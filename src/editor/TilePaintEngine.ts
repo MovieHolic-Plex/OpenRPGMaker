@@ -366,7 +366,9 @@ export class TilePaintEngine {
     if (state.terrainBrush === "surface" || state.terrainBrush === "river") {
       if (firstStrokeTile) {this.stopReliefGrowth();this.terrainLast=null;this.reliefStrokeBase=map.relief?.levels[pick.y*map.width+pick.x]??0;}
       const centers=strokeCenters(this.terrainLast?`${this.terrainLast.x},${this.terrainLast.y}`:"",pick.x,pick.y);
-      this.applyStrokeEdit(mid,()=>{for(const c of centers)for(const p of symmetricPoints(c,state.terrainSymmetry,map.width,map.height))paintTerrainBrush(mid,p.x,p.y,state.terrainBrush==="river"?"water":state.terrainMaterial,state.terrainWidth,this.reliefStrokeBase);});
+      let refused=0;
+      this.applyStrokeEdit(mid,()=>{for(const c of centers)for(const p of symmetricPoints(c,state.terrainSymmetry,map.width,map.height))refused+=paintTerrainBrush(mid,p.x,p.y,state.terrainBrush==="river"?"water":state.terrainMaterial,state.terrainWidth,this.reliefStrokeBase);},{label:state.terrainBrush==="river"?"강 붓":"표면 붓"});
+      if(refused>0&&!this.placementNoticeShown){this.placementNoticeShown=true;toast(`강은 처음 누른 ${this.reliefStrokeBase}단 땅에만 그린다. 높이가 다른 땅은 건너뛰었다. 고원을 가르려면 먼저 골짜기로 파라`,"info");}
       this.terrainLast={x:pick.x,y:pick.y};
       return;
     }
