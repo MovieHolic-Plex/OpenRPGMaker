@@ -143,8 +143,13 @@ body.ai-studio-open .ai-team-sidebar { visibility: hidden; }
 .ai-chat-secondary-actions { display: grid; gap: 3px; padding-bottom: 8px; margin-bottom: 8px; border-bottom: 1px solid var(--border-subtle); }
 .ai-deck .ai-chat-secondary-actions > button { display: flex; align-items: center; justify-content: flex-start; gap: 10px; width: 100%; min-height: 34px; padding: 7px 10px; border: 0; border-radius: var(--radius-s); background: transparent; color: var(--text-2); font: 12px var(--font-ui); }
 .ai-deck .ai-chat-secondary-actions > button:hover { background: var(--bg-inset); color: var(--text-1); }
-.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions-lead { flex-wrap: wrap; gap: 5px; overflow: visible; }
-.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions-trail { width: auto; justify-content: flex-end; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions { align-items: flex-end; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions-lead { flex: 1 1 0; min-width: 0; flex-wrap: wrap; gap: 5px; overflow: visible; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions-lead > * { max-width: 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-actions-trail { width: auto; justify-content: flex-end; align-self: flex-end; }
+/* 사용량 메타 줄: 입력창 아래 오른쪽, 한 줄, 넘치면 말줄임. */
+.ai-chat-panel .ai-command-bar > .ai-composer-spend { display: block; margin: 6px 4px 0; max-width: 100%; overflow: hidden; text-align: right; text-overflow: ellipsis; font-size: 11px; color: var(--text-3); }
+.ai-chat-panel .ai-command-bar > .ai-composer-spend[hidden] { display: none; }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-model { margin-right: auto; font-size: 10px; color: var(--text-3); }
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-stamp-toggle,
 .ai-chat-panel.is-left-sidebar:not(.is-studio) .ai-composer-team-toggle,
