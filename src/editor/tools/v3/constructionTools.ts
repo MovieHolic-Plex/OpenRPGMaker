@@ -998,6 +998,16 @@ function assertFillRegionGroup(tileset: TilesetDef, group: TileGroupMetadata, au
   );
 }
 
+/** 지형 리뷰 F4: 물 같은 통행 불가 면이 단 경계를 넘으면 절벽 띠가 물을 가로질러 그려진다. 가장 낮은 단의 칸만 남긴다. */
+function splitReliefLevelCells(map: GameMap, cells: readonly Point[]): { cells: Point[]; skipped: number; level: number } {
+  const levels = map.relief?.levels;
+  if (!levels || cells.length === 0) return { cells: [...cells], skipped: 0, level: 0 };
+  const levelAt = (cell: Point) => levels[cell.y * map.width + cell.x] ?? 0;
+  const lowest = Math.min(...cells.map(levelAt));
+  const kept = cells.filter((cell) => levelAt(cell) === lowest);
+  return { cells: kept, skipped: cells.length - kept.length, level: lowest };
+}
+
 const PLAIN_WATER_MATERIAL = /^(물|맑은 물|호수|호수 물|연못|못|물웅덩이|water|lake|pond)$/iu;
 /** 흔한 물 낱말 → 시트의 움직이는 물 오토타일 어휘(animated_terrain 수역). 없으면 null(라벨 검색으로 간다). */
 function plainWaterMaterialGroup(tileset: TilesetDef, material: unknown): TileGroupMetadata | null {
@@ -1123,7 +1133,8 @@ const fillRegion: ToolDefinition = {
       } else setLayerTileAt(map, layerNo, index, body);
     };
     const filtered = filterPassageProtectedCells(draft, map, events.cells, paintCell);
-    const exit = blocksPassage ? reserveStartExit(draft, map, filtered.cells) : { cells: filtered.cells, corridor: [] as Point[] };
+    const level = (blocksPassage || group.role === "water") && layerNo === 1 ? splitReliefLevelCells(map, filtered.cells) : { cells: filtered.cells, skipped: 0, level: 0 };
+    const exit = blocksPassage ? reserveStartExit(draft, map, level.cells) : { cells: level.cells, corridor: [] as Point[] };
     const before = snapshotLayers(map);
     let upperCleared = 0;
     for (const cell of exit.cells) {
@@ -1180,6 +1191,9 @@ const fillRegion: ToolDefinition = {
     const upperNote = upperCleared > 0 ? `, 상위 ${upperCleared}칸 비움` : "";
     const exitNote = exit.corridor.length > 0 ? `, 시작 위치 통로 ${exit.corridor.length}칸 비움` : "";
     const warnings = [
+      ...(level.skipped > 0
+        ? [`높이가 다른 ${level.skipped}칸에는 깔지 않았습니다. 물은 가장 낮은 ${level.level}단에만 깔립니다(단 경계를 넘으면 절벽 띠가 물을 가로지릅니다). 더 넓게 깔려면 sculpt_relief 로 그 칸들을 먼저 ${level.level}단으로 맞추세요`]
+        : []),
       ...(protectedSkipWarnings(skippedAll) ?? []),
       ...bareBoardWarnings(map, exit.cells.length, layerNo === 1 ? "lower" : String(requestedLayer)),
       ...(exit.corridor.length > 0

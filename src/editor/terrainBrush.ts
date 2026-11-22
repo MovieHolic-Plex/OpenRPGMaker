@@ -21,14 +21,19 @@ export function terrainBrushPoints(map:GameMap,x:number,y:number,width:number,ri
   return points;
 }
 
-/** Surface leaves all heights intact. River carves a level bed and shapes water/shore in one edit. */
-export function paintTerrainBrush(mapId:string,x:number,y:number,material:TerrainMaterial,width:number,bedLevel:number):void {
-  const p=store.getCurrent(),map=p.maps[mapId];if(!map)return;
+/**
+ * Surface leaves all heights intact. River paints water only on cells at the stroke's first level (F5): carving a plateau
+ * left a wall-less cut and a one-cell jog where the pick crossed the lifted face. Returns how many cells it refused.
+ */
+export function paintTerrainBrush(mapId:string,x:number,y:number,material:TerrainMaterial,width:number,bedLevel:number):number {
+  const p=store.getCurrent(),map=p.maps[mapId];if(!map)return 0;
   const tileset=p.tilesets[map.tilesetId],tile=terrainMaterialTile(tileset,material);
-  if(tile===undefined || tile<0)return;
-  const points=terrainBrushPoints(map,x,y,width,material==="water");
+  if(tile===undefined || tile<0)return 0;
+  const reach=terrainBrushPoints(map,x,y,width,material==="water");
+  const points=material==="water"&&map.relief?reach.filter(c=>(map.relief!.levels[c.y*map.width+c.x]??0)===bedLevel):reach;
+  const refused=reach.length-points.length;
   const previous=points.map(c=>layerTileAt(map,1,c.y*map.width+c.x));
-  if(!points.some(c=>layerTileAt(map,1,c.y*map.width+c.x)!==tile || layerTileAt(map,2,c.y*map.width+c.x)>=0 || (material==="water" && map.relief && map.relief.levels[c.y*map.width+c.x]!==bedLevel)))return;
+  if(!points.some(c=>layerTileAt(map,1,c.y*map.width+c.x)!==tile || layerTileAt(map,2,c.y*map.width+c.x)>=0))return refused;
   const dirty=new Map<number,{x:number;y:number;layer:"lower"}>();
   for(const c of points)for(let dy=-2;dy<=2;dy++)for(let dx=-2;dx<=2;dx++){
     const X=c.x+dx,Y=c.y+dy;if(X>=0&&Y>=0&&X<map.width&&Y<map.height)dirty.set(Y*map.width+X,{x:X,y:Y,layer:"lower"});
@@ -45,9 +50,6 @@ export function paintTerrainBrush(mapId:string,x:number,y:number,material:Terrai
       for (const c of points) draft.terrainDesign.waterDepth![c.y*draft.width+c.x] = material === "water" ? 3 : 0;
     }
     for(const group of autotileGroupsForTileset(tileset)) if((group.layer??"lower")==="lower" && previous.some(v=>autotileEditTriggersGroup(group,v,tile)))shapeAutotileGroupAround(draft,group,points);
-    if(material==="water" && draft.relief){
-      const levels=draft.relief.levels.slice();for(const c of points)levels[c.y*draft.width+c.x]=bedLevel;
-      draft.relief={...draft.relief,levels};
-    }
-  },{label:material==="water"?"강 붓 · 물·물가·강바닥":"표면 붓",cells:[...dirty.values()],...(material==="water"?{relief:true as const}:{})});
+  },{label:material==="water"?"강 붓 · 물·물가":"표면 붓",cells:[...dirty.values()]});
+  return refused;
 }
