@@ -26,6 +26,19 @@ export const TERRAIN_LAND_SIZES: readonly TerrainLandSize[] = [1, 3, 5, "rect"];
 
 export const terrainLandLabel = (land: TerrainLand): string => TERRAIN_LANDS.find((entry) => entry.land === land)?.label ?? String(land);
 
+/**
+ * 「땅 올리기」「땅 내리기」 한 번 끌기의 목표 땅 — 처음 누른 칸보다 한 층 위·아래.
+ * 층은 물 → 낮은 땅(0) → 높은 땅(2) → 더 높은 땅(4). 끝 층에서는 그 층에 머문다(내리기는 물을 파지 않는다).
+ * 한 끌기 안에서는 목표가 하나라 언덕 윗면이 평평하게 나온다.
+ */
+export function landStepTarget(map: Pick<GameMap, "width" | "height" | "relief" | "terrainDesign">, at: Point, step: "raise" | "lower"): TerrainLand {
+  const i = at.y * map.width + at.x;
+  const wet = (map.terrainDesign?.waterDepth?.[i] ?? 0) > 0;
+  const level = map.relief?.levels[i] ?? 0;
+  if (step === "raise") return wet ? 0 : level >= 2 ? 4 : 2;
+  return wet ? "water" : level > 2 ? 2 : 0;
+}
+
 type Point = { readonly x: number; readonly y: number };
 
 export function landBrushCells(map: Pick<GameMap, "width" | "height">, center: Point, size: 1 | 3 | 5): number[] {

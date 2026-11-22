@@ -33,6 +33,19 @@
 .relief-side-description { margin: 0; color: var(--text-2); font-size: 12px; line-height: 1.45; }
 .relief-land-palette { display: flex; flex-direction: column; gap: 6px; }
 .relief-land-palette .relief-side-subtitle { margin: 0; }
+/* 기본 도구 6개 — 3열 격자, 아이콘 위·이름 아래. 낱말은 줄바꿈하되 한 글자씩 끊지 않는다. */
+.relief-main-tools { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.relief-main-tool {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; min-width: 0; min-height: 58px; padding: 6px 4px;
+  border: 1px solid var(--border-default); border-radius: 10px;
+  background: var(--bg-raised); color: var(--text-1); font: 600 12px/1.2 var(--font-ui); cursor: pointer;
+}
+.relief-main-tool svg { width: 22px; height: 22px; }
+.relief-main-tool-label { text-align: center; word-break: keep-all; overflow-wrap: normal; }
+.relief-main-tool:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--border-default)); }
+.relief-main-tool.is-active { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg-raised)); }
+.relief-main-tool:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.relief-main-tool:disabled { opacity: .45; cursor: not-allowed; }
 .relief-land-swatches { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .relief-land-swatch {
   display: flex; align-items: center; gap: 7px; min-height: 36px; padding: 6px 8px;
@@ -43,8 +56,14 @@
 .relief-land-swatch.is-active { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg-raised)); }
 .relief-land-swatch:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .relief-land-chip { flex: 0 0 auto; width: 18px; height: 18px; border-radius: 5px; box-shadow: inset 0 -4px 0 rgb(0 0 0 / 18%); }
-.relief-land-swatch > span:nth-child(2) { flex: 1; min-width: 0; }
+.relief-land-swatch > span:nth-child(2) { flex: 1; min-width: 0; word-break: keep-all; }
 .relief-land-swatch kbd { color: var(--text-2); font: 600 10px/1 var(--font-ui); }
+/* 좁은 패널(390 폭 등)에서는 단축키 글자를 빼서 땅 이름이 낱말 단위로 줄바꿈되게 한다. */
+.relief-side-panel { container-type: inline-size; }
+@container (max-width: 240px) {
+  .relief-land-swatch { gap: 5px; padding: 6px; }
+  .relief-land-swatch kbd { display: none; }
+}
 .relief-land-sizes { display: flex; gap: 4px; }
 .relief-land-sizes .relief-bar-size { flex: 1; white-space: nowrap; padding-inline: 4px; }
 .relief-land-sizes .relief-bar-size:last-child { flex: 1.6; }
@@ -153,7 +172,7 @@
 .relief-side-panel .relief-bar-context > .relief-bar-group:not(:first-child) { align-self: flex-start; width: auto; }
 .relief-side-panel .relief-bar-mode { flex-direction: column; justify-content: center; min-width: 0; height: 54px; gap: 2px; padding: 4px 2px; }
 .relief-side-panel .relief-bar-mode { display: flex; }
-.relief-side-panel .relief-bar-mode-label { display: inline; }
+.relief-side-panel .relief-bar-mode-label { display: inline; max-width: 100%; text-align: center; white-space: normal; word-break: keep-all; }
 .relief-side-panel .relief-bar-options-toggle { align-self: flex-start; }
 .relief-side-panel .relief-bar-advanced { border-left: 0; border-top: 1px solid var(--border-default, #dfe2ea); padding: 10px 0 0; }
 .relief-side-panel > [data-testid="relief-brush-controls"] { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); justify-content: stretch; max-width: none; padding: 8px 0 0; border: 0; border-top: 1px solid var(--border-default, #dfe2ea); border-radius: 0; box-shadow: none; background: transparent; }

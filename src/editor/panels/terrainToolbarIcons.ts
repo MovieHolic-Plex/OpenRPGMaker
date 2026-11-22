@@ -14,6 +14,11 @@ const PATHS = {
   grass: '<path d="M4 21h16M7 21 4 11l6 5 2-12 2 12 6-5-3 10"/>',
   move: '<path d="M12 2v20M2 12h20M8 6l4-4 4 4M8 18l4 4 4-4M6 8l-4 4 4 4M18 8l4 4-4 4"/>',
   delete: '<path d="M3 6h18M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7"/>',
+  raise: '<path d="M3 20h18M6 20v-6h12v6"/><path d="M12 11V3M8.5 6.5 12 3l3.5 3.5"/>',
+  lower: '<path d="M3 20h18M6 20v-3h12v3"/><path d="M12 3v9M8.5 8.5 12 12l3.5-3.5"/>',
+  water: '<path d="M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11Z"/><path d="M9 15a3 3 0 0 0 3 3"/>',
+  tree: '<path d="M12 2 6 10h3l-4 6h14l-4-6h3Z"/><path d="M12 16v6"/>',
+  eraser: '<path d="m7 21-4-4L14 6l6 6-9 9Z"/><path d="M7 21h14M10 10l6 6"/>',
 } as const;
 
 export type TerrainToolbarIcon = keyof typeof PATHS;
