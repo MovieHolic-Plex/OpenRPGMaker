@@ -4,7 +4,7 @@ import { WORLDMAP_AUTHORING_TEXTURE, WORLDMAP_AUTHORING_ID, createWorldmapAuthor
 import { BEODEUL_CITY_TEXTURE, createBeodeulCityTileset, ensureBeodeulCityReferences, ensureBeodeulCityTileset, beodeulCityBundledReferenceDocuments } from "./beodeulCity";
 import {ensureBeodeulFacilityKits} from './beodeulFacilities';
 import {BEODEUL_ORGANIC_TEXTURE,createBeodeulOrganicTileset,ensureBeodeulOrganicTileset,ensureBeodeulOrganic} from './beodeulOrganic';
-import { ensureBeodeulPlaceableObjects } from "./beodeulPlaceableObjects";
+import { ensureBeodeulPlaceableObjects, upgradeBeodeulCrateStackGrafts } from "./beodeulPlaceableObjects";
 import {BEODEUL_FORMS_TEXTURE,createBeodeulFormsTileset,ensureBeodeulFormsTileset,ensureBeodeulForms} from './beodeulForms';
 import {BEODEUL_REVIEWED_TEXTURE,createBeodeulReviewedTileset,ensureBeodeulReviewedTileset,ensureBeodeulReviewed} from './beodeulReviewed';
 import {BEODEUL_MASSING_TEXTURE,createBeodeulMassingTileset,ensureBeodeulMassingTileset,ensureBeodeulMassing} from './beodeulMassing';
@@ -229,6 +229,7 @@ export function preloadAllBundledTilesetDefinitions(): Promise<void> | null {
 // 옛 프로젝트에 남은 그 타일셋 정의는 그대로 읽힌다(번들 목록에 없으니 여기서 건드리지 않는다).
 export function ensureBundledTilesets(project: { tilesets: Record<string, TilesetDef>; maps?: Readonly<Record<string, { tilesetId?: string }>> }): boolean {
   let changed = false;
+  for (const tileset of Object.values(project.tilesets)) changed = upgradeBeodeulCrateStackGrafts(tileset) || changed;
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     // 존재 확인이 **먼저**다. 생성자를 먼저 부르면 타일셋이 이미 있는 흔한 경우에도
     // 3~5MB 짜리 JSON 사본을 만들어 그대로 버린다 — 실측 2026-09-22: 프로젝트 로드마다
