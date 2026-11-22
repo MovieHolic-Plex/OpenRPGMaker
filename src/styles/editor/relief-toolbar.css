@@ -34,7 +34,16 @@
 .relief-land-palette { display: flex; flex-direction: column; gap: 6px; }
 .relief-land-palette .relief-side-subtitle { margin: 0; }
 /* 기본 도구 6개 — 3열 격자, 아이콘 위·이름 아래. 낱말은 줄바꿈하되 한 글자씩 끊지 않는다. */
-.relief-main-palette { display: grid; gap: 8px; }
+.relief-main-palette { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.relief-main-palette .relief-land-sizes .relief-bar-size { min-width: 0; }
+.relief-preset-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+.relief-preset {
+  min-width: 0; min-height: 34px; padding: 4px; border: 1px solid var(--border-default); border-radius: 8px;
+  background: var(--bg-raised); color: var(--text-1); font: 600 12px/1.2 var(--font-ui); word-break: keep-all; cursor: pointer;
+}
+.relief-preset:hover { border-color: color-mix(in srgb, var(--accent) 55%, var(--border-default)); }
+.relief-preset.is-active { border-color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); background: color-mix(in srgb, var(--accent) 12%, var(--bg-raised)); }
+.relief-preset:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 /* 통행 보기 + 항상 보이는 범례 */
 .relief-reach-row { display: grid; gap: 6px; }
 .relief-reach-toggle { display: inline-flex; align-items: center; gap: 6px; justify-self: start; }
