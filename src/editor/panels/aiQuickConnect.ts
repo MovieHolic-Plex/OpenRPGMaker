@@ -3,13 +3,12 @@
 //
 // 「연결」 을 누르면 동반 서비스가 도구 달린 채팅을 한 번 보내 보고, 통과할 때만 키를 저장 파일(0600)에 넣는다
 // (/auth/openai-compat/connect). 키는 브라우저 저장소·프로젝트 파일에 남지 않는다 — 입력칸은 성공하면 비운다.
-// 쓰는 곳: AI 설정 「연결」 탭 맨 위, 연결 관문(aiConnectGate) 안. 첫 실행 화면도 이 카드를 그대로 끼울 수 있다.
+// 쓰는 곳: AI 설정 「계정 추가」 안, 연결 관문(aiConnectGate) 안. 첫 실행 화면도 이 카드를 그대로 끼울 수 있다.
 
 import { isLegacyTerraModel } from "@/ai/chatgptDefault";
 import { connectOpenAiCompatEndpoint, ChatGptCompanionResponseError } from "@/ai/chatgptOAuthClient";
 import { OPENROUTER_DEFAULT_MODEL, OPENROUTER_KEYS_URL, type OpenAiCompatEndpointPublic } from "@/ai/openAiCompat";
 import { el } from "@/util/dom";
-import "@/styles/components/ai-quick-connect.css";
 
 export const AI_QUICK_CONNECT_TESTIDS = {
   host: "ai-quick-connect",
@@ -68,7 +67,7 @@ export function renderAiQuickConnect(options: AiQuickConnectOptions): AiQuickCon
   const baseUrlInput = textInput(AI_QUICK_CONNECT_TESTIDS.baseUrl, "url", "https://example.com/v1");
   const modelInput = textInput(AI_QUICK_CONNECT_TESTIDS.model, "text", OPENROUTER_DEFAULT_MODEL, OPENROUTER_DEFAULT_MODEL);
   const keysLink = el("a", {
-    class: "ai-quick-connect-link",
+    class: "ai-settings-link ai-quick-connect-link",
     text: "OpenRouter 에서 키 만들기",
     attrs: { href: OPENROUTER_KEYS_URL, target: "_blank", rel: "noopener noreferrer" },
   });
@@ -78,7 +77,7 @@ export function renderAiQuickConnect(options: AiQuickConnectOptions): AiQuickCon
   const modelField = field("모델", modelInput, modelHint);
 
   const submit = el("button", {
-    class: "ai-quick-connect-submit",
+    class: "ai-settings-button is-primary ai-quick-connect-submit",
     text: "연결",
     attrs: { type: "submit" },
     dataset: { testid: AI_QUICK_CONNECT_TESTIDS.submit },

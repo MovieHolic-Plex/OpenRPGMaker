@@ -19,18 +19,16 @@ test("the launcher chip and menu open the shared AI form and keep local programs
   const settings = page.getByTestId("start-settings");
   await chip.click();
   await expect(settings.getByTestId("ai-settings-chatgpt-account")).toContainText("builder@example.invalid");
-  await expect(settings.getByRole("radio", { name: "Balanced" })).toBeChecked();
   const programs = settings.getByTestId("ai-settings-local-programs");
   await expect(programs).toBeHidden();
+  // 계정이 있으면 「계정 추가」는 접혀 있다 — 열어야 다른 방법이 보인다(2026-11-23 첫 화면 단순화).
+  await settings.getByTestId("ai-settings-add-account-toggle").click();
   await settings.getByTestId("ai-settings-other-ways").click();
   await programs.locator("summary").first().click();
   await expect(programs.getByTestId("start-settings-engine-codex")).toHaveAttribute("data-state", "not-installed");
   await expect(settings.getByTestId("ai-settings-chatgpt-account")).toBeVisible();
-  await settings.getByTestId("ai-settings-tab-behavior").click();
-  await settings.getByTestId("ai-settings-open-advanced").click();
-  await expect(settings.getByTestId("ai-settings-advanced-done")).toBeFocused();
-  await page.keyboard.press("Escape");
-  await expect(settings.getByTestId("ai-settings-open-advanced")).toBeFocused();
+  await settings.getByTestId("ai-settings-tab-model").click();
+  await expect(settings.getByRole("radio", { name: "Balanced" })).toBeChecked();
 
   const aiTab = settings.getByTestId("start-settings-tab-ai");
   await aiTab.press("ArrowRight");

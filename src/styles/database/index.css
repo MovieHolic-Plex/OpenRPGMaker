@@ -109,7 +109,6 @@
 @import "./from-editor-world-panel.css" layer(database);
 @import "./from-editor-map-props.css" layer(database);
 @import "./from-editor-audio-test-dialog.css" layer(database);
-@import "./from-editor-ai-settings-modal.css" layer(database);
 @import "./curve-editors.css" layer(database);
 @import "./battle-studio.css" layer(database);
 @import "./animation-editor.css" layer(database);

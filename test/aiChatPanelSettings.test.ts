@@ -117,12 +117,11 @@ describe("설정 자동 저장", () => {
     // 「구독 로그인」 배지는 지웠다 — 카드 필·상태 줄과 같은 말을 세 번째로 되풀이했다.
     // 안내 문장은 abaa03e78f 로 「<계정> 계정으로 로그인」 한 줄이 됐다 — 키 입력칸이 없다는 사실은 위 단언이 고정한다.
     expect(modal.textContent).toMatch(/계정으로 (로그인|연결됨)/u);
-    const sheet = findByTestId(modal, "ai-settings-advanced");
-    expect(sheet?.hidden).toBe(true);
-    findByTestId(modal, "ai-settings-tab-behavior")?.click();
-    findByTestId(modal, "ai-settings-open-advanced")?.click();
-    expect(sheet?.hidden).toBe(false);
-    expect(sheet?.textContent).toContain("역할별 모델");
+    // 역할별 모델은 왼쪽 「모델」 메뉴에 있다(2026-11-23 겹쳐 뜨는 고급 시트를 없앴다).
+    const modelPane = findByTestId(modal, "ai-settings-pane-model");
+    findByTestId(modal, "ai-settings-tab-model")?.click();
+    expect(modelPane?.hidden).toBe(false);
+    expect(modelPane?.textContent).toContain("역할별 모델");
   });
 
   it("제공자를 바꿔도 전송 축은 동반 서비스로 남는다", () => {

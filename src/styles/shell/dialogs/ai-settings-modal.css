@@ -12,22 +12,21 @@
   --shell-ai-settings-segment-bg: var(--control-bg-hover);
   --shell-ai-settings-segment-selected: var(--bg-raised);
   --shell-ai-settings-title-bg: var(--bg-inset);
-  --shell-ai-settings-sheet-bar-bg: var(--bg-surface);
 
   background: var(--shell-ai-settings-bg);
   border: 0;
-  border-radius: 12px;
+  border-radius: var(--ais-radius);
   box-shadow: var(--shadow-modal);
   box-sizing: border-box;
   color: var(--text-1);
   display: grid;
-  font: 14px/1.3 var(--font-ui, system-ui, sans-serif);
-  grid-template-rows: 52px minmax(0, 1fr);
-  height: min(580px, calc(100dvh - 24px));
+  font: 13px/1.3 var(--font-ui, system-ui, sans-serif);
+  grid-template-rows: 40px minmax(0, 1fr);
+  height: min(620px, calc(100dvh - 24px));
   max-height: calc(100dvh - 24px);
   min-height: 0;
   overflow: hidden;
-  width: min(720px, calc(100vw - 24px));
+  width: min(760px, calc(100vw - 24px));
   -webkit-font-smoothing: antialiased;
 }
 
@@ -40,12 +39,80 @@
     --shell-ai-settings-segment-bg: var(--bg-base);
     --shell-ai-settings-segment-selected: var(--bg-overlay);
     --shell-ai-settings-title-bg: var(--bg-raised);
-    --shell-ai-settings-sheet-bar-bg: var(--bg-overlay);
   }
 }
 
-.ai-settings-titlebar,
-.ai-settings-sheet-bar {
+/* ── 체계 (2026-11-23 ai-setup-adaptive c) ─────────────────────────────────
+ * 이 창의 모양은 이 파일 하나가 정한다. 간격은 --ais-gap(덩이 사이)·--ais-inner(카드 안),
+ * 모서리는 카드 --ais-radius · 조작 --ais-radius-control 둘뿐이다.
+ * 버튼은 세 종류: .ai-settings-button(보조) · .ai-settings-button.is-primary(주) · .ai-settings-link(글자).
+ * 고르기 칸(품질·키 종류)은 한 모양의 분절 컨트롤(.ai-model-presets · .ai-quick-connect-kinds)이다.
+ * 카드는 .ai-settings-section-body · .ai-settings-hero · 접힘 줄(.ai-settings-alternatives > summary) 한 모양이고, 카드 안에 카드를 두지 않는다. */
+.ai-settings-window {
+  --ais-gap: var(--space-3);
+  --ais-inner: var(--space-2) var(--space-3);
+  --ais-radius: var(--radius-m);
+  --ais-radius-control: var(--radius-s);
+  --ais-control-h: 28px;
+  --ais-row-h: 36px;
+}
+
+.ai-settings-window :is(.ai-settings-button, .ai-settings-login) {
+  align-items: center;
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--ais-radius-control);
+  box-shadow: none;
+  color: var(--text-1);
+  cursor: pointer;
+  display: inline-flex;
+  font: 500 12px/1.2 var(--font-ui, system-ui, sans-serif);
+  gap: var(--space-1);
+  justify-content: center;
+  letter-spacing: -0.01em;
+  margin: 0;
+  min-height: var(--ais-control-h);
+  min-width: 0;
+  padding: 0 var(--space-2);
+  white-space: nowrap;
+}
+
+.ai-settings-window :is(.ai-settings-button, .ai-settings-login):hover:not(:disabled) {
+  background: var(--control-bg-hover);
+}
+
+.ai-settings-window :is(.ai-settings-button.is-primary, .ai-settings-login) {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.ai-settings-window :is(.ai-settings-button.is-primary, .ai-settings-login):hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.ai-settings-window .ai-settings-button.is-danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+.ai-settings-window :is(.ai-settings-button, .ai-settings-login):disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.ai-settings-window :is(.ai-settings-button, .ai-settings-login, .ai-settings-link):focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+.ai-settings-content {
+  align-content: start;
+  display: grid;
+  gap: var(--ais-gap);
+}
+
+.ai-settings-titlebar {
   align-items: center;
   background: var(--shell-ai-settings-title-bg);
   border-bottom: 1px solid var(--border-subtle);
@@ -54,8 +121,7 @@
   position: relative;
 }
 
-.ai-settings-titlebar h2,
-.ai-settings-sheet-bar h3 {
+.ai-settings-titlebar h2 {
   color: inherit;
   font: 600 13px/1.25 var(--font-ui, system-ui, sans-serif);
   letter-spacing: -0.02em;
@@ -66,7 +132,7 @@
   align-items: center;
   background: transparent;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--ais-radius-control);
   color: var(--black-soft);
   cursor: pointer;
   display: grid;
@@ -113,7 +179,7 @@
   display: grid;
   font-size: inherit;
   gap: 0;
-  grid-template-columns: 172px minmax(0, 1fr);
+  grid-template-columns: 136px minmax(0, 1fr);
   grid-template-rows: minmax(0, 1fr);
   height: 100%;
   margin: 0;
@@ -125,76 +191,25 @@
   display: none;
 }
 
-.ai-settings-rail {
-  background: var(--shell-ai-settings-sidebar);
-  border-inline-end: 1px solid var(--border-subtle);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 10px 8px 16px;
-}
-
-.ai-settings-tab {
-  align-items: center;
-  background: transparent;
-  border: 0;
-  border-radius: 7px;
-  color: inherit;
-  cursor: pointer;
-  display: flex;
-  font: 500 13px/1.25 var(--font-ui, system-ui, sans-serif);
-  gap: 9px;
-  letter-spacing: -0.02em;
-  min-height: 32px;
-  padding: 4px 8px;
-  text-align: start;
-}
-
-.ai-settings-tab:is([aria-current="page"], :hover) {
-  background: var(--bg-active);
-}
-
-.ai-settings-nav-icon {
-  align-items: center;
-  background: color-mix(in srgb, var(--text-3) 75%, var(--bg-raised));
-  border-radius: 6px;
-  color: var(--white-soft);
-  display: inline-flex;
-  flex: 0 0 22px;
-  height: 22px;
-  justify-content: center;
-}
-
-.ai-settings-tab[aria-current="page"] .ai-settings-nav-icon {
-  background: var(--accent);
-  color: var(--on-accent);
-}
-
-.ai-settings-content,
-.ai-settings-sheet-body {
+.ai-settings-content {
   min-height: 0;
   min-width: 0;
   overflow: auto;
   overscroll-behavior: contain;
   overflow-wrap: anywhere;
-  padding: 22px 24px 24px;
-}
-
-.ai-settings-pane {
-  display: grid;
-  gap: 16px;
+  padding: 12px 16px 16px;
 }
 
 .ai-settings-inset,
 .ai-settings-section-body,
 .ai-settings-alternatives > summary {
   background: var(--bg-raised);
-  border-radius: 10px;
+  border-radius: var(--ais-radius);
   min-width: 0;
 }
 
 .ai-settings-section-header {
-  padding: 0 4px 6px;
+  padding: 0 2px 4px;
 }
 
 .ai-settings-section-header h3,
@@ -218,10 +233,10 @@
 .ai-settings-row {
   align-items: center;
   display: flex;
-  gap: 12px;
-  min-height: 44px;
+  gap: var(--space-2);
+  min-height: var(--ais-row-h);
   min-width: 0;
-  padding: 10px 14px;
+  padding: 6px 12px;
 }
 
 .ai-settings-row-copy {
@@ -246,24 +261,23 @@
   cursor: pointer;
   font: inherit;
   list-style: none;
-  padding: 10px 14px;
+  padding: 6px 12px;
   text-align: start;
   width: 100%;
 }
 
 .ai-settings-row-button:not(.ai-settings-inset) {
   background: transparent;
-  border-radius: 10px;
+  border-radius: var(--ais-radius);
 }
 
 .ai-settings-row-button:hover,
 .ai-settings-form summary.ai-settings-row:hover {
   background: color-mix(in srgb, var(--bg-raised) 96%, var(--text-1));
-  border-radius: 10px;
+  border-radius: var(--ais-radius);
 }
 
 .ai-settings-row-button:focus-visible,
-.ai-settings-tab:focus-visible,
 .ai-settings-form summary:focus-visible,
 .ai-settings-link:focus-visible,
 .ai-settings-login:focus-visible,
@@ -304,7 +318,7 @@
 .ai-settings-hero {
   align-items: center;
   background: var(--bg-raised);
-  border-radius: 12px;
+  border-radius: var(--ais-radius);
   display: flex;
   flex-direction: column;
   padding: 36px 32px 32px;
@@ -325,7 +339,7 @@
 }
 
 .ai-settings-avatar {
-  border-radius: 9px;
+  border-radius: var(--ais-radius);
   height: 36px;
   width: 36px;
 }
@@ -348,31 +362,13 @@
 }
 
 .ai-settings-login {
-  background: var(--accent);
-  border: 0;
-  border-radius: 8px;
-  box-shadow: var(--shadow-control);
-  color: var(--on-accent);
-  cursor: pointer;
-  font: 500 15px/1.3 var(--font-ui, system-ui, sans-serif);
-  letter-spacing: -0.02em;
-  margin-top: 22px;
-  min-height: 36px;
+  margin-top: var(--space-4);
   min-width: min(196px, 100%);
-  padding: 6px 22px;
-}
-
-.ai-settings-login:is(:hover, :active) {
-  background: var(--accent-hover);
-}
-
-.ai-settings-login:focus-visible {
-  outline-offset: 2px;
 }
 
 .ai-settings-primary-feedback {
   background: var(--bg-raised);
-  border-radius: 10px;
+  border-radius: var(--ais-radius);
   padding: 10px 14px;
 }
 
@@ -387,7 +383,7 @@
 .ai-settings-link {
   background: none;
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--ais-radius-control);
   color: var(--accent);
   cursor: pointer;
   font: inherit;
@@ -431,19 +427,21 @@
   padding: 14px;
 }
 
-.ai-model-presets {
+.ai-model-presets,
+.ai-quick-connect-kinds {
   background: var(--shell-ai-settings-segment-bg);
-  border-radius: 9px;
+  border-radius: var(--ais-radius);
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   min-height: 32px;
   padding: 2px;
 }
 
-.ai-model-preset-card {
+.ai-model-preset-card,
+.ai-quick-connect-kind {
   background: transparent;
   border: 0;
-  border-radius: 7px;
+  border-radius: var(--ais-radius-control);
   color: inherit;
   cursor: pointer;
   font: 500 13px/1.25 var(--font-ui, system-ui, sans-serif);
@@ -451,7 +449,8 @@
   padding: 4px;
 }
 
-.ai-model-preset-card[aria-checked="true"] {
+.ai-model-preset-card[aria-checked="true"],
+.ai-quick-connect-kind[aria-checked="true"] {
   background: var(--shell-ai-settings-segment-selected);
   box-shadow: var(--shadow-control);
 }
@@ -461,7 +460,7 @@
 }
 
 .ai-settings-switch-row {
-  min-height: 62px;
+  min-height: 44px;
 }
 
 .ai-settings-switch-row + .ai-settings-switch-row,
@@ -497,41 +496,6 @@
 
 .ai-settings-switch-row[aria-checked="true"] .ai-settings-switch::after {
   inset-inline: auto 2px;
-}
-
-.ai-settings-sheet {
-  background: var(--shell-ai-settings-bg);
-  display: grid;
-  grid-template-rows: 48px minmax(0, 1fr);
-  inset: 0;
-  position: absolute;
-}
-
-.ai-settings-sheet-bar {
-  background: var(--shell-ai-settings-sheet-bar-bg);
-}
-
-.ai-settings-sheet-done {
-  font-weight: 500;
-  inset-inline-end: 12px;
-  position: absolute;
-}
-
-.ai-settings-sheet-body {
-  padding: 14px 20px 16px;
-}
-
-.ai-settings-sheet-body .ai-settings-section + .ai-settings-section {
-  margin-top: 14px;
-}
-
-.ai-settings-sheet .ai-settings-role-details > .ai-settings-row {
-  min-height: 48px;
-  padding-block: 8px;
-}
-
-.ai-settings-sheet .ai-settings-section-roles .ai-settings-role-details > .ai-settings-row {
-  min-height: 52px;
 }
 
 .ai-settings-role-value {
@@ -596,10 +560,10 @@
   align-items: center;
   border-bottom: 1px solid var(--shell-ai-settings-separator);
   display: grid;
-  gap: 8px 16px;
+  gap: 4px 12px;
   grid-template-columns: minmax(0, 1fr) minmax(0, 0.8fr);
   margin: 0;
-  padding: 10px 14px;
+  padding: 6px 12px;
 }
 
 .ai-settings-form .ai-config-row:last-child { border: 0; }
@@ -614,7 +578,7 @@
 
 .ai-settings-form .ai-config-label {
   color: var(--text-1);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 400;
 }
 
@@ -643,7 +607,7 @@
 .ai-settings-window :is(.ai-config-input, .ai-config-select:not(.event-custom-select-native)) {
   background: var(--bg-inset);
   border: 1px solid var(--border-default);
-  border-radius: var(--radius-s);
+  border-radius: var(--ais-radius-control);
   color: var(--text-1);
   font: inherit;
   min-width: 0;
@@ -664,6 +628,7 @@
 
 .ai-settings-alternative-body .ai-auth-quick-card {
   align-items: center;
+  font: inherit;
   background: transparent;
   border: 0;
   border-bottom: 1px solid var(--shell-ai-settings-separator);
@@ -678,7 +643,7 @@
 
 .ai-settings-alternative-body .ai-auth-quick-card[aria-checked="true"] {
   background: var(--accent-muted);
-  border-radius: 7px;
+  border-radius: 0;
 }
 
 .ai-settings-alternative-body .ai-auth-card-head { grid-column: 1; }
@@ -688,25 +653,11 @@
 .ai-settings-section-quick-connect .ai-quick-connect {
   background: transparent;
   border: 0;
-  padding: 0;
+  padding: var(--ais-inner);
 }
 
 @media (max-width: 575px) {
-  .ai-config-form.ai-settings-form {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
-  }
-
-  .ai-settings-rail {
-    border-block-end: 1px solid var(--border-subtle);
-    border-inline-end: 0;
-    flex-direction: row;
-    padding: 8px;
-  }
-
-  .ai-settings-tab { flex: 1; }
-  .ai-settings-content,
-  .ai-settings-sheet-body { padding: 14px 12px; }
+    .ai-settings-content { padding: 14px 12px; }
   .ai-settings-hero { padding-inline: 14px; }
 
   .ai-settings-form .ai-config-row,
@@ -716,7 +667,6 @@
 }
 
 @media (forced-colors: active) {
-  .ai-settings-tab[aria-current="page"],
   .ai-model-preset-card[aria-checked="true"],
   .ai-settings-switch-row[aria-checked="true"] .ai-settings-switch {
     outline: 1px solid Highlight;
@@ -732,7 +682,7 @@
 
 .ai-settings-subdetails > summary {
   align-items: center;
-  border-radius: var(--radius-s);
+  border-radius: var(--ais-radius-control);
   color: var(--text-2);
   cursor: pointer;
   display: flex;
@@ -850,9 +800,10 @@
 }
 
 .ai-settings-section-connection .ai-auth-panel {
-  background: var(--bg-inset);
-  border: var(--stroke-1) solid var(--border-default);
-  border-radius: var(--radius-m);
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--shell-ai-settings-separator);
+  border-radius: 0;
   color: var(--text-2);
   display: grid;
   font-size: var(--font-size-sm);
@@ -906,6 +857,11 @@
 }
 
 .ai-model-control .ai-config-input,
+/* 목록에서 모델을 골랐으면 같은 값을 보이는 입력칸은 숨긴다(같은 정보 두 번). 「목록에서 모델 고르기」(빈 값)일 때만 ID 를 직접 쓴다. */
+.ai-model-control:has(> select.ai-model-preset option:checked:not([value=""])) > .ai-config-input {
+  display: none;
+}
+
 .ai-model-control .ai-config-select {
   min-width: 0;
 }
@@ -948,7 +904,7 @@
 .ai-auth-quick-card {
   background: var(--control-bg);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-m);
+  border-radius: var(--ais-radius);
   color: var(--text-2);
   cursor: pointer;
   display: grid;
@@ -1107,9 +1063,6 @@
   justify-content: space-between;
 }
 
-/* 로그인 버튼 강조(.ai-oauth-login.is-primary)는 database 레이어의 .ai-assistant-action 을 이겨야 해서
- * database/from-editor-ai-settings-modal.css 에 [레이어 보존] 으로 둔다. */
-
 .ai-auth-actions[hidden] {
   display: none;
 }
@@ -1159,7 +1112,7 @@
   margin: 0;
   padding: var(--space-2) var(--space-3);
   border: 1px solid var(--line);
-  border-radius: var(--radius-2, 8px);
+  border-radius: var(--ais-radius-control);
   background: var(--surface-2, transparent);
 }
 
@@ -1175,7 +1128,7 @@
 .ai-oauth-device {
   background: var(--control-bg);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-s);
+  border-radius: var(--ais-radius-control);
   display: grid;
   gap: var(--space-2);
   padding: var(--space-3);
@@ -1226,7 +1179,7 @@
 .ai-oauth-device-usercode {
   background: var(--bg-inset);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-s);
+  border-radius: var(--ais-radius-control);
   color: var(--text-1);
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: 14px;
@@ -1253,7 +1206,7 @@
   align-items: center;
   background: color-mix(in srgb, var(--warning) 10%, transparent);
   border: 1px solid color-mix(in srgb, var(--warning) 35%, transparent);
-  border-radius: var(--radius-s);
+  border-radius: var(--ais-radius-control);
   color: var(--text-1);
   display: flex;
   font-size: 11px;
@@ -1275,7 +1228,7 @@
 .ai-auth-error {
   background: color-mix(in srgb, var(--danger) 10%, transparent);
   border: 1px solid var(--danger);
-  border-radius: var(--radius-s);
+  border-radius: var(--ais-radius-control);
   color: var(--danger);
   font-size: 11px;
   line-height: 1.5;
@@ -1323,9 +1276,10 @@
 }
 
 .ai-compat-card {
-  background: var(--control-bg);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-m);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--shell-ai-settings-separator);
+  border-radius: 0;
   display: grid;
   gap: var(--space-2);
   padding: var(--space-3);
@@ -1412,7 +1366,7 @@
 .ai-compat-result {
   background: var(--bg-inset);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-s);
+  border-radius: var(--ais-radius-control);
   color: var(--text-2);
   font-size: 11.5px;
   line-height: 1.5;
@@ -1452,9 +1406,10 @@
 }
 
 .ai-compat-form {
-  background: var(--bg-inset);
-  border: 1px solid var(--accent-border);
-  border-radius: var(--radius-m);
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--shell-ai-settings-separator);
+  border-radius: 0;
   display: grid;
   gap: var(--space-3);
   padding: var(--space-3);
@@ -1496,7 +1451,7 @@
 .ai-compat-icon-button {
   background: var(--control-bg);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-s);
+  border-radius: var(--ais-radius-control);
   color: var(--text-2);
   cursor: pointer;
   min-width: 28px;
@@ -1600,8 +1555,8 @@
 }
 
 .ai-tool-usage-stat {
-  background: var(--bg-inset);
-  border-radius: var(--radius-s);
+  background: transparent;
+  border-radius: 0;
   display: grid;
   gap: 2px;
   padding: var(--space-2) var(--space-3);
@@ -1637,7 +1592,7 @@
   align-items: center;
   background: transparent;
   border: 0;
-  border-radius: var(--radius-s);
+  border-radius: var(--ais-radius-control);
   color: inherit;
   cursor: pointer;
   display: grid;
@@ -1757,4 +1712,308 @@
   .ai-compat-role-row { grid-template-columns: minmax(0, 1fr); }
   .ai-compat-role-extra { grid-column: 1; }
   .ai-oauth-device-foot { flex-wrap: wrap; }
+}
+
+/* ── 빠른 연결(editor/panels/aiQuickConnect.ts) — 섹션 카드 안에 들어가므로 테두리·배경을 따로 두지 않는다. ── */
+.ai-quick-connect {
+  color: var(--text-1);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ai-quick-connect-title {
+  font-size: var(--font-16);
+  font-weight: 600;
+}
+
+.ai-quick-connect-lead,
+.ai-quick-connect-hint {
+  color: var(--shell-ai-settings-secondary);
+  font-size: 12px;
+  margin: 0;
+}
+
+.ai-quick-connect-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.ai-quick-connect-label {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ai-quick-connect-input {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: var(--ais-radius-control);
+  color: var(--text-1);
+  font: inherit;
+  min-height: var(--ais-control-h);
+  padding: 0 var(--space-2);
+}
+
+.ai-quick-connect-input:focus-visible {
+  border-color: var(--accent);
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-offset);
+}
+
+.ai-quick-connect-input::placeholder {
+  color: var(--text-placeholder);
+}
+
+.ai-quick-connect-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.ai-quick-connect-status {
+  font-size: 12px;
+  margin: 0;
+}
+
+/* 가로 줄(빠른 연결 버튼 옆)에서만 남은 폭을 채운다 — 세로로 쌓이는 직접 입력 폼에서는 200px 높이의 빈 칸이 됐다. */
+.ai-quick-connect-actions > .ai-quick-connect-status {
+  flex: 1 1 200px;
+}
+
+.ai-quick-connect-status[data-tone="busy"] { color: var(--text-2); }
+.ai-quick-connect-status[data-tone="ok"] { color: var(--success); }
+.ai-quick-connect-status[data-tone="error"] { color: var(--danger); }
+
+/* ── 첫 화면: 지금 쓰는 모델 · 연결된 계정 (editor/panels/aiSettingsOverview.ts) ── */
+.ai-settings-overview {
+  display: grid;
+  gap: var(--ais-gap);
+}
+
+.ai-settings-overview-model {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ai-settings-overview-current + .ai-settings-switch-row,
+.ai-settings-account + .ai-settings-account {
+  box-shadow: inset 0 1px 0 var(--shell-ai-settings-separator);
+}
+
+.ai-settings-accounts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ai-settings-account,
+.ai-settings-accounts-empty {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+  min-height: var(--ais-row-h);
+  padding: 0 12px;
+}
+
+.ai-settings-accounts-empty {
+  color: var(--shell-ai-settings-secondary);
+  font-size: 13px;
+}
+
+.ai-settings-account-name {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ai-settings-pill {
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  padding: 2px var(--space-2);
+  white-space: nowrap;
+}
+
+.ai-settings-pill[data-tone="ok"] { background: color-mix(in srgb, var(--success) 12%, transparent); color: var(--success); }
+.ai-settings-pill[data-tone="warn"] { background: color-mix(in srgb, var(--warning) 14%, transparent); color: var(--warning); }
+.ai-settings-pill[data-tone="muted"] { background: var(--control-bg-hover); color: var(--shell-ai-settings-secondary); }
+.ai-settings-pill[data-tone="accent"] { background: var(--accent-muted); color: var(--accent); }
+
+/* ── 왼쪽 메뉴(계정 · 모델 · 작업 · 표시 · 사용량) ── */
+.ai-settings-rail {
+  background: var(--shell-ai-settings-sidebar);
+  border-inline-end: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2) 6px;
+}
+
+.ai-settings-tab {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: var(--ais-radius-control);
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  font: 500 13px/1.2 var(--font-ui, system-ui, sans-serif);
+  gap: var(--space-2);
+  min-height: 30px;
+  padding: 0 var(--space-2);
+  text-align: start;
+}
+
+.ai-settings-tab:is([aria-current="page"], :hover) {
+  background: var(--bg-active);
+}
+
+.ai-settings-tab:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+.ai-settings-nav-icon {
+  align-items: center;
+  background: color-mix(in srgb, var(--text-3) 75%, var(--bg-raised));
+  border-radius: var(--ais-radius-control);
+  color: var(--white-soft);
+  display: inline-flex;
+  flex: 0 0 20px;
+  height: 20px;
+  justify-content: center;
+}
+
+.ai-settings-tab[aria-current="page"] .ai-settings-nav-icon {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.ai-settings-pane {
+  display: grid;
+  gap: var(--ais-gap);
+}
+
+/* ── 브라우저 기본 상자를 쓰지 않는다(오너 2026-11-23: 「default css box 같은건 매우 혐오스럽다」) ──
+ * 이 창 안의 입력·선택·글상자·묶음은 클래스가 없어도 같은 토큰 모양이다. */
+.ai-settings-window :is(input:not([type="range"], [type="checkbox"], [type="radio"], [type="color"]), select, textarea) {
+  appearance: none;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: var(--ais-radius-control);
+  box-shadow: none;
+  color: var(--text-1);
+  font: inherit;
+  min-height: var(--ais-control-h);
+  padding: 0 var(--space-2);
+}
+
+.ai-settings-window textarea {
+  min-height: 56px;
+  padding: var(--space-1) var(--space-2);
+}
+
+.ai-settings-window :is(input, select, textarea):focus-visible {
+  border-color: var(--accent);
+  outline: var(--focus-outline);
+  outline-offset: 0;
+}
+
+.ai-settings-window fieldset {
+  border: 0;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.ai-settings-window legend {
+  color: var(--shell-ai-settings-secondary);
+  font-size: 12px;
+  padding: 0;
+}
+
+.ai-settings-window button:not([class]) {
+  background: var(--control-bg);
+  border: 1px solid var(--border-default);
+  border-radius: var(--ais-radius-control);
+  color: var(--text-1);
+  cursor: pointer;
+  font: 500 12px/1.2 var(--font-ui, system-ui, sans-serif);
+  min-height: var(--ais-control-h);
+  padding: 0 var(--space-2);
+}
+
+@media (max-width: 575px) {
+  .ai-config-form.ai-settings-form {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .ai-settings-rail {
+    border-block-end: 1px solid var(--border-subtle);
+    border-inline-end: 0;
+    flex-direction: row;
+    overflow-x: auto;
+    padding: 6px;
+  }
+
+  .ai-settings-tab {
+    flex: 0 0 auto;
+  }
+
+  .ai-settings-nav-icon {
+    display: none;
+  }
+}
+
+/* ── 내 PC 프로그램(aiLocalProgramSettings) — 회색 칩을 한 줄씩 쌓던 것을 카드 안 목록 줄로 ── */
+[data-testid="ai-settings-local-programs"] > .ai-settings-alternative-body {
+  background: var(--bg-raised);
+  border-radius: var(--ais-radius);
+  gap: 0;
+  margin-top: var(--space-2);
+  padding: var(--space-1) 0;
+}
+
+.ai-settings-program {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--text-1);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  gap: var(--space-1);
+  min-height: var(--ais-row-h);
+  padding: 0 12px;
+  text-align: start;
+  width: 100%;
+}
+
+.ai-settings-program + .ai-settings-program,
+.ai-settings-program + .ai-config-help + .ai-settings-program {
+  box-shadow: inset 0 1px 0 var(--shell-ai-settings-separator);
+}
+
+.ai-settings-program[aria-pressed="true"] {
+  background: var(--accent-muted);
+}
+
+.ai-settings-program[aria-disabled="true"] {
+  color: var(--shell-ai-settings-secondary);
+  cursor: default;
+}
+
+.ai-settings-program:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+[data-testid="ai-settings-local-programs"] .ai-config-help:empty {
+  display: none;
+}
+
+[data-testid="ai-settings-local-programs"] .ai-config-help {
+  padding: var(--space-1) 12px;
 }

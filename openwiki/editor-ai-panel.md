@@ -3414,9 +3414,19 @@ v0.413.0에서 「AI로 명령 만들기」의 도구 결과마다 약 78MB 프�
 
 - **원격 OAuth launch (2026-08-27):** Google Antigravity 는 데스크톱 클라라 `redirect_uri` 가 `http://127.0.0.1:PORT/oauth-callback` 만 통과한다. mdc-server 호스트를 callback 으로 넣으면 Google 이 `invalid_request` 로 거절한다. 그래서 `OPRN_PUBLIC_ORIGIN`(없으면 `Origin`/`Host`) 으로 **로그인 시작 URL만** `http://mdc-server:9888/oauth/launch?port=` 로 바꾸고, 돌아온 localhost 콜백 URL 은 `POST /auth/oauth-paste` 로 서버가 대신 GET 한다. Antigravity·Codex 브라우저 로그인은 `/launch` 가 아니라 Google/OpenAI 인가 URL을 바로 연다. 그 URL의 `redirect_uri`가 루프백 콜백이면 원격 origin에서 `pasteCallback`을 켠다. 편집기는 이 화면으로 돌아오면 클립보드의 localhost 주소를 읽어 버튼 없이 연결하고, 붙여넣기만 해도 바로 넘긴다. env 키는 `.env.local` 의 `OPRN_PUBLIC_ORIGIN`. `npm start` 는 값이 없으면 `http://mdc-server:9888` 로 고정한다.
 
-- **OpenAI 호환 API 직접 입력 (2026-11-21).** 연결 탭의 「OpenAI 호환 API (직접 입력)」(`ai-openai-direct`, `src/editor/panels/aiOpenAiDirectSettings.ts`)에 프리셋·기본 주소·API 키(password)·모델을 둔다. OpenDesign 프리셋은 `https://amr-link.open-design.ai/v1` 과 모델 예 `deepseek-v4.1-flash-eco` 를 채운다. 「모델 불러오기」는 동반 서비스 `POST /auth/openai-compat/test` 에 모델 없이 보내 GET `{base}/models` 만 하게 하고, 「연결 시험」은 그 모델로 도구 호출까지 본다. 「이 연결로 조수 사용」은 `POST /auth/openai-compat/connect` 가 도구 시험을 통과할 때만 `~/.oprn/openai-compat-endpoints.json`(0600)에 키를 넣고, 계획·실행·시각·작문·시공 칸을 그 모델로 맞춘다. 브라우저는 사용자 주소를 직접 부르지 않는다(OpenDesign 은 브라우저 CORS 사전 요청을 405 로 거절한다). 키는 상태 문장에서 지우고, 성공하면 입력칸을 비운다. localStorage `oprn:ai-config` 의 `apiKey`·`baseUrl` 은 빈 값이다. 응답의 `reasoning_details` 는 빈 답으로 보지 않고 원문 그대로 조수 파서에 넘긴다. 추론 방식 기본은 「보내지 않음」이다. 목록·시험·저장이 진행되는 동안 프리셋·주소·키·모델 칸을 잠근다. 프리셋에 허용·차단 패턴이나 그림 입력이 있으면 그 값을 시험과 저장에 함께 보내고, 요청에 그 칸이 없으면 이미 저장된 값을 유지한다. 다시 연결하는 시험도 그 저장된 패턴으로 차단 모델을 부르지 않는다. 빈 배열을 보내면 그 목록을 비운다. 이 연결을 조수에 꽂을 때는 저장돼 있던 로컬 CLI 엔진을 먼저 끈다.
+- **OpenAI 호환 API 직접 입력 (2026-11-21).** 「계정 추가」 안 「고급: 직접 입력」의 「OpenAI 호환 API (직접 입력)」(`ai-openai-direct`, `src/editor/panels/aiOpenAiDirectSettings.ts`)에 프리셋·기본 주소·API 키(password)·모델을 둔다. OpenDesign 프리셋은 `https://amr-link.open-design.ai/v1` 과 모델 예 `deepseek-v4.1-flash-eco` 를 채운다. 「모델 불러오기」는 동반 서비스 `POST /auth/openai-compat/test` 에 모델 없이 보내 GET `{base}/models` 만 하게 하고, 「연결 시험」은 그 모델로 도구 호출까지 본다. 「이 연결로 조수 사용」은 `POST /auth/openai-compat/connect` 가 도구 시험을 통과할 때만 `~/.oprn/openai-compat-endpoints.json`(0600)에 키를 넣고, 계획·실행·시각·작문·시공 칸을 그 모델로 맞춘다. 브라우저는 사용자 주소를 직접 부르지 않는다(OpenDesign 은 브라우저 CORS 사전 요청을 405 로 거절한다). 키는 상태 문장에서 지우고, 성공하면 입력칸을 비운다. localStorage `oprn:ai-config` 의 `apiKey`·`baseUrl` 은 빈 값이다. 응답의 `reasoning_details` 는 빈 답으로 보지 않고 원문 그대로 조수 파서에 넘긴다. 추론 방식 기본은 「보내지 않음」이다. 목록·시험·저장이 진행되는 동안 프리셋·주소·키·모델 칸을 잠근다. 프리셋에 허용·차단 패턴이나 그림 입력이 있으면 그 값을 시험과 저장에 함께 보내고, 요청에 그 칸이 없으면 이미 저장된 값을 유지한다. 다시 연결하는 시험도 그 저장된 패턴으로 차단 모델을 부르지 않는다. 빈 배열을 보내면 그 목록을 비운다. 이 연결을 조수에 꽂을 때는 저장돼 있던 로컬 CLI 엔진을 먼저 끈다.
 
-- **AI 설정은 연결·동작 레일과 고급 시트를 쓴다 (2026-11-19).** 연결 첫 화면은 ChatGPT 로그인이나 계정 행을 보여 준다. 로그인·해제·대기 안내는 `aiAuthSettings.ts`의 기존 OAuth 경로를 공유한다. 「다른 방법으로 연결」(`ai-settings-other-ways`)에는 제공자 선택, 빠른 키 연결, 사용자 지정 서버, 상태 재확인을 모았다.
+- **AI 설정 첫 화면 단순화와 CSS 체계 (2026-11-23, ai-setup-adaptive c — 아래 11-19 레일 설명을 대체).**
+  - 탭(연결·동작)은 없다. 본문(`ai-settings-pane-main`)은 `aiSettingsOverview.ts` 의 「지금 쓰는 모델」(자동 고르기 스위치 `ai-settings-auto`)·「연결된 계정」(`ai-settings-accounts`,
+    자동 선택이 모은 길마다 사용 중·남음 N%·한도 모름·한도 초과), 접힌 「계정 추가」(`ai-settings-add-account`, 연결이 없으면 펼침 — 빠른 연결·ChatGPT 로그인·직접 입력·다른 방법),
+    「고급…」 넷뿐이다. 스위치를 끄면 지금 길을 고정(`ai/providerPin`)하고, 켜면 고정을 풀고 다시 고른다.
+  - 예전 「동작」의 스위치 셋과 「품질」(균형·최고 품질)은 고급 시트 맨 위(`ai-settings-section-behavior`, `ai-settings-section-presets`)로 옮겼다.
+  - 모양은 `styles/shell/dialogs/ai-settings-modal.css` 한 파일이 정한다. 버튼 세 종류 `.ai-settings-button`(보조)·`.is-primary`(주)·`.ai-settings-link`(글자),
+    고르기 칸은 분절 컨트롤 한 모양, 카드는 섹션 본문 한 모양(카드 안에 카드를 두지 않는다), 간격·모서리는 `--ais-*` 토큰.
+    모달 안 컴포넌트(인증·사용자 지정·직접 입력·내 PC 프로그램·역할 표·도구 사용량)는 조수 패널의 `.ai-assistant-action` 을 쓰지 않는다 —
+    그 클래스는 database 레이어라 셸 CSS 를 레이어 순서로 이겨 버튼 모양이 제각각이 됐다(전 버튼 4종·고르기 2디자인 → 후 3종·1). 새 버튼은 이 세 클래스만 쓴다.
+  - 목록에서 모델을 고르면 같은 값의 ID 입력칸은 숨는다(`:has`), 「목록에서 모델 고르기」(빈 값)일 때만 보인다.
+- **(대체됨) AI 설정은 연결·동작 레일과 고급 시트를 쓴다 (2026-11-19).** 연결 첫 화면은 ChatGPT 로그인이나 계정 행을 보여 준다. 로그인·해제·대기 안내는 `aiAuthSettings.ts`의 기존 OAuth 경로를 공유한다. 「다른 방법으로 연결」(`ai-settings-other-ways`)에는 제공자 선택, 빠른 키 연결, 사용자 지정 서버, 상태 재확인을 모았다.
   - 로그인 후 「품질」의 균형과 최고 품질은 계획·실행·시공·작문·시각 역할을 GPT-6.2 Sol의 medium 또는 high로 맞춘다. 역할별 조합이 다르면 선택 표시를 해제한다. 명시한 실행·시공 강도는 자율성 다이얼의 강도보다 우선하며, Sol 제작 요청은 medium 이상을 쓴다.
   - 「동작」의 스위치는 기존 `piApply`, `dialoguePolishAfterBuild`, `imagePlanBuild`에 바로 저장한다. 고급 시트의 적용 모드 선택기에는 다섯 모드가 모두 있다. 스위치를 켜고 끌 때는 같은 창에서 마지막으로 고른 즉시·검토 모드를 기억한다.
   - 「고급…」(`ai-settings-open-advanced`)에는 역할 모델과 ChatGPT 그림 제공자, 작업 방식, 역할 배정, 표시, 도구 사용량, 호출자가 넣은 추가 섹션이 있다.
@@ -3776,7 +3786,7 @@ companion은 `bun:sqlite`를 직접 로드하지 않으므로 `scripts/lib/omp-a
 모델, 팀 설정과 별개이며 `AiConfig.piApply`에 저장한다. 미설정·잘못된 값은 `default`,
 `piApplyPolicyVersion: 1`이 없는 옛 `review` 공장값도 `default`로 전환한다.
 새 선택은 저장할 때 정책 버전을 함께 기록해 명시 `review`를 보존한다. `auto` 등 다른 값은 유지한다.
-Pi 활동 로그는 시작·종료 모두 `result.applyMode`에 실행 당시 모드를 기록한다. 입력창 선택기와 AI 설정 → 동작에서 전환하고 고급 시트에서 적용 모드를 직접 선택하며 실행
+Pi 활동 로그는 시작·종료 모두 `result.applyMode`에 실행 당시 모드를 기록한다. 입력창 선택기와 AI 설정 「고급…」 → 「자주 바꾸는 것」에서 전환하고 고급 시트에서 적용 모드를 직접 선택하며 실행
 시점 값을 고정한다(실행 도중 바꾼 설정은 다음 요청에 적용).
 
 - `yolo` / YOLO: 실제 편집을 도구 완료 경계마다 반영. 별도 계획·조화 검수·삭제 확인 생략.
@@ -4583,7 +4593,7 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 | 동반 서비스 | `scripts/lib/openAiCompatRuntime.ts` `connectOpenAiCompat` | `POST /auth/openai-compat/connect`. `testOpenAiCompat({ model, probeTools: true })` 로 **도구 달린 채팅 한 번**을 보내 통과(채팅 2xx + toolsOk)할 때만 저장한다. 같은 주소가 있으면 그 행을 고친다 |
 | 클라이언트 | `src/ai/chatgptOAuthClient.ts` `connectOpenAiCompatEndpoint` | 키는 요청 본문으로만 한 번 간다. 실패도 200 + `ok:false` + 사람 말 |
 | 카드 | `src/editor/panels/aiQuickConnect.ts` | OpenRouter 키 / 다른 OpenAI 호환(주소·키·모델) 두 가지. 성공하면 키 칸을 비운다 |
-| 설정 창 | `aiSettingsModal.ts` | 연결의 「다른 방법으로 연결」 안 「빠른 연결」. 성공 시 `authSettings.selectProvider(id)` 로 기본 연결이 된다 |
+| 설정 창 | `aiSettingsModal.ts` | 「계정 추가」 안 「빠른 연결」. 성공 시 `authSettings.selectProvider(id)` 로 기본 연결이 된다 |
 | 관문 | `src/editor/ui/aiConnectGate.ts` | 첫 실행 설정 마법사(`aiSetupWizard.ts`)를 띄운다. 무엇이 감지됐는지 보여 주고, 없는 것은 OS 별 설치 안내·로그인·「다시 확인」·키 붙여 넣기로 한 단계씩 안내한다. 모델 선택 표는 `src/ai/teamScoreboard.ts`(점수판 출처 주석), 감지→팀 계산은 `src/ai/teamPlan.ts`, 화면 문구는 `src/ai/setupWizardModel.ts` |
 
 **첫 실행 화면 훅:** `ensureAiConnected(options?)`(`@/editor/ui/aiConnectGate`) — 연결돼 있으면 곧바로 `true`, 아니면 설정 마법사가 든 관문을 띄우고 연결되면 `true`, 「나중에」 면 `false`. 환경 변수 키(OPENAI/ANTHROPIC/GEMINI·GOOGLE/DEEPSEEK `_API_KEY`)는 `GET /auth/key-sources` 가 이름만 알려 주고 값은 화면·로그에 나오지 않는다 — 한 번 확인한 뒤에만 `POST /auth/key-adopt` 로 서버 안에서 쓴다. 윈도에서는 `scripts/lib/localCliAgent/resolveBinary.ts` 가 `.cmd` 래퍼·PATHEXT·`%APPDATA%\npm` 을 해석하고, 앱이 Claude/Codex 를 대신 설치하는 길은 `POST /v1/local-agents/install`(허용 목록만)이다. 화면 안에 카드만 끼우려면 `renderAiQuickConnect({ onConnected })`(`@/editor/panels/aiQuickConnect`). OpenRouter 의 `/models` 는 키 없이 열리므로 키 검증은 채팅 시험만 한다.
@@ -4739,7 +4749,7 @@ API 키 로그인, 환경 변수 키(`env: true`), 이미 엔진을 고른 사�
   **조수 채팅 본체(`chat` 표면)는 이 칸을 읽지 않는다** — 채팅이 부르는 «도트 찍는 도구» 가 `pixel-draw` 로 이 칸을 읽는다.
 - **옛 설정 호환**: 저장값에 `pixelModel` 이 없으면 만들지 않는다(`loadAiConfig` 가 비워 둠) → 공방 그리기는 예전처럼 계획·최종 판단(ultrabrain) 모델.
   모달은 「계획·최종 판단 모델을 따라가기」로 보여 주고, 도트 칸을 만지지 않은 채 다른 칸을 바꿔 저장해도 `pixelModel` 이 몰래 생기지 않는다(`scripts/qa/image-model-split.mjs` 의 legacy 시나리오).
-  새 설정(`defaultAiConfig`)도 이 칸을 비워 둔다(2026-11-16) — 계획 모델(공장 기본에서는 Claude Opus 5.5 · medium)을 따른다. 그 전에는 새 설정만 Google Gemini 4 Argon · 보통으로 채웠는데,
+  새 설정(`defaultAiConfig`)도 이 칸을 비워 둔다(2026-11-16) — 계획 모델(공장 기본에서는 Claude Sonnet 5.5 · high, 2026-11-23 — 그 전 2026-11-16 은 Opus 5.5 · medium)을 따른다. 그 전에는 새 설정만 Google Gemini 4 Argon · 보통으로 채웠는데,
   이 칸은 계정 선택(맞추기 포함)을 따라 바뀌지 않아서(`providerSelection.ts`) Google 연결이 없는 사용자의 도트 저작이 막혔다.
 - **선택지**: `PIXEL_MODEL_CHOICES` — Argon, Claude(Opus/Sonnet 4.5·4.6 = Antigravity 카탈로그에 실제 있는 id), GPT-6.1 Sol. 계정에서 실제로 쓸 수 있는지는 요청 때 오류로 알려 주며 자동 대체하지 않는다.
 - **화면**: 모델 탭의 「이미지」 절이 두 묶음이다 — 「배경·대형 이미지 — 생성형 이미지 모델」(기존 제공자·모델·추천·상태 그대로, 추천 문구에서 «픽셀 타일·캐릭터가 안정적» 문장을 뺐다) /
@@ -4812,7 +4822,7 @@ API 키 로그인, 환경 변수 키(`env: true`), 이미 엔진을 고른 사�
 
 - 오른쪽 AI 도크가 열려 있으면 폭 1100px 이상에서는 **레이아웃 폭을 차지**한다(지도 위를 덮지 않는다). 1100px 미만에서는 예전처럼 덮는 오버레이이고 툴바만 비켜 준다(`32-ai-workspace.css`).
 - 서버가 AI 를 껐을 때(`hostAiDisabled`) 잠금 막(`aiLockScrim`)과 칩은 같은 「AI 서버에서 꺼짐」 문구를 쓰고, 소용없는 로그인 버튼은 숨긴다. AI 입구 4곳은 그대로 둔다. 대화/조수 탭에는 설명 title 이 붙는다.
-- (UI 감사 2026-10-21) 같은 판정을 더 따른다: AI 설정 「연결」 탭의 계정 카드 배지는 503(`OPRN_HOST_OWNER_AI`)이면 「확인 실패」 대신 「AI 서버에서 꺼짐」(`cardAuth` 의 `"hostDisabled"`), 스튜디오 「내 요청」 유휴 줄은 「AI 꺼짐」 / 평소 「요청 없음」(예전 「대기 중」). 잠금 막이 덮는 동안 막 뒤 본문(스타터·대화 기록, `.ai-chat-body` 의 막 아닌 자식)은 `inert` 라 Tab 이 그리로 들어가지 않는다 — 컴포저는 body 밖이라 살아 있다.
+- (UI 감사 2026-10-21) 같은 판정을 더 따른다: AI 설정 「계정 추가」 → 「다른 방법으로 연결」의 계정 카드 배지는 503(`OPRN_HOST_OWNER_AI`)이면 「확인 실패」 대신 「AI 서버에서 꺼짐」(`cardAuth` 의 `"hostDisabled"`), 스튜디오 「내 요청」 유휴 줄은 「AI 꺼짐」 / 평소 「요청 없음」(예전 「대기 중」). 잠금 막이 덮는 동안 막 뒤 본문(스타터·대화 기록, `.ai-chat-body` 의 막 아닌 자식)은 `inert` 라 Tab 이 그리로 들어가지 않는다 — 컴포저는 body 밖이라 살아 있다.
 
 ## 생성형 그림은 ChatGPT 한 경로 (2026-11-19 오너 결정)
 

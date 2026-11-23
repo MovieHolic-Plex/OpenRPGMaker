@@ -30,10 +30,10 @@ try {
     await ready;
     const section = page.getByTestId("ai-settings-section-image");
     const openImageSettings = async () => {
-      await page.getByTestId("ai-settings-tab-behavior").click();
-      await page.getByTestId("ai-settings-open-advanced").click();
+      await page.getByTestId("ai-settings-tab-model").click();
       await page.getByTestId("ai-settings-model-image").locator(":scope > summary").click();
       await page.getByTestId("ai-settings-model-image-provider").locator(":scope > summary").click();
+      await page.getByTestId("ai-settings-tab-work").click();
       await section.scrollIntoViewIfNeeded();
     };
     await openImageSettings();
@@ -48,8 +48,7 @@ try {
     const provider = page.getByTestId("ai-config-image-provider");
     assert.equal(await provider.isDisabled(), true);
     assert.deepEqual(await provider.locator("option").evaluateAll(options => options.map(option => option.value)), ["openai-codex"]);
-    await page.getByTestId("ai-settings-advanced-done").click();
-    await page.getByTestId("ai-settings-tab-connection").click();
+    await page.getByTestId("ai-settings-tab-account").click();
     await page.getByTestId("ai-settings-other-ways").click();
     await page.getByTestId("ai-auth-quick-google-antigravity").click();
     await page.getByTestId("ai-auth-quick-openai-codex").click();

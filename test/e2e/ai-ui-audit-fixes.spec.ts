@@ -228,16 +228,13 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
         await page.keyboard.press("Tab");
         await expect(page.getByTestId(`ai-${kind}-close`)).toBeFocused();
         if (kind === "settings") {
-          // The select, Advanced, and settings each own one Escape.
-          await openAdvancedAiSettings(page);
+          // The select and settings each own one Escape(겹쳐 뜨는 고급 시트는 2026-11-23 에 없앴다).
+          await page.getByTestId("ai-settings-tab-display").click();
           await page.locator("[data-custom-select-for='ai-font-size']").click();
           await expect(page.locator(".event-custom-select-options")).toBeVisible();
           await page.keyboard.press("Escape");
           await expect(page.locator(".event-custom-select-options")).toBeHidden();
-          await expect(page.getByTestId("ai-settings-advanced")).toBeVisible();
-          await page.keyboard.press("Escape");
-          await expect(page.getByTestId("ai-settings-advanced")).toBeHidden();
-          await expect(page.getByTestId("ai-settings-open-advanced")).toBeFocused();
+          await expect(page.getByTestId("ai-settings-modal")).toBeVisible();
         }
         await page.keyboard.press("Escape");
         await expect(page.getByTestId(`ai-${kind}-modal`)).toBeHidden();

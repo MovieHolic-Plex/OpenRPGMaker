@@ -151,7 +151,7 @@ function renderReport(report: ToolUsageReport): HTMLElement {
   }
 
   const exportButton = el("button", {
-    class: "ai-assistant-action",
+    class: "ai-settings-button",
     attrs: { type: "button" },
     dataset: { testid: "ai-tool-usage-export" },
     text: "JSON으로 보내기",

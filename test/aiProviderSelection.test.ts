@@ -23,6 +23,15 @@ describe("account selection and persisted work models", () => {
     expect(next.imageProviderId).toBe(codex);
   });
 
+  it("티어 매핑이 없는 계정(Grok)으로 바꾸면 이전 제공자 모델을 남기지 않고 그 계정의 기본 모델을 쓴다", () => {
+    const next = configForProviderSelection(defaultAiConfig(), "xai-oauth");
+    for (const role of ["vision", "deep", "build", "writer"] as const) {
+      expect(configForRole(next, role).providerId).toBe("xai-oauth");
+      expect(configForRole(next, role).model).toBe("grok-4.6");
+    }
+    expect(next.ultrabrainModel).toBe("grok-4.6");
+  });
+
   it("preserves direct mixed-account choices through save, reload, and account switching", () => {
     const values = new Map<string, string>();
     vi.stubGlobal("localStorage", {

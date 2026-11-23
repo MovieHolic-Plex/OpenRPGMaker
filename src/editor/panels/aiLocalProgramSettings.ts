@@ -26,12 +26,12 @@ export function renderAiLocalProgramSettings(): { element: HTMLDetailsElement; d
   const status = el("p", { class: "ai-config-help", attrs: { role: "status" } });
   const health = el("p", { class: "ai-config-help", attrs: { role: "status" }, dataset: { testid: "start-settings-test-result" } });
   const detectButton = el("button", {
-    class: "ai-assistant-action", attrs: { type: "button" }, text: "다시 확인",
+    class: "ai-settings-button", attrs: { type: "button" }, text: "다시 확인",
     dataset: { testid: "start-settings-detect" },
     on: { click: () => void detect(detectFailed ? lastFresh : true) },
   });
   const testButton = el("button", {
-    class: "ai-assistant-action", attrs: { type: "button" }, text: "연결 시험",
+    class: "ai-settings-button", attrs: { type: "button" }, text: "연결 시험",
     dataset: { testid: "start-settings-test" },
     on: { click: () => void runTest() },
   });
@@ -51,7 +51,7 @@ export function renderAiLocalProgramSettings(): { element: HTMLDetailsElement; d
   const entries = LOCAL_CLI_IDS.map(id => {
     const label = el("span");
     const button = el("button", {
-      class: "ai-assistant-action", attrs: { type: "button", "aria-pressed": "false", "aria-disabled": "true" },
+      class: "ai-settings-program", attrs: { type: "button", "aria-pressed": "false", "aria-disabled": "true" },
       dataset: { testid: `start-settings-engine-${id}` },
       children: [el("span", { text: LOCAL_PROGRAM_LABELS[id] }), " · ", label],
       on: { click: () => {

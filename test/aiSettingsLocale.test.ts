@@ -76,10 +76,10 @@ it("localizes both AI settings surfaces, including their disclosures and Advance
     await vi.waitFor(() => expect(byId(root, "ai-settings-chatgpt-account").hidden).toBe(false));
     await vi.waitFor(() => expectEnglish(root));
 
-    byId(root, "ai-settings-tab-behavior").click();
-    byId(root, "ai-settings-open-advanced").click();
-    expect(byId(root, "ai-settings-advanced").hidden).toBe(false);
-    await vi.waitFor(() => expectEnglish(root));
-    byId(root, "ai-settings-advanced-done").click();
+    for (const pane of ["model", "work", "display", "usage", "account"]) {
+      byId(root, `ai-settings-tab-${pane}`).click();
+      expect(byId(root, `ai-settings-pane-${pane}`).hidden).toBe(false);
+      await vi.waitFor(() => expectEnglish(root));
+    }
   }
 });

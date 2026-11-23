@@ -154,10 +154,10 @@ export function renderAiRoleMatrixSettings(onChange: () => void, onApplyMain?: (
     const families = [...new Set(available.map((route) => FAMILY_LABEL[route.provider]))];
     summary.textContent = available.length
       ? `연결된 계정: ${families.join(" · ")} — 역할 ${filled}/${ASSISTANT_ROLES.length}개를 채웠습니다.`
-      : "연결된 계정이 없습니다 — 「연결」 탭에서 계정을 하나 연결하면 역할이 자동으로 채워집니다.";
+      : "연결된 계정이 없습니다 — 첫 화면 「계정 추가」에서 계정을 하나 연결하면 역할이 자동으로 채워집니다.";
   };
 
-  const mainApply = el("button", { class: "ai-assistant-action", text: "맞추기", attrs: { type: "button", hidden: "" }, dataset: { testid: "ai-role-matrix-main-apply" } }) as HTMLButtonElement;
+  const mainApply = el("button", { class: "ai-settings-button", text: "맞추기", attrs: { type: "button", hidden: "" }, dataset: { testid: "ai-role-matrix-main-apply" } }) as HTMLButtonElement;
   mainApply.addEventListener("click", () => {
     const rec = resolved?.main;
     if (rec?.status === "ok") onApplyMain?.(rec.model);

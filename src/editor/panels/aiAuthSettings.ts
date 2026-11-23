@@ -240,7 +240,7 @@ export function renderAiAuthSettings(
     }),
   });
   const retryCards = el("button", {
-    class: "ai-assistant-action", text: "다시 시도", attrs: { type: "button", hidden: "" },
+    class: "ai-settings-button", text: "다시 시도", attrs: { type: "button", hidden: "" },
     dataset: { testid: "ai-auth-cards-retry" },
     on: { click: () => {
       for (const [id, auth] of cardAuth) {
@@ -343,7 +343,7 @@ export function renderAiAuthSettings(
 
   // ── 동작 버튼 ─────────────────────────────────────────────────────────────
   const loginButton = el("button", {
-    class: "ai-assistant-action ai-oauth-login",
+    class: "ai-settings-button ai-oauth-login",
     text: "로그인",
     attrs: { type: "button" },
     dataset: { testid: "ai-oauth-login" },
@@ -352,13 +352,13 @@ export function renderAiAuthSettings(
   // 저장된 자격이 있을 때만 보인다 — 지울 것이 없을 때 뜨는 해제 버튼은 거짓말이다.
   // env 자격은 에디터가 지울 수 없으므로 stored 가 false 고, 따라서 이 버튼도 뜨지 않는다.
   const envScanAllow = el("button", {
-    class: "ai-assistant-action",
+    class: "ai-settings-button",
     text: "찾아보기",
     attrs: { type: "button" },
     dataset: { testid: "ai-env-scan-allow" },
   }) as HTMLButtonElement;
   const envScanDeny = el("button", {
-    class: "ai-assistant-action",
+    class: "ai-settings-button",
     text: "안 볼게요",
     attrs: { type: "button" },
     dataset: { testid: "ai-env-scan-deny" },
@@ -385,7 +385,7 @@ export function renderAiAuthSettings(
   }) as HTMLButtonElement;
 
   const disconnectButton = el("button", {
-    class: "ai-assistant-action ai-auth-disconnect",
+    class: "ai-settings-button ai-auth-disconnect",
     text: "연결 해제",
     attrs: { type: "button", hidden: "" },
     dataset: { testid: "ai-auth-disconnect" },
@@ -408,7 +408,7 @@ export function renderAiAuthSettings(
     dataset: { testid: "ai-oauth-device-url" },
   }) as HTMLAnchorElement;
   const copyUrlButton = el("button", {
-    class: "ai-assistant-action ai-oauth-copy-url",
+    class: "ai-settings-button ai-oauth-copy-url",
     text: "주소 복사",
     attrs: { type: "button", title: "창이 안 열리면 주소를 복사해 새 탭 주소창에 붙여 넣으세요." },
     dataset: { testid: "ai-oauth-copy-url" },
@@ -423,7 +423,7 @@ export function renderAiAuthSettings(
     dataset: { testid: "ai-oauth-device-usercode" },
   });
   const copyCodeButton = el("button", {
-    class: "ai-assistant-action",
+    class: "ai-settings-button",
     text: "코드 복사",
     attrs: { type: "button" },
     dataset: { testid: "ai-oauth-copy-code" },
@@ -447,7 +447,7 @@ export function renderAiAuthSettings(
     dataset: { testid: "ai-oauth-paste-url" },
   }) as HTMLInputElement;
   const pasteButton = el("button", {
-    class: "ai-assistant-action",
+    class: "ai-settings-button",
     text: "연결하기",
     attrs: { type: "button" },
     dataset: { testid: "ai-oauth-paste-submit" },
@@ -464,7 +464,7 @@ export function renderAiAuthSettings(
     dataset: { testid: "ai-oauth-device-poll" },
   });
   const cancelButton = el("button", {
-    class: "ai-assistant-action",
+    class: "ai-settings-button",
     text: "취소",
     attrs: { type: "button" },
     dataset: { testid: "ai-oauth-device-cancel" },
@@ -491,7 +491,7 @@ export function renderAiAuthSettings(
   // 옛 구현은 상한에 닿으면 기기 블록을 조용히 접고 상태 줄만 바꿨다 — 사용자는 무엇이 끝났는지,
   // 다음에 무엇을 누를지 몰랐다. 멈춘 이유와 재시도 버튼을 한자리에 보여 준다.
   const retryButton = el("button", {
-    class: "ai-assistant-action",
+    class: "ai-settings-button",
     text: "다시 시도",
     attrs: { type: "button" },
     dataset: { testid: "ai-oauth-timeout-retry" },

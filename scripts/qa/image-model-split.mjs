@@ -48,8 +48,7 @@ try {
       const ready = page.waitForEvent("console", { predicate: (m) => m.text() === "ims-ready", timeout: 150000 });
       await page.goto(`${base}/ims-qa.html?lang=${lang}`);
       await ready;
-      await page.getByTestId("ai-settings-tab-behavior").click();
-      await page.getByTestId("ai-settings-open-advanced").click();
+      await page.getByTestId("ai-settings-tab-model").click();
       await page.getByTestId("ai-settings-model-pixel").locator(":scope > summary").click();
       const stored = () => page.evaluate(() => JSON.parse(localStorage.getItem("oprn:ai-config") ?? "null"));
       const opened = await stored();
