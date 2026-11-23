@@ -28,7 +28,6 @@ export async function openTopbarAiSettings(page: Page): Promise<void> {
 }
 
 export async function openAdvancedAiSettings(page: Page): Promise<void> {
-  await page.getByTestId("ai-settings-tab-behavior").click();
   await page.getByTestId("ai-settings-open-advanced").click();
   await expect(page.getByTestId("ai-settings-advanced")).toBeVisible();
 }

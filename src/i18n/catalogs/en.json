@@ -20129,5 +20129,19 @@
 "이 이벤트가 움직이다가 플레이어에게 닿으면 실행해요":"Runs when this event moves into the player",
 "이 맵에서 한 번만 바로 실행해요. 타이머 조건은 다시 맞으면 또 실행해요":"Runs only once on this map. A timer condition runs again when it matches",
 "이 페이지가 켜진 동안 뒤에서 계속 반복해요":"Keeps repeating in the background while this page is on",
-"지정한 구역에 들어가거나 나올 때 실행해요":"Runs when you enter or leave the chosen area"
+"지정한 구역에 들어가거나 나올 때 실행해요":"Runs when you enter or leave the chosen area",
+"지금 쓰는 모델":"Current model",
+"자동으로 고르기":"Choose automatically",
+"연결된 계정과 남은 한도를 보고 고르고, 한도에 걸리면 다음 계정으로 바꿔요.":"Picks from your connected accounts and remaining quota, and moves to the next account when one hits its limit.",
+"연결된 계정":"Connected accounts",
+"연결된 계정이 없어요. 아래 「계정 추가」에서 연결하세요.":"No connected accounts. Connect one under “Add account” below.",
+"계정 추가":"Add account",
+"API 키 · ChatGPT · Claude · Google · 내 PC 프로그램":"API key · ChatGPT · Claude · Google · Programs on this PC",
+"자주 바꾸는 것":"Common settings",
+"한도 모름":"Limit unknown",
+"한도 초과":"Limit reached",
+"한도 초과 · {0} 풀림":"Limit reached · resets at {0}",
+"{0} 한도 · 자동 전환":"{0} limit · switched automatically",
+"직접 고정":"Pinned",
+"고른 모델 없음":"No model selected"
 }

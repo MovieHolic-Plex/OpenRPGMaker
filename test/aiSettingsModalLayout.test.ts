@@ -100,15 +100,22 @@ async function openModal(): Promise<FakeElement> {
 }
 
 describe("AI 설정 모달 섹션 레이아웃", () => {
-  it("연결·동작 버튼만 표시하고 역할과 상세 설정은 고급 시트에 둔다", async () => {
+  it("첫 화면은 지금 모델·연결된 계정·계정 추가·고급 하나고, 나머지는 고급 시트 한 곳에 둔다", async () => {
     const modal = await openModal();
-    const rail = findByTestId(modal, "ai-settings-rail");
-    expect(rail?.querySelectorAll("button").map(button => button.dataset.testid)).toEqual([
-      "ai-settings-tab-connection", "ai-settings-tab-behavior",
+    expect(findByTestId(modal, "ai-settings-rail")).toBeNull();
+    const main = findByTestId(modal, "ai-settings-pane-main")!;
+    expect(main.childNodes.map(child => (child as FakeElement).dataset?.testid)).toEqual([
+      "ai-settings-overview", "ai-settings-add-account", "ai-settings-open-advanced",
     ]);
-    expect(findByTestId(modal, "ai-settings-tab-connection")?.getAttribute("aria-current")).toBe("page");
-    expect(findByTestId(modal, "ai-settings-pane-behavior")?.hidden).toBe(true);
+    expect(findByTestId(main, "ai-settings-current-model")).not.toBeNull();
+    expect(findByTestId(main, "ai-settings-auto")?.getAttribute("role")).toBe("switch");
+    expect(findByTestId(main, "ai-settings-accounts")).not.toBeNull();
+    // 연결이 없는(확인 전) 상태에서는 「계정 추가」를 펼쳐 둔다 — 할 일이 그것뿐이다.
+    expect(findByTestId(modal, "ai-settings-add-account")?.getAttribute("open")).not.toBeNull();
     expect(findByTestId(modal, "ai-settings-chatgpt-hero")?.hidden).toBe(false);
+    // 품질·동작 스위치는 첫 화면에 없고 고급 시트에 있다.
+    expect(findByTestId(main, "ai-model-presets")).toBeNull();
+    expect(findByTestId(main, "ai-config-apply-immediately")).toBeNull();
     expect(findByTestId(modal, "ai-settings-chatgpt-account")?.hidden).toBe(true);
     expect(findByTestId(modal, "ai-settings-other-ways")?.parentElement?.getAttribute("open")).toBeNull();
 
@@ -116,10 +123,10 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     expect(sheet?.hidden).toBe(true);
     expect(findByTestId(modal, "ai-settings-continue")).toBeNull();
     expect(findByTestId(modal, "ai-tool-usage")).toBeNull();
-    findByTestId(modal, "ai-settings-tab-behavior")?.click();
-    expect(findByTestId(modal, "ai-settings-tab-behavior")?.getAttribute("aria-current")).toBe("page");
     findByTestId(modal, "ai-settings-open-advanced")?.click();
     expect(sheet?.hidden).toBe(false);
+    expect(findByTestId(sheet!, "ai-config-apply-immediately")).not.toBeNull();
+    expect(findByTestId(sheet!, "ai-model-presets")).not.toBeNull();
     expect(sheet?.getAttribute("role")).toBe("dialog");
     expect(findByTestId(sheet!, "ai-tool-usage")).not.toBeNull();
     const roles = findByTestId(modal, "ai-settings-section-roles");
@@ -134,7 +141,6 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     }
     findByTestId(modal, "ai-settings-advanced-done")?.click();
     expect(sheet?.hidden).toBe(true);
-    expect(findByTestId(modal, "ai-settings-pane-behavior")?.hidden).toBe(false);
   });
 
   it("로그인하면 GPT-6.2 Sol 품질을 고르고 역할을 따로 바꾸면 선택을 푼다", async () => {
@@ -247,7 +253,6 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
 
   it("고급 시트에서 자동 저장 상태를 제공한다", async () => {
     const modal = await openModal();
-    findByTestId(modal, "ai-settings-tab-behavior")?.click();
     findByTestId(modal, "ai-settings-open-advanced")?.click();
     const hint = findByTestId(modal, "ai-config-saved-hint");
 

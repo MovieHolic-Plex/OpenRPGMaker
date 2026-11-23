@@ -41,7 +41,9 @@ test("edit mode restores existing chrome, removes the bottom bar, and exposes sc
   await expect(page.getByTestId("ai-settings-modal")).toHaveCSS("position", "fixed");
   await expect(page.getByTestId("ai-settings-modal")).toHaveCSS("display", "grid");
   await expect(page.locator(".ai-settings-window")).toHaveCSS("display", "grid");
-  await expect(page.getByTestId("ai-settings-rail").getByRole("button")).toHaveCount(2);
+  // 첫 화면은 탭 없이 지금 쓰는 모델·연결된 계정·계정 추가·고급 한 장이다(2026-11-23).
+  await expect(page.getByTestId("ai-settings-overview")).toBeVisible();
+  await expect(page.getByTestId("ai-settings-add-account-toggle")).toBeVisible();
   await expect(page.getByTestId("ai-settings-advanced")).toBeHidden();
   await openAdvancedAiSettings(page);
 

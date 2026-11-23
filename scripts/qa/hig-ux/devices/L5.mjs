@@ -316,7 +316,6 @@ async function studioHierarchy(ctx) {
 }
 
 async function openAdvancedSettings(page) {
-  await clickTid(page, 'ai-settings-tab-behavior', 1200);
   await clickTid(page, 'ai-settings-open-advanced', 1200);
 }
 

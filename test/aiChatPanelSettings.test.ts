@@ -119,7 +119,6 @@ describe("설정 자동 저장", () => {
     expect(modal.textContent).toMatch(/계정으로 (로그인|연결됨)/u);
     const sheet = findByTestId(modal, "ai-settings-advanced");
     expect(sheet?.hidden).toBe(true);
-    findByTestId(modal, "ai-settings-tab-behavior")?.click();
     findByTestId(modal, "ai-settings-open-advanced")?.click();
     expect(sheet?.hidden).toBe(false);
     expect(sheet?.textContent).toContain("역할별 모델");

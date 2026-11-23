@@ -71,8 +71,9 @@ export function renderAiQuotaChip(openSettings: () => void): { readonly element:
     // 강도도 붙인다 — 같은 모델이라도 강도에 따라 속도·품질이 다르고, 조수 기본은 「Sonnet 5.5 · 높음」이다.
     const effort = model ? EFFORT_LABELS[modelForRole(config, "deep").thinkingLevel ?? ""] : undefined;
     const modelLabel = model ? `${modelDisplayName(model)}${effort ? ` · ${effort}` : ""}` : "";
+    // 화면 글자는 이름과 강도를 다른 노드에 둔다 — 번역 계층이 강도(「높음」)를 따로 옮길 수 있게.
     name.textContent = status.providerLabel;
-    modelName.textContent = modelLabel;
+    modelName.replaceChildren(...(model ? [el("span", { text: modelDisplayName(model) }), ...(effort ? [el("span", { text: " · " }), el("span", { text: effort })] : [])] : []));
     value.textContent = tail;
     const detail = status.kind === "ready" || status.limited ? usageDetail(current) : status.title;
     button.title = `${status.limited ? status.title : status.providerLabel}${modelLabel ? ` · ${modelLabel}` : ""} — ${detail} — 누르면 AI 설정에서 다른 연결을 고를 수 있어요.`;

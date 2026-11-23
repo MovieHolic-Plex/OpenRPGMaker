@@ -9,7 +9,6 @@ import { isLegacyTerraModel } from "@/ai/chatgptDefault";
 import { connectOpenAiCompatEndpoint, ChatGptCompanionResponseError } from "@/ai/chatgptOAuthClient";
 import { OPENROUTER_DEFAULT_MODEL, OPENROUTER_KEYS_URL, type OpenAiCompatEndpointPublic } from "@/ai/openAiCompat";
 import { el } from "@/util/dom";
-import "@/styles/components/ai-quick-connect.css";
 
 export const AI_QUICK_CONNECT_TESTIDS = {
   host: "ai-quick-connect",
@@ -68,7 +67,7 @@ export function renderAiQuickConnect(options: AiQuickConnectOptions): AiQuickCon
   const baseUrlInput = textInput(AI_QUICK_CONNECT_TESTIDS.baseUrl, "url", "https://example.com/v1");
   const modelInput = textInput(AI_QUICK_CONNECT_TESTIDS.model, "text", OPENROUTER_DEFAULT_MODEL, OPENROUTER_DEFAULT_MODEL);
   const keysLink = el("a", {
-    class: "ai-quick-connect-link",
+    class: "ai-settings-link ai-quick-connect-link",
     text: "OpenRouter 에서 키 만들기",
     attrs: { href: OPENROUTER_KEYS_URL, target: "_blank", rel: "noopener noreferrer" },
   });
@@ -78,7 +77,7 @@ export function renderAiQuickConnect(options: AiQuickConnectOptions): AiQuickCon
   const modelField = field("모델", modelInput, modelHint);
 
   const submit = el("button", {
-    class: "ai-quick-connect-submit",
+    class: "ai-settings-button is-primary ai-quick-connect-submit",
     text: "연결",
     attrs: { type: "submit" },
     dataset: { testid: AI_QUICK_CONNECT_TESTIDS.submit },

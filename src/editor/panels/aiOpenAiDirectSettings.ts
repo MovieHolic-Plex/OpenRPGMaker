@@ -139,19 +139,19 @@ export function renderAiOpenAiDirectSettings(options: AiOpenAiDirectSettingsOpti
     dataset: { testid: AI_OPENAI_DIRECT_TESTIDS.status, tone: "idle" },
   });
   const loadButton = el("button", {
-    class: "ai-assistant-action",
+    class: "ai-settings-button",
     text: "모델 불러오기",
     attrs: { type: "button" },
     dataset: { testid: AI_OPENAI_DIRECT_TESTIDS.loadModels },
   }) as HTMLButtonElement;
   const testButton = el("button", {
-    class: "ai-assistant-action",
+    class: "ai-settings-button",
     text: "연결 시험",
     attrs: { type: "button" },
     dataset: { testid: AI_OPENAI_DIRECT_TESTIDS.test },
   }) as HTMLButtonElement;
   const useButton = el("button", {
-    class: "ai-assistant-action is-primary",
+    class: "ai-settings-button is-primary",
     text: "이 연결로 조수 사용",
     attrs: { type: "button" },
     dataset: { testid: AI_OPENAI_DIRECT_TESTIDS.use },

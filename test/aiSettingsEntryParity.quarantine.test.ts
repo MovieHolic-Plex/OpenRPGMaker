@@ -39,7 +39,6 @@ async function boot(): Promise<HTMLElement> {
 }
 
 function openAdvanced(): void {
-  control("ai-settings-tab-behavior").click();
   control("ai-settings-open-advanced").click();
 }
 

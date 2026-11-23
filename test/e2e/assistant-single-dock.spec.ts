@@ -151,7 +151,7 @@ test.describe("조수 단일 도크", () => {
 
     const modal = page.getByTestId("ai-settings-modal");
     await expect(modal).toBeVisible();
-    await expect(modal.getByTestId("ai-settings-rail").getByRole("button")).toHaveCount(2);
+    await expect(modal.getByTestId("ai-settings-overview")).toBeVisible();
     expect(await modal.getByTestId("ai-settings-section-temperature").count()).toBe(0);
     expect(await page.getByTestId("ai-panel").getAttribute("data-temperature")).toBeNull();
     await page.getByTestId("ai-settings-close").click();

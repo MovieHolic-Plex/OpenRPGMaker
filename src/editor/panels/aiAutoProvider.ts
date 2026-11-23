@@ -93,10 +93,16 @@ export function applyAutoPick(providerId: string): boolean {
 }
 
 let lastPick: AutoPick | null = null;
+let lastRoutes: readonly ProviderRouteState[] = [];
 let running: Promise<AutoPick | null> | null = null;
 
 export function lastAutoPick(): AutoPick | null {
   return lastPick;
+}
+
+/** 마지막 고르기에서 모은 길 목록(설정 첫 화면의 「연결된 계정」이 쓴다). */
+export function lastAutoRoutes(): readonly ProviderRouteState[] {
+  return lastRoutes;
 }
 
 /**
@@ -110,6 +116,7 @@ export function runAutoProviderPick(options: { readonly limitedUntil?: (id: stri
       const routes = await collectProviderRoutes(options.limitedUntil ?? ((id) => providerLimitedUntil(id)));
       const pick = pickAutoProvider({ routes, pinnedProviderId: loadProviderPin(), now: Date.now() });
       lastPick = pick;
+      lastRoutes = routes;
       const changed = pick.reason !== "pinned" && pick.providerId !== null && applyAutoPick(pick.providerId);
       if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent(AI_AUTO_PICK_EVENT, { detail: pick }));
       if (changed) options.onChanged?.();

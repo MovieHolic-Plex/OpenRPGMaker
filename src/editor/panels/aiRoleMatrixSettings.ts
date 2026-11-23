@@ -157,7 +157,7 @@ export function renderAiRoleMatrixSettings(onChange: () => void, onApplyMain?: (
       : "연결된 계정이 없습니다 — 「연결」 탭에서 계정을 하나 연결하면 역할이 자동으로 채워집니다.";
   };
 
-  const mainApply = el("button", { class: "ai-assistant-action", text: "맞추기", attrs: { type: "button", hidden: "" }, dataset: { testid: "ai-role-matrix-main-apply" } }) as HTMLButtonElement;
+  const mainApply = el("button", { class: "ai-settings-button", text: "맞추기", attrs: { type: "button", hidden: "" }, dataset: { testid: "ai-role-matrix-main-apply" } }) as HTMLButtonElement;
   mainApply.addEventListener("click", () => {
     const rec = resolved?.main;
     if (rec?.status === "ok") onApplyMain?.(rec.model);

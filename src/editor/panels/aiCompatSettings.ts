@@ -115,7 +115,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
   const formHost = el("div", { class: "ai-compat-form-host" });
   const loadNote = el("p", { class: "ai-config-help ai-compat-load-note", attrs: { role: "status", hidden: "" }, dataset: { testid: "ai-compat-load-note" } });
   const addButton = el("button", {
-    class: "ai-assistant-action ai-compat-add",
+    class: "ai-settings-button ai-compat-add",
     text: "엔드포인트 추가",
     attrs: { type: "button" },
     dataset: { testid: "ai-compat-add" },
@@ -183,7 +183,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
     ];
     const deleting = confirmingDelete === endpoint.id;
     const needsTest = !endpoint.lastTest?.ok;
-    const testButton = el("button", { class: needsTest ? "ai-assistant-action is-primary" : "ai-assistant-action", text: "연결 시험", attrs: { type: "button" }, dataset: { testid: `ai-compat-card-test-${endpoint.id}` } }) as HTMLButtonElement;
+    const testButton = el("button", { class: needsTest ? "ai-settings-button is-primary" : "ai-settings-button", text: "연결 시험", attrs: { type: "button" }, dataset: { testid: `ai-compat-card-test-${endpoint.id}` } }) as HTMLButtonElement;
     const cardResult = el("div", { class: "ai-compat-result", attrs: { role: "status", hidden: "" }, dataset: { testid: `ai-compat-card-result-${endpoint.id}` } });
     testButton.addEventListener("click", () => {
       testButton.disabled = true;
@@ -198,16 +198,16 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
     const isMain = options.getMainProvider() === endpoint.id;
     const hasModel = Boolean(endpoint.defaultModel || endpoint.models[0]);
     const mainButton = el("button", {
-      class: !needsTest && !isMain && hasModel ? "ai-assistant-action is-primary" : "ai-assistant-action",
+      class: !needsTest && !isMain && hasModel ? "ai-settings-button is-primary" : "ai-settings-button",
       text: isMain ? "기본 연결로 사용 중" : "기본 연결로 사용",
       attrs: { type: "button", "aria-pressed": String(isMain), ...(isMain || !hasModel ? { disabled: "" } : {}), title: hasModel ? "이 엔드포인트를 기본 연결로 씁니다. 직접 지정하지 않은 역할이 이 서버의 모델로 바뀌어요." : "먼저 연결 시험으로 모델을 받거나 모델 ID 를 입력해 저장하세요." },
       dataset: { testid: `ai-compat-main-${endpoint.id}` },
     }) as HTMLButtonElement;
     mainButton.addEventListener("click", () => { options.selectMain(endpoint.id); window.setTimeout(renderList, 0); });
-    const editButton = el("button", { class: "ai-assistant-action", text: "편집", attrs: { type: "button" }, dataset: { testid: `ai-compat-edit-${endpoint.id}` } });
+    const editButton = el("button", { class: "ai-settings-button", text: "편집", attrs: { type: "button" }, dataset: { testid: `ai-compat-edit-${endpoint.id}` } });
     editButton.addEventListener("click", () => openForm(endpoint));
     const deleteButton = el("button", {
-      class: `ai-assistant-action${deleting ? " is-danger" : ""}`,
+      class: `ai-settings-button${deleting ? " is-danger" : ""}`,
       text: deleting ? "정말 삭제" : "삭제",
       attrs: { type: "button" },
       dataset: { testid: `ai-compat-delete-${endpoint.id}` },
@@ -274,7 +274,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
       }) as HTMLInputElement;
       const datalist = el("datalist", { attrs: { id: modelListId }, children: choices.map((model) => el("option", { attrs: { value: model } })) });
       const apply = el("button", {
-        class: "ai-assistant-action",
+        class: "ai-settings-button",
         text: usingThis ? "다시 적용" : "이 역할에 쓰기",
         attrs: { type: "button" },
         dataset: { testid: `ai-compat-role-apply-${endpoint.id}-${slot.id}` },
@@ -387,7 +387,7 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
 
     const headerRows: HeaderRow[] = [];
     const headerHost = el("div", { class: "ai-compat-headers", dataset: { testid: "ai-compat-headers" } });
-    const addHeaderButton = el("button", { class: "ai-assistant-action", text: "헤더 추가", attrs: { type: "button" }, dataset: { testid: "ai-compat-add-header" } }) as HTMLButtonElement;
+    const addHeaderButton = el("button", { class: "ai-settings-button", text: "헤더 추가", attrs: { type: "button" }, dataset: { testid: "ai-compat-add-header" } }) as HTMLButtonElement;
     const addHeader = (initialName = "", keptOnServer = false): void => {
       if (headerRows.length >= OPENAI_COMPAT_MAX_HEADERS) return;
       const nameInput = el("input", { class: "ai-config-input", attrs: { type: "text", placeholder: "헤더 이름", "aria-label": "헤더 이름", spellcheck: "false" }, value: initialName, dataset: { testid: "ai-compat-header-name" } }) as HTMLInputElement;
@@ -517,9 +517,9 @@ export function renderAiCompatSettings(options: AiCompatSettingsOptions): AiComp
       }));
 
     const status = el("span", { class: "ai-compat-form-status", attrs: { role: "status" }, dataset: { testid: "ai-compat-form-status" } });
-    const testButton = el("button", { class: "ai-assistant-action", text: "연결 시험", attrs: { type: "button" }, dataset: { testid: "ai-compat-test" } }) as HTMLButtonElement;
-    const saveButton = el("button", { class: "ai-assistant-action is-primary", text: "저장", attrs: { type: "button" }, dataset: { testid: "ai-compat-save" } }) as HTMLButtonElement;
-    const cancelButton = el("button", { class: "ai-assistant-action", text: "닫기", attrs: { type: "button" }, dataset: { testid: "ai-compat-cancel" } }) as HTMLButtonElement;
+    const testButton = el("button", { class: "ai-settings-button", text: "연결 시험", attrs: { type: "button" }, dataset: { testid: "ai-compat-test" } }) as HTMLButtonElement;
+    const saveButton = el("button", { class: "ai-settings-button is-primary", text: "저장", attrs: { type: "button" }, dataset: { testid: "ai-compat-save" } }) as HTMLButtonElement;
+    const cancelButton = el("button", { class: "ai-settings-button", text: "닫기", attrs: { type: "button" }, dataset: { testid: "ai-compat-cancel" } }) as HTMLButtonElement;
     cancelButton.addEventListener("click", closeForm);
 
     const showResult = (response: OpenAiCompatTestResponse): void => {

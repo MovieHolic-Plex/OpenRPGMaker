@@ -132,7 +132,6 @@ it("excludes hidden, inert, disabled and negative-tabindex controls from setting
 
 it("escapes the select, then Advanced, then settings and restores each opener", () => {
   const modal = openAiSettingsModal();
-  control("ai-settings-tab-behavior").click();
   const advanced = control("ai-settings-open-advanced");
   advanced.click();
   expect(document.activeElement).toBe(control("ai-settings-advanced-done"));
