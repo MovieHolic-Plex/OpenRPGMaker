@@ -20,6 +20,7 @@ import type { Project } from "@/project/types";
 import type { SpatialAuthoringDocument, SpatialConnection, SpatialId, SpatialOccurrence } from "@/project/spatial/types";
 import { authorizeSpatialToolChange, consumeSpatialToolPreview, issueSpatialToolPreview } from "./spatialToolState";
 import { collapseVariants, formatCounts, describeObjectFilter, matchesObjectFilter, matchesPlace, objectQueryRank, parseObjectFilter, topCounts } from "./objectSearch";
+import { buildSceneKit, findObjectScene } from "./objectScenes";
 import { tilesetFamily } from "@/project/tilesetFamily";
 import { SPATIAL_APPLY_SCHEMA, SPATIAL_BUILD_SCHEMA, SPATIAL_GET_SCHEMA, SPATIAL_LIST_SCHEMA, SPATIAL_OCCURRENCE_SCHEMA, SPATIAL_UPSERT_SCHEMA } from "./spatialToolSchemas";
 import { ToolError, type ToolDefinition } from "./types";
@@ -178,7 +179,7 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     },
   },
   { name: "list_spatial_designs", mode: "read", domains: ["world", "map", "database"],
-    description: "Discover saved canonical designs across all project tilesets; query matches id, name or tags. object = reusable appearance/prop, including building exteriors; place = room, floor, yard, complete facility or settlement. Use environment:interior/outdoor for a direct place and placeKind:facility/settlement/natural for a grouped place. For a complete house search kind:place; for saved exteriors search kind:object with query:건물 외형 (or the authored name/tag). Context designs are only samples: search this full library before declaring an asset missing. List rows use kind:place plus placeKind:facility|settlement|natural; get_spatial_design returns the original upsert body. Read-only; never activates or seeds an empty library. When data.active is false the project has no spatialAuthoring document and canonical design/build tools reject with spatial-inactive; read_region_reference remains available — activation is a user-side editor action, not a tool. data.shared always lists the shared library every project sees (the editor 장소/오브젝트 tabs): kind:place rows are registered and reviewed places (use import_region_reference with the row id), kind:object rows are the shared object catalog (obj:… — leafless trees per climate, volcano peaks, climate terrain pieces such as lava pools, fumaroles, basalt, mesas and dunes, harbor boats/mooring posts/cargo, the gatehouse, generated buildings and house exteriors, village props like wells, lanterns, notice boards) plus this project's other kits (kit:/group:). Each row has owner (where it belongs — next to what), passage, tilesetId and preview; place it with stamp_object using the row id and follow owner. Put rows tagged with place (place/use word) first, narrow with surface (floor|water|wall), maxWidth/maxHeight and family (art family; pass mapId to rank the current map's family first) — rows whose name or own tag equals the query come first; variants of one object (name A/B/C, 1/2) fold into one row with variantIds; each row carries family and the summary counts rows per family. Page with limit/offset (default 40, data.shared.nextOffset).",
+    description: "Discover saved canonical designs across all project tilesets; query matches id, name or tags. object = reusable appearance/prop, including building exteriors; place = room, floor, yard, complete facility or settlement. Use environment:interior/outdoor for a direct place and placeKind:facility/settlement/natural for a grouped place. For a complete house search kind:place; for saved exteriors search kind:object with query:건물 외형 (or the authored name/tag). Context designs are only samples: search this full library before declaring an asset missing. List rows use kind:place plus placeKind:facility|settlement|natural; get_spatial_design returns the original upsert body. Read-only; never activates or seeds an empty library. When data.active is false the project has no spatialAuthoring document and canonical design/build tools reject with spatial-inactive; read_region_reference remains available — activation is a user-side editor action, not a tool. data.shared always lists the shared library every project sees (the editor 장소/오브젝트 tabs): kind:place rows are registered and reviewed places (use import_region_reference with the row id), kind:object rows are the shared object catalog (obj:… — leafless trees per climate, volcano peaks, climate terrain pieces such as lava pools, fumaroles, basalt, mesas and dunes, harbor boats/mooring posts/cargo, the gatehouse, generated buildings and house exteriors, village props like wells, lanterns, notice boards) plus this project's other kits (kit:/group:). Each row has owner (where it belongs — next to what), passage, tilesetId and preview; place it with stamp_object using the row id and follow owner. Put rows tagged with place (place/use word) first, narrow with surface (floor|water|wall), maxWidth/maxHeight and family (art family; pass mapId to rank the current map's family first) — rows whose name or own tag equals the query come first; variants of one object (name A/B/C, 1/2) fold into one row with variantIds; each row carries family and the summary counts rows per family. When query or place names a place (편의점 앞, 수산시장, 조선 장터, 교실…), data.shared.sceneKit lists role slots (건물·큰 구조, 바닥 소품, 생활 소품, 조명·간판, 자연) with everyday object words and matching rows: furnish the scene by picking from every slot (one building, then props per slot) instead of several variants of the building. Page with limit/offset (default 40, data.shared.nextOffset).",
     parameters: SPATIAL_LIST_SCHEMA,
     run(project, args) {
       const kind = args.kind === undefined ? undefined : parseKind(args.kind, "kind");
@@ -227,14 +228,27 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
         if (alt.length) { shared.push(...alt); aliasNote = ` — 「${query}」 0건이라 ${words.join("·")} 로 찾음(search used ${words.join(", ")} for "${query}")`; }
         else aliasNote = ` — no match for "${query}". Kit names are mostly English: try English words or a nearby object that stands in for it (corpse → coffin, notice → board/sign)`;
       }
+      const sceneFound = kind === "place" ? undefined : findObjectScene(query, filter.place);
+      const sceneKit = sceneFound && buildSceneKit(sceneFound,
+        collapseVariants(filtered.filter(entry => entry.kind === "object"))
+          .map((entry, index) => ({ entry, index, same: mapFamily !== undefined && entryFamily(entry) === mapFamily }))
+          .sort((a, b) => Number(b.same) - Number(a.same) || a.index - b.index).map(({ entry }) => entry),
+        [...queryWords, ...(filter.place ? filter.place.split(/\s+/u) : [])]);
+      const sceneKitData = sceneKit && sceneKit.slots.length ? { place: sceneKit.place, trigger: sceneKit.trigger,
+        suggested: sceneKit.suggested.map(row => ({ id: row.id, name: row.name })),
+        slots: sceneKit.slots.map(slot => ({ role: slot.role, label: slot.label, pick: slot.pick,
+          items: slot.items.map(item => ({ word: item.word, rows: item.rows.map(row => { const family = entryFamily(row);
+            return { id: row.id, name: row.name, tilesetId: row.tilesetId, width: row.width, height: row.height, ...(family ? { family } : {}) }; }) })) })) } : undefined;
       const byFamily = topCounts(shared.flatMap(entry => entryFamily(entry) ?? []), 6);
       const collapsed = collapseVariants(shared);
       const folded = shared.length - collapsed.length;
       const sharedPage = { total: collapsed.length, offset,
         rows: collapsed.slice(offset, offset + limit).map(entry => { const family = entryFamily(entry); return family ? { ...entry, family } : entry; }),
-        ...(offset + limit < collapsed.length ? { nextOffset: offset + limit } : {}), ...(byFamily.length > 1 ? { byFamily } : {}) };
+        ...(offset + limit < collapsed.length ? { nextOffset: offset + limit } : {}), ...(byFamily.length > 1 ? { byFamily } : {}),
+        ...(sceneKitData ? { sceneKit: sceneKitData } : {}) };
       const filterNote = [describeObjectFilter(filter), wantFamily && `계열 ${wantFamily}`].filter(Boolean).join(" · ");
-      const sharedNote = `공용 ${collapsed.length}건${folded ? `(변형 ${folded}개는 variantIds 로 접음)` : ""}${filterNote ? `(${filterNote})` : ""}${byFamily.length > 1 ? ` · 계열별 ${formatCounts(byFamily)}` : ""}${aliasNote}`;
+      const sharedNote = `공용 ${collapsed.length}건${folded ? `(변형 ${folded}개는 variantIds 로 접음)` : ""}${filterNote ? `(${filterNote})` : ""}${byFamily.length > 1 ? ` · 계열별 ${formatCounts(byFamily)}` : ""}${aliasNote}${sceneKitData
+        ? ` · 장면 키트 「${sceneKitData.place}」 ${sceneKitData.slots.map(slot => `${slot.label} ${slot.pick}`).join(" · ")} — 칸마다 골라 장면을 채운다. 같은 낱말에서 둘을 고르기보다 다른 낱말로 넓힌다. suggested 는 칸을 돌며 하나씩 고른 기본 한 벌(data.shared.sceneKit; prefer one row per word, start from suggested)` : ""}`;
       if (project.spatialAuthoring === undefined) {
         return { summary: `장소 저작 비활성(프로젝트 설계 0) · ${sharedNote}`, data: { active: false, designs: [], shared: sharedPage } };
       }
