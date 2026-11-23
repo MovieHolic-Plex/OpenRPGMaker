@@ -1,4 +1,6 @@
 import { expect, test } from "@playwright/test";
+import { AI_CONFIG_STORAGE_KEY, AI_CONFIG_VERSION } from "@/ai/llmClient";
+import { chatgptFixtureConfig } from "../helpers/chatgptFixtureConfig";
 import { openAdvancedAiSettings, openTopbarAiSettings } from "./topbarNavigation";
 
 test("edit mode restores existing chrome, removes the bottom bar, and exposes scrollable AI settings", async ({ page }) => {
@@ -104,6 +106,11 @@ test("ChatGPT sign-in and quality share the settings connection and role control
     await route.fulfill({ json: { connected, accountEmail: connected ? "you@example.com" : undefined, endpoints: [] } });
   });
   await page.route("**/v1/local-agents*", route => route.fulfill({ json: { clis: [] } }));
+  // 공장 기본이 Claude Sonnet 5.5 · high 로 바뀐 뒤(#4939) 이 시험은 ChatGPT 길을 본다 — 공장 기본에 기대지 않고 ChatGPT 고정물로 시작한다.
+  const seeded = JSON.stringify({ ...chatgptFixtureConfig(), configVersion: AI_CONFIG_VERSION });
+  await page.addInitScript(({ key, value }) => {
+    if (!localStorage.getItem(key)) localStorage.setItem(key, value);
+  }, { key: AI_CONFIG_STORAGE_KEY, value: seeded });
   await page.goto("/?freshProject=1&lang=en");
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 15_000 });
   await page.locator("body").press("Control+K");
