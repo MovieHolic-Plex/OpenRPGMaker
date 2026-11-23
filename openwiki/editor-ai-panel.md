@@ -3366,6 +3366,12 @@ v0.413.0에서 「AI로 명령 만들기」의 도구 결과마다 약 78MB 프�
 - 고정: AI 설정에서 사람이 연결을 고르면(`aiAuthSettings` 의 `emit`) `ai/providerPin` 이 그 id 를 적고, 그 뒤로는 자동으로
   바꾸지 않는다(한도라도). 프로그램 경로(`selectProvider(…, { notify: false })`)는 고정하지 않는다.
 - 단위 표: `test/autoProviderPick.test.ts`(Claude만 · ChatGPT만 · 둘 다 · Claude 한도 · 429 만료 · 모름 · 도구 불가 · 없음 · 고정).
+- 한도 전환(b): 요청이 429 로 막히면(`AI_TRANSPORT_HEALTH_EVENT`, status 429) `installAutoProviderSwitching` 이 지금 길에
+  `ai/providerLimits.noteProviderLimited` 로 풀리는 시각을 적고(Retry-After·「resets in」·「try again in」, 못 읽으면 15분) 다시 고른다.
+  `companionConnection` 은 429 응답의 `retry-after` 헤더를 전송 상태 문장에 싣는다. 쉬는 길이 있으면 1분마다 다시 골라
+  풀리면 우선순위 길로 돌아간다. 요청이 다시 성공하면 그 길의 기록을 지운다.
+- 칩(`aiQuotaChip`): 모델 이름 뒤에 추론 강도(「Claude Sonnet 5.5 · 높음」). 자동 선택이 한도 때문에 다른 길을 골랐으면
+  꼬리가 「Claude 한도 · 자동 전환」, 지금 길이 한도(고정이거나 모두 한도)면 「한도 초과 · 15:02 풀림」(`autoPickNote`).
 
 ### 첫 연결과 실제 작업 계정 (2026-10-01)
 

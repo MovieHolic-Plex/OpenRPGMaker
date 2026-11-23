@@ -40,6 +40,8 @@ export interface AutoPick {
   readonly reason: AutoPickReason;
   /** 고른 길의 한도 상태. */
   readonly quota: ProviderQuotaState;
+  /** 고른 길이 한도일 때 풀리는 시각(ms). 모르면 없다. */
+  readonly resetsAt?: number;
   /** 고른 길보다 우선순위가 높은데 건너뛴 길과 이유 — 칩·설정이 「Claude 한도라 ChatGPT」 처럼 말하는 데 쓴다. */
   readonly skipped: readonly { readonly providerId: string; readonly why: SkipWhy }[];
 }
@@ -97,10 +99,13 @@ export function pickAutoProvider(input: {
   const ordered = [...input.routes].sort((a, b) => rank(a.providerId) - rank(b.providerId));
   if (input.pinnedProviderId) {
     const pinned = ordered.find((route) => route.providerId === input.pinnedProviderId);
+    const quota = pinned ? providerQuotaState(pinned, now) : "unknown";
+    const reset = pinned && quota === "exhausted" ? resetsAt(pinned, now) : Infinity;
     return {
       providerId: input.pinnedProviderId,
       reason: "pinned",
-      quota: pinned ? providerQuotaState(pinned, now) : "unknown",
+      quota,
+      ...(Number.isFinite(reset) ? { resetsAt: reset } : {}),
       skipped: [],
     };
   }
@@ -117,10 +122,25 @@ export function pickAutoProvider(input: {
   if (!usable.length) return { providerId: null, reason: "none", quota: "unknown", skipped };
   // 모두 한도 — 가장 빨리 풀리는 길(같으면 우선순위).
   const soonest = [...usable].sort((a, b) => resetsAt(a, now) - resetsAt(b, now) || rank(a.providerId) - rank(b.providerId))[0]!;
+  const reset = resetsAt(soonest, now);
   return {
     providerId: soonest.providerId,
     reason: "all-limited",
     quota: "exhausted",
+    ...(Number.isFinite(reset) ? { resetsAt: reset } : {}),
     skipped: skipped.filter((entry) => entry.providerId !== soonest.providerId),
   };
+}
+
+/**
+ * 칩 꼬리에 붙는 자동 선택 설명. 알릴 것이 없으면(우선순위 길을 그대로 씀) undefined.
+ * - 한도로 다음 길을 썼으면 「Claude 한도 · 자동 전환」
+ * - 모두 한도이거나 고정한 길이 한도면 「한도 초과 · 15:02 풀림」(시각을 모르면 「한도 초과」)
+ */
+export function autoPickNote(pick: AutoPick | null, labelOf: (providerId: string) => string, formatTime: (ms: number) => string): string | undefined {
+  if (!pick?.providerId) return undefined;
+  if (pick.quota === "exhausted") return pick.resetsAt !== undefined ? `한도 초과 · ${formatTime(pick.resetsAt)} 풀림` : "한도 초과";
+  const limited = pick.skipped.find((entry) => entry.why === "limited");
+  if (pick.reason === "fallback" && limited) return `${labelOf(limited.providerId)} 한도 · 자동 전환`;
+  return undefined;
 }

@@ -6,7 +6,8 @@
 import { companionAuthUrl, fetchChatGptAuthStatus, ensureOpenAiCompatEndpointsKnown } from "@/ai/chatgptOAuthClient";
 import { fetchCompanion } from "@/ai/companionConnection";
 import { configForProviderSelection } from "@/ai/providerSelection";
-import { loadAiConfig, saveAiConfig } from "@/ai/llmClient";
+import { AI_TRANSPORT_HEALTH_EVENT, getAiTransportHealth, loadAiConfig, resetAiTransportHealth, saveAiConfig } from "@/ai/llmClient";
+import { hasActiveProviderLimit, noteProviderLimited, providerLimitedUntil } from "@/ai/providerLimits";
 import { localCliOfProvider, localCliProviderId, loadAssistantEngine, saveAssistantEngine } from "@/ai/localCliEngine";
 import { ANTHROPIC_PROVIDER_ID, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { listKnownOpenAiCompatEndpoints } from "@/ai/openAiCompat";
@@ -106,7 +107,7 @@ export function runAutoProviderPick(options: { readonly limitedUntil?: (id: stri
   if (running) return running;
   running = (async () => {
     try {
-      const routes = await collectProviderRoutes(options.limitedUntil);
+      const routes = await collectProviderRoutes(options.limitedUntil ?? ((id) => providerLimitedUntil(id)));
       const pick = pickAutoProvider({ routes, pinnedProviderId: loadProviderPin(), now: Date.now() });
       lastPick = pick;
       const changed = pick.reason !== "pinned" && pick.providerId !== null && applyAutoPick(pick.providerId);
@@ -120,4 +121,35 @@ export function runAutoProviderPick(options: { readonly limitedUntil?: (id: stri
     }
   })();
   return running;
+}
+
+const RECHECK_MS = 60_000;
+
+/**
+ * 한도에 걸리면 다음 길로 바꾼다. 요청이 429 로 막히면(전송 상태 이벤트) 지금 길에 풀리는 시각을 적고 다시 고른다.
+ * 쉬는 길이 있는 동안에는 1분마다 다시 골라, 풀리면 우선순위 길로 돌아간다. 고정한 길은 바꾸지 않는다(칩이 한도만 보인다).
+ * 부팅에서 한 번 고르는 일도 여기서 한다. 돌려주는 함수로 끄다.
+ */
+export function installAutoProviderSwitching(onChanged: () => void): () => void {
+  const changed = (): void => { resetAiTransportHealth(); onChanged(); };
+  const run = (): void => { void runAutoProviderPick({ onChanged: changed }); };
+  const onHealth = (): void => {
+    const health = getAiTransportHealth();
+    if (!health) return;
+    // 성공 신호로 기록을 지우지 않는다 — 다른 길로 바꾼 뒤의 성공이나 모델 호출이 아닌 /v1 성공도 「풀림」으로 보일 수 있다.
+    // 기록은 풀리는 시각이 지나면 저절로 무시된다(providerLimitedUntil).
+    if (health.ok || health.status !== 429) return;
+    noteProviderLimited(currentProviderId(), health.message);
+    run();
+  };
+  const win = typeof window === "undefined" ? undefined : window;
+  win?.addEventListener?.(AI_TRANSPORT_HEALTH_EVENT, onHealth);
+  const timer = win?.setInterval(() => {
+    if (hasActiveProviderLimit() || lastPick?.reason === "fallback" || lastPick?.reason === "all-limited") run();
+  }, RECHECK_MS);
+  run();
+  return () => {
+    win?.removeEventListener?.(AI_TRANSPORT_HEALTH_EVENT, onHealth);
+    if (timer !== undefined) win?.clearInterval(timer);
+  };
 }
