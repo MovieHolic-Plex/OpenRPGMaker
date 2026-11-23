@@ -192,9 +192,14 @@ describe("bundled Beodeul placeable objects", () => {
       id: kitId(object.id), width: object.widthTiles, height: object.heightTiles,
       tags: expect.arrayContaining([...object.tags]),
     }));
-    const listed = runTool(ctx, "list_tileset_objects", { mapId, query });
-    expect(listed.ok, listed.summary).toBe(true);
-    expect(listed.data).toMatchObject({ objects: expected });
+    const listedRows: unknown[] = [];
+    for (let offset = 0; offset < expected.length; offset += 200) {
+      const listed = runTool(ctx, "list_tileset_objects", { mapId, query, limit: 200, offset });
+      expect(listed.ok, listed.summary).toBe(true);
+      expect(listed.data).toMatchObject({ total: expected.length });
+      listedRows.push(...(listed.data as { objects: unknown[] }).objects);
+    }
+    expect(listedRows).toMatchObject(expected);
     const plannerIndex = new Map(buildStampObjectIndex(ctx.project.tilesets[tilesetId]).map(entry => [entry.id, entry]));
     for (const object of BEODEUL_PLACEABLE_OBJECTS) {
       expect(plannerIndex.get(kitId(object.id))).toMatchObject({
@@ -210,6 +215,60 @@ describe("bundled Beodeul placeable objects", () => {
         ...entry, id: `kit:${tilesetId}/${entry.id}`,
       })) } });
     }
+  });
+
+  it("offers Beodeul objects on a same-family map and grafts only the stamped kit", () => {
+    const project = createBlankProject();
+    const map = Object.values(project.maps)[0]!;
+    const interior = project.tilesets.atlas_biome_interior!;
+    expect(interior.structureKits?.some(kit => kit.id === kitId("lantern_post"))).toBe(false);
+    map.tilesetId = interior.id;
+    const ctx = { project };
+    const object = BEODEUL_PLACEABLE_OBJECTS.find(entry => entry.id === "lantern_post")!;
+    const listed = runTool(ctx, "list_tileset_objects", { mapId: map.id, query: object.nameKo });
+    expect(listed.ok, listed.summary).toBe(true);
+    expect((listed.data as { objects: { id: string; source?: string }[] }).objects[0]).toMatchObject({ id: kitId(object.id), source: "family" });
+    const before = interior.tileGrafts?.length ?? 0;
+    const stamped = runTool(ctx, "stamp_tileset_object", { mapId: map.id, objectId: kitId(object.id), at: { x: 4, y: 4 } });
+    expect(stamped.ok, stamped.summary).toBe(true);
+    const tileset = ctx.project.tilesets[interior.id]!;
+    expect(tileset.structureKits?.filter(kit => kit.id === kitId(object.id))).toHaveLength(1);
+    const cells = object.footprint.join("").replace(/ /gu, "").length;
+    expect((tileset.tileGrafts?.length ?? 0) - before).toBe(cells);
+    const painted = ctx.project.maps[map.id]!;
+    for (const [dy, row] of object.footprint.entries()) {
+      for (const [dx, mark] of [...row].entries()) if (mark !== " ") expect(isPassable(ctx.project, painted, 4 + dx, 4 + dy)).toBe(mark !== "X");
+    }
+  });
+
+  it("filters objects by place, surface and size and lists name matches first", () => {
+    const { ctx, mapId } = projectWithObjectTileset();
+    type Listed = { objects: { id: string; name: string; width: number; height: number; surface: string; tags?: string[] }[]; total: number };
+    const place = runTool(ctx, "list_tileset_objects", { mapId, place: "버스 정류장" });
+    expect(place.ok, place.summary).toBe(true);
+    const placed = place.data as Listed;
+    expect(placed.total).toBeGreaterThan(0);
+    for (const row of placed.objects) {
+      const fields = [row.name, ...(row.tags ?? [])];
+      for (const word of ["버스", "정류장"]) expect(fields.some(value => value.includes(word)), row.name).toBe(true);
+    }
+    const water = runTool(ctx, "list_tileset_objects", { mapId, surface: "water", maxWidth: 2 }).data as Listed;
+    expect(water.total).toBeGreaterThan(0);
+    for (const row of water.objects) { expect(row.surface).toBe("water"); expect(row.width).toBeLessThanOrEqual(2); }
+    const ranked = runTool(ctx, "list_tileset_objects", { mapId, query: "수산시장", limit: 200 }).data as Listed;
+    const named = ranked.objects.map(row => row.name.includes("수산시장"));
+    expect(named.indexOf(true)).toBe(0);
+    expect(named.lastIndexOf(true)).toBeLessThan(named.indexOf(false) === -1 ? named.length : named.indexOf(false));
+    expect(runTool(ctx, "list_tileset_objects", { mapId, surface: "ceiling" }).ok).toBe(false);
+  });
+
+  it("restricts shared object search to one art family and labels each row with it", () => {
+    const ctx = { project: createBlankProject() };
+    const listed = runTool(ctx, "list_spatial_designs", { kind: "object", query: "항아리", family: "oprn-joseon" });
+    expect(listed.ok, listed.summary).toBe(true);
+    const rows = (listed.data as { shared: { rows: { tilesetId: string; family?: string }[]; total: number } }).shared.rows;
+    expect(rows.length).toBeGreaterThan(0);
+    for (const row of rows) expect(row).toMatchObject({ tilesetId: "joseon_baram", family: "oprn-joseon" });
   });
 
   it("preserves stamped collision through serialization and includes the painted asset in web export", () => {

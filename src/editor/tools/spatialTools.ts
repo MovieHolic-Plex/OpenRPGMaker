@@ -19,6 +19,8 @@ import { resolveSpatialDesign } from "@/project/spatial/resolve";
 import type { Project } from "@/project/types";
 import type { SpatialAuthoringDocument, SpatialConnection, SpatialId, SpatialOccurrence } from "@/project/spatial/types";
 import { authorizeSpatialToolChange, consumeSpatialToolPreview, issueSpatialToolPreview } from "./spatialToolState";
+import { formatCounts, describeObjectFilter, matchesObjectFilter, objectQueryRank, parseObjectFilter, topCounts } from "./objectSearch";
+import { tilesetFamily } from "@/project/tilesetFamily";
 import { SPATIAL_APPLY_SCHEMA, SPATIAL_BUILD_SCHEMA, SPATIAL_GET_SCHEMA, SPATIAL_LIST_SCHEMA, SPATIAL_OCCURRENCE_SCHEMA, SPATIAL_UPSERT_SCHEMA } from "./spatialToolSchemas";
 import { ToolError, type ToolDefinition } from "./types";
 import { referenceManifest, referenceOwnerManifest } from '@/project/tilesetReferences';
@@ -176,7 +178,7 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     },
   },
   { name: "list_spatial_designs", mode: "read", domains: ["world", "map", "database"],
-    description: "Discover saved canonical designs across all project tilesets; query matches id, name or tags. object = reusable appearance/prop, including building exteriors; place = room, floor, yard, complete facility or settlement. Use environment:interior/outdoor for a direct place and placeKind:facility/settlement/natural for a grouped place. For a complete house search kind:place; for saved exteriors search kind:object with query:건물 외형 (or the authored name/tag). Context designs are only samples: search this full library before declaring an asset missing. List rows use kind:place plus placeKind:facility|settlement|natural; get_spatial_design returns the original upsert body. Read-only; never activates or seeds an empty library. When data.active is false the project has no spatialAuthoring document and canonical design/build tools reject with spatial-inactive; read_region_reference remains available — activation is a user-side editor action, not a tool. data.shared always lists the shared library every project sees (the editor 장소/오브젝트 tabs): kind:place rows are registered and reviewed places (use import_region_reference with the row id), kind:object rows are the shared object catalog (obj:… — leafless trees per climate, volcano peaks, climate terrain pieces such as lava pools, fumaroles, basalt, mesas and dunes, harbor boats/mooring posts/cargo, the gatehouse, generated buildings and house exteriors, village props like wells, lanterns, notice boards) plus this project's other kits (kit:/group:). Each row has owner (where it belongs — next to what), passage, tilesetId and preview; place it with stamp_object using the row id and follow owner. Page with limit/offset (default 40, data.shared.nextOffset).",
+    description: "Discover saved canonical designs across all project tilesets; query matches id, name or tags. object = reusable appearance/prop, including building exteriors; place = room, floor, yard, complete facility or settlement. Use environment:interior/outdoor for a direct place and placeKind:facility/settlement/natural for a grouped place. For a complete house search kind:place; for saved exteriors search kind:object with query:건물 외형 (or the authored name/tag). Context designs are only samples: search this full library before declaring an asset missing. List rows use kind:place plus placeKind:facility|settlement|natural; get_spatial_design returns the original upsert body. Read-only; never activates or seeds an empty library. When data.active is false the project has no spatialAuthoring document and canonical design/build tools reject with spatial-inactive; read_region_reference remains available — activation is a user-side editor action, not a tool. data.shared always lists the shared library every project sees (the editor 장소/오브젝트 tabs): kind:place rows are registered and reviewed places (use import_region_reference with the row id), kind:object rows are the shared object catalog (obj:… — leafless trees per climate, volcano peaks, climate terrain pieces such as lava pools, fumaroles, basalt, mesas and dunes, harbor boats/mooring posts/cargo, the gatehouse, generated buildings and house exteriors, village props like wells, lanterns, notice boards) plus this project's other kits (kit:/group:). Each row has owner (where it belongs — next to what), passage, tilesetId and preview; place it with stamp_object using the row id and follow owner. Narrow with place (place/use word), surface (floor|water|wall), maxWidth/maxHeight and family (art family; pass mapId to rank the current map's family first) — rows whose name or own tag equals the query come first; each row carries family and the summary counts rows per family. Page with limit/offset (default 40, data.shared.nextOffset).",
     parameters: SPATIAL_LIST_SCHEMA,
     run(project, args) {
       const kind = args.kind === undefined ? undefined : parseKind(args.kind, "kind");
@@ -189,15 +191,30 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
         // 몬스터 수집 칩셋의 장소·기물은 몬스터 프로젝트(또는 몬스터 요청 턴)가 아니면 조수 검색에 나오지 않는다(genreLockMonsterAssets.ts).
         .filter(entry => !monsterTilesetHiddenInRun(project, entry.tilesetId));
       const queryWords = query.toLocaleLowerCase().split(/\s+/u).filter(Boolean);
-      const strict = candidates.filter(entry => matchesQuery(entry, query));
-      const shared = (strict.length > 0 || queryWords.length <= 1 ? strict : candidates.filter(entry => queryWords.some(word => matchesQuery(entry, word))))
-        // Rows whose id/name/object-tags match come before rows that only share a sheet-level tag (e.g. every tile group of the volcano sheet).
+      const filter = parseObjectFilter(args);
+      const mapFamily = typeof args.mapId === "string" && project.maps[args.mapId] ? tilesetFamily(project, project.maps[args.mapId]!.tilesetId) : undefined;
+      const familyArg = typeof args.family === "string" && args.family.trim() ? args.family.trim() : undefined;
+      const wantFamily = familyArg === undefined ? undefined : project.tilesets[familyArg] ? tilesetFamily(project, familyArg) : familyArg;
+      const familyOf = new Map<string, string>();
+      const entryFamily = (entry: { tilesetId: string | null }) => {
+        if (!entry.tilesetId) return undefined;
+        let family = familyOf.get(entry.tilesetId);
+        if (family === undefined) { family = tilesetFamily(project, entry.tilesetId); familyOf.set(entry.tilesetId, family); }
+        return family;
+      };
+      const filtered = candidates.filter(entry => (wantFamily === undefined || entryFamily(entry) === wantFamily)
+        && matchesObjectFilter({ ...entry, width: entry.width ?? 0, height: entry.height ?? 0, surface: entry.kind === "object" ? entry.surface : undefined }, filter));
+      const strict = filtered.filter(entry => matchesQuery(entry, query));
+      const shared = (strict.length > 0 || queryWords.length <= 1 ? strict : filtered.filter(entry => queryWords.some(word => matchesQuery(entry, word))))
+        // 순위(objectSearch.objectQueryRank): 이름·자기 태그가 질의와 같음 → 이름에 낱말 → 자기 태그에 낱말 → 칩셋 이름 태그로만 맞음.
+        // 같은 순위면 지금 맵과 같은 계열(mapId) → 사용자 선택 → 맵에 쓰인 칩셋 → 카탈로그 순서.
         .map((entry, index) => {
           const sheetName = entry.tilesetId ? project.tilesets[entry.tilesetId]?.name : undefined;
-          const ownTags = entry.tags.filter(t => t !== sheetName && t !== "타일셋 킷");
-          return { entry, index, rank: !query || queryWords.some(word => matchesQuery({ ...entry, tags: ownTags }, word)) ? 0 : 1 };
+          const sheetTags = new Set([...(sheetName ? [sheetName] : []), "타일셋 킷"]);
+          return { entry, index, rank: objectQueryRank({ ...entry, width: entry.width ?? 0, height: entry.height ?? 0 }, query, sheetTags) };
         })
         .sort((a, b) => a.rank - b.rank
+          || (mapFamily === undefined ? 0 : Number(entryFamily(b.entry) === mapFamily) - Number(entryFamily(a.entry) === mapFamily))
           || Number(b.entry.tags.includes("사용자 선택")) - Number(a.entry.tags.includes("사용자 선택"))
           || Number(activeTilesetIds.includes(b.entry.tilesetId ?? "")) - Number(activeTilesetIds.includes(a.entry.tilesetId ?? ""))
           || a.index - b.index).map(({ entry }) => entry);
@@ -206,13 +223,16 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
       let aliasNote = "";
       if (!shared.length && query) {
         const words = OBJECT_QUERY_ALIASES.filter(([re]) => re.test(query)).flatMap(([, alts]) => alts);
-        const alt = words.length ? candidates.filter(entry => words.some(word => matchesQuery(entry, word))) : [];
+        const alt = words.length ? filtered.filter(entry => words.some(word => matchesQuery(entry, word))) : [];
         if (alt.length) { shared.push(...alt); aliasNote = ` — 「${query}」 0건이라 ${words.join("·")} 로 찾음(search used ${words.join(", ")} for "${query}")`; }
         else aliasNote = ` — no match for "${query}". Kit names are mostly English: try English words or a nearby object that stands in for it (corpse → coffin, notice → board/sign)`;
       }
-      const sharedPage = { total: shared.length, offset, rows: shared.slice(offset, offset + limit),
-        ...(offset + limit < shared.length ? { nextOffset: offset + limit } : {}) };
-      const sharedNote = `공용 ${shared.length}건${aliasNote}`;
+      const byFamily = topCounts(shared.flatMap(entry => entryFamily(entry) ?? []), 6);
+      const sharedPage = { total: shared.length, offset,
+        rows: shared.slice(offset, offset + limit).map(entry => { const family = entryFamily(entry); return family ? { ...entry, family } : entry; }),
+        ...(offset + limit < shared.length ? { nextOffset: offset + limit } : {}), ...(byFamily.length > 1 ? { byFamily } : {}) };
+      const filterNote = [describeObjectFilter(filter), wantFamily && `계열 ${wantFamily}`].filter(Boolean).join(" · ");
+      const sharedNote = `공용 ${shared.length}건${filterNote ? `(${filterNote})` : ""}${byFamily.length > 1 ? ` · 계열별 ${formatCounts(byFamily)}` : ""}${aliasNote}`;
       if (project.spatialAuthoring === undefined) {
         return { summary: `장소 저작 비활성(프로젝트 설계 0) · ${sharedNote}`, data: { active: false, designs: [], shared: sharedPage } };
       }

@@ -12,6 +12,8 @@ import { footprintFromUpper, footprintRefusal } from "@/project/objectFootprint"
 import { checkKitPlacement } from "@/project/kitPlacementRules";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { requireMap } from "./mapHelpers";
+import { familyObjectBundlesFor } from "@/project/familyObjectBundles";
+import { OBJECT_FILTER_PROPERTIES, describeObjectFilter, formatCounts, kitSurface, matchesObjectFilter, objectQueryRank, parseObjectFilter, topCounts } from "./objectSearch";
 
 const KIND_TAGS = new Set(["decal", "prop", "tall", "wallmount", "door", "overhead"]);
 
@@ -19,6 +21,28 @@ function packObjects(tileset: TilesetDef | undefined): SectionStructureKitDef[] 
   return (tileset?.structureKits ?? []).filter(
     (kit) => kit.learnedFrom === "pack-preset" || kit.learnedFrom === "workshop" || (kit.learnedFrom === "db-authored" && kit.id.startsWith("mc-")),
   );
+}
+
+/** 이 맵에서 찍을 수 있는 물체: 타일셋 자기 것 + 같은 계열 기물 묶음 중 아직 없는 것(찍을 때 이식). */
+function listableObjects(project: Project, map: GameMap): { kit: SectionStructureKitDef; source: "tileset" | "family" }[] {
+  const tileset = project.tilesets[map.tilesetId];
+  const own = packObjects(tileset).map(kit => ({ kit, source: "tileset" as const }));
+  const ids = new Set((tileset?.structureKits ?? []).map(kit => kit.id));
+  const family = familyObjectBundlesFor(project, map.tilesetId)
+    .flatMap(bundle => bundle.kits().filter(kit => !ids.has(kit.id)).map(kit => ({ kit, source: "family" as const })));
+  return [...own, ...family];
+}
+
+/** 계열 묶음에서 id·정확한 이름으로 고른 킷을 이 맵 타일셋에 이식해 단다. */
+function installFamilyObject(project: Project, map: GameMap, query: string): SectionStructureKitDef | undefined {
+  const tileset = project.tilesets[map.tilesetId];
+  if (!tileset || tileset.structureKits?.some(kit => kit.id === query)) return undefined;
+  for (const bundle of familyObjectBundlesFor(project, map.tilesetId)) {
+    const kits = bundle.kits();
+    const kit = kits.find(entry => entry.id === query) ?? kits.find(entry => entry.name === query);
+    if (kit) return bundle.install(tileset, kit.id);
+  }
+  return undefined;
 }
 
 function objectKind(kit: SectionStructureKitDef): string {
@@ -156,42 +180,69 @@ const listTilesetObjects: ToolDefinition = {
   description:
     "현재 타일셋의 여러 칸 물체 목록 — 버들항 기본 기물, 설치한 팩 프리셋의 가로등·신호등·자판기·벤치·창문·문·차선·횡단보도 등. "
     + "손 도트 실내 칩셋에서는 사용자가 공방에서 그려 넣은 기물(id workshop:…)이 나온다. "
-    + "id·이름·크기·태그·종류(decal 바닥 표시/prop 막힘/tall 밑줄만 막힘/wallmount 벽·옥상 부착/door 문/overhead 머리 위)·이어 찍기 축. "
-    + "놓을 때는 stamp_tileset_object.",
+    + "같은 그림체 계열 칩셋(예: 버들항과 실내 v5) 맵에서는 계열 기물 묶음(버들항풍 기물, source:family)도 나온다 — 찍으면 그 칸만 이 타일셋에 이식된다. "
+    + "id·이름·크기·태그·놓는 면·종류(decal 바닥 표시/prop 막힘/tall 밑줄만 막힘/wallmount 벽·옥상 부착/door 문/overhead 머리 위)·이어 찍기 축. "
+    + "place(장소·용도)·surface(floor/water/wall)·maxWidth·maxHeight 로 거르고, 이름·태그가 질의와 정확히 같은 물체부터 보여 준다. "
+    + "응답 = 요약(총 수·많은 태그) + 앞 limit 개(기본 40) + nextOffset. 놓을 때는 stamp_tileset_object.",
   mode: "read",
   parameters: {
     type: "object",
     properties: {
       mapId: { type: "string" },
       query: { type: "string", description: "선택. 이름·id·설명·태그에 든 낱말로 거른다(예: \"가로등\", \"버들항 기본 기물\", \"market\")" },
+      ...OBJECT_FILTER_PROPERTIES,
+      limit: { type: "integer", minimum: 1, maximum: 200, description: "선택. 한 번에 보일 개수(기본 40)" },
+      offset: { type: "integer", minimum: 0, description: "선택. 건너뛸 개수(data.nextOffset)" },
     },
     required: ["mapId"],
   },
   run(project, args): ToolExecResult {
     const map = requireMap(project, args.mapId as string);
-    const tileset = project.tilesets[map.tilesetId];
     const query = typeof args.query === "string" ? args.query.trim() : "";
-    const objects = packObjects(tileset)
-      .filter((kit) => !query || kit.id.includes(query) || (kit.name ?? "").includes(query) || (kit.ai?.description ?? "").includes(query)
-        || kit.ai?.tags?.some(tag => tag.includes(query)))
-      .map((kit) => {
-        const axes = growth(kit);
-        return {
-          id: kit.id,
-          name: kit.name ?? kit.id,
-          width: kit.width,
-          height: kit.height,
-          kind: objectKind(kit),
-          ...(kit.ai?.tags?.length ? { tags: kit.ai.tags } : {}),
-          ...(axes.x || axes.y ? { repeat: axes.x && axes.y ? "x,y" : axes.x ? "x" : "y" } : {}),
-          ...(kit.ai?.description ? { description: kit.ai.description } : {}),
-        };
-      });
+    const filter = parseObjectFilter(args);
+    const limit = args.limit === undefined ? 40 : Math.max(1, Math.min(200, Number(args.limit)));
+    const offset = args.offset === undefined ? 0 : Math.max(0, Number(args.offset));
+    const words = query.toLocaleLowerCase().split(/\s+/u).filter(Boolean);
+    const ranked = listableObjects(project, map)
+      .map(({ kit, source }, index) => {
+        const searchable = { id: kit.id, name: kit.name ?? kit.id, tags: kit.ai?.tags ?? [], width: kit.width, height: kit.height,
+          surface: kitSurface(kit), ...(kit.ai?.description ? { description: kit.ai.description } : {}) };
+        return { kit, source, searchable, index, rank: objectQueryRank(searchable, query) };
+      })
+      .filter(({ kit, searchable }) => {
+        const fields = [kit.id, kit.name ?? "", kit.ai?.description ?? "", ...(kit.ai?.tags ?? [])].map(value => value.toLocaleLowerCase());
+        return words.every(word => fields.some(field => field.includes(word))) && matchesObjectFilter(searchable, filter);
+      })
+      .sort((a, b) => a.rank - b.rank || a.index - b.index);
+    const objects = ranked.slice(offset, offset + limit).map(({ kit, source, searchable }) => {
+      const axes = growth(kit);
+      return {
+        id: kit.id,
+        name: kit.name ?? kit.id,
+        width: kit.width,
+        height: kit.height,
+        kind: objectKind(kit),
+        surface: searchable.surface,
+        ...(source === "family" ? { source } : {}),
+        ...(kit.ai?.tags?.length ? { tags: kit.ai.tags } : {}),
+        ...(axes.x || axes.y ? { repeat: axes.x && axes.y ? "x,y" : axes.x ? "x" : "y" } : {}),
+        ...(kit.ai?.description ? { description: kit.ai.description } : {}),
+      };
+    });
+    const total = ranked.length;
+    const label = [query && `"${query}"`, describeObjectFilter(filter)].filter(Boolean).join(" · ");
+    // 거의 모든 행에 붙은 태그(묶음 이름·「현대 도시」)는 요약에서 뺀다 — 장소·용도 태그가 보여야 다음 질의를 좁힌다.
+    const commonTags = new Set(total > 4 ? topCounts(ranked.flatMap(({ kit }) => kit.ai?.tags ?? []), 50)
+      .filter(({ count }) => count >= total * 0.8).map(({ value }) => value) : []);
+    const tagCounts = topCounts(ranked.flatMap(({ kit }) => (kit.ai?.tags ?? []).filter(tag => !commonTags.has(tag) && !KIND_TAGS.has(tag))));
+    const familyCount = ranked.filter(({ source }) => source === "family").length;
     return {
-      summary: objects.length === 0
-        ? `${map.name} 타일셋(${map.tilesetId})에 ${query ? `"${query}" 에 맞는 ` : ""}팩 물체가 없습니다. 칩셋 소품 킷(버들항 bd-prop-* 등)은 list_spatial_designs({kind:"object", query}) 로 찾고 stamp_object 로 놓는다 — 거기에도 없을 때만 generate_missing_object.`
-        : `${map.name} 타일셋의 물체 ${objects.length}개${query ? `("${query}")` : ""}`,
-      data: { tilesetId: map.tilesetId, objects },
+      summary: total === 0
+        ? `${map.name} 타일셋(${map.tilesetId})에 ${label ? `${label} 에 맞는 ` : ""}물체가 없습니다. 다른 칩셋 소품 킷은 list_spatial_designs({kind:"object", query}) 로 찾고 stamp_object 로 놓는다 — 거기에도 없을 때만 generate_missing_object.`
+        : `${map.name} 타일셋의 물체 ${total}개${label ? `(${label})` : ""}${familyCount ? ` — 계열 묶음 ${familyCount}개 포함` : ""}`
+          + `${total > objects.length ? ` · ${offset + 1}~${offset + objects.length}번째` : ""}${tagCounts.length ? ` · 많은 태그: ${formatCounts(tagCounts)}` : ""}`,
+      data: { tilesetId: map.tilesetId, total, objects, ...(offset + limit < total ? { nextOffset: offset + limit } : {}),
+        ...(tagCounts.length ? { topTags: tagCounts } : {}) },
     };
   },
 };
@@ -230,6 +281,7 @@ const stampTilesetObject: ToolDefinition = {
   invalidArgsExample: { mapId: "city", objectId: "street_lamp_left", base: { x: 4, y: 11 } },
   run(draft, args): ToolExecResult {
     const map = requireMap(draft, args.mapId as string);
+    const familyInstalled = installFamilyObject(draft, map, String(args.objectId ?? "").trim());
     const tileset = draft.tilesets[map.tilesetId];
     // 조수 실행이면 이 게임의 변형 그림으로(같은 칸 크기·같은 막힌 칸) — 이름으로 찾은 «우물» 도 그 게임의 우물이 된다. 사람 편집은 고른 킷 그대로.
     const spot = (args.at ?? args.base) as { x?: unknown; y?: unknown } | undefined;   // 집 벌의 집마다 변형을 고르는 씨(자리)
@@ -424,7 +476,7 @@ const stampTilesetObject: ToolDefinition = {
     const laneWarning = centerLineWarning(draft, map, kit.id, ox, oy);
     if (laneWarning) warnings.push(laneWarning);
     return {
-      summary: `${map.name}에 ${kit.name}(${kit.id}) ${repeatX * repeatY > 1 ? `${repeatX}×${repeatY}번 ` : ""}찍음 — (${ox},${oy}) ${width}×${height}${stacked ? ` (아래 물체 위 4층에 올림)` : ""}${blockedCells.length ? `, 막힌 칸 ${blockedCells.length}` : ""}${plainSwapped ? `, 밑 벽 ${plainSwapped}칸을 창 없는 벽으로` : ""}`,
+      summary: `${map.name}에 ${kit.name}(${kit.id}) ${repeatX * repeatY > 1 ? `${repeatX}×${repeatY}번 ` : ""}찍음${familyInstalled ? " (계열 묶음에서 이 타일셋으로 이식)" : ""} — (${ox},${oy}) ${width}×${height}${stacked ? ` (아래 물체 위 4층에 올림)` : ""}${blockedCells.length ? `, 막힌 칸 ${blockedCells.length}` : ""}${plainSwapped ? `, 밑 벽 ${plainSwapped}칸을 창 없는 벽으로` : ""}`,
       ...(warnings.length ? { warnings } : {}),
       data: { objectId: kit.id, footprint: { x: ox, y: oy, w: width, h: height }, blockedCells, ...(doorCells.length ? { doorCells } : {}) },
     };
