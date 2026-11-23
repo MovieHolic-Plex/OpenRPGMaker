@@ -43,7 +43,8 @@ import { mountAgentModeDock } from "@/editor/agentMode/agentModeDock";
 import { createAiSidebarWorkspace } from "@/editor/panels/aiSidebarWorkspace";
 import { mountRightInspector, type RightInspectorMount } from "@/editor/panels/rightInspector";
 import { closeSidebarSurface, teardownSidebarSurfaces } from '@/editor/panels/sidebarSurface';
-import { refreshAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
+import { refreshAiConnectionStatus, resetAiConnectionStatusCache } from "@/editor/panels/aiConnectionStatus";
+import { runAutoProviderPick } from "@/editor/panels/aiAutoProvider";
 import { showConfirm } from "@/editor/ui/modal";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
 import { ensureReliefSidePanel, mountReliefToolbar } from "@/editor/panels/reliefToolbar";
@@ -438,6 +439,8 @@ export function renderEditor(main: HTMLElement): void {
   // 조회해 구조 키트·클러스터·타일셋 게이트가 실제 연결 상태를 보게 한다. 완료 전 checking은
   // 각 게이트가 허용하므로 느린 companion 조회가 사용자를 잠그지는 않는다.
   void refreshAiConnectionStatus();
+  // 연결된 길·한도를 보고 조수 연결을 고른다(사용자가 고정했으면 그대로). 바뀌면 연결 상태를 다시 읽는다.
+  void runAutoProviderPick({ onChanged: () => { resetAiConnectionStatusCache(); void refreshAiConnectionStatus(); } });
   scheduleEditorAssetWarmup();
 }
 

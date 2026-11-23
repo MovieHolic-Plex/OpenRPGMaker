@@ -9,6 +9,9 @@ import { fetchCompanion } from "@/ai/companionConnection";
 import { AI_CONFIG_CHANGED_EVENT, AI_TRANSPORT_HEALTH_EVENT, loadAiConfig } from "@/ai/llmClient";
 import { modelDisplayName } from "@/ai/modelDisplayName";
 import { activeModelId } from "@/ai/quickModelSwitch";
+import { modelForRole } from "@/ai/modelRoles";
+
+const EFFORT_LABELS: Readonly<Record<string, string>> = { low: "낮음", medium: "보통", high: "높음", xhigh: "매우 높음", max: "최대" };
 import { parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { usageChipSuffix, usageDetail, type ProviderUsageSnapshot } from "@/ai/providerQuota";
 import { AI_CONNECTION_STATUS_CHANGED_EVENT, getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
@@ -51,8 +54,11 @@ export function renderAiQuotaChip(openSettings: () => void): { readonly element:
     const current = usage && usageFor === status.providerId ? usage : null;
     const tail = status.limited ? "사용 한도 초과" : status.kind === "ready" ? usageChipSuffix(current) : status.label.replace(status.providerLabel, "").trim();
     // 지금 쓰는 모델도 머리줄에서 바로 보인다. 연결이 안 됐을 땐 모델이 뜻이 없으니 제공자만 둔다.
-    const model = status.kind === "ready" || status.limited ? activeModelId(loadAiConfig()).trim() : "";
-    const modelLabel = model ? modelDisplayName(model) : "";
+    const config = loadAiConfig();
+    const model = status.kind === "ready" || status.limited ? activeModelId(config).trim() : "";
+    // 강도도 붙인다 — 같은 모델이라도 강도에 따라 속도·품질이 다르고, 조수 기본은 「Sonnet 5.5 · 높음」이다.
+    const effort = model ? EFFORT_LABELS[modelForRole(config, "deep").thinkingLevel ?? ""] : undefined;
+    const modelLabel = model ? `${modelDisplayName(model)}${effort ? ` · ${effort}` : ""}` : "";
     name.textContent = status.providerLabel;
     modelName.textContent = modelLabel;
     value.textContent = tail;

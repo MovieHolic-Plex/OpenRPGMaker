@@ -3349,6 +3349,24 @@ v0.413.0에서 「AI로 명령 만들기」의 도구 결과마다 약 78MB 프�
 
 ## 제공자 · OAuth · 동반 서비스
 
+### 사용자 상태로 고르는 조수 연결 (2026-11-23, ai-setup-adaptive)
+
+공장 기본 제공자(지금 ChatGPT)는 처음 한 번만 쓰인다. 편집기·시작 화면이 뜨면 `editor/panels/aiAutoProvider.runAutoProviderPick` 이
+연결된 길을 모아 `ai/autoProviderPick.pickAutoProvider` 로 고르고 설정에 입힌다. 예전에는 Claude 만 연결한 사용자도
+칩이 「ChatGPT 로그인 필요」이고 조수가 잠겼다.
+
+- 모으는 상태: 계정 길(Claude · ChatGPT · Google · xAI · OpenRouter · Gemini CLI)은 `/auth/status`, 내 PC 의 CLI 는
+  `/v1/local-agents`(state `ready`), 사용자 지정 엔드포인트(DeepSeek 등)는 키 유무(`hasKey`). 연결된 길마다
+  `/auth/usage` 로 남은 한도를 묻는다. 숫자를 주는 길은 ChatGPT · Google 뿐이고(`scripts/lib/providerUsageRuntime.ts`)
+  나머지는 「모름」이다. 모름은 쓸 수 있는 것으로 본다.
+- 고르는 순서(`AUTO_PROVIDER_PRIORITY`): Claude 계정·키 → Claude Code(내 PC) → ChatGPT → Codex(내 PC) → Google → 나머지 레지스트리 순서 →
+  사용자 지정 엔드포인트. 한도 소진(남은 비율 0 또는 최근 429 의 쉬는 시각 전)과 도구 호출 불가로 알려진 길은 건너뛴다.
+  모두 한도면 가장 빨리 풀리는 길을 고르고 `reason: "all-limited"` 로 알린다.
+- 입히기: 계정 길은 `configForProviderSelection`(직접 고친 역할 칸은 그대로), 내 PC CLI 는 엔진 선택(`oprn:assistant-engine`).
+- 고정: AI 설정에서 사람이 연결을 고르면(`aiAuthSettings` 의 `emit`) `ai/providerPin` 이 그 id 를 적고, 그 뒤로는 자동으로
+  바꾸지 않는다(한도라도). 프로그램 경로(`selectProvider(…, { notify: false })`)는 고정하지 않는다.
+- 단위 표: `test/autoProviderPick.test.ts`(Claude만 · ChatGPT만 · 둘 다 · Claude 한도 · 429 만료 · 모름 · 도구 불가 · 없음 · 고정).
+
 ### 첫 연결과 실제 작업 계정 (2026-10-01)
 
 - 계정 카드 선택은 `providerSelection.configForProviderSelection`으로 아직 직접 지정하지 않은
