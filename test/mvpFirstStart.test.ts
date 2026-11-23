@@ -103,6 +103,13 @@ describe("v2 blueprint size", () => {
     expect(smallGame(project)).toBe(false);
     expect(mapsNeed(project, 6)).toBe(6);
   });
+  it("a first blueprint written as small is still the first version (no ending), also on a rewrite", async () => {
+    const project = createBlankProject() as Project;
+    await writeBlueprint(project, blueprintArgs({ scale: "small" }));
+    expect(project.gameBlueprint?.scale).toBe("mvp");
+    await writeBlueprint(project, blueprintArgs({ scale: "small" }));
+    expect(project.gameBlueprint?.scale).toBe("mvp");
+  });
 });
 
 describe("next step chips text", () => {
