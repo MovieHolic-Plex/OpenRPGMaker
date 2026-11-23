@@ -11,7 +11,7 @@ import { MVP_REACHED_SWITCH } from "@/project/gameBlueprint";
 import { walkBlueprint } from "@/ai/v2/story/blueprint";
 import { mvpNextSteps, nextStepsBlock, splitNextSteps, NEXT_STEPS_HEADING } from "@/ai/nextSteps";
 import type { Project } from "@/project/types";
-import { worldForRequest } from "@/ai/v2/request/world";
+import { worldForRequest, worldRequestWords } from "@/ai/v2/request/world";
 import { enableGenreLock } from "@/project/genreLock";
 import { createProjectStartSeed } from "@/editor/projectStartSeed";
 import { startScreenPrompt } from "@/editor/startScreenPrompt";
@@ -127,12 +127,26 @@ describe("next step chips text", () => {
 });
 
 // 2026-11-23 실측: 몬스터 수집 씨앗에 «몬스터를 모으며 모험하는 게임» 요청이 우주 정거장 세계를 골라 make_place 가 장르 잠금에 매번 막혔다(맵 1장).
+// 세계는 사용자 글로만 고른다(아래 «world pick reads the user's words») — «몬스터» 는 테마 낱말이라 세계를 고르지 않으므로 잠금 시험은 «모험 게임» 으로 한다.
 describe("world pick under a genre lock", () => {
-  const task = startScreenPrompt({ choiceId: "adventure-jrpg", intent: "몬스터를 모으며 모험하는 게임을 만들어 줘." })!;
+  const task = startScreenPrompt({ choiceId: "adventure-jrpg", intent: "모험 게임을 만들어 줘." })!;
   it("picks a world for the unlocked adventure seed and none once the monster-collect lock forbids it", async () => {
     const project = await createProjectStartSeed("adventure-jrpg", "새 프로젝트", "ai", "wide");
     expect(worldForRequest(project, "k", task)).toBeDefined();
     enableGenreLock(project, "monster-collect");
     expect(worldForRequest(project, "k", task)).toBeUndefined();
+  }, 60_000);
+});
+
+// 2026-11-23 mvp-map-quality: 첫 화면 지시문의 전투 화면 안내(«veil=SF·미니멀»)가 요청 글로 읽혀 판타지 JRPG·회상 스토리가 우주 정거장 세계로 지어졌다.
+describe("world pick reads the user's words, not the start-screen guidance", () => {
+  const jrpg = startScreenPrompt({ choiceId: "adventure-jrpg", intent: "용사가 마을에서 출발해 숲 너머 동굴의 마물을 물리치는 모험 게임을 만들어 줘." })!;
+  const space = startScreenPrompt({ choiceId: "adventure-jrpg", intent: "우주 정거장에서 시작하는 모험 게임을 만들어 줘." })!;
+  it("keeps the fantasy adventure off the space station and still honours a space request", async () => {
+    const project = await createProjectStartSeed("adventure-jrpg", "새 프로젝트", "ai", "wide");
+    expect(project.tilesets.sf_station).toBeDefined();
+    expect(worldRequestWords(jrpg)).not.toMatch(/SF|veil/u);
+    expect(worldForRequest(project, "2ad3408d-a264-4c42-b55a-debdd51c77d4", jrpg)?.id).not.toBe("sf_station");
+    expect(worldForRequest(project, "k", space)?.id).toBe("sf_station");
   }, 60_000);
 });
