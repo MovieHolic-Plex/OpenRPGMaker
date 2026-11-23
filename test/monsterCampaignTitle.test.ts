@@ -13,7 +13,9 @@ async function create(configure: (p: ReturnType<typeof createBlankProject>) => v
   return context.project;
 }
 
-describe('build_monster_game create title', () => {
+// build_monster_game(create) 한 번이 #4934(겹치면 다른 씨앗으로 다시 짓기·천장/테두리 칠하기) 뒤 CI 에서 약 3초 → 9초가 됐다.
+// 세 번 짓는 둘째 시험이 9.4s(04d5d878) → 28.2s(ci-vitest-files 45180506664 단독)로 기본 15s 를 넘는다. 이웃 몬스터 시험(180s)처럼 넉넉히 준다.
+describe('build_monster_game create title', { timeout: 120_000 }, () => {
   it('names the game after the campaign instead of the blank-project default', async () => {
     const project = await create(() => {});
     expect(project.meta.title).not.toBe('새 프로젝트');
