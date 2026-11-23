@@ -150,6 +150,8 @@ try {
   execFileSync("npx", ["vite", "build", "--configLoader", "runner"], { cwd: buildDir, stdio: "inherit", env: { ...env, OPRN_ASSUME_ALL_BGM_INSTALLED: "1" } });
   // 예제 프로젝트(dist/demos) — 편집기 「예제 프로젝트」·컨셉 피드 «열기»가 읽는다. desktop-release.yml 과 같은 절차.
   execFileSync("npm", ["run", "bake:demos"], { cwd: buildDir, stdio: "inherit", env });
+  // 공용 초상·장소 내려받기를 패키지에서 빼고 처음 쓸 때 받게 한다(electron/main/assetsOnDemand.ts). desktop-release.yml 과 같은 절차.
+  execFileSync("node", ["scripts/desktop-ondemand-assets.mjs"], { cwd: buildDir, stdio: "inherit", env });
   // icon-tool.js is CJS. Without this, Node walks up to ~/package.json ("type":"module") and dies on require.
   writeFileSync(join(homedir(), ".cache/electron-builder/package.json"), "{\"type\":\"commonjs\"}\n");
   execFileSync(

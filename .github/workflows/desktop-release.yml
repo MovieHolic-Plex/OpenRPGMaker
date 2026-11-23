@@ -212,6 +212,13 @@ jobs:
           npm run bake:demos
           test -s dist/demos/chrono-bell.project.json
 
+      # 공용 초상·장소 내려받기는 패키지에서 빼고, 앱이 처음 쓸 때 이 커밋의 public/ 에서 받는다(electron/main/assetsOnDemand.ts).
+      - name: 필요할 때 받을 자산 빼기
+        if: steps.preflight.outputs.needed == 'true'
+        run: |
+          node scripts/desktop-ondemand-assets.mjs
+          test -s dist/ondemand-assets.json
+
       - name: 데스크톱 패키지 압축
         if: steps.preflight.outputs.needed == 'true'
         env:

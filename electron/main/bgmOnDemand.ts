@@ -87,8 +87,9 @@ export function commitOwnedCacheFile(target: string, bytes: Uint8Array): string 
 /**
  * 곡을 사용자 캐시에 확보하고 경로를 돌려준다. 받지 못하거나 해시가 다르면 null(→ 404, 재생만 조용히 빠진다).
  * 같은 곡을 동시에 여러 번 요청해도 한 번만 받는다. 심볼릭 링크와 다른 계정의 캐시는 돌려주지 않는다.
+ * url 을 주면 그 주소에서 받는다(필요할 때 받는 다른 자산, assetsOnDemand.ts).
  */
-export function ensureCachedTrack(track: Track, cacheDir: string, fetchImpl: typeof fetch = fetch): Promise<string | null> {
+export function ensureCachedTrack(track: Track, cacheDir: string, fetchImpl: typeof fetch = fetch, url = BGM_PUBLIC_CDN + encodeURIComponent(track.fileName)): Promise<string | null> {
   const target = join(cacheDir, track.fileName);
   if (!ownedCacheDir(cacheDir)) return Promise.resolve(null);
   if (ownedRegularFile(target)) return Promise.resolve(target);
@@ -96,7 +97,7 @@ export function ensureCachedTrack(track: Track, cacheDir: string, fetchImpl: typ
   if (pending) return pending;
   const job = (async () => {
     try {
-      const response = await fetchImpl(BGM_PUBLIC_CDN + encodeURIComponent(track.fileName));
+      const response = await fetchImpl(url);
       if (!response.ok) return null;
       const bytes = new Uint8Array(await response.arrayBuffer());
       if (bytes.byteLength !== track.bytes) return null;
