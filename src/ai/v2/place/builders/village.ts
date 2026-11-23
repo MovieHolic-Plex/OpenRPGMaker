@@ -17,6 +17,7 @@ import { eventsOf, tileLabel } from "../cells";
 import { roadCells } from "../surface";
 import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 import { avoidGrammars, grammarKindOf, pickGrammar, villageGrammarArgs, type GrammarPick } from "../placeGrammar";
+import { VARIETY_GATE, closestTwin, type Twin } from "../structureSimilarity";
 
 /**
  * v2 계획 모델에게 늘 실리는 마을 지식. 끝 문장은 마을 종류(hints.kind)가 있다는 것과 예 넷뿐이다 — 종류는 코드가 게임 열쇠와 땅으로 고르는 것이 기본이라
@@ -346,8 +347,14 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const wantHouses = num(args.houseCount);
   // 이야기가 청한 큰 건물(hints.buildingNeeds — 청사진 장소 종류에서 온 안쪽 칸): 지형·물에 따라 그 킷이 못 앉는 씨앗이 있다 — 사본 위에서 씨앗 몇 개를 지어 보고 청한 건물이 모두 선 첫 씨앗을 고른다(없으면 가장 많이 선 것).
   const needs = (Array.isArray(args.buildingNeeds) ? args.buildingNeeds : []) as BuildingNeed[];
+  let varietyNote = "";
   if (!prev && args.seed === undefined && (!args.layout || grammarKeys.includes("layout")) && (needs.length || wantHouses !== undefined)) {
-    let best: { seed: number; stood: number; houseDelta: number } | undefined;
+    let best = undefined as { seed: number; stood: number; houseDelta: number; twin?: Twin } | undefined;
+    // 생성물끼리 유사도 관문(structureSimilarity.ts): 이 게임의 다른 맵과 구조가 VARIETY_GATE 이상 같은 씨앗은 뒤로 미루고,
+    // 모든 씨앗이 걸리면 코드가 고른 문법을 한 번 바꿔 다시 본다.
+    const before = new Set(Object.keys(run.ctx.project.maps));
+    const gated = (b: typeof best) => !!b?.twin && b.twin.similarity >= VARIETY_GATE;
+    const trySeeds = () => {
     // Preserve the house-count seed sequence when the blueprint requests an interior.
     // Changing the first seed moves the terrain and can remove sites for dungeon entrances.
     const nameSeed = [...spec.name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7);
@@ -365,9 +372,25 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
       let stood = 0;
       for (const need of needs) { const at = left.findIndex((k) => kitServesBuilding(k, need)); if (at >= 0) { left.splice(at, 1); stood++; } }
       const houseDelta = wantHouses === undefined ? 0 : Math.abs(houses! - wantHouses);
-      if (!best || stood > best.stood || (stood === best.stood && houseDelta < best.houseDelta)) best = { seed, stood, houseDelta };
-      if (stood === needs.length && (wantHouses === undefined || houses! >= wantHouses)) break;
+      const twin = closestTwin(trial.ctx.project, tm, (id) => before.has(id) && id !== tm.id);
+      const cand = { seed, stood, houseDelta, ...(twin ? { twin } : {}) };
+      if (!best || (gated(best) && !gated(cand)) || (gated(best) === gated(cand) && (stood > best.stood || (stood === best.stood && houseDelta < best.houseDelta)))) best = cand;
+      if (!gated(cand) && stood === needs.length && (wantHouses === undefined || houses! >= wantHouses)) break;
     }
+    };
+    trySeeds();
+    const tried: string[] = [];
+    for (let k = 0; k < 2 && gated(best) && grammar && grammar.why !== "plan"; k++) {
+      const was = grammar.grammar, twinName = run.ctx.project.maps[best!.twin!.mapId]?.name ?? "?";
+      tried.push(was);
+      const next = pickGrammar(spec, "village", ["harbor", ...avoidGrammars(spec), ...tried]);
+      if (tried.includes(next.grammar)) break;
+      applyGrammar(next);
+      best = undefined;
+      trySeeds();
+      varietyNote = `구조가 «${twinName}» 와 너무 같아 문법을 ${tried.join(" → ")} → ${next.grammar} 로 바꿔 지었다`;
+    }
+    if (gated(best)) varietyNote = `구조가 «${run.ctx.project.maps[best!.twin!.mapId]?.name ?? "?"}» 와 ${Math.round(best!.twin!.similarity * 100)}% 같다(다른 문법·씨앗도 모두 걸렸다)`;
     if (best) args.seed = best.seed;
   }
   if (!prev && args.seed === undefined && wantHouses === undefined && spec.salt !== undefined) args.seed = spec.salt % 100000;
@@ -437,7 +460,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const farm = farmAddons(run, builtId, words(spec), warnings, missing);
   calls.push(...run.calls.slice(firstCall + calls.length));
   if (data.theme === "coast") warnings.unshift(COAST_TERRAIN_NOTE);
-  const parts = [`${String(data.theme ?? "")} ${String(data.form ?? "")} 마을`, farm.length ? `농가 ${farm.join("·")}` : "", `집 ${houses ?? "?"}채`, data.gathering ? `모이는 곳 ${(data.gathering as { why?: string }).why ?? ""}` : "", data.walls ? "성벽" : "", data.bridge ? "다리" : "", grammar ? `문법 ${grammar.grammar}(${grammar.why})` : ""].filter(Boolean);
+  const parts = [`${String(data.theme ?? "")} ${String(data.form ?? "")} 마을`, farm.length ? `농가 ${farm.join("·")}` : "", `집 ${houses ?? "?"}채`, data.gathering ? `모이는 곳 ${(data.gathering as { why?: string }).why ?? ""}` : "", data.walls ? "성벽" : "", data.bridge ? "다리" : "", grammar ? `문법 ${grammar.grammar}(${grammar.why})` : "", varietyNote].filter(Boolean);
   // 시작에서 걸어 닿지 않는 집(강 건너·막힌 터)의 문은 목록에서 뺀다 — 그 문앞으로 이으면 출입구가 닿는 맨바닥으로 옮겨 붙는다(2026-11-11 문 앞 칸 탐침 seed 202).
   const allDoors = Array.isArray(data.doors) ? data.doors as (NonNullable<VillageState["doors"]>[number] & { reached?: boolean })[] : undefined;
   const doors = allDoors?.filter((d) => d.reached !== false);
