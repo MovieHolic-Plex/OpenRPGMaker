@@ -112,7 +112,7 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
           el("button", {
             class: "db-overview-assistant-cta db-overview-ai",
             text: "AI 조수에게 물어보기",
-            attrs: { type: "button", title: "AI 조수 열기" },
+            attrs: { type: "button", title: "조수 열기" },
             dataset: { testid: "db-overview-ai" },
             on: { click: openDatabaseAiBar },
           }),

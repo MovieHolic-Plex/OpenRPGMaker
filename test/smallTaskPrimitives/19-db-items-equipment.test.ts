@@ -637,7 +637,7 @@ describe("자료집 작은 일 진입점", () => {
         host.querySelector<HTMLElement>(`[data-testid="db-elements-row-${index}"]`)?.click();
         button = host.querySelector<HTMLButtonElement>('[data-testid="db-elements-hero"] .small-task-trigger');
       }
-      expect(button?.textContent).toBe("이걸로 작업");
+      expect(button?.textContent).toBe("조수에게 맡기기");
       button!.click();
       const box = host.querySelector<HTMLElement>(".small-task")!;
       expect(box.querySelector("strong")?.textContent).toBe(selected?.label);
@@ -669,7 +669,7 @@ describe("자료집 작은 일 진입점", () => {
     for (const [index, { default: catalog }] of catalogs.entries()) {
       const translator = createTranslator(catalog);
       expect(translator.translate(selected.label)?.split(" · ")[0]).toBe(["Equipment slot", "装備スロット", "装备栏位"][index]);
-      expect(translator.translate("이걸로 작업")).toBeTruthy();
+      expect(translator.translate("조수에게 맡기기")).toBeTruthy();
       expect(translator.translate("스크립트가 실행하는 이벤트 명령의 장비 착용을 확인할 수 없어요.")).toBeTruthy();
     }
   });

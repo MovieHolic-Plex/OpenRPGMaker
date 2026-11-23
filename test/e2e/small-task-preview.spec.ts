@@ -44,7 +44,7 @@ async function enablePreview(page: Page) {
 async function openSmallTask(page: Page) {
   await page.goto("/?blankProject=1&lang=ko", { waitUntil: "commit" });
   const guest = page.getByTestId("login-guest");
-  const trigger = page.getByTestId("editor-zoom-controls").getByRole("button", { name: "이걸로 작업" });
+  const trigger = page.getByTestId("editor-zoom-controls").getByRole("button", { name: "조수에게 맡기기" });
   await expect(guest.or(trigger).first()).toBeVisible({ timeout: 120_000 });
   if (await guest.isVisible()) await guest.click();
   await expect(trigger).toBeVisible({ timeout: 60_000 });

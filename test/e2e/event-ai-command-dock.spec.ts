@@ -4,7 +4,7 @@ import type { Command, Project } from "@/project/types";
 import { eventDockProject, mockDockModel, openEventDockFixture } from "./eventAiDockFixture";
 
 /**
- * 「AI로 명령 만들기」 도크의 사용 계약. LLM 엔드포인트를 목으로 갈아끼워 생성 → 목록 자리에서
+ * 「조수로 명령 만들기」 도크의 사용 계약. LLM 엔드포인트를 목으로 갈아끼워 생성 → 목록 자리에서
  * 검토 → 적용까지 실제 브라우저에서 끝까지 태운다. 자격증명 없이 돌아야 하므로
  * `/v1/chat/completions` 를 가로챈다.
  *

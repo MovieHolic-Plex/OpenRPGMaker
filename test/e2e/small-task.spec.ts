@@ -49,7 +49,7 @@ test.beforeEach(async ({ page }) => {
   });
   await page.goto("/?blankProject=1", { waitUntil: "commit" });
   const guest = page.getByTestId("login-guest");
-  const trigger = page.getByTestId("editor-zoom-controls").getByRole("button", { name: "이걸로 작업" });
+  const trigger = page.getByTestId("editor-zoom-controls").getByRole("button", { name: "조수에게 맡기기" });
   await expect(guest.or(trigger).first()).toBeVisible({ timeout: 120_000 });
   if (await guest.isVisible()) await guest.click();
   await expect(trigger).toBeVisible({ timeout: 60_000 });
@@ -92,7 +92,7 @@ test("캔버스 선택 → 한 줄 요청 → 적용 요약 → 한 번에 되�
     event.pages![0].commands = [{ kind: "text", body: ++calls === 1 ? "어서 오세요!" : "안녕하세요!" }];
     return [`maps.${mapId}`];
   });
-  const trigger = page.getByTestId("editor-zoom-controls").getByRole("button", { name: "이걸로 작업" });
+  const trigger = page.getByTestId("editor-zoom-controls").getByRole("button", { name: "조수에게 맡기기" });
   await page.getByTestId("edit-canvas").locator("canvas").click({ position: await pointAtTile(page, fixture) });
   const depth = () => page.evaluate(async () => (await import("/src/editor/mapEditHistory.ts")).getMapEditHistoryDepth());
   const beforeDepth = await depth();
@@ -117,7 +117,7 @@ test("캔버스 선택 → 한 줄 요청 → 적용 요약 → 한 번에 되�
 
   const eventEditor = await openGreetingEditor(page, mapId, fixture.event.id);
   await eventEditor.getByTestId("event-editor-header-more").locator(":scope > summary").click();
-  const eventTrigger = eventEditor.getByRole("button", { name: "이걸로 작업" });
+  const eventTrigger = eventEditor.getByRole("button", { name: "조수에게 맡기기" });
   await eventTrigger.click();
   await expect(box).toContainText("이벤트 · 안내인");
   for (const viewport of [{ width: 1440, height: 980 }, { width: 760, height: 720 }]) {
@@ -159,7 +159,7 @@ test("작은 일을 되돌릴 때 열린 초안은 손편집 여부를 따르고
     target.pages![0].commands.push({ kind: "text", body: "AI가 추가한 대사." });
     return [`maps.${mapId}`];
   });
-  const trigger = page.getByTestId("editor-zoom-controls").getByRole("button", { name: "이걸로 작업" });
+  const trigger = page.getByTestId("editor-zoom-controls").getByRole("button", { name: "조수에게 맡기기" });
   const box = page.getByRole("dialog", { name: "작은 일" });
   const run = async (open: typeof trigger) => {
     await open.click();
@@ -210,7 +210,7 @@ test("작은 일을 되돌릴 때 열린 초안은 손편집 여부를 따르고
 
   const reopened = await openGreetingEditor(page, mapId, event.id);
   await reopened.getByTestId("event-editor-header-more").locator(":scope > summary").click();
-  await run(reopened.getByRole("button", { name: "이걸로 작업" }));
+  await run(reopened.getByRole("button", { name: "조수에게 맡기기" }));
   // Leave the result card open. The same Cancel click should dismiss it and open the guard.
   await reopened.getByTestId("event-editor-name").fill("두 번째 직접 편집");
   await reopened.getByTestId("event-editor-name").press("Tab");
@@ -236,7 +236,7 @@ test("자료집에서 고른 물건의 가격을 고치고 범위 거절 메시�
   });
   const modal = page.getByTestId("database-modal");
   await modal.getByTestId(`db-record-row-${id}`).click();
-  const trigger = modal.getByRole("button", { name: "이걸로 작업" });
+  const trigger = modal.getByRole("button", { name: "조수에게 맡기기" });
   const box = page.getByRole("dialog", { name: "작은 일" });
   let calls = 0;
   let failure: string | undefined;

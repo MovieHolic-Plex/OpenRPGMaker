@@ -1,3 +1,4 @@
+import { t } from "@/i18n";
 import { commandSummary } from "./commandSummary";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { editorState } from "@/editor/editorState";
@@ -911,8 +912,10 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
 function renderCommandAuxGroup(aiDock?: HTMLDetailsElement): HTMLElement {
   // AI 도크는 팝오버 밖에 살므로 도구 메뉴를 열지 않고 자기만 토글한다.
   // aria-expanded 는 도크의 toggle 이 단일 진상이다 — Escape 나 재렌더 로 닫혀도 어긋나지 않는다.
-  const aiButton = aiDock ? toolbarButton("spark", "AI로 명령 만들기", "event-command-quick-ai") : null;
+  const aiButton = aiDock ? toolbarButton("spark", "조수로 명령 만들기", "event-command-quick-ai") : null;
   if (aiDock && aiButton) {
+    // 좁은 칼럼에서 라벨 대신 보이는 짧은 이름(command-list-4.css ::after). CSS 글자는 번역기가 못 보므로 여기서 번역한다.
+    aiButton.dataset.shortLabel = t("조수");
     aiButton.setAttribute("aria-controls", aiDock.id);
     const syncAiExpanded = (): void => aiButton.setAttribute("aria-expanded", String(aiDock.open));
     syncAiExpanded();

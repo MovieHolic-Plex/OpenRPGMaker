@@ -1,6 +1,6 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 
-// QA 네 건: 탭 전용 저장 표시, ChatGPT 안내와 줌 막대 겹침, 이걸로 작업의 런타임 오류, 칭호·영어·가져오기 토스트.
+// QA 네 건: 탭 전용 저장 표시, ChatGPT 안내와 줌 막대 겹침, 조수에게 맡기기의 런타임 오류, 칭호·영어·가져오기 토스트.
 // 동반 서비스가 없어도 안내 띠가 뜨게 로그인 없음으로 응답한다. 작은 일은 409 다음 500(Bun 없음)을 흉내 낸다.
 
 const BUN_ERROR = "bun 이 필요합니다. oh-my-pi 제공자 로그인/전송은 Bun 에서만 로드됩니다.";

@@ -48,7 +48,7 @@ export function recordSmallTask(collection: SmallTaskCollection, id: string): HT
 
 let dismiss: (() => void) | undefined;
 function smallTaskButton(readTarget: () => SmallTaskTarget | null): HTMLButtonElement {
-  const button = el("button", { class: "small-task-trigger", dataset: { testid: "small-task-open" }, text: "이걸로 작업", attrs: { type: "button", "aria-haspopup": "dialog" } });
+  const button = el("button", { class: "small-task-trigger", dataset: { testid: "small-task-open" }, text: "조수에게 맡기기", attrs: { type: "button", "aria-haspopup": "dialog" } });
   button.addEventListener("click", () => openCapsule(button, readTarget()));
   return button;
 }

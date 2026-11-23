@@ -143,7 +143,7 @@ test("AI 명령 도크는 명령 목록을 덮지 않고 모달 안에 머밃다
 
   expect(probe.cardWithinModal).toBe(true);
   // AI 는 목록 옆 도크가 아니라 편집기 안의 대화상자다. 떠 있는 동안 목록을 가리고, 닫으면 목록이 다시 보인다.
-  await expect(editor.getByRole("dialog", { name: "AI로 명령 만들기" })).toBeVisible();
+  await expect(editor.getByRole("dialog", { name: "조수로 명령 만들기" })).toBeVisible();
   expect(probe.listHeight).toBeGreaterThan(CMD_LIST_MIN_HEIGHT_PX);
   expect(probe.inputLineHeight).toBeGreaterThanOrEqual(21);
   expect(probe.inputHeight).toBeGreaterThanOrEqual(66);

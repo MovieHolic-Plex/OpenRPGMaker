@@ -658,7 +658,7 @@ export function renderEventAiAssist(options: EventAiAssistOptions): HTMLDetailsE
       dataset: { testid: "ai-event-assist-summary" },
       children: [
         el("span", { class: "event-aux-chip-icon", attrs: { "aria-hidden": "true" }, children: [renderEditorIcon("spark")] }),
-        el("span", { class: "event-aux-chip-label", text: "AI로 명령 만들기" }),
+        el("span", { class: "event-aux-chip-label", text: "조수로 명령 만들기" }),
         chipStatus,
         el("span", { class: "ai-event-caret", attrs: { "aria-hidden": "true" }, children: [renderEditorIcon("caret")] }),
       ],
