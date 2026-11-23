@@ -125,6 +125,7 @@ export function jobFacets(topic: string): JobFacets {
  * 작은 일에 늘 처음부터 싣는 도구 — 보고(inspect·find_events·get_event), 고치고(patch_event_page·move_event), 세우고(add_event·add_people), 모르면 묻는다(ask_user).
  * 실측(2026-11-11 Terra 작은 일 30건): place_object·restore_event·remove_event·declare_story_flag 는 처음부터 실렸지만 한 번도 불리지 않았고,
  * run_scene_test·find_empty_ground·get_database_records 는 안 실려서 load_tools 로 불러 썼다 — 그래서 앞의 것은 필요할 때로, 뒤의 것은 그 일에 처음부터.
+ * (이 실측은 옛 기본 모델 Terra 의 판이다. 출하 기본 Sonnet 5.5 high 로는 아직 다시 재지 않았다 — 목록을 바꿀 때 같은 30건을 그 모델로 다시 잔다. assistant-prompt-review F11)
  * ask_user 도 30건에서 불리지 않았지만 늘 싣는다 — 「크레딧에 내 이름도 넣어 줘」처럼 물어야 풀리는 일에서 글자 상한에 밀리면 안 된다.
  */
 const SMALL_BASE: readonly string[] = ["inspect", "find_events", "get_event", "patch_event_page", "move_event", "add_event", "add_people", "read_specs", "ask_user"];

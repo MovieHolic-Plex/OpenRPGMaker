@@ -67,7 +67,9 @@ describe("write_blueprint thin first draft", () => {
     const project = createBlankProject() as Project; const session = new V2Session();
     const small = { ...args(["역 앞 상점가", "라멘집"], 4, false), scale: "small", battles: false };
     const res = summaryOf(await write(project, session, small, "짧은 이야기 게임을 만들어 줘. 전투는 없어도 돼."));
-    expect(project.gameBlueprint?.scale).toBe("small");
+    // #4948: 새 게임의 첫 청사진은 모델이 scale:"small" 을 적어도 첫 판 MVP 로 둔다(엔딩 없음). MVP 기준(장소 2·단계 3 이상)을 넘으니
+    // 크기 줄은 여전히 빠지고, battles:false 는 싸움 줄을 뺀다.
+    expect(project.gameBlueprint?.scale).toBe("mvp");
     expect(project.gameBlueprint?.battles).toBe(false);
     expect(res).not.toContain("step(s) over");
     expect(res).not.toContain("no battle step");

@@ -17,6 +17,7 @@ import {
   welcomeGenrePresetDisplayText,
 } from "@/editor/welcomeGenrePresets";
 import type { GameDesignBrief } from "@/project/gameDesignBrief";
+import { flagshipBeatManifestForChoice, formatFlagshipExemplarPrompt } from "@/project/flagship/beats";
 import { GENRE_PACK_IDS } from "@/project/genrePackId";
 
 describe("welcomeGenrePresets", () => {
@@ -103,6 +104,18 @@ describe("welcomeGenrePresets", () => {
     expect(prompt).toContain("지금 열려 있는 프로젝트에 이어서 작업한다");
     for (const line of WELCOME_GENRE_CHECKLIST_LINES) {
       expect(prompt).toContain(line.slice(0, 12));
+    }
+  });
+
+  it("first-build chips carry only the opening beats of the flagship beat sheet (no finale next to the MVP line)", () => {
+    for (const id of ["monster-collect", "partner-raise", "adventure-jrpg", "story-cutscene"] as const) {
+      const manifest = flagshipBeatManifestForChoice(id)!;
+      const prompt = buildWelcomeGenrePresetPrompt(welcomeGenrePresetById(id)!);
+      const beatLines = prompt.split("\n").filter((line) => line.startsWith("  - ["));
+      expect(beatLines.length).toBeGreaterThan(0);
+      expect(beatLines.length).toBeLessThan(manifest.beats.length);
+      expect(beatLines.join("\n")).not.toMatch(/엔딩|결전|최종|챔피언 전당/u);
+      expect(formatFlagshipExemplarPrompt(manifest).split("\n").filter((line) => line.startsWith("  - ["))).toHaveLength(manifest.beats.length);
     }
   });
 

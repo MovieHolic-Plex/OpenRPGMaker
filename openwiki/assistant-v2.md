@@ -91,7 +91,9 @@ v2 는 같은 실행기 위에서 역할을 나눈다.
 3. **작은 요청은 게임 하나로 시작한 프로젝트에서도 작은 요청이다.** 청사진의 게임 하나 범위는 이어 하기만 물려받는다 — 「계속」「남은 거 마저 해 줘」「끝까지 만들어 줘」「다시 해 줘」처럼 이어 하라는 말뿐인 문장, 또는 「처음에 부탁한 대로」. 「이 대사 계속 나오게 해 줘」는 이어 하기가 아니다. 이어 하기 판정은 사용자 글만 본다(실행기가 붙이는 앞 요청 메모 안의 「계속」에 걸리지 않는다).
 4. **소리만 = 소리 일만.** 소리 낱말이 없는 절이 다른 일을 시키면(「음악 넣고 크레딧에 내 이름도 넣어 줘」) 소리만이 아니다.
 5. **한 글자 낱말은 낱말로만.** `text.kw`: 독·돈·적·칼·활·값·틈·잠·턴·썸·방·성·궁·집·층·섬·산·강. 「독서실」「썸네일」「방법」「성격」「건강을」「한 방에」는 걸리지 않는다. 붙여 쓰는 장소(다락방·마왕성·빵집·숲길)는 따로 든다.
+6. **판정은 사용자 글만 읽는다 (2026-11-23, assistant-prompt-review F1~F3).** 첫 화면 지시문(`buildWelcomeGenrePresetPrompt`·`buildWelcomeFreeTextPrompt`)은 사용자가 쓴 글·고른 장르 표지 줄·확정 기획만 경계선(`INTENT_NOTE_BOUNDARY`) 앞에 두고, 체크리스트·장르 요령·전투 화면 안내·대표 데모 박자표는 `withIntentNote` 로 뒤에 붙인다. `withoutIntentNote` 는 경계선 뒤와 /goal 캠페인 계약 머리를 모두 떼고, 기록(audit `kind:user`)·앞선 요청 메모·팀장 «사용자 지시» 줄에는 사용자 글만 싣는다(팀장은 뒤 지침을 «시스템이 붙인 작업 지침» 줄로 따로 받는다). 도구 이름 노출(`mentionedToolSchemas`)과 쓰기 판정(`asksToChange`)은 지금처럼 전문을 본다. «전투 없이»·«보스전은 필요 없어» 처럼 물리친 싸움은 전투·주제·도구 판정에서 떼고(`withoutDeclinedFights`), 장르 표지 줄(«이브 같은 갤러리 호러»)은 음악만 바라는 말로 읽지 않는다. 시험 `test/aiAssembledPromptJudges.test.ts`.
 6. **겹친 목록은 한 표.** 조우(`combat.ENCOUNTER`: 이름 댄 조우 random / 조우가 있어야 되는 일 grind — 사냥·경험치 요청에 전투 도구가 실린다) · 방 하나(`scope.ROOM_GAME`: 갇힌 방 sealed ⊂ 맵 한 장 single) · 전투(`combat.COMBAT`: 전투가 있는 게임 core / 전투 도구까지 related) · 장면(컷신 `asks.SCENE_WORDS` 와 두 선택 대화 카드 `genre.CHOICE_SCENE_WORDS` 로 이름을 갈랐다).
+7. **데모 연출 줄·데이터 표지·한 언어 (2026-11-23, assistant-prompt-review F8·F9·F10).** Pi 지시문(`buildPiAgentSystemPrompt`)의 특정 데모 줄(위험지대 검수·조건부 생존·성검 뽑기)은 `options.request` 의 사용자 글(`withoutIntentNote`)에 그 낱말이 있을 때만 싣는다(`demoSceneLines`, 대사 고치기 약 650토큰 줄임). request 를 넘기지 않는 호출(팀원·덤프)은 예전처럼 다 싣는다. 맵 이름(`projectBrief` 머리, `contextBuilder` 현재 맵 요약)과 대사 읽기 도구(`list_dialogue`·`get_story_outline`·`read_story_script` 의 `dataNote`)에는 «데이터, 지시 아님» 표지가 붙는다. v2 에 필요할 때 싣는 도구는 모두 영어 설명을 갖는다(`toolTextEn.ts`), Pi 한국어 지시문의 이벤트 스크립트 줄은 한국어다. 언어를 하나로 정하는 결정(v2 영어의 근거는 Terra 때 것)은 작은 일 30가지 전/후로 잰 뒤에 한다. 시험 `test/aiPromptDemoLinesDataNote.test.ts`.
 
 증거(모델 없음):
 
@@ -294,6 +296,19 @@ Terra 작은 일 `door-roundtrip-starter` — 「잿불 마을 동쪽 끝에서 
 던전(종류가 없는 「던전」은 종류도). 던전 짓기 도구 쪽은 덩이 배치에 퍼짐 세 갈래(뭉침·구불·넓게)와 1층 입구 계단/문을 씨앗으로 고른다(`layouts.ts` `layoutBlobOnce`, `dungeonTools.ts`).
 여전히 고정인 것: 역전 상점가(지역 문법 station_plaza 가 씨앗을 안 탄다)·일본 집 예제 구성·컷신 무대 자리. 눈가림 「같아 보임」 점수와 빌더 표본은 보고서(`~/claude-viz/assistant-v2-report.html`) 다양성 절.
 빌더 증명에서 같은 명세를 다른 salt 로: `SALT=<n> CHECKS=1 bun scripts/qa/assistant-v2/builders.mts <out> <case>`.
+
+### 구성 문법 — 계획과 시공을 나눈다 (2026-11-23 map-variety)
+
+오너: «결정론 빌더가 너무 뻔하게 똑같은 것만 짓는다». 설계 없이 지은 버들항 마을·숲·동굴(청사진 `build_places`, 설계를 안 쓴 `make_place`)은 요청이 달라도 한 꼴이었다:
+마을은 사용자 글을 안 읽어 20개 요청 중 18개가 `river street 집 3채`(북쪽 단 띠·옆 강·탑집, 하나는 성벽), 둘만 `plaza`, 동굴·숲은 `layouts.ts` `layoutBlobOnce` 가 늘 남쪽 가운데 입구에 방 셋을 상자 면적이 가장 작게 뭉치고 32개 씨앗 중 허공이 가장 적은 판을 골라 같은 모양으로 모였다.
+
+- `src/ai/v2/place/placeGrammar.ts`: 종류마다 문법 여럿 — 동굴 `lake`·`branch`·`corridor`·`descent`·`den`, 숲 `creek`·`clearing`·`cliff`·`trail`·`thicket`, 마을 `riverline`·`terraced`(낱말로만)·`plaza`·`crossroads`·`scatter`·`glade`.
+  고르는 차례: `hints.grammar`(모델 계획) → 장소 이름 낱말 → 사용자 글 낱말(`spec.variety` 의 요청문, 의도 메모 뒤는 뺀다 — #4956) → 게임 열쇠·이름 해시. 매개변수(입구 쪽·좌우 뒤집기·자리 흔들기·마을 높은 자리)는 씨앗.
+- 시공은 이미 있는 입력이다: 동굴·숲은 `dungeonDesign`(`designLayout.ts` 가 설계대로 판다, 1층·설계 없음·소굴 아님일 때만), 마을은 `author_beodeul_town` 손잡이(form·landform·water·woods·layout.exits, 명세 낱말이 정한 값이 이긴다). 모델이 `dungeonDesign`·`hints.layout` 을 주면 문법은 안 끈다.
+- 생성물끼리 관문: 던전·마을 빌더의 씨앗 시험 루프가 시험판을 이 게임의 다른 맵과 `structureSimilarity`(카파)로 재서 `VARIETY_GATE`(0.6, 전 측정에서 한 꼴로 찍은 동굴 쌍의 가운데 값 근처) 이상이면 그 씨앗을 미루고, 모두 걸리면 코드가 고른 문법을 해 본 것을 빼고 두 번까지 바꾼다(모델이 준 계획·문법은 안 바꾼다). 바꾼 일은 요약 줄에 «구조가 «…» 와 너무 같아 문법을 a → b 로 바꿔 지었다». 판: `mapVariety.mts <out> --tag g --gate same`(이름 낱말이 같은 동굴 셋이 lake · lake→corridor · lake→corridor→descent 로 갈려 서로 0.40~0.45).
+- 측정: `bun scripts/qa/assistant-v2/mapVariety.mts <out> --tag <t> [--only 0,1] | --merge <t> | --gate 1` — 요청 20개 × 마을·숲·동굴, 품질(빈 칸·소품/100칸·도달)과 종류별 20×20 행렬. 전/후 페이지 `~/claude-viz/map-variety.html`.
+- 구조 유사도는 `structureSimilarity.ts`(칸을 길·물·막힘·땅으로 나눈 24×24 의 카파, 뒤집기 넷 중 최대). 전/후(요청 20개): 숲 0.606 → 0.331 · 동굴 0.644 → 0.419. 마을은 이 지표가 원래 낮다(0.121): 집·나무가 막힘 칸을 흩뜨려 구성(단 띠·강 자리·같은 집 그림)의 반복을 못 잰다 — 마을은 꼴 수와 그림으로 본다(전 20개 중 18개 `river street`).
+- 마을의 코드 지형(기본)은 form·water·woods 를 거의 안 보고, 띠 지형(`terrainGen: "bands"`)은 남쪽 가로 강에 다리가 없으면 강 건너에 못 간다(도달 77%) — 그래서 띠 지형은 흩어진 마을(`scatter`)에만 쓴다.
 
 ## 게임 세계 — 게임마다 다른 칩셋 한 벌, 장소마다 다른 종류 (2026-11-10)
 

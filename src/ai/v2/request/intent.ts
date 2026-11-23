@@ -8,6 +8,8 @@ import { ART_ASK, ENDING_WORDS } from "./asks";
 import { PLACE_BUILD_WORDS, buildsPlaceBeyondWhere } from "./place";
 import { MAKE_GAME_WORDS, ONE_ROOM_GAME, SINGLE_PLACE, asksToChange, asksToContinue, bareDescription, isEscapeBlueprint, isFreshProject, linkedExistingMaps, wholeGameAsk } from "./scope";
 import { maskNames, userText } from "./text";
+import { withoutDeclinedFights } from "../loop/requestSkeleton";
+import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { matchToolGroups, type ToolGroups } from "./toolGroups";
 import { DEVICE_TOPICS, gameTopics, jobFacets, recordTopicsNamed, smallJobTools, type GameTopic, type JobFacets } from "./topics";
 
@@ -79,13 +81,17 @@ export function readRequest(task: string | undefined): RequestText {
   const raw = String(task ?? "");
   return remember(TEXT_MEMO, raw, () => {
     const own = userText(raw), topic = maskNames(own);
-    const audio = audioAsk(topic), combat = combatAsk(topic);
+    // «전투 없이»·«보스전은 필요 없어» 처럼 물리친 싸움은 전투 요청이 아니다 — 전투·주제·도구 판정은 그 말을 떾 글을 본다(assistant-prompt-review F2).
+    const fought = withoutDeclinedFights(topic);
+    // 장르 칩의 표지 줄(«장르 프리셋: 이브 같은 갤러리 호러»)은 게임을 고른 것이지 음악만 바라는 말이 아니다 — «이브 같은» 이 음악 결 낱말이다.
+    const heard = audioAsk(topic), audio = heard.only && isGenrePresetBriefRequest(own) ? { ...heard, only: false } : heard;
+    const combat = combatAsk(fought);
     // 쓰기 판정은 실행기가 붙인 메모까지 본다(옛 동작 그대로) — 메모 속 「만들어」가 질문을 쓰기로 바꿀 수 있다는 것은 알려진 한계다.
     const write = asksToChange(raw), continuation = asksToContinue(own);
     const placeBuild = PLACE_BUILD_WORDS.test(topic), makeGame = MAKE_GAME_WORDS.test(topic);
     const { scope, why, into } = scopeOf(own, topic, { audioOnly: audio.only, write, continuation, placeBuild, makeGame });
-    const tools = matchToolGroups(topic, { wholeGame: scope === "wholeGame", audio, combat });
-    const topics = gameTopics(topic, combat), job = jobFacets(topic);
+    const tools = matchToolGroups(fought, { wholeGame: scope === "wholeGame", audio, combat });
+    const topics = gameTopics(fought, combat), job = jobFacets(topic);
     return {
       own, topic, scope, why, write, continuation, placeBuild, makeGame, intoGame: into === true,
       oneRoom: SINGLE_PLACE.test(topic) || ONE_ROOM_GAME.test(topic),
@@ -137,7 +143,7 @@ export function classifyRequest(task: string | undefined, project: Pick<Project,
     const editsBuilt = editOnly && !text.audio.only;
     const widen = !text.tools.game && (inherits || editsBuilt);
     // 고치기로 내린 «…게임으로 만들어» 는 게임 하나 묶음(타이틀·오프닝·엔딩 도구)을 벗고 지은 것을 고치는 묶음을 받는다.
-    const tools = widen || reshape ? matchToolGroups(text.topic, { wholeGame: inherits, editsBuilt, audio: text.audio, combat: text.combat }) : text.tools;
+    const tools = widen || reshape ? matchToolGroups(withoutDeclinedFights(text.topic), { wholeGame: inherits, editsBuilt, audio: text.audio, combat: text.combat }) : text.tools;
     const topics = named.length ? [...text.topics, ...named] : text.topics;
     return {
       ...text, scope, why, wholeGame, fresh, tools, topics,

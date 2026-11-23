@@ -1,5 +1,7 @@
 // 조수 v2 시스템 지시문 — 역할·고리·규칙 한 쪽 + 요청 종류별 지식 카드 + 지금 프로젝트 요약. 전체 8k 토큰 안(카드 합 ≈ 6천 자).
 // 2026-10-30: 모델이 읽는 글은 영어다(싼 모델 gpt-6.1-terra 가 영어 지시를 더 잘 따른다). 코드가 맞추는 한국어 낱말·사용자 글 예시만 한국어로 남긴다.
+// 2026-11-23: 이 근거는 Terra 때 것이다. 조수 출하 기본이 Claude Sonnet 5.5 high 로 바뀐 뒤 언어 결정은 다시 재지 않았다(assistant-prompt-review F9·F11) —
+// 바꿀 때는 작은 일 30가지 전/후(openwiki/harnesses/assistant-capability.md)로 잔다. 그전까지 영어를 유지한다.
 // 바뀐 글은 scripts/qa/assistant-v2/dumpPrompt.mts 로 통째 본다.
 import type { Project } from "@/project/types";
 import { HAND_INTERIOR_TILESET_ID } from "@/editor/handInterior/builder";

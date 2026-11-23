@@ -8,12 +8,6 @@ export function startScreenPrompt(intent: { readonly choiceId: NewProjectChoiceI
   const text = intent.intent.trim();
   if (!text) return null;
   const choice = intent.choiceId ? newProjectChoiceById(intent.choiceId) : undefined;
-  const base = buildWelcomeFreeTextPrompt(text);
-  if (!choice) return base;
-  return [
-    base,
-    "",
-    "선택한 시작 장르: " + choice.label + " — 장르 시스템 설정은 이미 적용돼 있다. 끄지 말고 그 위에 만든다.",
-    "장르 톤: " + choice.tone,
-  ].join("\n");
+  // 고른 장르 이름은 사용자가 고른 것이라 경계선 앞(낱말 판정이 읽는 쪽)에, 장르 톤·계약은 우리 안내라 뒤에 둔다.
+  return buildWelcomeFreeTextPrompt(text, choice ? { label: choice.label, tone: choice.tone } : undefined);
 }

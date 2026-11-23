@@ -76,6 +76,7 @@ export interface DungeonPlan {
   readonly boss?: readonly [string, string];
   readonly missing: string[];
   readonly warnings: string[];
+  readonly grammar?: import("../placeGrammar").GrammarPick;
 }
 
 export type Pt = { x: number; y: number };

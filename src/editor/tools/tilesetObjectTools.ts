@@ -189,7 +189,7 @@ const listTilesetObjects: ToolDefinition = {
     type: "object",
     properties: {
       mapId: { type: "string" },
-      query: { type: "string", description: "선택. 이름·id·설명·태그에 든 낱말로 거른다(예: \"가로등\", \"버들항 기본 기물\", \"market\")" },
+      query: { type: "string", description: "선택. 이름·id·설명·태그에 든 낱말로 거른다. 사용자가 말한 물건 이름을 그대로 넣는다." },
       ...OBJECT_FILTER_PROPERTIES,
       limit: { type: "integer", minimum: 1, maximum: 200, description: "선택. 한 번에 보일 개수(기본 40)" },
       offset: { type: "integer", minimum: 0, description: "선택. 건너뛸 개수(data.nextOffset)" },

@@ -38,6 +38,7 @@ export const NEW_PLAYER_PLAYTEST_RULE =
   "Before you report done, play it once as a first-time player: start from the new-game opening, follow only the «현재 목표» line and what you can SEE on screen, and reach an ending. Every step of that play must be one of: the objective line says where to go, or you can see the thing to walk to. If you needed a coordinate, an event id, or the project files to move on, a new player cannot — fix the map (visible entrance, sparkle, objective with «where») and play again from the start. On the editing side of OPRN this play is the goal, because a new player cannot read the database. Verify it with run_scene_test through the whole path plus the critic's screen check.";
 
 // 2026-11-07 terra-fun-game 판정: 파일럿 Terra 게임이 «끝까지는 간다»인데 판단·보상 연출이 0이었다(fun 3/10, choice 0 · payoff 1 · again 0).
+// (근거는 옛 기본 모델 Terra 의 판이다. 출하 기본 Sonnet 5.5 high 에서는 아직 다시 재지 않았다 — 규칙 자체는 모델과 무관하게 유지한다. assistant-prompt-review F11)
 // 그래서 «끝까지 간다» 다음 층—— 플레이어가 판단하고, 누르면 화면이 반응하고, 클라이맥스가 연출로 보인다 —— 를 같은 단일 소스에 넣는다.
 export const PLAY_LOOP_RULE =
   "A game that only walks to an ending is a tutorial, not a game. Before you call it done, the whole path must contain at least one decision the player makes and sees the result of. Author it with a real instrument, not prose: list_puzzle_presets then author_map_puzzle (or compile_puzzle kind:switch-sequence|password|item-gate|push-switches) for the gate, and put the reward inside a branch so the outcome differs. One gate on the way to the ending is the minimum; two is better than one.";
