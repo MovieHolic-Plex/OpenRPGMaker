@@ -14,6 +14,7 @@ import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentia
 import { pickAutoProvider, type AutoPick, type ProviderRouteState } from "@/ai/autoProviderPick";
 import type { ProviderUsageSnapshot } from "@/ai/providerQuota";
 import { loadProviderPin } from "@/ai/providerPin";
+import { ASSISTANT_CLAUDE_EFFORT } from "@/ai/claudeDefault";
 import { createLocalAgentsApi, localAgentsEnabled, ASSISTANT_ENGINE_CHANGED_EVENT } from "@/start/settings/localAgents";
 
 export const AI_AUTO_PICK_EVENT = "oprn:ai-auto-pick";
@@ -79,7 +80,8 @@ export function applyAutoPick(providerId: string): boolean {
   if (currentProviderId() === providerId) return false;
   const cli = localCliOfProvider(providerId);
   if (cli) {
-    saveAssistantEngine({ kind: "local-cli", cli });
+    // 엔진 선택의 강도 기본은 medium 이다 — Claude 는 조수 기본(Sonnet 5.5 · high)과 같게 맞춘다.
+    saveAssistantEngine({ kind: "local-cli", cli, ...(cli === "claude" ? { effort: ASSISTANT_CLAUDE_EFFORT } : {}) });
   } else {
     if (loadAssistantEngine()) saveAssistantEngine(undefined);
     const config = loadAiConfig();
