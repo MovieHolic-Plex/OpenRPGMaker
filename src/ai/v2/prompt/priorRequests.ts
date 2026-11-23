@@ -3,6 +3,7 @@
 // 밤의 학교 공포 게임 제목을 「버들항의 모험」으로 덮었다(J70, hf2-school-flash 2턴).
 // 같은 대화의 앞선 사용자 요청을 의도 메모로 함께 싣는다. 사용자 글(command.task)은 그대로 두어 활동 기록·낱말 판정이 바뀌지 않는다.
 import type { AuditEntry } from "@/ai/assistantSession";
+import { withoutIntentNote } from "@/ai/piAgent/monsterGameRequest";
 
 const PER_REQUEST_MAX = 1500;
 const TOTAL_MAX = 4000;
@@ -12,11 +13,12 @@ const clip = (text: string, max: number): string => (text.length > max ? `${text
 
 /** 앞선 사용자 요청 메모. 앞 요청이 없으면 null. 같은 글이 이어 들어온 것(재시도)은 한 번만 싣는다. */
 export function priorRequestsNote(entries: readonly AuditEntry[], current: string): string | null {
-  const now = current.trim();
+  const now = withoutIntentNote(current).trim();
   const seen: string[] = [];
   for (const entry of entries) {
     if (entry.kind !== "user") continue;
-    const text = entry.text.trim();
+    // 예전에 저장된 기록은 첫 화면 지시문 전문을 «사용자» 글로 담았다 — 우리가 붙인 지침은 빼고 싣는다(assistant-prompt-review F3).
+    const text = withoutIntentNote(entry.text).trim();
     if (!text || text === now || seen[seen.length - 1] === text) continue;
     seen.push(text);
   }

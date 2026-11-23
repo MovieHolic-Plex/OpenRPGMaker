@@ -109,7 +109,7 @@ import {
 import { buildPreferenceMemorySection } from "./preferenceMemory";
 import { buildSessionRegistryTools } from "./sessionToolExposure";
 import { toolHiddenByMonsterLock } from "@/project/genreLockMonsterAssets";
-import { isMonsterRequestTurn } from "./piAgent/monsterGameRequest";
+import { auditedUserText, isMonsterRequestTurn } from "./piAgent/monsterGameRequest";
 import { resolveWorkingContextTokens } from "./messageBudget";
 import {
   buildCompactedMessages,
@@ -2122,7 +2122,9 @@ export class AssistantSession {
     const userMessage: ChatMessage = { role: "user", content: userContent };
     this.messages.push(userMessage);
     if (this.eventCommandScope) this.eventCommandPrompt = userMessage;
-    this.pushAudit({ kind: "user", text, context: turnContext });
+    // 기록의 «사용자» 글은 사용자 말만 남긴다 — 첫 화면 지시문의 체크리스트·장르 요령이 다음 턴의 «앞선 사용자 요청»으로
+    // 다시 실리지 않게(assistant-prompt-review F3). 패널이 끝에 붙이는 [컨텍스트] 꼬리표는 그대로 둔다(대상 맵 id 를 거기서 읽는다).
+    this.pushAudit({ kind: "user", text: auditedUserText(text), context: turnContext });
     // 사용자 발화만 따로 든다. `[컨텍스트]` footer 는 코드가 아는 사실이라 모델에는 그대로 가지만,
     // 의도 선언·툴 이름 언급·능력 승격의 입력은 사용자 말이어야 한다 — 기계 텍스트가 이 자리에
     // 섞여 들어 라우팅이 어긋났던 것이 2026-09-03 감사의 근인이었다.

@@ -1,3 +1,5 @@
+import { GOAL_CAMPAIGN_MARKER } from "./goalCommand";
+
 /**
  * composePiTask 가 사용자 글과 의도 메모(모험 지침·참조 작품·시공 노트…) 사이에 끼우는 경계선.
  * 메모는 사용자 글이 아니다 — 거기 적힌 「몬스터」「포켓몬풍」「트레이너」「수집」 같은 낱말을 몬스터 신호로 읽으면
@@ -5,10 +7,57 @@
  */
 export const INTENT_NOTE_BOUNDARY = "\n\n[의도 메모 — 아래는 사용자 글이 아니라 시스템 지침]\n";
 
-/** 사용자 글만 돌려준다(경계선 뒤 의도 메모를 뺀다). 경계선이 없으면 그대로. */
+/**
+ * 사용자 글 뒤에 우리가 조립한 지시(체크리스트·전투 화면 안내·장르 요령…)를 경계선 너머로 붙인다.
+ * 모델은 둘 다 읽고, 낱말 판정(세계·주제·범위·전투)은 withoutIntentNote 로 사용자 글만 읽는다.
+ * 2026-11-23 assistant-prompt-review: 한 덩어리로 붙였더니 안내 글의 «SF» 가 판타지 모험을 우주 정거장으로,
+ * «보스·퀘스트를 할당하지 마세요» 가 빵집 게임에 전투·보스·퀘스트 주제를 켰다.
+ */
+export function withIntentNote(userText: string, note: string): string {
+  const own = userText.trim(), memo = note.trim();
+  return memo ? `${own}${INTENT_NOTE_BOUNDARY}${memo}` : own;
+}
+
+const GOAL_USER_HEAD = "\n\n사용자 목표:\n";
+
+/**
+ * 사용자 글만 돌려준다 — 경계선 뒤 의도 메모를 빼고, /goal 이 앞에 씌운 장기 캠페인 계약(goalCampaignTask)도 뺀다.
+ * 계약의 «적·장비·보스전»·«결전/결말 지역» 이 사용자 요청 주제로 읽히면 안 된다. 경계선이 없으면 그대로.
+ */
 export function withoutIntentNote(task: string): string {
+  let own = task;
+  if (own.trimStart().startsWith(GOAL_CAMPAIGN_MARKER)) {
+    const head = own.indexOf(GOAL_USER_HEAD);
+    if (head >= 0) own = own.slice(head + GOAL_USER_HEAD.length);
+  }
+  const at = own.indexOf(INTENT_NOTE_BOUNDARY);
+  return at < 0 ? own : own.slice(0, at);
+}
+
+const CONTEXT_FOOTER = "\n\n[컨텍스트]";
+
+/** 기록에 남길 사용자 글 — 우리가 붙인 지침은 빼고, 패널이 끝에 붙인 [컨텍스트] 꼬리표(대상 맵)는 남긴다. */
+export function auditedUserText(text: string): string {
+  const own = withoutIntentNote(text);
+  if (own === text) return text;
+  const footer = text.lastIndexOf(CONTEXT_FOOTER);
+  return footer >= 0 && !own.includes(CONTEXT_FOOTER) ? `${own.trimEnd()}${text.slice(footer)}` : own;
+}
+
+/**
+ * 사용자 글과 우리가 붙인 지침(/goal 캠페인 계약·경계선 뒤 의도 메모)을 나눈다.
+ * 기록·앞선 요청·팀장 «사용자 지시»에는 own 만 싣는다(assistant-prompt-review F3).
+ */
+export function splitIntentNote(task: string): { readonly own: string; readonly notes: string } {
+  const own = withoutIntentNote(task);
+  let head = "";
+  if (task.trimStart().startsWith(GOAL_CAMPAIGN_MARKER)) {
+    const at = task.indexOf(GOAL_USER_HEAD);
+    if (at >= 0) head = task.slice(0, at);
+  }
   const at = task.indexOf(INTENT_NOTE_BOUNDARY);
-  return at < 0 ? task : task.slice(0, at);
+  const note = at < 0 ? "" : task.slice(at + INTENT_NOTE_BOUNDARY.length);
+  return { own, notes: [head.trim(), note.trim()].filter(Boolean).join("\n\n") };
 }
 
 /**

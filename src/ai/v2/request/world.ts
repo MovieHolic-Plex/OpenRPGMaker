@@ -31,7 +31,8 @@ export function worldRequestWords(task: string): string {
   const own = withoutIntentNote(task);
   const intent = /^사용자 의도:[ \t]*([\s\S]*?)(?:\n\s*\n|$)/mu.exec(own);
   if (!intent) return own;
-  const genre = /^선택한 시작 장르:[ \t]*(.+?)[ \t]+—/mu.exec(own);
+  // 장르 줄은 이제 경계선 앞에 이름만 있다(예전 저장본은 «이름 — 계약» 꼴).
+  const genre = /^선택한 시작 장르:[ \t]*(.+?)(?:[ \t]+—.*)?$/mu.exec(own);
   return [intent[1]!.trim(), genre?.[1]?.trim()].filter(Boolean).join("\n");
 }
 
