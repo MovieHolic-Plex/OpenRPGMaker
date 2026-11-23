@@ -10,6 +10,15 @@ import { AI_CONFIG_CHANGED_EVENT, AI_TRANSPORT_HEALTH_EVENT, loadAiConfig } from
 import { modelDisplayName } from "@/ai/modelDisplayName";
 import { activeModelId } from "@/ai/quickModelSwitch";
 import { modelForRole } from "@/ai/modelRoles";
+import { autoPickNote } from "@/ai/autoProviderPick";
+import { getOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { AI_AUTO_PICK_EVENT, lastAutoPick } from "@/editor/panels/aiAutoProvider";
+
+const providerLabel = (id: string): string => getOhMyPiProvider(id)?.label ?? id;
+const clockTime = (ms: number): string => {
+  const at = new Date(ms);
+  return `${String(at.getHours()).padStart(2, "0")}:${String(at.getMinutes()).padStart(2, "0")}`;
+};
 
 const EFFORT_LABELS: Readonly<Record<string, string>> = { low: "낮음", medium: "보통", high: "높음", xhigh: "매우 높음", max: "최대" };
 import { parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
@@ -52,7 +61,10 @@ export function renderAiQuotaChip(openSettings: () => void): { readonly element:
     const kind = status.limited ? "limited" : status.kind;
     button.dataset.kind = kind;
     const current = usage && usageFor === status.providerId ? usage : null;
-    const tail = status.limited ? "사용 한도 초과" : status.kind === "ready" ? usageChipSuffix(current) : status.label.replace(status.providerLabel, "").trim();
+    // 자동 선택이 한도 때문에 다른 길을 골랐거나(「Claude 한도 · 자동 전환」) 지금 길이 한도면(「한도 초과 · 15:02 풀림」) 그 말이 먼저다.
+    const pick = lastAutoPick();
+    const note = pick?.providerId === status.providerId ? autoPickNote(pick, providerLabel, clockTime) : undefined;
+    const tail = note ?? (status.limited ? "사용 한도 초과" : status.kind === "ready" ? usageChipSuffix(current) : status.label.replace(status.providerLabel, "").trim());
     // 지금 쓰는 모델도 머리줄에서 바로 보인다. 연결이 안 됐을 땐 모델이 뜻이 없으니 제공자만 둔다.
     const config = loadAiConfig();
     const model = status.kind === "ready" || status.limited ? activeModelId(config).trim() : "";
@@ -87,6 +99,7 @@ export function renderAiQuotaChip(openSettings: () => void): { readonly element:
   win?.addEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, onStatus);
   win?.addEventListener?.(AI_TRANSPORT_HEALTH_EVENT, onConfig);
   win?.addEventListener?.(AI_CONFIG_CHANGED_EVENT, onConfig);
+  win?.addEventListener?.(AI_AUTO_PICK_EVENT, paint);
   const timer = win ? win.setInterval(() => refreshUsage(false), USAGE_REFRESH_MS) : undefined;
   paint();
   refreshUsage(true);
@@ -96,6 +109,7 @@ export function renderAiQuotaChip(openSettings: () => void): { readonly element:
       win?.removeEventListener?.(AI_CONNECTION_STATUS_CHANGED_EVENT, onStatus);
       win?.removeEventListener?.(AI_TRANSPORT_HEALTH_EVENT, onConfig);
       win?.removeEventListener?.(AI_CONFIG_CHANGED_EVENT, onConfig);
+      win?.removeEventListener?.(AI_AUTO_PICK_EVENT, paint);
       if (timer !== undefined) win?.clearInterval(timer);
     },
   };
