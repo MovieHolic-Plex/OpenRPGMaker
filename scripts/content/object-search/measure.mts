@@ -4,7 +4,8 @@
 // 정답: 기물 이름이 요청의 개념 정규식에 맞고 허용 칩셋에 있으면 맞음. recall 분모 = 카탈로그에 실재하는 개념.
 // 실행: OS_OUT=/tmp/x.json npx vite-node --script scripts/content/object-search/measure.mts
 //       OS_MODE=llm OS_KEY_FILE=~/.config/oc-fastlane/key ... (키는 파일에서만 읽고 출력하지 않는다)
-import { readFileSync, writeFileSync } from "node:fs";
+//       OS_MODE=llm OS_RELAY_DIR=<dir> OS_MODEL_LABEL=sonnet-5.5 ... (바깥 실행기가 <dir>/*.req.json 에 답한다)
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { createBlankProject } from "@/project/defaults/blankProject";
 import { SPATIAL_TOOLS } from "@/editor/tools/spatialTools";
 import { sharedObjects } from "@/editor/tools/sharedDesignCatalog";
@@ -62,7 +63,20 @@ function deterministic() {
 }
 
 const KEY = process.env.OS_KEY_FILE ? readFileSync(process.env.OS_KEY_FILE.replace(/^~/, process.env.HOME ?? ""), "utf8").trim() : "";
+// OS_RELAY_DIR: 요청을 <dir>/<id>.req.json 으로 쓰고 <id>.ans 를 기다린다 — 바깥 실행기가 다른 모델 경로(예: Sonnet 5.5 서브에이전트)로 답한다.
+const RELAY = process.env.OS_RELAY_DIR;
+let relaySeq = 0;
+async function relayChat(system: string, user: string): Promise<string> {
+  const id = `${process.pid}-${(relaySeq += 1)}`;
+  writeFileSync(`${RELAY}/${id}.req.json`, JSON.stringify({ system, user }));
+  for (;;) {
+    if (existsSync(`${RELAY}/${id}.ans`)) return readFileSync(`${RELAY}/${id}.ans`, "utf8");
+    await new Promise(r => setTimeout(r, 1000));
+  }
+}
+
 async function chat(system: string, user: string): Promise<string> {
+  if (RELAY) return relayChat(system, user);
   for (let attempt = 0; attempt < 6; attempt += 1) {
     try {
       const response = await fetch("https://oc.hyeon.space/v1/chat/completions", {
@@ -83,7 +97,7 @@ async function chat(system: string, user: string): Promise<string> {
   throw new Error("retries exhausted");
 }
 
-const parseJson = (text: string) => JSON.parse(text.replace(/^```(?:json)?\s*|\s*```$/gu, ""));
+const parseJson = (text: string) => { const body = text.replace(/^```(?:json)?\s*|\s*```$/gu, "").trim(); return JSON.parse(body.slice(body.indexOf("{"), body.lastIndexOf("}") + 1)); };
 
 async function llmOne(req: Req) {
   const stage1System = "You plan prop searches for an RPG map-building assistant. You can call the tool below up to 5 times. "
@@ -127,6 +141,6 @@ async function llm() {
 
 const mode = process.env.OS_MODE ?? "det";
 const result = mode === "llm" ? await llm() : deterministic();
-const out = { mode, rowsSearched: allObjects.length, toolParameters: properties, ...result };
+const out = { mode, model: process.env.OS_MODEL_LABEL ?? (RELAY ? "relay" : "deepseek-v4.1-flash-free-1m"), rowsSearched: allObjects.length, toolParameters: properties, ...result };
 if (process.env.OS_OUT) writeFileSync(process.env.OS_OUT, JSON.stringify(out, null, 1));
 console.log(JSON.stringify({ mode, rowsSearched: allObjects.length, summary: result.summary }));

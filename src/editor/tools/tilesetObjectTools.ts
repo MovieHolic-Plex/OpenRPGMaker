@@ -13,7 +13,7 @@ import { checkKitPlacement } from "@/project/kitPlacementRules";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 import { requireMap } from "./mapHelpers";
 import { familyObjectBundlesFor } from "@/project/familyObjectBundles";
-import { OBJECT_FILTER_PROPERTIES, describeObjectFilter, formatCounts, kitSurface, matchesObjectFilter, objectQueryRank, parseObjectFilter, topCounts } from "./objectSearch";
+import { OBJECT_FILTER_PROPERTIES, collapseVariants, describeObjectFilter, matchesPlace, formatCounts, kitSurface, matchesObjectFilter, objectQueryRank, parseObjectFilter, topCounts } from "./objectSearch";
 
 const KIND_TAGS = new Set(["decal", "prop", "tall", "wallmount", "door", "overhead"]);
 
@@ -207,14 +207,15 @@ const listTilesetObjects: ToolDefinition = {
       .map(({ kit, source }, index) => {
         const searchable = { id: kit.id, name: kit.name ?? kit.id, tags: kit.ai?.tags ?? [], width: kit.width, height: kit.height,
           surface: kitSurface(kit), ...(kit.ai?.description ? { description: kit.ai.description } : {}) };
-        return { kit, source, searchable, index, rank: objectQueryRank(searchable, query) };
+        return { kit, source, searchable, index, rank: objectQueryRank(searchable, query), placed: matchesPlace(searchable, filter.place) };
       })
       .filter(({ kit, searchable }) => {
         const fields = [kit.id, kit.name ?? "", kit.ai?.description ?? "", ...(kit.ai?.tags ?? [])].map(value => value.toLocaleLowerCase());
         return words.every(word => fields.some(field => field.includes(word))) && matchesObjectFilter(searchable, filter);
       })
-      .sort((a, b) => a.rank - b.rank || a.index - b.index);
-    const objects = ranked.slice(offset, offset + limit).map(({ kit, source, searchable }) => {
+      .sort((a, b) => Number(b.placed) - Number(a.placed) || a.rank - b.rank || a.index - b.index);
+    const collapsed = collapseVariants(ranked.map(entry => ({ ...entry, id: entry.kit.id, name: entry.kit.name ?? entry.kit.id, tilesetId: map.tilesetId })));
+    const objects = collapsed.slice(offset, offset + limit).map(({ kit, source, searchable, variantIds }) => {
       const axes = growth(kit);
       return {
         id: kit.id,
@@ -224,12 +225,15 @@ const listTilesetObjects: ToolDefinition = {
         kind: objectKind(kit),
         surface: searchable.surface,
         ...(source === "family" ? { source } : {}),
+        ...(variantIds ? { variantIds } : {}),
         ...(kit.ai?.tags?.length ? { tags: kit.ai.tags } : {}),
         ...(axes.x || axes.y ? { repeat: axes.x && axes.y ? "x,y" : axes.x ? "x" : "y" } : {}),
         ...(kit.ai?.description ? { description: kit.ai.description } : {}),
       };
     });
-    const total = ranked.length;
+    const total = collapsed.length;
+    const folded = ranked.length - collapsed.length;
+    const placedCount = filter.place === undefined ? 0 : ranked.filter(entry => entry.placed).length;
     const label = [query && `"${query}"`, describeObjectFilter(filter)].filter(Boolean).join(" · ");
     // 거의 모든 행에 붙은 태그(묶음 이름·「현대 도시」)는 요약에서 뺀다 — 장소·용도 태그가 보여야 다음 질의를 좁힌다.
     const commonTags = new Set(total > 4 ? topCounts(ranked.flatMap(({ kit }) => kit.ai?.tags ?? []), 50)
@@ -239,7 +243,7 @@ const listTilesetObjects: ToolDefinition = {
     return {
       summary: total === 0
         ? `${map.name} 타일셋(${map.tilesetId})에 ${label ? `${label} 에 맞는 ` : ""}물체가 없습니다. 다른 칩셋 소품 킷은 list_spatial_designs({kind:"object", query}) 로 찾고 stamp_object 로 놓는다 — 거기에도 없을 때만 generate_missing_object.`
-        : `${map.name} 타일셋의 물체 ${total}개${label ? `(${label})` : ""}${familyCount ? ` — 계열 묶음 ${familyCount}개 포함` : ""}`
+        : `${map.name} 타일셋의 물체 ${total}개${label ? `(${label})` : ""}${familyCount ? ` — 계열 묶음 ${familyCount}개 포함` : ""}${folded ? ` · 변형 ${folded}개는 variantIds 로 접음` : ""}${filter.place !== undefined ? ` · 장소 맞음 ${placedCount}개가 앞` : ""}`
           + `${total > objects.length ? ` · ${offset + 1}~${offset + objects.length}번째` : ""}${tagCounts.length ? ` · 많은 태그: ${formatCounts(tagCounts)}` : ""}`,
       data: { tilesetId: map.tilesetId, total, objects, ...(offset + limit < total ? { nextOffset: offset + limit } : {}),
         ...(tagCounts.length ? { topTags: tagCounts } : {}) },
