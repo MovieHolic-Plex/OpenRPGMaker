@@ -5,6 +5,20 @@ import { resolveAssetResourceUrl } from '@/assets/generatedAssetResourceResolver
 import { isPassableLanding } from '@/project/collision';
 import { checkMonsterCampaignDefinition } from '@/project/monsterCampaignConsistency';
 import { LEGACY_CAMPAIGN_PLAN } from '@/project/examples/monsterExpedition/campaignPlan';
+import mapTemplates from '@/project/examples/monsterExpedition/mapTemplates.json' with { type: 'json' };
+import { maxTemplateOverlap, TEMPLATE_COPY_GATE, type OverlapGrid } from '@/project/mapTemplateOverlap';
+
+/** 길·필드·던전 맵이 참고 견본을 칸 그대로 옮긴 것인가(겹침 ≥ TEMPLATE_COPY_GATE). 실내 표준 방·체육관·마을은 재지 않는다. */
+export function monsterTemplateCopies(p: Project): { mapId: string; name: string; closest: string; overlap: number }[] {
+  const templates = mapTemplates as unknown as Record<string, OverlapGrid>;
+  const out: { mapId: string; name: string; closest: string; overlap: number }[] = [];
+  for (const map of Object.values(p.maps)) {
+    if (map.mapRole !== 'field' && map.mapRole !== 'dungeon') continue;
+    const hit = maxTemplateOverlap({ width: map.width, height: map.height, lower: map.lowerTiles, tilesetId: map.tilesetId }, templates, { floor: TEMPLATE_COPY_GATE });
+    if (hit && hit.overlap >= TEMPLATE_COPY_GATE) out.push({ mapId: map.id, name: map.name, closest: hit.key, overlap: Math.round(hit.overlap * 1000) / 10 });
+  }
+  return out;
+}
 
 /** 키 순서와 무관한 직렬화 — 보수가 맵 객체를 다시 짜며 lowerTiles 키를 뒤로 옮기기만 해도 지문이 바뀌어
  * 「마지막 변경 뒤 read_monster_game」 완료 검사가 끝나지 않았다(2026-10-07 사막 기획서 실편집기 녹화, 저장소에서 다시 읽은 문서). */
@@ -87,5 +101,7 @@ export function reviewMonsterGame(p: Project) {
   }
   if(!opening?.musicResourceId||!known(opening.musicResourceId))issues.push('실제 오프닝 음악이 연결되지 않았습니다.');
   for(const finding of checkMonsterCampaignDefinition(p))if(finding.severity==='blocker')issues.push(finding.message);
-  return {reference:p.meta.oprnMonsterStyle??null,resolution:p.system.playResolution??null,cameraZoom:p.system.cameraZoom??1,campaignId:campaign?.id??null,plan:{gyms:plan.gyms,species:plan.species,maps:plan.maps,links:plan.links,declared:!!campaign?.plan},maps:maps.length,species:roster.length,badges:campaign?.badges.length??0,objectives:campaign?.objectives.length??0,transfers:transfers.length,trainerBattles:commands('battleProcessing').length,shops:commands('shop').length,missingSpecies:missing,start:{mapId:p.startMapId,...p.startPos},issues,verificationScope:'authored structure/resources only',playbackVerified:false as const};
+  const templateCopies=monsterTemplateCopies(p);
+  const warnings=templateCopies.map(c=>`${c.name}(${c.mapId})이 참고 견본 ${c.closest} 와 ${c.overlap}% 같습니다 — build_monster_game create 를 다른 mapSeed 로 다시 짓거나 그 맵을 직접 고쳐 배치를 바꾸세요.`);
+  return {reference:p.meta.oprnMonsterStyle??null,templateCopies,warnings,resolution:p.system.playResolution??null,cameraZoom:p.system.cameraZoom??1,campaignId:campaign?.id??null,plan:{gyms:plan.gyms,species:plan.species,maps:plan.maps,links:plan.links,declared:!!campaign?.plan},maps:maps.length,species:roster.length,badges:campaign?.badges.length??0,objectives:campaign?.objectives.length??0,transfers:transfers.length,trainerBattles:commands('battleProcessing').length,shops:commands('shop').length,missingSpecies:missing,start:{mapId:p.startMapId,...p.startPos},issues,verificationScope:'authored structure/resources only',playbackVerified:false as const};
 }
