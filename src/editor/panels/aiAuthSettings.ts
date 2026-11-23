@@ -14,6 +14,7 @@
 // apiKey 제공자는 없다. 화면에서 그 가지를 눌러도 가짜 제공자를 만들거나 키 입력을 되살리지 않고,
 // 같은 두 구독 제공자를 보여 준다. `configForConnectionKind` 가 전송/비밀 정규화를 강제한다.
 
+import { fetchCachedAuthStatus } from "@/ai/authStatusCache";
 import {
   completeOAuthPaste,
   cancelCompanionLogin,
@@ -1204,7 +1205,8 @@ export function renderAiAuthSettings(
     if (disposed || previous === "checking") return;
     cardAuth.set(id, "checking");
     if (previous) renderCardPill(id);
-    void readStatus(id)
+    // 카드 알약은 읽기 전용 표시라 계정당 짧은 캐시를 쓴다(설정을 열 때마다 계정 카드 전부를 다시 묻지 않게).
+    void fetchCachedAuthStatus(id, statusRequests.signal)
       .then((auth) => {
         if (disposed || id === providerId) return;
         cardAuth.set(id, auth);

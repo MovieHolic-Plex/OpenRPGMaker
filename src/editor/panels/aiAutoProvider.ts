@@ -3,7 +3,8 @@
 //
 // 왜 (2026-11-23 ai-setup-adaptive): 공장 기본(ChatGPT)이 사용자 상태와 무관해서 Claude 만 연결한 사용자는 「ChatGPT 로그인 필요」로 잠겼다.
 // 사용자가 AI 설정에서 직접 연결을 고르면 고정(pin)되고, 그때부터는 자동으로 바꾸지 않는다.
-import { companionAuthUrl, fetchChatGptAuthStatus, ensureOpenAiCompatEndpointsKnown } from "@/ai/chatgptOAuthClient";
+import { companionAuthUrl, ensureOpenAiCompatEndpointsKnown } from "@/ai/chatgptOAuthClient";
+import { AUTH_STATUS_CACHE_MS, fetchCachedAuthStatus } from "@/ai/authStatusCache";
 import { fetchCompanion } from "@/ai/companionConnection";
 import { configForProviderSelection } from "@/ai/providerSelection";
 import { AI_TRANSPORT_HEALTH_EVENT, getAiTransportHealth, loadAiConfig, resetAiTransportHealth, saveAiConfig } from "@/ai/llmClient";
@@ -26,7 +27,18 @@ export const AI_AUTO_PICK_EVENT = "oprn:ai-auto-pick";
  */
 const ACCOUNT_ROUTES = [ANTHROPIC_PROVIDER_ID, CODEX_PROVIDER_ID, ANTIGRAVITY_PROVIDER_ID, "xai-oauth", "openrouter", "google-gemini-cli"] as const;
 
-async function fetchUsage(providerId: string): Promise<ProviderUsageSnapshot | null> {
+const usageCache = new Map<string, { readonly at: number; readonly value: Promise<ProviderUsageSnapshot | null> }>();
+
+/** 남은 한도도 계정 상태와 같은 30초 동안 다시 쓴다 — 부팅에 고르기가 두 번 돌면 /auth/usage 가 두 번 나갔다. */
+function fetchUsage(providerId: string): Promise<ProviderUsageSnapshot | null> {
+  const hit = usageCache.get(providerId);
+  if (hit && Date.now() - hit.at < AUTH_STATUS_CACHE_MS) return hit.value;
+  const value = readUsage(providerId);
+  usageCache.set(providerId, { at: Date.now(), value });
+  return value;
+}
+
+async function readUsage(providerId: string): Promise<ProviderUsageSnapshot | null> {
   try {
     const response = await fetchCompanion(companionAuthUrl("/auth/usage", providerId));
     if (!response.ok) return null;
@@ -39,7 +51,7 @@ async function fetchUsage(providerId: string): Promise<ProviderUsageSnapshot | n
 
 async function accountRoute(providerId: string, limitedUntil: (id: string) => number | undefined): Promise<ProviderRouteState> {
   try {
-    const status = await fetchChatGptAuthStatus(providerId);
+    const status = await fetchCachedAuthStatus(providerId);
     const connected = status.connected && status.expired !== true;
     const usage = connected ? await fetchUsage(providerId) : null;
     return { providerId, connected, usage, limitedUntil: limitedUntil(providerId) };

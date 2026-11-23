@@ -1,3 +1,4 @@
+import { fetchCachedAuthStatus } from "@/ai/authStatusCache";
 import { ChatGptCompanionResponseError, ChatGptCompanionUnreachableError, adoptKeySource, fetchChatGptAuthStatus, fetchKeySources, hasUsableCompanionCredential, startChatGptLogin, setCompanionEnvScan } from "@/ai/chatgptOAuthClient";
 import { loadAiConfig, saveAiConfig } from "@/ai/llmClient";
 import { configForProviderSelection } from "@/ai/providerSelection";
@@ -36,7 +37,7 @@ async function detectEnvironment(): Promise<WizardEnvironment> {
   const os = detectOs();
   const agents = localAgentsEnabled() ? createLocalAgentsApi().detect(true).then((report) => report.clis, () => [] as readonly LocalCliStatus[]) : Promise.resolve([] as readonly LocalCliStatus[]);
   const accounts = Promise.all([CODEX_ACCOUNT_PROVIDER_ID, GOOGLE_ACCOUNT_PROVIDER_ID].map((providerId) =>
-    fetchChatGptAuthStatus(providerId).then((status): DetectedAccount => ({ providerId, ...status }), () => null),
+    fetchCachedAuthStatus(providerId).then((status): DetectedAccount => ({ providerId, ...status }), () => null),
   )).then((rows) => rows.filter((row): row is DetectedAccount => row !== null));
   const sources = fetchKeySources().then((result) => result.sources, () => []);
   const [clis, accountRows, keySources] = await Promise.all([agents, accounts, sources]);
