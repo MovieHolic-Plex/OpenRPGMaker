@@ -14,6 +14,7 @@ import { createBuildRun } from "../../shared/buildRun";
 import { carryFloorEvents, retargetIncoming } from "./dungeonRebuildCarry";
 import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 import { FOE_WORDS, BOSS_WORDS, DungeonPlan, Pt, art, planTroops } from "./dungeonFoes";
+import { avoidGrammars, grammarDesign, grammarKindOf, pickGrammar, type GrammarPick } from "../placeGrammar";
 
 /** v2 계획 모델에게 주는 유일한 던전 지식(≤900자). */
 export const DUNGEON_CARD =
@@ -26,6 +27,7 @@ export const DUNGEON_CARD =
 
 const KNOWN_HINTS = new Set(["type", "size", "floors", "direction", "seed", "variant", "width", "height", "populate", "flooded", "lair", "puzzle", "style", "gimmick", "inspiration", "layout", "floorShapes", "floorGimmicks"]);
 const BEODEUL_TILESET = "beodeul_city";
+const GRAMMAR_HINTS = new Set(["grammar", "avoidGrammars"]);
 const TYPES: readonly DungeonType[] = DUNGEON_TYPES;
 
 interface DungeonState { readonly args: Record<string, unknown>; readonly seed?: number; readonly variant?: number; readonly floors: readonly string[] }
@@ -104,6 +106,7 @@ export function dungeonArgs(spec: PlaceSpec, keepType?: DungeonType): DungeonPla
     // 넘어가 author_dungeon 인자 검증에 걸렸다(2026-10-30 dd1030 terra 같은 요청 3판 모두 실패).
     if (value === "" || value === 0 || value === null || (typeof value === "object" && !Array.isArray(value))) continue;
     if (value === false && !KNOWN_HINTS.has(key)) continue;
+    if (GRAMMAR_HINTS.has(key)) continue;
     if (!KNOWN_HINTS.has(key)) { warnings.push(`알 수 없는 hints.${key} 는 무시했다`); continue; }
     if (key === "variant" || key === "style") continue;
     if (key === "type" && !(TYPES as readonly string[]).includes(String(value))) { warnings.push(`알 수 없는 type ${String(value)} → ${type}`); continue; }
@@ -119,7 +122,15 @@ export function dungeonArgs(spec: PlaceSpec, keepType?: DungeonType): DungeonPla
   // 조수가 설계한 층(2026-10-29): 방·길·입구 쪽은 설계 그대로 도구에 넘긴다 — 함수는 조화(겹침·길·도달)만 하고 「고침:」으로 알린다.
   if (spec.dungeonDesign && typeof spec.dungeonDesign === "object") args.design = spec.dungeonDesign;
   if (Array.isArray(spec.floorDesigns) && spec.floorDesigns.length) args.floorDesigns = spec.floorDesigns;
-  return { args, type: args.type as DungeonType, foes, boss, missing, warnings };
+  // 설계 없는 한 층 동굴·숲(청사진 build_places·설계를 안 쓴 make_place): 구성 문법 하나로 설계를 만들어 넘긴다(placeGrammar.ts) —
+  // 없으면 늘 «남쪽 입구 + 뭉친 방 셋» 한 꼴로 수렴했다(2026-11-23 map-variety 전 측정).
+  let grammar: GrammarPick | undefined;
+  const gk = grammarKindOf(spec);
+  if (!args.design && !args.floorDesigns && floors === 1 && args.lair !== true && (gk === "cave" || gk === "forest") && (type === "cave" || type === "forest")) {
+    grammar = pickGrammar(spec, gk, avoidGrammars(spec));
+    args.design = grammarDesign(grammar);
+  }
+  return { args, type: args.type as DungeonType, foes, boss, missing, warnings, ...(grammar ? { grammar } : {}) };
 }
 
 /** 지을 맵 고르기: 이전 기록의 첫 층 → 명세 mapId → 현재 맵이 빈 버들항 맵이면 그 맵 → 새 맵. */
@@ -380,6 +391,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     args.seed = base0 + (variant ?? 0) * 7919;
   }
   const base: Record<string, unknown> = { name: spec.name, ...args };
+  const grammar = plan.grammar;
   // 바깥 문 자리를 make_place·make_game 이 정해 주면(세계 방향 가장자리 길 칸) 짓기가 그 칸과 바로 잇는다 — 기본 출구(시작점 곁 갱구 자리)를 쓰지 않는다.
   if (spec.gate && run.ctx.project.maps[spec.gate.fromMapId]) base.entrance = { fromMapId: spec.gate.fromMapId, x: spec.gate.x, y: spec.gate.y };
   // 다시 짓기: 옛 바깥 문 칸에 짓기가 바로 잇는다(entrance) — 기본 출구 + 나중 create_transfer_pair 로 문이 둘 생기던 것.
@@ -510,7 +522,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     : { mapId: first, x: ent?.x ?? Math.floor((num(data.width) ?? 40) / 2), y: ent?.y ?? Math.floor((num(data.height) ?? 30) / 2) };
   const seed = num(data.seed) ?? num(args.seed);
   const state: DungeonState = { args, seed, variant, floors };
-  const summary = `${spec.name}: ${type} ${floors.length}층${args.direction === "up" ? "(위로)" : ""}${args.flooded ? " · 물에 잠김" : ""}${args.lair ? " · 고블린 소굴" : ""}${data.gimmick ? ` · 장치 ${String(data.gimmick)}` : ""} (${num(data.width)}×${num(data.height)})${healNote}`;
+  const summary = `${spec.name}: ${type} ${floors.length}층${args.direction === "up" ? "(위로)" : ""}${args.flooded ? " · 물에 잠김" : ""}${args.lair ? " · 고블린 소굴" : ""}${data.gimmick ? ` · 장치 ${String(data.gimmick)}` : ""}${grammar ? ` · 문법 ${grammar.grammar}(${grammar.why})` : ""} (${num(data.width)}×${num(data.height)})${healNote}`;
   return { ok: true, mapIds: floors, entrance, summary, warnings, missingArt: missing, calls, state };
 }
 
