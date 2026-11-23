@@ -195,6 +195,19 @@ Node 쪽 `aiAuthRuntime.ts` 라 워커 없이 된다). 워커는 `@oh-my-pi/pi-n
   `window.oprn.companionOrigin + "/v1/chat/completions"` 를 `x-oprn-companion-token` 헤더로 부른다.
   증거(2026-09-27): `verify-shots/desktop-ai-worker/` — wine exe READY·`/complete` 200, 앱 채팅 200.
 
+### 필요할 때 받는 자산 (2026-11-23, app-size-2)
+
+공용 초상(`assets/shared/portraits`)과 장소 내려받기(`assets/region-references/*.oprn.json`)는 데스크톱 패키지에 다 싣지 않는다.
+`bake:demos` 다음에 `scripts/desktop-ondemand-assets.mjs` 가 그 파일을 `dist` 에서 빼고 `dist/ondemand-assets.json` 에
+경로마다 크기·SHA-256 과 받을 곳(`raw.githubusercontent.com/MovieHolic-Plex/OpenRPGMaker/<빌드 커밋>/public/`)을 적는다.
+앱의 `app://` 처리기는 없는 파일을 만나면 `electron/main/assetsOnDemand.ts` 로 받아 해시를 확인하고
+`<userData>/asset-cache/<sha256>.<확장자>` 에 둔다(BGM 의 `bgmOnDemand.ts` 와 같은 캐시 코드). 렌더러 주소는 그대로다.
+
+- 남기는 것: 예제 데모가 쓰는 초상 세트의 대사 감정 다섯 표정(base·happy·sad·angry·surprised)과 데모가 이름으로 부른 표정,
+  데모가 가리키는 장소 파일, 그 커밋의 git blob 과 바이트가 다른 파일(받을 곳이 없다). 데모는 오프라인에서도 그대로 돈다.
+- 받을 곳이 빌드 커밋에 묶이므로 **그 커밋이 공개 저장소에 푸시돼 있어야 한다**(스크립트가 아니면 경고한다). 릴리스는 태그 커밋이라 늘 맞다.
+- 못 받으면(오프라인·해시 불일치) 404 로 그 그림만 빠진다. 장소 가져오기는 스냅숏으로 물러난다(`regionReferenceImport.ts`).
+
 ## 커밋 메시지가 릴리스 노트의 원고다
 
 `npm run release` 는 `git log` 에서 노트를 만든다(`scripts/lib/releaseNotes.mjs`). 손으로 쓰는 노트는

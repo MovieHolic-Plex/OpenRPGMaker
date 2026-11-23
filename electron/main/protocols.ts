@@ -8,6 +8,7 @@ import { extname, normalize, resolve, sep } from "node:path";
 import { pathToFileURL } from "node:url";
 import { app, net, protocol } from "electron";
 import { catalogTrackForPath, ensureCachedTrack } from "./bgmOnDemand";
+import { ensureOnDemandAsset } from "./assetsOnDemand";
 import { ASSET_RESPONSE_CSP, assetCacheControl, safeAssetContentType } from "../shared/assetMime";
 import { OPRN_APP_SCHEME, OPRN_ASSET_SCHEME } from "../shared/channels";
 import { handleActivityMirror, isActivityMirrorPath } from "../../scripts/lib/activityMirror.mjs";
@@ -161,7 +162,10 @@ export function registerAppProtocol(rendererDir: string, activityLogBaseDir: () 
     if (!existsSync(target)) {
       // 앱에 없는 카탈로그 BGM 은 공개 CDN 에서 받아 사용자 폴더에 두고 거기서 준다(bgmOnDemand.ts).
       const track = catalogTrackForPath(relative);
-      const cached = track ? await ensureCachedTrack(track, resolve(app.getPath("userData"), "bgm-catalog")) : null;
+      // 패키지에서 뺀 초상·장소 내려받기도 같은 방식으로 처음 쓸 때 받는다(assetsOnDemand.ts).
+      const cached = track
+        ? await ensureCachedTrack(track, resolve(app.getPath("userData"), "bgm-catalog"))
+        : await ensureOnDemandAsset(root, relative, resolve(app.getPath("userData"), "asset-cache"));
       return cached ? staticFileResponse(cached) : new Response("not found", { status: 404 });
     }
     return staticFileResponse(target);
