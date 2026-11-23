@@ -27,10 +27,10 @@
 - `stamp_object`(kitPlacementRules `checkKitPlacement`): 앞 칸이 막히면 거절. 편집기 키트 붓은 첫 칸에서 안내 토스트(막지 않음).
 - `fitStairTransfers` 짝 맞추기: 오르는 계단으로 위층의 오르는 계단 앞에 내리면, 위층에서 이 맵으로 돌아오는 내려가는 계단 앞으로 옮긴다.
 
-## 참고문서 — 번들 소유
-- `scripts/content/stairs/prepare_stair_references.py` → `src/assets/sharedStairReferences.json`(칩셋 19 · 그림 106, 경로만) + `public/assets/stair-references/<칩셋>/NN.png`(4배, 정상/오류 나란히).
-- `ensureStairEntranceReferences`(`src/project/defaults/stairReferences.ts`)를 `ensureBundledTilesets` 끝에서 모든 칩셋에 부른다 — 새·옛 사본 모두 빠진 「계단 입구」(id `stair-entrance`)만 덧붙인다. 공유 포인터·일부러 비운 []·같은 id·32 상한은 건드리지 않는다.
-- 계약을 고치면: overrides → build-stair-contracts → prepare_stair_references 순서로 다시 굽는다.
+## 참고문서 — 없음 (2026-11-23 삭제)
+- 2026-10-22 부터 칩셋마다 「계단 입구」 참고문서(계약 사전 사본 + 4배 정상/오류 그림 106장)를 번들이 덧붙였으나, 오너 결정(«쓸데도 없고 개구린데 자꾸 참고하네»)으로 그림·번들 JSON·굽기 스크립트를 지웠다.
+- 저장된 사본에 남은 옛 용도(안내 문서 id `stair-entrance-guide`, /assets/ 경로 그림)는 `removeLegacyStairEntranceReferences`(`src/project/defaults/legacyStairEntranceCleanup.ts`)가 `ensureBundledTilesets` 에서 뗀다. 저자가 그 용도에 덧붙인 문서·직접 올린 그림은 남긴다.
+- 계단 배치 정본은 그대로 `src/assets/stairContracts.json`(overrides → build-stair-contracts)이다. 조수는 `list_hand_interior_parts` 의 `entrance` 와 도구 쪽 계약 검사로 계단을 놓는다.
 
 ## 일괄 점검 스크립트
 - `scripts/qa/staging/lint-bundled-stairs.mts` — 방 견본(계단 든 44개, 벽 상자+남문 합성) · 일본 집 2층 청사진 · 공용 장소 72곳.
@@ -96,7 +96,7 @@
   object-gate 종류는 `flat`(바닥 조각) — `structure` 로 넣으면 북쪽 난간을 「윗면 없는 인방」으로 본다.
   들어서는 쪽 남쪽 · 내려갈 때 북쪽을 본다 · 도착은 아래층 올라가는 계단 맨 아래 줄의 남쪽 앞 칸, 계단을 등지고 남쪽.
 - `wz-hd-stairs-down` 은 id 의 down 이 옛 이름이고 **올라가는** 계단(지하 창고 → 위층 가게)이다 — 이름표·설명·계약(`leads: up`) 모두 「올라가는」.
-- 계약 문장(`overrides.json` 의 `why`)에 들어서는 쪽·보는 방향·도착을 적었고, `prepare_stair_references.py` 가 키트 행에 `note`(계약 문장)를 함께 싣는다(모든 칩셋).
+- 계약 문장(`overrides.json` 의 `why`)에 들어서는 쪽·보는 방향·도착을 적었다.
 - 출하 장소: 시계탑 기어실 계단을 방 서쪽 (1,11) → 북벽 (1,2)(그 자리 벽걸이 공구판 하나 뗌), 부엉이 탑 (1,8) 은 올라가는 계단 → **내려가는 계단통**(탑 꼭대기 방),
   허니듀크 지하 (13,2) 는 그대로. 다시 찍기 `scripts/content/stairs/restamp-wz-stairs.py --write`. 조립기는 계단 키트를 깔개(전부 f 칸)로 보지 않는다(`builder.ts` flatOnly).
 - 출하 플레이어 걷기: `scripts/qa/runtime/wz-stairs.scenario.mjs`.

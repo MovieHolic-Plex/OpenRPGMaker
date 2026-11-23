@@ -32,7 +32,7 @@ import { DESERT_EAST_TEXTURE, createDesertEastTileset, ensureDesertEastReference
 import { SNOW_NORTH_TEXTURE, createSnowNorthTileset, ensureSnowNorthReferences, ensureSnowNorthTileset, snowNorthBundledReferenceDocuments } from "./snowNorth";
 import { createEmeraldMonsterKitTileset, emeraldMonsterKitBundledReferenceDocuments, ensureEmeraldMonsterKitTileset, isEmeraldMonsterKitTexture } from "./emeraldMonsterKit";
 import { createMonsterKitTileset, ensureMonsterKitTileset, isMonsterKitTexture, monsterKitBundledReferenceDocuments } from "./monsterKit";
-import { ensureStairEntranceReferences } from "./stairReferences";
+import { removeLegacyStairEntranceReferences } from "./legacyStairEntranceCleanup";
 import { ATLAS_VEHICLES_TEXTURE, createAtlasVehiclesTileset, ensureAtlasVehiclesReferences } from "./atlasVehicles";
 import { ATLAS_BIOME_INTERIOR_TEXTURE, createAtlasBiomeInteriorTileset, ensureAtlasBiomeInteriorCurrent, atlasBiomeInteriorBundledReferenceDocuments } from "./atlasBiomeInterior";
 import { bundledJsonKeyForTexture, bundledJsonLoaded, preloadBundledJson, type BundledJsonKey, type BundledJsonProgress } from "./bundledJson";
@@ -353,8 +353,8 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
     changed = true;
   }
   changed = ensureTilesetHarnesses(project) || changed;
-  // 계단 입구 참고문서(번들 소유) — 새 사본·옛 사본 모두 빠진 「계단 입구」 용도만 덧붙인다(stairReferences.ts).
-  for (const tileset of Object.values(project.tilesets)) changed = ensureStairEntranceReferences(tileset) || changed;
+  // 옛 번들 「계단 입구」 참고문서(그림 삭제됨)를 저장된 사본에서 뗀다(legacyStairEntranceCleanup.ts).
+  for (const tileset of Object.values(project.tilesets)) changed = removeLegacyStairEntranceReferences(tileset) || changed;
   for (const tileset of Object.values(project.tilesets)) if (tileset.mvPack) changed = refreshMvPackGuide(tileset) || changed;
   changed = ensureWorldmapAuthoringBrushes(project) || changed;
   return changed;

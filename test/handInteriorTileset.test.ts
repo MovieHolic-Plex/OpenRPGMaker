@@ -44,8 +44,7 @@ describe("atlas_biome_interior = hand-pixel v5", () => {
     const t = p.tilesets.atlas_biome_interior!;
     expect(t.count).toBe(ATLAS_BIOME_INTERIOR_COUNT);
     expect(t.structureKits!.some((k) => k.id === "tibo-bed")).toBe(false);
-    // 기존 사본에는 번들 「계단 입구」 용도가 덧붙는다(ensureStairEntranceReferences, #3247).
-    expect(t.referenceDocuments!.map((c) => c.id).sort()).toEqual(["hand-interior-v5", "mine", "stair-entrance"]);
+    expect(t.referenceDocuments!.map((c) => c.id).sort()).toEqual(["hand-interior-v5", "mine"]);
     expect(p.maps.old).toEqual(old);
     expect(atlasBiomeInteriorReplacementWarnings.length).toBe(n + 1);
     expect(atlasBiomeInteriorReplacementWarnings.at(-1)).toContain("old");
@@ -71,8 +70,7 @@ describe("atlas_biome_interior = hand-pixel v5", () => {
     expect(t.count).toBe(ATLAS_BIOME_INTERIOR_COUNT);
     expect(t.structureKits!.length).toBe(cur.structureKits!.length);
     expect(t.referenceDocuments!.find((c) => c.id === "hand-interior-v5")!.documents.length).toBeGreaterThan(0);
-    // 기존 사본에는 번들 「계단 입구」 용도가 덧붙는다(ensureStairEntranceReferences, #3247).
-    expect(t.referenceDocuments!.map((c) => c.id).sort()).toEqual(["hand-interior-v5", "mine", "stair-entrance"]);
+    expect(t.referenceDocuments!.map((c) => c.id).sort()).toEqual(["hand-interior-v5", "mine"]);
     expect(p.maps.m).toEqual(map);
     expect(atlasBiomeInteriorReplacementWarnings.length).toBe(n);
   });
