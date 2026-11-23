@@ -375,7 +375,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
       const twin = closestTwin(trial.ctx.project, tm, (id) => before.has(id) && id !== tm.id);
       const cand = { seed, stood, houseDelta, ...(twin ? { twin } : {}) };
       if (!best || (gated(best) && !gated(cand)) || (gated(best) === gated(cand) && (stood > best.stood || (stood === best.stood && houseDelta < best.houseDelta)))) best = cand;
-      if (!gated(best) && stood === needs.length && (wantHouses === undefined || houses! >= wantHouses)) break;
+      if (!gated(cand) && stood === needs.length && (wantHouses === undefined || houses! >= wantHouses)) break;
     }
     };
     trySeeds();
