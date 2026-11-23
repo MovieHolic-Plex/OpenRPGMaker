@@ -56,7 +56,7 @@ async function boot(): Promise<HTMLElement> {
 function openTopbarAiSettings(): void {
   expect(listEditorCommands().some((entry) => entry.id === "topbar-ai-settings"), "⌘K AI 설정 명령").toBe(true);
   openAiSettingsModal();
-  control("ai-settings-open-advanced").click();
+  control("ai-settings-tab-display").click();
 }
 
 /**

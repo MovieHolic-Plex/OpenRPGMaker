@@ -28,8 +28,9 @@ export async function openTopbarAiSettings(page: Page): Promise<void> {
 }
 
 export async function openAdvancedAiSettings(page: Page): Promise<void> {
-  await page.getByTestId("ai-settings-open-advanced").click();
-  await expect(page.getByTestId("ai-settings-advanced")).toBeVisible();
+  // 역할·모델은 왼쪽 「모델」 메뉴에 있다(2026-11-23 겹쳐 뜨는 고급 시트를 없앴다).
+  await page.getByTestId("ai-settings-tab-model").click();
+  await expect(page.getByTestId("ai-settings-pane-model")).toBeVisible();
 }
 
 /** 도움말은 ⌘K 「도움말: 단축키 보기」(help-shortcuts) 명령이 단축키 절 도움말 창을 연다. */

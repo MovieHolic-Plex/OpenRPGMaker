@@ -427,7 +427,7 @@ export function renderAiSettingsForm(options: {
       syncChatGptAccount();
     },
   });
-  // 「사용자 지정 (OpenAI 호환)」 카드 — 로그인 카드 아래 같은 연결 탭에 둔다. 역할 칸에 꽂는 일은 아래 assignCompatRole 이 한다.
+  // 「사용자 지정 (OpenAI 호환)」 카드 — 「계정 추가」 안 「다른 방법으로 연결」에 둔다. 역할 칸에 꽂는 일은 아래 assignCompatRole 이 한다.
   const compatSettings = renderAiCompatSettings({
     getAssignment: (slot) => {
       if (slot === "ultrabrain") return { provider: brainProvider.value, model: brainModel.input.value.trim() };
@@ -438,14 +438,14 @@ export function renderAiSettingsForm(options: {
     selectMain: (endpointId) => authSettings.selectProvider(endpointId),
     assign: (slot, endpointId, endpointModel) => assignCompatRole(slot, endpointId, endpointModel),
   });
-  // 빠른 연결(OpenRouter 키·OpenAI 호환) — 아무것도 연결되지 않은 사용자에게 연결 탭 맨 위에 보인다. 저장되면 그 엔드포인트를 기본 연결로 고른다.
+  // 빠른 연결(OpenRouter 키·OpenAI 호환) — 「계정 추가」 맨 위에 있다(연결이 없으면 펼쳐진 채 열린다). 저장되면 그 엔드포인트를 기본 연결로 고른다.
   const quickConnect = renderAiQuickConnect({
     onConnected: (endpoint) => {
       authSettings.selectProvider(endpoint.id);
       compatSettings.refresh();
     },
   });
-  // 연결 탭에 바로 보이는 직접 입력. 저장된 뒤 모든 역할 칸을 그 모델로 맞춘다.
+  // 「계정 추가」 안 「고급: 직접 입력」. 저장된 뒤 모든 역할 칸을 그 모델로 맞춘다.
   let applyDirectConnection: (endpointId: string, model: string) => void = () => undefined;
   const directSettings = renderAiOpenAiDirectSettings({
     onUse: (endpoint, model) => applyDirectConnection(endpoint.id, model),
@@ -1197,7 +1197,8 @@ export function renderAiSettingsForm(options: {
     const focusedFeedback = primaryFeedback.contains(active);
     const label = account?.accountEmail || account?.accountLabel || account?.planType?.toUpperCase();
     accountLabel.textContent = label ? ` · ${label}` : "";
-    hero.hidden = connected || chatGptAccountChecking;
+    // 다른 계정(Claude·Grok 등)으로 조수가 이미 돌면 ChatGPT 로그인 큰 카드를 띄우지 않는다 — 한 계정 사용자에게는 소음이다(2026-11-23).
+    hero.hidden = connected || chatGptAccountChecking || (status.kind === "ready" && status.providerId !== CODEX_PROVIDER_ID);
     accountRow.hidden = !connected;
     accountChecking.hidden = connected || !chatGptAccountChecking;
     accountCheckError.hidden = !chatGptCheckFailed;
@@ -1243,68 +1244,9 @@ export function renderAiSettingsForm(options: {
     ],
   });
 
-  const advancedButton = el("button", {
-    class: "ai-settings-inset ai-settings-row ai-settings-row-button",
-    attrs: { type: "button", "aria-controls": "ai-settings-advanced", "aria-expanded": "false" },
-    dataset: { testid: "ai-settings-open-advanced" },
-    children: [rowCopy("고급…"), chevron()],
-  });
-  const doneButton = el("button", {
-    class: "ai-settings-link ai-settings-sheet-done",
-    attrs: { type: "button" },
-    text: "완료",
-    dataset: { testid: "ai-settings-advanced-done" },
-  });
   const usageContent = el("div");
-  const sheetBody = el("div", {
-    class: "ai-settings-sheet-body",
-    children: [
-      // 예전 「동작」 탭의 스위치 셋과 품질 두 칸은 여기 한 곳으로 옮겼다(첫 화면은 모델·계정만, 2026-11-23).
-      settingsSection("behavior", "자주 바꾸는 것", "", [applySwitch.row, dialoguePolish.row, imagePlan.row]),
-      qualitySection,
-      settingsSection("roles", "역할별 모델",
-        "이 화면은 고급 설정이에요. 대부분의 경우 품질만으로 충분하고, 필요할 때만 역할마다 모델을 직접 고르면 돼요.",
-        [execution.element, advisor.element, vision.element, image.element, pixel.element]),
-      settingsSection("image", "그림 제공자", "", [imageSource.element]),
-      settingsSection("work", "작업 방식", "", [
-        autonomyRow, applyRow, externalAgentRow, piTeam.row, imagePlanCountRow, maxTokens.row, reasoningRow, agentModeRow,
-      ]),
-      settingsSection("specialists", "추가 모델 설정", "", [
-        roleControls("writer"),
-        el("p", { class: "ai-config-help ai-roles-help", text: "모델은 목록에서 고르거나 공급자별 모델 ID를 직접 입력하세요." }),
-        settingsRow("제공자별 품질 프리셋", "현재 역할의 제공자에 맞춰 모델과 추론 강도를 조정해요.",
-          el("div", { class: "ai-settings-preset-actions", children: MODEL_PRESETS.map(preset => el("button", {
-            class: "ai-settings-button",
-            text: preset.label,
-            attrs: { type: "button", title: preset.description },
-            dataset: { testid: `ai-model-provider-preset-${preset.id}` },
-            on: { click: () => applyProviderPreset(preset) },
-          })) })),
-      ]),
-      roleMatrixSection,
-      settingsSection("display", "표시", "AI 패널의 읽기 환경과 화면 무게를 조정합니다.", [renderWeightRow, fontSizeRow, backgroundOpacityRow]),
-      settingsSection("usage", "도구 사용량", "조수가 부른 도구를 횟수·실패·검색어로 보고, JSON으로 보낼 수 있습니다.", [usageContent]),
-      ...(options.extraSections ?? []).map(section => settingsSection(section.id, section.title, section.description, [section.content])),
-      savedHint,
-    ],
-  });
-  const sheet = el("section", {
-    class: "ai-settings-sheet",
-    attrs: { id: "ai-settings-advanced", role: "dialog", "aria-modal": "true", "aria-labelledby": "ai-settings-sheet-title" },
-    dataset: { testid: "ai-settings-advanced" },
-    children: [
-      el("header", { class: "ai-settings-sheet-bar", children: [
-        el("h3", { text: "고급", attrs: { id: "ai-settings-sheet-title" } }), doneButton,
-      ] }),
-      sheetBody,
-    ],
-  });
-
-  sheet.hidden = true;
-
-  // 첫 화면 = 지금 쓰는 모델(자동) + 연결된 계정 + 계정 추가(접힘) + 고급… (2026-11-23 ai-setup-adaptive c).
-  // 예전에는 「연결·동작」 두 탭이 있었고, 연결 탭 한 화면에 빠른 연결 폼·ChatGPT 로그인·품질·직접 입력·다른 방법이 한꺼번에 날었다.
   const overview = renderAiSettingsOverview();
+  // 계정 추가 — 연결이 없으면 펼쳐 둔다(할 일이 그것뿐). 연결된 사용자에게는 접힌 한 줄이다(다른 길 안내가 시끄럽게 뜨지 않게).
   const addAccount = el("details", {
     class: "ai-settings-alternatives",
     dataset: { testid: "ai-settings-add-account" },
@@ -1318,42 +1260,79 @@ export function renderAiSettingsForm(options: {
       ] }),
     ],
   }) as HTMLDetailsElement;
-  // 아무 계정도 없으면 처음부터 펼쳐 둔다 — 할 일이 그것뿐이다.
   if (getAiConnectionStatus().kind !== "ready") addAccount.setAttribute("open", "");
-  const content = el("div", {
-    class: "ai-settings-content",
-    dataset: { testid: "ai-settings-pane-main" },
-    children: [overview.element, addAccount, advancedButton],
+
+  // 왼쪽 메뉴 다섯(2026-11-23 오너: 「왼쪽 사이드바에 메뉴를 여러 개 넣는 기존 안이 더 깔끔하다. 다 분배해라.」).
+  // 예전 고급 시트(겹쳐 뜨는 두 번째 창)는 없앴다 — 모든 설정이 메뉴 하나씩에 놓인다.
+  const panes = {
+    account: settingsPane("account", [overview.accounts, addAccount]),
+    model: settingsPane("model", [
+      overview.current,
+      qualitySection,
+      settingsSection("roles", "역할별 모델", "필요할 때만 역할마다 모델을 직접 고르면 돼요.",
+        [execution.element, advisor.element, vision.element, image.element, pixel.element]),
+      settingsSection("specialists", "추가 모델 설정", "", [
+        roleControls("writer"),
+        el("p", { class: "ai-config-help ai-roles-help", text: "모델은 목록에서 고르거나 공급자별 모델 ID를 직접 입력하세요." }),
+        settingsRow("제공자별 품질 프리셋", "현재 역할의 제공자에 맞춰 모델과 추론 강도를 조정해요.",
+          el("div", { class: "ai-settings-preset-actions", children: MODEL_PRESETS.map(preset => el("button", {
+            class: "ai-settings-button",
+            text: preset.label,
+            attrs: { type: "button", title: preset.description },
+            dataset: { testid: `ai-model-provider-preset-${preset.id}` },
+            on: { click: () => applyProviderPreset(preset) },
+          })) })),
+      ]),
+      roleMatrixSection,
+    ]),
+    work: settingsPane("work", [
+      settingsSection("behavior", "자주 바꾸는 것", "", [applySwitch.row, dialoguePolish.row, imagePlan.row]),
+      settingsSection("work", "작업 방식", "", [
+        autonomyRow, applyRow, externalAgentRow, piTeam.row, imagePlanCountRow, maxTokens.row, reasoningRow, agentModeRow,
+      ]),
+      settingsSection("image", "그림 제공자", "", [imageSource.element]),
+      ...(options.extraSections ?? []).map(section => settingsSection(section.id, section.title, section.description, [section.content])),
+    ]),
+    display: settingsPane("display", [
+      settingsSection("display", "표시", "AI 패널의 읽기 환경과 화면 무게를 조정합니다.", [renderWeightRow, fontSizeRow, backgroundOpacityRow]),
+    ]),
+    usage: settingsPane("usage", [
+      settingsSection("usage", "도구 사용량", "조수가 부른 도구를 횟수·실패·검색어로 보고, JSON으로 보낼 수 있습니다.", [usageContent]),
+    ]),
+  };
+  type PaneId = keyof typeof panes;
+  const tabs: Record<PaneId, HTMLButtonElement> = {
+    account: settingsTab("account", "계정", "user", () => activatePane("account")),
+    model: settingsTab("model", "모델", "spark", () => activatePane("model")),
+    work: settingsTab("work", "작업", "gear", () => activatePane("work")),
+    display: settingsTab("display", "표시", "eye", () => activatePane("display")),
+    usage: settingsTab("usage", "사용량", "list", () => activatePane("usage")),
+  };
+  const rail = el("nav", {
+    class: "ai-settings-rail",
+    attrs: { "aria-label": "AI 설정 메뉴" },
+    dataset: { testid: "ai-settings-rail" },
+    children: Object.values(tabs),
   });
-  let closeSheet: (() => void) | undefined;
-  let releaseSheetFocus: (() => void) | undefined;
-  advancedButton.addEventListener("click", () => {
-    if (closeSheet) return;
-    content.inert = true;
-    options.onAdvancedChange?.(true);
-    advancedButton.setAttribute("aria-expanded", "true");
-    sheet.hidden = false;
-    sheetBody.scrollTop = 0;
-    releaseSheetFocus = installAiModalFocus(sheet);
-    closeSheet = registerModal(sheet, () => {
-      sheet.hidden = true;
-      content.inert = false;
-      options.onAdvancedChange?.(false);
-      advancedButton.setAttribute("aria-expanded", "false");
-      releaseSheetFocus?.();
-      releaseSheetFocus = undefined;
-      closeSheet = undefined;
-      if (!disposed) advancedButton.focus();
-    });
-    doneButton.focus();
-    if (!usageContent.firstChild) usageContent.append(renderAiToolUsagePanel());
-  });
-  doneButton.addEventListener("click", () => closeSheet?.());
+  const content = el("div", { class: "ai-settings-content", children: [...Object.values(panes), savedHint] });
+  let activePane: PaneId = "account";
+  function activatePane(id: PaneId): void {
+    activePane = id;
+    for (const key of Object.keys(panes) as PaneId[]) {
+      panes[key].hidden = key !== id;
+      if (key === id) tabs[key].setAttribute("aria-current", "page");
+      else tabs[key].removeAttribute("aria-current");
+    }
+    if (id === "usage" && !usageContent.firstChild) usageContent.append(renderAiToolUsagePanel());
+    content.scrollTop = 0;
+  }
   const form = el("div", {
     class: "ai-config-form ai-settings-form",
     dataset: { testid: "ai-config" },
-    children: [content, sheet],
+    children: [rail, content],
   });
+  // 연결돼 있으면 지금 쓰는 모델부터, 아니면 계정 연결부터 보인다.
+  activatePane(getAiConnectionStatus().kind === "ready" ? "model" : "account");
 
   syncModelDisplay();
   syncChatGptAccount();
@@ -1368,7 +1347,6 @@ export function renderAiSettingsForm(options: {
     element: form,
     dispose: () => {
       disposed = true;
-      closeSheet?.();
       overview.dispose();
       localPrograms?.dispose();
       win?.removeEventListener?.(ASSISTANT_ENGINE_CHANGED_EVENT, onEngineChanged);
@@ -1387,7 +1365,7 @@ export function renderAiSettingsForm(options: {
       }
       authSettings.dispose();
     },
-    focusFirstInput: () => (content.querySelector<HTMLElement>("[data-testid='ai-settings-auto']") ?? addAccount.querySelector("summary"))?.focus(),
+    focusFirstInput: () => tabs[activePane].focus(),
     focusApiKey: () => {
       directSettings.focusKey();
     },
@@ -1443,6 +1421,25 @@ function settingsSwitch(testid: string, title: string, description: string, init
     onChange(next);
   });
   return { row: button, checked };
+}
+
+function settingsTab(id: string, label: string, icon: Parameters<typeof deckIcon>[0], onClick: () => void): HTMLButtonElement {
+  return el("button", {
+    class: "ai-settings-tab",
+    attrs: { type: "button", id: `ai-settings-tab-${id}`, "aria-controls": `ai-settings-pane-${id}` },
+    dataset: { testid: `ai-settings-tab-${id}`, pane: id },
+    children: [el("span", { class: "ai-settings-nav-icon", children: [deckIcon(icon, { size: 15 })] }), el("span", { text: label })],
+    on: { click: onClick },
+  });
+}
+
+function settingsPane(id: string, children: readonly HTMLElement[]): HTMLElement {
+  return el("div", {
+    class: "ai-settings-pane",
+    attrs: { role: "region", id: `ai-settings-pane-${id}`, "aria-labelledby": `ai-settings-tab-${id}` },
+    dataset: { testid: `ai-settings-pane-${id}`, pane: id },
+    children,
+  });
 }
 
 function settingsSection(

@@ -53,7 +53,7 @@ async function openModal(): Promise<FakeElement> {
   openAiSettingsModal();
   const modal = findByTestId(document.body as unknown as FakeElement, "ai-settings-modal");
   if (!modal) throw new Error("ai-settings-modal missing");
-  findByTestId(modal, "ai-settings-open-advanced")?.click();
+  findByTestId(modal, "ai-settings-tab-work")?.click();
   return modal;
 }
 

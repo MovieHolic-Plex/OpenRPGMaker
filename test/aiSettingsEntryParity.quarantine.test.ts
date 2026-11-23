@@ -39,7 +39,7 @@ async function boot(): Promise<HTMLElement> {
 }
 
 function openAdvanced(): void {
-  control("ai-settings-open-advanced").click();
+  control("ai-settings-tab-display").click();
 }
 
 async function open(entry: "topbar" | "panel"): Promise<void> {

@@ -8,7 +8,7 @@ export async function reviewDialogue(rows: readonly DialogueRow[], rules: string
   if (!rows.length) throw new Error('검토할 대사가 없습니다.');
   if (!rules.trim()) throw new Error('먼저 문체 규칙을 입력하고 저장하세요.');
   const config = resolveSurfaceAiConfig('dialogue-review');
-  if (!isAssistantEndpointReady(config)) throw new Error('AI 연결 설정이 필요합니다. AI 설정에서 제공자와 모델을 확인하세요.');
+  if (!isAssistantEndpointReady(config)) throw new Error('AI 연결 설정이 필요합니다. AI 설정 첫 화면에서 연결된 계정과 지금 쓰는 모델을 확인하세요.');
   const source = JSON.stringify(rows.map(({ id, location, speaker, kind, text }) => ({ id, location, speaker, kind, text })));
   if (source.length > REVIEW_CHAR_LIMIT) throw new Error('검토 범위가 60,000자를 넘습니다. 검색·화자·맵 필터로 범위를 줄여 주세요. 대사를 자동으로 잘라 보내지 않습니다.');
   const result = await chatCompletion(config, { stream: false, signal, response_format: { type: 'json_object' }, messages: [

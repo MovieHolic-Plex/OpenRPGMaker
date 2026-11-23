@@ -134,7 +134,7 @@ export interface PiAgentRequest {
   readonly systemPrompt?: readonly string[];
   readonly maxTurns?: number;
   /**
-   * 완성 뒤 대사 윤문 고리(src/ai/piAgent/dialoguePolishHook.ts). false 면 끈다(AI 설정 「동작」 → 「완성 뒤 대사 윤문」). 비우면 켬.
+   * 완성 뒤 대사 윤문 고리(src/ai/piAgent/dialoguePolishHook.ts). false 면 끈다(AI 설정 「고급…」 → 「자주 바꾸는 것」 → 「완성 뒤 대사 윤문」). 비우면 켬.
    */
   readonly dialoguePolish?: boolean;
   /** 다듬기 모드(src/ai/piAgent/featureReview.ts) — 이미 지은 맵을 1배 검토→고치기로 N바퀴·M분까지 다듬는다. */

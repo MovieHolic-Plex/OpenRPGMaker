@@ -316,7 +316,7 @@ async function studioHierarchy(ctx) {
 }
 
 async function openAdvancedSettings(page) {
-  await clickTid(page, 'ai-settings-open-advanced', 1200);
+  await clickTid(page, 'ai-settings-tab-usage', 1200);
 }
 
 // ---------------------------------------------------------------- C-67 one connection/usable state
@@ -363,7 +363,6 @@ async function failedRunsCounted(ctx) {
     const stats = q('.ai-tool-usage-stats > *').map((s) => ({ label: textOf(s).replace(/^\\d+\\s*/, ''), value: Number((textOf(s).match(/^\\d+/) || [-1])[0]) }));
     const get = (re) => stats.find((s) => re.test(s.label))?.value ?? -1;
     return { requests: get(/^요청/), failedRequests: get(/실패한 요청|요청 실패/), toolCalls: get(/도구 호출|^호출/), stats: stats.map((s) => s.label + '=' + s.value).join(', ') };`);
-  await page.getByTestId('ai-settings-advanced-done').click();
   await page.keyboard.press('Escape');
   await wait(page, 800);
   await clickTid(page, 'topbar-ai-studio', 2500);
@@ -378,7 +377,7 @@ async function settingsFooter(ctx) {
   await clickTid(page, 'topbar-ai-settings', 1500);
   await openAdvancedSettings(page);
   const m = await pe(page, `
-    const dlg = q('.ai-settings-window')[0]; const btn = tid('ai-settings-advanced-done');
+    const dlg = q('.ai-settings-window')[0]; const btn = tid('ai-settings-close');
     const parseC = (c) => { const x = String(c).match(/rgba?\\(([^)]+)\\)/); if (!x) return null; const p = x[1].split(/[ ,/]+/).map(parseFloat); return { r: p[0], g: p[1], b: p[2], a: p.length > 3 ? p[3] : 1 }; };
     const sat = (c) => { const mx = Math.max(c.r, c.g, c.b), mn = Math.min(c.r, c.g, c.b); return mx ? (mx - mn) / mx : 0; };
     const filled = [...dlg.querySelectorAll('button')].filter((b) => vis(b) && (() => { const c = parseC(getComputedStyle(b).backgroundColor); return c && c.a > 0.9 && sat(c) > 0.45 && (c.r + c.g + c.b) / 3 < 170; })()).length;

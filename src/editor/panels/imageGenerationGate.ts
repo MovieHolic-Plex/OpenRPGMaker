@@ -1,5 +1,5 @@
 import { AI_CONFIG_CHANGED_EVENT } from "@/ai/llmClient";
-import { AI_CONNECTION_STATUS_CHANGED_EVENT } from "./aiConnectionStatus";
+import { AI_CONNECTION_STATUS_CHANGED_EVENT, getAiConnectionStatus } from "./aiConnectionStatus";
 import { AI_SETTINGS_CLOSED_EVENT } from "./aiSettingsModal";
 import { IMAGE_GENERATION_UNAVAILABLE_CODE, IMAGE_GENERATION_UNAVAILABLE_NOTICE, imageUnavailableGateNotice, probeImageGenerationAvailability } from "@/editor/imageGenerationNotice";
 import type { AiGateNotice } from "@/ai/aiGateNotice";
@@ -45,7 +45,11 @@ export function createImageGenerationNotice(options: { readonly onOpenSettings: 
     } catch {
       unavailable = false;
     }
-    if (!disposed) element.hidden = !unavailable;
+    // 조수가 다른 계정(Claude·Grok 만)으로 잘 도는 사용자에게는 상시 띠를 띄우지 않는다 — 대부분은 계정이 하나뿐이고(오너 2026-11-23),
+    // 설치 직후 캡도 따라 다른 길 안내가 시끄럽게 뜨면 안 된다. 그림이 실제로 필요해 막히면 차단 모달이 그때 알린다
+    // (reportImageGenerationUnavailable — 조용한 계속 금지 규칙은 그대로). 연결이 없을 때는 지금처럼 띠를 보인다.
+    const quiet = unavailable && getAiConnectionStatus().kind === "ready";
+    if (!disposed) element.hidden = !unavailable || quiet;
     return unavailable;
   };
 

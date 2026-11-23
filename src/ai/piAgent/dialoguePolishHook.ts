@@ -10,7 +10,7 @@
 //      rewrite_dialogue 는 스킬(read_assistant_skill dialogue-polish)과 장면 문맥(read_story_script·get_dialogue_context)을 읽기 전에는 거절한다.
 //      이번 실행이 쓴 줄은 바로 고치고(apply), 사람이 쓴 줄은 「대사」 탭 제안(propose)으로만 남긴다 — 모델이 고른 mode 와 무관하게 실행기가 가른다.
 //   4. 차례마다 실행기가 다시 린트해 전/후 적중 수를 실행 기록(execution_status dialogue_polish)과 마지막 보고에 남긴다.
-// 끄기: AI 설정 「동작」 → 「완성 뒤 대사 윤문」(요청 dialoguePolish:false), 시험용 OPRN_DIALOGUE_POLISH_HOOK=0.
+// 끄기: AI 설정 「고급…」 → 「자주 바꾸는 것」 → 「완성 뒤 대사 윤문」(요청 dialoguePolish:false), 시험용 OPRN_DIALOGUE_POLISH_HOOK=0.
 // 맵 소유권: 같은 실행 안의 단계라 그 실행이 쥔 맵 예약을 그대로 쓴다(새 실행·새 예약을 만들지 않는다). 묶음 실행의 범위 검사도 그대로 걸린다.
 
 import { collectDialogueLines, type DialogueLine } from "@/editor/dialogue/dialogueIndex";

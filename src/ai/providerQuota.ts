@@ -68,5 +68,5 @@ export function usageDetail(snapshot: ProviderUsageSnapshot | null | undefined, 
  */
 export function quotaFailureCopy(providerLabel: string, applied: boolean): string {
   const kept = applied ? "멈추기 전에 반영한 변경은 남아 있고 되돌릴 수 있어요." : "변경한 내용은 적용하지 않았어요.";
-  return `${providerLabel} 사용 한도(쿼터·속도 제한)에 걸려 작업을 멈췄어요. ${kept} 한도가 풀릴 때까지 기다리거나 다른 AI 연결로 바꿔 다시 보내 주세요.`;
+  return `${providerLabel} 사용 한도(쿼터·속도 제한)에 걸려 작업을 멈췄어요. ${kept} 한도가 풀릴 때까지 기다리거나 다른 AI 연결로 다시 보내 주세요. AI 설정의 「자동으로 고르기」가 켜져 있으면 연결된 다른 계정으로 이미 바꿔 두었어요.`;
 }

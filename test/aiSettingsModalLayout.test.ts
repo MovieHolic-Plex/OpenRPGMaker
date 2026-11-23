@@ -32,7 +32,6 @@ const REQUIRED_TEST_IDS = [
   "ai-settings-modal",
   "ai-settings-close",
   "ai-settings-body",
-  "ai-settings-advanced",
   "ai-config-ultrabrain-model",
   "ai-config-vision-model",
   "ai-config-writer-provider",
@@ -100,47 +99,52 @@ async function openModal(): Promise<FakeElement> {
 }
 
 describe("AI 설정 모달 섹션 레이아웃", () => {
-  it("첫 화면은 지금 모델·연결된 계정·계정 추가·고급 하나고, 나머지는 고급 시트 한 곳에 둔다", async () => {
+  it("왼쪽 메뉴 다섯(계정·모델·작업·표시·사용량)에 모든 설정을 나누고, 연결 전에는 계정부터 연다", async () => {
     const modal = await openModal();
-    expect(findByTestId(modal, "ai-settings-rail")).toBeNull();
-    const main = findByTestId(modal, "ai-settings-pane-main")!;
-    expect(main.childNodes.map(child => (child as FakeElement).dataset?.testid)).toEqual([
-      "ai-settings-overview", "ai-settings-add-account", "ai-settings-open-advanced",
+    const rail = findByTestId(modal, "ai-settings-rail");
+    expect(rail?.querySelectorAll("button").map(button => button.dataset.testid)).toEqual([
+      "ai-settings-tab-account", "ai-settings-tab-model", "ai-settings-tab-work", "ai-settings-tab-display", "ai-settings-tab-usage",
     ]);
-    expect(findByTestId(main, "ai-settings-current-model")).not.toBeNull();
-    expect(findByTestId(main, "ai-settings-auto")?.getAttribute("role")).toBe("switch");
-    expect(findByTestId(main, "ai-settings-accounts")).not.toBeNull();
-    // 연결이 없는(확인 전) 상태에서는 「계정 추가」를 펼쳐 둔다 — 할 일이 그것뿐이다.
-    expect(findByTestId(modal, "ai-settings-add-account")?.getAttribute("open")).not.toBeNull();
+    // 연결이 없는(확인 전) 상태에서는 계정 메뉴가 먼저 열리고 「계정 추가」가 펼쳐져 있다 — 할 일이 그것뿐이다.
+    expect(findByTestId(modal, "ai-settings-tab-account")?.getAttribute("aria-current")).toBe("page");
+    const account = findByTestId(modal, "ai-settings-pane-account")!;
+    expect(account.hidden).toBe(false);
+    expect(findByTestId(account, "ai-settings-accounts")).not.toBeNull();
+    expect(findByTestId(account, "ai-settings-add-account")?.getAttribute("open")).not.toBeNull();
     expect(findByTestId(modal, "ai-settings-chatgpt-hero")?.hidden).toBe(false);
-    // 품질·동작 스위치는 첫 화면에 없고 고급 시트에 있다.
-    expect(findByTestId(main, "ai-model-presets")).toBeNull();
-    expect(findByTestId(main, "ai-config-apply-immediately")).toBeNull();
     expect(findByTestId(modal, "ai-settings-chatgpt-account")?.hidden).toBe(true);
     expect(findByTestId(modal, "ai-settings-other-ways")?.parentElement?.getAttribute("open")).toBeNull();
-
-    const sheet = findByTestId(modal, "ai-settings-advanced");
-    expect(sheet?.hidden).toBe(true);
+    // 겹쳐 뜨는 고급 시트는 없다.
+    expect(findByTestId(modal, "ai-settings-advanced")).toBeNull();
+    expect(findByTestId(modal, "ai-settings-open-advanced")).toBeNull();
     expect(findByTestId(modal, "ai-settings-continue")).toBeNull();
-    expect(findByTestId(modal, "ai-tool-usage")).toBeNull();
-    findByTestId(modal, "ai-settings-open-advanced")?.click();
-    expect(sheet?.hidden).toBe(false);
-    expect(findByTestId(sheet!, "ai-config-apply-immediately")).not.toBeNull();
-    expect(findByTestId(sheet!, "ai-model-presets")).not.toBeNull();
-    expect(sheet?.getAttribute("role")).toBe("dialog");
-    expect(findByTestId(sheet!, "ai-tool-usage")).not.toBeNull();
-    const roles = findByTestId(modal, "ai-settings-section-roles");
+
+    const model = findByTestId(modal, "ai-settings-pane-model")!;
+    expect(model.hidden).toBe(true);
+    findByTestId(modal, "ai-settings-tab-model")?.click();
+    expect(model.hidden).toBe(false);
+    expect(account.hidden).toBe(true);
+    expect(findByTestId(model, "ai-settings-current-model")).not.toBeNull();
+    expect(findByTestId(model, "ai-settings-auto")?.getAttribute("role")).toBe("switch");
+    expect(findByTestId(model, "ai-model-presets")).not.toBeNull();
+    const roles = findByTestId(model, "ai-settings-section-roles");
     for (const role of ["progress", "advisor", "screen", "image", "pixel"]) {
       expect(findByTestId(roles!, `ai-settings-model-${role}`)?.tagName).toBe("DETAILS");
     }
     for (const role of ["ultrabrain", "vision", "writer", "deep", "build"]) {
-      expect(findByTestId(sheet!, `ai-settings-role-${role}`), role).not.toBeNull();
+      expect(findByTestId(model, `ai-settings-role-${role}`), role).not.toBeNull();
     }
-    for (const id of ["image", "work", "specialists", "role-matrix", "display", "usage"]) {
-      expect(findByTestId(sheet!, `ai-settings-section-${id}`), id).not.toBeNull();
-    }
-    findByTestId(modal, "ai-settings-advanced-done")?.click();
-    expect(sheet?.hidden).toBe(true);
+    for (const id of ["specialists", "role-matrix"]) expect(findByTestId(model, `ai-settings-section-${id}`), id).not.toBeNull();
+
+    const work = findByTestId(modal, "ai-settings-pane-work")!;
+    for (const id of ["behavior", "work", "image"]) expect(findByTestId(work, `ai-settings-section-${id}`), id).not.toBeNull();
+    expect(findByTestId(work, "ai-config-apply-immediately")).not.toBeNull();
+    expect(findByTestId(findByTestId(modal, "ai-settings-pane-display")!, "ai-settings-section-display")).not.toBeNull();
+
+    // 도구 사용량은 그 메뉴를 열 때 처음 읽는다.
+    expect(findByTestId(modal, "ai-tool-usage")).toBeNull();
+    findByTestId(modal, "ai-settings-tab-usage")?.click();
+    expect(findByTestId(findByTestId(modal, "ai-settings-pane-usage")!, "ai-tool-usage")).not.toBeNull();
   });
 
   it("로그인하면 GPT-6.2 Sol 품질을 고르고 역할을 따로 바꾸면 선택을 푼다", async () => {
@@ -253,7 +257,7 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
 
   it("고급 시트에서 자동 저장 상태를 제공한다", async () => {
     const modal = await openModal();
-    findByTestId(modal, "ai-settings-open-advanced")?.click();
+    findByTestId(modal, "ai-settings-tab-work")?.click();
     const hint = findByTestId(modal, "ai-config-saved-hint");
 
     // 「지금 저장」버튼은 없다 — 수동 저장이 있으면 자동 저장이 안 되는 것처럼 보인다.

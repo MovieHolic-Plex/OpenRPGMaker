@@ -27,11 +27,8 @@ test("the launcher chip and menu open the shared AI form and keep local programs
   await programs.locator("summary").first().click();
   await expect(programs.getByTestId("start-settings-engine-codex")).toHaveAttribute("data-state", "not-installed");
   await expect(settings.getByTestId("ai-settings-chatgpt-account")).toBeVisible();
-  await settings.getByTestId("ai-settings-open-advanced").click();
-  await expect(settings.getByTestId("ai-settings-advanced-done")).toBeFocused();
+  await settings.getByTestId("ai-settings-tab-model").click();
   await expect(settings.getByRole("radio", { name: "Balanced" })).toBeChecked();
-  await page.keyboard.press("Escape");
-  await expect(settings.getByTestId("ai-settings-open-advanced")).toBeFocused();
 
   const aiTab = settings.getByTestId("start-settings-tab-ai");
   await aiTab.press("ArrowRight");

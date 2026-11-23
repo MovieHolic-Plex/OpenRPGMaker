@@ -117,7 +117,7 @@ export async function requestWorldCanonInterview(options: {
 }): Promise<{ ok: true; turn: InterviewTurn } | { ok: false; message: string }> {
   const config = resolveSurfaceAiConfig("world-canon-interview");
   if (!isAssistantEndpointReady(config, getAiConnectionStatus(config))) {
-    return { ok: false, message: "AI 연결이 필요합니다. 편집기 헤더의 AI 설정에서 로그인하거나 API 키를 넣어 주세요." };
+    return { ok: false, message: "AI 연결이 필요합니다. AI 설정의 「계정 추가」에서 로그인하거나 API 키를 넣어 주세요." };
   }
   try {
     const result = await chatCompletion(config, {
@@ -340,7 +340,7 @@ export function bodyDraftMessages(request: BodyDraftRequest): ChatMessage[] {
 export async function requestWorldCanonBodyDraft(request: BodyDraftRequest): Promise<BodyDraftResult> {
   const config = resolveSurfaceAiConfig("world-canon-body");
   if (!isAssistantEndpointReady(config, getAiConnectionStatus(config))) {
-    return { ok: false, message: "AI 연결이 필요합니다. 편집기 헤더의 AI 설정에서 로그인하거나 API 키를 넣어 주세요." };
+    return { ok: false, message: "AI 연결이 필요합니다. AI 설정의 「계정 추가」에서 로그인하거나 API 키를 넣어 주세요." };
   }
   try {
     const result = await chatCompletion(config, {

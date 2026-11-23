@@ -56,9 +56,9 @@ describe("Pi 팀 실행 설정", () => {
     storage.set("oprn:ai-config", JSON.stringify({ piTeam: true }));
     const modal = await openModal();
     expect(findByTestId(modal, "ai-config-route")).toBeNull();
-    expect(findByTestId(findByTestId(modal, "ai-settings-pane-main")!, "ai-config-pi-team")).toBeNull();
-    findByTestId(modal, "ai-settings-open-advanced")?.click();
-    const team = findByTestId(findByTestId(modal, "ai-settings-advanced")!, "ai-config-pi-team");
+    expect(findByTestId(findByTestId(modal, "ai-settings-pane-account")!, "ai-config-pi-team")).toBeNull();
+    findByTestId(modal, "ai-settings-tab-work")?.click();
+    const team = findByTestId(findByTestId(modal, "ai-settings-pane-work")!, "ai-config-pi-team");
     expect(team?.getAttribute("role")).toBe("switch");
     expect(team?.getAttribute("aria-checked")).toBe("true");
     team?.click();

@@ -3,7 +3,7 @@
 //
 // 「연결」 을 누르면 동반 서비스가 도구 달린 채팅을 한 번 보내 보고, 통과할 때만 키를 저장 파일(0600)에 넣는다
 // (/auth/openai-compat/connect). 키는 브라우저 저장소·프로젝트 파일에 남지 않는다 — 입력칸은 성공하면 비운다.
-// 쓰는 곳: AI 설정 「연결」 탭 맨 위, 연결 관문(aiConnectGate) 안. 첫 실행 화면도 이 카드를 그대로 끼울 수 있다.
+// 쓰는 곳: AI 설정 「계정 추가」 안, 연결 관문(aiConnectGate) 안. 첫 실행 화면도 이 카드를 그대로 끼울 수 있다.
 
 import { isLegacyTerraModel } from "@/ai/chatgptDefault";
 import { connectOpenAiCompatEndpoint, ChatGptCompanionResponseError } from "@/ai/chatgptOAuthClient";

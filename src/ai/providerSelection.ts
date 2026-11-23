@@ -3,7 +3,7 @@ import { modelForRole, type RoleModel, type SpecialistRole } from "./modelRoles"
 import { MODEL_PRESETS, tierModelFor } from "./modelPresets";
 import { CODEX_PROVIDER_ID } from "./oauth/credentials";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "./imageModelCatalog";
-import { CHATGPT_DEFAULT_EFFORT, CLAUDE_DEFAULT_EFFORT, CLAUDE_DEFAULT_MODEL, parseOhMyPiProvider } from "./ohMyPiProviders";
+import { CHATGPT_DEFAULT_EFFORT, CLAUDE_DEFAULT_EFFORT, CLAUDE_DEFAULT_MODEL, getOhMyPiProvider, parseOhMyPiProvider } from "./ohMyPiProviders";
 import { configForUltrabrain } from "./ultrabrainConfig";
 
 /** 계정을 바꿀 때 역할별 사고 강도는 「균형」 프리셋을 따른다. 같은 계정 안에서는 기존 값을 둔다. */
@@ -32,8 +32,11 @@ export function isOptionalWriterProvider(config: AiConfig): boolean {
 export function configForProviderSelection(config: AiConfig, providerId: string, force = false): AiConfig {
   const next = { ...config, providerId: parseOhMyPiProvider(providerId), roleModels: { ...config.roleModels } };
   const pinned = config.modelSelectionOverrides ?? {};
+  // 티어 매핑이 없는 계정(xAI Grok · OpenRouter 등)으로 바꿀 때 이전 제공자의 모델 id 를 남기면 그 계정에 없는 모델을 부른다
+  // (2026-11-23 실측: Grok 만 연결 → xai-oauth + claude-sonnet-5-5). 그때는 그 계정의 기본 모델을 쓴다.
   const model = (oldProvider: string, oldModel: string): string =>
-    tierModelFor(next.providerId, oldModel === tierModelFor(oldProvider, "strong") ? "strong" : "fast") ?? oldModel;
+    tierModelFor(next.providerId, oldModel === tierModelFor(oldProvider, "strong") ? "strong" : "fast")
+      ?? (parseOhMyPiProvider(oldProvider) !== next.providerId ? getOhMyPiProvider(next.providerId)?.defaultModel || oldModel : oldModel);
   const thinking = (role: SpecialistRole, old: RoleModel, newModel: string): RoleModel["thinkingLevel"] =>
     old.provider === next.providerId ? old.thinkingLevel : roleEffortFor(role, newModel);
   for (const role of ["vision", "writer", "deep", "build"] as const) {

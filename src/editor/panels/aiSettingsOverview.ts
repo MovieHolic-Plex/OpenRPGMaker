@@ -44,7 +44,7 @@ export function routeQuotaText(route: ProviderRouteState, now: number = Date.now
   return { text: `남음 ${Math.round(lowest * 100)}%`, tone: state === "low" ? "warn" : "ok" };
 }
 
-export function renderAiSettingsOverview(): { readonly element: HTMLElement; readonly dispose: () => void } {
+export function renderAiSettingsOverview(): { readonly element: HTMLElement; readonly current: HTMLElement; readonly accounts: HTMLElement; readonly dispose: () => void } {
   const modelName = el("span", { class: "ai-settings-overview-model", dataset: { testid: "ai-settings-current-model" } });
   const modelNote = el("small", { class: "ai-settings-overview-note", dataset: { testid: "ai-settings-current-note" } });
   const autoSwitch = el("button", {
@@ -73,7 +73,7 @@ export function renderAiSettingsOverview(): { readonly element: HTMLElement; rea
 
     const connected = lastAutoRoutes().filter((route) => route.connected);
     if (!connected.length) {
-      accounts.replaceChildren(el("li", { class: "ai-settings-accounts-empty", text: "연결된 계정이 없어요. 아래 「계정 추가」에서 연결하세요." }));
+      accounts.replaceChildren(el("li", { class: "ai-settings-accounts-empty", text: "연결된 계정이 없어요. 아래에서 계정을 연결하세요." }));
       return;
     }
     accounts.replaceChildren(...connected.map((route) => {
@@ -97,23 +97,19 @@ export function renderAiSettingsOverview(): { readonly element: HTMLElement; rea
     if (turnOn) void runAutoProviderPick();
   });
 
-  const element = el("div", {
-    class: "ai-settings-overview",
-    dataset: { testid: "ai-settings-overview" },
-    children: [
-      el("section", { class: "ai-settings-section", dataset: { testid: "ai-settings-section-current" }, children: [
-        el("header", { class: "ai-settings-section-header", children: [el("h3", { text: "지금 쓰는 모델" })] }),
-        el("div", { class: "ai-settings-section-body", children: [
-          el("div", { class: "ai-settings-row ai-settings-overview-current", children: [el("span", { class: "ai-settings-row-copy", children: [modelName, modelNote] })] }),
-          autoSwitch,
-        ] }),
-      ] }),
-      el("section", { class: "ai-settings-section", dataset: { testid: "ai-settings-section-accounts" }, children: [
-        el("header", { class: "ai-settings-section-header", children: [el("h3", { text: "연결된 계정" })] }),
-        el("div", { class: "ai-settings-section-body", children: [accounts] }),
-      ] }),
-    ],
-  });
+  // 두 덩이는 설정 창의 다른 메뉴에 들어간다 — 「지금 쓰는 모델」은 모델 메뉴, 「연결된 계정」은 계정 메뉴(2026-11-23 오너: 사이드바로 분배).
+  const current = el("section", { class: "ai-settings-section", dataset: { testid: "ai-settings-section-current" }, children: [
+    el("header", { class: "ai-settings-section-header", children: [el("h3", { text: "지금 쓰는 모델" })] }),
+    el("div", { class: "ai-settings-section-body", children: [
+      el("div", { class: "ai-settings-row ai-settings-overview-current", children: [el("span", { class: "ai-settings-row-copy", children: [modelName, modelNote] })] }),
+      autoSwitch,
+    ] }),
+  ] });
+  const accountsSection = el("section", { class: "ai-settings-section", dataset: { testid: "ai-settings-section-accounts" }, children: [
+    el("header", { class: "ai-settings-section-header", children: [el("h3", { text: "연결된 계정" })] }),
+    el("div", { class: "ai-settings-section-body", children: [accounts] }),
+  ] });
+  const element = el("div", { class: "ai-settings-overview", dataset: { testid: "ai-settings-overview" }, children: [current, accountsSection] });
 
   const win = typeof window === "undefined" ? undefined : window;
   const events = [AI_AUTO_PICK_EVENT, AI_CONFIG_CHANGED_EVENT, ASSISTANT_ENGINE_CHANGED_EVENT];
@@ -123,6 +119,8 @@ export function renderAiSettingsOverview(): { readonly element: HTMLElement; rea
   void runAutoProviderPick();
   return {
     element,
+    current,
+    accounts: accountsSection,
     dispose: () => { for (const name of events) win?.removeEventListener?.(name, paint); },
   };
 }

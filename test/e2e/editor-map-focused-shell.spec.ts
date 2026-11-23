@@ -41,17 +41,16 @@ test("edit mode restores existing chrome, removes the bottom bar, and exposes sc
   await expect(page.getByTestId("ai-settings-modal")).toHaveCSS("position", "fixed");
   await expect(page.getByTestId("ai-settings-modal")).toHaveCSS("display", "grid");
   await expect(page.locator(".ai-settings-window")).toHaveCSS("display", "grid");
-  // 첫 화면은 탭 없이 지금 쓰는 모델·연결된 계정·계정 추가·고급 한 장이다(2026-11-23).
-  await expect(page.getByTestId("ai-settings-overview")).toBeVisible();
-  await expect(page.getByTestId("ai-settings-add-account-toggle")).toBeVisible();
-  await expect(page.getByTestId("ai-settings-advanced")).toBeHidden();
+  // 왼쪽 메뉴 다섯(계정·모델·작업·표시·사용량), 겹쳐 뜨는 고급 시트는 없다(2026-11-23).
+  await expect(page.getByTestId("ai-settings-rail").getByRole("button")).toHaveCount(5);
+  await expect(page.getByTestId("ai-settings-advanced")).toHaveCount(0);
   await openAdvancedAiSettings(page);
 
   // The folded role controls must still fit when the sheet is opened on a narrow window.
   await page.setViewportSize({ width: 490, height: 720 });
   await page.getByTestId("ai-settings-model-progress").locator("summary").click();
   await page.getByTestId("ai-settings-model-screen").locator("summary").click();
-  const content = page.locator(".ai-settings-sheet-body");
+  const content = page.locator(".ai-settings-content");
   const paneRight = await content.evaluate(element => element.getBoundingClientRect().left + element.clientWidth);
   for (const role of ["ultrabrain", "vision", "writer", "deep", "build"]) {
     const effort = page.locator(`[data-custom-select-for="ai-config-${role}-reasoning"]`);
@@ -73,14 +72,12 @@ test("edit mode restores existing chrome, removes the bottom bar, and exposes sc
   });
   expect(scroll.scrollHeight).toBeGreaterThan(scroll.clientHeight);
   expect(scroll.top).toBeGreaterThan(0);
-  // 수동 「지금 저장」은 없다 — 푸터는 자동 저장 상태만 보여 준다.
+  // 수동 「지금 저장」은 없다 — 본문 끝은 자동 저장 상태만 보여 준다.
   await expect(page.getByTestId("ai-config-saved-hint")).toBeVisible();
 
   // The assistant is mounted during editor bootstrap, before database.css is
   // lazy-loaded. Its first paint still needs a real flex workspace instead of
   // a block-flow panel below the canvas.
-  await page.keyboard.press("Escape");
-  await expect(page.getByTestId("ai-settings-open-advanced")).toBeFocused();
   await page.getByTestId("ai-settings-close").click();
   await page.setViewportSize({ width: 1024, height: 768 });
   const aiPanel = page.locator(".ai-chat-panel").first();
@@ -127,6 +124,7 @@ test("ChatGPT sign-in and quality share the settings connection and role control
   await expect(localPrograms.getByTestId("start-settings-engine-codex")).toBeHidden();
   await alternatives.click();
 
+  await modal.getByTestId("ai-settings-tab-model").click();
   const balanced = modal.getByRole("radio", { name: "Balanced" });
   const best = modal.getByRole("radio", { name: "Best quality" });
   await expect(balanced).toBeChecked();
@@ -136,7 +134,7 @@ test("ChatGPT sign-in and quality share the settings connection and role control
   const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("oprn:ai-config") ?? "{}"));
   expect(saved.roleModels.deep).toMatchObject({ model: "gpt-6.2-sol", thinkingLevel: "high" });
 
-  await modal.getByRole("button", { name: "Behavior" }).click();
+  await modal.getByTestId("ai-settings-tab-work").click();
   const polish = modal.getByRole("switch", { name: "Polish dialogue after building" });
   await polish.press("Space");
   await expect(polish).not.toBeChecked();
@@ -146,11 +144,10 @@ test("ChatGPT sign-in and quality share the settings connection and role control
   await openAdvancedAiSettings(page);
   await modal.getByTestId("ai-settings-model-screen").locator("summary").click();
   await modal.getByTestId("ai-config-vision-model").fill("gpt-6.2-astra");
-  await modal.getByTestId("ai-settings-advanced-done").click();
-  await modal.getByRole("button", { name: "Connection" }).click();
   await expect(modal.getByText("Models are customized by role in Advanced.")).toBeVisible();
   await expect(balanced).not.toBeChecked();
   await expect(best).not.toBeChecked();
+  await modal.getByTestId("ai-settings-tab-account").click();
   await modal.getByRole("button", { name: "Sign out of ChatGPT" }).click();
   await expect(modal.getByRole("button", { name: "Sign in with ChatGPT" })).toBeVisible();
   expect(actions).toEqual(["login", "logout"]);
