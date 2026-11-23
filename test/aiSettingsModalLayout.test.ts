@@ -3,6 +3,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 import { modalStackDepthForTest, resetModalStackForTest } from "@/editor/ui/modalStack";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 import { chatgptFixtureConfig } from "./helpers/chatgptFixtureConfig";
+import { clearCachedAuthStatus } from "@/ai/authStatusCache";
 
 // 역할 배정 표는 모달을 열 때 연결된 경로를 비동기로 가져와 다시 그린다. 오프라인에서도 그 약속은 테스트가 끝난 뒤에
 // 풀려 복원된 happy-dom document 로 옵션을 만들고 가짜 select 에 붙이다 미처리 오류를 낸다 — 이 파일은 경로 조회를 보지 않는다.
@@ -59,6 +60,8 @@ beforeAll(async () => { await import("@/editor/panels/aiSettingsModal"); });
 
 beforeEach(() => {
   vi.clearAllMocks();
+  // #4954 의 계정 상태 캐시(30초)는 모듈에 남는다 — 앞 시험(또는 같은 워커의 다른 파일)이 넣은 «연결됨»·확인 중 값을 이 시험이 읽지 않게 비운다.
+  clearCachedAuthStatus();
   fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
   restoreDom = installFakeDom();
   resetModalStackForTest();
@@ -111,7 +114,8 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     expect(account.hidden).toBe(false);
     expect(findByTestId(account, "ai-settings-accounts")).not.toBeNull();
     expect(findByTestId(account, "ai-settings-add-account")?.getAttribute("open")).not.toBeNull();
-    expect(findByTestId(modal, "ai-settings-chatgpt-hero")?.hidden).toBe(false);
+    // 계정 확인(캐시를 거쳐 비동기로 풀린다)이 끝나야 로그인 카드가 보인다 — 확인 중에는 카드를 숨긴다.
+    await vi.waitFor(() => expect(findByTestId(modal, "ai-settings-chatgpt-hero")?.hidden).toBe(false));
     expect(findByTestId(modal, "ai-settings-chatgpt-account")?.hidden).toBe(true);
     expect(findByTestId(modal, "ai-settings-other-ways")?.parentElement?.getAttribute("open")).toBeNull();
     // 겹쳐 뜨는 고급 시트는 없다.
