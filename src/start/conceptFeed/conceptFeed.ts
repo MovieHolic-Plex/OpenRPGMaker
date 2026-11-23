@@ -227,7 +227,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     searchBox,
     el("div", { class: "fr-chips", attrs: { role: "group", "aria-label": "예시" }, children: FIRST_RUN_EXAMPLES.map((example, index) => el("button", {
       class: "fr-chip", attrs: { type: "button" }, dataset: { testid: `${CONCEPT_FEED_TESTIDS.example}-${index}` }, text: example,
-      on: { click: () => { if (making) return; search.value = t(example); search.focus(); } },
+      on: { click: () => { if (making) return; search.value = t(example); search.dispatchEvent(new Event("input")); search.focus(); } },
     })) }),
     el("section", { class: "fr-games", dataset: { testid: CONCEPT_FEED_TESTIDS.quick }, children: [
       el("div", { class: "fr-builtin-head", children: [el("h2", { class: "fr-builtin-title", text: "장르로 시작" })] }),

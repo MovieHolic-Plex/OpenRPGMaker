@@ -200,6 +200,7 @@ describe("concept feed", () => {
     expect(browse.contains(q(root, CONCEPT_FEED_TESTIDS.card))).toBe(true);
     q(root, `${CONCEPT_FEED_TESTIDS.example}-0`)!.click();
     expect((q(root, CONCEPT_FEED_TESTIDS.search) as HTMLTextAreaElement).value).not.toBe("");
+    expect(root.querySelector(".cf-grid")!.firstElementChild!.getAttribute("data-testid")).toBe(CONCEPT_FEED_TESTIDS.custom);
     q(root, CONCEPT_FEED_TESTIDS.blank)!.click();
     expect(onBlank).toHaveBeenCalledOnce();
   });
