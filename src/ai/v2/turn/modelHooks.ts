@@ -1,10 +1,10 @@
 // 모델 호출 앞뒤의 갈고리 — 도구 싣기·상태 카드·리드 계획·첫 호출 todo 강제·도구 호출 강제. 2026-11-11 리팩토링 R3: runAssistantV2 의 runPiAgent 호출에서 옮겼다.
 import { createV2Tools } from "../tools/verbs";
 import type { PiAssistantV2Env } from "../shared/env";
-import { withTodoLoop } from "../loop/todoTools";
+import { turnSkeleton, withTodoLoop } from "../loop/todoTools";
 import { exposeV2Tools } from "../tools/toolExposure";
 import { formatCall, nextForItem } from "../loop/nextCall";
-import { requestSkeleton, skeletonCard } from "../loop/requestSkeleton";
+import { skeletonCard } from "../loop/requestSkeleton";
 import { checkLabel } from "../loop/todoStore";
 import { leadPlanMessages, planForWorker, projectDigest, toolCatalog } from "./split";
 import type { TurnContext } from "./context";
@@ -27,7 +27,7 @@ export function turnModelHooks(turn: TurnContext) {
     if (!store.items.length) {
       // H1: 목록을 적기 전 호출에는 요청 뼈대 카드(함수가 요청 글에서 뽑은 필수 요소)를 보인다.
       if (!writeRequest) return undefined;
-      const card = skeletonCard(requestSkeleton(env.request.task));
+      const card = skeletonCard(turnSkeleton(env));
       if (card && !state.skeletonShown) { state.skeletonShown = true; env.emit({ type: "execution_status", name: "v2.hook.skeleton_card", ok: true, summary: card.slice(0, 400) }); }
       return card;
     }
@@ -52,7 +52,7 @@ export function turnModelHooks(turn: TurnContext) {
     if (!env.leadChat || !writeRequest) return undefined;
     const t0 = Date.now();
     try {
-      const skeleton = skeletonCard(requestSkeleton(env.request.task));
+      const skeleton = skeletonCard(turnSkeleton(env));
       const messages = leadPlanMessages({ task: env.request.task, ...(skeleton ? { skeleton } : {}), digest: projectDigest(env.ctx.project), tools: toolCatalog(state.exposure?.tools ?? [], [...(state.exposure?.lazy.keys() ?? [])]) });
       const plan = (await env.leadChat(messages, env.signal)).trim();
       if (!plan) { env.emit({ type: "execution_status", name: "v2.split.plan", ok: false, summary: `리드 계획이 비어 옴 — 워커 혼자 한다 · ${env.leadModel}` }); return undefined; }

@@ -18,7 +18,7 @@ export interface BlueprintBlocker { readonly id: string; readonly message: strin
 export const BLUEPRINT_CARD = [
   "[Blueprint first — write_blueprint] For a request to make a whole game, write one design sheet for the game with write_blueprint before building places (build verbs are rejected without a blueprint).",
   "- playerGoal: one guiding line for a new player (what leads to the ending). The judge gets only this line and plays the game to the end.",
-  "- Size: a new game is a first playable version (scale:\"mvp\", the default) — 3 to 5 places, ONE core loop (genre: talk + one errand, one battle, catch one monster, one clue chain…), start to ending in 5-10 minutes. The user grows it later with the next request («다음 지역 만들어 줘»). Only when the user explicitly asks for a big, long or complete game send scale:\"full\" (6–8 steps, 6–8 places).",
+  "- Size: a new game is a first playable version (scale:\"mvp\", the default) — 3 to 5 places, ONE core loop (genre: talk + one errand, one battle, catch one monster, one clue chain…), 5-10 minutes from start to the last step. An mvp builds NO ending event: the last step is where the first version stops (code marks it), and «ending» below is only the planned goal of the full game. The user grows it later with the next request («다음 지역 만들어 줘»). Only when the user explicitly asks for a big, long or complete game send scale:\"full\" (6–8 steps, 6–8 places).",
   "- steps: the critical path from start to ending — 3–6 steps for mvp, 6–8 for full (spread over 2+ places; each step reads the switch the previous step turned on — the finish gate measures that chain depth). Per step: kind · place · event (for a person, the person's name) · who · action · needs · gives · feeling — as each field says.",
   "- kind decides what code builds for the step: talk = a named person (who) speaks your lines and hands over the next lead · find = the player examines or picks up a thing · battle = the player must win a fight against who · puzzle = a number lock whose answer is written in an earlier step's lines · choice = who offers 2–3 options and each option changes something the player sees later. A path of «examine X, then examine Y» is a walking tour, not a game — players score it lowest. Mix the kinds: at least 2 talk steps with different people, a battle in an adventure or RPG, a puzzle or a choice, and never 3 find steps in a row.",
   "- ending: {name, how, feeling, closing}. how = design note, never shown (several endings: the basic one's path, the rest here). closing = 2–4 lines the player reads on the ending screen: what happened, what became of the people.",
@@ -37,7 +37,7 @@ export const WRITE_BLUEPRINT_SCHEMA = {
       from: { type: "string", description: "name of the place this one is entered from (default: the place listed before it)" },
     }, required: ["name", "kind"] } },
     look: { type: "string", description: "UI look id offered in the result" },
-    scale: { type: "string", enum: ["mvp", "small", "full"], description: "mvp (default for a new game) = first playable version: 3 to 5 places, one core loop, 4 to 6 steps, start to ending in 5-10 minutes — the user grows it later («다음 지역 만들어 줘»). small = the request asks for a short or tiny game. full = only when the user explicitly asks for a big, long or complete full-size game (many regions, 40 minutes+). The gates count this blueprint's own places and steps for mvp and small." },
+    scale: { type: "string", enum: ["mvp", "small", "full"], description: "mvp (default for a new game) = first playable version: 3 to 5 places, one core loop, 3 to 6 steps, 5-10 minutes from start to the last step. An mvp has NO ending: the last step is the stopping point and the assistant tells the user the first version is done (the ending field is only the planned goal of the full game, not built). The user grows it later («다음 지역 만들어 줘»). small = the request asks for a short or tiny game. full = only when the user explicitly asks for a big, long or complete full-size game (many regions, 40 minutes+). The gates count this blueprint's own places and steps for mvp and small." },
     battles: { type: "boolean", description: "false only if the request says fights are not needed" },
     playerGoal: { type: "string", description: "one guiding line for a new player (within 140 chars)" },
     opening: { type: "array", items: { type: "string" }, description: "2–4 lines the player reads in the opening, before the first map — narration that sets the scene: who they are, what is wrong here. Not the goal restated, no answer to what must be found, no game words (boss, quest, level)." },
@@ -80,7 +80,7 @@ export function thinBlueprintReason(bp: GameBlueprint): string | undefined {
   const places = [...new Set(bp.steps.map((step) => norm(step.place)))].filter(Boolean);
   // 첫 판 MVP 는 장소 2곳 이상·단계 3 이상이면 충분하다 — 더 키우는 것은 사용자의 다음 요청이다.
   if (bp.scale === "mvp") return places.length >= MIN_BLUEPRINT_PLACES && bp.steps.length >= MVP_MIN_STEPS ? undefined
-    : `the blueprint has ${bp.steps.length} step(s) over ${places.length} place(s) — a first playable version (mvp) has ${MVP_MIN_STEPS} to 6 steps over 2 or more places, start to ending in 5-10 minutes.`;
+    : `the blueprint has ${bp.steps.length} step(s) over ${places.length} place(s) — a first playable version (mvp) has ${MVP_MIN_STEPS} to 6 steps over 2 or more places, 5-10 minutes from start to the last step (no ending).`;
   if (places.length >= MIN_BLUEPRINT_PLACES && bp.steps.length >= MIN_BLUEPRINT_STEPS) return undefined;
   const first = bp.steps[0]?.place ?? "장소";
   return `the blueprint has ${bp.steps.length} step(s) over ${places.length} place(s) — a full-size game has 6 to 8 steps over 3 or more places (split one place like «${first} 앞», «${first} 안쪽», «지하 통로»), each step with a new event name; for a deliberately short game send scale:"small".`;
@@ -522,10 +522,11 @@ export function walkBlueprint(project: Project): BlueprintWalk {
         if (needs.length && needs.some((n) => (n.kind === "switch" ? s.switches : n.kind === "item" ? s.items : s.variables).has(n.id)) && settersOf(page.commands).ends) { ends = true; break; }
       }
     }
-    if (!ends) add("blueprint-no-ending", `청사진 마지막 단계 ${last.step.id} 「${last.step.event}」(${last.map.id} ${last.ev.id}) 가 엔딩을 부르지 않는다 — 이 이벤트(또는 이 이벤트가 켜는 스위치로 열리는 자동 실행 이벤트)에 엔딩 「${bp.ending.name}」을 연결한다.`, `${last.step.id} ${last.ev.id}`);
+    // 첫 판 MVP 는 엔딩을 만들지 않는다 — 마지막 단계는 끝 지점 스위치까지(judge/blueprintScale.MVP_REACHED_SWITCH).
+    if (!ends && bp.scale !== "mvp") add("blueprint-no-ending", `청사진 마지막 단계 ${last.step.id} 「${last.step.event}」(${last.map.id} ${last.ev.id}) 가 엔딩을 부르지 않는다 — 이 이벤트(또는 이 이벤트가 켜는 스위치로 열리는 자동 실행 이벤트)에 엔딩 「${bp.ending.name}」을 연결한다.`, `${last.step.id} ${last.ev.id}`);
   }
   // 5) 게임 어디에도 엔딩을 부르는 맵 이벤트가 없다 — 마지막 단계 이벤트가 없어 4)가 건너뛰어도 막는다(mt2 Flash·Argon: define_ending 만 하고 끝났다).
-  if (!blockers.some((b) => b.id === "blueprint-no-ending")) {
+  if (bp.scale !== "mvp" && !blockers.some((b) => b.id === "blueprint-no-ending")) {
     const anyEnding = Object.values(project.maps).some((map) => (map.events ?? []).some((ev) => eventSetter(project, ev).ends));
     // 맨 앞에 둔다 — 출하 검사는 앞 6개만 싣는다.
     if (!anyEnding) blockers.unshift({ id: "blueprint-no-ending", message: `게임 어디에도 엔딩 「${bp.ending.name}」을 부르는 맵 이벤트가 없다(define_ending 은 정의일 뿐이다) — 새 플레이어가 게임을 끝낼 수 없다.`, evidence: `triggerEnding 0 · endings ${(project.endings ?? []).length}` });
@@ -545,7 +546,7 @@ export async function designBlueprint(chat: (messages: readonly unknown[], signa
     "너는 RPG 편집기 조수의 설계자다. 사용자 요청으로 게임 하나의 청사진을 JSON 한 덩어리로만 쓴다(설명·코드 울타리 없이).",
     BLUEPRINT_CARD,
     `JSON 모양: ${JSON.stringify(WRITE_BLUEPRINT_SCHEMA)}`,
-    "장소는 이 편집기가 지을 수 있는 것(마을·거리·집·실내 방·던전·동굴)으로. 크기는 기본이 첫 판 MVP(scale:\"mvp\"): 장소 3~5곳(장소마다 10×10 이상·사람이나 조사 이벤트 하나), 핵심 루프 하나, 핵심 경로 3~6단계(단계마다 앞 단계가 켠 스위치를 조건으로 읽는다), 새 플레이어가 5~10분 안에 엔딩을 볼 크기. 요청이 큰 게임·긴 게임을 분명히 청할 때만 scale:\"full\" 로 장소 6~8곳·단계 6~8·40분 크기로 쓴다.",
+    "장소는 이 편집기가 지을 수 있는 것(마을·거리·집·실내 방·던전·동굴)으로. 크기는 기본이 첫 판 MVP(scale:\"mvp\"): 장소 3~5곳(장소마다 10×10 이상·사람이나 조사 이벤트 하나), 핵심 루프 하나, 핵심 경로 3~6단계(단계마다 앞 단계가 켠 스위치를 조건으로 읽는다), 새 플레이어가 5~10분 안에 마지막 단계에 닿는 크기이고 엔딩 이벤트는 만들지 않는다(마지막 단계가 첫 판의 끝 지점, ending 칸은 나중 전체 게임의 목표). 요청이 큰 게임·긴 게임을 분명히 청할 때만 scale:\"full\" 로 장소 6~8곳·단계 6~8·40분 크기로 쓴다.",
   ].join("\n");
   let last = "";
   for (let attempt = 0; attempt < 2; attempt++) {

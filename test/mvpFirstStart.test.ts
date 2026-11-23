@@ -7,6 +7,8 @@ import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 import { createV2Tools } from "@/ai/v2/tools/verbs";
 import { V2Session } from "@/ai/v2/turn/session";
 import { mapsNeed, mvpGame, smallGame } from "@/ai/v2/judge/blueprintScale";
+import { MVP_REACHED_SWITCH } from "@/project/gameBlueprint";
+import { walkBlueprint } from "@/ai/v2/story/blueprint";
 import { mvpNextSteps, nextStepsBlock, splitNextSteps, NEXT_STEPS_HEADING } from "@/ai/nextSteps";
 import type { Project } from "@/project/types";
 import { worldForRequest } from "@/ai/v2/request/world";
@@ -33,9 +35,11 @@ describe("monster campaign first version (scale mvp)", () => {
     expect(missing).toEqual([]);
     expect(project.maps[project.system.gameOver?.recoveryFallback?.mapId ?? project.startMapId]).toBeDefined();
   });
-  it("ends the game when the gym leader is beaten", () => {
+  it("stops at the first badge with the MVP end switch and builds no ending", () => {
     const leader = project.maps.mx_map_grove_gym!.events.find((e) => e.id.endsWith("_leader"))!;
-    expect(JSON.stringify(leader.pages)).toContain("\"triggerEnding\"");
+    expect(JSON.stringify(leader.pages)).toContain(`"switchId":"${MVP_REACHED_SWITCH}"`);
+    expect(JSON.stringify(project.maps)).not.toContain("\"triggerEnding\"");
+    expect(project.endings ?? []).toEqual([]);
   });
   it("puts healing and a shop in front of the removed buildings", () => {
     const people = Object.values(project.maps).flatMap((m) => m.events.map((e) => e.name));
@@ -89,6 +93,8 @@ describe("v2 blueprint size", () => {
     expect(smallGame(project)).toBe(true);
     expect(mvpGame(project)).toBe(true);
     expect(mapsNeed(project, 6)).toBe(3);
+    // 첫 판은 엔딩을 만들지 않는다 — 청사진 걷기가 «엔딩 없음» 을 막힘으로 내지 않는다.
+    expect(walkBlueprint(project).blockers.map((b) => b.id)).not.toContain("blueprint-no-ending");
   });
   it("keeps scale full when the model writes it", async () => {
     const project = createBlankProject() as Project;

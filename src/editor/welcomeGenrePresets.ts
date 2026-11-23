@@ -246,7 +246,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
     return [
       `${GOAL_GENRE_PRESET_BRIEF_PREFIX} ${brief.interview ? [sceneGenre(brief.interview.genre).label, ...(brief.interview.secondary ? [sceneGenre(brief.interview.secondary).label] : [])].join(" + ") : brief.concept ? `${brief.concept.title} (${preset.label})` : preset.label}`,
       gameDesignBriefContext(brief),
-      preset.packId === "monster-collect" ? "확정 기획을 반영해 첫 판 MVP 를 build_monster_game 으로 지으세요(scale 생략: 맵 5장 — 시작 마을·연구소·1번길·다음 마을·체육관, 관장을 이기면 엔딩). 기획이 큰 캠페인(여러 체육관·리그)을 분명히 적었을 때만 scale:\"full\" 또는 gymCount 를 넘깁니다. 설정만으로 완료하지 마세요." : "확정 기획에서 핵심 루프 하나를 골라 플레이 가능한 첫 판 MVP 를 실제 편집 도구로 구현하세요: 맵 3~5개(시작 장소·길 하나·목적지, 필요하면 실내 1~2), 시작부터 엔딩까지 5~10분. 기획의 나머지는 사용자가 이어서 청할 때(다음 지역·다음 장) 키웁니다. 맵마다 장소·이동·상호작용 콘텐츠를 채우고, 핵심 행동 → 진행 → 결과가 엔딩까지 이어지게 하세요.",
+      preset.packId === "monster-collect" ? "확정 기획을 반영해 첫 판 MVP 를 build_monster_game 으로 지으세요(scale 생략: 맵 5장 — 시작 마을·연구소·1번길·다음 마을·체육관, 첫 배지가 끝 지점이고 엔딩은 만들지 않는다). 기획이 큰 캠페인(여러 체육관·리그)을 분명히 적었을 때만 scale:\"full\" 또는 gymCount 를 넘깁니다. 설정만으로 완료하지 마세요." : "확정 기획에서 핵심 루프 하나를 골라 플레이 가능한 첫 판 MVP 를 실제 편집 도구로 구현하세요: 맵 3~5개(시작 장소·길 하나·목적지, 필요하면 실내 1~2), 시작부터 마지막 지점까지 5~10분. 엔딩·결말 이벤트는 만들지 않고, 마지막 지점에 닿으면 사용자에게 «첫 판까지 만들었다» 고 안내한다. 기획의 나머지는 사용자가 이어서 청할 때(다음 지역·다음 장) 키웁니다. 맵마다 장소·이동·상호작용 콘텐츠를 채우고, 핵심 행동 → 진행 → 결과가 마지막 지점까지 이어지게 하세요.",
       ...(preset.packId === "monster-collect" ? [] : [startPlanPrompt(planStartForBrief(brief, brief.concept?.title ?? ""))]),
       "현재 프로젝트의 시스템 설정·맵·DB·타일 참고문서를 먼저 읽으세요. 기존 실제 ID를 조회한 뒤 참조하고, 저작 도구의 실행 결과를 확인하세요.",
       "기본 프리셋의 분위기나 임의의 NPC·아이템 수로 사용자 기획을 덮어쓰지 마세요. 분위기 변주만으로 선택한 수집·육성·전투 시스템을 끄지 마세요.",

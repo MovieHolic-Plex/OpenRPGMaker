@@ -10,8 +10,8 @@ import type { GameEvent, GameMap, Project } from "@/project/types";
 import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 
 export const MONSTER_TOWN_CARD =
-  "Monster-collecting (Pokémon-like) town: make_place {type:'village', style:'monster', name:town name, theme?:'meadow'|'desert'|'snow'|'coast'|'volcano', hints?:{title:game title (invent one if the project title is still «새 프로젝트» or a test name), region:region name, professor:professor name, firstRoute:first route name, gymCount:number of gyms — leave it out for the first playable version (5 maps: town, lab, Route 1, next town, its gym; beating the leader ends the game); set it only when the user asks for that many gyms or a full campaign, townSize:small|medium|large, streets:cross|ladder (two cross streets)|loop (ring road)|jog (bent main road), pond:true|false — set these only when the request named size, streets or a pond. Otherwise leave them empty (empty = a different town each run, filled = always the same town)}}. " +
-  "Works only in an empty project — the monster game generator builds the first town (hero's house, own room upstairs, professor's lab, monster center, item shop), Route 1 to the north (tall grass, wild encounters, trainers) and (by default) the next town with one gym whose leader ends the game — a 5-map first version (hero's house, center and shop interiors come only with gymCount), and locks the chipset to the monster family. " +
+  "Monster-collecting (Pokémon-like) town: make_place {type:'village', style:'monster', name:town name, theme?:'meadow'|'desert'|'snow'|'coast'|'volcano', hints?:{title:game title (invent one if the project title is still «새 프로젝트» or a test name), region:region name, professor:professor name, firstRoute:first route name, gymCount:number of gyms — leave it out for the first playable version (5 maps: town, lab, Route 1, next town, its gym; the first badge is where the first version stops — no ending); set it only when the user asks for that many gyms or a full campaign, townSize:small|medium|large, streets:cross|ladder (two cross streets)|loop (ring road)|jog (bent main road), pond:true|false — set these only when the request named size, streets or a pond. Otherwise leave them empty (empty = a different town each run, filled = always the same town)}}. " +
+  "Works only in an empty project — the monster game generator builds the first town (hero's house, own room upstairs, professor's lab, monster center, item shop), Route 1 to the north (tall grass, wild encounters, trainers) and (by default) the next town with one gym whose first badge is where the 5-map first version stops (no ending) (hero's house, center and shop interiors come only with gymCount), and locks the chipset to the monster family. " +
   "The generator's default residents are left out, so place townspeople with add_people (mapId = town map), as many as requested (where: 광장 square · 입구 entrance · 가운데 center…). Rebuilding or fixing (edit_place) is not possible.";
 
 const MONSTER_STYLE = /monster|몬스터|포켓|pokemon|pokémon/iu;
@@ -113,7 +113,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const total = Object.keys(after.maps).length;
   const mapIds = [townId, ...(routeId ? [routeId] : []), ...rooms, ...upstairs];
   warnings.push(gymCount === undefined
-    ? `첫 판(MVP) 맵 ${total}개: 시작 마을·연구소·1번길·다음 마을·체육관(관장을 이기면 엔딩). 회복·가게는 마을 건물 앞 사람이 맡는다.`
+    ? `첫 판(MVP) 맵 ${total}개: 시작 마을·연구소·1번길·다음 마을·체육관(첫 배지가 끝 지점, 엔딩 없음). 회복·가게는 마을 건물 앞 사람이 맡는다.`
     : `생성기가 첫 마을만 따로 짓지 못해 뒤 캠페인(체육관 ${gymCount}·맵 모두 ${total}개)도 함께 지었다 — 보고에 적는다.`);
   if (residents.length) warnings.push(`생성기의 기본 주민 ${residents.length}명을 뺐다 — 마을 사람은 add_people(mapId=${townId})로 둔다.`);
   return {

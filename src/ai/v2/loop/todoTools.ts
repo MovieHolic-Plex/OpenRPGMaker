@@ -21,6 +21,8 @@ import { correctionFor, englishFailureLine, englishVerbFailureHead, formatV2Fail
 import { covers, requestSkeleton, type SkeletonElement } from "./requestSkeleton";
 import { callInText, formatCall, isFilledCall, MISSING_HIGH_VERB, VERB_SCOPE, nextAfterFailure, nextForItem, scopeRedirect, skeletonFor, strategyAfterRepeat, type NextCall } from "./nextCall";
 import { isWriteRequest } from "../request/readers";
+import { endsAtMvp } from "../judge/blueprintScale";
+import { buildsWholeGame } from "../request/readers";
 
 const text = (value: unknown): PiToolExecResult => ({ content: [{ type: "text", text: typeof value === "string" ? value : JSON.stringify(value) }] });
 
@@ -127,10 +129,16 @@ function runCheck(env: PiAssistantV2Env, store: TodoStore, item: TodoItem): Chec
 /** 「모호함」 판정에 붙이는 한 줄 — 후보 id 는 판정 글에 있다. */
 const BIND_HINT = (id: string) => `→ bind the candidate this item means with todo(op:"bind", task:"${id}", mapId|eventId|itemId|troopId:<id>) and call done again.`;
 
+/** 이 턴의 요청 뼈대 — 새 게임 첫 판(MVP: 청사진이 아직 없거나 mvp)은 엔딩을 만들지 않으므로 첫 화면 지시문의 «엔딩» 낱말로 «엔딩에 닿는다» 항목을 두지 않는다. */
+export function turnSkeleton(env: PiAssistantV2Env): ReturnType<typeof requestSkeleton> {
+  const firstVersion = buildsWholeGame(env.ctx.project, env.request.task) && (!env.ctx.project.gameBlueprint || endsAtMvp(env.ctx.project));
+  return requestSkeleton(env.request.task).filter((e) => !(firstVersion && e.check?.kind === "ending"));
+}
+
 /** H1 요청 뼈대 맞추기: 모델 목록(added)이 덮지 못한 확인 요소를 «요청 뼈대» 단계로 덧붙이고, 다시 init 해 이제 덮인 뼈대 항목은 뺀다. 돌려주는 값: 결과에 붙일 한 줄. */
 function applySkeleton(env: PiAssistantV2Env, store: TodoStore, hooks: HookStats, added: readonly TodoItem[]): string | undefined {
   if (!isWriteRequest(env.request)) return undefined;
-  const els = requestSkeleton(env.request.task).filter((e) => e.check);
+  const els = turnSkeleton(env).filter((e) => e.check);
   if (!els.length) return undefined;
   const model = store.items.filter((i) => i.source === "model");
   for (const item of store.items) {

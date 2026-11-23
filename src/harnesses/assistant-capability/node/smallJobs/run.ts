@@ -20,6 +20,7 @@ import { buildFixture } from './fixtures';
 import { loadSuite, selectJobs, suiteFile, suiteLabel, type SmallJob } from './suite';
 import { createProjectStartSeed } from '../../../../editor/projectStartSeed';
 import { startScreenPrompt } from '../../../../editor/startScreenPrompt';
+import { splitNextSteps } from '../../../../ai/nextSteps';
 import type { NewProjectChoiceId } from '../../../../editor/newProjectChoices';
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../..');
@@ -197,6 +198,10 @@ async function runJob(job: SmallJob, root: string, pin: { file: string; config: 
     const after = readProjectSqlite(projectDir);
     keepSlim(resolve(dir, 'after.json.gz'), after);
     const check = runCheck(job.check, job.allow, job.checkFrom === 'lastTurn' && lastTurnBefore ? lastTurnBefore : before, after);
+    // 첫 판 MVP 는 조수가 «여기까지 만들었다» 안내와 다음 단계 칩을 보여야 한다(답 끝의 «다음에 해 볼 것» 덩어리).
+    if (job.check.kind === 'mvpStart' && check.pass && !splitNextSteps(String(metrics.answer ?? '')).steps.length) {
+      check.pass = false; check.outcome = { ok: false, note: `${check.outcome.note} · 안내(다음에 해 볼 것) 없음` }; check.reason = check.outcome.note;
+    }
     const { status, reason } = decide({ check, turnOutcomes: turns.map(turn => String(turn.outcome)), waitedLimit: waited === 'limit', errors: metrics.errors ?? [], toolCallCount: metrics.toolCallCount ?? 0, persistence, limitMs: options.limitMs, unsent: metrics.unsent, ...(job.maxToolCalls !== undefined ? { maxToolCalls: job.maxToolCalls } : {}), ...(job.honestPartial ? { honestPartial: job.honestPartial, answer: metrics.answer ?? '' } : {}) });
     return finish({ ...metrics, autoAnswered, persistence, check, status, pass: status === 'pass', reason });
   } catch (error) {

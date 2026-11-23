@@ -2,12 +2,13 @@
 //
 // 왜(2026-11-23 오너): 「ai 가 한 번에 '게임' 을 만들어 버리는 걸 지양하고 싶다. 처음에 프로젝트를 시작하면 맵을 3개에서 5개 정도
 // 만드는 소규모로 MVP 만 보여주는 방식」. 남기는 맵 = 시작 마을 · 박사 연구소(첫 동료) · 1번길(야생 조우·포획) · 다음 마을 · 그 체육관.
-// 체육관 관장을 이기면 배지와 함께 바로 엔딩이다(관측탑·리그는 짓지 않는다). 회복 센터·도구점 실내 대신 그 건물 문 앞에
+// 체육관 관장을 이기면 첫 배지와 함께 끝 지점(mvp_reached)이다 — 엔딩·관측탑·리그는 짓지 않는다. 회복 센터·도구점 실내 대신 그 건물 문 앞에
 // 회복 도우미·도구 상인을 세운다. 지운 맵으로 가던 문 이벤트는 지우고, 그 밖의 이동(진 뒤 돌아가기 등)은 시작 칸으로 돌린다.
 // 키우는 것은 사용자가 이어서 청한다(「다음 지역 만들어 줘」).
 import { isPassable } from "@/project/collision";
 import type { Command, GameEvent, GameMap, Project } from "@/project/types";
 import type { ExpeditionManifest } from "./world";
+import { MVP_REACHED_SWITCH } from "@/project/gameBlueprint";
 
 type Cell = { x: number; y: number };
 
@@ -102,25 +103,21 @@ export function trimExpeditionToMvp(project: Project, manifest: ExpeditionManife
     ]);
   }
 
-  // 체육관 관장을 이기면 배지를 받고 바로 엔딩(리그·관측탑 없음).
-  const endingId = project.endings?.[0]?.id;
+  // 체육관 관장을 이기면 첫 배지와 함께 첫 판(MVP) 끝 지점 — 엔딩은 만들지 않는다(2026-11-23 오너 «3맵에 굳이 엔딩이 있어야 하나»).
   const badge = project.system.monsterCampaign?.badges[0]?.switchId;
-  if (endingId && badge) {
+  if (badge) {
     for (const event of project.maps[kept[4]!]!.events) walk(event.pages, (cmd) => {
       for (const key of ["victoryBranch", "then", "branch"]) {
         const list = cmd[key];
         if (!Array.isArray(list)) continue;
         const at = list.findIndex((c: Record<string, unknown>) => (c?.kind === "switch" || c?.kind === "setSwitch") && c.switchId === badge && c.value !== false);
-        if (at < 0 || list.some((c: Record<string, unknown>) => c?.kind === "triggerEnding")) continue;
-        list.splice(list.length, 0,
-          { kind: "text", body: "첫 배지를 받았다! 이 섬의 모험은 이제 막 시작되었다." },
-          { kind: "setSwitch", switchId: "mx_ending", value: true },
-          { kind: "checkpointSave", label: "첫 배지" },
-          { kind: "triggerEnding", endingId });
+        if (at < 0 || list.some((c: Record<string, unknown>) => c?.kind === "setSwitch" && c.switchId === MVP_REACHED_SWITCH)) continue;
+        list.push({ kind: "setSwitch", switchId: MVP_REACHED_SWITCH, value: true }, { kind: "checkpointSave", label: "첫 배지" });
       }
     });
   }
-
+  project.endings = [];
+  if (!project.switches.some((s) => s.id === MVP_REACHED_SWITCH)) project.switches.push({ id: MVP_REACHED_SWITCH, name: "첫 판(MVP) 끝 지점" });
   for (const id of removed) delete project.maps[id];
   project.mapTree = { mapId: home.id, children: kept.filter((id) => id !== home.id).map((mapId) => ({ mapId, children: [] })) };
   const fallback = project.system.gameOver?.recoveryFallback;
@@ -130,6 +127,5 @@ export function trimExpeditionToMvp(project: Project, manifest: ExpeditionManife
     campaign.locations = campaign.locations?.filter((l) => keep.has(l.mapId));
     campaign.objectives = campaign.objectives?.filter((o) => o.id === "starter" || o.id === "gym_1");
   }
-  for (const ending of project.endings ?? []) if (ending.presentation) ending.presentation = { ...ending.presentation, credits: ending.presentation.credits?.replace("별빛섬 몬스터 원정", "별빛섬 몬스터 원정 · 첫 판") };
   return { kept, removed };
 }

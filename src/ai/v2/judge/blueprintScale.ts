@@ -5,6 +5,7 @@
 // 요청에 없는 선술집과 곁 퀘스트 셋을 지었다.
 // 요청 글의 낱말로 크기를 가르지 않는다 — 요청을 읽은 모델이 청사진에 적은 값만 읽는다(gameBlueprint.scale · battles).
 import type { Project } from "@/project/types";
+import { MVP_REACHED_SWITCH } from "@/project/gameBlueprint";
 
 const key = (s: string) => s.normalize("NFC").replace(/\s+/gu, "").toLowerCase();
 
@@ -19,6 +20,15 @@ export const smallGame = (project: Project): boolean => project.gameBlueprint?.s
 
 /** 첫 판 MVP 청사진인가(다음 단계 제안을 단다). */
 export const mvpGame = (project: Project): boolean => project.gameBlueprint?.scale === "mvp";
+
+/**
+ * 첫 판 MVP 의 끝 지점 스위치 — MVP 는 엔딩·결말 이벤트를 만들지 않는다(2026-11-23 오너: «3맵에 굳이 엔딩이 있어야하나? 그냥 거기까지만 만들고
+ * 사용자에게 MVP 까지 만들었다고 안내하면 그만»). 마지막 단계(몬스터는 첫 배지)가 이 스위치를 켜고, 자동 플레이·측정은 여기까지 간다.
+ */
+export { MVP_REACHED_SWITCH };
+
+/** 엔딩을 요구하는 검사를 건너뛸 게임인가 — MVP 청사진, 또는 MVP 끝 스위치를 든 몬스터 첫 판. */
+export const endsAtMvp = (project: Project): boolean => mvpGame(project) || (project.switches ?? []).some((s) => s.id === MVP_REACHED_SWITCH);
 
 /** 작은 게임의 세는 맵 하한 — 청사진이 말한 서로 다른 장소 수(단계의 장소와 장소 목록), 1 이상 full 이하. 작은 게임이 아니면 full. */
 export function mapsNeed(project: Project, full: number): number {

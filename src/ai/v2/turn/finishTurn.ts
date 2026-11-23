@@ -6,8 +6,8 @@ import { databaseChangeReport } from "../judge/sideEffectChecks";
 import { vqaSummary } from "../judge/vqa";
 import { vqaLedgerLines, vqaUnofferedBlockers } from "./vqaItems";
 import { countMaps, RECOMMENDED_MAPS } from "../judge/mapCount";
-import { mvpGame, smallGame } from "../judge/blueprintScale";
-import { mvpNextSteps, nextStepsBlock } from "../../nextSteps";
+import { endsAtMvp, smallGame } from "../judge/blueprintScale";
+import { MVP_DONE_LINE, mvpNextSteps, nextStepsBlock } from "../../nextSteps";
 import { countQuests, RECOMMENDED_QUESTS } from "../judge/questCount";
 import type { TurnContext } from "./context";
 import type { turnRecheck } from "./recheck";
@@ -36,8 +36,8 @@ export function turnFinish(turn: TurnContext & Pick<ReturnType<typeof turnRechec
         const report = todoReport({ store, draft: state.draft, leftovers, missing: [...session.missingArt], autoNotes, preexisting: [...preexisting.values()], dataChanges, ...(state.loopStop ? { loopStop: state.loopStop } : {}), ...(vqaLeft && !vqaLeft.clean ? { vqa: vqaLeft.text } : {}), vqaLedger: vqaLedgerLines(vqaBook, store), vqaUnoffered: vqaUnofferedBlockers(vqaBook, store) });
         options.onEvent?.({ type: "execution_status", name: "v2.todo.final", ok: report.complete, at: Date.now(), summary: `할 일 최종 — ${report.complete ? "완료" : "아직 완료 아님"} · ${store.view(0).split("\n")[0]}${report.receipts.length ? ` · 보고와 다른 것 ${report.receipts.length}` : ""}`, data: { complete: report.complete, receipts: report.receipts, list: store.view(), items: store.items, reinjections: state.reinjections, loopStop: state.loopStop } });
         // 첫 판 MVP 를 지은 턴은 끝에 «다음에 해 볼 것» 2~3개를 붙인다 — 화면이 칩으로 그린다(src/ai/nextSteps.ts).
-        const firstVersion = !!env && buildsWholeGame(env.ctx.project, env.request.task) && (mvpGame(env.ctx.project) || (!!env.ctx.project.system.monsterCampaign && Object.keys(env.ctx.project.maps).length <= 5));
-        const shown = firstVersion && env ? `${report.text}\n\n${nextStepsBlock(mvpNextSteps(env.ctx.project))}` : report.text;
+        const firstVersion = !!env && buildsWholeGame(env.ctx.project, env.request.task) && endsAtMvp(env.ctx.project);
+        const shown = firstVersion && env ? `${report.text}\n\n${MVP_DONE_LINE}\n\n${nextStepsBlock(mvpNextSteps(env.ctx.project))}` : report.text;
         if (store.items.length || /통과|없음|다\s*됐|완료/u.test(state.draft) || !state.draft) options.onEvent?.({ type: "assistant", text: shown });
       } else if (!(options.signal?.aborted) && !session.questions.length && dataChanges.length && state.draft.trim()) {
         // 할 일 없이 자료집만 고친 턴(「적 HP 전부 1.5배」「자료집을 사이버펑크로」)도 기계가 센 변경을 답 끝에 붙인다 — 모델 글만으로는 몇 개를 고치고

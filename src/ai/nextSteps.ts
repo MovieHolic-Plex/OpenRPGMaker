@@ -4,6 +4,8 @@
 import type { Project } from "@/project/types";
 
 export const NEXT_STEPS_HEADING = "다음에 해 볼 것:";
+/** 첫 판 끝 안내 — MVP 는 엔딩 없이 마지막 지점에서 멈추고 사용자에게 여기까지 만들었다고 알린다(2026-11-23 오너). */
+export const MVP_DONE_LINE = "첫 판(MVP)까지 만들었습니다. 엔딩 없이 마지막 지점에서 멈춥니다. 이어서 키우고 싶은 것을 골라 주세요.";
 const MAX_STEPS = 3;
 
 /** 이 게임에 맞는 다음 요청 문장 셋(사용자가 그대로 입력할 말). */

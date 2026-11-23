@@ -21,7 +21,7 @@ import { BLUEPRINT_PATH_IDS, strayStepCopies, walkBlueprint } from "../story/blu
 import { countMaps, MIN_COUNTED_MAPS, MIN_MAP_CELLS, planLinks } from "./mapCount";
 import { MAX_SAME_KIND, worldOf } from "../place/world";
 import { MIN_ACT_DEPTH, progressionDepth } from "./actDepth";
-import { depthNeed, mapsNeed, smallGame } from "./blueprintScale";
+import { depthNeed, endsAtMvp, mapsNeed, smallGame } from "./blueprintScale";
 import { countQuests, MIN_COUNTED_QUESTS } from "./questCount";
 import { assemblyTimeMismatches } from "@/project/blueprintAssembly";
 import { battleSites, healingSources } from "./combatChecks";
@@ -417,5 +417,7 @@ export function shipBlockers(project: Project, task: string): ShipBlocker[] {
     message: `전투가 있는데(${sites.slice(0, 3).join(", ")}${sites.length > 3 ? ` 외 ${sites.length - 3}곳` : ""}) 여관·회복약·회복 기술·상점 회복약이 하나도 없어 깎인 HP 가 돌아오지 않는다 — build_blueprint_path 를 다시 부르면 시작 맵에 회복의 샘(전원 회복·저장)과 시작 회복약 3개를 넣고 목표 줄이 샘 자리를 가리킨다. 직접 고치려면 place_savepoint{mapId:시작 맵, heal:true} 와 set_session_start{inventory:{item_potion:3}}.`,
     evidence: `battleSites=${sites.length} healingSources=0`,
   }] : [];
-  return [...reloadBlock, ...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...bundledPictureLeft(project), ...openingMissing(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
+  const all: ShipBlocker[] = [...reloadBlock, ...blueprint, ...noHealing, ...hidden, ...unlit, ...invisible, ...offArt, ...repeats, ...tints, ...objectives, ...romance, ...editorDefaultsLeft(project), ...bundledPictureLeft(project), ...openingMissing(project), ...endingClosureProblems(project), ...endingConditionsUnset(project), ...openingWithoutPlace(project), ...offPremiseArt(project, task), ...defaultPlaceLeaks(project, task), ...titleMismatch(project, task), ...assemblyTimeMismatches(project).map((m): ShipBlocker => ({ id: "assembly-time-mismatch", message: m.message, evidence: m.evidence })), ...requestedFeatureGaps(project, task), ...chaserWithoutHiding(project), ...selfLoops, ...silentExits, ...bossTalk, ...strays, ...sparkles, ...unreachable, ...spoilers];
+  // 첫 판 MVP 는 엔딩·결말을 만들지 않는다(2026-11-23 오너) — 엔딩 그림·맺음 글·엔딩 호출을 묻는 항목은 일감이 아니다.
+  return endsAtMvp(project) ? all.filter((b) => !/ending/u.test(b.id)) : all;
 }
