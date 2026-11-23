@@ -218,6 +218,8 @@ jobs:
         run: |
           node scripts/desktop-ondemand-assets.mjs
           test -s dist/ondemand-assets.json
+          # 패키지에 실릴 PNG 를 무손실로 다시 압축한다(oxipng, 화소 그대로). 저장소 원본은 그대로다.
+          node scripts/desktop-png-optimize.mjs
 
       - name: 데스크톱 패키지 압축
         if: steps.preflight.outputs.needed == 'true'
