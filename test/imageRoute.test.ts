@@ -14,8 +14,8 @@ import { isModelValidForAuthMode } from "@/ai/modelCatalog";
 const purposes = Object.keys(IMAGE_PURPOSES) as ImagePurpose[];
 const kindOf = (kind: string): ImagePurpose[] => purposes.filter((p) => IMAGE_PURPOSES[p].kind === kind);
 
-/** 새 설정의 계획 모델 — 도트 칸이 비면 이 모델이 도트를 찍는다(오너 결정 2026-11-19: 조수 기본은 ChatGPT GPT-6.2 Sol · medium). */
-const FACTORY_PLAN = { provider: "openai-codex", model: "gpt-6.2-sol", thinkingLevel: "medium" } as const;
+/** 새 설정의 계획 모델 — 도트 칸이 비면 이 모델이 도트를 찍는다(오너 결정 2026-11-23: 조수 기본은 Claude Sonnet 5.5 · high). */
+const FACTORY_PLAN = { provider: "anthropic", model: "claude-sonnet-5-5", thinkingLevel: "high" } as const;
 
 describe("그림 용도 라우터", () => {
   it("세 갈래가 모두 있다", () => {
@@ -31,8 +31,8 @@ describe("그림 용도 라우터", () => {
       expect(resolveImageRoute(purpose, config)).toMatchObject({ kind: "generative", providerId: "openai-codex", model: "codex-image-default" });
     }
   });
-  it("도트 용도는 이미지 모델이 아니라 텍스트 모델로 간다 — 새 설정은 계획 모델(ChatGPT Terra medium)을 따르고, 고른 칸이 있으면 그 모델이다", () => {
-    // 공장 기본(2026-11-19): 도트 칸이 비어 계획 모델을 따른다 — Google 연결을 요구하지 않는다.
+  it("도트 용도는 이미지 모델이 아니라 텍스트 모델로 간다 — 새 설정은 계획 모델(Claude Sonnet 5.5 high)을 따르고, 고른 칸이 있으면 그 모델이다", () => {
+    // 공장 기본(2026-11-23): 도트 칸이 비어 계획 모델을 따른다 — Google 연결을 요구하지 않는다.
     const route = resolveImageRoute("tileset", defaultAiConfig());
     expect(route).toMatchObject({ kind: "dot-text", surface: "workshop-draw", follows: true, model: FACTORY_PLAN });
     // 도트 칸을 고른 설정(2026-10-16 ~ 2026-11-16 의 새 설정 기본 = Google Argon 보통)은 그 모델 그대로다.

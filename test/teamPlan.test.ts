@@ -33,10 +33,14 @@ describe("first-run team defaults from what the user has", () => {
     expect(plan?.choice).toBeUndefined();
   });
 
-  it("prefers ChatGPT (Sol alone) over Claude when a ChatGPT subscription or login is present — owner decision 2026-11-19", () => {
-    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude"), cli("codex")] })))).toEqual({ lead: undefined, worker: "sol62", route: "cli" });
-    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], accounts: [oauth("openai-codex"), oauth("google-antigravity")] })))).toEqual({ lead: undefined, worker: "sol62", route: "account" });
-    expect(buildTeamPlan(inputs({ clis: [cli("claude"), cli("codex")] }))?.routes).toEqual([{ kind: "cli", cli: "codex" }]);
+  it("prefers Claude (Sonnet alone, any route) over ChatGPT when both are present — owner decision 2026-11-23, replacing ChatGPT-first of 2026-11-19", () => {
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude"), cli("codex")] })))).toEqual({ lead: undefined, worker: "sonnet", route: "cli" });
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], accounts: [oauth("openai-codex"), oauth("google-antigravity")] })))).toEqual({ lead: undefined, worker: "sonnet", route: "cli" });
+    expect(buildTeamPlan(inputs({ clis: [cli("claude"), cli("codex")] }))?.routes).toEqual([{ kind: "cli", cli: "claude" }]);
+    // 구독이 아니라 키로만 가진 Claude 도 ChatGPT 보다 앞선다.
+    const claudeKey = key("ANTHROPIC_API_KEY", "claude", { opus: "claude-opus-5-5", sonnet: "claude-sonnet-5-5", haiku: "claude-haiku-5-5" });
+    expect(shape(buildTeamPlan(inputs({ keys: [claudeKey], accounts: [oauth("openai-codex")] })))).toEqual({ lead: undefined, worker: "sonnet", route: "key" });
+    expect(shape(buildTeamPlan(inputs({ keys: [claudeKey], clis: [cli("codex")] })))).toEqual({ lead: undefined, worker: "sonnet", route: "key" });
   });
 
   it("keeps Sonnet alone when Claude is present without a ChatGPT subscription — an OpenAI API key does not take over", () => {
@@ -216,10 +220,15 @@ describe("setup wizard screens", () => {
     expect(ready.details?.rows.map((row) => `${row.label}: ${row.value}`)).toContain("맡는 AI: Sonnet 5.5");
     expect(ready.details?.rows.map((row) => row.value).join(" ")).not.toMatch(/Haiku/u);
 
-    // ChatGPT 가 같이 있으면 ChatGPT 하나로 시작한다(오너 결정 2026-11-19: 기본 AI 는 ChatGPT).
+    // ChatGPT 가 같이 있어도 Claude 하나로 시작한다(오너 결정 2026-11-23: 조수는 Sonnet 5.5 high — 2026-11-19 에는 ChatGPT 가 먼저였다).
     const withChatGpt = wizardScreen({ ...base, plan: buildTeamPlan(inputs({ clis: [cli("claude")], accounts: [oauth("openai-codex")] })) });
-    expect(withChatGpt.service).toBe("chatgpt");
-    expect(withChatGpt.title).toBe("ChatGPT로 연결돼 있어요");
+    expect(withChatGpt.service).toBe("claude");
+    expect(withChatGpt.title).toBe("Claude로 연결돼 있어요");
+
+    // Claude 가 없으면 ChatGPT 하나로 시작한다.
+    const chatGptOnly = wizardScreen({ ...base, plan: buildTeamPlan(inputs({ accounts: [oauth("openai-codex")] })) });
+    expect(chatGptOnly.service).toBe("chatgpt");
+    expect(chatGptOnly.title).toBe("ChatGPT로 연결돼 있어요");
 
     const both = wizardScreen({ ...base, plan: splitPlan(slot("opus", CLAUDE_CLI), slot("terra", { kind: "account", providerId: "openai-codex" })) });
     expect(both.title).toBe("AI가 연결돼 있어요");

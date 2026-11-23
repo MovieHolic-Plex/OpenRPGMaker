@@ -1,8 +1,11 @@
-// 조수의 공장 기본 = ChatGPT(Codex 계정 로그인) · GPT-6.2 Sol · medium — 한 곳(오너 결정 2026-11-19: 「기본 AI 를 ChatGPT 로」).
+// ChatGPT(Codex 계정 로그인) 길의 조수 기본 = GPT-6.2 Sol · medium — 한 곳.
+// 조수의 공장 기본은 아니다: 2026-11-19 에는 공장 기본이었지만 2026-11-23 오너 결정(「조수는 sonnet 5.5 high 만 쓰게」)으로
+// 공장 기본은 Claude Sonnet 5.5 · high(src/ai/claudeDefault.ts)다. ChatGPT 는 계속 고를 수 있다.
 //
-// 새로 설정하는 사용자(저장된 AI 설정이 없는 사람)의 계획·실행·시각·작문·시공·감독이 모두 이 모델 · 이 강도다.
+// ChatGPT 를 고른 설정의 계획·실행·시각·작문·시공·감독이 모두 이 모델 · 이 강도다.
 // ChatGPT 구독(Codex CLI) · 편집기 안 ChatGPT 로그인 첫 실행 마법사(planDefaults)도 같은 값을 쓴다.
-// 지난 기본: 2026-10-14 Google(Gemini 4 Argon) → 2026-11-16 Claude(Opus 5.5 medium) → 2026-11-19 ChatGPT(Terra medium).
+// 지난 기본: 2026-10-14 Google(Gemini 4 Argon) → 2026-11-16 Claude(Opus 5.5 medium) → 2026-11-19 ChatGPT(Terra medium)
+// → 2026-11-23 Claude(Sonnet 5.5 high).
 // 2026-11-19 오너 결정: Terra 로는 게임을 못 만든다 → GPT-6.2 Sol · medium.
 // 저장된 Terra 는 읽을 때 Sol 로 옮긴다. Google·Claude 계정 선택은 유지한다.
 //

@@ -198,9 +198,9 @@ describe("AI reasoning 설정 로드", () => {
     expect(config.reasoningEffort).toBe("high");
   });
 
-  it("기본 reasoningEffort는 medium이다(Argon medium 권장 조합, #2535)", () => {
+  it("기본 reasoningEffort는 high다(공장 기본 Claude Sonnet 5.5 high, 2026-11-23 — 그 전 ChatGPT medium 2026-11-19, Argon medium #2535)", () => {
     const config = defaultAiConfig();
-    expect(config.reasoningEffort).toBe("medium");
+    expect(config.reasoningEffort).toBe("high");
   });
 });
 
