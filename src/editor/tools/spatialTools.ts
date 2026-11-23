@@ -19,7 +19,7 @@ import { resolveSpatialDesign } from "@/project/spatial/resolve";
 import type { Project } from "@/project/types";
 import type { SpatialAuthoringDocument, SpatialConnection, SpatialId, SpatialOccurrence } from "@/project/spatial/types";
 import { authorizeSpatialToolChange, consumeSpatialToolPreview, issueSpatialToolPreview } from "./spatialToolState";
-import { formatCounts, describeObjectFilter, matchesObjectFilter, objectQueryRank, parseObjectFilter, topCounts } from "./objectSearch";
+import { collapseVariants, formatCounts, describeObjectFilter, matchesObjectFilter, matchesPlace, objectQueryRank, parseObjectFilter, topCounts } from "./objectSearch";
 import { tilesetFamily } from "@/project/tilesetFamily";
 import { SPATIAL_APPLY_SCHEMA, SPATIAL_BUILD_SCHEMA, SPATIAL_GET_SCHEMA, SPATIAL_LIST_SCHEMA, SPATIAL_OCCURRENCE_SCHEMA, SPATIAL_UPSERT_SCHEMA } from "./spatialToolSchemas";
 import { ToolError, type ToolDefinition } from "./types";
@@ -178,7 +178,7 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
     },
   },
   { name: "list_spatial_designs", mode: "read", domains: ["world", "map", "database"],
-    description: "Discover saved canonical designs across all project tilesets; query matches id, name or tags. object = reusable appearance/prop, including building exteriors; place = room, floor, yard, complete facility or settlement. Use environment:interior/outdoor for a direct place and placeKind:facility/settlement/natural for a grouped place. For a complete house search kind:place; for saved exteriors search kind:object with query:건물 외형 (or the authored name/tag). Context designs are only samples: search this full library before declaring an asset missing. List rows use kind:place plus placeKind:facility|settlement|natural; get_spatial_design returns the original upsert body. Read-only; never activates or seeds an empty library. When data.active is false the project has no spatialAuthoring document and canonical design/build tools reject with spatial-inactive; read_region_reference remains available — activation is a user-side editor action, not a tool. data.shared always lists the shared library every project sees (the editor 장소/오브젝트 tabs): kind:place rows are registered and reviewed places (use import_region_reference with the row id), kind:object rows are the shared object catalog (obj:… — leafless trees per climate, volcano peaks, climate terrain pieces such as lava pools, fumaroles, basalt, mesas and dunes, harbor boats/mooring posts/cargo, the gatehouse, generated buildings and house exteriors, village props like wells, lanterns, notice boards) plus this project's other kits (kit:/group:). Each row has owner (where it belongs — next to what), passage, tilesetId and preview; place it with stamp_object using the row id and follow owner. Narrow with place (place/use word), surface (floor|water|wall), maxWidth/maxHeight and family (art family; pass mapId to rank the current map's family first) — rows whose name or own tag equals the query come first; each row carries family and the summary counts rows per family. Page with limit/offset (default 40, data.shared.nextOffset).",
+    description: "Discover saved canonical designs across all project tilesets; query matches id, name or tags. object = reusable appearance/prop, including building exteriors; place = room, floor, yard, complete facility or settlement. Use environment:interior/outdoor for a direct place and placeKind:facility/settlement/natural for a grouped place. For a complete house search kind:place; for saved exteriors search kind:object with query:건물 외형 (or the authored name/tag). Context designs are only samples: search this full library before declaring an asset missing. List rows use kind:place plus placeKind:facility|settlement|natural; get_spatial_design returns the original upsert body. Read-only; never activates or seeds an empty library. When data.active is false the project has no spatialAuthoring document and canonical design/build tools reject with spatial-inactive; read_region_reference remains available — activation is a user-side editor action, not a tool. data.shared always lists the shared library every project sees (the editor 장소/오브젝트 tabs): kind:place rows are registered and reviewed places (use import_region_reference with the row id), kind:object rows are the shared object catalog (obj:… — leafless trees per climate, volcano peaks, climate terrain pieces such as lava pools, fumaroles, basalt, mesas and dunes, harbor boats/mooring posts/cargo, the gatehouse, generated buildings and house exteriors, village props like wells, lanterns, notice boards) plus this project's other kits (kit:/group:). Each row has owner (where it belongs — next to what), passage, tilesetId and preview; place it with stamp_object using the row id and follow owner. Put rows tagged with place (place/use word) first, narrow with surface (floor|water|wall), maxWidth/maxHeight and family (art family; pass mapId to rank the current map's family first) — rows whose name or own tag equals the query come first; variants of one object (name A/B/C, 1/2) fold into one row with variantIds; each row carries family and the summary counts rows per family. Page with limit/offset (default 40, data.shared.nextOffset).",
     parameters: SPATIAL_LIST_SCHEMA,
     run(project, args) {
       const kind = args.kind === undefined ? undefined : parseKind(args.kind, "kind");
@@ -211,9 +211,9 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
         .map((entry, index) => {
           const sheetName = entry.tilesetId ? project.tilesets[entry.tilesetId]?.name : undefined;
           const sheetTags = new Set([...(sheetName ? [sheetName] : []), "타일셋 킷"]);
-          return { entry, index, rank: objectQueryRank({ ...entry, width: entry.width ?? 0, height: entry.height ?? 0 }, query, sheetTags) };
+          return { entry, index, placed: matchesPlace(entry, filter.place), rank: objectQueryRank({ ...entry, width: entry.width ?? 0, height: entry.height ?? 0 }, query, sheetTags) };
         })
-        .sort((a, b) => a.rank - b.rank
+        .sort((a, b) => Number(b.placed) - Number(a.placed) || a.rank - b.rank
           || (mapFamily === undefined ? 0 : Number(entryFamily(b.entry) === mapFamily) - Number(entryFamily(a.entry) === mapFamily))
           || Number(b.entry.tags.includes("사용자 선택")) - Number(a.entry.tags.includes("사용자 선택"))
           || Number(activeTilesetIds.includes(b.entry.tilesetId ?? "")) - Number(activeTilesetIds.includes(a.entry.tilesetId ?? ""))
@@ -228,11 +228,13 @@ export const SPATIAL_TOOLS: readonly ToolDefinition[] = [
         else aliasNote = ` — no match for "${query}". Kit names are mostly English: try English words or a nearby object that stands in for it (corpse → coffin, notice → board/sign)`;
       }
       const byFamily = topCounts(shared.flatMap(entry => entryFamily(entry) ?? []), 6);
-      const sharedPage = { total: shared.length, offset,
-        rows: shared.slice(offset, offset + limit).map(entry => { const family = entryFamily(entry); return family ? { ...entry, family } : entry; }),
-        ...(offset + limit < shared.length ? { nextOffset: offset + limit } : {}), ...(byFamily.length > 1 ? { byFamily } : {}) };
+      const collapsed = collapseVariants(shared);
+      const folded = shared.length - collapsed.length;
+      const sharedPage = { total: collapsed.length, offset,
+        rows: collapsed.slice(offset, offset + limit).map(entry => { const family = entryFamily(entry); return family ? { ...entry, family } : entry; }),
+        ...(offset + limit < collapsed.length ? { nextOffset: offset + limit } : {}), ...(byFamily.length > 1 ? { byFamily } : {}) };
       const filterNote = [describeObjectFilter(filter), wantFamily && `계열 ${wantFamily}`].filter(Boolean).join(" · ");
-      const sharedNote = `공용 ${shared.length}건${filterNote ? `(${filterNote})` : ""}${byFamily.length > 1 ? ` · 계열별 ${formatCounts(byFamily)}` : ""}${aliasNote}`;
+      const sharedNote = `공용 ${collapsed.length}건${folded ? `(변형 ${folded}개는 variantIds 로 접음)` : ""}${filterNote ? `(${filterNote})` : ""}${byFamily.length > 1 ? ` · 계열별 ${formatCounts(byFamily)}` : ""}${aliasNote}`;
       if (project.spatialAuthoring === undefined) {
         return { summary: `장소 저작 비활성(프로젝트 설계 0) · ${sharedNote}`, data: { active: false, designs: [], shared: sharedPage } };
       }

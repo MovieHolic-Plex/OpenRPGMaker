@@ -74,7 +74,7 @@ export const SPATIAL_LIST_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA,
   offset: { type: "integer", minimum: 0, description: "Skip this many shared rows (data.shared.nextOffset)." },
   mapId: { ...text, description: "Optional. Rows in the same art family (TilesetDef.family) as this map's tileset rank first among equal matches." },
   family: { ...text, description: "Optional. Only rows of this art family (e.g. oprn-atlas, oprn-joseon, oprn-jp) or of the family of this tilesetId. Each row carries family; data.shared.byFamily counts them." },
-  place: { ...text, description: "Optional. Place/use word(s) every row must carry in its name or tags (e.g. 버스 정류장, 수산시장, 교실)." },
+  place: { ...text, description: "Optional. Place/use word(s) (e.g. 버스 정류장, 수산시장, 교실): rows carrying them in name or tags come first; other rows stay after them." },
   surface: { type: "string", enum: ["floor", "water", "wall"], description: "Optional. Object surface: floor, water (on water), wall (wall-mounted)." },
   maxWidth: { type: "integer", minimum: 1, maximum: 64, description: "Optional. Max width in tiles." },
   maxHeight: { type: "integer", minimum: 1, maximum: 64, description: "Optional. Max height in tiles." } }, []);

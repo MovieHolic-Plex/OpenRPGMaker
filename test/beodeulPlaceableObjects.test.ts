@@ -6,6 +6,7 @@ import { BEODEUL_OBJECT_IMAGE_ASSETS, BEODEUL_OBJECT_KIT_PREFIX, BEODEUL_OBJECT_
 import { bundledChipsetFrameCount, bundledChipsetTileSize, bundledChipsetTilesPerRow, findBundledImageAsset } from "@/assets/bundled";
 import { comboBrushPlacement } from "@/editor/comboBrush";
 import { filterProps, recommendProps } from "@/editor/propRecommendations";
+import { collapseVariants } from "@/editor/tools/objectSearch";
 import { runTool } from "@/editor/tools/toolRunner";
 import { bundledTilesetDiffForTest, restoreBundledTilesetDiffs } from "@/project/bundledTilesetDiff";
 import { isPassable } from "@/project/collision";
@@ -188,7 +189,10 @@ describe("bundled Beodeul placeable objects", () => {
   it("lists the full catalog through both assistant tools and the placement planner", () => {
     const { ctx, mapId, tilesetId } = projectWithObjectTileset();
     const query = "버들항 기본 기물";
-    const expected = BEODEUL_PLACEABLE_OBJECTS.map(object => ({
+    // 「이름 A·B」 변형은 한 행으로 접히고 나머지는 variantIds 로 남는다.
+    const folded = new Set(collapseVariants(BEODEUL_PLACEABLE_OBJECTS.map(object => ({ id: kitId(object.id), name: object.nameKo, tilesetId })))
+      .flatMap(row => row.variantIds ?? []));
+    const expected = BEODEUL_PLACEABLE_OBJECTS.filter(object => !folded.has(kitId(object.id))).map(object => ({
       id: kitId(object.id), width: object.widthTiles, height: object.heightTiles,
       tags: expect.arrayContaining([...object.tags]),
     }));
@@ -200,6 +204,7 @@ describe("bundled Beodeul placeable objects", () => {
       listedRows.push(...(listed.data as { objects: unknown[] }).objects);
     }
     expect(listedRows).toMatchObject(expected);
+    expect(new Set(listedRows.flatMap(row => (row as { variantIds?: string[] }).variantIds ?? []))).toEqual(folded);
     const plannerIndex = new Map(buildStampObjectIndex(ctx.project.tilesets[tilesetId]).map(entry => [entry.id, entry]));
     for (const object of BEODEUL_PLACEABLE_OBJECTS) {
       expect(plannerIndex.get(kitId(object.id))).toMatchObject({
@@ -241,17 +246,17 @@ describe("bundled Beodeul placeable objects", () => {
     }
   });
 
-  it("filters objects by place, surface and size and lists name matches first", () => {
+  it("puts place matches first, filters by surface and size, and lists name matches first", () => {
     const { ctx, mapId } = projectWithObjectTileset();
     type Listed = { objects: { id: string; name: string; width: number; height: number; surface: string; tags?: string[] }[]; total: number };
-    const place = runTool(ctx, "list_tileset_objects", { mapId, place: "버스 정류장" });
+    const all = (runTool(ctx, "list_tileset_objects", { mapId }).data as Listed).total;
+    const place = runTool(ctx, "list_tileset_objects", { mapId, place: "버스 정류장", limit: 200 });
     expect(place.ok, place.summary).toBe(true);
     const placed = place.data as Listed;
-    expect(placed.total).toBeGreaterThan(0);
-    for (const row of placed.objects) {
-      const fields = [row.name, ...(row.tags ?? [])];
-      for (const word of ["버스", "정류장"]) expect(fields.some(value => value.includes(word)), row.name).toBe(true);
-    }
+    expect(placed.total).toBe(all);
+    const hits = placed.objects.map(row => ["버스", "정류장"].every(word => [row.name, ...(row.tags ?? [])].some(value => value.includes(word))));
+    expect(hits[0]).toBe(true);
+    expect(hits.lastIndexOf(true)).toBeLessThan(hits.indexOf(false));
     const water = runTool(ctx, "list_tileset_objects", { mapId, surface: "water", maxWidth: 2 }).data as Listed;
     expect(water.total).toBeGreaterThan(0);
     for (const row of water.objects) { expect(row.surface).toBe("water"); expect(row.width).toBeLessThanOrEqual(2); }
@@ -260,6 +265,16 @@ describe("bundled Beodeul placeable objects", () => {
     expect(named.indexOf(true)).toBe(0);
     expect(named.lastIndexOf(true)).toBeLessThan(named.indexOf(false) === -1 ? named.length : named.indexOf(false));
     expect(runTool(ctx, "list_tileset_objects", { mapId, surface: "ceiling" }).ok).toBe(false);
+  });
+
+  it("folds lettered variants of one object into a single row", () => {
+    const ctx = { project: createBlankProject() };
+    const listed = runTool(ctx, "list_spatial_designs", { kind: "object", query: "편의점", limit: 200 });
+    expect(listed.ok, listed.summary).toBe(true);
+    const rows = (listed.data as { shared: { rows: { name: string; tilesetId: string; variantIds?: string[] }[] } }).shared.rows;
+    const bases = rows.filter(row => /\s(?:[A-Z]|\d{1,2})$/u.test(row.name)).map(row => `${row.tilesetId}|${row.name.replace(/\s+(?:[A-Z]|\d{1,2})$/u, "")}`);
+    expect(new Set(bases).size).toBe(bases.length);
+    expect(rows.some(row => (row.variantIds?.length ?? 0) > 0)).toBe(true);
   });
 
   it("restricts shared object search to one art family and labels each row with it", () => {
