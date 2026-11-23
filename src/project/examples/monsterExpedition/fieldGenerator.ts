@@ -49,6 +49,182 @@ interface Learned {
   mass: Cls; cave: boolean; voidRing: boolean; seaFrame: boolean; hall: boolean; wallTop: number; obstacles: Cls[];
   landmarks: { name: string; w: number; h: number; lower: number[]; upper: number[] }[];
   depth?: Uint8Array;
+  /** 큰 방 테두리 그림(벽 면 두 줄 + 어둠 천장과 그 가장자리 선). 있으면 벽 덩이는 규칙으로 칠한다. */
+  frame?: HallFrame;
+  rim?: CaveRim;
+}
+
+/**
+ * 동굴 견본의 테두리 한 줄(어둠 테두리 바로 안쪽). 자리마다 그림이 정해져 있다: 네 귀퉁이(oc38·oc76·oc19·oc137),
+ * 위쪽 = 벽 윗면(top110), 왼쪽·오른쪽 = 옆면(side55·side205), 아래쪽 = 벽 앞면. 이웃 점수로 고르면 드문 귀퉁이 그림이
+ * 변 한 줄을 채우거나(아래 테두리가 oc137 로 죽 깔림) 옆면에 안쪽 귀퉁이가 왔다 — 견본 테두리에서 변마다 뽑아 쓴다.
+ */
+export interface CaveRim {
+  readonly corners: readonly [tl: number, tr: number, bl: number, br: number];
+  readonly top: readonly number[]; readonly bottom: readonly number[]; readonly left: readonly number[]; readonly right: readonly number[];
+}
+
+/** 테두리 칸이 바닥에 닿지 않는 본래 모양인가(출구 통로 옆은 오토타일이 다듬는다). 변: 0 위 1 아래 2 왼 3 오른 4 귀퉁이. */
+function rimSide(W: number, H: number, x: number, y: number, walk: (x: number, y: number) => boolean): number {
+  if (walk(x, y)) return -1;
+  const corner = (x === 1 || x === W - 2) && (y === 1 || y === H - 2);
+  if (corner) return 4;
+  let side = -1, inward: [number, number] = [0, 0];
+  if (y === 1 && x > 1 && x < W - 2) { side = 0; inward = [0, 1]; }
+  else if (y === H - 2 && x > 1 && x < W - 2) { side = 1; inward = [0, -1]; }
+  else if (x === 1 && y > 1 && y < H - 2) { side = 2; inward = [1, 0]; }
+  else if (x === W - 2 && y > 1 && y < H - 2) { side = 3; inward = [-1, 0]; }
+  if (side < 0) return -1;
+  const along: [number, number] = [inward[1], inward[0]];
+  for (const [dx, dy] of [inward, along, [-along[0], -along[1]]] as const) if (walk(x + dx, y + dy)) return -1;
+  return side;
+}
+
+function learnRim(t: FieldTemplate, walk: (x: number, y: number) => boolean, voidAt: (x: number, y: number) => boolean): CaveRim | undefined {
+  const W = t.width, H = t.height;
+  if (!voidAt(0, 0) || !voidAt(W - 1, H - 1)) return undefined;
+  const at = (x: number, y: number) => t.lower[y * W + x]!;
+  const sides: number[][] = [[], [], [], []];
+  for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
+    const s = rimSide(W, H, x, y, walk);
+    if (s < 0 || s > 3 || voidAt(x, y)) continue;
+    // 배울 때는 안쪽 두 줄·양옆까지 모두 막힘인 테두리만 본다 — 안쪽 벽 덩이 옆 칸은 그 덩이에 맞춘 조각이라 다른 자리에 옮기면 작은 턱이 남았다.
+    const [ix, iy] = [[0, 1], [0, -1], [1, 0], [-1, 0]][s]!;
+    let solid = true;
+    for (let d = 1; d <= 2 && solid; d++) for (let a = -1; a <= 1 && solid; a++) if (walk(x + ix! * d + iy! * a, y + iy! * d + ix! * a)) solid = false;
+    if (solid) sides[s]!.push(at(x, y));
+  }
+  if (sides.some(s => s.length < 2)) return undefined;
+  return { corners: [at(1, 1), at(W - 2, 1), at(1, H - 2), at(W - 2, H - 2)], top: sides[0]!, bottom: sides[1]!, left: sides[2]!, right: sides[3]! };
+}
+
+/** 동굴 테두리 불일치 칸 수(검사·QA 용): 본래 모양인 테두리 칸의 그림이 견본의 같은 변 그림이 아니면 센다. */
+export function caveRimDefects(rim: CaveRim, W: number, H: number, lower: readonly number[], walk: (x: number, y: number) => boolean): { x: number; y: number; tile: number; want: number | string }[] {
+  const sets = [rim.top, rim.bottom, rim.left, rim.right].map(s => new Set(s));
+  const names = ["top", "bottom", "left", "right"];
+  const out: { x: number; y: number; tile: number; want: number | string }[] = [];
+  for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
+    const s = rimSide(W, H, x, y, walk), v = lower[y * W + x]!;
+    if (s === 4) { const want = rim.corners[(x === 1 ? 0 : 1) + (y === 1 ? 0 : 2)]!; if (v !== want) out.push({ x, y, tile: v, want }); }
+    else if (s >= 0 && !sets[s]!.has(v)) out.push({ x, y, tile: v, want: `rim-${names[s]}` });
+  }
+  return out;
+}
+
+/**
+ * 큰 방(밤막회사·유적·탑) 견본의 테두리 문법. 방 밖은 어둠 천장(edge_v)이고, 바닥과 닿는 쪽에만 선이 있다:
+ * 바닥 북쪽은 벽 면 두 줄(wall_up 위·wall_dn 아래), 천장 칸의 서·동·북에 바닥이나 벽 면이 닿으면 그쪽 선(edge_l·edge_r·edge_t),
+ * 대각선으로만 닿으면 위 귀퉁이 점(edge_lt = 왼쪽 위 점·edge_rt = 오른쪽 위 점). 탑처럼 견본이 선을 쓰지 않으면 천장은 전부 edge_v.
+ * 그림이 없는 모양(선 둘·선+반대 점·점 둘)은 배치 단계에서 바닥으로 펴서 만들지 않는다(normalizeHallMass).
+ */
+export interface HallFrame {
+  readonly up: number; readonly upL: number; readonly upR: number; readonly dn: number; readonly dnL: number; readonly dnR: number;
+  /** 같은 열에 위·아래로 짝지어 놓는 벽 면 무늬(환기구·기둥·창살). */
+  readonly deco: readonly (readonly [up: number, dn: number])[];
+  readonly lines: boolean;
+  readonly v: number; readonly l: number; readonly r: number; readonly t: number; readonly lt: number; readonly rt: number;
+}
+
+const FRAME_SHAPES = ["", "W", "E", "N", "dNW", "dNE"] as const;
+type FrameShape = (typeof FRAME_SHAPES)[number];
+
+/** 견본 이름표에서 큰 방 테두리 그림을 찾는다(벽 면·천장 그림이 견본 바닥층에 실제로 깔린 묶음만). */
+function learnFrame(t: FieldTemplate): HallFrame | undefined {
+  const used = new Set(t.lower);
+  for (const fam of new Set(Object.keys(t.names).map(n => n.split("_")[0]!))) {
+    const id = (s: string) => t.names[`${fam}_${s}`];
+    const need = ["wall_up", "wall_dn", "edge_v", "edge_l", "edge_r", "edge_t", "edge_lt", "edge_rt"].map(id);
+    if (need.some(v => v === undefined) || !used.has(id("wall_up")!) || !used.has(id("wall_dn")!)) continue;
+    const [up, dn, v, l, r, tt, lt, rt] = need as number[];
+    const deco: [number, number][] = [];
+    for (const n of Object.keys(t.names)) {
+      const m = n.startsWith(`${fam}_wall_up_`) ? n.slice(`${fam}_wall_up_`.length) : undefined;
+      if (!m || m === "l" || m === "r") continue;
+      const a = id(`wall_up_${m}`), b = id(`wall_dn_${m}`);
+      if (a !== undefined && b !== undefined && used.has(a) && used.has(b)) deco.push([a, b]);
+    }
+    return { up: up!, upL: id("wall_up_l") ?? up!, upR: id("wall_up_r") ?? up!, dn: dn!, dnL: id("wall_dn_l") ?? dn!, dnR: id("wall_dn_r") ?? dn!, deco,
+      lines: used.has(l!) || used.has(r!) || used.has(tt!), v: v!, l: l!, r: r!, t: tt!, lt: lt!, rt: rt! };
+  }
+  return undefined;
+}
+
+/**
+ * 벽 덩이 칸 하나의 역할: 바닥 바로 위 = 벽 면 아래(dn), 그 위 = 벽 면 위(up), 나머지 = 천장과 그 선 모양.
+ * open(x, y) 는 벽 덩이가 아닌 칸(바닥·칸막이·명소). 맨 아래 줄의 바닥(출구 틈)은 같은 줄 이웃에게 천장으로 보인다 — 견본도 출구 양옆은 edge_t 다.
+ * 그림이 없는 모양이면 "bad".
+ */
+function frameRole(W: number, H: number, mass: (x: number, y: number) => boolean, x: number, y: number): "dn" | "up" | FrameShape | "bad" {
+  const open = (nx: number, ny: number) => nx >= 0 && ny >= 0 && nx < W && ny < H && !mass(nx, ny) && !(ny === H - 1 && y === H - 1 && nx !== x);
+  const face = (nx: number, ny: number) => nx >= 0 && ny >= 0 && nx < W && ny < H && mass(nx, ny) && (open(nx, ny + 1) || (mass(nx, ny + 1) && open(nx, ny + 2)));
+  if (open(x, y + 1)) return mass(x, y - 1) ? "dn" : "bad";
+  if (mass(x, y + 1) && open(x, y + 2)) return "up";
+  const side = (nx: number, ny: number) => open(nx, ny) || face(nx, ny);
+  const w = side(x - 1, y), e = side(x + 1, y), n = side(x, y - 1);
+  const nw = side(x - 1, y - 1), ne = side(x + 1, y - 1);
+  const lines = [w && "W", e && "E", n && "N"].filter(Boolean) as string[];
+  if (lines.length > 1) return "bad";
+  if (lines.length === 1) {
+    // 선 하나와 그 선 반대편 위 대각선의 점은 한 그림에 없다(edge_l 에 오른쪽 위 점 없음).
+    if ((w && ne) || (e && nw)) return "bad";
+    return lines[0] as FrameShape;
+  }
+  if (nw && ne) return "bad";
+  return nw ? "dNW" : ne ? "dNE" : "";
+}
+
+/** 큰 방 배치에서 그림이 없는 테두리 모양의 벽 덩이 칸을 바닥으로 편다(가장자리 줄은 그대로 둔다 — 맵 밖으로 새지 않게). */
+function normalizeHallMass(g: Cls[], W: number, H: number, mass: Cls, fill: Cls): void {
+  const isMass = (x: number, y: number) => x < 0 || y < 0 || x >= W || y >= H || g[y * W + x] === mass;
+  for (let pass = 0; pass < 40; pass++) {
+    let changed = false;
+    for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
+      if (g[y * W + x] !== mass || frameRole(W, H, isMass, x, y) !== "bad") continue;
+      g[y * W + x] = fill; changed = true;
+    }
+    if (!changed) return;
+  }
+}
+
+/** 벽 덩이 칸에 테두리 그림을 칠한다. 벽 면 무늬는 같은 열 위·아래 짝으로만 놓는다. */
+function paintFrame(f: HallFrame, W: number, H: number, mass: (x: number, y: number) => boolean, lower: number[], upper: number[], hash: (x: number, y: number) => number): void {
+  const role = (x: number, y: number) => frameRole(W, H, mass, x, y);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    if (!mass(x, y)) continue;
+    const r = role(x, y), i = y * W + x;
+    upper[i] = -1;
+    if (r === "dn" || r === "up") {
+      const top = r === "up" ? y : y - 1;
+      const isFace = (nx: number) => mass(nx, y) && role(nx, y) === r;
+      const left = !isFace(x - 1), right = !isFace(x + 1);
+      const deco = !left && !right && f.deco.length && top >= 0 && role(x, top) === "up" && hash(x, top) % 7 === 0 ? f.deco[hash(x, top) % f.deco.length] : undefined;
+      lower[i] = deco ? deco[r === "up" ? 0 : 1] : r === "up" ? (left ? f.upL : right ? f.upR : f.up) : (left ? f.dnL : right ? f.dnR : f.dn);
+      continue;
+    }
+    if (!f.lines || r === "bad" || r === "") { lower[i] = f.v; continue; }
+    lower[i] = { W: f.l, E: f.r, N: f.t, dNW: f.lt, dNE: f.rt }[r];
+  }
+}
+
+/**
+ * 큰 방 테두리 불일치 칸 수(검사·QA 용). 바닥층만 보고 칸을 「천장 그림·벽 면 그림·그 밖」으로 나눈 뒤,
+ * 벽 면이 아닌 덩이 칸 아래에 바닥이 바로 붙었거나(벽 면 없음), 벽 면이 두 줄 짝이 아니거나, 천장 그림의 선·점이 이웃과 맞지 않으면 센다.
+ */
+export function hallFrameDefects(f: HallFrame, W: number, H: number, lower: readonly number[]): { x: number; y: number; tile: number; want: number | string }[] {
+  const ups = new Set([f.up, f.upL, f.upR, ...f.deco.map(d => d[0])]), dns = new Set([f.dn, f.dnL, f.dnR, ...f.deco.map(d => d[1])]);
+  const ceil = new Set([f.v, f.l, f.r, f.t, f.lt, f.rt]);
+  const mass = (x: number, y: number) => { if (x < 0 || y < 0 || x >= W || y >= H) return true; const v = lower[y * W + x]!; return ups.has(v) || dns.has(v) || ceil.has(v); };
+  const out: { x: number; y: number; tile: number; want: number | string }[] = [];
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    if (!mass(x, y)) continue;
+    const v = lower[y * W + x]!, r = frameRole(W, H, mass, x, y);
+    if (r === "bad") { out.push({ x, y, tile: v, want: "no-tile-shape" }); continue; }
+    if (r === "up") { if (!ups.has(v)) out.push({ x, y, tile: v, want: f.up }); continue; }
+    if (r === "dn") { if (!dns.has(v)) out.push({ x, y, tile: v, want: f.dn }); continue; }
+    const want = !f.lines || r === "" ? f.v : { W: f.l, E: f.r, N: f.t, dNW: f.lt, dNE: f.rt }[r];
+    if (v !== want) out.push({ x, y, tile: v, want });
+  }
+  return out;
 }
 type Stamp = [kit: number, x: number, y: number];
 
@@ -183,6 +359,8 @@ function learn(tileset: TilesetDef, t: FieldTemplate): Learned {
     cliff: pair?.[0], face: pair?.[1], faceRows, patches: [...counts.keys()].filter(c => c.startsWith("p:") && !PATH_GROUPS.includes(c.slice(2)) && counts.get(c)! >= 8),
     mass, cave: voidCount >= 10, voidRing: voidCount >= 10, seaFrame: !!water && (counts.get(M) ?? 0) < N * 0.12 && (counts.get(water) ?? 0) > N * 0.2,
     landmarks, hall, wallTop: Math.max(2, Math.min(4, wallTop)), obstacles: [...counts.keys()].filter(c => c.startsWith("o:")),
+    frame: hall ? learnFrame(t) : undefined,
+    rim: voidCount >= 10 ? learnRim(t, (x, y) => x >= 0 && y >= 0 && x < W && y < H && passable(y * W + x), (x, y) => cls[y * W + x] === "V") : undefined,
   };
   cache.set(t, learned);
   return learned;
@@ -273,6 +451,8 @@ function layout(L: Learned, W: number, H: number, plan: FieldPlan, r: () => numb
       }
     }
     landmarks((plan.landmarks ?? 2) + 3);
+    // 귀퉁이 깎기·칸막이로 생긴 그림 없는 벽 모양(한 칸 기둥·한 줄 벽·선 두 개가 닿는 천장)은 바닥으로 편다 — 천장이 조각나 보였다.
+    if (L.frame) normalizeHallMass(g, W, H, L.mass, F);
     return { g, stamps };
   }
   if (L.cave) {
@@ -375,6 +555,29 @@ function layout(L: Learned, W: number, H: number, plan: FieldPlan, r: () => numb
   return { g, stamps };
 }
 
+/**
+ * 동굴 테두리 한 줄을 견본 테두리 그림으로 칠한다. 오토타일 다듬기 뒤에 한 번 더 부른다 — 테두리 그림 일부(at55·앞면)는 오토타일 조각이라
+ * 엔진이 옆의 귀퉁이 그림(오토타일 밖)을 보고 안쪽 귀퉁이로 바꿔 놓았다(왼쪽 위 귀퉁이·아래 양 끝의 홈).
+ */
+function paintRim(L: Learned, g: readonly Cls[], W: number, H: number, seed: number, lower: number[], upper: number[]): void {
+  const rim = L.rim;
+  if (!rim) return;
+  const walk = (x: number, y: number) => x >= 0 && y >= 0 && x < W && y < H && L.walkable.has(g[y * W + x]!);
+  const lists = [rim.top, rim.bottom, rim.left, rim.right];
+  for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) {
+    const s = rimSide(W, H, x, y, walk), i = y * W + x;
+    if (s < 0 || g[i] === "V") continue;
+    const h = (Math.imul(x + 3, 73856093) ^ Math.imul(y + 5, 19349663) ^ Math.imul(seed | 0, 83492791)) >>> 0;
+    lower[i] = s === 4 ? rim.corners[(x === 1 ? 0 : 1) + (y === 1 ? 0 : 2)]! : lists[s]![h % lists[s]!.length]!;
+    upper[i] = -1;
+  }
+}
+
+/** 동굴 테두리처럼 자리로 정해진 칸(오토타일 엔진이 다시 다듬지 않는 칸)인가. QA 의 오토타일 재성형 지표가 뺀다. */
+export function isCaveRimCell(W: number, H: number, x: number, y: number, walk: (x: number, y: number) => boolean): boolean {
+  return rimSide(W, H, x, y, walk) >= 0;
+}
+
 function sameWalk(L: Learned, a: Cls, b: Cls): boolean { return a === b || (L.walkable.has(a) && L.walkable.has(b) && (a === F || b === F) && a !== "G" && b !== "G"); }
 
 /** 칸 종류 격자를 견본에서 배운 규칙으로 칠한다. */
@@ -436,6 +639,9 @@ function paint(L: Learned, t: FieldTemplate, g: Cls[], W: number, H: number, see
     const s = pick(x, y, list, s0 => score(x, y, s0) * 8 + (hash(x, y, s0) & 7));
     lower[i] = t.lower[s]!; upper[i] = t.upper[s] ?? -1;
   }
+  // 큰 방의 벽 덩이는 이웃 점수로 고르지 않고 견본 테두리 문법으로 칠한다(견본 테두리는 한 칸 띠뿐이라 깊은 칸·깎은 귀퉁이에 아무 조각이나 왔다).
+  paintRim(L, g, W, H, seed, lower, upper);
+  if (L.frame) paintFrame(L.frame, W, H, (x, y) => x < 0 || y < 0 || x >= W || y >= H || g[y * W + x] === L.mass, lower, upper, (x, y) => hash(x, y, 3));
   for (const [k, x0, y0] of stamps) {
     const kit = L.landmarks[k]!;
     kit.lower.forEach((v, j) => { const i = (y0 + ((j / kit.w) | 0)) * W + x0 + (j % kit.w); if (v >= 0) lower[i] = v; if (kit.upper[j]! >= 0) upper[i] = kit.upper[j]!; });
@@ -468,6 +674,7 @@ export function generateFieldMap(project: Project, key: string, t: FieldTemplate
     const { lower, upper } = paint(L, t, g, W, H, seed, stamps);
     const map = { id: `gen_${key}`, name: key, width: W, height: H, tilesetId: t.tilesetId, tileSize: 16, lowerTiles: lower, upperTiles: upper, events: [] } as unknown as GameMap;
     shapeAllAutotileGroupsAround(map, groups, Array.from({ length: W * H }, (_, i) => ({ x: i % W, y: (i / W) | 0 })));
+    paintRim(L, g, W, H, seed, map.lowerTiles, map.upperTiles);
     if (!connected(project, map, plan)) continue;
     const hit = maxTemplateOverlap({ width: W, height: H, lower: map.lowerTiles, tilesetId: t.tilesetId }, templates, { floor: FIELD_OVERLAP_GATE });
     const result: FieldResult = { width: W, height: H, lower: map.lowerTiles, upper: map.upperTiles, overlap: hit?.overlap ?? 0, closest: hit?.key ?? "", attempts: attempt + 1 };
@@ -479,7 +686,7 @@ export function generateFieldMap(project: Project, key: string, t: FieldTemplate
 }
 
 /** QA 스크립트가 배치 격자·배운 규칙을 들여다보는 입구. */
-export const fieldGeneratorInternals = { learn, layout, paint, connected, rng, sizeFor };
+export const fieldGeneratorInternals = { learn, layout, paint, connected, rng, sizeFor, learnFrame };
 
 /** 남쪽 출구에서 걸어 북쪽 출구(through)에 닿고, 걸을 수 있는 칸의 대부분에 닿는가. */
 function connected(project: Project, map: GameMap, plan: FieldPlan): boolean {

@@ -5,10 +5,11 @@ import { describe, expect, it } from "vitest";
 import { createMonsterExpedition } from "@/project/examples/monsterExpedition";
 import templateData from "@/project/examples/monsterExpedition/mapTemplates.json" with { type: "json" };
 import { maxTemplateOverlap, templateOverlap, TEMPLATE_COPY_GATE, type OverlapGrid } from "@/project/mapTemplateOverlap";
-import { canMove } from "@/project/collision";
+import { canMove, layeredPassability } from "@/project/collision";
+import { caveRimDefects, fieldGeneratorInternals, hallFrameDefects, type FieldTemplate } from "@/project/examples/monsterExpedition/fieldGenerator";
 import type { GameMap, Project } from "@/project/types";
 
-type Built = { project: Project; manifest: { maps: { id: string; role: string; entry: { x: number; y: number } }[] } };
+type Built = { project: Project; manifest: { maps: { id: string; role: string; template: string; entry: { x: number; y: number } }[] } };
 const templates = templateData as unknown as Record<string, OverlapGrid>;
 const grid = (m: GameMap): OverlapGrid => ({ width: m.width, height: m.height, lower: m.lowerTiles, tilesetId: m.tilesetId });
 const fieldMaps = ({ manifest }: Built) => manifest.maps.filter((m) => m.role === "field" || m.role === "dungeon");
@@ -46,6 +47,42 @@ describe("monster expedition field generator", () => {
       const blocked = fieldMaps(built).flatMap((m) => unreachable(built.project, built.project.maps[m.id]!, m.entry));
       expect(blocked, `mapSeed ${mapSeed}`).toEqual([]);
     }
+  }, 180_000);
+
+  // 큰 방(밤막회사·유적·탑) 천장이 조각나고(이웃 점수로 테두리 조각을 골랐다) 동굴 테두리 아래 줄이 귀퉁이 그림으로 채워지던 판(2026-11-23).
+  it("draws hall ceilings and cave rims by the template's frame rule", () => {
+    const ruled = new Set<string>();
+    for (const mapSeed of [0, 1]) {
+      const built = createMonsterExpedition({ mapSeed }) as unknown as Built;
+      const bad: string[] = [];
+      for (const m of fieldMaps(built)) {
+        const map = built.project.maps[m.id]!, tileset = built.project.tilesets[map.tilesetId]!;
+        const L = fieldGeneratorInternals.learn(tileset, (templateData as unknown as Record<string, FieldTemplate>)[m.template]!);
+        const walk = (x: number, y: number) => {
+          if (x < 0 || y < 0 || x >= map.width || y >= map.height) return false;
+          const i = y * map.width + x, p = layeredPassability(tileset, [map.lowerTiles[i]!, -1, map.upperTiles[i] ?? -1, -1]);
+          return p.up || p.down || p.left || p.right;
+        };
+        if (L.frame) { ruled.add(`${m.id}:frame`); bad.push(...hallFrameDefects(L.frame, map.width, map.height, map.lowerTiles).map((d) => `${m.id} ${d.x},${d.y} ${d.tile}->${d.want}`)); }
+        if (L.rim) { ruled.add(`${m.id}:rim`); bad.push(...caveRimDefects(L.rim, map.width, map.height, map.lowerTiles, walk).map((d) => `${m.id} ${d.x},${d.y} ${d.tile}->${d.want}`)); }
+      }
+      expect(bad, `mapSeed ${mapSeed}`).toEqual([]);
+    }
+    // 검사가 빈손으로 통과하지 않게: 큰 방 넷·동굴 넷에서 규칙을 찾아야 한다.
+    expect([...ruled].sort()).toEqual(["mx_map_cave:rim", "mx_map_ghost_tower:frame", "mx_map_hideout:frame", "mx_map_ice_cave:rim", "mx_map_lava_cave:rim", "mx_map_observatory:frame", "mx_map_ruins:frame", "mx_map_sea_cave:rim"]);
+  }, 180_000);
+
+  it("counts a hall ceiling cell whose edge line faces the wrong way", () => {
+    const built = createMonsterExpedition() as unknown as Built;
+    const m = fieldMaps(built).find((x) => x.id === "mx_map_hideout")!;
+    const map = built.project.maps[m.id]!;
+    const L = fieldGeneratorInternals.learn(built.project.tilesets[map.tilesetId]!, (templateData as unknown as Record<string, FieldTemplate>)[m.template]!);
+    const f = L.frame!;
+    const i = map.lowerTiles.findIndex((v) => v === f.l);
+    expect(i).toBeGreaterThanOrEqual(0);
+    const broken = [...map.lowerTiles];
+    broken[i] = f.r;
+    expect(hallFrameDefects(f, map.width, map.height, broken).map((d) => d.y * map.width + d.x)).toEqual([i]);
   }, 180_000);
 
   it("builds a different layout for a different seed", () => {
