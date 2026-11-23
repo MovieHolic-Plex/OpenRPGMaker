@@ -99,7 +99,7 @@ describe("Codex native image real worker dispatch and transport", () => {
     assert.equal((await request({ prompt: "wizard" }, "unknown-provider")).status, 409);
   });
   it("preserves JPEG bytes and detects MIME instead of trusting format labels", async () => {
-    const jpeg = await readFile(new URL("../public/assets/generated/welcome/_cinematic_backup/slide-03.jpg", import.meta.url));
+    const jpeg = await readFile(new URL("../assets/source/welcome-backup/cinematic/slide-03.jpg", import.meta.url));
     reply = { status: 200, body: { output_format: "png", data: [{ b64_json: jpeg.toString("base64") }] } };
     const result = await request({ prompt: "wizard" });
     assert.equal(result.status, 200); assert.equal(result.body.mimeType, "image/jpeg");

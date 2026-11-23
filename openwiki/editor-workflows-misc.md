@@ -587,7 +587,7 @@ The common expression selector now contains 76 characters / 1216 expressions:
 Actor1, Actor2, People1 and People2 (16 each), Monster 1–12. Monster 13–16 are not imported.
 `src/assets/faceExpressionSets.ts` registers the selector; `scripts/shared-face-expression-sources.json`
 records stable stems, base portrait mapping, original attachment filenames and source hashes.
-Masters live in `public/assets/shared/faceset/source/`. Rebuild with
+Masters live in `assets/source/shared-faceset/`. Rebuild with
 `node scripts/prepare-shared-faceset.mjs --all` then `node scripts/slice-faceset-sheets.mjs`.
 Verify using `node scripts/slice-faceset-sheets.mjs --verify` (1328 total faces including 112 base/generated faces).
 The preparation command checks source hashes before center-sampling each cell to 48px;
