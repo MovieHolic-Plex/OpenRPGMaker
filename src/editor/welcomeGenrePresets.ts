@@ -34,6 +34,7 @@ import {
   FLAGSHIP_DEMO_ID_BY_CHOICE,
   flagshipBeatManifestForChoice,
   formatFlagshipExemplarPrompt,
+  formatFlagshipFirstBuildExemplarPrompt,
 } from "@/project/flagship/beats";
 import type { FlagshipBeatManifest, FlagshipDemoId } from "@/project/flagship/types";
 
@@ -83,13 +84,16 @@ export type WelcomeGenrePreset = {
  *   "제안만 하고 승인을 기다려라"는 지시는 없는 게이트를 기다리게 만들어 모델이 설명만 하고
  *   멈추게 유도한다.
  */
+/** 기획 없는 장르 칩의 첫 판 범위 — 체크리스트 수량보다 앞선다(assistant-prompt-review F6). 수량은 끝맺음 판정이 정하므로 여기서는 말하지 않는다. */
+export const WELCOME_FIRST_BUILD_SCOPE_LINE =
+  "첫 판 범위: 플레이해 볼 수 있는 가장 작은 구간(MVP)만 만든다. 맵 3~5개(시작 장소·길 하나·목적지, 필요하면 실내 1~2), 시작부터 마지막 지점까지 이어지고 엔딩·결말은 만들지 않는다. 나머지는 사용자가 이어서 청할 때 키운다.";
+
 export const WELCOME_GENRE_CHECKLIST_LINES = [
   "지금 열려 있는 프로젝트에 이어서 작업한다 — 기존 맵·이벤트·DB 를 먼저 읽고 거기에 얹는다.",
   "장르에 맞는 무대를 마련한다 — 쓸 맵이 없으면 만들고, 있으면 그 맵을 장르에 맞게 고친다.",
   "플레이어 시작 위치를 장르에 맞는 자리로 맞춘다.",
-  "장르 핵심 NPC/이벤트를 최소 2개 둔다.",
-  "몬스터/적 또는 상호작용 대상 시드를 DB에 넣는다.",
-  "관련 아이템 시드를 DB에 넣는다.",
+  "장르 핵심 NPC·이벤트는 첫 판 동선(시작 → 마지막 지점)에 필요한 만큼만 둔다. 정해 둔 개수는 없다.",
+  "첫 판에서 실제로 만나는 몬스터·적·상호작용 대상과 아이템만 DB에 넣는다.",
   "id 를 지어내지 않는다 — 트룹·몬스터·아이템을 참조하기 전에 조회 툴로 실제 id 를 확인한다.",
   "계획 항목을 하나씩 끝낸다 — 항목이 요구하는 툴을 실제로 성공시킨 뒤 다음 항목으로 넘어간다.",
 ] as const;
@@ -272,7 +276,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
       ...(!brief.interview && textAsksForMystery(brief.summary) ? [MYSTERY_AUTHORING_GUIDE] : []),
       ...(preset.id === "horror-gallery" ? [HORROR_GALLERY_AUTHORING_GUIDE] : []),
       ...(preset.id === "school-horror" ? [HORROR_CHASE_AUTHORING_GUIDE] : []),
-      ...(flagshipBeatManifestForChoice(preset.id) ? [formatFlagshipExemplarPrompt(flagshipBeatManifestForChoice(preset.id)!)] : []),
+      ...(flagshipBeatManifestForChoice(preset.id) ? [formatFlagshipFirstBuildExemplarPrompt(flagshipBeatManifestForChoice(preset.id)!)] : []),
     ].join("\n\n"));
   }
   const chosen = `${GOAL_GENRE_PRESET_BRIEF_PREFIX} ${preset.label}`;
@@ -288,13 +292,14 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
   return withIntentNote(chosen, [
     `톤: ${preset.tone}`,
     "",
-    "다음 체크리스트를 모두 만족하도록 실제 편집 툴을 호출해 작업하세요. 설명만 하고 끝내지 마세요.",
+    WELCOME_FIRST_BUILD_SCOPE_LINE,
+    "다음 체크리스트를 위 범위 안에서 만족하도록 실제 편집 툴을 호출해 작업하세요. 설명만 하고 끝내지 마세요.",
     checklist,
     ...requiredTemplateBlock(preset.narrativeHorrorGenre),
     ...(preset.id === "horror-gallery" ? ["", HORROR_GALLERY_AUTHORING_GUIDE] : []),
     ...(preset.id === "school-horror" ? ["", HORROR_CHASE_AUTHORING_GUIDE] : []),
     ...(preset.packId === "adventure-jrpg" ? ["", welcomeBattleLookLine()] : []),
-    ...(flagshipBeatManifestForChoice(preset.id) ? ["", formatFlagshipExemplarPrompt(flagshipBeatManifestForChoice(preset.id)!)] : []),
+    ...(flagshipBeatManifestForChoice(preset.id) ? ["", formatFlagshipFirstBuildExemplarPrompt(flagshipBeatManifestForChoice(preset.id)!)] : []),
     "",
     WELCOME_DIALOGUE_LOOK_LINE,
     "한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성하세요.",

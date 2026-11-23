@@ -389,6 +389,27 @@ export function formatFlagshipExemplarPrompt(manifest: FlagshipBeatManifest): st
   ].join("\n");
 }
 
+const FIRST_BUILD_BEATS = 4;
+const FINALE_BEAT = /엔딩|결전|최종|스탭롤|크레딧|챔피언 전당/u;
+
+/**
+ * 첫 판(MVP, 엔딩 없음)용 박자표 — 앞 박자만 싣는다. 전체 박자표(15맵·엔딩 1종·«챔피언 전당 · 엔딩»)를 같은 지시문의
+ * «맵 5장 MVP … 엔딩 없음» 옆에 실으면 두 범위가 부딪힌다(assistant-prompt-review F5).
+ */
+export function formatFlagshipFirstBuildExemplarPrompt(manifest: FlagshipBeatManifest): string {
+  const beats: typeof manifest.beats[number][] = [];
+  for (const beat of manifest.beats) {
+    if (beats.length >= FIRST_BUILD_BEATS || FINALE_BEAT.test(`${beat.act} ${beat.sceneTitle} ${beat.playerFeel}`)) break;
+    beats.push(beat);
+  }
+  return [
+    `[정본 대표 데모 참고 박자표 · 『${manifest.title}』 앞부분 — 첫 판은 이 앞 박자까지만 참고한다. 결전·엔딩 박자는 사용자가 이어서 청할 때 키운다]`,
+    `- 그림체 잠금: 해상도 ${manifest.styleLock.resolution.width}×${manifest.styleLock.resolution.height} (zoom ${manifest.styleLock.cameraZoom}), 대화창 ${manifest.styleLock.dialogueStyle}, 허용 타일셋 [${manifest.styleLock.allowedTilesetIds.join(", ")}], 외부 저작권 고유명사 금지.`,
+    "- 분 단위 상승 곡선(박자·기믹 문법만 참고하고 타일은 기획에 맞게 새로 조립):",
+    ...beats.map((b) => `  - [${b.atMinute}분 · ${b.act}] ${b.sceneTitle}: ${b.playerFeel} (도구/기믹: ${b.mechanics.join(", ")})`),
+  ].join("\n");
+}
+
 export function formatFlagshipExemplarForPrompt(choiceId: NewProjectChoiceId | undefined): string | undefined {
   const manifest = flagshipManifestForChoice(choiceId);
   return manifest ? formatFlagshipExemplarPrompt(manifest) : undefined;
