@@ -11,11 +11,8 @@ name: ci-fast
 # 예측 불가다 — 실측으로 변경 6건이면 454파일 254초지만, 코어 모듈을 스치면 1,247파일로
 # 번져 30분을 넘긴다. 푸시 레인의 게이트로 쓸 수 없다. 로컬 반복용 도구로 남긴다.
 #
-# `fast` 와 `fast-static` 은 GitHub 호스티드(ubuntu-latest)에서 돈다.
-# `fast-parity` 4샤드는 푸시와 같은 저장소의 PR 에서만 mdc2-fast 를 쓴다.
-# 포크 PR 과 pull_request_target 은 `runs-on` 식에서 ubuntu-latest 로 간다.
+# 같은 저장소의 푸시·PR 은 mdc2-fast, 포크 PR 과 pull_request_target 은 ubuntu-latest.
 # 포크 PR 워크플로는 저장소 설정에서 외부 기여자 전원 승인 필요(all_external_contributors)다.
-# 두 러너 풀에 잡을 나눠 PR 이 몰릴 때 대기를 줄이고, Codex 워커와 CPU 를 공유하는 mdc2(러너 10대)의 부하를 제한한다.
 
 on:
   push:
@@ -33,12 +30,9 @@ on:
       - main
 
 concurrency:
-  # push 와 pull_request 가 같은 브랜치면 동시 실행 그룹을 공유한다.
-  # PR 브랜치는 새 푸시가 옛 잡을 끊는다.
-  # main 은 끊지 않는다. 2026-09-26 에 머지 간격이 잡(타입체크만 약 3분)보다 짧아서,
-  # 타입체크가 통과한 main 잡이 parity 도중에 취소되고 완료된 체크가 하나도 남지 않았다.
-  # 진행 중인 main 잡은 끝내고, 아직 시작 전인 대기 잡만 최신 커밋으로 바뀐다.
-  group: ci-fast-${{ github.head_ref || github.ref_name }}
+  # PR 번호로 묶어 포크의 같은 브랜치 이름이 다른 PR/푸시를 취소하지 않게 한다.
+  # main 은 이미 실행 중인 검사를 완료한다.
+  group: ci-fast-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 # 2026-11-08 실측에서 직렬 실행의 단계 합은 중앙 440초, 벽시계는 448초였다.
@@ -49,53 +43,49 @@ concurrency:
 # 서로 기다리지 않고 병렬로 돈다. 같은 날 실측(run 44531254883, 44533700673, 44536145289):
 # ci-full 과 여러 PR 이 겹치면 4초짜리 집계 잡도 선행 잡 완료 뒤 101~733초 동안 러너를 기다렸다.
 # 집계를 머지 도우미에서 해 PR 한 판에 잡 6개만 실행하고, 마지막 러너 대기를 없앤다.
+permissions:
+  contents: read
+
 jobs:
   fast:
     name: fast
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2","mdc2-fast"]') || 'ubuntu-latest' }}
     timeout-minutes: 45
     steps:
+      - &mirror-origin
+        name: mdc2 미러 체크아웃 연결
+        if: runner.environment == 'self-hosted'
+        shell: bash
+        run: |
+          # 시작 훅이 미러를 origin 으로 복제한다. checkout 이 다른 저장소로
+          # 판단해 복제본을 삭제하지 않도록 공개 origin 주소만 맞춘다.
+          origin="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY"
+          if [[ -d .git ]] && git remote get-url origin >/dev/null 2>&1; then
+            git remote set-url origin "$origin"
+            # 예전 checkout 이 미러를 지운 러너에서도 로컬 Git 객체를 재사용한다.
+            # 미러를 읽기만 하고 각 작업공간의 alternates 만 갱신한다.
+            while IFS= read -r -d '' objects; do
+              mirror=${objects%/objects}
+              remote=$(git --git-dir="$mirror" config --get remote.origin.url || true)
+              if [[ "${remote%.git}" == "$origin" ]]; then
+                mkdir -p .git/objects/info
+                printf '%s\n' "$objects" > .git/objects/info/alternates
+                echo "mdc2 Git 미러 객체 재사용"
+                break
+              fi
+            done < <(find /opt/actions-runner/git-mirrors -maxdepth 4 -type d -name objects -print0 2>/dev/null)
+          fi
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          fetch-depth: 1   # 이 잡은 git 이력을 안 쓴다 — HEAD~1 이 필요한 핀 검사는 fast-static 에 있다
+          fetch-depth: 2   # PR 병합의 부모를 미러에 있는 협상 대상으로 유지한다.
+          persist-credentials: false
 
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      - uses: ./.github/actions/linux-ci
         with:
-          node-version: 24
-          cache: npm
+          bun-version: '1.4.2' # 데스크톱 릴리스와 같은 컴파일러
 
-      - run: npm ci
-
-      # 릴리스(desktop-release)는 **태그 트리**를 체크아웃해 `node scripts/build-electron.mjs` 로 AI 워커를
-      # `bun build --compile` 한다. 이 저장소의 어느 게이트도 그 엔트리포인트를 컴파일하지 않았다 —
-      # typecheck:app 은 src 만, windows-worker-smoke 는 paths 필터에 scripts/lib/** 가 없다.
-      # 그래서 #4373 이 scripts/lib/piAgentRuntime.ts 에 없는 경로(`../src/...`)를 넣은 채 머지됐고,
-      # desktop-release 가 2026-11-06 22:05Z 부터 매번 실패해 v0.408.0 이 빈 채 latest 가 됐다(404).
-      # 릴리스와 같은 엔트리포인트·플래그로 컴파일해 못 푸는 import 를 머지 전에 잡는다.
-      #
-      # 설치 경로를 바꾼 이유 (2026-11-08 실측, 최근 100판): 이 단계 실패 18건이 **전부**
-      # `Failed to download bun from "https://github.com/oven-sh/bun/releases/latest/download/bun-linux-x64.zip"`
-      # (curl 22 + 503/504)였다. 옛 명령 `curl -fsSL https://bun.sh/install | bash` 는 «latest» 를
-      # GitHub 릴리스에서 받고 재시도도 없다 — PR 코드와 무관한 실패이고, 그 18판은 초록이 될 수 없었다.
-      # 이제 npm 레지스트리에서 **고정판**을 받는다: (1) 버전이 고정되어 릴리스와 같은 컴파일러를 쓰고,
-      # (2) npm ci 가 이미 쓰는 레지스트리라 별도 CDN 장애에 걸리지 않으며, (3) ci-full·ci-vitest-files 가
-      # 처음부터 쓰던 방식과 같다. 컴파일 대상·플래그는 릴리스와 동일하게 그대로 둔다(무엇을 굽는지는 불변).
       - name: AI 워커 컴파일 (릴리스와 같은 엔트리포인트)
-        env:
-          BUN_VERSION: '1.4.2'
         run: |
-          set -euo pipefail
-          for attempt in 1 2 3; do
-            if timeout 180 npm install -g "bun@${BUN_VERSION}"; then break; fi
-            if [ "$attempt" = 3 ]; then echo "::error::bun@${BUN_VERSION} 설치가 3회 실패했다."; exit 1; fi
-            echo "::warning::bun@${BUN_VERSION} 설치 실패 (시도 ${attempt}/3) — $((attempt * 10))초 뒤 재시도한다."
-            sleep $((attempt * 10))
-          done
-          bun --version
-          if [ "$(bun --version)" != "${BUN_VERSION}" ]; then
-            echo "::error::bun 이 ${BUN_VERSION} 이 아니다: $(bun --version)"
-            exit 1
-          fi
           bun build scripts/oh-my-pi-worker.ts \
             --compile --target=bun-linux-x64 \
             --outfile="$RUNNER_TEMP/oh-my-pi-worker"
@@ -105,18 +95,35 @@ jobs:
       # object-gen 도 char-gen·tile-gen 과 같이 비공개라 호스티드 러너는 복제할 수 없다(2026-10-22 실측:
       # git clone 이 Username 을 묻다 실패하고, 그 뒤의 타입체크·패리티가 시작도 못 했다).
       # 공개로 바뀌기 전에는 이 워크플로에 넣지 않는다. 자격 없는 러너에 비공개 지시문을 받지 않는다.
-      - name: 캐릭터 하네스 계약
-        run: |
-          python3 -m venv "$RUNNER_TEMP/charset-harness-venv"
-          "$RUNNER_TEMP/charset-harness-venv/bin/pip" install 'Pillow>=10,<14'
-          "$RUNNER_TEMP/charset-harness-venv/bin/python" src/harnesses/charset-actor/verify.py
-
       # 2026-10-04 타입체크 상주 집합이 7GB 를 넘어 7168 힙에서 exit 134 로 죽었다.
-      # 호스티드 러너에서 타입체크에 8GB 힙을 준다.
-      - name: 타입체크 (src 만)
+      # Python 하네스는 타입체크와 파일이나 산출물을 공유하지 않는다.
+      - name: 타입체크 (src 만) 및 캐릭터 하네스 계약
         env:
           NODE_OPTIONS: --max-old-space-size=8192
-        run: npm run typecheck:app
+        run: |
+          set -euo pipefail
+          charset() {
+            local venv="$RUNNER_TEMP/charset-harness-venv"
+            python3 -m venv "$venv"
+            "$venv/bin/pip" install 'Pillow>=10,<14'
+            "$venv/bin/python" src/harnesses/charset-actor/verify.py
+          }
+          check_types() {
+            if [[ -n "${OPRN_CI_CACHE:-}" ]]; then
+              npm run typecheck:app -- --tsBuildInfoFile "$OPRN_CI_CACHE/app.tsbuildinfo"
+            else
+              npm run typecheck:app
+            fi
+          }
+          TIMEFORMAT='캐릭터 하네스: %3Rs'
+          (time charset) > "$RUNNER_TEMP/charset.log" 2>&1 &
+          charset_pid=$!
+          TIMEFORMAT='앱 타입체크: %3Rs'
+          status=0
+          time check_types || status=$?
+          wait "$charset_pid" || status=$?
+          cat "$RUNNER_TEMP/charset.log"
+          exit "$status"
 
       # 앱 번들만. 전체 npm run build(플레이어·standalone·아카이브까지)는 ci-full 몫이다.
       - name: 앱 빌드
@@ -131,23 +138,13 @@ jobs:
       matrix:
         shard: [1, 2, 3, 4]
     steps:
+      - *mirror-origin
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          fetch-depth: 1
+          fetch-depth: 2
+          persist-credentials: false
 
-      # mdc2 의 기본 npm 캐시는 호스트 공용이다. setup-node 가 아카이브를 각 러너의 _temp 에 복원하게 한다.
-      - name: mdc2 npm 캐시 경로 분리
-        if: runner.environment == 'self-hosted'
-        run: |
-          printf '%s\n' "NPM_CONFIG_CACHE=$RUNNER_TEMP/npm-cache" "npm_config_cache=$RUNNER_TEMP/npm-cache" >> "$GITHUB_ENV"
-
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: 24
-          cache: npm
-
-      # node_modules 는 러너별 체크아웃에 매번 설치한다. setup-node 는 npm 패키지 캐시만 복원한다.
-      - run: npm ci
+      - uses: ./.github/actions/linux-ci
 
       # 에디터↔플레이어 데이터 왕복 계약. 9파일이라 바운드가 확실하다.
       # Node 환경의 Vitest 스위트라 고정 포트나 X 디스플레이를 쓰지 않는다.
@@ -162,19 +159,16 @@ jobs:
   # 정적 검사 묶음. `fast`·`fast-parity` 와 **동시에** 돌고 서로를 기다리지 않는다(2026-11-08 의 100초 절감이 여기서 나온다).
   # 각 항목은 순수 함수/정적 분석이라 다른 단계의 산출물을 쓰지 않는다(러너도 따로다).
   fast-static:
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2","mdc2-fast"]') || 'ubuntu-latest' }}
     timeout-minutes: 45
     steps:
+      - *mirror-origin
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          fetch-depth: 2   # jp_city 핀 검사가 바로 앞 커밋(HEAD~1)의 pins.json 과 비교한다
+          fetch-depth: 2   # jp_city 핀 검사가 HEAD~1 의 pins.json 과 비교한다
+          persist-credentials: false
 
-      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
-        with:
-          node-version: 24
-          cache: npm
-
-      - run: npm ci
+      - uses: ./.github/actions/linux-ci
 
       # jp_city 칸 번호 핀은 덧붙이기 전용. 2026-10-14~18 에 낡은 pins.json 으로 구운 PR 이 머지되며 번호가 밀려
       # 게시한 장소 32곳·사용자 맵이 엉뚱한 칸을 그렸다(#2899 에서 11,329칸). node 만 쓰고 1초 안에 끝난다.
@@ -187,7 +181,12 @@ jobs:
       - name: 타입체크 (Electron 스토어 중계)
         env:
           NODE_OPTIONS: --max-old-space-size=8192
-        run: npm run typecheck:electron-store
+        run: |
+          if [[ -n "${OPRN_CI_CACHE:-}" ]]; then
+            npm run typecheck:electron-store -- --incremental --tsBuildInfoFile "$OPRN_CI_CACHE/electron-store.tsbuildinfo"
+          else
+            npm run typecheck:electron-store
+          fi
 
       # typecheck:app 은 src 만 본다. test/ · scripts/ · evals/ 의 import 계약은 아무도 안 보는데
       # (`npx tsc --noEmit` 전체는 이 저장소에서 4GB 힙으로 OOM 이라 게이트로 못 쓴다),
@@ -209,25 +208,22 @@ jobs:
       # 플레이어·웹 내보내기가 선언한 런타임 에셋이 public/ 에 실제로 있는지(저작권 정리로 지운 그림을
       # 계속 선언해 모든 Web ZIP 내보내기가 실패했던 회귀를 막는다). 브라우저·빌드 없이 수십 초.
       # vite-node 기본 힙(약 2GB)을 넘겼던 검사에 6GB 힙을 준다(2026-11-20, fast-static exit 134).
-      - name: 런타임 에셋 존재
+      # CSS 래칫 6종(budget·graph·live-classes·surfaces·winners·dead-classes)도 확인한다.
+      # verify-gates 의 cssGate 가 실패한 하위 기준선을 다시 뜨는 명령을 ::error:: 로 찍는다.
+      - name: 런타임 에셋 존재, CSS 래칫 및 openwiki 색인 생성기
         env:
           NODE_OPTIONS: --max-old-space-size=6144
-        run: npm run check:runtime-assets
-
-      # CSS 래칫 6종(budget·graph·live-classes·surfaces·winners·dead-classes). 몇 초면 끝난다.
-      # 왜 (2026-10-26): ci-full 에만 있어서 머지마다 드리프트가 쌓였다 — #3541·#3611 로 두 번 다시 올렸는데
-      # 그 사이 #3628 이 hex 1개·표면 밖 선택자 1개를 또 넣었다. PR 에서 막는다.
-      #
-      # 실패 14건의 원인 (2026-11-08 실측): 12건이 «PR 이 시트를 고쳤는데 css-winners 기준선을 다시 뜨지
-      # 않은 것», 1건이 같은 이유의 surfaces, 1건이 hex 신규 1건이었다. 게이트 자체는 결정적이다 —
-      # 깨끗한 origin/main 에서 두 번 돌려 출력 md5 가 같았다. 그래서 판정은 그대로 두고,
-      # **어느 기준선을 어떻게 다시 뜨는지**를 한 줄로 알려 준다(verify-gates 의 cssGate 가
-      # `::error::` 로 `npm run gates:css:save` 를 찍는다).
-      - name: CSS 래칫
-        run: node scripts/verify-gates.mjs --only css
-
-      # openwiki/INDEX.md 는 생성 파일이고 커밋하지 않는다(.gitignore, 2026-11-11). 전에는 커밋해 두고 「최신인가」를
-      # 여기서 대조했는데, 문서를 건드리는 PR 이 저마다 그 파일을 다시 써서 main 에 문서 PR 하나가 들어갈 때마다
-      # 열려 있는 문서 PR 전부가 충돌했다. 이제는 생성기가 도는지만 본다(생성기가 깨지면 에이전트가 목차를 못 만든다).
-      - name: openwiki 색인 생성기 동작
-        run: node scripts/openwiki-index.mjs
+        run: |
+          set -euo pipefail
+          # 런타임 에셋 검사 중 독립적인 CSS 래칫과 생성기 검사를 끝낸다.
+          TIMEFORMAT='런타임 에셋: %3Rs'
+          (time npm run check:runtime-assets) > "$RUNNER_TEMP/runtime-assets.log" 2>&1 &
+          assets_pid=$!
+          status=0
+          TIMEFORMAT='CSS 래칫: %3Rs'
+          time node scripts/verify-gates.mjs --only css || status=$?
+          TIMEFORMAT='openwiki 색인: %3Rs'
+          time node scripts/openwiki-index.mjs || status=$?
+          wait "$assets_pid" || status=$?
+          cat "$RUNNER_TEMP/runtime-assets.log"
+          exit "$status"

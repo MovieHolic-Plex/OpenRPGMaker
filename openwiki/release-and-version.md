@@ -115,10 +115,13 @@ gh release upload v0.3.0 dist-packages/OPRN\ Studio-0.3.0.*
   publish 설정과 latest.yml 을 같이 도입한다.
 - GitHub Release 파일 상한(2GB/파일) 안이므로 AppImage·dmg 모두 문제없다.
 - README 다운로드는 버전이 없는 이름을 쓴다. `.github/workflows/desktop-release.yml` 이
-  정식 `vX.Y.Z` 릴리스가 나오면 GitHub 호스티드 `ubuntu-latest` 에서 AppImage·윈도우 zip·portable exe 를
+  정식 `vX.Y.Z` 릴리스가 나오면 mdc2 `mdc2-heavy` 에서 AppImage·윈도우 zip·portable exe 를
   만들어 버전 파일과 함께 `OPRN.Studio-linux.AppImage`, `OPRN.Studio-windows.zip`, `OPRN.Studio-windows.exe` 를
   같은 릴리스에 올린다. 주소는 `https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/`
-  뒤에 그 이름이다. 이미 세 파일이 있으면 빌드하지 않는다. 소유자 컴퓨터의 `scripts/release-desktop.mjs` 는
+  뒤에 그 이름이다. 버전 파일까지 자산 여섯 개가 있으면 빌드를 생략한다. 초안이면 검증 후 발행한다.
+  Electron 다운로드와 예제 JSON 은 러너별 `_tool/oprn-desktop` 아래에 캐시한다.
+  수동 복구에는 저장소 브랜치·태그 이름이나 기본 브랜치 이력의 SHA 를 `source_ref` 로 쓸 수 있다.
+  로컬 `scripts/release-desktop.mjs` 는
   `OPRN_DESKTOP_LOCAL=1` 일 때만 같은 일을 한다. macOS 패키지는 아직 없다.
 
 ### 윈도우 zip·단일 exe 는 리눅스에서 만든다 (2026-09-22, 갱신 2026-10-10)

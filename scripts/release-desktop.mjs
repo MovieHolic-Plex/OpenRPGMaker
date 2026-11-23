@@ -143,7 +143,7 @@ function hasDesktop(names) {
 }
 
 if (process.env.OPRN_DESKTOP_LOCAL !== "1") {
-  console.log("[release-desktop] 건너뜀. 데스크톱 패키지는 GitHub Actions desktop-release 가 호스티드 러너에서 만들어 릴리스에 올린다. 이 머신에서 빌드하려면 OPRN_DESKTOP_LOCAL=1.");
+  console.log("[release-desktop] 건너뜀. 데스크톱 패키지는 GitHub Actions desktop-release 가 mdc2 러너에서 만들어 릴리스에 올린다. 이 머신에서 빌드하려면 OPRN_DESKTOP_LOCAL=1.");
   process.exit(0);
 }
 
