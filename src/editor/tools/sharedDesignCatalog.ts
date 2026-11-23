@@ -11,6 +11,7 @@ import { REGION_REFERENCES, PLACE_REFERENCES } from "@/project/regionReferences"
 import { sharedRegionReferences } from "@/project/sharedSpatialReferences";
 import { reviewedPlaceIndex } from "@/project/defaults/spatial/reviewedPlaceIndex";
 import type { Project, TilesetDef } from "@/project/types";
+import { kitSurface, type ObjectSurface } from "./objectSearch";
 
 export type SharedPlaceEntry = {
   readonly id: string; readonly kind: "place"; readonly name: string;
@@ -47,6 +48,8 @@ export type SharedObjectEntry = {
   readonly referenceId?: string;
   /** 계단·사다리·에스컬레이터: 입구 계약 한 줄(앞 칸·이동 칸·도착 방향, 키트 왼쪽 위 기준) — project/stairs/contract.ts. */
   readonly entrance?: string;
+  /** 놓는 면 — 구조 킷의 벽 걸이·물 위 표시에서(objectSearch.kitSurface). */
+  readonly surface?: ObjectSurface;
 };
 
 /** Ids published by PR #1499 before the catalog existed. */
@@ -125,7 +128,7 @@ function kitObjects(tileset: TilesetDef): SharedObjectEntry[] {
     return {
       ...(stair ? { entrance: describeStairContract(stair) } : {}),
       id: `kit:${tileset.id}/${kit.id}`, kind: "object" as const, name: kit.name || kit.id, category: "project-kit" as const, tilesetId: tileset.id,
-      width: kit.width, height: kit.height, tags: [tileset.name, "타일셋 킷", ...(kit.ai?.tags ?? []), ...extra], use: `stamp_object({objectId:'kit:${tileset.id}/${kit.id}', mapId, x, y})`,
+      width: kit.width, height: kit.height, surface: kitSurface(kit), tags: [tileset.name, "타일셋 킷", ...(kit.ai?.tags ?? []), ...extra], use: `stamp_object({objectId:'kit:${tileset.id}/${kit.id}', mapId, x, y})`,
     };
   });
 }

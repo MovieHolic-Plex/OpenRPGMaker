@@ -1,0 +1,812 @@
+{
+ "note": "요청 40개 · 정답 개념(이름 정규식 + 허용 칩셋). 출처: object-findability 레인(2026-11-22) gold.py·requests.json. 측정 scripts/content/object-search/measure.mts",
+ "requests": [
+  {
+   "id": "q01",
+   "request": "수산시장 골목 만들어 줘",
+   "genre": "현대",
+   "place": "수산시장",
+   "tilesets": [
+    "atlas_biome_interior",
+    "beodeul_city",
+    "beodeul_massing",
+    "beodeul_organic",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "생선 좌판": "생선|어물|건어물",
+    "수조": "수조|활어",
+    "얼음 상자": "얼음.*(상자|통)|아이스박스",
+    "저울": "저울",
+    "그물·통발": "그물|통발"
+   }
+  },
+  {
+   "id": "q02",
+   "request": "비 오는 버스 정류장",
+   "genre": "현대",
+   "place": "버스 정류장",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "버스 정류장 쉘터": "(버스|정류장).*(쉘터|셸터|대기|지붕|정류장)|정류장",
+    "정류장 표지": "정류장.*(표지|안내|팻말)|버스.*표지",
+    "우산": "우산",
+    "물웅덩이": "웅덩이|빗물",
+    "벤치": "벤치"
+   }
+  },
+  {
+   "id": "q03",
+   "request": "조선 장터",
+   "genre": "조선",
+   "place": "장터",
+   "tilesets": [
+    "joseon_baram"
+   ],
+   "concepts": {
+    "좌판·가게": "좌판|장터|가판|노점|저잣",
+    "독·항아리": "독|항아리|옹기",
+    "짚단·가마니": "짚|가마니|멍석",
+    "수레": "수레|달구지",
+    "초가·기와 가게": "주막|가게|상점|객주"
+   }
+  },
+  {
+   "id": "q04",
+   "request": "폐교 복도",
+   "genre": "현대 공포",
+   "place": "복도",
+   "tilesets": [
+    "atlas_biome_interior",
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "사물함": "사물함|락커",
+    "복도 창문": "창문|창틀",
+    "게시판": "게시판|알림판",
+    "교실 문": "교실.*문|미닫이",
+    "깨진 잔해": "깨진|부서진|잔해|폐허"
+   }
+  },
+  {
+   "id": "q05",
+   "request": "편의점 앞 밤거리",
+   "genre": "현대",
+   "place": "편의점",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "편의점": "편의점",
+    "자판기": "자판기",
+    "가로등": "가로등",
+    "쓰레기통": "쓰레기통",
+    "파라솔 테이블": "파라솔|야외 테이블"
+   }
+  },
+  {
+   "id": "q06",
+   "request": "항구 부두에 어선 정박장",
+   "genre": "판타지 항구",
+   "place": "부두",
+   "tilesets": [
+    "atlas_biome_interior",
+    "beodeul_city",
+    "beodeul_massing",
+    "beodeul_organic",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "부두·잔교": "부두|잔교|선착장",
+    "배": "배$|어선|나룻배|보트|조각배|돛배",
+    "말뚝·계류": "말뚝|계류|밧줄",
+    "그물": "그물",
+    "나무 상자·통": "(나무|화물).*(상자|궤짝)|술통|나무통"
+   }
+  },
+  {
+   "id": "q07",
+   "request": "학교 운동장",
+   "genre": "현대",
+   "place": "운동장",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "축구 골대": "골대",
+    "철봉·정글짐": "철봉|정글짐|구름사다리",
+    "스탠드·관람석": "관람석|스탠드|계단식",
+    "트랙": "트랙|육상",
+    "국기 게양대": "게양대|국기"
+   }
+  },
+  {
+   "id": "q08",
+   "request": "공원 벤치와 분수",
+   "genre": "현대",
+   "place": "공원",
+   "tilesets": [
+    "atlas_biome_interior",
+    "beodeul_city",
+    "beodeul_massing",
+    "beodeul_organic",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "벤치": "벤치",
+    "분수": "분수",
+    "가로등": "가로등",
+    "꽃밭·화단": "화단|꽃밭|화분",
+    "나무": "나무|가로수"
+   }
+  },
+  {
+   "id": "q09",
+   "request": "병원 대기실",
+   "genre": "현대 실내",
+   "place": "병원",
+   "tilesets": [
+    "atlas_biome_interior",
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "대기 의자": "대기.*(의자|벤치)|의자",
+    "접수대": "접수",
+    "정수기": "정수기",
+    "혈압계·진료": "혈압|문진|진료",
+    "화분": "화분"
+   }
+  },
+  {
+   "id": "q10",
+   "request": "주유소",
+   "genre": "현대",
+   "place": "주유소",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "주유기": "주유기|주유",
+    "캐노피": "캐노피|주유소 지붕",
+    "타이어": "타이어",
+    "세차": "세차",
+    "공기 주입기": "공기 주입|에어"
+   }
+  },
+  {
+   "id": "q11",
+   "request": "농가 마당에 짚더미와 우물",
+   "genre": "판타지 마을",
+   "place": "농가",
+   "tilesets": [
+    "atlas_biome_interior",
+    "beodeul_city",
+    "beodeul_massing",
+    "beodeul_organic",
+    "beodeul_reviewed"
+   ],
+   "concepts": {
+    "짚더미": "짚|건초",
+    "우물": "우물",
+    "울타리": "울타리",
+    "수레": "수레",
+    "닭장·가축": "닭|가축|외양간|돼지|소 "
+   }
+  },
+  {
+   "id": "q12",
+   "request": "대장간 앞",
+   "genre": "판타지 마을",
+   "place": "대장간",
+   "tilesets": [
+    "atlas_biome_interior",
+    "beodeul_city",
+    "beodeul_massing",
+    "beodeul_organic",
+    "beodeul_reviewed"
+   ],
+   "concepts": {
+    "모루": "모루",
+    "화덕·풀무": "화덕|풀무|용광로|노$",
+    "무기 걸이": "무기.*걸이|칼.*걸이|창.*걸이",
+    "물통": "물통|담금",
+    "장작": "장작"
+   }
+  },
+  {
+   "id": "q13",
+   "request": "꽃집 가게 앞",
+   "genre": "현대",
+   "place": "꽃집",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "꽃 진열대": "꽃.*(진열|매대|선반|양동이)|꽃집",
+    "화분": "화분",
+    "물뿌리개": "물뿌리개",
+    "꽃 양동이": "양동이",
+    "흙 포대": "흙 포대|흙포대|원예"
+   }
+  },
+  {
+   "id": "q14",
+   "request": "공사장",
+   "genre": "현대",
+   "place": "공사장",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "안전 펜스": "펜스|가림막|방호",
+    "라바콘": "라바콘|콘$|교통 콘|러버콘",
+    "철근·자재": "철근|자재|각목|파이프|벽돌 더미",
+    "굴착기·중장비": "굴착기|포크레인|중장비|크레인|레미콘",
+    "가설 사무실": "컨테이너|가설"
+   }
+  },
+  {
+   "id": "q15",
+   "request": "야시장 포장마차 거리",
+   "genre": "현대",
+   "place": "포장마차",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city",
+    "sengoku_edo"
+   ],
+   "concepts": {
+    "포장마차": "포장마차",
+    "등불·초롱": "등불|초롱|제등|전구 줄|알전구",
+    "플라스틱 의자·탁자": "플라스틱.*(의자|탁자)|간이.*(의자|탁자)",
+    "먹거리 좌판": "(떡볶이|어묵|꼬치|타코야키|붕어빵|노점)",
+    "가스통": "가스통|버너"
+   }
+  },
+  {
+   "id": "q16",
+   "request": "신사 경내",
+   "genre": "일본",
+   "place": "신사",
+   "tilesets": [
+    "beodeul_city",
+    "jp_city",
+    "sengoku_edo"
+   ],
+   "concepts": {
+    "도리이": "도리이|토리이",
+    "석등": "석등",
+    "배전·본전": "본전|배전|신사",
+    "고마이누": "고마이누|사자상|여우상",
+    "에마 걸이": "에마|오미쿠지|제비"
+   }
+  },
+  {
+   "id": "q17",
+   "request": "기차역 플랫폼",
+   "genre": "일본 현대",
+   "place": "플랫폼",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city",
+    "sengoku_edo"
+   ],
+   "concepts": {
+    "플랫폼": "플랫폼|승강장",
+    "개찰구": "개찰|검표",
+    "열차": "열차|전철|기차",
+    "역 표지판": "역.*(표지|안내|간판)",
+    "벤치": "벤치"
+   }
+  },
+  {
+   "id": "q18",
+   "request": "해변 피서지",
+   "genre": "현대",
+   "place": "해변",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "파라솔": "파라솔",
+    "선베드": "선베드|비치 의자|썬베드",
+    "튜브·구명": "튜브|구명",
+    "모래성": "모래성",
+    "해변 샤워": "샤워|해변"
+   }
+  },
+  {
+   "id": "q19",
+   "request": "놀이공원 축제",
+   "genre": "현대",
+   "place": "놀이공원",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "회전목마": "회전목마",
+    "관람차": "관람차",
+    "솜사탕·노점": "솜사탕|팝콘|노점",
+    "풍선": "풍선",
+    "축제 등·깃발": "깃발|가랜드|축제"
+   }
+  },
+  {
+   "id": "q20",
+   "request": "택배 물류 창고",
+   "genre": "현대",
+   "place": "물류",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "팔레트": "팔레트",
+    "택배 상자": "택배|상자 더미|박스",
+    "지게차": "지게차",
+    "선반 랙": "랙|선반",
+    "컨베이어": "컨베이어|분류"
+   }
+  },
+  {
+   "id": "q21",
+   "request": "한옥 주막 마당",
+   "genre": "조선",
+   "place": "주막",
+   "tilesets": [
+    "joseon_baram"
+   ],
+   "concepts": {
+    "주막": "주막",
+    "평상": "평상",
+    "장독": "장독|독|항아리",
+    "기와집": "기와",
+    "우물": "우물"
+   }
+  },
+  {
+   "id": "q22",
+   "request": "서점과 신문 가판대",
+   "genre": "현대",
+   "place": "서점",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "책장": "책장|서가",
+    "가판대": "가판|신문",
+    "잡지 진열": "잡지",
+    "계산대": "계산대|카운터",
+    "책 더미": "책 더미|책더미|책 상자"
+   }
+  },
+  {
+   "id": "q23",
+   "request": "오락실",
+   "genre": "현대 실내",
+   "place": "오락실",
+   "tilesets": [
+    "atlas_biome_interior",
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "아케이드 기계": "오락기|아케이드|게임기",
+    "인형뽑기": "인형뽑기|크레인 게임",
+    "노래방": "노래방|마이크",
+    "동전 교환기": "동전",
+    "캡슐 뽑기": "캡슐|뽑기"
+   }
+  },
+  {
+   "id": "q24",
+   "request": "교실",
+   "genre": "현대 실내",
+   "place": "교실",
+   "tilesets": [
+    "atlas_biome_interior",
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "책상": "책상",
+    "칠판": "칠판",
+    "교탁": "교탁",
+    "사물함": "사물함",
+    "의자": "의자"
+   }
+  },
+  {
+   "id": "q25",
+   "request": "여관 객실 침대 방",
+   "genre": "판타지 실내",
+   "place": "여관",
+   "tilesets": [
+    "atlas_biome_interior",
+    "beodeul_city",
+    "beodeul_massing",
+    "beodeul_organic",
+    "beodeul_reviewed"
+   ],
+   "concepts": {
+    "침대": "침대",
+    "옷장": "옷장",
+    "협탁": "협탁|탁자",
+    "양탄자": "양탄자|깔개|카펫",
+    "촛대·등불": "촛대|초 |등불|등잔"
+   }
+  },
+  {
+   "id": "q26",
+   "request": "술집 카운터와 술통",
+   "genre": "판타지 실내",
+   "place": "술집",
+   "tilesets": [
+    "atlas_biome_interior",
+    "beodeul_city",
+    "beodeul_massing",
+    "beodeul_organic",
+    "beodeul_reviewed"
+   ],
+   "concepts": {
+    "카운터": "카운터|계산대|바 ",
+    "술통": "술통|맥주통|나무통",
+    "술병 선반": "술병|선반",
+    "원탁·의자": "탁자|의자|테이블",
+    "벽난로": "벽난로|화로"
+   }
+  },
+  {
+   "id": "q27",
+   "request": "성문과 성벽",
+   "genre": "판타지",
+   "place": "성문",
+   "tilesets": [
+    "atlas_biome_interior",
+    "beodeul_city",
+    "beodeul_massing",
+    "beodeul_organic",
+    "beodeul_reviewed"
+   ],
+   "concepts": {
+    "성문": "성문",
+    "성벽": "성벽",
+    "망루·탑": "망루|탑",
+    "깃발": "깃발|군기",
+    "해자·다리": "해자|도개교|다리"
+   }
+  },
+  {
+   "id": "q28",
+   "request": "숲속 캠핑장 모닥불",
+   "genre": "야외",
+   "place": "캠핑",
+   "tilesets": [
+    "atlas_biome_interior",
+    "beodeul_city",
+    "beodeul_massing",
+    "beodeul_organic",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "모닥불": "모닥불|캠프파이어",
+    "텐트": "텐트|천막",
+    "통나무 의자": "통나무",
+    "장작": "장작",
+    "나무": "나무"
+   }
+  },
+  {
+   "id": "q29",
+   "request": "재활용 쓰레기 분리수거장",
+   "genre": "현대",
+   "place": "분리수거",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "분리수거함": "분리수거|재활용",
+    "쓰레기통": "쓰레기통",
+    "대형 폐기물": "폐기물|매트리스|버린",
+    "음식물 쓰레기": "음식물",
+    "종량제 봉투": "봉투|종량제"
+   }
+  },
+  {
+   "id": "q30",
+   "request": "옥상 정원",
+   "genre": "현대",
+   "place": "옥상",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "옥상 화단": "옥상|화단|텃밭",
+    "실외기": "실외기",
+    "물탱크": "물탱크|급수탑",
+    "파라솔·벤치": "파라솔|벤치",
+    "화분": "화분"
+   }
+  },
+  {
+   "id": "q31",
+   "request": "자동차 정비소",
+   "genre": "현대",
+   "place": "정비소",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "리프트": "리프트",
+    "타이어 더미": "타이어",
+    "공구함": "공구",
+    "자동차": "자동차|승용차|세단",
+    "기름통": "기름|오일|드럼통"
+   }
+  },
+  {
+   "id": "q32",
+   "request": "아파트 단지 놀이터",
+   "genre": "현대",
+   "place": "놀이터",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "미끄럼틀": "미끄럼",
+    "그네": "그네",
+    "시소": "시소",
+    "모래밭": "모래",
+    "벤치": "벤치"
+   }
+  },
+  {
+   "id": "q33",
+   "request": "절 마당 석탑",
+   "genre": "조선",
+   "place": "절",
+   "tilesets": [
+    "joseon_baram"
+   ],
+   "concepts": {
+    "석탑": "석탑|탑",
+    "석등": "석등",
+    "법당·절": "법당|절|사찰|대웅",
+    "범종": "범종|종",
+    "향로": "향로"
+   }
+  },
+  {
+   "id": "q34",
+   "request": "라멘집 이자카야 골목",
+   "genre": "일본",
+   "place": "이자카야",
+   "tilesets": [
+    "beodeul_city",
+    "jp_city",
+    "sengoku_edo"
+   ],
+   "concepts": {
+    "라멘 노점": "라멘|라면",
+    "이자카야": "이자카야",
+    "제등": "제등|초롱|등불",
+    "노렌·간판": "노렌|간판",
+    "맥주 상자": "맥주"
+   }
+  },
+  {
+   "id": "q35",
+   "request": "체육관 농구 코트",
+   "genre": "현대",
+   "place": "체육관",
+   "tilesets": [
+    "atlas_biome_interior",
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "농구 골대": "농구.*(골대|대)|골대",
+    "코트 바닥": "코트",
+    "관람석": "관람석|스탠드",
+    "점수판": "점수판|스코어",
+    "공 바구니": "공.*(바구니|카트)|농구공"
+   }
+  },
+  {
+   "id": "q36",
+   "request": "공항 탑승구",
+   "genre": "현대",
+   "place": "공항",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "탑승구": "탑승|게이트",
+    "공항 의자": "(공항|대기).*(의자|벤치)",
+    "출발 안내판": "안내판|전광판|출발",
+    "수하물": "수하물|캐리어|여행 가방",
+    "비행기": "비행기|항공"
+   }
+  },
+  {
+   "id": "q37",
+   "request": "과일 채소 시장 좌판",
+   "genre": "판타지 시장",
+   "place": "시장",
+   "tilesets": [
+    "atlas_biome_interior",
+    "beodeul_city",
+    "beodeul_massing",
+    "beodeul_organic",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "과일 좌판": "과일",
+    "채소 좌판": "채소|배추|야채",
+    "바구니": "바구니",
+    "천막 노점": "노점|천막|좌판|가판",
+    "나무 궤짝": "궤짝|상자"
+   }
+  },
+  {
+   "id": "q38",
+   "request": "카페 테라스",
+   "genre": "현대",
+   "place": "카페",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "야외 테이블": "(야외|테라스|카페).*(탁자|테이블)|파라솔",
+    "의자": "의자",
+    "화분": "화분",
+    "카페 간판": "카페.*(간판|입간판)|입간판",
+    "차양": "차양|어닝"
+   }
+  },
+  {
+   "id": "q39",
+   "request": "전기차 충전소",
+   "genre": "현대",
+   "place": "충전소",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "충전기": "충전",
+    "전기차": "전기차",
+    "주차 표시": "주차",
+    "캐노피": "캐노피",
+    "충전 케이블": "케이블"
+   }
+  },
+  {
+   "id": "q40",
+   "request": "사당 기도터 촛불",
+   "genre": "현대",
+   "place": "사당",
+   "tilesets": [
+    "beodeul_city",
+    "beodeul_reviewed",
+    "joseon_baram",
+    "jp_city",
+    "modern_campus",
+    "modern_city"
+   ],
+   "concepts": {
+    "촛불·촛대": "촛불|촛대|초 ",
+    "제단": "제단|제사|상$",
+    "향로": "향로|향",
+    "사당": "사당|기도",
+    "위패·불상": "위패|불상|석상"
+   }
+  }
+ ]
+}

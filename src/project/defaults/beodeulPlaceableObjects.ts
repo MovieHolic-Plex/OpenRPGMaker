@@ -83,6 +83,36 @@ function sourceKits(target: TilesetDef, catalog: PlaceableCatalog) {
   return { source, kits };
 }
 
+// 계열 기반 기물 묶음(familyObjectBundles.ts)이 버들항 밖 같은 계열 칩셋 맵에서 읽는 원본. 그림은 전부 이식(PNG)이라 시트 그림은 쓰지 않는다.
+let familySource: ReturnType<typeof sourceKits> | undefined;
+function familySourceKits() {
+  familySource ??= sourceKits({ image: { type: "bundled", id: "beodeul-placeable-objects" }, tilesPerRow: 1 } as TilesetDef, "current");
+  return familySource;
+}
+
+/** 버들항 기물 킷 정의(칸 번호는 가상 원본 기준) — 목록에만 쓰고, 찍을 때는 installBeodeulObjectKit 으로 옮긴다. */
+export function beodeulObjectFamilyKits(): readonly SectionStructureKitDef[] {
+  return familySourceKits().kits;
+}
+
+/**
+ * 버들항 기물 하나를 다른 타일셋(같은 계열·16px)에 옮겨 단다: 그 킷의 칸만 tileGrafts 로 이식하고 킷을 structureKits 에 더한다.
+ * 저장 형식은 그대로다(stamp_object 의 교차 이식과 같은 길). 이미 있으면 그 킷을 돌려준다.
+ */
+export function installBeodeulObjectKit(target: TilesetDef, kitId: string): SectionStructureKitDef | undefined {
+  const existing = target.structureKits?.find(kit => kit.id === kitId);
+  if (existing?.kind === "section") return existing;
+  if (target.tileSize !== BEODEUL_OBJECT_TILE_SIZE) return undefined;
+  const { source, kits } = familySourceKits();
+  const kit = kits.find(entry => entry.id === kitId);
+  if (!kit) return undefined;
+  const { map } = translateTiles(source, target, kit.rows.flatMap(row => row.upperTiles ?? []));
+  const installed = structuredClone(kit);
+  for (const row of installed.rows) row.upperTiles = row.upperTiles!.map(tile => tile < 0 ? tile : map.get(tile)!);
+  (target.structureKits ??= []).push(installed);
+  return installed;
+}
+
 /** The 2-column crate used source frames 2 and 3 for its bottom row. Keep their painted slots. */
 export function upgradeBeodeulCrateStackGrafts(tileset: TilesetDef): boolean {
   const grafts = tileset.tileGrafts;

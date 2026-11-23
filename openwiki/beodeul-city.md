@@ -4,6 +4,8 @@
 
 새 프로젝트와 불러온 버들항 칩셋 맵의 왼쪽 **기물**에서 분류별 묶음을 펼쳐 찍거나 한국어 이름·ID·태그로 검색한다. 조수는 `list_tileset_objects({mapId, query:"버들항 기본 기물"})`의 id·크기·태그를 보고 `stamp_tileset_object`로 놓는다. `list_spatial_designs({kind:"object"})`와 `stamp_object`도 같은 구조 킷을 쓴다.
 
+**계열 기반 묶음과 검색 필터(2026-11-23, object-search 레인).** `src/project/familyObjectBundles.ts` 등록부가 `oprn-atlas` 계열에 이 카탈로그(«버들항풍 기물»)를 단다. 같은 계열 칩셋(실내 v5 `atlas_biome_interior`·건물 덩어리 등) 맵에서도 `list_tileset_objects` 가 이 기물을 `source:"family"` 로 보이고, `stamp_tileset_object` 는 그 킷의 칸만 대상 타일셋에 이식(`tileGrafts`)해 단 뒤 찍는다. 저장 형식은 그대로다. 두 목록 도구는 `place`(장소·용도)·`surface`(floor/water/wall)·`maxWidth`·`maxHeight` 로 거르고(`list_spatial_designs` 는 `family`·`mapId` 도), 순위는 이름이 질의와 같음 → 이름에 낱말 → 태그가 질의와 같음 → 태그에 낱말(`src/editor/tools/objectSearch.ts`). 응답은 요약(총 수·많은 태그 또는 계열별 개수) + 앞 40개 + `nextOffset`. 측정은 `scripts/content/object-search/measure.mts`(요청 40개, 결정적·LLM).
+
 `public/assets/beodeul-objects/catalog.json`이 독립 PNG, 이름, 팔레트 그룹, 통행표, 검색 태그, 세트 소속, 출처의 정본이다. 같은 폴더의 `manifest.json`은 그룹 이름과 순서, 세트별 필수 조각을 정한다. `src/project/defaults/beodeulPlaceableObjects.ts`에서 투명 빈 칸을 제외한 그림을 기존 버들항 칩셋 끝에 이식하고, 이미 저장한 칸은 같은 원본 그림을 찾아 재사용한다. 추가 절차는 [기물 README](../public/assets/beodeul-objects/README.md)에 있다.
 
 ## 출처 정정 (2026-10-22) — RTP 파생 칸은 크레딧, 나무는 다시 그렸다
@@ -1326,7 +1328,7 @@ revision 16 기와 변경은 사용자 지적을 오해한 것이며 철회했�
 - **참고문서**: `beodeul-objects` 용도에 README 8절 · 문서 「마을 종류별 기물 사전」(`KINDS.md`) · 「마을 종류별 기물 배열」 · 그림 `kinds-1x/2x.png` · 정상/오류 그림. `prepare-beodeul-objects-references.mts` 가 실제 놓기 도구와 엔진 통행으로 잰다(건널 널 건너기 · 줄 나룻배·빨래 디딤판 올라서기 · 배·말뚝 칸 막힘 · 문 지나기 · 뭍/물 거절 · `kind:` 태그).
 - **검사**: `test/beodeulObjects.test.ts`(덧붙이기 전용 자리 · 종류마다 다섯 넘게 · `kind:` 태그 = `kinds.json` · 낱말 첫째와 옛 킷 첫째 · 밟는 물 위 것 · 걸어 지나는 문).
 - **증거 페이지**: `beodeul-objects-300.html` — 종류마다 장면 판(손으로 짠 작은 배치, 주인공 포함 2배)과 새 그림 전부(3배, 원본 기물 옆), 약한 것·뺀 것·돈.
-- **남은 것**: 마을 빌더는 아직 이 기물을 놓지 않는다(마을 종류 작업이 `kinds.json` 을 읽어 장면으로 놓는다). `list_tileset_objects(query)` 는 킷 이름·id·설명만 본다 — 태그(`kind:` 포함)로는 못 찾는다. 약한 그림은 구운 그대로다.
+- **남은 것**: 마을 빌더는 아직 이 기물을 놓지 않는다(마을 종류 작업이 `kinds.json` 을 읽어 장면으로 놓는다). `list_tileset_objects(query)` 는 이제 태그도 본다(2026-11-23 object-search, 낱말마다 이름·id·설명·태그). 약한 그림은 구운 그대로다.
 
 ## 마을 종류 beodeul-village-kinds (2026-11-14) — 미리 지어 둔 서른여덟 종류, 장면은 통째로
 

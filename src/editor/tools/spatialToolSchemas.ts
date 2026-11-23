@@ -71,7 +71,13 @@ export const SPATIAL_GET_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA, id,
 export const SPATIAL_LIST_SCHEMA = object({ kind: SPATIAL_KIND_SCHEMA,
   query: { ...text, description: "Case-insensitive substring of saved id, name or tags. For exteriors try kind:object and query:건물 외형, then the authored name/tag; for complete houses use kind:place. Omit query to list all designs of the kind." },
   limit: { type: "integer", minimum: 1, maximum: 200, description: "Shared rows per page (default 40)." },
-  offset: { type: "integer", minimum: 0, description: "Skip this many shared rows (data.shared.nextOffset)." } }, []);
+  offset: { type: "integer", minimum: 0, description: "Skip this many shared rows (data.shared.nextOffset)." },
+  mapId: { ...text, description: "Optional. Rows in the same art family (TilesetDef.family) as this map's tileset rank first among equal matches." },
+  family: { ...text, description: "Optional. Only rows of this art family (e.g. oprn-atlas, oprn-joseon, oprn-jp) or of the family of this tilesetId. Each row carries family; data.shared.byFamily counts them." },
+  place: { ...text, description: "Optional. Place/use word(s) every row must carry in its name or tags (e.g. 버스 정류장, 수산시장, 교실)." },
+  surface: { type: "string", enum: ["floor", "water", "wall"], description: "Optional. Object surface: floor, water (on water), wall (wall-mounted)." },
+  maxWidth: { type: "integer", minimum: 1, maximum: 64, description: "Optional. Max width in tiles." },
+  maxHeight: { type: "integer", minimum: 1, maximum: 64, description: "Optional. Max height in tiles." } }, []);
 export const SPATIAL_APPLY_SCHEMA = object({ previewId: id });
 // Occurrence endpoints use occurrenceId (concrete frozen id), not design childId slots.
 const occurrenceEndpoint = object({ occurrenceId: id, portId: id });
