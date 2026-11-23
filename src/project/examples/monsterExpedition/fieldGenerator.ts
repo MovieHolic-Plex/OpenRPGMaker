@@ -26,6 +26,8 @@ export interface FieldPlan extends FieldRequest { readonly exits: "through" | "s
 export interface FieldResult { width: number; height: number; lower: number[]; upper: number[]; overlap: number; closest: string; attempts: number }
 
 export const FIELD_OVERLAP_GATE = TEMPLATE_COPY_GATE;
+/** 관문 아래여도 이 값 이상이면 남은 씨앗을 더 해 보고 가장 덜 겹친 판을 고른다 — 벽 면을 규칙대로 칠하자 탑이 견본과 39.7%까지 닮았다(2026-11-23). */
+const FIELD_OVERLAP_SOFT = 0.35;
 const MAX_ATTEMPTS = 10;
 
 const WATER_GROUPS = ["rwater", "water", "swater", "oasis", "pond", "shore", "se_pool", "lv_lava", "spring", "deep"];
@@ -679,7 +681,7 @@ export function generateFieldMap(project: Project, key: string, t: FieldTemplate
     const hit = maxTemplateOverlap({ width: W, height: H, lower: map.lowerTiles, tilesetId: t.tilesetId }, templates, { floor: FIELD_OVERLAP_GATE });
     const result: FieldResult = { width: W, height: H, lower: map.lowerTiles, upper: map.upperTiles, overlap: hit?.overlap ?? 0, closest: hit?.key ?? "", attempts: attempt + 1 };
     if (!best || result.overlap < best.overlap) best = result;
-    if (result.overlap < FIELD_OVERLAP_GATE) return result;
+    if (result.overlap < FIELD_OVERLAP_SOFT) return result;
   }
   if (!best) throw Error(`generateFieldMap: no walkable layout for ${key}`);
   return best;
