@@ -4600,7 +4600,7 @@
   },
   {
     "id": "city_sfront_capsule_machine_pair",
-    "nameKo": "캡슐 뽑기 기계 두 대",
+    "nameKo": "캡슐 뽑기 기계 두 대 · 학교 앞",
     "category": "prop",
     "group": "city_school",
     "sourceFile": "city_sfront_capsule_machine_pair_hq.png",
@@ -7401,7 +7401,7 @@
   },
   {
     "id": "city_logi_parcel_lockers",
-    "nameKo": "무인 택배 보관함",
+    "nameKo": "무인 택배 보관함 · 대형",
     "category": "prop",
     "group": "city_logistics",
     "sourceFile": "city_logi_parcel_lockers_hq.png",
@@ -8662,7 +8662,7 @@
   },
   {
     "id": "city_subw_ashtray_trash_post",
-    "nameKo": "재떨이 겸용 쓰레기통",
+    "nameKo": "재떨이 겸용 쓰레기통 · 기둥형",
     "category": "prop",
     "group": "city_transport",
     "sourceFile": "city_subw_ashtray_trash_post_sz.png",
@@ -11708,7 +11708,7 @@
   },
   {
     "id": "city_harb_crab_trap_stack",
-    "nameKo": "게 통발 더미",
+    "nameKo": "게 통발 더미 · 낮은",
     "category": "prop",
     "group": "city_harbor",
     "sourceFile": "city_harb_crab_trap_stack_hq.png",
@@ -11869,7 +11869,7 @@
   },
   {
     "id": "city_harb_lifering_holder",
-    "nameKo": "구명환 거치대",
+    "nameKo": "구명환 거치대 · 항구",
     "category": "prop",
     "group": "city_harbor",
     "sourceFile": "city_harb_lifering_holder_hq.png",
@@ -12572,7 +12572,7 @@
   },
   {
     "id": "city_laun_folding_drying_rack",
-    "nameKo": "접이식 빨래 건조대",
+    "nameKo": "접이식 빨래 건조대 · 빨래방",
     "category": "indoor",
     "group": "city_bath_laundry",
     "sourceFile": "city_laun_folding_drying_rack_hq.png",
@@ -14279,7 +14279,7 @@
   },
   {
     "id": "city_terr_parcel_locker",
-    "nameKo": "무인 택배 보관함",
+    "nameKo": "무인 택배 보관함 · 소형",
     "category": "prop",
     "group": "city_terrace",
     "sourceFile": "city_terr_parcel_locker_hq2.png",
@@ -16214,7 +16214,9 @@
     ],
     "tags": [
       "village",
-      "laundry"
+      "laundry",
+      "빨래줄",
+      "마을 마당"
     ]
   },
   {
@@ -16232,7 +16234,9 @@
     ],
     "tags": [
       "village",
-      "laundry"
+      "laundry",
+      "빨래통",
+      "마을 마당"
     ]
   },
   {
@@ -17094,7 +17098,9 @@
     ],
     "tags": [
       "village",
-      "well"
+      "well",
+      "우물",
+      "마을 마당"
     ]
   },
   {
@@ -17114,7 +17120,9 @@
     ],
     "tags": [
       "village",
-      "well"
+      "well",
+      "우물",
+      "마을 마당"
     ]
   },
   {
@@ -21230,7 +21238,7 @@
   },
   {
     "id": "city_fish_lifejacket_hanger",
-    "nameKo": "구명조끼 걸이",
+    "nameKo": "구명조끼 걸이 · 낚시터",
     "category": "prop",
     "group": "city_parks",
     "sourceFile": "city_fish_lifejacket_hanger_hq2.png",
@@ -21677,7 +21685,7 @@
   },
   {
     "id": "city_pa_mic_stand",
-    "nameKo": "마이크 스탠드",
+    "nameKo": "마이크 스탠드 · 축제 무대",
     "category": "prop",
     "group": "city_festival",
     "sourceFile": "city_pa_mic_stand_hq2.png",
@@ -25009,7 +25017,7 @@
   },
   {
     "id": "city_gym_parallel_bars",
-    "nameKo": "평행봉",
+    "nameKo": "평행봉 · 체육관",
     "category": "structure",
     "group": "city_sports",
     "sourceFile": "city_gym_parallel_bars_hq.png",
@@ -25081,7 +25089,7 @@
   },
   {
     "id": "city_gym_sit_up_bench",
-    "nameKo": "윗몸 일으키기 벤치",
+    "nameKo": "윗몸 일으키기 벤치 · 체육관",
     "category": "structure",
     "group": "city_sports",
     "sourceFile": "city_gym_sit_up_bench_hq.png",
@@ -25129,7 +25137,7 @@
   },
   {
     "id": "city_gym_waist_twister",
-    "nameKo": "허리 돌리기 운동기구",
+    "nameKo": "허리 돌리기 운동기구 · 체육관",
     "category": "structure",
     "group": "city_sports",
     "sourceFile": "city_gym_waist_twister_hq.png",
@@ -25502,7 +25510,7 @@
   },
   {
     "id": "city_kim_cabbage_stack",
-    "nameKo": "배추 더미",
+    "nameKo": "배추 더미 · 김장용",
     "category": "prop",
     "group": "city_market",
     "sourceFile": "city_kim_cabbage_stack_hq2.png",
@@ -27526,7 +27534,7 @@
   },
   {
     "id": "city_autum_scarecrow_front",
-    "nameKo": "허수아비",
+    "nameKo": "허수아비 · 가을 축제",
     "category": "prop",
     "group": "city_festival",
     "sourceFile": "city_autum_scarecrow_front_hq.png",
@@ -28699,7 +28707,7 @@
   },
   {
     "id": "city_flori_garden_soil_bags",
-    "nameKo": "원예용 흙 포대",
+    "nameKo": "원예용 흙 포대 · 낮은 줄",
     "category": "prop",
     "group": "city_garden",
     "sourceFile": "city_flori_garden_soil_bags_hq2.png",
@@ -28853,7 +28861,7 @@
   },
   {
     "id": "city_garde_garden_gnome_pair",
-    "nameKo": "정원 난쟁이 장식 두 개",
+    "nameKo": "정원 난쟁이 장식 두 개 · 도시 정원",
     "category": "prop",
     "group": "city_garden",
     "sourceFile": "city_garde_garden_gnome_pair_hq.png",
@@ -28919,7 +28927,7 @@
   },
   {
     "id": "city_garde_sundial_stone",
-    "nameKo": "돌 해시계",
+    "nameKo": "돌 해시계 · 도시 정원",
     "category": "prop",
     "group": "city_garden",
     "sourceFile": "city_garde_sundial_stone_hq.png",
@@ -29287,7 +29295,7 @@
   },
   {
     "id": "city_hedge_hedge_h",
-    "nameKo": "생울타리 · 가로 직선",
+    "nameKo": "생울타리 · 가로 직선 · 긴",
     "category": "structure",
     "group": "city_garden",
     "sourceFile": "city_hedge_hedge_h_hq.png",
@@ -29314,7 +29322,7 @@
   },
   {
     "id": "city_hedge_hedge_v",
-    "nameKo": "생울타리 · 세로 직선",
+    "nameKo": "생울타리 · 세로 직선 · 긴",
     "category": "structure",
     "group": "city_garden",
     "sourceFile": "city_hedge_hedge_v_hq.png",
@@ -29424,7 +29432,7 @@
   },
   {
     "id": "city_hedge_wood_fence_h",
-    "nameKo": "나무 울타리 · 가로 직선",
+    "nameKo": "나무 울타리 · 가로 직선 · 긴",
     "category": "structure",
     "group": "city_garden",
     "sourceFile": "city_hedge_wood_fence_h_hq.png",
@@ -32042,7 +32050,7 @@
   },
   {
     "id": "city_vendm_ice_cream_freezer_box",
-    "nameKo": "아이스크림 냉동고",
+    "nameKo": "아이스크림 냉동고 · 상자형",
     "category": "prop",
     "group": "city_market",
     "sourceFile": "city_vendm_ice_cream_freezer_box_hq.png",
@@ -32153,7 +32161,7 @@
   },
   {
     "id": "city_vendm_umbrella_lend_stand",
-    "nameKo": "우산 대여함",
+    "nameKo": "우산 대여함 · 거치대형",
     "category": "prop",
     "group": "city_market",
     "sourceFile": "city_vendm_umbrella_lend_stand_hq.png",
@@ -32413,7 +32421,7 @@
   },
   {
     "id": "city_xmas_snowman_front",
-    "nameKo": "눈사람",
+    "nameKo": "눈사람 · 성탄 축제",
     "category": "prop",
     "group": "city_festival",
     "sourceFile": "city_xmas_snowman_front_hq.png",
@@ -35638,7 +35646,7 @@
   },
   {
     "id": "city_izaka_beer_crate_tower",
-    "nameKo": "맥주 상자 더미",
+    "nameKo": "맥주 상자 더미 · 높이 쌓은",
     "category": "prop",
     "group": "city_food",
     "sourceFile": "city_izaka_beer_crate_tower_hq.png",
@@ -37039,7 +37047,7 @@
   },
   {
     "id": "city_newss_plastic_stool_pair",
-    "nameKo": "플라스틱 스툴 두 개",
+    "nameKo": "플라스틱 스툴 두 개 · 신문 가판대",
     "category": "prop",
     "group": "city_books",
     "sourceFile": "city_newss_plastic_stool_pair_hq.png",
@@ -37700,7 +37708,7 @@
   },
   {
     "id": "city_pharm_sunscreen_display",
-    "nameKo": "자외선 차단제 진열대",
+    "nameKo": "자외선 차단제 진열대 · 약국",
     "category": "prop",
     "group": "city_clinic",
     "sourceFile": "city_pharm_sunscreen_display_hq.png",
@@ -38251,7 +38259,7 @@
   },
   {
     "id": "city_ramen_chopstick_holder_post",
-    "nameKo": "젓가락 통 받침대",
+    "nameKo": "젓가락 통 받침대 · 라멘집",
     "category": "prop",
     "group": "city_food",
     "sourceFile": "city_ramen_chopstick_holder_post_hq.png",
@@ -38455,7 +38463,7 @@
   },
   {
     "id": "city_ramen_towel_hook_pole",
-    "nameKo": "수건 걸이 기둥",
+    "nameKo": "수건 걸이 기둥 · 라멘집",
     "category": "prop",
     "group": "city_food",
     "sourceFile": "city_ramen_towel_hook_pole_hq.png",
@@ -38591,7 +38599,7 @@
   },
   {
     "id": "city_recyc_bottle_return_machine",
-    "nameKo": "빈 병 반납기",
+    "nameKo": "빈 병 반납기 · 소형",
     "category": "prop",
     "group": "city_recycling_center",
     "sourceFile": "city_recyc_bottle_return_machine_hq.png",
@@ -38774,7 +38782,7 @@
   },
   {
     "id": "city_recyc_plastic_crate_tower",
-    "nameKo": "플라스틱 상자 더미",
+    "nameKo": "플라스틱 상자 더미 · 세로로 쌓은",
     "category": "prop",
     "group": "city_recycling_center",
     "sourceFile": "city_recyc_plastic_crate_tower_hq.png",
