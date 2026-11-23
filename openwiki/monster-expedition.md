@@ -36,8 +36,17 @@ the shipping Gen1 battle, collection, interpreter, save and menu systems.
 - 측정: `node_modules/.bin/vite-node --script scripts/qa/monster-map-overlap.mts -- <out.json> default seed0 seed1 …`
   (맵마다 가장 닮은 견본·겹침, 입구에서 이벤트 도달, 길 출구 가장자리 빈칸), 그림은
   `scripts/qa/monster-map-render.mts -- <폴더> 0 1`. 렌더는 맵이 커서 `NODE_OPTIONS=--max-old-space-size=12000` 을 준다.
+- 천장(2026-11-23 monster-map-ceiling-fix): 이웃 점수로 고르면 자리로 정해진 테두리 그림이 흩어졌다. 이제 두 경우는 규칙으로 칠한다.
+  큰 방(밤막회사 `pw`·유적·관측탑 `ru`·추억의 탑 `gh`)은 `HallFrame`: 바닥 바로 위 두 줄 = 벽 면(wall_up·wall_dn, 끝은 _l·_r,
+  무늬는 같은 열 짝), 나머지 벽 덩이 = 어둠 천장 edge_v, 바닥·벽 면이 서·동·북에 닿으면 edge_l·edge_r·edge_t, 위 대각선만 닿으면 edge_lt·edge_rt
+  (견본이 선을 안 쓰면 전부 edge_v). 그림이 없는 모양(선 둘·한 줄 벽)은 배치 단계 `normalizeHallMass` 가 바닥으로 편다.
+  동굴(어둠 테두리)은 `CaveRim`: 테두리 한 줄을 견본 테두리에서 변마다(귀퉁이·위·아래·왼·오른) 뽑아 칠하고,
+  오토타일 다듬기 뒤에 다시 칠한다(테두리 일부가 오토타일 조각이라 엔진이 안쪽 귀퉁이로 바꿨다).
+  검사 `hallFrameDefects`·`caveRimDefects`(단위 테스트 `test/monsterFieldGenerator.test.ts`), 측정
+  `node_modules/.bin/vite-node --script scripts/qa/monster-map-ceiling.mts -- <out.json> [변형…] [--seeds 0-15]`
+  (변형 7 × 씨앗, 천장 불일치·오토타일 재성형·견본 겹침·닿지 않는 이벤트).
 - 알려진 한계: 절벽은 오르내리는 계단 없이 장애물로만 놓인다. 한 방향 턱(ledge)·얼음 미끄럼·회전 판 같은 장치 칸은
-  배우지 않는다(`SPECIAL`). 벽이 얇은 실내 던전(유적·밤막회사)은 벽 덩이 무늬가 견본보다 어지럽다.
+  배우지 않는다(`SPECIAL`).
   해변 오두막은 없어졌다(문 쉼터 이벤트도 함께). `water`·`cliffs` 는 그 견본 칩셋에 물·절벽 그림 규칙이 있을 때만 효과가 있다(1번길 풀밭은 물이 없다).
 - `roster.ts`, original creature art and audio registrars own the data/assets.
   `markers.json` contains three original event sprites, not chipset tiles.
