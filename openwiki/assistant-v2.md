@@ -300,13 +300,13 @@ Terra 작은 일 `door-roundtrip-starter` — 「잿불 마을 동쪽 끝에서 
 ### 구성 문법 — 계획과 시공을 나눈다 (2026-11-23 map-variety)
 
 오너: «결정론 빌더가 너무 뻔하게 똑같은 것만 짓는다». 설계 없이 지은 버들항 마을·숲·동굴(청사진 `build_places`, 설계를 안 쓴 `make_place`)은 요청이 달라도 한 꼴이었다:
-마을은 사용자 글을 안 읽어 20개 요청 모두 `river street 집 3채`(북쪽 단 띠·옆 강·탑집), 동굴·숲은 `layouts.ts` `layoutBlobOnce` 가 늘 남쪽 가운데 입구에 방 셋을 상자 면적이 가장 작게 뭉치고 32개 씨앗 중 허공이 가장 적은 판을 골라 같은 모양으로 모였다.
+마을은 사용자 글을 안 읽어 20개 요청 중 18개가 `river street 집 3채`(북쪽 단 띠·옆 강·탑집, 하나는 성벽), 둘만 `plaza`, 동굴·숲은 `layouts.ts` `layoutBlobOnce` 가 늘 남쪽 가운데 입구에 방 셋을 상자 면적이 가장 작게 뭉치고 32개 씨앗 중 허공이 가장 적은 판을 골라 같은 모양으로 모였다.
 
 - `src/ai/v2/place/placeGrammar.ts`: 종류마다 문법 여럿 — 동굴 `lake`·`branch`·`corridor`·`descent`·`den`, 숲 `creek`·`clearing`·`cliff`·`trail`·`thicket`, 마을 `riverline`·`terraced`(낱말로만)·`plaza`·`crossroads`·`scatter`·`glade`.
   고르는 차례: `hints.grammar`(모델 계획) → 장소 이름 낱말 → 사용자 글 낱말(`spec.variety` 의 요청문, 의도 메모 뒤는 뺀다 — #4956) → 게임 열쇠·이름 해시. 매개변수(입구 쪽·좌우 뒤집기·자리 흔들기·마을 높은 자리)는 씨앗.
 - 시공은 이미 있는 입력이다: 동굴·숲은 `dungeonDesign`(`designLayout.ts` 가 설계대로 판다, 1층·설계 없음·소굴 아님일 때만), 마을은 `author_beodeul_town` 손잡이(form·landform·water·woods·layout.exits, 명세 낱말이 정한 값이 이긴다). 모델이 `dungeonDesign`·`hints.layout` 을 주면 문법은 안 끈다.
 - 측정: `bun scripts/qa/assistant-v2/mapVariety.mts <out> --tag <t> [--only 0,1] | --merge <t> | --gate 1` — 요청 20개 × 마을·숲·동굴, 품질(빈 칸·소품/100칸·도달)과 종류별 20×20 행렬. 전/후 페이지 `~/claude-viz/map-variety.html`.
-- 구조 유사도는 `structureSimilarity.ts`(칸을 길·물·막힘·땅으로 나눈 24×24 의 카파, 뒤집기 넷 중 최대). 전/후(요청 20개): 숲 0.606 → 0.331 · 동굴 0.644 → 0.419. 마을은 이 지표가 원래 낮다(0.121): 집·나무가 막힘 칸을 흩뜨려 구성(단 띠·강 자리·같은 집 그림)의 반복을 못 잰다 — 마을은 꼴 수와 그림으로 본다(전 20개 모두 `river street`).
+- 구조 유사도는 `structureSimilarity.ts`(칸을 길·물·막힘·땅으로 나눈 24×24 의 카파, 뒤집기 넷 중 최대). 전/후(요청 20개): 숲 0.606 → 0.331 · 동굴 0.644 → 0.419. 마을은 이 지표가 원래 낮다(0.121): 집·나무가 막힘 칸을 흩뜨려 구성(단 띠·강 자리·같은 집 그림)의 반복을 못 잰다 — 마을은 꼴 수와 그림으로 본다(전 20개 중 18개 `river street`).
 - 마을의 코드 지형(기본)은 form·water·woods 를 거의 안 보고, 띠 지형(`terrainGen: "bands"`)은 남쪽 가로 강에 다리가 없으면 강 건너에 못 간다(도달 77%) — 그래서 띠 지형은 흩어진 마을(`scatter`)에만 쓴다.
 
 ## 게임 세계 — 게임마다 다른 칩셋 한 벌, 장소마다 다른 종류 (2026-11-10)
