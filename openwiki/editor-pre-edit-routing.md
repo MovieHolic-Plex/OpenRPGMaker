@@ -1158,7 +1158,7 @@ aria-current로 말하고 일회성 테스트에는 상태를 붙이지 않는�
 | 오른쪽 | `toolbar-database` 자료집 · `toolbar-resource-manager` 소재 · **`topbar-assistant` 조수**(`openAiAssistantPanel()`) | 고스트 단추 |
 | 오른쪽 | `toolbar-save` = 연한 글자 「저장됨 HH:MM / 저장 중 / 저장 실패 / 저장 안 됨 · 이 탭만」(`autosaveStripText`). 평소 누르면 저장하며 title 은 「프로젝트 저장 (Ctrl+S)」이다. 실패하면 경고 아이콘과 「저장 실패」를 표시하고, 누르면 오류 원문과 「다시 저장」 또는 「복구」를 연다. `?blankProject=1`·`?freshProject=1` 은 편집 전에도 `data-autosave-kind="unsaved-session"` 이고 빨간 실패가 아니다. 라이브 리전 `toolbar-save-autosave` 를 유지한다. | 저장 상태와 상세 |
 | 오른쪽 | `topbar-test-play`/`mode-play` 「▷ 테스트 실행」 | 그대로 |
-| 오른쪽 끝 | `menu-more-tools` ⋯ 32×32, 늘 보임. 항목 = `menu-help` ▸ · `menu-language` ▸ · `topbar-ai-settings`(이름에 연결 상태: 「AI 설정 · … 로그인 필요」) | ⋯ |
+| 오른쪽 끝 | `menu-more-tools` ⋯ 32×32, 늘 보임(이름 「도움말 · 설정」). 한때 ⌘K 로만 옮겼다가 2026-11-23 되살렸다: 입구 이름이 「찾기」라 초보가 도움말·AI 설정을 못 찾았다(editor-main-ui-vqa 6번). 항목 = `menu-help` ▸ · `menu-language` ▸ · `topbar-ai-settings`(이름에 연결 상태: 「AI 설정 · … 로그인 필요」) | ⋯ |
 | ⌘K 만 | 세계관 `open-world` · 음악 `open-audio` · 찾기 `open-map-event-search` · 랜덤 전투 `topbar-battle-test` · AI 스튜디오 `topbar-ai-studio` · 패널 보기 `workspace-panels-button-<pane>` · 저장 기록 `commit-history-toggle` · 편집 이름 `topbar-identity` · 전체화면 `window-fullscreen` · 명령 팔레트 칩(Ctrl+K 자체) | 팔레트 행 testid `command-palette-item-command-<id>` |
 | 뺌 | `topbar-save-status` 실패 칩 · `studio-status-strip` 상태 줄 · `ai-connection-chip` | 저장 글자·캔버스·⋯ 항목 이름이 같은 정보를 말한다 |
 

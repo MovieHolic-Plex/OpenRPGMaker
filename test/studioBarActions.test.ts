@@ -336,23 +336,24 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
       for (const child of node.children) walk(child);
     };
     walk(trailing);
-    const shown = ["toolbar-database", "toolbar-resource-manager", "topbar-assistant", "toolbar-save", "topbar-test-play"];
+    const shown = ["toolbar-database", "toolbar-resource-manager", "topbar-assistant", "toolbar-save", "topbar-test-play", "menu-more-tools"];
     expect(order.filter((id) => shown.includes(id))).toEqual(shown);
     // ⌘K 로만 닿는 것 — 톱바 어디에도 단추가 없다.
     for (const gone of [
       "toolbar-world", "toolbar-sound-test", "toolbar-search", "topbar-battle-test", "topbar-ai-studio",
       "workspace-panels-button", "workspace-command-palette-button", "commit-history-toggle", "topbar-identity",
       "window-fullscreen", "topbar-save-status", "studio-status-strip", "ai-connection-chip", "studio-run-group",
-      "menu-more-tools",
     ]) {
       expect(findByTestId(topbar, gone), gone).toBeNull();
     }
   });
 
-  it("⋯ 더 보기는 톱바에 없다 — AI 설정 · 언어 · 도움말은 ⌘K 명령이고 AI 설정 명령이 모달을 연다", async () => {
-    // Break: ⋯ 단추가 시안과 달리 되살아나거나, 그 항목이 ⌘K 명령으로 옮겨지지 않아 닿을 길이 사라진다.
+  it("⋯ 도움말 · 설정이 톱바 끝에 보이고, ⌘K 에도 AI 설정 · 언어 · 도움말 명령이 있다", async () => {
+    // Break: 도움말·언어·AI 설정의 화면 입구가 다시 사라져 ⌘K 를 모르는 초보가 닿지 못한다.
     const topbar = render();
-    expect(findByTestId(topbar, "menu-more-tools")).toBeNull();
+    const more = findByTestId(topbar, "menu-more-tools") as FakeElement;
+    expect(more).not.toBeNull();
+    expect(more.getAttribute("aria-label")).toBe("도움말 · 설정");
     const commands = listEditorCommands();
     const ids = commands.map((command) => command.id);
     for (const id of ["topbar-ai-settings", "menu-help-guide", "help-shortcuts", "menu-language-ko", "menu-language-en"]) expect(ids, id).toContain(id);
