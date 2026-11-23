@@ -8,7 +8,8 @@
 // 이름·크기 검증 → 발행. 업로드가 실패하면 초안으로 남고 latest 는 이전 정상 릴리스를 계속 준다.
 
 /**
- * README·문서가 버전 없이 부르는 이름과 버전이 박힌 이름, 합쳐 6개가 릴리스에 있어야 한다.
+ * README·문서가 버전 없이 부르는 이름과 버전이 박힌 이름, 합쳐 4개가 릴리스에 있어야 한다.
+ * 윈도우는 portable exe 하나다(2026-11-23): zip 은 같은 무설치 실행본의 중복이라 뺐다.
  * electron-builder 산출물 이름(`<product>-<version>-<arch>.<ext>`)을 전제로 한다.
  *
  * @param {string} version `0.408.0` 처럼 v 없는 버전
@@ -20,11 +21,9 @@ export function requiredDesktopAssets(version) {
   return [
     // README·릴리스 노트가 버전 없이 부르는 고정 이름
     "OPRN.Studio-windows.exe",
-    "OPRN.Studio-windows.zip",
     "OPRN.Studio-linux.AppImage",
     // 버전이 박힌 이름(옛 릴리스·직접 링크용)
     `OPRN.Studio.${plain}.exe`,
-    `OPRN.Studio-${plain}-win.zip`,
     `OPRN.Studio-${plain}.AppImage`,
   ];
 }

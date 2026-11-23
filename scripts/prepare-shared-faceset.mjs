@@ -17,7 +17,7 @@ const bounds = {
   'blue-headband-expressions': { x:[[14,314],[327,628],[641,941],[954,1252]], y:[[8,309],[321,622],[635,936],[948,1249]] },
 };
 for (const set of selected) {
-  const bytes = await readFile(path.join(root, 'public/assets/shared/faceset/source', `${set.stem}.png`));
+  const bytes = await readFile(path.join(root, 'assets/source/shared-faceset', `${set.stem}.png`));
   assert.equal(createHash('sha256').update(bytes).digest('hex'), set.sha256, `Master changed: ${set.stem}`);
   const image = await Jimp.read(bytes);
   const {width, height} = image.bitmap;
