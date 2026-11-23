@@ -47,7 +47,8 @@
 .cf-chips { position: sticky; top: 0; z-index: 2; display: flex; gap: var(--space-2); padding: var(--space-3) 0; overflow-x: auto; background: var(--bg-base); scrollbar-width: none; }
 .cf-chip { min-height: 30px; padding: 0 var(--space-3); white-space: nowrap; border: 0; border-radius: var(--radius-pill); background: var(--bg-inset); color: var(--text-2); font: inherit; font-size: var(--font-13); cursor: pointer; }
 .cf-chip:hover { background: var(--control-bg-hover); color: var(--text-1); }
-.cf-chip.is-on { background: var(--text-1); color: var(--bg-base); }
+/* 고른 분류는 필터 상태라 주요 버튼(만들기)보다 가볍게: 검정 채움 대신 중립 칸 + 가는 테두리. */
+.cf-chip.is-on { background: var(--bg-active); color: var(--text-1); box-shadow: inset 0 0 0 1px var(--border-default); font-weight: var(--font-weight-semibold); }
 
 .cf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: var(--space-5) var(--space-4); }
 .cf-card { cursor: pointer; border-radius: var(--radius-3); outline: none; }
@@ -159,8 +160,9 @@
   background: rgb(12 14 20 / 0.6); color: #fff; font: inherit; font-size: var(--font-13); cursor: pointer; backdrop-filter: blur(6px);
 }
 .cf-quick-genre:hover { border-color: rgb(255 255 255 / 0.55); }
-.cf-quick-go { border-color: transparent; background: var(--accent); color: var(--on-accent); font-weight: var(--font-weight-semibold); }
-.cf-quick-go:hover { background: var(--accent-hover); }
+/* 창의 주요 행동은 위 막대 「만들기」 하나다. 「시작하기」는 두 번째 길이라 강조색이 아니라 흰 테두리 버튼. */
+.cf-quick-go { border-color: rgb(255 255 255 / 0.6); background: rgb(255 255 255 / 0.12); color: #fff; font-weight: var(--font-weight-semibold); }
+.cf-quick-go:hover { border-color: #fff; background: rgb(255 255 255 / 0.2); }
 .cf-newband { display: flex; align-items: center; gap: var(--space-5); flex-wrap: wrap; margin: var(--space-6) 0 0; padding: var(--space-3) var(--space-4); border: var(--stroke-1) solid var(--border-default); border-radius: var(--radius-3); }
 .cf-newband:first-child, :empty + .cf-newband { margin-top: 0; }
 .cf-builtin-demos { margin: var(--space-3) 0 var(--space-4); padding: var(--space-4) var(--space-5); border: var(--stroke-1) solid var(--border-subtle); border-radius: var(--radius-4); background: var(--bg-surface); }
