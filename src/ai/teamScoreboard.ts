@@ -13,9 +13,9 @@
 // 고르는 규칙: 쓸 수 있는 모델로 만들 수 있는 조합을 더 많이 채점한 표를 쓰고(같으면 판 수가 큰 full), 그 표에서
 // 최고 품질에서 1점 이내인 조합 중 가장 싼 것을 고른다.
 // 단, 기본 혼자 모델(SOLO_DEFAULT_WORKERS, 앞이 먼저)을 쓸 수 있으면 점수·값을 견주지 않고 「그 모델 혼자」 를 고른다:
-//   ① GPT-6.2 Sol — 오너 결정 2026-11-19: ChatGPT(Codex 구독·로그인)가 있으면 Sol · medium 혼자다(teamPlan.ts).
-//   ② Sonnet 5.5 — 오너 결정 2026-11-23: ChatGPT 가 없고 Claude 가 있으면 Sonnet 5.5 · high 한 모델(teamPlan.ts, 점수표에 행 없음).
+//   ① Sonnet 5.5 — 오너 결정 2026-11-23: Claude 가 있으면(구독 CLI · 키) Sonnet 5.5 · high 한 모델(teamPlan.ts, 점수표에 행 없음).
 //      그 전 2026-11-16 은 Opus 5.5 · medium. 팀장·워커 나누기는 기본에서 뺐다.
+//   ② GPT-6.2 Sol — 오너 결정 2026-11-19: Claude 가 없고 ChatGPT(Codex 구독·로그인)가 있으면 Sol · medium 혼자다(teamPlan.ts).
 //   ③ Opus 5.5 — Sonnet 없이 Opus 만 있는 키 등에서만 점수표의 기본 혼자 모델(SOLO_DEFAULT_WORKERS)로 남는다.
 //
 // 순수 모듈 — 브라우저와 Node 가 같이 읽는다.

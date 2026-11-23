@@ -43,7 +43,8 @@ import { mountAgentModeDock } from "@/editor/agentMode/agentModeDock";
 import { createAiSidebarWorkspace } from "@/editor/panels/aiSidebarWorkspace";
 import { mountRightInspector, type RightInspectorMount } from "@/editor/panels/rightInspector";
 import { closeSidebarSurface, teardownSidebarSurfaces } from '@/editor/panels/sidebarSurface';
-import { refreshAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
+import { refreshAiConnectionStatus, resetAiConnectionStatusCache } from "@/editor/panels/aiConnectionStatus";
+import { installAutoProviderSwitching } from "@/editor/panels/aiAutoProvider";
 import { showConfirm } from "@/editor/ui/modal";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
 import { ensureReliefSidePanel, mountReliefToolbar } from "@/editor/panels/reliefToolbar";
@@ -82,6 +83,9 @@ import { mountCanvasStatus } from "@/editor/panels/canvasToolPill";
 import { installPointerStrokeGate, runWhenPointerReleased } from "@/editor/pointerStrokeGate";
 import { mountEventAiQueueView, unmountEventAiQueueView } from "@/editor/eventAiQueue/eventAiQueueView";
 import { mountFirstRunGuide } from "./firstRunGuide";
+
+/** 자동 연결 선택·한도 전환 감시는 편집기 수명 동안 한 번만 건다(편집기를 다시 열어도 중복되지 않게). */
+let autoProviderSwitchingInstalled = false;
 
 const LEFT_PANEL_DEFAULT_WIDTH = 260;
 const LEFT_PANEL_MIN_WIDTH = 184;
@@ -438,6 +442,12 @@ export function renderEditor(main: HTMLElement): void {
   // 조회해 구조 키트·클러스터·타일셋 게이트가 실제 연결 상태를 보게 한다. 완료 전 checking은
   // 각 게이트가 허용하므로 느린 companion 조회가 사용자를 잠그지는 않는다.
   void refreshAiConnectionStatus();
+  // 연결된 길·한도를 보고 조수 연결을 고르고, 한도에 걸리면 다음 길로 바꾼다(사용자가 고정했으면 그대로).
+  // 편집기가 떠 있는 동안 한 번만 건다. 바뀌면 연결 상태를 다시 읽는다.
+  if (!autoProviderSwitchingInstalled) {
+    autoProviderSwitchingInstalled = true;
+    installAutoProviderSwitching(() => { resetAiConnectionStatusCache(); void refreshAiConnectionStatus(); });
+  }
   scheduleEditorAssetWarmup();
 }
 

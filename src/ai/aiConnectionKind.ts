@@ -54,7 +54,7 @@ export function editorHasProviderChoice(): boolean {
   return OH_MY_PI_PROVIDERS.length > 1;
 }
 
-/** 그 종류의 기본 제공자 = 권장 제공자(ChatGPT, 2026-11-19 오너 결정). 두 종류가 같은 목록을 쓰므로 기본값도 하나다. */
+/** 그 종류의 기본 제공자 = 권장 제공자(Claude, 2026-11-23 오너 결정). 두 종류가 같은 목록을 쓰므로 기본값도 하나다. */
 export function defaultProviderForKind(_kind: AiConnectionKindId): string {
   return RECOMMENDED_OH_MY_PI_PROVIDER;
 }

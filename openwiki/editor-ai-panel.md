@@ -1440,16 +1440,16 @@ Ultrabrain for supervisor surfaces. Cast-sheet prose uses Writer. The small inte
 classifier remains a non-reasoning, 4096-token routing call; it must not inherit
 Deep's expensive effort or the editor's 200000 output budget. Legacy/test configs
 without role selections retain their prior behavior.
-**조수 출하 기본 = ChatGPT · GPT-6.2 Sol · medium (오너 결정 2026-11-19).** Terra 로는 게임을 못 만든다는 결정에 따라, 저장된 Terra 제작 역할과 Codex 엔진 선택도 읽을 때 Sol 로 올린다. medium 이상의 저장 강도는 유지한다.
-**Claude 기본 = Claude · Sonnet 5.5 · high (오너 결정 2026-11-23: 「조수는 sonnet 5.5 high 만 쓰게」).** Claude 로 도는 모든 길에서 계획·실행(deep)·시각·작문·시공(build)·감독(ultrabrain)과 곁 호출(화면 검수·검토자)이 **`claude-sonnet-5-5` · `high` 한 모델**이다(`src/ai/claudeDefault.ts`). 지난 Claude 기본은 `claude-opus-5-5` · `medium`(2026-11-16)이었다. Haiku 워커·팀장 나누기는 여전히 기본에서 빠져 있다. Opus·나누기·다른 모델은 설정에서 고른다. 공장 기본 제공자(ChatGPT)는 이 결정으로 바뀌지 않았다.
+**조수 출하 기본 = Claude · Sonnet 5.5 · high (오너 결정 2026-11-23: 「조수는 sonnet 5.5 high 만 쓰게」).** 새 설치(저장된 설정 없음)와 첫 실행 마법사의 첫 순위가 모두 Claude 다. Claude 로 도는 모든 길에서 계획·실행(deep)·시각·작문·시공(build)·감독(ultrabrain)과 곁 호출(화면 검수·검토자)이 **`claude-sonnet-5-5` · `high` 한 모델**이다(`src/ai/claudeDefault.ts`). 제공자 목록의 첫 항목(= `RECOMMENDED_OH_MY_PI_PROVIDER`)도 Claude, 둘째가 ChatGPT 다. ChatGPT·Google·그 밖의 제공자는 그대로 고를 수 있고, 이미 저장된 설정은 옮기지 않는다. 그림 만들기는 이 선택과 무관하게 ChatGPT 뿐이다(오너 결정 2026-11-19). Haiku 워커·팀장 나누기는 여전히 기본에서 빠져 있다. Opus·나누기·다른 모델은 설정에서 고른다.
+**지난 출하 기본(이력) = ChatGPT · GPT-6.2 Sol · medium (오너 결정 2026-11-19, 2026-11-23 에 Claude 로 바뀜).** Terra 로는 게임을 못 만든다는 결정에 따라, 저장된 Terra 제작 역할과 Codex 엔진 선택도 읽을 때 Sol 로 올린다. medium 이상의 저장 강도는 유지한다. ChatGPT 를 고른 설정·ChatGPT 구독·로그인 첫 실행의 기본은 지금도 이 값이다(`src/ai/chatgptDefault.ts`). 지난 Claude 기본은 `claude-opus-5-5` · `medium`(2026-11-16)이었다.
 
 | 들어가는 길 | 기본이 풀리는 값 | 정하는 곳 |
 |---|---|---|
-| 새 설치(저장 없음) | `openai-codex` / `gpt-6.2-sol` / medium — 모든 역할·감독. 도트 칸은 계획 모델을 따른다 | `defaultAiConfig()` |
-| 새 설치 + Claude Code CLI 구독 | 엔진 `local-cli:claude` · `claude-sonnet-5-5` 하나 · high, 팀장 없음 | 첫 실행 마법사 `teamPlan.ts buildTeamPlan`(ChatGPT 가 없고 Sonnet 을 쓸 수 있으면 Sonnet 혼자, 점수표 행 없음) → `applyTeamPlan`(Claude CLI 강도 = `ASSISTANT_CLAUDE_EFFORT`). `LOCAL_CLI_DEFAULT_MODELS.claude` 도 같다 |
+| 새 설치(저장 없음) | `anthropic` / `claude-sonnet-5-5` / high — 모든 역할·감독. 도트 칸은 계획 모델을 따른다. 그림 만들기(`imageProviderId`)는 ChatGPT 그대로 | `defaultAiConfig()` · `RECOMMENDED_OH_MY_PI_PROVIDER` = anthropic(제공자 목록 첫 항목) |
+| 새 설치 + Claude Code CLI 구독 | 엔진 `local-cli:claude` · `claude-sonnet-5-5` 하나 · high, 팀장 없음 | 첫 실행 마법사 `teamPlan.ts buildTeamPlan`(Sonnet 을 쓸 수 있으면 — 구독 CLI·키 어느 길이든 — ChatGPT 보다 먼저 Sonnet 혼자, 점수표 행 없음) · 후보 카드 순서 `planDefaults.ts planCandidates` = Claude 구독 → ChatGPT → Gemini/Google · 자동 추천 `registry.ts LOCAL_CLI_DEFAULT_ORDER` = claude → codex → gemini → `applyTeamPlan`(Claude CLI 강도 = `ASSISTANT_CLAUDE_EFFORT`). `LOCAL_CLI_DEFAULT_MODELS.claude` 도 같다 |
 | Anthropic 키(`ANTHROPIC_API_KEY`) | 입양한 엔드포인트 `openai-compat:…` / `claude-sonnet-5-5` — 모든 역할·감독 | `keyRouteAdoptModel("claude")` = sonnet, `providerSelection.ts`. 이 길은 추론 강도를 보내지 않는다(`KEY_ROUTES.claude.reasoningMode = none`) |
 | 편집기 안 Claude 계정(설정에서 Claude 를 고름) | `anthropic` / `claude-sonnet-5-5` / high — 모든 역할·감독 | `modelPresets.ts`(anthropic 두 티어 모두 Sonnet) + `providerSelection.ts`(조수 기본 모델 칸은 역할·감독 모두 `CLAUDE_DEFAULT_EFFORT`) |
-| ChatGPT 구독 또는 로그인 | Codex CLI 와 편집기 안 로그인 모두 `gpt-6.2-sol` · medium | 마법사 → `applyTeamPlan` · `configForPlanAccount` |
+| ChatGPT 구독 또는 로그인(Claude 가 없을 때, 또는 설정에서 ChatGPT 를 고름) | Codex CLI 와 편집기 안 로그인 모두 `gpt-6.2-sol` · medium | 마법사 → `applyTeamPlan` · `configForPlanAccount` |
 | Google 만 | 지난 기본 그대로: `gemini-4-argon` medium · 감독 high | 마법사 → `configForProviderSelection` |
 | 저장된 설정이 있음 | Terra 제작 역할은 Sol 로 읽는다 | `loadAiConfig` · `loadAssistantEngine` |
 
@@ -1457,7 +1457,7 @@ without role selections retain their prior behavior.
 (`localCliEngine.ts promoteLegacyEngineDefault`. 저장은 `policyVersion: 3` 을 찍으므로 그 뒤에 사람이 다시 고른 Opus·나누기는 그대로다) ② Claude 계정을 골랐을 때 제품이 채운 Haiku 칸(직접 고른 표시가 없는 칸)은 조수 기본(Sonnet 5.5)으로 읽는다
 (`llmClient.ts promoteLegacyClaudeWorker`). 강도는 저장된 대로 둔다. 사람이 고른 Haiku·Sonnet, 한 칸이라도 고친 엔진 선택, Google·ChatGPT 설정은 건드리지 않는다. 계약 `test/aiDefaultClaudeSonnetHigh.test.ts` · `test/aiDefaultModelForced.test.ts`.
 옛 저장값(제공자 없는 blob)을 읽는 기본 제공자는 여전히 Google 이다(`DEFAULT_OH_MY_PI_PROVIDER`, `DEFAULT_MODEL = gemini-4-argon`) — 제공자 목록 순서가 아니라 이 상수가 정한다.
-저장된 설정이 없는 Google·ChatGPT 사용자는 공장 기본(Claude)이 연결돼 있지 않으므로 첫 실행 마법사를 한 번 거쳐 그 계정의 기본으로 맞춰진다.
+저장된 설정이 없는 Google·ChatGPT 사용자(Claude 를 쓸 수 없는 사람)는 공장 기본(Claude)이 연결돼 있지 않으므로 첫 실행 마법사를 한 번 거쳐 그 계정의 기본으로 맞춰진다. 연결된 계정이나 남은 한도를 보고 기본을 고르는 로직은 두지 않는다 — 공장 기본은 늘 Claude 한 값이다.
 
 **지난 기본(이력) = Google · Gemini 4 Argon · medium (사용자 결정 2026-10-14, PR #2535).** 그때 새로 설정하는 사용자의 `defaultAiConfig()` 는 계획·실행(deep)·시각·작문·시공(build) 다섯 슬롯을
 전부 `google-antigravity` / `gemini-4-argon` / `medium` 으로 두었다(감독 ultrabrain 검수만 `high`). `RECOMMENDED_OH_MY_PI_PROVIDER` 는 Google 이었고 제공자 목록도 Google 이 맨 앞이었다.
@@ -3348,6 +3348,30 @@ v0.413.0에서 「AI로 명령 만들기」의 도구 결과마다 약 78MB 프�
 - Project menu creation flows distinguish blank authoring from sample content: `???꾨줈?앺듃` clears to `createBlankProject()`, while `?덉젣濡??쒖옉` loads `createSampleAdventureProject()` (?딆씠??마을??醫끹?editor-export fixture). Keep that separation when adding project-start entry points.
 
 ## 제공자 · OAuth · 동반 서비스
+
+### 사용자 상태로 고르는 조수 연결 (2026-11-23, ai-setup-adaptive)
+
+공장 기본 제공자(지금 ChatGPT)는 처음 한 번만 쓰인다. 편집기·시작 화면이 뜨면 `editor/panels/aiAutoProvider.runAutoProviderPick` 이
+연결된 길을 모아 `ai/autoProviderPick.pickAutoProvider` 로 고르고 설정에 입힌다. 예전에는 Claude 만 연결한 사용자도
+칩이 「ChatGPT 로그인 필요」이고 조수가 잠겼다.
+
+- 모으는 상태: 계정 길(Claude · ChatGPT · Google · xAI · OpenRouter · Gemini CLI)은 `/auth/status`, 내 PC 의 CLI 는
+  `/v1/local-agents`(state `ready`), 사용자 지정 엔드포인트(DeepSeek 등)는 키 유무(`hasKey`). 연결된 길마다
+  `/auth/usage` 로 남은 한도를 묻는다. 숫자를 주는 길은 ChatGPT · Google 뿐이고(`scripts/lib/providerUsageRuntime.ts`)
+  나머지는 「모름」이다. 모름은 쓸 수 있는 것으로 본다.
+- 고르는 순서(`AUTO_PROVIDER_PRIORITY`): Claude 계정·키 → Claude Code(내 PC) → ChatGPT → Codex(내 PC) → Google → 나머지 레지스트리 순서 →
+  사용자 지정 엔드포인트. 한도 소진(남은 비율 0 또는 최근 429 의 쉬는 시각 전)과 도구 호출 불가로 알려진 길은 건너뛴다.
+  모두 한도면 가장 빨리 풀리는 길을 고르고 `reason: "all-limited"` 로 알린다.
+- 입히기: 계정 길은 `configForProviderSelection`(직접 고친 역할 칸은 그대로), 내 PC CLI 는 엔진 선택(`oprn:assistant-engine`).
+- 고정: AI 설정에서 사람이 연결을 고르면(`aiAuthSettings` 의 `emit`) `ai/providerPin` 이 그 id 를 적고, 그 뒤로는 자동으로
+  바꾸지 않는다(한도라도). 프로그램 경로(`selectProvider(…, { notify: false })`)는 고정하지 않는다.
+- 단위 표: `test/autoProviderPick.test.ts`(Claude만 · ChatGPT만 · 둘 다 · Claude 한도 · 429 만료 · 모름 · 도구 불가 · 없음 · 고정).
+- 한도 전환(b): 요청이 429 로 막히면(`AI_TRANSPORT_HEALTH_EVENT`, status 429) `installAutoProviderSwitching` 이 지금 길에
+  `ai/providerLimits.noteProviderLimited` 로 풀리는 시각을 적고(Retry-After·「resets in」·「try again in」, 못 읽으면 15분) 다시 고른다.
+  `companionConnection` 은 429 응답의 `retry-after` 헤더를 전송 상태 문장에 싣는다. 쉬는 길이 있으면 1분마다 다시 골라
+  풀리면 우선순위 길로 돌아간다. 요청이 다시 성공하면 그 길의 기록을 지운다.
+- 칩(`aiQuotaChip`): 모델 이름 뒤에 추론 강도(「Claude Sonnet 5.5 · 높음」). 자동 선택이 한도 때문에 다른 길을 골랐으면
+  꼬리가 「Claude 한도 · 자동 전환」, 지금 길이 한도(고정이거나 모두 한도)면 「한도 초과 · 15:02 풀림」(`autoPickNote`).
 
 ### 첫 연결과 실제 작업 계정 (2026-10-01)
 

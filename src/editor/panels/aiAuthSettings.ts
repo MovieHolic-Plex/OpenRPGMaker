@@ -53,6 +53,7 @@ import {
   resetAiConnectionStatusCache,
 } from "@/editor/panels/aiConnectionStatus";
 import { el } from "@/util/dom";
+import { saveProviderPin } from "@/ai/providerPin";
 import { deckIcon } from "./aiDeckIcons";
 import { aiProviderIcon } from "./aiProviderIcons";
 
@@ -616,6 +617,8 @@ export function renderAiAuthSettings(
   }
 
   const emit = (): void => {
+    // 사람이 직접 고른 연결이다 — 자동 선택(aiAutoProvider)이 다시 바꾸지 않게 고정한다.
+    saveProviderPin(providerId);
     onChange({ kind, providerId });
   };
 

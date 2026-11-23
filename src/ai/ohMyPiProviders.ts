@@ -14,6 +14,7 @@
 // 제공자는 순서가 아니라 DEFAULT_OH_MY_PI_PROVIDER 상수가 정한다. 그래서 순서를 바꿔도 기존 사용자가 다른 제공자로 넘어가지 않는다.
 // 2026-11-16(오너 결정): Claude 를 맨 앞으로 올렸다 — 조수 기본이 Claude Opus 5.5 · medium 이었다.
 // 2026-11-19(오너 결정): ChatGPT 를 맨 앞으로 올렸다 — 조수 기본이 ChatGPT(Codex 로그인) GPT-6.2 Sol · medium 이다.
+// 2026-11-23(오너 결정): Claude 를 다시 맨 앞으로 올렸다 — 조수 기본이 Claude Sonnet 5.5 · high 다(ChatGPT 는 둘째, 그대로 고를 수 있다).
 //
 // 모든 제공자의 자격은 동반 서비스(~/.oprn/oh-my-pi-auth.json)에만 있고 브라우저로 나가지 않는다.
 
@@ -50,13 +51,13 @@ export type OhMyPiProvider = {
 
 /** Claude 계정(편집기 안 로그인 · ANTHROPIC_API_KEY). id 는 pi 의 제공자 이름이자 저장값이다. */
 export const ANTHROPIC_PROVIDER_ID = "anthropic";
-/** Claude 의 조수 기본 모델(오너 결정 2026-11-23): Claude Sonnet 5.5. Claude 로 도는 모든 길(구독 CLI · 키 · 편집기 안 계정)의 모든 역할이 이 한 모델이다. */
+/** 조수 공장 기본 모델(오너 결정 2026-11-23): Claude Sonnet 5.5. 새 설정의 모든 역할이 이 한 모델이다. Claude 로 도는 모든 길(구독 CLI · 키 · 편집기 안 계정)의 모든 역할이 이 한 모델이다. */
 export const CLAUDE_DEFAULT_MODEL = ASSISTANT_CLAUDE_MODEL;
-/** Claude 의 조수 기본 추론 강도(오너 결정 2026-11-23): high. */
+/** 조수 공장 기본 추론 강도(오너 결정 2026-11-23): high. */
 export const CLAUDE_DEFAULT_EFFORT = ASSISTANT_CLAUDE_EFFORT;
-/** 조수 공장 기본 모델(오너 결정 2026-11-19): ChatGPT 의 GPT-6.2 Sol. 새 설정의 모든 역할이 이 한 모델이다(src/ai/chatgptDefault.ts). */
+/** ChatGPT 길의 기본 모델: GPT-6.2 Sol(src/ai/chatgptDefault.ts). 2026-11-19 부터 2026-11-22 까지는 조수 공장 기본이었고, 지금은 ChatGPT 를 고른 설정·ChatGPT 로그인 첫 실행의 기본이다. */
 export const CHATGPT_DEFAULT_MODEL = ASSISTANT_CHATGPT_MODEL;
-/** 조수 공장 기본 추론 강도(오너 결정 2026-11-19): medium. */
+/** ChatGPT 길의 기본 추론 강도: medium. */
 export const CHATGPT_DEFAULT_EFFORT = ASSISTANT_CHATGPT_EFFORT;
 
 /**
@@ -73,7 +74,8 @@ export const CHATGPT_DEFAULT_EFFORT = ASSISTANT_CHATGPT_EFFORT;
  * modelCatalog 가 이 모듈을 import 하기 때문 — 순환을 만들지 않고 테스트로 묶는다.
  */
 export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
-  // defaultModel 은 @oh-my-pi/pi-catalog DEFAULT_MODEL_PER_PROVIDER 실측값(2026-11-02)이자 조수 기본 모델이다.
+  // defaultModel 은 조수 기본 모델이다(Claude 는 공장 기본 2026-11-23, ChatGPT·Google 은 @oh-my-pi/pi-catalog DEFAULT_MODEL_PER_PROVIDER 실측값 2026-11-02).
+  { id: ANTHROPIC_PROVIDER_ID, label: "Claude", defaultModel: CLAUDE_DEFAULT_MODEL, envVars: ["ANTHROPIC_API_KEY"], authKind: "oauth" },
   {
     id: CODEX_PROVIDER_ID,
     label: "ChatGPT",
@@ -81,7 +83,6 @@ export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
     envVars: ["OPENAI_CODEX_OAUTH_TOKEN"],
     authKind: "oauth",
   },
-  { id: ANTHROPIC_PROVIDER_ID, label: "Claude", defaultModel: CLAUDE_DEFAULT_MODEL, envVars: ["ANTHROPIC_API_KEY"], authKind: "oauth" },
   {
     id: ANTIGRAVITY_PROVIDER_ID,
     label: "Google",
@@ -115,16 +116,16 @@ export const OH_MY_PI_PROVIDERS: readonly OhMyPiProvider[] = [
 export const DEFAULT_OH_MY_PI_PROVIDER = ANTIGRAVITY_PROVIDER_ID;
 
 /**
- * 새로 설정하는 사용자에게 권하는 제공자 = ChatGPT(Codex 계정 로그인)의 GPT-6.2 Sol(추론 강도 medium).
- * 오너 결정(2026-11-19): 기본 AI 를 ChatGPT 로.
+ * 새로 설정하는 사용자에게 권하는 제공자 = Claude(구독 CLI · 키 · 편집기 안 계정)의 Sonnet 5.5(추론 강도 high).
+ * 오너 결정(2026-11-23): 「조수는 sonnet 5.5 high 만 쓰게」.
  * 지난 기본: 2026-10-07 ChatGPT(gpt-6.1-sol) → 2026-10-14 Google(Gemini 4 Argon medium, PR #2535) → 2026-11-16 Claude(Opus 5.5 medium)
- * → 2026-11-19 ChatGPT(GPT-6.2 Sol medium).
- * 이미 Google·Claude 를 고른 저장값은 그대로 둔다. ChatGPT 를 쓸 수 없는 사용자(Claude 구독만 · Google 로그인만)는
- * 첫 실행 마법사가 그 계정의 지금 기본(Sonnet 5.5 high · Argon)으로 맞춘다.
+ * → 2026-11-19 ChatGPT(GPT-6.2 Sol medium) → 2026-11-23 Claude(Sonnet 5.5 high).
+ * 이미 ChatGPT·Google 을 고른 저장값은 그대로 둔다. Claude 를 쓸 수 없는 사용자(ChatGPT 구독만 · Google 로그인만)는
+ * 첫 실행 마법사가 그 계정의 지금 기본(GPT-6.2 Sol medium · Argon)으로 맞춘다.
  * 제공자 목록 순서도 이 값을 첫 항목으로 둔다(첫 항목 = 권장값).
- * 제공자 레코드의 defaultModel 과 공장 기본 모델은 모두 CHATGPT_DEFAULT_MODEL 을 쓴다.
+ * 제공자 레코드의 defaultModel 과 공장 기본 모델은 모두 CLAUDE_DEFAULT_MODEL 을 쓴다.
  */
-export const RECOMMENDED_OH_MY_PI_PROVIDER = CODEX_PROVIDER_ID;
+export const RECOMMENDED_OH_MY_PI_PROVIDER = ANTHROPIC_PROVIDER_ID;
 
 const BY_ID = new Map(OH_MY_PI_PROVIDERS.map((provider) => [provider.id, provider]));
 

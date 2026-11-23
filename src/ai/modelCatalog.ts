@@ -126,7 +126,7 @@ export function modelCatalogForAuthMode(
 
 /**
  * 해당 제공자의 권장 기본 모델. 카탈로그 첫 그룹의 첫 항목을 기준으로 한다.
- * 공장 기본은 ChatGPT 의 GPT-6.2 Sol — 새 설정의 모든 모델 슬롯이 이 값 · medium 으로 시작한다(오너 결정 2026-11-16).
+ * 공장 기본은 Claude 의 Sonnet 5.5 — 새 설정의 모든 모델 슬롯이 이 값 · high 로 시작한다(오너 결정 2026-11-23, 그 전 ChatGPT 2026-11-19).
  * Antigravity 의 첫 항목 gemini-4-argon 은 Google 계정의 기본이자 옛 저장값의 기본이다(감독 지시 2026-08-26, 기본 모델 이동 2026-10-14).
  * 계약은 test/aiDefaultModelForced.test.ts 가 고정한다.
  * Codex 카탈로그 첫 항목은 gpt-6.2-sol(2026-11-19).
