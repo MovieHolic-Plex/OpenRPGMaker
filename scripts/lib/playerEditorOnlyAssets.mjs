@@ -41,7 +41,6 @@ export const PLAYER_EDITOR_ONLY_ASSETS = Object.freeze({
   "src/assets/sengokuEdoReferences.json": "whole",
   "src/assets/sfStationReferences.json": "whole",
   "src/assets/sharedHandInteriorReferences.json": "whole",
-  "src/assets/sharedStairReferences.json": "whole",
   "src/assets/skyIslandReferences.json": "whole",
   "src/assets/snowNorthReferences.json": "whole",
   "src/assets/steampunkCityReferences.json": "whole",

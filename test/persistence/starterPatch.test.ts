@@ -32,12 +32,13 @@ it.each(["empty folder", "legacy full tilesets"] as const)(
       const repository = createElectronRepository();
       setProjectRepositoryForTest(repository);
       if (source === "legacy full tilesets") {
-        // The QA row predates the beodeul-objects category. Its full inline list already ends in stair-entrance.
+        // The QA row predates the beodeul-objects category. The author adds a page to its last remaining category.
         const starter = createStarterBlankProject();
         ensureBundledTilesets(starter);
         const city = starter.tilesets.beodeul_city!;
         city.referenceDocuments = city.referenceDocuments!.filter(category => category.id !== "beodeul-objects");
-        city.referenceDocuments = city.referenceDocuments.map(category => category.id === "stair-entrance"
+        const last = city.referenceDocuments.at(-1)!;
+        city.referenceDocuments = city.referenceDocuments.map(category => category === last
           ? { ...category, documents: [...category.documents, note] } : category);
         await session.store.saveSerialized(serialize(starter, { inlineBundledTilesets: true }));
       }
