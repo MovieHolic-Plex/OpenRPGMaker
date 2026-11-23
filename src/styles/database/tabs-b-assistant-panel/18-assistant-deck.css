@@ -720,7 +720,8 @@ html[data-ai-render="off"] {
 .left-column-search-input::placeholder { color: var(--text-3); }
 .left-column-search-input::-webkit-search-cancel-button { display: none; }
 .left-column-search-shortcut {
-  position: absolute; top: 14px; right: 16px; height: 18px; padding: 0 4px; border: 0; border-radius: 4px;
+  /* 누르는 단추라 조밀 하한 24px(전에는 18px — editor-main-ui-vqa 10번, app-ux-vqa 12·24·100번). 가운데는 그대로 둔다. */
+  position: absolute; top: 11px; right: 16px; height: 24px; padding: 0 6px; border: 0; border-radius: 5px;
   background: transparent; color: var(--text-3); font: 500 12px var(--font-ui); cursor: pointer;
 }
 .left-column-search-shortcut:hover { background: var(--bg-hover); color: var(--text-1); }

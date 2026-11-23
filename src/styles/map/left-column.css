@@ -78,11 +78,12 @@
   display: flex; align-items: center; gap: 4px; flex: 1; min-width: 0;
   color: var(--text-3); font: 500 11.5px/1.2 var(--font-ui); white-space: nowrap;
 }
+/* 맵 설정을 여는 진짜 단추라 조밀 하한 24px 을 지킨다 — 글자 높이(14px)뿐이라 누르기 어려웠다(editor-main-ui-vqa 10번, app-ux-vqa 3·105번). */
 .tile-section-tileset {
-  min-width: 0; padding: 0; border: 0; background: transparent; color: inherit; font: inherit;
+  min-width: 0; min-height: 24px; padding: 0 4px; margin-left: -4px; border: 0; border-radius: 5px; background: transparent; color: inherit; font: inherit;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;
 }
-.tile-section-tileset:hover { color: var(--text-1); }
+.tile-section-tileset:hover { background: var(--bg-hover); color: var(--text-1); }
 .palette-work-pane.is-event > .tile-section-head .tile-section-title {
   align-items: baseline;
   flex: 1 1 auto;
