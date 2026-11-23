@@ -187,4 +187,21 @@ describe("concept feed", () => {
     q(root, CONCEPT_FEED_TESTIDS.blank)!.click();
     expect(onBlank).toHaveBeenCalledOnce();
   });
+
+  it("overlay mode is the first-run home: one input, example chips, four genre cards plus blank, and the feed folded away", async () => {
+    const onBlank = vi.fn();
+    const { root } = mount({ onBlank, onInterview: async () => true, onClose: () => undefined, source: fakeSource({ first: { items: [concept(1)], nextCursor: null, fallback: null } }) });
+    await flush();
+    expect(root.querySelector(".fr-title")!.textContent).toBe("어떤 게임을 만들까요?");
+    expect(qa(root, CONCEPT_FEED_TESTIDS.search)).toHaveLength(1);
+    expect(qa(root, CONCEPT_FEED_TESTIDS.quickGenre).map((card) => card.dataset.genre)).toEqual(["romance", "monster", "adventure", "mystery"]);
+    const browse = q(root, CONCEPT_FEED_TESTIDS.browse) as HTMLDetailsElement;
+    expect(browse.open).toBe(false);
+    expect(browse.contains(q(root, CONCEPT_FEED_TESTIDS.card))).toBe(true);
+    q(root, `${CONCEPT_FEED_TESTIDS.example}-0`)!.click();
+    expect((q(root, CONCEPT_FEED_TESTIDS.search) as HTMLTextAreaElement).value).not.toBe("");
+    expect(root.querySelector(".cf-grid")!.firstElementChild!.getAttribute("data-testid")).toBe(CONCEPT_FEED_TESTIDS.custom);
+    q(root, CONCEPT_FEED_TESTIDS.blank)!.click();
+    expect(onBlank).toHaveBeenCalledOnce();
+  });
 });

@@ -9,22 +9,19 @@ import { CONCEPT_TAGS, CONCEPT_TWEAK_LIMIT, localizedConcept, type GameConcept }
 import { CONCEPT_FALLBACK_THUMB, type ConceptFallback, type ConceptQuery, type ConceptSource } from "@/concepts/source";
 import { NEW_PROJECT_CHOICES } from "@/editor/newProjectChoices";
 import type { GameDesignBrief } from "@/project/gameDesignBrief";
+import type { GamePresetId } from "@/project/gameDesignBrief";
 import type { InterviewGenre } from "@/project/gameInterview";
 import { startIcon } from "../icons";
 import { BUILTIN_GAMES, type BuiltinGameId } from "../home/builtinGames";
+import { FIRST_RUN_EXAMPLES } from "../firstRun/promptHome";
 import { conceptStageArt } from "./stageArt";
 
-/** 덮는 창의 「골라서 만들기」 띠 — 인터뷰 첫 장면(cdn, src/editor/interviewSceneBank.ts)과 장르 바로가기. 띠 하나 때문에 장면 목록 JSON 을 피드에 싣지 않는다. */
-const QUICK_ART = "https://cdn.openrpgmaker.com/interview-scene-bank/full/opening-62062ac73a78.webp";
-const QUICK_GENRES: readonly (readonly [InterviewGenre, string])[] = [["romance", "관계·연애"], ["monster", "몬스터 수집"], ["adventure", "모험"], ["mystery", "추리"]];
+/** 덮는 창의 장르 카드 — 누르면 빠른 인터뷰(장르 + 질문 셋). 그림은 그 장르가 짓는 틀의 대표 그림(CONCEPT_FALLBACK_THUMB). */
+const QUICK_GENRES: readonly (readonly [InterviewGenre, string, GamePresetId])[] = [
+  ["romance", "관계·연애", "story-cutscene"], ["monster", "몬스터 수집", "monster-collect"], ["adventure", "모험", "adventure-jrpg"], ["mystery", "추리", "horror-gallery"],
+];
 
 export type BuiltinDemoId = BuiltinGameId;
-
-/** 덮는 창의 「기본 데모 게임」 카드 — 첫 화면 「기본 게임」 선반과 같은 표(src/start/home/builtinGames.ts)를 쓴다. */
-const BUILTIN_DEMO_CARDS = BUILTIN_GAMES.map((game) => ({
-  ...game,
-  openTestId: `builtin-demo-open-${game.id}`,
-}));
 
 export const CONCEPT_FEED_TESTIDS = {
   root: "concept-feed",
@@ -46,6 +43,8 @@ export const CONCEPT_FEED_TESTIDS = {
   quickGenre: "concept-feed-quick-genre",
   quickStart: "concept-feed-quick-start",
   builtinDemos: "concept-feed-builtin-demos",
+  example: "concept-feed-example",
+  browse: "concept-feed-browse",
 } as const;
 
 /** launcher = 런처 「만들기」 갈래의 본문(위 막대는 틀이 그린다). overlay = 편집기의 덮는 창(자기 위 막대·닫기). */
@@ -152,24 +151,31 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   const setError = (message: string): void => { errorLine.textContent = message; errorLine.hidden = message === ""; };
 
   // ── 입력창 ────────────────────────────────────────────────────────────
-  const search = el("input", {
-    class: "cf-search-input",
-    attrs: {
-      type: "search", maxlength: "200", autocomplete: "off", "aria-label": "만들고 싶은 게임",
-      placeholder: t(launcher ? "만들고 싶은 게임을 적거나 컨셉 검색 — 예: 회귀한 용사가 마왕의 비서가 된다" : "만들고 싶은 게임을 적어 보세요 — 예: 회귀한 용사가 마왕의 비서가 된다"),
-    },
-    dataset: { testid: CONCEPT_FEED_TESTIDS.search },
-  });
-  const searchSubmit = el("button", { class: "cf-search-go", attrs: { type: "button" }, text: "만들기" });
-  const searchBox = el("div", { class: "cf-search", children: [...(launcher ? [startIcon("search", "cf-search-icon")] : []), search, searchSubmit] });
-  const top = launcher ? null : el("header", { class: "cf-top", children: [
-    el("div", { class: "cf-brand", text: "새 게임" }),
-    searchBox,
-    ...(options.onClose ? [el("div", { class: "cf-top-actions", children: [el("button", {
+  // 덮는 창은 첫 실행 홈(src/start/firstRun/promptHome.ts)과 같은 입력 칸(fr-composer)을 쓴다. 런처는 틀 위 막대에 꽂는 검색 줄이다.
+  const search = launcher
+    ? el("input", {
+      class: "cf-search-input",
+      attrs: { type: "search", maxlength: "200", autocomplete: "off", "aria-label": "만들고 싶은 게임", placeholder: t("만들고 싶은 게임을 적거나 컨셉 검색 — 예: 회귀한 용사가 마왕의 비서가 된다") },
+      dataset: { testid: CONCEPT_FEED_TESTIDS.search },
+    })
+    : el("textarea", {
+      class: "fr-input",
+      attrs: { rows: "3", maxlength: "200", spellcheck: "false", "aria-label": "만들고 싶은 게임", placeholder: t("예: 회귀한 용사가 마왕의 비서로 취직하는 코믹 RPG") },
+      dataset: { testid: CONCEPT_FEED_TESTIDS.search },
+    });
+  const searchSubmit = launcher
+    ? el("button", { class: "cf-search-go", attrs: { type: "button" }, text: "만들기" })
+    : el("button", { class: "fr-submit", attrs: { type: "button" }, children: [el("span", { text: "만들기" }), startIcon("arrow", "fr-icon")] });
+  const searchBox = launcher
+    ? el("div", { class: "cf-search", children: [startIcon("search", "cf-search-icon"), search, searchSubmit] })
+    : el("div", { class: "fr-composer", children: [search, el("div", { class: "fr-composer-foot", children: [searchSubmit] })] });
+  const top = launcher ? null : el("header", { class: "fr-top", children: [
+    el("span", { class: "fr-brand", text: "새 게임" }),
+    ...(options.onClose ? [el("button", {
       class: "cf-close", attrs: { type: "button", "aria-label": "닫기" }, dataset: { testid: CONCEPT_FEED_TESTIDS.close },
       children: [startIcon("close", "cf-close-icon")],
       on: { click: () => { if (!making) options.onClose?.(); } },
-    })] })] : []),
+    })] : []),
   ] });
 
   // ── 피드 ──────────────────────────────────────────────────────────────
@@ -178,10 +184,6 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   const more = el("button", { class: "cf-more", attrs: { type: "button" }, text: "더 보기", dataset: { testid: CONCEPT_FEED_TESTIDS.more } });
   const offlineNote = el("p", { class: "cf-offline", dataset: { testid: CONCEPT_FEED_TESTIDS.offline } });
   offlineNote.hidden = true;
-  const blank = !launcher && options.onBlank ? el("p", { class: "cf-blank", children: [
-    el("span", { text: "직접 처음부터 만들고 싶다면" }),
-    el("button", { class: "cf-link", attrs: { type: "button" }, text: "빈 프로젝트로 시작", dataset: { testid: CONCEPT_FEED_TESTIDS.blank }, on: { click: () => options.onBlank?.() } }),
-  ] }) : null;
   // ── 골라서 만들기(빠른 인터뷰) ────────────────────────────────────────
   let quick: { element: HTMLElement; destroy(): void } | null = null;
   const closeQuick = (): void => { quick?.destroy(); quick = null; };
@@ -204,23 +206,6 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     root.append(quick.element);
     quick.element.querySelector<HTMLElement>(".qi-card")?.focus();
   };
-  const genreButtons = (className: string): HTMLElement[] => QUICK_GENRES.map(([id, label]) => el("button", {
-    class: className, attrs: { type: "button" }, text: label, dataset: { testid: CONCEPT_FEED_TESTIDS.quickGenre, genre: id },
-    on: { click: () => void openQuick(id) },
-  }));
-  // 덮는 창만: 인터뷰 첫 장면을 깐 띠. 런처는 「컨셉에서 시작」 머리의 「골라서 만들기 ›」가 같은 창을 연다.
-  const quickBand = !options.onInterview || launcher ? null
-    : el("section", { class: "cf-quick", dataset: { testid: CONCEPT_FEED_TESTIDS.quick }, children: [
-      el("img", { class: "cf-quick-art", attrs: { src: QUICK_ART, alt: "", draggable: "false" } }),
-      el("div", { class: "cf-quick-text", children: [
-        el("strong", { text: "골라서 만들기" }),
-        el("span", { text: "장르 하나, 질문 셋. 네 번 고르면 바로 시작해요." }),
-      ] }),
-      el("div", { class: "cf-quick-genres", children: [
-        ...genreButtons("cf-quick-genre"),
-        el("button", { class: "cf-quick-go", attrs: { type: "button" }, text: "시작하기", dataset: { testid: CONCEPT_FEED_TESTIDS.quickStart }, on: { click: () => void openQuick() } }),
-      ] }),
-    ] });
   const runBuiltinDemo = (demoId: BuiltinDemoId, action: "play" | "open"): void => {
     if (making) return;
     if (options.onBuiltinDemo) {
@@ -229,57 +214,53 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     }
     window.location.href = `/index.html?demo=${demoId}${action === "play" ? "&play=1" : ""}`;
   };
-  const builtinDemosSection = el("section", {
-    class: "cf-builtin-demos",
-    dataset: { testid: CONCEPT_FEED_TESTIDS.builtinDemos },
-    children: [
-      el("div", {
-        class: "cf-builtin-head",
-        children: [
-          el("h2", { class: "cf-builtin-title", text: "기본 게임" }),
-          el("p", { class: "cf-builtin-sub", text: "열어서 고쳐 보며 배우기 — 해 보려면 편집기 「테스트 실행」" }),
-        ],
-      }),
-      el("div", {
-        class: "cf-builtin-grid",
-        children: BUILTIN_DEMO_CARDS.map((demo) =>
-          el("article", {
-            class: `cf-builtin-card cf-builtin-${demo.id}`,
-            dataset: { testid: `builtin-demo-card-${demo.id}` },
-            children: [
-              el("div", {
-                class: "cf-builtin-thumb",
-                children: [
-                  el("img", { class: "cf-builtin-thumb-img", attrs: { src: demo.cover, alt: "", decoding: "async", draggable: "false" } }),
-                  el("span", { class: "cf-builtin-badge", text: "공식" }),
-                ],
-              }),
-              el("div", {
-                class: "cf-builtin-body",
-                children: [
-                  el("h3", { class: "cf-builtin-card-title", text: demo.title }),
-                  el("p", { class: "cf-builtin-card-sub", text: demo.genre }),
-                  el("p", { class: "cf-builtin-card-desc", text: demo.description }),
-                  el("div", {
-                    class: "cf-builtin-actions",
-                    children: [
-                      el("button", {
-                        class: "cf-builtin-btn cf-builtin-btn-open",
-                        attrs: { type: "button" },
-                        dataset: { testid: demo.openTestId },
-                        text: "편집기에서 열기",
-                        on: { click: () => runBuiltinDemo(demo.id, "open") },
-                      }),
-                    ],
-                  }),
-                ],
-              }),
-            ],
-          }),
-        ),
-      }),
-    ],
+  // 덮는 창(편집기 「새 프로젝트」·환영)은 첫 실행 홈(promptHome.ts)과 같은 한 장이다(2026-11-23 오너 「처음 키면 나오는 그거랑 동일하게」).
+  // 제목 → 입력 칸 → 예시 칩 → 장르 카드 넷 + 빈 프로젝트 → 접힌 「아이디어·예제 둘러보기」(예제 셋 + 컨셉 피드). 클래스는 promptHome.css 의 fr- 를 그대로 쓴다.
+  const startCard = (testid: string, cover: HTMLElement, name: string, meta: string, run: () => void, extra: Record<string, string> = {}): HTMLElement => el("button", {
+    class: testid === CONCEPT_FEED_TESTIDS.blank ? "fr-gcard fr-gcard-new" : "fr-gcard", attrs: { type: "button" }, dataset: { testid, ...extra },
+    on: { click: () => { if (!making) run(); } },
+    children: [cover, el("span", { class: "fr-gcard-name", text: name }), el("span", { class: "fr-gcard-meta", text: meta })],
   });
+  const overlayHome = launcher ? null : el("div", { class: "fr-main", children: [
+    el("h1", { class: "fr-title", text: "어떤 게임을 만들까요?" }),
+    el("p", { class: "fr-sub", text: "한 줄로 적으면 AI가 컨셉을 잡아 보여 줘요." }),
+    searchBox,
+    el("div", { class: "fr-chips", attrs: { role: "group", "aria-label": "예시" }, children: FIRST_RUN_EXAMPLES.map((example, index) => el("button", {
+      class: "fr-chip", attrs: { type: "button" }, dataset: { testid: `${CONCEPT_FEED_TESTIDS.example}-${index}` }, text: example,
+      on: { click: () => { if (making) return; search.value = t(example); search.dispatchEvent(new Event("input")); search.focus(); } },
+    })) }),
+    el("section", { class: "fr-games", dataset: { testid: CONCEPT_FEED_TESTIDS.quick }, children: [
+      el("div", { class: "fr-builtin-head", children: [el("h2", { class: "fr-builtin-title", text: "장르로 시작" })] }),
+      el("div", { class: "fr-games-row", children: [
+        ...(options.onInterview ? QUICK_GENRES.map(([id, label, preset]) => startCard(
+          CONCEPT_FEED_TESTIDS.quickGenre,
+          el("span", { class: "fr-gcard-cov", children: [el("img", { attrs: { src: CONCEPT_FALLBACK_THUMB[preset], alt: "", decoding: "async", draggable: "false" } })] }),
+          label, "질문 셋으로 시작", () => void openQuick(id), { genre: id },
+        )) : []),
+        ...(options.onBlank ? [startCard(
+          CONCEPT_FEED_TESTIDS.blank,
+          el("span", { class: "fr-gcard-cov", attrs: { "aria-hidden": "true" }, text: "+" }),
+          "빈 프로젝트", "AI 없이 직접 그리기", () => options.onBlank?.(),
+        )] : []),
+      ] }),
+    ] }),
+    el("details", { class: "fr-builtin cf-browse", dataset: { testid: CONCEPT_FEED_TESTIDS.browse }, children: [
+      el("summary", { class: "fr-builtin-head", children: [el("span", { class: "fr-builtin-title", text: "아이디어·예제 둘러보기" })] }),
+      el("div", { class: "fr-builtin-row", dataset: { testid: CONCEPT_FEED_TESTIDS.builtinDemos }, children: BUILTIN_GAMES.map((game) => el("button", {
+        class: "fr-bcard", attrs: { type: "button", "aria-label": `${game.title} — 편집기에서 열기` },
+        dataset: { testid: `builtin-demo-open-${game.id}` },
+        on: { click: () => runBuiltinDemo(game.id, "open") },
+        children: [
+          el("img", { class: "fr-bcard-img", attrs: { src: game.cover, alt: "", decoding: "async", loading: "lazy", draggable: "false" } }),
+          el("span", { class: "fr-bcard-text", children: [
+            el("span", { class: "fr-bcard-name", text: game.title.split(":")[0]!.trim(), attrs: { translate: "no" } }),
+            el("span", { class: "fr-bcard-meta", text: game.genre }),
+          ] }),
+        ],
+      })) }),
+      chips, grid, more, offlineNote,
+    ] }),
+  ] });
   // 런처(첫 화면 「라이브러리 홈」)는 배너·내 게임·기본 게임 선반을 lead 로 받고, 여기서는 「컨셉에서 시작」 선반만 그린다.
   // 장르 질문(골라서 만들기)과 빈 프로젝트는 선반 머리 오른쪽 글자 단추로 둔다.
   const launcherHead = launcher ? el("div", { class: "cf-feed-head", dataset: { nav: "create" }, children: [
@@ -293,11 +274,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
   const feed = el("section", { class: "cf-feed", children: [
     ...(options.lead ? [options.lead] : []),
     ...(launcher ? [el("div", { class: "cf-launcher-search", children: [searchBox] })] : []),
-    ...(launcher ? [] : [builtinDemosSection]),
-    ...(quickBand ? [quickBand] : []),
-    ...(launcherHead ? [launcherHead] : []),
-    chips,
-    grid, more, offlineNote, ...(blank ? [blank] : []),
+    ...(overlayHome ? [overlayHome] : [...(launcherHead ? [launcherHead] : []), chips, grid, more, offlineNote]),
   ] });
   const detail = el("section", { class: "cf-detail", dataset: { testid: CONCEPT_FEED_TESTIDS.detail } });
   detail.hidden = true;
@@ -449,7 +426,10 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     if (text) void openCustom(text);
     else search.focus();
   };
-  search.addEventListener("keydown", (event) => { if (event.key === "Enter") { event.preventDefault(); submitSearch(); } });
+  search.addEventListener("keydown", (raw) => {
+    const event = raw as KeyboardEvent;
+    if (event.key === "Enter" && !event.shiftKey && !event.isComposing) { event.preventDefault(); submitSearch(); }
+  });
   searchSubmit.addEventListener("click", submitSearch);
 
   // ── 상세 ──────────────────────────────────────────────────────────────
