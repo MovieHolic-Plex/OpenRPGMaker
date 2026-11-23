@@ -7,7 +7,7 @@ import { companionAuthUrl, fetchChatGptAuthStatus, ensureOpenAiCompatEndpointsKn
 import { fetchCompanion } from "@/ai/companionConnection";
 import { configForProviderSelection } from "@/ai/providerSelection";
 import { AI_TRANSPORT_HEALTH_EVENT, getAiTransportHealth, loadAiConfig, resetAiTransportHealth, saveAiConfig } from "@/ai/llmClient";
-import { clearProviderLimit, hasActiveProviderLimit, noteProviderLimited, providerLimitedUntil } from "@/ai/providerLimits";
+import { hasActiveProviderLimit, noteProviderLimited, providerLimitedUntil } from "@/ai/providerLimits";
 import { localCliOfProvider, localCliProviderId, loadAssistantEngine, saveAssistantEngine } from "@/ai/localCliEngine";
 import { ANTHROPIC_PROVIDER_ID, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { listKnownOpenAiCompatEndpoints } from "@/ai/openAiCompat";
@@ -136,10 +136,10 @@ export function installAutoProviderSwitching(onChanged: () => void): () => void 
   const onHealth = (): void => {
     const health = getAiTransportHealth();
     if (!health) return;
-    const providerId = currentProviderId();
-    if (health.ok) { clearProviderLimit(providerId); return; }
-    if (health.status !== 429) return;
-    noteProviderLimited(providerId, health.message);
+    // 성공 신호로 기록을 지우지 않는다 — 다른 길로 바꾼 뒤의 성공이나 모델 호출이 아닌 /v1 성공도 「풀림」으로 보일 수 있다.
+    // 기록은 풀리는 시각이 지나면 저절로 무시된다(providerLimitedUntil).
+    if (health.ok || health.status !== 429) return;
+    noteProviderLimited(currentProviderId(), health.message);
     run();
   };
   const win = typeof window === "undefined" ? undefined : window;

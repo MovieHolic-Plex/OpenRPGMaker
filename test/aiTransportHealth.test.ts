@@ -1,8 +1,9 @@
 // 상태바 "AI 연결됨" 칩 진실화 — 실제 요청 성패(전송 건강)를 함께 판정하는지.
 // 배경(2026-08-19 적대 평가 P0): 설정 모양만 보고 ready 를 내보내, 모든 턴이 404 로
 // 죽는 동안에도 "AI 연결됨"이라고 표시했다.
-import { beforeEach, describe, expect, it } from "vitest";
-import { reportTransportHealth, resetAiTransportHealth, type AiConfig } from "@/ai/llmClient";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { fetchCompanion } from "@/ai/companionConnection";
+import { getAiTransportHealth, reportTransportHealth, resetAiTransportHealth, type AiConfig } from "@/ai/llmClient";
 import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
 
 const proxyConfig: AiConfig = {
@@ -38,6 +39,21 @@ describe("AI 연동 칩 × 전송 건강", () => {
     reportTransportHealth(true, 200);
     const status = getAiConnectionStatus(proxyConfig);
     expect(status.kind).toBe("ready");
+  });
+
+  it("429 뒤 내 PC 프로그램 감지(/v1/local-agents) 성공은 한도 표시를 지우지 않고, 모델 호출 성공만 지운다", async () => {
+    const reply = (status: number, headers: Record<string, string> = {}) => async () => new Response("{}", { status, headers });
+    await fetchCompanion("/v1/agent/run", { method: "POST", body: "{}" }, { fetchImpl: reply(429, { "retry-after": "600" }) });
+    await vi.waitFor(() => expect(getAiTransportHealth()?.status).toBe(429));
+    expect(getAiTransportHealth()?.message).toContain("Retry-After 600");
+
+    await fetchCompanion("/v1/local-agents", undefined, { fetchImpl: reply(200) });
+    // fetchCompanion 은 해제를 `import("@/ai/llmClient").then(...)` 으로 미룬다 — 같은 import 를 기다리면 그보다 먼저 걸린 해제가 끝난 뒤다.
+    await import("@/ai/llmClient");
+    expect(getAiTransportHealth()?.status).toBe(429);
+
+    await fetchCompanion("/v1/agent/run", { method: "POST", body: "{}" }, { fetchImpl: reply(200) });
+    await vi.waitFor(() => expect(getAiTransportHealth()?.ok).toBe(true));
   });
 
   it("429(사용량 제한)는 연결 문제로 취급하지 않는다", () => {
