@@ -3,6 +3,7 @@ import { resolveCommandListAtPath } from "@/editor/eventCommandPaths";
 import { jsonEqual } from "@/util/structuralJson";
 import { shareContentDigests } from "@/project/persistence/core/contentDigest";
 import { isPendingLazyTileset } from "@/project/bundledTilesetLazy";
+import { registerLazyTilesets, unregisterLazyTilesets } from "@/project/lazyTilesetRead";
 
 /**
  * 편집용 프로젝트 복제. 타일셋 참고문서(타일셋당 수 MB, 합계 약 20MB)는
@@ -85,6 +86,7 @@ function lazyTilesetDictionary(originals: Project["tilesets"]): Project["tileset
     });
   }
   lazyTilesetStates.set(dictionary, { originals, clones });
+  registerLazyTilesets(dictionary, originals);
   return dictionary;
 }
 
@@ -236,6 +238,7 @@ export function finishProjectMutation(draft: Project): ReadonlySet<string> | nul
   const state = lazyTilesetStates.get(dictionary);
   if (!state) return null;
   lazyTilesetStates.delete(dictionary);
+  unregisterLazyTilesets(dictionary);
   const settled: Project["tilesets"] = {};
   const changed = new Set<string>();
   for (const id of Object.keys(dictionary)) {
