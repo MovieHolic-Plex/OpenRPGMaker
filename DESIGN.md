@@ -706,7 +706,7 @@ The system is a Vite + TypeScript + Phaser browser app: DOM panels and controls 
 
 ### Active editor shell — cool white studio
 
-There is **one shipped editor shell theme**: cool white + slate + indigo `#4A57D6` in `src/styles/tokens.css`. Ladder: `canvas/inset #EEF1F4 < base/surface #F7F8F8 < raised/overlay #FFFFFF`. Text `#0F172A/#475569/#64748B`. Legacy `--gold` is an indigo alias. `color-scheme: light`. No theme toggle.
+There is **one shipped editor shell theme**: cool white + slate + blue `#1F6FC5` (`--accent`) in `src/styles/tokens.css`. Ladder: `canvas/inset #EEF1F4 < base/surface #F7F8F8 < raised/overlay #FFFFFF`. Text `#0F172A/#475569/#64748B`. Legacy `--gold` is an indigo alias. `color-scheme: light`. No theme toggle.
 
 ### Cream shell tokens (SoT: `src/styles/tokens.css`)
 
@@ -720,7 +720,7 @@ Defined in `src/styles/tokens.css` (`src/styles/index.css:75` sets `color-scheme
 | `--text-1` | `#0F172A` | Primary |
 | `--text-2` | `#475569` | Secondary |
 | `--text-3` | `#64748B` | Hint |
-| `--accent` / `--gold` | `#4A57D6` | Send, accept, selection |
+| `--accent` / `--gold` | `#1F6FC5` | Send, accept, selection |
 
 ### Primary token set (what the UI is actually built from)
 
