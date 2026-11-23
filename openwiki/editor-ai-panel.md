@@ -1441,21 +1441,21 @@ classifier remains a non-reasoning, 4096-token routing call; it must not inherit
 Deep's expensive effort or the editor's 200000 output budget. Legacy/test configs
 without role selections retain their prior behavior.
 **조수 출하 기본 = ChatGPT · GPT-6.2 Sol · medium (오너 결정 2026-11-19).** Terra 로는 게임을 못 만든다는 결정에 따라, 저장된 Terra 제작 역할과 Codex 엔진 선택도 읽을 때 Sol 로 올린다. medium 이상의 저장 강도는 유지한다.
-Claude 로 도는 모든 길에서 계획·실행(deep)·시각·작문·시공(build)·감독(ultrabrain)이 **`claude-opus-5-5` · `medium` 한 모델**이다. Haiku 워커·팀장 나누기와 감독만 `high` 로 두던 것을 기본에서 뺐다(오너: Haiku 로는 게임을 못 만든다). 나누기·다른 모델은 설정에서 고른다.
+**Claude 기본 = Claude · Sonnet 5.5 · high (오너 결정 2026-11-23: 「조수는 sonnet 5.5 high 만 쓰게」).** Claude 로 도는 모든 길에서 계획·실행(deep)·시각·작문·시공(build)·감독(ultrabrain)과 곁 호출(화면 검수·검토자)이 **`claude-sonnet-5-5` · `high` 한 모델**이다(`src/ai/claudeDefault.ts`). 지난 Claude 기본은 `claude-opus-5-5` · `medium`(2026-11-16)이었다. Haiku 워커·팀장 나누기는 여전히 기본에서 빠져 있다. Opus·나누기·다른 모델은 설정에서 고른다. 공장 기본 제공자(ChatGPT)는 이 결정으로 바뀌지 않았다.
 
 | 들어가는 길 | 기본이 풀리는 값 | 정하는 곳 |
 |---|---|---|
 | 새 설치(저장 없음) | `openai-codex` / `gpt-6.2-sol` / medium — 모든 역할·감독. 도트 칸은 계획 모델을 따른다 | `defaultAiConfig()` |
-| 새 설치 + Claude Code CLI 구독 | 엔진 `local-cli:claude` · `claude-opus-5-5` 하나 · medium, 팀장 없음 | 첫 실행 마법사 `teamScoreboard.ts chooseTeam`(Opus 를 쓸 수 있으면 Opus 혼자) → `applyTeamPlan`. `LOCAL_CLI_DEFAULT_MODELS.claude` 도 같다 |
-| Anthropic 키(`ANTHROPIC_API_KEY`) | 입양한 엔드포인트 `openai-compat:…` / `claude-opus-5-5` / medium — 모든 역할·감독 | `keyRouteAdoptModel("claude")` = opus, `providerSelection.ts`. 이 길은 추론 강도를 보내지 않는다(`KEY_ROUTES.claude.reasoningMode = none`) — Opus 5.5 의 API 기본이 medium 이다 |
-| 편집기 안 Claude 계정(설정에서 Claude 를 고름) | `anthropic` / `claude-opus-5-5` / medium — 모든 역할·감독 | `modelPresets.ts`(anthropic 두 티어 모두 Opus) + `providerSelection.ts`(감독도 medium) |
+| 새 설치 + Claude Code CLI 구독 | 엔진 `local-cli:claude` · `claude-sonnet-5-5` 하나 · high, 팀장 없음 | 첫 실행 마법사 `teamPlan.ts buildTeamPlan`(ChatGPT 가 없고 Sonnet 을 쓸 수 있으면 Sonnet 혼자, 점수표 행 없음) → `applyTeamPlan`(Claude CLI 강도 = `ASSISTANT_CLAUDE_EFFORT`). `LOCAL_CLI_DEFAULT_MODELS.claude` 도 같다 |
+| Anthropic 키(`ANTHROPIC_API_KEY`) | 입양한 엔드포인트 `openai-compat:…` / `claude-sonnet-5-5` — 모든 역할·감독 | `keyRouteAdoptModel("claude")` = sonnet, `providerSelection.ts`. 이 길은 추론 강도를 보내지 않는다(`KEY_ROUTES.claude.reasoningMode = none`) |
+| 편집기 안 Claude 계정(설정에서 Claude 를 고름) | `anthropic` / `claude-sonnet-5-5` / high — 모든 역할·감독 | `modelPresets.ts`(anthropic 두 티어 모두 Sonnet) + `providerSelection.ts`(조수 기본 모델 칸은 역할·감독 모두 `CLAUDE_DEFAULT_EFFORT`) |
 | ChatGPT 구독 또는 로그인 | Codex CLI 와 편집기 안 로그인 모두 `gpt-6.2-sol` · medium | 마법사 → `applyTeamPlan` · `configForPlanAccount` |
 | Google 만 | 지난 기본 그대로: `gemini-4-argon` medium · 감독 high | 마법사 → `configForProviderSelection` |
 | 저장된 설정이 있음 | Terra 제작 역할은 Sol 로 읽는다 | `loadAiConfig` · `loadAssistantEngine` |
 
-**소급(PR #2535 와 같은 규칙 — 저장값이 옛 기본과 똑같을 때만, 읽을 때 올리고 디스크에는 쓰지 않는다):** ① 표식 없는 엔진 선택이 옛 Claude 구독 기본(Haiku 워커 + Opus 팀장 · medium · `teamLead`)과 똑같으면 Opus 하나로 읽는다
-(`localCliEngine.ts promoteLegacyEngineDefault`. 저장은 `policyVersion: 2` 를 찍으므로 그 뒤에 사람이 다시 고른 나누기는 그대로다) ② Claude 계정을 골랐을 때 제품이 채운 Haiku 칸(직접 고른 표시가 없는 칸)은 Opus 로 읽는다
-(`llmClient.ts promoteLegacyClaudeWorker`). 강도는 저장된 대로 둔다. 사람이 고른 Haiku·Sonnet, 한 칸이라도 고친 엔진 선택, Google·ChatGPT 설정은 건드리지 않는다. 계약 `test/aiDefaultOpusMedium.test.ts` · `test/aiDefaultModelForced.test.ts`.
+**소급(PR #2535 와 같은 규칙 — 저장값이 옛 기본과 똑같을 때만, 읽을 때 올리고 디스크에는 쓰지 않는다):** ① 엔진 선택이 표식 버전보다 새로 바뀐 옛 Claude 구독 기본과 똑같으면 Sonnet 5.5 · high 하나로 읽는다 — 표식 없음(1)은 Haiku 워커 + Opus 팀장 · medium · `teamLead`, 표식 2 는 Opus 5.5 하나 · medium
+(`localCliEngine.ts promoteLegacyEngineDefault`. 저장은 `policyVersion: 3` 을 찍으므로 그 뒤에 사람이 다시 고른 Opus·나누기는 그대로다) ② Claude 계정을 골랐을 때 제품이 채운 Haiku 칸(직접 고른 표시가 없는 칸)은 조수 기본(Sonnet 5.5)으로 읽는다
+(`llmClient.ts promoteLegacyClaudeWorker`). 강도는 저장된 대로 둔다. 사람이 고른 Haiku·Sonnet, 한 칸이라도 고친 엔진 선택, Google·ChatGPT 설정은 건드리지 않는다. 계약 `test/aiDefaultClaudeSonnetHigh.test.ts` · `test/aiDefaultModelForced.test.ts`.
 옛 저장값(제공자 없는 blob)을 읽는 기본 제공자는 여전히 Google 이다(`DEFAULT_OH_MY_PI_PROVIDER`, `DEFAULT_MODEL = gemini-4-argon`) — 제공자 목록 순서가 아니라 이 상수가 정한다.
 저장된 설정이 없는 Google·ChatGPT 사용자는 공장 기본(Claude)이 연결돼 있지 않으므로 첫 실행 마법사를 한 번 거쳐 그 계정의 기본으로 맞춰진다.
 
@@ -4572,7 +4572,7 @@ Pi가 error 뒤 done을 보내도 성공 완료로 승격하지 않는다. 최�
 
 | 로그인 | 고르면 | 비고 |
 |---|---|---|
-| Claude Code CLI 구독(`authMethod oauth_token`) | 엔진 `claude` · `claude-opus-5-5` 하나 · medium(팀장 없음) | 오너 결정 2026-11-16. 그 전에는 워커 `claude-haiku-5-5` + 팀장 `claude-opus-5-5`(`teamLead: true`)였다 — 지금은 설정에서 모델을 나눈 사람만 `request.lead` 가 실린다 |
+| Claude Code CLI 구독(`authMethod oauth_token`) | 엔진 `claude` · `claude-sonnet-5-5` 하나 · high(팀장 없음) | 오너 결정 2026-11-23(2026-11-16 은 Opus 5.5 · medium). 그 전에는 워커 `claude-haiku-5-5` + 팀장 `claude-opus-5-5`(`teamLead: true`)였다 — 지금은 설정에서 모델을 나눈 사람만 `request.lead` 가 실린다 |
 | Codex CLI ChatGPT 로그인 | 엔진 `codex` · `gpt-6.2-sol` · medium | 2026-11-19 오너 결정 |
 | 편집기 안 ChatGPT 로그인(OAuth) | 그 계정을 기본 연결로 + 제작 역할·계획을 `gpt-6.2-sol` · medium 으로(`configForPlanAccount`) | 앱 경로 확장(`scripts/lib/ohMyPiModel.ts`)에 Sol·Astra 6.2 를 등록했다 |
 | Gemini CLI 구글 로그인 / 편집기 안 Google 로그인 | 그 엔진·계정의 지금 기본값 | |

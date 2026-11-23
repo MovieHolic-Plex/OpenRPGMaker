@@ -14,8 +14,9 @@
 // 최고 품질에서 1점 이내인 조합 중 가장 싼 것을 고른다.
 // 단, 기본 혼자 모델(SOLO_DEFAULT_WORKERS, 앞이 먼저)을 쓸 수 있으면 점수·값을 견주지 않고 「그 모델 혼자」 를 고른다:
 //   ① GPT-6.2 Sol — 오너 결정 2026-11-19: ChatGPT(Codex 구독·로그인)가 있으면 Sol · medium 혼자다(teamPlan.ts).
-//   ② Opus 5.5 — 오너 결정 2026-11-16: ChatGPT 가 없고 Claude 가 있으면 Opus 5.5 · medium 한 모델. Haiku 워커로는 게임을 못 만든다고 보아
-//      팀장·워커 나누기를 기본에서 뺐다.
+//   ② Sonnet 5.5 — 오너 결정 2026-11-23: ChatGPT 가 없고 Claude 가 있으면 Sonnet 5.5 · high 한 모델(teamPlan.ts, 점수표에 행 없음).
+//      그 전 2026-11-16 은 Opus 5.5 · medium. 팀장·워커 나누기는 기본에서 뺐다.
+//   ③ Opus 5.5 — Sonnet 없이 Opus 만 있는 키 등에서만 점수표의 기본 혼자 모델(SOLO_DEFAULT_WORKERS)로 남는다.
 //
 // 순수 모듈 — 브라우저와 Node 가 같이 읽는다.
 
@@ -97,7 +98,7 @@ export const SCORE_ROWS: readonly ScoreRow[] = [
 /** 최고 품질에서 이 점수 이내인 조합이면 «거의 같다» 로 보고 더 싼 쪽을 고른다. */
 export const NEAR_BEST_POINTS = 1;
 
-/** 점수표 안에서 우선하는 단독 모델(2026-11-16 오너 결정). Sol 6.2 는 측정값 없이 teamPlan 에서 고른다. */
+/** 점수표 안에서 우선하는 단독 모델(2026-11-16 오너 결정). Sol 6.2 와 Sonnet 5.5(2026-11-23 오너 결정 — Claude 조수 기본)는 점수표에 행이 없어 teamPlan 에서 먼저 고른다. */
 export const SOLO_DEFAULT_WORKERS: readonly TeamModelKey[] = ["opus"];
 
 export interface TeamChoice {

@@ -8,7 +8,7 @@
 // 화면이 오기 전에는 개발 콘솔에서: `localStorage.setItem("oprn:assistant-engine", JSON.stringify({ kind: "local-cli", cli: "claude" }))`.
 
 import type { RoleModel, SpecialistModels, ThinkingEffort } from "./modelRoles";
-import { ASSISTANT_CLAUDE_MODEL } from "./claudeDefault.ts";
+import { ASSISTANT_CLAUDE_EFFORT, ASSISTANT_CLAUDE_MODEL } from "./claudeDefault.ts";
 import { ASSISTANT_CHATGPT_MODEL, atLeastMediumEffort, isLegacyTerraModel } from "./chatgptDefault.ts";
 
 export type LocalCliEngineId = "claude" | "codex" | "gemini";
@@ -27,7 +27,7 @@ export interface AssistantEngineChoice {
   /**
    * 팀장·워커(조수 v2 리드, src/ai/v2/turn/split.ts). 켜면 deepModel 이 팀장으로 할 일·사양을 쓰고 단계 끝에서 검토하며,
    * routineModel 이 워커로 짓는다(같은 CLI). deepModel 이 routineModel 과 같으면 나누지 않는다 — 설정의 「한 모델로 합치기」가 곴 끄기다.
-   * 기본으로는 켜지 않는다(2026-11-16 오너 결정: Claude 구독도 Opus 5.5 하나 — planDefaults.ts). 설정에서 모델을 나눈 사람만 쓴다.
+   * 기본으로는 켜지 않는다(오너 결정: Claude 구독도 한 모델 — 2026-11-23 부터 Sonnet 5.5 · high, planDefaults.ts). 설정에서 모델을 나눈 사람만 쓴다.
    * OPRN_V2_SPLIT 이 있으면 그 값이 이긴다.
    */
   readonly teamLead?: boolean;
@@ -41,7 +41,7 @@ export const LOCAL_CLI_LABELS: Readonly<Record<LocalCliEngineId, string>> = {
 
 /**
  * CLI 별 권장 기본 모델. 감지 API 가 실제 목록으로 덮는다.
- * Claude 는 Opus 5.5 하나(오너 결정 2026-11-16 — 조수 기본은 Claude Opus 5.5 · medium). 별칭 `opus` 가 아니라 정식 ID 를 박는다:
+ * Claude 는 Sonnet 5.5 하나(오너 결정 2026-11-23 — 조수 기본은 Claude Sonnet 5.5 · high). 별칭 `sonnet` 이 아니라 정식 ID 를 박는다:
  * 별칭이 가리키는 세대는 CLI 판마다 다르다(scripts/lib/localCliAgent/claude.ts MODELS 머리말).
  */
 export const LOCAL_CLI_DEFAULT_MODELS: Readonly<Record<LocalCliEngineId, { routine: string; deep: string }>> = {
@@ -89,26 +89,34 @@ function migrateCodexEngine(choice: AssistantEngineChoice): AssistantEngineChoic
 }
 
 /**
- * 저장 꼴의 정책 버전. 2 = Claude 구독 기본이 Opus 5.5 하나로 바뀐 2026-11-16 이후에 저장한 선택.
+ * 저장 꼴의 정책 버전. 2 = Claude 구독 기본이 Opus 5.5 하나로 바뀐 2026-11-16 이후에 저장한 선택,
+ * 3 = Sonnet 5.5 · high 하나로 바뀐 2026-11-23 이후에 저장한 선택.
  * 표식이 없는 옛 저장만 소급 대상이다 — 표식이 찍힌 뒤에 사람이 다시 고른 「Opus 팀장 + Haiku 워커」 는 그대로 둔다
  * (llmClient 의 roleModelsPolicyVersion 과 같은 패턴: 모양만 보고 올리면 일부러 고른 값을 읽을 때마다 잃는다).
  */
-export const ASSISTANT_ENGINE_POLICY_VERSION = 2;
+export const ASSISTANT_ENGINE_POLICY_VERSION = 3;
 
-/** 2026-11-16 까지 첫 실행이 Claude 구독에 저장하던 기본(Opus 팀장 + Haiku 워커, medium). */
-const LEGACY_CLAUDE_ENGINE_DEFAULT = { cli: "claude", routineModel: "claude-haiku-5-5", deepModel: "claude-opus-5-5", effort: "medium", teamLead: true } as const;
+/** 표식 버전별 옛 Claude 구독 기본. 표식이 그 버전보다 낮은 저장만 그 기본과 비교한다. */
+const LEGACY_CLAUDE_ENGINE_DEFAULTS: readonly { readonly before: number; readonly routineModel: string; readonly deepModel: string; readonly effort: string; readonly teamLead?: true }[] = [
+  // 2026-11-16 까지: Opus 팀장 + Haiku 워커, medium.
+  { before: 2, routineModel: "claude-haiku-5-5", deepModel: "claude-opus-5-5", effort: "medium", teamLead: true },
+  // 2026-11-16 ~ 2026-11-23: Opus 5.5 하나, medium.
+  { before: 3, routineModel: "claude-opus-5-5", deepModel: "claude-opus-5-5", effort: "medium" },
+];
 
 /**
- * 표식 없는 옛 저장이 옛 Claude 구독 기본과 **똑같으면** 새 기본(Opus 5.5 하나, medium)으로 읽는다. 디스크에는 쓰지 않는다 —
+ * 표식이 낮은 옛 저장이 그 버전의 옛 Claude 구독 기본과 **똑같으면** 새 기본(Sonnet 5.5 하나, high)으로 읽는다. 디스크에는 쓰지 않는다 —
  * 다음 저장이 표식을 찍는다. 한 칸이라도 다르면(사람이 고친 것) 그대로 둔다. PR #2535 의 옛 공장 기본 소급과 같은 규칙이다.
  */
 export function promoteLegacyEngineDefault(choice: AssistantEngineChoice, policyVersion: unknown): AssistantEngineChoice {
-  if (Number(policyVersion) >= ASSISTANT_ENGINE_POLICY_VERSION) return choice;
-  const legacy = LEGACY_CLAUDE_ENGINE_DEFAULT;
-  if (choice.cli !== legacy.cli || choice.routineModel !== legacy.routineModel || choice.deepModel !== legacy.deepModel
-    || choice.effort !== legacy.effort || choice.teamLead !== legacy.teamLead) return choice;
+  const version = Number(policyVersion) || 0;
+  if (version >= ASSISTANT_ENGINE_POLICY_VERSION || choice.cli !== "claude") return choice;
+  const matches = LEGACY_CLAUDE_ENGINE_DEFAULTS.some((legacy) => version < legacy.before
+    && choice.routineModel === legacy.routineModel && choice.deepModel === legacy.deepModel
+    && choice.effort === legacy.effort && choice.teamLead === legacy.teamLead);
+  if (!matches) return choice;
   const model = LOCAL_CLI_DEFAULT_MODELS.claude.routine;
-  return { kind: "local-cli", cli: "claude", routineModel: model, deepModel: model, effort: "medium" };
+  return { kind: "local-cli", cli: "claude", routineModel: model, deepModel: model, effort: ASSISTANT_CLAUDE_EFFORT };
 }
 
 /** 저장된 엔진 선택(없으면 undefined = 기존 Pi 엔진). */
@@ -154,7 +162,7 @@ export function applyAssistantEngine<T extends { providerId?: string; model: str
 
 /**
  * 조수 v2 팀장(리드) — 엔진 선택이 teamLead 를 켜고 deepModel 이 routineModel 과 다를 때만. 같은 CLI 로 부른다(키 없음).
- * 기본(Opus 5.5 하나)에서는 팀장이 없다.
+ * 기본(Sonnet 5.5 하나)에서는 팀장이 없다.
  * 강도는 측정한 조합(2026-11-03 lead-worker-split, `lead:claude:claude-opus-5-5:medium`)을 따라 medium 으로 둔다.
  */
 export function assistantEngineLead(choice: AssistantEngineChoice | undefined): RoleModel | undefined {

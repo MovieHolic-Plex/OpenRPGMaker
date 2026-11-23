@@ -33,13 +33,13 @@ describe("resolveAssistantRoles — 연결 조합", () => {
 
   it("Claude 만: 그림 생성은 없다고 말하고, 나머지는 로컬 Claude Code 로 채운다", () => {
     const t = table("claude");
-    // 오너 결정 2026-11-16: Claude 경로는 주·눈·도트가 Opus 5.5 한 모델이다. 잔일 칸(Haiku)은 없다 — 주 모델이 대신한다.
-    expect(t.main).toBe("local-cli:claude/claude-opus-5-5");
+    // 오너 결정 2026-11-23: Claude 경로는 주·눈·도트가 Sonnet 5.5 한 모델이다. 잔일 칸(Haiku)은 없다 — 주 모델이 대신한다.
+    expect(t.main).toBe("local-cli:claude/claude-sonnet-5-5");
     expect(t.smol).toMatch(/^missing: 주 모델이 대신함/u);
-    // 검토자도 Opus 5.5 medium(N6, 2026-11-16) — Claude 만 있으면 주 모델과 같은 모델이 문맥만 따로 본다.
-    expect(t.advisor).toBe("local-cli:claude/claude-opus-5-5");
-    expect(t.vision).toBe("local-cli:claude/claude-opus-5-5");
-    expect(t.pixel).toBe("local-cli:claude/claude-opus-5-5");
+    // 검토자도 Sonnet 5.5 high(N6 2026-11-16, 모델은 2026-11-23) — Claude 만 있으면 주 모델과 같은 모델이 문맥만 따로 본다.
+    expect(t.advisor).toBe("local-cli:claude/claude-sonnet-5-5");
+    expect(t.vision).toBe("local-cli:claude/claude-sonnet-5-5");
+    expect(t.pixel).toBe("local-cli:claude/claude-sonnet-5-5");
     expect(t.image).toMatch(/^missing: 그림은 ChatGPT 로만 그려요/u);
   });
 
@@ -53,14 +53,14 @@ describe("resolveAssistantRoles — 연결 조합", () => {
     expect(t.pixel).toBe("openai-codex/gpt-6.2-sol");
   });
 
-  it("넷 다: 주는 Claude Opus 5.5 medium, 검토자는 다른 계열(Gemini Argon), 잔일은 다른 계정의 싼 모델(Claude 에는 잔일 칸이 없다), 그림은 GPT Image", () => {
+  it("넷 다: 주는 Claude Sonnet 5.5 high, 검토자는 다른 계열(Gemini Argon), 잔일은 다른 계정의 싼 모델(Claude 에는 잔일 칸이 없다), 그림은 GPT Image", () => {
     const roles = resolveAssistantRoles(mockConnectedRoutes("gemini,gpt,claude,deepseek"));
-    expect(roles.main).toMatchObject({ status: "ok", model: { provider: "local-cli:claude", model: "claude-opus-5-5", thinkingLevel: "medium" } });
+    expect(roles.main).toMatchObject({ status: "ok", model: { provider: "local-cli:claude", model: "claude-sonnet-5-5", thinkingLevel: "high" } });
     const t = table("gemini,gpt,claude,deepseek");
     expect(t.advisor).toBe("google-antigravity/gemini-4-argon");
     expect(t.smol).toBe("google-antigravity/gemini-3.8-flash");
     expect(t.image).toBe("openai-codex/codex-image-default");
-    expect(roles.vision).toMatchObject({ status: "ok", model: { provider: "local-cli:claude", model: "claude-opus-5-5", thinkingLevel: "medium" } });
+    expect(roles.vision).toMatchObject({ status: "ok", model: { provider: "local-cli:claude", model: "claude-sonnet-5-5", thinkingLevel: "high" } });
   });
 
   it("Claude 가 없으면 주 작업은 Argon medium 으로 물러난다", () => {

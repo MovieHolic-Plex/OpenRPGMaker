@@ -4,6 +4,8 @@ import { localCliProviderId } from "./localCliEngine.ts";
 import type { RoleModel } from "./modelRoles.ts";
 import { CODEX_ACCOUNT_PROVIDER_ID } from "./planDefaults.ts";
 import type { TeamPlan, TeamRoute, TeamSlot } from "./teamPlan.ts";
+import { ASSISTANT_CLAUDE_EFFORT } from "./claudeDefault.ts";
+import { ASSISTANT_CHATGPT_EFFORT } from "./chatgptDefault.ts";
 
 export interface TeamApplyDeps {
   readonly adoptKey: (sourceId: string, modelId: string) => Promise<string | undefined>;
@@ -45,7 +47,7 @@ export async function applyTeamPlan(plan: TeamPlan, deps: TeamApplyDeps): Promis
       cli: workerRoute.cli,
       routineModel: plan.worker.modelId,
       deepModel: sameCli && lead ? lead.modelId : plan.worker.modelId,
-      effort: "medium",
+      effort: workerRoute.cli === "claude" ? ASSISTANT_CLAUDE_EFFORT : ASSISTANT_CHATGPT_EFFORT,
       ...(sameCli ? { teamLead: true } : {}),
     });
   } else {

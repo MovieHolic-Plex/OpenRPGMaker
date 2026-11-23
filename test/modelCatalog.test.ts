@@ -99,11 +99,11 @@ describe("modelCatalog — 두 제공자만 해석한다", () => {
     expect(modelCatalogForAuthMode("chatgpt")[0]?.models[0]).toBe("gemini-4-argon");
   });
 
-  it("Claude 계정 목록은 5.5 세 모델이고 Opus 가 기본이다", async () => {
+  it("Claude 계정 목록은 5.5 세 모델이고 Sonnet 이 기본이다(오너 결정 2026-11-23)", async () => {
     const { defaultModelForAuthMode, modelCatalogForAuthMode } = await loadCatalog();
     expect(modelCatalogForAuthMode("chatgpt", "anthropic").flatMap((g) => g.models))
-      .toEqual(["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"]);
-    expect(defaultModelForAuthMode("chatgpt", "anthropic")).toBe("claude-opus-5-5");
+      .toEqual(["claude-sonnet-5-5", "claude-opus-5-5", "claude-haiku-5-5"]);
+    expect(defaultModelForAuthMode("chatgpt", "anthropic")).toBe("claude-sonnet-5-5");
   });
 });
 
@@ -112,7 +112,7 @@ describe("latestModelsFor — 첫 실행 목록은 옛 모델을 뺀다", () => 
     const { defaultModelForAuthMode, latestModelsFor } = await loadCatalog();
     expect(latestModelsFor(CODEX_PROVIDER_ID)).toEqual(["gpt-6.2-sol", "gpt-6.2-astra", "gpt-6-astra", "gpt-6-luna"]);
     expect(latestModelsFor(ANTIGRAVITY_PROVIDER_ID)).toEqual(["gemini-4-argon", "gemini-3.8-flash"]);
-    expect(latestModelsFor("anthropic")).toEqual(["claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"]);
+    expect(latestModelsFor("anthropic")).toEqual(["claude-sonnet-5-5", "claude-opus-5-5", "claude-haiku-5-5"]);
     for (const provider of OH_MY_PI_PROVIDERS) {
       expect(latestModelsFor(provider.id)[0], provider.id).toBe(defaultModelForAuthMode("chatgpt", provider.id));
     }

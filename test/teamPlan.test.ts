@@ -16,10 +16,13 @@ const slot = (model: TeamModelKey, route: TeamRoute): TeamSlot => ({ model: TEAM
 const splitPlan = (lead: TeamSlot, worker: TeamSlot): TeamPlan => ({ lead, worker, routes: lead.route === worker.route ? [worker.route] : [worker.route, lead.route] });
 
 describe("first-run team defaults from what the user has", () => {
-  it("gives a Claude subscription Opus alone, and every other single service the team the scoreboard rates best within one point, cheapest first", () => {
-    // 오너 결정 2026-11-16: Claude 를 쓸 수 있으면 Opus 5.5 하나가 계획부터 만들기까지 — Opus 팀장 + Haiku 워커(62.7점·$0.30)가 1점 이내로 더 싸도 고르지 않는다.
-    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")] })))).toEqual({ lead: undefined, worker: "opus", route: "cli" });
-    expect(shape(buildTeamPlan(inputs({ keys: [key("ANTHROPIC_API_KEY", "claude", { opus: "claude-opus-5-5", sonnet: "claude-sonnet-5-5", haiku: "claude-haiku-5-5" })] })))).toEqual({ lead: undefined, worker: "opus", route: "key" });
+  it("gives a Claude subscription or key Sonnet alone, and every other single service the team the scoreboard rates best within one point, cheapest first", () => {
+    // 오너 결정 2026-11-23: Claude 를 쓸 수 있으면 Sonnet 5.5 하나가 계획부터 만들기까지 — 점수표에 행이 없어도 점수표 조합보다 먼저 고른다.
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")] })))).toEqual({ lead: undefined, worker: "sonnet", route: "cli" });
+    expect(buildTeamPlan(inputs({ clis: [cli("claude")] }))?.choice).toBeUndefined();
+    expect(shape(buildTeamPlan(inputs({ keys: [key("ANTHROPIC_API_KEY", "claude", { opus: "claude-opus-5-5", sonnet: "claude-sonnet-5-5", haiku: "claude-haiku-5-5" })] })))).toEqual({ lead: undefined, worker: "sonnet", route: "key" });
+    // Sonnet 이 없는 Claude 키는 점수표의 기본 혼자 모델(Opus)로 물러난다.
+    expect(shape(buildTeamPlan(inputs({ keys: [key("ANTHROPIC_API_KEY", "claude", { opus: "claude-opus-5-5", haiku: "claude-haiku-5-5" })] })))).toEqual({ lead: undefined, worker: "opus", route: "key" });
     expect(shape(buildTeamPlan(inputs({ accounts: [oauth("openai-codex")] })))).toEqual({ lead: undefined, worker: "sol62", route: "account" });
     expect(shape(buildTeamPlan(inputs({ keys: [key("DEEPSEEK_API_KEY", "deepseek", { deepseek: "deepseek-v4.1-flash" })] })))).toEqual({ lead: undefined, worker: "deepseek", route: "key" });
   });
@@ -36,10 +39,10 @@ describe("first-run team defaults from what the user has", () => {
     expect(buildTeamPlan(inputs({ clis: [cli("claude"), cli("codex")] }))?.routes).toEqual([{ kind: "cli", cli: "codex" }]);
   });
 
-  it("keeps Opus alone when Claude is present without a ChatGPT subscription — an OpenAI API key does not take over", () => {
-    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], keys: [key("OPENAI_API_KEY", "openai", { terra: "gpt-6.1-terra" })] })))).toEqual({ lead: undefined, worker: "opus", route: "cli" });
-    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], keys: [key("DEEPSEEK_API_KEY", "deepseek", { deepseek: "deepseek-v4.1-flash" })] })))).toEqual({ lead: undefined, worker: "opus", route: "cli" });
-    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], accounts: [oauth("google-antigravity")] })))).toEqual({ lead: undefined, worker: "opus", route: "cli" });
+  it("keeps Sonnet alone when Claude is present without a ChatGPT subscription — an OpenAI API key does not take over", () => {
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], keys: [key("OPENAI_API_KEY", "openai", { terra: "gpt-6.1-terra" })] })))).toEqual({ lead: undefined, worker: "sonnet", route: "cli" });
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], keys: [key("DEEPSEEK_API_KEY", "deepseek", { deepseek: "deepseek-v4.1-flash" })] })))).toEqual({ lead: undefined, worker: "sonnet", route: "cli" });
+    expect(shape(buildTeamPlan(inputs({ clis: [cli("claude")], accounts: [oauth("google-antigravity")] })))).toEqual({ lead: undefined, worker: "sonnet", route: "cli" });
   });
 
   it("gives ChatGPT Sol alone, with or without Google", () => {
@@ -121,9 +124,9 @@ describe("plain-language text", () => {
   it("names the service, the one model that does everything and the evidence without jargon", () => {
     const plan = buildTeamPlan(inputs({ clis: [cli("claude")] }))!;
     expect(planTitle(plan)).toBe("Claude 구독");
-    expect(planSentence(plan)).toBe("계획부터 만들기까지 Opus 5.5 하나가 맡아요.");
+    expect(planSentence(plan)).toBe("계획부터 만들기까지 Sonnet 5.5 하나가 맡아요.");
     expect(planSentence(plan)).not.toContain("Haiku");
-    expect(planEvidence(plan)).toContain("63.5");
+    expect(planEvidence(plan)).toContain("점수가 아직 없는");
   });
 
   it("names both roles for a split team", () => {
@@ -150,21 +153,21 @@ describe("applying a plan", () => {
     return { calls, deps };
   };
 
-  it("turns a Claude subscription into an engine choice with Opus 5.5 medium in every slot and no lead", async () => {
+  it("turns a Claude subscription into an engine choice with Sonnet 5.5 high in every slot and no lead", async () => {
     const { calls, deps } = recorder();
     const plan = buildTeamPlan(inputs({ clis: [cli("claude")] }))!;
     expect(await applyTeamPlan(plan, deps)).toEqual({ ok: true });
-    expect(calls.engine).toEqual({ kind: "local-cli", cli: "claude", routineModel: "claude-opus-5-5", deepModel: "claude-opus-5-5", effort: "medium" });
+    expect(calls.engine).toEqual({ kind: "local-cli", cli: "claude", routineModel: "claude-sonnet-5-5", deepModel: "claude-sonnet-5-5", effort: "high" });
     expect(calls.lead).toBeUndefined();
     expect(calls.provider).toBeUndefined();
   });
 
-  it("adopts an Anthropic key with Opus 5.5 as the one model", async () => {
+  it("adopts an Anthropic key with Sonnet 5.5 as the one model", async () => {
     const { calls, deps } = recorder();
     const plan = buildTeamPlan(inputs({ keys: [key("ANTHROPIC_API_KEY", "claude", { opus: "claude-opus-5-5", sonnet: "claude-sonnet-5-5", haiku: "claude-haiku-5-5" })] }))!;
     expect(await applyTeamPlan(plan, deps)).toEqual({ ok: true });
     expect(calls.adopted).toEqual(["ANTHROPIC_API_KEY"]);
-    expect(calls.provider).toEqual(["openai-compat:anthropic_api_key", "claude-opus-5-5"]);
+    expect(calls.provider).toEqual(["openai-compat:anthropic_api_key", "claude-sonnet-5-5"]);
     expect(calls.lead).toBeUndefined();
     expect(calls.engine).toBeUndefined();
   });
@@ -172,7 +175,7 @@ describe("applying a plan", () => {
   it("still applies a split team on one CLI as an engine choice with the lead on the same CLI", async () => {
     const { calls, deps } = recorder();
     expect(await applyTeamPlan(splitPlan(slot("opus", CLAUDE_CLI), slot("haiku", CLAUDE_CLI)), deps)).toEqual({ ok: true });
-    expect(calls.engine).toEqual({ kind: "local-cli", cli: "claude", routineModel: "claude-haiku-5-5", deepModel: "claude-opus-5-5", effort: "medium", teamLead: true });
+    expect(calls.engine).toEqual({ kind: "local-cli", cli: "claude", routineModel: "claude-haiku-5-5", deepModel: "claude-opus-5-5", effort: "high", teamLead: true });
     expect(calls.lead).toBeUndefined();
   });
 
@@ -208,9 +211,9 @@ describe("setup wizard screens", () => {
     expect(ready.title).toBe("Claude로 연결돼 있어요");
     expect(ready.primary).toEqual({ id: "start-plan", label: "시작하기" });
     expect(`${ready.title} ${ready.body}`).not.toMatch(MODEL_NAME);
-    expect(ready.details?.rows.map((row) => row.value).join(" ")).toMatch(/Opus/u);
+    expect(ready.details?.rows.map((row) => row.value).join(" ")).toMatch(/Sonnet/u);
 
-    expect(ready.details?.rows.map((row) => `${row.label}: ${row.value}`)).toContain("맡는 AI: Opus 5.5");
+    expect(ready.details?.rows.map((row) => `${row.label}: ${row.value}`)).toContain("맡는 AI: Sonnet 5.5");
     expect(ready.details?.rows.map((row) => row.value).join(" ")).not.toMatch(/Haiku/u);
 
     // ChatGPT 가 같이 있으면 ChatGPT 하나로 시작한다(오너 결정 2026-11-19: 기본 AI 는 ChatGPT).

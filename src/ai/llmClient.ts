@@ -197,7 +197,7 @@ function promoteLegacyFactoryModel(model: string, providerId: string): string {
 
 /**
  * Claude 계정의 옛 기본 워커(Haiku 5.5). 2026-11-16 까지 Claude 계정을 고르면 실행·시공·작문·시각 칸이 이 모델로 채워졌다
- * (modelPresets 의 anthropic fast 티어). 기본이 Opus 5.5 하나로 바뀌면서 #2535 와 같은 규칙으로 소급한다 —
+ * (modelPresets 의 anthropic fast 티어). 기본이 한 모델(2026-11-16 Opus 5.5, 2026-11-23 Sonnet 5.5)로 바뀌면서 #2535 와 같은 규칙으로 소급한다 —
  * 제품이 채운 칸(사용자가 직접 고르지 않은 칸)만 읽을 때 새 기본으로 올리고, 디스크에는 쓰지 않는다.
  * 사용자가 직접 고른 칸(modelSelectionOverrides)의 Haiku 는 그대로다.
  */

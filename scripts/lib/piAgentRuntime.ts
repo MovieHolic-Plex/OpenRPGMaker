@@ -1405,7 +1405,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       sideUsage.calls += 1;
       try {
         const cli = localCliIdOf(role.provider);
-        // 강도도 넘긴다 — 화면 검수의 Claude 검수자는 Opus 5.5 · medium 이다(src/ai/v2/judge/vqa.ts LOCAL_CLI_REVIEWERS).
+        // 강도도 넘긴다 — 화면 검수의 Claude 검수자는 조수 기본(Sonnet 5.5 · high)이다(src/ai/v2/judge/vqa.ts LOCAL_CLI_REVIEWERS).
         if (cli) return await localCliChat(cli, role.model, addSideUsage, role.effort)(messages, signal ?? options.signal);
         const key = options.providerApiKeys?.[role.provider] ?? (role.provider === request.provider ? options.apiKey : undefined);
         if (!key) throw new Error(`${role.provider} 계정 키가 이 실행에 없음`);

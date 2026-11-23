@@ -10,12 +10,16 @@ import { configForUltrabrain } from "./ultrabrainConfig";
 const BALANCED = MODEL_PRESETS.find(preset => preset.id === "balanced")!;
 
 /**
- * 계정을 바꿀 때 계획·감독(ultrabrain) 칸의 사고 강도. 「균형」 프리셋은 high 인데, 조수 기본 모델(Claude Opus 5.5)로
- * 맞춰지는 계정은 medium 이다 — 오너 결정(2026-11-16): 모든 역할이 Opus 5.5 · medium 한 모델. Claude 계정과
- * Anthropic 키로 만든 사용자 지정 엔드포인트가 여기에 든다. 다른 계정은 그대로 「균형」(high).
+ * 계정을 바꿀 때의 사고 강도. 조수 기본 모델(Claude Sonnet 5.5)로 맞춰지는 칸은 모든 역할·감독이 그 기본 강도(high)다 —
+ * 오너 결정(2026-11-23): 「조수는 sonnet 5.5 high 만」. Claude 계정과 Anthropic 키로 만든 사용자 지정 엔드포인트가 여기에 든다.
+ * 다른 모델은 그대로 「균형」 프리셋 강도다.
  */
 function ultrabrainEffortFor(model: string): "low" | "medium" | "high" {
   return model === CLAUDE_DEFAULT_MODEL ? CLAUDE_DEFAULT_EFFORT : BALANCED.ultrabrain.thinking as "low" | "medium" | "high";
+}
+
+function roleEffortFor(role: SpecialistRole, model: string): RoleModel["thinkingLevel"] {
+  return model === CLAUDE_DEFAULT_MODEL ? CLAUDE_DEFAULT_EFFORT : BALANCED.roles[role].thinking;
 }
 
 /** 작문을 다른 계정에 둘 수 있는지 — 그 계정이 없어도 작업은 시작된다(작문만 실행 모델로 대신한다). */
@@ -30,12 +34,13 @@ export function configForProviderSelection(config: AiConfig, providerId: string,
   const pinned = config.modelSelectionOverrides ?? {};
   const model = (oldProvider: string, oldModel: string): string =>
     tierModelFor(next.providerId, oldModel === tierModelFor(oldProvider, "strong") ? "strong" : "fast") ?? oldModel;
-  const thinking = (role: SpecialistRole, old: RoleModel): RoleModel["thinkingLevel"] =>
-    old.provider === next.providerId ? old.thinkingLevel : BALANCED.roles[role].thinking;
+  const thinking = (role: SpecialistRole, old: RoleModel, newModel: string): RoleModel["thinkingLevel"] =>
+    old.provider === next.providerId ? old.thinkingLevel : roleEffortFor(role, newModel);
   for (const role of ["vision", "writer", "deep", "build"] as const) {
     const old = modelForRole(config, role);
     if (!force && pinned[role]) continue;
-    next.roleModels[role] = { provider: next.providerId, model: model(old.provider, old.model), thinkingLevel: thinking(role, old) };
+    const newModel = model(old.provider, old.model);
+    next.roleModels[role] = { provider: next.providerId, model: newModel, thinkingLevel: thinking(role, old, newModel) };
   }
   const brain = configForUltrabrain(config);
   if (force || !pinned.ultrabrain) {

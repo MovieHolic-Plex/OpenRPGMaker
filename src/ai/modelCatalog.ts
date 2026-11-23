@@ -67,8 +67,8 @@ const ANTIGRAVITY_MODELS: readonly string[] = [
  * pi-catalog(18.9.1·18.13.2) anthropic 제공자에 세 id 가 다 있고, 2026-11-04 Anthropic messages 호출이 세 모델 모두 통과했다.
  */
 const ANTHROPIC_MODELS: readonly string[] = [
-  "claude-opus-5-5",
   "claude-sonnet-5-5",
+  "claude-opus-5-5",
   "claude-haiku-5-5",
 ];
 

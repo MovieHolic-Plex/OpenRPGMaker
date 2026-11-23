@@ -56,7 +56,7 @@ export const ROLE_COPY: Readonly<Record<AssistantRole, RoleCopy>> = MATRIX.roles
 export const FAMILY_LABEL: Readonly<Record<ModelFamily, string>> = Object.fromEntries(
   MODEL_FAMILIES.map((family) => [family, MATRIX.families[family].label])) as Record<ModelFamily, string>;
 
-// 주 작업은 Claude(Opus 5.5 medium)를 먼저 본다 — 사용자 결정(2026-10-25). Claude 가 없으면 Gemini Argon medium.
+// 주 작업은 Claude(Sonnet 5.5 high — 오너 결정 2026-11-23)를 먼저 본다 — 사용자 결정(2026-10-25). Claude 가 없으면 Gemini Argon medium.
 const ROLE_FAMILY_ORDER: Partial<Record<AssistantRole, readonly ModelFamily[]>> = { main: MATRIX.mainFamilyOrder };
 
 interface Candidate { readonly family: ModelFamily; readonly providerId: string; readonly entry: MatrixEntry }

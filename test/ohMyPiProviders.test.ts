@@ -61,7 +61,7 @@ describe("oh-my-pi provider catalog", () => {
 
     const claude = getOhMyPiProvider("anthropic");
     expect(claude?.label).toBe("Claude");
-    expect(claude?.defaultModel).toBe("claude-opus-5-5");
+    expect(claude?.defaultModel).toBe("claude-sonnet-5-5");
   });
 
   it("옛 저장값을 읽을 때의 제공자는 Antigravity OAuth 다 — 권장 제공자가 ChatGPT 로 바뀌어도 그대로다", () => {

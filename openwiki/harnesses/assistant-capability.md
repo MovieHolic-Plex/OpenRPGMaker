@@ -228,8 +228,8 @@ DeepSeek 추론 계열로 읽어 `low, high, max` 사다리와 `reasoning_conten
 - 모델 고정: `--model terra-high` = `harness-data/assistant-capability/ai-configs/terra-high.json`(모든 역할을 `openai-compat:opencodex` 의
   `gpt-6.1-terra` high 로). 엔드포인트 주소·키는 저장소 밖 `OPRN_OPENAI_COMPAT_PATH`(없으면 `~/.oprn-suite/openai-compat-endpoints.json`)에서만
   읽는다. 다른 모델은 `ai-configs/` 에 파일을 더하고 그 이름을 준다.
-- 조수 출하 기본(2026-11-16 오너 결정: Claude Opus 5.5 · medium)으로 잴 때는 `--model local-claude-opus-medium`(`ai-configs/local-claude-opus-medium.json` — v2, 로컬 Claude CLI,
-  `claude-opus-5-5` 하나 · effort medium, 팀장·워커로 나누지 않는다). `--model` 을 비우면 지금도 `terra-high` 다(앞선 판과의 비교 기준). 모델이 다른 판의 숫자를 한 표에 섞지 않는다.
+- 조수의 Claude 기본(2026-11-23 오너 결정: Claude Sonnet 5.5 · high)으로 잴 때는 `--model local-claude-sonnet-5-5-high`(`ai-configs/local-claude-sonnet-5-5-high.json` — v2, 로컬 Claude CLI,
+  `claude-sonnet-5-5` 하나 · effort high, 팀장·워커로 나누지 않는다). 지난 Claude 기본(2026-11-16, Opus 5.5 · medium)과 견줄 때만 `local-claude-opus-medium` 을 쓴다. `--model` 을 비우면 지금도 `terra-high` 다(앞선 판과의 비교 기준). 모델이 다른 판의 숫자를 한 표에 섞지 않는다.
 
 ```bash
 npm run -s build:fast && node scripts/build-electron.mjs                  # 편집기·호스트 빌드(워크트리면 VITE_CACHE_DIR 를 준다)

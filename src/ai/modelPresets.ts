@@ -40,9 +40,9 @@ const PROVIDER_TIER_MODELS: Readonly<Record<string, Readonly<Record<ModelTier, s
   [ANTIGRAVITY_PROVIDER_ID]: { fast: "gemini-4-argon", strong: "gemini-4-argon" },
   // Codex 는 두 티어 모두 GPT-6.2 Sol 이고 사고 강도로만 가른다(오너 결정 2026-11-19).
   [CODEX_PROVIDER_ID]: { fast: CHATGPT_DEFAULT_MODEL, strong: CHATGPT_DEFAULT_MODEL },
-  // Claude 계정: 두 티어 모두 Opus 5.5 이고 사고 강도로만 가른다(오너 결정 2026-11-16 — Haiku 워커를 기본에서 뺐다. Codex 와 같은 꼴).
+  // Claude 계정: 두 티어 모두 조수 기본(Sonnet 5.5, 오너 결정 2026-11-23)이고 사고 강도로만 가른다(Haiku 워커는 2026-11-16 에 기본에서 뺐다. Codex 와 같은 꼴).
   // 로컬 Claude CLI 기본(src/ai/planDefaults.ts)과 같은 한 모델이다. 티어가 없으면 configForProviderSelection 이
-  // 이전 제공자의 모델 id(gemini-4-argon 등)를 Claude 계정에 그대로 남긴다. Haiku·Sonnet 은 설정의 모델 목록에서 직접 고른다.
+  // 이전 제공자의 모델 id(gemini-4-argon 등)를 Claude 계정에 그대로 남긴다. Opus·Haiku 는 설정의 모델 목록에서 직접 고른다.
   [ANTHROPIC_PROVIDER_ID]: { fast: CLAUDE_DEFAULT_MODEL, strong: CLAUDE_DEFAULT_MODEL },
 };
 

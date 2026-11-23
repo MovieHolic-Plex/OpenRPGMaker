@@ -71,6 +71,9 @@ export function buildTeamPlan(inputs: TeamInputs): TeamPlan | undefined {
   // ChatGPT 구독·로그인이 있으면 Sol 6.2 혼자 쓴다. 옛 점수표의 비용·품질은 이 모델에 붙이지 않는다.
   const chatgpt = slot("sol62");
   if (chatgpt && chatgpt.route.kind !== "key") return { worker: chatgpt, routes: [chatgpt.route] };
+  // Claude 를 쓸 수 있으면 Sonnet 5.5 혼자(오너 결정 2026-11-23). 점수표에 Sonnet 혼자 행이 없으므로 점수 없이 고른다.
+  const sonnet = slot("sonnet");
+  if (sonnet) return { worker: sonnet, routes: [sonnet.route] };
   const choice = chooseTeam(new Set(routes.keys()));
   if (choice) {
     const worker = slot(choice.worker)!;
