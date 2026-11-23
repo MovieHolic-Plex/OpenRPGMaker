@@ -16,6 +16,7 @@ import { composeTown, START_ROUTES, START_TOWNS, TOWN_SKETCHES, VOLCANO_ROUTE_KE
 import { autotileGroupsForTileset } from "@/project/defaults/autotileGroups";
 import { shapeAllAutotileGroupsAround } from "@/project/defaults/autotileEngine";
 import { roughenTallGrass } from "./tallGrassShape";
+import { generateFieldMap, type FieldRequest } from "./fieldGenerator";
 import { expeditionEnemyActions } from "./enemyActions";
 import { repairExpeditionShopPrices } from './shopPrices';
 import { monsterCenterCommands } from "@/project/monsterCenterRecipe";
@@ -83,7 +84,15 @@ const GYM_KEY_BY_TYPE: Readonly<Record<string, string>> = {
   dragon: "dragon", steel: "dragon", flying: "dragon",
 };
 
-export function authorExpeditionWorld(project: Project, options: { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[]; readonly startTheme?: StartTheme; readonly gymCount?: number; readonly startLayout?: HomeTownLayout } = {}): ExpeditionManifest {
+/** 견본마다 생성기 기본 요청 — 강 계곡은 물, 산·사막·눈 고개는 절벽. 조수가 fieldMaps 로 길·지역마다 덮어쓴다. */
+const FIELD_DEFAULTS: Readonly<Record<string, FieldRequest>> = {
+  "overworld/route": { water: false, cliffs: true, branches: 1 }, "wild/forest_maze": { branches: 2 }, "wild/river": { water: true, stream: true, cliffs: true, branches: 1 },
+  "wild/mountain": { cliffs: true, branches: 1 }, "climate/desert": { water: true, cliffs: true }, "climate/ice_route": { cliffs: true, branches: 1 },
+  "wild/swamp": { water: true }, "dungeon/ruins": {}, "wild/garden": { branches: 1 }, "coast/beach": { water: true }, "dungeon/sea_cave": { water: true },
+  "dungeon/lava_cave": { water: true }, "overworld/cave": { branches: 2 }, "dungeon/ice_cave": {}, "dungeon/ghost_tower": {}, "dungeon/hideout": {},
+};
+
+export function authorExpeditionWorld(project: Project, options: { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[]; readonly startTheme?: StartTheme; readonly gymCount?: number; readonly startLayout?: HomeTownLayout; readonly mapSeed?: number; readonly fieldMaps?: Readonly<Record<string, FieldRequest>> } = {}): ExpeditionManifest {
   // 화산 기획의 1관은 불 체육관이다 — 시작 마을이 재 마을 판(둘째 마을 ↔ 잿빛 온천 맞바꿈)이라 풀 관장이 서 있으면 어색하다. 기획서가 첫 관 타입을 정하면 그것이 이긴다.
   if (options.startTheme === "volcano" && !options.firstGymType && options.gymTypes?.[0] === undefined) options = { ...options, firstGymType: "fire" };
   // 규모(체육관 수) — 기본 8관은 아래 모든 값이 본래 그대로다. 0~7관은 마을·길·부속 지역·리그를 앞에서부터 잘라 쓴다.
@@ -171,22 +180,27 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
     // 시작 마을 짜임(2026-10-24): 풀밭 시작 마을은 손잡이·씨앗으로 판을 새로 짠다 — 늘 같은 템플릿이었다.
     const homeLayout = key === "home" && !options.startTheme && options.startLayout ? homeTownSketch(options.startLayout).sketch : undefined;
     const sketch = homeLayout ?? (volcanoTown ? volcanoTownSketch(towns.findIndex(x => x.key === key) + 1, gymPlanTowns.has(key))
-      : volcanoField ? volcanoRouteSketch(volcanoRoute(key)) : startTown?.sketch ?? TOWN_SKETCHES[look]);
+      : volcanoField ? volcanoRouteSketch(volcanoRoute(key)) : startTown?.sketch ?? (role === "dungeon" && FIELD_DEFAULTS[source] ? undefined : TOWN_SKETCHES[look]));
     // 0관 캠페인: 마을 판의 체육관 건물(7×7)은 체육관 문처럼 보이는데 안은 조련사 회관(교실 판 재사용)이었다. 같은 크기의 박공 집으로 바꾼다.
     const gymless = gymCount === 0 && role === "town" && sketch && t.buildings.some(b => b.name === "gable_a");
     if (sketch) composeTown(project, map, t, gymless ? { ...sketch, kits: sketch.kits.map(([n, x, y]) => [n.startsWith("gym_") ? "gable_a" : n, x, y] as [string, number, number]) } : sketch, templates);
+    // 길·필드·던전은 견본을 복사하지 않고 견본 문법으로 새로 짠다(fieldGenerator) — 견본과 93~100% 같던 판(2026-11-22 분석).
+    const generated = !sketch && (role === "field" || role === "dungeon") && FIELD_DEFAULTS[source]
+      ? generateFieldMap(project, key, t, { ...FIELD_DEFAULTS[source], ...options.fieldMaps?.[key], exits: role === "field" ? "through" : "south", seed: options.mapSeed ?? 0 }, templates)
+      : undefined;
+    if (generated) { map.width = generated.width; map.height = generated.height; map.lowerTiles = generated.lower; map.upperTiles = generated.upper; }
     // 1번길 템플릿은 길 끝 다섯 줄이 모래 띠였다 — 길로 이어 깐다(모래 네모가 풀숲 옆에 떠 보였다, 2026-10-06 시각 QA).
     // 메아리 동굴 템플릿은 바닥 한가운데 밝은 노란 모래 네모가 떠 보였고, 드나드는 문도 바닥 한가운데 보이지 않는 칸이었다.
     // 모래는 동굴 바닥으로, 문은 템플릿이 그려 둔 사다리(「이동 이벤트를 올릴 자리」) 칸으로 옮긴다.
     // 8번길 유적 템플릿은 출구 위 모래에 돌바닥 두 칸이 덩그러니 떠 있었다(2026-10-06 조화 검수 지적, 렌더로 확인) — 모래로 덮는다.
-    if (source === "dungeon/ruins" && !TOWN_SKETCHES[key]) {
+    if (source === "dungeon/ruins" && !TOWN_SKETCHES[key] && !generated) {
       const stone = new Set(["ru_fl2", "ru_fl3"].map(n => t.names[n]));
       for (let x = 0; x < map.width; x++) {
         const cell = (map.height - 3) * map.width + x;
         if (stone.has(map.lowerTiles[cell]!)) map.lowerTiles[cell] = t.names[x % 2 ? "ru_sand1" : "ru_sand2"]!;
       }
     }
-    if (source === "overworld/cave") {
+    if (source === "overworld/cave" && !generated) {
       // 쓰지 않는 아래층 구멍도 길처럼 읽히므로 함께 바닥으로.
       const sand = new Set([...Object.entries(t.names).filter(([n]) => n.startsWith("cave_sand")).map(([, v]) => v), t.names.hole_down!]);
       const floor = ["cave_floor0", "cave_floor1", "cave_floor2", "cave_floor3"].map(n => t.names[n]!);
@@ -194,7 +208,7 @@ export function authorExpeditionWorld(project: Project, options: { readonly firs
       const ladder = map.lowerTiles.indexOf(t.names.ladder_up!);
       if (ladder >= 0) doorSpots.set(map.id, { x: ladder % map.width, y: Math.floor(ladder / map.width) });
     }
-    if (source === "overworld/route") {
+    if (source === "overworld/route" && !generated) {
       const clearing = autotileGroupsForTileset(project.tilesets[map.tilesetId]).find(g => g.id === "clearing")!;
       const sand = new Set(Object.entries(t.names).filter(([n]) => n.startsWith("sand_at")).map(([, v]) => v));
       const changed: Point[] = [];
