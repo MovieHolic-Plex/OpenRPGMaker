@@ -106,7 +106,9 @@ it("preserves the continuing build when an obsolete member adapter hands off aft
   expect(spatialSession()).toMatchObject({ tab: "spaces", mode: "instances", occurrenceId: rootId });
 });
 
-it("retains opaque transfer identities when an ordinary shared containing edit moves their actual destination", () => {
+// Same heavy full-project clone as the two tests above; it was the only one left on the 15s default and crossed it
+// under CI load (9.5s → 10.4s → 14.1s → 18.1s over ci-full 44994739875→45149079696 while its siblings went 15s → 30s).
+it("retains opaque transfer identities when an ordinary shared containing edit moves their actual destination", { timeout: 120_000 }, () => {
   // Given: valid persisted opaque transfers between two actual spaces sharing one outdoor map.
   const scene = sharedFixture();
   installManualProject(renameEvents(scene.project, scene.project.mapConnections?.map(pair => pair.id) ?? []));
