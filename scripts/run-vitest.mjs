@@ -217,6 +217,10 @@ function cgroupBudget(args) {
     const memoryWorkers = Math.max(1, Math.floor((usableMb * OVERCOMMIT_FACTOR) / MIN_WORKER_HEAP_MB));
     workers = Math.min(workers, memoryWorkers);
   }
+  // 공유 박스(mdc2)에서 샤드 하나의 메모리를 묶는다. cgroup 상한(러너 20~22G)만 보면 워커 4개 × 힙이 나가
+  // 8샤드가 박스를 8GB 까지 몰았다(2026-11-23, run 45232304512). 낮추기만 한다.
+  const workerCap = Number.parseInt(process.env.OPRN_VITEST_MAX_WORKERS ?? "", 10);
+  if (Number.isFinite(workerCap) && workerCap > 0) workers = Math.min(workers, workerCap);
   workers = Math.max(1, workers);
   // 힙은 최악 파일(피크 3.13GB)을 담을 수 있어야 한다 — 이 아래로 내리면 그 파일이
   // `Ineffective mark-compacts near heap limit` 으로 죽고 결과를 못 내놓는다.

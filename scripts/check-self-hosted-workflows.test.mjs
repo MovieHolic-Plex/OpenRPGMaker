@@ -40,8 +40,11 @@ test("Linux jobs run on mdc2 labels, heavy jobs on mdc2-heavy, and only the list
 
 test("ci-full vitest shards are capped on mdc2", () => {
   const tests = load(workflowSource("ci-full")).jobs.tests;
-  assert.equal(tests.strategy["max-parallel"], 3);
+  assert.equal(tests.strategy["max-parallel"], 2);
   assert.equal(tests.strategy.matrix.shard.length, 16);
+  const vitest = tests.steps.find(({ name }) => name?.startsWith("vitest 샤드"));
+  assert.deepEqual(vitest.env, { OPRN_VITEST_MAX_WORKERS: "2", OPRN_VITEST_HEAP_MB: "4608" });
+  assert.ok(tests.steps.some(({ run }) => run?.startsWith("bash scripts/ci-wait-mem.sh 30")));
 });
 
 test("desktop-release uses trusted triggers, and publishes only after upload and asset verification", () => {

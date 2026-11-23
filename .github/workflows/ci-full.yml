@@ -64,6 +64,10 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/linux-ci
 
+      - name: 박스 메모리 기다리기 (MemAvailable 30GB)
+        timeout-minutes: 95
+        run: bash scripts/ci-wait-mem.sh 30 90
+
       - name: 환경 확인 (cgroup 예산이 실제로 걸려 있는지)
         run: |
           echo "node: $(node -v) / npm: $(npm -v)"
@@ -146,11 +150,12 @@ jobs:
     # 반씩(--shard=1/16·2/16) 돌리면 둘 다 끝났다(ci-vitest-files 40308924284·40308932285) → 샤드 16.
     # 2026-11-23 mdc2 로 옮김: 16샤드가 한꺼번에 뜨면 박스 메모리(여유 150GB 안팎, 같은 박스에 win11 VM)를
     # 넘을 수 있어 동시 샤드 수를 묶는다. 2026-11-23 브랜치 실측(run 45232304512): 8샤드는 샤드마다 러너 상한(20~22G)까지
-    # vitest 워커를 띄워 MemAvailable 8GB·load 711 까지 갔다 → 3. 올리려면 실측으로(MemAvailable 25GB 아래가 위험선).
+    # vitest 워커를 띄워 MemAvailable 8GB·load 711 까지 갔다 → 동시 2샤드, 샤드당 워커 2·힙 4608MB(샤드 하나 10GB 이하).
+    # 올리려면 실측으로(MemAvailable 25GB 아래가 위험선). 시작 전에 MemAvailable 30GB 를 기다린다.
     timeout-minutes: 300
     strategy:
       fail-fast: false
-      max-parallel: 3
+      max-parallel: 2
       matrix:
         shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     steps:
@@ -179,6 +184,10 @@ jobs:
           echo "$venv/bin" >> "$GITHUB_PATH"
           "$venv/bin/python" -c "import numpy, PIL; print(numpy.__version__, PIL.__version__)"
 
+      - name: 박스 메모리 기다리기 (MemAvailable 30GB)
+        timeout-minutes: 95
+        run: bash scripts/ci-wait-mem.sh 30 90
+
       - name: 자원 스냅샷 (시작)
         run: node scripts/ci-resource-report.mjs start
 
@@ -186,6 +195,9 @@ jobs:
       # 샤드마다 40분. 후보가 상한(30)을 넘으면 재확인 자체를 건너뛴다. 후보가 수십 건이면 기준선이 낡은 것이다.
       - name: vitest 샤드 (기준선 대비 회귀만 실패)
         timeout-minutes: 280
+        env:
+          OPRN_VITEST_MAX_WORKERS: '2'
+          OPRN_VITEST_HEAP_MB: '4608'
         run: node scripts/verify-gates.mjs --only tests --shard ${{ matrix.shard }}/16 --flake-budget-min=40 --flake-max-candidates=30
 
       - name: 자원 리포트
