@@ -15,6 +15,7 @@ import { carryFloorEvents, retargetIncoming } from "./dungeonRebuildCarry";
 import type { BuildRun, BuilderCall, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 import { FOE_WORDS, BOSS_WORDS, DungeonPlan, Pt, art, planTroops } from "./dungeonFoes";
 import { avoidGrammars, grammarDesign, grammarKindOf, pickGrammar, type GrammarPick } from "../placeGrammar";
+import { VARIETY_GATE, closestTwin, type Twin } from "../structureSimilarity";
 
 /** v2 계획 모델에게 주는 유일한 던전 지식(≤900자). */
 export const DUNGEON_CARD =
@@ -391,7 +392,8 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     args.seed = base0 + (variant ?? 0) * 7919;
   }
   const base: Record<string, unknown> = { name: spec.name, ...args };
-  const grammar = plan.grammar;
+  let grammar = plan.grammar;
+  let varietyNote = "";
   // 바깥 문 자리를 make_place·make_game 이 정해 주면(세계 방향 가장자리 길 칸) 짓기가 그 칸과 바로 잇는다 — 기본 출구(시작점 곁 갱구 자리)를 쓰지 않는다.
   if (spec.gate && run.ctx.project.maps[spec.gate.fromMapId]) base.entrance = { fromMapId: spec.gate.fromMapId, x: spec.gate.x, y: spec.gate.y };
   // 다시 짓기: 옛 바깥 문 칸에 짓기가 바로 잇는다(entrance) — 기본 출구 + 나중 create_transfer_pair 로 문이 둘 생기던 것.
@@ -418,19 +420,43 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     // 씨앗은 요청·게임 열쇠(variety)와 이름에서 — 모델이 준 seed 는 make_place 가 버린다(2026-10-29 terra 가 seed 0·1·2 만 보내 동굴 8장이 세 무리로 같았다).
     const keyHash = spec.variety ? [...`${spec.variety}|${spec.name}`].reduce((h, c) => (Math.imul(h, 31) + c.charCodeAt(0)) >>> 0, 17) : undefined;
     const seed0 = num(args.seed) ?? (keyHash !== undefined ? keyHash % 90000 : (nameHash + (spec.salt ?? Math.floor(Math.random() * 90000))) % 90000);
-    let best: { seed: number; score: number; gimmick?: unknown } | undefined;
+    let best = undefined as { seed: number; score: number; gimmick?: unknown; twin?: Twin } | undefined;
     const requestedLever = /레버|lever/.test(wanted) || spec.hints?.gimmick === "lever" || spec.hints?.puzzle === "lever";
-    for (let i = 0; i < (Number(args.floors) > 1 ? SEED_TRIALS - 1 : SEED_TRIALS); i++) {
-      const seed = seed0 + i * 104729;
-      const trial = createBuildRun({ ...run.ctx, project: cloneProjectSharingSharedDictionaries(run.ctx.project) });
-      if (previous) {
-        for (const id of [...(prev?.floors ?? previous.result.mapIds)].slice(1).reverse()) if (trial.ctx.project.maps[id]) trial.call("remove_map", { mapId: id });
-        dropOldGate(trial);
+    // 생성물끼리 유사도 관문(structureSimilarity.ts): 시험판 맵이 이 게임에 이미 있는 맵과 구조가 VARIETY_GATE 이상 같으면 그 씨앗은 뒤로 미루고,
+    // 모든 씨앗이 걸리면 코드가 고른 문법을 다른 문법으로 한 번 바꿔 다시 지어 본다(모델이 준 설계·문법은 바꾸지 않는다).
+    const before = new Set(Object.keys(run.ctx.project.maps));
+    const own = new Set<string>(previous ? [...(prev?.floors ?? previous.result.mapIds)] : []);
+    const trySeeds = () => {
+      best = undefined;
+      for (let i = 0; i < (Number(args.floors) > 1 ? SEED_TRIALS - 1 : SEED_TRIALS); i++) {
+        const seed = seed0 + i * 104729;
+        const trial = createBuildRun({ ...run.ctx, project: cloneProjectSharingSharedDictionaries(run.ctx.project) });
+        if (previous) {
+          for (const id of [...(prev?.floors ?? previous.result.mapIds)].slice(1).reverse()) if (trial.ctx.project.maps[id]) trial.call("remove_map", { mapId: id });
+          dropOldGate(trial);
+        }
+        const r = exec(trial, { seed, ...(mapId ? { mapId } : {}), ...(previous && mapId ? { rebuild: true } : {}) }, []);
+        const built = r.ok ? trial.ctx.project.maps[mapId ?? Object.keys(trial.ctx.project.maps).find((id) => !before.has(id)) ?? ""] : undefined;
+        const twin = built ? closestTwin(trial.ctx.project, built, (id) => before.has(id) && !own.has(id) && id !== built.id) : undefined;
+        const gated = twin !== undefined && twin.similarity >= VARIETY_GATE;
+        const score = r.ok ? layoutScore(r.data as Record<string, unknown>, type, args) - (gated ? 1000 : 0) : -Infinity;
+        if (!best || score > best.score) best = { seed, score, gimmick: (r.data as Record<string, unknown> | undefined)?.gimmick, ...(twin ? { twin } : {}) };
       }
-      const r = exec(trial, { seed, ...(mapId ? { mapId } : {}), ...(previous && mapId ? { rebuild: true } : {}) }, []);
-      const score = r.ok ? layoutScore(r.data as Record<string, unknown>, type, args) : -Infinity;
-      if (!best || score > best.score) best = { seed, score, gimmick: (r.data as Record<string, unknown> | undefined)?.gimmick };
+    };
+    trySeeds();
+    const stuck = () => !!best && best.twin !== undefined && best.twin.similarity >= VARIETY_GATE;
+    // 다른 문법은 두 번까지, 해 본 문법은 모두 피한다(하나만 피하면 셋째 호수 동굴이 둘째와 같은 corridor 로 돌아가 91% 같았다).
+    const tried: string[] = [];
+    for (let k = 0; k < 2 && stuck() && grammar && grammar.why !== "plan" && grammar.kind !== "village"; k++) {
+      const was = grammar.grammar, twinName = run.ctx.project.maps[best!.twin?.mapId ?? ""]?.name ?? "?";
+      tried.push(was);
+      grammar = pickGrammar(spec, grammar.kind, [...avoidGrammars(spec), ...tried]);
+      if (tried.includes(grammar.grammar)) break;
+      args.design = base.design = grammarDesign(grammar);
+      trySeeds();
+      varietyNote = `구조가 «${twinName}» 와 너무 같아 문법을 ${tried.join(" → ")} → ${grammar.grammar} 로 바꿔 지었다`;
     }
+    if (stuck()) varietyNote = `구조가 «${run.ctx.project.maps[best!.twin!.mapId]?.name ?? "?"}» 와 ${Math.round(best!.twin!.similarity * 100)}% 같다(다른 문법·씨앗도 모두 걸렸다)`;
     if (best && Number.isFinite(best.score)) args.seed = base.seed = best.seed;
     // 레버 쇠창살은 요청했을 때만: 장치 자리가 없어 도구가 레버로 바꾸면 좁은 탑·동굴 통로를 쇠창살이 막아 「통로에 뜬 쇠창살」로 읽혔다(2026-10-23 비교 검수).
     if (best && best.gimmick === "lever" && !requestedLever) args.gimmick = base.gimmick = "none";
@@ -522,7 +548,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     : { mapId: first, x: ent?.x ?? Math.floor((num(data.width) ?? 40) / 2), y: ent?.y ?? Math.floor((num(data.height) ?? 30) / 2) };
   const seed = num(data.seed) ?? num(args.seed);
   const state: DungeonState = { args, seed, variant, floors };
-  const summary = `${spec.name}: ${type} ${floors.length}층${args.direction === "up" ? "(위로)" : ""}${args.flooded ? " · 물에 잠김" : ""}${args.lair ? " · 고블린 소굴" : ""}${data.gimmick ? ` · 장치 ${String(data.gimmick)}` : ""}${grammar ? ` · 문법 ${grammar.grammar}(${grammar.why})` : ""} (${num(data.width)}×${num(data.height)})${healNote}`;
+  const summary = `${spec.name}: ${type} ${floors.length}층${args.direction === "up" ? "(위로)" : ""}${args.flooded ? " · 물에 잠김" : ""}${args.lair ? " · 고블린 소굴" : ""}${data.gimmick ? ` · 장치 ${String(data.gimmick)}` : ""}${grammar ? ` · 문법 ${grammar.grammar}(${grammar.why})` : ""}${varietyNote ? ` · ${varietyNote}` : ""} (${num(data.width)}×${num(data.height)})${healNote}`;
   return { ok: true, mapIds: floors, entrance, summary, warnings, missingArt: missing, calls, state };
 }
 
