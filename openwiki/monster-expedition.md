@@ -14,6 +14,31 @@ the shipping Gen1 battle, collection, interpreter, save and menu systems.
 - `mapTemplates.json`: reviewed I6 native sample arrays. Its generator is
   `scripts/content/monster-expedition-templates.py`; inspect the current canonical
   tileset references and images before changing tile placement.
+  Towns, gyms and interiors still stamp these arrays. **Routes, side areas and
+  dungeons no longer copy them** (see "필드 생성기" below).
+
+## 필드 생성기 (길·필드·동굴·던전, 2026-11-23)
+
+- 예전: `world.ts` `make()` 가 견본을 칸 그대로 복사해 기본 캐페인 필드·던전 17맵 중 16맵이 견본과 93~100% 같았다
+  (분석 http://mdc2:18301/assistant-map-copying.html). 이제 `fieldGenerator.ts` 가 새로 짠다.
+- 방식: 견본 칸을 종류(벽 덩이·바닥·길·물·풀숲·절벽·절벽면·무늬 바닥·어둠)로 나누고 종류마다
+  「이웃 모양 + 걷는 칸까지 거리 → 타일」 규칙을 배운다(숲은 2×2 덩이로). 배치는 씨앗으로 새로 짠다:
+  테두리 덩이(군데군데 내민다) → 북·남 출구를 잇는 굽은 큰길 → 갈림길·빈터 → 물(못·가장자리 강·바다) →
+  절벽(남쪽 faceRows 줄은 절벽면) → 풀숲 → 무늬 바닥 → 덩이 → 명소(견본에 실제로 놓인 킷). 동굴·실내 던전은
+  방 여럿을 굽은 통로로 잇는다. 칠한 뒤 오토타일 엔진이 가장자리를 다듬는다.
+- 관문: 생성 맵과 같은 타일셋 견본 전부의 최대 겹침(`src/project/mapTemplateOverlap.ts`, 평행이동 ±10·좌우반전)이
+  `FIELD_OVERLAP_GATE`(0.40) 이상이거나 남 출구에서 북 출구에 못 가면 다른 씨앗으로 최대 10번 다시 짠다.
+- 요청 요소: `createMonsterExpedition({ mapSeed, fieldMaps })`, 도구 `build_monster_game` 의 `mapSeed`·`fieldMaps`
+  (열쇠 meadow·forest·river…, 값 length·branches·water·cliffs·stream·landmarks). 도구는 mapSeed 가 없으면 매번 새 씨앗을
+  고르고 `data.mapSeed` 로 돌려준다. 기본값은 `world.ts` `FIELD_DEFAULTS`(강 계곡 = 가장자리 강, 산·사막 = 절벽 …).
+- 검토: `review_monster_game` 의 `templateCopies`·`warnings` 가 견본과 40% 이상 같은 필드·던전 맵을 보인다
+  (이미 저장된 옛 게임은 맵이 바뀌지 않고 경고만 뜬다 — 생성은 create 때만 돈다).
+- 측정: `node_modules/.bin/vite-node --script scripts/qa/monster-map-overlap.mts -- <out.json> default seed0 seed1 …`
+  (맵마다 가장 닮은 견본·겹침, 입구에서 이벤트 도달, 길 출구 가장자리 빈칸), 그림은
+  `scripts/qa/monster-map-render.mts -- <폴더> 0 1`. 렌더는 맵이 커서 `NODE_OPTIONS=--max-old-space-size=12000` 을 준다.
+- 알려진 한계: 절벽은 오르내리는 계단 없이 장애물로만 놓인다. 한 방향 턱(ledge)·얼음 미끄럼·회전 판 같은 장치 칸은
+  배우지 않는다(`SPECIAL`). 벽이 얇은 실내 던전(유적·밤막회사)은 벽 덩이 무늬가 견본보다 어지럽다.
+  해변 오두막은 없어졌다(문 쉼터 이벤트도 함께). `water`·`cliffs` 는 그 견본 칩셋에 물·절벽 그림 규칙이 있을 때만 효과가 있다(1번길 풀밭은 물이 없다).
 - `roster.ts`, original creature art and audio registrars own the data/assets.
   `markers.json` contains three original event sprites, not chipset tiles.
 - `opening.ts` authors three distinct prologue images (4/5/9 seconds), a single
