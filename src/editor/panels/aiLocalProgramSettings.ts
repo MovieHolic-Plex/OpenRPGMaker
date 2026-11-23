@@ -51,7 +51,7 @@ export function renderAiLocalProgramSettings(): { element: HTMLDetailsElement; d
   const entries = LOCAL_CLI_IDS.map(id => {
     const label = el("span");
     const button = el("button", {
-      class: "ai-settings-button", attrs: { type: "button", "aria-pressed": "false", "aria-disabled": "true" },
+      class: "ai-settings-program", attrs: { type: "button", "aria-pressed": "false", "aria-disabled": "true" },
       dataset: { testid: `start-settings-engine-${id}` },
       children: [el("span", { text: LOCAL_PROGRAM_LABELS[id] }), " · ", label],
       on: { click: () => {

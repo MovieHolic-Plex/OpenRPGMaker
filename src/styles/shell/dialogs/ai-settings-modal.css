@@ -1965,3 +1965,55 @@
     display: none;
   }
 }
+
+/* ── 내 PC 프로그램(aiLocalProgramSettings) — 회색 칩을 한 줄씩 쌓던 것을 카드 안 목록 줄로 ── */
+[data-testid="ai-settings-local-programs"] > .ai-settings-alternative-body {
+  background: var(--bg-raised);
+  border-radius: var(--ais-radius);
+  gap: 0;
+  margin-top: var(--space-2);
+  padding: var(--space-1) 0;
+}
+
+.ai-settings-program {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--text-1);
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  gap: var(--space-1);
+  min-height: var(--ais-row-h);
+  padding: 0 12px;
+  text-align: start;
+  width: 100%;
+}
+
+.ai-settings-program + .ai-settings-program,
+.ai-settings-program + .ai-config-help + .ai-settings-program {
+  box-shadow: inset 0 1px 0 var(--shell-ai-settings-separator);
+}
+
+.ai-settings-program[aria-pressed="true"] {
+  background: var(--accent-muted);
+}
+
+.ai-settings-program[aria-disabled="true"] {
+  color: var(--shell-ai-settings-secondary);
+  cursor: default;
+}
+
+.ai-settings-program:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: -2px;
+}
+
+[data-testid="ai-settings-local-programs"] .ai-config-help:empty {
+  display: none;
+}
+
+[data-testid="ai-settings-local-programs"] .ai-config-help {
+  padding: var(--space-1) 12px;
+}
