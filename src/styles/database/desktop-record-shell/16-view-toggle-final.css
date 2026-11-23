@@ -1,7 +1,9 @@
 /* Database view toggle final owner.
    studio-v2.css supplies the modern base button. This late slice owns the
    active and focus states so earlier party fixes cannot be overridden by the
-   later studio shell. */
+   later studio shell.
+   보기 전환(갤러리 | 목록)은 "어떻게 보나" 일 뿐이라 창의 행동 버튼보다 약해야 한다.
+   선택 칸은 강조색 채움이 아니라 이벤트 편집기 세그먼트와 같은 움푹한 중립 칸이다. */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle {
   appearance: none;
   cursor: pointer;
@@ -13,10 +15,11 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle.active,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle[aria-pressed="true"] {
-  background: var(--accent-primary, var(--accent));
-  border-color: var(--accent-primary, var(--accent));
-  color: var(--on-accent);
-  font-weight: 700;
+  background: var(--db-studio-surface, var(--bg-surface));
+  border-color: transparent;
+  box-shadow: var(--db-studio-shadow, var(--shadow-pop));
+  color: var(--db-studio-text-1, var(--text-1));
+  font-weight: 600;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle:focus-visible,
