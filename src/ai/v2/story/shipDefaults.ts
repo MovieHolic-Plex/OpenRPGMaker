@@ -18,6 +18,7 @@ import { beginFitBudget, enterFastFit, FitBudgetExceeded, restoreFitState, snaps
 import { redressHeroTwins } from "./heroTwins";
 import { Obj, reconcileFieldHud, premiseOf, fillBattleBgm, fillBattleBackgrounds, fillEnemyHpLook, fillPartyLooks, fillPartyNames, fillUiLook } from "./shipLookDefaults";
 import { moveEntrancesOntoArt, fillStaleObjectives, moveRepeatingStartObjective, pullBackStartObjective, fillGymArrivalObjectives, hasFinal, quietFieldGuides } from "./shipObjectiveDefaults";
+import { endsAtMvp, MVP_REACHED_SWITCH } from "../judge/blueprintScale";
 
 /** 출하 기본값을 채운다. 바꾼 항목 설명을 돌려준다(없으면 빈 배열). task 는 실행 지시문(앞선 요청 메모 포함). */
 export function applyShipDefaults(project: Project, task = project.gameBlueprint?.request ?? "", lookSeed = ""): string[] {
@@ -69,7 +70,7 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   if (emptySparkles(project).length) applied.push(...dropEmptySparkles(project));
   if (strayStepCopies(project).length) applied.push(...dropStrayStepCopies(project));
   if (silentLockedExits(project).length) applied.push(...explainLockedExits(project));
-  applied.push(...attachEndingToLastStep(project));
+  applied.push(...(endsAtMvp(project) ? endMvpAtLastStep(project) : attachEndingToLastStep(project)));
   // 목표 줄이 있는데 필드 HUD 가 「현재 목표」 줄을 숨기면 켠다(출하 검사 objective-missing — 2026-10-29 vm4 argon 탈출, 목표 글은 다 있었다).
   {
     const hud = project.system.fieldHud as { objective?: boolean } | undefined;
@@ -124,6 +125,37 @@ export function applyLookDefaults(project: Project, story = "", lookSeed = ""): 
  * 그 이벤트가 전투를 하면 승리 갈래 끝에, 아니면 첫 페이지 끝에. 조건 없는 엔딩을 먼저 고른다.
  * 왜(2026-10-29 vm4 argon jrpg): 마지막 단계가 마왕 전투였고 경로 짓기는 «전투가 든 이벤트라 다시 짓지 않음»으로 건너뛰어, 엔딩이 정의만 있고 끝낼 수 없었다.
  */
+/**
+ * 첫 판 MVP 는 엔딩·결말 이벤트를 만들지 않는다(2026-11-23 오너). 경로가 지은 엔딩 호출은 MVP 끝 스위치 켜기로 바꾸고 엔딩 정의를 걷는다.
+ * 끝 스위치를 켜는 곳이 없으면 청사진 마지막 단계 이벤트(전투면 승리 뒤)에 붙인다 — 자동 플레이·측정이 여기까지 간다.
+ */
+function endMvpAtLastStep(project: Project): string[] {
+  const applied: string[] = [];
+  const mark = { kind: "setSwitch", switchId: MVP_REACHED_SWITCH, value: true };
+  let replaced = 0, marked = false;
+  const swap = (node: unknown): void => {
+    if (!node || typeof node !== "object") return;
+    if (Array.isArray(node)) {
+      for (let i = 0; i < node.length; i += 1) {
+        const o = node[i] as Obj | undefined;
+        if (o && (o.kind === "triggerEnding" || o.kind === "ending")) { node[i] = { ...mark }; replaced += 1; continue; }
+        swap(o);
+      }
+      return;
+    }
+    const o = node as Obj;
+    if (o.kind === "setSwitch" && o.switchId === MVP_REACHED_SWITCH) marked = true;
+    Object.values(o).forEach(swap);
+  };
+  for (const map of Object.values(project.maps)) swap(map.events ?? []);
+  swap(project.commonEvents ?? []);
+  if (!project.switches.some((s) => s.id === MVP_REACHED_SWITCH)) project.switches.push({ id: MVP_REACHED_SWITCH, name: "첫 판(MVP) 끝 지점" });
+  if (replaced) applied.push(`첫 판(MVP): 엔딩 호출 ${replaced}개를 끝 지점 스위치(${MVP_REACHED_SWITCH})로 바꿈`);
+  if ((project.endings ?? []).length) { applied.push(`첫 판(MVP): 엔딩 정의 ${project.endings!.length}개를 걷음(MVP 는 엔딩을 만들지 않는다)`); project.endings = []; }
+  if (!marked && !replaced) applied.push(...placeOnLastStep(project, mark, "첫 판(MVP) 끝 지점 스위치"));
+  return applied;
+}
+
 function attachEndingToLastStep(project: Project): string[] {
   const endings = project.endings ?? [];
   const steps = project.gameBlueprint?.steps ?? [];
@@ -139,6 +171,14 @@ function attachEndingToLastStep(project: Project): string[] {
   for (const map of Object.values(project.maps)) scan(map.events ?? []);
   scan(project.commonEvents ?? []);
   if (calls) return [];
+  const ending = endings.find((e) => !(e.conditions ?? []).length) ?? endings[0]!;
+  return placeOnLastStep(project, { kind: "triggerEnding", endingId: ending.id }, `엔딩 「${ending.name}」`);
+}
+
+/** 명령 하나를 청사진 마지막 단계 이벤트에 붙인다 — 전투면 승리 갈래 끝에, 아니면 첫 페이지 끝에. */
+function placeOnLastStep(project: Project, call: Obj, label: string): string[] {
+  const steps = project.gameBlueprint?.steps ?? [];
+  if (!steps.length) return [];
   const last = steps.at(-1)!;
   const place = Object.values(project.maps).find((m) => m.id === last.place || m.name === last.place);
   const maps = place ? [place, ...Object.values(project.maps).filter((m) => m !== place)] : Object.values(project.maps);
@@ -148,25 +188,23 @@ function attachEndingToLastStep(project: Project): string[] {
     if (event) { hit = { map, event }; break; }
   }
   if (!hit) return [];
-  const ending = endings.find((e) => !(e.conditions ?? []).length) ?? endings[0]!;
-  const call = { kind: "triggerEnding", endingId: ending.id };
   const isVictoryFork = (c: Obj) => c.kind === "fork" && (c.condition as Obj | undefined)?.kind === "battleResult" && (c.condition as Obj).result === "victory" && Array.isArray(c.then);
   for (const page of hit.event.pages ?? []) {
     const commands = page.commands as unknown as Obj[] | undefined;
     if (!Array.isArray(commands)) continue;
     const fork = commands.find(isVictoryFork);
-    if (fork) { (fork.then as unknown[]).push(call); return [`엔딩 「${ending.name}」을 마지막 단계 「${hit.event.name ?? hit.event.id}」 승리 뒤에 붙임`]; }
+    if (fork) { (fork.then as unknown[]).push(call); return [`${label}을 마지막 단계 「${hit.event.name ?? hit.event.id}」 승리 뒤에 붙임`]; }
     const battle = commands.find((c) => c.kind === "battleProcessing");
     if (battle) {
       if (battle.branchOnResult === true && Array.isArray(battle.victoryBranch)) (battle.victoryBranch as unknown[]).push(call);
       else commands.splice(commands.indexOf(battle) + 1, 0, { kind: "fork", condition: { kind: "battleResult", result: "victory" }, then: [call] });
-      return [`엔딩 「${ending.name}」을 마지막 단계 「${hit.event.name ?? hit.event.id}」 승리 뒤에 붙임`];
+      return [`${label}을 마지막 단계 「${hit.event.name ?? hit.event.id}」 승리 뒤에 붙임`];
     }
   }
   const first = hit.event.pages?.[0];
   if (!first || !Array.isArray(first.commands)) return [];
   (first.commands as unknown as Obj[]).push(call);
-  return [`엔딩 「${ending.name}」을 마지막 단계 「${hit.event.name ?? hit.event.id}」 끝에 붙임`];
+  return [`${label}을 마지막 단계 「${hit.event.name ?? hit.event.id}」 끝에 붙임`];
 }
 
 function forkStackedEndingCalls(project: Project): string[] {

@@ -19,6 +19,7 @@ import { repairCapOf } from "../turn/session";
 import { stageOpensBattle } from "../story/stageBattle";
 import { findingKey, findingLine, tagged, type Finding } from "./finding";
 import { findingEn, refNames, type RefNames } from "./findingEn";
+import { endsAtMvp } from "./blueprintScale";
 
 /** 음악 요청의 일감인 게임 검사 — 나머지(이미 있던 위협·출하 차단 등)는 음악만 바라는 요청에서 참고다. */
 const MUSIC_WORK: ReadonlySet<string> = new Set(["음악", "효과음", "실행", "부작용"]);
@@ -105,6 +106,8 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
   const fixable = open.filter((o) => o.rounds < o.cap);
   // 게임 내용 검사(날씨·엔딩·상태·물건 고르기·깃발·부작용) — 요청 낱말과 실제로 바뀐 이벤트를 맞댄다.
   let game: Finding[] = env ? gameFindings(env.request.project, env.ctx.project, env.request.task, session.stageWrites) : [];
+  // 첫 판 MVP 는 엔딩을 만들지 않는다 — 요청 글(첫 화면 지시문)의 «엔딩» 낱말로 엔딩을 요구하지 않는다(judge/blueprintScale.endsAtMvp).
+  if (env && endsAtMvp(env.ctx.project)) game = game.filter((g) => g.id !== "엔딩");
   // 아무것도 안 바꾸고 «도구가 없다»며 끝내기(2026-10-24 g3-edit-move: 대장장이 옮기기를 묻기만 했다, g3-apple-count: 그림 카드만 남겼다).
   // 설정이 이미 기본값(켜짐)이면 set_project_settings 가 아무것도 안 바꾸는 것이 맞다(2026-10-25 데모 과업: 탭 걷기·팡파레·빠른 달려들기는 기본 켜짐).
   const settingOnly = asksSettingOnly(env?.request.task ?? "");

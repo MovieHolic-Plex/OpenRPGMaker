@@ -626,10 +626,10 @@ npm run harness -- assistant-capability small-jobs-report --run <그 폴더> --h
 묶음 `harness-data/assistant-capability/small-jobs-5.json`, 판정 `smallJobs/checksStart.ts`.
 
 - **새 게임 첫 화면 길 그대로**: 일에 `startScreen:{choiceId}` 가 있으면 픽스처 대신 `createProjectStartSeed(choiceId, …, 'ai')` 씨앗을 쓰고, `request` 를 사용자가 친 한 문장으로 보고 `startScreenPrompt`(`src/editor/startScreenPrompt.ts`, 편집기 인계와 같은 함수)로 감싼 글을 보낸다.
-- `mvpStart`: 맵 수가 `minMaps`~`maxMaps`(3~5)이고 자동 플레이가 엔딩에 닿으면 합격. 자동 플레이는 정직한 플레이를 먼저, 못 닿으면 계획표 플레이를 돌려 둘 다 글에 남긴다(정직한 플레이는 몬스터 캠페인 체육관의 회전문 장치를 못 푼다 — 전체 캠페인도 같다). `allow.firstBuild` 는 씨앗 위 첫 생성이라 파괴 판정을 하지 않는다.
+- `mvpStart`: 맵 수가 `minMaps`~`maxMaps`(3~5), 모든 맵이 시작에서 문으로 닿고(마지막 맵 도달), 엔딩·결말 이벤트가 없고(오너 2026-11-23: 첫 판은 엔딩 없이 멈춘다), 계획표 자동 플레이가 끝 지점 스위치 `mvp_reached` 까지 가고(핵심 루프 1회), 조수 답 끝에 «다음에 해 볼 것» 안내가 있으면(run.ts 가 답에서 본다) 합격. `allow.firstBuild` 는 씨앗 위 첫 생성이라 파괴 판정을 하지 않는다.
 - `regionAdded`: 시작에서 문으로 닿는 새 맵이 생기고 있던 맵 바닥을 10% 넘게 다시 깔지 않았으면 합격(파괴는 runCheck 의 damage 가 따로 본다). `checkFrom:"lastTurn"` 이면 판정의 «전» 이 마지막 이어 보내기 직전 저장 문서(`mid-NNN.json.gz`)다 — 같은 대화에서 첫 판 뒤 「다음 지역 만들어 줘」.
 - 일 여섯: 장르 넷(몬스터 수집·모험 JRPG·회상 스토리·갤러리 호러) 첫 생성, JRPG 첫 생성 뒤 다음 지역, 이미 있는 6맵 게임(`built`)에 다음 지역.
-- 정답(reference)은 자리표시다(첫 생성 정답을 도구 호출로 적을 수 없다) — 이 묶음은 `small-jobs-selfcheck` 대상이 아니고, 판정은 `createMonsterExpedition({scale:"mvp"})`(합격)·`{gymCount:1}`(19맵 불합격)로 확인했다.
+- 정답(reference)은 자리표시다(첫 생성 정답을 도구 호출로 적을 수 없다) — 이 묶음은 `small-jobs-selfcheck` 대상이 아니고. 첫 판정(엔딩 도달)으로 잰 전/후 한 판이 있고(`before-b2ac4320f`·`after-4eba17467`), 판정을 바꾼 뒤 다시 잰 판이 따로 있다 — 두 판의 합격 수를 한 표에 섞지 않는다.
 
 ```bash
 npm run harness -- assistant-capability small-jobs --set 5 --model local-claude-sonnet-5-5-high --v2 --out <새 폴더> --timeout-min 40

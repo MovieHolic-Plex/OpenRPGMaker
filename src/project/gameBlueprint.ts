@@ -287,3 +287,6 @@ export function gameBlueprintText(blueprint: GameBlueprint): string {
 export function blueprintEndingId(name: string): string {
   return `ending_${Math.abs([...name].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7)).toString(36)}`;
 }
+
+/** 첫 판(MVP)의 끝 지점 스위치 — MVP 는 엔딩을 만들지 않고 마지막 단계(몬스터는 첫 배지)가 이 스위치를 켠다(2026-11-23 오너). */
+export const MVP_REACHED_SWITCH = "mvp_reached";
