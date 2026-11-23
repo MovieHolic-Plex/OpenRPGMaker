@@ -14,15 +14,17 @@ import data from "./requests.json" with { type: "json" };
 type Req = { id: string; request: string; genre: string; place: string; tilesets: string[]; concepts: Record<string, string> };
 type Row = { id: string; name: string; tilesetId: string; width?: number; height?: number; tags?: string[]; family?: string };
 
-const requests = (data as { requests: Req[] }).requests;
+// OS_REQUESTS: 다른 요청 묶음(예: 사전을 만든 사람이 보지 않고 따로 쓴 숨김 요청)으로 같은 측정을 돈다.
+const requests = (process.env.OS_REQUESTS ? JSON.parse(readFileSync(process.env.OS_REQUESTS, "utf8")) as { requests: Req[] } : data as { requests: Req[] }).requests;
 const project = createBlankProject();
 const tool = SPATIAL_TOOLS.find(entry => entry.name === "list_spatial_designs")!;
 const properties = Object.keys((tool.parameters as { properties?: Record<string, unknown> }).properties ?? {});
 const allObjects = sharedObjects(project) as Row[];
 
-function search(args: Record<string, unknown>): { rows: Row[]; total: number; summary: string } {
-  const result = tool.run(project, { kind: "object", limit: 40, ...args }) as { summary: string; data: { shared: { rows: Row[]; total: number } } };
-  return { rows: result.data.shared.rows, total: result.data.shared.total, summary: result.summary };
+type Kit = { place: string; suggested?: { id: string; name: string }[]; slots: { role: string; label: string; pick: string; items: { word: string; rows: Row[] }[] }[] };
+function search(args: Record<string, unknown>): { rows: Row[]; total: number; summary: string; sceneKit?: Kit } {
+  const result = tool.run(project, { kind: "object", limit: 40, ...args }) as { summary: string; data: { shared: { rows: Row[]; total: number; sceneKit?: Kit } } };
+  return { rows: result.data.shared.rows, total: result.data.shared.total, summary: result.summary, sceneKit: result.data.shared.sceneKit };
 }
 
 function conceptOf(req: Req, row: Pick<Row, "name" | "tilesetId">): string | undefined {
@@ -39,8 +41,30 @@ function score(req: Req, picked: readonly Row[], k: number) {
   return {
     precision: top.length ? top.filter(row => conceptOf(req, row)).length / k : 0,
     recall: exist.size ? [...hits].filter(c => exist.has(c)).length / exist.size : 0,
+    recallMatched: exist.size ? matchedConcepts(req, top, exist) / exist.size : 0,
     hit: [...hits], exist: [...exist],
   };
+}
+
+/**
+ * recall 은 한 기물을 처음 맞는 개념 하나로만 센다(「버스 정류장 표지판」은 표지가 아니라 쉘터로 센다). recallMatched 는 고른 기물과
+ * 개념을 일대일 최대 짝짓기로 센다 — 한 기물은 개념 하나에만 쓰이지만, 여러 개념에 맞으면 비어 있는 쪽으로 간다. 두 숫자를 함께 낸다.
+ */
+function matchedConcepts(req: Req, picked: readonly Row[], exist: ReadonlySet<string>): number {
+  const options = picked.map(row => req.tilesets.includes(row.tilesetId)
+    ? Object.entries(req.concepts).filter(([concept, pattern]) => exist.has(concept) && new RegExp(pattern, "u").test(row.name)).map(([concept]) => concept) : []);
+  const owner = new Map<string, number>();
+  const assign = (index: number, seen: Set<string>): boolean => {
+    for (const concept of options[index]!) {
+      if (seen.has(concept)) continue;
+      seen.add(concept);
+      const held = owner.get(concept);
+      if (held === undefined || assign(held, seen)) { owner.set(concept, index); return true; }
+    }
+    return false;
+  };
+  options.forEach((_, index) => assign(index, new Set()));
+  return owner.size;
 }
 
 const mean = (values: number[]) => Math.round((values.reduce((a, b) => a + b, 0) / Math.max(1, values.length)) * 1000) / 1000;
@@ -120,10 +144,25 @@ async function llmOne(req: Req) {
   const shown = new Map<string, Row>();
   const summaries: string[] = [];
   const errors: string[] = [];
+  // 도구가 돌려준 장면 키트도 그대로 보여 준다(역할 칸·낱말마다 행). 같은 키트는 한 번만.
+  const kitLines: string[] = [];
+  const kitsShown = new Set<string>();
   for (const call of calls) {
     try {
-      const { rows, summary } = search(call);
+      const { rows, summary, sceneKit } = search(call);
       summaries.push(summary);
+      if (sceneKit && !kitsShown.has(sceneKit.place)) {
+        kitsShown.add(sceneKit.place);
+        kitLines.push(`Scene kit 「${sceneKit.place}」:`);
+        if (sceneKit.suggested?.length) kitLines.push(`  suggested set (one per word, across roles): ${sceneKit.suggested.map(row => row.id).join(", ")}`);
+        for (const slot of sceneKit.slots) {
+          kitLines.push(`  [${slot.label} · pick ${slot.pick}]`);
+          for (const item of slot.items) {
+            kitLines.push(`    ${item.word}: ${item.rows.map(row => JSON.stringify({ id: row.id, name: row.name, tilesetId: row.tilesetId, size: `${row.width}x${row.height}` })).join(" ")}`);
+            for (const row of item.rows) if (!shown.has(row.id)) shown.set(row.id, { ...row, tags: row.tags ?? [] });
+          }
+        }
+      }
       for (const row of rows) if (!shown.has(row.id)) shown.set(row.id, row);
     } catch (error) { errors.push(`${JSON.stringify(call)}: ${error instanceof Error ? error.message : String(error)}`); }
   }
@@ -131,7 +170,7 @@ async function llmOne(req: Req) {
     ...(row.family ? { family: row.family } : {}), tags: (row.tags ?? []).slice(0, 8) })).join("\n");
   const stage2 = parseJson(await chat("You furnish an RPG map. From the search results, pick the 10 objects that best fit the request "
     + "(right place, right art style, things a player would expect there). Return JSON {\"picks\":[10 ids]} using ids exactly as listed.",
-    `Request: ${req.request}\nSearch summaries:\n${summaries.join("\n")}\nResults:\n${listing}`)) as { picks?: string[] };
+    `Request: ${req.request}\nSearch summaries:\n${summaries.join("\n")}\n${kitLines.length ? `${kitLines.join("\n")}\n` : ""}Results:\n${listing}`)) as { picks?: string[] };
   const picks = (stage2.picks ?? []).slice(0, 10).map(id => shown.get(id)).filter((row): row is Row => Boolean(row));
   const scored = score(req, picks, 10);
   return { id: req.id, calls, errors, rowsShown: shown.size, picks: picks.map(row => row.name), invalid: (stage2.picks ?? []).length - picks.length, ...scored };
@@ -148,7 +187,7 @@ async function llm() {
     }
   }));
   results.sort((a, b) => a.id.localeCompare(b.id));
-  return { perRequest: results, failed, summary: { precision: mean(results.map(r => r.precision)), recall: mean(results.map(r => r.recall)), n: results.length, failed: failed.length } };
+  return { perRequest: results, failed, summary: { precision: mean(results.map(r => r.precision)), recall: mean(results.map(r => r.recall)), recallMatched: mean(results.map(r => r.recallMatched)), n: results.length, failed: failed.length } };
 }
 
 const mode = process.env.OS_MODE ?? "det";
