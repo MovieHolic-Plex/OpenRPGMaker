@@ -247,13 +247,13 @@ export function renderAiRoleMatrixSettings(onChange: () => void, onApplyMain?: (
 export async function fetchConnectedRoutes(signal?: AbortSignal): Promise<AvailableRoute[]> {
   const mock = (() => { try { return typeof location === "undefined" ? null : new URLSearchParams(location.search).get("roleMatrixMock"); } catch { return null; } })();
   if (mock !== null) return mockConnectedRoutes(mock);
-  const [{ fetchChatGptAuthStatus, hasUsableCompanionCredential, fetchOpenAiCompatEndpoints }, { createLocalAgentsApi, localAgentsEnabled }, { OH_MY_PI_PROVIDERS }] = await Promise.all([
-    import("@/ai/chatgptOAuthClient"), import("@/start/settings/localAgents"), import("@/ai/ohMyPiProviders"),
+  const [{ hasUsableCompanionCredential, fetchOpenAiCompatEndpoints }, { createLocalAgentsApi, localAgentsEnabled }, { OH_MY_PI_PROVIDERS }, { fetchCachedAuthStatus }] = await Promise.all([
+    import("@/ai/chatgptOAuthClient"), import("@/start/settings/localAgents"), import("@/ai/ohMyPiProviders"), import("@/ai/authStatusCache"),
   ]);
   const rows: { providerId: string; models?: readonly string[]; supportsImages?: boolean; imageModels?: readonly string[]; imageBlindModels?: readonly string[] }[] = [];
   await Promise.all([
     ...OH_MY_PI_PROVIDERS.map(async (provider) => {
-      try { if (hasUsableCompanionCredential(await fetchChatGptAuthStatus(provider.id, signal))) rows.push({ providerId: provider.id }); } catch { /* 닿지 못함 = 연결 안 됨 */ }
+      try { if (hasUsableCompanionCredential(await fetchCachedAuthStatus(provider.id, signal))) rows.push({ providerId: provider.id }); } catch { /* 닿지 못함 = 연결 안 됨 */ }
     }),
     (async () => {
       try {

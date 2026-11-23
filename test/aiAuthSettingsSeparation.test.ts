@@ -9,6 +9,7 @@
 //     사용자에게 "서비스가 안 켜졌다"고 오진했다.
 //  ⑤ 환경 변수 키는 동의한 뒤에만 연결로 센다. 연결 해제 버튼은 붙이지 않는다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { clearCachedAuthStatus } from "@/ai/authStatusCache";
 import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
 
 const fetchChatGptAuthStatus = vi.fn();
@@ -55,6 +56,7 @@ async function loadDeps() {
 let restoreDom: (() => void) | null = null;
 
 beforeEach(() => {
+  clearCachedAuthStatus();
   vi.clearAllMocks();
   restoreDom = installFakeDom();
   fetchChatGptAuthStatus.mockResolvedValue({ connected: false });

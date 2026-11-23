@@ -3354,6 +3354,7 @@ v0.413.0에서 「AI로 명령 만들기」의 도구 결과마다 약 78MB 프�
 공장 기본 제공자(지금 ChatGPT)는 처음 한 번만 쓰인다. 편집기·시작 화면이 뜨면 `editor/panels/aiAutoProvider.runAutoProviderPick` 이
 연결된 길을 모아 `ai/autoProviderPick.pickAutoProvider` 로 고르고 설정에 입힌다. 예전에는 Claude 만 연결한 사용자도
 칩이 「ChatGPT 로그인 필요」이고 조수가 잠겼다.
+계정 상태 조회는 `src/ai/authStatusCache.fetchCachedAuthStatus` 로 계정당 30초 동안 한 번만 나간다(동시 호출도 한 요청). 자동 고르기와 역할 표(`fetchConnectedRoutes`)가 쓴다 — 전에는 설정을 열 때마다 `/auth/status` 가 44번 나갔다(2026-11-23 실측, 부팅 9번). 로그인·로그아웃·키 저장·갱신은 `COMPANION_AUTH_CHANGED_EVENT` 로 캐시를 비우고, 로그인 폴링과 칩의 연결 확인은 늘 새로 묻는다.
 
 - 모으는 상태: 계정 길(Claude · ChatGPT · Google · xAI · OpenRouter · Gemini CLI)은 `/auth/status`, 내 PC 의 CLI 는
   `/v1/local-agents`(state `ready`), 사용자 지정 엔드포인트(DeepSeek 등)는 키 유무(`hasKey`). 연결된 길마다

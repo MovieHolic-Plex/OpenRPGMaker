@@ -206,6 +206,7 @@ function readAuthStatus(payload: Record<string, unknown> | null): ChatGptAuthSta
 }
 
 export async function setCompanionEnvScan(decision: "allow" | "deny", providerId?: string): Promise<ChatGptAuthStatus> {
+  clearAuthStatusCache();
   const response = await companionFetch(companionAuthUrl("/auth/env-scan", providerId), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -252,6 +253,7 @@ function readLoginStart(payload: Record<string, unknown> | null): CompanionLogin
 }
 
 export async function cancelCompanionLogin(providerId: string): Promise<ChatGptAuthStatus> {
+  clearAuthStatusCache();
   const response = await companionFetch(companionAuthUrl("/auth/login-cancel", providerId), { method: "POST" });
   if (!response.ok) throw new ChatGptCompanionResponseError(response.status, await readErrorBody(response));
   return readAuthStatus(await readJsonBody(response));
@@ -305,7 +307,14 @@ export async function fetchChatGptAuthStatus(providerId?: string, signal?: Abort
   return readAuthStatus(status);
 }
 
+/** 계정 자격이 바뀌었을 수 있다(로그인·로그아웃·키 저장·갱신) — 짧은 상태 캐시(authStatusCache)가 이 신호로 비운다. */
+export const COMPANION_AUTH_CHANGED_EVENT = "oprn:companion-auth-changed";
+function clearAuthStatusCache(): void {
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(COMPANION_AUTH_CHANGED_EVENT));
+}
+
 export async function startChatGptLogin(providerId?: string, apiKey?: string): Promise<CompanionLoginStart> {
+  clearAuthStatusCache();
   const provider = parseOhMyPiProvider(providerId, DEFAULT_OH_MY_PI_PROVIDER);
   const response = await companionFetch(companionAuthUrl("/auth/login", provider), {
     method: "POST",
@@ -334,6 +343,7 @@ export async function startChatGptLogin(providerId?: string, apiKey?: string): P
 }
 
 export async function completeOAuthPaste(callbackUrl: string): Promise<void> {
+  clearAuthStatusCache();
   const response = await companionFetch(companionAuthUrl("/auth/oauth-paste"), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -345,6 +355,7 @@ export async function completeOAuthPaste(callbackUrl: string): Promise<void> {
 }
 
 export async function refreshCompanionAuth(providerId?: string, signal?: AbortSignal): Promise<ChatGptAuthStatus> {
+  clearAuthStatusCache();
   const provider = parseOhMyPiProvider(providerId, DEFAULT_OH_MY_PI_PROVIDER);
   const status = await companionFetch(companionAuthUrl("/auth/refresh", provider), {
     signal,
@@ -356,6 +367,7 @@ export async function refreshCompanionAuth(providerId?: string, signal?: AbortSi
 }
 
 export async function saveCompanionApiKey(providerId: string, apiKey: string): Promise<ChatGptAuthStatus> {
+  clearAuthStatusCache();
   const provider = parseOhMyPiProvider(providerId, DEFAULT_OH_MY_PI_PROVIDER);
   const response = await companionFetch(companionAuthUrl("/auth/key", provider), {
     method: "POST",
@@ -375,6 +387,7 @@ export async function saveCompanionApiKey(providerId: string, apiKey: string): P
  * 모든 턴이 401 이 되는 상태였다. 서버는 삭제 후의 상태를 `/auth/status` 와 같은 모양으로 준다.
  */
 export async function disconnectCompanionAuth(providerId?: string): Promise<ChatGptAuthStatus> {
+  clearAuthStatusCache();
   const provider = parseOhMyPiProvider(providerId, DEFAULT_OH_MY_PI_PROVIDER);
   const response = await companionFetch(companionAuthUrl("/auth/logout", provider), {
     method: "POST",
