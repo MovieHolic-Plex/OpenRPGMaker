@@ -99,9 +99,11 @@ export interface GameBlueprint {
   places?: GameBlueprintPlace[];
   /**
    * 요청이 짧은·작은 게임을 청했다고 모델이 적은 값 — 관문 하한(세는 맵·퀘스트·진행 깊이·단계 수)이 이 청사진의 장소·단계 수를 따른다
-   * (src/ai/v2/judge/blueprintScale.ts). 없으면 보통 크기의 게임이다.
+   * (src/ai/v2/judge/blueprintScale.ts).
+   * mvp = 새 게임의 첫 판(맵 3~5장·핵심 루프 하나, 2026-11-23 오너 «처음엔 작은 MVP 만») — 처음 쓰는 청사진이 크기를 안 적으면 이것이다.
+   * full = 사용자가 큰 게임을 분명히 청한 판. 없으면(옛 청사진) 보통 크기 게임으로 읽는다.
    */
-  scale?: "small";
+  scale?: "small" | "mvp" | "full";
   /** 요청이 싸움이 없어도 된다고 했다고 모델이 적은 값(false) — 청사진 검사가 전투 단계를 요구하지 않는다. 없으면 장르가 정한다. */
   battles?: false;
   /** 판정자가 받는 유일한 글 — 새 플레이어에게 «무엇을 하면 되는지» 한 줄. */
@@ -229,7 +231,7 @@ export function normalizeGameBlueprint(value: unknown): GameBlueprint {
     ...(typeof data.setting === "string" && data.setting.trim() ? { setting: data.setting.trim().slice(0, 40) } : {}),
     ...(places.length ? { places } : {}),
     ...(uiLookById(data.look) ? { look: uiLookById(data.look)!.id } : {}),
-    ...(data.scale === "small" ? { scale: "small" as const } : {}),
+    ...(data.scale === "small" || data.scale === "mvp" || data.scale === "full" ? { scale: data.scale } : {}),
     ...(data.battles === false ? { battles: false as const } : {}),
     playerGoal: bounded("playerGoal", data.playerGoal, BLUEPRINT_LIMITS.goal),
     ...(() => {

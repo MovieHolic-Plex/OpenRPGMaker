@@ -11,7 +11,7 @@ import { FIXTURE_IDS, type FixtureId } from './fixtures';
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../..');
 export const SUITE_FILE = resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs.json');
 /** `--set <번호>` 로 고르는 묶음. 1 = 처음 30가지(기준선 비교의 기준 — id·순서·판정을 바꾸지 않는다), 2 = 둘째 묶음(새 가족), 3 = 셋째 묶음(JRPG 가 아닌 게임의 장치), 4 = 넷째 묶음(자료집 고치기 — 2026-11-16). */
-const SUITE_SETS: Record<string, string> = { '1': SUITE_FILE, '2': resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs-2.json'), '3': resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs-3.json'), '4': resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs-4.json') };
+const SUITE_SETS: Record<string, string> = { '1': SUITE_FILE, '2': resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs-2.json'), '3': resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs-3.json'), '4': resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs-4.json'), '5': resolve(REPO_ROOT, 'harness-data/assistant-capability/small-jobs-5.json') };
 export function suiteFile(set: string | undefined): string {
   const file = SUITE_SETS[set ?? '1'];
   if (!file) throw Error(`--set ${set}: 없는 묶음(있는 것: ${Object.keys(SUITE_SETS).join(', ')})`);
@@ -50,6 +50,10 @@ export type SmallJob = {
   honestPartial?: { tables: string[]; ko: Record<string, string[]> };
   /** 같은 대화에서 이어 보내는 요청(앞 턴이 끝난 뒤 하나씩). 판정은 마지막 턴 뒤 문서를 본다. 자기검사의 reference 는 모든 턴을 합친 호출이다. */
   followUps?: string[];
+  /** 새 게임 첫 화면 길(다섯째 묶음): 픽스처 대신 createProjectStartSeed(choiceId) 로 씨앗을 만들고, request 를 한 문장으로 보고 startScreenPrompt 로 감싼 글을 보낸다. */
+  startScreen?: { choiceId: string };
+  /** 'lastTurn' = 판정의 «전» 을 마지막 이어 보내기 직전 저장 문서로 둔다(확장 요청이 앞 턴의 결과를 보존하는지 본다). */
+  checkFrom?: 'lastTurn';
 };
 export type SmallJobSuite = { schemaVersion: 1; kind: 'assistant-small-jobs'; /** 보고서 머리글. 없으면 「작은 일 30가지」. */ title?: string; description: string; autoAnswer: string; fixtures: Record<string, string>; families: Record<string, string>; jobs: SmallJob[] };
 

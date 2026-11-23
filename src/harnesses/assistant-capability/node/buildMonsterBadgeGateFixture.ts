@@ -10,7 +10,7 @@ const out = process.argv[2];
 if (!out) throw Error('bun buildMonsterBadgeGateFixture.ts <out.json>');
 const project = createBlankProject();
 const ctx = { project, currentMapId: project.startMapId };
-const built = await runToolAsync(ctx as never, 'build_monster_game', { mode: 'create' });
+const built = await runToolAsync(ctx as never, 'build_monster_game', { mode: 'create', scale: 'full' });
 if (!built.ok) throw Error(`캠페인 준비 실패: ${built.summary}`);
 
 // 실제 조수 세션처럼 몬스터 수집 장르 잠금을 켠 뒤 게이트를 놓는다(허용 사람 칩만 보인다).

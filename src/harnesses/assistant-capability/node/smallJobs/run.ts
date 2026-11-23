@@ -18,6 +18,9 @@ export { decide, honestPartial } from './verdictRules';
 import { endedOnQuestion, neverStarted, QUESTION_NOTE } from '../turnVerdict';
 import { buildFixture } from './fixtures';
 import { loadSuite, selectJobs, suiteFile, suiteLabel, type SmallJob } from './suite';
+import { createProjectStartSeed } from '../../../../editor/projectStartSeed';
+import { startScreenPrompt } from '../../../../editor/startScreenPrompt';
+import type { NewProjectChoiceId } from '../../../../editor/newProjectChoices';
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../..');
 const SESSION = resolve(REPO_ROOT, 'src/harnesses/assistant-capability/node/wholeGameSession.mjs');
@@ -122,7 +125,10 @@ async function runJob(job: SmallJob, root: string, pin: { file: string; config: 
 
   // 1) 새 정본: 픽스처를 이 일만의 SQLite 프로젝트로 저장한다.
   const store = await initLocalProjectStore({ projectDir });
-  try { await store.saveProject(buildFixture(job.fixture)); } finally { store.close(); }
+  // 새 게임 첫 화면 길: 제품과 같은 씨앗(장르 팩 적용)과 같은 첫 지시문(startScreenPrompt).
+  const seed = job.startScreen ? await createProjectStartSeed(job.startScreen.choiceId as NewProjectChoiceId, '새 프로젝트', 'ai', 'wide') : buildFixture(job.fixture);
+  const request = job.startScreen ? startScreenPrompt({ choiceId: job.startScreen.choiceId as NewProjectChoiceId, intent: job.request }) ?? job.request : job.request;
+  try { await store.saveProject(seed); } finally { store.close(); }
 
   // 2) 실제 편집기 세션(자기 프로세스 그룹). 끝나면 그 그룹만 정리한다.
   const child = spawn(process.env.SMALL_JOBS_NODE ?? 'node', [SESSION, '--project-dir', projectDir, '--out', session, ...(options.v2 ? ['--v2'] : []), '--ai-config', pin.file, '--turn-timeout-ms', String(options.limitMs), '--no-live'],
@@ -153,7 +159,7 @@ async function runJob(job: SmallJob, root: string, pin: { file: string; config: 
     // 4) 한 턴. 되물으면 한 번만 답한다. 상한은 요청을 보낸 순간부터 잰다.
     const steps = ['001'];
     writeFileSync(resolve(session, 'deadline'), String(Date.now() + options.limitMs + 20_000));
-    writeFileSync(resolve(session, 'inbox', '001.txt'), job.request);
+    writeFileSync(resolve(session, 'inbox', '001.txt'), request);
     const turnDone = (step: string) => existsSync(resolve(session, 'turns', `${step}.json`)) && state().phase !== 'turn';
     let waited = await waitFor(() => turnDone('001'), options.limitMs + 4 * 60_000, alive);
     let autoAnswered = false;
@@ -163,9 +169,13 @@ async function runJob(job: SmallJob, root: string, pin: { file: string; config: 
       waited = await waitFor(() => turnDone('002'), options.limitMs + 4 * 60_000, alive);
     }
     // 4b) 이어지는 요청(같은 대화의 다음 턴 — 「한 번 더 바꿔 줘」 같은 두 번째 말). 앞 턴이 끝난 뒤에만 보낸다.
+    let lastTurnBefore: Project | null = null;
     for (const next of job.followUps ?? []) {
       if (waited !== 'ok' || state().phase !== 'idle') break;
       const step = String(steps.length + 1).padStart(3, '0');
+      // 이어 보내기 직전의 저장 문서(앞 턴의 결과) — 확장 요청이 그것을 보존하는지 판정한다(checkFrom).
+      lastTurnBefore = readProjectSqlite(projectDir);
+      keepSlim(resolve(dir, `mid-${step}.json.gz`), lastTurnBefore);
       steps.push(step);
       writeFileSync(resolve(session, 'deadline'), String(Date.now() + options.limitMs + 20_000));
       writeFileSync(resolve(session, 'inbox', `${step}.txt`), next);
@@ -186,7 +196,7 @@ async function runJob(job: SmallJob, root: string, pin: { file: string; config: 
     if (!turns.length) return finish({ ...metrics, autoAnswered, status: 'infra', reason: `턴 기록이 없다(${waited}, phase ${state().phase ?? '-'}): ${String(state().failure ?? driverLog).slice(-400)}` });
     const after = readProjectSqlite(projectDir);
     keepSlim(resolve(dir, 'after.json.gz'), after);
-    const check = runCheck(job.check, job.allow, before, after);
+    const check = runCheck(job.check, job.allow, job.checkFrom === 'lastTurn' && lastTurnBefore ? lastTurnBefore : before, after);
     const { status, reason } = decide({ check, turnOutcomes: turns.map(turn => String(turn.outcome)), waitedLimit: waited === 'limit', errors: metrics.errors ?? [], toolCallCount: metrics.toolCallCount ?? 0, persistence, limitMs: options.limitMs, unsent: metrics.unsent, ...(job.maxToolCalls !== undefined ? { maxToolCalls: job.maxToolCalls } : {}), ...(job.honestPartial ? { honestPartial: job.honestPartial, answer: metrics.answer ?? '' } : {}) });
     return finish({ ...metrics, autoAnswered, persistence, check, status, pass: status === 'pass', reason });
   } catch (error) {

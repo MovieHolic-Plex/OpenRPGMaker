@@ -18,7 +18,8 @@ export interface BlueprintBlocker { readonly id: string; readonly message: strin
 export const BLUEPRINT_CARD = [
   "[Blueprint first — write_blueprint] For a request to make a whole game, write one design sheet for the game with write_blueprint before building places (build verbs are rejected without a blueprint).",
   "- playerGoal: one guiding line for a new player (what leads to the ending). The judge gets only this line and plays the game to the end.",
-  "- steps: the 6–8 step critical path from start to ending (spread over 2+ places; each step reads the switch the previous step turned on — the finish gate measures that chain depth). Per step: kind · place · event (for a person, the person's name) · who · action · needs · gives · feeling — as each field says.",
+  "- Size: a new game is a first playable version (scale:\"mvp\", the default) — 3 to 5 places, ONE core loop (genre: talk + one errand, one battle, catch one monster, one clue chain…), start to ending in 5-10 minutes. The user grows it later with the next request («다음 지역 만들어 줘»). Only when the user explicitly asks for a big, long or complete game send scale:\"full\" (6–8 steps, 6–8 places).",
+  "- steps: the critical path from start to ending — 3–6 steps for mvp, 6–8 for full (spread over 2+ places; each step reads the switch the previous step turned on — the finish gate measures that chain depth). Per step: kind · place · event (for a person, the person's name) · who · action · needs · gives · feeling — as each field says.",
   "- kind decides what code builds for the step: talk = a named person (who) speaks your lines and hands over the next lead · find = the player examines or picks up a thing · battle = the player must win a fight against who · puzzle = a number lock whose answer is written in an earlier step's lines · choice = who offers 2–3 options and each option changes something the player sees later. A path of «examine X, then examine Y» is a walking tour, not a game — players score it lowest. Mix the kinds: at least 2 talk steps with different people, a battle in an adventure or RPG, a puzzle or a choice, and never 3 find steps in a row.",
   "- ending: {name, how, feeling, closing}. how = design note, never shown (several endings: the basic one's path, the rest here). closing = 2–4 lines the player reads on the ending screen: what happened, what became of the people.",
   "- After building the places call build_blueprint_path once — the function builds an event per step, uses the previous step's gives as the condition, and makes the last one call the ending (do not match them one by one with upsert_event/define_ending). Give dialogue only via steps[{id, lines, …}]: write lines for every talk, choice and battle step (2–4 short lines in that person's own voice — what they want, fear or know; not «X was examined»), and for a choice step also choices:[{text, lines, later}] (later = one line shown at the ending that tells what this choice led to). Per step also write goal and item.",
@@ -36,7 +37,7 @@ export const WRITE_BLUEPRINT_SCHEMA = {
       from: { type: "string", description: "name of the place this one is entered from (default: the place listed before it)" },
     }, required: ["name", "kind"] } },
     look: { type: "string", description: "UI look id offered in the result" },
-    scale: { type: "string", enum: ["small"], description: "only if the request asks for a short or small game — the gates then count this blueprint's own places and steps" },
+    scale: { type: "string", enum: ["mvp", "small", "full"], description: "mvp (default for a new game) = first playable version: 3 to 5 places, one core loop, 4 to 6 steps, start to ending in 5-10 minutes — the user grows it later («다음 지역 만들어 줘»). small = the request asks for a short or tiny game. full = only when the user explicitly asks for a big, long or complete full-size game (many regions, 40 minutes+). The gates count this blueprint's own places and steps for mvp and small." },
     battles: { type: "boolean", description: "false only if the request says fights are not needed" },
     playerGoal: { type: "string", description: "one guiding line for a new player (within 140 chars)" },
     opening: { type: "array", items: { type: "string" }, description: "2–4 lines the player reads in the opening, before the first map — narration that sets the scene: who they are, what is wrong here. Not the goal restated, no answer to what must be found, no game words (boss, quest, level)." },
@@ -71,10 +72,15 @@ export function parseBlueprintArgs(args: unknown, request: string, now = new Dat
 /** 처음 쓴 청사진이 맵 관문(6장)·깊이 관문(5)의 최소 입력에 못 미치면 이유 한 줄, 아니면 undefined. 서로 다른 장소 2곳 미만 또는 단계 6 미만. */
 export const MIN_BLUEPRINT_PLACES = 2;
 export const MIN_BLUEPRINT_STEPS = 6;
+/** 첫 판 MVP 청사진의 단계 하한(핵심 루프 하나: 만나고 → 하고 → 끝). */
+export const MVP_MIN_STEPS = 3;
 export function thinBlueprintReason(bp: GameBlueprint): string | undefined {
   // 요청이 작은 게임을 청했다고 모델이 적었으면(scale) 얇다고 알리지 않는다 — 관문도 이 청사진의 크기를 센다(judge/blueprintScale.ts). 돌려주는 글은 알림이다(거절이 아니다).
   if (bp.scale === "small") return undefined;
   const places = [...new Set(bp.steps.map((step) => norm(step.place)))].filter(Boolean);
+  // 첫 판 MVP 는 장소 2곳 이상·단계 3 이상이면 충분하다 — 더 키우는 것은 사용자의 다음 요청이다.
+  if (bp.scale === "mvp") return places.length >= MIN_BLUEPRINT_PLACES && bp.steps.length >= MVP_MIN_STEPS ? undefined
+    : `the blueprint has ${bp.steps.length} step(s) over ${places.length} place(s) — a first playable version (mvp) has ${MVP_MIN_STEPS} to 6 steps over 2 or more places, start to ending in 5-10 minutes.`;
   if (places.length >= MIN_BLUEPRINT_PLACES && bp.steps.length >= MIN_BLUEPRINT_STEPS) return undefined;
   const first = bp.steps[0]?.place ?? "장소";
   return `the blueprint has ${bp.steps.length} step(s) over ${places.length} place(s) — a full-size game has 6 to 8 steps over 3 or more places (split one place like «${first} 앞», «${first} 안쪽», «지하 통로»), each step with a new event name; for a deliberately short game send scale:"small".`;
@@ -539,7 +545,7 @@ export async function designBlueprint(chat: (messages: readonly unknown[], signa
     "너는 RPG 편집기 조수의 설계자다. 사용자 요청으로 게임 하나의 청사진을 JSON 한 덩어리로만 쓴다(설명·코드 울타리 없이).",
     BLUEPRINT_CARD,
     `JSON 모양: ${JSON.stringify(WRITE_BLUEPRINT_SCHEMA)}`,
-    "장소는 이 편집기가 지을 수 있는 것(마을·거리·집·실내 방·던전·동굴)으로, 6곳 이상(끝맺음 관문이 문으로 닿는 맵 6장을 센다 — 장소마다 10×10 이상·사람이나 조사 이벤트 하나). 핵심 경로는 6~8단계(장소를 2곳 이상에 나눠 두고, 단계마다 앞 단계가 켠 스위치를 조건으로 읽는다), 새 플레이어가 40분 안에 엔딩을 볼 크기로.",
+    "장소는 이 편집기가 지을 수 있는 것(마을·거리·집·실내 방·던전·동굴)으로. 크기는 기본이 첫 판 MVP(scale:\"mvp\"): 장소 3~5곳(장소마다 10×10 이상·사람이나 조사 이벤트 하나), 핵심 루프 하나, 핵심 경로 3~6단계(단계마다 앞 단계가 켠 스위치를 조건으로 읽는다), 새 플레이어가 5~10분 안에 엔딩을 볼 크기. 요청이 큰 게임·긴 게임을 분명히 청할 때만 scale:\"full\" 로 장소 6~8곳·단계 6~8·40분 크기로 쓴다.",
   ].join("\n");
   let last = "";
   for (let attempt = 0; attempt < 2; attempt++) {

@@ -620,6 +620,21 @@ npm run harness -- assistant-capability small-jobs-report --run <그 폴더> --h
 - 판정(`checksDb.ts`): `unusedRemoved`(안 쓰던 것은 모두 지우고 쓰이던 것은 남기고 끊긴 참조 0) · `scaleAll`(표 전체 배수, 내림·올림·반올림 모두 받음) · `recordsEdited`(이름·값 + 건드리면 안 되는 비슷한 이름) ·
   `classAndSkills`(주인공 직업이 바뀌고 새 스킬 n 개를 레벨 1 에 배우며, 있던 직업을 썼다면 그 배움표가 줄지 않음) · `fieldsEqual` · `rewriteAll`(표마다 이름이 바뀐 몫 — 주제가 맞는지는 사람이 본다).
 
+### 다섯째 묶음 — 새 게임 첫 생성(MVP)과 다음 지역 (`--set 5`, 2026-11-23)
+
+오너 2026-11-23: 「처음에 프로젝트를 시작하면 맵을 3개에서 5개 정도 만드는 소규모로 MVP 만」. 이 묶음은 그 약속을 잰다.
+묶음 `harness-data/assistant-capability/small-jobs-5.json`, 판정 `smallJobs/checksStart.ts`.
+
+- **새 게임 첫 화면 길 그대로**: 일에 `startScreen:{choiceId}` 가 있으면 픽스처 대신 `createProjectStartSeed(choiceId, …, 'ai')` 씨앗을 쓰고, `request` 를 사용자가 친 한 문장으로 보고 `startScreenPrompt`(`src/editor/startScreenPrompt.ts`, 편집기 인계와 같은 함수)로 감싼 글을 보낸다.
+- `mvpStart`: 맵 수가 `minMaps`~`maxMaps`(3~5)이고 자동 플레이가 엔딩에 닿으면 합격. 자동 플레이는 정직한 플레이를 먼저, 못 닿으면 계획표 플레이를 돌려 둘 다 글에 남긴다(정직한 플레이는 몬스터 캠페인 체육관의 회전문 장치를 못 푼다 — 전체 캠페인도 같다). `allow.firstBuild` 는 씨앗 위 첫 생성이라 파괴 판정을 하지 않는다.
+- `regionAdded`: 시작에서 문으로 닿는 새 맵이 생기고 있던 맵 바닥을 10% 넘게 다시 깔지 않았으면 합격(파괴는 runCheck 의 damage 가 따로 본다). `checkFrom:"lastTurn"` 이면 판정의 «전» 이 마지막 이어 보내기 직전 저장 문서(`mid-NNN.json.gz`)다 — 같은 대화에서 첫 판 뒤 「다음 지역 만들어 줘」.
+- 일 여섯: 장르 넷(몬스터 수집·모험 JRPG·회상 스토리·갤러리 호러) 첫 생성, JRPG 첫 생성 뒤 다음 지역, 이미 있는 6맵 게임(`built`)에 다음 지역.
+- 정답(reference)은 자리표시다(첫 생성 정답을 도구 호출로 적을 수 없다) — 이 묶음은 `small-jobs-selfcheck` 대상이 아니고, 판정은 `createMonsterExpedition({scale:"mvp"})`(합격)·`{gymCount:1}`(19맵 불합격)로 확인했다.
+
+```bash
+npm run harness -- assistant-capability small-jobs --set 5 --model local-claude-sonnet-5-5-high --v2 --out <새 폴더> --timeout-min 40
+```
+
 ## 조수가 깐 맵의 적대적 그림 검수 (`map-vqa`, 2026-11-11)
 
 목적: 조수가 **맵을 잘 깔게** 고치는 것이 핵심이라는 오너 판단(2026-11-11)에 따라, 조수가 깐 맵을 그림으로 보고 «플레이어가 엉성하게 깔린 맵이라고 할 까닭»을

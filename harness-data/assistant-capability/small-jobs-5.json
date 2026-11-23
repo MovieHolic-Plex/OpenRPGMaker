@@ -1,0 +1,90 @@
+{
+ "schemaVersion": 1,
+ "kind": "assistant-small-jobs",
+ "title": "작은 일 다섯째 묶음 — 새 게임 첫 생성(MVP)과 다음 지역",
+ "description": "새 게임 첫 화면 길 그대로: 장르 씨앗(createProjectStartSeed) 위에 한 문장(startScreenPrompt 로 감싼 글)을 보낸다. 첫 생성이 맵 3~5장의 MVP 이고 정직한 자동 플레이가 엔딩에 닿는지, 이어서 「다음 지역 만들어 줘」가 있던 것을 지키며 맵을 더하는지 본다. 판정은 저장 문서의 기계 검사.",
+ "autoAnswer": "좋아, 네가 판단해서 진행해 줘.",
+ "fixtures": {
+  "blank": "startScreen 이 있으면 createProjectStartSeed(장르, 'ai') 씨앗(새 게임 첫 화면과 같다)",
+  "built": "조수 v2 가 만든 작은 게임 《얼음 아래의 노래》(맵 6장), small-jobs/built-game.json.gz"
+ },
+ "families": {
+  "start": "새 게임 첫 생성 — MVP 크기와 끝까지 플레이",
+  "extend": "다음 지역 — 있던 것을 지키며 이어 붙이기"
+ },
+ "jobs": [
+  {
+   "id": "start-monster",
+   "family": "start",
+   "fixture": "blank",
+   "startScreen": { "choiceId": "monster-collect" },
+   "request": "몬스터를 모으며 모험하는 게임을 만들어 줘.",
+   "check": { "kind": "mvpStart", "minMaps": 3, "maxMaps": 5 },
+   "allow": { "firstBuild": true },
+   "reference": [{ "tool": "build_monster_game", "args": { "mode": "create" } }],
+   "wrong": [],
+   "note": "몬스터 수집 첫 화면. 전에는 build_monster_game 기본(체육관 8 · 90맵) 또는 v2 첫 마을(체육관 1 · 19맵)이었다."
+  },
+  {
+   "id": "start-jrpg",
+   "family": "start",
+   "fixture": "blank",
+   "startScreen": { "choiceId": "adventure-jrpg" },
+   "request": "용사가 마을에서 출발해 숲 너머 동굴의 마물을 물리치는 모험 게임을 만들어 줘.",
+   "check": { "kind": "mvpStart", "minMaps": 3, "maxMaps": 5 },
+   "allow": { "firstBuild": true },
+   "reference": [{ "tool": "build_monster_game", "args": { "mode": "create" } }],
+   "wrong": [],
+   "note": "모험 JRPG 첫 화면(판타지)."
+  },
+  {
+   "id": "start-story",
+   "family": "start",
+   "fixture": "blank",
+   "startScreen": { "choiceId": "story-cutscene" },
+   "request": "할머니 집에서 옛 추억을 되짚으며 대화하는 이야기 게임을 만들어 줘.",
+   "check": { "kind": "mvpStart", "minMaps": 3, "maxMaps": 5 },
+   "allow": { "firstBuild": true },
+   "reference": [{ "tool": "build_monster_game", "args": { "mode": "create" } }],
+   "wrong": [],
+   "note": "회상 스토리(대화 중심) 첫 화면."
+  },
+  {
+   "id": "start-horror",
+   "family": "start",
+   "fixture": "blank",
+   "startScreen": { "choiceId": "horror-gallery" },
+   "request": "밤의 미술관에 갇힌 아이가 단서를 모아 빠져나가는 공포 게임을 만들어 줘.",
+   "check": { "kind": "mvpStart", "minMaps": 3, "maxMaps": 5 },
+   "allow": { "firstBuild": true },
+   "reference": [{ "tool": "build_monster_game", "args": { "mode": "create" } }],
+   "wrong": [],
+   "note": "갤러리 호러 첫 화면."
+  },
+  {
+   "id": "jrpg-then-next",
+   "family": "extend",
+   "fixture": "blank",
+   "startScreen": { "choiceId": "adventure-jrpg" },
+   "request": "용사가 마을에서 출발해 숲 너머 동굴의 마물을 물리치는 모험 게임을 만들어 줘.",
+   "followUps": ["다음 지역 만들어 줘."],
+   "checkFrom": "lastTurn",
+   "check": { "kind": "regionAdded", "minNew": 1 },
+   "allow": { "newMaps": 6 },
+   "reference": [{ "tool": "build_monster_game", "args": { "mode": "create" } }],
+   "wrong": [],
+   "note": "첫 생성 뒤 같은 대화에서 「다음 지역 만들어 줘」 — 판정의 «전» 은 첫 턴 뒤 저장 문서."
+  },
+  {
+   "id": "next-region-built",
+   "family": "extend",
+   "fixture": "built",
+   "request": "다음 지역 만들어 줘.",
+   "check": { "kind": "regionAdded", "minNew": 1 },
+   "allow": { "newMaps": 6 },
+   "reference": [{ "tool": "build_monster_game", "args": { "mode": "create" } }],
+   "wrong": [],
+   "note": "이미 있는 작은 게임(맵 6장)에 다음 지역 하나."
+  }
+ ]
+}

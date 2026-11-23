@@ -6,7 +6,7 @@ import type { Project } from '../../../../project/types';
 import { blockedOn } from '../matrixNativeSpec';
 
 export type CheckSpec = { kind: string } & Record<string, any>;
-export type Allow = { newMaps?: number; movedEvents?: string[]; renamedMaps?: string[]; title?: boolean; removedEvents?: string[]; /** 시작 위치를 옮기는 일. */ startPos?: boolean };
+export type Allow = { newMaps?: number; movedEvents?: string[]; renamedMaps?: string[]; title?: boolean; removedEvents?: string[]; /** 시작 위치를 옮기는 일. */ startPos?: boolean; /** 새 게임 첫 생성(씨앗 위) — 파괴 판정을 하지 않는다. */ firstBuild?: boolean };
 export type Verdict = { pass: boolean; reason: string; outcome: { ok: boolean; note: string }; damage: string[]; sideEdits: string[] };
 export type Doc = Record<string, any>;
 export type Ev = { id: string; x: number; y: number; name?: string; pages?: any[]; [key: string]: any };

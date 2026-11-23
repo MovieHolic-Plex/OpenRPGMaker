@@ -66,7 +66,7 @@ export const NEW_PROJECT_CHOICES: readonly NewProjectChoice[] = [
     label: "몬스터 수집",
     blurb: "수집 · 조우 · 도감",
     thumb: "/assets/generated/welcome/slide-01.png",
-    tone: "에메랄드 참고 픽셀 창과 교수 소개. AI 기획은 실제72맵·60종·8체육관·리그·엔딩의 완성 캠페인을 build_monster_game로 제작하며 스타터 선택·야생 조우·포획·상점·저장으로 이어진다.",
+    tone: "에메랄드 참고 픽셀 창과 교수 소개. AI 첫 판은 맵 5장의 MVP(시작 마을·연구소·1번길·다음 마을·체육관)를 build_monster_game로 짓고 스타터 선택·야생 조우·포획·체육관 승리 엔딩으로 이어진다. 더 큰 캠페인은 사용자가 이어서 청한다.",
     featured: true,
   },
   {

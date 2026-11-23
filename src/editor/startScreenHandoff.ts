@@ -5,9 +5,9 @@
 import { createProjectStartSeed } from "./projectStartSeed";
 import { projectStartMode } from "@/start/projectStart";
 import { focusProjectStartMap } from "@/editor/mapSelection";
-import { newProjectChoiceById } from "@/editor/newProjectChoices";
+import { startScreenPrompt } from "@/editor/startScreenPrompt";
 import { getAiConnectionStatus } from "@/editor/panels/aiConnectionStatus";
-import { buildWelcomeFreeTextPrompt, welcomeFreeTextDisplayText } from "@/editor/welcomeGenrePresets";
+import { welcomeFreeTextDisplayText } from "@/editor/welcomeGenrePresets";
 import { isAssistantEndpointReady, resolveSurfaceAiConfig } from "@/ai/assistantEndpoint";
 import { normalizeGameDesignBrief } from "@/project/gameDesignBrief";
 import { projectRepository } from "@/project/persistence/repository";
@@ -32,20 +32,7 @@ function sessionStore(): Storage | null {
   }
 }
 
-/** 장르를 골랐으면 한 문장 앞에 장르 계약을 붙인다 — 모델이 장르 엔진(이미 켜져 있다)을 끄지 않게 한다. */
-export function startScreenPrompt(intent: Pick<StartScreenIntent, "choiceId" | "intent">): string | null {
-  const text = intent.intent.trim();
-  if (!text) return null;
-  const choice = intent.choiceId ? newProjectChoiceById(intent.choiceId) : undefined;
-  const base = buildWelcomeFreeTextPrompt(text);
-  if (!choice) return base;
-  return [
-    base,
-    "",
-    "선택한 시작 장르: " + choice.label + " — 장르 시스템 설정은 이미 적용돼 있다. 끄지 말고 그 위에 만든다.",
-    "장르 톤: " + choice.tone,
-  ].join("\n");
-}
+export { startScreenPrompt };
 
 /**
  * 인계가 없거나 다른 폴더면 null 이고 아무것도 바꾸지 않는다.

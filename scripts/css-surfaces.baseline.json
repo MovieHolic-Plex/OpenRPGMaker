@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-22T17:12:15.685Z",
+  "generatedAt": "2026-11-23T10:12:28.264Z",
   "counts": {
     "tokens": {
       "important": 0,
@@ -1643,6 +1643,9 @@
     "R2|database/tabs-b-assistant-panel/assistant-deck.part-2.css|.ai-chat-log .ai-command-row[data-role=\"user\"] > .ai-command-row-body|ai-command-row-body",
     "R2|database/tabs-b-assistant-panel/assistant-deck.part-2.css|.ai-chat-log .ai-command-row|ai-command-row",
     "R2|database/tabs-b-assistant-panel/assistant-deck.part-2.css|.ai-chat-log .ai-day-divider-label|ai-day-divider-label",
+    "R2|database/tabs-b-assistant-panel/assistant-deck.part-2.css|.ai-chat-log .ai-next-step-chip:hover|ai-next-step-chip",
+    "R2|database/tabs-b-assistant-panel/assistant-deck.part-2.css|.ai-chat-log .ai-next-step-chip|ai-next-step-chip",
+    "R2|database/tabs-b-assistant-panel/assistant-deck.part-2.css|.ai-chat-log .ai-next-steps|ai-next-steps",
     "R2|database/tabs-b-assistant-panel/assistant-deck.part-2.css|.ai-chat-log .ai-tool-activity-line + .ai-tool-activity-line|ai-tool-activity-line",
     "R2|database/tabs-b-assistant-panel/assistant-deck.part-2.css|.ai-chat-log .ai-tool-activity-line.ai-act|ai-tool-activity-line",
     "R2|database/tabs-b-assistant-panel/assistant-deck.part-2.css|.ai-chat-log .ai-tool-activity-line|ai-tool-activity-line",

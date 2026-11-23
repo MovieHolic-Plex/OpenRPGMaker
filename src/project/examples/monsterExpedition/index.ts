@@ -19,6 +19,7 @@ import { configureEmeraldMonsterOpening } from "@/project/emeraldMonsterOpening"
 import { configureEmeraldMonsterCast } from "@/project/emeraldMonsterCast";
 import { remapCharsetsToPreset } from "@/project/genreLockCharsets";
 import { monsterTitleThemeFromStart } from "@/project/emeraldMonsterTitleArt";
+import { trimExpeditionToMvp } from "./mvpTrim";
 
 /** Complete, ordinary editable campaign: the player uses the shipping engine. */
 /** gymTypes: 기획서의 1~8관 타입(「바위 체육관」→rock) — 관장 동료만 그 타입으로 바꾼다. 맵·장치는 그대로. firstGymType 은 gymTypes[0] 의 옛 이름. */
@@ -26,9 +27,12 @@ import { monsterTitleThemeFromStart } from "@/project/emeraldMonsterTitleArt";
 /** gymCount: 체육관(=배지) 수 0~8, 생략 = 8(본래 90맵 캠페인). 적으면 마을·길·리그를 앞에서부터 잘라 쓰고 정의에 plan(검수 하한)을 싣는다.
  * speciesCount: 도감을 이 수 이상으로 줄인다(쓰지 않는 계통만 덜어 냄 — 실제 수는 plan.species). 생략 = 60종. */
 /** mapSeed: 길·필드·던전 맵을 짜는 씨앗(생략 0). fieldMaps: 길·지역 열쇠(river·beach …)별 요청 요소(길이·분기·물·절벽·명소). */
-export interface ExpeditionOptions { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[]; readonly startTheme?: StartTheme; readonly gymCount?: number; readonly speciesCount?: number; readonly startLayout?: HomeTownLayout; readonly mapSeed?: number; readonly fieldMaps?: Readonly<Record<string, FieldRequest>> }
+/** scale: "mvp" = 첫 판(체육관 하나 캐페인을 맵 5장으로 줄이고 첫 배지에서 엔딩, mvpTrim.ts). 생략 = gymCount 그대로의 전체 캐페인. */
+export interface ExpeditionOptions { readonly scale?: "mvp" | "full"; readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[]; readonly startTheme?: StartTheme; readonly gymCount?: number; readonly speciesCount?: number; readonly startLayout?: HomeTownLayout; readonly mapSeed?: number; readonly fieldMaps?: Readonly<Record<string, FieldRequest>> }
 
-export function createMonsterExpedition(options: ExpeditionOptions = {}) {
+export function createMonsterExpedition(input: ExpeditionOptions = {}) {
+  const mvp = input.scale === "mvp";
+  const options: ExpeditionOptions = mvp ? { ...input, gymCount: 1 } : input;
   const project = createExpeditionSeed();
   const hero = project.database.actors.find(a => a.id === DEFAULT_ACTOR_ID)!;
   configureScarloxyPokemonDemoProject(project);
@@ -56,6 +60,7 @@ export function createMonsterExpedition(options: ExpeditionOptions = {}) {
   project.session.monsterParty = [];
   project.session.monsterBox = [];
   const manifest = authorExpeditionWorld(project, options);
+  if (mvp) trimExpeditionToMvp(project, manifest);
   const usedTilesets = new Set(Object.values(project.maps).map(map => map.tilesetId));
   project.tilesets = Object.fromEntries(Object.entries(project.tilesets).filter(([id]) => usedTilesets.has(id)));
   project.database.monsterSpecies = project.database.monsterSpecies?.filter(s => s.id.startsWith("mx_species_"));
