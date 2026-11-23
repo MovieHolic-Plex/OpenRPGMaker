@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
 import type { ChatGptAuthStatus } from "@/ai/chatgptOAuthClient";
+import { clearCachedAuthStatus } from "@/ai/authStatusCache";
 
 const fetchChatGptAuthStatus = vi.fn();
 const startChatGptLogin = vi.fn();
@@ -34,6 +35,8 @@ let restoreDom: (() => void) | null = null;
 beforeEach(() => {
   vi.clearAllMocks();
   pendingFetches.length = 0;
+  // #4954 의 계정 상태 캐시(30초)가 앞 시험의 카드 필 조회를 들고 있으면 다음 시험의 «정확한 /auth/status 요청» 이 나오지 않는다.
+  clearCachedAuthStatus();
   fetchChatGptAuthStatus.mockImplementation(() => {
     const request = deferred<ChatGptAuthStatus>();
     pendingFetches.push(request);
