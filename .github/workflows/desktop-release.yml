@@ -1,7 +1,10 @@
 name: desktop-release
 
-# 정식 vX.Y.Z 릴리스의 AppImage·윈도우 zip·portable exe 를 mdc2 에서 만든다.
+# 정식 vX.Y.Z 릴리스의 AppImage·윈도우 portable exe 를 mdc2 에서 만든다.
 # 윈도우 패키지도 wine 없이 리눅스에서 만든다(electron-builder 가 makensis 를 받는다).
+#
+# 윈도우 zip 을 뺐다 (2026-11-23, app-size): zip 과 portable exe 가 둘 다 무설치 실행이라 같은 앱을
+# 1GB 씩 두 번 올렸다. exe 하나만 남기고 자산 검사는 6개 → 4개다. 옛 릴리스의 zip 은 그대로 남는다.
 
 # 순서 계약 (2026-11-07, 오너 지적 「파일이 실제 업로드 된 후에야 README 가 업데이트 되어야하는거아니냐」):
 #   ① scripts/release-auto.mjs 가 릴리스를 **초안(draft)** 으로 만든다.
@@ -72,7 +75,7 @@ jobs:
             # 스케줄: 자산이 모자란 가장 새 vX.Y.Z 릴리스(초안 포함). 없으면 할 일이 없다.
             tag="$(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=30" --jq '
               [ .[] | select(.tag_name | test("^v[0-9]+\\.[0-9]+\\.[0-9]+$"))
-                    | select(.draft or ((.assets | map(select((.size // 0) > 0)) | length) < 6)) ]
+                    | select(.draft or ((.assets | map(select((.size // 0) > 0)) | length) < 4)) ]
               | sort_by(.tag_name | sub("^v"; "") | split(".") | map(tonumber))
               | last | .tag_name // ""')"
           fi
@@ -123,12 +126,12 @@ jobs:
           version="${TAG#v}"
           missing="$(printf '%s' "$json" | jq -r --arg v "$version" '
             (.assets // []) as $a
-            | ["OPRN.Studio-windows.exe","OPRN.Studio-windows.zip","OPRN.Studio-linux.AppImage",
-               "OPRN.Studio.\($v).exe","OPRN.Studio-\($v)-win.zip","OPRN.Studio-\($v).AppImage"]
+            | ["OPRN.Studio-windows.exe","OPRN.Studio-linux.AppImage",
+               "OPRN.Studio.\($v).exe","OPRN.Studio-\($v).AppImage"]
             | map(select(. as $n | ($a | map(select(.name == $n and (.size // 0) > 0)) | length) == 0))
             | join(" ")')"
           if [[ -z "$missing" ]]; then
-            echo "$TAG 은 자산 6개가 모두 있다 — 빌드를 건너뛴다"
+            echo "$TAG 은 자산 4개가 모두 있다 — 빌드를 건너뛴다"
             echo "needed=false" >> "$GITHUB_OUTPUT"
           else
             echo "$TAG 에 없는/빈 자산: $missing"
@@ -246,7 +249,7 @@ jobs:
           chmod +x "$wrapper"
           ELECTRON_BUILDER_7ZIP_PATH="$wrapper" npx --no-install electron-builder \
             --config scripts/electron-builder.config.mjs --publish never \
-            --linux AppImage --win zip portable --x64
+            --linux AppImage --win portable --x64
 
       - name: 릴리스 자산 업로드
         if: steps.preflight.outputs.needed == 'true'
@@ -258,7 +261,7 @@ jobs:
           out=dist-packages
           shopt -s nullglob
           files=()
-          for f in "$out"/*.AppImage "$out"/*win*.zip "$out"/*.exe; do
+          for f in "$out"/*.AppImage "$out"/*.exe; do
             size=$(stat -c %s -- "$f")
             if (( size == 0 || size >= 2 * 1024 * 1024 * 1024 )); then
               echo "::error::$f 자산 크기 범위 초과 ($size bytes)"
@@ -266,16 +269,14 @@ jobs:
             fi
             files+=("$f")
           done
-          test "${#files[@]}" -eq 3
+          test "${#files[@]}" -eq 2
           printf '%s\n' "${files[@]}" | grep -q 'AppImage'
-          printf '%s\n' "${files[@]}" | grep -q 'win.zip'
           printf '%s\n' "${files[@]}" | grep -q '\.exe'
           stable=()
           for f in "${files[@]}"; do
             base="$(basename "$f")"
             if [[ "$base" == *.AppImage ]]; then alias="OPRN.Studio-linux.AppImage"
-            elif [[ "$base" == *.exe ]]; then alias="OPRN.Studio-windows.exe"
-            else alias="OPRN.Studio-windows.zip"
+            else alias="OPRN.Studio-windows.exe"
             fi
             ln -f -- "$f" "$out/$alias"
             stable+=("$out/$alias")
@@ -299,8 +300,8 @@ jobs:
           if [[ -z "$json" ]]; then echo "::error::$TAG 릴리스를 찾지 못함"; exit 1; fi
           report="$(printf '%s' "$json" | jq -r --arg v "$version" '
             (.assets // []) as $a
-            | ["OPRN.Studio-windows.exe","OPRN.Studio-windows.zip","OPRN.Studio-linux.AppImage",
-               "OPRN.Studio.\($v).exe","OPRN.Studio-\($v)-win.zip","OPRN.Studio-\($v).AppImage"]
+            | ["OPRN.Studio-windows.exe","OPRN.Studio-linux.AppImage",
+               "OPRN.Studio.\($v).exe","OPRN.Studio-\($v).AppImage"]
             | map(. as $n | { name: $n, size: (($a | map(select(.name == $n)) | first | .size) // 0) })')"
           echo "$report" | jq -r '.[] | "  \(.name): \(.size) bytes"'
           bad="$(echo "$report" | jq -r '[.[] | select(.size <= 0) | .name] | join(" ")')"
@@ -342,7 +343,7 @@ jobs:
           TAG: ${{ steps.target.outputs.tag }}
         run: |
           set -euo pipefail
-          for name in OPRN.Studio-windows.exe OPRN.Studio-windows.zip OPRN.Studio-linux.AppImage; do
+          for name in OPRN.Studio-windows.exe OPRN.Studio-linux.AppImage; do
             code="$(curl -sIL -o /dev/null -w '%{http_code}' "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG/$name")"
             len="$(curl -sIL "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG/$name" | grep -i '^content-length' | tail -1 | tr -d '\r' | awk '{print $2}')"
             echo "$name HTTP=$code Content-Length=${len:-0}"

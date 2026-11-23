@@ -1,6 +1,7 @@
 #!/usr/bin/env node
-// 최신 vX.Y.Z GitHub Release 에 리눅스 AppImage · 윈도우 zip · 윈도우 단일 exe(portable)가 없으면
+// 최신 vX.Y.Z GitHub Release 에 리눅스 AppImage · 윈도우 단일 exe(portable)가 없으면
 // 그 태그에서 빌드해 올린다. 이미 있으면 바로 끝난다.
+// 윈도우 zip 은 2026-11-23 에 버렸다 — exe 와 같은 무설치 실행본을 1GB 더 올리던 중복이다.
 // 기본 경로는 GitHub Actions(.github/workflows/desktop-release.yml)다. 이 스크립트는
 // OPRN_DESKTOP_LOCAL=1 일 때만 빌드한다. 20분짜리 버전 제안과 분리한다.
 
@@ -14,11 +15,10 @@ import { checkDesktopAssets } from "./lib/releaseAssets.mjs";
 const repo = process.cwd();
 const buildRoot = process.env.OPRN_DESKTOP_BUILD || join(homedir(), ".cache", "oprn-desktop-release");
 const lockFile = `${buildRoot}.lock`;
-// 윈도우 zip 을 테스트용 PC 로 바로 보낸다(GitHub 에서 다시 받지 않는다). 비우면 건너뛴다.
+// 윈도우 exe 를 테스트용 PC 로 바로 보낸다(GitHub 에서 다시 받지 않는다). 비우면 건너뛴다.
 // OPRN_WIN_DELIVER_HOST="" 로 끈다. 전달 실패는 릴리스 업로드를 실패시키지 않는다.
 const deliverHost = process.env.OPRN_WIN_DELIVER_HOST ?? "ubbio@100.112.124.41";
 const deliverDir = process.env.OPRN_WIN_DELIVER_DIR ?? "Downloads/oprn-app";
-const deliverWinDir = process.env.OPRN_WIN_DELIVER_WINDIR ?? "C:\\Users\\ubbio\\Downloads\\oprn-app";
 // Android Dev 는 tag:android-dev 라 Tailscale 으로 Windows 에 직접 붙지 못한다.
 // 빌드 산출물을 여기에 두면 Windows 가 가져간다.
 // 빈 문자열이면 로컬 복사본을 만들지 않는다(Actions 러너).
@@ -81,50 +81,13 @@ function assetList(tag) {
   return JSON.parse(raw).assets ?? [];
 }
 
-/** zip 을 SFTP 로 올리고 원격 크기를 대조한 뒤 원격에서 버전 폴더로 푼다. */
-function deliverWindowsZip(zipPath, version) {
-  const name = zipPath.split("/").pop();
-  const localSize = statSync(zipPath).size;
-  const ssh = ["-o", "BatchMode=yes", "-o", "ConnectTimeout=15"];
-  const listing = execFileSync("sftp", ["-b", "-", ...ssh, "-P", "22", deliverHost], {
-    input: `-mkdir ${deliverDir}\nput "${zipPath}" "${deliverDir}/${name}"\nls -l "${deliverDir}/${name}"\n`,
-    encoding: "utf8",
-    stdio: ["pipe", "pipe", "pipe"],
-  });
-  const line = listing.split("\n").find((row) => row.includes(name) && !row.startsWith("sftp>"));
-  const remoteSize = Number(line?.trim().split(/\s+/)[4]);
-  if (remoteSize !== localSize) throw new Error(`원격 크기 불일치: 로컬 ${localSize}, 원격 ${remoteSize || "(없음)"}`);
-  const zipWin = `${deliverWinDir}\\${name}`;
-  const outWin = `${deliverWinDir}\\OPRN Studio ${version}`;
-  const ps = [
-    "$ProgressPreference='SilentlyContinue'",
-    `$z='${zipWin}'`,
-    `$d='${outWin}'`,
-    "if (Test-Path $d) { Remove-Item -Recurse -Force $d }",
-    "New-Item -ItemType Directory -Force $d | Out-Null",
-    "tar -xf $z -C $d",
-    "if ($LASTEXITCODE -ne 0) { 'TAR_FAIL ' + $LASTEXITCODE; exit 1 }",
-    "$n=(Get-ChildItem -Recurse -File $d | Measure-Object).Count",
-    "$exe=Get-Item (Join-Path $d 'OPRN Studio.exe')",
-    "'EXTRACT files=' + $n + ' exe=' + $exe.Length",
-  ].join("; ");
-  const encoded = Buffer.from(ps, "utf16le").toString("base64");
-  const out = execFileSync("ssh", [...ssh, deliverHost, `powershell -NoProfile -EncodedCommand ${encoded}`], {
-    encoding: "utf8",
-    stdio: ["ignore", "pipe", "pipe"],
-  });
-  const result = out.split("\n").find((row) => row.startsWith("EXTRACT ") || row.startsWith("TAR_FAIL"))?.trim();
-  if (!result?.startsWith("EXTRACT ")) throw new Error(`원격 압축 해제 실패: ${result || "(출력 없음)"}`);
-  console.log(`[release-desktop] 윈도우 zip 전달: ${deliverHost} ${outWin} (${localSize} bytes, ${result})`);
-}
-
 /** 단일 실행 exe(portable)를 SFTP 로 올리고 원격 크기를 대조한다. 압축을 풀지 않는다 — 그대로 실행한다. */
 function deliverWindowsExe(exePath) {
   const name = exePath.split("/").pop();
   const localSize = statSync(exePath).size;
   const ssh = ["-o", "BatchMode=yes", "-o", "ConnectTimeout=15"];
   const listing = execFileSync("sftp", ["-b", "-", ...ssh, "-P", "22", deliverHost], {
-    input: `put "${exePath}" "${deliverDir}/${name}"\nls -l "${deliverDir}/${name}"\n`,
+    input: `-mkdir ${deliverDir}\nput "${exePath}" "${deliverDir}/${name}"\nls -l "${deliverDir}/${name}"\n`,
     encoding: "utf8",
     stdio: ["pipe", "pipe", "pipe"],
   });
@@ -136,10 +99,9 @@ function deliverWindowsExe(exePath) {
 
 function hasDesktop(names) {
   const appImage = names.some((name) => name.endsWith(".AppImage"));
-  const winZip = names.some((name) => name.endsWith(".zip") && name.includes("win"));
-  // 단일 exe(portable)도 필수다 — 없으면 다음 실행이 다시 빌드한다(2026-10-10 추가).
+  // 단일 exe(portable)가 유일한 윈도우 산출물이다 — 없으면 다음 실행이 다시 빌드한다.
   const winExe = names.some((name) => name.endsWith(".exe"));
-  return appImage && winZip && winExe;
+  return appImage && winExe;
 }
 
 if (process.env.OPRN_DESKTOP_LOCAL !== "1") {
@@ -161,7 +123,7 @@ try {
   const tag = resolveTag();
   const names = assetNames(tag);
   if (hasDesktop(names)) {
-    console.log(`[release-desktop] ${tag} 에 AppImage·윈도우 zip·단일 exe 가 이미 있음`);
+    console.log(`[release-desktop] ${tag} 에 AppImage·윈도우 단일 exe 가 이미 있음`);
     process.exit(0);
   }
 
@@ -192,22 +154,21 @@ try {
   writeFileSync(join(homedir(), ".cache/electron-builder/package.json"), "{\"type\":\"commonjs\"}\n");
   execFileSync(
     "npx",
-    ["electron-builder", "--config", "scripts/electron-builder.config.mjs", "--linux", "AppImage", "--win", "zip", "portable", "--x64"],
+    ["electron-builder", "--config", "scripts/electron-builder.config.mjs", "--linux", "AppImage", "--win", "portable", "--x64"],
     { cwd: buildDir, stdio: "inherit", env },
   );
 
   const outDir = join(buildDir, "dist-packages");
   const files = readdirSync(outDir)
-    .filter((name) => name.endsWith(".AppImage") || (name.endsWith(".zip") && name.includes("win")) || name.endsWith(".exe"))
+    .filter((name) => name.endsWith(".AppImage") || name.endsWith(".exe"))
     .map((name) => join(outDir, name));
-  const missing = [".AppImage", "win.zip", ".exe"].filter((need) => !files.some((file) => file.includes(need)));
+  const missing = [".AppImage", ".exe"].filter((need) => !files.some((file) => file.includes(need)));
   if (missing.length) throw new Error(`산출물이 부족합니다(${missing.join(", ")}): ${files.join(", ") || "(없음)"}`);
 
   // README 의 /releases/latest/download/ 주소는 버전 없는 이름을 본다.
   const stableName = (file) => {
     if (file.endsWith(".AppImage")) return "OPRN.Studio-linux.AppImage";
-    if (file.endsWith(".exe")) return "OPRN.Studio-windows.exe";
-    return "OPRN.Studio-windows.zip";
+    return "OPRN.Studio-windows.exe";
   };
   const stable = [];
   for (const file of files) {
@@ -227,25 +188,15 @@ try {
   }
   if (process.env.OPRN_DESKTOP_NO_PUBLISH !== "1") {
     run("gh", ["release", "edit", tag, "--draft=false"]);
-    console.log(`[release-desktop] ${tag} 자산 6개 검증 후 발행`);
+    console.log(`[release-desktop] ${tag} 자산 4개 검증 후 발행`);
   }
 
   if (dropDir) {
-    const winFiles = [...files, ...stable].filter((file) => file.endsWith(".zip") || file.endsWith(".exe"));
+    const winFiles = [...files, ...stable].filter((file) => file.endsWith(".exe"));
     mkdirSync(dropDir, { recursive: true });
     for (const file of winFiles) copyFileSync(file, join(dropDir, file.split("/").pop()));
     writeFileSync(join(dropDir, "VERSION"), `${tag.slice(1)}\n`);
     console.log(`[release-desktop] Windows 가 가져갈 파일: ${dropDir}`);
-  }
-
-  const winZip = files.find((file) => file.endsWith(".zip"));
-  if (deliverHost && winZip) {
-    try {
-      deliverWindowsZip(winZip, tag.slice(1));
-    } catch (error) {
-      // 릴리스는 이미 올라갔다. 전달만 실패로 남기고 다음 수동 전달에 맡긴다.
-      console.error(`[release-desktop] 윈도우 zip 전달 실패: ${error instanceof Error ? error.message : String(error)}`);
-    }
   }
 
   const winExe = files.find((file) => file.endsWith(".exe"));

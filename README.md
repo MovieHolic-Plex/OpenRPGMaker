@@ -9,7 +9,6 @@
 **English** · [中文](README.zh-CN.md) · [日本語](README.ja.md) · [한국어](README.ko.md)
 
 [![Windows Download (EXE)](https://img.shields.io/badge/Windows-Download%20EXE-2563eb?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.exe)
-[![Windows Download (ZIP)](https://img.shields.io/badge/Windows-Download%20ZIP-2563eb?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.zip)
 [![Linux Download (AppImage)](https://img.shields.io/badge/Linux-Download%20AppImage-eab308?style=for-the-badge&logo=linux&logoColor=black)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-linux.AppImage)
 
 [![Play the demos](https://img.shields.io/badge/play%20the%20demos-play.openrpgmaker.com-10b981)](https://play.openrpgmaker.com/)
@@ -148,7 +147,7 @@ Bundled tilesets ship with reference documents the assistant can read, so it can
 
 Desktop builds for Windows and Linux are attached to each [release](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases). The buttons at the top download the newest one.
 
-- **Windows** — run the EXE, or unzip the ZIP and run `OPRN Studio.exe`.
+- **Windows** — run the EXE. It needs no install; the first launch unpacks itself and is slower.
 - **Linux** — `chmod +x` the AppImage, then run it.
 - **macOS** — no packaged build yet. Use the source command below.
 

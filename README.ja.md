@@ -9,7 +9,6 @@
 [English](README.md) · [中文](README.zh-CN.md) · **日本語** · [한국어](README.ko.md)
 
 [![Windows ダウンロード (EXE)](https://img.shields.io/badge/Windows-%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89%20EXE-2563eb?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.exe)
-[![Windows ダウンロード (ZIP)](https://img.shields.io/badge/Windows-%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89%20ZIP-2563eb?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.zip)
 [![Linux ダウンロード (AppImage)](https://img.shields.io/badge/Linux-%E3%83%80%E3%82%A6%E3%83%B3%E3%83%AD%E3%83%BC%E3%83%89%20AppImage-eab308?style=for-the-badge&logo=linux&logoColor=black)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-linux.AppImage)
 
 [![デモをプレイ](https://img.shields.io/badge/%E3%83%87%E3%83%A2%E3%82%92%E3%83%97%E3%83%AC%E3%82%A4-play.openrpgmaker.com-10b981)](https://play.openrpgmaker.com/?lang=ja)
@@ -148,7 +147,7 @@
 
 Windows・Linux のデスクトップ版は各[リリース](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases)に添付されています。上のボタンはいちばん新しいビルドをダウンロードします。
 
-- **Windows** —— EXE を実行するか、ZIP を展開して `OPRN Studio.exe` を実行してください。
+- **Windows** —— EXE を実行してください。インストール不要で、初回起動は自己展開のため少し時間がかかります。
 - **Linux** —— AppImage に `chmod +x` で実行権限を付けてから実行してください。
 - **macOS** —— パッケージ版はまだありません。下のソースからの起動を使ってください。
 
