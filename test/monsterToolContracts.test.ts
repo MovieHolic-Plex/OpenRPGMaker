@@ -12,7 +12,7 @@ let base: Project;
 beforeAll(async () => {
   const project = createBlankProject();
   const ctx = { project, currentMapId: project.startMapId };
-  const built = await runToolAsync(ctx as never, "build_monster_game", { mode: "create", gymCount: 1, speciesCount: 12 });
+  const built = await runToolAsync(ctx as never, "build_monster_game", { mode: "create", gymCount: 1, speciesCount: 12, mapSeed: 0 });
   expect(built.ok).toBe(true);
   base = ctx.project;
 }, 60_000);
