@@ -137,8 +137,7 @@
 
 .ai-chat-log .ai-next-step-chip:hover,
 .ai-chat-log .ai-next-step-chip:focus-visible {
-  background: var(--accent-active);
-  color: var(--bg-0, #000);
+  border-color: var(--text-1);
 }
 
 /* 언급된 자료 썸네일(14 레이어에서 이관). 픽셀 아트라 보간하지 않는다. */
