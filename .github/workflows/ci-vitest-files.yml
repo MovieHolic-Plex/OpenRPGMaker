@@ -1,8 +1,7 @@
 name: ci-vitest-files
 
 # 지정한 vitest 파일만 mdc2-heavy 에서 돌린다 — 수동(workflow_dispatch) 전용.
-# `runs-on` 식은 포크 PR 과 pull_request_target 을
-# `||` 뒤의 GitHub 호스티드 러너(ubuntu-latest)로 보낸다.
+# 포크 PR 과 pull_request_target 은 잡 `if:` 의 포크 가드가 건너뛴다(호스티드 러너는 쓰지 않는다).
 #
 # 왜 (2026-10-25): 테스트는 CI 에서만 돈다(로컬 vitest 는 금지). 그런데 ci-full 은 샤드 넷에 약 3시간 20분이 걸려
 # (run 40165485978), 실패 묶음 하나를 고친 뒤 그 파일 몇 개가 정말 통과하는지 보려고 ci-full 을 돌리면 하루에 몇 번 못 본다.
@@ -51,7 +50,8 @@ permissions:
 
 jobs:
   vitest:
-    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2","mdc2-heavy"]') || 'ubuntu-latest' }}
+    if: github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: [self-hosted, linux, x64, mdc2, mdc2-heavy]
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -142,3 +142,8 @@ jobs:
           if [ "$verdict" = "VERDICT: CLEAN" ]; then echo "::notice title=ci-vitest-files::${note}"; else echo "::error title=ci-vitest-files::${note}"; fi
           echo "$line"
           echo "$more"
+      # 러너 작업 디렉터리 정리 (2026-11-23). 완료 훅은 _temp 만 비운다. 복사한 node_modules·빌드 산출물이
+      # 러너 18대마다 남아 디스크를 채우지 않게 업로드 뒤에 지운다. 다음 잡의 checkout 이 소스를 다시 받는다.
+      - name: 작업 디렉터리 정리
+        if: always() && runner.environment == 'self-hosted'
+        run: rm -rf -- node_modules dist dist-electron .vite-cache .omo/gates-*report*.json

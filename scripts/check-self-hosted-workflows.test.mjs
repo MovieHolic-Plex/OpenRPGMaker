@@ -1,35 +1,48 @@
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import test from "node:test";
 import { load } from "js-yaml";
-import { isAllowedRunsOn, runsOnValues } from "./check-self-hosted-workflows.mjs";
+import { FORK_GUARD, PENDING, checkWorkflow, hasForkGuard, isAllowedRunsOn, jobsOf, runsOnValues } from "./check-self-hosted-workflows.mjs";
 
-const labels = '["self-hosted","linux","x64","mdc2"]';
-const targetCheck = "github.event_name != 'pull_request_target'";
-const sameRepo = "github.event.pull_request.head.repo.full_name == github.repository";
-const forkCheck = `github.event_name != 'pull_request' || ${sameRepo}`;
-const safeExpression = "${{ " + `${targetCheck} && (${forkCheck}) && fromJSON('${labels}') || 'ubuntu-latest' }}`;
+const fast = ["self-hosted", "linux", "x64", "mdc2", "mdc2-fast"];
+const heavy = ["self-hosted", "linux", "x64", "mdc2", "mdc2-heavy"];
+const workflowDir = new URL("../.github/workflows/", import.meta.url);
+const workflowSource = (name) => readFileSync(new URL(`${name}.yml`, workflowDir), "utf8");
 
-const fastRunner = safeExpression.replace(labels, labels.replace('"mdc2"', '"mdc2","mdc2-fast"'));
-const heavyRunner = fastRunner.replace("mdc2-fast", "mdc2-heavy");
-const workflowSource = (name) => readFileSync(new URL(`../.github/workflows/${name}.yml`, import.meta.url), "utf8");
+test("every workflow in the repository passes the self-hosted contract", () => {
+  for (const file of readdirSync(workflowDir).filter((name) => /\.ya?ml$/.test(name))) {
+    assert.deepEqual(checkWorkflow(file, readFileSync(new URL(file, workflowDir), "utf8")).violations, [], file);
+  }
+});
 
-test("Linux CI routes trusted events to mdc2 and keeps hosted capacity for the full suite", () => {
+test("Linux jobs run on mdc2 labels, heavy jobs on mdc2-heavy, and only the listed jobs stay hosted", () => {
   for (const [workflow, jobs] of Object.entries({
-    "ci-fast": { fast: fastRunner, "fast-parity": fastRunner, "fast-static": fastRunner },
-    "ci-full": { static: heavyRunner, tests: "ubuntu-latest" },
-    "ci-vitest-files": { vitest: heavyRunner },
-    "security-audit": { audit: fastRunner },
-    "windows-worker-smoke": { build: fastRunner, smoke: "windows-latest" },
+    "ci-fast": { fast, "fast-parity": fast, "fast-static": fast },
+    "ci-full": { static: heavy, tests: heavy },
+    "ci-vitest-files": { vitest: heavy },
+    "security-audit": { audit: fast },
+    "mac-onboarding": { "launcher-and-private-setup": "macos-latest" },
     parity: {
-      "editor-player-parity": fastRunner, "unit-tests": "ubuntu-latest",
-      build: fastRunner, e2e: "ubuntu-latest", "ax-gates": fastRunner,
-      "css-gates": fastRunner, "surface-gates": fastRunner,
+      "editor-player-parity": fast, "unit-tests": fast, build: fast, e2e: fast,
+      "ax-gates": fast, "css-gates": fast, "surface-gates": fast,
     },
   })) {
     const runners = Object.fromEntries(runsOnValues(workflowSource(workflow)).map(({ job, value }) => [job, value]));
     assert.deepEqual(runners, jobs, workflow);
   }
+  assert.deepEqual(
+    Object.fromEntries(Object.entries(PENDING).map(([file, jobs]) => [file, Object.keys(jobs)])),
+    {
+      "mac-onboarding.yml": ["launcher-and-private-setup"],
+      "desktop-release.yml": ["packages"],
+    },
+  );
+});
+
+test("ci-full vitest shards are capped on mdc2", () => {
+  const tests = load(workflowSource("ci-full")).jobs.tests;
+  assert.equal(tests.strategy["max-parallel"], 8);
+  assert.equal(tests.strategy.matrix.shard.length, 16);
 });
 
 test("desktop-release uses trusted triggers, and publishes only after upload and asset verification", () => {
@@ -38,7 +51,6 @@ test("desktop-release uses trusted triggers, and publishes only after upload and
   assert.deepEqual(workflow.on.release.types, ["published"]);
   assert.deepEqual(workflow.on.schedule, [{ cron: "*/30 * * * *" }]);
   const packages = workflow.jobs.packages;
-  assert.equal(packages["runs-on"], heavyRunner);
   assert.match(packages.if, /github\.repository == 'MovieHolic-Plex\/OpenRPGMaker'/);
   const upload = packages.steps.findIndex(({ run }) => run?.includes("gh release upload"));
   const publish = packages.steps.findIndex(({ run }) => run?.includes("-F draft=false"));
@@ -47,76 +59,56 @@ test("desktop-release uses trusted triggers, and publishes only after upload and
   assert.match(packages.steps[publish].if, /steps\.preflight\.outputs\.draft == 'true'/);
 });
 
-test("allows hosted runner labels in scalar, flow sequence, and block sequence forms", () => {
-  const entries = runsOnValues(`jobs:
-  linux:
-    runs-on: ubuntu-22.04 # pinned image
-  windows:
-    runs-on: ["windows-latest"]
-  mac:
-    runs-on:
-      - 'macos-latest'
-  reusable:
-    uses: ./.github/workflows/reusable.yml
-`);
-  assert.deepEqual(entries.map(({ job }) => job), ["linux", "windows", "mac"]);
-  for (const { job, value } of entries) assert.equal(isAllowedRunsOn(value), true, job);
+test("allows self-hosted mdc2 and win11 label lists", () => {
+  assert.equal(isAllowedRunsOn(fast), true);
+  assert.equal(isAllowedRunsOn(heavy), true);
+  assert.equal(isAllowedRunsOn(["self-hosted", "Windows", "X64", "win11"]), true);
 });
 
-test("rejects bare self-hosted labels and raw lists including hosted or mdc2 labels", () => {
-  const entries = runsOnValues(`jobs:
-  bare: { "runs-on": Self-Hosted }
-  flow:
-    runs-on: [self-hosted, linux, x64, mdc2]
-  block:
-    runs-on:
-      - ubuntu-latest
-      - self-hosted
-`);
-  assert.deepEqual(entries.map(({ job }) => job), ["bare", "flow", "block"]);
-  for (const { job, value } of entries) assert.equal(isAllowedRunsOn(value), false, job);
+test("rejects hosted labels, expressions, and incomplete self-hosted lists", () => {
+  for (const value of [
+    "ubuntu-latest", ["windows-latest"], "macos-14", ["self-hosted", "linux", "mdc2", "ubuntu-latest"],
+    "self-hosted", ["self-hosted", "linux", "x64"], ["linux", "mdc2"], ["self-hosted", "windows", "mdc2"], [],
+    "${{ github.event_name != 'pull_request_target' && fromJSON('[\"self-hosted\",\"linux\",\"mdc2\"]') || 'ubuntu-latest' }}",
+  ]) {
+    assert.equal(isAllowedRunsOn(value), false, JSON.stringify(value));
+  }
 });
 
-test("allows the guarded mdc2 and mdc2-heavy expressions", () => {
-  assert.equal(isAllowedRunsOn(safeExpression), true);
-  const heavy = labels.replace('"mdc2"', '"mdc2", "mdc2-heavy"');
-  assert.equal(isAllowedRunsOn(safeExpression.replace(labels, heavy)), true);
+test("accepts the fork guard alone, wrapped, folded, or with a parenthesised extra condition", () => {
+  assert.equal(hasForkGuard(FORK_GUARD), true);
+  assert.equal(hasForkGuard("${{ " + FORK_GUARD + " }}"), true);
+  assert.equal(hasForkGuard(FORK_GUARD.replaceAll(" && ", " &&\n   ")), true);
+  assert.equal(hasForkGuard(`${FORK_GUARD} && (github.repository == 'a/b' || github.event_name == 'schedule')`), true);
 });
 
-test("allows folded YAML, extra whitespace, and swapped equality operands", () => {
-  const expression = safeExpression.replace(sameRepo, "github.repository   ==   github.event.pull_request.head.repo.full_name");
-  const folded = expression.replaceAll(" && ", " &&\n      ");
-  const [{ value }] = runsOnValues(`jobs:\n  folded:\n    runs-on: >-\n      ${folded}\n`);
-  assert.equal(isAllowedRunsOn(value), true);
+test("rejects missing guards and conditions that can bypass the guard", () => {
+  for (const condition of [
+    undefined,
+    "always()",
+    FORK_GUARD.replace("github.event_name != 'pull_request_target' && ", ""),
+    `${FORK_GUARD} || always()`,
+    `${FORK_GUARD} && always()`,
+    `${FORK_GUARD} && (always()) || (always())`,
+    `always() || ${FORK_GUARD}`,
+    `${FORK_GUARD} && (github.ref == ')') || (true)`,
+  ]) {
+    assert.equal(hasForkGuard(condition), false, String(condition));
+  }
 });
 
-test("rejects expressions missing the fork check or using OR to bypass it", () => {
-  assert.equal(isAllowedRunsOn(safeExpression.replace(`(${forkCheck}) && `, "")), false);
-  assert.equal(isAllowedRunsOn(safeExpression.replace(`(${forkCheck}) &&`, `(${forkCheck}) ||`)), false);
-});
-
-test("rejects expressions without a hosted fallback", () => {
-  assert.equal(isAllowedRunsOn(safeExpression.replace(" || 'ubuntu-latest'", "")), false);
-  assert.equal(isAllowedRunsOn(safeExpression.replace("'ubuntu-latest'", "'mdc2'")), false);
-});
-
-test("rejects pull_request_target workflows that can select self-hosted", () => {
-  const unsafe = safeExpression.replace(targetCheck, "github.event_name == 'pull_request_target'");
-  const entries = runsOnValues(`on: [pull_request, pull_request_target]
+test("rejects pull_request_target and workflow_run triggers, and unguarded jobs", () => {
+  const source = (on, condition) => `on: ${on}
 jobs:
-  safe:
-    runs-on: ${safeExpression}
-  unsafe:
-    runs-on: ${unsafe}
-`);
-  assert.deepEqual(entries.map(({ value }) => isAllowedRunsOn(value)), [true, false]);
-  assert.equal(isAllowedRunsOn(safeExpression.replace(`${targetCheck} && `, "")), false);
-});
-
-test("requires a single expression and a JSON array with self-hosted and mdc2", () => {
-  assert.equal(isAllowedRunsOn(`${safeExpression} trailing text`), false);
-  assert.equal(isAllowedRunsOn(safeExpression.replace(labels, '["self-hosted","linux"]')), false);
-  assert.equal(isAllowedRunsOn(safeExpression.replace(labels, '["mdc2","linux"]')), false);
-  assert.equal(isAllowedRunsOn(safeExpression.replace(labels, '["self-hosted","mdc2",]')), false);
-  assert.equal(isAllowedRunsOn([safeExpression]), false);
+  build:
+    if: ${condition}
+    runs-on: [self-hosted, linux, x64, mdc2]
+    steps: []
+`;
+  assert.deepEqual(checkWorkflow("x.yml", source("[pull_request]", JSON.stringify(FORK_GUARD))).violations, []);
+  assert.equal(checkWorkflow("x.yml", source("[pull_request_target]", JSON.stringify(FORK_GUARD))).violations.length, 1);
+  assert.equal(checkWorkflow("x.yml", source("[workflow_run]", JSON.stringify(FORK_GUARD))).violations.length, 1);
+  assert.equal(checkWorkflow("x.yml", source("[push]", "always()")).violations.length, 1);
+  const [{ condition }] = jobsOf(source("[push]", JSON.stringify(FORK_GUARD)));
+  assert.equal(condition, FORK_GUARD);
 });

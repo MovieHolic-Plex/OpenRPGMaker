@@ -56,12 +56,17 @@
 - `fast`(AI 워커 컴파일·캐릭터 하네스·타입체크 src·앱 빌드), `fast-parity` 4샤드(`vitest --shard`),
   `fast-static`(jp_city 핀·타입체크:electron-store·배럴·러너 선택 계약과 테스트·런타임 에셋·CSS 래칫·openwiki 인덱스)이
   서로 의존하지 않는다. 같은 저장소의 푸시·PR 에서는 여섯 잡 모두 mdc2 러너(`mdc2-fast`, 10대)를 쓴다.
-  포크 PR 과 `pull_request_target` 의 러너 선택은 `ubuntu-latest` 다.
+  포크 PR 과 `pull_request_target` 은 잡을 건너뛴다(잡마다 포크 가드 `if:`). 포크 PR 은 메인테이너가 브랜치로 옮겨 돌린다.
+  **GitHub 호스티드 러너는 쓰지 않는다** (2026-11-23, 오너 「github runner 를 아예 안 쓰고싶다」).
+  `npm run gates:self-hosted`(`scripts/check-self-hosted-workflows.mjs`)가 runs-on 은 self-hosted 라벨 목록,
+  `if:` 는 포크 가드로 시작, 트리거에 `pull_request_target`·`workflow_run` 금지를 검사하고, 남은 예외(`PENDING`)를 찍는다.
+  윈도 스모크 워크플로(windows-cli-smoke·windows-worker-smoke)는 오너 결정으로 지웠다. 윈도 exe 는 desktop-release 가 mdc2 에서 크로스 빌드한다.
   mdc2 에서는 시작 훅이 준비한 Git 미러와 러너별 `_tool/oprn-ci` 캐시를 재사용한다.
   의존성 스냅샷은 lockfile·Node/npm 판·설치 방식에 묶고 잡 작업공간에 복사한다.
   TypeScript 증분 자료도 러너별이다. 패리티는 Node 환경에서 실행하며 고정 포트나 X 디스플레이를 쓰지 않는다.
   수동 `ci-vitest-files` 는
-  같은 선택식에 `mdc2-heavy` 라벨을 더해 mdc2 러너(10대: runner-1..4 는 MemoryMax=22G·CPUQuota=500%, runner-5..10 은 20G·400%)를 쓴다.
+  `mdc2-heavy` 라벨로 mdc2 러너(10대: runner-1..4 는 MemoryMax=22G·CPUQuota=500%, runner-5..10 은 20G·400%)를 쓴다.
+  `mdc2-fast` 는 18대 전부, `mdc2-heavy` 는 runner-1..10 에만 둔다. 무거운 잡이 한꺼번에 받을 수 있는 러너는 10대다.
   왜 (2026-11-19, run 44483882406): 옛 `fast` 는 6분 28초가 전부 직렬이었고 그중 parity 가 230초(가져오기 40%)였다.
   같은 날 실측(run 44531254883, 44533700673, 44536145289)에서 ci-full 과 여러 PR 이 겹치자
   4초짜리 집계 잡이 선행 잡 완료 뒤 101~733초 동안 러너를 기다렸다. 집계를 머지 도우미로 옮겨 마지막 대기를 없앴다.
@@ -69,12 +74,14 @@
   초록이어야 `--match-head-commit` 으로 머지한다. 체크가 빠졌으면 기다리고 실패·취소된 체크가 있으면 머지를 거절한다.
 - ci-full 은 main 푸시마다가 아니라 `17 */4 * * *` cron 이다. 푸시마다 걸면 한 판(약 4시간) 동안 대기 자리를 새 푸시가
   계속 빼앗아 60판 중 51판이 cancelled 였다. 판정 논리(기준선 대비 회귀만 실패)는 그대로다.
-  정적 잡은 mdc2 에서 돈다. 테스트 16샤드는 `ubuntu-latest` 에서 돌려 mdc2 의 PR CI 자리를 비워 둔다.
+  정적 잡과 테스트 16샤드 모두 mdc2(`mdc2-heavy`)에서 돈다. 샤드는 `max-parallel: 8` 로 동시 수를 묶고
+  (박스 MemAvailable 25GB 아래가 위험선, 같은 박스에 win11 VM), 끝에 node_modules 복사본을 지운다.
+  호스티드 시절에는 샤드 하나가 중앙 72분·최대 204분이었다(최근 30일).
 - 브랜치 보호의 필수 체크 `fast` 는 저장소 설정이고 이제 빌드 잡을 확인한다.
 - **bun 은 고정판(1.4.2)을 npm 에서 받는다** (2026-11-08). 옛 `curl -fsSL https://bun.sh/install | bash` 는
   «latest» 를 GitHub 릴리스에서 받고 재시도가 없어, ci-fast 100판 중 18판이 `releases/latest/…zip` 의
-  503·504 로 죽었다(PR 코드와 무관). ci-fast·desktop-release·windows-worker-smoke 가 같은 판을 쓴다 —
-  ci-fast 가 «릴리스와 같은 컴파일러»를 검증한다는 전제가 그것이다. 올릴 때는 `BUN_VERSION` 을 세 파일에서 같이 고친다.
+  503·504 로 죽었다(PR 코드와 무관). ci-fast·ci-full·desktop-release 가 같은 판을 쓴다 —
+  ci-fast 가 «릴리스와 같은 컴파일러»를 검증한다는 전제가 그것이다. 올릴 때는 `bun-version` 을 세 파일에서 같이 고친다.
 - **CSS 래칫 실패는 대개 PR 자신의 CSS 변경 + 기준선 미갱신이다** (2026-11-08: 14건 중 12건이 css-winners,
   1건 surfaces, 1건 hex). 게이트는 결정적이다(깨끗한 origin/main 에서 두 번 돌려 출력 md5 동일).
   그래서 `verify-gates.mjs --only css` 는 실패한 하위 게이트마다 그 기준선을 다시 뜨는 **정확한 한 줄**을

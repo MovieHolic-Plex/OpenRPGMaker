@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// 윈도 러너에서 로컬 CLI 감지가 실제로 되는지 본다(.github/workflows/windows-cli-smoke.yml).
+// 윈도에서 로컬 CLI 감지가 실제로 되는지 본다. 윈도 PC 에서 손으로 돌린다.
+// (CI 워크플로 windows-cli-smoke 는 2026-11-23 오너 결정으로 지웠다. 호스티드 러너를 쓰지 않는다.)
 // node 24 는 .ts 를 타입만 지우고 바로 읽는다 — localCliAgent 는 node 내장 모듈만 쓰므로 npm ci 가 필요 없다.
 //
 // EXPECT_INSTALLED=codex,gemini[,claude]: 설치 단계가 성공한 CLI. 그중 found:false 가 있으면 exit 1.
