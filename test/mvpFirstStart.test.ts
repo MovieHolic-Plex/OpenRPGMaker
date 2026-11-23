@@ -9,6 +9,10 @@ import { V2Session } from "@/ai/v2/turn/session";
 import { mapsNeed, mvpGame, smallGame } from "@/ai/v2/judge/blueprintScale";
 import { mvpNextSteps, nextStepsBlock, splitNextSteps, NEXT_STEPS_HEADING } from "@/ai/nextSteps";
 import type { Project } from "@/project/types";
+import { worldForRequest } from "@/ai/v2/request/world";
+import { enableGenreLock } from "@/project/genreLock";
+import { createProjectStartSeed } from "@/editor/projectStartSeed";
+import { startScreenPrompt } from "@/editor/startScreenPrompt";
 
 function transfers(node: unknown, out: string[] = []): string[] {
   if (Array.isArray(node)) { for (const item of node) transfers(item, out); return out; }
@@ -107,4 +111,15 @@ describe("next step chips text", () => {
     const text = `${NEXT_STEPS_HEADING}\n그냥 문장`;
     expect(splitNextSteps(text)).toEqual({ body: text, steps: [] });
   });
+});
+
+// 2026-11-23 실측: 몬스터 수집 씨앗에 «몬스터를 모으며 모험하는 게임» 요청이 우주 정거장 세계를 골라 make_place 가 장르 잠금에 매번 막혔다(맵 1장).
+describe("world pick under a genre lock", () => {
+  const task = startScreenPrompt({ choiceId: "adventure-jrpg", intent: "몬스터를 모으며 모험하는 게임을 만들어 줘." })!;
+  it("picks a world for the unlocked adventure seed and none once the monster-collect lock forbids it", async () => {
+    const project = await createProjectStartSeed("adventure-jrpg", "새 프로젝트", "ai", "wide");
+    expect(worldForRequest(project, "k", task)).toBeDefined();
+    enableGenreLock(project, "monster-collect");
+    expect(worldForRequest(project, "k", task)).toBeUndefined();
+  }, 60_000);
 });
