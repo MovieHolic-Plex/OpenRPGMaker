@@ -208,6 +208,9 @@ Node 쪽 `aiAuthRuntime.ts` 라 워커 없이 된다). 워커는 `@oh-my-pi/pi-n
 - 받을 곳이 빌드 커밋에 묶이므로 **그 커밋이 공개 저장소에 푸시돼 있어야 한다**(스크립트가 아니면 경고한다). 릴리스는 태그 커밋이라 늘 맞다.
 - 못 받으면(오프라인·해시 불일치) 404 로 그 그림만 빠진다. 장소 가져오기는 스냅숏으로 물러난다(`regionReferenceImport.ts`).
 
+그다음 `scripts/desktop-png-optimize.mjs` 가 패키지에 남은 `dist` PNG 를 oxipng(고정 판, SHA-256 확인)로 무손실 재압축한다.
+저장소 원본은 그대로다(그림 해시를 쓰는 관문과 웹 빌드가 원본을 본다). 2026-11-23 실측: 초상 밖 PNG 8,860장 188.0MB → 124.7MB, RGBA 화소 차이 0.
+
 ## 커밋 메시지가 릴리스 노트의 원고다
 
 `npm run release` 는 `git log` 에서 노트를 만든다(`scripts/lib/releaseNotes.mjs`). 손으로 쓰는 노트는
