@@ -7,6 +7,7 @@ import { extractOriginalContext, originalContextWindow } from "@/ai/originalCont
 import { createBlankMap, createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { independentReviewPayload } from "./independentReviewFixture";
+import { chatgptFixtureConfig } from "./helpers/chatgptFixtureConfig";
 // The 2026-10-07 default (beodeul_city, ~7MB) alone overflows complete review evidence; these window/scope cases keep the small retired sheet.
 import { RETIRED_COMBINED_TOWN_TILESET_ID, startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
@@ -37,8 +38,8 @@ describe("independent review map deltas", () => {
     const renamed = { ...structuredClone(target), name: "Renamed target" };
     after.maps[target.id] = renamed;
     const input = reviewInput(before, after);
-    // 이 경우는 1M 급 창의 검토자에서 잰다 — 공장 기본은 2026-11-19 에 ChatGPT(GPT-6.2 Sol, 500k 창)로 바뀌었으므로
-    // Claude 계정(Sonnet 5.5, 1M 창)을 고른 설정으로 고정한다.
+    // 이 경우는 1M 급 창의 검토자에서 잰다 — 공장 기본이 ChatGPT(GPT-6.2 Sol, 500k 창)였던 2026-11-19 ~ 2026-11-23 에 Claude 계정을
+    // 고른 설정으로 고정했고, 지금 공장 기본은 Claude(Sonnet 5.5, 1M 창)지만 그 고정은 그대로 둔다.
     const config = configForProviderSelection(defaultAiConfig(), "anthropic");
     expect(config.providerId).toBe("anthropic");
     expect(config.model).toBe("claude-sonnet-5-5");
@@ -85,7 +86,7 @@ describe("independent review map deltas", () => {
     expect(reviewChanges(before, structuredClone(before))).toEqual([]);
   });
 
-  it("still refuses genuinely oversized complete changed-map evidence on the default reviewer", () => {
+  it("still refuses genuinely oversized complete changed-map evidence on a 500k-window reviewer", () => {
     const before = startOnRetiredCombinedTown(createBlankProject());
     const target = { ...createBlankMap("Large target", 512, 512, RETIRED_COMBINED_TOWN_TILESET_ID), id: before.startMapId };
     before.maps[target.id] = target;
@@ -93,7 +94,8 @@ describe("independent review map deltas", () => {
     after.maps[target.id] = { ...structuredClone(target), name: "Renamed large target" };
     const input = reviewInput(before, after);
 
-    expect(() => buildIndependentReviewRequest(defaultAiConfig(), input))
+    // 500k 창(GPT-6.2 Sol) 검토자에서 넘친다 — 공장 기본(Claude Sonnet 5.5, 1M 창)이 아니라 ChatGPT 로 저장된 설정으로 잰다.
+    expect(() => buildIndependentReviewRequest(chatgptFixtureConfig(), input))
       .toThrow("independent-review-window-exceeded");
   });
 });

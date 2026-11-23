@@ -31,10 +31,12 @@ afterEach(() => {
 
 async function render(): Promise<{ root: FakeElement; dispose: () => void }> {
   const { defaultAiConfig } = await import("@/ai/llmClient");
+  const { configForProviderSelection } = await import("@/ai/providerSelection");
   const { renderAiAuthSettings } = await import("@/editor/panels/aiAuthSettings");
   let view!: ReturnType<typeof renderAiAuthSettings>;
   const root = renderWithFakeDom(() => {
-    view = renderAiAuthSettings(defaultAiConfig(), () => undefined);
+    // 연결 해제 경로만 본다 — 제공자는 ChatGPT 로 고정한다(공장 기본은 Claude, 2026-11-23).
+    view = renderAiAuthSettings(configForProviderSelection(defaultAiConfig(), "openai-codex"), () => undefined);
     return view.element;
   });
   return { root, dispose: () => view.dispose() };
@@ -78,7 +80,7 @@ describe("연결 해제", () => {
     await vi.waitFor(() => {
       expect(findByTestId(root, "ai-oauth-status")?.dataset.tone).toBe("disconnected");
     });
-    // 공장 기본 제공자(ChatGPT, 2026-11-19)의 자격을 지운다.
+    // 화면에 고른 제공자(ChatGPT)의 자격을 지운다.
     expect(disconnectCompanionAuth).toHaveBeenCalledWith("openai-codex");
     // 해제 후에는 다시 뜨지 않는다 — 남은 자격이 없다.
     expect(button?.hidden).toBe(true);

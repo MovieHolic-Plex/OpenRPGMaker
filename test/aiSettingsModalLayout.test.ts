@@ -2,6 +2,7 @@
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { modalStackDepthForTest, resetModalStackForTest } from "@/editor/ui/modalStack";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
+import { chatgptFixtureConfig } from "./helpers/chatgptFixtureConfig";
 
 // 역할 배정 표는 모달을 열 때 연결된 경로를 비동기로 가져와 다시 그린다. 오프라인에서도 그 약속은 테스트가 끝난 뒤에
 // 풀려 복원된 happy-dom document 로 옵션을 만들고 가짜 select 에 붙이다 미처리 오류를 낸다 — 이 파일은 경로 조회를 보지 않는다.
@@ -85,6 +86,11 @@ afterEach(async () => {
   vi.unstubAllGlobals();
 });
 
+/** 이 파일의 ChatGPT 계정 시험은 ChatGPT 로 저장된 설정으로 연다 — 공장 기본은 Claude 다(2026-11-23). */
+function seedChatGptConfig(): void {
+  storage.set("oprn:ai-config", JSON.stringify(chatgptFixtureConfig()));
+}
+
 async function openModal(): Promise<FakeElement> {
   const { openAiSettingsModal } = await import("@/editor/panels/aiSettingsModal");
   openAiSettingsModal();
@@ -132,6 +138,7 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
   });
 
   it("로그인하면 GPT-6.2 Sol 품질을 고르고 역할을 따로 바꾸면 선택을 푼다", async () => {
+    seedChatGptConfig();
     fetchChatGptAuthStatus.mockResolvedValue({ connected: true, accountEmail: "you@example.com" });
     const modal = await openModal();
     const account = findByTestId(modal, "ai-settings-chatgpt-account");
@@ -202,6 +209,7 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
   });
 
   it("다른 연결에서 기존 상태를 다시 확인할 수 있다", async () => {
+    seedChatGptConfig();
     const modal = await openModal();
     const summary = findByTestId(modal, "ai-settings-connection-summary");
     const check = findByTestId(modal, "ai-settings-connection-check");
@@ -218,6 +226,7 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
   it("다른 연결의 요약은 인증 패널 상태를 공유한다", async () => {
     // 옛 헤더는 열 때 따로 한 번 조회해서 패널과 다른 말을 했다(패널 「로그인 대기 중」, 헤더 「로그인이 필요합니다」).
     fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
+    seedChatGptConfig();
     const modal = await openModal();
     await vi.waitFor(() => {
       expect(findByTestId(modal, "ai-oauth-status")?.textContent).toBe("로그인 필요");

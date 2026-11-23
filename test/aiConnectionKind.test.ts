@@ -92,13 +92,13 @@ describe("에디터의 제공자 선택 — 두 구독 로그인", () => {
     expect(editorConnectionKind({ ...GATEWAY, providerId: "zai" })).toBe("oauth");
   });
 
-  it("종류와 무관하게 같은 제공자 목록(앞의 셋은 ChatGPT·Claude·Google)을 노출하고, 사용자에게 선택권이 있다", () => {
+  it("종류와 무관하게 같은 제공자 목록(앞의 셋은 Claude·ChatGPT·Google)을 노출하고, 사용자에게 선택권이 있다", () => {
     // 이전 계약은 "Antigravity 하나만", 그다음은 "둘뿐" 이었다. abaa03e78f(2026-11-02) 로 17종이 됐다.
-    // 2026-11-16(오너 결정)에 Claude 가 맨 앞이었고, 2026-11-19(오너 결정: 기본 AI 는 ChatGPT)부터 ChatGPT 가 맨 앞이다. 앞의 셋 순서가 고정이다.
+    // 2026-11-16(오너 결정)에 Claude 가 맨 앞이었고, 2026-11-19 에 ChatGPT 가 맨 앞이었다가, 2026-11-23(오너 결정: 조수는 Sonnet 5.5 high)부터 다시 Claude 가 맨 앞이다. 앞의 셋 순서가 고정이다.
     for (const kind of ["oauth", "apiKey"] as const) {
       expect(providersForKind(kind).map((provider) => provider.id).slice(0, 3)).toEqual([
-        CODEX_PROVIDER_ID,
         "anthropic",
+        CODEX_PROVIDER_ID,
         ANTIGRAVITY_PROVIDER_ID,
       ]);
       expect(providersForKind(kind).length).toBeGreaterThan(3);
@@ -107,11 +107,11 @@ describe("에디터의 제공자 선택 — 두 구독 로그인", () => {
     expect(editorHasProviderChoice()).toBe(true);
   });
 
-  it("목록의 첫 항목은 기본 제공자(ChatGPT)이고 두 종류의 기본값이 같다", () => {
-    expect(providersForKind("oauth")[0]?.id).toBe(CODEX_PROVIDER_ID);
-    expect(defaultProviderForKind("oauth")).toBe(CODEX_PROVIDER_ID);
+  it("목록의 첫 항목은 기본 제공자(Claude)이고 두 종류의 기본값이 같다", () => {
+    expect(providersForKind("oauth")[0]?.id).toBe("anthropic");
+    expect(defaultProviderForKind("oauth")).toBe("anthropic");
     // "API 키" 쪽에 내놓을 제공자가 없으므로 가짜 apiKey 제공자를 만들지 않고 같은 기본값을 쓴다.
-    expect(defaultProviderForKind("apiKey")).toBe(CODEX_PROVIDER_ID);
+    expect(defaultProviderForKind("apiKey")).toBe("anthropic");
     expect(ohMyPiAuthKind(defaultProviderForKind("apiKey"))).toBe("oauth");
   });
 

@@ -17,7 +17,7 @@ import { DEFAULT_PI_TEAM, LEGACY_PI_TEAM_ROUTE } from "./piAgent/executionDefaul
 import type { AutonomyLevel } from "@/ai/autonomyLevels";
 import { AUTONOMY_LEVEL_IDS } from "@/ai/autonomyLevels";
 import { PRODUCT_BRAND } from "@/brand";
-import { ANTHROPIC_PROVIDER_ID, CHATGPT_DEFAULT_EFFORT, CHATGPT_DEFAULT_MODEL, CLAUDE_DEFAULT_MODEL, DEFAULT_OH_MY_PI_PROVIDER, RECOMMENDED_OH_MY_PI_PROVIDER, getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
+import { ANTHROPIC_PROVIDER_ID, CHATGPT_DEFAULT_EFFORT, CHATGPT_DEFAULT_MODEL, CLAUDE_DEFAULT_EFFORT, CLAUDE_DEFAULT_MODEL, DEFAULT_OH_MY_PI_PROVIDER, RECOMMENDED_OH_MY_PI_PROVIDER, getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { parseImageDelivery, type ImageDelivery } from "./imageDelivery";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID, RECOMMENDED_IMAGE_MODEL, RECOMMENDED_IMAGE_PROVIDER_ID } from "@/ai/imageModelCatalog";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
@@ -156,7 +156,7 @@ export const DEFAULT_CHATGPT_BASE_URL = companionCompletionsBaseUrl();
 // 1.55×(30k), 실제 Pi 런은 중앙값 기준 1.28~1.36×.
 // 저장된 제공자 선택은 존중된다. providerId 가 없는 옛 blob 은 옛 기본 제공자(Antigravity)로 읽히므로
 // 이 상수가 그 blob 의 모델 기본값이다 — **Google 계정의 기본 모델**이다.
-// 새로 설정하는 사용자의 공장 기본은 이 상수가 아니라 Claude Opus 5.5 · medium 이다(defaultAiConfig, 2026-11-16).
+// 새로 설정하는 사용자의 공장 기본은 이 상수가 아니라 Claude Sonnet 5.5 · high 다(defaultAiConfig, 2026-11-23).
 export const DEFAULT_MODEL = "gemini-4-argon";
 // DEFAULT_LITE_MODEL: 실행 단계용. 기본은 DEFAULT_MODEL과 동일 → 이원화 비활성.
 export const DEFAULT_LITE_MODEL = "gemini-4-argon";
@@ -239,29 +239,30 @@ function promoteLegacyRoleModels(roles: SpecialistModels, pinned: Partial<Record
  */
 export function defaultAiConfig(): AiConfig {
   const legacy = legacyStoredAiConfigBase();
-  // 새로 설정하는 사용자의 공장 기본(2026-11-19, 오너 결정: 「기본 AI 를 ChatGPT 로」): 계획·실행·시각·작문·시공·감독(ultrabrain) 모두
-  // ChatGPT(Codex 계정 로그인)의 GPT-6.2 Sol · medium 한 모델이다 — 첫 실행 마법사가 ChatGPT 로그인에 맞추는 팀(planDefaults)과 같다.
-  // 지난 기본은 Claude Opus 5.5 medium(2026-11-16), 그 전은 Google 의 Gemini 4 Argon medium(2026-10-14, PR #2535)이었다.
-  // Google·Claude 는 사용자가 고를 때만 쓴다 — 이미 저장된 설정은 loadAiConfig 가 그대로 읽는다(Google·Claude 로 저장된 설정을 ChatGPT 로 옮기지 않는다).
-  const chatgptMedium = { provider: RECOMMENDED_OH_MY_PI_PROVIDER, model: CHATGPT_DEFAULT_MODEL, thinkingLevel: CHATGPT_DEFAULT_EFFORT } as const;
+  // 새로 설정하는 사용자의 공장 기본(2026-11-23, 오너 결정: 「조수는 sonnet 5.5 high 만 쓰게」): 계획·실행·시각·작문·시공·감독(ultrabrain) 모두
+  // Claude 의 Sonnet 5.5 · high 한 모델이다 — 첫 실행 마법사가 Claude 구독에 맞추는 팀(planDefaults)과 같다.
+  // 지난 기본은 ChatGPT 의 GPT-6.2 Sol medium(2026-11-19), Claude Opus 5.5 medium(2026-11-16), Google 의 Gemini 4 Argon medium(2026-10-14, PR #2535)이었다.
+  // ChatGPT·Google 은 사용자가 고를 때만 쓴다 — 이미 저장된 설정은 loadAiConfig 가 그대로 읽는다(ChatGPT·Google 로 저장된 설정을 Claude 로 옮기지 않는다).
+  // 그림 만들기(imageProviderId)는 이 선택과 무관하게 ChatGPT 뿐이다(오너 결정 2026-11-19).
+  const claudeHigh = { provider: RECOMMENDED_OH_MY_PI_PROVIDER, model: CLAUDE_DEFAULT_MODEL, thinkingLevel: CLAUDE_DEFAULT_EFFORT } as const;
   return {
     ...legacy,
     providerId: RECOMMENDED_OH_MY_PI_PROVIDER,
-    model: CHATGPT_DEFAULT_MODEL,
-    liteModel: CHATGPT_DEFAULT_MODEL,
-    reasoningEffort: CHATGPT_DEFAULT_EFFORT,
+    model: CLAUDE_DEFAULT_MODEL,
+    liteModel: CLAUDE_DEFAULT_MODEL,
+    reasoningEffort: CLAUDE_DEFAULT_EFFORT,
     ultrabrainProviderId: RECOMMENDED_OH_MY_PI_PROVIDER,
-    ultrabrainModel: CHATGPT_DEFAULT_MODEL,
-    ultrabrainReasoningEffort: CHATGPT_DEFAULT_EFFORT,
+    ultrabrainModel: CLAUDE_DEFAULT_MODEL,
+    ultrabrainReasoningEffort: CLAUDE_DEFAULT_EFFORT,
     imageProviderId: RECOMMENDED_IMAGE_PROVIDER_ID,
     imageModel: RECOMMENDED_IMAGE_MODEL,
     roleModels: {
-      deep: { ...chatgptMedium },
-      vision: { ...chatgptMedium },
-      writer: { ...chatgptMedium },
-      build: { ...chatgptMedium },
+      deep: { ...claudeHigh },
+      vision: { ...claudeHigh },
+      writer: { ...claudeHigh },
+      build: { ...claudeHigh },
     },
-    // 도트 저작(공방) 칸은 비워 둔다 — 비면 계획 모델(여기서는 GPT-6.2 Sol medium)을 따른다(src/ai/pixelModel.ts resolvePixelModel).
+    // 도트 저작(공방) 칸은 비워 둔다 — 비면 계획 모델(여기서는 Claude Sonnet 5.5 high)을 따른다(src/ai/pixelModel.ts resolvePixelModel).
     // 2026-11-16 까지는 Google 의 Argon medium 으로 채웠는데, 이 칸은 계정 선택을 따라 바뀌지 않아 Google 연결이 없는 사용자의 도트 저작이 막혔다.
     roleModelsPolicyVersion: 1,
   };

@@ -3,6 +3,7 @@ import { estimateAdmissionTokens, estimateContextTokens } from "@/ai/contextComp
 import { buildIndependentReviewRequest, type ReviewInput } from "@/ai/independentReview";
 import { defaultAiConfig } from "@/ai/llmClient";
 import { originalContextWindow } from "@/ai/originalContext";
+import { chatgptFixtureConfig } from "./helpers/chatgptFixtureConfig";
 import type { ChatMessage } from "@/ai/llmClient";
 
 /** A real PNG header (signature + IHDR) followed by filler, as a base64 data URL.
@@ -78,7 +79,7 @@ describe("image admission accounting", () => {
   });
 
   it("still refuses an envelope that exceeds the provider request body, not just the window", () => {
-    const config = defaultAiConfig();
+    const config = chatgptFixtureConfig(); // 500k 창(GPT-6.2 Sol) — 공장 기본(Claude, 2026-11-23)과 무관하게 같은 전제로 잰다.
     // Admission accounting must not trade a local refusal for an input-size failure one round
     // trip later: this envelope is cheap in billed tokens and far too large as a request body.
     const images = Array.from({ length: 6 }, (_, i) => ({ label: `map ${i}`, dataUrl: pngDataUrl(512, 512, 900_000) }));

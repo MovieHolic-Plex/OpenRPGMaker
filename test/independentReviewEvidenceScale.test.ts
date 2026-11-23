@@ -4,10 +4,12 @@ import { buildIndependentReviewRequest, reviewChanges, reviewEvidenceContexts, r
 import { estimateContextTokens } from "@/ai/contextCompaction";
 import type { IntentDeclaration } from "@/ai/intentDeclaration";
 import { defaultAiConfig } from "@/ai/llmClient";
+import { chatgptFixtureConfig } from "./helpers/chatgptFixtureConfig";
 import { extractOriginalContext, originalContextWindow } from "@/ai/originalContext";
 import { createBlankMap, createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";
 import { independentReviewPayload } from "./independentReviewFixture";
+// 창이 500k 인 ChatGPT(GPT-6.2 Sol)로 저장된 설정으로 잰다 — 공장 기본은 2026-11-23 부터 Claude(1M 창)라 넘침 전제가 바뀐다. 아래 `...defaultAiConfig()` 는 제공자·모델을 덮어쓰는 고정물이다.
 // The 2026-10-07 default (beodeul_city, ~7MB) alone overflows complete review evidence; these window/scope cases keep the small retired sheet.
 import { RETIRED_COMBINED_TOWN_TILESET_ID, startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 
@@ -121,7 +123,7 @@ describe("review evidence contexts", () => {
   });
 
   it("pays the shared project payload once instead of once per map", () => {
-    const config = defaultAiConfig();
+    const config = chatgptFixtureConfig();
     const envelope = (count: number): number => {
       const { before, after, mapIds } = withMaps(count);
       const changes = reviewChanges(before, after);
@@ -156,7 +158,7 @@ describe("review evidence contexts", () => {
 
     const changes = reviewChanges(before, after);
     const roots = reviewMapReferenceRoots(before, after, changes);
-    const build = (mapIds: string[], targetMapId: string) => buildIndependentReviewRequest(defaultAiConfig(), {
+    const build = (mapIds: string[], targetMapId: string) => buildIndependentReviewRequest(chatgptFixtureConfig(), {
       revision: 1, originalRequest: "Rename the small map", changes, toolResults: [],
       before: reviewEvidenceContexts(before, { snapshotId: "before-1", mapIds, targetMapId,
         mapReferenceRoots: roots, intent: null }),
@@ -186,7 +188,7 @@ describe("review evidence contexts", () => {
     const after = structuredClone(before);
     after.maps[target] = { ...after.maps[target]!, name: "Renamed" };
 
-    const built = (fit: ReviewEvidenceFit) => buildIndependentReviewRequest(defaultAiConfig(), {
+    const built = (fit: ReviewEvidenceFit) => buildIndependentReviewRequest(chatgptFixtureConfig(), {
       revision: 1, originalRequest: "Rename", changes: reviewChanges(before, after), toolResults: [],
       before: [], after: reviewEvidenceContexts(after, { snapshotId: "after-1", mapIds: [target],
         targetMapId: target, mapReferenceRoots: [], intent: null }),
@@ -228,7 +230,7 @@ describe("review evidence fit ladder", () => {
     return { before, after, target: before.startMapId };
   };
   const envelope = (before: Project, after: Project, target: string, fit: ReviewEvidenceFit): ReviewInput =>
-    independentReviewPayload(buildIndependentReviewRequest(defaultAiConfig(), {
+    independentReviewPayload(buildIndependentReviewRequest(chatgptFixtureConfig(), {
       revision: 1, originalRequest: "Rename the map", changes: reviewChanges(before, after), toolResults: [],
       before: reviewEvidenceContexts(before, { snapshotId: "before-1", mapIds: [target],
         targetMapId: target, mapReferenceRoots: [], intent: null }),
@@ -309,7 +311,7 @@ describe("review evidence fit ladder", () => {
     expect(ids(packed.after)).toContain(`/maps/${target}/tiles`);
     expect(unpack(packed.after.flatMap(context => context.entries)
       .find(entry => entry.id === `/maps/${target}/tiles`)!.value))
-      .toEqual(independentReviewPayload(buildIndependentReviewRequest(defaultAiConfig(), {
+      .toEqual(independentReviewPayload(buildIndependentReviewRequest(chatgptFixtureConfig(), {
         revision: 1, originalRequest: "Rename the map", changes: [], toolResults: [], before: [],
         after: reviewEvidenceContexts(after, { snapshotId: "after-1", mapIds: [target],
           targetMapId: target, mapReferenceRoots: [], intent: null }),

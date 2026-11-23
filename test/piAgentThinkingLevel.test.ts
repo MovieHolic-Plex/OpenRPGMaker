@@ -9,6 +9,7 @@ import type { PiAgentThinkingLevel } from "@/ai/piAgent/protocol";
 import { DEFAULT_MODEL, defaultAiConfig } from "@/ai/llmClient";
 import { modelForRole } from "@/ai/modelRoles";
 import { createBlankProject } from "@/project/defaults";
+import { chatgptFixtureConfig } from "./helpers/chatgptFixtureConfig";
 
 const brain = { providerId: "google-antigravity", model: "gemini-3.8-flash", reasoningEffort: "high" } as const;
 const deep = { provider: "google-antigravity", model: "gemini-3.8-flash", thinkingLevel: "high" } as const;
@@ -90,8 +91,9 @@ describe("공급자가 거부하는 사고 강도는 요청을 만들 때 낮춘
 });
 
 describe("provider-specific defaults", () => {
-  it("uses medium for the default Sol profile and keeps explicit legacy role values", () => {
-    const config = defaultAiConfig();
+  it("uses medium for the ChatGPT Sol profile and keeps explicit legacy role values", () => {
+    // ChatGPT 로 저장된 설정으로 잰다 — 공장 기본은 Claude 다(2026-11-23). roleModels 가 없을 때의 폴백은 ChatGPT 만 medium 이상으로 올린다.
+    const config = chatgptFixtureConfig();
     expect(modelForRole({ ...config, roleModels: undefined }, "deep").thinkingLevel).toBe("medium");
     expect(modelForRole({ ...config, roleModels: { deep: { ...deep } } }, "deep").thinkingLevel).toBe("high");
     expect(DEFAULT_MODEL).toBe("gemini-4-argon");

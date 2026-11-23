@@ -1,7 +1,7 @@
 // Claude 로 도는 길의 기본 = Claude Sonnet 5.5 · high (오너 결정 2026-11-23: 「조수는 sonnet 5.5 high 만 쓰게」).
 // 지난 Claude 기본: 2026-11-16 Opus 5.5 · medium.
-// 2026-11-19(오너 결정): 공장 기본(저장 없음)과 첫 실행의 우선 계정은 ChatGPT(GPT-6.2 Sol · medium)로 바뀌었다 — test/aiDefaultModelForced.test.ts.
-// 이 파일은 Claude 를 고른·Claude 만 가진 길이 Sonnet 5.5 · high 한 모델인지 묶는다.
+// 2026-11-19 에는 공장 기본(저장 없음)과 첫 실행의 우선 계정이 ChatGPT(GPT-6.2 Sol · medium)였지만, 2026-11-23(오너 결정)에 다시 Claude 가 됐다 — test/aiDefaultModelForced.test.ts.
+// 이 파일은 공장 기본·Claude 를 고른·Claude 를 가진 길이 Sonnet 5.5 · high 한 모델인지 묶는다.
 //
 // 이 파일은 «들어가는 길마다 기본이 무엇으로 풀리는가» 를 한 자리에 고정한다:
 //   Claude 로 도는 길(구독 CLI · Anthropic 키 · 편집기 안 계정) — 계획·실행·시각·작문·시공·감독이 모두 claude-sonnet-5-5 · high 한 모델.
@@ -78,9 +78,10 @@ async function firstRun(partial: Partial<TeamInputs>): Promise<AiConfig> {
 }
 
 describe("들어가는 길마다 — Claude 로 도는 길은 모든 역할이 Sonnet 5.5 · high 한 모델", () => {
-  it("새 설치(저장 없음): 공장 기본은 ChatGPT 의 Sol · medium 이다(2026-11-19) — Claude 로 시작하지 않는다", () => {
-    expect(resolved(loadAiConfig())).toEqual(every("openai-codex/gpt-6.2-sol@medium"));
-    expect(resolved(defaultAiConfig())).toEqual(every("openai-codex/gpt-6.2-sol@medium"));
+  it("새 설치(저장 없음): 공장 기본은 Claude 의 Sonnet 5.5 · high 다(2026-11-23) — ChatGPT 로 시작하지 않는다", () => {
+    expect(resolved(loadAiConfig())).toEqual(every(`anthropic/${SONNET}@high`));
+    expect(resolved(defaultAiConfig())).toEqual(every(`anthropic/${SONNET}@high`));
+    expect(defaultAiConfig()).toMatchObject({ providerId: "anthropic", model: SONNET, liteModel: SONNET, reasoningEffort: "high" });
   });
 
   it("새 설치 + Claude CLI 구독: 같은 CLI 로 Sonnet 5.5 · high 하나 — 팀장도 Haiku 워커도 없다", async () => {
@@ -96,9 +97,9 @@ describe("들어가는 길마다 — Claude 로 도는 길은 모든 역할이 S
     expect(resolved(config)).toEqual(every(`local-cli:claude/${SONNET}@high`));
   });
 
-  it("새 설치 + Claude CLI 와 ChatGPT 가 같이 있으면 ChatGPT(Sol) 하나로 시작한다(2026-11-19 오너 결정: 기본 AI 는 ChatGPT)", async () => {
+  it("새 설치 + Claude CLI 와 ChatGPT 가 같이 있으면 Claude(Sonnet 5.5 · high) 하나로 시작한다(2026-11-23 오너 결정 — 2026-11-19 에는 ChatGPT 가 먼저였다)", async () => {
     const config = await firstRun({ clis: [cli("claude"), cli("codex")], accounts: [oauth("google-antigravity")] });
-    expect(resolved(config)).toEqual(every("local-cli:codex/gpt-6.2-sol@medium"));
+    expect(resolved(config)).toEqual(every(`local-cli:claude/${SONNET}@high`));
   });
 
   it("Anthropic 키: 입양한 엔드포인트의 모든 역할이 Sonnet 5.5 · high 이다", async () => {
@@ -122,7 +123,7 @@ describe("들어가는 길마다 — Claude 를 쓸 수 없는 길은 그 계정
     expect(resolved(await firstRun({ clis: [cli("codex")] }))).toEqual(every("local-cli:codex/gpt-6.2-sol@medium"));
   });
 
-  it("편집기 안 ChatGPT 로그인만: 공장 기본 그대로 Sol · medium 하나(계획·감독도 medium)", async () => {
+  it("편집기 안 ChatGPT 로그인만: Sol · medium 하나(계획·감독도 medium)", async () => {
     expect(resolved(await firstRun({ accounts: [oauth("openai-codex")] }))).toEqual(every("openai-codex/gpt-6.2-sol@medium"));
   });
 
