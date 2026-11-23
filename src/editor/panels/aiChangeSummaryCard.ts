@@ -5,8 +5,10 @@
 // 되돌리기는 새 기록 장치를 만들지 않는다: 지금 프로젝트에서 그 항목만 실행 전 값으로 바꾼 프로젝트를
 // `applyProjectWithHistory` 로 커밋한다 — 편집기 실행 취소(Ctrl+Z) 스택에 한 칸으로 올라가므로
 // 되돌린 것도 다시 실행 취소로 되살릴 수 있다. 실행 뒤 사용자가 같은 항목을 손으로 고쳤으면 덮지 않고 묻는다.
+import { tileBuffersDiffer } from "@/editor/tools/changeset";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { jsonEqual } from "@/util/structuralJson";
 
 export type ChangeItemKind = "map" | "event" | "actor" | "item" | "enemy" | "skill" | "equipment" | "state" | "music";
 
@@ -65,6 +67,16 @@ function mapTilesOf(map: Project["maps"][string]): unknown {
   return rest;
 }
 
+/**
+ * 맵이 «눈에 보이게» 바뀌었나 — 칸(1~4층·그림자·스택)·크기·이름·타일셋·높이 지형만 본다.
+ * 맵 전체를 JSON 으로 비교하면 전투 배경·조우·곡 같은 맵 속성 기본값을 끝맺음이 여러 맵에 채우거나 빈 층·키 순서만 달라도
+ * 손대지 않은 맵이 줄줄이 «고침» 으로 올라온다(이벤트 1개 만든 턴에 «맵 23»). 칸 비교는 도구 실행기·되돌리기가 쓰는 tileBuffersDiffer 와 같다.
+ */
+function mapVisiblyChanged(a: Project["maps"][string], b: Project["maps"][string]): boolean {
+  return a.name !== b.name || a.tilesetId !== b.tilesetId || a.tileSize !== b.tileSize
+    || a.visualTopOverhangPx !== b.visualTopOverhangPx || tileBuffersDiffer(a, b) || !jsonEqual(a.relief, b.relief);
+}
+
 /** 실행 전/후 프로젝트에서 바뀐 항목 목록(순수). 맵의 칸 변경과 맵 안 이벤트는 따로 센다. */
 export function listChangeItems(before: Project, after: Project, options: { readonly skipMapTiles?: boolean } = {}): ChangeItem[] {
   const items: ChangeItem[] = [];
@@ -77,7 +89,7 @@ export function listChangeItems(before: Project, after: Project, options: { read
     if (!options.skipMapTiles) {
       if (!a && b) items.push({ kind: "map", change: "added", id: mapId, mapId, label: mapLabel });
       else if (a && !b) { items.push({ kind: "map", change: "removed", id: mapId, mapId, label: mapLabel }); continue; }
-      else if (a && b && !same(mapTilesOf(a), mapTilesOf(b))) items.push({ kind: "map", change: "modified", id: mapId, mapId, label: mapLabel });
+      else if (a && b && mapVisiblyChanged(a, b)) items.push({ kind: "map", change: "modified", id: mapId, mapId, label: mapLabel });
     }
     if (!b) continue;
     const beforeEvents = new Map((a?.events ?? []).map((event) => [event.id, event]));

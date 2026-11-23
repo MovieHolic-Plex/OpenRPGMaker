@@ -30,6 +30,15 @@ describe("listChangeItems", () => {
     expect(changeCountsLine(items)).toBe("맵 1 · 이벤트 2");
   });
 
+  it("does not list maps whose only difference is a property fill or an empty layer", () => {
+    const before = seed();
+    const forest = { ...before.maps.map_east!, id: "map_forest", name: "숲" } as GameMap;
+    const base = { ...before, maps: { ...before.maps, map_forest: forest } } as Project;
+    const filled = withMap(base, "map_forest", { battleBackground: "battle-scenery-forest", encounterRate: 10, lowerOverlayTiles: new Array(forest.width * forest.height).fill(-1) });
+    const after = withMap(filled, "map_east", { events: [npc("ev_a", 1, 1, "촌장"), npc("ev_b", 2, 2, "약장수")] });
+    expect(listChangeItems(base, after).map((item) => `${item.kind}:${item.change}:${item.id}`)).toEqual(["event:added:ev_b"]);
+  });
+
   it("reports a new map once and its events", () => {
     const before = seed();
     const after = { ...before, maps: { ...before.maps, map_new: { ...before.maps.map_east!, id: "map_new", name: "숲속 마을" } } } as Project;

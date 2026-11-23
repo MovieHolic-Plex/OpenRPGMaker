@@ -968,3 +968,10 @@
   backdrop-filter: none;
   background: color-mix(in srgb, var(--bg-surface) 42%, transparent);
 }
+
+/* 이벤트 편집기 «모습» 칸: 연결 상태 줄은 칸 나누기(미리보기 칸 + 버튼 칸)와 무관하게 한 줄 전체를 쓴다.
+   자리를 안 주면 격자가 첫 칸(52~72px)에 넣어 글자가 한 단어씩 세로로 쌓인다. */
+.event-graphic-control > .empty-hint {
+  grid-column: 1 / -1;
+  min-width: 0;
+}

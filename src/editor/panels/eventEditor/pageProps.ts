@@ -1913,8 +1913,10 @@ function graphicControl(mapId: MapId, eventId: string, page: EventPage): HTMLEle
       updateEventPage(mapId, eventId, page.id, { graphic });
       control.replaceWith(graphicControl(mapId, eventId, page));
     }),
+    // 상태 한 줄만 보인다. 긴 설명은 툴팁으로 — 좁은 왼쪽 열에서 여섯 줄짜리 안내가 외형 선택 아래를 밀어내지 않게.
     ...(linked ? [el("p", { class: "empty-hint", dataset: { testid: "event-page-appearance-linked" },
-      text: `${linked.name} 연결됨 · 직접 지정 그림은 보관됩니다. 대사에 별도 얼굴 명령이 없으면 이 외형의 초상을 사용합니다.` })] : []),
+      text: `${linked.name} 연결됨`,
+      attrs: { title: `${linked.name} 연결됨 · 직접 지정 그림은 보관됩니다. 대사에 별도 얼굴 명령이 없으면 이 외형의 초상을 사용합니다.` } })] : []),
     renderEventGraphicPreview(page.graphic, page.movement.type),
     el("div", {
       class: "event-graphic-control-actions",
