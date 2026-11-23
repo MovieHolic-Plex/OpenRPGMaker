@@ -517,6 +517,15 @@
   padding: 0 10px;
 }
 
+/* 「편집 ▾」「도구 ▾」는 <summary> 라 block 줄 상자다. 높이 30px 에 상속된 큰 line-height 가 겹쳐 글자가 위 테두리로
+   올라가 잘렸다(editor-main-ui-vqa 1번, 다섯 폭 모두). 같은 줄 단추처럼 flex 로 세로 가운데에 둔다. */
+.event-editor-modal-window .event-editor .event-editor-command-edit-summary,
+.event-editor-modal-window .event-editor .event-editor-command-tools-summary {
+  align-items: center;
+  display: inline-flex;
+  line-height: 1;
+}
+
 .event-editor-modal-window .btn.danger:hover {
   border-color: var(--danger);
 }
