@@ -7,6 +7,10 @@
 // 그래서 이 관문의 자동 플레이는 정직한 플레이다(qa/gameCheck/honestPlay.ts — 보이는 것과 읽은 글만 쓴다). 멈춘 까닭이 갈래(variant)가 되어 모델이 받는 글이 갈린다.
 // 비용: 기준선 16판에서 한 번 70~600ms(몬스터 캠페인 한 판 6초), 최악은 예산 한 번 + 회복 재실행.
 import { runGameCheck } from "@/qa/gameCheck";
+import { runSwitchPlay } from "@/qa/gameCheck/autoPlay";
+import { allPages, visitPageCommands } from "@/qa/gameCheck/walk";
+import { MVP_REACHED_SWITCH } from "@/project/gameBlueprint";
+import { endsAtMvp } from "./blueprintScale";
 import { honestCauseOf } from "@/qa/gameCheck/honestPlay";
 import { whereText } from "@/qa/gameCheck/types";
 import type { Project } from "@/project/types";
@@ -35,6 +39,29 @@ export function playProblems(project: Project): readonly Finding[] {
         ko: `[끝까지 플레이 불가] ${finding.message}${where ? ` (${where})` : ""} — 플레이어가 엔딩까지 걸어서 갈 수 있어야 «완성»이다: 막힌 곳의 길(문·길 잇기·이동 칸)이나 그 단계의 스위치를 켜는 이벤트를 고친 뒤 다시 확인한다. 고치지 못하면 «완성»이라고 쓰지 말고 막힌 곳을 보고에 적는다.`,
       });
     }
-    return out;
+    return [...out, ...mvpEndProblems(project)];
   } catch { return []; }
+}
+
+/**
+ * 첫 판 MVP 는 엔딩이 없어 엔진 검사의 자동 플레이가 목표를 갖지 않는다 — 끝 지점 스위치(mvp_reached)를 켜는 이벤트까지 걸어서 가는지 따로 본다.
+ * 왜(2026-11-23 mvp-first-start 후 측정 호러): 끝 지점을 켜는 미술관 정문까지 «걸어갈 길이 없다» 였는데 조수는 «MVP 까지 만들었다» 로 끝냈다.
+ * 끝 지점 스위치가 아직 없으면(끝맺음이 마지막 단계에 붙이기 전) 막지 않는다. 시간 상한 초과는 위와 같이 올리지 않는다.
+ */
+function mvpEndProblems(project: Project): Finding[] {
+  if (!endsAtMvp(project)) return [];
+  let target: Parameters<typeof runSwitchPlay>[2] | undefined;
+  for (const page of allPages(project)) {
+    if (target || !page.map || !page.event) continue;
+    visitPageCommands(page, (visit) => { if (!target && visit.command.kind === "setSwitch" && visit.command.switchId === MVP_REACHED_SWITCH && visit.command.value !== false) target = visit; });
+  }
+  if (!target) return [];
+  const run = runSwitchPlay(project, "첫 판 끝 지점", target, MVP_REACHED_SWITCH, PLAY_CHECK_BUDGET_MS);
+  const detail = run.failure ? `${run.failure.goal}: ${run.failure.detail}` : "";
+  if (run.ok || detail.includes(TIMED_OUT)) return [];
+  const where = whereText(target.where);
+  return [{
+    judge: "play", id: "autoplay", target: { ref: `mvp:${MVP_REACHED_SWITCH}` }, severity: "block", owner: "model",
+    ko: `[첫 판 끝 지점까지 플레이 불가] ${detail}${where ? ` (끝 지점: ${where})` : ""} — 플레이어가 시작에서 끝 지점 이벤트까지 걸어서 갈 수 있어야 «MVP 까지 만들었다» 고 쓸 수 있다: 막힌 길(문·길 잇기·이벤트 자리)을 고친 뒤 다시 확인한다.`,
+  }];
 }
