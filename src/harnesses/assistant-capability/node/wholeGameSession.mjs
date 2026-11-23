@@ -84,10 +84,15 @@ async function open() {
   editor = await newEditor(browser, host.url, projectDir, { ...aiConfigOverride, ...(assistantEngine ? { assistantEngine } : {}) }, { async onPage(p) {
     p.on('pageerror', error => pageErrors.push({ at: new Date().toISOString(), message: error.message.slice(0, 500) }));
     if (storeUrl) await installStoreBridge(p, storeUrl, { autoInstall: storeAutoInstall });
-    await p.addInitScript(v2 => {
+    // --ai-config 로 고른 모델은 실측의 고정값이다 — 자동 연결 고르기(aiAutoProvider: 한도·우선순위로 길을 바꿈)가 덮지 않게 고정(pin)으로도 적는다.
+    // 2026-11-23 mvp-first-start: Claude Sonnet 고정 실측이 ChatGPT(gpt-6.2-sol)로 바뀌어 한도 오류로 끝났다.
+    const pinEngine = assistantEngine ?? aiConfigOverride.assistantEngine;
+    const pin = pinEngine?.kind === 'local-cli' ? `local-cli:${pinEngine.cli}` : (option('ai-config') && typeof aiConfigOverride.providerId === 'string' ? aiConfigOverride.providerId.replace(/^oh-my-pi:/u, '') : null);
+    await p.addInitScript(([v2, pinned]) => {
       localStorage.setItem('oprn:editor-welcome-dismissed', '1');
       localStorage.setItem('oprn:assistant-v2', v2 ? '1' : '0');
-    }, useV2);
+      if (pinned) localStorage.setItem('oprn:ai-provider-pin', pinned);
+    }, [useV2, pin]);
     p.on('request', request => {
       if (request.method() !== 'POST' || !/\/v1\/(agent\/run|chat\/completions)/.test(request.url())) return;
       try {
