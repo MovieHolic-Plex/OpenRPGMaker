@@ -53,7 +53,9 @@ export function blueprintVerbs(c: VerbContext) {
       // 앞 청사진에 적은 크기·싸움 없음도 물려받는다 — 이름 맞추기 다시 쓰기가 그 칸을 빼도 관문 하한이 도로 커지지 않게. 다시 적으면 적은 값이 이긴다.
       if (prior?.scale && raw.scale === undefined) parsed.blueprint = { ...parsed.blueprint, scale: prior.scale };
       // 처음 쓰는 청사진이 크기를 안 적으면 첫 판 MVP 다(2026-11-23 오너 «처음엔 맵 3~5개 MVP 만, 키우는 것은 요청 시»). 큰 게임은 모델이 scale:"full" 로 적는다.
-      if (!prior && raw.scale === undefined) parsed.blueprint = { ...parsed.blueprint, scale: "mvp" };
+      // 처음 쓰는 청사진의 «small» 도 첫 판이라 MVP 로 둔다 — 첫 판은 엔딩을 만들지 않는다(2026-11-23 오너). 실측(Sonnet 5.5 high 연애 시작):
+      // 모델이 scale:"small" 을 적어 엔딩 둘을 지었다(다시 쓰기도 small). 큰 게임만 모델이 scale:"full" 로 적는다.
+      if ((!prior || prior.scale === "mvp") && (raw.scale === undefined || parsed.blueprint.scale === "small")) parsed.blueprint = { ...parsed.blueprint, scale: "mvp" };
       if (prior?.battles === false && raw.battles === undefined) parsed.blueprint = { ...parsed.blueprint, battles: false };
       // 싸움이 없어도 된다고 적은 게임에는 전투 단계를 요구하지 않는다(요청 글의 «전투» 낱말은 «전투는 없어도 돼» 에도 있다).
       const needBattle = (genre: string): boolean => parsed.blueprint.battles !== false && wantsBattle(genre);
