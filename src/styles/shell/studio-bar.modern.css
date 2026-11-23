@@ -962,22 +962,36 @@
   max-width: 96px;
 }
 
-/* 4단계(200% 확대·아주 좁은 창): 그래도 넘치면 묶음을 겹치지 않고 상단 바를 가로로 민다(C-19).
-   단추는 모두 제자리에서 눌리고, Tab 초점은 스스로 보이는 곳까지 민다. */
+/* 4단계(200% 확대·폰 폭): 그래도 넘치면 바를 두 줄로 나눈다. 윗줄 = 프로젝트 | 자료·저장·실행, 아랫줄 = 편집 칸 분절.
+   전에는 바를 가로로 밀고 오른쪽 묶음을 sticky 로 붙여, 390 폭에서 오른쪽 묶음이 레이어 분절과 프로젝트 이름을
+   덮었다(레이어 단추 4개가 저장 글자 뒤에 숨고 이름이 「새 프」로 잘림, app-ux-vqa 상단 막대 1·2·5·25·64·74번, 2026-11-23).
+   「테스트 실행」은 윗줄 오른쪽 끝에 그대로 남는다(2026-11-08 autopilot-usability D4). #app 은 flex 열이라 바 높이를 따라간다. */
 .oprn-menu-bar.studio-bar[data-fit-level="4"] {
-  grid-template-columns: max-content max-content max-content;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: thin;
+  grid-template-areas: "lead trailing" "center center";
+  grid-template-columns: minmax(0, 1fr) auto;
+  height: auto;
+  padding-block: 6px;
+  row-gap: 6px;
 }
 
-/* 4단계에서 바를 가로로 밀면 오른쪽 끝 「테스트 실행」이 화면 밖으로 나가 폰 폭(390)에서 처음 만든 게임을 돌려 볼 길이 없었다
-   (2026-11-08 autopilot-usability D4: 인터뷰로 만든 직후 mode-play x≥390). 밀어도 그 단추만은 바의 오른쪽 끝에 붙여 둔다. */
+.oprn-menu-bar.studio-bar[data-fit-level="4"] > .studio-bar-lead {
+  grid-area: lead;
+  min-width: 0;
+}
+
+.oprn-menu-bar.studio-bar[data-fit-level="4"] > .studio-bar-center {
+  grid-area: center;
+  justify-self: stretch;
+}
+
 .oprn-menu-bar.studio-bar[data-fit-level="4"] > .studio-bar-trailing {
-  background: var(--bg-base);
-  position: sticky;
-  right: 0;
-  z-index: 1;
+  grid-area: trailing;
+}
+
+/* 윗줄 폭이 모자라므로 평소 저장 글자(「저장됨 HH:MM」·「저장 안 됨 · 이 탭만」)는 걷는다 — 자동 저장·Ctrl+S 는 그대로이고
+   임시 세션은 캔버스 위 배너가 같은 말을 한다. 저장 실패는 숨기지 않는다. */
+.oprn-menu-bar.studio-bar[data-fit-level="4"] .studio-save-button:not(.is-failing):not([data-autosave-kind="error"]) {
+  display: none;
 }
 
 
