@@ -9,6 +9,7 @@ import { cellLayerTiles } from "./mapLayers";
 import { passageMarkForTile } from "./tilesetPassage";
 import { footprintBounds, passageBounds } from "./footprint";
 import { reliefAllowsStep } from "./relief/walk";
+import { readTileset } from "./lazyTilesetRead";
 
 // 주어진 타일 좌표가 맵 경계 안인가?
 export function inBounds(map: GameMap, x: number, y: number): boolean {
@@ -18,6 +19,11 @@ export function inBounds(map: GameMap, x: number, y: number): boolean {
 // 맵의 타일셋 정의 조회(편의).
 export function getTileset(project: Pick<Project, "tilesets">, map: GameMap): TilesetDef | null {
   return project.tilesets[map.tilesetId] ?? null;
+}
+
+// 통행 판정은 타일셋을 읽기만 한다 — 도구 초안에서 읽었다고 타일셋 전체를 복제하지 않는다(lazyTilesetRead).
+function passabilityTileset(project: Pick<Project, "tilesets">, map: GameMap): TilesetDef | null {
+  return readTileset(project.tilesets, map.tilesetId) ?? null;
 }
 
 // 맵의 (x,y) 칸의 타일. lower/upper 는 옛 스택 top 을 반영한 1·3층, layers 는 1~4층 원래 값.
@@ -133,7 +139,7 @@ export function canMove(
   toY: number
 ): boolean {
   if (!inBounds(map, toX, toY)) return false;
-  const tileset = getTileset(project, map);
+  const tileset = passabilityTileset(project, map);
   if (!tileset) return false;
   // 이동 방향 결정.
   const dx = toX - fromX;
@@ -185,7 +191,7 @@ export function ledgeDirectionAt(tileset: TilesetDef, map: GameMap, x: number, y
  * 서 있는 사람이 턱 줄 위에 얹혀 보이지 않게 NPC 이동 판정에서만 막는다(주인공은 playSceneMovement 가 따로 넘는다).
  */
 export function isLedgeCell(project: Project, map: GameMap, x: number, y: number): boolean {
-  const tileset = getTileset(project, map);
+  const tileset = passabilityTileset(project, map);
   return !!tileset && ledgeDirectionAt(tileset, map, x, y) !== null;
 }
 
@@ -206,7 +212,7 @@ export function isPassable(
   y: number
 ): boolean {
   if (!inBounds(map, x, y)) return false;
-  const tileset = getTileset(project, map);
+  const tileset = passabilityTileset(project, map);
   if (!tileset) return false;
   const pass = cellPassOrNull(tileset, map, y * map.width + x);
   return pass !== null && (pass.up || pass.down || pass.left || pass.right);

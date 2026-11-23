@@ -4,6 +4,7 @@ import { copiedTerrainMap } from "@/editor/terrainDesignPlans";
 import { planQuickHouseDrag, quickHouseStyles } from "@/editor/quickHouse";
 import { restoreStructurePlacementTiles } from "@/project/structurePlacements";
 import { ToolError } from "./types";
+import { readTileset } from "@/project/lazyTilesetRead";
 
 type Cell = { readonly x: number; readonly y: number };
 type Bounds = Pick<GameMap, "width" | "height">;
@@ -171,7 +172,7 @@ function ownerKey(house: HouseSnapshot): string {
 /** Rebuild a roof-only edit from the current accepted house, including final live proposals.
  * No tool-name exemption: arbitrary raster edits, changed walls and stale human edits still fail. */
 function isExactRoofResize(before: HouseSnapshot, after: HouseSnapshot, project: Project): boolean {
-  const old = before.placement, next = after.placement, map = project.maps[before.mapId], ts = project.tilesets[before.tilesetId];
+  const old = before.placement, next = after.placement, map = project.maps[before.mapId], ts = readTileset(project.tilesets, before.tilesetId);
   if (!old || !next || !map || !ts || ts.id !== "beodeul_city" || old.kitId === next.kitId
     || !/^quick_house_beodeul-/.test(old.kitId) || !/^quick_house_beodeul-/.test(next.kitId)
     || before.cells.some(c => c.lowerStack !== undefined || c.upperStack !== undefined)) return false;

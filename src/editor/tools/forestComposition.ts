@@ -17,6 +17,7 @@ import { inMapBounds, passableCellCount, reachableCells } from "./mapHelpers";
 import { placePropsOnDraft } from "./placePropsDomain";
 import { isPathSurfaceTile, protectedEventCells } from "./placementTools";
 import { tilePassability } from "@/project/collision";
+import { readTileset } from "@/project/lazyTilesetRead";
 import { shapeAutotileGroupAround } from "@/project/defaults/autotileEngine";
 import { autotileGroupsForTileset, DEFAULT_UNDERGROWTH_AUTOTILE_GROUP } from "@/project/defaults/autotileGroups";
 import { isLakeAutotileTile, LAKE_AUTOTILE_TILE } from "@/project/defaults/lakeAutotile";
@@ -46,7 +47,7 @@ const BLOCKING_BUSH_LABELS: readonly string[] = ["덤불"];
 export function resolveForestCanopyReplacementExemptTileIds(project: Project, options: { readonly storeProject?: boolean } = {}): ReadonlySet<number> {
   const tileIds = new Set<number>();
   for (const map of Object.values(project.maps)) {
-    const tileset = project.tilesets[map.tilesetId];
+    const tileset = readTileset(project.tilesets, map.tilesetId);
     if (!tileset) continue;
     for (const id of options.storeProject ? exemptIdsOfStoreTileset(tileset) : exemptIdsOfTileset(tileset)) tileIds.add(id);
   }
