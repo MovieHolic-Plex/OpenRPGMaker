@@ -6,6 +6,8 @@
 // 후처리하면 대상은 "조수가 방금 한 말" 로 한정된다.
 import { buildEditorReferenceIndex, findEditorReferences, type EditorReferenceIndex, type EditorReferenceTarget } from "@/editor/aiAnswerLinks";
 import { navigateToEditorReference } from "@/editor/editorReferenceNavigation";
+import { prefillAiAssistantInput, sendAiBootIntent } from "@/editor/aiBootIntent";
+import { splitNextSteps } from "@/ai/nextSteps";
 import { store } from "@/project/store";
 import { el } from "@/util/dom";
 import { renderMarkdown } from "@/util/markdown";
@@ -33,11 +35,29 @@ function liveReferenceIndex(): EditorReferenceIndex {
   return index;
 }
 
-/** 조수/시스템 말풍선 본문. 마크다운 + 내부 이동 링크. */
+/** 조수/시스템 말풍선 본문. 마크다운 + 내부 이동 링크 + (첫 판 뒤) 다음 단계 칩. */
 export function renderAssistantAnswer(text: string): HTMLElement {
-  const root = renderMarkdown(text);
+  const { body, steps } = splitNextSteps(text);
+  const root = renderMarkdown(body);
   decorateEditorReferences(root, liveReferenceIndex());
+  if (steps.length) root.append(nextStepChips(steps));
   return root;
+}
+
+/** 누르면 그 문장을 조수에게 보낸다(보낼 수 없는 상태면 입력창에 담기만). */
+export function nextStepChips(steps: readonly string[]): HTMLElement {
+  return el("div", {
+    class: "ai-next-steps",
+    dataset: { testid: "ai-next-steps" },
+    attrs: { role: "group", "aria-label": "다음에 해 볼 것" },
+    children: steps.map((step) => el("button", {
+      class: "ai-next-step-chip",
+      text: step,
+      attrs: { type: "button" },
+      dataset: { testid: "ai-next-step-chip" },
+      on: { click: (event) => { event.preventDefault(); if (!sendAiBootIntent(step)) prefillAiAssistantInput(step); } },
+    })),
+  });
 }
 
 /**

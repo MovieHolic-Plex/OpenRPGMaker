@@ -193,7 +193,7 @@ export const MOON_CUTSCENE_STAGING_LINE =
 export const MONSTER_COLLECT_AUTHORING_GUIDE = [
   EMERALD_MONSTER_AUTHORING_GUIDE,
   MONSTER_GAME_PRODUCTION_PROMPT,
-  "새로 만드는 수집 게임의 전체 내용은 build_monster_game(mode:create)가 공용 몬스터 타일셋의 검토된72맵/60종을 작성한다. 커스텀 추가 맵은 현재 타일 참고문서를 읽고 기존 캠페인에 연결한다. 기본 왕국 실내·일반 던전 생성기로 몬스터 연구소/체육관을 대체하지 않는다.",
+  "새로 만드는 수집 게임은 build_monster_game(mode:create)가 공용 몬스터 타일셋으로 첫 판 MVP(맵 5장)를 짓는다 — 전체 72맵/60종은 사용자가 큰 캠페인을 분명히 청할 때 scale:\"full\". 커스텀 추가 맵은 현재 타일 참고문서를 읽고 기존 캠페인에 연결한다. 기본 왕국 실내·일반 던전 생성기로 몬스터 연구소/체육관을 대체하지 않는다.",
 ].join("\n");
 
 /** 마법사로 시작한 게임의 임시 제목 — 조수가 기획에 맞는 제목으로 바꾼다(레시피 이름이 게임 제목이 되던 결함). */
@@ -246,7 +246,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
     return [
       `${GOAL_GENRE_PRESET_BRIEF_PREFIX} ${brief.interview ? [sceneGenre(brief.interview.genre).label, ...(brief.interview.secondary ? [sceneGenre(brief.interview.secondary).label] : [])].join(" + ") : brief.concept ? `${brief.concept.title} (${preset.label})` : preset.label}`,
       gameDesignBriefContext(brief),
-      preset.packId === "monster-collect" ? "확정 기획을 반영해 실제 전체72맵/60종/8체육관/리그/엔딩 캠페인을 제작하세요. 작은 시작 구간이나 설정만으로 완료하지 마세요." : "확정된 기획 전체를 실제 편집 도구로 구현하세요. 최소 10개 맵과 맵별 장소·이동·상호작용 콘텐츠를 채우고, 핵심 행동 → 진행 → 사건의 결과가 캠페인 전체에서 이어지게 하세요.",
+      preset.packId === "monster-collect" ? "확정 기획을 반영해 첫 판 MVP 를 build_monster_game 으로 지으세요(scale 생략: 맵 5장 — 시작 마을·연구소·1번길·다음 마을·체육관, 관장을 이기면 엔딩). 기획이 큰 캠페인(여러 체육관·리그)을 분명히 적었을 때만 scale:\"full\" 또는 gymCount 를 넘깁니다. 설정만으로 완료하지 마세요." : "확정 기획에서 핵심 루프 하나를 골라 플레이 가능한 첫 판 MVP 를 실제 편집 도구로 구현하세요: 맵 3~5개(시작 장소·길 하나·목적지, 필요하면 실내 1~2), 시작부터 엔딩까지 5~10분. 기획의 나머지는 사용자가 이어서 청할 때(다음 지역·다음 장) 키웁니다. 맵마다 장소·이동·상호작용 콘텐츠를 채우고, 핵심 행동 → 진행 → 결과가 엔딩까지 이어지게 하세요.",
       ...(preset.packId === "monster-collect" ? [] : [startPlanPrompt(planStartForBrief(brief, brief.concept?.title ?? ""))]),
       "현재 프로젝트의 시스템 설정·맵·DB·타일 참고문서를 먼저 읽으세요. 기존 실제 ID를 조회한 뒤 참조하고, 저작 도구의 실행 결과를 확인하세요.",
       "기본 프리셋의 분위기나 임의의 NPC·아이템 수로 사용자 기획을 덮어쓰지 마세요. 분위기 변주만으로 선택한 수집·육성·전투 시스템을 끄지 마세요.",

@@ -10,7 +10,7 @@ if (!out) throw Error('bun buildMonsterFixture.ts <out.json>');
 const project = createBlankProject();
 // runToolAsync 는 ctx.project 를 새 문서로 갈아 끼운다 — 넘긴 객체가 아니라 ctx 에서 읽는다.
 const ctx = { project, currentMapId: project.startMapId };
-const built = await runToolAsync(ctx as never, 'build_monster_game', { mode: 'create' });
+const built = await runToolAsync(ctx as never, 'build_monster_game', { mode: 'create', scale: 'full' });
 if (!built.ok) throw Error(`캠페인 준비 실패: ${built.summary}`);
 if (Object.keys(ctx.project.maps).length < 72) throw Error(`캠페인 맵이 ${Object.keys(ctx.project.maps).length}개뿐입니다`);
 writeFileSync(out, serialize(ctx.project));

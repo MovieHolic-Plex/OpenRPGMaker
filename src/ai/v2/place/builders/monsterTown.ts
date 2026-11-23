@@ -2,7 +2,7 @@
 //
 // 몬스터 칩셋(monster_overworld 계열)으로 마을을 짓는 결정론 도구는 build_monster_game 하나뿐이다(빈 프로젝트 전용).
 // 그 생성기의 시작 마을이 요청 문법 그대로다: 주인공 집(2층 내 방)·박사 연구소·회복 센터·도구점, 북쪽 1번길(키큰 풀숲·야생 조우·트레이너).
-// 생성기는 첫 마을만 따로 짓지 못해 뒤 캠페인(체육관 gymCount, 기본 1 = 맵 19개)도 같이 생긴다 — 보고에 그대로 적는다.
+// gymCount 를 안 주면 첫 판 MVP(맵 5개 — monsterExpedition/mvpTrim.ts, 2026-11-23 오너 «처음엔 작은 MVP»). 주면 그 수의 전체 캠페인(체육관 1 = 맵 19개).
 // 이 빌더가 더 하는 일: 맵 이름을 요청 낱말로(「주인공의 집」「몬스터 센터」), 생성기의 기본 주민 넷을 뺀다(마을 사람은 add_people 로 —
 // 요청한 수만큼만 서게). 칩셋은 생성기가 장르 잠금을 걸어 몬스터 계열로 고정된다.
 import { prepareTool } from "@/editor/tools/asyncToolRunner";
@@ -10,8 +10,8 @@ import type { GameEvent, GameMap, Project } from "@/project/types";
 import type { BuildRun, PlaceBuildResult, PlaceBuilder, PlaceRecord, PlaceSpec } from "../../shared/types";
 
 export const MONSTER_TOWN_CARD =
-  "Monster-collecting (Pokémon-like) town: make_place {type:'village', style:'monster', name:town name, theme?:'meadow'|'desert'|'snow'|'coast'|'volcano', hints?:{title:game title (invent one if the project title is still «새 프로젝트» or a test name), region:region name, professor:professor name, firstRoute:first route name, gymCount:number of gyms (default 1), townSize:small|medium|large, streets:cross|ladder (two cross streets)|loop (ring road)|jog (bent main road), pond:true|false — set these only when the request named size, streets or a pond. Otherwise leave them empty (empty = a different town each run, filled = always the same town)}}. " +
-  "Works only in an empty project — the monster game generator builds the first town (hero's house, own room upstairs, professor's lab, monster center, item shop), Route 1 to the north (tall grass, wild encounters, trainers) and a short campaign after it in one go, and locks the chipset to the monster family. " +
+  "Monster-collecting (Pokémon-like) town: make_place {type:'village', style:'monster', name:town name, theme?:'meadow'|'desert'|'snow'|'coast'|'volcano', hints?:{title:game title (invent one if the project title is still «새 프로젝트» or a test name), region:region name, professor:professor name, firstRoute:first route name, gymCount:number of gyms — leave it out for the first playable version (5 maps: town, lab, Route 1, next town, its gym; beating the leader ends the game); set it only when the user asks for that many gyms or a full campaign, townSize:small|medium|large, streets:cross|ladder (two cross streets)|loop (ring road)|jog (bent main road), pond:true|false — set these only when the request named size, streets or a pond. Otherwise leave them empty (empty = a different town each run, filled = always the same town)}}. " +
+  "Works only in an empty project — the monster game generator builds the first town (hero's house, own room upstairs, professor's lab, monster center, item shop), Route 1 to the north (tall grass, wild encounters, trainers) and (by default) the next town with one gym whose leader ends the game — a 5-map first version (hero's house, center and shop interiors come only with gymCount), and locks the chipset to the monster family. " +
   "The generator's default residents are left out, so place townspeople with add_people (mapId = town map), as many as requested (where: 광장 square · 입구 entrance · 가운데 center…). Rebuilding or fixing (edit_place) is not possible.";
 
 const MONSTER_STYLE = /monster|몬스터|포켓|pokemon|pokémon/iu;
@@ -53,7 +53,8 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   if (previous) return fail("몬스터 마을은 생성기가 빈 프로젝트에서 한 번에 짓는다 — 같은 자리 다시 짓기·고치기는 못 한다. 사람은 add_people, 남은 문제는 보고에 적는다.");
 
   const hints = spec.hints ?? {};
-  const gymCount = typeof hints.gymCount === "number" && Number.isInteger(hints.gymCount) ? Math.max(0, Math.min(8, hints.gymCount)) : 1;
+  // 체육관 수를 안 적으면 첫 판 MVP(맵 5장 — mvpTrim.ts). 적으면 그 수의 전체 캐페인(사용자가 큰 게임을 청한 경우).
+  const gymCount = typeof hints.gymCount === "number" && Number.isInteger(hints.gymCount) ? Math.max(0, Math.min(8, hints.gymCount)) : undefined;
   const names = {
     startTown: str(spec.name),
     ...(str(hints.professor) ? { professor: str(hints.professor) } : {}),
@@ -70,7 +71,7 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
     ...(["cross", "ladder", "loop", "jog"].includes(String(hints.streets)) ? { streets: hints.streets } : {}),
     ...(typeof hints.pond === "boolean" ? { pond: hints.pond } : /pond|연못|호수|lake/iu.test(`${(spec.features ?? []).join(" ")}`) ? { pond: true } : {}),
   };
-  const res = run.call("build_monster_game", { mode: "create", gymCount, names, startLayout, ...(title ? { title } : {}), ...(theme ? { startTheme: theme } : {}) });
+  const res = run.call("build_monster_game", { mode: "create", ...(gymCount === undefined ? { scale: "mvp" } : { gymCount }), names, startLayout, ...(title ? { title } : {}), ...(theme ? { startTheme: theme } : {}) });
   if (!res.ok) {
     const why = String(res.summary ?? "");
     return fail(`몬스터 마을 짓기 실패: ${why.slice(0, 300)}${/보존|authored/u.test(why) ? " — 생성기는 손대지 않은 빈 프로젝트에서만 짓는다(이미 맵이 있다)." : ""}`);
@@ -107,11 +108,13 @@ function build(run: BuildRun, spec: PlaceSpec, previous?: PlaceRecord): PlaceBui
   const after = run.ctx.project;
   const label = (id: string) => after.maps[id]?.name ?? id;
   const roles = rooms.map((id) => `${({ lab: "박사 연구소", center: "몬스터 센터", house: "주인공 집", mart: "도구점", other: "건물" } as const)[roleOf(id)]}=${label(id)}`);
-  const missing = (["lab", "center", "house"] as const).filter((r) => !rooms.some((id) => roleOf(id) === r));
+  const missing = (gymCount === undefined ? ["lab"] as const : ["lab", "center", "house"] as const).filter((r) => !rooms.some((id) => roleOf(id) === r));
   if (missing.length) warnings.push(`생성된 첫 마을에 ${missing.join("·")} 문이 없다.`);
   const total = Object.keys(after.maps).length;
   const mapIds = [townId, ...(routeId ? [routeId] : []), ...rooms, ...upstairs];
-  warnings.push(`생성기가 첫 마을만 따로 짓지 못해 뒤 캠페인(체육관 ${gymCount}·맵 모두 ${total}개)도 함께 지었다 — 보고에 적는다.`);
+  warnings.push(gymCount === undefined
+    ? `첫 판(MVP) 맵 ${total}개: 시작 마을·연구소·1번길·다음 마을·체육관(관장을 이기면 엔딩). 회복·가게는 마을 건물 앞 사람이 맡는다.`
+    : `생성기가 첫 마을만 따로 짓지 못해 뒤 캠페인(체육관 ${gymCount}·맵 모두 ${total}개)도 함께 지었다 — 보고에 적는다.`);
   if (residents.length) warnings.push(`생성기의 기본 주민 ${residents.length}명을 뺐다 — 마을 사람은 add_people(mapId=${townId})로 둔다.`);
   return {
     ok: true,

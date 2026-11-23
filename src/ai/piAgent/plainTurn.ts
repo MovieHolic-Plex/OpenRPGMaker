@@ -189,7 +189,7 @@ export async function classifyPlainPiTurn(input: PlainPiTurnInput): Promise<Plai
   // 의도 선언은 모델을 두 번 불러 10~24초를 쓰고, 30초 창을 넘기면 첫 생성이 시작조차 못 한다(2026-09-27 실측).
   // 도구는 좁히지 않는다(initialToolNames 없음 = 전체) — 게임 전체 저작은 DB·시스템·맵 도구를 모두 쓴다.
   if (!plan.readOnly && requestsEmeraldMonsterGame(input.text)) {
-    const routingAudit = "intent:emerald-monster-game → 전체72맵/60종 제작";
+    const routingAudit = "intent:emerald-monster-game → 몬스터 게임 제작(기본 첫 판 MVP 5맵)";
     // One producer owns shared world/DB/session; never scatter a fresh campaign across map bundles.
     return { mode: "single", plan: { ...plan, routineEdit: false, routingAudit }, questionPromoted: false,
       initialToolNames: [...MONSTER_GAME_INITIAL_TOOLS], intentNote: MONSTER_GAME_PRODUCTION_PROMPT + monsterScaleNote(input.text), routingAudit, monsterKit: true };

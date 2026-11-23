@@ -8,13 +8,22 @@ import type { Project } from "@/project/types";
 
 const key = (s: string) => s.normalize("NFC").replace(/\s+/gu, "").toLowerCase();
 
-/** 이 프로젝트의 청사진이 작은 게임이라고 적혔나. */
-export const smallGame = (project: Project): boolean => project.gameBlueprint?.scale === "small";
+/**
+ * 새 게임의 첫 판(MVP) 크기 — 장소 3~5곳(2026-11-23 오너: «처음에 프로젝트를 시작하면 맵을 3개에서 5개 정도 만드는 소규모로 MVP 만»).
+ * 더 키우는 것은 사용자가 «다음 지역 만들어 줘» 처럼 이어서 청할 때다.
+ */
+export const MVP_PLACES = { min: 3, max: 5 } as const;
+
+/** 이 프로젝트의 청사진이 작은 게임(요청한 작은 판 또는 첫 판 MVP)이라고 적혔나 — 관문이 그 청사진의 크기를 언다. */
+export const smallGame = (project: Project): boolean => project.gameBlueprint?.scale === "small" || project.gameBlueprint?.scale === "mvp";
+
+/** 첫 판 MVP 청사진인가(다음 단계 제안을 단다). */
+export const mvpGame = (project: Project): boolean => project.gameBlueprint?.scale === "mvp";
 
 /** 작은 게임의 세는 맵 하한 — 청사진이 말한 서로 다른 장소 수(단계의 장소와 장소 목록), 1 이상 full 이하. 작은 게임이 아니면 full. */
 export function mapsNeed(project: Project, full: number): number {
   const bp = project.gameBlueprint;
-  if (!bp || bp.scale !== "small") return full;
+  if (!bp || !smallGame(project)) return full;
   const places = new Set([...bp.steps.map((step) => key(step.place)), ...(bp.places ?? []).map((place) => key(place.name))].filter(Boolean));
   return Math.max(1, Math.min(full, places.size));
 }
@@ -22,5 +31,5 @@ export function mapsNeed(project: Project, full: number): number {
 /** 작은 게임의 진행 깊이 하한 — 청사진 단계가 한 줄로 이어졌을 때의 깊이(단계 수 − 1), 1 이상 full 이하. 작은 게임이 아니면 full. */
 export function depthNeed(project: Project, full: number): number {
   const bp = project.gameBlueprint;
-  return bp && bp.scale === "small" ? Math.max(1, Math.min(full, bp.steps.length - 1)) : full;
+  return bp && smallGame(project) ? Math.max(1, Math.min(full, bp.steps.length - 1)) : full;
 }

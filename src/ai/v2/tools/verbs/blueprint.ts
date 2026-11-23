@@ -52,10 +52,13 @@ export function blueprintVerbs(c: VerbContext) {
       if (prior?.look && !parsed.blueprint.look) parsed.blueprint = { ...parsed.blueprint, look: prior.look };
       // 앞 청사진에 적은 크기·싸움 없음도 물려받는다 — 이름 맞추기 다시 쓰기가 그 칸을 빼도 관문 하한이 도로 커지지 않게. 다시 적으면 적은 값이 이긴다.
       if (prior?.scale && raw.scale === undefined) parsed.blueprint = { ...parsed.blueprint, scale: prior.scale };
+      // 처음 쓰는 청사진이 크기를 안 적으면 첫 판 MVP 다(2026-11-23 오너 «처음엔 맵 3~5개 MVP 만, 키우는 것은 요청 시»). 큰 게임은 모델이 scale:"full" 로 적는다.
+      if (!prior && raw.scale === undefined) parsed.blueprint = { ...parsed.blueprint, scale: "mvp" };
       if (prior?.battles === false && raw.battles === undefined) parsed.blueprint = { ...parsed.blueprint, battles: false };
       // 싸움이 없어도 된다고 적은 게임에는 전투 단계를 요구하지 않는다(요청 글의 «전투» 낱말은 «전투는 없어도 돼» 에도 있다).
       const needBattle = (genre: string): boolean => parsed.blueprint.battles !== false && wantsBattle(genre);
       const small = parsed.blueprint.scale === "small";
+      const mvp = parsed.blueprint.scale === "mvp";
       const unknownLook = typeof raw.look === "string" && raw.look.trim() && !uiLookById(raw.look) ? ` look «${raw.look.trim().slice(0, 24)}» is not a look id — ignored.` : "";
       // 앞 청사진의 단계가 지어 둔 이벤트·스위치도 물려받는다 — 이름만 바꾼 다시 쓰기가 사람을 한 명 더 세우지 않게(story/blueprintCarry.ts).
       parsed.blueprint = carryBuilt(prior, parsed.blueprint);
@@ -80,7 +83,7 @@ export function blueprintVerbs(c: VerbContext) {
           session.worldBounces += 1;
           return text({ ok: false, summary: `Blueprint not saved yet (${session.worldBounces}/${WORLD_BOUNCES}) — this game's world is ${world.name}. Fix and call write_blueprint again: ${broken.join(" ")}` });
         }
-        if (!prior) advice.push(...worldPlaceProblems(draft, world, oneRoom || small).filter((p) => !broken.includes(p)), ...(!oneRoom && !small && draft.steps.length < MIN_BLUEPRINT_STEPS ? [`only ${draft.steps.length} steps — a full-size game has ${MIN_BLUEPRINT_STEPS} to 8 (each step reads what the step before it gave).`] : []), ...(oneRoom ? [] : stepMixProblems(draft, needBattle(draft.genre))));
+        if (!prior) advice.push(...worldPlaceProblems(draft, world, oneRoom || small, mvp).filter((p) => !broken.includes(p)), ...(!oneRoom && !small && !mvp && draft.steps.length < MIN_BLUEPRINT_STEPS ? [`only ${draft.steps.length} steps — a full-size game has ${MIN_BLUEPRINT_STEPS} to 8 (each step reads what the step before it gave).`] : []), ...(oneRoom ? [] : stepMixProblems(draft, needBattle(draft.genre))));
         // 지을 수 없는 장소만 함수가 메운다 — 장소 수와 같은 종류를 거듭 쓴 것은 모델이 정한 것이다(알림만).
         const fixed = repairWorldPlaces(draft, world, broken.length > 0);
         draft = { ...draft, setting: world.id, places: fixed.places };

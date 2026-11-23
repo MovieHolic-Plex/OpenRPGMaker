@@ -44,7 +44,9 @@ describe("write_blueprint thin first draft", () => {
     expect(project.gameBlueprint?.steps.length).toBe(3);
     expect(res).toContain("Notice — saved as written, nothing is rejected");
     expect(res).toContain("3 step(s) over 1 place(s)");
-    expect(res).toContain("scale:");
+    // 크기를 안 적은 첫 청사진은 첫 판 MVP 다(2026-11-23) — 알림은 MVP 크기(장소 2곳·단계 3)를 말한다.
+    expect(project.gameBlueprint?.scale).toBe("mvp");
+    expect(res).toContain("first playable version (mvp)");
   });
   it("gives no notice for a six-step three-place first blueprint", async () => {
     const project = createBlankProject() as Project; const session = new V2Session();

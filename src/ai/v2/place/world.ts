@@ -26,6 +26,7 @@ import { describesSteampunk } from "@/ai/steampunkCityPolicy";
 import { hasThemeWord, projectKeyHash } from "@/ai/villageChipsetPool";
 import type { PlaceSpec } from "../shared/types";
 import { WASTELAND_WORDS, BEODEUL_WORDS, FANTASY_WORDS, fitsAnyWorld } from "../request/genre";
+import { MVP_PLACES } from "../judge/blueprintScale";
 
 /** 구성기 호출 하나로 짓는 종류 — 맵 크기는 구성기가 받는 크기(실내는 방 크기 그대로). */
 interface ComposedKind {
@@ -352,7 +353,7 @@ export function spareKind(world: WorldSetting, used: readonly string[], want: { 
  * 청사진 장소가 이 세계에서 지을 수 있고 고르게 퍼졌나 — 문제면 모델에게 돌려줄 영어 한 줄들, 없으면 [].
  * oneRoom(방탈출·「방 하나」)은 장소 수·퍼짐을 보지 않는다.
  */
-export function worldPlaceProblems(bp: Pick<GameBlueprint, "places" | "steps">, world: WorldSetting, oneRoom = false): string[] {
+export function worldPlaceProblems(bp: Pick<GameBlueprint, "places" | "steps">, world: WorldSetting, oneRoom = false, mvp = false): string[] {
   const places = bp.places ?? [];
   const problems: string[] = [];
   if (!places.length) return [`places is missing — list every place of the game as places:[{name, kind}] with kind from this world: ${kindList(world)}.`];
@@ -362,6 +363,12 @@ export function worldPlaceProblems(bp: Pick<GameBlueprint, "places" | "steps">, 
   const strays = [...new Set(bp.steps.map((s) => s.place))].filter((p) => !names.has(norm(p)));
   if (strays.length) problems.push(`steps use place ${strays.map((p) => `«${p}»`).join(", ")} that is not in places — every steps[].place must be a places[].name.`);
   if (oneRoom) return problems;
+  // 첫 판 MVP: 장소 3~5곳. 더 많이 적었으면 줄이라고 알린다(더 키우는 것은 사용자의 다음 요청에 build_places{add}).
+  if (mvp) {
+    if (places.length < MVP_PLACES.min) problems.push(`only ${places.length} places — a first playable version (mvp) lists ${MVP_PLACES.min} to ${MVP_PLACES.max}.`);
+    if (places.length > MVP_PLACES.max) problems.push(`${places.length} places — a first playable version (mvp) lists ${MVP_PLACES.min} to ${MVP_PLACES.max}; keep the rest for when the user asks for the next region (build_places{add}), or send scale:"full" only if the user asked for a big game.`);
+    return problems;
+  }
   const need = Math.min(MIN_WORLD_PLACES, world.kinds.length * MAX_SAME_KIND);
   if (places.length < need) problems.push(`only ${places.length} places — list ${need} to 8 (the finish gate counts ${MIN_WORLD_PLACES} maps reached by doors).`);
   const kinds = places.map((p) => worldKind(world, p.kind)?.id).filter((k): k is string => !!k);
@@ -415,7 +422,8 @@ export function worldCard(world: WorldSetting): string {
     `Outdoor kinds: ${outdoor.map(line).join(" · ")}.`,
     ...(indoor.length ? [`Indoor kinds: ${indoor.map(line).join(" · ")}.`] : []),
     "(★ = fits fights and a boss — code puts visible enemies and a treasure chest in every ★ place; put the battle steps there.)",
-    `- In write_blueprint list places:[{name, kind, from?}] — ${Math.min(MIN_WORLD_PLACES, world.kinds.length * MAX_SAME_KIND)} to 8 places, at least ${minDistinct} different kinds, no kind more than ${MAX_SAME_KIND} times. The first place is where the game starts; each later place is entered from «from» (default: the place listed before it); an indoor place hangs off a door of its «from» place. Spread the steps over at least ${MIN_STEP_PLACES} places.`,
+    `- Size: a new game is a first playable version (scale:"mvp", the default) — ${MVP_PLACES.min} to ${MVP_PLACES.max} places, one core loop, start to ending in 5-10 minutes; the user grows it later («다음 지역 만들어 줘» → build_places{add}). Only when the user explicitly asks for a big, long or full game send scale:"full" and list ${Math.min(MIN_WORLD_PLACES, world.kinds.length * MAX_SAME_KIND)} to 8 places.`,
+    `- In write_blueprint list places:[{name, kind, from?}] — ${MVP_PLACES.min} to ${MVP_PLACES.max} places (mvp) or ${Math.min(MIN_WORLD_PLACES, world.kinds.length * MAX_SAME_KIND)} to 8 (full), at least ${Math.min(MVP_PLACES.min, minDistinct)} (mvp) or ${minDistinct} (full) different kinds, no kind more than ${MAX_SAME_KIND} times. The first place is where the game starts; each later place is entered from «from» (default: the place listed before it); an indoor place hangs off a door of its «from» place. Spread the steps over at least ${MVP_PLACES.min} places (mvp) or ${MIN_STEP_PLACES} (full).`,
     `- Then call build_places once: code builds every listed place and links the doors and roads between them${world.composer ? " (no make_place, no layouts to design, no author_forest_route)" : " (to design a village, dungeon or interior yourself, call make_place with the same name first — build_places builds whatever is still missing)"}. To add a place later: build_places{add:[{name, kind, from}]}.`,
     "- After build_places: build_blueprint_path with steps:[{id, lines…}] (the words of every talk, choice and battle step), then more people and events per place (add_people, add_event…).",
   ].join("\n");
