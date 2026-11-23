@@ -80,6 +80,19 @@ describe("토스트 스택", () => {
 });
 
 describe("기존 계약 유지", () => {
+  it("같은 문구를 연달아 띄우면 하나만 남고 시간이 다시 잰다", () => {
+    // Break: 되돌리기 연타의 같은 안내가 넷씩 쌓여 캔버스 아래를 가린다.
+    vi.useFakeTimers();
+    for (let index = 0; index < 5; index += 1) {
+      toast("되돌릴 것이 없습니다", "info");
+      vi.advanceTimersByTime(1_500);
+    }
+    expect(visible()).toHaveLength(1);
+    expect(visible()[0]?.classList.contains("show")).toBe(true);
+    vi.advanceTimersByTime(500);
+    expect(visible()).toHaveLength(0);
+  });
+
   it("data-testid='toast' 는 항상 정확히 하나다", () => {
     toast("첫째");
     expect(taggedToast()).toHaveLength(1);

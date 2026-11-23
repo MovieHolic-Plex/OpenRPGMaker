@@ -129,7 +129,14 @@ export function toast(message: string, kindOrOptions: ToastKind | ToastOptions =
   const kind: ToastKind = options.kind ?? "info";
 
   const stack = ensureStack();
-  if (options.dedupe && entries.some((entry) => entry.message === message && entry.element.classList.contains("show"))) {
+  const showing = entries.find((entry) => entry.message === message && entry.element.classList.contains("show"));
+  if (showing && options.dedupe) return;
+  // 같은 문구·같은 종류가 이미 떠 있으면 또 쌓지 않고 그 토스트의 시간만 다시 잰다. 연타(되돌리기 등)에서 같은 안내가
+  // 4개씩 쌓여 캔버스 아래와 좌표 줄을 가렸다(app-ux-vqa 9번, 2026-11-23). 동작 단추가 있는 토스트는 각자 다른 일을 할 수 있어 제외.
+  if (showing && !showing.persistent && !options.action && showing.element.classList.contains(kind)) {
+    if (showing.timer) clearTimeout(showing.timer);
+    const durationMs = options.durationMs ?? (kind === "error" ? 4000 : 2000);
+    showing.timer = setTimeout(() => expireEntry(showing), durationMs);
     return;
   }
 
