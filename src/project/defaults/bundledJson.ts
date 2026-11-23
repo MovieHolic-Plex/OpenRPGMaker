@@ -18,6 +18,7 @@ import {
   type BundledJsonData,
   type BundledJsonKey,
 } from "./bundledJsonSources";
+import { applyKitDisplayNames } from "../kitDisplayNames";
 
 export type { BundledJsonKey };
 export type { BundledJsonReader } from "./bundledJsonSources";
@@ -33,6 +34,7 @@ export function bundledJson<K extends BundledJsonKey>(key: K): BundledJsonData[K
   let value = cache.get(key) as BundledJsonData[K] | undefined;
   if (value === undefined) {
     value = bundledJsonSync(key);
+    applyKitDisplayNames(value);
     cache.set(key, value);
   }
   return value;
@@ -57,7 +59,7 @@ export function preloadBundledJson(keys: readonly BundledJsonKey[] = BUNDLED_JSO
     let wait = pending.get(key);
     if (!wait) {
       wait = loadBundledJsonEntry(key, onBytes).then((value) => {
-        if (!cache.has(key)) cache.set(key, value);
+        if (!cache.has(key)) { applyKitDisplayNames(value); cache.set(key, value); }
       }).finally(() => pending.delete(key));
       pending.set(key, wait);
     }

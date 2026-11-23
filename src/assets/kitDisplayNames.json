@@ -1,0 +1,3799 @@
+{
+ "note": "번들 칩셋 킷의 표시 이름 정리(영문 조각 → 한국어). [옛 이름, 새 이름]. 킷 이름이 옛 이름일 때만 바꾼다(src/project/kitDisplayNames.ts). object-search 레인 2026-11-23, 초안 Claude Sonnet 5.5, 검사 test/objectNameGate.test.ts",
+ "tilesets": {
+  "joseon_baram": {
+   "jb-cav_brazier": [
+    "조선 cav brazier 1×2",
+    "조선 동굴 화로 1×2"
+   ],
+   "jb-cav_cart": [
+    "조선 cav cart 2×1",
+    "조선 동굴 수레 2×1"
+   ],
+   "jb-cav_chest": [
+    "조선 cav chest 1×1",
+    "조선 동굴 상자 1×1"
+   ],
+   "jb-cav_chest_dais": [
+    "조선 cav chest dais 3×2",
+    "조선 동굴 상자 받침대 3×2"
+   ],
+   "jb-cav_crystal": [
+    "조선 cav crystal 1×1",
+    "조선 동굴 수정 1 1×1"
+   ],
+   "jb-cav_crystal_b": [
+    "조선 cav crystal b 2×1",
+    "조선 동굴 수정 2 2×1"
+   ],
+   "jb-cav_crystal_c": [
+    "조선 cav crystal c 1×2",
+    "조선 동굴 수정 3 1×2"
+   ],
+   "jb-cav_moss": [
+    "조선 cav moss 1×1",
+    "조선 동굴 이끼 1×1"
+   ],
+   "jb-cav_mushroom_a": [
+    "조선 cav mushroom a 1×1",
+    "조선 동굴 버섯 1 1×1"
+   ],
+   "jb-cav_mushroom_b": [
+    "조선 cav mushroom b 1×1",
+    "조선 동굴 버섯 2 1×1"
+   ],
+   "jb-cav_nest": [
+    "조선 cav nest 2×1",
+    "조선 동굴 둥지 2×1"
+   ],
+   "jb-cav_puddle": [
+    "조선 cav puddle 1×1",
+    "조선 동굴 물웅덩이 1×1"
+   ],
+   "jb-cav_rock_a": [
+    "조선 cav rock a 1×1",
+    "조선 동굴 바위 1 1×1"
+   ],
+   "jb-cav_rock_b": [
+    "조선 cav rock b 2×1",
+    "조선 동굴 바위 나 2×1"
+   ],
+   "jb-cav_rock_c": [
+    "조선 cav rock c 1×1",
+    "조선 동굴 바위 3 1×1"
+   ],
+   "jb-cav_rubble": [
+    "조선 cav rubble 2×1",
+    "조선 동굴 잔돌 무더기 2×1"
+   ],
+   "jb-cav_stalagmite": [
+    "조선 cav stalagmite 1×2",
+    "조선 동굴 석순 1 1×2"
+   ],
+   "jb-cav_stalagmite_b": [
+    "조선 cav stalagmite b 1×2",
+    "조선 동굴 석순 2 1×2"
+   ],
+   "jb-cav_stalagmite_c": [
+    "조선 cav stalagmite c 1×1",
+    "조선 동굴 석순 3 1×1"
+   ],
+   "jb-cav_stalagmite_wide": [
+    "조선 cav stalagmite wide 2×2",
+    "조선 동굴 넓은 석순 2×2"
+   ],
+   "jb-cav_torch_a": [
+    "조선 cav torch a 1×2",
+    "조선 동굴 횃불 1 1×2"
+   ],
+   "jb-cav_torch_b": [
+    "조선 cav torch b 1×2",
+    "조선 동굴 횃불 2 1×2"
+   ],
+   "jb-fld_bones_a": [
+    "조선 fld bones a 1×1",
+    "조선 들판 뼈 가 1×1"
+   ],
+   "jb-fld_bones_b": [
+    "조선 fld bones b 1×1",
+    "조선 들판 뼈 나 1×1"
+   ],
+   "jb-fld_boulder_mass": [
+    "조선 fld boulder mass 4×3",
+    "조선 큰 바윗덩이 무더기 4×3"
+   ],
+   "jb-fld_burrow": [
+    "조선 fld burrow 2×1",
+    "조선 들판 짐승 굴 2×1"
+   ],
+   "jb-fld_cairn": [
+    "조선 fld cairn 1×1",
+    "조선 들판 돌무더기 1×1"
+   ],
+   "jb-fld_campfire": [
+    "조선 fld campfire 1×1",
+    "조선 들판 모닥불 1×1"
+   ],
+   "jb-fld_cave_a": [
+    "조선 fld cave a 5×3",
+    "조선 들판 동굴 가 5×3"
+   ],
+   "jb-fld_cave_b": [
+    "조선 fld cave b 4×3",
+    "조선 들판 동굴 나 4×3"
+   ],
+   "jb-fld_cave_c": [
+    "조선 fld cave c 3×3",
+    "조선 들판 동굴 다 3×3"
+   ],
+   "jb-fld_dead_a": [
+    "조선 fld dead a 3×4",
+    "조선 들판 고목 가 3×4"
+   ],
+   "jb-fld_dead_b": [
+    "조선 fld dead b 3×4",
+    "조선 고목 2 3×4"
+   ],
+   "jb-fld_fern": [
+    "조선 fld fern 1×1",
+    "조선 고사리 1×1"
+   ],
+   "jb-fld_flowers_a": [
+    "조선 fld flowers a 1×1",
+    "조선 들꽃 1 1×1"
+   ],
+   "jb-fld_flowers_b": [
+    "조선 fld flowers b 1×1",
+    "조선 들꽃 2 1×1"
+   ],
+   "jb-fld_flowers_c": [
+    "조선 fld flowers c 1×1",
+    "조선 들꽃 3 1×1"
+   ],
+   "jb-fld_grave_a": [
+    "조선 fld grave a 2×2",
+    "조선 들판 무덤 가 2×2"
+   ],
+   "jb-fld_grave_b": [
+    "조선 fld grave b 2×2",
+    "조선 들판 무덤 나 2×2"
+   ],
+   "jb-fld_log_a": [
+    "조선 fld log a 3×1",
+    "조선 쓰러진 통나무 1 3×1"
+   ],
+   "jb-fld_log_b": [
+    "조선 fld log b 2×1",
+    "조선 들판 통나무 나 2×1"
+   ],
+   "jb-fld_ore_a": [
+    "조선 fld ore a 1×1",
+    "조선 광석 덩이 1 1×1"
+   ],
+   "jb-fld_ore_b": [
+    "조선 fld ore b 2×1",
+    "조선 광석 덩이 2 2×1"
+   ],
+   "jb-fld_pine_a": [
+    "조선 fld pine a 4×5",
+    "조선 소나무 1 4×5"
+   ],
+   "jb-fld_pine_b": [
+    "조선 fld pine b 4×5",
+    "조선 소나무 2 4×5"
+   ],
+   "jb-fld_pine_c": [
+    "조선 fld pine c 4×5",
+    "조선 소나무 3 4×5"
+   ],
+   "jb-fld_pine_d": [
+    "조선 fld pine d 4×5",
+    "조선 소나무 4 4×5"
+   ],
+   "jb-fld_rack": [
+    "조선 fld rack 2×2",
+    "조선 들판 건조대 2×2"
+   ],
+   "jb-fld_rock_l_a": [
+    "조선 fld rock l a 3×2",
+    "조선 큰 바위 1 3×2"
+   ],
+   "jb-fld_rock_l_b": [
+    "조선 fld rock l b 3×2",
+    "조선 큰 바위 2 3×2"
+   ],
+   "jb-fld_rock_m_a": [
+    "조선 fld rock m a 2×1",
+    "조선 중간 바위 1 2×1"
+   ],
+   "jb-fld_rock_m_b": [
+    "조선 fld rock m b 2×2",
+    "조선 들판 중간 바위 나 2×2"
+   ],
+   "jb-fld_rock_s_a": [
+    "조선 fld rock s a 1×1",
+    "조선 들판 작은 바위 가 1×1"
+   ],
+   "jb-fld_rock_s_b": [
+    "조선 fld rock s b 1×1",
+    "조선 들판 작은 바위 나 1×1"
+   ],
+   "jb-fld_rock_s_c": [
+    "조선 fld rock s c 1×1",
+    "조선 작은 바위 3 1×1"
+   ],
+   "jb-fld_ruin_pagoda": [
+    "조선 fld ruin pagoda 2×3",
+    "조선 들판 폐허 탑 2×3"
+   ],
+   "jb-fld_signpost": [
+    "조선 fld signpost 1×2",
+    "조선 들판 이정표 1×2"
+   ],
+   "jb-fld_stump_a": [
+    "조선 fld stump a 1×1",
+    "조선 들판 그루터기 가 1×1"
+   ],
+   "jb-fld_stump_b": [
+    "조선 fld stump b 1×1",
+    "조선 들판 그루터기 나 1×1"
+   ],
+   "jb-fld_tent_a": [
+    "조선 fld tent a 3×2",
+    "조선 들판 천막 가 3×2"
+   ],
+   "jb-fld_tent_b": [
+    "조선 fld tent b 4×3",
+    "조선 들판 천막 나 4×3"
+   ],
+   "jb-fld_tombstone": [
+    "조선 fld tombstone 1×2",
+    "조선 들판 비석 1×2"
+   ],
+   "jb-fld_zelkova_a": [
+    "조선 fld zelkova a 4×5",
+    "조선 느티나무 1 4×5"
+   ],
+   "jb-fld_zelkova_b": [
+    "조선 fld zelkova b 4×5",
+    "조선 느티나무 2 4×5"
+   ],
+   "jb-fld_zelkova_c": [
+    "조선 fld zelkova c 4×5",
+    "조선 느티나무 3 4×5"
+   ],
+   "jb-fld_zelkova_d": [
+    "조선 fld zelkova d 4×5",
+    "조선 느티나무 4 4×5"
+   ],
+   "jb-fort_wall_end_l": [
+    "조선 성벽 end_l 1×5",
+    "조선 성벽 왼쪽 끝 1×5"
+   ],
+   "jb-fort_wall_end_r": [
+    "조선 성벽 end_r 1×5",
+    "조선 성벽 오른쪽 끝 1×5"
+   ],
+   "jb-fort_wall_sluice": [
+    "조선 성벽 sluice 4×5",
+    "조선 성벽 수문 4×5"
+   ],
+   "jb-gate_pyeong": [
+    "조선 대문 pyeong 4×6",
+    "조선 대문 평대문 4×6"
+   ],
+   "jb-gate_solseul": [
+    "조선 대문 solseul 10×7",
+    "조선 대문 솟을 10×7"
+   ],
+   "jb-giwa_haengnang_7": [
+    "조선 기와 haengnang_7 9×6",
+    "조선 기와 행랑 7 9×6"
+   ],
+   "jb-giwa_numa": [
+    "조선 기와 numa 7×6",
+    "조선 기와 누마루 7×6"
+   ],
+   "jb-giwa_sadang": [
+    "조선 기와 sadang 4×6",
+    "조선 기와 사당 4×6"
+   ],
+   "jb-giwa_seodang": [
+    "조선 기와 seodang 6×6",
+    "조선 기와 서당 6×6"
+   ],
+   "jb-giwa_seowon": [
+    "조선 기와 seowon 9×6",
+    "조선 기와 서원 9×6"
+   ],
+   "jb-gn_g2_inn_6": [
+    "조선 국내성 g2_inn_6 8×10",
+    "조선 국내성 2단 객잔 6번 8×10"
+   ],
+   "jb-gn_g2_nugak_5": [
+    "조선 국내성 g2_nugak_5 7×10",
+    "조선 국내성 2단 누각 5번 7×10"
+   ],
+   "jb-gn_g3_inn_7": [
+    "조선 국내성 g3_inn_7 9×15",
+    "조선 국내성 3단 객잔 7번 9×15"
+   ],
+   "jb-gn_g3_nugak_4t": [
+    "조선 국내성 g3_nugak_4t 6×14",
+    "조선 국내성 3단 누각 4번 위쪽 6×14"
+   ],
+   "jb-gn_jm_anchae_4": [
+    "조선 국내성 jm_anchae_4 4×6",
+    "조선 국내성 주막 안채 4 4×6"
+   ],
+   "jb-gn_jm_anchae_5": [
+    "조선 국내성 jm_anchae_5 5×6",
+    "조선 국내성 주막 안채 5 5×6"
+   ],
+   "jb-gn_jm_corner_l": [
+    "조선 국내성 jm_corner_l 5×6",
+    "조선 국내성 주막 모서리 왼쪽 5×6"
+   ],
+   "jb-gn_jm_corner_r": [
+    "조선 국내성 jm_corner_r 5×6",
+    "조선 국내성 주막 모서리 오른쪽 5×6"
+   ],
+   "jb-gn_jm_daemun_6": [
+    "조선 국내성 jm_daemun_6 8×6",
+    "조선 국내성 주막 대문 6 8×6"
+   ],
+   "jb-gn_jm_row_back_6": [
+    "조선 국내성 jm_row_back_6 8×6",
+    "조선 국내성 주막 줄행랑 뒤채 6 8×6"
+   ],
+   "jb-gn_jm_row_room_4": [
+    "조선 국내성 jm_row_room_4 6×6",
+    "조선 국내성 주막 줄행랑 객실 4 6×6"
+   ],
+   "jb-gn_jm_row_store_5": [
+    "조선 국내성 jm_row_store_5 7×6",
+    "조선 국내성 주막 줄행랑 가게 5 7×6"
+   ],
+   "jb-gn_jm_row_v_3": [
+    "조선 국내성 jm_row_v_3 4×3",
+    "조선 국내성 주막 세로 줄행랑 3 4×3"
+   ],
+   "jb-gn_jm_row_v_cap": [
+    "조선 국내성 jm_row_v_cap 4×6",
+    "조선 국내성 주막 세로 줄행랑 덮개 4×6"
+   ],
+   "jb-gn_jm_row_v_end": [
+    "조선 국내성 jm_row_v_end 4×6",
+    "조선 국내성 주막 세로 줄행랑 끝 4×6"
+   ],
+   "jb-gn_l_brown_5g": [
+    "조선 국내성 l_brown_5g 7×9",
+    "조선 국내성 ㄱ자 갈색집 5 가 7×9"
+   ],
+   "jb-gn_l_giwa_6": [
+    "조선 국내성 l_giwa_6 8×9",
+    "조선 국내성 ㄱ자 기와집 6 8×9"
+   ],
+   "jb-gn_l_teal_7": [
+    "조선 국내성 l_teal_7 9×10",
+    "조선 국내성 ㄱ자 청록집 7 9×10"
+   ],
+   "jb-gn_l_thatch_5": [
+    "조선 국내성 l_thatch_5 7×9",
+    "조선 국내성 ㄱ자 초가집 5 7×9"
+   ],
+   "jb-gn_mud_c_ne": [
+    "조선 국내성 mud_c_ne 1×1",
+    "조선 국내성 흙담 모서리 북동 1×1"
+   ],
+   "jb-gn_mud_c_nw": [
+    "조선 국내성 mud_c_nw 1×1",
+    "조선 국내성 흙담 모서리 북서 1×1"
+   ],
+   "jb-gn_mud_c_se": [
+    "조선 국내성 mud_c_se 1×1",
+    "조선 국내성 흙담 모서리 남동 1×1"
+   ],
+   "jb-gn_mud_c_sw": [
+    "조선 국내성 mud_c_sw 1×1",
+    "조선 국내성 흙담 모서리 남서 1×1"
+   ],
+   "jb-gn_mud_h0": [
+    "조선 국내성 mud_h0 1×1",
+    "조선 국내성 흙담 가로 0 1×1"
+   ],
+   "jb-gn_mud_h1": [
+    "조선 국내성 mud_h1 1×1",
+    "조선 국내성 흙담 가로 1 1×1"
+   ],
+   "jb-gn_mud_h2": [
+    "조선 국내성 mud_h2 1×1",
+    "조선 국내성 흙담 가로 2 1×1"
+   ],
+   "jb-gn_mud_v": [
+    "조선 국내성 mud_v 1×1",
+    "조선 국내성 흙담 세로 1×1"
+   ],
+   "jb-gn_mud_v1": [
+    "조선 국내성 mud_v1 1×1",
+    "조선 국내성 흙담 세로 1번 1×1"
+   ],
+   "jb-gn_mudg_c_ne": [
+    "조선 국내성 mudg_c_ne 1×1",
+    "조선 국내성 풀흙담 모서리 북동 1×1"
+   ],
+   "jb-gn_mudg_c_nw": [
+    "조선 국내성 mudg_c_nw 1×1",
+    "조선 국내성 풀흙담 모서리 북서 1×1"
+   ],
+   "jb-gn_mudg_c_se": [
+    "조선 국내성 mudg_c_se 1×1",
+    "조선 국내성 풀흙담 모서리 남동 1×1"
+   ],
+   "jb-gn_mudg_c_sw": [
+    "조선 국내성 mudg_c_sw 1×1",
+    "조선 국내성 풀흙담 모서리 남서 1×1"
+   ],
+   "jb-gn_mudg_h0": [
+    "조선 국내성 mudg_h0 1×1",
+    "조선 국내성 풀흙담 가로 0 1×1"
+   ],
+   "jb-gn_mudg_h1": [
+    "조선 국내성 mudg_h1 1×1",
+    "조선 국내성 풀흙담 가로 1 1×1"
+   ],
+   "jb-gn_mudg_h2": [
+    "조선 국내성 mudg_h2 1×1",
+    "조선 국내성 풀흙담 가로 2 1×1"
+   ],
+   "jb-gn_mudg_v": [
+    "조선 국내성 mudg_v 1×1",
+    "조선 국내성 풀흙담 세로 1×1"
+   ],
+   "jb-gn_mudg_v1": [
+    "조선 국내성 mudg_v1 1×1",
+    "조선 국내성 풀흙담 세로 1번 1×1"
+   ],
+   "jb-gn_samun_mud": [
+    "조선 국내성 samun_mud 5×3",
+    "조선 국내성 흙 사문 5×3"
+   ],
+   "jb-gn_samun_stone": [
+    "조선 국내성 samun_stone 4×3",
+    "조선 국내성 돌 사문 4×3"
+   ],
+   "jb-gn_sarip_mud": [
+    "조선 국내성 sarip_mud 2×1",
+    "조선 국내성 흙벽 사립문 2×1"
+   ],
+   "jb-gn_sarip_stone": [
+    "조선 국내성 sarip_stone 3×1",
+    "조선 국내성 돌 사립문 3×1"
+   ],
+   "jb-gn_shop_armory": [
+    "조선 국내성 shop_armory 9×7",
+    "조선 국내성 무기 가게 9×7"
+   ],
+   "jb-gn_shop_butcher": [
+    "조선 국내성 shop_butcher 7×7",
+    "조선 국내성 푸줏간 7×7"
+   ],
+   "jb-gn_shop_cloth": [
+    "조선 국내성 shop_cloth 8×7",
+    "조선 국내성 옷감 가게 8×7"
+   ],
+   "jb-gn_shop_smithy": [
+    "조선 국내성 shop_smithy 8×7",
+    "조선 국내성 대장간 8×7"
+   ],
+   "jb-gn_stone_c_ne": [
+    "조선 국내성 stone_c_ne 1×1",
+    "조선 국내성 돌담 모서리 북동 1×1"
+   ],
+   "jb-gn_stone_c_nw": [
+    "조선 국내성 stone_c_nw 1×1",
+    "조선 국내성 돌담 모서리 북서 1×1"
+   ],
+   "jb-gn_stone_c_se": [
+    "조선 국내성 stone_c_se 1×1",
+    "조선 국내성 돌담 모서리 남동 1×1"
+   ],
+   "jb-gn_stone_c_sw": [
+    "조선 국내성 stone_c_sw 1×1",
+    "조선 국내성 돌담 모서리 남서 1×1"
+   ],
+   "jb-gn_stone_h0": [
+    "조선 국내성 stone_h0 1×1",
+    "조선 국내성 돌담 가로 0 1×1"
+   ],
+   "jb-gn_stone_h1": [
+    "조선 국내성 stone_h1 1×1",
+    "조선 국내성 돌담 가로 1 1×1"
+   ],
+   "jb-gn_stone_h2": [
+    "조선 국내성 stone_h2 1×1",
+    "조선 국내성 돌담 가로 2 1×1"
+   ],
+   "jb-gn_stone_v": [
+    "조선 국내성 stone_v 1×1",
+    "조선 국내성 돌담 세로 1×1"
+   ],
+   "jb-gn_stone_v1": [
+    "조선 국내성 stone_v1 1×1",
+    "조선 국내성 돌담 세로 1번 1×1"
+   ],
+   "jb-gn_thatch_a": [
+    "조선 국내성 thatch_a 5×6",
+    "조선 국내성 초가집 가 5×6"
+   ],
+   "jb-gn_thatch_b": [
+    "조선 국내성 thatch_b 6×6",
+    "조선 국내성 초가집 나 6×6"
+   ],
+   "jb-gn_thatch_c": [
+    "조선 국내성 thatch_c 7×6",
+    "조선 국내성 초가집 다 7×6"
+   ],
+   "jb-gn_thatch_d": [
+    "조선 국내성 thatch_d 8×6",
+    "조선 국내성 초가집 라 8×6"
+   ],
+   "jb-gn_u_brown_8g": [
+    "조선 국내성 u_brown_8g 10×10",
+    "조선 국내성 ㄷ자 갈색집 8 가 10×10"
+   ],
+   "jb-gn_u_giwa_7": [
+    "조선 국내성 u_giwa_7 9×10",
+    "조선 국내성 ㄷ자 기와집 7 9×10"
+   ],
+   "jb-gn_u_thatch_6": [
+    "조선 국내성 u_thatch_6 8×8",
+    "조선 국내성 ㄷ자 초가집 6 8×8"
+   ],
+   "jb-gnf_bastion_e": [
+    "조선 gnf bastion e 5×5",
+    "조선 국내성 외성 동쪽 보루 5×5"
+   ],
+   "jb-gnf_bastion_e2": [
+    "조선 gnf bastion e2 5×5",
+    "조선 국내성 외성 동쪽 보루 2 5×5"
+   ],
+   "jb-gnf_bastion_w": [
+    "조선 gnf bastion w 5×5",
+    "조선 국내성 외성 서쪽 보루 5×5"
+   ],
+   "jb-gnf_bastion_w2": [
+    "조선 gnf bastion w2 5×5",
+    "조선 국내성 외성 서쪽 보루 2 5×5"
+   ],
+   "jb-gnf_cave_dark": [
+    "조선 gnf cave dark 5×4",
+    "조선 국내성 외성 어두운 동굴 5×4"
+   ],
+   "jb-gnf_cave_moss": [
+    "조선 gnf cave moss 5×4",
+    "조선 국내성 외성 이끼 동굴 5×4"
+   ],
+   "jb-gnf_cave_white": [
+    "조선 gnf cave white 5×4",
+    "조선 국내성 외성 하얀 동굴 5×4"
+   ],
+   "jb-gnf_gate_great_12": [
+    "조선 gnf gate great 12 12×13",
+    "조선 국내성 외성 큰 성문 12 12×13"
+   ],
+   "jb-gnf_gate_side_5": [
+    "조선 gnf gate side 5 5×8",
+    "조선 국내성 외성 성문 곁채 5 5×8"
+   ],
+   "jb-gnf_palace_gate_side_3": [
+    "조선 gnf palace gate side 3 3×8",
+    "조선 국내성 외성 궁궐 문 곁채 3 3×8"
+   ],
+   "jb-gnf_palace_hall_wide_14": [
+    "조선 gnf palace hall wide 14 18×10",
+    "조선 국내성 외성 궁궐 넓은 전각 14 18×10"
+   ],
+   "jb-gnf_sarip_mud": [
+    "조선 gnf sarip mud 4×1",
+    "조선 국내성 외성 흙 사립문 4×1"
+   ],
+   "jb-gnf_sarip_stone": [
+    "조선 gnf sarip stone 4×1",
+    "조선 국내성 외성 돌 사립문 4×1"
+   ],
+   "jb-gnf_tower_corner_5w": [
+    "조선 gnf tower corner 5w 5×12",
+    "조선 국내성 외성 모서리 망루 5 서쪽 5×12"
+   ],
+   "jb-gungnae_bridge_narrow_h": [
+    "조선 국내성 돌다리 narrow_h 4×3",
+    "조선 국내성 돌다리 좁은 가로 4×3"
+   ],
+   "jb-gungnae_bridge_narrow_h5": [
+    "조선 국내성 돌다리 narrow_h5 5×3",
+    "조선 국내성 돌다리 좁은 가로 5 5×3"
+   ],
+   "jb-gungnae_bridge_narrow_h6": [
+    "조선 국내성 돌다리 narrow_h6 6×3",
+    "조선 국내성 돌다리 좁은 가로 6 6×3"
+   ],
+   "jb-gungnae_bridge_narrow_v": [
+    "조선 국내성 돌다리 narrow_v 2×4",
+    "조선 국내성 돌다리 좁은 세로 2×4"
+   ],
+   "jb-gungnae_gate_great_12": [
+    "조선 국내성 성문 great_12 12×13",
+    "조선 국내성 성문 큰문 12 12×13"
+   ],
+   "jb-gungnae_gate_great_8": [
+    "조선 국내성 성문 great_8 8×13",
+    "조선 국내성 성문 큰문 8 8×13"
+   ],
+   "jb-gungnae_gate_side_5": [
+    "조선 국내성 성문 side_5 5×8",
+    "조선 국내성 성문 곁문 5 5×8"
+   ],
+   "jb-gungnae_gate_small_6": [
+    "조선 국내성 성문 small_6 6×9",
+    "조선 국내성 성문 작은문 6 6×9"
+   ],
+   "jb-gungnae_tower_corner_4": [
+    "조선 국내성 망루 corner_4 4×12",
+    "조선 국내성 망루 모서리 4 4×12"
+   ],
+   "jb-gungnae_tower_corner_5": [
+    "조선 국내성 망루 corner_5 5×12",
+    "조선 국내성 망루 모서리 5 5×12"
+   ],
+   "jb-gungnae_wall_corner_ne": [
+    "조선 국내성 성벽 corner_ne 3×5",
+    "조선 국내성 성벽 모서리 북동 3×5"
+   ],
+   "jb-gungnae_wall_corner_nw": [
+    "조선 국내성 성벽 corner_nw 3×5",
+    "조선 국내성 성벽 모서리 북서 3×5"
+   ],
+   "jb-gungnae_wall_corner_se": [
+    "조선 국내성 성벽 corner_se 3×5",
+    "조선 국내성 성벽 모서리 남동 3×5"
+   ],
+   "jb-gungnae_wall_corner_sw": [
+    "조선 국내성 성벽 corner_sw 3×5",
+    "조선 국내성 성벽 모서리 남서 3×5"
+   ],
+   "jb-gungnae_wall_end_l": [
+    "조선 국내성 성벽 end_l 1×5",
+    "조선 국내성 성벽 왼쪽 끝 1×5"
+   ],
+   "jb-gungnae_wall_end_r": [
+    "조선 국내성 성벽 end_r 1×5",
+    "조선 국내성 성벽 오른쪽 끝 1×5"
+   ],
+   "jb-in_ansuk": [
+    "조선 in ansuk 1×1",
+    "조선 안석 1×1"
+   ],
+   "jb-in_bandaji": [
+    "조선 in bandaji 2×1",
+    "조선 반닫이 2×1"
+   ],
+   "jb-in_bangseok_b": [
+    "조선 in bangseok b 1×1",
+    "조선 푸른 방석 1×1"
+   ],
+   "jb-in_bangseok_g": [
+    "조선 in bangseok g 1×1",
+    "조선 초록 방석 1×1"
+   ],
+   "jb-in_bangseok_r": [
+    "조선 in bangseok r 1×1",
+    "조선 붉은 방석 1×1"
+   ],
+   "jb-in_betl": [
+    "조선 in betl 2×2",
+    "조선 베틀 2×2"
+   ],
+   "jb-in_boryo_2": [
+    "조선 in boryo 2 2×1",
+    "조선 보료 2 2×1"
+   ],
+   "jb-in_buk": [
+    "조선 in buk 1×2",
+    "조선 북 1×2"
+   ],
+   "jb-in_bumak_2": [
+    "조선 in bumak 2 2×2",
+    "조선 부엌 아궁이 2 2×2"
+   ],
+   "jb-in_bumak_3": [
+    "조선 in bumak 3 3×2",
+    "조선 부엌 아궁이 3 3×2"
+   ],
+   "jb-in_byeongpung_a": [
+    "조선 in byeongpung a 3×2",
+    "조선 병풍 1 3×2"
+   ],
+   "jb-in_byeongpung_b": [
+    "조선 in byeongpung b 3×2",
+    "조선 병풍 2 3×2"
+   ],
+   "jb-in_byeongpung_c": [
+    "조선 in byeongpung c 3×2",
+    "조선 병풍 3 3×2"
+   ],
+   "jb-in_byeongpung_royal": [
+    "조선 in byeongpung royal 3×2",
+    "조선 임금 병풍 3×2"
+   ],
+   "jb-in_byeongpung_s": [
+    "조선 in byeongpung s 2×2",
+    "조선 작은 병풍 2×2"
+   ],
+   "jb-in_ceil_beam_l": [
+    "조선 in ceil beam l 1×1",
+    "조선 천장 들보 왼쪽 1×1"
+   ],
+   "jb-in_ceil_beam_m": [
+    "조선 in ceil beam m 1×1",
+    "조선 천장 들보 가운데 1×1"
+   ],
+   "jb-in_ceil_beam_r": [
+    "조선 in ceil beam r 1×1",
+    "조선 천장 들보 오른쪽 1×1"
+   ],
+   "jb-in_chaekdemi": [
+    "조선 in chaekdemi 1×1",
+    "조선 실내 책더미 1×1"
+   ],
+   "jb-in_chaeksang": [
+    "조선 in chaeksang 2×1",
+    "조선 책상 2×1"
+   ],
+   "jb-in_charcoal": [
+    "조선 in charcoal 1×1",
+    "조선 숯 1×1"
+   ],
+   "jb-in_chotdae": [
+    "조선 in chotdae 1×1",
+    "조선 촛대 1×1"
+   ],
+   "jb-in_dais_front_l": [
+    "조선 in dais front l 1×1",
+    "조선 단상 앞면 왼쪽 1×1"
+   ],
+   "jb-in_dais_front_m": [
+    "조선 in dais front m 1×1",
+    "조선 단상 앞면 가운데 1×1"
+   ],
+   "jb-in_dais_front_r": [
+    "조선 in dais front r 1×1",
+    "조선 단상 앞면 오른쪽 1×1"
+   ],
+   "jb-in_dais_side_l": [
+    "조선 in dais side l 1×1",
+    "조선 단상 옆면 왼쪽 1×1"
+   ],
+   "jb-in_dais_side_r": [
+    "조선 in dais side r 1×1",
+    "조선 단상 옆면 오른쪽 1×1"
+   ],
+   "jb-in_dais_steps": [
+    "조선 in dais steps 1×1",
+    "조선 단상 계단 1×1"
+   ],
+   "jb-in_dameum": [
+    "조선 in dameum 1×1",
+    "조선 실내 다듬이 1×1"
+   ],
+   "jb-in_deungjan": [
+    "조선 in deungjan 1×2",
+    "조선 등잔 1×2"
+   ],
+   "jb-in_dok_row": [
+    "조선 in dok row 2×1",
+    "조선 독 줄 2×1"
+   ],
+   "jb-in_door_sill": [
+    "조선 in door sill 1×1",
+    "조선 문턱 1×1"
+   ],
+   "jb-in_doorway": [
+    "조선 in doorway 1×1",
+    "조선 출입구 1×1"
+   ],
+   "jb-in_dwiju": [
+    "조선 in dwiju 1×2",
+    "조선 뒤주 1×2"
+   ],
+   "jb-in_exit_door": [
+    "조선 in exit door 1×1",
+    "조선 나가는 문 1×1"
+   ],
+   "jb-in_exit_door2": [
+    "조선 in exit door2 2×1",
+    "조선 나가는 문 2 2×1"
+   ],
+   "jb-in_geolsang": [
+    "조선 in geolsang 1×1",
+    "조선 걸상 1×1"
+   ],
+   "jb-in_gonjang_rack": [
+    "조선 in gonjang rack 1×2",
+    "조선 곤장 걸이 1×2"
+   ],
+   "jb-in_gwan_chair": [
+    "조선 in gwan chair 1×2",
+    "조선 관아 의자 1×2"
+   ],
+   "jb-in_gwan_desk": [
+    "조선 in gwan desk 3×1",
+    "조선 관아 책상 3×1"
+   ],
+   "jb-in_hakdong_sang": [
+    "조선 in hakdong sang 1×1",
+    "조선 학동 책상 1×1"
+   ],
+   "jb-in_hang_bagaji": [
+    "조선 in hang bagaji 1×1",
+    "조선 실내 항아리 바가지 1×1"
+   ],
+   "jb-in_hang_gochu": [
+    "조선 in hang gochu 1×1",
+    "조선 실내 항아리 고추 1×1"
+   ],
+   "jb-in_hang_meju": [
+    "조선 in hang meju 1×1",
+    "조선 실내 항아리 메주 1×1"
+   ],
+   "jb-in_hang_sirae": [
+    "조선 in hang sirae 1×1",
+    "조선 실내 항아리 시래기 1×1"
+   ],
+   "jb-in_hangari_a": [
+    "조선 in hangari a 1×1",
+    "조선 항아리 1 1×1"
+   ],
+   "jb-in_hangari_b": [
+    "조선 in hangari b 1×1",
+    "조선 항아리 2 1×1"
+   ],
+   "jb-in_hangari_tall": [
+    "조선 in hangari tall 1×2",
+    "조선 키 큰 항아리 1×2"
+   ],
+   "jb-in_herb_hang": [
+    "조선 in herb hang 2×1",
+    "조선 걸어 둔 약초 2×1"
+   ],
+   "jb-in_hoechori": [
+    "조선 in hoechori 1×1",
+    "조선 회초리 1×1"
+   ],
+   "jb-in_hunjang_sang": [
+    "조선 in hunjang sang 2×1",
+    "조선 훈장 책상 2×1"
+   ],
+   "jb-in_hwadeok": [
+    "조선 in hwadeok 2×2",
+    "조선 화덕 2×2"
+   ],
+   "jb-in_hwaro": [
+    "조선 in hwaro 1×1",
+    "조선 화로 1×1"
+   ],
+   "jb-in_hyeongtul": [
+    "조선 in hyeongtul 2×2",
+    "조선 형틀 2×2"
+   ],
+   "jb-in_ibul_b": [
+    "조선 in ibul b 2×2",
+    "조선 푸른 이불 2×2"
+   ],
+   "jb-in_ibul_folded": [
+    "조선 in ibul folded 1×1",
+    "조선 갠 이불 1×1"
+   ],
+   "jb-in_ibul_r": [
+    "조선 in ibul r 2×2",
+    "조선 붉은 이불 2×2"
+   ],
+   "jb-in_ibuljang": [
+    "조선 in ibuljang 2×2",
+    "조선 이불장 2×2"
+   ],
+   "jb-in_ingots": [
+    "조선 in ingots 1×1",
+    "조선 쇳덩이 1×1"
+   ],
+   "jb-in_jangjak": [
+    "조선 in jangjak 1×1",
+    "조선 장작 1×1"
+   ],
+   "jb-in_jipjari_1": [
+    "조선 in jipjari 1 1×1",
+    "조선 짚자리 1 1×1"
+   ],
+   "jb-in_jipjari_2": [
+    "조선 in jipjari 2 2×1",
+    "조선 짚자리 2 2×1"
+   ],
+   "jb-in_jokja_a": [
+    "조선 in jokja a 1×2",
+    "조선 족자 1 1×2"
+   ],
+   "jb-in_jokja_b": [
+    "조선 in jokja b 1×2",
+    "조선 족자 2 1×2"
+   ],
+   "jb-in_jumak_counter": [
+    "조선 in jumak counter 3×1",
+    "조선 주막 계산대 3×1"
+   ],
+   "jb-in_ladder_loft": [
+    "조선 in ladder loft 1×3",
+    "조선 실내 다락 사다리 1×3"
+   ],
+   "jb-in_mat_dot_2x2": [
+    "조선 in mat dot 2x2 2×2",
+    "조선 실내 돗자리 2×2"
+   ],
+   "jb-in_mat_hopi": [
+    "조선 in mat hopi 2×2",
+    "조선 실내 호피 깔개 2×2"
+   ],
+   "jb-in_morus": [
+    "조선 in morus 1×1",
+    "조선 뽕나무 토막 1×1"
+   ],
+   "jb-in_mul_dongi": [
+    "조선 in mul dongi 1×1",
+    "조선 물동이 1×1"
+   ],
+   "jb-in_mulle": [
+    "조선 in mulle 1×1",
+    "조선 물레 1×1"
+   ],
+   "jb-in_mungap": [
+    "조선 in mungap 2×1",
+    "조선 문갑 2×1"
+   ],
+   "jb-in_nong": [
+    "조선 in nong 2×2",
+    "조선 농 2×2"
+   ],
+   "jb-in_pillar": [
+    "조선 in pillar 1×2",
+    "조선 실내 기둥 1×2"
+   ],
+   "jb-in_pillar_3": [
+    "조선 in pillar 3 1×3",
+    "조선 실내 기둥 3 1×3"
+   ],
+   "jb-in_pulmu": [
+    "조선 in pulmu 2×1",
+    "조선 풀무 2×1"
+   ],
+   "jb-in_pyeongsang_3": [
+    "조선 in pyeongsang 3 3×2",
+    "조선 평상 3 3×2"
+   ],
+   "jb-in_runner_m": [
+    "조선 in runner m 1×1",
+    "조선 길쭉한 깔개 가 1×1"
+   ],
+   "jb-in_runner_n": [
+    "조선 in runner n 1×1",
+    "조선 길쭉한 깔개 나 1×1"
+   ],
+   "jb-in_sang_2": [
+    "조선 in sang 2 2×1",
+    "조선 상 2 2×1"
+   ],
+   "jb-in_sang_jumak": [
+    "조선 in sang jumak 2×1",
+    "조선 주막 상 2×1"
+   ],
+   "jb-in_seoan": [
+    "조선 in seoan 1×1",
+    "조선 실내 서안 1×1"
+   ],
+   "jb-in_seoan_2": [
+    "조선 in seoan 2 2×1",
+    "조선 실내 서안 2 2×1"
+   ],
+   "jb-in_seoga": [
+    "조선 in seoga 2×2",
+    "조선 서가 2×2"
+   ],
+   "jb-in_seonban": [
+    "조선 in seonban 2×2",
+    "조선 선반 2×2"
+   ],
+   "jb-in_seonban_bottles": [
+    "조선 in seonban bottles 2×2",
+    "조선 병 얹은 선반 2×2"
+   ],
+   "jb-in_sewing": [
+    "조선 in sewing 1×1",
+    "조선 실내 바느질 1×1"
+   ],
+   "jb-in_soban_a": [
+    "조선 in soban a 1×1",
+    "조선 소반 1 1×1"
+   ],
+   "jb-in_soban_b": [
+    "조선 in soban b 1×1",
+    "조선 소반 2 1×1"
+   ],
+   "jb-in_soban_c": [
+    "조선 in soban c 1×1",
+    "조선 소반 3 1×1"
+   ],
+   "jb-in_sokuri_fruit": [
+    "조선 in sokuri fruit 1×1",
+    "조선 실내 소쿠리 과일 1×1"
+   ],
+   "jb-in_sokuri_grain": [
+    "조선 in sokuri grain 1×1",
+    "조선 실내 소쿠리 곡식 1×1"
+   ],
+   "jb-in_sokuri_veg": [
+    "조선 in sokuri veg 1×1",
+    "조선 실내 소쿠리 채소 1×1"
+   ],
+   "jb-in_ssal_gama": [
+    "조선 in ssal gama 1×1",
+    "조선 쌀 가마 1×1"
+   ],
+   "jb-in_stairs_down": [
+    "조선 in stairs down 1×1",
+    "조선 아래 계단 1×1"
+   ],
+   "jb-in_stairs_stone_3": [
+    "조선 in stairs stone 3 3×3",
+    "조선 돌계단 3×3"
+   ],
+   "jb-in_stairs_wood_2": [
+    "조선 in stairs wood 2 2×3",
+    "조선 나무 계단 2 2×3"
+   ],
+   "jb-in_stairs_wood_3": [
+    "조선 in stairs wood 3 3×3",
+    "조선 나무 계단 3 3×3"
+   ],
+   "jb-in_suldok": [
+    "조선 in suldok 1×1",
+    "조선 술독 1×1"
+   ],
+   "jb-in_tool_rack": [
+    "조선 in tool rack 2×1",
+    "조선 연장 걸이 2×1"
+   ],
+   "jb-in_tub": [
+    "조선 in tub 1×1",
+    "조선 나무 물통 1×1"
+   ],
+   "jb-in_wall_chang_door": [
+    "조선 in wall chang door 1×2",
+    "조선 실내 창살벽 문 1×2"
+   ],
+   "jb-in_wall_chang_l": [
+    "조선 in wall chang l 1×2",
+    "조선 실내 창살벽 왼쪽 1×2"
+   ],
+   "jb-in_wall_chang_lr": [
+    "조선 in wall chang lr 1×2",
+    "조선 실내 창살벽 양쪽 1×2"
+   ],
+   "jb-in_wall_chang_m": [
+    "조선 in wall chang m 1×2",
+    "조선 실내 창살벽 가운데 1×2"
+   ],
+   "jb-in_wall_chang_r": [
+    "조선 in wall chang r 1×2",
+    "조선 실내 창살벽 오른쪽 1×2"
+   ],
+   "jb-in_wall_dol_l": [
+    "조선 in wall dol l 1×2",
+    "조선 실내 돌벽 왼쪽 1×2"
+   ],
+   "jb-in_wall_dol_lr": [
+    "조선 in wall dol lr 1×2",
+    "조선 실내 돌벽 양쪽 1×2"
+   ],
+   "jb-in_wall_dol_m": [
+    "조선 in wall dol m 1×2",
+    "조선 실내 돌벽 가운데 1×2"
+   ],
+   "jb-in_wall_dol_r": [
+    "조선 in wall dol r 1×2",
+    "조선 실내 돌벽 오른쪽 1×2"
+   ],
+   "jb-in_wall_heuk_l": [
+    "조선 in wall heuk l 1×2",
+    "조선 실내 흑벽 왼쪽 1×2"
+   ],
+   "jb-in_wall_heuk_lr": [
+    "조선 in wall heuk lr 1×2",
+    "조선 실내 흑벽 양쪽 1×2"
+   ],
+   "jb-in_wall_heuk_m": [
+    "조선 in wall heuk m 1×2",
+    "조선 실내 흑벽 가운데 1×2"
+   ],
+   "jb-in_wall_heuk_r": [
+    "조선 in wall heuk r 1×2",
+    "조선 실내 흑벽 오른쪽 1×2"
+   ],
+   "jb-in_wall_heuk_win": [
+    "조선 in wall heuk win 1×2",
+    "조선 실내 흑벽 창문 1×2"
+   ],
+   "jb-in_wall_hoe_door": [
+    "조선 in wall hoe door 1×2",
+    "조선 실내 회벽 문 1×2"
+   ],
+   "jb-in_wall_hoe_l": [
+    "조선 in wall hoe l 1×2",
+    "조선 실내 회벽 왼쪽 1×2"
+   ],
+   "jb-in_wall_hoe_lr": [
+    "조선 in wall hoe lr 1×2",
+    "조선 실내 회벽 양쪽 1×2"
+   ],
+   "jb-in_wall_hoe_m": [
+    "조선 in wall hoe m 1×2",
+    "조선 실내 회벽 가운데 1×2"
+   ],
+   "jb-in_wall_hoe_r": [
+    "조선 in wall hoe r 1×2",
+    "조선 실내 회벽 오른쪽 1×2"
+   ],
+   "jb-in_wall_hoe_win": [
+    "조선 in wall hoe win 1×2",
+    "조선 실내 회벽 창문 1×2"
+   ],
+   "jb-in_wall_mok_door": [
+    "조선 in wall mok door 1×2",
+    "조선 실내 나무벽 문 1×2"
+   ],
+   "jb-in_wall_mok_l": [
+    "조선 in wall mok l 1×2",
+    "조선 실내 나무벽 왼쪽 1×2"
+   ],
+   "jb-in_wall_mok_lr": [
+    "조선 in wall mok lr 1×2",
+    "조선 실내 나무벽 양쪽 1×2"
+   ],
+   "jb-in_wall_mok_m": [
+    "조선 in wall mok m 1×2",
+    "조선 실내 나무벽 가운데 1×2"
+   ],
+   "jb-in_wall_mok_r": [
+    "조선 in wall mok r 1×2",
+    "조선 실내 나무벽 오른쪽 1×2"
+   ],
+   "jb-in_wall_mok_win": [
+    "조선 in wall mok win 1×2",
+    "조선 실내 나무벽 창문 1×2"
+   ],
+   "jb-in_workbench": [
+    "조선 in workbench 2×1",
+    "조선 작업대 2×1"
+   ],
+   "jb-in_yak_table": [
+    "조선 in yak table 2×1",
+    "조선 실내 약재 탁자 2×1"
+   ],
+   "jb-in_yakhwa": [
+    "조선 in yakhwa 1×1",
+    "조선 약화로 1×1"
+   ],
+   "jb-in_yakjang": [
+    "조선 in yakjang 2×2",
+    "조선 약장 2×2"
+   ],
+   "jb-in_yakjang_1": [
+    "조선 in yakjang 1 1×2",
+    "조선 약장 1 1×2"
+   ],
+   "jb-in_yakyeon": [
+    "조선 in yakyeon 1×1",
+    "조선 약연 1×1"
+   ],
+   "jb-market_stall_cloth": [
+    "조선 market stall cloth 3×3",
+    "조선 천막 좌판 3×3"
+   ],
+   "jb-market_stall_pots": [
+    "조선 market stall pots 3×3",
+    "조선 항아리 좌판 3×3"
+   ],
+   "jb-market_stall_thatch": [
+    "조선 market stall thatch 3×3",
+    "조선 초가 지붕 좌판 3×3"
+   ],
+   "jb-pal_bangseok_blue": [
+    "조선 pal bangseok blue 1×1",
+    "조선 궁궐 푸른 방석 1×1"
+   ],
+   "jb-pal_bangseok_red": [
+    "조선 pal bangseok red 1×1",
+    "조선 궁궐 붉은 방석 1×1"
+   ],
+   "jb-pal_buk_big": [
+    "조선 pal buk big 2×2",
+    "조선 큰 북 2×2"
+   ],
+   "jb-pal_byeongpung_ilwol": [
+    "조선 pal byeongpung ilwol 6×3",
+    "조선 일월오봉도 병풍 6×3"
+   ],
+   "jb-pal_ceil_beam_l": [
+    "조선 pal ceil beam l 1×1",
+    "조선 궁궐 천장 들보 왼쪽 1×1"
+   ],
+   "jb-pal_ceil_beam_m": [
+    "조선 pal ceil beam m 1×1",
+    "조선 궁궐 천장 들보 가운데 1×1"
+   ],
+   "jb-pal_ceil_beam_r": [
+    "조선 pal ceil beam r 1×1",
+    "조선 궁궐 천장 들보 오른쪽 1×1"
+   ],
+   "jb-pal_chaekgap": [
+    "조선 pal chaekgap 1×1",
+    "조선 책갑 1×1"
+   ],
+   "jb-pal_changgeori": [
+    "조선 pal changgeori 2×2",
+    "조선 창걸이 2×2"
+   ],
+   "jb-pal_chimsang": [
+    "조선 pal chimsang 3×2",
+    "조선 침상 3×2"
+   ],
+   "jb-pal_chotdae_tall": [
+    "조선 pal chotdae tall 1×2",
+    "조선 키 큰 촛대 1×2"
+   ],
+   "jb-pal_dais_front_l": [
+    "조선 pal dais front l 1×1",
+    "조선 궁궐 단상 앞면 왼쪽 1×1"
+   ],
+   "jb-pal_dais_front_m": [
+    "조선 pal dais front m 1×1",
+    "조선 궁궐 단상 앞면 가운데 1×1"
+   ],
+   "jb-pal_dais_front_r": [
+    "조선 pal dais front r 1×1",
+    "조선 궁궐 단상 앞면 오른쪽 1×1"
+   ],
+   "jb-pal_dais_steps_4": [
+    "조선 pal dais steps 4 4×1",
+    "조선 궁궐 단상 계단 4 4×1"
+   ],
+   "jb-pal_dais_steps_6": [
+    "조선 pal dais steps 6 6×1",
+    "조선 궁궐 단상 계단 6 6×1"
+   ],
+   "jb-pal_deung_hang": [
+    "조선 pal deung hang 1×2",
+    "조선 등 걸이 1×2"
+   ],
+   "jb-pal_deungrong": [
+    "조선 pal deungrong 1×2",
+    "조선 등롱 1×2"
+   ],
+   "jb-pal_exit_door": [
+    "조선 pal exit door 1×1",
+    "조선 출구 문 1×1"
+   ],
+   "jb-pal_exit_door2": [
+    "조선 pal exit door2 2×1",
+    "조선 출구 문 2 2×1"
+   ],
+   "jb-pal_exit_door3": [
+    "조선 pal exit door3 3×1",
+    "조선 출구 문 3 3×1"
+   ],
+   "jb-pal_exit_door4": [
+    "조선 pal exit door4 4×1",
+    "조선 출구 문 4 4×1"
+   ],
+   "jb-pal_gungnyeo_jari": [
+    "조선 pal gungnyeo jari 1×1",
+    "조선 궁녀 자리 1×1"
+   ],
+   "jb-pal_gwan_seat": [
+    "조선 pal gwan seat 2×1",
+    "조선 관원 자리 2×1"
+   ],
+   "jb-pal_gyeongdae": [
+    "조선 pal gyeongdae 1×1",
+    "조선 경대 1×1"
+   ],
+   "jb-pal_hwajangdae": [
+    "조선 pal hwajangdae 2×2",
+    "조선 화장대 2×2"
+   ],
+   "jb-pal_hyangro": [
+    "조선 pal hyangro 1×2",
+    "조선 향로 1×2"
+   ],
+   "jb-pal_jangnong": [
+    "조선 pal jangnong 2×3",
+    "조선 장롱 2×3"
+   ],
+   "jb-pal_jong": [
+    "조선 pal jong 2×2",
+    "조선 종 2×2"
+   ],
+   "jb-pal_munseo_ham": [
+    "조선 pal munseo ham 1×1",
+    "조선 문서함 1×1"
+   ],
+   "jb-pal_pillar": [
+    "조선 pal pillar 1×3",
+    "조선 궁궐 기둥 1×3"
+   ],
+   "jb-pal_pillar_2": [
+    "조선 pal pillar 2 1×2",
+    "조선 궁궐 기둥 2 1×2"
+   ],
+   "jb-pal_seoan_gwan": [
+    "조선 pal seoan gwan 2×1",
+    "조선 관청 서안 2×1"
+   ],
+   "jb-pal_seoga_tall": [
+    "조선 pal seoga tall 2×3",
+    "조선 키 큰 서가 2×3"
+   ],
+   "jb-pal_surasang": [
+    "조선 pal surasang 2×1",
+    "조선 수라상 2×1"
+   ],
+   "jb-pal_throne": [
+    "조선 pal throne 2×3",
+    "조선 어좌 2×3"
+   ],
+   "jb-pal_uija": [
+    "조선 pal uija 1×2",
+    "조선 의자 1×2"
+   ],
+   "jb-pal_wall_bun_l": [
+    "조선 pal wall bun l 1×2",
+    "조선 궁궐 분칠담 왼쪽 1×2"
+   ],
+   "jb-pal_wall_bun_lr": [
+    "조선 pal wall bun lr 1×2",
+    "조선 궁궐 분칠담 양쪽 1×2"
+   ],
+   "jb-pal_wall_bun_m": [
+    "조선 pal wall bun m 1×2",
+    "조선 궁궐 분칠담 가운데 1×2"
+   ],
+   "jb-pal_wall_bun_r": [
+    "조선 pal wall bun r 1×2",
+    "조선 궁궐 분칠담 오른쪽 1×2"
+   ],
+   "jb-pal_wall_chang_l": [
+    "조선 pal wall chang l 1×2",
+    "조선 궁궐 창살담 왼쪽 1×2"
+   ],
+   "jb-pal_wall_chang_lr": [
+    "조선 pal wall chang lr 1×2",
+    "조선 궁궐 창살담 양쪽 1×2"
+   ],
+   "jb-pal_wall_chang_m": [
+    "조선 pal wall chang m 1×2",
+    "조선 궁궐 창살담 가운데 1×2"
+   ],
+   "jb-pal_wall_chang_r": [
+    "조선 pal wall chang r 1×2",
+    "조선 궁궐 창살담 오른쪽 1×2"
+   ],
+   "jb-pal_wall_hoe_doorl": [
+    "조선 pal wall hoe doorl 1×2",
+    "조선 궁궐 회벽담 문 왼쪽 1×2"
+   ],
+   "jb-pal_wall_hoe_doorr": [
+    "조선 pal wall hoe doorr 1×2",
+    "조선 궁궐 회벽담 문 오른쪽 1×2"
+   ],
+   "jb-pal_wall_hoe_l": [
+    "조선 pal wall hoe l 1×2",
+    "조선 궁궐 회벽담 왼쪽 1×2"
+   ],
+   "jb-pal_wall_hoe_lr": [
+    "조선 pal wall hoe lr 1×2",
+    "조선 궁궐 회벽담 양쪽 1×2"
+   ],
+   "jb-pal_wall_hoe_m": [
+    "조선 pal wall hoe m 1×2",
+    "조선 궁궐 회벽담 가운데 1×2"
+   ],
+   "jb-pal_wall_hoe_r": [
+    "조선 pal wall hoe r 1×2",
+    "조선 궁궐 회벽담 오른쪽 1×2"
+   ],
+   "jb-pal_yaktang": [
+    "조선 pal yaktang 1×1",
+    "조선 약탕기 1×1"
+   ],
+   "jb-palace_censer": [
+    "조선 궁궐 censer 1×2",
+    "조선 궁궐 향로 1×2"
+   ],
+   "jb-palace_deumeu": [
+    "조선 궁궐 deumeu 1×2",
+    "조선 궁궐 드므 1×2"
+   ],
+   "jb-palace_eodo": [
+    "조선 궁궐 eodo 4×1",
+    "조선 궁궐 어도 4×1"
+   ],
+   "jb-palace_eodo_end": [
+    "조선 궁궐 eodo_end 4×1",
+    "조선 궁궐 어도 끝 4×1"
+   ],
+   "jb-palace_gate_side_3": [
+    "조선 궁문 side_3 3×8",
+    "조선 궁문 곁문 3 3×8"
+   ],
+   "jb-palace_haenggak_3": [
+    "조선 궁궐 haenggak_3 5×4",
+    "조선 궁궐 행각 3 5×4"
+   ],
+   "jb-palace_haengnak_mid_4": [
+    "조선 궁궐 행각 mid_4 4×6",
+    "조선 궁궐 행각 가운데 4 4×6"
+   ],
+   "jb-palace_haetae": [
+    "조선 궁궐 haetae 2×2",
+    "조선 궁궐 해태상 2×2"
+   ],
+   "jb-palace_hall_wide_8": [
+    "조선 궁궐 정전 wide_8 12×10",
+    "조선 궁궐 정전 넓은 8 12×10"
+   ],
+   "jb-palace_lantern": [
+    "조선 궁궐 lantern 1×2",
+    "조선 궁궐 석등 1×2"
+   ],
+   "jb-palace_pine_a": [
+    "조선 궁궐 pine_a 4×6",
+    "조선 궁궐 소나무 가 4×6"
+   ],
+   "jb-palace_pine_b": [
+    "조선 궁궐 pine_b 4×6",
+    "조선 궁궐 소나무 나 4×6"
+   ],
+   "jb-palace_pine_c": [
+    "조선 궁궐 pine_c 4×6",
+    "조선 궁궐 소나무 다 4×6"
+   ],
+   "jb-palace_pond_4": [
+    "조선 궁궐 pond_4 4×3",
+    "조선 궁궐 연못 4 4×3"
+   ],
+   "jb-palace_pond_6": [
+    "조선 궁궐 pond_6 6×3",
+    "조선 궁궐 연못 6 6×3"
+   ],
+   "jb-palace_wall_ne": [
+    "조선 궁 담 ne 1×2",
+    "조선 궁 담 북동 1×2"
+   ],
+   "jb-palace_wall_nw": [
+    "조선 궁 담 nw 1×2",
+    "조선 궁 담 북서 1×2"
+   ],
+   "jb-palace_wall_se": [
+    "조선 궁 담 se 1×2",
+    "조선 궁 담 남동 1×2"
+   ],
+   "jb-palace_wall_sw": [
+    "조선 궁 담 sw 1×2",
+    "조선 궁 담 남서 1×2"
+   ],
+   "jb-thatch_bangatgan": [
+    "조선 초가 bangatgan 7×6",
+    "조선 초가 방앗간 7×6"
+   ],
+   "jb-thatch_gotgan": [
+    "조선 초가 gotgan 5×6",
+    "조선 초가 곳간 5×6"
+   ],
+   "jb-thatch_hut_2": [
+    "조선 초가 hut_2 4×6",
+    "조선 초가 오두막 2 4×6"
+   ],
+   "jb-thatch_jumak": [
+    "조선 초가 jumak 8×6",
+    "조선 초가 주막 8×6"
+   ],
+   "jb-thatch_maguan": [
+    "조선 초가 maguan 6×6",
+    "조선 초가 마구간 6×6"
+   ],
+   "jb-thatch_porch_4": [
+    "조선 초가 porch_4 6×6",
+    "조선 초가 툇마루 4 6×6"
+   ],
+   "jb-thatch_porch_5": [
+    "조선 초가 porch_5 7×6",
+    "조선 초가 툇마루 5 7×6"
+   ],
+   "jb-thatch_smithy": [
+    "조선 초가 smithy 6×6",
+    "조선 초가 대장간 6×6"
+   ],
+   "jb-tower_sulsa_5": [
+    "조선 탑형 누각 sulsa_5 9×14",
+    "조선 탑형 누각 술사 다섯째 9×14"
+   ],
+   "jb-tower_yesik_7": [
+    "조선 탑형 누각 yesik_7 11×14",
+    "조선 탑형 누각 예식 일곱째 11×14"
+   ],
+   "jb-wall_corner_ne": [
+    "조선 토석담 corner_ne 1×2",
+    "조선 토석담 모서리 북동 1×2"
+   ],
+   "jb-wall_corner_nw": [
+    "조선 토석담 corner_nw 1×2",
+    "조선 토석담 모서리 북서 1×2"
+   ],
+   "jb-wall_corner_se": [
+    "조선 토석담 corner_se 1×2",
+    "조선 토석담 모서리 남동 1×2"
+   ],
+   "jb-wall_corner_sw": [
+    "조선 토석담 corner_sw 1×2",
+    "조선 토석담 모서리 남서 1×2"
+   ]
+  },
+  "wizarding_world": {
+   "wz-nv-pot-botanical-ingredients-cut": [
+    "botanical-ingredients · cut",
+    "식물 재료 · 손질한 조각"
+   ],
+   "wz-nv-pot-botanical-ingredients-dried": [
+    "botanical-ingredients · dried",
+    "식물 재료 · 말린 약초"
+   ],
+   "wz-nv-pot-botanical-ingredients-measured-pouch": [
+    "botanical-ingredients · measured-pouch",
+    "식물 재료 · 정량 주머니"
+   ],
+   "wz-nv-pot-botanical-ingredients-root": [
+    "botanical-ingredients · root",
+    "식물 재료 · 뿌리"
+   ],
+   "wz-nv-pot-glass-reagents-amber": [
+    "glass-reagents · amber",
+    "유리 시약병 · 호박색"
+   ],
+   "wz-nv-pot-glass-reagents-finished": [
+    "glass-reagents · finished",
+    "유리 시약병 · 완성"
+   ],
+   "wz-nv-pot-glass-reagents-flask": [
+    "glass-reagents · flask",
+    "유리 시약병 · 플라스크"
+   ],
+   "wz-nv-pot-glass-reagents-green": [
+    "glass-reagents · green",
+    "유리 시약병 · 녹색"
+   ],
+   "wz-nv-pot-glass-reagents-purple": [
+    "glass-reagents · purple",
+    "유리 시약병 · 보라색"
+   ],
+   "wz-nv-pot-glass-reagents-stoppered": [
+    "glass-reagents · stoppered",
+    "유리 시약병 · 마개 닫힘"
+   ],
+   "wz-nv-pot-glass-reagents-stored": [
+    "glass-reagents · stored",
+    "유리 시약병 · 수납"
+   ],
+   "wz-nv-pot-hood-lighting-candle-anim": [
+    "hood-lighting · candle 4프레임",
+    "배기 후드와 조명 · 촛불 4프레임"
+   ],
+   "wz-nv-pot-hood-lighting-hood": [
+    "hood-lighting · hood",
+    "배기 후드와 조명 · 후드"
+   ],
+   "wz-nv-pot-ingredient-storage-drawers": [
+    "ingredient-storage · 재료 서랍장",
+    "재료 보관장 · 재료 서랍장"
+   ],
+   "wz-nv-pot-ingredient-storage-dried-herbs": [
+    "ingredient-storage · 말린 약초 장",
+    "재료 보관장 · 말린 약초 장"
+   ],
+   "wz-nv-pot-ingredient-storage-glass-display": [
+    "ingredient-storage · 유리 시약 진열장",
+    "재료 보관장 · 유리 시약 진열장"
+   ],
+   "wz-nv-pot-iron-cauldrons-cauldron-burner-stirrer": [
+    "iron-cauldrons · 버너 위 가마솥과 교반봉",
+    "철 가마솥 · 버너 위 가마솥과 교반봉"
+   ],
+   "wz-nv-pot-low-window-window": [
+    "low-window · 낮은 납살 창",
+    "낮은 창 · 낮은 납살 창"
+   ],
+   "wz-nv-pot-mixing-tools-knife-board": [
+    "mixing-tools · knife-board",
+    "조제 도구 · 칼과 도마"
+   ],
+   "wz-nv-pot-mixing-tools-mortar-pestle": [
+    "mixing-tools · mortar-pestle",
+    "조제 도구 · 절구와 공이"
+   ],
+   "wz-nv-pot-mixing-tools-scale": [
+    "mixing-tools · scale",
+    "조제 도구 · 저울"
+   ],
+   "wz-nv-pot-mixing-tools-tray": [
+    "mixing-tools · tray",
+    "조제 도구 · 재료 쟁반"
+   ],
+   "wz-nv-pot-potion-response-amber-anim": [
+    "potion-response · amber 6프레임",
+    "마법약 반응 · 호박색 6프레임"
+   ],
+   "wz-nv-pot-potion-response-bottle-anim": [
+    "potion-response · bottle 6프레임",
+    "마법약 반응 · 병 6프레임"
+   ],
+   "wz-nv-pot-potion-response-bubble-anim": [
+    "potion-response · bubble 6프레임",
+    "마법약 반응 · 거품 6프레임"
+   ],
+   "wz-nv-pot-potion-response-green-anim": [
+    "potion-response · green 6프레임",
+    "마법약 반응 · 녹색 6프레임"
+   ],
+   "wz-nv-pot-potion-response-purple-anim": [
+    "potion-response · purple 6프레임",
+    "마법약 반응 · 보라색 6프레임"
+   ],
+   "wz-nv-pot-potion-response-steam-anim": [
+    "potion-response · steam 6프레임",
+    "마법약 반응 · 김 6프레임"
+   ],
+   "wz-nv-pot-prep-bench-bench": [
+    "prep-bench · 오크 작업대",
+    "준비대 · 오크 작업대"
+   ],
+   "wz-nv-pot-repair-r9-arched-prep-door-closed": [
+    "repair-r9-arched-prep-door · closed",
+    "보수 9차 아치형 준비실 문 · 닫힘"
+   ],
+   "wz-nv-pot-repair-r9-arched-prep-door-locked": [
+    "repair-r9-arched-prep-door · locked",
+    "보수 9차 아치형 준비실 문 · 잠김"
+   ],
+   "wz-nv-pot-repair-r9-arched-prep-door-open": [
+    "repair-r9-arched-prep-door · open",
+    "보수 9차 아치형 준비실 문 · 열림"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-center": [
+    "repair-v2-stone-floor · center",
+    "보수 2차 돌바닥 · 중앙"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-drain": [
+    "repair-v2-stone-floor · drain",
+    "보수 2판 돌바닥 · 배수구"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-drain-groove": [
+    "repair-v2-stone-floor · drain-groove",
+    "보수 2판 돌바닥 · 배수 홈"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-e": [
+    "repair-v2-stone-floor · E",
+    "보수 2차 돌바닥 · 동쪽"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-inner-ne": [
+    "repair-v2-stone-floor · inner-NE",
+    "보수 2차 돌바닥 · 안쪽 북동"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-inner-nw": [
+    "repair-v2-stone-floor · inner-NW",
+    "보수 2판 돌바닥 · 안쪽 북서"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-inner-se": [
+    "repair-v2-stone-floor · inner-SE",
+    "보수 2판 돌바닥 · 안쪽 남동"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-inner-sw": [
+    "repair-v2-stone-floor · inner-SW",
+    "보수 2판 돌바닥 · 안쪽 남서"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-n": [
+    "repair-v2-stone-floor · N",
+    "보수 2차 돌바닥 · 북쪽"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-outer-ne": [
+    "repair-v2-stone-floor · outer-NE",
+    "보수 2차 돌바닥 · 바깥 북동"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-outer-nw": [
+    "repair-v2-stone-floor · outer-NW",
+    "보수 2차 돌바닥 · 바깥 북서"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-outer-se": [
+    "repair-v2-stone-floor · outer-SE",
+    "보수 2차 돌바닥 · 바깥 남동"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-outer-sw": [
+    "repair-v2-stone-floor · outer-SW",
+    "보수 2차 돌바닥 · 바깥 남서"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-quiet-48x32": [
+    "repair-v2-stone-floor · quiet-48x32",
+    "보수 2판 돌바닥 · 조용한 48×32"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-reagent-stain": [
+    "repair-v2-stone-floor · reagent-stain",
+    "보수 2판 돌바닥 · 시약 얼룩"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-s": [
+    "repair-v2-stone-floor · S",
+    "보수 2차 돌바닥 · 남쪽"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-threshold": [
+    "repair-v2-stone-floor · threshold",
+    "보수 2판 돌바닥 · 문턱"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-w": [
+    "repair-v2-stone-floor · W",
+    "보수 2차 돌바닥 · 서쪽"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-wet": [
+    "repair-v2-stone-floor · wet",
+    "보수 2차 돌바닥 · 젖음"
+   ],
+   "wz-nv-pot-repair-v2-stone-floor-worn": [
+    "repair-v2-stone-floor · worn",
+    "보수 2차 돌바닥 · 닳음"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-door-e": [
+    "repair-v3-connected-stone-wall · door-E",
+    "보수 3판 이어진 돌벽 · 문 동"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-door-n": [
+    "repair-v3-connected-stone-wall · door-N",
+    "보수 3판 이어진 돌벽 · 문 북"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-door-s": [
+    "repair-v3-connected-stone-wall · door-S",
+    "보수 3판 이어진 돌벽 · 문 남"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-door-w": [
+    "repair-v3-connected-stone-wall · door-W",
+    "보수 3판 이어진 돌벽 · 문 서"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-e": [
+    "repair-v3-connected-stone-wall · E",
+    "보수 3판 이어진 돌벽 · 동"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-e-course": [
+    "repair-v3-connected-stone-wall · E-course",
+    "보수 3판 이어진 돌벽 · 동쪽 돌줄"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-end-e": [
+    "repair-v3-connected-stone-wall · end-E",
+    "보수 3판 이어진 돌벽 · 끝 동"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-end-n": [
+    "repair-v3-connected-stone-wall · end-N",
+    "보수 3판 이어진 돌벽 · 끝 북"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-end-s": [
+    "repair-v3-connected-stone-wall · end-S",
+    "보수 3판 이어진 돌벽 · 끝 남"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-end-w": [
+    "repair-v3-connected-stone-wall · end-W",
+    "보수 3판 이어진 돌벽 · 끝 서"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-inner-ne": [
+    "repair-v3-connected-stone-wall · inner-NE",
+    "보수 3판 이어진 돌벽 · 안쪽 북동"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-inner-nw": [
+    "repair-v3-connected-stone-wall · inner-NW",
+    "보수 3판 이어진 돌벽 · 안쪽 북서"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-inner-se": [
+    "repair-v3-connected-stone-wall · inner-SE",
+    "보수 3판 이어진 돌벽 · 안쪽 남동"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-inner-sw": [
+    "repair-v3-connected-stone-wall · inner-SW",
+    "보수 3판 이어진 돌벽 · 안쪽 남서"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-junction-cross": [
+    "repair-v3-connected-stone-wall · junction-cross",
+    "보수 3판 이어진 돌벽 · 십자 접합"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-junction-t": [
+    "repair-v3-connected-stone-wall · junction-T",
+    "보수 3판 이어진 돌벽 · 삼거리 접합"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-n": [
+    "repair-v3-connected-stone-wall · N",
+    "보수 3판 이어진 돌벽 · 북"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-north-large-0": [
+    "repair-v3-connected-stone-wall · north-large-0",
+    "보수 3판 이어진 돌벽 · 북쪽 큰 돌 0"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-north-large-1": [
+    "repair-v3-connected-stone-wall · north-large-1",
+    "보수 3판 이어진 돌벽 · 북쪽 큰 돌 1"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-north-large-2": [
+    "repair-v3-connected-stone-wall · north-large-2",
+    "보수 3판 이어진 돌벽 · 북쪽 큰 돌 2"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-north32": [
+    "repair-v3-connected-stone-wall · north32",
+    "보수 3판 이어진 돌벽 · 북쪽 32"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-outer-ne": [
+    "repair-v3-connected-stone-wall · outer-NE",
+    "보수 3판 이어진 돌벽 · 바깥 북동"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-outer-nw": [
+    "repair-v3-connected-stone-wall · outer-NW",
+    "보수 3판 이어진 돌벽 · 바깥 북서"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-outer-se": [
+    "repair-v3-connected-stone-wall · outer-SE",
+    "보수 3판 이어진 돌벽 · 바깥 남동"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-outer-sw": [
+    "repair-v3-connected-stone-wall · outer-SW",
+    "보수 3판 이어진 돌벽 · 바깥 남서"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-s": [
+    "repair-v3-connected-stone-wall · S",
+    "보수 3판 이어진 돌벽 · 남"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-s-course": [
+    "repair-v3-connected-stone-wall · S-course",
+    "보수 3판 이어진 돌벽 · 남쪽 돌줄"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-w": [
+    "repair-v3-connected-stone-wall · W",
+    "보수 3판 이어진 돌벽 · 서"
+   ],
+   "wz-nv-pot-repair-v3-connected-stone-wall-w-course": [
+    "repair-v3-connected-stone-wall · W-course",
+    "보수 3판 이어진 돌벽 · 서쪽 돌줄"
+   ],
+   "wz-nv-pot-south-stair-stair": [
+    "south-stair · 남쪽 계단",
+    "남쪽 계단 · 남쪽 계단"
+   ],
+   "wz-nv-pot-stair-transition-down": [
+    "stair-transition · down",
+    "계단 이동 · 하강"
+   ],
+   "wz-nv-pot-stair-transition-inactive": [
+    "stair-transition · inactive",
+    "계단 이동 · 비활성"
+   ],
+   "wz-nv-pot-stair-transition-return": [
+    "stair-transition · return",
+    "계단 전환 · 복귀 룬"
+   ],
+   "wz-nv-pot-stone-wash-drying-hanger": [
+    "stone-wash · drying-hanger",
+    "석재 세척 수조 · 건조걸이"
+   ],
+   "wz-nv-pot-stone-wash-idle": [
+    "stone-wash · idle",
+    "석재 세척 수조 · 대기"
+   ],
+   "wz-nv-pot-stone-wash-rinse-anim": [
+    "stone-wash · rinse 4프레임",
+    "석재 세척 수조 · 헹굼 4프레임"
+   ],
+   "wz-nv-pot-teaching-kit-blackboard": [
+    "teaching-kit · 칠판",
+    "교육 도구 · 칠판"
+   ],
+   "wz-nv-pot-teaching-kit-book-parchment": [
+    "teaching-kit · book-parchment",
+    "교육 도구 · 책과 양피지"
+   ],
+   "wz-nv-pot-teaching-kit-table": [
+    "teaching-kit · 교탁",
+    "교육 도구 · 교탁"
+   ],
+   "wz-nv-pot-work-benches-bench": [
+    "work-benches · 오크 작업대",
+    "작업대 · 오크 작업대"
+   ],
+   "wz-nv-wand-aged-dark-boards-plain-a": [
+    "aged-dark-boards · plain-a",
+    "낡은 검은 널마루 · 민무늬 가"
+   ],
+   "wz-nv-wand-aged-dark-boards-plain-b": [
+    "aged-dark-boards · plain-b",
+    "낡은 검은 널마루 · 민무늬 나"
+   ],
+   "wz-nv-wand-aged-dark-boards-transition": [
+    "aged-dark-boards · transition",
+    "낡은 검은 널마루 · 이음새"
+   ],
+   "wz-nv-wand-aged-dark-boards-worn": [
+    "aged-dark-boards · worn",
+    "낡은 검은 널마루 · 닳음"
+   ],
+   "wz-nv-wand-brass-measure-and-record-measure-coiled": [
+    "brass-measure-and-record · measure-coiled",
+    "황동 줄자와 기록 · 줄자 감김"
+   ],
+   "wz-nv-wand-brass-measure-and-record-measure-extended": [
+    "brass-measure-and-record · measure-extended",
+    "황동 줄자와 기록 · 줄자 펼침"
+   ],
+   "wz-nv-wand-dark-timber-wall-e-cap": [
+    "dark-timber-wall · E-cap",
+    "검은 목재 벽 · 동쪽 마감"
+   ],
+   "wz-nv-wand-dark-timber-wall-e-end": [
+    "dark-timber-wall · E-end",
+    "검은 목재 벽 · 동쪽 끝"
+   ],
+   "wz-nv-wand-dark-timber-wall-entry-jamb": [
+    "dark-timber-wall · entry-jamb",
+    "검은 목재 벽 · 출입구 문설주"
+   ],
+   "wz-nv-wand-dark-timber-wall-inner-ne": [
+    "dark-timber-wall · inner-NE",
+    "검은 목재 벽 · 안쪽 북동"
+   ],
+   "wz-nv-wand-dark-timber-wall-inner-nw": [
+    "dark-timber-wall · inner-NW",
+    "검은 목재 벽 · 안쪽 북서"
+   ],
+   "wz-nv-wand-dark-timber-wall-inner-se": [
+    "dark-timber-wall · inner-SE",
+    "검은 목재 벽 · 안쪽 남동"
+   ],
+   "wz-nv-wand-dark-timber-wall-inner-sw": [
+    "dark-timber-wall · inner-SW",
+    "검은 목재 벽 · 안쪽 남서"
+   ],
+   "wz-nv-wand-dark-timber-wall-n-base": [
+    "dark-timber-wall · N-base",
+    "검은 목재 벽 · 북쪽 밑단"
+   ],
+   "wz-nv-wand-dark-timber-wall-n-end": [
+    "dark-timber-wall · N-end",
+    "검은 목재 벽 · 북쪽 끝"
+   ],
+   "wz-nv-wand-dark-timber-wall-n-face": [
+    "dark-timber-wall · N-face",
+    "검은 목재 벽 · 북쪽 면"
+   ],
+   "wz-nv-wand-dark-timber-wall-ne-base": [
+    "dark-timber-wall · NE-base",
+    "검은 목재 벽 · 북동 밑단"
+   ],
+   "wz-nv-wand-dark-timber-wall-nw-base": [
+    "dark-timber-wall · NW-base",
+    "검은 목재 벽 · 북서 밑단"
+   ],
+   "wz-nv-wand-dark-timber-wall-outer-e": [
+    "dark-timber-wall · outer-E",
+    "검은 목재 벽 · 바깥 동쪽"
+   ],
+   "wz-nv-wand-dark-timber-wall-outer-n": [
+    "dark-timber-wall · outer-N",
+    "검은 목재 벽 · 바깥 북쪽"
+   ],
+   "wz-nv-wand-dark-timber-wall-outer-ne": [
+    "dark-timber-wall · outer-NE",
+    "검은 목재 벽 · 바깥 북동"
+   ],
+   "wz-nv-wand-dark-timber-wall-outer-nw": [
+    "dark-timber-wall · outer-NW",
+    "검은 목재 벽 · 바깥 북서"
+   ],
+   "wz-nv-wand-dark-timber-wall-outer-s": [
+    "dark-timber-wall · outer-S",
+    "검은 목재 벽 · 바깥 남쪽"
+   ],
+   "wz-nv-wand-dark-timber-wall-outer-se": [
+    "dark-timber-wall · outer-SE",
+    "검은 목재 벽 · 바깥 남동"
+   ],
+   "wz-nv-wand-dark-timber-wall-outer-sw": [
+    "dark-timber-wall · outer-SW",
+    "검은 목재 벽 · 바깥 남서"
+   ],
+   "wz-nv-wand-dark-timber-wall-outer-w": [
+    "dark-timber-wall · outer-W",
+    "검은 목재 벽 · 바깥 서쪽"
+   ],
+   "wz-nv-wand-dark-timber-wall-partition": [
+    "dark-timber-wall · partition",
+    "검은 목재 벽 · 칸막이"
+   ],
+   "wz-nv-wand-dark-timber-wall-partition-end": [
+    "dark-timber-wall · partition-end",
+    "검은 목재 벽 · 칸막이 끝"
+   ],
+   "wz-nv-wand-dark-timber-wall-s-cap": [
+    "dark-timber-wall · S-cap",
+    "검은 목재 벽 · 남쪽 마감"
+   ],
+   "wz-nv-wand-dark-timber-wall-s-end": [
+    "dark-timber-wall · S-end",
+    "검은 목재 벽 · 남쪽 끝"
+   ],
+   "wz-nv-wand-dark-timber-wall-staff-jamb": [
+    "dark-timber-wall · staff-jamb",
+    "검은 목재 벽 · 직원 문설주"
+   ],
+   "wz-nv-wand-dark-timber-wall-t-e": [
+    "dark-timber-wall · T-E",
+    "검은 목재 벽 · T자 동쪽"
+   ],
+   "wz-nv-wand-dark-timber-wall-t-join": [
+    "dark-timber-wall · T-join",
+    "검은 목재 벽 · T자 이음"
+   ],
+   "wz-nv-wand-dark-timber-wall-t-w": [
+    "dark-timber-wall · T-W",
+    "검은 목재 벽 · T자 서쪽"
+   ],
+   "wz-nv-wand-dark-timber-wall-w-cap": [
+    "dark-timber-wall · W-cap",
+    "검은 목재 벽 · 서쪽 마감"
+   ],
+   "wz-nv-wand-dark-timber-wall-w-end": [
+    "dark-timber-wall · W-end",
+    "검은 목재 벽 · 서쪽 끝"
+   ],
+   "wz-nv-wand-deep-display-window-recess": [
+    "deep-display-window · 깊은 진열창",
+    "깊은 진열창 · 깊은 진열창"
+   ],
+   "wz-nv-wand-stock-ladder-ladder": [
+    "stock-ladder · 재고 사다리",
+    "재고 사다리 · 재고 사다리"
+   ],
+   "wz-nv-wand-timber-ceiling-cutaway-mask-0": [
+    "timber-ceiling-cutaway · mask-0",
+    "목재 천장 단면 · 연결 0"
+   ],
+   "wz-nv-wand-timber-ceiling-cutaway-mask-1": [
+    "timber-ceiling-cutaway · mask-1",
+    "목재 천장 단면 · 연결 1"
+   ],
+   "wz-nv-wand-timber-ceiling-cutaway-mask-10": [
+    "timber-ceiling-cutaway · mask-10",
+    "목재 천장 절개 · 마스크 10"
+   ],
+   "wz-nv-wand-timber-ceiling-cutaway-mask-11": [
+    "timber-ceiling-cutaway · mask-11",
+    "목재 천장 절개 · 마스크 11"
+   ],
+   "wz-nv-wand-timber-ceiling-cutaway-mask-12": [
+    "timber-ceiling-cutaway · mask-12",
+    "목재 천장 절개 · 마스크 12"
+   ],
+   "wz-nv-wand-timber-ceiling-cutaway-mask-13": [
+    "timber-ceiling-cutaway · mask-13",
+    "목재 천장 절개 · 마스크 13"
+   ],
+   "wz-nv-wand-timber-ceiling-cutaway-mask-14": [
+    "timber-ceiling-cutaway · mask-14",
+    "목재 천장 절개 · 마스크 14"
+   ],
+   "wz-nv-wand-timber-ceiling-cutaway-mask-15": [
+    "timber-ceiling-cutaway · mask-15",
+    "목재 천장 절개 · 마스크 15"
+   ],
+   "wz-nv-wand-timber-ceiling-cutaway-mask-2": [
+    "timber-ceiling-cutaway · mask-2",
+    "목재 천장 절개 · 마스크 2"
+   ],
+   "wz-nv-wand-timber-ceiling-cutaway-mask-3": [
+    "timber-ceiling-cutaway · mask-3",
+    "목재 천장 절개 · 마스크 3"
+   ],
+   "wz-nv-wand-timber-ceiling-cutaway-mask-4": [
+    "timber-ceiling-cutaway · mask-4",
+    "목재 천장 절개 · 마스크 4"
+   ],
+   "wz-nv-wand-timber-ceiling-cutaway-mask-5": [
+    "timber-ceiling-cutaway · mask-5",
+    "목재 천장 절개 · 마스크 5"
+   ],
+   "wz-nv-wand-timber-ceiling-cutaway-mask-6": [
+    "timber-ceiling-cutaway · mask-6",
+    "목재 천장 절개 · 마스크 6"
+   ],
+   "wz-nv-wand-timber-ceiling-cutaway-mask-7": [
+    "timber-ceiling-cutaway · mask-7",
+    "목재 천장 절개 · 마스크 7"
+   ],
+   "wz-nv-wand-timber-ceiling-cutaway-mask-8": [
+    "timber-ceiling-cutaway · mask-8",
+    "목재 천장 절개 · 마스크 8"
+   ],
+   "wz-nv-wand-timber-ceiling-cutaway-mask-9": [
+    "timber-ceiling-cutaway · mask-9",
+    "목재 천장 절개 · 마스크 9"
+   ],
+   "wz-nv-wand-wand-response-extra-seq-anim": [
+    "wand-response-extra · seq 3프레임",
+    "지팡이 반응 추가 효과 · 순차 3프레임"
+   ],
+   "wz-nv-wand-wand-testing-table-height16-table": [
+    "wand-testing-table-height16 · 교탁",
+    "지팡이 시험대 높이 16 · 교탁"
+   ],
+   "wz-nv-wand-wand-third-and-rack-rack": [
+    "wand-third-and-rack · rack",
+    "세 번째 지팡이와 거치대 · 거치대"
+   ],
+   "wz-nv-wand-wand-third-and-rack-third-wand": [
+    "wand-third-and-rack · third-wand",
+    "세 번째 지팡이와 거치대 · 세 번째 지팡이"
+   ],
+   "wz-nv-wand-wandtrial-boxes-closed": [
+    "wandtrial-boxes · closed",
+    "지팡이 시험 상자 · 닫힘"
+   ],
+   "wz-nv-wand-wandtrial-boxes-open": [
+    "wandtrial-boxes · open",
+    "지팡이 시험 상자 · 열림"
+   ],
+   "wz-nv-wand-wandtrial-boxes-stack": [
+    "wandtrial-boxes · stack",
+    "지팡이 시험 상자 · 쌓음"
+   ],
+   "wz-nv-wand-wandtrial-lights-east": [
+    "wandtrial-lights · east",
+    "지팡이 시험 등불 · 동쪽"
+   ],
+   "wz-nv-wand-wandtrial-lights-west": [
+    "wandtrial-lights · west",
+    "지팡이 시험 등불 · 서쪽"
+   ],
+   "wz-nv-wand-wandtrial-response-seq-anim": [
+    "wandtrial-response · seq 4프레임",
+    "지팡이 시험 반응 · 순차 4프레임"
+   ],
+   "wz-nv-wand-wandtrial-shelves-east-run": [
+    "wandtrial-shelves · east-run",
+    "지팡이 시험 선반 · 동쪽 연결"
+   ],
+   "wz-nv-wand-wandtrial-shelves-west-run": [
+    "wandtrial-shelves · west-run",
+    "지팡이 시험 선반 · 서쪽 연결"
+   ],
+   "wz-nv-wand-wandtrial-target-target": [
+    "wandtrial-target · 지팡이 시험 표적",
+    "지팡이 시험 표적 · 지팡이 시험 표적"
+   ],
+   "wz-nv-wand-wandtrial-traces-traces": [
+    "wandtrial-traces · traces",
+    "지팡이 시험 흔적 · 그을음 자국"
+   ],
+   "wz-nv-wand-wandtrial-wands-pair": [
+    "wandtrial-wands · pair",
+    "지팡이 시험 지팡이 · 한 쌍"
+   ],
+   "wz-nv-wand-wood-service-counter-counter": [
+    "wood-service-counter · 오크 카운터",
+    "목재 접객 카운터 · 오크 카운터"
+   ],
+   "wz-nv-wand-wood-shop-doors-r2-entry-closed": [
+    "wood-shop-doors-r2 · entry_closed",
+    "목재 가게 문 2 · 출입구 닫힘"
+   ],
+   "wz-nv-wand-wood-shop-doors-r2-entry-locked": [
+    "wood-shop-doors-r2 · entry_locked",
+    "목재 가게 문 2 · 출입구 잠김"
+   ],
+   "wz-nv-wand-wood-shop-doors-r2-entry-open": [
+    "wood-shop-doors-r2 · entry_open",
+    "목재 가게 문 2 · 출입구 열림"
+   ],
+   "wz-nv-wand-wood-shop-doors-r2-staff-closed": [
+    "wood-shop-doors-r2 · staff_closed",
+    "목재 가게 문 2 · 직원용 닫힘"
+   ],
+   "wz-nv-wand-wood-shop-doors-r2-staff-locked": [
+    "wood-shop-doors-r2 · staff_locked",
+    "목재 가게 문 2 · 직원용 잠김"
+   ],
+   "wz-nv-wand-wood-shop-doors-r2-staff-open": [
+    "wood-shop-doors-r2 · staff_open",
+    "목재 가게 문 2 · 직원용 열림"
+   ],
+   "wz-owl-wall-ne": [
+    "탑 벽 북동(NE)",
+    "탑 벽 북동"
+   ],
+   "wz-owl-wall-nw": [
+    "탑 벽 북서(NW)",
+    "탑 벽 북서"
+   ],
+   "wz-owl-wall-se": [
+    "탑 벽 남동(SE)",
+    "탑 벽 남동"
+   ],
+   "wz-owl-wall-sw": [
+    "탑 벽 남서(SW)",
+    "탑 벽 남서"
+   ]
+  },
+  "pirate_isles": {
+   "pi-anchor": [
+    "large iron ship anchor lying on the ground",
+    "눕힌 큰 쇠닻"
+   ],
+   "pi-bamboo-raft": [
+    "bamboo raft floating on the water seen from above, lashed poles, a paddle and a ",
+    "대나무 뗏목"
+   ],
+   "pi-banana": [
+    "banana plant with large paddle leaves",
+    "큰 잎 바나나 나무"
+   ],
+   "pi-bar-counter": [
+    "long polished wooden tavern bar counter with panelled front, brass foot rail, mu",
+    "술집 긴 계산대"
+   ],
+   "pi-bar-shelf": [
+    "tavern back shelf with rows of colourful bottles and mugs, cupboard below",
+    "술집 뒤 술병 선반"
+   ],
+   "pi-barrel": [
+    "wooden barrel seen from above at an angle: big light elliptical lid on top, curv",
+    "나무통"
+   ],
+   "pi-barrels": [
+    "stack of three wooden barrels, two below and one on top",
+    "쌓은 나무통 셋"
+   ],
+   "pi-basket": [
+    "round woven basket full of tropical fruit: mangoes, bananas and a coconut",
+    "과일 바구니"
+   ],
+   "pi-bed-straw": [
+    "simple hut bed seen from above at 3/4: low bamboo frame with a straw-stuffed mat",
+    "오두막 짚 침대"
+   ],
+   "pi-bench": [
+    "wooden bench",
+    "나무 긴 의자"
+   ],
+   "pi-boathouse": [
+    "open-front wooden boathouse shed on the shore with a boat inside",
+    "앞이 트인 배 창고"
+   ],
+   "pi-bollard": [
+    "iron mooring bollard bolted on a square stone quay block, mushroom cap seen from",
+    "쇠 계선주"
+   ],
+   "pi-bones": [
+    "small pile of three skulls and crossed bones",
+    "해골 뼈 더미"
+   ],
+   "pi-bookshelf-ship": [
+    "tall dark wooden ship bookshelf with books held by rope rails, rolled charts on ",
+    "배 책장"
+   ],
+   "pi-broken-rowboat": [
+    "broken old rowboat half buried in the sand, seen from above with a cracked hull ",
+    "부서진 노 젓는 배"
+   ],
+   "pi-bunk-ship": [
+    "wooden ship bunk bed with pillow at the north end and a folded blue wool blanket",
+    "배 침상"
+   ],
+   "pi-bush": [
+    "round tropical bush",
+    "둥근 열대 덤불"
+   ],
+   "pi-bush-hibiscus": [
+    "hibiscus bush with red flowers",
+    "붉은 꽃 무궁화 덤불"
+   ],
+   "pi-cabin": [
+    "log cabin with thatched hip roof and two shuttered windows",
+    "짚 모임지붕 통나무집"
+   ],
+   "pi-campfire": [
+    "campfire ringed with stones, burning logs",
+    "돌 두른 모닥불"
+   ],
+   "pi-candelabra": [
+    "tall iron candle stand seen from above at 3/4: a wide round drip tray on top hol",
+    "쇠 촛대"
+   ],
+   "pi-cannon": [
+    "iron cannon on a wooden carriage with wheels, aimed south",
+    "나무 포가 위 쇠 대포"
+   ],
+   "pi-cannon-int": [
+    "naval deck cannon on a four-wheeled wooden truck carriage with breeching rope, a",
+    "포갑판 함포"
+   ],
+   "pi-cannonballs": [
+    "low wooden tray holding a pyramid of iron cannonballs",
+    "포탄 더미"
+   ],
+   "pi-canoe": [
+    "outrigger canoe with a side float, floating",
+    "통나무 쪽배"
+   ],
+   "pi-captain-bed": [
+    "captain's large wooden bed seen from above at 3/4: carved headboard against the ",
+    "선장 큰 침대"
+   ],
+   "pi-captain-desk": [
+    "captain's wooden writing desk with sea chart, quill in inkwell and oil lamp on t",
+    "선장 책상"
+   ],
+   "pi-captain-house": [
+    "grand two-storey pirate captain mansion with tile roof, balcony and flag",
+    "해적 선장 저택"
+   ],
+   "pi-cargo-barrels": [
+    "two-tier wooden rack holding four rum barrels lying on their sides, round ends f",
+    "두 단 럼통 시렁"
+   ],
+   "pi-cave-entrance": [
+    "treasure cave entrance in a rocky mound with dark arched mouth, vines and skull ",
+    "해골 표식 보물 동굴 입구"
+   ],
+   "pi-chair-ship": [
+    "captain's high-backed wooden armchair with red leather seat cushion, back toward",
+    "선장 의자"
+   ],
+   "pi-chapel": [
+    "small whitewashed island chapel with bell tower and tile roof",
+    "종탑 있는 회칠 예배당"
+   ],
+   "pi-chest-big": [
+    "big ornate closed treasure chest seen from above at 3/4: deep domed lid with gol",
+    "큰 장식 보물 상자"
+   ],
+   "pi-chest-closed": [
+    "closed wooden treasure chest seen from above at an angle: flat plank lid top fac",
+    "닫힌 보물 상자"
+   ],
+   "pi-chest-open": [
+    "open treasure chest overflowing with gold coins and jewels",
+    "열린 보물 상자"
+   ],
+   "pi-cobble": [
+    "harbor cobblestone pavement floor tiles, 2 variants",
+    "항구 포석 바닥 2종"
+   ],
+   "pi-coconuts": [
+    "pile of fallen coconuts",
+    "떨어진 코코넛 더미"
+   ],
+   "pi-coral": [
+    "coral reef heads rising from shallow water with foam",
+    "분홍 주황 산호초"
+   ],
+   "pi-coral-purple": [
+    "purple fan coral and brain coral in shallow water",
+    "보라 부채 산호와 뇌 산호"
+   ],
+   "pi-crab": [
+    "small red crab on the sand seen from above, claws raised",
+    "붉은 게"
+   ],
+   "pi-crate": [
+    "wooden cargo crate with cross brace",
+    "나무 화물 상자"
+   ],
+   "pi-crates": [
+    "stack of cargo crates, two below and one on top",
+    "쌓은 화물 상자"
+   ],
+   "pi-cutlass-rack": [
+    "two crossed pirate cutlasses mounted on a wooden wall plaque",
+    "벽걸이 해적 칼"
+   ],
+   "pi-dartboard": [
+    "round dartboard with red and cream segments and two darts stuck in it",
+    "다트판"
+   ],
+   "pi-deck": [
+    "wooden ship deck planking floor tiles, 2 variants",
+    "나무 배 갑판 널마루 2종"
+   ],
+   "pi-deepwater": [
+    "deep blue sea water tiles, 2 variants",
+    "깊은 푸른 바닷물 2종"
+   ],
+   "pi-dock-crane": [
+    "wooden dock crane house with a plank roof seen from above, big treadwheel in fro",
+    "부두 나무 기중기"
+   ],
+   "pi-driftwood": [
+    "bleached driftwood log lying on the sand",
+    "모래 위 하얀 유목 통나무"
+   ],
+   "pi-fence": [
+    "wooden fence section of round log posts with sawn tops seen from above, two rail",
+    "통나무 울타리"
+   ],
+   "pi-fence-bamboo": [
+    "bamboo pole fence section, hollow cut bamboo tops seen from above, lashed with r",
+    "대나무 울타리"
+   ],
+   "pi-fern": [
+    "low jungle fern",
+    "낮은 밀림 고사리"
+   ],
+   "pi-fire-pit": [
+    "stone-ringed cooking fire pit with a wooden tripod holding a hanging iron stew p",
+    "돌 두른 화덕 구덩이"
+   ],
+   "pi-fireplace": [
+    "stone tavern fireplace with burning logs, a hanging iron kettle, mantel shelf wi",
+    "돌 벽난로"
+   ],
+   "pi-fish-rack": [
+    "low wooden fish drying table seen from above at an angle, split fish laid out on",
+    "생선 말리는 시렁"
+   ],
+   "pi-fish-shack": [
+    "small plank fish shack on the pier with net hanging and fish sign",
+    "그물 걸린 부두 어부 오두막"
+   ],
+   "pi-fishing-boat": [
+    "small fishing boat with a short mast, furled sail and a pile of nets",
+    "고깃배"
+   ],
+   "pi-flagpole": [
+    "pirate flag on a short pole planted in a big square stone pedestal block seen fr",
+    "해적 깃대"
+   ],
+   "pi-floor-cave": [
+    "rough cave rock floor and treasure-strewn floor tiles",
+    "동굴 바위 바닥과 보물 흩어진 바닥"
+   ],
+   "pi-floor-reed": [
+    "woven reed mat hut floor tiles",
+    "갈대 돗자리 오두막 바닥"
+   ],
+   "pi-floor-ship": [
+    "dark ship cabin plank floor tiles, 2 variants",
+    "어두운 선실 널마루 2종"
+   ],
+   "pi-floor-tavern": [
+    "tavern wooden floorboards tiles, 2 variants",
+    "술집 나무 마루 2종"
+   ],
+   "pi-flowerbed": [
+    "small bed of red and yellow tropical flowers",
+    "열대 꽃밭"
+   ],
+   "pi-fort-barracks": [
+    "stone fort barracks with terracotta roof and iron-banded door",
+    "기와 지붕 요새 병영"
+   ],
+   "pi-fort-bastion": [
+    "round stone fort bastion tower with crenellated top and cannon",
+    "둥근 돌 포대 탑"
+   ],
+   "pi-fort-gate": [
+    "stone fort gatehouse with arched wooden gate, crenellated top walkway and flag",
+    "아치 대문 요새 문루"
+   ],
+   "pi-galleon": [
+    "pirate galleon with dark hull, gun ports, raised stern castle, three masts with ",
+    "해적 범선"
+   ],
+   "pi-galley-shelf": [
+    "tall wooden kitchen shelf with clay pots, bowls and an iron pan, a water jug on ",
+    "주방 선반"
+   ],
+   "pi-galley-stove": [
+    "cast iron galley stove with a stew pot and a kettle on top, glowing firebox door",
+    "무쇠 주방 화덕"
+   ],
+   "pi-galley-table": [
+    "galley work table with a loaf of bread, a fish, a soup bowl and a knife on top",
+    "주방 일 탁자"
+   ],
+   "pi-globe": [
+    "world globe on a small round wooden side table, seen from above at 3/4 (round ta",
+    "둥근 탁자 위 지구의"
+   ],
+   "pi-gold-pile": [
+    "scattered pile of gold coins and a goblet on the floor",
+    "금화 무더기"
+   ],
+   "pi-grass": [
+    "tropical jungle grass floor tiles, 6 variants (plain, small flowers, four with s",
+    "열대 밀림 풀밭 바닥 6종"
+   ],
+   "pi-grass-shade-a": [
+    "large dark grass shade patch over jungle grass floor, 3x2 tiles, organic outline",
+    "풀밭 큰 그늘 덩이 3×2"
+   ],
+   "pi-grass-shade-b": [
+    "large dark grass shade patch over jungle grass floor, 2x2 tiles, organic outline",
+    "풀밭 큰 그늘 덩이 2×2"
+   ],
+   "pi-grass-shade-c": [
+    "large dark grass shade patch over jungle grass floor, 4x2 tiles, organic outline",
+    "풀밭 큰 그늘 덩이 4×2"
+   ],
+   "pi-grass-shade-d": [
+    "large dark grass shade patch over jungle grass floor, 3x3 tiles, organic outline",
+    "풀밭 큰 그늘 덩이 3×3"
+   ],
+   "pi-grass-tuft": [
+    "tall beach grass tuft",
+    "해변 억새 덤불"
+   ],
+   "pi-hammock": [
+    "woven rope hammock strung between two posts, deep hollow cloth bed seen from abo",
+    "그물 침대"
+   ],
+   "pi-hammock-int": [
+    "sailor's canvas hammock seen from above at 3/4, slung between two posts with woo",
+    "선창 그물 침대"
+   ],
+   "pi-hanging-herbs": [
+    "bundles of drying herbs and a garlic braid hanging from a wooden wall peg rail",
+    "벽걸이 말린 약초"
+   ],
+   "pi-harbor-office": [
+    "two-storey stone harbor master house with tile roof and balcony",
+    "2층 돌 항만 관리소"
+   ],
+   "pi-house-plaster": [
+    "whitewashed colonial house with terracotta tile roof and teal shutters",
+    "회칠 벽 붉은 기와 항구 집"
+   ],
+   "pi-hut-palm": [
+    "beach hut with palm-leaf thatch roof and plank walls",
+    "야자잎 지붕 해변 오두막"
+   ],
+   "pi-hut-round": [
+    "round thatched hut with conical straw roof",
+    "원뿔 짚 지붕 둥근 오두막"
+   ],
+   "pi-hut-thatch": [
+    "small thatched village hut with bamboo walls and wooden door",
+    "대나무 벽 짚 지붕 오두막"
+   ],
+   "pi-idol-pedestal": [
+    "golden tiki idol statue with ruby eyes sitting on a carved stone pedestal",
+    "받침 위 황금 우상"
+   ],
+   "pi-keg-powder": [
+    "black powder keg seen from above at an angle: round lid disk with rim and fuse p",
+    "화약통"
+   ],
+   "pi-keg-stand": [
+    "tavern keg rack: deep wooden top shelf with mugs on it, two ale kegs lying under",
+    "맥주통 거치대"
+   ],
+   "pi-ladder-hatch": [
+    "open square deck hatch with a wooden ladder going down into the dark hold",
+    "사다리 갑판 승강구"
+   ],
+   "pi-lantern-post": [
+    "harbor brazier lamp: iron post with a wide open fire bowl on top seen from above",
+    "부두 화로 등"
+   ],
+   "pi-lantern-wall": [
+    "hanging oil lantern on an iron wall bracket, glowing",
+    "벽걸이 기름 등불"
+   ],
+   "pi-lighthouse": [
+    "white and red striped stone lighthouse with lantern room and gallery",
+    "붉고 흰 줄무늬 등대"
+   ],
+   "pi-lobster-traps": [
+    "two stacked slatted wooden lobster traps, slatted lids seen from above",
+    "쌓은 나무 통발"
+   ],
+   "pi-log-bench": [
+    "log bench: a split log seat with flat light top seen from above, resting on two ",
+    "통나무 의자"
+   ],
+   "pi-longhouse": [
+    "long thatched village meeting house on low stilts with wide porch",
+    "짚 지붕 긴 마을 회관"
+   ],
+   "pi-low-table-hut": [
+    "low bamboo table with a bowl of rice, a coconut shell cup and a bunch of bananas",
+    "대나무 낮은 상"
+   ],
+   "pi-map-table": [
+    "large chart table covered with a sea chart showing islands, a dotted route line,",
+    "해도 탁자"
+   ],
+   "pi-mast-base": [
+    "stump of a thick ship mast with a sawn round top face, iron rings, standing in a",
+    "돛대 밑동"
+   ],
+   "pi-mat-hut": [
+    "woven reed sleeping mat on the floor with a cloth pillow and a folded patterned ",
+    "짚 돗자리 잠자리"
+   ],
+   "pi-net-rack": [
+    "low wooden drying table seen from above at an angle, slatted top face covered by",
+    "그물 말리는 나무 틀"
+   ],
+   "pi-nets": [
+    "heap of fishing nets with floats lying on the ground",
+    "부표 달린 그물 더미"
+   ],
+   "pi-oar-rack": [
+    "wooden oar stand box seen from above with oars standing upright in it",
+    "노 걸이"
+   ],
+   "pi-palisade": [
+    "thick log palisade wall section, flat sawn log ends visible along the top",
+    "통나무 목책"
+   ],
+   "pi-palm": [
+    "coconut palm tree with curved ringed trunk and drooping fronds",
+    "휜 줄기 코코넛 야자수"
+   ],
+   "pi-palm-lean": [
+    "leaning coconut palm tree bending toward the sea",
+    "바다로 기운 야자수"
+   ],
+   "pi-palm-pair": [
+    "twin coconut palm trees from one clump",
+    "쌍둥이 코코넛 야자수"
+   ],
+   "pi-palm-stump": [
+    "cut palm tree stump with ringed bark and a flat sawn top seen from above",
+    "야자 그루터기"
+   ],
+   "pi-palm-young": [
+    "young short palm tree",
+    "어린 키 작은 야자나무"
+   ],
+   "pi-pier-post": [
+    "thick round wooden pier post, sawn top end with tree rings seen from above, rope",
+    "밧줄 감긴 부두 말뚝"
+   ],
+   "pi-porthole": [
+    "round brass ship porthole with rivets showing the blue sea and sky outside",
+    "둥근 놋쇠 현창"
+   ],
+   "pi-pot-rack": [
+    "iron wall rail with a hanging frying pan, a ladle and a copper pot",
+    "벽 냄비 걸이"
+   ],
+   "pi-rock-large": [
+    "large mossy coastal boulder cluster",
+    "이끼 낀 큰 해안 바위 덩이"
+   ],
+   "pi-rock-pillar": [
+    "broken natural cave rock column seen from above at 3/4: flat rough top cut face ",
+    "부러진 동굴 바위 기둥"
+   ],
+   "pi-rock-small": [
+    "small coastal boulder",
+    "작은 해안 바위"
+   ],
+   "pi-rock-water": [
+    "small rocks breaking the surface of the water with foam",
+    "물거품 이는 물 위 작은 바위"
+   ],
+   "pi-rockfloor": [
+    "flat coastal rock ground tiles, 2 variants",
+    "해안 평평한 바위 바닥 2종"
+   ],
+   "pi-rope-coil": [
+    "coiled ship rope lying on the deck",
+    "감아 둔 밧줄 사리"
+   ],
+   "pi-rowboat": [
+    "small wooden rowboat with two benches and oars, floating",
+    "작은 노 젓는 배"
+   ],
+   "pi-rug-tavern": [
+    "red woven rectangular rug with gold diamond medallion, patterned border and frin",
+    "붉은 직물 깔개"
+   ],
+   "pi-sacks": [
+    "open burlap grain sack showing grain inside, with a closed sack behind",
+    "곡식 자루"
+   ],
+   "pi-sand": [
+    "white-gold beach sand floor tiles, 3 variants (plain, wind ripples, shells)",
+    "흰금빛 해변 모래 바닥 3종(맨 모래·바람 물결·조개)"
+   ],
+   "pi-sea-chest": [
+    "sailor's sea chest with teal painted lid, iron corners and rope handles",
+    "선원 궤짝"
+   ],
+   "pi-sea-stack": [
+    "rocky islet sea stack standing in the water with surf foam ring",
+    "물거품 둘린 바위섬"
+   ],
+   "pi-seaweed": [
+    "washed-up seaweed pile on the sand",
+    "밀려온 해초 더미"
+   ],
+   "pi-shelf-hut": [
+    "tall bamboo shelf seen from above at 3/4 with clay pots, gourds and a basket, a ",
+    "대나무 선반"
+   ],
+   "pi-shells": [
+    "scattered seashells and a starfish on the sand",
+    "조개와 불가사리"
+   ],
+   "pi-ship-window": [
+    "stern-cabin leaded window: dark wood frame with small glass panes showing the se",
+    "선미 선실 납틀 창"
+   ],
+   "pi-shipwreck": [
+    "broken shipwreck hull lying tilted on the sand with exposed ribs and snapped mas",
+    "모래에 박힌 난파선"
+   ],
+   "pi-signpost": [
+    "square wooden signpost seen from above at an angle: thick post with flat light t",
+    "갈림길 푯말"
+   ],
+   "pi-skull-rock": [
+    "large grey sea rock shaped like a skull with two dark hollow eyes, mossy top",
+    "해골 바위"
+   ],
+   "pi-smokehouse": [
+    "small clay smokehouse with smoke vent and stacked firewood",
+    "흙 훈제 오두막"
+   ],
+   "pi-stairs-up": [
+    "steep wooden ship stairs with rope handrail going up toward the north",
+    "위 갑판 나무 계단"
+   ],
+   "pi-stalagmite": [
+    "cave stalagmite seen from above at 3/4: a broad flat rock ledge (top surface vis",
+    "동굴 석순 (넓은 바위 턱)"
+   ],
+   "pi-stall-fish": [
+    "fish market stall with blue striped awning, fish on ice and baskets",
+    "푸른 차양 생선 노점"
+   ],
+   "pi-stall-fruit": [
+    "market stall with striped red awning and fruit baskets on the counter",
+    "붉은 차양 과일 노점"
+   ],
+   "pi-stall-goods": [
+    "trade goods stall with cream canvas awning, pots and rolled cloth",
+    "흰 범포 차양 잡화 노점"
+   ],
+   "pi-stilt-hut": [
+    "stilt house on wooden piles over the water with thatched roof and porch deck",
+    "짚 지붕 수상 가옥"
+   ],
+   "pi-stool-int": [
+    "round wooden bar stool seen from above at 3/4: big round seat top, three splayed",
+    "둥근 나무 걸상"
+   ],
+   "pi-table-stools": [
+    "round wooden table with two stools",
+    "둥근 나무 탁자와 걸상"
+   ],
+   "pi-tavern": [
+    "two-storey harbor tavern with tile roof, timber-framed plaster walls, porch cano",
+    "2층 기와 항구 술집"
+   ],
+   "pi-tavern-chair": [
+    "simple wooden tavern chair with spindle back toward the north",
+    "술집 나무 의자"
+   ],
+   "pi-tavern-table": [
+    "long rectangular wooden tavern table seen from above at 3/4: deep plank top with",
+    "술집 긴 사각 탁자"
+   ],
+   "pi-tavern-table-round": [
+    "round wooden tavern table with two ale mugs, a lit candle and a plate on top",
+    "술집 둥근 탁자"
+   ],
+   "pi-tide-pool": [
+    "small rock tide pool with clear water and a starfish, flat on the beach",
+    "바위 웅덩이"
+   ],
+   "pi-tiki-torch": [
+    "bamboo tiki torch on a round stone base, flame burning in an open bowl seen from",
+    "대나무 횃불"
+   ],
+   "pi-torch-stand": [
+    "standing iron brazier seen from above at 3/4: wide round fire bowl full of glowi",
+    "쇠 화로대 (숯불 그릇)"
+   ],
+   "pi-totem": [
+    "carved wooden tiki totem pole with painted faces on a square stone base, flat ca",
+    "새긴 나무 토템"
+   ],
+   "pi-treasure-heap": [
+    "huge heap of gold coins with goblets, a jewelled crown, pearls and a sword stuck",
+    "금화 큰 무더기"
+   ],
+   "pi-treasure-urn": [
+    "ornate clay urn with gold bands seen from above at 3/4, its wide open mouth full",
+    "금테 보물 항아리"
+   ],
+   "pi-treasure-x": [
+    "red painted X mark on the sand with a small dug mound, a buried treasure spot",
+    "보물 묻은 자리"
+   ],
+   "pi-tree-broad": [
+    "broadleaf tropical tree with layered round canopy and short trunk",
+    "넓은잎 열대 나무"
+   ],
+   "pi-tree-fruit": [
+    "mango tree with round canopy and orange fruit",
+    "주황 열매 망고나무"
+   ],
+   "pi-wall-face-cave": [
+    "cave rock wall front face strip, 4 variants x 2 rows",
+    "동굴 바위 벽 앞면 4×2"
+   ],
+   "pi-wall-face-fort": [
+    "stone fort wall front face strip, 4 variants x 2 rows (plain, arrow slit, cannon",
+    "돌 요새 성벽 앞면 4×2(민벽·활 구멍·포문·이끼)"
+   ],
+   "pi-wall-face-hut": [
+    "bamboo hut wall front face strip, 4 variants x 2 rows",
+    "대나무 오두막 벽 앞면 4×2"
+   ],
+   "pi-wall-face-ship": [
+    "dark ship cabin plank wall front face strip, 4 variants x 2 rows",
+    "어두운 선실 널벽 앞면 4×2"
+   ],
+   "pi-wall-face-tavern": [
+    "tavern plaster and wainscot wall front face strip, 4 variants x 2 rows",
+    "술집 회벽과 벽널 앞면 4×2"
+   ],
+   "pi-wall-map": [
+    "nautical sea chart pinned to the wall with brass tacks: islands, a dotted route,",
+    "벽에 꽂은 해도"
+   ],
+   "pi-wall-trophy": [
+    "mounted swordfish trophy on a carved wooden wall plaque",
+    "박제 황새치 벽장식"
+   ],
+   "pi-wardrobe-ship": [
+    "tall dark wooden ship wardrobe seen from above at 3/4: deep top surface with a f",
+    "배 옷장"
+   ],
+   "pi-warehouse": [
+    "wooden harbor warehouse with big double cargo doors and pulley beam",
+    "도르래 들보 항구 창고"
+   ],
+   "pi-watchtower": [
+    "tall wooden watchtower on four legs with an open plank lookout platform seen fro",
+    "네 다리 나무 망루"
+   ],
+   "pi-water": [
+    "shallow turquoise sea water tiles, 2 variants",
+    "얕은 청록 바닷물 2종"
+   ],
+   "pi-water-barrel": [
+    "water cask lying on a wooden cradle with a brass tap facing south",
+    "받침 위 물통"
+   ],
+   "pi-water-jar": [
+    "two wide-mouthed terracotta storage jars seen from above at 3/4, dark open mouth",
+    "토기 항아리 둘"
+   ],
+   "pi-well": [
+    "round stone well with wooden roof and bucket",
+    "돌 우물"
+   ]
+  },
+  "jp_city": {
+   "jp-in-am-crane": [
+    "UFO 캐처",
+    "분홍 테 인형 뽑기 기계"
+   ],
+   "jp-in-am-crane-big": [
+    "대형 UFO 캐처",
+    "대형 인형 뽑기 기계"
+   ],
+   "jp-in-cv-atm": [
+    "ATM",
+    "편의점 ATM"
+   ],
+   "jp-in-cv-register": [
+    "계산대(POS)",
+    "편의점 POS 계산대"
+   ],
+   "jp-in-hs-aed": [
+    "AED 수납함",
+    "자동 심장충격기 수납함"
+   ],
+   "jp-in-hs-bedside-cabinet": [
+    "병실 협탁(床頭台·작은 TV)",
+    "병실 협탁(침상 머리맡 · 작은 TV)"
+   ],
+   "jp-in-po-atm": [
+    "ATM",
+    "우체국 ATM"
+   ],
+   "jp-in-st-timetable": [
+    "발차 안내 LED 판",
+    "역 발차 안내 LED 판"
+   ],
+   "jp-in-tv-board": [
+    "TV보드",
+    "TV 보드"
+   ],
+   "jp-inaka-keitora-white": [
+    "흰 경트럭(軽トラ) - 3/4 탑뷰, 동쪽을 보는 옆모습(jp-truck-kei 와 같은 틀): 캡 지붕 윗면 9줄·기운 앞유리·문 창·짐칸 위에서 본 안쪽(먼 판 안쪽 → 골 바닥 위 채소 상자·파란 덮개 → 가까운 판 윗테)·남쪽 옆판·한 줄 바닥선 위 두 바퀴(4×3)",
+    "흰 경트럭 옆모습(4×3)"
+   ],
+   "jp-inaka-single-car-train": [
+    "단량 디젤 동차(キハ40 국철색) - AU75 냉방기·물탱크·배기구 지붕 윗면·크림+주홍 투톤 차체·폴딩 도어·전조등·대차(8×3)",
+    "단량 디젤 동차 국철색(8×3)"
+   ],
+   "jp-prop-cat-loaf": [
+    "식빵 자세 고양이 · loaf",
+    "식빵 자세 고양이 · 식빵"
+   ],
+   "jp-prop-cat-sit": [
+    "앉은 고양이(삼색) · sit",
+    "앉은 고양이(삼색) · 앉음"
+   ],
+   "jp-prop-cat-wood": [
+    "처마 위 목각 고양이 · wood",
+    "처마 위 목각 고양이 · 목각"
+   ],
+   "jp-prop-gate-iron": [
+    "철문 · iron",
+    "철문 · 닫힘"
+   ],
+   "jp-prop-gate-iron-open": [
+    "열린 철문 · iron_open",
+    "열린 철문 · 열림"
+   ],
+   "jp-prop-tree-ginkgo": [
+    "가로수(줄기 칸만 막힘) · ginkgo",
+    "가로수(줄기 칸만 막힘) · 은행나무"
+   ],
+   "jp-prop-tree-sakura": [
+    "가로수(줄기 칸만 막힘) · sakura",
+    "가로수(줄기 칸만 막힘) · 벚나무"
+   ],
+   "jp-prop-tree-zelkova": [
+    "가로수(줄기 칸만 막힘) · zelkova",
+    "가로수(줄기 칸만 막힘) · 느티나무"
+   ],
+   "jp-prop-wall-block": [
+    "블록 담 · block",
+    "블록 담 · 블록"
+   ],
+   "jp-prop-wall-board": [
+    "판자 담 · board",
+    "판자 담 · 판자"
+   ],
+   "jp-prop-wall-hedge": [
+    "생울타리 · hedge",
+    "생울타리 · 산울타리"
+   ],
+   "jp-prop-wall-tsuiji": [
+    "築地塀 · tsuiji",
+    "築地塀 · 축지담"
+   ],
+   "jp-roof-charcoal": [
+    "골함석 지붕면 charcoal(2×2)",
+    "골함석 지붕면 짙은 회색(2×2)"
+   ],
+   "jp-roof-green": [
+    "골함석 지붕면 green(2×2)",
+    "골함석 지붕면 초록(2×2)"
+   ],
+   "jp-roof-navy": [
+    "골함석 지붕면 navy(2×2)",
+    "골함석 지붕면 남색(2×2)"
+   ],
+   "jp-roof-orange": [
+    "골함석 지붕면 orange(2×2)",
+    "골함석 지붕면 주황색(2×2)"
+   ],
+   "jp-sf-apartment-3-L": [
+    "일체형 가게 정면 apartment 3칸(문 왼쪽)",
+    "일체형 가게 정면 아파트 3칸(문 왼쪽)"
+   ],
+   "jp-sf-apartment-3-R": [
+    "일체형 가게 정면 apartment 3칸(문 오른쪽)",
+    "일체형 가게 정면 아파트 3칸(문 오른쪽)"
+   ],
+   "jp-sf-apartment-4-L": [
+    "일체형 가게 정면 apartment 4칸(문 왼쪽)",
+    "일체형 가게 정면 아파트 4칸(문 왼쪽)"
+   ],
+   "jp-sf-apartment-5-L": [
+    "일체형 가게 정면 apartment 5칸(문 왼쪽)",
+    "일체형 가게 정면 아파트 5칸(문 왼쪽)"
+   ],
+   "jp-sf-apartment-5-R": [
+    "일체형 가게 정면 apartment 5칸(문 오른쪽)",
+    "일체형 가게 정면 아파트 5칸(문 오른쪽)"
+   ],
+   "jp-sf-apartment-6-L": [
+    "일체형 가게 정면 apartment 6칸(문 왼쪽)",
+    "일체형 가게 정면 아파트 6칸(문 왼쪽)"
+   ],
+   "jp-sf-apartment-6-R": [
+    "일체형 가게 정면 apartment 6칸(문 오른쪽)",
+    "일체형 가게 정면 아파트 6칸(문 오른쪽)"
+   ],
+   "jp-sf-apartment-7-L": [
+    "일체형 가게 정면 apartment 7칸(문 왼쪽)",
+    "일체형 가게 정면 아파트 7칸(문 왼쪽)"
+   ],
+   "jp-sf-apartment-7-R": [
+    "일체형 가게 정면 apartment 7칸(문 오른쪽)",
+    "일체형 가게 정면 아파트 7칸(문 오른쪽)"
+   ],
+   "jp-sf-apartment-8-L": [
+    "일체형 가게 정면 apartment 8칸(문 왼쪽)",
+    "일체형 가게 정면 아파트 8칸(문 왼쪽)"
+   ],
+   "jp-sf-apartment-8-R": [
+    "일체형 가게 정면 apartment 8칸(문 오른쪽)",
+    "일체형 가게 정면 아파트 8칸(문 오른쪽)"
+   ],
+   "jp-sf-apartment-9-L": [
+    "일체형 가게 정면 apartment 9칸(문 왼쪽)",
+    "일체형 가게 정면 아파트 9칸(문 왼쪽)"
+   ],
+   "jp-sf-apartment-9-R": [
+    "일체형 가게 정면 apartment 9칸(문 오른쪽)",
+    "일체형 가게 정면 아파트 9칸(문 오른쪽)"
+   ],
+   "jp-sf-bento-3-L": [
+    "일체형 가게 정면 bento 3칸(문 왼쪽)",
+    "일체형 가게 정면 도시락집 3칸(문 왼쪽)"
+   ],
+   "jp-sf-bento-3-R": [
+    "일체형 가게 정면 bento 3칸(문 오른쪽)",
+    "일체형 가게 정면 도시락집 3칸(문 오른쪽)"
+   ],
+   "jp-sf-bento-4-L": [
+    "일체형 가게 정면 bento 4칸(문 왼쪽)",
+    "일체형 가게 정면 도시락집 4칸(문 왼쪽)"
+   ],
+   "jp-sf-bento-5-L": [
+    "일체형 가게 정면 bento 5칸(문 왼쪽)",
+    "일체형 가게 정면 도시락집 5칸(문 왼쪽)"
+   ],
+   "jp-sf-bento-5-R": [
+    "일체형 가게 정면 bento 5칸(문 오른쪽)",
+    "일체형 가게 정면 도시락집 5칸(문 오른쪽)"
+   ],
+   "jp-sf-bento-6-L": [
+    "일체형 가게 정면 bento 6칸(문 왼쪽)",
+    "일체형 가게 정면 도시락집 6칸(문 왼쪽)"
+   ],
+   "jp-sf-bento-6-R": [
+    "일체형 가게 정면 bento 6칸(문 오른쪽)",
+    "일체형 가게 정면 도시락집 6칸(문 오른쪽)"
+   ],
+   "jp-sf-bento-7-L": [
+    "일체형 가게 정면 bento 7칸(문 왼쪽)",
+    "일체형 가게 정면 도시락집 7칸(문 왼쪽)"
+   ],
+   "jp-sf-bento-7-R": [
+    "일체형 가게 정면 bento 7칸(문 오른쪽)",
+    "일체형 가게 정면 도시락집 7칸(문 오른쪽)"
+   ],
+   "jp-sf-bento-8-L": [
+    "일체형 가게 정면 bento 8칸(문 왼쪽)",
+    "일체형 가게 정면 도시락집 8칸(문 왼쪽)"
+   ],
+   "jp-sf-bento-8-R": [
+    "일체형 가게 정면 bento 8칸(문 오른쪽)",
+    "일체형 가게 정면 도시락집 8칸(문 오른쪽)"
+   ],
+   "jp-sf-bento-9-L": [
+    "일체형 가게 정면 bento 9칸(문 왼쪽)",
+    "일체형 가게 정면 도시락집 9칸(문 왼쪽)"
+   ],
+   "jp-sf-bento-9-R": [
+    "일체형 가게 정면 bento 9칸(문 오른쪽)",
+    "일체형 가게 정면 도시락집 9칸(문 오른쪽)"
+   ],
+   "jp-sf-cafe-3-L": [
+    "일체형 가게 정면 cafe 3칸(문 왼쪽)",
+    "일체형 가게 정면 카페 3칸(문 왼쪽)"
+   ],
+   "jp-sf-cafe-3-R": [
+    "일체형 가게 정면 cafe 3칸(문 오른쪽)",
+    "일체형 가게 정면 카페 3칸(문 오른쪽)"
+   ],
+   "jp-sf-cafe-4-L": [
+    "일체형 가게 정면 cafe 4칸(문 왼쪽)",
+    "일체형 가게 정면 카페 4칸(문 왼쪽)"
+   ],
+   "jp-sf-cafe-5-L": [
+    "일체형 가게 정면 cafe 5칸(문 왼쪽)",
+    "일체형 가게 정면 카페 5칸(문 왼쪽)"
+   ],
+   "jp-sf-cafe-5-R": [
+    "일체형 가게 정면 cafe 5칸(문 오른쪽)",
+    "일체형 가게 정면 카페 5칸(문 오른쪽)"
+   ],
+   "jp-sf-cafe-6-L": [
+    "일체형 가게 정면 cafe 6칸(문 왼쪽)",
+    "일체형 가게 정면 카페 6칸(문 왼쪽)"
+   ],
+   "jp-sf-cafe-6-R": [
+    "일체형 가게 정면 cafe 6칸(문 오른쪽)",
+    "일체형 가게 정면 카페 6칸(문 오른쪽)"
+   ],
+   "jp-sf-cafe-7-L": [
+    "일체형 가게 정면 cafe 7칸(문 왼쪽)",
+    "일체형 가게 정면 카페 7칸(문 왼쪽)"
+   ],
+   "jp-sf-cafe-7-R": [
+    "일체형 가게 정면 cafe 7칸(문 오른쪽)",
+    "일체형 가게 정면 카페 7칸(문 오른쪽)"
+   ],
+   "jp-sf-cafe-8-L": [
+    "일체형 가게 정면 cafe 8칸(문 왼쪽)",
+    "일체형 가게 정면 카페 8칸(문 왼쪽)"
+   ],
+   "jp-sf-cafe-8-R": [
+    "일체형 가게 정면 cafe 8칸(문 오른쪽)",
+    "일체형 가게 정면 카페 8칸(문 오른쪽)"
+   ],
+   "jp-sf-cafe-9-L": [
+    "일체형 가게 정면 cafe 9칸(문 왼쪽)",
+    "일체형 가게 정면 카페 9칸(문 왼쪽)"
+   ],
+   "jp-sf-cafe-9-R": [
+    "일체형 가게 정면 cafe 9칸(문 오른쪽)",
+    "일체형 가게 정면 카페 9칸(문 오른쪽)"
+   ],
+   "jp-sf-house-3-L": [
+    "일체형 가게 정면 house 3칸(문 왼쪽)",
+    "일체형 가게 정면 주택 3칸(문 왼쪽)"
+   ],
+   "jp-sf-house-3-R": [
+    "일체형 가게 정면 house 3칸(문 오른쪽)",
+    "일체형 가게 정면 주택 3칸(문 오른쪽)"
+   ],
+   "jp-sf-house-4-L": [
+    "일체형 가게 정면 house 4칸(문 왼쪽)",
+    "일체형 가게 정면 주택 4칸(문 왼쪽)"
+   ],
+   "jp-sf-house-5-L": [
+    "일체형 가게 정면 house 5칸(문 왼쪽)",
+    "일체형 가게 정면 주택 5칸(문 왼쪽)"
+   ],
+   "jp-sf-house-5-R": [
+    "일체형 가게 정면 house 5칸(문 오른쪽)",
+    "일체형 가게 정면 주택 5칸(문 오른쪽)"
+   ],
+   "jp-sf-house-6-L": [
+    "일체형 가게 정면 house 6칸(문 왼쪽)",
+    "일체형 가게 정면 주택 6칸(문 왼쪽)"
+   ],
+   "jp-sf-house-6-R": [
+    "일체형 가게 정면 house 6칸(문 오른쪽)",
+    "일체형 가게 정면 주택 6칸(문 오른쪽)"
+   ],
+   "jp-sf-house-7-L": [
+    "일체형 가게 정면 house 7칸(문 왼쪽)",
+    "일체형 가게 정면 주택 7칸(문 왼쪽)"
+   ],
+   "jp-sf-house-7-R": [
+    "일체형 가게 정면 house 7칸(문 오른쪽)",
+    "일체형 가게 정면 주택 7칸(문 오른쪽)"
+   ],
+   "jp-sf-house-8-L": [
+    "일체형 가게 정면 house 8칸(문 왼쪽)",
+    "일체형 가게 정면 주택 8칸(문 왼쪽)"
+   ],
+   "jp-sf-house-8-R": [
+    "일체형 가게 정면 house 8칸(문 오른쪽)",
+    "일체형 가게 정면 주택 8칸(문 오른쪽)"
+   ],
+   "jp-sf-house-9-L": [
+    "일체형 가게 정면 house 9칸(문 왼쪽)",
+    "일체형 가게 정면 주택 9칸(문 왼쪽)"
+   ],
+   "jp-sf-house-9-R": [
+    "일체형 가게 정면 house 9칸(문 오른쪽)",
+    "일체형 가게 정면 주택 9칸(문 오른쪽)"
+   ],
+   "jp-sf-izakaya-3-L": [
+    "일체형 가게 정면 izakaya 3칸(문 왼쪽)",
+    "일체형 가게 정면 이자카야 3칸(문 왼쪽)"
+   ],
+   "jp-sf-izakaya-3-R": [
+    "일체형 가게 정면 izakaya 3칸(문 오른쪽)",
+    "일체형 가게 정면 이자카야 3칸(문 오른쪽)"
+   ],
+   "jp-sf-izakaya-4-L": [
+    "일체형 가게 정면 izakaya 4칸(문 왼쪽)",
+    "일체형 가게 정면 이자카야 4칸(문 왼쪽)"
+   ],
+   "jp-sf-izakaya-5-L": [
+    "일체형 가게 정면 izakaya 5칸(문 왼쪽)",
+    "일체형 가게 정면 이자카야 5칸(문 왼쪽)"
+   ],
+   "jp-sf-izakaya-5-R": [
+    "일체형 가게 정면 izakaya 5칸(문 오른쪽)",
+    "일체형 가게 정면 이자카야 5칸(문 오른쪽)"
+   ],
+   "jp-sf-izakaya-6-L": [
+    "일체형 가게 정면 izakaya 6칸(문 왼쪽)",
+    "일체형 가게 정면 이자카야 6칸(문 왼쪽)"
+   ],
+   "jp-sf-izakaya-6-R": [
+    "일체형 가게 정면 izakaya 6칸(문 오른쪽)",
+    "일체형 가게 정면 이자카야 6칸(문 오른쪽)"
+   ],
+   "jp-sf-izakaya-7-L": [
+    "일체형 가게 정면 izakaya 7칸(문 왼쪽)",
+    "일체형 가게 정면 이자카야 7칸(문 왼쪽)"
+   ],
+   "jp-sf-izakaya-7-R": [
+    "일체형 가게 정면 izakaya 7칸(문 오른쪽)",
+    "일체형 가게 정면 이자카야 7칸(문 오른쪽)"
+   ],
+   "jp-sf-izakaya-8-L": [
+    "일체형 가게 정면 izakaya 8칸(문 왼쪽)",
+    "일체형 가게 정면 이자카야 8칸(문 왼쪽)"
+   ],
+   "jp-sf-izakaya-8-R": [
+    "일체형 가게 정면 izakaya 8칸(문 오른쪽)",
+    "일체형 가게 정면 이자카야 8칸(문 오른쪽)"
+   ],
+   "jp-sf-izakaya-9-L": [
+    "일체형 가게 정면 izakaya 9칸(문 왼쪽)",
+    "일체형 가게 정면 이자카야 9칸(문 왼쪽)"
+   ],
+   "jp-sf-izakaya-9-R": [
+    "일체형 가게 정면 izakaya 9칸(문 오른쪽)",
+    "일체형 가게 정면 이자카야 9칸(문 오른쪽)"
+   ],
+   "jp-sf-konbini-3-L": [
+    "일체형 가게 정면 konbini 3칸(문 왼쪽)",
+    "일체형 가게 정면 편의점 3칸(문 왼쪽)"
+   ],
+   "jp-sf-konbini-3-R": [
+    "일체형 가게 정면 konbini 3칸(문 오른쪽)",
+    "일체형 가게 정면 편의점 3칸(문 오른쪽)"
+   ],
+   "jp-sf-konbini-4-L": [
+    "일체형 가게 정면 konbini 4칸(문 왼쪽)",
+    "일체형 가게 정면 편의점 4칸(문 왼쪽)"
+   ],
+   "jp-sf-konbini-5-L": [
+    "일체형 가게 정면 konbini 5칸(문 왼쪽)",
+    "일체형 가게 정면 편의점 5칸(문 왼쪽)"
+   ],
+   "jp-sf-konbini-5-R": [
+    "일체형 가게 정면 konbini 5칸(문 오른쪽)",
+    "일체형 가게 정면 편의점 5칸(문 오른쪽)"
+   ],
+   "jp-sf-konbini-6-L": [
+    "일체형 가게 정면 konbini 6칸(문 왼쪽)",
+    "일체형 가게 정면 편의점 6칸(문 왼쪽)"
+   ],
+   "jp-sf-konbini-6-R": [
+    "일체형 가게 정면 konbini 6칸(문 오른쪽)",
+    "일체형 가게 정면 편의점 6칸(문 오른쪽)"
+   ],
+   "jp-sf-konbini-7-L": [
+    "일체형 가게 정면 konbini 7칸(문 왼쪽)",
+    "일체형 가게 정면 편의점 7칸(문 왼쪽)"
+   ],
+   "jp-sf-konbini-7-R": [
+    "일체형 가게 정면 konbini 7칸(문 오른쪽)",
+    "일체형 가게 정면 편의점 7칸(문 오른쪽)"
+   ],
+   "jp-sf-konbini-8-L": [
+    "일체형 가게 정면 konbini 8칸(문 왼쪽)",
+    "일체형 가게 정면 편의점 8칸(문 왼쪽)"
+   ],
+   "jp-sf-konbini-8-R": [
+    "일체형 가게 정면 konbini 8칸(문 오른쪽)",
+    "일체형 가게 정면 편의점 8칸(문 오른쪽)"
+   ],
+   "jp-sf-konbini-9-L": [
+    "일체형 가게 정면 konbini 9칸(문 왼쪽)",
+    "일체형 가게 정면 편의점 9칸(문 왼쪽)"
+   ],
+   "jp-sf-konbini-9-R": [
+    "일체형 가게 정면 konbini 9칸(문 오른쪽)",
+    "일체형 가게 정면 편의점 9칸(문 오른쪽)"
+   ],
+   "jp-sf-machiya-3-L": [
+    "일체형 가게 정면 machiya 3칸(문 왼쪽)",
+    "일체형 가게 정면 도시 상가주택 3칸(문 왼쪽)"
+   ],
+   "jp-sf-machiya-3-R": [
+    "일체형 가게 정면 machiya 3칸(문 오른쪽)",
+    "일체형 가게 정면 도시 상가주택 3칸(문 오른쪽)"
+   ],
+   "jp-sf-machiya-4-L": [
+    "일체형 가게 정면 machiya 4칸(문 왼쪽)",
+    "일체형 가게 정면 도시 상가주택 4칸(문 왼쪽)"
+   ],
+   "jp-sf-machiya-5-L": [
+    "일체형 가게 정면 machiya 5칸(문 왼쪽)",
+    "일체형 가게 정면 도시 상가주택 5칸(문 왼쪽)"
+   ],
+   "jp-sf-machiya-5-R": [
+    "일체형 가게 정면 machiya 5칸(문 오른쪽)",
+    "일체형 가게 정면 도시 상가주택 5칸(문 오른쪽)"
+   ],
+   "jp-sf-machiya-6-L": [
+    "일체형 가게 정면 machiya 6칸(문 왼쪽)",
+    "일체형 가게 정면 도시 상가주택 6칸(문 왼쪽)"
+   ],
+   "jp-sf-machiya-6-R": [
+    "일체형 가게 정면 machiya 6칸(문 오른쪽)",
+    "일체형 가게 정면 도시 상가주택 6칸(문 오른쪽)"
+   ],
+   "jp-sf-machiya-7-L": [
+    "일체형 가게 정면 machiya 7칸(문 왼쪽)",
+    "일체형 가게 정면 도시 상가주택 7칸(문 왼쪽)"
+   ],
+   "jp-sf-machiya-7-R": [
+    "일체형 가게 정면 machiya 7칸(문 오른쪽)",
+    "일체형 가게 정면 도시 상가주택 7칸(문 오른쪽)"
+   ],
+   "jp-sf-machiya-8-L": [
+    "일체형 가게 정면 machiya 8칸(문 왼쪽)",
+    "일체형 가게 정면 도시 상가주택 8칸(문 왼쪽)"
+   ],
+   "jp-sf-machiya-8-R": [
+    "일체형 가게 정면 machiya 8칸(문 오른쪽)",
+    "일체형 가게 정면 도시 상가주택 8칸(문 오른쪽)"
+   ],
+   "jp-sf-machiya-9-L": [
+    "일체형 가게 정면 machiya 9칸(문 왼쪽)",
+    "일체형 가게 정면 도시 상가주택 9칸(문 왼쪽)"
+   ],
+   "jp-sf-machiya-9-R": [
+    "일체형 가게 정면 machiya 9칸(문 오른쪽)",
+    "일체형 가게 정면 도시 상가주택 9칸(문 오른쪽)"
+   ],
+   "jp-sf-office-3-L": [
+    "일체형 가게 정면 office 3칸(문 왼쪽)",
+    "일체형 가게 정면 사무실 3칸(문 왼쪽)"
+   ],
+   "jp-sf-office-3-R": [
+    "일체형 가게 정면 office 3칸(문 오른쪽)",
+    "일체형 가게 정면 사무실 3칸(문 오른쪽)"
+   ],
+   "jp-sf-office-4-L": [
+    "일체형 가게 정면 office 4칸(문 왼쪽)",
+    "일체형 가게 정면 사무실 4칸(문 왼쪽)"
+   ],
+   "jp-sf-office-5-L": [
+    "일체형 가게 정면 office 5칸(문 왼쪽)",
+    "일체형 가게 정면 사무실 5칸(문 왼쪽)"
+   ],
+   "jp-sf-office-5-R": [
+    "일체형 가게 정면 office 5칸(문 오른쪽)",
+    "일체형 가게 정면 사무실 5칸(문 오른쪽)"
+   ],
+   "jp-sf-office-6-L": [
+    "일체형 가게 정면 office 6칸(문 왼쪽)",
+    "일체형 가게 정면 사무실 6칸(문 왼쪽)"
+   ],
+   "jp-sf-office-6-R": [
+    "일체형 가게 정면 office 6칸(문 오른쪽)",
+    "일체형 가게 정면 사무실 6칸(문 오른쪽)"
+   ],
+   "jp-sf-office-7-L": [
+    "일체형 가게 정면 office 7칸(문 왼쪽)",
+    "일체형 가게 정면 사무실 7칸(문 왼쪽)"
+   ],
+   "jp-sf-office-7-R": [
+    "일체형 가게 정면 office 7칸(문 오른쪽)",
+    "일체형 가게 정면 사무실 7칸(문 오른쪽)"
+   ],
+   "jp-sf-office-8-L": [
+    "일체형 가게 정면 office 8칸(문 왼쪽)",
+    "일체형 가게 정면 사무실 8칸(문 왼쪽)"
+   ],
+   "jp-sf-office-8-R": [
+    "일체형 가게 정면 office 8칸(문 오른쪽)",
+    "일체형 가게 정면 사무실 8칸(문 오른쪽)"
+   ],
+   "jp-sf-office-9-L": [
+    "일체형 가게 정면 office 9칸(문 왼쪽)",
+    "일체형 가게 정면 사무실 9칸(문 왼쪽)"
+   ],
+   "jp-sf-office-9-R": [
+    "일체형 가게 정면 office 9칸(문 오른쪽)",
+    "일체형 가게 정면 사무실 9칸(문 오른쪽)"
+   ],
+   "jp-sf-ramen-3-L": [
+    "일체형 가게 정면 ramen 3칸(문 왼쪽)",
+    "일체형 가게 정면 라멘집 3칸(문 왼쪽)"
+   ],
+   "jp-sf-ramen-3-R": [
+    "일체형 가게 정면 ramen 3칸(문 오른쪽)",
+    "일체형 가게 정면 라멘집 3칸(문 오른쪽)"
+   ],
+   "jp-sf-ramen-4-L": [
+    "일체형 가게 정면 ramen 4칸(문 왼쪽)",
+    "일체형 가게 정면 라멘집 4칸(문 왼쪽)"
+   ],
+   "jp-sf-ramen-5-L": [
+    "일체형 가게 정면 ramen 5칸(문 왼쪽)",
+    "일체형 가게 정면 라멘집 5칸(문 왼쪽)"
+   ],
+   "jp-sf-ramen-5-R": [
+    "일체형 가게 정면 ramen 5칸(문 오른쪽)",
+    "일체형 가게 정면 라멘집 5칸(문 오른쪽)"
+   ],
+   "jp-sf-ramen-6-L": [
+    "일체형 가게 정면 ramen 6칸(문 왼쪽)",
+    "일체형 가게 정면 라멘집 6칸(문 왼쪽)"
+   ],
+   "jp-sf-ramen-6-R": [
+    "일체형 가게 정면 ramen 6칸(문 오른쪽)",
+    "일체형 가게 정면 라멘집 6칸(문 오른쪽)"
+   ],
+   "jp-sf-ramen-7-L": [
+    "일체형 가게 정면 ramen 7칸(문 왼쪽)",
+    "일체형 가게 정면 라멘집 7칸(문 왼쪽)"
+   ],
+   "jp-sf-ramen-7-R": [
+    "일체형 가게 정면 ramen 7칸(문 오른쪽)",
+    "일체형 가게 정면 라멘집 7칸(문 오른쪽)"
+   ],
+   "jp-sf-ramen-8-L": [
+    "일체형 가게 정면 ramen 8칸(문 왼쪽)",
+    "일체형 가게 정면 라멘집 8칸(문 왼쪽)"
+   ],
+   "jp-sf-ramen-8-R": [
+    "일체형 가게 정면 ramen 8칸(문 오른쪽)",
+    "일체형 가게 정면 라멘집 8칸(문 오른쪽)"
+   ],
+   "jp-sf-ramen-9-L": [
+    "일체형 가게 정면 ramen 9칸(문 왼쪽)",
+    "일체형 가게 정면 라멘집 9칸(문 왼쪽)"
+   ],
+   "jp-sf-ramen-9-R": [
+    "일체형 가게 정면 ramen 9칸(문 오른쪽)",
+    "일체형 가게 정면 라멘집 9칸(문 오른쪽)"
+   ],
+   "jp-sf-sento-3-L": [
+    "일체형 가게 정면 sento 3칸(문 왼쪽)",
+    "일체형 가게 정면 공중목욕탕 3칸(문 왼쪽)"
+   ],
+   "jp-sf-sento-3-R": [
+    "일체형 가게 정면 sento 3칸(문 오른쪽)",
+    "일체형 가게 정면 공중목욕탕 3칸(문 오른쪽)"
+   ],
+   "jp-sf-sento-4-L": [
+    "일체형 가게 정면 sento 4칸(문 왼쪽)",
+    "일체형 가게 정면 공중목욕탕 4칸(문 왼쪽)"
+   ],
+   "jp-sf-sento-5-L": [
+    "일체형 가게 정면 sento 5칸(문 왼쪽)",
+    "일체형 가게 정면 공중목욕탕 5칸(문 왼쪽)"
+   ],
+   "jp-sf-sento-5-R": [
+    "일체형 가게 정면 sento 5칸(문 오른쪽)",
+    "일체형 가게 정면 공중목욕탕 5칸(문 오른쪽)"
+   ],
+   "jp-sf-sento-6-L": [
+    "일체형 가게 정면 sento 6칸(문 왼쪽)",
+    "일체형 가게 정면 공중목욕탕 6칸(문 왼쪽)"
+   ],
+   "jp-sf-sento-6-R": [
+    "일체형 가게 정면 sento 6칸(문 오른쪽)",
+    "일체형 가게 정면 공중목욕탕 6칸(문 오른쪽)"
+   ],
+   "jp-sf-sento-7-L": [
+    "일체형 가게 정면 sento 7칸(문 왼쪽)",
+    "일체형 가게 정면 공중목욕탕 7칸(문 왼쪽)"
+   ],
+   "jp-sf-sento-7-R": [
+    "일체형 가게 정면 sento 7칸(문 오른쪽)",
+    "일체형 가게 정면 공중목욕탕 7칸(문 오른쪽)"
+   ],
+   "jp-sf-sento-8-L": [
+    "일체형 가게 정면 sento 8칸(문 왼쪽)",
+    "일체형 가게 정면 공중목욕탕 8칸(문 왼쪽)"
+   ],
+   "jp-sf-sento-8-R": [
+    "일체형 가게 정면 sento 8칸(문 오른쪽)",
+    "일체형 가게 정면 공중목욕탕 8칸(문 오른쪽)"
+   ],
+   "jp-sf-sento-9-L": [
+    "일체형 가게 정면 sento 9칸(문 왼쪽)",
+    "일체형 가게 정면 공중목욕탕 9칸(문 왼쪽)"
+   ],
+   "jp-sf-sento-9-R": [
+    "일체형 가게 정면 sento 9칸(문 오른쪽)",
+    "일체형 가게 정면 공중목욕탕 9칸(문 오른쪽)"
+   ],
+   "jp-sf-shop-3-L": [
+    "일체형 가게 정면 shop 3칸(문 왼쪽)",
+    "일체형 가게 정면 상점 3칸(문 왼쪽)"
+   ],
+   "jp-sf-shop-3-R": [
+    "일체형 가게 정면 shop 3칸(문 오른쪽)",
+    "일체형 가게 정면 상점 3칸(문 오른쪽)"
+   ],
+   "jp-sf-shop-4-L": [
+    "일체형 가게 정면 shop 4칸(문 왼쪽)",
+    "일체형 가게 정면 상점 4칸(문 왼쪽)"
+   ],
+   "jp-sf-shop-5-L": [
+    "일체형 가게 정면 shop 5칸(문 왼쪽)",
+    "일체형 가게 정면 상점 5칸(문 왼쪽)"
+   ],
+   "jp-sf-shop-5-R": [
+    "일체형 가게 정면 shop 5칸(문 오른쪽)",
+    "일체형 가게 정면 상점 5칸(문 오른쪽)"
+   ],
+   "jp-sf-shop-6-L": [
+    "일체형 가게 정면 shop 6칸(문 왼쪽)",
+    "일체형 가게 정면 상점 6칸(문 왼쪽)"
+   ],
+   "jp-sf-shop-6-R": [
+    "일체형 가게 정면 shop 6칸(문 오른쪽)",
+    "일체형 가게 정면 상점 6칸(문 오른쪽)"
+   ],
+   "jp-sf-shop-7-L": [
+    "일체형 가게 정면 shop 7칸(문 왼쪽)",
+    "일체형 가게 정면 상점 7칸(문 왼쪽)"
+   ],
+   "jp-sf-shop-7-R": [
+    "일체형 가게 정면 shop 7칸(문 오른쪽)",
+    "일체형 가게 정면 상점 7칸(문 오른쪽)"
+   ],
+   "jp-sf-shop-8-L": [
+    "일체형 가게 정면 shop 8칸(문 왼쪽)",
+    "일체형 가게 정면 상점 8칸(문 왼쪽)"
+   ],
+   "jp-sf-shop-8-R": [
+    "일체형 가게 정면 shop 8칸(문 오른쪽)",
+    "일체형 가게 정면 상점 8칸(문 오른쪽)"
+   ],
+   "jp-sf-shop-9-L": [
+    "일체형 가게 정면 shop 9칸(문 왼쪽)",
+    "일체형 가게 정면 상점 9칸(문 왼쪽)"
+   ],
+   "jp-sf-shop-9-R": [
+    "일체형 가게 정면 shop 9칸(문 오른쪽)",
+    "일체형 가게 정면 상점 9칸(문 오른쪽)"
+   ]
+  },
+  "sf_station": {
+   "sf-asphalt": [
+    "night city asphalt road, four variants (aggregate, crack, oil stain, wet neon reflection)",
+    "밤거리 아스팔트 도로 4종(골재·균열·기름얼룩·젖은 네온)"
+   ],
+   "sf-at-lightline": [
+    "floor guide light decal autotile, cyan line toward neighbours, transparent, 16 variants",
+    "바닥 청록 안내선 오토타일 16종"
+   ],
+   "sf-cargo-floor": [
+    "dark diamond-plate cargo bay floor, two variants (one with yellow safety line)",
+    "어두운 마름모 무늬 화물칸 바닥 2종"
+   ],
+   "sf-crew-floor": [
+    "navy studded rubber crew quarters floor, two variants",
+    "남색 돌기 고무 숙소 바닥 2종"
+   ],
+   "sf-crosswalk": [
+    "asphalt road with worn white zebra crosswalk bars, horizontal and vertical",
+    "닳은 흰 줄무늬 횡단보도 도로(가로·세로)"
+   ],
+   "sf-deck-grate": [
+    "dark maintenance grating with cyan light and pipes glowing below the bars, two variants",
+    "어두운 점검 격자 바닥(아래 청록빛·배관) 2종"
+   ],
+   "sf-deck-hazard": [
+    "worn yellow and black diagonal hazard stripe floor, two variants",
+    "낡은 황흑 사선 위험 줄무늬 바닥 2종"
+   ],
+   "sf-deck-lane-h": [
+    "station corridor floor with recessed horizontal cyan guide light, two variants",
+    "가로 청록 안내등 복도 바닥 2종"
+   ],
+   "sf-deck-lane-v": [
+    "station corridor floor with recessed vertical cyan guide light, two variants",
+    "세로 청록 안내등 복도 바닥 2종"
+   ],
+   "sf-deck-plate": [
+    "station deck floor plating, four variants (brushed steel panel, recessed hatch, half-plate seam, floor light)",
+    "정거장 갑판 바닥판 4종(솔질한 강철판·점검 해치·반쪽판 이음·바닥등)"
+   ],
+   "sf-glass-floor": [
+    "transparent viewport floor with metal frame showing stars below, two variants",
+    "별이 비치는 유리 전망 바닥 2종"
+   ],
+   "sf-hydro-soil": [
+    "dark hydroponic soil bed with furrows, sprouts and drip line, two variants",
+    "어두운 수경재배 흙 두둑 2종"
+   ],
+   "sf-lab-floor": [
+    "white glazed laboratory floor tiles with grout and gloss, two variants (one with drain)",
+    "흰 유약 연구실 타일 바닥 2종(배수구 포함)"
+   ],
+   "sf-landing-plate": [
+    "concrete landing plate with hazard chevrons or landing lights, two variants",
+    "위험 갈매기무늬 콘크리트 착륙판 2종"
+   ],
+   "sf-lane-dash": [
+    "asphalt road with worn white dashed center line, horizontal and vertical",
+    "닳은 흰 점선 중앙선 도로(가로·세로)"
+   ],
+   "sf-puddle": [
+    "wet puddle reflecting magenta and cyan neon, two variants (overlay on road)",
+    "마젠타·청록 네온 비친 물웅덩이 2종"
+   ],
+   "sf-regolith": [
+    "grey moon regolith ground with pebbles and small craters, four variants",
+    "자갈과 작은 분화구 회색 달 흙 4종"
+   ],
+   "sf-sidewalk": [
+    "grey concrete sidewalk slabs, two variants (one with drain grate)",
+    "회색 콘크리트 보도 블록 2종(배수 격자 포함)"
+   ],
+   "sf-void-star": [
+    "deep space void with faint nebula and scattered stars, four variants",
+    "성운과 별이 있는 심우주 허공 4종"
+   ],
+   "sf-wall-face-hull": [
+    "hull bulkhead wall front face strip under the ceiling autotile: upper and lower face rows, four variants",
+    "선체 격벽 앞면 띠 4종(위줄·아래줄)"
+   ],
+   "sf-wall-face-viewport": [
+    "hull wall front face with star viewport windows: upper and lower face rows, four variants",
+    "별 전망창 선체 벽 앞면 4종(위줄·아래줄)"
+   ],
+   "sf-wall-face-white": [
+    "white lab wall front face strip under the ceiling autotile: upper and lower face rows, four variants",
+    "흰 연구실 벽 앞면 띠 4종(위줄·아래줄)"
+   ]
+  },
+  "modern_city": {
+   "mc-in-mci-tv-stand": [
+    "TV 장",
+    "거실 TV 장"
+   ],
+   "mc-in-mci-tv-wall": [
+    "벽걸이 TV",
+    "벽걸이 TV 평면 화면"
+   ],
+   "mc-in-r10-dept-vip-sofa": [
+    "VIP 라운지 러브시트",
+    "VIP 라운지 2인 소파"
+   ],
+   "mc-in-r10-train-lcd-dual": [
+    "듀얼 LCD 행선 모니터",
+    "전동차 두 화면 LCD 행선 모니터"
+   ],
+   "mc-in-r10b-elev-floor-led": [
+    "층 표시 LED",
+    "엘리베이터 층 표시 LED"
+   ],
+   "mc-in-r10b-hosp-ct-scanner": [
+    "CT 촬영기(3×2)",
+    "CT 촬영기(3×2) 병원"
+   ],
+   "mc-in-r11-amuse-speaker-stack": [
+    "PA 스피커",
+    "공연장 대형 스피커"
+   ],
+   "mc-in-r11-ind-lathe": [
+    "CNC 선반",
+    "공장 CNC 선반"
+   ],
+   "mc-in-r11-pub-atm": [
+    "ATM",
+    "은행 ATM"
+   ],
+   "mc-in-r13-jumbo-hosp-mri": [
+    "MRI 촬영 장치(4×3)",
+    "MRI 촬영 장치(4×3) 대형"
+   ]
+  },
+  "beodeul_city": {
+   "bd-pick-aqueduct-sewer-face-sewer-1h": [
+    "버들항 지하 수도교·하수도 · face_sewer_1h 3×1",
+    "버들항 지하 수도교·하수도 · 하수도 앞면 가로 3×1"
+   ],
+   "bd-pick-mining-valley-ground-cliff": [
+    "버들항 광산 골짜기 마을 · 바닥 cliff 3×3",
+    "버들항 광산 골짜기 마을 · 바닥 절벽 3×3"
+   ],
+   "bd-pick-mining-valley-ground-deck": [
+    "버들항 광산 골짜기 마을 · 바닥 deck 2×2",
+    "버들항 광산 골짜기 마을 · 바닥 널마루 2×2"
+   ],
+   "bd-pick-mining-valley-ground-road": [
+    "버들항 광산 골짜기 마을 · 바닥 road 3×3",
+    "버들항 광산 골짜기 마을 · 바닥 길 3×3"
+   ],
+   "bd-pick-mining-valley-ground-rock": [
+    "버들항 광산 골짜기 마을 · 바닥 rock 3×3",
+    "버들항 광산 골짜기 마을 · 바닥 바위 3×3"
+   ],
+   "bd-pick-mining-valley-ground-slagg": [
+    "버들항 광산 골짜기 마을 · 바닥 slagg 3×3",
+    "버들항 광산 골짜기 마을 · 바닥 광재 3×3"
+   ],
+   "bd-pick-mining-valley-ground-soil": [
+    "버들항 광산 골짜기 마을 · 바닥 soil 3×3",
+    "버들항 광산 골짜기 마을 · 바닥 흙 3×3"
+   ],
+   "bd-pick-mining-valley-ground-tail": [
+    "버들항 광산 골짜기 마을 · 바닥 tail 3×3",
+    "버들항 광산 골짜기 마을 · 바닥 광미 3×3"
+   ],
+   "bd-pick-mining-valley-ground-tcliff": [
+    "버들항 광산 골짜기 마을 · 바닥 tcliff 2×2",
+    "버들항 광산 골짜기 마을 · 바닥 단구 절벽 2×2"
+   ],
+   "bd-pick-mining-valley-ground-terr": [
+    "버들항 광산 골짜기 마을 · 바닥 terr 3×3",
+    "버들항 광산 골짜기 마을 · 바닥 계단밭 3×3"
+   ],
+   "bd-pick-mining-valley-ground-yard": [
+    "버들항 광산 골짜기 마을 · 바닥 yard 3×3",
+    "버들항 광산 골짜기 마을 · 바닥 작업마당 3×3"
+   ],
+   "bd-pick-swamp-stilt-ground-bog": [
+    "버들항 늪 수상 마을 · 바닥 bog 3×3",
+    "버들항 늪 수상 마을 · 바닥 수렁 3×3"
+   ],
+   "bd-pick-swamp-stilt-ground-deck": [
+    "버들항 늪 수상 마을 · 바닥 deck 3×3",
+    "버들항 늪 수상 마을 · 바닥 널마루 3×3"
+   ],
+   "bd-pick-swamp-stilt-ground-mud": [
+    "버들항 늪 수상 마을 · 바닥 mud 3×3",
+    "버들항 늪 수상 마을 · 바닥 진흙 3×3"
+   ],
+   "bd-pick-swamp-stilt-ground-path": [
+    "버들항 늪 수상 마을 · 바닥 path 3×3",
+    "버들항 늪 수상 마을 · 바닥 오솔길 3×3"
+   ],
+   "bd-pick-swamp-stilt-ground-reedbed": [
+    "버들항 늪 수상 마을 · 바닥 reedbed 3×3",
+    "버들항 늪 수상 마을 · 바닥 갈대밭 3×3"
+   ],
+   "bd-pick-swamp-stilt-ground-water": [
+    "버들항 늪 수상 마을 · 바닥 water 3×3",
+    "버들항 늪 수상 마을 · 바닥 물 3×3"
+   ]
+  }
+ }
+}
