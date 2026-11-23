@@ -21,7 +21,7 @@ test("Linux jobs run on mdc2 labels, heavy jobs on mdc2-heavy, and only the list
     "ci-full": { static: heavy, tests: heavy },
     "ci-vitest-files": { vitest: heavy },
     "security-audit": { audit: fast },
-    "mac-onboarding": { "launcher-and-private-setup": "macos-latest" },
+    "mac-onboarding": { "launcher-and-private-setup": fast },
     parity: {
       "editor-player-parity": fast, "unit-tests": fast, build: fast, e2e: fast,
       "ax-gates": fast, "css-gates": fast, "surface-gates": fast,
@@ -33,7 +33,6 @@ test("Linux jobs run on mdc2 labels, heavy jobs on mdc2-heavy, and only the list
   assert.deepEqual(
     Object.fromEntries(Object.entries(PENDING).map(([file, jobs]) => [file, Object.keys(jobs)])),
     {
-      "mac-onboarding.yml": ["launcher-and-private-setup"],
       "desktop-release.yml": ["packages"],
     },
   );
