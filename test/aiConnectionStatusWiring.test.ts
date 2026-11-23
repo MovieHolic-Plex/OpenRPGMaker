@@ -40,6 +40,14 @@ vi.mock("@/ai/chatgptOAuthClient", () => ({
   fetchChatGptAuthStatus: (...args: unknown[]) => fetchChatGptAuthStatus(...args),
   startChatGptLogin: vi.fn(),
 }));
+// #4940·#4943: renderEditor 는 계정 캐시 warm-up 과 별도로 자동 연결 고르기(installAutoProviderSwitching)를 켠다.
+// 고르기는 계정 길 6개의 상태를 읽어 fetchChatGptAuthStatus 를 6번 더 부르므로(1+6=7, ci-full 45149079696)
+// 여기서는 켜는 것만 따로 두고 한 번 켰는지만 본다. 고르기 자체는 test/autoProviderPick.test.ts 가 본다.
+const installAutoProviderSwitching = vi.fn(() => () => {});
+vi.mock("@/editor/panels/aiAutoProvider", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/editor/panels/aiAutoProvider")>()),
+  installAutoProviderSwitching: (...args: unknown[]) => installAutoProviderSwitching(...(args as [() => void])),
+}));
 
 let restoreDom: (() => void) | null = null;
 let storage: MemoryStorage;
@@ -208,6 +216,7 @@ describe("에디터 하단 상태바 제거", () => {
     expect(findByTestId(surface, "toggle-layout-bboxes")).toBeNull();
     expect(findByTestId(surface, "ai-connection-status")).toBeNull();
     expect(fetchChatGptAuthStatus).toHaveBeenCalledTimes(1);
+    expect(installAutoProviderSwitching).toHaveBeenCalledTimes(1);
 
     teardownEditor();
   }, 60_000);
