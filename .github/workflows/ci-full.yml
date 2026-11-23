@@ -145,11 +145,12 @@ jobs:
     # (「The operation was canceled」, always() 단계까지 건너뜀 — 러너 메모리 고갈로 본다). 같은 파일을
     # 반씩(--shard=1/16·2/16) 돌리면 둘 다 끝났다(ci-vitest-files 40308924284·40308932285) → 샤드 16.
     # 2026-11-23 mdc2 로 옮김: 16샤드가 한꺼번에 뜨면 박스 메모리(여유 150GB 안팎, 같은 박스에 win11 VM)를
-    # 넘을 수 있어 동시 8샤드로 묶는다. 실측 뒤 조정한다(MemAvailable 25GB 아래가 위험선).
+    # 넘을 수 있어 동시 샤드 수를 묶는다. 2026-11-23 브랜치 실측(run 45232304512): 8샤드는 샤드마다 러너 상한(20~22G)까지
+    # vitest 워커를 띄워 MemAvailable 8GB·load 711 까지 갔다 → 3. 올리려면 실측으로(MemAvailable 25GB 아래가 위험선).
     timeout-minutes: 300
     strategy:
       fail-fast: false
-      max-parallel: 8
+      max-parallel: 3
       matrix:
         shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
     steps:

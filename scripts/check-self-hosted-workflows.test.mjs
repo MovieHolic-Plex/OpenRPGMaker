@@ -40,7 +40,7 @@ test("Linux jobs run on mdc2 labels, heavy jobs on mdc2-heavy, and only the list
 
 test("ci-full vitest shards are capped on mdc2", () => {
   const tests = load(workflowSource("ci-full")).jobs.tests;
-  assert.equal(tests.strategy["max-parallel"], 8);
+  assert.equal(tests.strategy["max-parallel"], 3);
   assert.equal(tests.strategy.matrix.shard.length, 16);
 });
 
