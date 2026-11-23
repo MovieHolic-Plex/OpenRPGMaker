@@ -27,6 +27,29 @@ import { prehistoricPromptLines } from "../prehistoricPolicy";
 import { desertEastPromptLines } from "../desertEastPolicy";
 import { snowNorthPromptLines } from "../snowNorthPolicy";
 import { JOSEON_POINTER_LINE } from "../joseonPolicy";
+import { withoutIntentNote } from "./monsterGameRequest";
+
+/**
+ * 특정 데모(열풍·독안개 사망 함정, 성검 뽑기)에서 나온 연출 줄. 요청 글에 그 낱말이 있을 때만 싣는다 — 대사·가격 고치기에도
+ * 매번 약 1,100토큰이 실렸다(assistant-prompt-review F8, 2026-11-23). 낱말은 사용자 글만 본다(withoutIntentNote) — 우리가 붙인 지침의 낱말로 켜지지 않게.
+ * 낱말은 넓게 잡는다: 빠뜨리는 쪽이 더 나쁘다(줄이 없으면 run_lint 의 hazard-*·shrine-sword-* 경고를 고치는 법을 모른다).
+ */
+const HAZARD_WORDS = /열풍|독안개|독가스|독늪|맹독|방독면|안개|용암|화산|위험|함정|사망|죽|게임\s*오버|붕괴|무너|다리|생존|무사|통과|반지|hazard|lava|poison|trap|game\s*over/iu;
+const SWORD_WORDS = /성검|검을?\s*뽑|칼을?\s*뽑|무기를?\s*뽑|뽑아|뽑는|sword/iu;
+
+const HAZARD_CHECK_LINE = "위험지대 연출 검수: 열풍·독안개 같은 사망 이벤트를 만든 뒤 run_lint 를 부르고 authoring:hazard-* warning 이 있으면 고친 뒤 완료한다 — hazard-no-particles/hazard-weak-particles 는 particles(fire|smoke)를 durationMs 1000 이상으로 늘리거나 서로 다른 칸 2곳 이상에 쏘고, hazard-no-fog 는 weather fog 를 함께 깔았다가 장면 끝에 none 으로 되돌리고, hazard-survival-static 은 생존 분기에 주인공 걷기를(생존 분기가 아예 없으면 조건 페이지를 하나 더 만들어 위험 연출 → 버팀 대사 → 걷기를 넣는다), hazard-missing-gameover 는 실패 분기에 쓰러짐+게임오버를, hazard-collapse-missing-tile-change 와 shrine-sword-not-pulled 는 data.collapse·data.swordPull 의 changeTile 을, shrine-sword-not-raised 는 data.swordPull.raise 의 changeTile 을 넣는다. 다리·검 장면도 사망 이벤트가 아니어도 run_lint 를 부른다.";
+const SURVIVAL_LINE = "조건부 생존·사망 함정(방독면·반지·동료가 있으면 무사 통과): 사망 분기는 위험 색조 + 입자·안개·흔들림·효과음 → 비명 → look pose:'fallen' → 게임오버. 생존 분기는 주인공을 한 칸에 세워 두고 대사만 치지 않는다 — 위험 색조(독=보라, 열풍·용암=붉은/황금빛)·weather{weather:'fog'}·위험 입자(fire/smoke 2곳 이상, durationMs 4500)와 방어 입자(particles sparkle·magic target:'player' durationMs 4500)를 켜 둔 채로 버팀 대사를 치고, 색조·안개를 끄지 않은 상태에서 moveActor{target:'player',moves:3~5걸음,wait:true}(이벤트 명령이면 moveEvent eventId:'@player' wait:true)로 이벤트 칸을 지나 위험 구역을 먼저 다 걸어서 건넌 뒤에야 마지막에 tint neutral, weather none 으로 거둔다(걷기와 동시에 parallel 로 색조·안개를 끄면 통과 장면에 위험·방어 효과가 사라져 감점된다). build_scene_setting 을 썼으면 결과 data.survivalWalk.moves 를 그대로 쓴다(막힌 칸이 없다).";
+const SWORD_PULL_LINE = "성검·무기 뽑기 연출: 뽑는 분기에서 칼이 바위에 그대로 남으면 안 된다 — 인물을 바위 옆 제자리(movement type:'fixed', turn right)에 두고 섬광·흔들림·효과음·sparkle 과 함께 changeTile 로 바위의 칼 칸을 지운 뒤(build_scene_setting 결과 data.swordPull.cells 그대로), 인물을 정면(turn down)으로만 돌리고(주의: 인물에 jump{dx:0,dy:0} 나 move 를 쓰면 바라보는 방향으로 2칸 이동해 머리 위 성검 밑에서 이탈하므로 절대 쓰지 않는다!) data.swordPull.raise 를 changeTile 로 찍어 머리 위에 칼이 솟게 한다(캐릭터 도트에는 검을 든 자세가 없다 — 대사만으로는 «치켜드는 동작 누락» 으로 감점). 같은 순간 인물 위 sparkle·황금빛 섬광·금빛 색조·치켜드는 외침 대사로 맺는다.";
+
+export const PI_PRIORITY_LINE = "지시가 서로 어긋나면 사용자 원문 > 확정 기획 > 프로젝트 데이터 > 정책 줄 > 장르 요령·스킬 > 예시 순으로 따른다. 도구 설명의 예시는 값의 모양을 보일 뿐 그대로 베낄 값이 아니다.";
+
+/** 요청 글에 맞는 데모 연출 줄. request 를 모르는 호출(팀원·하네스 덤프)은 예전처럼 셋 다 싣는다. */
+export function demoSceneLines(request: string | undefined): string[] {
+  const own = request === undefined ? undefined : withoutIntentNote(request);
+  const hazard = own === undefined || HAZARD_WORDS.test(own);
+  const sword = own === undefined || SWORD_WORDS.test(own);
+  return [...(hazard || sword ? [HAZARD_CHECK_LINE] : []), ...(hazard ? [SURVIVAL_LINE] : []), ...(sword ? [SWORD_PULL_LINE] : [])];
+}
 
 /**
  * 장르 잠금·표지 줄. 공간 시공 실행은 긴 잠금 덩어리를 싣고, 그 밖의 실행(대사·가격·이름·NPC 그림 고치기)도 한 줄 표지는 매번 싣는다 —
@@ -57,7 +80,7 @@ export function buildPiAgentSystemPrompt(
   project: Project,
   mapIds: readonly string[],
   scopeStrict = true,
-  options: { readonly spatialWork?: boolean } = {},
+  options: { readonly spatialWork?: boolean; readonly request?: string } = {},
 ): string[] {
   const scope = mapIds.length > 0
     ? [
@@ -73,11 +96,11 @@ export function buildPiAgentSystemPrompt(
   // 공간 시공(타일·지형·실내·마을) 규칙은 그런 일을 할 수 있는 실행에만 싣는다. 대사·가격·이름 고치기에 매번 1만 자 넘게 실렸다(2026-10-07 실측).
   const spatial = options.spatialWork !== false;
   return [
+    // v2 core 의 우선순위 한 줄과 같다(assistant-prompt-review F7 — #4958 은 v2 에만 넣었다).
+    PI_PRIORITY_LINE,
     authoringPresetDiscoveryText(),
     "연출 규칙: 화면 효과(색조·흔들림·섬광·폭발·사망)를 쓰는 이벤트는 같은 순간에 어울리는 효과음을 반드시 넣는다(script_cutscene 은 music{action:'se',resourceId}, 이벤트 명령은 playAudio channel:'se') — resourceId 는 list_resources 로 조회한 실제 id 만 쓴다. 색조는 대사가 뜨기 전에 걸고 대사가 끝난 뒤에 푼다(대사 중에도 화면에 보여야 한다). 분기마다 그 분기만의 색·효과(열풍·심판의 빛=붉은/주홍 색조+fire 입자, 냉기=푸른 색조+얼음 입자, 독=보라 색조, 황금빛·태양석·각성=황금빛 색조 255,215,60,0.38+sparkle 입자 durationMs 3500, 차원 붕괴·검기·어둠=보라/남색 반투명 색조 35,20,70,0.45+magic/sparkle 입자 — flash 만 쓰거나 장면 도중 불투명 암전 fadeOut 을 쓰면 대사 화면에 연출이나 지형이 안 보여 감점된다)를 대사 동안 유지한다. 사망은 look{target:'player',pose:'fallen'} 으로 쓰러뜨린 뒤 게임오버로 잇는다. 색조 값 «r,g,b,알파» 의 알파는 0~1 이다(권장 0.25~0.5). 140 처럼 255 단위로 쓰면 1 로 잘려 화면이 불투명한 한 색으로 덮여 장면이 안 보인다. 요청이 특정 외형(예: 개구리 기사)을 말하면 먼저 list_resources(kind:'charset', query:외형 낱말 한글·영문)로 프로젝트가 이미 가진 캐릭터 그림을 찾고, 있으면 그 resourceId 를 이벤트 페이지 graphic 에 sprite:{type:'uploaded',id:resourceId}, direction:'down', pattern:1 로 쓴다 — author_actor_charset 은 기계·탈것용이라 생물·인물에는 쓰지 않는다. 시트에도 없으면 generate_cutscene_art(role:'sprite') 로 만들어 컷신에서 picture 로 보인다. 한 번만 재생하는 이벤트(셀프스위치 A 로 막는 페이지)는 셀프스위치를 장면 맨 끝에서 켠다. 시작하자마자 켜면 장면 도중 그 페이지가 내려가 다음 페이지 조건이 아직 안 맞아 이벤트가 화면에서 사라진다 — 꼭 처음에 켜야 하면 A 가 켜진 페이지에도 같은 그림(graphic)을 두고 그 페이지는 명령을 비운다. 지형이 무너지거나 변하는 연출은 changeTile 로 실제 타일을 바꾼다(타일 번호는 build_scene_setting 결과 data.collapse 또는 tile_query 로 조회).",
-    "위험지대 연출 검수: 열풍·독안개 같은 사망 이벤트를 만든 뒤 run_lint 를 부르고 authoring:hazard-* warning 이 있으면 고친 뒤 완료한다 — hazard-no-particles/hazard-weak-particles 는 particles(fire|smoke)를 durationMs 1000 이상으로 늘리거나 서로 다른 칸 2곳 이상에 쏘고, hazard-no-fog 는 weather fog 를 함께 깔았다가 장면 끝에 none 으로 되돌리고, hazard-survival-static 은 생존 분기에 주인공 걷기를(생존 분기가 아예 없으면 조건 페이지를 하나 더 만들어 위험 연출 → 버팀 대사 → 걷기를 넣는다), hazard-missing-gameover 는 실패 분기에 쓰러짐+게임오버를, hazard-collapse-missing-tile-change 와 shrine-sword-not-pulled 는 data.collapse·data.swordPull 의 changeTile 을, shrine-sword-not-raised 는 data.swordPull.raise 의 changeTile 을 넣는다. 다리·검 장면도 사망 이벤트가 아니어도 run_lint 를 부른다.",
-    "조건부 생존·사망 함정(방독면·반지·동료가 있으면 무사 통과): 사망 분기는 위험 색조 + 입자·안개·흔들림·효과음 → 비명 → look pose:'fallen' → 게임오버. 생존 분기는 주인공을 한 칸에 세워 두고 대사만 치지 않는다 — 위험 색조(독=보라, 열풍·용암=붉은/황금빛)·weather{weather:'fog'}·위험 입자(fire/smoke 2곳 이상, durationMs 4500)와 방어 입자(particles sparkle·magic target:'player' durationMs 4500)를 켜 둔 채로 버팀 대사를 치고, 색조·안개를 끄지 않은 상태에서 moveActor{target:'player',moves:3~5걸음,wait:true}(이벤트 명령이면 moveEvent eventId:'@player' wait:true)로 이벤트 칸을 지나 위험 구역을 먼저 다 걸어서 건넌 뒤에야 마지막에 tint neutral, weather none 으로 거둔다(걷기와 동시에 parallel 로 색조·안개를 끄면 통과 장면에 위험·방어 효과가 사라져 감점된다). build_scene_setting 을 썼으면 결과 data.survivalWalk.moves 를 그대로 쓴다(막힌 칸이 없다).",
-    "성검·무기 뽑기 연출: 뽑는 분기에서 칼이 바위에 그대로 남으면 안 된다 — 인물을 바위 옆 제자리(movement type:'fixed', turn right)에 두고 섬광·흔들림·효과음·sparkle 과 함께 changeTile 로 바위의 칼 칸을 지운 뒤(build_scene_setting 결과 data.swordPull.cells 그대로), 인물을 정면(turn down)으로만 돌리고(주의: 인물에 jump{dx:0,dy:0} 나 move 를 쓰면 바라보는 방향으로 2칸 이동해 머리 위 성검 밑에서 이탈하므로 절대 쓰지 않는다!) data.swordPull.raise 를 changeTile 로 찍어 머리 위에 칼이 솟게 한다(캐릭터 도트에는 검을 든 자세가 없다 — 대사만으로는 «치켜드는 동작 누락» 으로 감점). 같은 순간 인물 위 sparkle·황금빛 섬광·금빛 색조·치켜드는 외침 대사로 맺는다.",
+    ...demoSceneLines(options.request),
     "인용 대사 규칙: 요청이 따옴표('…' 또는 \"…\")로 준 대사는 한 글자도 줄이거나 바꾸지 말고 그대로 text 명령 body 에 넣고, 요청이 말한 그 순간(외치며·쓰러지며·통과하며)의 분기·컷씬 안에서 실제로 재생되게 한다. 앞뒤에 다른 대사를 덧붙이는 것은 괜찮지만 인용문 자체를 의역·요약하거나 컷씬이 끝난 뒤 다시 말을 걸어야 나오는 쪽(페이지)에만 두지 않는다.",
     "무대 규칙: 이벤트·컷씬·함정 요청이 장소·지형·건물·사물을 말하면(예: 화산·용암 다리·독늪·유적·성소·제단) 이벤트만 만들고 끝내지 않는다. 먼저 get_map_region·show_map_region으로 요청 좌표 주변을 읽고, 말한 것이 보이지 않고 맵이 버들항(beodeul_city)이면 build_scene_setting({mapId,theme,x,y}) 한 번으로 이벤트 좌표 둘레에 무대를 짓는다(theme: volcano·lava_bridge·poison_swamp·ruins_shrine, x,y 는 이벤트 칸). 다른 칩셋이거나 theme 이 맞지 않으면 find_tools 로 찾은 공간 시공 도구(fill_region·stamp_object·place_props·list_spatial_designs·import_region_reference)로 직접 짓는다. 요청이 말한 것만, 그 주변에만 짓고 맵의 나머지는 보존한다. 오브젝트·건물은 한쪽 구석에 몰지 말고 좌표 둘레에 배치하며, 트리거 칸과 시작 칸은 통행 가능하게 남긴다. 짓고 나면 show_map_region 으로 그림을 확인한 뒤 이벤트를 완성하고, 보고에는 지은 것을 적는다.",
     '선택지의 취소를 종료로 요청하면 choices에 cancelBehavior:"branch",cancelBranch:[]를 명시한다. choice1~choice5는 Esc가 해당 선택지를 실행하는 동작이며 cancelBranch를 무시한다. 완료 보고 전에 양쪽 선택과 취소를 각각 확인한다. run_scene_test의 {kind:"choose",index:-1}은 취소이며, 그 뒤 대사·보상·상태 변화가 요청과 맞는지 확인한다.',
@@ -89,7 +112,8 @@ export function buildPiAgentSystemPrompt(
     ...(spatial ? [BEODEUL_GROUND_POLICY_LINE] : []),
     "대사 다듬기(윤문·말투·줄이기)·이야기 파악: 이벤트 명령을 다시 쓰지 말고 먼저 get_story_outline 으로 막·장면 순서와 인물 말투를 보고, read_story_script 로 고칠 장면을 대본으로 읽은 뒤(앞뒤 흐름을 보고) rewrite_dialogue 에 줄 꼬리표 ⟨S12.3·a1b2c3⟩ 를 ref·hash 로 넘겨 고친 글만 낸다. 한 인물·넘치는 줄만 훑을 때는 list_dialogue(speaker·overflowOnly). 다 읽은 장면은 set_scene_summaries 로 한 줄 요약을 남긴다. 기본은 제안(mode:propose)이라 사용자가 자료집 「대사」 탭에서 줄마다 받는다 — 게임 대사가 이미 바뀌었다고 보고하지 않는다. 요청한 말투는 set_speaker_voice 로 먼저 남기고, 제어 코드·화자 이름·이벤트 구조는 그대로 둔다.",
     "윤문: 대사·자막·선택지·아이템 설명을 새로 쓰거나 고치기 전에 read_assistant_skill({id:'dialogue-polish'}) 를 읽고(공식 윤문 스킬 general-good-writing, 게임 글 적용 지침), 쓴 뒤 lint_dialogue 로 그 글을 검사해 번역투·모델틱·부정재정의·기호(em dash·가운뎃점)·서사체 종결 적중을 고친다. 인물 말투가 요구해 남긴 적중은 이유를 말한다.",
-    ...(assistantScriptsOn() ? ["Event scripts: Event commands are what people read: dialogue, cutscenes, branches, choices, switch/variable/gold/item changes, movement and effects stay commands. A script command is only for a short fragment commands express badly — a formula (price, damage), a loop over a list, an ordered-sequence check, a timer or countdown — kept to 1-3 lines with one job and named consts, writing its result to a variable or switch that the surrounding commands read (\\V[var_id] in Show Text, a fork). No dialogue inside a script unless it depends on the computed value. Decide once per event: never write a script and convert it back (or the reverse), never turn existing commands into scripts unless the user asks. Write each fragment with ONE author_script call carrying explain and examples — it compiles and runs the examples in that call, so no check_script/dry_run_script loop; several similar fragments = author_script{scripts:[…]}. API and examples: read_assistant_skill({id:'event-scripts'}). Never hand-write {kind:'script'}."] : []),
+    // 이 지시문은 한국어다 — 이 한 줄만 영어로 섞여 있었다(assistant-prompt-review F9). 같은 규칙의 영어판은 툴 능력 색인 event-scripts 정책에 있다.
+    ...(assistantScriptsOn() ? ["이벤트 스크립트: 사람이 읽는 것은 이벤트 명령이다. 대사·컷신·분기·선택지·스위치/변수/돈/아이템 변경·이동·효과는 명령으로 둔다. script 명령은 명령으로 쓰기 어려운 짧은 조각(가격·피해 같은 공식, 목록을 도는 반복, 순서 맞히기 검사, 타이머·카운트다운)에만 쓰고, 한 가지 일만 하는 1~3줄에 이름 붙은 const 를 쓰며, 결과는 둘레 명령이 읽는 변수·스위치에 쓴다(대사의 \\V[var_id], 분기). 계산값에 따라 달라지는 대사가 아니면 스크립트 안에 대사를 넣지 않는다. 이벤트마다 한 번 정한다: 스크립트를 썼다가 명령으로 되돌리거나 그 반대로 하지 않고, 사용자가 시키지 않으면 기존 명령을 스크립트로 바꾸지 않는다. 조각마다 explain 과 examples 를 담은 author_script 한 번으로 쓴다. 그 호출이 컴파일하고 예시를 돌리므로 check_script/dry_run_script 를 되풀이하지 않는다. 비슷한 조각 여럿은 author_script{scripts:[…]}. API 와 예시: read_assistant_skill({id:'event-scripts'}). {kind:'script'} 를 손으로 쓰지 않는다."] : []),
     "장면 다듬기: 이야기 장면·이벤트·컷신·NPC 등장/퇴장·문/이동/계단·대화창·맵 BGM·탈것을 만들거나 고치기 전에 read_assistant_skill({id:'game-scene-polish'}) 를 한 번 끝까지 읽는다(세 데모에서 사람이 손으로 고친 실수 목록). 쓰기 결과 issues 의 scene-* 경고는 완료 전에 고치거나, 의도라면 이유를 말한다.",
     "출입구는 문 그림·밟는 문앞·반대편 착지·귀환을 함께 확인한다. place_door 결과 data.transferEndpoint는 문 하단이 아닌 바로 앞 통행 칸이며 create_transfer_pair의 a/b 또는 link_maps의 from/to에 그대로 넣는다. 집 배치 도구가 돌려준 doorFront를 연결할 때도 실제 문 하단 doorAt을 함께 전달한다. 문앞이 막혔다고 옆 빈칸에 이동 이벤트만 대신 놓지 않는다. 장애물과 길을 고친 다음 같은 문앞에 다시 연결한다. 착지 칸에는 출구 이벤트·가구를 겹치지 않으며, 방 안에서 출구까지 걸어 닿아야 한다.",
     "너는 웹 JRPG 메이커의 시공 에이전트다. 제공된 도구만으로 프로젝트를 편집하며, 도구 밖의 텍스트 편집은 없다.",
