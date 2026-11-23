@@ -254,7 +254,8 @@ function rebuildTopbar(topbar: HTMLElement): void {
     renderSaveButton(),
   );
   if (mode === "edit") trailing.append(renderTestPlayButton());
-  // ⋯ 더 보기는 없다(시안에 없다) — 도움말·언어·AI 설정은 ⌘K 명령이다(commandRegistry). 되살리려면 RETIRED_TOPBAR_CONTROLS.moreMenu.
+  // ⋯ 더 보기 — 도움말·언어·AI 설정의 화면 입구. ⌘K 만으로는 초보가 찾지 못한다(editor-main-ui-vqa 6번, 2026-11-23).
+  trailing.append(renderMoreMenu(topbar));
   menuBar.append(trailing);
 
   topbar.append(menuBar);
@@ -452,11 +453,14 @@ export const RETIRED_TOPBAR_CONTROLS = {
   panels: renderWorkspaceBar,
   battleTest: renderQuickBattleTestButton,
   fullscreen: renderFullscreenButton,
-  moreMenu: (topbar: HTMLElement): HTMLElement => renderMenu("more-tools", "더 보기", () => menuCommands("more-tools", topbar), { icon: "more", className: "studio-icon-button studio-more-button" }),
   worldButton: (): HTMLElement => toolButton({ testId: "toolbar-world", icon: TOPBAR_ICONS.world, title: headerLabel("world"), keys: "Control+Alt+W", onClick: () => openWorldPanel() }),
   audioButton: (): HTMLElement => toolButton({ testId: "toolbar-sound-test", icon: "music", title: headerLabel("audio"), keys: "Control+Alt+M", onClick: () => openAudioTestDialog() }),
   searchButton: (): HTMLElement => toolButton({ testId: "toolbar-search", icon: "docSearch", title: headerLabel("mapEventSearch"), keys: "Control+Shift+F", onClick: () => openMapEventSearchModal() }),
 } as const;
+
+function renderMoreMenu(topbar: HTMLElement): HTMLElement {
+  return renderMenu("more-tools", "도움말 · 설정", () => menuCommands("more-tools", topbar), { icon: "more", className: "studio-icon-button studio-more-button" });
+}
 
 /** 조수 도크를 펼친다. 패널이 아직 안 붙었으면 그렇다고 말한다(눌렀는데 아무 일도 없으면 안 된다). */
 function openAssistantDock(): void {
