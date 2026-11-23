@@ -11,6 +11,7 @@ import { DB_KINDS, DB_SIDE } from './checksDb';
 import { GENRE_KINDS, GENRE_SIDE } from './checksGenre';
 import { GENRE_PLAY_KINDS, GENRE_PLAY_SIDE } from './checksGenrePlay';
 import { PLAY_KINDS, PLAY_SIDE } from './checksPlay';
+import { START_KINDS } from './checksStart';
 import { allCommands, cellFree, commandsDeep, eventOf, eventsOf, freshSession, hasSprite, includesPhrase, inRect, interact, itemIdsByName, mapName, newEvents, no, ok, pagesOf, passable, placeNote, saysFirst, squash, triggerKinds, visibleAt, where,
   type Allow, type CheckSpec, type Doc, type Ev, type Play, type Result, type Verdict } from './checkSupport';
 
@@ -274,7 +275,7 @@ const KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result
   },
 };
 /** 모든 판정 종류: 첫 묶음(이 파일) + 둘째 묶음(자료·설정, 말 걸기·장면) + 셋째 묶음(장르 장치) + 넷째 묶음(자료집 고치기). 이름이 겹치면 안 된다. */
-const KIND_SETS = [KINDS, DATA_KINDS, PLAY_KINDS, GENRE_KINDS, GENRE_PLAY_KINDS, DB_KINDS];
+const KIND_SETS = [KINDS, DATA_KINDS, PLAY_KINDS, GENRE_KINDS, GENRE_PLAY_KINDS, DB_KINDS, START_KINDS];
 const ALL_KINDS: Record<string, (spec: CheckSpec, before: Doc, after: Doc) => Result> = Object.assign({}, ...KIND_SETS);
 if (Object.keys(ALL_KINDS).length !== KIND_SETS.reduce((sum, kinds) => sum + Object.keys(kinds).length, 0)) throw Error('판정 종류 이름이 겹친다');
 export const CHECK_KINDS = Object.keys(ALL_KINDS);
@@ -321,6 +322,8 @@ function expectedSide(spec: CheckSpec): RegExp | undefined {
 function damageOf(before: Doc, after: Doc, allow: Allow, spec: CheckSpec, targets: ReadonlySet<string>): { damage: string[]; sideEdits: string[] } {
   const kind = spec.kind;
   const damage: string[] = [], sideEdits: string[] = [];
+  // 새 게임 첫 생성: «전» 은 저자가 아무것도 쓰지 않은 씨앗이다 — 부수기·바꾸기는 파괴가 아니다.
+  if (allow.firstBuild) return { damage, sideEdits };
   const beforeMaps = Object.keys(before.maps ?? {}), afterMaps = Object.keys(after.maps ?? {});
   for (const id of beforeMaps) if (!after.maps?.[id]) damage.push(`맵 「${mapName(before, id)}」 삭제`);
   const added = afterMaps.filter(id => !before.maps?.[id]);
