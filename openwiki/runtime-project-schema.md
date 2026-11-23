@@ -233,7 +233,7 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
   `/index.html?play=1`(`START_PLAY_URL`)·`?demo=<id>&play=1` 부팅 경로는 QA·캡처 스크립트용으로 남아 있다 — 편집기 부팅(`src/app/mode.ts`)이 `takeStartPlayRequest` 로
   표시를 읽고 지운 뒤 플레이 모드로 연다. 플레이 기록(`oprn:start-played`, 옛 `src/start/playFeed`)은 지웠다.
   「게임 파일 열기」 = `.oprn` 을 `readOprnGameFile`(동적 로드)로 읽어 그 프로젝트를 씨앗으로 `문서/OPRN Games/<제목>` 새 폴더를 만들고 편집기로 연다.
-  런처 모드의 피드는 자기 위 막대를 그리지 않고 입력창을 셸에 넘긴다. 편집기 「새 프로젝트」 덮는 창은 예전 모양 그대로다. 팀 참여는 별도 보기(`start-join-view`).
+  런처 모드의 피드는 자기 위 막대를 그리지 않고 입력창을 셸에 넘긴다. 편집기 「새 프로젝트」 덮는 창은 첫 실행 홈과 같은 한 장이다(2026-11-23, 아래 「편집기 안 입구」). 팀 참여는 별도 보기(`start-join-view`).
   편집기 트리를 import 하지 않는다. 장르 씨앗·AI 모듈을 여기서 부르면 수십 MB 가 된다(실측 esbuild 90MB) —
   `launcherMake.ts` 는 `brief.ts`(gameDesignBrief 는 타입만)·`newProjectChoices`·`startIntent` 만 정적으로 부른다.
   `vite.config.ts` 의 `startScreen` 입력, `scripts/mac-launch.mjs` 빌드 입력 목록에 들어 있다.
@@ -281,6 +281,8 @@ affects mp 면 MP). 둘 다 0/생략이면 키가 없다 — 옛 프로젝트는
 - **편집기 안 입구**: 메뉴 「새 프로젝트」와 첫 부팅 환영은 같은 피드를 덮는 창으로 연다(`src/editor/conceptFeedOverlay.ts`, `modalStack` 등록 —
   Escape 는 상세면 피드로, 피드면 닫기). 처리기는 `src/editor/conceptMake.ts`: 메뉴는 새 폴더에 씨앗 + 기획을 저장하고 다시 읽는다,
   환영은 지금 열린 빈 프로젝트의 시스템을 장르 틀 씨앗으로 바꾸고(화면 크기 보존) 기획을 심는다. 「빈 프로젝트로 시작」은 장르 없는 새 폴더(메뉴) 또는 그냥 닫기(환영).
+  화면(2026-11-23): 첫 실행 홈(`promptHome`)과 같은 fr- 구성이다. 제목, 입력 칸(만들기 = 컨셉 초안 → 상세), 예시 칩, 「장르로 시작」 카드 넷(빠른 인터뷰) + 빈 프로젝트,
+  접힌 「아이디어·예제 둘러보기」(기본 게임 셋 + 분류 칩·컨셉 격자). 런처 모드 피드는 그대로다. 증거 http://mdc2:18301/new-game-page.html.
 - **기획 필드 `gameDesignBrief.concept?`**: `{slug, title, hook, tweak?}`(각 80/40/120/300자). 컨셉에서 온 기획만 있고 `interview` 와 동시에 있을 수 없다.
   `summary` 마지막 줄은 `사용자 변경: …` 이며 4000자 제한에 걸려도 남는다. 장르 프리셋 프롬프트의 이름은 `<컨셉 제목> (<장르 틀>)`.
 - **증거**: `verify-shots/home-redesign/`(웹, 가짜 브리지 · `scripts/qa/home-redesign-capture.mjs`), `verify-shots/home-redesign-electron/`

@@ -96,7 +96,7 @@ function mountOverlay(mode: "menu" | "welcome", resolve: (result: ConceptFeedOve
     });
   };
   register();
-  feed.element.querySelector<HTMLInputElement>("input[type=search]")?.focus();
+  feed.element.querySelector<HTMLElement>("[data-testid='concept-feed-search']")?.focus();
 }
 
 /** 메뉴의 「빈 프로젝트로 시작」 — 장르 없이 새 폴더. 예전 다이얼로그의 빈 프로젝트와 같다. */
