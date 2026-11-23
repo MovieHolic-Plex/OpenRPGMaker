@@ -97,7 +97,19 @@ async function chat(system: string, user: string): Promise<string> {
   throw new Error("retries exhausted");
 }
 
-const parseJson = (text: string) => { const body = text.replace(/^```(?:json)?\s*|\s*```$/gu, "").trim(); return JSON.parse(body.slice(body.indexOf("{"), body.lastIndexOf("}") + 1)); };
+const parseJson = (text: string) => {
+  // 첫 완결 JSON 객체만 읽는다 — 모델이 JSON 뒤에 설명을 덧붙여도 실패하지 않게.
+  const start = text.indexOf("{");
+  let depth = 0, inString = false, escaped = false;
+  for (let i = start; i >= 0 && i < text.length; i += 1) {
+    const ch = text[i]!;
+    if (inString) { if (escaped) escaped = false; else if (ch === "\\") escaped = true; else if (ch === "\"") inString = false; continue; }
+    if (ch === "\"") inString = true;
+    else if (ch === "{") depth += 1;
+    else if (ch === "}" && (depth -= 1) === 0) return JSON.parse(text.slice(start, i + 1));
+  }
+  throw new Error(`no JSON object in: ${text.slice(0, 120)}`);
+};
 
 async function llmOne(req: Req) {
   const stage1System = "You plan prop searches for an RPG map-building assistant. You can call the tool below up to 5 times. "

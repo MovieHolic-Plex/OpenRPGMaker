@@ -5,11 +5,12 @@ import { describe, expect, it } from "vitest";
 import { BEODEUL_PLACEABLE_OBJECTS } from "@/assets/beodeulPlaceableObjects";
 import { sharedObjects } from "@/editor/tools/sharedDesignCatalog";
 import { createBlankProject } from "@/project/defaults/blankProject";
+import { kitDisplayNameTable } from "@/project/kitDisplayNames";
 
 /** 칩셋별 상한: 같은 이름을 가진 킷 행 수, 영문 낱말(두 글자 이상)이 든 이름 수. 여기 없는 칩셋은 0. */
 const BASELINE: Readonly<Record<string, { duplicateRows: number; englishNames: number }>> = {
   atlas_biome_interior: { duplicateRows: 4, englishNames: 0 },
-  beodeul_city: { duplicateRows: 122, englishNames: 26 },
+  beodeul_city: { duplicateRows: 122, englishNames: 9 },
   beodeul_ground: { duplicateRows: 0, englishNames: 5 },
   beodeul_reviewed: { duplicateRows: 42, englishNames: 0 },
   beodeul_warm_trees: { duplicateRows: 0, englishNames: 7 },
@@ -20,10 +21,10 @@ const BASELINE: Readonly<Record<string, { duplicateRows: number; englishNames: n
   emerald_monster_overworld: { duplicateRows: 0, englishNames: 93 },
   emerald_monster_rooms: { duplicateRows: 0, englishNames: 104 },
   emerald_monster_wild: { duplicateRows: 0, englishNames: 65 },
-  joseon_baram: { duplicateRows: 19, englishNames: 388 },
-  jp_city: { duplicateRows: 524, englishNames: 180 },
+  joseon_baram: { duplicateRows: 19, englishNames: 0 },
+  jp_city: { duplicateRows: 522, englishNames: 16 },
   modern_campus: { duplicateRows: 0, englishNames: 1 },
-  modern_city: { duplicateRows: 302, englishNames: 11 },
+  modern_city: { duplicateRows: 302, englishNames: 10 },
   monster_climate: { duplicateRows: 0, englishNames: 48 },
   monster_coast: { duplicateRows: 0, englishNames: 85 },
   monster_dungeon: { duplicateRows: 0, englishNames: 13 },
@@ -31,9 +32,6 @@ const BASELINE: Readonly<Record<string, { duplicateRows: number; englishNames: n
   monster_overworld: { duplicateRows: 0, englishNames: 93 },
   monster_rooms: { duplicateRows: 0, englishNames: 104 },
   monster_wild: { duplicateRows: 0, englishNames: 65 },
-  pirate_isles: { duplicateRows: 0, englishNames: 166 },
-  sf_station: { duplicateRows: 0, englishNames: 22 },
-  wizarding_world: { duplicateRows: 0, englishNames: 172 },
 };
 
 const ENGLISH_WORD = /[A-Za-z]{2,}/u;
@@ -53,6 +51,16 @@ describe("object name gate", () => {
   it("gives every Beodeul object a Korean tag", () => {
     const missing = BEODEUL_PLACEABLE_OBJECTS.filter(object => !object.tags.some(tag => /[가-힣]/u.test(tag))).map(object => object.id);
     expect(missing).toEqual([]);
+  });
+
+  it("applies every kit display-name entry to a bundled kit", () => {
+    const project = createBlankProject();
+    const stale: string[] = [];
+    for (const [tilesetId, renames] of Object.entries(kitDisplayNameTable())) {
+      const kits = new Map((project.tilesets[tilesetId]?.structureKits ?? []).map(kit => [kit.id, kit.name]));
+      for (const [kitId, [, name]] of Object.entries(renames)) if (kits.get(kitId) !== name) stale.push(`${tilesetId}/${kitId}: ${kits.get(kitId)} ≠ ${name}`);
+    }
+    expect(stale).toEqual([]);
   });
 
   it("does not add duplicate or English-fragment kit names to bundled chipsets", () => {
