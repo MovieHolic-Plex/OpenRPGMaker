@@ -23,7 +23,7 @@ export function playToMvpEnd(doc: Doc): { reached: boolean; note: string } {
     if (!target) return { reached: false, note: `끝 지점 스위치(${MVP_REACHED_SWITCH})를 켜는 이벤트가 없다` };
     const run = runSwitchPlay(project, '첫 판 끝 지점', target, MVP_REACHED_SWITCH, PLAY_BUDGET_MS);
     return run.ok ? { reached: true, note: `자동 플레이 끝 지점 도달(목표 ${run.steps.length}개, ${target.where.mapName ?? target.where.mapId})` }
-      : { reached: false, note: `자동 플레이 끝 지점 못 닿음: ${String(run.failure ?? '').slice(0, 160)}` };
+      : { reached: false, note: `자동 플레이 끝 지점 못 닿음: ${(run.failure ? `${run.failure.goal}: ${run.failure.detail}` : '').slice(0, 200)}` };
   } catch (error) {
     return { reached: false, note: `자동 플레이 오류: ${error instanceof Error ? error.message : String(error)}`.slice(0, 200) };
   }
