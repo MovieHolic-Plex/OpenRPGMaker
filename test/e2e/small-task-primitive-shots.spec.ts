@@ -89,7 +89,7 @@ for (const [index, entry] of cases.entries()) {
     await page.goto("/?blankProject=1", { waitUntil: "commit" });
     const guest = page.getByTestId("login-guest");
     const canvas = page.getByTestId("editor-zoom-controls");
-    const canvasTrigger = canvas.getByRole("button", { name: "이걸로 작업" });
+    const canvasTrigger = canvas.getByRole("button", { name: "조수에게 맡기기" });
     await expect(guest.or(canvasTrigger).first()).toBeVisible({ timeout: 120_000 });
     if (await guest.isVisible()) await guest.click();
     await expect(canvasTrigger).toBeVisible({ timeout: 60_000 });
@@ -209,7 +209,7 @@ for (const [index, entry] of cases.entries()) {
         await panel.getByTestId(`db-record-row-${target.id}`).click();
       }
     }
-    const trigger = triggerHost.getByRole("button", { name: "이걸로 작업" });
+    const trigger = triggerHost.getByRole("button", { name: "조수에게 맡기기" });
     await expect(trigger).toBeVisible();
     const snapshot = () => page.evaluate(async () => {
       const { store } = await import("/src/project/store.ts");

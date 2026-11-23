@@ -173,7 +173,7 @@
   flex-shrink: 0;
 }
 
-/* 명령 칼럼이 툴바 전체(약 710px)를 못 담으면 AI 버튼은 글리프 + 「AI」로 줄인다. 긴 라벨은
+/* 명령 칼럼이 툴바 전체(약 710px)를 못 담으면 조수 버튼은 글리프 + 「조수」로 줄인다(편집기 전체가 「조수」라 부른다). 긴 라벨은
    title 로 남는다. 그대로 두면 버튼이 칼럼 밖으로 밀려 잘리고 목록에 가로 스크롤이 생겼다
    (07-eventcmd-01·02·04). */
 @container evt-command-column (max-width: 759px) {
@@ -182,7 +182,7 @@
   }
 
   .event-editor .event-editor-command-toolbar .event-editor-command-aux-group .event-editor-command-tool::after {
-    content: "AI";
+    content: attr(data-short-label);
   }
 }
 

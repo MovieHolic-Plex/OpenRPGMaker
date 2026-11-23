@@ -3,7 +3,7 @@ import type { Command, Project } from "@/project/types";
 import { EVENT_DOCK_ID, eventDockProject, mockDockModel, openEventDockFixture } from "./eventAiDockFixture";
 
 /**
- * 「AI로 명령 만들기」 도크가 **보기 방식과 무관하게** 초안을 보여야 한다는 계약.
+ * 「조수로 명령 만들기」 도크가 **보기 방식과 무관하게** 초안을 보여야 한다는 계약.
  *  1) 스토리에서 초안을 검토하고 패널을 접거나 취소하면 스토리로 돌아온다.
  *  2) 생성 도중 스토어가 갱신돼 본문이 다시 그려져도 초안이 보인다(명령 영역이 비지 않는다).
  */

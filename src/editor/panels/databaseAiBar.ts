@@ -345,9 +345,9 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
 
   const toggle = el("button", {
     class: "database-ai-toggle",
-    attrs: { type: "button", title: "조수 열기", "aria-label": "AI 조수 열기", "aria-expanded": "false" },
+    attrs: { type: "button", title: "조수 열기", "aria-label": "조수 열기", "aria-expanded": "false" },
     dataset: { testid: "database-ai-toggle" },
-    children: [icon("sparkle", "database-modal-icon"), "AI 조수"],
+    children: [icon("sparkle", "database-modal-icon"), "조수"],
   }) as HTMLButtonElement;
 
   const input = el("input", {
@@ -363,7 +363,7 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
   }) as HTMLButtonElement;
   const closeButton = el("button", {
     class: "database-ai-close",
-    attrs: { type: "button", title: "조수 닫기", "aria-label": "AI 조수 닫기" },
+    attrs: { type: "button", title: "조수 닫기", "aria-label": "조수 닫기" },
     dataset: { testid: "database-ai-close" },
     children: [icon("close")],
   }) as HTMLButtonElement;
@@ -453,22 +453,22 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
     class: "database-ai-head",
     children: [
       el("span", { class: "database-ai-mark", attrs: { "aria-hidden": "true" }, children: [icon("sparkle")] }),
-      // 단추와 같은 이름 — 「AI 조수」를 눌러 열어 놓고 다른 이름을 마주하게 하지 않는다. 편집기 전체가
+      // 단추와 같은 이름 — 「조수」를 눌러 열어 놓고 다른 이름을 마주하게 하지 않는다. 편집기 전체가
       // 「조수」라 부른다(메인 레일·세계 개요 「조수 전달」) — 한 개념에 한 낱말(V-shell-topbar-36).
-      el("span", { class: "database-ai-head-title", text: "AI 조수" }),
+      el("span", { class: "database-ai-head-title", text: "조수" }),
       el("span", { class: "database-ai-head-spacer" }),
       closeButton,
     ],
   });
   const panel = el("div", {
     class: "database-ai-panel",
-    attrs: { role: "dialog", "aria-label": "AI 조수" },
+    attrs: { role: "dialog", "aria-label": "조수" },
     dataset: { testid: "database-ai-panel" },
     children: [heading, composer, contextRow, turn],
   });
   const bar = el("section", {
     class: "database-ai-bar",
-    attrs: { "aria-label": "AI 조수" },
+    attrs: { "aria-label": "조수" },
     dataset: { testid: "database-ai-bar" },
     children: [panel],
   });
