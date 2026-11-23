@@ -1,6 +1,6 @@
 // 기본 모델 계약 둘.
 //   ① 새 설정의 공장 기본 = ChatGPT(Codex 로그인) GPT-6.2 Sol · medium — 계획·실행·시각·작문·시공·감독 모든 슬롯이 한 모델이다(오너 결정 2026-11-19).
-//      Claude 계정을 고른 사람의 기본은 Opus 5.5 · medium 그대로다(오너 결정 2026-11-16).
+//      Claude 계정을 고른 사람의 기본은 Sonnet 5.5 · high 다(오너 결정 2026-11-23).
 //   ② Google 계정(옛 저장값의 기본 제공자)의 기본 모델 = gemini-4-argon — 네 소스가 한 값이다(2026-08-26 강제, 2026-10-14 Argon 이동).
 //
 // 왜 계약으로 고정하는가: 기본 모델이 여러 곳에서 각자 정해지면(llmClient 의 DEFAULT_MODEL /
@@ -27,12 +27,12 @@ const FORCED_DEFAULT = "gemini-4-argon";
 /** 새 설정의 공장 기본(오너 결정 2026-11-19). */
 const FACTORY_PROVIDER = "openai-codex";
 const FACTORY_MODEL = "gpt-6.2-sol";
-/** Claude 계정의 기본(오너 결정 2026-11-16) — 공장 기본은 아니지만 Claude 를 고르면 이 모델이다. */
+/** Claude 계정의 기본(오너 결정 2026-11-23) — Claude 를 고르면 이 모델이다. */
 const CLAUDE_PROVIDER = "anthropic";
-const CLAUDE_MODEL = "claude-opus-5-5";
+const CLAUDE_MODEL = "claude-sonnet-5-5";
 
 describe("공장 기본 = ChatGPT GPT-6.2 Sol · medium", () => {
-  it("권장 제공자와 조수 기본 모델 상수가 ChatGPT · Terra 다(Claude 계정의 기본 상수는 Opus 5.5 그대로)", () => {
+  it("권장 제공자와 조수 기본 모델 상수가 ChatGPT · Terra 다(Claude 계정의 기본 상수는 Sonnet 5.5)", () => {
     expect(RECOMMENDED_OH_MY_PI_PROVIDER).toBe(FACTORY_PROVIDER);
     expect(CHATGPT_DEFAULT_MODEL).toBe(FACTORY_MODEL);
     expect(CLAUDE_DEFAULT_MODEL).toBe(CLAUDE_MODEL);
@@ -71,7 +71,7 @@ describe("공장 기본 = ChatGPT GPT-6.2 Sol · medium", () => {
   });
 });
 
-describe("Claude 계정의 기본 = Opus 5.5 · medium", () => {
+describe("Claude 계정의 기본 = Sonnet 5.5 · high", () => {
   it("Claude 계정의 카탈로그 첫 항목·제공자 레코드·두 티어가 모두 공장 기본 모델이다(프리셋이 Haiku 로 내리지 않는다)", () => {
     expect(defaultModelForAuthMode("chatgpt", CLAUDE_PROVIDER)).toBe(CLAUDE_MODEL);
     expect(getOhMyPiProvider(CLAUDE_PROVIDER)?.defaultModel).toBe(CLAUDE_MODEL);

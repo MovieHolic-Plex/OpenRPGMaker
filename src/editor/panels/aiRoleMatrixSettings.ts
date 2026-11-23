@@ -33,7 +33,7 @@ function overridesFromConfig(config: AiConfig, available: readonly AvailableRout
   const connected = new Set(available.map((route) => route.providerId));
   const pick = (model: RoleModel | undefined): RoleModel | undefined => (model && connected.has(model.provider) ? model : undefined);
   const out: RoleOverrides = {};
-  // 주 작업은 표가 추천을 계산한다(Claude 가 있으면 Opus 5.5 medium). 지금 쓰는 값과 다르면 줄에 「맞추기」 단추가 뜬다.
+  // 주 작업은 표가 추천을 계산한다(Claude 가 있으면 Sonnet 5.5 high). 지금 쓰는 값과 다르면 줄에 「맞추기」 단추가 뜬다.
   const vision = pick(modelForRole(config, "vision"));
   if (vision && config.modelSelectionOverrides?.vision) out.vision = vision;
   const pixel = resolvePixelModel(config);

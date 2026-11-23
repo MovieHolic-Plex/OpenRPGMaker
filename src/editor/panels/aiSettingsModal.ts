@@ -925,7 +925,7 @@ export function renderAiSettingsForm(options: {
   });
   // ── 역할 배정(연결된 계정으로 자동) ─────────────────────────────────────────
   const roleMatrix = renderAiRoleMatrixSettings(() => persist(false), (recommended) => {
-    // 로컬 CLI 추천(Claude 가 연결돼 있으면 Opus 5.5 medium)은 조수 엔진 선택으로 넣는다 — 그래야 실제 실행이 그 모델로 간다.
+    // 로컬 CLI 추천(Claude 가 연결돼 있으면 Sonnet 5.5 high)은 조수 엔진 선택으로 넣는다 — 그래야 실제 실행이 그 모델로 간다.
     const cli = localCliOfProvider(recommended.provider);
     if (cli) {
       saveEngineChoice({ kind: "local-cli", cli, routineModel: recommended.model, deepModel: recommended.model, effort: recommended.thinkingLevel === "low" || recommended.thinkingLevel === "high" ? recommended.thinkingLevel : "medium" });

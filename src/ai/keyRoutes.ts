@@ -95,6 +95,7 @@ export function keyRouteAdoptModel(family: ModelFamily): TeamModelKey | undefine
   const route = KEY_ROUTES[family];
   const keys = FAMILY_MODEL_KEYS[family].filter((key) => route.models[key] !== undefined);
   if (!keys.length) return undefined;
+  if (keys.includes("sonnet")) return "sonnet"; // Claude 조수 기본(오너 결정 2026-11-23) — teamPlan 과 같다.
   const worker = chooseTeam(new Set(keys))?.worker ?? UNRATED_DEFAULT_WORKER[family];
   return worker && keys.includes(worker) ? worker : keys[0];
 }

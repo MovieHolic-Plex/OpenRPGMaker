@@ -17,9 +17,10 @@ export const CLAUDE_MCP_SERVER_NAME = "oprn";
 export const MCP_TOKEN_ENV = "OPRN_MCP_TOKEN";
 
 const MODELS = [
-  // 조수 기본(오너 결정 2026-11-16): Opus 5.5 · medium 하나가 계획부터 짓기까지 한다(src/ai/planDefaults.ts). 정식 ID 를 박는다 —
+  // 조수 기본(오너 결정 2026-11-23): Sonnet 5.5 · high 하나가 계획부터 짓기까지 한다(src/ai/planDefaults.ts). 정식 ID 를 박는다 —
   // 별칭은 CLI 판마다 가리키는 세대가 다르다(별칭 `haiku` 는 Claude Code 2.1.284 에서 Haiku 4.5 로 갔다, 2026-11-03 실측 modelUsage).
-  { id: ASSISTANT_CLAUDE_MODEL, label: "Opus 5.5 (권장)", roles: ["routine", "deep"] as const },
+  { id: ASSISTANT_CLAUDE_MODEL, label: "Sonnet 5.5 (권장)", roles: ["routine", "deep"] as const },
+  { id: "claude-opus-5-5", label: "Opus 5.5" },
   { id: "sonnet", label: "Sonnet" },
   { id: "haiku", label: "Haiku (빠름·가벼움)" },
   { id: "opus", label: "Opus (가장 강함·한도 많이 씀)" },

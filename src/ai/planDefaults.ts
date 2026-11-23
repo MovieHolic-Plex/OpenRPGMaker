@@ -3,8 +3,8 @@
 //
 // 대부분의 사용자는 낮은 요금제 하나(Claude 또는 ChatGPT)만 갖고 있다. 그래서 첫 실행 관문(editor/ui/aiConnectGate.ts)이
 // 이 PC 에서 이미 로그인된 구독을 찾아 「연결됨: <이름> · 이걸로 시작」 한 장으로 보이고, 고르면 그 요금제에 맞는 팀을 고른다.
-//   - Claude 구독(Claude Code CLI, authMethod oauth_token): Opus 5.5 · medium 하나가 계획부터 짓기까지(오너 결정 2026-11-16 —
-//     Haiku 워커로는 게임을 못 만든다고 보아 Opus 팀장 + Haiku 워커 나누기를 기본에서 뺐다. 나누기는 설정에서 고를 수 있다).
+//   - Claude 구독(Claude Code CLI, authMethod oauth_token): Sonnet 5.5 · high 하나가 계획부터 짓기까지(오너 결정 2026-11-23,
+//     그 전 2026-11-16 은 Opus 5.5 · medium. 팀장·워커 나누기는 설정에서 고를 수 있다).
 //   - ChatGPT 구독(Codex CLI)·편집기 안 ChatGPT 로그인: GPT-6.2 Sol · medium 하나가 계획부터 짓기까지.
 //   - 그 밖(Gemini CLI 구글 로그인, 편집기 안 Google 로그인): 지금 기본값 그대로.
 // API 키 로그인·환경 변수 키·이미 엔진을 고른 사용자는 후보가 아니다(기본값을 바꾸지 않는다).
@@ -38,7 +38,7 @@ export type PlanCandidate =
 export const CODEX_ACCOUNT_PROVIDER_ID = "openai-codex";
 export const GOOGLE_ACCOUNT_PROVIDER_ID = "google-antigravity";
 
-/** Claude 구독 기본: Opus 5.5 · medium 하나가 계획부터 짓기까지 한다(같은 CLI, 키 없음, 팀장·워커로 나누지 않는다). */
+/** Claude 구독 기본: Sonnet 5.5 · high 하나가 계획부터 짓기까지 한다(같은 CLI, 키 없음, 팀장·워커로 나누지 않는다). */
 export const CLAUDE_SUBSCRIPTION_ENGINE: AssistantEngineChoice = {
   kind: "local-cli", cli: "claude", routineModel: ASSISTANT_CLAUDE_MODEL, deepModel: ASSISTANT_CLAUDE_MODEL, effort: ASSISTANT_CLAUDE_EFFORT,
 };
@@ -64,7 +64,7 @@ export function planCandidates(rows: readonly DetectedCli[], accounts: readonly 
     out.push({ key: "codex-account", kind: "account", name: "ChatGPT 로그인", setup: "GPT-6.2 Sol 하나가 계획부터 만들기까지 해요.", providerId: CODEX_ACCOUNT_PROVIDER_ID });
   }
   if (ready(rows, "claude")) {
-    out.push({ key: "claude-cli", kind: "local-cli", name: "Claude 구독", setup: "Opus 5.5 하나가 계획부터 만들기까지 해요.", engine: CLAUDE_SUBSCRIPTION_ENGINE });
+    out.push({ key: "claude-cli", kind: "local-cli", name: "Claude 구독", setup: "Sonnet 5.5 하나가 계획부터 만들기까지 해요.", engine: CLAUDE_SUBSCRIPTION_ENGINE });
   }
   if (ready(rows, "gemini")) {
     out.push({ key: "gemini-cli", kind: "local-cli", name: "Gemini CLI 구글 로그인", setup: "Gemini CLI 기본 모델로 해요.", engine: { kind: "local-cli", cli: "gemini", effort: "medium" } });
