@@ -7,6 +7,7 @@ import { configureExpeditionAudio } from "./audio";
 import { configureExpeditionOpening } from "./opening";
 import { authorExpeditionWorld } from "./world";
 import type { HomeTownLayout, StartTheme } from "./townLayouts";
+import type { FieldRequest } from "./fieldGenerator";
 import { clampGymCount, FULL_GYMS, planFromBuilt, retellForGymCount } from "./campaignPlan";
 import { pruneUnusedSpecies } from "./campaignSpecies";
 import { deserialize, serialize } from "@/project/io";
@@ -24,7 +25,8 @@ import { monsterTitleThemeFromStart } from "@/project/emeraldMonsterTitleArt";
 /** startTheme: 기획서의 시작 마을 풍경(사막·눈·바닷가). 생략하면 풀밭 별싹 마을. */
 /** gymCount: 체육관(=배지) 수 0~8, 생략 = 8(본래 90맵 캠페인). 적으면 마을·길·리그를 앞에서부터 잘라 쓰고 정의에 plan(검수 하한)을 싣는다.
  * speciesCount: 도감을 이 수 이상으로 줄인다(쓰지 않는 계통만 덜어 냄 — 실제 수는 plan.species). 생략 = 60종. */
-export interface ExpeditionOptions { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[]; readonly startTheme?: StartTheme; readonly gymCount?: number; readonly speciesCount?: number; readonly startLayout?: HomeTownLayout }
+/** mapSeed: 길·필드·던전 맵을 짜는 씨앗(생략 0). fieldMaps: 길·지역 열쇠(river·beach …)별 요청 요소(길이·분기·물·절벽·명소). */
+export interface ExpeditionOptions { readonly firstGymType?: string; readonly gymTypes?: readonly (string | undefined)[]; readonly startTheme?: StartTheme; readonly gymCount?: number; readonly speciesCount?: number; readonly startLayout?: HomeTownLayout; readonly mapSeed?: number; readonly fieldMaps?: Readonly<Record<string, FieldRequest>> }
 
 export function createMonsterExpedition(options: ExpeditionOptions = {}) {
   const project = createExpeditionSeed();

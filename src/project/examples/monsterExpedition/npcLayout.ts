@@ -1,4 +1,12 @@
 import type { Project } from "@/project/types";
+import templateData from "./mapTemplates.json" with { type: "json" };
+import { templateOverlap, type OverlapGrid } from "@/project/mapTemplateOverlap";
+
+/** 길·던전 맵의 사람 옮기기(아래 표)는 견본 판을 보고 잰 자리다 — 생성기가 새로 짠 판(fieldGenerator)에서는 같은 좌표가 물가·구석일 수 있다(2026-11-23 해변 연구원이 막힌 칸에 섬). */
+const FIELD_TEMPLATES: Readonly<Record<string, string>> = {
+  river: "wild/river", meadow: "overworld/route", hideout: "dungeon/hideout", beach: "coast/beach", ice_cave: "dungeon/ice_cave", ruins: "dungeon/ruins", snow: "climate/ice_route",
+};
+const templates = templateData as unknown as Record<string, OverlapGrid>;
 
 // Reviewed corridor repairs after making NPCs solid. Open-looking floor can
 // still be an articulation point, an ice approach, or a portal bypass.
@@ -32,6 +40,9 @@ export function repairExpeditionNpcLayout(project: Project): string[] {
     const mapId = `mx_map_${key}`;
     const event = project.maps[mapId]?.events.find(entry => entry.id === `${mapId}_${suffix}`);
     if (!event || event.x !== fromX || event.y !== fromY) continue;
+    const reviewed = FIELD_TEMPLATES[key] ? templates[FIELD_TEMPLATES[key]] : undefined;
+    const map = project.maps[mapId]!;
+    if (reviewed && templateOverlap({ width: map.width, height: map.height, lower: map.lowerTiles, tilesetId: map.tilesetId }, reviewed, 0).overlap < 0.85) continue;
     event.x = x;
     event.y = y;
     moved.push(event.id);
