@@ -63,7 +63,7 @@ export function trimExpeditionToMvp(project: Project, manifest: ExpeditionManife
   const removed = Object.keys(project.maps).filter((id) => !keep.has(id));
   const gone = new Set(removed);
   const home = project.maps[project.startMapId]!;
-  const back: Command = { kind: "transfer", mapId: home.id, x: project.startPos.x, y: project.startPos.y } as Command;
+  const back = { mapId: home.id, x: project.startPos.x, y: project.startPos.y };
 
   // 가게·센터를 대신 세울 자리 = 지운 건물의 문 바로 아래.
   const doors = new Map<string, { mapId: string; at: Cell }>();
@@ -84,7 +84,7 @@ export function trimExpeditionToMvp(project: Project, manifest: ExpeditionManife
     map.events = map.events.filter((e) => !doorIds.has(e.id));
     // 그 밖의 이동(진 뒤 센터로 돌아가기 등)은 시작 칸으로.
     for (const event of map.events) walk([event.commands, event.pages], (cmd) => {
-      if (cmd.kind === "transfer" && typeof cmd.mapId === "string" && gone.has(cmd.mapId)) Object.assign(cmd, { mapId: back.mapId, x: (back as { x: number }).x, y: (back as { y: number }).y });
+      if (cmd.kind === "transfer" && typeof cmd.mapId === "string" && gone.has(cmd.mapId)) Object.assign(cmd, back);
     });
   }
   for (const [to, door] of doors) {
@@ -103,7 +103,7 @@ export function trimExpeditionToMvp(project: Project, manifest: ExpeditionManife
   }
 
   // 체육관 관장을 이기면 배지를 받고 바로 엔딩(리그·관측탑 없음).
-  const endingId = project.endings[0]?.id;
+  const endingId = project.endings?.[0]?.id;
   const badge = project.system.monsterCampaign?.badges[0]?.switchId;
   if (endingId && badge) {
     for (const event of project.maps[kept[4]!]!.events) walk(event.pages, (cmd) => {
@@ -130,6 +130,6 @@ export function trimExpeditionToMvp(project: Project, manifest: ExpeditionManife
     campaign.locations = campaign.locations?.filter((l) => keep.has(l.mapId));
     campaign.objectives = campaign.objectives?.filter((o) => o.id === "starter" || o.id === "gym_1");
   }
-  for (const ending of project.endings) if (ending.presentation) ending.presentation = { ...ending.presentation, credits: ending.presentation.credits?.replace("별빛섬 몬스터 원정", "별빛섬 몬스터 원정 · 첫 판") };
+  for (const ending of project.endings ?? []) if (ending.presentation) ending.presentation = { ...ending.presentation, credits: ending.presentation.credits?.replace("별빛섬 몬스터 원정", "별빛섬 몬스터 원정 · 첫 판") };
   return { kept, removed };
 }
