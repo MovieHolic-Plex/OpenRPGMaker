@@ -9,6 +9,7 @@ import { gameDesignBriefContext } from "@/project/gameDesignBrief";
 import type { PiTeamRoleId } from "./protocol";
 import { describeTeamMembers, type PiTeamSpec } from "./teamSpec";
 import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
+import { splitIntentNote } from "./monsterGameRequest";
 import { hasPlayableSegmentSkeleton, playableSegmentContract } from "@/project/playableSegmentContract";
 import { GOAL_CAMPAIGN_MAP_BLUEPRINT, GOAL_MIN_MAPS, isGoalCampaignTask } from "./goalCommand";
 
@@ -17,6 +18,14 @@ import { GOAL_CAMPAIGN_MAP_BLUEPRINT, GOAL_MIN_MAPS, isGoalCampaignTask } from "
  * 통과하지 못했고, 다음 실행은 41분이 지나도 끝나지 않았다(맵 17장·이벤트 175개). 사용자가 기다리는 것은
  * 「첫 제작 범위를 플레이해 볼 수 있는 구간」이다 — 넓히는 것은 다음 요청이 한다.
  */
+function teamTaskLines(task: string): string[] {
+  const { own, notes } = splitIntentNote(task);
+  return [
+    ...(notes ? [`시스템이 붙인 작업 지침(사용자 말이 아니다. 아래 사용자 지시와 어긋나면 사용자 지시가 이긴다):\n${notes}`] : []),
+    `사용자 지시: ${own.trim() || task.trim()}`,
+  ];
+}
+
 export const PRESET_FIRST_BUILD_RULES = [
   "[첫 생성 범위] 이 요청은 새 프로젝트의 첫 생성이다. 확정 기획의 「첫 제작 범위」를 플레이해 볼 수 있는 가장 작은 구간만 만든다.",
   "- 맵은 그 구간에 꼭 필요한 것만(보통 3~5장: 시작 마을 1, 필드 1, 목표 지점 1, 꼭 필요한 실내). 주민 집 실내를 채우려고 맵을 늘리지 않는다.",
@@ -91,7 +100,8 @@ export const PI_TEAM_ROLES: Record<PiTeamRoleId, PiTeamRole> = {
         "5. 맵의 시공이 끝났으면 review_map 으로 검수를 시킨다(한 턴에 여러 맵 가능). 아직 작업 중인 맵은 검수가 거절된다 — wait_agents 를 먼저 부른다. 검수 팀원이 없으면 건너뛴다.",
         "6. 검수에서 문제가 나오면 assign_map_agent 로 수정 작업을 지시한다. 수정은 맵당 최대 2회이며, 업무 배정과는 예산이 따로다.",
         "7. 끝나면 finish 에 사람이 읽을 한 문단 보고를 적는다. 진행 중인 배정이 있으면 finish 가 거절하니 wait_agents 를 먼저 부른다. 사용자에게 되묻지 않는다.",
-        `사용자 지시: ${task}`,
+        // 사용자 말과 우리가 붙인 지침(캠페인 계약·체크리스트·장르 요령)을 갈라 싣는다 — 지침이 «사용자 지시»로 읽히면 안 된다(assistant-prompt-review F3).
+        ...teamTaskLines(task),
       ];
     },
   },

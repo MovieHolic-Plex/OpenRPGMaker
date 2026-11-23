@@ -1,4 +1,5 @@
-import { MONSTER_GAME_PRODUCTION_PROMPT } from '@/ai/piAgent/monsterGameRequest';
+import { MONSTER_GAME_PRODUCTION_PROMPT, withIntentNote } from '@/ai/piAgent/monsterGameRequest';
+import { withoutDeclinedFights } from "@/ai/v2/loop/requestSkeleton";
 import { EMERALD_MONSTER_AUTHORING_GUIDE } from '@/project/emeraldMonsterStyle';
 // editor/welcomeGenrePresets.ts
 // Welcome genre chips → fixed AI prompt templates (map + monster/item DB seed checklist).
@@ -240,12 +241,18 @@ export const HORROR_CHASE_AUTHORING_GUIDE = [
   "- 붙잡히면 killPlayer 로 게임 오버하고 진입 체크포인트에서 재개한다. 꽃잎 체력은 만들지 말 것.",
 ].join("\n");
 
+/**
+ * 장르 칩·기획 핸드오프의 지시문. 사용자가 고른 것(장르 표지 줄, 확정 기획)만 경계선 앞에 두고, 체크리스트·장르 요령·전투 화면 안내·대표 데모 박자표는
+ * 의도 메모(withIntentNote)로 뒤에 붙인다 — 낱말 판정은 사용자가 고른 것만 읽는다(assistant-prompt-review F1·F2).
+ */
 export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?: GameDesignBrief): string {
   if (brief) {
     if (brief.presetId !== preset.id) throw new Error("게임 기획과 프리셋이 다릅니다.");
-    return [
+    const chosen = [
       `${GOAL_GENRE_PRESET_BRIEF_PREFIX} ${brief.interview ? [sceneGenre(brief.interview.genre).label, ...(brief.interview.secondary ? [sceneGenre(brief.interview.secondary).label] : [])].join(" + ") : brief.concept ? `${brief.concept.title} (${preset.label})` : preset.label}`,
       gameDesignBriefContext(brief),
+    ].join("\n\n");
+    return withIntentNote(chosen, [
       preset.packId === "monster-collect" ? "확정 기획을 반영해 첫 판 MVP 를 build_monster_game 으로 지으세요(scale 생략: 맵 5장 — 시작 마을·연구소·1번길·다음 마을·체육관, 첫 배지가 끝 지점이고 엔딩은 만들지 않는다). 기획이 큰 캠페인(여러 체육관·리그)을 분명히 적었을 때만 scale:\"full\" 또는 gymCount 를 넘깁니다. 설정만으로 완료하지 마세요." : "확정 기획에서 핵심 루프 하나를 골라 플레이 가능한 첫 판 MVP 를 실제 편집 도구로 구현하세요: 맵 3~5개(시작 장소·길 하나·목적지, 필요하면 실내 1~2), 시작부터 마지막 지점까지 5~10분. 엔딩·결말 이벤트는 만들지 않고, 마지막 지점에 닿으면 사용자에게 «첫 판까지 만들었다» 고 안내한다. 기획의 나머지는 사용자가 이어서 청할 때(다음 지역·다음 장) 키웁니다. 맵마다 장소·이동·상호작용 콘텐츠를 채우고, 핵심 행동 → 진행 → 결과가 마지막 지점까지 이어지게 하세요.",
       ...(preset.packId === "monster-collect" ? [] : [startPlanPrompt(planStartForBrief(brief, brief.concept?.title ?? ""))]),
       "현재 프로젝트의 시스템 설정·맵·DB·타일 참고문서를 먼저 읽으세요. 기존 실제 ID를 조회한 뒤 참조하고, 저작 도구의 실행 결과를 확인하세요.",
@@ -266,20 +273,19 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
       ...(preset.id === "horror-gallery" ? [HORROR_GALLERY_AUTHORING_GUIDE] : []),
       ...(preset.id === "school-horror" ? [HORROR_CHASE_AUTHORING_GUIDE] : []),
       ...(flagshipBeatManifestForChoice(preset.id) ? [formatFlagshipExemplarPrompt(flagshipBeatManifestForChoice(preset.id)!)] : []),
-    ].join("\n\n");
+    ].join("\n\n"));
   }
+  const chosen = `${GOAL_GENRE_PRESET_BRIEF_PREFIX} ${preset.label}`;
   if (preset.packId === "action-rpg") {
-    return [
-      `${GOAL_GENRE_PRESET_BRIEF_PREFIX} ${preset.label}`,
+    return withIntentNote(chosen, [
       `톤: ${preset.tone}`,
       buildActionArenaAuthoringGuide(),
       WELCOME_DIALOGUE_LOOK_LINE,
       "한국어로 진행하고, 도구로 실제 2D 액션 전투 공간을 저작하세요.",
-    ].join("\n\n");
+    ].join("\n\n"));
   }
   const checklist = WELCOME_GENRE_CHECKLIST_LINES.map((line, index) => `${index + 1}. ${line}`).join("\n");
-  return [
-    `${GOAL_GENRE_PRESET_BRIEF_PREFIX} ${preset.label}`,
+  return withIntentNote(chosen, [
     `톤: ${preset.tone}`,
     "",
     "다음 체크리스트를 모두 만족하도록 실제 편집 툴을 호출해 작업하세요. 설명만 하고 끝내지 마세요.",
@@ -292,7 +298,7 @@ export function buildWelcomeGenrePresetPrompt(preset: WelcomeGenrePreset, brief?
     "",
     WELCOME_DIALOGUE_LOOK_LINE,
     "한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성하세요.",
-  ].join("\n");
+  ].join("\n"));
 }
 
 /**
@@ -356,16 +362,20 @@ const TURN_BATTLE_INTENT_RE = /전투|턴제|던전|보스|RPG|용사|모험/iu;
 
 /** 자유 문장이 턴제 전투를 시키는지(전투 화면 꾸미기 지시를 붙일지). */
 export function textAsksForTurnBattle(text: string): boolean {
-  return TURN_BATTLE_INTENT_RE.test(text);
+  // «전투 없이»·«보스전은 필요 없어» 처럼 물리친 말은 전투 요청이 아니다.
+  return TURN_BATTLE_INTENT_RE.test(withoutDeclinedFights(text));
 }
 
-/** Free text keeps the user's scope; structured intent selects a recipe later. */
-export function buildWelcomeFreeTextPrompt(userIntent: string): string {
+/**
+ * Free text keeps the user's scope; structured intent selects a recipe later.
+ * 사용자 글(과 고른 시작 장르 이름)만 경계선 앞에 두고, 우리가 붙이는 안내는 의도 메모로 뒤에 붙인다(assistant-prompt-review F1·F2).
+ */
+export function buildWelcomeFreeTextPrompt(userIntent: string, start?: { readonly label: string; readonly tone: string }): string {
   const intent = userIntent.trim();
   const genre = detectNarrativeHorrorGenre(intent);
-  return [
-    `사용자 의도: ${intent}`,
-    "",
+  const chosen = [`사용자 의도: ${intent}`, ...(start ? [`선택한 시작 장르: ${start.label}`] : [])].join("\n");
+  return withIntentNote(chosen, [
+    ...(start ? ["선택한 시작 장르의 시스템 설정은 이미 적용돼 있다. 끄지 말고 그 위에 만든다.", `장르 톤: ${start.tone}`, ""] : []),
     "지금 열려 있는 프로젝트에 이어서 작업한다 — 기존 맵·이벤트·DB 를 먼저 읽고 거기에 얹는다.",
     "사용자가 요청한 범위만 실제 편집 툴로 작성하세요. 구조화된 의도에 맞는 저작 순서를 따르고, 요청하지 않은 NPC·아이템·퀘스트·상점·보스·보상·페이지 수를 할당하지 마세요.",
     ...requiredTemplateBlock(genre ?? undefined),
@@ -373,7 +383,7 @@ export function buildWelcomeFreeTextPrompt(userIntent: string): string {
     "",
     WELCOME_DIALOGUE_LOOK_LINE,
     "한국어로 진행하고, 도구로 맵·이벤트·DB를 실제로 구성하세요.",
-  ].join("\n");
+  ].join("\n"));
 }
 
 /** Secondary inspirations — compact chips in the unified worlds row. */
