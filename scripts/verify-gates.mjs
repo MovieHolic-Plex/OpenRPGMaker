@@ -294,7 +294,7 @@ function cssGate() {
     "check-css-budget.mjs": "node scripts/check-css-budget.mjs --save-baseline",
     "check-css-live-classes.mjs": "CSS_LIVE_BASELINE_UPDATE=1 node scripts/check-css-live-classes.mjs --save-baseline",
     "check-css-surfaces.mjs": "node scripts/check-css-surfaces.mjs --baseline",
-    "check-css-winners.mjs": "node scripts/check-css-winners.mjs --save-baseline",
+    "check-css-winners.mjs": "node scripts/check-css-winners.mjs --save-baseline  (리베이스에서 기준선 조각이 충돌하면 npm run css-baseline:rebase)",
     "check-css-graph.mjs": "기준선이 없다 — ALLOWLIST 에서 고치거나 --print-baseline 출력을 붙여넣어라",
     "check-dead-css-classes.mjs": "node scripts/check-dead-css-classes.mjs --write-baseline  (정말 불필요한 스타일이면 새 클래스를 지워라)",
   };

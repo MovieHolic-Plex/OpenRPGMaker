@@ -210,6 +210,8 @@ jobs:
       # vite-node 기본 힙(약 2GB)을 넘겼던 검사에 6GB 힙을 준다(2026-11-20, fast-static exit 134).
       # CSS 래칫 6종(budget·graph·live-classes·surfaces·winners·dead-classes)도 확인한다.
       # verify-gates 의 cssGate 가 실패한 하위 기준선을 다시 뜨는 명령을 ::error:: 로 찍는다.
+      # css-winners 기준선은 2026-11-24 부터 엔트리×승자 파일 조각(scripts/css-winners/**)이다 — 서로 다른
+      # CSS 를 건드린 PR 끼리는 같은 조각을 쓰지 않고, 같은 조각이 충돌하면 `npm run css-baseline:rebase` 가 다시 뜬다.
       - name: 런타임 에셋 존재, CSS 래칫 및 openwiki 색인 생성기
         env:
           NODE_OPTIONS: --max-old-space-size=6144
