@@ -28,6 +28,13 @@ export interface LiveStep {
 const QUIET_PREFIXES = ["get_", "show_", "find_", "list_", "query_", "check_", "lint_", "evaluate_", "explain_", "analyze_", "look_", "read_", "inspect_", "preview_", "search_"];
 const QUIET_TOOLS = new Set(["todo", "find_tools", "web_search", "focus_editor_view", "highlight_map_region", "set_build_spec"]);
 
+/** 사람에게 보일 실제 작업 단계(끝맺음 자동 짓기·저장본 검사·그림 진행). turn.diag·tool.size 같은 진단 상태는 내지 않는다. */
+const STAGE_STATUS = /^(?:v2\.(?:blueprint(?:\.|$)|reload$|link_built_places$|design$)|[a-z_.]+\.progress$)/u;
+
+export function isStageStatus(name: string): boolean {
+  return STAGE_STATUS.test(name);
+}
+
 export function isQuietTool(name: string): boolean {
   return QUIET_TOOLS.has(name) || QUIET_PREFIXES.some((prefix) => name.startsWith(prefix));
 }
@@ -78,6 +85,8 @@ export function createAiLiveStatus(options: { readonly baseProject: Project }): 
   let lastWrite: LiveStep | null = null;
   let finished = false;
   let fallback = "요청을 읽고 있어요";
+  // fallback 이 마지막으로 바뀐 때의 단계 수 — 그 뒤에 단계가 끝났으면 옛 문장(«요청을 읽고 있어요»)을 다시 쓰지 않는다(qa1124 «6/6 단계» 버그).
+  let fallbackAt = 0;
 
   const line = el("span", { class: "ai-status-live-line", dataset: { testid: "ai-live-status-line" }, text: fallback });
   const caret = el("span", { class: "ai-status-live-caret", attrs: { "aria-hidden": "true" } });
@@ -110,11 +119,13 @@ export function createAiLiveStatus(options: { readonly baseProject: Project }): 
   const paintLine = (): void => {
     const now = [...running.values()].at(-1);
     const done = steps.filter((step) => step.state === "done").length;
+    const lastSettled = [...steps].reverse().find((step) => step.state === "done" || step.state === "failed");
+    const idle = fallbackAt >= steps.length || !lastSettled ? fallback : `${lastSettled.label} ${lastSettled.state === "done" ? "끝" : "실패"}`;
     const text = now
-      ? liveStatusHeadline({ action: aiActivityActionLabel(now.key.split("|")[1] ?? ""), mapName: mapName(now.mapId), done, planned: planned.length })
+      ? liveStatusHeadline({ action: aiActivityActionLabel(now.key.split("|")[1] ?? "", false, now.label), mapName: mapName(now.mapId), done, planned: planned.length })
       : finished
         ? (done ? `${done}단계를 마쳤어요` : steps.length ? `${steps.length}단계를 시도했지만 끝내지 못했어요` : fallback)
-        : liveStatusHeadline({ action: fallback, done, planned: planned.length });
+        : liveStatusHeadline({ action: idle, done, planned: planned.length });
     line.textContent = text;
     toggle.disabled = steps.length === 0 && planned.length === 0;
     // 단계 없이 끝난 턴(연결 실패·시작 거부)은 「요청을 읽고 있어요」를 남기지 않는다 — 실패 안내는 대화 쪽에 있다.
@@ -166,6 +177,7 @@ export function createAiLiveStatus(options: { readonly baseProject: Project }): 
     status(text) {
       if (finished) return;
       fallback = text.replace(/[….]+$/u, "");
+      fallbackAt = steps.length;
       if (!running.size) paintLine();
     },
     event(raw) {
@@ -173,6 +185,12 @@ export function createAiLiveStatus(options: { readonly baseProject: Project }): 
       let event = raw;
       let agent = "root";
       while (event.type === "agent_event") { agent = event.agentId; event = event.event; }
+      if (event.type === "execution_status" && isStageStatus(event.name) && event.summary.trim()) {
+        fallback = event.summary.split(" — ")[0]!.trim().slice(0, 60);
+        fallbackAt = steps.length;
+        if (!running.size) paintLine();
+        return;
+      }
       if (event.type === "tool_start") {
         if (event.name === "todo") {
           const plan = plannedStepsFromTodoArgs(event.args);
