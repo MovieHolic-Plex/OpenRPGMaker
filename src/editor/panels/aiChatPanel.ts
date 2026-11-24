@@ -1,7 +1,9 @@
 import type { ActivityVisual } from "@/ai/activityVisual";
 import { conversationScroll, followConversationLog } from "./aiConversationScroll";
 import { startAiCanvasProgress, type AiCanvasProgress } from "@/editor/aiCanvasProgress";
-import { createAiLiveStatus, type AiLiveStatus } from "@/editor/panels/aiLiveStatus";
+import { createAiLiveStatus } from "@/editor/panels/aiLiveStatus";
+import { createAiRunStream, type AiRunStream } from "@/editor/panels/aiRunStream";
+import { selectEditorMap } from "@/editor/mapSelection";
 import { createAiReferenceView } from "@/editor/aiReferenceView";
 import { clearPromptInspection } from "@/ai/authoring/promptInspection";
 import { openAiAuthoringModal, closeAiAuthoringModal, type AiAuthoringTab } from "./aiAuthoring/modal";
@@ -495,7 +497,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   });
   let disposed = false;
   let canvasProgress: AiCanvasProgress | null = null;
-  let liveStatus: AiLiveStatus | null = null;
+  let liveStatus: AiRunStream | null = null;
   let creationFeed: CreationFeed | null = null;
   let creationFeedRelease: (() => void) | null = null;
   // 조수 첫 전송이 타일셋·자산 전체를 직렬화·해시하느라 메인 스레드를 수 초 멈추지 않게, 패널이 뜬 뒤 한가할 때 미리 만든다.
@@ -2251,7 +2253,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const progress = canvasProgress ?? startAiCanvasProgress(displayText || command.task);
     canvasProgress = progress;
     liveStatus?.root.remove();
-    const turnLiveStatus = createAiLiveStatus({ baseProject: store.getCurrent() });
+    // 작업 스트림 카드(목업 v4): 조수별 도구 호출·실제 인자·결과·걸린 시간·모델 글·할 일·일꾼 미리보기. 옛 한 줄 상태는 머리줄로 품는다.
+    const turnBase = store.getCurrent();
+    const turnLiveStatus = createAiRunStream({
+      live: createAiLiveStatus({ baseProject: turnBase }),
+      team: command.mode === "team",
+      firstMvp: firstMvpRoute(turnBase, command.task).team,
+      mapName: (mapId) => store.getCurrent().maps[mapId]?.name?.trim() || undefined,
+      onPreview: (mapId) => { selectEditorMap(mapId); },
+    });
     liveStatus = turnLiveStatus;
     composerShell.commandBar.before(turnLiveStatus.root);
     const turnReference = createAiReferenceView({ images: opts?.images ?? [], baseProject: store.getCurrent() });
@@ -2354,10 +2364,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       unsubscribeCreations();
       turnCreations.observe(store.getCurrent());
       progress.finish();
-      turnLiveStatus.finish();
+      const phase = currentTeamActivity()?.phase;
+      turnLiveStatus.finish(phase !== "실패" && phase !== "중단" && piRunController?.signal.aborted !== true);
       turnReference.finish();
       if (canvasProgress === progress) canvasProgress = null;
-      const phase = currentTeamActivity()?.phase;
       finishWorkCard({ ok: phase !== "실패" && phase !== "중단", message: phase === "검토 대기" ? "검토 필요" : phase === "실패" ? "실패" : phase === "중단" ? "중단" : undefined });
       // 다음 턴이 이번 4축을 물고 가지 않게 한다 — 세션 경로 beginWorkPlanTurn 의 슬롯 클리어와 같은 수명.
       piRunOutcome = null;
