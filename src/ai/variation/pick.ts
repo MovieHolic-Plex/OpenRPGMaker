@@ -53,8 +53,21 @@ const PARTICLE = "(?:을|를|이|가|은|는|에|에서|의|으로|로|과|와|�
 /** 계절·시간·날씨를 사용자가 말했나 — 분위기 축은 그때 뽑지 않는다. */
 const MOOD_STATED = new RegExp(`(?<![가-힣])(?:봄|여름|가을|겨울|새벽|아침|한낮|저녁|노을|밤|비|눈|안개|폭우|폭풍|벚꽃)(?=${PARTICLE}(?![가-힣]))|비\\s*오는|눈\\s*내리는|해\\s*질\\s*녘`, "u");
 
+/**
+ * 장르 이름 그 자체 — 글이 장르를 이름으로 말했으면 그 덱이 낱말 하나(단서·가족·기억)로 걸린 다른 덱보다 먼저다.
+ * 2026-11-24 assistant-measure 실측: «단서를 모아 빠져나가는 공포 게임» 이 덱 순서상 추리 덱(«단서»)에 걸려 «용의자별 챕터» 카드를 받았다.
+ */
+const GENRE_NAME: Partial<Record<DeckId, RegExp>> = {
+  recall: /회상|flashback/iu,
+  mystery: /추리|탐정|미스터리|mystery|detective/iu,
+  warm: /감동|힐링|일상\s*물|heartwarming|slice\s*of\s*life/iu,
+  horror: /공포|호러|horror/iu,
+  romance: /연애|로맨스|미연시|romance|dating/iu,
+};
+
 export function deckFor(text: string, adventureOk = false): Deck | undefined {
-  const specific = DECKS.filter((d) => d.id !== "adventure").find((d) => d.match.test(text));
+  const genres = DECKS.filter((d) => d.id !== "adventure");
+  const specific = genres.find((d) => GENRE_NAME[d.id]?.test(text)) ?? genres.find((d) => d.match.test(text));
   if (specific) return specific;
   return adventureOk ? DECKS.find((d) => d.id === "adventure") : undefined;
 }

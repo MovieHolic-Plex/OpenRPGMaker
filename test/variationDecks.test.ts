@@ -85,6 +85,9 @@ describe("pickVariation", () => {
     expect(pickVariation({ text: "카페 경영 게임 만들어 줘", key: keyOf(1) })).toBeUndefined();
     expect(deckFor("카페 경영 게임 만들어 줘", true)?.id).toBe("adventure");
     expect(deckFor("회상 추리 게임", true)?.id).toBe("recall");
+    // 장르 이름이 다른 덱의 낱말(단서)보다 먼저다 — 공포 요청이 추리 카드를 받던 것(2026-11-24 assistant-measure).
+    expect(deckFor("밤의 미술관에 갇힌 아이가 단서를 모아 빠져나가는 공포 게임을 만들어 줘.")?.id).toBe("horror");
+    expect(deckFor("가족의 비밀을 파헤치는 추리 게임")?.id).toBe("mystery");
   });
 
   it("the three places have distinct kinds, the first is never an indoor kind of a world, and a world first place pulls the others from the same world", () => {
