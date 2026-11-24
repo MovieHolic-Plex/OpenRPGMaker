@@ -73,6 +73,26 @@ export function installCurrentMonsterArt(project: Project, resourceIds: Iterable
   return installer(project, want);
 }
 
+/**
+ * 로드 정규화(store.normalizeCurrentProject·headless): 적 레코드가 현행 세트 id 를 쓰는데 그림이 아직 없으면 넣는다.
+ * 같은 id 의 업로드가 이미 있으면(사용자 그림·스토어 팩·조수·폴른 스타가 넣은 것) 건드리지 않는다. 넣었으면 true.
+ * 왜(qa1124 항목 4, 오너 2026-11-24 «최신 몬스터들 반영»): 새 프로젝트 기본 적 32종이 현행 id 인데 설치 0 — 자료집·전투에 옛 3×3 그림이 보였다.
+ * 그림 데이터를 아직 못 읽었으면(preloadCurrentMonsterArt 전) 아무것도 하지 않는다.
+ */
+export function ensureCurrentMonsterArt(project: Project): boolean {
+  if (!installer) return false;
+  const uploaded = project.assets.uploaded;
+  const want = new Set<string>();
+  for (const enemy of project.database.enemies ?? []) {
+    const id = enemy.monsterResourceId;
+    if (id && CURRENT.has(id) && !Object.hasOwn(uploaded, id) && !Object.hasOwn(uploaded, `${id}-sheet20`)) want.add(id);
+  }
+  if (!want.size) return false;
+  const before = Object.keys(uploaded).length;
+  installer(project, want);
+  return Object.keys(uploaded).length !== before;
+}
+
 /** 이 프로젝트에 그 id 의 현행 그림이 들어 있나. */
 export const hasCurrentMonsterArt = (project: Project, resourceId: string | undefined): boolean =>
   isCurrentMonsterArt(resourceId) && project.assets.uploaded[resourceId!]?.kind === "monster";
