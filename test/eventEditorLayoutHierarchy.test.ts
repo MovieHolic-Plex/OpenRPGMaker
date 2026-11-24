@@ -117,8 +117,11 @@ describe("event editor layout hierarchy", () => {
     render();
     expect(host.querySelector("[data-testid='event-command-quick-tools']")).toBeNull();
     const toolbar = host.querySelector<HTMLElement>(".event-editor-command-toolbar");
-    expect(toolbar?.querySelector(".event-editor-command-aux-group")).toBeTruthy();
-    expect(toolbar?.querySelector("[data-testid='event-command-quick-ai']")).toBeTruthy();
+    // 조수 입구는 도구줄 단추가 아니라 명령 칼럼 맨 아래 한 줄 입력칸이다(목업 v2).
+    expect(toolbar?.querySelector("[data-testid='event-command-quick-ai']")).toBeNull();
+    const line = host.querySelector<HTMLElement>("[data-testid='event-edit-line']");
+    expect(line?.parentElement?.classList.contains("event-editor-commands-column")).toBe(true);
+    expect(line?.parentElement?.lastElementChild).toBe(line);
     const list = host.querySelector<HTMLElement>(".cmd-list");
     const siblings = [...(list?.parentElement?.children ?? [])] as HTMLElement[];
     expect(siblings.some((node) => node.classList.contains("event-editor-command-aux-group"))).toBe(false);

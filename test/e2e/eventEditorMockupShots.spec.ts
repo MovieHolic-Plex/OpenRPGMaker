@@ -56,13 +56,9 @@ test("event editor matches the approved mockup", async ({ page }) => {
   await expect(nested).toBeFocused();
   await nested.click();
 
-  await modal.getByTestId("event-command-quick-ai").click();
-  // AI 도크는 도구 팝오버와 분리된 칼럼 맨 아래 서확이다 — 팝오버를 여지 않는다.
+  // 조수 입구는 칼럼 맨 아래 한 줄 입력칸이다 — 도구 팝오버를 열지 않는다.
+  await expect(modal.getByTestId("event-edit-line-input")).toBeVisible();
   await expect(modal.getByTestId("event-editor-aux-tools")).not.toHaveAttribute("open", "");
-  await expect(modal.getByTestId("ai-event-assist")).toHaveAttribute("open", "");
-  await expect(modal.getByTestId("ai-event-assist")).toBeVisible();
-  await modal.getByTestId("event-command-quick-ai").click();
-  await expect(modal.getByTestId("ai-event-assist")).not.toHaveAttribute("open", "");
   await modal.getByTestId("event-view-toggle-preview").click();
   await expect(modal.getByTestId("event-page-preview")).toBeVisible();
   await expect(modal.getByTestId("event-view-toggle-preview")).toHaveAttribute("aria-pressed", "true");

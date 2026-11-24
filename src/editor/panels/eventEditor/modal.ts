@@ -32,6 +32,7 @@ import { renderEventIdReadout } from "./eventIdReadout";
 import { isTopModal, hasOpenModalLayer, registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { clearEventAiLiveDock, collapseFocusedEventAiAssist, focusEventAiDockInOpenEditor } from "./aiAssist";
 import { clearEventAiDockOpenRequest, requestEventAiDockOpen } from "./aiDockOpenRequest";
+import { focusEventEditLine } from "./eventEditLine";
 import {
   openActiveEventCommandPicker,
   renderEventEditorDynamic,
@@ -89,7 +90,7 @@ export function openEventEditorModal(
     // 복원을 **먼저** 한다. 최소화된 편집기의 도크는 hidden 부모 아래 살아 있어서, 복원 전에
     // 펼치면 보이지 않는 곳에서 초점을 뺏고 사용자는 "눌렀는데 아무 일도 안 일어났다"를 본다.
     modal?.dispatchEvent(new CustomEvent(EVENT_EDITOR_RESTORE_EVENT));
-    if (options?.aiDock) focusEventAiDockInOpenEditor();
+    if (options?.aiDock && !focusEventEditLine()) focusEventAiDockInOpenEditor();
     return;
   }
   guardedCloseExistingEventEditorModal(() => {

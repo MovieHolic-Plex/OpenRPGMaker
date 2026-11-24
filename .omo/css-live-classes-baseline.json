@@ -1,5 +1,5 @@
 {
- "ranAt": "2026-11-21T03:26:25.791Z",
+ "ranAt": "2026-11-24T18:12:15.576Z",
  "canon": [
   {
    "path": "test/fixtures/eventEditorFormSurface.baseline.json",
@@ -11,7 +11,7 @@
   },
   {
    "path": "test/fixtures/eventEditorShellSurface.baseline.json",
-   "added": 301
+   "added": 286
   },
   {
    "path": "test/fixtures/eventEditorConditionSurface.baseline.json",
@@ -19,7 +19,7 @@
   },
   {
    "path": "test/fixtures/eventEditorPortalSurface.baseline.json",
-   "added": 205
+   "added": 206
   },
   {
    "path": "test/fixtures/eventEditorInteractionSurface.baseline.json",
@@ -30,6 +30,7 @@
   "active": {
    "props": [
     "align-items",
+    "animation",
     "background",
     "border-bottom-color",
     "border-color",
@@ -72,6 +73,7 @@
    "decls": [
     "align-items:center",
     "align-items:start",
+    "animation:db-retro-thumb-play var(--rt-ms) steps(var(--rt-frames)) infinite",
     "background:#0a246a",
     "background:#384840",
     "background:#fff",
@@ -103,7 +105,6 @@
     "background:var(--accent-muted, rgba(120, 140, 255, 0.22))",
     "background:var(--accent-muted, var(--accent-muted))",
     "background:var(--accent-primary)",
-    "background:var(--accent-primary, var(--accent))",
     "background:var(--accent-soft)",
     "background:var(--accent-subtle, #eef0fd)",
     "background:var(--accent-subtle, var(--control-bg))",
@@ -118,6 +119,7 @@
     "background:var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 12%, transparent))",
     "background:var(--db-studio-accent-soft, color-mix(in srgb, var(--accent) 8%, transparent))",
     "background:var(--db-studio-surface)",
+    "background:var(--db-studio-surface, var(--bg-surface))",
     "background:var(--db-studio-surface, var(--db-studio-surface))",
     "background:var(--db-studio-text-1)",
     "background:var(--db2-accent-tint)",
@@ -141,6 +143,7 @@
     "border-color:#14324a var(--border-subtle) var(--border-subtle) #14324a",
     "border-color:#384840",
     "border-color:color-mix(in srgb, var(--accent) 60%, transparent)",
+    "border-color:currentcolor",
     "border-color:rgba(194, 232, 91, 0.5)",
     "border-color:rgba(255, 215, 90, 0.72)",
     "border-color:rgba(255,255,255,0.5)",
@@ -155,7 +158,6 @@
     "border-color:var(--accent-hover)",
     "border-color:var(--accent-muted)",
     "border-color:var(--accent-primary)",
-    "border-color:var(--accent-primary, var(--accent))",
     "border-color:var(--accent-secondary)",
     "border-color:var(--battle-gold)",
     "border-color:var(--border-default)",
@@ -206,6 +208,7 @@
     "box-shadow:none",
     "box-shadow:var(--db-studio-shadow)",
     "box-shadow:var(--db-studio-shadow, 0 1px 3px rgba(15, 23, 42, 0.08))",
+    "box-shadow:var(--db-studio-shadow, var(--shadow-pop))",
     "box-shadow:var(--shadow-pop)",
     "color:var(--accent)",
     "color:var(--accent, #3b6fd8)",
@@ -222,6 +225,7 @@
     "color:var(--db-studio-surface)",
     "color:var(--db-studio-text-1)",
     "color:var(--db-studio-text-1, var(--db-studio-text-1))",
+    "color:var(--db-studio-text-1, var(--text-1))",
     "color:var(--db-studio-text-2)",
     "color:var(--db-studio-text-2, var(--db-studio-text-2))",
     "color:var(--db-studio-text-2, var(--text-2))",
@@ -1077,517 +1081,6 @@
     "src/styles/event/previews/command-preview-3.css"
    ]
   },
-  "ai-event-assist": {
-   "props": [
-    "background",
-    "border",
-    "border-bottom",
-    "border-radius",
-    "color",
-    "cursor",
-    "display",
-    "gap",
-    "margin",
-    "min-height",
-    "min-width"
-   ],
-   "decls": [
-    "background:var(--bg-raised)",
-    "border-bottom:1px solid var(--border-subtle)",
-    "border-radius:6px",
-    "border-radius:var(--radius-m)",
-    "border:1px solid var(--border-default)",
-    "color:var(--text-1)",
-    "cursor:progress",
-    "display:flex",
-    "display:none",
-    "gap:var(--space-2)",
-    "margin:6px 12px 8px",
-    "min-height:34px",
-    "min-width:0"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list-4.css"
-   ]
-  },
-  "ai-event-assist-body": {
-   "props": [
-    "display",
-    "gap",
-    "min-width",
-    "padding"
-   ],
-   "decls": [
-    "display:grid",
-    "gap:8px",
-    "min-width:0",
-    "padding:8px 12px 10px"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
-  "ai-event-assist-summary": {
-   "props": [
-    "background",
-    "border-bottom",
-    "border-radius",
-    "color",
-    "display",
-    "flex",
-    "font-size",
-    "gap",
-    "min-height",
-    "min-width"
-   ],
-   "decls": [
-    "background:var(--bg-hover)",
-    "border-bottom:1px solid var(--border-subtle)",
-    "border-radius:var(--radius-s)",
-    "color:var(--text-1)",
-    "display:flex",
-    "flex:1 1 auto",
-    "font-size:12px",
-    "gap:var(--space-2)",
-    "min-height:34px",
-    "min-width:0"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
-  "ai-event-btn": {
-   "props": [
-    "align-items",
-    "background",
-    "border",
-    "border-color",
-    "border-radius",
-    "color",
-    "cursor",
-    "display",
-    "font",
-    "font-weight",
-    "gap",
-    "height",
-    "justify-content",
-    "min-height",
-    "opacity",
-    "padding",
-    "transition"
-   ],
-   "decls": [
-    "align-items:center",
-    "background:var(--accent)",
-    "background:var(--accent-hover)",
-    "background:var(--control-bg)",
-    "background:var(--control-bg-hover)",
-    "border-color:var(--accent-border)",
-    "border-color:var(--border-strong)",
-    "border-radius:6px",
-    "border-radius:var(--radius-m)",
-    "border:1px solid var(--accent)",
-    "border:1px solid var(--border-default)",
-    "color:var(--on-accent)",
-    "color:var(--text-1)",
-    "cursor:default",
-    "cursor:pointer",
-    "display:inline-flex",
-    "display:none",
-    "font-weight:600",
-    "font:700 12px/1 var(--font-ui)",
-    "gap:6px",
-    "height:30px",
-    "justify-content:center",
-    "min-height:30px",
-    "min-height:32px",
-    "opacity:0.55",
-    "padding:0 12px",
-    "transition:background var(--transition-fast), border-color var(--transition-fast)"
-   ],
-   "sheets": [
-    "src/styles/event/command-forms/forms-6.css",
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/subdialogs/dialogs-5.css"
-   ]
-  },
-  "ai-event-caret": {
-   "props": [
-    "color",
-    "display",
-    "flex",
-    "transform"
-   ],
-   "decls": [
-    "color:var(--text-2)",
-    "display:flex",
-    "flex:0 0 auto",
-    "transform:rotate(180deg)"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
-  "ai-event-example": {
-   "props": [
-    "background",
-    "border",
-    "border-color",
-    "border-radius",
-    "color",
-    "cursor",
-    "font",
-    "font-size",
-    "font-weight",
-    "height",
-    "min-height",
-    "padding",
-    "transition",
-    "white-space"
-   ],
-   "decls": [
-    "background:var(--control-bg)",
-    "background:var(--control-bg-hover)",
-    "border-color:var(--accent-border)",
-    "border-radius:4px",
-    "border-radius:var(--radius-s)",
-    "border:1px solid transparent",
-    "border:1px solid var(--border-default)",
-    "color:var(--text-1)",
-    "color:var(--text-2)",
-    "cursor:pointer",
-    "font-size:12px",
-    "font-weight:500",
-    "font:600 12px/1 var(--font-ui)",
-    "height:24px",
-    "min-height:24px",
-    "padding:0 8px",
-    "padding:3px 8px",
-    "transition:background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast)",
-    "white-space:nowrap"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list-4.css",
-    "src/styles/event/subdialogs/dialogs-5.css"
-   ]
-  },
-  "ai-event-examples": {
-   "props": [
-    "display",
-    "flex-wrap",
-    "gap",
-    "min-width"
-   ],
-   "decls": [
-    "display:flex",
-    "flex-wrap:wrap",
-    "gap:5px",
-    "min-width:0"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
-  "ai-event-feedback": {
-   "props": [
-    "align-items",
-    "display",
-    "gap",
-    "min-width"
-   ],
-   "decls": [
-    "align-items:baseline",
-    "display:flex",
-    "display:none",
-    "gap:6px",
-    "min-width:0"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
-  "ai-event-generate-row": {
-   "props": [
-    "align-items",
-    "display",
-    "flex-wrap",
-    "gap"
-   ],
-   "decls": [
-    "align-items:center",
-    "display:flex",
-    "flex-wrap:wrap",
-    "gap:6px var(--space-2)"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
-  "ai-event-hintrow": {
-   "props": [
-    "align-items",
-    "display",
-    "flex-wrap",
-    "gap",
-    "justify-content"
-   ],
-   "decls": [
-    "align-items:center",
-    "display:flex",
-    "flex-wrap:wrap",
-    "gap:6px var(--space-2)",
-    "justify-content:space-between"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
-  "ai-event-input": {
-   "props": [
-    "background",
-    "border",
-    "border-color",
-    "border-radius",
-    "box-sizing",
-    "color",
-    "cursor",
-    "font",
-    "max-height",
-    "min-height",
-    "outline",
-    "padding",
-    "resize",
-    "width"
-   ],
-   "decls": [
-    "background:var(--bg-inset)",
-    "border-color:var(--accent)",
-    "border-radius:6px",
-    "border-radius:var(--radius-m)",
-    "border:1px solid var(--border-default)",
-    "box-sizing:border-box",
-    "color:var(--text-1)",
-    "color:var(--text-2)",
-    "cursor:progress",
-    "font:500 13px/1.65 var(--font-ui)",
-    "max-height:140px",
-    "min-height:66px",
-    "outline:2px solid var(--accent-muted)",
-    "padding:9px 11px",
-    "resize:vertical",
-    "width:100%"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list-4.css"
-   ]
-  },
-  "ai-event-kbd": {
-   "props": [
-    "border",
-    "border-radius",
-    "font",
-    "font-size",
-    "opacity",
-    "padding"
-   ],
-   "decls": [
-    "border-radius:var(--radius-s)",
-    "border:1px solid var(--accent-border)",
-    "font-size:12px",
-    "font:600 10px/1 var(--font-mono)",
-    "opacity:0.8",
-    "padding:3px 4px"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list-4.css"
-   ]
-  },
-  "ai-event-preview-actions": {
-   "props": [
-    "display",
-    "gap",
-    "margin-left"
-   ],
-   "decls": [
-    "display:flex",
-    "display:none",
-    "gap:var(--space-2)",
-    "margin-left:auto"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
-  "ai-event-progress": {
-   "props": [
-    "align-items",
-    "color",
-    "display",
-    "flex",
-    "font",
-    "gap",
-    "min-width"
-   ],
-   "decls": [
-    "align-items:baseline",
-    "align-items:center",
-    "color:var(--accent)",
-    "display:flex",
-    "display:none",
-    "flex:0 0 auto",
-    "font:600 12px/1.5 var(--font-ui)",
-    "gap:6px",
-    "min-width:0"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
-  "ai-event-prompt-label": {
-   "props": [
-    "color",
-    "display",
-    "font",
-    "margin",
-    "min-width"
-   ],
-   "decls": [
-    "color:var(--text-1)",
-    "display:block",
-    "font:700 13px/1.4 var(--font-ui)",
-    "margin:0",
-    "min-width:0"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
-  "ai-event-result": {
-   "props": [
-    "align-items",
-    "border-top",
-    "display",
-    "flex-wrap",
-    "gap",
-    "padding-top"
-   ],
-   "decls": [
-    "align-items:baseline",
-    "border-top:1px solid var(--border-subtle)",
-    "display:flex",
-    "display:none",
-    "flex-wrap:wrap",
-    "gap:2px var(--space-2)",
-    "padding-top:6px"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
-  "ai-event-result-meta": {
-   "props": [
-    "color",
-    "font",
-    "min-width",
-    "overflow-wrap"
-   ],
-   "decls": [
-    "color:var(--text-2)",
-    "font:400 12px/1.5 var(--font-ui)",
-    "min-width:0",
-    "overflow-wrap:anywhere"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
-  "ai-event-result-title": {
-   "props": [
-    "color",
-    "font",
-    "margin"
-   ],
-   "decls": [
-    "color:var(--text-1)",
-    "font:700 13px/1.4 var(--font-ui)",
-    "margin:0"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
-  "ai-event-spinner": {
-   "props": [
-    "animation",
-    "border",
-    "border-radius",
-    "border-top-color",
-    "box-sizing",
-    "height",
-    "width"
-   ],
-   "decls": [
-    "animation:ai-event-spin 0.8s linear infinite",
-    "animation:none",
-    "border-radius:50%",
-    "border-top-color:var(--accent)",
-    "border:2px solid var(--accent-border)",
-    "box-sizing:border-box",
-    "height:12px",
-    "width:12px"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
-  "ai-event-status": {
-   "props": [
-    "color",
-    "display",
-    "font",
-    "min-width",
-    "overflow-wrap",
-    "white-space"
-   ],
-   "decls": [
-    "color:var(--accent)",
-    "color:var(--danger)",
-    "color:var(--text-2)",
-    "display:none",
-    "font:400 12px/1.5 var(--font-ui)",
-    "min-width:0",
-    "overflow-wrap:anywhere",
-    "white-space:pre-line"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
-   ]
-  },
-  "ai-event-target": {
-   "props": [
-    "color",
-    "font",
-    "font-size",
-    "min-width",
-    "overflow-wrap"
-   ],
-   "decls": [
-    "color:var(--text-2)",
-    "font-size:12px",
-    "font:400 12px/1.5 var(--font-ui)",
-    "min-width:0",
-    "overflow-wrap:anywhere"
-   ],
-   "sheets": [
-    "src/styles/event/command-forms/forms-6.css",
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list-4.css"
-   ]
-  },
   "ai-image-queue": {
    "props": [
     "align-items",
@@ -2067,6 +1560,7 @@
    "decls": [
     "align-items:center",
     "align-self:center",
+    "align-self:flex-start",
     "align-self:start",
     "appearance:none",
     "background:color-mix(in srgb, var(--accent-soft, var(--accent-muted)) 72%, var(--bg-raised))",
@@ -2191,6 +1685,7 @@
     "display:flex",
     "display:grid",
     "display:inline-flex",
+    "display:none",
     "filter:brightness(0.96)",
     "filter:brightness(1.07)",
     "filter:brightness(1.08)",
@@ -2325,6 +1820,7 @@
     "padding:var(--space-2) var(--space-3)",
     "position:absolute",
     "position:relative",
+    "position:static",
     "right:12px",
     "row-gap:2px",
     "text-align:center",
@@ -2379,6 +1875,7 @@
     "src/styles/event/command-list-3.css",
     "src/styles/event/command-list-4.css",
     "src/styles/event/command-list.css",
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/footer.css",
     "src/styles/event/pages-2.css",
     "src/styles/event/pages-3.css",
@@ -3804,6 +3301,7 @@
     "bottom:-1px",
     "bottom:2px",
     "box-shadow:0 -2px 0 0 var(--accent)",
+    "box-shadow:0 0 0 2px var(--gold)",
     "box-shadow:0 2px 0 0 var(--accent)",
     "box-shadow:0 2px 7px rgba(42, 37, 33, 0.08)",
     "box-shadow:inset 0 0 0 1px color-mix(in srgb, var(--danger, #c6403d) 65%, transparent)",
@@ -3937,6 +3435,7 @@
     "src/styles/event/command-list-4.css",
     "src/styles/event/command-list.css",
     "src/styles/event/pages-2.css",
+    "src/styles/event/scene-cards.css",
     "src/styles/event/subdialogs/dialogs-4.css",
     "src/styles/event/subdialogs/dialogs-5.css"
    ]
@@ -4371,9 +3870,10 @@
     "grid-template-columns:auto auto 3px auto minmax(0, 1fr) auto auto",
     "grid-template-columns:minmax(0, 1fr)",
     "grid-template-columns:minmax(200px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) minmax(280px, 28%)",
+    "grid-template-columns:minmax(220px, 300px) 6px minmax(0, 1fr)",
     "grid-template-columns:minmax(240px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) 32px",
     "grid-template-columns:var(--balanced-settings-width) minmax(0, 1fr)",
-    "grid-template-rows:auto auto auto",
+    "grid-template-rows:auto auto auto auto",
     "grid-template-rows:minmax(0, 1fr)",
     "height:100%",
     "height:12px",
@@ -4484,6 +3984,7 @@
     "src/styles/event/command-list-4.css",
     "src/styles/event/command-list.css",
     "src/styles/event/command-workbench.css",
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/narrow.css",
     "src/styles/event/pages-2.css",
     "src/styles/event/subdialogs/dialogs-4.css",
@@ -4593,24 +4094,6 @@
     "src/styles/event/command-list-2.css",
     "src/styles/event/command-list-4.css",
     "src/styles/event/command-list.css"
-   ]
-  },
-  "cmd-staged-host": {
-   "props": [
-    "display",
-    "flex-direction",
-    "min-height",
-    "min-width"
-   ],
-   "decls": [
-    "display:flex",
-    "display:none",
-    "flex-direction:column",
-    "min-height:0",
-    "min-width:0"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css"
    ]
   },
   "cmd-step": {
@@ -5390,6 +4873,7 @@
    "props": [
     "align-items",
     "align-self",
+    "appearance",
     "background",
     "background-color",
     "border",
@@ -5442,12 +4926,14 @@
     "align-items:start",
     "align-items:stretch",
     "align-self:center",
+    "appearance:none",
     "background-color:transparent",
     "background-color:var(--db-studio-surface)",
     "background:transparent",
     "background:var(--bg-raised)",
     "background:var(--db-light-bg-raised)",
     "background:var(--db-studio-surface, var(--db-studio-surface))",
+    "border-color:transparent",
     "border-color:var(--db-studio-accent)",
     "border-color:var(--db-studio-border-default)",
     "border-color:var(--db-studio-border-strong)",
@@ -5463,6 +4949,7 @@
     "border:1px solid var(--db-modern-line, var(--border-subtle))",
     "border:1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.1))",
     "box-shadow:0 0 0 3px var(--db2-accent-ring)",
+    "box-shadow:none",
     "box-sizing:border-box",
     "clip:rect(0 0 0 0)",
     "color:inherit",
@@ -5658,6 +5145,7 @@
     "src/styles/database/tilesets.css",
     "src/styles/database/title-workbench.css",
     "src/styles/event/command-forms/forms.css",
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/settings-rail.css"
    ]
   },
@@ -7144,22 +6632,45 @@
   },
   "ecp-message-body": {
    "props": [
+    "-webkit-box-orient",
+    "-webkit-line-clamp",
     "color",
+    "display",
     "font-size",
     "opacity",
+    "overflow",
+    "overflow-wrap",
     "white-space",
     "word-break"
    ],
    "decls": [
+    "-webkit-box-orient:vertical",
+    "-webkit-line-clamp:5",
     "color:var(--text-1)",
+    "display:-webkit-box",
     "font-size:12px",
     "opacity:0.92",
+    "overflow-wrap:anywhere",
+    "overflow:hidden",
     "white-space:pre-wrap",
     "word-break:break-word"
    ],
    "sheets": [
     "src/styles/event/previews/command-preview-2.css",
     "src/styles/event/previews/command-preview-3.css",
+    "src/styles/event/previews/command-preview.css"
+   ]
+  },
+  "ecp-message-content": {
+   "props": [
+    "max-height",
+    "overflow"
+   ],
+   "decls": [
+    "max-height:132px",
+    "overflow:hidden"
+   ],
+   "sheets": [
     "src/styles/event/previews/command-preview.css"
    ]
   },
@@ -7227,6 +6738,8 @@
   },
   "ecp-message-window": {
    "props": [
+    "-webkit-box-orient",
+    "-webkit-line-clamp",
     "align-content",
     "align-items",
     "align-self",
@@ -7256,10 +6769,12 @@
     "image-rendering",
     "justify-items",
     "margin-top",
+    "max-height",
     "max-width",
     "min-height",
     "opacity",
     "overflow",
+    "overflow-wrap",
     "padding",
     "position",
     "transform",
@@ -7268,6 +6783,8 @@
     "z-index"
    ],
    "decls": [
+    "-webkit-box-orient:vertical",
+    "-webkit-line-clamp:5",
     "align-content:safe end",
     "align-items:center",
     "align-items:stretch",
@@ -7298,6 +6815,7 @@
     "box-sizing:border-box",
     "color:var(--runtime-window-text, rgba(238, 241, 251, 0.98))",
     "color:var(--text-1)",
+    "display:-webkit-box",
     "display:flex",
     "display:grid",
     "flex-direction:column",
@@ -7314,10 +6832,12 @@
     "image-rendering:pixelated",
     "justify-items:center",
     "margin-top:14px",
+    "max-height:132px",
     "max-width:96%",
     "min-height:120px",
     "min-height:72px",
     "opacity:0.92",
+    "overflow-wrap:anywhere",
     "overflow:hidden",
     "padding:10px 12px",
     "position:relative",
@@ -8485,109 +8005,6 @@
     "src/styles/event/pages-4.part-2.css",
     "src/styles/event/pages.css",
     "src/styles/event/settings-rail.css"
-   ]
-  },
-  "event-aux-chip-icon": {
-   "props": [
-    "color",
-    "font-size",
-    "line-height"
-   ],
-   "decls": [
-    "color:var(--event-modern-accent)",
-    "font-size:12px",
-    "line-height:1"
-   ],
-   "sheets": [
-    "src/styles/event/command-list.css"
-   ]
-  },
-  "event-aux-chip-label": {
-   "props": [
-    "flex",
-    "font",
-    "min-width"
-   ],
-   "decls": [
-    "flex:1 1 auto",
-    "font:700 13px/1 \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
-    "min-width:0"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list.css"
-   ]
-  },
-  "event-aux-chip-status": {
-   "props": [
-    "background",
-    "border",
-    "border-color",
-    "border-radius",
-    "color",
-    "display",
-    "font",
-    "font-size",
-    "letter-spacing",
-    "margin-left",
-    "padding",
-    "white-space"
-   ],
-   "decls": [
-    "background:color-mix(in srgb, var(--event-modern-accent) 12%, var(--event-modern-field))",
-    "border-color:color-mix(in srgb, var(--accent) 45%, var(--event-modern-border))",
-    "border-color:color-mix(in srgb, var(--danger) 45%, var(--event-modern-border))",
-    "border-color:color-mix(in srgb, var(--event-modern-accent) 50%, var(--event-modern-border))",
-    "border-color:color-mix(in srgb, var(--success) 45%, transparent)",
-    "border-color:var(--event-modern-border)",
-    "border-radius:999px",
-    "border-radius:var(--radius-s)",
-    "border:1px solid color-mix(in srgb, var(--event-modern-accent) 28%, var(--event-modern-border))",
-    "color:var(--accent)",
-    "color:var(--danger)",
-    "color:var(--event-modern-accent)",
-    "color:var(--success)",
-    "color:var(--text-2)",
-    "color:var(--text-3)",
-    "display:none",
-    "font-size:12px",
-    "font:600 10px/1 \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
-    "letter-spacing:0.02em",
-    "margin-left:2px",
-    "padding:3px 7px",
-    "white-space:nowrap"
-   ],
-   "sheets": [
-    "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list.css"
-   ]
-  },
-  "event-aux-chip-summary": {
-   "props": [
-    "align-items",
-    "color",
-    "cursor",
-    "display",
-    "gap",
-    "list-style",
-    "min-height",
-    "padding",
-    "user-select"
-   ],
-   "decls": [
-    "align-items:center",
-    "color:var(--text-2)",
-    "cursor:pointer",
-    "display:inline-flex",
-    "display:none",
-    "gap:8px",
-    "list-style:none",
-    "min-height:38px",
-    "padding:0 14px",
-    "user-select:none"
-   ],
-   "sheets": [
-    "src/styles/event/command-list.css"
    ]
   },
   "event-character-display-name-label": {
@@ -10073,6 +9490,7 @@
     "border-style",
     "border-width",
     "box-shadow",
+    "box-sizing",
     "color",
     "display",
     "flex",
@@ -10129,6 +9547,7 @@
     "border:1px solid var(--border-soft, var(--border-default))",
     "border:1px solid var(--border-soft, var(--border-subtle))",
     "box-shadow:inset 0 1px 0 var(--shadow-pop)",
+    "box-sizing:border-box",
     "color:var(--text, var(--text-1))",
     "color:var(--text-1)",
     "color:var(--text-2, #5c5348)",
@@ -10304,6 +9723,7 @@
     "grid-template-columns",
     "min-height",
     "min-width",
+    "order",
     "width"
    ],
    "decls": [
@@ -10316,6 +9736,7 @@
     "grid-template-columns:minmax(320px, 1.05fr) minmax(360px, 1fr)",
     "min-height:0",
     "min-width:0",
+    "order:-1",
     "width:100%",
     "width:min(780px, calc(100vw - 24px))"
    ],
@@ -12403,6 +11824,7 @@
     "gap",
     "grid-template-columns",
     "min-width",
+    "order",
     "padding"
    ],
    "decls": [
@@ -12413,6 +11835,7 @@
     "gap:12px",
     "grid-template-columns:minmax(0, 1fr)",
     "min-width:0",
+    "order:-1",
     "padding:12px"
    ],
    "sheets": [
@@ -12551,6 +11974,7 @@
     "grid-template-columns",
     "min-height",
     "min-width",
+    "order",
     "outline",
     "padding",
     "padding-top",
@@ -12580,6 +12004,7 @@
     "grid-template-columns:repeat(auto-fit, minmax(180px, 1fr))",
     "min-height:138px",
     "min-width:0",
+    "order:-1",
     "outline:none",
     "padding-top:0",
     "padding-top:8px",
@@ -14455,6 +13880,7 @@
     "flex:0 0 auto",
     "flex:0 1 auto",
     "flex:1",
+    "flex:1 0 100%",
     "flex:1 1 140px",
     "flex:1 1 auto",
     "float:none",
@@ -14491,9 +13917,10 @@
     "grid-template-columns:minmax(0, 1fr)",
     "grid-template-columns:minmax(0, 1fr) auto",
     "grid-template-columns:minmax(200px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) minmax(280px, 28%)",
+    "grid-template-columns:minmax(220px, 300px) 6px minmax(0, 1fr)",
     "grid-template-columns:minmax(240px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) 32px",
     "grid-template-columns:var(--balanced-settings-width) minmax(0, 1fr)",
-    "grid-template-rows:auto auto auto",
+    "grid-template-rows:auto auto auto auto",
     "grid-template-rows:auto minmax(0, 1fr)",
     "grid-template-rows:minmax(0, 1fr)",
     "height:100%",
@@ -14601,6 +14028,7 @@
     "src/styles/event/command-list-4.css",
     "src/styles/event/command-list.css",
     "src/styles/event/command-workbench.css",
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/narrow.css",
     "src/styles/event/pages-2.css",
     "src/styles/event/previews/command-preview-3.css",
@@ -14626,6 +14054,7 @@
     "color:var(--text-2)",
     "cursor:not-allowed",
     "display:inline-grid",
+    "flex:0 1 auto",
     "flex:1",
     "flex:none",
     "max-width:100%",
@@ -14634,6 +14063,7 @@
     "min-width:76px",
     "opacity:0.55",
     "position:relative",
+    "position:static",
     "vertical-align:middle",
     "width:100%",
     "width:140px !important"
@@ -14642,6 +14072,7 @@
     "src/styles/event/command-forms/forms-2.css",
     "src/styles/event/command-forms/forms-4.css",
     "src/styles/event/command-forms/forms-6.css",
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/settings-rail.css",
     "src/styles/event/subdialogs/dialogs-5.css",
     "src/styles/shell/dialogs/ai-settings-modal.css"
@@ -14700,7 +14131,7 @@
    ],
    "decls": [
     "background:var(--bg-inset)",
-    "border-radius:var(--radius-s)",
+    "border-radius:var(--ais-radius-control)",
     "border:1px solid var(--border-default)",
     "color:var(--text-1)",
     "font:inherit",
@@ -14843,6 +14274,154 @@
     "src/styles/shell/dialogs/ai-settings-modal.css"
    ]
   },
+  "event-edit-line": {
+   "props": [
+    "border-top",
+    "display",
+    "flex",
+    "flex-direction",
+    "gap",
+    "padding"
+   ],
+   "decls": [
+    "border-top:1px solid var(--border-default)",
+    "display:flex",
+    "flex-direction:column",
+    "flex:0 0 auto",
+    "gap:6px",
+    "padding:8px 2px 2px"
+   ],
+   "sheets": [
+    "src/styles/event/scene-cards.css"
+   ]
+  },
+  "event-edit-line-input": {
+   "props": [
+    "background",
+    "border",
+    "border-color",
+    "border-radius",
+    "color",
+    "flex",
+    "font",
+    "min-width",
+    "outline",
+    "padding"
+   ],
+   "decls": [
+    "background:var(--bg-inset)",
+    "border-color:var(--accent)",
+    "border-radius:10px",
+    "border:1px solid var(--border-default)",
+    "color:var(--text-1)",
+    "flex:1 1 auto",
+    "font:14px/1.4 var(--font-ui)",
+    "min-width:0",
+    "outline:2px solid var(--accent-muted)",
+    "padding:9px 12px"
+   ],
+   "sheets": [
+    "src/styles/event/scene-cards.css"
+   ]
+  },
+  "event-edit-line-row": {
+   "props": [
+    "align-items",
+    "display",
+    "gap"
+   ],
+   "decls": [
+    "align-items:center",
+    "display:flex",
+    "gap:6px"
+   ],
+   "sheets": [
+    "src/styles/event/scene-cards.css"
+   ]
+  },
+  "event-edit-line-summary": {
+   "props": [
+    "color",
+    "font",
+    "margin",
+    "overflow-wrap"
+   ],
+   "decls": [
+    "color:var(--danger)",
+    "color:var(--text-1)",
+    "color:var(--text-2)",
+    "font:13px/1.4 var(--font-ui)",
+    "margin:0",
+    "overflow-wrap:anywhere"
+   ],
+   "sheets": [
+    "src/styles/event/scene-cards.css"
+   ]
+  },
+  "event-edit-line-undo": {
+   "props": [
+    "align-items",
+    "background",
+    "border",
+    "border-radius",
+    "color",
+    "cursor",
+    "display",
+    "flex",
+    "font",
+    "gap",
+    "padding"
+   ],
+   "decls": [
+    "align-items:center",
+    "background:transparent",
+    "border-radius:8px",
+    "border:1px solid var(--border-default)",
+    "color:var(--text-1)",
+    "cursor:pointer",
+    "display:inline-flex",
+    "display:none",
+    "flex:0 0 auto",
+    "font:12px/1.4 var(--font-ui)",
+    "gap:6px",
+    "padding:7px 10px"
+   ],
+   "sheets": [
+    "src/styles/event/scene-cards.css"
+   ]
+  },
+  "event-edit-line-undo-count": {
+   "props": [
+    "background",
+    "border-radius",
+    "font-weight",
+    "min-width",
+    "padding",
+    "text-align"
+   ],
+   "decls": [
+    "background:var(--bg-inset)",
+    "border-radius:999px",
+    "font-weight:600",
+    "min-width:18px",
+    "padding:0 5px",
+    "text-align:center"
+   ],
+   "sheets": [
+    "src/styles/event/scene-cards.css"
+   ]
+  },
+  "event-edit-line-undo-label": {
+   "props": [
+    "display"
+   ],
+   "decls": [
+    "display:none"
+   ],
+   "sheets": [
+    "src/styles/event/scene-cards.css"
+   ]
+  },
   "event-editor": {
    "props": [
     "--balanced-inspector-width",
@@ -14953,6 +14532,7 @@
     "resize",
     "right",
     "row-gap",
+    "scrollbar-width",
     "text-align",
     "text-overflow",
     "text-shadow",
@@ -15125,6 +14705,7 @@
     "bottom:0",
     "bottom:auto",
     "box-shadow:-12px 0 28px rgba(15, 23, 42, 0.16)",
+    "box-shadow:0 0 0 2px var(--gold)",
     "box-shadow:0 0 0 2px var(--mk-accent-wash)",
     "box-shadow:0 0 0 3px color-mix(in srgb, #2d9b70 18%, transparent)",
     "box-shadow:0 0 0 3px color-mix(in srgb, var(--mk-t3) 16%, transparent)",
@@ -15174,13 +14755,13 @@
     "content:\"\\25b8\"",
     "content:\"\\25be\"",
     "content:\"\\29c9\\a0\"",
-    "content:\"ai\"",
     "content:\"▾\"",
     "content:\"명령을 선택하면 여기에서 편집합니다\"",
     "content:\"어디로\"",
     "content:\"언제\"",
     "content:\"일정 \" counter(event-schedule-row)",
     "content:attr(data-label)",
+    "content:attr(data-short-label)",
     "content:none",
     "counter-increment:event-schedule-row",
     "counter-reset:event-schedule-row",
@@ -15196,6 +14777,7 @@
     "display:contents",
     "display:flex",
     "display:grid",
+    "display:inline",
     "display:inline-block",
     "display:inline-flex",
     "display:none",
@@ -15213,8 +14795,10 @@
     "flex:0 0 3px",
     "flex:0 0 54px",
     "flex:0 0 auto",
+    "flex:0 1 auto",
     "flex:1",
     "flex:1 0 100%",
+    "flex:1 1 0%",
     "flex:1 1 140px",
     "flex:1 1 auto",
     "flex:none",
@@ -15253,11 +14837,13 @@
     "font:600 11px/1.45 var(--font-ui)",
     "font:600 12px/16px var(--font-ui)",
     "font:600 13px/18px var(--font-ui)",
+    "font:600 15px/1.4 var(--font-ui)",
     "font:650 10.5px/1 var(--font-ui)",
     "font:650 12.5px/1.25 var(--font-ui)",
     "font:700 10.5px/1.2 var(--font-ui)",
     "font:700 10px/1 var(--font-ui)",
     "font:700 12px/1.2 var(--font-ui)",
+    "font:700 13px/1.3 var(--font-ui)",
     "font:800 10px var(--font-mono)",
     "font:inherit",
     "gap:0",
@@ -15321,6 +14907,7 @@
     "grid-template-columns:minmax(0, 1fr) auto",
     "grid-template-columns:minmax(0, 1fr) minmax(0, 1fr)",
     "grid-template-columns:minmax(200px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) minmax(280px, 28%)",
+    "grid-template-columns:minmax(220px, 300px) 6px minmax(0, 1fr)",
     "grid-template-columns:minmax(240px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) 32px",
     "grid-template-columns:minmax(38px, max-content) minmax(48px, 1fr)",
     "grid-template-columns:minmax(44px, max-content) minmax(48px, 1fr)",
@@ -15334,6 +14921,7 @@
     "grid-template-columns:var(--balanced-settings-width) minmax(0, 1fr) var(--event-inspector-reserved-track, 0px)",
     "grid-template-rows:auto auto",
     "grid-template-rows:auto auto auto",
+    "grid-template-rows:auto auto auto auto",
     "grid-template-rows:auto minmax(0, 1fr)",
     "grid-template-rows:auto minmax(0, 1fr) auto",
     "grid-template-rows:minmax(0, 1fr)",
@@ -15429,6 +15017,7 @@
     "margin-top:2px",
     "margin-top:3px",
     "margin-top:4px",
+    "margin-top:5px",
     "margin-top:auto",
     "margin-top:var(--space-1)",
     "margin:0",
@@ -15630,6 +15219,7 @@
     "row-gap:2px",
     "row-gap:4px",
     "row-gap:6px",
+    "scrollbar-width:thin",
     "text-align:center",
     "text-align:left",
     "text-align:right",
@@ -15695,6 +15285,7 @@
     "z-index:2",
     "z-index:3",
     "z-index:4",
+    "z-index:6",
     "z-index:auto"
    ],
    "sheets": [
@@ -15704,6 +15295,7 @@
     "src/styles/event/command-list-4.css",
     "src/styles/event/command-list.css",
     "src/styles/event/command-workbench.css",
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/inspector.css",
     "src/styles/event/narrow.css",
     "src/styles/event/pages-2.css",
@@ -15716,12 +15308,40 @@
     "src/styles/event/pages-5.css",
     "src/styles/event/pages.css",
     "src/styles/event/previews/command-preview-3.css",
+    "src/styles/event/scene-cards.css",
     "src/styles/event/settings-rail.css",
     "src/styles/event/shell-2.css",
     "src/styles/event/shell.css",
     "src/styles/event/subdialogs/dialogs-4.css",
     "src/styles/event/subdialogs/dialogs-5.css",
     "src/styles/map/core.part-2.css"
+   ]
+  },
+  "event-editor-advanced-toggle": {
+   "props": [
+    "background",
+    "border",
+    "color",
+    "cursor",
+    "flex",
+    "font",
+    "padding",
+    "text-decoration",
+    "white-space"
+   ],
+   "decls": [
+    "background:transparent",
+    "border:0",
+    "color:var(--accent)",
+    "cursor:pointer",
+    "flex:0 0 auto",
+    "font:600 12px/1.3 var(--font-ui)",
+    "padding:4px 2px",
+    "text-decoration:underline",
+    "white-space:nowrap"
+   ],
+   "sheets": [
+    "src/styles/event/editor-chrome.css"
    ]
   },
   "event-editor-aux-tools": {
@@ -15747,6 +15367,27 @@
    ],
    "sheets": [
     "src/styles/event/command-list.css"
+   ]
+  },
+  "event-editor-beginner-heading": {
+   "props": [
+    "color",
+    "display",
+    "font",
+    "grid-column",
+    "margin"
+   ],
+   "decls": [
+    "color:var(--text-1)",
+    "display:block",
+    "display:none",
+    "font:700 13px/1.3 var(--font-ui)",
+    "grid-column:1 / -1",
+    "margin:0",
+    "margin:0 0 6px"
+   ],
+   "sheets": [
+    "src/styles/event/editor-chrome.css"
    ]
   },
   "event-editor-column-count": {
@@ -15780,6 +15421,7 @@
   "event-editor-column-hint": {
    "props": [
     "color",
+    "display",
     "font-size",
     "overflow",
     "text-overflow",
@@ -15788,6 +15430,7 @@
    "decls": [
     "color:var(--text-2)",
     "color:var(--text-3)",
+    "display:none",
     "font-size:11px",
     "font-size:12px",
     "overflow:hidden",
@@ -15798,6 +15441,8 @@
    "sheets": [
     "src/styles/event/command-forms/forms-6.css",
     "src/styles/event/command-list-4.css",
+    "src/styles/event/editor-chrome.css",
+    "src/styles/event/scene-cards.css",
     "src/styles/event/settings-rail.css",
     "src/styles/event/shell-2.css"
    ]
@@ -15830,9 +15475,21 @@
     "src/styles/event/shell-2.css"
    ]
   },
+  "event-editor-column-label-commands": {
+   "props": [
+    "display"
+   ],
+   "decls": [
+    "display:none"
+   ],
+   "sheets": [
+    "src/styles/event/editor-chrome.css"
+   ]
+  },
   "event-editor-column-label-settings": {
    "props": [
     "align-content",
+    "display",
     "grid-template-columns",
     "padding-block",
     "row-gap",
@@ -15840,12 +15497,14 @@
    ],
    "decls": [
     "align-content:center",
+    "display:none",
     "grid-template-columns:minmax(0, 1fr)",
     "padding-block:6px",
     "row-gap:0",
     "white-space:normal"
    ],
    "sheets": [
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/settings-rail.css"
    ]
   },
@@ -15929,6 +15588,7 @@
   "event-editor-column-title": {
    "props": [
     "color",
+    "display",
     "font-size",
     "font-weight",
     "letter-spacing",
@@ -15936,12 +15596,14 @@
    ],
    "decls": [
     "color:var(--text-1)",
+    "display:none",
     "font-size:12px",
     "font-weight:700",
     "letter-spacing:-0.01em",
     "white-space:nowrap"
    ],
    "sheets": [
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/shell-2.css"
    ]
   },
@@ -15962,7 +15624,7 @@
    ],
    "decls": [
     "border-left:1px solid var(--border)",
-    "content:\"ai\"",
+    "content:attr(data-short-label)",
     "display:flex",
     "display:inline-block",
     "display:none",
@@ -16009,6 +15671,7 @@
    "sheets": [
     "src/styles/event/command-list-2.css",
     "src/styles/event/command-list-4.css",
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/shell.css"
    ]
   },
@@ -16062,6 +15725,7 @@
   },
   "event-editor-command-edit-summary": {
    "props": [
+    "align-items",
     "background",
     "border",
     "border-color",
@@ -16081,6 +15745,7 @@
     "user-select"
    ],
    "decls": [
+    "align-items:center",
     "background:var(--bg-raised)",
     "border-color:color-mix(in srgb, var(--mk-accent) 48%, var(--mk-line))",
     "border-radius:3px",
@@ -16092,12 +15757,14 @@
     "color:var(--text-1)",
     "content:\"▾\"",
     "cursor:pointer",
+    "display:inline-flex",
     "display:none",
     "font-size:11.5px",
     "font-size:13px",
     "font-size:9px",
     "font-weight:500",
     "height:30px",
+    "line-height:1",
     "line-height:14px",
     "list-style:none",
     "margin-left:7px",
@@ -16189,8 +15856,9 @@
     "grid-template-columns:200px 6px minmax(0, 1fr) 260px 32px",
     "grid-template-columns:minmax(0, 1fr)",
     "grid-template-columns:minmax(200px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) minmax(280px, 28%)",
+    "grid-template-columns:minmax(220px, 300px) 6px minmax(0, 1fr)",
     "grid-template-columns:minmax(240px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) 32px",
-    "grid-template-rows:auto auto auto",
+    "grid-template-rows:auto auto auto auto",
     "grid-template-rows:minmax(0, 1fr)",
     "height:auto",
     "justify-self:stretch",
@@ -16219,7 +15887,8 @@
     "z-index:3"
    ],
    "sheets": [
-    "src/styles/event/command-workbench.css"
+    "src/styles/event/command-workbench.css",
+    "src/styles/event/editor-chrome.css"
    ]
   },
   "event-editor-command-search": {
@@ -16348,6 +16017,7 @@
    "decls": [
     "align-items:center",
     "display:flex",
+    "display:none",
     "flex:1 1 140px",
     "gap:6px",
     "max-width:320px",
@@ -16357,7 +16027,8 @@
     "width:100%"
    ],
    "sheets": [
-    "src/styles/event/command-list-4.css"
+    "src/styles/event/command-list-4.css",
+    "src/styles/event/editor-chrome.css"
    ]
   },
   "event-editor-command-tool": {
@@ -16420,7 +16091,7 @@
     "color:var(--on-accent)",
     "color:var(--text-1)",
     "color:var(--text-3)",
-    "content:\"ai\"",
+    "content:attr(data-short-label)",
     "cursor:not-allowed",
     "display:inline-flex",
     "filter:brightness(1.07)",
@@ -16566,7 +16237,7 @@
     "border-radius:6px",
     "border:0",
     "column-gap:8px",
-    "content:\"ai\"",
+    "content:attr(data-short-label)",
     "display:flex",
     "display:inline-block",
     "display:none",
@@ -16575,6 +16246,7 @@
     "flex-wrap:nowrap",
     "flex-wrap:wrap",
     "flex:0 0 auto",
+    "flex:1 0 100%",
     "flex:1 1 140px",
     "font-weight:600",
     "gap:8px",
@@ -16636,7 +16308,8 @@
     "src/styles/event/command-list-3.css",
     "src/styles/event/command-list-4.css",
     "src/styles/event/command-list.css",
-    "src/styles/event/command-workbench.css"
+    "src/styles/event/command-workbench.css",
+    "src/styles/event/scene-cards.css"
    ]
   },
   "event-editor-command-tools-menu": {
@@ -16664,7 +16337,8 @@
    ],
    "sheets": [
     "src/styles/event/command-list-2.css",
-    "src/styles/event/command-list-4.css"
+    "src/styles/event/command-list-4.css",
+    "src/styles/event/editor-chrome.css"
    ]
   },
   "event-editor-command-tools-popover": {
@@ -16698,6 +16372,7 @@
   },
   "event-editor-command-tools-summary": {
    "props": [
+    "align-items",
     "background",
     "border",
     "border-color",
@@ -16717,6 +16392,7 @@
     "user-select"
    ],
    "decls": [
+    "align-items:center",
     "background:var(--bg-raised)",
     "border-color:color-mix(in srgb, var(--mk-accent) 48%, var(--mk-line))",
     "border-radius:3px",
@@ -16728,12 +16404,14 @@
     "color:var(--text-1)",
     "content:\"▾\"",
     "cursor:pointer",
+    "display:inline-flex",
     "display:none",
     "font-size:11.5px",
     "font-size:13px",
     "font-size:9px",
     "font-weight:500",
     "height:30px",
+    "line-height:1",
     "line-height:14px",
     "list-style:none",
     "margin-left:7px",
@@ -16975,6 +16653,7 @@
    ],
    "sheets": [
     "src/styles/event/command-workbench.css",
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/inspector.css",
     "src/styles/event/narrow.css",
     "src/styles/event/subdialogs/dialogs-5.css"
@@ -16990,17 +16669,24 @@
     "border-style",
     "border-width",
     "box-shadow",
+    "box-sizing",
     "color",
     "display",
+    "flex",
     "font",
     "font-size",
     "font-weight",
     "gap",
     "grid-template-columns",
     "grid-template-rows",
+    "height",
+    "letter-spacing",
     "line-height",
+    "margin",
+    "max-width",
     "min-height",
     "min-width",
+    "opacity",
     "outline",
     "overflow",
     "padding",
@@ -17013,9 +16699,11 @@
    "decls": [
     "align-items:center",
     "background:transparent",
+    "background:var(--bg-inset)",
     "background:var(--bg-surface)",
     "background:var(--event-modern-field)",
     "border-color:color-mix(in srgb, var(--event-modern-accent) 35%, var(--border-subtle))",
+    "border-color:var(--accent)",
     "border-color:var(--event-modern-accent)",
     "border-color:var(--event-rm-light) var(--event-rm-mid) var(--event-rm-mid) var(--event-rm-light)",
     "border-color:var(--event-rm-mid) var(--event-rm-light) var(--event-rm-light) var(--event-rm-mid)",
@@ -17029,13 +16717,21 @@
     "border:1px solid var(--border-subtle)",
     "box-shadow:0 0 0 3px color-mix(in srgb, var(--event-modern-accent) 22%, transparent)",
     "box-shadow:0 1px 2px var(--shadow-pop) inset",
+    "box-sizing:border-box",
     "color:var(--event-modern-text)",
     "color:var(--mk-t2)",
     "color:var(--text-1)",
     "color:var(--text-2)",
+    "color:var(--text-3)",
+    "display:flex",
     "display:grid",
+    "display:none",
+    "flex:0 1 360px",
     "font-size:11px",
+    "font-size:14px",
     "font-size:15px",
+    "font-weight:400",
+    "font-weight:500",
     "font-weight:600",
     "font:500 13px/1.3 var(--font-ui)",
     "font:500 14px/20px \"segoe ui\", \"malgun gothic\", system-ui, sans-serif",
@@ -17049,16 +16745,22 @@
     "grid-template-columns:auto minmax(0, 1fr)",
     "grid-template-rows:40px",
     "grid-template-rows:auto",
+    "height:32px",
+    "letter-spacing:0",
     "line-height:15px",
+    "margin:0",
+    "max-width:42%",
     "min-height:0",
     "min-height:28px",
     "min-height:30px",
     "min-height:32px",
     "min-height:40px",
     "min-width:0",
+    "opacity:1",
     "outline:none",
     "overflow:hidden",
     "padding:0",
+    "padding:0 10px",
     "padding:0 8px",
     "padding:1px 8px 4px",
     "padding:2px 7px 4px",
@@ -17070,10 +16772,97 @@
     "width:100%"
    ],
    "sheets": [
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/pages-2.css",
     "src/styles/event/pages-4.part-6.css",
     "src/styles/event/pages.css",
+    "src/styles/event/scene-cards.css",
     "src/styles/event/subdialogs/dialogs-4.css"
+   ]
+  },
+  "event-editor-page-more": {
+   "props": [
+    "align-items",
+    "background",
+    "border",
+    "border-radius",
+    "color",
+    "cursor",
+    "display",
+    "font",
+    "height",
+    "justify-content",
+    "list-style",
+    "min-width",
+    "overflow",
+    "padding",
+    "position",
+    "z-index"
+   ],
+   "decls": [
+    "align-items:center",
+    "background:var(--bg-raised)",
+    "border-radius:6px",
+    "border:1px solid var(--border-strong)",
+    "color:var(--text-1)",
+    "cursor:pointer",
+    "display:inline-flex",
+    "display:none",
+    "font:700 16px/1 var(--font-ui)",
+    "height:30px",
+    "justify-content:center",
+    "list-style:none",
+    "min-width:32px",
+    "overflow:visible",
+    "padding:0 8px",
+    "position:relative",
+    "z-index:6"
+   ],
+   "sheets": [
+    "src/styles/event/editor-chrome.css"
+   ]
+  },
+  "event-editor-page-more-panel": {
+   "props": [
+    "background",
+    "border",
+    "border-radius",
+    "box-shadow",
+    "box-sizing",
+    "color",
+    "display",
+    "font",
+    "gap",
+    "grid-template-columns",
+    "min-width",
+    "padding",
+    "position",
+    "right",
+    "top",
+    "z-index"
+   ],
+   "decls": [
+    "background:var(--bg-raised)",
+    "border-radius:8px",
+    "border:1px solid var(--border-default)",
+    "box-shadow:0 12px 28px rgba(15, 23, 42, 0.18)",
+    "box-sizing:border-box",
+    "color:var(--text-3)",
+    "display:grid",
+    "display:none",
+    "font:600 11px/1.3 var(--font-ui)",
+    "gap:4px",
+    "gap:6px",
+    "grid-template-columns:1fr 1fr",
+    "min-width:220px",
+    "padding:8px",
+    "position:absolute",
+    "right:0",
+    "top:calc(100% + 4px)",
+    "z-index:40"
+   ],
+   "sheets": [
+    "src/styles/event/editor-chrome.css"
    ]
   },
   "event-editor-pagebar": {
@@ -17087,6 +16876,7 @@
     "column-gap",
     "display",
     "flex",
+    "font-size",
     "gap",
     "height",
     "justify-content",
@@ -17103,6 +16893,7 @@
     "padding-left",
     "position",
     "scrollbar-width",
+    "width",
     "z-index"
    ],
    "decls": [
@@ -17117,8 +16908,12 @@
     "column-gap:10px",
     "column-gap:4px",
     "display:flex",
+    "display:inline",
+    "display:none",
     "flex:0 0 auto",
     "flex:0 1 auto",
+    "flex:1 1 0%",
+    "font-size:12px",
     "gap:10px",
     "gap:3px",
     "gap:4px",
@@ -17137,17 +16932,22 @@
     "min-width:238px",
     "overflow-x:auto",
     "overflow:hidden",
+    "overflow:visible",
     "padding-block:2px",
     "padding-inline:6px",
     "padding-left:10px",
     "padding-left:5px",
+    "padding:0 10px",
     "padding:0 16px 0 12px",
     "padding:0 4px 5px 12px",
     "position:relative",
     "scrollbar-width:thin",
-    "z-index:2"
+    "width:auto",
+    "z-index:2",
+    "z-index:6"
    ],
    "sheets": [
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/narrow.css",
     "src/styles/event/pages-3.css",
     "src/styles/event/pages-4.css"
@@ -17160,6 +16960,7 @@
     "background",
     "border",
     "border-left",
+    "border-top",
     "color",
     "cursor",
     "display",
@@ -17180,6 +16981,7 @@
     "background:var(--bg-hover)",
     "background:var(--bg-surface)",
     "border-left:1px solid var(--border-default)",
+    "border-top:1px solid var(--border-default)",
     "border:0",
     "color:var(--text-1)",
     "color:var(--text-2)",
@@ -17188,17 +16990,21 @@
     "display:none",
     "font:600 12px/1 var(--font-ui)",
     "grid-column:-2",
+    "grid-column:1",
     "grid-row:1",
+    "grid-row:4",
     "justify-content:center",
     "letter-spacing:0.02em",
     "min-width:0",
     "outline-offset:-2px",
     "outline:var(--focus-outline)",
+    "padding:10px 0",
     "padding:12px 0",
     "writing-mode:vertical-rl"
    ],
    "sheets": [
-    "src/styles/event/command-workbench.css"
+    "src/styles/event/command-workbench.css",
+    "src/styles/event/editor-chrome.css"
    ]
   },
   "event-editor-settings-accordion": {
@@ -17415,6 +17221,7 @@
    ],
    "sheets": [
     "src/styles/event/command-list-4.css",
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/pages-4.css",
     "src/styles/event/pages-4.part-2.css",
     "src/styles/event/pages-4.part-3.css",
@@ -17515,6 +17322,7 @@
     "color:var(--text-1)",
     "column-gap:8px",
     "display:grid",
+    "display:none",
     "font-weight:600",
     "grid-column:1",
     "grid-template-columns:minmax(0, 1fr) 12px",
@@ -17528,6 +17336,7 @@
     "width:100%"
    ],
    "sheets": [
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/pages-4.part-2.css",
     "src/styles/event/settings-rail.css",
     "src/styles/event/subdialogs/dialogs-5.css"
@@ -17816,6 +17625,7 @@
     "background",
     "border",
     "border-left",
+    "border-top",
     "bottom",
     "box-shadow",
     "color",
@@ -17869,6 +17679,7 @@
     "background:var(--bg-surface)",
     "border-left:1px solid var(--border)",
     "border-left:1px solid var(--border-default)",
+    "border-top:1px solid var(--border-default)",
     "border:0",
     "bottom:0",
     "box-shadow:-12px 0 28px rgba(15, 23, 42, 0.16)",
@@ -17896,10 +17707,12 @@
     "grid-row:1",
     "grid-row:2",
     "grid-row:3",
+    "grid-row:4",
     "grid-template-columns:1fr",
     "grid-template-columns:200px 6px minmax(0, 1fr) 260px 32px",
     "grid-template-columns:minmax(0, 1fr)",
     "grid-template-columns:minmax(200px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) minmax(280px, 28%)",
+    "grid-template-columns:minmax(220px, 300px) 6px minmax(0, 1fr)",
     "grid-template-columns:minmax(240px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) 32px",
     "grid-template-columns:minmax(250px, var(--event-editor-settings-track)) 8px minmax(280px, 1fr)",
     "grid-template-columns:minmax(260px, var(--event-editor-settings-track)) 8px minmax(300px, 1fr)",
@@ -17910,7 +17723,7 @@
     "grid-template-columns:var(--event-editor-settings-track) 8px minmax(0, 1.08fr)",
     "grid-template-columns:var(--event-editor-settings-track) 8px minmax(0, 1.1fr)",
     "grid-template-rows:auto auto",
-    "grid-template-rows:auto auto auto",
+    "grid-template-rows:auto auto auto auto",
     "grid-template-rows:minmax(0, 1fr)",
     "grid-template-rows:minmax(220px, 1fr) auto",
     "height:100%",
@@ -17926,6 +17739,7 @@
     "overflow:auto",
     "overflow:hidden",
     "padding:0 12px",
+    "padding:10px 0",
     "padding:12px",
     "padding:12px 0",
     "padding:var(--space-4)",
@@ -17942,6 +17756,7 @@
    "sheets": [
     "src/styles/event/command-list-3.css",
     "src/styles/event/command-workbench.css",
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/inspector.css",
     "src/styles/event/narrow.css",
     "src/styles/event/pages-2.css",
@@ -18552,6 +18367,7 @@
     "width:48px"
    ],
    "sheets": [
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/settings-rail.css",
     "src/styles/event/subdialogs/dialogs-2.css",
     "src/styles/event/subdialogs/dialogs-3.css",
@@ -19231,6 +19047,7 @@
     "column-gap:8px",
     "display:grid",
     "display:inline-flex",
+    "display:none",
     "gap:5px",
     "grid-column:1",
     "grid-column:2",
@@ -19241,6 +19058,7 @@
     "white-space:nowrap"
    ],
    "sheets": [
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/settings-rail.css",
     "src/styles/event/subdialogs/dialogs.css"
    ]
@@ -19614,6 +19432,7 @@
     "color:var(--text-1)",
     "color:var(--text-3)",
     "display:flex",
+    "display:grid",
     "display:inline-flex",
     "flex-wrap:nowrap",
     "flex-wrap:wrap",
@@ -19623,6 +19442,7 @@
     "gap:4px",
     "gap:8px",
     "grid-template-columns:1fr",
+    "grid-template-columns:1fr 1fr",
     "grid-template-columns:none",
     "grid-template-columns:repeat(2, minmax(0, 1fr))",
     "grid-template-columns:repeat(auto-fit, minmax(130px, 1fr))",
@@ -19647,6 +19467,7 @@
    ],
    "sheets": [
     "src/styles/event/command-list.css",
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/pages-2.css",
     "src/styles/event/pages-3.css",
     "src/styles/event/pages-4.css",
@@ -19684,6 +19505,7 @@
     "color",
     "display",
     "flex",
+    "font",
     "font-size",
     "font-weight",
     "letter-spacing"
@@ -19695,10 +19517,12 @@
     "font-size:11px",
     "font-size:12px",
     "font-weight:700",
+    "font:600 11px/1.3 var(--font-ui)",
     "letter-spacing:0.02em"
    ],
    "sheets": [
     "src/styles/event/command-list-4.css",
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/pages-4.css"
    ]
   },
@@ -20939,6 +20763,37 @@
     "src/styles/event/settings-rail.css"
    ]
   },
+  "event-page-pixel-fx": {
+   "props": [
+    "align-items",
+    "align-self",
+    "display",
+    "flex",
+    "flex-direction",
+    "gap",
+    "max-width",
+    "min-width",
+    "position",
+    "width"
+   ],
+   "decls": [
+    "align-items:stretch",
+    "align-self:flex-start",
+    "display:block",
+    "display:flex",
+    "flex-direction:column",
+    "flex:0 0 auto",
+    "flex:0 1 auto",
+    "gap:6px",
+    "max-width:100%",
+    "min-width:0",
+    "position:static",
+    "width:100%"
+   ],
+   "sheets": [
+    "src/styles/event/editor-chrome.css"
+   ]
+  },
   "event-page-preview": {
    "props": [
     "-webkit-box-orient",
@@ -21160,6 +21015,7 @@
     "padding-left:5px"
    ],
    "sheets": [
+    "src/styles/event/narrow.css",
     "src/styles/event/pages-2.css",
     "src/styles/event/pages-3.css",
     "src/styles/event/pages-4.css",
@@ -21644,6 +21500,21 @@
     "src/styles/event/command-forms/forms.css",
     "src/styles/event/subdialogs/dialogs-2.css",
     "src/styles/event/subdialogs/dialogs-4.css"
+   ]
+  },
+  "event-scene-host": {
+   "props": [
+    "min-height",
+    "overflow",
+    "padding"
+   ],
+   "decls": [
+    "min-height:0",
+    "overflow:auto",
+    "padding:4px 2px 12px"
+   ],
+   "sheets": [
+    "src/styles/event/scene-cards.css"
    ]
   },
   "event-schedule-editor": {
@@ -22138,9 +22009,10 @@
     "grid-template-columns:200px 6px minmax(0, 1fr) 260px 32px",
     "grid-template-columns:minmax(0, 1fr)",
     "grid-template-columns:minmax(200px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) minmax(280px, 28%)",
+    "grid-template-columns:minmax(220px, 300px) 6px minmax(0, 1fr)",
     "grid-template-columns:minmax(240px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) 32px",
     "grid-template-columns:var(--balanced-settings-width) minmax(0, 1fr)",
-    "grid-template-rows:auto auto auto",
+    "grid-template-rows:auto auto auto auto",
     "grid-template-rows:minmax(0, 1fr)",
     "height:auto",
     "max-height:none",
@@ -22154,6 +22026,7 @@
     "src/styles/event/command-list-2.css",
     "src/styles/event/command-list-3.css",
     "src/styles/event/command-workbench.css",
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/narrow.css"
    ]
   },
@@ -22799,6 +22672,7 @@
     "border:1px solid var(--border-subtle)",
     "display:flex",
     "display:inline-flex",
+    "display:none",
     "flex-shrink:0",
     "flex:0 0 auto",
     "gap:3px",
@@ -22811,7 +22685,8 @@
    "sheets": [
     "src/styles/event/command-list-2.css",
     "src/styles/event/command-list-3.css",
-    "src/styles/event/command-list-4.css"
+    "src/styles/event/command-list-4.css",
+    "src/styles/event/editor-chrome.css"
    ]
   },
   "event-view-toggle-btn": {
@@ -22880,6 +22755,18 @@
     "src/styles/event/subdialogs/dialogs-5.css"
    ]
   },
+  "evt-page-add-label": {
+   "props": [
+    "display"
+   ],
+   "decls": [
+    "display:inline",
+    "display:none"
+   ],
+   "sheets": [
+    "src/styles/event/editor-chrome.css"
+   ]
+  },
   "evt-page-segment": {
    "props": [
     "align-items",
@@ -22923,6 +22810,7 @@
     "cursor:grabbing",
     "display:grid",
     "display:inline-flex",
+    "display:none",
     "flex:0 0 auto",
     "font-weight:500",
     "gap:6px",
@@ -22946,6 +22834,7 @@
     "width:max-content"
    ],
    "sheets": [
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/pages-4.css",
     "src/styles/event/pages-5.css",
     "src/styles/event/subdialogs/dialogs-5.css"
@@ -22959,6 +22848,7 @@
     "color",
     "display",
     "flex",
+    "font-size",
     "font-weight",
     "gap",
     "height",
@@ -22966,7 +22856,8 @@
     "min-height",
     "padding",
     "user-select",
-    "white-space"
+    "white-space",
+    "width"
    ],
    "decls": [
     "align-items:center",
@@ -22975,7 +22866,9 @@
     "color:var(--text-1)",
     "display:inline-flex",
     "flex:0 0 auto",
+    "font-size:12px",
     "font-weight:500",
+    "gap:4px",
     "gap:6px",
     "height:28px",
     "height:30px",
@@ -22983,9 +22876,11 @@
     "min-height:30px",
     "padding:0 10px",
     "user-select:none",
-    "white-space:nowrap"
+    "white-space:nowrap",
+    "width:auto"
    ],
    "sheets": [
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/pages-4.css",
     "src/styles/event/subdialogs/dialogs-5.css"
    ]
@@ -23062,6 +22957,7 @@
     "max-width",
     "min-width",
     "opacity",
+    "overflow",
     "overflow-x",
     "overflow-y",
     "padding",
@@ -23082,7 +22978,9 @@
     "display:flex",
     "display:grid",
     "display:inline-flex",
+    "display:none",
     "flex:0 0 auto",
+    "flex:1 1 0%",
     "flex:1 1 auto",
     "gap:4px",
     "gap:6px",
@@ -23096,6 +22994,7 @@
     "opacity:0.55",
     "overflow-x:auto",
     "overflow-y:hidden",
+    "overflow:visible",
     "padding:4px 8px",
     "row-gap:2px",
     "scrollbar-width:thin",
@@ -23105,6 +23004,7 @@
     "width:max-content"
    ],
    "sheets": [
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/narrow.css",
     "src/styles/event/pages-4.css"
    ]
@@ -23206,6 +23106,7 @@
     "line-height",
     "margin",
     "margin-bottom",
+    "max-width",
     "min-height",
     "min-width",
     "overflow",
@@ -23218,6 +23119,7 @@
    ],
    "decls": [
     "align-items:center",
+    "align-items:start",
     "background:var(--bg-inset)",
     "background:var(--bg-raised)",
     "background:var(--control-bg)",
@@ -23268,6 +23170,7 @@
     "grid-template-columns:82px minmax(0, 1fr)",
     "grid-template-columns:84px 24px",
     "grid-template-columns:92px minmax(0, 1fr)",
+    "grid-template-columns:minmax(0, 1fr)",
     "grid-template-columns:minmax(0, 1fr) 42px",
     "grid-template-columns:minmax(72px, 0.24fr) minmax(0, 1fr)",
     "grid-template-columns:minmax(74px, 0.24fr) minmax(0, 1fr)",
@@ -23286,6 +23189,7 @@
     "margin:0",
     "margin:0 0 2px",
     "margin:0 0 7px",
+    "max-width:100%",
     "min-height:36px",
     "min-height:54px",
     "min-height:92px",
@@ -23318,6 +23222,7 @@
     "src/styles/database/modern/skills.css",
     "src/styles/database/studio-theme.css",
     "src/styles/event/command-forms/forms-2.css",
+    "src/styles/event/command-forms/forms.css",
     "src/styles/event/inspector.css",
     "src/styles/event/previews/command-preview-3.css",
     "src/styles/event/shell-2.css",
@@ -23662,12 +23567,13 @@
     "grid-template-columns:200px 6px minmax(0, 1fr) 260px 32px",
     "grid-template-columns:minmax(0, 1fr)",
     "grid-template-columns:minmax(200px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) minmax(280px, 28%)",
+    "grid-template-columns:minmax(220px, 300px) 6px minmax(0, 1fr)",
     "grid-template-columns:minmax(240px, var(--event-editor-settings-track)) 6px minmax(0, 1fr) 32px",
     "grid-template-columns:var(--balanced-settings-width) minmax(0, 1fr)",
     "grid-template-columns:var(--balanced-settings-width) minmax(0, 1fr) var(--balanced-inspector-width)",
     "grid-template-columns:var(--balanced-settings-width) minmax(0, 1fr) var(--event-inspector-reserved-track, 0px)",
     "grid-template-rows:auto auto",
-    "grid-template-rows:auto auto auto",
+    "grid-template-rows:auto auto auto auto",
     "grid-template-rows:minmax(0, 1fr)",
     "overflow:auto",
     "padding:var(--space-4)",
@@ -23680,6 +23586,7 @@
    "sheets": [
     "src/styles/event/command-list-3.css",
     "src/styles/event/command-workbench.css",
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/inspector.css",
     "src/styles/event/narrow.css",
     "src/styles/event/shell.css"
@@ -25041,6 +24948,7 @@
    "sheets": [
     "src/styles/database/assetStore/assetStore.css",
     "src/styles/database/assistant-composer.css",
+    "src/styles/database/battle-studio.css",
     "src/styles/database/dialogue-desk.css",
     "src/styles/database/growth-tree.css",
     "src/styles/database/modern/factions.css",
@@ -25061,6 +24969,7 @@
     "src/styles/event/command-forms/forms-5.css",
     "src/styles/event/command-forms/forms.css",
     "src/styles/event/pages-5.css",
+    "src/styles/event/scene-cards.css",
     "src/styles/event/subdialogs/dialogs-4.css",
     "src/styles/map/canvas-tool-pill.css",
     "src/styles/map/inline-assist.css",
@@ -25069,6 +24978,7 @@
     "src/styles/map/map-event-search.css",
     "src/styles/map/map-location-layer.css",
     "src/styles/map/map-panel.modern.css",
+    "src/styles/map/region-result-card.css",
     "src/styles/map/region-task.part-4.css",
     "src/styles/map/region-task.part-9.css",
     "src/styles/map/tile-palette-smart.css",
@@ -25237,6 +25147,7 @@
     "src/styles/event/command-forms/forms-5.css",
     "src/styles/event/pages-4.part-2.css",
     "src/styles/event/previews/command-preview-3.css",
+    "src/styles/event/scene-cards.css",
     "src/styles/map/inline-assist.css",
     "src/styles/map/region-task.part-8.css",
     "src/styles/map/tile-palette-smart.css",
@@ -25551,6 +25462,7 @@
     "src/styles/database/assetStore/assetStore.css",
     "src/styles/database/from-editor-world-panel.css",
     "src/styles/database/growth-tree.css",
+    "src/styles/database/modern/utility-records.css",
     "src/styles/database/spatial-composition.css",
     "src/styles/database/spatial-geography.css",
     "src/styles/database/spatial-places.css",
@@ -25774,17 +25686,26 @@
   "m2-command-body": {
    "props": [
     "align-items",
+    "box-sizing",
     "display",
     "gap",
     "grid-template-columns",
-    "min-width"
+    "max-width",
+    "min-width",
+    "width"
    ],
    "decls": [
     "align-items:end",
+    "align-items:start",
+    "box-sizing:border-box",
     "display:grid",
     "gap:10px",
+    "gap:4px",
+    "grid-template-columns:minmax(0, 1fr)",
     "grid-template-columns:repeat(auto-fit, minmax(180px, 1fr))",
-    "min-width:0"
+    "max-width:100%",
+    "min-width:0",
+    "width:100%"
    ],
    "sheets": [
     "src/styles/event/command-forms/forms-4.css",
@@ -28995,6 +28916,7 @@
     "color:var(--text-3)",
     "content:\"\"",
     "display:grid",
+    "display:none",
     "font-size:11px",
     "font-size:12px",
     "font-size:14px",
@@ -29022,6 +28944,7 @@
     "width:56px"
    ],
    "sheets": [
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/pages-4.css",
     "src/styles/event/settings-rail.css"
    ]
@@ -31507,6 +31430,7 @@
   },
   "small": {
    "props": [
+    "align-self",
     "aspect-ratio",
     "background",
     "border",
@@ -31524,9 +31448,11 @@
     "outline-offset",
     "padding",
     "padding-inline",
+    "position",
     "width"
    ],
    "decls": [
+    "align-self:flex-start",
     "aspect-ratio:4 / 3",
     "background:var(--bg-raised)",
     "background:var(--control-bg)",
@@ -31570,6 +31496,7 @@
     "padding:0 14px",
     "padding:3px 6px",
     "padding:var(--space-2) var(--space-3)",
+    "position:static",
     "width:72px"
    ],
    "sheets": [
@@ -31580,6 +31507,7 @@
     "src/styles/database/from-editor-world-panel.css",
     "src/styles/database/workspace-modern.css",
     "src/styles/event/command-forms/forms.css",
+    "src/styles/event/editor-chrome.css",
     "src/styles/event/pages-2.css",
     "src/styles/event/settings-rail.css",
     "src/styles/event/shell.css",
@@ -32432,6 +32360,7 @@
     "display:none",
     "gap:10px",
     "grid-template-columns:minmax(0, 1.4fr) minmax(220px, 300px)",
+    "grid-template-columns:minmax(0, 1fr)",
     "grid-template-columns:repeat(auto-fit, minmax(180px, 1fr))",
     "max-height:min(78vh, 720px)",
     "max-height:min(78vh, 760px)",
@@ -33508,9 +33437,6 @@
  },
  "unstyled": [
   "actor-m2-preview-body",
-  "ai-event-elapsed",
-  "ai-event-generate",
-  "ai-event-generate-label",
   "battle-processing-source-slot",
   "battle-processing-variable-hint",
   "battle-processing-variable-row",
@@ -33519,13 +33445,11 @@
   "change-battle-commands-command-body",
   "cmd-branch-drop-zone",
   "ecp-battle-mini-badge",
-  "ecp-message-content",
   "ee-icon-arrowDown",
   "ee-icon-arrowLeft",
   "ee-icon-arrowRight",
   "ee-icon-arrowUp",
   "ee-icon-branch",
-  "ee-icon-caret",
   "ee-icon-chat",
   "ee-icon-choice",
   "ee-icon-close",
@@ -33592,7 +33516,6 @@
   "event-condition-weekday",
   "event-condition-weekdays",
   "event-editor-aux-tool-button",
-  "event-editor-column-label-commands",
   "event-fork-condition-section",
   "event-fork-options-section",
   "event-fork-timer-warning",
@@ -33600,13 +33523,15 @@
   "event-page-flow-body",
   "event-page-move-route-frequency",
   "event-page-move-route-help-panel",
-  "event-page-pixel-fx",
   "event-record-picker-add",
   "event-trigger-body",
+  "evt-page-add-icon",
   "face-mode-chip",
   "gold",
   "inn-not-enough-branch-controls",
   "inside-location",
+  "is-advanced",
+  "is-level-advanced",
   "is-undetermined",
   "m2-command-intent",
   "m2-command-intent-copy",
