@@ -26,6 +26,7 @@ import {
   previewObjectDelete,
 } from "@/editor/panels/spatialObjectDraft";
 import { resetSpatialObjectsTabChrome } from "@/editor/panels/spatialObjectChromeState";
+import { resetSpatialAdvancedEditForTests, setSpatialAdvancedEdit } from "@/editor/panels/spatialAdvancedEdit";
 import { duplicateIntoTileset } from "@/editor/harnessSuggestion/structureKitActions";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { createBlankProject } from "@/project/defaults";
@@ -44,6 +45,8 @@ beforeEach(() => {
   resetMapEditHistory();
   store.replace(createBlankProject(), { preserveEventDrafts: false });
   editorState.set({ currentMapId: store.getCurrent().startMapId });
+  // 아래 배선 시험은 칸 그리기 편집기를 다룬다 — 편집기는 「고급 편집」 뒤에 있다(PR8).
+  setSpatialAdvancedEdit(true);
 });
 
 afterEach(() => {
@@ -53,6 +56,8 @@ afterEach(() => {
   store.replace(previous, { preserveEventDrafts: false });
   editorState.set(previousEditor);
   setDatabaseActiveTab("overview");
+  setSpatialAdvancedEdit(false);
+  resetSpatialAdvancedEditForTests();
 });
 
 describe("spatial object draft actions", () => {
@@ -179,6 +184,27 @@ describe("spatial tiles and objects surfaces", () => {
     expect(host.querySelector("[data-testid='spatial-object-copy']")).not.toBeNull();
     expect(host.querySelector("[data-testid='spatial-object-name']")).not.toBeNull();
     expect(store.getCurrent()).toEqual(before);
+    host.remove();
+  });
+
+  it("고급 편집이 꺼져 있으면 상세는 편집기 없이 그림과 「조수에게 시키기」만 보인다", () => {
+    // Given: 기본(고급 편집 꺼짐).
+    setSpatialAdvancedEdit(false);
+    const host = document.createElement("div");
+    host.className = "database-modal-body";
+    document.body.append(host);
+    setDatabaseActiveTab("spatialObjects");
+    setSpatialTab("objects");
+
+    // When
+    renderDatabasePanel(host);
+
+    // Then: 칸 그리기 편집기는 만들지 않고, 조수 버튼과 고급 편집 스위치가 있다.
+    expect(host.querySelector("[data-testid='spatial-object-simple-preview']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='spatial-object-ask-assistant']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='spatial-object-advanced']")).not.toBeNull();
+    expect(host.querySelector("[data-testid='spatial-object-preview']")).toBeNull();
+    expect(host.querySelector("[data-testid='spatial-object-copy']")).toBeNull();
     host.remove();
   });
 });
