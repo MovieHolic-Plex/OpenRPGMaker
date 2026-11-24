@@ -10,6 +10,7 @@ import { createSaveErrorPopover, saveErrorIcon } from "@/editor/ui/saveErrorPopo
 import { afterOpeningPaint } from "@/editor/ui/afterOpeningPaint";
 import {
   databaseTabGroupLabel,
+  lifeTabClosed,
   databaseTabLabel,
   databaseTabPath,
   getDatabaseActiveTab,
@@ -90,7 +91,8 @@ function writeCrumb(crumb: HTMLElement, tab: DatabaseTab): void {
     ],
   });
   if (group) items.push(item(el("span", { class: "database-modal-crumb-group", text: group })));
-  for (const entry of path) {
+  // 생활 그룹이 닫혀 있으면(LIFE_SIM_ENABLED=false) 그룹 이름만 — 편집할 수 없는 탭 이름(「농사·작물」)을 위치처럼 보이지 않는다.
+  for (const entry of lifeTabClosed(tab) ? [] : path) {
     items.push(item(el("span", { class: "database-modal-crumb-tab", text: databaseTabLabel(entry), dataset: { tab: entry } })));
   }
   // 세 번째 칸 — 구획을 가진 탭(시스템)이 보고 있는 구획. 마지막 칸이라 aria-current 로 알린다.

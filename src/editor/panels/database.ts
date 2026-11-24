@@ -11,6 +11,8 @@ import { renderCharacterAppearancesTab, selectCharacterAppearance } from "@/edit
 import { registerAppearanceGenerationUI } from "@/editor/characterAppearanceGeneration";
 import { disposeAppearanceSlots } from "@/editor/panels/databaseAppearanceSlots";
 import { renderLifeCraftingTab } from "@/editor/panels/databaseLifeCraftingView";
+import { renderLifeClosedNotice } from "@/editor/panels/databaseLifeClosedView";
+import { LIFE_SIM_ENABLED } from "../../../electron/shared/lifeSim";
 import { renderDailyWeatherTab } from "@/editor/panels/databaseDailyWeatherView";
 import { renderFarmAnimalsTab } from "@/editor/panels/databaseFarmAnimalsView";
 import { renderFarmSpatialTab } from "@/editor/panels/databaseFarmSpatialView";
@@ -362,6 +364,15 @@ function groupForTab(id: DatabaseTab): DatabaseTabGroup | undefined {
   return TAB_GROUPS.find((group) => group.tabs.includes(primaryTab(id)));
 }
 
+/**
+ * 생활 그룹이 닫혀 있는가(electron/shared/lifeSim.ts). 닫히면 그룹 띠 버튼은 남지만 레일에는 생활 탭이 없고,
+ * 탭 검색·최근 탭에도 안 나오며, 어떤 경로(딥링크·저장된 활성 탭·조수 점프)로 닿아도 본문은 안내 한 장이다.
+ * 탭 id·데이터는 그대로다(TAB_GROUPS 는 그대로 — 되살릴 때 깃발만 바꾼다).
+ */
+export function lifeTabClosed(id: DatabaseTab): boolean {
+  return !LIFE_SIM_ENABLED && groupForTab(id)?.slug === "life";
+}
+
 // 레일은 모든 그룹을 펼친 채로 둔다(2026-09-24, 사이드바 개선안 C). 예전 아코디언은
 // 한 그룹만 열어서 그룹을 건널 때마다 두 번 눌러야 했고, 접힌 머리 하나가 66px(이름·부제·
 // 배지+셰브론 세 줄)라 접힌 여섯 개가 낱말 여섯 개에 ~400px 를 썼다.
@@ -433,7 +444,7 @@ function foldedEmptyTabs(group: DatabaseTabGroup): DatabaseTab[] {
   if (revealedEmptyGroupSlugs().has(group.slug)) return [];
   const active = primaryTab(activeTab);
   const profileFolded = genreFoldedTabs(store.getCurrent().gameDesignBrief?.interview?.genre);
-  return group.tabs.filter((id) => id !== active && (isEmptyListTab(id) || profileFolded.includes(id)));
+  return group.tabs.filter((id) => id !== active && !lifeTabClosed(id) && (isEmptyListTab(id) || profileFolded.includes(id)));
 }
 
 /** 그룹마다 빈 탭을 숨기고 「빈 탭 N개」 줄을 맞춘다. 데이터·활성 탭이 바뀔 때마다 다시 부른다.
@@ -670,6 +681,7 @@ export function renderDatabasePanel(container: HTMLElement): void {
       },
     }));
     for (const id of group.tabs) {
+      if (lifeTabClosed(id)) continue;
       const subhead = group.subheadings?.[id];
       if (subhead) {
         header.append(el("div", {
@@ -885,6 +897,7 @@ const LEGACY_TAB_SEARCH: Partial<Record<DatabaseTab, string>> = {
 };
 
 function tabMatchesQuery(tab: typeof tabs[number], query: string): boolean {
+  if (lifeTabClosed(tab.id)) return false;
   const exact = tabs.find((entry) => entry.id.toLowerCase() === query);
   if (exact) return tab.id === exact.id || tab.id === resolveCanonicalDatabaseTab(exact.id);
   if (tab.id.toLowerCase().startsWith(query)) return true;
@@ -904,6 +917,7 @@ function appendTabSearch(header: HTMLElement, body: HTMLElement, container: HTML
       for (const tab of tabs) {
         if (
           !tabOrder.includes(tab.id)
+          && !lifeTabClosed(tab.id)
           && resolveCanonicalDatabaseTab(tab.id) === tab.id
           && tabMatchesQuery(tab, query)
         ) {
@@ -1048,7 +1062,7 @@ function appendRecentTabs(header: HTMLElement, body: HTMLElement, container: HTM
   });
   const sync = (): void => {
     const searching = (header.querySelector<HTMLInputElement>(".db-tab-search")?.value ?? "").trim() !== "";
-    const recent = recentDatabaseTabs(primaryTab(activeTab), (id) => tabs.some((tab) => tab.id === id));
+    const recent = recentDatabaseTabs(primaryTab(activeTab), (id) => tabs.some((tab) => tab.id === id) && !lifeTabClosed(id as DatabaseTab));
     clearChildren(row);
     if (searching || recent.length === 0) {
       row.hidden = true;
@@ -1473,6 +1487,10 @@ function renderActiveTabUnguarded(
   retainDatabasePreviewsIn(body, true);
   stopSkillAnimationStagesIn(body);
   body.replaceChildren();
+  if (lifeTabClosed(tab)) {
+    renderLifeClosedNotice(body);
+    return;
+  }
   const content = mapView ? el("div", { class: "db-map-content" }) : body;
   if (mapView) {
     // 링크가 하나도 없으면 빈 내비 바만 남는다 — 그 경우 아예 안 단다.

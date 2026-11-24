@@ -13,7 +13,8 @@ describe("첫 사용자 프롬프트 — AI 없이 장르 고르기", () => {
   it("먼저 나온 규칙이 이긴다 — 몬스터 + 공포는 수집 틀을 지킨다", () => {
     expect(pickFirstRunPreset("공포스러운 몬스터를 포획하는 게임")).toBe("monster-collect");
     expect(pickFirstRunPreset("저택에 갇힌 호러")).toBe("horror-gallery");
-    expect(pickFirstRunPreset("A cozy FARM life")).toBe("farm-life");
+    // 생활(농사) 시스템이 닫혀 있는 동안 「농장」 낱말은 장르를 고르지 않는다(electron/shared/lifeSim.ts) — 기본 JRPG.
+    expect(pickFirstRunPreset("A cozy FARM life")).toBe(FIRST_RUN_DEFAULT_PRESET);
   });
 
   it("맞는 낱말이 없으면 기본 JRPG", () => {

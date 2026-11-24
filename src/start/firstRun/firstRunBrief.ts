@@ -5,6 +5,7 @@
 import type { GameDesignAnswer, GameDesignBrief, GamePresetId } from "@/project/gameDesignBrief";
 import { GAME_BRIEF_SLOTS, type GameBriefSlot } from "@/project/gameDesignIds";
 import { NEW_PROJECT_CHOICES } from "@/editor/newProjectChoices";
+import { LIFE_SIM_ENABLED } from "../../../electron/shared/lifeSim";
 
 /** 입력창 글자 수 상한 — 컨셉 초안도 400자까지만 읽는다(src/concepts/draft.ts draftPrompt). */
 export const FIRST_RUN_TEXT_LIMIT = 400;
@@ -25,6 +26,8 @@ export const FIRST_RUN_DEFAULT_PRESET: GamePresetId = "adventure-jrpg";
 export function pickFirstRunPreset(text: string): GamePresetId {
   const haystack = text.toLowerCase();
   for (const { preset, words } of KEYWORD_PRESETS) {
+    // 생활(농사) 시스템이 닫혀 있으면 「농장」 낱말은 장르를 고르지 않는다 — 기본 JRPG 로 떨어진다(electron/shared/lifeSim.ts).
+    if (preset === "farm-life" && !LIFE_SIM_ENABLED) continue;
     if (words.some((word) => haystack.includes(word))) return preset;
   }
   return FIRST_RUN_DEFAULT_PRESET;
