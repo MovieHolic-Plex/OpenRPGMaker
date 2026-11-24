@@ -96,8 +96,26 @@
   .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench.has-command-inspector,
   .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench:has(.event-contents-fieldset > .cmd-list:not([hidden]), .event-storyboard-host > .event-storyboard:not([hidden])) {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto auto auto;
+    grid-template-rows: auto auto auto auto;
     overflow: auto;
+  }
+  /* 줄을 고르면 미리보기(240px)가 목록 아래에 끼어들어 줄이 위로 밀렸다 — 두 번째 클릭이 다른 줄이나
+     미리보기에 떨어져 더블클릭 편집이 열리지 않았다(명령 검토 a, 390 에서 40 중 23). 801~1100 처럼 접은 채
+     시작하고 아래 「미리보기 펼치기」 단추로만 연다. */
+  .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-workbench:not(.is-preview-open) > .event-editor-inspector-column { display: none; }
+  .event-editor-modal-window .event-editor-workbench > .event-editor-preview-toggle {
+    appearance: none;
+    background: var(--bg-surface);
+    border: 0;
+    border-top: 1px solid var(--border-default);
+    color: var(--text-2);
+    cursor: pointer;
+    display: flex;
+    font: 600 12px/1 var(--font-ui);
+    grid-column: 1;
+    grid-row: 4;
+    justify-content: center;
+    padding: 10px 0;
   }
   .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-settings-column { grid-column: 1; grid-row: 1; max-height: 200px; }
   .event-editor-modal-window .event-editor.event-editor-command-focused .event-editor-column-resizer { display: none; }
