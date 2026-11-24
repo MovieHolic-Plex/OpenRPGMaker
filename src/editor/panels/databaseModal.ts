@@ -291,7 +291,8 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseMo
   };
   const deferSpatialRefresh = (): void => {
     deferredSpatialChanges += 1;
-    deferredChip.textContent = `새 변경 ${deferredSpatialChanges}건 · 새로 고침`;
+    deferredChip.textContent = `↻ 새 변경 ${deferredSpatialChanges}건`;
+    deferredChip.title = `조수가 바꾼 ${deferredSpatialChanges}건을 아직 다시 그리지 않았습니다. 누르면 새로 고칩니다.`;
     deferredChip.hidden = false;
   };
   const unsubscribeActiveTab = subscribeDatabaseActiveTab((tab) => {
