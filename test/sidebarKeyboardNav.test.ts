@@ -42,7 +42,7 @@ describe("Sidebar Keyboard Navigation & Focus Survival Integration", () => {
     });
 
     it("has roving tabindex (1 tab stop in toolbar) and moves focus via arrow keys", () => {
-      const selectBtn = findByTestId(container as unknown as FakeElement, "tool-select");
+      const selectBtn = findByTestId(container as unknown as FakeElement, "palette-tool-select");
       const paintBtn = findByTestId(container as unknown as FakeElement, "palette-tool-paint");
       expect(selectBtn).not.toBeNull();
       expect(paintBtn).not.toBeNull();

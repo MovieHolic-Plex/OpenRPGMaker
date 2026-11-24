@@ -1,12 +1,16 @@
 // editor/panels/canvasToolPill.ts
-// 캔버스 위 도구막대 — 칠하기 · 사각형 · 채우기 · 화면 밀기 | 되돌리기 | 배율 | 조수에게 맡기기.
+// 캔버스 위 도구막대 — 칠하기 · 영역 선택 · 채우기 | 되돌리기 | 배율 | 조수에게 맡기기.
+//
+// 2026-11-24(btn-vqa-map PR 1): 오너 흐름 「드래그로 영역 잡고 → 지시」의 입구인 영역 선택(V)이 단축키·⌘K 에만 있었다.
+// 그 자리를 「사각형으로 칠하기」가 차지하고 있었으므로 바꿨다. 화면 밀기는 Space·가운데 버튼 끌기와 같아 뺐다.
+// 지형·이벤트 레이어에서는 타일 붓이 맞지 않아 영역 선택만 보인다.
 //
 // 2026-11 개편(시안 mock-editor-*.png): 캔버스 위에 떠 있는 것은 이 알약 하나다. 예전 오른쪽 위 막대의
 // 로케이션·배경 미리보기·걷기 전투·AI 빠른 작업·「더 보기」(격자·맵 PNG)와 왼쪽 아래 저작 여정은
 // 처음 30분에 쓰지 않는 것이라 ⌘K 명령으로만 닿는다(commandRegistry.ts CANVAS_MOVED_COMMANDS).
 // 코드는 지우지 않았다 — 명령이 같은 함수를 부른다.
 //
-// 상태는 editorState 하나다. 도구 단추는 tileToolbarActions 의 selectTileTool/selectMapModeTool 을
+// 상태는 editorState 하나다. 도구 단추는 tileToolbarActions 의 selectTileTool 을
 // 그대로 불러 단축키(B·G·Space·숫자)와 같은 전이를 탄다. testid 는 옛 계약(tool-paint·tool-fill·tool-pan,
 // editor-zoom-*)을 이 알약이 가진다 — 왼쪽 도구 줄의 같은 두 단추는 palette-tool-paint/fill 로 물러났다(한 화면에
 // 같은 testid 가 둘이면 Playwright strict 모드가 깨진다). 되돌리기는 왼쪽 쌍이 oprn-tool-undo 를 지키므로 canvas-tool-undo.
@@ -15,19 +19,19 @@ import { runUndoWithFeedback } from "@/editor/hotkeys";
 import { getMapEditHistoryState, MAP_EDIT_HISTORY_EVENT, pendingHistoryLabels } from "@/editor/mapEditHistory";
 import { isLocationDrawMode } from "@/editor/locationDrawMode";
 import { layerUiLabel, toolLabel } from "@/editor/uiCopy";
-import { selectMapModeTool, selectTileTool, isTileToolbarItemActive } from "@/editor/panels/tileToolbarActions";
+import { selectTileTool, isTileToolbarItemActive } from "@/editor/panels/tileToolbarActions";
 import { installDelayedTooltips } from "@/editor/delayedTooltipRollout";
 import { runWhenPointerReleased } from "@/editor/pointerStrokeGate";
 import { canvasSmallTask } from "@/editor/smallTask/capsule";
+import { makeSvgIcon } from "@/editor/panels/tileToolbarIcons";
 import { clearChildren, el } from "@/util/dom";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 
 const PILL_ICONS = {
   paint: "M10 2l4 4-6.5 6.5H3.5v-4z",
-  rect: "",
+  select: "",
   fill: "M3 7l5-5 5 5-5 5z M13.5 10.5c0 1-.7 2-1.5 2s-1.5-1-1.5-2 1.5-2.5 1.5-2.5 1.5 1.5 1.5 2.5z",
-  pan: "M5 8V3.5a1 1 0 012 0V7 M7 6.5V2.5a1 1 0 012 0V7 M9 7V3.5a1 1 0 012 0V9c0 3-2 5-4.5 5S3 12 2.5 10L2 8.5a1 1 0 011.8-.8L5 9.5",
   undo: "M4 6.5h6a3.5 3.5 0 010 7H7 M6.5 3.5L3.5 6.5l3 3",
 } as const;
 
@@ -39,10 +43,12 @@ function pillIcon(name: keyof typeof PILL_ICONS): SVGSVGElement {
   svg.setAttribute("aria-hidden", "true");
   svg.setAttribute("focusable", "false");
   svg.setAttribute("class", "canvas-tool-pill-icon");
-  if (name === "rect") {
-    const rect = document.createElementNS(SVG_NS, "rect");
-    for (const [key, value] of Object.entries({ x: "2.5", y: "3.5", width: "11", height: "9", rx: "1" })) rect.setAttribute(key, value);
-    svg.append(rect);
+  if (name === "select") {
+    const icon = makeSvgIcon("select");
+    icon.setAttribute("width", "16");
+    icon.setAttribute("height", "16");
+    icon.setAttribute("class", "canvas-tool-pill-icon");
+    return icon;
   } else {
     const path = document.createElementNS(SVG_NS, "path");
     path.setAttribute("d", PILL_ICONS[name]);
@@ -52,21 +58,31 @@ function pillIcon(name: keyof typeof PILL_ICONS): SVGSVGElement {
 }
 
 type PillTool = {
-  readonly id: "paint" | "rect" | "fill" | "pan";
+  readonly id: "paint" | "select" | "fill";
   readonly label: string;
   readonly hotkey?: string;
+  /** 지형·이벤트 레이어에서도 보이는가 — 영역 선택만 그렇다. */
+  readonly anyLayer?: boolean;
+  /** 아이콘 옆에 보이는 짧은 글자. 영역 선택은 오너 흐름의 입구라 글자로 드러낸다. */
+  readonly text?: string;
   readonly active: (state: EditorState) => boolean;
   readonly select: () => void;
 };
 
-// 「사각형」은 칠하기의 모양(paintShape rect)이다 — 영역 선택(V)은 칠하지 않는 사각형이라 처음 쓰는 사람이 헷갈린다.
-// 영역 선택·지우기·타일 집기는 단축키(V·E·I)와 ⌘K 「도구: …」 명령으로 닿는다.
+// 영역 선택은 칠하지 않는다 — 왼쪽 드래그로 영역을 잡으면 그 자리에 지시 입력 막대가 뜬다(selectionActionChips).
+// 사각형 칠하기·지우기·타일 집기·화면 밀기는 단축키(R·E·I·Space)와 ⌘K 「도구: …」 명령으로 닿는다.
+export const REGION_SELECT_LABEL = "영역 선택";
 const PILL_TOOLS: readonly PillTool[] = [
   { id: "paint", label: toolLabel("paint"), hotkey: "B", active: (s) => isTileToolbarItemActive("pen", s.tool, s.paintShape), select: () => selectTileTool("pen") },
-  { id: "rect", label: "사각형으로 칠하기", active: (s) => isTileToolbarItemActive("rect", s.tool, s.paintShape), select: () => selectTileTool("rect") },
+  { id: "select", label: REGION_SELECT_LABEL, hotkey: "V", anyLayer: true, text: "영역", active: (s) => !isLocationDrawMode() && s.tool === "select", select: () => selectTileTool("select") },
   { id: "fill", label: toolLabel("fill"), hotkey: "G", active: (s) => isTileToolbarItemActive("fill", s.tool, s.paintShape), select: () => selectTileTool("fill") },
-  { id: "pan", label: toolLabel("pan"), hotkey: "Space", active: (s) => !isLocationDrawMode() && s.tool === "pan", select: () => selectMapModeTool("pan") },
 ];
+
+/** 이 레이어·도구 상태에서 알약에 보일 도구 id. 지형(relief)·이벤트에서는 영역 선택 하나. */
+export function visiblePillToolIds(state: Pick<EditorState, "layer" | "tool">): readonly PillTool["id"][] {
+  const tileLayer = state.layer !== "event" && state.tool !== "relief";
+  return PILL_TOOLS.filter((tool) => tileLayer || tool.anyLayer).map((tool) => tool.id);
+}
 
 function tooltip(label: string, hotkey: string | undefined): string {
   return hotkey ? `${label} (${hotkey})` : label;
@@ -128,13 +144,14 @@ export function renderCanvasToolPill(container: HTMLElement): void {
   container.setAttribute("role", "toolbar");
   container.setAttribute("aria-label", "캔버스 도구");
 
-  // 이벤트 레이어에서는 타일 도구가 맞지 않는다 — 고르면 타일 레이어로 나가지만, 보여 줄 때는 숨겨 한 줄을 짧게 둔다.
-  if (state.layer !== "event") {
-    for (const tool of PILL_TOOLS) {
+  // 이벤트·지형에서는 타일 붓이 맞지 않는다 — 영역 선택만 남겨 한 줄을 짧게 둔다.
+  const visible = new Set(visiblePillToolIds(state));
+  {
+    for (const tool of PILL_TOOLS.filter((entry) => visible.has(entry.id))) {
       const active = tool.active(state);
       container.append(el("button", {
         class: "canvas-tool-pill-button" + (active ? " is-active" : ""),
-        children: [pillIcon(tool.id)],
+        children: [pillIcon(tool.id), ...(tool.text ? [el("span", { class: "canvas-tool-pill-button-text", text: tool.text })] : [])],
         attrs: {
           type: "button",
           "aria-label": tool.label,

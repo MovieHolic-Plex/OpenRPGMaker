@@ -196,7 +196,7 @@ test("editor shell contains Basic and Expert regions at every supported viewport
   await page.setViewportSize({ width: 1440, height: 820 });
   await page.goto("/?freshProject=1&layoutContract=clickability");
   await expectCenterClickable(page, "[data-testid='toolbar-database']");
-  await expectCenterClickable(page, "[data-testid='tool-pan']");
+  await expectCenterClickable(page, "[data-testid='tool-select']");
   await expectCenterClickable(page, "[data-testid='layer-event']");
   await page.getByTestId("toolbar-database").click();
   await expectCenterClickable(page, "[data-testid='db-tab-enemies']");
@@ -479,7 +479,6 @@ test("left sidebar tool buttons use visible icons with accessible names", async 
     { testId: "tool-paint", label: "칠하기" },
     { testId: "tool-fill", label: "채우기" },
     { testId: "tool-eyedropper", label: "타일 집기" },
-    { testId: "tool-pan", label: "이동" },
     { testId: "tool-select", label: "영역 선택" },
     { testId: "tool-collision", label: "통행" },
     { testId: "tool-event", label: "이벤트" },

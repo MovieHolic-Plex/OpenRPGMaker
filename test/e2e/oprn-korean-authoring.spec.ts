@@ -97,7 +97,7 @@ test("Korean editor supports NPC dialogue and monster authoring basics", async (
   await expect(page.getByTestId("menu-project")).toBeVisible();
   await expect(page.getByTestId("layer-selector")).toBeVisible();
   await expect(page.getByTestId("layer-event")).toHaveAttribute("aria-label", "이벤트");
-  await expect(page.getByTestId("tool-pan")).toHaveAttribute("aria-label", "이동");
+  await expect(page.getByTestId("tool-select")).toHaveAttribute("aria-label", "영역 선택");
   await expect(page.getByTestId("map-move-hint")).toContainText("Space");
 
   await page.getByTestId("layer-event").click();

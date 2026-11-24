@@ -55,7 +55,8 @@ import type { DatabaseCollection } from "@/editor/databaseActions";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import { editorState, editorStateChangedOnlyCanvasOverlay, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
-import { AI_REGION_HANDOFF_EVENT, aiRegionHandoffDetail } from "@/editor/aiRegionHandoff";
+import { AI_REGION_HANDOFF_EVENT, aiRegionHandoffDetail, requestAiRegionHandoff } from "@/editor/aiRegionHandoff";
+import { showRegionResultCard } from "@/editor/regionResultCard";
 import { formatSelectionTerrain } from "@/editor/selectionTerrainSummary";
 import { isStampPlaceOn, setStampPlaceOn, subscribeStampPlace } from "@/editor/stampPlaceMode";
 import {
@@ -979,6 +980,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    * Pi 명령은 «무엇이 바뀌었나» 만 알고 카드·되돌리기·스튜디오 「변경」 탭은 패널에 있다. 그래서
    * 렌더를 명령에 넣지 않고 이 훅으로 되돌린다 — 명령은 DOM 을 모른 채로 남는다.
    */
+  let regionTurn: { readonly mapId: string; readonly region: { readonly x: number; readonly y: number; readonly width: number; readonly height: number }; readonly instruction: string } | null = null;
   const showPiChangeReceipt = (input: PiChangeReceipt, targetCard?: AiWorkCard): void => {
     // 맵이 안 바뀐 실행은 그릴 영역이 없다 — 칩만 남은 가짜 카드를 만들지 않는다.
     const summary = createChangeSummaryCard(input.before, input.after, {
@@ -1004,6 +1006,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     lastStudioChange = preview;
     studioShell?.setChangePreview(preview);
     (targetCard ?? ensureWorkCard()).attachChange(preview);
+    const scoped = regionTurn;
+    if (scoped && scoped.mapId === input.mapId) {
+      showRegionResultCard({
+        mapId: scoped.mapId,
+        region: scoped.region,
+        instruction: scoped.instruction,
+        before: input.before,
+        after: input.after,
+        onUndo: preview.onUndo!,
+        onRetry: () => requestAiRegionHandoff({ mapId: scoped.mapId, region: scoped.region, instruction: scoped.instruction, autoRun: true, stamp: false }),
+      });
+    }
   };
 
   /**
@@ -2023,6 +2037,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 17줄은 툴 설명으로 옮겼다 — 기계 텍스트가 사용자 채널에 실려 되묻기·플래너 스킵·툴 노출을 어긋나게
     // 했던 근인이다(2026-09-03 의도 라우터 감사). 선택 사각형은 스코프 인자로 따로 넘긴다.
     const turnScope = resolveTurnScope();
+    // 영역에 시킨 턴이면 그 결과를 맵 위 영역 아래에도 보인다(showPiChangeReceipt → regionResultCard).
+    regionTurn = turnScope?.region && !opts?.eventCommandScope
+      ? { mapId: turnScope.mapId, region: turnScope.region, instruction: displayAs ?? trimmed }
+      : null;
     // 보존 기획 지침은 사용자 발화 뒤·사실 줄 앞에 온다. 고른 게 없으면 빈 문자열이라 아무 것도 붙지 않는다.
     // 보낸 뒤에는 선택을 자동으로 푸는다 — 한 번 고른 재사용이 다음 턴에 조용히 또 실리면 그게 숨은 기억이다.
     const planningGuidance = opts?.eventCommandScope ? "" : planningReuse.guidanceBlock();
