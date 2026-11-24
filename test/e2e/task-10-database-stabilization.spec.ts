@@ -30,6 +30,7 @@ test("database reference guard blocks a skill used only by event command referen
 
   await page.getByRole("button", { name: /Task 10 Command Skill/u }).click();
   await expect(page.getByTestId("db-field-name")).toHaveValue("Task 10 Command Skill");
+  await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
   await page.getByTestId("db-delete-selected").click();
   // fix(db): 삭제 거부 메시지가 "무엇이 어디서" 참조하는지(커먼 이벤트 이름/id) 포함하도록
   // 풍부화됐다.

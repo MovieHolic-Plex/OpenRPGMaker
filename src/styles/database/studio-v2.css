@@ -499,6 +499,91 @@
   margin: 0;
 }
 
+/* 목록 도구 ⋯ — 「+ 추가」 옆 하나. 목록 아래에 붙어 있으니 위로 연다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-more {
+  position: relative;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-more > summary {
+  align-items: center;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: var(--db2-radius-control);
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  display: inline-flex;
+  font: 600 14px/1 var(--font-ui);
+  justify-content: center;
+  list-style: none;
+  min-height: 32px;
+  min-width: 32px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-more > summary::-webkit-details-marker {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-more > summary::marker {
+  content: "";
+}
+
+/* 접이 상자 공통 꺾쇠(modern-controls.css details > summary::before)는 ⋯ 단추에는 붙이지 않는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-more > summary::before {
+  content: none;
+}
+
+/* 좁은 화면에서는 목록 칸이 좁아 ⋯ 기준으로 펴면 양쪽이 잘린다 — 도구 줄 폭에 맞춰 편다. */
+@media (max-width: 640px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar {
+    position: relative;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-more {
+    position: static;
+  }
+
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-more[open] > .db-toolbar-more-menu {
+    left: 0;
+    min-width: 0;
+    right: 0;
+  }
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-more > summary:hover,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-more[open] > summary {
+  background: var(--db-studio-inset);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-more > summary:focus-visible {
+  outline: 2px solid var(--db-studio-accent);
+  outline-offset: 1px;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-more-menu {
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 10px;
+  bottom: calc(100% + 6px);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 14%);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  left: 0;
+  min-width: 188px;
+  padding: 8px;
+  position: absolute;
+  z-index: 20;
+}
+
+/* 닫힌 details 내용은 content-visibility 로만 가려져 상자가 남는다 — 닫히면 아예 빼서 탭 순서·스크린 리더에서도 없게 한다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-more:not([open]) > .db-toolbar-more-menu {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-more-menu > :is(.btn, .db-toolbar-delete, .db-view-toggle-group) {
+  justify-content: flex-start;
+  width: 100%;
+}
+
 .database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .btn,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-toolbar-button,
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-btn {

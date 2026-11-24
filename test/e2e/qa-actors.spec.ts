@@ -223,6 +223,7 @@ test.describe("QA — actors tab", () => {
     await expect(page.getByTestId("db-field-name")).toHaveValue("QA 액터 사본");
 
     // delete: two-step confirm
+    await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
     const deleteButton = page.getByTestId("db-delete-selected");
     await deleteButton.click();
     await expect(deleteButton).toHaveText("정말 삭제?");

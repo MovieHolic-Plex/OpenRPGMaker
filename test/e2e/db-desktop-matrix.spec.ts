@@ -67,6 +67,7 @@ for (const { width, height } of VIEWPORTS) {
 
     // ── 3. 갤러리 뷰 (items 는 기본 갤러리) ──
     await page.getByTestId("db-tab-items").click();
+    await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
     await expect(page.getByTestId("db-view-toggle-gallery")).toBeVisible();
     const galleryCards = page.locator("[data-testid^='db-record-card-']");
     await expect(galleryCards.first()).toBeVisible();

@@ -618,6 +618,7 @@ test('equipment filtering, selection and gallery', async ({ page }) => {
   await page.getByTestId('db-catalog-reveal-selection').click();
   await expect(search).toHaveValue('');
   for (const mode of ['gallery', 'list']) {
+    await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
     await page.getByTestId(`db-view-toggle-${mode}`).click();
     await expect(page.getByTestId(`db-record-${mode === 'list' ? 'row' : 'card'}-${equipment.id}`)).toHaveAttribute('aria-pressed', 'true');
   }
@@ -690,6 +691,7 @@ for (const mode of ['list', 'gallery']) {
   });
   const before = await page.evaluate(async () => JSON.stringify((await import('/src/project/store.ts')).store.getCurrent().database));
     await navigate(page, 'enemies');
+    await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
     await page.getByTestId(`db-view-toggle-${mode}`).click();
     const search = page.locator('.oprn-record-list-pane .db-search input');
     await page.evaluate(() => {
@@ -858,6 +860,7 @@ test('CRUD confirmation and representative shared text contrast', async ({ page 
   // relying on two actions and a screenshot finishing within three seconds.
   await page.clock.install({ time: new Date('2026-09-06T00:00:00Z') });
   await page.clock.pauseAt(new Date('2026-09-06T00:00:01Z'));
+  await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
   const remove = page.getByTestId('db-delete-selected');
   const idle = await remove.evaluate(node => getComputedStyle(node).backgroundColor);
   await remove.press('Enter');

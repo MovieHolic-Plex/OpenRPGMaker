@@ -91,6 +91,17 @@ describe("database per-collection view mode session", () => {
     session = await import("@/editor/panels/databaseRecordViewSession");
   });
 
+  it("list toolbar keeps only + 추가 outside; 복제·삭제·view toggle sit behind the ⋯ menu", () => {
+    const host = document.createElement("div") as unknown as FakeElement;
+    renderRecordTab(host, "items", () => undefined);
+    const more = findByTestId(host, "db-toolbar-more")?.parentElement;
+    if (!more) throw new Error("missing toolbar ⋯");
+    for (const testid of ["db-duplicate-record", "db-delete-selected", "db-view-toggle-gallery"]) {
+      expect(more.contains(findByTestId(host, testid))).toBe(true);
+    }
+    expect(more.contains(findByTestId(host, "db-add-record"))).toBe(false);
+  });
+
   it("clicking db-view-toggle-gallery on items flips state to gallery and persists across re-render and localStorage re-read", async () => {
     const host = document.createElement("div") as unknown as FakeElement;
     const rerender = (): void => {

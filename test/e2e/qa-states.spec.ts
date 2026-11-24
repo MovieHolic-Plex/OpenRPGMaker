@@ -129,6 +129,7 @@ test.describe("QA sweep: states tab", () => {
     expect(duplicates.length).toBeGreaterThanOrEqual(2);
 
     // delete (2-step confirm)
+    await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
     const deleteButton = page.getByTestId("db-delete-selected");
     await deleteButton.click();
     await expect(deleteButton).toHaveText("정말 삭제?");
