@@ -50,6 +50,20 @@ describe("createAiLiveStatus finish", () => {
     expect(status.root.hidden).toBe(false);
     expect(status.root.textContent).toContain("1단계를 마쳤어요");
   });
+
+  it("between tools shows the last finished step, never the stale opening line (qa1124 «요청을 읽고 있어요 · 6/6»)", () => {
+    const status = createAiLiveStatus({ baseProject: base });
+    status.status("요청을 읽고 있어요");
+    status.event({ type: "tool_start", id: "t1", name: "make_place", args: {} });
+    status.event({ type: "tool_end", id: "t1", name: "make_place", ok: true, summary: "" });
+    const line = () => status.root.querySelector("[data-testid=ai-live-status-line]")!.textContent!;
+    expect(line()).not.toContain("요청을 읽고 있어요");
+    expect(line()).toContain("장소 짓기 끝");
+    status.event({ type: "execution_status", name: "v2.blueprint.auto_path", ok: true, summary: "청사진 경로 자동 짓기 — 길 3개" });
+    expect(line()).toContain("청사진 경로 자동 짓기");
+    status.event({ type: "execution_status", name: "turn.diag", ok: true, summary: "stop=toolUse blocks=text(0)" });
+    expect(line()).not.toContain("stop=");
+  });
 });
 
 describe("isQuietTool", () => {

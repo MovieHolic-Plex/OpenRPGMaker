@@ -34,16 +34,19 @@ import {
   type MonsterFxPainter,
 } from "@/editor/panels/databaseMonsterSkillStage";
 import {
-  PIXEL_ENEMY_FRAME,
+  PIXEL_ENEMY_CELL_INDEX,
   pixelEnemyCell,
   pixelEnemyFrame,
+  pixelEnemyHasCell,
   pixelEnemySheet,
   pixelEnemySheetUrl,
   type PixelEnemyCell,
+  type PixelEnemyExtraCell,
   type PixelEnemyMotion,
   type PixelEnemySheet,
   type RetroMonsterCell,
 } from "@/assets/pixelEnemySheets";
+import { pixelEnemyGridDims } from "@/assets/pixelEnemyGrid";
 import { el } from "@/util/dom";
 
 /** 무대 논리 크기. 96px 셀(드래곤)이 발밑 여백과 함께 들어가는 높이. */
@@ -66,6 +69,25 @@ const CELL_LABELS: Readonly<Record<PixelEnemyCell, string>> = {
   recover: "복귀", hit: "피격", dead: "쓰러짐",
 };
 const CELL_ORDER: readonly PixelEnemyCell[] = ["idle_a", "idle_b", "idle_c", "windup", "move", "attack", "recover", "hit", "dead"];
+/** 4×4·5×4 시트만 갖는 칸(번호 순). 그려진 칸만 칸 표에 나온다(pixelEnemyHasCell). */
+const EXTRA_CELL_LABELS: Readonly<Record<PixelEnemyExtraCell, string>> = {
+  attack_mid: "공격 중간", cast_charge: "시전 모음", cast_release: "시전 방출", guard: "막기", weak: "약해짐", intro: "등장",
+  move_b: "이동 2", hit_b: "피격 2", attack_b: "연타", stunned: "기절", enrage: "분노",
+};
+const EXTRA_CELL_ORDER = (Object.keys(EXTRA_CELL_LABELS) as PixelEnemyExtraCell[]).sort((a, b) => PIXEL_ENEMY_CELL_INDEX[a] - PIXEL_ENEMY_CELL_INDEX[b]);
+type SheetCell = PixelEnemyCell | PixelEnemyExtraCell;
+
+/** 이 시트의 칸 표 순서: 3×3 은 9칸, 4×4 는 그려진 확장 칸까지(최대 15), 5×4 는 최대 20. */
+export function enemyPixelCellOrder(sheet: Pick<PixelEnemySheet, "grid" | "missingCells" | "skillCell">): readonly SheetCell[] {
+  return [...CELL_ORDER, ...EXTRA_CELL_ORDER.filter((id) => pixelEnemyHasCell(sheet, id))];
+}
+
+/** 칸 이름 → 시트 안 자리 그대로(행 우선, 열 수 = 격자 폭). 칸 표의 정지 보기가 쓴다 — 재생은 pixelEnemyFrame 규칙을 따른다. */
+function sheetCellAt(sheet: Pick<PixelEnemySheet, "grid">, id: SheetCell): { readonly col: number; readonly row: number } {
+  const { cols } = pixelEnemyGridDims(sheet.grid);
+  const index = PIXEL_ENEMY_CELL_INDEX[id];
+  return { col: index % cols, row: Math.floor(index / cols) };
+}
 const IDLE_LOOP: readonly PixelEnemyCell[] = ["idle_a", "idle_b", "idle_c", "idle_b"];
 
 type Beat = { readonly cell: PixelEnemyCell; readonly ms: number; readonly dx: number; readonly dy: number };
@@ -131,8 +153,9 @@ export function enemyPixelListBadge(resourceId: string | undefined, size = 16): 
     dataset: { testid: "db-enemy-pixel-badge" },
   });
   const url = pixelEnemySheetUrl(sheet);
+  const dims = pixelEnemyGridDims(sheet.grid);
   badge.style.backgroundImage = 'url("' + url + '")';
-  badge.style.backgroundSize = size * 3 + "px " + size * 3 + "px";
+  badge.style.backgroundSize = size * dims.cols + "px " + size * dims.rows + "px";
   badge.style.width = size + "px";
   badge.style.height = size + "px";
   void probeSheet(url).then((ok) => { if (!ok) badge.remove(); });
@@ -158,6 +181,7 @@ export function renderEnemyPixelPreview(
   const cell = pixelEnemyCell(sheet);
   const url = pixelEnemySheetUrl(sheet);
   const name = record.name || sheet.resourceId;
+  const dims = pixelEnemyGridDims(sheet.grid);
 
   const world = el("div", { class: "db-enemy-pixel-world", attrs: { "aria-hidden": "true" } });
   world.style.width = STAGE_W + "px";
@@ -168,7 +192,7 @@ export function renderEnemyPixelPreview(
   sprite.style.width = cell + "px";
   sprite.style.height = cell + "px";
   sprite.style.backgroundImage = 'url("' + url + '")';
-  sprite.style.backgroundSize = cell * 3 + "px " + cell * 3 + "px";
+  sprite.style.backgroundSize = cell * dims.cols + "px " + cell * dims.rows + "px";
   const ally = el("span", { class: "db-enemy-pixel-ally" });
   const allySheet = charsetBattler("charset-battler-actor1-0");
   if (allySheet) ally.style.backgroundImage = 'url("' + withInlineAsset("/" + allySheet.path) + '")';
@@ -196,21 +220,26 @@ export function renderEnemyPixelPreview(
     resizeObserver.observe(stage);
   }
 
-  // ---- 칸 표(9칸) ----
-  const cellButtons = new Map<PixelEnemyCell, HTMLButtonElement>();
-  const grid = el("div", { class: "db-enemy-pixel-cells", attrs: { role: "group", "aria-label": "칸 표" }, dataset: { testid: "db-enemy-pixel-cells" } });
+  // ---- 칸 표(3×3 9칸 · 4×4 최대 15칸 · 5×4 최대 20칸, 시트 격자를 그대로 읽는다) ----
+  const cellButtons = new Map<SheetCell, HTMLButtonElement>();
+  const cellOrder = enemyPixelCellOrder(sheet);
+  const grid = el("div", {
+    class: "db-enemy-pixel-cells",
+    attrs: { role: "group", "aria-label": `칸 표 ${cellOrder.length}칸` },
+    dataset: { testid: "db-enemy-pixel-cells", grid: sheet.grid ?? "3x3", cells: String(cellOrder.length) },
+  });
   const thumb = 36;
-  for (const id of CELL_ORDER) {
-    const frame = PIXEL_ENEMY_FRAME[id];
+  for (const id of cellOrder) {
+    const frame = sheetCellAt(sheet, id);
     const pic = el("span", { class: "db-enemy-pixel-cell-pic", attrs: { "aria-hidden": "true" } });
     pic.style.backgroundImage = 'url("' + url + '")';
-    pic.style.backgroundSize = thumb * 3 + "px " + thumb * 3 + "px";
+    pic.style.backgroundSize = thumb * dims.cols + "px " + thumb * dims.rows + "px";
     pic.style.backgroundPosition = -frame.col * thumb + "px " + -frame.row * thumb + "px";
     const button = el("button", {
       class: "db-enemy-pixel-cell",
       attrs: { type: "button", "aria-pressed": "false" },
       dataset: { testid: "db-enemy-pixel-cell-" + id, cell: id },
-      children: [pic, el("span", { class: "db-enemy-pixel-cell-label", text: id === "recover" && sheet.skillCell ? "스킬" : CELL_LABELS[id] })],
+      children: [pic, el("span", { class: "db-enemy-pixel-cell-label", text: id === "recover" && sheet.skillCell ? "스킬" : Object.hasOwn(CELL_LABELS, id) ? CELL_LABELS[id as PixelEnemyCell] : EXTRA_CELL_LABELS[id as PixelEnemyExtraCell] })],
     });
     button.addEventListener("click", () => showStill(id));
     cellButtons.set(id, button);
@@ -226,7 +255,7 @@ export function renderEnemyPixelPreview(
   let beats: readonly Beat[] = [];
   let beatAt = 0;
   let action: EnemyPixelAction | "idle" | "still" | "skill" = "idle";
-  let still: PixelEnemyCell = "idle_a";
+  let still: SheetCell = "idle_a";
   let from = { x: 0, y: 0 };
 
   let lastDrawing = "";
@@ -235,7 +264,7 @@ export function renderEnemyPixelPreview(
     if (drawing === lastDrawing) return;
     lastDrawing = drawing;
     // 칸 표에서 고른 정지 칸은 시트 자리 그대로, 재생은 skillCell 규칙(pixelEnemyFrame)으로 고른다.
-    const pos = action === "still" && Object.hasOwn(PIXEL_ENEMY_FRAME, current) ? PIXEL_ENEMY_FRAME[current as PixelEnemyCell] : pixelEnemyFrame(sheet, current);
+    const pos = action === "still" && Object.hasOwn(PIXEL_ENEMY_CELL_INDEX, current) ? sheetCellAt(sheet, current as SheetCell) : pixelEnemyFrame(sheet, current);
     sprite.style.backgroundPosition = -pos.col * cell + "px " + -pos.row * cell + "px";
     sprite.style.left = Math.round(HOME_X - cell / 2 + dx) + "px";
     sprite.style.top = Math.round(FEET_Y - (cell - 4) + dy) + "px";
@@ -246,7 +275,7 @@ export function renderEnemyPixelPreview(
     ally.classList.toggle("is-hit", allyStruck);
     stage.dataset.pixelCell = current;
     for (const [id, button] of cellButtons) {
-      const at = PIXEL_ENEMY_FRAME[id];
+      const at = sheetCellAt(sheet, id);
       const on = at.col === pos.col && at.row === pos.row;
       button.classList.toggle("is-current", on);
       button.setAttribute("aria-pressed", String(action === "still" && on));
@@ -410,7 +439,7 @@ export function renderEnemyPixelPreview(
     start();
   }
 
-  function showStill(id: PixelEnemyCell): void {
+  function showStill(id: SheetCell): void {
     // 같은 칸을 다시 누르면 대기 루프로 돌아간다.
     if (action === "still" && still === id) { setAction("idle"); clock = 0; if (canAutoplay) start(); else draw("idle_a", 0, 0); return; }
     still = id;

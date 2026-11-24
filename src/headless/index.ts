@@ -1,4 +1,5 @@
 import { validateArgs } from "@/editor/tools/jsonSchema";
+import { ensureCurrentMonsterArt } from "@/assets/currentMonsterArt";
 import { countAudioDescriptionChanges } from "@/project/audioDescriptionChanges";
 import { countMonsterMetadataChanges } from "@/project/monsterMetadata";
 import { allTools, getTool } from "@/editor/tools/toolRegistry";
@@ -82,6 +83,7 @@ export function normalizeHeadlessProject(project: Project): Project {
   ensureDefaultDatabaseIconResources(project);
   ensureBundledBattleAnimations(project);
   ensureRetroRosterRecords(project);
+  ensureCurrentMonsterArt(project);
   repairFaceMatches(project);
   return project;
 }

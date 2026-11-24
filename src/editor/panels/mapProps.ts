@@ -57,6 +57,7 @@ import { clearChildren, el } from "@/util/dom";
 import { showConfirm } from "@/editor/ui/modal";
 import { tilesetSwitchImpact, tilesetSwitchMessage, tilesetSwitchNeedsConfirm } from "@/editor/tilesetSwitchImpact";
 import { toast } from "@/util/toast";
+import { t } from "@/i18n";
 
 function roleLabel(role: MapRole): string {
   return role === "unknown" ? "알 수 없음" : MAP_ROLE_LABELS[role];
@@ -222,7 +223,7 @@ function attachBgmPlay(row: HTMLElement, map: import("@/project/types").GameMap)
   if (!playback.playable || !playback.url) return;
   const host = el("span", { attrs: { hidden: "" } });
   const session = new AudioPreviewSession(host);
-  session.select(playback.url, "", true);
+  session.select(playback.url, "", true, resourceId);
   bgmPreview = session;
   let playing = false;
   const play = el("button", {
@@ -238,7 +239,7 @@ function attachBgmPlay(row: HTMLElement, map: import("@/project/types").GameMap)
   });
   session.subscribe((state) => {
     playing = state.phase === "playing";
-    play.textContent = playing ? "멈춤" : "재생";
+    play.textContent = playing ? "멈춤" : state.phase === "error" && state.unreachable ? t("받지 못함") : "재생";
   });
   row.append(play, host);
 }

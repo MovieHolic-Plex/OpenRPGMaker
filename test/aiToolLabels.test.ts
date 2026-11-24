@@ -1,7 +1,10 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { TOOL_LABELS, toolGroup, toolIconKey, toolLabel, toolLabelSummary } from "@/editor/panels/aiToolLabels";
 import { DECK_ICON_NAMES } from "@/editor/panels/aiDeckIcons";
 import { activeTools } from "@/editor/tools/toolRegistry";
+import { createV2Tools } from "@/ai/v2/tools/verbs";
+import { V2Session } from "@/ai/v2/turn/session";
 import { createTranslator } from "@/i18n/translator";
 import en from "@/i18n/catalogs/en.json";
 import ja from "@/i18n/catalogs/ja.json";
@@ -72,5 +75,21 @@ describe("aiToolLabels — 툴 이름을 사람 말로", () => {
     // Break(2026-09-23 실측): 248개 중 160개가 사전에 없어 「read tileset reference」 가 그대로 보였다.
     const missing = activeTools().map(tool => tool.name).filter(name => !TOOL_LABELS[name]);
     expect(missing).toEqual([]);
+  });
+
+  it("조수 v2 동사도 모두 사전에 있다 — v2 가 기본이 된 뒤 작업 표시에 «make place» 같은 영문이 떴다(qa1124 20개)", () => {
+    // Break: v2 동사를 더하고 사전을 빠뜨리면 여기서 잡힌다. todo 는 단계로 세지 않는 조용한 도구다.
+    const env = { ctx: { project: { maps: {} } }, request: { task: "", mapIds: [] }, emit() {}, record() {}, checkpoint: async () => {} } as never;
+    const names = createV2Tools(env, new V2Session()).map(tool => tool.name).filter(name => name !== "todo");
+    expect(names.length).toBeGreaterThan(20);
+    expect(names.filter(name => !TOOL_LABELS[name])).toEqual([]);
+  });
+
+  it("팀 실행 도구(팀장 배정·일꾼 메시지)도 사전에 있다 — 첫 MVP 가 팀으로 도는 뒤 작업 스트림의 첫 줄이다", () => {
+    // Break(2026-11-24 실화면): «assign map agent» 가 팀장 레인 첫 줄에 영문 그대로 떴다.
+    const runtime = readFileSync("scripts/lib/piTeamRuntime.ts", "utf8") + readFileSync("scripts/lib/piTeamMessaging.ts", "utf8");
+    const names = [...new Set([...runtime.matchAll(/(?:name: |make\()["']([a-z]+(?:_[a-z]+)*)["']/gu)].map(m => m[1]!))];
+    expect(names).toContain("assign_map_agent");
+    expect(names.filter(name => !TOOL_LABELS[name])).toEqual([]);
   });
 });

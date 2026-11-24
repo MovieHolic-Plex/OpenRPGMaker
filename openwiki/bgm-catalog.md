@@ -25,8 +25,10 @@ map/battle/menu can each get a fitting cue without the author sourcing music the
   release and committed `assets/bgm-release-v1.json` pin the exact bytes. DigitalOcean
   remains the producer's source and an optional explicit streaming override.
 - **Exception — three starter tracks are committed** (`public/assets/cc0/audio/catalog/`, ~10MB).
-  The default map/battle BGM point at starter tracks. The title track is available to choose,
-  but the default title is silent (`test/bgmCatalog.test.ts`, `test/titleScreenMusic.test.ts`).
+  The default map/battle BGM and a **new project's** title BGM (`cc0-bgm-rtp-ttl-001`) point at
+  starter tracks (`test/bgmCatalog.test.ts`, `test/titleScreenMusic.test.ts`; owner decision
+  2026-11-24 — a silent title read as "the default BGM doesn't play"). Saved projects keep whatever
+  they stored, including a title the author deliberately left empty.
   `.gitignore` ignores the catalog directory except those three files.
 - 273 MP3 (962,377,084 bytes) + 8 WAV (341,557,080 bytes). Original audio bytes and codecs
   are preserved in the release; there is no transcoding.
@@ -241,8 +243,15 @@ The desktop app ships without the pack. Before this, Fallen Star played 3 of its
 
 - **AI 곡 고르기 (`recommend_bgm`, 2026-09-17):** 분위기/장면 질의 → 후보 10개(기본, 최대 20) + 전체 설명 1호출 읽기 툴. 제목만 보고 1등을 집는 버릇을 끊기 위해 `list_resources`(240자 잘림)+`get_audio_resource` N번을 하나로 합쳤다. 검색 0건은 빈 목록(엉뚱한 1등 금지). 시스템 프롬프트 RESOURCE_HINT가 BGM은 이 툴로 고르게 안내. 회귀: `test/recommendBgm.test.ts`.
 - **`searchResources("bgm", query)`** exposes the same catalog to AI tools (`list_resources`).
-- **Default project**: map and battle BGM point at starter catalog tracks; the default title is
-  silent (`defaultSystem()`, `defaultTitleScreenSettings()`). `legacyAudioRepair.ts` also repairs
+- **Default project**: map and battle BGM point at starter catalog tracks. A **new project**
+  (`defaultSystem(true)` → `newProjectTitleScreenSettings()`, reached by `createBlankProject` and
+  `createEmptyToolProject`) also gets the starter title BGM plus title menu SE `cursor =
+  cc0-se-orp-interface-interface1`, `confirm = ...interface2`, `cancel = ...interface6`
+  (`STARTER_TITLE_SE_IDS`, committed under `public/assets/se/oga-rpg-pack/interface/`).
+  `defaultSystem()` / `defaultTitleScreenSettings()` stay silent on purpose: they are the baseline
+  for legacy-document migration and `normalizeSystemRecords`, so filling them would overwrite the
+  blank slots of already-saved projects. Demo/bundled project data is not touched.
+  `legacyAudioRepair.ts` also repairs
   unplayable `.mid` references to the starter tracks — it must only ever target starter ids,
   because a CDN-only replacement would leave CDN-less environments silent again.
 

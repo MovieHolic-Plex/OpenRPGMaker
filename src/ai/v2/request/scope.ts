@@ -36,6 +36,11 @@ const AS_A_GAME = new RegExp(String.raw`(?:^|[\s.,!?])[^\s.,!?]{0,9}[^\s.,!?을�
 const FINISH_GAME = /(?:엔딩|결말)까지\s*(?:[^\s.!?]+\s+){0,3}?(?:이어지|이어서|플레이|진행|만들|완성|마무리|갈\s*수|할\s*수|볼\s*수|깰\s*수|끝낼\s*수|클리어)|whole game/iu;
 /** 컨셉 카드 한 줄 — 끝의 (장르) 괄호가 표지다(「폐업 직전 태엽 장난감 가게, 밤마다 손님이 깨어난다 (회상 스토리)」). */
 const CONCEPT_CARD = /\([^()\n]{0,24}(?:스토리|이야기|RPG|어드벤처|호러|공포|연애|로맨스|추리|미스터리|탐험|퍼즐|시뮬레이션|액션|비주얼\s*노벨|생존|육성|수집|게임)[^()\n]{0,12}\)\s*$/iu;
+/**
+ * 첫 화면 포스터 요청 — 「사용자 의도: 회상 스토리 / 선택한 시작 장르: 회상 스토리」. 장르를 고른 새 프로젝트의 첫 지시는 만들라는 동사가 없어도 게임 하나를 시작하는 말이다.
+ * 왜(2026-11-24 qa1124-ai-gen): 이 꼴 5요청이 wholeGame 0/5 로 읽혀 청사진 카드·세계 카드가 안 실렸다. 지은 것이 있는 프로젝트에서는 «…게임으로» 와 같이 고치기다(into).
+ */
+const START_GENRE_POSTER = /^사용자 의도:[\s\S]*?\n선택한 시작 장르:[ \t]*\S/u;
 /** 고치기 동사로 끝나는 짧은 요청(「버튼 효과 고쳐 (액션)」)은 괄호 장르가 붙어도 컨셉 카드가 아니다. */
 const EDIT_BEFORE_PAREN = /(?:고쳐|바꿔|옮겨|지워|없애|줄여|늘려|수정|변경)\s*(?:줘|주세요|라)?[^()\n]{0,4}\([^()\n]*\)\s*$/u;
 /** 「게임」 바로 뒤에 만들기 동사 — 방·부분 낱말이 같이 있어도 게임이 만들 대상이다(「방 하나만 있는 방탈출 게임 만들어 줘」). */
@@ -52,6 +57,7 @@ export function wholeGameAsk(text: string): { readonly asked: boolean; readonly 
   if (SINGLE_PLACE.test(text) && !GAME_THEN_MAKE.test(text)) return no("asks for one room or map only");
   if (made) return yes("asks to make a game");
   if (form.into) return { asked: true, why: "asks to make it into a game («… 게임으로 만들어»)", into: true };
+  if (START_GENRE_POSTER.test(text.trimStart())) return { asked: true, why: "first-screen poster request («사용자 의도 + 선택한 시작 장르») — starts a game", into: true };
   if (AS_A_GAME.test(text)) return yes("ends with «… as a game»");
   if (FINISH_GAME.test(text)) return yes("asks to make the game playable through to the ending");
   if (CONCEPT_CARD.test(text) && !EDIT_BEFORE_PAREN.test(text)) return yes("one-line concept card with a (genre) tag");

@@ -9,6 +9,7 @@ import { bgmCdnBase } from "./bgmCdn";
 import { findBgmRuntimeEntry } from "./bgmCatalogRuntime";
 import { getAudioAiDescription } from "./audioAiDescriptions";
 import { isBgmFileInstalled } from "./installedBgm";
+import { isDesktopBgmOnDemand } from "./bgmOnDemand";
 import { BGM_CATALOG, bgmTrackLabel } from "./bgmCatalog";
 import { CC0_AUDIO_ASSETS } from "./cc0AudioAssets";
 import { OPRN_BGM_ASSETS } from "./oprnBgmAssets";
@@ -22,7 +23,14 @@ import { readStoreSoundMeta, storeSoundDescription, storeSoundTags } from "./sto
 
 export function isCatalogBgmAvailable(resourceId: string): boolean {
   const bgm = findBgmRuntimeEntry(resourceId);
-  return !bgm || bgmCdnBase() !== null || isBgmFileInstalled(bgm.fileName);
+  // 데스크톱은 앱에 없는 곡도 처음 재생할 때 받으므로 카탈로그 전체가 「받을 수 있음」이다.
+  return !bgm || bgmCdnBase() !== null || isBgmFileInstalled(bgm.fileName) || isDesktopBgmOnDemand();
+}
+
+/** 데스크톱에서 아직 앱에 없어 처음 재생할 때 받아야 하는 카탈로그 곡. 웹·설치된 곡은 false. */
+export function bgmNeedsDownload(resourceId: string): boolean {
+  const bgm = findBgmRuntimeEntry(resourceId);
+  return bgm !== undefined && isDesktopBgmOnDemand() && !isBgmFileInstalled(bgm.fileName);
 }
 
 export type AudioResourceProject = {

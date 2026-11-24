@@ -11,7 +11,7 @@
 
 import { editorState } from "@/editor/editorState";
 import { duplicateIntoTileset, renameStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
-import { assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
+import { assembledKitCells, renderTileCellsToCanvas, type KitRenderInput } from "@/editor/harnessSuggestion/kitRender";
 import {
   paletteStampFromCells,
   paletteStampFromKit,
@@ -47,15 +47,19 @@ export function setInspectorSelectedPartId(id: string | null): void {
   selectedPartId = id;
 }
 
-export function interiorObjectCanvas(tileset: TilesetDef, object: InteriorObjectDef, scale: number): HTMLCanvasElement {
-  return renderTileCellsToCanvas({
+export function interiorObjectRenderInput(tileset: TilesetDef, object: InteriorObjectDef, scale: number): KitRenderInput {
+  return {
     tileset,
     widthTiles: Math.max(1, object.width),
     heightTiles: Math.max(1, object.height),
     cells: object.cells,
     scale,
     backgroundTile: INTERIOR_OBJECT_THUMB_BACKGROUND_TILE,
-  });
+  };
+}
+
+export function interiorObjectCanvas(tileset: TilesetDef, object: InteriorObjectDef, scale: number): HTMLCanvasElement {
+  return renderTileCellsToCanvas(interiorObjectRenderInput(tileset, object, scale));
 }
 
 /**

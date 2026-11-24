@@ -152,6 +152,11 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
     { tag: "path", attrs: { d: "M4.3 18.7 12.4 10.6" } },
     { tag: "path", attrs: { d: "M11 7.4l3.5-3.5 4.8 4.8-3.5 3.5z" } },
   ],
+  // 제작법·강화 — 망치(생활 기술·제작과 같은 손도구, 아이템 하위 보기)
+  itemCrafting: [
+    { tag: "path", attrs: { d: "M4.3 18.7 12.4 10.6" } },
+    { tag: "path", attrs: { d: "M11 7.4l3.5-3.5 4.8 4.8-3.5 3.5z" } },
+  ],
   // 계절·날씨 — 해 + 구름
   dailyWeather: [
     { tag: "circle", attrs: { cx: "7.7", cy: "7.4", r: "3.1" } },

@@ -1,5 +1,5 @@
 import type { BattleAnimationRecord, ProjectDatabaseRecords, ProjectSession, SystemRecords, Terms, TitleScreenSettings } from "../types";
-import { STARTER_BATTLE_BGM_ID, STARTER_DEFAULT_BGM_ID } from "@/assets/bgmStarterTracks";
+import { STARTER_BATTLE_BGM_ID, STARTER_DEFAULT_BGM_ID, STARTER_TITLE_BGM_ID, STARTER_TITLE_SE_IDS } from "@/assets/bgmStarterTracks";
 import { defaultBattleRecords } from "./defaultDatabaseBattleRecords";
 import { defaultPartyRecords, defaultStarterActorIds } from "./defaultDatabasePartyRecords";
 import {
@@ -222,7 +222,24 @@ export function defaultSystem(newProject = false): SystemRecords {
         grass: { fire: 0.5, water: 2, grass: 0.5 },
       },
     },
-    titleScreen: defaultTitleScreenSettings(),
+    titleScreen: newProject ? newProjectTitleScreenSettings() : defaultTitleScreenSettings(),
+  };
+}
+
+/**
+ * 새 프로젝트의 타이틀: 기본 설정 + 타이틀 BGM·커서/결정/취소 SE(전부 앱에 설치된 CC0 파일).
+ * 옛 문서 이관·normalize·«titleScreen 이 없을 때» 폴백은 소리 없는 defaultTitleScreenSettings() 를
+ * 그대로 쓴다 — 이미 저장된 프로젝트의 빈 칸(저작자가 일부러 비운 것 포함)은 채우지 않는다.
+ */
+function newProjectTitleScreenSettings(): TitleScreenSettings {
+  return {
+    ...defaultTitleScreenSettings(),
+    musicResourceId: STARTER_TITLE_BGM_ID,
+    sounds: {
+      cursorSeResourceId: STARTER_TITLE_SE_IDS.cursor,
+      confirmSeResourceId: STARTER_TITLE_SE_IDS.confirm,
+      cancelSeResourceId: STARTER_TITLE_SE_IDS.cancel,
+    },
   };
 }
 
@@ -230,9 +247,10 @@ export function defaultTitleScreenSettings(): TitleScreenSettings {
   return {
     title: "새 프로젝트",
     backgroundResourceId: "oprn-title-field",
-    // 타이틀 BGM 은 의도적으로 비워 둔다("silent title" — test/titleScreenMusic.test.ts 가 계약으로 못박음).
-    // 카탈로그에 타이틀·메뉴 곡이 있으므로 저작자는 피커에서 한 번에 고르면 된다.
-    // 후보: cc0-bgm-rtp-ttl-001(새벽의 의뢰서), cc0-bgm-rtp-uix-001..005(UI · 첫 조작).
+    // 이 함수는 소리를 채우지 않는다: normalize·옛 문서 이관·titleScreen 누락 폴백의 기준이라, 여기서 곡을
+    // 채우면 이미 저장된 프로젝트(저작자가 일부러 비운 칸 포함)가 바뀐다. 새 프로젝트의 타이틀 BGM·SE 는
+    // newProjectTitleScreenSettings() 가 채운다(test/titleScreenMusic.test.ts 계약).
+    // 다른 후보: cc0-bgm-rtp-uix-001..005(UI · 첫 조작).
     layout: {
       titleX: 32,
       titleY: 48,

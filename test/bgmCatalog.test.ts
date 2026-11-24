@@ -24,7 +24,7 @@ import {
   isBgmCatalogResourceId,
 } from "@/assets/bgmCatalogRuntime";
 import { BGM_CDN_PREFIX, BGM_LOCAL_FALLBACK_PREFIX, bgmCdnBase, bgmTrackUrl } from "@/assets/bgmCdn";
-import { BGM_STARTER_TRACK_IDS } from "@/assets/bgmStarterTracks";
+import { BGM_STARTER_TRACK_IDS, STARTER_TITLE_BGM_ID } from "@/assets/bgmStarterTracks";
 import { resolveBgmCatalogAssetUrl } from "@/assets/bgmCatalogResolver";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
@@ -224,9 +224,13 @@ describe("스타터 곡 — CDN 없이도 소리가 난다", () => {
     }
   });
 
-  it("타이틀 BGM 은 기본값이 없다(의도된 무음)", () => {
-    // titleScreenMusic.test.ts 의 "silent title" 계약과 짝. 카탈로그를 기본 세트로 만들면서
-    // 이 계약을 조용히 뒤집는 회귀를 막는다 — 곡은 피커에 있고, 꽂는 건 저작자 몫이다.
+  it("타이틀 BGM: 새 프로젝트만 스타터 곡으로 채우고, 옛 문서 기준 기본값은 비어 있다", () => {
+    // titleScreenMusic.test.ts 의 계약(2026-11-24 "채운다")과 짝. 새 프로젝트의 타이틀 곡은 레포에
+    // 파일이 있는 스타터 곡이어야 하고(CDN 없는 환경에서도 재생), normalize 기준인
+    // defaultTitleScreenSettings() 는 비어 있어야 저장된 프로젝트의 빈 칸이 채워지지 않는다.
+    const title = defaultSystem(true).titleScreen;
+    expect(title?.musicResourceId).toBe(STARTER_TITLE_BGM_ID);
+    expect(BGM_STARTER_TRACK_IDS).toContain(title?.musicResourceId);
     expect(defaultTitleScreenSettings().musicResourceId).toBeUndefined();
   });
 

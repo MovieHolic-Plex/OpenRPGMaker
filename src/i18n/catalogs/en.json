@@ -987,6 +987,9 @@
 "API 키가 필요합니다. 설정을 열어 LLM API 키와 baseUrl을 입력하세요.":"An API key is required. Open settings and enter your LLM API key and baseUrl.",
 "ATB 대기 모드 전환":"Toggle ATB wait mode",
 "Actor1 흉상 — 대사 창 위 대형 초상":"Actor1 portrait: large bust above message window",
+"BGM 「{0}」을(를) 받지 못해 재생하지 못했습니다":"Could not play BGM \"{0}\": download failed",
+"BGM 「{0}」을(를) 재생하지 못했습니다":"Could not play BGM \"{0}\"",
+"BGM 「{0}」을(를) 찾을 수 없어 재생하지 못했습니다":"Could not play BGM \"{0}\": file not found",
 "BGM 모드":"BGM mode",
 "BGM 설치 요청이 실패했습니다 (HTTP {0}).":"BGM install request failed (HTTP {0}).",
 "BGM 없음":"No BGM",
@@ -18466,6 +18469,7 @@
 "모두 버리기":"Reject all",
 "모두 받기 ({0})":"Accept all ({0})",
 "받기":"Accept",
+"받기 필요":"Download needed",
 "전":"Before",
 "후":"After",
 "사라진 줄":"Missing line",
@@ -19824,6 +19828,7 @@
 "끌어당김":"Pull in",
 "시간정지 연타":"Time-stop flurry",
 "받아내기 반격":"Parry and counter",
+"받지 못함":"Download failed",
 "공중 추격":"Aerial pursuit",
 "잡기 던지기":"Grab and throw",
 "관통 후 귀환":"Pierce and return",
@@ -20169,5 +20174,9 @@
 "타이틀 BGM과 커서·결정·취소 SE는 「소리」에서 기본 BGM과 함께 편집합니다.":"Title BGM and cursor, confirm, and cancel SE are edited in Sound, together with the default BGM.",
 "기본 · 전투 · 타이틀 음악과 효과음":"Default, battle, and title music and sound effects",
 "기본 BGM {0} · {1}/9칸":"Default BGM {0} · {1}/9 slots",
-"기본 BGM 없음 · {0}/9칸":"No default BGM · {0}/9 slots"
+"기본 BGM 없음 · {0}/9칸":"No default BGM · {0}/9 slots",
+"제작법·강화":"Recipes & upgrades",
+"아이템 편집":"Edit items",
+"제작법·강화 편집 (아이템)":"Edit recipes & upgrades (Items)",
+"제작·강화 종류":"Recipe & upgrade types"
 }

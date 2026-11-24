@@ -8,6 +8,14 @@ import type { Project } from "@/project/types";
 import { AudioEngine, type AudioPlayOptions } from "./audioEngine";
 import { authoredTrackGain } from "./fade";
 import { audioChannelForCommand, resolveAudioSource } from "./audioResources";
+import { recordAudioFailure } from "./audioFailureLog";
+
+export {
+  listAudioFailures,
+  recordAudioFailure,
+  subscribeAudioFailures,
+  type AudioFailure,
+} from "./audioFailureLog";
 
 export { AudioEngine, type AudioPlayOptions, type AudioStateSnapshot } from "./audioEngine";
 export {
@@ -60,7 +68,7 @@ export function duckBgmForEffect(level: number, holdMs: number): void {
   engine?.duckBgm(level, holdMs);
 }
 
-// playAudio 명령: 리소스 해석 후 재생. 해석 실패 시 조용히 no-op.
+// playAudio 명령: 리소스 해석 후 재생. 해석 실패 시 재생은 no-op 이고 실패 기록만 남긴다.
 // Explicit channel/options override the legacy loop-derived channel.
 export function playAudioCommand(
   step: AudioTrackState & { readonly channel?: AudioChannel },
@@ -68,8 +76,11 @@ export function playAudioCommand(
   options?: AudioPlayOptions
 ): void {
   const url = resolveAudioSource(step.resourceId, project);
-  if (url === null) return;
   const channel = step.channel ?? audioChannelForCommand(step.loop);
+  if (url === null) {
+    if (step.resourceId.trim().length > 0) recordAudioFailure({ resourceId: step.resourceId, reason: "unresolved", channel });
+    return;
+  }
   // options 가 없으면 5번짜 인자를 **전달하지 않는다** — `undefined` 도 인자로 기록되서
   // 기존 호출 계약을 단정하는 테스트(test/cc0AudioPlayback.test.ts)가 깨진다.
   if (options === undefined && step.volume === undefined && step.fadeInMs === undefined) {
