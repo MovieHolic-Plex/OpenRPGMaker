@@ -124,6 +124,7 @@ describe("renderDatabaseChangeCards — 레코드 카드", () => {
     expect(describeDatabaseChanges([])).toBe("바뀐 레코드 없음");
     expect(formatDatabaseFieldValue(after, "allEnemies", "scope")).toBe("적 전체");
     expect(formatDatabaseFieldValue(after, "battle", "occasion")).toBe("전투 중");
+    expect(formatDatabaseFieldValue(after, "normal", "type")).toBe("일반");
   });
 
   it("목록 필드는 잘린 id 나열이 아니라 더한 것·뺀 것을 이름으로 말한다", () => {

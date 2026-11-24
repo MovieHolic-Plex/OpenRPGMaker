@@ -68,6 +68,7 @@ export function databaseRecordArtUrl(
 const ENUM_VALUE_LABELS: Readonly<Record<string, Readonly<Record<string, string>>>> = {
   scope: { self: "자신", ally: "아군 1명", allAllies: "아군 전체", enemy: "적 1명", allEnemies: "적 전체" },
   occasion: { always: "언제나", battle: "전투 중", field: "필드에서", never: "사용 불가" },
+  type: { normal: "일반" },
 };
 
 /** 필드 값 한 줄. 참조 id 는 그 레코드 이름으로, 없는 값은 「없음」, 나머지는 ledger 요약과 같다. */
