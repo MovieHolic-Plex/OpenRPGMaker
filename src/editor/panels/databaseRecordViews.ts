@@ -52,11 +52,14 @@ import {
   setListScrollTopForCollection,
   setSearchQueryForCollection,
   setSelectedRecordId,
+  setShowsPresetRecords,
   setViewModeForCollection,
+  showsPresetRecords,
   takeRecordRevealForSession,
   viewModeForCollection,
   type RecordViewMode,
 } from "@/editor/panels/databaseRecordViewSession";
+import { countGameDatabaseRecords, isPresetDatabaseRecord } from "@/project/databasePresetRecords";
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
 import type { ActorRecord, DatabaseRecords, EquipmentRecord, ItemRecord } from "@/project/types";
@@ -104,7 +107,11 @@ const ITEM_TYPE_CHIP_LABELS: Record<(typeof ITEM_TYPES)[number], string> = {
 
 export function renderRecordTab(host: HTMLElement, collection: DatabaseCollection, rerender: () => void): void {
   const records = store.getCurrent().database[collection];
-  const selected = selectedRecordForSession(collection, records);
+  const scope = recordScope(collection, records);
+  const selected = selectedRecordForSession(
+    collection,
+    scope.gameOnly ? records.filter((record) => !isPresetDatabaseRecord(collection, record)) as typeof records : records,
+  );
   const detailPane = el("div", { class: "db-detail-pane oprn-record-detail-pane" });
 
   // 디테일 폼만 부분 갱신한다(리스트/스크롤/검색 포커스는 유지).
@@ -152,7 +159,7 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
       selectedId: selected?.id,
       project: store.getCurrent(),
       search: recordSearch(collection, rerender),
-      footer: recordListFooter(visible.length, records.length),
+      footer: recordListFooter(visible.length, records.length, scope, collection, rerender),
       toolbar: toolbar(collection, rerender),
       onSelect,
     });
@@ -177,7 +184,7 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
         class: "db-ws-list-head",
         children: [
           el("h3", { class: "db-ws-list-title", text: COLLECTION_LABELS[collection] }),
-          recordListFooter(visible.length, records.length),
+          recordListFooter(visible.length, records.length, scope, collection, rerender),
         ],
       }),
       recordSearch(collection, rerender),
@@ -566,9 +573,11 @@ function visibleRecordRows(
   // 저장된 필터 id가 현재 컬렉션의 칩 목록에 없으면 'all'로 취급한다(손상/낡은
   // localStorage 값에서도 크래시 없이 전체 목록을 보여준다).
   const categoryFilter = effectiveCategoryFilter(collection);
+  const { gameOnly } = recordScope(collection, records);
   const visible: VisibleRow[] = [];
   let visibleIndex = 0;
   for (const [originalIndex, record] of records.entries()) {
+    if (gameOnly && isPresetDatabaseRecord(collection, record)) continue;
     // 카테고리 필터와 검색어는 AND 결합한다.
     if (categoryFilter !== "all" && !matchesCategoryFilter(collection, record, categoryFilter)) continue;
     if (searchQuery && !matchesNameOrId(record.name, record.id, searchQuery)) continue;
@@ -1006,7 +1015,53 @@ export function recordForm(
  * 목록 카운트. 필터가 걸려 있으면 `보이는/전체` 로 적어 "0개를 보여주면서 29개라고 말하는"
  * 상태를 만들지 않는다.
  */
-function recordListFooter(visibleCount: number, totalCount: number): HTMLElement {
+interface RecordScope {
+  /** 이 게임이 만든·고친 레코드 수(기본 프리셋과 값이 다른 것). */
+  readonly gameCount: number;
+  /** 프리셋을 가리는 중인가. 이 게임 것이 0 이면 가리지 않는다 — 빈 목록은 아무것도 말하지 않는다. */
+  readonly gameOnly: boolean;
+}
+
+/**
+ * 새 프로젝트가 싣고 오는 기본 프리셋(스킬 1,243·아이템 1,000…) 사이에 AI 초안과 작가의 레코드가 묻혔다.
+ * 목록은 기본으로 이 게임 것만 보이고, 목록 머리 개수 단추로 기본 프리셋까지 펼친다.
+ */
+function recordScope(collection: DatabaseCollection, records: DatabaseRecords[DatabaseCollection]): RecordScope {
+  const gameCount = countGameDatabaseRecords(collection, records);
+  return { gameCount, gameOnly: gameCount > 0 && gameCount < records.length && !showsPresetRecords(collection) };
+}
+
+function recordListFooter(
+  visibleCount: number,
+  totalCount: number,
+  scope?: RecordScope,
+  collection?: DatabaseCollection,
+  rerender?: () => void,
+): HTMLElement {
+  if (scope && collection && rerender && scope.gameCount > 0 && scope.gameCount < totalCount) {
+    const label = scope.gameOnly ? `이 게임 것 ${visibleCount}개` : `기본 포함 ${visibleCount}개`;
+    return el("div", {
+      class: "oprn-record-list-footer",
+      children: [el("button", {
+        class: "oprn-record-count db-ws-count db-record-scope",
+        text: label,
+        attrs: {
+          type: "button",
+          "aria-pressed": String(!scope.gameOnly),
+          title: scope.gameOnly
+            ? `이 게임이 만들거나 고친 ${scope.gameCount}개만 보입니다. 누르면 기본 프리셋 ${totalCount - scope.gameCount}개도 보입니다`
+            : `기본 프리셋까지 ${totalCount}개를 보입니다. 누르면 이 게임 것 ${scope.gameCount}개만 봅니다`,
+        },
+        dataset: { testid: "db-record-scope", scope: scope.gameOnly ? "game" : "all" },
+        on: {
+          click: () => {
+            setShowsPresetRecords(collection, scope.gameOnly);
+            rerender();
+          },
+        },
+      })],
+    });
+  }
   const filtered = visibleCount !== totalCount;
   return el("div", {
     class: "oprn-record-list-footer",

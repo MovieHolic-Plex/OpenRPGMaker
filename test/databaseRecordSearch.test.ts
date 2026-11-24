@@ -3,7 +3,7 @@ import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { renderRecordTab, resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
-import { searchQueryForCollection, setCategoryFilterForCollection, setViewModeForCollection } from "@/editor/panels/databaseRecordViewSession";
+import { searchQueryForCollection, setCategoryFilterForCollection, setShowsPresetRecords, setViewModeForCollection } from "@/editor/panels/databaseRecordViewSession";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 // 목록 검색은 80ms 뒤에 탭을 다시 그린다. 타이머를 즉시 돌리면, 그 사이에 옮긴 커서와
@@ -55,6 +55,45 @@ afterEach(() => {
   restoreDom = undefined;
   restoreBrowserGlobal("window", previousWindow);
   Reflect.deleteProperty(globalThis, "requestAnimationFrame");
+});
+
+describe("database record scope — 이 게임 것만", () => {
+  it("기본 프리셋 사이에 이 게임 레코드가 있으면 그것만 보이고, 개수 단추로 프리셋까지 펼친다", () => {
+    setShowsPresetRecords("items", false);
+    const presetCount = store.getCurrent().database.items.length;
+    store.update((project) => {
+      project.database.items = [...project.database.items, normalizeItemRecord({ id: "it_game_sword", name: "동검", type: "medicine" })];
+    });
+    const host = document.createElement("div") as unknown as FakeElement;
+    document.body.append(host);
+    const rerender = (): void => {
+      host.replaceChildren();
+      renderRecordTab(host, "items", rerender);
+    };
+    rerender();
+
+    expect(visibleRecordIds(host)).toEqual(["it_game_sword"]);
+    const scope = findByTestId(host, "db-record-scope");
+    if (!(scope instanceof FakeElement)) throw new Error("missing scope toggle");
+    expect(scope.textContent).toBe("이 게임 것 1개");
+    expect(scope.dataset.scope).toBe("game");
+
+    scope.click();
+    const widened = findByTestId(host, "db-record-scope");
+    if (!(widened instanceof FakeElement)) throw new Error("missing scope toggle");
+    expect(widened.dataset.scope).toBe("all");
+    expect(widened.textContent).toBe(`기본 포함 ${presetCount + 1}개`);
+    expect(visibleRecordIds(host).length).toBeGreaterThan(1);
+    setShowsPresetRecords("items", false);
+  });
+
+  it("기본 프리셋뿐이면 가리지 않고 단추도 없다", () => {
+    const host = document.createElement("div") as unknown as FakeElement;
+    document.body.append(host);
+    renderRecordTab(host, "items", () => undefined);
+    expect(findByTestId(host, "db-record-scope")).toBeFalsy();
+    expect(visibleRecordIds(host).length).toBeGreaterThan(1);
+  });
 });
 
 describe("database record search", () => {
