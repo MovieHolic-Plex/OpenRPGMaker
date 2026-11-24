@@ -47,6 +47,8 @@ export interface DraftOverview {
   readonly counts: readonly DraftCount[];
 }
 
+const MAX_PEOPLE = 4;
+
 const ROLE_LABEL: Record<DraftPersonKind, string> = { hero: "주인공", companion: "동료", boss: "보스", other: "인물" };
 
 const text = (value: unknown): string => (typeof value === "string" ? value.replace(/\s+/gu, " ").trim() : "");
@@ -104,16 +106,36 @@ function readPeople(project: Project): DraftPersonCard[] {
       bio: text(profiles[actor.id]?.note), faceResourceId: actor.faceResourceId ?? "",
     });
   });
-  const boss = profiles["boss"];
-  const bossName = text(boss?.displayName);
-  if (bossName) cards.push({ key: "boss", kind: "boss", roleLabel: ROLE_LABEL.boss, name: bossName, sub: "", bio: text(boss?.note), faceResourceId: "" });
+  // 싸움 없는 게임의 동료는 파티 밖 배우(actor_cast_*)다 — characters[배우 id] 에 소개가 있으면 동료로 세운다.
+  const seenIds = new Set(cards.map((card) => card.key));
+  for (const actor of actors) {
+    if (seenIds.has(actor.id)) continue;
+    const profile = profiles[actor.id];
+    if (!text(profile?.note) && !text(profile?.displayName)) continue;
+    seenIds.add(actor.id);
+    const className = classes.find((record) => record.id === actor.classId)?.name ?? "";
+    cards.push({
+      key: actor.id, kind: "companion", roleLabel: ROLE_LABEL.companion, name: text(profile?.displayName) || text(actor.name) || actor.id,
+      sub: [text(actor.nickname), text(className)].filter(Boolean).join(" · "),
+      bio: text(profile?.note), faceResourceId: actor.faceResourceId ?? "",
+    });
+  }
   const known = new Set(cards.map((card) => card.name));
+  const bossName = text(profiles["boss"]?.displayName);
+  if (bossName) known.add(bossName);
+  let castBoss: DraftPersonCard | null = null;
   for (const person of readBlueprintCast(project)) {
     if (known.has(person.name)) continue;
     known.add(person.name);
-    cards.push({ key: `cast:${person.name}`, kind: person.kind, roleLabel: ROLE_LABEL[person.kind], name: person.name, sub: "", bio: person.bio, faceResourceId: "" });
+    const card: DraftPersonCard = { key: `cast:${person.name}`, kind: person.kind, roleLabel: ROLE_LABEL[person.kind], name: person.name, sub: "", bio: person.bio, faceResourceId: "" };
+    if (person.kind === "boss") castBoss ??= card;
+    else cards.push(card);
   }
-  return cards;
+  // 사람은 넷까지, 보스는 따로 하나.
+  const people = cards.slice(0, MAX_PEOPLE);
+  if (bossName) people.push({ key: "boss", kind: "boss", roleLabel: ROLE_LABEL.boss, name: bossName, sub: "", bio: text(profiles["boss"]?.note), faceResourceId: "" });
+  else if (castBoss) people.push(castBoss);
+  return people;
 }
 
 function readMaps(project: Project): DraftMapNode[] {

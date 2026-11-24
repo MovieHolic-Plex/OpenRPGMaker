@@ -244,6 +244,33 @@ describe("draft overview reader", () => {
     expect(draft.maps.length).toBe(Object.keys(project.maps).length);
   });
 
+  it("adds profiled non-party actors as companions, capped at four people plus the boss", async () => {
+    const { readDraftOverview } = await import("@/editor/panels/draftOverviewData");
+    const project = createBlankProject();
+    const base = project.database.actors[0]!;
+    const ids = ["actor_hero_x", "actor_cast_1", "actor_cast_2", "actor_cast_3", "actor_cast_4"];
+    project.database.actors.push(...ids.map((id) => ({ ...base, id, name: id })));
+    project.system.startActorIds = ["actor_hero_x"];
+    project.characters = {
+      actor_hero_x: { note: "주인공 소개" },
+      actor_cast_1: { displayName: "미나", note: "울보 소녀" },
+      actor_cast_2: { displayName: "하루" },
+      actor_cast_3: { note: "말없는 소년" },
+      actor_cast_4: { displayName: "다섯째" },
+      boss: { displayName: "그림자" },
+    };
+
+    const people = readDraftOverview(project).people;
+
+    expect(people.map((person) => [person.kind, person.name, person.bio])).toEqual([
+      ["hero", "actor_hero_x", "주인공 소개"],
+      ["companion", "미나", "울보 소녀"],
+      ["companion", "하루", ""],
+      ["companion", "actor_cast_3", "말없는 소년"],
+      ["boss", "그림자", ""],
+    ]);
+  });
+
   it("falls back to the blueprint title when the world canon is empty", async () => {
     const { readDraftOverview } = await import("@/editor/panels/draftOverviewData");
     const project = createBlankProject();
