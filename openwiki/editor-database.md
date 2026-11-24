@@ -2718,3 +2718,16 @@ CSS로 접힌 작은 창·도크 상태에서는 참조 변경을 계속 반영�
 - 새 프로젝트 기본 속성 18개 이름이 한국어다(`defaultDatabaseUtilityRecords.defaultElementRecords`: 검·창·타격·활·화염·빙결·번개·물·대지·바람·신성·암흑·공격력·방어력·지력·민첩·흡수·풀). id 는 그대로다.
 - 저장된 프로젝트의 영어 기본 이름(Sword·ATK…)은 데이터를 바꾸지 않고, 작가가 손대지 않은 그 이름일 때만 표시를 한국어로 한다(`battle/skillHelp.elementDisplayName` — 속성 탭 목록·제목·예시, 적 상성 표 행, 전투 기술 배지).
 - 배율은 등급 문자(A~E) 대신 낱말로 보인다(`databaseElementPresentation.elementGradeWord`: 2배·1.5배·보통·절반·무효·흡수). 저장 값과 선택 값은 그대로 A~E 다.
+
+## 「전투 화면」 탭 실시간 미리보기 (2026-11-24, qa1124 항목 6)
+
+탭 오른쪽(좁은 화면 ≤900px 은 맨 위, 접이식)에 **진짜 전투 화면**(`mountBattleScene`)을 작게 띄운다. 설정을 바꾸면 그 설정이 보이는 장면을 처음부터 다시 돌린다.
+
+- **파일:** `panels/battleScreenPreview.ts`(패널 UI·수명) · `panels/battleScreenPreviewDemo.ts`(데모 전투·장면 대본) · 탭 연결 `databaseBattleScreenTab.ts` · CSS `styles/database/battle-studio.css` 맨 끝.
+- **데모:** 아군 1~2(시작 파티 앞 둘) 대 적 2(시작 적 그룹, 없으면 둘 이상인 첫 그룹)를 데모 프로젝트에 심는다(`prepareBattleScreenDemo`, `editor/enemyBattleTest.ts` 와 같은 발상). 부대(troops 배열 사본)·적 기록(결과 장면, `structuredClone`)·연계 기술(skills 배열 사본)은 데모 프로젝트에만 있고 **저장소에는 아무것도 쓰지 않는다**(직렬화 해시·되돌리기 기록 그대로 — `test/battleScreenPreview.test.ts`). 프로젝트 전체를 `structuredClone` 하지 않는다: 새 프로젝트도 2.07초(타일 칩셋만 1.91초)라 500ms 안에 다시 못 돈다 — **바꾸는 것만 복제하고 나머지는 읽기 전용으로 공유**한다(전투 런타임은 프로젝트를 읽기만 하며 전투 테스트도 저장소의 프로젝트를 그대로 넘긴다). 라운드제(strict)로 고정해 대기 장면에서 적이 알아서 때리지 않는다.
+- **장면(`db-battle-preview-scene-*`):** 대기 · 공격(아군이 때림) · 피격(아군 방어 → 적이 달려들어 맞음) · 연계기(복제본에만 있는 「합체 공격」) · 결과(적 체력 1·경험치 500 → 레벨 업 연출). 장면은 사람이 누르는 것과 같은 길(명령 단추·대상 클릭)로 한 번만 보낸다. 몬스터 대치(포켓몬식)는 「공격」 단추가 없어 「스킬」 목록의 첫 단일 적 피해 기술을 쓴다.
+- **설정 → 장면:** 타격감·적 달려드는 속도 → 피격 · 맞힌 뒤 상성 알림·전투 흐름 → 공격 · 연계기 컷인·화려함 → 연계기 · 레벨 업 연출 카드 전부 → 결과 · 전투 방식·꾸미기·적 약점 표시·기술 도움말·적 그림 움직임 → 대기. `updateSystem(mutator, scene)` 가 저장 직후 `preview.replay(scene)` 를 부른다. 탭이 다시 그려져도 같은 미리보기 객체를 새 틀에 다시 붙인다(`previewFor(host)`).
+- **수명:** `registerDatabasePreview`(databasePreviewLifecycle.ts)에 묶인다 — 탭을 떠나거나 모달을 닫으면 `.battle-scene`·`setInterval`·창 리스너·소리 잠금을 모두 푼다. 「접기」도 같다. 「전투 테스트」를 누르면(진짜 전투가 위에 열림) 미리보기를 멈추고 「다시 재생」으로 돌아온다.
+- **격리:** 무대 상자는 `.db-battle-screen-preview-box`(4:3, `contain: layout paint; overflow: hidden`)이고 `inert` 라 편집기 포커스·클릭이 안 들어간다. `mountBattleScene` 옵션 `isolateInput` 으로 **창 keydown/keyup 리스너를 달지 않는다** — 편집기의 타이핑·단축키가 보이지 않는 전투를 움직이지 못한다. 전투 규칙은 복제본으로 돌지만 전투 DOM 은 `store.getCurrent()` 로 설정을 읽는다(지금 저장된 값이라 같다). 명령 창만 복제본의 기술·연계기를 보도록 `mountBattleScene({ project })` → `BattleCommandPanelOptions.project`(`battleCommandDom.listingProject`, 한 번 그리는 동안만).
+- **소리:** 기본 꺼짐. `player/battleAudioMute.ts` 의 `holdBattleAudioMute()` 를 쥐는 동안 합성음(`battleSfx.ensureContext`)·샘플·몬스터 세트·저작 슬롯(`battleJuice`)·이펙트 프레임(`battleAnimationDom`)·팡파레(`battleFanfareDom`)가 모두 침묵한다. 「소리」 체크로 켜면 다시 마운트한다. 실제 플레이·전투 테스트는 잠금을 쥐지 않아 그대로다.
+- **testid:** `db-battle-screen-preview`(`data-preview-state`=mounted|idle|collapsed|paused|unavailable|error · `data-preview-scene` · `data-preview-mounts`) · `db-battle-preview-stage` · `db-battle-preview-scene-<장면>` · `db-battle-preview-replay` · `db-battle-preview-sound` · `db-battle-preview-collapse` · `db-battle-preview-status`.
