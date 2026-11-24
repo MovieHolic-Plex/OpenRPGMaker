@@ -1,4 +1,4 @@
-import { expect } from "vitest";
+import { expect, vi } from "vitest";
 import { getMapEditHistoryDepth, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
 import { resolveTarget, type CorpusCase, type CorpusSetup, type FixtureName } from "@/editor/smallTask/primitives/corpusSchema";
@@ -17,6 +17,10 @@ import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
+
+// The first case of a file pays the one-time costs (fixture build, first freeze, module warm-up). A slow shared runner must not turn that
+// into a failure of the whole file, so the default per-case limit is raised for every file that uses this harness. Cases that set their own limit keep it.
+vi.setConfig({ testTimeout: 120_000 });
 
 function buildFixtureProject(fixture: FixtureName): Project {
   switch (fixture) {
