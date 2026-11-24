@@ -45,9 +45,8 @@ describe("canvas tool pill", () => {
     expect(fake.classList.contains("canvas-tool-pill")).toBe(true);
     expect(ids(fake)).toEqual([
       "tool-paint",
-      "tool-rect",
+      "tool-select",
       "tool-fill",
-      "tool-pan",
       "canvas-tool-pill-divider",
       "canvas-tool-undo",
       "editor-zoom-group",
@@ -61,6 +60,8 @@ describe("canvas tool pill", () => {
       "map-background-preview-toggle",
       "editor-grid-toggle",
       "editor-map-screenshot-button",
+      "tool-rect",
+      "tool-pan",
     ]) {
       expect(fake.querySelector(`[data-testid="${gone}"]`), gone).toBeNull();
     }
@@ -79,13 +80,12 @@ describe("canvas tool pill", () => {
 
   it("drives the shared tool state and reflects it as the pressed button", () => {
     let fake = render();
-    (fake.querySelector('[data-testid="tool-rect"]') as FakeElement).click();
-    expect(editorState.get()).toMatchObject({ tool: "paint", paintShape: "rect" });
+    (fake.querySelector('[data-testid="tool-select"]') as FakeElement).click();
+    expect(editorState.get()).toMatchObject({ tool: "select" });
     fake = render();
-    expect(fake.querySelector('[data-testid="tool-rect"]')?.getAttribute("aria-pressed")).toBe("true");
+    expect(fake.querySelector('[data-testid="tool-select"]')?.getAttribute("aria-pressed")).toBe("true");
+    expect(fake.querySelector('[data-testid="tool-select"]')?.getAttribute("aria-label")).toBe("영역 선택");
     expect(fake.querySelector('[data-testid="tool-paint"]')?.getAttribute("aria-pressed")).toBe("false");
-    (fake.querySelector('[data-testid="tool-pan"]') as FakeElement).click();
-    expect(editorState.get().tool).toBe("pan");
     (fake.querySelector('[data-testid="tool-fill"]') as FakeElement).click();
     expect(editorState.get().tool).toBe("fill");
   });
@@ -96,11 +96,21 @@ describe("canvas tool pill", () => {
     expect(undo?.disabled).toBe(true);
   });
 
-  it("drops the tile tools on the event layer but keeps undo and zoom", () => {
+  it("drops the tile tools on the event layer but keeps region select, undo and zoom", () => {
     editorState.set({ layer: "event", tool: "event" });
     const fake = render();
     expect(fake.querySelector('[data-testid="tool-paint"]')).toBeNull();
+    expect(fake.querySelector('[data-testid="tool-fill"]')).toBeNull();
+    expect(fake.querySelector('[data-testid="tool-select"]')).toBeTruthy();
     expect(fake.querySelector('[data-testid="canvas-tool-undo"]')).toBeTruthy();
     expect(fake.querySelector('[data-testid="editor-zoom-stepper"]')).toBeTruthy();
+  });
+
+  it("shows only region select on the terrain (relief) tool", () => {
+    editorState.set({ layer: "lower", tool: "relief" });
+    const fake = render();
+    expect(fake.querySelector('[data-testid="tool-paint"]')).toBeNull();
+    expect(fake.querySelector('[data-testid="tool-fill"]')).toBeNull();
+    expect(fake.querySelector('[data-testid="tool-select"]')).toBeTruthy();
   });
 });

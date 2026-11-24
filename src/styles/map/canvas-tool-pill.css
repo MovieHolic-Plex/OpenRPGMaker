@@ -32,6 +32,11 @@
   padding: 0 8px;
 }
 
+/* 글자를 단 도구(영역 선택) — 아이콘과 글자 사이 4px. */
+.canvas-tool-pill-button-text {
+  margin-left: 4px;
+}
+
 .canvas-tool-pill-icon {
   fill: none;
   flex: none;

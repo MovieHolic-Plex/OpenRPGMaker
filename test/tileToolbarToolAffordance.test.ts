@@ -105,7 +105,7 @@ describe("도구막대 표기", () => {
   it("도구마다 hotkeys.ts 의 단축키를 툴팁에 적는다", () => {
     const expected: ReadonlyArray<readonly [string, string]> = [
       ["palette-tool-paint", "칠하기 (B)"],
-      ["tool-select", "영역 선택 (V)"],
+      ["palette-tool-select", "영역 선택 (V)"],
       ["tool-erase", "지우기 (E)"],
       ["palette-tool-fill", "이어진 영역 채우기 (G)"],
     ];

@@ -34,7 +34,8 @@ type TileToolbarItem = {
 // 되돌리기/다시실행은 이 목록에 없다 — 도구를 «고르는» 것이 아니라 «실행하는» 것이고,
 // 각자 펼쳐보기 메뉴를 달고 다니므로 makeTileHistoryControls 가 한 쌍으로 낸다.
 const TOOLBAR_ITEMS: readonly TileToolbarItem[] = [
-  { id: "select", label: "영역 선택", hotkey: "V", icon: "select", testid: "tool-select" },
+  // 영역 선택도 캔버스 알약에 있다(2026-11-24) — 알약이 tool-select 를 갖는다.
+  { id: "select", label: "영역 선택", hotkey: "V", icon: "select", testid: "palette-tool-select" },
   // 아이콘은 초보 레일과 같은 brush 를 쓴다 — 한 행위에 두 글리프를 두지 않는다.
   // 칠하기·채우기는 캔버스 알약에도 있다(2026-11) — 한 화면에 같은 testid 가 둘이면 자동화가 어느 쪽인지 모른다. 알약이 tool-paint/tool-fill 을 갖는다.
   { id: "pen", label: "칠하기", hotkey: "B", icon: "brush", testid: "palette-tool-paint" },
