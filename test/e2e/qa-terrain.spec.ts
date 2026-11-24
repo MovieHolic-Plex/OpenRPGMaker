@@ -14,6 +14,12 @@ async function gotoExpert(page: Page): Promise<void> {
   await page.goto("/?freshProject=1");
 }
 
+// 칸 DOM 격자는 「칸 편집」 을 켰을 때만 있다(qa1124-space PR6). 이미 켜져 있으면 그대로 둔다.
+async function openTileGrid(page: Page): Promise<void> {
+  const toggle = page.getByTestId("tileset-grid-edit");
+  if ((await toggle.getAttribute("aria-pressed")) !== "true") await toggle.click();
+}
+
 test.describe("QA sweep: terrain tab", () => {
   test("field edit round trip persists across tab switch and export, with boundary clamps", async ({ page }) => {
     test.setTimeout(120_000);
@@ -106,6 +112,7 @@ test.describe("QA sweep: tilesets tab", () => {
     await openDatabase(page);
     await switchDatabaseTab(page, TILESETS_TAB);
     await page.getByTestId(TOWN_TILESET_ROW).click();
+    await openTileGrid(page);
 
     // tile 0 starts blocked (mark-x) per default chipset data
     await expect(page.getByTestId("tileset-db-cell-0")).toHaveClass(/mark-x/);
@@ -147,6 +154,7 @@ test.describe("QA sweep: tilesets tab", () => {
     await openDatabase(page);
     await switchDatabaseTab(page, TILESETS_TAB);
     await page.getByTestId(TOWN_TILESET_ROW).click();
+    await openTileGrid(page);
 
     await page.getByTestId("tileset-edit-mode-terrain").click();
     await expect(page.getByTestId("tileset-db-cell-3")).toHaveText("0");
@@ -170,6 +178,7 @@ test.describe("QA sweep: tilesets tab", () => {
     await openDatabase(page);
     await switchDatabaseTab(page, TILESETS_TAB);
     await page.getByTestId(TOWN_TILESET_ROW).click();
+    await openTileGrid(page);
 
     const nameInput = page.locator('[data-testid="tileset-oprn-name"] input');
     await nameInput.fill("QA타일셋이름변경됨");

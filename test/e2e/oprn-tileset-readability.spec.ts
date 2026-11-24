@@ -1,5 +1,11 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { expectReadableControl } from "./oprn-database-helpers";
+
+// 칸 DOM 격자는 「칸 편집」 을 켰을 때만 있다(qa1124-space PR6). 이미 켜져 있으면 그대로 둔다.
+async function openTileGrid(page: Page): Promise<void> {
+  const toggle = page.getByTestId("tileset-grid-edit");
+  if ((await toggle.getAttribute("aria-pressed")) !== "true") await toggle.click();
+}
 
 // 3탭 재편(2026-07-05): 타일 규칙 / 타일 지식(단어장) / 구성.
 test("tileset section tabs keep Korean controls readable and split features", async ({ page }, testInfo) => {
@@ -32,6 +38,7 @@ test("tileset section tabs keep Korean controls readable and split features", as
   await expectReadableControl(page.getByTestId("tileset-settings-open"), "tileset detailed passage button");
 
   await expect(page.getByTestId("tileset-edit-mode-passage")).toHaveAttribute("aria-selected", "true");
+  await openTileGrid(page);
   await expect(page.getByTestId("tileset-db-cell-0")).toHaveClass(/mark-(o|x|star)/);
   await page.getByTestId("tileset-edit-mode-terrain").click();
   await expect(page.getByTestId("tileset-edit-mode-terrain")).toHaveAttribute("aria-selected", "true");

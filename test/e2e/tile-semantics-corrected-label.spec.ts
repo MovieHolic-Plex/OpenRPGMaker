@@ -11,10 +11,16 @@
 // 즉 이 한 줄이 [시맨틱 테이블 → tileMeta 시드 → DB 화면] 배선 전체를 통과한다.
 import { mkdirSync } from "node:fs";
 import path from "node:path";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { RETRO_EXTERIOR_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsRetroExterior";
 import { bootDbLane, switchTabAnyMode } from "./dbAuditHelpers";
 import { DATABASE_TAB_SPECS } from "./oprn-database-helpers";
+
+// 칸 DOM 격자는 「칸 편집」 을 켰을 때만 있다(qa1124-space PR6). 이미 켜져 있으면 그대로 둔다.
+async function openTileGrid(page: Page): Promise<void> {
+  const toggle = page.getByTestId("tileset-grid-edit");
+  if ((await toggle.getAttribute("aria-pressed")) !== "true") await toggle.click();
+}
 
 test.setTimeout(120_000);
 test.use({ serviceWorkers: "block" });
@@ -39,6 +45,7 @@ test("교정된 179번 타일 의미가 타일셋 DB 의미 편집 다이얼로�
   await expect(page.getByTestId(RETRO_EXTERIOR_ROW)).toHaveClass(/active/);
   await expect(page.getByTestId("tileset-db-preview")).toBeVisible({ timeout: 15_000 });
 
+  await openTileGrid(page);
   const cell = page.getByTestId(`tileset-db-cell-${TILE}`);
   await expect(cell).toBeAttached();
   await cell.click({ button: "right", force: true });

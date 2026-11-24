@@ -3,6 +3,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderTilesetEditor } from "@/editor/panels/tilesetSettingsDetails";
 import { setTilesetMetadataEditMode } from "@/editor/panels/tilesetMetadataEditor";
+import { setChipsetGridEditing } from "@/editor/panels/tilesetChipsetPreview";
 import { setTileBackingOverride, userTileBackingOverride, userTileLayerOverride } from "@/editor/runtimeTileMetadata";
 import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { tileBackingTile } from "@/editor/tileLayerPolicy";
@@ -13,6 +14,10 @@ import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
 import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const CONIFER_TRUNK = 290;
+
+// 아래 시험은 칸 DOM 격자(「칸 편집」)를 다룬다 — 기본 보기는 정적 시트다(qa1124-space PR6).
+beforeEach(() => setChipsetGridEditing(true));
+afterEach(() => setChipsetGridEditing(false));
 
 describe("타일 레이어·배경 정책 편집기 표면", () => {
   let restoreDom: (() => void) | null = null;

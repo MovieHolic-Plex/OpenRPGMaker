@@ -3,7 +3,7 @@
 // - 통행/지형 편집도 user 메타로 기록되어 하네스 재적용에 살아남는다.
 // - 지형 템플릿(교과서)은 구성 탭으로 이사했다.
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { passageGlyph } from "@/editor/panels/tilesetChipsetPreview";
+import { passageGlyph, setChipsetGridEditing } from "@/editor/panels/tilesetChipsetPreview";
 import { renderTilesetEditor } from "@/editor/panels/tilesetSettingsDetails";
 import {
   getTilesetPassagePaint,
@@ -31,6 +31,10 @@ import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 const SLOPED_ROOF = 385; // 투명 칩 — 자동 판정은 상위.
 const STRAIGHT_ROOF = 404; // 불투명 — 자동 판정은 하위.
+
+// 아래 시험은 칸 DOM 격자(「칸 편집」)를 다룬다 — 기본 보기는 정적 시트다(qa1124-space PR6).
+beforeEach(() => setChipsetGridEditing(true));
+afterEach(() => setChipsetGridEditing(false));
 
 describe("타일 레이어 수동 지정(setTileLayerOverride)", () => {
   it("하위로 확정하면 userLocked 메타로 기록되고 하네스 재적용에도 유지된다", () => {
@@ -201,6 +205,18 @@ describe("타일셋 섹션 UI", () => {
     // 메뉴 닫힌 뒤에는 Escape 가 DB 를 닫을 수 있음
     controller.handleKeyDown({ key: "Escape", defaultPrevented: false } as Event);
     expect(closed).toBe(true);
+  });
+
+  it("기본 보기는 칸 DOM 없이 시트 그림·통행 덮개·선택 표시이고, 「칸 편집」 을 켜야 칸이 생긴다", () => {
+    setChipsetGridEditing(false);
+    const editor = renderEditor();
+    expect(findByTestId(editor, "tileset-db-cell-0")).toBeNull();
+    expect(findByTestId(editor, "tileset-passage-overlay")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-static-selection")).toBeTruthy();
+    expect(findByTestId(editor, "tileset-grid-edit")).toBeTruthy();
+
+    (findByTestId(editor, "tileset-grid-edit") as unknown as HTMLElement).click();
+    expect(findByTestId(renderEditor(), "tileset-db-cell-0")).toBeTruthy();
   });
 
   it("칩셋 프리뷰에 레이어 필터·범례·셀 layer 속성이 있다", () => {
