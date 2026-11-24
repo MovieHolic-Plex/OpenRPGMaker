@@ -83,7 +83,6 @@
   "1e3056d0d035": "[event] center",
   "1f34b3409319": "[event] minmax(72px, 92px) minmax(0, 1fr)",
   "1f8c5b47fd4c": "[event] keep-all",
-  "1ff6ecae5ab5": "[event] minmax(0, 1.4fr) minmax(220px, 300px)",
   "20031de27b15": "[event] minmax(0, 1fr)",
   "201cefbf37f4": "[event] wrap",
   "20a702a0727f": "[event] var(--bg-raised)",

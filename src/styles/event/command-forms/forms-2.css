@@ -535,6 +535,12 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
+/* 장소 이동: 오른쪽 범용 미리보기는 숨기는데(command-preview.css) 두 번째 칸(240~320px)은 남아,
+   390 에서 본문이 20px 로 줄고 글자가 창 밖으로 밀렸다(명령 검토 b PR8, 실측 gtc 20px 300px). 한 칸으로. */
+.event-command-edit-columns:has(.transfer-command-editor-inline) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 /* 애니메이션 표시: 본문이 진짜 재생 표시면을 직접 갖는다.
    오른쪽 범용 프리뷰까지 다시 그리면 같은 연출이 한 모달에 둘이 된다. */
 .event-command-edit-columns:has([data-testid="show-animation-command-body"]) {

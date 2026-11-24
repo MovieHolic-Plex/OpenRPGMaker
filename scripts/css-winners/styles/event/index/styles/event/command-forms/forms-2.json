@@ -2,6 +2,7 @@
  "entry": "src/styles/event/index.css",
  "file": "src/styles/event/command-forms/forms-2.css",
  "contested": {
+  "1ff6ecae5ab5": ".event-command-edit-columns:has(.transfer-command-editor-inline)|grid-template-columns  (경쟁 2)",
   "24dcbcffacdd": ".event-command-edit-body|border  (경쟁 2)",
   "4e12fd4a0cb8": ".event-command-edit-body|background  (경쟁 3)",
   "63545a69923a": ".event-graphic-resource-list|border-radius  (경쟁 2)",
@@ -93,6 +94,7 @@
   "1f3826b057c1": "[event] grid",
   "1f9c6b138548": "[event] 11px",
   "1fec3c15ce51": "[event] 1 / -1",
+  "1ff6ecae5ab5": "[event] minmax(0, 1fr)",
   "20393a14772d": "[event] 4px",
   "20408a1a7d60": "[event] 700 12px/16px ui-monospace, monospace",
   "205f4a1e3343": "[event] 1px solid var(--border-soft, var(--border-subtle))",
