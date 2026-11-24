@@ -1,4 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+// 생활 시스템이 켜진 상태(도구 16개가 레지스트리에 실린다)를 검증한다 — 기본값(false)이면 조수 도구 목록에서 빠진다(electron/shared/lifeSim.ts, #4994).
+vi.mock('../electron/shared/lifeSim', () => ({ LIFE_SIM_ENABLED: true, LIFE_SIM_CLOSED_TITLE: '', LIFE_SIM_CLOSED_BODY: '', LIFE_SIM_CLOSED_NOTICE: '' }));
 import { buildSessionRegistryTools } from '@/ai/sessionToolExposure';
 import { FIRST_PLAY_TOOLS } from '@/ai/piAgent/firstPlay';
 import { activeTools, getTool } from '@/editor/tools/toolRegistry';
@@ -126,6 +128,7 @@ describe('assistant playable-pattern manuals', () => {
     expect(reading(project, 'choice-endings').authoringState.absentProjectFields).toContain('endings');
   });
 
+  // 생활(농사) 프리셋은 생활 시스템이 켜진 상태의 도구를 가리킨다 — 파일 머리의 lifeSim mock 을 본다(#4994).
   it('references only active tools and classifies every declared write accurately', () => {
     const tools = new Map(activeTools().map(tool => [tool.name, tool]));
     for (const preset of AUTHORING_PRESETS) {

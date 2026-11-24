@@ -1,4 +1,7 @@
 vi.mock("@/editor/panels/aiActivitySave", () => ({ observeActivitySave: vi.fn() }));
+// 이 파일은 v1 단독 실행(계획 턴·검수·적용 방식)을 검증한다. 조수 기본이 v2 로 바뀐 뒤(#4973) v2 단독 턴은 계획 턴을 건너뛰므로,
+// 되돌리는 길(「oprn:assistant-v2」="0")과 같은 v1 상태로 고정한다.
+vi.mock("@/ai/v2/shared/switch", () => ({ isAssistantV2Enabled: () => false }));
 // Pi 경로(2026-09-10 이후 기본)에도 실행 결과 4축(ai-run-outcome)이 산다 — 세션 경로만
 // 있던 불일치(2026-09-11 실측: 20턴 내내 1회도 미렌더)의 회귀.
 // 렌더는 패널이 소유하고, 여기선 surface.setRunOutcome 으로 흘린 facts 만 고정한다.
