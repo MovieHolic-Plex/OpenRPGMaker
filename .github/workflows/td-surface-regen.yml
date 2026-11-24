@@ -1,0 +1,45 @@
+name: td-surface-regen
+on:
+  push:
+    branches: ['agent/test-diet-surface-regen']
+permissions:
+  contents: read
+jobs:
+  regen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { axis: Shell, env: SHELL_SURFACE_UPDATE }
+          - { axis: Form, env: FORM_SURFACE_UPDATE }
+          - { axis: M2, env: M2_SURFACE_UPDATE }
+          - { axis: Condition, env: CONDITION_SURFACE_UPDATE }
+          - { axis: Portal, env: PORTAL_SURFACE_UPDATE }
+          - { axis: Interaction, env: INTERACTION_SURFACE_UPDATE }
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/linux-ci
+      - name: 갱신 모드로 표면 재생성
+        # assertNoUpdateEnvInCI 가 CI 에서 *_SURFACE_UPDATE 를 막는다. 임시 재생성 전용이라 이 스텝에서만 CI 를 비우고 OPRN_LOCAL_TESTS=1 로 러너 가드를 연다.
+        env:
+          CI: ''
+          OPRN_LOCAL_TESTS: '1'
+        run: |
+          set +e
+          export ${{ matrix.env }}=1
+          node scripts/run-vitest.mjs run --configLoader bundle --maxWorkers=1 test/eventEditor${{ matrix.axis }}Surface.baseline.test.ts 2>&1 | tee $RUNNER_TEMP/regen.log
+          git status --short
+          git diff --stat
+          exit 0
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: regen-${{ matrix.axis }}
+          path: |
+            test/fixtures/eventEditor${{ matrix.axis }}Surface.baseline.json
+            test/fixtures/eventEditor${{ matrix.axis }}Surface.floor.json
+            ${{ runner.temp }}/regen.log
