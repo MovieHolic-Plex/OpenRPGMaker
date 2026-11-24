@@ -5,7 +5,7 @@
  *   OPRN_DEV_URL=http://127.0.0.1:<DEV_SERVER_PORT>/ (기본: .env.local 의 DEV_SERVER_PORT)
  *
  * 편집기는 `?blankProject=1` 빈 프로젝트로 띄운다(fixture 가 아니라 사용자가 새로 만든 게임과 같은 출발점).
- * Flow 1: 자료집 → 적 → 「+ 새 적」 → 「+ 9칸 도트 시트 생성·편집」 → 생성 → 9칸 시트 + 초안 무대의
+ * Flow 1: 자료집 → 적 → 「+ 새 적」 → 「고급」 펼치기 → 「+ 9칸 도트 시트 생성·편집」 → 생성 → 9칸 시트 + 초안 무대의
  *         대기·공격·스킬·피격·쓰러짐 → 적용 → 적 도트 미리보기 카드가 저작 시트로 바뀐다.
  * Flow 2: AI 조수와 같은 runTool 경로(window.__oprnEditorTool)로 author_enemy_pixel_sheet ×3 + upsert_troop +
  *         시작 맵 자동 시작(trigger auto) battleProcessing 이벤트(upsert_event) → 편집기 store 를 직렬화해
@@ -89,6 +89,8 @@ if (!args.flow3Only) {
   const name = page.locator('.database-modal-window [data-testid="db-field-name"]:visible').first();
   await name.fill("가시 자수정 늑대");
   await name.dispatchEvent("change");
+  // 공방은 기본으로 접힌 「고급」 안에 있다(2026-11-24). 실제 사용자 경로: 머리줄을 먼저 펼친다.
+  await page.locator(".database-modal-window details.db-enemy-advanced > summary").click();
   await page.locator('[data-testid="db-enemy-pixel-studio-toggle"]').click();
   const studio = page.locator('[data-testid="db-enemy-pixel-studio"]');
   await studio.locator('[data-testid="db-pixel-studio-archetype"]').selectOption("beast");
