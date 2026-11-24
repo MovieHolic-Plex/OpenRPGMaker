@@ -115,7 +115,7 @@ function monsterCatalog(project: Project) {
   const uploads = resourceManagerUploadDependency(project);
   if (!catalogCache || catalogCache.profiles !== project.resourceProfiles || catalogCache.uploads !== uploads
     || !jsonEqual(catalogCache.metadata, project.monsterMetadata)) {
-    const resources = listMonsterResources(project);
+    const resources = listMonsterResources(project, { emeraldV4: true });
     catalogCache = { profiles: project.resourceProfiles, uploads, metadata: project.monsterMetadata,
       resources, byId: new Map(resources.map(r => [r.resourceId, r])) };
   }

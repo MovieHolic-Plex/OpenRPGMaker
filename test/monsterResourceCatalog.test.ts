@@ -42,6 +42,14 @@ describe("monster resource authority", () => {
     for (const retired of RETIRED) expect(resources.some(resource => resource.resourceId === retired)).toBe(false);
   });
 
+  it("에메랄드 v4 종 그림은 기본 목록(JRPG 적)에 없고 emeraldV4 를 준 목록에만 있다", () => {
+    const plain = listMonsterResources(project).map(resource => resource.resourceId);
+    const collect = listMonsterResources(project, { emeraldV4: true }).map(resource => resource.resourceId);
+    expect(plain.some(resourceId => resourceId.startsWith("emerald-v4-"))).toBe(false);
+    expect(collect.filter(resourceId => resourceId.startsWith("emerald-v4-")).length).toBe(120);
+    expect(getMonsterResource(project, "emerald-v4-" + collect.find(resourceId => resourceId.startsWith("emerald-v4-"))!.slice("emerald-v4-".length))).toBeDefined();
+  });
+
   it("inherits catalog fields independently when an explicit project description clears the default", () => {
     // Given
     const source = { ...project, monsterMetadata: { [id]: { description: "" } } };

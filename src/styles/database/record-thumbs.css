@@ -252,6 +252,27 @@
   width: 100%;
 }
 
+.db-resource-picker-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1, 4px);
+  margin-bottom: 8px;
+}
+
+.db-resource-picker-group {
+  background: transparent;
+  border: var(--stroke-1, 1px) solid var(--db-studio-border-subtle, rgba(42, 37, 33, 0.2));
+  border-radius: 999px;
+  cursor: pointer;
+  padding: 2px 10px;
+}
+
+.db-resource-picker-group.active {
+  background: var(--accent-muted, rgba(120, 140, 255, 0.22));
+  border-color: currentColor;
+  font-weight: 600;
+}
+
 .db-resource-picker-grid {
   display: grid;
   gap: 10px;
