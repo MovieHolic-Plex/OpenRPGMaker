@@ -26,7 +26,7 @@ afterEach(() => resetIntentDeclarationCache());
 // Heavy under CI load (15s default is too tight): runs real AssistantSession turns.
 describe("request-bound verify_npc_reward session tool", { timeout: 120_000 }, () => {
   it("R1 exposes the tool and completes through its real session boundary", async () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const h = harness(f, [call("verify_npc_reward", { requirementIndex: 0, prelude: f.prelude })]);
     const before = structuredClone(f.project);
     const result = await h.session.sendUserMessage("Verify the chief reward after acquiring the key", h.onEvent);
@@ -47,14 +47,14 @@ describe("request-bound verify_npc_reward session tool", { timeout: 120_000 }, (
     { prelude: [{ kind: "expect", goldDelta: 20 }] },
     { prelude: [{ kind: "walk", mapId: "map_blank_start", to: { x: 2, y: 2, extra: true } }] },
   ])("R10 rejects malformed input before execution %j", async extra => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const h = harness(f, [call("verify_npc_reward", { requirementIndex: 0, prelude: f.prelude, ...extra })]);
     await h.session.sendUserMessage("Verify the chief reward", h.onEvent);
     expect(h.results()[0]).toMatchObject({ ok: false, data: { executed: false } });
     expect(h.session.getProposedProject()).toEqual(f.project);
   });
   it("R12 valid failed replacement cannot fall back to an old pass or fresh-local proof", async () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const h = harness(f, [
       call("verify_npc_reward", { requirementIndex: 0, prelude: f.prelude }),
       call("verify_npc_reward", { requirementIndex: 0, prelude: [] }),
@@ -64,7 +64,7 @@ describe("request-bound verify_npc_reward session tool", { timeout: 120_000 }, (
     expect(result.assistantText).not.toContain(COMPLETE);
   });
   it("R12 preserves witness across retry and replan without weakening the requirement", async () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const interruption = Object.assign(new Error("Test authentication interruption"), { status: 401, name: "LlmError" });
     const h = harness(f, [call("verify_npc_reward", { requirementIndex: 0, prelude: f.prelude }), interruption]);
     expect((await h.session.sendUserMessage("Verify the chief reward", h.onEvent)).stoppedReason).toBe("error");
@@ -76,7 +76,7 @@ describe("request-bound verify_npc_reward session tool", { timeout: 120_000 }, (
     expect(h.results("complete_work_item")[0]?.ok).toBe(true);
   });
   it("R13 cannot erase an unrelated failed scene check", async () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const h = harness(f, [
       call("run_scene_test", { mapId: f.village.id, start: f.project.startPos, steps: [{ kind: "expect", variableEquals: { unrelated: 99 } }] }),
       call("verify_npc_reward", { requirementIndex: 0, prelude: f.prelude }),
@@ -88,7 +88,7 @@ describe("request-bound verify_npc_reward session tool", { timeout: 120_000 }, (
   });
 
   it("R11/12 replays current content after a pass, replan, explicit completion and final skip", async () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const brokenChest = structuredClone(f.chest);
     brokenChest.pages![0].commands = [];
     const h = harness(f, [
@@ -106,7 +106,7 @@ describe("request-bound verify_npc_reward session tool", { timeout: 120_000 }, (
   });
 
   it("R12 preserves witness and immutable selections over a real user continuation", async () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const interruption = Object.assign(new Error("Test authentication interruption"), { status: 401, name: "LlmError" });
     const h = harness(f, [
       call("set_work_plan", { goal: "Finish", layers: [{ title: "Finish", items: [{ title: "Check", instruction: "Inspect database then finish", successTools: ["get_database_records"] }] }] }),
@@ -122,7 +122,7 @@ describe("request-bound verify_npc_reward session tool", { timeout: 120_000 }, (
   });
 
   it("R12 a new request lifetime does not inherit the earlier route", async () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const h = harness(f, [call("verify_npc_reward", { requirementIndex: 0, prelude: f.prelude })]);
     expect((await h.session.sendUserMessage("Verify the chief reward", h.onEvent)).assistantText).toBe(COMPLETE);
     const result = await h.session.sendUserMessage("Verify this as a new independent reward request", h.onEvent);
@@ -131,7 +131,7 @@ describe("request-bound verify_npc_reward session tool", { timeout: 120_000 }, (
   });
 
   it("R12 never falls back to an easier fresh-local pass after content changes", async () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const earlyChief = structuredClone(f.chief);
     earlyChief.pages = [earlyChief.pages![1], earlyChief.pages![2]];
     earlyChief.pages[0].conditions = [];
@@ -144,7 +144,7 @@ describe("request-bound verify_npc_reward session tool", { timeout: 120_000 }, (
   });
 
   it("R12 a valid replacement is run afresh and can repair a failed route", async () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const h = harness(f, [call("verify_npc_reward", { requirementIndex: 0, prelude: [] }), call("verify_npc_reward", { requirementIndex: 0, prelude: f.prelude })]);
     const result = await h.session.sendUserMessage("Verify the chief reward", h.onEvent);
     expect(h.results().map(r => r.ok)).toEqual([false, true]);
@@ -152,7 +152,7 @@ describe("request-bound verify_npc_reward session tool", { timeout: 120_000 }, (
   });
 
   it("R12 keeps the stored program private from observer-owned arguments", async () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const h = harness(f, [call("verify_npc_reward", { requirementIndex: 0, prelude: f.prelude })]);
     const result = await h.session.sendUserMessage("Verify the chief reward", event => {
       h.onEvent(event);
@@ -163,7 +163,7 @@ describe("request-bound verify_npc_reward session tool", { timeout: 120_000 }, (
   });
 
   it("R6 rejects session witness replacement after a same-named NPC moves to another map", async () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     f.requirement = { ...f.requirement, target: { eventName: CHIEF } };
     const h = harness(f, [
       call("verify_npc_reward", { requirementIndex: 0, prelude: f.prelude }),
@@ -180,7 +180,7 @@ describe("request-bound verify_npc_reward session tool", { timeout: 120_000 }, (
   });
 
   it("R12 preserves the witness through the milestone application rebase boundary", async () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const interruption = Object.assign(new Error("Test authentication interruption"), { status: 401, name: "LlmError" });
     const h = harness(f, [call("verify_npc_reward", { requirementIndex: 0, prelude: f.prelude }), interruption]);
     expect((await h.session.sendUserMessage("Verify the chief reward", h.onEvent)).stoppedReason).toBe("error");
@@ -190,7 +190,7 @@ describe("request-bound verify_npc_reward session tool", { timeout: 120_000 }, (
   });
 
   it("R13 a reward proof cannot clear image or original-baseline change obligations", async () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const h = harness(f, [
       call("set_work_plan", { goal: "Required acceptance", acceptance: [
         { id: "image", title: "Image", criteria: [{ kind: "imageReviewed", target: { mapId: f.village.id } }] },

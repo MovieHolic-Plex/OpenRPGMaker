@@ -1,5 +1,6 @@
 import { EVENT_TOOLS } from "@/editor/tools/eventTools";
 import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject } from "./support/sharedBlankProject";
 import type { Command, EventPage, GameEvent } from "@/project/types";
 import type { NpcRewardRequirement } from "@/ai/intentDeclaration";
 import type { NpcRewardPreludeStep, NpcRewardWitness } from "@/ai/npcRewardWitness";
@@ -14,8 +15,9 @@ export function page(id: string, commands: Command[], conditions: EventPage["con
 export function event(id: string, x: number, y: number, pages: EventPage[]): GameEvent {
   return { id, name: id, x, y, pages, trigger: { kind: "action" }, commands: [] };
 }
-export function prerequisiteFixture() {
-  const project = createBlankProject();
+/** shareTilesets: 타일셋 정의를 제자리에서 고치지 않는 시험만 켠다(support/sharedBlankProject.ts). */
+export function prerequisiteFixture(options: { readonly shareTilesets?: boolean } = {}) {
+  const project = options.shareTilesets ? createSharedTilesetBlankProject() : createBlankProject();
   const village = project.maps[project.startMapId];
   village.events = [];
   village.encounterRate = 0;

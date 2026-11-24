@@ -1,4 +1,4 @@
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "../support/sharedBlankProject";
 import type { Command, EventPage, GameEvent } from "@/project/types";
 import type { SceneStep, SceneTestInput } from "@/testing/sceneTestRunner";
 

@@ -3,7 +3,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent, type ToolImageRenderer } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { fixedDeclarer } from "./intentFixture";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 
