@@ -7,7 +7,8 @@
 //     떴다. 전부 줄 밀림이고 픽셀 변화는 0이었다. 양치기 소년 게이트는 꺼진 게이트다.
 // 그래서 읽기용 직렬화(formatWinners, 줄 포함)와 래칫용(ratchetOf, 줄 없음)이 따로 있다.
 import { describe, expect, it } from "vitest";
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
@@ -288,17 +289,18 @@ describe("기준선 인코딩", () => {
   it("조각은 항목마다 한 줄이고 키는 정렬이다 — 다른 줄이면 git 이 합친다", () => {
     const winners = computeWinners({ sheets: [sheet("a.css", ".z { top: 0 } .a { top: auto } .m { top: 1px }")] });
     const lines = serializeShard(encodeShard("e.css", groupByFile(winners).get("a.css")!)).trimEnd().split("\n");
-    const items = lines.filter((l) => l.startsWith('   "')).map((l) => l.trimEnd().replace(/,$/, ""));
+    const items = lines.filter((l) => /^  "[0-9a-f]{12}": /.test(l)).map((l) => l.trimEnd().replace(/,$/, ""));
     expect(items).toHaveLength(3);
     expect(items).toEqual([...items].sort());
   });
 
   describe("조각 저장", () => {
     const css = (color: string) =>
-      computeWinners({ sheets: [sheet("a.css", `.x { color: ${color} }`), sheet("b.css", ".y { top: 0 }")] });
+      computeWinners({ sheets: [sheet("src/a.css", `.x { color: ${color} }`), sheet("src/b.css", ".y { top: 0 }")] });
     const per = (winners: Record<string, Record<string, unknown>>) => ({ "src/e.css": winners });
     const inTmp = (fn: (root: string) => void) => {
       const root = mkdtempSync(join(tmpdir(), "css-winners-"));
+      mkdirSync(join(root, "scripts"));
       try {
         fn(root);
       } finally {
@@ -332,7 +334,7 @@ describe("기준선 인코딩", () => {
     it("승자가 사라진 조각은 지운다", () => {
       inTmp((root) => {
         writeBaseline(root, per(css("red")));
-        const onlyB = computeWinners({ sheets: [sheet("b.css", ".y { top: 0 }")] });
+        const onlyB = computeWinners({ sheets: [sheet("src/b.css", ".y { top: 0 }")] });
         expect(writeBaseline(root, per(onlyB))).toEqual({ total: 1, written: 0, removed: ["scripts/css-winners/e/a.json"] });
         expect(readBaseline(root)?.shards).toBe(1);
       });
@@ -351,9 +353,13 @@ describe("기준선 인코딩", () => {
 
 describe("diffWinners — 이동 증명용 비교", () => {
   const mk = (name: string, css: string) => computeWinners({ sheets: [sheet(name, css)] });
-  // 엔트리 하나의 기준선. diffWinners 는 키(해시)를 현재 소스에서 이름으로 되찾는다.
+  // 엔트리 하나의 기준선. 키는 승자 키의 sha1 앞 12자리다 — diffWinners 가 현재 소스의 키를 같은 해시로 찾는다.
+  const hashOf = (key: string) => createHash("sha1").update(key).digest("hex").slice(0, 12);
   const baselineOf = (winners: Record<string, Record<string, unknown>>) => ({
-    "e.css": { winners: Object.fromEntries(Object.keys(winners).map((k) => [k, ratchetOf(winners[k] as never)])), contested: {} },
+    "e.css": {
+      winners: Object.fromEntries(Object.keys(winners).map((k) => [hashOf(k), ratchetOf(winners[k] as never)])),
+      contested: {},
+    },
   });
 
   it("파일이 옮겨지면 기본 비교는 변경으로 본다", () => {
