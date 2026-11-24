@@ -160,7 +160,7 @@ function equipInto(
   next: ActorInitialEquipment,
   requestedSlot: EquipmentSlot,
   record: EquipmentRecord,
-  records: ReadonlyMap<string, EquipmentRecord>
+  records: Pick<ReadonlyMap<string, EquipmentRecord>, "get">
 ): void {
   if (record.twoHanded) {
     next.weapon = record.id;
@@ -181,7 +181,7 @@ function equipInto(
 function unequipFrom(
   next: ActorInitialEquipment,
   slot: EquipmentSlot,
-  records: ReadonlyMap<string, EquipmentRecord>
+  records: Pick<ReadonlyMap<string, EquipmentRecord>, "get">
 ): void {
   const id = next[slot];
   if (!id) return;
