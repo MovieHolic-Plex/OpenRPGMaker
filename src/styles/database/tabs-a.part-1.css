@@ -354,6 +354,22 @@
   text-shadow: 1px 1px 0 rgba(60, 48, 32, 0.12);
 }
 
+/* 조수가 쓰는 동안 보류한 공간 탭 갱신 칩 — 좁은 창에서도 한 줄로 남는다. */
+.database-deferred-refresh {
+  border: 1px solid var(--accent-border);
+  border-radius: 999px;
+  color: var(--text-1);
+  cursor: pointer;
+  flex: 0 1 auto;
+  font-size: 12px;
+  max-width: 45%;
+  min-width: 0;
+  overflow: hidden;
+  padding: 1px 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .database-modal-controls {
   display: inline-flex;
   flex: 0 0 auto;
