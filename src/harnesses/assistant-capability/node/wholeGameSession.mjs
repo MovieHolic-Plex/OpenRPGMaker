@@ -106,6 +106,9 @@ async function open() {
   page = editor.page;
 }
 async function save() {
+  // 첫 MVP 뒤 편집기가 «초안 한 장»(draft-overview, 덮개)을 띄운다 — 저장 버튼 클릭을 가로채 저장·재로드 확인이 120초 시간 초과로 실패했다(2026-11-24 draft-10min).
+  const overview = page.getByTestId('draft-overview-close');
+  if (await overview.isVisible().catch(() => false)) await overview.click().catch(() => {});
   await page.getByTestId('toolbar-save').click();
   await page.waitForFunction(() => ['idle', 'saved', 'error', 'unsaved-session'].includes(
     document.querySelector('[data-testid="toolbar-save"]')?.dataset.autosaveKind), null, { timeout: 180000 });
