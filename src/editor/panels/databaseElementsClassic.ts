@@ -27,6 +27,7 @@ import {
 } from "@/editor/panels/databaseWorkspace";
 import { elementArtwork, elementDefenseContext, elementDefenseNote, elementGradeWord, elementOutcome } from "@/editor/panels/databaseElementPresentation";
 import { elementDisplayName } from "@/battle/skillHelp";
+import { elementAffinityCard } from "@/editor/panels/databaseElementAffinity";
 import { recordSmallTask } from "@/editor/smallTask/capsule";
 import { store } from "@/project/store";
 import type { ActorRateGrade, DatabaseElementRecord } from "@/project/types";
@@ -279,6 +280,7 @@ function elementDetailPane(
     body: el("div", {
       class: "db-ws-stack db-el-worksheet",
       children: [
+        elementAffinityCard(element.id),
         elementIdentityCard(element, index),
         elementDamageCard(element, index),
         elementUsageCard(element),
