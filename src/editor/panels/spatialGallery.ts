@@ -2,9 +2,11 @@ import { sharedPlacePreview } from "@/project/sharedContent";
 import { regionMapPreview } from "./regionMapView";
 import { regionReferenceImage } from "./regionReferenceView";
 import { interiorObjectById, interiorObjectsForTheme } from "@/editor/interiorObjectCatalog";
-import { cellsFromMapRect, assembledKitCells, renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
+import { cellsFromMapRect, assembledKitCells, renderTileCellsToCanvas, type KitRenderInput } from "@/editor/harnessSuggestion/kitRender";
+import { tilesetAssetHash } from "@/editor/thumbCache/tilesetAssetHash";
+import { thumbContentHash } from "@/editor/thumbCache";
 import { INTERIOR_OBJECT_THUMB_BACKGROUND_TILE, interiorThemeCards, kitThumbBackgroundTile } from "@/editor/panels/structureKitDbSources";
-import { interiorObjectCanvas } from "@/editor/panels/structureKitInspector";
+import { interiorObjectCanvas, interiorObjectRenderInput } from "@/editor/panels/structureKitInspector";
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { tilesetImageUrl } from "@/editor/tilesetImage";
 import { visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess";
@@ -24,7 +26,7 @@ import {
 import { renderGeographyThumb } from "@/editor/panels/spatialGeographyRaster";
 import { catalogListImage } from "@/editor/panels/catalogListImage";
 import { sharedObjectDef } from "@/editor/tools/sharedDesignCatalog";
-import { deferredSpatialCardThumb } from "@/editor/panels/spatialCardThumbs";
+import { deferredSpatialCardThumb, type SpatialThumbCacheKey } from "@/editor/panels/spatialCardThumbs";
 import { tilesetListThumb } from "@/editor/panels/tilesetListThumb";
 import { designUsage, usageSummary } from "@/editor/panels/spatialUsage";
 import { spatialId } from "@/project/spatial/domain";
@@ -40,62 +42,82 @@ function tilesetOf(card: SpatialGalleryCard): TilesetDef | undefined {
   return Object.hasOwn(tilesets, card.tilesetId) ? tilesets[card.tilesetId] : undefined;
 }
 
-function renderBuiltinObject(tileset: TilesetDef, kitId: string): HTMLElement | undefined {
+const OBJECT_THUMB_SCALE = 3;
+
+function builtinObjectRecipe(tileset: TilesetDef, kitId: string): KitRenderInput | undefined {
   const probe = resolveSpatialGraphic(
     { tilesets: { [tileset.id]: { ...tileset, structureKits: undefined } } },
     { tilesetId: tileset.id, kitId },
   );
   if (probe?.source !== "builtin") return undefined;
-  return interiorObjectCanvas(tileset, probe.object, 3);
+  return interiorObjectRenderInput(tileset, probe.object, OBJECT_THUMB_SCALE);
 }
 
-function renderObjectThumb(card: SpatialGalleryCard): HTMLElement {
+function sectionKitRecipe(tileset: TilesetDef, kit: SectionStructureKitDef): KitRenderInput {
+  return {
+    tileset,
+    widthTiles: Math.max(1, kit.width),
+    heightTiles: Math.max(1, kit.height),
+    cells: assembledKitCells(kit, kit.width),
+    scale: OBJECT_THUMB_SCALE,
+    backgroundTile: kitThumbBackgroundTile(tileset),
+  };
+}
+
+/**
+ * 오브젝트 카드 그림의 재료. 그리기(`renderObjectThumb`)와 캐시 키(`objectThumbCacheKey`)가 같은 재료를
+ * 써야 키가 그림과 어긋나지 않는다. 공용 카탈로그 미리보기는 이미 그림 파일이다.
+ */
+function objectThumbRecipe(card: SpatialGalleryCard): { readonly preview: string } | KitRenderInput | undefined {
   if (card.sharedObjectId) {
     const preview = sharedObjectDef(card.sharedObjectId)?.preview;
-    if (preview) {
-      const img = catalogListImage(preview, "spatial-card-image");
-      img.style.imageRendering = "pixelated";
-      img.style.objectFit = "contain";
-      return img;
-    }
+    if (preview) return { preview };
   }
   const tileset = tilesetOf(card);
   const kitId = card.objectId ?? card.localId;
   if (tileset && kitId) {
     const resolved = resolveSpatialGraphic(visibleAuthoringProject(), { tilesetId: tileset.id, kitId });
     if (card.source === "default") {
-      const builtin = renderBuiltinObject(tileset, kitId);
+      const builtin = builtinObjectRecipe(tileset, kitId);
       if (builtin) return builtin;
     } else if (resolved?.source === "authored" && resolved.kit.kind === "section") {
-      return renderTileCellsToCanvas({
-        tileset,
-        widthTiles: Math.max(1, resolved.kit.width),
-        heightTiles: Math.max(1, resolved.kit.height),
-        cells: assembledKitCells(resolved.kit, resolved.kit.width),
-        scale: 3,
-        backgroundTile: kitThumbBackgroundTile(tileset),
-      });
+      return sectionKitRecipe(tileset, resolved.kit);
     } else if (resolved?.source === "builtin") {
-      return interiorObjectCanvas(tileset, resolved.object, 3);
+      return interiorObjectRenderInput(tileset, resolved.object, OBJECT_THUMB_SCALE);
     }
     const kit = tileset.structureKits?.find((entry) => entry.id === kitId);
-    if (kit?.kind === "section") {
-      return renderTileCellsToCanvas({
-        tileset,
-        widthTiles: Math.max(1, kit.width),
-        heightTiles: Math.max(1, kit.height),
-        cells: assembledKitCells(kit as SectionStructureKitDef, kit.width),
-        scale: 3,
-        backgroundTile: kitThumbBackgroundTile(tileset),
-      });
-    }
+    if (kit?.kind === "section") return sectionKitRecipe(tileset, kit as SectionStructureKitDef);
   }
   const object = kitId ? interiorObjectById(kitId) : undefined;
-  if (tileset && object && card.source === "default") {
-    const builtin = renderBuiltinObject(tileset, object.id);
-    if (builtin) return builtin;
+  if (tileset && object && card.source === "default") return builtinObjectRecipe(tileset, object.id);
+  return undefined;
+}
+
+function renderObjectThumb(card: SpatialGalleryCard): HTMLElement {
+  const recipe = objectThumbRecipe(card);
+  if (!recipe) return el("div", { class: "spatial-card-fallback" });
+  if ("preview" in recipe) {
+    const img = catalogListImage(recipe.preview, "spatial-card-image");
+    img.style.imageRendering = "pixelated";
+    img.style.objectFit = "contain";
+    return img;
   }
-  return el("div", { class: "spatial-card-fallback" });
+  return renderTileCellsToCanvas(recipe);
+}
+
+/**
+ * 오브젝트 카드의 thumbCache 키 — `obj:<타일셋 그림 해시>:<칸 배열 해시>`, size = 배율.
+ * 그림 파일이 이미 있는 카드(공용 카탈로그 미리보기)와 그릴 재료가 없는 카드는 키가 없다.
+ */
+export function objectThumbCacheKey(card: SpatialGalleryCard): SpatialThumbCacheKey | undefined {
+  if (card.kind !== "objects") return undefined;
+  const recipe = objectThumbRecipe(card);
+  if (!recipe || "preview" in recipe) return undefined;
+  const cells = JSON.stringify([recipe.widthTiles, recipe.heightTiles, recipe.backgroundTile ?? null, recipe.cells]);
+  return {
+    key: `obj:${tilesetAssetHash(recipe.tileset)}:${thumbContentHash(cells)}`,
+    size: recipe.scale ?? OBJECT_THUMB_SCALE,
+  };
 }
 
 /** 라이브러리·배치 공간은 실제 레이아웃을 굽는다 — 카드마다 다른 그림이 나와야 한다. */

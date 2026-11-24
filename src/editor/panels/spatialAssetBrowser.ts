@@ -2,7 +2,7 @@ import { spatialProjectKey, patchSpatialSession, selectSpatialDesign, type Spati
 import { visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess";
 import { listSpatialGalleryCards, type SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { deferredSpatialCardThumb } from "@/editor/panels/spatialCardThumbs";
-import { renderSpatialCardThumb } from "@/editor/panels/spatialGallery";
+import { objectThumbCacheKey, renderSpatialCardThumb } from "@/editor/panels/spatialGallery";
 import { renderSpatialInspector, renderSpatialChrome, renderSpatialSourceChips } from "@/editor/panels/spatialStage";
 import { tilesetListThumb } from "@/editor/panels/tilesetListThumb";
 import { addBlankObject } from "@/editor/panels/spatialObjectMutations";
@@ -102,7 +102,7 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
       // 검색 입력·카드 선택마다 이 목록이 통째로 다시 그려진다 — 썸네일은 보일 때 굽는다.
       const art = el("div", {
         class: "asset-browser-card-art",
-        children: [deferredSpatialCardThumb(card, () => renderSpatialCardThumb(card))],
+        children: [deferredSpatialCardThumb(card, () => renderSpatialCardThumb(card), objectThumbCacheKey(card))],
       });
       grid.append(el("button", {
         class: `asset-browser-card${selected?.id === card.id ? " is-selected" : ""}`,
