@@ -10,6 +10,7 @@ import { CONTINUE_WORDS, buildsWholeGame, editOnlyRequest, v2ExtraToolNames, wan
 import { ROMANCE_SETUP_WORDS } from "@/ai/v2/request/genre";
 import { INTERIOR_WORDS, TERRAIN_WORDS } from "@/ai/v2/request/place";
 import { ONE_ROOM_GAME } from "@/ai/v2/request/scope";
+import { startScreenPrompt } from "@/editor/startScreenPrompt";
 
 type State = "blank" | "event" | "built";
 const made = new Map<State, Project>();
@@ -32,6 +33,11 @@ function project(state: State): Project {
   made.set(state, p);
   return p;
 }
+
+/** 첫 화면에서 장르 포스터를 골라 보낸 첫 지시(«사용자 의도 + 선택한 시작 장르») — 만들라는 동사가 없다. */
+const POSTER_STORY = startScreenPrompt({ choiceId: "story-cutscene", intent: "회상 스토리" })!;
+const POSTER_STORY_LONG = startScreenPrompt({ choiceId: "story-cutscene", intent: "바닷가 등대지기의 마지막 여름을 회상하는 게임" })!;
+const POSTER_JRPG = startScreenPrompt({ choiceId: "adventure-jrpg", intent: "모험 JRPG" })!;
 
 const FOLLOW = "아직 다 안 된 것 같아. 처음에 부탁한 대로 끝까지 만들어 줘. 게임을 처음부터 엔딩까지 실제로 플레이할 수 있게 해 줘.";
 
@@ -132,6 +138,10 @@ const CORPUS: readonly (readonly [string, Want])[] = [
   ["힐링 게임 하나 만들어 줘. 잡화점 실내도 만들어 줘.", { scope: "wholeGame" }],
   ["make me a fun game", { scope: "wholeGame" }],
   ["판타지 RPG 게임 하나 만들어 줘.", { scope: "wholeGame", on: "built", whole: true, editOnly: false }],
+  // 첫 화면 포스터 요청 — 빈 프로젝트에서 게임 하나(지은 것이 있는 프로젝트에서는 아래 별도 시험)
+  [POSTER_STORY, { scope: "wholeGame", whole: true }],
+  [POSTER_STORY_LONG, { scope: "wholeGame", whole: true }],
+  [POSTER_JRPG, { scope: "wholeGame", whole: true }],
   // ── 소리만 ──
   ["마을에 잔잔한 배경 음악 깔아 줘", { scope: "audio", audioOnly: true, music: true }],
   ["보스 전투 음악을 더 긴박하게 바꿔 줘", { scope: "audio", audioOnly: true }],
@@ -213,6 +223,16 @@ describe("request intent — one record, every reader agrees", () => {
       if (intent.wholeGame || (intent.editOnly && !intent.audio.only)) expect(intent.tools.game).toBe(true);
       else expect([...intent.tools.extra]).toEqual(v2ExtraToolNames(ask));
     }
+  });
+
+  it("a first-screen poster request is a whole game on an empty project and a change on a built one", () => {
+    for (const poster of [POSTER_STORY, POSTER_STORY_LONG, POSTER_JRPG]) {
+      expect(readRequest(poster)).toMatchObject({ scope: "wholeGame", intoGame: true });
+      expect(classifyRequest(poster, project("blank"))).toMatchObject({ scope: "wholeGame", wholeGame: true });
+      expect(classifyRequest(poster, project("built"))).toMatchObject({ scope: "edit", wholeGame: false });
+    }
+    // 시작 장르 줄이 없는 자유글 묘사는 여전히 첫 장소를 짓는 시작이다.
+    expect(classifyRequest(startScreenPrompt({ choiceId: null, intent: "풀숲 마을" })!, project("blank")).wholeGame).toBe(false);
   });
 
   it("classifies once per (request, project state) and says why", () => {
