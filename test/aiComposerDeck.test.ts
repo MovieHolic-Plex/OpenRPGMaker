@@ -102,9 +102,11 @@ describe("aiComposer — 데크 컴포저", () => {
     expect(findByTestId(actions, "ai-composer-model")).toBeNull();
   });
 
-  it("턴·토큰 줄은 비어 있으면 숨고, 값이 있으면 입력줄에 보인다", () => {
+  it("턴·토큰 줄은 비어 있으면 숨고, 값이 있으면 입력창 밖 메타 줄에 보인다", () => {
     const { shell } = render();
-    const chip = findByTestId(shell.actions as unknown as FakeElement, "ai-composer-spend");
+    // #4899: 사용량 줄은 칩 줄(actions) 밖, 명령 바의 메타 줄로 옮겨졌다.
+    expect(findByTestId(shell.actions as unknown as FakeElement, "ai-composer-spend")).toBeNull();
+    const chip = findByTestId(shell.commandBar as unknown as FakeElement, "ai-composer-spend");
     expect(chip?.hidden).toBe(true);
     shell.setSpend("3턴 · 12,400토큰");
     expect(chip?.hidden).toBe(false);

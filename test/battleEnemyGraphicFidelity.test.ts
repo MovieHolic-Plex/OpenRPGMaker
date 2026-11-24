@@ -30,11 +30,12 @@ describe("전투 적 그래픽 정합성", () => {
       field.querySelector<HTMLImageElement>(
         '[data-record-id="enemy_stone_golem"] .battle-enemy-image',
       )?.src,
-    ).toContain("pixel-enemy-portraits/golem.png");
+    // 새 프로젝트 기본 적은 현행 종 그림(대역)을 쓴다(#4984 currentMonsterStandIns: stone_golem→golem_stone, cave_bat→bat_cave).
+    ).toContain("pixel-enemy-portraits/golem-stone.png");
     expect(
       field.querySelector<HTMLImageElement>(
         '[data-record-id="enemy_cave_bat"] .battle-enemy-image',
       )?.src,
-    ).toContain("pixel-enemy-portraits/bat.png");
+    ).toContain("pixel-enemy-portraits/bat-cave.png");
   });
 });
