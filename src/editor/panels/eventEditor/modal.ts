@@ -1079,7 +1079,7 @@ function dismissTopDetailsLayer(root: HTMLElement): void {
   for (let guard = 0; guard < 8; guard += 1) {
     let top: HTMLDetailsElement | null = null;
     for (const node of root.querySelectorAll("details")) {
-      if (node instanceof HTMLDetailsElement && isTopModal(node)) {
+      if (isTopModal(node)) {
         top = node;
         break;
       }
