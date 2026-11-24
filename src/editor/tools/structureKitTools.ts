@@ -25,6 +25,7 @@ import type {
 } from "@/project/types";
 import { TILE } from "@/project/defaults";
 import { referenceManifest } from "@/project/tilesetReferences";
+import { isRetiredObject } from "@/project/retiredObjects";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type ToolDefinition, type ToolExecResult } from "./types";
 
@@ -33,7 +34,7 @@ type Point = { readonly x: number; readonly y: number };
 /** 타일셋의 사용 가능한 킷 전체 — 등록 킷. */
 function availableKits(tileset: TilesetDef | undefined): SectionStructureKitDef[] {
   if (!tileset) return [];
-  return (tileset.structureKits ?? []).filter((kit) => kit.kind === "section" && !kit.ai?.supersededBy);   // 새 가족이 대신한 옛 키트는 권하지 않는다
+  return (tileset.structureKits ?? []).filter((kit) => kit.kind === "section" && !kit.ai?.supersededBy && !isRetiredObject(tileset.id, kit.id));   // 새 가족이 대신한 옛 키트는 권하지 않는다
 }
 
 const listStructureKits: ToolDefinition = {

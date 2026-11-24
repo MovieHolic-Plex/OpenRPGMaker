@@ -9,6 +9,7 @@ import { spatialPresentationId } from "@/editor/panels/spatialPresentation";
 import type { SpatialDesignReference } from "@/project/spatial/types";
 import type { TilesetDef } from "@/project/types";
 import { SHARED_OBJECTS } from "@/editor/tools/sharedDesignCatalog";
+import { isRetiredObject } from "@/project/retiredObjects";
 import { isJpCityTileset, JP_CITY_ID, JP_CITY_PREFIX } from "@/project/defaults/jpCity";
 import jpInteriorSpec from "@/assets/jpInteriorSpec.json" with { type: "json" };
 
@@ -127,7 +128,7 @@ function buildObjectCards(): SpatialGalleryCard[] {
   for (const tileset of Object.values(project.tilesets)) {
     for (const kit of tileset.structureKits ?? []) {
       // 숲마을 선별 소품(dewbank:*)은 공용 카탈로그 카드로 이미 보인다.
-      if (kit.id.startsWith("dewbank:")) continue;
+      if (kit.id.startsWith("dewbank:") || isRetiredObject(tileset.id, kit.id)) continue;
       // Keep compatibility cards until a canonical design owns the same graphic.
       if (ownedGraphics.has(`${tileset.id}\u0000${kit.id}`)) continue;
       const id = spatialPresentationId("tileset-kit", tileset.id, kit.id);

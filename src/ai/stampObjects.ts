@@ -10,6 +10,7 @@
 // 순수 모듈 — 스토어·네트워크 없음.
 import { beodeulPlaceableObjectForKit } from "@/assets/beodeulPlaceableObjects";
 import type { SectionStructureKitDef, TileGroupMetadata, TilesetDef } from "@/project/types";
+import { isRetiredObject } from "@/project/retiredObjects";
 
 export type StampObjectSource = "pack" | "authored" | "hand" | "group";
 export type StampObjectPlacement = "floor" | "wall" | "water" | "road";
@@ -135,7 +136,7 @@ export function buildStampObjectIndex(tileset: TilesetDef | undefined): readonly
   const entries: StampObjectEntry[] = [];
   const seenKitIds = new Set<string>();
   for (const kit of tileset.structureKits ?? []) {
-    if (!isObjectKit(kit) || seenKitIds.has(kit.id) || kit.ai?.supersededBy) continue;
+    if (!isObjectKit(kit) || seenKitIds.has(kit.id) || kit.ai?.supersededBy || isRetiredObject(tileset.id, kit.id)) continue;
     const placement = kitPlacementOf(kit);
     if (!placement) continue;
     seenKitIds.add(kit.id);

@@ -4279,8 +4279,8 @@ function expandSpecialSpatialSteps(
         const placements: readonly { readonly kitId: string; readonly x: number; readonly y: number }[] = [
           { kitId: "bd-pick-aqueduct-sewer-bone-heap", x: Math.max(area.x, cx - 3), y: Math.max(area.y, cy - 1) },
           { kitId: "bd-pick-aqueduct-sewer-bone-heap", x: Math.min(area.x + area.w - 2, cx + 1), y: Math.min(area.y + area.h - 2, cy + 1) },
-          { kitId: "bd-pick-desert-oasis-bones", x: Math.max(area.x, cx - 1), y: Math.max(area.y, cy - 2) },
-          { kitId: "bd-pick-desert-oasis-bones", x: Math.max(area.x, cx - 4), y: Math.min(area.y + area.h - 1, cy + 2) },
+          { kitId: "bd-pick-aqueduct-sewer-bones", x: Math.max(area.x, cx - 1), y: Math.max(area.y, cy - 2) },
+          { kitId: "bd-pick-aqueduct-sewer-bones", x: Math.max(area.x, cx - 4), y: Math.min(area.y + area.h - 1, cy + 2) },
           { kitId: "bd-pick-aqueduct-sewer-skulls", x: cx, y: cy },
           { kitId: "bd-pick-aqueduct-sewer-skulls", x: Math.min(area.x + area.w - 1, cx + 3), y: Math.max(area.y, cy - 1) },
           { kitId: "bd-pick-aqueduct-sewer-bones", x: Math.max(area.x, cx - 2), y: Math.min(area.y + area.h - 1, cy + 1) },
