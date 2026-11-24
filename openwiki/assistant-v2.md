@@ -549,6 +549,7 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 
 - **현행 세트**(`src/assets/currentMonsterArt.ts`): id 목록(34) + `installCurrentMonsterArt(project, ids)`. 그림 데이터(0.9MB)는 그 자리에 두고 늦게 읽는다 — 턴 첫 지시 앞(`turn/modelHooks.firstPromptSuffix`)과 끝맺음 `step-foes` 앞에서 `preloadCurrentMonsterArt()`.
 - **모든 프로젝트의 기본 적에도 설치(2026-11-24, qa1124 항목 4):** 편집기 로드 정규화(`store.normalizeCurrentProject` 의 `currentMonsterArt`)와 `headless.normalizeHeadlessProject` 가 `ensureCurrentMonsterArt(project)` 를 부른다 — 적 레코드가 현행 id 를 쓰는데 같은 id 업로드가 없으면 그 그림(초상 + 20칸 시트)을 넣는다. 사용자·스토어·조수가 넣은 같은 id 업로드는 건드리지 않는다. 새 프로젝트 기준 32종, 업로드 약 0.83MB. 자료집 칸 표(`databaseEnemyPixelPreview.enemyPixelCellOrder`)는 시트 격자를 읽어 3×3 9칸 · 4×4 15칸 · 5×4 20칸을 보인다.
+- **새 프로젝트의 옛 그림 적은 대역 그림으로(2026-11-24, 리드 지시):** `createBlankProject` 가 `defaults/currentMonsterStandIns.applyCurrentMonsterStandIns` 로 현행 그림이 없던 기본 적 74종의 `monsterResourceId` 를 대역 표(`CURRENT_MONSTER_STAND_IN`, 이 문서 아래 대역 표와 같은 것 + 미믹 상자→철 골렘, 허수아비→식충 식물)의 현행 그림으로 바꿔 싣는다. 기본 적 106종 모두 현행 그림이다. 저장된 프로젝트는 바꾸지 않는다. 조수 v2 는 `standInOriginalArt` 로 그 적의 원래 그림을 읽어 «바란 그림» 줄을 예전처럼 쓰고, 옛 묶음 그림으로 세우던 `namedFoe` 경로(2026-11-16 «에셋을 자유롭게»)는 새 프로젝트에서 대역 현행 그림 + 그릴 목록이 된다.
 - **고르는 한 곳**(`story/currentFoes.ts`): `currentFoe(project, 적 id)` → 그 적의 그림이 현행이면 그 적, 아니면 가장 가까운 현행 종(대역 표 — 해골·좀비·미라 → 창백한 유령, 리자드맨 → 독사, 검치호·곰 → 다이어 울프, 용류 → 청룡 …) + 바란 그림 이름. 대역도 없으면 undefined. 위 네 고르기가 모두 여기에 묻는다 — 구형 그림은 v2 가 세우는 적에 나오지 않는다.
 - **테마 표**: 적 목록 = 그 장소가 바라는 종 + 현행 그림이 있는 그 장소의 종. 서는 것은 현행 그림이 있는 종뿐(`drawn`)이고, 없는 종은 종마다 없는 그림 줄 `[art-gap] theme=prehistoric/swamp want=foe wanted=«lizardman-spear» …` 로 남는다 — 그 종이 그려지면 표를 고치지 않아도 선다. 테마 표에 없는 세계(버들항)의 싸우는 단계는 흔한 판타지 목록(`COMMON`)과 이름의 적 낱말(`enemyArtFor` → `currentFoe`)에서.
 - **같이 서는 길 적은 자기 기술이 있는 종만**(`placeTheme.withOwnSkills`): 시작 파티에 맞춘 사본은 센 기술이 「맹독 이빨」·「산성 침」으로 갈려(`bossThreatScaling.swapOverpoweredSkills`) 종이 달라도 기술이 같아진다. 현행 그림으로 좁히자 사막 길 적이 독사·복면 산적(둘 다 「맹독 이빨」)이 되어 끝맺음 «적 개성»이 울렸다(은행 jrpg-w3). 그래서 길 적 목록은 그 검사와 같은 값(`judge/enemyChecks.foeSkillNames`)으로 «종마다 다른 종에 없는 기술 하나»인 것만 순서대로 남긴다 — 선사 시대 늪은 독사·뿔 딱정벌레(멧돼지·사마귀는 사본 기술이 독사와 같다). 종 수를 늘리려면 고르기가 아니라 그 갈아 끼우기가 종마다 다른 기술을 주어야 한다(남은 일).
@@ -586,7 +587,7 @@ r1w-fun 저장본 → 끝맺음 재생(모델 없음, `finishReplay.mts`) 전/�
 | 우주 정거장 | 경비 로봇·드론·외계 생물 · slime-metal · sword-flying |
 | 황무지 | zombie-rot · ghoul-grave · rat-giant · behemoth-horn · ogre-club |
 
-대역 표에도 없는 종: mimic-chest · scarecrow-field. 현행 세트에 있지만 기본 DB 에 적 기록이 없어 v2 가 못 쓰는 그림: jelly-lantern · leafling-01 · snake-01 · well-olm · yeti-frost(『폴른 스타』 전용 적).
+대역 표에도 없는 종: 없음(2026-11-24 미믹 상자→철 골렘, 허수아비→식충 식물 추가). 현행 세트에 있지만 기본 DB 에 적 기록이 없어 v2 가 못 쓰는 그림: jelly-lantern · leafling-01 · snake-01 · well-olm · yeti-frost(『폴른 스타』 전용 적).
 남은 것: 모델이 `upsert_enemy`·`upsert_troop` 으로 직접 고른 구형 그림 적은 그대로 선다(끝맺음이 없는 그림 줄만 남긴다) · `author_dungeon` 을 직접 부른 던전의 주제 적(`dungeonThemeTroops`)은 v2 빌더를 거치지 않는다 · 몬스터 수집 장르의 종 그림은 다른 세트다. 시험 `test/aiV2CurrentFoes.test.ts` · `test/aiV2PlaceTheme.test.ts`.
 
 ### 더 그린 종 — battle-gen gif20 단계의 통과분을 현행 세트에 더한다 (2026-11-12)

@@ -28,6 +28,7 @@ import { charsetFamilyOf } from "@/project/charsetFamily";
 import { hideLockCodes } from "@/ai/v2/story/codeLeaks";
 import { ensureBossRest } from "@/ai/v2/story/healingAccess";
 import { namedFoeArt } from "@/ai/v2/story/currentFoes";
+import { isCurrentMonsterArt } from "@/assets/currentMonsterArt";
 import { databaseChangeReport, unaskedChanges } from "@/ai/v2/judge/sideEffectChecks";
 import { sceneCraftFindings } from "@/ai/v2/judge/sceneCraft";
 import { REST_LINE } from "@/ai/v2/story/restLine";
@@ -211,8 +212,8 @@ describe("길을 막는 적의 자리 — 확인 빌드 r6", () => {
     const lead = run.ctx.project.database.enemies.find((e) => e.id === (troop.members?.[0]?.enemyId ?? troop.enemyIds?.[0]))! as unknown as { monsterResourceId?: string };
     expect((foe.pages![0]!.graphic as unknown as { sprite: { id: string } }).sprite.id).toBe(lead.monsterResourceId);
     expect(JSON.stringify(foe.pages)).not.toContain("changeFace");
-    // 해골 그림은 현행 세트에 없고 옛 묶음에 있다 — 대역(창백한 유령)이 아니라 그 그림이다(끝맺음 step-foes 가 «old-set picture» 로 알린다).
-    expect(lead.monsterResourceId).toBe("generated-enemy-skeleton-bone");
+    // 새 프로젝트는 옛 묶음 그림을 싣지 않는다(2026-11-24 qa1124) — 해골 보스도 현행 그림으로 선다.
+    expect(isCurrentMonsterArt(lead.monsterResourceId)).toBe(true);
     expect(res.missingArt.join("\n")).not.toContain("want=person");
     expect(res.missingArt.join("\n")).not.toContain("want=boss");
   }, 60_000);

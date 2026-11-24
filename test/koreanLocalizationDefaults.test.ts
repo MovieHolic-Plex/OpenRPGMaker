@@ -66,7 +66,7 @@ describe("Korean default localization and EasyRPG RTP defaults", () => {
     // Then: each default resource points at an existing RTP 또는 generated asset.
     expect(project.database.actors[0]?.faceResourceId).toBe("easyrpg-faceset-actor1-00");
     expect(project.database.actors[0]?.characterResourceId).toBe("easyrpg-charset-actor1");
-    expect(project.database.enemies[0]?.monsterResourceId).toBe("generated-enemy-slime-01");
+    expect(project.database.enemies[0]?.monsterResourceId).toBe("generated-enemy-slime-green");
     expect(project.system.titleResourceId).toBe("oprn-title-field");
     expect(project.system.systemResourceId).toBe("windowskin-warm");
     // System2(전투 게이지 시트)는 저작권 정리(2026-10-07)로 지워져 기본값이 없다.
