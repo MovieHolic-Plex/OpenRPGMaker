@@ -409,12 +409,12 @@ function resourceButton(
     dataset: { resourceId: option.id, testid: `${prefix}-option-${option.id}` },
     children: [
       resourceVisual(option.id, kind, project, option.name, "db-resource-picker-option-thumb", { characterIndex }),
-      el("span", { children: [
-        studioResourceLabel(option.name, option.id),
-        ...(kind === "music" && bgmNeedsDownload(option.id)
-          ? [el("small", { class: "db-resource-picker-option-badge", text: t("받기 필요"), dataset: { testid: `${prefix}-needs-download` } })]
-          : []),
-      ] }),
+      kind === "music" && bgmNeedsDownload(option.id)
+        ? el("span", { class: "db-resource-picker-option-label", children: [
+          el("span", { text: studioResourceLabel(option.name, option.id) }),
+          el("small", { class: "db-resource-picker-option-badge", text: t("받기 필요"), dataset: { testid: `${prefix}-needs-download` } }),
+        ] })
+        : el("span", { text: studioResourceLabel(option.name, option.id) }),
     ],
     on: { click: onSelect },
   });
