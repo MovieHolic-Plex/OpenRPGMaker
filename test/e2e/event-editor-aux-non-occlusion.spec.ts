@@ -1,4 +1,3 @@
-import { mkdir } from "node:fs/promises";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { createBlankProject } from "@/project/defaults";
 import { mockupProject } from "./mockupProbeSeeds";
@@ -84,79 +83,6 @@ test("event editor preset and toolbar do not overlap the command list", async ({
   expect(viewSwitcherBox.y + viewSwitcherBox.height).toBeLessThanOrEqual(cmdListBox.y);
 });
 
-test("AI 명령 도크는 명령 목록을 덮지 않고 모달 안에 머밃다", async ({ page }) => {
-  await page.setViewportSize({ width: 960, height: 900 });
-  const { project, eventId } = mockupProject();
-  await seedProjectForEditor(page, project);
-  await page.evaluate(async ({ mapId, id }) => {
-    const modalModule = await import("/src/editor/panels/eventEditor/modal.ts");
-    modalModule.openEventEditorModal(mapId, id);
-  }, { mapId: project.startMapId, id: eventId });
-
-  const editor = page.getByTestId("event-editor-modal");
-  await expect(editor).toBeVisible();
-  await editor.getByTestId("event-view-toggle-list").click();
-  await editor.locator(".cmd-item .cmd-head").first().click();
-  // 801~1100px 에서는 미리보기 열을 접어 둔다. 인스펙터는 그 단추로 연다.
-  const previewToggle = editor.getByTestId("event-editor-preview-toggle");
-  if (await previewToggle.isVisible()) await previewToggle.click();
-  await expect(editor.getByTestId("event-editor-inspector")).toBeVisible();
-
-  // 단일 진입점: 툴바 AI 버튼 하나로 도크가 열린다(도구 팝오버 경유 없이).
-  await editor.getByTestId("event-command-quick-ai").click();
-  const ai = editor.getByTestId("ai-event-assist");
-  await expect(ai).toHaveJSProperty("open", true);
-  await expect(editor.getByTestId("event-editor-aux-tools")).toHaveJSProperty("open", false);
-  const card = ai.locator(".ai-event-assist-body");
-  await expect(card).toBeVisible();
-  await expect(editor.getByTestId("ai-event-input")).toBeFocused();
-
-  const probe = await card.evaluate((body) => {
-    const cardRect = body.getBoundingClientRect();
-    const modalRect = body.closest<HTMLElement>('[role="dialog"]')?.getBoundingClientRect();
-    const listRect = body.closest<HTMLElement>(".event-editor-commands-column")
-      ?.querySelector<HTMLElement>(".event-contents-fieldset .cmd-list")
-      ?.getBoundingClientRect();
-    const input = body.querySelector<HTMLElement>(".ai-event-input");
-    const inputStyle = input ? getComputedStyle(input) : null;
-    const overlapWidth = listRect
-      ? Math.max(0, Math.min(listRect.right, cardRect.right) - Math.max(listRect.left, cardRect.left))
-      : 0;
-    const overlapHeight = listRect
-      ? Math.max(0, Math.min(listRect.bottom, cardRect.bottom) - Math.max(listRect.top, cardRect.top))
-      : 0;
-
-    return {
-      cardWithinModal: Boolean(
-        modalRect &&
-          cardRect.left >= modalRect.left - 1 &&
-          cardRect.right <= modalRect.right + 1 &&
-          cardRect.top >= modalRect.top - 1 &&
-          cardRect.bottom <= modalRect.bottom + 1
-      ),
-      listOverlapArea: Math.round(overlapWidth * overlapHeight),
-      listHeight: listRect ? Math.round(listRect.height) : 0,
-      inputLineHeight: Number.parseFloat(inputStyle?.lineHeight ?? "0"),
-      inputHeight: input?.getBoundingClientRect().height ?? 0,
-    };
-  });
-
-  expect(probe.cardWithinModal).toBe(true);
-  // AI 는 목록 옆 도크가 아니라 편집기 안의 대화상자다. 떠 있는 동안 목록을 가리고, 닫으면 목록이 다시 보인다.
-  await expect(editor.getByRole("dialog", { name: "조수로 명령 만들기" })).toBeVisible();
-  expect(probe.listHeight).toBeGreaterThan(CMD_LIST_MIN_HEIGHT_PX);
-  expect(probe.inputLineHeight).toBeGreaterThanOrEqual(21);
-  expect(probe.inputHeight).toBeGreaterThanOrEqual(66);
-
-  // Escape 는 도크만 닫는다 — 이벤트 에디터가 함까 닫힐가 모든 입력을 사라지게 하면 안 된다.
-  await page.keyboard.press("Escape");
-  await expect(ai).toHaveJSProperty("open", false);
-  await expect(editor).toBeVisible();
-
-  await mkdir("output/evidence/event-ai-assist-ux", { recursive: true });
-  await editor.screenshot({ path: "output/evidence/event-ai-assist-ux/960x900-compact.png" });
-});
-
 async function openEventEditor(page: Page, mapId: string): Promise<Locator> {
   await page.evaluate(async (activeMapId) => {
     const modalModule = await import("/src/editor/panels/eventEditor/modal.ts");
@@ -176,12 +102,8 @@ async function openEventEditor(page: Page, mapId: string): Promise<Locator> {
  * 그러면서 겹칠 수 있는 오버레이 자체를 그만뒀다.
  */
 async function openAuxChip(editor: Locator): Promise<Locator> {
-  // AI 도크는 도구 팝오버 밖이다. 툴바의 AI 버튼 하나가 연다.
-  const chip = editor.getByTestId("ai-event-assist");
-  await editor.getByTestId("event-command-quick-ai").click();
-  await expect
-    .poll(async () => chip.evaluate((node) => node instanceof HTMLDetailsElement && node.open))
-    .toBe(true);
+  // 조수 입구는 명령 칼럼 맨 아래 한 줄 입력칸이다(늘 보인다).
+  const chip = editor.getByTestId("event-edit-line");
   await expect(chip).toBeVisible();
   return chip;
 }

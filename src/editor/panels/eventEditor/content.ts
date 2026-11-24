@@ -1,4 +1,3 @@
-import { t } from "@/i18n";
 import { commandSummary } from "./commandSummary";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { editorState } from "@/editor/editorState";
@@ -31,7 +30,8 @@ import type { Command, EventPage, MapId } from "@/project/types";
 import { el } from "@/util/dom";
 import { renderEditorIcon, type EditorIconName } from "./editorIcons";
 import { toast } from "@/util/toast";
-import { eventAiStagedCommands, renderEventAiAssist } from "./aiAssist";
+import { consumeEventAiDockOpen } from "./aiDockOpenRequest";
+import { eventEditLineChangedPaths, focusEventEditLine, renderEventEditLine } from "./eventEditLine";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
 import { renderEventPageFlow, renderEventPagePreview } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
@@ -277,16 +277,10 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   const storyboardHost = el("div", { class: "event-storyboard-host", dataset: { testid: "event-storyboard-host" } });
   const sceneHost = el("div", { class: "event-scene-host", dataset: { testid: "event-scene-host" } });
   sceneHost.hidden = !sceneLevel;
-  // AI 초안과 저작 명령은 같은 명령 영역을 공유한다.
-  const stagedHost = el("div", {
-    class: "cmd-staged-host",
-    dataset: { testid: "ai-event-staged-host" },
-  });
   const flowHost = el("div", {
     class: "event-page-flow-host",
     dataset: { testid: "event-page-flow-host" },
   });
-  let reviewingAiDraft = false;
   let rememberedMode: StoryboardMode = storyboardMode === "preview" ? "list" : storyboardMode;
   // 초보 화면은 명령 목록만 보여 준다. 저장해 둔 스토리/플로우는 고급을 다시 열 때 돌아온다.
   let currentMode: StoryboardMode = advancedOpen ? rememberedMode : "list";
@@ -360,23 +354,22 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     dataset: { testid: "event-editor-command-count" },
   });
   const refreshCommandCount = (): void => {
-    const draft = reviewingAiDraft ? eventAiStagedCommands(mapId, eventId, activePage.id) : null;
-    const count = totalCommandCount(draft ?? activePage.commands);
+    const count = totalCommandCount(activePage.commands);
     commandCount.textContent = `${count}개`;
-    commandCount.setAttribute("aria-label", `${draft ? "적용 예정 명령" : "작성한 명령"} ${count}개, 분기 안 명령 포함`);
+    commandCount.setAttribute("aria-label", `작성한 명령 ${count}개, 분기 안 명령 포함`);
   };
   refreshCommandCount();
   // 툴바가 아직 없는 시점에도 applyViewMode 가 안전하게 호출되도록 기본값은 빈 함수다.
   let syncToolbarState: () => void = () => {};
   function applyViewMode(): void {
-    const isStoryboard = !sceneLevel && !reviewingAiDraft && currentMode === "storyboard";
-    const isFlow = !sceneLevel && !reviewingAiDraft && currentMode === "flow";
+    const isStoryboard = !sceneLevel && currentMode === "storyboard";
+    const isFlow = !sceneLevel && currentMode === "flow";
     refreshCommandCount();
     setCommandSelectionSurface(section);
-    if (!sceneLevel && !reviewingAiDraft && !isStoryboard && !isFlow) ensureCommandList();
-    cmdList.hidden = !!sceneLevel || reviewingAiDraft || isStoryboard || isFlow;
-    sceneHost.hidden = !sceneLevel || reviewingAiDraft;
-    if (sceneLevel && !reviewingAiDraft && sceneHost.childNodes.length === 0) {
+    if (!sceneLevel && !isStoryboard && !isFlow) ensureCommandList();
+    cmdList.hidden = !!sceneLevel || isStoryboard || isFlow;
+    sceneHost.hidden = !sceneLevel;
+    if (sceneLevel && sceneHost.childNodes.length === 0) {
       sceneHost.append(renderSceneCards({
         commands: activePage.commands,
         level: sceneLevel,
@@ -384,6 +377,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         eventName: (id) => store.getCurrent().maps[mapId]?.events.find((candidate) => candidate.id === id)?.name?.trim() || undefined,
         onOpen: (path) => openStoryboardEditor([...path]),
         onAddCard: () => openCommandPickerForActions(actions, undefined, activePage.commands),
+        changedPaths: eventEditLineChangedPaths(mapId, eventId, activePage.id),
       }));
     }
     if (!cmdList.hidden) resumeCommandListMount(cmdList);
@@ -463,23 +457,17 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     Array.from(node.childNodes).forEach((child) => replacement.append(child));
     node.replaceWith(replacement);
   });
-  const aiAssist = renderEventAiAssist({
+  // 조수 창(도크)은 없다(목업 v2). 맨 아래 한 줄이 이 이벤트를 바로 고친다 — eventEditLine.ts.
+  const editLine = renderEventEditLine({
     mapId,
     eventId: ev.id,
-    page: activePage,
-    cmdList,
-    selectionPath: selectedCommandPath,
-    stagedHost,
-    refreshListVisibility: (reviewing) => {
-      if (reviewingAiDraft === reviewing) {
-        if (reviewing) refreshCommandCount();
-        return;
-      }
-      reviewingAiDraft = reviewing;
-      applyViewMode();
-    },
-    replaceAll: (commands) => commandHistory.replaceAll(commands),
+    activePageId: activePage.id,
+    pages,
+    applyPage: (pageId, commands) => pageCommandHistory(mapId, ev.id, pageId).replaceAll(commands),
+    undoPage: (pageId) => pageCommandHistory(mapId, ev.id, pageId).undo(),
   });
+  // 우클릭 「AI 로 이벤트 …」처럼 조수 입구를 연 채 들어온 편집기는 한 줄 입력칸으로 초점을 준다.
+  if (consumeEventAiDockOpen(mapId, ev.id)) queueMicrotask(() => { focusEventEditLine(); });
   const commandToolbar = renderCommandToolbar({
     cmdList,
     actions,
@@ -488,20 +476,20 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     eventId: ev.id,
     page: activePage,
     viewToggle,
-    aiDock: aiAssist,
     currentMode: () => currentMode,
     storyboardEl: () => storyboardEl,
   });
   // 툴바가 생긴 다음에야 검색·이동 버튼 상태를 맞출 수 있다. 첫 적용은 여기서 한 번.
-  syncToolbarState = () => {
-    for (const tool of commandToolbar.element.children) {
-      if (!(tool instanceof HTMLElement) || tool.classList.contains("event-editor-command-aux-group")) continue;
-      tool.inert = reviewingAiDraft;
-    }
-    commandToolbar.sync();
-  };
+  syncToolbarState = () => commandToolbar.sync();
+  // 한 줄 고치기로 방금 바뀐 맨 위 줄은 목록에서도 2.5초 노랗게(eventEditLine.ts).
+  const lineChanged = eventEditLineChangedPaths(mapId, eventId, activePage.id);
   syncListMount = () => {
     searchSurfaces.delete(cmdList);
+    if (lineChanged.size > 0) {
+      for (const row of cmdList.querySelectorAll<HTMLElement>(".cmd-item")) {
+        if (row.dataset.cmdPath && lineChanged.has(row.dataset.cmdPath)) row.classList.add("is-line-changed");
+      }
+    }
     if (currentMode === "list") commandToolbar.sync();
   };
   // 선택이 바뀌면(목록·스토리 어느 쪽이든) 편집 버튼 상태를 즉시 다시 계산한다.
@@ -520,14 +508,13 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       dataset: { testid: "event-script-canvas" },
       children: [
         commandToolbar.element,
-        aiAssist,
-        stagedHost,
         storyboardHost,
         sceneHost,
         flowHost,
         cmdList,
       ],
     }),
+    editLine,
   );
 
   const workbench = el("div", {
@@ -663,7 +650,6 @@ type CommandToolbarOptions = {
   readonly eventId: string;
   readonly page: EventPage;
   readonly viewToggle?: HTMLElement;
-  readonly aiDock?: HTMLDetailsElement;
   readonly currentMode: () => StoryboardMode;
   readonly storyboardEl: () => HTMLElement;
 };
@@ -739,7 +725,7 @@ function parseCommandPath(raw: string | undefined): number[] | null {
 }
 
 function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
-  const { cmdList, actions, commandHistory, mapId, eventId, page, viewToggle, aiDock } = options;
+  const { cmdList, actions, commandHistory, mapId, eventId, page, viewToggle } = options;
   // 선택의 단일 진상은 인스펙터다. 예전에는 `cmdList` 의 `.selected` 를 DOM 에서 긁었는데,
   // 스토리 보기에서는 목록이 비어 있으니 무엇을 골라도 이동/복사가 조용히 아무 일도 안 했다.
   const selectedPath = (): number[] | null => {
@@ -911,7 +897,7 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
       editTools,
       toolsMenu,
       ...(viewToggle ? [viewToggle] : []),
-      renderCommandAuxGroup(aiDock),
+      renderCommandAuxGroup(),
     ],
   });
   const syncHistoryButtons = (): void => {
@@ -927,22 +913,8 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
   };
 }
 
-function renderCommandAuxGroup(aiDock?: HTMLDetailsElement): HTMLElement {
-  // AI 도크는 팝오버 밖에 살므로 도구 메뉴를 열지 않고 자기만 토글한다.
-  // aria-expanded 는 도크의 toggle 이 단일 진상이다 — Escape 나 재렌더 로 닫혀도 어긋나지 않는다.
-  // 초보 창에서도 보이는 조수 입구다(오너 흐름: 말로 시키기). 누르면 이 페이지 맥락의 조수 도크가 열린다.
-  const aiButton = aiDock ? toolbarButton("spark", "이 이벤트를 말로 고치기", "event-command-quick-ai") : null;
-  if (aiDock && aiButton) {
-    // 좁은 칼럼에서 라벨 대신 보이는 짧은 이름(command-list-4.css ::after). CSS 글자는 번역기가 못 보므로 여기서 번역한다.
-    aiButton.dataset.shortLabel = t("조수");
-    aiButton.setAttribute("aria-controls", aiDock.id);
-    const syncAiExpanded = (): void => aiButton.setAttribute("aria-expanded", String(aiDock.open));
-    syncAiExpanded();
-    aiDock.addEventListener("toggle", syncAiExpanded);
-    aiButton.addEventListener("click", () => {
-      aiDock.open = !aiDock.open;
-    });
-  }
+function renderCommandAuxGroup(): HTMLElement {
+  // 조수 입구는 이 묶음이 아니라 명령 칼럼 맨 아래 한 줄 입력칸이다(eventEditLine.ts).
   return el("div", {
     class: "event-editor-command-aux-group",
     attrs: { role: "group", "aria-label": "보조 도구" },
@@ -950,7 +922,7 @@ function renderCommandAuxGroup(aiDock?: HTMLDetailsElement): HTMLElement {
     // (`event-view-toggle-preview` / `event-view-toggle-flow`)와 같은 화면으로 들어가는
     // 중복 컨트롤이었다. 플로우는 그 위에 팝오버로 떠서 미리보기의 재생 컨트롤을 덮기까지 했다.
     // 파생 보기의 입구는 세그먼트 하나다.
-    children: aiButton ? [aiButton] : [],
+    children: [],
   });
 }
 

@@ -102,7 +102,7 @@ async function rightClickMapTile(page: Page, x: number, y: number): Promise<void
   });
 }
 
-test("빈 칸 우클릭 → AI 로 이벤트 만들기 → 도크가 펼쳐진 채 편집기가 열린다", async ({ page }, testInfo) => {
+test("빈 칸 우클릭 → AI 로 이벤트 만들기 → 편집기가 열리고 한 줄 입력칸이 초점을 받는다", async ({ page }, testInfo) => {
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await page.setViewportSize({ width: 1280, height: 800 });
   await seedProject(page);
@@ -118,17 +118,13 @@ test("빈 칸 우클릭 → AI 로 이벤트 만들기 → 도크가 펼쳐진 �
 
   await aiItem.click();
 
-  // 편집기가 열리고, AI 명령 도크가 **펼쳐진 채** 태어난다.
+  // 편집기가 열리고, 맨 아래 한 줄 입력칸이 초점을 받아 곧바로 문장을 칠 수 있다.
   await expect(page.getByTestId("event-editor-modal")).toBeVisible();
-  const dock = page.getByTestId("ai-event-assist");
-  await expect(dock).toBeVisible();
-  await expect(dock).toHaveAttribute("open", "");
-  // 입력창이 초점을 받아 곧바로 문장을 칠 수 있다.
-  await expect(page.getByTestId("ai-event-input")).toBeFocused();
+  await expect(page.getByTestId("event-edit-line-input")).toBeFocused();
   await page.screenshot({ path: `${EVIDENCE_DIR}/02-dock-expanded-focused.png`, fullPage: true });
 
   await testInfo.attach("evidence", {
-    body: JSON.stringify({ dockOpen: await dock.getAttribute("open"), focused: true }, null, 2),
+    body: JSON.stringify({ focused: true }, null, 2),
     contentType: "application/json",
   });
 });
@@ -155,7 +151,6 @@ test("이벤트가 있는 칸 우클릭 → 「이 이벤트를 AI 로 고치기
 
   await aiItem.click();
   await expect(page.getByTestId("event-editor-modal")).toBeVisible();
-  await expect(page.getByTestId("ai-event-assist")).toHaveAttribute("open", "");
-  await expect(page.getByTestId("ai-event-input")).toBeFocused();
+  await expect(page.getByTestId("event-edit-line-input")).toBeFocused();
   await page.screenshot({ path: `${EVIDENCE_DIR}/04-existing-event-dock-open.png`, fullPage: true });
 });

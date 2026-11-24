@@ -155,7 +155,10 @@ function renderBody(card: SceneCard, key: string, options: SceneCardsViewOptions
     const text = [...bits, ...quotes.slice(0, 2)].join(" · ");
     if (text) body.push(el("p", { class: "event-scene-bits", text }));
   }
-  if (card.branches.length > 0) body.push(renderBranches(card.branches, options));
+  // 상점의 거래 갈래처럼 비어 있는 갈래만 있으면 카드에 싣지 않는다.
+  if (card.branches.some((branch) => branch.commandCount > 0) || (card.branches.length > 0 && card.kind !== "shop")) {
+    body.push(renderBranches(card.branches, options));
+  }
   if (card.hiddenCount > 0) {
     body.push(el("button", {
       class: "event-scene-hidden",
