@@ -48,16 +48,17 @@ export function followRegionsFromDeltas(deltas: readonly PiMapDelta[], mapOf: (m
     let whole = Boolean(delta.shape);
     const cells: AgentFocusCell[] = [];
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-    const mark = (x: number, y: number, layer: AgentFocusCell["layer"]): void => {
+    const mark = (x: number, y: number, layer: AgentFocusCell["layer"], cleared = false): void => {
       if (x < 0 || y < 0 || x >= map.width || y >= map.height) return;
       minX = Math.min(minX, x); minY = Math.min(minY, y); maxX = Math.max(maxX, x); maxY = Math.max(maxY, y);
-      if (cells.length <= FLASH_CELL_LIMIT) cells.push({ x, y, layer });
+      // 지운 칸(빈 타일·사라진 스택)은 빨강, 찍은 칸은 파랑으로 반짝인다(목업 v4 장면 C).
+      if (cells.length <= FLASH_CELL_LIMIT) cells.push(cleared ? { x, y, layer, cleared: true } : { x, y, layer });
     };
     for (const layer of delta.layers ?? []) {
       if (layer.full) { whole = true; continue; }
       const kind: AgentFocusCell["layer"] = layer.layer === "lower" || layer.layer === "layer2" || layer.layer === "shadow" ? "lower" : "upper";
-      for (const cell of layer.cells ?? []) mark(cell.i % map.width, Math.floor(cell.i / map.width), kind);
-      for (const stack of layer.stacks ?? []) mark(stack.i % map.width, Math.floor(stack.i / map.width), kind);
+      for (const cell of layer.cells ?? []) mark(cell.i % map.width, Math.floor(cell.i / map.width), kind, cell.t < 0);
+      for (const stack of layer.stacks ?? []) mark(stack.i % map.width, Math.floor(stack.i / map.width), kind, stack.s === null);
     }
     for (const event of delta.events?.upserts ?? []) mark(event.x, event.y, "event");
     if (whole) {
@@ -91,6 +92,8 @@ export interface AiFollowCameraOptions {
   readonly baseProject: Project;
   /** 다른 맵에서 같이 도는 대기열 실행 — 앞 실행의 화면을 빼앗지 않는다. */
   readonly background?: boolean;
+  /** 처음부터 따라갈지. 기본 true. 팀 실행은 `followsByDefault("team")` = false — 알약·PiP 를 눌러야 붙는다. */
+  readonly following?: boolean;
   readonly now?: () => number;
 }
 
@@ -100,12 +103,20 @@ const PIP_INTERVAL_MS = 1500;
 
 let releasePrevious: (() => void) | null = null;
 
+/**
+ * 큰 캔버스가 처음부터 조수를 따라가는가(2026-11-24 qa1124 목업 v4 장면 A). 팀 실행은 여러 일꾼이 여러 맵을 동시에 쓰므로
+ * 화면이 이 맵 저 맵으로 끌려 다니지 않게 따라가지 않고 시작한다(사용자가 PiP·「따라가기」로 붙는다). 단독 실행은 그대로 따라간다.
+ */
+export function followsByDefault(mode: string | undefined): boolean {
+  return mode !== "team";
+}
+
 export function createAiFollowCamera(options: AiFollowCameraOptions): AiFollowCamera {
   if (options.background || typeof document === "undefined") return { observe() {}, dispose() {} };
   releasePrevious?.();
   const now = options.now ?? (() => Date.now());
   let maps: Record<string, GameMap> = { ...(options.baseProject.maps ?? {}) };
-  let following = true;
+  let following = options.following ?? true;
   let disposed = false;
   /** 우리가 맵을 여는 동안 일어난 currentMapId 변경은 사용자 선택이 아니다. */
   let programmatic = false;
@@ -244,6 +255,8 @@ export function createAiFollowCamera(options: AiFollowCameraOptions): AiFollowCa
       lastRegion = region;
       if (!isAiLiveCanvasEnabled() || isUiInBackground()) { paintChrome(); return; }
       if (following) go(region, false);
+      // 따라가지 않아도 지금 보는 맵에 쓴 칸은 그 자리에서 반짝인다(화면은 옮기지 않는다).
+      else if (region.mapId === editorState.get().currentMapId) flash(region);
       paintChrome();
     },
     dispose,

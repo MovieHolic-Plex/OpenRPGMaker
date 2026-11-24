@@ -6,6 +6,9 @@
 // 체크포인트로 받아, 그 순서와 그 시점의 칸 값 그대로 사람 눈 속도로 늦춰 튼다. 기록이 없으면 연출하지 않는다
 // (지어낸 순서는 보이지 않는다 — 기존 「✓ 반영됨」 강조로 간다).
 //
+// 합성 기록(`log.synthetic`, 기록을 남기지 않는 도구의 적용 전·후 차이를 열 순서로 나눈 것)은 재생하지 않는다(2026-11-24
+// qa1124 목업 v4): 그 순서는 도구가 밟은 순서가 아니라 연출이었다. 그런 도구는 바뀐 칸 강조만 받는다.
+//
 // 적용은 늦추지 않는다(다음 도구·체크포인트 ACK 를 잡지 않는다). 그리기는 `agentConstructionRevealRenderer.ts`.
 
 import type { ConstructionLog, ConstructionStep } from "@/editor/tools/constructionLog";
@@ -62,7 +65,13 @@ export function discardConstructionLogs(mapId?: MapId): void {
 export function offerConstructionLogs(logs: readonly ConstructionLog[] | undefined): void {
   const now = Date.now();
   for (const [id, entry] of pending) if (now - entry.at > PENDING_TTL_MS) pending.delete(id);
-  for (const log of logs ?? []) if (!log.truncated && log.steps.length) pending.set(log.mapId, { log, at: now });
+  for (const log of logs ?? []) if (!log.synthetic && !log.truncated && log.steps.length) pending.set(log.mapId, { log, at: now });
+}
+
+/** 재생이 실제보다 느리다는 것을 밝히는 글줄 — «실제 1.4초 · 재생 6.1초». */
+export function constructionRevealTimingLabel(plan: Pick<ConstructionRevealPlan, "log" | "durationMs">): string {
+  const seconds = (ms: number): string => Math.max(0.1, ms / 1000).toFixed(1);
+  return `실제 ${seconds(plan.log.elapsedMs)}초 · 재생 ${seconds(plan.durationMs)}초`;
 }
 
 function stepDuration(step: ConstructionStep): number {
@@ -87,8 +96,8 @@ export function planConstructionReveal(
   const log = entry.log;
   if (Date.now() - entry.at > PENDING_TTL_MS || log.width !== after.width || log.height !== after.height) return null;
 
-  // 도구 하나의 실제 변경(synthetic)은 칸 수에 맞춘 속도로 — 한 칸 고치기에 0.5초를 쓰지 않고, 큰 칠하기도 1.4초 안에.
-  if (log.synthetic) return synthesizedPlan(after, log);
+  // 합성 기록은 지어낸 순서다 — 재생하지 않고 호출부가 바뀐 칸 강조로 간다.
+  if (log.synthetic) return null;
   const stampTotal = log.steps.reduce((sum, step) => sum + (step.kind === "stamp" ? stepDuration(step) : 0), 0);
   const stampScale = stampTotal > STAMP_SPAN_MAX_MS ? STAMP_SPAN_MAX_MS / stampTotal : 1;
   const frames: ConstructionRevealFrame[] = [];
@@ -117,29 +126,6 @@ export function planConstructionReveal(
     log,
     frames,
     holdUntilMs,
-    durationMs: holdUntilMs + CONSTRUCTION_FADE_OUT_MS,
-    bounds: { x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1 },
-  };
-}
-
-function synthesizedPlan(after: GameMap, log: ConstructionLog): ConstructionRevealPlan | null {
-  const frames: ConstructionRevealFrame[] = [];
-  let t = 0;
-  let minX = after.width, minY = after.height, maxX = -1, maxY = -1;
-  for (const step of log.steps) {
-    const duration = Math.round(Math.min(1400, Math.max(step.kind === "stamp" ? 220 : 260, 140 + step.cells.length * 6)));
-    frames.push({ step, at: t, duration });
-    t += duration + 80;
-    for (const c of step.cells) {
-      const x = c % log.width, y = (c - x) / log.width;
-      if (x < minX) minX = x; if (x > maxX) maxX = x;
-      if (y < minY) minY = y; if (y > maxY) maxY = y;
-    }
-  }
-  if (!frames.length || maxX < 0) return null;
-  const holdUntilMs = t + 120;
-  return {
-    mapId: after.id, width: log.width, height: log.height, tilesetId: after.tilesetId, log, frames, holdUntilMs,
     durationMs: holdUntilMs + CONSTRUCTION_FADE_OUT_MS,
     bounds: { x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1 },
   };

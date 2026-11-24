@@ -8,6 +8,7 @@ import { canOpenEditorMap, selectEditorMap } from "@/editor/mapSelection";
 import { mapTreeDropRelation, type MapTreeDropRelation } from "@/editor/mapTreeDrop";
 import { openMapCreateDialog, openMapCreateUnder } from "@/editor/panels/mapCreateDialog";
 import { createMapThumbnail } from "@/editor/panels/mapThumbnail";
+import { currentMapAiBadges, mapAiBadgeElements, onMapAiBadgesChange, type MapAiBadge } from "@/editor/panels/mapTreeAiBadges";
 import { openTestPlayModal } from "@/editor/panels/testPlayModal";
 import { openMapContextMenu, type MapContextMenuItem, type MapContextMenuPoint } from "@/editor/panels/mapContextMenu";
 import { renderMapInspector, type MapInspectorAction, type MapInspectorView } from "@/editor/panels/mapInspectorPane";
@@ -36,6 +37,8 @@ import { isMapPanelCollapsed, setMapPanelCollapsed, toggleMapPanelCollapsed } fr
 
 type RenderNodeContext = {
   readonly activeId: string;
+  /** 맵 id → 「조수 작업 중 / 잠금 대기」 배지(mapTreeAiBadges). */
+  readonly aiBadges: ReadonlyMap<string, readonly MapAiBadge[]>;
   readonly canDeleteMap: boolean;
   readonly startMapId: MapId;
   readonly visibleIds: ReadonlySet<MapId>;
@@ -171,7 +174,7 @@ export function renderMapList(container: HTMLElement, options?: MapListOptions):
     },
   });
   renderNode({
-    context: { activeId, canDeleteMap: mapCount > 1, startMapId: project.startMapId, visibleIds },
+    context: { activeId, aiBadges: watchMapAiBadges(), canDeleteMap: mapCount > 1, startMapId: project.startMapId, visibleIds },
     depth: 0,
     host: tree,
     node: project.mapTree,
@@ -597,6 +600,7 @@ function renderNode(spec: RenderNodeSpec): void {
             attrs: { title: "시작 맵" },
           })]
           : []),
+        ...mapAiBadgeElements(context.aiBadges.get(node.mapId), node.mapId),
       ],
     });
     // 한 텍스트 노드로 붙이면 `{0}×{1} · 이벤트 {2}` 가 뒤의 「N개 · 문 M개」까지
@@ -1076,6 +1080,32 @@ function pathToMap(node: MapTreeNode, mapId: MapId, path: MapId[] = []): readonl
     if (found.length > 0) return found;
   }
   return [];
+}
+
+const isProjectMap = (mapId: string): boolean => Boolean(store.getCurrent().maps[mapId]);
+let aiBadgeWatch = false;
+
+/** 지금 배지를 읽고, 처음 한 번은 배지가 바뀔 때 목록 전체가 아니라 이름 줄의 배지만 갈아 끼우게 구독한다. */
+function watchMapAiBadges(): ReadonlyMap<string, readonly MapAiBadge[]> {
+  if (!aiBadgeWatch) {
+    aiBadgeWatch = true;
+    onMapAiBadgesChange(refreshAiBadgesInPlace);
+  }
+  return currentMapAiBadges(isProjectMap);
+}
+
+function refreshAiBadgesInPlace(): void {
+  const container = currentMapListContainer;
+  if (!container?.isConnected) return;
+  const badges = currentMapAiBadges(isProjectMap);
+  const prefix = "map-tree-node-";
+  for (const row of container.querySelectorAll<HTMLElement>(`.map-item[data-testid^="${prefix}"]`)) {
+    const mapId = row.dataset.testid!.slice(prefix.length);
+    const line = row.querySelector(".map-tree-name-line");
+    if (!line) continue;
+    for (const old of line.querySelectorAll(".map-tree-ai-badge")) old.remove();
+    line.append(...mapAiBadgeElements(badges.get(mapId), mapId));
+  }
 }
 
 function rerenderMapList(): void {

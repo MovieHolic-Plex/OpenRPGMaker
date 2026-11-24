@@ -48,7 +48,7 @@ export interface ConstructionLog {
   readonly initial?: Omit<ConstructionStep, "kind" | "label">;
   /** 기록 상한을 넘어 뒤를 버렸다. */
   readonly truncated?: boolean;
-  /** 도구가 스스로 남긴 기록이 아니라 그 도구의 실제 변경(적용 전 → 후)을 층 순서로 나눈 것. 재생 속도를 칸 수에 맞춘다. */
+  /** 도구가 스스로 남긴 기록이 아니라 그 도구의 실제 변경(적용 전 → 후)을 층 순서로 나눈 것. 편집기는 재생하지 않는다(지어낸 순서) — 바뀐 칸 강조만. */
   readonly synthetic?: boolean;
 }
 
@@ -297,7 +297,11 @@ function diffLog(toolName: string, prev: GameMap | undefined, map: GameMap, elap
  */
 export function mergeConstructionLogs(logs: readonly ConstructionLog[]): ConstructionLog[] {
   const byMap = new Map<string, ConstructionLog>();
+  // 실제 기록이 있는 맵에서는 합성 기록(열 순서로 나눈 차이)을 잇지 않는다 — 잇으면 지어낸 순서가 실제 재생에 섞인다(2026-11-24).
+  // 그 칸은 재생 덮개가 걷힐 때 적용된 맵 그대로 보인다.
+  const realMaps = new Set(logs.filter((log) => !log.synthetic).map((log) => log.mapId));
   for (const log of logs) {
+    if (log.synthetic && realMaps.has(log.mapId)) continue;
     const prev = byMap.get(log.mapId);
     if (!prev || prev.width !== log.width || prev.height !== log.height || !prev.initial || !log.initial) { byMap.set(log.mapId, log); continue; }
     const seen = new Set(prev.initial.cells);

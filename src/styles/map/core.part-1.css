@@ -180,9 +180,10 @@ body[data-editor-tool="pan"] .editor-layout .canvas-area .phaser-container:activ
 }
 
 .agent-focus-highlight {
-  animation: agent-focus-highlight-fade 2.2s ease-out forwards;
-  background: rgba(104, 120, 100, 0.03);
-  border: 1px solid rgba(98, 113, 95, 0.65);
+  /* 바뀐 칸 상자: 0.6초 또렷이 → 0.2초 걷힘(agentPreviewRenderers AGENT_FOCUS_HOLD_MS). 찍기 파랑, 지우기 빨강. */
+  animation: agent-focus-highlight-fade 0.8s ease-out forwards;
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
+  border: 2px solid var(--accent);
   box-shadow: none;
   box-sizing: border-box;
   pointer-events: none;
@@ -199,12 +200,29 @@ body[data-editor-tool="pan"] .editor-layout .canvas-area .phaser-container:activ
   z-index: 3;
 }
 
+.agent-focus-highlight-badge {
+  background: var(--bg-glass);
+  border-radius: var(--radius-1);
+  color: var(--text-1);
+  font: 600 var(--font-size-sm)/1.4 var(--font-ui);
+  left: var(--space-1);
+  padding: 0 var(--space-1);
+  position: absolute;
+  top: var(--space-1);
+  white-space: nowrap;
+}
+
+.agent-focus-highlight[data-tone="clear"] {
+  background: color-mix(in srgb, var(--danger) 6%, transparent);
+  border-color: var(--danger);
+}
+
 @keyframes agent-focus-highlight-fade {
   0% {
     opacity: 1;
   }
-  72% {
-    opacity: 0.82;
+  75% {
+    opacity: 1;
   }
   100% {
     opacity: 0;

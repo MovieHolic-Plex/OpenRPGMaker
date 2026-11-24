@@ -14,6 +14,8 @@ export interface AgentFocusCell {
   readonly x: number;
   readonly y: number;
   readonly layer: AgentFocusLayer;
+  /** 이 칸은 지워졌다(빈 타일·사라진 이벤트) — 강조가 빨강으로 그린다. 없으면 찍기(파랑). */
+  readonly cleared?: true;
 }
 
 export interface AgentFocusBounds {
@@ -181,8 +183,9 @@ function collectChangedTiles(before: GameMap, after: GameMap, focus: MutableFocu
     for (let x = 0; x < commonWidth; x += 1) {
       const beforeIndex = y * before.width + x;
       const afterIndex = y * after.width + x;
-      if (before.lowerTiles[beforeIndex] !== after.lowerTiles[afterIndex]) includeCell(focus, { x, y, layer: "lower" });
-      if (before.upperTiles[beforeIndex] !== after.upperTiles[afterIndex]) includeCell(focus, { x, y, layer: "upper" });
+      const lower = after.lowerTiles[afterIndex] ?? -1, upper = after.upperTiles[afterIndex] ?? -1;
+      if (before.lowerTiles[beforeIndex] !== lower) includeCell(focus, { x, y, layer: "lower", ...(lower < 0 ? { cleared: true as const } : {}) });
+      if (before.upperTiles[beforeIndex] !== upper) includeCell(focus, { x, y, layer: "upper", ...(upper < 0 ? { cleared: true as const } : {}) });
     }
   }
   if (after.width > before.width) {
@@ -239,7 +242,7 @@ function collectChangedEvents(before: GameMap, after: GameMap, focus: MutableFoc
     }
   }
   for (const [id, event] of beforeEvents) {
-    if (!afterEvents.has(id)) includeCell(focus, { x: event.x, y: event.y, layer: "event" });
+    if (!afterEvents.has(id)) includeCell(focus, { x: event.x, y: event.y, layer: "event", cleared: true });
   }
 }
 

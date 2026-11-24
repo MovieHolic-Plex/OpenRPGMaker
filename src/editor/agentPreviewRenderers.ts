@@ -4,7 +4,7 @@ import { isAiLiveCanvasEnabled } from "@/editor/aiLiveCanvas";
 import { editorMapTileSize } from "@/editor/mapGeometry";
 import { narrateAiActivity } from "@/editor/aiActivityNarration";
 import { placeAiActivityChip } from "@/editor/aiActivityChipPlacement";
-import type { AgentFocusBounds, AgentFocusCell, AgentFocusTarget } from "@/editor/agentFocus";
+import type { AgentFocusBounds, AgentFocusTarget } from "@/editor/agentFocus";
 import {
   agentGhostPreviewsForMap,
   buildGhostRevealSchedule,
@@ -26,7 +26,12 @@ import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
 
 const AGENT_FOCUS_MAX_CELL_RECTS = 256;
-const AGENT_FOCUS_HIGHLIGHT_MS = 2200;
+/** 바뀐 칸 강조가 또렷하게 머무는 시간, 그 뒤 걷히는 시간(목업 v4: 약 0.6초). */
+export const AGENT_FOCUS_HOLD_MS = 600;
+const AGENT_FOCUS_FADE_MS = 200;
+/** 찍기 = --accent(#1F6FC5), 지우기 = --danger(#B5302E). Phaser 그래픽은 CSS 변수를 못 읽어 같은 값을 숫자로 쓴다. */
+const AGENT_FOCUS_STAMP_COLOR = 0x1f6fc5;
+const AGENT_FOCUS_CLEAR_COLOR = 0xb5302e;
 export const AGENT_GHOST_MAX_CELL_RECTS = 256;
 const AGENT_GHOST_FILL_COLOR = 0x687864;
 const AGENT_GHOST_STROKE_COLOR = 0x62715f;
@@ -837,26 +842,45 @@ export class AgentFocusRenderer {
     group.setName("agent-focus-highlight");
     this.layer.add(group);
 
+    // 한 Graphics 에 모아 그린다 — 칸마다 Rectangle 객체를 만들면 칸 256개에서 한 번 그리기가 수 ms 를 넘는다.
+    const tile = editorMapTileSize(this.mapId());
+    const zoom = Math.max(0.05, this.scene.cameras.main.zoom || 1);
+    const hair = 1 / zoom;
     const cells = target.cells.filter((cell) => cell.x >= 0 && cell.y >= 0);
-    if (cells.length > 0 && cells.length <= AGENT_FOCUS_MAX_CELL_RECTS) {
-      for (const cell of cells) group.add(this.cellRect(cell));
+    const drawCells = cells.length > 0 && cells.length <= AGENT_FOCUS_MAX_CELL_RECTS;
+    const allCleared = drawCells && cells.every((cell) => cell.cleared);
+    const g = this.scene.add.graphics();
+    if (drawCells) {
+      for (const cell of cells) {
+        const color = cell.cleared ? AGENT_FOCUS_CLEAR_COLOR : AGENT_FOCUS_STAMP_COLOR;
+        g.fillStyle(color, 0.18);
+        g.fillRect(cell.x * tile, cell.y * tile, tile, tile);
+        g.lineStyle(hair, color, 0.75);
+        g.strokeRect(cell.x * tile + hair / 2, cell.y * tile + hair / 2, tile - hair, tile - hair);
+      }
     }
-    group.add(this.boundsRect(target.bounds, false));
-    if (typeof this.scene.add.text === "function") {
-      const badge = this.scene.add.text(target.bounds.x * editorMapTileSize(this.mapId()) + 4, target.bounds.y * editorMapTileSize(this.mapId()) + 4,
-        "✓ 반영됨", { fontFamily: "sans-serif", fontSize: "12px", color: "#f7f3ea", backgroundColor: "#465744", padding: { x: 6, y: 3 } });
-      group.add(badge);
-      if (!prefersReducedMotion()) this.scene.tweens.add({ targets: badge, y: badge.y - 5, duration: 360, ease: "Cubic.easeOut" });
+    // 바뀐 칸 전체의 상자. 칸을 못 그리는 통째 쓰기(새 맵·다시 짓기)는 상자에 옅은 채움을 더한다.
+    const { x, y, width, height } = target.bounds;
+    const edge = 2 / zoom;
+    const boxColor = allCleared ? AGENT_FOCUS_CLEAR_COLOR : AGENT_FOCUS_STAMP_COLOR;
+    if (!drawCells) {
+      g.fillStyle(boxColor, 0.1);
+      g.fillRect(x * tile, y * tile, width * tile, height * tile);
     }
+    g.lineStyle(edge, boxColor, 0.95);
+    g.strokeRect(x * tile + edge / 2, y * tile + edge / 2, width * tile - edge, height * tile - edge);
+    group.add(g);
     group.setAlpha(1);
+    // 바뀐 칸을 0.6초 동안 또렷하게 보인 뒤 짧게 걷는다(목업 v4 장면 B·C).
     this.scene.tweens.add({
       targets: group,
       alpha: 0,
-      duration: prefersReducedMotion() ? 150 : AGENT_FOCUS_HIGHLIGHT_MS,
+      delay: AGENT_FOCUS_HOLD_MS,
+      duration: prefersReducedMotion() ? 1 : AGENT_FOCUS_FADE_MS,
       ease: "Cubic.easeOut",
       onComplete: () => group.destroy(true),
     });
-    this.renderDomMarker(target.bounds);
+    this.renderDomMarker(target.bounds, allCleared);
   }
 
   clear(): void {
@@ -864,29 +888,7 @@ export class AgentFocusRenderer {
     this.clearDomMarker();
   }
 
-  private cellRect(cell: AgentFocusCell): Phaser.GameObjects.Rectangle {
-    const color = cell.layer === "event" ? 0x957451 : cell.layer === "upper" ? 0x667a7b : 0x7d8869;
-    const rect = this.scene.add.rectangle(cell.x * editorMapTileSize(this.mapId()), cell.y * editorMapTileSize(this.mapId()), editorMapTileSize(this.mapId()), editorMapTileSize(this.mapId()), color, 0.04);
-    rect.setOrigin(0, 0);
-    rect.setStrokeStyle(1, color, 0.35);
-    return rect;
-  }
-
-  private boundsRect(bounds: AgentFocusBounds, strongFill: boolean): Phaser.GameObjects.Rectangle {
-    const rect = this.scene.add.rectangle(
-      bounds.x * editorMapTileSize(this.mapId()),
-      bounds.y * editorMapTileSize(this.mapId()),
-      bounds.width * editorMapTileSize(this.mapId()),
-      bounds.height * editorMapTileSize(this.mapId()),
-      0x687864,
-      strongFill ? 0.04 : 0.015
-    );
-    rect.setOrigin(0, 0);
-    rect.setStrokeStyle(1, 0x52654d, 0.7);
-    return rect;
-  }
-
-  private renderDomMarker(bounds: AgentFocusBounds): void {
+  private renderDomMarker(bounds: AgentFocusBounds, cleared: boolean): void {
     if (typeof document === "undefined") return;
     const host = this.scene.game.canvas.parentElement;
     if (!host) return;
@@ -894,14 +896,17 @@ export class AgentFocusRenderer {
     const marker = document.createElement("div");
     marker.className = "agent-focus-highlight";
     marker.dataset.testid = "agent-focus-highlight";
+    marker.dataset.tone = cleared ? "clear" : "stamp";
     marker.setAttribute("aria-hidden", "true");
     marker.style.left = `${rect.x}px`;
     marker.style.top = `${rect.y}px`;
     marker.style.width = `${rect.width}px`;
     marker.style.height = `${rect.height}px`;
+    // 「✓ 반영됨」은 DOM 글자로 — Phaser 글자는 만들 때마다 캔버스에 글꼴을 래스터해 강조 한 번이 수 ms 늘었다.
+    marker.append(Object.assign(document.createElement("span"), { className: "agent-focus-highlight-badge", textContent: "✓ 반영됨" }));
     host.append(marker);
     this.domMarker = marker;
-    this.domTimer = setTimeout(() => this.clearDomMarker(), AGENT_FOCUS_HIGHLIGHT_MS + 100);
+    this.domTimer = setTimeout(() => this.clearDomMarker(), AGENT_FOCUS_HOLD_MS + AGENT_FOCUS_FADE_MS + 100);
   }
 
   private screenRect(bounds: AgentFocusBounds): AgentFocusBounds {
