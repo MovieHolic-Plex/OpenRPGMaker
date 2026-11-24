@@ -238,6 +238,9 @@ Node 쪽 `aiAuthRuntime.ts` 라 워커 없이 된다). 워커는 `@oh-my-pi/pi-n
   `boot.ts` 가 바로 끝낸다. AppImage 이름에 공백이 있으면 gh 업로드가 점으로 바꿔 `latest-linux.yml` 과 어긋나므로
   `linux.artifactName` 을 `OPRN.Studio-${version}.${ext}` 로 고정했다. AppImage 의 차등 받기는 파일 안 blockmap 을 쓴다
   (별도 `.blockmap` 은 NSIS 만).
+- 릴리스 자산: 0.420.0 부터 `latest.yml`·`latest-linux.yml`·`OPRN.Studio-Setup-<판>.exe.blockmap` 도 발행 전 필수다
+  (`releaseAssets.mjs` `requiredUpdateAssets`, `UPDATE_FEED_SINCE` — desktop-release.yml 의 jq `feed()` 와 같은 판). 이름은 바꾸지 않고
+  올린다(README 고정 이름과 겹치지 않는다). 그 전 판은 요구하지 않는다 — 옛 빌드 설정은 이 파일을 만들지 못한다.
 - 검증: CI `app-update-e2e`(`scripts/qa/app-update-e2e.mjs`)가 실제 AppImage 0.0.1 → 로컬 generic 서버 → 0.0.2 교체·재시작과
   NSIS `latest.yml`·sha512·blockmap 을 본다. 실제 윈도 업데이트는 사람이 윈도에서 확인한다.
 

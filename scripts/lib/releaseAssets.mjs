@@ -32,6 +32,28 @@ export function requiredDesktopAssets(version) {
 }
 
 /**
+ * 앱 자동 업데이트(electron/main/appUpdate.ts)가 읽는 파일이 처음 실리는 판. 그 전 판의 빌드 설정에는 publish 가 없어
+ * latest.yml 을 만들지 못한다 — 옛 초안을 다시 채울 때 영영 모자란 자산으로 걸리지 않게 판으로 가른다.
+ * desktop-release.yml 의 jq 판정과 같은 값이어야 한다(그쪽은 체크아웃 전에 돈다).
+ */
+export const UPDATE_FEED_SINCE = "0.420.0";
+
+/**
+ * 자동 업데이트 자산. 앱은 Latest 릴리스의 latest.yml(윈도 NSIS)·latest-linux.yml(AppImage)을 읽고,
+ * 윈도는 설치판 blockmap 으로 차등 받는다(AppImage 는 파일 안 blockmap). 발행 전에 있어야 한다 —
+ * 발행되는 순간 설치된 앱이 그 릴리스를 본다.
+ *
+ * @param {string} version
+ * @returns {readonly string[]}
+ */
+export function requiredUpdateAssets(version) {
+  const plain = String(version ?? "").replace(/^v/, "").trim();
+  if (!/^\d+\.\d+\.\d+$/.test(plain)) throw new Error(`버전이 X.Y.Z 가 아닙니다: ${version}`);
+  if (compareParts(plain.split(".").map(Number), UPDATE_FEED_SINCE.split(".").map(Number)) < 0) return [];
+  return ["latest.yml", "latest-linux.yml", `OPRN.Studio-Setup-${plain}.exe.blockmap`];
+}
+
+/**
  * 릴리스 자산 목록에서 «없는 이름»과 «크기 0»을 가려낸다. gh api 의 asset 은
  * `{ name, size, state }` 꼴이다. 업로드가 끝나지 않은 자산은 state 가 `starter` 이고
  * size 가 0 이라 크기 검사만으로도 걸린다.
@@ -47,7 +69,7 @@ export function checkDesktopAssets(version, assets) {
   }
   const missing = [];
   const empty = [];
-  for (const name of requiredDesktopAssets(version)) {
+  for (const name of [...requiredDesktopAssets(version), ...requiredUpdateAssets(version)]) {
     const asset = byName.get(name);
     if (!asset) {
       missing.push(name);

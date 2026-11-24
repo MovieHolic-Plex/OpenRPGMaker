@@ -162,7 +162,7 @@ try {
   writeFileSync(join(homedir(), ".cache/electron-builder/package.json"), "{\"type\":\"commonjs\"}\n");
   execFileSync(
     "npx",
-    ["electron-builder", "--config", "scripts/electron-builder.config.mjs", "--linux", "AppImage", "--win", "nsis", "portable", "--x64"],
+    ["electron-builder", "--config", "scripts/electron-builder.config.mjs", "--publish", "never", "--linux", "AppImage", "--win", "nsis", "portable", "--x64"],
     { cwd: buildDir, stdio: "inherit", env },
   );
 
@@ -187,8 +187,12 @@ try {
       stable.push(alias);
     }
   }
-  runInherit("gh", ["release", "upload", tag, ...files, ...stable, "--clobber"], repo);
-  console.log(`[release-desktop] ${tag} 업로드 완료: ${[...files, ...stable].map((file) => file.split("/").pop()).join(", ")}`);
+  // 앱 자동 업데이트 파일(latest.yml·latest-linux.yml·설치판 blockmap) — 이름 그대로 올린다. 있어야 하는지는 checkDesktopAssets 가 판으로 가른다.
+  const feed = readdirSync(outDir)
+    .filter((name) => name === "latest.yml" || name === "latest-linux.yml" || /^OPRN\.Studio-Setup-.*\.exe\.blockmap$/.test(name))
+    .map((name) => join(outDir, name));
+  runInherit("gh", ["release", "upload", tag, ...files, ...stable, ...feed, "--clobber"], repo);
+  console.log(`[release-desktop] ${tag} 업로드 완료: ${[...files, ...stable, ...feed].map((file) => file.split("/").pop()).join(", ")}`);
 
   // 같은 순서 계약: 업로드한 이름·크기를 다시 읽어 확인한 뒤에만 발행한다.
   const check = checkDesktopAssets(tag.replace(/^v/, ""), assetList(tag));
@@ -197,7 +201,7 @@ try {
   }
   if (process.env.OPRN_DESKTOP_NO_PUBLISH !== "1") {
     run("gh", ["release", "edit", tag, "--draft=false"]);
-    console.log(`[release-desktop] ${tag} 자산 6개 검증 후 발행`);
+    console.log(`[release-desktop] ${tag} 자산 검증 후 발행`);
   }
 
   if (dropDir) {
