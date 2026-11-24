@@ -50,11 +50,15 @@ export function matchesPrimitiveSchema(schema: JsonSchema, value: unknown): bool
   return true;
 }
 
+/** Objects whose whole subtree is already frozen. Frozen trees cannot change, so a later call skips them instead of re-walking tilesets and assets. */
+const deeplyFrozen = new WeakSet<object>();
+
 function deepFreezeProject(value: unknown, seen = new WeakSet<object>()): void {
-  if (value === null || typeof value !== "object" || seen.has(value)) return;
+  if (value === null || typeof value !== "object" || seen.has(value) || deeplyFrozen.has(value)) return;
   seen.add(value);
   for (const child of Object.values(value)) deepFreezeProject(child, seen);
   Object.freeze(value);
+  deeplyFrozen.add(value);
 }
 
 export function runPrimitive(
