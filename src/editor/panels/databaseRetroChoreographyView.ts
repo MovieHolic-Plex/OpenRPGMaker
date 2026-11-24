@@ -86,43 +86,89 @@ export function renderRetroChoreographyTab(content: HTMLElement, rerender: () =>
   currentStage?.stop();
   currentStage = null;
   const projectRecords = records();
-  const all = filterRetroChoreographies({ query: listQuery.trim() || undefined }, projectRecords);
-  const projectRows = all.filter((entry) => entry.origin === "project");
-  const defaultMatches = all.filter((entry) => entry.origin === "default");
-  const defaultRows = defaultMatches.slice(0, DEFAULT_ROW_LIMIT);
-  const visible = [...projectRows, ...defaultRows];
-  const known = [...projectRecords.map((record) => record.id), ...retroChoreographyEntries().map((entry) => entry.id)];
-  if (!selectedId || !known.includes(selectedId)) selectedId = visible[0]?.id;
-  const selectedProject = projectRecords.find((record) => record.id === selectedId);
-  const selectedEntry: RetroChoreographyEntry | undefined = selectedId
-    ? filterRetroChoreographies({}, projectRecords).find((entry) => entry.id === selectedId)
-    : undefined;
+  const knownIds = new Set([...projectRecords.map((record) => record.id), ...retroChoreographyEntries().map((entry) => entry.id)]);
+  const currentProject = (): SkillChoreographyRecord | undefined => records().find((record) => record.id === selectedId);
 
-  const select = (id: string): void => { selectedId = id; pickerLayer = undefined; rerender(); };
-
-  const rows = visible.map((entry) => {
-    const row = listRow({
-      name: entry.name,
-      ...(entry.origin === "default" ? { sub: "기본" } : { sub: "내 연출" }),
-      thumb: sheetThumb(entry.layerKeys[0] ?? "", 24),
-      active: entry.id === selectedId,
-      title: `${entry.name}\n${entry.layerSummary}`,
-      onSelect: () => select(entry.id),
-      testid: "db-retro-choreo-row-" + entry.id,
+  // 목록 행만 다시 만든다. 검색·선택은 탭 전체를 다시 그리지 않는다(검색칸 포커스·무대를 지키고 클릭 지연을 줄인다, qa1124 항목 5).
+  const buildRows = (): { readonly rows: HTMLElement[]; readonly empty: boolean } => {
+    const all = filterRetroChoreographies({ query: listQuery.trim() || undefined }, records());
+    const projectRows = all.filter((entry) => entry.origin === "project");
+    const defaultMatches = all.filter((entry) => entry.origin === "default");
+    const defaultRows = defaultMatches.slice(0, DEFAULT_ROW_LIMIT);
+    const visible = [...projectRows, ...defaultRows];
+    if (!selectedId || !knownIds.has(selectedId)) selectedId = visible[0]?.id;
+    const rows = visible.map((entry) => {
+      const row = listRow({
+        name: entry.name,
+        ...(entry.origin === "default" ? { sub: "기본" } : { sub: "내 연출" }),
+        thumb: sheetThumb(entry.layerKeys[0] ?? "", 24),
+        active: entry.id === selectedId,
+        title: `${entry.name}\n${entry.layerSummary}`,
+        onSelect: () => select(entry.id),
+        testid: "db-retro-choreo-row-" + entry.id,
+      });
+      if (entry.origin === "default") row.querySelector(".db-list-sub")?.setAttribute("data-testid", "db-retro-choreo-badge-default");
+      return row;
     });
-    if (entry.origin === "default") row.querySelector(".db-list-sub")?.setAttribute("data-testid", "db-retro-choreo-badge-default");
-    return row;
-  });
-  if (defaultMatches.length > defaultRows.length) {
-    rows.push(el("div", { class: "db-retro-choreo-more", text: `기본 연출 ${defaultMatches.length - defaultRows.length}개 더 있음 — 검색으로 좁혀 보세요.` }));
-  }
+    if (defaultMatches.length > defaultRows.length) {
+      rows.push(el("div", { class: "db-retro-choreo-more", text: `기본 연출 ${defaultMatches.length - defaultRows.length}개 더 있음 — 검색으로 좁혀 보세요.` }));
+    }
+    return { rows, empty: visible.length === 0 };
+  };
+
+  const buildDetail = (): HTMLElement => {
+    const entry: RetroChoreographyEntry | undefined = selectedId
+      ? filterRetroChoreographies({}, records()).find((candidate) => candidate.id === selectedId)
+      : undefined;
+    return entry
+      ? renderDetail(entry, currentProject(), { rerender, cloneSelected })
+      : detailPane({ body: emptyState({ title: "연출을 골라 보세요", body: "왼쪽에서 기본 연출을 고른 뒤 「복제해서 고치기」를 누르면 층을 바꿀 수 있습니다." }) });
+  };
+
+  let detail: HTMLElement | undefined;
+  let list: HTMLElement | undefined;
+  const syncToolbar = (): void => {
+    const clone = list?.querySelector<HTMLButtonElement>('[data-testid="db-retro-choreo-clone-list"]');
+    const remove = list?.querySelector<HTMLButtonElement>('[data-testid="db-retro-choreo-delete"]');
+    if (clone) clone.disabled = !selectedId;
+    if (remove) remove.disabled = !currentProject();
+  };
+  const swapDetail = (): void => {
+    currentStage?.stop();
+    currentStage = null;
+    const next = buildDetail();
+    detail?.replaceWith(next);
+    detail = next;
+    syncToolbar();
+  };
+  const select = (id: string): void => {
+    if (id === selectedId && pickerLayer === undefined) return;
+    selectedId = id;
+    pickerLayer = undefined;
+    for (const row of list?.querySelectorAll<HTMLElement>('[data-testid^="db-retro-choreo-row-"]') ?? []) {
+      const on = row.dataset.testid === "db-retro-choreo-row-" + id;
+      row.classList.toggle("active", on);
+      row.setAttribute("aria-pressed", on ? "true" : "false");
+    }
+    swapDetail();
+  };
+  const refilter = (): void => {
+    const rowsHost = list?.querySelector<HTMLElement>(":scope > .db-list");
+    if (!rowsHost) { rerender(); return; }
+    const { rows, empty } = buildRows();
+    rowsHost.replaceChildren(...(empty ? [noMatches()] : rows));
+    rowsHost.classList.toggle("db-ws-list-empty", empty);
+    swapDetail();
+  };
+  const noMatches = (): HTMLElement => emptyState({ title: "맞는 연출이 없습니다", body: "낱말을 줄이거나 다른 이름으로 찾아 보세요.", compact: true });
 
   const addRecord = (): void => {
-    if (projectRecords.length >= SKILL_CHOREOGRAPHY_LIMIT) { toast(`프로젝트 연출은 ${SKILL_CHOREOGRAPHY_LIMIT}개까지입니다.`, "error"); return; }
+    const current = records();
+    if (current.length >= SKILL_CHOREOGRAPHY_LIMIT) { toast(`프로젝트 연출은 ${SKILL_CHOREOGRAPHY_LIMIT}개까지입니다.`, "error"); return; }
     const sheet = retroFxSheetKeys()[0];
     if (!sheet) return;
     const fresh = normalizeSkillChoreographyRecord({
-      id: freshChoreographyId(projectRecords, "새 연출"), name: "새 연출", motion: "cast", layers: [{ sheet, anchor: "target" }],
+      id: freshChoreographyId(current, "새 연출"), name: "새 연출", motion: "cast", layers: [{ sheet, anchor: "target" }],
     });
     if (!fresh) return;
     recordProjectSnapshot("도트 연출 추가");
@@ -132,10 +178,11 @@ export function renderRetroChoreographyTab(content: HTMLElement, rerender: () =>
     toast("새 연출을 만들었습니다. 첫 층의 이펙트를 골라 보세요.", "ok");
     rerender();
   };
-  const cloneSelected = (): void => {
+  function cloneSelected(): void {
     if (!selectedId) return;
-    if (projectRecords.length >= SKILL_CHOREOGRAPHY_LIMIT) { toast(`프로젝트 연출은 ${SKILL_CHOREOGRAPHY_LIMIT}개까지입니다.`, "error"); return; }
-    const copy = cloneChoreographyRecord(projectRecords, selectedId);
+    const current = records();
+    if (current.length >= SKILL_CHOREOGRAPHY_LIMIT) { toast(`프로젝트 연출은 ${SKILL_CHOREOGRAPHY_LIMIT}개까지입니다.`, "error"); return; }
+    const copy = cloneChoreographyRecord(current, selectedId);
     if (!copy) { toast("복제할 수 없는 연출입니다.", "error"); return; }
     recordProjectSnapshot("도트 연출 복제");
     store.update((draft) => { (draft.database.skillChoreographies ??= []).push(copy); });
@@ -143,8 +190,9 @@ export function renderRetroChoreographyTab(content: HTMLElement, rerender: () =>
     pickerLayer = undefined;
     toast(`「${copy.name}」을(를) 만들었습니다. 이제 고칠 수 있습니다.`, "ok");
     rerender();
-  };
+  }
   const deleteSelected = (): void => {
+    const selectedProject = currentProject();
     if (!selectedProject) return;
     const users = usedBy(selectedProject.id);
     const message = users.length
@@ -162,28 +210,26 @@ export function renderRetroChoreographyTab(content: HTMLElement, rerender: () =>
     rerender();
   };
 
-  const list = listPane({
+  const { rows } = buildRows();
+  list = listPane({
     title: "도트 연출",
     count: projectRecords.length ? `내 ${projectRecords.length} · 기본 ${retroChoreographyEntries().length}` : `기본 ${retroChoreographyEntries().length}`,
     search: listSearch({
       placeholder: "이름·설명·이펙트 (예: 번개, 화염 참격)",
       value: listQuery,
-      onInput: (value) => { listQuery = value; selectedId = undefined; rerender(); },
+      onInput: (value) => { listQuery = value; selectedId = undefined; refilter(); },
       testid: "db-retro-choreo-search",
     }),
     rows,
-    empty: emptyState({ title: "맞는 연출이 없습니다", body: "낱말을 줄이거나 다른 이름으로 찾아 보세요.", compact: true }),
+    empty: noMatches(),
     toolbar: listToolbar([
       { label: "추가", kind: "primary", onClick: addRecord, testid: "db-retro-choreo-add", title: "빈 연출을 새로 만든다" },
       { label: "복제", onClick: cloneSelected, disabled: !selectedId, testid: "db-retro-choreo-clone-list", title: "고른 연출을 복제해 프로젝트 연출로 만든다" },
-      { label: "삭제", kind: "danger", onClick: deleteSelected, disabled: !selectedProject, testid: "db-retro-choreo-delete", title: "고른 프로젝트 연출을 지운다(기본 연출은 지울 수 없다)" },
+      { label: "삭제", kind: "danger", onClick: deleteSelected, disabled: !currentProject(), testid: "db-retro-choreo-delete", title: "고른 프로젝트 연출을 지운다(기본 연출은 지울 수 없다)" },
     ]),
     testid: "db-retro-choreo-list",
   });
-
-  const detail = selectedEntry
-    ? renderDetail(selectedEntry, selectedProject, { rerender, cloneSelected })
-    : detailPane({ body: emptyState({ title: "연출을 골라 보세요", body: "왼쪽에서 기본 연출을 고른 뒤 「복제해서 고치기」를 누르면 층을 바꿀 수 있습니다." }) });
+  detail = buildDetail();
 
   // 위의 보기 전환 줄(도트 연출 | 옛 전투 애니메이션, database.ts PARTY_SUBVIEWS)은 남긴다.
   const subviews = content.querySelector<HTMLElement>(":scope > .db-party-subviews");
