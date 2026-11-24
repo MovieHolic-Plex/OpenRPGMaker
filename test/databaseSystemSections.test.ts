@@ -50,6 +50,7 @@ const SECTION_KEY_TESTIDS: readonly { readonly slug: string; readonly testid: st
   { slug: "hud", testid: "db-field-hud" },
   { slug: "font", testid: "db-field-system-font-ui" },
   { slug: "resources", testid: "db-field-title-resource" },
+  { slug: "sound", testid: "db-field-system-default-bgm" },
   { slug: "title", testid: "db-title-workbench" },
 ];
 
@@ -68,7 +69,7 @@ describe("database system section navigation", () => {
     cleanupDom = undefined;
   });
 
-  it("renders 13 section nav buttons in order under 3 subheadings and lifts title jump links", () => {
+  it("renders 14 section nav buttons in order under 3 subheadings and lifts title jump links", () => {
     const host = renderSystem();
     const nav = findByTestId(host, "db-system-section-nav")!;
     const buttons = sectionNavButtons(host);
@@ -85,6 +86,7 @@ describe("database system section navigation", () => {
       "db-system-nav-hud",
       "db-system-nav-font",
       "db-system-nav-resources",
+      "db-system-nav-sound",
       "db-system-nav-title",
     ]);
     expect(buttons.map((button) => button.textContent)).toEqual([
@@ -100,6 +102,7 @@ describe("database system section navigation", () => {
       "인게임 HUD",
       "폰트",
       "리소스",
+      "소리",
       "타이틀",
     ]);
     expect(nav.querySelectorAll(".db-system-section-subhead").map((subhead) => subhead.textContent)).toEqual([
@@ -118,6 +121,31 @@ describe("database system section navigation", () => {
     ]);
     clickNav(host, "title");
     expect(jump.hidden).toBe(false);
+  });
+
+  it("gathers default, battle, and title sound pickers in the sound section once", () => {
+    const host = renderSystem();
+    const sound = sectionNode(host, "sound");
+    for (const testid of [
+      "db-field-system-default-bgm",
+      "db-field-system-battle-bgm",
+      "db-field-system-battle-victory-me",
+      "db-field-system-battle-defeat-se",
+      "db-field-system-battle-escape-se",
+      "db-field-title-screen-music",
+      "db-field-title-screen-se-cursor",
+      "db-field-title-screen-se-confirm",
+      "db-field-title-screen-se-cancel",
+    ]) {
+      expect(host.querySelectorAll(`[data-testid="${testid}"]`)).toHaveLength(1);
+      expect(findByTestId(sound, testid)).not.toBeNull();
+    }
+    // 옛 자리(시작 설정 「전투 오디오」, 타이틀 「소리」)에는 소리 구획 링크만 남는다.
+    expect(findByTestId(sectionNode(host, "startup"), "db-system-startup-open-sound")?.dataset.systemTarget).toBe("sound");
+    expect(findByTestId(sectionNode(host, "title"), "db-title-open-sound")?.dataset.systemTarget).toBe("sound");
+    clickNav(host, "startup");
+    findByTestId(host, "db-system-startup-open-sound")!.click();
+    expect(sectionNode(host, "sound").hidden).toBe(false);
   });
 
   it("defaults to the overview section active and keeps the party editor hidden", () => {

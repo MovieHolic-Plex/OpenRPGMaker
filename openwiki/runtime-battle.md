@@ -2531,7 +2531,7 @@ retro2003 sideview 의 명령 창은 `data-look-command`(actor 156px · keys 152
 - 메뉴(`runtimeJuice.emitRuntimeJuice` 의 `cue`): 저장 `save`, 불러오기 `load`, 장비·해제 `equip`, 아이템 사용 `useItem`, 상점 거래 `shop`, 메뉴 열기 `menuOpen` → 사건의 기본 자리(confirm…). 자리마다 세션 → 표 순.
 - 그 밖(`player/seCuePlayback.playProjectSeCue`, 표에 있을 때만): 레벨 업 창 `levelUp`(없으면 합성), 아이템 늘리기 명령 `itemGet`(없으면 몬스터 세트), 전투 진입 `battleStart`(몬스터 전환음 대신), 문 `door`·`doorClose`(내장 CC0 문 소리 대신), 궤짝 뒤지기 `chest`, 「+ 아이템」 떠오름 `itemGet`.
 - **발소리**(`player/footsteps.ts`): 한 칸을 다 걸은 뒤(비행선·탈것 제외) 그 칸 지형 기록의 `footstepSoundResourceId` → 지형 이름이 가리키는 `footstep-<표면>`(`footstepCueForTerrain`) → 무음. 180ms 안에 한 번, 효과음 채널 크기의 45%. 예전에는 지형 발소리 칸이 저장만 되고 런타임이 틀지 않았다.
-- 자료집: 시스템 → 「전투 오디오」 아래 「효과음 자리 · 메뉴·화면/전투/마법·상태/필드·문」(`databaseSeCueTable.ts`).
+- 자료집: 시스템 → 「시작 설정」의 「전투 오디오」(→ 「소리」 구획 링크) 아래 「효과음 자리 · 메뉴·화면/전투/마법·상태/필드·문」(`databaseSeCueTable.ts`). 기본·전투 BGM·승리·패배·도주 소리는 2026-11-24 부터 시스템 → 「소리」 구획에서 편집한다.
 
 ## 결투 규칙 — TroopRecord.duel (2026-10-30)
 

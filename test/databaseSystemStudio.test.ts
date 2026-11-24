@@ -67,7 +67,7 @@ describe("database system studio", () => {
     const studio = findByTestId(host, "db-system-studio");
     if (!studio) throw new Error("missing system studio");
 
-    for (const id of ["startup", "party", "display", "time", "combat", "features", "title"]) {
+    for (const id of ["startup", "party", "display", "time", "sound", "combat", "features", "title"]) {
       expect(findByTestId(host, `db-system-studio-card-${id}`)).not.toBeNull();
     }
     for (const id of ["save", "economy", "input"]) {

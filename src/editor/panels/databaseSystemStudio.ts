@@ -13,7 +13,7 @@ import { buildStoryFlagUsageIndex, usageBucketFor } from "@/project/storyFlagUsa
 import type { Project, StoryFlagKind, TitleScreenSettings } from "@/project/types";
 import { el } from "@/util/dom";
 
-type SystemStudioTarget = "party" | "display" | "hud" | "menu" | "font" | "resources" | "startup" | "optin" | "time" | "typechart" | "title";
+type SystemStudioTarget = "party" | "display" | "hud" | "menu" | "font" | "resources" | "sound" | "startup" | "optin" | "time" | "typechart" | "title";
 
 type StudioCard = {
   readonly id: string;
@@ -228,6 +228,7 @@ function primaryCardGrid(project: Project): HTMLElement {
     // 「역할: 글꼴」을 쉼표로 잇는다. 글꼴 이름 자체에 「 · 」가 있어 같은 구분자로 이으면 번역 계층이 경계를 못 찾는다.
     { id: "font", title: "폰트", description: "UI · 픽셀 · 고정폭 역할별 글꼴", status: FONT_ROLES.map((role) => `${FONT_ROLE_LABELS[role]}: ${fontOptionsForRole(role).find((entry) => entry.id === fonts[role])?.label ?? fonts[role]}`).join(", "), statusKind: "neutral", target: "font" },
     { id: "resources", title: "리소스", description: "타이틀 · 창 공유 그래픽", status: `${resources.length}/2개 선택`, statusKind: "neutral", target: "resources" },
+    { id: "sound", title: "소리", description: "기본 · 전투 · 타이틀 음악과 효과음", status: soundStatus(project), statusKind: project.system.defaultBgmResourceId ? "ok" : "warn", target: "sound" },
     { id: "typechart", title: "타입 상성", description: "공격 → 방어 배율", status: `${project.system.typeChart?.types.length ?? 0}개 타입`, statusKind: "neutral", target: "typechart" },
   ];
   return el("section", {
@@ -235,6 +236,27 @@ function primaryCardGrid(project: Project): HTMLElement {
     attrs: { "aria-label": "핵심 시스템" },
     children: [...cards, ...additional].map((card) => studioCard(card, "primary")),
   });
+}
+
+/** 소리 카드 상태 — 기본 BGM 이름과 소리 구획 9칸 중 채운 수. 기본 BGM 이 비면 경고 색. */
+function soundStatus(project: Project): string {
+  const system = project.system;
+  const sounds = project.system.titleScreen?.sounds;
+  const filled = [
+    system.defaultBgmResourceId,
+    system.battleBgmResourceId,
+    system.battleVictoryMeResourceId,
+    system.battleDefeatSeResourceId,
+    system.battleEscapeSeResourceId,
+    system.titleScreen?.musicResourceId,
+    sounds?.cursorSeResourceId,
+    sounds?.confirmSeResourceId,
+    sounds?.cancelSeResourceId,
+  ].filter(Boolean).length;
+  const defaultBgm = system.defaultBgmResourceId
+    ? listDatabaseResourceOptions("music", project).find((entry) => entry.id === system.defaultBgmResourceId)?.name ?? system.defaultBgmResourceId
+    : undefined;
+  return defaultBgm ? `기본 BGM ${defaultBgm} · ${filled}/9칸` : `기본 BGM 없음 · ${filled}/9칸`;
 }
 
 function stateRegistry(rows: readonly StateRow[]): HTMLElement {
