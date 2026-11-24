@@ -68,7 +68,9 @@ function readWorld(project: Project): DraftWorldCard | null {
   const genre = text(blueprint?.genre);
   const opening = (blueprint?.opening ?? []).map(text).filter(Boolean);
   const body = text(canon?.body);
-  const lines = opening.length ? opening.slice(0, 3) : body ? [body] : [];
+  // 세계 전제가 오프닝 글을 이어 붙인 것이면(초안 데이터가 world.premise 없이 채운 경우) 같은 줄을 두 번 싣지 않는다.
+  const fresh = opening.filter((line) => !premise.includes(line));
+  const lines = fresh.length ? fresh.slice(0, 3) : opening.length ? [] : body ? [body] : [];
   if (!name && !premise && lines.length === 0) return null;
   return { name: name || "이름 없는 세계", premise, tones: tones.length ? tones : genre ? [genre] : [], lines };
 }

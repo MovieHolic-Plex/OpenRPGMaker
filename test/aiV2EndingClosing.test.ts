@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { endingClosing, normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
 import { applyShipDefaults } from "@/ai/v2/story/shipDefaults";
-import { fillPartyNames } from "@/ai/v2/story/shipLookDefaults";
+import { fillPartyNames, pickChip } from "@/ai/v2/story/shipLookDefaults";
 import type { GameEvent, Project } from "@/project/types";
 import { applyDraftCast, draftCastCounts, BOSS_PROFILE_KEY } from "@/ai/v2/story/draftCast";
 
@@ -137,5 +137,11 @@ describe("청사진 인물·세계 칸 → 첫 판 초안 데이터(draft-cast)"
     const names = Object.values(project.characters ?? {}).map((p) => p.displayName);
     expect(names).toEqual(expect.arrayContaining(["박만석", "이도윤"]));
     expect(names).not.toContain("리안");
+  });
+});
+
+describe("칩 고르기는 영어 looks·아주머니도 여성으로 읽는다", () => {
+  it("«young woman» · «옆집 아주머니» 에 남성 칩을 주지 않는다", () => {
+    for (const text of ["리나 young woman 견습 사제", "옆집 아주머니"]) expect(pickChip(text, new Set(), undefined)?.label ?? "").not.toMatch(/남성|청년|소년/u);
   });
 });

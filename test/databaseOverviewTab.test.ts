@@ -281,6 +281,15 @@ describe("draft overview reader", () => {
     project.gameBlueprint = { version: 1, title: "마왕 살아남기", genre: "JRPG", playerGoal: "살아남아 성으로 돌아간다", opening: ["눈을 뜨니 낯선 하늘이었다."], steps: [], ending: { name: "귀환", how: "", feeling: "" } };
     expect(readDraftOverview(project).world).toEqual({ name: "마왕 살아남기", premise: "살아남아 성으로 돌아간다", tones: ["JRPG"], lines: ["눈을 뜨니 낯선 하늘이었다."] });
   });
+
+  it("does not repeat opening lines the world premise already holds", async () => {
+    const { readDraftOverview } = await import("@/editor/panels/draftOverviewData");
+    const project = createBlankProject();
+    const opening = ["눈을 뜨니 낯선 하늘이었다.", "뿔도 마력도 사라졌다."];
+    project.gameBlueprint = { version: 1, title: "마왕 살아남기", genre: "JRPG", playerGoal: "살아남는다", opening, steps: [], ending: { name: "귀환", how: "", feeling: "" } };
+    project.worldCanon = { name: "변경", premise: opening.join(" ") };
+    expect(readDraftOverview(project).world?.lines).toEqual([]);
+  });
 });
 
 describe("database overview tab shell", () => {

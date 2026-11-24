@@ -208,7 +208,8 @@ export function fillEnemyHpLook(project: Project): string[] {
 
 // ── 파티 모습·얼굴 ───────────────────────────────────────────────────────
 
-const FEMALE = /소녀|여자|여성|그녀|아가씨|공주|여학생|언니|누나|딸|어머니|엄마|할머니|여왕|마녀|무녀|수녀/u;
+// 청사진 looks 는 영어로도 온다(«old woman» · «young woman») — 2026-11-24 초안 동료 «옆집 아주머니»·«리나(young woman)» 가 청년 남성 칩을 받았다.
+const FEMALE = /소녀|여자|여성|그녀|아가씨|공주|여학생|언니|누나|딸|어머니|엄마|할머니|아주머니|아줌마|이모|여왕|마녀|무녀|수녀|\b(?:woman|women|girl|female|lady)\b/iu;
 
 /** 이야기 낱말 → 공용 캐릭터 칩 검색어(남·여 순서). 짝 얼굴이 검토된 칩만 고른다. */
 const ROLE_QUERIES: readonly { readonly re: RegExp; readonly male: readonly string[]; readonly female: readonly string[] }[] = [
