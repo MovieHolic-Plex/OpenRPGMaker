@@ -1,4 +1,4 @@
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "../support/sharedBlankProject";
 import { parseAcceptanceCriteriaResult } from "@/ai/assistantAcceptance";
 import { verificationEvent } from "./verificationOwnership";
 import recordedCriteria from "./p7ApproachCriteria.json";

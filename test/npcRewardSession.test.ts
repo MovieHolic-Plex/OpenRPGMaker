@@ -12,7 +12,7 @@ import { defaultAiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClie
 import { resetIntentDeclarationCache, type IntentDeclarer } from "@/ai/intentDeclarationClient";
 import type { NpcRewardRequirements } from "@/ai/intentDeclaration";
 import { verifyNpcRewardsPlayable } from "@/ai/workItemOutcome";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import type { Command, GameEvent } from "@/project/types";
 import { declaredIntent, fixedDeclarer } from "./intentFixture";
 import { offlineChatResponse } from "./fixtures/offlineChatResponse";
