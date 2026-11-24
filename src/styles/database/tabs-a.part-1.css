@@ -354,15 +354,14 @@
   text-shadow: 1px 1px 0 rgba(60, 48, 32, 0.12);
 }
 
-/* 조수가 쓰는 동안 보류한 공간 탭 갱신 칩 — 좁은 창에서도 한 줄로 남는다. */
+/* 조수가 쓰는 동안 보류한 공간 탭 갱신 칩 — 좁은 창에서도 줄지 않는다(건수가 보여야 한다). 옆 저장 상태 알약이 대신 줄어든다. */
 .database-deferred-refresh {
   border: 1px solid var(--accent-border);
   border-radius: 999px;
   color: var(--text-1);
   cursor: pointer;
-  flex: 0 1 auto;
+  flex: 0 0 auto;
   font-size: 12px;
-  max-width: 45%;
   min-width: 0;
   overflow: hidden;
   padding: 1px 8px;
