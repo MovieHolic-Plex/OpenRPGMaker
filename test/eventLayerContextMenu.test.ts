@@ -224,6 +224,8 @@ describe("event layer context menu", () => {
     expect(redoMapEdit()).toBe(true);
     expect(store.getCurrent().maps[target.mapId].events.map((item) => item.id)).toEqual([]);
     expect(getMapEditHistoryEntries()).toHaveLength(1);
+  });
+
   it("refuses a paste whose body would leave the map, and still pastes when the body fits", () => {
     resetMapEditHistory();
     const wide = sampleEvent("event-wide", 1, 1, { width: 3, height: 1 });
