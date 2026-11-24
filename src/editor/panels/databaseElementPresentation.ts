@@ -45,6 +45,15 @@ export function elementDefenseNote(project: Project, elementId: string): string 
       : "현재 Gen1 모델: 물리 계열은 대상의 물리 방어력으로 경감합니다.";
 }
 
+/** 배율(%)을 낱말로: 200 → 2배 · 150 → 1.5배 · 100 → 보통 · 50 → 절반 · 0 → 무효 · 음수 → 흡수. 등급 문자(A~E) 대신 보인다(qa1124 항목 8). */
+export function elementGradeWord(percentage: number): string {
+  if (percentage < 0) return "흡수";
+  if (percentage === 0) return "무효";
+  if (percentage === 100) return "보통";
+  if (percentage === 50) return "절반";
+  return `${Math.round(percentage) / 100}배`;
+}
+
 export function elementOutcome(reference: number, percentage: number) {
   const value = Math.round(reference * percentage / 100);
   const outcome = percentage < 0 ? "heal" : percentage === 0 ? "none" : "damage";

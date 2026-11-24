@@ -2711,3 +2711,9 @@ CSS로 접힌 작은 창·도크 상태에서는 참조 변경을 계속 반영�
 - (2026-11-03) 같은 카드에 **전투 흐름** 고르기(`db-battle-staging-pace`: 빠르게(기본) · 차분하게) → `system.battleStaging.pace`. 동작 규칙은 `runtime-battle.md` 「폴른 스타 전투 체감」.
 - (2026-11-10) 같은 카드에 **맞힌 뒤 상성 알림** 고르기(`db-battle-staging-effectiveness-feedback`: 보임(기본) · 안 보임(피해 숫자만)) → `system.battleStaging.effectivenessFeedback`. 동작 규칙은 `runtime-battle.md` 「약점 발견」 절.
 - (2026-11-07) 같은 카드에 **적 그림 움직임** 고르기(`db-battle-enemy-still-motion`: 모든 적 그림에(기본) · 정지 그림 하나뿐인 적만 · 끄기) → `system.enemyStillMotion`. 동작 규칙은 `runtime-battle.md` 「적 몸짓 엔진」.
+
+## 속성 이름 한국어 · 배율 낱말 (2026-11-24, qa1124 항목 8-1)
+
+- 새 프로젝트 기본 속성 18개 이름이 한국어다(`defaultDatabaseUtilityRecords.defaultElementRecords`: 검·창·타격·활·화염·빙결·번개·물·대지·바람·신성·암흑·공격력·방어력·지력·민첩·흡수·풀). id 는 그대로다.
+- 저장된 프로젝트의 영어 기본 이름(Sword·ATK…)은 데이터를 바꾸지 않고, 작가가 손대지 않은 그 이름일 때만 표시를 한국어로 한다(`battle/skillHelp.elementDisplayName` — 속성 탭 목록·제목·예시, 적 상성 표 행, 전투 기술 배지).
+- 배율은 등급 문자(A~E) 대신 낱말로 보인다(`databaseElementPresentation.elementGradeWord`: 2배·1.5배·보통·절반·무효·흡수). 저장 값과 선택 값은 그대로 A~E 다.

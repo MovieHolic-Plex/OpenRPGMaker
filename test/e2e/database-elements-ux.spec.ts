@@ -15,7 +15,7 @@ test("elements real editor: recognition, filtering, editing and project export",
   await page.getByTestId("db-tab-elements").click();
   expect(await page.locator(".database-modal-window").boundingBox()).toEqual(shellBefore);
   const name = page.getByTestId("db-field-element-name-selected");
-  await expect(name).toHaveValue("Ice");
+  await expect(name).toHaveValue("빙결");
   await page.evaluate(() => document.fonts.ready);
   const imageSources = await page.getByTestId("db-elements-list").locator("img").evaluateAll(async (nodes) => {
     const images = nodes as HTMLImageElement[];
@@ -49,10 +49,10 @@ test("elements real editor: recognition, filtering, editing and project export",
     await page.screenshot({ path: `${directory}/elements-after-${width}x${height}.png`, animations: "disabled" });
   }
   const search = page.getByTestId("db-elements-search");
-  await search.fill("Fire");
+  await search.fill("화염");
   await expect(page.getByTestId("db-elements-list").locator(".db-ws-row")).toHaveCount(1);
   await expect(search).toBeFocused();
-  await expect(name).toHaveValue("Ice");
+  await expect(name).toHaveValue("빙결");
   await search.fill("no-such-element");
   await expect(page.getByTestId("db-elements-search-clear")).toBeVisible();
   await expect(search).toBeFocused();

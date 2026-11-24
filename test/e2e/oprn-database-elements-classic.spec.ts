@@ -14,11 +14,11 @@ test("RM2003 Elements tab uses a readable single-record editor shape", async ({ 
   await expect(page.getByText("속성 유형", { exact: true })).toBeVisible();
   await expect(page.getByText("대미지 배율", { exact: true })).toBeVisible();
   await expect(page.getByTestId("db-elements-maximum-number")).toHaveText("최대 개수");
-  await expect(page.getByTestId("db-elements-list")).toContainText("0001: Sword");
-  await expect(page.getByTestId("db-elements-list")).toContainText("0006: Ice");
+  await expect(page.getByTestId("db-elements-list")).toContainText("0001: 검");
+  await expect(page.getByTestId("db-elements-list")).toContainText("0006: 빙결");
   await expect(page.getByTestId("db-elements-row-5")).toHaveClass(/is-selected/);
 
-  await expect(page.getByTestId("db-field-element-name-selected")).toHaveValue("Ice");
+  await expect(page.getByTestId("db-field-element-name-selected")).toHaveValue("빙결");
   await expect(page.getByText("물리", { exact: true })).toBeVisible();
   await expect(page.getByText("마법", { exact: true })).toBeVisible();
   await expect(page.getByTestId("db-field-element-kind-physical")).not.toBeChecked();
