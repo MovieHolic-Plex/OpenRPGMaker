@@ -407,6 +407,12 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+  /* 한 칸이 되면 미리보기가 위를 다 차지해 대사 칸까지 스크롤해야 했다(명령 검토 a, 본문 1752px/화면 755px).
+     쓸 칸을 먼저, 미리보기는 그 아래로. */
+  .event-command-edit-dialog .event-command-text-editor > .event-command-text-compose-card {
+    order: -1;
+  }
+
   .event-command-text-tools-row {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
