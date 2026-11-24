@@ -132,6 +132,15 @@ export function blueprintVerbs(c: VerbContext) {
         const unbuilt = (parsed.blueprint.places ?? []).filter((pl) => !blueprintMapFor(env.ctx.project, pl.name));
         return text({ ok: true, summary: `Blueprint saved (${parsed.blueprint.steps.length} steps · world ${world.name} · ${parsed.blueprint.places?.length ?? 0} places).${worldNotes.length ? ` Code adjusted places: ${worldNotes.join("; ")}.` : ""} ${unbuilt.length ? `Next: build_places once — it builds and links ${unbuilt.length} place(s): ${unbuilt.map((pl) => `«${pl.name}»(${pl.kind})`).join(", ")}. Then build_blueprint_path once (do not write step events one by one with upsert_event).` : "All places are built. Next: build_blueprint_path once."}${assembled.length ? ` Title defaults set from the blueprint: ${assembled.join(" · ")}.` : ""}${noClosing}`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });
       }
+      // 새 게임의 첫 초안(MVP): 장소를 모델이 make_place 로 하나씩 짓지 않고 지금 한 번에 짓는다(끝맺음 auto-places · build_blueprint_path 와 같은 빌더).
+      // 2026-11-24 draft-10min 실측(판타지 JRPG): 조수가 장소·숲길·이동·사람을 하나씩 지어 청사진 조립까지만 14분이었다.
+      if (!prior && parsed.blueprint.scale === "mvp" && session.buildPlaces && walked.blockers.some((b) => b.id === "blueprint-place-missing")) {
+        const built = await session.buildPlaces();
+        if (built.length) {
+          const after = walkBlueprint(env.ctx.project);
+          return text({ ok: true, summary: `Blueprint saved (${parsed.blueprint.steps.length} steps). First version: the places were built and linked now — ${built.join(" / ").slice(0, 500)}. Next: build_blueprint_path once (do not make_place them again; decorate later with edit_place).${assembled.length ? ` Title defaults set from the blueprint: ${assembled.join(" · ")}.` : ""}${noClosing}`, path: after.lines, open: after.blockers.slice(0, 8).map((b) => b.message) });
+        }
+      }
       return text({ ok: true, summary: `청사진을 걸었다(${parsed.blueprint.steps.length}단계). 장소를 make_place 로 지은 뒤 build_blueprint_path 한 번으로 단계별 이벤트·조건·엔딩 호출을 짓는다(이벤트를 upsert_event 로 하나씩 쓰지 않는다).${assembled.length ? ` 청사진에 맞춰 타이틀 기본값을 바꿨다: ${assembled.join(" · ")}.` : ""}${noClosing}`, path: walked.lines, open: walked.blockers.slice(0, 8).map((b) => b.message) });
     },
   };
