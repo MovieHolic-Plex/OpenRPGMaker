@@ -164,13 +164,13 @@ const FARM_TOOL_LABELS: readonly (readonly [string, string])[] = [
 ];
 
 /**
- * 같은 작업대를 두 자리에서 쓴다. `item` = 아이템 → 「제작법·강화」(제작법·도구 강화, 폴른 스타 공방 포함),
- * `life` = 생활 → 「생활 기술·제작」(나머지 8구획). `all` 은 열 구획을 모두 보이는 옛 모양이다.
+ * 같은 작업대를 두 자리에서 쓴다. `item` = 아이템 → 「제작·강화·판매가」(제작법·도구 강화·판매 가격, 폴른 스타 공방 포함),
+ * `life` = 생활 → 「생활 기술·제작」(나머지 7구획). `all` 은 열 구획을 모두 보이는 옛 모양이다.
  * 데이터 위치(system.craftRecipes · system.itemUpgrades)는 어느 자리에서도 같다.
  */
 export type LifeCraftingScope = "all" | "life" | "item";
 
-const ITEM_SCOPE_SECTIONS: readonly LifeSection[] = ["recipes", "upgrades"];
+const ITEM_SCOPE_SECTIONS: readonly LifeSection[] = ["recipes", "upgrades", "sellPrices"];
 
 function sectionsFor(scope: LifeCraftingScope): readonly SectionMeta[] {
   if (scope === "all") return SECTIONS;
@@ -248,7 +248,7 @@ export function renderLifeCraftingTab(host: HTMLElement, rerender: () => void, s
 function sectionRailHeader(project: Project, rerender: () => void, scope: LifeCraftingScope): HTMLElement {
   return el("nav", {
     class: "db-ws-section-tabs db-life-section-nav",
-    attrs: { role: "tablist", "aria-label": scope === "item" ? "제작·강화 종류" : "생활 데이터 종류" },
+    attrs: { role: "tablist", "aria-label": scope === "item" ? "제작·강화·판매가 종류" : "생활 데이터 종류" },
     dataset: { testid: "db-life-crafting-header" },
     children: sectionsFor(scope).map((section) => {
       const count = sectionCount(project, section.id);

@@ -1191,7 +1191,7 @@ function optInSystemFields(project: Project, rerender: SystemRefresh): readonly 
       el("span", { text: `판매 가격 재정의: ${sellPricesCount}개` }),
     ] }),
     el("button", {
-      class: "btn", text: "제작법·강화 편집 (아이템)", attrs: { type: "button" },
+      class: "btn", text: "제작·강화·판매가 편집 (아이템)", attrs: { type: "button" },
       dataset: { databaseTarget: "items", databaseSubview: "item-crafting", testid: "db-system-open-item-crafting" },
     }),
     // 생활 그룹이 닫혀 있으면(LIFE_SIM_ENABLED=false) 갈 편집 화면이 없다 — 버튼을 두지 않는다. 제작법·강화는 위 버튼이 아이템 쪽으로 연다.

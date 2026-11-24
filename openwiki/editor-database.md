@@ -1154,10 +1154,11 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 - 레이아웃은 `styles/database/desktop-record-shell/11-life-authoring.css`에 modal-scoped로 있다. 1180px 이하에서는 세 개의 동물 저작 열이 한 열로 접히고, 799px 이하에서는 계절 카드와 rule grid도 한 열/두 열로 축소된다.
 - 집중 테스트는 `test/p1LifeEditorAuthoring.test.ts`, `test/p1ReferenceIntegrity.test.ts`, `test/databaseSidebarNav.test.ts`, `test/databaseSidebarKeyboard.test.ts`다.
 
-## 제작법·강화는 아이템의 하위 보기 (2026-11-24, qa1124 항목 12 L1)
+## 제작법·강화·판매가는 아이템의 하위 보기 (2026-11-24, qa1124 항목 12 L1·L4)
 
 - 제작법(`system.craftRecipes`)과 도구 강화(`system.itemUpgrades`) 저작 화면은 생활이 아니라 **아이템·장비 → 「제작법·강화」** 하위 보기(`itemCrafting`, `db-subview-item-crafting`, `PARTY_SUBVIEW_PARENT.itemCrafting = "items"`)에 있다. 데이터 위치·스키마는 그대로라 폴른 스타 공방 제작법(`flagship/fallen/worldPass/workshop.ts`), 가방 「조합」, 이벤트 명령 「제작」이 같은 값을 쓴다. 레일에는 칸이 없고 탭 검색 「제작」「레시피」「강화」「공방」과 시스템 개요의 「제작법·강화 편집 (아이템)」 버튼(`data-database-subview`)으로도 간다.
-- 같은 작업대를 `renderLifeCraftingTab(host, rerender, scope)` 가 두 자리에서 쓴다: `item` = 제작법·도구 강화 2구획, `life` = 생활 기술·판매 가격·도구 행동·에너지·출하·지역 해금·꾸러미·가공 설비 8구획, `all`(기본) = 열 구획 전부. 구획별 선택·검색 상태는 scope 마다 따로다. 생활 탭 count 는 제작법·강화를 더하지 않고 `itemCrafting` count 가 둘을 센다.
+- 같은 작업대를 `renderLifeCraftingTab(host, rerender, scope)` 가 두 자리에서 쓴다: `item` = 제작법·도구 강화·판매 가격 3구획, `life` = 생활 기술·도구 행동·에너지·출하·지역 해금·꾸러미·가공 설비 7구획, `all`(기본) = 열 구획 전부. 구획별 선택·검색 상태는 scope 마다 따로다. 생활 탭 count 는 이 셋을 더하지 않고 `itemCrafting` count 가 셋을 센다.
+- 판매 가격(`system.sellPrices`, 2026-11-24 L4)도 아이템 쪽으로 옮겼다. 생활 그룹이 닫힌 동안(L2) JRPG 상점·폴른 스타가 쓰는 판매가를 고칠 곳이 없어졌기 때문이다. 하위 보기 이름은 「제작·강화·판매가」, 탭 검색 「판매가」「판매 가격」으로도 간다. 조수 도구 `set_sell_prices` 는 L3 에서도 닫지 않았다(생활 컬렉션 쓰기 거절은 `database.*` 생활 컬렉션만 본다).
 
 ## 생활 그룹 닫힘 — `LIFE_SIM_ENABLED` (2026-11-24, qa1124 항목 12 L2)
 
