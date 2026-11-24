@@ -20173,5 +20173,9 @@
 "타이틀 BGM과 커서·결정·취소 SE는 「소리」에서 기본 BGM과 함께 편집합니다.":"Title BGM and cursor, confirm, and cancel SE are edited in Sound, together with the default BGM.",
 "기본 · 전투 · 타이틀 음악과 효과음":"Default, battle, and title music and sound effects",
 "기본 BGM {0} · {1}/9칸":"Default BGM {0} · {1}/9 slots",
-"기본 BGM 없음 · {0}/9칸":"No default BGM · {0}/9 slots"
+"기본 BGM 없음 · {0}/9칸":"No default BGM · {0}/9 slots",
+"제작법·강화":"Recipes & upgrades",
+"아이템 편집":"Edit items",
+"제작법·강화 편집 (아이템)":"Edit recipes & upgrades (Items)",
+"제작·강화 종류":"Recipe & upgrade types"
 }

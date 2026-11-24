@@ -163,7 +163,29 @@ const FARM_TOOL_LABELS: readonly (readonly [string, string])[] = [
   ["", "도구 종류 조건 없음"], ["hoe", "괭이"], ["wateringCan", "물뿌리개"], ["axe", "도끼"], ["pickaxe", "곡괭이"],
 ];
 
-let activeSection: LifeSection = "skills";
+/**
+ * 같은 작업대를 두 자리에서 쓴다. `item` = 아이템 → 「제작법·강화」(제작법·도구 강화, 폴른 스타 공방 포함),
+ * `life` = 생활 → 「생활 기술·제작」(나머지 8구획). `all` 은 열 구획을 모두 보이는 옛 모양이다.
+ * 데이터 위치(system.craftRecipes · system.itemUpgrades)는 어느 자리에서도 같다.
+ */
+export type LifeCraftingScope = "all" | "life" | "item";
+
+const ITEM_SCOPE_SECTIONS: readonly LifeSection[] = ["recipes", "upgrades"];
+
+function sectionsFor(scope: LifeCraftingScope): readonly SectionMeta[] {
+  if (scope === "all") return SECTIONS;
+  const wantItem = scope === "item";
+  return SECTIONS.filter((section) => ITEM_SCOPE_SECTIONS.includes(section.id) === wantItem);
+}
+
+/** 이 자리 밖 구획으로 건너가는 「관련 보기」는 걸지 않는다. 아이템 자리는 제작법 ↔ 강화로 서로 잇는다. */
+function relatedSectionFor(meta: SectionMeta, scope: LifeCraftingScope): LifeSection | undefined {
+  const inScope = sectionsFor(scope);
+  if (meta.related && inScope.some((section) => section.id === meta.related)) return meta.related;
+  return scope === "item" ? inScope.find((section) => section.id !== meta.id)?.id : undefined;
+}
+
+const activeSectionByScope: Record<LifeCraftingScope, LifeSection> = { all: "skills", life: "skills", item: "recipes" };
 const selectedIndex: Record<RecordSection, number> = {
   skills: 0,
   recipes: 0,
@@ -185,9 +207,10 @@ const sectionSearch: Record<RecordSection, string> = {
   makers: "",
 };
 
-export function renderLifeCraftingTab(host: HTMLElement, rerender: () => void): void {
+export function renderLifeCraftingTab(host: HTMLElement, rerender: () => void, scope: LifeCraftingScope = "all"): void {
   const project = store.getCurrent();
-  const header = sectionRailHeader(project, rerender);
+  const header = sectionRailHeader(project, rerender, scope);
+  const activeSection = activeSectionByScope[scope];
 
   if (!isRecordSection(activeSection)) {
     const shell = workspaceShell({
@@ -211,7 +234,7 @@ export function renderLifeCraftingTab(host: HTMLElement, rerender: () => void): 
     list: recordListPane(recordSection, records, rerender),
     detail: selected
       ? recordDetail(recordSection, selected, selectedIndex[recordSection], rerender)
-      : sectionBriefing(recordSection, rerender),
+      : sectionBriefing(recordSection, rerender, scope),
     testid: "db-life-workspace",
   });
   shell.dataset.section = activeSection;
@@ -222,14 +245,14 @@ export function renderLifeCraftingTab(host: HTMLElement, rerender: () => void): 
 // 섹션 서브탭
 // ---------------------------------------------------------------------------
 
-function sectionRailHeader(project: Project, rerender: () => void): HTMLElement {
+function sectionRailHeader(project: Project, rerender: () => void, scope: LifeCraftingScope): HTMLElement {
   return el("nav", {
     class: "db-ws-section-tabs db-life-section-nav",
-    attrs: { role: "tablist", "aria-label": "생활 데이터 종류" },
+    attrs: { role: "tablist", "aria-label": scope === "item" ? "제작·강화 종류" : "생활 데이터 종류" },
     dataset: { testid: "db-life-crafting-header" },
-    children: SECTIONS.map((section) => {
+    children: sectionsFor(scope).map((section) => {
       const count = sectionCount(project, section.id);
-      const active = activeSection === section.id;
+      const active = activeSectionByScope[scope] === section.id;
       return el("button", {
         class: `db-ws-section-tab${active ? " active" : ""}`,
         attrs: {
@@ -246,7 +269,7 @@ function sectionRailHeader(project: Project, rerender: () => void): HTMLElement 
         ],
         on: {
           click: () => {
-            activeSection = section.id;
+            activeSectionByScope[scope] = section.id;
             rerender();
           },
         },
@@ -347,9 +370,10 @@ function rowSub(section: RecordSection, record: LifeRecord): string | undefined 
 // 빈 섹션
 // ---------------------------------------------------------------------------
 
-function sectionBriefing(section: RecordSection, rerender: () => void): HTMLElement {
+function sectionBriefing(section: RecordSection, rerender: () => void, scope: LifeCraftingScope): HTMLElement {
   const meta = sectionMeta(section);
-  const related = meta.related ? sectionMeta(meta.related) : undefined;
+  const relatedId = relatedSectionFor(meta, scope);
+  const related = relatedId ? sectionMeta(relatedId) : undefined;
 
   return detailPane({
     body: [
@@ -370,7 +394,7 @@ function sectionBriefing(section: RecordSection, rerender: () => void): HTMLElem
               kind: "ghost" as const,
               testid: "db-life-empty-related",
               onClick: () => {
-                activeSection = related.id;
+                activeSectionByScope[scope] = related.id;
                 rerender();
               },
             },

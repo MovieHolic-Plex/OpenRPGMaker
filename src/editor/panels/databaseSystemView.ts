@@ -1190,6 +1190,10 @@ function optInSystemFields(project: Project, rerender: SystemRefresh): readonly 
       el("span", { text: `판매 가격 재정의: ${sellPricesCount}개` }),
     ] }),
     el("button", {
+      class: "btn", text: "제작법·강화 편집 (아이템)", attrs: { type: "button" },
+      dataset: { databaseTarget: "items", databaseSubview: "item-crafting", testid: "db-system-open-item-crafting" },
+    }),
+    el("button", {
       class: "btn", text: "생활 기술·제작에서 편집", attrs: { type: "button" },
       dataset: { databaseTarget: "life-crafting", testid: "db-system-open-life-crafting" },
     }),

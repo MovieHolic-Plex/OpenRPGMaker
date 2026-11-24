@@ -96,6 +96,7 @@ export type DatabaseTab =
   | "characterAppearances"
   | "crops"
   | "lifeCrafting"
+  | "itemCrafting"
   | "dailyWeather"
   | "farmAnimals"
   | "farmSpatial"
@@ -141,6 +142,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "classes", label: "직업", testid: "db-tab-classes" },
   { id: "skills", label: "스킬", testid: "db-tab-skills" },
   { id: "items", label: "아이템·장비", testid: "db-tab-items" },
+  { id: "itemCrafting", label: "제작법·강화", testid: "db-tab-item-crafting" },
   { id: "crops", label: "농사·작물", testid: "db-tab-crops" },
   { id: "characters", label: "주민 관계", testid: "db-tab-characters" },
   { id: "characterGraphics", label: "캐릭터·얼굴", testid: "db-tab-character-graphics" },
@@ -279,6 +281,7 @@ export const PARTY_SUBVIEW_PARENT: Partial<Record<DatabaseTab, DatabaseTab>> = {
   skillTrees: "skills",
   comboTechs: "skills",
   animations: "retroChoreographies",
+  itemCrafting: "items",
 };
 
 const PARTY_SUBVIEWS: Partial<Record<DatabaseTab, readonly { readonly tab: DatabaseTab; readonly label: string; readonly slug: string }[]>> = {
@@ -296,6 +299,10 @@ const PARTY_SUBVIEWS: Partial<Record<DatabaseTab, readonly { readonly tab: Datab
     { tab: "skills", label: "스킬 편집", slug: "skills" },
     { tab: "skillTrees", label: "성장 트리", slug: "skill-trees" },
     { tab: "comboTechs", label: "연계기", slug: "combo-techs" },
+  ],
+  items: [
+    { tab: "items", label: "아이템 편집", slug: "items" },
+    { tab: "itemCrafting", label: "제작법·강화", slug: "item-crafting" },
   ],
   retroChoreographies: [
     { tab: "retroChoreographies", label: "도트 연출", slug: "retro-choreographies" },
@@ -753,10 +760,10 @@ function databaseTabCount(tab: DatabaseTab): number | null {
       return database.crops?.length ?? 0;
     case "characters":
       return Object.keys(project.characters ?? {}).length;
+    case "itemCrafting":
+      return (project.system.craftRecipes?.length ?? 0) + (project.system.itemUpgrades?.length ?? 0);
     case "lifeCrafting":
       return (database.lifeSkills?.length ?? 0)
-        + (project.system.craftRecipes?.length ?? 0)
-        + (project.system.itemUpgrades?.length ?? 0)
         + (project.system.sellPrices?.length ?? 0)
         + (project.system.toolActions?.length ?? 0)
         + (project.system.energy ? 1 : 0)
@@ -866,6 +873,7 @@ const LEGACY_TAB_SEARCH: Partial<Record<DatabaseTab, string>> = {
   tilesetSpaces: "공간 종류",
   // 옛 「전투 애니메이션」 레일 칸은 도트 연출의 하위 보기로 들어갔다(2026-10-02) — 그 이름으로 찾아도 연출 탭이 걸린다.
   comboTechs: "연계 합체기 듀얼 트리플 테크 combo tech 크로노",
+  itemCrafting: "제작 제작법 레시피 조합 공방 강화 업그레이드 강화 craft recipe upgrade workshop",
   bestiary: "도감 몬스터 괴물 약점 사냥 bestiary",
   retroChoreographies: "스킬 이펙트 연출 번개 도트 skillChoreographies 전투 애니메이션 animations",
   spatialTiles: "타일셋 AI 참고문서 MD 이미지 통행 지형 tilesets references",
@@ -1554,7 +1562,10 @@ function renderActiveTabUnguarded(
       renderCharacterGraphicsTab(body, rerender);
       break;
     case "lifeCrafting":
-      renderLifeCraftingTab(body, rerender);
+      renderLifeCraftingTab(body, rerender, "life");
+      break;
+    case "itemCrafting":
+      renderLifeCraftingTab(body, rerender, "item");
       break;
     case "dailyWeather":
       renderDailyWeatherTab(body, rerender);

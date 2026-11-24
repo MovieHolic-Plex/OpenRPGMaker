@@ -45,7 +45,7 @@ describe("party rail", () => {
   it("keeps five primary party destinations and routes subviews under their owner", () => {
     const party = TAB_GROUPS.find((group) => group.slug === "party");
     expect(party?.tabs).toEqual(["actors", "characterGraphics", "classes", "skills", "items"]);
-    expect(PARTY_SUBVIEW_PARENT).toEqual({ characterAppearances: "actors", promotionTree: "classes", skillTrees: "skills", animations: "retroChoreographies" });
+    expect(PARTY_SUBVIEW_PARENT).toEqual({ characterAppearances: "actors", promotionTree: "classes", skillTrees: "skills", comboTechs: "skills", animations: "retroChoreographies", itemCrafting: "items" });
     expect(databaseTabPath("promotionTree")).toEqual(["classes", "promotionTree"]);
     expect(databaseTabPath("skillTrees")).toEqual(["skills", "skillTrees"]);
     expect(databaseTabPath("characterAppearances")).toEqual(["actors", "characterAppearances"]);
@@ -67,7 +67,7 @@ describe("party subview strip", () => {
   });
 
   it("does not draw the strip on tabs without views", () => {
-    const host = mountPanel("items");
+    const host = mountPanel("elements");
     expect(findByTestId(host, "db-party-subviews")).toBeNull();
   });
 });
