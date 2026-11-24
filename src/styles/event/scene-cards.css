@@ -327,6 +327,10 @@
   color: var(--text-1);
 }
 
+.event-edit-line-summary[data-kind="hint"] {
+  color: var(--accent);
+}
+
 .event-edit-line-summary[data-kind="fail"] {
   color: var(--danger);
 }
