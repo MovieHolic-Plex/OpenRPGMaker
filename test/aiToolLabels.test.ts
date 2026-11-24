@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { TOOL_LABELS, toolGroup, toolIconKey, toolLabel, toolLabelSummary } from "@/editor/panels/aiToolLabels";
 import { DECK_ICON_NAMES } from "@/editor/panels/aiDeckIcons";
@@ -81,6 +82,14 @@ describe("aiToolLabels — 툴 이름을 사람 말로", () => {
     const env = { ctx: { project: { maps: {} } }, request: { task: "", mapIds: [] }, emit() {}, record() {}, checkpoint: async () => {} } as never;
     const names = createV2Tools(env, new V2Session()).map(tool => tool.name).filter(name => name !== "todo");
     expect(names.length).toBeGreaterThan(20);
+    expect(names.filter(name => !TOOL_LABELS[name])).toEqual([]);
+  });
+
+  it("팀 실행 도구(팀장 배정·일꾼 메시지)도 사전에 있다 — 첫 MVP 가 팀으로 도는 뒤 작업 스트림의 첫 줄이다", () => {
+    // Break(2026-11-24 실화면): «assign map agent» 가 팀장 레인 첫 줄에 영문 그대로 떴다.
+    const runtime = readFileSync("scripts/lib/piTeamRuntime.ts", "utf8") + readFileSync("scripts/lib/piTeamMessaging.ts", "utf8");
+    const names = [...new Set([...runtime.matchAll(/(?:name: |make\()["']([a-z]+(?:_[a-z]+)*)["']/gu)].map(m => m[1]!))];
+    expect(names).toContain("assign_map_agent");
     expect(names.filter(name => !TOOL_LABELS[name])).toEqual([]);
   });
 });
