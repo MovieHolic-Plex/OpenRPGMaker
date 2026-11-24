@@ -171,7 +171,7 @@ describe("elements worksheet", () => {
       vi.useRealTimers();
     });
 
-    it("keeps Fire filtered in the same cached pane after a sidebar round trip", () => {
+    it("keeps 화염 filtered in the same cached pane after a sidebar round trip", () => {
       document.body.replaceChildren();
       setDatabaseActiveTab("elements");
       renderDatabasePanel(document.body);
@@ -179,7 +179,7 @@ describe("elements worksheet", () => {
       const pane = get("db-elements-classic");
       const list = get("db-elements-list");
       expect(list.querySelectorAll(".db-ws-row")).toHaveLength(17);
-      const search = input("db-elements-search", "Fire");
+      const search = input("db-elements-search", "화염");
 
       // Leave before the old 90ms debounce, then release it while Elements is cached.
       get("db-tab-group-system").click();
@@ -195,7 +195,7 @@ describe("elements worksheet", () => {
       expect(get("db-elements-classic")).toBe(pane);
       expect(get("db-elements-list")).toBe(list);
       expect(get("db-elements-search")).toBe(search);
-      expect(search.value).toBe("Fire");
+      expect(search.value).toBe("화염");
       expect(list.querySelectorAll(".db-ws-row")).toHaveLength(1);
       expect(list.querySelector(".db-ws-row")?.getAttribute("data-testid")).toBe("db-elements-row-4");
     });

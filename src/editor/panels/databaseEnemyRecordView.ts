@@ -1,4 +1,6 @@
 import { enemyDropFields, enemyStealFields } from "@/editor/panels/databaseCombatRuleFields";
+import { elementGradeWord } from "@/editor/panels/databaseElementPresentation";
+import { elementDisplayName } from "@/battle/skillHelp";
 import { renderEnemyStudio } from "@/editor/panels/databaseEnemyStudio";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
@@ -885,9 +887,9 @@ function rateRows(record: EnemyRecord, kind: "state" | "element"): HTMLElement[]
     const testid = kind === "state" ? `db-picker-enemy-state-rate-${entry.id}` : `db-picker-enemy-element-rate-${entry.id}`;
     const multipliers = database.elements?.find((element) => element.id === entry.id)?.damageMultipliers;
     const labels = Object.fromEntries(ACTOR_RATE_GRADES.map((grade) => [grade,
-      kind === "state" ? `${grade} · 적용 ${stateRatePercentage(grade)}%` : `${grade} · 피해 ${(multipliers?.[grade] ?? 100) / 100}배`,
+      kind === "state" ? `${grade} · 적용 ${stateRatePercentage(grade)}%` : `피해 ${elementGradeWord(multipliers?.[grade] ?? 100)}`,
     ])) as Record<ActorRateGrade, string>;
-    const row = rateField(entry.name, testid, value, (grade) => {
+    const row = rateField(kind === "state" ? entry.name : elementDisplayName({ database }, entry.id), testid, value, (grade) => {
       const current = currentEnemy(record);
       const rates = { ...(kind === "state" ? current.stateRates : current.elementRates) };
       if (grade) rates[entry.id] = grade;
@@ -895,7 +897,7 @@ function rateRows(record: EnemyRecord, kind: "state" | "element"): HTMLElement[]
       updateDatabaseRecord("enemies", record.id, kind === "state" ? { stateRates: rates } : { elementRates: rates });
     }, labels);
     const fallback = row.querySelector("option");
-    if (fallback) fallback.textContent = kind === "state" ? "미지정 · 적용 100%" : `기본 C · 피해 ${(multipliers?.C ?? 100) / 100}배`;
+    if (fallback) fallback.textContent = kind === "state" ? "미지정 · 적용 100%" : `기본 · 피해 ${elementGradeWord(multipliers?.C ?? 100)}`;
     return row;
   });
   if (kind !== "element") return [rateList(rows, kind)];

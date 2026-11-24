@@ -17,27 +17,28 @@ function elementRecord(id: string, name: string, kind: DatabaseElementRecord["ki
   return { id, name, kind, rateLabels: ["A", "B", "C", "D", "E"], damageMultipliers: { ...DEFAULT_ELEMENT_DAMAGE_MULTIPLIERS } };
 }
 
+/** 새 프로젝트 기본 속성. 이름은 한국어다(2026-11-24 qa1124 항목 8 — 예전 영어 이름은 battle/skillHelp DEFAULT_ELEMENT_DISPLAY_KO 가 표시 때 한국어로 바꾼다). */
 export function defaultElementRecords(): DatabaseElementRecord[] {
   return [
-    elementRecord("sword", "Sword", "physical"),
-    elementRecord("spear", "Spear", "physical"),
-    elementRecord("hit", "Hit", "physical"),
-    elementRecord("bow", "Bow", "physical"),
-    elementRecord("fire", "Fire", "magical"),
-    elementRecord("ice", "Ice", "magical"),
-    elementRecord("thunder", "Thunder", "magical"),
-    elementRecord("water", "Water", "magical"),
-    elementRecord("earth", "Earth", "magical"),
-    elementRecord("wind", "Wind", "magical"),
-    elementRecord("holy", "Holy", "magical"),
-    elementRecord("dark", "Dark", "magical"),
-    elementRecord("atk", "ATK", "magical"),
-    elementRecord("def", "DEF", "magical"),
-    elementRecord("int", "INT", "magical"),
-    elementRecord("agi", "AGI", "magical"),
-    elementRecord("absorb", "Absorb", "magical"),
+    elementRecord("sword", "검", "physical"),
+    elementRecord("spear", "창", "physical"),
+    elementRecord("hit", "타격", "physical"),
+    elementRecord("bow", "활", "physical"),
+    elementRecord("fire", "화염", "magical"),
+    elementRecord("ice", "빙결", "magical"),
+    elementRecord("thunder", "번개", "magical"),
+    elementRecord("water", "물", "magical"),
+    elementRecord("earth", "대지", "magical"),
+    elementRecord("wind", "바람", "magical"),
+    elementRecord("holy", "신성", "magical"),
+    elementRecord("dark", "암흑", "magical"),
+    elementRecord("atk", "공격력", "magical"),
+    elementRecord("def", "방어력", "magical"),
+    elementRecord("int", "지력", "magical"),
+    elementRecord("agi", "민첩", "magical"),
+    elementRecord("absorb", "흡수", "magical"),
     // Leaf attacks and the farmer roster refer to this id. Keep existing slots stable.
-    elementRecord("grass", "Grass", "magical"),
+    elementRecord("grass", "풀", "magical"),
   ];
 }
 

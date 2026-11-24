@@ -26,10 +26,10 @@ test("RM2K3 database modal exposes manual parity surface tabs", async ({ page })
   await page.getByTestId("db-tab-elements").click();
   await expect(page.getByTestId("db-elements-classic")).toBeVisible();
   await expect(page.getByTestId("db-elements-row-5")).toHaveClass(/is-selected/);
-  await expect(page.getByTestId("db-field-element-name-selected")).toHaveValue("Ice");
+  await expect(page.getByTestId("db-field-element-name-selected")).toHaveValue("빙결");
   await expect(page.getByTestId("db-field-element-damage-D")).toHaveValue("50");
   await page.getByTestId("db-elements-row-0").click();
-  await expect(page.getByTestId("db-field-element-name-selected")).toHaveValue("Sword");
+  await expect(page.getByTestId("db-field-element-name-selected")).toHaveValue("검");
   await page.getByTestId("db-field-element-name-selected").fill("Strike");
   await page.getByTestId("db-field-element-damage-A").fill("250");
   await page.getByTestId("db-field-element-damage-B").fill("175");

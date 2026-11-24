@@ -25,7 +25,8 @@ import {
   sectionCard,
   workspaceShell,
 } from "@/editor/panels/databaseWorkspace";
-import { elementArtwork, elementDefenseContext, elementDefenseNote, elementOutcome } from "@/editor/panels/databaseElementPresentation";
+import { elementArtwork, elementDefenseContext, elementDefenseNote, elementGradeWord, elementOutcome } from "@/editor/panels/databaseElementPresentation";
+import { elementDisplayName } from "@/battle/skillHelp";
 import { recordSmallTask } from "@/editor/smallTask/capsule";
 import { store } from "@/project/store";
 import type { ActorRateGrade, DatabaseElementRecord } from "@/project/types";
@@ -66,7 +67,7 @@ export function renderElementsTab(host: HTMLElement): void {
 function elementListPane(elements: readonly DatabaseElementRecord[], rerender: () => void): HTMLElement {
   const rows: HTMLElement[] = [];
   for (const [index, element] of elements.entries()) {
-    const label = element.name?.trim() ? element.name : "(이름 없음)";
+    const label = elementLabel(element);
     const row = listRow({
       name: label,
       number: index + 1,
@@ -105,11 +106,11 @@ function elementListPane(elements: readonly DatabaseElementRecord[], rerender: (
     const current = store.getCurrent().database.elements ?? [];
     const visible = rows.filter((row, index) => {
       const element = current[index];
-      const name = element.name.trim() ? element.name : "(이름 없음)";
+      const name = elementLabel(element);
       const label = row.querySelector<HTMLElement>(".db-list-name")!;
       label.textContent = label.title = name;
       row.title = `${name} #${index + 1} · ${element.id}`;
-      return matchesNameOrId(name, element.id, elementQuery);
+      return matchesNameOrId(name, element.id, elementQuery) || matchesNameOrId(element.name, element.id, elementQuery);
     });
     const list = pane.querySelector<HTMLElement>(".db-ws-list")!;
     list.classList.toggle("db-ws-list-empty", !visible.length);
@@ -263,7 +264,7 @@ function elementDetailPane(
   }
   const hero = detailHero({
     eyebrow: "속성",
-    title: element.name?.trim() ? element.name : "(이름 없음)",
+    title: elementLabel(element),
     subtitle: element.id,
     media: elementArtwork(element, store.getCurrent(), 52),
     tags: [
@@ -415,7 +416,7 @@ function elementDamageCard(element: DatabaseElementRecord, index: number): HTMLE
   const gradeSelect = el("select", {
     attrs: { "aria-label": "예시 내성 등급" },
     dataset: { testid: "db-elements-preview-grade" },
-    children: ELEMENT_DAMAGE_GRADES.map((grade) => el("option", { attrs: { value: grade }, text: grade })),
+    children: ELEMENT_DAMAGE_GRADES.map((grade) => el("option", { attrs: { value: grade }, text: elementGradeWord(element.damageMultipliers[grade]) })),
   });
   gradeSelect.value = "C";
   const result = el("output", { dataset: { testid: "db-elements-example-result" }, attrs: { "aria-live": "polite" } });
@@ -428,7 +429,7 @@ function elementDamageCard(element: DatabaseElementRecord, index: number): HTMLE
   const example = el("div", { class: "db-el-example", children: [
     artwork,
     el("div", { class: "db-el-example-copy", children: [
-      el("strong", { text: element.name || "(이름 없음)", dataset: { testid: "db-elements-example-name" } }),
+      el("strong", { text: elementLabel(element), dataset: { testid: "db-elements-example-name" } }),
       caption,
       result,
     ] }),
@@ -437,6 +438,7 @@ function elementDamageCard(element: DatabaseElementRecord, index: number): HTMLE
     const current = store.getCurrent().database.elements![index];
     const scale = Math.max(100, ...ELEMENT_DAMAGE_GRADES.map((grade) => Math.abs(current.damageMultipliers[grade])));
     for (const update of refresh) update(referenceDamage, scale);
+    for (const option of gradeSelect.options) option.textContent = elementGradeWord(current.damageMultipliers[option.value as ActorRateGrade]);
     const percentage = current.damageMultipliers[gradeSelect.value as ActorRateGrade];
     const outcome = elementOutcome(referenceDamage, percentage);
     result.dataset.value = String(outcome.value);
@@ -530,6 +532,7 @@ function elementDamageRow(element: DatabaseElementRecord, index: number, grade: 
     children: [fill, el("span", { class: "db-el-baseline" })],
   });
   const result = el("span", { class: "db-el-result", dataset: { testid: `db-elements-damage-result-${grade}` } });
+  const word = el("span", { class: "db-el-grade", text: elementGradeWord(element.damageMultipliers[grade]), attrs: { title: `내성 등급 ${grade}` }, dataset: { grade } });
 
   const paint = (multiplier: number, reference: number, scale: number): void => {
     const outcome = elementOutcome(reference, multiplier);
@@ -541,6 +544,7 @@ function elementDamageRow(element: DatabaseElementRecord, index: number, grade: 
     result.dataset.value = String(outcome.value);
     result.dataset.outcome = outcome.outcome;
     result.textContent = outcome.text;
+    word.textContent = elementGradeWord(multiplier);
   };
 
   input.addEventListener("focus", () => { selectUtilityRecord("elements", index); selectGrade(); });
@@ -561,11 +565,7 @@ function elementDamageRow(element: DatabaseElementRecord, index: number, grade: 
   const node = el("label", {
     class: "db-el-damage-row",
     children: [
-      el("span", {
-        class: "db-el-grade",
-        text: grade,
-        attrs: { title: `내성 등급 ${grade}` },
-      }),
+      word,
       input,
       el("span", { class: "db-elements-percent", text: "%" }),
       bar,
@@ -592,6 +592,12 @@ function refreshIdentity(source: HTMLElement, index: number): void {
   const art = root.querySelector<HTMLElement>(".db-el-example [data-art-source]")!;
   art.setAttribute("aria-label", `${name} · ${art.title}`);
   root.querySelector<HTMLElement>('[data-testid="db-elements-list-pane"]')!.dispatchEvent(new Event("element-identity-change"));
+}
+
+/** 목록·제목에 보이는 이름 — 작가가 손대지 않은 예전 영어 기본 이름(Sword·Fire…)은 한국어로 보인다(battle/skillHelp). */
+function elementLabel(element: DatabaseElementRecord): string {
+  if (!element.name?.trim()) return "(이름 없음)";
+  return elementDisplayName({ database: { ...store.getCurrent().database, elements: [element] } }, element.id);
 }
 
 function clampIndex(index: number, elements: readonly DatabaseElementRecord[]): number {
