@@ -281,7 +281,6 @@ export function renderTilePalette(container: HTMLElement): void {
       ? previousList.querySelector<HTMLElement>(".event-list-rows")?.scrollTop ?? 0
       : 0;
     const map = project.maps[mapId];
-    const tileset = map ? project.tilesets[map.tilesetId] : undefined;
     const shell = el("div", {
       class: "panel-section palette-work-shell is-single-surface",
       dataset: { testid: "palette-work-shell" },
@@ -291,8 +290,9 @@ export function renderTilePalette(container: HTMLElement): void {
       dataset: { testid: "palette-work-pane-event" },
     });
     if (map) appendStandaloneMapHeader(root, map);
-    const eventSettings = map && tileset ? [makeTileToolbar({ map, rerender: renderPalettePreservingViewport, state, tileset })] : [];
-    root.append(...makeTileSection("이벤트", tileset, map, eventSettings));
+    // 이벤트 레이어에는 붓이 없다 — 「붓 설정 ▾」(타일 도구 줄)과 타일셋 이름 단추는 이 화면과 무관해 그리지 않는다
+    // (btn-vqa-map PR 8, 2026-11-24). 되돌리기는 캔버스 알약에, 타일셋 바꾸기는 타일 레이어 머리에 있다.
+    root.append(...makeTileSection("이벤트", undefined, map, []));
     const renderEvents = (): void => {
       renderEventEditor(root);
       if (map) offerNewEventInEmptyList(root, map);

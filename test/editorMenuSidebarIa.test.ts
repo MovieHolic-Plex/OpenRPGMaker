@@ -321,6 +321,9 @@ describe("좌측 사이드바 ↔ 상단 메뉴 정보구조", () => {
       expect(order.indexOf("tile-section-header")).toBe(1);
       expect(order.indexOf("palette-brush-settings")).toBe(2);
       expect(order.indexOf("palette-event-pane")).toBe(3);
+      // 이벤트에는 붓이 없다 — 붓 설정 단추·타일셋 이름 단추를 보이지 않는다.
+      expect(findByTestId(fake(container), "palette-tileset-name"), "이벤트 레이어의 타일셋 이름").toBeNull();
+      expect(findByTestId(fake(container), "palette-brush-settings-toggle")?.hidden, "이벤트 레이어의 붓 설정").toBe(true);
     });
   }
 });
