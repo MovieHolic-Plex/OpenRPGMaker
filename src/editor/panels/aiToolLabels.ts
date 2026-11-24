@@ -597,6 +597,24 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   place_object: build("그린 물건 놓기", "box"),
   dress_room: build("방 채우기", "box"),
   move_object: build("가구 옮기기", "box"),
+  // ── 팀 실행(팀장·일꼾) — 첫 MVP 가 팀으로 돈 뒤(2026-11-24) 작업 스트림에 이 이름들이 영문으로 떴다. ──
+  assign_map_agent: system("맵 배정하기", "map"),
+  assign_task_agent: system("일 배정하기", "list"),
+  check_agents: inspect("일꾼 상태 보기", "list"),
+  wait_agents: inspect("일꾼 기다리기", "clock"),
+  review_map: inspect("맵 검수 맡기기", "eye"),
+  report_review: inspect("검수 보고하기", "eye"),
+  report_task: system("맡은 일 보고하기", "list"),
+  finish: system("마무리 보고하기", "check"),
+  report_first_play: inspect("첫 플레이 보고하기", "eye"),
+  report_first_play_review: inspect("첫 플레이 검토 보고하기", "eye"),
+  report_first_presentation: inspect("첫 연출 보고하기", "eye"),
+  report_first_scene_review: inspect("첫 장면 검토 보고하기", "eye"),
+  list_team_agents: inspect("팀 일꾼 목록 보기", "list"),
+  send_team_message: system("일꾼에게 말하기", "link"),
+  read_team_messages: inspect("팀 메시지 읽기", "link"),
+  wait_team_messages: inspect("팀 메시지 기다리기", "clock"),
+  acknowledge_team_message: system("팀 메시지 반영 확인", "check"),
 };
 
 const READ_PREFIXES = ["get_", "show_", "find_", "list_", "query_", "check_", "lint_", "evaluate_", "explain_", "analyze_", "look_"] as const;
