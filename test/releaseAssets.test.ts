@@ -2,7 +2,7 @@
 // 릴리스 자산 계약 — «자산이 0개인 릴리스가 latest 가 되던» 사고(v0.408.0, 2026-11-07)의
 // 판정을 순수 함수로 고정한다. 이 검사가 느슨해지면 순서를 뒤집어도 워크플로가 발행해 버린다.
 import { describe, expect, it } from "vitest";
-import { checkDesktopAssets, highestReleaseTag, requiredDesktopAssets } from "../scripts/lib/releaseAssets.mjs";
+import { checkDesktopAssets, highestReleaseTag, requiredDesktopAssets, requiredUpdateAssets } from "../scripts/lib/releaseAssets.mjs";
 
 const full = (version: string, size = 1_100_000_000) =>
   requiredDesktopAssets(version).map((name) => ({ name, size }));
@@ -92,5 +92,20 @@ describe("highestReleaseTag", () => {
 
   it("하나도 없으면 null — 이때는 latest 를 건드리지 않는다", () => {
     expect(highestReleaseTag([])).toBeNull();
+  });
+});
+
+describe("requiredUpdateAssets", () => {
+  it("0.420.0 부터 latest.yml·latest-linux.yml·설치판 blockmap 이 있어야 발행한다 — 없으면 설치된 앱이 새 판을 못 찾는다", () => {
+    expect(requiredUpdateAssets("v0.420.0")).toEqual(["latest.yml", "latest-linux.yml", "OPRN.Studio-Setup-0.420.0.exe.blockmap"]);
+    const withoutFeed = requiredDesktopAssets("0.420.0").map((name) => ({ name, size: 1_000_000_000 }));
+    expect(checkDesktopAssets("0.420.0", withoutFeed)).toEqual({ ok: false, missing: requiredUpdateAssets("0.420.0"), empty: [] });
+    const withFeed = [...withoutFeed, ...requiredUpdateAssets("0.420.0").map((name) => ({ name, size: 900 }))];
+    expect(checkDesktopAssets("0.420.0", withFeed).ok).toBe(true);
+  });
+
+  it("그 전 판은 요구하지 않는다 — 옛 초안을 다시 채울 때 만들 수 없는 파일로 영영 걸리지 않게", () => {
+    expect(requiredUpdateAssets("0.419.0")).toEqual([]);
+    expect(checkDesktopAssets("0.419.0", requiredDesktopAssets("0.419.0").map((name) => ({ name, size: 1 }))).ok).toBe(true);
   });
 });

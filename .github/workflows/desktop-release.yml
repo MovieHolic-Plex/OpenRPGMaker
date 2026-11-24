@@ -85,7 +85,8 @@ jobs:
             # 스케줄: 자산이 모자란 가장 새 vX.Y.Z 릴리스(초안 포함). 없으면 할 일이 없다.
             tag="$(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=30" --jq '
               [ .[] | select(.tag_name | test("^v[0-9]+\\.[0-9]+\\.[0-9]+$"))
-                    | select(.draft or ((.assets | map(select((.size // 0) > 0)) | length) < 6)) ]
+                    | select(.draft or ((.assets | map(select((.size // 0) > 0)) | length)
+                        < (if ((.tag_name | sub("^v"; "") | split(".") | map(tonumber)) as $p | ($p[0] > 0 or $p[1] >= 420)) then 9 else 6 end))) ]
               | sort_by(.tag_name | sub("^v"; "") | split(".") | map(tonumber))
               | last | .tag_name // ""')"
           fi
@@ -135,10 +136,11 @@ jobs:
           if [[ -z "$json" ]]; then echo "::error::$TAG 릴리스를 찾지 못함"; exit 1; fi
           jq -r '"draft=\(.draft)"' <<< "$json" >> "$GITHUB_OUTPUT"
           version="${TAG#v}"
-          missing="$(printf '%s' "$json" | jq -r --arg v "$version" '
+          # 0.420.0 부터는 자동 업데이트 파일(latest.yml·latest-linux.yml·설치판 blockmap)도 있어야 한다 — scripts/lib/releaseAssets.mjs UPDATE_FEED_SINCE.
+          missing="$(printf '%s' "$json" | jq -r --arg v "$version" 'def feed($v): ($v | split(".") | map(tonumber)) as $p | if ($p[0] > 0 or $p[1] >= 420) then ["latest.yml","latest-linux.yml","OPRN.Studio-Setup-\($v).exe.blockmap"] else [] end;
             (.assets // []) as $a
             | ["OPRN.Studio-windows-setup.exe","OPRN.Studio-windows.exe","OPRN.Studio-linux.AppImage",
-               "OPRN.Studio-Setup-\($v).exe","OPRN.Studio.\($v).exe","OPRN.Studio-\($v).AppImage"]
+               "OPRN.Studio-Setup-\($v).exe","OPRN.Studio.\($v).exe","OPRN.Studio-\($v).AppImage"] + feed($v)
             | map(select(. as $n | ($a | map(select(.name == $n and (.size // 0) > 0)) | length) == 0))
             | join(" ")')"
           if [[ "$DRY_RUN" == "true" ]]; then
@@ -331,8 +333,14 @@ jobs:
             ln -f -- "$f" "$out/$alias"
             stable+=("$out/$alias")
           done
-          gh release upload "$TAG" "${files[@]}" "${stable[@]}" --clobber
-          echo "업로드 완료: $TAG"
+          # 앱 자동 업데이트 파일(electron/main/appUpdate.ts). 이름을 바꾸지 않는다 — latest.yml 이 버전 이름 설치판을 가리킨다.
+          # 0.420.0 전 판의 빌드는 이 파일을 만들지 않으므로 있는 것만 올리고, 있어야 하는지는 발행 검증이 판으로 가른다.
+          feed=()
+          for f in "$out"/latest.yml "$out"/latest-linux.yml "$out"/OPRN.Studio-Setup-*.exe.blockmap; do
+            if [[ -s "$f" ]]; then feed+=("$f"); fi
+          done
+          gh release upload "$TAG" "${files[@]}" "${stable[@]}" "${feed[@]}" --clobber
+          echo "업로드 완료: $TAG (업데이트 파일 ${#feed[@]}개)"
 
       # ── ③ 검증 → 발행 ──────────────────────────────────────────────────────────
       # 이름·크기를 한 번 더 읽어 확인한다. 발행은 그 뒤에만. 검증에 실패하면 스텝이 실패해
@@ -348,10 +356,10 @@ jobs:
           # releases/tags/{tag} 는 초안에 404 를 준다(2026-11-08 v0.410.0 실측) — 초안을 찾으려면 목록에서 고른다.
           json="$(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=100" --jq "map(select(.tag_name == \"$TAG\")) | first // empty")"
           if [[ -z "$json" ]]; then echo "::error::$TAG 릴리스를 찾지 못함"; exit 1; fi
-          report="$(printf '%s' "$json" | jq -r --arg v "$version" '
+          report="$(printf '%s' "$json" | jq -r --arg v "$version" 'def feed($v): ($v | split(".") | map(tonumber)) as $p | if ($p[0] > 0 or $p[1] >= 420) then ["latest.yml","latest-linux.yml","OPRN.Studio-Setup-\($v).exe.blockmap"] else [] end;
             (.assets // []) as $a
             | ["OPRN.Studio-windows-setup.exe","OPRN.Studio-windows.exe","OPRN.Studio-linux.AppImage",
-               "OPRN.Studio-Setup-\($v).exe","OPRN.Studio.\($v).exe","OPRN.Studio-\($v).AppImage"]
+               "OPRN.Studio-Setup-\($v).exe","OPRN.Studio.\($v).exe","OPRN.Studio-\($v).AppImage"] + feed($v)
             | map(. as $n | { name: $n, size: (($a | map(select(.name == $n)) | first | .size) // 0) })')"
           echo "$report" | jq -r '.[] | "  \(.name): \(.size) bytes"'
           bad="$(echo "$report" | jq -r '[.[] | select(.size <= 0) | .name] | join(" ")')"
