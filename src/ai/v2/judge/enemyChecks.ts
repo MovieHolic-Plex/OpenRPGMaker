@@ -84,6 +84,9 @@ function spareSkills(project: Project, taken: ReadonlySet<string>, limit: number
  * 실측: 안내문이 upsert_skill 부터 시킨 판은 스키마 오류 6번에 막혔다(upsert_enemy 는 한 번도 안 불렸다).
  */
 export function enemyIdentityProblems(project: Project): Finding[] {
+  // 몬스터 수집 게임의 적은 종(야생·트레이너의 몬스터)의 사본이다 — 같은 타입 종은 기술이 겹치는 것이 정상이다. 2026-11-24 draft-10min:
+  // 첫 MVP 몬스터 판마다 이 지적이 관문에 두세 번씩 올라 모델이 종 기술을 손으로 바꾸며 돌았다(pathBattleBudget 도 같은 판별로 건너뛴다).
+  if (project.system.battleParty === "monsters" || project.system.monsterBattleParty === true) return [];
   const problems: Finding[] = [];
   const seen = new Set<string>();
   for (const [mapId, troopIds] of troopIdsByMap(project)) {
