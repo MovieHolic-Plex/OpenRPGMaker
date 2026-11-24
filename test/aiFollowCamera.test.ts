@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { followRegionsFromDeltas } from "@/editor/aiFollowCamera";
+import { followRegionsFromDeltas, followsByDefault } from "@/editor/aiFollowCamera";
 import { applyMapDeltas, diffMapsForDelta } from "@/ai/piAgent/mapDelta";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
@@ -49,4 +49,26 @@ describe("followRegionsFromDeltas", () => {
     const regions = regionsFor(before, { ...before, map_east: map });
     expect(regions[0]).toMatchObject({ mapId: "map_east", x: 12, y: 10, w: 1, h: 1 });
   });
+
+  it("marks erased cells so the flash can tell a clear (red) from a stamp (blue)", () => {
+    const project = seed();
+    const map = structuredClone(project.maps.map_east!);
+    const upper = [...map.upperTiles];
+    upper[2 * map.width + 2] = 40;
+    const before = { ...structuredClone(project.maps), map_east: { ...map, upperTiles: upper } };
+    const cleared = [...upper];
+    cleared[2 * map.width + 2] = -1;
+    cleared[2 * map.width + 3] = 41;
+    const regions = regionsFor(before, { ...before, map_east: { ...map, upperTiles: cleared } });
+    expect(regions[0]!.cells).toEqual([{ x: 2, y: 2, layer: "upper", cleared: true }, { x: 3, y: 2, layer: "upper" }]);
+  });
 });
+
+describe("followsByDefault", () => {
+  it("does not drag the big canvas around in team runs; single runs keep following", () => {
+    expect(followsByDefault("team")).toBe(false);
+    expect(followsByDefault("single")).toBe(true);
+    expect(followsByDefault(undefined)).toBe(true);
+  });
+});
+

@@ -22,3 +22,37 @@
 .ai-canvas-progress p { margin: var(--space-1) 0 0; }
 .ai-canvas-progress-request { color: var(--text-2); }
 .ai-canvas-progress-stage { color: var(--text-1); }
+
+/* 시공 기록 재생 캡션(agentConstructionRevealRenderer) — 단계 이름 · 「실제 n초 · 재생 m초」 · 설명 한 줄. */
+.ai-construction-step {
+  position: absolute;
+  left: var(--space-4);
+  bottom: calc(var(--space-4) + var(--space-6) * 2);
+  z-index: var(--z-canvas-chip, 22);
+  max-width: min(360px, calc(100% - 2 * var(--space-4)));
+  box-sizing: border-box;
+  padding: var(--space-2) var(--space-3);
+  border: var(--stroke-1) solid var(--border-default);
+  border-radius: var(--radius-m);
+  background: var(--bg-glass);
+  color: var(--text-1);
+  box-shadow: var(--shadow-pop);
+  font-family: var(--font-ui);
+  font-size: var(--font-size-sm);
+  line-height: 1.45;
+  pointer-events: none;
+}
+.ai-construction-step.is-inline {
+  position: static;
+  max-width: none;
+  margin-top: var(--space-2);
+  padding: var(--space-2) 0 0;
+  border: 0;
+  border-top: var(--stroke-1) solid var(--border-subtle);
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+}
+.ai-construction-step-name { display: block; font-size: var(--font-13); font-weight: var(--font-weight-medium); }
+.ai-construction-step-timing { display: block; color: var(--text-1); font-family: var(--font-mono); font-size: var(--font-12); }
+.ai-construction-step-note { display: block; color: var(--text-2); }

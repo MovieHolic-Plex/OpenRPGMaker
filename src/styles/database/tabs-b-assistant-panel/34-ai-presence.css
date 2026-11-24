@@ -2,7 +2,7 @@
  * AI 존재감 — 지도 위 이름표 · 지도 아래 상태 줄 · 도크 받은함.
  * 색 번호(data-tone 0~3)는 이 세 표면과 팝오버가 같이 쓴다: 지도의 파란 상자 = 상태 줄의 파란 칩.
  */
-.ai-map-presence, .ai-status-bar, .ai-status-pop, .ai-inbox, .ai-status-jobs, .ai-status-jobs-entry {
+.ai-map-presence, .ai-status-bar, .ai-status-pop, .ai-inbox, .ai-status-jobs, .ai-status-jobs-entry, .map-tree-ai-badge {
   --tone-0: #3b5bdb; --tone-1: #12a150; --tone-2: #c2410c; --tone-3: #7c3aed;
   font-family: var(--font-ui);
 }

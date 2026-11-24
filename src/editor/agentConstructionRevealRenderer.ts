@@ -14,7 +14,7 @@ import type Phaser from "phaser";
 import { markEditRenderActive } from "@/editor/editRenderGate";
 import { editorMapTileSize } from "@/editor/mapGeometry";
 import { ensureTilesetTexture } from "@/editor/tilesetImage";
-import { CONSTRUCTION_FADE_OUT_MS, type ConstructionRevealFrame, type ConstructionRevealPlan } from "@/editor/agentConstructionReveal";
+import { CONSTRUCTION_FADE_OUT_MS, constructionRevealTimingLabel, type ConstructionRevealFrame, type ConstructionRevealPlan } from "@/editor/agentConstructionReveal";
 import type { ConstructionStep } from "@/editor/tools/constructionLog";
 import { store } from "@/project/store";
 import type { MapId } from "@/project/types";
@@ -154,20 +154,20 @@ export class AgentConstructionRevealRenderer {
     const host = card ?? document.querySelector(".phaser-container");
     if (!host) return null;
     const box = document.createElement("div");
+    box.className = card ? "ai-construction-step is-inline" : "ai-construction-step";
     box.dataset.testid = "ai-construction-step";
     box.setAttribute("role", "status");
-    box.style.cssText = card
-      ? "margin-top:6px;padding-top:6px;border-top:1px solid rgba(0,0,0,.08);font-size:12px;line-height:1.45"
-      : "position:absolute;left:16px;bottom:56px;z-index:6;pointer-events:none;padding:8px 12px;border-radius:10px;"
-        + "background:rgba(255,255,255,.95);color:#2a2f3a;font:12px/1.45 system-ui,sans-serif;max-width:min(360px,70%);"
-        + "box-shadow:0 2px 8px rgba(0,0,0,.12)";
     const step = document.createElement("strong");
-    step.style.cssText = "display:block;font-size:13px;font-weight:600";
+    step.className = "ai-construction-step-name";
+    // 재생이 실제보다 느리다는 것을 숫자로 밝힌다(목업 v4 장면 B): «실제 1.4초 · 재생 6.1초».
+    const timing = document.createElement("span");
+    timing.className = "ai-construction-step-timing";
+    timing.dataset.testid = "ai-construction-timing";
+    timing.textContent = constructionRevealTimingLabel(plan);
     const note = document.createElement("span");
-    note.style.cssText = "display:block;opacity:.7";
-    const seconds = Math.max(0.1, plan.log.elapsedMs / 1000);
-    note.textContent = `도구가 실제로 ${seconds.toFixed(1)}초에 지은 순서를 그대로 늦춰 보여 줘요 · 단계 ${plan.frames.length}개`;
-    box.append(step, note);
+    note.className = "ai-construction-step-note";
+    note.textContent = `도구가 실제로 지은 순서를 늦춰 보여 줘요 · 단계 ${plan.frames.length}개`;
+    box.append(step, timing, note);
     host.append(box);
     return box;
   }
