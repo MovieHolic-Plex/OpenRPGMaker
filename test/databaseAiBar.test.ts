@@ -425,10 +425,52 @@ describe("createDatabaseAiBar — 검토 후 적용", () => {
     const status = handle.element.querySelector<HTMLElement>("[data-testid='database-ai-turn-status']")!;
     expect(status.dataset.phase).toBe("done");
     expect(status.textContent).toContain("적용됐어요");
-    expect(handle.element.querySelectorAll("[data-testid='database-ai-card']")).toHaveLength(0);
+    // 적용 뒤에도 카드는 남고 카드마다 되돌리기를 단다.
+    expect(handle.element.querySelectorAll("[data-testid='database-ai-card']")).toHaveLength(1);
+    expect(handle.element.querySelectorAll("[data-testid='database-ai-card-revert']")).toHaveLength(1);
     const undoButton = handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-turn-undo']")!;
     expect(undoButton.hidden).toBe(false);
     expect(undoButton.textContent).toContain("AI 적 튀닝");
+  });
+
+  it("카드별로 골라 적용하고, 뺀 카드는 AI 전으로 남기며, 적용 뒤 한 장만 되돌린다", async () => {
+    const before = projectWith([imp(), imp({ id: "enemy_bat", name: "박쥐" })]);
+    const after = projectWith([
+      imp({ stats: { maxHp: 300, maxMp: 0, attack: 28, defense: 8, mind: 4, agility: 9 } }),
+      imp({ id: "enemy_bat", name: "박쥐", stats: { maxHp: 90, maxMp: 0, attack: 12, defense: 8, mind: 4, agility: 9 } }),
+    ]);
+    let current: Project = before;
+    const commits: { label: string; joinPrevious: boolean }[] = [];
+    const handle = mountReview({
+      send: () => Promise.resolve(okResult({ pendingProposal: { callCount: 2, summary: "tune_enemy", before, after } })),
+      apply: () => { current = after; return Promise.resolve(null); },
+      readProject: () => current,
+      commitRecords: (project, label, options) => { current = project; commits.push({ label, joinPrevious: options.joinPrevious }); return true; },
+    });
+    await runTurn(handle);
+    const hpOf = (id: string) => (current.database.enemies.find((enemy) => enemy.id === id) as { stats: { maxHp: number } }).stats.maxHp;
+
+    const picks = handle.element.querySelectorAll<HTMLInputElement>("[data-testid='database-ai-card-pick']");
+    expect(picks).toHaveLength(2);
+    const label = () => handle.element.querySelector("[data-testid='database-ai-turn-apply'] .database-ai-turn-action-label")?.textContent;
+    expect(label()).toBe("적용 2건");
+    picks[1]!.checked = false;
+    picks[1]!.dispatchEvent(new Event("change"));
+    expect(label()).toBe("고른 1건 적용");
+
+    handle.element.querySelector<HTMLButtonElement>("[data-testid='database-ai-turn-apply']")!.click();
+    for (let i = 0; i < 4; i += 1) await Promise.resolve();
+    expect(hpOf("enemy_imp")).toBe(300);
+    expect(hpOf("enemy_bat")).toBe(64);
+    expect(commits).toEqual([{ label: "AI 변경 1건 빼기", joinPrevious: true }]);
+    expect(handle.element.querySelector("[data-testid='database-ai-turn-status']")?.textContent).toContain("뺀 1건은 그대로");
+
+    const reverts = handle.element.querySelectorAll<HTMLButtonElement>("[data-testid='database-ai-card-revert']");
+    expect(reverts).toHaveLength(1);
+    reverts[0]!.click();
+    expect(hpOf("enemy_imp")).toBe(64);
+    expect(commits.at(-1)).toEqual({ label: "AI 변경 되돌리기 · 임프", joinPrevious: false });
+    expect([...handle.element.querySelectorAll("[data-testid='database-ai-card-state']")].map((node) => node.textContent)).toEqual(["되돌림", "뺀"]);
   });
 
   it("적용 실패 사유는 상태줄에 남기고 카드를 지우지 않는다", async () => {

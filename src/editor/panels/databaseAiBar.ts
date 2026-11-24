@@ -30,11 +30,14 @@ import {
   type AiBridgeTurnResult,
 } from "@/editor/aiAssistantBridge";
 import type { RunOutcome } from "@/ai/runOutcome";
-import { pendingHistoryLabels, undoMapEdit } from "@/editor/mapEditHistory";
+import { applyProjectInAgentTurn, applyProjectWithHistory, pendingHistoryLabels, undoMapEdit } from "@/editor/mapEditHistory";
 import { databaseTabLabel, TAB_GROUPS, type DatabaseTab } from "@/editor/panels/database";
 import { describeDatabaseChanges, renderDatabaseChangeCards } from "@/editor/panels/databaseAiChangeCards";
 import { buildSvgIcon, type SvgNodeSpec } from "@/editor/panels/tileToolbarIcons";
 import { diffDatabaseRecords, type DatabaseRecordChange } from "@/project/databaseRecordDiff";
+import { projectWithRecordStates } from "@/project/databaseRecordRestore";
+import { store } from "@/project/store";
+import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { toast } from "@/util/toast";
@@ -100,6 +103,13 @@ export interface DatabaseAiBarDeps {
   readonly navigate?: (collection: string, recordId: string) => void;
   /** 폴링 스케줄러. 취소 함수를 돌려준다. 테스트가 손으로 돌릴 수 있게 주입한다. */
   readonly schedule?: (fn: () => void, ms: number) => () => void;
+  /** 지금 프로젝트 — 카드별 빼기·되돌리기가 그 위에 레코드 상태를 얹는다. */
+  readonly readProject?: () => Project;
+  /**
+   * 레코드 상태를 맞춘 프로젝트를 커밋한다. `joinPrevious` 는 방금 적용과 같은 되돌리기 한 번에 묶는다
+   * (뺀 카드는 처음부터 없던 것이다). 카드 하나 되돌리기는 따로 한 칸이다.
+   */
+  readonly commitRecords?: (project: Project, label: string, options: { readonly joinPrevious: boolean }) => boolean;
 }
 
 export interface DatabaseAiBarOptions {
@@ -119,6 +129,16 @@ export interface DatabaseAiBarHandle {
 }
 
 const POLL_MS = 400;
+
+function changeKey(change: DatabaseRecordChange): string {
+  return `${change.collection}\u0000${change.id}`;
+}
+
+function defaultCommitRecords(project: Project, label: string, options: { readonly joinPrevious: boolean }): boolean {
+  return options.joinPrevious
+    ? applyProjectInAgentTurn(project, label, false)
+    : applyProjectWithHistory(project, label, { origin: "ai" });
+}
 
 /** 레코드 이름을 프롬프트에 넣을 때 쓰는 표기. */
 function recordName(record: DatabaseAiRecordRef): string {
@@ -342,12 +362,20 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
   const discardProposal = deps.discard ?? discardAiAssistantProposal;
   const navigate = deps.navigate;
   const schedule = deps.schedule ?? defaultSchedule;
+  const readProject = deps.readProject ?? (() => store.getCurrent());
+  const commitRecords = deps.commitRecords ?? defaultCommitRecords;
 
+  // 자료집의 하나뿐인 AI 입구. 모든 탭 머리줄에 입력줄처럼 보이고, 누르면 오버레이 입력에 포커스가 간다
+  // (오너 2026-11-24 「데이터베이스는 AI 에게 거의 맡기는 방향」, ideal-flow-edit 3순위).
   const toggle = el("button", {
     class: "database-ai-toggle",
-    attrs: { type: "button", title: "조수 열기", "aria-label": "조수 열기", "aria-expanded": "false" },
+    attrs: { type: "button", title: "말로 고치기 — 지금 탭과 고른 레코드를 AI 가 함께 봅니다", "aria-label": "말로 고치기", "aria-expanded": "false" },
     dataset: { testid: "database-ai-toggle" },
-    children: [icon("sparkle", "database-modal-icon"), "조수"],
+    children: [
+      icon("sparkle", "database-modal-icon"),
+      el("span", { class: "database-ai-toggle-label", text: "말로 고치기" }),
+      el("span", { class: "database-ai-toggle-hint", attrs: { "aria-hidden": "true" }, text: "예) 마왕 스킬 3개 추가" }),
+    ],
   }) as HTMLButtonElement;
 
   const input = el("input", {
@@ -453,9 +481,8 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
     class: "database-ai-head",
     children: [
       el("span", { class: "database-ai-mark", attrs: { "aria-hidden": "true" }, children: [icon("sparkle")] }),
-      // 단추와 같은 이름 — 「조수」를 눌러 열어 놓고 다른 이름을 마주하게 하지 않는다. 편집기 전체가
-      // 「조수」라 부른다(메인 레일·세계 개요 「조수 전달」) — 한 개념에 한 낱말(V-shell-topbar-36).
-      el("span", { class: "database-ai-head-title", text: "조수" }),
+      // 단추와 같은 이름 — 「말로 고치기」를 눌러 열어 놓고 다른 이름을 마주하게 하지 않는다(V-shell-topbar-36).
+      el("span", { class: "database-ai-head-title", text: "말로 고치기" }),
       el("span", { class: "database-ai-head-spacer" }),
       closeButton,
     ],
@@ -479,6 +506,13 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
   let lastToolCount = 0;
   let pendingChanges: readonly DatabaseRecordChange[] = [];
   let pendingSummary: string | null = null;
+  let pendingProposal: AiBridgePendingProposal | null = null;
+  // 검토 중 「넣기」를 푼 카드. 적용은 나머지만 남긴다(전부 아니면 전무가 아니다).
+  const excluded = new Set<string>();
+  // 적용 뒤에도 카드를 남겨 하나씩 되돌릴 수 있게 한다. 되돌린 카드는 여기에 쌓인다.
+  const reverted = new Set<string>();
+  let appliedMode = false;
+  const selectedChanges = (): readonly DatabaseRecordChange[] => pendingChanges.filter((change) => !excluded.has(changeKey(change)));
 
   const stopPolling = (): void => {
     cancelPoll?.();
@@ -513,26 +547,95 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
     );
   };
 
+  const syncApplyLabel = (): void => {
+    const labelHost = applyButton.querySelector(".database-ai-turn-action-label");
+    const chosen = selectedChanges().length;
+    if (labelHost) {
+      labelHost.textContent = pendingChanges.length === 0
+        ? "적용"
+        : chosen === pendingChanges.length ? `적용 ${chosen}건` : `고른 ${chosen}건 적용`;
+    }
+    applyButton.disabled = pendingChanges.length > 0 && chosen === 0;
+  };
+
+  const pickControl = (change: DatabaseRecordChange): HTMLElement => {
+    const key = changeKey(change);
+    const box = el("input", {
+      attrs: { type: "checkbox", "aria-label": `「${change.name}」 변경 넣기` },
+      dataset: { testid: "database-ai-card-pick" },
+    }) as HTMLInputElement;
+    box.checked = !excluded.has(key);
+    box.addEventListener("change", () => {
+      if (box.checked) excluded.delete(key);
+      else excluded.add(key);
+      box.closest(".database-ai-card")?.classList.toggle("is-excluded", !box.checked);
+      syncApplyLabel();
+    });
+    return el("label", { class: "database-ai-card-pick", children: [box, el("span", { text: "넣기" })] });
+  };
+
+  const revertControl = (change: DatabaseRecordChange): HTMLElement => {
+    const key = changeKey(change);
+    if (excluded.has(key)) return el("span", { class: "database-ai-card-state", dataset: { testid: "database-ai-card-state" }, text: "뺀" });
+    if (reverted.has(key)) return el("span", { class: "database-ai-card-state", dataset: { testid: "database-ai-card-state" }, text: "되돌림" });
+    const button = el("button", {
+      class: "database-ai-card-revert",
+      attrs: { type: "button", title: `「${change.name}」만 AI 가 바꾸기 전으로 되돌립니다` },
+      dataset: { testid: "database-ai-card-revert" },
+      children: [icon("undo"), "되돌리기"],
+    }) as HTMLButtonElement;
+    button.addEventListener("click", () => {
+      const label = `AI 변경 되돌리기 · ${change.name}`;
+      if (!commitRecords(projectWithRecordStates(readProject(), [change], "before"), label, { joinPrevious: false })) {
+        toast(`「${change.name}」은 이미 AI 전과 같아요`, "info");
+      } else {
+        toast(`「${change.name}」을 되돌렸어요`, "ok");
+      }
+      reverted.add(key);
+      const card = button.closest(".database-ai-card");
+      card?.classList.add("is-reverted");
+      button.replaceWith(revertControl(change));
+    });
+    return button;
+  };
+
   const paintCards = (proposal: AiBridgePendingProposal | null): void => {
     if (!proposal) {
       pendingChanges = [];
       pendingSummary = null;
+      pendingProposal = null;
+      appliedMode = false;
+      excluded.clear();
+      reverted.clear();
       cardsHost.replaceChildren();
       cardsHost.hidden = true;
       return;
     }
-    pendingChanges = diffDatabaseRecords(proposal.before, proposal.after);
-    pendingSummary = describeDatabaseChanges(pendingChanges);
-    cardsHost.replaceChildren(renderDatabaseChangeCards(pendingChanges, {
+    if (proposal !== pendingProposal) {
+      excluded.clear();
+      reverted.clear();
+      pendingChanges = diffDatabaseRecords(proposal.before, proposal.after);
+    }
+    pendingProposal = proposal;
+    pendingSummary = appliedMode ? null : describeDatabaseChanges(pendingChanges);
+    const list = renderDatabaseChangeCards(pendingChanges, {
       before: proposal.before,
       after: proposal.after,
+      control: pendingChanges.length > 1 || appliedMode ? (appliedMode ? revertControl : pickControl) : undefined,
       ...(navigate ? { onNavigate: (change: DatabaseRecordChange) => {
         navigate(change.collection, change.id);
         setOpen(false);
         toast(`「${change.name}」으로 이동했어요 — AI 검토는 그대로 있습니다`, "info");
       } } : {}),
-    }));
+    });
+    for (const card of list.querySelectorAll<HTMLElement>(".database-ai-card")) {
+      const key = `${card.dataset.collection ?? ""}\u0000${card.dataset.recordId ?? ""}`;
+      card.classList.toggle("is-excluded", excluded.has(key));
+      card.classList.toggle("is-reverted", reverted.has(key));
+    }
+    cardsHost.replaceChildren(list);
     cardsHost.hidden = pendingChanges.length === 0;
+    syncApplyLabel();
   };
 
   let paintedPhase: DatabaseAiTurnPhase | null = null;
@@ -565,10 +668,7 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
     chatButton.hidden = !finished;
     applyButton.hidden = !reviewing;
     discardButton.hidden = !reviewing;
-    if (reviewing) {
-      const labelHost = applyButton.querySelector(".database-ai-turn-action-label");
-      if (labelHost) labelHost.textContent = pendingChanges.length > 0 ? `적용 ${pendingChanges.length}건` : "적용";
-    }
+    if (reviewing) syncApplyLabel();
     // 되돌리기는 **이미 적용된** 변경에만 붙는다 — 쓰기 툴이 돌았다는 것과 적용됐다는 것은 다른 사실이다.
     const label = finished && summary.applied ? undoLabel() : null;
     undoButton.hidden = !label;
@@ -690,11 +790,20 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
           statusText.textContent = `적용 실패 — ${error}`;
           return;
         }
-        const count = pendingChanges.length;
-        paintCards(null);
+        const left = pendingChanges.filter((change) => excluded.has(changeKey(change)));
+        const count = pendingChanges.length - left.length;
+        // 브리지는 초안을 통째로만 커밋한다. 뺀 카드는 그 위에서 AI 전으로 되돌리되 같은 되돌리기 칸에 묶는다.
+        if (left.length > 0) {
+          commitRecords(projectWithRecordStates(readProject(), left, "before"), `AI 변경 ${left.length}건 빼기`, { joinPrevious: true });
+        }
+        const proposal = pendingProposal;
+        appliedMode = true;
+        paintCards(proposal);
         paintSummary(summarizeDatabaseAiTurn([], { busy: false }));
         status.dataset.phase = "done";
-        statusText.textContent = `적용됐어요 · 레코드 ${count}건 — 화면에 바로 반영됩니다`;
+        statusText.textContent = left.length > 0
+          ? `적용됐어요 · 레코드 ${count}건 (뺀 ${left.length}건은 그대로) — 카드마다 되돌릴 수 있어요`
+          : `적용됐어요 · 레코드 ${count}건 — 카드마다 되돌릴 수 있어요`;
         const label = undoLabel();
         undoButton.hidden = !label;
         if (label) {
@@ -761,7 +870,7 @@ export function createDatabaseAiBar(options: DatabaseAiBarOptions): DatabaseAiBa
     }
     bar.hidden = !open;
     toggle.setAttribute("aria-expanded", String(open));
-    toggle.title = open ? "조수 닫기" : "조수 열기";
+    toggle.title = open ? "말로 고치기 닫기" : "말로 고치기 — 지금 탭과 고른 레코드를 AI 가 함께 봅니다";
     if (open) {
       // 오버레이는 헤더와 발 단추 사이를 덮는다. 둘 다 도크·최대화·좁은 폭에서 높이가 바뀌므로
       // 상수로 박지 않고 열 때마다 실측한다. 발 단추(닫기·지금 저장)를 덮지 않는 이유는 두 가지다:
