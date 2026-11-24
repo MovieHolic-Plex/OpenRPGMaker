@@ -78,6 +78,18 @@ let viewModes: Partial<Record<DatabaseCollection, RecordViewMode>> = readStoredV
 // 'all'이 기본값이며 항목이 없으면 'all'로 읽힌다. 아이템/장비 외 컬렉션은 저장하지 않는다.
 let categoryFilters: Partial<Record<DatabaseCollection, string>> = readStoredCategoryFilters();
 
+// 「기본 프리셋도 보기」를 켜 둔 컨렉션. 기본은 이 게임 것만(오너 2026-11-24, ideal-flow-draft 4번) — 사용자 선택이라 세션 리셋은 건드리지 않는다.
+const presetVisibleCollections = new Set<DatabaseCollection>();
+
+export function showsPresetRecords(collection: DatabaseCollection): boolean {
+  return presetVisibleCollections.has(collection);
+}
+
+export function setShowsPresetRecords(collection: DatabaseCollection, show: boolean): void {
+  if (show) presetVisibleCollections.add(collection);
+  else presetVisibleCollections.delete(collection);
+}
+
 export function resetRecordViewSessionState(): void {
   state = createRecordViewSessionState();
   detailSections.clear();
