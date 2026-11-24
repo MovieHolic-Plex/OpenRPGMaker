@@ -5,8 +5,9 @@
 2026-11-24 오너 결정(레인 fix1124-ai-gen)으로 기본이 v2 다. v1 기본이라 v2 다양화 수정(#4955·#4960~#4962)이 사용자 화면에 닿지 않았다.
 되돌리는 길: `?assistant=v1` 또는 `localStorage['oprn:assistant-v2']='0'`(하네스 v1 비교 판은 `'0'` 을 적는다).
 
-**첫 MVP 생성은 팀 실행이 기본이다**(같은 결정). 빈 프로젝트(이벤트·엔딩 없음)에서 게임 하나를 만들라는 요청과 장르 프리셋 첫 요청은
-`src/ai/piAgent/firstMvpRoute.ts` 가 팀으로 보내고(맵마다 시공 일꾼, 맵 잠금), 일반 대화·작은 수정은 v2 단일로 간다. 몬스터 수집 요청은
+**첫 MVP 생성은 v2 단일이다**(2026-11-24 리드 결정, 같은 날 팀 기본을 되돌림). 팀 경로는 v1 Pi 팀이라 v2 MVP 관문(엔딩 없음·끝 지점 `mvp_reached`·3~5맵)을
+비켜 갔다(assistant-measure 실측: start-jrpg 단일 16분 합격 → 팀 40분 시간 초과·엔딩 2). 팀장이 MVP 규칙을 지킬 때까지 `src/ai/piAgent/firstMvpRoute.ts` 는
+빈 프로젝트의 게임 하나 요청을 `firstMvp`(작업 카드 «MVP까지 만들었어요»)로만 표시하고 팀으로 보내지 않는다. 장르 프리셋 첫 요청은 예전처럼 팀이다. 몬스터 수집 요청은
 `classifyPlainPiTurn` 의 몬스터 갈래가 단일 제작자로 되돌린다. `/goal` 은 자기 경로다.
 
 이 패널의 평범한 요청 턴(`plainPiTurn` → `runPiCommand`)이
