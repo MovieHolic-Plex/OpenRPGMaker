@@ -38,12 +38,18 @@ describe("database modal footer — honest auto-save UI", () => {
     expect(status?.textContent).not.toContain("OK");
   });
 
-  // 되돌리기(Ctrl+Z)는 예전부터 동작했지만 모달 어디에도 노출이 없었다 — 푸터로 올렸다.
-  it("keeps dismissal in the header and only actions in the footer", () => {
+  // 도움말·되돌리기(Ctrl+Z)는 머리줄 ⋯ 안으로 옮겼다(impl-database PR-D) — 발 줄에는 저장 결정만 남는다.
+  it("keeps dismissal in the header, rare actions behind the header ⋯, and only saving in the footer", () => {
     openDatabaseModal("actors");
 
     const labels = footerButtons().map((button) => button.textContent);
-    expect(labels).toEqual(["도움말", "되돌리기", "지금 저장"]);
+    expect(labels).toEqual(["지금 저장"]);
+    const menu = document.querySelector<HTMLElement>("[data-testid='database-modal-more-menu']");
+    expect(menu?.hidden).toBe(true);
+    document.querySelector<HTMLElement>("[data-testid='database-modal-more']")?.click();
+    expect(menu?.hidden).toBe(false);
+    expect(["database-dock-toggle", "database-modal-maximize", "database-footer-help", "database-footer-undo"]
+      .every((testid) => menu?.querySelector(`[data-testid='${testid}']`))).toBe(true);
     expect(document.querySelector("[data-testid='database-footer-cancel']")).toBeNull();
 
     const applyButton = document.querySelector<HTMLElement>(`[data-testid='${DATABASE_FOOTER_ACTION_TEST_IDS.apply}']`);

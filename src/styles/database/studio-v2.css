@@ -187,6 +187,61 @@
   width: 16px;
 }
 
+/* 머리줄 ⋯ — 창 배치·도움말·되돌리기를 한 메뉴로(impl-database PR-D). 메뉴 항목은 아이콘 옆에 이름을 쓴다. */
+.database-modal-backdrop .database-modal-window .database-modal-controls {
+  position: relative;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-more {
+  font: 700 16px/1 var(--font-ui);
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-more-menu {
+  background: var(--db-studio-surface, var(--bg-raised));
+  border: 1px solid var(--db-studio-border-default, var(--border-default));
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 18%);
+  display: grid;
+  gap: 2px;
+  min-width: 180px;
+  padding: 6px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 40;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-more-menu[hidden] {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-more-label {
+  white-space: nowrap;
+}
+
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-controls .database-modal-more-menu button,
+.database-modal-backdrop .database-modal-window .database-modal-controls .database-modal-more-menu button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--db-studio-text-1, var(--text-1));
+  cursor: pointer;
+  display: flex;
+  font: 500 13px/1.2 var(--font-ui);
+  gap: 8px;
+  height: 32px;
+  justify-content: flex-start;
+  padding: 0 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-controls .database-modal-more-menu button:hover,
+.database-modal-backdrop .database-modal-window .database-modal-controls .database-modal-more-menu button:hover {
+  background: var(--db-studio-inset, var(--bg-sunken));
+}
+
 /* 푸터 — 자동 저장 상태는 전폭 초록 띠가 아니라 작은 필이다. 화면에서 가장 큰 색면이
    "저장됨" 한 낱말이면 위계가 뒤집힌다. */
 .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .database-modal-footer {

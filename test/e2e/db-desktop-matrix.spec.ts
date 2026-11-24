@@ -128,6 +128,7 @@ for (const { width, height } of VIEWPORTS) {
     await shot("07-overview");
 
     // ── 8. 도크 토글 (사이드바 → 아이콘 레일) ──
+    await page.getByTestId("database-modal-more").click();
     await page.getByTestId("database-dock-toggle").click();
     await expect(page.locator(".database-modal-backdrop.is-docked")).toBeVisible();
     const sidebarWidth = await page.locator(".db-tabs").evaluate((node) => node.getBoundingClientRect().width);
