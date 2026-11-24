@@ -50,7 +50,7 @@ describe("real AudioEngine QA capability", () => {
       expect(audio?.playbackRate).toBe(0.75);
       expect(HTMLMediaElement.prototype.play).toHaveBeenCalledTimes(1);
       expect(engine.audioStateSnapshot()).toEqual({
-        volume: { bgm: 0.3, se: 0.8 }, playbackRate: 0.75, pan: 0, fadeInMs: 0,
+        volume: { bgm: 0.3, se: 0.8 }, playbackRate: 0.75, pan: 0, fadeInMs: 0, failures: [],
       });
       if (qaInstrumentation === true) {
         expect(qaWindow.__oprnAudioState?.()).toEqual(engine.audioStateSnapshot());

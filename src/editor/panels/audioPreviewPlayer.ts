@@ -1,6 +1,7 @@
 import type { AudioResource } from "@/assets/audioResourceCatalog";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { t } from "@/i18n";
 import { renderEditorIcon as editorIcon } from "./eventEditor/editorIcons";
 import { audioPlayback } from "./audioResourcePresentation";
 import { AUDIO_PREVIEW_DEFAULTS, AudioPreviewSession, type AudioPreviewSettings } from "./audioPreviewSession";
@@ -60,7 +61,11 @@ export function createAudioPreviewPlayer(prefix = "audio-preview") {
     seek.value = String(state.current);
     seek.setAttribute("aria-valuetext", `${audioPreviewTime(state.current)} / ${audioPreviewTime(state.duration)}`);
     time.textContent = `${audioPreviewTime(state.current)} / ${audioPreviewTime(state.duration)}`;
-    status.textContent = state.error ? `${PHASE_LABELS[state.phase]}: ${state.error}` : PHASE_LABELS[state.phase];
+    // 원본을 받지 못한 실패(네트워크·404)는 짧게 「받지 못함」만 보이고, 긴 사유는 마우스오버에 둔다.
+    const unreachable = state.phase === "error" && state.unreachable;
+    status.textContent = unreachable ? t("받지 못함") : state.error ? `${PHASE_LABELS[state.phase]}: ${state.error}` : PHASE_LABELS[state.phase];
+    status.title = unreachable ? state.error : "";
+    status.dataset.failure = unreachable ? "unreachable" : state.phase === "error" ? "error" : "";
   });
   // Showing the field again must not restart a clip the author already left.
   const lifecycle = registerDatabasePreview(transport, {
@@ -121,7 +126,7 @@ export function createAudioPreviewPlayer(prefix = "audio-preview") {
       if (key !== selectedKey) session.select(null);
       selectedKey = key;
       const playback = resource ? audioPlayback(resource.id, project) : undefined;
-      session.select(playback?.url ?? null, playback && !playback.playable ? playback.midi ? "MIDI 비재생" : "재생 가능한 파일이 없습니다." : "", resource?.kind === "music");
+      session.select(playback?.url ?? null, playback && !playback.playable ? playback.midi ? "MIDI 비재생" : "재생 가능한 파일이 없습니다." : "", resource?.kind === "music", resource?.id);
     },
     dispose: (): void => { lifecycle.dispose(); },
   };
