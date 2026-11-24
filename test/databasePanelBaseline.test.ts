@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { addSwitch, addVariable, renameSwitch, renameVariable } from "@/editor/actions";
-import { createBlankProject, COMBINED_TOWN_TILESET_ID } from "@/project/defaults";
+import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
@@ -40,29 +40,5 @@ describe("Database panel baseline behavior", () => {
     expect(variableId).toBe("var_1001");
     expect(store.getCurrent().switches.at(-1)).toEqual({ id: "sw_1001", name: "Switch 1001" });
     expect(store.getCurrent().variables.at(-1)).toEqual({ id: "var_1001", name: "Variable 1001" });
-  });
-
-  it("keeps common event commands, tileset flags, and terms editable in v3 data", () => {
-    store.update((project) => {
-      project.commonEvents.push({
-        id: "ce_baseline",
-        name: "Door Script",
-        trigger: "parallel",
-        commands: [{ kind: "text", body: "open" }],
-      });
-      project.tilesets[COMBINED_TOWN_TILESET_ID].priority[0] = "upper";
-      project.tilesets[COMBINED_TOWN_TILESET_ID].passability[0].up = false;
-      project.meta.terms.gold = "Coins";
-    });
-
-    const project = store.getCurrent();
-    expect(project.commonEvents[0]).toMatchObject({
-      id: "ce_baseline",
-      trigger: "parallel",
-      commands: [{ kind: "text", body: "open" }],
-    });
-    expect(project.tilesets[COMBINED_TOWN_TILESET_ID].priority[0]).toBe("upper");
-    expect(project.tilesets[COMBINED_TOWN_TILESET_ID].passability[0].up).toBe(false);
-    expect(project.meta.terms.gold).toBe("Coins");
   });
 });

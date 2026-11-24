@@ -366,9 +366,9 @@ after a passing run. Cleanup deletes the owned project and verifies absence.
 
 ## P3 request-bound fixture alignment (2026-09-08)
 
-`test/assistantAcceptanceProject.test.ts` exercises exact title/item values,
-finite preservation allowances, applied/draft state and sourced wiki declarations
-through real tool and wiki paths. Retain `context.project` after a writing tool:
+`test/assistantAcceptanceProject.test.ts` now keeps only the pure criteria-parser
+rejection cases (the ledger evaluation path was disabled 2026-09-17, so its
+ledger/tool-path cases were removed). Retain `context.project` after a writing tool:
 the runner replaces that object. Wiki fixture IDs must be canonical `w_` IDs.
 
 `test/aiHarnessResponderProtocol.node.test.mjs` keeps intent and
@@ -1896,8 +1896,8 @@ AI 조수가 `place_npc` 로 만든 NPC 가 제자리에만 있던 회귀를 출
 - 좌표 판정 probe(`scripts/qa/runtime/npc-movement.probe.mjs`): `__oprnCharacterSprites` 로
   배회 NPC 가 실제로 옮겼는지 본다. **같은 디렉터리를 쓰면 하네스 샷을 덮어쓰므로**
   `QA_OUT_DIR=verify-shots/runtime-qa/npc-movement-probe` 로 분리 실행한다.
-- 저작 쪽 단위 테스트는 `test/npcMovementInference.test.ts`. 수용 게이트가 이동형 NPC 때문에
-  reachability 를 포기하지 않는 계약은 `test/assistantAcceptanceDiagnostics.test.ts`.
+- 저작 쪽 단위 테스트는 `test/npcMovementInference.test.ts`. (수용 원장이 꺼진 2026-09-17 뒤로
+  수용 게이트의 reachability 계약 시험은 없다 — `test/assistantAcceptanceDiagnostics.test.ts` 는 파서 진단만 남았다.)
 
 ## fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
 

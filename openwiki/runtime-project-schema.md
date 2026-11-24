@@ -939,7 +939,7 @@ using real save/load/merge functions aren't evidence of a live LegacyDb write.
 
 `characterGraphics.validateCharacterGraphicsProject` runs in `validateProjectV4`, rejecting malformed attributes, duplicate canonical sprite slots and unknown mapped face IDs. Non-mapped states require an explicit null face ID; pending/no-face are distinct. Existing projects keep these optional fields absent; display-only literal-label suggestions do not write metadata on load. Texture-key/resource-ID profile aliases resolve to the annotated profile rather than hiding edits. Whole-project serialize/deserialize, packages and LegacyDb current_json retain the fields; the existing missing-only bundled-profile supplementation preserves annotated profiles.
 
-Metadata JSON import validates all v1/v2 rows before a single mutation, retains pending labels and exact supplied face IDs, and never invokes automatic face matching or rewrites authored event commands. V2 exports both independent attribute sets. Focused contracts: `test/characterGraphics.test.ts`, `test/characterGraphicsLoad.test.ts`, `test/databaseCharacterGraphics.test.ts`.
+Metadata JSON import validates all v1/v2 rows before a single mutation, retains pending labels and exact supplied face IDs, and never invokes automatic face matching or rewrites authored event commands. V2 exports both independent attribute sets. Focused contracts: `test/characterGraphics.test.ts`, `test/databaseCharacterGraphics.test.ts`.
 ## Character appearance sets v1 (2026-09-06)
 
 `database.characterAppearances?` is an additive v4 catalog of
