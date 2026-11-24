@@ -63,7 +63,8 @@ describe("audio description store adapter", () => {
     expect(runTool({ project: store.getCurrent() }, "get_audio_resource", {
       kind: "music", resourceId: MUSIC_ID,
     }).data).toMatchObject({ resource: { description: SET_ARGS.description, descriptionSource: "project" } });
-  });
+    // 제안 적용(applyProposedProject)은 기준 사본·검증을 거쳐 ci-full 샤드(ubuntu-latest)에서 15.7~15.9초가 걸려 기본 15초 상한 언저리다 — 45206810315 에서 17.4초로 넘었다.
+  }, 60_000);
 
   it("restores the previous clear when an accepted edit is undone", () => {
     // Given
