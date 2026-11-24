@@ -355,7 +355,7 @@ export async function runPiCommand(
   options: PiRunOptions = {},
 ): Promise<boolean> {
   if (command.goalMode) options = { ...options, maxTurns: GOAL_MAX_TURNS, timeoutMs: GOAL_TIMEOUT_MS };
-  // v2 스위치(기본 꺼짐) — 단독 평문 턴만 v2 로 간다. 목표·팀·다듬기는 v1 그대로.
+  // v2 스위치(기본 켜짐, 2026-11-24) — 단독 평문 턴만 v2 로 간다. 목표·팀·다듬기는 v1 그대로.
   if (!command.goalMode && command.mode !== "team" && !options.polish && isAssistantV2Enabled()) options = { ...options, assistantVersion: "v2", skipPlanTurn: true };
   const projectKey = aiProjectRunKey();
   editorAiMapRuns.refreshBundles(projectKey, store.getCurrent());

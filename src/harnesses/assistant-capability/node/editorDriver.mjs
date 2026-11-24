@@ -124,7 +124,8 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
     // 조수 엔진(로컬 CLI) 선택은 설정과 따로 저장된다 — 제품 설정 화면이 쓰는 그 칸(src/ai/localCliEngine.ts).
     if(assistantEngine)localStorage.setItem('oprn:assistant-engine',JSON.stringify(assistantEngine));
     // 조수 v2 비교(ai-config 의 assistantVersion:"v2") — 제품 스위치(src/ai/v2/shared/switch.ts)와 같은 칸.
-    if(assistantVersion==='v2')localStorage.setItem('oprn:assistant-v2','1');
+    // 제품 기본이 v2 로 바뀐 뒤(2026-11-24)에도 v1 비교 판은 v1 로 돈다 — 값을 늘 적는다.
+    localStorage.setItem('oprn:assistant-v2',assistantVersion==='v2'?'1':'0');
     window.__capEvents=[];
     // 편집기 쪽이 내는 상태 줄은 스트림을 타지 않는다(체크포인트 적용 checkpoint.apply · 버린 렌더 응답 render.dropped · 스트림 이어 받기 stream.resume).
     // 조수 감사 기록(__oprnAiBridge.audit)에서 1초마다 새 줄만 읽어 시각을 붙여 남긴다 — 멈춘 턴에서 «마지막 요청에 답이 갔는가»를 가른다.
