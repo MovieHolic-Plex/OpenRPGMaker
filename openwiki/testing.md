@@ -89,6 +89,30 @@
   저장해도 다시 쓰지 않는다. 같은 조각이 충돌하면 줄을 고르지 말고 `npm run css-baseline:rebase` 가 `--save-baseline` 로 다시 만든다
   (`scripts/css-baseline-rebase.mjs`). 조각은 계산된 값이라 한 쪽을 고르면 합쳐진 CSS 와 어긋난다. 판정은 그대로다 — 바뀐 승자만 회귀.
 
+## PR 에는 «바뀐 코드의 시험» 만 따로 돈다 — ci-related-tests (2026-11-24, 정보용)
+
+- 왜: PR 에는 ci-fast 만 돌고 전체 vitest(약 3,000파일, 시험 시간 합 16.5시간)는 ci-full 이 4시간마다 돈다. «내가 바꾼 코드의 시험» 이 빨간 채 머지돼 한참 뒤에야 잡혔다.
+  `npm run test:changed`(vitest --changed)는 import 그래프를 끝까지 타서 소요가 예측 불가라 PR 게이트로 쓰지 않는다. 실측(최근 PR 20건, `test-diet-ci`):
+  이행적 폐포는 평균 약 2,000파일(허브 `src/ai/oauth/credentials.ts` 가 시험의 91% 에 닿는다), 깊이 2 는 중앙 21분, **깊이 1 은 중앙 12파일·약 4분·p75 8.5분·최대 252파일·97분**.
+- 무엇: `.github/workflows/ci-related-tests.yml`(잡 `related-tests`, `pull_request` → main, mdc2-heavy, 타임아웃 15분)이 `node scripts/vitest-related.mjs` 로 시험을 고른 뒤
+  `node scripts/run-vitest.mjs run --configLoader bundle <파일들>` 로 돌린다. 설정은 `ci-vitest-files` 와 같다(linux-ci·bun 1.4.2·numpy/Pillow venv). 워커 2.
+- 고르는 법(깊이 1, 우선순위 순): ① 바뀐 시험 파일 ② 바뀐 파일을 **직접** import 하는 `test/**/*.test.ts`(상대 경로·`@/`→`src/`·`.ts .mts .tsx .js .mjs`·index 파일·`./x.js`→`x.ts`·`vi.mock`·`import()`·`require()` 의 문자열 한정자)
+  ③ 코드가 아닌 바뀐 파일(json·css·png·md …)의 경로·이름을 문자열 리터럴로 든 시험(`index.json` 같이 흔한 이름은 «상위폴더/이름» 이 같아야). `vitest.config.ts` 의 include/exclude(`*.bun`·`*.quarantine`·`*.browser`·`lakeVillageRebuildFinal`)는 그대로 거른다.
+  못 보는 것: 비리터럴 동적 import(`import(\`./a/${x}\`)`), 깊이 2 이상에서만 깨지는 회귀 — nightly(ci-full)가 본다.
+- 안전망: `package.json`·`package-lock.json`·`vitest*.ts`·`tsconfig*.json`·`scripts/run-vitest*.mjs`·`scripts/verify-gates.mjs`·`scripts/lib/ciOnlyTests.mjs`·`.github/workflows/ci-*.yml`·`test/setup*`·`test/helpers/`·`test/support/`·`.omo/gates-baseline.json` 이 바뀌면
+  로그·요약에 `safety-net hit: … full suite runs nightly` 만 찍는다. PR 에서 전체 스위트로 넓히지 않는다 — 위 규칙(깊이 1 + 시간 상한)대로 고른다.
+- 시간 상한: 파일 하나의 비용 = 85초 + 2 × `.omo/test-timings.json` 의 기록 초(워커 초), 예상 벽시계 = 시작 200초 + Σ비용 ÷ 워커 4 가 **380초**를 넘지 않게
+  우선순위 순·싼 것부터 담는다(`scripts/vitest-related.mjs` 머리말에 근거). 못 담은 파일은 돌리지 않고 요약(GITHUB_STEP_SUMMARY)에 «nightly 로 미룸 n개» 와 목록을 찍는다.
+  기록 없는 새 파일은 6.4초로 본다. 시간 기록은 ci-full 실측(#5002 의 `scripts/update-test-timings.mjs`)을 그대로 쓴다.
+  **왜 기록 초 그대로가 아닌가 (2026-11-24 실측 7회):** 기록은 케이스 실행 시간이라 파일마다 드는 고정 비용(모듈 import·jsdom)이 없다. mdc2-heavy(박스 load 약 38/40코어)에서
+  같은 36파일(기록 합 377초)이 11분에 20파일(워커 4)·14파일(워커 2)만 끝났고(첫 파일 완료까지 2~4분), ubuntu-latest(워커 1)는 같은 18파일 중 7분에 13파일이었다.
+  mdc2 의 러너 대기도 6~22분이었다(다른 레인의 ci-vitest-files·ci-fast 와 같은 `mdc2-heavy` 자리를 쓴다). 박스가 한가해지면 `selector_args` 로 `--factor`·`--per-file-seconds` 를 낮춘다.
+  검증: 7파일 예상 358초 → 실제 vitest 393초(잡 8분 17초, 러너 대기 제외), 6파일 예상 365초 → 450초 시간 상자에 끊겨 `INCOMPLETE`(잡 9분 17초). vitest 에는 450초 시간 상자가 따로 있다 — 넘으면 끊고 끝까지 본 만큼만 `RESULT: INCOMPLETE` 로 보고한다(새 실패가 보일 때만 빨강).
+- 판정: `ci-vitest-files` 와 같은 기준선 대조다. 떨어진 파일이 모두 `.omo/gates-baseline.json` 의 `tests.failedFiles` 에 있으면(`VERDICT: CLEAN`) 초록, 기준선에 없는 파일(`NEW-FAIL`)이나 가를 수 없음(`UNKNOWN`)이면 빨강.
+  끝줄은 `RESULT`·`NEW-FAIL`·`KNOWN-FAIL`·`NOW-PASSING`·`VERDICT` 다섯 줄. 고른 파일이 0개면 의존성 설치 없이 한 줄만 찍고 초록으로 끝난다.
+- **정보용이다 — 필수 체크가 아니다.** `scripts/merge-pr.mjs` 는 여전히 `fast`·`fast-static`·`fast-parity` 만 기다린다(바꾸지 않았다). 이 체크를 필수로 올릴지는 몇 주 실측(소요 < 10분, 새 빨강의 오탐 비율, 기준선 밖 flaky)을 본 뒤에 정한다.
+- 로컬에서 같은 선택을 미리 보려면(시험은 돌지 않는다): `node scripts/vitest-related.mjs --base origin/main`. 선택기의 단위 시험은 `node --test scripts/vitest-related.test.mjs`.
+
 ## 그림 블라인드 검수의 Argon 은 `scripts/qa/argon-vqa.py` 로 (2026-10-25)
 
 Claude Code 의 `argon` 서브에이전트(`~/.claude/agents/argon.md`)는 **그림을 보지 못한다** — 그 판정은 눈 감은 판정이라 근거로 쓰지 않는다.
