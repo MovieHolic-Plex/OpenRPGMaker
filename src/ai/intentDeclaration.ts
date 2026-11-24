@@ -597,6 +597,37 @@ export interface ScopeNoteInput {
 }
 
 /**
+ * 영역에 장소를 짓는 지시(상점·여관·던전 입구…)면 build_region_place 한 번을 이르는 노트. 외관은 영역 안, 실내·던전은 새 맵이다 —
+ * 「새 맵 금지」도 「참고용」도 아니다. 장소 짓기 지시가 아니면 null.
+ */
+export function formatRegionPlaceNote(scope: ScopeNoteInput, requestText: string): string | null {
+  const place = regionPlaceRequest(requestText);
+  if (!place) return null;
+  const { mapId, region } = scope;
+  const where = `맵 \`${mapId}\` 의 (${region.x},${region.y}) ${region.width}×${region.height}`;
+  return [
+    `[선택 영역] 사용자가 ${where} 에 장소를 지어 달라고 했다.`,
+    `- build_region_place({mapId:"${mapId}", region:{x:${region.x},y:${region.y},width:${region.width},height:${region.height}}, kind:"${place}"}) 한 번으로 외관·실내 맵·문 왕복·주인(상점/숙박)을 짓는다. 외관·실내·문·NPC 를 따로 부르지 않는다.`,
+    "- 바깥 맵은 이 사각형 안만 바뀐다. 실내·던전 같은 새 맵은 허용된다(결과 카드가 함께 되돌린다).",
+    "- 영역이 좁다고 거부되면 다른 자리에 짓지 말고 사용자에게 영역을 넓혀 달라고 말한다. 품목·가구를 바꾸라는 말이 있으면 지은 뒤 set_shop_stock·build_hand_interior_room(replace) 으로 고친다.",
+  ].join("\n");
+}
+
+/**
+ * 조수 v2 턴의 선택 영역 노트. v2 는 의도 선언을 건너뛰므로 선택 사각형이 모델에 전혀 닿지 않았다(「여기에」가 가리킬 곳이 없었다).
+ * 장소 짓기면 레시피 노트, 아니면 「이 사각형이 대상, 나머지는 보존」.
+ */
+export function formatV2RegionNote(scope: ScopeNoteInput, requestText: string): string {
+  const place = formatRegionPlaceNote(scope, requestText);
+  if (place) return place;
+  const { mapId, region } = scope;
+  return [
+    `[선택 영역] 사용자가 맵 \`${mapId}\` 의 (${region.x},${region.y}) ${region.width}×${region.height} 사각형을 고르고 이 요청을 보냈다 — 「여기」「이 자리」는 이 사각형이다.`,
+    "- 이 사각형 밖의 타일·이벤트는 바꾸지 않는다. 좌표를 받는 도구에는 이 사각형 안의 칸을 쓴다.",
+  ].join("\n");
+}
+
+/**
  * 선택 사각형 노트 — 사실(맵 id·좌표)과 그에 따르는 경계다. 선언이 「그 안에서」라고 했으면 영역 밖 금지와
  * 마을 시공 시그니처를, 새 맵/실내 시공이면 참고용임을 알린다. 옛 가이드의 키워드 분기(bare 집 → 야외 집
  * 강제)는 없다 — 「수집 이벤트 놔줘」가 집 시공 지시를 받던 경로다.
@@ -604,16 +635,8 @@ export interface ScopeNoteInput {
 export function formatScopeNote(scope: ScopeNoteInput, intent: IntentDeclaration, requestText?: string): string {
   const { mapId, region } = scope;
   const where = `맵 \`${mapId}\` 의 (${region.x},${region.y}) ${region.width}×${region.height}`;
-  // 영역에 장소를 짓는 지시(상점·여관·던전 입구…)는 외관은 영역 안, 실내·던전은 새 맵이다 — 「새 맵 금지」도 「참고용」도 아니다.
-  const place = requestText ? regionPlaceRequest(requestText) : null;
-  if (place) {
-    return [
-      `[선택 영역] 사용자가 ${where} 에 장소를 지어 달라고 했다.`,
-      `- build_region_place({mapId:"${mapId}", region:{x:${region.x},y:${region.y},width:${region.width},height:${region.height}}, kind:"${place}"}) 한 번으로 외관·실내 맵·문 왕복·주인(상점/숙박)을 짓는다. 외관·실내·문·NPC 를 따로 부르지 않는다.`,
-      "- 바깥 맵은 이 사각형 안만 바뀐다. 실내·던전 같은 새 맵은 허용된다(결과 카드가 함께 되돌린다).",
-      "- 영역이 좁다고 거부되면 다른 자리에 짓지 말고 사용자에게 영역을 넓혀 달라고 말한다. 품목·가구를 바꾸라는 말이 있으면 지은 뒤 set_shop_stock·build_hand_interior_room(replace) 으로 고친다.",
-    ].join("\n");
-  }
+  const place = requestText ? formatRegionPlaceNote(scope, requestText) : null;
+  if (place) return place;
   const inside = intent.source !== "llm" || intent.useSelection;
   if (inside) {
     return [
