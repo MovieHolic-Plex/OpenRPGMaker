@@ -7,6 +7,21 @@ import { PRODUCT_BRAND, PRODUCT_SLUG } from "../src/brand.ts";
 // 메인·preload 는 esbuild 번들이라 런타임 node_modules 가 필요 없고, 렌더러는 vite 번들이다.
 // 기본값은 production 의존성을 asar 에 넣어 439MB 를 만들었다(실측) — 명시적으로 뺀다.
 // node:sqlite 는 내장이고 electron 은 패키저가 넣는다.
+// 윈도 코드 서명(기본 꺼짐, 2026-11-24 app-auto-update 조사). Azure Artifact Signing 은 개인이면 미국·캐나다만,
+// 조직은 한국 법인도 가입된다. OPRN_WIN_SIGN=azure 와 아래 값·AZURE_TENANT_ID/CLIENT_ID/CLIENT_SECRET 비밀값이 있을 때만 켜진다.
+// 켜면 app-update.yml 에 publisherName 이 들어가 자동 업데이트가 서명 게시자를 확인한다(무서명 판은 확인을 건너뛴다).
+const AZURE_SIGN = process.env.OPRN_WIN_SIGN === "azure"
+  ? {
+      publisherName: process.env.OPRN_WIN_PUBLISHER ?? "",
+      endpoint: process.env.OPRN_AZURE_SIGN_ENDPOINT ?? "",
+      certificateProfileName: process.env.OPRN_AZURE_SIGN_PROFILE ?? "",
+      codeSigningAccountName: process.env.OPRN_AZURE_SIGN_ACCOUNT ?? "",
+    }
+  : null;
+if (AZURE_SIGN && Object.values(AZURE_SIGN).some((value) => !value)) {
+  throw new Error("OPRN_WIN_SIGN=azure 인데 OPRN_WIN_PUBLISHER·OPRN_AZURE_SIGN_ENDPOINT·OPRN_AZURE_SIGN_PROFILE·OPRN_AZURE_SIGN_ACCOUNT 중 빈 값이 있다");
+}
+
 const APP_FILES = ["dist/**", "dist-electron/**", "package.json", "scripts/oh-my-pi-worker.ts", "scripts/lib/**", "!node_modules/**"];
 
 /** @type {import('electron-builder').Configuration} */
@@ -37,6 +52,9 @@ export default {
   linux: {
     target: ["AppImage"],
     category: "Development",
+    // 띄어쓰기 없는 이름. 기본값 「OPRN Studio-<판>.AppImage」 는 gh 가 올릴 때 「OPRN.Studio-…」 로 바꿔서
+    // latest-linux.yml 의 path 와 릴리스 자산 이름이 어긋난다(자동 업데이트가 404). 릴리스의 옛 이름과 같다.
+    artifactName: "OPRN.Studio-${version}.${ext}",
     files: [...APP_FILES, "!dist-electron/oh-my-pi-worker.exe", "!dist-electron/pi_natives.win32-*.node"],
   },
   // NSIS exe(portable)는 electron-builder 가 내려받은 makensis 를 직접 돌려 리눅스에서도 만든다
@@ -51,6 +69,7 @@ export default {
   // 설정·프로젝트 폴더는 appId 기준이라 둘이 같은 것을 쓴다.
   win: {
     target: ["nsis", "portable"],
+    ...(AZURE_SIGN ? { azureSignOptions: AZURE_SIGN } : {}),
     files: [...APP_FILES, "!dist-electron/oh-my-pi-worker", "!dist-electron/pi_natives.linux-*.node"],
   },
   nsis: {
@@ -65,6 +84,8 @@ export default {
   portable: {
     splashImage: "build/portable-splash.bmp",
   },
-  // 자동 업데이트는 범위 밖이다(설계서 2절 비목표) — 게시하지 않는다.
-  publish: null,
+  // 자동 업데이트 공급자(2026-11-24, electron/main/appUpdate.ts). 패키지 안 app-update.yml 과 dist-packages 의
+  // latest.yml·latest-linux.yml·*.blockmap 을 이 설정으로 만든다. 올리기는 릴리스 워크플로가 gh 로 한다 —
+  // electron-builder 는 늘 --publish never 로 부른다(태그 빌드에서 스스로 올리지 않게).
+  publish: { provider: "github", owner: "MovieHolic-Plex", repo: "OpenRPGMaker", releaseType: "release" },
 };

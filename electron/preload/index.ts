@@ -193,6 +193,18 @@ const bridge = {
       return () => ipcRenderer.removeListener(OPRN_CHANNELS.storeOpenLink, listener);
     },
   },
+  update: {
+    status: invoke(OPRN_CHANNELS.updateStatus),
+    install: invoke(OPRN_CHANNELS.updateInstall),
+    openDownload: invoke(OPRN_CHANNELS.updateOpenDownload),
+    setEnabled: invoke(OPRN_CHANNELS.updateSetEnabled),
+    takeWhatsNew: invoke(OPRN_CHANNELS.updateTakeWhatsNew),
+    onState: (callback: (payload: unknown) => void): (() => void) => {
+      const listener = (_event: unknown, payload: unknown): void => callback(payload);
+      ipcRenderer.on(OPRN_CHANNELS.updateState, listener);
+      return () => ipcRenderer.removeListener(OPRN_CHANNELS.updateState, listener);
+    },
+  },
 } as const;
 
 contextBridge.exposeInMainWorld("oprn", bridge);

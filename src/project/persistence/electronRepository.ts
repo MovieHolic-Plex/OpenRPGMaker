@@ -167,6 +167,15 @@ export type OprnAgentBridge = {
   cancelLogin?(payload: { readonly agent: string }): Promise<unknown>;
 };
 
+export type OprnUpdateBridge = {
+  status(): Promise<import("../../../electron/shared/appUpdate").AppUpdateStatus>;
+  install(): Promise<boolean>;
+  openDownload(): Promise<void>;
+  setEnabled(enabled: boolean): Promise<import("../../../electron/shared/appUpdate").AppUpdateStatus>;
+  takeWhatsNew(): Promise<import("../../../electron/shared/appUpdate").AppUpdateWhatsNew | null>;
+  onState(callback: (payload: unknown) => void): () => void;
+};
+
 export type OprnBridge = {
   readonly windowControl?: (action: import("../../../electron/shared/windowControl").WindowControlAction) => Promise<boolean>;
   /** 데스크톱 전용 — 창 단추 방식. darwin 은 OS 신호등, 그 밖은 렌더러가 직접 그린다. */
@@ -210,6 +219,8 @@ export type OprnBridge = {
   readonly agent?: OprnAgentBridge;
   /** 데스크톱 앱에서만 있다. 에셋 스토어 중계(openwiki/asset-store.md). */
   readonly store?: import("../../assetStore/bridgeTypes").OprnStoreBridge;
+  /** 데스크톱 앱에서만 있다. 앱 자동 업데이트(electron/main/appUpdate.ts). */
+  readonly update?: OprnUpdateBridge;
 };
 
 declare global {

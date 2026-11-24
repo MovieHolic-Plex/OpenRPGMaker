@@ -126,7 +126,22 @@ function renderGeneral(): HTMLElement {
     el("p", { text: "편집기와 이 화면의 글자 언어예요. 만든 게임 안의 글자는 바뀌지 않아요." }),
     select,
     el("p", { children: [el("label", { class: "ai-compat-toggle", children: [preview, "AI가 고친 내용을 적용 전에 보기"] })] }),
+    ...renderAutoUpdateToggle(),
   ] });
+}
+
+/** 데스크톱 앱에서만 보인다. 끄면 확인도 내려받기도 하지 않는다(electron/main/appUpdate.ts). */
+function renderAutoUpdateToggle(): HTMLElement[] {
+  const update = window.oprn?.update;
+  if (!update) return [];
+  const toggle = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "settings-auto-update" } });
+  toggle.disabled = true;
+  void update.status().then((status) => {
+    toggle.checked = status.enabled;
+    toggle.disabled = status.mode === "off";
+  }, () => {});
+  toggle.addEventListener("change", () => void update.setEnabled(toggle.checked));
+  return [el("p", { children: [el("label", { class: "ai-compat-toggle", children: [toggle, "자동 업데이트"] })] })];
 }
 
 function renderAbout(): HTMLElement {

@@ -40,6 +40,7 @@ import { withoutRecentProject } from "../../electron/shared/recentProjects";
 import { BUILTIN_GAMES } from "./home/builtinGames";
 import { createLocalAgentsApi, loadEngineChoice, localAgentsEnabled, summarizeAiStatus, type AiStatusSummary } from "./settings/localAgents";
 import type { SettingsTab } from "./settings/settingsDialog";
+import { renderAppUpdateChip } from "@/app/appUpdateChip";
 
 export const START_SCREEN_TESTIDS = {
   root: "start-screen",
@@ -173,6 +174,12 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     aiReady: loadEngineChoice() !== null,
   };
   host.dataset.testid = START_SCREEN_TESTIDS.root;
+  // 앱 업데이트 칩 — 받아 둔 새 판이 있을 때만 위 가운데에 뜬다. 오른쪽 위는 창 단추 자리다.
+  const updateChip = renderAppUpdateChip({ className: "ln-btn ln-btn-primary" });
+  if (updateChip) {
+    Object.assign(updateChip.element.style, { position: "fixed", top: "10px", left: "50%", transform: "translateX(-50%)", zIndex: "20", color: "" });
+    document.body.append(updateChip.element);
+  }
   const errorBox = el("p", { class: "ln-error", attrs: { role: "alert" }, dataset: { testid: START_SCREEN_TESTIDS.error } });
   const setError = (message: string): void => {
     errorBox.textContent = message;
