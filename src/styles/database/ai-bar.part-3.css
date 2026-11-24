@@ -310,3 +310,83 @@
     animation: none;
   }
 }
+
+/* 검토 카드 건별 고르기(넣기 체크)·적용 뒤 카드별 되돌리기·목록 필드의 더한 것/뺀 것 */
+.database-modal-backdrop .database-modal-window .database-ai-card-pick,
+.database-modal-backdrop .database-modal-window .database-ai-card-state {
+  align-items: center;
+  color: var(--db-studio-text-2);
+  display: inline-flex;
+  font: 600 12px/1 var(--font-ui);
+  gap: 4px;
+  margin-left: auto;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-card-pick {
+  cursor: pointer;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-card-goto + .database-ai-card-pick,
+.database-modal-backdrop .database-modal-window .database-ai-card-goto + .database-ai-card-revert,
+.database-modal-backdrop .database-modal-window .database-ai-card-goto + .database-ai-card-state {
+  margin-left: 0;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-card-revert {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--db-studio-border-default);
+  border-radius: 8px;
+  color: var(--db-studio-text-1);
+  cursor: pointer;
+  display: inline-flex;
+  font: 600 12px/1 var(--font-ui);
+  gap: 4px;
+  height: 24px;
+  margin-left: auto;
+  padding: 0 8px;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-card-revert .database-ai-icon {
+  height: 14px;
+  width: 14px;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-card.is-excluded,
+.database-modal-backdrop .database-modal-window .database-ai-card.is-reverted {
+  opacity: 0.55;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-card-values.is-list {
+  flex-wrap: wrap;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-card-list-added {
+  color: var(--db-studio-success);
+  font-weight: 600;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-card-list-removed {
+  color: var(--db-studio-danger);
+  font-weight: 600;
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-card-list-kept {
+  color: var(--db-studio-text-3, var(--db-studio-text-2));
+}
+
+.database-modal-backdrop .database-modal-window .database-ai-toggle-hint {
+  color: var(--db-studio-text-3, var(--db-studio-text-2));
+  font-weight: 400;
+  margin-left: 6px;
+}
+
+.database-modal-backdrop.is-docked .database-ai-toggle-hint {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .database-modal-backdrop .database-modal-window .database-ai-toggle-hint {
+    display: none;
+  }
+}

@@ -16,6 +16,8 @@ export interface DatabaseChangeCardsOptions {
   readonly after: Project;
   /** 「이동 →」 — 그 레코드의 탭·선택으로 점프. 없으면 단추를 그리지 않는다. */
   readonly onNavigate?: (change: DatabaseRecordChange) => void;
+  /** 카드 머리 끝에 붙는 조작(검토 중 「넣기」 체크, 적용 뒤 「되돌리기」). 오버레이가 상태를 소유한다. */
+  readonly control?: (change: DatabaseRecordChange) => HTMLElement | null;
 }
 
 const ART_KEYS_BY_COLLECTION: Readonly<Record<string, readonly string[]>> = {
@@ -62,15 +64,73 @@ export function databaseRecordArtUrl(
   return null;
 }
 
+// 열거 값은 편집기 화면이 쓰는 말로 보인다 — 「enemy」가 아니라 「적 1명」(skillHelp·AI 생성 카드와 같은 낱말).
+const ENUM_VALUE_LABELS: Readonly<Record<string, Readonly<Record<string, string>>>> = {
+  scope: { self: "자신", ally: "아군 1명", allAllies: "아군 전체", enemy: "적 1명", allEnemies: "적 전체" },
+  occasion: { always: "언제나", battle: "전투 중", field: "필드에서", never: "사용 불가" },
+};
+
 /** 필드 값 한 줄. 참조 id 는 그 레코드 이름으로, 없는 값은 「없음」, 나머지는 ledger 요약과 같다. */
-export function formatDatabaseFieldValue(project: Project, value: unknown): string {
+export function formatDatabaseFieldValue(project: Project, value: unknown, path?: string): string {
   if (value === undefined || value === null || value === "") return "없음";
   if (typeof value === "boolean") return value ? "켜짐" : "꺼짐";
   if (typeof value === "string") {
+    const leaf = path?.split(".").pop();
+    const enumLabel = leaf ? ENUM_VALUE_LABELS[leaf]?.[value] : undefined;
+    if (enumLabel) return enumLabel;
     const referenced = databaseRecordNameById(project, value);
     return referenced ? referenced : summarizeLedgerValue(value);
   }
   return summarizeLedgerValue(value);
+}
+
+export interface DatabaseListChange {
+  readonly beforeCount: number;
+  readonly afterCount: number;
+  readonly added: readonly string[];
+  readonly removed: readonly string[];
+}
+
+function listEntryRef(entry: unknown): string | null {
+  if (typeof entry === "string") return entry;
+  if (typeof entry !== "object" || entry === null) return null;
+  for (const [key, value] of Object.entries(entry)) {
+    if (/Id$/u.test(key) && typeof value === "string" && value.length > 0) return value;
+  }
+  return null;
+}
+
+function listEntryLabel(entry: unknown, projects: readonly Project[]): string {
+  const ref = listEntryRef(entry);
+  const name = ref ? projects.map((project) => databaseRecordNameById(project, ref)).find((found) => found) : null;
+  const level = typeof entry === "object" && entry !== null ? (entry as { readonly level?: unknown }).level : undefined;
+  const base = name ?? ref ?? summarizeLedgerValue(entry);
+  return typeof level === "number" ? `${base} (Lv${level})` : base;
+}
+
+/**
+ * 목록 필드(스킬·습득 스킬·장비…)의 차이를 더한 것/뺀 것 이름으로. 잘린 id 나열(「skill_a, skill_b…」)로는
+ * 무엇이 늘었는지 알 수 없었다(ideal-flow-edit 4순위). 목록이 아니면 null.
+ */
+export function describeDatabaseListChange(
+  before: unknown,
+  after: unknown,
+  projects: { readonly before: Project; readonly after: Project },
+): DatabaseListChange | null {
+  const prev = before === undefined || before === null ? [] : before;
+  const next = after === undefined || after === null ? [] : after;
+  if (!Array.isArray(prev) || !Array.isArray(next)) return null;
+  if (prev.length === 0 && next.length === 0) return null;
+  const key = (entry: unknown): string => JSON.stringify(entry ?? null);
+  const prevKeys = new Set(prev.map(key));
+  const nextKeys = new Set(next.map(key));
+  const lookup = [projects.after, projects.before];
+  return {
+    beforeCount: prev.length,
+    afterCount: next.length,
+    added: next.filter((entry) => !prevKeys.has(key(entry))).map((entry) => listEntryLabel(entry, lookup)),
+    removed: prev.filter((entry) => !nextKeys.has(key(entry))).map((entry) => listEntryLabel(entry, [projects.before, projects.after])),
+  };
 }
 
 function formatDelta(delta: number): string {
@@ -96,17 +156,39 @@ function arrowIcon(): SVGSVGElement {
   return svg;
 }
 
-function fieldRow(project: Project, field: DatabaseFieldChange, change: DatabaseRecordChange["change"]): HTMLElement {
-  const values = change === "added"
-    ? [el("span", { class: "database-ai-card-after", text: formatDatabaseFieldValue(project, field.after) })]
+function listValues(list: DatabaseListChange, change: DatabaseRecordChange["change"]): HTMLElement[] {
+  const values: HTMLElement[] = change === "added"
+    ? [el("span", { class: "database-ai-card-after", text: `${list.afterCount}개` })]
     : [
-      el("span", { class: "database-ai-card-before", text: formatDatabaseFieldValue(project, field.before) }),
+      el("span", { class: "database-ai-card-before", text: String(list.beforeCount) }),
       el("span", { class: "database-ai-card-to", attrs: { "aria-hidden": "true" }, text: "→" }),
-      el("span", { class: "database-ai-card-after", text: formatDatabaseFieldValue(project, field.after) }),
+      el("span", { class: "database-ai-card-after", text: String(list.afterCount) }),
+    ];
+  for (const name of list.added) {
+    values.push(el("span", { class: "database-ai-card-list-added", dataset: { testid: "database-ai-card-list-added" }, text: `+ ${name}` }));
+  }
+  for (const name of list.removed) {
+    values.push(el("span", { class: "database-ai-card-list-removed", dataset: { testid: "database-ai-card-list-removed" }, text: `− ${name}` }));
+  }
+  const kept = list.afterCount - list.added.length;
+  if (change !== "added" && kept > 0 && (list.added.length > 0 || list.removed.length > 0)) {
+    values.push(el("span", { class: "database-ai-card-list-kept", text: `기존 ${kept}개는 그대로` }));
+  }
+  return values;
+}
+
+function fieldRow(options: DatabaseChangeCardsOptions, field: DatabaseFieldChange, change: DatabaseRecordChange["change"]): HTMLElement {
+  const list = describeDatabaseListChange(field.before, field.after, options);
+  const values = list ? listValues(list, change) : change === "added"
+    ? [el("span", { class: "database-ai-card-after", text: formatDatabaseFieldValue(options.after, field.after, field.path) })]
+    : [
+      el("span", { class: "database-ai-card-before", text: formatDatabaseFieldValue(options.before, field.before, field.path) }),
+      el("span", { class: "database-ai-card-to", attrs: { "aria-hidden": "true" }, text: "→" }),
+      el("span", { class: "database-ai-card-after", text: formatDatabaseFieldValue(options.after, field.after, field.path) }),
     ];
   const children: (HTMLElement | string)[] = [
     el("span", { class: "database-ai-card-key", text: field.label }),
-    el("span", { class: "database-ai-card-values", children: values }),
+    el("span", { class: `database-ai-card-values${list ? " is-list" : ""}`, children: values }),
   ];
   if (field.delta !== null && field.delta !== 0) {
     children.push(el("span", {
@@ -159,13 +241,15 @@ export function renderDatabaseChangeCard(change: DatabaseRecordChange, options: 
       on: { click: () => options.onNavigate?.(change) },
     }));
   }
+  const control = options.control?.(change);
+  if (control) head.append(control);
 
   const body = el("div", { class: "database-ai-card-body", children: [head] });
   for (const field of graphicFields) body.append(graphicPair(options, change, field));
   if (slim) {
     body.append(el("p", { class: "database-ai-card-note", text: "이 레코드가 삭제됩니다" }));
   } else if (plainFields.length > 0 || change.hiddenFieldCount > 0) {
-    const list = el("ul", { class: "database-ai-card-fields", children: plainFields.map((field) => fieldRow(options.after, field, change.change)) });
+    const list = el("ul", { class: "database-ai-card-fields", children: plainFields.map((field) => fieldRow(options, field, change.change)) });
     if (change.hiddenFieldCount > 0) {
       list.append(el("li", { class: "database-ai-card-field is-more", text: `…외 ${change.hiddenFieldCount}개 필드` }));
     }

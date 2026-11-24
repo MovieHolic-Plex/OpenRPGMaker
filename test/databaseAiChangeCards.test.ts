@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import {
   databaseRecordArtUrl,
   describeDatabaseChanges,
+  describeDatabaseListChange,
   formatDatabaseFieldValue,
   renderDatabaseChangeCards,
 } from "@/editor/panels/databaseAiChangeCards";
@@ -121,5 +122,29 @@ describe("renderDatabaseChangeCards — 레코드 카드", () => {
     expect(changes.map((change) => change.id).sort()).toEqual(["enemy_imp", "i", "s"]);
     expect(describeDatabaseChanges(changes)).toBe("바꾼 레코드 1 · 추가 1 · 삭제 1");
     expect(describeDatabaseChanges([])).toBe("바뀐 레코드 없음");
+    expect(formatDatabaseFieldValue(after, "allEnemies", "scope")).toBe("적 전체");
+    expect(formatDatabaseFieldValue(after, "battle", "occasion")).toBe("전투 중");
+  });
+
+  it("목록 필드는 잘린 id 나열이 아니라 더한 것·뺀 것을 이름으로 말한다", () => {
+    const skills = [
+      { id: "skill_slash", name: "베기" },
+      { id: "skill_guard", name: "수비" },
+    ];
+    const before = project({ skills, enemies: [imp({ skillIds: ["skill_slash", "skill_guard"] })] });
+    const after = project({
+      skills: [...skills, { id: "skill_dark_wave", name: "암흑 파동" }],
+      enemies: [imp({ skillIds: ["skill_slash", "skill_dark_wave"] })],
+    });
+    expect(describeDatabaseListChange(["skill_slash", "skill_guard"], ["skill_slash", "skill_dark_wave"], { before, after })).toEqual({
+      beforeCount: 2, afterCount: 2, added: ["암흑 파동"], removed: ["수비"],
+    });
+    const list = renderDatabaseChangeCards(diffDatabaseRecords(before, after), { before, after });
+    const row = list.querySelector<HTMLElement>("[data-record-id='enemy_imp'] [data-path='skillIds']")!;
+    expect([...row.querySelectorAll("[data-testid='database-ai-card-list-added']")].map((node) => node.textContent)).toEqual(["+ 암흑 파동"]);
+    expect([...row.querySelectorAll("[data-testid='database-ai-card-list-removed']")].map((node) => node.textContent)).toEqual(["− 수비"]);
+    expect(row.textContent).not.toContain("skill_");
+    expect(describeDatabaseListChange([{ skillId: "skill_slash", level: 1 }], [{ skillId: "skill_slash", level: 1 }, { skillId: "skill_dark_wave", level: 5 }], { before, after })?.added).toEqual(["암흑 파동 (Lv5)"]);
+    expect(describeDatabaseListChange(3, 4, { before, after })).toBeNull();
   });
 });
