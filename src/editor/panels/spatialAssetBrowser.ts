@@ -1,4 +1,4 @@
-import { spatialProjectKey, patchSpatialSession, selectSpatialDesign, type SpatialAuthoringSession } from "@/editor/panels/spatialAuthoringSession";
+import { spatialProjectKey, patchSpatialSession, selectSpatialDesign, spatialSession, type SpatialAuthoringSession } from "@/editor/panels/spatialAuthoringSession";
 import { visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess";
 import { listSpatialGalleryCards, type SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { deferredSpatialCardThumb } from "@/editor/panels/spatialCardThumbs";
@@ -6,6 +6,7 @@ import { objectThumbCacheKey, renderSpatialCardThumb } from "@/editor/panels/spa
 import { renderSpatialInspector, renderSpatialChrome, renderSpatialSourceChips } from "@/editor/panels/spatialStage";
 import { tilesetListThumb } from "@/editor/panels/tilesetListThumb";
 import { addBlankObject } from "@/editor/panels/spatialObjectMutations";
+import { syncSpatialFeedbackSelection } from "@/editor/panels/spatialFeedback";
 import { el } from "@/util/dom";
 
 type BrowserState = {
@@ -19,6 +20,29 @@ type BrowserState = {
 const states = new Map<string, BrowserState>();
 let browserScrollEpoch = 0;
 const PAGE_SIZE = 48;
+
+const sortedMemo = new WeakMap<readonly SpatialGalleryCard[], readonly SpatialGalleryCard[]>();
+
+/** 내 것이 앞에 오는 순서. 목록이 메모된 탭(오브젝트 1만 장)은 정렬도 한 번만 한다. */
+function ownFirst(cards: readonly SpatialGalleryCard[]): readonly SpatialGalleryCard[] {
+  const known = sortedMemo.get(cards);
+  if (known) return known;
+  const sorted = [...cards].sort((a, b) => Number(b.source === "own") - Number(a.source === "own"));
+  sortedMemo.set(cards, sorted);
+  return sorted;
+}
+
+const railCountMemo = new WeakMap<readonly SpatialGalleryCard[], ReadonlyMap<string, number>>();
+
+/** 레일 49줄마다 전체 목록을 거르던 것(약 60만 비교)을 한 번의 집계로. */
+function countsByTileset(cards: readonly SpatialGalleryCard[]): ReadonlyMap<string, number> {
+  const known = railCountMemo.get(cards);
+  if (known) return known;
+  const counts = new Map<string, number>();
+  for (const card of cards) if (card.tilesetId) counts.set(card.tilesetId, (counts.get(card.tilesetId) ?? 0) + 1);
+  railCountMemo.set(cards, counts);
+  return counts;
+}
 
 export function filterSpatialBrowserCards(cards: readonly SpatialGalleryCard[], query: string, tilesetId: string | null): readonly SpatialGalleryCard[] {
   const words = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
@@ -36,7 +60,8 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
   const state = saved;
   const pageBeforeSelection = state.page;
   const project = visibleAuthoringProject();
-  const cards = [...listSpatialGalleryCards(session)].sort((a, b) => Number(b.source === "own") - Number(a.source === "own"));
+  const cards = ownFirst(listSpatialGalleryCards(session));
+  const railCounts = countsByTileset(cards);
   if (selected && state.selection !== selected.id) {
     state.selection = selected.id;
     if (!filterSpatialBrowserCards(cards, state.query, state.tilesetId).some(card => card.id === selected.id)) {
@@ -51,7 +76,9 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
     el("h2", { text: `${noun} 라이브러리` }),
     el("p", { text: "공용 오브젝트에서 가구와 소품을 골라 배치하거나, 복제해 내 오브젝트로 편집하세요." }),
   ] });
-  const chrome = renderSpatialChrome(session, rerender, { browser: true, onAdd: () => addBlankObject(rerender, state.tilesetId ?? undefined) });
+  const renderChrome = (): HTMLElement => renderSpatialChrome(spatialSession(), rerender, { browser: true, onAdd: () => addBlankObject(rerender, state.tilesetId ?? undefined) });
+  let chrome = renderChrome();
+  let selectedId = selected?.id;
   const results = el("div", { class: "asset-browser-results", dataset: { testid: "spatial-browser-results" } });
   const count = el("span", { class: "asset-browser-count", attrs: { role: "status", "aria-live": "polite" } });
   const search = el("input", {
@@ -77,7 +104,7 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
       children: [el("span", { text: "모든 타일셋" }), el("small", { text: String(cards.length) })],
       on: { click: () => chooseTileset(null) },
     }), ...Object.values(project.tilesets).map(tileset => {
-      const total = cards.filter(card => card.tilesetId === tileset.id).length;
+      const total = railCounts.get(tileset.id) ?? 0;
       return el("button", {
         class: `asset-browser-tileset${state.tilesetId === tileset.id ? " is-selected" : ""}`,
         attrs: { type: "button", "aria-pressed": String(state.tilesetId === tileset.id) },
@@ -105,19 +132,14 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
         children: [deferredSpatialCardThumb(card, () => renderSpatialCardThumb(card), objectThumbCacheKey(card))],
       });
       grid.append(el("button", {
-        class: `asset-browser-card${selected?.id === card.id ? " is-selected" : ""}`,
-        attrs: { type: "button", "aria-pressed": String(selected?.id === card.id) },
+        class: `asset-browser-card${selectedId === card.id ? " is-selected" : ""}`,
+        attrs: { type: "button", "aria-pressed": String(selectedId === card.id) },
         dataset: { cardId: card.id, testid: `spatial-card-${card.id}`, source: card.source },
         children: [art, el("strong", { text: card.name }), el("span", {
           // 분류가 있으면(공용 카탈로그 분류·일본 실내 방 분류) 그걸 보인다 — 출처는 위 출처 칩이 이미 거른다.
           text: card.subtitle ?? (card.source === "default" ? "공용 오브젝트" : card.compatibility ? "방 템플릿" : "내가 만든 항목"),
         })],
-        on: { click: () => {
-          state.railScrollTop = rail.scrollTop;
-          state.resultsScrollTop = results.scrollTop;
-          browserScrollEpoch += 1;
-          selectSpatialDesign(card.id); patchSpatialSession({ inspectorOpen: true }); rerender();
-        } },
+        on: { click: () => selectCard(card) },
       }));
     }
     const navigation = el("div", { class: "asset-browser-pagination", children: [
@@ -140,6 +162,27 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
   ] });
   const detail = el("section", { class: "asset-browser-detail", attrs: { "aria-label": `${noun} 편집` } });
   detail.append(renderSpatialInspector(selected, true, rerender));
+  /**
+   * 카드 선택은 셀을 다시 짓지 않는다(qa1124 실측: 클릭마다 233~3,754ms·새 캔버스 46~74개).
+   * 바뀌는 것은 선택 표시, 오른쪽 상세, 선택에 따라 달라지는 머리줄 동작(복제·삭제)뿐이다.
+   * 상세의 편집·삭제 등은 여전히 `rerender` 로 셀 전체를 다시 그린다.
+   */
+  function selectCard(card: SpatialGalleryCard): void {
+    selectSpatialDesign(card.id);
+    const next = patchSpatialSession({ inspectorOpen: true });
+    state.selection = card.id;
+    selectedId = card.id;
+    syncSpatialFeedbackSelection(`${next.tab}:${next.mode}:${next.source}:${card.id}`);
+    for (const button of results.querySelectorAll<HTMLElement>(".asset-browser-card")) {
+      const on = button.dataset.cardId === card.id;
+      button.classList.toggle("is-selected", on);
+      button.setAttribute("aria-pressed", String(on));
+    }
+    const nextChrome = renderChrome();
+    chrome.replaceWith(nextChrome);
+    chrome = nextChrome;
+    detail.replaceChildren(renderSpatialInspector(card, true, rerender));
+  }
   const collection = el("section", { class: "asset-browser-collection", attrs: { "aria-label": `${noun} 목록` }, children: [
     controls, results,
   ] });

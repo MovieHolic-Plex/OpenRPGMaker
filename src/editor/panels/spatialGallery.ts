@@ -4,7 +4,7 @@ import { regionReferenceImage } from "./regionReferenceView";
 import { interiorObjectById, interiorObjectsForTheme } from "@/editor/interiorObjectCatalog";
 import { cellsFromMapRect, assembledKitCells, renderTileCellsToCanvas, type KitRenderInput } from "@/editor/harnessSuggestion/kitRender";
 import { tilesetAssetHash } from "@/editor/thumbCache/tilesetAssetHash";
-import { thumbContentHash } from "@/editor/thumbCache";
+import { peekThumb, thumbContentHash } from "@/editor/thumbCache";
 import { INTERIOR_OBJECT_THUMB_BACKGROUND_TILE, interiorThemeCards, kitThumbBackgroundTile } from "@/editor/panels/structureKitDbSources";
 import { interiorObjectCanvas, interiorObjectRenderInput } from "@/editor/panels/structureKitInspector";
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
@@ -96,13 +96,20 @@ function objectThumbRecipe(card: SpatialGalleryCard): { readonly preview: string
 function renderObjectThumb(card: SpatialGalleryCard): HTMLElement {
   const recipe = objectThumbRecipe(card);
   if (!recipe) return el("div", { class: "spatial-card-fallback" });
-  if ("preview" in recipe) {
-    const img = catalogListImage(recipe.preview, "spatial-card-image");
-    img.style.imageRendering = "pixelated";
-    img.style.objectFit = "contain";
-    return img;
+  if ("preview" in recipe) return pixelImage(catalogListImage(recipe.preview, "spatial-card-image"));
+  // 같은 그림이 캐시에 있으면 캔버스를 만들지 않는다 — 카드를 고를 때마다 상세·작업대가 같은 그림을 다시 굽던 것.
+  const key = objectThumbCacheKey(card);
+  const cached = key ? peekThumb(key.key, key.size) : undefined;
+  if (cached) {
+    return pixelImage(el("img", { class: "spatial-card-image", attrs: { src: cached, alt: "", draggable: "false" }, dataset: { thumbSource: "memory" } }));
   }
   return renderTileCellsToCanvas(recipe);
+}
+
+function pixelImage(img: HTMLImageElement): HTMLImageElement {
+  img.style.imageRendering = "pixelated";
+  img.style.objectFit = "contain";
+  return img;
 }
 
 /**

@@ -79,7 +79,23 @@ function tileCards(): SpatialGalleryCard[] {
   }));
 }
 
-function objectCards(): SpatialGalleryCard[] {
+/**
+ * 오브젝트 카드 목록은 1만 장이 넘는다(qa1124 실측 12,356장). 카드를 고를 때마다 셸이 이 목록을
+ * 처음부터 만들었다. 재료(타일셋들·내 오브젝트 라이브러리)의 정체성이 같으면 같은 목록을 돌려준다 —
+ * 스토어 편집과 초안 편집은 두 참조를 갈아끼우므로 낡은 목록이 남지 않는다.
+ */
+let objectCardsMemo: { readonly tilesets: object; readonly objects: object | undefined; readonly cards: readonly SpatialGalleryCard[] } | null = null;
+
+function objectCards(): readonly SpatialGalleryCard[] {
+  const project = visibleAuthoringProject();
+  const objects = project.spatialAuthoring?.library.objects;
+  if (objectCardsMemo && objectCardsMemo.tilesets === project.tilesets && objectCardsMemo.objects === objects) return objectCardsMemo.cards;
+  const cards = buildObjectCards();
+  objectCardsMemo = { tilesets: project.tilesets, objects, cards };
+  return cards;
+}
+
+function buildObjectCards(): SpatialGalleryCard[] {
   const project = visibleAuthoringProject();
   const tilesetId = boundInteriorTilesetId();
   const cards: SpatialGalleryCard[] = INTERIOR_OBJECT_CATALOG.map((object) => ({
@@ -105,13 +121,15 @@ function objectCards(): SpatialGalleryCard[] {
     subtitle: `${SHARED_OBJECT_CATEGORY_LABEL[object.category] ?? object.category} · ${object.width}×${object.height}`,
   })));
   const known = new Set(cards.map((card) => card.id));
+  // 킷마다 라이브러리 전체를 훑던 .some(킷 수 × 오브젝트 수)을 한 번의 집합으로 바꾼다.
+  const ownedGraphics = new Set(Object.values(project.spatialAuthoring?.library.objects ?? {})
+    .map((object) => `${object.graphic.tilesetId}\u0000${object.graphic.kitId}`));
   for (const tileset of Object.values(project.tilesets)) {
     for (const kit of tileset.structureKits ?? []) {
       // 숲마을 선별 소품(dewbank:*)은 공용 카탈로그 카드로 이미 보인다.
       if (kit.id.startsWith("dewbank:")) continue;
       // Keep compatibility cards until a canonical design owns the same graphic.
-      if (Object.values(project.spatialAuthoring?.library.objects ?? {}).some((object) =>
-        object.graphic.tilesetId === tileset.id && object.graphic.kitId === kit.id)) continue;
+      if (ownedGraphics.has(`${tileset.id}\u0000${kit.id}`)) continue;
       const id = spatialPresentationId("tileset-kit", tileset.id, kit.id);
       if (known.has(id)) continue;
       known.add(id);
@@ -225,7 +243,7 @@ function spaceCards(): SpatialGalleryCard[] {
   return cards;
 }
 
-const DESIGN_LISTERS: Record<SpatialShellTab, () => SpatialGalleryCard[]> = {
+const DESIGN_LISTERS: Record<SpatialShellTab, () => readonly SpatialGalleryCard[]> = {
   tiles: tileCards,
   objects: objectCards,
   spaces: spaceCards,
@@ -238,11 +256,21 @@ export function spatialAllSourceDesignCount(tab: SpatialShellTab): number {
   return DESIGN_LISTERS[tab]().length;
 }
 
+let sourceFilterMemo: { readonly base: readonly SpatialGalleryCard[]; readonly source: SpatialSourceFilter; readonly cards: readonly SpatialGalleryCard[] } | null = null;
+
+/** 목록이 메모된 탭(오브젝트)은 같은 출처 필터 결과도 같은 배열이다 — 카드 선택이 1만 장을 다시 거르지 않게. */
+function filteredBySource(base: readonly SpatialGalleryCard[], source: SpatialSourceFilter): readonly SpatialGalleryCard[] {
+  if (sourceFilterMemo && sourceFilterMemo.base === base && sourceFilterMemo.source === source) return sourceFilterMemo.cards;
+  const cards = base.filter((card) => matchesSource(card, source));
+  sourceFilterMemo = { base, source, cards };
+  return cards;
+}
+
 export function listSpatialGalleryCards(session: SpatialAuthoringSession): readonly SpatialGalleryCard[] {
   if (session.mode === "instances") return session.tab === "places"
     ? [...placedCards("places"), ...placedCards("spaces")]
     : placedCards(session.tab);
-  const cards = DESIGN_LISTERS[session.tab]().filter((card) => matchesSource(card, session.source));
+  const cards = filteredBySource(DESIGN_LISTERS[session.tab](), session.source);
   if (session.tab === "places" && session.placeKindFilter) {
     return cards.filter((card) => card.placeKind === session.placeKindFilter);
   }
