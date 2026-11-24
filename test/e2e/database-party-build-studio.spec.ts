@@ -88,6 +88,7 @@ test("Party Studio folds to one/two columns without overlap or horizontal overfl
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await seedProjectForEditor(page, project, "/?freshProject=1");
   await openActorBuild(page, actor.id);
+  await page.getByTestId("database-modal-more").click();
   await page.getByTestId("database-dock-toggle").click();
   await expect(page.locator(".database-modal-backdrop.is-docked")).toBeVisible();
 

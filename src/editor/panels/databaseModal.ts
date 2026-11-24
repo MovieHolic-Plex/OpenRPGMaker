@@ -77,6 +77,11 @@ function windowIcon(name: WindowIconName): SVGSVGElement {
   return icon;
 }
 
+/** 머리줄 ⋯ 메뉴 안 항목은 아이콘만으로는 무엇인지 모른다 — 아이콘 옆에 이름을 같이 그린다. */
+function paintMenuItem(button: HTMLElement, icon: WindowIconName, label: string): void {
+  button.replaceChildren(windowIcon(icon), el("span", { class: "database-modal-more-label", text: label }));
+}
+
 /** 헤더 브레드크럼 "그룹 › 탭" 을 현재 활성 탭으로 다시 쓴다. 개요처럼 그룹 밖 탭은 탭 이름만 남긴다. */
 function writeCrumb(crumb: HTMLElement, tab: DatabaseTab): void {
   const group = databaseTabGroupLabel(tab);
@@ -232,9 +237,33 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseMo
     dataset: { testid: "database-dock-toggle" },
     children: [windowIcon("dock")],
   }) as HTMLButtonElement;
+  // 창 배치 2개·도움말·되돌리기는 한 번 정하거나 거의 안 누른다(btn-vqa-db PR 1, 오너 2026-11-24 「사용자는 많은 버튼을 원하지
+  // 않는다」). 머리줄 ⋯ 하나 뒤로 모은다. 단추 요소와 testid 는 그대로라 기존 배선이 같은 요소를 잔다.
+  paintMenuItem(dockToggleButton, "dock", "사이드 도크로");
+  paintMenuItem(maximizeButton, "maximize", "전체 화면");
+  const moreMenu = el("div", {
+    class: "database-modal-more-menu",
+    attrs: { role: "menu", "aria-label": "창·도움말", hidden: "" },
+    dataset: { testid: "database-modal-more-menu" },
+    children: [dockToggleButton, maximizeButton],
+  });
+  const moreButton = el("button", {
+    class: "database-modal-more",
+    text: "⋯",
+    attrs: { type: "button", title: "창 배치·도움말·되돌리기", "aria-label": "더 보기", "aria-haspopup": "menu", "aria-expanded": "false" },
+    dataset: { testid: "database-modal-more" },
+  }) as HTMLButtonElement;
+  const setMoreOpen = (open: boolean): void => {
+    moreMenu.hidden = !open;
+    moreButton.setAttribute("aria-expanded", String(open));
+  };
+  moreButton.addEventListener("click", () => setMoreOpen(Boolean(moreMenu.hidden)));
+  moreMenu.addEventListener("click", (event) => {
+    if (event.target instanceof Element && event.target.closest("button")) setMoreOpen(false);
+  });
   const windowControls = el("div", {
     class: "database-modal-controls",
-    children: [dockToggleButton, maximizeButton, closeButton],
+    children: [moreButton, moreMenu, closeButton],
   });
   // ── AI 연결(M7): 제목 옆 ✨ AI 토글 → 헤더 아래 인라인 바. 진행·도구 결과·답변을 바 안에
   // 그린다(databaseAiBar.ts). 채팅 패널은 이 모달 뒤에 가려지므로 「패널에서 확인하세요」로
@@ -699,22 +728,23 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseMo
     controller.requestClose("x");
   };
   closeButton.addEventListener("click", dismissKeepingEdits);
+  // 도움말·되돌리기는 머리줄 ⋯ 안으로 간다(Ctrl+Z 는 그대로). 발 줄에는 저장 결정만 남는다.
+  moreMenu.append(
+    el("button", {
+      class: "database-footer-button tertiary database-footer-help",
+      text: "도움말",
+      attrs: { type: "button" },
+      dataset: { testid: "database-footer-help" },
+      // 예전에는 동어반복 토스트가 전부였다. 실제 DB 도움말 문서가 이미 있다.
+      on: { click: () => openHelpModal("database") },
+    }),
+    undoButton,
+  );
   const footer = el("footer", {
     class: "database-modal-footer",
     children: [
-      el("button", {
-        class: "database-footer-button tertiary database-footer-help",
-        text: "도움말",
-        attrs: { type: "button" },
-        dataset: { testid: "database-footer-help" },
-        // 예전에는 동어반복 토스트가 전부였다. 실제 DB 도움말 문서가 이미 있다.
-        on: { click: () => openHelpModal("database") },
-      }),
       footerStatus,
       dirtyPrompt,
-      // Ctrl+Z 는 예전부터 동작했지만 모달 어디에도 노출이 없어 아무도 몰랐다.
-      // 같은 DB 안 전투 명령 스튜디오가 이미 가시 되돌리기를 갖고 있다 — 그 규약을 셸로 올린다.
-      undoButton,
       applyButton = el("button", {
         class: "database-footer-button primary",
         text: "지금 저장",
@@ -759,7 +789,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseMo
       windowEl.style.height = "";
       windowEl.style.maxWidth = "";
       windowEl.style.maxHeight = "";
-      maximizeButton.replaceChildren(windowIcon("maximize"));
+      paintMenuItem(maximizeButton, "maximize", "전체 화면");
       // 도크는 모달이 아니다 — 포커스를 가두지 않고 맵과 병행 조작하는 보조 패널.
       windowEl.setAttribute("role", "complementary");
       windowEl.removeAttribute("aria-modal");
@@ -769,7 +799,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseMo
     }
     maximizeButton.disabled = next;
     maximizeButton.setAttribute("aria-disabled", String(next));
-    dockToggleButton.replaceChildren(windowIcon(next ? "undock" : "dock"));
+    paintMenuItem(dockToggleButton, next ? "undock" : "dock", next ? "창 모드로" : "사이드 도크로");
     const label = next ? "창 모드로 복원" : "사이드 도크로 전환";
     dockToggleButton.setAttribute("title", label);
     dockToggleButton.setAttribute("aria-label", label);
@@ -1151,7 +1181,7 @@ function toggleMaximizedDatabaseModal(button: HTMLButtonElement): void {
     windowEl.style.maxWidth = "";
     windowEl.style.maxHeight = "";
   }
-  button.replaceChildren(windowIcon(isMaximized ? "restore" : "maximize"));
+  paintMenuItem(button, isMaximized ? "restore" : "maximize", isMaximized ? "창 크기로" : "전체 화면");
   button.title = isMaximized ? "창 크기로 복원 (Esc)" : "전체 화면";
   button.setAttribute("aria-label", isMaximized ? "데이터베이스 창 크기로 복원" : "데이터베이스 전체 화면");
   // 토글 버튼이면서 눌림 상태 신호가 없었다 — 이벤트 에디터의 전체화면 버튼과 규약을 맞춘다.

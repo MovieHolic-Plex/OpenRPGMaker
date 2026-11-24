@@ -105,7 +105,9 @@ describe("데이터베이스 모달 헤더 — 현재 위치 브레드크럼", (
     for (const testid of ["database-dock-toggle", "database-modal-maximize", "database-modal-close"]) {
       const button = document.querySelector<HTMLElement>(`[data-testid='${testid}']`);
       expect(button, testid).not.toBeNull();
-      expect((button?.textContent ?? "").trim(), `${testid} 는 글자를 담지 않는다`).toBe("");
+      // 닫기는 아이콘만, ⋯ 메뉴 안의 창 배치 항목은 아이콘 옆에 이름을 쓴다(impl-database PR-D).
+      const expectedText = { "database-dock-toggle": "사이드 도크로", "database-modal-maximize": "전체 화면", "database-modal-close": "" }[testid];
+      expect((button?.textContent ?? "").trim(), `${testid} 글자`).toBe(expectedText);
       // fakeDom 은 setAttribute("class") 를 className 에 반영하지 않으므로 자식 태그와 속성으로 본다.
       const icon = button?.children[0] as HTMLElement | undefined;
       expect(icon?.tagName.toLowerCase(), `${testid} 아이콘 태그`).toBe("svg");

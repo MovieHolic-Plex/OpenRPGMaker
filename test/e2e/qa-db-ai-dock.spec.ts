@@ -60,6 +60,8 @@ test.describe("QA — DB 모달 사이드 도킹 (M8)", () => {
     const windowEl = page.locator(".database-modal-window");
     await expect(windowEl).toHaveAttribute("aria-modal", "true");
 
+    await page.getByTestId("database-modal-more").click();
+
     await page.getByTestId("database-dock-toggle").click();
     await expect(page.getByTestId("database-modal")).toHaveClass(/is-docked/);
     await expect(windowEl).toHaveAttribute("role", "complementary");
@@ -91,6 +93,7 @@ test.describe("QA — DB 모달 사이드 도킹 (M8)", () => {
     await expect(page.getByTestId("database-modal")).toHaveClass(/is-docked/);
 
     // 창 모드 복원: aria/클래스 원상 + 백드롭이 다시 포인터를 가로챈다.
+    await page.getByTestId("database-modal-more").click();
     await page.getByTestId("database-dock-toggle").click();
     await expect(page.getByTestId("database-modal")).not.toHaveClass(/is-docked/);
     await expect(windowEl).toHaveAttribute("role", "dialog");
@@ -105,6 +108,7 @@ test.describe("QA — DB 모달 사이드 도킹 (M8)", () => {
   test("도크 상태는 localStorage 에 저장되어 다음 오픈에 복원된다", async ({ page }) => {
     await gotoExpertEditor(page);
     await openDatabase(page);
+    await page.getByTestId("database-modal-more").click();
     await page.getByTestId("database-dock-toggle").click();
     await expect(page.getByTestId("database-modal")).toHaveClass(/is-docked/);
 
