@@ -8,17 +8,26 @@ const full = (version: string, size = 1_100_000_000) =>
   requiredDesktopAssets(version).map((name) => ({ name, size }));
 
 describe("requiredDesktopAssets", () => {
-  it("README 가 버전 없이 부르는 이름 2개와 버전 이름 2개를 요구한다 — 윈도우는 exe 하나", () => {
+  it("README 가 버전 없이 부르는 이름 3개와 버전 이름 3개를 요구한다 — 윈도우는 설치판과 portable", () => {
     expect(requiredDesktopAssets("0.408.0")).toEqual([
+      "OPRN.Studio-windows-setup.exe",
       "OPRN.Studio-windows.exe",
       "OPRN.Studio-linux.AppImage",
+      "OPRN.Studio-Setup-0.408.0.exe",
       "OPRN.Studio.0.408.0.exe",
       "OPRN.Studio-0.408.0.AppImage",
     ]);
   });
 
+  it("설치판이 빠진 릴리스(v0.418.0 까지의 portable 만)는 불통과 — README 기본 단추가 404 가 된다", () => {
+    const assets = ["OPRN.Studio-windows.exe", "OPRN.Studio-linux.AppImage", "OPRN.Studio.0.418.0.exe", "OPRN.Studio-0.418.0.AppImage"].map(
+      (name) => ({ name, size: 1_000_000_000 }),
+    );
+    expect(checkDesktopAssets("0.418.0", assets)).toEqual({ ok: false, missing: ["OPRN.Studio-windows-setup.exe", "OPRN.Studio-Setup-0.418.0.exe"], empty: [] });
+  });
+
   it("윈도우 zip 은 요구하지 않는다 — zip 없이 exe·AppImage 만 있는 릴리스가 통과해야 한다", () => {
-    const assets = ["OPRN.Studio-windows.exe", "OPRN.Studio-linux.AppImage", "OPRN.Studio.0.417.0.exe", "OPRN.Studio-0.417.0.AppImage"].map(
+    const assets = ["OPRN.Studio-windows-setup.exe", "OPRN.Studio-windows.exe", "OPRN.Studio-linux.AppImage", "OPRN.Studio-Setup-0.417.0.exe", "OPRN.Studio.0.417.0.exe", "OPRN.Studio-0.417.0.AppImage"].map(
       (name) => ({ name, size: 1_000_000_000 }),
     );
     expect(checkDesktopAssets("0.417.0", assets)).toEqual({ ok: true, missing: [], empty: [] });
@@ -38,7 +47,7 @@ describe("checkDesktopAssets", () => {
   it("자산이 0개인 릴리스는 불통과 — 이것이 v0.408.0 이 latest 가 된 상태다", () => {
     const result = checkDesktopAssets("0.408.0", []);
     expect(result.ok).toBe(false);
-    expect(result.missing).toHaveLength(4);
+    expect(result.missing).toHaveLength(6);
     expect(result.empty).toEqual([]);
   });
 
@@ -65,7 +74,7 @@ describe("checkDesktopAssets", () => {
   it("옛 버전 이름만 있으면(다른 릴리스 자산) 이 버전은 불통과", () => {
     const result = checkDesktopAssets("0.408.0", full("0.407.0"));
     expect(result.ok).toBe(false);
-    expect(result.missing).toHaveLength(2);
+    expect(result.missing).toHaveLength(3);
   });
 });
 

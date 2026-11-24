@@ -8,7 +8,7 @@
 
 [English](README.md) · **中文** · [日本語](README.ja.md) · [한국어](README.ko.md)
 
-[![Windows 下载 (EXE)](https://img.shields.io/badge/Windows-%E4%B8%8B%E8%BD%BD%20EXE-2563eb?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.exe)
+[![Windows 下载 (EXE)](https://img.shields.io/badge/Windows-%E4%B8%8B%E8%BD%BD%20EXE-2563eb?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows-setup.exe)
 [![Linux 下载 (AppImage)](https://img.shields.io/badge/Linux-%E4%B8%8B%E8%BD%BD%20AppImage-eab308?style=for-the-badge&logo=linux&logoColor=black)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-linux.AppImage)
 
 [![试玩演示](https://img.shields.io/badge/%E8%AF%95%E7%8E%A9%E6%BC%94%E7%A4%BA-play.openrpgmaker.com-10b981)](https://play.openrpgmaker.com/?lang=zh)
@@ -147,7 +147,7 @@
 
 Windows 和 Linux 桌面版附在每个[发布](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases)里。顶部的按钮会下载最新版本。
 
-- **Windows** —— 运行 EXE 即可，无需安装；首次启动会自解压，稍慢。
+- **Windows** —— 运行安装程序(`OPRN.Studio-windows-setup.exe`)。无需管理员权限，只为当前用户安装，装完直接打开应用，之后启动很快。也提供免安装的[便携版 EXE](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.exe)，但每次启动都要自解压，打开慢得多。
 - **Linux** —— 用 `chmod +x` 给 AppImage 加上执行权限，然后运行。
 - **macOS** —— 暂无安装包，请使用下面的源码命令。
 

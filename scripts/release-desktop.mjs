@@ -99,9 +99,10 @@ function deliverWindowsExe(exePath) {
 
 function hasDesktop(names) {
   const appImage = names.some((name) => name.endsWith(".AppImage"));
-  // 단일 exe(portable)가 유일한 윈도우 산출물이다 — 없으면 다음 실행이 다시 빌드한다.
-  const winExe = names.some((name) => name.endsWith(".exe"));
-  return appImage && winExe;
+  // 윈도우는 설치판(OPRN.Studio-Setup-*.exe)과 portable exe 둘이다 — 하나라도 없으면 다음 실행이 다시 빌드한다.
+  const setup = names.some((name) => /^OPRN\.Studio-Setup-.*\.exe$/.test(name));
+  const portable = names.some((name) => name.endsWith(".exe") && !/^OPRN\.Studio-Setup-/.test(name));
+  return appImage && setup && portable;
 }
 
 if (process.env.OPRN_DESKTOP_LOCAL !== "1") {
@@ -158,7 +159,7 @@ try {
   writeFileSync(join(homedir(), ".cache/electron-builder/package.json"), "{\"type\":\"commonjs\"}\n");
   execFileSync(
     "npx",
-    ["electron-builder", "--config", "scripts/electron-builder.config.mjs", "--linux", "AppImage", "--win", "portable", "--x64"],
+    ["electron-builder", "--config", "scripts/electron-builder.config.mjs", "--linux", "AppImage", "--win", "nsis", "portable", "--x64"],
     { cwd: buildDir, stdio: "inherit", env },
   );
 
@@ -166,12 +167,13 @@ try {
   const files = readdirSync(outDir)
     .filter((name) => name.endsWith(".AppImage") || name.endsWith(".exe"))
     .map((name) => join(outDir, name));
-  const missing = [".AppImage", ".exe"].filter((need) => !files.some((file) => file.includes(need)));
+  const missing = [".AppImage", "OPRN.Studio-Setup-", ".exe"].filter((need) => !files.some((file) => file.includes(need)));
   if (missing.length) throw new Error(`산출물이 부족합니다(${missing.join(", ")}): ${files.join(", ") || "(없음)"}`);
 
   // README 의 /releases/latest/download/ 주소는 버전 없는 이름을 본다.
   const stableName = (file) => {
     if (file.endsWith(".AppImage")) return "OPRN.Studio-linux.AppImage";
+    if (/OPRN\.Studio-Setup-[^/]*\.exe$/.test(file)) return "OPRN.Studio-windows-setup.exe";
     return "OPRN.Studio-windows.exe";
   };
   const stable = [];
@@ -192,7 +194,7 @@ try {
   }
   if (process.env.OPRN_DESKTOP_NO_PUBLISH !== "1") {
     run("gh", ["release", "edit", tag, "--draft=false"]);
-    console.log(`[release-desktop] ${tag} 자산 4개 검증 후 발행`);
+    console.log(`[release-desktop] ${tag} 자산 6개 검증 후 발행`);
   }
 
   if (dropDir) {
@@ -203,7 +205,8 @@ try {
     console.log(`[release-desktop] Windows 가 가져갈 파일: ${dropDir}`);
   }
 
-  const winExe = files.find((file) => file.endsWith(".exe"));
+  // 원격 PC 전달은 바로 켜 볼 수 있는 portable 을 보낸다(설치판은 설치 단계가 있다).
+  const winExe = files.find((file) => file.endsWith(".exe") && !/OPRN\.Studio-Setup-[^/]*\.exe$/.test(file));
   if (deliverHost && winExe) {
     try {
       deliverWindowsExe(winExe);

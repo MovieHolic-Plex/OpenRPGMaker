@@ -1,6 +1,11 @@
 name: desktop-release
 
-# 정식 vX.Y.Z 릴리스의 AppImage·윈도우 portable exe 를 mdc2 에서 만든다.
+# 정식 vX.Y.Z 릴리스의 AppImage·윈도우 설치판(NSIS)·portable exe 를 mdc2 에서 만든다.
+#
+# 윈도우 기본 다운로드를 설치판으로 (2026-11-24, qa1124 항목 1): portable 은 실행할 때마다 1.89GB 를
+# 풀어 아이콘을 눌러도 30초 넘게 아무것도 안 뗴다. 설치판은 설치 때 한 번만 푼다. README 의 윈도우 단추는
+# OPRN.Studio-windows-setup.exe, 옛 고정 이름 OPRN.Studio-windows.exe 는 portable 로 남겨 옛 링크가 안 깨진다.
+# 자산 검사는 4개 → 6개다. 자동 업데이트는 없다(publish: null) — latest.yml 을 만들지 않는다.
 # 윈도우 패키지도 wine 없이 리눅스에서 만든다(electron-builder 가 makensis 를 받는다).
 #
 # 윈도우 zip 을 뺐다 (2026-11-23, app-size): zip 과 portable exe 가 둘 다 무설치 실행이라 같은 앱을
@@ -37,6 +42,11 @@ on:
         description: 빌드할 커밋(비우면 태그 자체). 자산이 빈 기존 릴리스를 고칠 때 main 을 준다.
         required: false
         type: string
+      dry_run:
+        description: 만들기만 하고 올리지·발행하지 않는다(패키지 형식·크기 확인용). 브랜치에서 배포 형식을 바꿀 때 머지 전에 한 번 돌린다.
+        required: false
+        type: boolean
+        default: false
   schedule:
     - cron: '*/30 * * * *'
 
@@ -75,7 +85,7 @@ jobs:
             # 스케줄: 자산이 모자란 가장 새 vX.Y.Z 릴리스(초안 포함). 없으면 할 일이 없다.
             tag="$(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=30" --jq '
               [ .[] | select(.tag_name | test("^v[0-9]+\\.[0-9]+\\.[0-9]+$"))
-                    | select(.draft or ((.assets | map(select((.size // 0) > 0)) | length) < 4)) ]
+                    | select(.draft or ((.assets | map(select((.size // 0) > 0)) | length) < 6)) ]
               | sort_by(.tag_name | sub("^v"; "") | split(".") | map(tonumber))
               | last | .tag_name // ""')"
           fi
@@ -117,6 +127,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.target.outputs.tag }}
+          DRY_RUN: ${{ inputs.dry_run && 'true' || 'false' }}
         run: |
           set -euo pipefail
           # releases/tags/{tag} 는 초안에 404 를 준다(2026-11-08 v0.410.0 실측) — 초안을 찾으려면 목록에서 고른다.
@@ -126,12 +137,15 @@ jobs:
           version="${TAG#v}"
           missing="$(printf '%s' "$json" | jq -r --arg v "$version" '
             (.assets // []) as $a
-            | ["OPRN.Studio-windows.exe","OPRN.Studio-linux.AppImage",
-               "OPRN.Studio.\($v).exe","OPRN.Studio-\($v).AppImage"]
+            | ["OPRN.Studio-windows-setup.exe","OPRN.Studio-windows.exe","OPRN.Studio-linux.AppImage",
+               "OPRN.Studio-Setup-\($v).exe","OPRN.Studio.\($v).exe","OPRN.Studio-\($v).AppImage"]
             | map(select(. as $n | ($a | map(select(.name == $n and (.size // 0) > 0)) | length) == 0))
             | join(" ")')"
-          if [[ -z "$missing" ]]; then
-            echo "$TAG 은 자산 4개가 모두 있다 — 빌드를 건너뛴다"
+          if [[ "$DRY_RUN" == "true" ]]; then
+            echo "시험 빌드(dry_run) — 자산과 상관없이 만들기만 한다. 올리기·발행은 건너뛴다."
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+          elif [[ -z "$missing" ]]; then
+            echo "$TAG 은 자산 6개가 모두 있다 — 빌드를 건너뛴다"
             echo "needed=false" >> "$GITHUB_OUTPUT"
           else
             echo "$TAG 에 없는/빈 자산: $missing"
@@ -258,10 +272,32 @@ jobs:
           chmod +x "$wrapper"
           ELECTRON_BUILDER_7ZIP_PATH="$wrapper" npx --no-install electron-builder \
             --config scripts/electron-builder.config.mjs --publish never \
-            --linux AppImage --win portable --x64
+            --linux AppImage --win nsis portable --x64 \
+            '-c.nsis.artifactName=OPRN.Studio-Setup-${version}.${ext}'
+
+      # 시험 빌드는 여기서 끝난다: 형식(설치판은 NSIS 설치기, portable 은 스플래시를 품은 자기 해제 exe)과 크기를 남긴다.
+      - name: 시험 빌드 산출물 보고
+        if: steps.preflight.outputs.needed == 'true' && inputs.dry_run
+        run: |
+          set -euo pipefail
+          out=dist-packages
+          ls -l "$out"/*.AppImage "$out"/*.exe
+          setup=( "$out"/OPRN.Studio-Setup-*.exe )
+          portable=( "$out"/*.exe )
+          test -s "${setup[0]}"
+          test "${#portable[@]}" -eq 2
+          sevenzip=$(command -v 7zz || command -v 7z || command -v 7za || true)
+          if [[ -z "$sevenzip" ]]; then
+            sevenzip=$(node -e 'require("app-builder-lib/out/toolsets/7zip").getPath7za().then(file => process.stdout.write(file))')
+          fi
+          for f in "$out"/*.exe; do
+            echo "== $(basename "$f") $(stat -c %s "$f") bytes"
+            # 두 exe 모두 NSIS 자기 해제 파일이다. 포함된 항목으로 설치기인지(제거 프로그램 있음)·portable 인지 가른다.
+            "$sevenzip" l "$f" | grep -E 'app-64\.7z|Uninstall|splash\.bmp|\.nsi' || true
+          done
 
       - name: 릴리스 자산 업로드
-        if: steps.preflight.outputs.needed == 'true'
+        if: steps.preflight.outputs.needed == 'true' && !inputs.dry_run
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.target.outputs.tag }}
@@ -278,13 +314,15 @@ jobs:
             fi
             files+=("$f")
           done
-          test "${#files[@]}" -eq 2
+          test "${#files[@]}" -eq 3
           printf '%s\n' "${files[@]}" | grep -q 'AppImage'
-          printf '%s\n' "${files[@]}" | grep -q '\.exe'
+          printf '%s\n' "${files[@]}" | grep -q 'OPRN.Studio-Setup-.*\.exe'
+          test "$(printf '%s\n' "${files[@]}" | grep -c '\.exe$')" -eq 2
           stable=()
           for f in "${files[@]}"; do
             base="$(basename "$f")"
             if [[ "$base" == *.AppImage ]]; then alias="OPRN.Studio-linux.AppImage"
+            elif [[ "$base" == OPRN.Studio-Setup-*.exe ]]; then alias="OPRN.Studio-windows-setup.exe"
             else alias="OPRN.Studio-windows.exe"
             fi
             ln -f -- "$f" "$out/$alias"
@@ -297,7 +335,7 @@ jobs:
       # 이름·크기를 한 번 더 읽어 확인한다. 발행은 그 뒤에만. 검증에 실패하면 스텝이 실패해
       # 릴리스는 초안으로 남고 latest 는 이전 정상 릴리스를 계속 가리킨다.
       - name: 자산 검증 후 발행
-        if: steps.preflight.outputs.needed == 'true' || steps.preflight.outputs.draft == 'true'
+        if: (steps.preflight.outputs.needed == 'true' || steps.preflight.outputs.draft == 'true') && !inputs.dry_run
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.target.outputs.tag }}
@@ -309,8 +347,8 @@ jobs:
           if [[ -z "$json" ]]; then echo "::error::$TAG 릴리스를 찾지 못함"; exit 1; fi
           report="$(printf '%s' "$json" | jq -r --arg v "$version" '
             (.assets // []) as $a
-            | ["OPRN.Studio-windows.exe","OPRN.Studio-linux.AppImage",
-               "OPRN.Studio.\($v).exe","OPRN.Studio-\($v).AppImage"]
+            | ["OPRN.Studio-windows-setup.exe","OPRN.Studio-windows.exe","OPRN.Studio-linux.AppImage",
+               "OPRN.Studio-Setup-\($v).exe","OPRN.Studio.\($v).exe","OPRN.Studio-\($v).AppImage"]
             | map(. as $n | { name: $n, size: (($a | map(select(.name == $n)) | first | .size) // 0) })')"
           echo "$report" | jq -r '.[] | "  \(.name): \(.size) bytes"'
           bad="$(echo "$report" | jq -r '[.[] | select(.size <= 0) | .name] | join(" ")')"
@@ -347,12 +385,12 @@ jobs:
 
       # 다운로드가 실제로 되는지 마지막으로 확인한다 — 이 링크가 README 의 주소다.
       - name: latest 다운로드 확인
-        if: steps.preflight.outputs.needed == 'true' || steps.preflight.outputs.draft == 'true'
+        if: (steps.preflight.outputs.needed == 'true' || steps.preflight.outputs.draft == 'true') && !inputs.dry_run
         env:
           TAG: ${{ steps.target.outputs.tag }}
         run: |
           set -euo pipefail
-          for name in OPRN.Studio-windows.exe OPRN.Studio-linux.AppImage; do
+          for name in OPRN.Studio-windows-setup.exe OPRN.Studio-windows.exe OPRN.Studio-linux.AppImage; do
             code="$(curl -sIL -o /dev/null -w '%{http_code}' "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG/$name")"
             len="$(curl -sIL "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG/$name" | grep -i '^content-length' | tail -1 | tr -d '\r' | awk '{print $2}')"
             echo "$name HTTP=$code Content-Length=${len:-0}"

@@ -8,7 +8,7 @@
 
 [English](README.md) · [中文](README.zh-CN.md) · [日本語](README.ja.md) · **한국어**
 
-[![Windows 다운로드 (EXE)](https://img.shields.io/badge/Windows-%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C%20EXE-2563eb?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.exe)
+[![Windows 다운로드 (EXE)](https://img.shields.io/badge/Windows-%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C%20EXE-2563eb?style=for-the-badge&logo=windows&logoColor=white)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows-setup.exe)
 [![Linux 다운로드 (AppImage)](https://img.shields.io/badge/Linux-%EB%8B%A4%EC%9A%B4%EB%A1%9C%EB%93%9C%20AppImage-eab308?style=for-the-badge&logo=linux&logoColor=black)](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-linux.AppImage)
 
 [![데모 플레이](https://img.shields.io/badge/%EB%8D%B0%EB%AA%A8%20%ED%94%8C%EB%A0%88%EC%9D%B4-play.openrpgmaker.com-10b981)](https://play.openrpgmaker.com/?lang=ko)
@@ -147,7 +147,7 @@
 
 Windows·Linux 데스크톱 빌드는 [릴리스](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases)마다 붙어 있습니다. 맨 위 버튼은 가장 새 빌드를 받습니다.
 
-- **Windows** — EXE를 실행하세요. 설치가 필요 없고, 첫 실행은 스스로 압축을 풀어 조금 느립니다.
+- **Windows** — 설치 파일(`OPRN.Studio-windows-setup.exe`)을 실행하세요. 관리자 권한 없이 내 계정에만 설치하고 바로 앱을 엽니다. 그다음부터는 바로 켜집니다. 설치 없는 [포터블 EXE](https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/OPRN.Studio-windows.exe)도 있지만, 켤 때마다 스스로 압축을 풀어 훨씬 늦게 열립니다.
 - **Linux** — AppImage에 `chmod +x` 로 실행 권한을 준 뒤 실행하세요.
 - **macOS** — 아직 설치 파일이 없습니다. 아래 소스 명령을 쓰세요.
 
