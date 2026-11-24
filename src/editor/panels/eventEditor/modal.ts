@@ -706,6 +706,11 @@ function renderModalHeader(
         children: [
           eventSmallTask(mapId, eventId),
           applyButton,
+          // 초보 창은 머리줄 「?」를 숨긴다(editor-chrome.css). 도움말의 길은 여기 하나가 남는다.
+          footerButton("도움말", "event-editor-help-more", () => {
+            headerMore.open = false;
+            openEventEditorHelp();
+          }, false, "ghost"),
           el("div", {
             class: "event-editor-window-controls",
             attrs: { role: "group", "aria-label": "이벤트 편집 창" },

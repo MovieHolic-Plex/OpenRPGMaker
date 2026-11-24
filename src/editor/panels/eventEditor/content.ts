@@ -912,7 +912,8 @@ function renderCommandToolbar(options: CommandToolbarOptions): CommandToolbar {
 function renderCommandAuxGroup(aiDock?: HTMLDetailsElement): HTMLElement {
   // AI 도크는 팝오버 밖에 살므로 도구 메뉴를 열지 않고 자기만 토글한다.
   // aria-expanded 는 도크의 toggle 이 단일 진상이다 — Escape 나 재렌더 로 닫혀도 어긋나지 않는다.
-  const aiButton = aiDock ? toolbarButton("spark", "조수로 명령 만들기", "event-command-quick-ai") : null;
+  // 초보 창에서도 보이는 조수 입구다(오너 흐름: 말로 시키기). 누르면 이 페이지 맥락의 조수 도크가 열린다.
+  const aiButton = aiDock ? toolbarButton("spark", "이 이벤트를 말로 고치기", "event-command-quick-ai") : null;
   if (aiDock && aiButton) {
     // 좁은 칼럼에서 라벨 대신 보이는 짧은 이름(command-list-4.css ::after). CSS 글자는 번역기가 못 보므로 여기서 번역한다.
     aiButton.dataset.shortLabel = t("조수");
@@ -1179,7 +1180,7 @@ function renderEmptyCommandLine(
         class: "event-command-empty-copy",
         children: [
           el("strong", { text: "이 이벤트는 아직 비어 있습니다." }),
-          el("span", { text: "시작 유형을 고르거나 명령 검색으로 직접 구성하세요." }),
+          el("span", { text: "틀을 고르거나, 「이 이벤트를 말로 고치기」에 하고 싶은 일을 적으세요." }),
         ],
       }),
       el("div", {

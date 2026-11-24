@@ -236,8 +236,27 @@
 .event-editor.is-beginner .event-editor-command-edit-menu,
 .event-editor.is-beginner .event-editor-command-tools-menu,
 .event-editor.is-beginner .event-view-toggle,
-.event-editor.is-beginner .event-editor-command-aux-group,
-.event-editor.is-beginner .event-editor-preview-toggle {
+.event-editor.is-beginner .event-editor-preview-toggle,
+.event-editor.is-beginner [data-testid="evt-page-add"],
+.event-editor.is-beginner [data-testid="event-page-more"],
+.event-editor.is-beginner [data-testid="event-command-empty-line"],
+.event-editor.is-beginner [data-testid="event-template-treasure-chest"],
+.event-editor.is-beginner [data-testid="event-template-shop"],
+.event-editor.is-beginner [data-testid="event-template-battle"],
+.event-editor.is-beginner [data-testid="event-template-scene"],
+.event-editor.is-beginner [data-testid="event-template-memory-opening"],
+.event-editor.is-beginner [data-testid="event-template-empty-search"] {
+  display: none;
+}
+
+/*
+ * 초보 창의 틀은 「이름 · 테스트 · ⋯ · 닫기 / 모습 · 시작 방식 / 명령 · 말로 고치기 / 저장」만 남긴다.
+ * 취소는 닫기(X)와 같은 일이고, 도움말은 ⋯ 안에 있으며, 안내만 있는 종은 고칠 것이 없다는 뜻이다.
+ * 고급을 펴면 전부 돌아온다(코드·testid 는 그대로).
+ */
+.event-editor-modal-window:has(.event-editor.is-beginner) [data-testid="event-editor-cancel"],
+.event-editor-modal-window:has(.event-editor.is-beginner) [data-testid="event-editor-help"],
+.event-editor-modal-window:has(.event-editor.is-beginner) [data-testid="event-draft-validation"][data-severity="info"] {
   display: none;
 }
 
@@ -246,7 +265,9 @@
 .event-editor-modal-window .event-editor.is-beginner .presence,
 .event-editor-modal-window .event-editor.is-beginner [data-testid="event-classic-name"],
 .event-editor-modal-window .event-editor.is-beginner [data-testid="event-page-fact-overlap"],
-.event-editor-modal-window .event-editor.is-beginner [data-testid="event-page-safety-warning"] {
+.event-editor-modal-window .event-editor.is-beginner [data-testid="event-page-safety-warning"],
+.event-editor-modal-window .event-editor.is-beginner .event-editor-settings-accordion-body .event-graphic-control > .db-field:has([data-testid="event-page-appearance-select"], [data-custom-select-for="event-page-appearance-select"]),
+.event-editor-modal-window .event-editor.is-beginner .event-editor-settings-accordion-body .event-graphic-transparent {
   display: none;
 }
 
