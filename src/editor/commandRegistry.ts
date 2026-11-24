@@ -22,6 +22,7 @@ import { toggleLocationLayer } from "@/editor/mapLocationLayerState";
 import { toggleMapBackgroundPreview } from "@/editor/mapBackgroundPreviewState";
 import { OPEN_AUTHORING_JOURNEY_EVENT } from "@/editor/panels/authoringJourneyStrip";
 import { OPEN_AI_SUGGESTIONS_EVENT } from "@/editor/panels/aiSuggestionPeek";
+import { requestDraftOverview } from "@/editor/panels/draftOverviewEvents";
 import { openMapEventSearchModal } from "@/editor/panels/mapEventSearchModal";
 import { openResourceModal } from "@/editor/panels/resourceModal";
 import { openWorldCodexPanel, openWorldPanel } from "@/editor/panels/worldEntries";
@@ -200,6 +201,13 @@ const CANVAS_MOVED_COMMANDS: readonly EditorCommand[] = [
     category: "화면",
     keywords: ["journey", "progress", "저작 진행", "여정", "단계", "진행"],
     run: () => { window.dispatchEvent(new CustomEvent(OPEN_AUTHORING_JOURNEY_EVENT)); },
+  },
+  {
+    id: "draft-overview-open",
+    label: "AI: 초안 한 장 보기",
+    category: "화면",
+    keywords: ["draft", "overview", "mvp", "초안", "한 장", "세계", "인물", "주인공", "동료"],
+    run: () => requestDraftOverview(),
   },
   {
     id: "ai-suggestion-peek",

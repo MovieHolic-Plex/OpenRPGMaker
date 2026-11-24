@@ -29,6 +29,8 @@ export interface AiRunStreamOptions {
   readonly team?: boolean;
   /** 이 턴이 빈 프로젝트의 첫 MVP 생성이다 — 끝 화면이 «MVP까지 만들었어요» 다. */
   readonly firstMvp?: boolean;
+  /** 첫 MVP 끝 카드의 «초안 한 장 보기» 링크. */
+  readonly onDraftView?: () => void;
   readonly mapName?: (mapId: string) => string | undefined;
   readonly onPreview?: (mapId: string) => void;
   /** 한 번 그리는 데 든 시간(ms) — 프레임 예산 계측용. */
@@ -178,7 +180,10 @@ export function createAiRunStream(options: AiRunStreamOptions): AiRunStream {
     const head = !snap.outcome.ok ? (snap.outcome.stoppedEarly ? `도중에 멈췄어요 · ${snap.outcome.stoppedEarly}` : "끝내지 못했어요")
       : options.firstMvp ? "MVP까지 만들었어요" : "끝났어요";
     end.classList.toggle("is-failed", !snap.outcome.ok);
-    end.replaceChildren(el("strong", { text: head }), el("span", { text: `맵 ${snap.outcome.changedMaps}장 바뀜 · 도구 ${snap.outcome.tools}번 · ${spent}` }));
+    const draftLink = snap.outcome.ok && options.firstMvp && options.onDraftView
+      ? [el("button", { class: "ai-run-stream-draft-link", text: "초안 한 장 보기", attrs: { type: "button" }, dataset: { testid: "ai-run-stream-draft-link" }, on: { click: () => options.onDraftView?.() } })]
+      : [];
+    end.replaceChildren(el("strong", { text: head }), el("span", { text: `맵 ${snap.outcome.changedMaps}장 바뀜 · 도구 ${snap.outcome.tools}번 · ${spent}` }), ...draftLink);
   };
 
   const paint = (): void => {
