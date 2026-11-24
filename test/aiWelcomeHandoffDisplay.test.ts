@@ -76,6 +76,8 @@ async function waitForTurn(before: number): Promise<void> {
 describe("첫 화면 핸드오프 — 보이는 문장과 보낸 지시문", () => {
   it("자동 전송은 말풍선에 사용자 문장만 남기고, 모델에는 전체 지시문을 보내며, 입력창을 더럽히지 않는다", async () => {
     // Break: 보이는 문장을 따로 싣지 않으면 말풍선이 「사용자 의도: …」 로 시작하고 입력창에 꼬리 줄이 남는다.
+    // 의도 분류 모델은 v1 경로만 부른다 — v2(기본, #4973)는 단일 실행에서 분류를 건너뛴다. 분류 재료를 보려고 되돌리는 길(저장값 "0")로 연다.
+    localStorage.setItem("oprn:assistant-v2", "0");
     const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
     const full = buildWelcomeFreeTextPrompt(INTENT);
     expect(sendAiBootIntent(full, welcomeFreeTextDisplayText(INTENT))).toBe(true);

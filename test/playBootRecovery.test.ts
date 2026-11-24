@@ -14,6 +14,8 @@ vi.mock("@/player/audio", () => ({
   getAudioEngine: vi.fn(() => ({ setQaInstrumentation: vi.fn(), unlock: vi.fn() })),
   playAudioCommand: vi.fn(),
   stopAudioCommand: vi.fn(),
+  // 테스트 플레이 창은 BGM 재생 실패를 구독한다(#4971) — 구독 해제 함수만 돌려준다.
+  subscribeAudioFailures: vi.fn(() => () => undefined),
 }));
 vi.mock("@/player/runtimeDebugPanel", () => ({
   renderRuntimeDebugPanel: () => document.createElement("div"),

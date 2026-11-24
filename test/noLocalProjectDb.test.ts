@@ -34,6 +34,7 @@ const deviceCacheFiles: ReadonlySet<string> = new Set([
   "src/project/sharedContentCache.ts", // shared-content response cache (ETag + parsed snapshot)
   "src/editor/terrainStampLibrary.ts", // per-device terrain stamp library (oprn-terrain-library), shared across projects
   "src/editor/workshop/queue/jobStore.ts", // workshop job queue oprn-workshop-jobs (#3212)
+  "src/editor/thumbCache/index.ts", // thumbnail image cache keyed by content hash + LRU (#4979), redrawn on miss
 ]);
 
 const forbiddenRuntimePatterns = [

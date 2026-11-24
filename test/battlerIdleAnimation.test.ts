@@ -169,7 +169,8 @@ describe("배틀러 idle 애니메이션 — 적 배틀러(<img> 유지)", () =>
     const golem = field.querySelector<HTMLElement>('[data-record-id="enemy_stone_golem"] .battle-enemy-image');
     expect(golem).toBeTruthy();
     expect(golem?.tagName).toBe("IMG");
-    expect((golem as HTMLImageElement).getAttribute("src")).toContain("pixel-enemy-portraits/golem.png");
+    // 새 프로젝트 기본 돌 골렘은 현행 종 golem_stone 그림을 쓴다(#4984 currentMonsterStandIns).
+    expect((golem as HTMLImageElement).getAttribute("src")).toContain("pixel-enemy-portraits/golem-stone.png");
     expect((golem as HTMLImageElement).getAttribute("src")).not.toContain("/idle/");
     expect(golem?.dataset.battlerAnim).toBeUndefined();
     expect(golem?.style.getPropertyValue("--battler-anim-url")).toBe("");
