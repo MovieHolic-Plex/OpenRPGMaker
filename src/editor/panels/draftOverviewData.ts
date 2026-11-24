@@ -53,6 +53,12 @@ const ROLE_LABEL: Record<DraftPersonKind, string> = { hero: "주인공", compani
 
 const text = (value: unknown): string => (typeof value === "string" ? value.replace(/\s+/gu, " ").trim() : "");
 
+/** 별명 · 직업 — 엔진 자리표시 별명 «없음»은 빼고, 별명과 직업이 같은 낱말이면 한 번만. */
+function subLine(nickname: unknown, className: unknown): string {
+  const parts = [text(nickname), text(className)].filter((part) => part && part !== "없음");
+  return [...new Set(parts)].join(" · ");
+}
+
 function readWorld(project: Project): DraftWorldCard | null {
   const canon = project.worldCanon;
   const blueprint = project.gameBlueprint;
@@ -102,7 +108,7 @@ function readPeople(project: Project): DraftPersonCard[] {
     const className = classes.find((record) => record.id === actor.classId)?.name ?? "";
     cards.push({
       key: actor.id, kind, roleLabel: ROLE_LABEL[kind], name: text(actor.name) || actor.id,
-      sub: [text(actor.nickname), text(className)].filter(Boolean).join(" · "),
+      sub: subLine(actor.nickname, className),
       bio: text(profiles[actor.id]?.note), faceResourceId: actor.faceResourceId ?? "",
     });
   });
@@ -116,7 +122,7 @@ function readPeople(project: Project): DraftPersonCard[] {
     const className = classes.find((record) => record.id === actor.classId)?.name ?? "";
     cards.push({
       key: actor.id, kind: "companion", roleLabel: ROLE_LABEL.companion, name: text(profile?.displayName) || text(actor.name) || actor.id,
-      sub: [text(actor.nickname), text(className)].filter(Boolean).join(" · "),
+      sub: subLine(actor.nickname, className),
       bio: text(profile?.note), faceResourceId: actor.faceResourceId ?? "",
     });
   }

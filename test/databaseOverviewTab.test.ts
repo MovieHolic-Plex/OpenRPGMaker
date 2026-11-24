@@ -249,7 +249,10 @@ describe("draft overview reader", () => {
     const project = createBlankProject();
     const base = project.database.actors[0]!;
     const ids = ["actor_hero_x", "actor_cast_1", "actor_cast_2", "actor_cast_3", "actor_cast_4"];
-    project.database.actors.push(...ids.map((id) => ({ ...base, id, name: id })));
+    const className = project.database.classes.find((record) => record.id === base.classId)!.name;
+    // 엔진 자리표시 별명 «없음»은 빼고, 별명 = 직업 이름이면 한 번만.
+    const nicknames: Record<string, string> = { actor_cast_1: className, actor_cast_2: "없음" };
+    project.database.actors.push(...ids.map((id) => ({ ...base, id, name: id, nickname: nicknames[id] ?? "" })));
     project.system.startActorIds = ["actor_hero_x"];
     project.characters = {
       actor_hero_x: { note: "주인공 소개" },
@@ -269,6 +272,7 @@ describe("draft overview reader", () => {
       ["companion", "actor_cast_3", "말없는 소년"],
       ["boss", "그림자", ""],
     ]);
+    expect(people.slice(1, 3).map((person) => person.sub)).toEqual([className, className]);
   });
 
   it("falls back to the blueprint title when the world canon is empty", async () => {
