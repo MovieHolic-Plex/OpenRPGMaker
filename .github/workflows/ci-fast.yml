@@ -11,8 +11,13 @@ name: ci-fast
 # 예측 불가다 — 실측으로 변경 6건이면 454파일 254초지만, 코어 모듈을 스치면 1,247파일로
 # 번져 30분을 넘긴다. 푸시 레인의 게이트로 쓸 수 없다. 로컬 반복용 도구로 남긴다.
 #
-# 같은 저장소의 푸시·PR 은 mdc2-fast, 포크 PR 과 pull_request_target 은 ubuntu-latest.
-# 포크 PR 워크플로는 저장소 설정에서 외부 기여자 전원 승인 필요(all_external_contributors)다.
+# 러너는 모두 GitHub 호스티드(ubuntu-latest)다 (2026-11-24, ci-github-offload).
+# 왜: mdc2 러너(18대)는 에이전트 레인·VM 과 메모리 251GB 를 나눠 쓴다. CI 가 몰리면 MemAvailable 20GB·load 200 까지
+# 가고 러너가 전부 offline 이 됐다(2026-11-24 12:09~12:56Z). 그 하루 mdc2 위 ci-fast 잡의 대기는 중앙 145~243초,
+# 최대 2,589초였고, 호스티드는 같은 기간 대기 p90 2초였다. 공개 저장소라 호스티드는 무료이고 분 제한이 없다.
+# 한도는 **동시 잡 20개**다(개인 계정, 2026-11-22T16:54Z 에 20 에서 막힌 것을 실측). 그래서 이 워크플로는
+# 푸시 한 번에 잡 4개(fast·fast-static·fast-parity 2샤드)만 쓴다 — ci-full 이 13개를 써도 PR 몫 7개가 남는다.
+# 포크 PR 도 같은 호스티드 러너·읽기 전용 토큰으로 돈다. mdc2 에는 포크 코드가 가지 않는다.
 
 on:
   push:
@@ -39,7 +44,7 @@ concurrency:
 # 독립적인 정적 검사를 fast-static 으로 떼어 병렬로 돌려 임계 경로를 약 100초 줄이는 구성이었다.
 #
 # 2026-11-19 실측(run 44483882406)에서 fast 는 6분 28초 걸렸고, parity 230초(가져오기 40%)·
-# 타입체크 44초·체크아웃 46초가 직렬이었다. `fast`(빌드)·`fast-parity` 4샤드·`fast-static` 은
+# 타입체크 44초·체크아웃 46초가 직렬이었다. `fast`(빌드)·`fast-parity` 2샤드·`fast-static` 은
 # 서로 기다리지 않고 병렬로 돈다. 같은 날 실측(run 44531254883, 44533700673, 44536145289):
 # ci-full 과 여러 PR 이 겹치면 4초짜리 집계 잡도 선행 잡 완료 뒤 101~733초 동안 러너를 기다렸다.
 # 집계를 머지 도우미에서 해 PR 한 판에 잡 6개만 실행하고, 마지막 러너 대기를 없앤다.
@@ -49,35 +54,11 @@ permissions:
 jobs:
   fast:
     name: fast
-    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2","mdc2-fast"]') || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - &mirror-origin
-        name: mdc2 미러 체크아웃 연결
-        if: runner.environment == 'self-hosted'
-        shell: bash
-        run: |
-          # 시작 훅이 미러를 origin 으로 복제한다. checkout 이 다른 저장소로
-          # 판단해 복제본을 삭제하지 않도록 공개 origin 주소만 맞춘다.
-          origin="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY"
-          if [[ -d .git ]] && git remote get-url origin >/dev/null 2>&1; then
-            git remote set-url origin "$origin"
-            # 예전 checkout 이 미러를 지운 러너에서도 로컬 Git 객체를 재사용한다.
-            # 미러를 읽기만 하고 각 작업공간의 alternates 만 갱신한다.
-            while IFS= read -r -d '' objects; do
-              mirror=${objects%/objects}
-              remote=$(git --git-dir="$mirror" config --get remote.origin.url || true)
-              if [[ "${remote%.git}" == "$origin" ]]; then
-                mkdir -p .git/objects/info
-                printf '%s\n' "$objects" > .git/objects/info/alternates
-                echo "mdc2 Git 미러 객체 재사용"
-                break
-              fi
-            done < <(find /opt/actions-runner/git-mirrors -maxdepth 4 -type d -name objects -print0 2>/dev/null)
-          fi
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          fetch-depth: 2   # PR 병합의 부모를 미러에 있는 협상 대상으로 유지한다.
           persist-credentials: false
 
       - uses: ./.github/actions/linux-ci
@@ -129,19 +110,20 @@ jobs:
       - name: 앱 빌드
         run: npm run build:app
 
+  # 샤드 둘인 이유 (2026-11-24): 호스티드 동시 잡 20개가 한도라 푸시마다 쓰는 잡 수가 곧 대기 시간이다.
+  # mdc2 4샤드는 샤드당 시험 79~141초였고, 호스티드 `fast`·`fast-static` 이 약 3분이다. 둘로 나눠도
+  # parity 는 그 임계 경로 안에 든다. parity 가 임계 경로가 되면 그때 샤드를 늘린다.
   fast-parity:
-    name: fast-parity (${{ matrix.shard }}/4)
-    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2","mdc2-fast"]') || 'ubuntu-latest' }}
+    name: fast-parity (${{ matrix.shard }}/2)
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4]
+        shard: [1, 2]
     steps:
-      - *mirror-origin
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          fetch-depth: 2
           persist-credentials: false
 
       - uses: ./.github/actions/linux-ci
@@ -149,20 +131,18 @@ jobs:
       # 에디터↔플레이어 데이터 왕복 계약. 9파일이라 바운드가 확실하다.
       # Node 환경의 Vitest 스위트라 고정 포트나 X 디스플레이를 쓰지 않는다.
       # vitest 내장 --shard 는 파일 경로의 SHA-1 해시로 정렬해 연속 구간으로 자른다.
-      # 분할은 결정적이고 네 샤드의 합집합이 test/parity 전체다(누락·중복 없음).
-      # 2026-11-19 기준 9파일은 3/2/2/2로 나뉜다. 샤드 수가 파일 수보다 많으면
-      # vitest 가 에러로 멈추므로 파일이 4개 미만이 되면 샤드 수를 줄인다.
-      # 공유 러너에서 겹쳐 도는 편집기 저장·로드 사례는 기본 15초를 넘길 수 있다.
-      - name: parity 스위트 (샤드 ${{ matrix.shard }}/4)
-        run: npm run test:parity -- --shard=${{ matrix.shard }}/4 --testTimeout=60000
+      # 분할은 결정적이고 두 샤드의 합집합이 test/parity 전체다(누락·중복 없음).
+      # 샤드 수가 파일 수보다 많으면 vitest 가 에러로 멈춘다.
+      # 겹쳐 도는 편집기 저장·로드 사례는 기본 15초를 넘길 수 있다.
+      - name: parity 스위트 (샤드 ${{ matrix.shard }}/2)
+        run: npm run test:parity -- --shard=${{ matrix.shard }}/2 --testTimeout=60000
 
   # 정적 검사 묶음. `fast`·`fast-parity` 와 **동시에** 돌고 서로를 기다리지 않는다(2026-11-08 의 100초 절감이 여기서 나온다).
   # 각 항목은 순수 함수/정적 분석이라 다른 단계의 산출물을 쓰지 않는다(러너도 따로다).
   fast-static:
-    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2","mdc2-fast"]') || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
-      - *mirror-origin
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 2   # jp_city 핀 검사가 HEAD~1 의 pins.json 과 비교한다

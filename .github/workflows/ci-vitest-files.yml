@@ -1,8 +1,7 @@
 name: ci-vitest-files
 
-# 지정한 vitest 파일만 mdc2-heavy 에서 돌린다 — 수동(workflow_dispatch) 전용.
-# `runs-on` 식은 포크 PR 과 pull_request_target 을
-# `||` 뒤의 GitHub 호스티드 러너(ubuntu-latest)로 보낸다.
+# 지정한 vitest 파일만 GitHub 호스티드(ubuntu-latest)에서 돌린다 — 수동(workflow_dispatch) 전용.
+# 2026-11-24 mdc2-heavy 에서 옮겼다(ci-github-offload): 하루 65판쯤 도는 무거운 잡이라 mdc2 메모리를 가장 많이 썼다.
 #
 # 왜 (2026-10-25): 테스트는 CI 에서만 돈다(로컬 vitest 는 금지). 그런데 ci-full 은 샤드 넷에 약 3시간 20분이 걸려
 # (run 40165485978), 실패 묶음 하나를 고친 뒤 그 파일 몇 개가 정말 통과하는지 보려고 ci-full 을 돌리면 하루에 몇 번 못 본다.
@@ -51,7 +50,7 @@ permissions:
 
 jobs:
   vitest:
-    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2","mdc2-heavy"]') || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
