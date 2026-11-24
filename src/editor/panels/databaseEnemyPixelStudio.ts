@@ -120,7 +120,10 @@ type StudioSession = {
  */
 const sessions = new Map<string, StudioSession>();
 
-/** 공방 패널. 적용하면 루트에 change 를 쏘아 스튜디오가 도트 미리보기 카드를 새로 그리게 한다. */
+/**
+ * 공방 패널. 적용하면 루트에 change 를 쏘아 스튜디오가 도트 미리보기 카드를 새로 그리게 한다.
+ * 기본으로 접힌 「고급」 안에 둔다(오너 2026-11-24: 사용자는 많은 버튼을 원하지 않는다). 같은 일을 하는 조수 도구는 그대로 열려 있다.
+ */
 export function renderEnemyPixelStudio(record: EnemyRecord): HTMLElement {
   const toggle = el("button", {
     class: "db-ws-btn db-pixel-studio-toggle",
@@ -331,5 +334,8 @@ export function renderEnemyPixelStudio(record: EnemyRecord): HTMLElement {
   }
 
   if (session.open) setOpen(true);
-  return root;
+  return el("details", {
+    class: "db-enemy-advanced",
+    children: [el("summary", { text: "고급" }), root],
+  });
 }
