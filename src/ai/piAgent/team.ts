@@ -12,6 +12,7 @@ import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
 import { splitIntentNote } from "./monsterGameRequest";
 import { hasPlayableSegmentSkeleton, playableSegmentContract } from "@/project/playableSegmentContract";
 import { GOAL_CAMPAIGN_MAP_BLUEPRINT, GOAL_MIN_MAPS, isGoalCampaignTask } from "./goalCommand";
+import { piVariation } from "./variationNote";
 
 /**
  * 프리셋 첫 생성의 범위. 2026-09-27 실측: 첫 생성에서 시공 팀원 하나가 170턴·입력 3,500만 토큰을 쓰고도 마을 검사를
@@ -24,6 +25,17 @@ function teamTaskLines(task: string): string[] {
     ...(notes ? [`시스템이 붙인 작업 지침(사용자 말이 아니다. 아래 사용자 지시와 어긋나면 사용자 지시가 이긴다):\n${notes}`] : []),
     `사용자 지시: ${own.trim() || task.trim()}`,
   ];
+}
+
+/**
+ * 첫 게임 하나의 «이 게임의 변주» 카드 — 맵·장소를 배정하는 팀장이 읽는다(팀원은 배정 task 로 받는다). 장르 프리셋 첫 생성도 포함한다.
+ * 사용자 말이 아닌 시스템 메모라 사용자 지시와 어긋나면 사용자 지시가 이긴다. 몬스터 수집·/goal 캠페인·빈 프로젝트가 아닌 요청에는 없다.
+ */
+function variationLines(project: Project, task: string, projectKey: string | undefined): string[] {
+  if (!projectKey?.trim() || isGoalCampaignTask(task)) return [];
+  const variation = piVariation(project, { projectKey, request: task, orchestrator: true });
+  if (!variation) return [];
+  return [`시스템 메모(사용자 말이 아니다. 아래 사용자 지시와 어긋나면 사용자 지시가 이긴다): ${variation.card} 맵 배정의 장소 역할은 이 카드의 장소를 따른다 — 첫 맵은 카드의 첫 장소이고(「시작 마을」 같은 기본 예시는 이 첫 장소로 바꿔 읽는다) 배정 task 에 짓는 길을 적는다.`];
 }
 
 export const PRESET_FIRST_BUILD_RULES = [
@@ -56,7 +68,7 @@ export interface PiTeamRole {
   /** 팀장처럼 소수 툴만 집어 쓸 때. */
   readonly toolNames?: readonly string[];
   readonly maxTurns: number;
-  systemPrompt(project: Project, mapIds: readonly string[], task: string, team?: PiTeamSpec, currentMapId?: string | null): string[];
+  systemPrompt(project: Project, mapIds: readonly string[], task: string, team?: PiTeamSpec, currentMapId?: string | null, projectKey?: string): string[];
 }
 
 export const ORCHESTRATOR_TOOL_NAMES = ["get_map_region", "get_database_records", "run_lint"] as const;
@@ -68,7 +80,7 @@ export const PI_TEAM_ROLES: Record<PiTeamRoleId, PiTeamRole> = {
     toolNames: [...ORCHESTRATOR_TOOL_NAMES],
     // 배정과 수령이 갈리면서 턴이 늘었다(assign → check/wait → review → 수정 → finish).
     maxTurns: 100,
-    systemPrompt(project, mapIds, task, team, currentMapId) {
+    systemPrompt(project, mapIds, task, team, currentMapId, projectKey) {
       const candidates = mapIds.length > 0
         ? ["이번 작업에 쓸 수 있는 맵:", ...describeScopedMaps(project, mapIds)]
         : ["프로젝트의 맵:", ...describeScopedMaps(project, Object.keys(project.maps))];
@@ -101,6 +113,7 @@ export const PI_TEAM_ROLES: Record<PiTeamRoleId, PiTeamRole> = {
         "6. 검수에서 문제가 나오면 assign_map_agent 로 수정 작업을 지시한다. 수정은 맵당 최대 2회이며, 업무 배정과는 예산이 따로다.",
         "7. 끝나면 finish 에 사람이 읽을 한 문단 보고를 적는다. 진행 중인 배정이 있으면 finish 가 거절하니 wait_agents 를 먼저 부른다. 사용자에게 되묻지 않는다.",
         // 사용자 말과 우리가 붙인 지침(캠페인 계약·체크리스트·장르 요령)을 갈라 싣는다 — 지침이 «사용자 지시»로 읽히면 안 된다(assistant-prompt-review F3).
+        ...variationLines(project, task, projectKey),
         ...teamTaskLines(task),
       ];
     },

@@ -18,7 +18,8 @@ import { MAKE_GAME_CARD, makeGameOn } from "../story/makeGame";
 import { BLUEPRINT_CARD, blueprintPin } from "../story/blueprint";
 import type { TodoStore } from "../loop/todoStore";
 import { isComposedWorld, worldCard } from "../place/world";
-import { worldForRequest } from "../request/world";
+import { gameVariation, worldForRequest } from "../request/world";
+import { variationCard } from "@/ai/variation/card";
 import { MUSIC_TIER, SOUND_TIER, fallenCard, storeCard } from "../request/toolGroups";
 import { leanPromptFor } from "../request/readers";
 import { classifyRequest, type RequestIntent } from "../request/intent";
@@ -82,5 +83,8 @@ export function buildV2SystemPrompt(project: Project, currentMapId?: string, tas
   const cards = lean ? smallJobCards(intent) : composed ? WORLD_CARDS : v2Cards(projectKey, task);
   // 청사진은 핵심 지시 바로 뒤에 박아 매 모델 차례가 대조하게 한다. 청사진 쓰는 법(카드)은 게임 하나를 짓는 턴과 장소를 짓는 턴에만 싣는다.
   const blueprintCard = intent.wholeGame || (!!project.gameBlueprint && !lean);
-  return [V2_CORE_PROMPT, ...carried, ...blueprintPin(project), "[Knowledge cards]", ...(blueprintCard ? [BLUEPRINT_CARD] : []), ...(world ? [worldCard(world)] : []), ...cards, ...conditionalCards(project, currentMapId, task, lean || composed, projectKey ?? ""), projectBrief(project, currentMapId)];
+  // 이 게임의 변주 — 첫 게임 하나를 짓는 턴에만(청사진이 있으면 장소는 이미 정해졌다). 세계 카드 바로 뒤.
+  const picked = intent.wholeGame ? gameVariation(project, projectKey, task).variation : undefined;
+  const variation = picked ? variationCard(picked, { lang: "en" }) : undefined;
+  return [V2_CORE_PROMPT, ...carried, ...blueprintPin(project), "[Knowledge cards]", ...(blueprintCard ? [BLUEPRINT_CARD] : []), ...(world ? [worldCard(world)] : []), ...(variation ? [variation] : []), ...cards, ...conditionalCards(project, currentMapId, task, lean || composed, projectKey ?? ""), projectBrief(project, currentMapId)];
 }

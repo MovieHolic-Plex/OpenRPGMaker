@@ -4,9 +4,40 @@ import type { Project } from "@/project/types";
 import { withoutIntentNote } from "@/ai/piAgent/monsterGameRequest";
 import { blueprintDesignerFromEnv } from "../shared/env";
 import { buildsWholeGame, oneProjectGame } from "./readers";
-import { pickWorld, worldOf, type WorldSetting } from "../place/world";
+import { WORLDS, pickWorld, worldOf, type WorldSetting } from "../place/world";
 import { isComposedWorld } from "../place/world";
 import { enforcingGenreLock, genreLockAllowsTileset } from "@/project/genreLock";
+import { isLivedMap } from "@/editor/tools/livedMap";
+import { hasThemeWord } from "@/ai/villageChipsetPool";
+import { isGenrePresetBriefRequest } from "@/ai/genrePresetBrief";
+import { pickVariation, type Variation } from "@/ai/variation/pick";
+import { fitsAnyWorld, MONSTER_WORDS } from "./genre";
+import { isFreshProject } from "./scope";
+
+/**
+ * 이 게임의 변주(장르 데크에서 씨앗으로 뽑은 장소·사건·분위기·구조) — 첫 게임 하나를 짓는 요청에만. 세계(칩셋)는 사용자 글이 정한 것이 이기고(«세계는 사용자 글로만», #4955),
+ * 아무것도 정해지지 않았을 때 변주의 첫 장소가 세계에 묶여 있으면 그 세계를 고른다(세계 고르기가 모험 낱말에만 열려 있어 회상·추리·감동이 100/100 세계 없음이던 것).
+ * v1(v1: true) 은 세계 카드가 없으니 사용자가 «말한» 세계만 장소 축을 거둔다(열쇠 풀로 고른 세계는 v1 지시문에 없다). preset: 장르 프리셋 첫 생성 요청도 게임 하나로 본다(팀장 지시문).
+ */
+export function gameVariation(project: Project, projectKey: string | undefined, task: string | undefined, options: { readonly v1?: boolean; readonly preset?: boolean } = {}): { readonly variation?: Variation; readonly world?: WorldSetting } {
+  const text = String(task ?? "");
+  if (project.gameBlueprint || !projectKey?.trim() || !isFreshProject(project)) return {};
+  const preset = isGenrePresetBriefRequest(text);
+  if (preset && !options.preset) return {};
+  if (!(buildsWholeGame(project, text) || (options.preset && preset)) || oneProjectGame(project, text) || blueprintDesignerFromEnv()) return {};
+  // 몬스터 수집·장르 잠금 게임은 정해진 길(몬스터 마을 빌더)이 있다 — 변주를 얹지 않는다.
+  if (MONSTER_WORDS.test(withoutIntentNote(text)) || enforcingGenreLock(project)) return {};
+  const words = worldRequestWords(text);
+  const have = WORLDS.filter((w) => project.tilesets[w.tilesetId]);
+  const lived = Object.values(project.maps).some((m) => isLivedMap(m));
+  const settled = options.v1 ? have.find((w) => w.named(words)) : pickWorld(project, projectKey, words);
+  const variation = pickVariation({
+    text: words, key: projectKey, allowedWorlds: settled || lived ? [] : have.map((w) => w.id),
+    worldFixed: !!settled, placeStated: (residual) => hasThemeWord(residual) || have.some((w) => w.named(words)), adventureOk: fitsAnyWorld(words),
+  });
+  const world = !settled && variation?.world ? have.find((w) => w.id === variation.world) : undefined;
+  return { ...(variation ? { variation } : {}), ...(world ? { world } : {}) };
+}
 
 export function worldForRequest(project: Project, projectKey: string | undefined, task: string | undefined): WorldSetting | undefined {
   if (project.gameBlueprint) return worldOf(project);
@@ -14,7 +45,7 @@ export function worldForRequest(project: Project, projectKey: string | undefined
   // 청사진 설계자(OPRN_V2_BLUEPRINT_DESIGNER)가 쓰는 청사진에는 장소 목록·세계가 없다 — 세계 카드와 build_places 를 내놓으면 지을 것이 없는 반쪽이 된다.
   // 프로젝트를 같이 본 판정을 쓴다 — 지은 것이 있는 프로젝트의 «…게임으로 만들어 줘» 는 고치기라 세계를 고르지 않는다.
   if (!buildsWholeGame(project, text) || oneProjectGame(project, text) || blueprintDesignerFromEnv()) return undefined;
-  const world = pickWorld(project, projectKey, worldRequestWords(text));
+  const world = pickWorld(project, projectKey, worldRequestWords(text)) ?? gameVariation(project, projectKey, text).world;
   // 장르 잠금(몬스터 수집 등)이 막는 칩셋의 세계는 고르지 않는다 — 2026-11-23 mvp-first-start 실측: 몬스터 수집 씨앗에 «모험» 낱말로
   // 우주 정거장 세계를 골라 make_place 가 매번 거절됐고 맵 1장으로 끝났다(전·후 모두). 세계가 없으면 장르 길(몬스터 마을 빌더)이 맡는다.
   if (world && enforcingGenreLock(project) && !genreLockAllowsTileset(project, world.tilesetId)) return undefined;
