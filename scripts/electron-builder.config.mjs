@@ -7,6 +7,21 @@ import { PRODUCT_BRAND, PRODUCT_SLUG } from "../src/brand.ts";
 // 메인·preload 는 esbuild 번들이라 런타임 node_modules 가 필요 없고, 렌더러는 vite 번들이다.
 // 기본값은 production 의존성을 asar 에 넣어 439MB 를 만들었다(실측) — 명시적으로 뺀다.
 // node:sqlite 는 내장이고 electron 은 패키저가 넣는다.
+// 윈도 코드 서명(기본 꺼짐, 2026-11-24 app-auto-update 조사). Azure Artifact Signing 은 개인이면 미국·캐나다만,
+// 조직은 한국 법인도 가입된다. OPRN_WIN_SIGN=azure 와 아래 값·AZURE_TENANT_ID/CLIENT_ID/CLIENT_SECRET 비밀값이 있을 때만 켜진다.
+// 켜면 app-update.yml 에 publisherName 이 들어가 자동 업데이트가 서명 게시자를 확인한다(무서명 판은 확인을 건너뛴다).
+const AZURE_SIGN = process.env.OPRN_WIN_SIGN === "azure"
+  ? {
+      publisherName: process.env.OPRN_WIN_PUBLISHER ?? "",
+      endpoint: process.env.OPRN_AZURE_SIGN_ENDPOINT ?? "",
+      certificateProfileName: process.env.OPRN_AZURE_SIGN_PROFILE ?? "",
+      codeSigningAccountName: process.env.OPRN_AZURE_SIGN_ACCOUNT ?? "",
+    }
+  : null;
+if (AZURE_SIGN && Object.values(AZURE_SIGN).some((value) => !value)) {
+  throw new Error("OPRN_WIN_SIGN=azure 인데 OPRN_WIN_PUBLISHER·OPRN_AZURE_SIGN_ENDPOINT·OPRN_AZURE_SIGN_PROFILE·OPRN_AZURE_SIGN_ACCOUNT 중 빈 값이 있다");
+}
+
 const APP_FILES = ["dist/**", "dist-electron/**", "package.json", "scripts/oh-my-pi-worker.ts", "scripts/lib/**", "!node_modules/**"];
 
 /** @type {import('electron-builder').Configuration} */
@@ -54,6 +69,7 @@ export default {
   // 설정·프로젝트 폴더는 appId 기준이라 둘이 같은 것을 쓴다.
   win: {
     target: ["nsis", "portable"],
+    ...(AZURE_SIGN ? { azureSignOptions: AZURE_SIGN } : {}),
     files: [...APP_FILES, "!dist-electron/oh-my-pi-worker", "!dist-electron/pi_natives.linux-*.node"],
   },
   nsis: {
