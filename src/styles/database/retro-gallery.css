@@ -16,16 +16,19 @@
   background-size: auto 100%;
   background-position: 0 0;
   image-rendering: pixelated;
-  animation: db-retro-thumb-play var(--rt-ms) steps(var(--rt-frames)) infinite;
+  /* 목록 150개·갤러리 48개가 한꺼번에 돌면 프레임마다 페인트가 100번 넘게 난다(qa1124 실측).
+     기본은 첫 칸 그림만 두고, 마우스를 올리거나 키보드로 고르거나 선택된 행·카드만 재생한다. */
 }
-.db-retro-thumb-missing { animation: none; border: 1px dashed var(--db-studio-border-default); }
+@media (prefers-reduced-motion: no-preference) {
+  :is(.db-list-row, .db-retro-card, .db-retro-choreo-thumb-btn):is(:hover, :focus-visible, .active) .db-retro-thumb:not(.db-retro-thumb-missing) {
+    animation: db-retro-thumb-play var(--rt-ms) steps(var(--rt-frames)) infinite;
+  }
+}
+.db-retro-thumb-missing { border: 1px dashed var(--db-studio-border-default); }
 
 @keyframes db-retro-thumb-play {
   from { background-position: 0 0; }
   to { background-position: calc(var(--rt-frames) * var(--rt-size) * -1) 0; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .db-retro-thumb { animation: none; }
 }
 
 .db-retro-gallery { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
