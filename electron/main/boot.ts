@@ -22,6 +22,9 @@ protocol.registerSchemesAsPrivileged([
  */
 const singleInstance = app.isPackaged && process.env.OPRN_SMOKE_PAGE === undefined && process.env.OPRN_OPEN_PROJECT_DIR === undefined
   && process.env.OPRN_MULTI_INSTANCE !== "1";
+// electron-updater 가 AppImage 를 바꾼 뒤 새 파일을 이 표시와 함께 한 번 실행한다(설치 확인용). 창을 띄우지 않고 끝낸다 —
+// 다시 띄우기는 이전 실행이 끝날 때 app.relaunch 가 한다(electron/main/appUpdate.ts).
+if (process.env.APPIMAGE_EXIT_AFTER_INSTALL === "true") app.exit(0);
 const duplicate = singleInstance && !app.requestSingleInstanceLock();
 if (duplicate) app.exit(0);
 

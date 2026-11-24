@@ -1,0 +1,64 @@
+name: app-update-e2e
+
+# 앱 자동 업데이트 e2e (electron/main/appUpdate.ts, scripts/qa/app-update-e2e.mjs).
+# 실제 AppImage 0.0.1 → 로컬 가짜 업데이트 서버(generic 공급자) → 0.0.2 로 바뀌고 다시 켜지는지 본다.
+# 윈도는 NSIS 산출물(latest.yml·sha512·blockmap)만 검사한다 — 실제 윈도 업데이트는 오너 실측 필요.
+# 호스티드 러너에서 돈다(mdc2 무거운 빌드 슬롯을 쓰지 않는다). 업데이트에 닿는 파일이 바뀐 PR 에서만 돈다.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'electron/main/appUpdate.ts'
+      - 'electron/shared/appUpdate.ts'
+      - 'electron/main/boot.ts'
+      - 'electron/main/main.ts'
+      - 'scripts/electron-builder.config.mjs'
+      - 'scripts/qa/app-update-e2e.mjs'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/app-update-e2e.yml'
+
+concurrency:
+  group: app-update-e2e-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  appimage-update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: 시스템 도구 (AppImage FUSE·xvfb)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libfuse2t64 xvfb
+          # ubuntu 24.04 는 비특권 user namespace 를 막아 AppImage 안 Chromium 이 뜨지 못한다.
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+      - run: npm ci
+      # 워커·애드온은 업데이트와 무관하다 — 빠른 모드로 메인·프리로드만 묶는다.
+      - name: 메인 번들
+        run: OPRN_QA_FAST=1 node scripts/build-electron.mjs
+      - name: 업데이트 e2e
+        env:
+          APP_UPDATE_E2E_KEEP: '1'
+        run: xvfb-run -a node scripts/qa/app-update-e2e.mjs
+      - name: 실패 기록
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: app-update-e2e
+          path: |
+            ${{ runner.temp }}/app-update-e2e-*/events.jsonl
+            ${{ runner.temp }}/app-update-e2e-*/app-output.log
+            ${{ runner.temp }}/app-update-e2e-*/server.log
+            ${{ runner.temp }}/app-update-e2e-*/results.json
+            ${{ runner.temp }}/app-update-e2e-*/out-*/*.yml
+          if-no-files-found: ignore

@@ -13,6 +13,7 @@ import { PRODUCT_BRAND } from "../../src/brand";
 import { AGENT_CHANNELS, createAgentHost, dispatchAgentChannel, type AgentHost } from "./agentHost";
 import { registerAssetBrowser } from "./assetBrowser";
 import { acceptStoreDeepLink, registerAssetStore } from "./assetStore";
+import { isInstallingAppUpdate, registerAppUpdate } from "./appUpdate";
 import { findStoreDeepLinkArg } from "../../src/assetStore/deepLink";
 import { electronUserArgIndex, inspectCliProjectArgs, inspectCurrentCliProject, projectDirFromOpenPath } from "./cliProject";
 import { decideAfterCloseFlush, decideCloseResponse, type CloseSaveMode } from "./closeFlow";
@@ -1441,6 +1442,7 @@ export async function startApp(boot: BootContext): Promise<void> {
   }
   registerAssetBrowser();
   registerAssetStore({ hasProject: (webContentsId) => sessions.get(webContentsId) !== null });
+  registerAppUpdate();
   registerDeepLinkProtocol();
   mainMark("handlersRegistered");
   // 첫 실행 인자(Windows·Linux)와 본체를 읽기 전에 온 링크·두 번째 실행을 이제 처리한다. 이후 것은 바로 받는다.
@@ -1497,6 +1499,12 @@ export async function startApp(boot: BootContext): Promise<void> {
 }
 
 app.on("before-quit", (event) => {
+  // 업데이트 칩으로 재시작: 렌더러가 저장을 마친 뒤 부른다. 저장 확인을 다시 거치면 설치기가 기다리다 끝난다.
+  if (isInstallingAppUpdate()) {
+    destroyAuxiliaryChildren();
+    for (const window of appWindows) if (!window.isDestroyed()) window.destroy();
+    return;
+  }
   if (closeInProgress) { event.preventDefault(); return; }
   const windows = [...appWindows].filter((window) => !window.isDestroyed());
   const owner = windows.find((window) => window.isFocused() && flushReady.has(window.webContents.id))

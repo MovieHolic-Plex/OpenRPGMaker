@@ -221,6 +221,26 @@ Node 쪽 `aiAuthRuntime.ts` 라 워커 없이 된다). 워커는 `@oh-my-pi/pi-n
 그다음 `scripts/desktop-png-optimize.mjs` 가 패키지에 남은 `dist` PNG 를 oxipng(고정 판, SHA-256 확인)로 무손실 재압축한다.
 저장소 원본은 그대로다(그림 해시를 쓰는 관문과 웹 빌드가 원본을 본다). 2026-11-23 실측: 초상 밖 PNG 8,860장 188.0MB → 124.7MB, RGBA 화소 차이 0.
 
+## 앱 자동 업데이트 (2026-11-24, app-auto-update)
+
+데스크톱 앱이 GitHub 릴리스에서 스스로 새 판을 받는다. 코드는 `electron/main/appUpdate.ts`(메인)·
+`electron/shared/appUpdate.ts`(판정)·`src/app/appUpdateChip.ts`(칩)이다.
+
+- 공급자: `scripts/electron-builder.config.mjs` 의 `publish`(github). 앱은 `releases/latest`(Latest 표시 릴리스)의
+  `latest.yml`(윈도 NSIS)·`latest-linux.yml`(AppImage)을 읽는다. 초안은 보이지 않으므로 「검증 뒤 발행」 순서와 맞다.
+  electron-builder 는 늘 `--publish never` 로 부르고, 올리기는 릴리스 워크플로가 한다.
+- 흐름: 켠 뒤 15초·6시간마다 조용히 확인 → 뒤에서 받기 → 상단 칩 「v0.x 준비됨 · 다시 시작」 하나.
+  누르면 조수가 끝나길 기다리고 창 닫기와 같은 저장(`src/main.ts` flushForClose)을 한 뒤 재시작한다.
+  안 누르면 앱을 끌 때 설치한다. 설정 「일반·언어」 의 「자동 업데이트」 하나로 끈다. 재시작 뒤 바뀐 점을 토스트로 한 번.
+- 설치 형태: 윈도 NSIS 설치판·리눅스 AppImage 는 자동, portable exe 는 「새 버전 있음 · 내려받기」 링크만, 개발 실행·맥은 끔.
+- AppImage 함정: `isForceRunAfter` 로 새 파일을 바로 띄우면 한 번만 실행 잠금 때문에 새 실행이 꺼진다. 설치만 하고
+  `app.relaunch({ execPath: 새 파일 })` 로 이전 실행이 끝난 뒤 띄운다. 설치 확인용 실행(`APPIMAGE_EXIT_AFTER_INSTALL=true`)은
+  `boot.ts` 가 바로 끝낸다. AppImage 이름에 공백이 있으면 gh 업로드가 점으로 바꿔 `latest-linux.yml` 과 어긋나므로
+  `linux.artifactName` 을 `OPRN.Studio-${version}.${ext}` 로 고정했다. AppImage 의 차등 받기는 파일 안 blockmap 을 쓴다
+  (별도 `.blockmap` 은 NSIS 만).
+- 검증: CI `app-update-e2e`(`scripts/qa/app-update-e2e.mjs`)가 실제 AppImage 0.0.1 → 로컬 generic 서버 → 0.0.2 교체·재시작과
+  NSIS `latest.yml`·sha512·blockmap 을 본다. 실제 윈도 업데이트는 사람이 윈도에서 확인한다.
+
 ## 커밋 메시지가 릴리스 노트의 원고다
 
 `npm run release` 는 `git log` 에서 노트를 만든다(`scripts/lib/releaseNotes.mjs`). 손으로 쓰는 노트는

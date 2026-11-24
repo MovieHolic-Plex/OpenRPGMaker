@@ -27,6 +27,7 @@ import { abortAiAssistantTurn } from "@/editor/aiAssistantBridge";
 import { settleMonsterResourceDraftsForClose } from "@/editor/panels/databaseMonsterResourceEditor";
 import { hasEventDraftVaultEntries, persistEventDraftVaultNow } from "@/project/eventDraftVault";
 import { flushProjectForClose } from "../electron/main/closeFlow";
+import { provideAppUpdateRestartFlush } from "@/app/appUpdateChip";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import { reloadFlushAllowsReload } from "../electron/shared/reloadFlow";
@@ -73,18 +74,21 @@ if (typeof window !== "undefined" && window.location) {
   mountWindowControls();
   if (window.oprn?.closeIsHostDriven === true) {
     const { lifecycle } = window.oprn;
+    const flushForClose = async (mode: "auto" | "save"): Promise<boolean> => {
+      // 입력 중인 필드의 change를 반영하고 조수가 새 편집을 시작하지 않도록 중지한다.
+      const focused = document.activeElement;
+      if (focused instanceof HTMLElement && focused.matches("input, textarea, select, [contenteditable]")) focused.blur();
+      abortAiAssistantTurn();
+      const monsterDraftsSaved = settleMonsterResourceDraftsForClose(mode === "save");
+      // 이벤트 초안은 적용 버튼을 누르기 전까지 기존 금고에만 저장한다.
+      const projectSaved = await flushProjectForClose(store);
+      const eventDraftsSaved = !hasEventDraftVaultEntries() || persistEventDraftVaultNow();
+      return projectSaved && monsterDraftsSaved && eventDraftsSaved && !store.hasUnsavedChanges();
+    };
+    // 업데이트 칩의 「다시 시작」도 창 닫기와 같은 저장을 거친다(메인은 그 재시작에서 닫기 확인을 다시 묻지 않는다).
+    provideAppUpdateRestartFlush(() => flushForClose("save"));
     lifecycle.onFlushBeforeClose((requestId, mode) => {
-      const flush = async (): Promise<boolean> => {
-        // 입력 중인 필드의 change를 반영하고 조수가 새 편집을 시작하지 않도록 중지한다.
-        const focused = document.activeElement;
-        if (focused instanceof HTMLElement && focused.matches("input, textarea, select, [contenteditable]")) focused.blur();
-        abortAiAssistantTurn();
-        const monsterDraftsSaved = settleMonsterResourceDraftsForClose(mode === "save");
-        // 이벤트 초안은 적용 버튼을 누르기 전까지 기존 금고에만 저장한다.
-        const projectSaved = await flushProjectForClose(store);
-        const eventDraftsSaved = !hasEventDraftVaultEntries() || persistEventDraftVaultNow();
-        return projectSaved && monsterDraftsSaved && eventDraftsSaved && !store.hasUnsavedChanges();
-      };
+      const flush = (): Promise<boolean> => flushForClose(mode);
       void flush().catch((error: unknown) => {
         console.error("[store] 닫기 전 저장 실패:", error);
         return false;

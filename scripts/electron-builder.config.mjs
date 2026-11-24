@@ -37,6 +37,9 @@ export default {
   linux: {
     target: ["AppImage"],
     category: "Development",
+    // 띄어쓰기 없는 이름. 기본값 「OPRN Studio-<판>.AppImage」 는 gh 가 올릴 때 「OPRN.Studio-…」 로 바꿔서
+    // latest-linux.yml 의 path 와 릴리스 자산 이름이 어긋난다(자동 업데이트가 404). 릴리스의 옛 이름과 같다.
+    artifactName: "OPRN.Studio-${version}.${ext}",
     files: [...APP_FILES, "!dist-electron/oh-my-pi-worker.exe", "!dist-electron/pi_natives.win32-*.node"],
   },
   // NSIS exe(portable)는 electron-builder 가 내려받은 makensis 를 직접 돌려 리눅스에서도 만든다
@@ -65,6 +68,8 @@ export default {
   portable: {
     splashImage: "build/portable-splash.bmp",
   },
-  // 자동 업데이트는 범위 밖이다(설계서 2절 비목표) — 게시하지 않는다.
-  publish: null,
+  // 자동 업데이트 공급자(2026-11-24, electron/main/appUpdate.ts). 패키지 안 app-update.yml 과 dist-packages 의
+  // latest.yml·latest-linux.yml·*.blockmap 을 이 설정으로 만든다. 올리기는 릴리스 워크플로가 gh 로 한다 —
+  // electron-builder 는 늘 --publish never 로 부른다(태그 빌드에서 스스로 올리지 않게).
+  publish: { provider: "github", owner: "MovieHolic-Plex", repo: "OpenRPGMaker", releaseType: "release" },
 };

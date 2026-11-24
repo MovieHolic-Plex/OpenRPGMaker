@@ -55,6 +55,8 @@ import { downloadBlob } from "@/util/downloadBlob";
 import { clearChildren, el } from "@/util/dom";
 import { createLogger } from "@/util/logger";
 import { toast } from "@/util/toast";
+import { renderAppUpdateChip } from "@/app/appUpdateChip";
+import { prepareEditorForAppUpdateRestart } from "@/editor/appUpdateRestart";
 import { beginGameExport, endGameExport } from "./gameExportNotice";
 import { projectRepository } from "@/project/persistence/repository";
 import { sameProjectTarget } from "@/project/persistence/target";
@@ -166,6 +168,7 @@ let disposeTopbarFit: (() => void) | null = null;
 let disposeProjectLabel: (() => void) | null = null;
 let disposeMapCrumb: (() => void) | null = null;
 let disposeStatusStrip: (() => void) | null = null;
+let disposeAppUpdateChip: (() => void) | null = null;
 let paintStripSave: ((state: AutoSaveState) => void) | null = null;
 let lastLoggedAutoSaveKind: AutoSaveState["kind"] | null = null;
 // 실패 에피소드가 진행 중인가. error 로 켜지고 saved/idle 로 꺼진다 — 재시도 중(saving)에도
@@ -203,6 +206,8 @@ function rebuildTopbar(topbar: HTMLElement): void {
   disposeProjectLabel = null;
   disposeMapCrumb?.();
   disposeMapCrumb = null;
+  disposeAppUpdateChip?.();
+  disposeAppUpdateChip = null;
   installTopbarChords();
   while (topbar.firstChild) topbar.removeChild(topbar.firstChild);
   const mode = getMode();
@@ -254,6 +259,12 @@ function rebuildTopbar(topbar: HTMLElement): void {
     renderSaveButton(),
   );
   if (mode === "edit") trailing.append(renderTestPlayButton());
+  // 앱 업데이트 칩 — 받아 둔 새 판이 있을 때만 보인다(데스크톱 앱만, src/app/appUpdateChip.ts).
+  const updateChip = renderAppUpdateChip({ className: "studio-tool-button", beforeRestart: prepareEditorForAppUpdateRestart });
+  if (updateChip) {
+    disposeAppUpdateChip = updateChip.dispose;
+    trailing.append(updateChip.element);
+  }
   // ⋯ 더 보기 — 도움말·언어·AI 설정의 화면 입구. ⌘K 만으로는 초보가 찾지 못한다(editor-main-ui-vqa 6번, 2026-11-23).
   trailing.append(renderMoreMenu(topbar));
   menuBar.append(trailing);
