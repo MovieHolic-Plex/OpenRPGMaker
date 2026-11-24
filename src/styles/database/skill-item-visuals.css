@@ -493,6 +493,8 @@
   border: 1px solid var(--db-studio-border-default);
   border-radius: 6px;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--db-studio-text-1) 18%, transparent);
+  /* 크기가 고정된 상자다. 안쪽이 매 프레임 움직여도 자료집 전체를 다시 배치·페인트하지 않게 가둔다(qa1124 항목 5). */
+  contain: strict;
   max-width: 480px;
   overflow: hidden;
   position: relative;

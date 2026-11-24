@@ -44,6 +44,7 @@ import {
 } from "@/battle/retroSkillTimeline";
 import { loadBattleSample, playBattleSample } from "@/player/battleSeSamples";
 import { el } from "@/util/dom";
+import { placeStageNode } from "@/editor/panels/databaseStagePosition";
 
 // ---- 계약 조회 ----
 
@@ -344,14 +345,14 @@ export function createMonsterFxPainter(
     node.style.backgroundImage = 'url("' + monsterFxUrl(layer.key) + '")';
     node.style.backgroundSize = size * layer.frames + "px " + size + "px";
     node.style.backgroundPosition = -cell * size + "px 0";
-    node.style.left = Math.round(center.x - size / 2) + "px";
-    node.style.top = Math.round(bottom ? center.y - size : center.y - size / 2) + "px";
+    placeStageNode(node, Math.round(center.x - size / 2), Math.round(bottom ? center.y - size : center.y - size / 2));
     node.dataset.key = layer.key;
     node.dataset.anchor = layer.anchor;
     node.dataset.cell = String(cell);
     if (layer.plane === "backdrop") {
       const host = node.parentElement;
-      Object.assign(node.style, {left:"0px",top:"0px",width:(host?.clientWidth ?? size)+"px",height:stageH+"px",
+      placeStageNode(node, 0, 0);
+      Object.assign(node.style, {width:(host?.clientWidth ?? size)+"px",height:stageH+"px",
         backgroundImage:'url("'+monsterFxUrl(layer.key+"-f"+cell)+'")',backgroundSize:"128px 128px",backgroundPosition:"0px 0px",backgroundRepeat:"repeat"});
     }
   };
@@ -502,8 +503,7 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
     const pos = pixelEnemyFrame(sheet, beat);
     monster.style.backgroundPosition = -pos.col * cell + "px " + -pos.row * cell + "px";
     // 시트 계약: 바닥 기준선 y = cell − 4.
-    monster.style.left = Math.round(point.x - cell / 2) + "px";
-    monster.style.top = Math.round(point.y - (cell - 4)) + "px";
+    placeStageNode(monster, Math.round(point.x - cell / 2), Math.round(point.y - (cell - 4)));
     monster.style.opacity=String(programmed?.alpha??1);
     monster.style.scale=programmed?.flip?"-1 1":"";
     monster.style.zIndex = point.x > home.x + 1 ? "40" : baseZ;
@@ -519,8 +519,7 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
       // 아군은 오른쪽으로 밀려난다.
       const knock = struck > 0 ? Math.round(5 * struck) + (Math.floor(clock / 40) % 2 === 0 ? 1 : -1) : 0;
       const at=targetTrack?motionPositionAt(targetTrack,now,anchors,timeline.movement?.acceleration):member.home;
-      member.node.style.left = Math.round(at.x - CELL / 2 + knock) + "px";
-      member.node.style.top = Math.round(at.y - 45) + "px";
+      placeStageNode(member.node, Math.round(at.x - CELL / 2 + knock), Math.round(at.y - 45));
       member.node.style.setProperty("--retro-glow", "0");
       member.node.style.setProperty("--retro-dim", String(Math.round(state.dim * 100) / 100));
     });

@@ -53,6 +53,7 @@ import {
 } from "@/editor/panels/databaseMonsterSkillStage";
 import type { Project, SkillRecord } from "@/project/types";
 import { el } from "@/util/dom";
+import { placeStageNode } from "@/editor/panels/databaseStagePosition";
 
 const STAGE_W = 240;
 const STAGE_H = 136;
@@ -606,14 +607,14 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
     node.style.backgroundImage = 'url("' + sheet.url + '")';
     node.style.backgroundSize = size * sheet.frames + "px " + size + "px";
     node.style.backgroundPosition = -cell * size + "px 0";
-    node.style.left = Math.round(center.x - size / 2) + "px";
-    node.style.top = Math.round(bottom ? center.y - size : center.y - size / 2) + "px";
+    placeStageNode(node, Math.round(center.x - size / 2), Math.round(bottom ? center.y - size : center.y - size / 2));
     node.dataset.key = sheet.key;
     node.dataset.cell = String(cell);
     node.dataset.anchor = sheet.anchor;
     node.style.filter = filter ?? "";
     if (authored?.plane === "backdrop") {
-      Object.assign(node.style, {left:"0px",top:"0px",width:STAGE_W+"px",height:STAGE_H+"px",
+      placeStageNode(node, 0, 0);
+      Object.assign(node.style, {width:STAGE_W+"px",height:STAGE_H+"px",
         backgroundImage:'url("'+fxUrl(sheet.key+"-f"+cell)+'")', backgroundSize:"128px 128px", backgroundPosition:"0px 0px", backgroundRepeat:"repeat"});
     }
   };
@@ -769,9 +770,8 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
       const rise = Math.round((1 - strength) * 14);
       // 겹치지 않게 번호마다 6px 씩 엇갈리게 띄운다.
       const tall = side === "enemies" ? Math.max(0, (enemies[index]?.cell ?? CELL) - CELL) : 0;
-      node.style.top = point.y - 52 - tall - rise - index * 2 + "px";
       // 무대 왼쪽 끝(뒤줄 적) 숫자가 잘리지 않게 4px 안쪽으로 붙든다.
-      node.style.left = Math.max(4, point.x + (index % 2 === 0 ? -6 : 6)) + "px";
+      placeStageNode(node, Math.max(4, point.x + (index % 2 === 0 ? -6 : 6)), point.y - 52 - tall - rise - index * 2);
       node.style.opacity = String(Math.min(1, strength * 3));
     });
   }
@@ -948,8 +948,7 @@ function placeCell(node: HTMLElement, cell: { readonly col: number; readonly row
 
 /** 셀 상자를 발 위치에 맞춘다. footRow = 셀 안의 발 줄(px). */
 function placeSprite(node: HTMLElement, feet: Point, size: number, footRow: number): void {
-  node.style.left = Math.round(feet.x - size / 2) + "px";
-  node.style.top = Math.round(feet.y - footRow) + "px";
+  placeStageNode(node, Math.round(feet.x - size / 2), Math.round(feet.y - footRow));
 }
 
 function seconds(ms: number): string {
