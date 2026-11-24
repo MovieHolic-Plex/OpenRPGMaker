@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { createInterpreter } from "@/player/interpreter";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject } from "../support/blankProject";
 import type { Command } from "@/project/types";
 import { createContractSession, roundtripCommands } from "./harness";
 
 describe("spawnFieldEnemy interpreter handoff contract", () => {
   it("forwards the spawn definition without executing subsequent commands before host resume", () => {
-    const project = createBlankProject();
+    const project = freshBlankProject();
     const session = createContractSession(project);
     const command: Command = { kind: "spawnFieldEnemy", spawn: {
       id: "spawn_contract", troopId: "troop_contract", area: { x: 2, y: 3, w: 4, h: 5 },

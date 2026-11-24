@@ -3,9 +3,9 @@
 //
 // test/interpreter.test.ts 의 기존 부트 패턴(빈 세션 + createInterpreter + drain 루프)을
 // 재사용 가능한 형태로 추출했다. 기존 테스트 파일은 그대로 두고, 하네스는 같은 공개 API
-// (createInterpreter / createBlankProject / serialize / deserialize)만 사용한다.
+// (createInterpreter / freshBlankProject / serialize / deserialize)만 사용한다.
 //
-// - 기본 실행 환경: createBlankProject() + 시작 맵에 계약 테스트용 이벤트 1개(CONTRACT_EVENT_ID).
+// - 기본 실행 환경: freshBlankProject() + 시작 맵에 계약 테스트용 이벤트 1개(CONTRACT_EVENT_ID).
 // - pause 발생 시 answers 스크립트를 순서대로 소비하고, 소진되면 undefined 로 자동 진행
 //   (text dismiss / choices 기본 0번 선택과 동일한 의미).
 // - console.warn 은 vi.spyOn 으로 캡처하고 반드시 복원한다.
@@ -14,7 +14,7 @@
 import { vi } from "vitest";
 import { createInterpreter } from "@/player/interpreter";
 import type { StepResult } from "@/player/interpreter";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject } from "../support/blankProject";
 import { deserialize, serialize } from "@/project/io";
 import type { Command, GameEvent, Project } from "@/project/types";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
@@ -29,7 +29,7 @@ const FINISHED_SENTINEL_FLAG = "__contract_finished__";
 export type ContractAnswer = number | boolean | string | undefined;
 
 export interface ContractRunOptions {
-  /** 기본: createBlankProject() 기반 + 맵 1개 + 이벤트 1개. 필요 시 콜백으로 가공. */
+  /** 기본: freshBlankProject() 기반 + 맵 1개 + 이벤트 1개. 필요 시 콜백으로 가공. */
   mutateProject?: (project: Project) => void;
   /** 세션 초기값 (골드/아이템/스위치/변수/파티). 기본: 빈 세션. */
   mutateSession?: (session: PlaySessionLike) => void;
@@ -115,7 +115,7 @@ export function createContractSession(project?: Project): PlaySessionLike {
 
 // 계약 테스트용 기본 프로젝트: 빈 프로젝트 + 시작 맵에 commands 를 가진 이벤트 1개.
 export function buildContractProject(commands: readonly Command[]): Project {
-  const project = createBlankProject();
+  const project = freshBlankProject();
   const event: GameEvent = {
     id: CONTRACT_EVENT_ID,
     x: 1,

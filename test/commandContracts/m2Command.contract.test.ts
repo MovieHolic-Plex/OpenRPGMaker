@@ -10,6 +10,7 @@ import {
 import type { Command, M2CommandFields } from "@/project/types";
 import type { ContractRunOptions, ContractRunResult } from "./harness";
 import { CONTRACT_EVENT_ID, runCommandContract } from "./harness";
+import { ownTileset } from "../support/blankProject";
 import { HIDE_SHOW_SCREEN_FADE_MS } from "@/player/interpreter/screenEffectPlan";
 
 type M2Command = Extract<Command, { kind: "m2Command" }>;
@@ -39,7 +40,7 @@ const MAP_FULL_CONTRACTS: readonly MapSemanticContract[] = [
   }, { mutateProject: (project) => {
     const map = project.maps[project.startMapId];
     map.lowerTiles[3 * map.width + 2] = 0;
-    const tileset = project.tilesets[map.tilesetId];
+    const tileset = ownTileset(project, map.tilesetId);
     tileset.tileMeta ??= [];
     tileset.tileMeta[0] = { ...tileset.tileMeta[0], terrainTag: 9 };
   } }),

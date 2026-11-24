@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { createInterpreter, type StepResult } from "@/player/interpreter";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject } from "../support/blankProject";
 import { projectLint } from "@/project/lint/projectLint";
 import type { Command, Project } from "@/project/types";
 import { createContractSession, roundtripCommands } from "./harness";
 
 function craftProject(): Project {
-  const project = createBlankProject();
+  const project = freshBlankProject();
   project.database.items.push(
     { ...project.database.items[0]!, id: "ore", name: "광석" },
     { ...project.database.items[0]!, id: "ingot", name: "주괴" },
@@ -89,7 +89,7 @@ describe("openCraftShop interpreter contract", () => {
   });
 
   it("passes through without a window when no recipe can be shown", () => {
-    const project = createBlankProject();
+    const project = freshBlankProject();
     const session = createContractSession(project);
     const interp = createInterpreter([shop(), { kind: "setFlag", flag: "after", value: true }], session, project);
     expect(interp.start()).toEqual({ kind: "done" });
