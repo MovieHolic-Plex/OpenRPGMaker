@@ -65,6 +65,17 @@ describe("atomic equipment transition authority", () => {
     });
   });
 
+  it("sees equipment records replaced in place after an earlier read", () => {
+    const { project, actor, sword } = setup();
+    expect(effectiveActorEquipment(project, actor, { weapon: sword.id }).weapon).toBe(sword.id);
+    const at = project.database.equipment.indexOf(sword);
+    project.database.equipment[at] = { ...sword, id: "eq_swapped_in" };
+    expect(effectiveActorEquipment(project, actor, { weapon: sword.id }).weapon).toBeUndefined();
+    expect(effectiveActorEquipment(project, actor, { weapon: "eq_swapped_in" }).weapon).toBe("eq_swapped_in");
+    project.database.equipment.push({ ...sword, id: "eq_pushed" });
+    expect(effectiveActorEquipment(project, actor, { weapon: "eq_pushed" }).weapon).toBe("eq_pushed");
+  });
+
   it("projects a two-handed shield mirror as one logical item without dropping other slots", () => {
     const { project, sword } = setup();
     sword.twoHanded = true;
