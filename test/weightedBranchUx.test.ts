@@ -145,6 +145,12 @@ describe("weighted branch command UX", () => {
     expect(Number(control(body, "weighted-branch-meter-0").getAttribute("aria-valuenow"))).toBeGreaterThan(0);
   });
   function openModal(table: string) {
+    // 설정 창의 확인은 이 명령 하나에 검사기를 돌려 없는 변수를 가리키면 막는다(#5023) — 결과 변수 roll 은 프로젝트에 있어야 한다.
+    const project = createBlankProject();
+    const variable = project.variables[0];
+    if (!variable) throw new Error("Missing fixture variable");
+    project.variables.push({ ...variable, id: "roll", name: "Roll" });
+    store.replace(project);
     openEventCommandEditDialog({
       initial: { ...newM2Command("m2-211-weighted-branch"), fields: { table, resultVariableId: "roll" } },
       onApply: command => { replaced = command; },
