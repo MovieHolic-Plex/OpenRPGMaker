@@ -989,6 +989,14 @@
   align-self: flex-start;
 }
 
+/* 공방은 접힌 「고급」 안에 있다. 머리줄은 「연결된 데이터」 머리줄과 같은 눈높이다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-enemy-advanced > summary {
+  color: var(--db-studio-text-2);
+  cursor: pointer;
+  font: 600 12px/1.5 var(--font-ui);
+  padding: 6px 0;
+}
+
 /* 공방은 밝은 카드다 — 어두운 무대용 머리줄(안쪽 여백·inset 색 상태 글씨)을 카드에 맞춘다. */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-pixel-studio .db-pixel-studio-body > .db-enemy-stage-heading {
   padding: 0;

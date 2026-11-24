@@ -2038,6 +2038,8 @@ enemy allowlist 에 `monsterResourceId` 를 더해 LLM 이 도트 몬스터 140�
 목록 밖이면 `pickPixelMonsterId` 가 이름 조각 → 슬라임으로 맞춘다. 결과 미리보기는 그 도트 몬스터의 정지 그림이다.
 적 그래픽 칸의 「AI로 만들기」와 소재 고르기의 몬스터 생성도 지웠다 — `runtime-battle.md` 「전투는 전부 도트 측면」.
 
+**2026-11-24: 9칸 도트 공방은 접힌 「고급」 안.** 적 상세 무대 칸의 「+ 9칸 도트 시트 생성·편집」(`databaseEnemyPixelStudio.ts`)은 기본으로 접힌 `<details class="db-enemy-advanced">` 「고급」 뒤로 옮겼다(오너: 사용자는 많은 버튼을 원하지 않는다). 펼치면 토글과 공방 몸통이 그대로 있고, 조수 도구 `author_enemy_pixel_sheet` 등 5종(`enemyPixelSheetTools.ts`)은 바뀌지 않았다.
+
 리소스 kind 는 종류마다 다르다 — 적은 `monster`, 아이템은 `picture`. 아이템 아이콘 피커
 (`kind:"icon"`)가 업로드 자산 중 `picture`/`monster`/`system` 만 목록에 올리기 때문이다
 (`databaseResourcePickerDialog.ts` `uploadedMatchesKind`). 그림은 `assets.uploaded[id].dataUrl`
