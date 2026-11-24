@@ -9,36 +9,12 @@ import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import type { Project } from "@/project/types";
 import { isGeneratedMonsterSprite } from "@/assets/generatedMonsterSprites";
 import { RETRO_MONSTER_PLAN } from "@/assets/retroMonsterPlan";
+import { CURRENT_MONSTER_STAND_IN, standInOriginalArt } from "@/project/defaults/currentMonsterStandIns";
 
 type Obj = Record<string, unknown>;
 
-/** 현행 그림이 없는 종 → 가장 가까운 현행 종(기본 DB 적 id 의 enemy_ 뺀 꼬리). 표에 없는 종은 대역도 없다. */
-const STAND_IN: Readonly<Record<string, string>> = (() => {
-  const groups: Record<string, readonly string[]> = {
-    slime_green: ["slime", "meadow_slime", "slime_blue", "slime_red", "slime_metal", "slime_king", "slime_cube", "ooze_black", "ooze_acid"],
-    bat_cave: ["cave_bat", "bat_vampire", "rat_giant"],
-    spider_cave: ["spider_widow"],
-    golem_stone: ["stone_golem", "totem_cursed", "gargoyle_stone", "ape_stone", "spirit_earth", "troll_cave", "ogre_club", "minotaur_maze", "behemoth_horn"],
-    golem_iron: ["armor_living", "knight_fallen", "skeleton_knight", "sword_flying", "puppet_string"],
-    dragon_blue: ["dragon", "dragon_whelp", "dragon_red", "dragon_bone", "hydra_three", "wyvern_cliff"],
-    ghost_pale: ["skeleton_bone", "skeleton_archer", "mine_skel_archer", "zombie_rot", "ghoul_grave", "mummy_bandage", "banshee_wail", "bonepile_crawler"],
-    wraith_dark: ["lich_frost", "revenant_vengeful", "spirit_dark", "demon_lord", "angel_fallen", "mage_rogue"],
-    beetle_horn: ["scorpion_sand", "ant_soldier"],
-    snake_viper: ["worm_sand", "lizardman_spear"],
-    spirit_fire: ["salamander_flame", "centipede_fire"],
-    wolf_dire: ["bear_brown", "tiger_saber"],
-    hound_hell: ["cat_shadow"],
-    boar_tusk: ["goat_mountain", "deer_forest", "centaur_plains"],
-    goblin_scout: ["goblin_brute", "orc_warrior", "orc_shaman", "kobold_digger", "imp_mischief"],
-    wisp_blue: ["spirit_wind", "spirit_light", "sylph_air"],
-    spirit_water: ["undine_sea"],
-    bird_hawk: ["harpy_cliff", "griffin_sky", "roc_giant", "phoenix_rebirth"],
-    eel_electric: ["fish_piranha", "squid_deep", "shark_land"],
-  };
-  const out: Record<string, string> = {};
-  for (const [to, from] of Object.entries(groups)) for (const tail of from) out[tail] = to;
-  return out;
-})();
+/** 현행 그림이 없는 종 → 가장 가까운 현행 종(기본 DB 적 id 의 enemy_ 뺀 꼬리). 표는 새 프로젝트 기본 적 대역과 같은 것(defaults/currentMonsterStandIns). */
+const STAND_IN = CURRENT_MONSTER_STAND_IN;
 
 const enemyOf = (project: Project, enemyId: string | undefined) => project.database.enemies.find((e) => e.id === enemyId);
 const artOf = (project: Project, enemyId: string | undefined): string | undefined => (enemyOf(project, enemyId) as { monsterResourceId?: string } | undefined)?.monsterResourceId;
@@ -51,10 +27,12 @@ export const leadEnemyId = (project: Project, troopId: string | undefined): stri
 
 /** 바란 그림의 이름 — 그 적 그림 id 의 꼬리(lizardman-spear). 같은 종은 늘 같은 이름이다. */
 export const wantedArtName = (project: Project, enemyId: string): string =>
-  (artOf(project, enemyId) ?? enemyId).replace(/^generated-enemy-/u, "").replace(/^enemy_/u, "").replace(/_/gu, "-");
+  (standInOriginalArt(enemyOf(project, enemyId) as { id: string; monsterResourceId?: string } | undefined) ?? artOf(project, enemyId) ?? enemyId).replace(/^generated-enemy-/u, "").replace(/^enemy_/u, "").replace(/_/gu, "-");
 
 /** 그 적의 그림이 현행 세트인가. */
-export const hasCurrentArt = (project: Project, enemyId: string | undefined): boolean => isCurrentMonsterArt(artOf(project, enemyId));
+/** 그 적의 그림이 현행 세트인가 — 새 프로젝트가 대역 그림을 실어 둔 기본 적(standInOriginalArt)은 제 그림이 아니므로 아니다. */
+export const hasCurrentArt = (project: Project, enemyId: string | undefined): boolean =>
+  isCurrentMonsterArt(artOf(project, enemyId)) && !standInOriginalArt(enemyOf(project, enemyId) as { id: string; monsterResourceId?: string } | undefined);
 
 export interface CurrentFoe {
   /** 세울 적(현행 그림이 있는 기본 DB 적). */
@@ -208,7 +186,7 @@ const keyHash = (key: string): number => [...key].reduce((h, ch) => (Math.imul(h
  * 남은 그림이 없으면 want 그대로(겹침을 받아들인다).
  */
 export function distinctBossFoe(project: Project, want: string, used: ReadonlySet<string>, avoid: (enemyId: string) => boolean, key: string): string {
-  const free = (id: string): boolean => { const a = artOf(project, id); return !!a && isCurrentMonsterArt(a) && !used.has(a) && !avoid(id); };
+  const free = (id: string): boolean => { const a = artOf(project, id); return !!a && hasCurrentArt(project, id) && !used.has(a) && !avoid(id); };
   if (!used.has(artOf(project, want) ?? "")) return want;
   const kin = (BOSS_KIN[want.replace(/^enemy_/u, "")] ?? []).map((t) => `enemy_${t}`).filter((id) => enemyOf(project, id));
   const strength = (id: string): number => { const s = enemyOf(project, id)?.stats; return (s?.maxHp ?? 0) + 4 * (s?.attack ?? 0); };
@@ -232,7 +210,8 @@ export function namedFoeArt(project: Project, text: string): string | undefined 
   const said = text.normalize("NFC");
   const design = new Map(RETRO_MONSTER_PLAN.map((plan) => [`generated-enemy-${plan.slug}`, plan.design]));
   const scored = project.database.enemies.flatMap((enemy) => {
-    const art = (enemy as { monsterResourceId?: string }).monsterResourceId;
+    // 대역 그림으로 선 기본 적은 원래 그림의 설계 글로 이름을 맞춘다(«해골 병사» 는 대역 유령이 아니라 해골 적을 가리킨다).
+    const art = standInOriginalArt(enemy as { id: string; monsterResourceId?: string }) ?? (enemy as { monsterResourceId?: string }).monsterResourceId;
     if (!art || /^enemy_(?:v2|path|fit)_/u.test(enemy.id) || !(isCurrentMonsterArt(art) || isGeneratedMonsterSprite(art))) return [];
     const words = new Set(`${enemy.name ?? ""} ${design.get(art) ?? ""}`.split(/[\s·,()]+/u).filter((w) => w.length >= 2 && said.includes(w)));
     return words.size >= 2 ? [{ id: enemy.id, art, hits: words.size }] : [];
