@@ -8,6 +8,7 @@
 // → 이 분리 + defaultMaps 통과 re-export 제거로 162모듈·0.87 s.
 //
 // 여기에는 **에디터를 끌지 않는 것만** 둔다. 새 데모/쇼케이스 빌더는 defaultProject.ts 로.
+import { applyCurrentMonsterStandIns } from "./currentMonsterStandIns";
 import type { CommonEvent, GameMap, MapId, Project, SwitchDef, VariableDef } from "../types";
 import { SCHEMA_VERSION } from "../types";
 import { ensureSharedContent } from "../sharedContent";
@@ -126,5 +127,7 @@ export function createBlankProject(): Project {
   project.system = { ...project.system, startActorIds: [DEFAULT_ACTOR_ID] };
   project.system.opening = defaultOpeningSequence();
   project.session = { ...project.session, partyActorIds: [DEFAULT_ACTOR_ID] };
+  // 옛 3×3 그림의 기본 적은 가장 가까운 현행 종 그림으로 싣는다(새 프로젝트만 — currentMonsterStandIns.ts).
+  applyCurrentMonsterStandIns(project.database.enemies);
   return project;
 }

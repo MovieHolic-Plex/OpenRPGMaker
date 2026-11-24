@@ -1,24 +1,26 @@
 import { describe, expect, it } from "vitest";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { createBlankProject } from "@/project/defaults";
+import { isCurrentMonsterArt } from "@/assets/currentMonsterArt";
+import { CURRENT_MONSTER_STAND_IN } from "@/project/defaults/currentMonsterStandIns";
 import { seedHomeDungeonComplexTroops } from "@/project/defaults/complexMonsterAuthoring";
 
 describe("database image matching", () => {
   it("assigns unique matching monster graphics for default enemies and species", () => {
     const project = createBlankProject();
-    // Only these two role-identical pairs may share art; unrelated duplicates fail.
+    // qa1124 항목 4(오너 2026-11-24 «최신 몬스터들 반영»): 새 프로젝트 기본 적은 모두 현행 20칸 세트 그림이다.
+    // 현행 그림이 없던 종은 대역 표(currentMonsterStandIns)의 가장 가까운 종 그림을 나눠 쓴다 — 그 밖의 공유는 실패.
     const monsterIds = project.database.enemies.map((enemy) => enemy.monsterResourceId);
     const generatedIds = monsterIds.filter((id) => id?.startsWith("generated-enemy-"));
     expect(generatedIds.length).toBe(monsterIds.length);
     expect(generatedIds.length).toBeGreaterThanOrEqual(100);
-    const shared = Object.fromEntries([...new Set(monsterIds)].flatMap((resourceId) => {
-      const ids = project.database.enemies.filter((enemy) => enemy.monsterResourceId === resourceId).map((enemy) => enemy.id).sort();
-      return ids.length > 1 ? [[String(resourceId), ids]] : [];
-    }));
-    expect(shared).toEqual({
-      "generated-enemy-slime-01": ["enemy_meadow_slime", "enemy_slime"],
-      "generated-enemy-skeleton-archer": ["enemy_mine_skel_archer", "enemy_skeleton_archer"],
-    });
+    expect(monsterIds.filter((id) => !isCurrentMonsterArt(id))).toEqual([]);
+    for (const enemy of project.database.enemies) {
+      const owners = project.database.enemies.filter((other) => other.monsterResourceId === enemy.monsterResourceId);
+      if (owners.length === 1) continue;
+      const tails = owners.map((other) => CURRENT_MONSTER_STAND_IN[other.id.replace(/^enemy_/u, "")] ?? other.id.replace(/^enemy_/u, ""));
+      expect(new Set(tails).size, `${enemy.monsterResourceId}: ${owners.map((o) => o.id).join(", ")}`).toBe(1);
+    }
     for (const id of monsterIds) {
       expect(resolveAssetResourceUrl(id), id).toBeTruthy();
     }
