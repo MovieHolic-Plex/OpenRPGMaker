@@ -16,6 +16,7 @@ import { createBlankProject, createStarterBlankProject } from "./defaults";
 // 에디터 인테리어 파이프라인을 끌고, store 를 import 하는 테스트 669개가 그 비용을 물게 된다.
 import { ensureSwitchVariableSlots } from "./defaults/blankProject";
 import { ensureBundledResourceProfiles, ensureBundledTilesets, preloadAllBundledTilesetDefinitions, removeLegacyRmTileset, removeLegacySpriteReferences } from "./defaults/defaultAssets";
+import { ensureCurrentMonsterArt, preloadCurrentMonsterArt } from "@/assets/currentMonsterArt";
 import { reshapeJpCityMapBorders } from "./defaults/jpCityEdgeMigration";
 import { hasPendingFacesetSheetRepair, repairUploadedFacesetSheets } from "@/assets/facesetSheetRepair";
 import { separateInlineUploadedMedia } from "./persistence/inlineMediaRefs";
@@ -2000,6 +2001,8 @@ class ProjectStore {
     // 돌리기 전에 한꺼번에 읽어 둔다 — 건너뛰는 웜 부팅은 읽지 않는다. 기다리는 동안 문서가 바뀌면 아래는 새 문서를 정규화한다.
     const definitions = skipNormalizers ? null : preloadAllBundledTilesetDefinitions();
     if (definitions) await definitions;
+    // 현행 몬스터 그림(5×4 20칸 시트) 데이터도 늦게 읽는다 — 아래 정규화기 currentMonsterArt 가 동기로 설치한다.
+    if (!skipNormalizers) await preloadCurrentMonsterArt();
     // 로드가 미룬 타일셋 요약은 정규화기가 고치기 전에 끝나 있어야 한다(electronRepository).
     if (!skipNormalizers) await this.repository.settleDeferredDigests?.();
     if (!skipNormalizers) forgetTrustedSharedEntries();
@@ -2032,6 +2035,8 @@ class ProjectStore {
       ["bundledBattleAnimations", ensureBundledBattleAnimations(this.current)],
       // 로스터 직업·예비 배우·스킬·기믹 상태 8종 중 빠진 것만 심는다(저자 레코드·시작 파티는 그대로).
       ["retroRoster", ensureRetroRosterRecords(this.current)],
+      // 기본 적이 쓰는 현행 몬스터 id 에 그 그림(초상 + 20칸 시트)을 넣는다 — 같은 id 업로드는 그대로(currentMonsterArt.ts).
+      ["currentMonsterArt", ensureCurrentMonsterArt(this.current)],
       // 걷기 그림과 다른 인물의 얼굴을 짝으로 맞춘다(2026-09-28 전수 조사, faceMatchRepair.ts).
       ["faceMatches", faceMatchesRepaired(repairFaceMatches(this.current))],
     ];
