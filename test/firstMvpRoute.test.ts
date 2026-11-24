@@ -1,4 +1,4 @@
-// 첫 MVP 는 v2 단일(팀 경로는 v2 MVP 관문을 비켜 간다, 2026-11-24 리드 결정), 장르 프리셋 첫 생성만 팀 — 패널 라우팅이 읽는 순수 판정.
+// 첫 MVP 는 팀 실행(팀 finish 가 첫 판 관문을 건다, teamMvp.ts) — 패널 라우팅이 읽는 순수 판정.
 import { describe, expect, it } from "vitest";
 import { createNewProjectSeed } from "@/editor/genrePacks";
 import { buildWelcomeFreeTextPrompt } from "@/editor/welcomeGenrePresets";
@@ -10,11 +10,11 @@ import { MVP_REACHED_SWITCH } from "@/project/gameBlueprint";
 describe("firstMvpRoute", () => {
   const fresh = () => createNewProjectSeed(null);
 
-  it("marks a whole-game request on a fresh project as the first MVP and keeps it on the single v2 run", () => {
+  it("marks a whole-game request on a fresh project as the first MVP and routes it to the team", () => {
     for (const text of ["회상 형 게임 만들어 줘", buildWelcomeFreeTextPrompt("추리 게임 만들어 줘")]) {
       const route = firstMvpRoute(fresh(), text);
       expect(route.firstMvp).toBe(true);
-      expect(route.team).toBe(false);
+      expect(route.team).toBe(true);
     }
   });
 
