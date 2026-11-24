@@ -1,5 +1,5 @@
 /** @vitest-environment happy-dom */
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/autonomyLevels";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 import { resetModalStackForTest } from "@/editor/ui/modalStack";
@@ -22,6 +22,10 @@ vi.mock("@/editor/panels/aiToolUsagePanel", () => ({
 
 let restoreDom: (() => void) | null = null;
 let storage: Map<string, string>;
+
+// 설정 모달의 import 그래프는 크다(CI 4코어 러너에서 첫 import 만 ~19초). 그 한 번의 비용이 첫 테스트의 15초 제한에 얹히지 않도록
+// 훅(hookTimeout 90초)에서 미리 불러 둔다 — test/aiSettingsModalLayout.test.ts 와 같은 방식이다.
+beforeAll(async () => { await import("@/editor/panels/aiSettingsModal"); });
 
 beforeEach(() => {
   restoreDom = installFakeDom();

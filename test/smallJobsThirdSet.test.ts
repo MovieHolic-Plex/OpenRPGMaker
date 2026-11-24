@@ -1,4 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+// 생활(농사·냚시·동물) 시스템이 켜진 상태를 본다 — 이 시험은 판정기를 재는 것이라 손 정답(실제 도구 호출)이 도구를 써야 한다. 기본값(false)이면 농사·냚시 도구 16개가
+// 조수 레지스트리에서 빠진다(#4994 — 실제 작은 일 측정에서 그 과제는 의도적 거절이다). 도구 이름을 아는 다른 시험과 같은 모킹(electron/shared/lifeSim.ts).
+vi.mock("../electron/shared/lifeSim", () => ({ LIFE_SIM_ENABLED: true, LIFE_SIM_CLOSED_TITLE: "", LIFE_SIM_CLOSED_BODY: "", LIFE_SIM_CLOSED_NOTICE: "" }));
 import { runCheck } from "@/harnesses/assistant-capability/node/smallJobs/checks";
 import { freshSession, interact, playPaths } from "@/harnesses/assistant-capability/node/smallJobs/checkSupport";
 import { buildFixture, FIXTURE_IDS, type FixtureId } from "@/harnesses/assistant-capability/node/smallJobs/fixtures";

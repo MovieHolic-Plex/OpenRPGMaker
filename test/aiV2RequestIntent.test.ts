@@ -215,7 +215,11 @@ describe("request intent — one record, every reader agrees", () => {
     for (const [ask] of CORPUS) {
       const intent = classifyRequest(ask, built);
       expect(buildsWholeGame(built, ask)).toBe(intent.wholeGame);
-      expect(wantsWholeGame(ask)).toBe(intent.scope === "wholeGame");
+      // 글만 보는 읽기는 프로젝트를 모른다: 빈 프로젝트의 기록과는 늘 같은 답이다. 지은 게임이 있는 프로젝트에서만 «…게임으로 만들어»·첫 화면 포스터 꼴이
+      // 고치기로 내려간다(intent.ts reshape, #4977) — 그 하나만 글 기록(intoGame)과 달라지고, 그 밖의 요청은 지은 게임이 있어도 같은 답이다.
+      expect(wantsWholeGame(ask)).toBe(classifyRequest(ask, project("blank")).scope === "wholeGame");
+      const text = readRequest(ask);
+      expect(wantsWholeGame(ask)).toBe(intent.scope === "wholeGame" || (text.scope === "wholeGame" && text.intoGame));
       expect(editOnlyRequest(built, ask)).toBe(intent.editOnly);
       expect(CONTINUE_WORDS.test(ask)).toBe(intent.continuation);
       // 글만 보는 읽기 함수는 글의 기록과 같다. 프로젝트를 같이 본 기록은 게임 하나를 잇는 이어 하기와 지은 것을 고치는 작은 일에 게임 도구를 더한다.

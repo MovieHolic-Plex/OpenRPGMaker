@@ -69,7 +69,9 @@ function selectedEvent(body: string): GameEvent {
 
 beforeEach(() => {
   _resetEventDraftVaultForTest();
-  restoreDom = installFakeDom();
+  // 브라우저에서는 전역 requestAnimationFrame 이 있다 — 플레이 창의 게임 메뉴 감시(watchGameMenuPause)가 DOM 변경마다 그 전역을 부른다.
+  // 전역이 없으면 가짜 MutationObserver 의 마이크로태스크가 ReferenceError 를 처리되지 않은 오류로 낸다. 수동 프레임은 부르기만 받고 돌리지 않는다.
+  restoreDom = installFakeDom({ animationFrames: "manual" });
   previousWindow = Object.getOwnPropertyDescriptor(globalThis, "window");
   Object.defineProperty(globalThis, "window", {
     configurable: true,

@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import {
   computeMapViewport,
   formatViewportContextBlock,
@@ -9,6 +9,9 @@ import { createBlankMap, createBlankProject } from "@/project/defaults";
 import { buildSystemPrompt } from "@/ai/contextBuilder";
 import { defaultAiConfig } from "@/ai/llmClient";
 import { fixedDeclarer } from "./intentFixture";
+// createBlankProject() 는 호출마다 약 80MB 를 새로 만든다(test/support/blankProject.ts 머리말) — 이 파일의 느린 케이스는 한 케이스에 그것을 여러 번 부르거나 부르는 제품 함수를 돌려
+// CI(4코어 호스티드 러너)에서 11~15초가 걸려 기본 15초 제한에 걸리거나 닿을 듯하다. 판정은 그대로 두고 제한만 이 파일의 다른 무거운 시험과 같이 넓힌다.
+vi.setConfig({ testTimeout: 120_000 });
 
 describe("computeMapViewport", () => {
   const map = { id: "map_a", width: 40, height: 30 };
