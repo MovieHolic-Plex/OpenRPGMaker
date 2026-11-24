@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import path from "path";
+import { revealDbRailTab } from "./dbRail";
 
 const ARTIFACT_DIR = "C:/Users/USER/.gemini/antigravity-cli/brain/fd8cdbaf-262f-4f68-9419-ed9ae9afe24d";
 
@@ -26,6 +27,7 @@ test("Verify Battle Enhancements (Juice, Speed, Auto, and Quick Battle Modal)", 
   await page.waitForTimeout(500);
 
   // Click '적 그룹' (Troops) tab
+  await revealDbRailTab(page, "troops");
   const troopsTab = page.getByTestId("db-tab-troops");
   if (await troopsTab.isVisible()) {
     await troopsTab.click();

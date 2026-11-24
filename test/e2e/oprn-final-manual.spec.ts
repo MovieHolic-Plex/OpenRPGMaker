@@ -16,6 +16,7 @@ import {
   winBattle,
 } from "./oprn-final-manual-helpers";
 import { startNewGameFromTitle } from "./runtimeInput";
+import { revealDbRailTab } from "./dbRail";
 
 test.setTimeout(90_000);
 
@@ -26,6 +27,7 @@ test("final manual QA covers RM2K3 editor surfaces and sample game end to end", 
 
   await openEveryDatabaseTab(page);
   await page.getByTestId("toolbar-database").click();
+  await revealDbRailTab(page, "actors");
   await page.getByTestId("db-tab-actors").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("database-modal-actors.png"), fullPage: true });

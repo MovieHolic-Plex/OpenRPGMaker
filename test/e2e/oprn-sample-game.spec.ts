@@ -3,6 +3,7 @@ import { writeFile } from "node:fs/promises";
 import { deserialize, serialize } from "@/project/io";
 import type { Project } from "@/project/types";
 import { startNewGameFromTitle } from "./runtimeInput";
+import { revealDbRailTab } from "./dbRail";
 
 type RuntimeState = {
   readonly mapId: string;
@@ -125,24 +126,30 @@ test("RM2K3 sample fixture loads in the editor, exports cleanly, and plays title
   await page.getByTestId("resource-modal-close").click();
 
   await page.getByTestId("toolbar-database").click();
+  await revealDbRailTab(page, "skills");
   await page.getByTestId("db-tab-skills").click();
   await page.getByTestId("db-add-record").click();
   await page.getByTestId("db-field-name").fill("QA 불꽃");
   await page.getByTestId("db-field-power").fill("17");
+  await revealDbRailTab(page, "enemies");
   await page.getByTestId("db-tab-enemies").click();
   await page.getByTestId("db-add-record").click();
   await page.getByTestId("db-field-name").fill("QA 슬라임");
   await page.getByTestId("db-picker-skill").selectOption({ label: "QA 불꽃" });
+  await revealDbRailTab(page, "troops");
   await page.getByTestId("db-tab-troops").click();
   await page.getByTestId("db-add-record").click();
   await page.getByTestId("db-field-name").fill("QA 적 그룹");
   await page.getByTestId("db-picker-troop-member-enemy").selectOption({ label: "QA 슬라임" });
+  await revealDbRailTab(page, "actors");
   await page.getByTestId("db-tab-actors").click();
   await page.getByRole("button", { name: /미라/ }).click();
   await expect(page.getByTestId("db-field-name")).toHaveValue("미라");
+  await revealDbRailTab(page, "troops");
   await page.getByTestId("db-tab-troops").click();
   await page.getByRole("button", { name: /동굴 슬라임 무리/ }).click();
   await expect(page.getByTestId("db-field-name")).toHaveValue("동굴 슬라임 무리");
+  await revealDbRailTab(page, "common-events");
   await page.getByTestId("db-tab-common-events").click();
   await expect(page.getByTestId("db-detail-form")).toContainText("ce_blessing");
   await expect(page.getByTestId("db-detail-form")).toContainText("스위치 조작");

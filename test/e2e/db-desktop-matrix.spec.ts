@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { revealDbRailTab } from "./dbRail";
 
 // todo 16 최종 데스크톱 매트릭스 증거 — 1024×768 / 1280×800 / 1440×900 에서
 // DB 모달의 핵심 흐름(오픈 → 사이드바 그룹 이동 → 갤러리 → 필터 칩 → 아이템 슬라이더 편집
@@ -54,7 +55,9 @@ for (const { width, height } of VIEWPORTS) {
     // ── 2. 사이드바 그룹 내비 ──
     const groupLabels = await page.locator(".db-tab-group-label").allTextContents();
     expect(groupLabels).toEqual(["이야기", "파티", "전투", "맵", "생활", "시스템"]);
+    await revealDbRailTab(page, "overview");
     await expect(page.getByTestId("db-tab-overview")).toBeVisible();
+    await revealDbRailTab(page, "items");
     await expect(page.getByTestId("db-tab-items")).toBeVisible();
     // 1024px 바닥 계약: 모달 창 가로 스크롤 없음.
     const noHScroll = await page.evaluate(() => {
@@ -66,6 +69,7 @@ for (const { width, height } of VIEWPORTS) {
     await shot("02-sidebar");
 
     // ── 3. 갤러리 뷰 (items 는 기본 갤러리) ──
+    await revealDbRailTab(page, "items");
     await page.getByTestId("db-tab-items").click();
     await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
     await expect(page.getByTestId("db-view-toggle-gallery")).toBeVisible();
@@ -106,6 +110,7 @@ for (const { width, height } of VIEWPORTS) {
     await shot("05-item-edit");
 
     // ── 6. 시스템 타입칩 매트릭스 ──
+    await revealDbRailTab(page, "system");
     await page.getByTestId("db-tab-system").click();
     await expect(page.getByTestId("db-system-section-nav")).toBeVisible();
     await page.getByTestId("db-system-nav-typechart").click();
@@ -121,6 +126,7 @@ for (const { width, height } of VIEWPORTS) {
     await shot("06-typechart");
 
     // ── 7. overview 대시보드 (idle 이후 차트 등장) ──
+    await revealDbRailTab(page, "overview");
     await page.getByTestId("db-tab-overview").click();
     await expect(page.getByTestId("db-overview-stat-items")).toBeVisible();
     // 곡선/산점도는 requestIdleCallback(폴백 200ms) 뒤 주입된다 — 요소 가시성만 대기한다.

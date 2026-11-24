@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { revealDbRailTab } from "./dbRail";
 
 test("RM2K3 database record list resets modal state and has no decorative fillers", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
@@ -8,6 +9,7 @@ test("RM2K3 database record list resets modal state and has no decorative filler
   await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
 
+  await revealDbRailTab(page, "skills");
   await page.getByTestId("db-tab-skills").click();
   const skillRows = page.locator('[data-testid^="db-record-row-"]');
   await expect(skillRows.nth(1)).toBeVisible();
@@ -19,15 +21,18 @@ test("RM2K3 database record list resets modal state and has no decorative filler
   await page.getByTestId("toolbar-database").click();
   await expect(page.locator('[data-testid^="db-record-row-"]').first()).toHaveAttribute("aria-pressed", "true");
 
+  await revealDbRailTab(page, "actors");
   await page.getByTestId("db-tab-actors").click();
   const actorSearch = page.locator(".db-search input").first();
   await actorSearch.fill("Hero");
   await expect(actorSearch).toHaveValue("Hero");
+  await revealDbRailTab(page, "skills");
   await page.getByTestId("db-tab-skills").click();
   await expect(page.locator(".db-search input").first()).toHaveValue("");
 
   // 가짜 직업 채움 행("마검사"/"기사"/... 비활성 장식 행)은 fix(db)에서 제거됐다 — 목록은
   // 실제 레코드 개수만큼만 렌더된다.
+  await revealDbRailTab(page, "classes");
   await page.getByTestId("db-tab-classes").click();
   await expect(page.locator(".db-list-row-visual-filler")).toHaveCount(0);
   const classRows = page.locator('[data-testid^="db-record-row-"]');

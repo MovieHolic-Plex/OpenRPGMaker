@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { applyDatabaseChanges, closeAndReopenDatabase, exportedProject, openAnimationsSubview, openDatabase } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 test.setTimeout(90_000);
 
@@ -57,6 +58,7 @@ test("RM2K3 resource animation and tileset tabs persist canonical project edits"
   await page.getByTestId("db-field-animation-position").selectOption("screen");
   await page.getByTestId("db-field-animation-large").check();
 
+  await revealDbRailTab(page, "tilesets");
   await page.getByTestId("db-tab-tilesets").click();
   await page.getByTestId("tileset-oprn-name").locator("input").fill("Town Proof Tileset");
   await page.getByTestId("tileset-field-terrain-tag").fill("7");
@@ -90,6 +92,7 @@ test("RM2K3 resource animation and tileset tabs persist canonical project edits"
 
   await openAnimationsSubview(page);
   await expect(page.getByTestId("db-field-name")).toHaveValue("Impact Burst");
+  await revealDbRailTab(page, "tilesets");
   await page.getByTestId("db-tab-tilesets").click();
   await expect(page.getByTestId("tileset-oprn-name").locator("input")).toHaveValue("Town Proof Tileset");
   await expect(page.getByTestId("tileset-field-ai-label")).toHaveValue("Proof grass edge");

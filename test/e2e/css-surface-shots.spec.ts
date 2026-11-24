@@ -4,6 +4,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { mockupProject } from "./mockupProbeSeeds";
 import { seedProjectForEditor } from "./projectSeed";
 import { LIFE_SIM_ENABLED } from "../../electron/shared/lifeSim";
+import { revealDbRailTab } from "./dbRail";
 
 // 레일 버튼은 database.ts 의 tabs 레지스트리가 이미 `db-tab-<kebab>` testid 를 붙인다 — 그 이름을 그대로 쓴다.
 const NAV_TESTID = (tab: string) => `db-tab-${tab.replace(/[A-Z]/g, (ch) => `-${ch.toLowerCase()}`)}`;
@@ -163,6 +164,7 @@ async function navigateDbTab(page: Page, tab: string) {
     return;
   }
   if (SEARCH_ONLY.has(tab)) {
+    await revealDbRailTab(page);
     await page.getByTestId("db-tab-search").fill(tab.toLowerCase());
     const nav = page.getByTestId(NAV_TESTID(tab));
     await expect(nav, `search result for ${tab}`).toHaveCount(1);

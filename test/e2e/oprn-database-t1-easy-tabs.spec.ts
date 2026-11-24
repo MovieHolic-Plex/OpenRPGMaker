@@ -1,5 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { expect, test, type Page } from "@playwright/test";
+import { revealDbRailTab } from "./dbRail";
 import {
   DATABASE_TAB_SPECS,
   applyDatabaseChanges,
@@ -143,6 +144,7 @@ function databaseTabs(testIds: readonly string[]): readonly DatabaseTabSpec[] {
 }
 
 async function editElement(page: Page): Promise<void> {
+  await revealDbRailTab(page, "elements");
   await page.getByTestId("db-tab-elements").click();
   await page.getByTestId("db-elements-row-0").click();
   await page.getByTestId("db-field-element-name-selected").fill("T1 Strike");
@@ -152,6 +154,7 @@ async function editElement(page: Page): Promise<void> {
 }
 
 async function editTerrain(page: Page): Promise<void> {
+  await revealDbRailTab(page, "terrain");
   await page.getByTestId("db-tab-terrain").click();
   await page.getByTestId("db-field-terrain-name-0").fill("T1 Grass");
   await page.getByTestId("db-field-terrain-damage-0").fill("9");
@@ -161,6 +164,7 @@ async function editTerrain(page: Page): Promise<void> {
 }
 
 async function editBattleCommand(page: Page): Promise<void> {
+  await revealDbRailTab(page, "battle-commands");
   await page.getByTestId("db-tab-battle-commands").click();
   await page.getByTestId("db-field-battle-command-name-0").fill("T1 Fight");
   await page.getByTestId("db-field-battle-command-kind-0").selectOption("skillSubset");
@@ -169,17 +173,20 @@ async function editBattleCommand(page: Page): Promise<void> {
 }
 
 async function editTerms(page: Page): Promise<void> {
+  await revealDbRailTab(page, "terms");
   await page.getByTestId("db-tab-terms").click();
   await page.getByTestId("db-field-gold").fill("Credits");
   await page.getByTestId("db-field-skill-term").fill("Arts");
 }
 
 async function editSwitches(page: Page): Promise<void> {
+  await revealDbRailTab(page, "switches");
   await page.getByTestId("db-tab-switches").click();
   await renameFirstUtilityDefinition(page, "T1 Switch", "T1 Door Open");
 }
 
 async function editVariables(page: Page): Promise<void> {
+  await revealDbRailTab(page, "variables");
   await page.getByTestId("db-tab-variables").click();
   await renameFirstUtilityDefinition(page, "T1 Variable", "T1 Score");
 }
@@ -194,6 +201,7 @@ async function renameFirstUtilityDefinition(page: Page, prefix: string, name: st
 }
 
 async function editSystem(page: Page): Promise<void> {
+  await revealDbRailTab(page, "system");
   await page.getByTestId("db-tab-system").click();
   await page.getByTestId("db-field-title-resource").fill("easyrpg-title-blue");
   await page.getByTestId("db-field-title-screen-title").fill("T1 Title");
@@ -207,6 +215,7 @@ async function editSystem(page: Page): Promise<void> {
 }
 
 async function editCommonEvents(page: Page): Promise<void> {
+  await revealDbRailTab(page, "common-events");
   await page.getByTestId("db-tab-common-events").click();
   await page.getByRole("button", { name: "+ 공통 이벤트 추가" }).click();
   await page.locator(".db-common-event-detail-pane .db-row input").fill("T1 Common Event");

@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { exportedProject } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 test("Troops battle event editor offers desktop encounter template and quality warnings", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
@@ -7,6 +8,7 @@ test("Troops battle event editor offers desktop encounter template and quality w
 
   await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
+  await revealDbRailTab(page, "troops");
   await page.getByTestId("db-tab-troops").click();
   // 2026-09: 전투 이벤트는 「전투 이벤트」 구획 탭 안에 있다.
   await page.getByTestId("db-troop-section-events-tab").click();

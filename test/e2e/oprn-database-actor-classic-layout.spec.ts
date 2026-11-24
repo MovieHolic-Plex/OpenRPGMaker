@@ -1,10 +1,12 @@
 import { expect, test } from "@playwright/test";
+import { revealDbRailTab } from "./dbRail";
 
 test("actor database uses Korean classic RPG Maker actor sheet layout", async ({ page }) => {
   await page.setViewportSize({ width: 1000, height: 640 });
   await page.goto("/?freshProject=1");
 
   await page.getByTestId("toolbar-database").click();
+  await revealDbRailTab(page, "actors");
   await page.getByTestId("db-tab-actors").click();
 
   const modal = page.getByTestId("database-modal");

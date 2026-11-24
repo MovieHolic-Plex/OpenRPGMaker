@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { revealDbRailTab } from "./dbRail";
 
 // 맵 → 타일 작업대 레이아웃 회귀 (2026-09-13).
 //
@@ -23,6 +24,7 @@ async function openTilesTab(page: Page): Promise<void> {
   const mapGroup = page.getByTestId("db-tab-group-world");
   await mapGroup.evaluate((node) => node.scrollIntoView({ block: "center" }));
   if ((await mapGroup.getAttribute("aria-expanded")) !== "true") await mapGroup.click();
+  await revealDbRailTab(page, "spatial-tiles");
   const tilesTab = page.getByTestId("db-tab-spatial-tiles");
   await tilesTab.evaluate((node) => node.scrollIntoView({ block: "center" }));
   await tilesTab.click();

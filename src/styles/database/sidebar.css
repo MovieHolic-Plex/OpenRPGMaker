@@ -990,3 +990,25 @@
     width: 100vw;
   }
 }
+
+/* 레일 접기 (btn-vqa-db PR 7, 오너 확인 2026-11-24) — 묶음 아이콘 띠만 늘 보이고, 탭 목록(.db-tabs)은
+   묶음을 눌렀을 때만 띠 옆에 겹쳐 뜬다. 닫혀 있으면 상자를 아예 빼서 탭 순서·조작 수에 잡히지 않는다.
+   열림·닫힘은 database.ts 의 setRailOpen 이 .database-modal-body 의 data-rail-open 으로 정한다.
+   띠가 없는 좁은 창(799px 이하)·도크에서는 아이콘 목록이 유일한 길이라 접지 않는다. */
+@container db-modal (min-width: 800px) {
+  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body[data-rail-open] {
+    position: relative;
+  }
+
+  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body[data-rail-open="0"] > .db-tabs {
+    display: none;
+  }
+
+  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body[data-rail-open="1"] > .db-tabs {
+    bottom: 0;
+    box-shadow: 8px 0 24px rgb(15 23 42 / 16%);
+    position: absolute;
+    top: 0;
+    z-index: 40;
+  }
+}

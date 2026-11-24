@@ -1,5 +1,6 @@
 import { expect, firefox, test } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
+import { revealDbRailTab } from "./dbRail";
 
 test("items and equipment expose usable settings and keep summaries synchronized", async ({ baseURL }) => {
   test.setTimeout(300_000);
@@ -18,6 +19,7 @@ test("items and equipment expose usable settings and keep summaries synchronized
     }
     console.log("editor ready");
     await page.getByTestId("toolbar-database").click();
+    await revealDbRailTab(page, "items");
     await page.getByTestId("db-tab-items").click();
     await expect(page.getByTestId("db-field-item-type").locator('option[value="weapon"]')).toHaveCount(0);
     await expect(page.getByTestId("db-field-item-farm-tool")).toHaveCount(0);
@@ -27,6 +29,7 @@ test("items and equipment expose usable settings and keep summaries synchronized
     for (const width of [1280, 1024, 1440]) {
       await page.setViewportSize({ width, height: width === 1024 ? 768 : width === 1280 ? 800 : 900 });
       for (const tab of ["items", "equipment"]) {
+        await revealDbRailTab(page, "items");
         await page.getByTestId("db-tab-items").click();
         await page.getByTestId(`db-catalog-filter-${tab}`).click();
         await page.locator(`.db-catalog-rows [data-collection="${tab}"]`).first().click();
@@ -47,6 +50,7 @@ test("items and equipment expose usable settings and keep summaries synchronized
         }
       }
     }
+    await revealDbRailTab(page, "items");
     await page.getByTestId("db-tab-items").click();
     await page.getByTestId("db-catalog-filter-items").click();
     await page.locator('.db-catalog-rows [data-collection="items"]').first().click();
