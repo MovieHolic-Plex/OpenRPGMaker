@@ -270,6 +270,9 @@ jobs:
           exec "$OPRN_7ZIP" "$@"
           EOF
           chmod +x "$wrapper"
+          # NSIS 설치판의 언인스톨러 꺼내기는 wine 을 부른다. 러너에 wine 이 없어 순수 JS 대체를 "wine" 으로 잡힌다
+          # (scripts/nsis-wine-shim/extract-uninstaller.cjs).
+          export PATH="$PWD/scripts/nsis-wine-shim:$PATH" USE_SYSTEM_WINE=true
           ELECTRON_BUILDER_7ZIP_PATH="$wrapper" npx --no-install electron-builder \
             --config scripts/electron-builder.config.mjs --publish never \
             --linux AppImage --win nsis portable --x64 \

@@ -144,6 +144,9 @@ try {
     npm_config_audit: "false",
     // -mx=9 가 코어 수만큼 사전을 잡아 메모리를 먹는다. 래퍼가 -mmemuse 를 붙인다.
     ELECTRON_BUILDER_7ZIP_PATH: join(dirname(fileURLToPath(import.meta.url)), "7za-memcap.sh"),
+    // NSIS 설치판의 언인스톨러 꺼내기를 wine 없이 한다(scripts/nsis-wine-shim/extract-uninstaller.cjs).
+    PATH: `${join(buildDir, "scripts/nsis-wine-shim")}:${process.env.PATH ?? ""}`,
+    USE_SYSTEM_WINE: "true",
   };
   execFileSync("npm", ["ci"], { cwd: buildDir, stdio: "inherit", env });
   execFileSync("node", ["scripts/build-electron.mjs"], { cwd: buildDir, stdio: "inherit", env });
