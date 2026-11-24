@@ -86,9 +86,18 @@ export function runShort(binary: string, args: readonly string[], timeoutMs = 20
   return { ok: !out.error && out.status === 0, stdout: out.stdout ?? "", stderr: out.stderr ?? "" };
 }
 
-/** 모델 요청이 일시적으로 거절됐는가(용량·속도 제한) — 같은 차례를 잠시 뒤 다시 보낼 만한 오류. */
+/**
+ * 계정 사용 한도가 다 떨어졌는가 — 몇 시간·며칠 뒤에야 풀리므로 몇십 초 뒤 다시 보내도 같은 거절이다.
+ * 2026-11-24 draft-10min 실측: codex CLI 는 「You've hit your usage limit … try again at Nov 27th」를 4초 만에 돌려주는데,
+ * 아래 «try again» 이 이것을 일시 오류로 읽어 8·16·24·32·40초 쉬며 5번 다시 보냈다 — 화면 검수 한 판마다 약 140초가 빈 답으로 사라졌다.
+ */
+export function isHardQuotaCliError(message: string | undefined): boolean {
+  return !!message && /usage limit|purchase more credits|try again (?:at|on|in ~?\d+ ?(?:min|hour|day))/iu.test(message);
+}
+
+/** 모델 요청이 일시적으로 거절됐는가(용량·속도 제한) — 같은 차례를 잠시 뒤 다시 보낼 만한 오류. 계정 한도 소진(isHardQuotaCliError)은 아니다. */
 export function isTransientCliError(message: string | undefined): boolean {
-  return !!message && /at capacity|high demand|overloaded|rate.?limit|429|503|temporarily unavailable|try again/iu.test(message);
+  return !!message && !isHardQuotaCliError(message) && /at capacity|high demand|overloaded|rate.?limit|429|503|temporarily unavailable|try again/iu.test(message);
 }
 
 export const sleep = (ms: number, signal?: AbortSignal) => new Promise<void>((resolve) => {
