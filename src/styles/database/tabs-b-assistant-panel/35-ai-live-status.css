@@ -126,12 +126,13 @@
 .ai-run-todo.is-done .ai-run-todo-mark { color: var(--success); }
 .ai-run-todo.is-dropped { text-decoration: line-through; }
 .ai-run-todo-mark { flex: none; width: 1em; text-align: center; }
-.ai-run-stream-previews { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 120px)); gap: var(--space-2); }
+.ai-run-stream-previews { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: var(--space-2); }
 .ai-run-previews-head { grid-column: 1 / -1; margin: 0; color: var(--text-2); font-size: var(--font-size-xs); }
 .ai-run-preview {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  max-width: 160px;
   padding: 0;
   border: 2px solid var(--lane);
   border-radius: var(--radius-s);

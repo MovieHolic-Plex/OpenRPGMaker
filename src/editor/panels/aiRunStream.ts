@@ -159,7 +159,8 @@ export function createAiRunStream(options: AiRunStreamOptions): AiRunStream {
         children: [cached.node, el("span", { class: "ai-run-preview-who", text: [lane?.title, lane?.mapName ?? options.mapName?.(mapId)].filter(Boolean).join(" · ") }), el("span", { class: "ai-run-preview-tool", text: line })],
       }), lane);
     });
-    previews.replaceChildren(el("p", { class: "ai-run-previews-head", text: `일꾼 미리보기 · ${snap.lanes.filter((l) => l.state === "running" && l.role !== "orchestrator").length} 작업 중` }), ...cards);
+    const working = snap.lanes.filter((l) => l.state === "running" && l.role !== "orchestrator").length;
+    previews.replaceChildren(el("p", { class: "ai-run-previews-head", text: working ? `일꾼 미리보기 · ${working} 작업 중` : "일꾼 미리보기" }), ...cards);
   };
 
   const paintTodos = (snap: TimelineSnapshot): void => {
