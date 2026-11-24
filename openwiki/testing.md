@@ -94,7 +94,7 @@
 - 왜: PR 에는 ci-fast 만 돌고 전체 vitest(약 3,000파일, 시험 시간 합 16.5시간)는 ci-full 이 4시간마다 돈다. «내가 바꾼 코드의 시험» 이 빨간 채 머지돼 한참 뒤에야 잡혔다.
   `npm run test:changed`(vitest --changed)는 import 그래프를 끝까지 타서 소요가 예측 불가라 PR 게이트로 쓰지 않는다. 실측(최근 PR 20건, `test-diet-ci`):
   이행적 폐포는 평균 약 2,000파일(허브 `src/ai/oauth/credentials.ts` 가 시험의 91% 에 닿는다), 깊이 2 는 중앙 21분, **깊이 1 은 중앙 12파일·약 4분·p75 8.5분·최대 252파일·97분**.
-- 무엇: `.github/workflows/ci-related-tests.yml`(잡 `related-tests`, `pull_request` → main, mdc2-heavy, 타임아웃 15분)이 `node scripts/vitest-related.mjs` 로 시험을 고른 뒤
+- 무엇: `.github/workflows/ci-related-tests.yml`(잡 `related-tests`, `pull_request` → main, GitHub 호스티드 ubuntu-latest, 타임아웃 15분)이 `node scripts/vitest-related.mjs` 로 시험을 고른 뒤
   `node scripts/run-vitest.mjs run --configLoader bundle <파일들>` 로 돌린다. 설정은 `ci-vitest-files` 와 같다(linux-ci·bun 1.4.2·numpy/Pillow venv). 워커 2.
 - 고르는 법(깊이 1, 우선순위 순): ① 바뀐 시험 파일 ② 바뀐 파일을 **직접** import 하는 `test/**/*.test.ts`(상대 경로·`@/`→`src/`·`.ts .mts .tsx .js .mjs`·index 파일·`./x.js`→`x.ts`·`vi.mock`·`import()`·`require()` 의 문자열 한정자)
   ③ 코드가 아닌 바뀐 파일(json·css·png·md …)의 경로·이름을 문자열 리터럴로 든 시험(`index.json` 같이 흔한 이름은 «상위폴더/이름» 이 같아야). `vitest.config.ts` 의 include/exclude(`*.bun`·`*.quarantine`·`*.browser`·`lakeVillageRebuildFinal`)는 그대로 거른다.
