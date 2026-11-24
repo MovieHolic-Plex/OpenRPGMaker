@@ -7,8 +7,10 @@ import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import type { PrimitiveContext } from "@/editor/smallTask/primitives/types";
 import { dbTarget as findDbTarget, mapTarget as findMapTarget, type SmallTaskCollection, type SmallTaskTarget } from "@/editor/smallTask/target";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
+import { createBlankProject } from "@/project/defaults/blankProject";
 import { buildFixture } from "@/harnesses/assistant-capability/node/smallJobs/fixtures";
 import { createInterpreter, type StepResult } from "@/player/interpreter";
+import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { createMaouKonbiniFlagshipDemo } from "@/project/flagship/maouKonbini";
 import { runtimeEventViewById } from "@/project/runtimeEventState";
 import { startSession } from "@/project/session";
@@ -16,7 +18,7 @@ import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 
-export function loadFixture(fixture: FixtureName): Project {
+function buildFixtureProject(fixture: FixtureName): Project {
   switch (fixture) {
     case "blank": return createEmptyToolProject();
     case "built": return buildFixture("built");
@@ -24,6 +26,35 @@ export function loadFixture(fixture: FixtureName): Project {
     default: throw new Error("검수 자료 이름을 확인해 주세요.");
   }
 }
+
+// Building a fixture costs 0.5 s (blank, built) to 30 s (maou) and a plain structuredClone of the result about 0.4 s. Every case used to
+// pay one of them. Each fixture is built once per worker and never handed out; callers get an independent copy that shares only the
+// tileset and uploaded-asset entries, which the store contract (projectClone.ts) forbids editing in place.
+const fixtureMasters = new Map<FixtureName, Project>();
+
+export function loadFixture(fixture: FixtureName): Project {
+  let master = fixtureMasters.get(fixture);
+  if (!master) {
+    master = buildFixtureProject(fixture);
+    fixtureMasters.set(fixture, master);
+  }
+  return cloneProjectSharingSharedDictionaries(master);
+}
+
+let blankMaster: Project | undefined;
+
+/** `createBlankProject()` costs about as much as a fixture build, so build it once per worker and hand out copies like `loadFixture`. */
+export function createBlankProjectCopy(): Project {
+  blankMaster ??= createBlankProject();
+  return cloneProjectSharingSharedDictionaries(blankMaster);
+}
+
+/**
+ * Independent copy of a whole project for before/after comparisons and tampered variants. Tilesets and uploaded assets stay shared with
+ * the source: they are frozen once a primitive has run on the project and the store never edits them in place, so a plain
+ * `structuredClone` (about 0.4 s per call for the bundled tilesets) buys nothing here.
+ */
+export const cloneProject = cloneProjectSharingSharedDictionaries;
 
 export function setupCorpusProject(fixture: Project, entry: CorpusCase): Project {
   let project = fixture;

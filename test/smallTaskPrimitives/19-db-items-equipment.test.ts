@@ -21,7 +21,7 @@ import { goodsIndex } from "@/player/playSceneShopGoods";
 import { useItemFromMenu } from "@/player/playerItemUse";
 import { applySaveSnapshot, createSaveSnapshot, snapshotLoadBlocker } from "@/player/saveSlots";
 import { normalizeEquipmentRecord, normalizeItemRecord, normalizeTroopRecord } from "@/project/databaseRecordModel";
-import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { activeItemEffects } from "@/project/itemUsage";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
@@ -31,7 +31,7 @@ import * as idGenerator from "@/util/id";
 import { initLocalProjectStore, openLocalProjectStore } from "../../electron/local-store/store";
 import corpus from "../../harness-data/small-task-corpus/19-db-items-equipment.json";
 import slotCorpus from "./19-db-items-equipment/slots-corpus.json";
-import { expectApplies, expectUndoRestores, loadFixture, setupCorpusProject } from "./harness";
+import { createBlankProjectCopy, expectApplies, expectUndoRestores, loadFixture, setupCorpusProject } from "./harness";
 
 type Collection = "items" | "equipment" | "equipmentSlots" | "elements";
 type Args = Record<string, unknown>;
@@ -222,7 +222,7 @@ describe("자료집 프리미티브", () => {
 
   it.each([["items", "item_small_1"], ["equipment", "equip_small_1"]] as const)(
     "예전 플레이 세이브의 %s 수량은 같은 종류의 새 행에 붙지 않는다", (collection, legacyId) => {
-      const project = createBlankProject();
+      const project = createBlankProjectCopy();
       if (collection === "items") project.database.items.push(normalizeItemRecord({ id: legacyId, name: "예전 물약" }));
       else project.database.equipment.push(normalizeEquipmentRecord({ id: legacyId, name: "예전 장비" }));
       const session = startSession(project, 19);
@@ -273,7 +273,7 @@ describe("자료집 프리미티브", () => {
 
   it("이벤트·장비·속성 연결과 기본 장비 칸을 삭제로부터 보호한다", () => {
     const project = setup("blank");
-    const blankMap = createBlankProject();
+    const blankMap = createBlankProjectCopy();
     const map = blankMap.maps[blankMap.startMapId];
     project.maps = { [map.id]: map };
     project.startMapId = map.id;
@@ -294,7 +294,7 @@ describe("자료집 프리미티브", () => {
 
   it.each(["new", "edit"] as const)("열린 %s 이벤트 초안에서 사용하는 아이템은 도구와 적용 단계에서 삭제를 막는다", async kind => {
     const project = setup("blank");
-    const map = createBlankProject();
+    const map = createBlankProjectCopy();
     const original: GameEvent = {
       id: "event_test_draft", name: "약 상자", x: 1, y: 1, trigger: { kind: "action" }, commands: [],
     };
@@ -675,7 +675,7 @@ describe("자료집 작은 일 진입점", () => {
   });
 
   it("기본 장비 칸과 속성의 편집 결과가 SQLite 재로드 뒤에도 유지된다", async () => {
-    const project = createBlankProject();
+    const project = createBlankProjectCopy();
     delete project.database.equipmentSlots;
     const { id } = project.database.elements![0];
     const slot = dbTarget(project, "equipmentSlots", "weapon")!;
