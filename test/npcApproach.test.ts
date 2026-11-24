@@ -21,7 +21,7 @@ const delta = (kind: Component, amount: number) => kind === "gold" ? { gold: amo
   : kind === "item" ? { inventory: { [ITEM]: amount } } : { monsters: { [SPECIES]: amount } };
 
 function approachFixture(kind: Component = "gold", earlyAmount = 20, explicit = false) {
-  const f = prerequisiteFixture();
+  const f = prerequisiteFixture({ shareTilesets: true });
   f.requirement = { ...f.requirement, grants: [grant(kind)] };
   f.prelude.splice(0);
   f.chief.pages = [
@@ -84,7 +84,7 @@ describe("bound NPC interactions before the protected claim snapshot", { timeout
   });
 
   it("a nested foreign chaser cannot retire the early NPC interaction's baseline", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const arrival = page("arrival", [{ kind: "setSwitch", switchId: "arrived", value: true }], [], { kind: "eventTouch" }, false);
     arrival.movement = { type: "chase", speed: 3, frequency: 8, pathfind: false };
     f.village.events.push(event("arrival", 6, 3, [arrival,
@@ -98,7 +98,7 @@ describe("bound NPC interactions before the protected claim snapshot", { timeout
   });
 
   it.each(["gold", "item", "monster"] as const)("allows an unrelated prerequisite chest's legitimate %s reward", kind => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     f.requirement = { ...f.requirement, grants: [grant(kind)] };
     f.chest.pages![0].commands.unshift(...reward(kind));
     f.chief.pages![1].commands.splice(0, 1, ...reward(kind));

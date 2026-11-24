@@ -6,7 +6,7 @@ import { fixedDeclarer } from "./intentFixture";
 import { approvedReviewResponse, independentReviewPayload } from "./independentReviewFixture";
 import { AssistantSession, type RunEndProofState } from "@/ai/assistantSession";
 import { store } from "@/project/store";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 
