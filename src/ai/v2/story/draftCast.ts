@@ -109,7 +109,9 @@ function templateActor(project: Project, chips: ReadonlySet<string>): ActorRecor
 
 /** 쓰인 칩(파티·맵 위 사람) — 동료가 같은 얼굴로 서지 않게. */
 function usedChips(project: Project): Set<string> {
-  const used = new Set<string>(project.database.actors.map((a) => `${a.characterResourceId}#${a.characterIndex ?? 0}`));
+  const party = new Set(project.system.startActorIds ?? []);
+  // 자료집의 기본 배우 136명은 모두 같은 칩 목록을 쓴다 — 그것까지 세면 쓸 칩이 하나도 남지 않아 동료가 주인공을 그대로 본뜬다(CI 2026-11-24).
+  const used = new Set<string>(project.database.actors.filter((a) => party.has(a.id) || a.id.startsWith(`actor_${DRAFT_ID}_`)).map((a) => `${a.characterResourceId}#${a.characterIndex ?? 0}`));
   for (const map of Object.values(project.maps)) for (const ev of map.events ?? []) for (const page of ev.pages ?? []) {
     const g = page.graphic as { sprite?: { id?: string }; pattern?: number } | undefined;
     const asset = g?.sprite?.id ? findCharsetAsset(g.sprite.id) : undefined;
