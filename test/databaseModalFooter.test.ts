@@ -50,6 +50,9 @@ describe("database modal footer — honest auto-save UI", () => {
     expect(menu?.hidden).toBe(false);
     expect(["database-dock-toggle", "database-modal-maximize", "database-footer-help", "database-footer-undo"]
       .every((testid) => menu?.querySelector(`[data-testid='${testid}']`))).toBe(true);
+    // 메뉴 밖(본문)을 누르면 닫힌다 — 열린 채로 남아 오른쪽 칸을 가리던 결함.
+    document.querySelector<HTMLElement>(".database-modal-body")?.dispatchEvent(new Event("pointerdown", { bubbles: true }));
+    expect(menu?.hidden).toBe(true);
     expect(document.querySelector("[data-testid='database-footer-cancel']")).toBeNull();
 
     const applyButton = document.querySelector<HTMLElement>(`[data-testid='${DATABASE_FOOTER_ACTION_TEST_IDS.apply}']`);

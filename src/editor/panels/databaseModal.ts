@@ -265,6 +265,10 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseMo
     class: "database-modal-controls",
     children: [moreButton, moreMenu, closeButton],
   });
+  // 메뉴 밖을 누르면 닫는다 — 열린 채로 두면 다음 칸을 편집하는 내내 오른쪽 칸을 가린다(실제 앱 캡처 2026-11-24).
+  const closeMoreOnOutside = (event: Event): void => {
+    if (!moreMenu.hidden && event.target instanceof Node && !windowControls.contains(event.target)) setMoreOpen(false);
+  };
   // ── AI 연결(M7): 제목 옆 ✨ AI 토글 → 헤더 아래 인라인 바. 진행·도구 결과·답변을 바 안에
   // 그린다(databaseAiBar.ts). 채팅 패널은 이 모달 뒤에 가려지므로 「패널에서 확인하세요」로
   // 끝내지 않는다.
@@ -354,6 +358,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseMo
       }),
     ],
   });
+  backdrop.addEventListener("pointerdown", closeMoreOnOutside);
 
   // 데이터베이스 모달이 열려 있어도 Ctrl+Z/Y 로 undo/redo 하고, 복원된 프로젝트 상태를
   // 패널에 다시 반영한다(입력 필드 포커스 중에는 브라우저 텍스트 undo 우선 — 가드 유지).
