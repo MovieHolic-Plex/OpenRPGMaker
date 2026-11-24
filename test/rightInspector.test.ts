@@ -44,16 +44,14 @@ describe("right inspector", () => {
     expect(find("right-inspector-advanced")).not.toBeNull();
   });
 
-  it("opens the existing map settings section for a row instead of editing in place", () => {
+  it("opens map settings only from the name row; the other rows are read-only facts", () => {
     const map = store.getCurrent().maps[store.getCurrent().startMapId]!;
     mounted = mountRightInspector(cursorHost);
-    find("right-inspector-row-bgm")!.click();
-    expect(openMapPropertiesDialog).toHaveBeenLastCalledWith(map.id, map.name, { section: "bgm" });
-    find("right-inspector-row-tileset")!.click();
-    expect(openMapPropertiesDialog).toHaveBeenLastCalledWith(map.id, map.name, { focus: "tileset" });
-    find("right-inspector-row-encounter")!.click();
-    expect(openMapPropertiesDialog).toHaveBeenLastCalledWith(map.id, map.name, { focus: "encounter" });
-    expect(find("right-inspector-row-cell-tile")?.tagName).toBe("DIV");
+    find("right-inspector-row-name")!.click();
+    expect(openMapPropertiesDialog).toHaveBeenLastCalledWith(map.id, map.name, { section: "general" });
+    for (const key of ["tileset", "size", "bgm", "bgs", "encounter", "battle-background", "cell-tile"]) {
+      expect(find(`right-inspector-row-${key}`)?.tagName, key).toBe("DIV");
+    }
   });
 
   it("reflects a renamed map after a store change", async () => {

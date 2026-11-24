@@ -133,24 +133,26 @@ export function buildInspectorView(
   const inside = cell && cell.x >= 0 && cell.y >= 0 && cell.x < map.width && cell.y < map.height ? cell : null;
   return {
     kind: "map", mapId: map.id, title: map.name, subtitle: `맵 · ${map.width} × ${map.height} 칸`,
+    // 맵 속성은 보여 주기만 한다 — 바꾸기는 「이름」 줄 하나(속성 창)와 조수에게 말로(btn-vqa-map PR 3, 2026-11-24).
+    // 타일셋 바꾸기는 팔레트 머리의 타일셋 단추가 맡는다(같은 창을 연다).
     groups: [
       {
         key: "basic", title: "기본", rows: [
           { key: "name", label: "이름", value: map.name, section: "general" },
-          { key: "tileset", label: "타일셋", value: project.tilesets[map.tilesetId]?.name ?? map.tilesetId, focus: "tileset" },
-          { key: "size", label: "크기", value: `${map.width} × ${map.height}`, section: "general" },
+          { key: "tileset", label: "타일셋", value: project.tilesets[map.tilesetId]?.name ?? map.tilesetId },
+          { key: "size", label: "크기", value: `${map.width} × ${map.height}` },
         ],
       },
       {
         key: "sound", title: "소리", rows: [
-          { key: "bgm", label: "배경 음악", value: bgmValue(project, map), section: "bgm" },
-          { key: "bgs", label: "환경음", value: bgsValue(project, map), section: "bgm" },
+          { key: "bgm", label: "배경 음악", value: bgmValue(project, map) },
+          { key: "bgs", label: "환경음", value: bgsValue(project, map) },
         ],
       },
       {
         key: "battle", title: "전투", rows: [
-          { key: "encounter", label: "적 출현", value: encounterValue(map), focus: "encounter" },
-          { key: "battle-background", label: "전투 배경", value: resourceName(project, "backdrop", map.battleBackground) || "타일셋 기본", section: "battle" },
+          { key: "encounter", label: "적 출현", value: encounterValue(map) },
+          { key: "battle-background", label: "전투 배경", value: resourceName(project, "backdrop", map.battleBackground) || "타일셋 기본" },
         ],
       },
       {
