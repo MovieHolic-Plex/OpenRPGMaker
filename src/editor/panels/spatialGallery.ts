@@ -32,7 +32,7 @@ import { designUsage, usageSummary } from "@/editor/panels/spatialUsage";
 import { spatialId } from "@/project/spatial/domain";
 import { resolveSpatialGraphic } from "@/project/spatial/assets";
 import { BUILTIN_INTERIOR_ROOM_KINDS } from "@/project/defaults/interiorRoomKinds";
-import type { InteriorRoomKindRecord, SectionStructureKitDef, TilesetDef } from "@/project/types";
+import type { InteriorRoomKindRecord, Project, SectionStructureKitDef, TilesetDef } from "@/project/types";
 import type { SpaceDesign } from "@/project/spatial/types";
 import { el } from "@/util/dom";
 
@@ -120,11 +120,27 @@ export function objectThumbCacheKey(card: SpatialGalleryCard): SpatialThumbCache
   if (card.kind !== "objects") return undefined;
   const recipe = objectThumbRecipe(card);
   if (!recipe || "preview" in recipe) return undefined;
-  const cells = JSON.stringify([recipe.widthTiles, recipe.heightTiles, recipe.backgroundTile ?? null, recipe.cells]);
+  return objectRecipeCacheKey(recipe);
+}
+
+/** 재료의 thumbCache 키. 카드·조수 도구(show_spatial_design)가 같은 키를 써야 같은 그림을 두 번 굽지 않는다. */
+export function objectRecipeCacheKey(recipe: KitRenderInput): SpatialThumbCacheKey {
+  const cells = JSON.stringify([recipe.widthTiles, recipe.heightTiles, recipe.backgroundTile ?? null,
+    recipe.cells.map(cell => [cell.dx, cell.dy, cell.layer, cell.tile])]);
   return {
     key: `obj:${tilesetAssetHash(recipe.tileset)}:${thumbContentHash(cells)}`,
     size: recipe.scale ?? OBJECT_THUMB_SCALE,
   };
+}
+
+/** 타일셋 그림 하나(킷 또는 내장 실내 오브젝트)의 그리기 재료 — 공간 탭 카드와 같은 배율·받침. */
+export function objectGraphicRecipe(project: Pick<Project, "tilesets">, tilesetId: string, kitId: string): KitRenderInput | undefined {
+  const tileset = Object.hasOwn(project.tilesets, tilesetId) ? project.tilesets[tilesetId] : undefined;
+  if (!tileset) return undefined;
+  const resolved = resolveSpatialGraphic(project, { tilesetId, kitId });
+  if (resolved?.source === "builtin") return interiorObjectRenderInput(tileset, resolved.object, OBJECT_THUMB_SCALE);
+  if (resolved?.source === "authored" && resolved.kit.kind === "section") return sectionKitRecipe(tileset, resolved.kit as SectionStructureKitDef);
+  return undefined;
 }
 
 /** 라이브러리·배치 공간은 실제 레이아웃을 굽는다 — 카드마다 다른 그림이 나와야 한다. */

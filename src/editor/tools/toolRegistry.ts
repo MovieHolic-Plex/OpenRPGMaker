@@ -185,6 +185,7 @@ import { WORLD_STRUCTURE_TOOLS } from "./worldStructureTools";
 import { WORLD_CANON_TOOLS } from "./worldCanonTools";
 import { WORLD_CODEX_TOOLS } from "./worldCodexTools";
 import { SPATIAL_TOOLS } from "./spatialTools";
+import { SPATIAL_DESIGN_VIEW_TOOLS } from "./spatialDesignViewTools";
 import { BUILD_CONCEPT_EXAMPLE_TOOL } from "./conceptExampleTool";
 import { SHARED_SCENE_TOOLS } from "./sharedSceneTools";
 import { SHARED_OBJECT_TOOLS } from "./sharedObjectTools";
@@ -293,6 +294,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   AUTHOR_BEODEUL_DUNGEON_ALIAS,
   ...WORLD_STRUCTURE_TOOLS,
   ...SPATIAL_TOOLS,
+  ...SPATIAL_DESIGN_VIEW_TOOLS,
   BUILD_CONCEPT_EXAMPLE_TOOL,
   ...SHARED_SCENE_TOOLS,
   ...SHARED_OBJECT_TOOLS,

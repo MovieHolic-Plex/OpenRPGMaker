@@ -173,6 +173,14 @@ v2 는 로직 낱말(`SCRIPT_TIER`)이 맞으면 네 도구를 처음부터 싣�
 
 계단 키트는 앞 칸(approach)이 빈 바닥이어야 찍히고, 층 이동은 이동 칸(trigger)에, 도착은 앞 칸에 계단을 등지고 둔다. `list_hand_interior_parts`·`list_spatial_designs` 행의 `entrance`, 칩셋 참고문서 「계단 입구」. 상세 `openwiki/stair-entrance-contract.md`.
 
+## 오브젝트 그림 보기 `show_spatial_design` (2026-11-24, qa1124-space PR9)
+
+조수가 오브젝트를 이름·태그만으로 고르지 않고 **그림을 보고** 고르게 하는 읽기 도구(`src/editor/tools/spatialDesignViewTools.ts`).
+
+- 인자: `id`(list_spatial_designs 의 내 오브젝트 id 또는 `shared-object:<id>`) 또는 `tilesetId`+`kitId`(타일셋 킷·내장 실내 오브젝트).
+- 결과: 크기와 칸 배열(`kind:"cells"`) 또는 공용 카탈로그 미리보기 경로(`kind:"preview"`). 편집기 렌더러(`toolImageRenderer` `renderSpatialDesignImage`)가 PNG 한 장으로 그려 도구 응답에 붙인다(`VISION_TOOLS`, Pi 런타임 이미지 분기, 512px 상한).
+- 그림은 공간 탭 오브젝트 카드와 같은 재료(`objectGraphicRecipe`)·같은 thumbCache 키(`objectRecipeCacheKey`, `src/editor/thumbCache`)로 굽는다 — 카드가 이미 구운 그림이면 다시 그리지 않는다. 새 그림을 만들지 않는다.
+
 ## 없는 기물 그리기 `generate_missing_object` (2026-10-21)
 
 조수가 기물 하나를 놓아 달라는 요청을 받았는데 칩셋에 그 물건이 없을 때, 공방 object-gen 실행기를 사용자 자기 AI 계정으로 돌려 후보를 그리고 고른 것을 **그 맵 칩셋의 공방 칸**으로 구워 놓는다. 스킬 `assistant-skills/missing-object-generation/SKILL.md`, 정책 한 줄 `OBJECT_GEN_POLICY_LINE`(`src/ai/promptPolicies.ts`, Pi 시스템 프롬프트 공간 작업에 실린다).

@@ -14,7 +14,7 @@ import { TITLE_ART_TOOL } from "@/editor/tools/titleArtTools";
 import { BATTLE_BACKDROP_TOOL } from "@/editor/tools/battleBackdropTools";
 
 // 이미지를 주입할 툴(명시적 '보여줘' 계열 + 미리보기). get_map_region 등 빈번 조회는 텍스트로 두어 토큰을 아낀다.
-export const VISION_TOOLS = new Set(["show_tiles", "show_tile_grid", "show_map_region", "preview_house", "look_at_houses", "render_group_sample"]);
+export const VISION_TOOLS = new Set(["show_tiles", "show_tile_grid", "show_map_region", "preview_house", "look_at_houses", "render_group_sample", "show_spatial_design"]);
 
 // 타일 지식 기록(인터뷰/시연의 답 기록)은 맵/이벤트를 바꾸지 않는 계열 —
 // 제안 카드 없이 즉시 저장되는 목록(패널이 자동 반영 판단에 공유한다).

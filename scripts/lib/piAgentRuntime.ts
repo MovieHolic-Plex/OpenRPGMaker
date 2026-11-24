@@ -1003,7 +1003,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 얼굴 그림 수(실행당 상한 — 한 장이 생성 브로커 한 번, 모델 호출과 실행 끝이 같이 쓴다).
   const PORTRAIT_RUN_BUDGET = 6;
   let portraitDraws = 0;
-  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !['show_map_region', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'generate_map_background', 'generate_image_asset', 'run_ffmpeg', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources', 'generate_walk_chip', ITEM_ICON_TOOL, APPEARANCE_GENERATION_TOOL].includes(tool.name) ? tool : ({ ...tool,
+  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !['show_map_region', 'show_spatial_design', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'generate_map_background', 'generate_image_asset', 'run_ffmpeg', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources', 'generate_walk_chip', ITEM_ICON_TOOL, APPEARANCE_GENERATION_TOOL].includes(tool.name) ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
@@ -1245,6 +1245,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         const region = data && typeof data === 'object' ? data as Record<string, unknown> : {};
         options.onEvent?.({ type: "execution_status", name: "map.image.delivered", ...imageStatus("현재 초안 이미지를 모델 도구 응답에 포함했습니다."), data: { toolCallId: id, base64Length: png.length,
           ...Object.fromEntries(['mapId', 'x', 'y', 'w', 'h'].map(key => [key, region[key]])) } });
+      }
+      if (tool.name === "show_spatial_design") {
+        // 오브젝트 그림 — 편집기 렌더러가 칸 배열(또는 공용 미리보기)을 PNG 로 그린다. 그림 없이 이름만으로 고르지 않게 한다.
+        if (!options.renderToolImage) throw new Error("오브젝트 그림 전달 경로가 없습니다.");
+        const data = (result.details as { data?: unknown } | undefined)?.data;
+        const png = await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, data, signal ?? options.signal);
+        result.content.push({ type: "image", mimeType: "image/png", data: png });
       }
       const charsetResult = result.details as ToolResult;
       const candidates = charsetPreviewCandidates(tool.name, charsetResult?.data);
