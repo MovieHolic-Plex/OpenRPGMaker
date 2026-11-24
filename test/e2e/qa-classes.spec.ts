@@ -115,6 +115,7 @@ test("classes 탭 CRUD 왕복 — 정체성/전투명령/옵션/스킬/승급/�
   await expect(page.locator('[data-testid^="db-record-row-"]')).toHaveCount(rowsBeforeDuplicate + 1);
 
   // 삭제 2단계 확인 (참조 없는 방금 복제본 대상)
+  await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
   const deleteButton = page.getByTestId("db-delete-selected");
   await deleteButton.click();
   await expect(deleteButton).toHaveText("정말 삭제?");

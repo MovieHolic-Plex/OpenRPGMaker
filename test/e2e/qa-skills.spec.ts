@@ -65,6 +65,7 @@ test.describe("Database skills tab", () => {
     await expect(page.locator(".db-list-row")).toHaveCount(countBeforeDuplicate + 1);
 
     // 2-step delete on the duplicate (now selected).
+    await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
     await expect(page.getByTestId("db-delete-selected")).toHaveText("삭제");
     await page.getByTestId("db-delete-selected").click();
     await expect(page.getByTestId("db-delete-selected")).toHaveText("정말 삭제?");
@@ -75,6 +76,7 @@ test.describe("Database skills tab", () => {
   test("reference guard blocks deletion of a skill an actor has learned", async ({ page }) => {
     // skill_sword_slash ("검격") is learned by the default actor "궁수" in a fresh project.
     await page.getByTestId("db-record-row-skill_sword_slash").click();
+    await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
     await page.getByTestId("db-delete-selected").click();
 
     await expect(page.locator(".toast")).toContainText("궁수");

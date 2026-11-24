@@ -233,14 +233,21 @@ export function resetDatabaseRecordViewSession(): void {
   clearSearchRerenderTimer();
 }
 
+// 목록 도구는 「+ 추가」만 남기고 나머지(복제·삭제·갤러리/목록·AI로 생성·소재)는 ⋯ 하나 뒤로 모은다(btn-vqa-db PR 3,
+// 오너 2026-11-24 「사용자는 많은 버튼을 원하지 않는다」). 단추 요소·testid·배선은 그대로다.
+function toolbarMore(children: readonly HTMLElement[]): HTMLElement {
+  return el("details", {
+    class: "db-toolbar-more",
+    children: [
+      el("summary", { text: "⋯", attrs: { title: "복제·삭제·보기 방식", "aria-label": "목록 도구 더 보기" }, dataset: { testid: "db-toolbar-more" } }),
+      el("div", { class: "db-toolbar-more-menu", children: [...children] }),
+    ],
+  });
+}
+
 function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElement {
   const wrap = el("div", { class: "db-toolbar" });
   wrap.append(
-    ...(collection === "enemies" ? [el("button", {
-      class: "btn small", text: "몬스터 소재", attrs: { type: "button" },
-      dataset: { testid: "db-monster-resources-open" },
-      on: { click: openMonsterResourceEditor },
-    })] : []),
     el("button", {
       class: "btn small",
       text: "+ 추가",
@@ -254,23 +261,30 @@ function toolbar(collection: DatabaseCollection, rerender: () => void): HTMLElem
         },
       },
     }),
-    el("button", {
-      class: "btn small",
-      text: "복제",
-      dataset: { testid: "db-duplicate-record" },
-      on: {
-        click: () => {
-          const selected = selectedRecordIdForSession(collection);
-          if (!selected) return;
-          setSelectedRecordId(collection, duplicateDatabaseRecord(collection, selected), { reveal: true });
-          rerender();
+    toolbarMore([
+      el("button", {
+        class: "btn small",
+        text: "복제",
+        dataset: { testid: "db-duplicate-record" },
+        on: {
+          click: () => {
+            const selected = selectedRecordIdForSession(collection);
+            if (!selected) return;
+            setSelectedRecordId(collection, duplicateDatabaseRecord(collection, selected), { reveal: true });
+            rerender();
+          },
         },
-      },
-    }),
-    deleteButton(collection, rerender),
-    ...(collection === "items" || collection === "enemies" ? [aiGenerateButton(collection, rerender)] : []),
-    ...(collection === "battleAnimations" ? [generatedEffectInstallButton(rerender)] : []),
-    viewToggle(collection, rerender)
+      }),
+      deleteButton(collection, rerender),
+      ...(collection === "items" || collection === "enemies" ? [aiGenerateButton(collection, rerender)] : []),
+      ...(collection === "enemies" ? [el("button", {
+        class: "btn small", text: "몬스터 소재", attrs: { type: "button" },
+        dataset: { testid: "db-monster-resources-open" },
+        on: { click: openMonsterResourceEditor },
+      })] : []),
+      ...(collection === "battleAnimations" ? [generatedEffectInstallButton(rerender)] : []),
+      viewToggle(collection, rerender),
+    ]),
   );
   return wrap;
 }

@@ -101,6 +101,7 @@ test.describe("QA sweep: equipment tab", () => {
 
     // delete (2-step confirm)
     const rowsBeforeDelete = await page.locator('[data-testid^="db-record-row-"]').count();
+    await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
     await page.getByTestId("db-delete-selected").click();
     await page.getByTestId("db-delete-selected").click();
     await expect(page.locator('[data-testid^="db-record-row-"]')).toHaveCount(rowsBeforeDelete - 1);

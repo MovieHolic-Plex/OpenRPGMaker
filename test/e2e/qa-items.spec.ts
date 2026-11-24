@@ -29,6 +29,7 @@ test.describe("QA sweep: items tab", () => {
     await openDatabase(page);
     await switchDatabaseTab(page, ITEMS_TAB);
     // 갤러리가 기본 뷰(T5) — 행 카운트/CRUD 는 리스트 뷰에서 수행한다.
+    await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
     await page.getByTestId("db-view-toggle-list").click();
     await expect(page.getByTestId("db-view-toggle-list")).toHaveClass(/active/);
 
@@ -79,6 +80,7 @@ test.describe("QA sweep: items tab", () => {
     await expect(page.getByTestId("db-field-name")).toHaveValue("QA아이템경계값 사본");
 
     // delete requires a second confirming click (2-step confirm)
+    await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
     await page.getByTestId("db-delete-selected").click();
     expect(await totalRecordCount(page), "single click must not delete yet").toBe(countBefore + 2);
     await page.getByTestId("db-delete-selected").click();

@@ -228,6 +228,7 @@ test.describe("QA explore — battle tabs (animations / battler / screen / comma
     await toolbar.getByRole("button", { name: "복제" }).click();
     const dupExport = await exportedProject(page);
     console.log("ANIM_COUNT_AFTER_DUP", dupExport.database.battleAnimations.length);
+    await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
     await page.getByTestId("db-delete-selected").click();
     await expect(page.getByTestId("db-delete-selected")).toHaveText("정말 삭제?");
     await page.getByTestId("db-delete-selected").click();
