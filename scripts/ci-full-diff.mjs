@@ -128,9 +128,16 @@ function downloadReports(runId, dir) {
 
 /** 전체 대조. 실패하면 throw 대신 `{ ok:false, error }` 를 돌려 판정에 «판정 불가» 로 남긴다. */
 export function computeCiFullDiff({ repo = repoSlug(), tag = null, candidateId = null, baselineId = null } = {}) {
-  const baseTag = tag ?? latestPublishedTag(repo);
-  if (!baseTag) return { ok: false, error: "발행된 태그가 없음" };
-  const { candidate, baselines } = pickRuns({ repo, tag: baseTag, candidateId, baselineId });
+  let baseTag = tag;
+  let picked;
+  try {
+    baseTag = baseTag ?? latestPublishedTag(repo);
+    if (!baseTag) return { ok: false, error: "발행된 태그가 없음" };
+    picked = pickRuns({ repo, tag: baseTag, candidateId, baselineId });
+  } catch (error) {
+    return { ok: false, tag: baseTag, error: `ci-full 판 목록을 못 읽음: ${String(error?.message ?? error).split("\n")[0]}` };
+  }
+  const { candidate, baselines } = picked;
   const baseline = baselines[0] ?? null;
   if (!candidate) return { ok: false, tag: baseTag, error: `${baseTag} 이후 main 의 완전한 ci-full 판이 없음`, baseline };
   if (!baseline) return { ok: false, tag: baseTag, error: `${baseTag} 에 포함된 커밋의 ci-full 판이 없음`, candidate };

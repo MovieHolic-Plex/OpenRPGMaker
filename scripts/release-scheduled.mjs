@@ -58,7 +58,8 @@ function gatherInputs(repo, now) {
     .sort((a, b) => String(b.published_at).localeCompare(String(a.published_at)));
   const lastPublished = published[0] ?? null;
   const dayAgo = now.getTime() - 24 * 3_600_000;
-  const recentReleaseTags = versioned.filter((release) => new Date(release.created_at).getTime() > dayAgo).map((release) => release.tag_name);
+  // 릴리스의 created_at 은 커밋 시각이다. 하루 상한은 발행 시각(published_at)으로 센다. 초안은 no-draft 검사가 따로 막는다.
+  const recentReleaseTags = published.filter((release) => new Date(release.published_at).getTime() > dayAgo).map((release) => release.tag_name);
   const draftTags = versioned.filter((release) => release.draft).map((release) => release.tag_name);
 
   const sinceTag = lastPublished?.tag_name ?? null;
@@ -108,6 +109,13 @@ function notify(repo, text) {
   }
 }
 
+function assertNoHold(stage) {
+  const holds = ghJson(["pr", "list", "--state", "open", "--label", AUTO_RELEASE_RULES.holdLabel, "--json", "number"]) ?? [];
+  if (holds.length > 0) {
+    throw new Error(`${stage} 직전에 ${AUTO_RELEASE_RULES.holdLabel} 라벨이 붙어 멈춘다 (${holds.map((pr) => `#${pr.number}`).join(", ")})`);
+  }
+}
+
 function execute(repo, decision) {
   const steps = [];
   const step = (name, fn) => {
@@ -122,7 +130,10 @@ function execute(repo, decision) {
   gh(["label", "create", AUTO_RELEASE_RULES.autoLabel, "--color", "0e8a16", "--description", "조건 기반 자동 릴리스", "--force"], { allowFailure: true });
   step("label", () => gh(["pr", "edit", String(pr.number), "--add-label", AUTO_RELEASE_RULES.autoLabel]) || `#${pr.number}`);
   step("ci-fast", () => gh(["workflow", "run", "ci-fast.yml", "--ref", "release/next"]) || "디스패치");
+  // merge-pr 가 CI 를 기다리는 동안 누가 hold-release 를 붙였을 수 있다. 머지 전과 태그 전에 다시 본다.
+  assertNoHold("merge");
   step("merge", () => run("node", ["scripts/merge-pr.mjs", String(pr.number), "--timeout-min=60"]));
+  assertNoHold("publish");
   step("publish", () => run("node", ["scripts/release-auto.mjs", "--skip-propose"]));
   git(["fetch", "origin", "--tags", "--quiet"], { allowFailure: true });
   const version = JSON.parse(git(["show", "origin/main:package.json"])).version;
