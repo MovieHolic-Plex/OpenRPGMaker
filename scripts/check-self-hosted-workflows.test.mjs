@@ -21,7 +21,6 @@ test("heavy Linux CI runs on GitHub-hosted runners and only light or release job
     "ci-full": { static: hosted, tests: hosted },
     "ci-vitest-files": { vitest: hosted },
     "security-audit": { audit: fastRunner },
-    "windows-worker-smoke": { build: hosted, smoke: "windows-latest" },
     parity: {
       "editor-player-parity": hosted, "unit-tests": hosted,
       build: hosted, e2e: hosted, "ax-gates": hosted,
