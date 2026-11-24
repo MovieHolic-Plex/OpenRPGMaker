@@ -243,6 +243,8 @@ export function commandRequiredProblems(command: Command): readonly string[] {
   if (command.kind === "text" && !textBodyOf(command as unknown as { kind: string } & Record<string, unknown>).trim()) {
     return ["대사를 한 줄 이상 적으세요."];
   }
+  const blank = silentBlankProblem(command);
+  if (blank) return [blank];
   const project = store.getCurrent();
   const modal = typeof document === "undefined" || typeof document.querySelector !== "function"
     ? null
@@ -263,6 +265,26 @@ export function commandRequiredProblems(command: Command): readonly string[] {
     .filter((issue) => issue.severity === "error" && issue.commandPath?.length === 1 && !issue.code.startsWith("runtime."))
     .map((issue) => issue.message);
   return [...new Set(messages)];
+}
+
+/** 검사기가 조용한 빈 필수값(명령 검토 b PR2): 「(주인공 선택) · (값 없음)」· 소리 없는 재생이 그대로 들어갔다. */
+const M2_ACTOR_TARGET_REQUIRED = new Set([
+  "m2-022-change-actor-name",
+  "m2-023-change-actor-nickname",
+  "m2-024-change-actor-graphic",
+  "m2-025-change-actor-faceset",
+  "m2-091-change-actor-class",
+]);
+const M2_SOUND_REQUIRED = new Set(["m2-061-play-bgm", "m2-065-play-se"]);
+
+function silentBlankProblem(command: Command): string | null {
+  if (command.kind === "playAudio" && !String(command.resourceId ?? "").trim()) return "재생할 소리를 고르세요.";
+  if (command.kind !== "m2Command") return null;
+  const field = (key: string): string => String(command.fields[key] ?? "").trim();
+  if (M2_ACTOR_TARGET_REQUIRED.has(command.commandId) && !field("target")) return "바꿀 주인공을 고르세요.";
+  if (command.commandId === "m2-091-change-actor-class" && !field("value")) return "바꿀 직업을 고르세요.";
+  if (M2_SOUND_REQUIRED.has(command.commandId) && !field("resourceId")) return "재생할 소리를 고르세요.";
+  return null;
 }
 
 function hasUnselectedSwitch(condition: Condition): boolean {
