@@ -7,6 +7,7 @@ import { BATTLE_TOOL_WORDS, type CombatAsk } from "./combat";
 import { TERRAIN_WORDS } from "./place";
 import { kw, kwEnd } from "./text";
 import { HORROR_WORDS } from "./genre";
+import { withoutClosedLifeToolNames } from "@/editor/tools/lifeSimClosure";
 
 /** 게임 요소(퀘스트·아이템·전투·이벤트 로직…)를 말하는 낱말 — 이 낱말이 있으면 v1 결정론 도구 묶음을 쓴다. */
 const GAME_WORDS = new RegExp(String.raw`퀘스트|스크립트|타입스크립트|typescript|의뢰|심부름|부탁|아이템|회복약|포션|무기|갑옷|방패|장비|장신구|상점|가게|팔게|팔기|열쇠|잠긴|보물|상자|제작|만들어 주는|주인공|이름|직업|레벨|능력치|체력|동료|파티|합류|떠나|스킬|기술|전투|싸우|보스|${kw("적", "들")}|몬스터|무리|선택지|호감|기억|스위치|변수|횟수|레버|여관|묵으|저장|회복|치료|신부|골드|${kw("돈")}|엔딩|결말|게임|일지|제한 시간|타이머|낮에|밤에|시간대|아침|저녁|팻말|표지판|우물|동전|암호|비밀번호|통행료|경비|문지기|함정|${kw("독")}|중독|마비|수면|상태 ?이상|날씨|비가|비 ?오|무작위|랜덤|인카운터|조우|마주치|늑대|멧돼지|슬라임|고블린|얻게|얻는|얻을|모으|모았|모아|줍|주워|개수|몇 개|조사하면|조사할|입력|자물쇠|숫자|비밀번호|옮겨|옮기|묘비|회상|따라오|따라와|따라다|도망|사라지|나타나|말 걸|말을 걸|대사|다가가|밟으면|들어가면|문을|잇|이어 줘|이어줘|연결|follow|random|encounter|지진|흔들|번쩍|번개|음악|배경음|브금|bgm|팡파르|사운드트랙|약초|광맥|이동석|눈이|눈 ?내|폭풍|안개|대화|표정|얼굴|초상|흉상|웃으|걱정|장면|뛰어다|돌아다|걸어 다|순찰|쫓아|쫓다|추격|발견|뒤지|뒤져|뒤질|수납|항아리|서랍|옷장|들키|들켜|몰래|${kwEnd("숲", "속|길")}|사당|오프닝|제목|타이틀|레터박스|검은 띠|카메라|연기|막 끝|막이|제\s*\d+\s*막|카드|페이즈|소환|불러|예고|힘을 모|꿰뚫|속성|약하게|약점|치명타|반지|목걸이|마나|에테르|\bMP\b|화상|기절|잠 |잠은|책장|비석|역사|망원경|이름을|줄여|절반|추가해|연계|합체|협동|콤보|레벨 ?업|팡파레|습득|달려들|돌진|느릿|컷인|도움말|말투|존댓말|반말|다듬|윤문|호칭|대화창|넘치|줄거리|대본|휴대폰|모바일|폰에서|터치|탭하면|탭해서|진동|조이스틱|달리기 단추|들판|초원|필드|바위|버섯|들꽃|고사리|그루터기|통나무|덤불|풀숲|행인|오가|출근|지나다니|옥상|내려다|전망|황무지|문 열리|여는 효과|문 효과|한 명만|두 명|중복|겹쳐|남겨|지워|없애|삭제|빼 줘|치워|combo|touch|mobile|quest|item|shop|weapon|armor|battle|enemy|party|skill|inn|save|gold|ending|poison|weather`, "iu");
@@ -115,19 +116,21 @@ const V2_POOL_ONLY: readonly string[] = ["set_session_start", "duplicate_event",
  * JRPG 가 아닌 게임의 장치를 짓는 도구(openwiki/assistant-v2-genre-tools.md 의 재고) — V2_POOL_ONLY 와 같이 풀에만 둔다.
  * 작은 일 셋째 묶음(2026-11-11)의 손 풀이가 부르는데 v2 어디에서도 닿지 않던 열다섯: 함정·잠긴 문·보관 상자·밭·작물·낚시·기한 엔딩·대사 기록·액션 전투·몬스터 수집·시작 값이 있는 변수.
  */
-const V2_GENRE_TOOLS: readonly string[] = [
+// 밭·작물·낚시 도구는 생활 시스템이 닫혀 있는 동안(LIFE_SIM_ENABLED=false) 빠진다(editor/tools/lifeSimClosure.ts).
+const V2_GENRE_TOOLS: readonly string[] = withoutClosedLifeToolNames([
   "place_trap", "lock_door", "place_storage_chest", "create_farm_plot", "define_crop", "upsert_fish_species", "configure_fishing", "set_deadline_ending",
   "set_dialogue_system", "set_action_combat", "make_action_enemy", "configure_monster_system", "give_starter_monsters", "place_trainer", "manage_flag_slot",
   // 이벤트 명령을 손으로 조립하던 장치 넷(셋째 묶음 Terra 기준선: 선물 36호출 · 고백 32 · 내밀기 27) — src/editor/tools/genreDeviceTools.ts.
   "set_npc_affection", "set_present_reactions", "set_time_limit", "add_hud_gauge",
-];
+]);
 
 /**
  * 자료집 전체를 고치는 도구(2026-11-16 오너 「조수가 자료집을 전체적으로 수정할 수 있나」 · 적대 리뷰 db-review A F1·F2·F5·F6·F9·F11).
  * 지우기·복제·안 쓰는 것 정리·속성/지형/전투 명령·전투 애니메이션·장비 칸·승급·상성표·게임 시스템·몬스터 종족·세계 설정·도감·일정표·주민 관계·생활 시스템,
  * 그리고 지금 값을 읽는 도구. 풀에만 둔다 — 처음부터 싣지 않고 load_tools 목록(«Also loadable»)에 이름이 뜬다.
  */
-const V2_DATABASE_TOOLS: readonly string[] = [
+// 생활 시스템 도구(생활 기술·도구 행동·낚시·동물·농장 건물·생활 경제)는 닫혀 있는 동안 빠진다. 제작법·강화(upsert_item_upgrade·delete_craft_recipe)는 남는다.
+const V2_DATABASE_TOOLS: readonly string[] = withoutClosedLifeToolNames([
   "delete_database_record", "duplicate_database_record", "prune_unused", "bulk_edit_database", "reorder_database_records", "set_difficulties", "set_monster_fusions",
   "set_game_over_library", "set_play_settings", "upsert_skill_tree", "replace_text_in_project", "delete_troop_battle_page", "upsert_database_utility", "upsert_battle_animation",
   "upsert_equipment_slot", "define_promotion", "set_type_chart", "configure_game_systems", "define_monster_species", "rename_monster_species", "define_monster_families",
@@ -136,7 +139,7 @@ const V2_DATABASE_TOOLS: readonly string[] = [
   "upsert_home_decoration_type", "upsert_farm_animal_building", "configure_life_economy", "configure_museum", "configure_collections", "configure_seasonal_forage",
   "get_game_over", "read_game_systems", "get_title_screen", "get_project_summary",
   "upsert_skill", "upsert_class", "upsert_state", "upsert_item", "upsert_enemy", "upsert_equipment", "upsert_common_event", "set_project_settings",
-];
+]);
 
 // tile_erase: 끝맺음 검사(gameChecks.ts «다리·출입구·방 쓰임»)가 «tile_erase 로 걷는다» 고 이르는데 v2 도구 풀에 없어 부를 수 없었다 — 이름으로 부르면 실린다.
 const V2_TERRAIN_TOOLS: readonly string[] = ["list_spatial_designs", "stamp_object", "fill_region", "tile_erase"];

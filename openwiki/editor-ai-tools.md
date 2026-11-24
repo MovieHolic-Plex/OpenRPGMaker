@@ -1,5 +1,12 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 생활(농사·낚시·동물) 조수 경로 닫힘 — `LIFE_SIM_ENABLED` (2026-11-24, qa1124 항목 12 L3)
+
+- 깃발 하나(`electron/shared/lifeSim.ts`)를 편집기(L2)와 조수가 같이 읽는다. false 이면 도구 16개 — `upsert_life_skill` · `upsert_life_system` · `upsert_tool_action` · `configure_life_economy` · `upsert_fish_species` · `delete_fish_species` · `configure_fishing` · `configure_seasonal_forage` · `configure_museum` · `configure_collections` · `upsert_farm_building_type` · `upsert_home_decoration_type` · `upsert_farm_animal_building` · `set_session_farm_state` · `create_farm_plot` · `define_crop` — 가 `TOOL_REGISTRY`(`allTools()`·`activeTools()`·`getTool`·`find_tools`·헤드리스/MCP 목록)에서 빠진다. 남기는 5개: `upsert_craft_recipe` · `delete_craft_recipe` · `upsert_item_upgrade` · `set_sell_prices`(JRPG 상점·가방 「조합」·폴른 스타 공방) · `set_life_flower`(공포 장르 목숨 꽃). 이름 집합·거절 판정은 `src/editor/tools/lifeSimClosure.ts` 한 곳이다.
+- v2: `toolGroups.ts` 의 `V2_GENRE_TOOLS`·`V2_DATABASE_TOOLS` 와 `topics.ts` 의 `farm`·`fishing` 작은 일 도구 목록에서 그 이름을 뺀다(「밭 만들어 줘」 분류에 닫힌 도구 0개). 농사·낚시를 말한 요청에는 `conditionalCards` 가 닫힘 안내 한 장(`lifeSimClosedCard`)을 붙여, 조수가 손으로 흉내 내지 않고 한 문장으로 「다음 버전에서 열려요」를 알리게 한다. 능력 색인(`toolCapabilityIndex.ts`)의 `life`·`monster-field-items` 레시피 쓰기 목록에서도 뺀다.
+- 범용 기록 도구(`delete_database_record` · `duplicate_database_record` · `reorder_database_records` · `bulk_edit_database` · `prune_unused` apply …)는 이름이 아니라 **결과**로 막는다: `toolRunner.ts` 의 쓰기 경로에서 조수 실행(`ctx.assistantRun`)이 `database.crops`·`lifeSkills`·`farmAnimalSpecies`·`fishSpecies`·`farmBuildingTypes`·`homeDecorationTypes` 중 하나라도 바꾸면 `life-sim-closed` 로 거절하고 draft 를 버린다. 읽기(`get_database_records` 등)는 이 줄을 지나지 않아 그대로 허용된다.
+- 코드는 지우지 않았고 사용자 프로젝트의 생활 데이터·런타임도 그대로다. 시험이 켠 상태를 보려면 `vi.mock("../electron/shared/lifeSim", …)`(teamCollab 선례). 계약 시험: `test/lifeSimToolClosure.test.ts`(allTools() 에 16개 0개, 5개 전부 있음). 작은 일 30가지의 농사 과제는 **의도적 거절**이라 기준선에서 달라진다. 플레이 프리셋 `life-economy` 5종(작물·낚시·채집·가공·꾸러미)은 아직 닫힌 도구 이름을 지침에 적고 있다 — 후속.
+
 ## TypeScript 이벤트 스크립트 도구 `author_script` · `dry_run_script` 외 7개 (2026-10-31)
 
 조건·계산·반복·여러 갈래가 얽힌 이벤트 로직(조합 자물쇠·레버 순서·가격 공식·시간대·소지품·확률)을 명령 수십 줄 대신

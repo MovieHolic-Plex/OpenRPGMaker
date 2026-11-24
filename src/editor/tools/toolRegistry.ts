@@ -200,6 +200,7 @@ import { STORE_ICON_TOOLS } from "./storeIconTools";
 import { TIMED_ESCAPE_TOOLS } from "./timedEscapeTools";
 import { OBJECT_GEN_TOOLS } from "./objectGenTool";
 import { SCENE_SETTING_TOOLS } from "./sceneSettingTools";
+import { withoutClosedLifeTools } from "./lifeSimClosure";
 
 export { PLACEMENT_TOOLS };
 
@@ -281,7 +282,8 @@ function withDomain(tools: readonly ToolDefinition[], domain: ToolDomain): reado
 }
 
 // 레지스트리 순서: canonical construction → 정공법(v3) → 활성 맵/이벤트… → 레거시(deprecated) 엔진 호환.
-export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
+// 생활(농사·낚시·동물) 도구 16개는 LIFE_SIM_ENABLED=false 동안 빠진다(editor/tools/lifeSimClosure.ts) — allTools()·getTool·find_tools·v2 풀 모두에서.
+export const TOOL_REGISTRY: readonly ToolDefinition[] = withoutClosedLifeTools(tagLegacy([
   FIND_TOOLS,
   ...AUTHORING_PRESET_TOOLS,
   ...PROJECT_WIKI_TOOLS,
@@ -515,7 +517,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = tagLegacy([
   ...withDomain(RANGE_CLASSIFY_TOOLS, "tile"),
   // 웹 검색은 UI 상태로 예측할 수 없다 — "최신 정보가 필요하다" 는 도메인이 아니라 요청의 성질이다.
   ...WEB_SEARCH_TOOLS,
-]);
+]));
 
 const TOOL_BY_NAME = new Map<string, ToolDefinition>(TOOL_REGISTRY.map((tool) => [tool.name, tool]));
 

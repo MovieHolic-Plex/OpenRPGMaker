@@ -2,7 +2,9 @@
 // 집어낸 "에디터 UI 는 쓰는데 어떤 툴도 못 쓰는" 저작 필드 32곳의 툴 이름·스키마·도달성.
 // 필드별 쓰기 동작은 각 파사드 파일의 전용 테스트가 직접 증명한다.
 // 도달성이 빠지면 툴이 있어도 모델은 "그 기능이 없습니다"로 답한다(openwiki/editor-ai-tools.md 2026-08-23 사건).
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+// 생활 시스템이 켜진 상태(도구 16개가 레지스트리에 실린다)를 검증한다 — 기본값(false)이면 조수 도구 목록에서 빠진다(electron/shared/lifeSim.ts).
+vi.mock("../electron/shared/lifeSim", () => ({ LIFE_SIM_ENABLED: true, LIFE_SIM_CLOSED_TITLE: "", LIFE_SIM_CLOSED_BODY: "", LIFE_SIM_CLOSED_NOTICE: "" }));
 import { activeTools, getTool, runTool, toOpenAiTools } from "@/editor/tools";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { buildToolCapabilityIndex } from "@/ai/toolCapabilityIndex";

@@ -2,7 +2,9 @@
 // database.farmBuildingTypes / database.homeDecorationTypes / system.farmAnimalBuildings /
 // session.farmAnimals·farmBuildingPlacements·homeDecorationPlacements 를 실제로 쓰는지 증명한다.
 // 거부 경로는 "모델이 다음 수를 둘 수 있는 메시지"인지(유효 값 나열) 함께 고정한다.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+// 생활 시스템이 켜진 상태(도구 16개가 레지스트리에 실린다)를 검증한다 — 기본값(false)이면 조수 도구 목록에서 빠진다(electron/shared/lifeSim.ts).
+vi.mock("../electron/shared/lifeSim", () => ({ LIFE_SIM_ENABLED: true, LIFE_SIM_CLOSED_TITLE: "", LIFE_SIM_CLOSED_BODY: "", LIFE_SIM_CLOSED_NOTICE: "" }));
 import { runTool, type ToolContext, type ToolResult } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
 import type { Project } from "@/project/types";

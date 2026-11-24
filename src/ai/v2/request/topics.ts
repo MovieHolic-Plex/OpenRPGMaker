@@ -6,6 +6,7 @@ import { STATE_WORDS, type CombatAsk } from "./combat";
 import { kw, kwEnd } from "./text";
 import { LINK_MAPS_WORDS } from "./scope";
 import { ENDING_WORK_WORDS, QUEST_WORDS, SCRIPT_TIER, SHOP_NOUN, SHOP_WORDS, V2_DRESS_TOOLS, type ToolGroups } from "./toolGroups";
+import { withoutClosedLifeToolNames } from "@/editor/tools/lifeSimClosure";
 
 /** 게임 카드 줄의 주제. */
 export type GameTopic =
@@ -145,8 +146,9 @@ const SMALL_BY_TOPIC: Readonly<Partial<Record<GameTopic, readonly string[]>>> = 
   trap: ["place_trap"],
   lockDoor: ["lock_door", "list_map_locations"],
   storage: ["place_storage_chest", "find_empty_ground"],
-  farm: ["create_farm_plot", "define_crop", "upsert_item", "find_empty_ground"],
-  fishing: ["configure_fishing", "upsert_fish_species", "upsert_item"],
+  // 밭·작물·낚시 도구는 생활 시스템이 닫혀 있는 동안 빠진다 — 주제 낱말은 그대로라 닫힘 안내 카드(lifeSimClosedCard)가 붙는다.
+  farm: withoutClosedLifeToolNames(["create_farm_plot", "define_crop", "upsert_item", "find_empty_ground"]),
+  fishing: withoutClosedLifeToolNames(["configure_fishing", "upsert_fish_species", "upsert_item"]),
   deadline: ["set_deadline_ending", "configure_time_system"],
   time: ["configure_time_system", "set_npc_schedule"],
   readingAids: ["set_dialogue_system"],
