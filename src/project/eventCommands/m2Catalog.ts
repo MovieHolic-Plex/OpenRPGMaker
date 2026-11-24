@@ -80,9 +80,30 @@ const OPERATION_OPTIONS: readonly M2CommandFieldOption[] = [
 ];
 
 const BOOLEAN_OPTIONS: readonly M2CommandFieldOption[] = [
-  { value: "true", label: "켜기 / 허가" },
-  { value: "false", label: "끄기 / 금지" },
+  { value: "true", label: "켜기" },
+  { value: "false", label: "끄기" },
 ];
+
+/**
+ * 「켜기 / 허가」 하나를 돌려 쓰면 「저장 금지 변경: 켜기」가 금지를 켜는지 저장을 켜는지 거꾸로 읽혔다
+ * (명령 검토 b PR5). 런타임에서 true 는 「허용」이다(m2Runtime access · playerStatusMenuModel saveDisabled).
+ * 명령마다 무엇이 켜지는지 말하는 선택지를 준다. 요약 줄도 같은 라벨을 쓴다(m2FieldSummaryText).
+ */
+const TOGGLE_LABELS_BY_TITLE: Readonly<Record<string, readonly [on: string, off: string]>> = {
+  "Change Save Access": ["저장 허용", "저장 막기"],
+  "Change Menu Access": ["메뉴 열기 허용", "메뉴 막기"],
+  "Change Escape Access": ["도망 허용", "도망 막기"],
+  "Teleportation On/Off": ["순간이동 허용", "순간이동 막기"],
+  "Toggle ATB Wait Mode": ["고르는 동안 멈춤", "고르는 동안도 진행"],
+  "Toggle Fullscreen Mode": ["전체화면", "창 모드"],
+  "Get On/Off Vehicle": ["타기", "내리기"],
+};
+
+function toggleOptionsFor(title: string): readonly M2CommandFieldOption[] {
+  const labels = TOGGLE_LABELS_BY_TITLE[title];
+  if (!labels) return BOOLEAN_OPTIONS;
+  return [{ value: "true", label: labels[0] }, { value: "false", label: labels[1] }];
+}
 
 const SYSTEM_BGM_SLOT_OPTIONS: readonly M2CommandFieldOption[] = [
   { value: "field", label: "필드 기본곡" },
@@ -322,7 +343,7 @@ function genericFieldsFor(title: string): readonly M2CommandFieldSpec[] {
     ];
   }
   if (title.includes("On/Off") || title.includes("Access") || title.startsWith("Toggle ")) {
-    return [{ key: "enabled", label: "상태", type: "select", defaultValue: "true", options: BOOLEAN_OPTIONS }];
+    return [{ key: "enabled", label: "상태", type: "select", defaultValue: "true", options: toggleOptionsFor(title) }];
   }
   if (
     title.startsWith("Open ")
@@ -443,7 +464,7 @@ function page3FieldsFor(title: string): readonly M2CommandFieldSpec[] | undefine
       ];
     case "Get On/Off Vehicle":
       return [
-        { key: "boarded", label: "탑승", type: "select", defaultValue: "true", options: BOOLEAN_OPTIONS },
+        { key: "boarded", label: "탑승", type: "select", defaultValue: "true", options: toggleOptionsFor(title) },
       ];
     case "Set Vehicle Location":
       return [

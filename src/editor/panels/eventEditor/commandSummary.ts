@@ -816,6 +816,16 @@ function m2CommandSummaryParts(cmd: Extract<Command, { kind: "m2Command" }>): re
   return commandLine(label, valuePart(fields.join(", ")));
 }
 
+/** 요약 줄에 그대로 나오던 내부값(명령 검토 b PR3: true·neutral·player·auto) → 사람 말. */
+const M2_RAW_VALUE_LABELS: Readonly<Record<string, string>> = {
+  true: "켜기",
+  false: "끄기",
+  player: "주인공",
+  "this-event": "이 이벤트",
+  neutral: "보통",
+  auto: "자동",
+};
+
 /**
  * 폴백 요약은 `effect: fadeIn, durationMs: 300` 처럼 내부 키와 영문 값을 그대로 노출했다.
  * 같은 값의 사람용 라벨(카탈로그의 option.label / spec.label)이 이미 있으니 그것을 쓴다.
@@ -827,9 +837,11 @@ function m2FieldSummaryText(
 ): string {
   const raw = String(value);
   const spec = specs.find((entry) => entry.key === key);
-  if (!spec) return `${key}: ${raw}`;
+  // 카탈로그에 없는 키(저장된 옛 필드·조수가 더한 필드)도 키 이름을 내보이지 않는다 — 값만 사람 말로.
+  if (!spec) return M2_RAW_VALUE_LABELS[raw] ?? raw;
   const option = spec.options?.find((choice) => choice.value === raw);
   if (option) return option.label;
+  if (spec.type !== "number" && M2_RAW_VALUE_LABELS[raw]) return `${spec.label} ${M2_RAW_VALUE_LABELS[raw]}`;
   // 단위가 라벨에 이미 들어 있는 숫자 필드(···(ms))는 값 뒤에 단위를 붙인다.
   const unit = spec.type === "number" ? spec.label.match(/\(([^)]+)\)/u)?.[1] : undefined;
   if (unit) return `${raw}${unit}`;
