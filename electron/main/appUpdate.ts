@@ -33,11 +33,9 @@ let whatsNew: AppUpdateWhatsNew | null = null;
 let updater: Updater | null = null;
 let timer: ReturnType<typeof setInterval> | null = null;
 let installing = false;
-/** AppImage 는 이름에 판이 박혀 있으면 새 이름으로 옮겨진다. 다시 띄울 파일. */
-let appImageTarget: string | null = null;
 
 const prefsPath = (): string => join(app.getPath("userData"), "app-update.json");
-/** CI 업데이트 e2e(scripts/qa/app-update-e2e.mjs)만 켠다. 다 받으면 칩을 누른 것처럼 바로 설치·재시작하고 줄을 남긴다. */
+/** CI 업데이트 e2e(scripts/qa/app-update-e2e.mjs)만 켠다. 다 받으면 칩을 누르거나(install) 앱을 끄고(quit) 줄을 남긴다. */
 const e2eLog = (): string | undefined => process.env.OPRN_UPDATE_E2E_LOG || undefined;
 
 function e2eNote(event: string, detail: Record<string, unknown> = {}): void {
@@ -128,9 +126,12 @@ async function attachUpdater(): Promise<void> {
     writePrefs();
     setState({ kind: "ready", version: info.version });
     e2eNote("downloaded", { to: info.version });
-    if (e2eLog()) installAppUpdate();
+    // e2e: install = 칩을 누른 것과 같다, quit = 칩을 안 누르고 앱을 끈 것과 같다(끌 때 설치).
+    if (e2eLog()) {
+      if (process.env.OPRN_UPDATE_E2E_ACTION === "quit") app.quit();
+      else installAppUpdate();
+    }
   });
-  autoUpdater.on("appimage-filename-updated", (path: string) => { appImageTarget = path; });
   autoUpdater.on("error", (error) => {
     console.warn("[update] 오류:", error instanceof Error ? error.message : String(error));
     if (state.kind === "downloading") setState({ kind: "idle" });
@@ -145,17 +146,10 @@ export function installAppUpdate(): boolean {
   if (!updater || state.kind !== "ready" || installing) return false;
   installing = true;
   e2eNote("install");
-  if (process.platform === "linux") {
-    // AppImage: isForceRunAfter 를 주면 새 파일을 바로 띄우는데, 그때는 아직 이 실행이 한 번만 실행 잠금을 쥐고 있어
-    // 새 실행이 곧바로 꺼진다. 설치만 하고(새 파일은 APPIMAGE_EXIT_AFTER_INSTALL 로 바로 끝난다 — boot.ts)
-    // 이 실행이 완전히 끝난 뒤 다시 띄우게 relaunch 를 건다.
-    const before = process.env.APPIMAGE ?? null;
-    updater.quitAndInstall(true, false);
-    const target = appImageTarget ?? before;
-    if (target) app.relaunch({ execPath: target, args: process.argv.slice(1) });
-  } else {
-    updater.quitAndInstall(true, true);
-  }
+  // 설치 후 새 판을 띄운다. AppImage 는 새 파일을 바로 띄우므로 그 실행이 아직 이 실행의 한 번만 실행 잠금과 겹친다 —
+  // 새 실행은 APPIMAGE_SILENT_INSTALL 표시를 보고 잠금이 풀릴 때까지 기다린다(boot.ts). app.relaunch 는 쓰지 않는다:
+  // 마운트된(FUSE) 옛 바이너리에서 띄운 재실행 도우미는 옛 실행이 끝나며 마운트가 풀릴 때 같이 사라졌다(2026-11-24 CI).
+  updater.quitAndInstall(true, true);
   return true;
 }
 

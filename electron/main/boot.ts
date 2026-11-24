@@ -22,11 +22,28 @@ protocol.registerSchemesAsPrivileged([
  */
 const singleInstance = app.isPackaged && process.env.OPRN_SMOKE_PAGE === undefined && process.env.OPRN_OPEN_PROJECT_DIR === undefined
   && process.env.OPRN_MULTI_INSTANCE !== "1";
-// electron-updater 가 AppImage 를 바꾼 뒤 새 파일을 이 표시와 함께 한 번 실행한다(설치 확인용). 창을 띄우지 않고 끝낸다 —
-// 다시 띄우기는 이전 실행이 끝날 때 app.relaunch 가 한다(electron/main/appUpdate.ts).
+// electron-updater 가 AppImage 를 바꾼 뒤 새 파일을 실행하는 두 경우(electron/main/appUpdate.ts):
+// - 앱을 끌 때 설치: APPIMAGE_EXIT_AFTER_INSTALL=true 로 한 번 동기 실행한다. 창을 띄우지 않고 바로 끝낸다.
+// - 칩 「다시 시작」: APPIMAGE_SILENT_INSTALL=true 로 즉시 띄운다. 이전 실행이 아직 끝나는 중이라 잠금을 못 얻으면
+//   끄지 않고 잠금이 풀릴 때까지 기다린다(상한 LOCK_WAIT_MS).
 if (process.env.APPIMAGE_EXIT_AFTER_INSTALL === "true") app.exit(0);
-const duplicate = singleInstance && !app.requestSingleInstanceLock();
+const startedByUpdate = process.env.APPIMAGE_SILENT_INSTALL === "true";
+const LOCK_WAIT_MS = 30_000;
+const locked = !singleInstance || app.requestSingleInstanceLock();
+const duplicate = !locked && !startedByUpdate;
 if (duplicate) app.exit(0);
+
+function waitForSingleInstanceLock(): Promise<boolean> {
+  const deadline = Date.now() + LOCK_WAIT_MS;
+  return new Promise((resolve) => {
+    const attempt = (): void => {
+      if (app.requestSingleInstanceLock()) { resolve(true); return; }
+      if (Date.now() > deadline) { resolve(false); return; }
+      setTimeout(attempt, 250);
+    };
+    attempt();
+  });
+}
 
 // ── 「에디터에서 열기」 링크(oprn://store/install?…) ─────────────────────────────
 // 본체가 붙기 전에 온 것은 받아 두었다가 넘긴다. 판정·처리는 본체(main.ts → assetStore.ts)가 한다.
@@ -60,8 +77,12 @@ mainMark("bootEvaluated");
 /** 스플래시가 그려지기를 기다리는 상한. 넘으면 그냥 본체를 읽는다(느린 기계에서 큰 창이 마냥 늦지 않게). */
 const SPLASH_WAIT_MS = 400;
 
+const lockReady: Promise<boolean> = locked ? Promise.resolve(true) : duplicate ? Promise.resolve(false) : waitForSingleInstanceLock();
+
 if (!duplicate) {
-  void app.whenReady().then(() => {
+  void lockReady.then(async (ok) => {
+    if (!ok) { app.exit(0); return; }
+    await app.whenReady();
     mainMark("appReady");
     // 누르자마자 보이는 것: 스플래시를 다른 무엇보다 먼저 만든다. 시작 화면으로 켜질 때만(QA 진입점은 빼고).
     // Playwright 가 띄운 앱은 기본으로 끈다 — QA 스크립트 다수가 app.firstWindow() 로 앱 창을 받는다. OPRN_SPLASH=1 이면 켜고 0 이면 끈다.

@@ -126,44 +126,79 @@ async function linuxUpdate() {
   }
   for (const file of newFiles) if (statSync(file).isFile()) copyFileSync(file, join(work, "feed", file.split("/").pop()));
 
-  // README 의 고정 이름처럼 판이 없는 파일 이름으로 둔다 → 같은 자리에서 바뀌어야 한다.
-  const appDir = join(work, "app");
-  mkdirSync(appDir, { recursive: true });
-  const installed = join(appDir, "OPRN.Studio-linux.AppImage");
-  copyFileSync(oldImage, installed);
-  const log = join(work, "events.jsonl");
+  await clickScenario({ oldImage, info });
+  await quitScenario({ oldImage, info });
+  feed.server.close();
+  writeFileSync(join(work, "server.log"), feed.log.join("\n"));
+  console.log(`서버 요청:\n  ${feed.log.slice(0, 40).join("\n  ")}`);
+  if (feed.log.some((line) => line.startsWith("GET /latest-linux.yml"))) pass("linux-feed-fetched", "앱이 latest-linux.yml 을 받았다");
+  else fail("linux-feed-fetched", "latest-linux.yml 요청 없음");
+}
+
+/** 판이 없는 이름(README 고정 이름처럼)으로 0.0.1 을 둔다 → 같은 자리에서 바뀌어야 한다. 시나리오마다 설정 폴더를 따로 쓴다. */
+function launch(name, image, action) {
+  const dir = join(work, name);
+  mkdirSync(dir, { recursive: true });
+  const installed = join(dir, "OPRN.Studio-linux.AppImage");
+  if (image) copyFileSync(image, installed);
+  const log = join(dir, "events.jsonl");
   const env = {
     ...process.env,
     OPRN_UPDATE_E2E_LOG: log,
-    XDG_CONFIG_HOME: join(work, "config"),
-    XDG_CACHE_HOME: join(work, "cache"),
+    OPRN_UPDATE_E2E_ACTION: action,
+    XDG_CONFIG_HOME: join(dir, "config"),
+    XDG_CACHE_HOME: join(dir, "cache"),
     ELECTRON_ENABLE_LOGGING: "1",
   };
   const child = spawn(installed, ["--no-sandbox"], { env, detached: true, stdio: ["ignore", "pipe", "pipe"] });
-  let output = "";
-  child.stdout.on("data", (chunk) => { output += chunk; });
-  child.stderr.on("data", (chunk) => { output += chunk; });
+  const output = { text: "" };
+  child.stdout.on("data", (chunk) => { output.text += chunk; });
+  child.stderr.on("data", (chunk) => { output.text += chunk; });
+  const exited = new Promise((resolveExit) => child.once("exit", (code, signal) => resolveExit({ code, signal })));
+  return { dir, installed, log, child, output, exited };
+}
 
-  const events = await waitForEvents(log, (list) => list.some((event) => event.event === "start" && event.version === NEW), 360_000);
+function stop(run, events) {
   for (const event of events) if (event.pid) killPid(event.pid);
-  try { process.kill(-child.pid, "SIGTERM"); } catch { /* 이미 끝났다 */ }
-  feed.server.close();
-  writeFileSync(join(work, "app-output.log"), output);
-  writeFileSync(join(work, "server.log"), feed.log.join("\n"));
+  try { process.kill(-run.child.pid, "SIGTERM"); } catch { /* 이미 끝났다 */ }
+}
 
+function inOrder(order, expect) {
+  return expect.every((step, index) => order.indexOf(step) >= 0 && (index === 0 || order.indexOf(step) > order.indexOf(expect[index - 1])));
+}
+
+/** 칩 「다시 시작」: 다 받으면 바로 설치하고 새 판이 스스로 켜져야 한다. */
+async function clickScenario({ oldImage, info }) {
+  const run = launch("app-click", oldImage, "install");
+  const events = await waitForEvents(run.log, (list) => list.some((event) => event.event === "start" && event.version === NEW), 360_000);
+  stop(run, events);
+  writeFileSync(join(run.dir, "app-output.log"), run.output.text);
   const order = events.map((event) => `${event.event}@${event.version}`);
-  console.log(`기록: ${order.join(" → ")}`);
-  console.log(`서버 요청:\n  ${feed.log.slice(0, 40).join("\n  ")}`);
-  const expect = [`start@${OLD}`, `downloaded@${OLD}`, `install@${OLD}`, `start@${NEW}`];
-  const seen = expect.every((step, index) => order.indexOf(step) >= 0 && (index === 0 || order.indexOf(step) > order.indexOf(expect[index - 1])));
-  if (seen) pass("linux-update-restart", order.join(" → "));
-  else { fail("linux-update-restart", `${order.join(" → ") || "(기록 없음)"}\n앱 출력 끝:\n${output.slice(-4000)}`); }
-  const replaced = existsSync(installed) && sha512(installed) === info.sha512;
-  if (replaced) pass("linux-file-replaced", `${installed} 가 0.0.2 와 같은 sha512`);
-  else fail("linux-file-replaced", `${installed} sha512 가 latest-linux.yml 과 다르다`);
-  const fetchedChannel = feed.log.some((line) => line.startsWith("GET /latest-linux.yml"));
-  if (fetchedChannel) pass("linux-feed-fetched", "앱이 latest-linux.yml 을 받았다");
-  else fail("linux-feed-fetched", "latest-linux.yml 요청 없음");
+  console.log(`[칩] 기록: ${order.join(" → ")}`);
+  if (inOrder(order, [`start@${OLD}`, `downloaded@${OLD}`, `install@${OLD}`, `start@${NEW}`])) pass("linux-click-restart", order.join(" → "));
+  else fail("linux-click-restart", `${order.join(" → ") || "(기록 없음)"}\n앱 출력 끝:\n${run.output.text.slice(-4000)}`);
+  if (existsSync(run.installed) && sha512(run.installed) === info.sha512) pass("linux-click-file-replaced", "같은 자리 파일이 0.0.2 와 같은 sha512");
+  else fail("linux-click-file-replaced", "sha512 가 latest-linux.yml 과 다르다");
+}
+
+/** 칩을 안 누르고 끔: 끌 때 설치하고 정상 종료해야 하며, 다음에 켜면 새 판이다. */
+async function quitScenario({ oldImage, info }) {
+  const run = launch("app-quit", oldImage, "quit");
+  const quit = await Promise.race([run.exited.then((value) => ({ exited: true, ...value })), new Promise((resolveWait) => setTimeout(() => resolveWait({ exited: false }), 360_000))]);
+  const events = readEvents(run.log);
+  stop(run, events);
+  writeFileSync(join(run.dir, "app-output.log"), run.output.text);
+  const order = events.map((event) => `${event.event}@${event.version}`);
+  console.log(`[끌 때] 기록: ${order.join(" → ")} · 종료 ${JSON.stringify(quit)}`);
+  if (quit.exited && inOrder(order, [`start@${OLD}`, `downloaded@${OLD}`])) pass("linux-quit-exits", `끄기가 막히지 않았다 (${order.join(" → ")})`);
+  else fail("linux-quit-exits", `${JSON.stringify(quit)} ${order.join(" → ")}\n앱 출력 끝:\n${run.output.text.slice(-3000)}`);
+  if (existsSync(run.installed) && sha512(run.installed) === info.sha512) pass("linux-quit-file-replaced", "끌 때 같은 자리 파일이 0.0.2 로 바뀌었다");
+  else { fail("linux-quit-file-replaced", "끈 뒤에도 0.0.2 가 아니다"); return; }
+  const again = launch("app-quit", null, "none");
+  const next = await waitForEvents(again.log, (list) => list.some((event) => event.event === "start" && event.version === NEW), 120_000);
+  stop(again, next);
+  if (next.some((event) => event.event === "start" && event.version === NEW)) pass("linux-quit-next-launch", "다시 켜니 0.0.2");
+  else fail("linux-quit-next-launch", `다시 켠 기록: ${next.map((event) => `${event.event}@${event.version}`).join(" → ")}`);
 }
 
 async function windowsArtifacts() {
