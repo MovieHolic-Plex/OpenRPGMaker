@@ -9,12 +9,12 @@
 // - 이름 반영은 프로젝트 DB 가 아니라 세션 오버라이드(actorNames)다(저장 데이터 원복 유지).
 // - maxLength 는 clampMaxLength 로 1~12 범위로 강제된다(코드포인트 기준 절단).
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject } from "../support/blankProject";
 import type { Command } from "@/project/types";
 import { roundtripCommands, runCommandContract } from "./harness";
 
 function validActor(): { actorId: string; name: string } {
-  const project = createBlankProject();
+  const project = freshBlankProject();
   const actor = project.database.actors[0];
   if (!actor) throw new Error("blank project 에 actor 가 있어야 한다");
   return { actorId: actor.id, name: actor.name };

@@ -1,12 +1,12 @@
 // test/commandContracts/promoteActor.contract.test.ts
 // G1 계약: promoteActor (Phase 8a 승급 커맨드).
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject } from "../support/blankProject";
 import type { Command, Project } from "@/project/types";
 import { roundtripCommands, runCommandContract } from "./harness";
 
 function ids(): { actorId: string; fromClassId: string; toClassId: string } {
-  const project = createBlankProject();
+  const project = freshBlankProject();
   const actorId = project.database.actors[0]?.id;
   const fromClassId = project.database.actors[0]?.classId;
   const toClassId = project.database.classes.find((record) => record.id !== fromClassId)?.id;

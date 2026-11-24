@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { effectiveFactionStance } from "@/project/factionRuntime";
 import { createInterpreter } from "@/player/interpreter";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject } from "../support/blankProject";
 import { PLAYER_FACTION_ID, resolveFactionTable } from "@/project/factions";
 import type { Command } from "@/project/types";
 import { createContractSession, roundtripCommands, runCommandContract } from "./harness";
@@ -32,7 +32,7 @@ describe("changeFactionStance 계약", () => {
 
   it("invalidates live target selection immediately after changing a stance", () => {
     const onFactionStanceChanged = vi.fn();
-    const project = createBlankProject();
+    const project = freshBlankProject();
     project.factions = { defs: [{ id: "guard", name: "경비병" }], relations: [] };
     const session = createContractSession(project);
     const interpreter = createInterpreter([

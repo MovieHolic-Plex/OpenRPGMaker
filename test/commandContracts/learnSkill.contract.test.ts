@@ -7,13 +7,13 @@
 //   actorId/skillId 도 경고 없이 그대로 기록된다(크래시 없음). 케이스 2는 실측 동작을 고정하고,
 //   표와의 차이는 보고서 "표 대조 결과"에 기록한다.
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject } from "../support/blankProject";
 import type { Command } from "@/project/types";
 import { roundtripCommands, runCommandContract } from "./harness";
 
 // 하네스의 기본 프로젝트(createBlankProject)와 같은 DB 에서 유효 id 를 얻는다.
 function validIds(): { actorId: string; skillId: string } {
-  const project = createBlankProject();
+  const project = freshBlankProject();
   const actorId = project.database.actors[0]?.id;
   const skillId = project.database.skills[0]?.id;
   if (!actorId || !skillId) throw new Error("blank project 에 actor/skill 이 있어야 한다");
@@ -41,7 +41,7 @@ describe("learnSkill 계약", () => {
 
   it("여러 스킬은 습득 순서대로 누적된다", () => {
     const { actorId } = validIds();
-    const project = createBlankProject();
+    const project = freshBlankProject();
     const skillIds = project.database.skills.slice(0, 2).map((skill) => skill.id);
     expect(skillIds.length).toBe(2);
 

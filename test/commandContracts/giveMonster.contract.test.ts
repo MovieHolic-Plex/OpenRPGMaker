@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import type { Command } from "@/project/types";
 import { DEFAULT_MONSTER_EXP_CURVE, MONSTER_PARTY_MAX } from "@/project/monsterCollection";
 import { totalExpForLevel } from "@/project/actorModel";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject } from "../support/blankProject";
 import { roundtripCommands, runCommandContract } from "./harness";
 
 function command(speciesId = "species_wild_slime", level = 4): Command {
@@ -23,7 +23,7 @@ describe("giveMonster 계약", () => {
       nickname: "계약 슬라임",
       level: 4,
       // 경험치는 누적값이라 지급 몬스터는 그 레벨의 바닥에서 시작한다(monsterCollection.giveMonster).
-      exp: totalExpForLevel(createBlankProject().database.monsterSpecies?.find((entry) => entry.id === "species_wild_slime")?.expCurve ?? DEFAULT_MONSTER_EXP_CURVE, 4),
+      exp: totalExpForLevel(freshBlankProject().database.monsterSpecies?.find((entry) => entry.id === "species_wild_slime")?.expCurve ?? DEFAULT_MONSTER_EXP_CURVE, 4),
       friendship: 70,
     });
     expect(result.warnings).toEqual([]);

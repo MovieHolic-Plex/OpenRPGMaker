@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { createInterpreter } from "@/player/interpreter";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject } from "../support/blankProject";
 import { commandRuntimeSupportDescriptor } from "@/project/eventCommands/runtimeSupport";
 import type { Command } from "@/project/types";
 import { createContractSession, roundtripCommands } from "./harness";
 
 describe("playMovie interpreter handoff contract", () => {
   it.each([true, false])("preserves wait=%s and blocks the sentinel until the host resumes", (wait) => {
-    const project = createBlankProject();
+    const project = freshBlankProject();
     const session = createContractSession(project);
     const command: Command = { kind: "playMovie", resourceId: "movie_contract", wait, skippable: false };
     const interpreter = createInterpreter([command, { kind: "setFlag", flag: "after", value: true }], session, project);
@@ -32,7 +32,7 @@ describe("playMovie interpreter handoff contract", () => {
       };
     });
     expect(restored).toEqual([command]);
-    const project = createBlankProject();
+    const project = freshBlankProject();
     const interpreter = createInterpreter(restored, createContractSession(project), project);
     expect(interpreter.start()).toEqual(command);
   });

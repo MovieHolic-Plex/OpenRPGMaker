@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { createInterpreter } from "@/player/interpreter";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject } from "../support/blankProject";
 import { createContractSession, roundtripCommands } from "./harness";
 
 describe("openSaveMenu interpreter handoff contract", () => {
   it("pauses before subsequent commands and resumes after the host closes the menu", () => {
-    const project = createBlankProject();
+    const project = freshBlankProject();
     const session = createContractSession(project);
     const interpreter = createInterpreter([
       { kind: "openSaveMenu" }, { kind: "setFlag", flag: "after", value: true },
