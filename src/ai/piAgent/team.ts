@@ -14,6 +14,7 @@ import { hasPlayableSegmentSkeleton, playableSegmentContract } from "@/project/p
 import { GOAL_CAMPAIGN_MAP_BLUEPRINT, GOAL_MIN_MAPS, isGoalCampaignTask } from "./goalCommand";
 import { piVariation } from "./variationNote";
 import { firstMvpRoute } from "./firstMvpRoute";
+import { FIRST_MVP_TEAM_RULES } from "./teamMvp";
 
 /**
  * 프리셋 첫 생성의 범위. 2026-09-27 실측: 첫 생성에서 시공 팀원 하나가 170턴·입력 3,500만 토큰을 쓰고도 마을 검사를
@@ -110,7 +111,7 @@ export const PI_TEAM_ROLES: Record<PiTeamRoleId, PiTeamRole> = {
         ...(team?.orchestratorNotes.trim() ? [`사용자의 팀 운영 지침: ${team.orchestratorNotes.trim()}`] : []),
         ...(isGenrePresetBriefRequest(task) ? [] : teamWorkflowPrompt()),
         ...(isGoalCampaignTask(task) ? GOAL_CAMPAIGN_RULES : isGenrePresetBriefRequest(task) ? PRESET_FIRST_BUILD_RULES : []),
-        ...(firstMvpRoute(project, task).team ? [FIRST_MVP_DATA_RULE] : []),
+        ...(firstMvpRoute(project, task).team && !isGoalCampaignTask(task) ? [...FIRST_MVP_TEAM_RULES, FIRST_MVP_DATA_RULE] : []),
         ...(hasPlayableSegmentSkeleton(project) ? [playableSegmentContract(project)] : []),
         "절차:",
         "1. 필요하면 get_map_region 으로 현황을 짧게 본다(맵당 한 번, 넓은 영역 한 번).",

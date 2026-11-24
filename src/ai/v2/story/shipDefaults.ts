@@ -129,7 +129,7 @@ export function applyLookDefaults(project: Project, story = "", lookSeed = ""): 
  * 첫 판 MVP 는 엔딩·결말 이벤트를 만들지 않는다(2026-11-23 오너). 경로가 지은 엔딩 호출은 MVP 끝 스위치 켜기로 바꾸고 엔딩 정의를 걷는다.
  * 끝 스위치를 켜는 곳이 없으면 청사진 마지막 단계 이벤트(전투면 승리 뒤)에 붙인다 — 자동 플레이·측정이 여기까지 간다.
  */
-function endMvpAtLastStep(project: Project): string[] {
+export function endMvpAtLastStep(project: Project): string[] {
   const applied: string[] = [];
   const mark = { kind: "setSwitch", switchId: MVP_REACHED_SWITCH, value: true };
   let replaced = 0, marked = false;
