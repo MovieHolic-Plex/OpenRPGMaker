@@ -117,6 +117,9 @@ export function wireSystemStudioOverview(root: HTMLElement, source: HTMLElement 
       entry.addEventListener("click", () => {
         const button = document.querySelector<HTMLElement>(`[data-testid="db-tab-${databaseTarget}"]`);
         button?.click();
+        // 탭 안의 하위 보기(`db-subview-*`)로 곧장 간다 — 탭 전환은 동기로 다시 그린다.
+        const subview = entry.dataset.databaseSubview;
+        if (subview) document.querySelector<HTMLElement>(`[data-testid="db-subview-${subview}"]`)?.click();
       });
     }
   }
