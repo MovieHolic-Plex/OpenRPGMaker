@@ -11,11 +11,9 @@ const localRun = process.env.OPRN_LOCAL_TESTS === "1" && process.env.CI !== "tru
 
 export default defineConfig({
   // Worktrees often symlink node_modules. Keep their optimizer and result caches local.
-  ...(localRun && {
-    cacheDir: ".cache/vitest/vite",
-    // Bundled tilesets use default imports. Vite's SSR JSON fast path avoids parsing them as JS.
-    json: { namedExports: false, stringify: true },
-  }),
+  ...(localRun && { cacheDir: ".cache/vitest/vite" }),
+  // DIAG ONLY: JSON fast path for every run (CI too) — see td-slow heap finding.
+  json: { namedExports: false, stringify: true },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
