@@ -106,6 +106,13 @@ async function open() {
   page = editor.page;
 }
 async function save() {
+  // 첫 MVP 가 끝나면 «초안 한 장»(#5050) 창이 저장 단추를 덮는다 — 그대로 누르면 2분 뒤 클릭 시간 초과로 실행기가 죽고 판정이 저장·재로드 실패로 남는다
+  // (2026-11-24 assistant-measure start-jrpg: 판정은 통과, persistence null). 창을 찍어 두고 닫는다.
+  const draftClose = page.getByTestId('draft-overview-close');
+  if (await draftClose.isVisible().catch(() => false)) {
+    await page.screenshot({ path: resolve(out, `draft-overview-${Date.now()}.png`) }).catch(() => {});
+    await draftClose.click();
+  }
   await page.getByTestId('toolbar-save').click();
   await page.waitForFunction(() => ['idle', 'saved', 'error', 'unsaved-session'].includes(
     document.querySelector('[data-testid="toolbar-save"]')?.dataset.autosaveKind), null, { timeout: 180000 });
