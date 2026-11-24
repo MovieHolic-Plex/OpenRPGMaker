@@ -120,7 +120,8 @@ describe("Database record tab partial rendering", () => {
   });
 
   it("Given a record selection When another record row is clicked Then the list is not rebuilt and only the active row changes", () => {
-    const firstId = store.getCurrent().database.skills[0]?.id ?? "";
+    // 목록은 기본으로 「이 게임 것만」이라(#5026) 새 레코드가 생기면 기본 카탈로그 행은 가려진다 — 두 행 모두 더한 것으로 잰다.
+    const firstId = addDatabaseRecord("skills");
     const secondId = addDatabaseRecord("skills");
     const host = renderRecordHost("skills");
 
