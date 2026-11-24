@@ -494,6 +494,11 @@ describe("command edit modal — image-rich preview", () => {
     ["empty dialogue", { kind: "text", speaker: "", body: "" } as Command, (c: Command) => ({ ...c, body: "안녕" }) as Command],
     ["unselected switch", { kind: "setSwitch", switchId: "", value: true } as Command,
       (c: Command) => ({ ...c, switchId: store.getCurrent().switches[0]!.id }) as Command],
+    ["sound without a sound", { kind: "playAudio", resourceId: "", loop: true } as Command,
+      (c: Command) => ({ ...c, resourceId: "cc0-music-field-loop" }) as Command],
+    ["actor rename without an actor",
+      { kind: "m2Command", commandId: "m2-022-change-actor-name", fields: { target: "", value: "레안" } } as Command,
+      (c: Command) => ({ ...c, fields: { target: store.getCurrent().database.actors[0]!.id, value: "레안" } }) as Command],
   ])("keeps the dialog open on OK while a required value is empty (%s)", (_name, initial, fill) => {
     const applied: Command[] = [];
     openEventCommandEditDialog({ initial, onApply: (command) => applied.push(command) });
