@@ -499,7 +499,6 @@ export function renderEnemyPixelPreview(
   // 닫힌 details 내용은 브라우저에 따라 상자가 남아 탭 순서에 걸리므로 hidden 으로도 감춘다. 단추·testid 는 그대로다.
   grid.hidden = true;
   const cellsFold = el("details", {
-    class: "db-enemy-pixel-cells-fold",
     children: [el("summary", { text: `칸 표 ${cellOrder.length}칸`, dataset: { testid: "db-enemy-pixel-cells-toggle" } }), grid],
   }) as HTMLDetailsElement;
   cellsFold.addEventListener("toggle", () => { grid.hidden = !cellsFold.open; });
