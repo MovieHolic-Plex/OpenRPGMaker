@@ -47,6 +47,88 @@ let passageDragModel: ChipsetPreviewModel | null = null;
 let layerFilter: LayerFilter = "all";
 let unlabeledOnlyFilter = false;
 let previewPanState: PreviewPanState | null = null;
+/**
+ * 칸 DOM 격자는 「칸 편집」을 켰 때만 만든다(qa1124-space PR6). 기본은 시트 그림 한 장 + 칸당 한 화소 통행 덮개 한 장이고,
+ * 누르면 칸을 고를 뿐 통행을 바꾸지 않는다. 타일은 맵에서 끌어 고치는 것이 주 흐름이다.
+ */
+let gridEditing = false;
+
+export function chipsetGridEditing(): boolean {
+  return gridEditing;
+}
+
+export function setChipsetGridEditing(on: boolean): void {
+  gridEditing = on;
+}
+
+/** 시트 <img> 는 URL 마다 하나를 계속 옮겨 붙인다 — 새 요소를 만들면 큰 시트(2048×8688)를 다시 풀고 다시 꺔다. */
+const sheetImages = new Map<string, HTMLImageElement>();
+
+function sheetImage(url: string, alt: string, width: number, height: number): HTMLImageElement {
+  let image = sheetImages.get(url);
+  if (!image) {
+    image = el("img", { attrs: { src: url, decoding: "async" } });
+    sheetImages.set(url, image);
+  }
+  image.alt = alt;
+  image.width = width;
+  image.height = height;
+  return image;
+}
+
+const PASSAGE_OVERLAY_RGBA: Record<PassageMark, readonly [number, number, number, number]> = {
+  o: [0, 0, 0, 0],
+  x: [200, 40, 40, 110],
+  star: [230, 180, 20, 110],
+};
+
+/** 통행 덮개: 칸 하나 = 화소 하나(열×행 크기)를 CSS 로 키운다. drawImage 없이 putImageData 한 번. */
+function passageOverlay(model: ChipsetPreviewModel, rows: number, width: number, height: number): HTMLCanvasElement {
+  const cols = model.tileset.tilesPerRow;
+  const canvas = el("canvas", {
+    class: "tileset-db-passage-overlay",
+    attrs: {
+      "aria-hidden": "true",
+      style: `position:absolute;left:2px;top:2px;width:${width}px;height:${height}px;image-rendering:pixelated;pointer-events:none`,
+    },
+    dataset: { testid: "tileset-passage-overlay" },
+  });
+  canvas.width = cols;
+  canvas.height = rows;
+  const context = canvas.getContext?.("2d");
+  if (!context) return canvas;
+  const pixels = context.createImageData(cols, rows);
+  for (let tile = 0; tile < model.tileset.count; tile += 1) {
+    const [r, g, b, a] = PASSAGE_OVERLAY_RGBA[passageMarkForTile(model.tileset, tile)];
+    const offset = tile * 4;
+    pixels.data[offset] = r;
+    pixels.data[offset + 1] = g;
+    pixels.data[offset + 2] = b;
+    pixels.data[offset + 3] = a;
+  }
+  context.putImageData(pixels, 0, 0);
+  return canvas;
+}
+
+function staticSelection(model: ChipsetPreviewModel, cell: number): HTMLElement {
+  const cols = model.tileset.tilesPerRow;
+  const x = (model.selectedTile % cols) * cell + 2;
+  const y = Math.floor(model.selectedTile / cols) * cell + 2;
+  return el("div", {
+    class: "tileset-db-static-selection",
+    attrs: { style: `position:absolute;left:${x}px;top:${y}px;width:${cell}px;height:${cell}px;box-sizing:border-box;border:2px solid var(--accent, #2f6fde);pointer-events:none` },
+    dataset: { testid: "tileset-static-selection", tile: String(model.selectedTile) },
+  });
+}
+
+function tileAtPoint(model: ChipsetPreviewModel, image: HTMLElement, cell: number, event: MouseEvent): number | null {
+  const box = image.getBoundingClientRect();
+  const col = Math.floor((event.clientX - box.left) / cell);
+  const row = Math.floor((event.clientY - box.top) / cell);
+  if (col < 0 || row < 0 || col >= model.tileset.tilesPerRow) return null;
+  const tile = row * model.tileset.tilesPerRow + col;
+  return tile < model.tileset.count ? tile : null;
+}
 
 export function getUnlabeledOnlyFilter(): boolean {
   return unlabeledOnlyFilter;
@@ -132,6 +214,13 @@ function renderPreviewHeader(model: ChipsetPreviewModel): HTMLElement {
                 renderScrollButton({ axis: "y", direction: -1, text: "↑", title: "위로 이동" }),
                 renderScrollButton({ axis: "y", direction: 1, text: "↓", title: "아래로 이동" }),
               ]),
+          el("button", {
+            class: gridEditing ? "active" : "",
+            text: "칸 편집",
+            attrs: { type: "button", "aria-pressed": String(gridEditing), title: gridEditing ? "칸 격자를 닫고 시트 그림만 본다" : "칸마다 눌러 통행·지형·묶음을 바꾸는 격자를 연다" },
+            dataset: { testid: "tileset-grid-edit" },
+            on: { click: () => { gridEditing = !gridEditing; stableRerender(model.rerender); } },
+          }),
           ...(autotileChrome || !model.onOpenFullSheet
             ? []
             : [
@@ -361,6 +450,43 @@ function renderChipsetPreview(model: ChipsetPreviewModel): HTMLElement {
   const previewWidth = model.tileset.tilesPerRow * previewCell;
   const rows = Math.ceil(model.tileset.count / model.tileset.tilesPerRow);
   const previewHeight = rows * previewCell;
+  const alt = `${model.tileset.name} 타일 그림판 (${model.tileset.count}칸)`;
+  const style = [
+    `--tileset-cols:${model.tileset.tilesPerRow}`,
+    `--tileset-cell:${previewCell}px`,
+    `--tileset-width:${previewWidth}px`,
+    `--tileset-height:${previewHeight}px`,
+  ].join(";");
+  if (!gridEditing) {
+    const image = sheetImage(tilesetImageUrl(model.tileset), alt, previewWidth, previewHeight);
+    return el("div", {
+      class: "tileset-db-preview is-static",
+      dataset: { testid: "tileset-db-preview", layerFilter, view: "static" },
+      attrs: { style },
+      children: [
+        image,
+        ...(model.mode === "passage" ? [passageOverlay(model, rows, previewWidth, previewHeight)] : []),
+        staticSelection(model, previewCell),
+        el("div", {
+          class: "tileset-db-preview-meta",
+          dataset: { testid: "tileset-db-preview-meta" },
+          attrs: { title: PREVIEW_SCROLL_HELP },
+          text: `${previewMetaText(model, rows)} · 눌러서 칸 고르기, 칸마다 바꾸려면 「칸 편집」`,
+        }),
+      ],
+      on: {
+        click: (event) => {
+          if (!(event instanceof MouseEvent)) return;
+          const tile = tileAtPoint(model, image, previewCell, event);
+          if (tile !== null) model.onSelectTile(tile);
+        },
+        auxclick: (event) => {
+          if (event instanceof MouseEvent && event.button === 1) event.preventDefault();
+        },
+        mousedown: (event) => startPreviewPan(event),
+      },
+    });
+  }
   const virtual = model.tileset.count > VIRTUALIZE_MIN_CELLS;
   const clickGrid = el("div", {
     class: "tileset-db-click-grid",
@@ -383,23 +509,9 @@ function renderChipsetPreview(model: ChipsetPreviewModel): HTMLElement {
   const preview = el("div", {
     class: "tileset-db-preview",
     dataset: { testid: "tileset-db-preview", layerFilter },
-    attrs: {
-      style: [
-        `--tileset-cols:${model.tileset.tilesPerRow}`,
-        `--tileset-cell:${previewCell}px`,
-        `--tileset-width:${previewWidth}px`,
-        `--tileset-height:${previewHeight}px`,
-      ].join(";"),
-    },
+    attrs: { style },
     children: [
-      el("img", {
-        attrs: {
-          src: tilesetImageUrl(model.tileset),
-          alt: `${model.tileset.name} 타일 그림판 (${model.tileset.count}칸)`,
-          width: String(previewWidth),
-          height: String(previewHeight),
-        },
-      }),
+      sheetImage(tilesetImageUrl(model.tileset), alt, previewWidth, previewHeight),
       clickGrid,
       ...(model.mode === "passage"
         ? []

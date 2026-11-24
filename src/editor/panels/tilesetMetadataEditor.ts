@@ -17,7 +17,7 @@ import {
   passageText,
   textAreaControl,
 } from "@/editor/panels/tilesetMetadataControls";
-import { getUnlabeledOnlyFilter, setUnlabeledOnlyFilter } from "@/editor/panels/tilesetChipsetPreview";
+import { chipsetGridEditing, getUnlabeledOnlyFilter, setUnlabeledOnlyFilter } from "@/editor/panels/tilesetChipsetPreview";
 import { openTilesetSettingsModal } from "@/editor/panels/tilesetPassageModal";
 import { getTilesetPassagePaint, setTilesetPassagePaint } from "@/editor/panels/tilesetPassagePaint";
 import {
@@ -332,7 +332,7 @@ function renderPassagePaintTools(rerender: () => void): HTMLElement {
           paintButton("star", "캐릭터 위 ★", "tileset-passage-star"),
         ],
       }),
-      el("span", { class: "tileset-passage-paint-hint", text: "시트에서 클릭·드래그로 칠합니다" }),
+      el("span", { class: "tileset-passage-paint-hint", text: chipsetGridEditing() ? "시트에서 클릭·드래그로 칠합니다" : "「칸 편집」을 켜고 시트에서 칠합니다" }),
     ],
   });
 }

@@ -10,6 +10,12 @@ const TEMPLATE_TEST_IDS = [
   "tileset-knowledge-template-repeatable-cliff-2x3",
 ] as const;
 
+// 칸 DOM 격자는 「칸 편집」 을 켰을 때만 있다(qa1124-space PR6). 이미 켜져 있으면 그대로 둔다.
+async function openTileGrid(page: Page): Promise<void> {
+  const toggle = page.getByTestId("tileset-grid-edit");
+  if ((await toggle.getAttribute("aria-pressed")) !== "true") await toggle.click();
+}
+
 async function openKnowledgeWorkspace(page: Page): Promise<void> {
   await page.goto("/?freshProject=1");
   const coachSkip = page.getByTestId("coach-mark-skip");
@@ -20,6 +26,7 @@ async function openKnowledgeWorkspace(page: Page): Promise<void> {
   await page.getByTestId("tileset-section-tab-knowledge").click();
   await page.getByTestId("tileset-edit-mode-group").click();
   if (await coachSkip.isVisible()) await coachSkip.click();
+  await openTileGrid(page);
   await expect(page.getByTestId("tileset-knowledge-inspector")).toBeVisible();
 }
 

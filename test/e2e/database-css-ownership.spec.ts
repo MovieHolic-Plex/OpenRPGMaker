@@ -802,6 +802,8 @@ for (const width of [1440, 1024]) {
     }
     await navigate(page, 'tilesets');
     await page.getByTestId('tileset-section-tab-rules').click();
+    // 칸 DOM 격자는 「칸 편집」 을 켰을 때만 있다(qa1124-space PR6).
+    if ((await page.getByTestId('tileset-grid-edit').getAttribute('aria-pressed')) !== 'true') await page.getByTestId('tileset-grid-edit').click();
     const art = page.locator('.tileset-db-click-grid');
     expect(await art.locator('[data-tile]').count()).toBeGreaterThan(0);
     const cell = art.locator('[data-tile]').first();
