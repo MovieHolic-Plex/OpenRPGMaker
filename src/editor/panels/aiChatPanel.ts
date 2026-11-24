@@ -1008,6 +1008,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     (targetCard ?? ensureWorkCard()).attachChange(preview);
     const scoped = regionTurn;
     if (scoped && scoped.mapId === input.mapId) {
+      // 좁은 창(<1000px)에서는 조수 패널이 캔버스를 덮는다(C-57) — 결과는 맵 위 카드가 말하므로 패널을 접어 그 자리를 보인다.
+      if (!collapsed && typeof window !== "undefined" && window.innerWidth < 1000) toggleCollapsed();
       showRegionResultCard({
         mapId: scoped.mapId,
         region: scoped.region,
