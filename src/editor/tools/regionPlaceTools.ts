@@ -208,7 +208,7 @@ function placeExterior(work: Project, mapId: MapId, region: Rect, big: boolean):
 function pickGoods(project: Project, goods: Goods): string[] {
   if (goods === "none") return [];
   const items = project.database.items ?? [];
-  const sellable = items.filter((item) => (item.price ?? 0) > 0 && item.type !== "keyItem");
+  const sellable = items.filter((item) => (item.price ?? 0) > 0 && item.type !== "special" && item.type !== "switch");
   const armsTypes = new Set(["weapon", "shield", "armor", "helmet", "accessory", "body"]);
   if (goods === "arms") {
     const equipment = (project.database.equipment ?? []).filter((e) => (e.price ?? 0) > 0).map((e) => e.id);

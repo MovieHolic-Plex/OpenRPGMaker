@@ -346,10 +346,15 @@ function carryEnabledSystemFeatures(merged: Project, started: Project, result: P
 function carryCreatedWorldGraph(merged: Project, started: Project, result: Project): void {
   if (!result.worldGraph) return;
   const target = merged.worldGraph ?? { nodes: [], edges: [] };
-  const nodes = createdById(started.worldGraph?.nodes ?? [], result.worldGraph.nodes, target.nodes);
-  const edges = createdById(started.worldGraph?.edges ?? [], result.worldGraph.edges, target.edges);
-  if (nodes === target.nodes && edges === target.edges) return;
-  merged.worldGraph = { nodes, edges };
+  const nodeKey = (node: { readonly mapId: string }): string => node.mapId;
+  const edgeKey = (edge: { readonly from: { readonly mapId: string }; readonly to: { readonly mapId: string }; readonly kind: string }): string =>
+    JSON.stringify([edge.from, edge.to, edge.kind]);
+  const knownNodes = new Set([...(started.worldGraph?.nodes ?? []), ...target.nodes].map(nodeKey));
+  const knownEdges = new Set([...(started.worldGraph?.edges ?? []), ...target.edges].map(edgeKey));
+  const nodes = result.worldGraph.nodes.filter((node) => !knownNodes.has(nodeKey(node)));
+  const edges = result.worldGraph.edges.filter((edge) => !knownEdges.has(edgeKey(edge)));
+  if (nodes.length === 0 && edges.length === 0) return;
+  merged.worldGraph = { nodes: [...target.nodes, ...clone(nodes)], edges: [...target.edges, ...clone(edges)] };
 }
 function carryCreatedWorld(merged: Project, started: Project, result: Project): void {
   if (!result.world) return;
