@@ -27,6 +27,8 @@ import { createMapRunLocks, mapRunScope, mapRunBundleIds } from "../../src/ai/pi
 import { authorMergedSpatialProposal, exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.ts";
 import { addPiAgentUsage, changedProjectKeys, PI_MAP_LOSS_DECLINED_PREFIX, restoreCheckpointProject, slimDoneEvent, slimProjectForWire, type PiAgentDoneEvent, type PiAgentUsage, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
+import { firstMvpRoute } from "../../src/ai/piAgent/firstMvpRoute.ts";
+import { applyDraftCast } from "../../src/ai/v2/story/draftCast.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
 import { FIRST_PLAY_TOOLS, firstPlayEvents, firstPlaySignature, inspectFirstPlay, type FirstPlayReceipt } from '../../src/ai/piAgent/firstPlay.ts';
 import { FIRST_SCENE_INSTRUCTIONS, firstSceneGraphicEvidence, firstSceneObjectCatalog, firstSceneMapIds, firstSceneSignature, inspectFirstScene, inspectFirstScenePlaces, storyRouteBrief } from '../../src/ai/piAgent/firstScene.ts';
@@ -785,6 +787,18 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           if (made.length || JSON.stringify(synced.commonEvents) !== JSON.stringify(working.commonEvents)) {
             working = synced;
             emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `호감 대화 인물이 둘 이상이라 기한 판정에 인물별 엔딩을 얹었습니다${made.length ? `(새 엔딩 ${made.join(", ")})` : ""}.` } });
+          }
+        }
+        // 첫 MVP(빈 프로젝트의 게임 하나)는 맵만 남기지 않는다 — 담당은 맵 단위라 게임 전체 끝맺음(draft-cast)이 여기서는 돌지 않는다.
+        // 병합본에 세계관·동료·직업·기술·물건·적을 채운다(2026-11-24 ideal-flow-draft). 다시 불려도 같은 결과다.
+        if (!request.readOnly && firstMvpRoute(base, request.task).team) {
+          const drafted: Project = { ...working, system: { ...working.system }, characters: { ...(working.characters ?? {}) }, database: { ...working.database,
+            actors: working.database.actors.map((actor) => ({ ...actor, learnedSkills: [...actor.learnedSkills] })), classes: [...working.database.classes],
+            skills: [...working.database.skills], items: [...working.database.items], enemies: [...working.database.enemies] } };
+          const made = applyDraftCast(drafted, request.task);
+          if (made.length) {
+            working = drafted;
+            emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `초안 데이터를 채웠습니다: ${made.slice(0, 12).join(", ")}${made.length > 12 ? ` 외 ${made.length - 12}개` : ""}.` } });
           }
         }
         if (firstPlay) {

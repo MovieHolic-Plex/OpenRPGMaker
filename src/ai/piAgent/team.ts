@@ -13,6 +13,7 @@ import { splitIntentNote } from "./monsterGameRequest";
 import { hasPlayableSegmentSkeleton, playableSegmentContract } from "@/project/playableSegmentContract";
 import { GOAL_CAMPAIGN_MAP_BLUEPRINT, GOAL_MIN_MAPS, isGoalCampaignTask } from "./goalCommand";
 import { piVariation } from "./variationNote";
+import { firstMvpRoute } from "./firstMvpRoute";
 
 /**
  * 프리셋 첫 생성의 범위. 2026-09-27 실측: 첫 생성에서 시공 팀원 하나가 170턴·입력 3,500만 토큰을 쓰고도 마을 검사를
@@ -46,6 +47,12 @@ export const PRESET_FIRST_BUILD_RULES = [
   "- 길 막힘·문/필수 이벤트 누락·장소 미구성·보이지 않는 행동 대상·오프닝과 첫 장면 불일치는 이번 제작에서 고친다. 추가 지역이나 과도한 장식만 다음 요청으로 넘긴다.",
   "- finish 보고에는 만든 것, 바로 플레이해 볼 순서, 다음에 늘릴 것 세 가지를 적는다.",
 ] as const;
+/**
+ * 첫 MVP 의 데이터 단계(2026-11-24 ideal-flow-draft) — 맵 배정만 하면 세계관·동료·직업이 빈 채 끝난다. finish 때 실행기가 빈 칸을 채우지만(story/draftCast)
+ * 이름·소개는 요청의 무대에서 나와야 하므로 팀장이 프로젝트 작업으로 따로 맡긴다.
+ */
+export const FIRST_MVP_DATA_RULE = "[첫 MVP 데이터 단계] 맵 배정이 끝나면(wait_agents 뒤) assign_task_agent mode=project 로 한 번, 이 게임의 자료를 맡긴다: 세계관(set_world_canon: 이름·전제·규칙) · 주인공 이름과 직업 · 동료 2~3명(upsert_actor + set_party, 싸움 없는 게임은 파티 대신 upsert_character_profile) · 인물마다 대표 기술 1(upsert_skill) · 이 세계 물건 3~5(upsert_item) · 싸우는 게임은 보스와 잡목(upsert_enemy). 이름은 요청의 무대에서 짓고 «주인공» 같은 기본 이름을 남기지 않는다. finish 보고에 세계관 한 줄과 동료 이름을 적는다.";
+
 /** 프리셋 첫 생성에서 팀원 한 명이 쓰는 턴 상한. 기본(200~300)의 절반 아래 — 구간이 작으니 한 배정이 길 이유가 없다. */
 export const PRESET_FIRST_BUILD_MEMBER_TURNS = 120;
 
@@ -103,6 +110,7 @@ export const PI_TEAM_ROLES: Record<PiTeamRoleId, PiTeamRole> = {
         ...(team?.orchestratorNotes.trim() ? [`사용자의 팀 운영 지침: ${team.orchestratorNotes.trim()}`] : []),
         ...(isGenrePresetBriefRequest(task) ? [] : teamWorkflowPrompt()),
         ...(isGoalCampaignTask(task) ? GOAL_CAMPAIGN_RULES : isGenrePresetBriefRequest(task) ? PRESET_FIRST_BUILD_RULES : []),
+        ...(firstMvpRoute(project, task).team ? [FIRST_MVP_DATA_RULE] : []),
         ...(hasPlayableSegmentSkeleton(project) ? [playableSegmentContract(project)] : []),
         "절차:",
         "1. 필요하면 get_map_region 으로 현황을 짧게 본다(맵당 한 번, 넓은 영역 한 번).",

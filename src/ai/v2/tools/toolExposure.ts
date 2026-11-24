@@ -50,8 +50,11 @@ const WHOLE_GAME_LATER: ReadonlySet<string> = new Set([
   "add_scene", "draw_object", "place_object", "dungeon_parts", "set_start_position", "place_chest", "furnish_outdoor_area",
   "create_opening_animatic_shot", "place_opening_background", "place_opening_charset_actor",
 ]);
-/** 게임 하나 요청에는 요청 묶음 밖이라도 처음부터 싣는다 — list_endings 는 잇는 턴 10번에 10번 불렸다(167자). */
-const WHOLE_GAME_ALWAYS: ReadonlySet<string> = new Set(["list_endings"]);
+/**
+ * 게임 하나 요청에는 요청 묶음 밖이라도 처음부터 싣는다 — list_endings 는 잇는 턴 10번에 10번 불렸다(167자).
+ * 세계 허리·인물 소개(2026-11-24 ideal-flow-draft): 첫 판이 세계관·인물을 비워 두었고 두 도구는 풀에만 있었다. 끝맺음(draft-cast)이 청사진 cast·world 로 채우고, 이 둘은 그 글을 다듬는 데 쓴다.
+ */
+const WHOLE_GAME_ALWAYS: ReadonlySet<string> = new Set(["list_endings", "set_world_canon", "upsert_character_profile"]);
 /**
  * 청사진의 단계가 다 지어진 게임을 잇는 턴(고치기)에 처음부터 싣는 것 — 읽기 · 돌려 보기 · 이벤트와 목표 고치기 · 엔딩 · 소품.
  * 같은 기록의 잇는 턴 10번에서, 실린 글자의 81~92% 가 그 턴에 한 번도 안 불린 도구였다(12.6만 자 → 3.9만 자). 짓는 동사(청사진 · 장소 · 사람 · 사건)는 load_tools 로.

@@ -3801,3 +3801,16 @@ bun scripts/qa/assistant-v2/specBank.mts ab --out /tmp/bank            # 기준(
 v2 가 이긴 것: 마을(광장), 동굴(보이는 적), 던전(근소). 크게 진 것: 천문대(큰 망원경이 작은 것으로 밀림), 컷신(목표 칸이 집에 막혀 1~2걸음 — 미리보기 검사가 못 잡음),
 방 고치기(북쪽 문 불가 + 다시 짓기에서 바닥이 돌로 바뀜). 선술집도 바닥이 돌이라 짐. **기본은 v1 유지.**
 다음 손볼 곳: 「큰 ○○」 주인공 물건 지키기, 테마별 바닥 재질 고정, 컷신 걷기 경로를 실제로 따라가는 검사, 실내 북벽 문 그림, 자리 낱말(«홀 한쪽»), 역할에 맞는 NPC 그림·얼굴.
+
+
+## 첫 판 초안 데이터 — 세계관·주인공·동료·직업·기술·물건·적 (2026-11-24 ideal-flow-draft)
+
+**왜.** 오너 이상 흐름 1·2: 첫 프롬프트(「이세계에 떨어진 마왕 살아남기」) 하나로 AI 가 세계·주인공·데이터와 맵 3~5장을 초안으로 잡아야 한다. 실측(첫 판 저장본 4판): 맵 3장은 나오지만 세계관 0·새 동료 0·새 직업 0, 첫 판 도구 39번 중 자료집 쓰기는 보스 1번. 도구를 실어도 모델은 자료집 도구를 거의 부르지 않는다.
+
+**어떻게.** 모델은 청사진에 이름과 한 줄만 적고, 레코드는 결정적 함수가 짓는다.
+- 청사진 칸(`src/project/gameBlueprint.ts`): `cast{hero, companions[≤3], boss}`(name·role·looks·bio·skill) · `world{name, premise, rules[≤4], tones}` · `items[≤8]`. 다시 쓰기가 칸을 빼면 앞 청사진 것을 물려받는다(`tools/verbs/blueprint.ts`).
+- 빌더 `story/draftCast.ts` `applyDraftCast(project, request)`: 세계 허리가 비었으면 world(없으면 오프닝·목표·요청 글)로 채우고, 주인공 이름·이 게임 직업(주인공 직업이 프리셋일 때), 동료 2명 이상(배우·직업·대표 기술, 싸우는 게임만 시작 파티), 인물 소개 `project.characters[<배우 id>]`·보스는 `characters.boss`, 프리셋이 아닌 아이템이 셋이 될 때까지 청사진 물건, 싸우는 게임에 이 게임 적이 0이면 보스 적. id 는 `*_cast_*` 고정이라 두 번 돌아도 같다. cast 가 비면 파티·청사진에서 채운다(대체 이름 리안·세라·카이·유나).
+- 끝맺음 단계 `finish/stages/draft-cast.ts`(assembly 128 — 출하 기본값 130 앞, 주인공 이름을 먼저 정한다). 팀 실행 첫 MVP 는 맵 담당만 돌아 이 단계가 안 타므로 `scripts/lib/piTeamRuntime.ts` 의 finish 가 병합본에 같은 함수를 부른다(`firstMvpRoute(base, task).team`).
+- 팀장 지시문 `FIRST_MVP_DATA_RULE`(`piAgent/team.ts`): 맵 배정 뒤 assign_task_agent mode=project 로 자료 한 번.
+- 게임 하나 요청은 `set_world_canon` · `upsert_character_profile` 을 처음부터 싣는다(`tools/toolExposure.ts` `WHOLE_GAME_ALWAYS`).
+- 재는 법: `npx vite-node --script scripts/qa/draft-cast-replay.mts -- <out.json> <이름=after.json.gz|blank:<청사진 json>|count:<after.json.gz>>`(모델 없음, 장르 하나씩 — 저장본 여럿을 한 프로세스에 실으면 힙이 넘친다). 실제 조수 판은 작은 일 다섯째 묶음 `start-maou` 를 더했다.

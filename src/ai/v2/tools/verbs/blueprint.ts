@@ -57,6 +57,10 @@ export function blueprintVerbs(c: VerbContext) {
       // 모델이 scale:"small" 을 적어 엔딩 둘을 지었다(다시 쓰기도 small). 큰 게임만 모델이 scale:"full" 로 적는다.
       if ((!prior || prior.scale === "mvp") && (raw.scale === undefined || parsed.blueprint.scale === "small")) parsed.blueprint = { ...parsed.blueprint, scale: "mvp" };
       if (prior?.battles === false && raw.battles === undefined) parsed.blueprint = { ...parsed.blueprint, battles: false };
+      // 인물·세계·물건 칸도 물려받는다 — 이름 맞추기 다시 쓰기가 그 칸을 빼도 동료·세계관이 사라지지 않게(story/draftCast.ts 가 읽는다).
+      if (prior?.cast && raw.cast === undefined) parsed.blueprint = { ...parsed.blueprint, cast: prior.cast };
+      if (prior?.world && raw.world === undefined) parsed.blueprint = { ...parsed.blueprint, world: prior.world };
+      if (prior?.items && raw.items === undefined) parsed.blueprint = { ...parsed.blueprint, items: prior.items };
       // 싸움이 없어도 된다고 적은 게임에는 전투 단계를 요구하지 않는다(요청 글의 «전투» 낱말은 «전투는 없어도 돼» 에도 있다).
       const needBattle = (genre: string): boolean => parsed.blueprint.battles !== false && wantsBattle(genre);
       const small = parsed.blueprint.scale === "small";
@@ -98,7 +102,7 @@ export function blueprintVerbs(c: VerbContext) {
       }
       const adviceNote = advice.length ? ` Notice — saved as written, nothing is rejected. Change these only if the request asks for it: ${advice.join(" ")}` : "";
       // 같은 내용을 다시 쓰면 바꾸지 않는다 — 청사진을 되풀이해 쓰는 대신 경로를 짓게 한다.
-      const core = (b: typeof parsed.blueprint | undefined) => b ? JSON.stringify({ t: b.title, g: b.genre, p: b.playerGoal, o: b.opening, s: b.steps, e: b.ending, w: b.setting, pl: b.places, l: b.look, sc: b.scale, ba: b.battles }) : "";
+      const core = (b: typeof parsed.blueprint | undefined) => b ? JSON.stringify({ t: b.title, g: b.genre, p: b.playerGoal, o: b.opening, s: b.steps, e: b.ending, w: b.setting, pl: b.places, l: b.look, sc: b.scale, ba: b.battles, c: b.cast, wo: b.world, it: b.items }) : "";
       if (prior && core(prior) === core(parsed.blueprint)) {
         session.blueprintRewrites += 1;
         const walked = walkBlueprint(env.ctx.project);

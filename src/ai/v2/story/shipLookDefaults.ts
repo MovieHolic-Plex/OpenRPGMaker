@@ -220,9 +220,9 @@ const ROLE_QUERIES: readonly { readonly re: RegExp; readonly male: readonly stri
 // 끝의 «금발 머리 청년»: 앞의 두 칩을 마을 사람이 먼저 쓴 게임에서도 흉상·전투 그림이 다 있는 칩이 남게.
 const DEFAULT_QUERIES = { male: ["청년 남성", "파란 머리 청년", "금발 머리 청년"], female: ["젊은 여성", "청년 남성"] } as const;
 
-interface ChipPick { readonly resourceId: string; readonly index: number; readonly label: string; readonly face?: string }
+export interface ChipPick { readonly resourceId: string; readonly index: number; readonly label: string; readonly face?: string }
 
-function pickChip(text: string, avoid: ReadonlySet<string>, overrides: Project["charsetLabels"]): ChipPick | undefined {
+export function pickChip(text: string, avoid: ReadonlySet<string>, overrides: Project["charsetLabels"]): ChipPick | undefined {
   const female = FEMALE.test(text);
   const role = ROLE_QUERIES.find((r) => r.re.test(text));
   const queries = [...(role ? (female ? role.female : role.male) : []), ...(female ? DEFAULT_QUERIES.female : DEFAULT_QUERIES.male)];
