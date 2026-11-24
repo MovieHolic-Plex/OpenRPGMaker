@@ -1,0 +1,20 @@
+{
+ "entry": "src/styles/database/index.css",
+ "file": "src/styles/database/editor-owned-ai-modal-shell.css",
+ "contested": {},
+ "winners": {
+  "0c58885b353c": "[database] 0",
+  "331f45a816ae": "[database] var(--space-2)",
+  "3d3f5b8883a3": "[database] 0",
+  "4c3e4966be06": "[database] hidden",
+  "51e93ecb1de5": "[database] 1 1 auto",
+  "6853939aff52": "[database] start",
+  "9e323a5ddd95": "[database] var(--bg-raised)",
+  "a2f6c6e80908": "[database] hidden",
+  "a9978df999de": "[database] var(--space-3) var(--space-4)",
+  "ae8e6506df5a": "[database] auto",
+  "be564fbbb765": "[database] initial",
+  "bff71326961e": "[database] 0",
+  "efa4ff34cef1": "[database] grid"
+ }
+}

@@ -19,13 +19,12 @@
 //   node scripts/check-css-winners.mjs --save-baseline  # 기준선 갱신
 //   node scripts/check-css-winners.mjs --json           # 기계 판독용
 //   node scripts/check-css-winners.mjs --limit 50       # 보고할 변경 건수 상한(기본 25)
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { relative, resolve } from "node:path";
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+import { dirname, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import postcss from "postcss";
 import { declarationsOf, flattenImports, emitOrder, specificity } from "./css-flatten.mjs";
 import { discoverEntries } from "./lib/css-entries.mjs";
-import { warnIfStale } from "./lib/baseline-age.mjs";
 
 // 레이어 "직속". 같은 레이어의 모든 서브레이어보다 강하다(CSS Cascade 5 §6.4.4).
 const DIRECT = Number.MAX_SAFE_INTEGER;
@@ -149,14 +148,23 @@ export function formatWinners(winners) {
 
 // ── 기준선 인코딩 ──────────────────────────────────────────────────────────────
 //
+// 저장은 **조각** 단위다(2026-11-24). 전에는 파일 하나(scripts/css-winners.baseline.json, 4.8 MB)였고
+// CSS 를 조금이라도 건드린 PR 이마다 그 파일을 다시 썼다. 먼저 머지된 PR 이 생기면 나머지는 전부
+// 충돌 → 리베이스 → --save-baseline → CI 재실행이었다. 조각은 엔트리 × **승자 원본 파일** 이다 —
+// 승자의 `where` 파일이 곧 조각이므로 다른 시트를 건드린 PR 은 같은 조각을 쓰지 않는다.
+//   - 항목은 한 줄에 하나, 키는 정렬. 같은 조각을 두 PR 이 고쳐도 다른 줄이면 git 이 합친다.
+//     같은 줄이면 `npm run css-baseline:rebase` 가 --save-baseline 로 다시 만든다.
+//   - 색인 테이블(files/layers/values)은 두지 않는다. 조각마다 따로 두면 저장마다 밀려 diff 잡음이 되고,
+//     한 파일에 두면 모든 PR 이 같은 파일을 쓰는 문제가 그대로 남는다.
+//   - 생성 시각 필드는 두지 않는다. 같은 조각을 건드린 두 PR 이 그 한 줄을 항상 다르게 써서, 항목 줄이
+//     겹치지 않아도 무조건 충돌한다(2026-11-24 시연에서 확인). 나이 경고도 뺀다 — 이 게이트는 매번
+//     승자 전체를 대조하므로 오래된 조각이 빚을 숨기지 않는다(유예 목록형 기준선과 다르다).
+//
 // 래칫 값에서 **줄 번호를 뺀다**. 넣었더니 `database/states.css` 맨 위에 주석 한 줄을
 // 넣는 것만으로 "승자 121건 변경"이 떴다 — 전부 줄이 1씩 밀린 것뿐이고 픽셀 변화는 0이다.
 // 양치기 소년이 된 게이트는 꺼진 게이트와 같다. 줄 번호는 **보고할 때만** 현재 값을 쓴다.
 //
-// 저장 형식은 색인 테이블 + 키 해시다. 전체 텍스트로 쓰면 10.9 MB 인데, 이 파일은 CSS 를
-// 건드릴 때마다 다시 써지는 파일이라 리포에 그대로 쌓으면 안 된다(현존 최대 기준선은 0.72 MB).
-//   - files/layers/values: 고유값 테이블. 값은 78,668건 중 고유 6,223개뿐이라 거의 공짜가 된다.
-//   - 키(선택자|속성|조건)는 sha1 앞 12자리. 62,830개 기준 충돌 확률 ~1e-5.
+// 키(선택자|속성|조건)는 sha1 앞 12자리다(131,790건 기준 충돌 확률 ~4e-5).
 //     해시만으로도 검사는 완전하고, 이름은 검사 시점에 현재 소스에서 되찾는다.
 //   - 단 **경쟁이 있던 키**(2건 이상이 같은 키를 다툰 것)는 원문을 같이 적는다. 캐스케이드가
 //     실제로 판정을 내린 자리라 사람이 읽을 값이 있고, 전체의 1%(545건)라 크기 부담이 없다.
@@ -167,47 +175,138 @@ const hashKey = (key) => createHash("sha1").update(key).digest("hex").slice(0, 1
 // 래칫 대상 문자열. 줄 번호 없음 — 파일·레이어·값이 같으면 같은 승자로 본다.
 export const ratchetOf = (w) => `${w.where.replace(/:\d+$/, "")} [${w.layer}] ${w.value}`;
 
+export const BASELINE_DIR = "scripts/css-winners";
+const LEGACY_BASELINE = "scripts/css-winners.baseline.json";
+
+// `src/a/b.css` → `a/b`. 엔트리와 승자 파일 둘 다 이 꼴이다.
+const stemOf = (rel) => {
+  if (!rel.startsWith("src/") || !rel.endsWith(".css")) throw new Error(`기준선 경로는 src/ 아래 .css 여야 한다: ${rel}`);
+  return rel.slice(4, -4);
+};
+
+// 조각 경로. `<엔트리>/<승자 파일>.json` — 디렉터리만 봐도 어느 번들의 어느 시트인지 알게 한다.
+export function shardRelPath(entry, file) {
+  return `${BASELINE_DIR}/${stemOf(entry)}/${stemOf(file)}.json`;
+}
+
+// 한 엔트리의 승자 맵을 승자 원본 파일별로 묶는다 → Map<파일, {contested, winners}>.
+// 값은 `[레이어] 값` — 파일은 조각이 정하므로 줄마다 되풀이하지 않는다.
+// 항목 순서는 **해시 순**이다. 선택자 이름 순으로 쓰면 두 PR 이 다른 키를 같은 줄 자리에 넣게 된다.
+export function groupByFile(winners) {
+  const groups = new Map();
+  for (const key of Object.keys(winners)) {
+    const x = winners[key];
+    const file = x.where.replace(/:\d+$/, "");
+    let g = groups.get(file);
+    if (!g) { g = { file, contested: {}, winners: {} }; groups.set(file, g); }
+    const h = hashKey(key);
+    g.winners[h] = `[${x.layer}] ${x.value}`;
+    if (x.rivals > 1) g.contested[h] = `${key}  (경쟁 ${x.rivals})`;
+  }
+  for (const g of groups.values()) {
+    for (const table of ["winners", "contested"]) {
+      const sorted = {};
+      for (const h of Object.keys(g[table]).sort()) sorted[h] = g[table][h];
+      g[table] = sorted;
+    }
+  }
+  return groups;
+}
+
+export function encodeShard(entry, group) {
+  return { entry, file: group.file, contested: group.contested, winners: group.winners };
+}
+
+// 들여쓰기 1 → 중첩 객체의 항목이 **한 줄에 하나** 놓인다.
+export const serializeShard = (doc) => `${JSON.stringify(doc, null, 1)}\n`;
+
+// 조각 → diffWinners 이 받는 형태(winners[해시] = `파일 [레이어] 값`).
+export function decodeShard(doc) {
+  const winners = {};
+  for (const [h, v] of Object.entries(doc.winners ?? {})) winners[h] = `${doc.file} ${v}`;
+  return { winners, contested: doc.contested ?? {} };
+}
+
+function walkJson(dir, out = []) {
+  for (const name of readdirSync(dir)) {
+    const full = `${dir}/${name}`;
+    if (statSync(full).isDirectory()) walkJson(full, out);
+    else if (name.endsWith(".json")) out.push(full);
+  }
+  return out;
+}
+
+/**
+ * 기준선을 읽어 엔트리별로 합친다. 조각이 하나도 없으면 null (호출자가 안내 문구를 찍는다).
+ * @returns {{ entries: Record<string, {winners: Record<string, string>, contested: Record<string, string>}>, shards: number }|null}
+ */
+export function readBaseline(root) {
+  const dir = resolve(root, BASELINE_DIR);
+  if (!existsSync(dir)) return null;
+  const paths = walkJson(dir);
+  if (paths.length === 0) return null;
+  const entries = {};
+  for (const p of paths) {
+    let doc;
+    try { doc = JSON.parse(readFileSync(p, "utf8")); } catch (e) { throw new Error(`기준선 조각이 깨졌다: ${relative(root, p)} (${e.message})`); }
+    if (!doc?.entry || !doc?.file || typeof doc.winners !== "object") throw new Error(`기준선 조각 모양이 틀리다: ${relative(root, p)}`);
+    entries[doc.entry] ??= { winners: {}, contested: {} };
+    const e = entries[doc.entry];
+    const d = decodeShard(doc);
+    Object.assign(e.winners, d.winners);
+    Object.assign(e.contested, d.contested);
+  }
+  return { entries, shards: paths.length };
+}
+
+/**
+ * 엔트리별 승자 맵을 조각으로 쓴다. 내용이 같은 조각은 건드리지 않고(mtime·diff 유지),
+ * 더 이상 승자가 없는 조각과 옛 단일 파일은 지운다.
+ * @returns {{ total: number, written: number, removed: string[] }}
+ */
+export function writeBaseline(root, perEntry) {
+  const dir = resolve(root, BASELINE_DIR);
+  const seen = new Set();
+  const out = { total: 0, written: 0, removed: [] };
+  for (const entry of Object.keys(perEntry).sort()) {
+    for (const group of groupByFile(perEntry[entry]).values()) {
+      const rel = shardRelPath(entry, group.file);
+      if (seen.has(rel)) throw new Error(`조각 경로가 겹친다: ${rel}`);
+      seen.add(rel);
+      out.total += 1;
+      const abs = resolve(root, rel);
+      const doc = encodeShard(entry, group);
+      let current = null;
+      try { current = readFileSync(abs, "utf8"); } catch { current = null; }
+      if (current === serializeShard(doc)) continue;
+      mkdirSync(dirname(abs), { recursive: true });
+      writeFileSync(abs, serializeShard(doc));
+      out.written += 1;
+    }
+  }
+  if (existsSync(dir)) {
+    for (const p of walkJson(dir)) {
+      if (!seen.has(relative(root, p).split("\\").join("/"))) { unlinkSync(p); out.removed.push(relative(root, p).split("\\").join("/")); }
+    }
+    for (const sub of [...new Set([...seen].map((r) => dirname(r)))]) {
+      let d = resolve(root, sub);
+      while (d.startsWith(dir + "/") && d !== dir) {
+        if (readdirSync(d).length > 0) break;
+        rmSync(d);
+        d = dirname(d);
+      }
+    }
+  }
+  const legacy = resolve(root, LEGACY_BASELINE);
+  if (existsSync(legacy)) { unlinkSync(legacy); out.removed.push(LEGACY_BASELINE); }
+  return out;
+}
+
 // 파일 경로를 뺀 래칫. 시트를 **옮기기만** 했을 때 캐스케이드가 그대로인지 증명할 때 쓴다
 // (Phase 3·4 의 대규모 이동). 레이어와 값은 그대로 비교하므로 이동에 섞인 실제 변경은 잡는다.
 const stripFile = (s) => s.replace(/^.*?( \[)/, "$1");
 
-export function encodeBaseline(perEntry) {
-  const tables = { files: [], layers: [], values: [] };
-  const maps = { files: new Map(), layers: new Map(), values: new Map() };
-  const intern = (kind, v) => {
-    const m = maps[kind];
-    if (!m.has(v)) { m.set(v, tables[kind].length); tables[kind].push(v); }
-    return m.get(v);
-  };
-  const entries = {};
-  for (const entry of Object.keys(perEntry).sort()) {
-    const winners = perEntry[entry];
-    const w = {};
-    const contested = {};
-    for (const key of Object.keys(winners).sort()) {
-      const x = winners[key];
-      const h = hashKey(key);
-      w[h] = `${intern("files", x.where.replace(/:\d+$/, ""))} ${intern("layers", x.layer)} ${intern("values", x.value)}`;
-      if (x.rivals > 1) contested[h] = `${key}  (경쟁 ${x.rivals})`;
-    }
-    entries[entry] = { contested, winners: w };
-  }
-  return { ...tables, entries };
-}
 
-// 색인은 기준선마다 다르므로 비교 전에 텍스트로 되돌린다.
-export function decodeBaseline(doc) {
-  const out = {};
-  for (const [entry, e] of Object.entries(doc.entries ?? {})) {
-    const winners = {};
-    for (const [h, triple] of Object.entries(e.winners ?? {})) {
-      const [f, l, v] = triple.split(" ").map(Number);
-      winners[h] = `${doc.files?.[f]} [${doc.layers?.[l]}] ${doc.values?.[v]}`;
-    }
-    out[entry] = { winners, contested: e.contested ?? {} };
-  }
-  return out;
-}
 
 /**
  * 기준선(디코드된 것)과 현재 승자 맵을 비교한다.
@@ -269,15 +368,9 @@ export function buildAll(root) {
   return { discovery, perEntry };
 }
 
-const BASELINE_NOTE =
-  "키는 sha1(선택자|속성|조건) 앞 12자리. 값은 `files layers values` 색인 3개. " +
-  "줄 번호는 일부러 뺐다 — 줄이 밀리는 것만으로 대량 오보가 난다. " +
-  "갱신: node scripts/check-css-winners.mjs --save-baseline";
-
 function main() {
   const root = process.cwd();
   const args = process.argv.slice(2);
-  const baselinePath = resolve(root, "scripts/css-winners.baseline.json");
   const limitArg = args.indexOf("--limit");
   const limit = limitArg >= 0 ? Number(args[limitArg + 1]) || 25 : 25;
   const { discovery, perEntry } = buildAll(root);
@@ -287,19 +380,19 @@ function main() {
   const note = discovery === "scan" ? "엔트리 스캔" : "엔트리 폴백";
 
   if (args.includes("--save-baseline")) {
-    const doc = { generatedAt: new Date().toISOString(), note: BASELINE_NOTE, discovery, ...encodeBaseline(perEntry) };
-    writeFileSync(baselinePath, `${JSON.stringify(doc, null, 1)}\n`);
-    console.log(`css-winners: 기준선 저장 (${note}) ${totals}`);
+    const w = writeBaseline(root, perEntry);
+    const removed = w.removed.length ? ` · 지움 ${w.removed.length}` : "";
+    console.log(`css-winners: 기준선 저장 (${note}) 조각 ${w.total}개 중 바뀐 것 ${w.written}개${removed}. ${totals}`);
     return 0;
   }
 
-  if (!existsSync(baselinePath)) {
+  const stored = readBaseline(root);
+  if (!stored) {
     console.error("css-winners: 기준선이 없다. `node scripts/check-css-winners.mjs --save-baseline` 로 먼저 뜬다.");
     return 1;
   }
 
-  warnIfStale(baselinePath, "css-winners");
-  const before = decodeBaseline(JSON.parse(readFileSync(baselinePath, "utf8")));
+  const before = stored.entries;
   const ignoreFile = args.includes("--ignore-file");
   const changes = diffWinners(before, perEntry, { ignoreFile });
   if (ignoreFile) console.error("  (--ignore-file: 파일 경로를 뺀 비교 — 순수 이동 증명용)");
@@ -317,7 +410,7 @@ function main() {
     console.error(`  [${c.entry}] ${c.name}\n      전: ${c.before}\n      후: ${c.after}`);
   }
   if (changes.length > limit) console.error(`  … 외 ${changes.length - limit}건 (--limit N 으로 더 보기)`);
-  console.error("의도한 변경이면 `node scripts/check-css-winners.mjs --save-baseline` 후 diff 를 리뷰에 올린다.");
+  console.error("의도한 변경이면 `node scripts/check-css-winners.mjs --save-baseline` 후 diff 를 리뷰에 올린다. 리베이스에서 조각이 충돌하면 `npm run css-baseline:rebase`.");
   return 1;
 }
 

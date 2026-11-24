@@ -1,0 +1,26 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/shell/shell-density.part-2.css",
+ "contested": {},
+ "winners": {
+  "0ada5e0a5273": "[shell] grid",
+  "3e0e22608eff": "[shell] center",
+  "4af91a38fae4": "[shell] pointer",
+  "4b19a6ab427b": "[shell] fixed",
+  "6ad1b2f721a2": "[shell] 16px minmax(0, 1fr) max-content",
+  "6ed601fd11a2": "[shell] grid",
+  "6fb788f277d3": "[shell] 0",
+  "7da32eac0cb3": "[shell] var(--surface-workbench)",
+  "7edf349a5b9d": "[shell] transparent",
+  "860b9bed1712": "[shell] none",
+  "89f33b5f6640": "[shell] 1px solid transparent",
+  "9c467dbf79c5": "[shell] nowrap",
+  "a82df352a4ab": "[shell] 1px",
+  "c00225fd3c77": "[shell] 1px solid var(--border-subtle)",
+  "cb0d4e1408d4": "[shell] var(--z-popover-high)",
+  "cecc4fb405f0": "[shell] end",
+  "d5ae9b9d982c": "[shell] left",
+  "e0cf3108f54c": "[shell] 3px",
+  "f7086ac10dfd": "[shell] 600 11px/1.2 var(--mono)"
+ }
+}

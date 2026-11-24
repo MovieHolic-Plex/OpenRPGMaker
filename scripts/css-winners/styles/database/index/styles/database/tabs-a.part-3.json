@@ -1,0 +1,16 @@
+{
+ "entry": "src/styles/database/index.css",
+ "file": "src/styles/database/tabs-a.part-3.css",
+ "contested": {},
+ "winners": {
+  "22ed0c85ac9b": "[database] 70px",
+  "4586e3babf71": "[database] var(--text-dim)",
+  "8f85bb8cfbbf": "[database] var(--bg)",
+  "9f3d9ed61b46": "[database] inherit",
+  "ad98782e4093": "[database] 10px",
+  "b61aa002dfb3": "[database] 1px 3px",
+  "cf2996e72d32": "[database] 2px",
+  "e5dc09a9eb99": "[database] 1px solid var(--border-soft)",
+  "e92b5ba7a06f": "[database] auto"
+ }
+}

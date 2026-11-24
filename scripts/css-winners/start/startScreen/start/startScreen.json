@@ -1,0 +1,25 @@
+{
+ "entry": "src/start/startScreen.css",
+ "file": "src/start/startScreen.css",
+ "contested": {},
+ "winners": {
+  "0a19e273149e": "[start] border-box",
+  "1548e163a715": "[start] 1.5",
+  "2a11672cbd09": "[start] inherit",
+  "3b3a4e5ab382": "[start] 0",
+  "5e78abf747cc": "[start] 14px",
+  "62429d013444": "[start] inherit",
+  "69c3d0094a16": "[start] var(--font-ui)",
+  "74b503e83eb0": "[start] progress",
+  "83d4362777e5": "[start] border-box",
+  "9c780792dea2": "[start] border-box",
+  "9f31e6baed20": "[start] var(--text-1, #ececee)",
+  "b61ae17204ae": "[start] 100vh",
+  "c07e1a49b82c": "[start] none",
+  "caa9842b5404": "[start] 100vh",
+  "d98419371371": "[start] antialiased",
+  "dfac9d0e2d59": "[start] var(--bg-base, #111214)",
+  "ee55fdf547a3": "[start] block",
+  "f934c474a79d": "[start] keep-all"
+ }
+}

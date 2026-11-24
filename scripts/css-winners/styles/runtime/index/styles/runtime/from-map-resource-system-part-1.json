@@ -1,0 +1,25 @@
+{
+ "entry": "src/styles/runtime/index.css",
+ "file": "src/styles/runtime/from-map-resource-system-part-1.css",
+ "contested": {},
+ "winners": {
+  "1ea8b4713da4": "[runtime] stretch",
+  "2443f49aeb39": "[runtime] stretch",
+  "246a4d111b25": "[runtime] stretch",
+  "396c6f06710a": "[runtime] stretch",
+  "3c47e3f38c64": "[runtime] #000 !important",
+  "5343ce223209": "[runtime] 100%",
+  "5e1751aae57e": "[runtime] 100%",
+  "64dbec02f3df": "[runtime] stretch",
+  "91409703b12c": "[runtime] 100%",
+  "9f91f63009ef": "[runtime] minmax(0, 1fr)",
+  "abe3e0112465": "[runtime] 0",
+  "b79af8c5bb0a": "[runtime] 100%",
+  "bbda69d6bd4c": "[runtime] minmax(0, 1fr)",
+  "bf651122799f": "[runtime] 100%",
+  "e491987ccf10": "[runtime] 100%",
+  "f08886604585": "[runtime] 0",
+  "f81605067863": "[runtime] 0",
+  "fc553143c3a4": "[runtime] stretch"
+ }
+}

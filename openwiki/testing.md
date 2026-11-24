@@ -79,6 +79,11 @@
   1건 surfaces, 1건 hex). 게이트는 결정적이다(깨끗한 origin/main 에서 두 번 돌려 출력 md5 동일).
   그래서 `verify-gates.mjs --only css` 는 실패한 하위 게이트마다 그 기준선을 다시 뜨는 **정확한 한 줄**을
   `::error::` 어노테이션으로 찍는다. `gates:css:save` 는 budget 만 저장하므로 그 이름만 보고 믿지 마라.
+- **css-winners 기준선은 조각이다** (2026-11-24): `scripts/css-winners/<엔트리>/<승자 원본 파일>.json` 593개, 항목은 한 줄에 하나.
+  전에는 4.8 MB 파일 하나라 CSS 를 조금이라도 건드린 PR 이마다 그 파일을 다시 썼고, 먼저 머지된 PR 이 생기면 나머지는 전부
+  충돌했다(리베이스 → `--save-baseline` → CI 재실행). 이제 다른 시트를 건드린 PR 은 다른 조각을 쓰고, 내용이 안 바뀐 조각은
+  저장해도 다시 쓰지 않는다. 같은 조각이 충돌하면 줄을 고르지 말고 `npm run css-baseline:rebase` 가 `--save-baseline` 로 다시 만든다
+  (`scripts/css-baseline-rebase.mjs`). 조각은 계산된 값이라 한 쪽을 고르면 합쳐진 CSS 와 어긋난다. 판정은 그대로다 — 바뀐 승자만 회귀.
 
 ## 그림 블라인드 검수의 Argon 은 `scripts/qa/argon-vqa.py` 로 (2026-10-25)
 

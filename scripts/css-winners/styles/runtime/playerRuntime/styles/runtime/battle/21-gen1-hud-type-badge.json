@@ -1,0 +1,29 @@
+{
+ "entry": "src/styles/runtime/playerRuntime.css",
+ "file": "src/styles/runtime/battle/21-gen1-hud-type-badge.css",
+ "contested": {},
+ "winners": {
+  "0246708874c0": "[runtime] #3f8142",
+  "0ea9a9d3c7e7": "[runtime] 12px",
+  "1c3cb3a5ce59": "[runtime] 999px",
+  "1db6672f8919": "[runtime] 0 6px",
+  "1e46a9d5921a": "[runtime] none",
+  "24a69486b712": "[runtime] var(--battle-command-tag-bg, #6b7280)",
+  "2f170e5bf002": "[runtime] nowrap",
+  "36787e979ad2": "[runtime] none",
+  "4626d79a2216": "[runtime] 0 0 auto",
+  "513751e0002d": "[runtime] none",
+  "5e3e32ae0008": "[runtime] #fff",
+  "60e6a9cda0d2": "[runtime] 0.04em",
+  "6274e3fd9e15": "[runtime] none",
+  "6c325603ee96": "[runtime] #2f6fb0",
+  "8c1966601270": "[runtime] none",
+  "bd8bdf783ad2": "[runtime] none",
+  "d0ccdaf9b8f3": "[runtime] #c4462c",
+  "d16cc7f80138": "[runtime] 1.3",
+  "d3913e1469a1": "[runtime] normal",
+  "d491c66c14f2": "[runtime] none",
+  "d560feacd68d": "[runtime] 700",
+  "ee911d8c01ab": "[runtime] flex-start"
+ }
+}

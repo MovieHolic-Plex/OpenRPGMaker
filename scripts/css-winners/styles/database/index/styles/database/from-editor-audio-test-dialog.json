@@ -1,0 +1,19 @@
+{
+ "entry": "src/styles/database/index.css",
+ "file": "src/styles/database/from-editor-audio-test-dialog.css",
+ "contested": {},
+ "winners": {
+  "01dc9336ef6b": "[database] 0",
+  "0d0b9cdbbae2": "[database] min(520px, calc(100dvh - 240px))",
+  "1856712827c0": "[database] 0",
+  "26a29a289429": "[database] 0",
+  "65f6c18e0bde": "[database] min-content",
+  "7fc9b44b928c": "[database] 0",
+  "80c38aa78a92": "[database] none",
+  "85a05bf62656": "[database] flex",
+  "c5ae36b7e319": "[database] 0",
+  "d31e01c2716f": "[database] stretch",
+  "daf823314642": "[database] wrap",
+  "f2b7e6815f6b": "[database] minmax(192px, 256px) minmax(0, 1fr)"
+ }
+}

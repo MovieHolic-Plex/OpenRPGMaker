@@ -1,0 +1,10 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/components/from-resources-resource-manager.css",
+ "contested": {},
+ "winners": {
+  "558a66942860": "[components] 400 12px/18px var(--font-ui)",
+  "7f928caaf48b": "[components] var(--space-2)",
+  "e0fe3e5bf304": "[components] var(--text-3)"
+ }
+}

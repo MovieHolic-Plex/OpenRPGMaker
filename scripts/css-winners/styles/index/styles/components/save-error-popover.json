@@ -1,0 +1,29 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/components/save-error-popover.css",
+ "contested": {},
+ "winners": {
+  "01a788f34254": "[components] start",
+  "071ddce2cfab": "[components] border-box",
+  "07827bb73230": "[components] none",
+  "0d241dadddea": "[components] auto",
+  "14196db65432": "[components] pre-wrap",
+  "1b89928f0d97": "[components] var(--space-2)",
+  "1beae0942b3f": "[components] var(--bg-overlay)",
+  "49d152da8a35": "[components] 12px",
+  "5a461db754ea": "[components] var(--text-1)",
+  "7829c9e0aa15": "[components] min(22rem, calc(100vw - 24px))",
+  "7b71c56c2262": "[components] flip-inline, flip-block, flip-inline flip-block, --save-error-viewport",
+  "7f599e81fc05": "[components] anywhere",
+  "9df3c04e7aba": "[components] block-end span-inline-start",
+  "9f61aeaaa3d8": "[components] var(--space-3)",
+  "b01b75485a6b": "[components] 400 13px/1.5 var(--font-ui)",
+  "c192cbbb7d6c": "[components] 12px",
+  "c25076508c14": "[components] min(16rem, 70vh)",
+  "c600f2f218bd": "[components] var(--shadow-pop)",
+  "d5fe0076b3ff": "[components] var(--space-1)",
+  "dad6cf3b6c0e": "[components] 1px solid var(--border-default)",
+  "e12829ee5c88": "[components] var(--radius-m)",
+  "fd4c08ed7cb7": "[components] auto"
+ }
+}

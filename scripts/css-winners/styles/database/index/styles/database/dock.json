@@ -1,0 +1,27 @@
+{
+ "entry": "src/styles/database/index.css",
+ "file": "src/styles/database/dock.css",
+ "contested": {
+  "5ae31db71c99": ".database-modal-backdrop.is-docked .database-modal-window|height  (경쟁 2)"
+ },
+ "winners": {
+  "148b10591e2b": "[database] default",
+  "3ec4e8a89611": "[database] fixed !important",
+  "4c794f79af54": "[database] 0 !important",
+  "5ae31db71c99": "[database] 100dvh !important",
+  "6213a77f697d": "[database] none !important",
+  "692141e3da5c": "[database] 0 !important",
+  "6d1e0bddb22d": "[database] none !important",
+  "6f4120312ccc": "[database] nowrap",
+  "9330bd374af2": "[database] 0.45",
+  "a3c242da15dc": "[database] 0 1 auto",
+  "aa99375cb5ae": "[database] transparent !important",
+  "abbb4b6ce117": "[database] auto !important",
+  "c0535a9636f9": "[database] auto !important",
+  "c65affe88951": "[database] stretch end",
+  "caea80fbe425": "[database] default",
+  "cd387f6780aa": "[database] 40vw !important",
+  "ee0ebd5e59a6": "[database] 0",
+  "eed3efb6db5a": "[database] 0"
+ }
+}

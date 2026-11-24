@@ -1,0 +1,15 @@
+{
+ "entry": "src/styles/event/index.css",
+ "file": "src/styles/event/pages-4.part-3.css",
+ "contested": {},
+ "winners": {
+  "1f34ae42fe7d": "[event] .04em",
+  "3916e81a3514": "[event] default",
+  "4c8d2951bf82": "[event] flex-start",
+  "5db2b56e16ac": "[event] 0",
+  "5e94d3da1f16": "[event] 700 10.5px/1.2 var(--font-ui)",
+  "682927b822e9": "[event] none",
+  "925b3f2274ea": "[event] 650 12.5px/1.25 var(--font-ui)",
+  "d611d2ee8446": "[event] var(--text-2)"
+ }
+}

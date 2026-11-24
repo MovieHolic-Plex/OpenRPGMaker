@@ -1,0 +1,22 @@
+{
+ "entry": "src/styles/runtime/index.css",
+ "file": "src/styles/runtime/battle/30-backdrop-motion.css",
+ "contested": {},
+ "winners": {
+  "082e1ed417e6": "[runtime] absolute",
+  "393c14baffd4": "[runtime] battle-backdrop-scroll var(--battle-backdrop-scroll-duration, 8s) linear infinite",
+  "39ed4e435e65": "[runtime] repeat",
+  "3c1c1bb2f942": "[runtime] 0",
+  "72fd5162be6d": "[runtime] none",
+  "8d1c4a1e928c": "[runtime] none",
+  "9c7efaa8d80f": "[runtime] block",
+  "a76eae81f235": "[runtime] battle-backdrop-scroll var(--battle-backdrop-scroll-duration, 8s) linear infinite, battle-backdrop-palette var(--battle-backdrop-palette-duration, 6s) linear infinite",
+  "abae45e8dbf0": "[runtime] battle-backdrop-palette var(--battle-backdrop-palette-duration, 6s) linear infinite",
+  "b8e983dc705f": "[runtime] none",
+  "c1d1bfc01d36": "[runtime] 100%",
+  "cd5f58133aa1": "[runtime] none",
+  "e2f3136da30f": "[runtime] 100%",
+  "e7690d300485": "[runtime] battle-backdrop-palette var(--battle-backdrop-palette-duration, 6s) linear infinite",
+  "e992cfd26a9f": "[runtime] 640px 480px"
+ }
+}

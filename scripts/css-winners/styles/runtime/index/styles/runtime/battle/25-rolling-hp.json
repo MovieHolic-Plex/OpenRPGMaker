@@ -1,0 +1,10 @@
+{
+ "entry": "src/styles/runtime/index.css",
+ "file": "src/styles/runtime/battle/25-rolling-hp.css",
+ "contested": {},
+ "winners": {
+  "4bd7d2fe79de": "[runtime] battle-rolling-hp-dying 0.6s ease-in-out infinite alternate",
+  "8048dbdc014e": "[runtime] rgb(255, 110, 110)",
+  "dcd742d17036": "[runtime] none"
+ }
+}

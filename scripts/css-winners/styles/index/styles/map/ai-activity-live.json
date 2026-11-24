@@ -1,0 +1,31 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/map/ai-activity-live.css",
+ "contested": {},
+ "winners": {
+  "2b9e90a0d153": "[map] var(--text-1)",
+  "371ce4ca1c76": "[map] ai-activity-live-spin 900ms linear infinite",
+  "3ae7318fc288": "[map] flex",
+  "53ab822f18f8": "[map] 0",
+  "5436dd24e529": "[map] var(--stroke-1) solid var(--accent-border)",
+  "54a6f6a7718f": "[map] none",
+  "5b5323991700": "[map] var(--font-weight-medium)",
+  "655ee1dc4fb9": "[map] var(--stroke-2) solid var(--accent-muted)",
+  "66ff0b1a45ea": "[map] center",
+  "6e5be14850ee": "[map] var(--radius-s)",
+  "83674e847961": "[map] var(--space-2) var(--space-3)",
+  "8b4b90500a3d": "[map] var(--space-3)",
+  "8d5b2d7a7ccb": "[map] var(--space-3)",
+  "913db752d143": "[map] anywhere",
+  "91d82df2a4e3": "[map] var(--accent-muted)",
+  "9cb5f13c59c1": "[map] var(--font-ui)",
+  "a07ca1642f20": "[map] var(--line-height-tight)",
+  "aa31798740ba": "[map] inline-block",
+  "b6171f71d242": "[map] contents",
+  "bc4979c2cf4c": "[map] var(--accent)",
+  "be4a2bb25e14": "[map] var(--font-size-sm)",
+  "c9829bc23071": "[map] var(--space-2)",
+  "dbf3ff1d92f7": "[map] 0 0 auto",
+  "f40e2f5dc649": "[map] var(--radius-pill)"
+ }
+}

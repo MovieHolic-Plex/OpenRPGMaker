@@ -1,0 +1,9 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/shell/from-database-tabs-b-assistant-panel-08-studio-mode-start-screen.css",
+ "contested": {},
+ "winners": {
+  "4900fa20cca9": "[shell] var(--z-status)",
+  "b2307987ad77": "[shell] relative"
+ }
+}

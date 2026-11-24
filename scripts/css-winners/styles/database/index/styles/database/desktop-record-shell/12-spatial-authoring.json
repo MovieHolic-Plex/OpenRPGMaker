@@ -1,0 +1,15 @@
+{
+ "entry": "src/styles/database/index.css",
+ "file": "src/styles/database/desktop-record-shell/12-spatial-authoring.css",
+ "contested": {},
+ "winners": {
+  "168ffb03168e": "[database] 1px solid var(--db-studio-border-subtle) !important",
+  "250cce6dd4de": "[database] center",
+  "3e05236c0e88": "[database] var(--db-studio-accent) !important",
+  "91cbce1eed74": "[database] var(--db-studio-surface) !important",
+  "92a30c30af58": "[database] 18px 16px",
+  "c87d3c1f0d39": "[database] 10px !important",
+  "cedc091b1f60": "[database] #fff !important",
+  "d9a5df155fc4": "[database] var(--db-studio-accent) !important"
+ }
+}

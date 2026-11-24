@@ -1,0 +1,17 @@
+{
+ "entry": "src/styles/database/index.css",
+ "file": "src/styles/database/region-reference.css",
+ "contested": {},
+ "winners": {
+  "087abc56e042": "[database] 100%",
+  "0ab4c8128359": "[database] 100%",
+  "0c39028a25a0": "[database] 0",
+  "84ca19741c1e": "[database] contain",
+  "bce78a908cec": "[database] 100%",
+  "c97a8f1f0c61": "[database] contain",
+  "d7079ec1074f": "[database] 100%",
+  "dd17092bf8a9": "[database] 100%",
+  "e151c254de98": "[database] pixelated",
+  "f36878202656": "[database] 100%"
+ }
+}

@@ -1,0 +1,19 @@
+{
+ "entry": "src/player/player.css",
+ "file": "src/styles/runtime/from-database-modern-utility-records.css",
+ "contested": {},
+ "winners": {
+  "158903d48063": "[runtime] var(--db-studio-text-1)",
+  "1adad4002671": "[runtime] var(--stroke-2) solid var(--db-studio-accent)",
+  "28808e88a218": "[runtime] var(--radius-s)",
+  "3696ec5ba340": "[runtime] grid",
+  "39c28461ac14": "[runtime] 0",
+  "44fbded85b7d": "[runtime] start",
+  "72c2b474ef8d": "[runtime] var(--db-studio-surface)",
+  "76581223c567": "[runtime] var(--space-2)",
+  "a00a6fd6c151": "[runtime] var(--stroke-1) solid var(--db-studio-border-default)",
+  "a2149d4763f1": "[runtime] var(--stroke-2)",
+  "d0d953e1ae51": "[runtime] var(--space-2) var(--space-3)",
+  "e80dc46ab7f1": "[runtime] anywhere"
+ }
+}

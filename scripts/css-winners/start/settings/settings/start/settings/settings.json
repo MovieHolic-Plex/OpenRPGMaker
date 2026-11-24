@@ -1,0 +1,28 @@
+{
+ "entry": "src/start/settings/settings.css",
+ "file": "src/start/settings/settings.css",
+ "contested": {},
+ "winners": {
+  "0c158bc51f82": "[(unlayered)] auto",
+  "0f48f0d5fa5f": "[(unlayered)] 100%",
+  "1f11da238c7a": "[(unlayered)] var(--bg-active)",
+  "2b550381572c": "[(unlayered)] var(--space-5)",
+  "32991bfc76d8": "[(unlayered)] var(--space-2) var(--space-3)",
+  "4d57fb5e8744": "[(unlayered)] var(--text-1)",
+  "4f8def31d28e": "[(unlayered)] transparent",
+  "503541f6d5a9": "[(unlayered)] 0 0 var(--space-2)",
+  "71f39e3420d3": "[(unlayered)] -2px",
+  "7629036638a2": "[(unlayered)] var(--text-2)",
+  "81b28406f574": "[(unlayered)] var(--accent)",
+  "9f97deefc87d": "[(unlayered)] 0",
+  "ace39d6a24e7": "[(unlayered)] 46px",
+  "bb2657e5826f": "[(unlayered)] flex",
+  "c097eed7bcfe": "[(unlayered)] 100%",
+  "c2533da9d53e": "[(unlayered)] pointer",
+  "cf2b6d6b1964": "[(unlayered)] nowrap",
+  "d67493307d1c": "[(unlayered)] var(--radius-s)",
+  "dbd952a34c60": "[(unlayered)] 2px solid var(--focus-color)",
+  "e8762c6ad708": "[(unlayered)] var(--space-1)",
+  "fdb0caf13609": "[(unlayered)] inherit"
+ }
+}

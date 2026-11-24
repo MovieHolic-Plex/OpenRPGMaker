@@ -1,0 +1,33 @@
+{
+ "entry": "src/styles/runtime/index.css",
+ "file": "src/styles/runtime/juice.css",
+ "contested": {},
+ "winners": {
+  "1e3b93b1dda8": "[runtime] juice-menu-back-slide 160ms ease-out",
+  "2adb0170efa5": "[runtime] juice-menu-invalid-shake 140ms ease-in-out",
+  "2b0d9755df08": "[runtime] none",
+  "3351223d7731": "[runtime] none",
+  "3a68d8fc91ec": "[runtime] 2px solid color-mix(in oklab, var(--danger) 78%, transparent)",
+  "5655ca177811": "[runtime] juice-menu-confirm-press 180ms ease-out",
+  "5b9a0c94cb79": "[runtime] 1px",
+  "6df431e484e3": "[runtime] juice-menu-open-pop 160ms ease-out",
+  "74aad1e68b14": "[runtime] none",
+  "7a2ae3ebd0a1": "[runtime] none",
+  "7b60fc01105d": "[runtime] juice-menu-open-pop 160ms ease-out",
+  "98038b78bd4c": "[runtime] none",
+  "9d688c94c891": "[runtime] none",
+  "a93a731249ff": "[runtime] juice-menu-confirm-press 180ms ease-out",
+  "aef9bded7bef": "[runtime] none",
+  "b3d7441673c1": "[runtime] none",
+  "bbfa75c1ab5f": "[runtime] none",
+  "bc3246c3e239": "[runtime] juice-menu-back-slide 160ms ease-out",
+  "c10993f1d22a": "[runtime] none",
+  "c118cebd3daa": "[runtime] none",
+  "c2441f4fd6da": "[runtime] none",
+  "d0ae4f4f5236": "[runtime] none",
+  "d71342eaabc8": "[runtime] none",
+  "ded8b3d81bad": "[runtime] none",
+  "eac6e618b81c": "[runtime] none",
+  "f858f70baee2": "[runtime] none"
+ }
+}

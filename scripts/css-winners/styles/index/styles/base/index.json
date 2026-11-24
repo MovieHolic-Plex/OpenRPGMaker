@@ -1,0 +1,32 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/base/index.css",
+ "contested": {},
+ "winners": {
+  "059705169691": "[base] color-mix(in srgb, var(--accent) 22%, transparent)",
+  "07aa28f3afc9": "[base] padding-box",
+  "0fd578788343": "[base] 2px solid transparent",
+  "1fc639fa7fc3": "[base] transparent",
+  "48050d5487e2": "[base] keep-all",
+  "5937cc06d0cf": "[base] break-word",
+  "5b35e8a0170c": "[base] grayscale",
+  "5b86bca333c1": "[base] var(--focus-offset)",
+  "69c3d0094a16": "[base] var(--font-ui)",
+  "73b58f2449ea": "[base] transparent",
+  "7b1620e88ef3": "[base] var(--focus-outline)",
+  "8b0a7e1dbba3": "[base] pretty",
+  "8d46e9c5d48e": "[base] var(--scrollbar-thumb)",
+  "939a1d370a13": "[base] 2px solid transparent",
+  "96223974c32c": "[base] optimizeLegibility",
+  "994c6496622d": "[base] 999px",
+  "b56dc867d3bc": "[base] var(--text-1)",
+  "c748c34636a5": "[base] padding-box",
+  "cce763000e28": "[base] var(--scrollbar-thumb) transparent",
+  "d53166e63211": "[base] 10px",
+  "d5f594673f84": "[base] 10px",
+  "d98419371371": "[base] antialiased",
+  "e5a092c5945d": "[base] thin",
+  "e7d3db282f5f": "[base] var(--scrollbar-thumb-hover)",
+  "ee596ff0362b": "[base] light"
+ }
+}

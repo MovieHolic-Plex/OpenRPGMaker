@@ -1,0 +1,33 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/shell/figma-editor/05-canvas-statusbar.css",
+ "contested": {},
+ "winners": {
+  "0d13d9541cd9": "[shell] calc(100vh - 24px)",
+  "0e82c20e5a23": "[shell] var(--scrollbar-thumb) var(--bg-inset)",
+  "11dc4ab33591": "[shell] var(--focus-outline)",
+  "1ba68290c718": "[shell] scroll",
+  "215cecd147bf": "[shell] 12px",
+  "4ed892949597": "[shell] var(--editor-text)",
+  "4fd0a61bc201": "[shell] 100% !important",
+  "62949e7497d2": "[shell] var(--bg-inset)",
+  "6c05886ea839": "[shell] 322px",
+  "6c83d70b591d": "[shell] block",
+  "6e00a1c6f524": "[shell] border-box",
+  "7696f3e5dcf6": "[shell] auto",
+  "7d5c83110205": "[shell] auto",
+  "82e614a9537b": "[shell] hidden",
+  "9784e959b7a6": "[shell] scroll",
+  "97f455f68c72": "[shell] -2px",
+  "9e293a16a087": "[shell] 1",
+  "9e963c5939fd": "[shell] var(--editor-popover-bg)",
+  "a1a11ce2f0d1": "[shell] var(--shadow-pop)",
+  "a7d3286e9f78": "[shell] var(--radius-m)",
+  "b4d1489b5595": "[shell] 1px solid var(--editor-line-strong)",
+  "b8523384e845": "[shell] hidden",
+  "c87541584331": "[shell] 100% !important",
+  "e33c8b1679fb": "[shell] calc(100vw - 24px)",
+  "f20fc7282da9": "[shell] contain",
+  "f626fc64b2b1": "[shell] absolute"
+ }
+}

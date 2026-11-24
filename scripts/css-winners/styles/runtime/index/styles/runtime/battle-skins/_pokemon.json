@@ -1,0 +1,19 @@
+{
+ "entry": "src/styles/runtime/index.css",
+ "file": "src/styles/runtime/battle-skins/_pokemon.css",
+ "contested": {},
+ "winners": {
+  "225158366735": "[runtime] #282828",
+  "4421f8483e09": "[runtime] #4858a0",
+  "588bcc50318e": "[runtime] #f8f8f8",
+  "695412e3c70e": "[runtime] pre-line",
+  "752a858a18d3": "[runtime] keep-all",
+  "827151f2f5b2": "[runtime] break-word",
+  "9449692ab912": "[runtime] #282828",
+  "9aebf13c5fc9": "[runtime] #f04030",
+  "b91926d42afe": "[runtime] start",
+  "c189da7c03dc": "[runtime] 1.3",
+  "eae0ead7c96e": "[runtime] #f8f8f8",
+  "f47f04e9e3ee": "[runtime] clip"
+ }
+}

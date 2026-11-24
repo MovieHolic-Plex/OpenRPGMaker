@@ -1,0 +1,24 @@
+{
+ "entry": "src/player/player.css",
+ "file": "src/styles/runtime/battle-skins/_transitions.css",
+ "contested": {},
+ "winners": {
+  "0f87ccec90ab": "[runtime] retro2003-entry-flash 340ms linear both",
+  "109a112e8ecf": "[runtime] 100%",
+  "1325b99e9e73": "[runtime] -100%",
+  "427b943d6d31": "[runtime] hidden",
+  "493eba83f36a": "[runtime] left",
+  "5e18062c6074": "[runtime] calc(var(--blind-index) * 10ms)",
+  "632ec39ffb8a": "[runtime] #000",
+  "692ce1a61c44": "[runtime] calc((7 - var(--blind-index)) * 10ms)",
+  "6dee734b1aa5": "[runtime] none",
+  "76ea2e619e96": "[runtime] #fff",
+  "7f731ee1717b": "[runtime] #fff",
+  "815b96662cbd": "[runtime] retro2003-stripe-open 230ms ease-out both",
+  "87d80b146604": "[runtime] #000",
+  "98660c1fe6f5": "[runtime] retro2003-stripe-close 190ms ease-in both",
+  "98e3615f259a": "[runtime] none",
+  "c1251f7e9093": "[runtime] translateX(var(--retro-slide))",
+  "dfa63e74ef5a": "[runtime] none"
+ }
+}

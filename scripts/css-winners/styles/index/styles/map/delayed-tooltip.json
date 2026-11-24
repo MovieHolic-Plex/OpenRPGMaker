@@ -1,0 +1,21 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/map/delayed-tooltip.css",
+ "contested": {},
+ "winners": {
+  "0a1bd6e0a210": "[map] var(--radius-2)",
+  "217c529cae33": "[map] 4px 8px",
+  "291ece1dda12": "[map] var(--oprn-surface-raised, #20242c)",
+  "5f1cfcf40b9c": "[map] break-word",
+  "7942a8d2c431": "[map] none",
+  "7a86bb7230d7": "[map] var(--oprn-text, #e8ebf0)",
+  "9a87a6e54dea": "[map] 1.4",
+  "c3a327ca26d8": "[map] min(36ch, calc(100vw - 16px))",
+  "c544a805774f": "[map] fixed",
+  "d4bfc137b484": "[map] 1px solid var(--oprn-border, #3a3f4b)",
+  "d9eb6afc44fd": "[map] none",
+  "e8d49d7ec929": "[map] 0 4px 14px rgb(0 0 0 / 35%)",
+  "f3aaaf183e0b": "[map] var(--font-12)",
+  "f54bd63096c2": "[map] var(--z-tooltip)"
+ }
+}

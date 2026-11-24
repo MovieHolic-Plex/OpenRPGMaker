@@ -11,3 +11,9 @@
 *.wav binary
 *.webm binary
 *.pdf binary
+
+# css-winners 기준선 조각(scripts/css-winners/<엔트리>/<승자 파일>.json): 계산된 값이라 줄 단위로 합치면
+# CSS 와 어긋난다. 같은 조각이 충돌하면 손으로 고르지 말고 `npm run css-baseline:rebase` 가
+# --save-baseline 로 다시 만든다(scripts/css-baseline-rebase.mjs).
+scripts/css-winners/** text eol=lf
+scripts/css-winners/** linguist-generated=true

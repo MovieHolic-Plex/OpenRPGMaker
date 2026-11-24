@@ -1,0 +1,20 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/components/grid-4.css",
+ "contested": {},
+ "winners": {
+  "1cbeaecce3bf": "[components.components] 1fr",
+  "1f251abc0d82": "[components.components] start",
+  "4144a86f03a2": "[components.components] repeat(auto-fit, minmax(130px, 1fr))",
+  "699837b5ad13": "[components.components] repeat(auto-fill, 48px)",
+  "963cfac0d72a": "[components.components] thin",
+  "ae6c0845e1d5": "[components.components] repeat(2, minmax(0, 1fr))",
+  "b193c90e83e6": "[components.components] var(--space-1)",
+  "b1b17d7a01d9": "[components.components] repeat(auto-fit, minmax(72px, 1fr))",
+  "b39db84a8671": "[components.components] auto",
+  "befc92834a35": "[components.components] grid",
+  "bfc7fd004a15": "[components.components] repeat(2, minmax(0, 1fr))",
+  "d1a86b0a0cb4": "[components.components] 100%",
+  "d8a1afbe447d": "[components.components] repeat(4, minmax(0, 1fr))"
+ }
+}

@@ -7,14 +7,21 @@
 //     떴다. 전부 줄 밀림이고 픽셀 변화는 0이었다. 양치기 소년 게이트는 꺼진 게이트다.
 // 그래서 읽기용 직렬화(formatWinners, 줄 포함)와 래칫용(ratchetOf, 줄 없음)이 따로 있다.
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import {
   computeWinners,
-  decodeBaseline,
+  decodeShard,
   diffWinners,
-  encodeBaseline,
+  encodeShard,
   formatWinners,
+  groupByFile,
   ratchetOf,
+  readBaseline,
+  serializeShard,
+  shardRelPath,
+  writeBaseline,
 } from "../scripts/check-css-winners.mjs";
 
 const sheet = (name: string, css: string, layer: string | null = null) => ({ name, css, layer });
@@ -243,8 +250,8 @@ describe("기준선 인코딩", () => {
         sheet("b.css", "@layer app { .x { color: blue } .y { margin: 0 } }"),
       ],
     });
-    const round = decodeBaseline({ generatedAt: "t", ...encodeBaseline({ "e.css": winners }) });
-    const values = Object.values(round["e.css"].winners);
+    const shard = encodeShard("e.css", groupByFile(winners).get("b.css"));
+    const values = Object.values(decodeShard(shard).winners);
     expect(values).toContain(ratchetOf(winners[".x|color"]));
     expect(values).toContain(ratchetOf(winners[".y|margin"]));
   });
@@ -256,50 +263,120 @@ describe("기준선 인코딩", () => {
         sheet("b.css", ".dup { color: blue } .solo { margin: 0 }"),
       ],
     });
-    const contested = Object.values(encodeBaseline({ "e.css": winners }).entries["e.css"].contested);
+    const contested = Object.values(groupByFile(winners).get("b.css").contested);
     expect(contested).toHaveLength(1);
     expect(contested[0]).toContain(".dup|color");
     expect(contested[0]).toContain("경쟁 2");
   });
 
-  it("고유 값 테이블이 반복 값을 접는다", () => {
+  it("승자 원본 파일별로 나뉜다 — 다른 시트를 고친 PR 은 다른 조각을 쓴다", () => {
     const winners = computeWinners({
-      sheets: [sheet("a.css", ".a { color: red } .b { color: red } .c { color: red }")],
+      sheets: [
+        sheet("a.css", ".a { color: red } .dup { color: red }"),
+        sheet("b.css", ".b { color: red } .dup { color: blue }"),
+      ],
     });
-    expect(encodeBaseline({ "e.css": winners }).values).toEqual(["red"]);
+    const groups = groupByFile(winners);
+    expect([...groups.keys()]).toEqual(["a.css", "b.css"]);
+    expect(Object.keys(groups.get("a.css")!.winners)).toHaveLength(1); // .a — .dup 은 b.css 가 이겼다
+    expect(Object.keys(groups.get("b.css")!.winners)).toHaveLength(2);
+    expect(shardRelPath("src/styles/index.css", "src/styles/runtime/shop.css")).toBe(
+      "scripts/css-winners/styles/index/styles/runtime/shop.json",
+    );
+  });
+
+  it("조각은 항목마다 한 줄이고 키는 정렬이다 — 다른 줄이면 git 이 합친다", () => {
+    const winners = computeWinners({ sheets: [sheet("a.css", ".z { top: 0 } .a { top: auto } .m { top: 1px }")] });
+    const lines = serializeShard(encodeShard("e.css", groupByFile(winners).get("a.css")!)).trimEnd().split("\n");
+    const items = lines.filter((l) => l.startsWith('   "')).map((l) => l.trimEnd().replace(/,$/, ""));
+    expect(items).toHaveLength(3);
+    expect(items).toEqual([...items].sort());
+  });
+
+  describe("조각 저장", () => {
+    const css = (color: string) =>
+      computeWinners({ sheets: [sheet("a.css", `.x { color: ${color} }`), sheet("b.css", ".y { top: 0 }")] });
+    const per = (winners: Record<string, Record<string, unknown>>) => ({ "src/e.css": winners });
+    const inTmp = (fn: (root: string) => void) => {
+      const root = mkdtempSync(join(tmpdir(), "css-winners-"));
+      try {
+        fn(root);
+      } finally {
+        rmSync(root, { recursive: true, force: true });
+      }
+    };
+    const textOf = (root: string, shard: string) => readFileSync(join(root, "scripts/css-winners", shard), "utf8");
+
+    it("내용이 같은 조각은 다시 쓰지 않고, 옛 단일 파일은 지운다", () => {
+      inTmp((root) => {
+        writeFileSync(join(root, "scripts/css-winners.baseline.json"), "{}");
+        const first = writeBaseline(root, per(css("red")));
+        expect(first).toEqual({ total: 2, written: 2, removed: ["scripts/css-winners.baseline.json"] });
+        expect(writeBaseline(root, per(css("red")))).toEqual({ total: 2, written: 0, removed: [] });
+        const aBefore = textOf(root, "e/a.json");
+        const bBefore = textOf(root, "e/b.json");
+        expect(aBefore).not.toContain("generatedAt"); // 저장마다 달라지는 줄은 조각끼리 충돌시킨다
+
+        // a.css 의 승자 하나만 바뀌면 그 조각만 다시 쓴다.
+        expect(writeBaseline(root, per(css("blue")))).toEqual({ total: 2, written: 1, removed: [] });
+        expect(textOf(root, "e/a.json")).not.toBe(aBefore);
+        expect(textOf(root, "e/b.json")).toBe(bBefore);
+
+        const stored = readBaseline(root);
+        expect(stored).toMatchObject({ shards: 2 });
+        expect(diffWinners(stored!.entries, per(css("blue")))).toHaveLength(0);
+        expect(diffWinners(stored!.entries, per(css("red")))).toHaveLength(1);
+      });
+    });
+
+    it("승자가 사라진 조각은 지운다", () => {
+      inTmp((root) => {
+        writeBaseline(root, per(css("red")));
+        const onlyB = computeWinners({ sheets: [sheet("b.css", ".y { top: 0 }")] });
+        expect(writeBaseline(root, per(onlyB))).toEqual({ total: 1, written: 0, removed: ["scripts/css-winners/e/a.json"] });
+        expect(readBaseline(root)?.shards).toBe(1);
+      });
+    });
+
+    it("기준선이 없으면 null, 조각이 깨졌으면 파일을 짚고 던진다", () => {
+      inTmp((root) => {
+        expect(readBaseline(root)).toBeNull();
+        writeBaseline(root, per(css("red")));
+        writeFileSync(join(root, "scripts/css-winners/e/a.json"), "{");
+        expect(() => readBaseline(root)).toThrow("scripts/css-winners/e/a.json");
+      });
+    });
   });
 });
 
 describe("diffWinners — 이동 증명용 비교", () => {
   const mk = (name: string, css: string) => computeWinners({ sheets: [sheet(name, css)] });
+  // 엔트리 하나의 기준선. diffWinners 는 키(해시)를 현재 소스에서 이름으로 되찾는다.
+  const baselineOf = (winners: Record<string, Record<string, unknown>>) => ({
+    "e.css": { winners: Object.fromEntries(Object.keys(winners).map((k) => [k, ratchetOf(winners[k] as never)])), contested: {} },
+  });
 
   it("파일이 옮겨지면 기본 비교는 변경으로 본다", () => {
-    const before = { "e.css": { winners: {}, contested: {} } };
     const a = mk("editor/x.css", ".p { color: red }");
     const b = mk("map/x.css", ".p { color: red }");
-    const baseline = decodeBaseline({ ...encodeBaseline({ "e.css": a }) });
-    expect(diffWinners(baseline, { "e.css": b }, { ignoreFile: false })).toHaveLength(1);
-    void before;
+    expect(diffWinners(baselineOf(a), { "e.css": b }, { ignoreFile: false })).toHaveLength(1);
   });
 
   it("--ignore-file 이면 경로만 바뀐 이동은 변경이 아니다", () => {
     const a = mk("editor/x.css", ".p { color: red }");
     const b = mk("map/x.css", ".p { color: red }");
-    const baseline = decodeBaseline({ ...encodeBaseline({ "e.css": a }) });
-    expect(diffWinners(baseline, { "e.css": b }, { ignoreFile: true })).toHaveLength(0);
+    expect(diffWinners(baselineOf(a), { "e.css": b }, { ignoreFile: true })).toHaveLength(0);
   });
 
   it("--ignore-file 이어도 값 변경은 잡는다", () => {
     const a = mk("editor/x.css", ".p { color: red }");
     const b = mk("map/x.css", ".p { color: blue }");
-    const baseline = decodeBaseline({ ...encodeBaseline({ "e.css": a }) });
-    expect(diffWinners(baseline, { "e.css": b }, { ignoreFile: true })).toHaveLength(1);
+    expect(diffWinners(baselineOf(a), { "e.css": b }, { ignoreFile: true })).toHaveLength(1);
   });
 
   it("--ignore-file 이어도 레이어 변경은 잡는다", () => {
     const a = computeWinners({ sheets: [sheet("editor/x.css", "@layer map { .p { color: red } }")] });
     const b = computeWinners({ sheets: [sheet("map/x.css", "@layer shell { .p { color: red } }")] });
-    const baseline = decodeBaseline({ ...encodeBaseline({ "e.css": a }) });
-    expect(diffWinners(baseline, { "e.css": b }, { ignoreFile: true })).toHaveLength(1);
+    expect(diffWinners(baselineOf(a), { "e.css": b }, { ignoreFile: true })).toHaveLength(1);
   });
 });

@@ -1,0 +1,10 @@
+{
+ "entry": "src/styles/runtime/playerRuntime.css",
+ "file": "src/styles/runtime/from-database-system-studio.css",
+ "contested": {},
+ "winners": {
+  "3b4cb3d61405": "[runtime] 100%",
+  "b339d8c72f82": "[runtime] 100%",
+  "da9af11e4786": "[runtime] 0"
+ }
+}

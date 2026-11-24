@@ -1,0 +1,25 @@
+{
+ "entry": "src/styles/runtime/playerRuntime.css",
+ "file": "src/styles/runtime/pictures.css",
+ "contested": {},
+ "winners": {
+  "04d9de329deb": "[runtime.runtime] var(--radius-s, 6px)",
+  "300ab07fa3e4": "[runtime.runtime] var(--text-1)",
+  "41171b4bbf9f": "[runtime.runtime] inline-block",
+  "4357fabb1626": "[runtime.runtime] 1.2",
+  "5722a5634a2a": "[runtime.runtime] pixelated",
+  "5d95e5b8437f": "[runtime.runtime] var(--font-ui, system-ui, sans-serif)",
+  "65bf4fc08c57": "[runtime.runtime] 700",
+  "6c8b99a4c1c0": "[runtime.runtime] none",
+  "7c05aa459a1f": "[runtime.runtime] 14px",
+  "845afa75e91d": "[runtime.runtime] top left",
+  "869cff4e25d8": "[runtime.runtime] absolute",
+  "87d3398bb92d": "[runtime.runtime] block",
+  "8d00a8c1c45b": "[runtime.runtime] 4px 6px",
+  "9dd1ce9c58c0": "[runtime.runtime] 1px solid var(--border-strong)",
+  "ace7ffd2a2e7": "[runtime.runtime] none",
+  "cb9fd696486d": "[runtime.runtime] var(--bg-glass)",
+  "cddaa5e42cca": "[runtime.runtime] transform, opacity, left, top",
+  "f97969945f2a": "[runtime.runtime] none"
+ }
+}
