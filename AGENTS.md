@@ -147,7 +147,7 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
    - 북방 설원 번들 snow_north · 눈 덮인 북방 마을·얼어붙은 호수 낚시터·얼음 동굴 입구·겨울 장터 + 오두막·회관·선술집·사우나·얼음 동굴 실내 코드 손 도트 131조각(오토타일 6, object-gate 영수증·조립 그림, 프로필 미보정), 구성기 `compose_snow_north_map`, 버들항 눈 기후(theme:"snow")와의 라우팅 경계는 `src/ai/snowNorthPolicy.ts`: `openwiki/snow-north.md`
    - Editor AI panel & tools: `openwiki/editor-ai-panel.md` + `openwiki/editor-ai-tools.md`
    - 퀘스트 등록 (이벤트로만 지은 부탁 흐름 탐지 `questCandidates.ts`, 조수 `find_quest_candidates`·`register_quest_candidate`, 자료집 개요 「퀘스트 제안」, `qa:game` 경고 `quest-unregistered`, 정답표·정밀도/재현율): `openwiki/quest-register.md`
-   - 조수 v2 (기본 꺼짐 — 모델은 명세만, 결정론 빌더가 짓고 독립 비평가가 1배 그림을 본다; `?assistant=v2`, v1 비교 결과): `openwiki/assistant-v2.md`
+   - 조수 v2 (2026-11-24 부터 기본 켜짐, 첫 MVP 생성은 팀 실행 — 모델은 명세만, 결정론 빌더가 짓고 독립 비평가가 1배 그림을 본다; 끄기 `?assistant=v1`, v1 비교 결과): `openwiki/assistant-v2.md`
    - **조수 v2 리팩토링 진행 중 (2026-11-11~)** — `src/ai/v2` 를 고치기 전에 읽는다. 목표 폴더 구조, 규칙 일곱(요청 낱말 목록·새 관문·감싸개를 더하지 않는다 등), 진행표, 옮기는 PR 검증법(`golden.mts`): `openwiki/assistant-v2-refactor.md`
    - 조수 v2 · JRPG 가 아닌 게임의 장치 (추리·연애·공포·농장·몬스터 수집·퍼즐·액션·경제·여러 엔딩·생존 — 장치마다 런타임·도구·v2 노출·작은 일 판정 재고 표, 빈틈 U/W/N/R, 셋째 묶음 `--set 3`, 청사진 고리 설계 제안): `openwiki/assistant-v2-genre-tools.md`
    - Editor misc workflows: `openwiki/editor-workflows-misc.md`

@@ -108,6 +108,7 @@ import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
 import { DEFAULT_PI_TEAM, resolvePiRunPlan, type PiRunPlan } from "@/ai/piAgent/executionRoute";
 import { isAssistantV2Enabled } from "@/ai/v2/shared/switch";
+import { firstMvpRoute } from "@/ai/piAgent/firstMvpRoute";
 import { priorRequestsNote } from "@/ai/v2/prompt/priorRequests";
 import { classifyPlainPiTurn, clarifyFollowUpText, selectedEventFact } from "@/ai/piAgent/plainTurn";
 import { applyMonsterIntentStart, needsMonsterKitStart } from "@/project/genrePresets";
@@ -2466,8 +2467,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 실제로 1.2~7.5s 를 삼킨다(2026-09-16 실측). 이걸 벽시계 밖에 두면 표의 total 이 그만큼 짧게 나와
     // 「어느 단계도 오래 안 걸렸는데 턴은 느렸다」는 모순이 생긴다.
     const timing = createTurnTiming();
-    // 조수 v2(기본 꺼짐): 의도 선언 모델 호출을 건너뛴다 — v2 는 실행 모델이 요청을 짓기 명세로 바로 해석한다(src/ai/v2).
-    if (isAssistantV2Enabled() && turnOptions?.team !== true) {
+    // 첫 MVP 생성(빈 프로젝트에서 게임 하나)은 팀 실행이 기본이다(오너 2026-11-24). 일반 대화·작은 수정은 단일.
+    const team = turnOptions?.team === true || firstMvpRoute(store.getCurrent(), text).team;
+    // 조수 v2(기본 켜짐): 의도 선언 모델 호출을 건너뛴다 — v2 는 실행 모델이 요청을 짓기 명세로 바로 해석한다(src/ai/v2).
+    if (isAssistantV2Enabled() && !team) {
       // 앞선 요청을 메모로 싣는다 — 실행마다 새 세션이라 「처음에 부탁한 대로」가 가리킬 곳이 없었다(J70).
       const priorNote = priorRequestsNote([...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])], text);
       return { command: plainPiCommand(text, "single", turnMapId), plan: { ...resolvePiRunPlan(currentAutonomy()), routingAudit: "assistant-v2" }, questionPromoted: false, intentNote: priorNote, timing };
@@ -2493,7 +2496,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
           return piIntentDeclarer.declarer;
         },
         // 프리셋 첫 생성은 설정과 무관하게 팀이다 — 읽기 전용 다이얼이면 classifyPlainPiTurn 이 여전히 단독으로 내린다.
-        piTeam: turnOptions?.team === true || (loadAiConfig().piTeam ?? DEFAULT_PI_TEAM),
+        piTeam: team || (loadAiConfig().piTeam ?? DEFAULT_PI_TEAM),
         onDeclaring: turnOptions?.onDeclaring ?? (() => setStatus("의도 읽는 중…")),
         contextWindow: resolveContextWindow(modelForRole(loadAiConfig(), "deep").model),
         ...(turnOptions?.hasUserImages ? { hasUserImages: true } : {}),
@@ -2687,7 +2690,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const mapKey = runMapId ?? "__project__";
     const explicit = parsePiCommand(text, store.getCurrent(), runMapId);
     const exclusive = handoff?.team === true || explicit?.mode === "team"
-      || loadAiConfig().piTeam === true || isGenrePresetBriefRequest(text);
+      || loadAiConfig().piTeam === true || isGenrePresetBriefRequest(text) || firstMvpRoute(store.getCurrent(), text).team;
     const queue = mapRunQueue();
     // 이 요청을 붙잡을 확인 카드가 열려 있으면 먼저 닫는다 — 카드 주인은 단추를, 새 요청은 카드 주인을 기다려
     // 둘 다 30분 적용 대기로 멈췄다(aiDecisionPrompt 「열린 카드 대장」, 2026-10-29 vm1 argon).
