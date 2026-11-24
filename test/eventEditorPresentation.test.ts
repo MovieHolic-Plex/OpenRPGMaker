@@ -300,6 +300,15 @@ describe("event editor presentation", () => {
     expect(findByTestId(body, "move-picture-m2-y-input")?.value).toBe("32");
   });
 
+  it("says what an access toggle allows and never prints internal keys or raw booleans", () => {
+    const blocked = commandSummary({ kind: "m2Command", commandId: "m2-077-change-save-access", fields: { enabled: "false" } });
+    expect(blocked).toContain("저장 막기");
+    expect(blocked).not.toMatch(/허가|금지 \/|false/);
+    const allowed = commandSummary({ kind: "m2Command", commandId: "m2-077-change-save-access", fields: { enabled: "true", legacyFlag: true } });
+    expect(allowed).toContain("저장 허용");
+    expect(allowed).not.toMatch(/legacyFlag|true/);
+  });
+
   it("renders the selected standalone face image inside the Change Face command editor", () => {
     const body = renderWithFakeDom(() =>
       renderCommandBody(
