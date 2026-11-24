@@ -49,6 +49,8 @@ export function sheetThumb(key: string, size = 64): HTMLElement {
   if (!meta) { node.classList.add("db-retro-thumb-missing"); return node; }
   node.style.setProperty("--rt-url", 'url("' + withInlineAsset("/assets/generated/pixel-fx/" + key + ".png") + '")');
   node.style.setProperty("--rt-frames", String(meta.frames));
+  // 멈춰 있을 때 보이는 칸. 이펙트 시트는 첫 칸이 거의 비어 있어 가운데 칸을 세운다.
+  node.style.setProperty("--rt-still", String(Math.floor(meta.frames / 2)));
   node.style.setProperty("--rt-ms", Math.max(600, meta.frames * 90) + "ms");
   return node;
 }
