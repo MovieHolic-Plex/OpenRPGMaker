@@ -1,4 +1,3 @@
-/** @vitest-environment happy-dom */
 import { describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { CHOICE_CANCEL_BRANCH_INDEX, FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";

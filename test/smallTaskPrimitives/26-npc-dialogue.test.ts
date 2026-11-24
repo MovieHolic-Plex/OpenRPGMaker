@@ -1,4 +1,3 @@
-/** @vitest-environment happy-dom */
 import { describe, expect, it } from "vitest";
 import { formatPiToolSuccess } from "@/ai/piAgent/toolAdapter";
 import { checkSmallTaskScope, type SmallTaskScope } from "@/ai/smallTaskScope";

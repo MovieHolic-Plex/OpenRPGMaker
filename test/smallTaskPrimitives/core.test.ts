@@ -1,4 +1,3 @@
-/** @vitest-environment happy-dom */
 import { describe, expect, it, vi } from "vitest";
 import { LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { CORE_PRIMITIVES } from "@/editor/smallTask/primitives/core/commands";
