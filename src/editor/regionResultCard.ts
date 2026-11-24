@@ -132,6 +132,8 @@ export function showRegionResultCard(input: RegionResultInput, host?: HTMLElemen
   });
   const root = el("div", { class: "region-result-layer", dataset: { testid: "region-result-layer" }, children: [beforeLayer, frame, card] });
   container.append(root);
+  // 카드가 떠 있는 동안 선택 막대(지시 입력 줄)는 숨긴다 — 같은 자리를 덮어 결과를 가린다. 다시 시킬 때는 「다시」나 채팅 입력.
+  document.body.classList.add("has-region-result");
 
   let shotRequested = false;
   const showBefore = (on: boolean): void => {
@@ -186,6 +188,7 @@ export function showRegionResultCard(input: RegionResultInput, host?: HTMLElemen
     cancelAnimationFrame(frameHandle);
     unsubscribe();
     root.remove();
+    document.body.classList.remove("has-region-result");
   };
   current = { root, close };
 

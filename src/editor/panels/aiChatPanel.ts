@@ -2037,10 +2037,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 17줄은 툴 설명으로 옮겼다 — 기계 텍스트가 사용자 채널에 실려 되묻기·플래너 스킵·툴 노출을 어긋나게
     // 했던 근인이다(2026-09-03 의도 라우터 감사). 선택 사각형은 스코프 인자로 따로 넘긴다.
     const turnScope = resolveTurnScope();
-    // 영역에 시킨 턴이면 그 결과를 맵 위 영역 아래에도 보인다(showPiChangeReceipt → regionResultCard).
-    regionTurn = turnScope?.region && !opts?.eventCommandScope
-      ? { mapId: turnScope.mapId, region: turnScope.region, instruction: displayAs ?? trimmed }
-      : null;
     // 보존 기획 지침은 사용자 발화 뒤·사실 줄 앞에 온다. 고른 게 없으면 빈 문자열이라 아무 것도 붙지 않는다.
     // 보낸 뒤에는 선택을 자동으로 푸는다 — 한 번 고른 재사용이 다음 턴에 조용히 또 실리면 그게 숨은 기억이다.
     const planningGuidance = opts?.eventCommandScope ? "" : planningReuse.guidanceBlock();
@@ -2716,6 +2712,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 거절하지 않고 대기열로 보낸다(2026-10-03 사용자: 맵당 AI 하나, 맵마다 대기열, 여러 맵은 동시에).
     const runMapId = editorState.get().currentMapId ?? store.getCurrent().startMapId ?? null;
     const mapKey = runMapId ?? "__project__";
+    // 영역에 시킨 턴이면 그 결과를 맵 위 영역 아래에도 보인다(showPiChangeReceipt → regionResultCard).
+    const regionScope = resolveTurnScope();
+    regionTurn = regionScope?.region ? { mapId: regionScope.mapId, region: regionScope.region, instruction: shown } : null;
     const explicit = parsePiCommand(text, store.getCurrent(), runMapId);
     const exclusive = handoff?.team === true || explicit?.mode === "team"
       || loadAiConfig().piTeam === true || isGenrePresetBriefRequest(text) || firstMvpRoute(store.getCurrent(), text).team;
