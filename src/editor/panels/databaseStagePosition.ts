@@ -9,3 +9,16 @@ export function placeStageNode(node: HTMLElement, x: number, y: number): void {
   if (node.style.top !== "0px") node.style.top = "0px";
   node.style.translate = `${x}px ${y}px`;
 }
+
+// 아래 둘도 같은 이유다. 값이 같아도 hidden·글자를 다시 쓰면 :has() 무효화가 문서 전체로 번지고(qa1124 트레이스),
+// textContent 는 글자 노드를 갈아 끼워 레이아웃을 다시 돌린다. 바뀔 때만 쓰고, 글자는 같은 노드의 data 만 바꾼다.
+export function setStageHidden(node: HTMLElement, hidden: boolean): void {
+  if (node.hidden !== hidden) node.hidden = hidden;
+}
+
+export function setStageText(node: HTMLElement, text: string): void {
+  const first = node.firstChild;
+  if (first && first === node.lastChild && first.nodeType === 3) {
+    if ((first as Text).data !== text) (first as Text).data = text;
+  } else if (node.textContent !== text) node.textContent = text;
+}

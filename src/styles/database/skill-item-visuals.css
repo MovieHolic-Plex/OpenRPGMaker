@@ -671,8 +671,14 @@
 }
 
 .db-skill-retro-time {
+  /* 매 프레임 바뀌는 시각 글자가 자료집 전체를 다시 배치하지 않게 크기를 고정해 가둔다(qa1124 항목 5). */
+  block-size: calc(11px * 1.35 + 10px);
+  box-sizing: border-box;
+  contain: strict;
   font-variant-numeric: tabular-nums;
+  inline-size: calc(13ch + 14px);
   margin-left: auto;
+  text-align: center;
 }
 
 .db-skill-retro-layers {

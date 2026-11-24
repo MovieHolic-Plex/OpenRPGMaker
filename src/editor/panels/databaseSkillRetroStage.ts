@@ -53,7 +53,7 @@ import {
 } from "@/editor/panels/databaseMonsterSkillStage";
 import type { Project, SkillRecord } from "@/project/types";
 import { el } from "@/util/dom";
-import { placeStageNode } from "@/editor/panels/databaseStagePosition";
+import { placeStageNode, setStageHidden, setStageText } from "@/editor/panels/databaseStagePosition";
 
 const STAGE_W = 240;
 const STAGE_H = 136;
@@ -658,11 +658,11 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
       if(shot.trajectory)point=motionPositionAt(shot.trajectory,shot.at??now,motionAnchors(),timeline.movement?.acceleration);
       drawFx(shot.event * 10 + 9, shot.layer, shot.cell, point, false, used, 1, shot.filter);
     }
-    for (const [id, node] of fxNodes) node.hidden = !used.has(id);
+    for (const [id, node] of fxNodes) setStageHidden(node, !used.has(id));
     drawPops(state);
     stage.dataset.retroTime = String(Math.round(now));
     stage.dataset.retroPose = state.pose;
-    counter.textContent = `${seconds(now)} / ${seconds(timeline.durationMs)}초`;
+    setStageText(counter, `${seconds(now)} / ${seconds(timeline.durationMs)}초`);
   }
 
   const feet = (point: Point, pad: number): Point => ({ x: point.x, y: point.y + pad });
@@ -680,7 +680,7 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
       else {placeCell(node,EXTENDED_POSE_FRAME[p.pose??"idle"],CELL);placeSprite(node,p,CELL,45);}
       node.style.zIndex="42";
     }
-    for(const [role,node]of extraNodes)node.hidden=!used.has(role);
+    for(const [role,node]of extraNodes)setStageHidden(node,!used.has(role));
   }
   const casterPoint = (state: RetroStageState): Point => {
     const programmed=motionSample("user");if(programmed)return programmed;
@@ -764,9 +764,9 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
       let node = pops[index];
       if (!node) { node = el("span", { class: "db-skill-retro-pop" + (healing ? " is-heal" : "") }); popLayer.append(node); pops[index] = node; }
       const strength = Math.max(state.hitAll, index === single ? state.hitTarget : 0);
-      node.hidden = !previewHit || !previewTriggered || !showPops || strength <= 0.02;
+      setStageHidden(node, !previewHit || !previewTriggered || !showPops || strength <= 0.02);
       if (node.hidden) return;
-      node.textContent = popValue(index);
+      setStageText(node, popValue(index));
       const rise = Math.round((1 - strength) * 14);
       // 겹치지 않게 번호마다 6px 씩 엇갈리게 띄운다.
       const tall = side === "enemies" ? Math.max(0, (enemies[index]?.cell ?? CELL) - CELL) : 0;
@@ -778,7 +778,7 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
 
   function drawCutin(state: RetroStageState): void {
     const p = state.cutin;
-    cutin.hidden = p < 0;
+    setStageHidden(cutin, p < 0);
     if (p < 0) return;
     const open = p < 0.14 ? p / 0.14 : p > 0.86 ? (1 - p) / 0.14 : 1;
     cutin.style.setProperty("--retro-cutin-open", String(Math.round(open * 100) / 100));

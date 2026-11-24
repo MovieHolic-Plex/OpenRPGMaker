@@ -44,7 +44,7 @@ import {
 } from "@/battle/retroSkillTimeline";
 import { loadBattleSample, playBattleSample } from "@/player/battleSeSamples";
 import { el } from "@/util/dom";
-import { placeStageNode } from "@/editor/panels/databaseStagePosition";
+import { placeStageNode, setStageHidden, setStageText } from "@/editor/panels/databaseStagePosition";
 
 // ---- 계약 조회 ----
 
@@ -378,7 +378,7 @@ export function createMonsterFxPainter(
       if(shot.trajectory&&g.programAnchors)point=motionPositionAt(shot.trajectory,shot.at??0,g.programAnchors,g.acceleration);
       place(shot.event * 10 + 9, shot.layer, shot.cell, point, false, used, g.stageH);
     }
-    for (const [id, node] of nodes) node.hidden = !used.has(id);
+    for (const [id, node] of nodes) setStageHidden(node, !used.has(id));
   };
   return { paint, clear: () => { for (const node of nodes.values()) node.hidden = true; } };
 }
@@ -526,13 +526,13 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
     const usedRoles=new Set<string>();
     for(const track of timeline.actors??[]){if(["user","target"].includes(track.role))continue;
       usedRoles.add(track.role);let node=extraNodes.get(track.role);if(!node){node=monster.cloneNode(false) as HTMLElement;world.append(node);extraNodes.set(track.role,node);}
-      const p=motionPositionAt(track,now,anchors,timeline.movement?.acceleration);node.hidden=false;node.style.opacity=String(p.alpha);node.style.scale=p.flip?"-1 1":"";
+      const p=motionPositionAt(track,now,anchors,timeline.movement?.acceleration);setStageHidden(node,false);node.style.opacity=String(p.alpha);node.style.scale=p.flip?"-1 1":"";
       const summon=track.role==="summon"?partyPixelSheet("party-pixel-animal-7"):undefined,c=summon?.cell??cell;
       const f=summon?partyPixelFrame(summon,p.pose==="attack"?"attack":"idle_a"):pixelEnemyFrame(sheet,monsterCellForPose(p.pose??"idle")??"idle_a");
       Object.assign(node.style,{left:`${p.x-c/2}px`,top:`${p.y-c+4}px`,width:`${c}px`,height:`${c}px`,backgroundSize:`${c*3}px ${c*(summon?.rows??3)}px`,backgroundPosition:`${-f.col*c}px ${-f.row*c}px`,zIndex:"42"});
       if(summon)node.style.backgroundImage=`url("${partyPixelSheetUrl(summon)}")`;
     }
-    for(const [role,node]of extraNodes)node.hidden=!usedRoles.has(role);
+    for(const [role,node]of extraNodes)setStageHidden(node,!usedRoles.has(role));
     const targetMotion=timeline.actors?.find(a=>a.role==="target");
     const movingTarget=targetMotion?motionPositionAt(targetMotion,now,anchors,timeline.movement?.acceleration):target;
     painter.paint(state, {
@@ -540,7 +540,7 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
     });
     stage.dataset.retroTime = String(Math.round(now));
     stage.dataset.pixelCell = beat;
-    counter.textContent = seconds(now) + " / " + seconds(timeline.durationMs) + "초";
+    setStageText(counter, seconds(now) + " / " + seconds(timeline.durationMs) + "초");
   }
 
   // ---- 재생 제어(직업 무대와 같은 규약: 자동 반복은 무음, ▶ 재생 회차만 소리) ----
