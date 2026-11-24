@@ -1,0 +1,313 @@
+{
+ "note": "Opus 5.5 품질 판정 C(삭제 후보). 기물 검색·DB 앨범·조수 물건 사전·kit 목록·공간 갤러리에서 빠진다. 정의와 아틀라스 칸은 남아 옛 저장본·견본·id 로 부른 찍기는 그대로 된다. 갤러리 http://mdc2:18301/object-quality-purge.html (gallery = 그 페이지의 # 번호). 2026-11-24 object-quality-purge, 오너 승인 전 draft.",
+ "objects": {
+  "atlas_biome_interior": {
+   "hand-interior:altar": {
+    "gallery": 11052,
+    "reason": "Grey box with purple band, like anchor"
+   }
+  },
+  "beodeul_city": {
+   "bd-pick-desert-oasis-bones": {
+    "gallery": 328,
+    "reason": "Thin grey line, unreadable as bones"
+   }
+  },
+  "desert_east": {
+   "de-cushion-seat": {
+    "gallery": 10184,
+    "reason": "Flat red box, placeholder cushion"
+   }
+  },
+  "emerald_monster_gyms": {
+   "mk-monster-gyms-g_dais": {
+    "gallery": 12075,
+    "reason": "Flat grey grid box placeholder"
+   },
+   "mk-monster-gyms-g_edais": {
+    "gallery": 12076,
+    "reason": "Grey box with yellow bar placeholder"
+   },
+   "mk-monster-gyms-g_leader_mat": {
+    "gallery": 12079,
+    "reason": "Is the C anchor itself"
+   },
+   "mk-monster-gyms-gyd_dais_dragon": {
+    "gallery": 12085,
+    "reason": "Flat grey boxes with stripe placeholder"
+   },
+   "mk-monster-gyms-gyd_dais_fire": {
+    "gallery": 12086,
+    "reason": "Flat bands with icon flame placeholder"
+   },
+   "mk-monster-gyms-gyd_dais_ghost": {
+    "gallery": 12087,
+    "reason": "Is the C anchor itself"
+   },
+   "mk-monster-gyms-gyd_dais_ice": {
+    "gallery": 12089,
+    "reason": "Flat blue oval placeholder dais"
+   },
+   "mk-monster-gyms-gyp_dive": {
+    "gallery": 12093,
+    "reason": "Duplicate flat capsule placeholder"
+   },
+   "mk-monster-gyms-gyp_port": {
+    "gallery": 12107,
+    "reason": "Duplicate plain circle placeholder"
+   }
+  },
+  "emerald_monster_overworld": {
+   "mk-monster-overworld-c_escalator_dn": {
+    "gallery": 11669,
+    "reason": "empty render (cells outside texture)"
+   },
+   "mk-monster-overworld-c_sofa_b": {
+    "gallery": 11673,
+    "reason": "Duplicate flat square sofa"
+   },
+   "mk-monster-overworld-c_sofa_y": {
+    "gallery": 11674,
+    "reason": "Duplicate flat square sofa"
+   },
+   "mk-monster-overworld-g_dais": {
+    "gallery": 11691,
+    "reason": "Flat grey grid box placeholder"
+   },
+   "mk-monster-overworld-g_edais": {
+    "gallery": 11692,
+    "reason": "Grey box with yellow bar placeholder"
+   },
+   "mk-monster-overworld-g_leader_mat": {
+    "gallery": 11695,
+    "reason": "Is the C anchor itself"
+   },
+   "mk-monster-overworld-h_console": {
+    "gallery": 11710,
+    "reason": "empty render (cells outside texture)"
+   },
+   "mk-monster-overworld-h_desk": {
+    "gallery": 11712,
+    "reason": "empty render (cells outside texture)"
+   },
+   "mk-monster-overworld-h_lamp": {
+    "gallery": 11715,
+    "reason": "empty render (cells outside texture)"
+   },
+   "mk-monster-overworld-h_mat": {
+    "gallery": 11716,
+    "reason": "Flat pink mat box, anchor level"
+   },
+   "mk-monster-overworld-h_poster": {
+    "gallery": 11717,
+    "reason": "empty render (cells outside texture)"
+   },
+   "mk-monster-overworld-h_rug": {
+    "gallery": 11718,
+    "reason": "Flat green rectangle rug placeholder"
+   },
+   "mk-monster-overworld-h_sofa": {
+    "gallery": 11720,
+    "reason": "empty render (cells outside texture)"
+   },
+   "mk-monster-overworld-h_stairs_dn": {
+    "gallery": 11722,
+    "reason": "empty render (cells outside texture)"
+   },
+   "mk-monster-overworld-h_wardrobe": {
+    "gallery": 11725,
+    "reason": "empty render (cells outside texture)"
+   }
+  },
+  "emerald_monster_rooms": {
+   "mk-monster-rooms-c_sofa_b": {
+    "gallery": 11963,
+    "reason": "Duplicate flat square sofa"
+   },
+   "mk-monster-rooms-c_sofa_y": {
+    "gallery": 11964,
+    "reason": "Duplicate flat square sofa"
+   },
+   "mk-monster-rooms-dp_elevfoot": {
+    "gallery": 11970,
+    "reason": "Duplicate flat grey bar placeholder"
+   },
+   "mk-monster-rooms-h_mat": {
+    "gallery": 11986,
+    "reason": "Flat pink mat box, anchor level"
+   },
+   "mk-monster-rooms-h_rug": {
+    "gallery": 11987,
+    "reason": "Flat green rectangle rug placeholder"
+   },
+   "mk-monster-rooms-rmw_bow": {
+    "gallery": 12036,
+    "reason": "Clipped plank fragment, mostly empty cell"
+   },
+   "mk-monster-rooms-rmw_ch": {
+    "gallery": 12037,
+    "reason": "Map-structure outline, not a placeable object"
+   }
+  },
+  "joseon_baram": {
+   "jb-gn_sarip_stone": {
+    "gallery": 4400,
+    "reason": "broken split fragments, mismatched cells"
+   }
+  },
+  "jp_city": {
+   "jp-in-gy-blocks-mat": {
+    "gallery": 6537,
+    "reason": "Four flat colored squares, placeholder mat"
+   },
+   "jp-in-sc-curtain": {
+    "gallery": 6480,
+    "reason": "Flat green rectangle, no curtain folds"
+   }
+  },
+  "modern_campus": {
+   "mc-in-mc-cleaning-wagon": {
+    "gallery": 9592,
+    "reason": "Flat colored boxes, placeholder cart"
+   },
+   "mc-in-mc-toilet-stall": {
+    "gallery": 9570,
+    "reason": "Flat green box with dot, placeholder"
+   },
+   "mc-in-sc-curtain": {
+    "gallery": 9620,
+    "reason": "Flat green rectangle, no curtain folds"
+   }
+  },
+  "modern_city": {
+   "mc-in-opus-gym-mat": {
+    "gallery": 4793,
+    "reason": "Flat blue box, placeholder like anchor mat"
+   },
+   "mc-in-opus-karaoke-sofa": {
+    "gallery": 4811,
+    "reason": "Flat purple L-shape, no shading"
+   },
+   "mc-in-opus-studio-chroma-wall": {
+    "gallery": 4843,
+    "reason": "Flat green box placeholder"
+   },
+   "mc-in-r10-home-zabuton": {
+    "gallery": 4991,
+    "reason": "Flat filled squares, placeholder cushions"
+   },
+   "mc-parking-facility": {
+    "gallery": 5702,
+    "reason": "Whole map snapshot as one object"
+   },
+   "mc-parking-two-bays": {
+    "gallery": 5701,
+    "reason": "Whole map snapshot as one object"
+   }
+  },
+  "monster_gyms": {
+   "mk-monster-gyms-g_dais": {
+    "gallery": 11368,
+    "reason": "Flat grey grid box placeholder"
+   },
+   "mk-monster-gyms-g_edais": {
+    "gallery": 11369,
+    "reason": "Grey box with yellow bar placeholder"
+   },
+   "mk-monster-gyms-g_leader_mat": {
+    "gallery": 11372,
+    "reason": "Is the C anchor itself"
+   },
+   "mk-monster-gyms-gyd_dais_dragon": {
+    "gallery": 11378,
+    "reason": "Flat grey boxes with stripe placeholder"
+   },
+   "mk-monster-gyms-gyd_dais_fire": {
+    "gallery": 11379,
+    "reason": "Flat bands with icon flame placeholder"
+   },
+   "mk-monster-gyms-gyd_dais_ghost": {
+    "gallery": 11380,
+    "reason": "Is the C anchor itself"
+   },
+   "mk-monster-gyms-gyd_dais_ice": {
+    "gallery": 11382,
+    "reason": "Flat blue oval placeholder dais"
+   },
+   "mk-monster-gyms-gyp_dive": {
+    "gallery": 11386,
+    "reason": "Flat white capsule, unreadable placeholder"
+   },
+   "mk-monster-gyms-gyp_port": {
+    "gallery": 11400,
+    "reason": "Plain small circle placeholder"
+   }
+  },
+  "monster_overworld": {
+   "mk-monster-overworld-c_sofa_b": {
+    "gallery": 11411,
+    "reason": "Flat blue square, not readable sofa"
+   },
+   "mk-monster-overworld-c_sofa_y": {
+    "gallery": 11412,
+    "reason": "Flat yellow square, not readable sofa"
+   },
+   "mk-monster-overworld-g_dais": {
+    "gallery": 11429,
+    "reason": "Flat grey grid box placeholder"
+   },
+   "mk-monster-overworld-g_edais": {
+    "gallery": 11430,
+    "reason": "Grey box with yellow bar placeholder"
+   },
+   "mk-monster-overworld-g_leader_mat": {
+    "gallery": 11433,
+    "reason": "Is the C anchor itself"
+   },
+   "mk-monster-overworld-h_mat": {
+    "gallery": 11454,
+    "reason": "Flat pink mat box, anchor level"
+   },
+   "mk-monster-overworld-h_rug": {
+    "gallery": 11456,
+    "reason": "Flat green rectangle rug placeholder"
+   }
+  },
+  "monster_rooms": {
+   "mk-monster-rooms-c_sofa_b": {
+    "gallery": 11503,
+    "reason": "Duplicate flat square sofa"
+   },
+   "mk-monster-rooms-c_sofa_y": {
+    "gallery": 11504,
+    "reason": "Duplicate flat square sofa"
+   },
+   "mk-monster-rooms-dp_elevfoot": {
+    "gallery": 11510,
+    "reason": "Flat grey bar placeholder"
+   },
+   "mk-monster-rooms-h_mat": {
+    "gallery": 11526,
+    "reason": "Flat pink mat box, anchor level"
+   },
+   "mk-monster-rooms-h_rug": {
+    "gallery": 11527,
+    "reason": "Flat green rectangle rug placeholder"
+   },
+   "mk-monster-rooms-rmw_bow": {
+    "gallery": 11576,
+    "reason": "Clipped plank fragment, mostly empty cell"
+   },
+   "mk-monster-rooms-rmw_ch": {
+    "gallery": 11577,
+    "reason": "Map-structure outline, not a placeable object"
+   }
+  },
+  "sengoku_edo": {
+   "se-in-zabuton": {
+    "gallery": 9260,
+    "reason": "Tiny flat blue square, placeholder cushion"
+   }
+  }
+ }
+}

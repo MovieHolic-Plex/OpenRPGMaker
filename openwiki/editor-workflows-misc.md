@@ -20,6 +20,7 @@ Map/event search, audio test, help modal, themed dungeons, resource manager, vil
 - `PaletteStamp.source.tilesetId/tileSize`를 기록해 맵 전환 때 다른 칩셋의 기물을 해제한다. 패널을 접어도 이 검사는 실행한다.
 - 숨은 패널은 후보·그림을 만들지 않는다. 타일 칠하기는 목록을 재계산하지 않으며, 선택 표시는 기존 카드만 갱신한다. 스타일은 `src/styles/database/left-props-pane.css`가 `database` 층에서 소유한다.
 - 실제 브라우저 증거: `verify-shots/props-pane/SUMMARY.md`(종류 선택·전체 검색·선택·반복 배치·2×2 기물·undo·맵 전환·1024px·영어 표시). 테스트·게이트는 이 세션에서 실행하지 않았다.
+- **물러난 기물(2026-11-24, 오너 승인 전 draft):** `src/assets/retiredObjects.json` 에 적힌 (타일셋, 기물 id)는 `isRetiredObject`(`src/project/retiredObjects.ts`)로 기물 검색·DB 앨범(`albumEntries`·`interiorObjectsForTileset`)·조수 물건 사전(`buildStampObjectIndex`)·`list_structure_kits`·공간 갤러리 kit 카드에서 빠진다. 정의와 아틀라스 칸은 남아 옛 저장본·견본 맵 칸표·id 로 부른 찍기는 그대로 된다. 목록은 전수 품질 판정(Opus 5.5, A/B/C/P) 의 C 다 — 갤러리 `http://mdc2:18301/object-quality-purge.html`, 기준 C 예시 `g_leader_mat`·`gyd_dais_ghost`. 건물 그림자·기초 층, 도로 표시, 효과 프레임처럼 원래 납작하거나 작은 조각(P)은 대상이 아니다. 목록의 id 가 정의에서 사라지면 `test/retiredObjects.test.ts` 가 막는다.
 
 ### 세계 지도 만들기 (2026-10-05)
 

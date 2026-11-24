@@ -21,6 +21,7 @@ import {
   type InteriorThemeModifier,
 } from "@/editor/interiorRoomPipeline";
 import type { InteriorRoomKindRecord, StructureKitDef, TilesetDef } from "@/project/types";
+import { isRetiredObject } from "@/project/retiredObjects";
 
 /** 'all'은 앨범 전체(기본값). 나머지 둘이 요구된 원본 칩이다. */
 export type StructureKitDbSource = "all" | "interior" | "user";
@@ -53,7 +54,7 @@ export type StructureAlbumEntry =
 /** 실내 가구 — 타일셋에 시드된 킷이 있으면 그것, 실내 칩셋은 코드 카탈로그 폴백. */
 export function interiorObjectsForTileset(tileset: TilesetDef | undefined): readonly InteriorObjectDef[] {
   if (!tileset) return [];
-  const fromKits = interiorFurnitureKits(tileset).map(interiorObjectFromKit);
+  const fromKits = interiorFurnitureKits(tileset).filter((kit) => !isRetiredObject(tileset.id, kit.id)).map(interiorObjectFromKit);
   if (fromKits.length > 0) return fromKits;
   if (tileset.id === INTERIOR_ROOM_TILESET_ID) return INTERIOR_OBJECT_CATALOG;
   return [];
@@ -67,7 +68,7 @@ export function albumEntries(tileset: TilesetDef | undefined): readonly Structur
     entries.push({ kind: "object", source: "interior", object });
   }
   for (const kit of tileset.structureKits ?? []) {
-    if (isInteriorFurnitureKit(kit)) continue;
+    if (isInteriorFurnitureKit(kit) || isRetiredObject(tileset.id, kit.id)) continue;
     entries.push({ kind: "kit", source: "user", kit });
   }
   return entries;
