@@ -7,7 +7,7 @@ import type { Collection } from "@/editor/smallTask/primitives/units/21-db-life-
 import type { SmallTaskTarget } from "@/editor/smallTask/target";
 import { createInterpreter } from "@/player/interpreter";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
-import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { projectViewWithoutEventDrafts } from "@/project/eventDrafts";
 import { collectProjectReferenceIssues } from "@/project/io/references";
@@ -15,7 +15,7 @@ import { startSession } from "@/project/session";
 import type { GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { testSeededCorpus } from "./21-db-life-farm/corpus";
-import { expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture } from "./harness";
+import { createBlankProjectCopy, expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture } from "./harness";
 
 const exampleId = "row_unit21";
 const graphicResourceId = "generated-enemy-slime-01";
@@ -102,7 +102,7 @@ function idFor(collection: Collection, operation: string) {
 const fixtureNames = ["blank", "built", "maou"] as const;
 type Fixture = typeof fixtureNames[number];
 const fixtures = new Map<Fixture, Project>();
-const blankMapFixture = createBlankProject();
+const blankMapFixture = createBlankProjectCopy();
 
 function fixtureFor(sample: Fixture): Project {
   const cached = fixtures.get(sample);

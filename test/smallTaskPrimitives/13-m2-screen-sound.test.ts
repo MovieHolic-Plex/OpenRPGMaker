@@ -8,14 +8,14 @@ import { primitivesForTarget } from "@/editor/smallTask/primitives/registry";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/13-m2-screen-sound";
 import { createInterpreter } from "@/player/interpreter";
-import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { DEPRECATED_M2_COMMAND_IDS } from "@/project/eventCommands/m2CatalogData";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { showPictureState, startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, M2CommandFields, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
-import { eventTarget, expectKoreanSentence, expectUndoRestores, loadFixture } from "./harness";
+import { cloneProject, createBlankProjectCopy, eventTarget, expectKoreanSentence, expectUndoRestores, loadFixture } from "./harness";
 
 type Fixture = "blank" | "built" | "maou";
 type Sample = {
@@ -75,7 +75,7 @@ beforeAll(() => {
 
 function setup(fixture: Fixture, commands: Command[] = [prefix], siblingId = "stage_other") {
   const base = fixtureProject(fixture);
-  const blank = base.startMapId && base.maps[base.startMapId] ? base : createBlankProject();
+  const blank = base.startMapId && base.maps[base.startMapId] ? base : createBlankProjectCopy();
   const mapId = blank.startMapId;
   const map = base.maps[mapId] ?? blank.maps[mapId]!;
   const page = stagePage("stage_fx", commands);
@@ -247,7 +247,7 @@ it("페이지가 여러 개면 대상에 페이지를 명시해야 합니다", (
 
 it("같은 식별자를 가진 페이지를 골랐으면 편집을 거절합니다", () => {
   const { project, target } = setup("blank", [prefix], "stage_fx");
-  const before = structuredClone(project);
+  const before = cloneProject(project);
   expect(() => runPrimitive(project, target, "m2.047.insert", { color: "red" })).toThrow(/범위 밖.*같은 식별자/u);
   expect(jsonEqual(project, before)).toBe(true);
 });

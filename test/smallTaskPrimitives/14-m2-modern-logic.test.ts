@@ -17,7 +17,6 @@ import { createInterpreter } from "@/player/interpreter";
 import { judgeQuickTime } from "@/player/interpreter/minigameCommands";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
 import { currentObjectiveText } from "@/player/zoneFeedback";
-import { createBlankProject } from "@/project/defaults";
 import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
@@ -25,7 +24,7 @@ import { startSession } from "@/project/session";
 import type { PlaySessionLike } from "@/project/sessionRuntimeTypes";
 import type { Command, EventPage, GameEvent, M2CommandFields, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
-import { expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture } from "./harness";
+import { createBlankProjectCopy, expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture } from "./harness";
 import shots from "./14-m2-modern-logic/shots.json";
 import updateCorpus from "./14-m2-modern-logic/update-corpus.json";
 
@@ -74,7 +73,7 @@ function fixtureProject(name: "blank" | "built" | "maou") {
 
 function scenario(fixture: "blank" | "built" | "maou", commands: Command[] = [FIRST]) {
   const base = fixtureProject(fixture);
-  const mapSource = base.startMapId ? base : createBlankProject();
+  const mapSource = base.startMapId ? base : createBlankProjectCopy();
   const id = mapSource.startMapId;
   const template = mapSource.maps[id]!;
   const page: EventPage = {

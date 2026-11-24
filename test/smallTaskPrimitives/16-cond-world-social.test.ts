@@ -23,7 +23,7 @@ import { cachedSightBlocker } from "@/project/sightBlockers";
 import type { Condition, DifficultyRecord, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import corpus from "../../harness-data/small-task-corpus/16-cond-world-social.json";
-import { eventTarget, expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture, mapTarget } from "./harness";
+import { cloneProject, eventTarget, expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture, mapTarget } from "./harness";
 
 const TOWN = "map_1c3b4f24-9d3d-4c31-9d24-4dbda2df705d";
 const SHOP = "map_mk_konbini";
@@ -228,7 +228,7 @@ describe("선택한 이벤트 페이지의 월드 조건", () => {
       if (!refusal.ok) expect(refusal.reason).toMatch(/범위 밖/u);
     }
 
-    const commandEdit = structuredClone(project);
+    const commandEdit = cloneProject(project);
     getPage(commandEdit, at).commands = [{ kind: "text", body: "조건과 함께 들어온 다른 명령" }];
     const refusal = checkSmallTaskScope(project, commandEdit, scope);
     expect(refusal.ok).toBe(false);

@@ -17,7 +17,7 @@ import { containsHangul, createTranslator } from "@/i18n/translator";
 import { createInterpreter } from "@/player/interpreter";
 import { resolvePictureSource } from "@/player/pictures/pictureResources";
 import { resolveMovieResourceUrl } from "@/player/playSceneMovies";
-import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { beginEventEditDraft } from "@/project/eventDrafts";
 import { applyMapDefaultLighting } from "@/project/lightingRules";
@@ -28,7 +28,7 @@ import { STANDALONE_ASSETS_NODE_ID } from "@/project/standaloneHtml";
 import type { Command, EventPage, GameEvent, Project, UploadedAsset } from "@/project/types";
 import { collectWebExportAssets } from "@/project/webExportAssets";
 import { jsonEqual } from "@/util/structuralJson";
-import { expectApplies, expectRefused, expectUndoRestores, loadFixture } from "./harness";
+import { createBlankProjectCopy, expectApplies, expectRefused, expectUndoRestores, loadFixture } from "./harness";
 import { createLocalRepositoryFixture } from "../localStore/localRepositoryFixture";
 
 const MOVIE: UploadedAsset = {
@@ -175,7 +175,7 @@ const examples: readonly StagingExamples[] = [
 
 function fixture(name: Fixture, commands: Command[]) {
   const loaded = cachedFixture(name);
-  const mapProject = Object.keys(loaded.maps).length ? loaded : createBlankProject();
+  const mapProject = Object.keys(loaded.maps).length ? loaded : createBlankProjectCopy();
   const mapId = mapProject.startMapId;
   const map = mapProject.maps[mapId]!;
   const page: EventPage = {

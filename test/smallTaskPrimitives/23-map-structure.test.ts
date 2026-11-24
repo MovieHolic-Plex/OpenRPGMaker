@@ -20,7 +20,7 @@ import { store } from "@/project/store";
 import type { Command, GameMap, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { geographyFixture, geographyRoot } from "../support/spatialGeographyFixture";
-import { expectKoreanSentence, expectUndoRestores, loadFixture } from "./harness";
+import { cloneProject, expectKoreanSentence, expectUndoRestores, loadFixture } from "./harness";
 
 const firstId = "map_작은마을";
 const secondId = "map_건너편";
@@ -469,7 +469,7 @@ it("청사진의 이름 참조를 끊는 이름 변경을 거절한다", () => {
     version: 1, title: "강 건너 이야기", genre: "모험", playerGoal: "강 건너 묵은 비밀을 찾는다",
     places: [{ name: "강 건너", kind: "village" }], steps: [], ending: { name: "귀환", how: "비밀을 푼다", feeling: "안도" },
   };
-  const partialName = structuredClone(project);
+  const partialName = cloneProject(project);
   partialName.gameBlueprint!.places![0]!.name = "건너";
   expect(() => run(project, secondId, "map.properties.set", { name: "달빛 언덕" })).toThrow(/청사진/u);
   expect(() => run(partialName, firstId, "map.properties.set", { name: "건너" })).toThrow(/청사진/u);
@@ -552,7 +552,7 @@ it("공간 설계에서 만든 출입구를 수정하거나 같은 칸에 연결
   expect(run(project, from.mapId, "map.connection.upsert", { ...args, connectionId: id })).toBe(project);
   expect(run(project, from.mapId, "map.connection.upsert", { ...args, x: from.x + 1 }).mapConnections).toHaveLength(3);
 
-  const manual = structuredClone(project);
+  const manual = cloneProject(project);
   manual.mapConnections![0]!.id = "manual_connection";
   expect(() => run(manual, from.mapId, "map.connection.upsert", { ...args, x: from.x + 1, connectionId: "manual_connection" }))
     .toThrow(/공간 설계/u);
@@ -602,7 +602,7 @@ it("장소를 만들거나 이름을 바꿀 때 같은 이름과 식별자를 �
     { id: "loc1", name: "나무 그늘", x: 1, y: 1, w: 2, h: 2 },
     { id: "loc2", name: "정문", x: 3, y: 1, w: 1, h: 1 },
   ];
-  const duplicateIds = structuredClone(project);
+  const duplicateIds = cloneProject(project);
   duplicateIds.maps[firstId]!.locations![1]!.id = "loc1";
   expect(() => run(project, firstId, "map.location.create", { name: "나무그늘", x: 1, y: 1, w: 1, h: 1 }))
     .toThrow(/구분할 수 있는 이름/u);

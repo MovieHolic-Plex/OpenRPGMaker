@@ -10,17 +10,16 @@ import { createPrimitiveRegistry } from "@/editor/smallTask/primitives/registry"
 import { matchesPrimitiveSchema, runPrimitive } from "@/editor/smallTask/primitives/run";
 import { smallTaskBase } from "@/editor/smallTask/history";
 import { mapTarget as makeTarget } from "@/editor/smallTask/target";
-import { createBlankProject } from "@/project/defaults/blankProject";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { openingStageFlag } from "@/project/openingStage";
 import type { QuestGraphConditionExpression } from "@/project/quest/questDef";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { runSmallTaskPrimitiveTool } from "@/editor/tools/smallTaskPrimitiveTools";
 import { getTool, toOpenAiTools } from "@/editor/tools/toolRegistry";
-import { expectApplies, expectRefused, expectUndoRestores, eventTarget, runHeadless } from "./harness";
+import { createBlankProjectCopy, eventTarget, expectApplies, expectRefused, expectUndoRestores, runHeadless } from "./harness";
 
 function fixture(commands: Command[] = [{ kind: "text", body: "첫 줄" }, { kind: "text", body: "둘째 줄" }]) {
-  const before = createBlankProject();
+  const before = createBlankProjectCopy();
   const map = before.maps[before.startMapId];
   before.tilesets = { [map.tilesetId]: { ...before.tilesets[map.tilesetId], referenceDocuments: [] } };
   before.assets = { sprites: {}, uploaded: {} };

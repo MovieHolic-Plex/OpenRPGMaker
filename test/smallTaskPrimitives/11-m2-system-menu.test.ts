@@ -10,7 +10,7 @@ import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/11-m2-system-menu";
 import { createInterpreter } from "@/player/interpreter";
 import { systemAudioOverride } from "@/player/systemAudioSlots";
-import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
@@ -19,7 +19,7 @@ import { startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, M2CommandFields, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
 import { initLocalProjectStore, openLocalProjectStore } from "../../electron/local-store/store";
-import { eventTarget, expectKoreanSentence, expectUndoRestores, loadFixture, mapTarget } from "./harness";
+import { cloneProject, createBlankProjectCopy, eventTarget, expectKoreanSentence, expectUndoRestores, loadFixture, mapTarget } from "./harness";
 
 const music = "cc0-music-field-loop";
 const sound = "cc0-sound-ui-confirm";
@@ -113,7 +113,7 @@ function fixtureProject(fixture: Fixture): Project {
 
 function scene(fixture: Fixture, commands: Command[] = [unchanged]) {
   const before = fixtureProject(fixture);
-  const template = before.maps[before.startMapId] ? undefined : createBlankProject();
+  const template = before.maps[before.startMapId] ? undefined : createBlankProjectCopy();
   const map = template ? template.maps[template.startMapId] : before.maps[before.startMapId];
   const page: EventPage = {
     id: "system_menu_page", name: "설정 페이지", conditions: [], graphic: {},
@@ -153,7 +153,7 @@ describe("시스템·메뉴 작은 일", () => {
 
     it(`${row.suffix} 한 줄 삽입과 되돌리기`, async () => {
       const { project, target, map, commands, current, otherPage } = scene(fixture);
-      const before = structuredClone(project);
+      const before = cloneProject(project);
       const { after, sentence } = runPrimitive(project, target, insertId, row.args);
       expect(commands(after)).toEqual([unchanged, m2(row, expectedFields(row, map.id))]);
       expect(current(after).pages![1]).toEqual(otherPage);
@@ -168,7 +168,7 @@ describe("시스템·메뉴 작은 일", () => {
       const parameterless = ["093", "094", "097"].includes(row.row);
       const old = m2(row, { ...fields, legacy: "기존 값" });
       const { project, target, commands, current, otherPage } = scene(fixture, [old, unchanged]);
-      const before = structuredClone(project);
+      const before = cloneProject(project);
       const { after, sentence } = runPrimitive(project, target, updateId, {
         index: 0, expectedHash: eventCommandHash(old), ...row.updateArgs,
       });
@@ -190,7 +190,7 @@ describe("시스템·메뉴 작은 일", () => {
       const ctx = { project, target };
       for (const id of [insertId, updateId]) {
         const primitive = PRIMITIVES.find(candidate => candidate.id === id)!;
-        const other = structuredClone(project);
+        const other = cloneProject(project);
         current(other).pages![1].commands.push(m2(row, row.fields));
         const result = checkSmallTaskScope(project, other, primitive.scope(ctx, { mapId: "다른 맵" }));
         expect(result.ok).toBe(false);
