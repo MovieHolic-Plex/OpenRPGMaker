@@ -6,7 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { PNG } from "pngjs";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { STEAMPUNK_CITY_ID, createSteampunkCityTileset } from "@/project/defaults/steampunkCity";
 import { existingMatches } from "@/editor/tools/objectGenTool";
@@ -16,6 +16,9 @@ import { runTool } from "@/editor/tools";
 import type { Project, StructureKitDef, TilesetDef } from "@/project/types";
 import spec from "../tiledata/steampunk-city/objects/spec.json";
 import ask from "../tiledata/steampunk-city/objects/ask.json";
+// createBlankProject() 는 호출마다 약 80MB 를 새로 만든다(test/support/blankProject.ts 머리말) — 이 파일의 느린 케이스는 한 케이스에 그것을 여러 번 부르거나 부르는 제품 함수를 돌려
+// CI(4코어 호스티드 러너)에서 11~15초가 걸려 기본 15초 제한에 걸리거나 닿을 듯하다. 판정은 그대로 두고 제한만 이 파일의 다른 무거운 시험과 같이 넓힌다.
+vi.setConfig({ testTimeout: 120_000 });
 
 type Item = { id: string; w: number; h: number; place: string; block: number[][]; words: string[] };
 const ITEMS = spec.items as Item[];
