@@ -1,0 +1,542 @@
+import { describe, expect, it } from "vitest";
+import { bindSeedHouseInteriorPlan } from "@/editor/interiorConceptPlan";
+import { createBlankProject } from "@/project/defaults";
+import { SCRATCH_HOUSE_BUNDLE, SCRATCH_LIBRARY_BUNDLE } from "@/project/defaults/conceptFacilityTemplates";
+import { withRetiredEasyRpgTilesets, retiredEasyRpgTileset, startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
+import { withEnvironment } from "@/editor/panels/spatialSpaceDraft";
+import { createEmptyRoomMap, applyInteriorRoomLayer, floorMaskFromPlan } from "@/editor/interiorRoomPipeline";
+import { interiorActivityEntries } from "@/editor/interiorActivityEntries";
+import { deserialize, serialize } from "@/project/io";
+import { spatialId, own } from "@/project/spatial/domain";
+import { compileSpatialOccurrence } from "@/editor/spatial/compileSpatialOccurrence";
+import { spaceLayout } from "@/editor/spatial/spaceLayout";
+import { buildHouseInteriorPlan } from "@/editor/houseInteriors";
+import { fixtureDocument, spaceCompilerFixture, reinstantiateSpace, spaceDesign, spaceRoot } from "./support/spatialSpaceCompilerFixture";
+import { canMove, isPassable } from "@/project/collision";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { createStarterHouseInteriorMap, STARTER_HOUSE_INTERIOR_ENTRY, STARTER_HOUSE_SLIME_POS } from "@/project/defaults/starterHouseTransfer";
+import { nearestPassableTile } from "@/player/playSceneMapCommands";
+import type { GameMap, Project, StructureKitDef, TilesetDef } from "@/project/types";
+import fs from "node:fs";
+import path from "node:path";
+import { PNG } from "pngjs";
+import { PIRATE_ISLES_ID, createPirateIslesTileset } from "@/project/defaults/pirateIsles";
+import { existingMatches } from "@/editor/tools/objectGenTool";
+import { runTool, type ToolContext } from "@/editor/tools";
+import spec from "../tiledata/pirate-isles/objects/spec.json";
+import ask from "../tiledata/pirate-isles/objects/ask.json";
+import { pickNpcGraphic } from "@/assets/charsetQuery";
+import { bundledTileSemantics, searchResources } from "@/assets/resourceSearch";
+import { resolveGraphic } from "@/editor/tools/eventCompile";
+import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
+import { defaultTilesets } from "@/project/defaults/defaultAssets";
+import { DUNGEON_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsDungeon";
+import { resolveMaterialByLabel, isTrustedGroupSource } from "@/project/tileVocabulary";
+import { POKEMON_OVERWORLD_PRESET, pokemonPresetGroupIds, pokemonPresetRole, pokemonPresetRoleLabels } from "@/project/defaults/pokemonChipsetPreset";
+import { CHIPSET_TILE_GROUPS, describeChipsetTile } from "@/project/defaults/chipsetMapping";
+import { COMBINED_TOWN_TILE_SEMANTICS } from "@/project/defaults/tileSemanticsCombinedTown";
+import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
+import { isolateTimers } from "./mergedTeardown";
+
+describe("openInteriorZones", () => {
+  isolateTimers();
+  function zoned() {
+    return reinstantiateSpace(spaceCompilerFixture(), space => ({ ...space, environment: "interior", role: "entrance",
+      zones: [{ id: spatialId("sleep"), name: "침상", x: 0, y: 0, width: 6, height: 5, floor: "stone" },
+        { id: spatialId("living"), name: "생활", x: 0, y: 5, width: 16, height: 7, floor: "wood" }],
+      objectSlots: space.objectSlots.filter(s => s.id === "beds").map(s => ({ ...s, zoneId: spatialId("sleep") })),
+    }));
+  }
+  describe("activity zones share one interior shell", () => {
+    it("leaves wide openings to reachability checks while preserving narrow doorway reservations", () => {
+      const mask=Array.from({length:36},(_,i)=>Math.floor(i/6)<3), full=Array(36).fill(true);
+      expect(interiorActivityEntries(mask,full,6,6,true)).toEqual([]);
+      expect(interiorActivityEntries(mask,full,6,6,false)).toHaveLength(6);
+      const door=mask.map((v,i)=>v || i===3*6+2);
+      expect(interiorActivityEntries(mask,door,6,6,true)).toEqual([{x:2,y:2,dx:0,dy:-1}]);
+    });
+    it("preserves zones in an interior draft and clears assignments when converting outdoors", () => {
+      const project=zoned(), source=own(fixtureDocument(project).library.spaces,spaceDesign);
+      expect(withEnvironment(source,"interior")).toEqual(source);
+      expect(withEnvironment(source,"outdoor").objectSlots.every(slot=>slot.zoneId===undefined)).toBe(true);
+    });
+    it("opens touching activities only when requested, keeping old gapless partitions", () => {
+      const plan={...buildHouseInteriorPlan({mapId:"home",name:"home",seed:7,scale:"cottage2",program:"dwelling"}),width:11,height:12,openPlan:true,door:{x:7,y:9},innerDoors:[],rooms:[{id:"bed",theme:"bedroom",x:2,y:4,w:4,h:2},{id:"cook",theme:"kitchen",x:6,y:4,w:3,h:2},{id:"living",theme:"dining",x:2,y:6,w:7,h:4}]};
+      const open=applyInteriorRoomLayer(createEmptyRoomMap(plan),plan,"walls").map;
+      const closedPlan={...plan,openPlan:false};
+      const closed=applyInteriorRoomLayer(createEmptyRoomMap(closedPlan),closedPlan,"walls").map;
+      expect(open.lowerTiles[5*open.width+5]).toBe(72);
+      expect(closed.lowerTiles[5*closed.width+5]).not.toBe(72);
+    });
+    it.each(["cream", "gold-brick", "stone-brick"].flatMap(wall => ["bookshelf", "cabinet", "stone_hearth_lit", "stone_hearth_unlit"].map(kitId => ({wall,kitId}))))("overlaps $kitId with $wall using its frozen graphic identity", ({wall,kitId}) => {
+      const project=spaceCompilerFixture(), doc=fixtureDocument(project);
+      const object=doc.library.objects["bed-design"]!;
+      project.spatialAuthoring={...doc,library:{...doc.library,objects:{...doc.library.objects,
+        "bed-design":{...object,graphic:{...object.graphic,kitId}}}}};
+      const input=reinstantiateSpace(project,space=>({...space,wall,objectSlots:[{...space.objectSlots[0]!,quantity:1}]}));
+      const built=compileSpatialOccurrence(input,{occurrenceId:spaceRoot});
+      const child=Object.values(fixtureDocument(built).occurrences).find(o=>o.parentId===spaceRoot)!;
+      expect(child.bindings[0]!.rect.y).toBe(["bookshelf", "cabinet"].includes(kitId) ? 3 : 2); // Hearth: two wall rows; bookshelf: one.
+      expect(child.bindings[0]!.rect.height).toBe(kitId === "cabinet" ? 2 : 3);
+      expect(deserialize(serialize(built)).spatialAuthoring).toEqual(built.spatialAuthoring);
+    });
+    it("round-trips live and frozen zones, paints different floors without a partition", () => {
+      const project = deserialize(serialize(zoned()));
+      const source = own(fixtureDocument(project).library.spaces, spaceDesign);
+      expect(source.environment === "interior" && source.zones?.length).toBe(2);
+      const {map, floor} = spaceLayout(project, source, {mapId:"zoned", seed:7});
+      expect(map.lowerTiles[8 * map.width + 4]).toBe(12);
+      expect(map.lowerTiles[9 * map.width + 4]).toBe(72);
+      expect(floor[8 * map.width + 4] && floor[9 * map.width + 4]).toBe(true);
+      const proposal = compileSpatialOccurrence(project, {occurrenceId:spaceRoot});
+      const doc = fixtureDocument(proposal);
+      const children = Object.values(doc.occurrences).filter(o => o.parentId === spaceRoot);
+      expect(children).toHaveLength(2);
+      for (const child of children) {
+        const rect = child.bindings[0]!.rect;
+        expect(rect.x).toBeGreaterThanOrEqual(2); expect(rect.x + rect.width).toBeLessThanOrEqual(8);
+        expect(rect.y).toBeGreaterThanOrEqual(4); expect(rect.y + rect.height).toBeLessThanOrEqual(9);
+      }
+      expect(deserialize(serialize(proposal)).spatialAuthoring).toEqual(proposal.spatialAuthoring);
+    });
+    it.each(["overlap", "outside", "unknown"])("rejects %s zone inputs rather than silently moving furniture", fault => {
+      const project = zoned();
+      const raw = JSON.parse(serialize(project));
+      const space = raw.spatialAuthoring.library.spaces[spaceDesign];
+      if (fault === "overlap") space.zones[1].y = 4;
+      if (fault === "outside") space.zones[0].x = -1;
+      if (fault === "unknown") space.objectSlots[0].zoneId = "missing";
+      expect(() => deserialize(JSON.stringify(raw))).toThrow();
+    });
+    it("uses one small common table for meals and study in a tiny generated home", () => {
+      const plan=buildHouseInteriorPlan({mapId:"home",name:"home",seed:7,scale:"cottage3",program:"study"});
+      // 새 프로젝트에는 꾸러미 초안도 EasyRPG 실내 칩셋도 없다(초안 폐기 2026-09-18, 저작권 정리 2026-10-07) — 서재·민가 초안을 직접 심는다.
+      const project=withRetiredEasyRpgTilesets(createBlankProject());
+      project.tilesets.easyrpg_chipset_interior!.scratchConceptBundles=[structuredClone(SCRATCH_HOUSE_BUNDLE),structuredClone(SCRATCH_LIBRARY_BUNDLE)];
+      const bound=bindSeedHouseInteriorPlan(plan,project,"study");
+      const tables=Object.values(bound.concept!.rooms).flatMap(r=>r.things).filter(t=>["home_table","table_chairs","dining_table","reading_table","study_desk"].includes(t.objectId));
+      expect(tables).toHaveLength(1); expect(tables[0]!.objectId).toBe("home_table");
+      expect(bound.width * bound.height).toBeLessThan(220);
+    });
+    it("defaults small domestic houses to continuous floor, preserving private/public programs", () => {
+      const args = {mapId:"home",name:"home",seed:7,scale:"cottage-l" as const};
+      const home = buildHouseInteriorPlan({...args,program:"dwelling"});
+      expect(home.innerDoors).toEqual([]);
+      const mask = floorMaskFromPlan(home);
+      expect(mask[8 * home.width + 4] && mask[9 * home.width + 4]).toBe(true);
+      expect(buildHouseInteriorPlan({...args,program:"inn"}).innerDoors!.length).toBeGreaterThan(0);
+    });
+  });
+});
+
+// 통행성 함정 회귀 — "들어갈 수는 있는데 나올 수 없는/아무 데도 못 가는" 결함을 막는다.
+//
+// 배경(2026-07-27 조사): 타일 통행 모델 자체는 정상이다. `canMove` 는 RM2K3 정석대로
+// 출발 칸의 나가는 비트 AND 도착 칸의 들어오는 비트를 보고, 두 항이 같아서 **대칭**이다
+//   canMove(A→B) = dirPassable(A,dir) && dirPassable(B,opp)
+//   canMove(B→A) = dirPassable(B,opp) && dirPassable(A,dir)
+// 즉 **걸어서** 들어간 칸에서는 원리상 못 나올 수 없다.
+//
+// 문제는 두 곳이었다.
+//  ① 맵 이동(transfer)이 이 판정을 우회하고 `isPassable`(스스로 "레거시 호환 — EditScene
+//     표시용"이라 적힌 4방향 OR)로 착지 칸을 정했다. 한 방향만 열린 타일에 내려놓으면 갇힌다.
+//  ② `TILE.FLOOR`(342)가 이름과 달리 combined_town 에서 전방향 통행 불가인데,
+//     starterHouseTransfer 가 실내 300칸을 그걸로 채웠다 — 밟을 수 있는 칸이 2칸뿐이었다.
+describe("passabilityTraps", () => {
+  isolateTimers();
+  // 시작 집 내부·함정 맵은 합본 마을 칩셋(TILE.* 번호) 위에 있다 — 2026-10-07 정리로 새 프로젝트에서 빠진 그 정의를 되살린다.
+  const tileset = retiredEasyRpgTileset(COMBINED_TOWN_TILESET_ID);
+  const project = { tilesets: { [COMBINED_TOWN_TILESET_ID]: tileset } } as unknown as Project;
+  function reachableFrom(map: GameMap, sx: number, sy: number): Set<number> {
+    const key = (x: number, y: number): number => y * map.width + x;
+    const seen = new Set<number>([key(sx, sy)]);
+    const queue: [number, number][] = [[sx, sy]];
+    while (queue.length > 0) {
+      const [x, y] = queue.shift()!;
+      for (const [dx, dy] of [[0, 1], [0, -1], [1, 0], [-1, 0]] as const) {
+        const nx = x + dx;
+        const ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= map.width || ny >= map.height) continue;
+        if (seen.has(key(nx, ny))) continue;
+        if (!canMove(project, map, x, y, nx, ny)) continue;
+        seen.add(key(nx, ny));
+        queue.push([nx, ny]);
+      }
+    }
+    return seen;
+  }
+  describe("TILE.FLOOR / TILE.STAIRS 는 바닥이 아니다", () => {
+    it("두 상수는 기본 칩셋에서 전방향 통행 불가다 — 이름에 속지 않게 못 박는다", () => {
+      for (const id of [342, 246]) {
+        const flag = tileset.passability[id]!;
+        expect(
+          [flag.up, flag.down, flag.left, flag.right],
+          `타일 ${id} 가 통행 가능해졌다면 constants.ts 의 경고 주석도 함께 고쳐야 한다`
+        ).toEqual([false, false, false, false]);
+      }
+    });
+
+    it("나무 마루(222)는 실내 바닥으로 쓸 수 있다", () => {
+      const flag = tileset.passability[222]!;
+      expect([flag.up, flag.down, flag.left, flag.right]).toEqual([true, true, true, true]);
+    });
+  });
+  describe("시작 집 내부는 실제로 돌아다닐 수 있다", () => {
+    const interior = createStarterHouseInteriorMap("map_return");
+
+    it("실내 대부분이 입구에서 걸어서 닿는다", () => {
+      const seen = reachableFrom(interior, STARTER_HOUSE_INTERIOR_ENTRY.x, STARTER_HOUSE_INTERIOR_ENTRY.y);
+      // 20×15 에서 테두리 벽을 뺀 내부는 18×13 = 234칸. 예전엔 2칸이었다.
+      expect(seen.size, `입구에서 닿는 칸이 ${seen.size}개뿐 — 바닥이 통행 불가 타일인지 확인하라`).toBeGreaterThan(200);
+    });
+
+    it("실내에 배치된 슬라임에게 실제로 갈 수 있다", () => {
+      const seen = reachableFrom(interior, STARTER_HOUSE_INTERIOR_ENTRY.x, STARTER_HOUSE_INTERIOR_ENTRY.y);
+      const key = (x: number, y: number): number => y * interior.width + x;
+      expect(
+        seen.has(key(STARTER_HOUSE_SLIME_POS.x, STARTER_HOUSE_SLIME_POS.y)),
+        "실내 슬라임이 도달 불가 — 배치했지만 만날 수 없는 죽은 콘텐츠다"
+      ).toBe(true);
+    });
+  });
+  describe("transfer 착지는 나갈 수 있는 칸을 고른다", () => {
+    /** 한 방향만 열린 타일(나무 데크 북측 가장자리 230)로 둘러싸인 함정 맵. */
+    function trapMap(): GameMap {
+      const width = 7;
+      const height = 7;
+      const lowerTiles = new Array<number>(width * height).fill(306); // 전부 벽
+      // (3,3) 은 230 — up 만 닫힌 타일. 위쪽 이웃을 벽으로 두면 네 방향 모두 나갈 수 없다.
+      lowerTiles[3 * width + 3] = 230;
+      // (5,5) 는 정상 잔디 + 옆에 나갈 곳이 있다.
+      lowerTiles[5 * width + 5] = 240;
+      lowerTiles[5 * width + 4] = 240;
+      return {
+        id: "map_trap",
+        name: "함정",
+        width,
+        height,
+        tilesetId: COMBINED_TOWN_TILESET_ID,
+        tileSize: 16,
+        lowerTiles,
+        upperTiles: new Array<number>(width * height).fill(-1),
+        events: [],
+      } as GameMap;
+    }
+
+    it("한 방향만 열린 칸은 isPassable 은 통과시키지만 실제로는 갇힌다", () => {
+      const map = trapMap();
+      // 레거시 판정은 이 칸을 "통행 가능"이라고 한다 — 이게 예전 착지 기준이었다.
+      expect(isPassable(project, map, 3, 3)).toBe(true);
+      // 그런데 어느 방향으로도 못 나간다.
+      const canLeave =
+        canMove(project, map, 3, 3, 4, 3) ||
+        canMove(project, map, 3, 3, 2, 3) ||
+        canMove(project, map, 3, 3, 3, 4) ||
+        canMove(project, map, 3, 3, 3, 2);
+      expect(canLeave, "이 칸이 나갈 수 있게 됐다면 이 테스트의 함정 구성을 다시 짜라").toBe(false);
+    });
+
+    it("착지 계산이 그 함정 칸을 피해 나갈 수 있는 칸으로 보낸다", () => {
+      const map = trapMap();
+      const landing = nearestPassableTile(project, map, 3, 3);
+      expect(
+        landing,
+        "transfer 가 갇히는 칸에 플레이어를 내려놓았다 — nearestPassableTile 이 canMove 를 안 본다"
+      ).not.toEqual({ x: 3, y: 3 });
+      const canLeave =
+        canMove(project, map, landing.x, landing.y, landing.x + 1, landing.y) ||
+        canMove(project, map, landing.x, landing.y, landing.x - 1, landing.y) ||
+        canMove(project, map, landing.x, landing.y, landing.x, landing.y + 1) ||
+        canMove(project, map, landing.x, landing.y, landing.x, landing.y - 1);
+      expect(canLeave, `착지 칸 (${landing.x},${landing.y})에서 나갈 수 없다`).toBe(true);
+    });
+  });
+});
+
+// pirate_isles 이야기 기물 2종(pi-note · pi-logbook-stand, 시트 1240~1242): 새 사본이 킷·참고문서를 갖고 칸 표가 선언(막힘·★·바닥 그림)과 같은지,
+// 시트 칸이 원본 그림과 한 화소도 다르지 않은지, 조수가 게임이 바란 낱말로 그 킷에 닿는지(낱말 목록이 아니라 킷 이름·태그로), 실제 놓기 도구로 놓이는지.
+// 이식 칸이 있는 옛 사본은 test/themeBundleLocalTail.test.ts 가 본다.
+// 그림은 3/4 관문 미통과 — 오너 면제 묶음 fable-oneshot-2026-11-12 (굽기 scripts/content/pirate-isles/pi_story.py → pi_bake.py, 목록 tiledata/pirate-isles/objects/spec.json).
+describe("pirateIslesStoryObjects", () => {
+  isolateTimers();
+  type Item = { id: string; src: string; w: number; h: number; place: string; block: number[][]; words: string[] };
+  const ITEMS = spec.items as Item[];
+  const kitId = (id: string) => `pi-${id}`;
+  const IDS = new Set(ITEMS.map((item) => kitId(item.id)));
+  const own = (kits: readonly StructureKitDef[] | undefined) => (kits ?? []).filter((kit) => IDS.has(kit.id));
+  const FIRST = 1240;   // 이 묶음이 덧붙기 전 시트 끝
+
+  describe("pirate_isles 이야기 기물", () => {
+    it("새 사본은 2종 킷과 참고문서를 갖고, 칸 표가 선언과 같다(막힌 칸·★ 칸·바닥 그림)", () => {
+      const ts = createPirateIslesTileset();
+      const kits = own(ts.structureKits);
+      expect(kits.map((kit) => kit.id)).toEqual(ITEMS.map((item) => kitId(item.id)));
+      let next = FIRST;
+      for (const item of ITEMS) {
+        const kit = kits.find((k) => k.id === kitId(item.id))!;
+        expect([kit.width, kit.height]).toEqual([item.w, item.h]);
+        expect(kit.ai?.description).toContain("3/4 관문 미통과 — 오너 면제");
+        expect(kit.ai?.tags).toEqual(expect.arrayContaining([...item.words, item.place]));
+        kit.rows.forEach((row, y) => (row.upperTiles ?? []).forEach((tile, x) => {
+          expect(tile).toBe(next++); // 덧붙이기 전용 — 목록 순서대로 1240 부터
+          const blocked = item.block.some(([bx, by]) => bx === x && by === y);
+          expect(ts.passability[tile]!.up).toBe(!blocked);
+          expect(ts.priority[tile]).toBe(item.place === "decal" ? "lower" : "upper");
+        }));
+      }
+      expect(next).toBe(ts.count);
+      expect((ts.referenceDocuments ?? []).some((category) => category.documents.some((doc) => doc.id === "pi-props-objects"))).toBe(true);
+    });
+
+    it("시트 칸은 원본 그림과 한 화소도 다르지 않다(면제는 그림 화소에 묶인다)", () => {
+      const read = (file: string) => PNG.sync.read(fs.readFileSync(path.resolve(__dirname, "..", file)));
+      const sheet = read("public/assets/pirate-isles/pirate-isles-chipset.png");
+      const ts = createPirateIslesTileset();
+      for (const item of ITEMS) {
+        const piece = read(`tiledata/pirate-isles/objects/pieces/${item.src}`);
+        expect([piece.width, piece.height]).toEqual([item.w * 16, item.h * 16]);
+        const kit = own(ts.structureKits).find((k) => k.id === kitId(item.id))!;
+        kit.rows.forEach((row, cy) => (row.upperTiles ?? []).forEach((tile, cx) => {
+          const sx = (tile % ts.tilesPerRow) * 16, sy = Math.floor(tile / ts.tilesPerRow) * 16;
+          for (let y = 0; y < 16; y += 1) {
+            const a = ((sy + y) * sheet.width + sx) * 4, b = ((cy * 16 + y) * piece.width + cx * 16) * 4;
+            expect(Buffer.compare(sheet.data.subarray(a, a + 64), piece.data.subarray(b, b + 64))).toBe(0);
+          }
+        }));
+      }
+    });
+
+    it("게임이 바란 낱말이 그 킷을 첫째로 짚는다", () => {
+      const project = createBlankProject() as Project;
+      const ts = project.tilesets[PIRATE_ISLES_ID]!;
+      for (const [id, words] of Object.entries(ask.items)) for (const word of words) expect([word, existingMatches(project, ts, word)[0]?.id]).toEqual([word, kitId(id)]);
+    });
+
+    it("실제 놓기 도구로 놓으면 막힌 칸만 막힌다", () => {
+      const ctx = { project: createBlankProject() as Project, currentMapId: "dock", assistantRun: true };
+      expect(runTool(ctx, "create_map", { id: "dock", name: "모래밭", width: 20, height: 15, tilesetId: PIRATE_ISLES_ID }).ok).toBe(true);
+      const stamp = (id: string, x: number, y: number) => runTool(ctx, "stamp_tileset_object", { mapId: "dock", objectId: kitId(id), base: { x, y } }).ok;
+      expect([stamp("logbook-stand", 3, 6), stamp("note", 8, 6)]).toEqual([true, true]);
+      const walk = (x: number, y: number) => isPassable(ctx.project, ctx.project.maps.dock!, x, y);
+      // 항해 일지 1×2 는 발밑(통)만 막히고 윗칸(책)은 사람 위에 그려지는 걸음 칸, 쪽지·지도 조각은 밟고 지나간다
+      expect([walk(3, 6), walk(3, 5), walk(8, 6)]).toEqual([false, true, true]);
+    });
+  });
+});
+
+// 2026-09-27 배치 매칭 전수 조사의 회귀 못. 이름·재료와 다른 그림을 조용히 고르던 경로를 하나씩 막는다.
+describe("placementMatchingAudit", () => {
+  isolateTimers();
+  const slot = (graphic: ReturnType<typeof resolveGraphic>) => ({
+    sheet: graphic.sprite?.id,
+    index: decodeCharsetFrameIndex(graphic.pattern ?? 0).characterIndex,
+  });
+  describe("charset 검색은 낱말 하나만 맞는 칸을 고르지 않는다", () => {
+    it("「고양이 석상」은 살아 있는 고양이가 아니다", () => {
+      expect(pickNpcGraphic("고양이 석상")).toBeNull();
+    });
+    it("한 글자 질의는 다른 낱말 속 글자에 걸리지 않는다", () => {
+      expect(pickNpcGraphic("용")?.label).not.toBe("청년 용사");
+      expect(pickNpcGraphic("돌")?.label).not.toBe("동양풍 떠돌이 검객");
+    });
+    it("사물 이벤트 「큰 나무」는 나무 문 그림을 받지 않는다", () => {
+      const ctx: ToolContext = { project: createBlankProject() };
+      const res = runTool(ctx, "upsert_event", { mapId: ctx.project.startMapId, event: { id: "ev_big_tree", name: "큰 나무", x: 2, y: 2, trigger: { kind: "action" }, commands: [{ kind: "text", body: "오래된 나무다." }] } });
+      expect(res.ok, res.summary).toBe(true);
+      const page = ctx.project.maps[ctx.project.startMapId]!.events.find((entry) => entry.id === "ev_big_tree")!.pages![0]!;
+      expect(page.graphic.sprite?.id).not.toBe("tex_easyrpg_charset_object1");
+    });
+    it("「강철 문」은 나무 문이 아니다", () => {
+      expect(pickNpcGraphic("강철 문")?.label ?? "").not.toMatch(/나무/u);
+    });
+    it("맵에 왕이 이미 있어도 「왕」은 여왕으로 바뀌지 않는다", () => {
+      const king = pickNpcGraphic("왕")!;
+      const again = pickNpcGraphic("왕", { avoidKeys: new Set([`${king.textureKey}#${king.characterIndex}`]) });
+      expect(again?.label).toBe("왕");
+    });
+    it("textureKey 자리의 라벨은 칸까지 찾는다(보물상자 ≠ 나무 문)", () => {
+      expect(slot(resolveGraphic({ textureKey: "보물 상자" }))).toEqual({ sheet: "tex_easyrpg_charset_object1", index: 6 });
+    });
+  });
+  describe("못 찾은 그림은 거절한다", () => {
+    it("place_trap graphic.query 미매칭은 주민 그림이 아니라 오류", () => {
+      const ctx: ToolContext = { project: createBlankProject() };
+      const res = runTool(ctx, "place_trap", { mapId: ctx.project.startMapId, at: { x: 3, y: 3 }, trigger: "touch", graphic: { query: "가시덫" } });
+      expect(res.ok).toBe(false);
+      expect(res.issues?.[0]?.code).toBe("graphic-not-found");
+    });
+    // object2#2 는 「원형 바닥 판」, object2#7 은 「광산 수레」다(원본 대조) — 금고 보관 상자는 실패 대신 빨간 상자(object1#6)로 선다.
+    it("이름이 「철제 금고」인 보관 상자는 금고 칩이 없으면 빨간 상자로 선다", () => {
+      const ctx: ToolContext = { project: createBlankProject() };
+      const res = runTool(ctx, "place_storage_chest", { mapId: ctx.project.startMapId, x: 4, y: 4, name: "철제 금고" });
+      expect(res.ok, res.summary).toBe(true);
+      const event = ctx.project.maps[ctx.project.startMapId]!.events.find((entry) => entry.name === "철제 금고" || entry.pages?.[0]?.name === "철제 금고");
+      expect(slot(event!.pages![0]!.graphic)).toEqual({ sheet: "tex_easyrpg_charset_object1", index: 6 });
+    });
+  });
+  describe("재료 이름은 수식어를 버리고 풀리지 않는다", () => {
+    // 합본 마을은 2026-10-07 저작권 정리로 기본 타일셋에서 빠졌다 — 옛 저장본의 정의로 시험한다.
+    const town = retiredEasyRpgTileset("easyrpg_chipset_combined_town");
+    it("「황금 나무 상자」는 나무 상자로 자동 시공되지 않는다", () => {
+      const hit = resolveMaterialByLabel(town, "황금 나무 상자", { preferGroup: true, preferRoles: ["prop", "terrain"] });
+      expect(hit.status === "approved" && "tileId" in hit ? hit.tileId : undefined).not.toBe(237);
+    });
+    it("「우편함 없는 제단」은 우편함이 아니다", () => {
+      const hit = resolveMaterialByLabel(town, "우편함 없는 제단", { preferGroup: true });
+      expect(hit.status).toBe("missing");
+    });
+  });
+  describe("타일 라벨은 그 시트의 그림을 말한다", () => {
+    const tilesets = defaultTilesets();
+    // 「표 없는 번들 시트(opengameart_castle)」·「숲마을(forest_harmony) 라벨 상속」 사례는 은퇴 — 두 시트가 2026-10-07 저작권 정리로 삭제됐다.
+    it("tileMeta 에 설명 없는 칸이 있어도 타일 검색이 죽지 않는다", () => {
+      for (const id of ["forest_harmony", "forest_harmony_snow", "atlas_biome_jungle"]) {
+        expect(() => searchResources("tile", "나무", { tileset: tilesets[id] })).not.toThrow();
+      }
+    });
+    it("던전 시트: 441~443 은 마법진, 444·445·474·475 는 계단, 446 은 석주, 447 은 왕좌, 118 은 수정", () => {
+      const label = (index: number) => DUNGEON_TILE_SEMANTICS.find((entry) => entry.index === index)?.label ?? "";
+      expect(label(441)).toMatch(/마법진/u);
+      expect(label(27)).toMatch(/마법진/u);
+      for (const stairs of [444, 445, 474, 475]) expect(label(stairs)).toMatch(/계단/u);
+      expect(label(446)).toMatch(/기둥/u);
+      expect(label(447)).toMatch(/왕좌/u);
+      expect(label(118)).toMatch(/수정/u);
+      expect(label(117)).toMatch(/레일/u);
+    });
+    // 배·레트로 외부/집 시트 라벨은 은퇴 — 그 시트들이 2026-10-07 저작권 정리로 삭제됐다. 옛 저장본이 들고 있는 월드·실내 정의만 남겨 본다.
+    it("사용자 확정(2026-09-28): 옛 저장본 월드·실내 시트 라벨", () => {
+      const at = (id: string, tile: number) => bundledTileSemantics(retiredEasyRpgTileset(id)).find((entry) => entry.index === tile)?.label ?? "";
+      expect(at("easyrpg_chipset_retro_world", 444)).toMatch(/올라가는 계단/u);
+      expect(at("easyrpg_chipset_retro_world", 475)).toMatch(/내려가는 계단/u);
+      expect(at("easyrpg_chipset_world", 282)).toMatch(/바위/u);
+      expect(at("easyrpg_chipset_interior", 357)).toMatch(/피아노 좌/u);
+    });
+  });
+  describe("list_resources(kind:tile) 은 그 맵의 타일셋에서 찾는다", () => {
+    it("숲마을 시작 맵이면 숲마을 타일셋을 본다", () => {
+      const ctx: ToolContext = { project: createBlankProject() };
+      const res = runTool(ctx, "list_resources", { kind: "tile", query: "나무", mapId: ctx.project.startMapId });
+      expect(res.ok, res.summary).toBe(true);
+    });
+  });
+});
+
+// test/pokemonChipsetPreset.test.ts
+// 배치 5 — 포켓몬풍 칩셋 큐레이션 프리셋 계약 테스트.
+// 고정하는 것: (1) 프리셋 role→group id 가 전부 실재하는 번들(bundled-default) 하네스 그룹을 가리키고
+// isTrustedGroupSource 로 승인 취급된다 (2) 키큰 풀(DARK_GRASS)은 통행 가능한 별도 시맨틱이다
+// (3) 신규 tall-grass 그룹으로 "잔디 맵 + 흙길 + 키큰풀 구역" 한 장면을 실제로 조립할 수 있다.
+describe("pokemonChipsetPreset", () => {
+  isolateTimers();
+  const MAP_ID = "map_blank_start";
+  function defaultTilesetOf(): TilesetDef {
+    return withRetiredEasyRpgTilesets(createBlankProject()).tilesets[COMBINED_TOWN_TILESET_ID];
+  }
+  describe("포켓몬풍 오버월드 프리셋 — role 노출", () => {
+    it("잔디·키큰풀·흙길·물·나무·꽃·마을건물 role 을 한국어 라벨과 함께 노출한다", () => {
+      const roles = POKEMON_OVERWORLD_PRESET.roles.map((entry) => entry.role);
+      expect(roles).toEqual([
+        "grass_field",
+        "tall_grass",
+        "dirt_route",
+        "water",
+        "trees",
+        "flowers",
+        "village_buildings",
+      ]);
+      for (const entry of POKEMON_OVERWORLD_PRESET.roles) {
+        expect(entry.label.length, entry.role).toBeGreaterThan(0);
+        expect(entry.summary.length, entry.role).toBeGreaterThan(0);
+        expect(entry.groupIds.length, entry.role).toBeGreaterThan(0);
+        expect(entry.tools.length, entry.role).toBeGreaterThan(0);
+      }
+      // 한국어 라벨(사람이 읽는) 부여 확인.
+      expect(pokemonPresetRole("tall_grass")?.label).toContain("키큰 풀");
+      expect(pokemonPresetRoleLabels().find((r) => r.role === "grass_field")?.label).toBe("잔디 벌판");
+      expect(POKEMON_OVERWORLD_PRESET.tilesetId).toBe(COMBINED_TOWN_TILESET_ID);
+    });
+
+    it("참조하는 group id 는 전부 실재하는 bundled-default 하네스 그룹이고 승인 취급된다", () => {
+      const tileset = defaultTilesetOf();
+      const byId = new Map((tileset.tileGroups ?? []).map((group) => [group.id, group]));
+      for (const groupId of pokemonPresetGroupIds()) {
+        const group = byId.get(groupId);
+        expect(group, `그룹 미존재: ${groupId}`).toBeDefined();
+        expect(group!.source, groupId).toBe("bundled-default");
+        // 번들 그룹은 isTrustedGroupSource=true 라 시공 프리미티브가 soft-confirm 없이 소비한다.
+        expect(isTrustedGroupSource(group!), groupId).toBe(true);
+      }
+    });
+
+    it("키큰 풀 role 은 신규 tall-grass 그룹을, 마을건물 role 은 벽/지붕/문 그룹을 가리킨다", () => {
+      expect(pokemonPresetRole("tall_grass")?.groupIds).toEqual([`${COMBINED_TOWN_HARNESS_PREFIX}tall-grass-autotile`]);
+      const village = pokemonPresetRole("village_buildings");
+      expect(village?.groupIds).toEqual(expect.arrayContaining([
+        `${COMBINED_TOWN_HARNESS_PREFIX}plaster-wall-9slice`,
+        `${COMBINED_TOWN_HARNESS_PREFIX}roof-body`,
+        `${COMBINED_TOWN_HARNESS_PREFIX}roof-overlays`,
+        `${COMBINED_TOWN_HARNESS_PREFIX}doors`,
+      ]));
+      expect(village?.tools).toEqual(expect.arrayContaining(["build_wall", "build_roof", "place_door"]));
+    });
+  });
+  describe("키큰 풀(DARK_GRASS) 시맨틱 — 통행 가능 유지", () => {
+    it("describeChipsetTile 이 DARK_GRASS 대역을 tall_grass/통행가능/하위로 분류한다", () => {
+      for (const index of CHIPSET_TILE_GROUPS.tallGrass) {
+        const tile = describeChipsetTile(index);
+        expect(tile.key, `tile ${index}`).toBe("tall_grass");
+        expect(tile.usage, `tile ${index}`).toBe("terrain");
+        expect(tile.passage, `tile ${index}`).toBe("passable"); // 인카운터는 별도 배선, 타일은 통행 가능.
+        expect(tile.layer, `tile ${index}`).toBe("lower");
+        expect(tile.terrainTag, `tile ${index}`).toBe(0); // NORMAL — 잔디와 동일.
+        expect(tile.tags).toContain("encounter");
+      }
+      // 대표 DARK_GRASS 타일.
+      expect(describeChipsetTile(TILE.DARK_GRASS).key).toBe("tall_grass");
+    });
+
+    it("검색 시맨틱에 키큰 풀/인카운터 태그가 통행 가능으로 등록된다", () => {
+      const entry = COMBINED_TOWN_TILE_SEMANTICS.find((e) => e.index === TILE.DARK_GRASS);
+      expect(entry).toBeDefined();
+      expect(entry!.passage).toBe("passable");
+      expect(entry!.label).toBe("키큰 풀");
+      expect(entry!.tags).toEqual(expect.arrayContaining(["인카운터", "tall grass"]));
+    });
+  });
+  describe("헤드리스 장면 조립 — 잔디 맵 + 흙길 + 키큰풀 구역", () => {
+    it("프리셋 material 라벨로 fill_region 을 태워 잔디/흙길/키큰풀을 실제 배치한다", () => {
+      // 프리셋은 합본 마을 칩셋용이다 — 그 칩셋 위의 시작 맵에 장면을 조립한다.
+      const ctx: ToolContext = { project: startOnRetiredCombinedTown(createBlankProject()) };
+
+      // 1) 잔디 벌판으로 맵 전체 바닥을 깐다.
+      const grass = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 0, y: 0, w: 20, h: 15 }, material: "잔디" });
+      expect(grass.ok, grass.summary).toBe(true);
+      // 번들 시드라 목업 확인 대기(soft) 경고가 붙지 않는다.
+      expect((grass.diff?.warnings ?? []).some((w) => w.includes("목업 확인 대기")), "grass").toBe(false);
+
+      // 2) 가로 흙길 루트(3칸 폭 — 가운데 줄은 오토타일 바디).
+      const dirt = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 0, y: 7, w: 20, h: 3 }, material: "흙길" });
+      expect(dirt.ok, dirt.summary).toBe(true);
+
+      // 3) 키큰 풀 구역(인카운터 풀숲).
+      const tall = runTool(ctx, "fill_region", { mapId: MAP_ID, rect: { x: 2, y: 2, w: 5, h: 3 }, material: "키큰 풀" });
+      expect(tall.ok, tall.summary).toBe(true);
+      expect((tall.diff?.warnings ?? []).some((w) => w.includes("목업 확인 대기")), "tall").toBe(false);
+
+      const map = ctx.project.maps[MAP_ID];
+      const at = (x: number, y: number) => map.lowerTiles[y * map.width + x];
+
+      // Auto-connect selects the interior variant, not the palette's representative tile.
+      expect(at(4, 3)).toBe(304);
+      expect(CHIPSET_TILE_GROUPS.tallGrass).toContain(at(4, 3));
+      expect(isPassable(ctx.project, map, 4, 3)).toBe(true);
+
+      // 흙길 루트: 가운데 줄(내부 칸)은 오토타일 바디 타일.
+      expect(CHIPSET_TILE_GROUPS.dirtRoadBody as readonly number[]).toContain(at(10, 8));
+
+      // 잔디 벌판이 남은 곳: 기본 잔디.
+      expect(at(18, 13)).toBe(TILE.GRASS);
+    });
+  });
+});
