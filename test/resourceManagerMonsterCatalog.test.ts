@@ -41,7 +41,8 @@ describe("resource manager monster tab", () => {
   it("makes the full monster resource catalog reachable through bounded pages", () => {
     const project = store.getCurrent();
     const container = renderMonsterTab();
-    const expected = listMonsterResources(project).length;
+    // 소재 관리는 에메랄드 v4 종 그림까지 보인다(#5005: 기본 목록에서는 빠지고 emeraldV4 를 준 곳에만 나온다).
+    const expected = listMonsterResources(project, { emeraldV4: true }).length;
     expect(expected).toBeGreaterThan(100);
     let encountered = 0;
     const next = container.querySelector<HTMLButtonElement>('[data-testid="resource-page-next"]')!;
@@ -62,7 +63,7 @@ describe("resource manager monster tab", () => {
   it("shows the catalog total in the category badge", () => {
     const container = renderMonsterTab();
     const badge = container.querySelector('[data-testid="resource-category-list"] .rm-category-badge');
-    expect(badge?.textContent).toBe(String(listMonsterResources(store.getCurrent()).length));
+    expect(badge?.textContent).toBe(String(listMonsterResources(store.getCurrent(), { emeraldV4: true }).length));
   });
 
   it("shows effective catalog metadata in the inspector for the selected resource", () => {
