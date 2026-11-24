@@ -1,5 +1,4 @@
 import { matchesNameOrId, numberField, selectField, textControl } from "@/editor/panels/databaseControls";
-import { recordSmallTask } from "@/editor/smallTask/capsule";
 import {
   detailHero,
   emptyState,
@@ -125,7 +124,7 @@ export function renderSchedulesTab(host: HTMLElement, rerender: () => void): voi
           tags: [`슬롯 ${selected.slots.length}`, `활동 ${selected.activities.length}`],
           testid: "db-schedule-hero",
         }),
-        body: [recordSmallTask("schedules", selected.id), scheduleEditor(selected, rerender)],
+        body: [scheduleEditor(selected, rerender)],
         legacyClass: "db-schedule-detail-pane",
         testid: "db-detail-form",
       })

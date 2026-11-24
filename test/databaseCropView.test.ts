@@ -117,7 +117,8 @@ describe("database crop view", () => {
 
     expect(store.getCurrent().database.crops).toHaveLength(1);
     expect(findByTestId(host, "db-crop-name")).toBeTruthy();
-    expect(findByTestId(host, "small-task-open")?.textContent).toBe("조수에게 맡기기");
+    // AI 입구는 자료집 머리줄 「말로 고치기」 하나다(impl-database PR-B) — 레코드마다 따로 붙지 않는다.
+    expect(findByTestId(host, "small-task-open")).toBeNull();
   });
 
   // Break caught: the crop tab exposes raw fields but not whether time/farmable-map wiring is ready.

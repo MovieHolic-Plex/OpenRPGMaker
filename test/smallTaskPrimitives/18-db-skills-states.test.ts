@@ -1,5 +1,5 @@
 /** @vitest-environment happy-dom */
-import { beforeAll, expect, it, vi } from "vitest";
+import { beforeAll, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { BUNDLED_BATTLE_MOTIONS } from "@/assets/battleMotionCatalog";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
@@ -645,44 +645,24 @@ it("변경한 도트 연출의 첫 효과 위치를 재생기가 읽는다", () 
   expect(result?.skill.layers[1]?.anchor).toBe("user");
 });
 
-it("전투 애니메이션과 프로젝트 도트 연출에서 선택한 항목으로 작은 일을 연다", () => {
+it("전투 애니메이션과 프로젝트 도트 연출에는 작은 일 단추를 따로 달지 않는다(자료집 AI 입구는 머리줄 하나)", () => {
   store.replaceProject(withRecords("blank"));
   resetDatabaseRecordViewSession();
   resetRetroChoreographyViewState();
   const host = document.createElement("div");
   host.setAttribute("role", "dialog");
   document.body.append(host);
-  const htmlDocument: { createElement(tag: string): HTMLElement } = document;
-  const createElement = htmlDocument.createElement.bind(htmlDocument);
-  const create = vi.spyOn(htmlDocument, "createElement").mockImplementation(tag => {
-    const element = createElement(tag);
-    if (tag === "section") element.showPopover = () => {};
-    return element;
-  });
   const trigger = '[data-testid="small-task-open"]';
-  const openAndCheck = (label: string) => {
-    host.querySelector<HTMLButtonElement>(trigger)!.click();
-    expect(host.querySelector(".small-task strong")?.textContent).toBe(label);
-    expect(host.querySelector<HTMLInputElement>(".small-task input")?.disabled).toBe(false);
-    host.querySelector<HTMLButtonElement>(".small-task header button")!.click();
-  };
-
   try {
     setSelectedRecordId("battleAnimations", ids.battleAnimations);
     renderRecordTab(host, "battleAnimations", () => {});
-    openAndCheck("전투 애니메이션 · 불똥");
-    host.querySelector<HTMLButtonElement>('[data-testid="db-animation-frame-0"]')!.click();
-    openAndCheck("전투 애니메이션 · 불똥");
+    expect(host.querySelector(trigger)).toBeNull();
 
     const renderChoreographies = () => renderRetroChoreographyTab(host, renderChoreographies);
     renderChoreographies();
     host.querySelector<HTMLButtonElement>(`[data-testid="db-retro-choreo-row-${ids.skillChoreographies}"]`)!.click();
-    openAndCheck("스킬 연출 · 불꽃");
-    host.querySelector<HTMLButtonElement>('[data-testid="db-retro-choreo-badge-default"]')!.closest("button")!.click();
     expect(host.querySelector(trigger)).toBeNull();
   } finally {
-    host.querySelector<HTMLButtonElement>(".small-task header button")?.click();
-    create.mockRestore();
     resetRetroChoreographyViewState();
     resetDatabaseRecordViewSession();
     host.remove();

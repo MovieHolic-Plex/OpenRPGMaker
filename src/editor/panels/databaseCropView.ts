@@ -23,7 +23,6 @@
 // 준비 상태 스트립(renderLifePanel)은 그대로 두고 workspaceShell 의 `header` 로 올린다.
 
 import { FARMING_CROP_SPRITE_ASSETS } from "@/assets/farmingSprites";
-import { recordSmallTask } from "@/editor/smallTask/capsule";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { duplicateInto } from "@/editor/databaseCopy";
 import { cropReferenceMessage } from "@/editor/databaseReferences";
@@ -470,7 +469,6 @@ function cropDetail(record: CropRecord, project: Project, rerender: () => void):
     media: stageThumb(cropGraphicStages(record).at(-1), 56),
     testid: "db-crop-hero",
   });
-  hero.append(recordSmallTask("crops", record.id));
   return makeDetailPane({
     hero,
     body: cropInspector(record, project, rerender),

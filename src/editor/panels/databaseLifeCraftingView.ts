@@ -1,5 +1,4 @@
 import { craftRecipeReferenceMessage } from "@/editor/databaseCraftReferences";
-import { recordSmallTask } from "@/editor/smallTask/capsule";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { commandsReferenceLocations } from "@/editor/databaseCommandReferences";
 import { field as wsField, matchesNameOrId } from "@/editor/panels/databaseControls";
@@ -439,7 +438,6 @@ function recordDetail(section: RecordSection, record: LifeRecord, index: number,
     tags: sub ? [sub] : undefined,
     testid: `db-life-hero-${section}`,
   });
-  if (section === "skills") hero.append(recordSmallTask("lifeSkills", recordKey(section, record, index)));
   return detailPane({
     hero,
     body: recordInspector(section, record, index, rerender),

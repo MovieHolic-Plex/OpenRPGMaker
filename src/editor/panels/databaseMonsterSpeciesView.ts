@@ -1,5 +1,4 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { recordSmallTask } from "@/editor/smallTask/capsule";
 import { duplicateInto } from "@/editor/databaseCopy";
 import { recordCoalescedSnapshot, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { selectEditorMap } from "@/editor/mapSelection";
@@ -299,7 +298,6 @@ function speciesDetailPane(
   rerender: () => void,
 ): HTMLElement {
   const hero = speciesHero(project, record, index);
-  hero.element.append(recordSmallTask("monsterSpecies", record.id));
   const inspector = speciesInspector(project, record, rerender);
   const pane = makeDetailPane({ hero: hero.element, body: inspector.element, testid: "db-detail-form" });
   paintSpeciesSummaries = () => {
