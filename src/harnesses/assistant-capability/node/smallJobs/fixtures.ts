@@ -28,6 +28,9 @@ function starter(): Project {
   const project = createCapabilityFixtureProject() as any;
   project.meta.title = '잿불 마을 이야기';
   if (project.system.titleScreen) project.system.titleScreen.title = project.meta.title;
+  // 새 프로젝트는 2026-11-24 부터 타이틀 곡을 갖고 태어난다. «타이틀 화면에 음악이 나오게 해 줘»(title-bgm-starter)가
+  // 아무것도 안 하고 통과하지 않도록 이 픽스처는 예전처럼 타이틀 곡을 비운다.
+  if (project.system.titleScreen) delete project.system.titleScreen.musicResourceId;
   const map = project.maps[STARTER_MAP_ID];
   // 경비는 원래 30칸 맵의 (28,11)에 서 있었다 — 24×18 맵 안으로 들인다.
   const guard = map.events.find((event: any) => event.id === 'ev_ember_guard');
