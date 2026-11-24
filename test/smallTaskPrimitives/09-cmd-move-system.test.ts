@@ -1,4 +1,3 @@
-/** @vitest-environment happy-dom */
 import { beforeAll, describe, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { CHARSET_FRAME_COUNT } from "@/assets/easyrpgRtp";

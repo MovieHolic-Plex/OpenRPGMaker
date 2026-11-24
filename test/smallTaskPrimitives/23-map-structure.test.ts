@@ -1,4 +1,3 @@
-/** @vitest-environment happy-dom */
 import { beforeAll, expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { getMapEditHistoryDepth, resetMapEditHistory } from "@/editor/mapEditHistory";

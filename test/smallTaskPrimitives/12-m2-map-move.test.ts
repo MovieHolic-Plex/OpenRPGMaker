@@ -1,4 +1,3 @@
-/** @vitest-environment happy-dom */
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { newM2Command } from "@/editor/eventCommandFactory";

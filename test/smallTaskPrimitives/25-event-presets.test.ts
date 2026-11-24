@@ -1,4 +1,3 @@
-/** @vitest-environment happy-dom */
 import { expect, it } from "vitest";
 import { PrimitiveError, SELECT_EVENT_PAGE } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
