@@ -441,7 +441,7 @@ function droppedFromMerge(merged: Project, result: Project, key: string): boolea
 function carryBundleVehicles(merged: Project, started: Project, result: Project, bundle: ReadonlySet<string>): void {
   const after = result.system.vehicles ?? [];
   const before = new Map((started.system.vehicles ?? []).map((entry) => [entry.id, entry]));
-  const moved = after.filter((entry) => bundle.has(entry.mapId) && !same(before.get(entry.id), entry));
+  const moved = after.filter((entry) => entry.mapId !== undefined && bundle.has(entry.mapId) && !same(before.get(entry.id), entry));
   if (moved.length === 0) return;
   const ids = new Set(moved.map((entry) => entry.id));
   merged.system = { ...merged.system, vehicles: [...(merged.system.vehicles ?? []).filter((entry) => !ids.has(entry.id)), ...clone(moved)] };
