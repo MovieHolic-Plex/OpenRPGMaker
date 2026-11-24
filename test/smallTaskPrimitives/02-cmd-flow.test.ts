@@ -150,7 +150,7 @@ describe("흐름 제어 명령", () => {
       expect(id).toMatch(/^(?:loop|breakLoop)\.update$/u);
     }
     await expectUndoRestores(project, result.after, target);
-  }, 300_000); // Building the Maou fixture can be slow on a shared runner.
+  }, 600_000); // Building the Maou fixture can be slow on a shared runner.
 
   it("여러 페이지 중 고른 페이지에만 명령을 넣는다", () => {
     const { project } = setup([label]);

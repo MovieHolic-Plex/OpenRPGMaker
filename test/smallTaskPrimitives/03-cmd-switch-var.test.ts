@@ -126,7 +126,7 @@ it.each(cases)("$id 저장 결과, 미리보기, 선택 범위와 되돌리기",
   expectRefused(before, mapTarget(before, mapId), id, args);
 
   await expectUndoRestores(before, result.after, target);
-}, 180_000); // 마왕 픽스처의 전체 게임 조립 시간도 포함한다.
+}, 600_000); // 마왕 픽스처의 전체 게임 조립 시간도 포함한다.
 
 it("작은 일 도구에서 옛 기억 추가 별칭을 읽고 같은 스위치로 저장한다", async () => {
   const { before, target } = setup("blank", []);

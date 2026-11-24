@@ -51,7 +51,7 @@ beforeAll(() => {
     ensureSwitchVariableSlots(fixture);
     removeLegacySpriteReferences(fixture);
   }
-}, 240_000);
+}, 600_000);
 
 function blankProject(): Project {
   return { ...blank, maps: structuredClone(blank.maps), mapTree: structuredClone(blank.mapTree), mapConnections: [] };

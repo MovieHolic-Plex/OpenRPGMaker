@@ -119,7 +119,7 @@ describe("자료집 프리미티브", () => {
     maou = loadFixture("maou");
     // Match the editor's normalization before a primitive freezes the fixture.
     ensureSwitchVariableSlots(maou);
-  }, 300_000);
+  }, 600_000);
 
   for (const test of cases) {
     const { collection, action, args, expected, detail } = test;

@@ -655,4 +655,4 @@ it("마왕 프로젝트의 여러 칸짜리 출구 잠금은 다른 이벤트까
     switchId: project.switches[0].id,
   })).toThrow("범위 밖");
   expect(map.events).toEqual(before);
-}, 120_000);
+}, 600_000);

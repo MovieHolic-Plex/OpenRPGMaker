@@ -125,7 +125,7 @@ const examples: readonly {
 ];
 
 describe.each(["blank", "built", "maou"] as const)("%s 프로젝트", fixture => {
-  beforeAll(() => { fixtureProject(fixture); }, 180_000);
+  beforeAll(() => { fixtureProject(fixture); }, 600_000);
   const runs = examples.flatMap(example => ([false, true].map(update => ({
     example, update, id: `cmd.${example.initial.kind}.${update ? "update" : "insert"}`,
   }))));

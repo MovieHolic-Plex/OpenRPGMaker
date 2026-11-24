@@ -50,7 +50,7 @@ function fixtureProject(fixture: Fixture): Project {
 beforeAll(() => {
   fixtureProject("built");
   fixtureProject("maou");
-}, 180_000);
+}, 600_000);
 
 const switchId = "sw_mk_on_shift";
 const variableId = "var_mk_tasks";

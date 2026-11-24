@@ -117,7 +117,7 @@ function fixtureFor(sample: Fixture): Project {
 beforeAll(() => {
   // The flagship project can take over three minutes to build on shared workers.
   fixtureFor("maou");
-}, 300_000);
+}, 600_000);
 
 function setup(collection: Collection, sample: Fixture) {
   const original = fixtureFor(sample);

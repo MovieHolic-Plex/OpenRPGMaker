@@ -71,7 +71,7 @@ function fixtureProject(fixture: Fixture): Project {
 
 beforeAll(() => {
   fixtureProject("maou");
-}, 300_000);
+}, 600_000);
 
 function setup(fixture: Fixture, commands: Command[] = [prefix], siblingId = "stage_other") {
   const base = fixtureProject(fixture);

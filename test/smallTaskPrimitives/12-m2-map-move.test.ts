@@ -158,7 +158,7 @@ function expectedCommand(row: Row, project: Project) {
 
 describe.each(cases)("지도·이동 명령 $id", (row) => {
   // Building the flagship takes about a minute. Load it once, outside the per-edit timer.
-  beforeAll(() => { testFixture(row.fixture); }, 120_000);
+  beforeAll(() => { testFixture(row.fixture); }, 600_000);
 
   it("선택한 페이지에만 정확한 줄을 넣고 한 번 되돌린다", async () => {
     const { project, target, map } = seed(row.fixture);
