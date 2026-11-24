@@ -119,11 +119,21 @@ world z9, 배경 물결을 z4로 배치한다. 앞 효과는 기존 z60 층이�
   전후(로컬 `verify-shots/db-system-audit/`, gitignore): 출하 플레이어 캔버스 고치기 전 1024×768·3.2배 → 고친 뒤 480×270·1배, 시연 실행도 같음. 점검 표·전후 그림은 `~/claude-viz/db-system-audit-1.html`. 이 머신은 크로미움이 `ERR_NETWORK_CHANGED` 로 vite 모듈을 끊으므로 `unshare -rn` 격리 netns 에서 dev 서버와 같이 돌린다.
 - 그대로 둔 것(이 탭 밖 공용 부품): 리소스 칸 이름이 원시 id(`windowskin-warm`)로 보임, 숨은 시험 호환 id 칸(`.db-authoring-id`, aria-hidden)에 임의 글자를 넣으면 재로드가 참조 검사로 실패 — 사람 경로가 아니라 고치지 않았다.
 
+## 시스템(게임 설정) 「소리」 구획 — 기본 BGM 을 한 화면에 (2026-11-24, QA 1124 항목 13 S3)
+
+기본 BGM 칸이 「시작 설정」(높이 약 10,760px) 안 「전투 오디오」 카드, 섹션 위에서 2,211px 아래에 숨어 있었고 타이틀 BGM·메뉴 SE 는 타이틀 작업대 맨 아래에 따로 있었다. 소리 설정을 `sound`(소리) 구획 하나로 모았다.
+
+- **구획**: `db-system-nav-sound` / `data-system-section="sound"`, 순서는 `resources`(리소스) 다음·`title`(타이틀) 앞(소제목 `보이는 것` 묶음 끝). 구획은 14개다. 본문은 `soundSectionFieldsets`(`databaseSystemView.ts`): 「배경 음악」(기본 BGM `db-field-system-default-bgm` · 전투 BGM · 승리 팡파레) → 「전투 효과음」(패배 SE · 도주 SE) → 「타이틀 화면」(타이틀 BGM · 커서/결정/취소 SE, `titleScreenAudioControls`) → 「효과음 자리」(시작 설정의 효과음 자리 표로 가는 링크 `db-system-sound-open-startup`).
+- **입력 칸은 옮겼을 뿐 새로 만들지 않았다**: testid·`updateSystem`/`updateTitleScreen` mutation·스냅샷 키(`system:default-bgm`, `system:title-screen:music` 등)가 옛 위치 그대로다. 각 testid 는 DOM 에 한 번만 있다(`test/databaseSystemSections.test.ts`).
+- **옛 위치**: 시작 설정 「전투 오디오」 카드와 타이틀 작업대 「소리」 묶음(`db-title-workbench-audio`, 타이틀 바로가기 「소리」가 닿는 곳)에는 안내 한 줄과 「소리 섹션에서 편집」 링크(`db-system-startup-open-sound`, `db-title-open-sound`)만 남았다. 효과음 자리 표(`databaseSeCueTable.ts`)는 시작 설정에 그대로 있다.
+- **개요**: 핵심 카드에 「소리」(`db-system-studio-card-sound`, 기본 BGM 이름 · 채운 칸 수/9, 기본 BGM 이 비면 경고 색)를 더했다. 누르면 소리 구획으로 간다 — 개요에서 1클릭에 기본 BGM 칸이 구획 첫 화면에 보인다(1440×900 실측: 칸 행 위끝 121px, 숨은 ID 입력 561px).
+- **검색**: 자료집 탭 검색 `system-sound`(낱말 bgm·배경 음악·전투 오디오·기본 소리·팡파레·효과음·커서/결정/취소 se). 시작 설정 낱말에서 「전투 오디오」·「기본 소리」를 뺐다.
+
 ## 시스템(게임 설정) 탭 구획 목록·폼 격자·스위치 통일 (2026-10-17, 메뉴 감사 PR-5)
 
 `system` 탭(`src/editor/panels/databaseSystemView.ts`, `src/styles/database/studio-refresh.css`)의 상단 13칩 가로 줄을 왼쪽 세로 구획 목록(`184px | minmax(0, 1fr)`)으로 옮기고 소제목 3개(`규칙` / `보이는 것` / `시작·끝`)로 묶었다. 구획 DOM·testid(`db-system-nav-<slug>`, `data-system-section`)와 `requestSystemSection`·`DATABASE_SEARCH_DESTINATIONS` 경로는 그대로다.
 
-- **구획 순서와 소제목**: `overview`(개요) → **`규칙`**: `party`(초기 파티), `startup`(시작 설정), `optin`(기능 확장), `time`(시간), `typechart`(타입 상성) → **`보이는 것`**: `display`(화면), `menu`(게임 메뉴), `dialogue`(대화창), `hud`(인게임 HUD), `font`(폰트), `resources`(리소스) → **`시작·끝`**: `title`(타이틀).
+- **구획 순서와 소제목**: `overview`(개요) → **`규칙`**: `party`(초기 파티), `startup`(시작 설정), `optin`(기능 확장), `time`(시간), `typechart`(타입 상성) → **`보이는 것`**: `display`(화면), `menu`(게임 메뉴), `dialogue`(대화창), `hud`(인게임 HUD), `font`(폰트), `resources`(리소스), `sound`(소리, 2026-11-24 추가) → **`시작·끝`**: `title`(타이틀).
 - **타이틀 4단계 바로가기 승격**: `title` 본문 오른쪽 위 가로 칩 5개(`db-title-workbench-jump`: 오프닝 효과·글자·배경·메뉴·연출·소리)를 본문에서 빼고 왼쪽 구획 목록의 `타이틀` 바로 아래 하위 묶음으로 올렸다(`title` 활성 시 표시, 클릭 시 해당 필드셋으로 스크롤하고 3단 크럼에 `타이틀 · <항목>` 표시).
 - **시각 규칙 R2·R3 적용**: 시스템 폼 필드 격자를 `132px | minmax(0, 1fr)`로 맞추고, `checkboxField`/`lockedCheckboxField`를 34×18 알약 스위치(`.db-toggle-switch > input.db-toggle-input[role="switch"]`)로 통일해 시작 설정 등에서 체크박스가 1,000px 카드 오른쪽 끝으로 밀리던 문제를 함께 없앴다.
 

@@ -20156,5 +20156,18 @@
 "@scope(.ai-settings-rail) 작업":"Work",
 "@scope(.ai-settings-rail) 표시":"Display",
 "@scope(.ai-settings-rail) 모델":"Model",
-"@scope(.ai-settings-rail) 계정":"Accounts"
+"@scope(.ai-settings-rail) 계정":"Accounts",
+"기본·전투 음악과 타이틀 화면의 음악·효과음을 한곳에서 정합니다.":"Set default and battle music plus title screen music and sound effects in one place.",
+"전투 규칙, 보상, 갤러리를 정합니다.":"Set battle rules, rewards, and the gallery.",
+"시작 화면을 구성하고 표시·메뉴·연출을 조정합니다.":"Compose the title screen and adjust display, menu, and effects.",
+"기본 BGM·전투 BGM·승리 팡파레·패배 SE·도주 SE는 「소리」에서 타이틀 소리와 함께 편집합니다.":"Default BGM, battle BGM, victory fanfare, defeat SE, and escape SE are edited in Sound, together with the title sounds.",
+"소리 섹션에서 편집":"Edit in Sound",
+"전투 효과음":"Battle sound effects",
+"효과음 자리":"Sound effect slots",
+"메뉴·전투·마법·필드에서 나는 효과음 자리는 「시작 설정」의 효과음 자리 표에서 바꿉니다.":"Menu, battle, magic, and field sound effect slots are changed in the sound effect slot table under Start settings.",
+"시작 설정 열기":"Open start settings",
+"타이틀 BGM과 커서·결정·취소 SE는 「소리」에서 기본 BGM과 함께 편집합니다.":"Title BGM and cursor, confirm, and cancel SE are edited in Sound, together with the default BGM.",
+"기본 · 전투 · 타이틀 음악과 효과음":"Default, battle, and title music and sound effects",
+"기본 BGM {0} · {1}/9칸":"Default BGM {0} · {1}/9 slots",
+"기본 BGM 없음 · {0}/9칸":"No default BGM · {0}/9 slots"
 }

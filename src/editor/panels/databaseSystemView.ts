@@ -153,6 +153,7 @@ export type SystemSectionSlug =
   | "dialogue"
   | "font"
   | "resources"
+  | "sound"
   | "startup"
   | "optin"
   | "time"
@@ -198,6 +199,7 @@ const SYSTEM_SECTION_ORDER: readonly {
   { slug: "hud", label: "인게임 HUD" },
   { slug: "font", label: "폰트" },
   { slug: "resources", label: "리소스" },
+  { slug: "sound", label: "소리" },
   { slug: "title", label: "타이틀", subhead: "시작·끝" },
 ];
 
@@ -431,6 +433,7 @@ function systemSectionNodes(
         }),
       ]),
     ]),
+    sound: section("sound", soundSectionFieldsets(project, titleScreen, rerender)),
     startup: section("startup", [
       rm2k3Fieldset("전투 설정", [
         systemHelp("초기 적 그룹은 선택 사항입니다. 기본 참전 수 0은 전투 방식에 맞춰 자동으로 정합니다(도트 측면은 파티 전원, 몬스터 대치는 1마리)."),
@@ -542,75 +545,10 @@ function systemSectionNodes(
       battleTeamsSection(project, updateSystem, rerender),
       battleResourcesFieldset(project),
       rm2k3Fieldset("전투 오디오", [
-        resourcePickerControl({
-          label: "기본 BGM",
-          resourceId: project.system.defaultBgmResourceId,
-          kind: "music",
-          testid: "db-field-system-default-bgm",
-          allowClear: true,
-          dialogTitle: "기본 BGM",
-          onChange: (result) => {
-            updateSystem((draft) => {
-              draft.system.defaultBgmResourceId = emptyToUndefined(result.resourceId);
-            }, "system:default-bgm");
-          },
-          rerender,
-        }),
-        resourcePickerControl({
-          label: "전투 BGM",
-          resourceId: project.system.battleBgmResourceId,
-          kind: "music",
-          testid: "db-field-system-battle-bgm",
-          allowClear: true,
-          dialogTitle: "전투 BGM",
-          onChange: (result) => {
-            updateSystem((draft) => {
-              draft.system.battleBgmResourceId = emptyToUndefined(result.resourceId);
-            }, "system:battle-bgm");
-          },
-          rerender,
-        }),
-        resourcePickerControl({
-          label: "승리 팡파레",
-          resourceId: project.system.battleVictoryMeResourceId,
-          kind: "music",
-          testid: "db-field-system-battle-victory-me",
-          allowClear: true,
-          dialogTitle: "승리 팡파레",
-          onChange: (result) => {
-            updateSystem((draft) => {
-              draft.system.battleVictoryMeResourceId = emptyToUndefined(result.resourceId);
-            }, "system:battle-victory-me");
-          },
-          rerender,
-        }),
-        resourcePickerControl({
-          label: "패배 SE",
-          resourceId: project.system.battleDefeatSeResourceId,
-          kind: "sound",
-          testid: "db-field-system-battle-defeat-se",
-          allowClear: true,
-          dialogTitle: "패배 SE",
-          onChange: (result) => {
-            updateSystem((draft) => {
-              draft.system.battleDefeatSeResourceId = emptyToUndefined(result.resourceId);
-            }, "system:battle-defeat-se");
-          },
-          rerender,
-        }),
-        resourcePickerControl({
-          label: "도주 SE",
-          resourceId: project.system.battleEscapeSeResourceId,
-          kind: "sound",
-          testid: "db-field-system-battle-escape-se",
-          allowClear: true,
-          dialogTitle: "도주 SE",
-          onChange: (result) => {
-            updateSystem((draft) => {
-              draft.system.battleEscapeSeResourceId = emptyToUndefined(result.resourceId);
-            }, "system:battle-escape-se");
-          },
-          rerender,
+        systemHelp("기본 BGM·전투 BGM·승리 팡파레·패배 SE·도주 SE는 「소리」에서 타이틀 소리와 함께 편집합니다."),
+        el("div", {
+          class: "db-system-resource-actions",
+          children: [systemSectionLink("소리 섹션에서 편집", "sound", "db-system-startup-open-sound")],
         }),
       ]),
       seCueTableSection(project, updateSystem, rerender, resourcePickerControl),
@@ -674,7 +612,7 @@ function systemSectionNodes(
                 titleScreenMenuFieldset(titleScreen, rerender),
                 titleScreenVariantsFieldset(titleScreen, project, rerender),
                 titleScreenEffectsFieldset(titleScreen, rerender),
-                titleScreenAudioFieldset(titleScreen, rerender),
+                titleScreenAudioMovedFieldset(),
               ],
             }),
           ],
@@ -2249,70 +2187,172 @@ function titleScreenDisplayFieldset(
   });
 }
 
-function titleScreenAudioFieldset(titleScreen: TitleScreenSettings, rerender: SystemRefresh): HTMLElement {
+/**
+ * 「소리」 구획 — 흩어져 있던 기본·전투·타이틀 소리를 한 화면에 모은다. 입력 칸과 저장 경로(mutation·스냅샷 키)는
+ * 옛 위치(시작 설정 「전투 오디오」, 타이틀 「소리」)의 것을 그대로 옮겼다. 옛 위치에는 이 구획으로 오는 링크만 남는다.
+ */
+function soundSectionFieldsets(project: Project, titleScreen: TitleScreenSettings, rerender: SystemRefresh): HTMLElement[] {
+  return [
+    rm2k3Fieldset("배경 음악", [
+      resourcePickerControl({
+        label: "기본 BGM",
+        resourceId: project.system.defaultBgmResourceId,
+        kind: "music",
+        testid: "db-field-system-default-bgm",
+        allowClear: true,
+        dialogTitle: "기본 BGM",
+        onChange: (result) => {
+          updateSystem((draft) => {
+            draft.system.defaultBgmResourceId = emptyToUndefined(result.resourceId);
+          }, "system:default-bgm");
+        },
+        rerender,
+      }),
+      resourcePickerControl({
+        label: "전투 BGM",
+        resourceId: project.system.battleBgmResourceId,
+        kind: "music",
+        testid: "db-field-system-battle-bgm",
+        allowClear: true,
+        dialogTitle: "전투 BGM",
+        onChange: (result) => {
+          updateSystem((draft) => {
+            draft.system.battleBgmResourceId = emptyToUndefined(result.resourceId);
+          }, "system:battle-bgm");
+        },
+        rerender,
+      }),
+      resourcePickerControl({
+        label: "승리 팡파레",
+        resourceId: project.system.battleVictoryMeResourceId,
+        kind: "music",
+        testid: "db-field-system-battle-victory-me",
+        allowClear: true,
+        dialogTitle: "승리 팡파레",
+        onChange: (result) => {
+          updateSystem((draft) => {
+            draft.system.battleVictoryMeResourceId = emptyToUndefined(result.resourceId);
+          }, "system:battle-victory-me");
+        },
+        rerender,
+      }),
+    ]),
+    rm2k3Fieldset("전투 효과음", [
+      resourcePickerControl({
+        label: "패배 SE",
+        resourceId: project.system.battleDefeatSeResourceId,
+        kind: "sound",
+        testid: "db-field-system-battle-defeat-se",
+        allowClear: true,
+        dialogTitle: "패배 SE",
+        onChange: (result) => {
+          updateSystem((draft) => {
+            draft.system.battleDefeatSeResourceId = emptyToUndefined(result.resourceId);
+          }, "system:battle-defeat-se");
+        },
+        rerender,
+      }),
+      resourcePickerControl({
+        label: "도주 SE",
+        resourceId: project.system.battleEscapeSeResourceId,
+        kind: "sound",
+        testid: "db-field-system-battle-escape-se",
+        allowClear: true,
+        dialogTitle: "도주 SE",
+        onChange: (result) => {
+          updateSystem((draft) => {
+            draft.system.battleEscapeSeResourceId = emptyToUndefined(result.resourceId);
+          }, "system:battle-escape-se");
+        },
+        rerender,
+      }),
+    ]),
+    rm2k3Fieldset("타이틀 화면", titleScreenAudioControls(titleScreen, rerender)),
+    rm2k3Fieldset("효과음 자리", [
+      systemHelp("메뉴·전투·마법·필드에서 나는 효과음 자리는 「시작 설정」의 효과음 자리 표에서 바꿉니다."),
+      el("div", {
+        class: "db-system-resource-actions",
+        children: [systemSectionLink("시작 설정 열기", "startup", "db-system-sound-open-startup")],
+      }),
+    ]),
+  ];
+}
+
+/** 타이틀 작업대의 옛 「소리」 자리 — 바로가기(`db-title-workbench-audio`)가 닿는 곳에 소리 구획 링크만 둔다. */
+function titleScreenAudioMovedFieldset(): HTMLElement {
   return el("fieldset", {
     class: "oprn-db-fieldset db-title-workbench-group",
     dataset: { testid: "db-title-workbench-audio" },
     children: [
       el("legend", { text: "소리" }),
-      resourcePickerControl({
-        label: "타이틀 BGM",
-        resourceId: titleScreen.musicResourceId,
-        kind: "music",
-        testid: "db-field-title-screen-music",
-        allowClear: true,
-        dialogTitle: "타이틀 BGM",
-        onChange: (result) => {
-          updateTitleScreen((settings) => {
-            settings.musicResourceId = emptyToUndefined(result.resourceId);
-          }, "system:title-screen:music");
-        },
-        rerender,
-      }),
-      resourcePickerControl({
-        label: "커서 SE",
-        resourceId: titleScreen.sounds?.cursorSeResourceId,
-        kind: "sound",
-        testid: "db-field-title-screen-se-cursor",
-        allowClear: true,
-        dialogTitle: "타이틀 커서 SE",
-        onChange: (result) => {
-          updateTitleScreen((settings) => {
-            patchTitleSounds(settings, { cursorSeResourceId: emptyToUndefined(result.resourceId) });
-          }, "system:title-screen:se-cursor");
-        },
-        rerender,
-      }),
-      resourcePickerControl({
-        label: "결정 SE",
-        resourceId: titleScreen.sounds?.confirmSeResourceId,
-        kind: "sound",
-        testid: "db-field-title-screen-se-confirm",
-        allowClear: true,
-        dialogTitle: "타이틀 결정 SE",
-        onChange: (result) => {
-          updateTitleScreen((settings) => {
-            patchTitleSounds(settings, { confirmSeResourceId: emptyToUndefined(result.resourceId) });
-          }, "system:title-screen:se-confirm");
-        },
-        rerender,
-      }),
-      resourcePickerControl({
-        label: "취소 SE",
-        resourceId: titleScreen.sounds?.cancelSeResourceId,
-        kind: "sound",
-        testid: "db-field-title-screen-se-cancel",
-        allowClear: true,
-        dialogTitle: "타이틀 취소 SE",
-        onChange: (result) => {
-          updateTitleScreen((settings) => {
-            patchTitleSounds(settings, { cancelSeResourceId: emptyToUndefined(result.resourceId) });
-          }, "system:title-screen:se-cancel");
-        },
-        rerender,
+      systemHelp("타이틀 BGM과 커서·결정·취소 SE는 「소리」에서 기본 BGM과 함께 편집합니다."),
+      el("div", {
+        class: "db-system-resource-actions",
+        children: [systemSectionLink("소리 섹션에서 편집", "sound", "db-title-open-sound")],
       }),
     ],
   });
+}
+
+function titleScreenAudioControls(titleScreen: TitleScreenSettings, rerender: SystemRefresh): HTMLElement[] {
+  return [
+    resourcePickerControl({
+      label: "타이틀 BGM",
+      resourceId: titleScreen.musicResourceId,
+      kind: "music",
+      testid: "db-field-title-screen-music",
+      allowClear: true,
+      dialogTitle: "타이틀 BGM",
+      onChange: (result) => {
+        updateTitleScreen((settings) => {
+          settings.musicResourceId = emptyToUndefined(result.resourceId);
+        }, "system:title-screen:music");
+      },
+      rerender,
+    }),
+    resourcePickerControl({
+      label: "커서 SE",
+      resourceId: titleScreen.sounds?.cursorSeResourceId,
+      kind: "sound",
+      testid: "db-field-title-screen-se-cursor",
+      allowClear: true,
+      dialogTitle: "타이틀 커서 SE",
+      onChange: (result) => {
+        updateTitleScreen((settings) => {
+          patchTitleSounds(settings, { cursorSeResourceId: emptyToUndefined(result.resourceId) });
+        }, "system:title-screen:se-cursor");
+      },
+      rerender,
+    }),
+    resourcePickerControl({
+      label: "결정 SE",
+      resourceId: titleScreen.sounds?.confirmSeResourceId,
+      kind: "sound",
+      testid: "db-field-title-screen-se-confirm",
+      allowClear: true,
+      dialogTitle: "타이틀 결정 SE",
+      onChange: (result) => {
+        updateTitleScreen((settings) => {
+          patchTitleSounds(settings, { confirmSeResourceId: emptyToUndefined(result.resourceId) });
+        }, "system:title-screen:se-confirm");
+      },
+      rerender,
+    }),
+    resourcePickerControl({
+      label: "취소 SE",
+      resourceId: titleScreen.sounds?.cancelSeResourceId,
+      kind: "sound",
+      testid: "db-field-title-screen-se-cancel",
+      allowClear: true,
+      dialogTitle: "타이틀 취소 SE",
+      onChange: (result) => {
+        updateTitleScreen((settings) => {
+          patchTitleSounds(settings, { cancelSeResourceId: emptyToUndefined(result.resourceId) });
+        }, "system:title-screen:se-cancel");
+      },
+      rerender,
+    }),
+  ];
 }
 
 function titleScreenMenuFieldset(titleScreen: TitleScreenSettings, rerender: SystemRefresh): HTMLElement {
@@ -3727,11 +3767,12 @@ const SYSTEM_SECTION_HELP: Record<Exclude<SystemSectionSlug, "overview">, string
   dialogue: "NPC 대사창의 모양·글꼴·글자 소리를 고르고, 대사 종류별 모양을 확인합니다.",
   font: "화면 역할마다 글꼴을 고르고 실제 문장으로 비교합니다.",
   resources: "프로젝트에서 공유하는 그래픽을 선택합니다.",
-  startup: "전투 규칙, 기본 소리, 보상, 갤러리를 정합니다.",
+  startup: "전투 규칙, 보상, 갤러리를 정합니다.",
+  sound: "기본·전투 음악과 타이틀 화면의 음악·효과음을 한곳에서 정합니다.",
   optin: "선택 기능과 기존 프로젝트의 세부 설정을 관리합니다.",
   time: "시간 진행, 계절 길이와 하루 종료 동작을 정합니다.",
   typechart: "공격 타입과 방어 타입 사이의 배율을 편집합니다.",
-  title: "시작 화면을 구성하고 표시·메뉴·소리·연출을 조정합니다.",
+  title: "시작 화면을 구성하고 표시·메뉴·연출을 조정합니다.",
 };
 
 function systemHelp(text: string): HTMLElement {
