@@ -5,6 +5,7 @@ import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { DATABASE_PRIMARY_SENTINELS } from '../databasePrimarySentinels';
 import { LIFE_SIM_ENABLED } from '../../electron/shared/lifeSim';
+import { revealDbRailTab } from "./dbRail";
 
 declare global {
   interface Window { __dbDestinationReady?: Promise<void>; __dbTabReached?: Promise<void>; __dbScroll?: Promise<void>; __dbWheelEnd?: Promise<void>; __dbSearchReady?: Promise<void>; __dbNumeric?: { calls: number[]; events: string[]; text: string[] }; }
@@ -69,6 +70,7 @@ async function bootEditor(page: Page) {
 async function openDatabase(page: Page) {
   await page.getByTestId('toolbar-database').focus();
   await page.getByTestId('toolbar-database').press('Enter');
+  await revealDbRailTab(page);
   await page.getByTestId('db-tab-search').waitFor();
   await page.evaluate(() => document.fonts.ready);
 }
@@ -796,6 +798,7 @@ for (const width of [1440, 1024]) {
       await expect(page.locator(`.db-tab[data-tab="${parent}"]`)).toHaveClass(/active/);
     }
     for (const alias of ['tilesetAutotile', 'tilesetUnlabeled']) {
+      await revealDbRailTab(page);
       await page.getByTestId('db-tab-search').fill(alias);
       await page.locator(`.db-tab[data-tab="${alias}"]`).click();
       await renderedReady(page);

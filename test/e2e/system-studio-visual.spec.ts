@@ -1,5 +1,6 @@
 import { mkdir } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
+import { revealDbRailTab } from "./dbRail";
 
 const sections = ["overview", "party", "startup", "optin", "time", "typechart", "display", "menu", "dialogue", "hud", "font", "resources", "sound", "title"] as const;
 for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768 }]) {
@@ -17,6 +18,7 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
     }
     await page.getByTestId("toolbar-database").click();
     await page.getByTestId("db-tab-group-system").click();
+    await revealDbRailTab(page, "system");
     await page.getByTestId("db-tab-system").click();
     const nav = page.getByTestId("db-system-section-nav");
     await expect(nav.locator(".db-system-section-button")).toHaveCount(14);

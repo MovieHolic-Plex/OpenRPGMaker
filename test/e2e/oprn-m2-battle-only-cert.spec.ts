@@ -5,6 +5,7 @@ import { deserialize } from "@/project/io";
 import { seedProjectForEditor } from "./projectSeed";
 import { applyDatabaseChanges, exportedProject, openDatabase } from "./oprn-database-helpers";
 import { startNewGameFromTitle } from "./runtimeInput";
+import { revealDbRailTab } from "./dbRail";
 
 type Project = ReturnType<typeof deserialize>;
 type JsonRecord = Record<string, unknown>;
@@ -26,6 +27,7 @@ test("Loop 15 certifies battle-only M2 editor authoring, persistence, and runtim
 
   await seedProjectForEditor(page, fullProject);
   await openDatabase(page);
+  await revealDbRailTab(page, "troops");
   await page.getByTestId("db-tab-troops").click();
   await expect(page.getByTestId("db-field-troop-event-force-escape-summary")).toBeVisible();
   await page.getByTestId("database-modal").screenshot({ path: artifact("003-editor-all-battle-only-after-reload.png") });
@@ -39,6 +41,7 @@ test("Loop 15 certifies battle-only M2 editor authoring, persistence, and runtim
 
 async function authorBattleOnlyCommands(page: Page): Promise<void> {
   await openDatabase(page);
+  await revealDbRailTab(page, "troops");
   await page.getByTestId("db-tab-troops").click();
   await page.getByTestId("db-troop-event-add-page").click();
   await page.getByTestId("db-field-troop-event-condition-kind").selectOption("variable");

@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
 import { readStoredZipEntry } from "../../src/project/packageZip";
+import { revealDbRailTab } from "./dbRail";
 
 test("elements real editor: recognition, filtering, editing and project export", async ({ page }) => {
   // Bound the full seven-capture workflow on the shared, CPU-contended QA host.
@@ -12,6 +13,7 @@ test("elements real editor: recognition, filtering, editing and project export",
   await page.getByTestId("toolbar-database").click({ timeout: 90_000 });
   const shellBefore = await page.locator(".database-modal-window").boundingBox();
   await page.getByTestId("db-tab-group-battle").click();
+  await revealDbRailTab(page, "elements");
   await page.getByTestId("db-tab-elements").click();
   expect(await page.locator(".database-modal-window").boundingBox()).toEqual(shellBefore);
   const name = page.getByTestId("db-field-element-name-selected");

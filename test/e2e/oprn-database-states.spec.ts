@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { exportedProject } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 test("Database States tab exposes readable Korean RM-style ontology controls", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1474, height: 910 });
@@ -7,6 +8,7 @@ test("Database States tab exposes readable Korean RM-style ontology controls", a
 
   await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
+  await revealDbRailTab(page, "states");
   await page.getByTestId("db-tab-states").click();
 
   const workbench = page.getByTestId("db-states-oprn-workbench");

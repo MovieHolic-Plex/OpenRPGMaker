@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { exportedProject } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 test.setTimeout(60_000);
 
@@ -23,6 +24,7 @@ test("RM2K3 database modal exposes manual parity surface tabs", async ({ page })
     await expect(page.getByTestId("db-detail-form")).toContainText(tab.marker);
   }
 
+  await revealDbRailTab(page, "elements");
   await page.getByTestId("db-tab-elements").click();
   await expect(page.getByTestId("db-elements-classic")).toBeVisible();
   await expect(page.getByTestId("db-elements-row-5")).toHaveClass(/is-selected/);
@@ -37,6 +39,7 @@ test("RM2K3 database modal exposes manual parity surface tabs", async ({ page })
   await page.getByTestId("db-field-element-damage-D").fill("25");
   await page.getByTestId("db-field-element-damage-E").fill("-100");
 
+  await revealDbRailTab(page, "terrain");
   await page.getByTestId("db-tab-terrain").click();
   await expect(page.getByTestId("db-detail-form")).not.toContainText("database.terrains");
   await expect(page.getByTestId("db-field-terrain-name-0")).toHaveValue("물");
@@ -47,6 +50,7 @@ test("RM2K3 database modal exposes manual parity surface tabs", async ({ page })
   await page.getByTestId("db-field-terrain-boat-0").check();
   await page.getByTestId("db-field-terrain-ship-0").check();
 
+  await revealDbRailTab(page, "battle-commands");
   await page.getByTestId("db-tab-battle-commands").click();
   await expect(page.getByTestId("db-detail-form")).not.toContainText("database.battleCommands");
   await expect(page.getByTestId("db-field-battle-command-name-0")).toHaveValue("공격");

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { revealDbRailTab } from "./dbRail";
 
 test("editor database edit persists into the project the player runs", async ({ page }) => {
   test.setTimeout(60_000);
@@ -8,6 +9,7 @@ test("editor database edit persists into the project the player runs", async ({ 
 
   await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
+  await revealDbRailTab(page, "skills");
   await page.getByTestId("db-tab-skills").click();
 
   const selectSkillAttack = async (): Promise<void> => {
@@ -21,7 +23,9 @@ test("editor database edit persists into the project the player runs", async ({ 
   await power.fill("123");
   await expect(power).toHaveValue("123");
 
+  await revealDbRailTab(page, "items");
   await page.getByTestId("db-tab-items").click();
+  await revealDbRailTab(page, "skills");
   await page.getByTestId("db-tab-skills").click();
   await selectSkillAttack();
   await expect(page.getByTestId("db-field-power")).toHaveValue("123");

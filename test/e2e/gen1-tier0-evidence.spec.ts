@@ -11,6 +11,7 @@ import { createScarloxyPokemonDemoProject } from "../support/scarloxyPokemonProj
 import { scarloxySpeciesId } from "@/project/defaults/scarloxyPokemonDemoGame";
 import { DB_TOOLS } from "@/editor/tools/dbTools";
 import type { Project } from "@/project/types";
+import { revealDbRailTab } from "./dbRail";
 
 const POISON_SKILL_ID = "skill_poison_sting";
 // 결과 패널에서 몬스터 레벨업 행을 액터(트레이너) 행과 구분하기 위한 표시 이름.
@@ -123,6 +124,7 @@ test("Tier0-1/2: 데모가 gen1 게이트를 켜고, 상태 runtimeEffects 가 �
 
   // 전투 화면 탭의 「전투 방식」이 몬스터 대치(pokemon + gen1)를 반영한다(2026-10-02: 규칙 셀렉트 대신 방식 단추).
   // 화면과 규칙이 어긋나면 rules-mismatch 안내가 뜨므로, 그 안내가 없어야 gen1 까지 맞은 것이다.
+  await revealDbRailTab(page, "battle-screen");
   await page.getByTestId("db-tab-battle-screen").click();
   const monsterMethod = page.getByTestId("db-battle-method-monster");
   await expect(monsterMethod).toBeVisible({ timeout: 10_000 });
@@ -132,6 +134,7 @@ test("Tier0-1/2: 데모가 gen1 게이트를 켜고, 상태 runtimeEffects 가 �
 
   // (2) 상태 탭의 새 "전투 규칙 (Gen1 knob)" 패널 — 이전엔 필드도 뮤테이터도 없어서
   //     화상(공격 반감)을 에디터로 만들 수 없었다.
+  await revealDbRailTab(page, "states");
   await page.getByTestId("db-tab-states").click();
   const workbench = page.getByTestId("db-states-rm2k3-workbench");
   await expect(workbench).toBeVisible();

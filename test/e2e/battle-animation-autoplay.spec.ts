@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { revealDbRailTab } from "./dbRail";
 
 declare global {
   interface Window {
@@ -43,7 +44,9 @@ async function openAnimations(page: Page): Promise<void> {
   });
   await page.getByTestId("toolbar-database").click();
   // 전투 애니메이션은 도트 연출 레일 탭의 하위 보기다.
+  await revealDbRailTab(page);
   await page.getByTestId("db-tab-search").fill("도트 연출");
+  await revealDbRailTab(page, "retro-choreographies");
   await page.getByTestId("db-tab-retro-choreographies").click();
   await page.getByTestId("db-subview-animations").click();
   await expect(page.getByTestId("db-animation-preview-status")).toHaveAttribute("data-state", "ready");
@@ -109,11 +112,15 @@ test("entry and record switch autoplay visible frames, wrap, and cleanly remount
   expect(await activeLoops(page)).toBe(1);
   await advanceFrame(page);
 
+  await revealDbRailTab(page);
   await page.getByTestId("db-tab-search").fill("");
+  await revealDbRailTab(page, "overview");
   await page.getByTestId("db-tab-overview").click();
   expect(await activeLoops(page)).toBe(0);
   // 전투 애니메이션은 도트 연출 레일 탭의 하위 보기다.
+  await revealDbRailTab(page);
   await page.getByTestId("db-tab-search").fill("도트 연출");
+  await revealDbRailTab(page, "retro-choreographies");
   await page.getByTestId("db-tab-retro-choreographies").click();
   await page.getByTestId("db-subview-animations").click();
   await expect(play).toHaveAttribute("aria-pressed", "true");
@@ -124,7 +131,9 @@ test("entry and record switch autoplay visible frames, wrap, and cleanly remount
   expect(await activeLoops(page)).toBe(0);
   await page.getByTestId("toolbar-database").click();
   // 전투 애니메이션은 도트 연출 레일 탭의 하위 보기다.
+  await revealDbRailTab(page);
   await page.getByTestId("db-tab-search").fill("도트 연출");
+  await revealDbRailTab(page, "retro-choreographies");
   await page.getByTestId("db-tab-retro-choreographies").click();
   await page.getByTestId("db-subview-animations").click();
   await expect(play).toHaveAttribute("aria-pressed", "true");

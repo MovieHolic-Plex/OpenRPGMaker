@@ -1,11 +1,13 @@
 import { expect, test } from "@playwright/test";
 import { exportedProject } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 test("RM2003 Elements tab uses a readable single-record editor shape", async ({ page }) => {
   await page.setViewportSize({ width: 1484, height: 949 });
   await page.goto("/?freshProject=1");
 
   await page.getByTestId("toolbar-database").click();
+  await revealDbRailTab(page, "elements");
   await page.getByTestId("db-tab-elements").click();
 
   await expect(page.getByTestId("db-elements-classic")).toBeVisible();

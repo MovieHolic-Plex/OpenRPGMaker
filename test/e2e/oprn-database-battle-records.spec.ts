@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { exportedProject } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 test("BM101-BM104 Enemies tab exposes Korean RPG Maker-style editable enemy settings", async ({ page }, testInfo) => {
   test.setTimeout(60_000);
@@ -8,6 +9,7 @@ test("BM101-BM104 Enemies tab exposes Korean RPG Maker-style editable enemy sett
 
   await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
+  await revealDbRailTab(page, "enemies");
   await page.getByTestId("db-tab-enemies").click({ force: true });
 
   const workbench = page.getByTestId("db-enemies-bm101-workbench");
@@ -96,6 +98,7 @@ test("RM2K3 troops battle event editor authors encounter and battleback commands
 
   await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
+  await revealDbRailTab(page, "troops");
   await page.getByTestId("db-tab-troops").click();
   await page.getByTestId("db-troop-event-add-page").click();
   await page.getByTestId("db-field-troop-event-condition-kind").selectOption("actorCommand");
@@ -129,6 +132,7 @@ test("RM2K3 Troops tab matches Korean classic troop editor layout", async ({ pag
 
   await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
+  await revealDbRailTab(page, "troops");
   await page.getByTestId("db-tab-troops").click();
 
   const workbench = page.getByTestId("db-troops-classic-workbench");

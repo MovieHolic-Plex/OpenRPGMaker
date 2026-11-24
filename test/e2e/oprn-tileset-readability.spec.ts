@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { expectReadableControl } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 // 칸 DOM 격자는 「칸 편집」 을 켰을 때만 있다(qa1124-space PR6). 이미 켜져 있으면 그대로 둔다.
 async function openTileGrid(page: Page): Promise<void> {
@@ -13,6 +14,7 @@ test("tileset section tabs keep Korean controls readable and split features", as
   await page.goto("/?freshProject=1");
 
   await page.getByTestId("toolbar-database").click();
+  await revealDbRailTab(page, "tilesets");
   await page.getByTestId("db-tab-tilesets").click();
 
   await expect(page.getByTestId("tileset-oprn-name")).toBeVisible();

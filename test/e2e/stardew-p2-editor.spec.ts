@@ -1,6 +1,7 @@
 import { mkdirSync } from "node:fs";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { LIFE_SIM_ENABLED, openDatabase } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 // 생활 시스템이 닫혀 있는 동안(electron/shared/lifeSim.ts LIFE_SIM_ENABLED=false) 생활 편집 화면이 없다 — 깃발을 켤 때 다시 돈다.
 test.skip(!LIFE_SIM_ENABLED, "생활 시스템 닫힘(LIFE_SIM_ENABLED=false)");
@@ -64,6 +65,7 @@ test("P2 낚시·채집·박물관과 공간 저작 화면을 두 해상도에�
     await page.setViewportSize(viewport);
     const size = `${viewport.width}x${viewport.height}`;
 
+    await revealDbRailTab(page, "life-collections");
     await page.getByTestId("db-tab-life-collections").click({ force: true });
     const life = page.getByTestId("db-life-collections-workspace");
     await expect(life).toBeVisible();
@@ -77,6 +79,7 @@ test("P2 낚시·채집·박물관과 공간 저작 화면을 두 해상도에�
     await expectNoHorizontalOverflow(life, `${size} life collections workspace`);
     await page.getByTestId("database-modal").screenshot({ path: `${EVIDENCE_DIR}/editor-life-collections-${size}.png` });
 
+    await revealDbRailTab(page, "farm-spatial");
     await page.getByTestId("db-tab-farm-spatial").click({ force: true });
     const spatial = page.getByTestId("db-spatial-workspace");
     await expect(spatial).toBeVisible();

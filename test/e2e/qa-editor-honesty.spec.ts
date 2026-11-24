@@ -1,4 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
+import { revealDbRailTab } from "./dbRail";
 
 // QA 네 건: 탭 전용 저장 표시, ChatGPT 안내와 줌 막대 겹침, 조수에게 맡기기의 런타임 오류, 칭호·영어·가져오기 토스트.
 // 동반 서비스가 없어도 안내 띠가 뜨게 로그인 없음으로 응답한다. 작은 일은 409 다음 500(Bun 없음)을 흉내 낸다.
@@ -66,7 +67,9 @@ test.describe("QA editor honesty", () => {
     await expect(page.getByTestId("ai-settings-modal")).toBeHidden();
 
     await page.getByTestId("toolbar-database").click();
+    await revealDbRailTab(page, "actors");
     await expect(page.getByTestId("db-tab-actors")).toBeVisible({ timeout: 60_000 });
+    await revealDbRailTab(page, "actors");
     await page.getByTestId("db-tab-actors").click();
     await page.getByTestId("database-footer-apply").click();
     await expect(save).toHaveAttribute("data-autosave-kind", "unsaved-session");

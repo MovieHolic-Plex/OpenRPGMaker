@@ -1,5 +1,6 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { exportedProject, openDatabase, switchDatabaseTab, DATABASE_TAB_SPECS } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 // Adversarial QA for the DB modal refresh-deferral fix (interaction grace + rAF recheck + graceFlush).
 // Goal: BREAK the fix — lose a click, lose typed input, stale modal after external update, timer leaks.
@@ -156,6 +157,7 @@ test("F1: battler animations tab shows runtime-unlinked notice", async ({ page }
   const errors = collectConsoleErrors(page);
   await gotoExpert(page);
   await openDatabase(page);
+  await revealDbRailTab(page, "battler-animations");
   await page.getByTestId("db-tab-battler-animations").click({ force: true });
   await expect(page.getByTestId("db-battler-animations-runtime-note")).toBeVisible();
   expect(errors).toEqual([]);

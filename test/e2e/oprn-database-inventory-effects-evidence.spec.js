@@ -2,6 +2,7 @@ import { copyFile, mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
 import { expect, test } from "@playwright/test";
+import { revealDbRailTab } from "./dbRail";
 
 const EVIDENCE_DIR = "output/evidence/database-tabs-team/T2-inventory-effects";
 const TABS = [
@@ -84,6 +85,7 @@ async function switchTab(page, tab) {
 }
 
 async function editInventoryEffects(page) {
+  await revealDbRailTab(page, "skills");
   await page.getByTestId("db-tab-skills").click();
   await page.getByTestId("db-field-name").fill("QA 포커스");
   await page.getByTestId("db-field-scope").selectOption("ally");
@@ -96,6 +98,7 @@ async function editInventoryEffects(page) {
   await page.getByTestId("db-field-skill-effect-kind").selectOption("healing");
   await page.getByTestId("db-field-skill-effect-affects").selectOption("mp");
 
+  await revealDbRailTab(page, "items");
   await page.getByTestId("db-tab-items").click();
   await page.getByTestId("db-field-name").fill("QA 만능약");
   await page.getByTestId("db-field-item-type").selectOption("medicine");
@@ -107,6 +110,7 @@ async function editInventoryEffects(page) {
   await page.getByTestId("db-field-item-hp-percent-stepper").fill("15");
   await page.getByTestId("db-field-item-mp-flat").fill("8");
 
+  await revealDbRailTab(page, "items");
   await page.getByTestId("db-tab-items").click();
   await page.getByTestId("db-catalog-filter-equipment").click();
   await page.locator('.db-catalog-rows [data-collection="equipment"]').first().click();
@@ -120,6 +124,7 @@ async function editInventoryEffects(page) {
   await page.getByTestId("db-field-equipment-state-state_poison").check();
   await page.getByTestId("db-picker-equipment-use-skill").selectOption({ label: "QA 포커스" });
 
+  await revealDbRailTab(page, "states");
   await page.getByTestId("db-tab-states").click();
   await page.getByTestId("db-field-name").fill("QA 독 상태");
 }

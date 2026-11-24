@@ -1,6 +1,7 @@
 import { expect, test, type Page, type Locator } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
+import { revealDbRailTab } from "./dbRail";
 
 const evidence = resolve("output/evidence/battle-animation-ux");
 const sizes = [{ width: 1024, height: 768 }, { width: 1280, height: 800 }, { width: 1440, height: 900 }];
@@ -23,7 +24,9 @@ async function openAnimations(page: Page): Promise<void> {
   await page.clock.pauseAt(new Date("2026-09-05T13:00:00Z"));
   await page.getByTestId("toolbar-database").click();
   // 전투 애니메이션은 도트 연출 레일 탭의 하위 보기다.
+  await revealDbRailTab(page);
   await page.getByTestId("db-tab-search").fill("도트 연출");
+  await revealDbRailTab(page, "retro-choreographies");
   await page.getByTestId("db-tab-retro-choreographies").click();
   await page.getByTestId("db-subview-animations").click();
   await expect(page.getByTestId("db-animation-play")).toHaveAttribute("aria-pressed", "true");

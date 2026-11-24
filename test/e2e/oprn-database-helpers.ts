@@ -1,4 +1,5 @@
 import { expect, type Locator, type Page } from "@playwright/test";
+import { revealDbRailTab } from "./dbRail";
 
 export { LIFE_SIM_ENABLED } from "../../electron/shared/lifeSim";
 
@@ -251,6 +252,7 @@ async function revealCollapsedSidebarTab(page: Page, button: Locator): Promise<v
 
 /** 도트 연출 레일 탭 → 「전투 애니메이션」 하위 보기. */
 export async function openAnimationsSubview(page: Page): Promise<void> {
+  await revealDbRailTab(page, "retro-choreographies");
   await page.getByTestId("db-tab-retro-choreographies").click();
   await page.getByTestId("db-subview-animations").click();
 }
