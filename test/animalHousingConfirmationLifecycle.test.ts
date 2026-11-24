@@ -10,6 +10,8 @@
  * Does NOT import private pending/arm reset helpers (those are the fix surface).
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+// 생활 시스템이 켜진 상태의 편집 화면을 검증한다 — 기본값(false)이면 생활 그룹은 안내 한 장이다(electron/shared/lifeSim.ts, #4988).
+vi.mock("../electron/shared/lifeSim", () => ({ LIFE_SIM_ENABLED: true, LIFE_SIM_CLOSED_TITLE: "", LIFE_SIM_CLOSED_BODY: "", LIFE_SIM_CLOSED_NOTICE: "" }));
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { openDatabaseModal, requestDatabaseModalClose } from "@/editor/panels/databaseModal";
 import { createBlankProject } from "@/project/defaults";

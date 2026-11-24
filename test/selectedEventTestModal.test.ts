@@ -8,7 +8,8 @@ const playerMocks = vi.hoisted(() => ({
 vi.mock("@/player/player", () => playerMocks);
 // The shell now unlocks audio synchronously in the initiating user gesture.
 // This suite replaces the player; keep that audio boundary explicit too.
-vi.mock("@/player/audio", () => ({ getAudioEngine: () => ({ unlock: vi.fn() }) }));
+// 테스트 플레이 창은 BGM 재생 실패를 구독한다(#4971) — 구독 해제 함수만 돌려준다.
+vi.mock("@/player/audio", () => ({ getAudioEngine: () => ({ unlock: vi.fn() }), subscribeAudioFailures: () => () => undefined }));
 vi.mock("@/assets/bundledAssetWarmup", () => ({ warmBundledPlayAssets: vi.fn() }));
 vi.mock("@/player/playLoadingOverlay", () => ({
   mountPlayLoadingOverlay: (host: HTMLElement) => {
