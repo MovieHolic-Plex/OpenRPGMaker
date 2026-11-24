@@ -93,7 +93,7 @@
   border-bottom: var(--stroke-1) solid var(--db-studio-border-subtle);
   display: grid;
   gap: var(--space-2);
-  grid-template-columns: var(--space-5) minmax(0, calc(3 * var(--space-6))) var(--space-4) minmax(var(--space-6), 1fr) minmax(0, calc(3 * var(--space-6)));
+  grid-template-columns: minmax(var(--space-5), max-content) minmax(0, calc(3 * var(--space-6))) var(--space-4) minmax(var(--space-6), 1fr) minmax(0, calc(3 * var(--space-6)));
   margin: 0;
   min-height: calc(var(--db2-control-h) + var(--space-2));
 }
