@@ -6,3 +6,5 @@
 // 소스(테스트·oprn-serve·스크립트)는 그대로 원래 모듈을 직접 import 한다 — 바뀌는 것은 데스크톱 메인 번들뿐이다.
 export * as loadRepair from "../../src/project/persistence/core/loadRepair";
 export * as serialize from "../../src/project/io/serialize";
+// 팀 병합(teamMerge)은 참조 검사 사슬로 경사로 그림(rampArt 5.8MB)·캐릭터 칩 표(1.5MB)를 끌고 온다(2026-11-24 실측).
+export * as teamMerge from "../../src/project/persistence/core/teamMerge";

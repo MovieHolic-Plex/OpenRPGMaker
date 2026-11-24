@@ -25,7 +25,10 @@ import { jsonEqual } from "@/util/structuralJson";
 import { isPendingLazyTileset, markLazyTilesetMaterialized, markPendingLazyTileset } from "./bundledTilesetLazy";
 import type { TilesetDef } from "./types";
 
-export const BUNDLED_TILESET_DIFF = "bundledTilesetDiff";
+import { BUNDLED_TILESET_DIFF } from "./bundledTilesetDiffKey";
+
+// 키 이름은 가벼운 모듈에 둔다(Electron 메인이 타일셋 정의 없이 쓰도록). 기존 import 는 여기서 그대로 받는다.
+export { BUNDLED_TILESET_DIFF };
 const FORMAT = 1;
 
 /** 롤백 스위치. false 면 저장 보기가 차이를 만들지 않는다(읽기는 그대로). */

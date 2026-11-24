@@ -7,7 +7,8 @@ import { deserializeStoredProjectJson } from "../../src/project/persistence/core
 import { mergeTeamProject, validateMergedTeamProject } from "../../src/project/persistence/core/teamMerge";
 import type { MapSaveConflict } from "../../src/project/persistence/core/mapMerge";
 import { projectWireView } from "../../src/project/io/serialize";
-import { BUNDLED_TILESET_DIFF } from "../../src/project/bundledTilesetDiff";
+// 키 이름만 가벼운 모듈에서 가져온다 — bundledTilesetDiff.ts 는 번들 타일셋 정의 112MB 를 메인 본체에 끌고 온다(app.cjs 크기 상한, scripts/build-electron.mjs).
+import { BUNDLED_TILESET_DIFF } from "../../src/project/bundledTilesetDiffKey";
 import type { GameMap, Project, UploadedAsset, UploadedAssetRef } from "../../src/project/types";
 import { applyStorePragmas, openNodeSqliteDriver, readDataVersion, type Driver, type DriverValue } from "./driver";
 import { LocalStoreError } from "./errors";
