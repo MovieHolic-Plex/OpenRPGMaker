@@ -105,10 +105,11 @@ export function settleCurrentArtIn(project: Project): { readonly notes: string[]
     for (const enemyId of ids) {
       const art = artOf(project, enemyId);
       if (!art) continue;
-      if (!isCurrentMonsterArt(art)) {
-        if (/^generated-enemy-/u.test(art) && !project.assets.uploaded[art]) { const wanted = wantedArtName(project, enemyId); if (!missing.has(wanted)) missing.set(wanted, { wanted, where, name: String(enemyOf(project, enemyId)?.name ?? enemyId) }); }
-        continue;
-      }
+      // 제 그림이 없는 종: 옛 그림(올리지 않은 generated-enemy-*)이거나, 새 프로젝트가 대역 현행 그림을 실어 둔 기본 적(2026-11-24 qa1124 — 바란 그림은 원래 그림).
+      const ownArtMissing = !!standInOriginalArt(enemyOf(project, enemyId) as { id: string; monsterResourceId?: string } | undefined)
+        || (!isCurrentMonsterArt(art) && /^generated-enemy-/u.test(art) && !project.assets.uploaded[art]);
+      if (ownArtMissing) { const wanted = wantedArtName(project, enemyId); if (!missing.has(wanted)) missing.set(wanted, { wanted, where, name: String(enemyOf(project, enemyId)?.name ?? enemyId) }); }
+      if (!isCurrentMonsterArt(art)) continue;
       if (hasCurrentMonsterArt(project, art)) continue;
       useCurrentArt(project, enemyId);
       if (hasCurrentMonsterArt(project, art)) installed.push(art.replace(/^generated-enemy-/u, ""));
