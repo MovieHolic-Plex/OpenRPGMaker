@@ -92,7 +92,7 @@ class MonsterResourceEditor {
     document.body.append(this.overlay);
     openEditors.add(this);
     this.register();
-    this.select(listMonsterResources(store.getCurrent())[0]);
+    this.select(listMonsterResources(store.getCurrent(), { emeraldV4: true })[0]);
     this.unsubscribe = store.subscribe((_project, change) => {
       if (change.projectSwitch) {
         this.active = false;
@@ -103,7 +103,7 @@ class MonsterResourceEditor {
         return;
       }
       if (!this.active) return;
-      if (!this.dirty()) this.select(this.selected ? getMonsterResource(store.getCurrent(), this.selected.resourceId) : listMonsterResources(store.getCurrent())[0]);
+      if (!this.dirty()) this.select(this.selected ? getMonsterResource(store.getCurrent(), this.selected.resourceId) : listMonsterResources(store.getCurrent(), { emeraldV4: true })[0]);
       else this.refreshList();
     });
     window.addEventListener("beforeunload", this.unload);
@@ -155,7 +155,7 @@ class MonsterResourceEditor {
 
   private refreshList(): void {
     if (!this.active) return;
-    const all = listMonsterResources(store.getCurrent());
+    const all = listMonsterResources(store.getCurrent(), { emeraldV4: true });
     const query = this.search.value.trim().toLocaleLowerCase();
     const visible = all.filter(resource => [resource.resourceId, resource.name, resource.description, ...resource.tags].some(value => value.toLocaleLowerCase().includes(query)));
     this.count.textContent = `${visible.length}/${all.length}`;

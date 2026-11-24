@@ -9,6 +9,7 @@ import {
 // 이 모달은 자료집 모달 청크(databaseModal.ts → database/index.css) 밖에서도 열린다
 // (맵 설정 BGM·전투 배경 등). 표면 시트를 여기서 가져온다 — CSS import 는 모듈당 한
 // 번만 평가되므로 자료집 경로와 겹쳐도 중복 주입이 아니고, 늦은 표면이라 승자도 같다.
+import { EMERALD_SPECIES_V4_ASSETS } from "@/assets/emeraldSpeciesV4Art";
 import "@/styles/database/index.css";
 import { bgmNeedsDownload, listAudioResources } from "@/assets/audioResourceCatalog";
 import { t } from "@/i18n";
@@ -52,8 +53,21 @@ export type OpenDatabaseResourcePickerOptions = {
   readonly currentCharacterIndex?: number;
   readonly allowClear?: boolean;
   readonly testidPrefix?: string;
+  /** "collect" = 몬스터 수집 종족 고르기: 에메랄드 v4 종 그림 묶음을 목록 맨 앞에 붙인다(JRPG 적 고르기에는 없다). */
+  readonly monsterCatalog?: "collect";
   readonly onConfirm: (result: DatabaseResourcePickerResult) => void;
 };
+
+const EMERALD_V4_GROUP = "에메랄드 v4";
+
+/** 몬스터 수집 종족 고르기의 목록: 에메랄드 v4 묶음(60종 앞·뒤) → 나머지 몬스터 그림. */
+function pickerCatalog(options: OpenDatabaseResourcePickerOptions, project: Project): readonly DatabaseResourceOption[] {
+  const base = listDatabaseResourceOptions(options.kind, project);
+  if (options.kind !== "monster" || options.monsterCatalog !== "collect") return base;
+  const emerald = EMERALD_SPECIES_V4_ASSETS.map((asset): DatabaseResourceOption => ({ id: asset.id, name: asset.name, group: EMERALD_V4_GROUP, searchTerms: [EMERALD_V4_GROUP, "에메랄드"] }));
+  const ids = new Set(emerald.map((entry) => entry.id));
+  return [...emerald, ...base.filter((entry) => !ids.has(entry.id))];
+}
 
 const GENERATED_BATTLE_CHARSET_FRAME_WIDTH = 48;
 const GENERATED_BATTLE_CHARSET_FRAME_HEIGHT = 64;
@@ -64,7 +78,7 @@ const GENERATED_BATTLE_CHARSET_PREVIEW_SCALE = 0.75;
 export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePickerOptions): void {
   const project = store.getCurrent();
   const prefix = options.testidPrefix ?? "db-resource-picker";
-  const catalog = listDatabaseResourceOptions(options.kind, project);
+  const catalog = pickerCatalog(options, project);
   let selectedId = options.currentId && catalog.some((entry) => entry.id === options.currentId)
     ? options.currentId
     : catalog[0]?.id ?? options.currentId ?? "";
@@ -108,15 +122,29 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     ? null
     : createVirtualList<DatabaseResourceOption>({ items: [], container: list, measureRows: true, rowHeight: 48, renderRow: renderOption });
   const emptyHint = el("div", { class: "db-resource-picker-empty", text: "일치하는 리소스가 없습니다." });
+  // 묶음이 있는 목록(몬스터 수집 종족)만 「모두 · 에메랄드 v4」 칩을 단다.
+  let groupFilter: string | undefined;
+  const groups = [...new Set(catalog.map((entry) => entry.group).filter((group): group is string => Boolean(group)))];
+  const groupBar = groups.length ? el("div", { class: "db-resource-picker-groups", attrs: { role: "group", "aria-label": "그림 묶음" }, dataset: { testid: `${prefix}-groups` } }) : null;
+  const paintGroups = (): void => {
+    if (!groupBar) return;
+    const chip = (label: string, value: string | undefined, count: number): HTMLElement => {
+      const button = el("button", { class: `db-resource-picker-group${groupFilter === value ? " active" : ""}`, text: `${label} ${count}`, attrs: { type: "button", "aria-pressed": String(groupFilter === value) }, dataset: { testid: `${prefix}-group-${value ?? "all"}` } });
+      button.addEventListener("click", () => { groupFilter = value; paintGroups(); refreshList(); });
+      return button;
+    };
+    groupBar.replaceChildren(chip("모두", undefined, catalog.length), ...groups.map((group) => chip(group, group, catalog.filter((entry) => entry.group === group).length)));
+  };
   let filteredEntries: readonly DatabaseResourceOption[] = [];
 
   const refreshList = (): void => {
     const project = store.getCurrent();
-    const catalog = listDatabaseResourceOptions(options.kind, project);
+    const catalog = pickerCatalog(options, project);
     if ((options.kind === "music" || options.kind === "sound")
       && selectedId && !catalog.some(entry => entry.id === selectedId)) selectedId = "";
     const query = search.value.trim().toLowerCase();
     const filtered = catalog.filter((entry) => {
+      if (groupFilter && entry.group !== groupFilter) return false;
       if (!query) return true;
       if (entry.name.toLowerCase().includes(query) || entry.id.toLowerCase().includes(query)) return true;
       return entry.searchTerms?.some((term) => term.toLowerCase().includes(query)) ?? false;
@@ -213,8 +241,10 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
   const installBanner = bgmInstallBanner({ kind: options.kind, onInstalled: () => { refreshList(); } });
 
   let unsubscribe: (() => void) | undefined;
+  paintGroups();
   const closeDialog = openDialog(prefix, options.title, [
     search,
+    ...(groupBar ? [groupBar] : []),
     ...(installBanner ? [installBanner] : []),
     el("div", { class: "db-resource-picker-grid", children: [list, preview] }),
     indexPanel,
@@ -285,6 +315,7 @@ export function resourcePickerControl(input: {
   readonly queueKey?: string;
   /** Preview-first animation editor only; other picker presentation stays unchanged. */
   readonly presentation?: "graphic";
+  readonly monsterCatalog?: "collect";
 }): HTMLElement {
   const project = store.getCurrent();
   // 비어 있는 음악·효과음은 그림이 없어 40px 썸네일 칸에 "(없음)" 글자만 갇힌다 — 이름 칸의 "(미설정)" 이 대신한다.
@@ -338,6 +369,7 @@ export function resourcePickerControl(input: {
       currentCharacterIndex: input.currentCharacterIndex,
       allowClear: input.allowClear,
       testidPrefix: `${input.testid}-dialog`,
+      monsterCatalog: input.monsterCatalog,
       onConfirm: (result) => {
         input.onChange(result);
         input.rerender();

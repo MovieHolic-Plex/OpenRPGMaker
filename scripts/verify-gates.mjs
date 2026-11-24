@@ -29,6 +29,7 @@ import { tmpdir } from "node:os";
 import { dirname, resolve } from "node:path";
 import { classifyTestFailures } from "./lib/gatesRegression.mjs";
 import { assertCiOnlyTests } from "./lib/ciOnlyTests.mjs";
+import { planVitestShard, TIMINGS_FILE } from "./lib/vitestShardPlan.mjs";
 
 assertCiOnlyTests("npm run gates");
 
@@ -179,7 +180,24 @@ function testsGate() {
   // 프로세스 종료 전까지 로그에 안 나온다. 호스티드 잡이 상한에 잘리면 원인 로그가 0줄이 된다
   // (run 38238570454). CI 에서만 파일 이름을 흘리고, 판정은 계속 JSON 파일로 한다.
   const streamTests = process.env.GITHUB_ACTIONS === "true";
-  if (shardArg) console.log(`[verify-gates] vitest shard ${shardArg}`);
+  // 샤드는 `.omo/test-timings.json` 의 측정 시간으로 균형을 맞춘 **명시적 파일 목록** 으로 나눈다.
+  // vitest 의 `--shard` 는 경로 해시라 샤드마다 파일 수만 같고 시간 합은 2,558~5,709초로 벌어졌다
+  // (run 45328461701). 표가 없거나 계획이 안전하지 않으면 예전처럼 `--shard=` 로 물러난다.
+  // 판정(실패 파일만 기준선 대조 · 플레이크 단독 재실행)은 vitest 가 돌린 파일의 리포트만 보므로 그대로다.
+  let shardFiles = null;
+  if (shardArg) {
+    const [shardIndex, shardCount] = shardArg.split("/").map((part) => Number(part));
+    const plan = planVitestShard({ index: shardIndex, count: shardCount });
+    if (plan.files) {
+      shardFiles = plan.files;
+      console.log(
+        `[verify-gates] vitest shard ${shardArg} — 시간 균형 목록 ${plan.files.length}/${plan.total}파일, 예상 ${Math.round(plan.sec)}초` +
+        ` (표에 없는 ${plan.unknown}파일은 중앙값 ${plan.medianSec}초, 샤드 예상 ${Math.round(Math.min(...plan.loads))}~${Math.round(Math.max(...plan.loads))}초)`,
+      );
+    } else {
+      console.log(`[verify-gates] vitest shard ${shardArg} — 해시 분할(--shard=): ${plan.reason} (${TIMINGS_FILE})`);
+    }
+  }
   const { code, signal, error, out } = run("node", [
     "scripts/run-vitest.mjs",
     "run",
@@ -189,7 +207,7 @@ function testsGate() {
     ...(streamTests ? ["--reporter=verbose"] : []),
     "--outputFile",
     reportPath,
-    ...(shardArg ? [`--shard=${shardArg}`] : []),
+    ...(shardFiles ? shardFiles : shardArg ? [`--shard=${shardArg}`] : []),
     // 워커 수 상한. 이건 **상한일 뿐**이고, cgroup 으로 묶인 환경(CI 슬라이스)에서는
     // run-vitest.mjs 가 메모리 예산을 보고 이보다 낮출 수 있다 — 워커당 힙이 최악 파일의
     // 피크(3.13GB) 아래로 내려가면 그 파일이 heap limit 으로 죽기 때문이다.
@@ -230,6 +248,16 @@ function testsGate() {
   // 이게 없으면 신규 파일과 기존 파일을 구분할 수 없어, 스위트가 커질수록 «새 실패» 가 부풀고
   // 래칫이 노이즈에 묻힌다(실측 2026-09-11: 127건 중 84건이 신규 파일).
   const testFiles = [...new Set(results.map((entry) => normalize(entry.name)))].sort();
+  // 명시 목록이 그대로 돌았는지 확인한다 — vitest 필터는 부분 문자열이라 어긋날 수 있다. 판정은 바꾸지 않고 로그에만 남긴다.
+  if (shardFiles) {
+    const planned = new Set(shardFiles);
+    const ran = new Set(testFiles);
+    const missing = shardFiles.filter((file) => !ran.has(file));
+    const extra = testFiles.filter((file) => !planned.has(file));
+    if (missing.length > 0 || extra.length > 0) {
+      console.log(`::warning::[verify-gates] 샤드 ${shardArg} 목록과 실제 실행이 다르다 — 빠짐 ${missing.length}, 추가 ${extra.length} (예: ${[...missing, ...extra].slice(0, 3).join(", ")})`);
+    }
+  }
   const failedCount = Number(parsed.numFailedTests ?? 0);
   const passedCount = Number(parsed.numPassedTests ?? 0);
   const totalCount = Number(parsed.numTotalTests ?? 0);

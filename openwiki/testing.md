@@ -125,8 +125,30 @@ PR 브랜치는 그대로 새 푸시가 옛 잡을 끊는다.
 
 GitHub `ubuntu-latest` 도 16GB 라 같은 1×12288 예산이 걸린다. 그 한 잡으로는 스위트가 240분 상한 안에
 안 끝난다(2026-10-12, run 38238570454: 239분, CPU 18742초, 피크 15.01GiB, JSON 리포트 없음, 취소).
-`ci-full.yml` 은 vitest 를 `--shard 1/4`…`4/4` 로 러너 네 대에 나눈다. 힙은 그대로 12GB 다.
+`ci-full.yml` 은 vitest 를 `verify-gates.mjs --only tests --shard N/16` 으로 러너 열여섯 대에 나눈다. 힙은 그대로 12GB 다.
 샤드는 자기 실패 파일만 기준선과 대조한다. `--save-baseline` 과 `--shard` 는 함께 쓸 수 없다.
+
+**샤드는 측정한 시간으로 균형을 맞춘다(2026-11-24).** vitest 의 `--shard i/n` 은 경로 해시로 나눠서 샤드마다 파일은
+192~196개로 같은데 파일 시간 합이 2,558~5,709초(약 43~95분, run 45328461701)로 벌어졌고, 가장 느린 샤드가 판 전체를 정했다.
+그래서 `--shard N/16` 인자는 그대로 두고 verify-gates 가 안에서 바꾼다:
+
+- `.omo/test-timings.json`(`{version, updatedAt, commit, runs, files: {"test/a.test.ts": {sec, n}}}`, 초 평균과 평균에 쓴 회차 수)이 있으면
+  `scripts/lib/vitestShardPlan.mjs` 가 vitest 설정과 같은 규칙(`test/**/*.test.ts` 에서 lakeVillageRebuildFinal·`*.bun`·`*.quarantine`·`*.browser` 제외)으로
+  파일을 훑고, 오래 걸리는 파일부터 가장 가벼운 샤드에 넣는 LPT 로 나눈 뒤 **그 샤드의 파일 목록을 vitest 인자로 넘긴다**(`--shard=` 는 안 넘긴다).
+  표에 없는 새 파일은 표의 중앙값으로 본다. 파일 하나의 최소 비용은 1초라서 0초로 잰 파일이 한 샤드에 몰리지 않는다.
+  같은 체크아웃이면 열여섯 잡이 같은 계획을 독립적으로 계산한다(난수·시계 없음). 합집합 = 전체, 중복 0은 `scripts/lib/vitestShardPlan.test.mjs` 가 지킨다.
+- 표가 없거나 깨졌거나, 어떤 시험 경로가 다른 시험 경로의 부분 문자열이거나(vitest 의 파일 인자는 부분 문자열 필터다), 샤드가 비면
+  예전처럼 `--shard=` 해시 분할로 물러나고 로그에 이유를 찍는다. 샤드 로그의 첫 줄이 어느 쪽인지 알려 준다.
+- 판정은 그대로다. 실패 파일은 vitest 가 돌린 파일의 리포트에서 읽어 기준선과 대조하고, 새 실패의 단독 재실행도 같다.
+  명시 목록과 실제 실행이 다르면 `::warning::` 만 남긴다.
+- 표는 가끔 사람이 PR 로 갱신한다(매일 자동 커밋은 열린 PR 마다 충돌을 낸다):
+  `node scripts/update-test-timings.mjs <ci-full 회차 id>...` 가 `gh run download` 로 `gates-report-shard-*/gates-vitest-report.json` 을 받아
+  (`testResults[].name`, `endTime - startTime`) 회차들을 평균한다. 통과한 회차가 있는 파일은 통과 값만 쓰고, 통과가 한 번도 없는 파일은 실패 값으로 쓴다.
+  취소·시간 초과로 리포트가 없는 샤드가 있으면 그 파일은 다른 회차 값으로 채워지므로 회차를 둘 이상 준다.
+  `.omo/` 는 통째로 무시되므로 새 표 파일은 `git add -f` 로 올린다(기준선 파일들과 같다).
+- 한계: 이 표의 균형은 파일 시간이 회차마다 같다는 가정 위에 있다. 큰 파일은 회차마다 ±30% 흔들린다
+  (corpus.test.ts 1,862 vs 2,519초). 샤드 수를 늘리거나 호스티드 조건이 바뀌면 표를 다시 뜬다. 한 파일이 혼자 샤드 평균을 넘으면(aiAssistantSession 약 29분)
+  파일을 쪼개지 않는 한 그 샤드가 하한이다.
 
 PR 브랜치의 전체 vitest 는 그 브랜치로 수동 실행한다: `gh workflow run ci-full.yml --ref <브랜치>`.
 수동 실행은 브랜치마다 concurrency 그룹이 따로(`ci-full-<브랜치>`)라 main 푸시에 밀려 취소되지 않는다.
@@ -366,9 +388,9 @@ after a passing run. Cleanup deletes the owned project and verifies absence.
 
 ## P3 request-bound fixture alignment (2026-09-08)
 
-`test/assistantAcceptanceProject.test.ts` exercises exact title/item values,
-finite preservation allowances, applied/draft state and sourced wiki declarations
-through real tool and wiki paths. Retain `context.project` after a writing tool:
+`test/assistantAcceptanceProject.test.ts` now keeps only the pure criteria-parser
+rejection cases (the ledger evaluation path was disabled 2026-09-17, so its
+ledger/tool-path cases were removed). Retain `context.project` after a writing tool:
 the runner replaces that object. Wiki fixture IDs must be canonical `w_` IDs.
 
 `test/aiHarnessResponderProtocol.node.test.mjs` keeps intent and
@@ -1896,8 +1918,8 @@ AI 조수가 `place_npc` 로 만든 NPC 가 제자리에만 있던 회귀를 출
 - 좌표 판정 probe(`scripts/qa/runtime/npc-movement.probe.mjs`): `__oprnCharacterSprites` 로
   배회 NPC 가 실제로 옮겼는지 본다. **같은 디렉터리를 쓰면 하네스 샷을 덮어쓰므로**
   `QA_OUT_DIR=verify-shots/runtime-qa/npc-movement-probe` 로 분리 실행한다.
-- 저작 쪽 단위 테스트는 `test/npcMovementInference.test.ts`. 수용 게이트가 이동형 NPC 때문에
-  reachability 를 포기하지 않는 계약은 `test/assistantAcceptanceDiagnostics.test.ts`.
+- 저작 쪽 단위 테스트는 `test/npcMovementInference.test.ts`. (수용 원장이 꺼진 2026-09-17 뒤로
+  수용 게이트의 reachability 계약 시험은 없다 — `test/assistantAcceptanceDiagnostics.test.ts` 는 파서 진단만 남았다.)
 
 ## fakeDom 은 프로덕션이 쓰는 브라우저 전역을 빠짐없이 준다 (2026-08-29)
 

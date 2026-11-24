@@ -299,7 +299,7 @@ npm run test:node      # node:test. test/**/*.test.mjs 를 탐색해서 실행 (
 - `test/interpreter.test.ts` — 이벤트 명령 상태머신
 - `test/migration.test.ts` — v1 저장본을 현재 스키마로 읽고, 직렬화 왕복과 잘못된 파일을 거부
 - `test/defaults.test.ts` / `test/collision.test.ts` — 프로젝트 무결성, 통행 기반 충돌
-- `test/actions.test.ts` / `test/eventActions.test.ts` — 페인트/채우기, 명령 경로
+- `test/tileActions.m1.test.ts` / `test/eventActions.test.ts` — 페인트/채우기, 명령 경로
 - `test/battleRuntime.test.ts` / `test/battleRuntimeDb.test.ts` — 사이드뷰 전투 런타임
 - `test/eventCommandReorder.test.ts` — 이벤트 명령 드래그 재정렬
 - `test/editorHotkeys.test.ts` — 에디터 단축키

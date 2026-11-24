@@ -13,9 +13,12 @@ export default defineConfig({
   // Worktrees often symlink node_modules. Keep their optimizer and result caches local.
   ...(localRun && {
     cacheDir: ".cache/vitest/vite",
-    // Bundled tilesets use default imports. Vite's SSR JSON fast path avoids parsing them as JS.
-    json: { namedExports: false, stringify: true },
   }),
+  // Bundled tilesets use default imports. Vite's SSR JSON fast path avoids parsing them as JS.
+  // CI 도 같이 켠다(2026-11-24 test-diet): 번들 정의·참고문서 JSON(~76MB)을 JS 모듈로 변환하면 시험 파일 하나의
+  // import 만으로 힙 3.97GB 였고, 문자열화하면 1.43GB 다(vite-node 실측, #5008). ci-full 샤드 시간의 29~45% 가 import 다.
+  // 이름 있는 JSON import(`import { x } from "*.json"`)는 src·test 에 0건이다.
+  json: { namedExports: false, stringify: true },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

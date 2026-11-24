@@ -69,7 +69,7 @@ describe("monster metadata through the database", () => {
     const entry = host.querySelector<HTMLButtonElement>('[data-testid="db-monster-resources-open"]');
     expect(entry).not.toBeNull(); entry?.click();
     // Then the complete catalog and editable metadata exist independently of enemies.
-    expect(document.querySelectorAll('[data-testid="db-monster-resource-row"]')).toHaveLength(listMonsterResources(store.getCurrent()).length);
+    expect(document.querySelectorAll('[data-testid="db-monster-resource-row"]')).toHaveLength(listMonsterResources(store.getCurrent(), { emeraldV4: true }).length);
     expect(control("db-monster-resource-name")).toBeInstanceOf(HTMLInputElement);
     expect(control("db-monster-resource-apply")).toBeInstanceOf(HTMLButtonElement);
   });

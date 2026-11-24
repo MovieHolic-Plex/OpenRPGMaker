@@ -44,6 +44,8 @@ import {
 } from "@/battle/retroSkillTimeline";
 import { loadBattleSample, playBattleSample } from "@/player/battleSeSamples";
 import { el } from "@/util/dom";
+import { setStageRepeatEnabled, stageRepeatEnabled } from "@/editor/panels/databaseStageRepeat";
+import { createStageClock, placeStageNode, setStageHidden } from "@/editor/panels/databaseStagePosition";
 
 // ---- 계약 조회 ----
 
@@ -344,14 +346,14 @@ export function createMonsterFxPainter(
     node.style.backgroundImage = 'url("' + monsterFxUrl(layer.key) + '")';
     node.style.backgroundSize = size * layer.frames + "px " + size + "px";
     node.style.backgroundPosition = -cell * size + "px 0";
-    node.style.left = Math.round(center.x - size / 2) + "px";
-    node.style.top = Math.round(bottom ? center.y - size : center.y - size / 2) + "px";
+    placeStageNode(node, Math.round(center.x - size / 2), Math.round(bottom ? center.y - size : center.y - size / 2));
     node.dataset.key = layer.key;
     node.dataset.anchor = layer.anchor;
     node.dataset.cell = String(cell);
     if (layer.plane === "backdrop") {
       const host = node.parentElement;
-      Object.assign(node.style, {left:"0px",top:"0px",width:(host?.clientWidth ?? size)+"px",height:stageH+"px",
+      placeStageNode(node, 0, 0);
+      Object.assign(node.style, {width:(host?.clientWidth ?? size)+"px",height:stageH+"px",
         backgroundImage:'url("'+monsterFxUrl(layer.key+"-f"+cell)+'")',backgroundSize:"128px 128px",backgroundPosition:"0px 0px",backgroundRepeat:"repeat"});
     }
   };
@@ -377,7 +379,7 @@ export function createMonsterFxPainter(
       if(shot.trajectory&&g.programAnchors)point=motionPositionAt(shot.trajectory,shot.at??0,g.programAnchors,g.acceleration);
       place(shot.event * 10 + 9, shot.layer, shot.cell, point, false, used, g.stageH);
     }
-    for (const [id, node] of nodes) node.hidden = !used.has(id);
+    for (const [id, node] of nodes) setStageHidden(node, !used.has(id));
   };
   return { paint, clear: () => { for (const node of nodes.values()) node.hidden = true; } };
 }
@@ -411,7 +413,6 @@ const PARTY_BATTLERS = ["charset-battler-actor1-0", "charset-battler-actor2-0", 
 const FRONT_ALLY = 1;
 
 let sessionSpeed: 0.5 | 1 = 1;
-let sessionRepeat = true;
 
 export type MonsterSkillStage = { readonly element: HTMLElement; readonly stop: () => void };
 
@@ -485,7 +486,7 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
   let now = 0;
   let clock = 0;
   const idleCells: readonly PixelEnemyCell[] = ["idle_a", "idle_b", "idle_c", "idle_b"];
-  const counter = el("span", { class: "db-skill-animation-chip db-skill-retro-time", dataset: { testid: "db-skill-mon-time" } });
+  const counter = createStageClock("db-skill-mon-time");
 
   function draw(): void {
     let state = retroTimelineStateAt(timeline, now);
@@ -502,8 +503,7 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
     const pos = pixelEnemyFrame(sheet, beat);
     monster.style.backgroundPosition = -pos.col * cell + "px " + -pos.row * cell + "px";
     // 시트 계약: 바닥 기준선 y = cell − 4.
-    monster.style.left = Math.round(point.x - cell / 2) + "px";
-    monster.style.top = Math.round(point.y - (cell - 4)) + "px";
+    placeStageNode(monster, Math.round(point.x - cell / 2), Math.round(point.y - (cell - 4)));
     monster.style.opacity=String(programmed?.alpha??1);
     monster.style.scale=programmed?.flip?"-1 1":"";
     monster.style.zIndex = point.x > home.x + 1 ? "40" : baseZ;
@@ -519,21 +519,20 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
       // 아군은 오른쪽으로 밀려난다.
       const knock = struck > 0 ? Math.round(5 * struck) + (Math.floor(clock / 40) % 2 === 0 ? 1 : -1) : 0;
       const at=targetTrack?motionPositionAt(targetTrack,now,anchors,timeline.movement?.acceleration):member.home;
-      member.node.style.left = Math.round(at.x - CELL / 2 + knock) + "px";
-      member.node.style.top = Math.round(at.y - 45) + "px";
+      placeStageNode(member.node, Math.round(at.x - CELL / 2 + knock), Math.round(at.y - 45));
       member.node.style.setProperty("--retro-glow", "0");
       member.node.style.setProperty("--retro-dim", String(Math.round(state.dim * 100) / 100));
     });
     const usedRoles=new Set<string>();
     for(const track of timeline.actors??[]){if(["user","target"].includes(track.role))continue;
       usedRoles.add(track.role);let node=extraNodes.get(track.role);if(!node){node=monster.cloneNode(false) as HTMLElement;world.append(node);extraNodes.set(track.role,node);}
-      const p=motionPositionAt(track,now,anchors,timeline.movement?.acceleration);node.hidden=false;node.style.opacity=String(p.alpha);node.style.scale=p.flip?"-1 1":"";
+      const p=motionPositionAt(track,now,anchors,timeline.movement?.acceleration);setStageHidden(node,false);node.style.opacity=String(p.alpha);node.style.scale=p.flip?"-1 1":"";
       const summon=track.role==="summon"?partyPixelSheet("party-pixel-animal-7"):undefined,c=summon?.cell??cell;
       const f=summon?partyPixelFrame(summon,p.pose==="attack"?"attack":"idle_a"):pixelEnemyFrame(sheet,monsterCellForPose(p.pose??"idle")??"idle_a");
       Object.assign(node.style,{left:`${p.x-c/2}px`,top:`${p.y-c+4}px`,width:`${c}px`,height:`${c}px`,backgroundSize:`${c*3}px ${c*(summon?.rows??3)}px`,backgroundPosition:`${-f.col*c}px ${-f.row*c}px`,zIndex:"42"});
       if(summon)node.style.backgroundImage=`url("${partyPixelSheetUrl(summon)}")`;
     }
-    for(const [role,node]of extraNodes)node.hidden=!usedRoles.has(role);
+    for(const [role,node]of extraNodes)setStageHidden(node,!usedRoles.has(role));
     const targetMotion=timeline.actors?.find(a=>a.role==="target");
     const movingTarget=targetMotion?motionPositionAt(targetMotion,now,anchors,timeline.movement?.acceleration):target;
     painter.paint(state, {
@@ -541,12 +540,12 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
     });
     stage.dataset.retroTime = String(Math.round(now));
     stage.dataset.pixelCell = beat;
-    counter.textContent = seconds(now) + " / " + seconds(timeline.durationMs) + "초";
+    counter.set(seconds(now) + " / " + seconds(timeline.durationMs) + "초");
   }
 
   // ---- 재생 제어(직업 무대와 같은 규약: 자동 반복은 무음, ▶ 재생 회차만 소리) ----
   const playButton = el("button", { class: "db-skill-animation-toggle db-skill-retro-play", dataset: { testid: "db-skill-mon-play" }, attrs: { type: "button", "aria-pressed": "false" }, text: "▶ 재생" });
-  const repeatButton = el("button", { class: "db-skill-retro-option", dataset: { testid: "db-skill-mon-repeat" }, attrs: { type: "button", "aria-pressed": String(sessionRepeat) }, text: "반복" });
+  const repeatButton = el("button", { class: "db-skill-retro-option", dataset: { testid: "db-skill-mon-repeat" }, attrs: { type: "button", "aria-pressed": String(stageRepeatEnabled()) }, text: "반복" });
   const speedButtons = ([0.5, 1] as const).map((speed) => el("button", {
     class: "db-skill-retro-option", dataset: { testid: "db-skill-mon-speed-" + speed }, attrs: { type: "button", "aria-pressed": String(sessionSpeed === speed) }, text: speed + "×",
   }));
@@ -575,7 +574,7 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
   const outcome=el("select",{attrs:{"aria-label":"명중 결과"},children:[el("option",{attrs:{value:"hit"},text:"명중"}),el("option",{attrs:{value:"miss"},text:"빗나감"}),el("option",{attrs:{value:"cancel"},text:"발동불가"})]}) as HTMLSelectElement;
   if(record?.motion==="buff"){outcome.options[0]!.text="발동";outcome.options[1]!.disabled=true;}
   outcome.addEventListener("change",()=>{stop();previewHit=outcome.value!=="miss";previewTriggered=outcome.value!=="cancel";if(timeline.movement)timeline=buildBattleMotionPreview(record,count=>retroMonsterSkillTimeline(skill,{hits:count}),{hits:baseTimeline.hitCount,outcome:outcome.value as BattleMotionPreviewOutcome,preparing:record?.motion==="buff"});now=timeline.representativeMs;draw();});
-  const controls = el("div", { class: "db-skill-retro-controls", children: [playButton, repeatButton, speedGroup, counter,...(timeline.movement?[outcome]:[])] });
+  const controls = el("div", { class: "db-skill-retro-controls", children: [playButton, repeatButton, speedGroup, counter.element,...(timeline.movement?[outcome]:[])] });
   const wrap = el("div", { class: "db-skill-retro-preview db-skill-mon-preview", dataset: { testid: "db-skill-mon-preview", skill: skill.id }, children: [caption, stage, controls, chips] });
   let resizeObserver: ResizeObserver | undefined;
   if (typeof ResizeObserver === "function") {
@@ -628,7 +627,7 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
     draw();
     if (now >= timeline.durationMs) {
       withSound = false;
-      if (!sessionRepeat) { stop(); return; }
+      if (!stageRepeatEnabled()) { stop(); return; }
       restUntil = clock + LOOP_REST_MS;
     }
     schedule();
@@ -659,8 +658,8 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
     start(true);
   });
   repeatButton.addEventListener("click", () => {
-    sessionRepeat = !sessionRepeat;
-    repeatButton.setAttribute("aria-pressed", String(sessionRepeat));
+    setStageRepeatEnabled(!stageRepeatEnabled());
+    repeatButton.setAttribute("aria-pressed", String(stageRepeatEnabled()));
   });
   speedButtons.forEach((button, index) => button.addEventListener("click", () => {
     sessionSpeed = index === 0 ? 0.5 : 1;

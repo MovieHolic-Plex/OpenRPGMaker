@@ -1,4 +1,5 @@
 import { configureEmeraldMonsterStyle } from '@/project/emeraldMonsterStyle';
+import { applyDefaultElementAffinities } from "@/project/defaults/defaultElementAffinities";
 import { defaultOpeningSequence } from "@/project/defaults/defaultOpeningSequence";
 import { inBounds, isPassable } from "@/project/collision";
 import { createBlankProject, createStarterBlankProject } from "@/project/defaults";
@@ -314,6 +315,8 @@ export function createNewProjectSeed(packId: GenrePackId | null, title?: string)
   const project = packId === null ? createStarterBlankProject() : createProjectFromGenreBlankProjectSystemPreset(
     createGenreBlankProjectSystemPresetPlan(packId, genrePackById(packId).starter.defaultRecipeId),
   );
+  // 새 게임의 기본 적에 예시 상성(골렘 ← 타격 2배 …)을 싣는다 — qa1124 항목 8-3. 빈 프로젝트는 createStarterBlankProject 가 이미 실었다.
+  if (packId !== null) applyDefaultElementAffinities(project.database.enemies, project.database.elements ?? []);
   if (title !== undefined) {
     project.meta.title = title;
     project.system.opening = defaultOpeningSequence(title);

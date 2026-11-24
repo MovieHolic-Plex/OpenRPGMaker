@@ -322,3 +322,54 @@
   outline: var(--stroke-2) solid var(--db-studio-accent);
   outline-offset: var(--stroke-2);
 }
+
+/* 속성 상성표(databaseElementAffinity.ts) — 표는 자기 상자 안에서만 가로·세로로 넘친다(390 에서 페이지 넘침 0). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-affinity-sentences {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-affinity-sentence {
+  background: var(--db-studio-accent-soft);
+  border: var(--stroke-1) solid var(--db-studio-accent-border, var(--db-studio-border-subtle));
+  border-radius: var(--radius-2, 6px);
+  margin: 0;
+  padding: var(--space-1) var(--space-2);
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-affinity-scroll {
+  max-height: 320px;
+  max-width: 100%;
+  overflow: auto;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-affinity-table {
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-affinity-table :is(th, td) {
+  border-bottom: var(--stroke-1) solid var(--db-studio-border-subtle);
+  padding: 2px 4px;
+  white-space: nowrap;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-affinity-table thead th {
+  background: var(--db-studio-surface);
+  position: sticky;
+  top: 0;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-affinity-table :is(th, td).is-selected {
+  background: var(--db-studio-accent-soft);
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-affinity-cell {
+  background: none;
+  border: 0;
+  color: var(--db-studio-text-3);
+  cursor: pointer;
+  min-width: 3em;
+  padding: 2px;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-affinity-cell[data-tone="weak"] {
+  color: var(--db-studio-accent);
+  font-weight: 700;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-el-affinity-cell[data-tone="resist"] {
+  color: var(--db-studio-text-1);
+}

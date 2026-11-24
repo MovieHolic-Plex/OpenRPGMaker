@@ -53,6 +53,8 @@ import {
 } from "@/editor/panels/databaseMonsterSkillStage";
 import type { Project, SkillRecord } from "@/project/types";
 import { el } from "@/util/dom";
+import { setStageRepeatEnabled, stageRepeatEnabled } from "@/editor/panels/databaseStageRepeat";
+import { createStageClock, placeStageNode, setStageHidden, setStageText } from "@/editor/panels/databaseStagePosition";
 
 const STAGE_W = 240;
 const STAGE_H = 136;
@@ -429,7 +431,6 @@ function lerp(a: number, b: number, t: number): number { return a + (b - a) * t;
 // ---- 스테이지 ----
 
 let sessionSpeed: 0.5 | 1 = 1;
-let sessionRepeat = true;
 
 export type SkillRetroStage = { readonly element: HTMLElement; readonly stop: () => void };
 
@@ -606,14 +607,14 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
     node.style.backgroundImage = 'url("' + sheet.url + '")';
     node.style.backgroundSize = size * sheet.frames + "px " + size + "px";
     node.style.backgroundPosition = -cell * size + "px 0";
-    node.style.left = Math.round(center.x - size / 2) + "px";
-    node.style.top = Math.round(bottom ? center.y - size : center.y - size / 2) + "px";
+    placeStageNode(node, Math.round(center.x - size / 2), Math.round(bottom ? center.y - size : center.y - size / 2));
     node.dataset.key = sheet.key;
     node.dataset.cell = String(cell);
     node.dataset.anchor = sheet.anchor;
     node.style.filter = filter ?? "";
     if (authored?.plane === "backdrop") {
-      Object.assign(node.style, {left:"0px",top:"0px",width:STAGE_W+"px",height:STAGE_H+"px",
+      placeStageNode(node, 0, 0);
+      Object.assign(node.style, {width:STAGE_W+"px",height:STAGE_H+"px",
         backgroundImage:'url("'+fxUrl(sheet.key+"-f"+cell)+'")', backgroundSize:"128px 128px", backgroundPosition:"0px 0px", backgroundRepeat:"repeat"});
     }
   };
@@ -657,11 +658,11 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
       if(shot.trajectory)point=motionPositionAt(shot.trajectory,shot.at??now,motionAnchors(),timeline.movement?.acceleration);
       drawFx(shot.event * 10 + 9, shot.layer, shot.cell, point, false, used, 1, shot.filter);
     }
-    for (const [id, node] of fxNodes) node.hidden = !used.has(id);
+    for (const [id, node] of fxNodes) setStageHidden(node, !used.has(id));
     drawPops(state);
     stage.dataset.retroTime = String(Math.round(now));
     stage.dataset.retroPose = state.pose;
-    counter.textContent = `${seconds(now)} / ${seconds(timeline.durationMs)}초`;
+    counter.set(`${seconds(now)} / ${seconds(timeline.durationMs)}초`);
   }
 
   const feet = (point: Point, pad: number): Point => ({ x: point.x, y: point.y + pad });
@@ -679,7 +680,7 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
       else {placeCell(node,EXTENDED_POSE_FRAME[p.pose??"idle"],CELL);placeSprite(node,p,CELL,45);}
       node.style.zIndex="42";
     }
-    for(const [role,node]of extraNodes)node.hidden=!used.has(role);
+    for(const [role,node]of extraNodes)setStageHidden(node,!used.has(role));
   }
   const casterPoint = (state: RetroStageState): Point => {
     const programmed=motionSample("user");if(programmed)return programmed;
@@ -763,22 +764,21 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
       let node = pops[index];
       if (!node) { node = el("span", { class: "db-skill-retro-pop" + (healing ? " is-heal" : "") }); popLayer.append(node); pops[index] = node; }
       const strength = Math.max(state.hitAll, index === single ? state.hitTarget : 0);
-      node.hidden = !previewHit || !previewTriggered || !showPops || strength <= 0.02;
+      setStageHidden(node, !previewHit || !previewTriggered || !showPops || strength <= 0.02);
       if (node.hidden) return;
-      node.textContent = popValue(index);
+      setStageText(node, popValue(index));
       const rise = Math.round((1 - strength) * 14);
       // 겹치지 않게 번호마다 6px 씩 엇갈리게 띄운다.
       const tall = side === "enemies" ? Math.max(0, (enemies[index]?.cell ?? CELL) - CELL) : 0;
-      node.style.top = point.y - 52 - tall - rise - index * 2 + "px";
       // 무대 왼쪽 끝(뒤줄 적) 숫자가 잘리지 않게 4px 안쪽으로 붙든다.
-      node.style.left = Math.max(4, point.x + (index % 2 === 0 ? -6 : 6)) + "px";
+      placeStageNode(node, Math.max(4, point.x + (index % 2 === 0 ? -6 : 6)), point.y - 52 - tall - rise - index * 2);
       node.style.opacity = String(Math.min(1, strength * 3));
     });
   }
 
   function drawCutin(state: RetroStageState): void {
     const p = state.cutin;
-    cutin.hidden = p < 0;
+    setStageHidden(cutin, p < 0);
     if (p < 0) return;
     const open = p < 0.14 ? p / 0.14 : p > 0.86 ? (1 - p) / 0.14 : 1;
     cutin.style.setProperty("--retro-cutin-open", String(Math.round(open * 100) / 100));
@@ -787,9 +787,9 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
   }
 
   // ---- 재생 제어 ----
-  const counter = el("span", { class: "db-skill-animation-chip db-skill-retro-time", dataset: { testid: "db-skill-retro-time" } });
+  const counter = createStageClock("db-skill-retro-time");
   const playButton = el("button", { class: "db-skill-animation-toggle db-skill-retro-play", dataset: { testid: "db-skill-retro-play" }, attrs: { type: "button", "aria-pressed": "false" }, text: "▶ 재생" });
-  const repeatButton = el("button", { class: "db-skill-retro-option", dataset: { testid: "db-skill-retro-repeat" }, attrs: { type: "button", "aria-pressed": String(sessionRepeat) }, text: "반복" });
+  const repeatButton = el("button", { class: "db-skill-retro-option", dataset: { testid: "db-skill-retro-repeat" }, attrs: { type: "button", "aria-pressed": String(stageRepeatEnabled()) }, text: "반복" });
   const speedButtons = ([0.5, 1] as const).map((speed) => el("button", {
     class: "db-skill-retro-option", dataset: { testid: "db-skill-retro-speed-" + speed }, attrs: { type: "button", "aria-pressed": String(sessionSpeed === speed) }, text: speed + "×",
   }));
@@ -822,7 +822,7 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
   const outcome=el("select",{attrs:{"aria-label":"명중 결과"},children:[el("option",{attrs:{value:"hit"},text:"명중"}),el("option",{attrs:{value:"miss"},text:"빗나감"}),el("option",{attrs:{value:"cancel"},text:"발동불가"})]}) as HTMLSelectElement;
   if(record.effect.kind==="support"){outcome.options[0]!.text="발동";outcome.options[1]!.disabled=true;}
   outcome.addEventListener("change",()=>{stop();previewHit=outcome.value!=="miss";previewTriggered=outcome.value!=="cancel";if(timeline.movement){timeline=stageSource(record,project,{hit:previewHit,actionBlocked:outcome.value==="cancel"},selectedActorId,weaponId)!.timeline;}now=timeline.representativeMs;draw();});
-  const controls = el("div", { class: "db-skill-retro-controls", children: [playButton, repeatButton, speedGroup, counter,...(timeline.movement?[outcome]:[])] });
+  const controls = el("div", { class: "db-skill-retro-controls", children: [playButton, repeatButton, speedGroup, counter.element,...(timeline.movement?[outcome]:[])] });
   const wrap = el("div", { class: "db-skill-retro-preview", dataset: { testid: "db-skill-retro-preview" }, children: [caption, stage, controls, chips] });
   // 무대 폭에 맞춰 배율을 정한다. 기본 2배(480px), 카드가 좁으면 줄인다 — 도트는 nearest 라 흐려지지 않는다.
   let resizeObserver: ResizeObserver | undefined;
@@ -879,7 +879,7 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
     if (now >= timeline.durationMs) {
       // 소리는 사용자가 누른 회차에만 — 반복 회차는 무음이다.
       withSound = false;
-      if (!sessionRepeat) { stop(); return; }
+      if (!stageRepeatEnabled()) { stop(); return; }
       restUntil = clock + LOOP_REST_MS;
     }
     schedule();
@@ -917,8 +917,8 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
     start(true);
   });
   repeatButton.addEventListener("click", () => {
-    sessionRepeat = !sessionRepeat;
-    repeatButton.setAttribute("aria-pressed", String(sessionRepeat));
+    setStageRepeatEnabled(!stageRepeatEnabled());
+    repeatButton.setAttribute("aria-pressed", String(stageRepeatEnabled()));
   });
   speedButtons.forEach((button, index) => button.addEventListener("click", () => {
     sessionSpeed = index === 0 ? 0.5 : 1;
@@ -948,8 +948,7 @@ function placeCell(node: HTMLElement, cell: { readonly col: number; readonly row
 
 /** 셀 상자를 발 위치에 맞춘다. footRow = 셀 안의 발 줄(px). */
 function placeSprite(node: HTMLElement, feet: Point, size: number, footRow: number): void {
-  node.style.left = Math.round(feet.x - size / 2) + "px";
-  node.style.top = Math.round(feet.y - footRow) + "px";
+  placeStageNode(node, Math.round(feet.x - size / 2), Math.round(feet.y - footRow));
 }
 
 function seconds(ms: number): string {

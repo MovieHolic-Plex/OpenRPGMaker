@@ -691,7 +691,7 @@ until those removals have real ownership evidence.
 - `project/characterGraphics.ts`가 기존 `resourceProfiles`의 얼굴 `graphicAttributes`/`graphicNote`, charset `characterSlots`를 읽고 쓴다. 이름은 sprite의 경우 기존 `charsetLabels`, 얼굴은 profile.name이다. 두 그림의 종류·나이·성별·피부·머리·의상·역할은 독립이며 명확한 글자 특징만 기본 표시한다. 모호함은 빈칸이다.
 - 상태는 pending/mapped/no-face, 품질은 unspecified/exact/approximate다. pending 이름 편집은 검토 완료가 아니며, no-face는 명시적인 값이다. 그림으로 얼굴을 지정해도 속성을 복사하지 않고 기존 맵·이벤트 명령을 바꾸지 않는다.
 - `oprn-npc-face-mapping`(2026-09 개명 전 id `rpg-zzu-npc-face-mapping` 도 가져오기에서 받는다) v1 `mappings`를 가져올 때 label/note/status/faceResourceId를 보존하며 품질 생략은 unspecified다. v2는 같은 mappings에 attributes/quality를 더하고 `faces: [{resourceId,label,note,attributes}]`를 갖는다. 전체 검증 후 history + labeled store.update 한 번으로 적용한다. 중복·잘못된 칸·알 수 없는 얼굴은 전체 가져오기를 거부한다.
-- QA 진입: 기존 데이터베이스 → 시스템 → 캐릭터·얼굴. `db-cg-view-sprites`/`db-cg-view-faces`, `db-cg-import-file`, `db-cg-import-json`/`db-cg-import-apply`, `db-cg-export`가 공개 표면이다. 이름·속성 필터와 얼굴 후보 필터는 독립된 editor-only 상태다. 테스트: `characterGraphics.test.ts`, `characterGraphicsLoad.test.ts`, `databaseCharacterGraphics.test.ts`; 브라우저/원격 저장 검증은 별도다.
+- QA 진입: 기존 데이터베이스 → 시스템 → 캐릭터·얼굴. `db-cg-view-sprites`/`db-cg-view-faces`, `db-cg-import-file`, `db-cg-import-json`/`db-cg-import-apply`, `db-cg-export`가 공개 표면이다. 이름·속성 필터와 얼굴 후보 필터는 독립된 editor-only 상태다. 테스트: `characterGraphics.test.ts`, `databaseCharacterGraphics.test.ts`; 브라우저/원격 저장 검증은 별도다.
 ## Character appearance catalog v1 (2026-09-06)
 
 Database > Party > `캐릭터 외형` (`characterAppearances`,
@@ -2731,3 +2731,10 @@ CSS로 접힌 작은 창·도크 상태에서는 참조 변경을 계속 반영�
 - **격리:** 무대 상자는 `.db-battle-screen-preview-box`(4:3, `contain: layout paint; overflow: hidden`)이고 `inert` 라 편집기 포커스·클릭이 안 들어간다. `mountBattleScene` 옵션 `isolateInput` 으로 **창 keydown/keyup 리스너를 달지 않는다** — 편집기의 타이핑·단축키가 보이지 않는 전투를 움직이지 못한다. 전투 규칙은 복제본으로 돌지만 전투 DOM 은 `store.getCurrent()` 로 설정을 읽는다(지금 저장된 값이라 같다). 명령 창만 복제본의 기술·연계기를 보도록 `mountBattleScene({ project })` → `BattleCommandPanelOptions.project`(`battleCommandDom.listingProject`, 한 번 그리는 동안만).
 - **소리:** 기본 꺼짐. `player/battleAudioMute.ts` 의 `holdBattleAudioMute()` 를 쥐는 동안 합성음(`battleSfx.ensureContext`)·샘플·몬스터 세트·저작 슬롯(`battleJuice`)·이펙트 프레임(`battleAnimationDom`)·팡파레(`battleFanfareDom`)가 모두 침묵한다. 「소리」 체크로 켜면 다시 마운트한다. 실제 플레이·전투 테스트는 잠금을 쥐지 않아 그대로다.
 - **testid:** `db-battle-screen-preview`(`data-preview-state`=mounted|idle|collapsed|paused|unavailable|error · `data-preview-scene` · `data-preview-mounts`) · `db-battle-preview-stage` · `db-battle-preview-scene-<장면>` · `db-battle-preview-replay` · `db-battle-preview-sound` · `db-battle-preview-collapse` · `db-battle-preview-status`.
+
+## 속성 상성표 · 기본 적 예시 상성 (2026-11-24, qa1124 항목 8-2·8-3)
+
+- 속성 상세 맨 위 「상성표」 카드(`databaseElementAffinity.ts`, testid `db-elements-affinity-card`): 「타격(전쟁 망치)은 돌 골렘에게 2배」 같은 문장 카드(배율 100% 초과 칸, 선택 속성 먼저)와 속성(가로) × 적(세로) 표. 능력치·흡수 칸(atk·def·int·agi·absorb)은 뺀다.
+- 칸을 한 번 누르면 보통 → 2배 → 1.5배 → 절반 → 무효 → 보통(`nextAffinityGrade`). 저장은 적 편집기와 같은 `updateDatabaseRecord("enemies", id, { elementRates })` 라 undo 한 칸이다. 데이터는 그대로 적의 `elementRates`(A~E)다.
+- 표는 자기 상자 안에서만 넘친다(최대 높이 320px, 머리 줄 고정) — 390 에서 페이지 가로 넘침 0.
+- 새 게임의 기본 적에 예시 상성을 싣는다(`defaults/defaultElementAffinities.applyDefaultElementAffinities`, 적 id 낱말 규칙: 골렘·돌 ← 타격 2배, 슬라임 ← 화염 2배, 망령·해골 ← 신성 2배 …). 사용자 「새 프로젝트」 경로(`createStarterBlankProject`, `genrePacks.createNewProjectSeed`)에서만 부르고 `createBlankProject` 자체는 그대로다 — 데모·테스트·헤드리스 균형은 바뀌지 않는다. 작가가 정한 등급(C 가 아닌 값)은 덮지 않는다. 기본 적 106종 중 70종에 상성이 생긴다.

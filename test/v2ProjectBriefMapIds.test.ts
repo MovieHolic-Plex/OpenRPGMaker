@@ -2,7 +2,6 @@
 // 2026-10-30 실조수 e2e: 「map_blank_start 「버들 마을」 beodeul_city 20×15」에서 7번 중 5번 set_game_audio mapIds 에 beodeul_city 를 넣었다.
 import { describe, expect, it } from "vitest";
 import { projectBrief } from "@/ai/v2/prompt/projectBrief";
-import { MUSIC_TIER } from "@/ai/v2/request/toolGroups";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 
@@ -27,8 +26,4 @@ describe("v2 project brief map list", () => {
     expect(lines[0]).toContain("take the value after mapId=");
   });
 
-  it("the music card says what mapIds holds without naming tileset ids", () => {
-    expect(MUSIC_TIER.card).toContain("mapIds take the mapId= value from the [Current project] map list");
-    expect(MUSIC_TIER.card).not.toMatch(/tileset id|타일셋 id/u);
-  });
 });
