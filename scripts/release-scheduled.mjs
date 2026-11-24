@@ -130,9 +130,9 @@ function execute(repo, decision) {
   gh(["label", "create", AUTO_RELEASE_RULES.autoLabel, "--color", "0e8a16", "--description", "조건 기반 자동 릴리스", "--force"], { allowFailure: true });
   step("label", () => gh(["pr", "edit", String(pr.number), "--add-label", AUTO_RELEASE_RULES.autoLabel]) || `#${pr.number}`);
   step("ci-fast", () => gh(["workflow", "run", "ci-fast.yml", "--ref", "release/next"]) || "디스패치");
-  // merge-pr 가 CI 를 기다리는 동안 누가 hold-release 를 붙였을 수 있다. 머지 전과 태그 전에 다시 본다.
+  // merge-pr 가 CI 를 기다리는 동안 누가 hold-release 를 붙일 수 있다. merge-pr 가 머지 직전에, 여기서 태그 직전에 다시 본다.
   assertNoHold("merge");
-  step("merge", () => run("node", ["scripts/merge-pr.mjs", String(pr.number), "--timeout-min=60"]));
+  step("merge", () => run("node", ["scripts/merge-pr.mjs", String(pr.number), "--timeout-min=60", `--refuse-if-label=${AUTO_RELEASE_RULES.holdLabel}`]));
   assertNoHold("publish");
   step("publish", () => run("node", ["scripts/release-auto.mjs", "--skip-propose"]));
   git(["fetch", "origin", "--tags", "--quiet"], { allowFailure: true });

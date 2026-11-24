@@ -28,12 +28,12 @@ const POLL_MS = 20_000;
 
 function usage(message) {
   if (message) process.stderr.write(`merge-pr: ${message}\n`);
-  process.stderr.write("쓰는 법: node scripts/merge-pr.mjs <PR 번호> [--squash|--merge|--rebase] [--delete-branch] [--timeout-min=40]\n");
+  process.stderr.write("쓰는 법: node scripts/merge-pr.mjs <PR 번호> [--squash|--merge|--rebase] [--delete-branch] [--timeout-min=40] [--refuse-if-label=<라벨>]\n");
   process.exit(2);
 }
 
 function parseArgs(argv) {
-  const options = { pr: undefined, method: "--squash", deleteBranch: false, timeoutMin: 40 };
+  const options = { pr: undefined, method: "--squash", deleteBranch: false, timeoutMin: 40, refuseIfLabel: null };
   for (const arg of argv) {
     if (/^\d+$/.test(arg)) options.pr = arg;
     else if (arg === "--squash" || arg === "--merge" || arg === "--rebase") options.method = arg;
@@ -42,6 +42,9 @@ function parseArgs(argv) {
       const value = Number(arg.slice("--timeout-min=".length));
       if (!Number.isFinite(value) || value <= 0) usage(`잘못된 --timeout-min: ${arg}`);
       options.timeoutMin = value;
+    } else if (arg.startsWith("--refuse-if-label=")) {
+      // 자동 릴리스(release-scheduled.mjs)가 쓴다: CI 를 기다리는 동안 어느 열린 PR 에든 이 라벨이 붙으면 머지하지 않는다.
+      options.refuseIfLabel = arg.slice("--refuse-if-label=".length) || usage(`잘못된 ${arg}`);
     } else if (arg === "-h" || arg === "--help") usage();
     else usage(`모르는 인자: ${arg}`);
   }
@@ -137,6 +140,13 @@ async function main() {
       );
       process.exit(1);
     } else {
+      if (options.refuseIfLabel) {
+        const held = JSON.parse(gh(["pr", "list", "--state", "open", "--label", options.refuseIfLabel, "--json", "number"]) || "[]");
+        if (held.length) {
+          process.stderr.write(`merge-pr: 열린 PR ${held.map((pr) => `#${pr.number}`).join(", ")} 에 ${options.refuseIfLabel} 라벨이 있다. 머지하지 않는다.\n`);
+          process.exit(1);
+        }
+      }
       note(`${sha.slice(0, 10)} ci-fast 초록 (${REQUIRED_CHECKS.join(", ")}, fast-parity). 머지한다.`);
       const args = ["pr", "merge", options.pr, options.method, "--match-head-commit", sha];
       if (options.deleteBranch) args.push("--delete-branch");
