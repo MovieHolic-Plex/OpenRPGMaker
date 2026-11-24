@@ -331,6 +331,24 @@
   white-space: nowrap;
 }
 
+.db-resource-picker-option-label {
+  align-items: center;
+  display: flex;
+}
+
+.db-resource-picker-option-label > span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.db-resource-picker-option-badge {
+  color: var(--text-2);
+  flex: 0 0 auto;
+  font-size: 11px;
+  margin-left: 6px;
+}
+
 .db-resource-picker-preview {
   align-items: center;
   background: var(--bg-raised, rgba(255, 255, 255, 0.06));

@@ -10,7 +10,8 @@ import {
 // (맵 설정 BGM·전투 배경 등). 표면 시트를 여기서 가져온다 — CSS import 는 모듈당 한
 // 번만 평가되므로 자료집 경로와 겹쳐도 중복 주입이 아니고, 늦은 표면이라 승자도 같다.
 import "@/styles/database/index.css";
-import { listAudioResources } from "@/assets/audioResourceCatalog";
+import { bgmNeedsDownload, listAudioResources } from "@/assets/audioResourceCatalog";
+import { t } from "@/i18n";
 import { audioPlayback } from "./audioResourcePresentation";
 import { createAudioResourcePreview, releaseAudioPreviewOnRemoval } from "./audioResourcePreview";
 import { bgmInstallBanner } from "./bgmInstallBanner";
@@ -408,7 +409,12 @@ function resourceButton(
     dataset: { resourceId: option.id, testid: `${prefix}-option-${option.id}` },
     children: [
       resourceVisual(option.id, kind, project, option.name, "db-resource-picker-option-thumb", { characterIndex }),
-      el("span", { text: studioResourceLabel(option.name, option.id) }),
+      kind === "music" && bgmNeedsDownload(option.id)
+        ? el("span", { class: "db-resource-picker-option-label", children: [
+          el("span", { text: studioResourceLabel(option.name, option.id) }),
+          el("small", { class: "db-resource-picker-option-badge", text: t("받기 필요"), dataset: { testid: `${prefix}-needs-download` } }),
+        ] })
+        : el("span", { text: studioResourceLabel(option.name, option.id) }),
     ],
     on: { click: onSelect },
   });
