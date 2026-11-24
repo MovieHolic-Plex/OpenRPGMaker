@@ -1,5 +1,5 @@
 {
- "generatedAt": "2026-11-24T08:52:45.526Z",
+ "generatedAt": "2026-11-24T09:05:46.827Z",
  "note": "키는 sha1(선택자|속성|조건) 앞 12자리. 값은 `files layers values` 색인 3개. 줄 번호는 일부러 뺐다 — 줄이 밀리는 것만으로 대량 오보가 난다. 갱신: node scripts/check-css-winners.mjs --save-baseline",
  "discovery": "scan",
  "files": [
@@ -5254,7 +5254,7 @@
   "var(--db-studio-well)",
   "var(--element-baseline)",
   "translateX(-100%)",
-  "var(--space-5) minmax(0, calc(3 * var(--space-6))) var(--space-4) minmax(var(--space-6), 1fr) minmax(0, calc(3 * var(--space-6)))",
+  "minmax(var(--space-5), max-content) minmax(0, calc(3 * var(--space-6))) var(--space-4) minmax(var(--space-6), 1fr) minmax(0, calc(3 * var(--space-6)))",
   "calc(var(--db2-control-h) + var(--space-2))",
   "calc(3 * var(--space-6))",
   "400 11px/1.5 var(--font-ui)",
