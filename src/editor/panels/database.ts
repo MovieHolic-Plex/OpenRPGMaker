@@ -360,6 +360,11 @@ function primaryTab(tab: DatabaseTab): DatabaseTab {
 const tabOrder: readonly DatabaseTab[] = ["overview", ...TAB_GROUPS.flatMap((group) => group.tabs)];
 
 const orderedTabs: readonly { readonly id: DatabaseTab; readonly label: string; readonly testid: string }[] = tabOrder.map(tabFor);
+/** 공간(세계 묶음) 탭인가 — 타일·오브젝트·장소·지역·세계. */
+export function isSpatialDatabaseTab(id: DatabaseTab): boolean {
+  return groupForTab(id)?.slug === "world";
+}
+
 function groupForTab(id: DatabaseTab): DatabaseTabGroup | undefined {
   return TAB_GROUPS.find((group) => group.tabs.includes(primaryTab(id)));
 }

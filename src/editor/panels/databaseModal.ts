@@ -14,6 +14,7 @@ import {
   databaseTabLabel,
   databaseTabPath,
   getDatabaseActiveTab,
+  isSpatialDatabaseTab,
   refreshDatabasePanel,
   renderDatabasePanel,
   setDatabaseActiveTab,
@@ -275,7 +276,28 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseMo
   });
   // 구획이 바뀌는 것(시스템 탭 안 이동)은 활성 탭이 안 바뀌어도 크럼에 닿아야 한다.
   const unsubscribeSubLocation = subscribeDatabaseSubLocation(() => writeCrumb(crumb, getDatabaseActiveTab()));
+  // 조수가 쓰는 동안 열려 있는 공간 탭은 다시 그리지 않고 변경 수만 알린다(qa1124 오너 10·11:
+  // «실시간 렌더링이 없어야 렉이 안 걸린다», «공간은 90% 조수만 쓴다»). 공간 셀은 부분 갱신이 없어 재렌더 한 번이
+  // 셀 전체 재구성이다. 칩은 머리줄 고정 자리에 두어 낙은 화면을 믿지 않게 한다.
+  let deferredSpatialChanges = 0;
+  const deferredChip = el("button", {
+    class: "database-deferred-refresh",
+    attrs: { type: "button", hidden: "" },
+    dataset: { testid: "spatial-deferred-refresh" },
+  });
+  const clearDeferredSpatial = (): void => {
+    deferredSpatialChanges = 0;
+    deferredChip.hidden = true;
+  };
+  const deferSpatialRefresh = (): void => {
+    deferredSpatialChanges += 1;
+    deferredChip.textContent = `↻ 새 변경 ${deferredSpatialChanges}건`;
+    deferredChip.title = `조수가 바꾼 ${deferredSpatialChanges}건을 아직 다시 그리지 않았습니다. 누르면 새로 고칩니다.`;
+    deferredChip.hidden = false;
+  };
   const unsubscribeActiveTab = subscribeDatabaseActiveTab((tab) => {
+    // 탭을 옮기면 새 탭을 지금 상태로 그린다 — 보류한 변경은 그 렌더에 담긴다.
+    clearDeferredSpatial();
     writeCrumb(crumb, tab);
     aiBar.refreshContext();
     connections.paint(tab);
@@ -286,6 +308,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseMo
       // 창 제목이 라벨 정본(uiCopy)을 우회하면 명령 팔레트·도움말은 「자료집」, 정작 열린 창은
       // 다른 이름이 된다. 라벨 정본을 쓴다.
       el("div", { class: "database-modal-heading", children: [el("h2", { text: databaseSurfaceLabel() }), crumb] }),
+      deferredChip,
       aiToggleButton,
       windowControls,
     ],
@@ -330,6 +353,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseMo
     const run = (): void => {
       refreshQueued = false;
       if (modalClosed) return;
+      clearDeferredSpatial();
       // 프레임 시점 재판정: blur/change 커밋이 유발한 갱신은 구독 시점엔 activeElement 가
       // <body> 여도, rAF 까지 오면 다음 필드로 포커스가 정착해 있다. 편집 중이면 보류로 전환.
       // 버튼 클릭 직전의 유예 창도 막는다 — 재렌더가 버튼을 분리해 클릭이 유실되는 경로(qa-troops).
@@ -416,12 +440,20 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseMo
     syncUndoButton();
     // 연결 칸은 읽기 전용이라 편집 중에도 다시 그려도 입력을 빼앗지 않는다.
     connections.paint(getDatabaseActiveTab());
+    if (change.origin === "ai" && isSpatialDatabaseTab(getDatabaseActiveTab())) {
+      deferSpatialRefresh();
+      return;
+    }
     if (isEditingInsideModalBody() || withinInteractionGrace()) {
       pendingRefresh = true;
       scheduleGraceFlush();
       return;
     }
     scheduleModalRefresh();
+  });
+  deferredChip.addEventListener("click", () => {
+    clearDeferredSpatial();
+    refreshDatabasePanel(body);
   });
   const onClose = new Set(options?.onClose ? [options.onClose] : []);
   const close = (): void => {
