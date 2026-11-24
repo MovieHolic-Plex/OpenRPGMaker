@@ -5,7 +5,7 @@ import { roomTemplates } from "@/editor/handInterior/templates";
 import { withComposedRooms } from "@/editor/handInterior/rooms";
 import { kitInteriorKinds, placeTierMap, tierProgramFor, tierTableOf, tierTemplatePicker, TierPlanError } from "@/editor/handInterior/tierPlan";
 import { createBeodeulCityTileset } from "@/project/defaults/beodeulCity";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { createBuildRun } from "@/ai/v2/shared/buildRun";
 import { buildTier, tierProgramOf } from "@/ai/v2/place/builders/interiorTier";
 import { interiorBuilder } from "@/ai/v2/place/builders/interior";
