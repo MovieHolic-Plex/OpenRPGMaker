@@ -30,6 +30,7 @@ const rows = jobs.map((job) => {
   const made = countOnly ? [] : applyDraftCast(project, request);
   const after = draftCastCounts(project);
   const again = countOnly ? [] : applyDraftCast(project, request);
+  if (process.env.DRAFT_OUT_DIR) writeFileSync(`${process.env.DRAFT_OUT_DIR}/${name}.project.json`, JSON.stringify(project));
   const party = (project.system.startActorIds ?? []).map((id) => {
     const actor = project.database.actors.find((a) => a.id === id);
     const cls = project.database.classes.find((c) => c.id === actor?.classId);

@@ -116,4 +116,13 @@ describe("청사진 인물·세계 칸 → 첫 판 초안 데이터(draft-cast)"
     expect(Object.values(project.characters ?? {}).map((p) => p.displayName)).toEqual(expect.arrayContaining(["리나", "볼크"]));
     expect(project.database.enemies.some((e) => e.name === "용사 카일")).toBe(false);
   });
+
+  it("cast 가 없으면 청사진 대화 상대로 동료 소개를 채우고, 그 사람들은 시작 파티에 넣지 않는다", () => {
+    const project = game();
+    applyDraftCast(project);
+    expect(project.system.startActorIds).toHaveLength(1);
+    const names = Object.values(project.characters ?? {}).map((p) => p.displayName);
+    expect(names).toEqual(expect.arrayContaining(["박만석", "이도윤"]));
+    expect(names).not.toContain("리안");
+  });
 });
