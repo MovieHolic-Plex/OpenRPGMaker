@@ -322,7 +322,8 @@ function carryStartPosition(merged: Project, started: Project, result: Project, 
  * 켰다고 믿는다(2026-09-23 추리 도그푸딩 `--maps town` 실측). 이미 켜진 설정을 바꾸거나 끈 것은 기존
  * 설정의 수정·삭제라 옮기지 않는다. 제목·장르·해상도처럼 맵이 기대지 않는 게임 전체 설정은 여기에 넣지 않는다.
  */
-const CARRIED_SYSTEM_FEATURES = ["timeSystem"] as const;
+// peopleChipLock: 처음 놓은 NPC 가 정하는 사람 칩 계열 잠금 — 영역 턴이 상점 주인을 놓으면 생긴다(regionPlaceTools).
+const CARRIED_SYSTEM_FEATURES = ["timeSystem", "peopleChipLock"] as const;
 
 function carryEnabledSystemFeatures(merged: Project, started: Project, result: Project, conflicts: Set<string>): void {
   for (const key of CARRIED_SYSTEM_FEATURES) {
@@ -341,6 +342,15 @@ function carryEnabledSystemFeatures(merged: Project, started: Project, result: P
  * 이벤트를 가리킨다)와 locatedIn 관계로 등록한다 — 병합이 world 를 버리면 캐스트가 반만 남는다
  * (2026-09-23 같은 실행 실측). 관계는 id 가 없어 (a, b, kind) 를 키로 쓴다.
  */
+/** 이 결과가 새로 단 세계 그래프 노드·간선(던전 입구 잇기)을 옮긴다 — 맵은 묶음으로 넘어오는데 간선만 버려지지 않게. */
+function carryCreatedWorldGraph(merged: Project, started: Project, result: Project): void {
+  if (!result.worldGraph) return;
+  const target = merged.worldGraph ?? { nodes: [], edges: [] };
+  const nodes = createdById(started.worldGraph?.nodes ?? [], result.worldGraph.nodes, target.nodes);
+  const edges = createdById(started.worldGraph?.edges ?? [], result.worldGraph.edges, target.edges);
+  if (nodes === target.nodes && edges === target.edges) return;
+  merged.worldGraph = { nodes, edges };
+}
 function carryCreatedWorld(merged: Project, started: Project, result: Project): void {
   if (!result.world) return;
   const relationKey = (relation: WorldRelation): string => `${relation.a}\u0000${relation.b}\u0000${relation.kind}`;
@@ -402,6 +412,7 @@ function carryCreatedEntries(merged: Project, started: Project, result: Project,
   merged.database = createdDatabaseEntries(started.database, result.database, merged.database);
   carryEnabledSystemFeatures(merged, started, result, conflicts);
   carryCreatedWorld(merged, started, result);
+  carryCreatedWorldGraph(merged, started, result);
 }
 
 /**

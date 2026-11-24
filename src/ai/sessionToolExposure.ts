@@ -7,6 +7,7 @@
 // neutral/failed routing and for a discovery miss. This keeps capability
 // reachability without paying for every editor schema on every turn.
 
+import { regionPlaceRequest } from "./regionPlaceIntent";
 import { adventureToolNames, type AdventureRequirements } from "./adventureCompletion";
 import { capabilityEscalationSchemas } from "./capabilityEscalation";
 import { mentionedToolSchemas, planRequiredToolSchemas, toolSchemasForNames } from "./planToolExposure";
@@ -132,6 +133,10 @@ function buildSessionRegistryToolsUnfiltered(input: SessionToolExposureInput): O
     appendUnique(tools, seen, toolSchemasForNames(['list_worldmap_structures', 'read_worldmap_structure_reference', 'author_worldmap_structure', 'inspect_worldmap_structure', 'list_worldmap_themes', 'read_world_terrain', 'edit_world_terrain', 'derive_world_variant', 'link_world_entrance']) as OpenAiTool[]);
   }
   // 이벤트·컷씬 요청이 장소·지형·사물을 말하면 그 무대를 짓는 시공 도구를 처음부터 보인다 — 이벤트 도구만 쥐면 무대 없이 대사만 남는다(2026-10-15 JRPG 파일럿 실측).
+  // 「여기 상점 만들어 줘」 — 외관·실내·문·주인을 한 번에 짓는 레시피(regionPlaceTools). 선언이 다른 도구를 골라도 보인다.
+  if (regionPlaceRequest(input.requestText)) {
+    appendUnique(tools, seen, toolSchemasForNames(["build_region_place", "set_shop_stock", "show_map_region", "check_reachability"]) as OpenAiTool[]);
+  }
   if (SCENE_SETTING_PATTERN.test(input.requestText)) {
     appendUnique(tools, seen, toolSchemasForNames(['build_scene_setting', 'fill_region', 'stamp_object', 'place_props', 'list_spatial_designs', 'get_map_region', 'show_map_region', 'check_reachability', 'list_resources', 'generate_cutscene_art', 'script_cutscene']) as OpenAiTool[]);
   }

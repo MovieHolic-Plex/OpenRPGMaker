@@ -27,6 +27,15 @@ describe("region result card counts", () => {
     expect(regionResultSummary(counts)).toBe("이벤트 3개 바뀜");
   });
 
+  it("names maps the instruction created outside the region (shop interior)", () => {
+    const before = project(base);
+    const after = project(base.map((tile, i) => (i === 0 ? 9 : tile)));
+    (after.maps as Record<string, unknown>).inner = { id: "inner", name: "도구점", width: 2, height: 2, lowerTiles: [0, 0, 0, 0], upperTiles: [0, 0, 0, 0], events: [] };
+    const counts = countRegionChanges(before, after, "m1", { x: 0, y: 0, width: 2, height: 2 });
+    expect(counts).toEqual({ cells: 1, events: 0, newMaps: ["도구점"] });
+    expect(regionResultSummary(counts)).toBe("칸 1개 바뀜 · 새 맵 도구점");
+  });
+
   it("says nothing changed when the region is untouched", () => {
     expect(regionResultSummary(countRegionChanges(project(base), project(base), "m1", { x: 0, y: 0, width: 4, height: 3 }))).toBe("이 영역은 그대로");
   });
