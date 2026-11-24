@@ -3,6 +3,7 @@
   "updatedAt": "2026-11-24",
   "commit": "7aff0d566d89c02f6a3405bfcea8ab88a9a4235c",
   "runs": ["45149079696","45206810315","45328461701"],
+  "overheadSec": 13.9,
   "files": {
     "test/actionAcceptanceProof.test.ts": {"sec":55.6,"n":3},
     "test/actionAcceptanceRequirements.test.ts": {"sec":20.1,"n":3},

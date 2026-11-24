@@ -12,6 +12,7 @@ import {
   medianSec,
   mergeTimingRuns,
   planVitestShard,
+  measureOverheadSec,
 } from "./vitestShardPlan.mjs";
 
 // 결정적 의사 난수 — 시험이 우연에 기대지 않게 한다.
@@ -142,4 +143,26 @@ test("mergeTimingRuns: 통과한 회차만 평균하고, 통과가 없는 파일
     "test/b.test.ts": { sec: 200, n: 2 },
     "test/c.test.ts": { sec: 4, n: 1 },
   });
+});
+
+test("assignShards: 파일당 고정비를 더하면 작은 파일이 한 샤드에 몰리지 않는다", () => {
+  const table = { "test/big.test.ts": { sec: 100, n: 1 } };
+  for (let i = 0; i < 20; i += 1) table[`test/s${String(i).padStart(2, "0")}.test.ts`] = { sec: 0, n: 1 };
+  const files = Object.keys(table);
+  const without = assignShards(files, table, 2).shards.map((s) => s.files.length).sort((a, b) => a - b);
+  const withOverhead = assignShards(files, table, 2, 10).shards;
+  assert.deepEqual(without, [1, 20]);
+  const loads = withOverhead.map((s) => s.sec).sort((a, b) => a - b);
+  assert.ok(loads[1] - loads[0] <= 11, `고정비 포함 부하 차이: ${loads}`);
+});
+
+test("measureOverheadSec: 샤드 안 파일 사이 간격의 중앙값", () => {
+  const shard = [
+    { startTime: 0, endTime: 1000 },
+    { startTime: 11000, endTime: 12000 },
+    { startTime: 25000, endTime: 26000 },
+    { startTime: 38000, endTime: 39000 },
+  ];
+  assert.equal(measureOverheadSec([shard]), 12);
+  assert.equal(measureOverheadSec([[{ startTime: 0, endTime: 1 }]]), null);
 });

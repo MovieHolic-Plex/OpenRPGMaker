@@ -17,6 +17,12 @@ export const TIMINGS_FILE = ".omo/test-timings.json";
 // 전부 쌓이지 않게 한다 — 워커가 파일을 여는 비용은 0 이 아니다. 중앙값(약 6초)보다 훨씬 작아 배정을 흔들지 않는다.
 export const MIN_FILE_SEC = 1;
 
+// 파일마다 시험 시간 밖에서 드는 고정비(초): import·수집·환경 준비. vitest JSON 의 `endTime - startTime` 에는
+// 들어 있지 않다. 같은 샤드의 앞 파일 끝 → 다음 파일 시작 간격의 중앙값으로 잰다(run 45328461701: 13.9초,
+// p90 17.2초, 샤드 Duration 의 import 29~45%). 이걸 빼면 작은 파일이 몰린 샤드가 과소평가된다.
+// 표에 `overheadSec` 가 있으면 그 값을 쓴다.
+export const DEFAULT_OVERHEAD_SEC = 12;
+
 /**
  * vitest.config.ts 의 `include`/`exclude` 와 같은 규칙. 설정을 고치면 여기도 고친다(시험이 어긋남을 잡는다).
  *   include: test/**\/*.test.ts
@@ -62,10 +68,11 @@ export function medianSec(table) {
  * @param {readonly string[]} files 중복 없는 파일 경로
  * @param {Record<string, {sec: number}>} table `.omo/test-timings.json` 의 `files`
  * @param {number} count 샤드 수
+ * @param {number} [overheadSec] 파일마다 더하는 고정비(초, 기본 0)
  * @returns {{ shards: { files: string[], sec: number }[], medianSec: number, unknown: number }}
  *   `shards[i]` 가 샤드 i+1 이다. 각 `files` 는 경로순이다.
  */
-export function assignShards(files, table, count) {
+export function assignShards(files, table, count, overheadSec = 0) {
   if (!Number.isInteger(count) || count < 1) throw new Error(`샤드 수는 1 이상의 정수여야 한다: ${count}`);
   const fallback = medianSec(table);
   let unknown = 0;
@@ -73,9 +80,9 @@ export function assignShards(files, table, count) {
     const sec = table?.[file]?.sec;
     if (!Number.isFinite(sec)) {
       unknown += 1;
-      return Math.max(fallback, MIN_FILE_SEC);
+      return Math.max(fallback, MIN_FILE_SEC) + overheadSec;
     }
-    return Math.max(sec, MIN_FILE_SEC);
+    return Math.max(sec, MIN_FILE_SEC) + overheadSec;
   };
   const items = [...new Set(files)].map((file) => ({ file, cost: costOf(file) }));
   items.sort((a, b) => b.cost - a.cost || (a.file < b.file ? -1 : a.file > b.file ? 1 : 0));
@@ -131,11 +138,12 @@ export function planVitestShard({ root = process.cwd(), index, count, timingsPat
   if (all.length === 0) return { files: null, reason: "test/ 에서 시험 파일을 찾지 못함" };
   const collisions = findFilterCollisions(all);
   if (collisions.length > 0) return { files: null, reason: `경로가 다른 경로의 부분 문자열인 쌍 ${collisions.length}개 (예: ${collisions[0].join(" ⊂ ")})` };
-  const plan = assignShards(all, timings.files, count);
+  const overheadSec = Number.isFinite(timings.overheadSec) ? timings.overheadSec : DEFAULT_OVERHEAD_SEC;
+  const plan = assignShards(all, timings.files, count, overheadSec);
   const shard = plan.shards[index - 1];
   // 빈 목록을 vitest 에 넘기면 «필터 없음» = 전체 스위트가 돈다. 절대 넘기지 않는다.
   if (!shard || shard.files.length === 0) return { files: null, reason: `샤드 ${index}/${count} 에 배정된 파일이 없음` };
-  return { files: shard.files, sec: shard.sec, total: all.length, unknown: plan.unknown, medianSec: plan.medianSec, loads: plan.shards.map((s) => s.sec) };
+  return { files: shard.files, sec: shard.sec, total: all.length, unknown: plan.unknown, medianSec: plan.medianSec, overheadSec, loads: plan.shards.map((s) => s.sec) };
 }
 
 // ---- 표 생성 (scripts/update-test-timings.mjs 가 쓴다) ------------------------------------------------
@@ -176,4 +184,25 @@ export function mergeTimingRuns(runs) {
     files[file] = { sec: Math.round(mean * 10) / 10, n: used.length };
   }
   return files;
+}
+
+/**
+ * 파일 하나의 고정비(import·수집)를 잰다: 같은 샤드 리포트 안에서 시작 시각순으로 앞 파일 끝 → 다음 파일 시작
+ * 간격들의 중앙값(초, 소수 첫째 자리). 샤드 안 파일은 워커 1개에서 차례로 돈다(겹침 0 실측).
+ *
+ * @param {readonly (readonly {startTime: number, endTime: number}[])[]} shardReports 샤드마다 `testResults`
+ * @returns {number | null} 간격이 없으면 null
+ */
+export function measureOverheadSec(shardReports) {
+  const gaps = [];
+  for (const results of shardReports) {
+    const sorted = [...results].sort((a, b) => a.startTime - b.startTime);
+    for (let i = 1; i < sorted.length; i += 1) {
+      const gap = (sorted[i].startTime - sorted[i - 1].endTime) / 1000;
+      if (Number.isFinite(gap) && gap >= 0) gaps.push(gap);
+    }
+  }
+  if (gaps.length === 0) return null;
+  gaps.sort((a, b) => a - b);
+  return Math.round(gaps[gaps.length >> 1] * 10) / 10;
 }

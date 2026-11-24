@@ -16,7 +16,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
-import { mergeTimingRuns, TIMINGS_FILE } from "./lib/vitestShardPlan.mjs";
+import { measureOverheadSec, mergeTimingRuns, TIMINGS_FILE } from "./lib/vitestShardPlan.mjs";
 
 const args = process.argv.slice(2);
 const option = (name) => {
@@ -52,12 +52,15 @@ function download(runId) {
 }
 
 const runs = [];
+const shardReports = [];
 let commit = option("--commit");
 for (const runId of runIds) {
   const dir = download(runId);
   const reports = findReports(dir);
   if (reports.length === 0) throw new Error(`run ${runId}: gates-vitest-report.json 이 없다 (${dir})`);
-  const results = reports.flatMap((file) => JSON.parse(readFileSync(file, "utf8")).testResults ?? []);
+  const perShard = reports.map((file) => JSON.parse(readFileSync(file, "utf8")).testResults ?? []);
+  shardReports.push(...perShard);
+  const results = perShard.flat();
   console.log(`run ${runId}: 샤드 리포트 ${reports.length}개, 파일 ${results.length}개`);
   runs.push(results);
   // 마지막 회차의 커밋을 적는다 — 아티팩트에 commit.txt 가 있다.
@@ -66,10 +69,12 @@ for (const runId of runIds) {
 }
 
 const files = mergeTimingRuns(runs);
+const overheadSec = measureOverheadSec(shardReports);
 const lines = Object.entries(files).map(([file, entry]) => `    ${JSON.stringify(file)}: ${JSON.stringify(entry)}`);
 const body =
   `{\n  "version": 1,\n  "updatedAt": ${JSON.stringify(new Date().toISOString().slice(0, 10))},\n` +
-  `  "commit": ${JSON.stringify(commit ?? null)},\n  "runs": ${JSON.stringify(runIds)},\n  "files": {\n${lines.join(",\n")}\n  }\n}\n`;
+  `  "commit": ${JSON.stringify(commit ?? null)},\n  "runs": ${JSON.stringify(runIds)},\n` +
+  `  "overheadSec": ${JSON.stringify(overheadSec)},\n  "files": {\n${lines.join(",\n")}\n  }\n}\n`;
 mkdirSync(dirname(outPath), { recursive: true });
 writeFileSync(outPath, body, "utf8");
-console.log(`${outPath}: 파일 ${lines.length}개 (회차 ${runIds.length}개 평균)`);
+console.log(`${outPath}: 파일 ${lines.length}개 (회차 ${runIds.length}개 평균), 파일당 고정비 ${overheadSec}초`);
