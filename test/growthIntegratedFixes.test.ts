@@ -1,193 +1,289 @@
-import { expect, it } from 'vitest';
-import { integratedGrowthFixture as fixture } from './fixtures/growthIntegrated';
-import { createBattleRuntime } from '@/battle/runtime';
-import { actorBattlers } from '@/battle/battleBattlers';
-import { applyBattleRewardsToSession } from '@/player/battleRewardsToSession';
-import { applySaveSnapshot, createSaveSnapshot, readSaveSlot } from '@/player/saveSlots';
-import { activeSkillTrees, actorOwnedSkillIds, investSkillNode } from '@/project/growth/runtime';
-import { refreshGrowthVitals } from '@/project/growth/vitals';
-import { totalExpForLevel } from '@/project/actorModel';
-import type { Command, Project } from '@/project/types';
-import type { PlaySession } from '@/project/session';
+import { expect, it, describe } from "vitest";
+import { integratedGrowthFixture as fixture } from "./fixtures/growthIntegrated";
+import { changeActorClass, promoteActor, promotionRequirementsMet } from "@/project/sessionClass";
+import { actorOwnedSkillIds, activeSkillTrees, investSkillNode, resetSkillTree } from "@/project/growth/runtime";
+import { actorBattlers } from "@/battle/battleBattlers";
+import { createBattleRuntime } from "@/battle/runtime";
+import { refreshGrowthVitals } from "@/project/growth/vitals";
+import { assertGrowthShape, growthIssues } from "@/project/growth/validation";
+import { transitionActorEquipment } from "@/project/equipmentRules";
+import { normalizeClassRecord } from "@/project/databaseRecordModel";
+import { createSaveSnapshot, readSaveSlot, applySaveSnapshot } from "@/player/saveSlots";
+import { applyBattleRewardsToSession } from "@/player/battleRewardsToSession";
+import { totalExpForLevel } from "@/project/actorModel";
+import type { Command, Project } from "@/project/types";
+import type { PlaySession } from "@/project/session";
+import { isolateTimers } from "./mergedTeardown";
 
-function restore(project: Project, session: PlaySession): PlaySession {
-  const saved = JSON.stringify(createSaveSnapshot(project, session));
-  const slot = readSaveSlot({ getItem: () => saved }, 1);
-  if (slot.kind !== 'present') throw new Error(`save ${slot.kind}`);
-  return applySaveSnapshot(project, slot.snapshot);
-}
-
-function battle(project: Project, session: PlaySession, commands: Command[], withParty = true) {
-  const troop = project.database.troops[0];
-  if (!troop) throw new Error('troop missing');
-  project.system.battleFlow = 'strict';
-  troop.battleEventPages = [{
-    id: 'growth-fix', name: 'growth-fix', span: 'battle',
-    conditions: [{ kind: 'actorCommand', actorId: session.partyActorIds[0]!, commandId: 'defend' }], commands,
-  }];
-  return createBattleRuntime({
-    project, troopId: troop.id, sessionState: session, canEscape: true, canLose: true, rng: () => 0.5,
-    party: withParty ? {
-      levels: session.actorLevels, experience: session.actorExperience, vitals: session.actorVitals,
-      partyActorIds: session.partyActorIds, classOverrides: session.classOverrides,
-      paramBonuses: session.actorParamBonuses,
-    } : undefined,
+describe("growthIntegratedBoundaries", () => {
+  isolateTimers();
+  it('does not let an invalid override revive unrelated tree skills even if lineage contains the fallback class', () => {
+    const {project,actor,session}=fixture();
+    session.classOverrides[actor.id]='deleted'; session.promotionLineage={[actor.id]:['A','B']};
+    session.growthProgress={[actor.id]:{'tree-B':{skill:{rank:1,spent:1}}}};
+    expect(actorOwnedSkillIds(project,session,actor.id)).not.toContain('tree-skill');
+    expect(actorBattlers(project,{classOverrides:session.classOverrides,promotionLineage:session.promotionLineage,growthProgress:session.growthProgress})[0]?.skillIds).not.toContain('tree-skill');
   });
-}
-
-it.each([5, 2])('R1 keeps battle, field, save and next battle at authoritative level %s after promotion', level => {
-  const { project, actor, session } = fixture();
-  const destination = project.database.classes.find(c => c.id === 'B');
-  if (!destination) throw new Error('class missing');
-  actor.parameterCurves.maxHp = Array.from({ length: 99 }, (_, i) => 200 + i);
-  actor.parameterCurves.maxMp = Array.from({ length: 99 }, (_, i) => 40 + i);
-  destination.parameterCurves.maxHp = Array.from({ length: 99 }, (_, i) => 100 + 10 * i);
-  destination.parameterCurves.maxMp = Array.from({ length: 99 }, (_, i) => 20 + 5 * i);
-  refreshGrowthVitals(project, session, actor.id);
-  Object.assign(session.actorVitals[actor.id]!, { hp: 130, mp: 33 });
-  const runtime = battle(project, session, [
-    { kind: 'changeLevel', actorId: actor.id, op: '=', amount: level },
-    { kind: 'promoteActor', actorId: actor.id, toClassId: 'B' },
-    { kind: 'm2Command', commandId: 'm2-105-abort-battle', fields: {} },
-  ]);
-  expect(runtime.snapshot().actors[0]).toMatchObject({ level: 3, maxHp: 202, hp: 130 });
-  runtime.performActorCommand({ kind: 'defend' });
-  const snapshot = runtime.snapshot();
-  const vitals = { maxHp: 100 + 10 * (level - 1), maxMp: 20 + 5 * (level - 1), hp: Math.min(130, 100 + 10 * (level - 1)), mp: Math.min(33, 20 + 5 * (level - 1)) };
-  expect(snapshot.result).toBe('escape');
-  expect(snapshot.eventState.actorLevels?.[actor.id]).toBe(level);
-  expect(snapshot.actors[0]).toMatchObject({ level, classId: 'B', ...vitals });
-  applyBattleRewardsToSession(session, { ...snapshot, result: 'escape' }, project);
-  expect(session.actorLevels[actor.id]).toBe(level);
-  expect(session.actorVitals[actor.id]).toEqual(vitals);
-  const loaded = restore(project, session);
-  expect(loaded.actorLevels[actor.id]).toBe(level);
-  expect(loaded.actorVitals[actor.id]).toEqual(vitals);
-  expect(battle(project, loaded, []).snapshot().actors[0]).toMatchObject({ level, ...vitals });
+  it('uses the fallback class equipment restrictions when an override is invalid', () => {
+    const {project,actor}=fixture(); const klass=project.database.classes.find(c=>c.id===actor.classId); if (!klass) throw new Error('class missing');
+    klass.options.fixedEquipment=true;
+    expect(transitionActorEquipment({project,actorId:actor.id,classId:'deleted',inventory:{},slot:'weapon'})).toMatchObject({kind:'rejected',reason:'fixedEquipment'});
+  });
+  it('seeds battlers and event state consistently when a session-state override is supplied', () => {
+    const {project,actor,session}=fixture(); const troop=project.database.troops[0]; if (!troop) throw new Error('troop missing');
+    promoteActor(session,project,actor.id,'B'); session.actorSkillIds[actor.id]=['D-skill'];
+    const snapshot=createBattleRuntime({project,troopId:troop.id,sessionState:session,canEscape:true,canLose:true,rng:()=>0.5}).snapshot();
+    expect(snapshot.actors[0]?.classId).toBe('B'); expect(snapshot.actors[0]?.skillIds).toContain('D-skill');
+    expect(snapshot.eventState.promotionLineage).toEqual(session.promotionLineage);
+  });
+  it('keeps an active tree grant when a battle event forgets the independent copy', () => {
+    const {project,actor,session}=fixture(); const troop=project.database.troops[0]; if (!troop) throw new Error('troop missing');
+    project.system.battleFlow='strict'; investSkillNode(project,session,actor.id,'tree-A','root'); investSkillNode(project,session,actor.id,'tree-A','skill'); session.actorSkillIds[actor.id]=['tree-skill'];
+    troop.battleEventPages=[{id:'forget',name:'forget',span:'battle',conditions:[{kind:'actorCommand',actorId:actor.id,commandId:'defend'}],commands:[{kind:'learnSkill',actorId:actor.id,skillId:'tree-skill',action:'forget'}]}];
+    const runtime=createBattleRuntime({project,troopId:troop.id,sessionState:session,canEscape:true,canLose:true,rng:()=>0.5}); runtime.performActorCommand({kind:'defend'});
+    expect(runtime.snapshot().eventState.actorSkillIds?.[actor.id]).not.toContain('tree-skill');
+    expect(runtime.snapshot().actors[0]?.skillIds).toContain('tree-skill');
+  });
+  it('makes outgoing actor-level skills permanent and stops former-class future accrual', () => {
+    const {project,actor,session}=fixture(); const klass=project.database.classes.find(c=>c.id==='B'); if (!klass) throw new Error('class missing');
+    klass.learnedSkills=[{level:1,skillId:'B-skill'}];
+    promoteActor(session,project,actor.id,'B'); session.actorLevels[actor.id]=9;
+    expect(session.actorSkillIds[actor.id]).toContain('actor-skill');
+    expect(actorOwnedSkillIds(project,session,actor.id)).not.toContain('future');
+  });
+  it.each([undefined,false])('keeps legacy current-only activation for inherit=%s', inherit => {
+    const {project,actor,session,trees}=fixture(); const tree=trees[0]; if (!tree) throw new Error('tree missing'); tree.inheritOnPromotion=inherit;
+    promoteActor(session,project,actor.id,'B'); expect(activeSkillTrees(project,session,actor.id).map(t=>t.id)).toEqual(['tree-B']);
+  });
+  it('does not rewrite earned lineage when authored edges change', () => {
+    const {project,actor,session}=fixture(); promoteActor(session,project,actor.id,'B');
+    for (const klass of project.database.classes) klass.promotions=[];
+    expect(activeSkillTrees(project,session,actor.id).map(t=>t.id)).toEqual(['tree-A','tree-B']);
+  });
+  it('never transiently clamps inherited HP away during promotion, and reset does not demote or heal', () => {
+    const {project,actor,session,trees}=fixture(); const node=trees[0]?.nodes[0], klass=project.database.classes.find(c=>c.id==='B'); if (!node || !klass) throw new Error('fixture missing');
+    actor.parameterCurves.maxHp=Array(99).fill(100); klass.parameterCurves.maxHp=Array(99).fill(100); node.effect={kind:'parameter',parameter:'maxHp',amount:50};
+    investSkillNode(project,session,actor.id,'tree-A','root'); refreshGrowthVitals(project,session,actor.id);
+    const vitals=session.actorVitals[actor.id]; if (!vitals) throw new Error('vitals missing'); vitals.hp=130;
+    promoteActor(session,project,actor.id,'B'); expect(session.actorVitals[actor.id]).toMatchObject({maxHp:150,hp:130});
+    resetSkillTree(project,session,actor.id,'tree-A'); refreshGrowthVitals(project,session,actor.id);
+    expect(session.actorVitals[actor.id]).toMatchObject({maxHp:100,hp:100}); expect(session.classOverrides[actor.id]).toBe('B');
+  });
+  it.each(['skill','rank','points'] as const)('fails only the %s admission gate below boundary and passes at boundary', gate => {
+    const {project,actor,session}=fixture();
+    const requires=gate==='skill'?{requiredSkillIds:['tree-skill']}:gate==='rank'?{requiredNodes:[{treeId:'tree-A',nodeId:'root',rank:2}]}:{requiredTreePoints:[{treeId:'tree-A',points:4}]};
+    investSkillNode(project,session,actor.id,'tree-A','root');
+    const before=structuredClone(session); expect(promotionRequirementsMet(session,actor.id,requires,project)).toBe(false); expect(session).toEqual(before);
+    investSkillNode(project,session,actor.id,'tree-A',gate==='skill'?'skill':'root');
+    const vitals=session.actorVitals[actor.id]; if (vitals) vitals.mp=0;
+    expect(promotionRequirementsMet(session,actor.id,requires,project)).toBe(true);
+  });
+  it('accepts independent skills after tree reset, but not inactive tree-only ownership', () => {
+    const {project,actor,session}=fixture(); investSkillNode(project,session,actor.id,'tree-A','root'); investSkillNode(project,session,actor.id,'tree-A','skill');
+    changeActorClass(session,project,actor.id,'D'); expect(promotionRequirementsMet(session,actor.id,{requiredSkillIds:['tree-skill']},project)).toBe(false);
+    session.actorSkillIds[actor.id]=['tree-skill']; resetSkillTree(project,session,actor.id,'tree-A');
+    expect(promotionRequirementsMet(session,actor.id,{requiredSkillIds:['tree-skill']},project)).toBe(true);
+  });
+  it('selects the first eligible authored edge when destination is omitted', () => {
+    const {project,actor,session}=fixture(); const first=project.database.classes[0]?.promotions?.[0]; if (!first) throw new Error('edge missing'); first.requires={requiredSkillIds:['tree-skill']};
+    expect(promoteActor(session,project,actor.id)).toMatchObject({ok:true,classId:'C'});
+  });
+  it.each([null,'true',1])('rejects malformed inheritance %s', value => {
+    const {project}=fixture(); const growth=structuredClone(project.growth); if (!growth?.skillTrees[0]) throw new Error('tree missing');
+    Object.assign(growth.skillTrees[0],{inheritOnPromotion:value}); expect(()=>assertGrowthShape(growth)).toThrow();
+  });
+  it.each([null,'nodes',[{treeId:'tree-A',nodeId:'root',rank:0}],[{treeId:'tree-A',nodeId:'root',rank:1.5}],[{treeId:'tree-A',nodeId:'root',rank:100}]])('rejects malformed qualified requirements %j', value => {
+    const {project}=fixture(); const growth=structuredClone(project.growth); if (!growth?.skillTrees[0]?.nodes[0]) throw new Error('node missing');
+    Object.assign(growth.skillTrees[0].nodes[0],{requiredNodes:value}); expect(()=>assertGrowthShape(growth)).toThrow();
+    const klass=project.database.classes[0]; if (!klass) throw new Error('class missing'); const copy=structuredClone(klass); if (!copy.promotions?.[0]) throw new Error('edge missing'); Object.assign(copy.promotions[0].requires,{requiredNodes:value}); expect(()=>normalizeClassRecord(copy)).toThrow();
+  });
+  it.each([{requiredSkillIds:null},{requiredSkillIds:[3]},{requiredTreePoints:null},{requiredTreePoints:[{treeId:'tree-A',points:-1}]},{requiredTreePoints:[{treeId:'tree-A',points:1.5}]}])('rejects malformed promotion extensions %j before normalization loses them', extension => {
+    const {project}=fixture(); const klass=project.database.classes[0]; if (!klass?.promotions?.[0]) throw new Error('edge missing'); Object.assign(klass.promotions[0].requires,extension); expect(()=>normalizeClassRecord(klass)).toThrow();
+  });
+  it.each([{requiredSkillIds:['absent']},{requiredNodes:[{treeId:'absent',nodeId:'root',rank:1}]},{requiredNodes:[{treeId:'tree-A',nodeId:'root',rank:4}]},{requiredTreePoints:[{treeId:'absent',points:1}]}])('rejects invalid promotion references %j', requires => {
+    const {project}=fixture(); const path=project.database.classes[0]?.promotions?.[0]; if (!path) throw new Error('edge missing'); path.requires=requires; expect(growthIssues(project).length).toBeGreaterThan(0);
+  });
+  it.each([{promotionLineage:null},{promotionLineage:{actor:['A','A']}},{promotionLineage:{actor:'A'}},{growthProgress:{actor:{tree:{node:{rank:1,spent:-1}}}}},{growthProgress:{actor:{tree:{node:{rank:1.5,spent:2}}}}}])('rejects malformed present saved growth fields %j', extension => {
+    const {project,session}=fixture(); const snapshot=createSaveSnapshot(project,session); const value={...snapshot,session:{...snapshot.session,...extension}};
+    expect(readSaveSlot({getItem:()=>JSON.stringify(value)},1).kind).toBe('corrupt');
+  });
 });
 
-it.each([
-  { withParty: true, eventGrowth: false },
-  { withParty: true, eventGrowth: true },
-  { withParty: false, eventGrowth: true },
-])('R2 previews final class, level, XP and skill threshold %j', ({ withParty, eventGrowth }) => {
-  const { project, actor, session } = fixture();
-  const destination = project.database.classes.find(c => c.id === 'B');
-  if (!destination) throw new Error('class missing');
-  actor.parameterCurves.maxHp = Array.from({ length: 99 }, (_, i) => 100 + i);
-  destination.parameterCurves.maxHp = Array.from({ length: 99 }, (_, i) => 100 + 10 * i);
-  const fromLevel = eventGrowth ? 4 : 3, toLevel = fromLevel + 1;
-  destination.learnedSkills = [{ level: toLevel, skillId: 'B-skill' }];
-  for (const enemy of project.database.enemies) enemy.rewards.exp = 1;
-  const thresholdExp = totalExpForLevel(actor.expCurve, toLevel) - 1;
-  session.actorExperience[actor.id] = eventGrowth ? 0 : thresholdExp;
-  const growthCommands: Command[] = eventGrowth ? [
-    { kind: 'changeLevel', actorId: actor.id, op: '=', amount: fromLevel },
-    { kind: 'changeExp', actorId: actor.id, op: '=', amount: thresholdExp },
-  ] : [];
-  const runtime = battle(project, session, [
-    ...growthCommands,
-    { kind: 'promoteActor', actorId: actor.id, toClassId: 'B' },
-    { kind: 'm2Command', commandId: 'm2-098-change-enemy-hp', fields: { target: 'all', operation: 'remove', value: 999999 } },
-  ], withParty);
-  runtime.performActorCommand({ kind: 'defend' });
-  const snapshot = runtime.snapshot();
-  expect(snapshot.result).toBe('victory');
-  expect(snapshot.actors[0]?.skillIds).not.toContain('B-skill');
-  const beforeHp = snapshot.actors[0]!.hp;
-  const applied = applyBattleRewardsToSession(session, { ...snapshot, result: 'victory' }, project);
-  expect(applied).toHaveLength(1);
-  expect(applied[0]).toMatchObject({ fromLevel, toLevel, maxHpGain: 10, learnedSkillIds: ['B-skill'] });
-  expect(snapshot.rewards.levelUps).toEqual(applied);
-  // #3370 부터 직업 습득표 기술은 세션 목록에 넣지 않고(직업을 바꾸면 따라 바뀐다) 직업에서 다시 센다 — 소유 기술로 본다.
-  expect(session.actorSkillIds[actor.id] ?? []).not.toContain('B-skill');
-  expect(actorOwnedSkillIds(project, session, actor.id)).toContain('B-skill');
-  expect(session.actorVitals[actor.id]?.hp).toBe(beforeHp + 10);
-});
-
-it('R2 keeps authored initial levels authoritative without party or session-state seeds', () => {
-  const { project, actor, session } = fixture();
-  const troop = project.database.troops[0];
-  if (!troop) throw new Error('troop missing');
-  project.system.battleFlow = 'strict';
-  actor.parameterCurves.maxHp = Array.from({ length: 99 }, (_, i) => 100 + i);
-  // 경험치 바닥(#3234): 시작 레벨 3 배우는 세션 경험치 0 이어도 레벨 3 바닥에서 센다 — 바닥 + 보상이 레벨 4 문턱에 한 점 못 미치게 준다.
-  const floorExp = totalExpForLevel(actor.expCurve, 3);
-  const earnedExp = totalExpForLevel(actor.expCurve, 4) - floorExp - 1;
-  for (const enemy of project.database.enemies) enemy.rewards.exp = earnedExp;
-  troop.battleEventPages = [{
-    id: 'default-growth', name: 'default-growth', span: 'battle',
-    conditions: [{ kind: 'actorCommand', actorId: actor.id, commandId: 'defend' }],
-    commands: [{ kind: 'm2Command', commandId: 'm2-098-change-enemy-hp', fields: { target: 'all', operation: 'remove', value: 999999 } }],
-  }];
-  const runtime = createBattleRuntime({ project, troopId: troop.id, canEscape: true, canLose: true, rng: () => 0.5 });
-  const initial = runtime.snapshot();
-  expect(initial.actors[0]?.level).toBe(3);
-  expect(session.actorLevels[actor.id]).toBe(3);
-  runtime.performActorCommand({ kind: 'defend' });
-  const snapshot = runtime.snapshot();
-  expect(snapshot.result).toBe('victory');
-  expect(snapshot.rewards.exp).toBe(earnedExp);
-  const applied = applyBattleRewardsToSession(session, { ...snapshot, result: 'victory' }, project);
-  expect(applied).toEqual([]);
-  expect(snapshot.rewards.levelUps).toEqual(applied);
-  expect(initial.eventState.actorLevels?.[actor.id]).toBe(3);
-  expect(snapshot.eventState.actorLevels?.[actor.id]).toBe(3);
-  expect(session.actorLevels[actor.id]).toBe(3);
-  expect(session.actorExperience[actor.id]).toBe(floorExp + earnedExp);
-});
-
-it.each(['lowered rank', 'deleted node', 'invalid override', 'unchanged'] as const)('R3 restores effective growth maxima without healing after %s', change => {
-  const { project, actor, session, trees } = fixture();
-  const root = trees[0]?.nodes[0];
-  const destination = project.database.classes.find(c => c.id === 'B');
-  if (!root || !destination) throw new Error('fixture missing');
-  actor.parameterCurves.maxHp = Array(99).fill(100);
-  actor.parameterCurves.maxMp = Array(99).fill(30);
-  destination.parameterCurves.maxHp = Array(99).fill(200);
-  destination.parameterCurves.maxMp = Array(99).fill(60);
-  root.effect = { kind: 'parameter', parameter: 'maxHp', amount: 50 };
-  trees[0]!.nodes.push({ ...structuredClone(root), id: 'mp', effect: { kind: 'parameter', parameter: 'maxMp', amount: 20 } });
-  session.actorParamBonuses = { [actor.id]: { maxHp: 7, maxMp: 3 } };
-  investSkillNode(project, session, actor.id, 'tree-A', 'root');
-  investSkillNode(project, session, actor.id, 'tree-A', 'root');
-  investSkillNode(project, session, actor.id, 'tree-A', 'mp');
-  investSkillNode(project, session, actor.id, 'tree-A', 'mp');
-  if (change === 'invalid override') {
-    session.classOverrides[actor.id] = 'B';
+describe("growthIntegratedFixes", () => {
+  isolateTimers();
+  function restore(project: Project, session: PlaySession): PlaySession {
+    const saved = JSON.stringify(createSaveSnapshot(project, session));
+    const slot = readSaveSlot({ getItem: () => saved }, 1);
+    if (slot.kind !== 'present') throw new Error(`save ${slot.kind}`);
+    return applySaveSnapshot(project, slot.snapshot);
+  }
+  function battle(project: Project, session: PlaySession, commands: Command[], withParty = true) {
+    const troop = project.database.troops[0];
+    if (!troop) throw new Error('troop missing');
+    project.system.battleFlow = 'strict';
+    troop.battleEventPages = [{
+      id: 'growth-fix', name: 'growth-fix', span: 'battle',
+      conditions: [{ kind: 'actorCommand', actorId: session.partyActorIds[0]!, commandId: 'defend' }], commands,
+    }];
+    return createBattleRuntime({
+      project, troopId: troop.id, sessionState: session, canEscape: true, canLose: true, rng: () => 0.5,
+      party: withParty ? {
+        levels: session.actorLevels, experience: session.actorExperience, vitals: session.actorVitals,
+        partyActorIds: session.partyActorIds, classOverrides: session.classOverrides,
+        paramBonuses: session.actorParamBonuses,
+      } : undefined,
+    });
+  }
+  it.each([5, 2])('R1 keeps battle, field, save and next battle at authoritative level %s after promotion', level => {
+    const { project, actor, session } = fixture();
+    const destination = project.database.classes.find(c => c.id === 'B');
+    if (!destination) throw new Error('class missing');
+    actor.parameterCurves.maxHp = Array.from({ length: 99 }, (_, i) => 200 + i);
+    actor.parameterCurves.maxMp = Array.from({ length: 99 }, (_, i) => 40 + i);
+    destination.parameterCurves.maxHp = Array.from({ length: 99 }, (_, i) => 100 + 10 * i);
+    destination.parameterCurves.maxMp = Array.from({ length: 99 }, (_, i) => 20 + 5 * i);
+    refreshGrowthVitals(project, session, actor.id);
+    Object.assign(session.actorVitals[actor.id]!, { hp: 130, mp: 33 });
+    const runtime = battle(project, session, [
+      { kind: 'changeLevel', actorId: actor.id, op: '=', amount: level },
+      { kind: 'promoteActor', actorId: actor.id, toClassId: 'B' },
+      { kind: 'm2Command', commandId: 'm2-105-abort-battle', fields: {} },
+    ]);
+    expect(runtime.snapshot().actors[0]).toMatchObject({ level: 3, maxHp: 202, hp: 130 });
+    runtime.performActorCommand({ kind: 'defend' });
+    const snapshot = runtime.snapshot();
+    const vitals = { maxHp: 100 + 10 * (level - 1), maxMp: 20 + 5 * (level - 1), hp: Math.min(130, 100 + 10 * (level - 1)), mp: Math.min(33, 20 + 5 * (level - 1)) };
+    expect(snapshot.result).toBe('escape');
+    expect(snapshot.eventState.actorLevels?.[actor.id]).toBe(level);
+    expect(snapshot.actors[0]).toMatchObject({ level, classId: 'B', ...vitals });
+    applyBattleRewardsToSession(session, { ...snapshot, result: 'escape' }, project);
+    expect(session.actorLevels[actor.id]).toBe(level);
+    expect(session.actorVitals[actor.id]).toEqual(vitals);
+    const loaded = restore(project, session);
+    expect(loaded.actorLevels[actor.id]).toBe(level);
+    expect(loaded.actorVitals[actor.id]).toEqual(vitals);
+    expect(battle(project, loaded, []).snapshot().actors[0]).toMatchObject({ level, ...vitals });
+  });
+  it.each([
+    { withParty: true, eventGrowth: false },
+    { withParty: true, eventGrowth: true },
+    { withParty: false, eventGrowth: true },
+  ])('R2 previews final class, level, XP and skill threshold %j', ({ withParty, eventGrowth }) => {
+    const { project, actor, session } = fixture();
+    const destination = project.database.classes.find(c => c.id === 'B');
+    if (!destination) throw new Error('class missing');
+    actor.parameterCurves.maxHp = Array.from({ length: 99 }, (_, i) => 100 + i);
+    destination.parameterCurves.maxHp = Array.from({ length: 99 }, (_, i) => 100 + 10 * i);
+    const fromLevel = eventGrowth ? 4 : 3, toLevel = fromLevel + 1;
+    destination.learnedSkills = [{ level: toLevel, skillId: 'B-skill' }];
+    for (const enemy of project.database.enemies) enemy.rewards.exp = 1;
+    const thresholdExp = totalExpForLevel(actor.expCurve, toLevel) - 1;
+    session.actorExperience[actor.id] = eventGrowth ? 0 : thresholdExp;
+    const growthCommands: Command[] = eventGrowth ? [
+      { kind: 'changeLevel', actorId: actor.id, op: '=', amount: fromLevel },
+      { kind: 'changeExp', actorId: actor.id, op: '=', amount: thresholdExp },
+    ] : [];
+    const runtime = battle(project, session, [
+      ...growthCommands,
+      { kind: 'promoteActor', actorId: actor.id, toClassId: 'B' },
+      { kind: 'm2Command', commandId: 'm2-098-change-enemy-hp', fields: { target: 'all', operation: 'remove', value: 999999 } },
+    ], withParty);
+    runtime.performActorCommand({ kind: 'defend' });
+    const snapshot = runtime.snapshot();
+    expect(snapshot.result).toBe('victory');
+    expect(snapshot.actors[0]?.skillIds).not.toContain('B-skill');
+    const beforeHp = snapshot.actors[0]!.hp;
+    const applied = applyBattleRewardsToSession(session, { ...snapshot, result: 'victory' }, project);
+    expect(applied).toHaveLength(1);
+    expect(applied[0]).toMatchObject({ fromLevel, toLevel, maxHpGain: 10, learnedSkillIds: ['B-skill'] });
+    expect(snapshot.rewards.levelUps).toEqual(applied);
+    // #3370 부터 직업 습득표 기술은 세션 목록에 넣지 않고(직업을 바꾸면 따라 바뀐다) 직업에서 다시 센다 — 소유 기술로 본다.
+    expect(session.actorSkillIds[actor.id] ?? []).not.toContain('B-skill');
+    expect(actorOwnedSkillIds(project, session, actor.id)).toContain('B-skill');
+    expect(session.actorVitals[actor.id]?.hp).toBe(beforeHp + 10);
+  });
+  it('R2 keeps authored initial levels authoritative without party or session-state seeds', () => {
+    const { project, actor, session } = fixture();
+    const troop = project.database.troops[0];
+    if (!troop) throw new Error('troop missing');
+    project.system.battleFlow = 'strict';
+    actor.parameterCurves.maxHp = Array.from({ length: 99 }, (_, i) => 100 + i);
+    // 경험치 바닥(#3234): 시작 레벨 3 배우는 세션 경험치 0 이어도 레벨 3 바닥에서 센다 — 바닥 + 보상이 레벨 4 문턱에 한 점 못 미치게 준다.
+    const floorExp = totalExpForLevel(actor.expCurve, 3);
+    const earnedExp = totalExpForLevel(actor.expCurve, 4) - floorExp - 1;
+    for (const enemy of project.database.enemies) enemy.rewards.exp = earnedExp;
+    troop.battleEventPages = [{
+      id: 'default-growth', name: 'default-growth', span: 'battle',
+      conditions: [{ kind: 'actorCommand', actorId: actor.id, commandId: 'defend' }],
+      commands: [{ kind: 'm2Command', commandId: 'm2-098-change-enemy-hp', fields: { target: 'all', operation: 'remove', value: 999999 } }],
+    }];
+    const runtime = createBattleRuntime({ project, troopId: troop.id, canEscape: true, canLose: true, rng: () => 0.5 });
+    const initial = runtime.snapshot();
+    expect(initial.actors[0]?.level).toBe(3);
+    expect(session.actorLevels[actor.id]).toBe(3);
+    runtime.performActorCommand({ kind: 'defend' });
+    const snapshot = runtime.snapshot();
+    expect(snapshot.result).toBe('victory');
+    expect(snapshot.rewards.exp).toBe(earnedExp);
+    const applied = applyBattleRewardsToSession(session, { ...snapshot, result: 'victory' }, project);
+    expect(applied).toEqual([]);
+    expect(snapshot.rewards.levelUps).toEqual(applied);
+    expect(initial.eventState.actorLevels?.[actor.id]).toBe(3);
+    expect(snapshot.eventState.actorLevels?.[actor.id]).toBe(3);
+    expect(session.actorLevels[actor.id]).toBe(3);
+    expect(session.actorExperience[actor.id]).toBe(floorExp + earnedExp);
+  });
+  it.each(['lowered rank', 'deleted node', 'invalid override', 'unchanged'] as const)('R3 restores effective growth maxima without healing after %s', change => {
+    const { project, actor, session, trees } = fixture();
+    const root = trees[0]?.nodes[0];
+    const destination = project.database.classes.find(c => c.id === 'B');
+    if (!root || !destination) throw new Error('fixture missing');
+    actor.parameterCurves.maxHp = Array(99).fill(100);
+    actor.parameterCurves.maxMp = Array(99).fill(30);
+    destination.parameterCurves.maxHp = Array(99).fill(200);
+    destination.parameterCurves.maxMp = Array(99).fill(60);
+    root.effect = { kind: 'parameter', parameter: 'maxHp', amount: 50 };
+    trees[0]!.nodes.push({ ...structuredClone(root), id: 'mp', effect: { kind: 'parameter', parameter: 'maxMp', amount: 20 } });
+    session.actorParamBonuses = { [actor.id]: { maxHp: 7, maxMp: 3 } };
+    investSkillNode(project, session, actor.id, 'tree-A', 'root');
+    investSkillNode(project, session, actor.id, 'tree-A', 'root');
+    investSkillNode(project, session, actor.id, 'tree-A', 'mp');
+    investSkillNode(project, session, actor.id, 'tree-A', 'mp');
+    if (change === 'invalid override') {
+      session.classOverrides[actor.id] = 'B';
+      session.promotionLineage = { [actor.id]: ['A', 'B'] };
+    }
+    refreshGrowthVitals(project, session, actor.id);
+    session.actorVitals[actor.id]!.hp = session.actorVitals[actor.id]!.maxHp - 20;
+    session.actorVitals[actor.id]!.mp = session.actorVitals[actor.id]!.maxMp - 10;
+    const saved = JSON.stringify(createSaveSnapshot(project, session));
+    const history = structuredClone(session.growthProgress);
+    if (change === 'lowered rank') for (const node of trees[0]!.nodes) node.maxRank = 1;
+    if (change === 'deleted node') trees[0]!.nodes = [];
+    if (change === 'invalid override') project.database.classes = project.database.classes.filter(c => c.id !== 'B');
+    const slot = readSaveSlot({ getItem: () => saved }, 1);
+    if (slot.kind !== 'present') throw new Error(`save ${slot.kind}`);
+    const loaded = applySaveSnapshot(project, slot.snapshot);
+    const expected = change === 'lowered rank' ? { maxHp: 157, hp: 157, maxMp: 53, mp: 53 }
+      : change === 'deleted node' ? { maxHp: 107, hp: 107, maxMp: 33, mp: 33 }
+      : change === 'invalid override' ? { maxHp: 207, hp: 207, maxMp: 73, mp: 73 }
+      : { maxHp: 207, hp: 187, maxMp: 73, mp: 63 };
+    expect(loaded.actorVitals[actor.id]).toEqual(expected);
+    expect(loaded.growthProgress).toEqual(history);
+    expect(battle(project, loaded, []).snapshot().actors[0]).toMatchObject(expected);
+  });
+  it.each(['', 'deleted', undefined])('R5 distinguishes invalid-present override %j from missing across ownership, battle and save', override => {
+    const { project, actor, session } = fixture();
+    if (override !== undefined) session.classOverrides[actor.id] = override;
     session.promotionLineage = { [actor.id]: ['A', 'B'] };
-  }
-  refreshGrowthVitals(project, session, actor.id);
-  session.actorVitals[actor.id]!.hp = session.actorVitals[actor.id]!.maxHp - 20;
-  session.actorVitals[actor.id]!.mp = session.actorVitals[actor.id]!.maxMp - 10;
-  const saved = JSON.stringify(createSaveSnapshot(project, session));
-  const history = structuredClone(session.growthProgress);
-  if (change === 'lowered rank') for (const node of trees[0]!.nodes) node.maxRank = 1;
-  if (change === 'deleted node') trees[0]!.nodes = [];
-  if (change === 'invalid override') project.database.classes = project.database.classes.filter(c => c.id !== 'B');
-  const slot = readSaveSlot({ getItem: () => saved }, 1);
-  if (slot.kind !== 'present') throw new Error(`save ${slot.kind}`);
-  const loaded = applySaveSnapshot(project, slot.snapshot);
-  const expected = change === 'lowered rank' ? { maxHp: 157, hp: 157, maxMp: 53, mp: 53 }
-    : change === 'deleted node' ? { maxHp: 107, hp: 107, maxMp: 33, mp: 33 }
-    : change === 'invalid override' ? { maxHp: 207, hp: 207, maxMp: 73, mp: 73 }
-    : { maxHp: 207, hp: 187, maxMp: 73, mp: 63 };
-  expect(loaded.actorVitals[actor.id]).toEqual(expected);
-  expect(loaded.growthProgress).toEqual(history);
-  expect(battle(project, loaded, []).snapshot().actors[0]).toMatchObject(expected);
-});
-
-it.each(['', 'deleted', undefined])('R5 distinguishes invalid-present override %j from missing across ownership, battle and save', override => {
-  const { project, actor, session } = fixture();
-  if (override !== undefined) session.classOverrides[actor.id] = override;
-  session.promotionLineage = { [actor.id]: ['A', 'B'] };
-  session.growthProgress = { [actor.id]: { 'tree-B': { skill: { rank: 1, spent: 1 } } } };
-  for (const state of [session, restore(project, session)]) {
-    const expectedTrees = override === undefined ? ['tree-A', 'tree-B'] : ['tree-A'];
-    expect(activeSkillTrees(project, state, actor.id).map(t => t.id)).toEqual(expectedTrees);
-    expect(actorOwnedSkillIds(project, state, actor.id).includes('tree-skill')).toBe(override === undefined);
-    expect(actorBattlers(project, { classOverrides: state.classOverrides, promotionLineage: state.promotionLineage, growthProgress: state.growthProgress })[0]?.skillIds.includes('tree-skill')).toBe(override === undefined);
-    expect(battle(project, state, []).snapshot().actors[0]?.skillIds.includes('tree-skill')).toBe(override === undefined);
-    expect(state.growthProgress).toEqual(session.growthProgress);
-  }
+    session.growthProgress = { [actor.id]: { 'tree-B': { skill: { rank: 1, spent: 1 } } } };
+    for (const state of [session, restore(project, session)]) {
+      const expectedTrees = override === undefined ? ['tree-A', 'tree-B'] : ['tree-A'];
+      expect(activeSkillTrees(project, state, actor.id).map(t => t.id)).toEqual(expectedTrees);
+      expect(actorOwnedSkillIds(project, state, actor.id).includes('tree-skill')).toBe(override === undefined);
+      expect(actorBattlers(project, { classOverrides: state.classOverrides, promotionLineage: state.promotionLineage, growthProgress: state.growthProgress })[0]?.skillIds.includes('tree-skill')).toBe(override === undefined);
+      expect(battle(project, state, []).snapshot().actors[0]?.skillIds.includes('tree-skill')).toBe(override === undefined);
+      expect(state.growthProgress).toEqual(session.growthProgress);
+    }
+  });
 });
