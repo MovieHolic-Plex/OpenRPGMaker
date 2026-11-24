@@ -265,6 +265,14 @@ export function listEditorCommands(): readonly EditorCommand[] {
     { id: "left-drawer-workshop", label: "화면: 공방 열기", category: "화면", keywords: ["workshop", "harness", "공방", "도트", "후보"], run: () => openLeftDrawer("workshop") },
     { id: "left-drawer-store", label: "화면: 에셋 스토어 열기", category: "화면", keywords: ["store", "asset", "market", "스토어", "에셋", "장터"], run: () => openLeftDrawer("store") },
     { id: "left-column-toggle", label: "화면: 왼쪽 열 접기/펴기", category: "화면", keywords: ["sidebar", "left", "collapse", "사이드바", "왼쪽", "접기", "펴기"], run: () => toggleLeftColumn() },
+    // 공간 오브젝트 편집기(칸 그리기·앵커·삭제)는 기본으로 접힌다(qa1124-space PR8) — 여기서 켜고 끈다.
+    { id: "spatial-advanced-edit-toggle", label: "공간: 오브젝트 고급 편집 켜기/끄기", category: "화면", keywords: ["spatial", "object", "advanced", "edit", "공간", "오브젝트", "고급", "편집", "칸 그리기"], run: () => {
+      void Promise.all([import("@/editor/panels/spatialAdvancedEdit"), import("@/editor/panels/database")]).then(([advanced, database]) => {
+        advanced.setSpatialAdvancedEdit(!advanced.spatialAdvancedEdit());
+        const body = document.querySelector<HTMLElement>('[data-testid="database-modal"] .db-body');
+        if (body) database.refreshDatabasePanel(body.parentElement ?? body);
+      });
+    } },
     // 「작업: 데이터」·「작업: 테스트」는 아래 「자료집 열기」·「테스트 실행」과 같은 일을 다른 이름으로 했다 — 한 명령 한 이름.
     ...AUTHORING_TASKS.filter((task) => !DUPLICATED_TASKS.has(task.id)).map((task): EditorCommand => ({
       id: `authoring-task-${task.id}`,

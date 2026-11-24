@@ -15,6 +15,51 @@ import { applyToolToStore } from "@/editor/tools/applyChangesetToStore";
 import { prepareTool } from "@/editor/tools/asyncToolRunner";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
+import { setSpatialAdvancedEdit, spatialAdvancedEdit } from "@/editor/panels/spatialAdvancedEdit";
+import { openAiAssistantPanel } from "@/editor/aiAssistantBridge";
+import { prefillAiAssistantInput, setPendingAiBootIntent } from "@/editor/aiBootIntent";
+
+/** 선택한 오브젝트를 조수 입력창에 채운다. 보내지는 않는다 — 무엇을 시킬지는 사람이 잇는다. */
+function askAssistantAbout(card: SpatialGalleryCard): void {
+  const ref = card.sharedObjectId ? `shared-object:${card.sharedObjectId}` : card.canonicalSource ? card.canonicalSource.id : `${card.tilesetId ?? ""}/${card.objectId ?? card.localId ?? card.id}`;
+  const text = `오브젝트 「${card.name}」(${ref}) `;
+  openAiAssistantPanel();
+  if (!prefillAiAssistantInput(text, { preserveDraft: true })) setPendingAiBootIntent(text);
+}
+
+function askAssistantButton(card: SpatialGalleryCard): HTMLButtonElement {
+  return el("button", { class: "spatial-action", text: "조수에게 시키기", attrs: { type: "button", title: "이 오브젝트를 조수 입력창에 넣는다(보내지 않음)" },
+    dataset: { testid: "spatial-object-ask-assistant" }, on: { click: () => askAssistantAbout(card) } });
+}
+
+/**
+ * 고급 편집이 꺼진 기본 상세 — 그림·이름·위치와 두 버튼만. 칸 그리기 캔버스는 만들지 않는다(qa1124 오너 11).
+ * 그림은 목록 카드와 같은 재료라 thumbCache 메모리 적중이면 <img> 하나다.
+ */
+function simpleObjectInspector(card: SpatialGalleryCard, open: boolean, rerender: () => void): HTMLElement {
+  const art = renderSpatialCardThumb(card);
+  art.classList.add("spatial-object-simple-art");
+  const facts: [string, string][] = [
+    ["출처", card.source === "default" ? "공용 오브젝트" : "내 오브젝트"],
+    ...(card.subtitle ? [["분류", card.subtitle] as [string, string]] : []),
+    ...(card.tilesetId ? [["타일셋", card.tilesetId] as [string, string]] : []),
+  ];
+  return el("aside", {
+    class: `spatial-inspector${open ? " is-open" : ""}`,
+    attrs: { "aria-label": "속성", id: "spatial-inspector" },
+    dataset: { testid: "spatial-inspector", inspectorView: "simple" },
+    children: [
+      el("h3", { class: "spatial-inspector-name", text: card.name }),
+      el("div", { class: "spatial-object-simple-preview", dataset: { testid: "spatial-object-simple-preview" }, children: [art] }),
+      el("dl", { class: "spatial-inspector-facts", children: facts.flatMap(([label, value]) => [el("dt", { text: label }), el("dd", { text: value })]) }),
+      el("div", { class: "spatial-object-actions", children: [
+        askAssistantButton(card),
+        el("button", { class: "spatial-action", text: "고급 편집 열기", attrs: { type: "button", title: "칸 그리기·앵커·삭제 편집기를 펼친다" },
+          dataset: { testid: "spatial-object-advanced" }, on: { click: () => { setSpatialAdvancedEdit(true); rerender(); } } }),
+      ] }),
+    ],
+  });
+}
 
 
 let lastStamp: { objectId: string; text: string } | null = null;
@@ -49,7 +94,8 @@ function sharedObjectInspector(objectId: string, open: boolean, _rerender: () =>
       el("p", { class: "spatial-inspector-sub", text: "공용 오브젝트" }),
       el("p", { class: "spatial-inspector-sub", text: `어디 곁에: ${def.owner}`, dataset: { testid: "shared-object-owner" } }),
       facts([["크기", `${def.width}×${def.height}칸`], ["타일셋", def.tilesetId], ["통행", def.passage], ["태그", def.tags.join(", ")], ["조수", `stamp_object({objectId:'${def.id}', mapId, x, y})`]]),
-      el("div", { class: "spatial-object-actions", children: [stamp] }),
+      el("div", { class: "spatial-object-actions", children: [stamp, el("button", { class: "spatial-action", text: "조수에게 시키기", attrs: { type: "button" },
+        dataset: { testid: "spatial-object-ask-assistant" }, on: { click: () => { openAiAssistantPanel(); const text = `공용 오브젝트 「${def.name}」(shared-object:${def.id}) `; if (!prefillAiAssistantInput(text, { preserveDraft: true })) setPendingAiBootIntent(text); } } })] }),
       note,
     ] : [el("h3", { class: "spatial-inspector-name", text: objectId })],
   });
@@ -107,11 +153,12 @@ export function renderSpatialObjectsInspector(
       children: [el("h3", { class: "spatial-inspector-name", text: card.name })],
     });
   }
+  if (!spatialAdvancedEdit()) return simpleObjectInspector(card, open, rerender);
   const design = target.libraryId
     ? visibleAuthoringProject().spatialAuthoring?.library.objects[target.libraryId]
     : undefined;
   const deletePreview = objectChromeState.deleteOpen ? previewObjectDelete(visibleAuthoringProject(), target) : null;
-  return renderSpatialObjectInspector({
+  const inspector = renderSpatialObjectInspector({
     card,
     open,
     target,
@@ -119,4 +166,10 @@ export function renderSpatialObjectsInspector(
     deletePreview,
     handlers: objectInspectorHandlers(target, design, rerender),
   });
+  inspector.prepend(el("div", { class: "spatial-object-actions", children: [
+    askAssistantButton(card),
+    el("button", { class: "spatial-action", text: "간단히 보기", attrs: { type: "button", title: "편집기를 접고 그림·이름만 본다" },
+      dataset: { testid: "spatial-object-simple" }, on: { click: () => { setSpatialAdvancedEdit(false); rerender(); } } }),
+  ] }));
+  return inspector;
 }
