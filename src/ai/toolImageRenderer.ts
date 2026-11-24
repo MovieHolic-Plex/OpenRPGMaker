@@ -96,6 +96,7 @@ export async function renderPiToolImage(project: Project, toolName: string, data
     }
     return encodePng(drawCharsetPreview(candidates, id => sheets.get(id)!));
   }
+  if (toolName === 'show_spatial_design') return renderSpatialDesignImage(project, data);
   if (toolName !== 'show_title_opening') return renderPiMapImage(project, data);
   const resourceId = (data as { resourceId?: unknown } | undefined)?.resourceId;
   if (typeof resourceId !== 'string') throw new Error('presentation-rendering-unavailable: resource id missing');
@@ -124,6 +125,10 @@ export async function renderToolImages(project: Project, toolName: string, data:
     if (toolName === "preview_house") return await renderTileGrid(project, data, "집 미리보기");
     if (toolName === "look_at_houses") return await renderTileGrid(project, data, "깔린 집 관찰");
     if (toolName === "render_group_sample") return await renderGroupSamples(project, data);
+    if (toolName === "show_spatial_design") {
+      const name = (data as { name?: unknown } | undefined)?.name;
+      return [{ dataUrl: await renderSpatialDesignImage(project, data), label: `오브젝트 그림${typeof name === "string" ? ` · ${name}` : ""}` }];
+    }
     if (toolName === 'show_title_opening') {
       const images: RenderedToolImage[] = [];
       for (const resourceId of presentationArtIds(project)) images.push({
@@ -138,6 +143,59 @@ export async function renderToolImages(project: Project, toolName: string, data:
     if (cause instanceof Error && cause.message.includes("rendering-unavailable")) throw cause;
     return [];
   }
+}
+
+/** Pi 워커는 512×512 를 넘는 PNG 를 거절한다(client.ts) — 큰 오브젝트는 줄여 보낸다. */
+const SPATIAL_DESIGN_IMAGE_MAX_EDGE = 512;
+
+/**
+ * show_spatial_design 의 그림. 칸 배열은 공간 탭 오브젝트 카드와 같은 재료·키로 thumbCache 를 거친다 —
+ * 카드가 이미 구운 그림이면 다시 그리지 않는다. 공용 카탈로그 오브젝트는 미리보기 그림 파일을 쓴다.
+ */
+async function renderSpatialDesignImage(project: Project, data: unknown): Promise<string> {
+  const view = toolPayload(data);
+  if (!view) throw new Error("spatial-design-rendering-unavailable: no design");
+  let source: string;
+  if (view.kind === "preview" && typeof view.preview === "string") {
+    source = view.preview;
+  } else {
+    const tilesetId = stringValue(view.tilesetId), kitId = stringValue(view.kitId);
+    if (!tilesetId || !kitId) throw new Error("spatial-design-rendering-unavailable: tileset or kit missing");
+    const [{ objectGraphicRecipe, objectRecipeCacheKey }, { renderTileCellsToCanvas }, { getThumb }] = await Promise.all([
+      import("@/editor/panels/spatialGallery"), import("@/editor/harnessSuggestion/kitRender"), import("@/editor/thumbCache"),
+    ]);
+    const recipe = objectGraphicRecipe(project, tilesetId, kitId);
+    if (!recipe) throw new Error(`spatial-design-rendering-unavailable: ${tilesetId}/${kitId} has no tile picture`);
+    const key = objectRecipeCacheKey(recipe);
+    const url = await getThumb(key.key, key.size, () => new Promise<HTMLCanvasElement | null>((resolve) => {
+      const canvas = renderTileCellsToCanvas(recipe);
+      const settle = (): boolean => {
+        const state = canvas.dataset.previewState;
+        if (state === "ready") { resolve(canvas); return true; }
+        if (state === "error") { resolve(null); return true; }
+        return false;
+      };
+      if (settle()) return;
+      const observer = new MutationObserver(() => { if (settle()) observer.disconnect(); });
+      observer.observe(canvas, { attributes: true, attributeFilter: ["data-preview-state"] });
+    }));
+    if (!url) throw new Error(`spatial-design-rendering-unavailable: ${tilesetId}/${kitId} tileset picture failed to load`);
+    source = url;
+  }
+  const image = new Image();
+  await new Promise<void>((resolve, reject) => {
+    image.onload = () => resolve();
+    image.onerror = () => reject(new Error("spatial-design-rendering-unavailable: picture failed to load"));
+    image.src = source;
+  });
+  const scale = Math.min(1, SPATIAL_DESIGN_IMAGE_MAX_EDGE / Math.max(image.naturalWidth, image.naturalHeight, 1));
+  const pair = createCanvas(Math.max(1, Math.round(image.naturalWidth * scale)), Math.max(1, Math.round(image.naturalHeight * scale)));
+  if (!pair) throw new Error("spatial-design-rendering-unavailable: canvas missing");
+  pair.context.imageSmoothingEnabled = false;
+  pair.context.drawImage(image, 0, 0, pair.canvas.width, pair.canvas.height);
+  const png = canvasDataUrl(pair.canvas);
+  if (!png) throw new Error("spatial-design-rendering-unavailable: no PNG");
+  return png;
 }
 
 async function renderShowTiles(project: Project, data: unknown): Promise<RenderedToolImage[]> {
