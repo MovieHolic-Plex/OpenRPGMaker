@@ -123,7 +123,7 @@ describe("UX round 2: retained Life search and selected inspectors", () => {
     for (const [kind, id] of [["fishing", "spot_ux2"], ["forage", "area_ux2"], ["museum", "museum_ux2"], ["fish", "fish_ux2_1"]]) {
       control<HTMLButtonElement>(host, `db-life-collections-chip-${kind}`).click();
       control<HTMLButtonElement>(host, `db-life-collections-row-${kind}-${id}`).click();
-      expect(host.querySelectorAll('[data-testid="small-task-open"]')).toHaveLength(kind === "fish" ? 1 : 0);
+      expect(host.querySelectorAll('[data-testid="small-task-open"]')).toHaveLength(0);
       expect(control(host, `db-life-collections-panel-${kind}-${id}`).hidden).toBe(false);
       expect(host.querySelectorAll('[data-testid^="db-life-collections-panel-"]')).toHaveLength(1);
     }

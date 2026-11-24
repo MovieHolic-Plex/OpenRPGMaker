@@ -28,7 +28,6 @@ import {
 import { elementArtwork, elementDefenseContext, elementDefenseNote, elementGradeWord, elementOutcome } from "@/editor/panels/databaseElementPresentation";
 import { elementDisplayName } from "@/battle/skillHelp";
 import { elementAffinityCard } from "@/editor/panels/databaseElementAffinity";
-import { recordSmallTask } from "@/editor/smallTask/capsule";
 import { store } from "@/project/store";
 import type { ActorRateGrade, DatabaseElementRecord } from "@/project/types";
 import { el } from "@/util/dom";
@@ -274,7 +273,6 @@ function elementDetailPane(
     ],
     testid: "db-elements-hero",
   });
-  hero.append(recordSmallTask("elements", element.id));
   return detailPane({
     hero,
     body: el("div", {

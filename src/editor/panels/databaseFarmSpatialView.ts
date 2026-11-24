@@ -20,7 +20,6 @@
 // 용어 탭이 쓰는 것과 같은 계약 보존 패턴이다(workspace-modern.css 끝 주석 참고).
 
 import { FARMING_LIFE_UI_ASSETS } from "@/assets/farmingLifeUi";
-import { recordSmallTask } from "@/editor/smallTask/capsule";
 import {
   farmBuildingTypeReferenceMessage,
   homeDecorationTypeReferenceMessage,
@@ -216,8 +215,6 @@ export function renderFarmSpatialTab(host: HTMLElement, rerender: () => void): v
     }),
     testid: "db-spatial-hero",
   });
-  if (selection?.kind === "buildingType") hero.append(recordSmallTask("farmBuildingTypes", selection.id));
-  if (selection?.kind === "decorationType") hero.append(recordSmallTask("homeDecorationTypes", selection.id));
   const detail = detailPane({
     hero,
     body: [
