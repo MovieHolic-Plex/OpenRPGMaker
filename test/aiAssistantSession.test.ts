@@ -12,6 +12,7 @@ import type { SessionEvent, ToolImageRenderer } from "@/ai/assistantSession";
 import { getTool } from "@/editor/tools";
 import * as applyStore from "@/editor/tools/applyChangesetToStore";
 import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
+import { createSharedTilesetBlankProject } from "./support/sharedBlankProject";
 
 // Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
 // panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
@@ -1271,9 +1272,8 @@ const MILESTONE_PLAN_SHAPE = {
 };
 
 async function load() {
-  const [assistantSession, defaults, llm] = await Promise.all([
+  const [assistantSession, llm] = await Promise.all([
     import("@/ai/assistantSession"),
-    import("@/project/defaults"),
     import("@/ai/llmClient"),
   ]);
   return {
@@ -1283,7 +1283,7 @@ async function load() {
     truncatedTurnText: assistantSession.truncatedTurnText,
     AGENT_RUN_MAX_TOTAL_STEPS: assistantSession.AGENT_RUN_MAX_TOTAL_STEPS,
     TOKEN_BUDGET_STATUS_TEXT: assistantSession.TOKEN_BUDGET_STATUS_TEXT,
-    createBlankProject: defaults.createBlankProject,
+    createBlankProject: createSharedTilesetBlankProject,
     llm,
   };
 }
