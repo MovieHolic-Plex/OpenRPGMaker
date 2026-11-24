@@ -268,8 +268,8 @@
 }
 
 .db-resource-picker-group.active {
-  background: var(--db-studio-accent-soft, rgba(37, 99, 235, 0.12));
-  border-color: var(--db-studio-accent, #2563eb);
+  background: var(--accent-muted, rgba(120, 140, 255, 0.22));
+  border-color: currentColor;
   font-weight: 600;
 }
 
