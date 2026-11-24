@@ -43,6 +43,10 @@ const ENTRIES = [
   {
     entry: resolve(REPO_ROOT, "electron/main/main.ts"),
     outfile: resolve(OUT_DIR, "app.cjs"),
+    // 본체도 상한을 둔다(2026-11-24): 문자열 상수 하나 때문에 번들 타일셋 JSON 112MB 가 딸려 와 121.5MB 였고,
+    // 앱을 켤 때마다 이 파일을 읽는 데 3초 넘게 걸렸다. 타일셋 정의·팀 병합은 project-core.cjs(지연 읽기)에만 둔다.
+    // 고친 뒤 2.05MB 다. 상한은 그 두 배 정도로 두어 큰 JSON 하나만 딸려 와도 빌드가 멈추게 한다.
+    maxBytes: 4_000_000,
     injectOAuth: true,
     format: "cjs",
     platform: "node",
@@ -106,13 +110,14 @@ if (missingOAuth.length) process.stderr.write(`warning: OAuth 클라이언트 �
 const PROJECT_CORE_MODULES = {
   loadRepair: resolve(REPO_ROOT, "src/project/persistence/core/loadRepair.ts"),
   serialize: resolve(REPO_ROOT, "src/project/io/serialize.ts"),
+  teamMerge: resolve(REPO_ROOT, "src/project/persistence/core/teamMerge.ts"),
 };
 function lazyProjectCorePlugin(exportNames) {
   const byPath = new Map(Object.entries(PROJECT_CORE_MODULES).map(([namespace, path]) => [path, namespace]));
   return {
     name: "oprn-lazy-project-core",
     setup(pluginBuild) {
-      pluginBuild.onResolve({ filter: /(?:loadRepair|serialize)$/ }, async (args) => {
+      pluginBuild.onResolve({ filter: /(?:loadRepair|serialize|teamMerge)$/ }, async (args) => {
         if (args.pluginData?.lazyCoreSkip) return undefined;
         const resolved = await pluginBuild.resolve(args.path, { resolveDir: args.resolveDir, kind: args.kind, importer: args.importer, pluginData: { lazyCoreSkip: true } });
         const namespace = byPath.get(resolved.path);
@@ -183,7 +188,7 @@ for (const { entry, outfile, format, platform, target, external, injectOAuth, ma
   if (format === "cjs") assertNoTopLevelImportMeta(outfile);
   if (!injectOAuth) assertNoOAuthSecrets(outfile);
   // 입구가 무거워지면 아이콘을 누른 뒤 스플래시가 그만큼 늦게 뜬다(electron/main/boot.ts).
-  if (maxBytes && readFileSync(outfile).length > maxBytes) throw new Error(`${outfile}: ${readFileSync(outfile).length} bytes > ${maxBytes} — 시작 입구에 무거운 import 가 끌려 왔다`);
+  if (maxBytes && readFileSync(outfile).length > maxBytes) throw new Error(`${outfile}: ${readFileSync(outfile).length} bytes > ${maxBytes} — 무거운 import(번들 타일셋 JSON 등)가 끌려 왔다. esbuild metafile 로 사슬을 찾아 가벼운 모듈로 떼라`);
 }
 
 // 에이전트 모드(실험)의 MCP 서버. 에이전트가 Electron 바이너리(ELECTRON_RUN_AS_NODE)로 띄우므로 asar 밖에 둔다(asarUnpack).
