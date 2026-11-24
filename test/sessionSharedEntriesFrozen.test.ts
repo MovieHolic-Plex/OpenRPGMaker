@@ -16,6 +16,8 @@
 //  · 세션 한 턴(타일 이름 붙이기 + 타일 이식) → 적용 — 세션의 정규화·검수·적용 경로.
 import { Session } from "node:inspector";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
+// 생활 시스템이 켜진 상태(도구 16개가 레지스트리에 실린다)를 검증한다 — 기본값(false)이면 조수 도구 목록에서 빠진다(electron/shared/lifeSim.ts).
+vi.mock("../electron/shared/lifeSim", () => ({ LIFE_SIM_ENABLED: true, LIFE_SIM_CLOSED_TITLE: "", LIFE_SIM_CLOSED_BODY: "", LIFE_SIM_CLOSED_NOTICE: "" }));
 import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
 import { createV2Tools } from "@/ai/v2/tools/verbs";
 import { V2Session } from "@/ai/v2/turn/session";

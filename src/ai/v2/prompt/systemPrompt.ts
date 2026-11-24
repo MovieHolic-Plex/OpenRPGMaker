@@ -28,6 +28,7 @@ import { MONSTER_WORDS, CHOICE_SCENE_WORDS } from "../request/genre";
 import { V2_CORE_PROMPT } from "./core";
 import { v2Cards, PlaceSpecKind, PLACE_SPEC_INDEX, interiorCatalogCard } from "./placeSpecs";
 import { projectBrief } from "./projectBrief";
+import { lifeSimClosedCard } from "@/editor/tools/lifeSimClosure";
 /** 요청·프로젝트가 맞을 때만 싣는 카드. lean 이면(장소를 짓지 않는 요청·구성기 세계) 실내 칩셋 목록은 싣지 않는다 — read_specs 가 준다. */
 export function conditionalCards(project: Project, currentMapId?: string, task = "", lean = false, key = ""): string[] {
   const intent = classifyRequest(task, project);
@@ -49,6 +50,8 @@ export function conditionalCards(project: Project, currentMapId?: string, task =
     ...(contract || CHOICE_SCENE_WORDS.test(topic) ? [SCENE_CARD] : []), ...byRequest,
     ...(tools.terrain && !audio.only ? [TERRAIN_CARD] : []), ...(tools.dress && !audio.only ? [DRESS_CARD] : []), ...(tools.store ? [storeCard(tools)] : []),
     ...(makeGameOn() && intent.makeGame ? [MAKE_GAME_CARD] : []),
+    // 농사·낚시를 말한 요청 — 생활 시스템이 닫혀 있으면 흉내 내지 않고 알린다(editor/tools/lifeSimClosure.ts).
+    ...lifeSimClosedCard(intent.topics),
   ];
 }
 /** 게임 카드 — 게임 하나를 짓는 요청은 전부, 그 밖의 요청은 늘 싣는 줄과 요청이 말한 주제의 줄만. */

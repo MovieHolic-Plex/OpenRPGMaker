@@ -1,7 +1,9 @@
 // JRPG 가 아닌 게임의 장치 — 작은 일 셋째 묶음 36건이 작은 일로 갈리고, 그 장치를 짓는 도구가 처음부터 실린다(모델 없음).
 // 2026-11-11 출발점: 손 풀이 도구가 처음부터 다 실린 일 8 · v2 어디에도 없는 도구가 든 일 14 · 작은 일로 안 갈린 요청 3 (openwiki/assistant-v2-genre-tools.md).
 import { readFileSync } from "node:fs";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+// 생활 시스템이 켜진 상태(도구 16개가 레지스트리에 실린다)를 검증한다 — 기본값(false)이면 조수 도구 목록에서 빠진다(electron/shared/lifeSim.ts).
+vi.mock("../electron/shared/lifeSim", () => ({ LIFE_SIM_ENABLED: true, LIFE_SIM_CLOSED_TITLE: "", LIFE_SIM_CLOSED_BODY: "", LIFE_SIM_CLOSED_NOTICE: "" }));
 import { isMonsterRequestTurn } from "@/ai/piAgent/monsterGameRequest";
 import { classifyRequest } from "@/ai/v2/request/intent";
 import { v2ToolPool } from "@/ai/v2/request/toolGroups";

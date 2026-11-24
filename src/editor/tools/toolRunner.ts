@@ -46,6 +46,8 @@ import { authoringWritePrerequisite } from '../../harnesses/_core/authoringRegis
 import { rejectUnavailablePackStills } from "./stillPackGuard";
 import { formatTerrainFrameViolations, terrainFrameViolations } from "@/project/terrainFrame";
 import { ToolError, type JsonSchema, type ToolContext, type ToolDefinition, type ToolResult } from "./types";
+import { LIFE_SIM_ENABLED } from "../../../electron/shared/lifeSim";
+import { lifeRecordCollectionsChanged, lifeSimWriteRefusal } from "./lifeSimClosure";
 import { settleStepPages } from "@/project/blueprintStepPages";
 import { commitCarried, settleCarriedWrites } from "./keptWrites";
 import { assertHouseProtection, captureHouseProtection, newlyBuiltHouseSnapshots, type HouseSnapshot } from "./houseProtection";
@@ -601,6 +603,11 @@ export function runToolDefinition(
       if (monsterWarnings.length) exec = { ...exec, warnings: [...monsterWarnings, ...(exec.warnings ?? [])] };
       const peopleWarnings = rejectPeopleChips(ctx, tool, before, draft);
       if (peopleWarnings.length) exec = { ...exec, warnings: [...peopleWarnings, ...(exec.warnings ?? [])] };
+    }
+    // 생활(농사·낚시·동물) 시스템이 닫혀 있는 동안 조수는 어느 도구로도 생활 컬렉션을 쓰지 못한다 — 범용 기록 도구(delete·duplicate·reorder·bulk_edit·prune)도 여기서 막힌다. 읽기는 이 줄을 지나지 않는다.
+    if (ctx.assistantRun && !LIFE_SIM_ENABLED) {
+      const touched = lifeRecordCollectionsChanged(before, draft);
+      if (touched.length > 0) throw new ToolError(lifeSimWriteRefusal(touched), { code: "life-sim-closed" });
     }
     if (!tool.allowsTilesetChange) {
       rejectUploadedTilesetSwap(before, draft, name, normalizedArgs);

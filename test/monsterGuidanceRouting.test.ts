@@ -1,6 +1,8 @@
 // 포켓몬라이크 깊이 감사(2026-10-16) 수리 ①②③④: 제작 프롬프트의 신기능 문장·분류기·find_tools 별칭·초기 도구.
 // 에이전트 세션 규칙으로 작성 시점에는 실행하지 않았다(감독자가 게이트에서 돌린다). 같은 표본은 scripts/qa/poke-audit-fix/*-probe.mts 로 bun 에서 돌렸다.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+// 생활 시스템이 켜진 상태(도구 16개가 레지스트리에 실린다)를 검증한다 — 기본값(false)이면 조수 도구 목록에서 빠진다(electron/shared/lifeSim.ts).
+vi.mock("../electron/shared/lifeSim", () => ({ LIFE_SIM_ENABLED: true, LIFE_SIM_CLOSED_TITLE: "", LIFE_SIM_CLOSED_BODY: "", LIFE_SIM_CLOSED_NOTICE: "" }));
 import { classifyMonsterGameRequest, hasMonsterCollectIntent, MONSTER_GAME_INITIAL_TOOLS, MONSTER_GAME_PRODUCTION_PROMPT } from "@/ai/piAgent/monsterGameRequest";
 import { classifyPlainPiTurn } from "@/ai/piAgent/plainTurn";
 import { resolveAutonomy } from "@/ai/autonomyLevels";

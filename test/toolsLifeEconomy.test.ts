@@ -1,6 +1,8 @@
 // 생활·경제 저작 파사드(LIFE_ECONOMY_TOOLS)가 실제로 어떤 Project 필드를 쓰는지 고정한다.
 // 2026-08-27 커버리지 감사: 에디터 UI 는 쓰는데 어떤 툴도 못 쓰던 필드들.
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+// 생활 시스템이 켜진 상태(도구 16개가 레지스트리에 실린다)를 검증한다 — 기본값(false)이면 조수 도구 목록에서 빠진다(electron/shared/lifeSim.ts).
+vi.mock("../electron/shared/lifeSim", () => ({ LIFE_SIM_ENABLED: true, LIFE_SIM_CLOSED_TITLE: "", LIFE_SIM_CLOSED_BODY: "", LIFE_SIM_CLOSED_NOTICE: "" }));
 import { runTool } from "@/editor/tools";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
