@@ -53,7 +53,7 @@ const FALLBACK_COMPANIONS: readonly GameBlueprintPerson[] = [
  * 청사진 cast 칸, 모자라면 이 게임의 이야기 사람(청사진 대화·고르기 단계의 who, 없으면 인물 소개가 있는 사람)에서, 그래도 모자라면 대체 이름에서 채운다.
  * party = cast 가 적은 동료만 시작 파티에 선다 — 2026-11-24 실측(Sonnet 호러): cast 없는 호러에 대체 검사·치유사가 파티로 들어갔다.
  */
-export function draftPeople(project: Project, blueprint: GameBlueprint | undefined): { hero: GameBlueprintPerson; companions: (GameBlueprintPerson & { party?: boolean })[]; boss?: GameBlueprintPerson } {
+export function draftPeople(project: Project, blueprint: GameBlueprint | undefined): { hero: GameBlueprintPerson; companions: (GameBlueprintPerson & { party?: boolean; actorId?: string })[]; boss?: GameBlueprintPerson } {
   const heroActor = project.database.actors.find((a) => a.id === project.system.startActorIds?.[0]);
   const cast = blueprint?.cast;
   const hero: GameBlueprintPerson = { name: cast?.hero?.name ?? heroActor?.name ?? "주인공", ...(cast?.hero ?? {}) };
@@ -62,7 +62,10 @@ export function draftPeople(project: Project, blueprint: GameBlueprint | undefin
     ...(blueprint?.steps ?? []).map((s) => s.who ?? "").filter(Boolean)]);
   const battleWho = (blueprint?.steps ?? []).filter((s) => s.kind === "battle" && s.who?.trim()).map((s) => s.who!.trim()).pop();
   const boss = cast?.boss ?? (battleWho ? { name: battleWho } : undefined);
-  let companions: (GameBlueprintPerson & { party?: boolean })[] = (cast?.companions ?? []).slice(0, 3).map((p) => ({ ...p, party: true }));
+  // 이미 시작 파티에 선 동료(모델·작가가 지었다)가 먼저다 — 그 위에 대체 동료를 더 세우지 않는다(2026-11-24 마왕 실측: 세이라·미레 위에 리안·세라가 붙었다).
+  const partyActors = (project.system.startActorIds ?? []).slice(1).map((id) => project.database.actors.find((a) => a.id === id)).filter((a): a is NonNullable<typeof a> => !!a);
+  let companions: (GameBlueprintPerson & { party?: boolean; actorId?: string })[] = partyActors.slice(0, 3).map((a) => ({ name: a.name, ...(a.nickname && a.nickname !== "없음" ? { role: a.nickname } : {}), party: true, actorId: a.id }));
+  for (const p of cast?.companions ?? []) if (companions.length < 3 && !companions.some((c) => c.name === p.name)) companions.push({ ...p, party: true });
   const have = (name: string) => name === hero.name || name === boss?.name || companions.some((c) => c.name === name);
   const bioOf = (name: string) => Object.values(project.characters ?? {}).find((p) => p.displayName?.trim() === name)?.note;
   if (companions.length < 2) {
@@ -186,7 +189,7 @@ export function applyDraftCast(project: Project, request = ""): string[] {
   const heroClass = heroActor ? project.database.classes.find((c) => c.id === heroActor.classId) : undefined;
   const classTemplate = heroClass ?? project.database.classes[0] ?? factory().database.classes[0];
   const people = [hero, ...companions];
-  const skillIds = people.map((person, i) => skillTemplate ? ensureSkill(project, `skill_${DRAFT_ID}_${i}`, person.skill?.trim() || `${person.name}의 일격`, person.name, skillTemplate, out) : undefined);
+  const skillIds = people.map((person, i) => skillTemplate && !("actorId" in person && person.actorId) ? ensureSkill(project, `skill_${DRAFT_ID}_${i}`, person.skill?.trim() || `${person.name}의 일격`, person.name, skillTemplate, out) : undefined);
   if (heroActor && classTemplate && (!heroClass || isPresetDatabaseRecord("classes", heroClass))) {
     heroActor.classId = ensureClass(project, `class_${DRAFT_ID}_0`, roleOf(hero, blueprint?.genre ? `${blueprint.genre} 주인공` : "주인공"), classTemplate, skillIds[0], out);
   }
@@ -196,6 +199,7 @@ export function applyDraftCast(project: Project, request = ""): string[] {
   const chips = usedChips(project);
   companions.forEach((person, n) => {
     const i = n + 1;
+    if (person.actorId) return;
     const id = `actor_${DRAFT_ID}_${i}`;
     let actor = project.database.actors.find((a) => a.id === id);
     if (!actor) {
@@ -235,7 +239,7 @@ export function applyDraftCast(project: Project, request = ""): string[] {
     out.push(`인물 소개 ${person.name}`);
   };
   if (heroActor) profile(heroActor.id, { ...hero, name: heroActor.name }, `${title ? `«${title}»의 ` : ""}주인공. ${roleOf(hero, "")}`.trim());
-  companions.forEach((person, n) => { const id = `actor_${DRAFT_ID}_${n + 1}`; if (project.database.actors.some((a) => a.id === id)) profile(id, person, person.party ? `${hero.name}와 함께 다니는 ${roleOf(person, "동료")}.` : `${hero.name}의 이야기에 얽힌 사람.`); });
+  companions.forEach((person, n) => { const id = person.actorId ?? `actor_${DRAFT_ID}_${n + 1}`; if (project.database.actors.some((a) => a.id === id)) profile(id, person, person.party ? `${hero.name}와 함께 다니는 ${roleOf(person, "동료")}.` : `${hero.name}의 이야기에 얽힌 사람.`); });
   if (boss) profile(BOSS_PROFILE_KEY, boss, `${hero.name} 앞을 막아서는 자.`);
   project.characters = characters;
 

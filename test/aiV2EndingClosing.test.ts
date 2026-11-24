@@ -118,6 +118,18 @@ describe("청사진 인물·세계 칸 → 첫 판 초안 데이터(draft-cast)"
     expect(project.database.enemies.some((e) => e.name === "용사 카일")).toBe(false);
   });
 
+  it("이미 시작 파티에 선 동료가 있으면 그 위에 동료를 더 세우지 않는다", () => {
+    const project = castGame();
+    const hero = project.database.actors.find((a) => a.id === project.system.startActorIds?.[0])!;
+    const mate = { ...structuredClone(hero), id: "actor_seira", name: "세이라", nickname: "견습 마법사" };
+    project.database.actors.push(mate);
+    project.system.startActorIds = [hero.id, mate.id];
+    applyDraftCast(project);
+    const party = (project.system.startActorIds ?? []).map((id) => project.database.actors.find((a) => a.id === id)!.name);
+    expect(party).toEqual(["아젤", "세이라", "리나"]);
+    expect(project.characters?.actor_seira?.displayName).toBe("세이라");
+  });
+
   it("cast 가 없으면 청사진 대화 상대로 동료 소개를 채우고, 그 사람들은 시작 파티에 넣지 않는다", () => {
     const project = game();
     applyDraftCast(project);
