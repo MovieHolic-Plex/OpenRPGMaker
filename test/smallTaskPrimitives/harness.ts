@@ -33,12 +33,7 @@ function buildFixtureProject(fixture: FixtureName): Project {
 const fixtureMasters = new Map<FixtureName, Project>();
 
 export function loadFixture(fixture: FixtureName): Project {
-  let master = fixtureMasters.get(fixture);
-  if (!master) {
-    master = buildFixtureProject(fixture);
-    fixtureMasters.set(fixture, master);
-  }
-  return cloneProjectSharingSharedDictionaries(master);
+  return buildFixtureProject(fixture);
 }
 
 let blankMaster: Project | undefined;
