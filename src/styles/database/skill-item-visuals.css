@@ -671,14 +671,14 @@
 }
 
 .db-skill-retro-time {
-  /* 매 프레임 바뀌는 시각 글자가 자료집 전체를 다시 배치하지 않게 크기를 고정해 가둔다(qa1124 항목 5). */
+  /* 캔버스에 그리는 칩이다(databaseStagePosition.ts createStageClock). 크기를 고정해야 그림 칸이 맞는다. */
   block-size: calc(11px * 1.35 + 10px);
   box-sizing: border-box;
-  contain: strict;
+  display: block;
   font-variant-numeric: tabular-nums;
   inline-size: calc(13ch + 14px);
   margin-left: auto;
-  text-align: center;
+  padding: 0;
 }
 
 .db-skill-retro-layers {

@@ -53,7 +53,8 @@ import {
 } from "@/editor/panels/databaseMonsterSkillStage";
 import type { Project, SkillRecord } from "@/project/types";
 import { el } from "@/util/dom";
-import { placeStageNode, setStageHidden, setStageText } from "@/editor/panels/databaseStagePosition";
+import { setStageRepeatEnabled, stageRepeatEnabled } from "@/editor/panels/databaseStageRepeat";
+import { createStageClock, placeStageNode, setStageHidden, setStageText } from "@/editor/panels/databaseStagePosition";
 
 const STAGE_W = 240;
 const STAGE_H = 136;
@@ -430,7 +431,6 @@ function lerp(a: number, b: number, t: number): number { return a + (b - a) * t;
 // ---- 스테이지 ----
 
 let sessionSpeed: 0.5 | 1 = 1;
-let sessionRepeat = true;
 
 export type SkillRetroStage = { readonly element: HTMLElement; readonly stop: () => void };
 
@@ -662,7 +662,7 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
     drawPops(state);
     stage.dataset.retroTime = String(Math.round(now));
     stage.dataset.retroPose = state.pose;
-    setStageText(counter, `${seconds(now)} / ${seconds(timeline.durationMs)}초`);
+    counter.set(`${seconds(now)} / ${seconds(timeline.durationMs)}초`);
   }
 
   const feet = (point: Point, pad: number): Point => ({ x: point.x, y: point.y + pad });
@@ -787,9 +787,9 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
   }
 
   // ---- 재생 제어 ----
-  const counter = el("span", { class: "db-skill-animation-chip db-skill-retro-time", dataset: { testid: "db-skill-retro-time" } });
+  const counter = createStageClock("db-skill-retro-time");
   const playButton = el("button", { class: "db-skill-animation-toggle db-skill-retro-play", dataset: { testid: "db-skill-retro-play" }, attrs: { type: "button", "aria-pressed": "false" }, text: "▶ 재생" });
-  const repeatButton = el("button", { class: "db-skill-retro-option", dataset: { testid: "db-skill-retro-repeat" }, attrs: { type: "button", "aria-pressed": String(sessionRepeat) }, text: "반복" });
+  const repeatButton = el("button", { class: "db-skill-retro-option", dataset: { testid: "db-skill-retro-repeat" }, attrs: { type: "button", "aria-pressed": String(stageRepeatEnabled()) }, text: "반복" });
   const speedButtons = ([0.5, 1] as const).map((speed) => el("button", {
     class: "db-skill-retro-option", dataset: { testid: "db-skill-retro-speed-" + speed }, attrs: { type: "button", "aria-pressed": String(sessionSpeed === speed) }, text: speed + "×",
   }));
@@ -822,7 +822,7 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
   const outcome=el("select",{attrs:{"aria-label":"명중 결과"},children:[el("option",{attrs:{value:"hit"},text:"명중"}),el("option",{attrs:{value:"miss"},text:"빗나감"}),el("option",{attrs:{value:"cancel"},text:"발동불가"})]}) as HTMLSelectElement;
   if(record.effect.kind==="support"){outcome.options[0]!.text="발동";outcome.options[1]!.disabled=true;}
   outcome.addEventListener("change",()=>{stop();previewHit=outcome.value!=="miss";previewTriggered=outcome.value!=="cancel";if(timeline.movement){timeline=stageSource(record,project,{hit:previewHit,actionBlocked:outcome.value==="cancel"},selectedActorId,weaponId)!.timeline;}now=timeline.representativeMs;draw();});
-  const controls = el("div", { class: "db-skill-retro-controls", children: [playButton, repeatButton, speedGroup, counter,...(timeline.movement?[outcome]:[])] });
+  const controls = el("div", { class: "db-skill-retro-controls", children: [playButton, repeatButton, speedGroup, counter.element,...(timeline.movement?[outcome]:[])] });
   const wrap = el("div", { class: "db-skill-retro-preview", dataset: { testid: "db-skill-retro-preview" }, children: [caption, stage, controls, chips] });
   // 무대 폭에 맞춰 배율을 정한다. 기본 2배(480px), 카드가 좁으면 줄인다 — 도트는 nearest 라 흐려지지 않는다.
   let resizeObserver: ResizeObserver | undefined;
@@ -879,7 +879,7 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
     if (now >= timeline.durationMs) {
       // 소리는 사용자가 누른 회차에만 — 반복 회차는 무음이다.
       withSound = false;
-      if (!sessionRepeat) { stop(); return; }
+      if (!stageRepeatEnabled()) { stop(); return; }
       restUntil = clock + LOOP_REST_MS;
     }
     schedule();
@@ -917,8 +917,8 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
     start(true);
   });
   repeatButton.addEventListener("click", () => {
-    sessionRepeat = !sessionRepeat;
-    repeatButton.setAttribute("aria-pressed", String(sessionRepeat));
+    setStageRepeatEnabled(!stageRepeatEnabled());
+    repeatButton.setAttribute("aria-pressed", String(stageRepeatEnabled()));
   });
   speedButtons.forEach((button, index) => button.addEventListener("click", () => {
     sessionSpeed = index === 0 ? 0.5 : 1;
