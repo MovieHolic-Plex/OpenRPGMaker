@@ -1,8 +1,15 @@
 import { tilesetImageUrl } from "@/editor/tilesetImage";
 import type { TilesetDef } from "@/project/types";
+import { getThumb, peekThumb } from "@/editor/thumbCache";
+import { tilesetAssetHash } from "@/editor/thumbCache/tilesetAssetHash";
 
 const THUMB_WIDTH = 32;
 const THUMB_HEIGHT = 40;
+const CACHE_SIZE = `${THUMB_WIDTH}x${THUMB_HEIGHT}`;
+
+function cropCacheKey(tileset: TilesetDef): string {
+  return `tileset-crop:${tilesetAssetHash(tileset)}`;
+}
 
 const sheets = new Map<string, HTMLImageElement>();
 const waiters = new Map<string, Array<(image: HTMLImageElement | null) => void>>();
@@ -45,48 +52,73 @@ function paintCrop(canvas: HTMLCanvasElement, image: HTMLImageElement): void {
   canvas.dataset.thumb = "ready";
 }
 
-function paintTileset(canvas: HTMLCanvasElement, tileset: TilesetDef): void {
-  loadSheet(tilesetImageUrl(tileset), (image) => {
-    if (!image) {
-      canvas.dataset.thumb = "error";
-      return;
-    }
-    paintCrop(canvas, image);
+/** 귀퉁이 한 장을 화면 밖 캔버스에 굽는다. 결과는 thumbCache 가 PNG 로 간직한다. */
+function renderCrop(tileset: TilesetDef): Promise<HTMLCanvasElement | null> {
+  return new Promise((resolve) => {
+    loadSheet(tilesetImageUrl(tileset), (image) => {
+      if (!image) { resolve(null); return; }
+      const canvas = document.createElement("canvas");
+      canvas.width = THUMB_WIDTH;
+      canvas.height = THUMB_HEIGHT;
+      paintCrop(canvas, image);
+      resolve(canvas.dataset.thumb === "ready" ? canvas : null);
+    });
   });
+}
+
+/**
+ * 레일은 오브젝트 카드를 누를 때마다 다시 그려진다. 예전에는 줄마다 캔버스를 만들고 화면에 들어오면 그렸다
+ * (렌더마다 새 캔버스 37~45개). 이제 줄은 빈 <img> 이고, 화면에 들어오면 캐시에서 그림을 받는다 —
+ * 캐시에 없을 때만 한 번 굽는다.
+ */
+function fill(img: HTMLImageElement, tileset: TilesetDef): void {
+  void getThumb(cropCacheKey(tileset), CACHE_SIZE, () => renderCrop(tileset)).then((url) => {
+    if (!url) { img.dataset.thumb = "error"; return; }
+    img.src = url;
+    img.dataset.thumb = "ready";
+  }, () => { img.dataset.thumb = "error"; });
 }
 
 const sources = new WeakMap<Element, TilesetDef>();
 let observer: IntersectionObserver | null = null;
 
-function watch(canvas: HTMLCanvasElement, tileset: TilesetDef): void {
+function watch(img: HTMLImageElement, tileset: TilesetDef): void {
   if (typeof IntersectionObserver !== "function") {
-    paintTileset(canvas, tileset);
+    fill(img, tileset);
     return;
   }
-  sources.set(canvas, tileset);
+  sources.set(img, tileset);
   observer ??= new IntersectionObserver((entries) => {
     for (const entry of entries) {
       if (!entry.isIntersecting) continue;
       const node = entry.target;
-      if (!(node instanceof HTMLCanvasElement)) continue;
+      if (!(node instanceof HTMLImageElement)) continue;
       observer?.unobserve(node);
       const source = sources.get(node);
       if (!source) continue;
-      paintTileset(node, source);
+      fill(node, source);
     }
   }, { rootMargin: "240px" });
-  observer.observe(canvas);
+  observer.observe(img);
 }
 
-function cropCanvas(tileset: TilesetDef): HTMLCanvasElement {
-  const canvas = document.createElement("canvas");
-  canvas.width = THUMB_WIDTH;
-  canvas.height = THUMB_HEIGHT;
-  canvas.className = "tileset-list-thumb";
-  canvas.dataset.thumb = "pending";
-  canvas.dataset.tilesetId = tileset.id;
-  watch(canvas, tileset);
-  return canvas;
+function cropImage(tileset: TilesetDef): HTMLImageElement {
+  const img = document.createElement("img");
+  img.className = "tileset-list-thumb";
+  img.alt = "";
+  img.draggable = false;
+  img.width = THUMB_WIDTH;
+  img.height = THUMB_HEIGHT;
+  img.dataset.tilesetId = tileset.id;
+  const cached = peekThumb(cropCacheKey(tileset), CACHE_SIZE);
+  if (cached) {
+    img.dataset.thumb = "ready";
+    img.src = cached;
+    return img;
+  }
+  img.dataset.thumb = "pending";
+  watch(img, tileset);
+  return img;
 }
 
 /**
@@ -95,7 +127,7 @@ function cropCanvas(tileset: TilesetDef): HTMLCanvasElement {
  */
 export function tilesetListThumb(tileset: TilesetDef): HTMLElement {
   const url = tilesetImageUrl(tileset);
-  if (!url.startsWith("/assets/") || !url.includes("chipset")) return cropCanvas(tileset);
+  if (!url.startsWith("/assets/") || !url.includes("chipset")) return cropImage(tileset);
   const img = document.createElement("img");
   img.className = "tileset-list-thumb";
   img.alt = "";
@@ -109,7 +141,7 @@ export function tilesetListThumb(tileset: TilesetDef): HTMLElement {
   img.addEventListener("error", () => {
     if (img.dataset.usedFull === "1") return;
     img.dataset.usedFull = "1";
-    img.replaceWith(cropCanvas(tileset));
+    img.replaceWith(cropImage(tileset));
   }, { once: true });
   return img;
 }

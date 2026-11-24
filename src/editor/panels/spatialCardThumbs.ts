@@ -18,6 +18,13 @@
 import { visibleAuthoringProject } from "@/editor/panels/spatialAuthoringAccess";
 import type { SpatialGalleryCard } from "@/editor/panels/spatialCatalog";
 import { el } from "@/util/dom";
+import { getThumbResult, peekThumb, putThumb } from "@/editor/thumbCache";
+
+/**
+ * 내용 해시 키가 있는 카드(오브젝트). 세대 캐시와 달리 맵 칠하기·조수 쓰기·앱 재시작에도 살아남는다.
+ * `key`/`size` 는 thumbCache 저장 키다 — 재료가 같으면 그림도 같다.
+ */
+export type SpatialThumbCacheKey = { readonly key: string; readonly size: string | number };
 
 /** 화면 밖이어도 이만큼은 미리 구워 둔다 — 스크롤이 빈 칸을 만나지 않게. */
 const PREFETCH_MARGIN_PX = 400;
@@ -26,6 +33,7 @@ type PendingThumb = {
   readonly slot: HTMLElement;
   readonly cardId: string;
   readonly build: () => HTMLElement;
+  readonly cacheKey?: SpatialThumbCacheKey;
 };
 
 const NO_DOCUMENT: object = {};
@@ -140,17 +148,31 @@ function cloneAttachedThumb(node: HTMLElement): HTMLElement {
   return node.cloneNode(true) as HTMLElement;
 }
 
-function bake(entry: PendingThumb): void {
-  // 한 장이 실패해도 대기열은 계속 돌아야 한다 — 프레임 콜백에서 던지면 아무도 받지 못하고
-  // 남은 카드가 영원히 자리표시자로 남는다. 실패한 카드는 빈 그림으로 자리를 채운다.
-  let art: HTMLElement;
-  try {
-    // A shell replacement detaches the old art after queuing this slot. Recheck
-    // here so ordinary rerenders still reuse it without recompiling the map.
-    art = reusableThumb(entry.cardId) ?? entry.build();
-  } catch {
-    art = el("div", { class: "spatial-card-fallback", dataset: { thumbError: "build" } });
-  }
+function cachedThumbImage(url: string, source: string): HTMLImageElement {
+  return el("img", {
+    class: "spatial-card-image spatial-card-thumb-art",
+    attrs: { src: url, alt: "", draggable: "false", style: "image-rendering: pixelated; object-fit: contain" },
+    dataset: { thumbSource: source },
+  });
+}
+
+/** 구운 캔버스가 실제로 그려진 뒤(타일셋 그림 로드 후) 캐시에 넣는다. 실패한 그림은 넣지 않는다. */
+function storeWhenPainted(cacheKey: SpatialThumbCacheKey, art: HTMLElement): void {
+  if (!(art instanceof HTMLCanvasElement)) return;
+  const save = (): void => { void putThumb(cacheKey.key, cacheKey.size, art); };
+  const state = art.dataset.previewState;
+  if (state === "ready" || state === undefined) { save(); return; }
+  if (state === "error" || typeof MutationObserver === "undefined") return;
+  const observer = new MutationObserver(() => {
+    const next = art.dataset.previewState;
+    if (next === "pending") return;
+    observer.disconnect();
+    if (next === "ready") save();
+  });
+  observer.observe(art, { attributes: true, attributeFilter: ["data-preview-state"] });
+}
+
+function place(entry: PendingThumb, art: HTMLElement): void {
   art.classList.add("spatial-card-thumb-art");
   const src = art instanceof HTMLImageElement
     ? (art.currentSrc || art.getAttribute("src") || "")
@@ -159,6 +181,40 @@ function bake(entry: PendingThumb): void {
   bakedThumbs().set(entry.cardId, art);
   entry.slot.replaceChildren(art);
   entry.slot.dataset.thumb = "ready";
+}
+
+/**
+ * 키 있는 카드: 디스크(IndexedDB)를 먼저 본다. 적중하면 캔버스 없이 <img> 하나, 아니면 지금처럼 굽고
+ * 그린 결과를 캐시에 넣는다. 조회는 비동기라 자리는 «loading» 으로 둔다(대기열에서 빠진다).
+ */
+function bakeKeyed(entry: PendingThumb, cacheKey: SpatialThumbCacheKey): void {
+  entry.slot.dataset.thumb = "loading";
+  void getThumbResult(cacheKey.key, cacheKey.size).then((hit) => {
+    if (entry.slot.dataset.thumb !== "loading") return;
+    if (hit) place(entry, cachedThumbImage(hit.url, hit.source));
+    else bake(entry);
+  }, () => {
+    if (entry.slot.dataset.thumb === "loading") bake(entry);
+  });
+}
+
+function bake(entry: PendingThumb): void {
+  // 한 장이 실패해도 대기열은 계속 돌아야 한다 — 프레임 콜백에서 던지면 아무도 받지 못하고
+  // 남은 카드가 영원히 자리표시자로 남는다. 실패한 카드는 빈 그림으로 자리를 채운다.
+  let art: HTMLElement;
+  try {
+    // A shell replacement detaches the old art after queuing this slot. Recheck
+    // here so ordinary rerenders still reuse it without recompiling the map.
+    const reused = reusableThumb(entry.cardId);
+    if (reused) art = reused;
+    else {
+      art = entry.build();
+      if (entry.cacheKey) storeWhenPainted(entry.cacheKey, art);
+    }
+  } catch {
+    art = el("div", { class: "spatial-card-fallback", dataset: { thumbError: "build" } });
+  }
+  place(entry, art);
 }
 
 /**
@@ -189,7 +245,8 @@ function drain(): void {
   if (ready.length === 0) return;
   const started = performance.now();
   for (const entry of ready) {
-    bake(entry);
+    if (entry.cacheKey) bakeKeyed(entry, entry.cacheKey);
+    else bake(entry);
     if (performance.now() - started >= FRAME_BUDGET_MS) break;
   }
   schedule();
@@ -217,8 +274,22 @@ function listen(): void {
  * 카드 썸네일 자리를 돌려주고, 실제 굽기는 화면에 들어올 때까지 미룬다.
  * 이미 구워 둔 그림은 분리된 노드일 때 재사용한다. 다른 화면이 쓰는 그림은 옮기지 않는다.
  */
-export function deferredSpatialCardThumb(card: SpatialGalleryCard, build: () => HTMLElement): HTMLElement {
+export function deferredSpatialCardThumb(
+  card: SpatialGalleryCard,
+  build: () => HTMLElement,
+  cacheKey?: SpatialThumbCacheKey,
+): HTMLElement {
   adoptDocument();
+  // 내용 키가 메모리에 있으면 캔버스를 만들지도 복제하지도 않는다 — 셸 재렌더·맵 칠한 뒤 다시 열기의 경로.
+  const url = cacheKey ? peekThumb(cacheKey.key, cacheKey.size) : undefined;
+  if (url) {
+    zoomSrc.set(card.id, url);
+    return el("div", {
+      class: "spatial-card-thumb-slot",
+      dataset: { thumb: "ready", thumbCard: card.id },
+      children: [cachedThumbImage(url, "memory")],
+    });
+  }
   const cached = reusableThumb(card.id);
   const slot = el("div", {
     class: "spatial-card-thumb-slot",
@@ -228,7 +299,7 @@ export function deferredSpatialCardThumb(card: SpatialGalleryCard, build: () => 
     slot.append(cached);
     return slot;
   }
-  pending.push({ slot, cardId: card.id, build });
+  pending.push({ slot, cardId: card.id, build, ...(cacheKey ? { cacheKey } : {}) });
   listen();
   schedule();
   return slot;
