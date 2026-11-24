@@ -437,6 +437,43 @@ function droppedFromMerge(merged: Project, result: Project, key: string): boolea
   return !same(read(merged), read(result));
 }
 
+/** 묶음 안 맵에 선 탈것(system.vehicles)을 옮긴다 — 영역 턴의 「여기 배 하나」가 버려지지 않게. 다른 맵의 탈것은 건드리지 않는다. */
+function carryBundleVehicles(merged: Project, started: Project, result: Project, bundle: ReadonlySet<string>): void {
+  const after = result.system.vehicles ?? [];
+  const before = new Map((started.system.vehicles ?? []).map((entry) => [entry.id, entry]));
+  const moved = after.filter((entry) => entry.mapId !== undefined && bundle.has(entry.mapId) && !same(before.get(entry.id), entry));
+  if (moved.length === 0) return;
+  const ids = new Set(moved.map((entry) => entry.id));
+  merged.system = { ...merged.system, vehicles: [...(merged.system.vehicles ?? []).filter((entry) => !ids.has(entry.id)), ...clone(moved)] };
+}
+
+/**
+ * 묶음 밖 맵에 새로 생긴 「돌아오는 문」 이벤트를 옮긴다 — 영역에서 「옆 마을로 가는 문」을 만들면 그 맵에도 돌아오는
+ * 문이 생긴다(create_transfer_pair·link_maps·create_time_gate). 예전엔 그 맵 행이 통째로 「범위 밖」이라 버려져 가는 문만 남았다.
+ * 타일은 옮기지 않는다 — 그 맵에서 타일이 바뀐 결과는 이전처럼 버린다. 새 이벤트 가운데 묶음 맵으로 이동하는 것만 옮긴다.
+ */
+function carryReturnDoors(merged: Project, started: Project, result: Project, bundle: ReadonlySet<string>): void {
+  const leadsIntoBundle = (value: unknown): boolean => {
+    if (Array.isArray(value)) return value.some(leadsIntoBundle);
+    if (!value || typeof value !== "object") return false;
+    const record = value as Record<string, unknown>;
+    if (typeof record.mapId === "string" && bundle.has(record.mapId) && (record.kind === "transfer" || record.kind === "timeGate" || "toX" in record || "x" in record)) return true;
+    return Object.values(record).some(leadsIntoBundle);
+  };
+  for (const [id, row] of Object.entries(result.maps ?? {})) {
+    if (bundle.has(id)) continue;
+    const startedRow = started.maps?.[id];
+    const target = merged.maps?.[id];
+    if (!startedRow || !target || same(row, startedRow)) continue;
+    if (!same(row.lowerTiles, startedRow.lowerTiles) || !same(row.upperTiles, startedRow.upperTiles)) continue;
+    const known = new Set(startedRow.events.map((event) => event.id));
+    const doors = row.events.filter((event) => !known.has(event.id) && leadsIntoBundle(event.pages ?? event.commands));
+    const present = new Set(target.events.map((event) => event.id));
+    const add = doors.filter((event) => !present.has(event.id));
+    if (add.length > 0) merged.maps[id] = { ...target, events: [...target.events, ...clone(add)] };
+  }
+}
+
 /**
  * base 에 각 결과의 맵 묶음만 얹는다. 같은 맵을 두 결과가 주장하면 뒤의 것이 이기고 conflicts 로 알린다.
  *
@@ -471,6 +508,8 @@ export function mergeMapBundles(base: Project, results: readonly MapBundleResult
       else delete merged.maps[id];
     }
     carryStartPosition(merged, started, result.project, bundle);
+    carryBundleVehicles(merged, started, result.project, bundle);
+    carryReturnDoors(merged, started, result.project, bundle);
     if (merged.mapTree) {
       for (const id of result.mapIds) replaceOrAttachSubtree(merged.mapTree, started.mapTree, result.project.mapTree, id);
     }
