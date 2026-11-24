@@ -28,6 +28,7 @@ import { desertEastPromptLines } from "../desertEastPolicy";
 import { snowNorthPromptLines } from "../snowNorthPolicy";
 import { JOSEON_POINTER_LINE } from "../joseonPolicy";
 import { withoutIntentNote } from "./monsterGameRequest";
+import { piVariation, type PiVariationInput } from "./variationNote";
 
 /**
  * 특정 데모(열풍·독안개 사망 함정, 성검 뽑기)에서 나온 연출 줄. 요청 글에 그 낱말이 있을 때만 싣는다 — 대사·가격 고치기에도
@@ -80,7 +81,7 @@ export function buildPiAgentSystemPrompt(
   project: Project,
   mapIds: readonly string[],
   scopeStrict = true,
-  options: { readonly spatialWork?: boolean; readonly request?: string } = {},
+  options: { readonly spatialWork?: boolean; readonly request?: string; /** 첫 게임 하나의 «이 게임의 변주» 카드를 실을 요청·열쇠(없으면 카드 없음 — 지시문이 예전과 글자까지 같다). */ readonly variation?: PiVariationInput } = {},
 ): string[] {
   const scope = mapIds.length > 0
     ? [
@@ -95,6 +96,11 @@ export function buildPiAgentSystemPrompt(
     : ["작업 범위는 프로젝트 전체다. 그래도 요청과 무관한 데이터는 건드리지 않는다."];
   // 공간 시공(타일·지형·실내·마을) 규칙은 그런 일을 할 수 있는 실행에만 싣는다. 대사·가격·이름 고치기에 매번 1만 자 넘게 실렸다(2026-10-07 실측).
   const spatial = options.spatialWork !== false;
+  const variation = options.variation ? piVariation(project, options.variation) : undefined;
+  // 카드가 있으면 «새 야외·마을의 기본 = 버들항 마을» 대신 카드의 첫 장소가 게임의 시작이다.
+  const outdoorDefault = variation?.firstPlace
+    ? `새 야외의 기본 칩셋은 ${defaultOutdoorTilesetId(project)}이다. 이 게임은 위 변주 카드의 첫 장소 «${variation.firstPlace}» 에서 시작한다 — 마을이 기본이 아니다(마을을 짓는 경우에만 아래 마을 짓기 지시를 따른다). `
+    : `새 야외·마을의 기본 칩셋은 ${defaultOutdoorTilesetId(project)}이다. `;
   return [
     // v2 core 의 우선순위 한 줄과 같다(assistant-prompt-review F7 — #4958 은 v2 에만 넣었다).
     PI_PRIORITY_LINE,
@@ -121,7 +127,8 @@ export function buildPiAgentSystemPrompt(
     ...(project.gameDesignBrief ? [gameDesignBriefContext(project.gameDesignBrief)] : []),
     ...(hasPlayableSegmentSkeleton(project) ? [playableSegmentContract(project)] : []),
     ...scope,
-    ...(spatial ? [`새 야외·마을의 기본 칩셋은 ${defaultOutdoorTilesetId(project)}이다. 사용자 선택이 있으면 우선하고 새 맵의 tilesetId 로 전달한다. 기존 맵의 칩셋은 유지한다(맵 계열이 다르면 섞지 않는다). 칩셋이 버들항(beodeul_city)이면 마을·항구·읍은 author_beodeul_town({mapId 또는 name, theme, width?, height?}) 한 호출로 짓고(theme: 강가 river 기본·포구 coast·사막 desert·설원 snow·늪 swamp, 로마풍 블록 도시는 city — 굽은 큰길·뒷길 고리·광장·길을 보는 집·일터 덩이를 도구가 짓는다) check_city_form·check_reachability 로 확인한다 — 길·집을 손으로 깔지 않는다. 버들항의 광산 마을·던전(하수도·카타콤·바다 동굴·신전·화산)·랜드마크(등대·난파선·마법사의 탑)·필드(해안·숲·산길·밀밭) 조각은 사용자가 고른 키트 bd-pick-<장소>-<이름> 이다 — 참고문서 용도 beodeul-picks-village·climate-village·dungeon·special·field 를 먼저 읽고 stamp_object(kit:beodeul_city/bd-pick-…)로 찍는다. 실내·던전은 해당 용도 칩셋을 선택한다. 기획·세계관이 눈·겨울·사막이면 버들항 마을은 author_beodeul_town theme:"snow"·"desert" 로 짓고, 야외 맵은 set_map_properties climate:{mode:"fixed",weather:"snow",intensity:0.6} 로 기후를 맞춘다 — 전투 배경이 맵 기후를 따른다.`] : []),
+    ...(variation ? [variation.card] : []),
+    ...(spatial ? [`${outdoorDefault}사용자 선택이 있으면 우선하고 새 맵의 tilesetId 로 전달한다. 기존 맵의 칩셋은 유지한다(맵 계열이 다르면 섞지 않는다). 칩셋이 버들항(beodeul_city)이면 마을·항구·읍은 author_beodeul_town({mapId 또는 name, theme, width?, height?}) 한 호출로 짓고(theme: 강가 river 기본·포구 coast·사막 desert·설원 snow·늪 swamp, 로마풍 블록 도시는 city — 굽은 큰길·뒷길 고리·광장·길을 보는 집·일터 덩이를 도구가 짓는다) check_city_form·check_reachability 로 확인한다 — 길·집을 손으로 깔지 않는다. 버들항의 광산 마을·던전(하수도·카타콤·바다 동굴·신전·화산)·랜드마크(등대·난파선·마법사의 탑)·필드(해안·숲·산길·밀밭) 조각은 사용자가 고른 키트 bd-pick-<장소>-<이름> 이다 — 참고문서 용도 beodeul-picks-village·climate-village·dungeon·special·field 를 먼저 읽고 stamp_object(kit:beodeul_city/bd-pick-…)로 찍는다. 실내·던전은 해당 용도 칩셋을 선택한다. 기획·세계관이 눈·겨울·사막이면 버들항 마을은 author_beodeul_town theme:"snow"·"desert" 로 짓고, 야외 맵은 set_map_properties climate:{mode:"fixed",weather:"snow",intensity:0.6} 로 기후를 맞춘다 — 전투 배경이 맵 기후를 따른다.`] : []),
     // 장르 잠금(옵트인) — 기본 칩셋 줄보다 뒤에 와서 이긴다. 잠금이 없으면 줄이 없다(프롬프트가 글자까지 같다).
     ...genreLockLines(project, spatial),
     ...(spatial ? [HAND_INTERIOR_POLICY_LINE] : []),

@@ -1525,7 +1525,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   }
   const systemPrompt = request.systemPrompt
     ? [...request.systemPrompt]
-    : buildPiAgentSystemPrompt(base, request.mapIds, request.scopeStrict !== false, { spatialWork, request: request.task });
+    : buildPiAgentSystemPrompt(base, request.mapIds, request.scopeStrict !== false, { spatialWork, request: request.task, ...(request.projectKey ? { variation: { projectKey: String(request.projectKey), request: request.task } } : {}) });
   // v2 는 낱말별 v1 지시(없는 도구 이름을 부른다)를 싣지 않는다 — 지시문은 v2 카드가 정한다.
   if (!options.v2) {
   if (openingProduction.requested) systemPrompt.push(OPENING_PRODUCTION_PROMPT);
