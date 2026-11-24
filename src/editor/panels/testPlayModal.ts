@@ -1,4 +1,5 @@
-import { getAudioEngine } from "@/player/audio";
+import { getAudioEngine, subscribeAudioFailures, type AudioFailure } from "@/player/audio";
+import { t } from "@/i18n";
 import { advanceBattleRuntime } from "@/battle/battleRuntimeAdvance";
 import { PRODUCT_BRAND } from "@/brand";
 import { createBattleRuntime } from "@/battle/runtime";
@@ -32,6 +33,28 @@ let modalRoot: HTMLElement | null = null;
 let returnFocusAfterEnemyTest: HTMLElement | null = null;
 let removePlayWindowKeydown: (() => void) | null = null;
 let releaseEventTestSnapshot: (() => void) | null = null;
+// 테스트 실행 한 번 동안 최초 BGM 재생 실패를 한 번만 알리는 구독. 재생 실패는 콘솔 경고뿐이라 작성자는 「음악이 안 들린다」로만 겪었다.
+let releaseAudioFailureToast: (() => void) | null = null;
+
+function bgmFailureMessage(failure: AudioFailure): string {
+  const id = failure.resourceId;
+  if (failure.reason === "unresolved") return t(`BGM 「${id}」을(를) 찾을 수 없어 재생하지 못했습니다`);
+  if (failure.reason === "network" || failure.reason === "source") return t(`BGM 「${id}」을(를) 받지 못해 재생하지 못했습니다`);
+  return t(`BGM 「${id}」을(를) 재생하지 못했습니다`);
+}
+
+function watchFirstBgmFailure(): void {
+  releaseAudioFailureToast?.();
+  const unsubscribe = subscribeAudioFailures((failure) => {
+    if (failure.channel !== "bgm") return;
+    releaseAudioFailureToast?.();
+    toast(bgmFailureMessage(failure), "error");
+  });
+  releaseAudioFailureToast = () => {
+    unsubscribe();
+    releaseAudioFailureToast = null;
+  };
+}
 // 에디터 전투 테스트가 mount 한 배틀 씬 컨트롤러. closeTestPlayModal 이 destroy()
 // 를 호출해 setInterval(200ms 틱) 과 window keydown 리스너 누수를 막는다.
 let battleSceneController: BattleDomController | null = null;
@@ -321,6 +344,7 @@ export function closeTestPlayModal(): void {
   battleSceneController?.destroy();
   battleSceneController = null;
   playRunControls = null;
+  releaseAudioFailureToast?.();
   skipTitleCheckbox = null;
   skipOpeningCheckbox = null;
   removePlayWindowKeydown?.();
@@ -359,6 +383,7 @@ function openTestPlayShell(
   // 편집기 색키 워밍이 이 창의 프리로드와 연결·메인 스레드를 나누지 않게 멈춘다.
   // close 가 큐를 다시 켜므로, 그 다음에 건다.
   setImageWarmQueueSuspended(true);
+  watchFirstBgmFailure();
   void preloadRuntimeStyles();
   // Claim the initiating click/key before persistence and bootstrap yield.
   getAudioEngine().unlock();

@@ -1,3 +1,5 @@
+import { mediaErrorReason, recordAudioFailure } from "@/player/audio/audioFailureLog";
+
 export type AudioPreviewPhase = "empty" | "ready" | "loading" | "playing" | "paused" | "stopped" | "ended" | "error" | "unavailable";
 export type AudioPreviewState = {
   readonly phase: AudioPreviewPhase;
@@ -5,6 +7,8 @@ export type AudioPreviewState = {
   readonly duration: number | null;
   readonly error: string;
   readonly requested: boolean;
+  /** phase 가 error 일 때, 원본을 받지 못했다(네트워크·404·파일 없음). 디코딩·재생 거부는 false. */
+  readonly unreachable: boolean;
 };
 export type AudioPreviewSettings = {
   readonly volume: number;
@@ -24,6 +28,7 @@ export class AudioPreviewSession {
   private source: MediaElementAudioSourceNode | undefined;
   private panner: StereoPannerNode | undefined;
   private url: string | null = null;
+  private resourceId = "";
   private unavailable = "";
   private loop = false;
   private disposed = false;
@@ -33,7 +38,7 @@ export class AudioPreviewSession {
   private fadeElapsed = 0;
   private lastPosition = 0;
   private fadeSeconds = 0;
-  private state: AudioPreviewState = { phase: "empty", current: 0, duration: null, error: "", requested: false };
+  private state: AudioPreviewState = { phase: "empty", current: 0, duration: null, error: "", requested: false, unreachable: false };
   private settings: AudioPreviewSettings = AUDIO_PREVIEW_DEFAULTS;
   private readonly listeners = new Set<(state: AudioPreviewState) => void>();
 
@@ -45,10 +50,11 @@ export class AudioPreviewSession {
     return () => { this.listeners.delete(listener); };
   }
 
-  select(url: string | null, unavailable = "", loop = false): void {
+  select(url: string | null, unavailable = "", loop = false, resourceId = ""): void {
     if (this.disposed || (url === this.url && this.unavailable === unavailable && this.loop === loop)) return;
     this.release();
     this.url = url;
+    this.resourceId = resourceId;
     this.unavailable = unavailable;
     this.loop = loop;
     this.update({ phase: unavailable ? "unavailable" : url ? "ready" : "empty", current: 0, duration: null, error: unavailable });
@@ -56,7 +62,8 @@ export class AudioPreviewSession {
   }
 
   private update(patch: Partial<AudioPreviewState>): void {
-    this.state = { ...this.state, ...patch, requested: this.intent };
+    const next = { ...this.state, ...patch, requested: this.intent };
+    this.state = next.phase === "error" ? next : { ...next, unreachable: false };
     for (const listener of this.listeners) listener(this.state);
   }
 
@@ -109,7 +116,7 @@ export class AudioPreviewSession {
       cancelAnimationFrame(this.frame);
       this.update({ phase: "ended", current: media.currentTime });
     });
-    on("error", () => this.fail(media.error?.message || "음원을 불러올 수 없습니다. 파일·코덱 또는 CORS 설정을 확인하세요."));
+    on("error", () => this.fail(media.error?.message || "음원을 불러올 수 없습니다. 파일·코덱 또는 CORS 설정을 확인하세요.", mediaErrorReason(media.error?.code)));
     this.cleanup = () => { for (const [name, handler] of handlers) media.removeEventListener(name, handler); };
   }
 
@@ -147,7 +154,10 @@ export class AudioPreviewSession {
       // A fulfilled play promise is NOT a playing event.
     } catch (error) {
       if (request !== this.request || this.media !== media || this.disposed) return;
-      this.fail(error instanceof Error ? error.message : String(error));
+      this.fail(
+        error instanceof Error ? error.message : String(error),
+        error instanceof DOMException && error.name === "NotSupportedError" ? "source" : `play:${error instanceof Error ? error.name : "unknown"}`,
+      );
     }
   }
 
@@ -225,9 +235,10 @@ export class AudioPreviewSession {
     }
   }
 
-  private fail(error: string): void {
+  private fail(error: string, reason: string): void {
     this.intent = false;
-    this.update({ phase: "error", error });
+    this.update({ phase: "error", error, unreachable: reason === "network" || reason === "source" });
+    recordAudioFailure({ resourceId: this.resourceId || this.url || "", reason, channel: "preview" });
     this.media?.pause();
     cancelAnimationFrame(this.frame);
   }

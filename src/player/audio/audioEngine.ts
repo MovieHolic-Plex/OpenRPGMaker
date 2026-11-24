@@ -22,6 +22,7 @@ import { isLoopingChannel, volumeGroupForChannel, type AudioVolumeGroup } from "
 import { WeatherAudio } from "./weatherAudio";
 import { canUseGaplessLoop, GaplessLoopAudio } from "./gaplessLoop";
 import { preloadedAudioUrl } from "@/player/preloadedAudio";
+import { listAudioFailures, mediaErrorReason, recordAudioFailure, type AudioFailure } from "./audioFailureLog";
 
 const DEFAULT_FADE_MS = 600;
 const FADE_TICK_MS = 40;
@@ -55,6 +56,8 @@ export interface AudioStateSnapshot {
   readonly playbackRate: number;
   readonly pan: number;
   readonly fadeInMs: number;
+  /** 재생 실패 기록(최근 것이 뒤). 성공만 있으면 빈 배열. */
+  readonly failures: AudioFailure[];
 }
 
 /** 트랙이 쥔 재생기. 환경음(BGS) 루프는 틈 없는 WebAudio 재생기(gaplessLoop.ts), 나머지는 <audio>. */
@@ -264,6 +267,7 @@ export class AudioEngine {
       playbackRate: this.playbackRate,
       pan: this.pan,
       fadeInMs: this.fadeInMs,
+      failures: listAudioFailures(),
     };
   }
 
@@ -365,7 +369,7 @@ export class AudioEngine {
       if (!track || !isLoopingChannel(channel)) continue;
       const url = resolve(track.resourceId);
       if (url === null) {
-        this.warnMissing(track.resourceId);
+        this.warnMissing(track.resourceId, channel, "unresolved");
         continue;
       }
       this.play(channel, track.resourceId, url, track.loop, {
@@ -565,16 +569,17 @@ export class AudioEngine {
       this.oneShots.delete(track);
       this.disposeTrack(track);
     };
-    const failed = (): void => {
+    const failed = (reason: string): void => {
       if (!active()) return;
-      this.warnMissing(resourceId);
+      this.warnMissing(resourceId, track.channel, reason);
       release();
     };
+    const onError = (): void => failed(mediaErrorReason("error" in audio ? audio.error?.code : undefined));
     if (!this.mediaCleanup.has(audio)) {
-      audio.addEventListener("error", failed);
+      audio.addEventListener("error", onError);
       audio.addEventListener("ended", release);
       this.mediaCleanup.set(audio, () => {
-        audio.removeEventListener("error", failed);
+        audio.removeEventListener("error", onError);
         audio.removeEventListener("ended", release);
       });
     }
@@ -586,7 +591,7 @@ export class AudioEngine {
           this.blockedTracks.add(track);
           return;
         }
-        failed();
+        failed(error instanceof DOMException && error.name === "NotSupportedError" ? "source" : `play:${error instanceof Error ? error.name : "unknown"}`);
       });
     }
   }
@@ -670,7 +675,8 @@ export class AudioEngine {
     return { ...this.queue, oneShotPending: this.queue.oneShotPending.filter((r) => r.channel !== channel) };
   }
 
-  private warnMissing(resourceId: string): void {
+  private warnMissing(resourceId: string, channel: AudioChannel, reason: string): void {
+    recordAudioFailure({ resourceId, reason, channel });
     if (this.warnedMissing.has(resourceId)) return;
     this.warnedMissing.add(resourceId);
     console.warn(`[audio] 오디오 로드/디코딩 실패: ${resourceId}. 파일 형식과 경로를 확인하세요. 카탈로그 BGM은 npm run bgm:install 후 서버를 다시 시작하세요.`);
