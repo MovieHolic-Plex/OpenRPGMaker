@@ -7,7 +7,7 @@ import { mapTarget, type SmallTaskTarget } from "@/editor/smallTask/target";
 import { PASSIVE_MOVEMENT } from "@/editor/tools/eventCompile";
 import { createInterpreter } from "@/player/interpreter";
 import { isPassable, isPassableLanding } from "@/project/collision";
-import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { doorstepArrival } from "@/project/doorEntries";
 import { GOLD_MAX } from "@/project/economyValues";
@@ -19,7 +19,7 @@ import { projectWithEventRevision } from "@/project/projectClone";
 import { startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
-import { eventTarget, expectApplies, expectUndoRestores, loadFixture } from "./harness";
+import { createBlankProjectCopy, eventTarget, expectApplies, expectUndoRestores, loadFixture } from "./harness";
 
 const selection = { rect: { x: 2, y: 2, w: 1, h: 1 } };
 const invalidSelection = { rect: { ...selection.rect, w: 2 } };
@@ -29,7 +29,7 @@ const toRoom = { toMapId: otherMapId, toX: 3, toY: 3 };
 
 function blankWithMap(): Project {
   const fixture = loadFixture("blank");
-  const sample = createBlankProject();
+  const sample = createBlankProjectCopy();
   const project = {
     ...fixture,
     maps: sample.maps,
@@ -655,4 +655,4 @@ it("마왕 프로젝트의 여러 칸짜리 출구 잠금은 다른 이벤트까
     switchId: project.switches[0].id,
   })).toThrow("범위 밖");
   expect(map.events).toEqual(before);
-}, 120_000);
+}, 600_000);

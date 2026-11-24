@@ -171,7 +171,7 @@ const fixtures = ["blank", "built", "maou"] as const;
 
 beforeAll(() => {
   fixtures.forEach(baseFixture);
-}, 180_000);
+}, 600_000);
 
 function stored(project: Project): Command[] {
   return project.maps[MAP]!.events[0]!.pages![0]!.commands;

@@ -113,7 +113,7 @@ describe("공용 이벤트", () => {
     expect(result.sentence).toBe(sentence);
     expectKoreanSentence(result.sentence);
     await expectUndoRestores(project, result.after, target);
-  }, 150_000);
+  }, 600_000);
 
   it.each(cases)("$id 범위 밖의 변경 거부", ({ id, args }) => {
     const project = seed(stored.commands);

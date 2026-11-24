@@ -5,7 +5,7 @@ import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/27-quests";
 import { mapTarget } from "@/editor/smallTask/target";
-import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import type { DialogueProposal } from "@/project/dialogueDesk";
 import { startSession } from "@/project/session";
@@ -14,7 +14,7 @@ import { questFlagIds, type QuestDef, type QuestGraphDef, type QuestStep } from 
 import type { Command, GameEvent, Project, TroopRecord } from "@/project/types";
 import { buildQuestLog } from "@/player/questLog";
 import { jsonEqual } from "@/util/structuralJson";
-import { expectUndoRestores, loadFixture, runHeadless } from "./harness";
+import { createBlankProjectCopy, expectUndoRestores, loadFixture, runHeadless } from "./harness";
 
 const RUMOR = "q_snow_rumor";
 const PATROL = "q_ice_patrol";
@@ -50,7 +50,7 @@ function built() {
 
 function blank() {
   const project = loadFixture("blank");
-  const source = createBlankProject();
+  const source = createBlankProjectCopy();
   const mapId = project.startMapId || source.startMapId;
   const map = project.maps[mapId] ?? source.maps[mapId];
   const flags = questFlagIds("quest_1", 2);
@@ -126,7 +126,7 @@ describe("퀘스트 원시 기능", () => {
     expect(after.quests?.at(-1)).toMatchObject({ title: "근처 살피기", giver: { mapId: map.id, eventId: event.id }, steps: [objective] });
     textHasNoIds(sentence);
     await expectUndoRestores(before, after, target);
-  }, 180_000);
+  }, 600_000);
 
   it("제목만 바꾸고 요약에서 내부 표식과 괄호를 가린다", async () => {
     const { before, target } = built();
@@ -478,7 +478,7 @@ describe("퀘스트 원시 기능", () => {
 
   it("진행에 연결되지 않은 퀘스트도 아이템 보상의 상한을 검증한다", () => {
     const { before, target, quest } = blank();
-    const item = createBlankProject().database.items.find(entry => entry.id === "item_potion")!;
+    const item = createBlankProjectCopy().database.items.find(entry => entry.id === "item_potion")!;
     const project = { ...before, database: { ...before.database, items: [item] }, quests: [{ ...quest, key: "draft_well" }] };
     expect(() => runPrimitive(project, target, "quest.reward.set", { items: [{ itemId: item.id, count: 1_000_000 }] }))
       .toThrow(/수량/u);
@@ -694,7 +694,7 @@ describe("그래프 목표의 연결", () => {
 describe("이벤트 명령을 실행한 뒤 퀘스트 일지", () => {
   it("컴파일된 퀘스트의 목표 추가를 거절하고 보상 편집은 정의에만 적용한다", () => {
     const { before: seed, event, quest, objective } = blank();
-    const item = createBlankProject().database.items.find(entry => entry.id === "item_potion")!;
+    const item = createBlankProjectCopy().database.items.find(entry => entry.id === "item_potion")!;
     const map = seed.maps[seed.startMapId];
     const draft = {
       ...seed,

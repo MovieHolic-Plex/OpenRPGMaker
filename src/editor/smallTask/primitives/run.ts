@@ -50,11 +50,37 @@ export function matchesPrimitiveSchema(schema: JsonSchema, value: unknown): bool
   return true;
 }
 
-function deepFreezeProject(value: unknown, seen = new WeakSet<object>()): void {
+function deepFreezeValue(value: unknown, seen: WeakSet<object>): void {
   if (value === null || typeof value !== "object" || seen.has(value)) return;
   seen.add(value);
-  for (const child of Object.values(value)) deepFreezeProject(child, seen);
+  for (const child of Object.values(value)) deepFreezeValue(child, seen);
   Object.freeze(value);
+}
+
+/**
+ * Tileset and uploaded-asset entries are shared by every copy of a project (projectClone.ts) and are almost all of its size. Once an entry
+ * is frozen it stays frozen, so later calls skip it instead of re-walking the bundled tilesets (about 0.4 s per call).
+ */
+const frozenSharedEntries = new WeakSet<object>();
+
+function sharedEntries(project: Project): object[] {
+  const entries: object[] = [];
+  for (const dictionary of [project.tilesets, project.assets?.uploaded]) {
+    if (dictionary === null || typeof dictionary !== "object") continue;
+    for (const key of Object.keys(dictionary)) {
+      const descriptor = Object.getOwnPropertyDescriptor(dictionary, key);
+      if (descriptor && "value" in descriptor && descriptor.value !== null && typeof descriptor.value === "object") entries.push(descriptor.value);
+    }
+  }
+  return entries;
+}
+
+function deepFreezeProject(project: Project): void {
+  const seen = new WeakSet<object>();
+  const entries = sharedEntries(project);
+  for (const entry of entries) if (frozenSharedEntries.has(entry)) seen.add(entry);
+  deepFreezeValue(project, seen);
+  for (const entry of entries) frozenSharedEntries.add(entry);
 }
 
 export function runPrimitive(

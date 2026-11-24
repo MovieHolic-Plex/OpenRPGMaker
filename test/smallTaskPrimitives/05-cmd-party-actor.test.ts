@@ -10,14 +10,14 @@ import { PRIMITIVES } from "@/editor/smallTask/primitives/units/05-cmd-party-act
 import { mapTarget } from "@/editor/smallTask/target";
 import { commitChangeset } from "@/editor/tools/changeset";
 import { createInterpreter } from "@/player/interpreter";
-import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { charsetFollowerGraphic } from "@/project/followers";
 import { startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
-import { expectKoreanSentence, expectUndoRestores, loadFixture } from "./harness";
+import { cloneProject, createBlankProjectCopy, expectKoreanSentence, expectUndoRestores, loadFixture } from "./harness";
 
 const fixtures = ["blank", "built", "maou"] as const;
 const eventId = "ev_actor_test";
@@ -31,7 +31,7 @@ const text: Command = { kind: "text", body: "잠시 쉬었다 가요." };
 
 function fixture(name: typeof fixtures[number], commands: Command[]) {
   const source = loadFixture(name);
-  const starter = source.maps[source.startMapId] ? source : createBlankProject();
+  const starter = source.maps[source.startMapId] ? source : createBlankProjectCopy();
   const mapId = starter.startMapId;
   const map = starter.maps[mapId]!;
   const page: EventPage = {
@@ -597,7 +597,7 @@ it.each(["", "party", "all"])("파티 전체 대상 %j의 변경을 최종 적�
 
 it("최종 적용에서 알 수 없는 체력 변경 대상을 거부한다", () => {
   const { project, mapId } = fixture("blank", []);
-  const after = structuredClone(project);
+  const after = cloneProject(project);
   pages(after, mapId)[1]!.commands.push({ kind: "changeActorHp", actorId: "actor_missing", op: "-=", amount: 1 });
   const result = commitChangeset(after, project);
   expect(result.ok).toBe(false);

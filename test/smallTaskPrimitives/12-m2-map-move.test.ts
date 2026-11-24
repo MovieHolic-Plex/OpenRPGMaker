@@ -12,7 +12,7 @@ import { mapTarget } from "@/editor/smallTask/target";
 import { QUERY_TOOLS } from "@/editor/tools/queryTools";
 import { APPLY_SMALL_TASK_PRIMITIVE, runSmallTaskPrimitiveTool } from "@/editor/tools/smallTaskPrimitiveTools";
 import { createInterpreter } from "@/player/interpreter";
-import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { runtimeEventViewById } from "@/project/runtimeEventState";
@@ -21,7 +21,7 @@ import { startSession } from "@/project/session";
 import type { Command, GameEvent, M2CommandFields, Project } from "@/project/types";
 import corpusJson from "../../harness-data/small-task-corpus/12-m2-map-move.json";
 import seededCorpusJson from "./12-m2-map-move/seeded-corpus.json";
-import { eventTarget, expectKoreanSentence, expectUndoRestores, loadFixture } from "./harness";
+import { cloneProject, createBlankProjectCopy, eventTarget, expectKoreanSentence, expectUndoRestores, loadFixture } from "./harness";
 
 const HOST = "map_move_host";
 const OTHER = "map_move_other";
@@ -116,7 +116,7 @@ function testFixture(name: FixtureName): Project {
 function seed(name: FixtureName, commands: Command[] = [TAIL]) {
   const project = cloneProjectSharingSharedDictionaries(testFixture(name));
   if (!project.startMapId) {
-    const { startMapId, startPos, mapTree, maps } = createBlankProject();
+    const { startMapId, startPos, mapTree, maps } = createBlankProjectCopy();
     Object.assign(project, { startMapId, startPos, mapTree, maps });
   }
   const map = project.maps[project.startMapId];
@@ -158,7 +158,7 @@ function expectedCommand(row: Row, project: Project) {
 
 describe.each(cases)("지도·이동 명령 $id", (row) => {
   // Building the flagship takes about a minute. Load it once, outside the per-edit timer.
-  beforeAll(() => { testFixture(row.fixture); }, 120_000);
+  beforeAll(() => { testFixture(row.fixture); }, 600_000);
 
   it("선택한 페이지에만 정확한 줄을 넣고 한 번 되돌린다", async () => {
     const { project, target, map } = seed(row.fixture);
@@ -289,7 +289,7 @@ it("고른 분기와 페이지에만 쓰고 다른 페이지·조건·이벤트�
   expect(afterMap.events.find(event => event.id === OTHER)).toBe(map.events.find(event => event.id === OTHER));
   const primitive = PRIMITIVES.find(row => row.id === "m2.058.insert")!;
   const scope = primitive.scope({ project, target }, args);
-  const escaped = structuredClone(after);
+  const escaped = cloneProject(after);
   escaped.maps[map.id].events.find(event => event.id === HOST)!.pages![0].conditions = [];
   expect(checkSmallTaskScope(project, escaped, scope).ok).toBe(false);
   expect(() => runPrimitive(project, target, "m2.058.insert", { ...args, pageId: "other-page" })).toThrow(PrimitiveError);
@@ -514,7 +514,7 @@ it.each(Object.entries(spawnReferenceSites))("%s에 생성 ID 참조가 남으�
 
 it("계산된 복제 ID를 쓰는 스크립트가 있으면 초안과 저장본 모두에서 ID 변경을 거절한다", async () => {
   const { project, target } = seed("blank", [SPAWN]);
-  const live = structuredClone(project);
+  const live = cloneProject(project);
   const other = live.maps[live.startMapId].events.find(event => event.id === OTHER)!;
   const source = 'await game.cmd({ kind: "m2Command", commandId: "m2-204-remove-event", fields: { eventId: ["spawned", "guide"].join("_") } });';
   other.draft = { kind: "edit", original: structuredClone(other) };

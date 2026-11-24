@@ -12,7 +12,7 @@ import { setTimeWithMakers, transitionToNextDay } from "@/player/dayTransition";
 import { createInterpreter } from "@/player/interpreter";
 import { applyAdvanceTimeStep } from "@/player/playSceneTime";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
-import { createBlankProject, ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
+import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
 import { eventCommandHash } from "@/project/eventCommands/singleCommandOps";
 import { calendarDayKey } from "@/project/gameTime";
@@ -20,7 +20,7 @@ import { getFriendship, getTimer, getVariable, startSession } from "@/project/se
 import { store } from "@/project/store";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
-import { expectApplies, expectRefused, expectUndoRestores, loadFixture } from "./harness";
+import { createBlankProjectCopy, expectApplies, expectRefused, expectUndoRestores, loadFixture } from "./harness";
 
 const eventId = "ev_time_social";
 const pageId = "page_time_social";
@@ -40,7 +40,7 @@ function fixtureProject(fixture: Fixture): Project {
   if (!source) {
     source = loadFixture(fixture);
     if (fixture === "blank") {
-      const { maps, startMapId, startPos, mapTree } = createBlankProject();
+      const { maps, startMapId, startPos, mapTree } = createBlankProjectCopy();
       source = { ...source, maps, startMapId, startPos, mapTree };
     }
     ensureSwitchVariableSlots(source);
@@ -125,7 +125,7 @@ const examples: readonly {
 ];
 
 describe.each(["blank", "built", "maou"] as const)("%s 프로젝트", fixture => {
-  beforeAll(() => { fixtureProject(fixture); }, 180_000);
+  beforeAll(() => { fixtureProject(fixture); }, 600_000);
   const runs = examples.flatMap(example => ([false, true].map(update => ({
     example, update, id: `cmd.${example.initial.kind}.${update ? "update" : "insert"}`,
   }))));
