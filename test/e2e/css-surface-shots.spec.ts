@@ -3,6 +3,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mockupProject } from "./mockupProbeSeeds";
 import { seedProjectForEditor } from "./projectSeed";
+import { LIFE_SIM_ENABLED } from "../../electron/shared/lifeSim";
 
 // 레일 버튼은 database.ts 의 tabs 레지스트리가 이미 `db-tab-<kebab>` testid 를 붙인다 — 그 이름을 그대로 쓴다.
 const NAV_TESTID = (tab: string) => `db-tab-${tab.replace(/[A-Z]/g, (ch) => `-${ch.toLowerCase()}`)}`;
@@ -16,7 +17,9 @@ const FROZEN_TIME = new Date("2026-09-11T00:00:00Z");
 // 6개, spatialTiles 는 원래 목록에 있었음)을 대신 찍는다.
 const CONTEXT_CHILD: Record<string, string> = { terrain: "spatialTiles" };
 const SEARCH_ONLY = new Set(["tilesetAutotile", "tilesetUnlabeled"]);
-const DB_TABS = [
+// 생활 그룹 6탭은 LIFE_SIM_ENABLED=false 동안 안내 한 장이라 찍을 편집 화면이 없다(electron/shared/lifeSim.ts).
+const LIFE_DB_TABS = new Set(["crops", "lifeCrafting", "dailyWeather", "farmAnimals", "farmSpatial", "lifeCollections"]);
+const DB_TABS = ([
   "overview", "characters", "characterGraphics", "characterAppearances", "elements", "monsterSpecies",
   "skillTrees", "promotionTree", "animations", "battleCommands", "battleScreen", "terrain",
   "commonEvents", "switches", "variables", "system", "opening", "gameOver", "terms",
@@ -25,7 +28,7 @@ const DB_TABS = [
   "factions", "lifeCollections", "worldCanon", "worldCodex",
   // 컬렉션 7탭 — 레일의 파티/몬스터/전투 규칙 그룹에 보이는 레코드 편집 표면.
   "actors", "classes", "skills", "items", "enemies", "troops", "states",
-];
+] as const).filter((tab) => LIFE_SIM_ENABLED || !LIFE_DB_TABS.has(tab));
 
 async function settle(page: Page) {
   await page.evaluate(() => document.fonts.ready);

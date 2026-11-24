@@ -69,13 +69,14 @@ test("every group stays open and empty list tabs fold into one row per group", a
   await page.getByTestId("db-tab-troops").click();
   await expect(page.getByTestId("db-tab-troops")).toHaveClass(/active/);
 
-  // 빈 프로젝트의 생활 탭은 전부 0건이라 한 줄로 접힌다. 누르면 펼친다.
-  const lifeFold = page.getByTestId("db-tab-fold-life");
-  await expect(lifeFold).toBeVisible();
-  await expect(page.getByTestId("db-tab-crops")).toBeHidden();
-  await lifeFold.click();
-  await expect(page.getByTestId("db-tab-crops")).toBeVisible();
-  await expect(lifeFold).toBeHidden();
+  // 빈 프로젝트의 이야기 그룹 탭(도감·공용 이벤트…)은 전부 0건이라 한 줄로 접힌다. 누르면 펼친다.
+  // (생활 그룹은 닫혀 있어 레일에 탭이 없다 — electron/shared/lifeSim.ts)
+  const loreFold = page.getByTestId("db-tab-fold-lore");
+  await expect(loreFold).toBeVisible();
+  await expect(page.getByTestId("db-tab-bestiary")).toBeHidden();
+  await loreFold.click();
+  await expect(page.getByTestId("db-tab-bestiary")).toBeVisible();
+  await expect(loreFold).toBeHidden();
 
   await page.locator(".db-tabs").screenshot({ path: join(OUT, "01-rail-open-sections.png") });
 });
@@ -133,19 +134,19 @@ test("tabs keep an icon at desktop width", async ({ page }) => {
 test("search reaches folded empty tabs and restores after clearing", async ({ page }) => {
   // Break named: folding empty tabs can hide them from the existing label filter.
   await openDatabase(page);
-  await expect(page.getByTestId("db-tab-crops")).toBeHidden();
+  await expect(page.getByTestId("db-tab-bestiary")).toBeHidden();
 
   const search = page.getByTestId("db-tab-search");
-  await search.fill("농사");
-  await expect(page.getByTestId("db-tab-crops")).toBeVisible();
-  await expect(page.getByTestId("db-tab-fold-life")).toBeHidden();
+  await search.fill("도감");
+  await expect(page.getByTestId("db-tab-bestiary")).toBeVisible();
+  await expect(page.getByTestId("db-tab-fold-lore")).toBeHidden();
   await expect(page.getByTestId("db-tab-actors")).toBeHidden();
-  await page.getByTestId("db-tab-crops").click();
-  await expect(page.getByTestId("db-tab-crops")).toHaveClass(/active/);
+  await page.getByTestId("db-tab-bestiary").click();
+  await expect(page.getByTestId("db-tab-bestiary")).toHaveClass(/active/);
 
   await search.fill("");
   // 활성 탭은 비어 있어도 접히지 않는다 — 방금 고른 탭이 사라지면 안 된다.
-  await expect(page.getByTestId("db-tab-crops")).toBeVisible();
+  await expect(page.getByTestId("db-tab-bestiary")).toBeVisible();
   await expect(page.getByTestId("db-tab-actors")).toBeVisible();
 
   await page.locator(".db-tabs").screenshot({ path: join(OUT, "02-rail-after-search.png") });

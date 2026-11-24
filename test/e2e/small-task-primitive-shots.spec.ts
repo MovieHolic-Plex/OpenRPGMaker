@@ -11,6 +11,7 @@ import { mkdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
 import { expect, test } from "@playwright/test";
+import { LIFE_SIM_ENABLED } from "../../electron/shared/lifeSim";
 import type { PiAgentRequest, PiCheckpointHeavyKey } from "@/ai/piAgent/protocol";
 import type { DatabaseTab } from "@/editor/panels/database";
 import type { CorpusCase, FixtureName } from "@/editor/smallTask/primitives/corpusSchema";
@@ -31,6 +32,8 @@ const casesFile = process.env.SHOTS_CASES;
 const output = process.env.SHOTS_OUT;
 const cases: ShotCase[] = casesFile && output ? JSON.parse(readFileSync(casesFile, "utf8")) : [];
 const probeId = "db.items.price.shotProbe";
+// 생활 컬렉션 편집 화면은 LIFE_SIM_ENABLED=false 동안 안내 한 장이다(electron/shared/lifeSim.ts) — 그 행 확인은 깃발이 켜졌을 때만 한다.
+const LIFE_ROW_COLLECTIONS = new Set<SmallTaskCollection>(["crops", "lifeSkills", "farmAnimalSpecies", "fishSpecies", "farmBuildingTypes", "homeDecorationTypes"]);
 const lifeFarmRows: Partial<Record<SmallTaskCollection, {
   tab: DatabaseTab;
   section?: string;
@@ -94,7 +97,7 @@ for (const [index, entry] of cases.entries()) {
     if (await guest.isVisible()) await guest.click();
     await expect(canvasTrigger).toBeVisible({ timeout: 60_000 });
 
-    const recordView = entry.target.kind === "dbEntry" ? lifeFarmRows[entry.target.collection] : undefined;
+    const recordView = entry.target.kind === "dbEntry" && (LIFE_SIM_ENABLED || !LIFE_ROW_COLLECTIONS.has(entry.target.collection)) ? lifeFarmRows[entry.target.collection] : undefined;
     const { target, utilityRowIndex } = await page.evaluate(async ({ fixture, setup, target, overlay, recordView }) => {
       const { store } = await import("/src/project/store.ts");
       const { editorState } = await import("/src/editor/editorState.ts");

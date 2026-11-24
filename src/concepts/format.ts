@@ -1,6 +1,7 @@
 // 컨셉 피드 카드 한 장(oprn-concept/1). 스토어 서버·Electron 중계·하네스·화면이 같이 쓰는 순수 모듈이다.
 // DOM·node 의존을 두지 않는다 — 외부 스토어 서버와 하네스 CLI가 같은 계약을 사용한다.
 import { GAME_BRIEF_SLOTS, GAME_PRESET_IDS, type GameBriefSlot, type GamePresetId } from "../project/gameDesignIds";
+import { LIFE_SIM_ENABLED } from "../../electron/shared/lifeSim";
 
 export const CONCEPT_FORMAT = "oprn-concept/1";
 export const CONCEPT_TAGS = [
@@ -15,7 +16,8 @@ export const CONCEPT_TWEAK_LIMIT = 300;
  * 칩셋이 준비되면 여기에 더한다. 몬스터 수집은 첫 구간 도로 도구(author_wild_route)가 버들항 전용이라 아직 뺀다.
  */
 export const BUILDABLE_CONCEPT_TILESETS = ["joseon_baram", "wizarding_world", "jp_city", "beodeul_city", "pirate_isles", "sengoku_edo", "sky_island", "steampunk_city", "modern_campus", "sf_station", "gothic_manor", "prehistoric", "desert_east", "snow_north", "modern_city"] as const;
-export const UNBUILDABLE_CONCEPT_PRESETS: readonly string[] = ["monster-collect"];
+// 농장 생활은 생활 시스템이 닫혀 있는 동안(LIFE_SIM_ENABLED=false) 새로 지을 수 없다 — 피드·초안에서 고르지 않는다.
+export const UNBUILDABLE_CONCEPT_PRESETS: readonly string[] = LIFE_SIM_ENABLED ? ["monster-collect"] : ["monster-collect", "farm-life"];
 export const CONCEPT_LIMITS = { title: 40, hook: 120, description: 600, protagonist: 120, stage: 120, firstScene: 160, brief: 1000 } as const;
 
 export interface GameConcept {

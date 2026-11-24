@@ -32,7 +32,7 @@ test("item state, animation and care controls persist across tab changes and exp
   await page.getByTestId("db-item-card-care").scrollIntoViewIfNeeded();
   await page.getByTestId("database-modal").screenshot({ path: "verify-shots/item-editor-modern/recovered-care.png" });
 
-  await switchDatabaseTab(page, { label: "Crops", slug: "crops", testId: "db-tab-crops" });
+  await switchDatabaseTab(page, { label: "Skills", slug: "skills", testId: "db-tab-skills" });
   await switchDatabaseTab(page, items);
   await expect(page.getByTestId("db-field-name")).toHaveValue("QA 상태와 돌봄");
   await expect(page.getByTestId("db-field-item-state-effect-chance-0")).toHaveCount(0);

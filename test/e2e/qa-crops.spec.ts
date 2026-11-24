@@ -1,5 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
-import { exportedProject, openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
+import { LIFE_SIM_ENABLED, exportedProject, openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
+
+// 생활 시스템이 닫혀 있는 동안(electron/shared/lifeSim.ts LIFE_SIM_ENABLED=false) 생활 편집 화면이 없다 — 깃발을 켤 때 다시 돈다.
+test.skip(!LIFE_SIM_ENABLED, "생활 시스템 닫힘(LIFE_SIM_ENABLED=false)");
 
 const CROPS_TAB = { label: "Crops", slug: "crops", testId: "db-tab-crops" } as const;
 const ITEMS_TAB = { label: "Items", slug: "items", testId: "db-tab-items" } as const;

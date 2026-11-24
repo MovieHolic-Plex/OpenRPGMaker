@@ -4,6 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { DATABASE_PRIMARY_SENTINELS } from '../databasePrimarySentinels';
+import { LIFE_SIM_ENABLED } from '../../electron/shared/lifeSim';
 
 declare global {
   interface Window { __dbDestinationReady?: Promise<void>; __dbTabReached?: Promise<void>; __dbScroll?: Promise<void>; __dbWheelEnd?: Promise<void>; __dbSearchReady?: Promise<void>; __dbNumeric?: { calls: number[]; events: string[]; text: string[] }; }
@@ -181,7 +182,8 @@ for (const width of [1440, 1024]) {
 for (const [tab, section, field] of [
   ['actors', 'db-actor-tab-identity', ''],
   ['enemies', 'db-enemy-section-basic-tab', 'db-field-enemy-level'],
-  ['lifeCrafting', 'db-life-section-skills', 'db-life-skill-max-level'],
+  // 생활 그룹은 LIFE_SIM_ENABLED=false 동안 안내 한 장이라 생활 기술 편집 화면이 없다(electron/shared/lifeSim.ts).
+  ...(LIFE_SIM_ENABLED ? [['lifeCrafting', 'db-life-section-skills', 'db-life-skill-max-level']] : []),
 ]) {
   test(`equivalent shared roles and ordinary captions in ${tab}`, async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -355,6 +357,7 @@ test('numeric and native control states preserve input and change semantics', as
   test.setTimeout(300_000);
   await page.setViewportSize({ width: 1440, height: 900 });
   await openDatabase(page);
+  if (LIFE_SIM_ENABLED) {
   await page.evaluate(async () => {
     const { store } = await import('/src/project/store.ts');
     store.update(project => { project.database.lifeSkills = [{ id: 'css-numeric-life', name: 'CSS fixture', skillType: 'farming', maxLevel: 10, levelUpRewards: [] }]; }, { scope: 'database', label: 'Test-only populated Life fixture' });
@@ -367,6 +370,7 @@ test('numeric and native control states preserve input and change semantics', as
   expect(await storedLevel()).toBe(10);
   await life.press('Tab');
   expect(await storedLevel()).toBe(11);
+  }
   // Separate the native primitive state fixture from the live record's deferred
   // refresh. The real Life change path above remains exercised, not mocked.
   await page.evaluate(async () => (await import('/src/editor/panels/databaseModal.ts')).requestDatabaseModalClose('battleTest'));

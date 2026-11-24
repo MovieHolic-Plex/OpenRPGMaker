@@ -1159,6 +1159,12 @@ Party record tabs use the final section of `studio-v2.css`: actors, classes, ski
 - 제작법(`system.craftRecipes`)과 도구 강화(`system.itemUpgrades`) 저작 화면은 생활이 아니라 **아이템·장비 → 「제작법·강화」** 하위 보기(`itemCrafting`, `db-subview-item-crafting`, `PARTY_SUBVIEW_PARENT.itemCrafting = "items"`)에 있다. 데이터 위치·스키마는 그대로라 폴른 스타 공방 제작법(`flagship/fallen/worldPass/workshop.ts`), 가방 「조합」, 이벤트 명령 「제작」이 같은 값을 쓴다. 레일에는 칸이 없고 탭 검색 「제작」「레시피」「강화」「공방」과 시스템 개요의 「제작법·강화 편집 (아이템)」 버튼(`data-database-subview`)으로도 간다.
 - 같은 작업대를 `renderLifeCraftingTab(host, rerender, scope)` 가 두 자리에서 쓴다: `item` = 제작법·도구 강화 2구획, `life` = 생활 기술·판매 가격·도구 행동·에너지·출하·지역 해금·꾸러미·가공 설비 8구획, `all`(기본) = 열 구획 전부. 구획별 선택·검색 상태는 scope 마다 따로다. 생활 탭 count 는 제작법·강화를 더하지 않고 `itemCrafting` count 가 둘을 센다.
 
+## 생활 그룹 닫힘 — `LIFE_SIM_ENABLED` (2026-11-24, qa1124 항목 12 L2)
+
+- 깃발 하나: `electron/shared/lifeSim.ts` 의 `LIFE_SIM_ENABLED = false`(선례 `teamCollab.ts` 의 `TEAM_COLLAB_ENABLED`). false 이면 자료집 「생활」 그룹 띠 버튼(`db-group-strip-life`)은 남지만 본문은 안내 한 장(`db-life-closed-notice`)뿐이고 편집 컨트롤은 0개다: 「생활(농사·낚시·동물)은 다음 버전에서 열려요 — 이 프로젝트의 생활 데이터는 지워지지 않고 게임에서는 그대로 동작합니다」. 닫는 지점은 `database.ts` 의 `lifeTabClosed(tab)` 하나다 — 레일 행·「빈 탭」 줄·최근 탭·탭 검색(「작물」「낚시」는 0건)에서 생활 탭을 빼고, 딥링크·저장된 활성 탭·조수 점프로 어느 생활 탭에 닿아도 `renderActiveTabUnguarded` 가 `renderLifeClosedNotice`(`databaseLifeClosedView.ts`)를 그린다. 머리 크럼은 그룹 이름만 쓴다. `TAB_GROUPS`·탭 id·렌더러 코드는 그대로다(되살릴 때 깃발만 true).
+- 시스템 개요의 「생활 기술·제작에서 편집」 버튼은 깃발이 꺼지면 빠지고(「제작법·강화 편집 (아이템)」만 남는다), 새 프로젝트 쪽은 `UNBUILDABLE_CONCEPT_PRESETS` 에 `farm-life` 가 더해져 컨셉 피드·AI 초안이 농장 컨셉을 내지 않고, 첫 실행 프롬프트의 「농장」 낱말 추천(`pickFirstRunPreset`)은 기본 JRPG 로 떨어진다. `NEW_PROJECT_CHOICES` 의 `farm-life` 항목·장르 팩·인터뷰 질문은 기존 프로젝트·도구 계약이라 그대로 두었다(시작 화면 포스터·「새 프로젝트」 다이얼로그에는 원래 올라오지 않는다).
+- 데이터·런타임은 건드리지 않는다: `database.crops` 등 생활 필드는 저장·재로드에서 바이트 그대로이고 플레이도 그대로다. 시험은 켠 상태를 `vi.mock("../electron/shared/lifeSim", …)` 로 대체한다(`teamCollab` 선례). 생활 탭 e2e 는 `LIFE_SIM_ENABLED` 로 묶어 건너뛴다.
+
 ## 생활 기술·제작 저작 표면 (2026-08-24)
 
 - `src/editor/panels/database.ts`의 `lifeCrafting` / `db-tab-life-crafting`은 grouped navigation의 `생활` 그룹에 있다. 탭 count는 `database.lifeSkills`와 기존 제작/강화/가격/도구 행동뿐 아니라 `energy`, `shipping`, `worldUnlocks`, `bundles`, `makers`도 합산한다. optional singleton인 energy/shipping은 존재할 때 각각 1건으로 센다.

@@ -6,6 +6,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { genId } from "@/util/id";
 import { GUARD_MAX_DAMAGE_REDUCTION_PERCENT } from "@/battle/action/guard";
 import { switchDatabaseActiveTab } from "@/editor/panels/database";
+import { LIFE_SIM_ENABLED } from "../../../electron/shared/lifeSim";
 import { databasePanelRootFrom } from "@/editor/panels/databaseLifeUi";
 import {
   emptyToUndefined,
@@ -1193,10 +1194,11 @@ function optInSystemFields(project: Project, rerender: SystemRefresh): readonly 
       class: "btn", text: "제작법·강화 편집 (아이템)", attrs: { type: "button" },
       dataset: { databaseTarget: "items", databaseSubview: "item-crafting", testid: "db-system-open-item-crafting" },
     }),
-    el("button", {
+    // 생활 그룹이 닫혀 있으면(LIFE_SIM_ENABLED=false) 갈 편집 화면이 없다 — 버튼을 두지 않는다. 제작법·강화는 위 버튼이 아이템 쪽으로 연다.
+    ...(LIFE_SIM_ENABLED ? [el("button", {
       class: "btn", text: "생활 기술·제작에서 편집", attrs: { type: "button" },
       dataset: { databaseTarget: "life-crafting", testid: "db-system-open-life-crafting" },
-    }),
+    })] : []),
   ];
   groups.push(rm2k3Fieldset("연결된 생활 데이터", linked));
   return groups;

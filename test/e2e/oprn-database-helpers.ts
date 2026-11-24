@@ -1,5 +1,7 @@
 import { expect, type Locator, type Page } from "@playwright/test";
 
+export { LIFE_SIM_ENABLED } from "../../electron/shared/lifeSim";
+
 export type DatabaseTabSpec = {
   readonly label: string;
   readonly slug: string;

@@ -1,11 +1,12 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdirSync, writeFileSync } from "node:fs";
-import { openDatabase, switchDatabaseTab, type DatabaseTabSpec } from "./oprn-database-helpers";
+import { LIFE_SIM_ENABLED, openDatabase, switchDatabaseTab, type DatabaseTabSpec } from "./oprn-database-helpers";
 
 test.setTimeout(300_000);
 test.use({ serviceWorkers: "block" });
 
-const ALL_TABS: readonly DatabaseTabSpec[] = [
+// 생활 탭(작물)은 LIFE_SIM_ENABLED=false 동안 레일에 없다(electron/shared/lifeSim.ts).
+const ALL_TABS: readonly DatabaseTabSpec[] = ([
   { label: "Overview", slug: "overview", testId: "db-tab-overview" },
   { label: "Actors", slug: "actors", testId: "db-tab-actors" },
   { label: "Classes", slug: "classes", testId: "db-tab-classes" },
@@ -31,7 +32,7 @@ const ALL_TABS: readonly DatabaseTabSpec[] = [
   { label: "Terms", slug: "terms", testId: "db-tab-terms" },
   { label: "Switches", slug: "switches", testId: "db-tab-switches" },
   { label: "Variables", slug: "variables", testId: "db-tab-variables" },
-];
+] as const).filter((tab) => LIFE_SIM_ENABLED || tab.slug !== "crops");
 
 type TabProbe = {
   slug: string;

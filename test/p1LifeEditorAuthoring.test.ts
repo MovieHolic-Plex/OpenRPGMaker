@@ -1,4 +1,6 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+// 생활 시스템이 켜진 상태의 편집 화면을 검증한다 — 기본값(false)이면 생활 그룹은 안내 한 장이다(electron/shared/lifeSim.ts).
+vi.mock("../electron/shared/lifeSim", () => ({ LIFE_SIM_ENABLED: true, LIFE_SIM_CLOSED_TITLE: "", LIFE_SIM_CLOSED_BODY: "", LIFE_SIM_CLOSED_NOTICE: "" }));
 import { renderDatabasePanel, setDatabaseActiveTab, TAB_GROUPS } from "@/editor/panels/database";
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
