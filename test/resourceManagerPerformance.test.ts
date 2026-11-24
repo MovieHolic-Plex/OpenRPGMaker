@@ -61,10 +61,11 @@ describe("resource workbench catalog and DOM boundaries", () => {
       { kind: "monster", name: "profile registration", assetId: "generated-enemy-reference-cocoon" },
       { kind: "monster", name: "anonymous" }, { kind: "monster", name: "masked", assetId: builtin });
     project.monsterMetadata = { orphan: { name: "metadata cannot register a monster" } };
-    expect(resourceManagerMonsterCount(project)).toBe(listMonsterResources(project).length);
+    // 소재 관리는 에메랄드 v4 종 그림까지 센다(#5005: emeraldV4 를 준 곳에만 나온다).
+    expect(resourceManagerMonsterCount(project)).toBe(listMonsterResources(project, { emeraldV4: true }).length);
     const next = structuredClone(project);
     delete next.assets.uploaded[builtin];
-    expect(resourceManagerMonsterCount(next)).toBe(listMonsterResources(next).length);
+    expect(resourceManagerMonsterCount(next)).toBe(listMonsterResources(next, { emeraldV4: true }).length);
   });
 
   it("does not build monster metadata for another pane; monster selections use one indexed catalog", () => {
