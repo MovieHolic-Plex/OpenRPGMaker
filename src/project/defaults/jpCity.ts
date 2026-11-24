@@ -54,7 +54,7 @@ function markSupersededBuildings(kits: StructureKitDef[]): void {
   if (!kits.some((kit) => kit.id.startsWith(NEW_BUILDING_PREFIX))) return;
   for (const kit of kits) if (kit.id.startsWith("jp-bldg-") && !kit.id.startsWith(NEW_BUILDING_PREFIX) && !HAND_ONLY_BUILDINGS.has(kit.id) && kit.ai) kit.ai.supersededBy = NEW_BUILDING_PREFIX;
 }
-import references from "@/assets/jpCityReferences.json" with { type: "json" };
+import { jpCityReferencesJson } from "#bundled-asset-json";
 import streetCatalog from "@/assets/jpCityStreetCatalog.json" with { type: "json" };
 import forestReferences from "@/assets/jpForestReferences.json" with { type: "json" };
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
@@ -70,20 +70,25 @@ export const JP_CITY_TILES_PER_ROW: number = sheet.tilesPerRow;
 /** 조립 부품·오토타일 그룹·참고문서 id 머리. 번들이 소유한다(기존 사본에서 같은 id 는 번들 것으로 바꾼다). */
 export const JP_CITY_PREFIX = "jp-";
 // 숲 용도(jp-forest)는 따로 굽는다(scripts/content/jp-city/forest/bake_forest_refs.py) — bake_refs.py 가 다른 용도를 다시 구워도 숲 문서가 지워지지 않게.
-const ALL_REFERENCES = [...(references as unknown as TilesetReferenceCategory[]), ...(forestReferences as unknown as TilesetReferenceCategory[])];
+// 번들 참고문서(약 2.4MB JSON)는 처음 쓸 때 읽어 한 번만 만든다 — import 만 하는 시험 파일이 변환·평가하지 않게(bundledAssetJson.ts).
 // 새 건물 용도(jp-buildings-f)가 실려 있으면 옛 손 도트 건물 용도(jp-buildings-hand)는 번들 참고문서에서 내린다 — 읽는 순서·시트 지도가 가리키는 용도 이름도 새 것으로 바꾼다.
 const HAND_BUILDING_REFS = "jp-buildings-hand", NEW_BUILDING_REFS = "jp-buildings-f";
-const REFERENCES = !ALL_REFERENCES.some((category) => category.id === NEW_BUILDING_REFS) ? ALL_REFERENCES
-  : ALL_REFERENCES.filter((category) => category.id !== HAND_BUILDING_REFS).map((category) => category.id !== "jp-start" ? category : {
-    ...category,
-    documents: category.documents.map((doc) => ({ ...doc, markdown: doc.markdown.replaceAll("용도 「손 도트 건물」(`jp-bldg-hand-rules`)", "용도 「새 건물」(`jp-bldg-f-rules`)").replaceAll("용도 「손 도트 건물」", "용도 「새 건물」") })),
-  });
+let bundledReferences: TilesetReferenceCategory[] | undefined;
+function referencesOf(): TilesetReferenceCategory[] {
+  if (bundledReferences) return bundledReferences;
+  const all = [...(jpCityReferencesJson() as unknown as TilesetReferenceCategory[]), ...(forestReferences as unknown as TilesetReferenceCategory[])];
+  return bundledReferences = !all.some((category) => category.id === NEW_BUILDING_REFS) ? all
+    : all.filter((category) => category.id !== HAND_BUILDING_REFS).map((category) => category.id !== "jp-start" ? category : {
+      ...category,
+      documents: category.documents.map((doc) => ({ ...doc, markdown: doc.markdown.replaceAll("용도 「손 도트 건물」(`jp-bldg-hand-rules`)", "용도 「새 건물」(`jp-bldg-f-rules`)").replaceAll("용도 「손 도트 건물」", "용도 「새 건물」") })),
+    });
+}
 
 const isOwned = (id: string): boolean => id.startsWith(JP_CITY_PREFIX);
 
 /** 새 사본이 들고 태어나는 참고문서 — 정의 JSON 없이 만든다(로드가 저장본에서 뺀 번들 참고문서를 되돌릴 때 쓴다, installReferenceOwners.ts). */
 export function jpCityBundledReferenceDocuments(): TilesetReferenceCategory[] {
-  return structuredClone(REFERENCES);
+  return structuredClone(referencesOf());
 }
 
 /** 번들 정의의 독립 사본 — 참고문서를 들고 태어난다. */
@@ -123,7 +128,7 @@ export function ensureJpCityReferences(tileset: TilesetDef): boolean {
   if (tileset.id !== JP_CITY_ID || !isJpCityTileset(tileset) || tileset.referenceSourceTilesetId) return false;
   const cats = [...(tileset.referenceDocuments ?? [])];
   let changed = false;
-  for (const shipped of REFERENCES) {
+  for (const shipped of referencesOf()) {
     const i = cats.findIndex((existing) => existing.id === shipped.id);
     if (i < 0) { cats.push(structuredClone(shipped)); changed = true; continue; }
     const cur = cats[i]!;

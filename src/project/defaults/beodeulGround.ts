@@ -1,11 +1,11 @@
 import catalog from '@/assets/beodeulGroundCatalog.json' with { type: "json" };
-import references from '@/assets/beodeulGroundReferences.json' with { type: "json" };
+import {beodeulGroundReferencesJson} from '#bundled-asset-json';
 import type { StructureKitDef, TileGroupMetadata, TilesetDef } from '../types';
 
 export const BEODEUL_GROUND_ID='beodeul_ground';
 export const BEODEUL_GROUND_TEXTURE='tex_beodeul_ground';
 export const BEODEUL_GROUND_RECIPES=catalog.recipes;
-export const beodeulGroundReferences=()=>structuredClone(references);
+export const beodeulGroundReferences=()=>structuredClone(beodeulGroundReferencesJson());
 
 export function createBeodeulGroundTileset():TilesetDef {
   const passability=Array.from({length:catalog.count},()=>({up:true,down:true,left:true,right:true}));
@@ -62,7 +62,7 @@ export function ensureBeodeulGroundReferences(tileset:TilesetDef):boolean {
       if(kit.ai&&!kit.ai.layerHome){kit.ai.layerHome='upper';changed=true;}
     }
   }
-  for(const shipped of references){
+  for(const shipped of beodeulGroundReferencesJson()){
     const at=cats.findIndex(c=>c.id===shipped.id);
     if(at<0){cats.push(structuredClone(shipped));changed=true;continue;}
     const old=cats[at]!;

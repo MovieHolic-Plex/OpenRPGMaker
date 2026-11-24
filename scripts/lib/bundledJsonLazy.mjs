@@ -13,6 +13,9 @@ import { fileURLToPath, URL } from "node:url";
 // bundledJsonSources.node.ts 로, 그 밖(esbuild·tsx·vite build)에서는 정적 출처 bundledJsonSources.ts 로 풀린다. node 출처는 소스 트리의 파일을
 // 읽으므로 브라우저로 가는 변환은 아래 플러그인이 조건과 상관없이 출처를 직접 고른다.
 const BUNDLED_JSON_SOURCES = "#bundled-json-sources";
+// 큰 정의·참고문서 JSON 의 입구(bundledAssetJson.ts)도 같은 조건 풀이를 쓴다. 브라우저로 가는 변환은 조건과 상관없이 정적 출처로 고정한다(지연 출처는 없다).
+const BUNDLED_ASSET_JSON = "#bundled-asset-json";
+const staticAssetJson = fileURLToPath(new URL("../../src/project/defaults/bundledAssetJson.ts", import.meta.url));
 
 /** @returns {import("vite").Plugin} */
 export function bundledJsonLazyPlugin() {
@@ -21,8 +24,9 @@ export function bundledJsonLazyPlugin() {
     name: "oprn-bundled-json-lazy",
     enforce: "pre",
     resolveId(source, _importer, options) {
-      if (source !== BUNDLED_JSON_SOURCES || options?.ssr) return null;
-      return lazy;
+      if (options?.ssr) return null;
+      if (source === BUNDLED_JSON_SOURCES) return lazy;
+      return source === BUNDLED_ASSET_JSON ? staticAssetJson : null;
     },
   };
 }
@@ -38,7 +42,8 @@ export function bundledJsonStaticPlugin() {
     name: "oprn-bundled-json-static",
     enforce: "pre",
     resolveId(source) {
-      return source === BUNDLED_JSON_SOURCES ? staticSource : null;
+      if (source === BUNDLED_JSON_SOURCES) return staticSource;
+      return source === BUNDLED_ASSET_JSON ? staticAssetJson : null;
     },
   };
 }

@@ -1,5 +1,5 @@
 import { emeraldMonsterKitSheet } from "@/assets/emeraldMonsterKitAssets";
-import references from "@/assets/emeraldMonsterReferences.json" with { type: "json" };
+import { emeraldMonsterReferencesJson } from "#bundled-asset-json";
 import { createMonsterKitTileset } from "./monsterKit";
 import type { TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
@@ -12,7 +12,7 @@ export function isEmeraldMonsterKitTexture(textureKey: string): boolean {
 
 /** 새 사본의 참고문서만(`createEmeraldMonsterKitTileset(textureKey).referenceDocuments` 와 같은 값) — 칸 표를 복제하지 않는다. */
 export function emeraldMonsterKitBundledReferenceDocuments(textureKey: string): TilesetReferenceCategory[] {
-  return structuredClone((references as unknown as Record<string, TilesetReferenceCategory[]>)[textureKey] ?? []);
+  return structuredClone((emeraldMonsterReferencesJson() as unknown as Record<string, TilesetReferenceCategory[]>)[textureKey] ?? []);
 }
 
 /** Deep clone: groups, kits, home layers and passability retain original indices. */
@@ -29,7 +29,7 @@ export function createEmeraldMonsterKitTileset(textureKey: string): TilesetDef {
   // plus Emerald native examples instead of a pointer to another reference owner.
   delete tileset.referenceSourceTilesetId;
   tileset.referenceDocuments = structuredClone(
-    (references as unknown as Record<string, TilesetReferenceCategory[]>)[textureKey] ?? [],
+    (emeraldMonsterReferencesJson() as unknown as Record<string, TilesetReferenceCategory[]>)[textureKey] ?? [],
   );
   return tileset;
 }

@@ -1,12 +1,12 @@
 import {beodeulFacilityPlans,facilityPropId} from '../../assets/beodeulFacilitiesPlans';
-import references from '../../assets/beodeulFacilitiesReferences.json' with { type: "json" };
+import {beodeulFacilitiesReferencesJson} from '#bundled-asset-json';
 import {createBeodeulArchitectureTileset} from './beodeulArchitecture';
 import {translateTiles} from '../objectStamp';
 import type {StructureKitDef,TilesetDef} from '../types';
 import type {TilesetReferenceCategory} from '../tilesetReferences';
 
 export function beodeulFacilityReferences():TilesetReferenceCategory[]{
- return structuredClone(references) as unknown as TilesetReferenceCategory[];
+ return structuredClone(beodeulFacilitiesReferencesJson()) as unknown as TilesetReferenceCategory[];
 }
 
 /** Compose complete approved buildings and outdoor workspaces; no bitmap edits. */

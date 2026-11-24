@@ -10,6 +10,10 @@
     "#bundled-json-sources": {
       "development": "./src/project/defaults/bundledJsonSources.node.ts",
       "default": "./src/project/defaults/bundledJsonSources.ts"
+    },
+    "#bundled-asset-json": {
+      "development": "./src/project/defaults/bundledAssetJson.node.ts",
+      "default": "./src/project/defaults/bundledAssetJson.ts"
     }
   },
   "scripts": {
