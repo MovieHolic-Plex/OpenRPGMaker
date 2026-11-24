@@ -495,13 +495,20 @@ export function renderEnemyPixelPreview(
       skillNote,
     ],
   });
+  // 칸 표(9~20칸)는 시트 점검용이라 접어 둔다(btn-vqa-db PR 5, 오너 2026-11-24 「사용자는 많은 버튼을 원하지 않는다」).
+  // 닫힌 details 내용은 브라우저에 따라 상자가 남아 탭 순서에 걸리므로 hidden 으로도 감춘다. 단추·testid 는 그대로다.
+  grid.hidden = true;
+  const cellsFold = el("details", {
+    children: [el("summary", { text: `칸 표 ${cellOrder.length}칸`, dataset: { testid: "db-enemy-pixel-cells-toggle" } }), grid],
+  }) as HTMLDetailsElement;
+  cellsFold.addEventListener("toggle", () => { grid.hidden = !cellsFold.open; });
   const wrap = el("section", {
     class: "db-enemy-pixel-preview",
     attrs: { "aria-label": "도트 미리보기" },
     dataset: { testid: "db-enemy-pixel-preview", resourceId: sheet.resourceId },
     children: [
       el("div", { class: "db-enemy-stage-heading", children: [el("span", { text: "도트 미리보기" }), el("span", { class: "db-enemy-stage-status", text: "레트로 2003 전투" })] }),
-      caption, stage, controls, ...(skillGroup ? [skillGroup] : []), grid,
+      caption, stage, controls, ...(skillGroup ? [skillGroup] : []), cellsFold,
     ],
   });
 

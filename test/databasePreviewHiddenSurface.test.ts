@@ -86,6 +86,13 @@ describe("real retro/pixel stages on inactive surfaces", () => {
   it("preserves the enemy's still-cell choice after hide/reveal", async () => {
     await construct("enemy");
     setDatabasePreviewSurfaceActive(host, true);
+    // 칸 표는 접힌 채로 나오고(버튼 줄이기), 펼치면 보인다.
+    const cells = host.querySelector<HTMLElement>("[data-testid='db-enemy-pixel-cells']")!;
+    const fold = cells.closest("details") as HTMLDetailsElement;
+    expect(cells.hidden).toBe(true);
+    fold.open = true;
+    fold.dispatchEvent(new Event("toggle"));
+    expect(cells.hidden).toBe(false);
     const cell = host.querySelector<HTMLButtonElement>("[data-testid='db-enemy-pixel-cell-idle_a']")!;
     cell.click();
     setDatabasePreviewSurfaceActive(host, false);
