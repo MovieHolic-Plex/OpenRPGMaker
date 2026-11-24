@@ -44,11 +44,27 @@ function countsByTileset(cards: readonly SpatialGalleryCard[]): ReadonlyMap<stri
   return counts;
 }
 
+/** 카드마다 검색용 소문자 글을 한 번만 만든다 — 글자 하나마다 1만 장의 이름을 다시 소문자로 바꾸지 않게. */
+const haystacks = new WeakMap<SpatialGalleryCard, string>();
+
+function haystackOf(card: SpatialGalleryCard): string {
+  let text = haystacks.get(card);
+  if (text === undefined) {
+    text = `${card.name} ${card.subtitle ?? ""}`.toLocaleLowerCase();
+    haystacks.set(card, text);
+  }
+  return text;
+}
+
 export function filterSpatialBrowserCards(cards: readonly SpatialGalleryCard[], query: string, tilesetId: string | null): readonly SpatialGalleryCard[] {
   const words = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+  if (!tilesetId && words.length === 0) return cards;
   return cards.filter(card => (!tilesetId || card.tilesetId === tilesetId)
-    && words.every(word => `${card.name} ${card.subtitle ?? ""}`.toLocaleLowerCase().includes(word)));
+    && words.every(word => haystackOf(card).includes(word)));
 }
+
+/** 검색 입력은 이만큼 멈춘 뒤에 결과를 다시 그린다(qa1124 실측: 글자마다 결과 격자를 다시 지었다). */
+const SEARCH_DEBOUNCE_MS = 150;
 
 export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, selected: SpatialGalleryCard | undefined, rerender: () => void): HTMLElement {
   const key = `${spatialProjectKey()}:${session.tab}`;
@@ -80,6 +96,7 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
   let chrome = renderChrome();
   let selectedId = selected?.id;
   const results = el("div", { class: "asset-browser-results", dataset: { testid: "spatial-browser-results" } });
+  let searchTimer: ReturnType<typeof setTimeout> | undefined;
   const count = el("span", { class: "asset-browser-count", attrs: { role: "status", "aria-live": "polite" } });
   const search = el("input", {
     class: "asset-browser-search", value: state.query,
@@ -88,7 +105,12 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
     on: { input: (event) => {
       const input = event.currentTarget;
       if (!(input instanceof HTMLInputElement)) return;
-      state.query = input.value; state.page = 0; renderResults();
+      state.query = input.value; state.page = 0;
+      if (searchTimer !== undefined) clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => {
+        searchTimer = undefined;
+        renderResults();
+      }, SEARCH_DEBOUNCE_MS);
     } },
   });
   const rail = el("nav", { class: "asset-browser-rail", attrs: { "aria-label": "타일셋" }, dataset: { testid: "spatial-browser-tilesets" } });
