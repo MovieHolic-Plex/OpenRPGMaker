@@ -33,7 +33,6 @@ test("Linux jobs run on mdc2 labels, heavy jobs on mdc2-heavy, and only the list
   assert.deepEqual(
     Object.fromEntries(Object.entries(PENDING).map(([file, jobs]) => [file, Object.keys(jobs)])),
     {
-      "desktop-release.yml": ["packages"],
     },
   );
 });
@@ -53,6 +52,7 @@ test("desktop-release uses trusted triggers, and publishes only after upload and
   assert.deepEqual(workflow.on.release.types, ["published"]);
   assert.deepEqual(workflow.on.schedule, [{ cron: "*/30 * * * *" }]);
   const packages = workflow.jobs.packages;
+  assert.deepEqual(packages["runs-on"], heavy);
   assert.match(packages.if, /github\.repository == 'MovieHolic-Plex\/OpenRPGMaker'/);
   const upload = packages.steps.findIndex(({ run }) => run?.includes("gh release upload"));
   const publish = packages.steps.findIndex(({ run }) => run?.includes("-F draft=false"));

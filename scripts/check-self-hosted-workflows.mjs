@@ -24,9 +24,6 @@ export const FORK_GUARD =
 
 // 파일 → 잡 → 이유. 줄이기만 한다. 비면 호스티드 잡 0 이다.
 export const PENDING = {
-  "desktop-release.yml": {
-    packages: "릴리스 워크플로라 v0.418.0 발행 뒤 별도 PR 로 옮긴다(이미 mdc2-heavy, 폴백 식만 남음)",
-  },
 };
 
 const FORBIDDEN_TRIGGERS = ["pull_request_target", "workflow_run"];
