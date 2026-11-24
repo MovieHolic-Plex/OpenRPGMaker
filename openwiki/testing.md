@@ -57,7 +57,8 @@
   `fast-static`(jp_city 핀·타입체크:electron-store·배럴·러너 선택 계약과 테스트·런타임 에셋·CSS 래칫·openwiki 인덱스)이
   서로 의존하지 않는다.
 - **러너 배치 (2026-11-24, ci-github-offload):** 무거운 잡은 전부 GitHub 호스티드(`ubuntu-latest`)다 —
-  ci-fast 세 잡, ci-full static·tests, ci-vitest-files, 수동 parity, windows-worker-smoke 의 리눅스 빌드.
+  ci-fast 세 잡, ci-full static·tests, ci-vitest-files, 수동 parity.
+  윈도 연기 시험(windows-cli-smoke·windows-worker-smoke)은 2026-11-24 오너가 필요 없다고 해 지웠다.
   mdc2 에 남은 것은 desktop-release(릴리스 초안 채우기, 30GB 디스크 검사와 Electron·예제 캐시)와
   꺼져 있는 Security Audit(1분 내외)뿐이고, 둘 다 포크 PR 에서는 돌지 않는다(선택식이 포크를 호스티드로 보내고, desktop-release 는 릴리스·수동·cron 뿐이다).
   왜: mdc2 러너 18대가 에이전트 레인·VM 과 251GB 를 나눠 써서 CI 가 몰리면 러너가 전부 offline 이 됐고,
@@ -77,8 +78,8 @@
 - 브랜치 보호의 필수 체크 `fast` 는 저장소 설정이고 이제 빌드 잡을 확인한다.
 - **bun 은 고정판(1.4.2)을 npm 에서 받는다** (2026-11-08). 옛 `curl -fsSL https://bun.sh/install | bash` 는
   «latest» 를 GitHub 릴리스에서 받고 재시도가 없어, ci-fast 100판 중 18판이 `releases/latest/…zip` 의
-  503·504 로 죽었다(PR 코드와 무관). ci-fast·desktop-release·windows-worker-smoke 가 같은 판을 쓴다 —
-  ci-fast 가 «릴리스와 같은 컴파일러»를 검증한다는 전제가 그것이다. 올릴 때는 `BUN_VERSION` 을 세 파일에서 같이 고친다.
+  503·504 로 죽었다(PR 코드와 무관). ci-fast·desktop-release 가 같은 판을 쓴다 —
+  ci-fast 가 «릴리스와 같은 컴파일러»를 검증한다는 전제가 그것이다. 올릴 때는 `BUN_VERSION` 을 두 파일에서 같이 고친다.
 - **CSS 래칫 실패는 대개 PR 자신의 CSS 변경 + 기준선 미갱신이다** (2026-11-08: 14건 중 12건이 css-winners,
   1건 surfaces, 1건 hex). 게이트는 결정적이다(깨끗한 origin/main 에서 두 번 돌려 출력 md5 동일).
   그래서 `verify-gates.mjs --only css` 는 실패한 하위 게이트마다 그 기준선을 다시 뜨는 **정확한 한 줄**을
