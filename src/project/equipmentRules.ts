@@ -232,8 +232,23 @@ function strictActorEquipment(
   }
   return current;
 }
-function equipmentRecords(project: Project): Map<string, EquipmentRecord> {
-  return new Map(project.database.equipment.map((record) => [record.id, record]));
+/**
+ * id → 장비 기록. 전투 하나를 열 때마다 DB 배우 전원(136명)에 대해 불려 매번 장비 전체로 Map 을 새로 만들었다 —
+ * 2026-11-24 draft-10min 프로파일: 첫 MVP 끝맺음의 보스 맞추기(시뮬레이션 수천 판) 82초 중 약 21초가 이 Map 만들기였다.
+ * 같은 배열이면 색인을 다시 쓰고, 조회마다 그 자리 원소의 id 를 확인해 배열이 제자리에서 바뀌었으면 색인을 다시 만든다(결과는 전과 같다).
+ */
+const equipmentIndexCache = new WeakMap<readonly EquipmentRecord[], Map<string, number>>();
+function equipmentRecords(project: Project): { get(id: string): EquipmentRecord | undefined } {
+  const list = project.database.equipment;
+  const build = () => { const index = new Map(list.map((record, at) => [record.id, at] as const)); equipmentIndexCache.set(list, index); return index; };
+  return {
+    get(id) {
+      let index = equipmentIndexCache.get(list) ?? build();
+      let at = index.get(id);
+      if (at === undefined || list[at]?.id !== id) { index = build(); at = index.get(id); }
+      return at === undefined ? undefined : list[at];
+    },
+  };
 }
 
 function normalizeInventory(inventory: Readonly<Record<string, number>>): Record<string, number> {
