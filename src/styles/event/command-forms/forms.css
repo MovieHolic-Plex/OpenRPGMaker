@@ -330,6 +330,22 @@
   min-width: 0;
 }
 
+/* 범용 「기타 명령」 폼: 라벨이 칸 옆에 붙고 길이마다 칸이 어긋나며, textarea 라벨은 상자 아래로 떨어졌다
+   (명령 검토 a 공통 high, b PR7). 고르기 칸처럼 「라벨 위, 입력 아래」 한 가지로. */
+.event-command-edit-body .m2-command-body > .field {
+  align-items: start;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-command-edit-body .m2-command-body > .field > input:not([type="checkbox"]):not([type="radio"]),
+.event-command-edit-body .m2-command-body > .field > textarea {
+  box-sizing: border-box;
+  max-width: 100%;
+  width: 100%;
+}
+
 .weighted-branch-command-body {
   display: grid;
   gap: var(--space-4);
