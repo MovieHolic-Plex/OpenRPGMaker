@@ -126,7 +126,7 @@ describe("청사진 인물·세계 칸 → 첫 판 초안 데이터(draft-cast)"
     project.system.startActorIds = [hero.id, mate.id];
     applyDraftCast(project);
     const party = (project.system.startActorIds ?? []).map((id) => project.database.actors.find((a) => a.id === id)!.name);
-    expect(party).toEqual(["아젤", "세이라", "리나"]);
+    expect(party).toEqual(["아젤", "세이라", "리나", "볼크"]);
     expect(project.characters?.actor_seira?.displayName).toBe("세이라");
   });
 
