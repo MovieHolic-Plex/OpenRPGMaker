@@ -6,6 +6,8 @@ import { resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const parsed = new Map<string, unknown>();
+// 모듈을 불러올 때의 작업 디렉터리를 잡아 둔다 — 시험이 나중에 process.chdir 해도 같은 곳을 본다.
+const loadCwd = process.cwd();
 
 function locate(repoRelativePath: string): string {
   try {
@@ -14,7 +16,7 @@ function locate(repoRelativePath: string): string {
   } catch {
     // import.meta.url 이 file: 주소가 아니다 — 아래 작업 디렉터리 기준으로 읽는다.
   }
-  return resolve(process.cwd(), repoRelativePath);
+  return resolve(loadCwd, repoRelativePath);
 }
 
 /** 저장소 루트 기준 경로(`src/assets/x.json`)의 JSON 을 읽어 돌려준다. 같은 경로는 같은 객체다. */
