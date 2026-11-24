@@ -42,6 +42,12 @@ describe("v2 enemy identity check (fs-use-tools E1)", () => {
     expect(enemyLines(varied)).toEqual([]);
   });
 
+  it("does not fire in a monster-collect game, whose foes are species copies", () => {
+    const flat = battleProject({ 해골: ["맹독 이빨", "뼈 저주"], 갑옷: ["맹독 이빨", "뼈 저주"] });
+    flat.system = { ...flat.system, battleParty: "monsters" } as Project["system"];
+    expect(enemyLines(flat)).toEqual([]);
+  });
+
   it("does not fire for a single ordinary foe kind", () => {
     expect(enemyLines(battleProject({ 슬라임: [] }))).toEqual([]);
   });
