@@ -1,0 +1,405 @@
+// @vitest-environment happy-dom
+
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { openEventCommandPicker } from "@/editor/panels/eventEditor/commandPicker";
+import { getAudioEngine, playAudioCommand, resumeAudioState } from "@/player/audio";
+import { enterBattleAudio, exitBattleAudio, playAuthoredBattleResultCue } from "@/player/battleAudio";
+import { playBattleCue } from "@/player/battleJuice";
+import { createInterpreter } from "@/player/interpreter";
+import { runCommands } from "@/player/playSceneInterpreter";
+import { applyNonBlockingStep } from "@/player/playSceneSchedulers";
+import type { PlaySceneContext } from "@/player/playSceneTypes";
+import { createSaveSnapshot, applySaveSnapshot, saveToSlot, readSaveSlot } from "@/player/saveSlots";
+import { startMapBgm } from "@/player/mapBgm";
+import { M2_COMMAND_CATALOG } from "@/project/eventCommands/m2Catalog";
+import { deserialize, serialize } from "@/project/io";
+import { startSession } from "@/project/session";
+import { store } from "@/project/store";
+import type { Command, M2CommandFields, GameEvent } from "@/project/types";
+import { buildContractProject } from "./commandContracts/harness";
+import { openEventCommandEditDialog } from "@/editor/panels/eventEditor/commandEditDialog";
+import { validateEventDraftBody } from "@/editor/eventDraftValidator";
+import { createBlankProject } from "@/project/defaults";
+import { isolateTimers } from "./mergedTeardown";
+
+describe("eventAudioHandoffs", () => {
+  isolateTimers();
+  const FIELD = "cc0-bgm-rtp-fld-002";
+  const BATTLE = "cc0-bgm-rtp-btl-002";
+  const SE = "easyrpg-sound-decision1";
+  const OTHER_SE = "easyrpg-sound-cancel1";
+  const originalProject = store.getCurrent();
+  function m2(title: string, fields: M2CommandFields = {}): Command {
+    const entry = M2_COMMAND_CATALOG.find((candidate) => candidate.title === title);
+    if (!entry) throw new Error(`Missing command: ${title}`);
+    return { kind: "m2Command", commandId: entry.id, fields };
+  }
+  function setup(commands: Command[] = []) {
+    const project = buildContractProject(commands);
+    store.replaceProject(project);
+    const session = startSession(project, 3);
+    const dialogue = {
+      showText: vi.fn(async () => undefined), showChoices: vi.fn(async () => 0),
+      showNumberInput: vi.fn(async () => 0), hide: vi.fn(), close: vi.fn(),
+    };
+    // Only non-audio scene surfaces are stubbed; interpreter, scheduler, resolver and engine are real.
+    const scene = {
+      session, running: false, inputEnabled: true, lastActionTargetKey: "", tileY: 0,
+      map: project.maps[project.startMapId],
+      game: { registry: { get: (key: string) => key === "dialogue" ? dialogue : undefined } },
+      setInputEnabled: vi.fn(), refreshRuntimeSurfaces: vi.fn(), syncRuntimeState: vi.fn(),
+      showRuntimeOverlay: vi.fn(), clearRuntimeOverlay: vi.fn(),
+    } as unknown as PlaySceneContext;
+    return { project, session, scene };
+  }
+  function audioElements(): HTMLAudioElement[] {
+    return [...document.querySelectorAll<HTMLAudioElement>("audio[data-oprn-audio]")];
+  }
+  beforeEach(() => {
+    vi.useFakeTimers({ toFake: ["setInterval", "clearInterval"] });
+    vi.spyOn(HTMLMediaElement.prototype, "play").mockResolvedValue();
+    vi.spyOn(HTMLMediaElement.prototype, "pause").mockImplementation(() => undefined);
+    const engine = getAudioEngine();
+    engine.stopAll();
+    engine.unlock();
+    engine.setFadeInMs(600);
+    engine.setVolume("bgm", 0.7);
+    engine.setVolume("se", 0.8);
+  });
+  afterEach(() => {
+    getAudioEngine().stopAll();
+    vi.clearAllTimers();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    document.body.replaceChildren();
+    localStorage.clear();
+    store.replaceProject(originalProject);
+  });
+  describe("U14 actual audio handoffs", () => {
+    it.each(["blocking", "parallel"] as const)("delivers ambient gain and explicit zero fade through %s execution", async (path) => {
+      const { scene, session } = setup();
+      const command = m2("Sound Layer", { channel: "ambient", resourceId: FIELD, volume: 25, fadeMs: 0 });
+      if (path === "blocking") await runCommands(scene, [command]);
+      else applyNonBlockingStep(scene, createInterpreter([command], session).start());
+      const audio = audioElements();
+      expect(audio).toHaveLength(1);
+      expect(audio[0]?.loop).toBe(true);
+      expect(audio[0]?.volume).toBeCloseTo(0.7 * 0.25);
+      expect(getAudioEngine().getFadeInMs()).toBe(0);
+      expect(session.audio.ambient?.resourceId).toBe(FIELD);
+      expect(session.audio.bgm).toBeUndefined();
+    });
+
+    it("keeps per-track gain when the group volume changes and the same track is requested again", async () => {
+      const { scene } = setup();
+      await runCommands(scene, [m2("Sound Layer", { channel: "bgm", resourceId: FIELD, volume: 25, fadeMs: 0 })]);
+      getAudioEngine().setVolume("bgm", 0.4);
+      expect(audioElements()[0]?.volume).toBeCloseTo(0.1);
+      await runCommands(scene, [m2("Sound Layer", { channel: "bgm", resourceId: FIELD, volume: 50, fadeMs: 0 })]);
+      expect(audioElements()).toHaveLength(1);
+      expect(audioElements()[0]?.volume).toBeCloseTo(0.2);
+    });
+
+    it.each(["command", "map"] as const)("resets omitted gain on the same track through %s and keeps save/resume consistent", async (path) => {
+      const { scene, session, project } = setup();
+      await runCommands(scene, [m2("Sound Layer", { channel: "bgm", resourceId: FIELD, volume: 25, fadeMs: 0 })]);
+      const element = audioElements()[0];
+      expect(element?.volume).toBeCloseTo(0.175);
+
+      if (path === "command") await runCommands(scene, [{ kind: "playAudio", resourceId: FIELD, loop: true }]);
+      else {
+        project.system.defaultBgmResourceId = FIELD;
+        startMapBgm(project, session, project.startMapId);
+      }
+
+      expect(audioElements()).toEqual([element]);
+      expect(element?.volume).toBeCloseTo(0.7);
+      expect(session.audio.bgm).toEqual({ resourceId: FIELD, loop: true });
+      saveToSlot(localStorage, 1, createSaveSnapshot(project, session));
+      const saved = readSaveSlot(localStorage, 1);
+      if (saved.kind !== "present") throw new Error(`Save was ${saved.kind}`);
+      const restored = applySaveSnapshot(project, saved.snapshot);
+      getAudioEngine().stopAll();
+      resumeAudioState(restored.audio, project, { fadeInMs: 0 });
+      expect(audioElements()[0]?.volume).toBeCloseTo(0.7);
+    });
+
+    it.each([
+      { volume: 0.25, sameTrack: false }, { volume: 0, sameTrack: false },
+      { volume: 0.25, sameTrack: true }, { volume: 0, sameTrack: true },
+    ])("restores field gain $volume after battle (same track: $sameTrack)", async ({ volume, sameTrack }) => {
+      const { scene, session, project } = setup();
+      project.system.battleBgmResourceId = sameTrack ? FIELD : BATTLE;
+      await runCommands(scene, [m2("Sound Layer", { channel: "bgm", resourceId: FIELD, volume: volume * 100, fadeMs: 0 })]);
+      const before = { ...session.audio.bgm };
+      const saved = enterBattleAudio(project, session);
+      expect(audioElements().at(-1)?.volume).toBeCloseTo(sameTrack ? volume * 0.7 : 0.7);
+
+      exitBattleAudio(project, session, saved);
+
+      expect(session.audio.bgm).toEqual(before);
+      expect(audioElements().at(-1)?.volume).toBeCloseTo(volume * 0.7);
+    });
+
+    it("preserves an explicit field loop flag through a battle handoff", () => {
+      const { session, project } = setup();
+      session.audio.bgm = { resourceId: FIELD, loop: false, volume: 25 };
+      const saved = enterBattleAudio(project, session);
+      const play = vi.spyOn(getAudioEngine(), "play");
+      exitBattleAudio(project, session, saved);
+      expect(session.audio.bgm).toEqual({ resourceId: FIELD, loop: false, volume: 25 });
+      expect(play.mock.calls.at(-1)?.[0]).toBe("bgm");
+      expect(play.mock.calls.at(-1)?.[3]).toBe(false);
+    });
+
+    it.each(["me", "se"] as const)("plays %s once with its own gain without changing BGM", async (channel) => {
+      const { scene, project } = setup();
+      playAudioCommand({ resourceId: FIELD, loop: true }, project, { fadeInMs: 0 });
+      const field = audioElements()[0];
+      await runCommands(scene, [m2("Sound Layer", { channel, resourceId: SE, volume: 50, fadeMs: 0 })]);
+      expect(audioElements()[0]).toBe(field);
+      expect(field?.volume).toBeCloseTo(0.7);
+      expect(audioElements()[1]?.loop).toBe(false);
+      expect(audioElements()[1]?.volume).toBeCloseTo((channel === "me" ? 0.7 : 0.8) * 0.5);
+      getAudioEngine().setVolume(channel === "me" ? "bgm" : "se", 0.6);
+      expect(audioElements()[1]?.volume).toBeCloseTo(0.3);
+    });
+
+    it("replays memorized BGM through the engine, not only the session record", async () => {
+      const { scene } = setup();
+      const play = vi.spyOn(getAudioEngine(), "play");
+      await runCommands(scene, [
+        { kind: "playAudio", resourceId: FIELD, loop: true }, m2("Memorize Current BGM"),
+        { kind: "playAudio", resourceId: BATTLE, loop: true }, m2("Play Memorized BGM"),
+      ]);
+      expect(play.mock.calls.map(([channel, resource]) => [channel, resource])).toEqual([
+        ["bgm", FIELD], ["bgm", BATTLE], ["bgm", FIELD],
+      ]);
+    });
+
+    it("inserts the Fadeout BGM alias with its channel and preserves it through project export/import", () => {
+      let selected: Command | undefined;
+      openEventCommandPicker({ title: "Commands", context: "map", onSelect: (command) => { selected = command; } });
+      const button = [...document.querySelectorAll<HTMLButtonElement>(".event-command-picker-command")]
+        .find((candidate) => candidate.textContent?.includes("BGM 페이드아웃"));
+      expect(button).toBeDefined();
+      button?.click();
+      expect(selected).toEqual({ kind: "stopAudio", channel: "bgm" });
+      if (!selected) throw new Error("Picker did not insert a command");
+      const project = buildContractProject([selected, { kind: "stopAudio" }]);
+      const restored = deserialize(serialize(project));
+      expect(restored.maps[restored.startMapId]?.events[0]?.commands).toEqual([selected, { kind: "stopAudio" }]);
+    });
+
+    it.each(["blocking", "parallel", "legacy"] as const)("stops only BGM through the %s path", async (path) => {
+      const { scene, session } = setup();
+      await runCommands(scene, [
+        m2("Sound Layer", { channel: "bgm", resourceId: FIELD, fadeMs: 0 }),
+        m2("Sound Layer", { channel: "ambient", resourceId: BATTLE, fadeMs: 0 }),
+        m2("Sound Layer", { channel: "se", resourceId: SE }),
+      ]);
+      const stop = vi.spyOn(getAudioEngine(), "stopChannel");
+      const stopAll = vi.spyOn(getAudioEngine(), "stopAll");
+      if (path === "parallel") applyNonBlockingStep(scene, { kind: "stopAudio", channel: "bgm" });
+      else await runCommands(scene, [path === "legacy" ? m2("Fadeout BGM") : { kind: "stopAudio", channel: "bgm" }]);
+      expect(stop).toHaveBeenCalledWith("bgm");
+      expect(stopAll).not.toHaveBeenCalled();
+      expect(session.audio.bgm).toBeUndefined();
+      expect(session.audio.ambient?.resourceId).toBe(BATTLE);
+      expect(session.audio.se?.resourceId).toBe(SE);
+    });
+
+    it("persists system replacements through save-slot parsing and consumes them on map/battle entry", async () => {
+      const { project, session, scene } = setup();
+      await runCommands(scene, [m2("Change System BGM", { slot: "field", resourceId: FIELD }), m2("Change System BGM", { slot: "battle", resourceId: BATTLE })]);
+      expect(saveToSlot(localStorage, 1, createSaveSnapshot(project, session)).ok).toBe(true);
+      const saved = readSaveSlot(localStorage, 1);
+      if (saved.kind !== "present") throw new Error(`Save was ${saved.kind}`);
+      const restored = applySaveSnapshot(project, saved.snapshot);
+      const play = vi.spyOn(getAudioEngine(), "play");
+      startMapBgm(project, restored, project.startMapId);
+      enterBattleAudio(project, restored);
+      expect(play.mock.calls.map(([, resource]) => resource)).toEqual([FIELD, BATTLE]);
+      expect(startSession(project, 3).m2Runtime).toBeUndefined();
+    });
+
+    it("restores authored battle music across both command formats without clearing the field slot", async () => {
+      const { project, session, scene } = setup();
+      project.system.battleBgmResourceId = FIELD;
+      await runCommands(scene, [
+        m2("Change System BGM", { slot: "field", resourceId: BATTLE }),
+        m2("Change System BGM", { slot: "battle", value: BATTLE }),
+        m2("Change System BGM", { cue: "battle", operation: "set", resourceId: BATTLE, volume: 42 }),
+      ]);
+      enterBattleAudio(project, session);
+      expect(session.audio.bgm).toMatchObject({ resourceId: BATTLE, volume: 42 });
+
+      await runCommands(scene, [m2("Change System BGM", { cue: "battle", operation: "reset" })]);
+      enterBattleAudio(project, session);
+      expect(session.audio.bgm).toEqual({ resourceId: FIELD, loop: true });
+      startMapBgm(project, session, project.startMapId);
+      expect(session.audio.bgm?.resourceId).toBe(BATTLE);
+
+      await runCommands(scene, [
+        m2("Change System BGM", { cue: "battle", operation: "set", resourceId: BATTLE, volume: 42 }),
+        m2("Change System BGM", { slot: "battle", resourceId: "" }),
+      ]);
+      enterBattleAudio(project, session);
+      expect(session.audio.bgm).toEqual({ resourceId: FIELD, loop: true });
+    });
+
+    it.each(["defeat", "escape"] as const)("plays the active %s sound and restores the authored sound in either format", async cue => {
+      const { project, session, scene } = setup();
+      project.system.seCues = { [cue]: SE };
+      const play = vi.spyOn(getAudioEngine(), "play");
+      const playResult = () => playBattleCue(cue, { project, session });
+      const playedResources = () => play.mock.calls.filter(([channel]) => channel === "se").map(([, resource]) => resource);
+
+      await runCommands(scene, [m2("Change System SE", { slot: cue, resourceId: OTHER_SE })]);
+      playResult();
+      expect(playedResources()).toEqual([OTHER_SE]);
+
+      await runCommands(scene, [m2("Change System SE", { cue, operation: "set", resourceId: "", volume: 100 })]);
+      playResult();
+      expect(playedResources()).toEqual([OTHER_SE]);
+
+      await runCommands(scene, [m2("Change System SE", { cue, operation: "reset" })]);
+      playResult();
+      expect(playedResources()).toEqual([OTHER_SE, SE]);
+
+      await runCommands(scene, [
+        m2("Change System SE", { cue, operation: "set", resourceId: OTHER_SE, volume: 42 }),
+        m2("Change System SE", { slot: cue, resourceId: "" }),
+      ]);
+      playResult();
+      expect(playedResources()).toEqual([OTHER_SE, SE, SE]);
+    });
+
+    it("keeps battle result overrides session-owned even with overlapping battle lifetimes", async () => {
+      const first = setup();
+      const second = setup();
+      await runCommands(first.scene, [m2("Change System SE", { slot: "defeat", resourceId: SE })]);
+      await runCommands(second.scene, [m2("Change System SE", { slot: "defeat", resourceId: OTHER_SE })]);
+      const saved = enterBattleAudio(first.project, first.session);
+      enterBattleAudio(second.project, second.session);
+      exitBattleAudio(first.project, first.session, saved);
+      const play = vi.spyOn(getAudioEngine(), "play");
+      playAuthoredBattleResultCue(first.project, "defeat", first.session);
+      playAuthoredBattleResultCue(second.project, "defeat", second.session);
+      expect(play.mock.calls.map(([channel, resource]) => [channel, resource])).toEqual([["se", SE], ["se", OTHER_SE]]);
+    });
+
+    it("restores a layer's gain through save parsing and engine resume", async () => {
+      const { project, session, scene } = setup();
+      await runCommands(scene, [m2("Sound Layer", { channel: "ambient", resourceId: FIELD, volume: 30, fadeMs: 0 })]);
+      saveToSlot(localStorage, 1, createSaveSnapshot(project, session));
+      const saved = readSaveSlot(localStorage, 1);
+      if (saved.kind !== "present") throw new Error(`Save was ${saved.kind}`);
+      const restored = applySaveSnapshot(project, saved.snapshot);
+      getAudioEngine().stopAll();
+      resumeAudioState(restored.audio, project, { fadeInMs: 0 });
+      expect(audioElements()[0]?.volume).toBeCloseTo(0.21);
+    });
+  });
+});
+
+describe("eventBattleAdmission", () => {
+  isolateTimers();
+  type BattleCommand = Extract<Command, { kind: "battleProcessing" }>;
+  const previous = store.getCurrent();
+  let project = createBlankProject();
+  beforeEach(() => { project = createBlankProject(); store.replaceProject(project); });
+  afterEach(() => { document.body.replaceChildren(); store.replaceProject(previous); });
+  function control(id: string): HTMLElement {
+    const node = document.querySelector<HTMLElement>(`[data-testid="${id}"]`);
+    if (!node) throw new Error(`Missing control ${id}`);
+    return node;
+  }
+  function select(id: string, value: string): void {
+    const node = control(id);
+    if (!(node instanceof HTMLSelectElement)) throw new Error(`Not a select ${id}`);
+    node.value = value; node.dispatchEvent(new Event("change"));
+  }
+  function command(): BattleCommand {
+    return { kind: "battleProcessing", troopId: "", canEscape: true, canLose: false,
+      victoryBranch: [{ kind: "setFlag", flag: "kept", value: true }] };
+  }
+  function troop() {
+    const record = project.database.troops[0];
+    if (!record) throw new Error("Missing fixture troop");
+    return record;
+  }
+  describe("native battle confirmation admission", () => {
+    it.each(["empty", "missing", "empty-members", "variable-empty", "variable-missing"])("retains the draft when %s is confirmed and allows corrected authoring", kind => {
+      // Given an incomplete command and a separate valid troop for correction.
+      const initial = command();
+      const validId = troop().id;
+      if (kind === "missing") initial.troopId = "removed-troop";
+      if (kind === "empty-members") {
+        project.database.troops.push({ ...troop(), id: "empty", members: [], enemyIds: [] });
+        initial.troopId = "empty";
+      }
+      if (kind.startsWith("variable")) {
+        initial.troopSource = "variable"; initial.troopVariableId = kind === "variable-empty" ? "" : "removed-variable";
+      }
+      const apply = vi.fn();
+      openEventCommandEditDialog({ initial, onApply: apply });
+      const dialog = control("event-command-edit-dialog");
+      control("battle-processing-preset-boss").click();
+      // When confirming invalid input, no command is committed or discarded.
+      control("event-command-edit-ok").click();
+      expect(apply).not.toHaveBeenCalled();
+      expect(control("event-command-edit-dialog")).toBe(dialog);
+      const warning = control("battle-processing-warning");
+      expect(warning.hidden).toBe(false);
+      expect(warning.textContent?.trim().length).toBeGreaterThan(0);
+      // Correct the same mounted draft; prior rule and branch edits survive.
+      select("battle-processing-troop-source", "fixed");
+      select("battle-processing-troop-select", validId);
+      control("event-command-edit-ok").click();
+      expect(apply).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({
+        troopId: validId, canEscape: false, battleFlow: "strict", victoryBranch: initial.victoryBranch,
+      }));
+      expect(dialog.isConnected).toBe(false);
+    });
+
+    it("revalidates a troop removed while the dialog is open", () => {
+      const apply = vi.fn();
+      openEventCommandEditDialog({ initial: { ...command(), troopId: troop().id }, onApply: apply });
+      project.database.troops = [];
+      control("event-command-edit-ok").click();
+      expect(apply).not.toHaveBeenCalled();
+      expect(control("battle-processing-warning").hidden).toBe(false);
+    });
+
+    it("accepts a selected variable without treating the unused fixed reference as required", () => {
+      const variable = project.variables[0];
+      if (!variable) throw new Error("Missing fixture variable");
+      const initial = { ...command(), troopSource: "variable", troopVariableId: variable.id } as const;
+      const apply = vi.fn();
+      openEventCommandEditDialog({ initial, onApply: apply });
+      control("event-command-edit-ok").click();
+      expect(apply).toHaveBeenCalledExactlyOnceWith(initial);
+    });
+
+    it.each(["hidden", "legacy"])("accepts legitimate %s composition", kind => {
+      if (kind === "hidden") troop().members = troop().enemyIds.map(enemyId => ({ enemyId, hidden: true, x: 20, y: 20 }));
+      else troop().members = [];
+      const apply = vi.fn();
+      openEventCommandEditDialog({ initial: { ...command(), troopId: troop().id }, onApply: apply });
+      control("event-command-edit-ok").click();
+      expect(apply).toHaveBeenCalledTimes(1);
+    });
+
+    it("blocks aggregate event Apply for a troop whose effective composition is empty", () => {
+      troop().members = []; troop().enemyIds = [];
+      const event: GameEvent = { id: "admission", x: 1, y: 1, trigger: { kind: "action" },
+        commands: [], pages: [{ id: "battle-page", name: "Battle", conditions: [], graphic: {},
+          trigger: { kind: "action" }, priority: "below", movement: { type: "fixed", speed: 3, frequency: 3 },
+          commands: [{ ...command(), troopId: troop().id }] }] };
+      const result = validateEventDraftBody(project, project.startMapId, event);
+      expect(result.canCommit).toBe(false);
+      expect(result.issues).toContainEqual(expect.objectContaining({ code: "battle.troop.empty", severity: "error", commandPath: [0] }));
+    });
+  });
+});
