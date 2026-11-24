@@ -18,11 +18,24 @@ export const STARTER_BATTLE_BGM_ID = "cc0-bgm-rtp-btl-001";
 /**
  * 타이틀 · 메뉴 곡.
  *
- * 기본값으로 **꽂지 않는다** — 이 프로젝트는 타이틀 무음을 의도된 기본값으로 두고 있고
- * test/titleScreenMusic.test.ts 가 그걸 계약으로 못박았다. 대신 파일을 함께 커밋해 둬서
- * 저작자가 CDN 설정 없이도 피커에서 골라 바로 들을 수 있게 한다.
+ * **새 프로젝트**의 타이틀 BGM 기본값이다(`defaultSystem(true)` 만 꽂는다 — 2026-11-24 오너 결정).
+ * 예전에는 타이틀 무음이 의도된 기본이었지만, 새 프로젝트를 타이틀부터 실행하면 아무 소리도
+ * 나지 않는 것이 «기본 BGM 이 안 틀어진다» 로 보고됐다. 이미 저장된 프로젝트는 건드리지 않는다:
+ * `defaultTitleScreenSettings()`(옛 문서 보정·normalize 의 기준)에는 곡이 없고, 저작자가 일부러
+ * 비운 칸은 그대로 비어 있다. 파일은 레포에 함께 커밋돼 있어 CDN 설정 없이도 재생된다.
  */
 export const STARTER_TITLE_BGM_ID = "cc0-bgm-rtp-ttl-001";
+
+/**
+ * 새 프로젝트 타이틀 메뉴 효과음(커서·결정·취소). 전부 `public/assets/se/oga-rpg-pack/interface/` 에
+ * 함께 커밋된 CC0 UI 소리다(seCatalogRuntime.ts 가 경로를 안다 — CDN 없음).
+ * 커서 = 짧은 탭(0.19s), 결정 = 밝은 상향 차임(0.45s), 취소 = 낮은 노크(0.5s)로 서로 구분된다.
+ */
+export const STARTER_TITLE_SE_IDS = {
+  cursor: "cc0-se-orp-interface-interface1",
+  confirm: "cc0-se-orp-interface-interface2",
+  cancel: "cc0-se-orp-interface-interface6",
+} as const;
 
 /** 레포에 파일이 함께 커밋된 카탈로그 곡. CDN 없이도 재생돼야 한다. */
 export const BGM_STARTER_TRACK_IDS: readonly string[] = [

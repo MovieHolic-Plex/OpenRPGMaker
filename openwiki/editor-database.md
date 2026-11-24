@@ -751,6 +751,11 @@ hero-dawn과 스타터 타이틀 곡)을 받는다. createNewProjectSeed(packId,
 유지해야 한다. enabled:false도 그대로 유지한다. 9/21의 자동 채택 정규화기는
 remove_opening 후 재로드 시 삭제를 되돌리는 결함으로 제거했다.
 
+**새 프로젝트 타이틀 소리 (2026-11-24):** 같은 경로(`defaultSystem(true)`)가 타이틀 BGM
+(`cc0-bgm-rtp-ttl-001`)과 커서·결정·취소 SE(`cc0-se-orp-interface-interface1/2/6`)를 채운다.
+타이틀부터 시작해도 무음이 아니다. 옛 문서 기준인 `defaultTitleScreenSettings()` 는 계속 비어 있어
+이미 저장된 프로젝트(저작자가 일부러 비운 칸 포함)는 바뀌지 않는다. 계약 테스트 `test/titleScreenMusic.test.ts`.
+
 이미지 팩 생성·설치·검색·내보내기 계약과 실제 분량은 [opening-still-pack.md](opening-still-pack.md).
 AI 컨텍스트는 intro 25번 줄에 이 사실을 명시한다.
 

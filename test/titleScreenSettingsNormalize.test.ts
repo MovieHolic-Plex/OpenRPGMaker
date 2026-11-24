@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { MAX_TITLE_BACKGROUND_LAYERS, normalizeSystemRecords } from "@/project/databaseRecordModel";
+import { STARTER_TITLE_SE_IDS } from "@/assets/bgmStarterTracks";
 import { defaultSystem, defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io";
@@ -183,7 +184,12 @@ describe("titleScreen settings normalize expansion", () => {
       quit: true,
     });
     expect(project.system.titleScreen?.showInputHint).toBe(true);
-    expect(project.system.titleScreen?.sounds).toBeUndefined();
+    // 새 프로젝트는 타이틀 메뉴 SE 3칸을 설치된 파일로 채운다(titleScreenMusic.test.ts 계약, 2026-11-24).
+    expect(project.system.titleScreen?.sounds).toEqual({
+      cursorSeResourceId: STARTER_TITLE_SE_IDS.cursor,
+      confirmSeResourceId: STARTER_TITLE_SE_IDS.confirm,
+      cancelSeResourceId: STARTER_TITLE_SE_IDS.cancel,
+    });
     expect(project.system.titleScreen?.titleGraphic).toBeUndefined();
   });
 
