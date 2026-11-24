@@ -6,6 +6,12 @@
   "license": "SEE LICENSE IN LICENSE.md",
   "type": "module",
   "main": "dist-electron/main.cjs",
+  "imports": {
+    "#bundled-json-sources": {
+      "development": "./src/project/defaults/bundledJsonSources.node.ts",
+      "default": "./src/project/defaults/bundledJsonSources.ts"
+    }
+  },
   "scripts": {
     "electron:build": "node scripts/build-electron.mjs",
     "electron:dev": "node scripts/build-electron.mjs && node scripts/electron-dev.mjs",

@@ -17,11 +17,11 @@ import {
   setBundledJsonReader,
   type BundledJsonData,
   type BundledJsonKey,
-} from "./bundledJsonSources";
+} from "#bundled-json-sources";
 import { applyKitDisplayNames } from "../kitDisplayNames";
 
 export type { BundledJsonKey };
-export type { BundledJsonReader } from "./bundledJsonSources";
+export type { BundledJsonReader } from "#bundled-json-sources";
 export { setBundledJsonReader };
 
 /** 미리 읽기 진행: 끝난 파일 수 / 이번에 받을 파일 수, 받은 바이트(지연 출처만 센다). */

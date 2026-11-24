@@ -2,8 +2,9 @@
 //
 // 편집기·시작 화면(vite.config.ts)과 웹 플레이어(vite.player.config.ts)의 브라우저 빌드는 이 모듈을
 // `bundledJsonSources.lazy.ts`(파일 URL → 처음 쓸 때 fetch)로 바꿔 끼운다(scripts/lib/bundledJsonLazy.mjs).
-// 실행형 HTML(vite.standalone.config.ts, file://)과 node 실행(테스트·tsx 스크립트·헤드리스·vite-node·Electron 메인)은
-// 이 파일 그대로라 예전과 똑같이 동기로 갖는다.
+// 실행형 HTML(vite.standalone.config.ts, file://)과 esbuild 묶음·tsx 스크립트·헤드리스·Electron 메인은 이 파일 그대로라 예전과 똑같이 동기로 갖는다.
+// vitest·vite-node·dev 서버 SSR(`development` 조건)은 package.json 의 `#bundled-json-sources` 가 bundledJsonSources.node.ts 로 풀어 쓰는 키만 fs 로 읽는다 —
+// 이 파일의 키·API 를 바꾸면 그 파일도 같이 고친다(타입이 맞춘다).
 // 왜(2026-10-20 실측, 편집기 웜 부팅): 이 JSON 이 편집기 진입 청크 63MB 의 대부분이었고, 열린 프로젝트는 보통 그중 몇 개만 쓴다.
 // 읽는 곳은 bundledJson.ts 하나다 — 다른 곳에서 이 모듈을 직접 가져오지 말 것(바꿔 끼우기가 빗나간다).
 import jpCityTileset from "@/assets/jpCityTileset.json" with { type: "json" };
