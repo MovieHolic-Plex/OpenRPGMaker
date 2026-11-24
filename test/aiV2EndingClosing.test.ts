@@ -96,6 +96,7 @@ describe("청사진 인물·세계 칸 → 첫 판 초안 데이터(draft-cast)"
     expect(applyDraftCast(project).length).toBeGreaterThan(0);
     const party = (project.system.startActorIds ?? []).map((id) => project.database.actors.find((a) => a.id === id)!);
     expect(party.map((a) => a.name)).toEqual(["아젤", "리나", "볼크"]);
+    expect(new Set(party.map((a) => a.faceResourceId)).size).toBe(3);
     expect(party.map((a) => project.database.classes.find((c) => c.id === a.classId)?.name)).toEqual(["몰락한 마왕", "견습 사제", "퇴역 용병"]);
     expect(project.database.skills.some((s) => s.name === "마왕의 위압" && party[0]!.learnedSkills.some((l) => l.skillId === s.id))).toBe(true);
     expect(project.worldCanon?.name).toBe("아르센 변경");

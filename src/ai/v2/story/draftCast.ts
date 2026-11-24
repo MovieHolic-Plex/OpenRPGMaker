@@ -97,8 +97,11 @@ function templateEnemy(project: Project): EnemyRecord | undefined {
   return project.database.enemies.find((e) => !e.speciesId) ?? factory().database.enemies.find((e) => !e.speciesId);
 }
 
-function templateActor(project: Project, avoid: ReadonlySet<string>): ActorRecord | undefined {
-  return factory().database.actors.find((a) => !avoid.has(a.id)) ?? project.database.actors[0];
+/** 쓰이지 않은 칩·얼굴의 기본 배우 — 칩 고르기가 못 고를 때도 동료가 주인공과 같은 얼굴로 서지 않는다. */
+function templateActor(project: Project, chips: ReadonlySet<string>): ActorRecord | undefined {
+  const free = (a: ActorRecord) => !!a.faceResourceId && !!a.characterResourceId && !chips.has(`${a.characterResourceId}#${a.characterIndex ?? 0}`)
+    && !project.database.actors.some((b) => b.faceResourceId === a.faceResourceId && (project.system.startActorIds ?? []).includes(b.id));
+  return factory().database.actors.find(free) ?? project.database.actors[0];
 }
 
 /** 쓰인 칩(파티·맵 위 사람) — 동료가 같은 얼굴로 서지 않게. */
@@ -158,7 +161,7 @@ export function applyDraftCast(project: Project, request = ""): string[] {
     const premise = (world?.premise ?? blueprint?.opening?.join(" ") ?? blueprint?.playerGoal ?? splitIntentNote(request).own).trim().slice(0, 280);
     if (premise) {
       const rules = world?.rules ?? [];
-      const body = [...(rules.length ? ["## 이 세계의 규칙", ...rules.map((r) => `- ${r}`)] : []), ...(blueprint?.opening?.length ? ["## 이야기의 시작", ...blueprint.opening] : [])].join("\n");
+      const body = [...(rules.length ? ["## 이 세계의 규칙", ...rules.map((r) => `- ${r}`)] : []), ...(world?.premise && blueprint?.opening?.length ? ["## 이야기의 시작", ...blueprint.opening] : [])].join("\n");
       project.worldCanon = {
         ...(project.worldCanon ?? {}),
         name: (world?.name ?? title).slice(0, 120),
@@ -190,19 +193,19 @@ export function applyDraftCast(project: Project, request = ""): string[] {
   if (heroActor && skillIds[0] && !heroActor.learnedSkills.some((l) => l.skillId === skillIds[0])) heroActor.learnedSkills = [{ level: 1, skillId: skillIds[0] }, ...heroActor.learnedSkills];
 
   // 동료 — 배우·직업·기술, 싸우는 게임이면 시작 파티에 세운다.
-  const avoid = new Set(project.database.actors.map((a) => a.id));
   const chips = usedChips(project);
   companions.forEach((person, n) => {
     const i = n + 1;
     const id = `actor_${DRAFT_ID}_${i}`;
     let actor = project.database.actors.find((a) => a.id === id);
     if (!actor) {
-      const template = templateActor(project, avoid);
+      const template = templateActor(project, chips);
       if (!template) return;
       actor = clone(template);
+      chips.add(`${actor.characterResourceId}#${actor.characterIndex ?? 0}`);
       actor.id = id;
       actor.name = person.name;
-      actor.nickname = roleOf(person, person.party ? "동료" : "조력자");
+      actor.nickname = person.party ? roleOf(person, "동료") : "";
       actor.initialLevel = heroActor?.initialLevel ?? actor.initialLevel;
       const pick = pickChip(`${person.name} ${person.looks ?? ""} ${person.role ?? ""}`, chips, project.charsetLabels);
       if (pick) {
@@ -216,8 +219,7 @@ export function applyDraftCast(project: Project, request = ""): string[] {
       if (classTemplate) actor.classId = ensureClass(project, `class_${DRAFT_ID}_${i}`, roleOf(person, person.party ? "동료" : "조력자"), classTemplate, skillIds[i], out);
       actor.learnedSkills = skillIds[i] ? [{ level: 1, skillId: skillIds[i]! }] : [];
       project.database.actors.push(actor);
-      avoid.add(id);
-      out.push(`동료 ${person.name}(${actor.nickname})`);
+      out.push(`동료 ${person.name}(${roleOf(person, person.party ? "동료" : "조력자")})`);
     }
     if (fights && person.party && !(project.system.startActorIds ?? []).includes(id) && (project.system.startActorIds?.length ?? 0) < 4) {
       project.system.startActorIds = [...(project.system.startActorIds ?? []), id];
