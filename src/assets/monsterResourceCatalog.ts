@@ -33,7 +33,11 @@ const RETIRED_MONSTER_IDS: ReadonlySet<string> = new Set([
 ]);
 
 /** One raw-ID authority for editor/AI selection; metadata never registers resources. */
-export function listMonsterResources(project: MonsterResourceProject): readonly MonsterResource[] {
+/**
+ * 에메랄드 v4 종 그림은 몬스터 수집(포켓몬류) 게임 전용이다(오너 2026-11-24) — 기본 목록(JRPG 적 고르기·조수 적 그림 찾기)에는 없고,
+ * 몬스터 수집 종족 고르기·소재 관리처럼 `emeraldV4: true` 를 준 곳에만 나온다.
+ */
+export function listMonsterResources(project: MonsterResourceProject, options: { readonly emeraldV4?: boolean } = {}): readonly MonsterResource[] {
   // Local accumulator preserves canonical source order and deduplicates raw IDs.
   const resources = new Map<string, { readonly name: string; readonly origin: MonsterResource["origin"] }>();
   const add = (resourceId: string, name: string, origin: MonsterResource["origin"]): void => {
@@ -53,7 +57,7 @@ export function listMonsterResources(project: MonsterResourceProject): readonly 
   for (const asset of SCARLOXY_MONSTER_ASSETS) add(asset.id, asset.name, "bundled");
   // 몬스터 수집 하네스가 사람이 고른 종 그림(앞·뒤). 이름은 id 에서 만든다.
   for (const id of HARNESS_MONSTER_RESOURCE_IDS) add(id, id.replace(/^harness-monster-/, "").replace(/-/g, " "), "bundled");
-  for (const asset of EMERALD_SPECIES_V4_ASSETS) add(asset.id, asset.name, "bundled");
+  if (options.emeraldV4) for (const asset of EMERALD_SPECIES_V4_ASSETS) add(asset.id, asset.name, "bundled");
   for (const profile of project.resourceProfiles) {
     if (profile.kind === "monster" && profile.assetId) add(profile.assetId, profile.name, "profile");
   }
@@ -86,5 +90,5 @@ export function listMonsterResources(project: MonsterResourceProject): readonly 
 }
 
 export function getMonsterResource(project: MonsterResourceProject, resourceId: string): MonsterResource | undefined {
-  return listMonsterResources(project).find(resource => resource.resourceId === resourceId);
+  return listMonsterResources(project, { emeraldV4: true }).find(resource => resource.resourceId === resourceId);
 }

@@ -62,6 +62,8 @@ export type DatabaseResourceOption = {
    * 표시에서 빼고 검색에만 쓴다. BGM 카탈로그 281곡을 "던전"/"보스"로 찾게 하는 배선이다.
    */
   readonly searchTerms?: readonly string[];
+  /** 고르기 목록의 묶음 이름(예: 「에메랄드 v4」). 묶음 칩으로 거른다. */
+  readonly group?: string;
 };
 
 export function prettyId(id: string): string {
