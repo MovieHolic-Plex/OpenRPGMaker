@@ -1,7 +1,10 @@
 import { newCommand } from "@/editor/eventActions";
 import { m2CommandById } from "@/project/eventCommands/m2Catalog";
 import { isContainerInsideCommand, moveCommandBetweenLists, resolveRootCommandBranchList } from "@/editor/eventCommandPaths";
-import type { Command, Condition } from "@/project/types";
+import type { Command, Condition, GameEvent, MapId } from "@/project/types";
+import { validateEventDraftBody } from "@/editor/eventDraftValidator";
+import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
+import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 import { renderCommandBody } from "./commandBody";
 import { SCRIPT_UNWRAP_EVENT } from "./commandBodyScript";
@@ -51,6 +54,7 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
       const renderPreview = () => {
         ok.disabled = stagedCommand.kind === "fork" && hasUnselectedSwitch(stagedCommand.condition);
         ok.setAttribute("aria-disabled", String(ok.disabled));
+        if (requiredShown) syncRequired();
         clearChildren(previewHost);
         // 새 애니메이션 표시면은 편집 본문이 재생기를 직접 갖는다. 여기서 한 번 더 그리면
         // 같은 연출이 한 모달에 둘 생긴다 — 표시면은 하나만 둔다.
@@ -157,6 +161,20 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
           if (moveCommandBetweenLists(sourceList, fromIndex, targetList, toIndex)) renderEditor();
         },
       };
+      // 필수값 줄: 처음 열 때는 숨기고, 빈 값으로 확인을 누른 뒤부터 보이며 고치면 사라진다.
+      const required = el("div", {
+        class: "battle-processing-warning event-command-edit-required",
+        attrs: { role: "alert" },
+        dataset: { testid: "event-command-edit-required" },
+      });
+      required.hidden = true;
+      let requiredShown = false;
+      const syncRequired = (): readonly string[] => {
+        const problems = commandRequiredProblems(stagedCommand);
+        required.textContent = problems.join(" ");
+        required.hidden = !requiredShown || problems.length === 0;
+        return problems;
+      };
       const ok = el("button", {
         class: "event-command-edit-action primary",
         text: stagedCommand.kind === "shop" ? "상점 설정 적용" : "확인",
@@ -165,6 +183,8 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
         on: {
           click: () => {
             if (ok.disabled || !validateWeightedBranchForm(formHost) || !validateBattleProcessingForm(formHost, stagedCommand)) return;
+            requiredShown = true;
+            if (syncRequired().length > 0) return;
             request.onApply(structuredClone(stagedCommand));
             close();
           },
@@ -182,7 +202,8 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
       if (stagedCommand.kind === "shop") {
         footer.push(createShopPreviewFooterToggle(editor));
       }
-      footer.push(ok, cancel);
+      // 필수값 줄은 확인 단추 옆에 둔다 — 본문 아래에 두면 긴 설정 창에서 화면 밖이라 못 본다.
+      footer.push(required, ok, cancel);
 
       const columns = el("div", {
         class: "event-command-edit-columns",
@@ -211,6 +232,37 @@ export function openEventCommandEditDialog(request: EventCommandEditDialogReques
       }
     },
   });
+}
+
+/**
+ * 확인을 막는 빈 필수값. 이벤트 저장을 막는 검사기 오류(선택 안 한 맵·변수·스위치·주인공 등)를
+ * 이 명령 하나에만 돌려 설정 창에서 먼저 막는다 — 확인은 통과하고 저장에서야 막히던 길을 없언다.
+ * 실행 지원 분류(runtime.*) 는 사용자가 고칠 값이 아니라 빼고, 빈 대사는 검사기가 조용하므로 여기서 더한다.
+ */
+export function commandRequiredProblems(command: Command): readonly string[] {
+  if (command.kind === "text" && !textBodyOf(command as unknown as { kind: string } & Record<string, unknown>).trim()) {
+    return ["대사를 한 줄 이상 적으세요."];
+  }
+  const project = store.getCurrent();
+  const modal = typeof document === "undefined" || typeof document.querySelector !== "function"
+    ? null
+    : document.querySelector<HTMLElement>('[data-testid="event-editor-modal"]');
+  const mapId = (modal?.dataset.mapId ?? project.startMapId) as MapId;
+  const map = project.maps[mapId];
+  if (!map) return [];
+  const host = map.events.find((event) => event.id === modal?.dataset.eventId);
+  const probe: GameEvent = {
+    ...(host ? structuredClone(host) : { id: "__command-required-probe", x: 0, y: 0, trigger: { kind: "action" }, commands: [] }),
+    pages: [{
+      id: "__probe-page", name: "", conditions: [], graphic: {}, trigger: { kind: "action" }, priority: "same",
+      movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [command],
+    }],
+  } as GameEvent;
+  delete (probe as { draft?: unknown }).draft;
+  const messages = validateEventDraftBody(project, mapId, probe).issues
+    .filter((issue) => issue.severity === "error" && issue.commandPath?.length === 1 && !issue.code.startsWith("runtime."))
+    .map((issue) => issue.message);
+  return [...new Set(messages)];
 }
 
 function hasUnselectedSwitch(condition: Condition): boolean {
