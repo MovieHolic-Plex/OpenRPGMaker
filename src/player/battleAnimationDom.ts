@@ -2,6 +2,7 @@ import { cssMixBlendMode } from "@/project/blendMode";
 import type { BattleSnapshot } from "@/battle/runtime";
 import { activeTimingEffects, battleAnimationFrameAtUnits, battleAnimationFrameStartUnits, type ActiveTimingEffects } from "@/battle/animationTiming";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { isBattleAudioMuted } from "@/player/battleAudioMute";
 import { applyAutoTransparencyKey } from "@/assets/transparentColorKey";
 import { store } from "@/project/store";
 import { bundledRetroPixelAnimation } from "@/project/defaults/retroPixelAnimationRecords";
@@ -754,6 +755,7 @@ function setEffectVariables(
 const ANIMATION_SE_VOLUME = 0.4;
 
 function playTimingSound(soundResourceId: string | undefined): void {
+  if (isBattleAudioMuted()) return;
   // 디코딩 캐시에 있으면 즉시 — 새 요소의 로드 지연이 애니메이션 착탄음을 늦게 만든다.
   if (soundResourceId && playBattleSample(soundResourceId, ANIMATION_SE_VOLUME, 1, "animation")) return;
   const url = resolveAssetResourceUrl(soundResourceId, { project: store.getCurrent() });

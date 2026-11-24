@@ -11,6 +11,7 @@ import { skillHelp, skillHelpTagLine } from "@/battle/skillHelp";
 import { resolveBattleFanfare, type ResolvedBattleFanfare } from "@/project/battleFanfare";
 import type { Project, SkillRecord } from "@/project/types";
 import { el } from "@/util/dom";
+import { isBattleAudioMuted } from "@/player/battleAudioMute";
 import { playBattleSfx } from "@/player/battleSfx";
 import { playProjectSeCue } from "@/player/seCuePlayback";
 
@@ -150,7 +151,7 @@ export function newlyUnlockedCombos(project: Project, snapshot: BattleSnapshot):
 
 /** 창/카드가 열리는 순간의 소리. */
 export function playFanfareCue(windowNode: HTMLElement, fanfare: ResolvedBattleFanfare): void {
-  if (!fanfare.sound) return;
+  if (!fanfare.sound || isBattleAudioMuted()) return;
   const kind = windowNode.dataset.fanfareKind;
   if (kind === "skill" || kind === "combo") playBattleSfx(kind === "combo" ? "combo" : "skillLearned");
   else if (kind === "levelUp" && !playProjectSeCue("levelUp")) playBattleSfx("levelUp");

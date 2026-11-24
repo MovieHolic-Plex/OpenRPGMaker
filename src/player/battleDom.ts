@@ -16,7 +16,7 @@ import { mountOnFieldBackdrop, type OnFieldAnchors } from "@/player/battleOnFiel
 import { concreteTargetCommand } from "@/battle/runtime";
 import { BATTLE_START_FORMATION_BANNERS } from "@/battle/battleFormation";
 import { createInputSequenceTracker, inputKeyLabel, type SkillInputResult } from "@/battle/battleInputSequence";
-import type { SkillInputKey, SkillInputSequence } from "@/project/types";
+import type { Project, SkillInputKey, SkillInputSequence } from "@/project/types";
 import { waitForEventKey } from "@/player/eventInput";
 import type { BattleEventChoiceSnapshot, BattleEventPauseSnapshot } from "@/battle/types";
 import { targetScopeForCommand } from "@/battle/battleTargetResolver";
@@ -94,6 +94,16 @@ export interface BattleDomOptions {
   /** 명령 첫 단계(대상 선택·하위 메뉴가 없을 때)에서 취소 키를 눌렀다. 전투 안에서 할 일이 없는 키라 테스트 창이 닫기에 쓴다. */
   readonly onRootCancel?: () => void;
   readonly introHold?: boolean;
+  /**
+   * true 면 창 전체(window)의 키 입력을 받지 않는다 — 장면 루트 안으로 직접 들어온 입력만 듣는다. 편집기 안 전투 미리보기처럼
+   * 같은 페이지의 다른 입력(타이핑·단축키)이 보이지 않는 전투를 움직이면 안 되는 곳이 쓴다. 생략 = 지금까지처럼 창 키를 듣는다.
+   */
+  readonly isolateInput?: boolean;
+  /**
+   * 명령 창이 연계기를 찾는 프로젝트. 생략 = 저장소의 프로젝트. 전투 규칙은 runtime 이 가진 프로젝트를 따르므로,
+   * 저장소에 없는 복제본의 연계기(편집기 전투 미리보기의 데모 연계기)를 메뉴에 보일 때만 쓴다.
+   */
+  readonly project?: Project;
   /**
    * true 면 인트로 연출과 ATB 시계를 `controller.begin()` 까지 미룬다. 진입 연출이 `controller.ready` 를 기다리는 동안
    * 보이지 않는 전투가 흘러가지 않게 한다. 미루는 동안에도 DOM 은 한 번 그려져(syncView) 준비 문이 첫 프레임 그림을 모은다.
@@ -468,8 +478,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     beginTargetCommand(command: TargetedActorCommand): void;
     confirmTargetSelection(targetId: string): void;
     cancelTargetSelection(): void;
+    project?: Project;
   } = {
     runtime: options.runtime,
+    ...(options.project ? { project: options.project } : {}),
     submenu: null,
     setSubmenu(next) {
       if (next === null) forgetSubmenuBackCursor(options.runtime.snapshot());
@@ -1040,7 +1052,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     if (isTextInputTarget(event.target)) return;
     onKeydown(event);
   }
-  window.addEventListener("keydown", onWindowKeydown);
+  if (!options.isolateInput) window.addEventListener("keydown", onWindowKeydown);
   // Shift 단독 토글: keydown 에서 조합 여부를 기록하고, keyup 에서 단독이었을 때만
   // 속도를 토글한다. Shift+A(대문자)·Shift+Z 같은 조합에서는 토글되지 않는다(결함 2).
   function onWindowKeyup(event: KeyboardEvent): void {
@@ -1056,7 +1068,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     shiftHeld = false;
     shiftCombined = false;
   }
-  window.addEventListener("keyup", onWindowKeyup);
+  if (!options.isolateInput) window.addEventListener("keyup", onWindowKeyup);
 
   function menuContext(snapshot: BattleSnapshot): string {
     if (snapshot.phase === "targetSelect" && snapshot.targetSelection) {

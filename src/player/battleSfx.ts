@@ -1,4 +1,5 @@
 import { mulberry32 } from "@/util/rng";
+import { isBattleAudioMuted } from "@/player/battleAudioMute";
 
 /**
  * 합성 전투 효과음 — 오디오 에셋 없이 WebAudio 오실레이터/노이즈로 만든다.
@@ -34,6 +35,8 @@ let master: GainNode | undefined;
 let impactBus: GainNode | undefined;
 
 function ensureContext(): AudioContext | undefined {
+  // 편집기 전투 미리보기가 소리를 잠근 동안은 컨텍스트를 주지 않는다 — 합성음·샘플·몬스터 세트가 모두 이 컨텍스트를 거친다.
+  if (isBattleAudioMuted()) return undefined;
   if (typeof window === "undefined" || typeof AudioContext === "undefined") return undefined;
   if (!ctx) {
     ctx = new AudioContext();
