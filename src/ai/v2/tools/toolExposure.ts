@@ -53,6 +53,12 @@ const WHOLE_GAME_LATER: ReadonlySet<string> = new Set([
 /** 게임 하나 요청에는 요청 묶음 밖이라도 처음부터 싣는다 — list_endings 는 잇는 턴 10번에 10번 불렸다(167자). */
 const WHOLE_GAME_ALWAYS: ReadonlySet<string> = new Set(["list_endings"]);
 /**
+ * 게임 하나를 짓는 턴(고치는 턴은 아니다)에 처음부터 싣는다 — 세계 허리(2026-11-24 ideal-flow-draft). 첫 판이 세계관을 비워 두었고 이 도구는 풀에만 있었다.
+ * 인물은 청사진 cast 칸(write_blueprint, 처음부터 실림)을 끝맺음(draft-cast)이 배우·직업·기술·소개로 짓는다 — upsert_character_profile(3.3천 자)은
+ * 처음 목록 7만 자 상한을 넘겨서(69.8천 자) load_tools 로 둔다.
+ */
+const WHOLE_GAME_FIRST_BUILD: ReadonlySet<string> = new Set(["set_world_canon"]);
+/**
  * 청사진의 단계가 다 지어진 게임을 잇는 턴(고치기)에 처음부터 싣는 것 — 읽기 · 돌려 보기 · 이벤트와 목표 고치기 · 엔딩 · 소품.
  * 같은 기록의 잇는 턴 10번에서, 실린 글자의 81~92% 가 그 턴에 한 번도 안 불린 도구였다(12.6만 자 → 3.9만 자). 짓는 동사(청사진 · 장소 · 사람 · 사건)는 load_tools 로.
  */
@@ -254,7 +260,7 @@ export function exposeV2Tools(env: PiAssistantV2Env, allTools: readonly PiToolSh
   // 뒤로 돌린 v2 동사도 load_tools 설명의 앞쪽 목록(이름 — 한 줄 뜻)에 든다.
   const offeredSet = new Set([...intent.tools.extra, ...(placeLazy ? PLACE_BUILD_VERBS : []), ...(intent.wholeGame ? tools.filter((t) => !getTool(t.name) && later(t.name)).map((t) => t.name) : [])]);
   // 처음부터 = 이 요청 묶음에 들었고(offered) 기록에서 쓴 것(V2_UP_FRONT). 묶음 밖 도구(v2ToolPool 로만 들어온 것)는 늘 필요할 때.
-  const pinned = (name: string) => intent.wholeGame && (WHOLE_GAME_ALWAYS.has(name) || (repairTurn && WHOLE_GAME_REPAIR.has(name)));
+  const pinned = (name: string) => intent.wholeGame && (WHOLE_GAME_ALWAYS.has(name) || (repairTurn ? WHOLE_GAME_REPAIR.has(name) : WHOLE_GAME_FIRST_BUILD.has(name)));
   const isLazy = (t: PiToolShape) => small ? !small.has(t.name) : pinned(t.name) ? false : later(t.name) || (placeLazy && PLACE_BUILD_VERBS.has(t.name))
     || (lazyOn && !!getTool(t.name) && (!V2_UP_FRONT.has(t.name) || !offeredSet.has(t.name)));
   const seen: ShapeIndex = new Map();

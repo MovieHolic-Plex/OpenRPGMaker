@@ -26,6 +26,18 @@
    "note": "몬스터 수집 첫 화면. 전에는 build_monster_game 기본(체육관 8 · 90맵) 또는 v2 첫 마을(체육관 1 · 19맵)이었다."
   },
   {
+   "id": "start-maou",
+   "family": "start",
+   "fixture": "blank",
+   "startScreen": { "choiceId": "adventure-jrpg" },
+   "request": "이세계에 떨어진 마왕 살아남기",
+   "check": { "kind": "mvpStart", "minMaps": 3, "maxMaps": 5 },
+   "allow": { "firstBuild": true },
+   "reference": [{ "tool": "build_monster_game", "args": { "mode": "create" } }],
+   "wrong": [],
+   "note": "오너 이상 흐름 1·2 예시(2026-11-24 ideal-flow-draft) — 첫 판이 세계관·동료·직업까지 만드는지 본다."
+  },
+  {
    "id": "start-jrpg",
    "family": "start",
    "fixture": "blank",

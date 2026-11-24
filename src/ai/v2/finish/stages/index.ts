@@ -16,6 +16,7 @@ export { stage as bossDefeatReturns } from "./boss-defeat-returns";
 export { stage as blueprintAssembly } from "./blueprint-assembly";
 export { stage as blueprintOpening } from "./blueprint-opening";
 export { stage as gateOpenSteps } from "./gate-open-steps";
+export { stage as draftCast } from "./draft-cast";
 export { stage as shipDefaults } from "./ship-defaults";
 export { stage as speakerBusts } from "./speaker-busts";
 export { stage as stepFoes } from "./step-foes";

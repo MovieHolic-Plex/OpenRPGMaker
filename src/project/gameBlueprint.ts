@@ -9,6 +9,7 @@
 // 프로젝트에 함께 저장된다(SQLite current_json·내보내기). 옛 프로젝트는 없음 = 옛 동작.
 import { uiLookById } from "./uiLook";
 import { assert, requireArray, requireRecord, requireString } from "./io/guards";
+import { WORLD_CANON_TONES } from "./world/canon";
 
 /** 단계에서 플레이어가 하는 일의 종류 — 경로 빌더가 종류마다 다른 이벤트를 짓는다(src/ai/v2/story/blueprintPath.ts). 없으면 낱말로 추정(옛 청사진). */
 export const STEP_KINDS = ["talk", "find", "battle", "puzzle", "choice"] as const;
@@ -89,6 +90,39 @@ export interface GameBlueprintPlace {
   from?: string;
 }
 
+/**
+ * 청사진의 인물 한 명 — 주인공·동료·보스. 끝맺음의 초안 데이터 단계(src/ai/v2/story/draftCast.ts)가 이 칸으로 배우·직업·스킬·인물 소개를 짓는다.
+ * 2026-11-24 ideal-flow-draft: 첫 판이 맵 3장만 짓고 세계관·동료·직업은 비어 있었다(도구 39번 중 DB 쓰기 1번).
+ */
+export interface GameBlueprintPerson {
+  name: string;
+  /** 직업·역할 한 낱말(«몰락한 마왕» · «견습 사제») — 직업 이름이 된다. */
+  role?: string;
+  /** 성별·나이 낱말 — 캐릭터 그림을 고른다. */
+  looks?: string;
+  /** 한 줄 소개 — 인물 카드와 관계 메뉴에 보인다. */
+  bio?: string;
+  /** 대표 기술 이름 한 개. */
+  skill?: string;
+}
+
+export interface GameBlueprintCast {
+  hero?: GameBlueprintPerson;
+  /** 함께 다니는 동료(첫 판 2~3명). */
+  companions?: GameBlueprintPerson[];
+  boss?: GameBlueprintPerson;
+}
+
+/** 이 게임 세계의 뼈대 — 세계 허리(project.worldCanon)가 이 칸으로 채워진다. */
+export interface GameBlueprintWorld {
+  name?: string;
+  premise?: string;
+  /** 이 세계의 규칙 1~4줄(«마력은 달이 뜰 때만 돈다»). */
+  rules?: string[];
+  /** project/world/canon.ts 의 톤 id 하나 이상. */
+  tones?: string[];
+}
+
 export interface GameBlueprint {
   version: 1;
   title: string;
@@ -120,6 +154,12 @@ export interface GameBlueprint {
    * 옛 청사진은 closing 이 없다.
    */
   ending: { name: string; how: string; feeling: string; closing?: string[] };
+  /** 주인공·동료·보스 — 없으면 초안 데이터 단계가 파티와 청사진에서 채운다. */
+  cast?: GameBlueprintCast;
+  /** 세계 이름·전제·규칙. */
+  world?: GameBlueprintWorld;
+  /** 이 게임만의 물건 이름(회복약·열쇠 외의 이 세계 물건) — 아이템 레코드가 된다. */
+  items?: string[];
   /** 이 게임의 UI 모습 한 벌(project/uiLook.ts 의 id) — 대사창·메뉴·전투 창·타이틀·HUD 껍질을 함께 정한다. 없으면 끝맺음이 게임의 사실로 고른다. */
   look?: string;
   /** 다시 쓴 청사진에서 빠진 단계가 지어 둔 것 — 다음 경로 짓기가 걷어 낸다(그 이벤트, 그 스위치를 기다리는 조건). */
@@ -233,6 +273,9 @@ export function normalizeGameBlueprint(value: unknown): GameBlueprint {
     ...(uiLookById(data.look) ? { look: uiLookById(data.look)!.id } : {}),
     ...(data.scale === "small" || data.scale === "mvp" || data.scale === "full" ? { scale: data.scale } : {}),
     ...(data.battles === false ? { battles: false as const } : {}),
+    ...(() => { const cast = normalizeCast(data.cast); return cast ? { cast } : {}; })(),
+    ...(() => { const world = normalizeWorld(data.world); return world ? { world } : {}; })(),
+    ...(() => { const items = shortList(data.items, 8, 30); return items.length ? { items } : {}; })(),
     playerGoal: bounded("playerGoal", data.playerGoal, BLUEPRINT_LIMITS.goal),
     ...(() => {
       const opening = (Array.isArray(data.opening) ? data.opening : []).flatMap((line) => (typeof line === "string" && line.trim() ? [line.trim().slice(0, BLUEPRINT_LIMITS.text)] : [])).slice(0, BLUEPRINT_LIMITS.opening);
@@ -247,6 +290,41 @@ export function normalizeGameBlueprint(value: unknown): GameBlueprint {
     ...(typeof data.request === "string" && data.request.trim() ? { request: data.request.trim().slice(0, BLUEPRINT_LIMITS.request) } : {}),
     ...(typeof data.updatedAt === "string" ? { updatedAt: data.updatedAt } : {}),
   };
+}
+
+const shortText = (value: unknown, max: number): string => (typeof value === "string" ? value.trim().slice(0, max) : "");
+const shortList = (value: unknown, count: number, max: number): string[] => (Array.isArray(value) ? [...new Set(value.map((v) => shortText(v, max)).filter(Boolean))].slice(0, count) : []);
+
+/** 인물 한 명 — 이름이 없으면 없는 것으로 본다(덧붙임이다, 던지지 않는다). */
+function normalizePerson(raw: unknown): GameBlueprintPerson | undefined {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return undefined;
+  const r = raw as Record<string, unknown>;
+  const name = shortText(r.name, 24);
+  if (!name) return undefined;
+  const role = shortText(r.role, 24), looks = shortText(r.looks, 40), bio = shortText(r.bio, 120), skill = shortText(r.skill, 24);
+  return { name, ...(role ? { role } : {}), ...(looks ? { looks } : {}), ...(bio ? { bio } : {}), ...(skill ? { skill } : {}) };
+}
+
+export function normalizeCast(raw: unknown): GameBlueprintCast | undefined {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return undefined;
+  const r = raw as Record<string, unknown>;
+  const hero = normalizePerson(r.hero);
+  const boss = normalizePerson(r.boss);
+  const companions = (Array.isArray(r.companions) ? r.companions : []).map(normalizePerson)
+    .filter((p): p is GameBlueprintPerson => !!p && p.name !== hero?.name && p.name !== boss?.name)
+    .filter((p, i, list) => list.findIndex((o) => o.name === p.name) === i).slice(0, 3);
+  const cast: GameBlueprintCast = { ...(hero ? { hero } : {}), ...(companions.length ? { companions } : {}), ...(boss ? { boss } : {}) };
+  return Object.keys(cast).length ? cast : undefined;
+}
+
+export function normalizeWorld(raw: unknown): GameBlueprintWorld | undefined {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return undefined;
+  const r = raw as Record<string, unknown>;
+  const name = shortText(r.name, 60), premise = shortText(r.premise, 280);
+  const rules = shortList(r.rules, 4, 120);
+  const tones = shortList(r.tones, 3, 20).filter((t) => (WORLD_CANON_TONES as readonly string[]).includes(t));
+  const world: GameBlueprintWorld = { ...(name ? { name } : {}), ...(premise ? { premise } : {}), ...(rules.length ? { rules } : {}), ...(tones.length ? { tones } : {}) };
+  return Object.keys(world).length ? world : undefined;
 }
 
 /**
@@ -273,6 +351,8 @@ export function gameBlueprintText(blueprint: GameBlueprint): string {
     `[이 게임의 청사진 — 짓는 모든 단계는 이 문서의 항목 하나를 구현한다. 바꾸려면 write_blueprint 로 다시 쓴다]`,
     `제목: ${blueprint.title} · 장르: ${blueprint.genre}`,
     `플레이어 목표(새 플레이어가 받는 유일한 안내): ${blueprint.playerGoal}`,
+    ...(blueprint.cast ? [`인물: ${[blueprint.cast.hero ? `주인공 ${blueprint.cast.hero.name}${blueprint.cast.hero.role ? `(${blueprint.cast.hero.role})` : ""}` : "", ...(blueprint.cast.companions ?? []).map((p) => `동료 ${p.name}${p.role ? `(${p.role})` : ""}`), blueprint.cast.boss ? `보스 ${blueprint.cast.boss.name}` : ""].filter(Boolean).join(" · ")}`] : []),
+    ...(blueprint.world?.premise ? [`세계: ${blueprint.world.name ? `${blueprint.world.name} — ` : ""}${blueprint.world.premise}`] : []),
     ...(blueprint.places?.length ? [`장소(세계 ${blueprint.setting ?? "-"}): ${blueprint.places.map((p) => `「${p.name}」=${p.kind}${p.from ? `←「${p.from}」` : ""}`).join(" · ")}`] : []),
     "핵심 경로:",
     ...blueprint.steps.map((s) => `- ${s.id}${s.kind ? `[${s.kind}${s.who ? ` ${s.who}` : ""}]` : ""} 「${s.place}」 이벤트 「${s.event}」: ${s.action}${s.needs ? ` (조건: ${s.needs})` : ""} → ${s.gives} · 느낌: ${s.feeling}`),
