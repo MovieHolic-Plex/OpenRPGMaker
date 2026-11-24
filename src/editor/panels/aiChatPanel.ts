@@ -2294,7 +2294,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     liveStatus?.root.remove();
     // 작업 스트림 카드(목업 v4): 조수별 도구 호출·실제 인자·결과·걸린 시간·모델 글·할 일·일꾼 미리보기. 옛 한 줄 상태는 머리줄로 품는다.
     const turnBase = store.getCurrent();
-    const turnFirstMvp = firstMvpRoute(turnBase, command.task).team;
+    const turnFirstMvp = firstMvpRoute(turnBase, command.task).firstMvp;
     const turnLiveStatus = createAiRunStream({
       live: createAiLiveStatus({ baseProject: turnBase }),
       team: command.mode === "team",
@@ -2521,7 +2521,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 실제로 1.2~7.5s 를 삼킨다(2026-09-16 실측). 이걸 벽시계 밖에 두면 표의 total 이 그만큼 짧게 나와
     // 「어느 단계도 오래 안 걸렸는데 턴은 느렸다」는 모순이 생긴다.
     const timing = createTurnTiming();
-    // 첫 MVP 생성(빈 프로젝트에서 게임 하나)은 팀 실행이 기본이다(오너 2026-11-24). 일반 대화·작은 수정은 단일.
+    // 장르 프리셋 첫 생성만 팀이다. 첫 MVP(빈 프로젝트에서 게임 하나)는 v2 단일 — 팀 경로는 v2 MVP 관문을 비켜 간다(firstMvpRoute.ts).
     const team = turnOptions?.team === true || firstMvpRoute(store.getCurrent(), text).team;
     // 조수 v2(기본 켜짐): 의도 선언 모델 호출을 건너뛴다 — v2 는 실행 모델이 요청을 짓기 명세로 바로 해석한다(src/ai/v2).
     if (isAssistantV2Enabled() && !team) {
