@@ -45,6 +45,8 @@ export function createTurnContext(request: PiAgentRequest, options: TurnOptions,
     textStops: 0,
     loopStop: undefined as string | undefined,
     advisorRuns: 0,
+    /** 첫 초안 턴에서 장면 글 손질을 보고로 넘겼다는 기록을 한 번만 남긴다(afterMain). */
+    draftPolishNoted: false,
     vqaDone: !vqaEnabled(request),
     pendingBrief: undefined as string | undefined,
     freshNext: false,
