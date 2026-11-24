@@ -34,14 +34,14 @@ export function openDraftOverview(deps: DraftOverviewDeps): HTMLElement {
     on: { click: () => { close(); deps.prefill(draftFixPrefix(label)); } },
   });
   // 인물 칸은 카드마다 고치기가 있어 칸 머리에는 두지 않는다(fixLabel null).
-  const section = (title: string, fixLabel: string | null, body: HTMLElement, extra = ""): HTMLElement => el("section", {
-    class: `draft-overview-section${extra ? ` ${extra}` : ""}`,
+  const section = (title: string, fixLabel: string | null, body: HTMLElement): HTMLElement => el("section", {
+    class: "draft-overview-section",
     children: [el("header", { class: "draft-overview-section-head", children: [el("h3", { text: title }), ...(fixLabel ? [fix(fixLabel)] : [])] }), body],
   });
 
   const sections: HTMLElement[] = [];
   if (draft.world) sections.push(worldSection(draft, section));
-  if (draft.people.length) sections.push(section("인물", null, el("div", { class: "draft-overview-people", children: draft.people.map((person) => personCard(person, fix)) }), "is-people"));
+  if (draft.people.length) sections.push(section("인물", null, el("div", { class: "draft-overview-people", children: draft.people.map((person) => personCard(person, fix)) })));
   if (draft.maps.length) sections.push(section(`맵 ${draft.maps.length}장`, "맵 흐름", mapFlow(draft)));
   sections.push(section("데이터", "데이터", counts(draft)));
 
@@ -56,23 +56,25 @@ export function openDraftOverview(deps: DraftOverviewDeps): HTMLElement {
     ] })),
   });
 
-  backdrop.append(el("section", {
-    class: "draft-overview-window", attrs: { role: "dialog", "aria-modal": "true", "aria-label": "초안 한 장" },
+  const dialog = el("section", {
+    class: "draft-overview-window", attrs: { role: "dialog", "aria-modal": "true", "aria-label": "초안 한 장", tabindex: "-1" },
     children: [
       el("header", { class: "draft-overview-head", children: [el("h2", { text: "초안 한 장" }), closeButton] }),
       el("div", { class: "draft-overview-body", children: sections }),
       el("footer", { class: "draft-overview-foot", children: [chips] }),
     ],
-  }));
+  });
+  backdrop.append(dialog);
   closeButton.addEventListener("click", close);
   backdrop.addEventListener("mousedown", (event) => { if (event.target === backdrop) close(); });
   registerModal(backdrop, close);
   document.body.append(backdrop);
-  closeButton.focus();
+  // 창 자체에 초점 — 닫기 단추에 주면 열자마자 초점 링이 가장 크게 보였다. Tab 은 첫 단추부터.
+  dialog.focus();
   return backdrop;
 }
 
-type SectionFn = (title: string, fixLabel: string | null, body: HTMLElement, extra?: string) => HTMLElement;
+type SectionFn = (title: string, fixLabel: string | null, body: HTMLElement) => HTMLElement;
 
 function worldSection(draft: DraftOverview, section: SectionFn): HTMLElement {
   const world = draft.world!;
@@ -81,7 +83,7 @@ function worldSection(draft: DraftOverview, section: SectionFn): HTMLElement {
     ...(world.premise ? [el("p", { class: "draft-overview-world-premise", text: world.premise })] : []),
     ...(world.tones.length ? [el("p", { class: "draft-overview-tags", children: world.tones.map((tone) => el("span", { class: "draft-overview-tag", text: tone })) })] : []),
     ...world.lines.map((line) => el("p", { class: "draft-overview-world-line", text: line })),
-  ] }), "is-world");
+  ] }));
 }
 
 function personCard(person: DraftPersonCard, fix: (label: string) => HTMLElement): HTMLElement {
@@ -113,7 +115,7 @@ function mapFlow(draft: DraftOverview): HTMLElement {
       children: [
         createMapThumbnail(map.mapId, { width: 132, height: 88, className: "draft-overview-map-thumb", testId: `draft-overview-map-thumb-${map.mapId}` }),
         el("span", { class: "draft-overview-map-name", text: map.name }),
-        el("span", { class: "draft-overview-map-role", text: map.isStart ? `시작 · ${map.roleLabel}` : map.roleLabel }),
+        el("span", { class: "draft-overview-map-role", text: [map.isStart ? "시작" : "", map.roleLabel === "미분류" ? "" : map.roleLabel].filter(Boolean).join(" · ") }),
       ],
     }));
   });

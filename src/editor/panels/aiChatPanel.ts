@@ -195,6 +195,7 @@ import {
 } from "./aiAgentBrief";
 import {
   isAiAssistantBridgeConnected,
+  openAiAssistantPanel,
   registerAiAssistantBridge,
   setAiBridgeLastStatus,
   unregisterAiAssistantBridge,
@@ -2228,6 +2229,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       if (disposed) return;
       openDraftOverview({
         prefill: (text) => {
+          // 접힌 도크면 먼저 펼친다 — 안 보이는 입력창에 글만 넣으면 아무 일도 없는 것처럼 보인다.
+          openAiAssistantPanel();
           restoreComposer(text);
           try {
             input.focus();
