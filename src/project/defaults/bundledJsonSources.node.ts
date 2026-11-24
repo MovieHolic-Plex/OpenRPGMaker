@@ -4,8 +4,7 @@
 // 단독 import 가 60초·4GB 였다(defaults.ts). 여기서는 쓰는 키만, 처음 쓸 때 fs 로 읽어 JSON.parse 한다 — 같은 자료를 같은 동기 계약으로 준다.
 // 정적 출처가 기본이다(esbuild 묶음·tsx·bun·실행형 HTML·Electron 코어는 조건이 달라 그대로 정적). 이 파일은 소스 트리의 파일을 읽으므로
 // 묶음 산출물에서는 쓸 수 없다 — 키·API 는 정적 출처와 같아야 한다(타입이 맞춘다).
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { readBundledJsonFile } from "./bundledJsonFile.node";
 import type { BundledJsonData, BundledJsonKey, BundledJsonReader } from "./bundledJsonSources";
 
 export type { BundledJsonData, BundledJsonKey, BundledJsonReader };
@@ -36,16 +35,9 @@ void KEYS_COMPLETE;
 /** 이 출처가 지연인가 — 읽기가 동기라 호출자 쪽에서는 정적 출처와 같다(false). */
 export const BUNDLED_JSON_LAZY = false;
 
-const parsed = new Map<BundledJsonKey, unknown>();
-
 /** 동기로 읽는다. 키마다 한 번만 읽어 같은 객체를 돌려준다. */
 export function bundledJsonSync<K extends BundledJsonKey>(key: K): BundledJsonData[K] {
-  let value = parsed.get(key);
-  if (value === undefined) {
-    value = JSON.parse(readFileSync(fileURLToPath(new URL(`../../assets/${key}.json`, import.meta.url)), "utf8"));
-    parsed.set(key, value);
-  }
-  return value as BundledJsonData[K];
+  return readBundledJsonFile<BundledJsonData[K]>(`src/assets/${key}.json`);
 }
 
 /** 정적 출처와 같은 모양. 받을 것이 없으므로 무시한다. */
