@@ -67,6 +67,13 @@ export function countRegionChanges(before: Project, after: Project, mapId: MapId
   return newMaps.length > 0 ? { cells, events, newMaps } : { cells, events };
 }
 
+/** 이 턴이 영역 맵을 바꿨거나 새 맵을 만들었으면 맵 위 카드를 띄운다(영수증이 실내 맵을 가리켜도). */
+export function regionTurnTouched(before: Project, after: Project, mapId: MapId, region: RegionRect): boolean {
+  if (!after.maps[mapId]) return false;
+  const counts = countRegionChanges(before, after, mapId, region);
+  return counts.cells > 0 || counts.events > 0 || (counts.newMaps?.length ?? 0) > 0;
+}
+
 export function regionResultSummary(counts: RegionChangeCounts): string {
   const parts: string[] = [];
   if (counts.cells > 0) parts.push(`칸 ${counts.cells}개`);
