@@ -11,20 +11,31 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import {
   inventoryCatalogSession, listScrollTopForCollection, searchQueryForCollection,
   selectedRecordIdForSession, setListScrollTopForCollection, setSearchQueryForCollection,
-  setSelectedRecordId, setViewModeForCollection, takeRecordRevealForSession, viewModeForCollection,
+  setSelectedRecordId, setShowsPresetRecords, setViewModeForCollection, showsPresetRecords, takeRecordRevealForSession, viewModeForCollection,
 } from "@/editor/panels/databaseRecordViewSession";
+import { isPresetDatabaseRecord } from "@/project/databasePresetRecords";
 import type { ItemRecord, EquipmentRecord } from "@/project/types";
 
 type CatalogEntry =
   | { readonly collection: "items"; readonly record: ItemRecord }
   | { readonly collection: "equipment"; readonly record: EquipmentRecord };
 const LABELS = { items: "아이템", equipment: "장비", all: "전체" } as const;
-function entries(): CatalogEntry[] {
+function allEntries(): CatalogEntry[] {
   const database = store.getCurrent().database;
   return [
     ...database.items.map((record): CatalogEntry => ({ collection: "items", record })),
     ...database.equipment.map((record): CatalogEntry => ({ collection: "equipment", record })),
   ];
+}
+// 레코드 탭과 같은 규칙(databaseRecordViews recordScope): 이 게임 것이 있으면 기본 프리셋 1,086개는 가린다.
+function catalogScope(): { readonly gameCount: number; readonly total: number; readonly gameOnly: boolean } {
+  const all = allEntries();
+  const gameCount = all.filter((entry) => !isPresetDatabaseRecord(entry.collection, entry.record)).length;
+  return { gameCount, total: all.length, gameOnly: gameCount > 0 && gameCount < all.length && !showsPresetRecords("items") };
+}
+function entries(): CatalogEntry[] {
+  const all = allEntries();
+  return catalogScope().gameOnly ? all.filter((entry) => !isPresetDatabaseRecord(entry.collection, entry.record)) : all;
 }
 function entryKey(entry: CatalogEntry): string {
   return `${entry.collection}:${entry.record.id}`;
@@ -81,6 +92,10 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
     setListScrollTopForCollection("items", rows.scrollTop);
   };
   const count = el("span", { class: "db-ws-count", dataset: { testid: "db-catalog-count" }, attrs: { role: "status" } });
+  const scopeButton = el("button", {
+    class: "db-ws-count db-record-scope", attrs: { type: "button" }, dataset: { testid: "db-record-scope" },
+  }) as HTMLButtonElement;
+  scopeButton.hidden = true;
   const search = el("input", {
     attrs: { type: "search", placeholder: "아이템·장비 이름 또는 ID 검색", "aria-label": "아이템·장비 검색" },
     dataset: { testid: "db-catalog-search" }, value: searchQueryForCollection("items"),
@@ -120,7 +135,7 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
     rerender();
   };
   const renderActions = (): void => {
-    const current = entries().find(isSelected);
+    const current = allEntries().find(isSelected);
     actions.replaceChildren(listToolbar((["items", "equipment"] as const).map((collection) => ({
       label: `+ ${LABELS[collection]}`, testid: `db-catalog-add-${collection}`,
       onClick: () => { setSelectedRecordId(collection, addDatabaseRecord(collection)); refreshAfterMutation(); },
@@ -141,7 +156,7 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
     actions.append(recordActions);
   };
   const renderDetail = (): void => {
-    const entry = entries().find(isSelected);
+    const entry = allEntries().find(isSelected);
     if (!entry) {
       detail.replaceChildren(emptyState({ title: "아이템 또는 장비를 만드세요", compact: true }));
       return;
@@ -197,6 +212,14 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
       && (session.subtype === "all" || subtype(entry) === session.subtype));
     count.textContent = visible.length === all.length ? `${all.length}개` : `${visible.length}/${all.length}개`;
     count.dataset.visibleCount = String(visible.length); count.dataset.totalCount = String(all.length);
+    const scope = catalogScope();
+    scopeButton.hidden = !(scope.gameCount > 0 && scope.gameCount < scope.total);
+    scopeButton.textContent = scope.gameOnly ? "이 게임 것만" : "기본 포함";
+    scopeButton.dataset.scope = scope.gameOnly ? "game" : "all";
+    scopeButton.setAttribute("aria-pressed", String(!scope.gameOnly));
+    scopeButton.title = scope.gameOnly
+      ? `이 게임이 만들거나 고친 ${scope.gameCount}개만 보입니다. 누르면 기본 프리셋 ${scope.total - scope.gameCount}개도 보입니다`
+      : `기본 프리셋까지 ${scope.total}개를 보입니다. 누르면 이 게임 것 ${scope.gameCount}개만 봅니다`;
     for (const { filter, button } of filterButtons) {
       const total = filter === "all" ? matching.length : matching.filter((entry) => entry.collection === filter).length;
       button.textContent = `${LABELS[filter]} ${total}`;
@@ -283,7 +306,7 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
     return row;
   };
   const updateSelectionNotice = (): void => {
-    const current = entries().find(isSelected);
+    const current = allEntries().find(isSelected);
     // Filtering and windowing are separate: an offscreen selection stays selected.
     const included = current && visibleEntries.some((entry) => entryKey(entry) === entryKey(current));
     selectionNotice.hidden = !current || Boolean(included);
@@ -298,7 +321,12 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
     chips: el("div", { class: "db-catalog-controls", children: [filters, subtypeSelect, viewToggle, selectionNotice] }),
     rows: [], toolbar: actions,
   });
-  pane.querySelector(".db-ws-list-head")?.append(count);
+  pane.querySelector(".db-ws-list-head")?.append(scopeButton, count);
+  scopeButton.addEventListener("click", () => {
+    setShowsPresetRecords("items", scopeButton.dataset.scope === "game");
+    updateSubtypes();
+    renderRows();
+  });
   pane.querySelector(".db-list")?.replaceWith(rows);
   const workspace = workspaceShell({ list: pane, detail, legacyClass: "oprn-record-workspace db-inventory-catalog", testid: "db-inventory-catalog" });
   host.append(workspace);
