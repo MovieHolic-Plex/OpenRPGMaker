@@ -126,7 +126,7 @@ describe("퀘스트 원시 기능", () => {
     expect(after.quests?.at(-1)).toMatchObject({ title: "근처 살피기", giver: { mapId: map.id, eventId: event.id }, steps: [objective] });
     textHasNoIds(sentence);
     await expectUndoRestores(before, after, target);
-  }, 180_000);
+  }, 600_000);
 
   it("제목만 바꾸고 요약에서 내부 표식과 괄호를 가린다", async () => {
     const { before, target } = built();

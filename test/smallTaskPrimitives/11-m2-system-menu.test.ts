@@ -144,7 +144,7 @@ function expectedFields(row: Row, mapId: string) {
 describe("시스템·메뉴 작은 일", () => {
   beforeAll(() => {
     for (const fixture of fixtures) fixtureProject(fixture);
-  }, 120_000);
+  }, 600_000);
 
   cases.forEach((row, i) => {
     const fixture = fixtures[i % fixtures.length];

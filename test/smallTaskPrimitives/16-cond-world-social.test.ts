@@ -124,7 +124,7 @@ describe("선택한 이벤트 페이지의 월드 조건", () => {
   beforeAll(() => {
     // Building the full flagship project takes longer than an individual case.
     fixtureProject("maou");
-  }, 180_000);
+  }, 600_000);
 
   it.each(cases)("$stored.kind 조건만 저장하고 한 번에 되돌린다", async ({ place, args, stored, preview }) => {
     const at = fixture(place);

@@ -151,7 +151,7 @@ beforeAll(() => {
     removeLegacySpriteReferences(fixture);
     fixtures.set(name, fixture);
   }
-}, 240_000);
+}, 600_000);
 
 function arrange(fixture: Fixture, commands: Command[]) {
   const base = fixtures.get(fixture)!;

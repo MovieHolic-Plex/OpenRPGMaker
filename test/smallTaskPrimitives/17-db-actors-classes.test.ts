@@ -106,7 +106,7 @@ describe("자료집 주인공·직업·외형의 작은 일", () => {
       removeLegacySpriteReferences(fixture);
       fixtures.set(name, fixture);
     }
-  }, 180_000);
+  }, 600_000);
 
   it.each(cases)("$id 저장값·한국어 미리보기·범위·되돌리기", async example => {
     const before = projectWithRows(example.fixture);

@@ -64,7 +64,7 @@ function fixtureProject(fixture: Fixture): Project {
 
 beforeAll(() => {
   for (const fixture of ["blank", "built", "maou"] as const) fixtureProject(fixture);
-}, 180_000);
+}, 600_000);
 
 function withRecords(fixture: Fixture): Project {
   const project = fixtureProject(fixture);

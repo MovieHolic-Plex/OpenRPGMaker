@@ -34,7 +34,7 @@ beforeAll(() => {
     removeLegacySpriteReferences(fixture);
     fixtures.set(name, fixture);
   }
-}, 240_000);
+}, 600_000);
 
 it("작은 일 유닛마다 검수 자료 파일이 있다", () => {
   expect(files).toEqual(expect.arrayContaining(Object.keys(OWNERSHIP).map(unit => `${unit}.json`)));

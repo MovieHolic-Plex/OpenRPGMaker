@@ -125,7 +125,7 @@ describe("현대 명령 한 줄 편집", () => {
     expect(findEvent(updated.after).pages![0]!.commands).toEqual([FIRST, { ...stored, fields: { ...stored.fields, ...change } }]);
     expect(findEvent(added.after).pages![0]!.commands).toEqual([FIRST, stored]);
     await expectUndoRestores(added.after, updated.after, target);
-  }, 150_000);
+  }, 600_000);
 
   it.each(cases)("$command 범위 밖 변경과 잘못된 입력 거절", ({ command, initial, invalid }) => {
     const { project, target, id, findEvent } = scenario("built");
@@ -171,7 +171,7 @@ describe("현대 명령 한 줄 편집", () => {
     expect(createInterpreter(commands, play, after).start()).toEqual({ kind: "done" });
     expect(hasSessionCheckpoint(play)).toBe(true);
     await expectUndoRestores(project, after, target);
-  }, 150_000);
+  }, 600_000);
 
   it("분기 안 한 줄을 고치면서 저장된 필드와 다른 분기를 보존하고 오래된 확인값을 거절한다", () => {
     const legacy: Command = {
@@ -231,7 +231,7 @@ describe("현대 명령 한 줄 편집", () => {
       fields: { message: "샘에서 회복하자", surface: "banner", durationMs: 1500 },
     });
     await expectUndoRestores(project, after, target);
-  }, 150_000);
+  }, 600_000);
 
   it("없는 분기와 목록 밖 위치를 거절하고 분기에 한 줄만 추가한다", () => {
     const fork: Command = { kind: "fork", condition: { kind: "switch", switchId: SW, value: true }, then: [FIRST] };

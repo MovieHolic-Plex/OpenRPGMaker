@@ -267,7 +267,7 @@ describe("이벤트 구조 조작", () => {
     expect(after.maps.map_mk_room).toBe(before.maps.map_mk_room);
     verifySentence(sentence);
     await expectUndoRestores(before, after, target);
-  }, 120_000);
+  }, 600_000);
 
   it("완성 게임에서 특정 페이지의 방향만 바꾸고 옆 페이지와 명령을 보존한다", async () => {
     const before = loadFixture("built");

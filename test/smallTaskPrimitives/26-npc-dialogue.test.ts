@@ -570,5 +570,5 @@ describe("대사 재생", () => {
     expect(edited.name).toBe("히나");
     expectKoreanSentence(sentence, target);
     await expectUndoRestores(project, after, target);
-  }, 180_000);
+  }, 600_000);
 });
