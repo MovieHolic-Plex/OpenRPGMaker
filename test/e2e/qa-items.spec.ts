@@ -6,7 +6,8 @@ import {
 } from "./oprn-database-helpers";
 
 const ITEMS_TAB = { label: "Items", slug: "items", testId: "db-tab-items" } as const;
-const CROPS_TAB = { label: "Crops", slug: "crops", testId: "db-tab-crops" } as const;
+// 탭을 옮겼다 돌아와도 값이 남는지 보는 상대 탭 — 생활 탭은 닫혔으므로(electron/shared/lifeSim.ts) 스킬 탭을 쓴다.
+const OTHER_TAB = { label: "Skills", slug: "skills", testId: "db-tab-skills" } as const;
 
 // 가상화된 리스트는 렌더 창 안의 행만 DOM 에 두므로, 행 카운트 대신 푸터의 전체
 // 레코드 수("N개")로 증감을 검증한다(T6 가상화 이후).
@@ -51,7 +52,7 @@ test.describe("QA sweep: items tab", () => {
     await page.getByTestId("database-modal").screenshot({ path: ".superpowers/sdd/qa-shots/items-medicine-filled.png" });
 
     // tab away and back — value must persist
-    await switchDatabaseTab(page, CROPS_TAB);
+    await switchDatabaseTab(page, OTHER_TAB);
     await switchDatabaseTab(page, ITEMS_TAB);
     await expect(page.getByTestId("db-field-name")).toHaveValue("QA아이템경계값");
     await expect(page.getByTestId("db-field-price")).toHaveValue("999999");

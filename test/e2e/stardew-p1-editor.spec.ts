@@ -1,6 +1,9 @@
 import { mkdirSync } from "node:fs";
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { openDatabase } from "./oprn-database-helpers";
+import { LIFE_SIM_ENABLED, openDatabase } from "./oprn-database-helpers";
+
+// 생활 시스템이 닫혀 있는 동안(electron/shared/lifeSim.ts LIFE_SIM_ENABLED=false) 생활 편집 화면이 없다 — 깃발을 켤 때 다시 돈다.
+test.skip(!LIFE_SIM_ENABLED, "생활 시스템 닫힘(LIFE_SIM_ENABLED=false)");
 
 const PROJECT_ID = "rpg-zzu-stardew-demo";
 const EVIDENCE_DIR = ".superpowers/sdd/qa-shots/stardew-p1";
