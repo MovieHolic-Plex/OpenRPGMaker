@@ -226,7 +226,7 @@ const upsertItemUpgrade: ToolDefinition = {
 const setSellPrices: ToolDefinition = {
   name: "set_sell_prices",
   description:
-    "판매가 표(system.sellPrices)를 itemId 기준으로 upsert 한다. Database 생활·제작 탭의 판매가 행과 같은 저작 데이터. 행을 없앨 때는 removeItemIds 에 itemId 를 넣는다(가격 생략이 아니라 명시 삭제 목록).",
+    "판매가 표(system.sellPrices)를 itemId 기준으로 upsert 한다. Database 아이템 → 「제작·강화·판매가」 의 판매 가격 행과 같은 저작 데이터. 행을 없앨 때는 removeItemIds 에 itemId 를 넣는다(가격 생략이 아니라 명시 삭제 목록).",
   mode: "write",
   parameters: SELL_PRICES_PARAMS,
   invalidArgsExample: { entries: [{ itemId: "wood", price: 12 }], removeItemIds: ["plank"] },
