@@ -14,6 +14,8 @@ Thanks for helping improve OPRN Studio. Small, focused pull requests are easiest
 - Follow the existing TypeScript and formatting conventions.
 - Keep editor code and the MIT-licensed runtime separated.
 - Do not add assets copied from commercial packs or game ROMs. Include attribution for third-party material.
+- Add a regression test to the existing test file for the module you fixed. Create a new test file only when no file tests that module yet, and name it after the module, not the bug.
+- Do not write tests that pin prose (prompts, docs, UI copy) or that only guard a removed feature.
 - Never commit API keys, OAuth secrets, project databases, `.env` files, or credentials from local tooling.
 
 ## Pull requests
