@@ -173,6 +173,14 @@ function strayAfterScene(project: Project, p: ScenePage, id: string): number | u
 const BUILT_SIGN_EVENT = /^ev_(?:world_)?gate_|^ev_locked_door_|^ev_dead_end_|^ev_.+_rest$|^ev_.+_lever_gate(?:_\d+_\d+)?$/u;
 /** 함수가 여러 자리에 같은 글로 적는 안내 줄 — 남은 단서 목록(«· 아직 …»)과 그 단계 이벤트의 자리(«「X」은 … 에 있다.»). */
 const BUILT_HINT_LINE = /^·\s|^「[^」]{1,40}」[은는이가]\s.{1,60}에 있다[.。]?$/u;
+/** 전투 패배·도망 갈래의 줄(«눈앞이 캄캄해졌다…» «다시 준비해서 돌아오자.») — 트레이너마다 같은 관례 문구다. */
+const BATTLE_OUTCOME_PATH = /\.(?:defeatBranch|escapeBranch|loseBranch)(?:\/|$)/u;
+/**
+ * 같은 문·같은 역할의 이벤트인가 — 맵 id 접두와 길 폭 사본 꼬리(`_edge_<x>_<y>` 뒤)를 떼면 같은 이름.
+ * 몬스터 빌더는 출구를 길 폭만큼 복제하고(exitEdges.ts), 마을마다 회복 도우미·상인을 같은 글로 둔다(`<맵>_mvp_nurse`).
+ * 2026-11-24 draft-10min: 첫 MVP 몬스터 판의 관문 고리 9바퀴 대부분이 이 «같은 줄 두 번» 이었고, 모델이 사본마다 patch_event_page 로 고치느라 20분 넘게 돌았다.
+ */
+const roleKey = (p: Pick<ScenePage, "mapId" | "eventId">): string => (p.eventId.startsWith(`${p.mapId}_`) ? p.eventId.slice(p.mapId.length + 1) : p.eventId).replace(/_edge_\d+_\d+(?:_.*)?$/u, "");
 
 export function sceneCraftFindings(before: Project, after: Project, task: string): Finding[] {
   const pages = scenePages(before, after);
@@ -191,12 +199,13 @@ export function sceneCraftFindings(before: Project, after: Project, task: string
     // 함수가 일부러 같은 글로 지은 것은 반복으로 세지 않는다 — 모델에게 «고쳐라» 로 돌려보내면 함수가 다시 같은 글로 짓는다:
     // 다시 읽기 쪽(rereadPage.ts), 길목·잠긴 문·막힌 길 표지(같은 관문의 여러 칸), 남은 단서 목록 줄(«· 아직 …»), 길 안내 줄(«「X」은 … 에 있다.»).
     // 보스 앞 회복 줄(story/restLine)도 함수가 보스마다 같은 글로 짓는다.
-    if (isRereadMarker(p.lines[0]?.body) || BUILT_SIGN_EVENT.test(p.eventId) || BUILT_HINT_LINE.test(line.body.trim()) || line.body.trim() === REST_LINE) continue;
+    if (isRereadMarker(p.lines[0]?.body) || BUILT_SIGN_EVENT.test(p.eventId) || BUILT_HINT_LINE.test(line.body.trim()) || line.body.trim() === REST_LINE || BATTLE_OUTCOME_PATH.test(line.path)) continue;
     const k = norm(line.body);
     if (k.length < 8 || oldLines.has(k)) continue;
     const first = seen.get(k);
     if (!first) { seen.set(k, { p, line }); continue; }
     if (first.p === p && !samePlay(first.line.path, line.path)) continue;
+    if (first.p.eventId !== p.eventId && roleKey(first.p) === roleKey(p)) continue;
     if (repeated.has(k)) continue;
     repeated.add(k);
     const sameEvent = first.p.eventId === p.eventId;
