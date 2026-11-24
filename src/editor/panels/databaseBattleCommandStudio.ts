@@ -1,4 +1,5 @@
-import { battleCommandKindLabel } from "@/player/battleCommandDom";
+import { battleCommandKindLabel, battleCommandMenuPreview } from "@/player/battleCommandDom";
+import { battleScenePreviewFrame } from "./battleScenePreviewFrame";
 import { resolveTerms } from "@/project/terms";
 import { createActorRecord } from "@/project/actorModel";
 import { battleCommandsForActor } from "@/battle/battleCommands";
@@ -159,10 +160,12 @@ function preview(klass: ClassRecord, rerender: () => void): HTMLElement {
   const toggle = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "db-command-preview-switch" } });
   toggle.checked = includeSwitch;
   toggle.addEventListener("change", () => { includeSwitch = toggle.checked; refresh(rerender, "db-command-preview-switch"); });
-  return sectionCard({ title: "실제 메뉴 해석", hint: "미리보기 전용 · 여기서 전투를 실행하지 않습니다", testid: "db-battle-command-preview", children: [
-    el("label", { children: [toggle, el("span", { text: "교체 가능한 동료가 있는 상황" })] }),
-    el("ol", { class: "db-command-runtime-list", children: resolvedStudioCommands(project, klass.id, includeSwitch).map((row) => el("li", { text: battleCommandKindLabel(row, terms), dataset: { commandId: row.id, kind: row.kind } })) }),
-    el("p", { class: "db-ws-usage", text: "빈 메뉴는 기본 행동으로 대체됩니다. 포획은 몬스터 수집 설정에 따라 추가·제외됩니다. 교체는 전투 상황에 따라 숨겨집니다. 포켓몬 화면의 보유 몬스터는 직업 메뉴 대신 고정 4개 메뉴를 사용합니다. 강제 교체 때는 교체만 표시되며 전투 이벤트의 메뉴 덮어쓰기는 여기 반영하지 않습니다." }),
+  // 전투에서 쓰는 명령 창(battleCommandDom 의 같은 패널·버튼)을 이 직업의 실제 명령 목록으로 그린다(qa1124 항목 7).
+  const commands = resolvedStudioCommands(project, klass.id, includeSwitch);
+  return sectionCard({ title: "전투에서 보이는 메뉴", hint: `${klass.name} · 미리보기 전용`, testid: "db-battle-command-preview", children: [
+    battleScenePreviewFrame(project, { command: battleCommandMenuPreview(commands, terms) }, "db-command-menu-preview"),
+    el("label", { children: [toggle, el("span", { text: "교체할 동료가 있을 때" })] }),
+    el("p", { class: "db-ws-usage", text: "포획은 몬스터 수집 설정, 교체는 전투 상황에 따라 나타납니다." }),
   ] });
 }
 export function battleCommandPlacement(palette: HTMLElement, rerender: () => void): HTMLElement {

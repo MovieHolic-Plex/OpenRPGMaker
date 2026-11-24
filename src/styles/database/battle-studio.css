@@ -611,3 +611,14 @@
   }
 
 }
+
+/* 편집기 안 전투 화면 미리보기 틀(battleScenePreviewFrame.ts) — 640×480 장면을 틀 폭으로 줄여 4:3 상자에 가둔다. */
+.database-modal-backdrop .database-modal-window .db-battle-scene-preview {
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-2, 6px);
+  contain: layout paint;
+  max-width: 400px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
