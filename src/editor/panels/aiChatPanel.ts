@@ -112,6 +112,7 @@ import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
 import { DEFAULT_PI_TEAM, resolvePiRunPlan, type PiRunPlan } from "@/ai/piAgent/executionRoute";
 import { isAssistantV2Enabled } from "@/ai/v2/shared/switch";
+import { formatV2RegionNote } from "@/ai/intentDeclaration";
 import { firstMvpRoute } from "@/ai/piAgent/firstMvpRoute";
 import { priorRequestsNote } from "@/ai/v2/prompt/priorRequests";
 import { classifyPlainPiTurn, clarifyFollowUpText, selectedEventFact } from "@/ai/piAgent/plainTurn";
@@ -2526,7 +2527,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (isAssistantV2Enabled() && !team) {
       // 앞선 요청을 메모로 싣는다 — 실행마다 새 세션이라 「처음에 부탁한 대로」가 가리킬 곳이 없었다(J70).
       const priorNote = priorRequestsNote([...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])], text);
-      return { command: plainPiCommand(text, "single", turnMapId), plan: { ...resolvePiRunPlan(currentAutonomy()), routingAudit: "assistant-v2" }, questionPromoted: false, intentNote: priorNote, timing };
+      // 영역에 시킨 턴이면 그 사각형을 알린다 — v2 는 의도 선언(범위 노트)을 건너뛰어 「여기 상점」의 「여기」가 모델에 닿지 않았다.
+      const selection = turnOptions?.selection !== undefined ? turnOptions.selection : mapContext().selection;
+      const regionNote = selection ? formatV2RegionNote({ mapId: selection.mapId, region: selection }, text) : null;
+      const intentNote = [priorNote, regionNote].filter((note): note is string => !!note).join("\n") || null;
+      return { command: plainPiCommand(text, "single", turnMapId), plan: { ...resolvePiRunPlan(currentAutonomy()), routingAudit: "assistant-v2" }, questionPromoted: false, intentNote, timing };
     }
     timing.start("intent");
     // 순수 부분(선언 → 계획·노출 툴·의도 노트)은 plainTurn.ts 가 소유한다 — 헤드리스 생성기(scripts/qa-game/gen.mts)와 같은 함수다.
