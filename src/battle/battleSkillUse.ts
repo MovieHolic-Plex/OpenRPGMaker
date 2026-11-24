@@ -1,3 +1,4 @@
+import { recordById } from "@/project/recordById";
 import type { BattleBattlerSnapshot, BattleSnapshot } from "@/battle/types";
 import type { MutableBattler } from "@/battle/battleBattlers";
 import { canBattlerAct, stateBlocksSkillUse } from "@/battle/battleStates";
@@ -77,7 +78,7 @@ export function battleSkillUseFailure(
   skillId: SkillId,
   options: { readonly requireLearned?: boolean } = {},
 ): BattleSkillUseFailure | undefined {
-  const skill = project.database.skills.find((record) => record.id === skillId);
+  const skill = recordById(project.database.skills, skillId);
   if (!skill) return "missingSkill";
   if (options.requireLearned !== false && !battlerHasSkill(user, skillId)) return "notLearned";
   if ((user.skillCooldowns?.[skillId] ?? 0) > 0) return "cooldown";
@@ -100,7 +101,7 @@ export function consumeBattleSkillResource(
   user: MutableBattleSkillUser,
   skillId: SkillId,
 ): BattleSkillResourceConsumption {
-  const skill = project.database.skills.find((record) => record.id === skillId);
+  const skill = recordById(project.database.skills, skillId);
   if (!skill) return { kind: "none" };
   startBattleSkillCooldown(user, skill);
   if (usesSkillPp(project, user, skill)) {
@@ -212,7 +213,7 @@ export function battleActorSkillFailure(
   /** 파티 공용 게이지 현재값. 시스템에서 켠 경우에만 추격 연계기 적법성에 쓴다. */
   partyGauge?: number,
 ): BattleSkillUseFailure | undefined {
-  const skill = project.database.skills.find((record) => record.id === skillId);
+  const skill = recordById(project.database.skills, skillId);
   const combo = comboActorIdsOf(skill);
   const partyFailure = skill && (partyGauge ?? 0) < battleSkillPartyGaugeCost(project, skill) ? "insufficientPartyGauge" as const : undefined;
   if (!skill || !combo) return battleSkillUseFailure(project, user, skillId) ?? partyFailure;

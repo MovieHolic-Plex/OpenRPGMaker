@@ -1,3 +1,4 @@
+import { recordById } from "@/project/recordById";
 import { BattleGimmickLedger, type BattleGimmick, type GimmickStatus } from "@/battle/battleGimmickRules";
 import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
 import { formationDamage, formationStartRow, rollBattleFormation, type BattleRow, type BattleStartFormation } from "@/battle/battleFormation";
@@ -3189,7 +3190,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
   }
 
   function lookupSkill(skillId: SkillId) {
-    return options.project.database.skills.find((record) => record.id === skillId);
+    return recordById(options.project.database.skills, skillId);
   }
 
   /** 연계 판정용 참전 배우. allReady 는 이미 턴을 소비한 strict 해결 단계용(생존·MP 만 본다). */
