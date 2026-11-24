@@ -203,12 +203,36 @@ export function aiActivityFamilySource(toolName: string): AiActivityFamilySource
   return fallbackAction(toolName) === ACTIONS.work ? "generic" : "fallback";
 }
 
-function actionForms(toolName: string): ActionForms {
-  return readOnlyAction(toolName) ?? FAMILY_BY_TOOL.get(toolName) ?? fallbackAction(toolName);
+/** label: 그 도구의 사람 이름표(aiToolLabels). 일반 문구(«작업을 진행하는 중»)로 떨어질 도구는 이름표로 말한다 — 이 모듈은 import 가 없어야 해서 호출자가 넘긴다. */
+function actionForms(toolName: string, label?: string): ActionForms {
+  const action = readOnlyAction(toolName) ?? FAMILY_BY_TOOL.get(toolName) ?? fallbackAction(toolName);
+  return action === ACTIONS.work && label && label !== toolName.replace(/_/gu, " ") ? labelActionForms(label) : action;
 }
 
-export function aiActivityActionLabel(toolName: string, done = false): string {
-  const action = actionForms(toolName);
+const HANGUL_BASE = 0xac00;
+const JONG_RIEUL = 8;
+const SINO_ACTION = /(?:수정|추가|설정|조정|확인|변경|생성|삭제|배치|정리|실행|검사|등록)$/u;
+
+/**
+ * 이름표(«사람 두기»·«세계 짓기»·«엔딩 장면 넣기»)의 «~기» 를 «~는 중» 으로 푼다. ㄹ 받침 줄기는 ㄹ을 떼다(만들기→만드는 중).
+ * «작업을 진행하는 중» 대신 그 도구가 하는 일을 말한다(qa1124: 머리줄 35개가 일반 문구였다).
+ */
+export function labelRunningForm(label: string): string {
+  const verb = /^(.*?)([가-힣])기$/u.exec(label);
+  if (verb) {
+    const code = verb[2]!.charCodeAt(0);
+    const stem = (code - HANGUL_BASE) % 28 === JONG_RIEUL ? String.fromCharCode(code - JONG_RIEUL) : verb[2]!;
+    return `${verb[1]}${stem}는 중`;
+  }
+  return SINO_ACTION.test(label) ? `${label}하는 중` : `${label} 작업 중`;
+}
+
+function labelActionForms(label: string): ActionForms {
+  return forms(labelRunningForm(label), `${label} 끝`, `${label} 실패`);
+}
+
+export function aiActivityActionLabel(toolName: string, done = false, label?: string): string {
+  const action = actionForms(toolName, label);
   return done ? action.done : action.running;
 }
 

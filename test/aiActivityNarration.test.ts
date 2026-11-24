@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import {
   aiActivityActionLabel,
   aiActivityFamilySource,
+  labelRunningForm,
   narrateAiActivity,
 } from "@/editor/aiActivityNarration";
 import { allTools } from "@/editor/tools";
@@ -141,6 +142,19 @@ describe("AI 도구 활동 문장", () => {
   it("내레이션 모듈은 DOM과 Phaser 양쪽에서 안전하게 쓰도록 import가 없다", () => {
     const source = readFileSync(new URL("../src/editor/aiActivityNarration.ts", import.meta.url), "utf8");
     expect(source).not.toMatch(/^import\s/mu);
+  });
+
+  it("일반 문구로 떨어질 도구는 이름표를 «~는 중» 으로 푼다 (qa1124: 머리줄 35개가 «작업을 진행하는 중»)", () => {
+    // Break: 이름표를 무시하면 add_people 이 다시 «작업을 진행하는 중» 이 된다.
+    expect(aiActivityActionLabel("add_people", false, "사람 두기")).toBe("사람 두는 중");
+    expect(aiActivityActionLabel("add_people", true, "사람 두기")).toBe("사람 두기 끝");
+    expect(labelRunningForm("없는 물건 그리기")).toBe("없는 물건 그리는 중");
+    expect(labelRunningForm("작은 게임 만들기")).toBe("작은 게임 만드는 중");
+    expect(labelRunningForm("현재 목표 걸기")).toBe("현재 목표 거는 중");
+    expect(labelRunningForm("몬스터 수정")).toBe("몬스터 수정하는 중");
+    expect(labelRunningForm("사건·컷신")).toBe("사건·컷신 작업 중");
+    // 사전에 없어 밑줄만 푼 이름표는 쓰지 않는다(영문이 머리줄에 오르지 않게).
+    expect(aiActivityActionLabel("totally_unknown_tool", false, "totally unknown tool")).toBe("작업을 진행하는 중");
   });
 
   it("알 수 없는 도구도 내부 이름 대신 사람용 기본 문구를 쓴다", () => {
