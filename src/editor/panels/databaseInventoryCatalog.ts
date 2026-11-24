@@ -93,7 +93,7 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
   };
   const count = el("span", { class: "db-ws-count", dataset: { testid: "db-catalog-count" }, attrs: { role: "status" } });
   const scopeButton = el("button", {
-    class: "db-ws-count db-record-scope", attrs: { type: "button" }, dataset: { testid: "db-record-scope" },
+    class: "db-ws-count", attrs: { type: "button" }, dataset: { testid: "db-record-scope" },
   }) as HTMLButtonElement;
   scopeButton.hidden = true;
   const search = el("input", {

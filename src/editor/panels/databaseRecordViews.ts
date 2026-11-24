@@ -1043,7 +1043,7 @@ function recordListFooter(
     return el("div", {
       class: "oprn-record-list-footer",
       children: [el("button", {
-        class: "oprn-record-count db-ws-count db-record-scope",
+        class: "oprn-record-count db-ws-count",
         text: label,
         attrs: {
           type: "button",
