@@ -28,6 +28,7 @@ import { collectNpcActivitySuggestions } from "@/editor/panels/eventEditor/optio
 import { advancedConditionEntries, pageConditionField } from "@/editor/panels/eventEditor/pageConditionLayout";
 import { idleTimerSatisfies, idleTimerWarningMessage } from "@/editor/panels/eventEditor/timerConditionText";
 import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
+import { josa, withJosa } from "@/util/josa";
 import { lookupLocation } from "@/editor/mapLocationLabels";
 import { findLocationById } from "@/project/mapNamedLocations";
 import type {
@@ -844,7 +845,7 @@ function validateLabels(
       issues.push({
         severity: "error",
         code: "label.duplicate",
-        message: `라벨 '${name}'이(가) 같은 실행 범위에 ${rows.length}번 있습니다.`,
+        message: `라벨 '${name}'${josa(name, "이/가")} 같은 실행 범위에 ${rows.length}번 있습니다.`,
         pageId,
         commandPath: row.path,
       });
@@ -861,7 +862,7 @@ function validateLabels(
         issues.push({
           severity: "error",
           code: "label.target-missing",
-          message: name ? `현재 실행 범위에서 이동할 라벨 '${name}'을(를) 찾을 수 없습니다.` : "이동할 라벨 이름이 비어 있습니다.",
+          message: name ? `현재 실행 범위에서 이동할 라벨 '${name}'${josa(name, "을/를")} 찾을 수 없습니다.` : "이동할 라벨 이름이 비어 있습니다.",
           pageId,
           commandPath: path,
         });
@@ -1659,6 +1660,8 @@ function validateMoveRoute(
   }
 }
 
+const REFERENCE_LABEL_DISPLAY: Readonly<Record<string, string>> = { "배우": "주인공", "동료 배우": "동료" };
+
 function requireReference(
   issues: EventDraftIssue[],
   pageId: string,
@@ -1670,10 +1673,14 @@ function requireReference(
   commandPath?: readonly number[],
 ): void {
   if (id.trim() && known.has(id)) return;
+  // label 은 칸 위치 표(commandReferenceField)의 열쇠다. 화면 말은 여기서만 바꾼다(폼은 「주인공」).
+  const shown = REFERENCE_LABEL_DISPLAY[label] ?? label;
   issues.push({
     severity: "error",
     code,
-    message: id.trim() ? `${label} '${id}'을(를) 찾을 수 없습니다.` : `${label}이(가) 선택되지 않았습니다.`,
+    message: id.trim()
+      ? `${shown} '${id}'${josa(id, "을/를")} 찾을 수 없습니다.`
+      : `${withJosa(shown, "이/가")} 선택되지 않았습니다.`,
     pageId,
     ...(commandPath ? { commandPath: [...commandPath] } : {}),
     ...(field ? { field } : {}),

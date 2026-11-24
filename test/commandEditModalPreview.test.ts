@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderCommandPreview } from "@/editor/panels/eventEditor/commandPreview";
 import { renderCommandBody } from "@/editor/panels/eventEditor/commandBody";
 import {
+  commandRequiredProblems,
   openEventCommandEditDialog,
   shouldRerenderCommandForm,
 } from "@/editor/panels/eventEditor/commandEditDialog";
@@ -473,9 +474,10 @@ describe("command edit modal — image-rich preview", () => {
   });
 
   it("preserves fork branches through the edit dialog OK path", () => {
+    const switchId = store.getCurrent().switches[0]!.id;
     const original: Command = {
       kind: "fork",
-      condition: { kind: "switch", switchId: "", value: true },
+      condition: { kind: "switch", switchId, value: true },
       then: [{ kind: "text", body: "참 분기" }],
       else: [{ kind: "text", body: "거짓 분기" }],
     };
@@ -486,6 +488,26 @@ describe("command edit modal — image-rich preview", () => {
     expect(ok).toBeTruthy();
     ok?.click();
     expect(applied).toEqual(original);
+  });
+
+  it.each([
+    ["empty dialogue", { kind: "text", speaker: "", body: "" } as Command, (c: Command) => ({ ...c, body: "안녕" }) as Command],
+    ["unselected switch", { kind: "setSwitch", switchId: "", value: true } as Command,
+      (c: Command) => ({ ...c, switchId: store.getCurrent().switches[0]!.id }) as Command],
+  ])("keeps the dialog open on OK while a required value is empty (%s)", (_name, initial, fill) => {
+    const applied: Command[] = [];
+    openEventCommandEditDialog({ initial, onApply: (command) => applied.push(command) });
+    const body = globalThis.document.body as unknown as FakeNode;
+    const required = findByTestId(body, "event-command-edit-required")!;
+    expect(required.hidden).toBe(true);
+    findByTestId(body, "event-command-edit-ok")!.click();
+    expect(applied).toEqual([]);
+    expect(findByTestId(body, "event-command-edit-dialog")).toBeTruthy();
+    expect(required.hidden).toBe(false);
+    expect(required.textContent?.trim().length).toBeGreaterThan(0);
+
+    const filled = fill(initial);
+    expect(commandRequiredProblems(filled)).toEqual([]);
   });
 
   it.each(["set", "reset"] as const)("switches a victory music %s command to the field slot", (operation) => {

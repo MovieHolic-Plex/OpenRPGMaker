@@ -343,7 +343,7 @@ describe("event draft aggregate validator", () => {
       expect.objectContaining({
         code: "reference.item.missing",
         commandPath: [1],
-        message: "상점 아이템 'item_does_not_exist'을(를) 찾을 수 없습니다.",
+        message: "상점 아이템 'item_does_not_exist'을 찾을 수 없습니다.",
       }),
     ]);
     expect(result.issues.some((issue) => issue.commandPath?.[0] === 0 && issue.code === "reference.item.missing")).toBe(false);
