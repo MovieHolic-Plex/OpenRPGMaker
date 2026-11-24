@@ -9,31 +9,32 @@ describe("RM2003 database utility records", () => {
 
     expect(database.elements?.[0]).toMatchObject({
       id: "sword",
-      name: "Sword",
+      // 새 프로젝트 기본 속성 이름은 한국어다(#4985, qa1124 항목 8-1). id 와 칸 순서는 그대로다.
+      name: "검",
       kind: "physical",
       rateLabels: ["A", "B", "C", "D", "E"],
       damageMultipliers: { A: 200, B: 150, C: 100, D: 50, E: 0 },
     });
     expect(database.elements?.map((element) => element.name)).toEqual([
-      "Sword",
-      "Spear",
-      "Hit",
-      "Bow",
-      "Fire",
-      "Ice",
-      "Thunder",
-      "Water",
-      "Earth",
-      "Wind",
-      "Holy",
-      "Dark",
-      "ATK",
-      "DEF",
-      "INT",
-      "AGI",
-      "Absorb",
+      "검",
+      "창",
+      "타격",
+      "활",
+      "화염",
+      "빙결",
+      "번개",
+      "물",
+      "대지",
+      "바람",
+      "신성",
+      "암흑",
+      "공격력",
+      "방어력",
+      "지력",
+      "민첩",
+      "흡수",
       // 풀 속성은 몬스터 18타입 작업(#2603)이 기존 칸 뒤에 덧붙였다.
-      "Grass",
+      "풀",
     ]);
     // 순서 = 타일셋 지형 태그 − 1 (chipsetMapping.TERRAIN_TAG: 1 물, 2 모래, 3 눈, 4 돌).
     expect(database.terrains?.map((terrain) => terrain.id)).toEqual(["terrain_water", "terrain_sand", "terrain_snow", "terrain_stone"]);
