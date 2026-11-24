@@ -57,7 +57,9 @@ describe("checkDesktopAssets", () => {
 
   it("크기 0 인 자산(업로드 미완료·starter)은 불통과", () => {
     const assets = full("0.408.0");
-    assets[0] = { name: "OPRN.Studio-windows.exe", size: 0, state: "starter" };
+    // #4970 부터 목록 맨 앞은 설치판이다 — 자리로 덮지 말고 portable exe 를 이름으로 찾아 크기만 0 으로.
+    const portable = assets.findIndex((asset) => asset.name === "OPRN.Studio-windows.exe");
+    assets[portable] = { name: "OPRN.Studio-windows.exe", size: 0, state: "starter" };
     const result = checkDesktopAssets("0.408.0", assets);
     expect(result.ok).toBe(false);
     expect(result.missing).toEqual([]);
