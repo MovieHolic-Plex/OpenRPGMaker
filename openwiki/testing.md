@@ -50,7 +50,7 @@
 `.omo/gates-vitest-report.json` 에서 **오래 걸린 파일 상위**를 뽑아 `/usr/bin/time -v` 로 단독 실행해
 피크 RSS 를 재는 쪽이 빠르다(이번에도 그렇게 찾았다).
 
-## PR 판정 = ci-fast(pull_request), 머지 = scripts/merge-pr.mjs, ci-full = 4시간 cron (2026-10-25)
+## PR 판정 = ci-fast(pull_request), 머지 = scripts/merge-pr.mjs, ci-full = 밤 1회 cron + 릴리스 전 (2026-11-24, 전에는 4시간 cron)
 
 - ci-fast 는 `push`(main·release) 와 `pull_request`(→ main) 에 돈다. 전에는 push 뿐이라 PR 에 체크가 없었다.
 - `fast`(AI 워커 컴파일·캐릭터 하네스·타입체크 src·앱 빌드), `fast-parity` 2샤드(`vitest --shard`),
@@ -72,7 +72,7 @@
   4초짜리 집계 잡이 선행 잡 완료 뒤 101~733초 동안 러너를 기다렸다. 집계를 머지 도우미로 옮겨 마지막 대기를 없앴다.
 - 머지는 `node scripts/merge-pr.mjs <번호>` 로만 한다. 머리 커밋의 **`fast`·`fast-static`·`fast-parity (k/N)` 전 N개 샤드**가
   초록이어야 `--match-head-commit` 으로 머지한다. 체크가 빠졌으면 기다리고 실패·취소된 체크가 있으면 머지를 거절한다.
-- ci-full 은 main 푸시마다가 아니라 `17 */4 * * *` cron 이다. 푸시마다 걸면 한 판(약 4시간) 동안 대기 자리를 새 푸시가
+- ci-full 은 main 푸시마다가 아니라 `17 17 * * *` cron(밤 1회)과 release/next 푸시(릴리스 전)다. 2026-10-25~11-24 에는 `17 */4 * * *` 였다. 푸시마다 걸면 한 판(약 4시간) 동안 대기 자리를 새 푸시가
   계속 빼앗아 60판 중 51판이 cancelled 였다. 판정 논리(기준선 대비 회귀만 실패)는 그대로다.
   정적 잡과 테스트 24샤드(동시 12)는 모두 `ubuntu-latest` 에서 돈다.
 - 브랜치 보호의 필수 체크 `fast` 는 저장소 설정이고 이제 빌드 잡을 확인한다.
