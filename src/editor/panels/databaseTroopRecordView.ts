@@ -384,7 +384,7 @@ function backdropField(record: TroopRecord, rerender: () => void): HTMLElement {
     dataset: { testid: "db-troop-backdrop-card" },
     children: side
       ? [
-        battleSceneryField({
+        sceneryFold(battleSceneryField({
           project,
           resourceId: record.previewBackgroundResourceId,
           testid: "db-troop-scenery",
@@ -394,11 +394,23 @@ function backdropField(record: TroopRecord, rerender: () => void): HTMLElement {
             rerender();
           },
           customPicker: picker,
-        }),
+        })),
         cycle,
       ]
       : [picker, cycle],
   });
+}
+
+// 배경 카드 일곱 장은 접힌 「배경 고르기」 뒤에 둔다 — 보통은 「배경 변경」 한 번으로 넘기고, 고를 때만 펼친다
+// (btn-vqa-db PR 5, 오너 2026-11-24 「사용자는 많은 버튼을 원하지 않는다」). 닫힌 details 내용은 브라우저에 따라
+// 상자가 남아 탭 순서에 걸리므로 hidden 으로도 감춘다. 카드·testid 는 그대로다.
+function sceneryFold(field: HTMLElement): HTMLElement {
+  field.hidden = true;
+  const fold = el("details", {
+    children: [el("summary", { text: "배경 고르기", dataset: { testid: "db-troop-scenery-toggle" } }), field],
+  }) as HTMLDetailsElement;
+  fold.addEventListener("toggle", () => { field.hidden = !fold.open; });
+  return fold;
 }
 
 // ---------------------------------------------------------------------------
