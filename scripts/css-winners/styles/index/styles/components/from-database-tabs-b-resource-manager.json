@@ -1,0 +1,15 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/components/from-database-tabs-b-resource-manager.css",
+ "contested": {},
+ "winners": {
+  "06d5a8f1e5b6": "[components] 0",
+  "0bbbfaefcf0d": "[components] var(--accent)",
+  "36c4a60834ec": "[components] 5",
+  "3f133497eb82": "[components] var(--border-soft)",
+  "711af7deaad6": "[components] var(--accent)",
+  "a57541219cbb": "[components] col-resize",
+  "b32b4a9f4ec7": "[components] background 0.12s",
+  "f6e5c0a90e6d": "[components] 5px"
+ }
+}

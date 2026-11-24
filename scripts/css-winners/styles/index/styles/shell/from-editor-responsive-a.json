@@ -1,0 +1,31 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/shell/from-editor-responsive-a.css",
+ "contested": {},
+ "winners": {
+  "0049a30f561c": "[shell] 22px",
+  "02e70ef8035b": "[shell] 268px",
+  "0a9a19e3b9d0": "[shell] ellipsis",
+  "0abd0115aca3": "[shell] translateY(1px)",
+  "0fbef1270f93": "[shell] minmax(0, 1fr) 180px",
+  "15a77306edf9": "[shell] 22px",
+  "161f627804c5": "[shell] 23px",
+  "1bce60675d0c": "[shell] var(--border-default) var(--border-subtle) var(--border-subtle) var(--border-default)",
+  "29a5921ceb73": "[shell] 1px",
+  "34f6dd93ac9b": "[shell] 1px",
+  "444ef7241349": "[shell] nowrap",
+  "5ce81da0e9fa": "[shell] default",
+  "61d082eb027d": "[shell] 23px",
+  "6aed6bf5cbb4": "[shell] var(--surface-app)",
+  "91d8d7439b95": "[shell] 0",
+  "91fdf54e86a1": "[shell] 4px",
+  "976ae266fecd": "[shell] 268px",
+  "9c4a94217adc": "[shell] 34px",
+  "acded20bdcf7": "[shell] hidden",
+  "bea80b65c246": "[shell] none",
+  "c94837a052db": "[shell] var(--surface-recessed)",
+  "cc8819ab7339": "[shell] var(--surface-panel)",
+  "d9ad977d076b": "[shell] 1px solid var(--border-default)",
+  "fdd4f63c9b2e": "[shell] none"
+ }
+}

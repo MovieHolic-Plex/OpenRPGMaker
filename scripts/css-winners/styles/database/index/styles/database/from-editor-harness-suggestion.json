@@ -1,0 +1,17 @@
+{
+ "entry": "src/styles/database/index.css",
+ "file": "src/styles/database/from-editor-harness-suggestion.css",
+ "contested": {},
+ "winners": {
+  "07252a9155d6": "[database] 0 0 10px",
+  "3a4af9101b53": "[database] column",
+  "42e6713fc49a": "[database] column",
+  "52941bb46aa5": "[database] min(1424px, calc(100vw - 16px))",
+  "6d9a6c45caf2": "[database] flex",
+  "6fba17b53589": "[database] flex",
+  "82b1ee57d11c": "[database] min(884px, calc(100vh - 16px))",
+  "90217873cf24": "[database] column",
+  "94f14246132a": "[database] 6px",
+  "accb7a6342dc": "[database] flex"
+ }
+}

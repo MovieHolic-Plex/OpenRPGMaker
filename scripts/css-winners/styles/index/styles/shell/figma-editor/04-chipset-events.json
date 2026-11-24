@@ -1,0 +1,20 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/shell/figma-editor/04-chipset-events.css",
+ "contested": {},
+ "winners": {
+  "0b3e5994e885": "[shell] 12px",
+  "2c833948978f": "[shell] 1 1 auto",
+  "39505623c80a": "[shell] flex",
+  "3a9bd0c4c704": "[shell] left",
+  "40455694b8c4": "[shell] 1px solid var(--editor-line)",
+  "4aa81551903d": "[shell] var(--editor-text-muted)",
+  "5420c05cb682": "[shell] 14px 6px 0",
+  "761a49819fa6": "[shell] column",
+  "7b5ecff04e42": "[shell] 0",
+  "a73094081460": "[shell] hidden",
+  "a8888a42f80c": "[shell] var(--editor-text-muted)",
+  "c15c5594aed1": "[shell] var(--editor-text-muted)",
+  "c4fd6e863406": "[shell] transparent"
+ }
+}

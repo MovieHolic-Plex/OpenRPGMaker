@@ -1,0 +1,21 @@
+{
+ "entry": "src/player/player.css",
+ "file": "src/styles/runtime/battle-skins/_glass-variants.css",
+ "contested": {},
+ "winners": {
+  "04443d0affff": "[runtime] var(--battle-shadow, 0 8px 24px rgba(0, 0, 0, 0.45))",
+  "17a4e2b6854e": "[runtime] color-mix(in srgb, var(--battle-window-inner, var(--battle-window-bg)) 84%, transparent)",
+  "29b085086d90": "[runtime] var(--battle-backdrop-filter, none)",
+  "32bc869a26b6": "[runtime] color-mix(in srgb, var(--battle-window-edge) 42%, transparent)",
+  "3befa6aaaf53": "[runtime] linear-gradient(180deg, transparent 58%, color-mix(in srgb, var(--rm-floor) 50%, transparent) 84%, color-mix(in srgb, var(--rm-floor) 92%, transparent) 100%)",
+  "7c283df980c8": "[runtime] color-mix(in srgb, var(--battle-window-bg) 60%, transparent)",
+  "8bee674a25b6": "[runtime] color-mix(in srgb, var(--battle-window-inner, var(--battle-window-bg)) 92%, transparent)",
+  "c9f36f72d83a": "[runtime] linear-gradient(180deg, color-mix(in srgb, var(--rm-floor) 42%, transparent), color-mix(in srgb, var(--rm-floor) 70%, transparent)), var(--battle-backdrop-url, none)",
+  "d1e228d568c7": "[runtime] color-mix(in srgb, var(--battle-text) 16%, transparent)",
+  "ee7063ed2ead": "[runtime] color-mix(in srgb, var(--battle-window-bg) 90%, transparent)",
+  "ef7f59849a7f": "[runtime] color-mix(in srgb, var(--battle-window-edge) 78%, transparent)",
+  "f1bd522e6498": "[runtime] var(--battle-window-bg)",
+  "f393590fc341": "[runtime] color-mix(in srgb, var(--battle-window-inner, var(--battle-window-bg)) 72%, var(--battle-window-edge))",
+  "fa72f811cbeb": "[runtime] color-mix(in srgb, var(--battle-window-bg) 70%, transparent)"
+ }
+}

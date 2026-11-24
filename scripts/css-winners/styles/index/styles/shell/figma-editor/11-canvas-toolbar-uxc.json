@@ -1,0 +1,19 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/shell/figma-editor/11-canvas-toolbar-uxc.css",
+ "contested": {},
+ "winners": {
+  "040cd250ef78": "[shell] 220px",
+  "1d27490871c7": "[shell] auto",
+  "446a7cc195ad": "[shell] var(--danger, var(--danger))",
+  "44bfd9406eaa": "[shell] var(--status-success, var(--success))",
+  "48f08b614953": "[shell] var(--text-2)",
+  "a99cd698ff9d": "[shell] var(--text-2)",
+  "c5918ffdff5a": "[shell] 2px",
+  "c7f1941d09c3": "[shell] grid",
+  "cf80fc4d9c65": "[shell] var(--status-success, var(--success))",
+  "d5b4b2ba9a20": "[shell] var(--status-warning, var(--gold))",
+  "d9c7709cf81c": "[shell] 12px",
+  "e19c99e8b326": "[shell] 12px"
+ }
+}

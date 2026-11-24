@@ -1,0 +1,18 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/map/from-shell-figma-editor-07-context-menu-responsive.css",
+ "contested": {},
+ "winners": {
+  "26bae80f143f": "[map] 0 7px",
+  "2df875b4b9c5": "[map] 7px",
+  "309c7b5b1d62": "[map] 34px",
+  "5b554887d3a7": "[map] 4px",
+  "5c0f0093f43a": "[map] 1 / -1",
+  "60808608cc14": "[map] 6px",
+  "82104d32f625": "[map] 4px",
+  "95115375c020": "[map] 0 6px",
+  "9a45bcb7876c": "[map] 0 0 76px",
+  "e14e1eb352af": "[map] 38px",
+  "ea73b3ce1d3a": "[map] nowrap"
+ }
+}

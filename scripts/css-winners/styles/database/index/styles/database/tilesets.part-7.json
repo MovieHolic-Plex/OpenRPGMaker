@@ -1,0 +1,22 @@
+{
+ "entry": "src/styles/database/index.css",
+ "file": "src/styles/database/tilesets.part-7.css",
+ "contested": {},
+ "winners": {
+  "0330ba5fd777": "[database] minmax(0, 1fr)",
+  "05d61667a5f1": "[database] 168px",
+  "0d675eb5b043": "[database] auto",
+  "1b3301832aa6": "[database] auto",
+  "1fec707cd637": "[database] inset -12px 0 10px -12px var(--text-2)",
+  "28f3d4404461": "[database] minmax(300px, 0.9fr) minmax(260px, 1fr)",
+  "489429df40d4": "[database] 168px",
+  "5c53eb3699dc": "[database] none",
+  "5e07bbbe36e7": "[database] 40px",
+  "5eb09a5eb535": "[database] none",
+  "82f5c33381c2": "[database] var(--space-1)",
+  "b2d947c11485": "[database] thin",
+  "b4987c92f28c": "[database] repeat(3, minmax(0, 1fr))",
+  "c9b37c7e4302": "[database] 42px",
+  "e44a551fa27d": "[database] minmax(0, 1fr)"
+ }
+}

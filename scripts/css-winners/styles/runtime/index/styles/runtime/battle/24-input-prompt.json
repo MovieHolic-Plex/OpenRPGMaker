@@ -1,0 +1,32 @@
+{
+ "entry": "src/styles/runtime/index.css",
+ "file": "src/styles/runtime/battle/24-input-prompt.css",
+ "contested": {},
+ "winners": {
+  "0c79b316f35d": "[runtime] #ffe08a",
+  "0e413625cc48": "[runtime] 8px 14px",
+  "14c77ec54d4a": "[runtime] #fff",
+  "16890d24b607": "[runtime] center",
+  "1ba1aad92bd2": "[runtime] none",
+  "21593c206a5a": "[runtime] #1a1a2e",
+  "2212a59d540f": "[runtime] center",
+  "299f1406bc50": "[runtime] absolute",
+  "307d3f3aecf2": "[runtime] 13px",
+  "4d68aad3a18e": "[runtime] rgba(12, 16, 40, 0.92)",
+  "4da69ebbb964": "[runtime] 30%",
+  "583b1b7b97e4": "[runtime] 22px",
+  "5b2917326ef8": "[runtime] 0 0 6px",
+  "74f0fb9f3def": "[runtime] 6px",
+  "7bb071d915ac": "[runtime] 4px",
+  "8becac275dd0": "[runtime] 2px solid #ffe08a",
+  "a0cc59ff8523": "[runtime] 6px",
+  "a13a7e861525": "[runtime] 50%",
+  "a4c88fca2af1": "[runtime] #ffe08a",
+  "b28c7ecc4362": "[runtime] 2px 6px",
+  "b5513fd36118": "[runtime] 1px solid #9ab",
+  "c5e9af1f8f3c": "[runtime] 16px",
+  "d588a62476ff": "[runtime] translate(-50%, -50%)",
+  "d5f5fae15591": "[runtime] flex",
+  "dd09b883a286": "[runtime] 40"
+ }
+}

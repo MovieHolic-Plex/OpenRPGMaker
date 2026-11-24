@@ -1,0 +1,29 @@
+{
+ "entry": "src/styles/database/index.css",
+ "file": "src/styles/database/modern/life-crafting.css",
+ "contested": {},
+ "winners": {
+  "00e33e122f2c": "[database] minmax(88px, 0.6fr) minmax(150px, 1fr) minmax(150px, 1fr) auto",
+  "095cf696dd9b": "[database] 6px",
+  "0d371b260c31": "[database] 320px",
+  "0fa9694113ea": "[database] nowrap",
+  "1278f7e5bbb7": "[database] contain",
+  "1551932e24ff": "[database] var(--db-studio-accent-soft)",
+  "1767e6e4db4e": "[database] center",
+  "39ad81c2ccdb": "[database] repeat(auto-fill, minmax(190px, 1fr))",
+  "3f1bde899d3f": "[database] start",
+  "5f7ef75e1766": "[database] 0",
+  "601315dca728": "[database] 0",
+  "63624bdb66c1": "[database] thin",
+  "6ddb380251de": "[database] start",
+  "6e43f19bcbe8": "[database] auto",
+  "85074e2b16a1": "[database] auto",
+  "855a2f13cda6": "[database] none",
+  "bc03b86a6cbf": "[database] contain",
+  "c0cc1aa9aa97": "[database] transparent",
+  "c4c528049efc": "[database] max-content max-content",
+  "cf82c21e699b": "[database] minmax(72px, 0.5fr) minmax(120px, 1fr) minmax(120px, 1fr) auto",
+  "e1c46c91b7ad": "[database] var(--db-studio-accent)",
+  "e7861c850264": "[database] var(--db-studio-inset)"
+ }
+}

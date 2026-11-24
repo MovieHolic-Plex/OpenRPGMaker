@@ -1,0 +1,14 @@
+{
+ "entry": "src/styles/runtime/playerRuntime.css",
+ "file": "src/styles/runtime/battle-skins/_rm2003.css",
+ "contested": {},
+ "winners": {
+  "13975f761116": "[runtime] var(--battle-depth, 3)",
+  "2163e7f50ffb": "[runtime] 0",
+  "641de2483b69": "[runtime] 72px",
+  "b3a660a774df": "[runtime] 0",
+  "bb02ffc4573f": "[runtime] scale(1.25)",
+  "c4e75f6f78ae": "[runtime] 1",
+  "e130d7fbdf93": "[runtime] -1"
+ }
+}

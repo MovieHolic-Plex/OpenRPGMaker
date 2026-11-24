@@ -1,0 +1,43 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/map/region-task.part-10.css",
+ "contested": {
+  "bff6cca805b3": ".region-task-backdrop:not(.region-task-backdrop-popover) .region-task-modal.is-canvas-review|max-height  (경쟁 2)"
+ },
+ "winners": {
+  "11bd66d0b63a": "[map] var(--accent-border)",
+  "178af452101b": "[map] pointer",
+  "218c6da4369d": "[map] var(--accent-border)",
+  "2bf12467a5a4": "[map] none",
+  "3bdec4ea78ef": "[map] var(--accent)",
+  "40094f7c0b9f": "[map] transparent",
+  "476534d8e407": "[map] 600 11px/1.6 var(--font-ui, system-ui, sans-serif)",
+  "48411b9f0763": "[map] none",
+  "4fe68594b9bf": "[map] none",
+  "5376d449a164": "[map] nowrap",
+  "5ef6f7db6f79": "[map] default",
+  "7ff733afc40c": "[map] var(--space-2)",
+  "7ffe1ab2be27": "[map] none",
+  "8260536de505": "[map] min(560px, calc(100vw - 32px))",
+  "997f381a4b9a": "[map] var(--editor-text-muted)",
+  "9b745271449c": "[map] flex-start",
+  "a8c8b198bb8b": "[map] var(--accent)",
+  "afb8e6b0a741": "[map] var(--space-3)",
+  "b0449c279744": "[map] column",
+  "b94ffd8deb03": "[map] var(--space-2)",
+  "baebf4d5b0d9": "[map] flex-end",
+  "bff6cca805b3": "[map] 55dvh",
+  "c308a67077f4": "[map] var(--space-2)",
+  "d30ba2a10062": "[map] auto",
+  "d683dc08a9a1": "[map] 0.6",
+  "dbe559a5c251": "[map] none",
+  "e8f7f36e0a84": "[map] 1px solid var(--editor-line)",
+  "eeec2a99c4db": "[map] 2px 8px",
+  "ef26c63fbbf6": "[map] flex",
+  "f3091bed902b": "[map] none",
+  "f439ce23cabb": "[map] transparent",
+  "f55c1b4978f2": "[map] var(--radius-s)",
+  "fc7953f9f332": "[map] none",
+  "fc82198098bf": "[map] none"
+ }
+}

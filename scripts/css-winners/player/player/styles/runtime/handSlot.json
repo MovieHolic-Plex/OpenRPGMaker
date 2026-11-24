@@ -1,0 +1,30 @@
+{
+ "entry": "src/player/player.css",
+ "file": "src/styles/runtime/handSlot.css",
+ "contested": {},
+ "winners": {
+  "07db65cd6347": "[runtime] var(--runtime-font-size-9)",
+  "0977498157a8": "[runtime] var(--space-1) var(--space-2)",
+  "0f081a32010d": "[runtime] var(--runtime-glass-radius-small)",
+  "114e081de6a5": "[runtime] 1px solid var(--runtime-glass-hairline)",
+  "1152076d7090": "[runtime] var(--runtime-glass-panel)",
+  "14b17d2c97ac": "[runtime] border-box",
+  "22919f03e831": "[runtime] none",
+  "314b36bce5ec": "[runtime] 1.4",
+  "3a109b34c159": "[runtime] 30",
+  "458e0a20ef1f": "[runtime] none",
+  "60a98a70f6b5": "[runtime] none",
+  "74b648fe7a59": "[runtime] absolute",
+  "81d646e73ab2": "[runtime] var(--runtime-glass-shadow)",
+  "a7b1722cbbe7": "[runtime] var(--space-2)",
+  "a93366d32b22": "[runtime] var(--runtime-ui-font)",
+  "aae0c294f2be": "[runtime] var(--space-2)",
+  "ae97934481c8": "[runtime] none",
+  "d676b05bf16a": "[runtime] nowrap",
+  "daa5cd49dfa3": "[runtime] 0.75",
+  "e4c1ddd9493d": "[runtime] 1px 1px 0 var(--runtime-window-shadow)",
+  "eac69a25bf52": "[runtime] var(--runtime-window-text)",
+  "f6c293c74021": "[runtime] none",
+  "fab046bfa396": "[runtime] 40%"
+ }
+}

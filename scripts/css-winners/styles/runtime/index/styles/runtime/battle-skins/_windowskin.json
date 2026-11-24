@@ -1,0 +1,33 @@
+{
+ "entry": "src/styles/runtime/index.css",
+ "file": "src/styles/runtime/battle-skins/_windowskin.css",
+ "contested": {},
+ "winners": {
+  "00f4571f907c": "[runtime] 24",
+  "235be7299acc": "[runtime] stretch !important",
+  "2a0d2ff14182": "[runtime] var(--battle-window-skin-width, 1) !important",
+  "2a2948f3f0e0": "[runtime] 0 !important",
+  "32365de2ae78": "[runtime] stretch !important",
+  "355828f1774f": "[runtime] var(--battle-window-skin-width, 1) !important",
+  "39a86beecc3e": "[runtime] var(--battle-window-skin-slice, 24 fill) !important",
+  "40c31a3fbabe": "[runtime] var(--battle-window-skin-slice, 24 fill) !important",
+  "46cfb4e423a6": "[runtime] var(--battle-window-skin-slice, 24 fill) !important",
+  "492808faf835": "[runtime] var(--battle-window-skin-slice, 24 fill) !important",
+  "51de9cca624d": "[runtime] var(--battle-window-skin-slice, 24 fill) !important",
+  "5c39b38704ca": "[runtime] var(--runtime-window-skin) !important",
+  "5e695e009e83": "[runtime] var(--battle-window-skin-width, 1) !important",
+  "7dc8b0bca48c": "[runtime] 0 !important",
+  "85795f693167": "[runtime] 0 !important",
+  "8b41463acceb": "[runtime] var(--battle-window-skin-width, 1) !important",
+  "a74ba82a425b": "[runtime] var(--runtime-window-skin) !important",
+  "a77b7a5eb8c7": "[runtime] var(--runtime-window-skin) !important",
+  "bd679d3660dc": "[runtime] var(--runtime-window-skin) !important",
+  "cd47e0a86c84": "[runtime] 0 !important",
+  "cdffaadc896d": "[runtime] stretch !important",
+  "db2e68e11409": "[runtime] stretch !important",
+  "df5d8c923aae": "[runtime] stretch !important",
+  "eb746289bff1": "[runtime] var(--battle-window-skin-width, 1) !important",
+  "fefb512ea410": "[runtime] 0 !important",
+  "ff6569efb94e": "[runtime] var(--runtime-window-skin) !important"
+ }
+}

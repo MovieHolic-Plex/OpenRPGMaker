@@ -1,0 +1,20 @@
+{
+ "entry": "src/styles/database/index.css",
+ "file": "src/styles/database/from-editor-responsive-a.css",
+ "contested": {},
+ "winners": {
+  "0206b5a4feda": "[database] 2px 6px",
+  "1ec29a66cc8f": "[database] 78px",
+  "39726bad4b9d": "[database] center",
+  "4083cf23e93e": "[database] 10px",
+  "5137fa8261f9": "[database] 210px",
+  "7798e2dd26df": "[database] 3px",
+  "7fe3c8fc03a8": "[database] none",
+  "9941947d1edb": "[database] none",
+  "a0535687bd98": "[database] 4px",
+  "aa2c042a2857": "[database] 6px",
+  "c8aa213085e9": "[database] 250px",
+  "efd752be696d": "[database] 12px",
+  "feef6dde34c4": "[database] 250px"
+ }
+}

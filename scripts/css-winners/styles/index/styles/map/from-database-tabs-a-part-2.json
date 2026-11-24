@@ -1,0 +1,12 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/map/from-database-tabs-a-part-2.css",
+ "contested": {},
+ "winners": {
+  "1a43b3f69780": "[map] 3px",
+  "47f81d5e2aeb": "[map] 1",
+  "a1cb6dea54fa": "[map] 6px 2px",
+  "d0fd422a50db": "[map] flex",
+  "e0be85db849d": "[map] 11px"
+ }
+}

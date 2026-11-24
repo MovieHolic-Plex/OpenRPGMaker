@@ -1,0 +1,30 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/database/tabs-b-assistant-panel/12-assistant-temperature.css",
+ "contested": {},
+ "winners": {
+  "033a7a8aaf86": "[database] 700",
+  "047104821631": "[database] 0 2px 8px var(--gold-wash)",
+  "1610ded8542d": "[database] 0.06em",
+  "33798403ca38": "[database] var(--gold)",
+  "3b6754709607": "[database] 700",
+  "4051c8a6cd1b": "[database] 700",
+  "446f8a1ca6d9": "[database] var(--text-3)",
+  "4e68dc4d80be": "[database] flex",
+  "7f8ae9dc3e30": "[database] var(--text-3)",
+  "8de5639d6c12": "[database] var(--gold-deep, #6E5424)",
+  "974fa64160ae": "[database] 11px",
+  "a1972f07da41": "[database] var(--gold-deep)",
+  "a63e50dea775": "[database] none",
+  "b58b902dcbcd": "[database] 11px",
+  "bf10a1ef6ab3": "[database] 700",
+  "ceaeeef064e2": "[database] var(--gold-deep, #6E5424)",
+  "d99f33b44f30": "[database] none",
+  "da93459480d9": "[database] -1",
+  "ecbc00be723a": "[database] 0.06em",
+  "f2a9c053b02b": "[database] var(--gold)",
+  "f71b3f15686e": "[database] 8px 10px 2px",
+  "fd7eb27e0a2e": "[database] 8px 10px 2px",
+  "ff92a7f8eb0e": "[database] none"
+ }
+}

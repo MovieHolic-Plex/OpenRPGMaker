@@ -1,0 +1,28 @@
+{
+ "entry": "src/styles/database/index.css",
+ "file": "src/styles/database/tabs-b-shell-layout.css",
+ "contested": {},
+ "winners": {
+  "0c94941f85e6": "[database] var(--accent)",
+  "45a8506715ca": "[database] var(--text-3)",
+  "5eeb8634d92e": "[database] var(--success)",
+  "6122bf490cd2": "[database] var(--success)",
+  "61aea473e14a": "[database] var(--warning)",
+  "6f8b90973346": "[database] var(--bg-raised)",
+  "771074e8aea5": "[database] var(--border-default)",
+  "7e83bb83b40f": "[database] var(--text-1)",
+  "7ec37e93d5ba": "[database] var(--border-subtle)",
+  "8d9ce5c93cab": "[database] var(--bg-raised)",
+  "8dc4f066b545": "[database] var(--gold)",
+  "91df31742889": "[database] var(--success)",
+  "9588775ecd37": "[database] var(--bg-surface)",
+  "9b4dbfebbcbc": "[database] var(--accent-muted)",
+  "a18d4b4822d5": "[database] var(--bg-inset)",
+  "b589550f33b5": "[database] var(--bg-base)",
+  "b82a1bf53c55": "[database] var(--control-bg)",
+  "bc11ac1ce52e": "[database] rgba(42, 37, 33, 0.08)",
+  "e3c08e740650": "[database] var(--text-2)",
+  "ebf48ad91e80": "[database] var(--bg-base)",
+  "f91bd4fb710a": "[database] var(--font-mono)"
+ }
+}

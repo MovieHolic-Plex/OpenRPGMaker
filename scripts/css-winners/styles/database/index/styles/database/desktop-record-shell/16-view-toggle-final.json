@@ -1,0 +1,28 @@
+{
+ "entry": "src/styles/database/index.css",
+ "file": "src/styles/database/desktop-record-shell/16-view-toggle-final.css",
+ "contested": {
+  "394783894eb9": ".database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle.active|box-shadow  (경쟁 2)",
+  "82822a7cc2f9": ".database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle.active|background  (경쟁 2)",
+  "a85d5cbc8d6f": ".database-modal-backdrop .database-modal-window .database-modal-body .db-toolbar .db-view-toggle.active|color  (경쟁 2)"
+ },
+ "winners": {
+  "3654323b7ab7": "[database] none",
+  "394783894eb9": "[database] var(--db-studio-shadow, var(--shadow-pop))",
+  "44d66d453254": "[database] var(--accent-primary, var(--accent))",
+  "51bc343d21bd": "[database] var(--db-studio-surface, var(--bg-surface))",
+  "620177e41d86": "[database] 2px solid var(--accent-primary, var(--accent))",
+  "79404b1ceefa": "[database] transparent",
+  "8010ec36b8db": "[database] 600",
+  "82822a7cc2f9": "[database] var(--db-studio-surface, var(--bg-surface))",
+  "8bb894f03ca6": "[database] 600",
+  "9fcb47e901a8": "[database] pointer",
+  "a6ccac4d5f1f": "[database] var(--db-studio-shadow, var(--shadow-pop))",
+  "a857fe21c497": "[database] 1px",
+  "a85d5cbc8d6f": "[database] var(--db-studio-text-1, var(--text-1))",
+  "e1909d3d289b": "[database] transparent",
+  "f11281771b49": "[database] 2px solid var(--accent-primary, var(--accent))",
+  "f6696a8d0887": "[database] var(--db-studio-text-1, var(--text-1))",
+  "f82edf136fb8": "[database] 1px"
+ }
+}

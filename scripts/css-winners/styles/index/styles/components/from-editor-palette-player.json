@@ -1,0 +1,11 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/components/from-editor-palette-player.css",
+ "contested": {},
+ "winners": {
+  "03d3d68c6036": "[components] center",
+  "3b288da5e99d": "[components] 1.5",
+  "6a11f0118605": "[components] 12px",
+  "7de895a9cb50": "[components] italic"
+ }
+}
