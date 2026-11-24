@@ -555,8 +555,7 @@
 
 /* 1024 preview collapses to 160px strip so form stays */
 @media (max-width: 1100px) {
-  .database-modal-backdrop .database-modal-window .db-terrain-preview-stage,
-  .database-modal-backdrop .database-modal-window .db-battle-command-preview {
+  .database-modal-backdrop .database-modal-window .db-terrain-preview-stage {
     max-height: 160px;
     min-height: 160px;
   }
@@ -610,4 +609,32 @@
     grid-template-columns: minmax(0, 1fr);
   }
 
+}
+
+/* 편집기 안 전투 화면 미리보기 틀(battleScenePreviewFrame.ts) — 640×480 장면을 틀 폭으로 줄여 4:3 상자에 가둔다. */
+.database-modal-backdrop .database-modal-window .db-battle-scene-preview {
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-2, 6px);
+  contain: layout paint;
+  max-width: 480px;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.database-modal-backdrop .database-modal-window .db-command-card-name {
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  padding: 0;
+  text-align: left;
+}
+
+/* 좁은 폭에서 카드 설명(「전사 · 미리보기 전용」)이 한 글자씩 세로로 접히지 않게 제목 아래로 내린다(qa1124 항목 7). */
+.database-modal-backdrop .database-modal-window .db-battle-command-studio .db-ws-card-head {
+  flex-wrap: wrap;
+  row-gap: 2px;
 }

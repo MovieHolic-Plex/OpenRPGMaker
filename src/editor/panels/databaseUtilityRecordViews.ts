@@ -18,6 +18,7 @@
 // db-battle-command-{preview,palette,
 // inspector}, db-field-terrain-*-<i>(이름/피해/조우율은 전 레코드, 나머지는 선택 레코드),
 // db-field-battle-command-*-<i>(전 레코드), db-picker-battle-*, db-open-classes-tab.
+import { resolveTerms } from "@/project/terms";
 import {
   emptyToUndefined,
   numberField,
@@ -26,7 +27,7 @@ import {
   textField,
   toggleSwitch,
 } from "@/editor/panels/databaseControls";
-import { attachCatalogPlacement, battleCommandPlacement } from "./databaseBattleCommandStudio";
+import { attachCatalogPlacement, battleCommandDisplayName, battleCommandPlacement } from "./databaseBattleCommandStudio";
 import { battleStudioHeading } from "@/editor/panels/databaseBattleStudio";
 import { resourcePickerControl } from "@/editor/panels/databaseResourcePickerDialog";
 import { battleBackdropPreviewUrl, battleSceneryField, customPickerResourceId } from "@/editor/panels/battleSceneryPicker";
@@ -557,12 +558,18 @@ function battleCommandPaletteCard(command: DatabaseBattleCommandRecord, index: n
     class: "db-battle-command-card",
     dataset: { testid: `db-battle-command-card-${index}` },
     children: [
-      el("header", { children: [el("span", { class: "db-command-drag-label", text: "끌기" }), el("strong", { text: command.name || "이름 없는 명령" })] }),
-      commandActionButton("원본 편집", `db-command-edit-${command.id}`, "카탈로그 원본 편집", false, () => {
-        const field = document.querySelector<HTMLElement>(`[data-testid="db-field-battle-command-name-${index}"]`);
-        field?.scrollIntoView({ block: "center" });
-        field?.focus();
-      }),
+      // 이름을 누르면 아래 카탈로그 편집의 그 칸으로 간다 — 카드마다 「원본 편집」 단추가 반복되던 것을 이름 하나로 줄였다(qa1124 항목 7).
+      el("header", { children: [el("button", {
+        class: "db-command-card-name",
+        text: command.name ? battleCommandDisplayName(command, resolveTerms(store.getCurrent())) : "이름 없는 명령",
+        attrs: { type: "button", title: "카탈로그 원본 편집" },
+        dataset: { testid: `db-command-edit-${command.id}` },
+        on: { click: () => {
+          const field = document.querySelector<HTMLElement>(`[data-testid="db-field-battle-command-name-${index}"]`);
+          field?.scrollIntoView({ block: "center" });
+          field?.focus();
+        } },
+      })] }),
     ],
   });
   attachCatalogPlacement(card, command, rerender);

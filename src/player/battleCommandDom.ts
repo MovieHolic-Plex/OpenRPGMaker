@@ -534,6 +534,32 @@ function commandControl(
   }
 }
 
+const PREVIEW_COMMAND_ICON: Readonly<Record<RuntimeBattleCommand["kind"], string>> = {
+  attack: "sword", skill: "fire", item: "bag", capture: "target", defend: "shield", escape: "boot", commonEvent: "fire", switch: "switch",
+};
+
+/**
+ * 편집기 「전투 명령」 탭의 미리보기(qa1124 항목 7): 전투에서 쓰는 명령 창과 같은 패널·버튼(commandButton)으로 그 명령 목록을 그린다.
+ * 누르면 아무 일도 하지 않는다. 패널에는 프로젝트의 명령 창 CSS(system.battleCommandCss)도 그대로 붙는다.
+ */
+export function battleCommandMenuPreview(commands: readonly RuntimeBattleCommand[], terms: ResolvedTerms): HTMLElement {
+  const panel = document.createElement("div");
+  panel.className = "battle-command-panel";
+  mountBattleCommandCss(panel, store.getCurrent().system.battleCommandCss ?? "");
+  const menu = document.createElement("div");
+  menu.className = "battle-command-menu battle-standard-root";
+  menu.dataset.testid = "battle-command-grid";
+  for (const command of commands) {
+    const label = command.kind === "switch" ? command.name : battleCommandKindLabel(command, terms);
+    const button = commandButton(label, commandTestId(command), PREVIEW_COMMAND_ICON[command.kind], "", () => undefined);
+    button.dataset.commandId = command.id;
+    button.dataset.kind = command.kind;
+    menu.append(button);
+  }
+  panel.append(menu);
+  return panel;
+}
+
 function commandTestId(command: RuntimeBattleCommand): string {
   switch (command.kind) {
     case "attack":

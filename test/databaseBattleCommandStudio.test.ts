@@ -251,7 +251,7 @@ describe("studio DOM integration", () => {
     select.dispatchEvent(new Event("change"));
     const before = structuredClone(studio.resolvedStudioCommands(project, klass.id, false));
     const terms = resolveTerms(project);
-    const labels = Array.from(node("db-battle-command-preview").querySelectorAll("li"), (row) => row.textContent);
+    const labels = Array.from(node("db-battle-command-preview").querySelectorAll(".battle-command .battle-command-text strong"), (row) => row.textContent);
     expect(labels).toEqual(before.map((command) => battleCommandKindLabel(command, terms)));
     expect(studio.resolvedStudioCommands(project, klass.id, false)).toEqual(before);
     expect(store.getCurrent().database.classes).toEqual(project.database.classes);

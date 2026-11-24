@@ -230,7 +230,8 @@
 /* Placement is a two-track authoring surface, not a pretend runtime window. */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-command-placement {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  /* 좁으면 카탈로그·직업 메뉴를 위아래로 쌓는다(qa1124 항목 7, 390 에서 두 카드가 좁은 기둥이 되던 것). */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
   gap: var(--space-4);
   align-items: start;
   min-width: 0;
@@ -277,11 +278,8 @@
   justify-content: end;
 }
 .database-modal-backdrop .database-modal-window .database-modal-body .db-command-slot {
-  min-height: var(--space-6);
-  padding: var(--space-1) var(--space-2);
-  border-top: var(--stroke-2) solid var(--db-studio-border-subtle);
-  color: var(--db-studio-text-2);
-  font-size: var(--font-size-sm);
+  min-height: var(--space-2);
+  border-top: var(--stroke-2) dashed var(--db-studio-border-subtle);
 }
 .database-modal-backdrop .database-modal-window .database-modal-body .db-command-slot.is-target {
   border-color: var(--db-studio-accent);
@@ -300,12 +298,6 @@
   min-width: 0;
   max-width: 100%;
 }
-.database-modal-backdrop .database-modal-window .database-modal-body .db-command-runtime-list {
-  padding-left: var(--space-5);
-  margin: var(--space-2) 0;
-  overflow-wrap: anywhere;
-}
-
 .db-command-placement > [data-testid="db-command-css-editor"] {
   grid-column: 1 / -1;
 }

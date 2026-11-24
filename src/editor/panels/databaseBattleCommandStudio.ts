@@ -1,4 +1,5 @@
-import { battleCommandKindLabel } from "@/player/battleCommandDom";
+import { battleCommandKindLabel, battleCommandMenuPreview } from "@/player/battleCommandDom";
+import { battleScenePreviewFrame } from "./battleScenePreviewFrame";
 import { resolveTerms } from "@/project/terms";
 import { createActorRecord } from "@/project/actorModel";
 import { battleCommandsForActor } from "@/battle/battleCommands";
@@ -106,7 +107,8 @@ export function attachCatalogPlacement(card: HTMLElement, command: DatabaseBattl
   card.append(listToolbar([{ label: reason || "메뉴에 추가", ariaLabel: `${command.name} 메뉴에 추가${reason ? `: ${reason}` : ""}`, disabled: Boolean(reason), testid: `db-command-place-${command.id}`, onClick: () => { const current = selectedClass(); place(command.id, current ? editable(current).length : 0, rerender); } }]));
 }
 function slot(index: number, rerender: () => void): HTMLElement {
-  const node = el("div", { class: "db-command-slot", text: `${index + 1}번 위치에 놓기`, dataset: { testid: `db-command-slot-${index}` } });
+  // 끌어 놓을 자리는 얇은 선이다 — 행마다 「N번 위치에 놓기」 글자가 반복돼 메뉴가 흐려졌다(qa1124 항목 7). 이름은 읽기 도구용으로 남긴다.
+  const node = el("div", { class: "db-command-slot", attrs: { "aria-label": `${index + 1}번 위치에 놓기` }, dataset: { testid: `db-command-slot-${index}` } });
   node.addEventListener("dragover", (event) => {
     if (!drag) return;
     event.preventDefault();
@@ -135,8 +137,7 @@ function menuRow(row: ClassBattleCommand, index: number, klass: ClassRecord, rer
   const rows = editable(klass);
   const occurrence: RowOccurrence = { classId: klass.id, menu: JSON.stringify(klass.battleCommands), index };
   const node = el("article", { class: "db-command-menu-row", dataset: { testid: "db-command-menu-row", commandId: row.id }, children: [
-    el("span", { class: "db-command-drag-label", text: "끌기", attrs: { "aria-hidden": "true" } }),
-    el("strong", { text: `${index + 1}. ${row.name || row.id}` }),
+    el("strong", { text: `${index + 1}. ${battleCommandDisplayName(row, resolveTerms(store.getCurrent()))}` }),
     listToolbar([
       { label: "위", ariaLabel: `${row.name} 위로`, disabled: index === 0, testid: rowTestId("up", rows, index), onClick: () => move(occurrence, index - 1, rerender) },
       { label: "아래", ariaLabel: `${row.name} 아래로`, disabled: index === rows.length - 1, testid: rowTestId("down", rows, index), onClick: () => move(occurrence, index + 1, rerender) },
@@ -145,6 +146,15 @@ function menuRow(row: ClassBattleCommand, index: number, klass: ClassRecord, rer
   ] });
   draggable(node, "menu", row.id, occurrence);
   return node;
+}
+
+/**
+ * 명령의 표시 이름 — 카탈로그·직업 메뉴·미리보기가 같은 이름을 쓴다(전투의 명령 창과 같은 battleCommandKindLabel).
+ * 예전에는 같은 명령이 카탈로그에서 「스킬」, 직업 메뉴에서 「기술」로 달리 보였다(qa1124 항목 7).
+ */
+export function battleCommandDisplayName(row: Pick<ClassBattleCommand, "id" | "name" | "kind">, terms: ReturnType<typeof resolveTerms>): string {
+  const kind = row.kind === "guard" ? "defend" : row.kind === "skillSubset" ? "skill" : row.kind === "event" ? "commonEvent" : row.kind;
+  return battleCommandKindLabel({ id: row.id, name: row.name || row.id, kind }, terms);
 }
 
 /** Uses the runtime resolver even for a class with no assigned actor; the virtual actor never enters the store. */
@@ -159,10 +169,12 @@ function preview(klass: ClassRecord, rerender: () => void): HTMLElement {
   const toggle = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "db-command-preview-switch" } });
   toggle.checked = includeSwitch;
   toggle.addEventListener("change", () => { includeSwitch = toggle.checked; refresh(rerender, "db-command-preview-switch"); });
-  return sectionCard({ title: "실제 메뉴 해석", hint: "미리보기 전용 · 여기서 전투를 실행하지 않습니다", testid: "db-battle-command-preview", children: [
-    el("label", { children: [toggle, el("span", { text: "교체 가능한 동료가 있는 상황" })] }),
-    el("ol", { class: "db-command-runtime-list", children: resolvedStudioCommands(project, klass.id, includeSwitch).map((row) => el("li", { text: battleCommandKindLabel(row, terms), dataset: { commandId: row.id, kind: row.kind } })) }),
-    el("p", { class: "db-ws-usage", text: "빈 메뉴는 기본 행동으로 대체됩니다. 포획은 몬스터 수집 설정에 따라 추가·제외됩니다. 교체는 전투 상황에 따라 숨겨집니다. 포켓몬 화면의 보유 몬스터는 직업 메뉴 대신 고정 4개 메뉴를 사용합니다. 강제 교체 때는 교체만 표시되며 전투 이벤트의 메뉴 덮어쓰기는 여기 반영하지 않습니다." }),
+  // 전투에서 쓰는 명령 창(battleCommandDom 의 같은 패널·버튼)을 이 직업의 실제 명령 목록으로 그린다(qa1124 항목 7).
+  const commands = resolvedStudioCommands(project, klass.id, includeSwitch);
+  return sectionCard({ title: "전투에서 보이는 메뉴", hint: `${klass.name} · 미리보기 전용`, testid: "db-battle-command-preview", children: [
+    battleScenePreviewFrame(project, { command: battleCommandMenuPreview(commands, terms) }, "db-command-menu-preview"),
+    el("label", { children: [toggle, el("span", { text: "교체할 동료가 있을 때" })] }),
+    el("p", { class: "db-ws-usage", text: "포획은 몬스터 수집 설정, 교체는 전투 상황에 따라 나타납니다." }),
   ] });
 }
 export function battleCommandPlacement(palette: HTMLElement, rerender: () => void): HTMLElement {
@@ -176,6 +188,8 @@ export function battleCommandPlacement(palette: HTMLElement, rerender: () => voi
   const rows = klass ? editable(klass) : [];
   const board = sectionCard({ title: "직업의 전투 메뉴", hint: `${rows.length} / 6개 · 이 순서가 선택한 직업에 저장됩니다`, testid: "db-command-menu-board", children: [
     el("label", { class: "db-field", children: [el("span", { text: "직업" }), select] }),
+    // 결과(전투에서 보이는 메뉴)를 먼저 보이고 그 아래에서 순서를 바꾼다(qa1124 항목 7: 「어떻게 쓰라는 건지 감이 안 잡힘」).
+    ...(klass ? [preview(klass, rerender)] : []),
     ...(!klass ? [el("p", { text: "직업 탭에서 직업을 먼저 만드세요." })] : [
       ...(rows.length === 0 ? [el("p", { class: "db-ws-usage", text: "아직 배치한 명령이 없습니다. 아래 미리보기는 기본 행동입니다." })] : []),
       ...rows.flatMap((row, index) => [slot(index, rerender), menuRow(row, index, klass, rerender)]), slot(rows.length, rerender),
@@ -184,7 +198,6 @@ export function battleCommandPlacement(palette: HTMLElement, rerender: () => voi
     ]),
     listToolbar([{ label: "되돌리기", disabled: !pendingHistoryLabels().undo, testid: "db-command-undo", onClick: () => { if (undoMapEdit()) { status = "편집을 되돌렸습니다."; refresh(rerender, pendingHistoryLabels().undo ? "db-command-undo" : "db-command-class-select"); } } }]),
     el("p", { class: "db-ws-usage", text: status, attrs: { role: "status", "aria-live": "polite" }, dataset: { testid: "db-command-status" } }),
-    ...(klass ? [preview(klass, rerender)] : []),
   ] });
   const labels = klass ? resolvedStudioCommands(project, klass.id, includeSwitch).map((row) => battleCommandKindLabel(row, resolveTerms(project))) : [];
   return el("div", { class: "db-command-placement", children: [palette, board, battleCommandCssEditor(labels, rerender)] });

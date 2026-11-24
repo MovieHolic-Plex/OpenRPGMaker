@@ -195,6 +195,8 @@
   background: var(--db-studio-surface, var(--db-studio-surface));
   box-sizing: border-box;
   display: flex;
+  /* 좁은 폭(390)에서 제목·설명이 한 글자씩 세로로 접히지 않게 단추를 아랫줄로 보낸다(qa1124 항목 7). */
+  flex-wrap: wrap;
   min-width: 0;
 }
 
@@ -211,6 +213,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero-text {
   display: grid;
+  flex: 1 1 12em;
   gap: 3px;
   min-width: 0;
 }
@@ -242,6 +245,7 @@
   border: 1px solid var(--db-studio-accent-border, color-mix(in srgb, var(--accent) 16%, transparent));
   border-radius: 999px;
   color: var(--db-studio-accent, var(--db-studio-accent));
+  white-space: nowrap;
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-ws-hero-actions {
