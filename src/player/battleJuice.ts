@@ -5,6 +5,7 @@ import type { Project, SkillRecord } from "@/project/types";
 import { isSystemSeCue } from "@/project/systemAudioOverrides";
 import { magicCueForElement, projectSeCue } from "@/project/seCues";
 import { playAudioCommand } from "@/player/audio";
+import { isBattleAudioMuted } from "@/player/battleAudioMute";
 import { systemAudioOverride } from "@/player/systemAudioSlots";
 
 export type BattleAudioContext = { readonly project: Project; readonly session: PlaySession };
@@ -175,6 +176,7 @@ export function authoredBattleCue(
 }
 
 export function playBattleCue(event: BattleJuiceEvent, context?: BattleAudioContext, shape?: BattleCueShape): void {
+  if (isBattleAudioMuted()) return;
   const project = context?.project ?? store.getCurrent();
   const result = event === "victory" || event === "defeat" || event === "escape";
   if (result) beginBattleResultAudio();
@@ -311,6 +313,7 @@ export function skillSeCue(
 }
 
 export function playSkillCastCue(project: Project, skill: Pick<SkillRecord, "elementId" | "effect"> | undefined): boolean {
+  if (isBattleAudioMuted()) return false;
   const cue = skillSeCue(project, skill);
   const resourceId = cue ? projectSeCue(project, cue) : undefined;
   if (!resourceId) return false;

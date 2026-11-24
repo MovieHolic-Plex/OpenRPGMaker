@@ -17,7 +17,7 @@ import { noEscapeInlineReason } from "@/player/emeraldBattleNarration";
 import { store } from "@/project/store";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
-import type { ItemId, SkillId, SkillRecord } from "@/project/types";
+import type { ItemId, Project, SkillId, SkillRecord } from "@/project/types";
 import { resolveTerms, type ResolvedTerms } from "@/project/terms";
 import { isCaptureTool } from "@/project/itemUsage";
 import { activeActor, predictSkillDamageFor } from "@/battle/battlePredict";
@@ -45,6 +45,8 @@ export type BattleCommandSubmenu =
 
 export interface BattleCommandPanelOptions {
   readonly runtime: BattleRuntime;
+  /** 기술·연계기 목록을 찾는 프로젝트. 생략 = 저장소의 프로젝트(BattleDomOptions.project 가 넘긴다). */
+  readonly project?: Project;
   readonly submenu: BattleCommandSubmenu;
   setSubmenu(submenu: BattleCommandSubmenu): void;
   setDirectorState(state: BattleDirectorState): void;
@@ -59,7 +61,22 @@ export interface BattleCommandPanelOptions {
   cancelTargetSelection?(): void;
 }
 
+/** 한 번 그리는 동안만 목록(기술·연계기)이 읽는 프로젝트 — options.project 가 있을 때만 저장소 대신 쓴다. */
+let panelListingProject: Project | undefined;
+function listingProject(): Project {
+  return panelListingProject ?? store.getCurrent();
+}
+
 export function commandPanel(snapshot: BattleSnapshot, options: BattleCommandPanelOptions): HTMLElement {
+  panelListingProject = options.project;
+  try {
+    return buildCommandPanel(snapshot, options);
+  } finally {
+    panelListingProject = undefined;
+  }
+}
+
+function buildCommandPanel(snapshot: BattleSnapshot, options: BattleCommandPanelOptions): HTMLElement {
   const panel = document.createElement("div");
   panel.className = "battle-command-panel";
   mountBattleCommandCss(panel, store.getCurrent().system.battleCommandCss ?? "");
@@ -705,7 +722,7 @@ function listedSkillIds(actor: BattleBattlerSnapshot | undefined, command?: Runt
 /** 이 배우가 지금 고를 수 있는 연계기 — 배운 연계기 + 연계 멤버라서 열린 것. 동료가 전부 참전 중인 것만. */
 export function listedComboSkillIds(actor: BattleBattlerSnapshot | undefined, snapshot: BattleSnapshot): SkillId[] {
   if (!actor || actor.monsterInstanceId) return [];
-  const project = store.getCurrent();
+  const project = listingProject();
   const owned = battlerSkillIdsWithGrants(actor);
   const partyIds = snapshot.actors.map((entry) => entry.recordId);
   const ownedCombos = owned.filter((id) => {
@@ -723,7 +740,7 @@ function comboCommandButton(
   targetMode: boolean,
 ): HTMLButtonElement | null {
   if (!actor) return null;
-  const project = store.getCurrent();
+  const project = listingProject();
   if (project.system.battleUiStyle === "pokemon") return null;
   const combos = listedComboSkillIds(actor, snapshot);
   if (combos.length === 0) return null;
@@ -758,7 +775,7 @@ function comboSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
   header.textContent = "연계";
   const nodes: HTMLElement[] = [header];
   const actor = activeActor(snapshot);
-  const project = store.getCurrent();
+  const project = listingProject();
   for (const skillId of listedComboSkillIds(actor, snapshot)) {
     const skill = project.database.skills.find((record) => record.id === skillId);
     const reason = skillChoiceDisabledReason(snapshot, actor, skillId, skill);
@@ -984,14 +1001,14 @@ function appendSkillTypeBadge(
 
 /** 전투 메뉴의 기술 사용 가능 판정 — 연계기는 런타임과 같은 동료 준비 규칙을 쓴다. */
 function actorSkillFailure(snapshot: BattleSnapshot, actor: BattleBattlerSnapshot, skillId: SkillId) {
-  return battleActorSkillFailure(store.getCurrent(), actor, skillId, comboParticipantsFromSnapshot(snapshot), snapshot.partyGauge);
+  return battleActorSkillFailure(listingProject(), actor, skillId, comboParticipantsFromSnapshot(snapshot), snapshot.partyGauge);
 }
 
 function skillChoiceDisabledReason(
   snapshot: BattleSnapshot, actor: BattleBattlerSnapshot | undefined, skillId: SkillId, skill: SkillRecord | undefined,
 ): string | undefined {
   if (!actor) return "사용자가 없습니다.";
-  const project = store.getCurrent();
+  const project = listingProject();
   const failure = actorSkillFailure(snapshot, actor, skillId);
   if (failure) return battleSkillUseFailureLabel(failure, skill, actor, project);
   // 모든 대상에 이미 적용된 보조 기술은 차례만 소비하므로 메뉴에서 사유를 표시한다.
@@ -1003,7 +1020,7 @@ function skillChoiceDisabledReason(
 function comboPartnerNames(snapshot: BattleSnapshot, skill: { comboActorIds?: readonly string[] }, actorRecordId: string): string {
   const combo = comboActorIdsOf(skill as Parameters<typeof comboActorIdsOf>[0]);
   if (!combo) return "";
-  const project = store.getCurrent();
+  const project = listingProject();
   return combo
     .filter((id) => id !== actorRecordId)
     .map((id) => snapshot.actors.find((entry) => entry.recordId === id)?.name ?? project.database.actors.find((entry) => entry.id === id)?.name ?? id)
