@@ -9,6 +9,8 @@ import { el } from "@/util/dom";
 export function renderLifeClosedNotice(body: HTMLElement): void {
   body.append(el("div", {
     class: "db-life-closed",
+    // 새 CSS 선언은 CSS 승자 기준선(check-css-winners)을 건드리므로 여백만 인라인으로 준다.
+    attrs: { style: "display:flex;justify-content:center;padding:40px 24px" },
     dataset: { testid: "db-life-closed-notice" },
     children: [emptyState({
       icon: "…",

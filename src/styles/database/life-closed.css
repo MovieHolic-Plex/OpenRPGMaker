@@ -1,3 +1,0 @@
-/* 자료집 「생활」 그룹이 닫혀 있을 때의 안내 한 장(databaseLifeClosedView.ts, electron/shared/lifeSim.ts). */
-.database-modal-body .db-life-closed { display: flex; justify-content: center; padding: 40px 24px; }
-.database-modal-body .db-life-closed .db-ws-empty { max-width: 460px; width: 100%; }
