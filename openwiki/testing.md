@@ -74,7 +74,7 @@
   초록이어야 `--match-head-commit` 으로 머지한다. 체크가 빠졌으면 기다리고 실패·취소된 체크가 있으면 머지를 거절한다.
 - ci-full 은 main 푸시마다가 아니라 `17 */4 * * *` cron 이다. 푸시마다 걸면 한 판(약 4시간) 동안 대기 자리를 새 푸시가
   계속 빼앗아 60판 중 51판이 cancelled 였다. 판정 논리(기준선 대비 회귀만 실패)는 그대로다.
-  정적 잡과 테스트 16샤드 모두 mdc2(`mdc2-heavy`)에서 돈다. 샤드는 `max-parallel: 2`, 샤드당 `OPRN_VITEST_MAX_WORKERS=2`·`OPRN_VITEST_HEAP_MB=4608`(샤드 하나 10GB 이하)로 묶고, 잡 시작에 `scripts/ci-wait-mem.sh 30` 이 MemAvailable 30GB 를 기다린다(2026-11-23 실측: 8샤드는 샤드마다 러너 상한까지 vitest 워커를 띄워 박스 MemAvailable 8GB·load 711)
+  정적 잡과 테스트 16샤드 모두 mdc2(`mdc2-heavy`)에서 돈다. 샤드는 `max-parallel: 2`, 샤드당 `OPRN_VITEST_MAX_WORKERS=1`·`OPRN_VITEST_HEAP_MB=9216`(워커 2·4608MB 는 큰 파일 heap OOM)(샤드 하나 10GB 이하)로 묶고, 잡 시작에 `scripts/ci-wait-mem.sh 30` 이 MemAvailable 30GB 를 기다린다(2026-11-23 실측: 8샤드는 샤드마다 러너 상한까지 vitest 워커를 띄워 박스 MemAvailable 8GB·load 711)
   (박스 MemAvailable 25GB 아래가 위험선, 같은 박스에 win11 VM), 끝에 node_modules 복사본을 지운다.
   호스티드 시절에는 샤드 하나가 중앙 72분·최대 204분이었다(최근 30일).
 - 브랜치 보호의 필수 체크 `fast` 는 저장소 설정이고 이제 빌드 잡을 확인한다.

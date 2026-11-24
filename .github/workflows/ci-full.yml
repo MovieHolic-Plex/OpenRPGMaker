@@ -150,7 +150,8 @@ jobs:
     # 반씩(--shard=1/16·2/16) 돌리면 둘 다 끝났다(ci-vitest-files 40308924284·40308932285) → 샤드 16.
     # 2026-11-23 mdc2 로 옮김: 16샤드가 한꺼번에 뜨면 박스 메모리(여유 150GB 안팎, 같은 박스에 win11 VM)를
     # 넘을 수 있어 동시 샤드 수를 묶는다. 2026-11-23 브랜치 실측(run 45232304512): 8샤드는 샤드마다 러너 상한(20~22G)까지
-    # vitest 워커를 띄워 MemAvailable 8GB·load 711 까지 갔다 → 동시 2샤드, 샤드당 워커 2·힙 4608MB(샤드 하나 10GB 이하).
+    # vitest 워커를 띄워 MemAvailable 8GB·load 711 까지 갔다 → 동시 2샤드, 샤드당 워커 1·힙 9216MB(샤드 하나 10GB 이하).
+    # 워커 2·힙 4608MB 는 큰 파일이 heap OOM 으로 죽었다(2026-11-24 run 45323071145 샤드 3·4).
     # 올리려면 실측으로(MemAvailable 25GB 아래가 위험선). 시작 전에 MemAvailable 30GB 를 기다린다.
     timeout-minutes: 300
     strategy:
@@ -196,8 +197,8 @@ jobs:
       - name: vitest 샤드 (기준선 대비 회귀만 실패)
         timeout-minutes: 280
         env:
-          OPRN_VITEST_MAX_WORKERS: '2'
-          OPRN_VITEST_HEAP_MB: '4608'
+          OPRN_VITEST_MAX_WORKERS: '1'
+          OPRN_VITEST_HEAP_MB: '9216'
         run: node scripts/verify-gates.mjs --only tests --shard ${{ matrix.shard }}/16 --flake-budget-min=40 --flake-max-candidates=30
 
       - name: 자원 리포트
