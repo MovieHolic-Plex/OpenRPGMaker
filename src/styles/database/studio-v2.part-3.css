@@ -119,6 +119,28 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* 값 칸 기본 「보기」 — 자료집 레코드 칸은 글자처럼 보이고, 누르거나 키보드로 들어가면 편집 칸이 된다
+   (btn-vqa-db PR 4, 오너 2026-11-24 「데이터베이스는 AI 에게 거의 맡긴다」). 숫자 ± 단추는 그 칸을 가리키거나
+   편집할 때만 나온다. 요소·testid·이벤트는 그대로라 편집 경로는 바뀌지 않는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-field :is(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):where(:not(.db-number-stepper input)), select, textarea):not(:focus):not(:hover):not(:disabled) {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-field select:not(:focus):not(:hover):not(:disabled) {
+  appearance: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-field .db-number-stepper:not(:focus-within):not(:hover) .db-number-stepper-button {
+  display: none;
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-field .db-number-stepper:not(:focus-within):not(:hover) {
+  background: transparent;
+  border-color: transparent;
+}
+
 .database-modal-backdrop .database-modal-window .database-modal-body input[type="checkbox"] {
   accent-color: var(--db-studio-accent);
   cursor: pointer;
