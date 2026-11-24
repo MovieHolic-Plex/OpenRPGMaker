@@ -1,12 +1,14 @@
 import type { CloseSaveMode } from "../main/closeFlow";
 import { contextBridge, ipcRenderer } from "electron";
-import { OPRN_CHANNELS } from "../shared/channels";
+import { OPRN_APP_SCHEME, OPRN_CHANNELS } from "../shared/channels";
 import { windowChromeFor } from "../shared/windowControl";
 
 const invoke = (channel: string) => (payload?: unknown) => ipcRenderer.invoke(channel, payload);
 
 const bridge = {
   closeIsHostDriven: true,
+  /** app:// 로 열린 데스크톱 창만 true — 카탈로그 BGM 을 처음 재생할 때 받는다(electron/main/bgmOnDemand.ts). */
+  bgmOnDemand: typeof location !== "undefined" && location.protocol === `${OPRN_APP_SCHEME}:`,
   windowControl: invoke(OPRN_CHANNELS.windowControl),
   /** 렌더러가 창 단추 방식(OS 신호등 vs 직접 그림)을 동기로 고르도록 프리로드 시점에 준다. */
   platform: windowChromeFor(process.platform).platform,

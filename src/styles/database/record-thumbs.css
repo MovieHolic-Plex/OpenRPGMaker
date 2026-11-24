@@ -331,6 +331,12 @@
   white-space: nowrap;
 }
 
+.db-resource-picker-option-badge {
+  color: var(--text-2);
+  font-size: 11px;
+  margin-left: 6px;
+}
+
 .db-resource-picker-preview {
   align-items: center;
   background: var(--bg-raised, rgba(255, 255, 255, 0.06));

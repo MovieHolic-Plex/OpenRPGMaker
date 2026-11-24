@@ -1,6 +1,7 @@
 import { CC0_MUSIC_ASSETS, CC0_SOUND_ASSETS } from "@/assets/cc0AudioAssets";
 import { EASYRPG_MUSIC_ASSETS, EASYRPG_SOUND_ASSETS } from "@/assets/easyrpgRtp";
-import { listAudioResources } from "@/assets/audioResourceCatalog";
+import { bgmNeedsDownload, listAudioResources } from "@/assets/audioResourceCatalog";
+import { t } from "@/i18n";
 import { audioResourceDocument, audioPlayback, audioRowParts, audioUnplayableReason } from "./audioResourcePresentation";
 import { createAudioPreviewPlayer } from "./audioPreviewPlayer";
 import { bgmInstallBanner } from "./bgmInstallBanner";
@@ -106,6 +107,7 @@ export function openAudioTestDialog(): void {
       // 이름 한 줄에 용도·곡 이름·라이선스가 붙어 있었다 — 곡 이름을 주 글자로, 나머지를 보조 줄로 나눈다.
       const parts = audioRowParts(entry.name);
       const reason = playback.playable ? "" : audioUnplayableReason(playback);
+      const badge = reason || (entry.id && category === "music" && bgmNeedsDownload(entry.id) ? t("받기 필요") : "");
       return el("button", {
         class: `audio-test-option${entry.id === selectedId ? " selected" : ""}${playback.playable ? "" : " unplayable"}`,
         attrs: { type: "button", role: "option", tabindex: entry.id === selectedId ? "0" : "-1", "aria-selected": String(entry.id === selectedId),
@@ -117,7 +119,7 @@ export function openAudioTestDialog(): void {
             el("span", { class: "audio-test-option-label", text: parts.title }),
             ...(parts.meta ? [el("span", { class: "audio-test-option-meta", text: parts.meta })] : []),
           ] }),
-          ...(reason ? [el("span", { class: "audio-test-option-badge", text: reason })] : []),
+          ...(badge ? [el("span", { class: "audio-test-option-badge", text: badge })] : []),
         ],
         on: { click: () => {
           selectedId = entry.id;

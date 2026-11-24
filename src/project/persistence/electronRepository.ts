@@ -182,6 +182,8 @@ export type OprnBridge = {
   /** 데스크톱 전용 — 시작 화면이 첫 카드를 그렸다. 메인이 숨겨 둔 창을 보이고 스플래시를 닫는다(electron/main/splash.ts). */
   readonly startScreenReady?: () => void;
   readonly team?: import("../../../electron/shared/team").TeamBridge;
+  /** 데스크톱(app://)에서만 true — 카탈로그 BGM 이 앱에 없어도 처음 재생할 때 CDN 에서 받아 온다. 브라우저 호스트에는 없다. */
+  readonly bgmOnDemand?: boolean;
   /** true 면 닫기 절차를 호스트(일렉트론 메인)가 연다. 브라우저 로컬 서버는 false 라서 페이지가 직접 막는다. */
   readonly closeIsHostDriven: boolean;
   /** AI 동반 서비스 출처. 일렉트론은 루프백 주소, 브라우저는 페이지와 같은 출처라 null 이다. */
