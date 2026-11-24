@@ -5,6 +5,7 @@ import { editorState } from "@/editor/editorState";
 import { eventEditorViewLevel, setEventEditorViewLevel } from "@/editor/panels/eventEditor/beginnerChrome";
 import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
+import { FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { buildSceneCards, conditionQuestion, SCENE_COMMENT_COMMAND_ID } from "@/editor/panels/eventEditor/sceneCards";
 import { resetEventViewSession } from "@/editor/panels/eventEditor/storyboardView";
 import { createBlankProject } from "@/project/defaults";
@@ -51,7 +52,7 @@ describe("장면 카드 모델", () => {
     expect(cards).toHaveLength(1);
     expect(cards[0]!.kind).toBe("battle");
     expect(cards[0]!.branches.map((branch) => branch.label)).toEqual(["이기면", "지면"]);
-    expect(cards[0]!.branches[0]!.containerPath).toEqual([1, 0]);
+    expect(cards[0]!.branches[0]!.containerPath).toEqual([1, FORK_THEN_BRANCH_INDEX]);
   });
 
   it("조건 문장을 물음으로 바꾼다", () => {
