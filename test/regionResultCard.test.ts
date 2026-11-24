@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { countRegionChanges, regionResultSummary } from "@/editor/regionResultCard";
+import { countRegionChanges, regionResultSummary, regionTurnTouched } from "@/editor/regionResultCard";
 import type { Project } from "@/project/types";
 
 function project(lower: number[], events: { id: string; x: number; y: number }[] = []): Project {
@@ -34,6 +34,15 @@ describe("region result card counts", () => {
     const counts = countRegionChanges(before, after, "m1", { x: 0, y: 0, width: 2, height: 2 });
     expect(counts).toEqual({ cells: 1, events: 0, newMaps: ["도구점"] });
     expect(regionResultSummary(counts)).toBe("칸 1개 바뀜 · 새 맵 도구점");
+  });
+
+  it("shows the card for the region map even when the turn also made an interior", () => {
+    const before = project(base);
+    const after = project(base.map((tile, i) => (i === 0 ? 9 : tile)));
+    (after.maps as Record<string, unknown>).inner = { id: "inner", name: "집", width: 2, height: 2, lowerTiles: [0, 0, 0, 0], upperTiles: [0, 0, 0, 0], events: [] };
+    expect(regionTurnTouched(before, after, "m1", { x: 0, y: 0, width: 2, height: 2 })).toBe(true);
+    expect(regionTurnTouched(before, project(base), "m1", { x: 0, y: 0, width: 2, height: 2 })).toBe(false);
+    expect(regionTurnTouched(before, after, "gone", { x: 0, y: 0, width: 2, height: 2 })).toBe(false);
   });
 
   it("says nothing changed when the region is untouched", () => {
