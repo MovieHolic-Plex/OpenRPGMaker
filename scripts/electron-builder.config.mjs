@@ -43,9 +43,27 @@ export default {
   // — 실측 2026-10-10: wine 없이 nsis-3.0.4.1/nsis-resources-3.4.1 만 내려받아 생성됨.
   // 사용자는 단일 exe 하나만 받아 실행한다(첫 실행은 자동 해제로 느리다).
   // zip 은 2026-11-23 에 버렸다 — exe 와 같은 무설치 실행본을 1GB 더 올리던 중복이다.
+  //
+  // 기본 다운로드는 NSIS 설치판이다(2026-11-24, qa1124 항목 1). portable 은 실행할 때마다 770MB 솔리드 LZMA2 를 1.89GB·2,225개
+  // 파일로 풀고(리눈스 서버 코어에서만 33초) 끝나면 지운다 — 그동안 화면이 없었다. 설치판은 설치 때 한 번만 푼다.
+  // oneClick·perMachine false: 사용자 폴더(%LOCALAPPDATA%\Programs)에 관리자 권한 없이 설치하고 끝나면 바로 띄운다.
+  // portable 은 보조로 남기고, 푸는 동안 스플래시 그림을 보인다(splashImage 가 없으면 템플릿이 SetSilent 로 창을 숨긴다).
+  // 설정·프로젝트 폴더는 appId 기준이라 둘이 같은 것을 쓴다.
   win: {
-    target: ["portable"],
+    target: ["nsis", "portable"],
     files: [...APP_FILES, "!dist-electron/oh-my-pi-worker", "!dist-electron/pi_natives.linux-*.node"],
+  },
+  nsis: {
+    oneClick: true,
+    perMachine: false,
+    runAfterFinish: true,
+    createDesktopShortcut: true,
+    createStartMenuShortcut: true,
+    // 버전 없는 고정 이름(OPRN.Studio-windows-setup.exe)은 릴리스 워크플로가 붙인다. 띄어쓰기 없는 이름이라 업로드 때 바뀌지 않는다.
+    artifactName: "OPRN.Studio-Setup-${version}.${ext}",
+  },
+  portable: {
+    splashImage: "build/portable-splash.bmp",
   },
   // 자동 업데이트는 범위 밖이다(설계서 2절 비목표) — 게시하지 않는다.
   publish: null,

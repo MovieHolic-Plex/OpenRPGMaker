@@ -125,10 +125,20 @@ gh release upload v0.3.0 dist-packages/OPRN\ Studio-0.3.0.*
   1GB 씩 두 번 올렸다. 그 뒤 릴리스에서는 `releases/latest/download/OPRN.Studio-windows.zip` 이 404 다 — README 배지를 빼고,
   옛 릴리스(v0.416.0 까지)의 zip 은 그대로 남는다. 로컬 `scripts/release-desktop.mjs` 는
   `OPRN_DESKTOP_LOCAL=1` 일 때만 같은 일을 한다. macOS 패키지는 아직 없다.
+- **윈도우 기본 다운로드는 NSIS 설치판이다 (2026-11-24, qa1124 항목 1).** portable exe 는 실행할 때마다 770MB 솔리드
+  LZMA2 를 1.89GB·2,225개 파일로 풀고(리눅스 서버 코어에서 해제만 33초) 끝나면 지운다. 그동안 창이 없었다
+  (splashImage 가 없으면 템플릿이 `SetSilent`). 그래서 릴리스는 윈도우 exe 를 둘 낸다:
+  설치판 `OPRN.Studio-Setup-<버전>.exe`(고정 이름 `OPRN.Studio-windows-setup.exe`, README 단추) 와
+  portable `OPRN.Studio.<버전>.exe`(고정 이름 `OPRN.Studio-windows.exe` 는 그대로 — 옛 링크·사이트 단추가 깨지지 않는다).
+  자산 검사는 6개다. 설치판은 `oneClick`·사용자 폴더(`%LOCALAPPDATA%\Programs`, 관리자 불필요)·바로가기·설치 뒤 실행이고,
+  portable 은 `build/portable-splash.bmp` 를 해제 중에 띄운다. 설치판 파일 이름은 워크플로가 `-c.nsis.artifactName` 으로도
+  고정한다(옛 태그 트리를 다시 구워도 같은 이름이 나오게). 브랜치에서 형식만 확인하려면 `workflow_dispatch` 의
+  `dry_run: true` 로 돌린다 — 만들기·형식 보고만 하고 올리기·발행·latest 확인은 건너뛴다.
+  설정·프로젝트 폴더는 appId 기준이라 설치판과 portable 이 같은 것을 쓴다. 자동 업데이트는 여전히 없다.
 
 ### 윈도우 단일 exe 는 리눅스에서 만든다 (2026-09-22, 갱신 2026-10-10·2026-11-23)
 
-`electron-builder.config.mjs` 의 `win.target` 은 zip 과 NSIS portable 이고 **둘 다 wine 없이 리눅스에서 빌드된다**.
+`electron-builder.config.mjs` 의 `win.target` 은 NSIS 설치판과 NSIS portable 이고(2026-11-24) **둘 다 wine 없이 리눅스에서 빌드된다**.
 electron-builder 가 `makensis`(nsis-3.0.4.1 · nsis-resources-3.4.1)를 내려받아 직접 돌리기 때문이다.
 실측 2026-10-10: wine 미설치 상태에서 최소 프로브(electron 38.8.6)로 `Probe 1.0.0.exe`(84MB)와,
 v0.185.0 에서 `OPRN Studio-0.185.0-portable.exe` 가 만들어졌다. wine 은 그 뒤 **실행 검증에만** 쓴다.
@@ -164,8 +174,8 @@ DISPLAY=:78 xwininfo -root -tree | grep -i oprn   # 1272x766 창이 잡히면 �
 - **빌드는 wine 설치 전에 끝난다.** 실측에서 zip 과 portable exe 는 wine 없이 만들어졌고, wine 은 그 뒤 실행 검증에만
   썼다. 그러니 wine 설치 실패가 빌드를 막지는 않는다.
 - **단일 exe(portable)는 첫 실행 때 임시 폴더로 자동 해제한다.** 그래서 시작이 느리고 크다(≈0.8GB대).
-  true single binary 가 아니라 NSIS 자동 해제 래퍼다. 릴리스용 `scripts/electron-builder.config.mjs` 의 `win.target` 은
-  2026-11-23 부터 portable 하나다(위 «윈도우 zip 을 버렸다»). 폴더째 쓸 일이 있으면 로컬에서 `--win zip` 을 따로 준다.
+  true single binary 가 아니라 NSIS 자동 해제 래퍼다. 2026-11-24 부터 기본 다운로드는 설치판이고 portable 은 보조다
+  (위 «윈도우 기본 다운로드는 NSIS 설치판이다»). 폴더째 쓸 일이 있으면 로컬에서 `--win zip` 을 따로 준다.
 
 ### 데스크톱 AI 워커는 네이티브 애드온을 옆에 둔다 (2026-09-27 실측)
 
