@@ -1,43 +1,43 @@
 /* 영역 지시 결과 카드(src/editor/regionResultCard.ts) — 드래그로 잡은 영역에 시킨 조수 턴의 결과를 그 자리에서 보인다.
    .phaser-container 안의 덧그림이다. 층 자체는 포인터를 받지 않고 카드만 받는다(맵 칠하기를 막지 않는다).
    모양은 캔버스 알약(canvas-tool-pill.css)과 같은 판: --bg-overlay · 반경 10px · --shadow-pop. */
-.region-result-layer {
+.canvas-region-result-layer {
   inset: 0;
   pointer-events: none;
   position: absolute;
   z-index: 6;
 }
 
-.region-result-frame,
-.region-result-before {
+.canvas-region-result-frame,
+.canvas-region-result-before {
   position: absolute;
 }
 
-.region-result-frame {
+.canvas-region-result-frame {
   border: 2px solid var(--accent);
   border-radius: 2px;
   box-sizing: border-box;
 }
 
-.region-result-before {
+.canvas-region-result-before {
   overflow: hidden;
 }
 
-.region-result-before-shot {
+.canvas-region-result-before-shot {
   display: block;
   height: 100%;
   image-rendering: pixelated;
   width: 100%;
 }
 
-.region-result-before-text {
+.canvas-region-result-before-text {
   background: var(--bg-overlay);
   color: var(--text-2);
   font: 500 12px/1.4 var(--font-ui);
   padding: 4px 6px;
 }
 
-.region-result-card {
+.canvas-region-result-card {
   background: var(--bg-overlay);
   border-radius: 10px;
   box-shadow: var(--shadow-pop);
@@ -50,30 +50,30 @@
   position: absolute;
 }
 
-.region-result-head {
+.canvas-region-result-head {
   align-items: baseline;
   display: flex;
   flex-wrap: wrap;
   gap: 2px 8px;
 }
 
-.region-result-instruction {
+.canvas-region-result-instruction {
   color: var(--text-1);
   font: 600 13px/1.3 var(--font-ui);
 }
 
-.region-result-count {
+.canvas-region-result-count {
   color: var(--text-2);
   font: 500 12px/1.3 var(--font-ui);
 }
 
-.region-result-actions {
+.canvas-region-result-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
 }
 
-.region-result-button {
+.canvas-region-result-button {
   background: transparent;
   border: 1px solid var(--border-default);
   border-radius: 6px;
@@ -84,26 +84,26 @@
   padding: 0 10px;
 }
 
-.region-result-button:hover {
+.canvas-region-result-button:hover {
   background: var(--bg-hover);
 }
 
-.region-result-button.is-active {
+.canvas-region-result-button.is-active {
   background: var(--bg-active);
 }
 
-.region-result-button.is-primary {
+.canvas-region-result-button.is-primary {
   background: var(--accent);
   border-color: var(--accent);
   color: var(--on-accent);
 }
 
-.region-result-button:focus-visible {
+.canvas-region-result-button:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 
 /* 카드가 떠 있는 동안 선택 막대를 숨긴다(regionResultCard.ts 가 body 에 클래스를 단다). */
-.has-region-result .selection-action-chips {
+.canvas-region-result-open .selection-action-chips {
   visibility: hidden;
 }

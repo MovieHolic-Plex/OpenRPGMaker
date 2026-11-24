@@ -91,49 +91,49 @@ export function showRegionResultCard(input: RegionResultInput, host?: HTMLElemen
   if (!container) return null;
   const counts = countRegionChanges(input.before, input.after, input.mapId, input.region);
 
-  const beforeLayer = el("div", { class: "region-result-before", attrs: { "aria-hidden": "true" }, dataset: { testid: "region-result-before" } });
+  const beforeLayer = el("div", { class: "canvas-region-result-before", attrs: { "aria-hidden": "true" }, dataset: { testid: "region-result-before" } });
   beforeLayer.hidden = true;
-  const frame = el("div", { class: "region-result-frame", attrs: { "aria-hidden": "true" }, dataset: { testid: "region-result-frame" } });
+  const frame = el("div", { class: "canvas-region-result-frame", attrs: { "aria-hidden": "true" }, dataset: { testid: "region-result-frame" } });
   const compare = el("button", {
-    class: "region-result-button",
+    class: "canvas-region-result-button",
     text: "전/후",
     attrs: { type: "button", "aria-pressed": "false", title: "실행 전 모습을 이 자리에 겹쳐 봅니다" },
     dataset: { testid: "region-result-compare" },
   }) as HTMLButtonElement;
   const keep = el("button", {
-    class: "region-result-button is-primary",
+    class: "canvas-region-result-button is-primary",
     text: "유지",
     attrs: { type: "button", title: "이대로 둡니다" },
     dataset: { testid: "region-result-keep" },
   }) as HTMLButtonElement;
   const retry = input.onRetry ? el("button", {
-    class: "region-result-button",
+    class: "canvas-region-result-button",
     text: "다시",
     attrs: { type: "button", title: "되돌리고 같은 지시를 다시 보냅니다" },
     dataset: { testid: "region-result-retry" },
   }) as HTMLButtonElement : null;
   const undo = el("button", {
-    class: "region-result-button",
+    class: "canvas-region-result-button",
     text: "되돌리기",
     attrs: { type: "button", title: "이 지시로 바뀐 것을 실행 전으로 돌립니다 (Ctrl+Z)" },
     dataset: { testid: "region-result-undo" },
   }) as HTMLButtonElement;
   const card = el("div", {
-    class: "region-result-card",
+    class: "canvas-region-result-card",
     attrs: { role: "group", "aria-label": "영역 지시 결과" },
     dataset: { testid: "region-result-card" },
     children: [
-      el("div", { class: "region-result-head", children: [
-        el("span", { class: "region-result-instruction", text: shortInstruction(input.instruction) || "영역 지시" }),
-        el("span", { class: "region-result-count", text: regionResultSummary(counts), dataset: { testid: "region-result-count" } }),
+      el("div", { class: "canvas-region-result-head", children: [
+        el("span", { class: "canvas-region-result-instruction", text: shortInstruction(input.instruction) || "영역 지시" }),
+        el("span", { class: "canvas-region-result-count", text: regionResultSummary(counts), dataset: { testid: "region-result-count" } }),
       ] }),
-      el("div", { class: "region-result-actions", children: [compare, keep, ...(retry ? [retry] : []), undo] }),
+      el("div", { class: "canvas-region-result-actions", children: [compare, keep, ...(retry ? [retry] : []), undo] }),
     ],
   });
-  const root = el("div", { class: "region-result-layer", dataset: { testid: "region-result-layer" }, children: [beforeLayer, frame, card] });
+  const root = el("div", { class: "canvas-region-result-layer", dataset: { testid: "region-result-layer" }, children: [beforeLayer, frame, card] });
   container.append(root);
   // 카드가 떠 있는 동안 선택 막대(지시 입력 줄)는 숨긴다 — 같은 자리를 덮어 결과를 가린다. 다시 시킬 때는 「다시」나 채팅 입력.
-  document.body.classList.add("has-region-result");
+  document.body.classList.add("canvas-region-result-open");
 
   let shotRequested = false;
   const showBefore = (on: boolean): void => {
@@ -146,8 +146,8 @@ export function showRegionResultCard(input: RegionResultInput, host?: HTMLElemen
     const map = input.before.maps[input.mapId];
     if (!map) return;
     void renderRegionSnapshot(input.before, map, input.region, { targetWidth: Math.max(64, input.region.width * map.tileSize) })
-      .then((canvas) => { canvas.classList.add("region-result-before-shot"); beforeLayer.append(canvas); })
-      .catch(() => { beforeLayer.append(el("span", { class: "region-result-before-text", text: "실행 전 그림을 그리지 못했습니다" })); });
+      .then((canvas) => { canvas.classList.add("canvas-region-result-before-shot"); beforeLayer.append(canvas); })
+      .catch(() => { beforeLayer.append(el("span", { class: "canvas-region-result-before-text", text: "실행 전 그림을 그리지 못했습니다" })); });
   };
 
   let frameHandle = 0;
@@ -188,7 +188,7 @@ export function showRegionResultCard(input: RegionResultInput, host?: HTMLElemen
     cancelAnimationFrame(frameHandle);
     unsubscribe();
     root.remove();
-    document.body.classList.remove("has-region-result");
+    document.body.classList.remove("canvas-region-result-open");
   };
   current = { root, close };
 
