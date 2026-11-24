@@ -7,7 +7,7 @@ import { dungeonSkinFor, dungeonSkinLooks } from "@/assets/dungeonSkins";
 import { tilesetLookOptions, tilesetLookTableFor, TILESET_LOOK_PARTS } from "@/assets/tilesetLooks";
 import { composeDungeon } from "@/editor/dungeonKit/beodeul/compose";
 import { AUTHOR_BEODEUL_DUNGEON_ALIAS } from "@/editor/tools/dungeonTools";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { cellPassability } from "@/project/collision";
 import { withKitLook } from "@/project/kitLook";
 import { passageMarkForTile } from "@/project/tilesetPassage";
