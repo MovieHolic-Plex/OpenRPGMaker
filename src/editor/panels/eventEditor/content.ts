@@ -78,7 +78,8 @@ import { openEventCommandPicker } from "./commandPicker";
 import { defaultInsertionPath, describeInsertionPath } from "./commandInspector";
 import { scrollIntoNearestScroller } from "./scrollIntoNearestScroller";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
-import { eventEditorAdvancedOpen, setEventEditorAdvancedOpen } from "./beginnerChrome";
+import { eventEditorAdvancedOpen, eventEditorViewLevel, setEventEditorAdvancedOpen } from "./beginnerChrome";
+import { renderSceneCards } from "./sceneCardsView";
 import { bindDetailsEscape } from "./detailsPopover";
 import {
   appendEventRailGroup,
@@ -170,9 +171,12 @@ export function renderEventEditorStable(container: HTMLElement, mapId: MapId, ev
 }
 
 export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, eventId: string): void {
-  const advancedOpen = eventEditorAdvancedOpen();
-  const section = el("div", { class: "panel-section event-editor event-editor-command-focused", dataset: { testid: "event-editor-content" } });
-  section.classList.add(advancedOpen ? "is-advanced" : "is-beginner");
+  const viewLevel = eventEditorViewLevel();
+  // 쉬움·보통은 장면 카드를 그리고, 고급만 명령 목록과 옛 「고급 설정 펼치기」를 쓴다.
+  const sceneLevel = viewLevel === "advanced" ? null : viewLevel;
+  const advancedOpen = !sceneLevel && eventEditorAdvancedOpen();
+  const section = el("div", { class: "panel-section event-editor event-editor-command-focused", dataset: { testid: "event-editor-content", viewLevel } });
+  section.classList.add(advancedOpen ? "is-advanced" : "is-beginner", `is-level-${viewLevel}`);
   const map = store.getCurrent().maps[mapId];
   if (!map) {
     section.append(el("div", { class: "empty-hint", text: "맵을 찾을 수 없습니다." }));
@@ -271,6 +275,8 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     }
   });
   const storyboardHost = el("div", { class: "event-storyboard-host", dataset: { testid: "event-storyboard-host" } });
+  const sceneHost = el("div", { class: "event-scene-host", dataset: { testid: "event-scene-host" } });
+  sceneHost.hidden = !sceneLevel;
   // AI 초안과 저작 명령은 같은 명령 영역을 공유한다.
   const stagedHost = el("div", {
     class: "cmd-staged-host",
@@ -363,12 +369,23 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   // 툴바가 아직 없는 시점에도 applyViewMode 가 안전하게 호출되도록 기본값은 빈 함수다.
   let syncToolbarState: () => void = () => {};
   function applyViewMode(): void {
-    const isStoryboard = !reviewingAiDraft && currentMode === "storyboard";
-    const isFlow = !reviewingAiDraft && currentMode === "flow";
+    const isStoryboard = !sceneLevel && !reviewingAiDraft && currentMode === "storyboard";
+    const isFlow = !sceneLevel && !reviewingAiDraft && currentMode === "flow";
     refreshCommandCount();
     setCommandSelectionSurface(section);
-    if (!reviewingAiDraft && !isStoryboard && !isFlow) ensureCommandList();
-    cmdList.hidden = reviewingAiDraft || isStoryboard || isFlow;
+    if (!sceneLevel && !reviewingAiDraft && !isStoryboard && !isFlow) ensureCommandList();
+    cmdList.hidden = !!sceneLevel || reviewingAiDraft || isStoryboard || isFlow;
+    sceneHost.hidden = !sceneLevel || reviewingAiDraft;
+    if (sceneLevel && !reviewingAiDraft && sceneHost.childNodes.length === 0) {
+      sceneHost.append(renderSceneCards({
+        commands: activePage.commands,
+        level: sceneLevel,
+        project: store.getCurrent(),
+        eventName: (id) => store.getCurrent().maps[mapId]?.events.find((candidate) => candidate.id === id)?.name?.trim() || undefined,
+        onOpen: (path) => openStoryboardEditor([...path]),
+        onAddCard: () => openCommandPickerForActions(actions, undefined, activePage.commands),
+      }));
+    }
     if (!cmdList.hidden) resumeCommandListMount(cmdList);
     storyboardEl.hidden = !isStoryboard;
     flowHost.hidden = !isFlow;
@@ -506,6 +523,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         aiAssist,
         stagedHost,
         storyboardHost,
+        sceneHost,
         flowHost,
         cmdList,
       ],
@@ -548,7 +566,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       class: "event-editor-pagebar",
       dataset: { pageCount: String(pages.length), testid: "event-editor-pagebar" },
       children: [
-        advancedToggle,
+        ...(sceneLevel ? [] : [advancedToggle]),
         renderClassicPageTabStrip(mapId, evForRender, activePage),
         renderPageActions(mapId, evForRender, activePage),
       ],

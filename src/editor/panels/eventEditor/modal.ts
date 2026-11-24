@@ -56,6 +56,13 @@ import { attachWindowFullscreen } from "./modalFullscreen";
 import { attachWindowResize, renderModalResizeHandle } from "./modalResize";
 import { toast } from "@/util/toast";
 import { openEventEditorHelp } from "./eventEditorHelp";
+import {
+  EVENT_EDITOR_VIEW_LEVEL_LABEL,
+  EVENT_EDITOR_VIEW_LEVELS,
+  eventEditorViewLevel,
+  onEventEditorViewLevelChange,
+  setEventEditorViewLevel,
+} from "./beginnerChrome";
 
 const EVENT_EDITOR_MODAL_TEST_ID = "event-editor-modal";
 const EVENT_EDITOR_CLOSE_EVENT = "oprn:event-editor-close";
@@ -461,6 +468,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     lastEditorState = next;
     if (editorStateNeedsEventEditorRefresh(previous, next)) refresh();
   });
+  const unsubscribeViewLevel = onEventEditorViewLevelChange(() => refresh());
   const unsubscribeAutoSave = store.subscribeAutoSave(() => {
     refreshModalFooterStatus(footer, request);
     refreshModalHeaderSaveState(header, footer);
@@ -504,6 +512,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     unsubscribeStore();
     if (tilePaintRefreshTimer !== null) clearTimeout(tilePaintRefreshTimer);
     unsubscribeEditor();
+    unsubscribeViewLevel();
     unsubscribeAutoSave();
     if (!saved) discardEventDraft(request.mapId, request.eventId);
     // Let all child cleanup listeners run while the parent remains attached.
@@ -704,6 +713,7 @@ function renderModalHeader(
         class: "event-editor-header-more-panel",
         dataset: { testid: "event-editor-header-more-panel" },
         children: [
+          renderViewLevelRow(() => { headerMore.open = false; }),
           eventSmallTask(mapId, eventId),
           applyButton,
           // 초보 창은 머리줄 「?」를 숨긴다(editor-chrome.css). 도움말의 길은 여기 하나가 남는다.
@@ -762,6 +772,8 @@ function renderModalHeader(
           nameInput,
         ],
       }),
+      // 쉬움 보기는 이름 칸 대신 이름 글자만 보인다(목업 v2: 쉬움은 이벤트 이름 칸을 숨긴다).
+      el("span", { class: "event-editor-name-text", text: authoredName || borrowedName, attrs: { translate: "no" }, dataset: { testid: "event-editor-name-text" } }),
       el("div", {
         class: "event-editor-header-save-state",
         attrs: { style: "display: none;" },
@@ -813,6 +825,40 @@ function renderModalHeader(
     ],
   });
   return header;
+}
+
+/**
+ * ⋯ 메뉴 맨 위 한 줄: 보기 쉬움 · 보통 · 고급. 보기를 바꾸는 곳은 여기 하나다(새 단추 0, 목업 v2).
+ * 고르면 사람마다 기억하고 열린 편집기가 다시 그린다(onEventEditorViewLevelChange).
+ */
+function renderViewLevelRow(closeMenu: () => void): HTMLElement {
+  const current = eventEditorViewLevel();
+  const row = el("div", {
+    class: "event-editor-view-level",
+    attrs: { role: "radiogroup", "aria-label": "보기" },
+    dataset: { testid: "event-editor-view-level" },
+    children: [
+      el("span", { class: "event-editor-view-level-label", text: "보기" }),
+      ...EVENT_EDITOR_VIEW_LEVELS.map((level) => el("button", {
+        class: `event-editor-view-level-option${level === current ? " is-active" : ""}`,
+        text: EVENT_EDITOR_VIEW_LEVEL_LABEL[level],
+        attrs: { type: "button", role: "radio", "aria-checked": level === current ? "true" : "false" },
+        dataset: { testid: `event-editor-view-level-${level}` },
+        on: {
+          click: () => {
+            closeMenu();
+            for (const option of row.querySelectorAll<HTMLElement>("[role='radio']")) {
+              const active = option.dataset.testid === `event-editor-view-level-${level}`;
+              option.classList.toggle("is-active", active);
+              option.setAttribute("aria-checked", active ? "true" : "false");
+            }
+            if (level !== eventEditorViewLevel()) setEventEditorViewLevel(level);
+          },
+        },
+      })),
+    ],
+  });
+  return row;
 }
 
 /** 모달 안에서 편집 중(포커스 유지)인 필드의 change 를 닫기 전에 강제로 커밋한다. */
