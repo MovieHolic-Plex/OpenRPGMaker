@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
 import type { Project } from "../../src/project/types";
+import { revealDbRailTab } from "./dbRail";
 
 // DEV_SERVER_PORT=19036 E2E_RETRIES=0 VITE_LEGACY_DB_URL= VITE_LEGACY_DB_ANON_KEY=
 // VITE_LEGACY_DB_PROJECT_ID= VITE_AI_ACTIVITY_DISK_MIRROR=0 VITE_EDIT_ACTIVITY_DISK_MIRROR=0
@@ -44,6 +45,7 @@ test("오프닝 탭이 배경화·AI 생성·배경음악을 제공한다", asyn
   await page.goto(`${origin}/?blankProject=1&aiBridge=0`, { waitUntil: "domcontentloaded" });
   await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
+  await revealDbRailTab(page, "opening");
   const openingTab = page.getByTestId("db-tab-opening");
   if (!await openingTab.isVisible()) await page.getByTestId("db-tab-group-system").click();
   await openingTab.click();

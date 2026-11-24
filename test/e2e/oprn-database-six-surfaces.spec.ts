@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { applyDatabaseChanges, exportedProject, openAnimationsSubview, openDatabase } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 test.setTimeout(120_000);
 
@@ -12,6 +13,7 @@ test("database six surfaces persist real edits through project export", async ({
   await openDatabase(page);
 
   // (6) 속성 최대 개수
+  await revealDbRailTab(page, "elements");
   await page.getByTestId("db-tab-elements").click();
   const beforeElements = (await exportedProject(page)).database.elements?.length ?? 0;
   await page.getByTestId("db-elements-maximum-number").click();
@@ -23,6 +25,7 @@ test("database six surfaces persist real edits through project export", async ({
   expect(afterElements).toBe(beforeElements + 1);
 
   // (3) 직업 전투명령 순서 — 인라인 ↑↓ (별도 다이얼로그 없음)
+  await revealDbRailTab(page, "classes");
   await page.getByTestId("db-tab-classes").click();
   const classBefore = (await exportedProject(page)).database.classes[0]?.battleCommands.map((entry) => entry.name) ?? [];
   await page.getByTestId("db-class-command-down-0").click();
@@ -34,6 +37,7 @@ test("database six surfaces persist real edits through project export", async ({
   expect(classAfter.at(-1)).toBe("교체");
 
   // (1) 전투 규칙 — 전투 흐름·참전 수는 2026-10-02부터 시스템 › 시작 설정에 있다.
+  await revealDbRailTab(page, "system");
   await page.getByTestId("db-tab-system").click();
   await page.getByTestId("db-system-nav-startup").click();
   await page.getByTestId("db-field-system-battle-flow").selectOption("strict");
@@ -53,6 +57,7 @@ test("database six surfaces persist real edits through project export", async ({
   await expect(page.getByTestId("db-animation-cell-interpolate")).toBeEnabled();
 
   // (5) 몬스터 행동 기본/스킬 — 행 위 인라인 select가 dblclick을 가로채므로 Enter로 연다.
+  await revealDbRailTab(page, "enemies");
   await page.getByTestId("db-tab-enemies").click();
   const actionRow = page.getByTestId("db-enemy-action-row-0");
   await expect(actionRow).toBeVisible();

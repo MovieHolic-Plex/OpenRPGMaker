@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { revealDbRailTab } from "./dbRail";
 
 test("codex tab shows item-concept cards, locks guard manual save, and card is keyboard operable", async ({ page }) => {
   test.setTimeout(120_000);
@@ -9,9 +10,11 @@ test("codex tab shows item-concept cards, locks guard manual save, and card is k
 
   await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
+  await revealDbRailTab(page, "world-codex");
   if (await page.getByTestId("db-tab-world-codex").isHidden()) {
     await page.getByTestId("db-tab-group-lore").click();
   }
+  await revealDbRailTab(page, "world-codex");
   await page.getByTestId("db-tab-world-codex").click();
   await expect(page.getByTestId("db-world-codex-lead")).toBeVisible();
 

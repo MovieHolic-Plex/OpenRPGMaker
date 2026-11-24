@@ -9,6 +9,7 @@
 // 경계: 「무엇을 원하나」(수정/생성, 실내/야외, 시설, 되묻기, 계획 필요, 쓸 툴)는 이 선언이 정한다.
 // 「무엇이 사실인가」(열린 모달, 선택 사각형, 현재 맵, 타일셋 라벨)와 「지켜졌나」(승인·클립·스펙·검증)는
 // 코드가 그대로 맡는다. 이 모듈은 순수 함수만 둔다 — 네트워크는 intentDeclarationClient 가 안다.
+import { regionPlaceRequest } from "./regionPlaceIntent";
 import { parseFunctionalRequirements, parseFunctionalRefinements, type FunctionalCriterion, type FunctionalRefinement, type UnresolvedFunctionalRequirement } from "./functionalAcceptance";
 import type { AdventureRequirements } from "./adventureCompletion";
 import { ADVENTURE_AUTHORING_GUIDE } from "./adventureCompletion";
@@ -600,9 +601,19 @@ export interface ScopeNoteInput {
  * 마을 시공 시그니처를, 새 맵/실내 시공이면 참고용임을 알린다. 옛 가이드의 키워드 분기(bare 집 → 야외 집
  * 강제)는 없다 — 「수집 이벤트 놔줘」가 집 시공 지시를 받던 경로다.
  */
-export function formatScopeNote(scope: ScopeNoteInput, intent: IntentDeclaration): string {
+export function formatScopeNote(scope: ScopeNoteInput, intent: IntentDeclaration, requestText?: string): string {
   const { mapId, region } = scope;
   const where = `맵 \`${mapId}\` 의 (${region.x},${region.y}) ${region.width}×${region.height}`;
+  // 영역에 장소를 짓는 지시(상점·여관·던전 입구…)는 외관은 영역 안, 실내·던전은 새 맵이다 — 「새 맵 금지」도 「참고용」도 아니다.
+  const place = requestText ? regionPlaceRequest(requestText) : null;
+  if (place) {
+    return [
+      `[선택 영역] 사용자가 ${where} 에 장소를 지어 달라고 했다.`,
+      `- build_region_place({mapId:"${mapId}", region:{x:${region.x},y:${region.y},width:${region.width},height:${region.height}}, kind:"${place}"}) 한 번으로 외관·실내 맵·문 왕복·주인(상점/숙박)을 짓는다. 외관·실내·문·NPC 를 따로 부르지 않는다.`,
+      "- 바깥 맵은 이 사각형 안만 바뀐다. 실내·던전 같은 새 맵은 허용된다(결과 카드가 함께 되돌린다).",
+      "- 영역이 좁다고 거부되면 다른 자리에 짓지 말고 사용자에게 영역을 넓혀 달라고 말한다. 품목·가구를 바꾸라는 말이 있으면 지은 뒤 set_shop_stock·build_hand_interior_room(replace) 으로 고친다.",
+    ].join("\n");
+  }
   const inside = intent.source !== "llm" || intent.useSelection;
   if (inside) {
     return [

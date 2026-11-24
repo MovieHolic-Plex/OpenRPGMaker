@@ -28,8 +28,18 @@ export interface RegionResultInput {
   readonly onRetry?: () => void;
 }
 
-/** 영역 안에서 바뀐 칸 수(아래·위 타일 중 하나라도 다르면 1) + 영역 안에서 생기거나 옮겨지거나 사라진 이벤트 수. */
-export function countRegionChanges(before: Project, after: Project, mapId: MapId, region: RegionRect): { readonly cells: number; readonly events: number } {
+export interface RegionChangeCounts {
+  readonly cells: number;
+  readonly events: number;
+  /** 이 지시가 영역 밖에 새로 만든 맵(실내·던전) 이름. 없으면 필드도 없다. */
+  readonly newMaps?: readonly string[];
+}
+
+/**
+ * 영역 안에서 바뀐 칸 수(아래·위 타일 중 하나라도 다르면 1) + 영역 안에서 생기거나 옮겨지거나 사라진 이벤트 수
+ * + 영역 밖에 새로 생긴 맵(「여기 상점」의 실내). 되돌리기는 턴 하나를 통째로 되돌리므로 새 맵도 함께 사라진다.
+ */
+export function countRegionChanges(before: Project, after: Project, mapId: MapId, region: RegionRect): RegionChangeCounts {
   const base = before.maps[mapId];
   const next = after.maps[mapId];
   if (!base || !next) return { cells: 0, events: 0 };
@@ -53,14 +63,17 @@ export function countRegionChanges(before: Project, after: Project, mapId: MapId
     if ((!old || old.x !== event.x || old.y !== event.y || JSON.stringify(old) !== JSON.stringify(event)) && (inside(event.x, event.y) || (old && inside(old.x, old.y)))) events += 1;
   }
   for (const [id, event] of beforeEvents) if (!afterEvents.has(id) && inside(event.x, event.y)) events += 1;
-  return { cells, events };
+  const newMaps = Object.keys(after.maps).filter((id) => !before.maps[id]).map((id) => after.maps[id]!.name || id);
+  return newMaps.length > 0 ? { cells, events, newMaps } : { cells, events };
 }
 
-export function regionResultSummary(counts: { readonly cells: number; readonly events: number }): string {
+export function regionResultSummary(counts: RegionChangeCounts): string {
   const parts: string[] = [];
   if (counts.cells > 0) parts.push(`칸 ${counts.cells}개`);
   if (counts.events > 0) parts.push(`이벤트 ${counts.events}개`);
-  return parts.length > 0 ? `${parts.join(" · ")} 바뀜` : "이 영역은 그대로";
+  const changed = parts.length > 0 ? `${parts.join(" · ")} 바뀜` : "";
+  const made = counts.newMaps?.length ? `새 맵 ${counts.newMaps.join("·")}` : "";
+  return [changed, made].filter(Boolean).join(" · ") || "이 영역은 그대로";
 }
 
 const MAX_INSTRUCTION_CHARS = 28;

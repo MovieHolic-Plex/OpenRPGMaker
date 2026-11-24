@@ -174,7 +174,7 @@ export function buildPiIntentNote(input: PiIntentNoteInput): string | null {
     : input.beodeulTown ? formatBeodeulTownNote(input.beodeulTown, input.targetMap)
     : null;
   const scopeNote = input.selection
-    ? formatScopeNote({ mapId: input.selection.mapId, region: input.selection }, input.intent)
+    ? formatScopeNote({ mapId: input.selection.mapId, region: input.selection }, input.intent, input.requestText)
     : null;
   const villageTypeNote = input.villageType ? formatVillageTypeNote(input.villageType) : null;
   const parts = [conceptNote, worldmapNote, intentNote, villageNote, villageTypeNote, scopeNote].filter((part): part is string => typeof part === "string" && part.length > 0);

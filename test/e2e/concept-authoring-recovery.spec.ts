@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { mkdirSync } from "node:fs";
+import { revealDbRailTab } from "./dbRail";
 
 test("concept layout, zone, membership and seed painting remain editable", async ({ page }) => {
   test.setTimeout(180_000);
@@ -15,6 +16,7 @@ test("concept layout, zone, membership and seed painting remain editable", async
   }
   await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
+  await revealDbRailTab(page, "scratch-concepts");
   const tab = page.getByTestId("db-tab-scratch-concepts");
   if (!(await tab.isVisible())) await page.getByTestId("db-tab-group-world").click();
   await tab.click();

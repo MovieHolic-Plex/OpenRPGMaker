@@ -210,6 +210,79 @@ describe("database overview tab shell", () => {
   });
 });
 
+describe("draft overview reader", () => {
+  it("reads world, party, boss and this game's record counts from a small project", async () => {
+    const { readDraftOverview, draftFixPrefix } = await import("@/editor/panels/draftOverviewData");
+    const project = createBlankProject();
+    const base = project.database.actors[0]!;
+    project.database.actors.push(
+      { ...base, id: "actor-azel", name: "아젤", nickname: "떨어진 마왕" },
+      { ...base, id: "actor-rina", name: "리나", nickname: "" },
+    );
+    project.system.startActorIds = ["actor-azel", "actor-rina", "actor-missing"];
+    project.worldCanon = { name: "놀라트 대륙", premise: "마왕이 힘을 잃고 이세계에 떨어진다.", tones: ["grim"] };
+    project.characters = {
+      "actor-azel": { note: "힘을 되찾으려는 전직 마왕" },
+      boss: { displayName: "용사 세르주", note: "마왕을 쫓는 용사" },
+    };
+    project.quests = [{ id: "q1" }] as unknown as typeof project.quests;
+    project.endings = [{ id: "e1", name: "귀환", conditions: [], priority: 0 }];
+
+    const draft = readDraftOverview(project);
+
+    expect(draft.world).toEqual({ name: "놀라트 대륙", premise: "마왕이 힘을 잃고 이세계에 떨어진다.", tones: ["우울"], lines: [] });
+    expect(draft.people.map((person) => [person.kind, person.roleLabel, person.name])).toEqual([
+      ["hero", "주인공", "아젤"],
+      ["companion", "동료", "리나"],
+      ["boss", "보스", "용사 세르주"],
+    ]);
+    expect(draft.people[0]?.bio).toBe("힘을 되찾으려는 전직 마왕");
+    expect(draft.people[0]?.sub.startsWith("떨어진 마왕")).toBe(true);
+    expect(draftFixPrefix(`${draft.people[0]!.roleLabel} ${draft.people[0]!.name}`)).toBe("주인공 아젤: ");
+    const counts = Object.fromEntries(draft.counts.map((entry) => [entry.id, entry.count]));
+    expect(counts).toEqual({ actors: 2, classes: 0, skills: 0, items: 0, equipment: 0, enemies: 0, troops: 0, quests: 1, endings: 1 });
+    expect(draft.maps.length).toBe(Object.keys(project.maps).length);
+  });
+
+  it("adds profiled non-party actors as companions, capped at four people plus the boss", async () => {
+    const { readDraftOverview } = await import("@/editor/panels/draftOverviewData");
+    const project = createBlankProject();
+    const base = project.database.actors[0]!;
+    const ids = ["actor_hero_x", "actor_cast_1", "actor_cast_2", "actor_cast_3", "actor_cast_4"];
+    const className = project.database.classes.find((record) => record.id === base.classId)!.name;
+    // 엔진 자리표시 별명 «없음»은 빼고, 별명 = 직업 이름이면 한 번만.
+    const nicknames: Record<string, string> = { actor_cast_1: className, actor_cast_2: "없음" };
+    project.database.actors.push(...ids.map((id) => ({ ...base, id, name: id, nickname: nicknames[id] ?? "" })));
+    project.system.startActorIds = ["actor_hero_x"];
+    project.characters = {
+      actor_hero_x: { note: "주인공 소개" },
+      actor_cast_1: { displayName: "미나", note: "울보 소녀" },
+      actor_cast_2: { displayName: "하루" },
+      actor_cast_3: { note: "말없는 소년" },
+      actor_cast_4: { displayName: "다섯째" },
+      boss: { displayName: "그림자" },
+    };
+
+    const people = readDraftOverview(project).people;
+
+    expect(people.map((person) => [person.kind, person.name, person.bio])).toEqual([
+      ["hero", "actor_hero_x", "주인공 소개"],
+      ["companion", "미나", "울보 소녀"],
+      ["companion", "하루", ""],
+      ["companion", "actor_cast_3", "말없는 소년"],
+      ["boss", "그림자", ""],
+    ]);
+    expect(people.slice(1, 3).map((person) => person.sub)).toEqual([className, className]);
+  });
+
+  it("falls back to the blueprint title when the world canon is empty", async () => {
+    const { readDraftOverview } = await import("@/editor/panels/draftOverviewData");
+    const project = createBlankProject();
+    project.gameBlueprint = { version: 1, title: "마왕 살아남기", genre: "JRPG", playerGoal: "살아남아 성으로 돌아간다", opening: ["눈을 뜨니 낯선 하늘이었다."], steps: [], ending: { name: "귀환", how: "", feeling: "" } };
+    expect(readDraftOverview(project).world).toEqual({ name: "마왕 살아남기", premise: "살아남아 성으로 돌아간다", tones: ["JRPG"], lines: ["눈을 뜨니 낯선 하늘이었다."] });
+  });
+});
+
 describe("database overview tab shell", () => {
   it("databaseTabLabel resolves the overview label for the AI footer", async () => {
     const { store } = await import("@/project/store");

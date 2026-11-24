@@ -56,6 +56,21 @@ describe("자료집 그룹 띠", () => {
     expect(root.querySelector<HTMLElement>(".db-tab.active")?.dataset.testid).toBe("db-tab-enemies");
   });
 
+  it("레일은 접힌 채 시작하고, 묶음을 누르면 열리고, 탭을 고르거나 같은 묶음을 다시 누르면 닫힌다", () => {
+    const root = host();
+    expect(root.dataset.railOpen).toBe("0");
+    root.querySelector<HTMLElement>('[data-testid="db-group-strip-battle"]')!.click();
+    expect(root.dataset.railOpen).toBe("1");
+    root.querySelector<HTMLElement>('[data-testid="db-tab-states"]')!.click();
+    expect(root.dataset.railOpen).toBe("0");
+    expect(root.querySelector<HTMLElement>(".db-tab.active")?.dataset.testid).toBe("db-tab-states");
+    const battle = root.querySelector<HTMLElement>('[data-testid="db-group-strip-battle"]')!;
+    battle.click();
+    expect(root.dataset.railOpen).toBe("1");
+    battle.click();
+    expect(root.dataset.railOpen).toBe("0");
+  });
+
   it("다른 구획의 탭을 고르면 그 탭 그룹이 계속 보인다", () => {
     const root = host();
     root.querySelector<HTMLElement>('[data-testid="db-group-strip-battle"]')!.click();

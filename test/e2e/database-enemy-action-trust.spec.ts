@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { revealDbRailTab } from "./dbRail";
 
 async function recordState(page: Page) {
   return page.evaluate(async () => {
@@ -18,7 +19,9 @@ test("monster action dialog validates visibly, preserves drafts and keyboard foc
     if (await page.getByTestId(id).isVisible()) await page.getByTestId(id).click();
   }
   await page.getByTestId("toolbar-database").click();
+  await revealDbRailTab(page, "enemies");
   if (!await page.getByTestId("db-tab-enemies").isVisible()) await page.getByTestId("db-tab-group-battle").click();
+  await revealDbRailTab(page, "enemies");
   await page.getByTestId("db-tab-enemies").click();
   const before = await recordState(page);
   expect(before.remote).toBe(false);

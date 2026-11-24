@@ -1,0 +1,214 @@
+// scripts/lib/releaseGate.mjs
+// 조건 기반 자동 릴리스의 **순수 판정**. git·gh 호출은 scripts/release-scheduled.mjs 와
+// scripts/ci-full-diff.mjs 가 하고, 여기는 모은 값을 받아 판정만 한다.
+//
+// 규칙 (오너 2026-11-24 「자동 주기 릴리즈 조건을 기반으로 해라 니추천대로」, 리드 추천 확정):
+//   3시간마다 확인해서 아래를 모두 만족하면 발행한다.
+//   (1) 지난 태그 이후 사용자가 체감할 변경(feat/fix 커밋) 5개 이상
+//   (2) main 의 마지막 ci-full 이 직전 기준 판보다 새 실패 0 (실패 파일 단위 대조)
+//   (3) 마지막 발행에서 12시간 이상
+//   (4) 열린 PR 에 `hold-release` 라벨 없음
+//   하루(최근 24시간) 최대 2판. 안 맞으면 조용히 넘어가고 이유를 기록한다.
+//
+// (2) 는 v0.418·v0.419 레인이 손으로 한 대조를 그대로 옮긴 것이다: 두 판의 샤드 리포트
+// (`gates-report.json`)에서 실패 파일을 모아, 기준 판에서 돌았고 통과했는데 이번 판에서 실패한
+// 파일을 «새 실패» 로 센다. 기준 판에서 아예 안 돈 파일의 실패는 «기준 판에 없음» 으로 따로 세고,
+// 이것도 막는다(확인할 수 없는 빨강을 조용히 면제하지 않는다 — gatesRegression.mjs 와 같은 원칙).
+import { parseCommitSubject } from "./releaseNotes.mjs";
+
+export const AUTO_RELEASE_RULES = Object.freeze({
+  minUserCommits: 5,
+  minHoursSincePublish: 12,
+  maxReleasesPer24h: 2,
+  holdLabel: "hold-release",
+  autoLabel: "auto-release",
+});
+
+/** 사용자가 체감하지 않는 범위. `fix(test): …`·`feat(ci): …` 는 앱을 바꾸지 않는다. */
+const NON_USER_SCOPES = new Set(["test", "tests", "ci", "ci-fast", "ci-full", "gates", "release", "deps-dev", "openwiki", "docs"]);
+
+/**
+ * 지난 태그 이후 커밋 중 사용자가 체감할 변경(feat·fix, 깨지는 변경 포함)을 고른다.
+ * @param {{ sha: string, subject: string }[]} commits
+ */
+export function selectUserFacingCommits(commits = []) {
+  const picked = [];
+  for (const commit of commits) {
+    const parsed = parseCommitSubject(commit.subject ?? "");
+    if (!parsed) continue;
+    if (parsed.type !== "feat" && parsed.type !== "fix") continue;
+    const scopes = String(parsed.scope ?? "")
+      .split(/[,/]/u)
+      .map((part) => part.trim().toLowerCase())
+      .filter(Boolean);
+    if (scopes.length > 0 && scopes.every((scope) => NON_USER_SCOPES.has(scope))) continue;
+    picked.push({ sha: commit.sha, subject: commit.subject });
+  }
+  return picked;
+}
+
+/**
+ * 한 ci-full 판의 샤드 리포트들을 합친다.
+ * 실패 파일 = 샤드들의 `tests.failedFiles` 합집합에서 단독 재실행이 통과한 파일(`flakeRetries`)을 뺀 것.
+ * @param {object[]} reports gates-report.json 들
+ */
+export function summarizeShardReports(reports = []) {
+  const failed = new Set();
+  const ran = new Set();
+  const flaky = new Set();
+  for (const report of reports) {
+    for (const file of report?.tests?.failedFiles ?? []) failed.add(file);
+    for (const file of report?.tests?.testFiles ?? []) ran.add(file);
+    for (const file of report?.flakeRetries ?? []) flaky.add(file);
+  }
+  for (const file of flaky) failed.delete(file);
+  // 실패 파일은 그 판에서 돈 파일이다(testFiles 가 비어 있는 옛 리포트에서도 대조가 맞도록).
+  for (const file of failed) ran.add(file);
+  return { failedFiles: [...failed].sort(), ranFiles: [...ran].sort(), flakyFiles: [...flaky].sort() };
+}
+
+/**
+ * 기준 판 여러 개(새 것부터)를 한 기준으로 겹친다. 파일마다 그 파일을 돌린 **가장 새 판**의 결과를 쓴다.
+ * 레인들이 쓰던 «기준 판 + 그 뒤 고친 것» 과 같은 뜻이다: 가장 새 기준 판이 일부 샤드만 남겼으면
+ * (v0.418 의 45206810315 는 샤드 14 가 취소됐다) 빠진 파일만 그 앞 판에서 채운다.
+ * @param {{ failedFiles: string[], ranFiles: string[] }[]} summaries 새 판부터
+ */
+export function layerBaselines(summaries = []) {
+  const decided = new Map();
+  for (const summary of summaries) {
+    const failed = new Set(summary.failedFiles);
+    for (const file of summary.ranFiles) if (!decided.has(file)) decided.set(file, failed.has(file));
+  }
+  const ranFiles = [...decided.keys()].sort();
+  return { failedFiles: ranFiles.filter((file) => decided.get(file)), ranFiles };
+}
+
+/**
+ * 이번 판(candidate)을 기준 판(baseline)과 실패 파일 단위로 대조한다.
+ * @param {{ failedFiles: string[], ranFiles: string[] }} candidate
+ * @param {{ failedFiles: string[], ranFiles: string[] }} baseline
+ */
+export function diffFailedFiles(candidate, baseline) {
+  const baseFailed = new Set(baseline.failedFiles);
+  const baseRan = new Set(baseline.ranFiles);
+  const candFailed = new Set(candidate.failedFiles);
+  const candRan = new Set(candidate.ranFiles);
+  const newFailures = [];
+  const notInBaseline = [];
+  const stillFailing = [];
+  for (const file of [...candFailed].sort()) {
+    if (baseFailed.has(file)) stillFailing.push(file);
+    else if (baseRan.has(file)) newFailures.push(file);
+    else notInBaseline.push(file);
+  }
+  const fixed = [...baseFailed].filter((file) => candRan.has(file) && !candFailed.has(file)).sort();
+  return {
+    ok: newFailures.length === 0 && notInBaseline.length === 0,
+    newFailures,
+    notInBaseline,
+    stillFailing,
+    fixed,
+  };
+}
+
+/**
+ * 판 하나가 대조에 쓸 만큼 완전한가. 시험 잡이 전부 끝(success·failure)났고 잡마다 리포트가 있어야 한다.
+ * @param {{ testJobs: { name: string, conclusion: string | null }[], reportCount: number }} run
+ */
+export function runCompleteness({ testJobs = [], reportCount = 0 }) {
+  const finished = testJobs.filter((job) => job.conclusion === "success" || job.conclusion === "failure");
+  const complete = testJobs.length > 0 && finished.length === testJobs.length && reportCount === testJobs.length;
+  return { complete, testJobs: testJobs.length, finished: finished.length, reports: reportCount };
+}
+
+const HOUR_MS = 3_600_000;
+
+/**
+ * 모은 값으로 발행 여부를 정한다. 모든 검사를 항상 다 계산해 이유를 남긴다.
+ * @param {object} input
+ * @param {{ sha: string, subject: string }[]} input.userCommits   selectUserFacingCommits 결과
+ * @param {string | null} input.sinceTag
+ * @param {{ ok: boolean, newFailures?: string[], notInBaseline?: string[], error?: string, candidate?: object, baseline?: object } | null} input.ciDiff
+ * @param {string | null} input.lastPublishedAt  마지막으로 발행된(초안 아님) 릴리스의 published_at
+ * @param {string[]} input.recentReleaseTags      최근 24시간 안에 만들어진 릴리스 태그(초안 포함)
+ * @param {{ number: number, title?: string }[]} input.holdPrs
+ * @param {string[]} input.draftTags              아직 초안인 vX.Y.Z 릴리스(산출물 대기)
+ * @param {{ number: number, auto: boolean } | null} input.openReleasePr
+ * @param {Date | string | number} input.now
+ */
+export function decideAutoRelease(input) {
+  const rules = AUTO_RELEASE_RULES;
+  const now = new Date(input.now ?? Date.now()).getTime();
+  const checks = [];
+  const add = (id, label, ok, value, need) => checks.push({ id, label, ok: Boolean(ok), value, need });
+
+  const userCount = (input.userCommits ?? []).length;
+  add("user-commits", `${input.sinceTag ?? "태그"} 이후 사용자 체감 변경(feat/fix)`, userCount >= rules.minUserCommits, `${userCount}개`, `${rules.minUserCommits}개 이상`);
+
+  const diff = input.ciDiff;
+  let ciValue;
+  if (!diff) ciValue = "대조 안 함";
+  else if (diff.error) ciValue = `판정 불가: ${diff.error}`;
+  else {
+    const n = (diff.newFailures ?? []).length;
+    const u = (diff.notInBaseline ?? []).length;
+    ciValue = `새 실패 ${n} · 기준 판에 없던 파일 실패 ${u}`;
+  }
+  add("ci-full", "main 마지막 ci-full 대 기준 판", Boolean(diff && !diff.error && diff.ok), ciValue, "새 실패 0");
+
+  let hours = null;
+  if (input.lastPublishedAt) hours = (now - new Date(input.lastPublishedAt).getTime()) / HOUR_MS;
+  add(
+    "since-publish",
+    "마지막 발행 이후",
+    hours === null || hours >= rules.minHoursSincePublish,
+    hours === null ? "발행 기록 없음" : `${hours.toFixed(1)}시간`,
+    `${rules.minHoursSincePublish}시간 이상`,
+  );
+
+  const holds = input.holdPrs ?? [];
+  add("hold-label", `열린 PR 의 ${rules.holdLabel} 라벨`, holds.length === 0, holds.length === 0 ? "없음" : holds.map((pr) => `#${pr.number}`).join(", "), "없음");
+
+  const recent = input.recentReleaseTags ?? [];
+  add("daily-cap", "최근 24시간 릴리스", recent.length < rules.maxReleasesPer24h, `${recent.length}판${recent.length ? ` (${recent.join(", ")})` : ""}`, `${rules.maxReleasesPer24h}판 미만`);
+
+  const drafts = input.draftTags ?? [];
+  add("no-draft", "산출물 대기 중인 초안", drafts.length === 0, drafts.length === 0 ? "없음" : drafts.join(", "), "없음");
+
+  const open = input.openReleasePr;
+  add(
+    "no-open-release-pr",
+    "열린 release/next PR",
+    !open,
+    open ? `#${open.number}${open.auto ? " (자동, 앞 회차가 머지 못 함)" : " (사람이 진행 중)"}` : "없음",
+    "없음",
+  );
+
+  const failed = checks.filter((check) => !check.ok);
+  return {
+    release: failed.length === 0,
+    checks,
+    reasons: failed.map((check) => `${check.label}: ${check.value} (필요: ${check.need})`),
+  };
+}
+
+/** 워크플로 요약(마크다운). 사람이 Actions 화면에서 바로 읽는다. */
+export function renderGateSummary({ decision, at, dryRun, ciDiff }) {
+  const lines = [
+    `## 자동 릴리스 판정 ${decision.release ? "✅ 발행" : "⏸ 넘어감"}${dryRun ? " (건조 실행)" : ""}`,
+    "",
+    `판정 시각: ${at}`,
+    "",
+    "| 조건 | 값 | 필요 | 결과 |",
+    "|---|---|---|---|",
+    ...decision.checks.map((check) => `| ${check.label} | ${check.value} | ${check.need} | ${check.ok ? "통과" : "불통"} |`),
+  ];
+  if (ciDiff && !ciDiff.error) {
+    lines.push("", `ci-full 대조: 이번 판 ${ciDiff.candidate?.id ?? "?"} (${String(ciDiff.candidate?.headSha ?? "").slice(0, 9)}) · 기준 판 ${(ciDiff.baselineLayers ?? [ciDiff.baseline]).filter(Boolean).map((run) => `${run.id} (${String(run.headSha ?? "").slice(0, 9)}${run.complete ? "" : `, 샤드 ${run.reports}/${run.testJobs}`})`).join(" → ")}`);
+    for (const [title, list] of [["새 실패", ciDiff.newFailures], ["기준 판에 없던 파일의 실패", ciDiff.notInBaseline], ["고쳐진 파일", ciDiff.fixed]]) {
+      if (list?.length) lines.push("", `<details><summary>${title} ${list.length}</summary>`, "", ...list.map((file) => `- ${file}`), "", "</details>");
+    }
+  }
+  if (!decision.release) lines.push("", "넘어간 이유:", ...decision.reasons.map((reason) => `- ${reason}`));
+  return `${lines.join("\n")}\n`;
+}

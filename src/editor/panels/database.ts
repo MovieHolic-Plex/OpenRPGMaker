@@ -718,6 +718,7 @@ export function renderDatabasePanel(container: HTMLElement): void {
 
   renderActiveTab(body, container);
   container.append(buildGroupStrip(header, body, container), header, body);
+  wireRailFold(container, header);
   resumeSkillAnimationStagesIn(body);
   syncGroupStrip(header);
   revealActiveTab(header);
@@ -1293,6 +1294,46 @@ function groupLandingTab(group: DatabaseTabGroup): DatabaseTab {
   return group.tabs.find((id) => !folded.has(id)) ?? group.tabs[0]!;
 }
 
+// ── 레일 접기 (btn-vqa-db PR 7, 오너 확인 2026-11-24 「사용자는 많은 버튼을 원하지 않는다」) ───────────
+// 레일에는 묶음 아이콘만 보인다. 묶음을 누르면 탭 목록(.db-tabs: 검색·개요·그 묶음 탭)이 뜨고, 탭을 고르거나
+// 바깥을 누르거나 Esc 를 누르면 닫힌다. 지금 탭은 머리줄 크럼(「파티 › 주인공」)이 말한다. 숨기는 것은 CSS 다 —
+// .db-tabs 의 DOM·testid·탭 버튼 계약은 그대로다.
+function setRailOpen(container: HTMLElement, open: boolean): void {
+  container.dataset.railOpen = open ? "1" : "0";
+  const header = container.querySelector<HTMLElement>(":scope > .db-tabs");
+  const strip = header ? groupStripOf(header) : null;
+  if (header && strip && open) header.style.left = `${strip.offsetWidth}px`;
+  for (const button of strip ? Array.from(strip.children) : []) {
+    if (button instanceof HTMLElement) button.setAttribute("aria-expanded", String(open && button.classList.contains("active")));
+  }
+}
+
+const railFoldHosts = new WeakSet<HTMLElement>();
+
+function wireRailFold(container: HTMLElement, header: HTMLElement): void {
+  // 패널을 다시 그려도(같은 host) 열림 상태는 잇는다. host 리스너는 한 번만 단다.
+  setRailOpen(container, container.dataset.railOpen === "1");
+  // 탭을 고르면 닫는다. 탭 버튼의 자기 click 이 먼저 돌고(버블링) 여기서 닫는다.
+  header.addEventListener("click", (event) => {
+    const target = event.target instanceof Element ? event.target : null;
+    if (target?.closest(".db-tab, .db-search-dest, .db-recent-tab, [data-reveal-tab]")) setRailOpen(container, false);
+  });
+  header.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || container.dataset.railOpen !== "1") return;
+    event.stopPropagation();
+    setRailOpen(container, false);
+    groupStripOf(header)?.querySelector<HTMLElement>(".db-group-strip-btn.active")?.focus();
+  });
+  if (railFoldHosts.has(container)) return;
+  railFoldHosts.add(container);
+  container.addEventListener("pointerdown", (event) => {
+    if (container.dataset.railOpen !== "1") return;
+    const target = event.target instanceof Element ? event.target : null;
+    if (target?.closest(".db-tabs, .db-group-strip")) return;
+    setRailOpen(container, false);
+  });
+}
+
 function buildGroupStrip(header: HTMLElement, body: HTMLElement, container: HTMLElement): HTMLElement {
   return el("nav", {
     class: "db-group-strip",
@@ -1309,12 +1350,16 @@ function buildGroupStrip(header: HTMLElement, body: HTMLElement, container: HTML
           // 그룹을 바꾸면 본문·크럼도 그 그룹으로 간다. 예전에는 하위 목록만 바뀌고 본문은 이전 그룹의
           // 탭(「파티 › 주인공」)에 머물러, 지금 무엇을 편집 중인지 두 신호가 어긋났다(V-database-05~08).
           const owner = groupForTab(activeTab)?.slug;
+          // 같은 묶음을 다시 누르면 탭 목록을 닫는다(열림 토글).
+          const reopen = !(container.dataset.railOpen === "1" && currentViewedGroup() === group.slug);
           if (owner === group.slug) {
             viewGroup(header, group.slug);
+            setRailOpen(container, reopen);
             return;
           }
           viewGroup(header, group.slug);
           openRailDestination(header, body, container, groupLandingTab(group));
+          setRailOpen(container, true);
           (container.querySelector(`[data-testid="db-group-strip-${group.slug}"]`) as HTMLElement | null)?.focus();
         },
       },

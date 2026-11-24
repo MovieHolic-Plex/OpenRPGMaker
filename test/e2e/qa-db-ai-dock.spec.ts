@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { revealDbRailTab } from "./dbRail";
 
 // DB 3파 — M7(모달 안 AI 연결) · M8(사이드 도킹) E2E.
 // 실 LLM 호출은 하지 않는다: 전송 함수 도달은 window.__oprnDbAiLastRequest 훅과
@@ -20,6 +21,7 @@ test.describe("QA — DB 모달 AI 바 (M7)", () => {
   test("AI 버튼 → 바 표시 → 입력 → 실행 → 훅/토스트", async ({ page }) => {
     await gotoExpertEditor(page);
     await openDatabase(page);
+    await revealDbRailTab(page, "enemies");
     await page.getByTestId("db-tab-enemies").click();
 
     await expect(page.getByTestId("database-ai-bar")).toBeHidden();

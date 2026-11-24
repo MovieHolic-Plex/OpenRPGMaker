@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { SystemRecords } from "../../src/project/types";
+import { revealDbRailTab } from "./dbRail";
 
 async function openSystem(page: Page): Promise<void> {
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
@@ -18,6 +19,7 @@ async function openSystem(page: Page): Promise<void> {
   }
   await page.getByTestId("toolbar-database").click();
   await page.getByTestId("db-tab-group-system").click();
+  await revealDbRailTab(page, "system");
   await page.getByTestId("db-tab-system").click();
   expect(await page.evaluate(async () => {
     const path = "/src/project/store.ts";
@@ -159,7 +161,9 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
       await page.getByTestId("db-system-nav-title").focus();
       await page.keyboard.press("Control+z");
       await expect(speed).toHaveValue("0");
+      await revealDbRailTab(page, "terms");
       await page.getByTestId("db-tab-terms").click();
+      await revealDbRailTab(page, "system");
       await page.getByTestId("db-tab-system").click();
       await nav(page, "title");
       await canonicalCommit(page, "db-field-title-screen-layer-0-scroll-x", .125, .125, (s) => s.titleScreen!.backgroundLayers![0]!.scrollXPerSec ?? 0);

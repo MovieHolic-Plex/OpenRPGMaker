@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { mkdirSync, readdirSync, unlinkSync } from "node:fs";
 import { join } from "node:path";
+import { revealDbRailTab } from "./dbRail";
 
 const SHOT_DIR = "verify-shots/world-lore-v6";
 test.setTimeout(180_000);
@@ -20,6 +21,7 @@ test("world canon AI help evidence", async ({ page }) => {
     if (await button.isVisible()) await button.click();
   }
   await page.getByTestId("toolbar-database").click();
+  await revealDbRailTab(page, "world-canon");
   const tabButton = page.getByTestId("db-tab-world-canon");
   if (!await tabButton.isVisible()) await page.getByTestId("db-tab-group-lore").click();
   await tabButton.click();

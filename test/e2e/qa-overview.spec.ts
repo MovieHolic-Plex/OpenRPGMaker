@@ -6,6 +6,7 @@ import {
   switchTabAnyMode,
 } from "./dbAuditHelpers";
 import { exportedProject, type DatabaseTabSpec } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 const OVERVIEW_TAB = { label: "Overview", slug: "overview", testId: "db-tab-overview" } as const satisfies DatabaseTabSpec;
 const ACTIVE_TAB_KEY = "oprn:database.activeTab";
@@ -40,7 +41,9 @@ test.describe("QA — Database Overview dashboard", () => {
 
     // W5: overview is never the default open tab when no last-used tab is stored.
     // bootDbLane clears oprn:database.activeTab, so readStoredActiveTab falls back to actors.
+    await revealDbRailTab(page, "actors");
     await expect(page.getByTestId("db-tab-actors")).toHaveClass(/active/);
+    await revealDbRailTab(page, "overview");
     await expect(page.getByTestId("db-tab-overview")).not.toHaveClass(/active/);
     await expect(page.getByTestId("db-overview-stat-items")).toHaveCount(0);
 
@@ -80,6 +83,7 @@ test.describe("QA — Database Overview dashboard", () => {
     // when the key is absent — covered by the unseeded boot above).
     const stored = await page.evaluate((key) => localStorage.getItem(key), ACTIVE_TAB_KEY);
     expect(stored).toBe("overview");
+    await revealDbRailTab(page, "overview");
     await expect(page.getByTestId("db-tab-overview")).toHaveClass(/active/);
     await expect(page.getByTestId("db-overview-stat-items")).toBeVisible();
     expect(errors).toEqual([]);

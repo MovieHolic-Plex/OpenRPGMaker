@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { exportedProject } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 test("Database Items tab follows RM2K3 item types and Korean type-specific panels", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1280, height: 800 });
@@ -9,6 +10,7 @@ test("Database Items tab follows RM2K3 item types and Korean type-specific panel
 
   await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
+  await revealDbRailTab(page, "items");
   await page.getByTestId("db-tab-items").click();
 
   await expect(page.getByTestId("db-items-oprn-workbench")).toBeVisible();
@@ -45,6 +47,7 @@ test("Database Items tab follows RM2K3 item types and Korean type-specific panel
     path: testInfo.outputPath("items-tab-switch-panel.png"),
   });
 
+  await revealDbRailTab(page, "items");
   await page.getByTestId("db-tab-items").click();
   await page.getByTestId("db-catalog-filter-equipment").click();
   await page.locator('.db-catalog-rows [data-collection="equipment"]').first().click();

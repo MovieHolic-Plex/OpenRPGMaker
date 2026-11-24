@@ -333,8 +333,48 @@ npm run release:auto -- --dry-run    # 계획만 (아무것도 쓰지 않음)
 - `.github/workflows/desktop-release.yml`
 - `scripts/release.mjs` · `scripts/release-auto.mjs` · `scripts/release-desktop.mjs`
 - `scripts/lib/release*.mjs` (특히 `releaseAssets.mjs` 의 6개 이름 계약)
+- `.github/workflows/auto-release.yml` · `scripts/release-scheduled.mjs` · `scripts/ci-full-diff.mjs`
 
 `desktop-release` 가 빨간 동안에는 새 버전을 발행하지 않는다. 초안이 쌓여도 `latest` 는 안전하다.
+
+## 조건 기반 자동 릴리스 (2026-11-24, auto-release)
+
+오너: «자동 주기 릴리즈 조건을 기반으로 해라 니추천대로». `.github/workflows/auto-release.yml` 이 3시간마다(매 41분)
+호스티드 러너에서 `scripts/release-scheduled.mjs` 를 돌린다. 아래가 **모두** 맞을 때만 발행한다.
+숫자는 `scripts/lib/releaseGate.mjs` 의 `AUTO_RELEASE_RULES` 한 곳에 있다.
+
+| 조건 | 기준 |
+|---|---|
+| 사용자 체감 변경 | 마지막 발행 태그 이후 feat·fix 커밋 5개 이상 (범위가 test·ci·docs 뿐인 것은 안 센다) |
+| ci-full | main 의 마지막 완전한 ci-full 판이 기준 판보다 새 실패 0 (아래) |
+| 간격 | 마지막 발행(`published_at`)에서 12시간 이상 |
+| 보류 | 열린 PR 에 `hold-release` 라벨 없음 |
+| 하루 상한 | 최근 24시간에 만든 릴리스 2판 미만 |
+| 꼬임 방지 | 산출물 대기 중인 초안 없음, 열린 `release/next` PR 없음 |
+
+안 맞으면 아무것도 쓰지 않고 그 실행의 요약과 아티팩트 `auto-release-decision`(JSON)에 이유만 남긴다.
+맞으면 새 발행기를 만들지 않고 기존 경로를 탄다: `release-auto --skip-publish`(PR·사용자 말 CHANGELOG) →
+ci-fast 를 release/next 에 디스패치(GITHUB_TOKEN 푸시는 워크플로를 깨우지 않는다) → `merge-pr.mjs` →
+`release-auto --skip-propose`(태그·초안) → `desktop-release` 디스패치(검증 뒤 발행). 발행하거나 도중에 멈추면
+이슈 «자동 릴리스 기록» 에 한 줄 남긴다(리드가 보는 한 곳).
+
+판정만 보려면: `node scripts/release-scheduled.mjs --dry-run` (로컬, gh 인증) 또는
+`gh workflow run auto-release.yml` (수동 실행의 기본이 건조 실행이다).
+
+**ci-full 파일 대조** (`scripts/ci-full-diff.mjs`) 는 v0.418·v0.419 레인이 손으로 한 대조를 옮긴 것이다.
+
+- 이번 판: 마지막 발행 태그 **이후** main 커밋의 ci-full 중 가장 새 완전한 판(시험 샤드가 전부 끝나고 샤드마다
+  `gates-report-shard-*` 아티팩트가 있다). 실패 파일 = 샤드 failedFiles 합집합 − 단독 재실행 통과(`flakeRetries`).
+- 기준 판: 태그에 **포함된** 커밋(또는 그 위 `chore(release)` 범프 하나)의 판 중 새 것부터 3개를 겹친다.
+  파일마다 그 파일을 돌린 가장 새 판이 기준이다 — 샤드가 취소된 판도 쓸 수 있다.
+- 새 실패 = 기준에서 돌고 통과했는데 이번에 실패. 기준 어느 판에서도 안 돈 파일의 실패는 «기준 판에 없음»
+  으로 따로 세고 이것도 막는다(확인할 수 없는 빨강을 면제하지 않는다).
+- 손으로 돌리기: `node scripts/ci-full-diff.mjs [--tag vX.Y.Z] [--candidate <run>] [--baseline <run>] --out diff.json`.
+
+천장: ci-full 은 밤 1회라(#5039) 발행 후보가 생기는 창은 하루 한 번이다. 그 판에 새 실패가 하나라도
+있으면 그날은 자동으로 내지 않는다. 사람이 고치거나 손 릴리스 레인이 판단한다.
+저장소 Actions 설정이 GITHUB_TOKEN 의 PR 생성을 막으면 ① 단계에서 멈추고 이슈에 남는다.
+`RELEASE_BOT_TOKEN` 시크릿이 있으면 그것을 쓴다.
 
 검증: `node scripts/run-vitest.mjs run test/releaseAssets.test.ts` — 6개 이름·크기 0·옛 버전
 이름·최고 버전 판정을 케이스로 고정한다.

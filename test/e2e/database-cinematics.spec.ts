@@ -3,6 +3,7 @@ import { get } from "node:http";
 import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import type { Project } from "../../src/project/types";
+import { revealDbRailTab } from "./dbRail";
 
 // Run from this worktree with port 19035 initially unused:
 // DEV_SERVER_PORT=19035 E2E_RETRIES=0 VITE_LEGACY_DB_URL= VITE_LEGACY_DB_ANON_KEY=
@@ -159,6 +160,7 @@ async function openDatabase(page: Page): Promise<void> {
 }
 
 async function tab(page: Page, name: "opening" | "game-over" | "system"): Promise<void> {
+  await revealDbRailTab(page);
   const button = page.getByTestId(`db-tab-${name}`);
   if (!await button.isVisible()) await page.getByTestId("db-tab-group-system").click();
   await button.click();

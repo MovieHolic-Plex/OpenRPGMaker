@@ -164,6 +164,7 @@ import { CHARACTER_APPEARANCE_TOOLS } from "./characterAppearanceTools";
 import { WALK_CHIP_TOOLS } from "./walkChipTools";
 import { WORLD_GRAPH_TOOLS } from "./worldGraphTools";
 import { DUNGEON_LINK_TOOLS } from "./dungeonLinkTools";
+import { REGION_PLACE_TOOLS, bindRegionPlaceToolLookup } from "./regionPlaceTools";
 import { BBOX_PLACE_TOOLS } from "./bboxPlaceTools";
 import { BUILD_FROM_PLAN_TOOL } from "./planGridBuild";
 import { TILE_QUERY_TOOLS } from "./tileQueryTool";
@@ -455,6 +456,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = withoutClosedLifeTools(t
   ...withDomain(MONSTER_RESOURCE_TOOLS, "database"),
   ...withDomain(WORLD_GRAPH_TOOLS, "world"),
   ...DUNGEON_LINK_TOOLS,
+  ...REGION_PLACE_TOOLS,
   ...BBOX_PLACE_TOOLS,
   BUILD_FROM_PLAN_TOOL,
   ...withDomain(PALETTE_PRESET_TOOLS, "tile"),
@@ -530,6 +532,7 @@ bindRegionToolLookup(getTool);
 bindThemeToolLookup(getTool);
 bindSpaceBlueprintToolLookup(getTool);
 bindJrpgVolumeToolLookup(getTool);
+bindRegionPlaceToolLookup(getTool);
 
 export function allTools(): readonly ToolDefinition[] {
   return TOOL_REGISTRY;
