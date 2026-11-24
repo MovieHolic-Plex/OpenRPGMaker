@@ -161,16 +161,20 @@
 /* ── 조수 배지(mapTreeAiBadges) — 「조수 작업 중」은 작업 번호 색의 점·테두리, 글자는 늘 --text-1. 「잠금 대기」는 경고 색. */
 
 .map-tree-panel .map-tree-name-line .map-tree-ai-badge {
-  align-items: center;
   border: var(--stroke-1) solid var(--border-default);
   border-radius: var(--radius-pill);
-  display: inline-flex;
+  display: inline-block;
   flex: 0 0 auto;
-  font: 600 var(--font-size-sm)/1 var(--font-ui);
-  gap: var(--space-1);
+  font: 600 var(--font-size-sm)/1.2 var(--font-ui);
   margin-left: auto;
-  padding: 2px 6px;
+  padding: 1px 6px;
   white-space: nowrap;
+}
+
+/* 좁은 목록에서 배지가 이름을 밀어내지 않게 — 자리가 모자라면 배지가 이름 아래 줄로 내려간다(이름은 늘 다 읽힌다). */
+.map-tree-panel .map-tree-name-line:has(.map-tree-ai-badge) {
+  flex-wrap: wrap;
+  row-gap: 2px;
 }
 
 .map-tree-panel .map-tree-name-line .start-mark + .map-tree-ai-badge,
@@ -179,23 +183,22 @@
 }
 
 .map-tree-panel .map-tree-ai-badge.is-working {
-  --tone: var(--tone-0);
-  background: color-mix(in srgb, var(--tone) 10%, var(--bg-raised));
-  border-color: color-mix(in srgb, var(--tone) 45%, transparent);
+  background: color-mix(in srgb, var(--map-ai-tone, var(--accent)) 10%, var(--bg-raised));
+  border-color: color-mix(in srgb, var(--map-ai-tone, var(--accent)) 45%, transparent);
   color: var(--text-1);
 }
 
 .map-tree-panel .map-tree-ai-badge.is-working::before {
-  background: var(--tone);
+  background: var(--map-ai-tone, var(--accent));
   border-radius: 50%;
   content: "";
+  display: inline-block;
   height: 6px;
+  margin-right: var(--space-1);
+  vertical-align: 1px;
   width: 6px;
 }
 
-.map-tree-panel .map-tree-ai-badge[data-tone="1"] { --tone: var(--tone-1); }
-.map-tree-panel .map-tree-ai-badge[data-tone="2"] { --tone: var(--tone-2); }
-.map-tree-panel .map-tree-ai-badge[data-tone="3"] { --tone: var(--tone-3); }
 
 .map-tree-panel .map-tree-ai-badge.is-waiting {
   background: var(--warning-muted);

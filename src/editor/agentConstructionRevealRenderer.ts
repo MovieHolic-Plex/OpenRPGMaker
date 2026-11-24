@@ -154,18 +154,18 @@ export class AgentConstructionRevealRenderer {
     const host = card ?? document.querySelector(".phaser-container");
     if (!host) return null;
     const box = document.createElement("div");
-    box.className = card ? "ai-construction-step is-inline" : "ai-construction-step";
+    box.className = card ? "agent-construction-step is-inline" : "agent-construction-step";
     box.dataset.testid = "ai-construction-step";
     box.setAttribute("role", "status");
     const step = document.createElement("strong");
-    step.className = "ai-construction-step-name";
+    step.className = "agent-construction-step-name";
     // 재생이 실제보다 느리다는 것을 숫자로 밝힌다(목업 v4 장면 B): «실제 1.4초 · 재생 6.1초».
     const timing = document.createElement("span");
-    timing.className = "ai-construction-step-timing";
+    timing.className = "agent-construction-step-timing";
     timing.dataset.testid = "ai-construction-timing";
     timing.textContent = constructionRevealTimingLabel(plan);
     const note = document.createElement("span");
-    note.className = "ai-construction-step-note";
+    note.className = "agent-construction-step-note";
     note.textContent = `도구가 실제로 지은 순서를 늦춰 보여 줘요 · 단계 ${plan.frames.length}개`;
     box.append(step, timing, note);
     host.append(box);

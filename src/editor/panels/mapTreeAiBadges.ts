@@ -6,6 +6,7 @@
 //  - AI 존재감(aiPresence): 팀 일꾼(agent_spawn 의 mapId)이 지금 쓰는 맵과 그 일꾼 이름·색 번호.
 // 진행률·남은 시간 같은 짐작은 넣지 않는다. 글은 한국어 짧은 말만.
 
+import { JOB_TONE_CSS } from "@/editor/aiJobNumbers";
 import { mapRunQueue, type MapRunTicket } from "@/editor/aiMapRunQueue";
 import { currentPresences, subscribeAiPresence, type Presence } from "@/editor/panels/aiPresence";
 import { el } from "@/util/dom";
@@ -64,7 +65,14 @@ export function mapAiBadges(
   }
   const out = new Map<string, MapAiBadge[]>();
   for (const [mapId, badge] of working) out.set(mapId, [badge]);
-  for (const [mapId, badge] of waiting) out.set(mapId, [...(out.get(mapId) ?? []), badge]);
+  for (const [mapId, badge] of waiting) {
+    // 이미 누가 쓰는 맵이면 기다림은 짧게(«대기 n») — 좁은 맵 목록에서 맵 이름이 먼저 읽혀야 한다.
+    const held = out.get(mapId);
+    if (held && badge.text !== "차례 대기") {
+      const count = tickets.filter((t) => t.status === "waiting" && !t.exclusive && t.mapKey === mapId).length;
+      held.push({ ...badge, text: `대기 ${count}` });
+    } else out.set(mapId, [...(held ?? []), badge]);
+  }
   return out;
 }
 
@@ -72,7 +80,8 @@ export function mapAiBadgeElements(badges: readonly MapAiBadge[] | undefined, ma
   return (badges ?? []).map((badge) => el("span", {
     class: `map-tree-ai-badge is-${badge.kind}`,
     text: badge.text,
-    attrs: { title: badge.title },
+    // 작업 번호 색은 지도 위 이름표와 같은 원천(JOB_TONE_CSS)에서 — 맵 표면 CSS 는 존재감 표면의 --tone-* 를 못 읽는다.
+    attrs: { title: badge.title, ...(badge.tone !== undefined ? { style: `--map-ai-tone:${JOB_TONE_CSS[badge.tone % JOB_TONE_CSS.length]}` } : {}) },
     dataset: { testid: `map-tree-ai-badge-${mapId}`, kind: badge.kind, ...(badge.tone !== undefined ? { tone: String(badge.tone) } : {}) },
   }));
 }

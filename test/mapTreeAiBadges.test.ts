@@ -19,7 +19,9 @@ function presence(extra: Partial<Presence>): Presence {
 describe("mapAiBadges", () => {
   it("shows who holds a map and which maps are waiting for its lock", () => {
     const badges = mapAiBadges([], [ticket(1, "map_a", "running"), ticket(2, "map_a", "waiting"), ticket(3, "map_a", "waiting", { ahead: 1 })], isMap);
-    expect(badges.get("map_a")!.map((b) => [b.kind, b.text])).toEqual([["working", "조수 작업 중"], ["waiting", "잠금 대기 2"]]);
+    expect(badges.get("map_a")!.map((b) => [b.kind, b.text])).toEqual([["working", "조수 작업 중"], ["waiting", "대기 2"]]);
+    const queued = mapAiBadges([], [ticket(4, "map_b", "waiting", { wait: "exclusive" })], isMap);
+    expect(queued.get("map_b")!.map((b) => [b.kind, b.text])).toEqual([["waiting", "잠금 대기"]]);
   });
 
   it("names the team worker that owns a map, with its job colour", () => {

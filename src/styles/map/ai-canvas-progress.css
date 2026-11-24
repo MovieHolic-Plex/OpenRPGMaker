@@ -24,7 +24,7 @@
 .ai-canvas-progress-stage { color: var(--text-1); }
 
 /* 시공 기록 재생 캡션(agentConstructionRevealRenderer) — 단계 이름 · 「실제 n초 · 재생 m초」 · 설명 한 줄. */
-.ai-construction-step {
+.agent-construction-step {
   position: absolute;
   left: var(--space-4);
   bottom: calc(var(--space-4) + var(--space-6) * 2);
@@ -42,7 +42,7 @@
   line-height: 1.45;
   pointer-events: none;
 }
-.ai-construction-step.is-inline {
+.agent-construction-step.is-inline {
   position: static;
   max-width: none;
   margin-top: var(--space-2);
@@ -53,6 +53,6 @@
   background: none;
   box-shadow: none;
 }
-.ai-construction-step-name { display: block; font-size: var(--font-13); font-weight: var(--font-weight-medium); }
-.ai-construction-step-timing { display: block; color: var(--text-1); font-family: var(--font-mono); font-size: var(--font-12); }
-.ai-construction-step-note { display: block; color: var(--text-2); }
+.agent-construction-step-name { display: block; font-size: var(--font-13); font-weight: var(--font-weight-medium); }
+.agent-construction-step-timing { display: block; color: var(--text-1); font-family: var(--font-mono); font-size: var(--font-12); }
+.agent-construction-step-note { display: block; color: var(--text-2); }

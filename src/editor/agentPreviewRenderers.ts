@@ -870,12 +870,6 @@ export class AgentFocusRenderer {
     g.lineStyle(edge, boxColor, 0.95);
     g.strokeRect(x * tile + edge / 2, y * tile + edge / 2, width * tile - edge, height * tile - edge);
     group.add(g);
-    if (typeof this.scene.add.text === "function") {
-      const badge = this.scene.add.text(x * tile + 4, y * tile + 4,
-        "✓ 반영됨", { fontFamily: "sans-serif", fontSize: "12px", color: "#f7f3ea", backgroundColor: "#465744", padding: { x: 6, y: 3 } });
-      badge.setScale(1 / zoom);
-      group.add(badge);
-    }
     group.setAlpha(1);
     // 바뀐 칸을 0.6초 동안 또렷하게 보인 뒤 짧게 걷는다(목업 v4 장면 B·C).
     this.scene.tweens.add({
@@ -908,6 +902,8 @@ export class AgentFocusRenderer {
     marker.style.top = `${rect.y}px`;
     marker.style.width = `${rect.width}px`;
     marker.style.height = `${rect.height}px`;
+    // 「✓ 반영됨」은 DOM 글자로 — Phaser 글자는 만들 때마다 캔버스에 글꼴을 래스터해 강조 한 번이 수 ms 늘었다.
+    marker.append(Object.assign(document.createElement("span"), { className: "agent-focus-highlight-badge", textContent: "✓ 반영됨" }));
     host.append(marker);
     this.domMarker = marker;
     this.domTimer = setTimeout(() => this.clearDomMarker(), AGENT_FOCUS_HOLD_MS + AGENT_FOCUS_FADE_MS + 100);
