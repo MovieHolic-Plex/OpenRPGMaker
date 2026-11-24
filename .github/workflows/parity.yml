@@ -11,8 +11,8 @@ name: parity
 #   - 야간·수동         → ci-full.yml   (verify-gates.mjs, 기준선 대비 회귀만 실패)
 #   - 이 파일           → 수동 전용. 아래 잡들을 하나씩 초록으로 만들어 ci-fast 로 옮겨라.
 #
-# Node 기반의 패리티·빌드·정적 잡은 mdc2 에서 실행한다. 고정 포트 e2e 와
-# 전체 단위 테스트는 격리된 호스티드 VM 에 남겨 PR 잡의 대기와 포트 경합을 피한다.
+# 모든 잡은 GitHub 호스티드(ubuntu-latest)에서 돈다(2026-11-24, ci-github-offload). 수동 전용이라
+# 호스티드 동시 자리를 늘 차지하지 않는다.
 #
 # 남아 있는 빨간 잡과 이유:
 #   unit-tests  — 생짜 `npm test`. 상시 실패가 있고 이 박스에선 완주도 못 했다(78분 무출력 사망).
@@ -31,7 +31,7 @@ concurrency:
 
 jobs:
   editor-player-parity:
-    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2","mdc2-fast"]') || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -50,7 +50,7 @@ jobs:
       - run: npm run test:node
 
   build:
-    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2","mdc2-fast"]') || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -81,7 +81,7 @@ jobs:
       - run: npm run test:e2e
 
   ax-gates:
-    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2","mdc2-fast"]') || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -95,7 +95,7 @@ jobs:
   # 에서도 exit 1, 미유예 위반 19건). 같은 job 에 넣으면 CSS 게이트는 영원히 실행되지 않는다.
   # 별도 job 이면 PR 에 독립된 status check 로 뜨고, 선행 게이트의 부채와 무관하게 동작한다.
   css-gates:
-    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2","mdc2-fast"]') || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -136,7 +136,7 @@ jobs:
   # 주의: 이 저장소에서 Actions 는 리포지터리 수준에서 꺼져 있다. 실제 집행 경로는
   # `npm run gates` (verify-gates.mjs 의 surface 게이트)이고 같은 스크립트를 부른다.
   surface-gates:
-    runs-on: ${{ github.event_name != 'pull_request_target' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) && fromJSON('["self-hosted","linux","x64","mdc2","mdc2-fast"]') || 'ubuntu-latest' }}
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:

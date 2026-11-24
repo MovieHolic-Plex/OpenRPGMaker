@@ -53,15 +53,19 @@
 ## PR 판정 = ci-fast(pull_request), 머지 = scripts/merge-pr.mjs, ci-full = 4시간 cron (2026-10-25)
 
 - ci-fast 는 `push`(main·release) 와 `pull_request`(→ main) 에 돈다. 전에는 push 뿐이라 PR 에 체크가 없었다.
-- `fast`(AI 워커 컴파일·캐릭터 하네스·타입체크 src·앱 빌드), `fast-parity` 4샤드(`vitest --shard`),
+- `fast`(AI 워커 컴파일·캐릭터 하네스·타입체크 src·앱 빌드), `fast-parity` 2샤드(`vitest --shard`),
   `fast-static`(jp_city 핀·타입체크:electron-store·배럴·러너 선택 계약과 테스트·런타임 에셋·CSS 래칫·openwiki 인덱스)이
-  서로 의존하지 않는다. 같은 저장소의 푸시·PR 에서는 여섯 잡 모두 mdc2 러너(`mdc2-fast`, 10대)를 쓴다.
-  포크 PR 과 `pull_request_target` 의 러너 선택은 `ubuntu-latest` 다.
-  mdc2 에서는 시작 훅이 준비한 Git 미러와 러너별 `_tool/oprn-ci` 캐시를 재사용한다.
-  의존성 스냅샷은 lockfile·Node/npm 판·설치 방식에 묶고 잡 작업공간에 복사한다.
-  TypeScript 증분 자료도 러너별이다. 패리티는 Node 환경에서 실행하며 고정 포트나 X 디스플레이를 쓰지 않는다.
-  수동 `ci-vitest-files` 는
-  같은 선택식에 `mdc2-heavy` 라벨을 더해 mdc2 러너(10대: runner-1..4 는 MemoryMax=22G·CPUQuota=500%, runner-5..10 은 20G·400%)를 쓴다.
+  서로 의존하지 않는다.
+- **러너 배치 (2026-11-24, ci-github-offload):** 무거운 잡은 전부 GitHub 호스티드(`ubuntu-latest`)다 —
+  ci-fast 세 잡, ci-full static·tests, ci-vitest-files, 수동 parity, windows-worker-smoke 의 리눅스 빌드.
+  mdc2 에 남은 것은 desktop-release(릴리스 초안 채우기, 30GB 디스크 검사와 Electron·예제 캐시)와
+  꺼져 있는 Security Audit(1분 내외)뿐이고, 둘 다 포크 PR 에서는 돌지 않는다(선택식이 포크를 호스티드로 보내고, desktop-release 는 릴리스·수동·cron 뿐이다).
+  왜: mdc2 러너 18대가 에이전트 레인·VM 과 251GB 를 나눠 써서 CI 가 몰리면 러너가 전부 offline 이 됐고,
+  mdc2 위 ci-fast 잡 대기가 중앙 145~243초·최대 2,589초였다(호스티드 대기 p90 2초).
+  **호스티드 동시 잡 한도는 20개**다(개인 계정, 2026-11-22T16:54Z 에 20 에서 막힌 것을 실측). 그래서
+  ci-full tests 는 24샤드·`max-parallel: 12`(static 포함 13자리), ci-fast 는 푸시당 4잡이다 — ci-full 이 도는 동안에도
+  PR 몫 7자리가 남는다. 잡 수를 늘리는 변경은 이 20자리 예산을 먼저 계산한다.
+  패리티는 Node 환경에서 실행하며 고정 포트나 X 디스플레이를 쓰지 않는다.
   왜 (2026-11-19, run 44483882406): 옛 `fast` 는 6분 28초가 전부 직렬이었고 그중 parity 가 230초(가져오기 40%)였다.
   같은 날 실측(run 44531254883, 44533700673, 44536145289)에서 ci-full 과 여러 PR 이 겹치자
   4초짜리 집계 잡이 선행 잡 완료 뒤 101~733초 동안 러너를 기다렸다. 집계를 머지 도우미로 옮겨 마지막 대기를 없앴다.
@@ -69,7 +73,7 @@
   초록이어야 `--match-head-commit` 으로 머지한다. 체크가 빠졌으면 기다리고 실패·취소된 체크가 있으면 머지를 거절한다.
 - ci-full 은 main 푸시마다가 아니라 `17 */4 * * *` cron 이다. 푸시마다 걸면 한 판(약 4시간) 동안 대기 자리를 새 푸시가
   계속 빼앗아 60판 중 51판이 cancelled 였다. 판정 논리(기준선 대비 회귀만 실패)는 그대로다.
-  정적 잡은 mdc2 에서 돈다. 테스트 16샤드는 `ubuntu-latest` 에서 돌려 mdc2 의 PR CI 자리를 비워 둔다.
+  정적 잡과 테스트 24샤드(동시 12)는 모두 `ubuntu-latest` 에서 돈다.
 - 브랜치 보호의 필수 체크 `fast` 는 저장소 설정이고 이제 빌드 잡을 확인한다.
 - **bun 은 고정판(1.4.2)을 npm 에서 받는다** (2026-11-08). 옛 `curl -fsSL https://bun.sh/install | bash` 는
   «latest» 를 GitHub 릴리스에서 받고 재시도가 없어, ci-fast 100판 중 18판이 `releases/latest/…zip` 의

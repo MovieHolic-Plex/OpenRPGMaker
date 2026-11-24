@@ -14,17 +14,18 @@ const fastRunner = safeExpression.replace(labels, labels.replace('"mdc2"', '"mdc
 const heavyRunner = fastRunner.replace("mdc2-fast", "mdc2-heavy");
 const workflowSource = (name) => readFileSync(new URL(`../.github/workflows/${name}.yml`, import.meta.url), "utf8");
 
-test("Linux CI routes trusted events to mdc2 and keeps hosted capacity for the full suite", () => {
+test("heavy Linux CI runs on GitHub-hosted runners and only light or release jobs stay on mdc2", () => {
+  const hosted = "ubuntu-latest";
   for (const [workflow, jobs] of Object.entries({
-    "ci-fast": { fast: fastRunner, "fast-parity": fastRunner, "fast-static": fastRunner },
-    "ci-full": { static: heavyRunner, tests: "ubuntu-latest" },
-    "ci-vitest-files": { vitest: heavyRunner },
+    "ci-fast": { fast: hosted, "fast-parity": hosted, "fast-static": hosted },
+    "ci-full": { static: hosted, tests: hosted },
+    "ci-vitest-files": { vitest: hosted },
     "security-audit": { audit: fastRunner },
-    "windows-worker-smoke": { build: fastRunner, smoke: "windows-latest" },
+    "windows-worker-smoke": { build: hosted, smoke: "windows-latest" },
     parity: {
-      "editor-player-parity": fastRunner, "unit-tests": "ubuntu-latest",
-      build: fastRunner, e2e: "ubuntu-latest", "ax-gates": fastRunner,
-      "css-gates": fastRunner, "surface-gates": fastRunner,
+      "editor-player-parity": hosted, "unit-tests": hosted,
+      build: hosted, e2e: hosted, "ax-gates": hosted,
+      "css-gates": hosted, "surface-gates": hosted,
     },
   })) {
     const runners = Object.fromEntries(runsOnValues(workflowSource(workflow)).map(({ job, value }) => [job, value]));
