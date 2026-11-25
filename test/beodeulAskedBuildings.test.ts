@@ -2,7 +2,7 @@
 // 왜(2026-11-16 실모델 확인 빌드 r6 «갈매나루»): 요청은 «광장 곁 대성당» 이었는데 make_place 에는 건물을 청할 길이 없었다. 모델은 성당 킷을 손으로 찍다
 // 네 번 거절당하고 윗단 숲 위에 세웠다 — 문 앞은 벼랑 아래, 지붕 위에 숲 머리 세 그루. 오너 방향: 있는 에셋이면 깔고, 어긋나면 고쳐 놓고 알리고, 거절은 게임이 깨질 때만.
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { runTool } from "@/editor/tools";
 import { isPassable } from "@/project/collision";
 import { reliefAllowsStep } from "@/project/relief/walk";

@@ -8,7 +8,7 @@ import { store } from "@/project/store";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { SectionStructureKitDef } from "@/project/types";
 import { FakeElement, installFakeDom } from "./fakeDom";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 
 let restoreDom: (() => void) | undefined;

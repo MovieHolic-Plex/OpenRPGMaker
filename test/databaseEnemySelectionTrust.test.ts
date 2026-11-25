@@ -2,7 +2,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import { renderEnemyRecordForm } from "@/editor/panels/databaseEnemyRecordView";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import type { EnemyActionPattern, EnemyRecord } from "@/project/types";
 

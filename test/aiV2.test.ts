@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { followArrowWalk, holdArrowWalk, type ArrowRead, type ArrowWorld, type Cell } from "../scripts/qa/assistant-v2/arrowFollowWalk.mts";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { normalizeGameBlueprint, type GameBlueprint } from "@/project/gameBlueprint";
 import { applyThemeBackdrop, themeBossTroop, themeFieldTroops } from "@/ai/v2/place/placeTheme";
 import { fillBattleBackgrounds, fillEnemyHpLook } from "@/ai/v2/story/shipLookDefaults";

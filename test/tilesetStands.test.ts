@@ -8,7 +8,7 @@ import { describeTilesetLook, tilesetLookGrafts, tilesetLookOptions, tilesetLook
 import { standOverlaySource, tilesetStand, tilesetStandTableFor } from "@/assets/tilesetStands";
 import { bundledChipsetFrameCount, BUNDLED_REFERENCE_CHIPSET_ASSETS } from "@/assets/bundled";
 import { bundledChipsetTilesPerRow } from "@/assets/bundledChipsetGeometry";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject, ownTileset } from "./support/blankProject";
 import { chooseTilesetLook } from "@/project/tilesetLook";
 import { kitBaseTile } from "@/project/houseSetTiles";
 import { standKitPictures, standVariantKit } from "@/project/standKit";
@@ -25,6 +25,14 @@ import type { GameMap, Project, TilesetLook } from "@/project/types";
 const TS = "beodeul_city";
 const looks = tilesetLookTableFor(TS)!;
 const table = tilesetStandTableFor(TS)!;
+
+// 빈 프로젝트는 파일마다 한 번 짓고 번들 타일셋을 동결 공유한다(test/support/blankProject.ts). 버들항 시공기와 이 파일은
+// beodeul_city 타일셋을 제자리에서 고치므로(겉모습 look · 시설 킷 · 접목) 그 하나만 케이스마다 개인 사본으로 바꾼다.
+function createBlankProject(): Project {
+  const project = freshBlankProject();
+  ownTileset(project, "beodeul_city");
+  return project;
+}
 
 function village(look: Partial<TilesetLook> | undefined, key: string | undefined, salt = 250118, theme?: string): { project: Project; map: GameMap } {
   const project = createBlankProject() as Project;

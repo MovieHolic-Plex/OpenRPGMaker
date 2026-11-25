@@ -5,7 +5,7 @@
 //  D3: 모델의 배치로 깐 여관이 다음 턴에 «배치 실내가 아니다» 로 거절됐다 — 맵이 그 배치의 선언을 지니면 기록을 이어 받는다.
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import type { Project } from "@/project/types";
 import type { ToolContext } from "@/editor/tools/types";
 import { createV2Tools } from "@/ai/v2/tools/verbs";
