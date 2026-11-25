@@ -100,12 +100,11 @@ describe("build_region_place", () => {
     expect(mergeMapBundles(base, [{ mapIds: [dungeon.mapId], project: dungeon.ctx.project }]).spills).toEqual([]);
   });
 
-  it("창고·마구간·학교·경비 초소·풍차·등대는 그 모양의 버들항 키트 외관으로 서고 실내·왕복 문·주인까지 짓는다", () => {
-    const expected: Record<string, string> = {
-      warehouse: "bd-house-ware0", stable: "bd-house-cstable", school: "bd-house-h122_0",
-      guard_post: "bd-pick-mountain-pass-guard-post", windmill: "bd-house-mill1", lighthouse: "bd-pick-fishing-port-lighthouse",
-    };
-    for (const [kind, kitId] of Object.entries(expected)) {
+  it.each([
+    ["warehouse", "bd-house-ware0"], ["stable", "bd-house-cstable"], ["school", "bd-house-h122_0"],
+    ["guard_post", "bd-pick-mountain-pass-guard-post"], ["windmill", "bd-house-mill1"], ["lighthouse", "bd-pick-fishing-port-lighthouse"],
+  ])("%s 는 그 모양의 버들항 키트(%s) 외관으로 서고 실내·왕복 문·주인까지 짓는다", (kind, kitId) => {
+    {
       const { ctx, mapId } = setup();
       const base = structuredClone(ctx.project);
       const before = structuredClone(ctx.project.maps[mapId]!);
