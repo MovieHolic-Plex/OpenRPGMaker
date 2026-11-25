@@ -1,0 +1,379 @@
+import { describe, expect, it } from "vitest";
+import { nextLivingBattler, targetScopeForCommand } from "@/battle/battleTargetResolver";
+import { createBattleRuntime } from "@/battle/runtime";
+import { deserialize } from "@/project/io";
+import type { Project, ItemRecord } from "@/project/types";
+import battleFixture from "./fixtures/projects/battle-v3.json";
+import { createBlankProject } from "@/project/defaults";
+import { normalizeCropRecord } from "@/project/farmModel";
+import { startSession } from "@/project/session";
+import { placeableKey } from "@/project/placeables";
+import { giveMonster } from "@/project/monsterCollection";
+import { setEquippedTool } from "@/project/toolActions";
+import { interactWithFarmPlot } from "@/player/farming";
+import { useItemFromMenu } from "@/player/playerItemUse";
+import { isolateTimers } from "./mergedTeardown";
+
+describe("battleDownedTargetRetarget", () => {
+  isolateTimers();
+  function battleProject(): Project {
+    return deserialize(JSON.stringify(battleFixture));
+  }
+  function addAlly(project: Project): void {
+    const source = project.database.actors[0];
+    if (!source) throw new Error("missing fixture actor");
+    const ally = JSON.parse(JSON.stringify(source)) as typeof source;
+    ally.id = "actor_ally";
+    ally.name = "동료";
+    project.database.actors.push(ally);
+  }
+  describe("nextLivingBattler", () => {
+    const downed = { id: "enemy-1", recordId: "enemy_slime" };
+    const living = { id: "enemy-2", recordId: "enemy_dragon" };
+    const later = { id: "enemy-3", recordId: "enemy_dragon" };
+
+    it("walks forward to the next candidate and wraps the roster", () => {
+      expect(nextLivingBattler([downed, living], [living], "enemy-1")).toBe(living);
+      expect(nextLivingBattler([living, downed], [living], "enemy-1")).toBe(living);
+      expect(nextLivingBattler([downed, later, living], [living], "enemy-1")).toBe(living);
+    });
+
+    it("does not substitute an id that is not on the roster", () => {
+      expect(nextLivingBattler([downed, living], [living], "enemy-99")).toBeUndefined();
+      expect(nextLivingBattler([downed, living], [living], "")).toBeUndefined();
+    });
+  });
+  describe("strict battle retargets a downed single target", () => {
+    it("lands the later actor attack on the next living enemy", () => {
+      const project = battleProject();
+      addAlly(project);
+      const troop = project.database.troops.find((entry) => entry.id === "troop_slime");
+      if (!troop) throw new Error("missing troop");
+      troop.enemyIds = ["enemy_slime", "enemy_dragon"];
+      troop.members = [
+        { enemyId: "enemy_slime", x: 80, y: 90, hidden: false },
+        { enemyId: "enemy_dragon", x: 140, y: 90, hidden: false },
+      ];
+      const slime = project.database.enemies.find((entry) => entry.id === "enemy_slime");
+      const dragon = project.database.enemies.find((entry) => entry.id === "enemy_dragon");
+      if (!slime || !dragon) throw new Error("missing enemies");
+      slime.stats = { ...slime.stats, maxHp: 1, attack: 1, defense: 0, agility: 1 };
+      dragon.stats = { ...dragon.stats, maxHp: 999, attack: 1, defense: 0, agility: 1, mind: 0 };
+      dragon.skillIds = [];
+
+      const runtime = createBattleRuntime({
+        project,
+        troopId: "troop_slime",
+        canEscape: false,
+        canLose: true,
+        battleFlow: "strict",
+        rng: () => 0,
+        party: {
+          levels: { actor_hero: 1, actor_ally: 1 },
+          experience: {},
+          partyActorIds: ["actor_hero", "actor_ally"],
+        },
+      });
+
+      expect(runtime.snapshot().activeActorId).toBe("actor_hero");
+      runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+      expect(runtime.snapshot().activeActorId).toBe("actor_ally");
+      runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-1" });
+
+      const snapshot = runtime.snapshot();
+      const slimeBattler = snapshot.enemies.find((enemy) => enemy.id === "enemy-1");
+      const dragonBattler = snapshot.enemies.find((enemy) => enemy.id === "enemy-2");
+      expect(slimeBattler?.hp).toBe(0);
+      expect(dragonBattler?.hp).toBeLessThan(dragonBattler?.maxHp ?? 0);
+      expect(snapshot.timeline.some((entry) => entry.kind === "damage" && entry.targetId === "enemy-2" && entry.userRecordId === "actor_ally")).toBe(true);
+    });
+
+    it("lands the later enemy attack on the next living actor", () => {
+      const project = battleProject();
+      addAlly(project);
+      const troop = project.database.troops.find((entry) => entry.id === "troop_slime");
+      if (!troop) throw new Error("missing troop");
+      troop.enemyIds = ["enemy_slime", "enemy_slime"];
+      troop.members = [
+        { enemyId: "enemy_slime", x: 80, y: 90, hidden: false },
+        { enemyId: "enemy_slime", x: 140, y: 90, hidden: false },
+      ];
+      const slime = project.database.enemies.find((entry) => entry.id === "enemy_slime");
+      if (!slime) throw new Error("missing slime");
+      slime.stats = { ...slime.stats, maxHp: 500, attack: 80, defense: 80, agility: 90, mind: 0 };
+      slime.skillIds = [];
+
+      const runtime = createBattleRuntime({
+        project,
+        troopId: "troop_slime",
+        canEscape: false,
+        canLose: true,
+        battleFlow: "strict",
+        rng: () => 0,
+        party: {
+          levels: { actor_hero: 1, actor_ally: 1 },
+          experience: {},
+          vitals: { actor_hero: { hp: 1, mp: 0 }, actor_ally: { hp: 400, mp: 0 } },
+          partyActorIds: ["actor_hero", "actor_ally"],
+        },
+      });
+
+      runtime.performActorCommand({ kind: "defend" });
+      runtime.performActorCommand({ kind: "defend" });
+
+      const snapshot = runtime.snapshot();
+      const hero = snapshot.actors.find((actor) => actor.recordId === "actor_hero");
+      const ally = snapshot.actors.find((actor) => actor.recordId === "actor_ally");
+      expect(hero?.hp).toBe(0);
+      expect(ally?.hp).toBeLessThan(400);
+      const enemyHits = snapshot.timeline.filter((entry) => entry.kind === "damage" && entry.commandKind === "enemyAttack");
+      expect(enemyHits.map((entry) => entry.targetId)).toEqual(["actor_hero", "actor_ally"]);
+    });
+
+    it("does not spend the turn when the attack names an unknown enemy", () => {
+      const project = battleProject();
+      const enemy = project.database.enemies.find((entry) => entry.id === "enemy_slime");
+      if (!enemy) throw new Error("missing slime");
+      enemy.stats = { ...enemy.stats, maxHp: 40, agility: 1 };
+      const runtime = createBattleRuntime({
+        project,
+        troopId: "troop_slime",
+        canEscape: false,
+        canLose: true,
+        battleFlow: "strict",
+        rng: () => 0,
+        party: { levels: { actor_hero: 1 }, experience: {}, partyActorIds: ["actor_hero"] },
+      });
+      const before = runtime.snapshot();
+      runtime.performActorCommand({ kind: "attack", targetEnemyId: "enemy-99" });
+      const after = runtime.snapshot();
+      expect(after.phase).toBe("actorCommand");
+      expect(after.activeActorId).toBe("actor_hero");
+      expect(after.enemies[0]?.hp).toBe(before.enemies[0]?.hp);
+      expect(after.timeline).toHaveLength(before.timeline.length);
+    });
+  });
+});
+
+describe("itemRuntimeUsability", () => {
+  isolateTimers();
+  const POISON = "state_poison";
+  const SLEEP = "state_sleep";
+  describe("default item runtime usability", () => {
+    it("uses every field or always item through the real menu authority", () => {
+      const project = createBlankProject();
+
+      for (const item of project.database.items.filter(isMenuUsable)) {
+        const session = startSession(project);
+        const actorId = eligibleActorId(project, item, session);
+        if (!actorId) throw new Error("default party actor is missing");
+        session.inventory[item.id] = 1;
+        session.actorVitals[actorId] = { hp: 1, mp: 0, maxHp: 500, maxMp: 200 };
+        session.actorStateIds ??= {};
+        session.actorStateIds[actorId] = afflictedStateIds(item);
+        session.actorSkillIds ??= {};
+        session.actorSkillIds[actorId] = project.database.skills
+          .map((skill) => skill.id)
+          .filter((skillId) => skillId !== learnedSkillId(item));
+
+        if (item.onlyEffectiveOnDeadActors) session.actorVitals[actorId]!.hp = 0;
+        const before = session.inventory[item.id] ?? 0;
+        let targetMonsterInstanceId: string | undefined;
+        if (item.careProfile) {
+          project.system.monsterCollection = true;
+          const speciesId = project.database.monsterSpecies?.[0]?.id;
+          if (!speciesId) throw new Error("default monster species is missing");
+          const given = giveMonster(project, session, { speciesId, level: 1 });
+          if (!given.ok) throw new Error("default monster could not be added");
+          targetMonsterInstanceId = given.instance.instanceId;
+        }
+        const result = useItemFromMenu(project, session, item.id, actorId, targetMonsterInstanceId);
+
+        expect(result.kind, item.id).toBe("used");
+        const expected = afterOneUse(item, before);
+        expect(session.inventory[item.id] ?? 0, item.id).toBe(expected.copies);
+        if (item.consumptionLimit !== "noLimit") {
+          expect(session.itemUseCharges?.[item.id], item.id).toBe(expected.charge);
+        }
+      }
+    });
+
+    it("기본 농기구 세 개로 경작, 물주기, 채굴 경로를 실행한다", () => {
+      const project = createBlankProject();
+      project.database.crops ??= [];
+      project.database.crops.push(normalizeCropRecord({
+        id: "crop_tool_probe",
+        name: "도구 시험 작물",
+        seedItemId: "item_seed_bag",
+        harvestItemId: "item_potato",
+        stages: [{ days: 1 }],
+        seasons: ["spring"],
+      }));
+      const sourceMap = project.maps[project.startMapId];
+      if (!sourceMap) throw new Error("기본 맵이 없습니다");
+      const map = { ...sourceMap, farmableArea: [{ x: 2, y: 2, w: 2, h: 1 }] };
+      const session = startSession(project);
+      session.inventory.item_hoe = 1;
+      session.inventory.item_watering_can = 1;
+      session.inventory.item_pickaxe = 1;
+
+      setEquippedTool(session, "item_hoe");
+      expect(interactWithFarmPlot(project, session, map, 2, 2, "till")).toMatchObject({
+        kind: "tilled",
+        itemId: "item_hoe",
+      });
+
+      setEquippedTool(session, "item_watering_can");
+      const plot = session.farmPlots?.[map.id]?.["2,2"];
+      if (!plot) throw new Error("경작된 밭이 없습니다");
+      session.farmPlots![map.id]!["2,2"] = { ...plot, cropId: "crop_tool_probe" };
+      expect(interactWithFarmPlot(project, session, map, 2, 2, "water")).toMatchObject({
+        kind: "watered",
+        itemId: "item_watering_can",
+      });
+
+      const rockKey = placeableKey(map.id, 3, 2);
+      session.placeables ??= {};
+      session.placeables[rockKey] = { id: "runtime-tool-rock", mapId: map.id, x: 3, y: 2, kind: "rock", itemId: "item_iron_ore" };
+      const oreBefore = session.inventory.item_iron_ore ?? 0;
+      setEquippedTool(session, "item_pickaxe");
+      expect(interactWithFarmPlot(project, session, map, 3, 2)).toMatchObject({
+        kind: "harvested",
+        itemId: "item_iron_ore",
+        source: "rock",
+      });
+      expect(session.placeables[rockKey]).toBeUndefined();
+      expect(session.inventory.item_iron_ore).toBe(oreBefore + 1);
+    });
+
+    it("lands a real effect and consumes one copy for every battle item", () => {
+      const project = createBlankProject();
+      const actorId = project.system.startActorIds[0];
+      const targetActorId = project.database.actors.find((actor) => actor.id !== actorId)?.id;
+      const troopId = project.database.troops[0]?.id;
+      if (!actorId || !targetActorId || !troopId) throw new Error("default battle fixture is incomplete");
+
+      for (const item of project.database.items.filter(isBattleUsable)) {
+        const runtime = battleRuntimeFor(project, troopId, actorId, targetActorId, item);
+        runtime.tick(1_000);
+        const before = runtime.snapshot();
+        const enemyId = before.enemies[0]?.id;
+        if (!enemyId) throw new Error("default troop enemy is missing");
+
+        // scope "none" 인 투척물은 발동 기술의 대상 범위를 따른다(battleTargetResolver) — 실제 전투 UI 와 같은 판정으로 대상을 고른다.
+        const scope = targetScopeForCommand(project, { kind: "item", itemId: item.id });
+        runtime.performActorCommand({
+          kind: "item",
+          itemId: item.id,
+          targetEnemyId: scope === "enemy" ? enemyId : "",
+          ...(scope === "ally" || scope === "allAllies" ? { targetActorId } : {}),
+        });
+        const after = runtime.snapshot();
+
+        const expected = afterOneUse(item, 2);
+        expect(after.eventState.inventory[item.id] ?? 0, item.id).toBe(expected.copies);
+        if (item.consumptionLimit !== "noLimit") {
+          expect(after.eventState.itemUseCharges?.[item.id], item.id).toBe(expected.charge);
+        }
+        expect(battleEffectLanded(before, after), item.id).toBe(true);
+      }
+    });
+  });
+  function isMenuUsable(item: ItemRecord): boolean {
+    return item.occasion === "always" || item.occasion === "field" || item.occasionField;
+  }
+  function isBattleUsable(item: ItemRecord): boolean {
+    if (item.occasion === "never" || item.occasion === "field" || item.captureProfile) return false;
+    if (item.occasionBattle === false && item.occasion !== "battle" && item.occasion !== "always") return false;
+    return Boolean(
+      item.skillId ||
+        item.activateSkillId ||
+        item.hpRecovery.flat > 0 ||
+        item.hpRecovery.percentMax > 0 ||
+        item.mpRecovery.flat > 0 ||
+        item.mpRecovery.percentMax > 0 ||
+        item.healStateIds.length > 0 ||
+        item.stateEffects.length > 0
+    );
+  }
+  /**
+   * 한 번 쓴 뒤의 사본 수·충전 — consumptionLimit N 은 사본 하나를 N 번 쓰고 없앤다(itemTransitions normalizeItemState).
+   * 공용 투척물(item_shared_battle_*)은 N=1 이라 한 번에 사본 하나가 줄고 충전은 남지 않는다.
+   */
+  function afterOneUse(item: ItemRecord, before: number): { copies: number; charge: number | undefined } {
+    if (item.consumptionLimit === "noLimit") return { copies: before - 1, charge: undefined };
+    return item.consumptionLimit === 1 ? { copies: before - 1, charge: undefined } : { copies: before, charge: 1 };
+  }
+  /** 직업·인물 제한이 있는 비전서(item_shared_manual_*)는 그 직업 인물이 써야 한다 — 그 인물을 파티 맨 앞에 세운다. */
+  function eligibleActorId(project: Project, item: ItemRecord, session: ReturnType<typeof startSession>): string | undefined {
+    const fallback = session.partyActorIds[0];
+    if (item.usableActorIds.length === 0 && item.usableClassIds.length === 0) return fallback;
+    const eligible = project.database.actors.find((actor) => item.usableActorIds.includes(actor.id) || item.usableClassIds.includes(actor.classId));
+    if (!eligible) return fallback;
+    if (!session.partyActorIds.includes(eligible.id)) session.partyActorIds = [eligible.id, ...session.partyActorIds];
+    return eligible.id;
+  }
+  const BASE_AFFLICTIONS = [
+    POISON,
+    SLEEP,
+    "state_paralysis",
+    "state_deep_poison",
+    "state_silence",
+    "state_attack_down",
+    "state_defense_down",
+    "state_agility_down",
+  ] as const;
+  /**
+   * 대상에게 미리 걸어 두는 상태 — 기본 묶음에 그 아이템이 푸는 상태를 더한다. 공용 아이템 카탈로그(item_shared_remedy_*)가
+   * 암흑·석화 같은 상태를 stateEffects remove 로 풀게 되면서, 기본 묶음에 없는 상태만 푸는 치료제는 「효과 없음」으로 거절됐다.
+   */
+  function afflictedStateIds(item: ItemRecord): string[] {
+    const removes = item.stateEffects.filter((effect) => effect.operation === "remove").map((effect) => effect.stateId);
+    return [...new Set([...BASE_AFFLICTIONS, ...item.healStateIds, ...removes])];
+  }
+  function learnedSkillId(item: ItemRecord): string | undefined {
+    return item.learnedSkillId ?? (item.type === "book" ? item.skillId : undefined);
+  }
+  function battleRuntimeFor(project: Project, troopId: string, actorId: string, targetActorId: string, item: ItemRecord) {
+    return createBattleRuntime({
+      project,
+      troopId,
+      canEscape: true,
+      canLose: true,
+      rng: () => 0,
+      sessionState: {
+        switches: {},
+        variables: {},
+        inventory: { [item.id]: 2 },
+      },
+      party: {
+        levels: { [actorId]: 1 },
+        experience: { [actorId]: 0 },
+        vitals: {
+          [actorId]: { hp: 500, mp: 200 },
+          [targetActorId]: { hp: 1, mp: 0 },
+        },
+        stateIds: {
+          [targetActorId]: afflictedStateIds(item),
+        },
+        partyActorIds: [actorId, targetActorId],
+      },
+    });
+  }
+  function battleEffectLanded(
+    before: ReturnType<ReturnType<typeof createBattleRuntime>["snapshot"]>,
+    after: ReturnType<ReturnType<typeof createBattleRuntime>["snapshot"]>,
+  ): boolean {
+    const beforeBattlers = [...before.actors, ...before.enemies];
+    const afterBattlers = [...after.actors, ...after.enemies];
+    return beforeBattlers.some((previous) => {
+      const next = afterBattlers.find((battler) => battler.id === previous.id);
+      return Boolean(
+        next &&
+          (next.hp !== previous.hp ||
+            next.mp !== previous.mp ||
+            JSON.stringify(next.stateIds) !== JSON.stringify(previous.stateIds))
+      );
+    });
+  }
+});
