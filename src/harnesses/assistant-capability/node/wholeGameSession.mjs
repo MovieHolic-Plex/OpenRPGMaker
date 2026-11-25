@@ -285,8 +285,9 @@ try {
       statusNotes: events.filter(e => e.type === 'execution_status' && e.name !== 'turn.diag' && e.name !== 'tool.size').map(e => `${e.name}: ${String(e.summary ?? '').slice(0, 300)}`).slice(-80),
       // 턴 안의 시간표 — [보낸 뒤 ms, 종류, 이름]. 도구 호출 수가 적은데 턴이 길 때 어디서 시간이 갔는지(모델 대기·도구·끝맺음 단계) 가른다.
       // render_request·checkpoint(워커가 편집기의 답을 기다리는 요청)는 넷째 칸에 요청 id 를, client_status(편집기가 낸 checkpoint.apply · render.dropped · stream.resume)는 읽은 시각(1초 간격)을 싣는다.
+      // 팀 실행의 팀원 사건은 끝 칸에 `agent:<팀원 id>` 를 붙인다 — 빌더마다 시작·끝을 갈라 간트로 그린다(team-mvp-revive).
       timeline: events.filter(e => ['tool_start', 'tool_end', 'execution_status', 'assistant', 'done', 'render_request', 'checkpoint', 'client_status'].includes(e.type) && Number.isFinite(e.at))
-        .map(e => [e.at - (sentAt || startedAt), e.type, String(e.name ?? '').slice(0, 60), ...(['render_request', 'checkpoint'].includes(e.type) ? [String(e.id ?? '')] : [])]),
+        .map(e => [e.at - (sentAt || startedAt), e.type, String(e.name ?? '').slice(0, 60), ...(['render_request', 'checkpoint'].includes(e.type) ? [String(e.id ?? '')] : []), ...(e.agentId ? [`agent:${e.agentId}`] : [])]),
       // 워커↔편집기 주고받기 요약 — 턴이 멈췄을 때 마지막으로 기다리던 것. 마지막 체크포인트가 마지막 checkpoint.apply 보다 뒤면 답이 안 간 것이다.
       handoffs: (() => {
         const at = e => e.at - (sentAt || startedAt), of = (type, name) => events.filter(e => e.type === type && (name === undefined || e.name === name));
