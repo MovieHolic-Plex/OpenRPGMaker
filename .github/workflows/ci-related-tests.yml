@@ -1,6 +1,13 @@
 name: ci-related-tests
 
-# PR 이 바꾼 코드와 «직접» 이어진 vitest 파일만 돌린다 — pull_request(→ main) 와 수동(workflow_dispatch).
+# PR 이 바꾼 코드와 import 그래프로 이어진 vitest 파일을 돌린다 — pull_request(→ main) 와 수동(workflow_dispatch).
+#
+# 2026-11-25 ci-speed: 깊이 1 → 런타임 import 그래프(가까운 것부터) + 조각(matrix) + 넓은 변경.
+#   깊이 1 만 보던 판은 v0.420 을 막은 ci-full 새 실패를 PR 단계에서 거의 못 잡았다(재현 표: http://mdc2:18301/ci-speed.html).
+#   select 잡이 scripts/vitest-related.mjs 로 고르고 조각 수(1~4)를 정한다. 조각마다 같은 시간 상한(380초 예상·450초 시간 상자)이 걸린다.
+#   «넓은 변경»(그래프로 닿는 시험 > 500 또는 바뀐 파일 > 80 — 공용 허브 모듈을 건드린 PR)은 상한 없이 닿는 시험 전부를 12조각으로 돈다(ci-full 의 그 PR 판).
+#   조각 잡 이름은 `related-tests (n)` 이다. 정보용인 것은 그대로다(merge-pr 필수 체크 아님).
+#   아래 «깊이 1» 설명은 옛 판의 근거로 남긴다.
 # 러너는 ci-vitest-files.yml 과 같은 GitHub 호스티드(ubuntu-latest)다(#5022 가 무거운 잡을 호스티드로 옮겼다).
 #
 # 왜 (2026-11-24): PR 에는 ci-fast(타입체크·빌드·패리티·정적)만 돌고 전체 vitest(약 3,000파일, 시험 시간 합 16.5시간)는 ci-full 만 돈다.
@@ -47,14 +54,14 @@ permissions:
   contents: read
 
 jobs:
-  related-tests:
-    name: related-tests
+  select:
+    name: related-select
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    env:
-      VITEST_WORKERS: "4"
-      # vitest 시간 상자(초). 넘으면 vitest 를 끊고 «끝까지 본 만큼» 만 보고한다 — 잡이 10분을 넘지 않게 하는 마지막 보루다(선택기 상한은 이 안에 끝나도록 잡혀 있다).
-      VITEST_TIMEBOX_SECONDS: "450"
+    timeout-minutes: 10
+    outputs:
+      count: ${{ steps.select.outputs.count }}
+      mode: ${{ steps.select.outputs.mode }}
+      matrix: ${{ steps.select.outputs.matrix }}
     steps:
       # pull_request 체크아웃은 「PR 머리 + 지금 main」 병합 커밋이라 HEAD^1 = main 이다(ci-fast.yml 과 같다) — 이력은 둘이면 된다.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -62,7 +69,7 @@ jobs:
           fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 0 }}
           persist-credentials: false
 
-      # 선택기는 node 내장 모듈과 git 만 쓴다 — 고른 파일이 0개면 아래 무거운 설정(의존성·bun·python)을 건너뛴다.
+      # 선택기는 node 내장 모듈과 git 만 쓴다 — 고른 파일이 0개면 조각 잡이 아예 뜨지 않는다.
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24
@@ -77,22 +84,61 @@ jobs:
         run: |
           set -euo pipefail
           if [ "$EVENT" = "pull_request" ]; then base="HEAD^1"; head="HEAD"; else base="$BASE"; head="${HEAD_REF:-HEAD}"; fi
+          mkdir -p "$RUNNER_TEMP/related"
           # shellcheck disable=SC2086 — SELECTOR_ARGS 는 공백으로 나눈 인자 목록이다(수동 실행 전용).
-          node scripts/vitest-related.mjs --base "$base" --head "$head" --workers "$VITEST_WORKERS" --out "$RUNNER_TEMP/related.list" --summary "$GITHUB_STEP_SUMMARY" $SELECTOR_ARGS
-          count=$(grep -c . "$RUNNER_TEMP/related.list" || true)
-          echo "count=${count}" >> "$GITHUB_OUTPUT"
+          node scripts/vitest-related.mjs --base "$base" --head "$head" --out "$RUNNER_TEMP/related/all.list" --matrix "$RUNNER_TEMP/related/matrix.json" --summary "$GITHUB_STEP_SUMMARY" $SELECTOR_ARGS
+          count=$(grep -c . "$RUNNER_TEMP/related/all.list" || true)
+          {
+            echo "count=${count}"
+            echo "mode=$(node -p 'require(process.argv[1]).mode' "$RUNNER_TEMP/related/matrix.json")"
+            echo "matrix=$(cat "$RUNNER_TEMP/related/matrix.json")"
+          } >> "$GITHUB_OUTPUT"
           if [ "$count" = "0" ]; then
-            echo "관련 vitest 파일 없음 — 건너뛴다 (바뀐 코드와 직접 이어진 시험이 없다. 전체는 ci-full 이 본다)"
-            echo "관련 vitest 파일 없음 — 건너뛴다. 전체는 ci-full 이 본다." >> "$GITHUB_STEP_SUMMARY"
+            echo "관련 vitest 파일 없음 — 건너뛴다. 전체는 ci-full 이 본다." | tee -a "$GITHUB_STEP_SUMMARY"
           fi
 
-      - uses: ./.github/actions/linux-ci
+      # 조각 잡이 같은 목록을 쓰게 넘긴다(선택기를 다시 돌리지 않는다).
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: steps.select.outputs.count != '0'
+        with:
+          name: related-lists
+          path: ${{ runner.temp }}/related
+          retention-days: 3
+
+  related-tests:
+    name: related-tests (${{ matrix.chunk }})
+    needs: select
+    if: needs.select.outputs.count != '0'
+    runs-on: ubuntu-latest
+    # 넓은 변경은 시간 상자 없이 닿는 시험 전부를 돈다(조각 12개 — 한 조각 예상 40분 안팎).
+    timeout-minutes: ${{ needs.select.outputs.mode == 'wide' && 120 || 15 }}
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.select.outputs.matrix) }}
+    env:
+      VITEST_WORKERS: "4"
+      # vitest 시간 상자(초). 넘으면 vitest 를 끊고 «끝까지 본 만큼» 만 보고한다 — 좁은 변경의 조각이 10분을 넘지 않게 하는 마지막 보루다.
+      VITEST_TIMEBOX_SECONDS: ${{ needs.select.outputs.mode == 'wide' && '6600' || '450' }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: related-lists
+          path: ${{ runner.temp }}/related
+
+      - name: 조각 목록
+        env:
+          CHUNK: ${{ matrix.chunk }}
+        run: cp "$RUNNER_TEMP/related/chunk-${CHUNK}.list" "$RUNNER_TEMP/related.list" && wc -l "$RUNNER_TEMP/related.list"
+
+      - uses: ./.github/actions/linux-ci
         with:
           bun-version: '1.4.2'
 
       - name: python 의존성 (numpy·Pillow)
-        if: steps.select.outputs.count != '0'
         run: |
           venv="$RUNNER_TEMP/vitest-python"
           python3 -m venv "$venv"
@@ -100,13 +146,9 @@ jobs:
           echo "$venv/bin" >> "$GITHUB_PATH"
 
       # 실패는 이 스텝이 아니라 아래 «결과» 스텝이 판정한다(기준선에 있는 실패는 새 실패가 아니다). 설정 스텝의 실패는 그대로 잡을 실패시킨다.
-      # 워커 4 는 ci-vitest-files 와 같다(run-vitest.mjs 가 러너의 cgroup 메모리·코어에 맞춰 더 깎는다). 끊긴 종료 코드(124)는 «결과» 스텝이 읽는다.
-      # 스텝 제한 9분은 `timeout` 이 못 끊는 경우의 마지막 안전장치다.
       - name: vitest (관련 파일만)
         id: vitest
-        if: steps.select.outputs.count != '0'
         continue-on-error: true
-        timeout-minutes: 9
         run: |
           set -uo pipefail
           set +e   # 기본 셸(bash -e)에서도 파이프라인 종료 코드를 읽어 아래 결과 스텝에 넘긴다
@@ -119,9 +161,11 @@ jobs:
           exit "$code"
 
       - name: 결과 (RESULT)
-        if: always() && steps.select.outputs.count != '' && steps.select.outputs.count != '0'
+        if: always()
         env:
           OUTCOME: ${{ steps.vitest.outcome }}
+          CHUNK: ${{ matrix.chunk }}
+          MODE: ${{ needs.select.outputs.mode }}
         run: |
           set -uo pipefail
           mapfile -t files < "$RUNNER_TEMP/related.list"
@@ -140,7 +184,7 @@ jobs:
               line="RESULT: PASS ${total} files" ;;
             failure)
               if [ -n "$incomplete" ]; then
-                line="RESULT: INCOMPLETE ${total} files (시간 상자 ${VITEST_TIMEBOX_SECONDS}초에 끊겼다 — 결과가 보인 파일 ${seen}개, 나머지는 nightly 가 본다)"
+                line="RESULT: INCOMPLETE ${total} files (시간 상자 ${VITEST_TIMEBOX_SECONDS}초에 끊겼다, 조각 ${CHUNK} — 결과가 보인 파일 ${seen}개, 나머지는 nightly 가 본다)"
               else
               failed=$(sed 's/\x1b\[[0-9;]*m//g' "$RUNNER_TEMP/vitest.log" 2>/dev/null \
                 | grep -oE 'FAIL +[^ >]+\.(test|spec)\.[cm]?[jt]sx?' | awk '{print $2}' | sort -u || true)
@@ -160,7 +204,7 @@ jobs:
           # 끊긴 실행은 «기준선에서 뺄 것» 을 말할 수 없다(안 끝난 파일이 통과로 보인다).
           if [ -n "$incomplete" ]; then more=$(printf '%s\n' "$more" | grep -v '^NOW-PASSING'); fi
           verdict=$(printf '%s\n' "$more" | tail -n 1)
-          printf '### vitest 결과\n\n```\n%s\n%s\n```\n' "$line" "$more" >> "$GITHUB_STEP_SUMMARY"
+          printf '### vitest 결과 (조각 %s · %s)\n\n' "$CHUNK" "$MODE" >> "$GITHUB_STEP_SUMMARY"; printf '```\n%s\n%s\n```\n' "$line" "$more" >> "$GITHUB_STEP_SUMMARY"
           echo "$line"
           echo "$more"
           note=$({ printf '%s\n' "$verdict"; printf '%s\n' "$more" | head -n 3; } | paste -sd'|' - | sed 's/|/ · /g')

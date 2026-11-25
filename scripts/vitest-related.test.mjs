@@ -6,8 +6,9 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 import {
-  applyBudget, findDirectImporters, findLiteralReferences, importCandidates, isSafetyNet, isVitestFile, literalKeys, parseSpecifiers, selectRelated,
+  applyBudget, findDirectImporters, findLiteralReferences, importCandidates, isSafetyNet, isVitestFile, literalKeys, parseSpecifiers, planChunks, selectRelated,
 } from "./vitest-related.mjs";
+import { buildGraph } from "./lib/testImportGraph.mjs";
 
 test("isVitestFile follows the vitest.config.ts include/exclude", () => {
   assert.equal(isVitestFile("test/a.test.ts"), true);
@@ -138,6 +139,38 @@ test("selectRelated adds changed tests, direct importers and literal references;
     ["test/a.test.ts", "direct-import"], ["test/lit.test.ts", "string-literal"], ["test/new.test.ts", "changed-test"], ["test/pkg.test.ts", "direct-import"],
   ]);
   assert.deepEqual(result.skipped, []);
+});
+
+test("selectRelated reaches deeper importers through the runtime graph, nearest first, and goes wide past the threshold", () => {
+  const sources = new Map([
+    ["src/leaf.ts", "export const x = 1;"],
+    ["src/mid.ts", 'import { x } from "./leaf";'],
+    ["src/typeonly.ts", 'import type { x } from "./leaf";'],
+    ["test/near.test.ts", 'import "../src/leaf";'],
+    ["test/far.test.ts", 'import "../src/mid";'],
+    ["test/types.test.ts", 'import "../src/typeonly";'],
+  ]);
+  const { reverse } = buildGraph(sources, sources.keys());
+  const testSources = new Map([...sources].filter(([path]) => path.startsWith("test/")));
+  const narrow = selectRelated({ changed: ["src/leaf.ts"], testSources, exists: () => true, reverseGraph: reverse });
+  assert.equal(narrow.mode, "narrow");
+  assert.deepEqual(narrow.selected.map((entry) => [entry.file, entry.tier]), [["test/far.test.ts", "import-graph"], ["test/near.test.ts", "direct-import"]]);
+  assert.equal(narrow.chunks.length, 1);
+  // 빠듯한 상한에서는 먼 것(깊이 2)부터 미룬다.
+  const tight = selectRelated({ changed: ["src/leaf.ts"], testSources, exists: () => true, reverseGraph: reverse, options: { budgetSeconds: 30, startupSeconds: 0, perFileSeconds: 20, workers: 1, chunks: 1 } });
+  assert.deepEqual(tight.selected.map((entry) => entry.file), ["test/near.test.ts"]);
+  assert.deepEqual(tight.skipped.map((entry) => entry.file), ["test/far.test.ts"]);
+  const wide = selectRelated({ changed: ["src/leaf.ts"], testSources, exists: () => true, reverseGraph: reverse, options: { wideTests: 1, wideChunks: 2, budgetSeconds: 1 } });
+  assert.equal(wide.mode, "wide");
+  assert.deepEqual(wide.chunks.map((chunk) => chunk.files.length).sort(), [1, 1]);
+  assert.deepEqual(wide.skipped, []);
+});
+
+test("planChunks spreads files by cost (LPT) deterministically", () => {
+  const entries = [["a", 100], ["b", 60], ["c", 50], ["d", 10]].map(([name, sec]) => ({ file: `test/${name}.test.ts`, sec }));
+  const chunks = planChunks(entries, 2, { perFileSeconds: 0, factor: 1, workers: 1, startupSeconds: 0 });
+  assert.deepEqual(chunks.map((chunk) => chunk.files), [["test/a.test.ts", "test/d.test.ts"], ["test/b.test.ts", "test/c.test.ts"]]);
+  assert.deepEqual(chunks.map((chunk) => chunk.estWallSeconds), [110, 110]);
 });
 
 test("CLI diffs base...head in a real git repo and writes the list and the nightly-deferred summary", () => {
