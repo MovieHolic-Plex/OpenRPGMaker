@@ -16,7 +16,7 @@ describe("dungeonWorldSkeleton", () => {
   const gate = (id: string, x: number, y: number, mapId: string, tx: number, ty: number) => ({ id, name: id, x, y, trigger: { kind: "playerTouch" }, commands: [],
     pages: [{ id: `${id}_p0`, name: id, conditions: [], graphic: { transparent: true }, trigger: { kind: "playerTouch" }, priority: "below",
       movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [{ kind: "transfer", mapId, x: tx, y: ty }] }] }) as unknown as GameEvent;
-  it("세계 문만 있는 뼈대 맵에도 던전을 짓고, 문은 목적지 그대로 걸을 수 있는 칸에, 들어오는 문 도착 칸은 돌아오는 문 옆에 둔다", () => {
+  it("세계 문만 있는 뼈대 맵에도 던전을 짓고, 문은 목적지 그대로 걸을 수 있는 칸에, 들어오는 문은 고치지 않고 알린다", () => {
     const ctx = { project: createBlankProject() };
     expect(runTool(ctx, "create_map", { id: "map_forest", name: "숲", width: 30, height: 24 }).ok).toBe(true);
     expect(runTool(ctx, "create_map", { id: "map_cave", name: "동굴", width: 30, height: 24 }).ok).toBe(true);
@@ -35,9 +35,9 @@ describe("dungeonWorldSkeleton", () => {
       expect(isPassable(project, map, placed[0]!.x, placed[0]!.y)).toBe(true);
       if (exit) for (const cell of [exit, exit.front]) expect(Math.abs(cell.x - placed[0]!.x) + Math.abs(cell.y - placed[0]!.y)).toBeGreaterThan(1);
     }
-    const back = map.events.find((event) => event.id === "ev_world_gate_1")!;
-    const landing = project.maps[start]!.events[0]!.pages![0]!.commands[0] as { x: number; y: number };
-    expect(Math.max(Math.abs(landing.x - back.x), Math.abs(landing.y - back.y))).toBeLessThanOrEqual(2);
+    // 들어오는 문은 다른 맵(팀에서는 다른 담당 몫)이라 고치지 않고 경고만 한다 — 범위 가드가 호출 전체를 되돌리지 않게.
+    expect(project.maps[start]!.events[0]!.pages![0]!.commands[0]).toEqual({ kind: "transfer", mapId: "map_forest", x: 29, y: 23 });
+    expect((res.warnings ?? []).some((line) => line.includes("들어오는 문"))).toBe(true);
   });
 });
 

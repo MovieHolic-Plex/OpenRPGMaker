@@ -769,7 +769,7 @@ function takeWorldSkeletonGates(draft: Project, mapId: unknown): GameEvent[] {
   return gates;
 }
 
-/** 뗀 세계 문을 새 던전에 다시 놓는다: 첫 문은 입구 계단·문, 나머지는 입구에서 가장 먼 바닥(서로 떨어지게). 목적지는 그대로다 — 이 맵으로 들어오는 문의 도착 칸은 transferRepair 로 맞춘다. */
+/** 뗀 세계 문을 새 던전에 다시 놓는다: 첫 문은 입구 계단·문, 나머지는 입구에서 가장 먼 바닥(서로 떨어지게). 목적지는 그대로다 — 이 맵으로 들어오는 문의 도착 칸은 경고로 알리고 팀 끝맺음(transferRepair)이 맞춘다. */
 function replaceWorldGates(draft: Project, mapId: string, data: Record<string, unknown>, gates: readonly GameEvent[], warnings: string[]): string {
   const map = draft.maps[mapId]!;
   const stair = data.entryStair as Stair | null;
@@ -814,9 +814,11 @@ function replaceWorldGates(draft: Project, mapId: string, data: Record<string, u
       pages: (gate.pages ?? []).map((page) => ({ ...page, trigger, priority: bump ? "same" : "below" })) } as GameEvent);
     placed.push(`${gate.id}(${at.x},${at.y})`);
   });
-  // 다른 장소 맵에서 이 맵으로 들어오는 문의 도착 칸은 맵이 바뀌어 벽·맵 밖일 수 있다 — 돌아오는 문 옆으로 맞춘다.
-  const landings = repairWorldTransfers(draft, { toMapId: mapId });
-  return `세계 문 ${gates.length}개를 새 던전에 다시 놓았다: ${placed.join(", ")} — 목적지는 그대로.${landings.length ? ` 들어오는 문 도착 칸 ${landings.length}곳을 맞췄다: ${landings.join(" / ")}.` : ""}`;
+  // 다른 장소 맵에서 이 맵으로 들어오는 문의 도착 칸은 맵이 바뀌어 벽·맵 밖일 수 있다. 그 문은 다른 맵의 것이라 여기서 고치지 않는다 —
+  // 팀 실행에서는 그 맵이 다른 담당 몫이라 범위 가드가 이 호출 전체를 되돌린다. 사본으로 셈만 해 경고로 알리고, 팀 끝맺음(transferRepair)이 맞춘다.
+  const landings = repairWorldTransfers({ ...draft, maps: structuredClone(draft.maps) }, { toMapId: mapId });
+  if (landings.length) warnings.push(`다른 맵에서 들어오는 문 ${landings.length}곳의 도착 칸이 새 던전과 안 맞는다(${landings.join(" / ")}). 그 맵에서 transfer 도착 칸을 고치거나, 팀 실행이면 끝맺음이 맞춘다.`);
+  return `세계 문 ${gates.length}개를 새 던전에 다시 놓았다: ${placed.join(", ")} — 목적지는 그대로.`;
 }
 
 /** author_dungeon 본체: 층 수만큼 짓고(계단 잇기), rpg 장르면 적·상자·보스·쉼터까지 채운다. */

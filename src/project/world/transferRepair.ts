@@ -21,9 +21,18 @@ const RINGS: readonly Pt[] = [
   { x: 0, y: 2 }, { x: 0, y: -2 }, { x: 2, y: 0 }, { x: -2, y: 0 },
 ];
 
+/** 이벤트가 실행하는 transfer 전부 — 선택지·조건 분기 안의 것까지(분기 필드 이름에 묶이지 않게 명령 트리를 통째로 훑는다). */
 function transfersOf(event: GameEvent): TransferCommand[] {
-  const lists = event.pages?.length ? event.pages.map((page) => page.commands ?? []) : [event.commands ?? []];
-  return lists.flat().filter((command): command is TransferCommand => command.kind === "transfer");
+  const out: TransferCommand[] = [];
+  const visit = (value: unknown): void => {
+    if (Array.isArray(value)) { for (const item of value) visit(item); return; }
+    if (!value || typeof value !== "object") return;
+    const record = value as Record<string, unknown>;
+    if (record.kind === "transfer" && typeof record.mapId === "string") out.push(record as unknown as TransferCommand);
+    for (const child of Object.values(record)) if (child && typeof child === "object") visit(child);
+  };
+  visit(event.pages?.length ? event.pages.map((page) => page.commands ?? []) : event.commands ?? []);
+  return out;
 }
 
 function inside(map: GameMap, p: Pt): boolean {
