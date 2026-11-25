@@ -11,7 +11,7 @@ const esc = (s: unknown) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&
 const COLOR: Record<Status, string> = { 완전: "#2f9e44", 부분: "#f08c00", 불가: "#c92a2a" };
 const img = (file: string) => existsSync(file) ? `<img src="data:image/png;base64,${readFileSync(file).toString("base64")}" alt="">` : `<div class="miss">그림 없음</div>`;
 
-const [capPath, capturesDir, outPath, livePath] = process.argv.slice(2);
+const [capPath, capturesDir, outPath, livePath, sheetPath] = process.argv.slice(2);
 if (!capPath || !capturesDir || !outPath) throw new Error("page.ts <capability.json> <캡처 상위 폴더> <출력.html> [실측 json]");
 const cap = JSON.parse(readFileSync(resolve(capPath), "utf8")) as { summary: any; rows: Row[] };
 // 옛 판정(첫 호출 거부 = 불가)으로 낸 JSON 도 지금 규칙(도구가 있으면 부분)으로 읽는다.
@@ -34,18 +34,25 @@ const byGenre = genres.map((g) => {
 }).join("");
 
 const recipes = existsSync(capturesDir) ? readdirSync(capturesDir).filter((d) => existsSync(resolve(capturesDir, d, "capture.json"))).sort() : [];
+const OUTDOOR = new Set(["bridge", "gate", "farm", "market"]);
 const recipeHtml = recipes.map((d) => {
   const dir = resolve(capturesDir, d);
   const info = JSON.parse(readFileSync(resolve(dir, "capture.json"), "utf8"));
-  const pics: [string, string][] = [["1-before", "전: 영역과 지시"], ["2-after-exterior", "후: 외관 + 결과 카드"], ["4-interior", "새 실내 맵"], ["5-play-outside", "테스트 플레이: 문 앞"], ["6-play-inside", "문으로 들어감"], ["7-play-back-outside", "다시 나옴"]];
-  return `<section class="recipe"><h3>${esc(info.instruction)} <small>(${esc(info.kind)})</small></h3><p class="card">결과 카드: <b>${esc(info.card)}</b> · ${esc(info.result?.summary ?? "")}</p><div class="pics">${pics.map(([f, t]) => `<figure>${img(resolve(dir, `${f}.png`))}<figcaption>${t}</figcaption></figure>`).join("")}</div></section>`;
+  const away = existsSync(resolve(dir, "1b-elsewhere-during-turn.png"));
+  const all: [string, string][] = away
+    ? [["1-before", "전: 영역과 지시"], ["1b-elsewhere-during-turn", "턴 도중 다른 맵(잿불 마을)을 연다"], ["2-after-exterior", "턴이 끝나면 영역 맵으로 돌아와 결과 카드"]]
+    : OUTDOOR.has(String(info.kind))
+    ? [["1-before", "전: 영역과 지시"], ["2-after-exterior", "후: 결과 카드"], ["3-compare-before", "카드 「전/후」: 실행 전 그림"], ["5-play-outside", "테스트 플레이"]]
+    : [["1-before", "전: 영역과 지시"], ["2-after-exterior", "후: 외관 + 결과 카드"], ["4-interior", "새 실내 맵"], ["5-play-outside", "테스트 플레이: 문 앞"], ["6-play-inside", "문으로 들어감"], ["7-play-back-outside", String(info.kind).endsWith("_entrance") ? "나가는 계단 쪽으로 걸음" : "다시 나옴"]];
+  const pics = all;
+  return `<section class="recipe"><h3>${away ? "[다른 맵을 보는 중 턴 끝남] " : ""}${esc(info.instruction)} <small>(${esc(info.kind)})</small></h3><p class="card">결과 카드: <b>${esc(info.card)}</b> · ${esc(info.result?.summary ?? "")}</p><div class="pics">${pics.map(([f, t]) => `<figure>${img(resolve(dir, `${f}.png`))}<figcaption>${t}</figcaption></figure>`).join("")}</div></section>`;
 }).join("");
 
 const changed = cap.rows.filter((r) => r.before.status !== r.after.status);
 const stillOpen = cap.rows.filter((r) => r.after.status !== "완전");
 const rowTable = (rows: Row[]) => `<table class="rows"><tr><th>지시</th><th>장르</th><th>전</th><th>후</th><th>막히는 곳(후)</th></tr>${rows.map((r) => `<tr><td>${esc(r.text)}</td><td>${esc(r.genre)}</td><td style="color:${COLOR[r.before.status]}">${r.before.status}</td><td style="color:${COLOR[r.after.status]}">${r.after.status}</td><td>${esc(r.after.reason)}${r.after.where ? `<br><code>${esc(r.after.where)}</code>` : ""}</td></tr>`).join("")}</table>`;
 
-const liveHtml = live ? `<h2>실제 조수 실측 (Sonnet 5.5 high)</h2><p>${esc(live.note ?? "")}</p><table class="rows"><tr><th>지시</th><th>부른 도구</th><th>결과</th><th>시간</th></tr>${(live.runs ?? []).map((r: any) => `<tr><td>${esc(r.text)}</td><td>${esc((r.tools ?? []).join(", "))}</td><td>${esc(r.verdict)}</td><td>${esc(r.seconds)}s</td></tr>`).join("")}</table>` : `<h2>실제 조수 실측</h2><p>실측 필요 — 아직 돌리지 않았다.</p>`;
+const liveHtml = live ? `<h2>실제 조수 실측 (Sonnet 5.5 high)</h2><p>${esc(live.note ?? "")}</p><table class="rows"><tr><th>지시</th><th>부른 도구</th><th>결과</th><th>시간</th></tr>${(live.runs ?? []).map((r: any) => `<tr><td>${esc(r.text)}</td><td>${esc((r.tools ?? []).join(", "))}</td><td>${esc(r.verdict)}</td><td>${esc(r.seconds)}s</td></tr>`).join("")}</table><div class="pics">${(live.runs ?? []).filter((r: any) => r.shot).map((r: any) => `<figure>${img(r.shot)}<figcaption>${esc(r.text)} — 턴이 끝난 뒤 화면</figcaption></figure>`).join("")}</div>` : `<h2>실제 조수 실측</h2><p>실측 필요 — 아직 돌리지 않았다.</p>`;
 
 const html = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>영역 지시 — 능력 표와 장소 레시피</title><style>
 body{font:14px/1.5 system-ui,sans-serif;margin:0;padding:24px;background:#f8f9fa;color:#212529;max-width:1400px}
@@ -66,6 +73,12 @@ details{margin:12px 0}summary{cursor:pointer;font-weight:600}
 <p class="legend">색: <span style="background:${COLOR.완전}"></span>완전 <span style="background:${COLOR.부분}"></span>부분 <span style="background:${COLOR.불가}"></span>불가 · 칸에 마우스를 올리면 지시와 이유</p>
 <div class="grids"><div class="panel"><h3>전</h3>${grid("before")}</div><div class="panel"><h3>후</h3>${grid("after")}</div></div>
 <table><tr><th>장르</th><th>지시 수</th><th>전 완전/부분/불가</th><th>후 완전/부분/불가</th></tr>${byGenre}</table>
+<h2>이번 회차(r2)에 더한 것</h2><ul>
+<li>레시피 11종 → 21종: 창고·마구간·학교·경비 초소·풍차·등대(건물 키트 외관 + 실내 + 문 왕복 + 사람, #5080), 다리·성문·농장·시장(새 맵 없이 영역 안에만, #5084).</li>
+<li>턴이 실내 맵이나 다른 맵을 보여 준 채 끝나도 영역 맵으로 돌아와 결과 카드를 띄운다(#5082). 실측에서 카드가 안 보이던 문제.</li>
+<li>버들항에서 「물·호수·강」으로 채우면 물 준 경작지가 깔리던 것을 버들항 물로(#5086). 다른 7개 타일셋도 함께 바로잡힘.</li>
+<li>안 고친 것: 묘지(버들항에 묘비 그림 없음), 퍼즐 8개(author_map_puzzle 이 맵 전체를 퍼즐 방으로 다시 짓는다. 영역 지시용으로는 새 퍼즐 맵 + 문 연결 레시피가 맞다, 후속), 소품 낱말 거부(도구가 가까운 라벨을 돌려줘 모델이 다시 부르면 된다).</li></ul>
+${sheetPath && existsSync(sheetPath) ? `<h3>새 레시피 결과(결정적 리플레이, 칩셋으로 그림 · 노란 틀 = 영역 · 분홍 = 사람/문)</h3><figure>${img(sheetPath)}</figure>` : ""}
 <h2>레시피별 실제 앱 캡처</h2><p>편집기에서 영역을 잡고 지시 → 결과 카드 → 새 실내 맵 → 테스트 플레이로 문을 드나든다. 조수 응답은 대본(결정적 도구 리플레이)이다.</p>
 ${recipeHtml || "<p>캡처 없음</p>"}
 ${liveHtml}

@@ -106,10 +106,12 @@ const NO_RECIPE: readonly (readonly [string, Call | null])[] = [
   ["묘지 만들어 줘", null], ["시장 열어 줘", ["build_region_place", { kind: "market" }]],
   ["사냥터 만들어 줘", ["make_hunting_ground", {}]], ["캠프 만들어 줘", ["$campfire", {}]],
 ];
+/** 새 맵 없이 영역 안에만 서는 레시피(다리·성문·농장·시장) — 새 맵이 아니라 영역 안 칸 변화로 본다. */
+const OUTDOOR_KINDS = new Set(["bridge", "gate", "farm", "market"]);
 NO_RECIPE.forEach(([text, call], i) => add({
   id: `place-other-${i + 1}`, genre: "장소 짓기", text,
   // 레시피 도입 전(build_region_place 에 그 종류가 없던 때)은 짓는 도구가 없었다.
-  ...(call?.[0] === "build_region_place" ? { before: (): Call[] => [["$missing", { what: text }]], expect: (project: Project, env: Env) => needNewMap(project, env) ?? needEvent(1)(project, env) } : {}),
+  ...(call?.[0] === "build_region_place" ? { before: (): Call[] => [["$missing", { what: text }]], expect: (project: Project, env: Env) => (OUTDOOR_KINDS.has(String(call[1].kind)) ? needCells(project, env) : needNewMap(project, env)) ?? needEvent(1)(project, env) } : {}),
   after: (env) => {
     if (!call) return [["$missing", { what: text }]];
     const [name, args] = call;
