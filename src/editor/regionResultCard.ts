@@ -90,6 +90,17 @@ function shortInstruction(text: string): string {
   return flat.length > MAX_INSTRUCTION_CHARS ? `${flat.slice(0, MAX_INSTRUCTION_CHARS - 1)}…` : flat;
 }
 
+/**
+ * 영역 턴이 끝났을 때 카드를 영역 맵 위에 띄운다. 턴이 실내·던전 같은 새 맵으로 화면을 옮겨 두었으면 영역 맵으로 돌아온다 —
+ * 실측(2026-11-24, 「여기 상점 만들어 줘」): 턴이 실내 맵을 보여 주는 채로 끝나 맵 위 결과 카드가 뜨지 않았다(카드는 지금 보는 맵에만 선다).
+ * 사람은 영역을 잡은 그 자리에서 받아들일지 되돌릴지 정하므로, 새 맵은 카드 요약(「새 맵 …」)으로 알린다.
+ * select 는 맵을 여는 함수(selectEditorMap) — 열지 못하면 카드도 없다.
+ */
+export function showRegionResultCardOnRegionMap(input: RegionResultInput, select: (mapId: MapId) => boolean, host?: HTMLElement | null): HTMLElement | null {
+  if (editorState.get().currentMapId !== input.mapId && !select(input.mapId)) return null;
+  return showRegionResultCard(input, host);
+}
+
 let current: { readonly root: HTMLElement; readonly close: () => void } | null = null;
 
 export function closeRegionResultCard(): void {

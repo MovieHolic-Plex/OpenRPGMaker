@@ -1,5 +1,7 @@
+// @vitest-environment happy-dom
 import { describe, expect, it } from "vitest";
-import { countRegionChanges, regionResultSummary, regionTurnTouched } from "@/editor/regionResultCard";
+import { closeRegionResultCard, countRegionChanges, regionResultSummary, regionTurnTouched, showRegionResultCardOnRegionMap } from "@/editor/regionResultCard";
+import { editorState } from "@/editor/editorState";
 import type { Project } from "@/project/types";
 
 function project(lower: number[], events: { id: string; x: number; y: number }[] = []): Project {
@@ -43,6 +45,24 @@ describe("region result card counts", () => {
     expect(regionTurnTouched(before, after, "m1", { x: 0, y: 0, width: 2, height: 2 })).toBe(true);
     expect(regionTurnTouched(before, project(base), "m1", { x: 0, y: 0, width: 2, height: 2 })).toBe(false);
     expect(regionTurnTouched(before, after, "gone", { x: 0, y: 0, width: 2, height: 2 })).toBe(false);
+  });
+
+  it("goes back to the region map when the turn left the view on the new interior, then shows the card there", () => {
+    const host = document.createElement("div");
+    document.body.append(host);
+    const before = project(base);
+    const after = project(base.map((tile, i) => (i === 0 ? 9 : tile)));
+    (after.maps as Record<string, unknown>).inner = { id: "inner", name: "도구점", width: 2, height: 2, lowerTiles: [0, 0, 0, 0], upperTiles: [0, 0, 0, 0], events: [] };
+    const input = { mapId: "m1", region: { x: 0, y: 0, width: 2, height: 2 }, instruction: "여기 상점 만들어 줘", before, after, onUndo: () => {} };
+    editorState.set({ currentMapId: "inner" });
+    const opened: string[] = [];
+    const card = showRegionResultCardOnRegionMap(input, (id) => { opened.push(id); editorState.set({ currentMapId: id }); return true; }, host);
+    expect(opened).toEqual(["m1"]);
+    expect(card?.querySelector("[data-testid=region-result-count]")?.textContent).toBe("칸 1개 바뀜 · 새 맵 도구점");
+    closeRegionResultCard();
+    editorState.set({ currentMapId: "inner" });
+    expect(showRegionResultCardOnRegionMap(input, () => false, host)).toBeNull();
+    host.remove();
   });
 
   it("says nothing changed when the region is untouched", () => {
