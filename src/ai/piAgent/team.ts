@@ -53,7 +53,7 @@ export const PRESET_FIRST_BUILD_RULES = [
  * 예전(2026-11-24 ideal-flow-draft)에는 그 자료를 프로젝트 작업으로 따로 맡겼다. 그러나 2026-11-25 team-mvp-revive 실측에서 그 작업이 10~15분을 썼고,
  * 프로젝트 작업은 맵 작업과 배타라 맵 담당 전부를 세웠다. 그래서 뼈대는 팀장이 build_world 로 직접 선언한다(piTeamRuntime firstMvpTeam).
  */
-export const FIRST_MVP_DATA_RULE = "[첫 MVP 순서] 1) 네가 build_world 를 한 번 직접 불러 장소 3~5와 그 사이 문을 선언한다(시작 맵 mapId 를 노드에 넣는다). 2) 곧바로 장소 맵마다 assign_map_agent 를 한 턴에 모두 띄운다 — 각 담당은 자기 맵만 짓고, 마지막 장소 담당에게 끝 지점 스위치를 맡긴다. 3) wait_agents 뒤 finish. assign_task_agent mode=project 와 review_map 은 쓰지 않는다 — 프로젝트 작업은 맵 작업과 동시에 못 돌아 모두를 세우고, 세계관·주인공·동료·직업·기술·물건·적은 finish 가 요청의 무대로 채운다. finish 보고에 세계관 한 줄과 동료 이름을 적는다.";
+export const FIRST_MVP_DATA_RULE = "[첫 MVP 순서] 1) 네가 build_world 를 한 번 직접 불러 장소 3~5와 그 사이 문을 선언한다(시작 맵 mapId 를 노드에 넣는다). 2) 곧바로 장소 맵마다 assign_map_agent 를 한 턴에 모두 띄운다 — 각 담당은 자기 맵만 짓고, 마지막 장소 담당에게 끝 지점 스위치를 맡긴다. 3) wait_agents 뒤 finish. assign_task_agent mode=project 와 review_map 은 쓰지 않는다(사용자가 오프닝을 직접 요청한 판만 예외: 맵 담당이 끝난 뒤 오프닝 제작 하나를 mode=project 로 맡긴다) — 프로젝트 작업은 맵 작업과 동시에 못 돌아 모두를 세우고, 세계관·주인공·동료·직업·기술·물건·적은 finish 가 요청의 무대로 채운다. finish 보고에 세계관 한 줄과 동료 이름을 적는다.";
 
 /** 프리셋 첫 생성에서 팀원 한 명이 쓰는 턴 상한. 기본(200~300)의 절반 아래 — 구간이 작으니 한 배정이 길 이유가 없다. */
 export const PRESET_FIRST_BUILD_MEMBER_TURNS = 120;
