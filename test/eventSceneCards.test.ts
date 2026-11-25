@@ -9,7 +9,10 @@ import { FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { buildSceneCards, conditionQuestion, SCENE_COMMENT_COMMAND_ID } from "@/editor/panels/eventEditor/sceneCards";
 import { resetEventViewSession } from "@/editor/panels/eventEditor/storyboardView";
 import { resetViewLevelHintForTest, VIEW_LEVEL_HINT_QUIET_MS, viewLevelHintFor } from "@/editor/panels/eventEditor/viewLevelHint";
-import { noteViewLevelSignal, resetEventEditLineForTest } from "@/editor/panels/eventEditor/eventEditLine";
+import {
+  editStepSummary, eventCommandChanges, linkedMapEvents, noteViewLevelSignal, pruneUndoneSteps, resetEventEditLineForTest,
+  type EditStep,
+} from "@/editor/panels/eventEditor/eventEditLine";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { Command, EventPage, GameEvent } from "@/project/types";
@@ -170,5 +173,85 @@ describe("막히는 신호의 보기 제안", () => {
     expect(noteViewLevelSignal("line-copy")).toBe(false);
     document.body.replaceChildren();
     clearCommandInspector();
+  });
+});
+
+describe("한 줄 고치기 범위(이어진 이벤트)", () => {
+  const lever = (id: string, name: string, switchId: string, body: string): GameEvent => ({
+    id, name, x: 1, y: 1, trigger: { kind: "action" }, commands: [],
+    pages: [{
+      id: `${id}_p1`, name: "처음", conditions: [], graphic: {}, trigger: { kind: "action" }, priority: "same",
+      movement: { type: "fixed", speed: 3, frequency: 3 },
+      commands: [narrate(body), { kind: "setSwitch", switchId, value: true } as Command],
+    }],
+  });
+  const puzzle = () => {
+    const project = createBlankProject();
+    const mapId = Object.keys(project.maps)[0]!;
+    project.maps[mapId]!.events.push(
+      lever("ev_sun", "해 손잡이", "sw_sun", "해 문양"),
+      lever("ev_moon", "달 손잡이", "sw_sun", "달 문양"),
+      lever("ev_far", "석판", "sw_other", "석판 글"),
+    );
+    return { project, mapId };
+  };
+  const setBody = (event: GameEvent, body: string) => { (event.pages![0]!.commands[0] as { body: string }).body = body; };
+
+  it("같은 스위치를 쓰는 같은 맵 이벤트를 이어진 것으로 찾는다", () => {
+    const { project, mapId } = puzzle();
+    expect(linkedMapEvents(project, mapId, "ev_moon").map((event) => event.id)).toEqual(["ev_sun"]);
+  });
+
+  it("같은 맵 다른 이벤트의 명령 변경은 받고 연 이벤트를 먼저 둔다", () => {
+    const { project: before, mapId } = puzzle();
+    const after = structuredClone(before);
+    const events = after.maps[mapId]!.events;
+    setBody(events.find((event) => event.id === "ev_sun")!, "해 문양, 나중에");
+    setBody(events.find((event) => event.id === "ev_moon")!, "달 문양, 먼저");
+    const checked = eventCommandChanges(before, after, mapId, "ev_moon");
+    expect(checked.ok).toBe(true);
+    if (!checked.ok) return;
+    expect(checked.changes.map((change) => change.eventId)).toEqual(["ev_moon", "ev_sun"]);
+    const moonPages = before.maps[mapId]!.events.find((event) => event.id === "ev_moon")!.pages!;
+    const line = editStepSummary(checked.changes, moonPages, undefined, "ev_moon", (id) => id === "ev_sun" ? "해 손잡이" : id);
+    expect(line).toContain("이벤트 2개");
+    expect(line).toContain("해 손잡이");
+  });
+
+  it("다른 이벤트의 조건·다른 맵·이벤트 더하기는 통째로 거절한다", () => {
+    const { project: before, mapId } = puzzle();
+    const cond = structuredClone(before);
+    cond.maps[mapId]!.events.find((event) => event.id === "ev_sun")!.pages![0]!.name = "바뀐 이름";
+    expect(eventCommandChanges(before, cond, mapId, "ev_moon").ok).toBe(false);
+    const added = structuredClone(before);
+    added.maps[mapId]!.events.push(lever("ev_new", "새 손잡이", "sw_sun", "새"));
+    expect(eventCommandChanges(before, added, mapId, "ev_moon").ok).toBe(false);
+    const otherMap = structuredClone(before);
+    const otherMapId = Object.keys(otherMap.maps).find((id) => id !== mapId);
+    if (otherMapId) {
+      otherMap.maps[otherMapId]!.name = "바뀐 맵";
+      expect(eventCommandChanges(before, otherMap, mapId, "ev_moon").ok).toBe(false);
+    }
+  });
+
+  it("연 이벤트만 Ctrl+Z 로 되돌리면 같은 단계의 다른 이벤트도 되돌려 한 단계로 지킨다", () => {
+    const { project, mapId } = puzzle();
+    const events = project.maps[mapId]!.events;
+    const sun = events.find((event) => event.id === "ev_sun")!;
+    const moon = events.find((event) => event.id === "ev_moon")!;
+    const sunBefore = structuredClone(sun.pages![0]!.commands);
+    const moonBefore = structuredClone(moon.pages![0]!.commands);
+    setBody(sun, "해 문양, 나중에");
+    const sunAfter = structuredClone(sun.pages![0]!.commands);
+    const moonAfter = moonBefore.map((command, index) => index === 0 ? narrate("달 문양, 먼저") : command);
+    store.replace(project); // 달은 이미 Ctrl+Z 로 되돌아갔고(before), 해는 아직 after 다.
+    const state: { steps: EditStep[] } = { steps: [{ summary: "정답 바꿈", changes: [
+      { eventId: "ev_moon", pageId: "ev_moon_p1", before: moonBefore, after: moonAfter },
+      { eventId: "ev_sun", pageId: "ev_sun_p1", before: sunBefore, after: sunAfter },
+    ] }] };
+    const undone: string[] = [];
+    pruneUndoneSteps(state, mapId, (eventId, pageId) => undone.push(`${eventId}:${pageId}`));
+    expect(state.steps).toHaveLength(0);
+    expect(undone).toEqual(["ev_sun:ev_sun_p1"]);
   });
 });

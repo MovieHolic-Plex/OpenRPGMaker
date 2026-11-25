@@ -473,8 +473,8 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
     eventId: ev.id,
     activePageId: activePage.id,
     pages,
-    applyPage: (pageId, commands) => pageCommandHistory(mapId, ev.id, pageId).replaceAll(commands),
-    undoPage: (pageId) => pageCommandHistory(mapId, ev.id, pageId).undo(),
+    applyPage: (eventId, pageId, commands) => pageCommandHistory(mapId, eventId, pageId).replaceAll(commands),
+    undoPage: (eventId, pageId) => pageCommandHistory(mapId, eventId, pageId).undo(),
   });
   // 우클릭 「AI 로 이벤트 …」처럼 조수 입구를 연 채 들어온 편집기는 한 줄 입력칸으로 초점을 준다.
   if (consumeEventAiDockOpen(mapId, ev.id)) queueMicrotask(() => { focusEventEditLine(); });
@@ -563,7 +563,14 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       class: "event-editor-pagebar",
       dataset: { pageCount: String(pages.length), testid: "event-editor-pagebar" },
       children: [
-        ...(sceneLevel ? [] : [advancedToggle]),
+        // 목업 v2: 쉬움은 「때」, 보통은 「상태」 머리말 뒤에 페이지 탭. 고급은 지금처럼 펼치기 단추.
+        ...(sceneLevel
+          ? [el("span", {
+              class: "event-scene-page-label",
+              text: sceneLevel === "easy" ? "때" : "상태",
+              dataset: { testid: "event-scene-page-label" },
+            })]
+          : [advancedToggle]),
         renderClassicPageTabStrip(mapId, evForRender, activePage),
         renderPageActions(mapId, evForRender, activePage),
       ],
