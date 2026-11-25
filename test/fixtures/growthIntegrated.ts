@@ -1,4 +1,4 @@
-import { createBlankProject } from '@/project/defaults';
+import { freshBlankProject as createBlankProject } from "../support/blankProject";
 import { normalizeSkillRecord, normalizeClassRecord } from '@/project/databaseRecordModel';
 import { startSession } from '@/project/session';
 import { emptyGrowth, type SkillTree } from '@/project/growth/types';

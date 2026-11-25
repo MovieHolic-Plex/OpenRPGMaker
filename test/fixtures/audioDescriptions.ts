@@ -1,4 +1,4 @@
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "../support/blankProject";
 import type { Command, Project } from "@/project/types";
 
 export const AUDIO_QA_BGM_ID = "cc0-bgm-rtp-fld-003";

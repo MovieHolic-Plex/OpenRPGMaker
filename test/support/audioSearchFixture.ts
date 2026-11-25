@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { BGM_CATALOG, bgmTrackLabel } from "@/assets/bgmCatalog";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./blankProject";
 import type { AudioResourceKind, Project } from "@/project/types";
 import type { CommandEditContext, CommandListActions } from "@/editor/panels/eventEditor/types";
 

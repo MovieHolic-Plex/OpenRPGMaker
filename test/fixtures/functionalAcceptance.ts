@@ -1,4 +1,4 @@
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "../support/blankProject";
 import type { Command, GameEvent } from "@/project/types";
 
 export function functionalFixture() {

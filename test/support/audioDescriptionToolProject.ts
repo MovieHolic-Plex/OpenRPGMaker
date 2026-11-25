@@ -1,4 +1,4 @@
-import { createEmptyToolProject } from "@/editor/tools/emptyProject";
+import { freshEmptyToolProject as createEmptyToolProject } from "./blankProject";
 import type { Project } from "@/project/types";
 
 export const MUSIC_ID = "qa-description-music";

@@ -1,5 +1,5 @@
 import { expect, vi } from 'vitest';
-import { createBlankProject } from '@/project/defaults';
+import { freshBlankProject as createBlankProject, ownTileset } from "../support/blankProject";
 import { startSession } from '@/project/session';
 import { store } from '@/project/store';
 import { initialRuntimeEventPositions, runtimeEventViewsForMap } from '@/project/runtimeEventState';
@@ -30,7 +30,8 @@ export function pursuitFixture(tracking?: 'lastSeen' | 'persistent') {
   a.width = 10; a.height = 10;
   a.lowerTiles = Array<number>(100).fill(0); a.upperTiles = Array<number>(100).fill(-1);
   a.events = []; a.safeZones = [];
-  const tileset = required(project.tilesets[a.tilesetId]);
+  required(project.tilesets[a.tilesetId]);
+  const tileset = ownTileset(project, a.tilesetId); // 공유 타일셋은 동결 — 통행 칸을 고칠 이 하나만 개인 사본
   tileset.passability[0] = { up: true, down: true, left: true, right: true };
   tileset.passability[1] = { up: false, down: false, left: false, right: false };
   const b: GameMap = { ...structuredClone(a), id: 'room_b' };

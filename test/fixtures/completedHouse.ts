@@ -1,4 +1,4 @@
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "../support/blankProject";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap, Project } from "@/project/types";
 import { runToolDefinition } from "@/editor/tools/toolRunner";

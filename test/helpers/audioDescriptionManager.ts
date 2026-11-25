@@ -1,5 +1,5 @@
 import { vi } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "../support/sharedBlankProject";
 import { store } from "@/project/store";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { openResourceModal } from "@/editor/panels/resourceModal";

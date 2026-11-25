@@ -1,5 +1,5 @@
 import type { BuildSpec } from "@/ai/buildSpec";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "../support/blankProject";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { runTool } from "@/editor/tools";
 import type { ToolContext } from "@/editor/tools/types";

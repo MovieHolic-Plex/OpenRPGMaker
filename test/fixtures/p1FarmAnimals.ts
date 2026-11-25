@@ -1,4 +1,4 @@
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "../support/blankProject";
 import type { FarmAnimalState, PlaySession } from "@/project/session";
 import type { Project } from "@/project/types";
 

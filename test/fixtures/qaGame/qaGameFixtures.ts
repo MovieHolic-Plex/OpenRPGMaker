@@ -6,7 +6,7 @@
 //   endingSwitchUnset  엔딩 페이지를 여는 스위치를 켜는 곳이 없음(보스전 승리 분기에 setSwitch 없음)
 //   orphanMaps         기획의 던전·등대가 연결도 이벤트도 없는 빈 껍데기 / 들어가는 문이 없는 맵
 
-import { createBlankProject } from "@/project/defaults/defaultProject";
+import { freshBlankProject as createBlankProject } from "../../support/blankProject";
 import { runTool } from "@/editor/tools";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 

@@ -1,5 +1,5 @@
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "../support/blankProject";
 
 export function p2LifeProject() {
   const project = createBlankProject();

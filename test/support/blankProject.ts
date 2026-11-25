@@ -1,4 +1,5 @@
 import { createBlankProject } from "@/project/defaults";
+import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import type { Project, TilesetDef } from "@/project/types";
 
 // createBlankProject() 는 호출마다 약 80MB(그중 번들 타일셋 77MB, 객체 77만 개)를 새로 만든다 — 실측 2.7~3.3 s.
@@ -40,4 +41,16 @@ export function ownTileset(project: Project, id: string): TilesetDef {
   const own = structuredClone(shared);
   project.tilesets[id] = own;
   return own;
+}
+
+let cachedEmptyTool: { readonly rest: Omit<Project, "tilesets">; readonly tilesets: Readonly<Record<string, TilesetDef>> } | undefined;
+
+/** createEmptyToolProject() 와 같은 값의 독립 사본 — freshBlankProject() 와 같은 규칙(타일셋은 동결 공유, 나머지는 복제). */
+export function freshEmptyToolProject(): Project {
+  if (!cachedEmptyTool) {
+    const { tilesets, ...rest } = createEmptyToolProject();
+    for (const tileset of Object.values(tilesets)) deepFreeze(tileset);
+    cachedEmptyTool = { rest, tilesets };
+  }
+  return { ...structuredClone(cachedEmptyTool.rest), tilesets: { ...cachedEmptyTool.tilesets } };
 }

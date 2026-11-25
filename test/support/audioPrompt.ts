@@ -1,6 +1,6 @@
 import type { AiConfig } from "@/ai/llmClient";
 import { buildEventAssistPrompt } from "@/ai/eventCommandAssist";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./blankProject";
 import {
   requireArray,
   requireBoolean,
