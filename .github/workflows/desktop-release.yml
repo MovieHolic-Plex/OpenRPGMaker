@@ -83,11 +83,17 @@ jobs:
           if [[ -z "$tag" ]]; then tag="${INPUT_TAG:-}"; fi
           if [[ -z "$tag" ]]; then
             # 스케줄: 자산이 모자란 가장 새 vX.Y.Z 릴리스(초안 포함). 없으면 할 일이 없다.
+            # 자산이 다 찬 더 새 정식 릴리스가 있으면 그 아래 판은 고르지 않는다(2026-11-25 release-0420):
+            # 설치판 도입(0.419) 전의 v0.418.0 이 설치판 없는 «미완성»으로 매번 잡혀, 그 태그 트리(nsis-wine-shim 없음)로
+            # 빌드하다 spawn wine ENOENT 로 예약 실행이 계속 실패했다(run 45524084140·45591113927).
             tag="$(gh api "repos/$GITHUB_REPOSITORY/releases?per_page=30" --jq '
+              def ver: .tag_name | sub("^v"; "") | split(".") | map(tonumber);
+              def need: ver as $p | if ($p[0] > 0 or $p[1] >= 420) then 9 else 6 end;
               [ .[] | select(.tag_name | test("^v[0-9]+\\.[0-9]+\\.[0-9]+$"))
-                    | select(.draft or ((.assets | map(select((.size // 0) > 0)) | length)
-                        < (if ((.tag_name | sub("^v"; "") | split(".") | map(tonumber)) as $p | ($p[0] > 0 or $p[1] >= 420)) then 9 else 6 end))) ]
-              | sort_by(.tag_name | sub("^v"; "") | split(".") | map(tonumber))
+                    | . + { incomplete: (.draft or ((.assets | map(select((.size // 0) > 0)) | length) < need)) } ] as $all
+              | ([ $all[] | select(.incomplete | not) | ver ] | max // [-1]) as $floor
+              | [ $all[] | select(.incomplete and (ver > $floor)) ]
+              | sort_by(ver)
               | last | .tag_name // ""')"
           fi
           if [[ -z "$tag" ]]; then
