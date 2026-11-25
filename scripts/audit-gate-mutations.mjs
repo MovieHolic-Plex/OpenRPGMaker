@@ -43,7 +43,7 @@ const GATES = {
   condition: VITEST("eventEditorConditionSurface.baseline.test.ts"),
   portal: VITEST("eventEditorPortalSurface.baseline.test.ts"),
   interaction: VITEST("eventEditorInteractionSurface.baseline.test.ts"),
-  staged: VITEST("eventEditorStagedState.test.ts"),
+  staged: VITEST("commandBodyCommerce.test.ts"),
   cssLive: ["node", ["scripts/check-css-live-classes.mjs"]],
 };
 
