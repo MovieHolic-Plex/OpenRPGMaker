@@ -9,6 +9,20 @@ import { normalizeToolArgs, runTool, runToolDefinition, type RunToolOptions } fr
 import { ToolError, type ToolContext, type ToolResult } from "./types";
 import type { Project } from "@/project/types";
 
+/** 명령 종류별 개수 — 갈림·선택지 같은 안쪽 목록까지 센다. */
+export function commandKindCounts(commands: readonly unknown[]): Map<string, number> {
+  const counts = new Map<string, number>();
+  const visit = (value: unknown): void => {
+    if (Array.isArray(value)) { value.forEach(visit); return; }
+    if (!value || typeof value !== "object") return;
+    const kind = (value as { kind?: unknown }).kind;
+    if (typeof kind === "string" && "kind" in value) counts.set(kind, (counts.get(kind) ?? 0) + 1);
+    for (const child of Object.values(value)) if (child && typeof child === "object") visit(child);
+  };
+  visit(commands);
+  return counts;
+}
+
 /** Await the tool's lazy data so the synchronous run finds it. A failed load surfaces from run itself. */
 export async function prepareTool(name: string, args: Record<string, unknown>, project?: Project): Promise<void> {
   const tool = getTool(name);
@@ -60,8 +74,10 @@ export async function runToolAsync(
     // 지우거나 바꾸라는 말이 없는 요청에서 기존 명령이 사라지면 편집이 아니라 파손이다 — 되돌려 보내 mode:'append' 로 다시 시키게 한다
     // (실측 2026-10-13: 「화면 흔들림 추가」가 기존 화면 숨기기·표시 명령을 지웠다).
     if (result.scope === "page") {
-      const same = (left: unknown, right: unknown): boolean => JSON.stringify(left) === JSON.stringify(right);
-      const lost = page.commands.filter((old) => !result.commands.some((next) => same(next, old)));
+      // 사라진 것은 «달라진 명령»이 아니라 «줄어든 명령»이다 — 종류별 개수(안쪽 목록 포함)로 잔다.
+      // 실측(2026-11-25 fast-apply): 「상점 주인 말투를 반말로」는 대사 글만 바꿨는데 글이 달라진 대사 3개가 «사라진 명령»으로 세여 거절됐다.
+      const before = commandKindCounts(page.commands), after = commandKindCounts(result.commands);
+      const lost = [...before].flatMap(([kind, count]) => Array.from({ length: Math.max(0, count - (after.get(kind) ?? 0)) }, () => kind));
       const promptText = String(normalized.prompt);
       // 「나머지는 그대로 유지」라고 적은 요청이 기존 명령을 지웠다면, 「바꿔」가 들어 있어도 지시를 어긴 것이다.
       const asksRemoval = /지워|지우|삭제|제거|없애|빼|바꿔|바꾸|교체|수정|변경|고쳐|대신|replace|remove|delete|change/iu.test(promptText) && !/유지|그대로|보존|남겨|keep|preserve/iu.test(promptText);

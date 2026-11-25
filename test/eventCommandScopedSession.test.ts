@@ -8,7 +8,7 @@ import { ToolReadEvidence } from "@/ai/toolReadEvidence";
 import { createStarterBlankProject } from "@/project/defaults";
 import { toolHiddenByMonsterLock } from "@/project/genreLockMonsterAssets";
 import { eventScopeRefusal, eventScopeToolCall, onlyEventPageCommandsChanged, type EventCommandScope } from "@/ai/eventCommandScope";
-import { runToolAsync } from "@/editor/tools/asyncToolRunner";
+import { commandKindCounts, runToolAsync } from "@/editor/tools/asyncToolRunner";
 import type { JsonSchema } from "@/editor/tools/types";
 import type { Command } from "@/project/types";
 
@@ -197,6 +197,8 @@ describe("event editor shared assistant scope", () => {
     expect(result.proposedCalls).toEqual([]);
     expect(result.runOutcome?.delivery).toBe("no-change");
     expect(session.getAuditEntries().filter(entry => entry.kind === "assistant").at(-1)).toMatchObject({ text: "변경 없음" });
+    // 한 페이지 범위 턴은 프로젝트 전체 완료 검사를 돌리지 않는다.
+    expect(session.getAuditEntries().filter(entry => entry.kind === "tool").map(entry => (entry as { name?: string }).name)).not.toContain("run_lint");
   }, 60_000);
 
   it("reports a failed writer after three attempts across batches", async () => {
@@ -274,6 +276,21 @@ describe("event editor shared assistant scope", () => {
     const result = await runToolAsync({ project }, "get_event", scope, { eventCommandScope: scope });
     expect(result.ok).toBe(false);
     expect(result.issues?.[0]?.code).toBe("event-page-scope");
+  });
+
+  it("keeps a rewrite that only changes dialogue text, and still refuses one that drops a command", async () => {
+    // 2026-11-25 fast-apply: 「상점 주인 말투를 반말로」 가 대사 글만 바꿨는데 «기존 명령 3개가 사라져»로 거절됐다.
+    const { project, scope } = fixture();
+    const generate = (commands: Command[]) => vi.fn(async () => ({ commands, scope: "page" as const, attempts: 1 }));
+    const run = (commands: Command[]) => runToolAsync({ project: structuredClone(project) }, "event_command_assist",
+      { ...scope, prompt: "상점 주인 말투를 반말로" }, { eventCommandScope: scope, generate: generate(commands) });
+    const rewritten = await run([{ kind: "text", body: "이전 대사야" }]);
+    expect(rewritten.ok, rewritten.summary).toBe(true);
+    const dropped = await run([]);
+    expect(dropped.ok).toBe(false);
+    expect(dropped.issues?.[0]?.code).toBe("event-assist-dropped-commands");
+    expect(commandKindCounts([{ kind: "fork", condition: { kind: "switch" }, then: [{ kind: "text" }], else: [] }]))
+      .toEqual(new Map([["fork", 1], ["switch", 1], ["text", 1]]));
   });
 
   it("refuses an edit in append scope before the async runner generates anything", async () => {

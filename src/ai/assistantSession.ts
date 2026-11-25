@@ -3568,7 +3568,9 @@ export class AssistantSession {
       id: finalLayer?.id, title: "Final artifact", isFinal: true,
       assessGameQuality: this.completionQualityRequired || Boolean(this.ctx.project.endings?.length),
     };
-    return this.turnComposerMode !== "ask" && this.turnIntent?.mode !== "question" && !this.lastTurnPlanOnly
+    // 이벤트 한 페이지 범위 턴은 그 페이지만 결정적 검토를 마쳤다 — 프로젝트 전체 run_lint·evaluate_game_quality 는 다른 맵의 있던 결함으로
+    // «검증이 아직 통과되지 않았습니다»·blocked 를 내고 4초를 더 썼다(2026-11-25 fast-apply 실측).
+    return !this.eventCommandScope && this.turnComposerMode !== "ask" && this.turnIntent?.mode !== "question" && !this.lastTurnPlanOnly
       && selectVerificationCalls(layer, this.verificationHistory).length > 1
       ? await operation.wait(this.executeVerificationAdvisory(layer, onEvent, "completion")) : [];
   }
