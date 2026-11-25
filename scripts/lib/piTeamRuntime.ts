@@ -54,7 +54,7 @@ import {
 } from "../../src/ai/piAgent/teamAssignments.ts";
 import { plainLine } from "../../src/ai/piAgent/teamBoardState.ts";
 import { defaultTeamSpec, enabledMembers, memberSystemPrompt, normalizeTeamSpec, type PiTeamMember } from "../../src/ai/piAgent/teamSpec.ts";
-import type { PiToolShape } from "../../src/ai/piAgent/toolAdapter.ts";
+import { resolvePiToolShape, type PiToolShape } from "../../src/ai/piAgent/toolAdapter.ts";
 import type { Project } from "../../src/project/types.ts";
 import { cloneProjectSharingSharedDictionaries } from '../../src/project/projectClone.ts';
 import type { RunPiAgentOptions } from "./piAgentRuntime.ts";
@@ -216,7 +216,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   const coreFirst = !goalCampaign && isGenrePresetBriefRequest(request.task) && hasPlayableSegmentSkeleton(base)
     && !authoringHarnessFor(base) && !request.readOnly && !options.readOnlyTools;
   // 첫 MVP(빈 프로젝트에서 게임 하나) 팀 실행은 팀원 한 배정의 차례를 줄인다(FIRST_MVP_MEMBER_TURNS) — 뼈대 작업 하나가 15분을 먹고 맵 담당이 그 뒤에야 돌았다.
-  const firstMvpTeam = !goalCampaign && !coreFirst && !isGenrePresetBriefRequest(request.task) && !request.readOnly && !options.readOnlyTools && firstMvpRoute(base, request.task).firstMvp;
+  // 엄격한 맵 범위(mapIds + scopeStrict)는 프로젝트 전체를 쓰지 않는다 — 프로젝트 작업 배정 거절과 같은 경계라 build_world 도 주지 않는다.
+  const firstMvpTeam = !goalCampaign && !coreFirst && !isGenrePresetBriefRequest(request.task) && !request.readOnly && !options.readOnlyTools
+    && !(request.scopeStrict !== false && request.mapIds.length > 0) && firstMvpRoute(base, request.task).firstMvp;
   let firstPlay: FirstPlayReceipt | undefined;
   let reviewedFirstPlay: string | undefined;
   let reviewedFirstScene: string | undefined;
@@ -931,6 +933,23 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       },
     },
   ];
+  // 첫 MVP 팀은 팀장이 세계 뼈대(build_world)를 직접 한 번 선언한다 — 뼈대를 프로젝트 작업으로 맡기면 그 팀원이 메뉴·음악·시스템 검수까지 하며
+  // 10~15분을 쓰고(2026-11-25 team-mvp-revive r4·r5 실측), 프로젝트 작업은 맵 작업과 배타라 맵 담당 전부가 그 뒤에 섬다. 빈 칸(세계관·인물·도구)은 finish 가 draft-cast 로 채운다.
+  if (firstMvpTeam) {
+    orchestratorTools.push({
+      ...resolvePiToolShape({ project: working }, "build_world")!,
+      async execute(id, params) {
+        if (runningTasks().length || runningAssignments(ledger).length) throw new Error("진행 중인 배정이 있습니다. build_world 는 맵 배정 전에 한 번 부릅니다.");
+        const ctx = { project: working };
+        const result = await resolvePiToolShape(ctx, "build_world")!.execute(id, params);
+        if (ctx.project !== working) {
+          working = ctx.project;
+          emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: "세계 뼈대를 직접 선언했습니다(build_world)." } });
+        }
+        return result;
+      },
+    });
+  }
 
   /**
    * finish 시점에 429 로 끊긴 채 다시 맡겨지지 않은 배정(rateLimitedUnresolved)을 한 번만 자동 재시도한다.
