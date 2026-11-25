@@ -5,7 +5,8 @@ import {
   browserCanonicalDigestSource,
   evaluateBrowserCanonicalDigest,
 } from "../scripts/lib/canonical-project-digest.mjs";
-import { createBlankProject } from "../src/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
+import { cloneSharingFrozenTilesets } from "./support/demoProject";
 import type { Project } from "../src/project/types";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -25,7 +26,7 @@ describe("canonical project content digest", () => {
   // 한 번 만든 빈 프로젝트를 복제한다.
   const blank = createBlankProject();
   function sampleProject(): Project {
-    const project = structuredClone(blank);
+    const project = cloneSharingFrozenTilesets(blank);
     project.meta.title = "푸른 액자의 밤";
     project.startMapId = "map_horror_blue_gallery";
     project.startPos = { x: 13, y: 13 };

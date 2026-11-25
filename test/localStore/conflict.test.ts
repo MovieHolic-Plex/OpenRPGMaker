@@ -2,7 +2,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
+import { freshScarloxyDemoProject as createScarloxyDemoProject } from "../support/demoProject";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import type { Project } from "@/project/types";
 import { initLocalProjectStore, type LocalProjectStore } from "../../electron/local-store/store";

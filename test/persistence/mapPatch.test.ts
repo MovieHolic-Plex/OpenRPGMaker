@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
+import { freshScarloxyDemoProject as createScarloxyDemoProject, cloneSharingFrozenTilesets } from "../support/demoProject";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { serialize } from "@/project/io";
 import type { GameMap, Project } from "@/project/types";
@@ -24,9 +24,9 @@ describe("planMapPatch", () => {
   it("비겹침 편집은 후보를 만들고 후보에 최신본의 다른 맵이 남는다", async () => {
     const base = createScarloxyDemoProject();
     const [mineId, theirsId] = mapIds(base);
-    const mine = structuredClone(base);
+    const mine = cloneSharingFrozenTilesets(base);
     mine.maps[mineId] = renamed(mine, mineId, "내 맵");
-    const latest = structuredClone(base);
+    const latest = cloneSharingFrozenTilesets(base);
     latest.maps[theirsId] = renamed(latest, theirsId, "남의 맵");
 
     const plan = await planMapPatch(mapPatchChangeSet(base, mine), readMapPatchSnapshot(asStoredJson(latest)));
@@ -42,9 +42,9 @@ describe("planMapPatch", () => {
   it("같은 맵의 다른 편집은 충돌이다", async () => {
     const base = createScarloxyDemoProject();
     const [mapId] = mapIds(base);
-    const mine = structuredClone(base);
+    const mine = cloneSharingFrozenTilesets(base);
     mine.maps[mapId] = renamed(mine, mapId, "내 맵");
-    const latest = structuredClone(base);
+    const latest = cloneSharingFrozenTilesets(base);
     latest.maps[mapId] = renamed(latest, mapId, "남의 맵");
 
     const plan = await planMapPatch(mapPatchChangeSet(base, mine), readMapPatchSnapshot(asStoredJson(latest)));
@@ -55,7 +55,7 @@ describe("planMapPatch", () => {
   it("최신본이 없으면(첫 저장) 기준본을 최신본으로 써서 후보를 만든다", async () => {
     const base = createScarloxyDemoProject();
     const [mapId] = mapIds(base);
-    const mine = structuredClone(base);
+    const mine = cloneSharingFrozenTilesets(base);
     mine.maps[mapId] = renamed(mine, mapId, "내 맵");
     const changeSet = mapPatchChangeSet(base, mine);
 
@@ -67,7 +67,7 @@ describe("planMapPatch", () => {
   it("호출자가 changedMapIds 를 주면 그 목록만 병합한다", async () => {
     const base = createScarloxyDemoProject();
     const [mineId, otherId] = mapIds(base);
-    const mine = structuredClone(base);
+    const mine = cloneSharingFrozenTilesets(base);
     mine.maps[mineId] = renamed(mine, mineId, "내 맵");
     mine.maps[otherId] = renamed(mine, otherId, "안 보낼 편집");
     const changeSet = mapPatchChangeSet(base, mine, [mineId]);

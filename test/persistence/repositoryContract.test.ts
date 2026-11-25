@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createFakePostgrest } from "./fakePostgrest";
 import { createLocalRepositoryFixture } from "../localStore/localRepositoryFixture";
-import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
+import { freshScarloxyDemoProject as createScarloxyDemoProject, cloneSharingFrozenTilesets } from "../support/demoProject";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { serialize, serializeForComparison } from "@/project/io";
 import { createMemoryRepository } from "@/project/persistence/memoryRepository";
@@ -88,9 +88,9 @@ export function describeRepositoryContract(name: string, factory: FixtureFactory
       const base = createScarloxyDemoProject();
       await repository.save(base, target);
       const [aId, bId] = mapIds(base);
-      const editorA = structuredClone(base);
+      const editorA = cloneSharingFrozenTilesets(base);
       editorA.maps[aId] = renamed(editorA, aId, "A 의 맵");
-      const editorB = structuredClone(base);
+      const editorB = cloneSharingFrozenTilesets(base);
       editorB.maps[bId] = renamed(editorB, bId, "B 의 맵");
 
       const first = await repository.saveMapPatch({ project: editorA, baseProject: base }, target);
@@ -108,9 +108,9 @@ export function describeRepositoryContract(name: string, factory: FixtureFactory
       const base = createScarloxyDemoProject();
       await repository.save(base, target);
       const [mapId] = mapIds(base);
-      const editorA = structuredClone(base);
+      const editorA = cloneSharingFrozenTilesets(base);
       editorA.maps[mapId] = renamed(editorA, mapId, "A 의 맵");
-      const editorB = structuredClone(base);
+      const editorB = cloneSharingFrozenTilesets(base);
       editorB.maps[mapId] = renamed(editorB, mapId, "B 의 맵");
 
       await repository.saveMapPatch({ project: editorA, baseProject: base }, target);
