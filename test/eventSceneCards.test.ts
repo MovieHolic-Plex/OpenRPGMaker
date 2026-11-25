@@ -1,6 +1,6 @@
 /** @vitest-environment happy-dom */
 // 이벤트 편집기 보기 셋(쉬움·보통·고급)과 장면 카드 모델(목업 v2).
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { eventEditorViewLevel, setEventEditorViewLevel } from "@/editor/panels/eventEditor/beginnerChrome";
 import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
@@ -13,6 +13,7 @@ import {
   editStepSummary, eventCommandChanges, linkedMapEvents, noteViewLevelSignal, pruneUndoneSteps, resetEventEditLineForTest,
   type EditStep,
 } from "@/editor/panels/eventEditor/eventEditLine";
+import { registerAiAssistantBridge, unregisterAiAssistantBridge, type AiBridgeSendOptions } from "@/editor/aiAssistantBridge";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { Command, EventPage, GameEvent } from "@/project/types";
@@ -188,6 +189,54 @@ describe("막히는 신호의 보기 제안", () => {
     expect(noteViewLevelSignal("line-copy")).toBe(false);
     document.body.replaceChildren();
     clearCommandInspector();
+  });
+});
+
+describe("한 줄 고치기 조수 호출", () => {
+  afterEach(() => {
+    unregisterAiAssistantBridge();
+    resetEventEditLineForTest();
+    document.body.replaceChildren();
+    clearCommandInspector();
+  });
+
+  it("Enter 는 지금 페이지 범위(eventCommandScope)로 보내고, 이어진 이벤트가 없으면 한 번만 부른다", async () => {
+    setEventEditorViewLevel("easy");
+    const project = createBlankProject();
+    const mapId = Object.keys(project.maps)[0]!;
+    const page: EventPage = {
+      id: "p1", name: "처음", conditions: [], graphic: {}, trigger: { kind: "action" }, priority: "same",
+      movement: { type: "fixed", speed: 3, frequency: 3 },
+      commands: [say("오든", "어서 오게.")],
+    };
+    project.maps[mapId]!.events.push({ id: "ev_line", name: "오든", x: 1, y: 1, trigger: { kind: "action" }, commands: [], pages: [page] });
+    store.replace(project);
+    editorState.set({ currentMapId: mapId, selectedEventPageId: "p1" });
+    const calls: { text: string; options?: AiBridgeSendOptions }[] = [];
+    registerAiAssistantBridge({
+      send: async (text, options) => {
+        calls.push({ text, options });
+        const before = store.getCurrent();
+        const after = structuredClone(before);
+        (after.maps[mapId]!.events.find((event) => event.id === "ev_line")!.pages![0]!.commands[0] as { body: string }).body = "어서 와.";
+        return { ok: true, pendingProposal: { callCount: 1, summary: "", before, after }, status: { ready: true, turnBusy: false } as never, audit: [], harness: null };
+      },
+      getStatus: () => ({ ready: true, turnBusy: false }) as never,
+      getAudit: () => [],
+      getHarness: () => null,
+      abort: () => {},
+    });
+    const host = document.createElement("div");
+    document.body.append(host);
+    renderEventEditorDynamic(host, mapId, "ev_line");
+    const input = host.querySelector<HTMLInputElement>('[data-testid="event-edit-line-input"]')!;
+    input.value = "반말로";
+    input.dispatchEvent(new Event("input"));
+    input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await vi.waitFor(() => expect(store.getCurrent().maps[mapId]!.events.find((event) => event.id === "ev_line")!.pages![0]!.commands[0]).toMatchObject({ body: "어서 와." }));
+    expect(calls).toHaveLength(1);
+    expect(calls[0]!.text).toBe("반말로");
+    expect(calls[0]!.options).toMatchObject({ deferApply: true, eventCommandScope: { mapId, eventId: "ev_line", pageId: "p1", mode: "edit" } });
   });
 });
 
