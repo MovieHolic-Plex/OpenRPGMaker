@@ -385,6 +385,8 @@ export function mergeGroup(files, { header = "", resolver = null, teardownImport
         continue;
       }
       for (const sp of imp.specs) {
+        // 이미 합친 파일을 다시 합칠 때: 그 파일의 isolateTimers import 는 아래 머리 줄 하나로 대신한다(두 번 선언하면 구문 오류).
+        if (teardownImport && sp.local === "isolateTimers" && /(^|\/)mergedTeardown(\.ts)?$/.test(mod)) continue;
         const had = emitted.get(sp.local);
         if (had) {
           if (had.typeOnly && !sp.typeOnly) had.typeOnly = false; // 값 import 가 하나라도 있으면 값으로 둔다.

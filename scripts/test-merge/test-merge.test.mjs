@@ -120,6 +120,27 @@ test("mergeGroup: teardownImport 가 있으면 describe 마다 isolateTimers() �
   assert.match(res.text, /describe\("a", \(\) => \{\n  isolateTimers\(\);/);
 });
 
+test("mergeGroup: 이미 합친 파일을 다시 합쳐도 isolateTimers import 는 하나다", () => {
+  const first = mergeGroup(
+    [
+      { path: "test/a.test.ts", text: A },
+      { path: "test/b.test.ts", text: B },
+    ],
+    { teardownImport: "./mergedTeardown" },
+  );
+  const again = mergeGroup(
+    [
+      { path: "test/ab.test.ts", text: first.text },
+      { path: "test/c.test.ts", text: `import { expect, it } from "vitest";\nit("three", () => {\n  expect(3).toBe(3);\n});\n` },
+    ],
+    { teardownImport: "./mergedTeardown" },
+  );
+  assert.equal(countMismatch(again), null);
+  assert.deepEqual(again.merged, ["test/ab.test.ts", "test/c.test.ts"]);
+  assert.equal(again.text.match(/import \{ isolateTimers \} from/g).length, 1);
+  assert.deepEqual(analyzeFile("test/abc.test.ts", again.text).reasons, []);
+});
+
 test("mergeGroup: 모킹이 서로 다르면 뺀다, 같으면 한 번만 올린다", () => {
   const m1 = `import { vi, it } from "vitest";\nvi.mock("@/x", () => ({ a: 1 }));\nit("m1", () => {});\n`;
   const m2 = `import { vi, it } from "vitest";\nvi.mock("@/x", () => ({ a: 1 }));\nit("m2", () => {});\n`;
