@@ -17,6 +17,7 @@ function makeSession(chat: () => Promise<unknown>, log: string[]) {
 }
 
 describe("AssistantSession freezeGuard", () => {
+  // 호스티드 ci-full 샤드에서 16초 걸렸다(ci-full 45687718517 tests (2)) — 기본 15초 대신 60초(두 시험).
   it("턴이 도는 동안 가드를 쥐고 끝나면 놓는다", async () => {
     const log: string[] = [];
     const session = makeSession(async () => {
@@ -33,7 +34,7 @@ describe("AssistantSession freezeGuard", () => {
     expect(log.filter((entry) => entry === "acquire")).toHaveLength(1);
     expect(log.filter((entry) => entry === "release")).toHaveLength(1);
     expect(log.filter((entry) => entry === "chat").length).toBeGreaterThan(0);
-  });
+  }, 60_000);
 
   it("턴이 실패해도 가드를 놓는다", async () => {
     const log: string[] = [];
@@ -46,5 +47,5 @@ describe("AssistantSession freezeGuard", () => {
 
     expect(log.at(-1)).toBe("release");
     expect(log.filter((entry) => entry === "release")).toHaveLength(1);
-  });
+  }, 60_000);
 });
