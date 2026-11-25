@@ -3,7 +3,7 @@
 export type RegionPlaceKind =
   | "shop" | "weapon_shop" | "smithy" | "inn" | "tavern" | "house" | "chapel" | "bakery" | "pharmacy"
   | "warehouse" | "stable" | "school" | "guard_post" | "windmill" | "lighthouse"
-  | "bridge" | "gate" | "farm" | "market"
+  | "bridge" | "gate" | "farm" | "market" | "forest"
   | "dungeon_entrance" | "cave_entrance";
 
 const RULES: readonly (readonly [RegExp, RegionPlaceKind])[] = [
@@ -27,9 +27,14 @@ const RULES: readonly (readonly [RegExp, RegionPlaceKind])[] = [
   [/(?:^|[^사])다리|교량/, "bridge"],
   [/농장|포도원|과수원|농사|(?:^|[^꽃텃])밭/, "farm"],
   [/시장|장터|장마당/, "market"],
+  // 「나무 심어 줘」 는 나무 한두 그루라 장소가 아니다 — 숲·수풀·숲속만 숲 레시피로.
+  [/숲|수풀|삼림/, "forest"],
   [/상점|가게|도구점|잡화점|만물상|상회|매점/, "shop"],
   [/(?:^|[^빵모])집|주택|민가|오두막|살림집/, "house"],
 ];
+
+/** 결과 카드 「고치기」 가 보내는 지시의 머리 — 경고 글에 장소 낱말·짓는 말이 있어도 장소를 다시 짓는 지시가 아니다. */
+export const REGION_FIX_PREFIX = "[고치기]";
 
 const BUILD_VERB = /만들|지어|짓|세워|세우|놓아|넣어|추가|생기게|하나/;
 
@@ -42,6 +47,7 @@ export function regionPlaceKindFromText(text: string): RegionPlaceKind | null {
 
 /** 「여기 상점 만들어 줘」처럼 장소를 짓는 지시면 그 종류. 장소 낱말만 있고 짓는 말이 없으면(「상점 앞에 나무」) null. */
 export function regionPlaceRequest(text: string): RegionPlaceKind | null {
+  if (text.trimStart().startsWith(REGION_FIX_PREFIX)) return null;
   const kind = regionPlaceKindFromText(text);
   return kind && BUILD_VERB.test(text.replace(/\s+/g, "")) ? kind : null;
 }

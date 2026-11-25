@@ -8,6 +8,8 @@ import { recordProjectSnapshot, resetMapEditHistory, undoMapEdit } from "@/edito
 import { store } from "@/project/store";
 import { REGION_PLACE_KINDS, regionPlaceKindFromText } from "@/editor/tools/regionPlaceTools";
 import type { Command, GameMap, Project } from "@/project/types";
+import { createPiToolset } from "@/ai/piAgent/toolAdapter";
+import { PiCharsetSelectionGate } from "@/ai/piAgent/charsetSelectionGate";
 
 const REGION = { x: 14, y: 8, width: 13, height: 12 };
 
@@ -63,6 +65,17 @@ describe("build_region_place", () => {
     expect(shop && shop.kind === "shop" ? shop.itemIds.length : 0).toBeGreaterThan(0);
     const known = new Set(ctx.project.database.items.map((item) => item.id));
     if (shop?.kind === "shop") for (const id of shop.itemIds) expect(known.has(id), id).toBe(true);
+  });
+
+  it("조수 경로(칩 관문)에서도 레시피가 고른 주인 칩 때문에 첫 호출이 거절되지 않는다", async () => {
+    // 2026-11-25 assistant-measure-r2: 영역 6판 모두 첫 호출이 「캐릭터 그림 선택을 되돌렸습니다」로 거절돼 모델 두 차례를 더 썼다.
+    for (const kind of ["shop", "inn", "dungeon_entrance"]) {
+      const { ctx, mapId } = setup();
+      const tool = createPiToolset(ctx, { charsetGate: new PiCharsetSelectionGate() }).find((t) => t.name === "build_region_place")!;
+      const before = Object.keys(ctx.project.maps).length;
+      await expect(tool.execute(`call-${kind}`, { mapId, region: REGION, kind }), kind).resolves.toBeTruthy();
+      expect(Object.keys(ctx.project.maps).length, kind).toBeGreaterThan(before);
+    }
   });
 
   it("조수 턴 적용과 같은 프로젝트 스냅샷 한 칸이라 되돌리기 한 번에 실내 맵까지 사라진다", () => {
@@ -135,6 +148,24 @@ describe("build_region_place", () => {
     expect(mergeMapBundles(base, [{ mapIds: [mapId], project: ctx.project }]).spills).toEqual([]);
   });
 
+  it("숲은 영역 안에만 나무를 심고 가운데 남북 오솔길을 비워 둔다", () => {
+    const { ctx, mapId } = setup();
+    const before = structuredClone(ctx.project.maps[mapId]!);
+    const out = runTool(ctx, "build_region_place", { mapId, region: REGION, kind: "forest" });
+    expect(out.ok, out.summary).toBe(true);
+    const after = ctx.project.maps[mapId]!;
+    expect(outsideChanges(before, after)).toBe(0);
+    expect((out.data as { createdMapIds: string[] }).createdMapIds).toEqual([]);
+    let planted = 0;
+    for (let i = 0; i < after.upperTiles.length; i += 1) if (before.upperTiles[i] !== after.upperTiles[i] || before.lowerTiles[i] !== after.lowerTiles[i]) planted += 1;
+    expect(planted).toBeGreaterThan(30);
+    const pathX = REGION.x + Math.floor(REGION.width / 2) - 1;
+    for (let y = REGION.y; y < REGION.y + REGION.height; y += 1) for (const x of [pathX, pathX + 1]) {
+      const i = y * after.width + x;
+      expect(after.upperTiles[i], `${x},${y}`).toBe(before.upperTiles[i]);
+    }
+  });
+
   it("시장 상인은 이 게임 품목으로 판다", () => {
     const { ctx, mapId } = setup();
     const out = runTool(ctx, "build_region_place", { mapId, region: REGION, kind: "market" });
@@ -181,6 +212,7 @@ describe("build_region_place", () => {
     expect(regionPlaceKindFromText("여기 텃밭 좀 놓아 줘")).toBeNull();
     expect(regionPlaceKindFromText("시장 열어 줘")).toBe("market");
     expect(regionPlaceKindFromText("묘지 만들어 줘")).toBeNull();
+    expect(regionPlaceKindFromText("여기 숲 만들어 줘")).toBe("forest");
     expect(new Set(REGION_PLACE_KINDS).size).toBe(REGION_PLACE_KINDS.length);
   });
 });
