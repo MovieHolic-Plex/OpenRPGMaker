@@ -107,6 +107,33 @@ describe("프리셋 첫 생성의 실제 팀원 턴 상한", () => {
   });
 });
 
+// team-mvp-revive(2026-11-25): 첫 MVP 팀의 뼈대 프로젝트 작업 하나가 15분·도구 366번을 써 맵 담당이 그 뒤에야 돌았다.
+describe("첫 MVP 팀원 차례 상한", () => {
+  it("빈 프로젝트의 게임 하나 요청은 프로젝트 작업·맵 담당의 차례를 줄이고, 다른 요청은 팀원 상한 그대로다", async () => {
+    const run = async (task: string) => {
+      const seen: Record<string, number> = {};
+      const req = { ...request(seeded()), task, team: { ...TEAM, members: [{ ...TEAM.members[0]!, maxTurns: 300 }] } };
+      await runPiTeam(req, { runAgent: async (child, options) => {
+        if (options.extraTools?.some((t) => t.name === "assign_map_agent")) {
+          await callTool(options.extraTools, "assign_task_agent", { mode: "project", task: "뼈대" });
+          await callTool(options.extraTools, "wait_agents", {});
+          await callTool(options.extraTools, "assign_map_agent", { mapId: "map_a", task: "마을" });
+          await callTool(options.extraTools, "wait_agents", {});
+          await callTool(options.extraTools, "finish", { report: "끝" }).catch(() => ({}));
+        } else {
+          seen[child.mapIds.length ? "map" : "project"] = child.maxTurns!;
+          const report = options.extraTools?.find((t) => t.name === "report_task");
+          if (report) await report.execute("call", { report: "했다" });
+        }
+        return doneWith(child.project);
+      } });
+      return seen;
+    };
+    expect(await run("용사가 마을에서 출발해 숲 너머 동굴의 마물을 물리치는 모험 게임을 만들어 줘.")).toEqual({ project: 30, map: 60 });
+    expect(await run("마을에 여관을 하나 더 지어 줘")).toEqual({ project: 300, map: 300 });
+  });
+});
+
 describe("팀 런타임 — 맵 in-flight 락", () => {
   // 깨질 것: 락이 없으면 같은 턴의 두 배정이 같은 사본에서 출발해 나중 결과가 앞 결과를 통째로
   // 덮는다. 팀장 프롬프트의 문장 하나가 아니라 툴 계약이 막아야 한다.
