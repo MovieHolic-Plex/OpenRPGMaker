@@ -467,7 +467,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             ...(independent.length ? { independentMapIds: independent, mapBundleMerge: true } : {}),
             systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), ...describeMapSeams(snapshot, mapId), teamCommunicationPrompt(agentId),
               // r8: 동굴 담당이 mapId 없이 author_dungeon 을 불러 새 던전 맵을 하나 더 만들어 첫 판이 6장으로 «MVP 크기 밖» 불합격(13분).
-              ...(firstMvpTeam ? [`[첫 MVP 맵 담당] 맵 '${mapId}' 하나를 그 자리에서 짓는다: author_dungeon·author_beodeul_town·build_region_place 에 mapId:"${mapId}" 를 준다. 새 맵을 만들지 않는다(첫 판은 3~5장). 세계 문은 생성기가 다시 놓는다.`] : [])], maxTurns: member.maxTurns,
+              ...(firstMvpTeam ? [`[첫 MVP 맵 담당] 맵 '${mapId}' 하나를 그 자리에서 짓는다: author_dungeon·author_beodeul_town 과 바깥 장소 종류의 build_region_place 에 mapId:"${mapId}" 를 준다. 가게·여관·던전 입구 같은 실내·입구 종류는 새 맵을 만드니 첫 판(3~5장)에서는 쓰지 않는다. 세계 문은 생성기가 다시 놓는다.`] : [])], maxTurns: member.maxTurns,
             ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
             ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
           },
@@ -1319,7 +1319,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   if (firstMvpTeam && !finishAccepted) {
     autoFinishing = true;
     const finishTool = orchestratorTools.find((tool) => tool.name === "finish")!;
-    for (let attempt = 0; attempt < 6 && !finishAccepted; attempt += 1) {
+    // 관문마다 거절 예산이 따로라(첫 MVP 2·이음새 서명마다 1·JRPG 2·429 1) 넉넉히 돈다. 예산을 다 쓰면 관문은 받는다.
+    for (let attempt = 0; attempt < 12 && !finishAccepted; attempt += 1) {
       try { await finishTool.execute(`auto-finish-${attempt}`, { report: summaryOf(orchDone) }); }
       catch (error) { emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `자동 마무리 거절(${attempt + 1}): ${error instanceof Error ? error.message : String(error)}`.slice(0, 400) } }); }
     }
