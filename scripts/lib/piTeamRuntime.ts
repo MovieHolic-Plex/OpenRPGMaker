@@ -805,7 +805,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         }
         // 첫 MVP(빈 프로젝트의 게임 하나)는 맵만 남기지 않는다 — 담당은 맵 단위라 게임 전체 끝맺음(draft-cast)이 여기서는 돌지 않는다.
         // 병합본에 세계관·동료·직업·기술·물건·적을 채운다(2026-11-24 ideal-flow-draft). 다시 불려도 같은 결과다.
-        const firstMvp = !request.readOnly && firstMvpRoute(base, request.task).team;
+        const firstMvp = !request.readOnly && firstMvpRoute(base, request.task).firstMvp;
         if (firstMvp) {
           const drafted: Project = { ...working, system: { ...working.system }, characters: { ...(working.characters ?? {}) }, database: { ...working.database,
             actors: working.database.actors.map((actor) => ({ ...actor, learnedSkills: [...actor.learnedSkills] })), classes: [...working.database.classes],

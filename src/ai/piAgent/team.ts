@@ -111,7 +111,7 @@ export const PI_TEAM_ROLES: Record<PiTeamRoleId, PiTeamRole> = {
         ...(team?.orchestratorNotes.trim() ? [`사용자의 팀 운영 지침: ${team.orchestratorNotes.trim()}`] : []),
         ...(isGenrePresetBriefRequest(task) ? [] : teamWorkflowPrompt()),
         ...(isGoalCampaignTask(task) ? GOAL_CAMPAIGN_RULES : isGenrePresetBriefRequest(task) ? PRESET_FIRST_BUILD_RULES : []),
-        ...(firstMvpRoute(project, task).team && !isGoalCampaignTask(task) ? [...FIRST_MVP_TEAM_RULES, FIRST_MVP_DATA_RULE] : []),
+        ...(firstMvpRoute(project, task).firstMvp && !isGoalCampaignTask(task) ? [...FIRST_MVP_TEAM_RULES, FIRST_MVP_DATA_RULE] : []),
         ...(hasPlayableSegmentSkeleton(project) ? [playableSegmentContract(project)] : []),
         "절차:",
         "1. 필요하면 get_map_region 으로 현황을 짧게 본다(맵당 한 번, 넓은 영역 한 번).",

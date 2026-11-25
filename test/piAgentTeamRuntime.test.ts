@@ -119,7 +119,6 @@ describe("첫 MVP 팀원 차례 상한", () => {
           await callTool(options.extraTools, "wait_agents", {});
           await callTool(options.extraTools, "assign_map_agent", { mapId: "map_a", task: "마을" });
           await callTool(options.extraTools, "wait_agents", {});
-          await callTool(options.extraTools, "finish", { report: "끝" }).catch(() => ({}));
         } else {
           seen[child.mapIds.length ? "map" : "project"] = child.maxTurns!;
           const report = options.extraTools?.find((t) => t.name === "report_task");
