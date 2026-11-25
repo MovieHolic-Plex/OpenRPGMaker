@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { Project, TilesetDef, GameMap } from "@/project/types";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { referenceOwner, referencePageStarts } from "@/project/tilesetReferences";
 import { TilesetReferenceEvidence } from "@/ai/tilesetReferenceEvidence";
 import type { ToolContext } from "@/editor/tools/types";

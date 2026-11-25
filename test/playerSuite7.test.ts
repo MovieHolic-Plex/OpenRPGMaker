@@ -16,7 +16,8 @@ import { type ActorParameterKey, type Project, type Command, type GameEvent, typ
 import { loadBundledAssets } from "@/assets/bundled";
 import { generatedMonsterSpriteUrl } from "@/assets/generatedMonsterSprites";
 import { registerInlineAssets } from "@/assets/inlineAssetStore";
-import { createBlankProject, DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ACTOR_ID } from "@/project/defaults";
+import { DEFAULT_EASYRPG_CHARSET_ID, DEFAULT_ACTOR_ID } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { startSession, type PlaySession } from "@/project/session";
 import { collectWebExportAssets } from "@/project/webExportAssets";
 import { createFieldSpawnRuntime, syncFieldSpawnEventsIntoMap } from "@/player/fieldSpawns";

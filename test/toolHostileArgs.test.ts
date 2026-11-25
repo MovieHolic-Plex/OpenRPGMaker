@@ -10,7 +10,7 @@ import { scheduler } from "node:timers/promises";
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
 import { allTools } from "@/editor/tools/toolRegistry";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { serialize } from "@/project/io";
 import type { JsonSchema, ToolResult } from "@/editor/tools/types";
 import { completedHouseProject, houseMap, HOUSE_RECT, mutateProject } from "./fixtures/completedHouse";

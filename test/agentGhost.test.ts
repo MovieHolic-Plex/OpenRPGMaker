@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AgentGhostPreviewRenderer, computeGhostAnimationState, ghostPhaseChipInfo, preferredGhostToolName } from "@/editor/agentPreviewRenderers";
 import { clearAgentGhostPreview, GHOST_WIPE_DURATION_MS, replaceAgentGhostPreviewFromProjectDiff, getAgentGhostPreviewState, isAgentGhostPreviewHidden, setAgentGhostPreviewHidden, subscribeAgentGhostPreview, buildGhostRevealSchedule, GHOST_WIPE_HOLD_MS, type AgentGhostCell, appendAgentGhostPreviewForToolCall, clearAgentGhostRunningTool, setAgentGhostRunningTool, type AgentGhostPreviewState } from "@/editor/agentGhostPreview";
-import { createBlankMap, createBlankProject } from "@/project/defaults";
+import { createBlankMap } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import { installFakeDom } from "./fakeDom";
 import type { Project } from "@/project/types";

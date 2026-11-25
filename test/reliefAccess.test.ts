@@ -1,7 +1,8 @@
 import { describe, expect, it, afterEach } from "vitest";
 import { planReliefRamp } from "@/editor/reliefRampPlan";
 import { reliefAccess } from "@/editor/tools/reliefAccess";
-import { createBlankProject, createBlankProject as createBlankDefaultProject } from "@/project/defaults";
+import { createBlankProject as createBlankDefaultProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { reliefFromGrid } from "@/project/relief/types";
 import { renderToolImages } from "@/ai/toolImageRenderer";
 import { GROUP_SAMPLE_TOOLS } from "@/editor/tools/groupSampleTool";

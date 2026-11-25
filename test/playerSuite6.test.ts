@@ -1,5 +1,5 @@
 import { describe, expect, it, afterEach, vi, beforeEach } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import { audioIndicatorText, showAudioIndicator } from "@/player/resourceDisplay";
 import { createBattleRuntime } from "@/battle/runtime";

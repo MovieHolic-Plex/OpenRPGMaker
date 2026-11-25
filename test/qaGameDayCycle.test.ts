@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { runTool, getTool, type ToolContext, type ToolDomain } from "@/editor/tools";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { runGameCheck } from "@/qa/gameCheck";
 import type { Project, StructureKitDef, GameEvent } from "@/project/types";
 import { deserialize, serialize } from "@/project/io";

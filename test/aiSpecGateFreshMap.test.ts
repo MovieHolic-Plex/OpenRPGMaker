@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { NON_TILE_SPATIAL_TOOLS, SPATIAL_BUILD_TOOLS, } from "@/ai/buildSpec";
 import { runTool } from "@/editor/tools";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 

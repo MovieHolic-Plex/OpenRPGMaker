@@ -3,7 +3,7 @@ import { EventEmitter, once } from "node:events";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { PlayScene } from "@/player/PlayScene";
 import { createDialogueUI } from "@/player/dialogue";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";

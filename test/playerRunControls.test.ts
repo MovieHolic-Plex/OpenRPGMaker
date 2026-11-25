@@ -20,7 +20,7 @@ vi.mock("@/player/audio", () => ({
 }));
 
 import { renderPlayer, teardownPlayer, type PlayerRunControls } from "@/player/player";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import { LocalDiagnosticSession } from "@/util/localDiagnosticSession";
 import { clearRecentPlayBootDiagnosticsForTest, listRecentPlayBootDiagnostics } from "@/player/playBootDiagnostics";

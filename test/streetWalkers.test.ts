@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { runTool, getTool } from "@/editor/tools";
 import { planSheerTerrain, SHEER_DEVICES, SHEER_KINDS } from "@/editor/tools/sheerTerrainPlan";
 import type { SheerBuildReport } from "@/editor/tools/sheerTerrainBuild";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { layerTileAt } from "@/project/mapLayers";
 import { placeholderSheerArt, setSheerArt } from "@/project/relief/sheerArt";
 import type { Project, TilesetDef, GameMap, MoveCommand } from "@/project/types";
