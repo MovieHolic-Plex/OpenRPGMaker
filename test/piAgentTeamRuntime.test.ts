@@ -133,6 +133,34 @@ describe("첫 MVP 팀원 차례 상한", () => {
   });
 });
 
+// team-mvp-revive(2026-11-25): 뼈대를 프로젝트 작업으로 맡기면 그 팀원이 10~15분을 써 맵 담당 전부가 그 뒤에 섰다. 첫 MVP 팀장은 build_world 를 직접 부른다.
+describe("첫 MVP 팀장의 세계 뼈대", () => {
+  const plan = { nodes: [{ mapId: "map_town", role: "town", width: 20, height: 15 }, { mapId: "map_cave", role: "dungeon", width: 20, height: 15 }], edges: [] };
+  it("빈 프로젝트의 게임 하나 요청은 팀장이 build_world 로 장소 맵을 만들고 그 맵에 담당을 바로 배정한다", async () => {
+    const assigned: string[] = [];
+    const done = await runPiTeam({ ...request(seeded()), task: "용사가 마을에서 출발해 동굴의 마물을 물리치는 모험 게임을 만들어 줘." }, { runAgent: async (child, options) => {
+      if (options.extraTools?.some((t) => t.name === "assign_map_agent")) {
+        const world = options.extraTools.find((t) => t.name === "build_world")!;
+        await world.execute("call", { plan });
+        for (const mapId of ["map_town", "map_cave"]) await callTool(options.extraTools, "assign_map_agent", { mapId, task: "짓는다" });
+        await callTool(options.extraTools, "wait_agents", {});
+      } else assigned.push(child.mapIds[0]!);
+      return doneWith(child.project);
+    } });
+    expect(assigned.sort()).toEqual(["map_cave", "map_town"]);
+    expect(done.project.maps.map_cave).toBeDefined();
+  });
+
+  it("다른 요청의 팀장에게는 build_world 가 없다", async () => {
+    let names: string[] = [];
+    await runPiTeam({ ...request(seeded()), task: "마을에 여관을 하나 더 지어 줘" }, { runAgent: async (child, options) => {
+      if (options.extraTools?.some((t) => t.name === "assign_map_agent")) names = options.extraTools.map((t) => t.name);
+      return doneWith(child.project);
+    } });
+    expect(names).not.toContain("build_world");
+  });
+});
+
 describe("팀 런타임 — 맵 in-flight 락", () => {
   // 깨질 것: 락이 없으면 같은 턴의 두 배정이 같은 사본에서 출발해 나중 결과가 앞 결과를 통째로
   // 덮는다. 팀장 프롬프트의 문장 하나가 아니라 툴 계약이 막아야 한다.
