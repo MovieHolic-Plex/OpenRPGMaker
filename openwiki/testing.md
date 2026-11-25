@@ -2528,3 +2528,22 @@ VM 판 5개의 곁 칸: deepseek escape (3,4) up · terra escape (2,4) up · ter
 (진 판은 센터에서 깨고 챔피언은 잠겨 있다 — 결함이 아니라 레벨 부족).
 
 체크포인트도 같은 실물 게임으로 부팅된다(2026-10-29 — 전에는 `--checkpoint-set` 경로가 `--whole-game` 을 무시하고 기본 픽스처로 떨어져 «없는 맵» 으로 죽었다). 판정자가 멈춘 자리 하나를 확인할 때: 세트 파일에 `{ mapId, x, y, facing, beats }` 만 적고 `--scenario checkpoints --checkpoint-set <세트> --whole-game <폴더> --netns`. 예: standin monster 1번길 (19,20) 오른쪽 누르기 — 대화창 없이 제자리, 아래는 움직임 → 오른쪽 칸은 숲 경계(대사 잠금 아님).
+
+
+## PR 관련 시험 · ci-full 원인 알림 · 타이밍 의존 시험 (2026-11-25, ci-speed)
+
+**PR 관련 시험** (`ci-related-tests.yml`, 정보용): `scripts/vitest-related.mjs` 가 바뀐 파일에서 **런타임 import 그래프**(타입 전용 import 제외, `scripts/lib/testImportGraph.mjs`)를 거꾸로 타 닿는 시험을 가까운 것부터 담는다.
+조각(`related-tests (n)`) 1~4개, 조각마다 예상 380초·시간 상자 450초. 닿는 시험이 500개를 넘거나 바뀐 파일이 80개를 넘으면 `MODE: wide` — 닿는 시험 전부를 12조각(동시 6)으로 돈다.
+옛 깊이 1 판은 2026-11-25 ci-full 새 실패 19개 중 2개만 PR 단계에서 돌렸고, 그래프 판은 18개다(재현: http://mdc2:18301/ci-speed.html).
+자기 PR 을 미리 재 보기: `node scripts/vitest-related.mjs --base origin/main --head HEAD --out /dev/null`.
+
+**ci-full 원인 알림** (`ci-full-blame.yml`): main ci-full 이 실패로 끝나면 `scripts/ci-full-blame.mjs` 가 그 전 main 판과 대조한 새 실패 시험마다,
+두 머리 사이 머지 중 그 시험의 런타임 의존(또는 시험이 경로 문자열로 읽는 파일)을 바꾼 PR 상위 3개에 댓글을 달고 이슈 «ci-full 새 실패 N개 (run …)» 를 연다.
+레인은 자기 PR 의 댓글로 안다. 후보는 import 그래프로만 고르므로 원인이 아니면 무시한다. 손으로: `gh workflow run ci-full-blame.yml -f run=<id>`.
+
+**타이밍 의존 시험 처리 규칙.** ci-full 3판(45525672669·45589803653·45620536375)에서 «Test timed out» 이 난 파일 44개(2판 이상 35개),
+단독 재실행에서 통과한 파일(flakeRetries) 7개였다. 목록은 http://mdc2:18301/ci-speed.html.
+1. 먼저 단독으로 잰다: `gh workflow run ci-vitest-files.yml --ref main -f files="<파일>"`.
+2. 단독에서도 15초를 넘으면 느린 시험이다 — 케이스 준비를 줄이거나(공유 준비물, test-diet), 그 케이스에만 이유를 적은 상한을 둔다(`it(…, { timeout: 60_000 })`, #5144 처럼). 파일 전체 상한을 올리지 않는다.
+3. 단독에서 빠르고 ci-full 에서만 넘으면 부하 의존이다 — 고정 대기(`setTimeout(…, n)`·`sleep`·`waitForTimeout`)를 그 사건(이벤트·상태 변화·`vi.waitFor` 조건)을 기다리는 코드로 바꾼다. 가짜 시계(`vi.useFakeTimers`)로 시간을 빼는 것도 된다.
+4. 하루 안에 못 고치면 기준선에 «timeout» 태그로 남기고(`.omo/gates-baseline.json`), 고친 PR 이 그 줄을 뺀다. 시험을 지우거나 `.skip` 으로 초록을 만들지 않는다.
