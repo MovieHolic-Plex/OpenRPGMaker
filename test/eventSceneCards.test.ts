@@ -217,6 +217,12 @@ describe("한 줄 고치기 범위(이어진 이벤트)", () => {
     expect(linkedMapEvents(project, mapId, "ev_moon").map((event) => event.id)).toEqual(["ev_sun"]);
   });
 
+  it("맵 여러 이벤트가 명령에서 쓰는 이야기 깃발은 연결로 보지 않는다(마을 허브)", () => {
+    const { project, mapId } = puzzle();
+    for (let index = 0; index < 4; index += 1) project.maps[mapId]!.events.push(lever(`ev_villager_${index}`, "주민", "sw_sun", "안녕"));
+    expect(linkedMapEvents(project, mapId, "ev_moon")).toEqual([]);
+  });
+
   it("같은 맵 다른 이벤트의 명령 변경은 받고 연 이벤트를 먼저 둔다", () => {
     const { project: before, mapId } = puzzle();
     const after = structuredClone(before);
