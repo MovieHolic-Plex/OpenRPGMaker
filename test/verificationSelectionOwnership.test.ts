@@ -181,7 +181,9 @@ function normalSession(f: ReturnType<typeof fixture>) {
 
 // Heavy under CI load (15s default is too tight): runs real AssistantSession turns with scene tests.
 describe.each(["ordinary", "correct_verification"])("normal session selection ownership via %s", { timeout: 120_000 }, mode => {
-  it.each(["foreign-pass", "two-negatives", "no-target-control"])("%s stays blocked until each failed map is repaired", async scenario => {
+  // 2026-11-25 test-diet: ordinary 모드의 다시 돌리기(같은 probe) 경로는 two-negatives 행이 지킨다. foreign-pass·no-target-control 의
+  // 증거 판정은 위 ToolVerificationEvidence 단위 케이스와 correct_verification 모드 행이 지킨다 — ordinary 모드에서는 그 둘을 되풀이하지 않는다.
+  it.each(mode === "ordinary" ? ["two-negatives"] : ["foreign-pass", "two-negatives", "no-target-control"])("%s stays blocked until each failed map is repaired", async scenario => {
     const f = fixture(scenario === "no-target-control" ? "no-target" : "front");
     const s = normalSession(f);
     const probe: Call = { name: scene, args: f.args };

@@ -151,7 +151,9 @@ describe("bound NPC interactions before the protected claim snapshot", { timeout
     expect(f.project).toEqual(before);
   });
 
-  it.each([false, true])("real AssistantSession rejects duplicate approach payment at tool and final closure, explicit=%s", async explicit => {
+  // 2026-11-25 test-diet: 세션 경로는 explicit 값에 기대지 않는다 — explicit 은 approachFixture 가 붙이는 prelude 걸음만 바꾸고,
+  // 그 두 값은 위 「rejects early … / accepts zero early …」 직접 실행 케이스가 gold·item·monster 마다 둘 다 돈다. 세션 배선은 explicit=false 행이 지킨다.
+  it.each([false])("real AssistantSession rejects duplicate approach payment at tool and final closure, explicit=%s", async explicit => {
     const f = approachFixture("gold", 20, explicit);
     const { proof, result } = await sessionReplay(f);
     expect(proof.ok, JSON.stringify(proof)).toBe(false);
@@ -159,7 +161,7 @@ describe("bound NPC interactions before the protected claim snapshot", { timeout
     expect(result.assistantText).not.toContain(COMPLETE);
   });
 
-  it.each([false, true])("real AssistantSession accepts zero early then +20 / 0, explicit=%s", async explicit => {
+  it.each([false])("real AssistantSession accepts zero early then +20 / 0, explicit=%s", async explicit => {
     const { proof, result } = await sessionReplay(approachFixture("gold", 0, explicit));
     expect(proof.ok, JSON.stringify(proof)).toBe(true);
     expect(proof.data).toMatchObject({ executed: true, ok: true, evidence: [{ claim: { gold: 20 }, repeat: { gold: 0 }, final: { gold: 57 } }] });
