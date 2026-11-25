@@ -21,7 +21,7 @@
 
 `seed`와 `setup`은 각 사례에만 적용한다. 두 필드가 있으면 `seed`부터 적용한다. `system`과 `database`는 지정한 필드와 컬렉션을 덮어쓰고, `difficulties`는 시스템 난이도 목록을 지정한다. `events`는 선택 맵에, `switches`, `variables`, `commonEvents`, `endings`는 각 프로젝트 목록에 덧붙인다. `commands`는 해당 블록의 레코드 추가 직후 선택한 이벤트 페이지의 명령 목록을 대체한다. `seed.commands`가 가리키는 페이지는 기본 픽스처 또는 `seed.events`에 있어야 한다. `refusalMessage`로 한국어 거절 사유를 확인할 수 있다. 초기 데이터와 `expectRefusal`, `expect`를 모두 적으면 원래 픽스처에서 거절되고 준비한 픽스처에서 성공하는지 확인한다.
 
-유닛 하나의 코퍼스를 확인하려면 `OPRN_CORPUS_UNIT=08-cmd-time-social`처럼 확장자를 뺀 유닛 이름을 설정하고 `test/smallTaskPrimitives/corpus.test.ts`를 실행한다.
+유닛 하나의 코퍼스를 확인하려면 `OPRN_CORPUS_UNIT=08-cmd-time-social`처럼 확장자를 뺀 유닛 이름을 설정하고 그 유닛이 든 조각 파일(`test/smallTaskPrimitives/corpus.test.ts`·`corpus-2..5.test.ts`, 묶음은 `corpusSuite.ts` 의 `CORPUS_SHARDS`)을 실행한다. 다른 조각 파일은 건너뛰기 한 건만 낸다.
 
 `seed.uploaded` 또는 `setup.uploaded`에는 리소스 ID를 키로 한 업로드 레코드를 넣는다. 예를 들어 07 유닛은 테스트용 WebM을 넣고 동영상 명령의 저장값과 되돌리기를 검사한다.
 
