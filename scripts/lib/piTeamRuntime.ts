@@ -216,7 +216,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   const coreFirst = !goalCampaign && isGenrePresetBriefRequest(request.task) && hasPlayableSegmentSkeleton(base)
     && !authoringHarnessFor(base) && !request.readOnly && !options.readOnlyTools;
   // 첫 MVP(빈 프로젝트에서 게임 하나) 팀 실행은 팀원 한 배정의 차례를 줄인다(FIRST_MVP_MEMBER_TURNS) — 뼈대 작업 하나가 15분을 먹고 맵 담당이 그 뒤에야 돌았다.
-  const firstMvpTeam = !goalCampaign && !coreFirst && !request.readOnly && !options.readOnlyTools && firstMvpRoute(base, request.task).firstMvp;
+  const firstMvpTeam = !goalCampaign && !coreFirst && !isGenrePresetBriefRequest(request.task) && !request.readOnly && !options.readOnlyTools && firstMvpRoute(base, request.task).firstMvp;
   let firstPlay: FirstPlayReceipt | undefined;
   let reviewedFirstPlay: string | undefined;
   let reviewedFirstScene: string | undefined;
@@ -805,7 +805,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         }
         // 첫 MVP(빈 프로젝트의 게임 하나)는 맵만 남기지 않는다 — 담당은 맵 단위라 게임 전체 끝맺음(draft-cast)이 여기서는 돌지 않는다.
         // 병합본에 세계관·동료·직업·기술·물건·적을 채운다(2026-11-24 ideal-flow-draft). 다시 불려도 같은 결과다.
-        const firstMvp = !request.readOnly && !options.readOnlyTools && firstMvpRoute(base, request.task).firstMvp;
+        // 엄격한 맵 범위 실행(mapIds + scopeStrict)은 프로젝트 전체를 쓰지 않는다 — 프로젝트 작업 배정 거절과 같은 경계.
+        const firstMvp = !request.readOnly && !options.readOnlyTools && !(request.scopeStrict !== false && request.mapIds.length > 0) && firstMvpRoute(base, request.task).firstMvp;
         if (firstMvp) {
           const drafted: Project = { ...working, system: { ...working.system }, characters: { ...(working.characters ?? {}) }, database: { ...working.database,
             actors: working.database.actors.map((actor) => ({ ...actor, learnedSkills: [...actor.learnedSkills] })), classes: [...working.database.classes],
