@@ -34,11 +34,15 @@ vi.mock("@/ai/v2/story/monsterRequiredBattles", async (importOriginal) => {
   };
 });
 
+// 모의전은 센다 — 아래 «새 객체로 이어 쓰기» 경우는 simulateBattle 이 몇 번 불렸는지만 본다.
+const sims = vi.hoisted(() => ({ calls: 0 }));
+vi.mock("@/battle/simulate", () => ({ simulateBattle: () => { sims.calls += 1; return { winRate: 1, wins: 1, n: 1 } as never; } }));
+
 import { applyShipDefaults } from "@/ai/v2/story/shipDefaults";
 import { shipBlockers } from "@/ai/v2/judge/shipChecks";
 import { stage as shipDefaultsStage } from "@/ai/v2/finish/stages/ship-defaults";
 import { V2Session } from "@/ai/v2/turn/session";
-import { beginFitBudget, checkFitBudget, enterFastFit, fitIsFast, FIT_BUDGET_MS, guardFitBudget, FIT_INCOMPLETE_PREFIX, FitBudgetExceeded, fitBudgetExceeded, restoreFitState, snapshotFitState } from "@/ai/v2/story/monsterFitBudget";
+import { beginFitBudget, checkFitBudget, enterFastFit, fitIsFast, fitSimulate, FIT_BUDGET_MS, guardFitBudget, FIT_INCOMPLETE_PREFIX, FitBudgetExceeded, fitBudgetExceeded, rememberFitCache, restoreFitState, snapshotFitState } from "@/ai/v2/story/monsterFitBudget";
 
 const WHOLE = "몬스터 수집 모험 게임";
 function monsterish(): Project {
@@ -62,6 +66,28 @@ describe("fit budget", () => {
     beginFitBudget(p);
     expect(fitBudgetExceeded(p)).toBeUndefined();
     expect(new FitBudgetExceeded(61_000).message.startsWith(FIT_INCOMPLETE_PREFIX)).toBe(true);
+  });
+});
+
+describe("the fit's battle results carry over to a new project object with the same content", () => {
+  // 2026-11-25 draft-10min m3 몬스터: 둘째 끝맺음은 체크포인트가 바꾼 새 프로젝트 객체라 캐시가 비어 같은 모의전을 다시 돌렸다(워커 루프 80초).
+  it("reuses the results when database and system are identical, and recomputes once they differ", () => {
+    const p = monsterish();
+    sims.calls = 0;
+    beginFitBudget(p);
+    fitSimulate(p, "t1", 5, []);
+    expect(sims.calls).toBe(1);
+    rememberFitCache(p);
+    const same = structuredClone(p);
+    beginFitBudget(same);
+    fitSimulate(same, "t1", 5, []);
+    expect(sims.calls).toBe(1);
+    const changed = structuredClone(p);
+    // 모의전 칸 열쇠(트룹·적·파티)는 같고 내용(시스템)만 다르다 — 이어 쓰면 안 된다.
+    (changed.system as unknown as Record<string, unknown>).zzChanged = true;
+    beginFitBudget(changed);
+    fitSimulate(changed, "t1", 5, []);
+    expect(sims.calls).toBe(2);
   });
 });
 

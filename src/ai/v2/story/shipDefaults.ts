@@ -14,7 +14,7 @@ import { FACTORY_HERO_ARMS } from "../genreDefaults";
 import { fitGateLevelCurve, fitRouteLevelsToGates } from "./monsterRouteLevels";
 import { fitRequiredBattlesToStarters } from "./monsterRequiredBattles";
 import { equipMonsterCampaign } from "./monsterCampaignGifts";
-import { beginFitBudget, enterFastFit, FitBudgetExceeded, restoreFitState, snapshotFitState } from "./monsterFitBudget";
+import { beginFitBudget, enterFastFit, FitBudgetExceeded, rememberFitCache, restoreFitState, snapshotFitState } from "./monsterFitBudget";
 import { redressHeroTwins } from "./heroTwins";
 import { Obj, reconcileFieldHud, premiseOf, fillBattleBgm, fillBattleBackgrounds, fillEnemyHpLook, fillPartyLooks, fillPartyNames, fillUiLook } from "./shipLookDefaults";
 import { moveEntrancesOntoArt, fillStaleObjectives, moveRepeatingStartObjective, pullBackStartObjective, fillGymArrivalObjectives, hasFinal, quietFieldGuides } from "./shipObjectiveDefaults";
@@ -80,6 +80,8 @@ export function applyShipDefaults(project: Project, task = project.gameBlueprint
   if (endingClosureProblems(project).length) applied.push(...fillEndingClosure(project));
   // 기본 지명 걷어내기는 엔딩 글을 채운 뒤에 — 채운 글(청사진 느낌 칸)에도 그 지명이 들 수 있다.
   applied.push(...removeDefaultPlaceWords(project, task));
+  // 다음 끝맺음(체크포인트로 바뀜 새 프로젝트 객체)이 내용이 같으면 이 모의전 결과를 이어 쓴다 — 열쇠는 이 끝맺음을 마친 내용이다.
+  rememberFitCache(project);
   return applied;
 }
 
