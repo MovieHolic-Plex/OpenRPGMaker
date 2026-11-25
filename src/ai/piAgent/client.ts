@@ -190,6 +190,9 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
     }
     return event.type === "agent_event" && receiveInspection(event.event);
   };
+  // 마지막으로 적용한 체크포인트(워커의 accepted 와 같은 내용). 그림 요청이 baseIsLatest 면 빠진 타일셋·키를 여기서 되붙인다 —
+  // 그림과 적용은 같은 줄(checkpoints)로 차례를 서므로 그림을 그릴 때는 앞 적용이 다 끝나 있다(2026-11-25 draft-10min, piRenderBroker.ts).
+  let latestBase: Project = request.project;
   const receiveRender = (event: PiAgentEvent): boolean => {
     if (event.type === "agent_event") return receiveRender(event.event);
     if (event.type !== "render_request") return false;
@@ -202,7 +205,7 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
       const drawing = (async () => {
       try {
         options.signal?.throwIfAborted();
-        const draft = restoreCheckpointProject(request.project, event.project, event.unchangedKeys, event.unchangedTilesetIds);
+        const draft = restoreCheckpointProject(event.baseIsLatest ? latestBase : request.project, event.project, event.unchangedKeys, event.unchangedTilesetIds);
         const itemIcon = event.toolName === 'generate_opening_image' ? (event.data as { itemIcon?: import('../../editor/tools/itemIconTools').ItemIconTarget } | undefined)?.itemIcon : undefined;
         const appearancePortrait = event.toolName === 'generate_opening_image' ? (event.data as { appearancePortrait?: import('../../editor/characterAppearanceGeneration').AppearancePortraitTarget } | undefined)?.appearancePortrait : undefined;
         if (appearancePortrait) {
@@ -288,6 +291,8 @@ export async function runPiAgentViaCompanion(request: PiAgentRequest, options: R
           await defaultYieldToUi();
           options.signal?.throwIfAborted();
           project = await options.onCheckpoint(event);
+          // 워커는 이 적용본(돌려준 프로젝트, 없으면 받은 체크포인트)을 accepted 로 삼는다 — 같은 것을 그림 되붙이기 기준으로 둔다.
+          latestBase = project ?? restoreCheckpointProject(latestBase, event.project, event.unchangedKeys, event.unchangedTilesetIds);
         } catch (error) {
           checkpointError = error;
           issue = error instanceof Error ? error.message : String(error);

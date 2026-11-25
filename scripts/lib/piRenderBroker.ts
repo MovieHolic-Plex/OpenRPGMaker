@@ -55,8 +55,13 @@ export function requestPiOpeningGeneration(project: Project, base: Project, args
     catch (error) { cleanup(); reject(error); }
   });
 }
+/**
+ * baseIsLatest: base 가 «편집기가 마지막으로 적용한 체크포인트» 다. 그러면 그와 같은 타일셋·키는 빼고 보내고, 편집기는 그 적용본에서 되붙인다.
+ * 왜(2026-11-25 draft-10min): 요청 처음 프로젝트와만 비교하면 마을이 버들항 타일셋을 한 번 바꾼 뒤로 그림마다 26.8MB 가 실려
+ * 한 장 왕복이 약 21초였다(워커는 그동안 놀고 있었다) — 체크포인트는 이미 적용본과 비교한다.
+ */
 export function requestPiRender(project: Project, base: Project, toolName: string, data: unknown,
-  emit: (event: PiAgentEvent) => void, signal: AbortSignal, timeoutMs = 45_000): Promise<string> {
+  emit: (event: PiAgentEvent) => void, signal: AbortSignal, timeoutMs = 45_000, baseIsLatest = false): Promise<string> {
   signal.throwIfAborted();
   const renderId = randomUUID(), wire = slimProjectForWire(base, project);
   return new Promise((resolve, reject) => {
@@ -65,7 +70,7 @@ export function requestPiRender(project: Project, base: Project, toolName: strin
     const timer = setTimeout(abort, timeoutMs);
     signal.addEventListener("abort", abort, { once: true });
     pending.set(renderId, reply => { cleanup(); if (typeof reply.issue === "string") reject(new Error(reply.issue)); else resolve(reply.png as string); });
-    try { emit({ type: "render_request", renderId, toolName, data, project: wire.project, unchangedKeys: wire.unchangedKeys, ...(wire.unchangedTilesetIds.length ? { unchangedTilesetIds: wire.unchangedTilesetIds } : {}) }); }
+    try { emit({ type: "render_request", renderId, toolName, data, project: wire.project, unchangedKeys: wire.unchangedKeys, ...(wire.unchangedTilesetIds.length ? { unchangedTilesetIds: wire.unchangedTilesetIds } : {}), ...(baseIsLatest ? { baseIsLatest: true } : {}) }); }
     catch (error) { cleanup(); reject(error); }
   });
 }
