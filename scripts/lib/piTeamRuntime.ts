@@ -29,7 +29,7 @@ import { addPiAgentUsage, changedProjectKeys, PI_MAP_LOSS_DECLINED_PREFIX, resto
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { firstMvpRoute } from "../../src/ai/piAgent/firstMvpRoute.ts";
 import { applyDraftCast } from "../../src/ai/v2/story/draftCast.ts";
-import { checkTeamMvp, FIRST_MVP_MEMBER_TURNS } from "../../src/ai/piAgent/teamMvp.ts";
+import { checkTeamMvp, FIRST_MVP_BUILDER_TOOLS, FIRST_MVP_MEMBER_TURNS } from "../../src/ai/piAgent/teamMvp.ts";
 import { repairWorldTransfers } from "../../src/project/world/transferRepair.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
 import { FIRST_PLAY_TOOLS, firstPlayEvents, firstPlaySignature, inspectFirstPlay, type FirstPlayReceipt } from '../../src/ai/piAgent/firstPlay.ts';
@@ -184,6 +184,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let subUsage: PiAgentUsage | undefined;
   let finished: string | null = null;
   let finishAccepted = false;
+  /** 팀장이 finish 없이 끝난 첫 MVP 를 런타임이 마무리하는 중(아래 firstMvpTeam 자동 마무리). */
+  let autoFinishing = false;
   const reviewingMaps = new Set<string>();
   const repairingMaps = new Set<string>();
   /**
@@ -463,11 +465,14 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             ...request, ...exposureFor(member, false), ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
             // 독립 목록이 있으면 범위 가드를 늘 켠다(scopeStrict:false 부모여도) — 남의 세계 노드를 고친 호출이 성공으로 보이고 병합에서 버려지지 않게.
             ...(independent.length ? { independentMapIds: independent, mapBundleMerge: true } : {}),
-            systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), ...describeMapSeams(snapshot, mapId), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
+            systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), ...describeMapSeams(snapshot, mapId), teamCommunicationPrompt(agentId),
+              // r8: 동굴 담당이 mapId 없이 author_dungeon 을 불러 새 던전 맵을 하나 더 만들어 첫 판이 6장으로 «MVP 크기 밖» 불합격(13분).
+              ...(firstMvpTeam ? [`[첫 MVP 맵 담당] 맵 '${mapId}' 하나를 그 자리에서 짓는다: author_dungeon·author_beodeul_town 과 바깥 장소 종류의 build_region_place 에 mapId:"${mapId}" 를 준다. 가게·여관·던전 입구 같은 실내·입구 종류는 새 맵을 만드니 첫 판(3~5장)에서는 쓰지 않는다. 세계 문은 생성기가 다시 놓는다.`] : [])], maxTurns: member.maxTurns,
             ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
             ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
           },
           { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider),
+            ...(firstMvpTeam ? { toolNames: [...FIRST_MVP_BUILDER_TOOLS] } : {}),
             ...(options.onCheckpoint ? { onCheckpoint: checkpointFor(mapId, snapshot, independent) } : {}) },
         );
         const { spills, conflicts } = mergeOutcome(agentId, mapId, snapshot, done, independent);
@@ -505,6 +510,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     if (request.applyMode === "step" && (runningAssignments(ledger).length || runningTasks().length)) throw new Error("단계별 적용은 앞 작업 승인·완료 후 이어집니다. wait_agents를 먼저 호출하세요.");
     if (tasks.size >= 64) throw new Error("팀 작업 배정 상한(64)에 도달했습니다. 남은 작업을 보고하세요.");
     if (mode === "project") {
+      // 첫 MVP 팀은 프로젝트 작업을 받지 않는다 — 맵 작업과 배타라 모두를 세우고, 받은 팀원이 BGM·효과음·메뉴까지 넓혀 7~15분을 썼다(team-mvp-revive r4·r5·r7).
+      if (firstMvpTeam) throw new Error("첫 MVP 팀은 프로젝트 작업을 쓰지 않습니다. 세계관·인물·직업·기술·물건·적은 finish 가 채웁니다. 맵에 고칠 것이 있으면 그 맵 담당에게 assign_map_agent 로, 없으면 finish 하세요.");
       if (reviewingMaps.size) throw new Error('맵 검수·자동 수정이 진행 중입니다. 완료 후 프로젝트 공통 작업을 배정하세요.');
       if (request.readOnly || options.readOnlyTools || member.kind === "reviewer") throw new Error("읽기 전용 요청/검수 팀원에게 프로젝트 쓰기를 맡길 수 없습니다.");
       if (request.scopeStrict !== false && request.mapIds.length > 0) throw new Error("명시된 맵 범위를 프로젝트 전체 쓰기로 넓힐 수 없습니다. 맵 배정을 사용하세요.");
@@ -793,7 +800,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           throw new Error(`아직 ${running.map((assignment) => `${assignment.memberId}(${assignment.agentId}, ${assignment.mapId})`).join(", ")} 가 작업 중입니다. wait_agents 로 결과를 받은 뒤 보고하세요.`);
         }
         if (mapOwners.busy()) throw new Error("진행 중인 맵 검수가 있습니다. 완료 후 finish 하세요.");
-        if (mailbox.unread("orchestrator-1")) throw new Error("팀장에게 미열람 메시지 또는 반영 확인이 있습니다. read_team_messages로 확인하고 질문에 답한 뒤 finish 하세요.");
+        if (!autoFinishing && mailbox.unread("orchestrator-1")) throw new Error("팀장에게 미열람 메시지 또는 반영 확인이 있습니다. read_team_messages로 확인하고 질문에 답한 뒤 finish 하세요.");
         // 429 로 끊긴 배정은 쿨다운을 쉰 뒤 같은 일을 한 번 자동으로 다시 맡긴다 — 아래 검사들이 다시 한 일의 결과를 보게 맨 앞에 둔다.
         await retryRateLimitedAssignments();
         // 맵 묶음 병합은 맵만 합쳐 담당이 놓은 인물 수가 늘어도 프리셋 기한 판정에는 인물 엔딩이 안 얹힌 채 끝났다(romance-loop-3 rom-c) — 병합본에서 한 번 맞춘다.
@@ -1307,6 +1314,17 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   // 팀장이 wait 없이 끝났을 수 있다(턴 상한·조기 finish 실패). 남은 배정을 거두어 병합한다 —
   // 여기서 놓치면 이미 끝난 시공 결과가 조용히 사라진다.
   await Promise.all(inflight.map((entry) => entry.promise));
+  // 첫 MVP 팀장이 finish 없이 턴을 끝내면(A2A 답장으로 끝낸 판, 2026-11-25 team-mvp-revive r6) 첫 판 관문·끝 지점 변환·문 도착 칸 수리가 돌지 않았다.
+  // 런타임이 finish 를 직접 돌린다 — 관문의 거절 횟수 상한(두 번)을 넘기면 남은 문제를 보고에 적고 받는다. 미열람 메시지는 팀장이 없으니 막지 않는다.
+  if (firstMvpTeam && !finishAccepted) {
+    autoFinishing = true;
+    const finishTool = orchestratorTools.find((tool) => tool.name === "finish")!;
+    // 관문마다 거절 예산이 따로라(첫 MVP 2·이음새 서명마다 1·JRPG 2·429 1) 넉넉히 돈다. 예산을 다 쓰면 관문은 받는다.
+    for (let attempt = 0; attempt < 12 && !finishAccepted; attempt += 1) {
+      try { await finishTool.execute(`auto-finish-${attempt}`, { report: summaryOf(orchDone) }); }
+      catch (error) { emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `자동 마무리 거절(${attempt + 1}): ${error instanceof Error ? error.message : String(error)}`.slice(0, 400) } }); }
+    }
+  }
   if (coreFirst && !finishAccepted) throw new Error('첫 제작이 검증된 finish까지 끝나지 않았습니다. 저장된 핵심 플레이는 보존했습니다.');
   const authoringCompletion = inspectAuthoringHarness(working, base);
   if (authoringCompletion && (!finishAccepted || !authoringCompletion.ok || !authoringReview?.ok || authoringReview.signature !== authoringSignature(working))) {

@@ -23,6 +23,17 @@ export const FIRST_MVP_TEAM_RULES = [
  */
 export const FIRST_MVP_MEMBER_TURNS = { project: 30, map: 60 } as const;
 
+/**
+ * 첫 MVP 맵 담당이 쓰는 도구 — 장소는 결정적 생성기(마을·던전·지역 장소)로 한 번에 짓고, 사람·끝 지점 이벤트만 놓는다.
+ * 2026-11-25 team-mvp-revive r6: 시작 마을 담당 한 명이 find_tools·call_tool 로 손 시공·BGM·전투 모의까지 넓혀 22분을 썼다(맵 담당 도구 호출의 상위가 find_tools 20·show_map_region 19·get_database_records 17).
+ * 목록 밖 도구는 find_tools/call_tool 로도 부르지 못한다(resolvePiToolShape 가 toolNames 를 지킨다).
+ */
+export const FIRST_MVP_BUILDER_TOOLS = [
+  "author_beodeul_town", "author_dungeon", "build_region_place",
+  "show_map_region", "get_map_region", "check_reachability", "find_events", "get_event",
+  "place_npc", "list_npc_graphics", "upsert_event", "declare_story_flag", "set_map_properties",
+] as const;
+
 export interface TeamMvpCheck {
   /** finish 가 고친 것(엔딩 호출 → 끝 지점 스위치, 엔딩 정의 걷기). */
   readonly applied: string[];
