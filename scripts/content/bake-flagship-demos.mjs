@@ -105,7 +105,11 @@ async function graphInputs(inputs) {
       },
     }],
   });
-  for (const path of Object.keys(metafile.inputs)) inputs.add(resolve(root, path.replace(query, "")));
+  // esbuild 는 import 속성이 붙은 입력을 `x.json with { type: 'json' }` 이름으로 적는다 — 꼬리를 떼야 파일을 읽는다.
+  // (2026-11-25 실측: 이 꼬리 때문에 릴리스 굽기의 캐시 키가 매번 ENOENT 로 꺼져 15~23분 굽기를 다시 했다.)
+  for (const path of Object.keys(metafile.inputs)) {
+    inputs.add(resolve(root, path.replace(/ with \{[^}]*\}$/, "").replace(query, "")));
+  }
 }
 
 async function computeKey() {
