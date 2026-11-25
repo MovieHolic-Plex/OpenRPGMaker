@@ -109,13 +109,13 @@ describe("프리셋 첫 생성의 실제 팀원 턴 상한", () => {
 
 // team-mvp-revive(2026-11-25): 첫 MVP 팀의 뼈대 프로젝트 작업 하나가 15분·도구 366번을 써 맵 담당이 그 뒤에야 돌았다.
 describe("첫 MVP 팀원 차례 상한", () => {
-  it("빈 프로젝트의 게임 하나 요청은 프로젝트 작업·맵 담당의 차례를 줄이고, 다른 요청은 팀원 상한 그대로다", async () => {
+  it("빈 프로젝트의 게임 하나 요청은 프로젝트 작업을 거절하고 맵 담당의 차례를 줄이고, 다른 요청은 팀원 상한 그대로다", async () => {
     const run = async (task: string) => {
       const seen: Record<string, number> = {};
       const req = { ...request(seeded()), task, team: { ...TEAM, members: [{ ...TEAM.members[0]!, maxTurns: 300 }] } };
       await runPiTeam(req, { runAgent: async (child, options) => {
         if (options.extraTools?.some((t) => t.name === "assign_map_agent")) {
-          await callTool(options.extraTools, "assign_task_agent", { mode: "project", task: "뼈대" });
+          await callTool(options.extraTools, "assign_task_agent", { mode: "project", task: "뼈대" }).catch(() => { seen.projectRejected = 1; return {}; });
           await callTool(options.extraTools, "wait_agents", {});
           await callTool(options.extraTools, "assign_map_agent", { mapId: "map_a", task: "마을" });
           await callTool(options.extraTools, "wait_agents", {});
@@ -128,7 +128,8 @@ describe("첫 MVP 팀원 차례 상한", () => {
       } });
       return seen;
     };
-    expect(await run("용사가 마을에서 출발해 숲 너머 동굴의 마물을 물리치는 모험 게임을 만들어 줘.")).toEqual({ project: 30, map: 60 });
+    // 첫 MVP 팀은 프로젝트 작업을 받지 않는다(r7: 관문 거절 뒤 팀장이 맡긴 프로젝트 작업이 효과음까지 만들며 7분 넘게 돌았다).
+    expect(await run("용사가 마을에서 출발해 숲 너머 동굴의 마물을 물리치는 모험 게임을 만들어 줘.")).toEqual({ projectRejected: 1, map: 60 });
     expect(await run("마을에 여관을 하나 더 지어 줘")).toEqual({ project: 300, map: 300 });
   });
 });
