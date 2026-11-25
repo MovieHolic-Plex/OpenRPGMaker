@@ -21,6 +21,12 @@ export interface MapBundleResult {
   readonly mapIds: readonly string[];
   readonly project: Project;
   /**
+   * 이 결과의 묶음에서 빼는 맵(따로 맡은 맵) — 부분 트리에 달려 있어도 그 맵과 그 아래는 묶음이 아니다.
+   * 팀 실행만 준다(`worldNodeMapIds`): 빈 프로젝트의 시작 맵은 트리 뿌리라 build_world 가 만든 숲·동굴이 그 자식이 되고,
+   * 비우면 시작 맵 담당의 묶음이 곧 모든 맵이다. 비우면 예전 그대로(부분 트리 전부).
+   */
+  readonly independentMapIds?: readonly string[];
+  /**
    * 이 결과를 만든 에이전트가 출발한 사본. 범위 밖 변경 감사에만 쓴다(병합은 언제나 `base` 위에
    * 얹는다). 비동기 배정에서는 에이전트가 도는 동안 다른 에이전트의 결과가 먼저 병합돼 병합
    * base 가 앞서 나간다 — 그때 병합 base 로 감사하면 남이 바꾼 맵이 이 에이전트의 spill 로
@@ -88,18 +94,29 @@ function findMapTreeParent(root: MapTreeNode | undefined, mapId: string): MapTre
   return null;
 }
 
-function collectTreeIds(node: MapTreeNode, out: string[]): void {
+function collectTreeIds(node: MapTreeNode, out: string[], independent: ReadonlySet<string>): void {
   out.push(node.mapId);
-  for (const child of node.children ?? []) collectTreeIds(child, out);
+  for (const child of node.children ?? []) if (!independent.has(child.mapId)) collectTreeIds(child, out, independent);
 }
 
-/** 맵 + mapTree 부분 트리의 맵 id 들. 트리에 없는 맵은 자기 자신만. */
-export function mapBundleIds(project: Project, mapId: string): string[] {
+/**
+ * 맵 + mapTree 부분 트리의 맵 id 들. 트리에 없는 맵은 자기 자신만.
+ * `independent` 에 든 맵(뿌리 자신은 빼고)은 그 아래까지 묶음에서 뺀다 — 따로 맡은 맵이다(MapBundleResult.independentMapIds).
+ */
+export function mapBundleIds(project: Project, mapId: string, independent: readonly string[] = []): string[] {
   const node = findMapTreeNode(project.mapTree, mapId);
   if (!node) return [mapId];
   const ids: string[] = [];
-  collectTreeIds(node, ids);
+  collectTreeIds(node, ids, new Set(independent.filter((id) => id !== mapId)));
   return ids;
+}
+
+/**
+ * 세계 그래프(build_world)의 장소 맵 — 팀 실행에서 맵마다 따로 맡는 단위다. 프로젝트에 실제로 있는 맵만.
+ * 실내·파생 맵은 세계 노드가 아니라 부모 맵 묶음에 남는다.
+ */
+export function worldNodeMapIds(project: Pick<Project, "maps" | "worldGraph">): string[] {
+  return [...new Set((project.worldGraph?.nodes ?? []).map((node) => node.mapId).filter((id) => Boolean(project.maps[id])))];
 }
 
 function pruneSubtrees(node: MapTreeNode, roots: ReadonlySet<string>): MapTreeNode {
@@ -115,18 +132,18 @@ function pruneSubtrees(node: MapTreeNode, roots: ReadonlySet<string>): MapTreeNo
   };
 }
 
-function bundleMapIdSet(base: Project, result: Project, mapIds: readonly string[]): Set<string> {
+function bundleMapIdSet(base: Project, result: Project, mapIds: readonly string[], independent: readonly string[] = []): Set<string> {
   const bundle = new Set<string>();
   for (const id of mapIds) {
-    for (const bid of mapBundleIds(result, id)) bundle.add(bid);
-    for (const bid of mapBundleIds(base, id)) bundle.add(bid);
+    for (const bid of mapBundleIds(result, id, independent)) bundle.add(bid);
+    for (const bid of mapBundleIds(base, id, independent)) bundle.add(bid);
   }
   return bundle;
 }
 
 /** 묶음 밖에서 달라진 맵만(`maps.<id>`). 호출 시점 범위 가드(toolAdapter)와 `mapBundleSpill` 이 같은 판정을 쓴다. */
-export function mapBundleMapSpill(base: Project, result: Project, mapIds: readonly string[]): string[] {
-  const bundle = bundleMapIdSet(base, result, mapIds);
+export function mapBundleMapSpill(base: Project, result: Project, mapIds: readonly string[], independent: readonly string[] = []): string[] {
+  const bundle = bundleMapIdSet(base, result, mapIds, independent);
   const spill: string[] = [];
   const ids = new Set([...Object.keys(base.maps ?? {}), ...Object.keys(result.maps ?? {})]);
   for (const id of ids) {
@@ -137,13 +154,13 @@ export function mapBundleMapSpill(base: Project, result: Project, mapIds: readon
 }
 
 /** 묶음 밖에서 달라진 키. 범위를 벗어난 에이전트를 잡아내는 감사용. */
-export function mapBundleSpill(base: Project, result: Project, mapIds: readonly string[]): string[] {
+export function mapBundleSpill(base: Project, result: Project, mapIds: readonly string[], independent: readonly string[] = []): string[] {
   const roots = new Set(mapIds);
   const spill: string[] = [];
   const keys = new Set([...Object.keys(base), ...Object.keys(result)]);
   for (const key of keys) {
     if (key === "maps") {
-      spill.push(...mapBundleMapSpill(base, result, mapIds));
+      spill.push(...mapBundleMapSpill(base, result, mapIds, independent));
       continue;
     }
     if (key === "mapTree") {
@@ -490,12 +507,13 @@ export function mergeMapBundles(base: Project, results: readonly MapBundleResult
   const conflicts = new Set<string>();
   for (const result of results) {
     const started = result.base ?? base;
-    const rawKeys = mapBundleSpill(started, result.project, result.mapIds);
+    const independent = result.independentMapIds ?? [];
+    const rawKeys = mapBundleSpill(started, result.project, result.mapIds, independent);
     carryCreatedEntries(merged, started, result.project, conflicts);
     const bundle = new Set<string>();
     for (const id of result.mapIds) {
-      for (const bid of mapBundleIds(result.project, id)) bundle.add(bid);
-      for (const bid of mapBundleIds(base, id)) bundle.add(bid);
+      for (const bid of mapBundleIds(result.project, id, independent)) bundle.add(bid);
+      for (const bid of mapBundleIds(base, id, independent)) bundle.add(bid);
     }
     for (const id of bundle) {
       const row = result.project.maps?.[id];

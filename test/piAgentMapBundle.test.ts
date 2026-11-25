@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { mapBundleIds, mapBundleSpill, mergeMapBundles } from "@/ai/piAgent/mapBundle";
+import { mapBundleIds, mapBundleSpill, mergeMapBundles, worldNodeMapIds } from "@/ai/piAgent/mapBundle";
+import { createMapRunLocks, mapRunBundleIds } from "@/ai/piAgent/mapRunLocks.mjs";
 import { changedProjectKeys, createPiAgentLineDecoder, encodePiAgentEvent } from "@/ai/piAgent/protocol";
+import { repairWorldTransfers } from "@/project/world/transferRepair";
 import { commitChangeset } from "@/editor/tools";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
@@ -497,6 +499,72 @@ describe("piAgent mapBundle", () => {
     expect(merged.project.meta).toEqual(base.meta);
     expect(merged.project.worldCanon).toEqual(base.worldCanon);
     expect(merged.project.system).toEqual({ ...base.system, timeSystem: ctx.project.system.timeSystem });
+  });
+
+  // team-mvp-revive: 빈 프로젝트의 시작 맵은 트리 뿌리라 build_world 의 장소 맵이 그 자식이 된다. 팀은 장소 맵을 따로 맡긴다.
+  it("세계 노드는 따로 맡은 맵이라 시작 맵(트리 뿌리) 묶음·자물쇠에서 빠지고, 실내는 남는다", () => {
+    const base = seed();
+    base.worldGraph = { nodes: [{ mapId: base.startMapId, role: "town" }, { mapId: "map_east", role: "dungeon" }], edges: [] } as unknown as Project["worldGraph"];
+    base.maps.map_east_inner = { ...clone(base.maps.map_east!), id: "map_east_inner", name: "동쪽 실내" };
+    base.mapTree.children.find((node) => node.mapId === "map_east")!.children.push({ mapId: "map_east_inner", children: [] });
+    const root = base.mapTree.mapId;
+    expect(worldNodeMapIds(base).sort()).toEqual([base.startMapId, "map_east"].sort());
+    const independent = worldNodeMapIds(base).filter((id) => id !== root);
+    expect(mapBundleIds(base, root).sort()).toEqual([root, "map_east", "map_east_inner", "map_west"].sort());
+    expect(mapBundleIds(base, root, independent).sort()).toEqual([root, "map_west"].sort());
+    expect(mapRunBundleIds(base, [root], independent).sort()).toEqual([root, "map_west"].sort());
+    expect(mapRunBundleIds(base, ["map_east_inner"], [root, "map_east"]).sort()).toEqual(["map_east_inner"]);
+
+    const locks = createMapRunLocks();
+    const town = locks.acquire("p", mapRunBundleIds(base, [root], independent), "town", independent);
+    expect(town.ok).toBe(true);
+    locks.refreshBundles("p", base);
+    expect(locks.acquire("p", mapRunBundleIds(base, ["map_east"]), "east").ok).toBe(true);
+    // 독립 목록 없이 잡은 시작 맵은 예전처럼 모든 맵을 잠근다.
+    const legacy = createMapRunLocks();
+    expect(legacy.acquire("p", mapRunBundleIds(base, [root]), "town").ok).toBe(true);
+    expect(legacy.acquire("p", mapRunBundleIds(base, ["map_east"]), "east").ok).toBe(false);
+  });
+
+  it("시작 맵 담당이 따로 맡은 세계 노드를 바꾼 것은 옮기지 않고, 그 맵 담당의 결과를 남긴다", () => {
+    const base = seed();
+    base.worldGraph = { nodes: [{ mapId: base.startMapId, role: "town" }, { mapId: "map_east", role: "dungeon" }], edges: [] } as unknown as Project["worldGraph"];
+    const root = base.mapTree.mapId;
+    const east = clone(base);
+    east.maps.map_east!.name = "동쪽 (담당)";
+    const town = clone(base);
+    town.maps[root]!.name = "마을 (담당)";
+    town.maps.map_east!.name = "동쪽 (마을 담당이 건드림)";
+    const merged = mergeMapBundles(base, [
+      { mapIds: ["map_east"], project: east, independentMapIds: [root] },
+      { mapIds: [root], project: town, independentMapIds: ["map_east"] },
+    ]);
+    expect(merged.project.maps.map_east!.name).toBe("동쪽 (담당)");
+    expect(merged.project.maps[root]!.name).toBe("마을 (담당)");
+    expect(merged.conflicts).toEqual([]);
+    expect(merged.spills.flatMap((spill) => spill.keys)).toContain("maps.map_east");
+  });
+
+  // team-mvp-revive: 담당이 자기 맵을 생성기로 다시 지으면 다른 맵 문의 도착 칸이 벽·맵 밖이 된다. 팀 finish 가 돌아오는 문 옆으로 한 번 맞춘다.
+  it("세계 문 도착 칸을 목적지 맵의 돌아오는 문 옆 걸을 수 있는 칸으로 옮기고, 맞는 문은 두지 않는다", () => {
+    const base = seed();
+    const start = base.startMapId!;
+    base.worldGraph = { nodes: [{ mapId: start, role: "town" }, { mapId: "map_east", role: "dungeon" }], edges: [] } as unknown as Project["worldGraph"];
+    const gate = (id: string, x: number, y: number, mapId: string, tx: number, ty: number) => ({ id, name: id, x, y, trigger: { kind: "playerTouch" }, commands: [],
+      pages: [{ id: `${id}_p0`, name: id, conditions: [], graphic: { transparent: true }, trigger: { kind: "playerTouch" }, priority: "below",
+        movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [{ kind: "transfer", mapId, x: tx, y: ty }] }] }) as unknown as Project["maps"][string]["events"][number];
+    base.maps[start]!.events = [gate("ev_world_gate_1", 3, 3, "map_east", 19, 15)];
+    base.maps.map_east!.events = [gate("ev_world_gate_2", 5, 5, start, 3, 4)];
+    expect(repairWorldTransfers(base)).toHaveLength(1);
+    const fixed = base.maps[start]!.events[0]!.pages![0]!.commands[0] as { x: number; y: number };
+    expect(Math.max(Math.abs(fixed.x - 5), Math.abs(fixed.y - 5))).toBe(1);
+    expect(repairWorldTransfers(base)).toEqual([]);
+    // 페이지 없이 commands 만 가진 문도 같은 셈이다.
+    base.maps[start]!.events = [{ ...gate("ev_world_gate_3", 3, 3, "map_east", 19, 15), pages: undefined, commands: [{ kind: "transfer", mapId: "map_east", x: 19, y: 15 }] } as unknown as Project["maps"][string]["events"][number]];
+    expect(repairWorldTransfers(base)).toHaveLength(1);
+    // 선택지 분기 안의 transfer 도 같은 셈이다.
+    base.maps[start]!.events = [{ ...gate("ev_world_gate_4", 3, 3, "map_east", 0, 0), pages: [{ id: "p", name: "p", conditions: [], trigger: { kind: "playerTouch" }, commands: [{ kind: "choices", options: [{ label: "간다", branch: [{ kind: "transfer", mapId: "map_east", x: 19, y: 15 }] }] }] }] } as unknown as Project["maps"][string]["events"][number]];
+    expect(repairWorldTransfers(base)).toHaveLength(1);
   });
 
   it("NDJSON 디코더는 조각 경계와 깨진 줄을 견딘다", () => {

@@ -95,6 +95,8 @@ export interface CreatePiToolsetOptions {
    * 다른 키(mapTree·database 등)의 정책은 병합(`mergeMapBundles`)이 정한다 — 여기선 맵만 본다.
    */
   readonly scopeMapIds?: readonly string[];
+  /** 묶음에서 빼는 맵(다른 팀원이 따로 맡은 세계 노드) — 병합(`MapBundleResult.independentMapIds`)과 같은 목록. */
+  readonly scopeIndependentMapIds?: readonly string[];
   /** 평문 병합 실행(`piMapScopeGuard`) — 거부 문구가 「DB·시스템은 되고 다른 맵만 안 된다」고 말한다. */
   readonly scopeAllowsSystem?: boolean;
   /**
@@ -249,6 +251,7 @@ export interface ResolvePiToolOptions {
   readonly onCall?: (record: PiToolCallRecord) => void;
   readonly maxDataChars?: number;
   readonly scopeMapIds?: readonly string[];
+  readonly scopeIndependentMapIds?: readonly string[];
   readonly scopeAllowsSystem?: boolean;
   readonly findToolsCallable?: (name: string) => boolean;
   readonly eventAssistChat?: typeof chatCompletion;
@@ -294,6 +297,7 @@ export function resolvePiToolShape(ctx: ToolContext, name: string, options: Reso
     readOnly: options.readOnly,
     onCall: options.onCall,
     scopeMapIds: options.scopeMapIds,
+    scopeIndependentMapIds: options.scopeIndependentMapIds,
     scopeAllowsSystem: options.scopeAllowsSystem,
     findToolsCallable: options.findToolsCallable,
     eventAssistChat: options.eventAssistChat,
@@ -305,8 +309,8 @@ export function resolvePiToolShape(ctx: ToolContext, name: string, options: Reso
  * 묶음 밖 기존 맵을 바꾼 호출이면 거부 결과를, 아니면 null. 묶음 밖에 **새로** 생긴 맵은 여기서 막지
  * 않는다 — 다음 호출에서 묶음 아래로 옮겨질 수 있다. 대신 `scopeNewMapWarnings` 가 경고를 붙인다.
  */
-function scopeViolation(before: Project, after: Project, scopeMapIds: readonly string[], toolName: string, allowsSystem: boolean): ToolResult | null {
-  const outside = mapBundleMapSpill(before, after, scopeMapIds)
+function scopeViolation(before: Project, after: Project, scopeMapIds: readonly string[], toolName: string, allowsSystem: boolean, independent: readonly string[] = []): ToolResult | null {
+  const outside = mapBundleMapSpill(before, after, scopeMapIds, independent)
     .map(key => key.slice("maps.".length))
     .filter(id => before.maps[id] !== undefined);
   if (outside.length === 0) return null;
@@ -321,8 +325,8 @@ function scopeViolation(before: Project, after: Project, scopeMapIds: readonly s
 }
 
 /** 이 호출로 묶음 밖에 새로 생긴 맵마다 경고 — 묶음 아래로 달지 않으면 끝날 때 병합이 버린다. */
-function scopeNewMapWarnings(before: Project, after: Project, scopeMapIds: readonly string[]): string[] {
-  return mapBundleMapSpill(before, after, scopeMapIds)
+function scopeNewMapWarnings(before: Project, after: Project, scopeMapIds: readonly string[], independent: readonly string[] = []): string[] {
+  return mapBundleMapSpill(before, after, scopeMapIds, independent)
     .map(key => key.slice("maps.".length))
     .filter(id => before.maps[id] === undefined && after.maps[id] !== undefined)
     .map(id => `맵 ${after.maps[id]!.name ?? id}(${id}) 는 작업 범위(묶음 ${scopeMapIds.join(", ")}) 밖에 생겼습니다.`
@@ -365,12 +369,12 @@ export function createPiToolset(ctx: ToolContext, options: CreatePiToolsetOption
       }
       // 러너는 draft 를 새로 만들어 ctx.project 를 갈아 끼운다 — 되돌리기는 이전 참조 복원이면 된다.
       if (tool.mode === "write" && result.ok && options.scopeMapIds?.length && ctx.project !== beforeProject) {
-        const violation = scopeViolation(beforeProject, ctx.project, options.scopeMapIds, tool.name, options.scopeAllowsSystem === true);
+        const violation = scopeViolation(beforeProject, ctx.project, options.scopeMapIds, tool.name, options.scopeAllowsSystem === true, options.scopeIndependentMapIds);
         if (violation) {
           ctx.project = beforeProject;
           result = violation;
         } else {
-          const warnings = scopeNewMapWarnings(beforeProject, ctx.project, options.scopeMapIds);
+          const warnings = scopeNewMapWarnings(beforeProject, ctx.project, options.scopeMapIds, options.scopeIndependentMapIds);
           if (warnings.length > 0) result = { ...result, warnings: [...(result.warnings ?? []), ...warnings] };
         }
       }

@@ -5,6 +5,41 @@ import { projectLint } from "@/project/lint/projectLint";
 import { ToolError } from "@/editor/tools/types";
 import { AREA_VOID_RATIO, measureMapAreaUse } from "@/editor/tools/mapAreaUse";
 import { isolateTimers } from "./mergedTeardown";
+import { runTool } from "@/editor/tools";
+import { isPassable } from "@/project/collision";
+import type { GameEvent, Project } from "@/project/types";
+
+// 2026-11-24 team-mvp-revive: 팀 첫 MVP 의 숲·동굴 담당이 build_world 가 만든 빈 장소 맵(세계 문만 있음)에 author_dungeon 을 불렀더니
+// «이미 내용이 있다»(map-not-blank)로 거절돼 22분 동안 손으로 깔았다. 뼈대 맵은 짓고, 세계 문은 목적지 그대로 걸을 수 있는 칸에 다시 놓는다.
+describe("dungeonWorldSkeleton", () => {
+  isolateTimers();
+  const gate = (id: string, x: number, y: number, mapId: string, tx: number, ty: number) => ({ id, name: id, x, y, trigger: { kind: "playerTouch" }, commands: [],
+    pages: [{ id: `${id}_p0`, name: id, conditions: [], graphic: { transparent: true }, trigger: { kind: "playerTouch" }, priority: "below",
+      movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [{ kind: "transfer", mapId, x: tx, y: ty }] }] }) as unknown as GameEvent;
+  it("세계 문만 있는 뼈대 맵에도 던전을 짓고, 문은 목적지 그대로 걸을 수 있는 칸에, 들어오는 문은 고치지 않고 알린다", () => {
+    const ctx = { project: createBlankProject() };
+    expect(runTool(ctx, "create_map", { id: "map_forest", name: "숲", width: 30, height: 24 }).ok).toBe(true);
+    expect(runTool(ctx, "create_map", { id: "map_cave", name: "동굴", width: 30, height: 24 }).ok).toBe(true);
+    const project = ctx.project as Project;
+    const start = project.startMapId!;
+    project.worldGraph = { nodes: [{ mapId: start, role: "town" }, { mapId: "map_forest", role: "dungeon" }, { mapId: "map_cave", role: "dungeon" }], edges: [] } as unknown as Project["worldGraph"];
+    project.maps[start]!.events = [gate("ev_world_gate_s", 3, 3, "map_forest", 29, 23)];
+    project.maps.map_forest!.events = [gate("ev_world_gate_1", 1, 1, start, 3, 4), gate("ev_world_gate_2", 28, 22, "map_cave", 2, 2)];
+    const res = AUTHOR_BEODEUL_DUNGEON_ALIAS.run(project, { mapId: "map_forest", type: "forest", seed: 7, floors: 2, populate: false });
+    const map = project.maps.map_forest!;
+    const exit = (res.data as { floorData: { exitStair: { x: number; y: number; front: { x: number; y: number } } | null }[] }).floorData[0]!.exitStair;
+    for (const [id, to] of [["ev_world_gate_1", start], ["ev_world_gate_2", "map_cave"]] as const) {
+      const placed = map.events.filter((event) => event.id === id);
+      expect(placed).toHaveLength(1);
+      expect((placed[0]!.pages?.[0]?.commands[0] as { mapId: string }).mapId).toBe(to);
+      expect(isPassable(project, map, placed[0]!.x, placed[0]!.y)).toBe(true);
+      if (exit) for (const cell of [exit, exit.front]) expect(Math.abs(cell.x - placed[0]!.x) + Math.abs(cell.y - placed[0]!.y)).toBeGreaterThan(1);
+    }
+    // 들어오는 문은 다른 맵(팀에서는 다른 담당 몫)이라 고치지 않고 경고만 한다 — 범위 가드가 호출 전체를 되돌리지 않게.
+    expect(project.maps[start]!.events[0]!.pages![0]!.commands[0]).toEqual({ kind: "transfer", mapId: "map_forest", x: 29, y: 23 });
+    expect((res.warnings ?? []).some((line) => line.includes("들어오는 문"))).toBe(true);
+  });
+});
 
 // 여러 층 던전 층 잇기(2026-10-30): 깊은 방(보스방)이 장식으로 차 내려가는 계단 자리가 없으면 계단을 말없이 빠뜨려
 // 성 2층 시드 4·9·11 이 `links: []`·1층 `exitStair: null` 로 끊겼다. 이제 다른 칸·다른 방으로 물러나 늘 잇는다.

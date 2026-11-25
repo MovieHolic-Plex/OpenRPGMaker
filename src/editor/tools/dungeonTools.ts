@@ -4,6 +4,7 @@
 // 계산은 src/editor/dungeonKit/ — 중립 마스크(mask.ts) + 칩셋 어댑터(beodeul/·monster/) + 장르 프리셋(genres.ts) + 라우팅(route.ts).
 import { DUNGEON_DESIGN_SCHEMA } from "@/editor/dungeonKit/designLayout";
 import { isPassable } from "@/project/collision";
+import { repairWorldTransfers } from "@/project/world/transferRepair";
 import { kitDoorOpenCommands } from "@/project/kitDoors";
 import { groundSupportIssues } from "@/project/groundSupport";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
@@ -753,6 +754,73 @@ function attachDefaultExit(draft: Project, mapId: string, data: Record<string, u
   return `바깥 출구: 1층 입구 ${bump ? "문" : "계단"} (${stair.x},${stair.y}) 에 자리표시 출구(${id})를 두었다 — 이어질 바깥 맵이 없다(요청이 온 맵이 비었거나 이 던전 자신). 마을·필드가 생기면 link_world_entrance({worldMapId:<바깥 맵>, links:[{x,y, toMapId:"${mapId}"}]}) 로 잇는다(자리표시는 자동으로 바뀐다).`;
 }
 
+/**
+ * 세계 뼈대 맵: build_world 가 만든 빈 장소 맵이라 세계 문(ev_world_gate*)만 있고 다른 내용이 없다.
+ * 그 문 때문에 «이미 내용이 있다»로 거절하면 팀 첫 MVP 의 숲·동굴 담당이 생성기 없이 손으로 깔았다
+ * (2026-11-24 team-mvp-revive 실측: 숲 담당 22분·오류 17). 문을 잠시 떼고 지은 뒤 다시 놓는다.
+ */
+function takeWorldSkeletonGates(draft: Project, mapId: unknown): GameEvent[] {
+  const map = typeof mapId === "string" ? draft.maps[mapId] : undefined;
+  if (!map || map.events.length === 0 || (map.structurePlacements?.length ?? 0) > 0) return [];
+  const gate = (event: GameEvent) => event.id.startsWith("ev_world_gate") && (event.pages ?? []).some((page) => page.commands.some((command) => command.kind === "transfer"));
+  if (!map.events.every(gate) || !isBlankMap({ ...map, events: [] })) return [];
+  const gates = map.events;
+  map.events = [];
+  return gates;
+}
+
+/** 뗀 세계 문을 새 던전에 다시 놓는다: 첫 문은 입구 계단·문, 나머지는 입구에서 가장 먼 바닥(서로 떨어지게). 목적지는 그대로다 — 이 맵으로 들어오는 문의 도착 칸은 경고로 알리고 팀 끝맺음(transferRepair)이 맞춘다. */
+function replaceWorldGates(draft: Project, mapId: string, data: Record<string, unknown>, gates: readonly GameEvent[], warnings: string[]): string {
+  const map = draft.maps[mapId]!;
+  const stair = data.entryStair as Stair | null;
+  const entrance = (stair ?? data.entrance) as Pt | undefined;
+  if (!entrance) { map.events.push(...gates); warnings.push(`${map.name}: 입구 자리가 없어 세계 문을 원래 자리에 두었다.`); return ""; }
+  const start = stair?.front ?? entrance;
+  const dist = new Map<number, number>();
+  const queue: Pt[] = [];
+  if (isPassable(draft, map, start.x, start.y)) { dist.set(start.y * map.width + start.x, 0); queue.push(start); }
+  for (let i = 0; i < queue.length; i += 1) {
+    const p = queue[i]!, d = dist.get(p.y * map.width + p.x)!;
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const x = p.x + dx, y = p.y + dy, k = y * map.width + x;
+      if (x < 0 || y < 0 || x >= map.width || y >= map.height || dist.has(k) || !isPassable(draft, map, x, y)) continue;
+      dist.set(k, d + 1); queue.push({ x, y });
+    }
+  }
+  const taken: Pt[] = [entrance];
+  // 다음 층 계단과 그 앞 칸은 비운다 — 층 계단 이벤트는 이 뒤에 놓여 아래 «이벤트 옆 칸 피하기» 가 못 본다(밟는 문이 계단 앞에 서면 계단으로 못 간다).
+  const exit = data.exitStair as Stair | null;
+  const reserved: Pt[] = exit ? [exit, exit.front] : [];
+  const placed: string[] = [];
+  gates.forEach((gate, index) => {
+    let at: Pt = entrance;
+    let bump = stair?.kind === "door";
+    if (index > 0) {
+      let best: Pt | null = null, bestScore = -1;
+      for (const [k, d] of dist) {
+        const x = k % map.width, y = (k - x) / map.width;
+        if (map.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1) || reserved.some((r) => Math.abs(r.x - x) + Math.abs(r.y - y) <= 1)) continue;
+        const sep = Math.min(...taken.map((t) => Math.abs(t.x - x) + Math.abs(t.y - y)));
+        if (sep < 4) continue;
+        const score = Math.min(d, sep);
+        if (score > bestScore) { bestScore = score; best = { x, y }; }
+      }
+      if (!best) { warnings.push(`${map.name}: 세계 문 ${gate.id} 를 둘 바닥이 없어 입구 옆에 두었다.`); best = start; }
+      at = best; bump = false;
+    }
+    taken.push(at);
+    const trigger = { kind: bump ? "action" : "playerTouch" } as GameEvent["trigger"];
+    map.events.push({ ...gate, x: at.x, y: at.y, trigger,
+      pages: (gate.pages ?? []).map((page) => ({ ...page, trigger, priority: bump ? "same" : "below" })) } as GameEvent);
+    placed.push(`${gate.id}(${at.x},${at.y})`);
+  });
+  // 다른 장소 맵에서 이 맵으로 들어오는 문의 도착 칸은 맵이 바뀌어 벽·맵 밖일 수 있다. 그 문은 다른 맵의 것이라 여기서 고치지 않는다 —
+  // 팀 실행에서는 그 맵이 다른 담당 몫이라 범위 가드가 이 호출 전체를 되돌린다. 사본으로 셈만 해 경고로 알리고, 팀 끝맺음(transferRepair)이 맞춘다.
+  const landings = repairWorldTransfers({ ...draft, maps: structuredClone(draft.maps) }, { toMapId: mapId });
+  if (landings.length) warnings.push(`다른 맵에서 들어오는 문 ${landings.length}곳의 도착 칸이 새 던전과 안 맞는다(${landings.join(" / ")}). 그 맵에서 transfer 도착 칸을 고치거나, 팀 실행이면 끝맺음이 맞춘다.`);
+  return `세계 문 ${gates.length}개를 새 던전에 다시 놓았다: ${placed.join(", ")} — 목적지는 그대로.`;
+}
+
 /** author_dungeon 본체: 층 수만큼 짓고(계단 잇기), rpg 장르면 적·상자·보스·쉼터까지 채운다. */
 function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExecResult {
   // 게임 참고·요청 문장(inspiration, 2026-10-23 dungeon-themes): 「엘든링 같은 지하묘지」 → 종류·배치·장치 기본값. 명시한 인자가 늘 이긴다.
@@ -819,6 +887,7 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   const oneDesign = args.design && typeof args.design === "object" ? args.design : undefined;
   if (oneDesign && floors > 1 && !floorDesigns.length) warnings.push(`고침: 설계(design)가 하나라 마지막 층에만 썼다 — 나머지 ${floors - 1}층은 함수 배치다. 층마다 설계하려면 floorDesigns(아래층부터).`);
   const lookFinish: (() => void)[] = [];
+  const skeletonGates = args.entrance === undefined ? takeWorldSkeletonGates(draft, args.mapId) : [];
   for (let k = 1; k <= floors; k += 1) {
     const first = k === 1, last = k === floors;
     // 들어오는 계단: 1층은 바깥과 이을 때만(안 이으면 죽은 계단이 된다). 다음 층부터는 아래층(지하)·위층(탑)에서 오는 계단.
@@ -839,7 +908,8 @@ function authorDungeon(draft: Project, argsIn: Record<string, unknown>): ToolExe
   }
   const datas = results.map((r) => r.data as Record<string, unknown>);
   const mapIds = datas.map((d) => String(d.mapId));
-  const exitLine = linked ? "" : attachDefaultExit(draft, mapIds[0]!, datas[0]!, autoSource, warnings);
+  const exitLine = skeletonGates.length ? replaceWorldGates(draft, mapIds[0]!, datas[0]!, skeletonGates, warnings)
+    : linked ? "" : attachDefaultExit(draft, mapIds[0]!, datas[0]!, autoSource, warnings);
   // 층 잇기: k 층 나가는 계단 ↔ k+1 층 들어오는 계단. 도착은 상대 계단 앞 칸, 계단을 등진다.
   const links: string[] = [];
   for (let k = 0; k + 1 < datas.length; k += 1) {

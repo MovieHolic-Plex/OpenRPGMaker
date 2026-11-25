@@ -85,6 +85,11 @@ export interface PiAgentRequest {
    */
   readonly mapBundleMerge?: boolean;
   /**
+   * `mapIds` 묶음에서 빼는 맵 — 팀 실행에서 다른 팀원이 따로 맡는 세계 노드(mapBundle.ts `worldNodeMapIds`).
+   * 자물쇠·호출 시점 범위 가드·병합이 같은 목록을 쓴다. 비우면 부분 트리 전부(예전 그대로).
+   */
+  readonly independentMapIds?: readonly string[];
+  /**
    * 사용자가 지금 보고 있는 맵. 팀장이 「여기」「이 맵」을 해석하는 기준이자, 다른 맵을 지목하지 않은 지시의 기본 대상이다.
    * 후보(mapIds)를 제한하지 않는다 — 실측(2026-09-15) 팀 모드가 이걸 버려 팀장이 43맵 중 엉뚱한 마을에 배정했다.
    */
@@ -507,10 +512,10 @@ export function snapshotProjectKeepingHeavy(project: Project): Project {
  * `scopeAllowsSystem` 은 평문 병합 실행 표시: DB·시스템 편집은 허용이고 다른 맵만 안 된다고 말하게 한다.
  */
 export function piMapScopeGuard(
-  request: Pick<PiAgentRequest, "mapIds" | "scopeStrict" | "mapBundleMerge">,
-): { scopeMapIds?: readonly string[]; scopeAllowsSystem?: boolean } {
+  request: Pick<PiAgentRequest, "mapIds" | "scopeStrict" | "mapBundleMerge" | "independentMapIds">,
+): { scopeMapIds?: readonly string[]; scopeAllowsSystem?: boolean; scopeIndependentMapIds?: readonly string[] } {
   if (request.mapIds.length === 0) return {};
   const strict = request.scopeStrict !== false;
   if (!strict && request.mapBundleMerge !== true) return {};
-  return { scopeMapIds: request.mapIds, scopeAllowsSystem: !strict };
+  return { scopeMapIds: request.mapIds, scopeAllowsSystem: !strict, ...(request.independentMapIds?.length ? { scopeIndependentMapIds: request.independentMapIds } : {}) };
 }
