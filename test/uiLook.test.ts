@@ -35,7 +35,8 @@ describe("UI 모습 목록 — 있는 스타일만으로 짠 한 벌", () => {
   });
 
   it("모델에게 가는 글은 300자 안 — 카드에는 없고, 스키마 한 칸 + 도구 답의 후보 한 줄(그 세계의 세트 셋까지)", () => {
-    expect(BLUEPRINT_CARD).not.toMatch(/look/iu);
+    // 카드는 UI 모습 칸(look)을 말하지 않는다. 인물 칸의 «looks»(생김새, #5047 cast)는 다른 낱말이라 낱말 경계로 가른다.
+    expect(BLUEPRINT_CARD).not.toMatch(/\blook\b/iu);
     const { look, ...rest } = WRITE_BLUEPRINT_SCHEMA.properties;
     const schemaDelta = JSON.stringify(WRITE_BLUEPRINT_SCHEMA).length - JSON.stringify({ ...WRITE_BLUEPRINT_SCHEMA, properties: rest }).length;
     expect(look.description.length).toBeLessThanOrEqual(60);
