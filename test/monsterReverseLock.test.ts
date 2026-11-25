@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { createPiToolset } from "@/ai/piAgent/toolAdapter";
 import { buildSessionRegistryTools } from "@/ai/sessionToolExposure";

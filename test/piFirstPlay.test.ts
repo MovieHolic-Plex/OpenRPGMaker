@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createBlankProject } from '@/project/defaults';
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { buildPlayableSegmentSkeleton } from '@/project/playableSegment';
 import { FIRST_PLAY_TOOLS, inspectFirstPlay, type FirstPlayReceipt } from '@/ai/piAgent/firstPlay';
 import { inspectFirstScene, firstSceneSignature, firstSceneGraphicEvidence } from '@/ai/piAgent/firstScene';

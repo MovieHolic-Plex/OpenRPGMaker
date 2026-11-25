@@ -4,7 +4,7 @@
 // 이 파일은 에이전트 세션 규칙으로 작성 시점에는 실행하지 않았다(CI 가 돌린다). 같은 값은 모델 없는 탐침으로 미리 보았다.
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { normalizeGameBlueprint } from "@/project/gameBlueprint";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";

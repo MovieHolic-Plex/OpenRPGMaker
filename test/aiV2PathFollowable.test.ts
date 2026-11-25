@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { normalizeGameBlueprint } from "@/project/gameBlueprint";
 import { createBuildRun } from "@/ai/v2/shared/buildRun";
 import { buildBlueprintPath } from "@/ai/v2/story/blueprintPath";

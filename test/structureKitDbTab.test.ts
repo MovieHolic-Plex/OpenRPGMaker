@@ -9,7 +9,7 @@ import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { INTERIOR_OBJECT_CATALOG } from "@/editor/interiorObjectCatalog";
 import { INTERIOR_ROOM_TILESET_ID } from "@/editor/interiorRoomPipeline";
 import { FakeElement, installFakeDom } from "./fakeDom";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 
 let restoreDom: (() => void) | undefined;

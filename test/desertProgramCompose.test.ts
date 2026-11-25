@@ -1,6 +1,6 @@
 // 사막 구성기의 목적표 판 — 역할 건물과 채움 집만 놓이고, 맵 크기가 건물 수에서 나오며, 역할 건물이 맵 로케이션 꼬리표로 남는다. 목적표 없이 부르면 예전 그대로다.
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults/blankProject";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import type { ToolContext } from "@/editor/tools/types";
 import { createBuildRun } from "@/ai/v2/shared/buildRun";
 import { buildingEntrances } from "@/ai/v2/place/entrances";
