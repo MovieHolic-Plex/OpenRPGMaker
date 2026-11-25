@@ -1,5 +1,5 @@
 import { describe, expect, it, afterEach } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { startSession, DEFAULT_MESSAGE_WINDOW_SETTINGS, type PlaySession } from "@/project/session";
 import { applySaveSnapshot, createSaveSnapshot, readSaveSlot, saveToSlot, saveSlotKey, snapshotLoadBlocker, type SaveSnapshot } from "@/player/saveSlots";
 import { readFileSync } from "node:fs";

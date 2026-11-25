@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { advanceMakers, collectMaker, startMaker } from "@/project/makers";
 import { ITEM_QUANTITY_MAX } from "@/project/itemQuantities";

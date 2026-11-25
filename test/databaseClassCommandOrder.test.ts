@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { normalizeClassRecord, normalizeEnemyRecord } from "@/project/databaseRecordModel";
 import { reorderEditableClassCommand, insertCatalogClassCommand, editableClassCommands, moveEditableClassCommand } from "@/editor/databaseClassCommandOrder";
 import type { ClassBattleCommand, EnemyActionPattern } from "@/project/types";

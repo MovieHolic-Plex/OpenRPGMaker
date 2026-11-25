@@ -1,7 +1,7 @@
 import { describe, expect, it, vi, afterEach, beforeEach } from "vitest";
 import { generateAiImage, type GeneratedImageAsset } from "@/ai/imageGenerationClient";
 import { createCharacterAppearanceGenerationController, type AppearanceGenerationDeps } from "@/editor/characterAppearanceGeneration";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import { resetMapEditHistory, recordProjectSnapshot, undoMapEdit } from "@/editor/mapEditHistory";
 import { aiActivityFamilySource } from "@/editor/aiActivityNarration";

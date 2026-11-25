@@ -1,6 +1,6 @@
 import { Window } from "happy-dom";
 import { afterAll, afterEach, describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { startSession } from "@/project/session";
 import { normalizeItemTransitionState, transitionItemState } from "@/project/itemTransitions";

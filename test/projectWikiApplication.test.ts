@@ -1,6 +1,6 @@
 import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
 import { applyRegionProjectWithHistory } from "@/editor/regionTask/runRegionTask";

@@ -3,7 +3,7 @@ import { battleSkillUseFailure, battleSkillUseFailureLabel } from "@/battle/batt
 import { createBattleRuntime } from "@/battle/runtime";
 import { stateBehavior } from "@/battle/battleStates";
 import { renderStateRecordForm } from "@/editor/panels/databaseStateRecordView";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { deserialize, serialize } from "@/project/io";
 import { store } from "@/project/store";
 import type { ActorRecord, EnemyRecord, Project, SkillRecord } from "@/project/types";

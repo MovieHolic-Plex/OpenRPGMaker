@@ -3,7 +3,7 @@ import { AssistantSession, type TurnResult } from "@/ai/assistantSession";
 import { defaultAiConfig } from "@/ai/llmClient";
 import * as activity from "@/ai/activityLog";
 import { store } from "@/project/store";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { getMapEditHistoryEntries, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { clearAgentBlueprint } from "@/editor/agentBlueprint";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";

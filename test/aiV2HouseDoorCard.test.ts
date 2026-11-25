@@ -4,7 +4,7 @@
 // 이제: 마을 결과가 그 마을의 실내 카드와 건물 이름 · 단을 싣고, v5 낱말로 쓴 방은 v5 표로 그대로 깔리고, 없는 이름은 가까운 것으로 바꿔 깔고 알리고,
 // hints.door 로 문을 고르면 그 건물의 크기 단을 따른다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import type { ToolContext } from "@/editor/tools/types";
 import { createV2Tools } from "@/ai/v2/tools/verbs";
 import { withTodoLoop } from "@/ai/v2/loop/todoTools";
