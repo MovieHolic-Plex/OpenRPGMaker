@@ -465,7 +465,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             ...request, ...exposureFor(member, false), ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
             // 독립 목록이 있으면 범위 가드를 늘 켠다(scopeStrict:false 부모여도) — 남의 세계 노드를 고친 호출이 성공으로 보이고 병합에서 버려지지 않게.
             ...(independent.length ? { independentMapIds: independent, mapBundleMerge: true } : {}),
-            systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), ...describeMapSeams(snapshot, mapId), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
+            systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), ...describeMapSeams(snapshot, mapId), teamCommunicationPrompt(agentId),
+              // r8: 동굴 담당이 mapId 없이 author_dungeon 을 불러 새 던전 맵을 하나 더 만들어 첫 판이 6장으로 «MVP 크기 밖» 불합격(13분).
+              ...(firstMvpTeam ? [`[첫 MVP 맵 담당] 맵 '${mapId}' 하나를 그 자리에서 짓는다: author_dungeon·author_beodeul_town·build_region_place 에 mapId:"${mapId}" 를 준다. 새 맵을 만들지 않는다(첫 판은 3~5장). 세계 문은 생성기가 다시 놓는다.`] : [])], maxTurns: member.maxTurns,
             ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
             ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
           },
