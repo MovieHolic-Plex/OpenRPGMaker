@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { createBlankProject } from '@/project/defaults';
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { normalizeClassRecord, normalizeSkillRecord } from '@/project/databaseRecordModel';
 import { serialize, deserialize } from '@/project/io';
 import { collectProjectReferenceIssues, validateProjectReferences } from '@/project/io/references';

@@ -3,7 +3,7 @@ import { ToolVerificationEvidence } from "@/ai/toolVerificationEvidence";
 import { validateArgs } from "@/editor/tools/jsonSchema";
 import { COORD_SCHEMA } from "@/editor/tools/schemaShapes";
 import { runTool } from "@/editor/tools/toolRunner";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 
 const mapId = "map_blank_start";
 const validArgs = { mapId, from: { x: 10, y: 8 }, targets: [{ x: 11, y: 8 }] };

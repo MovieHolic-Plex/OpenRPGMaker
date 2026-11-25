@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderCharacterGraphicsTab } from "@/editor/panels/databaseCharacterGraphicsView";
-import { createBlankProject } from "@/project/defaults/blankProject";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import { listCharacterSprites, type CharacterGraphicsDocument } from "@/project/characterGraphics";
 import { emptySharedCharacterGraphics, sharedCharacterGraphicsProject, validateSharedCharacterGraphics } from "@/project/sharedCharacterGraphics";

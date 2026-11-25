@@ -10,7 +10,7 @@ import {
 import type { ChangeSummary } from "@/editor/tools/types";
 import { buildChangeLedger } from "@/project/changeLedger";
 import { computeChangeSites } from "@/project/changeSites";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import type { GameEvent, Project } from "@/project/types";
 import { documentListenerCount, FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 

@@ -5,7 +5,7 @@ import { getSelectedMonsterSpeciesId, setSelectedMonsterSpeciesId } from "@/edit
 import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import * as modal from "@/editor/ui/modal";
 import { resetModalStackForTest } from "@/editor/ui/modalStack";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { monsterSpeciesForEnemy, normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { store } from "@/project/store";
 import type { EnemyRecord } from "@/project/types";

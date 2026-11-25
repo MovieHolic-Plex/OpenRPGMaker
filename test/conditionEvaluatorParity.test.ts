@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createBattleEventRuntime } from "@/battle/battleEvents";
 import { CONDITION_KINDS, type ConditionKind } from "@/project/commandKindRegistry";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { resolveEventPage } from "@/project/io/pageResolution";
 import { evalCondition, startSession, type PlaySession } from "@/project/session";
 import type { Condition, GameEvent, Project } from "@/project/types";

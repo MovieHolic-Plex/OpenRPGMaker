@@ -5,7 +5,7 @@ import { verifyNpcRewardsPlayable } from "@/ai/workItemOutcome";
 import { ToolVerificationEvidence } from "@/ai/toolVerificationEvidence";
 import { runTool } from "@/editor/tools";
 import { PLAY_TOOLS } from "@/editor/tools/playTools";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import type { Command, GameEvent } from "@/project/types";
 import { runSceneTest, type SceneStep } from "@/testing/sceneTestRunner";
 

@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { renderWorldPanel } from "@/editor/panels/worldPanel";
 import { getPersistedCodexView, setPersistedCodexView } from "@/editor/panels/worldManager";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import type { GameEvent, Project } from "@/project/types";
 import type { WorldEntity } from "@/project/world";

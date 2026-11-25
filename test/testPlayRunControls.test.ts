@@ -19,7 +19,7 @@ vi.mock("@/player/runtimeDebugPanel", () => ({
 }));
 
 import { AudioEngine } from "@/player/audio/audioEngine";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import { closeTestPlayModal, openTestPlayModal } from "@/editor/panels/testPlayModal";
 
