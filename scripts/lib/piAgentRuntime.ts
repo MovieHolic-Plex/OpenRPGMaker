@@ -829,7 +829,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     if (!incremental || changedProjectKeys(accepted, ctx.project).length === 0) return;
     ckSlow("changedProjectKeys");
     const scoped = request.scopeStrict !== false && request.mapIds.length > 0;
-    const project = scoped ? mergeMapBundles(accepted, [{ mapIds: request.mapIds, project: ctx.project }]).project : ctx.project;
+    const project = scoped ? mergeMapBundles(accepted, [{ mapIds: request.mapIds, project: ctx.project, ...(request.independentMapIds?.length ? { independentMapIds: request.independentMapIds } : {}) }]).project : ctx.project;
     if (scoped) authorMergedSpatialProposal(project, accepted);
     if (changedProjectKeys(accepted, project).length === 0) return;
     // 쓰기 도구는 매번 createDraft 로 전체를 복제하므로 정체성은 늘 다르다 — 내용으로 판정한다.

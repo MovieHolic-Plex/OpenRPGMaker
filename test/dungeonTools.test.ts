@@ -5,6 +5,30 @@ import { projectLint } from "@/project/lint/projectLint";
 import { ToolError } from "@/editor/tools/types";
 import { AREA_VOID_RATIO, measureMapAreaUse } from "@/editor/tools/mapAreaUse";
 import { isolateTimers } from "./mergedTeardown";
+import { runTool } from "@/editor/tools";
+import { isPassable } from "@/project/collision";
+import type { GameEvent, Project } from "@/project/types";
+
+// 2026-11-24 team-mvp-revive: 팀 첫 MVP 의 숲·동굴 담당이 build_world 가 만든 빈 장소 맵(세계 문만 있음)에 author_dungeon 을 불렀더니
+// «이미 내용이 있다»(map-not-blank)로 거절돼 22분 동안 손으로 깔았다. 뼈대 맵은 짓고, 세계 문은 목적지 그대로 걸을 수 있는 칸에 다시 놓는다.
+describe("dungeonWorldSkeleton", () => {
+  isolateTimers();
+  it("세계 문만 있는 뼈대 맵에도 던전을 짓고, 그 문은 목적지 그대로 걸을 수 있는 칸에 남는다", () => {
+    const ctx = { project: createBlankProject() };
+    expect(runTool(ctx, "create_map", { id: "map_forest", name: "숲", width: 30, height: 24 }).ok).toBe(true);
+    const project = ctx.project as Project;
+    const start = project.startMapId!;
+    const page = { id: "ev_world_gate_1_p0", name: "ev_world_gate_1", conditions: [], graphic: { transparent: true }, trigger: { kind: "playerTouch" }, priority: "below",
+      movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [{ kind: "transfer", mapId: start, x: 2, y: 2 }] };
+    project.maps.map_forest!.events = [{ id: "ev_world_gate_1", name: "ev_world_gate_1", x: 1, y: 1, trigger: { kind: "playerTouch" }, commands: [], pages: [page] } as unknown as GameEvent];
+    AUTHOR_BEODEUL_DUNGEON_ALIAS.run(project, { mapId: "map_forest", type: "forest", seed: 7, populate: false });
+    const map = project.maps.map_forest!;
+    const gates = map.events.filter((event) => event.id === "ev_world_gate_1");
+    expect(gates).toHaveLength(1);
+    expect(gates[0]!.pages?.[0]?.commands).toEqual([{ kind: "transfer", mapId: start, x: 2, y: 2 }]);
+    expect(isPassable(project, map, gates[0]!.x, gates[0]!.y)).toBe(true);
+  });
+});
 
 // 여러 층 던전 층 잇기(2026-10-30): 깊은 방(보스방)이 장식으로 차 내려가는 계단 자리가 없으면 계단을 말없이 빠뜨려
 // 성 2층 시드 4·9·11 이 `links: []`·1층 `exitStair: null` 로 끊겼다. 이제 다른 칸·다른 방으로 물러나 늘 잇는다.

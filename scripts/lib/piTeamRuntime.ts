@@ -22,7 +22,7 @@ import { describeMapSeams, formatSeamIssues, inspectWorldSeams } from "../../src
 //
 // 팀장이 wait 없이 끝나도(턴 상한 등) 런타임이 남은 배정을 거두어 병합한다.
 
-import { mapBundleIds, mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
+import { mapBundleIds, mergeMapBundles, worldNodeMapIds } from "../../src/ai/piAgent/mapBundle.ts";
 import { createMapRunLocks, mapRunScope, mapRunBundleIds } from "../../src/ai/piAgent/mapRunLocks.mjs";
 import { authorMergedSpatialProposal, exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.ts";
 import { addPiAgentUsage, changedProjectKeys, PI_MAP_LOSS_DECLINED_PREFIX, restoreCheckpointProject, slimDoneEvent, slimProjectForWire, type PiAgentDoneEvent, type PiAgentUsage, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
@@ -30,6 +30,7 @@ import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { firstMvpRoute } from "../../src/ai/piAgent/firstMvpRoute.ts";
 import { applyDraftCast } from "../../src/ai/v2/story/draftCast.ts";
 import { checkTeamMvp } from "../../src/ai/piAgent/teamMvp.ts";
+import { repairWorldTransfers } from "../../src/ai/piAgent/worldSeamRepair.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
 import { FIRST_PLAY_TOOLS, firstPlayEvents, firstPlaySignature, inspectFirstPlay, type FirstPlayReceipt } from '../../src/ai/piAgent/firstPlay.ts';
 import { FIRST_SCENE_INSTRUCTIONS, firstSceneGraphicEvidence, firstSceneObjectCatalog, firstSceneMapIds, firstSceneSignature, inspectFirstScene, inspectFirstScenePlaces, storyRouteBrief } from '../../src/ai/piAgent/firstScene.ts';
@@ -248,9 +249,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   const runningTasks = () => [...tasks.entries()].filter(([id]) => !outcomes.has(id));
   const projectWriter = () => runningTasks().find(([, task]) => task.mode === "project");
   const mapOwners = createMapRunLocks();
-  const claimMaps = (agentId: string, mapIds: readonly string[] | null) => {
+  const claimMaps = (agentId: string, mapIds: readonly string[] | null, independent: readonly string[] = []) => {
     mapOwners.refreshBundles("team", working);
-    const claim = mapOwners.acquire("team", mapIds, agentId);
+    const claim = mapOwners.acquire("team", mapIds, agentId, independent);
     if (!claim.ok) throw new Error(`같은 맵은 한 번에 한 조수만 실행합니다. ${claim.owner} 작업/검수가 진행 중입니다. wait_agents로 완료를 확인한 뒤 다시 배정하세요.`);
     return claim;
   };
@@ -340,15 +341,15 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   emit({ type: "team_start", task: request.task, roles: teamRoleSummaries() });
 
   /** 배정 하나의 결과를 작업 사본에 얹는다. 도착 순서대로 동기 실행되므로 서로 끼어들지 않는다. */
-  function mergeOutcome(agentId: string, mapId: string, snapshot: Project, done: PiAgentDoneEvent): { spills: string[]; conflicts: string[] } {
+  function mergeOutcome(agentId: string, mapId: string, snapshot: Project, done: PiAgentDoneEvent, independent: readonly string[] = []): { spills: string[]; conflicts: string[] } {
     // 지금 다른 맵에서 도는 배정의 맵을 **실제로 바꿨는지** — 남의 작업 구역에 손을 댄 경우다.
     // 묶음 전체로 세면 안 된다: 시작 맵은 트리 루트라 묶음이 곧 모든 맵이고, 손대지 않은 들판까지 충돌로 보고됐다.
     const busyMaps = new Set(runningAssignments(ledger).filter((assignment) => assignment.agentId !== agentId).map((assignment) => assignment.mapId));
-    const bundle = new Set([...mapBundleIds(done.project, mapId), ...mapBundleIds(working, mapId)]);
+    const bundle = new Set([...mapBundleIds(done.project, mapId, independent), ...mapBundleIds(working, mapId, independent)]);
     const touched = [...bundle].filter((id) => JSON.stringify(done.project.maps[id]) !== JSON.stringify(snapshot.maps[id]));
     // 감사 기준은 병합 시점의 working 이 아니라 이 에이전트가 출발한 사본이다. 그 사이 남이
     // 병합한 맵을 이 에이전트의 범위 밖 변경으로 잘못 잡지 않기 위함.
-    const merged = mergeMapBundles(working, [{ mapIds: [mapId], project: done.project, base: snapshot }]);
+    const merged = mergeMapBundles(working, [{ mapIds: [mapId], project: done.project, base: snapshot, independentMapIds: independent }]);
     if (repairingMaps.has(mapId)) {
       const findings = romanceArtRepairFindings(merged.project, snapshot);
       if (findings.length) throw new Error(findings.join(' / '));
@@ -383,14 +384,14 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     changes: userDeclined,
     note: "사용자가 직접 거절한 변경이다. 요청의 이 부분은 사용자 결정으로 끝났다 — 다시 배정하거나 다른 팀원에게 맡기지 말고, 나머지가 끝났으면 finish 보고에 「사용자가 거절해 하지 않음」으로 적는다.",
   } };
-  const checkpointFor = (mapId: string | null, snapshot: Project) => async (checkpoint: PiProjectCheckpoint, signal?: AbortSignal): Promise<Project> => {
+  const checkpointFor = (mapId: string | null, snapshot: Project, independent: readonly string[] = []) => async (checkpoint: PiProjectCheckpoint, signal?: AbortSignal): Promise<Project> => {
     const next = publication.then(async () => {
       // 팀원 체크포인트는 안 바뀐 무거운 키(타일셋·DB)를 비워서 온다. 작업 사본에서 다시 붙인 뒤에만
       // 병합·검사한다 — 빈 채로 두면 이 뒤로 배정되는 팀원이 DB 없는 프로젝트에서 출발한다
       // (2026-09-27 프리셋 팀 첫 생성 실측: 시공 팀원들이 「project.database.actors 가 undefined」로 막혔다).
       const incoming = restoreCheckpointProject(working, checkpoint.project, checkpoint.unchangedKeys, checkpoint.unchangedTilesetIds);
       const proposed = mapId
-        ? mergeMapBundles(working, [{ mapIds: [mapId], project: incoming, base: snapshot }]).project
+        ? mergeMapBundles(working, [{ mapIds: [mapId], project: incoming, base: snapshot, independentMapIds: independent }]).project
         : incoming;
       if (mapId && repairingMaps.has(mapId)) {
         const findings = romanceArtRepairFindings(proposed, snapshot);
@@ -435,7 +436,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     const claim = claimAssignment(ledger, { mapId, agentId, memberId: member.id });
     if (!claim.ok) throw new Error(claim.reason);
     assignedTask.set(agentId, task);
-    const ownership = claimMaps(agentId, mapRunBundleIds(working, [mapId]));
+    // 다른 세계 노드(build_world 의 장소 맵)는 그 맵 담당이 따로 맡는다 — 시작 맵이 트리 뿌리라도 숲·동굴까지 잠그지 않는다.
+    // 자물쇠·호출 시점 범위 가드·병합이 같은 목록을 쓴다(배정 때 고정: 이 담당이 새로 만든 맵은 이 담당 묶음이다).
+    const independent = worldNodeMapIds(working).filter((id) => id !== mapId);
+    const ownership = claimMaps(agentId, mapRunBundleIds(working, [mapId], independent), independent);
     if (coreFirst) firstBuildAssignments += 1;
     counters.builder += 1;
     ledger = claim.ledger;
@@ -452,14 +456,15 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         const done = await runAgent(
           {
             ...request, ...exposureFor(member, false), ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
+            ...(independent.length ? { independentMapIds: independent } : {}),
             systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), ...describeMapSeams(snapshot, mapId), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
             ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
             ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
           },
           { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider),
-            ...(options.onCheckpoint ? { onCheckpoint: checkpointFor(mapId, snapshot) } : {}) },
+            ...(options.onCheckpoint ? { onCheckpoint: checkpointFor(mapId, snapshot, independent) } : {}) },
         );
-        const { spills, conflicts } = mergeOutcome(agentId, mapId, snapshot, done);
+        const { spills, conflicts } = mergeOutcome(agentId, mapId, snapshot, done, independent);
         trackInterior(done, snapshot);
         trackOpening(done, snapshot);
         const complete = !done.openingProduction?.issues.length && !done.interiorCompletion?.length;
@@ -594,7 +599,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     const busy = runningAssignments(ledger).find((assignment) => assignment.mapId === mapId);
     if (busy) throw new Error(`맵 '${mapId}' 은 아직 ${busy.memberId}(${busy.agentId})가 작업 중입니다. wait_agents 로 끝난 뒤 검수하세요 — 반쯤 지어진 맵을 검수하면 엉뚱한 지적이 나옵니다.`);
     const agentId = `reviewer-${counters.reviewer + 1}`;
-    const ownership = claimMaps(agentId, mapRunBundleIds(working, [mapId]));
+    const independent = worldNodeMapIds(working).filter((id) => id !== mapId);
+    const ownership = claimMaps(agentId, mapRunBundleIds(working, [mapId], independent), independent);
     counters.reviewer += 1;
     const romanceArt = authoringHarnessFor(base)?.id === 'romance-scene';
     const task = [focus ? `맵 '${mapId}' 검수. 특히: ${focus}` : `맵 '${mapId}' 의 시공 결과를 검수하라.`,
@@ -808,6 +814,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         // 첫 MVP 약속(맵 3~5장 · 엔딩 없음 · 끝 지점까지 걸어서 감) — v2 단일 실행의 끝맺음과 같은 셈(src/ai/piAgent/teamMvp.ts). 거절은 두 번까지, 그 뒤에는 보고에 남긴다.
         if (firstMvp && !isGoalCampaignTask(request.task)) {
           const mvp: Project = { ...working, maps: structuredClone(working.maps), commonEvents: structuredClone(working.commonEvents ?? []), endings: [...(working.endings ?? [])], switches: [...working.switches] };
+          // 맵 담당이 자기 맵을 생성기로 다시 지어 바뀐 도착 칸을 여기서 한 번 맞춘다 — 이음새를 LLM 수정 배정으로 왕복하지 않는다(worldSeamRepair.ts).
+          const seams = repairWorldTransfers(mvp);
+          if (seams.length) emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `맵 사이 도착 칸 ${seams.length}곳을 맞췄습니다: ${seams.slice(0, 6).join(" / ")}` } });
           const verdict = checkTeamMvp(mvp);
           working = mvp;
           if (verdict.applied.length) emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: verdict.applied.join(" / ") } });

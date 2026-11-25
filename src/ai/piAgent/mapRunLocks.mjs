@@ -4,7 +4,8 @@ export function createMapRunLocks() {
   const active = new Set();
   const listeners = new Set();
   return {
-    acquire(projectKey, mapIds, owner) {
+    // independent: 이 차지의 묶음에서 빼는 맵(따로 맡은 세계 노드, mapBundle.ts MapBundleResult.independentMapIds). 비우면 부분 트리 전부.
+    acquire(projectKey, mapIds, owner, independent = []) {
       const maps = mapIds === null ? null : new Set(mapIds);
       for (const claim of active) {
         // An older caller without project identity must not bypass known callers.
@@ -12,7 +13,7 @@ export function createMapRunLocks() {
         const overlap = maps === null ? claim.maps : claim.maps === null ? maps : new Set([...maps].filter(id => claim.maps.has(id)));
         if (overlap === null || overlap.size > 0) return { ok: false, owner: claim.owner, mapIds: overlap === null ? null : [...overlap] };
       }
-      const claim = { projectKey, maps, owner };
+      const claim = { projectKey, maps, owner, independent };
       active.add(claim);
       return { ok: true, release: () => {
         if (active.delete(claim)) queueMicrotask(() => { for (const listener of listeners) listener(); });
@@ -21,21 +22,26 @@ export function createMapRunLocks() {
     busy() { return active.size > 0; },
     refreshBundles(projectKey, project) {
       for (const claim of active) if (claim.maps !== null && (claim.projectKey === projectKey || claim.projectKey === null || projectKey === null)) {
-        claim.maps = new Set(mapRunBundleIds(project, [...claim.maps]));
+        claim.maps = new Set(mapRunBundleIds(project, [...claim.maps], claim.independent));
       }
     },
     subscribe(listener) { listeners.add(listener); return () => { listeners.delete(listener); }; },
   };
 }
 
-/** Ownership includes the map's subtree: the existing merger accepts that bundle. */
-export function mapRunBundleIds(project, mapIds) {
+/**
+ * Ownership includes the map's subtree: the existing merger accepts that bundle.
+ * Maps in `independent` (other than the requested roots) start their own bundle, so a parent's ownership stops there.
+ */
+export function mapRunBundleIds(project, mapIds, independent = []) {
   const ids = new Set(mapIds);
   const roots = new Set(mapIds);
+  const separate = new Set(independent.filter(id => !roots.has(id)));
   const visit = (node, inherited, seen) => {
     if (!node || typeof node !== "object" || seen.has(node)) return;
     seen.add(node);
-    const owned = inherited || roots.has(node.mapId);
+    // A separately owned map ends the parent's ownership; a requested root below it still owns its own subtree.
+    const owned = roots.has(node.mapId) || (inherited && !separate.has(node.mapId));
     if (owned && typeof node.mapId === "string") ids.add(node.mapId);
     for (const child of node.children ?? []) visit(child, owned, seen);
   };
