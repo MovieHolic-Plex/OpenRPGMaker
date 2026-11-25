@@ -5,9 +5,10 @@ name: ci-full
 #
 # 호스티드 동시 잡 한도는 20개다(개인 계정, 2026-11-22T16:54Z 에 20 에서 막힌 것을 실측). 예전 16샤드는
 # 한 판 내내 16자리를 2~3시간 차지해, ci-fast 를 호스티드로 옮기면 PR 잡이 그동안 줄을 섰다.
-# 그래서 샤드는 24개로 잘게 나누고 `max-parallel: 12` 로 동시 자리를 묶는다. static 까지 13자리,
-# 남는 7자리는 PR(푸시당 ci-fast 4잡) 몫이다. 샤드는 측정 시간 LPT 분할(#5002)이라 24개가 고르고,
-# 두 물결이면 벽시계는 대략 전체 합 / 12 다(2026-11-21~22 판 합 88k~115k초 → 약 2~2.7시간).
+# 2026-11-25 (test-diet, 오너 결정): 샤드는 «한 물결» 로 돈다 — 샤드 수 = 동시 자리 수. 두 물결(24샤드·동시 12)이면
+# 시험을 줄여도 벽시계가 2배라 40분 목표가 안 된다. 샤드 수는 아래 shard-plan 잡의 한 줄(저장소 변수 CI_FULL_SHARDS,
+# 없으면 18)로 정한다. 무료 한도 20자리: static 1 + 샤드 18 = 19, PR 1자리. Pro(40자리)면 변수만 38 로 바꾼다.
+# 샤드는 측정 시간 LPT 분할(#5002)이라 수가 바뀌어도 고르다.
 # 예전 16샤드의 가장 느린 샤드는 2.5~3.4시간이었다.
 #
 # 왜 테스트를 샤드로 나누는가 (2026-10-12, run 38238570454):
@@ -139,7 +140,26 @@ jobs:
           path: ${{ runner.temp }}/gates-report
           if-no-files-found: warn
 
+  # 샤드 수 한 줄. 무료 한도(동시 20)는 18, Pro(40)는 저장소 변수 CI_FULL_SHARDS=38 (gh variable set CI_FULL_SHARDS --body 38).
+  shard-plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      n: ${{ steps.plan.outputs.n }}
+      list: ${{ steps.plan.outputs.list }}
+    steps:
+      - id: plan
+        env:
+          SHARDS: ${{ vars.CI_FULL_SHARDS || '18' }}
+        run: |
+          set -euo pipefail
+          [[ "$SHARDS" =~ ^[1-9][0-9]?$ ]] || { echo "::error::CI_FULL_SHARDS 는 1~99 정수여야 한다: $SHARDS"; exit 1; }
+          echo "n=$SHARDS" >> "$GITHUB_OUTPUT"
+          echo "list=$(seq -s, 1 "$SHARDS" | sed 's/^/[/;s/$/]/')" >> "$GITHUB_OUTPUT"
+          echo "샤드 $SHARDS 개, 한 물결" >> "$GITHUB_STEP_SUMMARY"
+
   tests:
+    needs: shard-plan
     runs-on: ubuntu-latest
     # 호스티드 잡 상한은 6시간이다. 샤드 하나와 그 샤드의 플레이크 재확인이 여기 들어온다.
     # 2026-10-25: 샤드 넷은 240분에 잘려 리포트 업로드가 건너뛰어졌다 → 샤드 여덟, 잡 300분,
@@ -147,14 +167,13 @@ jobs:
     # 2026-10-26: 8샤드에서도 샤드 1(AI 세션 테스트가 몰린 샤드)이 55~80분에 러너째 사라졌다
     # (「The operation was canceled」, always() 단계까지 건너뜀 — 러너 메모리 고갈로 본다). 같은 파일을
     # 반씩(--shard=1/16·2/16) 돌리면 둘 다 끝났다(ci-vitest-files 40308924284·40308932285) → 샤드 16.
-    # 2026-11-24: 샤드 24 · 동시 12 (위 머리말 — 호스티드 20자리를 PR 과 나눈다). 샤드 수를 바꾸면
-    # 아래 두 곳의 `/24` 를 같이 고친다.
+    # 2026-11-24: 샤드 24 · 동시 12. 2026-11-25: 샤드 수 = 동시 자리 = shard-plan 의 한 줄(위 머리말).
     timeout-minutes: 300
     strategy:
       fail-fast: false
-      max-parallel: 12
+      max-parallel: ${{ fromJSON(needs.shard-plan.outputs.n) }}
       matrix:
-        shard: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24]
+        shard: ${{ fromJSON(needs.shard-plan.outputs.list) }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
@@ -183,11 +202,11 @@ jobs:
       # 샤드마다 40분. 후보가 상한(30)을 넘으면 재확인 자체를 건너뛴다. 후보가 수십 건이면 기준선이 낡은 것이다.
       - name: vitest 샤드 (기준선 대비 회귀만 실패)
         timeout-minutes: 280
-        run: node scripts/verify-gates.mjs --only tests --shard ${{ matrix.shard }}/24 --flake-budget-min=40 --flake-max-candidates=30
+        run: node scripts/verify-gates.mjs --only tests --shard ${{ matrix.shard }}/${{ needs.shard-plan.outputs.n }} --flake-budget-min=40 --flake-max-candidates=30
 
       - name: 자원 리포트
         if: always()
-        run: node scripts/ci-resource-report.mjs report "vitest 샤드 ${{ matrix.shard }}/24"
+        run: node scripts/ci-resource-report.mjs report "vitest 샤드 ${{ matrix.shard }}/${{ needs.shard-plan.outputs.n }}"
 
       # 호스티드 러너 디스크는 잡이 끝나면 사라진다. 판정 파일은 아티팩트로 올린다.
       # 계정 아티팩트 쿼터가 차 있으면 이 단계가 게이트를 실패시키진 않는다.
@@ -203,7 +222,7 @@ jobs:
           git rev-parse HEAD > "$dest/commit.txt"
           ls -la "$dest"
           {
-            echo "### vitest 리포트 (shard ${{ matrix.shard }}/24)"
+            echo "### vitest 리포트 (shard ${{ matrix.shard }}/${{ needs.shard-plan.outputs.n }})"
             echo ""
             echo "판정 파일은 이 잡의 아티팩트 \`gates-report-shard-${{ matrix.shard }}\` 에 있다."
           } >> "$GITHUB_STEP_SUMMARY"
