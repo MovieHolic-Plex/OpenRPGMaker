@@ -5,7 +5,7 @@ import { ToolVerificationEvidence } from "@/ai/toolVerificationEvidence";
 import { VERIFICATION_TOOL_NAMES } from "@/ai/agentVerification";
 import { getTool, runTool } from "@/editor/tools";
 import * as applyStore from "@/editor/tools/applyChangesetToStore";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import { fixedDeclarer } from "./intentFixture";
 import { approvedReviewResponse } from "./independentReviewFixture";

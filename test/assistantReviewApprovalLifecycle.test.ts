@@ -8,7 +8,7 @@ import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { createProposalHost } from "@/editor/panels/aiProposalCard";
 import { getMapEditHistoryState, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { installFakeDom } from "./fakeDom";
 import { installMemoryProjectSession } from "./support/projectSession";
 import { fixedDeclarer } from "./intentFixture";

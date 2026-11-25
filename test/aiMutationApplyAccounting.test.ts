@@ -3,7 +3,7 @@ import { reviewingChat } from "./aiEpochFixture";
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { AssistantSession, type TurnResult } from '@/ai/assistantSession';
 import { defaultAiConfig, type ChatResult } from '@/ai/llmClient';
-import { createBlankProject } from '@/project/defaults';
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from '@/project/store';
 import { applyProposedProject } from '@/editor/tools/applyChangesetToStore';
 import { resetMapEditHistory, getMapEditHistoryEntries, undoMapEdit } from '@/editor/mapEditHistory';

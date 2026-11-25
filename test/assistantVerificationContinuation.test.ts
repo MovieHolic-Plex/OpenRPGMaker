@@ -4,7 +4,7 @@ import { AssistantAcceptanceLedger } from "@/ai/assistantAcceptanceLedger";
 import { ToolVerificationEvidence, parseVerificationChecks } from "@/ai/toolVerificationEvidence";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { parseOrchestratorDecision, workPlanFromOrchestratorDecision, workPlanFromSetToolArgs } from "@/ai/workPlan";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { getTool, runTool } from "@/editor/tools";
 import type { ReviewInput } from "@/ai/independentReview";
 import { independentReviewPayload } from "./independentReviewFixture";

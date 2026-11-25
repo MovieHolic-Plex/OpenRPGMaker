@@ -8,7 +8,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, deterministicDraftFindings } from "@/ai/assistantSession";
 import { independentReviewPayload as payload, imageDeliveryForRequest } from "./independentReviewFixture";
 import { defaultAiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import { getTool } from "@/editor/tools";
 import { fixedDeclarer } from "./intentFixture";
