@@ -1,4 +1,4 @@
-import { createBlankProject } from "../../src/project/defaults/defaultProject";
+import { freshBlankProject } from "./blankProject";
 import { checkedDocument, own, spatialId } from "../../src/project/spatial/domain";
 import { duplicateSpatialOccurrence } from "../../src/project/spatial/duplicate";
 import { appendToTree } from "../../src/project/mapTree";
@@ -28,7 +28,8 @@ export const interiorAtlas = "easyrpg_chipset_interior";
 
 /** Numeric regression fixture only: shipped beds plus an authored asymmetric hearth assembly. */
 export function spaceCompilerFixture(seed = 7, shape: SpaceDesign["shape"] = "rect"): Project {
-  const project = withRetiredEasyRpgTilesets(createBlankProject());
+  // 번들 타일셋은 파일마다 한 번 짓고 동결 공유한다(blankProject.ts) — 아래에서 고치는 실내 아틀라스는 withRetiredEasyRpgTilesets 가 새로 만든 것이다.
+  const project = withRetiredEasyRpgTilesets(freshBlankProject());
   keepSpatialFixtureTilesets(project);
   const tileset = project.tilesets[interiorAtlas];
   if (!tileset) throw new TypeError("Missing shipped interior atlas");

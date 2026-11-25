@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { createBlankProject } from "../../src/project/defaults/defaultProject";
+import { freshBlankProject } from "./blankProject";
 import { deserialize } from "../../src/project/io";
 import { findOccurrenceChildId, own, resolveOccurrencePortId, spatialId } from "../../src/project/spatial/domain";
 import { duplicateSpatialOccurrence } from "../../src/project/spatial/duplicate";
@@ -13,7 +13,7 @@ import { withRetiredEasyRpgTilesets } from "./retiredEasyRpgTilesets";
 /** Saved parent probe output, never compiler-shaped output manufactured by this test. */
 export function savedProjectionInput(seed: 7 | 19 | 31 = 7) {
   const saved = { 7: seed7, 19: seed19, 31: seed31 }[seed];
-  const blank = withRetiredEasyRpgTilesets(createBlankProject());
+  const blank = withRetiredEasyRpgTilesets(freshBlankProject());
   const project = deserialize(JSON.stringify({ ...blank, maps: { ...blank.maps, [saved.map.id]: saved.map }, spatialAuthoring: saved.spatialAuthoring }));
   const document = project.spatialAuthoring;
   assert.ok(document);

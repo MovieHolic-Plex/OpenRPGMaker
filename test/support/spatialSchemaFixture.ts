@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { createBlankProject } from "../../src/project/defaults/defaultProject";
+import { freshBlankProject, ownTileset } from "./blankProject";
 
 export function emptySpatialDocument() {
   const json = '{ "terrainTemplates": [{"id":"retired"}] }\n';
@@ -16,9 +16,11 @@ export function emptySpatialDocument() {
 }
 
 export function spatialProject() {
-  const project = createBlankProject();
-  const tileset = Object.values(project.tilesets)[0];
-  if (!tileset) throw new Error("Blank fixture has no tileset");
+  const project = freshBlankProject();
+  const firstId = Object.keys(project.tilesets)[0];
+  if (!firstId) throw new Error("Blank fixture has no tileset");
+  // 공유 타일셋은 동결돼 있다 — 고칠 첫 타일셋만 개인 사본으로 바꾼다(값은 같다).
+  const tileset = ownTileset(project, firstId);
   tileset.structureKits = [{ id: "kit", kind: "section", width: 1, height: 1, rows: [{ tiles: [0] }], learnedFrom: "user-paint" }];
   return { project, tilesetId: tileset.id };
 }
