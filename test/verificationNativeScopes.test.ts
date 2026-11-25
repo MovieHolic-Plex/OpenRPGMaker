@@ -3,7 +3,7 @@ import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { parseToolVerdict } from "@/ai/agentVerification";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { parseVerificationChecks, type VerificationCheck } from "@/ai/toolVerificationEvidence";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import type { Project } from "@/project/types";
 import { getTool, runTool } from "@/editor/tools";
 import { fixedDeclarer } from "./intentFixture";

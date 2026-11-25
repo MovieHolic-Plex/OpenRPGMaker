@@ -10,7 +10,7 @@ import { editorState } from "@/editor/editorState";
 import { clearAgentGhostPreview, getAgentGhostPreviewState, type AgentGhostPreviewState } from "@/editor/agentGhostPreview";
 import { createProposalHost } from "@/editor/panels/aiProposalCard";
 import type { AiRunSurface } from "@/editor/panels/aiRunSurface";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { proposalCompletenessWarnings } from "@/ai/proposalCompleteness";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { approvedReviewResponse, imageDeliveryForRequest } from "./independentReviewFixture";

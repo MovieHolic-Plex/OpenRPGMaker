@@ -4,7 +4,7 @@ import { afterEach, expect, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import type { AcceptancePromise } from "@/ai/assistantAcceptance";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "../support/sharedBlankProject";
 import { runTool, type ToolResult } from "@/editor/tools";
 import { fixedDeclarer } from "../intentFixture";
 import { unboundCriterionCheck, verificationEvent } from "../fixtures/verificationOwnership";

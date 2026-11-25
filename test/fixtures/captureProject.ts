@@ -105,7 +105,7 @@
 // (createCommitProbeProject). 두 함수가 같은 파일에 있어야 다음 사람이 절단(상한)과
 // 시드(하한)를 한 화면에서 본다 — 파일을 나누면 그게 흩어진다.
 // 다른 축도 같은 하한이 필요해지면 그 축의 하드 계약·래칫과 함께 별도 커밋으로 옮길 일이다.
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "../support/sharedBlankProject";
 import type {
   CommonEvent,
   EndingDef,
