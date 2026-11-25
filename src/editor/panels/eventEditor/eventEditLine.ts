@@ -178,22 +178,35 @@ export function eventCommandChanges(
   return { ok: true, changes: [...own, ...others] };
 }
 
-const LINK_KEYS = /"(switchId|variableId|selfSwitch|itemId)":"([^"]+)"/gu;
+const LINK_KEYS = /"(switchId|variableId|itemId)":"([^"]+)"/gu;
+/** 이보다 많은 이벤트 명령이 쓰는 스위치·변수는 이야기 전체 깃발이라 연결로 보지 않는다(마을 허브가 수십 개를 끌고 왔다). */
+export const LINKED_REF_MAX_EVENTS = 4;
+export const LINKED_EVENTS_MAX = 5;
 
-/** 같은 맵에서 이 이벤트와 같은 스위치·변수·물건을 쓰는 이벤트(퍼즐 손잡이·상자처럼 이어진 것). */
+/**
+ * 같은 맵에서 이 이벤트와 **명령**이 같은 스위치·변수·물건을 쓰는 이벤트(퍼즐 손잡이·상자처럼 이어진 것).
+ * 페이지 조건만 같은 것은 연결이 아니고, 맵에서 넓게 쓰는 깃발은 빼며, 겹치는 것이 많은 순으로 최대 다섯.
+ */
 export function linkedMapEvents(project: Project, mapId: MapId, eventId: string): GameEvent[] {
   const events = project.maps[mapId]?.events ?? [];
   const refsOf = (event: GameEvent): Set<string> => {
     const refs = new Set<string>();
-    const text = JSON.stringify(event.pages ?? []);
-    for (const match of text.matchAll(LINK_KEYS)) if (match[1] !== "selfSwitch") refs.add(`${match[1]}:${match[2]}`);
+    const text = JSON.stringify((event.pages ?? []).map((page) => page.commands));
+    for (const match of text.matchAll(LINK_KEYS)) refs.add(`${match[1]}:${match[2]}`);
     return refs;
   };
-  const own = events.find((event) => event.id === eventId);
-  if (!own) return [];
-  const ownRefs = refsOf(own);
-  if (ownRefs.size === 0) return [];
-  return events.filter((event) => event.id !== eventId && [...refsOf(event)].some((ref) => ownRefs.has(ref)));
+  const refsByEvent = new Map(events.map((event) => [event.id, refsOf(event)]));
+  const users = new Map<string, number>();
+  for (const refs of refsByEvent.values()) for (const ref of refs) users.set(ref, (users.get(ref) ?? 0) + 1);
+  const ownRefs = [...(refsByEvent.get(eventId) ?? [])].filter((ref) => (users.get(ref) ?? 0) <= LINKED_REF_MAX_EVENTS);
+  if (ownRefs.length === 0) return [];
+  return events
+    .filter((event) => event.id !== eventId)
+    .map((event) => ({ event, shared: ownRefs.filter((ref) => refsByEvent.get(event.id)!.has(ref)).length }))
+    .filter((row) => row.shared > 0)
+    .sort((a, b) => b.shared - a.shared)
+    .slice(0, LINKED_EVENTS_MAX)
+    .map((row) => row.event);
 }
 
 function pageLabel(pages: readonly EventPage[], pageId: string): string {
