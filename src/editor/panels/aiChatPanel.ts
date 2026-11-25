@@ -57,7 +57,7 @@ import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import { editorState, editorStateChangedOnlyCanvasOverlay, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import { AI_REGION_HANDOFF_EVENT, aiRegionHandoffDetail, requestAiRegionHandoff } from "@/editor/aiRegionHandoff";
-import { regionTurnTouched, showRegionResultCard, showRegionResultCardOnRegionMap } from "@/editor/regionResultCard";
+import { regionFixInstruction, regionTurnTouched, regionWarningsFromEvent, showRegionResultCard, showRegionResultCardOnRegionMap, type RegionWarning } from "@/editor/regionResultCard";
 import { formatSelectionTerrain } from "@/editor/selectionTerrainSummary";
 import { isStampPlaceOn, setStampPlaceOn, subscribeStampPlace } from "@/editor/stampPlaceMode";
 import {
@@ -985,6 +985,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
    * 렌더를 명령에 넣지 않고 이 훅으로 되돌린다 — 명령은 DOM 을 모른 채로 남는다.
    */
   let regionTurn: { readonly mapId: string; readonly region: { readonly x: number; readonly y: number; readonly width: number; readonly height: number }; readonly instruction: string } | null = null;
+  // 영역 턴을 바로 적용한 뒤 조수 v2 가 알린 경고(v2.fast.warnings) — 결과 카드에 실린다.
+  let regionWarnings: readonly RegionWarning[] = [];
   const showPiChangeReceipt = (input: PiChangeReceipt, targetCard?: AiWorkCard): void => {
     // 맵이 안 바뀐 실행은 그릴 영역이 없다 — 칩만 남은 가짜 카드를 만들지 않는다.
     const summary = createChangeSummaryCard(input.before, input.after, {
@@ -1023,6 +1025,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         after: input.after,
         onUndo: preview.onUndo!,
         onRetry: () => requestAiRegionHandoff({ mapId: scoped.mapId, region: scoped.region, instruction: scoped.instruction, autoRun: true, stamp: false }),
+        warnings: regionWarnings,
+        onFix: (warnings: readonly RegionWarning[]) => requestAiRegionHandoff({ mapId: scoped.mapId, region: scoped.region, instruction: regionFixInstruction(warnings), autoRun: true, stamp: false }),
       };
       // 턴이 실내·던전 맵으로 화면을 옮겨 두었으면 영역 맵으로 돌아와 카드를 띄운다(돌아오는 것도 조수 화면 전환이다).
       if (editorState.get().currentMapId === scoped.mapId) showRegionResultCard(card);
@@ -2362,7 +2366,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     });
     try {
       await runPiCommand(command, {
-        onEvent: event => { progress.event(event); featureChecklist.event(event); turnLiveStatus.event(event); turnReference.event(event); reportPiImageUnavailable(event); },
+        onEvent: event => { progress.event(event); featureChecklist.event(event); turnLiveStatus.event(event); turnReference.event(event); reportPiImageUnavailable(event); regionWarnings = regionWarningsFromEvent(event) ?? regionWarnings; },
         getApprovedTilesetFamilies: () => approvedTilesetFamilies,
         onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
         onStoreCard: (request) => { storeCards.push(request); },
@@ -2754,6 +2758,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 영역에 시킨 턴이면 그 결과를 맵 위 영역 아래에도 보인다(showPiChangeReceipt → regionResultCard).
     const regionScope = resolveTurnScope();
     regionTurn = regionScope?.region ? { mapId: regionScope.mapId, region: regionScope.region, instruction: shown } : null;
+    regionWarnings = [];
     const explicit = parsePiCommand(text, store.getCurrent(), runMapId);
     const exclusive = handoff?.team === true || explicit?.mode === "team"
       || loadAiConfig().piTeam === true || isGenrePresetBriefRequest(text) || firstMvpRoute(store.getCurrent(), text).team;

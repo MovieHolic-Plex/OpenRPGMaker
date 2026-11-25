@@ -600,15 +600,18 @@ export interface ScopeNoteInput {
  * 영역에 장소를 짓는 지시(상점·여관·던전 입구…)면 build_region_place 한 번을 이르는 노트. 외관은 영역 안, 실내·던전은 새 맵이다 —
  * 「새 맵 금지」도 「참고용」도 아니다. 장소 짓기 지시가 아니면 null.
  */
+export const REGION_PLACE_NOTE_MARK = "에 장소를 지어 달라고 했다.";
+
 export function formatRegionPlaceNote(scope: ScopeNoteInput, requestText: string): string | null {
   const place = regionPlaceRequest(requestText);
   if (!place) return null;
   const { mapId, region } = scope;
   const where = `맵 \`${mapId}\` 의 (${region.x},${region.y}) ${region.width}×${region.height}`;
   return [
-    `[선택 영역] 사용자가 ${where} 에 장소를 지어 달라고 했다.`,
+    `[선택 영역] 사용자가 ${where} ${REGION_PLACE_NOTE_MARK}`,
     `- build_region_place({mapId:"${mapId}", region:{x:${region.x},y:${region.y},width:${region.width},height:${region.height}}, kind:"${place}"}) 한 번으로 외관·실내 맵·문 왕복·주인(상점/숙박)을 짓는다. 외관·실내·문·NPC 를 따로 부르지 않는다.`,
     "- 바깥 맵은 이 사각형 안만 바뀐다. 실내·던전 같은 새 맵은 허용된다(결과 카드가 함께 되돌린다).",
+    "- 지은 뒤에는 더 꾸미거나 inspect 로 다시 보지 말고 바로 짧게 보고한다 — 검사는 편집기가 뒤에서 돌려 결과 카드에 경고로 알린다. 사용자가 품목·가구를 직접 말했을 때만 고친다.",
     "- 영역이 좁다고 거부되면 다른 자리에 짓지 말고 사용자에게 영역을 넓혀 달라고 말한다. 품목·가구를 바꾸라는 말이 있으면 지은 뒤 set_shop_stock·build_hand_interior_room(replace) 으로 고친다.",
   ].join("\n");
 }

@@ -29,6 +29,8 @@ import { buildIntentFacts, createLlmIntentDeclarer as productionDeclarer, declar
 import { requiresVisualReview, tilesetVisualContent } from "@/ai/mapVisualEvidence";
 import { AssistantImageEvidence } from "@/ai/assistantImageEvidence";
 import { isolateTimers } from "./mergedTeardown";
+import { fastApplyTurn, fastWarnings } from "@/ai/v2/turn/fastApply";
+import { composePiTask } from "@/ai/piAgent/executionRoute";
 
 // Autonomy-level core model mapping: level id -> LLM/session knobs.
 // Tests machine-consumed values (ids, resolution fields); metadata prose is
@@ -1440,6 +1442,20 @@ describe("intentDeclaration", () => {
       expect(formatV2RegionNote(scope, "여기 나무 심어 줘")).not.toContain("build_region_place");
       expect(formatV2RegionNote(scope, "여기 나무 심어 줘")).toContain("`map_start` 의 (2,3) 8×6 사각형");
       expect(formatRegionPlaceNote(scope, "상점 앞에 나무")).toBeNull();
+    });
+
+    it("영역 장소 노트가 붙은 v2 요청만 빠른 적용 턴이고, 관문 줄은 카드용 짧은 경고가 된다(fast-apply)", () => {
+      const scope = { mapId: "map_start", region: { x: 2, y: 3, width: 8, height: 6 } };
+      expect(fastApplyTurn(composePiTask("여기 상점 만들어 줘", formatV2RegionNote(scope, "여기 상점 만들어 줘")))).toBe(true);
+      expect(fastApplyTurn(composePiTask("여기 나무 심어 줘", formatV2RegionNote(scope, "여기 나무 심어 줘")))).toBe(false);
+      expect(fastApplyTurn("마을에 상점 만들어 줘")).toBe(false);
+      const warnings = fastWarnings([
+        { key: "g1", source: "gate", text: "[게임 검사 방 쓰임] 도구점: pharmacy_shop(가게) 에 찻상(붉은 천) 1×1(10,5) — 그 방의 쓰임에 안 맞는다. tile_erase 로 걷어 낸다" },
+        { key: "g1", source: "gate", text: "같은 열쇠" },
+      ]);
+      expect(warnings).toHaveLength(1);
+      expect(warnings[0]!.text).toBe("도구점: pharmacy_shop(가게) 에 찻상(붉은 천) 1×1(10,5)");
+      expect(warnings[0]!.detail).toContain("tile_erase");
     });
 
     it("감사 한 줄에 출처·모드·공간·시설·툴·소요가 실린다", () => {
