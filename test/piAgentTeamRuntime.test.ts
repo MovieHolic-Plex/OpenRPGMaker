@@ -611,6 +611,8 @@ it.each([{ readOnly: true }, { mapIds: ["map_a"], scopeStrict: true }])("프로�
   });
 });
 
+// 체크포인트 병합 두 시험은 호스티드 러너에서 10~17초 걸린다(ci-vitest-files 45611735350·45616931082) — 기본 15초에 걸려 흔들렸다.
+const TEAM_CHECKPOINT_SLOW = 60_000;
 it("live team checkpoints merge owned maps before another agent's final result", async () => {
   const project = seeded();
   const publications: Project[] = [];
@@ -635,7 +637,7 @@ it("live team checkpoints merge owned maps before another agent's final result",
   expect(publications.at(-1)!.maps.map_b!.name).toBe("live:map_b");
   expect(result.project.maps.map_a!.name).toBe("live:map_a");
   expect(result.project.maps.map_b!.name).toBe("live:map_b");
-});
+}, TEAM_CHECKPOINT_SLOW);
 
 // 2026-10-05 스트레스: 맵 삭제 거절 하나가 팀 발행 줄을 막아 뒤의 팀원이 모두 같은 거절로 죽었고,
 // 거절을 모르는 팀장은 같은 요청을 두 번 더 배정했다.
@@ -668,7 +670,7 @@ it("a declined map-loss checkpoint neither blocks later members nor stays hidden
   });
   expect(laterPublished).toBe(true);
   expect(JSON.stringify(waited.userDeclined)).toContain("맵 1개 삭제를 취소했습니다");
-});
+}, TEAM_CHECKPOINT_SLOW);
 
 // 2026-09-27 프리셋 팀 첫 생성 실측: 프로젝트 공통 작업 팀원의 체크포인트는 안 바뀐 타일셋·DB 를 비워서 온다.
 // 팀 런타임이 그걸 그대로 작업 사본으로 삼아, 뒤에 배정된 시공 팀원이 「project.database.actors 가 undefined」로 막혔다.
