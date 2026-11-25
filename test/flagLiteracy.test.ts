@@ -5,7 +5,7 @@
 import { describe, expect, it } from "vitest";
 import { analyzeFlagLiteracy, scoreFlagLiteracy, FLAG_AXES } from "@/benchmark/flags";
 import { FLAG_BENCH_TASKS } from "@/benchmark/flags/tasks";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { projectLint } from "@/project/lint/projectLint";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 

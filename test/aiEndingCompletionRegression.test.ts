@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
 import { parseToolVerdict } from "@/ai/agentVerification";
 import { createInterpreter } from "@/player/interpreter";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { deserialize, resolveEventPage, serialize } from "@/project/io";
 import { startSession } from "@/project/session";
 import type { Command, GameEvent } from "@/project/types";

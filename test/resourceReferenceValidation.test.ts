@@ -11,7 +11,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { searchResources } from "@/assets/resourceSearch";
 import { defaultSystem, defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { charsetFrameIndex } from "@/assets/easyrpgRtp";
 import { resolveGraphic } from "@/editor/tools/eventCompile";
 import { runTool } from "@/editor/tools";

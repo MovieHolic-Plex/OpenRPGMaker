@@ -6,7 +6,8 @@ import { reconcileFaceWithCharset, reviewedCharsetFaceRow, reviewedFaceIdForChar
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { defaultActorFaceResourceId } from "@/project/actorFaceDefaults";
-import { createBlankProject, DEFAULT_TILESET_ID } from "@/project/defaults";
+import { DEFAULT_TILESET_ID } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { repairFaceMatches } from "@/project/faceMatchRepair";
 import { deserialize, serialize } from "@/project/io";
 import type { Command, GameEvent } from "@/project/types";

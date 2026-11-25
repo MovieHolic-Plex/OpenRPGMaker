@@ -24,7 +24,7 @@ import { renderMapHistoryPanel } from "@/editor/panels/mapHistoryPanel";
 import { makeTileToolbar } from "@/editor/panels/tileToolbar";
 import { resetTileHistoryMenusForTests } from "@/editor/panels/tileHistoryMenu";
 import { resetTileToolbarMenusForTests } from "@/editor/panels/tileToolbarMenus";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import * as modal from "@/editor/ui/modal";
 

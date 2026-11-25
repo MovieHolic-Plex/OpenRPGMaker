@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_CONTACT_PALETTE, contactPalette, drawContactFrame } from "@/player/battleImpactDom";
 import { normalizeActorRecord, normalizeActorPatch, normalizeBattleHitFlash } from "@/project/actorModel";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { deserialize, serialize } from "@/project/io/serialize";
 import { FIELD_MENU_COMMANDS, romanceFieldMenu, validateFieldMenu } from "@/project/fieldMenu";
 import { BACKLOG_LIMIT_MAX, READ_FLAG_LIMIT, appendBacklog, autoAdvanceDelayMs, backlogEnabled, defaultDialogueSystem, dialogueReadKey, dialogueSystemHasControls, isDialogueRead, markDialogueRead, mergeDialogueSystem, normalizeBacklog, normalizeReadKeys, resolveDialogueSystem, romanceDialogueSystem, skipVerdict, stepStopReason, stopsReading, validateDialogueSystem, type BacklogHost } from "@/project/dialogueSystem";

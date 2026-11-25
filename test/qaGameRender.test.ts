@@ -1,7 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { checkHorror, chaserStepMs } from "@/qa/gameCheck/horror";
 import { runTool } from "@/editor/tools/toolRunner";
-import { createBlankProject, COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults";
+import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { PNG } from "pngjs";
 import { runGameCheck } from "@/qa/gameCheck";
 import { buildReportHtml, renderMapPng, renderToolRegionPngBase64 } from "../scripts/qa-game/render.mts";

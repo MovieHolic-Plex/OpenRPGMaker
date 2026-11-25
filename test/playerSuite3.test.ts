@@ -10,7 +10,7 @@ import { createStatusMenuDetail } from "@/player/playerStatusMenuDetails";
 import { listStatusMenuCommandIds } from "@/player/playerStatusMenuModel";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { recoveryPreview } from "@/player/shopPartyFit";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { equipmentSlots } from "@/project/equipmentSlots";
 import { deserialize, serialize } from "@/project/io";
 import { listPartyBondEntries } from "@/project/partyBonds";

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { startSession, changeFriendship, evalCondition } from "@/project/session";
 import { createStatusMenuDetail } from "@/player/playerStatusMenuDetails";
 import type { InventoryView } from "@/player/playerInventoryView";

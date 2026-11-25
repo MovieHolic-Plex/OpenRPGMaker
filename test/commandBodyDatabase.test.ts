@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { renderM2CommandBody } from "@/editor/panels/eventEditor/commandBodyM2";
 import { enterHeroNameBody, promoteActorBody, recoverAllBody, namedVariablesOf, changeActorHpBody, changeEquipmentBody, changeLevelBody, changePartyBody } from "@/editor/panels/eventEditor/commandBodyDatabase";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import type { Command } from "@/project/types";
 import type { CommandEditContext, CommandListActions } from "@/editor/panels/eventEditor/types";

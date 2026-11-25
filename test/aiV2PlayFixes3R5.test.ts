@@ -2,7 +2,7 @@
 // 증거: claude-viz/av2-confirm-r5-play.html «플레이에서 찾은 조수 결함». 앞 판의 결함은 test/aiV2PlayFixes3.test.ts.
 // @vitest-environment node
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import type { GameEvent, Project } from "@/project/types";
 import { createBuildRun } from "@/ai/v2/shared/buildRun";
 import { buildPeople, pickPersonGraphic } from "@/ai/v2/place/people";

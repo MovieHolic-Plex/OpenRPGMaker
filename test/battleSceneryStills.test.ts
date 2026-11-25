@@ -15,7 +15,7 @@ import { builtinGeneratedResourceIds, resolveAssetResourceUrl } from "@/assets/g
 import { resolveBattleBackdrop } from "@/battle/battleBackdrop";
 import { readBattleScenery } from "@/editor/panels/battleSceneryPicker";
 import { BACKDROP_PASS_SCORE, BACKDROP_REVIEW_STANDARD } from "@/harnesses/battle-backdrop/opusReview";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { collectWebExportAssets } from "@/project/webExportAssets";
 import type { Project } from "@/project/types";
 
