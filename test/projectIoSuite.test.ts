@@ -29,6 +29,7 @@ describe("openingDelivery", () => {
         expect(p.system.titleScreen?.title).toBe('달빛 모험');
       }
     });
+    // 호스티드 ci-full 샤드에서 16.3초(ci-full 45695908317 tests (1)) — 기본 15초 대신 60초.
     it('keeps deleted and disabled openings through real store normalization',async()=>{
       const {store}=await import('@/project/store');
       const p=createBlankProject();delete p.system.opening;
@@ -37,7 +38,7 @@ describe("openingDelivery", () => {
       const disabled=createBlankProject();disabled.system.opening!.enabled=false;
       await store.loadFallbackProject(deserialize(serialize(disabled)));
       expect(store.getCurrent().system.opening?.enabled).toBe(false);
-    });
+    }, 60_000);
     it('every delivered pack still is searchable and survives save/load',()=>{
       const p=createBlankProject(), ids=listOpeningStillPackIds();
       expect(ids.length).toBeGreaterThan(0);
