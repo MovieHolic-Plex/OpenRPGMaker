@@ -68,6 +68,17 @@ jobs:
         with:
           bun-version: '1.4.2' # 데스크톱 릴리스와 같은 컴파일러
 
+      # 증분 타입체크 기록(tsbuildinfo)을 main 판에서 받는다 (2026-11-25 dev-bottlenecks).
+      # 호스티드 러너는 매번 빈 디스크라 `--incremental` 이 늘 처음부터 돈다(타입체크 p50 76초·스토어 중계 72초, 임계 경로).
+      # tsc 는 파일 내용 해시로 바뀐 파일과 그 의존만 다시 본다 — 다른 체크아웃의 기록을 써도 결과는 같다.
+      # mdc2 실측: 스토어 중계 타입체크 차가운 83초 → 기록 있음 6.5초. 저장은 main 푸시·수동 실행만(PR 캐시는 그 PR 만 쓴다).
+      - name: 타입체크 기록 복원
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .cache/typecheck-app.tsbuildinfo
+          key: tsc-app-${{ hashFiles('package-lock.json', 'tsconfig*.json') }}-${{ github.sha }}
+          restore-keys: tsc-app-${{ hashFiles('package-lock.json', 'tsconfig*.json') }}-
+
       - name: AI 워커 컴파일 (릴리스와 같은 엔트리포인트)
         run: |
           bun build scripts/oh-my-pi-worker.ts \
@@ -108,6 +119,13 @@ jobs:
           wait "$charset_pid" || status=$?
           cat "$RUNNER_TEMP/charset.log"
           exit "$status"
+
+      - name: 타입체크 기록 저장
+        if: github.event_name != 'pull_request' && hashFiles('.cache/typecheck-app.tsbuildinfo') != ''
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .cache/typecheck-app.tsbuildinfo
+          key: tsc-app-${{ hashFiles('package-lock.json', 'tsconfig*.json') }}-${{ github.sha }}
 
       # 앱 번들만. 전체 npm run build(플레이어·standalone·아카이브까지)는 ci-full 몫이다.
       - name: 앱 빌드
@@ -161,6 +179,14 @@ jobs:
       # typecheck:app 은 electron/ 을 보지 않는다. #2856 이 assetStoreClient.ts 의 import 를 지운 채 머지돼
       # 컨셉 피드가 늘 실패했다(2026-10-20). 스토어 중계·편집기 스토어 모듈·그 테스트와 import 만 본다 — electron/main 전체는
       # main.ts·protocols.ts·serve/runtime.ts 에 묵은 오류가 남아 있어 아직 게이트로 못 쓴다.
+      # 증분 기록은 `fast` 잡의 타입체크와 같은 방식이다(위 설명).
+      - name: 타입체크 기록 복원
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .cache/electron-store.tsbuildinfo
+          key: tsc-es-${{ hashFiles('package-lock.json', 'tsconfig*.json') }}-${{ github.sha }}
+          restore-keys: tsc-es-${{ hashFiles('package-lock.json', 'tsconfig*.json') }}-
+
       - name: 타입체크 (Electron 스토어 중계)
         env:
           NODE_OPTIONS: --max-old-space-size=8192
@@ -168,8 +194,15 @@ jobs:
           if [[ -n "${OPRN_CI_CACHE:-}" ]]; then
             npm run typecheck:electron-store -- --incremental --tsBuildInfoFile "$OPRN_CI_CACHE/electron-store.tsbuildinfo"
           else
-            npm run typecheck:electron-store
+            npm run typecheck:electron-store -- --incremental --tsBuildInfoFile .cache/electron-store.tsbuildinfo
           fi
+
+      - name: 타입체크 기록 저장
+        if: github.event_name != 'pull_request' && hashFiles('.cache/electron-store.tsbuildinfo') != ''
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: .cache/electron-store.tsbuildinfo
+          key: tsc-es-${{ hashFiles('package-lock.json', 'tsconfig*.json') }}-${{ github.sha }}
 
       # typecheck:app 은 src 만 본다. test/ · scripts/ · evals/ 의 import 계약은 아무도 안 보는데
       # (`npx tsc --noEmit` 전체는 이 저장소에서 4GB 힙으로 OOM 이라 게이트로 못 쓴다),
