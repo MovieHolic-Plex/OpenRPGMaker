@@ -4,7 +4,7 @@ import { parseAndValidate } from "@/ai/eventCommandAssist";
 import { eventResourceIdSet, listEventResourceOptions } from "@/ai/eventResourceCatalog";
 import { listAudioResources } from "@/assets/audioResourceCatalog";
 import { runTool } from "@/editor/tools/toolRunner";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { audioPrompt, audioPromptProject, parseAudioPrompt, uploadId } from "./support/audioPrompt";
 import { clampVolume, computeFadeVolume, duckGainAt, isFadeComplete } from "@/player/audio/fade";
 import { createAudioQueueState, requestAudio, unlockQueue, clearPending, type AudioRequest } from "@/player/audio/audioQueue";

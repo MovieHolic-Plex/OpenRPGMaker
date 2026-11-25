@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, expect, it, vi } from 'vitest';
-import { createBlankProject } from '@/project/defaults';
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from '@/project/store';
 import { applyGrowthPreset } from '@/project/growth/presets';
 import { emptyGrowth } from '@/project/growth/types';

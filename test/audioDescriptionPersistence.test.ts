@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { createProjectBackup, deserialize, migrateV1toV2, ProjectFormatError, restoreProjectBackup, serialize, serializePretty } from "@/project/io";
 import { createProjectPackage, readProjectPackage } from "@/project/package";
 import { getAudioDescriptionOverride, resetAudioDescriptionOverride, setAudioDescriptionOverride } from "@/project/audioDescriptions";

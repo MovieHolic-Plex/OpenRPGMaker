@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { blankFillTileFor, createStarterMap, createBlankMap } from "@/project/defaults/defaultMaps";
 import { createJpCityTileset, JP_CITY_ID } from "@/project/defaults/jpCity";
 import { deserialize, serialize } from "@/project/io";

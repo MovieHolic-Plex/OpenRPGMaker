@@ -1,6 +1,6 @@
 // 확인 빌드 r7 · r8 의 플레이 결함(2026-11-17, PR agent/av2-play-fixes-5). 자료: assistant-fable-runs/r7/DEFECTS-vs-r7a.md · r8/DEFECTS-r8.md.
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { normalizeGameBlueprint } from "@/project/gameBlueprint";
 import type { GameEvent, GameMap, Project } from "@/project/types";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";

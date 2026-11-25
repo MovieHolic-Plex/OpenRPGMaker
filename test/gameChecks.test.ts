@@ -1,5 +1,5 @@
 import { describe, expect, it, afterEach } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { choiceMetaTag, playerChoiceText } from "@/project/choiceText";
 import { fieldMenu } from "@/project/fieldMenu";
 import { applyStorySetupDefaults } from "@/ai/v2/genreDefaults";

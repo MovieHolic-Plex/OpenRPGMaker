@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { defaultAiConfig } from "@/ai/llmClient";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { chatgptFixtureConfig } from "./helpers/chatgptFixtureConfig";
 
 describe("explicit autonomous execution effort", () => {

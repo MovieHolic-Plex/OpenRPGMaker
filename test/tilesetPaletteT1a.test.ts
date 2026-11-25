@@ -5,7 +5,7 @@ import { proposalSummaryLines } from "@/editor/panels/aiChatPanel";
 import { proposalHumanSummaryLine } from "@/editor/panels/aiProposalSummary";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { deserialize, serialize } from "@/project/io";
 import {

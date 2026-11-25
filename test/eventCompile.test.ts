@@ -6,7 +6,7 @@ import { COMMAND_SCHEMA, CONDITION_SCHEMA, SIMPLE_PAGE_SCHEMA } from "@/editor/t
 import { getTool } from "@/editor/tools/toolRegistry";
 import { runTool } from "@/editor/tools/toolRunner";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { deserialize, serialize } from "@/project/io";
 import type { Command, EventPageCondition, EventPage, EventPageGraphic, GameEvent, GameMap, Project } from "@/project/types";
 import { charsetGraphicKey, queryNpcGraphics, resolveNpcGraphic } from "@/assets/charsetQuery";

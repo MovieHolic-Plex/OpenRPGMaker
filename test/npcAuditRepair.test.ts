@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { compileSimplePages } from "@/editor/tools/eventCompile";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { SimplePage, ToolContext, ToolResult } from "@/editor/tools/types";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { validateCommandArray, validateConditionShape } from "@/project/io/shapeCommandFields";
 
 const entry170 = {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { runTool, getTool } from "@/editor/tools";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import type { Project, Command, GameEvent } from "@/project/types";
 import { runGameCheck } from "@/qa/gameCheck";
 import type { ToolContext } from "@/editor/tools/types";

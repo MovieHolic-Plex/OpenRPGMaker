@@ -8,7 +8,7 @@ import type { AutonomyLevel } from "@/ai/autonomyLevels";
 import type { WorkPlan } from "@/ai/workPlan";
 import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import * as turnRunner from "@/editor/panels/aiTurnRunner";
 

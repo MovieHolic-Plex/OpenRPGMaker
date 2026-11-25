@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { describe, expect, it } from "vitest";
 import { commitChangeset, getTool, runTool } from "@/editor/tools";
 import { MYSTERY_ITEM_PREFIX, compileAccusationChoice, mysteryClueItemId } from "@/editor/tools/mysteryCaseTool";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { TILE } from "@/project/defaults/constants";
 import { deserialize, serialize } from "@/project/io/serialize";
 import type { Command, GameEvent, Project } from "@/project/types";

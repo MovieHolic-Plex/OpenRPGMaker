@@ -1,6 +1,6 @@
 import { describe, expect, it, beforeEach } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import type { Command, Project } from "@/project/types";
 import type { CinematicStillResult } from "@/editor/openingImageGeneration";
 import type { ToolContext } from "@/editor/tools/types";

@@ -30,7 +30,7 @@ import {
 import { clearRecentPlayBootDiagnosticsForTest } from "@/player/playBootDiagnostics";
 import { setExportedProject, store as exportProjectStore } from "@/player/exportProjectStoreShim";
 import { renderPlayer, teardownPlayer } from "@/player/player";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import type { PlaySession } from "@/project/session";
 import { store } from "@/project/store";
 import type { EventPage, GameEvent } from "@/project/types";
