@@ -403,3 +403,111 @@
     display: none;
   }
 }
+
+/* 목업 v2 배치(쉬움·보통): 왼쪽 설정 칸 대신 페이지 줄 앞 「모습」·「시작 방식」 칩(content.ts whoWhen),
+   이름만 보이는 알약 페이지 탭, 넓은 창에서는 → 로 이어진 카드 격자. 고급은 그대로다. */
+.event-editor-modal-window .event-editor.event-editor-command-focused.is-beginner:is(.is-level-easy, .is-level-normal) .event-editor-workbench {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.event-editor-modal-window .event-editor.event-editor-command-focused.is-beginner:is(.is-level-easy, .is-level-normal) .event-editor-settings-column,
+.event-editor-modal-window .event-editor.event-editor-command-focused.is-beginner:is(.is-level-easy, .is-level-normal) .event-editor-column-resizer {
+  display: none;
+}
+
+.event-editor-modal-window .event-editor.event-editor-command-focused.is-beginner:is(.is-level-easy, .is-level-normal) .event-editor-workbench > .event-editor-commands-column {
+  grid-column: 1;
+}
+
+.event-editor > .event-editor-pagebar:has(> .event-scene-who-when) {
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.event-scene-who-when {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+  min-width: 0;
+}
+
+.event-scene-who-when > .event-oprn-fieldset {
+  align-items: center;
+  border: 0;
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.event-editor.is-beginner .event-scene-who-when .event-editor-beginner-heading,
+.event-editor-modal-window .event-editor.is-beginner .event-scene-who-when .event-graphic-control > .db-field:has([data-testid="event-page-appearance-select"], [data-custom-select-for="event-page-appearance-select"]),
+.event-editor-modal-window .event-editor.is-beginner .event-scene-who-when .event-graphic-transparent {
+  display: none;
+}
+
+.event-scene-who-when .event-graphic-control {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
+.event-scene-who-when .event-graphic-control > .event-graphic-preview {
+  flex: 0 0 auto;
+  zoom: 0.6;
+}
+
+.event-editor.is-level-easy .event-editor-column-label-commands,
+.event-editor.is-level-normal .event-editor-column-label-commands {
+  display: none;
+}
+
+.event-scene-who-when .event-graphic-control-actions {
+  display: flex;
+}
+
+@media (max-width: 600px) {
+  .event-editor > .event-editor-pagebar > .event-scene-who-when {
+    flex-basis: 100%;
+  }
+
+  /* 목업 390: 쉬움·보통 머리줄에 「테스트」 없음(위 막대 ▶ 테스트 실행은 그대로). */
+  .event-editor-modal-window:has(.event-editor:is(.is-level-easy, .is-level-normal)) [data-testid="event-editor-test"] {
+    display: none;
+  }
+}
+
+.event-editor-modal-window .event-editor:is(.is-level-easy, .is-level-normal) .evt-page-segment-number,
+.event-editor-modal-window .event-editor:is(.is-level-easy, .is-level-normal) .evt-page-segment-cond {
+  display: none;
+}
+
+.event-editor-modal-window .event-editor:is(.is-level-easy, .is-level-normal) .evt-page-segments > .btn.evt-page-segment {
+  border-radius: 999px;
+  display: inline-flex;
+  padding: 3px 12px;
+}
+
+@media (min-width: 901px) {
+  .event-editor:is(.is-level-easy, .is-level-normal) .event-scene-cards {
+    align-items: start;
+    display: grid;
+    gap: 16px 28px;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+
+  .event-editor:is(.is-level-easy, .is-level-normal) .event-scene-card {
+    position: relative;
+  }
+
+  .event-editor:is(.is-level-easy, .is-level-normal) .event-scene-card:has(~ .event-scene-card)::after {
+    color: var(--text-3);
+    content: "→";
+    font: 12px/1 var(--font-ui);
+    position: absolute;
+    right: -19px;
+    top: 50%;
+  }
+}

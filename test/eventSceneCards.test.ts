@@ -116,6 +116,21 @@ describe("보기 셋", () => {
     expect(host.querySelector('[data-testid="event-editor-advanced-toggle"]')).toBeNull();
   });
 
+  it("쉬움은 모습·시작 방식을 페이지 줄 앞 칩으로 옮기고, 고급은 설정 칸에 그대로 둔다", () => {
+    setEventEditorViewLevel("easy");
+    const easy = render();
+    const strip = easy.querySelector('[data-testid="event-editor-pagebar"] > [data-testid="event-scene-who-when"]');
+    expect(strip?.querySelector('[data-testid="event-classic-graphic"]')).not.toBeNull();
+    expect(strip?.querySelector('[data-testid="event-classic-trigger"]')).not.toBeNull();
+    expect(easy.querySelector('.event-editor-settings-column [data-testid="event-classic-trigger"]')).toBeNull();
+    expect(easy.querySelector('[data-testid="event-scene-page-label"]')?.textContent).toBe("때");
+    document.body.replaceChildren();
+    setEventEditorViewLevel("advanced");
+    const advanced = render();
+    expect(advanced.querySelector('[data-testid="event-scene-who-when"]')).toBeNull();
+    expect(advanced.querySelector('.event-editor-settings-column [data-testid="event-classic-trigger"]')).not.toBeNull();
+  });
+
   it("보통은 카드에 줄 수와 카드 추가를 더한다", () => {
     setEventEditorViewLevel("normal");
     const host = render();
