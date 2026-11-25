@@ -14,7 +14,7 @@ import { buildSystemPrompt } from "@/ai/contextBuilder";
 import { atomFromGroup, fillRun, hardAdjacencyViolation, mirrorTile, planRows, rowThickness } from "@/editor/tools/v3/rowArrangement";
 import { CONSTRUCTION_TOOLS_V3 } from "@/editor/tools/v3";
 import { byName } from "@/editor/tools/toolArgCoerce";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
 import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
 import { isolateTimers } from "./mergedTeardown";

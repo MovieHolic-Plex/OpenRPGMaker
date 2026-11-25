@@ -14,7 +14,7 @@ import { plannedGrowthForSpec, validateBuildSpec, type BuildSpec } from "@/ai/bu
 import { formatIntentNote, parseIntentDeclaration, INTENT_SYSTEM_PROMPT, type IntentFacts } from "@/ai/intentDeclaration";
 import { estimateVillageSize } from "@/ai/constructionDeclaration";
 import { runTool } from "@/editor/tools";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import type { Project } from "@/project/types";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 

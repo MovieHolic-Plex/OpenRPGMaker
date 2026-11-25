@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderEnemyRecordForm } from "@/editor/panels/databaseEnemyRecordView";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import type { EnemyRecord } from "@/project/types";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";

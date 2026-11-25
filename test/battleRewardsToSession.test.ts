@@ -14,7 +14,7 @@ import assert from "node:assert/strict";
 import { ACTOR, ROUTES, TROOP, battleCase, choice, m2, mark, pending, resume, variables } from "./battleEventRepairFlow.fixture";
 import { acknowledge, eventPause } from "./battleEventSequential.fixture";
 import fixture from "./fixtures/projects/battle-v3.json";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { normalizeActorRecord, totalExpForLevel } from "@/project/actorModel";
 import { giveMonster, applyGen1FieldPoisonStep, applyMonsterExperienceAndEvolution, evolveMonster, normalizeMonsterInstanceBattleState, rejectPendingMonsterSkill, replacePendingMonsterSkill } from "@/project/monsterCollection";
 import { battlerSnapshot, monsterPartyBattlers, actorBattlers } from "@/battle/battleBattlers";

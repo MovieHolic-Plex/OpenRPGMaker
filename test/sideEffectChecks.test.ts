@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { battleDataEmptied, unaskedChanges, databaseChangeReport } from "@/ai/v2/judge/sideEffectChecks";
 import type { Project } from "@/project/types";
 import { findingLine } from "@/ai/v2/judge/finding";

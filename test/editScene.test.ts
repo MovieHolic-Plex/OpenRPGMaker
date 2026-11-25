@@ -4,7 +4,8 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi, afterEach } 
 import { editorState } from "@/editor/editorState";
 import { paintTile } from "@/editor/actions";
 import { getMapEditHistoryDebugEntries, resetMapEditHistory, undoMapEdit, redoMapEdit, getMapEditHistoryState } from "@/editor/mapEditHistory";
-import { createBlankProject, TILE } from "@/project/defaults";
+import { TILE } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store, type ProjectChangeDescriptor } from "@/project/store";
 import type { MapId } from "@/project/types";
 import { EventEmitter } from "node:events";

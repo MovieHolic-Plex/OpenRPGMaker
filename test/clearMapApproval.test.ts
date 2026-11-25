@@ -5,7 +5,7 @@ import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyC
 import { runTool, type ToolContext, type ToolResult } from "@/editor/tools";
 import * as history from "@/editor/mapEditHistory";
 import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { TILE } from "@/project/defaults/constants";
 import { serialize } from "@/project/io";
 import { store } from "@/project/store";

@@ -4,7 +4,7 @@ import { mapRegionImagePayload } from "@/ai/mapViewportContext";
 import { summarizeAgentGhostPreviewForProjectDiff } from "@/editor/agentGhostPreview";
 import { runTool, type ToolContext } from "@/editor/tools";
 import { summarizeChanges, tileChangedMapIds } from "@/editor/tools/changeset";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { EXTRA_LAYER_KEYS, layerTileAt, setLayerTileAt, setShadowAt, shadowAt } from "@/project/mapLayers";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 import { PNG } from "pngjs";

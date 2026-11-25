@@ -15,7 +15,7 @@ import { getOperator, listOperators, resolveOperatorParams } from "@/editor/oper
 import { __clearPendingRegionApplyForTest } from "@/editor/regionTask/pendingRegionApply";
 import { runOperatorTask } from "@/editor/regionTask/runOperatorTask";
 import { closeRegionTaskModal, openRegionTaskModal } from "@/editor/panels/regionTaskModal";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import type { Project } from "@/project/types";
 import { type FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 

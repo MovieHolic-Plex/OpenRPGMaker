@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { itemEffectSummary, renderStatusMenuDetailPanel, statusMenuHintClauses } from "@/player/playerStatusMenuDetailRenderer";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import type { ItemRecord, ItemCaptureProfile } from "@/project/types";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { startSession } from "@/project/session";
