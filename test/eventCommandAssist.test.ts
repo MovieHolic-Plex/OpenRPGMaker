@@ -245,6 +245,10 @@ describe("buildEventAssistPrompt", () => {
       { kind: "text", body: `대사 ${index} ${"가".repeat(40)}` } as Command
     )));
     expect(resolveAssistScope(long)).toBe("append");
+    // 컷신 한 편(1.3만 자, 폴른 스타 발렌)은 전체 수정으로 실린다.
+    const cutscene = testPage(Array.from({ length: 220 }, (_, index) => ({ kind: "text", body: `대사 ${index} ${"가".repeat(40)}` } as Command)));
+    expect(JSON.stringify(cutscene.commands).length).toBeGreaterThan(12000);
+    expect(resolveAssistScope(cutscene)).toBe("page");
     const prompt = buildEventAssistPrompt({ project, mapId: project.startMapId, page: long });
     expect(prompt).toContain("뒤에 붙일 새 커맨드 JSON 배열");
     expect(prompt).toContain("기존 명령은 손대지 말고");
