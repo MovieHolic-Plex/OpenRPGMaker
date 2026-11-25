@@ -28,7 +28,9 @@ describe.each(paths)("atomic verification adoption via %s", { timeout: 120_000 }
     expect(f.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("done");
   });
 
-  it.each(["same-item", "later-layer", "criterion"])("rejects contradictory pending resolutions across %s before either applies", async variant => {
+  // 2026-11-25 test-diet: 두 경로(tool·planner)는 같은 preflightWorkPlan 을 부르고 거절을 돌려주는 길만 다르다. 변형마다의 거절
+  // 분기는 tool 경로에서 다 돌고, planner 경로는 거절 전달을 첫 변형 하나로 지킨다(아래 raw retained ID 도 같다).
+  it.each(path === "tool" ? ["same-item", "later-layer", "criterion"] : ["same-item"])("rejects contradictory pending resolutions across %s before either applies", async variant => {
     const f = fixture();
     const pending = await f.setup("unverified", null);
     const checks: unknown[] = [f.check(f.args, pending.checkId), f.check(f.changed, pending.checkId)];
@@ -45,7 +47,7 @@ describe.each(paths)("atomic verification adoption via %s", { timeout: 120_000 }
     expect(f.session.getVerificationSnapshot().requirements).toEqual([pending]);
   });
 
-  it.each(["omitted", "changed", "wrong-tool", "malformed-args", "malformed-sibling", "unknown-id", "not-required"])("raw retained ID cannot bypass preflight via %s", async variant => {
+  it.each(path === "tool" ? ["omitted", "changed", "wrong-tool", "malformed-args", "malformed-sibling", "unknown-id", "not-required"] : ["omitted"])("raw retained ID cannot bypass preflight via %s", async variant => {
     const f = fixture("run_lint");
     const pending = await f.setup("unverified", null);
     const candidate = f.candidate([f.check(f.args, pending.checkId)]);
