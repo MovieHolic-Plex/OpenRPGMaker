@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools";
 import { roomSpecOf } from "@/editor/handInterior/builder";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { isPassable } from "@/project/collision";
 import { isDoorArtCell } from "@/project/staging/doorCells";
 import type { GameEvent, Project } from "@/project/types";

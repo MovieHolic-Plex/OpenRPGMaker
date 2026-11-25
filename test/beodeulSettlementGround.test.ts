@@ -4,7 +4,7 @@
 // 읍(성벽 · 청한 광장)은 중심부가 돌바닥이고(beodeulTownCore.ts) 풀은 화단으로만 남으며, 광장은 길 포석 테를 두른 네모다.
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject, ownTileset } from "./support/blankProject";
 import { runTool } from "@/editor/tools";
 import { planCommons, straightEarthRuns } from "@/editor/tools/beodeulCommons";
 import { readSettlementAreas, settlementGround, settlementRank, standableYard } from "@/editor/tools/beodeulSettlementRank";
@@ -316,7 +316,7 @@ describe("자갈 재질은 어느 급에도 쓰지 않는다(오너 «강자갈 
     const PLAZA_TILE = 1509; // «버들항 광장 판석» 몸통 — 겉모습이 이 칸의 그림을 그 게임의 광장 재질로 바꾼다
     for (const look of ["steppe", "frontier"]) {
       const project = createBlankProject() as Project;
-      (project.tilesets[TS] as unknown as { look: unknown }).look = { textureKey: "tex_beodeul_looks", surface: look };
+      (ownTileset(project, TS) as unknown as { look: unknown }).look = { textureKey: "tex_beodeul_looks", surface: look };
       const ctx = { project, currentMapId: project.startMapId } as ToolContext;
       const res = runTool(ctx, "author_beodeul_town", { theme: "coast", seed: 23, houseCount: 4, form: "plaza" });
       expect(res.ok, res.summary).toBe(true);

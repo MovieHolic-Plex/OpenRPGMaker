@@ -4,7 +4,7 @@ import { renderDatabasePanel, refreshDatabasePanel, setDatabaseActiveTab, switch
 import { resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
 import { setSelectedRecordId, setViewModeForCollection } from "@/editor/panels/databaseRecordViewSession";
 import { normalizeEquipmentRecord, normalizeItemRecord } from "@/project/databaseRecordModel";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import { openDatabaseModal, requestDatabaseModalClose } from "@/editor/panels/databaseModal";
 let host: HTMLDivElement;

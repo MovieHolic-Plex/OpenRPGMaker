@@ -3,7 +3,7 @@ import { afterEach, expect, it } from 'vitest';
 import { renderClassRecordForm } from '@/editor/panels/databaseClassRecordView';
 import { updateDatabaseRecord } from '@/editor/databaseActions';
 import { resetMapEditHistory } from '@/editor/mapEditHistory';
-import { createBlankProject } from '@/project/defaults';
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { applyGrowthPreset } from '@/project/growth/presets';
 import { investSkillNode, treeSpentPoints } from '@/project/growth/runtime';
 import { deserialize, serialize } from '@/project/io';

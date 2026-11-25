@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { runTool, type ToolContext, getTool } from "@/editor/tools";
-import { createBlankProject, DEFAULT_ITEM_ID, TILE } from "@/project/defaults";
+import { DEFAULT_ITEM_ID, TILE } from "@/project/defaults";
+import { freshBlankProject as createBlankProject, ownTileset } from "./support/blankProject";
 import type { Project, GameEvent, GameMap, MapLayoutPlan } from "@/project/types";
 import { withRetiredEasyRpgTilesets, startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 import { createHorrorPhase3Fixture, HORROR_FLAG_SWITCH, HORROR_TRUE_ENDING } from "./fixtures/horrorPhase3Fixture";
@@ -269,7 +270,7 @@ describe("interviewReask.smoke", () => {
     return res.data as UsageData;
   }
   function forgetTileMeta(ctx: { project: ReturnType<typeof createBlankProject> }, mapId: string, tile: number): void {
-    const tileset = ctx.project.tilesets[ctx.project.maps[mapId]!.tilesetId]!;
+    const tileset = ownTileset(ctx.project, ctx.project.maps[mapId]!.tilesetId); // 공유 타일셋은 동결 — 고칠 이 하나만 개인 사본
     tileset.tileMeta![tile] = { description: "", label: "", source: "unknown" };
   }
   describe("맵 인터뷰 재질문 스모크(#7)", () => {

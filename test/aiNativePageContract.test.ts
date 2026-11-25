@@ -4,7 +4,7 @@ import { runTool } from "@/editor/tools";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { COMMAND_SCHEMA } from "@/editor/tools/schemaShapes";
 import { createInterpreter } from "@/player/interpreter";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { deserialize, resolveEventPage, serialize } from "@/project/io";
 import { startSession } from "@/project/session";
 import type { GameEvent } from "@/project/types";

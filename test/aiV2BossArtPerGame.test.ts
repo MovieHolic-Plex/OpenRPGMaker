@@ -2,7 +2,7 @@
 // 현행 그림이 있는 종이 서른여덟뿐이라 주제 보스가 대역으로 접히면 한 그림에 몰렸다 — 지하묘(리치)·마법탑(리치)·마계(마왕)가 모두 어둠 망령.
 // planTroops 의 «쓴 그림» 은 한 번 부를 때만 살아 던전 둘을 지은 게임에서 두 보스가 같은 그림이었다. 이제 게임의 다른 보스가 쓰는 그림은 피한다.
 import { beforeAll, describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { applyGenrePreset } from "@/project/genrePresets";
 import { preloadCurrentMonsterArt } from "@/assets/currentMonsterArt";
 import { createBuildRun } from "@/ai/v2/shared/buildRun";

@@ -8,7 +8,7 @@ import { fixedDeclarer } from "./intentFixture";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import type { ChatRequest, ChatResult } from "@/ai/llmClient";
 import { getTool } from "@/editor/tools";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 
 const CONFIG = {
   authMode: "apiKey" as const,

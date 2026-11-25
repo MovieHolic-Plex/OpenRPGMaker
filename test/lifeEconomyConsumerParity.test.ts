@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { contributeBundle } from "@/project/bundles";
 import { craftRecipe } from "@/project/craftRecipes";
