@@ -188,6 +188,10 @@ jobs:
       - name: 러너 선택 계약 테스트
         run: node --test scripts/check-self-hosted-workflows.test.mjs
 
+      # PR 관련 시험 선택기·ci-full 원인 후보 알림(두 워크플로가 부르는 스크립트)의 node 시험. 1초 안. 2026-11-25 ci-speed.
+      - name: 관련 시험 선택·ci-full 원인 후보 테스트
+        run: node --test scripts/vitest-related.test.mjs scripts/ci-full-blame.test.mjs
+
       # 새 시험 파일 경고(실패 아님) — 회귀 시험은 그 모듈의 기존 시험 파일에 더한다(AGENTS.md). 2026-11-25 test-diet.
       - name: 새 시험 파일 경고
         run: |
