@@ -14,6 +14,7 @@ import { renderRegionSnapshot } from "@/editor/regionSnapshot";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import type { MapId, Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { REGION_FIX_PREFIX } from "@/ai/regionPlaceIntent";
 
 export interface RegionResultInput {
   readonly mapId: MapId;
@@ -26,6 +27,33 @@ export interface RegionResultInput {
   readonly onUndo: () => void;
   /** 되돌린 뒤 같은 지시를 같은 영역에 다시 보낸다. 없으면 「다시」 단추를 그리지 않는다. */
   readonly onRetry?: () => void;
+  /** 바로 적용한 뒤 검사가 본 것(조수 v2 v2.fast.warnings). 비었으면 경고 줄이 없다. */
+  readonly warnings?: readonly RegionWarning[];
+  /** 「고치기」 — 경고를 조수에게 맡긴다. 없으면 칩을 그리지 않는다. */
+  readonly onFix?: (warnings: readonly RegionWarning[]) => void;
+}
+
+export interface RegionWarning {
+  readonly text: string;
+  readonly detail: string;
+}
+
+/** 조수 실행 사건에서 빠른 적용 경고를 꺼낸다(중첩 agent_event 포함). 그 사건이 아니면 null. */
+export function regionWarningsFromEvent(event: unknown): RegionWarning[] | null {
+  let nested = event as { type?: unknown; event?: unknown; name?: unknown; data?: unknown } | null;
+  while (nested && nested.type === "agent_event") nested = nested.event as typeof nested;
+  if (!nested || nested.type !== "execution_status" || nested.name !== "v2.fast.warnings") return null;
+  const rows = (nested.data as { warnings?: unknown } | undefined)?.warnings;
+  if (!Array.isArray(rows)) return [];
+  return rows.flatMap((row) => {
+    const text = typeof row?.text === "string" ? row.text : "";
+    return text ? [{ text, detail: typeof row.detail === "string" ? row.detail : text }] : [];
+  });
+}
+
+/** 「고치기」 가 같은 영역에 보내는 지시. 머리 「[고치기]」 는 장소 짓기로 읽히지 않게 한다(regionPlaceIntent). */
+export function regionFixInstruction(warnings: readonly RegionWarning[]): string {
+  return `${REGION_FIX_PREFIX} 방금 지은 것에서 검사가 본 문제를 고쳐 줘:\n${warnings.map((w) => `- ${w.detail}`).join("\n")}`;
 }
 
 export interface RegionChangeCounts {
@@ -161,6 +189,25 @@ export function showRegionResultCard(input: RegionResultInput, host?: HTMLElemen
       el("div", { class: "canvas-region-result-actions", children: [compare, keep, ...(retry ? [retry] : []), undo] }),
     ],
   });
+  const warnings = input.warnings ?? [];
+  if (warnings.length > 0) {
+    const fix = input.onFix ? el("button", {
+      class: "canvas-region-result-button canvas-region-result-fix",
+      text: "고치기",
+      attrs: { type: "button", title: "이 문제를 조수에게 맡깁니다" },
+      dataset: { testid: "region-result-fix" },
+    }) as HTMLButtonElement : null;
+    fix?.addEventListener("click", () => { close(); input.onFix?.(warnings); });
+    card.insertBefore(el("div", {
+      class: "canvas-region-result-warnings",
+      attrs: { role: "status", title: warnings.map((w) => w.text).join("\n") },
+      dataset: { testid: "region-result-warnings" },
+      children: [
+        el("span", { class: "canvas-region-result-warning-text", text: `⚠ ${warnings[0]!.text}${warnings.length > 1 ? ` 외 ${warnings.length - 1}건` : ""}` }),
+        ...(fix ? [fix] : []),
+      ],
+    }), card.lastChild);
+  }
   const root = el("div", { class: "canvas-region-result-layer", dataset: { testid: "region-result-layer" }, children: [beforeLayer, frame, card] });
   container.append(root);
   // 카드가 떠 있는 동안 선택 막대(지시 입력 줄)는 숨긴다 — 같은 자리를 덮어 결과를 가린다. 다시 시킬 때는 「다시」나 채팅 입력.

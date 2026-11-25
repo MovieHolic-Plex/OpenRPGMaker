@@ -4163,3 +4163,8 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 - 노출: `formatScopeNote(scope, intent, requestText)` 가 장소 짓기 지시면 「build_region_place 한 번, 새 맵 허용」 노트를, `sessionToolExposure` 가 도구를 보인다.
 - 되돌리기: Pi 적용은 프로젝트 스냅샷 한 칸이라 결과 카드의 되돌리기 한 번에 새 맵까지 사라진다. 카드 요약은 `새 맵 <이름>` 을 붙인다(`countRegionChanges.newMaps`).
 - 시험 `test/regionPlaceTools.test.ts`(외관·실내·왕복·품목·병합 무손실·되돌리기·거부), 능력 표 `scripts/qa/region-directives/`.
+- 빠른 적용(2026-11-25, 오너 «우선 깔고, 그 후에 검증하고 경고… 적당히»): 영역 장소 노트(`REGION_PLACE_NOTE_MARK`)가 붙은 조수 v2 턴은
+  `src/ai/v2/turn/fastApply.ts` 가 가린다 — 지은 뒤 실내 구역·끝맺음 관문 재주입·비평 다시 보기·검토자·화면 검수를 돌리지 않고, 관문이 본 문제는
+  `v2.fast.warnings`(카드 경고 최대 3)와 보고 «확인할 것» 으로만 남긴다. 결과 카드는 경고 한 줄 + «고치기» 칩 하나, 칩은 같은 영역에
+  `[고치기]` 지시를 보낸다(`REGION_FIX_PREFIX` — 장소를 다시 짓지 않는다). 레시피가 고른 주인 칩은 `choosesOwnGraphic` 으로 칩 관문 면제.
+  kind 에 forest(숲: 3×3 나무 엇갈림 + 가운데 남북 오솔길) 추가.

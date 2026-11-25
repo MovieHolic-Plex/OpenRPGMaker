@@ -23,6 +23,7 @@ import type { turnVqa } from "./vqaRound";
 import type { turnLateTools } from "./lateTools";
 import { mvpGame } from "../judge/blueprintScale";
 import { buildsWholeGame } from "../request/readers";
+import { fastApplyTurn, noteFastWarnings } from "./fastApply";
 
 /**
  * 새 게임의 첫 초안(MVP) 턴인가 — 시작 저장본에 청사진이 없었고, 이번에 mvp 청사진으로 게임 하나를 짓는다.
@@ -113,6 +114,14 @@ export function turnAfterMain(turn: TurnContext & Pick<ReturnType<typeof turnRec
           const unseen = v2GateProblems(session, env).problems.filter((p) => !store.items.some((i) => i.content.includes(p.text.slice(0, 60))));
           if (unseen.length) autoNotes.push(`끝맺음 관문이 본 문제 ${unseen.length}건(고리가 멈춰 고치지 못함): ${unseen.slice(0, 5).map((p) => p.text.slice(0, 140)).join(" / ")}`);
         } catch { /* 관문 계산 실패는 보고를 막지 않는다 */ }
+        return undefined;
+      }
+      // 영역 지시(편집 중 지시): 지은 그대로 돌려준다 — 실내 구역·관문·비평 다시 보기·검토자·화면 검수를 할 일로 되돌리지 않고 경고로만(fastApply.ts).
+      if (fastApplyTurn(env.request.task)) {
+        if (!state.baselineKeys) { try { state.baselineKeys = v2BaselineGameKeys(env.request.project, env.request.task); } catch { state.baselineKeys = new Set(); } }
+        let fastIndex; try { fastIndex = indexProject(env.ctx.project); } catch { fastIndex = undefined; }
+        const problems = timed("v2GateProblems", () => v2GateProblems(session, env)).problems;
+        noteFastWarnings(env, splitPreexisting(problems, state.baselineKeys, store.baseline, fastIndex, autoTouched).current, autoNotes);
         return undefined;
       }
       // ③b 이번 턴에 지은 설계 실내 맵마다 room_zones 항목(구역·초점·갈 이유·반복) — 조수가 안 달았으면 함수가 덧붙인다(roomZones.ts).
