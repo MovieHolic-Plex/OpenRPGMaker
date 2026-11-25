@@ -1,6 +1,7 @@
 import { isEntranceArt } from "@/ai/v2/place/entrances";
 import { isRoadCell } from "@/ai/v2/place/surface";
 import { jsonEqual } from "@/util/structuralJson";
+import { readTileset } from "@/project/lazyTilesetRead";
 import { fixActorPartyConditions } from "@/project/eventCommands/commandFieldAliases";
 import { fitStairTransfers, stairPairMismatch } from "@/project/stairs/fit";
 import { npcMoveIntervalMs, PLAYER_WALK_STEP_MS } from "@/project/characterMotion";
@@ -3888,7 +3889,7 @@ function readHidingSound(draft: Project, raw: unknown, horrorGenre: boolean): { 
 
 /** 벽감의 action 접근 예외는 기본 보물상자를 수면에 띄우는 허가가 아니다. */
 function assertChestDrySurface(project: Project, map: GameMap, x: number, y: number): void {
-  const tileset = project.tilesets[map.tilesetId];
+  const tileset = readTileset(project.tilesets, map.tilesetId); // 읽기만 한다 — 초안의 지연 타일셋을 복제하지 않는다
   if (!tileset) return; // 통행 가능성/누락 타일셋은 resolveEventPlacement가 검사한다.
   const waterTile = (tile: number): boolean => {
     if (tile < 0) return false;

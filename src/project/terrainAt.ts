@@ -1,4 +1,5 @@
 import type { DatabaseTerrainRecord, Project } from "@/project/types";
+import { readTileset } from "@/project/lazyTilesetRead";
 
 export type TerrainLocation = {
   readonly mapId: string;
@@ -22,7 +23,8 @@ export function terrainTagAt(project: Project, location: TerrainLocation | undef
   if (x < 0 || y < 0 || x >= map.width || y >= map.height) return 0;
   const tileIndex = tileOverride ?? map.lowerTiles[y * map.width + x];
   if (typeof tileIndex !== "number" || tileIndex < 0) return 0;
-  const tileset = project.tilesets[map.tilesetId];
+  // 읽기만 한다 — 도구 초안의 지연 타일셋을 복제하지 않는다(lazyTilesetRead.ts, 칸마다 불려 청사진 짓기의 복제 시간 대부분이었다).
+  const tileset = readTileset(project.tilesets, map.tilesetId);
   if (!tileset) return 0;
   const tag = tileset.tileMeta?.[tileIndex]?.terrainTag ?? tileset.terrain?.[tileIndex] ?? 0;
   return typeof tag === "number" && Number.isFinite(tag) ? Math.trunc(tag) : 0;

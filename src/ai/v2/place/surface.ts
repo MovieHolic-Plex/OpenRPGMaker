@@ -3,10 +3,12 @@
 import { isPassable } from "@/project/collision";
 import { tilesetSurface, type TilesetSurface } from "@/project/tilesetSurface";
 import type { GameMap, Project } from "@/project/types";
+import { readTileset } from "@/project/lazyTilesetRead";
 
 export type SurfaceKind = "gate" | "road" | "water" | "wall" | "ground";
 
-const surfaceOf = (project: Project, map: GameMap): TilesetSurface => tilesetSurface(project.tilesets[map.tilesetId]);
+// 읽기만 한다 — 도구 초안의 지연 타일셋을 복제하지 않는다(lazyTilesetRead.ts). 원본을 읽으면 tilesetSurface 캐시(tileMeta 객체 열쇠)도 맞는다.
+const surfaceOf = (project: Project, map: GameMap): TilesetSurface => tilesetSurface(readTileset(project.tilesets, map.tilesetId));
 /** 네 층 모두 — 허공·물 위의 다리·잔교는 위층에 놓인 길 칸이다. */
 const tileLayers = (map: GameMap): (ArrayLike<number> | undefined)[] => {
   const m = map as unknown as { lowerOverlayTiles?: ArrayLike<number>; upperOverlayTiles?: ArrayLike<number> };
