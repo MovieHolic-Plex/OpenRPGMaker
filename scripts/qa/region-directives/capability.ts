@@ -97,13 +97,13 @@ const NO_RECIPE: readonly (readonly [string, Call | null])[] = [
   ["정원 꾸며 줘", ["furnish_outdoor_area", { style: "garden" }]],
   ["작은 숲 만들어 줘", ["furnish_outdoor_area", { style: "grove" }]],
   ["연못 하나 파 줘", ["furnish_outdoor_area", { style: "pond" }]],
-  ["농장 만들어 줘", ["create_farm_plot", {}]],
-  ["성문 세워 줘", null], ["다리 놓아 줘", ["author_world_bridge", { length: 6, orientation: "horizontal" }]],
+  ["농장 만들어 줘", ["build_region_place", { kind: "farm" }]],
+  ["성문 세워 줘", ["build_region_place", { kind: "gate" }]], ["다리 놓아 줘", ["build_region_place", { kind: "bridge" }]],
   ["우물 만들어 줘", ["place_props", { material: "우물", count: 1 }]],
   ["창고 지어 줘", ["build_region_place", { kind: "warehouse" }]], ["마구간 지어 줘", ["build_region_place", { kind: "stable" }]],
   ["학교 지어 줘", ["build_region_place", { kind: "school" }]], ["경비 초소 세워 줘", ["build_region_place", { kind: "guard_post" }]],
   ["풍차 세워 줘", ["build_region_place", { kind: "windmill" }]], ["등대 세워 줘", ["build_region_place", { kind: "lighthouse" }]],
-  ["묘지 만들어 줘", null], ["시장 열어 줘", null],
+  ["묘지 만들어 줘", null], ["시장 열어 줘", ["build_region_place", { kind: "market" }]],
   ["사냥터 만들어 줘", ["make_hunting_ground", {}]], ["캠프 만들어 줘", ["$campfire", {}]],
 ];
 NO_RECIPE.forEach(([text, call], i) => add({
@@ -184,7 +184,8 @@ add({ id: "water-river", genre: "물", text: "강 내 줘", after: (env) => [["f
 add({ id: "water-lake", genre: "물", text: "호수로 바꿔 줘", after: (env) => [["fill_region", { mapId: env.mapId, rect: AREA, material: "호수", layer: "lower", shape: "ellipse" }]], expect: needCells });
 add({ id: "water-swamp", genre: "물", text: "늪으로 만들어 줘", after: (env) => [["fill_region", { mapId: env.mapId, rect: AREA, material: "늪", layer: "lower" }]], expect: needCells });
 add({ id: "water-bridge", genre: "물", text: "강 위에 다리 놓아 줘",
-  after: (env) => [["fill_region", { mapId: env.mapId, path: [{ x: C.x, y: R.y }, { x: C.x, y: R.y + 11 }], width: 3, material: "물" }], ["author_world_bridge", { mapId: env.mapId, x: C.x - 3, y: C.y, length: 7, orientation: "horizontal" }]] });
+  before: (env) => [["fill_region", { mapId: env.mapId, path: [{ x: C.x, y: R.y }, { x: C.x, y: R.y + 11 }], width: 3, material: "물" }], ["author_world_bridge", { mapId: env.mapId, x: C.x - 3, y: C.y, length: 7, orientation: "horizontal" }]],
+  after: (env) => [["fill_region", { mapId: env.mapId, path: [{ x: C.x, y: R.y }, { x: C.x, y: R.y + 11 }], width: 3, material: "물" }], ["build_region_place", { mapId: env.mapId, region: R, kind: "bridge" }]], expect: needCells });
 add({ id: "water-boat", genre: "물", text: "물가에 배 하나", after: (env) => [["fill_region", { mapId: env.mapId, rect: AREA, material: "물", layer: "lower" }], ["place_vehicle", { vehicle: "boat", mapId: env.mapId, x: C.x, y: C.y }]], expect: needVehicle });
 add({ id: "water-raft", genre: "물", text: "뗏목 띄워 줘", after: (env) => [["fill_region", { mapId: env.mapId, rect: AREA, material: "물", layer: "lower" }], ["place_vehicle", { vehicle: "raft", mapId: env.mapId, x: C.x, y: C.y }]], expect: needVehicle });
 

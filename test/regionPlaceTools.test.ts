@@ -120,6 +120,31 @@ describe("build_region_place", () => {
     }
   });
 
+  it.each(["bridge", "gate", "farm", "market"])("%s 는 새 맵 없이 영역 안에만 서고 사람 하나를 영역 안에 세운다", (kind) => {
+    const { ctx, mapId } = setup();
+    const base = structuredClone(ctx.project);
+    const before = structuredClone(ctx.project.maps[mapId]!);
+    const out = runTool(ctx, "build_region_place", { mapId, region: REGION, kind });
+    expect(out.ok, out.summary).toBe(true);
+    const data = out.data as { createdMapIds: string[]; keeper: { x: number; y: number }; parts: Record<string, boolean> };
+    expect(data.createdMapIds).toEqual([]);
+    expect(data.parts.exterior && data.parts.keeper).toBe(true);
+    expect(Object.keys(ctx.project.maps).sort()).toEqual(Object.keys(base.maps).sort());
+    expect(outsideChanges(before, ctx.project.maps[mapId]!)).toBe(0);
+    expect(data.keeper.x >= REGION.x && data.keeper.y >= REGION.y && data.keeper.x < REGION.x + REGION.width && data.keeper.y < REGION.y + REGION.height).toBe(true);
+    expect(mergeMapBundles(base, [{ mapIds: [mapId], project: ctx.project }]).spills).toEqual([]);
+  });
+
+  it("시장 상인은 이 게임 품목으로 판다", () => {
+    const { ctx, mapId } = setup();
+    const out = runTool(ctx, "build_region_place", { mapId, region: REGION, kind: "market" });
+    expect(out.ok, out.summary).toBe(true);
+    const shop = commandsOf(ctx.project.maps[mapId]!).find((command) => command.kind === "shop");
+    const known = new Set(ctx.project.database.items.map((item) => item.id));
+    expect(shop?.kind === "shop" ? shop.itemIds.length : 0).toBeGreaterThan(0);
+    if (shop?.kind === "shop") for (const id of shop.itemIds) expect(known.has(id), id).toBe(true);
+  });
+
   it("등대·풍차는 키트가 들어가지 않으면 살림집으로 대신하지 않고 거부한다", () => {
     const { ctx, mapId } = setup();
     const out = runTool(ctx, "build_region_place", { mapId, region: { x: 14, y: 8, width: 9, height: 6 }, kind: "lighthouse" });
@@ -149,6 +174,13 @@ describe("build_region_place", () => {
     expect(regionPlaceKindFromText("경비 초소 세워 줘")).toBe("guard_post");
     expect(regionPlaceKindFromText("풍차 세워 줘")).toBe("windmill");
     expect(regionPlaceKindFromText("등대 세워 줘")).toBe("lighthouse");
+    expect(regionPlaceKindFromText("강 위에 다리 놓아 줘")).toBe("bridge");
+    expect(regionPlaceKindFromText("사다리 놓아 줘")).toBeNull();
+    expect(regionPlaceKindFromText("성문 세워 줘")).toBe("gate");
+    expect(regionPlaceKindFromText("농장 만들어 줘")).toBe("farm");
+    expect(regionPlaceKindFromText("여기 텃밭 좀 놓아 줘")).toBeNull();
+    expect(regionPlaceKindFromText("시장 열어 줘")).toBe("market");
+    expect(regionPlaceKindFromText("묘지 만들어 줘")).toBeNull();
     expect(new Set(REGION_PLACE_KINDS).size).toBe(REGION_PLACE_KINDS.length);
   });
 });

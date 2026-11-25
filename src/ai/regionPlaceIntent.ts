@@ -3,6 +3,7 @@
 export type RegionPlaceKind =
   | "shop" | "weapon_shop" | "smithy" | "inn" | "tavern" | "house" | "chapel" | "bakery" | "pharmacy"
   | "warehouse" | "stable" | "school" | "guard_post" | "windmill" | "lighthouse"
+  | "bridge" | "gate" | "farm" | "market"
   | "dungeon_entrance" | "cave_entrance";
 
 const RULES: readonly (readonly [RegExp, RegionPlaceKind])[] = [
@@ -21,6 +22,11 @@ const RULES: readonly (readonly [RegExp, RegionPlaceKind])[] = [
   [/초소|경비소|초막|병영|검문소/, "guard_post"],
   [/풍차|방앗간/, "windmill"],
   [/등대/, "lighthouse"],
+  [/성문|성문루|관문|성벽/, "gate"],
+  // 「사다리」는 다리가 아니다. 「텃밭·꽃밭 놓아 줘」·「노점 놓아 줘」는 소품 하나라 농장·시장 통짜 레시피로 보내지 않는다.
+  [/(?:^|[^사])다리|교량/, "bridge"],
+  [/농장|포도원|과수원|농사|(?:^|[^꽃텃])밭/, "farm"],
+  [/시장|장터|장마당/, "market"],
   [/상점|가게|도구점|잡화점|만물상|상회|매점/, "shop"],
   [/(?:^|[^빵모])집|주택|민가|오두막|살림집/, "house"],
 ];
