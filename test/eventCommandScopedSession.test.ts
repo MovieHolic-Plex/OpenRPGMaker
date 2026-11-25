@@ -283,7 +283,8 @@ describe("event editor shared assistant scope", () => {
     const { project, scope } = fixture();
     const generate = (commands: Command[]) => vi.fn(async () => ({ commands, scope: "page" as const, attempts: 1 }));
     const run = (commands: Command[]) => runToolAsync({ project: structuredClone(project) }, "event_command_assist",
-      { ...scope, prompt: "상점 주인 말투를 반말로" }, { eventCommandScope: scope, generate: generate(commands) });
+      // 도구 인자는 대상 셋과 prompt 뿐이다(additionalProperties: false) — 범위의 selection·selectionLabel 은 싣지 않는다.
+      { mapId: scope.mapId, eventId: scope.eventId, pageId: scope.pageId, prompt: "상점 주인 말투를 반말로" }, { eventCommandScope: scope, generate: generate(commands) });
     const rewritten = await run([{ kind: "text", body: "이전 대사야" }]);
     expect(rewritten.ok, rewritten.summary).toBe(true);
     const dropped = await run([]);

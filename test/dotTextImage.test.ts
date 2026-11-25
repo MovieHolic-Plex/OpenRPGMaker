@@ -494,11 +494,12 @@ describe("eventCommandAssistTool", () => {
       expect(ctx.project).toBe(before);
     });
 
+    // 전체 수정으로 싣는 페이지 상한은 2만 자다(#5106, src/ai/eventCommandAssist.ts MAX_EXISTING_CHARS).
     it("rejects missing targets and long-page edits before generation", async () => {
       const { ctx, args } = fixture();
       const generate = vi.fn(async () => generated);
       expect((await runToolAsync(ctx, "event_command_assist", { ...args, pageId: "absent" }, { generate })).ok).toBe(false);
-      ctx.project.maps[args.mapId].events.find(e => e.id === args.eventId)!.pages![0].commands = [{ kind: "text", body: "가".repeat(13000) }];
+      ctx.project.maps[args.mapId].events.find(e => e.id === args.eventId)!.pages![0].commands = [{ kind: "text", body: "가".repeat(21000) }];
       expect((await runToolAsync(ctx, "event_command_assist", args, { generate })).ok).toBe(false);
       expect(generate).not.toHaveBeenCalled();
     });
