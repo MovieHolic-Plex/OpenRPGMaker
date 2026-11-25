@@ -102,6 +102,16 @@ describe("v2 blueprint size", () => {
     // 첫 판은 엔딩을 만들지 않는다 — 청사진 걷기가 «엔딩 없음» 을 막힘으로 내지 않는다.
     expect(walkBlueprint(project).blockers.map((b) => b.id)).not.toContain("blueprint-no-ending");
   });
+  it("a first playable version counts at least 3 maps even when the blueprint names one place", async () => {
+    const project = createBlankProject() as Project;
+    await writeBlueprint(project, blueprintArgs({ steps: [
+      { id: "s1", kind: "talk", place: "할머니 집", event: "할머니", who: "할머니", action: "이야기를 듣는다", gives: "옛 사진", feeling: "그리움" },
+      { id: "s2", kind: "find", place: "할머니 집", event: "서랍", action: "열어 본다", gives: "편지", feeling: "설렘" },
+      { id: "s3", kind: "talk", place: "할머니 집", event: "할머니", who: "할머니", action: "편지를 건뛨다", gives: "추억", feeling: "따뜻함" },
+    ] }));
+    expect(mvpGame(project)).toBe(true);
+    expect(mapsNeed(project, 6)).toBe(3);
+  });
   it("keeps scale full when the model writes it", async () => {
     const project = createBlankProject() as Project;
     await writeBlueprint(project, blueprintArgs({ scale: "full" }));

@@ -30,12 +30,17 @@ export { MVP_REACHED_SWITCH };
 /** 엔딩을 요구하는 검사를 건너뛸 게임인가 — MVP 청사진, 또는 MVP 끝 스위치를 든 몬스터 첫 판. */
 export const endsAtMvp = (project: Project): boolean => mvpGame(project) || (project.switches ?? []).some((s) => s.id === MVP_REACHED_SWITCH);
 
-/** 작은 게임의 세는 맵 하한 — 청사진이 말한 서로 다른 장소 수(단계의 장소와 장소 목록), 1 이상 full 이하. 작은 게임이 아니면 full. */
+/**
+ * 작은 게임의 세는 맵 하한 — 청사진이 말한 서로 다른 장소 수(단계의 장소와 장소 목록), 1 이상 full 이하. 작은 게임이 아니면 full.
+ * 첫 판 MVP 는 청사진이 장소를 덜 적었어도 MVP_PLACES.min(3) 장을 센다 — 모델이 «할머니 집» 한 곳만 적은 MVP 가 맵 1장으로 끝났다
+ * (2026-11-25 assistant-measure 회상 r5-clb). 모자라면 끝맺음이 더 짓게 할 일로 알리고, 세 번 되풀이되면 막힘으로 닫는다(막지 않는다 — shipChecks mapsMinBlocker).
+ */
 export function mapsNeed(project: Project, full: number): number {
   const bp = project.gameBlueprint;
   if (!bp || !smallGame(project)) return full;
   const places = new Set([...bp.steps.map((step) => key(step.place)), ...(bp.places ?? []).map((place) => key(place.name))].filter(Boolean));
-  return Math.max(1, Math.min(full, places.size));
+  const floor = mvpGame(project) ? MVP_PLACES.min : 1;
+  return Math.max(1, Math.min(full, Math.max(floor, places.size)));
 }
 
 /** 작은 게임의 진행 깊이 하한 — 청사진 단계가 한 줄로 이어졌을 때의 깊이(단계 수 − 1), 1 이상 full 이하. 작은 게임이 아니면 full. */
