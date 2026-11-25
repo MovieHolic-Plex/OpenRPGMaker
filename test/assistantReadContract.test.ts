@@ -3,7 +3,7 @@ import { AssistantSession } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { ToolReadEvidence } from "@/ai/toolReadEvidence";
 import { runTool } from "@/editor/tools";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { fixedDeclarer } from "./intentFixture";
 
 // Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor

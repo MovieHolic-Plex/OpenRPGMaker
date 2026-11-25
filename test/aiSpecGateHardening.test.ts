@@ -15,7 +15,7 @@ import {
 import { formatMaterialLabelHint } from "@/ai/turnGuide";
 import { buildRegionTaskMessage } from "@/editor/regionTask/runRegionTask";
 import { getTool, runTool } from "@/editor/tools";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import type { GameMap, Project } from "@/project/types";
 import { independentReviewPayload } from "./independentReviewFixture";

@@ -4,7 +4,7 @@ import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { ToolVerificationEvidence } from "@/ai/toolVerificationEvidence";
 import { runTool } from "@/editor/tools";
 import * as lintProducer from "@/editor/tools/queryTools";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import * as commits from "@/project/projectCommitLog";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";

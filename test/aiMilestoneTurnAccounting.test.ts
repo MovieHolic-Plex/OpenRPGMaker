@@ -18,7 +18,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import type { ChatRequest } from "@/ai/llmClient";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
