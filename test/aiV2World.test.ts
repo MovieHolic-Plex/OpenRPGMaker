@@ -278,7 +278,8 @@ describe("단계 종류 — 청사진 경로가 종류마다 다른 이벤트를
 
   it("세계 없는 게임의 청사진에는 장소 목록을 남기지 않는다", async () => {
     const { ctx, call } = harness();
-    expect((await call("write_blueprint", { ...base(mixed(SPOTS)), places: SPOTS.map((name) => ({ name, kind: "village" })) })).ok).toBe(true);
+    // 첫 초안(mvp)이면 write_blueprint 가 장소 여섯을 바로 짓는다(#5070) — 이 시험은 남기는 청사진만 보므로 full 로 건다.
+    expect((await call("write_blueprint", { ...base(mixed(SPOTS)), scale: "full", places: SPOTS.map((name) => ({ name, kind: "village" })) })).ok).toBe(true);
     expect(ctx.project.gameBlueprint?.setting).toBeUndefined();
     expect(ctx.project.gameBlueprint?.places).toBeUndefined();
   });

@@ -80,10 +80,16 @@ const blueprintArgs = (extra: Record<string, unknown> = {}) => ({
   ending: { name: "돌아온 종소리", how: "마물을 쓰러뜨린다", feeling: "안도" },
   ...extra,
 });
-const writeBlueprint = (project: Project, params: unknown) => createV2Tools({
-  ctx: { project, currentMapId: project.startMapId, assistantRun: true }, request: { task: "닌자가 성에 잠입하는 게임", provider: "local-cli:claude", mapIds: [], project },
-  emit() {}, record() {}, sideChat: async () => "{}", render: async () => "", checkpoint: async () => {},
-} as never, new V2Session()).find((t) => t.name === "write_blueprint")!.execute("a", params as never, undefined as never);
+const writeBlueprint = (project: Project, params: unknown) => {
+  const session = new V2Session();
+  const tools = createV2Tools({
+    ctx: { project, currentMapId: project.startMapId, assistantRun: true }, request: { task: "닌자가 성에 잠입하는 게임", provider: "local-cli:claude", mapIds: [], project },
+    emit() {}, record() {}, sideChat: async () => "{}", render: async () => "", checkpoint: async () => {},
+  } as never, session);
+  // 첫 초안(mvp)의 write_blueprint 는 장소를 바로 짓는다(#5070). 여기서는 청사진의 크기 판정만 보므로 짓기는 뗀다.
+  session.buildPlaces = undefined;
+  return tools.find((t) => t.name === "write_blueprint")!.execute("a", params as never, undefined as never);
+};
 
 describe("v2 blueprint size", () => {
   it("a first blueprint without scale is the first playable version", async () => {

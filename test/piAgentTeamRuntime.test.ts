@@ -99,7 +99,10 @@ describe("프리셋 첫 생성의 실제 팀원 턴 상한", () => {
       if (options.extraTools?.some(t => t.name === "assign_map_agent")) {
         await callTool(options.extraTools, "assign_map_agent", { mapId: "map_a", task: "첫 상호작용" });
         await callTool(options.extraTools, "wait_agents", {});
-        await callTool(options.extraTools, "finish", { report: "끝" });
+        // 장르 프리셋 첫 생성은 첫 MVP 관문을 지난다 — 빈 맵이면 두 번 거절한 뒤 남은 항목을 보고에 적고 받는다(scripts/lib/piTeamRuntime.ts).
+        for (let attempt = 0; attempt < 3; attempt += 1) {
+          if (await callTool(options.extraTools, "finish", { report: "끝" }).then(() => true, () => false)) break;
+        }
       } else seen.push(child.maxTurns!);
       return doneWith(child.project);
     } });
