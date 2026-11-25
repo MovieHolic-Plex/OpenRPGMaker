@@ -136,7 +136,11 @@ describe("끝맺음 자동 짓기 — 종류를 모르는 장소는 마을로 �
 
   it("청사진에 적은 종류와 칸 배치 없이 청한 종류로 실내를 짓는다 — 모르는 둘만 남는다", async () => {
     const t = turn();
+    // 새 게임 첫 초안의 write_blueprint 는 장소를 바로 짓는다(#5070). 이 시험은 끝맺음 자동 짓기를 보므로 청사진만 건다.
+    const build = t.session.buildPlaces;
+    t.session.buildPlaces = undefined;
     await writeBlueprint(t, blueprint([{ name: "물레강 마을", kind: "village" }, { name: "방앗간 안", kind: "interior", from: "물레강 마을" }, { name: "말순네 농가", kind: "interior", from: "물레강 마을" }]));
+    t.session.buildPlaces = build;
     // 세계 없는 청사진은 장소 목록을 남기지 않는다 — 종류는 이 실행의 사실로만 남는다.
     expect((t.ctx.project.gameBlueprint as { places?: unknown }).places).toBeUndefined();
     expect(t.session.placeFacts.get("말순네농가")).toMatchObject({ kind: "interior", from: "물레강 마을" });

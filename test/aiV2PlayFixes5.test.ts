@@ -153,7 +153,7 @@ describe("상점만 든 청사진 단계도 짓고 상점은 그 사람에게 �
 describe("고치기 되돌림은 게임이 깨질 때만 — r8 D4", () => {
   const PNG = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAEElEQVR4nGNgGAWjYBTAAAADEAABPywr7AAAAABJRU5ErkJggg==";
   it("비평 major 만 늘어난 꾸밈 고치기는 남기고 그렇다고 알린다", async () => {
-    const THRONE = JSON.parse(/const THRONE_ROOM = (\{.*\});/u.exec(readFileSync("test/aiV2InteriorSpaceAdvisory.test.ts", "utf8"))![1]!);
+    const THRONE = JSON.parse(/const THRONE_ROOM = (\{.*\});/u.exec(readFileSync("test/aiV2KeepMapId.test.ts", "utf8"))![1]!);
     const project = createBlankProject();
     const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true };
     let majors = 0;

@@ -243,10 +243,12 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseMo
   paintMenuItem(maximizeButton, "maximize", "전체 화면");
   const moreMenu = el("div", {
     class: "database-modal-more-menu",
-    attrs: { role: "menu", "aria-label": "창·도움말", hidden: "" },
+    attrs: { role: "menu", "aria-label": "창·도움말" },
     dataset: { testid: "database-modal-more-menu" },
     children: [dockToggleButton, maximizeButton],
   });
+  // 닫힌 채 시작한다. 속성으로 준다 — setMoreOpen 도 속성을 쓰므로 열림 판정이 한 곳에서 온다.
+  moreMenu.hidden = true;
   const moreButton = el("button", {
     class: "database-modal-more",
     text: "⋯",
