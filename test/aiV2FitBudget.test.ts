@@ -82,9 +82,17 @@ describe("the fit's battle results carry over to a new project object with the s
     beginFitBudget(same);
     fitSimulate(same, "t1", 5, []);
     expect(sims.calls).toBe(1);
+    // 두 끝맺음 사이에 다른 단계가 이름·그림만 바꾸거나 다른 트룹의 적을 바꿔도 이어 쓴다(m4 몬스터: 둘째 끝맺음 91초).
+    const cosmetic = structuredClone(p);
+    cosmetic.database.enemies.push({ id: "e_other", name: "다른 적", level: 3 } as never);
+    const actor = cosmetic.database.actors[0] as unknown as Record<string, unknown> | undefined;
+    if (actor) actor.name = "이름만 바뀜";
+    beginFitBudget(cosmetic);
+    fitSimulate(cosmetic, "t1", 5, []);
+    expect(sims.calls).toBe(1);
     const changed = structuredClone(p);
     // 모의전 칸 열쇠(트룹·적·파티)는 같고 내용(시스템)만 다르다 — 이어 쓰면 안 된다.
-    (changed.system as unknown as Record<string, unknown>).zzChanged = true;
+    changed.system.battleModel = (changed.system.battleModel === "gen1" ? "default" : "gen1") as never;
     beginFitBudget(changed);
     fitSimulate(changed, "t1", 5, []);
     expect(sims.calls).toBe(2);
