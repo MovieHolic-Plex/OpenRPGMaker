@@ -207,6 +207,24 @@ const OUTDOORS: readonly OutdoorRecipe[] = [
           commands: goods.length ? [{ kind: "shop", itemIds: goods, allowSell: true, title: "시장" }] : [] } };
     },
   },
+  {
+    // 영역을 3×3 나무로 엇갈려 채우고 가운데에 남북 오솔길(폭 2)을 비워 둔다 — 숲이 길을 막지 않게.
+    kind: "forest", label: "숲", min: { width: 8, height: 6 },
+    build(work, mapId, region) {
+      const trees = ["bd-tree-03a8f7", "bd-tree-3e8732", "bd-tree-a80c85", "bd-tree-7ecdb8"];
+      const pathX = region.x + Math.floor(region.width / 2) - 1;
+      let planted = 0;
+      for (let row = 0; region.y + row * 3 + 3 <= region.y + region.height; row += 1) {
+        const y = region.y + row * 3;
+        for (let x = region.x + (row % 2); x + 3 <= region.x + region.width; x += 3) {
+          if (x < pathX + 2 && x + 3 > pathX) continue;
+          stampKit(work, mapId, trees[planted % trees.length]!, x, y);
+          planted += 1;
+        }
+      }
+      return { pieces: [`나무 ${planted}그루`, "가운데 남북 오솔길(폭 2)"] };
+    },
+  },
 ];
 
 export const REGION_PLACE_KINDS: readonly RegionPlaceKind[] = [...BUILDINGS.map((r) => r.kind), ...DUNGEONS.map((r) => r.kind), ...OUTDOORS.map((r) => r.kind)];
@@ -550,9 +568,13 @@ const buildRegionPlace: ToolDefinition = {
   name: "build_region_place",
   mode: "write",
   domains: ["map", "event"],
+  // 레시피가 주인·문지기·상자 칩을 스스로 고른다(graphic:{query}) — 모델이 칩을 고르지 않으므로 칩 관문 대상이 아니다.
+  // 실측(2026-11-25 assistant-measure-r2 영역 6판): 6판 모두 첫 호출이 「캐릭터 그림 선택을 되돌렸습니다」로 거절돼
+  // list_npc_graphics + 재호출로 모델 두 차례를 더 썼다.
+  choosesOwnGraphic: true,
   description:
     "사용자가 맵에서 고른 영역(region) 한 곳에 장소 하나를 통째로 짓는다 — 「여기 상점 만들어 줘」 한 번으로 외관(지붕·벽·문) + 실내 맵(방·가구·계산대) + 문 왕복 이동 + 주인 NPC(상점은 이 게임 DB 품목으로 상점 명령, 여관은 숙박 명령, 교회는 세이브 포인트) 까지 끝낸다. "
-    + "kind: shop 도구점·상점 · weapon_shop 무기점 · smithy 대장간 · inn 여관 · tavern 주점 · house 집 · chapel 교회 · bakery 빵집 · pharmacy 약방 · warehouse 창고 · stable 마구간 · school 학교 · guard_post 경비 초소 · windmill 풍차 · lighthouse 등대 · bridge 다리(강이 없으면 영역 안에 남북 강을 낸다) · gate 성문(성문루+양쪽 성벽) · farm 농장(밭+울타리+농부) · market 시장(노점 블록+상인) · dungeon_entrance 던전 입구(새 던전 맵) · cave_entrance 동굴 입구(새 동굴 맵). "
+    + "kind: shop 도구점·상점 · weapon_shop 무기점 · smithy 대장간 · inn 여관 · tavern 주점 · house 집 · chapel 교회 · bakery 빵집 · pharmacy 약방 · warehouse 창고 · stable 마구간 · school 학교 · guard_post 경비 초소 · windmill 풍차 · lighthouse 등대 · bridge 다리(강이 없으면 영역 안에 남북 강을 낸다) · gate 성문(성문루+양쪽 성벽) · farm 농장(밭+울타리+농부) · market 시장(노점 블록+상인) · forest 숲(나무+가운데 오솔길) · dungeon_entrance 던전 입구(새 던전 맵) · cave_entrance 동굴 입구(새 동굴 맵). "
     + "바깥 맵은 영역 사각형 안만 바뀐다(외관과 문 앞 칸이 영역 안에 서야 한다). 영역 밖에 생기는 것은 새 맵(실내·던전)뿐이고 결과 카드에서 같이 되돌린다. "
     + "외관·실내·문·주인을 따로 부르지 말고 이 도구 한 번으로 짓는다. 외관 칩셋: 버들항(beodeul_city)·기본 마을. 다른 칩셋은 거부되므로 그 칩셋의 구성 도구와 link_*_interior 를 쓴다.",
   invalidArgsExample: { mapId: "map_1", region: { x: 10, y: 6, width: 11, height: 10 }, kind: "shop" },
