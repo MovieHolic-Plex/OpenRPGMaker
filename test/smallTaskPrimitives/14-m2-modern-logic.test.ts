@@ -46,7 +46,7 @@ const cases: ReadonlyArray<{
   { command: "206-wait-until", initial: { condition: "eventIdle" }, change: { timeoutMs: 3000 }, invalid: { target: MISS }, fixture: "blank" },
   { command: "208-quest-objective", initial: { questId: "찾아온 부탁", objectiveId: "열쇠", text: "열쇠 찾기" }, change: { state: "complete" }, invalid: { objectiveId: "" } },
   { command: "211-weighted-branch", initial: { table: "성공=3\n실패=1", resultVariableId: VAR }, change: { table: "성공=1\n실패=2" }, invalid: { table: "성공=0\n실패=0" } },
-  { command: "214-ui-command", initial: { message: "입구 문을 살펴보세요." }, change: { surface: "banner", durationMs: 1500 }, invalid: { message: "" }, fixture: "maou" },
+  { command: "214-ui-command", initial: { message: "입구 문을 살펴보세요." }, change: { surface: "banner", durationMs: 1500 }, invalid: { message: "" } },
   { command: "215-debug-log", initial: { message: "재고 확인 시작" }, change: { level: "warn" }, invalid: { message: " " } },
   { command: "216-evaluate-expression", initial: { expression: "gold + 5 * 2", resultVariableId: VAR }, change: { expression: "(10 + 2) / 3" }, invalid: { expression: "missing_variable + 4" } },
   { command: "217-data-query", initial: { query: "playerX", variableId: VAR }, change: { query: "gold" }, invalid: { query: "itemCount", target: MISS } },
@@ -55,7 +55,7 @@ const cases: ReadonlyArray<{
   { command: "221-quick-time-event", initial: { keys: "up,z", resultVariableId: VAR }, change: { mode: "mash", keys: "x" }, invalid: { keys: "shift" } },
   { command: "222-high-score", initial: { scoreId: "달리기", valueVariableId: VAR }, change: { action: "submitLow" }, invalid: { valueVariableId: MISS } },
   { command: "223-teleport-menu", initial: { prompt: "돌아갈 곳을 고르세요.", resultVariableId: VAR }, change: { transfer: false }, invalid: { resultVariableId: MISS } },
-  { command: "227-journal-line", initial: { text: "숲에서 열쇠를 찾았다." }, change: { writer: "정찰대", date: "셋째 날" }, invalid: { learnSkillId: MISS }, fixture: "maou" },
+  { command: "227-journal-line", initial: { text: "숲에서 열쇠를 찾았다." }, change: { writer: "정찰대", date: "셋째 날" }, invalid: { learnSkillId: MISS } },
 ];
 
 const fixtures = new Map<"blank" | "built" | "maou", Project>();
@@ -104,6 +104,8 @@ function editArgs(commands: readonly Command[], index: number, fields: M2Command
   return { index, expectedHash: eventCommandHash(commands[index]!), ...fields };
 }
 
+// 2026-11-25 test-diet: 214-ui-command·227-journal-line 행은 예전에 maou 예제(짓는 데 30~60 s)로 돌았다 — scenario() 가 시작 맵에
+// 시험용 이벤트를 새로 꽂고 그 줄만 다루므로 예제 내용을 읽지 않는다. 기본(built)으로 돈다.
 describe("현대 명령 한 줄 편집", () => {
   it.each(cases)("$command 추가·수정·되돌리기", async ({ command, initial, change, fixture = "built" }) => {
     const { project, target, findEvent } = scenario(fixture);
