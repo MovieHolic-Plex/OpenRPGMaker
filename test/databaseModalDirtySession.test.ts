@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { updateDatabaseRecord } from "@/editor/databaseActions";
 import {
-  getMapEditHistoryDebugEntries,
+  getMapEditHistoryDepth,
   getMapEditHistoryState,
   recordProjectSnapshot,
   resetMapEditHistory,
@@ -86,18 +86,19 @@ describe("database modal dirty session", () => {
         project.database.actors[0].nickname = `prefill-${index}`;
       });
     }
-    const saturated = getMapEditHistoryDebugEntries().length;
+    // 깊이만 본다 — getMapEditHistoryDebugEntries 는 엔트리 50개의 프로젝트 전체를 JSON 으로 재서 호출마다 수십 초가 걸렸다.
+    const saturated = getMapEditHistoryDepth();
     expect(saturated).toBeGreaterThanOrEqual(50);
 
     const dirtySession = createDatabaseModalDirtySession();
     updateDatabaseRecord("actors", actorId, { name: "Discarded After Saturation" });
     // 포화 상태라 세션 중 push 가 가장 오래된 엔트리를 밀어내 길이가 그대로다 — 깊이 기준 절단이 무동작이 되는 조건.
-    expect(getMapEditHistoryDebugEntries().length).toBe(saturated);
+    expect(getMapEditHistoryDepth()).toBe(saturated);
     dirtySession.discard();
 
     expect(store.getCurrent().database.actors[0]?.name).toBe(originalName);
     // 세션 중 쌓인 엔트리는 시퀀스 기준으로 빠진다 — 깊이 기준 절단(회귀)이면 길이가 그대로 남는다.
-    expect(getMapEditHistoryDebugEntries().length).toBeLessThan(saturated);
+    expect(getMapEditHistoryDepth()).toBeLessThan(saturated);
 
     // discard 직후의 undo 는 폐기한 편집(Discarded After Saturation)을 부활시키지 않는다.
     // 예전엔 undo 를 50번 모두 소진해 호스티드 CI 에서 30~53초 걸렸다(release-0420, ci-full 45700529442) —
