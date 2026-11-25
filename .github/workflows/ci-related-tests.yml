@@ -114,6 +114,8 @@ jobs:
     timeout-minutes: ${{ needs.select.outputs.mode == 'wide' && 120 || 15 }}
     strategy:
       fail-fast: false
+      # 넓은 변경은 조각 12개를 동시 6개로 돈다 — 호스티드 40자리를 다른 PR 의 ci-fast 와 나눈다(최근 150 PR 중 29% 가 넓은 변경).
+      max-parallel: ${{ needs.select.outputs.mode == 'wide' && 6 || 4 }}
       matrix: ${{ fromJSON(needs.select.outputs.matrix) }}
     env:
       VITEST_WORKERS: "4"
