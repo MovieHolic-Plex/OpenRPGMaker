@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { normalizeStepText } from "@/project/gameBlueprint";
 import { isPassable } from "@/project/collision";
 import { createV2Tools } from "@/ai/v2/tools/verbs";

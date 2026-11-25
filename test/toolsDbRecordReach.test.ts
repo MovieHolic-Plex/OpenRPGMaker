@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { runTool, type ToolContext } from "@/editor/tools";
-import { createBlankProject, TILE } from "@/project/defaults";
+import { TILE } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import type { Project } from "@/project/types";
 import assert from "node:assert/strict";
 import { isolateTimers } from "./mergedTeardown";

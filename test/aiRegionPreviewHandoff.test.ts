@@ -11,7 +11,8 @@ import {
 import { createAiTurnRunner, type AiTurnRunnerDeps } from "@/editor/panels/aiTurnRunner";
 import type { AiRunSurface } from "@/editor/panels/aiRunSurface";
 import { getPendingRegionApply, setPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
-import { createBlankProject, TILE } from "@/project/defaults";
+import { TILE } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import type { GameMap } from "@/project/types";
 import { store } from "@/project/store";
 import { installFakeDom } from "./fakeDom";

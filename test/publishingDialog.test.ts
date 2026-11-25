@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { createRuntimeManifest, jsonBytes } from "@/project/gameRelease";
 import { preparePublication } from "@/project/publication";
 import { openPublishingDialog } from "@/editor/panels/publishingDialog";
