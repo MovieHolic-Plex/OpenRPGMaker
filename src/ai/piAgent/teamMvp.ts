@@ -16,6 +16,13 @@ export const FIRST_MVP_TEAM_RULES = [
   "- finish 보고에는 만든 것, 바로 플레이해 볼 순서, 다음 요청으로 늘릴 것 세 가지(예: 「다음 지역 만들어 줘」)를 적는다.",
 ] as const;
 
+/**
+ * 첫 MVP 팀원 한 배정의 차례 상한. 2026-11-25 team-mvp-revive 실측(ccapi Sonnet 5.5 high, 팀 start-jrpg): 뼈대·자료 프로젝트 작업 하나가
+ * 15분·도구 366번을 쓰며 메뉴 설정·시스템 검수까지 해, 맵 담당 셋이 그 뒤에야 동시에 시작했다(프로젝트 작업은 맵 작업과 배타).
+ * 빈 칸은 finish 가 draft-cast 로 채우므로 프로젝트 작업은 짧게, 맵 담당은 자기 맵 하나 분량만.
+ */
+export const FIRST_MVP_MEMBER_TURNS = { project: 30, map: 60 } as const;
+
 export interface TeamMvpCheck {
   /** finish 가 고친 것(엔딩 호출 → 끝 지점 스위치, 엔딩 정의 걷기). */
   readonly applied: string[];

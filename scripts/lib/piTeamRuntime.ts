@@ -29,7 +29,7 @@ import { addPiAgentUsage, changedProjectKeys, PI_MAP_LOSS_DECLINED_PREFIX, resto
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { firstMvpRoute } from "../../src/ai/piAgent/firstMvpRoute.ts";
 import { applyDraftCast } from "../../src/ai/v2/story/draftCast.ts";
-import { checkTeamMvp } from "../../src/ai/piAgent/teamMvp.ts";
+import { checkTeamMvp, FIRST_MVP_MEMBER_TURNS } from "../../src/ai/piAgent/teamMvp.ts";
 import { repairWorldTransfers } from "../../src/project/world/transferRepair.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
 import { FIRST_PLAY_TOOLS, firstPlayEvents, firstPlaySignature, inspectFirstPlay, type FirstPlayReceipt } from '../../src/ai/piAgent/firstPlay.ts';
@@ -215,6 +215,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   // seeded genres first author actual play, before the coordinator can decorate.
   const coreFirst = !goalCampaign && isGenrePresetBriefRequest(request.task) && hasPlayableSegmentSkeleton(base)
     && !authoringHarnessFor(base) && !request.readOnly && !options.readOnlyTools;
+  // 첫 MVP(빈 프로젝트에서 게임 하나) 팀 실행은 팀원 한 배정의 차례를 줄인다(FIRST_MVP_MEMBER_TURNS) — 뼈대 작업 하나가 15분을 먹고 맵 담당이 그 뒤에야 돌았다.
+  const firstMvpTeam = !goalCampaign && !coreFirst && !isGenrePresetBriefRequest(request.task) && !request.readOnly && !options.readOnlyTools && firstMvpRoute(base, request.task).firstMvp;
   let firstPlay: FirstPlayReceipt | undefined;
   let reviewedFirstPlay: string | undefined;
   let reviewedFirstScene: string | undefined;
@@ -429,6 +431,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     if (reviewingMaps.has(mapId) && !reviewRepair) throw new Error(`맵 '${mapId}'의 검수·자동 수정이 진행 중입니다. 완료 후 배정하세요.`);
     if (coreFirst && firstBuildAssignments >= 3) throw new Error('첫 제작의 후속 배정은 3회까지입니다. 핵심 플레이는 이미 작성했습니다. 남은 장식은 다음 할 일로 보고하고 finish 하세요.');
     if (coreFirst) member = { ...member, maxTurns: Math.min(member.maxTurns, 24) };
+    if (firstMvpTeam) member = { ...member, maxTurns: Math.min(member.maxTurns, FIRST_MVP_MEMBER_TURNS.map) };
     if (request.applyMode === "step" && (runningAssignments(ledger).length || runningTasks().length)) throw new Error("단계별 적용은 앞 작업 승인·완료 후 다음 작업을 배정합니다. wait_agents를 먼저 호출하세요.");
     if (projectWriter()) throw new Error("프로젝트 공통 데이터 제작 중입니다. wait_agents 후 맵 작업을 배정하세요.");
     if (!working.maps[mapId]) throw new Error(`맵 '${mapId}' 이 프로젝트에 없습니다. 후보: ${candidateMaps.join(", ")}`);
@@ -496,6 +499,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   function startTask(task: string, mode: "read" | "project", member: PiTeamMember): Record<string, unknown> {
     if (coreFirst && mode === 'project' && firstBuildAssignments >= 3) throw new Error('첫 제작의 후속 배정은 3회까지입니다. 추가 작업은 다음 할 일로 보고하고 finish 하세요.');
     if (coreFirst) member = { ...member, maxTurns: Math.min(member.maxTurns, 24) };
+    if (firstMvpTeam && mode === "project") member = { ...member, maxTurns: Math.min(member.maxTurns, FIRST_MVP_MEMBER_TURNS.project) };
     if (request.applyMode === "step" && (runningAssignments(ledger).length || runningTasks().length)) throw new Error("단계별 적용은 앞 작업 승인·완료 후 이어집니다. wait_agents를 먼저 호출하세요.");
     if (tasks.size >= 64) throw new Error("팀 작업 배정 상한(64)에 도달했습니다. 남은 작업을 보고하세요.");
     if (mode === "project") {
@@ -801,7 +805,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         }
         // 첫 MVP(빈 프로젝트의 게임 하나)는 맵만 남기지 않는다 — 담당은 맵 단위라 게임 전체 끝맺음(draft-cast)이 여기서는 돌지 않는다.
         // 병합본에 세계관·동료·직업·기술·물건·적을 채운다(2026-11-24 ideal-flow-draft). 다시 불려도 같은 결과다.
-        const firstMvp = !request.readOnly && firstMvpRoute(base, request.task).team;
+        // 엄격한 맵 범위 실행(mapIds + scopeStrict)은 프로젝트 전체를 쓰지 않는다 — 프로젝트 작업 배정 거절과 같은 경계.
+        const firstMvp = !request.readOnly && !options.readOnlyTools && !(request.scopeStrict !== false && request.mapIds.length > 0) && firstMvpRoute(base, request.task).firstMvp;
         if (firstMvp) {
           const drafted: Project = { ...working, system: { ...working.system }, characters: { ...(working.characters ?? {}) }, database: { ...working.database,
             actors: working.database.actors.map((actor) => ({ ...actor, learnedSkills: [...actor.learnedSkills] })), classes: [...working.database.classes],
