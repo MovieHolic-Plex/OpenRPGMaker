@@ -36,3 +36,9 @@ test("groupByPr gathers every failing test a PR was blamed for, and bodies carry
   assert.match(issueBody(rows, diff), /`test\/feature\.test\.ts` \| #12 \(0\), #10 \(2\)/u);
   assert.match(issueBody([{ test: "test/x.test.ts", candidates: [], more: 0 }], diff), /후보 없음/u);
 });
+
+test("blameFailures also blames a commit that changed (or deleted) a file the test reads by its path string", () => {
+  const reader = new Map([["test/reads.test.ts", 'const text = readFileSync("test/merged/old.test.ts", "utf8");']]);
+  const rows = blameFailures(["test/reads.test.ts"], [{ sha: "d".repeat(40), pr: "13", subject: "merge tests (#13)", changed: ["test/merged/old.test.ts"] }], forward, 3, reader);
+  assert.deepEqual(rows[0].candidates.map((candidate) => [candidate.pr, candidate.distance]), [["13", 0]]);
+});

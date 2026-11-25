@@ -36,10 +36,13 @@ const git = (...args) => execFileSync("git", args, { encoding: "utf8", maxBuffer
  * @param {string[]} failures 새 실패 시험 경로
  * @param {{sha: string, pr: string|null, subject: string, changed: string[]}[]} commits 범위 안 커밋(오래된 것 → 새 것)
  * @param {Map<string, Set<string>>} forward 런타임 import 그래프(파일 → 그 파일이 import 하는 것)
+ * @param {ReadonlyMap<string, string>} [sources] 시험 소스 — 시험이 경로 문자열로 읽는 파일(readFileSync("test/x.test.ts") 등)을 바꾼 커밋도 걸음 0 으로 친다.
  */
-export function blameFailures(failures, commits, forward, limit = MAX_CANDIDATES_PER_TEST) {
+export function blameFailures(failures, commits, forward, limit = MAX_CANDIDATES_PER_TEST, sources = new Map()) {
   return failures.map((test) => {
     const deps = distances(forward, [test]);
+    const source = sources.get(test) ?? "";
+    for (const commit of commits) for (const path of commit.changed) if (!deps.has(path) && path.includes("/") && (source.includes(`"${path}"`) || source.includes(`'${path}'`) || source.includes(`\`${path}\``))) deps.set(path, 0);
     const hits = [];
     commits.forEach((commit, order) => {
       const touched = commit.changed.filter((path) => deps.has(path)).sort((a, b) => deps.get(a) - deps.get(b) || (a < b ? -1 : 1));
@@ -153,7 +156,7 @@ function main(argv) {
   if (diff.error) throw new Error(`대조 실패: ${diff.error}`);
   const commits = rangeCommits(diff.baseline.headSha, diff.candidate.headSha);
   const graph = loadRepoGraph(process.cwd());
-  const rows = blameFailures(diff.newFailures, commits, graph.forward);
+  const rows = blameFailures(diff.newFailures, commits, graph.forward, MAX_CANDIDATES_PER_TEST, graph.sources);
   const report = { run: diff.candidate, baseline: diff.baseline, commits: commits.length, rows, prs: groupByPr(rows) };
   console.log(`ci-full-blame: run ${diff.candidate.id} vs ${diff.baseline.id} — 새 실패 ${rows.length}개, 범위 커밋 ${commits.length}개, 댓글 대상 PR ${report.prs.length}개`);
   for (const row of rows) console.log(`  ${row.test} ← ${row.candidates.map((candidate) => `${candidate.pr ? `#${candidate.pr}` : candidate.sha.slice(0, 9)}(${candidate.distance}: ${candidate.touched[0]})`).join(", ") || "후보 없음"}`);
