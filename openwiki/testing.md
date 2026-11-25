@@ -2533,7 +2533,7 @@ VM 판 5개의 곁 칸: deepseek escape (3,4) up · terra escape (2,4) up · ter
 ## PR 관련 시험 · ci-full 원인 알림 · 타이밍 의존 시험 (2026-11-25, ci-speed)
 
 **PR 관련 시험** (`ci-related-tests.yml`, 정보용): `scripts/vitest-related.mjs` 가 바뀐 파일에서 **런타임 import 그래프**(타입 전용 import 제외, `scripts/lib/testImportGraph.mjs`)를 거꾸로 타 닿는 시험을 가까운 것부터 담는다.
-조각(`related-tests (n)`) 1~4개, 조각마다 예상 380초·시간 상자 450초. 닿는 시험이 500개를 넘거나 바뀐 파일이 80개를 넘으면 `MODE: wide` — 닿는 시험 전부를 12조각(동시 6)으로 돈다.
+조각(`related-tests (n)`) 1~4개, 조각마다 예상 380초·시간 상자 450초. 닿는 시험이 1200개를 넘거나 바뀐 파일이 80개를 넘으면 `MODE: wide` — 닿는 시험 전부를 12조각(동시 6)으로 돈다.
 옛 깊이 1 판은 2026-11-25 ci-full 새 실패 19개 중 2개만 PR 단계에서 돌렸고, 그래프 판은 18개다(재현: http://mdc2:18301/ci-speed.html).
 자기 PR 을 미리 재 보기: `node scripts/vitest-related.mjs --base origin/main --head HEAD --out /dev/null`.
 
