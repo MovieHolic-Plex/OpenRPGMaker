@@ -76,6 +76,7 @@ const writeToolNames = (req: ChatRequest | undefined): string[] =>
   toolNames(req).filter((name) => getTool(name)?.mode === "write" || name === "set_build_spec");
 
 describe("질문 중 미완료 계획 보존", () => {
+  // 호스티드 러너에서 단독으로도 15~17초 걸린다(ci-vitest-files 45671861464, ci-full 45620536375) — 기본 15초 대신 60초.
   it("답변 뒤 계획을 재개하거나 자동 계속하지 않는다", async () => {
     const { chat, requests } = scriptedChat([finalResult(NEW_PLAN_JSON), finalResult("계획에는 두 단계가 있습니다.")]);
     const session = new AssistantSession(createBlankProject(), {
@@ -89,5 +90,5 @@ describe("질문 중 미완료 계획 보존", () => {
     expect(answered.workPlan).toEqual(planned.workPlan);
     expect(writeToolNames(requests[1])).toEqual([]);
     expect(answered.assistantText).toContain("두 단계");
-  });
+  }, 60_000);
 });

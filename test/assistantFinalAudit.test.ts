@@ -21,6 +21,7 @@ describe("authoritative final response audit", () => {
     expect(session.getAuditEntries().filter(entry => entry.kind === "assistant")).toHaveLength(1);
   });
 
+  // 호스티드 러너에서 단독으로도 15~17초 걸린다(ci-vitest-files 45671861464, ci-full 45620536375) — 기본 15초 대신 60초.
   it("does not lead with model success when explicit verification still fails", async () => {
     // 260(침엽수 상단) 고아 칸 lint 규칙은 옛 합본 마을 시트의 것이다 — 기본 버들항 시트에서는 오류가 아니다.
     const project = startOnRetiredCombinedTown(createBlankProject());
@@ -39,5 +40,5 @@ describe("authoritative final response audit", () => {
     const result = await session.sendUserMessage("Check the authored map");
     expect(result.assistantText).not.toContain("MODEL_SUCCESS_SENTINEL");
     expect(session.getAuditEntries().filter(entry => entry.kind === "assistant").at(-1)?.text).toBe(result.assistantText);
-  });
+  }, 60_000);
 });
