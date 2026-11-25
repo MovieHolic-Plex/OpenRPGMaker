@@ -511,7 +511,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     if (tasks.size >= 64) throw new Error("팀 작업 배정 상한(64)에 도달했습니다. 남은 작업을 보고하세요.");
     if (mode === "project") {
       // 첫 MVP 팀은 프로젝트 작업을 받지 않는다 — 맵 작업과 배타라 모두를 세우고, 받은 팀원이 BGM·효과음·메뉴까지 넓혀 7~15분을 썼다(team-mvp-revive r4·r5·r7).
-      if (firstMvpTeam) throw new Error("첫 MVP 팀은 프로젝트 작업을 쓰지 않습니다. 세계관·인물·직업·기술·물건·적은 finish 가 채웁니다. 맵에 고칠 것이 있으면 그 맵 담당에게 assign_map_agent 로, 없으면 finish 하세요.");
+      // 사용자가 오프닝을 명시로 요청한 판은 예외다 — 오프닝 제작은 프로젝트 작업으로만 할 수 있고, 마지막 오프닝 관문이 그 영수증을 본다(CodeRabbit #5101).
+      if (firstMvpTeam && !requestsOpeningProduction(request.task)) throw new Error("첫 MVP 팀은 프로젝트 작업을 쓰지 않습니다. 세계관·인물·직업·기술·물건·적은 finish 가 채웁니다. 맵에 고칠 것이 있으면 그 맵 담당에게 assign_map_agent 로, 없으면 finish 하세요.");
       if (reviewingMaps.size) throw new Error('맵 검수·자동 수정이 진행 중입니다. 완료 후 프로젝트 공통 작업을 배정하세요.');
       if (request.readOnly || options.readOnlyTools || member.kind === "reviewer") throw new Error("읽기 전용 요청/검수 팀원에게 프로젝트 쓰기를 맡길 수 없습니다.");
       if (request.scopeStrict !== false && request.mapIds.length > 0) throw new Error("명시된 맵 범위를 프로젝트 전체 쓰기로 넓힐 수 없습니다. 맵 배정을 사용하세요.");
