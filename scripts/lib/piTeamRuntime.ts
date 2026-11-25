@@ -30,7 +30,7 @@ import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { firstMvpRoute } from "../../src/ai/piAgent/firstMvpRoute.ts";
 import { applyDraftCast } from "../../src/ai/v2/story/draftCast.ts";
 import { checkTeamMvp } from "../../src/ai/piAgent/teamMvp.ts";
-import { repairWorldTransfers } from "../../src/ai/piAgent/worldSeamRepair.ts";
+import { repairWorldTransfers } from "../../src/project/world/transferRepair.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
 import { FIRST_PLAY_TOOLS, firstPlayEvents, firstPlaySignature, inspectFirstPlay, type FirstPlayReceipt } from '../../src/ai/piAgent/firstPlay.ts';
 import { FIRST_SCENE_INSTRUCTIONS, firstSceneGraphicEvidence, firstSceneObjectCatalog, firstSceneMapIds, firstSceneSignature, inspectFirstScene, inspectFirstScenePlaces, storyRouteBrief } from '../../src/ai/piAgent/firstScene.ts';
@@ -456,7 +456,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         const done = await runAgent(
           {
             ...request, ...exposureFor(member, false), ...request.roleModels?.deep, mode: "single", mapIds: [mapId], project: snapshot, task,
-            ...(independent.length ? { independentMapIds: independent } : {}),
+            // 독립 목록이 있으면 범위 가드를 늘 켠다(scopeStrict:false 부모여도) — 남의 세계 노드를 고친 호출이 성공으로 보이고 병합에서 버려지지 않게.
+            ...(independent.length ? { independentMapIds: independent, mapBundleMerge: true } : {}),
             systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), ...describeMapSeams(snapshot, mapId), teamCommunicationPrompt(agentId)], maxTurns: member.maxTurns,
             ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
             ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
@@ -814,7 +815,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         // 첫 MVP 약속(맵 3~5장 · 엔딩 없음 · 끝 지점까지 걸어서 감) — v2 단일 실행의 끝맺음과 같은 셈(src/ai/piAgent/teamMvp.ts). 거절은 두 번까지, 그 뒤에는 보고에 남긴다.
         if (firstMvp && !isGoalCampaignTask(request.task)) {
           const mvp: Project = { ...working, maps: structuredClone(working.maps), commonEvents: structuredClone(working.commonEvents ?? []), endings: [...(working.endings ?? [])], switches: [...working.switches] };
-          // 맵 담당이 자기 맵을 생성기로 다시 지어 바뀐 도착 칸을 여기서 한 번 맞춘다 — 이음새를 LLM 수정 배정으로 왕복하지 않는다(worldSeamRepair.ts).
+          // 맵 담당이 자기 맵을 생성기로 다시 지어 바뀐 도착 칸을 여기서 한 번 맞춘다 — 이음새를 LLM 수정 배정으로 왕복하지 않는다(src/project/world/transferRepair.ts).
           const seams = repairWorldTransfers(mvp);
           if (seams.length) emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `맵 사이 도착 칸 ${seams.length}곳을 맞췄습니다: ${seams.slice(0, 6).join(" / ")}` } });
           const verdict = checkTeamMvp(mvp);

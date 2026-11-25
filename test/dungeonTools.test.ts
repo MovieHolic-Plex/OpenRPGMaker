@@ -13,20 +13,31 @@ import type { GameEvent, Project } from "@/project/types";
 // «이미 내용이 있다»(map-not-blank)로 거절돼 22분 동안 손으로 깔았다. 뼈대 맵은 짓고, 세계 문은 목적지 그대로 걸을 수 있는 칸에 다시 놓는다.
 describe("dungeonWorldSkeleton", () => {
   isolateTimers();
-  it("세계 문만 있는 뼈대 맵에도 던전을 짓고, 그 문은 목적지 그대로 걸을 수 있는 칸에 남는다", () => {
+  const gate = (id: string, x: number, y: number, mapId: string, tx: number, ty: number) => ({ id, name: id, x, y, trigger: { kind: "playerTouch" }, commands: [],
+    pages: [{ id: `${id}_p0`, name: id, conditions: [], graphic: { transparent: true }, trigger: { kind: "playerTouch" }, priority: "below",
+      movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [{ kind: "transfer", mapId, x: tx, y: ty }] }] }) as unknown as GameEvent;
+  it("세계 문만 있는 뼈대 맵에도 던전을 짓고, 문은 목적지 그대로 걸을 수 있는 칸에, 들어오는 문 도착 칸은 돌아오는 문 옆에 둔다", () => {
     const ctx = { project: createBlankProject() };
     expect(runTool(ctx, "create_map", { id: "map_forest", name: "숲", width: 30, height: 24 }).ok).toBe(true);
+    expect(runTool(ctx, "create_map", { id: "map_cave", name: "동굴", width: 30, height: 24 }).ok).toBe(true);
     const project = ctx.project as Project;
     const start = project.startMapId!;
-    const page = { id: "ev_world_gate_1_p0", name: "ev_world_gate_1", conditions: [], graphic: { transparent: true }, trigger: { kind: "playerTouch" }, priority: "below",
-      movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [{ kind: "transfer", mapId: start, x: 2, y: 2 }] };
-    project.maps.map_forest!.events = [{ id: "ev_world_gate_1", name: "ev_world_gate_1", x: 1, y: 1, trigger: { kind: "playerTouch" }, commands: [], pages: [page] } as unknown as GameEvent];
-    AUTHOR_BEODEUL_DUNGEON_ALIAS.run(project, { mapId: "map_forest", type: "forest", seed: 7, populate: false });
+    project.worldGraph = { nodes: [{ mapId: start, role: "town" }, { mapId: "map_forest", role: "dungeon" }, { mapId: "map_cave", role: "dungeon" }], edges: [] } as unknown as Project["worldGraph"];
+    project.maps[start]!.events = [gate("ev_world_gate_s", 3, 3, "map_forest", 29, 23)];
+    project.maps.map_forest!.events = [gate("ev_world_gate_1", 1, 1, start, 3, 4), gate("ev_world_gate_2", 28, 22, "map_cave", 2, 2)];
+    const res = AUTHOR_BEODEUL_DUNGEON_ALIAS.run(project, { mapId: "map_forest", type: "forest", seed: 7, floors: 2, populate: false });
     const map = project.maps.map_forest!;
-    const gates = map.events.filter((event) => event.id === "ev_world_gate_1");
-    expect(gates).toHaveLength(1);
-    expect(gates[0]!.pages?.[0]?.commands).toEqual([{ kind: "transfer", mapId: start, x: 2, y: 2 }]);
-    expect(isPassable(project, map, gates[0]!.x, gates[0]!.y)).toBe(true);
+    const exit = (res.data as { floorData: { exitStair: { x: number; y: number; front: { x: number; y: number } } | null }[] }).floorData[0]!.exitStair;
+    for (const [id, to] of [["ev_world_gate_1", start], ["ev_world_gate_2", "map_cave"]] as const) {
+      const placed = map.events.filter((event) => event.id === id);
+      expect(placed).toHaveLength(1);
+      expect((placed[0]!.pages?.[0]?.commands[0] as { mapId: string }).mapId).toBe(to);
+      expect(isPassable(project, map, placed[0]!.x, placed[0]!.y)).toBe(true);
+      if (exit) for (const cell of [exit, exit.front]) expect(Math.abs(cell.x - placed[0]!.x) + Math.abs(cell.y - placed[0]!.y)).toBeGreaterThan(1);
+    }
+    const back = map.events.find((event) => event.id === "ev_world_gate_1")!;
+    const landing = project.maps[start]!.events[0]!.pages![0]!.commands[0] as { x: number; y: number };
+    expect(Math.max(Math.abs(landing.x - back.x), Math.abs(landing.y - back.y))).toBeLessThanOrEqual(2);
   });
 });
 

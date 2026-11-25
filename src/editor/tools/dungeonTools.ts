@@ -4,6 +4,7 @@
 // 계산은 src/editor/dungeonKit/ — 중립 마스크(mask.ts) + 칩셋 어댑터(beodeul/·monster/) + 장르 프리셋(genres.ts) + 라우팅(route.ts).
 import { DUNGEON_DESIGN_SCHEMA } from "@/editor/dungeonKit/designLayout";
 import { isPassable } from "@/project/collision";
+import { repairWorldTransfers } from "@/project/world/transferRepair";
 import { kitDoorOpenCommands } from "@/project/kitDoors";
 import { groundSupportIssues } from "@/project/groundSupport";
 import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
@@ -768,7 +769,7 @@ function takeWorldSkeletonGates(draft: Project, mapId: unknown): GameEvent[] {
   return gates;
 }
 
-/** 뗀 세계 문을 새 던전에 다시 놓는다: 첫 문은 입구 계단·문, 나머지는 입구에서 가장 먼 바닥(서로 떨어지게). 목적지는 그대로다 — 도착 칸은 팀 끝맺음(worldSeamRepair)이 맞춘다. */
+/** 뗀 세계 문을 새 던전에 다시 놓는다: 첫 문은 입구 계단·문, 나머지는 입구에서 가장 먼 바닥(서로 떨어지게). 목적지는 그대로다 — 이 맵으로 들어오는 문의 도착 칸은 transferRepair 로 맞춘다. */
 function replaceWorldGates(draft: Project, mapId: string, data: Record<string, unknown>, gates: readonly GameEvent[], warnings: string[]): string {
   const map = draft.maps[mapId]!;
   const stair = data.entryStair as Stair | null;
@@ -787,6 +788,9 @@ function replaceWorldGates(draft: Project, mapId: string, data: Record<string, u
     }
   }
   const taken: Pt[] = [entrance];
+  // 다음 층 계단과 그 앞 칸은 비운다 — 층 계단 이벤트는 이 뒤에 놓여 아래 «이벤트 옆 칸 피하기» 가 못 본다(밟는 문이 계단 앞에 서면 계단으로 못 간다).
+  const exit = data.exitStair as Stair | null;
+  const reserved: Pt[] = exit ? [exit, exit.front] : [];
   const placed: string[] = [];
   gates.forEach((gate, index) => {
     let at: Pt = entrance;
@@ -795,7 +799,7 @@ function replaceWorldGates(draft: Project, mapId: string, data: Record<string, u
       let best: Pt | null = null, bestScore = -1;
       for (const [k, d] of dist) {
         const x = k % map.width, y = (k - x) / map.width;
-        if (map.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1)) continue;
+        if (map.events.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 1) || reserved.some((r) => Math.abs(r.x - x) + Math.abs(r.y - y) <= 1)) continue;
         const sep = Math.min(...taken.map((t) => Math.abs(t.x - x) + Math.abs(t.y - y)));
         if (sep < 4) continue;
         const score = Math.min(d, sep);
@@ -810,7 +814,9 @@ function replaceWorldGates(draft: Project, mapId: string, data: Record<string, u
       pages: (gate.pages ?? []).map((page) => ({ ...page, trigger, priority: bump ? "same" : "below" })) } as GameEvent);
     placed.push(`${gate.id}(${at.x},${at.y})`);
   });
-  return `세계 문 ${gates.length}개를 새 던전에 다시 놓았다: ${placed.join(", ")} — 목적지는 그대로, 다른 맵의 도착 칸은 끝맺음이 맞춘다.`;
+  // 다른 장소 맵에서 이 맵으로 들어오는 문의 도착 칸은 맵이 바뀌어 벽·맵 밖일 수 있다 — 돌아오는 문 옆으로 맞춘다.
+  const landings = repairWorldTransfers(draft, { toMapId: mapId });
+  return `세계 문 ${gates.length}개를 새 던전에 다시 놓았다: ${placed.join(", ")} — 목적지는 그대로.${landings.length ? ` 들어오는 문 도착 칸 ${landings.length}곳을 맞췄다: ${landings.join(" / ")}.` : ""}`;
 }
 
 /** author_dungeon 본체: 층 수만큼 짓고(계단 잇기), rpg 장르면 적·상자·보스·쉼터까지 채운다. */

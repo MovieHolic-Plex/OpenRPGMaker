@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { mapBundleIds, mapBundleSpill, mergeMapBundles, worldNodeMapIds } from "@/ai/piAgent/mapBundle";
 import { createMapRunLocks, mapRunBundleIds } from "@/ai/piAgent/mapRunLocks.mjs";
 import { changedProjectKeys, createPiAgentLineDecoder, encodePiAgentEvent } from "@/ai/piAgent/protocol";
-import { repairWorldTransfers } from "@/ai/piAgent/worldSeamRepair";
+import { repairWorldTransfers } from "@/project/world/transferRepair";
 import { commitChangeset } from "@/editor/tools";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
@@ -559,6 +559,9 @@ describe("piAgent mapBundle", () => {
     const fixed = base.maps[start]!.events[0]!.pages![0]!.commands[0] as { x: number; y: number };
     expect(Math.max(Math.abs(fixed.x - 5), Math.abs(fixed.y - 5))).toBe(1);
     expect(repairWorldTransfers(base)).toEqual([]);
+    // 페이지 없이 commands 만 가진 문도 같은 셈이다.
+    base.maps[start]!.events = [{ ...gate("ev_world_gate_3", 3, 3, "map_east", 19, 15), pages: undefined, commands: [{ kind: "transfer", mapId: "map_east", x: 19, y: 15 }] } as unknown as Project["maps"][string]["events"][number]];
+    expect(repairWorldTransfers(base)).toHaveLength(1);
   });
 
   it("NDJSON 디코더는 조각 경계와 깨진 줄을 견딘다", () => {
