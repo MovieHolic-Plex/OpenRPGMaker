@@ -8,7 +8,7 @@ import type { Command } from "@/project/types";
 import { AUDIO_TEST_CONFIG, audioPromptProject, parseAudioPrompt, uploadId } from "./support/audioPrompt";
 import { audioDescriptionToolProject, MUSIC_ID, SOUND_ID } from "./support/audioDescriptionToolProject";
 import { applyBlueprintOpening } from "@/editor/tools/blueprintOpening";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { isolateTimers } from "./mergedTeardown";
 
 describe("audioDescriptionPromptTransport", () => {

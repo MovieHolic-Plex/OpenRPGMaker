@@ -20,7 +20,7 @@ import { renderPlayer, teardownPlayer } from "@/player/player";
 import * as saves from "@/player/saveSlots";
 import * as loadPanel from "@/player/playerLoadPanel";
 import { emitRuntimeJuice } from "@/player/runtimeJuice";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { normalizeItemRecord } from "@/project/databaseRecordModel";
 import { isLifeRecoveryState, LifeReconciliationError } from "@/project/lifeRecovery";
 import { startSession, type PlaySession } from "@/project/session";

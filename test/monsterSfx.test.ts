@@ -15,7 +15,7 @@ import { WEATHER_CONTINUE_LINES, WEATHER_END_LINES, WEATHER_START_LINES } from "
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import { createMonsterDialogueTick, monsterBattleCue, monsterTimelineCue } from "@/player/monsterSfx";
 import { emitRuntimeJuice } from "@/player/runtimeJuice";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { collectWebExportAssets } from "@/project/webExportAssets";
 
 type Manifest = {

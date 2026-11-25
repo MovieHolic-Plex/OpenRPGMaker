@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { projectLint } from "@/project/lint/projectLint";
 import { normalizeCropRecord } from "@/project/farmModel";
 import type { Project } from "@/project/types";

@@ -10,7 +10,7 @@ import { getTool } from "@/editor/tools/toolRegistry";
 import { isPassable } from "@/project/collision";
 import { FOUR_LAYER_GUIDANCE, FOUR_LAYER_GUIDANCE_SHORT } from "@/editor/tools/mapHelpers";
 import { buildEdgeCornerVariantMap } from "@/project/defaults/autotileEngine";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { EXTRA_LAYER_KEYS, layerTileAt, setLayerTileAt, setShadowAt, shadowAt } from "@/project/mapLayers";
 import type { AutotileGroup, GameMap } from "@/project/types";

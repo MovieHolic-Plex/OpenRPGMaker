@@ -5,7 +5,7 @@ import { createBuildRun } from "@/ai/v2/shared/buildRun";
 import { MODERN_KR_BUILDER } from "@/ai/v2/place/builders/modernCity";
 import { Board } from "@/project/modernCityBoard";
 import { koreanGround } from "@/project/modernCityKoreanGround";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { MODERN_CITY_ID, createModernCityTileset } from "@/project/defaults/modernCity";
 import { isPassable } from "@/project/collision";
 import { runTool } from "@/editor/tools";

@@ -3,7 +3,7 @@
 // 방 구성 여섯(농가·마치야·여관 1층·무가 저택·도장·성 알현실)을 방 구성 도구(build_hand_interior_room, layout.program)로 짓는 실내 종류로 싣는다.
 // 에이전트 세션 규칙으로 작성 시점에는 실행하지 않았다(CI 에서 돈다). 같은 값의 실측은 scripts/qa/assistant-v2/worldHouseMatrix.mts 와 PR 본문.
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { isPassable } from "@/project/collision";
 import type { ToolContext } from "@/editor/tools/types";
 import { createV2Tools } from "@/ai/v2/tools/verbs";

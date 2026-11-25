@@ -3,7 +3,7 @@ import { clearMapDissolveVeil } from "@/editor/mapDissolveVeil";
 import { editorState } from "@/editor/editorState";
 import { renderMapList, resetMapListUiStateForTests } from "@/editor/panels/mapList";
 import { isMapPanelCollapsed, resetMapPanelSectionForTests } from "@/editor/workspace/mapPanelSection";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import { toast } from "@/util/toast";
 import { FakeElement, findByTestId, flushFakeAnimationFrames, installFakeDom, renderWithFakeDom } from "./fakeDom";
