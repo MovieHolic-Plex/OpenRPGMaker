@@ -8,6 +8,10 @@ assertCiOnlyTests("vitest");
 applyLegacyEnvAliases();
 
 const localRun = process.env.OPRN_LOCAL_TESTS === "1" && process.env.CI !== "true" && process.env.CI !== "1";
+// 호스티드 CI 러너는 로컬보다 느려 빈 프로젝트 전체를 다루는 시험이 15~17초로 15초 경계에 걸려 판마다 흔들렸다
+// (2026-11-25 release-0420: ci-full 45620536375·45675478186·45687718517·45695908317 에서 매번 다른 1~2개). CI 에서만 30초.
+// 단언 실패는 시간과 무관하게 그대로 떨어진다. hookTimeout 은 이미 90초라 그대로 둔다.
+const ciRun = process.env.CI === "true" || process.env.CI === "1";
 
 export default defineConfig({
   // Worktrees often symlink node_modules. Keep their optimizer and result caches local.
@@ -38,7 +42,7 @@ export default defineConfig({
     // 32워커 무리에 섞이면 Chromium 부팅이 준비 마감을 넘겨 늘 이 파일이 회귀로 잡혔다.
     exclude: [...configDefaults.exclude, "test/lakeVillageRebuildFinal.test.ts", "test/**/*.bun.test.ts", "test/**/*.quarantine.test.ts", "test/**/*.browser.test.ts"],
     globals: false,
-    testTimeout: 15_000,
+    testTimeout: ciRun ? 30_000 : 15_000,
     hookTimeout: 90_000,
     silent: true,
   },
