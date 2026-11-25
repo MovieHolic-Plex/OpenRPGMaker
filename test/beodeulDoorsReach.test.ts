@@ -2,7 +2,7 @@
 // 아무도 그 문에 갈 수 없었다). 시공기는 기물을 다 놓은 뒤 입구에서 걸어 보고, 못 닿는 문이 남으면 그 문 앞 주머니를 피해 다시 짓는다(authorBeodeulTown).
 // 닿는지는 시공기의 보고가 아니라 엔진의 걸음(canMove — 통행·단·경사로)으로 따로 번져 본다.
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject, ownTileset } from "./support/blankProject";
 import { ensureBundledTilesets } from "@/project/defaults/defaultAssets";
 import { canMove, isPassable } from "@/project/collision";
 import { runTool } from "@/editor/tools";
@@ -19,6 +19,14 @@ const R5 = { type: "village", name: "물레강 마을", theme: "river", size: "m
   layout: { gather: { x: 17, y: 30 }, landmark: { x: 18, y: 6 }, anchor: { x: 24, y: 28 }, work: { x: 15, y: 22 }, houses: [{ x: 24, y: 20, kind: "medium" }, { x: 32, y: 22, kind: "small" }, { x: 32, y: 32, kind: "large" }, { x: 22, y: 38, kind: "small" }, { x: 30, y: 42, kind: "medium" }],
     fields: [{ x: 17, y: 44 }, { x: 26, y: 45 }], orchards: [{ x: 34, y: 38 }], pastures: [{ x: 30, y: 5 }], forests: [{ x: 36, y: 28 }, { x: 14, y: 12 }], props: [{ x: 20, y: 26 }, { x: 14, y: 33 }], exits: ["east"] }, width: 38, height: 48 } } as unknown as PlaceSpec;
 const R5_KEY = JSON.stringify(["project", "154683ba-d3cf-4df7-93d2-14f4960debac"]);
+
+// 빈 프로젝트는 파일마다 한 번 짓고 번들 타일셋을 동결 공유한다(test/support/blankProject.ts). 버들항 시공기와 이 파일은
+// beodeul_city 타일셋을 제자리에서 고치므로(겉모습 look · 시설 킷 · 접목) 그 하나만 케이스마다 개인 사본으로 바꾼다.
+function createBlankProject(): Project {
+  const project = freshBlankProject();
+  ownTileset(project, "beodeul_city");
+  return project;
+}
 
 function town(args: Record<string, unknown>, key?: string): { project: Project; map: GameMap; data: Data; warnings: string[] } {
   const project = createBlankProject() as Project; ensureBundledTilesets(project);

@@ -7,7 +7,7 @@ import { houseSetCovers, houseSetNames, houseSetTableFor } from "@/assets/houseS
 import { tilesetLookOptions, tilesetLookTableFor } from "@/assets/tilesetLooks";
 import { bundledChipsetFrameCount, BUNDLED_REFERENCE_CHIPSET_ASSETS } from "@/assets/bundled";
 import { bundledChipsetTilesPerRow } from "@/assets/bundledChipsetGeometry";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject, ownTileset } from "./support/blankProject";
 import { houseSetBaseTiles, houseSetKit } from "@/project/houseSetKit";
 import { lookKit, withKitLook, withKitSite, withoutHouseSet } from "@/project/kitLook";
 import { isPassable } from "@/project/collision";
@@ -28,6 +28,14 @@ const KEY = JSON.stringify(["project", "house-set-game"]);
 const lookTable = tilesetLookTableFor(TS)!;
 
 /** 강가 마을 한 판(조수의 마을 도구 그대로 — 집 놓기 · 바닥 꾸밈 · 낮 빛 맞춤까지). look 을 주면 그 겉모습을 미리 적어 고정한다. */
+// 빈 프로젝트는 파일마다 한 번 짓고 번들 타일셋을 동결 공유한다(test/support/blankProject.ts). 버들항 시공기와 이 파일은
+// beodeul_city 타일셋을 제자리에서 고치므로(겉모습 look · 시설 킷 · 접목) 그 하나만 케이스마다 개인 사본으로 바꾼다.
+function createBlankProject(): Project {
+  const project = freshBlankProject();
+  ownTileset(project, "beodeul_city");
+  return project;
+}
+
 function village(look: { houses?: string; plaza?: string } | undefined, key: string | undefined, seed = 4242, extra: Record<string, unknown> = {}): { project: Project; map: GameMap; summary: string } {
   const project = createBlankProject() as Project;
   if (look) project.tilesets[TS]!.look = { textureKey: lookTable.texture, ...look };
