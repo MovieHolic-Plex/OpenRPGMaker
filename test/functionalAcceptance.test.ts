@@ -70,6 +70,7 @@ describe("immutable engine-evaluated functional acceptance", () => {
     expect(ledger.repair("required-0", easier?.[0].criteria)).toMatchObject({ ok: false, code: "immutable-valid" });
     expect(ledger.evaluate(fixture.project).items[0]).toMatchObject({ required: true, evidence: [{ passed: false }] });
   });
+  // 호스티드 ci-full 샤드에서 15초를 넘겼다(ci-full 45675478186 tests (8)) — 기본 15초 대신 60초.
   it("does not verify an unapplied draft or reuse applied proof after a database-only write", () => {
     const fixture = functionalFixture();
     const ledger = ledgerFor(fixture);
@@ -78,7 +79,7 @@ describe("immutable engine-evaluated functional acceptance", () => {
     draft.session.gold = 1;
     expect(ledger.evaluate(fixture.project, draft).items[0].status).toBe("verifying");
     expect(ledger.evaluate(draft).items[0].evidence[0].passed).toBe(false);
-  });
+  }, 60_000);
   it("rejects a fabricated executable or pass field inside a reward requirement", () => {
     const fixture = functionalFixture();
     const criterion = criteriaFor(fixture)[2];

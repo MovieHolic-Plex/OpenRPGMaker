@@ -122,6 +122,7 @@ describe("public technical tile passage capability", () => {
     expect(context.project.maps).toEqual(before.maps);
   });
 
+  // 호스티드 ci-full 샤드에서 15초를 넘겼다(ci-full 45675478186 tests (8)) — 기본 15초 대신 60초.
   it("keeps semantic teaching and superseded painting hidden", () => {
     const names = toOpenAiTools().map(tool => tool.function.name);
     for (const name of [...SEMANTIC_TOOLS, ...LEGACY_PAINT_TOOLS]) {
@@ -138,7 +139,7 @@ describe("public technical tile passage capability", () => {
       const matches = (result.data as { matches: { name: string }[] }).matches;
       expect(matches.map(match => match.name), name).not.toContain(name);
     }
-  });
+  }, 60_000);
 
   it.each([true, false])("dispatches discovered passage=%s through an ordinary detached session", async passable => {
     const project = fixture(!passable);
