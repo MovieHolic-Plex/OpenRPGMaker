@@ -22,6 +22,35 @@ const FIT_SAMPLES_FAST = 10;
 const fitSimCache = new WeakMap<Project, Map<string, ReturnType<typeof simulateBattle>>>();
 
 /**
+ * 끝난 맞춤의 캐시를 그때 내용(데이터베이스·시스템) 열쇠와 함께 남긴다. 끝맺음은 한 턴에 두 번 이상 돈다 — 그 사이 체크포인트가 프로젝트 객체를
+ * 바꿔 WeakMap 캐시가 비고, 둘째 끝맺음이 같은 모의전을 처음부터 다시 돌려 워커 이벤트 루프를 또 막았다(2026-11-25 draft-10min m3 몬스터:
+ * 출구 마감 뒤 청사진 조립까지 80초 무응답이 두 번, 같은 판). 새 객체의 내용이 그 열쇠와 같으면 그 캐시를 이어 쓴다 — 같은 내용이면 결과도 같다(결정적).
+ * 내용이 한 글자라도 다르면 열쇠가 달라 이어 쓰지 않는다.
+ */
+const carriedFitCaches: { key: string; cache: Map<string, ReturnType<typeof simulateBattle>> }[] = [];
+const CARRIED_FIT_CACHES = 4;
+const fitContentKey = (project: Project) => JSON.stringify([project.database, project.system]);
+
+/** 맞춤을 마친 상태의 캐시를 남긴다(applyShipDefaults 가 맞춤 바퀴 뒤에 부른다). */
+export function rememberFitCache(project: Project): void {
+  const cache = fitSimCache.get(project);
+  if (!cache?.size) return;
+  const key = fitContentKey(project);
+  const at = carriedFitCaches.findIndex((entry) => entry.key === key);
+  if (at >= 0) carriedFitCaches.splice(at, 1);
+  carriedFitCaches.push({ key, cache });
+  if (carriedFitCaches.length > CARRIED_FIT_CACHES) carriedFitCaches.shift();
+}
+
+/** 이 프로젝트에 캐시가 없고 내용이 남겨 둔 맞춤 끝 상태와 같으면 그 캐시를 붙인다. */
+function adoptCarriedFitCache(project: Project): void {
+  if (fitSimCache.has(project) || !carriedFitCaches.length) return;
+  const key = fitContentKey(project);
+  const found = carriedFitCaches.find((entry) => entry.key === key);
+  if (found) fitSimCache.set(project, found.cache);
+}
+
+/**
  * 맞춤 시간 예산(벽시계). 끝맺음 한 번이 필수전투 모의전을 수백 초 동기로 돌려 워커 이벤트 루프를 막고, heartbeat 가 멎어 호스트가 300초
  * 무음으로 턴을 끊었다(2026-11-09 monster m3~m9 일곱 판: assembly:ship-defaults 414초 · 프로파일 80% 가 fitRequiredBattlesToStarters 의 simulateBattle,
  * 캐시 키 계산은 0.18초 — 비용은 키가 아니라 모의전 자체). 예산을 넘으면 FitBudgetExceeded 를 던져 맞춤 전체를 «미완» 으로 멈추고, 호출자가
@@ -39,7 +68,7 @@ interface FitBudget { start: number; limitMs: number; /** 단계 한도와 별�
 const fitBudgets = new WeakMap<Project, FitBudget>();
 
 /** 이 프로젝트의 맞춤 예산을 새로 시작한다(끝맺음 한 번 = applyShipDefaults 한 번). 이미 초과한 기록은 지운다. */
-export function beginFitBudget(project: Project, limitMs = FIT_BUDGET_MS): void { fitBudgets.set(project, { start: Date.now(), limitMs, deadline: Date.now() + (limitMs < 0 ? limitMs : FIT_TOTAL_MS), guarded: false, fast: false }); }
+export function beginFitBudget(project: Project, limitMs = FIT_BUDGET_MS): void { adoptCarriedFitCache(project); fitBudgets.set(project, { start: Date.now(), limitMs, deadline: Date.now() + (limitMs < 0 ? limitMs : FIT_TOTAL_MS), guarded: false, fast: false }); }
 
 /** 필수전투 단계의 시작·끝 — 예산 검사는 이 사이에서만 한다. 시작할 때 예산 시계를 새로 켠다(앞 싼 단계의 시간은 세지 않는다). */
 export function guardFitBudget(project: Project, on: boolean): void { const b = fitBudgets.get(project); if (!b) return; b.guarded = on; if (on) { b.start = Date.now(); b.exceededAt = undefined; } }
