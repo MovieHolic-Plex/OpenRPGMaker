@@ -1008,11 +1008,24 @@ function splitReliefLevelCells(map: GameMap, cells: readonly Point[]): { cells: 
   return { cells: kept, skipped: cells.length - kept.length, level: lowest };
 }
 
-const PLAIN_WATER_MATERIAL = /^(물|맑은 물|호수|호수 물|연못|못|물웅덩이|water|lake|pond)$/iu;
-/** 흔한 물 낱말 → 시트의 움직이는 물 오토타일 어휘(animated_terrain 수역). 없으면 null(라벨 검색으로 간다). */
+const PLAIN_WATER_MATERIAL = /^(물|맑은 물|호수|호수 물|연못|못|물웅덩이|강|강물|개울|운하|water|lake|pond|river)$/iu;
+/** 던전 물·용암처럼 role 이 water 여도 「물」 한 마디가 가리키지 않는 수역. */
+const NOT_PLAIN_WATER = /던전|dungeon|용암|lava|독|poison|늪|swamp/iu;
+/**
+ * 흔한 물 낱말 → 시트의 움직이는 물 오토타일 어휘(animated_terrain 수역). 그것이 없는 시트(버들항)는 그 시트의 보통 물(role water,
+ * 던전·용암 아님). 둘 다 없으면 null(라벨 검색으로 간다). 실측(2026-11-25): 버들항에서 「물」·「호수」·「강」이 라벨 검색으로
+ * 「버들항 경작지(물 준 흙)」을 골라 영역에 흙밭을 깔았다.
+ */
 function plainWaterMaterialGroup(tileset: TilesetDef, material: unknown): TileGroupMetadata | null {
   if (typeof material !== "string" || !PLAIN_WATER_MATERIAL.test(material.trim())) return null;
-  return (tileset.tileGroups ?? []).find((group) => group.role === "water" && group.patternGrammar?.kind === "animated_terrain") ?? null;
+  const water = (tileset.tileGroups ?? []).filter((group) => group.role === "water");
+  const fillable = (group: TileGroupMetadata): boolean => {
+    const kind = group.patternGrammar?.kind;
+    return !!autotileGroupForVocab(tileset, group) || kind === "autotile_3x3" || kind === "animated_terrain";
+  };
+  return water.find((group) => group.patternGrammar?.kind === "animated_terrain")
+    ?? water.find((group) => fillable(group) && !NOT_PLAIN_WATER.test(`${group.id} ${group.name}`))
+    ?? null;
 }
 
 const fillRegion: ToolDefinition = {

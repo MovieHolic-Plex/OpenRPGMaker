@@ -301,6 +301,17 @@ describe("fill_region / tile_erase (면 채우기·부분 보호)", () => {
     ]);
   });
 
+  it("버들항: 「물」·「호수」·「강」은 물 준 경작지가 아니라 버들항 물로 채운다", () => {
+    for (const material of ["물", "호수", "강"]) {
+      const ctx: ToolContext = { project: createBlankProject(), currentMapId: "", assistantRun: true };
+      const made = runTool(ctx, "create_map", { name: "물가", width: 30, height: 20, tilesetId: "beodeul_city" });
+      const mapId = (made.data as { mapId: string }).mapId;
+      const result = runTool(ctx, "fill_region", { mapId, rect: { x: 4, y: 4, w: 6, h: 5 }, material, layer: "lower" });
+      expect(result.ok, `${material}: ${result.summary}`).toBe(true);
+      expect((result.data as { groupId: string }).groupId, material).toBe("beodeul:water");
+    }
+  });
+
   it("fill_region shape=circle: 9×9 박스 안 원만 채우고 모서리는 비운다(원형 호수)", () => {
     const { ctx, tileset } = context();
     ctx.project.startPos = { x: 0, y: 0 };
