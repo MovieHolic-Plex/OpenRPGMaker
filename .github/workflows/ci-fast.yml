@@ -60,9 +60,21 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
+      # 부분 체크아웃 (2026-11-25 dev-bottlenecks): 체크아웃이 잡마다 p50 42초였다(2.26GB·9.4만 파일).
+      # 이 잡이 읽지 않는 그림 작업 자료(tiledata·assets/source·harness-data/object-gate·report-assets·verify-shots,
+      # 0.79GB·6만 파일)는 받지 않는다. src·test/parity·vite·public 은 이 경로를 import 하지 않는다.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !/tiledata/
+            !/assets/source/
+            !/harness-data/object-gate/
+            !/report-assets/
+            !/verify-shots/
 
       - uses: ./.github/actions/linux-ci
         with:
@@ -125,9 +137,21 @@ jobs:
       matrix:
         shard: [1, 2]
     steps:
+      # 부분 체크아웃 (2026-11-25 dev-bottlenecks): 체크아웃이 잡마다 p50 42초였다(2.26GB·9.4만 파일).
+      # 이 잡이 읽지 않는 그림 작업 자료(tiledata·assets/source·harness-data/object-gate·report-assets·verify-shots,
+      # 0.79GB·6만 파일)는 받지 않는다. src·test/parity·vite·public 은 이 경로를 import 하지 않는다.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !/tiledata/
+            !/assets/source/
+            !/harness-data/object-gate/
+            !/report-assets/
+            !/verify-shots/
 
       - uses: ./.github/actions/linux-ci
 
