@@ -5,7 +5,8 @@ import {
   mapRegionForContext,
   mapRegionImagePayload,
 } from "@/ai/mapViewportContext";
-import { createBlankMap, createBlankProject } from "@/project/defaults";
+import { createBlankMap } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { buildSystemPrompt } from "@/ai/contextBuilder";
 import { defaultAiConfig } from "@/ai/llmClient";
 import { fixedDeclarer } from "./intentFixture";

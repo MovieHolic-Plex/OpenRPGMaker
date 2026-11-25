@@ -8,7 +8,7 @@ import type { AiRunSurface } from "@/editor/panels/aiRunSurface";
 import { appendConversationBubble } from "@/editor/panels/aiConversationLog";
 import { buildAiActivityLogRecord } from "@/ai/activityLog";
 import * as apply from "@/editor/tools/applyChangesetToStore";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import { clearAgentBlueprint } from "@/editor/agentBlueprint";
 import { clearAgentGhostPreview } from "@/editor/agentGhostPreview";

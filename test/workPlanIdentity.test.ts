@@ -6,7 +6,7 @@ import {
   formatWorkPlanForOrchestration,
   workPlanFromOrchestratorDecision,
 } from "@/ai/workPlan";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { fixedDeclarer } from "./intentFixture";
 
 const items = [

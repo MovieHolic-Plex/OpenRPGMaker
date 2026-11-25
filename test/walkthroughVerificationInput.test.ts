@@ -4,7 +4,7 @@ import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { parseVerificationChecks, ToolVerificationEvidence, verificationInput } from "@/ai/toolVerificationEvidence";
 import { parseOrchestratorDecision, workPlanFromOrchestratorDecision, workPlanFromSetToolArgs } from "@/ai/workPlan";
 import { runTool } from "@/editor/tools";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { validateWalkthroughScenario, type WalkthroughStep } from "@/testing/walkthroughRunner";
 import { verificationEvent } from "./fixtures/verificationOwnership";
 import { fixedDeclarer } from "./intentFixture";
