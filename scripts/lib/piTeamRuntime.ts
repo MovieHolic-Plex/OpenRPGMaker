@@ -216,7 +216,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   const coreFirst = !goalCampaign && isGenrePresetBriefRequest(request.task) && hasPlayableSegmentSkeleton(base)
     && !authoringHarnessFor(base) && !request.readOnly && !options.readOnlyTools;
   // 첫 MVP(빈 프로젝트에서 게임 하나) 팀 실행은 팀원 한 배정의 차례를 줄인다(FIRST_MVP_MEMBER_TURNS) — 뼈대 작업 하나가 15분을 먹고 맵 담당이 그 뒤에야 돌았다.
-  const firstMvpTeam = !goalCampaign && !coreFirst && !isGenrePresetBriefRequest(request.task) && !request.readOnly && !options.readOnlyTools && firstMvpRoute(base, request.task).firstMvp;
+  // 엄격한 맵 범위(mapIds + scopeStrict)는 프로젝트 전체를 쓰지 않는다 — 프로젝트 작업 배정 거절과 같은 경계라 build_world 도 주지 않는다.
+  const firstMvpTeam = !goalCampaign && !coreFirst && !isGenrePresetBriefRequest(request.task) && !request.readOnly && !options.readOnlyTools
+    && !(request.scopeStrict !== false && request.mapIds.length > 0) && firstMvpRoute(base, request.task).firstMvp;
   let firstPlay: FirstPlayReceipt | undefined;
   let reviewedFirstPlay: string | undefined;
   let reviewedFirstScene: string | undefined;
