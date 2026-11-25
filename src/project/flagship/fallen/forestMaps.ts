@@ -43,7 +43,7 @@ export interface FallenForestHelpers {
 
 function tool(project: Project, name: string, args: Record<string, unknown>): { data?: unknown; warnings?: unknown } {
   const ctx = { project, assistantRun: false };
-  const res = runTool(ctx, name, args, { dryRun: false });
+  const res = runTool(ctx, name, args, { dryRun: false, advisory: false }); // 조언(diff·scene-*)은 읽지 않는다 — 굽기 시간 단축
   if (!res.ok) throw new Error(`[fallen-forest] ${name} failed: ${res.summary} ${JSON.stringify(res.issues ?? [])}`);
   Object.assign(project, ctx.project);
   return res as { data?: unknown; warnings?: unknown };

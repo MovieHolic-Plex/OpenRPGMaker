@@ -23,12 +23,29 @@ const escapeRegExp = (text) => text.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
 // 세트 안에서도 대사 감정이 자동으로 고르는 다섯 표정(SHARED_PORTRAIT_DIALOGUE_EXPRESSIONS)과 데모가 이름으로 부른 표정만 남긴다.
 // 흉상↔전신은 프리셋이 서로 바꿔 부르므로 두 모양을 함께 남긴다. 나머지는 처음 보일 때 받는다.
 const DIALOGUE_EXPRESSIONS = new Set(["base", "happy", "sad", "angry", "surprised"]);
+// 세트(폴더)마다 데모 글을 두 번만 훑는다. 예전에는 초상 파일(2,685장)마다 약 60MB 데모 글에 정규식 두 개를 새로 만들어 돌려
+// 릴리스 단계가 약 3분 걸렸다(2026-11-25 dev-bottlenecks, v0.419 run 45420794518). 판정은 같다:
+// ① 세트를 쓰는가는 같은 정규식 ② 이름으로 부른 표정은 `<세트>-(bust|full)-<표정>"` 를 한 번에 모아 집합으로 본다(표정에는 " 가 없다).
+const portraitSets = new Map();
+const portraitSetUse = (folder, demos) => {
+  let byText = portraitSets.get(demos);
+  if (!byText) { byText = new Map(); portraitSets.clear(); portraitSets.set(demos, byText); }
+  let use = byText.get(folder);
+  if (!use) {
+    const set = escapeRegExp(`shared-${folder}-expressions`);
+    const used = new RegExp(`${set}-(?:bust|full)-|"(?:face|portrait)[A-Za-z]*Id":"${set}`, "u").test(demos);
+    const named = new Set(used ? [...demos.matchAll(new RegExp(`${set}-(?:bust|full)-([^"]*)"`, "gu"))].map((m) => m[1]) : []);
+    use = { used, named };
+    byText.set(folder, use);
+  }
+  return use;
+};
 const portraitUsedByDemo = (rel, demos) => {
   const [, , , folder = "", file = ""] = rel.split("/");
-  const set = escapeRegExp(`shared-${folder}-expressions`);
-  if (!new RegExp(`${set}-(?:bust|full)-|"(?:face|portrait)[A-Za-z]*Id":"${set}`, "u").test(demos)) return false;
+  const use = portraitSetUse(folder, demos);
+  if (!use.used) return false;
   const expression = file.replace(/^(?:bust|full)-/u, "").replace(/\.png$/u, "");
-  return DIALOGUE_EXPRESSIONS.has(expression) || new RegExp(`${set}-(?:bust|full)-${escapeRegExp(expression)}"`, "u").test(demos);
+  return DIALOGUE_EXPRESSIONS.has(expression) || use.named.has(expression);
 };
 export const ONDEMAND_RULES = [
   { prefix: "assets/shared/portraits/", match: (rel) => rel.endsWith(".png"), usedByDemo: portraitUsedByDemo },

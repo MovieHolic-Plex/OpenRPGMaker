@@ -91,7 +91,7 @@ export interface WoodResult {
 
 function tool(project: Project, name: string, args: Record<string, unknown>): void {
   const ctx = { project, assistantRun: false };
-  const res = runTool(ctx, name, args, { dryRun: false });
+  const res = runTool(ctx, name, args, { dryRun: false, advisory: false }); // 조언(diff·scene-*)은 읽지 않는다 — 굽기 시간 단축
   if (!res.ok) throw new Error(`[fallen-woodland] ${name} failed: ${res.summary} ${JSON.stringify(res.issues ?? []).slice(0, 400)}`);
   Object.assign(project, ctx.project);
 }

@@ -54,6 +54,12 @@ import { assertHouseProtection, captureHouseProtection, newlyBuiltHouseSnapshots
 
 export interface RunToolOptions {
   readonly dryRun?: boolean;
+  /**
+   * false 면 프로젝트를 바꾸지 않는 조언 단계(변경 요약 diff, 장면 다듬기 scene-* 경고)를 건너뛴다. 기본 true.
+   * 결과를 읽지 않고 프로젝트만 쓰는 데모 굽기용이다(2026-11-25 dev-bottlenecks 프로파일: chrono-bell 굽기 940초 중
+   * newScenePolishIssues 169초·summarizeChanges 41초). 커밋 거부 검사(commitChangeset)는 그대로 돈다.
+   */
+  readonly advisory?: boolean;
 }
 
 /**
@@ -657,9 +663,10 @@ export function runToolDefinition(
     }
     // 지연 타일셋 사전을 확정한다 — 아래 비교·커밋은 모든 타일셋을 훑으므로, 확정 전이면 전부 복제된다.
     finishDraftTilesets(draft);
-    const diff = summarizeChanges(before, draft);
-    if (exec.warnings) diff.warnings.push(...exec.warnings);
-    if (treeRepairNote) diff.warnings.push(treeRepairNote);
+    const advisory = options.advisory !== false;
+    const diff = advisory ? summarizeChanges(before, draft) : undefined;
+    if (diff && exec.warnings) diff.warnings.push(...exec.warnings);
+    if (diff && treeRepairNote) diff.warnings.push(treeRepairNote);
 
     // baseline(before)을 넘겨 "이 변경이 새로 만든" 오류만 커밋을 막는다 — 선재 오류 프로젝트 편집 허용.
     // 타일 도구는 호출마다 프로젝트를 통째로 직렬화하고 모든 맵의 클러스터 규칙을 다시 훑었다.
@@ -685,10 +692,10 @@ export function runToolDefinition(
       commitCarried(ctx, carried.next, { project: draft, mapId: normalizedArgs.mapId, data: exec.data });
     }
     const postTile = verifyPostTilePlacement(draft, { name, args: normalizedArgs, data: exec.data });
-    if (postTile.length > 0) diff.warnings.push(...postTile.map((issue) => issue.message));
+    if (diff && postTile.length > 0) diff.warnings.push(...postTile.map((issue) => issue.message));
     // 장면 다듬기(scene-*): 이번 변경이 새로 만든 것만 — 앞에 싣는다(모델에는 issues 앞 8건만 간다). 규칙은 game-scene-polish 스킬.
-    const scene = tool.mode === "write" ? safeScenePolish(before, draft) : [];
-    if (scene.length > 0) diff.warnings.push(...scene.map((issue) => issue.message));
+    const scene = advisory && tool.mode === "write" ? safeScenePolish(before, draft) : [];
+    if (diff && scene.length > 0) diff.warnings.push(...scene.map((issue) => issue.message));
     const issues = [...(exec.issues ?? []), ...scene, ...commit.issues, ...postTile];
     const summary = treeRepairNote ? `${exec.summary} · ${treeRepairNote}` : exec.summary;
     return {
