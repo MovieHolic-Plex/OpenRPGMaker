@@ -107,14 +107,20 @@
 .canvas-region-result-warnings {
   align-items: center;
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
 }
 
+/* 좁은 캔버스(390 폭)에서 경고가 카드 높이를 다 먹지 않게 두 줄까지만 — 전문은 title. */
 .canvas-region-result-warning-text {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   color: var(--warning);
-  flex: 1 1 auto;
+  display: -webkit-box;
+  flex: 1 1 140px;
   font: 500 12px/1.35 var(--font-ui);
   min-width: 0;
+  overflow: hidden;
 }
 
 .canvas-region-result-fix {
