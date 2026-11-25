@@ -31,17 +31,7 @@ describe("canonical requirements", () => {
     expect(result).toMatchObject({ requirements: [{ id: "size", required: true }], layers: [{ items: [{ requirementIds: ["size"] }] }] });
   });
 
-  it("keeps a bare legacy scheduler plan unassessed", async () => {
-    // Given an actual legacy payload with neither new declarations nor scheduler links.
-    const f = fixture();
-    const legacy = plan();
-    expect(legacy.args).not.toHaveProperty("requirements");
-    expect(legacy.args).not.toHaveProperty("layers.0.items.0.requirementIds");
-    // When the plan is skipped; then no assessment is fabricated.
-    await f.run([[legacy, skip]]);
-    expect(f.session.getAcceptanceSnapshot()).toBeNull();
-  });
-
+  // Removed it "keeps a bare legacy scheduler plan unassessed": it only asserted getAcceptanceSnapshot() is null, which is always true since the acceptance ledger was removed on 2026-09-17 (see below).
   // Removed it "assesses existing explicit acceptance without requiring the new field": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
   // Removed it "retains an unlinked required obligation when replan drops links=%s": the acceptance ledger was removed on purpose on 2026-09-17 ("assistant: 수용 원장(acceptance ledger)을 만들지 않는다"; getAcceptanceSnapshot is always null).
 

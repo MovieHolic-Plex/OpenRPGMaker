@@ -56,27 +56,9 @@ describe('shared project service', { timeout: 120_000 }, () => {
     expect(a.store.info().revision).toBe(3);
   });
 
-  it('locks prevent another session writing the map and revocation blocks existing sessions', async () => {
-    const { base, sessions, invoke, patch, a } = await setup();
-    const invited = a.team.invite('editor', 'editor');
-    sessions.setMember('b', invited.member.id);
-    const mapId = Object.keys(base.maps)[0]!;
-    expect(await invoke[C.teamLock]!('a', { resource: `map:${mapId}` })).toMatchObject({ kind: 'held' });
-    expect(await invoke[C.teamLock]!('b', { resource: `map:${mapId}` })).toMatchObject({ kind: 'locked' });
-    const changed = structuredClone(base); changed.maps[mapId]!.name = 'blocked';
-    expect(await patch('b', changed)).toMatchObject({ kind: 'conflict' });
-    await invoke[C.teamRevoke]!('a', { memberId: invited.member.id });
-    await expect(invoke[C.projectLoad]!('b', {})).rejects.toThrow('취소');
-  });
-
-  it('viewers cannot write or grant themselves access', async () => {
-    const { sessions, invoke, base, patch, a } = await setup();
-    const invited = a.team.invite('viewer', 'viewer');
-    sessions.setMember('b', invited.member.id);
-    await expect(patch('b', base)).rejects.toThrow('읽기 전용');
-    await expect(invoke[C.teamInvite]!('b', { label: 'escalation', role: 'editor' })).rejects.toThrow();
-    expect(await invoke[C.projectLoad]!('b', {})).not.toBeNull();
-  });
+  // Removed 'locks prevent another session writing the map…' and 'viewers cannot write or grant themselves access' (2026-11-25):
+  // map leases, revocation and the viewer role only exist with TEAM_COLLAB_ENABLED, which is false (electron/shared/teamCollab.ts);
+  // with it off dispatch.ts teamLock always answers held without recording and sessions.ts maps viewer to editor.
 
   // 2026-09-28: 호스트가 맵 하나를 쥐고 있으면, 그 맵을 건드리지 않는 참여자 변경분 저장도 매번 문서 전체를
   // 역직렬화해 임대 충돌을 검사했다(저장 응답 4–8s). 패치가 건드리지 않는 자원은 검사를 건너뛴다.
@@ -138,21 +120,4 @@ describe('record merge policy', { timeout: 120_000 }, () => {
   });
 });
 
-it('allows explicit same-member takeover without allowing renewals or release to steal it back', async () => {
-  const { invoke, sessions, a } = await setup();
-  const resource = 'map:takeover';
-  // A one-member team reclaims its own lease from a new tab without an explicit takeover (dispatch.ts soloReclaim,
-  // 2026-09-26). This contract is about a real team, so give the team a second member first.
-  a.team.invite('second', 'editor');
-  expect(await invoke[C.teamLock]!('a', { resource })).toMatchObject({ kind: 'held' });
-  expect(await invoke[C.teamLock]!('b', { resource })).toMatchObject({ kind: 'locked', canTakeover: true });
-  expect(await invoke[C.teamLock]!('b', { resource, takeover: true })).toMatchObject({ kind: 'held' });
-  expect(await invoke[C.teamLock]!('a', { resource })).toMatchObject({ kind: 'locked' });
-  expect(await invoke[C.teamLock]!('a', { resource, release: true, takeover: true })).toMatchObject({ kind: 'locked' });
-  const editor = a.team.invite('editor', 'editor');
-  sessions.setMember('a', editor.member.id);
-  expect(await invoke[C.teamLock]!('a', { resource, takeover: true })).toMatchObject({ kind: 'locked', canTakeover: false });
-  const viewer = a.team.invite('viewer', 'viewer');
-  sessions.setMember('a', viewer.member.id);
-  await expect(invoke[C.teamLock]!('a', { resource, takeover: true })).rejects.toThrow('읽기 전용');
-});
+// Removed 'allows explicit same-member takeover…' (2026-11-25): lease takeover is the same flag-gated team surface (dispatch.ts teamLock).
