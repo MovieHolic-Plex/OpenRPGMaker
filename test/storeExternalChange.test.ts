@@ -2,7 +2,7 @@
 // 코딩 에이전트(바깥 프로세스)가 열린 프로젝트를 저장했을 때 편집기 반영 계약 — openwiki/agent-direct-edit.md.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getMapEditHistoryState, recordProjectSnapshot, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import type { Project } from "@/project/types";
 import { installMemoryProjectSession, type MemoryProjectSession } from "./support/projectSession";

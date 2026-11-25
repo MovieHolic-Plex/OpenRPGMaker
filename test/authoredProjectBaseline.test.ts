@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { AuthoredProjectBaseline } from "@/project/authoredProjectBaseline";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import type { Project } from "@/project/types";
 import { store } from "@/project/store";
 import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";

@@ -1,7 +1,7 @@
 import { validateMapClimateInput } from '@/editor/tools/combatAuthoringValidation';
 import { getTool } from '@/editor/tools/toolRegistry';
 import { describe, expect, it } from 'vitest';
-import { createBlankProject } from '@/project/defaults';
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { deserialize, serialize } from '@/project/io';
 import { runTool } from '@/editor/tools/toolRunner';
 import type { ToolContext } from '@/editor/tools/types';

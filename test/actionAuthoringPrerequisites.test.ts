@@ -3,7 +3,7 @@ import { ACTION_TOOLS } from "@/editor/tools/actionTools";
 import { runTool } from "@/editor/tools/toolRunner";
 import { toOpenAiTools } from "@/editor/tools/toolRegistry";
 import type { ToolContext } from "@/editor/tools/types";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { resolveActionCombatConfig } from "@/project/actionCombat";
 
 function fixture() {

@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { join, relative, resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { deserialize, serialize } from "@/project/io";
 import {
   OFFICIAL_GENRE_PACK_IDS,

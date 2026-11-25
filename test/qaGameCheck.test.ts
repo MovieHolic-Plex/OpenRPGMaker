@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { runGameCheck } from "@/qa/gameCheck";
 import { endingGoal, planCriticalPath } from "@/qa/gameCheck/autoPlay";
 import { allPages, visitPageCommands, type CommandVisit } from "@/qa/gameCheck/walk";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { deserialize, serialize } from "@/project/io";
 import { runSceneTest } from "@/testing/sceneTestRunner";
 import type { Command, Project } from "@/project/types";

@@ -5,7 +5,7 @@ import { DB_TOOLS } from "@/editor/tools/dbTools";
 import { giveMonster } from "@/project/monsterCollection";
 import { startSession } from "@/project/session";
 import { PLAY_TOOLS } from "@/editor/tools/playTools";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import type { Command, GameEvent } from "@/project/types";
 import { buildObjectGenRequest } from "@/editor/tools/objectGenTool";
 import { createHeadlessBlankProject } from "@/headless";
