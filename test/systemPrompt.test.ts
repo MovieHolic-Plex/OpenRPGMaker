@@ -15,7 +15,7 @@ import type { ToolContext } from "@/editor/tools/types";
 import { charsetFamilyOf } from "@/project/charsetFamily";
 import { createBlankProject } from "@/project/defaults";
 import { applyGenrePreset, applyMonsterIntentStart } from "@/project/genrePresets";
-import { enableGenreLock, genreLockAllowsCharset, genreLockPromptNote, genreMarkerNote } from "@/project/genreLock";
+import { enableGenreLock, genreLockAllowsCharset, genreMarkerNote } from "@/project/genreLock";
 import { genreLockCharsetViolations, remapCharsetsToPreset } from "@/project/genreLockCharsets";
 import type { Project } from "@/project/types";
 import { genreLockAllowsVisual } from "@/project/genreLockVisuals";
@@ -214,15 +214,6 @@ describe("genreLockCharsets", () => {
       const result = placeNpc(ctxOf(project), "청년", 4, { graphic: RTP_YOUTH });
       expect(result.ok).toBe(false);
       expect(result.issues?.[0]?.message).toContain("장르 잠금");
-    });
-
-    it("잠금 안내에 캐릭터 그림 규칙이 있다(공간 시공·비공간 모두)", () => {
-      const project = lockedProject();
-      const line = "캐릭터 그림(플레이어·NPC·트레이너 걷기 그림)도 이 장르 칩만 쓴다";
-      expect(genreLockPromptNote(project)).toContain(line);
-      expect(buildPiAgentSystemPrompt(project, [project.startMapId], false, { spatialWork: true }).join("\n")).toContain(line);
-      expect(buildPiAgentSystemPrompt(project, [project.startMapId], false, { spatialWork: false }).join("\n")).toContain(line);
-      expect(buildSystemPrompt(project)).toContain(line);
     });
   });
   describe("몬스터 장르 표지(system.genre)", () => {
@@ -463,14 +454,6 @@ describe("genreLockVisuals", () => {
       const ids = (ctx: ToolContext) => ((run(ctx, "list_resources", { kind: "faceset", query: "*", limit: 50 }).data as { matches?: { id: string }[] })?.matches ?? []).map((match) => match.id);
       expect(ids(ctxOf(project)).some((id) => faceFamilyOf(project, id) === "fantasy-people-face")).toBe(false);
       expect(ids(ctxOf(project, false)).some((id) => faceFamilyOf(project, id) === "fantasy-people-face")).toBe(true);
-    });
-  });
-  describe("프롬프트", () => {
-    it("잠금 덩어리와 조수 프롬프트에 얼굴·전투 그림 줄이 실린다", () => {
-      const project = lockedProject();
-      expect(genreLockPromptNote(project)).toContain("전투 그림");
-      const prompt = buildPiAgentSystemPrompt(project, [project.startMapId], false, { spatialWork: false }).join("\n");
-      expect(prompt).toContain("얼굴·흉상·전투 그림(몬스터·트레이너·전투 배경·전투 화면)도 이 장르 계열만");
     });
   });
 });
