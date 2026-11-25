@@ -5,7 +5,7 @@ import { reassembleSelectedProposalProject } from "@/editor/panels/aiChatPanel";
 import { resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
 import { runTool, type ToolContext } from "@/editor/tools";
 import { applyProposedProject, captureProposalBase } from "@/editor/tools/applyChangesetToStore";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { deserialize, serialize } from "@/project/io";
 import { store } from "@/project/store";
 import type { ChatResult } from "@/ai/llmClient";

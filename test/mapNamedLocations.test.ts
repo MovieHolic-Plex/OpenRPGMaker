@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 

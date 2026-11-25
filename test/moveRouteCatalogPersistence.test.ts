@@ -10,7 +10,7 @@ import {
   defaultRouteSoundId,
   type MoveRouteCommandContext,
 } from "@/editor/panels/eventEditor/moveRouteCommandCatalog";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { collectResourceIds } from "@/project/io/resourceReferenceValidation";
 import { deserialize, serialize } from "@/project/io/serialize";
 import type { EventPage, GameEvent, MoveCommand, Project } from "@/project/types";

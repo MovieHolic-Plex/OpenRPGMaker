@@ -16,7 +16,7 @@ import {
 } from "@/ai/llmClient";
 import { resolveAutonomy, type AutonomyLevel } from "@/ai/autonomyLevels";
 import { AssistantSession } from "@/ai/assistantSession";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 
 let configStore: Map<string, string>;
 

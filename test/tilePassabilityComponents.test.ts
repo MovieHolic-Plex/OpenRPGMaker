@@ -7,7 +7,8 @@
 import { describe, expect, it } from "vitest";
 import { findChasePath, nearestReachableCandidate, type ChasePoint } from "@/player/chaseAi";
 import { canMove } from "@/project/collision";
-import { createBlankMap, createBlankProject, TILE } from "@/project/defaults";
+import { createBlankMap, TILE } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import {
   armTerrainComponents,
   invalidateTilePassabilityComponents,

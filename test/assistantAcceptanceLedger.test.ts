@@ -4,7 +4,7 @@ import { parseAcceptanceCriteria } from "@/ai/assistantAcceptance";
 import { parseIntentDeclaration, type IntentFacts } from "@/ai/intentDeclaration";
 import { ToolVerificationEvidence } from "@/ai/toolVerificationEvidence";
 import { isWorkPlanComplete, skipWorkItemById, workPlanFromSetToolArgs } from "@/ai/workPlan";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject, ownTileset } from "./support/blankProject";
 import { runSceneTest } from "@/testing/sceneTestRunner";
 import { IDBFactory } from "fake-indexeddb";
 import { resetAiRecordDbForTest, writeAiRecords } from "@/ai/aiRecordDb";
@@ -270,7 +270,7 @@ describe("aiRunReconciliation", () => {
   it("restores an authored change to a bundled tileset from the compact baseline", async () => {
     const project = makeProject();
     const tilesetId = project.maps[project.startMapId]!.tilesetId;
-    const tileset = project.tilesets[tilesetId]!;
+    const tileset = ownTileset(project, tilesetId); // 공유 타일셋은 동결 — 고칠 이 하나만 개인 사본
     tileset.tileMeta![0] = { ...tileset.tileMeta![0]!, label: "Authored tile label" };
     await saveRunCheckpoint(fixture(project));
     const readback = await read();
