@@ -46,6 +46,22 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      # 수동 실행은 고른 판의 머리로 옮긴다(그 머리의 import 그래프로 봐야 한다). 그 머리에 이 스크립트가 없으면 지금 것을 쓴다.
+      - name: 고른 판의 머리로
+        if: github.event_name == 'workflow_dispatch' && inputs.run != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.run }}
+        run: |
+          set -euo pipefail
+          sha=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID" --jq .head_sha)
+          mkdir -p "$RUNNER_TEMP/tool/lib"
+          cp scripts/ci-full-blame.mjs scripts/ci-full-diff.mjs "$RUNNER_TEMP/tool/"
+          cp scripts/lib/testImportGraph.mjs scripts/lib/releaseGate.mjs "$RUNNER_TEMP/tool/lib/"
+          git checkout -q "$sha"
+          for f in ci-full-blame.mjs ci-full-diff.mjs; do cp "$RUNNER_TEMP/tool/$f" "scripts/$f"; done
+          cp "$RUNNER_TEMP/tool/lib/"*.mjs scripts/lib/
+
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 24

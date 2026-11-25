@@ -132,8 +132,8 @@ function post(repo, rows, diff) {
     console.log(`이슈 #${issue}: ${url}`);
   } else console.log(`이슈 #${issue} 이미 있음 — 건너뜀`);
   for (const entry of groupByPr(rows)) {
-    const comments = ghJson(["api", `repos/${repo}/issues/${entry.pr}/comments?per_page=100`, "--jq", "[.[].body]"]) ?? [];
-    if (comments.some((body) => body.includes(marker))) {
+    const bodies = gh(["api", "--paginate", `repos/${repo}/issues/${entry.pr}/comments?per_page=100`, "--jq", ".[].body | @json"]).split("\n").filter(Boolean).map((line) => JSON.parse(line));
+    if (bodies.some((body) => body.includes(marker))) {
       console.log(`#${entry.pr} 에 이미 댓글 있음 — 건너뜀`);
       continue;
     }
@@ -156,7 +156,8 @@ function main(argv) {
   if (diff.error) throw new Error(`대조 실패: ${diff.error}`);
   const commits = rangeCommits(diff.baseline.headSha, diff.candidate.headSha);
   const graph = loadRepoGraph(process.cwd());
-  const rows = blameFailures(diff.newFailures, commits, graph.forward, MAX_CANDIDATES_PER_TEST, graph.sources);
+  // 기준 판에서 돌지 않은 시험(새 시험 파일 등)의 실패도 이번 판에서 처음 보인 실패다.
+  const rows = blameFailures([...new Set([...diff.newFailures, ...(diff.notInBaseline ?? [])])], commits, graph.forward, MAX_CANDIDATES_PER_TEST, graph.sources);
   const report = { run: diff.candidate, baseline: diff.baseline, commits: commits.length, rows, prs: groupByPr(rows) };
   console.log(`ci-full-blame: run ${diff.candidate.id} vs ${diff.baseline.id} — 새 실패 ${rows.length}개, 범위 커밋 ${commits.length}개, 댓글 대상 PR ${report.prs.length}개`);
   for (const row of rows) console.log(`  ${row.test} ← ${row.candidates.map((candidate) => `${candidate.pr ? `#${candidate.pr}` : candidate.sha.slice(0, 9)}(${candidate.distance}: ${candidate.touched[0]})`).join(", ") || "후보 없음"}`);
