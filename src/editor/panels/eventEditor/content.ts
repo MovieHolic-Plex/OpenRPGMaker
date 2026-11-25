@@ -558,11 +558,23 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       },
     },
   });
+  // 목업 v2: 쉬움·보통에서는 왼쪽 설정 칸 대신 「누구(모습)」·「언제(시작 방식)」를 페이지 줄 앞 칩으로 옮긴다.
+  // 노드를 옮기므로 처리기는 그대로다. 나머지 설정(조건·우선순위 등)은 고급 보기에 있다.
+  const whoWhen = sceneLevel
+    ? el("div", {
+        class: "event-scene-who-when",
+        dataset: { testid: "event-scene-who-when" },
+        children: ["event-classic-graphic", "event-classic-trigger"]
+          .map((testId) => pageSettings.querySelector<HTMLElement>(`[data-testid="${testId}"]`))
+          .filter((node): node is HTMLElement => node !== null),
+      })
+    : null;
   section.append(
     el("div", {
       class: "event-editor-pagebar",
       dataset: { pageCount: String(pages.length), testid: "event-editor-pagebar" },
       children: [
+        ...(whoWhen ? [whoWhen] : []),
         // 목업 v2: 쉬움은 「때」, 보통은 「상태」 머리말 뒤에 페이지 탭. 고급은 지금처럼 펼치기 단추.
         ...(sceneLevel
           ? [el("span", {
