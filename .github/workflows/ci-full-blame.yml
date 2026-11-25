@@ -22,6 +22,11 @@ on:
         description: "기준 run id (비우면 그 전의 main 판)"
         required: false
         type: string
+      post:
+        description: "댓글·이슈를 단다 (끄면 대상만 요약에 찍는다 — 배선 확인용)"
+        required: false
+        type: boolean
+        default: true
 
 concurrency:
   group: ci-full-blame-${{ github.event.workflow_run.id || inputs.run || github.run_id }}
@@ -71,9 +76,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RUN_ID: ${{ github.event.workflow_run.id || inputs.run }}
           BASELINE_ID: ${{ inputs.baseline }}
+          POST: ${{ github.event_name != 'workflow_dispatch' || inputs.post }}
         run: |
           set -euo pipefail
-          args=(--out "$RUNNER_TEMP/blame.json" --post)
+          args=(--out "$RUNNER_TEMP/blame.json")
+          if [ "${POST:-true}" != "false" ]; then args+=(--post); fi
           if [ -n "${RUN_ID:-}" ]; then args+=(--run "$RUN_ID"); fi
           if [ -n "${BASELINE_ID:-}" ]; then args+=(--baseline "$BASELINE_ID"); fi
           node scripts/ci-full-blame.mjs "${args[@]}" | tee "$RUNNER_TEMP/blame.log"
