@@ -21,6 +21,7 @@ function asStoredJson(project: Project): unknown {
 }
 
 describe("planMapPatch", () => {
+  // 호스티드 러너에서 단독으로도 15~17초 걸린다(ci-vitest-files 45671861464, ci-full 45620536375) — 기본 15초 대신 60초.
   it("비겹침 편집은 후보를 만들고 후보에 최신본의 다른 맵이 남는다", async () => {
     const base = createScarloxyDemoProject();
     const [mineId, theirsId] = mapIds(base);
@@ -37,7 +38,7 @@ describe("planMapPatch", () => {
     expect(plan.mergedProject.maps[theirsId]?.name).toBe("남의 맵");
     expect(plan.wire.serialized).toBe(serialize(plan.mergedProject));
     expect(plan.wire.sha256).toMatch(/^[0-9a-f]{64}$/);
-  });
+  }, 60_000);
 
   it("같은 맵의 다른 편집은 충돌이다", async () => {
     const base = createScarloxyDemoProject();

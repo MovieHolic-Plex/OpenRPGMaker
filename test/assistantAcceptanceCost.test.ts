@@ -36,6 +36,7 @@ describe("bounded canonical project comparisons", () => {
     expect(snapshot.items.map(item => item.status)).toEqual([expected, expected, expected]);
   });
 
+  // 호스티드 러너에서 단독으로도 15~17초 걸린다(ci-vitest-files 45671861464, ci-full 45620536375) — 기본 15초 대신 60초.
   it("does not compare or clone an unrelated editor update without authority or verifier evidence", () => {
     // Given a session that has never established an assessment or observed verification.
     const f = fixture();
@@ -49,5 +50,5 @@ describe("bounded canonical project comparisons", () => {
     expect(fingerprints).not.toHaveBeenCalled();
     expect(clones).not.toHaveBeenCalled();
     expect(f.session.getAcceptanceSnapshot()).toBeNull();
-  });
+  }, 60_000);
 });

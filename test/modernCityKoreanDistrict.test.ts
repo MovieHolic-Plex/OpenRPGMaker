@@ -56,6 +56,7 @@ describe("Korean district materials and saved streets", () => {
     expect(isPassable(project, map, 2, 15)).toBe(false);
   });
 
+  // 호스티드 러너에서 단독으로도 15~17초 걸린다(ci-vitest-files 45671861464, ci-full 45620536375) — 기본 15초 대신 60초.
   it("uses a named district for a new place and preserves a pre-district street on rebuild", () => {
     const project = createBlankProject();
     const run = () => createBuildRun({ project, currentMapId: project.startMapId });
@@ -68,7 +69,7 @@ describe("Korean district materials and saved streets", () => {
     expect(rebuilt.ok, rebuilt.summary).toBe(true);
     expect(rebuilt.calls.find(c => c.tool === "compose_modern_city_street")!.args).not.toHaveProperty("district");
     expect(rebuilt.state).toEqual({ seed: 3 });
-  });
+  }, 60_000);
 });
 
 /**
