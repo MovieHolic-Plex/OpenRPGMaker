@@ -1,7 +1,8 @@
 import { TILE } from "@/project/defaults/constants";
 import { isLakeAutotileTile } from "@/project/defaults/lakeAutotile";
 import { isRoadTile } from "@/project/defaults/roadAutotile";
-import type { GameMap } from "@/project/types";
+import type { GameMap, Project } from "@/project/types";
+import { readTileset } from "@/project/lazyTilesetRead";
 
 /**
  * 맵을 넓힐 때 새로 생기는 아래층(lowerTiles) 칸을 채우는 규칙 — 기본 타일이 쭉 이어지게 한다.
@@ -31,7 +32,8 @@ export function mapBaseGroundTile(map: GroundFillSource, isFeature: (tile: numbe
 }
 
 export function groundFeaturePredicate(map: Pick<GameMap, "tilesetId">, tilesets: Record<string, unknown> | undefined): (tile: number) => boolean {
-  const tileset = tilesets?.[map.tilesetId] as Parameters<typeof isLakeAutotileTile>[1];
+  // 읽기만 한다 — 도구 초안의 지연 타일셋을 복제하지 않는다(lazyTilesetRead.ts).
+  const tileset = (tilesets ? readTileset(tilesets as Project["tilesets"], map.tilesetId) : undefined) as Parameters<typeof isLakeAutotileTile>[1];
   return (tile) => isRoadTile(tile) || isLakeAutotileTile(tile, tileset);
 }
 

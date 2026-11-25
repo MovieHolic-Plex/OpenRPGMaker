@@ -2,6 +2,7 @@
 // 규칙: ① 기존 맵을 고치면 그 맵의 칩셋이 어댑터를 정한다. ② 새 맵이면 장르가 정한다(pokemon → 몬스터 키트, rpg → 버들항).
 // ③ 어댑터가 그 종류를 못 지으면 거절(가장 가까운 지원 종류를 권한다). 다른 칩셋으로 조용히 갈아타지 않는다.
 import type { Project, TilesetDef } from "@/project/types";
+import { readTileset } from "@/project/lazyTilesetRead";
 import { createMonsterKitTileset } from "@/project/defaults/monsterKit";
 import { DungeonComposeError } from "./errors";
 import { adapterCaps, adapterIdForTileset, adapterSupports, refusalMessage, type AdapterId } from "./capabilities";
@@ -41,8 +42,13 @@ export interface RouteArgs {
 const isType = (v: unknown): v is DungeonType => typeof v === "string" && (DUNGEON_TYPES as readonly string[]).includes(v);
 
 /** 프로젝트 안에서 몬스터 시트를 찾는다(그룹으로 알아본다). 없으면 번들에서 만들 사본을 돌려준다(몬스터 칩셋 계열 프로젝트만). */
+// 라우터는 타일셋을 읽기만 한다(고르고 id 를 돌려준다) — 도구 초안의 지연 타일셋을 복제하지 않고 읽는다(lazyTilesetRead.ts).
+// Object.values(project.tilesets) 는 모든 타일셋을 깊게 복제해 던전 하나 짓기마다 수 초를 썼다(2026-11-25 draft-10min JRPG 재생).
+const tilesetOf = (project: Project, id: string) => readTileset(project.tilesets, id);
+const allTilesets = (project: Project) => Object.keys(project.tilesets).map((id) => readTileset(project.tilesets, id)).filter((t): t is TilesetDef => !!t);
+
 function monsterSheetFor(project: Project, sheet: MonsterSheet): { ts: TilesetDef; add?: TilesetDef } | null {
-  const all = Object.values(project.tilesets);
+  const all = allTilesets(project);
   const found = all.find((t) => isMonsterSheet(t, sheet));
   if (found) return { ts: found };
   try {
@@ -60,15 +66,15 @@ export function routeDungeon(project: Project, args: RouteArgs): DungeonRoute {
   let adapter: AdapterId;
   const map = args.mapId ? project.maps[args.mapId] : undefined;
   if (args.adapter === "beodeul" || args.adapter === "monster") adapter = args.adapter;
-  else if (map) adapter = adapterIdForTileset(project.tilesets[map.tilesetId]);
+  else if (map) adapter = adapterIdForTileset(tilesetOf(project, map.tilesetId));
   else {
-    const hasBeodeul = !!project.tilesets[BEODEUL_TILESET_ID];
-    const hasMonster = Object.values(project.tilesets).some((t) => adapterIdForTileset(t) === "monster");
+    const hasBeodeul = !!tilesetOf(project, BEODEUL_TILESET_ID);
+    const hasMonster = allTilesets(project).some((t) => adapterIdForTileset(t) === "monster");
     // 새 맵: 프로젝트가 고른다 — 몬스터 수집 장르(system.genre) → 몬스터 키트, 아니면 이미 있는 맵들의 칩셋 다수결(몬스터 맵이 더 많으면 몬스터 키트), 그 밖은 버들항.
     // 요청의 genre 인자는 배치 프리셋(짧은/긴 던전)만 바꾼다 — 그림체 계열은 바꾸지 않는다(칩셋 계열 지키기).
     const votes: Partial<Record<AdapterId, number>> = {};
-    for (const m of Object.values(project.maps)) { const id = adapterIdForTileset(project.tilesets[m.tilesetId]); votes[id] = (votes[id] ?? 0) + 1; }
-    const startAdapter = adapterIdForTileset(project.tilesets[project.maps[project.startMapId]?.tilesetId ?? ""]);
+    for (const m of Object.values(project.maps)) { const id = adapterIdForTileset(tilesetOf(project, m.tilesetId)); votes[id] = (votes[id] ?? 0) + 1; }
+    const startAdapter = adapterIdForTileset(tilesetOf(project, project.maps[project.startMapId]?.tilesetId ?? ""));
     const isMonsterProject = genreOfProject(project) === "pokemon" || (votes.monster ?? 0) > (votes.beodeul ?? 0);
     if (isMonsterProject && (hasMonster || !hasBeodeul)) adapter = "monster";
     else if (hasBeodeul) adapter = "beodeul";
@@ -90,7 +96,7 @@ export function routeDungeon(project: Project, args: RouteArgs): DungeonRoute {
 
   // 3) 타일셋
   if (adapter === "beodeul") {
-    const ts = project.tilesets[BEODEUL_TILESET_ID];
+    const ts = tilesetOf(project, BEODEUL_TILESET_ID);
     if (!ts) throw new DungeonComposeError("이 프로젝트에는 버들항 타일셋(beodeul_city)이 없다 — 버들항 던전은 버들항 타일셋 전용이다.", "beodeul-tileset-missing");
     if (variant) notes.push(`버들항 ${type} 에는 변형(variant)이 없어 무시했다.`);
     return { adapter, genre, type, tilesetId: ts.id, notes };
