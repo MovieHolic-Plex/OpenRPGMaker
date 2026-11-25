@@ -1,5 +1,5 @@
 import { captureActivityVisuals, type ActivityVisual } from "./activityVisual";
-import { EVENT_COMMAND_SCOPE_TOOLS, eventCommandScopeModeSchema, eventScopeRefusal, type EventCommandScope } from "./eventCommandScope";
+import { EVENT_COMMAND_SCOPE_TOOLS, eventCommandScopeModeSchema, eventScopeRefusal, eventScopeToolCall, type EventCommandScope } from "./eventCommandScope";
 import { refreshSharedCharacterGraphics } from "@/project/sharedCharacterFaceResolver";
 import { configForRole } from "./modelRoles";
 import { configForLegacySupervisor } from "./ultrabrainConfig";
@@ -5001,13 +5001,18 @@ export class AssistantSession {
         const grounded = buildGroundedRequest(messages, tools, this.phaseConfig(phase), original);
         requestMessages = grounded.messages;
         this.pushAudit({ kind: "status", text: `context:grounded ${JSON.stringify(grounded.budget)} originals=${grounded.includedIds.length}/${original?.context.entries.length ?? 0}` });
-        result = await operation.wait(this.chatWithTransientRetry(
-          this.phaseConfig(phase),
-          { messages: requestMessages, tools, tool_choice: "auto" },
-          onEvent,
-          signal,
-          this.turnComposerMode === "ask" || this.turnIntent?.mode === "question"
-        ));
+        // 이벤트 한 줄 고치기: 대상과 도구는 편집기가 이미 정했고 도구는 사용자 문장을 그대로 받는다 — 첫 차례는 모델을 거치지 않고 바로 부른다.
+        // 실측(2026-11-25 #5099): 로컬 Claude CLI 는 이 경로(chat)에 도구를 싣지 않아 모델이 «도구를 쓸 수 없다»고 답하고,
+        // 그 뒤 프로젝트 전체 완료 검사가 수리 고리를 네 번 돌아 67~106초에 변경 0으로 끝났다.
+        result = eventScope && round === 0
+          ? { message: { role: "assistant", content: null, tool_calls: [eventScopeToolCall(eventScope, this.currentTurnInstruction)] }, finishReason: "tool_calls" }
+          : await operation.wait(this.chatWithTransientRetry(
+            this.phaseConfig(phase),
+            { messages: requestMessages, tools, tool_choice: "auto" },
+            onEvent,
+            signal,
+            this.turnComposerMode === "ask" || this.turnIntent?.mode === "question"
+          ));
         // Only exact originals and native/monster reads in a successful writer request count.
         original?.observeDelivered(requestMessages, grounded.includedIds, this.readEvidence);
         this.readEvidence.observeDelivered(requestMessages);

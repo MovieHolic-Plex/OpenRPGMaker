@@ -7,7 +7,7 @@ import { buildSessionRegistryTools } from "@/ai/sessionToolExposure";
 import { ToolReadEvidence } from "@/ai/toolReadEvidence";
 import { createStarterBlankProject } from "@/project/defaults";
 import { toolHiddenByMonsterLock } from "@/project/genreLockMonsterAssets";
-import { eventScopeRefusal, onlyEventPageCommandsChanged, type EventCommandScope } from "@/ai/eventCommandScope";
+import { eventScopeRefusal, eventScopeToolCall, onlyEventPageCommandsChanged, type EventCommandScope } from "@/ai/eventCommandScope";
 import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 import type { JsonSchema } from "@/editor/tools/types";
 import type { Command } from "@/project/types";
@@ -55,14 +55,11 @@ describe("event editor shared assistant scope", () => {
     ]));
   }, 60_000);
 
-  it.each(["with no system message", "with oversized shared history"])("sends the current dock exchange %s", async history => {
+  it.each(["with no system message", "with oversized shared history"])("writes the current dock request without the outer model %s", async history => {
     const { project, scope } = fixture();
     const prompt = "대사를 한 줄 추가해 줘";
     const rejected = call("get_event", scope);
-    const chat = vi.fn<ChatFn>()
-      .mockResolvedValueOnce(rejected)
-      .mockResolvedValueOnce(call("event_command_assist", { ...target, mapId: scope.mapId, prompt, mode: "append" }))
-      .mockResolvedValueOnce(text('[{"kind":"text","body":"새 대사"}]'));
+    const chat = vi.fn<ChatFn>(async () => text('[{"kind":"text","body":"새 대사"}]'));
     const session = new AssistantSession(project, { config: defaultAiConfig(), chat });
     const prior: ChatMessage[] = history === "with no system message" ? [] : [
       { role: "system", content: "공용 조수 시스템 지시" },
@@ -76,19 +73,16 @@ describe("event editor shared assistant scope", () => {
     const result = await session.sendUserMessage(prompt, undefined, undefined, { eventCommandScope: scope, goalAction: "new-goal" });
 
     expect(result.stoppedReason, result.error).toBe("final");
-    expect(chat).toHaveBeenCalledTimes(3);
-    const first = chat.mock.calls[0][1].messages;
-    expect(first.map(message => message.role)).toEqual(["system", "user"]);
-    expect(first[1].content).toBe(prompt);
-    const retry = chat.mock.calls[1][1].messages;
-    expect(retry.map(message => message.role)).toEqual(["system", "user", "assistant", "tool"]);
-    expect(retry[1].content).toBe(prompt);
-    expect(retry[2].tool_calls?.map(entry => entry.id)).toEqual([retry[3].tool_call_id]);
-    expect(retry[3].content).toContain("event-page-scope");
+    // 한 번뿐: 도구 안의 명령 생성기(도구 없는 요청). 로컬 CLI 처럼 도구를 못 부르는 바깥 모델은 거치지 않는다(#5099).
+    expect(chat).toHaveBeenCalledTimes(1);
+    expect(chat.mock.calls[0][1].tools ?? []).toEqual([]);
+    expect(JSON.stringify(chat.mock.calls[0][1].messages)).not.toContain("지난 요청");
+    expect(result.proposedCalls.map(c => c.name)).toEqual(["event_command_assist"]);
+    expect(session.getProposedProject().maps[scope.mapId].events.find(e => e.id === scope.eventId)?.pages?.[0].commands.at(-1)).toEqual({ kind: "text", body: "새 대사" });
     expect(session.getMessages().slice(0, prior.length)).toEqual(prior);
   }, 60_000);
 
-  it.each(["edit", "append"] as const)("reviews an append draft with host mode %s and refuses out-of-scope calls", async mode => {
+  it.each(["edit", "append"] as const)("reviews an append draft with host mode %s from one generator call", async mode => {
     const { project, scope: eventScope, original } = fixture();
     const scope: EventCommandScope = { ...eventScope, mode };
     const baseline = structuredClone(project);
@@ -131,7 +125,7 @@ describe("event editor shared assistant scope", () => {
       { eventCommandScope: scope, goalAction: "new-goal", autonomous: false, composerMode: "do" });
     expect(prepareProjectWiki).not.toHaveBeenCalled();
     expect(declareIntent).not.toHaveBeenCalled();
-    expect(round).toBe(3);
+    expect(round).toBe(0);
     expect(generatorCalls).toBe(1);
     expect(result.stoppedReason, result.error).toBe("final");
     expect(result.review?.status).toBe("approved");
@@ -144,8 +138,7 @@ describe("event editor shared assistant scope", () => {
     expect(project).toEqual(baseline);
     const audit = session.getAuditEntries();
     expect(audit.filter(e => e.kind === "user").map(e => e.text)).toEqual([prompt]);
-    expect(audit.filter(e => e.kind === "tool" && e.ok === false).map(e => e.name))
-      .toEqual(["get_project_summary", "event_command_assist"]);
+    expect(audit.filter(e => e.kind === "tool" && e.ok === false).map(e => e.name)).toEqual([]);
   }, 60_000);
 
   it.each([false, true])("stops after the first successful switch draft (duplicate in batch: %s)", async duplicateInBatch => {
@@ -173,7 +166,7 @@ describe("event editor shared assistant scope", () => {
     });
     const result = await session.sendUserMessage(prompt, undefined, undefined,
       { eventCommandScope: scope, goalAction: "new-goal", autonomous: true, composerMode: "do" });
-    expect(outerCalls).toBe(1);
+    expect(outerCalls).toBe(0);
     expect(generatorCalls).toBe(1);
     expect(result.stoppedReason, result.error).toBe("final");
     expect(result.assistantText).toContain("명령 초안");
@@ -186,7 +179,7 @@ describe("event editor shared assistant scope", () => {
     const messages = session.getHarnessSnapshot().messages;
     const callIds = messages.flatMap(message => message.tool_calls?.map(tc => tc.id) ?? []);
     expect(messages.filter(message => message.role === "tool").map(message => message.tool_call_id)).toEqual(callIds);
-    if (duplicateInBatch) expect(messages.find(message => message.tool_call_id === extraCall.id)?.content).toContain("event-command-turn-settled");
+    expect(messages.some(message => message.tool_call_id === extraCall.id)).toBe(false);
   }, 60_000);
 
   it("ends a successful no-op without creating a proposal", async () => {
@@ -198,7 +191,7 @@ describe("event editor shared assistant scope", () => {
     const session = new AssistantSession(project, { config: defaultAiConfig(), chat });
     const result = await session.sendUserMessage(prompt, undefined, undefined,
       { eventCommandScope: scope, goalAction: "new-goal", composerMode: "do" });
-    expect(chat).toHaveBeenCalledTimes(2);
+    expect(chat).toHaveBeenCalledTimes(1);
     expect(result.stoppedReason).toBe("final");
     expect(result.assistantText).toBe("변경 없음");
     expect(result.proposedCalls).toEqual([]);
@@ -227,7 +220,7 @@ describe("event editor shared assistant scope", () => {
     });
     const result = await session.sendUserMessage(prompt, undefined, undefined,
       { eventCommandScope: scope, goalAction: "new-goal", composerMode: "do" });
-    expect(outerCalls).toBe(2);
+    expect(outerCalls).toBe(1);
     expect(generatorCalls).toBe(3);
     expect(result.stoppedReason).toBe("error");
     expect(result.assistantText).toContain("다시 시도해 주세요");
@@ -235,6 +228,14 @@ describe("event editor shared assistant scope", () => {
     expect(result.proposedCalls).toEqual([]);
     expect(session.getProposedProject().maps[scope.mapId].events[0].pages?.[0].commands).toEqual(original);
   }, 60_000);
+
+  it("picks append for add requests and keeps the user's words as the prompt", () => {
+    const args = (text: string, mode?: "edit" | "append") => JSON.parse(eventScopeToolCall({ ...target, ...(mode ? { mode } : {}) }, text).function.arguments);
+    expect(args("  상점 주인 말투를 반말로 ")).toEqual({ ...target, prompt: "상점 주인 말투를 반말로" });
+    expect(args("대사 한 줄 추가해 줘").mode).toBe("append");
+    expect(args("컷신에서 3번째 대사 지워", "append").mode).toBe("append");
+    expect(eventScopeRefusal(target, "event_command_assist", args("대사 한 줄 추가해 줘"))).toBeNull();
+  });
 
   it("rejects out-of-page changes", () => {
     const { project, scope } = fixture();
