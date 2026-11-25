@@ -871,11 +871,6 @@ export function getMapEditHistoryDepth(): number {
   return undoStack.length;
 }
 
-/** undo 스택 깊이. getMapEditHistoryDebugEntries 는 엔트리마다 프로젝트 전체를 JSON 으로 재어 깊이만 볼 때 쓰지 않는다. */
-export function getMapEditHistoryDepth(): number {
-  return undoStack.length;
-}
-
 export function getMapEditHistoryDebugEntries(): readonly {
   readonly kind: HistorySnapshot["kind"];
   readonly mapId: string | null;
