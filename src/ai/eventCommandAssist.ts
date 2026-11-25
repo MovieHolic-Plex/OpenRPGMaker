@@ -84,7 +84,8 @@ export interface AssistRunResult {
 const MAX_REF_ENTRIES = 40;
 // 기존 커맨드를 **온전한 JSON 으로** 실을 수 있는 상한. 넘으면 잘라 싣지 않고 append 로 내려간다
 // (예전에는 2000자에서 문자열 중간을 자르고 "…(생략)" 을 붙여, 모델이 닫히지 않은 JSON 을 봤다).
-const MAX_EXISTING_CHARS = 12000;
+// 2026-11-25 fast-apply: 1.2만 자에서 폴른 스타 발렌 컷신(1.3만 자)의 「3번째 대사 지워」가 «페이지가 길어 전체 수정 불가»로 막혔다 — 2만 자.
+const MAX_EXISTING_CHARS = 20000;
 // 최초 1회 + 자가수정 2회.
 const MAX_ATTEMPTS = 3;
 // 이동 대상 맵의 중앙에서 시작해 전체 맵을 훑는다. 일부만 보고 "착지 칸 없음"으로

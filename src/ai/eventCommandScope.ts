@@ -2,6 +2,7 @@ import { checkSmallTaskScope, type SmallTaskScopeResult } from "./smallTaskScope
 import { EVENT_COMMAND_ASSIST_TOOL } from "@/editor/tools/eventCommandAssistTool";
 import type { Project } from "@/project/types";
 import type { ToolResult } from "@/editor/tools/types";
+import type { ToolCall } from "./llmClient";
 
 /** Host-owned boundary; never read from model arguments or natural-language instructions. */
 export interface EventCommandScope {
@@ -17,6 +18,16 @@ export const EVENT_COMMAND_SCOPE_TOOLS: readonly string[] = [EVENT_COMMAND_ASSIS
 
 export function eventScopeAllowsTool(name: string): boolean {
   return EVENT_COMMAND_SCOPE_TOOLS.includes(name);
+}
+
+/** 끝에 더하는 요청 — edit 는 명령 배열을 다시 써서 유지할 명령이 사라질 수 있다(도구 설명의 실측). */
+const APPEND_REQUEST = /추가|덧붙|붙여|끝에|더해|\badd\b|\bappend\b/iu;
+
+/** 범위의 첫 차례 — 편집기가 정한 대상에 사용자 문장을 그대로 넣은 event_command_assist 호출. 바깥 모델을 거치지 않는다. */
+export function eventScopeToolCall(scope: EventCommandScope, instruction: string): ToolCall {
+  const append = scope.mode === "append" || APPEND_REQUEST.test(instruction);
+  const args = { mapId: scope.mapId, eventId: scope.eventId, pageId: scope.pageId, prompt: instruction.trim(), ...(append ? { mode: "append" } : {}) };
+  return { id: `event-scope-${scope.pageId}`, type: "function", function: { name: EVENT_COMMAND_ASSIST_TOOL, arguments: JSON.stringify(args) } };
 }
 
 export function eventCommandScopeModeSchema(scope: EventCommandScope) {
