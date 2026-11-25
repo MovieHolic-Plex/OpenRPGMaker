@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { resetMapEditHistory, recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { runTool } from "@/editor/tools/toolRunner";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import type { ToolContext } from "@/editor/tools/types";
 import { describesCityStreet, jpCityTargetFor, JP_CITY_POINTER_LINE, JP_CITY_DETAIL_LINE, formatJpCityNote } from "@/ai/jpCityPolicy";

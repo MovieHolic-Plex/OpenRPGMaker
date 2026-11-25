@@ -2,7 +2,7 @@
 // 명세는 harness-data/assistant-capability/spec-bank/r2s-fun.json · r2t-fun.json 에 있고(명세 은행이 통째로 다시 짓는다), 여기서는 고친 규칙만 작은 값으로 본다.
 // 에이전트 세션 규칙으로 작성 시점에는 실행하지 않았다(CI 에서 돈다).
 import { describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { STEAMPUNK_CITY_ID } from "@/project/defaults/steampunkCity";
 import { isPassable } from "@/project/collision";
 import { runTool } from "@/editor/tools";

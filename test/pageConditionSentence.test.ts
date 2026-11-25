@@ -7,7 +7,7 @@
 // 동사 어간으로 만들면 "있" + "을 때"는 되지만 "낮이" + "을 때"가 깨진다.
 import { beforeEach, describe, expect, it } from "vitest";
 import { pageConditionSentence } from "@/editor/panels/eventEditor/pageConditionSentence";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import type { EventPageCondition } from "@/project/types";
 

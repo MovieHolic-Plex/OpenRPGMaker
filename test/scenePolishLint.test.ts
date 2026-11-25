@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { createFirstLoveFlagshipDemo } from "@/project/flagship/firstLove";
 import { lintScenePolish, newScenePolishIssues } from "@/project/lint/scenePolishLint";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import type { Command, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { runTool } from "@/editor/tools";
 import { isPassable } from "@/project/collision";
