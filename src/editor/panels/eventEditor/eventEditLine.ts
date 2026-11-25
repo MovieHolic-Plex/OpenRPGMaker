@@ -349,7 +349,18 @@ export function renderEventEditLine(options: EventEditLineOptions): HTMLElement 
       if (state.busy) setStatus(`고치는 중… ${Math.floor((performance.now() - started) / 1000)}초`, "busy");
     }, 1000);
     try {
-      const response = await sendAiAssistantMessage(promptFor(options, text), { deferApply: true });
+      // 먼저 지금 페이지 범위의 빠른 길(eventCommandScope: 위키·의도 분류·플래너 없이 명령 도구 하나).
+      // 범위 없이 보내면 조수 v2 플래너로 가 15분을 넘겨다(실측 2026-11-25). 바뀐 것이 없고 이어진
+      // 이벤트(퍼즐 손잡이 등)가 있을 때만 같은 맵 전체 길로 한 번 더 보낸다.
+      let response = await sendAiAssistantMessage(text, {
+        deferApply: true,
+        eventCommandScope: { mapId: options.mapId, eventId: options.eventId, pageId: options.activePageId, mode: "edit" },
+      });
+      if (response.ok && !response.pendingProposal
+        && linkedMapEvents(store.getCurrent(), options.mapId, options.eventId).length > 0) {
+        setStatus("이어진 이벤트까지 보고 있어요…", "busy");
+        response = await sendAiAssistantMessage(promptFor(options, text), { deferApply: true });
+      }
       if (!response.ok) throw new Error(response.error || "조수를 부르지 못했어요.");
       const proposal = response.pendingProposal;
       if (!proposal) throw new Error(response.lastAssistantText?.trim() || "바꿀 곳을 찾지 못했어요. 무엇을 어디서 바꿀지 다시 말해 주세요.");
