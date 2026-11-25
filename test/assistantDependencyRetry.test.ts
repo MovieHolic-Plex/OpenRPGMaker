@@ -4,7 +4,7 @@ import { defaultAiConfig, type AiConfig, type ChatRequest, type ChatResult } fro
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 import { parseRunRecapPayload, serializeRunRecap } from "@/ai/runRecap";
 import { runTool } from "@/editor/tools";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import { getMapEditHistoryEntries, resetMapEditHistory } from "@/editor/mapEditHistory";
 import * as commits from "@/project/projectCommitLog";

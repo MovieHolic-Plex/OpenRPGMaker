@@ -6,7 +6,7 @@ import { defaultAiConfig, type ChatResult, type ChatRequest } from "@/ai/llmClie
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 import { applyProposedProject } from "@/editor/tools/applyChangesetToStore";
 import { store } from "@/project/store";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { fixedDeclarer } from "./intentFixture";
 import { bounded, deferred, epochRunner } from "./aiEpochFixture";

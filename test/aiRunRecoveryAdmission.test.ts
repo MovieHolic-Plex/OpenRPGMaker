@@ -9,7 +9,7 @@ import { AI_RECORD_STORES, readAllAiRecords, resetAiRecordDbForTest, writeAiReco
 import type { RunCheckpoint } from "@/ai/runCheckpointStore";
 import { checkpointContentIdentity } from "@/ai/runRecovery";
 import { store } from "@/project/store";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { fixedDeclarer } from "./intentFixture";
 import { bounded, deferred } from "./aiEpochFixture";

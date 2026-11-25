@@ -11,7 +11,7 @@ import { AssistantSession } from "@/ai/assistantSession";
 import { isCompactionSummaryMessage, SUMMARIZATION_SYSTEM_PROMPT } from "@/ai/contextCompaction";
 import { isRestoredTranscriptMessage } from "@/ai/conversationReplay";
 import type { AiConfig, ChatMessage, ChatRequest, ChatResult } from "@/ai/llmClient";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 
 // Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
 // panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)

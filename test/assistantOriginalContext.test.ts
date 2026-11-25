@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatRequest, type ChatResult } from "@/ai/llmClient";
 import { configForProviderSelection } from "@/ai/providerSelection";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { startSession } from "@/project/session";
 import { fixedDeclarer } from "./intentFixture";
 import { runTool } from "@/editor/tools";

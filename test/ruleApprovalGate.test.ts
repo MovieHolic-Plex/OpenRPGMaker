@@ -6,7 +6,7 @@ import {
   ruleToolRejectionText,
   type ProposedCall,
 } from "@/ai/assistantSession";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { ChatResult } from "@/ai/llmClient";
 import type { Project, TileGroupMetadata } from "@/project/types";
