@@ -200,7 +200,8 @@ export interface RunPiAgentOptions {
    * 제공자 키와 **별개로** 해결해 넘긴다(없으면 툴이 "Codex 로그인 필요" 로 정직하게 실패한다).
    */
   readonly codexApiKey?: string;
-  readonly renderToolImage?: (project: Project, toolName: string, data: unknown, signal?: AbortSignal) => Promise<string>;
+  /** latestBase: 편집기가 마지막으로 적용한 체크포인트(워커의 accepted). 주면 그와 같은 타일셋·키는 줄에서 빼고 편집기가 그 적용본에서 되붙인다. */
+  readonly renderToolImage?: (project: Project, toolName: string, data: unknown, signal?: AbortSignal, latestBase?: Project) => Promise<string>;
   /** 실제 프레임을 그린 뒤 재는 수치(팔레트 수·자막 대비·움직이는 화소 비율)를 모델에게 한글로 돌려준다. */
   readonly measureToolRender?: (project: Project, toolName: string, data: unknown, signal?: AbortSignal) => Promise<string | null>;
   readonly generateOpeningImage?: (project: Project, args: Record<string, unknown>, signal?: AbortSignal) => Promise<CinematicStillResult>;
@@ -805,6 +806,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   };
   const incremental = !!request.applyMode && request.applyMode !== "review" && !request.readOnly && !options.readOnlyTools && !!options.onCheckpoint;
   let accepted = snapshotProjectKeepingHeavy(ctx.project);
+  // 편집기에 그림을 청할 때 줄은 «마지막 적용본»(accepted) 과 비교해 줄인다 — 처음 요청과 비교하면 마을이 타일셋을 한 번 바꾼 뒤로
+  // 그림마다 그 타일셋(버들항 26.8MB)이 실려 한 장 왕복이 약 21초였다(2026-11-25 draft-10min). accepted 는 부르는 순간의 값을 읽는다.
+  const renderToEditor: RunPiAgentOptions["renderToolImage"] = options.renderToolImage
+    ? (project, toolName, data, signal) => options.renderToolImage!(project, toolName, data, signal, accepted)
+    : undefined;
   // v2 함수(끝맺음 단계·청사진 경로·전투 맞춤)는 도구 draft 가 아니라 ctx.project 를 제자리에서 고친다(database.troops.push 등).
   // accepted 스냅숏은 database·assets 를 같은 객체로 공유하므로(snapshotProjectKeepingHeavy) 제자리 수정은 «그대로»로 보여
   // 체크포인트 줄에서 빠지고, 받는 쪽은 옛 DB 를 다시 붙여 「troopId 없음」 직렬화 왕복 실패로 체크포인트 전체를 거부했다.
@@ -1177,8 +1183,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
             if (role) want.description = `${want.description} — ${characterBrief(name, role)}`.slice(0, 600);
             let started: { ok: boolean; note: string };
             try {
-              if (!options.renderToolImage) throw new Error('편집기 연결이 없다');
-              await options.renderToolImage(ctx.project, 'generate_walk_chip', { appearanceId: want.appearanceId, description: want.description, name }, signal ?? options.signal);
+              if (!renderToEditor) throw new Error('편집기 연결이 없다');
+              await renderToEditor(ctx.project, 'generate_walk_chip', { appearanceId: want.appearanceId, description: want.description, name }, signal ?? options.signal);
               started = { ok: true, note: `편집기 공방 작업 줄에서 걷기 칩을 만들기 시작했다(보통 5~12분). 다 되면 외형 칩이 저절로 바뀜고 이은 배우·이벤트도 함께 바뀐다 — 기다리지 말고 다음 작업을 계속한다.` };
             } catch (error) {
               started = { ok: false, note: `걷기 칩 생성은 시작하지 못했다(${error instanceof Error ? error.message : String(error)}). 외형에는 지금 칩이 그대로 있다 — 사용자에게 알린다.` };
@@ -1190,26 +1196,26 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         } else result = await tool.execute(id, params, signal);
       }
       if (tool.name === 'show_opening_image' || tool.name === 'generate_opening_image' || tool.name === 'generate_opening_layer') {
-        if (!options.renderToolImage) throw new Error('오프닝 그림 시각 전달 경로가 없습니다. 시각 검토 미완료입니다.');
+        if (!renderToEditor) throw new Error('오프닝 그림 시각 전달 경로가 없습니다. 시각 검토 미완료입니다.');
         const data = (result.details as { data?: { resourceId?: string } } | undefined)?.data;
-        const png = await options.renderToolImage(openingImageProject(ctx.project, data?.resourceId ? [data.resourceId] : []), 'show_opening_image', data, signal ?? options.signal);
+        const png = await renderToEditor(openingImageProject(ctx.project, data?.resourceId ? [data.resourceId] : []), 'show_opening_image', data, signal ?? options.signal);
         if (!png) throw new Error('오프닝 그림을 모델에게 전달하지 못했습니다.');
         result.content.push({ type: 'image', mimeType: 'image/png', data: png });
         if (data?.resourceId) {openingProduction.saw(ctx.project, data.resourceId);monsterGameProduction.saw(ctx.project, data.resourceId);}
         emit({ type: 'execution_status', name: 'opening.image.delivered', ...imageStatus('실제 오프닝 그림을 모델에게 전달했습니다.'), data: { resourceId: data?.resourceId, toolCallId: id } });
       }
       if (tool.name === 'preview_opening_reference') {
-        if (!options.renderToolImage) throw new Error('참고 프레임 전달 경로 없음.');
+        if (!renderToEditor) throw new Error('참고 프레임 전달 경로 없음.');
         const data = (result.details as { data?: unknown } | undefined)?.data;
-        const png = await options.renderToolImage(openingImageProject(ctx.project, []), tool.name, data, signal ?? options.signal);
+        const png = await renderToEditor(openingImageProject(ctx.project, []), tool.name, data, signal ?? options.signal);
         if (!png) throw new Error('참고 프레임을 모델에게 전달하지 못했습니다.');
         result.content.push({ type: 'image', mimeType: 'image/png', data: png });
       }
       if (tool.name === 'preview_opening_animatic') {
-        if (!options.renderToolImage) throw new Error('애니메틱 프레임 전달 경로가 없습니다.');
+        if (!renderToEditor) throw new Error('애니메틱 프레임 전달 경로가 없습니다.');
         const data = (result.details as { data?: { shotId: string; atMs: number[]; resourceIds: string[] } } | undefined)?.data;
         if (!data) throw new Error('애니메틱 프레임 요청 없음.');
-        const png = await options.renderToolImage(openingImageProject(ctx.project, data.resourceIds), tool.name, data, signal ?? options.signal);
+        const png = await renderToEditor(openingImageProject(ctx.project, data.resourceIds), tool.name, data, signal ?? options.signal);
         if (!png) throw new Error('애니메틱 프레임을 모델에게 전달하지 못했습니다.');
         result.content.push({ type: 'image', mimeType: 'image/png', data: png });
         const measurements = await options.measureToolRender?.(openingImageProject(ctx.project, data.resourceIds), tool.name, data, signal ?? options.signal).catch(() => null);
@@ -1217,14 +1223,14 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         openingProduction.sawAnimatic(ctx.project, data.shotId, data.atMs);
         emit({ type: 'execution_status', name: 'opening.animatic.delivered', ok: true, summary: `실제 합성 시간 표본을 모델에게 전달했습니다.${measurements ? ` ${measurements.slice(0, 220)}` : ''}`, data: { shotId: data.shotId, atMs: data.atMs, toolCallId: id, measured: Boolean(measurements) } });
       }
-      if (tool.name === "show_map_region" || (tool.name === "inspect_interior_layout" && options.renderToolImage)) {
-        if (!options.renderToolImage) throw new Error("맵 이미지 전달 경로가 없습니다. 배열만으로 시각 검토를 완료할 수 없습니다.");
+      if (tool.name === "show_map_region" || (tool.name === "inspect_interior_layout" && renderToEditor)) {
+        if (!renderToEditor) throw new Error("맵 이미지 전달 경로가 없습니다. 배열만으로 시각 검토를 완료할 수 없습니다.");
         const inspectedMap = tool.name === 'inspect_interior_layout' ? ctx.project.maps[String((params as { mapId?: unknown }).mapId)] : undefined;
         const data = inspectedMap ? { mapId: inspectedMap.id, x: 0, y: 0, w: inspectedMap.width, h: inspectedMap.height } : (result.details as { data?: unknown } | undefined)?.data;
         // inspect_interior_layout 은 좌표만 있다 — 칸 배열을 붙여 그린다(좌표만 넘기면 렌더러가 거절한다).
         const png = inspectedMap
-          ? await renderMapRegionImage(ctx.project, { mapId: inspectedMap.id, x: 0, y: 0, w: inspectedMap.width, h: inspectedMap.height }, options.renderToolImage, signal ?? options.signal)
-          : await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, data, signal ?? options.signal);
+          ? await renderMapRegionImage(ctx.project, { mapId: inspectedMap.id, x: 0, y: 0, w: inspectedMap.width, h: inspectedMap.height }, renderToEditor, signal ?? options.signal)
+          : await renderToEditor(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, data, signal ?? options.signal);
         result.content.push({ type: "image", mimeType: "image/png", data: png });
         // 손 도트 실내(방 짓기 역할표 칩셋)는 칸 번호로 고치지 않는다(평면·가구 인자로 다시 짓는다) — 그림을 함께 보냈으면 칸 번호 배열(맵 하나 7천 자 안팎)을 뺀다.
         // 2026-10-22 다듬기 실행: show_map_region 18번 결과 글 13만 자가 대부분 이 배열이었다.
@@ -1248,16 +1254,16 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       }
       if (tool.name === "show_spatial_design") {
         // 오브젝트 그림 — 편집기 렌더러가 칸 배열(또는 공용 미리보기)을 PNG 로 그린다. 그림 없이 이름만으로 고르지 않게 한다.
-        if (!options.renderToolImage) throw new Error("오브젝트 그림 전달 경로가 없습니다.");
+        if (!renderToEditor) throw new Error("오브젝트 그림 전달 경로가 없습니다.");
         const data = (result.details as { data?: unknown } | undefined)?.data;
-        const png = await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, data, signal ?? options.signal);
+        const png = await renderToEditor(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, data, signal ?? options.signal);
         result.content.push({ type: "image", mimeType: "image/png", data: png });
       }
       const charsetResult = result.details as ToolResult;
       const candidates = charsetPreviewCandidates(tool.name, charsetResult?.data);
       if (candidates.length) {
-        if (!options.renderToolImage) throw new Error('캐릭터 칩 이미지 전달 경로가 없습니다. 텍스트만으로 외형 선택을 승인할 수 없습니다.');
-        const png = await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, { charsetCandidates: candidates }, signal ?? options.signal);
+        if (!renderToEditor) throw new Error('캐릭터 칩 이미지 전달 경로가 없습니다. 텍스트만으로 외형 선택을 승인할 수 없습니다.');
+        const png = await renderToEditor(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, { charsetCandidates: candidates }, signal ?? options.signal);
         if (!png) throw new Error('캐릭터 칩 미리보기 이미지가 비었습니다.');
         // Gemini joins all text blocks in a function response. Keep one complete
         // JSON envelope so both the model and the delivery gate can read it.
@@ -1275,8 +1281,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         // Count the image parts actually returned, not metadata or an authored success claim.
         if (ids.length !== result.content.filter(part => part.type === 'image').length) throw new Error('타이틀/오프닝 그림 전달이 일치하지 않습니다.');
         for (const resourceId of presentationArtIds(ctx.project).filter(resourceId => !ids.includes(resourceId))) {
-          if (!options.renderToolImage) throw new Error('타이틀/오프닝 그림을 실제 자산 저장소에서 읽을 경로가 없습니다.');
-          const png = await options.renderToolImage(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, { resourceId }, signal ?? options.signal);
+          if (!renderToEditor) throw new Error('타이틀/오프닝 그림을 실제 자산 저장소에서 읽을 경로가 없습니다.');
+          const png = await renderToEditor(cloneProjectSharingSharedDictionaries(ctx.project), tool.name, { resourceId }, signal ?? options.signal);
           result.content.push({ type: 'text', text: resourceId }, { type: 'image', mimeType: 'image/png', data: png });
           ids.push(resourceId);
         }
@@ -1400,11 +1406,11 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     ...(!request.readOnly && !options.readOnlyTools ? { generateImage: createWorkerImageGenerator(request, workerKeyFor) } : {}),
     ...(advisorChat ? { advisorChat, advisorModel: `${advisorRole!.provider}/${advisorRole!.model}` } : {}),
     ...(leadChat ? { leadChat, leadModel: `${split!.lead.provider}/${split!.lead.model}${split!.lead.effort ? `@${split!.lead.effort}` : ""}` } : {}),
-    ...(options.renderToolImage ? { renderArt: async (art: { resourceId: string } | { shotId: string; atMs: readonly number[] }) => {
+    ...(renderToEditor ? { renderArt: async (art: { resourceId: string } | { shotId: string; atMs: readonly number[] }) => {
       const ids = "resourceId" in art ? [art.resourceId] : animaticResourceIdsFor(ctx.project, art.shotId);
       const tool = "resourceId" in art ? "show_opening_image" : "preview_opening_animatic";
       const data = "resourceId" in art ? { resourceId: art.resourceId } : { shotId: art.shotId, atMs: [...art.atMs], resourceIds: ids, bare: true };
-      const png = await options.renderToolImage!(openingImageProject(ctx.project, ids), tool, data, options.signal);
+      const png = await renderToEditor!(openingImageProject(ctx.project, ids), tool, data, options.signal);
       return png.startsWith("data:") ? png : `data:image/png;base64,${png}`;
     } } : {}),
     roleChat: async (role: { provider: string; model: string; effort?: "low" | "medium" | "high" }, messages: readonly unknown[], signal?: AbortSignal): Promise<string> => {
@@ -1424,7 +1430,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       } finally { sideUsage.ms += Date.now() - t0; }
     },
     keyedProviders: new Set([...Object.entries(options.providerApiKeys ?? {}).filter(([, key]) => Boolean(key)).map(([id]) => id), ...(options.apiKey ? [request.provider] : []), ...(localCliIdOf(request.provider) ? [request.provider] : [])]),
-    ...(options.renderToolImage ? { render: async (mapId: string, x: number, y: number, w: number, h: number) => `data:image/png;base64,${await renderMapRegionImage(ctx.project, { mapId, x, y, w, h }, options.renderToolImage!, options.signal)}` } : {}),
+    ...(renderToEditor ? { render: async (mapId: string, x: number, y: number, w: number, h: number) => `data:image/png;base64,${await renderMapRegionImage(ctx.project, { mapId, x, y, w, h }, renderToEditor!, options.signal)}` } : {}),
     readPublicAsset: readPublicAssetDataUrl,
     combinePictures: combinePngDataUrls,
     ...(/^(one|each|none)$/u.test(process.env.OPRN_ROOM_PARTS_PICTURES ?? "") ? { roomPartsPictures: process.env.OPRN_ROOM_PARTS_PICTURES as "one" | "each" | "none" } : {}),
@@ -2205,7 +2211,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const main = probes.slice().sort((a, b) => b.probe.subjects.length - a.probe.subjects.length)[0]!;
       const event = main.event, probe = { ...main.probe, issues: merged };
       emit({ type: 'execution_status', name: 'cutscene.review', ok: merged.length === 0, summary: `컷신 객관 측정(${probes.length}개): ${probes.map(p => `${p.event.id}: ${p.probe.summary}`).join(' || ')}${merged.length ? ` — 문제 ${merged.length}건` : ' — 통과'}`, data: probe });
-      if (probe.issues.length || !options.renderToolImage) { openingProduction.recordCutsceneReview(fingerprint, probe.issues); return; }
+      if (probe.issues.length || !renderToEditor) { openingProduction.recordCutsceneReview(fingerprint, probe.issues); return; }
       emit({ type: 'execution_status', name: 'cutscene.review.judging', ok: true, summary: '독립 판정자가 맵 그림과 컷신 핵심 장면을 보고 합격 여부를 가리는 중' });
       let mapImage: string | undefined, sheetImage: string | undefined;
       // 맵 그림 없이 판정하면 배경이 검게 나와 「검은 배경이 맵을 가린다」는 허위 지적이 반복된다(2026-10-15 3~4라운드 실측) — 세 번 시도하고, 끝내 못 얻으면 판정을 건너뛴다.
@@ -2215,7 +2221,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         if (mapImage) break;
         const w = Math.min(win.w, start.width), h = Math.min(win.h, start.height);
         const x = Math.max(0, Math.min(start.width - w, Math.round(((event as { x?: number }).x ?? start.width / 2) - w / 2))), y = Math.max(0, Math.min(start.height - h, Math.round(((event as { y?: number }).y ?? start.height / 2) - h / 2)));
-        try { mapImage = `data:image/png;base64,${await renderMapRegionImage(ctx.project, { mapId: start.id, x, y, w, h }, options.renderToolImage, options.signal)}`; } catch (error) { mapImage = undefined; mapError = error instanceof Error ? error.message : String(error); if (options.signal?.aborted) return; }
+        try { mapImage = `data:image/png;base64,${await renderMapRegionImage(ctx.project, { mapId: start.id, x, y, w, h }, renderToEditor, options.signal)}`; } catch (error) { mapImage = undefined; mapError = error instanceof Error ? error.message : String(error); if (options.signal?.aborted) return; }
       }
       if (!mapImage) { emit({ type: 'execution_status', name: 'cutscene.review.judged', ok: false, summary: `시작 맵 그림을 얻지 못해 독립 판정을 건너뜁니다(${mapError.slice(0, 160)}) — 합격으로 보고하지 않습니다` }); openingProduction.recordCutsceneReview(fingerprint, [], { verdict: 'unjudged', scores: {}, fix: '시작 맵 그림 렌더 실패', judge: 'none' }); return; }
       let motionImage: string | undefined;
@@ -2257,7 +2263,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const bytes = Buffer.from(b64, "base64");
       return bytes.length >= 24 ? { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) } : undefined;
     };
-    if (featureReviewEnabled && options.renderToolImage && !fatal && !rejected && !options.signal?.aborted) {
+    if (featureReviewEnabled && renderToEditor && !fatal && !rejected && !options.signal?.aborted) {
       const mapChanged = (id: string): boolean => {
         const now = ctx.project.maps[id], was = base.maps[id];
         if (!now) return false;
@@ -2284,7 +2290,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const renderErrors: string[] = [];
       const render = async (mapId: string, x: number, y: number, w: number, h: number): Promise<string | undefined> => {
         try {
-          return `data:image/png;base64,${await renderMapRegionImage(ctx.project, { mapId, x, y, w, h }, options.renderToolImage!, options.signal)}`;
+          return `data:image/png;base64,${await renderMapRegionImage(ctx.project, { mapId, x, y, w, h }, renderToEditor!, options.signal)}`;
         } catch (error) {
           if (options.signal?.aborted) throw error;
           renderErrors.push(`${mapId} (${x},${y}) ${w}×${h}: ${error instanceof Error ? error.message.slice(0, 160) : String(error)}`);
@@ -2456,9 +2462,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
           drawFace: (args: Record<string, unknown>, signal?: AbortSignal) => options.generateOpeningImage!(openingImageProject(ctx.project, []), args, signal),
           ...(options.signal ? { signal: options.signal } : {}),
         };
-        const startChip = options.renderToolImage ? async (appearanceId: string, description: string, name: string) => {
+        const startChip = renderToEditor ? async (appearanceId: string, description: string, name: string) => {
           walkChipStarts += 1;
-          await options.renderToolImage!(ctx.project, 'generate_walk_chip', { appearanceId, description, name }, options.signal);
+          await renderToEditor!(ctx.project, 'generate_walk_chip', { appearanceId, description, name }, options.signal);
         } : undefined;
         const facesLeft = () => Math.max(0, PORTRAIT_RUN_BUDGET - portraitDraws);
         const countedDraw = (args: Record<string, unknown>, signal?: AbortSignal) => {

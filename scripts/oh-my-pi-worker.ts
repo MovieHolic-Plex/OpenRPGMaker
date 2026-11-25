@@ -161,7 +161,7 @@ const server = Bun.serve({
           codexApiKey: body.codexApiKey,
           signal: request.signal,
           onEvent,
-          renderToolImage: (project, toolName, data, signal) => requestPiRender(project, agentRequest.project, toolName, data, onEvent, signal ?? request.signal),
+          renderToolImage: (project, toolName, data, signal, latestBase) => requestPiRender(project, latestBase ?? agentRequest.project, toolName, data, onEvent, signal ?? request.signal, undefined, !!latestBase),
           generateOpeningImage: (project, args, signal) => requestPiOpeningGeneration(project, agentRequest.project, args, onEvent, signal ?? request.signal),
           onCheckpoint: (checkpoint, signal) => requestPiCheckpoint(checkpoint, onEvent, signal ?? request.signal),
           ...(agentRequest.readOnly ? { readOnlyTools: true } : {}),
