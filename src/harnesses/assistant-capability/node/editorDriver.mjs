@@ -193,7 +193,7 @@ export async function newEditor(browser, url, projectDir, config, captureOptions
               text:event.type==='assistant'?event.text:undefined,summary:event.summary,modelText:event.type==='tool_end'?event.modelText:undefined,message:event.message,args:event.args,
               data:event.type==='prompt_inspection'?(event.snapshot?{boundary:event.snapshot.boundary,model:event.snapshot.model,scalars:event.snapshot.scalars,sizes:promptSizes(event.snapshot)}:undefined)
                 :['charset.image.delivered','charset.image.received','feature_checklist','feature_review','feature_review.critic','feature_review.repair','cutscene.review','cutscene.review.judged','v2.advisor','v2.advisor.recheck','dialogue_polish','dialogue_polish.lint','dialogue_polish.skip','dialogue_polish.speaker_labels'].includes(event.name)?event.data:undefined,
-              runId:outer.runId,usage:event.usage,stats:event.type==='done'?event.stats:undefined,at:Date.now()});
+              runId:outer.runId,agentId:outer.type==='agent_event'&&typeof outer.agentId==='string'?outer.agentId:undefined,usage:event.usage,stats:event.type==='done'?event.stats:undefined,at:Date.now()});
           }
           // 워커가 편집기에 답을 기다리는 요청(그림 렌더·체크포인트)은 id·도구 이름·시각만 남긴다 — 본문(프로젝트)은 남기지 않는다.
           // 턴이 «둘 다 노는 채» 멈췄을 때 어느 요청이 답을 못 받았는지 가르는 데 쓴다(2026-11-11 r1stall-fun).
