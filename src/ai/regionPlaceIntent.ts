@@ -2,6 +2,7 @@
 // 영역 지시 문장 → 장소 레시피 종류(build_region_place 의 kind). 범위 노트(intentDeclaration)·도구·능력 표가 같은 표를 쓴다.
 export type RegionPlaceKind =
   | "shop" | "weapon_shop" | "smithy" | "inn" | "tavern" | "house" | "chapel" | "bakery" | "pharmacy"
+  | "warehouse" | "stable" | "school" | "guard_post" | "windmill" | "lighthouse"
   | "dungeon_entrance" | "cave_entrance";
 
 const RULES: readonly (readonly [RegExp, RegionPlaceKind])[] = [
@@ -14,6 +15,12 @@ const RULES: readonly (readonly [RegExp, RegionPlaceKind])[] = [
   [/교회|성당|예배당|신전/, "chapel"],
   [/빵집|제과점|베이커리/, "bakery"],
   [/약방|약국|약초상|약재상/, "pharmacy"],
+  [/창고|곡간|헛간/, "warehouse"],
+  [/마구간|외양간|마차고/, "stable"],
+  [/학교|서당|학당|교실|학원/, "school"],
+  [/초소|경비소|초막|병영|검문소/, "guard_post"],
+  [/풍차|방앗간/, "windmill"],
+  [/등대/, "lighthouse"],
   [/상점|가게|도구점|잡화점|만물상|상회|매점/, "shop"],
   [/(?:^|[^빵모])집|주택|민가|오두막|살림집/, "house"],
 ];
