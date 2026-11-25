@@ -233,3 +233,6 @@ jobs:
           name: gates-report-shard-${{ matrix.shard }}
           path: ${{ runner.temp }}/gates-report
           if-no-files-found: warn
+          # 실패한 잡만 다시 돌릴 때(gh run rerun --failed) 새 리포트가 같은 이름으로 올라가 ci-full-diff 가 재시도 결과를 읽게 한다
+          # (release-0420, 2026-11-25: 덮어쓰기가 없으면 v4 업로드가 이름 충돌로 실패하고 continue-on-error 라 옛 실패 리포트가 남는다).
+          overwrite: true
