@@ -7,7 +7,7 @@ name: ci-full
 # 한 판 내내 16자리를 2~3시간 차지해, ci-fast 를 호스티드로 옮기면 PR 잡이 그동안 줄을 섰다.
 # 2026-11-25 (test-diet, 오너 결정): 샤드는 «한 물결» 로 돈다 — 샤드 수 = 동시 자리 수. 두 물결(24샤드·동시 12)이면
 # 시험을 줄여도 벽시계가 2배라 40분 목표가 안 된다. 샤드 수는 아래 shard-plan 잡의 한 줄(저장소 변수 CI_FULL_SHARDS,
-# 없으면 32)로 정한다. Pro 40자리: static 1 + 샤드 32 = 33, PR 몫 7자리. 무료(20)면 변수 CI_FULL_SHARDS=18.
+# 없으면 24)로 정한다. Pro 40자리: static 1 + 샤드 24 = 25, 남는 15자리는 PR·릴리스 몫. 무료(20)면 변수 CI_FULL_SHARDS=18.
 # 샤드는 측정 시간 LPT 분할(#5002)이라 수가 바뀌어도 고르다.
 # 예전 16샤드의 가장 느린 샤드는 2.5~3.4시간이었다.
 #
@@ -140,7 +140,7 @@ jobs:
           path: ${{ runner.temp }}/gates-report
           if-no-files-found: warn
 
-  # 샤드 수 한 줄. Pro(동시 40, 2026-11-25 구독): 32 — static 1 + 샤드 32 = 33, PR 7자리. 무료(20)로 돌아가면 저장소 변수 CI_FULL_SHARDS=18.
+  # 샤드 수 한 줄. Pro(동시 40, 2026-11-25 구독): 24 — static 1 + 샤드 24 = 25, PR·릴리스 15자리. 더 빠르게는 변수 CI_FULL_SHARDS=32, 무료(20)면 18.
   shard-plan:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -150,7 +150,7 @@ jobs:
     steps:
       - id: plan
         env:
-          SHARDS: ${{ vars.CI_FULL_SHARDS || '32' }}
+          SHARDS: ${{ vars.CI_FULL_SHARDS || '24' }}
         run: |
           set -euo pipefail
           [[ "$SHARDS" =~ ^[1-9][0-9]?$ ]] || { echo "::error::CI_FULL_SHARDS 는 1~99 정수여야 한다: $SHARDS"; exit 1; }
