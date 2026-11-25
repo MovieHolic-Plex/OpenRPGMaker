@@ -11,7 +11,7 @@ const run = (f: ReturnType<typeof prerequisiteFixture>) => verifyNpcRewardsPlaya
 
 describe("NPC prerequisite protected runtime replay", () => {
   it("R1 runs chief request, physical transfers, real chest, gold +20 and repeat 0 without changing project", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const before = structuredClone(f.project);
     expect(verifyNpcRewardsPlayable(f.project, [f.requirement]).ok).toBe(false);
     const result = run(f);
@@ -20,14 +20,14 @@ describe("NPC prerequisite protected runtime replay", () => {
     expect(f.project).toEqual(before);
   });
   it("R2 revisits chest across round-trip transfers with one key", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     f.prelude.splice(6, 0, ...f.visitChest);
     const result = run(f);
     expect(result.ok, JSON.stringify(result)).toBe(true);
     expect(result.evidence?.[0]?.final.inventory[KEY]).toBe(1);
   });
   it.each(["missing-key", "out-missing", "back-missing", "out-blocked", "back-blocked", "out-wrong", "back-wrong", "missing-map", "landing-bounds", "landing-blocked", "start-bounds", "start-blocked"])("R3 rejects %s", variant => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     if (variant === "missing-key") f.chest.pages![0].commands = [];
     if (variant === "out-missing") f.out.pages![0].commands = [];
     if (variant === "back-missing") f.back.pages![0].commands = [];
@@ -43,7 +43,7 @@ describe("NPC prerequisite protected runtime replay", () => {
     expect(run(f).ok).toBe(false);
   });
   it.each(["start", "transfer"] as const)("R3 rejects a stranded directional %s beside a paying NPC", origin => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture() // 통행 표를 제자리에서 고치므로 공유 타일셋을 쓰지 않는다;
     f.chief.pages = [f.chief.pages![1], f.chief.pages![2]];
     f.chief.pages[0].conditions = [];
     const tileset = f.project.tilesets[f.village.tilesetId];
@@ -85,25 +85,25 @@ describe("NPC prerequisite protected runtime replay", () => {
   });
 
   it.each([0, 10])("R4 chest's prior +20 cannot satisfy chief +%s", amount => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     f.chest.pages![0].commands.unshift({ kind: "changeGold", op: "+=", amount: 20 });
     f.chief.pages![1].commands[0] = { kind: "changeGold", op: "+=", amount };
     expect(run(f).ok).toBe(false);
   });
   it("R5 rejects early chief payout even when protected claim is exact", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     f.chief.pages![0].commands.unshift({ kind: "changeGold", op: "+=", amount: 20 });
     const result = run(f);
     expect(result.ok).toBe(false);
     expect(result.evidence?.[0]?.phase).toBe("prelude");
   });
   it("R6 rejects the wrong physical NPC", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     f.village.events.unshift(event("impostor", 5, 2, [page("fake", [{ kind: "changeGold", op: "+=", amount: 20 }])]));
     expect(run(f).ok).toBe(false);
   });
   it("R6 never rebinds a unique same-named replacement on another map", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     f.requirement = { ...f.requirement, target: { eventName: CHIEF } };
     expect(run(f).ok).toBe(true);
     f.village.events = f.village.events.filter(e => e.id !== CHIEF);
@@ -111,7 +111,7 @@ describe("NPC prerequisite protected runtime replay", () => {
     expect(run(f).ok).toBe(false);
   });
   it("R7 rejects chief transfer into a donor autorun even if it returns", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     f.chief.pages![1].commands = [{ kind: "transfer", mapId: f.cellar.id, x: 2, y: 2 }];
     f.cellar.events.push(event("donor", 10, 10, [page("donor", [
       { kind: "changeGold", op: "+=", amount: 20 }, { kind: "setSwitch", switchId: "paid", value: true },
@@ -120,21 +120,21 @@ describe("NPC prerequisite protected runtime replay", () => {
     expect(run(f).ok).toBe(false);
   });
   it.each([false, true])("R8 rejects callMapEvent delegation, nested=%s", nested => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const call = { kind: "callMapEvent" as const, eventId: "donor" };
     f.chief.pages![1].commands[0] = nested ? { kind: "fork", condition: { kind: "switch", switchId: "accepted", value: true }, then: [call], else: [] } : call;
     f.village.events.push(event("donor", 15, 12, [page("donor", [{ kind: "changeGold", op: "+=", amount: 20 }])]));
     expect(run(f).ok).toBe(false);
   });
   it.each(["pending", "budget", "unsupported"])("R9 fails %s rather than minting completion", variant => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     if (variant === "pending") f.chief.pages![0].commands.push({ kind: "choices", options: [{ text: "Accept", branch: [] }] });
     if (variant === "budget") f.chief.pages![1].commands.push({ kind: "loop", body: [{ kind: "setSwitch", switchId: "accepted", value: true }] });
     if (variant === "unsupported") f.chief.pages![1].commands.push({ kind: "inputNumber", variableId: "n", digits: 1 });
     expect(run(f).ok).toBe(false);
   });
   it.each(["chest", "transfer", "collision", "npc", "database", "start"])("R11 freshly replays after %s mutation", variant => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     expect(run(f).ok).toBe(true);
     if (variant === "chest") f.chest.pages![0].commands = [];
     if (variant === "transfer") f.back.pages![0].commands = [];
@@ -145,7 +145,7 @@ describe("NPC prerequisite protected runtime replay", () => {
     expect(run(f).ok).toBe(false);
   });
   it("ordinary scene behavior still supports callMapEvent", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     f.chief.pages = [page("call", [{ kind: "callMapEvent", eventId: "donor" }])];
     f.village.events.push(event("donor", 15, 12, [page("donor", [{ kind: "changeGold", op: "+=", amount: 20 }])]));
     const result = runSceneTest(f.project, { mapId: f.village.id, start: { x: 4, y: 2 }, steps: [{ kind: "face", dir: "right" }, { kind: "interact", eventId: CHIEF }, { kind: "expect", goldDelta: 20 }] });
@@ -153,7 +153,7 @@ describe("NPC prerequisite protected runtime replay", () => {
   });
 
   it("R4 another physically visited NPC cannot lend its currency to the chief", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     f.village.events.push(event("donor", 7, 5, [page("donor", [{ kind: "changeGold", op: "+=", amount: 20 }])]));
     f.prelude.splice(6, 0, { kind: "walk", mapId: f.village.id, to: { x: 7, y: 5 }, adjacent: true }, { kind: "interact", mapId: f.village.id, eventId: "donor" });
     f.chief.pages![1].commands.shift();
@@ -163,7 +163,7 @@ describe("NPC prerequisite protected runtime replay", () => {
   });
 
   it.each(["item", "monster"] as const)("R5 detects earlier chief %s grants, including completed choices", kind => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const grant = kind === "item" ? { kind, id: "item_potion", count: 1 } as const : { kind, id: "species_leafling", count: 1 } as const;
     f.requirement = { ...f.requirement, grants: [grant] };
     f.chief.pages![0].commands.push({ kind: "choices", options: [{ text: "Accept", branch: kind === "item"
@@ -176,14 +176,14 @@ describe("NPC prerequisite protected runtime replay", () => {
   });
 
   it("R6 rejects ambiguous copies of the same ID on different maps", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     f.requirement = { ...f.requirement, target: { eventId: CHIEF } };
     f.cellar.events.push(structuredClone(f.chief));
     expect(run(f).ok).toBe(false);
   });
 
   it("R7 rejects a donor chaser entering while the protected chief waits", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     f.chief.pages![1].commands = [{ kind: "wait", ms: 2000 }, { kind: "setSwitch", switchId: "paid", value: true }];
     const donor = page("donor", [{ kind: "changeGold", op: "+=", amount: 20 }], [{ kind: "item", itemId: KEY, present: true }], { kind: "eventTouch" });
     donor.movement = { type: "chase", speed: 3, frequency: 8, pathfind: false };
@@ -194,13 +194,13 @@ describe("NPC prerequisite protected runtime replay", () => {
   });
 
   it("R8 admits a legitimate route whose unexecuted branch contains callMapEvent", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     f.chief.pages![1].commands.unshift({ kind: "fork", condition: { kind: "item", itemId: KEY, present: false }, then: [{ kind: "callMapEvent", eventId: "donor" }] });
     expect(run(f).ok).toBe(true);
   });
 
   it("R8 missing scene-session common events are unverified, not grafted from project data", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     f.project.commonEvents.push({ id: "borrow", name: "Borrow", trigger: "none", commands: [{ kind: "callMapEvent", eventId: "donor" }] });
     f.chief.pages![1].commands.unshift({ kind: "callCommonEvent", commonEventId: "borrow" });
     const result = run(f);
@@ -210,7 +210,7 @@ describe("NPC prerequisite protected runtime replay", () => {
   });
 
   it("R8 actual interpreter dispatch hooks survive nested common-event frames", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const session = startSession(f.project, 1);
     session.commonEvents = [{ id: "nested", commands: [{ kind: "fork", condition: { kind: "item", itemId: KEY, present: false }, then: [{ kind: "callMapEvent", eventId: "donor" }] }] }];
     f.village.events.push(event("donor", 15, 12, [page("donor", [{ kind: "changeGold", op: "+=", amount: 20 }])]));
@@ -228,14 +228,14 @@ describe("NPC prerequisite protected runtime replay", () => {
   });
 
   it.each([-1, 1, 0])("R9 resolves only a valid pending prelude choice (%s)", index => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     f.chief.pages![0].commands = [{ kind: "choices", cancelBehavior: "branch", cancelBranch: [{ kind: "setSwitch", switchId: "accepted", value: true }], options: [{ text: "Accept", branch: [{ kind: "setSwitch", switchId: "accepted", value: true }] }] }];
     f.prelude.splice(2, 0, { kind: "choose", mapId: f.village.id, index });
     expect(run(f).ok).toBe(index === 0);
   });
 
   it("R9 holds protected choices to the immutable claim and repeat selections", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const payment = f.chief.pages![1].commands;
     f.chief.pages![1].commands = [{ kind: "choices", options: [{ text: "Decline", branch: [] }, { text: "Claim", branch: payment }] }];
     f.chief.pages![2].commands = [{ kind: "choices", options: [{ text: "Done", branch: [] }] }];
@@ -248,7 +248,7 @@ describe("NPC prerequisite protected runtime replay", () => {
   });
 
   it("R9 enforces the 100000 shared instruction budget across separate interactions", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const instruction = { kind: "setSwitch", switchId: "accepted", value: true } as const;
     f.chief.pages![0].commands = Array.from({ length: 60000 }, () => ({ ...instruction }));
     f.chief.pages![1].commands.push(...Array.from({ length: 50000 }, () => ({ ...instruction })));
@@ -258,7 +258,7 @@ describe("NPC prerequisite protected runtime replay", () => {
   });
 
   it("R9 enforces 4096 walking steps across at most 256 actions", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     const distance = f.village.width - 3;
     const walks = Array.from({ length: Math.ceil(4096 / distance) + 2 }, (_, i) => ({ kind: "walk" as const, mapId: f.village.id, to: { x: i % 2 ? 1 : f.village.width - 2, y: 10 } }));
     expect(walks.length).toBeLessThanOrEqual(256);
@@ -269,7 +269,7 @@ describe("NPC prerequisite protected runtime replay", () => {
   });
 
   it("R9 rejects action overflow and cancellation without completing the replay", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     expect(isVerifyNpcRewardInput({ requirementIndex: 0, prelude: Array.from({ length: 257 }, () => ({ kind: "face", mapId: f.village.id, dir: "right" })) })).toBe(false);
     const controller = new AbortController();
     controller.abort();
@@ -279,7 +279,7 @@ describe("NPC prerequisite protected runtime replay", () => {
   });
 
   it.each(["gold", "item", "monster"] as const)("R9 repeat rejects all reward components, including undeclared %s", kind => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     f.chief.pages![2].commands = kind === "gold" ? [{ kind: "changeGold", op: "+=", amount: 1 }]
       : kind === "item" ? [{ kind: "changeItem", itemId: "item_potion", op: "+=", amount: 1 }]
       : [{ kind: "giveMonster", speciesId: "species_leafling", level: 5 }];
@@ -289,7 +289,7 @@ describe("NPC prerequisite protected runtime replay", () => {
   });
 
   it("R10 validates every action and nested field before admission", () => {
-    const f = prerequisiteFixture();
+    const f = prerequisiteFixture({ shareTilesets: true });
     for (const action of [
       { kind: "transfer", mapId: f.cellar.id, x: 2, y: 2 }, { kind: "snapshotRewards" }, { kind: "retryCheckpoint" },
       { kind: "advanceDays", days: 1 }, { kind: "gift", eventId: "donor", itemId: KEY },
