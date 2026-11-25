@@ -57,6 +57,7 @@ import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import { editorState, editorStateChangedOnlyCanvasOverlay, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import { AI_REGION_HANDOFF_EVENT, aiRegionHandoffDetail, requestAiRegionHandoff } from "@/editor/aiRegionHandoff";
+import { AI_PREWARM_EVENT } from "@/editor/aiPrewarm";
 import { regionFixInstruction, regionTurnTouched, regionWarningsFromEvent, showRegionResultCard, showRegionResultCardOnRegionMap, type RegionWarning } from "@/editor/regionResultCard";
 import { formatSelectionTerrain } from "@/editor/selectionTerrainSummary";
 import { isStampPlaceOn, setStampPlaceOn, subscribeStampPlace } from "@/editor/stampPlaceMode";
@@ -2036,7 +2037,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const session = ensureSession();
     // 두 턴 사이에 사용자가 데이터베이스(개념 꾸러미 등)를 고쳤을 수 있다 — 승인 대기 제안이 없으면
     // 세션 기준을 저장소 최신으로 맞춘다. 안 그러면 조수는 옛 나무를 읽는다(2026-09-02 실측).
-    if (!opts?.replay && proposalApi.pendingProposalMessage === null) {
+    // 이벤트 범위 턴은 새 목표라 세션이 저장소에서 다시 맞춘다(sendUserMessage 의 rebase) — 여기서 한 번 더 맞추면 큰 프로젝트 사본을 두 번 만든다.
+    if (!opts?.replay && !opts?.eventCommandScope && proposalApi.pendingProposalMessage === null) {
       session.syncBaselineFromStoreIfClean(store.getCurrent());
     }
     // 자율 드라이버 진입: agentMode "auto" 에서만 켠다(전송 시점 설정 기준).
@@ -4406,7 +4408,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     cleanupAiAssistBridge?.();
     const targetWindow = window;
     targetWindow.addEventListener("oprn:ai-assist", handleAiAssist);
-    cleanupAiAssistBridge = () => targetWindow.removeEventListener("oprn:ai-assist", handleAiAssist);
+    // 이벤트 편집기를 열면 세션을 미리 만든다(aiPrewarm.ts) — 턴이 돌거나 이미 있으면 아무 것도 안 한다.
+    const handlePrewarm = (): void => { if (!turnBusy && !disposed) ensureSession(); };
+    targetWindow.addEventListener(AI_PREWARM_EVENT, handlePrewarm);
+    cleanupAiAssistBridge = () => {
+      targetWindow.removeEventListener("oprn:ai-assist", handleAiAssist);
+      targetWindow.removeEventListener(AI_PREWARM_EVENT, handlePrewarm);
+    };
   }
 
   // Ctrl/Cmd+K — 통합 커맨드 팔레트(명령+맵). 패널 수명주기와 함께 등록/해제한다.

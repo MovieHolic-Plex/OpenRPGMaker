@@ -877,6 +877,7 @@ export class AssistantSession {
   private storeBacked = false;
   private eventCommandScope: EventCommandScope | undefined;
   private eventCommandPrompt: ChatMessage | undefined;
+  private systemPromptStale = false;
   private runReceipt: ProjectPersistenceReceipt | null = null;
   private wikiDelivery: {
     owner: { current: TurnResult | null };
@@ -1841,6 +1842,7 @@ export class AssistantSession {
     signal = operation.signal;
     this.eventCommandScope = opts?.eventCommandScope ? structuredClone(opts.eventCommandScope) : undefined;
     this.eventCommandPrompt = undefined;
+    if (!this.eventCommandScope && this.systemPromptStale) this.rebuildSystemPrompt();
     this.recoveryOperation = opts?.driverContinue && this.recoveredCheckpoint ? operation : null;
     if (this.recoveryOperation !== operation) { this.recoveredCheckpoint = null; this.recoveryBudget = null; }
     const subscriber = onEvent;
@@ -4119,6 +4121,10 @@ export class AssistantSession {
   private rebuildSystemPrompt(): void {
     const system = this.messages[0];
     if (!system || system.role !== "system") return;
+    // 이벤트 한 페이지 범위 턴은 자기 지시문(buildEventCommandSystemPrompt)만 쓴다 — 공용 지시문은 다음 일반 턴 앞에 다시 조립한다.
+    // 실측(2026-11-25 fast-apply, 10MB 프로젝트 CPU 프로파일): 엔터 뒤 세션 전 24초 중 약 4초가 이 조립이었다.
+    if (this.eventCommandScope) { this.systemPromptStale = true; return; }
+    this.systemPromptStale = false;
     system.content = buildSystemPrompt(this.baselineProject, this.systemPromptOptions());
   }
 

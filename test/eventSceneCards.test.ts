@@ -238,6 +238,49 @@ describe("한 줄 고치기 조수 호출", () => {
     expect(calls[0]!.text).toBe("반말로");
     expect(calls[0]!.options).toMatchObject({ deferApply: true, eventCommandScope: { mapId, eventId: "ev_line", pageId: "p1", mode: "edit" } });
   });
+
+  it("페이지 범위가 실패로 끝나도 이어진 이벤트가 있으면 전체 길로 한 번 더 보낸다(퍼즐 손잡이)", async () => {
+    // 2026-11-25 fast-apply: 「퍼즐 정답을 2번으로」 의 범위 턴이 ok:false 로 끝나 전체 길을 타지 않고 바로 실패했다.
+    setEventEditorViewLevel("easy");
+    const project = createBlankProject();
+    const mapId = Object.keys(project.maps)[0]!;
+    const leverPage = (id: string, body: string): EventPage => ({
+      id, name: "처음", conditions: [], graphic: {}, trigger: { kind: "action" }, priority: "same",
+      movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [narrate(body), { kind: "setSwitch", switchId: "sw_sun", value: true } as Command],
+    });
+    project.maps[mapId]!.events.push(
+      { id: "ev_sun", name: "해 손잡이", x: 1, y: 1, trigger: { kind: "action" }, commands: [], pages: [leverPage("sun_p1", "해 문양")] },
+      { id: "ev_moon", name: "달 손잡이", x: 2, y: 1, trigger: { kind: "action" }, commands: [], pages: [leverPage("moon_p1", "달 문양")] },
+    );
+    store.replace(project);
+    editorState.set({ currentMapId: mapId, selectedEventPageId: "moon_p1" });
+    const calls: { text: string; options?: AiBridgeSendOptions }[] = [];
+    registerAiAssistantBridge({
+      send: async (text, options) => {
+        calls.push({ text, options });
+        if (options?.eventCommandScope) return { ok: false, error: "명령 4개가 사라져 적용하지 않았습니다", status: { ready: true, turnBusy: false } as never, audit: [], harness: null };
+        const before = store.getCurrent();
+        const after = structuredClone(before);
+        (after.maps[mapId]!.events.find((event) => event.id === "ev_moon")!.pages![0]!.commands[0] as { body: string }).body = "달 문양, 먼저";
+        return { ok: true, pendingProposal: { callCount: 1, summary: "", before, after }, status: { ready: true, turnBusy: false } as never, audit: [], harness: null };
+      },
+      getStatus: () => ({ ready: true, turnBusy: false }) as never,
+      getAudit: () => [],
+      getHarness: () => null,
+      abort: () => {},
+    });
+    const host = document.createElement("div");
+    document.body.append(host);
+    renderEventEditorDynamic(host, mapId, "ev_moon");
+    const input = host.querySelector<HTMLInputElement>('[data-testid="event-edit-line-input"]')!;
+    input.value = "퍼즐 정답을 2번으로";
+    input.dispatchEvent(new Event("input"));
+    input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+    await vi.waitFor(() => expect(calls).toHaveLength(2));
+    expect(calls[0]!.options?.eventCommandScope).toBeDefined();
+    expect(calls[1]!.options?.eventCommandScope).toBeUndefined();
+    await vi.waitFor(() => expect(store.getCurrent().maps[mapId]!.events.find((event) => event.id === "ev_moon")!.pages![0]!.commands[0]).toMatchObject({ body: "달 문양, 먼저" }));
+  });
 });
 
 describe("한 줄 고치기 범위(이어진 이벤트)", () => {
