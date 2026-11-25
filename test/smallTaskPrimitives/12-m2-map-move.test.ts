@@ -59,7 +59,7 @@ const cases: readonly Row[] = [
   { id: "037", fixture: "built", command: "move-to-variable-location", insert: { mapVariableId: VARIABLES.map, xVariableId: VARIABLES.x, yVariableId: VARIABLES.y },
     stored: { mapVariableId: VARIABLES.map, xVariableId: VARIABLES.x, yVariableId: VARIABLES.y },
     update: { xVariableId: VARIABLES.y, yVariableId: VARIABLES.x }, changed: { xVariableId: VARIABLES.y, yVariableId: VARIABLES.x }, bad: { mapVariableId: "없는-변수" } },
-  { id: "038", fixture: "maou", command: "get-on-off-vehicle", insert: { boarded: true },
+  { id: "038", fixture: "built", command: "get-on-off-vehicle", insert: { boarded: true },
     stored: { boarded: "true" }, update: { boarded: false }, changed: { boarded: "false" }, bad: { boarded: "일단 보류" } },
   { id: "039", fixture: "blank", command: "set-vehicle-location", insert: { vehicle: "raft", x: 2, y: 3 },
     stored: project => ({ vehicle: "raft", mapId: project.startMapId, x: 2, y: 3 }),
@@ -70,31 +70,31 @@ const cases: readonly Row[] = [
   { id: "041", fixture: "built", command: "swap-event-location", insert: { eventB: OTHER },
     stored: { eventA: "this-event", eventB: OTHER }, update: { eventA: OTHER, eventB: HOST },
     changed: { eventA: OTHER, eventB: HOST }, bad: { eventB: "없는-이벤트" } },
-  { id: "042", fixture: "maou", command: "get-terrain-id", insert: { variableId: VARIABLES.location, x: 2, y: 3 },
+  { id: "042", fixture: "built", command: "get-terrain-id", insert: { variableId: VARIABLES.location, x: 2, y: 3 },
     stored: { variableId: VARIABLES.location, x: 2, y: 3 }, update: { x: 4 }, changed: { x: 4 }, bad: { x: 99999 } },
   { id: "043", fixture: "blank", command: "get-event-id", insert: { variableId: VARIABLES.location, x: 2, y: 3 },
     stored: { variableId: VARIABLES.location, x: 2, y: 3 }, update: { x: 4 }, changed: { x: 4 }, bad: { variableId: "없는-변수" } },
   { id: "049", fixture: "built", command: "scroll-map", insert: { direction: "right", distance: 3, wait: false },
     stored: { direction: "right", distance: 3, wait: "false" }, update: { mode: "lock", speed: 5 },
     changed: { mode: "lock", speed: 5 }, bad: { distance: -3 } },
-  { id: "058", fixture: "maou", command: "wait-for-all-movement", insert: {}, stored: {}, update: {}, changed: {} },
+  { id: "058", fixture: "built", command: "wait-for-all-movement", insert: {}, stored: {}, update: {}, changed: {} },
   { id: "059", fixture: "blank", command: "stop-all-movement", insert: {}, stored: {}, update: {}, changed: {} },
   { id: "068", fixture: "built", command: "change-tileset", insert: project => ({ value: project.maps[project.startMapId].tilesetId }),
     stored: project => ({ value: project.maps[project.startMapId].tilesetId }), update: { value: "tiles_map_move" },
     changed: { value: "tiles_map_move" }, bad: { value: "없는-타일셋" } },
-  { id: "069", fixture: "maou", command: "change-parallax-back", insert: { resourceId: BACKDROP, flowPercent: 100 },
+  { id: "069", fixture: "built", command: "change-parallax-back", insert: { resourceId: BACKDROP, flowPercent: 100 },
     stored: { resourceId: BACKDROP }, update: { flowPercent: 0, flowDurationMs: 1000 },
     changed: { flowPercent: 0, flowDurationMs: 1000 }, bad: { resourceId: "없는-배경" } },
   { id: "070", fixture: "blank", command: "set-encounter-rate", insert: { value: 0 }, stored: { value: 0 },
     update: { value: 8 }, changed: { value: 8 }, bad: { value: -1 } },
   { id: "085", fixture: "built", command: "end-event-processing", insert: {}, stored: {}, update: {}, changed: {} },
-  { id: "086", fixture: "maou", command: "erase-event", insert: {}, stored: {}, update: {}, changed: {} },
+  { id: "086", fixture: "built", command: "erase-event", insert: {}, stored: {}, update: {}, changed: {} },
   { id: "203", fixture: "blank", command: "spawn-event", insert: { prefabId: OTHER, x: 2, y: 3 },
     stored: { prefabId: OTHER, eventId: `${OTHER}_spawn`, x: 2, y: 3 }, update: { eventId: "map_move_copy", y: 5 },
     changed: { eventId: "map_move_copy", y: 5 }, bad: { prefabId: "없는-원본" } },
   { id: "204", fixture: "built", command: "remove-event", insert: {}, stored: { eventId: "" },
     update: { eventId: OTHER }, changed: { eventId: OTHER }, bad: { eventId: "없는-이벤트" } },
-  { id: "205", fixture: "maou", command: "pathfind-move", insert: { x: 2, y: 3 },
+  { id: "205", fixture: "built", command: "pathfind-move", insert: { x: 2, y: 3 },
     stored: { x: 2, y: 3 }, update: { xSource: "variable", xVariableId: VARIABLES.x, resultSwitchId: SWITCH },
     changed: { xSource: "variable", xVariableId: VARIABLES.x, resultSwitchId: SWITCH }, bad: { xSource: "variable", xVariableId: "없는-변수" } },
   { id: "207", fixture: "blank", command: "region-trigger", insert: { regionId: REGION, switchId: SWITCH },
@@ -156,6 +156,8 @@ function expectedCommand(row: Row, project: Project) {
   return { ...command, fields: { ...command.fields, ...stored } };
 }
 
+// 2026-11-25 test-diet: 예전에 maou(마왕 편의점 예제, 짓는 데 30~60 s)였던 여섯 행(038·042·058·069·086·205)은 built 로 돈다 —
+// 이 파일의 사례는 시작 맵에 시험용 이벤트를 새로 꽂고 그 한 줄만 고치므로 예제 내용을 읽지 않는다.
 describe.each(cases)("지도·이동 명령 $id", (row) => {
   // Building the flagship takes about a minute. Load it once, outside the per-edit timer.
   beforeAll(() => { testFixture(row.fixture); }, 600_000);
