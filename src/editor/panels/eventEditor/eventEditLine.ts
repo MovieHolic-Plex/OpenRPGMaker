@@ -10,6 +10,7 @@ import type { Command, EventPage, GameEvent, MapId, Project } from "@/project/ty
 import { el } from "@/util/dom";
 import { jsonEqual } from "@/util/structuralJson";
 import { countCommandDiff, diffCommandLists, hasCommandDiffChanges, type CommandDiffRow } from "./commandDiff";
+import { viewLevelHintFor, type ViewLevelSignal } from "./viewLevelHint";
 
 export const EVENT_EDIT_HIGHLIGHT_MS = 2500;
 
@@ -26,7 +27,7 @@ interface EditStep {
 
 interface LineState {
   steps: EditStep[];
-  status: { text: string; kind: "ok" | "fail" | "busy" | "" };
+  status: { text: string; kind: "ok" | "fail" | "busy" | "hint" | "" };
   draft: string;
   busy: boolean;
   changed: Map<string, Set<string>>;
@@ -37,6 +38,7 @@ interface LineState {
 const states = new Map<string, LineState>();
 let statesProject = "";
 let liveInput: HTMLInputElement | null = null;
+let liveSetStatus: ((text: string, kind: LineState["status"]["kind"]) => void) | null = null;
 const undoListeners = new Set<(eventKey: string, count: number) => void>();
 
 function keyOf(mapId: MapId, eventId: string): string {
@@ -78,10 +80,20 @@ export function focusEventEditLine(): boolean {
   return true;
 }
 
+/** 막히는 신호 하나. 보기 제안이 나오면(쉬움·보통, 14일 안 처음) 열린 편집기의 요약줄 자리에 한 줄 띄운다. */
+export function noteViewLevelSignal(signal: ViewLevelSignal): boolean {
+  if (!liveInput?.isConnected || !liveSetStatus) return false;
+  const hint = viewLevelHintFor(signal);
+  if (!hint) return false;
+  liveSetStatus(hint, "hint");
+  return true;
+}
+
 export function resetEventEditLineForTest(): void {
   states.clear();
   statesProject = "";
   liveInput = null;
+  liveSetStatus = null;
   undoListeners.clear();
 }
 
@@ -331,9 +343,11 @@ export function renderEventEditLine(options: EventEditLineOptions): HTMLElement 
     setStatus(`되돌렸어요: ${step.summary}`, "ok");
     for (const change of step.changes) options.undoPage(change.pageId);
     for (const listener of [...undoListeners]) listener(key, state.undoCount);
+    if (state.undoCount === 2) noteViewLevelSignal("undo-twice");
   });
 
   liveInput = input;
+  liveSetStatus = setStatus;
   return el("div", {
     class: "event-edit-line",
     dataset: { testid: "event-edit-line" },

@@ -8,6 +8,8 @@ import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { buildSceneCards, conditionQuestion, SCENE_COMMENT_COMMAND_ID } from "@/editor/panels/eventEditor/sceneCards";
 import { resetEventViewSession } from "@/editor/panels/eventEditor/storyboardView";
+import { resetViewLevelHintForTest, VIEW_LEVEL_HINT_QUIET_MS, viewLevelHintFor } from "@/editor/panels/eventEditor/viewLevelHint";
+import { noteViewLevelSignal, resetEventEditLineForTest } from "@/editor/panels/eventEditor/eventEditLine";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { Command, EventPage, GameEvent } from "@/project/types";
@@ -116,5 +118,57 @@ describe("보기 셋", () => {
     const host = render();
     expect(host.querySelectorAll('[data-testid="event-scene-card-count"]')).toHaveLength(2);
     expect(host.querySelector('[data-testid="event-scene-add"]')).not.toBeNull();
+  });
+});
+
+describe("막히는 신호의 보기 제안", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    resetViewLevelHintForTest();
+    resetEventEditLineForTest();
+  });
+
+  it("쉬움에서 두 번 되돌림은 보통을 한 번만 제안하고, 14일 뒤 다시 제안한다", () => {
+    setEventEditorViewLevel("easy");
+    const now = 1_000_000;
+    expect(viewLevelHintFor("undo-twice", now)).toContain("보기 › 보통");
+    expect(viewLevelHintFor("undo-twice", now + 1000)).toBeNull();
+    expect(viewLevelHintFor("undo-twice", now + VIEW_LEVEL_HINT_QUIET_MS + 1)).toContain("보통");
+  });
+
+  it("숨은 명령·줄 복사·Delete 는 고급을 제안하고, 이미 그 보기 이상이면 말하지 않는다", () => {
+    setEventEditorViewLevel("normal");
+    expect(viewLevelHintFor("undo-twice")).toBeNull();
+    expect(viewLevelHintFor("hidden-command")).toContain("보기 › 고급");
+    expect(viewLevelHintFor("line-delete")).toBeNull();
+    setEventEditorViewLevel("advanced");
+    resetViewLevelHintForTest();
+    expect(viewLevelHintFor("line-copy")).toBeNull();
+  });
+
+  it("보기를 스스로 바꾸지 않고, 열린 편집기의 요약줄 자리에 한 줄로 띄운다", () => {
+    setEventEditorViewLevel("easy");
+    const project = createBlankProject();
+    const mapId = Object.keys(project.maps)[0]!;
+    const page: EventPage = {
+      id: "p1", name: "처음", conditions: [], graphic: {}, trigger: { kind: "action" }, priority: "same",
+      movement: { type: "fixed", speed: 3, frequency: 3 },
+      commands: [say("오든", "어서 오게.")],
+    };
+    project.maps[mapId]!.events.push({ id: "ev_hint", name: "오든", x: 1, y: 1, trigger: { kind: "action" }, commands: [], pages: [page] });
+    store.replace(project);
+    editorState.set({ currentMapId: mapId, selectedEventPageId: "p1" });
+    const host = document.createElement("div");
+    document.body.append(host);
+    renderEventEditorDynamic(host, mapId, "ev_hint");
+    const card = host.querySelector<HTMLElement>(".event-scene-card")!;
+    card.dispatchEvent(new KeyboardEvent("keydown", { key: "Delete", bubbles: true }));
+    const summary = host.querySelector<HTMLElement>('[data-testid="event-edit-line-summary"]')!;
+    expect(summary.dataset.kind).toBe("hint");
+    expect(summary.textContent).toContain("고급");
+    expect(eventEditorViewLevel()).toBe("easy");
+    expect(noteViewLevelSignal("line-copy")).toBe(false);
+    document.body.replaceChildren();
+    clearCommandInspector();
   });
 });

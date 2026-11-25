@@ -164,6 +164,7 @@
   "b0f9be681da7": "[event] 12px/1.6 var(--font-ui)",
   "b1342bc51414": "[event] center",
   "b195a925dcbf": "[event] none",
+  "b21a7919e07e": "[event] var(--accent)",
   "b52c2c233f6d": "[event] column",
   "b531ff50ad98": "[event] var(--text-1)",
   "b54f57acceeb": "[event] 13px/1.5 var(--font-ui)",

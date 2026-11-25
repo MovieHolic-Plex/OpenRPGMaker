@@ -31,7 +31,7 @@ import { el } from "@/util/dom";
 import { renderEditorIcon, type EditorIconName } from "./editorIcons";
 import { toast } from "@/util/toast";
 import { consumeEventAiDockOpen } from "./aiDockOpenRequest";
-import { eventEditLineChangedPaths, focusEventEditLine, renderEventEditLine } from "./eventEditLine";
+import { eventEditLineChangedPaths, focusEventEditLine, noteViewLevelSignal, renderEventEditLine } from "./eventEditLine";
 import { auxCompositeKey, syncAuxHosts } from "./auxOpenController";
 import { renderEventPageFlow, renderEventPagePreview } from "./eventScriptModernViews";
 import { renderEventScheduleEditor } from "./eventScheduleEditor";
@@ -277,6 +277,15 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   const storyboardHost = el("div", { class: "event-storyboard-host", dataset: { testid: "event-storyboard-host" } });
   const sceneHost = el("div", { class: "event-scene-host", dataset: { testid: "event-scene-host" } });
   sceneHost.hidden = !sceneLevel;
+  // 카드에서 줄 복사·Delete 를 누르는 것은 한 줄씩 고치려는 신호다 — 고급 보기를 한 번 제안한다.
+  sceneHost.addEventListener("keydown", (event) => {
+    const target = event.target as HTMLElement | null;
+    if (!target?.closest?.(".event-scene-card") || target.closest("input, textarea")) return;
+    if (event.key === "Delete") noteViewLevelSignal("line-delete");
+    else if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "c" && !document.getSelection()?.toString()) {
+      noteViewLevelSignal("line-copy");
+    }
+  });
   const flowHost = el("div", {
     class: "event-page-flow-host",
     dataset: { testid: "event-page-flow-host" },
@@ -378,6 +387,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         onOpen: (path) => openStoryboardEditor([...path]),
         onAddCard: () => openCommandPickerForActions(actions, undefined, activePage.commands),
         changedPaths: eventEditLineChangedPaths(mapId, eventId, activePage.id),
+        onRevealHidden: () => { noteViewLevelSignal("hidden-command"); },
       }));
     }
     if (!cmdList.hidden) resumeCommandListMount(cmdList);
