@@ -5,7 +5,7 @@ import { shopBody } from "@/editor/panels/eventEditor/commandBodyCommerce";
 import { renderM2CommandBody } from "@/editor/panels/eventEditor/commandBodyM2";
 import { conditionForm } from "@/editor/panels/eventEditor/conditionForm";
 import type { CommandEditContext, CommandListActions } from "@/editor/panels/eventEditor/types";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { startSession } from "@/project/session";
 import { store } from "@/project/store";
 import type { Command, Condition } from "@/project/types";

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { deserialize } from "@/project/io";
 import {
   WEB_PLAYER_MANIFEST,

@@ -5,7 +5,7 @@ import { clearSelectionRegion, copySelection, pasteClipboard, selectTileRegion }
 import { shiftMapContent } from "@/editor/mapShiftActions";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { EXTRA_LAYER_KEYS, setLayerTileAt } from "@/project/mapLayers";
 import { store } from "@/project/store";
 import type { GameMap, ChaseAcrossMaps, GameEvent, Command, Project } from "@/project/types";

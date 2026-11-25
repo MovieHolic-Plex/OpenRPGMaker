@@ -6,7 +6,7 @@
 
 import { describe, expect, it } from "vitest";
 import { ProjectFormatError, deserialize, serialize } from "@/project/io";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import type { EventPage, Project } from "@/project/types";
 
 function projectWithPage(overrides: Partial<EventPage>): Project {

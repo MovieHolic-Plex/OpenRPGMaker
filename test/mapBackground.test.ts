@@ -2,7 +2,7 @@ import { describe, expect, it, afterEach, beforeEach, vi } from "vitest";
 import { compileCutscene } from "@/editor/cutscene";
 import { runTool, type ToolContext } from "@/editor/tools";
 import { findOprnPanoramaSet } from "@/assets/oprnPanoramas";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { mapBackgroundFromLayerSet } from "@/project/mapBackground";
 import type { Command } from "@/project/types";
 import { parseTintColor } from "@/player/screen/tintModel";

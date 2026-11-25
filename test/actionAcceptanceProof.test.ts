@@ -1,7 +1,7 @@
 /** @vitest-environment happy-dom */
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AssistantAcceptanceLedger } from "@/ai/assistantAcceptanceLedger";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import {
   ACTION_COMBAT_OUTCOMES, isVerifiedActionCombatProof, runActionCombatTest,
 } from "@/testing/actionCombatProof";

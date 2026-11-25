@@ -22,7 +22,7 @@ import {
   updateShopStatus,
 } from "@/player/playSceneShopDom";
 import { markListOverflow } from "@/player/runtimeTextFit";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { changeItem, startSession } from "@/project/session";
 import { store } from "@/project/store";
 import { resolveTerms } from "@/project/terms";

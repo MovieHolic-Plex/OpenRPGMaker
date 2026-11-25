@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { renderLifeCraftingTab } from "@/editor/panels/databaseLifeCraftingView";
 import { redoMapEdit, resetMapEditHistory, undoMapEdit } from "@/editor/mapEditHistory";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { deserialize, serialize } from "@/project/io";
 import { store } from "@/project/store";
 import { toolActionRulesOf } from "@/project/toolActions";

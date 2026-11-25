@@ -1,4 +1,4 @@
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { createStandaloneHtmlExport } from "@/project/standaloneExport";
 import { STANDALONE_ASSETS_NODE_ID, STANDALONE_PROJECT_NODE_ID } from "@/project/standaloneHtml";
 import { afterEach, describe, expect, it, vi } from "vitest";

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { createBlankMap, createBlankProject } from "@/project/defaults";
+import { createBlankMap } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { initialGameTime, setGameTimeClock } from "@/project/gameTime";
 import { matchNpcSchedule, npcScheduleWhenMatches } from "@/project/npcSchedule";
 import { startSession, type PlaySession } from "@/project/session";

@@ -2,7 +2,8 @@ import { describe, expect, it } from "vitest";
 import { buildIndependentReviewRequest, reviewChanges, reviewMapReferenceRoots } from "@/ai/independentReview";
 import { extractOriginalContext, OriginalContextStore } from "@/ai/originalContext";
 import { defaultAiConfig } from "@/ai/llmClient";
-import { createBlankMap, createBlankProject } from "@/project/defaults";
+import { createBlankMap } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import type { Project } from "@/project/types";
 import { independentReviewPayload } from "./independentReviewFixture";
 // The 2026-10-07 default (beodeul_city, ~7MB) alone overflows complete review evidence; these window/scope cases keep the small retired sheet.

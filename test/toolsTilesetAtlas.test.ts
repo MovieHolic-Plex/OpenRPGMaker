@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { normalizeTerrainRecords } from "@/project/databaseUtilityRecordModel";
 import { deserialize, serialize } from "@/project/io";
 import { vehicleCanEnter } from "@/project/vehicles";

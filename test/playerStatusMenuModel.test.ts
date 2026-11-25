@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
-import { createBlankProject, DEFAULT_EQUIPMENT_ID } from "@/project/defaults";
+import { DEFAULT_EQUIPMENT_ID } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { startSession } from "@/project/session";
 import { createLifeLedgerDetail } from "@/player/lifeLedger";
 import { listStatusMenuCommandIds, createPlayerStatusMenuSnapshot, listStatusMenuGroupCommandIds, listStatusMenuRailIds, statusMenuCommandSummary, statusMenuRailIdForCommand } from "@/player/playerStatusMenuModel";

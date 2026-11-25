@@ -2,7 +2,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { playCinematicSequence, type CinematicPlayback } from "@/player/cinematicSequence";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import type { CinematicScene, Project, Command } from "@/project/types";
 import { startSession, type PlaySession } from "@/project/session";
 import { store } from "@/project/store";
