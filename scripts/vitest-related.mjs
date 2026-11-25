@@ -368,11 +368,12 @@ function main(argv) {
   const result = selectRelated({ changed, testSources, exists: existsSync, timings, options, reverseGraph });
   console.log(formatReport(result, options));
   if (args.out) writeFileSync(args.out, result.selected.map((entry) => `${entry.file}\n`).join(""));
-  // 워크플로 matrix: {"mode","chunk":[1..n]} 와 조각별 목록 파일(<matrix 폴더>/chunk-<n>.list).
+  // 워크플로 matrix: {"chunk":[1..n]}(matrix 값은 배열만 된다) 와 조각별 목록 파일(<matrix 폴더>/chunk-<n>.list), 모드는 mode.txt.
   if (args.matrix) {
     const dir = posix.dirname(args.matrix);
     for (const chunk of result.chunks) writeFileSync(posix.join(dir, `chunk-${chunk.id}.list`), chunk.files.map((file) => `${file}\n`).join(""));
-    writeFileSync(args.matrix, JSON.stringify({ mode: result.mode, chunk: result.chunks.map((chunk) => chunk.id) }));
+    writeFileSync(args.matrix, JSON.stringify({ chunk: result.chunks.map((chunk) => chunk.id) }));
+    writeFileSync(posix.join(dir, "mode.txt"), `${result.mode}\n`);
   }
   if (args.summary) writeFileSync(args.summary, formatSummary(result, options), { flag: "a" });
 }
