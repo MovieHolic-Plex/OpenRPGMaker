@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { normalizeSystemRecords } from "@/project/databaseRecordModel";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { deserialize, ProjectFormatError, serialize } from "@/project/io";
 import { validateSystem } from "@/project/io/shapeDatabaseFields";
 import { collectUsedUploadedAssetIds, prepareWebExport } from "@/project/webExport";

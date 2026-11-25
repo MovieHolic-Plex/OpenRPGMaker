@@ -8,7 +8,7 @@ import { runTool } from "@/editor/tools/toolRunner";
 import { renderEnemyRecordForm } from "@/editor/panels/databaseEnemyRecordView";
 import { battleField, syncBattleField } from "@/player/battleFieldDom";
 import { retroDamage } from "@/player/battleRetroMotion";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { deserialize, serialize } from "@/project/io/serialize";
 import { store } from "@/project/store";
 import type { EnemyRecord, Project } from "@/project/types";

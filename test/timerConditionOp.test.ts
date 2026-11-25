@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { openPageMoveRouteDialog } from "@/editor/panels/eventEditor/moveRouteDialog";
 import { MOVE_ROUTE_COMMAND_ROWS } from "@/editor/panels/eventEditor/moveRouteCommandCatalog";
-import { createBlankProject, DEFAULT_ACTOR_ID, DEFAULT_ITEM_ID } from "@/project/defaults";
+import { DEFAULT_ACTOR_ID, DEFAULT_ITEM_ID } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import type { EventPageMovement, EventPage, EventPageCondition, GameEvent, Command } from "@/project/types";
 import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom, flushFakeAnimationFrames } from "./fakeDom";
