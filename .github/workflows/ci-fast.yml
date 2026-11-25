@@ -188,6 +188,12 @@ jobs:
       - name: 러너 선택 계약 테스트
         run: node --test scripts/check-self-hosted-workflows.test.mjs
 
+      # 새 시험 파일 경고(실패 아님) — 회귀 시험은 그 모듈의 기존 시험 파일에 더한다(AGENTS.md). 2026-11-25 test-diet.
+      - name: 새 시험 파일 경고
+        run: |
+          node --test scripts/check-new-test-files.test.mjs
+          node scripts/check-new-test-files.mjs --base HEAD~1
+
       # 플레이어·웹 내보내기가 선언한 런타임 에셋이 public/ 에 실제로 있는지(저작권 정리로 지운 그림을
       # 계속 선언해 모든 Web ZIP 내보내기가 실패했던 회귀를 막는다). 브라우저·빌드 없이 수십 초.
       # vite-node 기본 힙(약 2GB)을 넘겼던 검사에 6GB 힙을 준다(2026-11-20, fast-static exit 134).
