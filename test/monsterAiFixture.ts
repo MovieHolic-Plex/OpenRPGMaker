@@ -1,4 +1,4 @@
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import type { ToolContext } from "@/editor/tools/types";
 
 export const goblinId = "upload-monster-goblin";

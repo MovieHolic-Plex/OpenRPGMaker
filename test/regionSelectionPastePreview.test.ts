@@ -1,4 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+// 빈 프로젝트는 케이스마다 모듈을 다시 읽어도(vi.resetModules) 파일에서 한 번만 짓는다 — 타일셋은 동결 공유(support/blankProject.ts).
+import { freshBlankProject } from "./support/blankProject";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 
 let restoreDom: (() => void) | null = null;
@@ -40,12 +42,12 @@ async function setupWithSelection(): Promise<{
     movePastePreview,
     selectTileRegion,
   } = await import("@/editor/mapClipboard");
-  const { createBlankProject, TILE } = await import("@/project/defaults");
+  const { TILE } = await import("@/project/defaults");
   const { store } = await import("@/project/store");
   const { paintTile } = await import("@/editor/tileActions");
   // TILE.* 는 옛 combined_town 칸 번호다 — 기본 칩셋이 beodeul_city 로 바뀐 뒤(PR #2335) 그 칩셋을 직접 깐다.
   const { startOnRetiredCombinedTown } = await import("./support/retiredEasyRpgTilesets");
-  store.replace(startOnRetiredCombinedTown(createBlankProject()));
+  store.replace(startOnRetiredCombinedTown(freshBlankProject()));
   editorState.set({ selection: null, clipboard: null, pastePreview: null, tool: "select", layer: "lower" });
   const mapId = store.getCurrent().startMapId;
   // 원본 타일 배치
