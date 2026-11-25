@@ -9,7 +9,7 @@ import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { resetIntentDeclarationCache } from "@/ai/intentDeclarationClient";
 import { store } from "@/project/store";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import type { Project } from "@/project/types";
 import type { ChatRequest, ChatResult } from "@/ai/llmClient";
 import { fixedDeclarer } from "./intentFixture";

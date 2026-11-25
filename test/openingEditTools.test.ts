@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext, ToolResult } from "@/editor/tools/types";
 import { acceptSharedCharacterGraphics, refreshSharedCharacterGraphics, sharedFaceForCharset } from "@/project/sharedCharacterFaceResolver";

@@ -3,7 +3,7 @@
 // 문서 openwiki/assistant-v2.md 「직접 플레이 셋째 판에서 찾은 결함」. 에이전트 세션 규칙으로 작성 시점에는 실행하지 않았다(CI 에서 돈다).
 import { readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { createBlankMap } from "@/project/defaults/defaultMaps";
 import type { GameEvent, Project } from "@/project/types";
 import { store } from "@/project/store";
