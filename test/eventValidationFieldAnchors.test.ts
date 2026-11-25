@@ -4,7 +4,7 @@ import { M2_COMMAND_CATALOG, createDefaultM2Fields } from "@/project/eventComman
 import { newCommand } from "@/editor/eventActions";
 import { validateEventDraftBody } from "@/editor/eventDraftValidator";
 import { renderCommandBody } from "@/editor/panels/eventEditor/commandBody";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import type { Command, GameEvent } from "@/project/types";
 

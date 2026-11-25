@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { AssistantAcceptanceLedger } from "@/ai/assistantAcceptanceLedger";
 import { AssistantImageEvidence } from "@/ai/assistantImageEvidence";
 import type { Project } from "@/project/types";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject, ownTileset } from "./support/blankProject";
 
 it("retains reviewed draft images until their exact content is applied", () => {
   // Given an image review for a changed draft, not the old applied map.
@@ -24,7 +24,7 @@ const mutations: readonly { readonly name: string; readonly change: (project: Pr
   { name: "upper tile", change: p => { p.maps[p.startMapId].upperTiles[0] = 1; }, affected: 1 },
   { name: "sparse stack", change: p => { p.maps[p.startMapId].upperTileStacks = { 0: [1, 2] }; }, affected: 1 },
   { name: "event", change: p => { p.maps[p.startMapId].events.push({ id: "event", x: 0, y: 0, trigger: { kind: "action" }, commands: [] }); }, affected: 1 },
-  { name: "tileset image", change: p => { p.tilesets[p.maps[p.startMapId].tilesetId].image = { type: "uploaded", id: "replacement" }; }, affected: 1 },
+  { name: "tileset image", change: p => { ownTileset(p, p.maps[p.startMapId].tilesetId).image = { type: "uploaded", id: "replacement" }; }, affected: 1 },
   { name: "shared assets", change: p => { p.assets.uploaded.replacement = { id: "replacement", name: "Image", kind: "tileset", dataUrl: "data:image/png;base64,AA==", meta: {} }; }, affected: 2 },
 ];
 

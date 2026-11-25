@@ -6,7 +6,7 @@
 // exhaustiveness(모든 switch 가 컴파일)는 typecheck 가 커버한다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { normalizeEnemyRecord, normalizeItemRecord } from "@/project/databaseRecordModel";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
 

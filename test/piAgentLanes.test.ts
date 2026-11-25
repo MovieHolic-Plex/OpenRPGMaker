@@ -11,7 +11,7 @@ import {
 import type { PiAgentDoneEvent, PiAgentEvent, PiAgentRequest } from "@/ai/piAgent/protocol";
 import { createLaneManager } from "@/editor/panels/aiLaneManager";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import { runTool } from "@/editor/tools";
 import type { Project } from "@/project/types";

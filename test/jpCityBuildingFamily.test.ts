@@ -3,7 +3,7 @@
 import { describe, expect, it } from "vitest";
 import { runTool } from "@/editor/tools/toolRunner";
 import "@/editor/tools/toolRegistry";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { blankFillTileFor, createStarterMap } from "@/project/defaults/defaultMaps";
 import { createJpCityTileset, JP_CITY_ID } from "@/project/defaults/jpCity";
 import { JP_CITY_BUILDER } from "@/ai/v2/place/builders/jpCity";

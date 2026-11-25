@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import * as bindings from "@/player/keyBindings";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { deserialize, serialize } from "@/project/io";
 import { actorBattlers } from "@/battle/battleBattlers";
 import type { ItemRecord } from "@/project/types";

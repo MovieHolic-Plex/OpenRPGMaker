@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { measure, countedContent } from "../scripts/fs-scale/score.mjs";
 import { MIN_ACT_DEPTH, progressionDepth } from "@/ai/v2/judge/actDepth";
 import { actDepthMinBlocker, mapsMinBlocker, editorDefaultsLeft } from "@/ai/v2/judge/shipChecks";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import type { Project, GameMap, GameEvent } from "@/project/types";
 import { normalizeGameBlueprint } from "@/project/gameBlueprint";
 import { createBuildRun } from "@/ai/v2/shared/buildRun";

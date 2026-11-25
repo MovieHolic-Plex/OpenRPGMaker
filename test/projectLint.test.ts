@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { deserialize, serialize } from "@/project/io";
 import { collectProjectReferenceIssues, repairProjectReferences, validateProjectReferences } from "@/project/io/references";
 import { projectLint } from "@/project/lint/projectLint";
