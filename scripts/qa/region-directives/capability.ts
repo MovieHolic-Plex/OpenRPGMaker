@@ -100,15 +100,20 @@ const NO_RECIPE: readonly (readonly [string, Call | null])[] = [
   ["농장 만들어 줘", ["create_farm_plot", {}]],
   ["성문 세워 줘", null], ["다리 놓아 줘", ["author_world_bridge", { length: 6, orientation: "horizontal" }]],
   ["우물 만들어 줘", ["place_props", { material: "우물", count: 1 }]],
-  ["창고 지어 줘", null], ["마구간 지어 줘", null], ["학교 지어 줘", null], ["경비 초소 세워 줘", null],
-  ["풍차 세워 줘", null], ["등대 세워 줘", null], ["묘지 만들어 줘", null], ["시장 열어 줘", null],
+  ["창고 지어 줘", ["build_region_place", { kind: "warehouse" }]], ["마구간 지어 줘", ["build_region_place", { kind: "stable" }]],
+  ["학교 지어 줘", ["build_region_place", { kind: "school" }]], ["경비 초소 세워 줘", ["build_region_place", { kind: "guard_post" }]],
+  ["풍차 세워 줘", ["build_region_place", { kind: "windmill" }]], ["등대 세워 줘", ["build_region_place", { kind: "lighthouse" }]],
+  ["묘지 만들어 줘", null], ["시장 열어 줘", null],
   ["사냥터 만들어 줘", ["make_hunting_ground", {}]], ["캠프 만들어 줘", ["$campfire", {}]],
 ];
 NO_RECIPE.forEach(([text, call], i) => add({
   id: `place-other-${i + 1}`, genre: "장소 짓기", text,
+  // 레시피 도입 전(build_region_place 에 그 종류가 없던 때)은 짓는 도구가 없었다.
+  ...(call?.[0] === "build_region_place" ? { before: (): Call[] => [["$missing", { what: text }]], expect: (project: Project, env: Env) => needNewMap(project, env) ?? needEvent(1)(project, env) } : {}),
   after: (env) => {
     if (!call) return [["$missing", { what: text }]];
     const [name, args] = call;
+    if (name === "build_region_place") return [[name, { mapId: env.mapId, region: R, ...args }]];
     if (name === "$campfire") return [["place_pixel_fx", { mapId: env.mapId, x: C.x, y: C.y, effectId: env.fx.find((f) => f.includes("campfire")) ?? env.fx[0] }]];
     if (name === "make_hunting_ground") return [[name, { mapId: env.mapId, area: AREA, troopId: env.troopId }]];
     if (name === "author_world_bridge") return [[name, { mapId: env.mapId, x: R.x + 2, y: C.y, ...args }]];

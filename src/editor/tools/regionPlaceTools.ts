@@ -40,6 +40,12 @@ interface BuildingRecipe {
   readonly greeting: string;
   readonly big: boolean;
   readonly savepoint?: boolean;
+  /**
+   * 버들항 외관을 이 구조 키트(입구 부위 있는 건물)에서 먼저 고른다 — 창고·마구간·등대처럼 살림집 키트로는 안 되는 모양.
+   * onlyKits 면 살림집·기본 마을 집으로 대신하지 않는다(등대·풍차를 집으로 세우지 않는다).
+   */
+  readonly kits?: readonly string[];
+  readonly onlyKits?: boolean;
 }
 
 interface DungeonRecipe {
@@ -58,6 +64,18 @@ const BUILDINGS: readonly BuildingRecipe[] = [
   { kind: "chapel", label: "교회", layout: { program: "chapel" }, counterRoom: /chapel|nave/, keeper: "talk", keeperName: "신부", keeperGraphic: "신부", goods: "none", greeting: "이곳에서 마음을 쉬어 가세요.", big: true, savepoint: true },
   { kind: "bakery", label: "빵집", layout: { program: "bakery" }, counterRoom: /shop/, keeper: "shop", keeperName: "빵집 주인", keeperGraphic: "상인", goods: "food", greeting: "갓 구운 빵 있어요!", big: true },
   { kind: "pharmacy", label: "약방", layout: { program: "pharmacy" }, counterRoom: /shop/, keeper: "shop", keeperName: "약방 주인", keeperGraphic: "상인", goods: "consumables", greeting: "다친 데는 없으세요?", big: true },
+  { kind: "warehouse", label: "창고", layout: { rooms: [{ kind: "storeroom" }, { kind: "cellar" }] }, counterRoom: /storeroom/, keeper: "talk", keeperName: "창고지기", keeperGraphic: "마을 사람", goods: "none", greeting: "함부로 만지지 마쇼. 다 주인 있는 물건이오.", big: true,
+    kits: ["bd-house-ware0", "bd-pick-mining-valley-s2", "bd-pick-snowfield-shed"] },
+  { kind: "stable", label: "마구간", layout: { rooms: [{ kind: "stable" }, { kind: "tack_room" }] }, counterRoom: /stable|tack/, keeper: "talk", keeperName: "마부", keeperGraphic: "마을 사람", goods: "none", greeting: "말들이 오늘따라 순하네요.", big: false,
+    kits: ["bd-house-cstable", "bd-house-estable"] },
+  { kind: "school", label: "학교", layout: { rooms: [{ kind: "study" }, { kind: "library" }] }, counterRoom: /study|library/, keeper: "talk", keeperName: "선생님", keeperGraphic: "학자", goods: "none", greeting: "배움에는 늦은 때가 없단다.", big: true,
+    kits: ["bd-house-h122_0", "bd-house-h119_0"] },
+  { kind: "guard_post", label: "경비 초소", layout: { rooms: [{ kind: "guard_room" }, { kind: "armory" }] }, counterRoom: /guard/, keeper: "talk", keeperName: "경비병", keeperGraphic: "병사", goods: "none", greeting: "수상한 자는 못 지나간다.", big: false,
+    kits: ["bd-pick-mountain-pass-guard-post", "bd-house-barracks"] },
+  { kind: "windmill", label: "풍차", layout: { rooms: [{ kind: "storeroom" }, { kind: "kitchen" }] }, counterRoom: /storeroom|kitchen/, keeper: "talk", keeperName: "방앗간 주인", keeperGraphic: "마을 사람", goods: "none", greeting: "바람만 좋으면 밀가루는 얼마든지요.", big: false,
+    kits: ["bd-house-mill1"], onlyKits: true },
+  { kind: "lighthouse", label: "등대", layout: { rooms: [{ kind: "study" }, { kind: "bedroom" }] }, counterRoom: /study/, keeper: "talk", keeperName: "등대지기", keeperGraphic: "마을 사람", goods: "none", greeting: "불이 꺼지면 배들이 길을 잃지.", big: false,
+    kits: ["bd-pick-fishing-port-lighthouse"], onlyKits: true },
 ];
 
 const DUNGEONS: readonly DungeonRecipe[] = [
@@ -148,10 +166,60 @@ function beodeulCandidates(work: Project, mapId: MapId, region: Rect, big: boole
     .map((k) => ({ kitId: k.id }));
 }
 
-function placeExterior(work: Project, mapId: MapId, region: Rect, big: boolean): { project: Project; exterior: Exterior } {
+interface KitEntrance { readonly id: string; readonly width: number; readonly height: number; readonly door: { dx: number; dy: number } }
+
+/** 레시피가 고른 구조 키트 중 이 타일셋에 있고 입구 부위가 있는 것. */
+function recipeKits(work: Project, tilesetId: string, kitIds: readonly string[]): KitEntrance[] {
+  const kits = work.tilesets[tilesetId]?.structureKits ?? [];
+  const out: KitEntrance[] = [];
+  for (const id of kitIds) {
+    const kit = kits.find((entry) => entry.id === id) as { id: string; width?: number; height?: number; parts?: { kind: string; dx: number; dy: number }[] } | undefined;
+    const door = kit?.parts?.find((part) => part.kind === "entrance");
+    if (kit && door && kit.width && kit.height) out.push({ id: kit.id, width: kit.width, height: kit.height, door: { dx: door.dx, dy: door.dy } });
+  }
+  return out;
+}
+
+/** 키트 외관: 문 앞 칸이 영역 맨 아래 줄 가운데에 오도록 찍는다(stamp_object, 자리 그대로). */
+function placeKitExterior(work: Project, mapId: MapId, region: Rect, kitIds: readonly string[], failures: string[]): { project: Project; exterior: Exterior } | null {
+  const tilesetId = requireMap(work, mapId).tilesetId;
+  for (const kit of recipeKits(work, tilesetId, kitIds)) {
+    if (kit.width > region.width || kit.height + 1 > region.height) { failures.push(`${kit.id}: ${kit.width}×${kit.height + 1} 이 영역보다 크다`); continue; }
+    const front = { x: region.x + Math.floor(region.width / 2), y: region.y + region.height - 1 };
+    const origin = {
+      x: Math.min(Math.max(front.x - kit.door.dx, region.x), region.x + region.width - kit.width),
+      y: front.y - 1 - kit.door.dy,
+    };
+    if (origin.y < region.y) { failures.push(`${kit.id}: 영역 위로 넘친다`); continue; }
+    const trial = forkProject(work);
+    try {
+      callTool(trial, "stamp_object", { objectId: `kit:${tilesetId}/${kit.id}`, mapId, x: origin.x, y: origin.y });
+      const door = { x: origin.x + kit.door.dx, y: origin.y + kit.door.dy };
+      return { project: trial, exterior: { door, front: { x: door.x, y: door.y + 1 }, box: { x: origin.x, y: origin.y, width: kit.width, height: kit.height }, how: kit.id } };
+    } catch (error) {
+      failures.push(`${kit.id}: ${(error as Error).message.slice(0, 80)}`);
+    }
+  }
+  return null;
+}
+
+function placeExterior(work: Project, mapId: MapId, region: Rect, recipe: Pick<BuildingRecipe, "big" | "kits" | "onlyKits" | "label">): { project: Project; exterior: Exterior } {
   const map = requireMap(work, mapId);
   const tilesetId = map.tilesetId;
   const failures: string[] = [];
+  const big = recipe.big;
+  if (recipe.kits?.length) {
+    const placed = placeKitExterior(work, mapId, region, recipe.kits, failures);
+    if (placed) return placed;
+    if (recipe.onlyKits) {
+      throw new ToolError(
+        tilesetId === "beodeul_city"
+          ? `영역 (${region.x},${region.y}) ${region.width}×${region.height} 안에 ${recipe.label} 외관이 서지 않는다 — 영역을 더 넓고 높게 잡는다. 시도: ${failures.slice(0, 3).join(" / ")}`
+          : `맵 '${map.name}' 의 칩셋 '${tilesetId}' 에는 ${recipe.label} 외관 키트가 없다(버들항 칩셋만). 그 칩셋의 구성 도구로 짓는다.`,
+        { code: tilesetId === "beodeul_city" ? "region-too-small" : "unsupported-tileset", mapId },
+      );
+    }
+  }
   if (tilesetId === "beodeul_city") {
     const centerX = region.x + Math.floor(region.width / 2);
     const bottom = region.y + region.height - 2;
@@ -246,7 +314,7 @@ function keeperSpot(interior: InteriorData, recipe: BuildingRecipe): { x: number
 
 function buildingRecipe(work: Project, mapId: MapId, region: Rect, recipe: BuildingRecipe, name: string): ToolExecResult & { project: Project } {
   const warnings: string[] = [];
-  const placed = placeExterior(work, mapId, region, recipe.big);
+  const placed = placeExterior(work, mapId, region, recipe);
   let project = placed.project;
   const { exterior } = placed;
   const interior = callTool(project, "build_hand_interior_room", { name, layout: recipe.layout }).data as InteriorData;
@@ -323,7 +391,7 @@ const buildRegionPlace: ToolDefinition = {
   domains: ["map", "event"],
   description:
     "사용자가 맵에서 고른 영역(region) 한 곳에 장소 하나를 통째로 짓는다 — 「여기 상점 만들어 줘」 한 번으로 외관(지붕·벽·문) + 실내 맵(방·가구·계산대) + 문 왕복 이동 + 주인 NPC(상점은 이 게임 DB 품목으로 상점 명령, 여관은 숙박 명령, 교회는 세이브 포인트) 까지 끝낸다. "
-    + "kind: shop 도구점·상점 · weapon_shop 무기점 · smithy 대장간 · inn 여관 · tavern 주점 · house 집 · chapel 교회 · bakery 빵집 · pharmacy 약방 · dungeon_entrance 던전 입구(새 던전 맵) · cave_entrance 동굴 입구(새 동굴 맵). "
+    + "kind: shop 도구점·상점 · weapon_shop 무기점 · smithy 대장간 · inn 여관 · tavern 주점 · house 집 · chapel 교회 · bakery 빵집 · pharmacy 약방 · warehouse 창고 · stable 마구간 · school 학교 · guard_post 경비 초소 · windmill 풍차 · lighthouse 등대 · dungeon_entrance 던전 입구(새 던전 맵) · cave_entrance 동굴 입구(새 동굴 맵). "
     + "바깥 맵은 영역 사각형 안만 바뀐다(외관과 문 앞 칸이 영역 안에 서야 한다). 영역 밖에 생기는 것은 새 맵(실내·던전)뿐이고 결과 카드에서 같이 되돌린다. "
     + "외관·실내·문·주인을 따로 부르지 말고 이 도구 한 번으로 짓는다. 외관 칩셋: 버들항(beodeul_city)·기본 마을. 다른 칩셋은 거부되므로 그 칩셋의 구성 도구와 link_*_interior 를 쓴다.",
   invalidArgsExample: { mapId: "map_1", region: { x: 10, y: 6, width: 11, height: 10 }, kind: "shop" },

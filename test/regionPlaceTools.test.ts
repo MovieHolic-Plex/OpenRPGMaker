@@ -100,6 +100,33 @@ describe("build_region_place", () => {
     expect(mergeMapBundles(base, [{ mapIds: [dungeon.mapId], project: dungeon.ctx.project }]).spills).toEqual([]);
   });
 
+  it.each([
+    ["warehouse", "bd-house-ware0"], ["stable", "bd-house-cstable"], ["school", "bd-house-h122_0"],
+    ["guard_post", "bd-pick-mountain-pass-guard-post"], ["windmill", "bd-house-mill1"], ["lighthouse", "bd-pick-fishing-port-lighthouse"],
+  ])("%s 는 그 모양의 버들항 키트(%s) 외관으로 서고 실내·왕복 문·주인까지 짓는다", (kind, kitId) => {
+    {
+      const { ctx, mapId } = setup();
+      const base = structuredClone(ctx.project);
+      const before = structuredClone(ctx.project.maps[mapId]!);
+      const out = runTool(ctx, "build_region_place", { mapId, region: REGION, kind });
+      expect(out.ok, `${kind}: ${out.summary}`).toBe(true);
+      const data = out.data as { interiorMapId: string; exterior: { source: string }; parts: Record<string, boolean> };
+      expect(data.exterior.source, kind).toBe(kitId);
+      expect(data.parts, kind).toEqual({ exterior: true, interior: true, link: true, keeper: true, service: true });
+      expect(outsideChanges(before, ctx.project.maps[mapId]!), kind).toBe(0);
+      expect(transfersTo(ctx.project.maps[mapId]!, data.interiorMapId), kind).toBeGreaterThan(0);
+      expect(transfersTo(ctx.project.maps[data.interiorMapId]!, mapId), kind).toBeGreaterThan(0);
+      expect(mergeMapBundles(base, [{ mapIds: [mapId], project: ctx.project }]).spills, kind).toEqual([]);
+    }
+  });
+
+  it("등대·풍차는 키트가 들어가지 않으면 살림집으로 대신하지 않고 거부한다", () => {
+    const { ctx, mapId } = setup();
+    const out = runTool(ctx, "build_region_place", { mapId, region: { x: 14, y: 8, width: 9, height: 6 }, kind: "lighthouse" });
+    expect(out.ok).toBe(false);
+    expect(out.summary).toMatch(/등대/);
+  });
+
   it("건물이 들어가지 않는 좁은 영역은 거부하고 프로젝트를 건드리지 않는다", () => {
     const { ctx, mapId } = setup();
     const mapsBefore = Object.keys(ctx.project.maps).sort();
@@ -116,6 +143,12 @@ describe("build_region_place", () => {
     expect(regionPlaceKindFromText("여관 하나")).toBe("inn");
     expect(regionPlaceKindFromText("동굴 입구 만들어")).toBe("cave_entrance");
     expect(regionPlaceKindFromText("나무 심어 줘")).toBeNull();
+    expect(regionPlaceKindFromText("창고 지어 줘")).toBe("warehouse");
+    expect(regionPlaceKindFromText("마구간 하나")).toBe("stable");
+    expect(regionPlaceKindFromText("학교 세워 줘")).toBe("school");
+    expect(regionPlaceKindFromText("경비 초소 세워 줘")).toBe("guard_post");
+    expect(regionPlaceKindFromText("풍차 세워 줘")).toBe("windmill");
+    expect(regionPlaceKindFromText("등대 세워 줘")).toBe("lighthouse");
     expect(new Set(REGION_PLACE_KINDS).size).toBe(REGION_PLACE_KINDS.length);
   });
 });
