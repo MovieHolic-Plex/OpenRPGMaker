@@ -322,7 +322,8 @@ function carryStartPosition(merged: Project, started: Project, result: Project, 
  * 켰다고 믿는다(2026-09-23 추리 도그푸딩 `--maps town` 실측). 이미 켜진 설정을 바꾸거나 끈 것은 기존
  * 설정의 수정·삭제라 옮기지 않는다. 제목·장르·해상도처럼 맵이 기대지 않는 게임 전체 설정은 여기에 넣지 않는다.
  */
-const CARRIED_SYSTEM_FEATURES = ["timeSystem"] as const;
+// peopleChipLock: 처음 놓은 NPC 가 정하는 사람 칩 계열 잠금 — 영역 턴이 상점 주인을 놓으면 생긴다(regionPlaceTools).
+const CARRIED_SYSTEM_FEATURES = ["timeSystem", "peopleChipLock"] as const;
 
 function carryEnabledSystemFeatures(merged: Project, started: Project, result: Project, conflicts: Set<string>): void {
   for (const key of CARRIED_SYSTEM_FEATURES) {
@@ -341,6 +342,20 @@ function carryEnabledSystemFeatures(merged: Project, started: Project, result: P
  * 이벤트를 가리킨다)와 locatedIn 관계로 등록한다 — 병합이 world 를 버리면 캐스트가 반만 남는다
  * (2026-09-23 같은 실행 실측). 관계는 id 가 없어 (a, b, kind) 를 키로 쓴다.
  */
+/** 이 결과가 새로 단 세계 그래프 노드·간선(던전 입구 잇기)을 옮긴다 — 맵은 묶음으로 넘어오는데 간선만 버려지지 않게. */
+function carryCreatedWorldGraph(merged: Project, started: Project, result: Project): void {
+  if (!result.worldGraph) return;
+  const target = merged.worldGraph ?? { nodes: [], edges: [] };
+  const nodeKey = (node: { readonly mapId: string }): string => node.mapId;
+  const edgeKey = (edge: { readonly from: { readonly mapId: string }; readonly to: { readonly mapId: string }; readonly kind: string }): string =>
+    JSON.stringify([edge.from, edge.to, edge.kind]);
+  const knownNodes = new Set([...(started.worldGraph?.nodes ?? []), ...target.nodes].map(nodeKey));
+  const knownEdges = new Set([...(started.worldGraph?.edges ?? []), ...target.edges].map(edgeKey));
+  const nodes = result.worldGraph.nodes.filter((node) => !knownNodes.has(nodeKey(node)));
+  const edges = result.worldGraph.edges.filter((edge) => !knownEdges.has(edgeKey(edge)));
+  if (nodes.length === 0 && edges.length === 0) return;
+  merged.worldGraph = { nodes: [...target.nodes, ...clone(nodes)], edges: [...target.edges, ...clone(edges)] };
+}
 function carryCreatedWorld(merged: Project, started: Project, result: Project): void {
   if (!result.world) return;
   const relationKey = (relation: WorldRelation): string => `${relation.a}\u0000${relation.b}\u0000${relation.kind}`;
@@ -402,6 +417,7 @@ function carryCreatedEntries(merged: Project, started: Project, result: Project,
   merged.database = createdDatabaseEntries(started.database, result.database, merged.database);
   carryEnabledSystemFeatures(merged, started, result, conflicts);
   carryCreatedWorld(merged, started, result);
+  carryCreatedWorldGraph(merged, started, result);
 }
 
 /**
@@ -419,6 +435,43 @@ function droppedFromMerge(merged: Project, result: Project, key: string): boolea
   }
   const read = (project: Project): unknown => (project as unknown as Record<string, unknown>)[key];
   return !same(read(merged), read(result));
+}
+
+/** 묶음 안 맵에 선 탈것(system.vehicles)을 옮긴다 — 영역 턴의 「여기 배 하나」가 버려지지 않게. 다른 맵의 탈것은 건드리지 않는다. */
+function carryBundleVehicles(merged: Project, started: Project, result: Project, bundle: ReadonlySet<string>): void {
+  const after = result.system.vehicles ?? [];
+  const before = new Map((started.system.vehicles ?? []).map((entry) => [entry.id, entry]));
+  const moved = after.filter((entry) => entry.mapId !== undefined && bundle.has(entry.mapId) && !same(before.get(entry.id), entry));
+  if (moved.length === 0) return;
+  const ids = new Set(moved.map((entry) => entry.id));
+  merged.system = { ...merged.system, vehicles: [...(merged.system.vehicles ?? []).filter((entry) => !ids.has(entry.id)), ...clone(moved)] };
+}
+
+/**
+ * 묶음 밖 맵에 새로 생긴 「돌아오는 문」 이벤트를 옮긴다 — 영역에서 「옆 마을로 가는 문」을 만들면 그 맵에도 돌아오는
+ * 문이 생긴다(create_transfer_pair·link_maps·create_time_gate). 예전엔 그 맵 행이 통째로 「범위 밖」이라 버려져 가는 문만 남았다.
+ * 타일은 옮기지 않는다 — 그 맵에서 타일이 바뀐 결과는 이전처럼 버린다. 새 이벤트 가운데 묶음 맵으로 이동하는 것만 옮긴다.
+ */
+function carryReturnDoors(merged: Project, started: Project, result: Project, bundle: ReadonlySet<string>): void {
+  const leadsIntoBundle = (value: unknown): boolean => {
+    if (Array.isArray(value)) return value.some(leadsIntoBundle);
+    if (!value || typeof value !== "object") return false;
+    const record = value as Record<string, unknown>;
+    if (typeof record.mapId === "string" && bundle.has(record.mapId) && (record.kind === "transfer" || record.kind === "timeGate" || "toX" in record || "x" in record)) return true;
+    return Object.values(record).some(leadsIntoBundle);
+  };
+  for (const [id, row] of Object.entries(result.maps ?? {})) {
+    if (bundle.has(id)) continue;
+    const startedRow = started.maps?.[id];
+    const target = merged.maps?.[id];
+    if (!startedRow || !target || same(row, startedRow)) continue;
+    if (!same(row.lowerTiles, startedRow.lowerTiles) || !same(row.upperTiles, startedRow.upperTiles)) continue;
+    const known = new Set(startedRow.events.map((event) => event.id));
+    const doors = row.events.filter((event) => !known.has(event.id) && leadsIntoBundle(event.pages ?? event.commands));
+    const present = new Set(target.events.map((event) => event.id));
+    const add = doors.filter((event) => !present.has(event.id));
+    if (add.length > 0) merged.maps[id] = { ...target, events: [...target.events, ...clone(add)] };
+  }
 }
 
 /**
@@ -455,6 +508,8 @@ export function mergeMapBundles(base: Project, results: readonly MapBundleResult
       else delete merged.maps[id];
     }
     carryStartPosition(merged, started, result.project, bundle);
+    carryBundleVehicles(merged, started, result.project, bundle);
+    carryReturnDoors(merged, started, result.project, bundle);
     if (merged.mapTree) {
       for (const id of result.mapIds) replaceOrAttachSubtree(merged.mapTree, started.mapTree, result.project.mapTree, id);
     }

@@ -56,7 +56,7 @@ import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import { editorState, editorStateChangedOnlyCanvasOverlay, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import { AI_REGION_HANDOFF_EVENT, aiRegionHandoffDetail, requestAiRegionHandoff } from "@/editor/aiRegionHandoff";
-import { showRegionResultCard } from "@/editor/regionResultCard";
+import { regionTurnTouched, showRegionResultCard } from "@/editor/regionResultCard";
 import { formatSelectionTerrain } from "@/editor/selectionTerrainSummary";
 import { isStampPlaceOn, setStampPlaceOn, subscribeStampPlace } from "@/editor/stampPlaceMode";
 import {
@@ -68,6 +68,7 @@ import {
 } from "@/editor/agentBlueprint";
 import { openHarnessModal } from "@/editor/panels/aiHarnessModal";
 import { COMMAND_PALETTE_OPEN_EVENT, openCommandPalette } from "./commandPalette";
+import { DRAFT_OVERVIEW_OPEN_EVENT } from "./draftOverviewEvents";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { filterToolCategories, openToolBrowserModal } from "@/editor/panels/toolBrowserModal";
 import type { RegionTaskOptions, RegionTaskResult } from "@/editor/regionTask/runRegionTask";
@@ -111,6 +112,7 @@ import { createInlineWorkCard } from "./aiInlineWorkCard";
 import { currentTeamActivity, setTeamStopHandler } from "@/ai/piAgent/teamActivity";
 import { DEFAULT_PI_TEAM, resolvePiRunPlan, type PiRunPlan } from "@/ai/piAgent/executionRoute";
 import { isAssistantV2Enabled } from "@/ai/v2/shared/switch";
+import { formatV2RegionNote } from "@/ai/intentDeclaration";
 import { firstMvpRoute } from "@/ai/piAgent/firstMvpRoute";
 import { priorRequestsNote } from "@/ai/v2/prompt/priorRequests";
 import { classifyPlainPiTurn, clarifyFollowUpText, selectedEventFact } from "@/ai/piAgent/plainTurn";
@@ -194,6 +196,7 @@ import {
 } from "./aiAgentBrief";
 import {
   isAiAssistantBridgeConnected,
+  openAiAssistantPanel,
   registerAiAssistantBridge,
   setAiBridgeLastStatus,
   unregisterAiAssistantBridge,
@@ -1007,7 +1010,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     studioShell?.setChangePreview(preview);
     (targetCard ?? ensureWorkCard()).attachChange(preview);
     const scoped = regionTurn;
-    if (scoped && scoped.mapId === input.mapId) {
+    // 영수증 맵은 «처음 바뀐 맵» 이라 「여기 집」 처럼 실내를 먼저 만든 턴에서는 실내가 된다 — 카드는 영역 맵 기준으로 판단한다.
+    if (scoped && (scoped.mapId === input.mapId || regionTurnTouched(input.before, input.after, scoped.mapId, scoped.region))) {
       // 좁은 창(<1000px)에서는 조수 패널이 캔버스를 덮는다(C-57) — 결과는 맵 위 카드가 말하므로 패널을 접어 그 자리를 보인다.
       if (!collapsed && typeof window !== "undefined" && window.innerWidth < 1000) toggleCollapsed();
       showRegionResultCard({
@@ -2221,6 +2225,26 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     syncInputHeight();
     refreshSendEnabled();
   };
+  /** «초안 한 장 보기» — 고치기는 입력창에 넣고 초점만, 방향 칩은 평소 보내기 경로로 바로 보낸다. */
+  const openDraftView = (): void => {
+    void import("./draftOverviewView").then(({ openDraftOverview }) => {
+      if (disposed) return;
+      openDraftOverview({
+        prefill: (text) => {
+          // 접힌 도크면 먼저 펼친다 — 안 보이는 입력창에 글만 넣으면 아무 일도 없는 것처럼 보인다.
+          openAiAssistantPanel();
+          restoreComposer(text);
+          try {
+            input.focus();
+            input.setSelectionRange(text.length, text.length);
+          } catch {
+            // headless DOM may not implement focus/selection
+          }
+        },
+        send: (text) => { restoreComposer(text); void send(); },
+      });
+    });
+  };
   /**
    * Pi 턴 하나 — 조수 채팅의 유일한 실행 경로다(2026-09-11). 명시 `/pi` 든 평문이든 여기로 모인다:
    * 중단 버튼·상태·보드·영수증 배선이 한 곳에 있어야 두 입구가 어긋나지 않는다.
@@ -2271,10 +2295,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     liveStatus?.root.remove();
     // 작업 스트림 카드(목업 v4): 조수별 도구 호출·실제 인자·결과·걸린 시간·모델 글·할 일·일꾼 미리보기. 옛 한 줄 상태는 머리줄로 품는다.
     const turnBase = store.getCurrent();
+    const turnFirstMvp = firstMvpRoute(turnBase, command.task).firstMvp;
     const turnLiveStatus = createAiRunStream({
       live: createAiLiveStatus({ baseProject: turnBase }),
       team: command.mode === "team",
-      firstMvp: firstMvpRoute(turnBase, command.task).team,
+      firstMvp: turnFirstMvp,
+      onDraftView: openDraftView,
       mapName: (mapId) => store.getCurrent().maps[mapId]?.name?.trim() || undefined,
       onPreview: (mapId) => { selectEditorMap(mapId); },
     });
@@ -2381,7 +2407,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       turnCreations.observe(store.getCurrent());
       progress.finish();
       const phase = currentTeamActivity()?.phase;
-      turnLiveStatus.finish(phase !== "실패" && phase !== "중단" && piRunController?.signal.aborted !== true);
+      const turnOk = phase !== "실패" && phase !== "중단" && piRunController?.signal.aborted !== true;
+      turnLiveStatus.finish(turnOk);
+      // 첫 MVP 가 끝나면 초안을 한 장으로 한 번 띄운다. 다시 볼 때는 끝 카드 링크·⌘K.
+      if (turnFirstMvp && turnOk && !disposed) openDraftView();
       turnReference.finish();
       if (canvasProgress === progress) canvasProgress = null;
       finishWorkCard({ ok: phase !== "실패" && phase !== "중단", message: phase === "검토 대기" ? "검토 필요" : phase === "실패" ? "실패" : phase === "중단" ? "중단" : undefined });
@@ -2493,13 +2522,17 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 실제로 1.2~7.5s 를 삼킨다(2026-09-16 실측). 이걸 벽시계 밖에 두면 표의 total 이 그만큼 짧게 나와
     // 「어느 단계도 오래 안 걸렸는데 턴은 느렸다」는 모순이 생긴다.
     const timing = createTurnTiming();
-    // 첫 MVP 생성(빈 프로젝트에서 게임 하나)은 팀 실행이 기본이다(오너 2026-11-24). 일반 대화·작은 수정은 단일.
+    // 장르 프리셋 첫 생성만 팀이다. 첫 MVP(빈 프로젝트에서 게임 하나)는 v2 단일 — 팀 경로는 v2 MVP 관문을 비켜 간다(firstMvpRoute.ts).
     const team = turnOptions?.team === true || firstMvpRoute(store.getCurrent(), text).team;
     // 조수 v2(기본 켜짐): 의도 선언 모델 호출을 건너뛴다 — v2 는 실행 모델이 요청을 짓기 명세로 바로 해석한다(src/ai/v2).
     if (isAssistantV2Enabled() && !team) {
       // 앞선 요청을 메모로 싣는다 — 실행마다 새 세션이라 「처음에 부탁한 대로」가 가리킬 곳이 없었다(J70).
       const priorNote = priorRequestsNote([...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])], text);
-      return { command: plainPiCommand(text, "single", turnMapId), plan: { ...resolvePiRunPlan(currentAutonomy()), routingAudit: "assistant-v2" }, questionPromoted: false, intentNote: priorNote, timing };
+      // 영역에 시킨 턴이면 그 사각형을 알린다 — v2 는 의도 선언(범위 노트)을 건너뛰어 「여기 상점」의 「여기」가 모델에 닿지 않았다.
+      const selection = turnOptions?.selection !== undefined ? turnOptions.selection : mapContext().selection;
+      const regionNote = selection ? formatV2RegionNote({ mapId: selection.mapId, region: selection }, text) : null;
+      const intentNote = [priorNote, regionNote].filter((note): note is string => !!note).join("\n") || null;
+      return { command: plainPiCommand(text, "single", turnMapId), plan: { ...resolvePiRunPlan(currentAutonomy()), routingAudit: "assistant-v2" }, questionPromoted: false, intentNote, timing };
     }
     timing.start("intent");
     // 순수 부분(선언 → 계획·노출 툴·의도 노트)은 plainTurn.ts 가 소유한다 — 헤드리스 생성기(scripts/qa-game/gen.mts)와 같은 함수다.
@@ -4389,6 +4422,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     document.addEventListener?.("keydown", onCommandPaletteKeyDown);
     window.addEventListener(COMMAND_PALETTE_OPEN_EVENT, onCommandPaletteRequest);
   }
+  if (typeof window !== "undefined") window.addEventListener(DRAFT_OVERVIEW_OPEN_EVENT, openDraftView);
 
   // MCP/외부 에이전트 브리지: 같은 채팅 세션으로 send·로그·하네스 공유.
   const waitUntilIdle = (timeoutMs: number): Promise<boolean> => {
@@ -4696,6 +4730,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       window.removeEventListener(MAP_EDIT_HISTORY_EVENT, refreshUndoLastButton);
       window.removeEventListener(MAP_EDIT_HISTORY_EVENT, refreshUndoApplied);
       window.removeEventListener(AI_STUDIO_TOGGLE_EVENT, onStudioToggleRequest);
+      window.removeEventListener(DRAFT_OVERVIEW_OPEN_EVENT, openDraftView);
       if (window.__oprnAiHarness === harnessAccessor) delete window.__oprnAiHarness;
       if (ownsCommandPaletteHotkey) {
         document.removeEventListener?.("keydown", onCommandPaletteKeyDown);

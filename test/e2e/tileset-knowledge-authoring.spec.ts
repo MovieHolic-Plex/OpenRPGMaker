@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { revealDbRailTab } from "./dbRail";
 
 const TILESET_ID = "easyrpg_chipset_combined_town";
 const TEMPLATE_TEST_IDS = [
@@ -22,6 +23,7 @@ async function openKnowledgeWorkspace(page: Page): Promise<void> {
   if (await coachSkip.isVisible()) await coachSkip.click();
   // 표준·전문가의 자료집 진입점은 톱바 버튼이다(2026-09-03). 초보만 도구 메뉴에 남는다.
   await page.getByTestId("toolbar-database").click();
+  await revealDbRailTab(page, "tilesets");
   await page.getByTestId("db-tab-tilesets").click();
   await page.getByTestId("tileset-section-tab-knowledge").click();
   await page.getByTestId("tileset-edit-mode-group").click();

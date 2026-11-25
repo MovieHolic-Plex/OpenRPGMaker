@@ -21,6 +21,18 @@ import type { turnReinject } from "./reinject";
 import type { turnAutoBuild } from "./autoBuild";
 import type { turnVqa } from "./vqaRound";
 import type { turnLateTools } from "./lateTools";
+import { mvpGame } from "../judge/blueprintScale";
+import { buildsWholeGame } from "../request/readers";
+
+/**
+ * 새 게임의 첫 초안(MVP) 턴인가 — 시작 저장본에 청사진이 없었고, 이번에 mvp 청사진으로 게임 하나를 짓는다.
+ * 초안은 10분 안에 나와야 한다(오너 2026-11-24 «초안이 10분안에는 나왔으면 좋겠군») — 첫 짓기 뒤 다듬기 고리(장면 글 손질·검토자 재검토·화면 재검수)가
+ * 첫 MVP 한 판의 절반 넘게 썼다(draft-10min 시간 분해: 몬스터 관문 고리 9바퀴·25분, JRPG 검토·검수 뒤 고치기 차례). 다듬기는 보고에 남기고 다음 요청으로 넘긴다.
+ */
+function firstDraftTurn(env: PiAssistantV2Env): boolean {
+  const start = env.request.project as { gameBlueprint?: unknown } | undefined;
+  return !start?.gameBlueprint && mvpGame(env.ctx.project) && buildsWholeGame(env.ctx.project, env.request.task);
+}
 
 /** afterMain = 모델이 멈출 때마다 한 번. 돌려주는 글이 있으면 그 글로 같은 대화를 한 차례 더 돌고, 없으면 턴이 끝난다. */
 export function turnAfterMain(turn: TurnContext & Pick<ReturnType<typeof turnRecheck>, "refreshChecks" | "stamp"> & Pick<ReturnType<typeof turnReinject>, "reinject" | "newBatch"> & Pick<ReturnType<typeof turnAutoBuild>, "autoBuild" | "lateBuildPending"> & Pick<ReturnType<typeof turnVqa>, "vqaStep"> & Pick<ReturnType<typeof turnLateTools>, "lateTool">) {
@@ -124,13 +136,24 @@ export function turnAfterMain(turn: TurnContext & Pick<ReturnType<typeof turnRec
       const gate = timed("v2GateProblems", () => v2GateProblems(session, env));
       if (!state.baselineKeys) { try { state.baselineKeys = v2BaselineGameKeys(env.request.project, env.request.task); } catch { state.baselineKeys = new Set(); } }
       let nowIndex; try { nowIndex = indexProject(env.ctx.project); } catch { nowIndex = undefined; }
+      const draft = firstDraftTurn(env);
       const split = splitPreexisting(gate.problems, state.baselineKeys, store.baseline, nowIndex, autoTouched);
+      // 초안: 장면 글 손질(반복 대사·대사 속 이름·얇은 장면)은 할 일이 아니라 보고로 — 끝맺음의 대사 윤문 단계는 그대로 돈다.
+      if (draft) {
+        const polish = split.current.filter((p) => p.key.startsWith("scene:"));
+        if (polish.length && !state.draftPolishNoted) {
+          state.draftPolishNoted = true;
+          autoNotes.push(`초안이라 다음에 다듬을 장면 글 ${polish.length}건: ${polish.slice(0, 5).map((p) => p.text.slice(0, 120)).join(" / ")}`);
+          env.emit({ type: "execution_status", name: "v2.draft.polish_later", ok: true, summary: `첫 초안 — 장면 글 손질 ${polish.length}건은 할 일 대신 보고로 넘김`, data: { keys: polish.map((p) => p.key) } });
+        }
+      }
+      const current = draft ? split.current.filter((p) => !p.key.startsWith("scene:")) : split.current;
       for (const p of split.preexisting) if (!preexisting.has(p.key)) {
         preexisting.set(p.key, p.text);
         env.emit({ type: "execution_status", name: "v2.gate.preexisting", ok: true, summary: `기존 결함(시작 저장본에 있었음 — 완료를 막지 않음): ${p.text.slice(0, 160)}` });
       }
       const capMapIds = new Set(session.unresolved().filter((o) => o.rounds >= o.cap).map((o) => o.mapId));
-      const synced = syncGateItems(store, split.current, capMapIds, toolNames, (name) => addRepairTool(env, name));
+      const synced = syncGateItems(store, current, capMapIds, toolNames, (name) => addRepairTool(env, name));
       if (synced.closed.length || synced.capped.length) env.emit({ type: "execution_status", name: "v2.gate.sync", ok: true, summary: `관문 항목 — 사라져 닫음 ${synced.closed.length} · 상한 막힘 ${synced.capped.length}` });
       if (synced.loaded.length) env.emit({ type: "execution_status", name: "v2.gate.tools", ok: true, summary: `관문이 고치는 법으로 이른 도구를 실음: ${synced.loaded.join(", ")}` });
       if (synced.unfixable.length) {
@@ -171,7 +194,7 @@ export function turnAfterMain(turn: TurnContext & Pick<ReturnType<typeof turnRec
       // ⑤ 독립 검토자 — 보고 초안을 «실제로 바뀐 것»에 대어 본다. 막음만 항목으로(우려·참고는 기록만). 처음 한 번 + 그 항목을 닫은 뒤 한 번.
       // 출하 차단은 ④ 관문만 본다(기존 결함 면제도 거기 하나) — 검토자가 같은 차단을 다시 항목으로 만들지 않는다.
       const advisorOpen = [...advisorItems].some((id) => { const i = store.get(id); return i && isOpen(i.status); });
-      if (advisorEnabled(env.request) && !(env.leadChat && state.leadPlan) && state.advisorRuns < 2 && !advisorOpen && (state.advisorRuns === 0 || advisorItems.size > 0)) {
+      if (advisorEnabled(env.request) && !(env.leadChat && state.leadPlan) && state.advisorRuns < (draft ? 1 : 2) && !advisorOpen && (state.advisorRuns === 0 || advisorItems.size > 0)) {
         state.advisorRuns += 1;
         const verdict = scopeAdviceToRequest(await adviseTurn({ task: env.request.task, toolLog: compactToolLog(calls), diff: safeDiff(env), report: state.draft }, advisorChatOf(env), env.signal), env.request.task);
         state.advice = state.advice ? { ...verdict, ms: state.advice.ms + verdict.ms, inputChars: state.advice.inputChars + verdict.inputChars } : verdict;
@@ -186,6 +209,8 @@ export function turnAfterMain(turn: TurnContext & Pick<ReturnType<typeof turnRec
         }
       }
       // ⑥ 화면 검수(게임 전체 요청만) — 결함은 vqa 항목.
+      // 초안: 화면 검수는 한 판 — 그 판이 건넜 결함을 한 차례 고친 뒤 다시 찍어 검수하지 않는다(남은 것은 보고의 장부로).
+      if (draft && vqaRounds.length >= 1) state.vqaDone = true;
       if (!state.vqaDone) {
         const opened = await vqaStep(env);
         if (opened.length) {

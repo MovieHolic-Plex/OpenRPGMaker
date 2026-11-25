@@ -357,17 +357,6 @@
    stagedDiffView.ts 가 그리는 행들. `.cmd-item` / `.cmd-kind` / `.cmd-summary-token` /
    `.cmd-line-marker` 를 그대로 물려받아 **실제 목록과 같은 모양**을 유지하고, 여기서는
    상태 표시(왼쪽 색 레일 + 기호)와 「이건 빼기」 토글만 더한다. */
-.cmd-staged-host {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  min-width: 0;
-}
-
-.cmd-staged-host[hidden] {
-  display: none;
-}
-
 /* 실제 목록(.cmd-list, balanced.css 「행은 줄이다」)과 같은 여백·들여쓰기 — 초안이 목록 자리에서
    같은 기하로 보여야 「넣으면 어떻게 보일지」가 예측된다. 예전엔 여백 0 이라 행이 칼럼 가장자리에
    붙어 다른 표면처럼 읽혔다. */

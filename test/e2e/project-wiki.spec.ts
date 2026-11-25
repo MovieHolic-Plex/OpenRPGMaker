@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { mkdir } from "node:fs/promises";
+import { revealDbRailTab } from "./dbRail";
 
 test("ordinary dialogue persists sourced wiki and a new chat recalls it", async ({ page }) => {
   test.setTimeout(180_000);
@@ -103,7 +104,9 @@ test("ordinary dialogue persists sourced wiki and a new chat recalls it", async 
   await extractionStarted;
   try {
     await page.getByTestId("toolbar-database").click();
+    await revealDbRailTab(page, "world-codex");
     if (!await page.getByTestId("db-tab-world-codex").isVisible()) await page.getByTestId("db-tab-group-lore").click();
+    await revealDbRailTab(page, "world-codex");
     await page.getByTestId("db-tab-world-codex").click();
     await page.locator(".world-card").filter({ hasText: "푸른별 전투" }).click();
     await page.getByTestId("world-edit-toggle").click();

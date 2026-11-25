@@ -11,6 +11,7 @@ import { redrawStepFoesIn } from "@/ai/v2/story/stepFoes";
 import { resolveEventSpriteTexture } from "@/player/eventSpriteResources";
 import { pixelEnemySheet, setPixelEnemySheetProjectSource } from "@/assets/pixelEnemySheets";
 import { parseArtGap } from "@/project/artGap";
+import { standInOriginalArt } from "@/project/defaults/currentMonsterStandIns";
 import { WORLDS } from "@/ai/v2/place/world";
 import type { Project } from "@/project/types";
 
@@ -204,9 +205,12 @@ describe("옛 판 맞추기(끝맺음 step-foes)", () => {
     const { project, mapId } = world("prehistoric", "prehistoric", "swamp", "늪지");
     const map = project.maps[mapId]!;
     const old = project.database.enemies.find((e) => e.id === "enemy_tiger_saber")!;   // 아직 현행 그림이 없는 종
-    (project.database.enemies as unknown[]).push({ ...structuredClone(old), id: "enemy_fit_foe_s1", name: "늪 괴수" });
+    // 새 프로젝트는 이 종의 그림을 대역(다이어 울프)으로 싣는다(2026-11-24). 이 시험은 대역 이전에 저장된 옛 판의 사본이므로 원래(옛 3×3) 그림으로 돌려 세운다.
+    const oldArt = standInOriginalArt(old)!;
+    expect(oldArt).toBe("generated-enemy-tiger-saber");
+    (project.database.enemies as unknown[]).push({ ...structuredClone(old), id: "enemy_fit_foe_s1", name: "늪 괴수", monsterResourceId: oldArt });
     (project.database.troops as unknown[]).push({ id: "troop_fit_foe_s1", name: "늪 괴수", enemyIds: ["enemy_fit_foe_s1"], members: [{ enemyId: "enemy_fit_foe_s1", x: 0, y: 0, hidden: false }], autoAlign: true, battleEventPages: [] });
-    (map.events as unknown[]).push({ id: "ev_chain_x_1", name: "늪 괴수", x: 2, y: 2, pages: [{ graphic: { sprite: { type: "bundled", id: old.monsterResourceId }, direction: "down", pattern: 0 }, trigger: { kind: "action" }, commands: [{ kind: "battleProcessing", troopId: "troop_fit_foe_s1", canEscape: false, canLose: false }] }] });
+    (map.events as unknown[]).push({ id: "ev_chain_x_1", name: "늪 괴수", x: 2, y: 2, pages: [{ graphic: { sprite: { type: "bundled", id: oldArt }, direction: "down", pattern: 0 }, trigger: { kind: "action" }, commands: [{ kind: "battleProcessing", troopId: "troop_fit_foe_s1", canEscape: false, canLose: false }] }] });
     const bp = project.gameBlueprint!;
     project.gameBlueprint = { ...bp, steps: bp.steps.map((s, i) => (i === 0 ? { ...s, kind: "battle" as const, who: "늪 괴수", built: { mapId, eventId: "ev_chain_x_1" } } : s)) };
     const done = redrawStepFoesIn(project);

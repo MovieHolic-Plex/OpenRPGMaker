@@ -33,6 +33,9 @@ on:
   pull_request:
     branches:
       - main
+  # 자동 릴리스(auto-release.yml)가 release/next 를 GITHUB_TOKEN 으로 푸시하면 push 이벤트가 생기지 않는다.
+  # 그래서 scripts/release-scheduled.mjs 가 이 워크플로를 release/next 에 직접 디스패치하고, merge-pr 가 그 체크를 기다린다.
+  workflow_dispatch:
 
 concurrency:
   # PR 번호로 묶어 포크의 같은 브랜치 이름이 다른 PR/푸시를 취소하지 않게 한다.

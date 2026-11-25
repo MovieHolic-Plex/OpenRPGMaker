@@ -1,5 +1,6 @@
 import { expect, test, type Page, type Locator } from "@playwright/test";
 import { openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 async function openEnemies(page: Page): Promise<void> {
   await page.addInitScript(() => {
@@ -102,6 +103,7 @@ test("enemy studio keeps selection, updates previews and opens a disposable batt
   await expect(page.getByTestId("db-field-enemy-gold")).toHaveValue("88");
   await page.getByTestId("db-enemy-references").locator("summary").click();
   await page.getByTestId("db-enemy-references").getByRole("button", { name: /^드롭/ }).click();
+  await revealDbRailTab(page, "items");
   await expect(page.getByTestId("db-tab-items")).toHaveClass(/active/);
   await switchDatabaseTab(page, { label: "몬스터", slug: "enemies", testId: "db-tab-enemies" });
   await expect(page.getByTestId("db-field-enemy-gold")).toHaveValue("88");

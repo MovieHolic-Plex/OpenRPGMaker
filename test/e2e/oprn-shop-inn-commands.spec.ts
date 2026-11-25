@@ -10,6 +10,7 @@ import {
   tapKey,
 } from "./oprn-commerce-fixtures";
 import { startNewGameFromTitle } from "./runtimeInput";
+import { revealDbRailTab } from "./dbRail";
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
@@ -232,6 +233,7 @@ test("common event inline commands use readable Korean command labels", async ({
   // 29개 탭은 그룹 아코디언 안에 있고 한 그룹만 펼쳐진다(database.ts defaultCollapsedGroups).
   // '공용 이벤트' 는 '세계' 그룹 소속이라 먼저 그 그룹을 열어야 탭이 보인다(예전 slug 는 `map`).
   await page.getByTestId("db-tab-group-lore").click();
+  await revealDbRailTab(page, "common-events");
   await page.getByTestId("db-tab-common-events").click();
 
   const detail = page.getByTestId("db-detail-form");

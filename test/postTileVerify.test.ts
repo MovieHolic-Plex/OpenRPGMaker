@@ -1,193 +1,614 @@
-// postTileVerify: AI 타일 시공 후검증 계약 (지붕 완결성·나무-풀 오배치).
-
 import { describe, expect, it } from "vitest";
-import { runTool, type ToolContext } from "@/editor/tools";
-import { createBlankProject } from "@/project/defaults";
+import { runTool } from "@/editor/tools/toolRunner";
+import type { ToolContext, ToolResult } from "@/editor/tools/types";
+import { inMapBounds, lineCells, type Point } from "@/editor/tools/mapHelpers";
+import { DIRT_ROAD_TILE } from "@/project/defaults/chipsetMapping";
 import { COMBINED_TOWN_TILESET_ID, TILE } from "@/project/defaults/constants";
+import { shapeRoadAround, isRoadTile } from "@/project/defaults/roadAutotile";
+import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_HARNESS_PREFIX } from "@/project/tilesetHarness/combinedTownGroups";
+import type { GameMap, TileGroupMetadata, TilesetDef } from "@/project/types";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 import { verifyPostTilePlacement } from "@/project/lint/postTileVerify";
 import type { LintIssue } from "@/project/lint/projectLint";
-import type { TileGroupMetadata, TilesetDef } from "@/project/types";
 import { withRetiredCombinedTownMaps } from "./support/retiredCombinedTownMaps";
+import { isolateTimers } from "./mergedTeardown";
 
-const MAP_ID = "map_blank_start";
-const WALL_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}plaster-wall-9slice`;
-
-function context(): { ctx: ToolContext; tileset: () => TilesetDef } {
-  const ctx: ToolContext = { project: withRetiredCombinedTownMaps(createBlankProject()) };
-  return { ctx, tileset: () => ctx.project.tilesets[COMBINED_TOWN_TILESET_ID] };
-}
-
-function approve(tileset: TilesetDef, groupId: string): TileGroupMetadata {
-  const group = tileset.tileGroups?.find((entry) => entry.id === groupId);
-  if (!group) throw new Error(`그룹 없음: ${groupId}`);
-  group.origin = "user";
-  return group;
-}
-
-function addApprovedRoof(tileset: TilesetDef): TileGroupMetadata {
-  const roof: TileGroupMetadata = {
-    id: "test-roof", name: "빨간 지붕", role: "roof", defaultLayer: "upper", layerHome: "upper",
-    tileIds: [60, 61, 62], description: "빨간 지붕 재료", placementRules: "", origin: "user",
-    patternGrammar: {
-      kind: "horizontal_expandable", minWidth: 2, preserveCaps: true, repeat: "body",
-      parts: [{ role: "leftCap", tileIds: [60] }, { role: "repeatBody", tileIds: [61] }, { role: "rightCap", tileIds: [62] }],
-    },
+describe("naturalScatterToolIntegration", () => {
+  isolateTimers();
+  const CONIFER_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}conifer-tree`;
+  type OriginData = {
+    readonly origin: Point;
   };
-  tileset.tileGroups!.push(roof);
-  tileset.tileMeta ??= [];
-  for (const tile of [60, 61, 62]) {
-    tileset.tileMeta[tile] = {
-      ...(tileset.tileMeta[tile] ?? {}),
-      label: "빨간 지붕",
-      description: "빨간 지붕 재료",
-      role: "roof",
-      origin: "user",
-      source: "user",
-    };
+  type ScatterData = {
+    readonly mode: "uniform" | "poisson" | "cluster";
+    readonly naturalness: number;
+    readonly placed: number;
+  };
+  function context(width = 30, height = 30): { readonly ctx: ToolContext; readonly mapId: string } {
+    // These cases target the combined-town harness (conifer group, bench tiles 327/328/358/388, dirt road). That sheet is retired
+    // from new projects, so restore it the way a pre-purge project carried it and build the map on it.
+    const ctx: ToolContext = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+    const created = runTool(ctx, "create_map", { id: "map_natural_tools", name: "자연 툴", width, height, tilesetId: COMBINED_TOWN_TILESET_ID });
+    expect(created.ok, created.summary).toBe(true);
+    return { ctx, mapId: "map_natural_tools" };
   }
-  return roof;
-}
-
-function lintIssues(data: unknown): LintIssue[] {
-  if (typeof data !== "object" || data === null) return [];
-  const issues = (data as { issues?: unknown }).issues;
-  return Array.isArray(issues) ? issues as LintIssue[] : [];
-}
-
-describe("post-roof-incomplete (지붕 완결성 후검증)", () => {
-  it("wallRect가 벽 일부만 덮으면 경고를 내되 적용은 막지 않는다", () => {
-    const { ctx, tileset } = context();
-    addApprovedRoof(tileset());
-    approve(tileset(), WALL_GROUP_ID);
-    expect(runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 4, y: 6, w: 6, h: 3 }, material: "흰 집 벽" }).ok).toBe(true);
-    const roofed = runTool(ctx, "build_roof", {
-      mapId: MAP_ID, material: "빨간 지붕", wallRect: { x: 4, y: 6, w: 3, h: 3 },
+  function currentMap(ctx: ToolContext, mapId: string): GameMap {
+    const map = ctx.project.maps[mapId];
+    if (!map) throw new Error(`missing map: ${mapId}`);
+    return map;
+  }
+  function expectOk(result: ToolResult): void {
+    expect(result.ok, result.summary).toBe(true);
+  }
+  function dataRecord<T>(result: ToolResult): T {
+    if (!result.data || typeof result.data !== "object") throw new Error(`missing data: ${result.summary}`);
+    return result.data as T;
+  }
+  function legacyRoadMap(source: GameMap, points: readonly Point[]): GameMap {
+    const map = structuredClone(source);
+    const painted: Point[] = [];
+    for (let index = 0; index < points.length; index += 1) {
+      const segment = index === 0 ? [points[0]] : lineCells(points[index - 1], points[index]);
+      for (const cell of segment) {
+        if (!inMapBounds(map, cell.x, cell.y)) continue;
+        const tileIndex = cell.y * map.width + cell.x;
+        map.lowerTiles[tileIndex] = DIRT_ROAD_TILE.BODY;
+        map.upperTiles[tileIndex] = TILE.EMPTY;
+        painted.push(cell);
+      }
+    }
+    shapeRoadAround(map, painted);
+    return map;
+  }
+  function roadCells(map: GameMap): readonly Point[] {
+    const cells: Point[] = [];
+    for (let y = 0; y < map.height; y += 1) {
+      for (let x = 0; x < map.width; x += 1) {
+        if (isRoadTile(map.lowerTiles[y * map.width + x] ?? TILE.EMPTY)) cells.push({ x, y });
+      }
+    }
+    return cells;
+  }
+  function coniferPairs(map: GameMap): readonly Point[] {
+    const pairs: Point[] = [];
+    for (let y = 0; y < map.height - 1; y += 1) {
+      for (let x = 0; x < map.width; x += 1) {
+        const top = map.upperTiles[y * map.width + x] === 260;
+        const trunkLower = map.lowerTiles[(y + 1) * map.width + x] === 290;
+        const trunkUpperLegacy = map.upperTiles[(y + 1) * map.width + x] === 290;
+        if (top && (trunkLower || trunkUpperLegacy)) pairs.push({ x, y });
+      }
+    }
+    return pairs;
+  }
+  function runScatter(ctx: ToolContext, mapId: string, args: Record<string, unknown> = {}): ToolResult {
+    return runTool(ctx, "scatter_object", {
+      area: { x: 2, y: 2, w: 20, h: 20 },
+      avoidProtected: false,
+      count: 6,
+      groupId: CONIFER_GROUP_ID,
+      mapId,
+      maxGap: 5,
+      minGap: 0,
+      ...args,
     });
-    expect(roofed.ok, roofed.summary).toBe(true);
-    const issue = (roofed.issues ?? []).find((entry) => entry.code === "post-roof-incomplete");
-    expect(issue).toBeTruthy();
-    expect(issue?.severity).toBe("warning");
-    expect(issue?.message).toContain("3칸");
-    expect((roofed.diff?.warnings ?? []).some((warning) => warning.includes("지붕 미완성"))).toBe(true);
-  });
+  }
+  describe("natural scatter tool integration", () => {
+    it("paint_road naturalness 0 matches the legacy lineCells/autotile path exactly", () => {
+      const { ctx, mapId } = context();
+      const points = [{ x: 2, y: 8 }, { x: 14, y: 8 }, { x: 14, y: 18 }];
+      const before = currentMap(ctx, mapId);
+      const expected = legacyRoadMap(before, points);
 
-  it("지붕이 그 집 벽 전체를 덮으면 조용하다", () => {
-    const { ctx, tileset } = context();
-    addApprovedRoof(tileset());
-    approve(tileset(), WALL_GROUP_ID);
-    expect(runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 4, y: 6, w: 5, h: 3 }, material: "흰 집 벽" }).ok).toBe(true);
-    const roofed = runTool(ctx, "build_roof", { mapId: MAP_ID, material: "빨간 지붕" });
-    expect(roofed.ok, roofed.summary).toBe(true);
-    expect((roofed.issues ?? []).some((entry) => entry.code === "post-roof-incomplete")).toBe(false);
-  });
+      const result = runTool(ctx, "paint_road", { mapId, points, style: "dirt", naturalness: 0, seed: 9 });
 
-  it("다른 집 벽이 있어도 이번에 지붕을 얹은 집만 본다", () => {
-    const { ctx, tileset } = context();
-    addApprovedRoof(tileset());
-    approve(tileset(), WALL_GROUP_ID);
-    expect(runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 1, y: 8, w: 5, h: 3 }, material: "흰 집 벽" }).ok).toBe(true);
-    expect(runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 12, y: 8, w: 5, h: 3 }, material: "흰 집 벽" }).ok).toBe(true);
-    const roofed = runTool(ctx, "build_roof", {
-      mapId: MAP_ID, material: "빨간 지붕", wallRect: { x: 1, y: 8, w: 5, h: 3 },
+      expectOk(result);
+      const actual = currentMap(ctx, mapId);
+      expect(actual.lowerTiles).toEqual(expected.lowerTiles);
+      expect(actual.upperTiles).toEqual(expected.upperTiles);
     });
-    expect(roofed.ok, roofed.summary).toBe(true);
-    expect((roofed.issues ?? []).some((entry) => entry.code === "post-roof-incomplete")).toBe(false);
-  });
 
-  it("run_lint는 일부만 덮인 지붕을 경고한다", () => {
-    const { ctx, tileset } = context();
-    addApprovedRoof(tileset());
-    approve(tileset(), WALL_GROUP_ID);
-    expect(runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 4, y: 6, w: 6, h: 3 }, material: "흰 집 벽" }).ok).toBe(true);
-    expect(runTool(ctx, "build_roof", {
-      mapId: MAP_ID, material: "빨간 지붕", wallRect: { x: 4, y: 6, w: 3, h: 3 },
-    }).ok).toBe(true);
-    const linted = runTool(ctx, "run_lint", {});
-    expect(linted.ok, linted.summary).toBe(true);
-    expect(lintIssues(linted.data).some((entry) => entry.code === "post-roof-incomplete")).toBe(true);
+    it("paint_road naturalness 0.8 creates a non-straight, longer road footprint", () => {
+      const { ctx, mapId } = context();
+      const points = [{ x: 2, y: 12 }, { x: 24, y: 12 }];
+
+      const result = runTool(ctx, "paint_road", { mapId, points, style: "dirt", naturalness: 0.8, seed: 1234 });
+
+      expectOk(result);
+      const cells = roadCells(currentMap(ctx, mapId));
+      expect(cells.length).toBeGreaterThan(lineCells(points[0], points[1]).length);
+      expect(cells.some((cell) => cell.y !== 12)).toBe(true);
+      expect(result.summary).toContain("자연도 0.8 / 경로");
+    });
+
+    it("paint_road replays the same natural path for the same seed", () => {
+      const first = context();
+      const second = context();
+      const args = { mapId: first.mapId, points: [{ x: 2, y: 5 }, { x: 20, y: 16 }], style: "dirt", naturalness: 0.9, seed: 77 };
+
+      expectOk(runTool(first.ctx, "paint_road", args));
+      expectOk(runTool(second.ctx, "paint_road", { ...args, mapId: second.mapId }));
+
+      expect(currentMap(first.ctx, first.mapId).lowerTiles).toEqual(currentMap(second.ctx, second.mapId).lowerTiles);
+    });
+
+    it("scatter_object auto-selects uniform below naturalness 0.3", () => {
+      const { ctx, mapId } = context();
+
+      const result = runScatter(ctx, mapId, { naturalness: 0.2 });
+
+      expectOk(result);
+      expect(dataRecord<ScatterData>(result).mode).toBe("uniform");
+    });
+
+    it("scatter_object auto-selects poisson from naturalness 0.3 through 0.7", () => {
+      const { ctx, mapId } = context();
+
+      const result = runScatter(ctx, mapId, { naturalness: 0.5 });
+
+      expectOk(result);
+      expect(dataRecord<ScatterData>(result).mode).toBe("poisson");
+    });
+
+    it("scatter_object auto-selects cluster above naturalness 0.7", () => {
+      const { ctx, mapId } = context();
+
+      const result = runScatter(ctx, mapId, { naturalness: 0.85 });
+
+      expectOk(result);
+      expect(dataRecord<ScatterData>(result).mode).toBe("cluster");
+    });
+
+    it("scatter_object explicit mode overrides the naturalness threshold", () => {
+      const { ctx, mapId } = context();
+
+      const result = runScatter(ctx, mapId, { mode: "cluster", naturalness: 0.1 });
+
+      expectOk(result);
+      expect(dataRecord<ScatterData>(result).mode).toBe("cluster");
+    });
+
+    it("scatter_object keeps hard conifer companion placement under cluster naturalness", () => {
+      const { ctx, mapId } = context();
+
+      const result = runScatter(ctx, mapId, { naturalness: 0.9, seed: 44 });
+
+      expectOk(result);
+      const data = dataRecord<ScatterData>(result);
+      expect(result.summary).toContain("클러스터 동반");
+      expect(coniferPairs(currentMap(ctx, mapId))).toHaveLength(data.placed);
+    });
+
+    it("scatter_object replays the same poisson placement for the same seed", () => {
+      const first = context();
+      const second = context();
+
+      expectOk(runScatter(first.ctx, first.mapId, { naturalness: 0.5, seed: 20260707 }));
+      expectOk(runScatter(second.ctx, second.mapId, { naturalness: 0.5, seed: 20260707 }));
+
+      expect(coniferPairs(currentMap(first.ctx, first.mapId))).toEqual(coniferPairs(currentMap(second.ctx, second.mapId)));
+    });
+
+    it("scatter_object poisson changes placement when seed changes", () => {
+      const first = context();
+      const second = context();
+
+      expectOk(runScatter(first.ctx, first.mapId, { naturalness: 0.5, seed: 11 }));
+      expectOk(runScatter(second.ctx, second.mapId, { naturalness: 0.5, seed: 99 }));
+
+      expect(coniferPairs(currentMap(first.ctx, first.mapId))).not.toEqual(coniferPairs(currentMap(second.ctx, second.mapId)));
+    });
+
+    it("forest stacks canopy upper over trunk lower on the same cell", () => {
+      const { ctx, mapId } = context(10, 10);
+      // 두 그루를 세로로 한 칸 어긋나게: 아래 그루 수관이 위 그루 밑동 칸에 겹침
+      expectOk(
+        runTool(ctx, "scatter_object", {
+          mapId,
+          groupId: CONIFER_GROUP_ID,
+          area: { x: 3, y: 2, w: 1, h: 2 },
+          count: 1,
+          minGap: 0,
+          naturalness: 0,
+          seed: 1,
+          avoidProtected: false,
+        }),
+      );
+      expectOk(
+        runTool(ctx, "scatter_object", {
+          mapId,
+          groupId: CONIFER_GROUP_ID,
+          area: { x: 3, y: 3, w: 1, h: 2 },
+          count: 1,
+          minGap: 0,
+          naturalness: 0,
+          seed: 2,
+          avoidProtected: false,
+        }),
+      );
+      const map = currentMap(ctx, mapId);
+      // 첫 그루: upper(3,2)=260, lower(3,3)=290
+      // 둘째: upper(3,3)=260, lower(3,4)=290 → 칸 (3,3)에 lower 밑동 + upper 수관 겹침
+      expect(map.upperTiles[2 * map.width + 3]).toBe(260);
+      expect(map.lowerTiles[3 * map.width + 3]).toBe(290);
+      expect(map.upperTiles[3 * map.width + 3]).toBe(260);
+      expect(map.lowerTiles[4 * map.width + 3]).toBe(290);
+    });
+
+    it("scatter_object bag props place 1-cell tiles, not vertical pairs of first two ids", () => {
+      const { ctx, mapId } = context(16, 16);
+      const tileset = ctx.project.tilesets[currentMap(ctx, mapId).tilesetId];
+      const bagId = "test-bag-props";
+      tileset.tileGroups = [
+        ...(tileset.tileGroups ?? []).filter((g) => g.id !== bagId),
+        {
+          id: bagId,
+          name: "가방 소품",
+          role: "prop",
+          defaultLayer: "upper",
+          tileIds: [327, 328, 357, 358, 319],
+          description: "벤치 조각을 가방에 넣은 잘못된 예전 형태",
+          placementRules: "",
+        },
+      ];
+      for (const tile of [327, 328, 357, 358, 319]) tileset.priority[tile] = "upper";
+
+      expectOk(
+        runTool(ctx, "scatter_object", {
+          mapId,
+          groupId: bagId,
+          area: { x: 1, y: 1, w: 12, h: 12 },
+          count: 8,
+          minGap: 0,
+          naturalness: 0.5,
+          seed: 7,
+          avoidProtected: false,
+        }),
+      );
+
+      const map = currentMap(ctx, mapId);
+      let verticalBenchPairs = 0;
+      for (let y = 0; y < map.height - 1; y += 1) {
+        for (let x = 0; x < map.width; x += 1) {
+          const top = map.upperTiles[y * map.width + x];
+          const bot = map.upperTiles[(y + 1) * map.width + x];
+          if (top === 327 && bot === 328) verticalBenchPairs += 1;
+        }
+      }
+      expect(verticalBenchPairs, "bench left/right halves must not stamp as vertical pairs").toBe(0);
+    });
+
+    it("place_props bench-horizontal is only 327|328 (no 357/358 under it)", () => {
+      const { ctx, mapId } = context(14, 14);
+      expectOk(
+        runTool(ctx, "place_props", {
+          mapId,
+          area: { x: 2, y: 2, w: 6, h: 4 },
+          material: "벤치",
+          count: 1,
+          minGap: 0,
+          naturalness: 0.2,
+          seed: 1,
+        }),
+      );
+      const map = currentMap(ctx, mapId);
+      let foundH = false;
+      for (let y = 0; y < map.height; y += 1) {
+        for (let x = 0; x < map.width - 1; x += 1) {
+          if (map.upperTiles[y * map.width + x] === 327 && map.upperTiles[y * map.width + x + 1] === 328) {
+            foundH = true;
+            if (y + 1 < map.height) {
+              expect(map.upperTiles[(y + 1) * map.width + x]).not.toBe(357);
+              expect(map.upperTiles[(y + 1) * map.width + x + 1]).not.toBe(358);
+            }
+          }
+        }
+      }
+      expect(foundH).toBe(true);
+    });
+
+    it("place_props bench-vertical stamps 358 above 388 on upper only", () => {
+      const { ctx, mapId } = context(14, 14);
+      expectOk(
+        runTool(ctx, "place_props", {
+          mapId,
+          area: { x: 2, y: 2, w: 6, h: 6 },
+          material: "세로 의자",
+          count: 1,
+          minGap: 0,
+          naturalness: 0.2,
+          seed: 1,
+        }),
+      );
+      const map = currentMap(ctx, mapId);
+      let foundV = false;
+      for (let y = 0; y < map.height - 1; y += 1) {
+        for (let x = 0; x < map.width; x += 1) {
+          if (map.upperTiles[y * map.width + x] === 358 && map.upperTiles[(y + 1) * map.width + x] === 388) {
+            foundV = true;
+            expect(map.lowerTiles[y * map.width + x]).not.toBe(358);
+            expect(map.lowerTiles[(y + 1) * map.width + x]).not.toBe(388);
+          }
+        }
+      }
+      expect(foundV).toBe(true);
+    });
+
+    it("scatter_object / place_props skip dirt road cells even though they are passable", () => {
+      const { ctx, mapId } = context(24, 24);
+      expectOk(
+        runTool(ctx, "paint_road", {
+          mapId,
+          points: [{ x: 2, y: 10 }, { x: 20, y: 10 }],
+          style: "dirt",
+          naturalness: 0,
+        }),
+      );
+      const roadKeys = new Set(roadCells(currentMap(ctx, mapId)).map((cell) => `${cell.x},${cell.y}`));
+      expect(roadKeys.size).toBeGreaterThan(5);
+
+      expectOk(
+        runTool(ctx, "scatter_object", {
+          mapId,
+          groupId: CONIFER_GROUP_ID,
+          area: { x: 1, y: 1, w: 22, h: 20 },
+          count: 20,
+          minGap: 0,
+          naturalness: 0.55,
+          seed: 3,
+          avoidProtected: true,
+        }),
+      );
+
+      const pairs = coniferPairs(currentMap(ctx, mapId));
+      expect(pairs.length).toBeGreaterThan(0);
+      for (const origin of pairs) {
+        expect(roadKeys.has(`${origin.x},${origin.y}`), `tree top on road ${origin.x},${origin.y}`).toBe(false);
+        expect(roadKeys.has(`${origin.x},${origin.y + 1}`), `tree bottom on road ${origin.x},${origin.y + 1}`).toBe(false);
+      }
+
+      // place_props 경로(그룹 위임)도 동일 보호.
+      const props = context(24, 24);
+      expectOk(
+        runTool(props.ctx, "paint_road", {
+          mapId: props.mapId,
+          points: [{ x: 2, y: 10 }, { x: 20, y: 10 }],
+          style: "dirt",
+          naturalness: 0,
+        }),
+      );
+      const propsRoad = new Set(roadCells(currentMap(props.ctx, props.mapId)).map((cell) => `${cell.x},${cell.y}`));
+      expectOk(
+        runTool(props.ctx, "place_props", {
+          mapId: props.mapId,
+          area: { x: 1, y: 1, w: 22, h: 20 },
+          material: "침엽수",
+          count: 16,
+          minGap: 0,
+          naturalness: 0.55,
+          seed: 5,
+        }),
+      );
+      for (const origin of coniferPairs(currentMap(props.ctx, props.mapId))) {
+        expect(propsRoad.has(`${origin.x},${origin.y}`)).toBe(false);
+        expect(propsRoad.has(`${origin.x},${origin.y + 1}`)).toBe(false);
+      }
+    });
+
+    it("build_house naturalness 0 preserves the requested origin", () => {
+      const { ctx, mapId } = context(16, 16);
+
+      const result = runTool(ctx, "build_house", { mapId, origin: { x: 2, y: 2 }, width: 10, height: 10, material: "plaster", naturalness: 0 });
+
+      expectOk(result);
+      expect(dataRecord<OriginData>(result).origin).toEqual({ x: 2, y: 2 });
+    });
+
+    it("build_house jitter falls back to the original origin when every offset overflows", () => {
+      const { ctx, mapId } = context(12, 12);
+
+      const result = runTool(ctx, "build_house", { mapId, origin: { x: 0, y: 0 }, width: 12, height: 12, material: "wood", naturalness: 1, seed: 17 });
+
+      expectOk(result);
+      expect(dataRecord<OriginData>(result).origin).toEqual({ x: 0, y: 0 });
+    });
+
+    // Removed it "stamp_structure jitters within": stamp_structure was removed from the tool registry on purpose.
+  });
+  describe("wobblePath 닫힌 폴리라인 (2026-07-08 회귀)", () => {
+    it("닫힌 사각 루프 + naturalness>0이 1칸으로 퇴화하지 않는다", async () => {
+      const { wobblePath } = await import("@/editor/tools/naturalScatter");
+      const square = [
+        { x: 22, y: 22 }, { x: 29, y: 22 }, { x: 29, y: 29 }, { x: 22, y: 29 }, { x: 22, y: 22 },
+      ];
+      let seed = 7;
+      const rng = () => {
+        seed = (seed * 1103515245 + 12345) % 2147483648;
+        return seed / 2147483648;
+      };
+      const result = wobblePath(square, 0.3, rng);
+      expect(result.path.length).toBeGreaterThanOrEqual(20); // 둘레(~28) 근처여야 정상
+    });
   });
 });
 
-describe("post-tree-only-undergrowth (나무가 풀로 깔림 후검증)", () => {
-  it("숲 합성이 나무 없이 덤불만 깔면 경고를 낸다", () => {
-    const project = withRetiredCombinedTownMaps(createBlankProject());
-    const map = project.maps[MAP_ID];
-    map.upperTiles[3 * map.width + 3] = 289;
-    map.upperTiles[3 * map.width + 4] = 289;
-    const issues = verifyPostTilePlacement(project, {
-      name: "place_props",
-      args: { mapId: MAP_ID, area: { x: 2, y: 2, w: 6, h: 6 }, material: "침엽수", density: "dense" },
-      data: { placed: 5, requested: 8, materials: ["덤불"] },
+// postTileVerify: AI 타일 시공 후검증 계약 (지붕 완결성·나무-풀 오배치).
+describe("postTileVerify", () => {
+  isolateTimers();
+  const MAP_ID = "map_blank_start";
+  const WALL_GROUP_ID = `${COMBINED_TOWN_HARNESS_PREFIX}plaster-wall-9slice`;
+  function context(): { ctx: ToolContext; tileset: () => TilesetDef } {
+    const ctx: ToolContext = { project: withRetiredCombinedTownMaps(createBlankProject()) };
+    return { ctx, tileset: () => ctx.project.tilesets[COMBINED_TOWN_TILESET_ID] };
+  }
+  function approve(tileset: TilesetDef, groupId: string): TileGroupMetadata {
+    const group = tileset.tileGroups?.find((entry) => entry.id === groupId);
+    if (!group) throw new Error(`그룹 없음: ${groupId}`);
+    group.origin = "user";
+    return group;
+  }
+  function addApprovedRoof(tileset: TilesetDef): TileGroupMetadata {
+    const roof: TileGroupMetadata = {
+      id: "test-roof", name: "빨간 지붕", role: "roof", defaultLayer: "upper", layerHome: "upper",
+      tileIds: [60, 61, 62], description: "빨간 지붕 재료", placementRules: "", origin: "user",
+      patternGrammar: {
+        kind: "horizontal_expandable", minWidth: 2, preserveCaps: true, repeat: "body",
+        parts: [{ role: "leftCap", tileIds: [60] }, { role: "repeatBody", tileIds: [61] }, { role: "rightCap", tileIds: [62] }],
+      },
+    };
+    tileset.tileGroups!.push(roof);
+    tileset.tileMeta ??= [];
+    for (const tile of [60, 61, 62]) {
+      tileset.tileMeta[tile] = {
+        ...(tileset.tileMeta[tile] ?? {}),
+        label: "빨간 지붕",
+        description: "빨간 지붕 재료",
+        role: "roof",
+        origin: "user",
+        source: "user",
+      };
+    }
+    return roof;
+  }
+  function lintIssues(data: unknown): LintIssue[] {
+    if (typeof data !== "object" || data === null) return [];
+    const issues = (data as { issues?: unknown }).issues;
+    return Array.isArray(issues) ? issues as LintIssue[] : [];
+  }
+  describe("post-roof-incomplete (지붕 완결성 후검증)", () => {
+    it("wallRect가 벽 일부만 덮으면 경고를 내되 적용은 막지 않는다", () => {
+      const { ctx, tileset } = context();
+      addApprovedRoof(tileset());
+      approve(tileset(), WALL_GROUP_ID);
+      expect(runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 4, y: 6, w: 6, h: 3 }, material: "흰 집 벽" }).ok).toBe(true);
+      const roofed = runTool(ctx, "build_roof", {
+        mapId: MAP_ID, material: "빨간 지붕", wallRect: { x: 4, y: 6, w: 3, h: 3 },
+      });
+      expect(roofed.ok, roofed.summary).toBe(true);
+      const issue = (roofed.issues ?? []).find((entry) => entry.code === "post-roof-incomplete");
+      expect(issue).toBeTruthy();
+      expect(issue?.severity).toBe("warning");
+      expect(issue?.message).toContain("3칸");
+      expect((roofed.diff?.warnings ?? []).some((warning) => warning.includes("지붕 미완성"))).toBe(true);
     });
-    const issue = issues.find((entry) => entry.code === "post-tree-only-undergrowth");
-    expect(issue).toBeTruthy();
-    expect(issue?.severity).toBe("warning");
-  });
 
-  it("숲 합성에 나무가 포함되면 조용하다", () => {
-    const project = withRetiredCombinedTownMaps(createBlankProject());
-    const map = project.maps[MAP_ID];
-    map.lowerTiles[3 * map.width + 3] = 290;
-    map.upperTiles[2 * map.width + 3] = 260;
-    const issues = verifyPostTilePlacement(project, {
-      name: "place_props",
-      args: { mapId: MAP_ID, area: { x: 2, y: 2, w: 6, h: 6 }, material: "침엽수", density: "dense" },
-      data: { placed: 5, requested: 8, materials: ["침엽수", "덤불"] },
+    it("지붕이 그 집 벽 전체를 덮으면 조용하다", () => {
+      const { ctx, tileset } = context();
+      addApprovedRoof(tileset());
+      approve(tileset(), WALL_GROUP_ID);
+      expect(runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 4, y: 6, w: 5, h: 3 }, material: "흰 집 벽" }).ok).toBe(true);
+      const roofed = runTool(ctx, "build_roof", { mapId: MAP_ID, material: "빨간 지붕" });
+      expect(roofed.ok, roofed.summary).toBe(true);
+      expect((roofed.issues ?? []).some((entry) => entry.code === "post-roof-incomplete")).toBe(false);
     });
-    expect(issues.some((entry) => entry.code === "post-tree-only-undergrowth")).toBe(false);
-  });
 
-  it("나무를 요청했는데 영역에 나무 타일이 하나도 없으면 경고를 낸다", () => {
-    const project = withRetiredCombinedTownMaps(createBlankProject());
-    const issues = verifyPostTilePlacement(project, {
-      name: "place_props",
-      args: { mapId: MAP_ID, area: { x: 2, y: 2, w: 4, h: 4 }, material: "침엽수", count: 4 },
-      data: { placed: 4, requested: 4 },
+    it("다른 집 벽이 있어도 이번에 지붕을 얹은 집만 본다", () => {
+      const { ctx, tileset } = context();
+      addApprovedRoof(tileset());
+      approve(tileset(), WALL_GROUP_ID);
+      expect(runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 1, y: 8, w: 5, h: 3 }, material: "흰 집 벽" }).ok).toBe(true);
+      expect(runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 12, y: 8, w: 5, h: 3 }, material: "흰 집 벽" }).ok).toBe(true);
+      const roofed = runTool(ctx, "build_roof", {
+        mapId: MAP_ID, material: "빨간 지붕", wallRect: { x: 1, y: 8, w: 5, h: 3 },
+      });
+      expect(roofed.ok, roofed.summary).toBe(true);
+      expect((roofed.issues ?? []).some((entry) => entry.code === "post-roof-incomplete")).toBe(false);
     });
-    expect(issues.some((entry) => entry.code === "post-tree-missing")).toBe(true);
-  });
 
-  it("덤불만 있으면 나무 타일로 세지 않는다", () => {
-    const project = withRetiredCombinedTownMaps(createBlankProject());
-    const map = project.maps[MAP_ID];
-    map.upperTiles[3 * map.width + 3] = 289;
-    const issues = verifyPostTilePlacement(project, {
-      name: "place_props",
-      args: { mapId: MAP_ID, area: { x: 2, y: 2, w: 4, h: 4 }, material: "침엽수", count: 4 },
-      data: { placed: 4, requested: 4 },
+    it("run_lint는 일부만 덮인 지붕을 경고한다", () => {
+      const { ctx, tileset } = context();
+      addApprovedRoof(tileset());
+      approve(tileset(), WALL_GROUP_ID);
+      expect(runTool(ctx, "build_wall", { mapId: MAP_ID, rect: { x: 4, y: 6, w: 6, h: 3 }, material: "흰 집 벽" }).ok).toBe(true);
+      expect(runTool(ctx, "build_roof", {
+        mapId: MAP_ID, material: "빨간 지붕", wallRect: { x: 4, y: 6, w: 3, h: 3 },
+      }).ok).toBe(true);
+      const linted = runTool(ctx, "run_lint", {});
+      expect(linted.ok, linted.summary).toBe(true);
+      expect(lintIssues(linted.data).some((entry) => entry.code === "post-roof-incomplete")).toBe(true);
     });
-    expect(issues.some((entry) => entry.code === "post-tree-missing")).toBe(true);
   });
-
-  it("나무 상자 같은 가구는 나무 기대치 검사에서 제외한다", () => {
-    const project = withRetiredCombinedTownMaps(createBlankProject());
-    const issues = verifyPostTilePlacement(project, {
-      name: "place_props",
-      args: { mapId: MAP_ID, area: { x: 2, y: 2, w: 4, h: 4 }, material: "나무 상자", count: 2 },
-      data: { placed: 2, requested: 2 },
+  describe("post-tree-only-undergrowth (나무가 풀로 깔림 후검증)", () => {
+    it("숲 합성이 나무 없이 덤불만 깔면 경고를 낸다", () => {
+      const project = withRetiredCombinedTownMaps(createBlankProject());
+      const map = project.maps[MAP_ID];
+      map.upperTiles[3 * map.width + 3] = 289;
+      map.upperTiles[3 * map.width + 4] = 289;
+      const issues = verifyPostTilePlacement(project, {
+        name: "place_props",
+        args: { mapId: MAP_ID, area: { x: 2, y: 2, w: 6, h: 6 }, material: "침엽수", density: "dense" },
+        data: { placed: 5, requested: 8, materials: ["덤불"] },
+      });
+      const issue = issues.find((entry) => entry.code === "post-tree-only-undergrowth");
+      expect(issue).toBeTruthy();
+      expect(issue?.severity).toBe("warning");
     });
-    expect(issues.some((entry) => entry.code === "post-tree-missing")).toBe(false);
-  });
 
-  it("영역에 실제 나무가 있으면 조용하다", () => {
-    const project = withRetiredCombinedTownMaps(createBlankProject());
-    const map = project.maps[MAP_ID];
-    map.lowerTiles[3 * map.width + 3] = 290;
-    map.upperTiles[2 * map.width + 3] = 260;
-    expect(map.upperTiles[2 * map.width + 3]).toBe(260);
-    const issues = verifyPostTilePlacement(project, {
-      name: "place_props",
-      args: { mapId: MAP_ID, area: { x: 2, y: 2, w: 4, h: 4 }, material: "침엽수", count: 1 },
-      data: { placed: 1, requested: 1 },
+    it("숲 합성에 나무가 포함되면 조용하다", () => {
+      const project = withRetiredCombinedTownMaps(createBlankProject());
+      const map = project.maps[MAP_ID];
+      map.lowerTiles[3 * map.width + 3] = 290;
+      map.upperTiles[2 * map.width + 3] = 260;
+      const issues = verifyPostTilePlacement(project, {
+        name: "place_props",
+        args: { mapId: MAP_ID, area: { x: 2, y: 2, w: 6, h: 6 }, material: "침엽수", density: "dense" },
+        data: { placed: 5, requested: 8, materials: ["침엽수", "덤불"] },
+      });
+      expect(issues.some((entry) => entry.code === "post-tree-only-undergrowth")).toBe(false);
     });
-    expect(issues.some((entry) => entry.code === "post-tree-missing")).toBe(false);
-  });
 
-  it("타일 쓰기 외의 툴에는 아무것도 말하지 않는다", () => {
-    const project = withRetiredCombinedTownMaps(createBlankProject());
-    expect(verifyPostTilePlacement(project, { name: "place_npc", args: {}, data: undefined })).toEqual([]);
-    expect(project.maps[MAP_ID].upperTiles.length).toBeGreaterThan(0);
-    void TILE.EMPTY;
+    it("나무를 요청했는데 영역에 나무 타일이 하나도 없으면 경고를 낸다", () => {
+      const project = withRetiredCombinedTownMaps(createBlankProject());
+      const issues = verifyPostTilePlacement(project, {
+        name: "place_props",
+        args: { mapId: MAP_ID, area: { x: 2, y: 2, w: 4, h: 4 }, material: "침엽수", count: 4 },
+        data: { placed: 4, requested: 4 },
+      });
+      expect(issues.some((entry) => entry.code === "post-tree-missing")).toBe(true);
+    });
+
+    it("덤불만 있으면 나무 타일로 세지 않는다", () => {
+      const project = withRetiredCombinedTownMaps(createBlankProject());
+      const map = project.maps[MAP_ID];
+      map.upperTiles[3 * map.width + 3] = 289;
+      const issues = verifyPostTilePlacement(project, {
+        name: "place_props",
+        args: { mapId: MAP_ID, area: { x: 2, y: 2, w: 4, h: 4 }, material: "침엽수", count: 4 },
+        data: { placed: 4, requested: 4 },
+      });
+      expect(issues.some((entry) => entry.code === "post-tree-missing")).toBe(true);
+    });
+
+    it("나무 상자 같은 가구는 나무 기대치 검사에서 제외한다", () => {
+      const project = withRetiredCombinedTownMaps(createBlankProject());
+      const issues = verifyPostTilePlacement(project, {
+        name: "place_props",
+        args: { mapId: MAP_ID, area: { x: 2, y: 2, w: 4, h: 4 }, material: "나무 상자", count: 2 },
+        data: { placed: 2, requested: 2 },
+      });
+      expect(issues.some((entry) => entry.code === "post-tree-missing")).toBe(false);
+    });
+
+    it("영역에 실제 나무가 있으면 조용하다", () => {
+      const project = withRetiredCombinedTownMaps(createBlankProject());
+      const map = project.maps[MAP_ID];
+      map.lowerTiles[3 * map.width + 3] = 290;
+      map.upperTiles[2 * map.width + 3] = 260;
+      expect(map.upperTiles[2 * map.width + 3]).toBe(260);
+      const issues = verifyPostTilePlacement(project, {
+        name: "place_props",
+        args: { mapId: MAP_ID, area: { x: 2, y: 2, w: 4, h: 4 }, material: "침엽수", count: 1 },
+        data: { placed: 1, requested: 1 },
+      });
+      expect(issues.some((entry) => entry.code === "post-tree-missing")).toBe(false);
+    });
+
+    it("타일 쓰기 외의 툴에는 아무것도 말하지 않는다", () => {
+      const project = withRetiredCombinedTownMaps(createBlankProject());
+      expect(verifyPostTilePlacement(project, { name: "place_npc", args: {}, data: undefined })).toEqual([]);
+      expect(project.maps[MAP_ID].upperTiles.length).toBeGreaterThan(0);
+      void TILE.EMPTY;
+    });
   });
 });

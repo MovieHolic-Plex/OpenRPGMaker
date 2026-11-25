@@ -1,5 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 import { startNewGameFromTitle } from "./runtimeInput";
+import { revealDbRailTab } from "./dbRail";
 
 type EventCommand = {
   readonly kind: string;
@@ -132,7 +133,9 @@ test("Korean editor supports NPC dialogue and monster authoring basics", async (
     /* 모달이 열려있지 않을 수 있음 */
   });
   await page.getByTestId("toolbar-database").click();
+  await revealDbRailTab(page, "enemies");
   await expect(page.getByTestId("db-tab-enemies")).toHaveText("몬스터");
+  await revealDbRailTab(page, "enemies");
   await page.getByTestId("db-tab-enemies").click();
   await expect(page.getByTestId("db-detail-form")).toContainText("몬스터 그래픽");
   await expect.poll(async () => {

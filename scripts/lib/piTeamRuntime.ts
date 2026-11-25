@@ -27,6 +27,9 @@ import { createMapRunLocks, mapRunScope, mapRunBundleIds } from "../../src/ai/pi
 import { authorMergedSpatialProposal, exportSpatialToolProof } from "../../src/editor/tools/spatialToolState.ts";
 import { addPiAgentUsage, changedProjectKeys, PI_MAP_LOSS_DECLINED_PREFIX, restoreCheckpointProject, slimDoneEvent, slimProjectForWire, type PiAgentDoneEvent, type PiAgentUsage, type PiAgentEvent, type PiAgentRequest, type PiTeamRoleId } from "../../src/ai/piAgent/protocol.ts";
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
+import { firstMvpRoute } from "../../src/ai/piAgent/firstMvpRoute.ts";
+import { applyDraftCast } from "../../src/ai/v2/story/draftCast.ts";
+import { checkTeamMvp } from "../../src/ai/piAgent/teamMvp.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
 import { FIRST_PLAY_TOOLS, firstPlayEvents, firstPlaySignature, inspectFirstPlay, type FirstPlayReceipt } from '../../src/ai/piAgent/firstPlay.ts';
 import { FIRST_SCENE_INSTRUCTIONS, firstSceneGraphicEvidence, firstSceneObjectCatalog, firstSceneMapIds, firstSceneSignature, inspectFirstScene, inspectFirstScenePlaces, storyRouteBrief } from '../../src/ai/piAgent/firstScene.ts';
@@ -225,6 +228,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   /** 구간 게이트(프리셋 첫 생성)와 별개로 연애 게임 완료 검사가 finish 를 돌려보낸 횟수 — 채팅 한 줄 경로(기획서 없음)도 같은 검사를 받는다. */
   let romanceRejections = 0;
   let jrpgChatRejections = 0;
+  let mvpRejections = 0;
+  let mvpLeft: string[] = [];
   // A review belongs to the inspected snapshot, not merely to a map id.
   let authoringReview: { signature: string; ok: boolean } | undefined;
   const authoringSignature = (project: Project): string => createHash('sha256').update(JSON.stringify(project)).digest('hex');
@@ -787,6 +792,32 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `호감 대화 인물이 둘 이상이라 기한 판정에 인물별 엔딩을 얹었습니다${made.length ? `(새 엔딩 ${made.join(", ")})` : ""}.` } });
           }
         }
+        // 첫 MVP(빈 프로젝트의 게임 하나)는 맵만 남기지 않는다 — 담당은 맵 단위라 게임 전체 끝맺음(draft-cast)이 여기서는 돌지 않는다.
+        // 병합본에 세계관·동료·직업·기술·물건·적을 채운다(2026-11-24 ideal-flow-draft). 다시 불려도 같은 결과다.
+        const firstMvp = !request.readOnly && firstMvpRoute(base, request.task).team;
+        if (firstMvp) {
+          const drafted: Project = { ...working, system: { ...working.system }, characters: { ...(working.characters ?? {}) }, database: { ...working.database,
+            actors: working.database.actors.map((actor) => ({ ...actor, learnedSkills: [...actor.learnedSkills] })), classes: [...working.database.classes],
+            skills: [...working.database.skills], items: [...working.database.items], enemies: [...working.database.enemies] } };
+          const made = applyDraftCast(drafted, request.task);
+          if (made.length) {
+            working = drafted;
+            emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `초안 데이터를 채웠습니다: ${made.slice(0, 12).join(", ")}${made.length > 12 ? ` 외 ${made.length - 12}개` : ""}.` } });
+          }
+        }
+        // 첫 MVP 약속(맵 3~5장 · 엔딩 없음 · 끝 지점까지 걸어서 감) — v2 단일 실행의 끝맺음과 같은 셈(src/ai/piAgent/teamMvp.ts). 거절은 두 번까지, 그 뒤에는 보고에 남긴다.
+        if (firstMvp && !isGoalCampaignTask(request.task)) {
+          const mvp: Project = { ...working, maps: structuredClone(working.maps), commonEvents: structuredClone(working.commonEvents ?? []), endings: [...(working.endings ?? [])], switches: [...working.switches] };
+          const verdict = checkTeamMvp(mvp);
+          working = mvp;
+          if (verdict.applied.length) emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: verdict.applied.join(" / ") } });
+          if (verdict.problems.length && mvpRejections < 2) {
+            mvpRejections += 1;
+            emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `첫 MVP 미완(${mvpRejections}/2): ${verdict.problems.join(" / ")}` } });
+            throw new Error(`첫 MVP 로는 아직 끝낼 수 없어 finish 를 받지 않습니다(${mvpRejections}/2). ${verdict.problems.join(" / ")} — 담당에게 배정하고 wait_agents 로 받은 뒤 다시 finish 하세요. 두 번 거절된 뒤에는 남은 항목을 보고에 적고 끝낼 수 있습니다.`);
+          }
+          mvpLeft = verdict.problems;
+        }
         if (firstPlay) {
           const issues = inspectFirstPlay(base, working, firstPlay);
           if (issues.length) throw new Error('핵심 플레이 미완료: ' + issues.join(' / '));
@@ -876,6 +907,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         if (romanceLeft.length) finished += `\n남은 연애 게임 마무리 항목: ${romanceLeft.join(" / ")}`;
         const jrpgLeft = !segmentGate && !request.readOnly && jrpgCompletionGateApplies(working, request.task) ? jrpgCompletionGaps(working, undefined, { task: request.task }) : [];
         if (jrpgLeft.length) finished += `\n남은 JRPG 마무리 항목: ${jrpgLeft.join(" / ")}`;
+        if (mvpLeft.length) finished += `\n남은 첫 MVP 항목: ${mvpLeft.join(" / ")}`;
         const failedTasks = [...outcomes.values()].filter(outcome => !outcome.ok);
         if (failedTasks.length) finished += `\n실패한 배정 기록 ${failedTasks.length}건: ${failedTasks.map(outcome => `${outcome.agentId}: ${outcome.summary}`).join("; ")}`;
         if (outstanding.length) finished += `\n미확인 협의 ${outstanding.length}건: ${outstanding.map(m => `${m.id} ${m.from}→${m.to}: ${m.body}`).join("; ")}`;

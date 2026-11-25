@@ -4148,3 +4148,18 @@ r8~r11 실편집기 녹화에서 조수는 도구를 찾지 않고 paint_tiles �
 ## 일정표 도구 (upsert_schedule)
 
 `list_schedules`/`upsert_schedule`(`src/editor/tools/scheduleTools.ts`)이 주간 일정표(`database.schedules`)를 저작한다. 명령 `planSchedule`/`runSchedule` 은 조수 이벤트 스키마에 포함. 계약·한계는 `openwiki/schedule-planner.md`.
+
+
+## 영역 지시 장소 레시피 `build_region_place` (2026-11-24)
+
+오너: 「영역 지시를 통해 수백가지의 것들을 지시할 수 있어야… 상점 만들어달라 하면 건물에다가 실내까지 지어야」.
+
+- 도구 `src/editor/tools/regionPlaceTools.ts` · 문장 분류 `src/ai/regionPlaceIntent.ts`(`regionPlaceRequest`).
+- 한 번 호출 = 외관(버들항 살림집 원본 키트 `place_terrain_house`, 기본 마을은 `build_house`) + 실내 맵(`build_hand_interior_room` layout) + 문 왕복(`create_transfer_pair`) + 주인 `place_npc`(상점=이 게임 DB 의 가격 있는 품목으로 `shop`, 여관=`inn`, 교회=세이브 포인트). 던전·동굴 입구는 `author_dungeon` entrance.
+- kind 11종: shop·weapon_shop·smithy·inn·tavern·house·chapel·bakery·pharmacy·dungeon_entrance·cave_entrance.
+- 계약: 바깥 맵은 영역 사각형 안만 바뀐다(외관·문 앞 칸이 영역 안에 안 서면 거부, 프로젝트 무변경). 새 맵은 맵 트리에서 바깥 맵 **아래**에 매단다 —
+  영역 턴은 `mergeMapBundles` 로 그 맵의 묶음(트리 하위)만 반영하므로, 트리 밖 새 맵은 「범위 밖」으로 버려져 문이 없는 맵을 가리켰다(실측).
+  같은 이유로 조립 집(style)은 쓰지 않는다(타일셋 structureKits 추가가 버려진다). `mergeMapBundles` 는 `system.peopleChipLock` 과 새 `worldGraph` 노드·간선을 옮긴다.
+- 노출: `formatScopeNote(scope, intent, requestText)` 가 장소 짓기 지시면 「build_region_place 한 번, 새 맵 허용」 노트를, `sessionToolExposure` 가 도구를 보인다.
+- 되돌리기: Pi 적용은 프로젝트 스냅샷 한 칸이라 결과 카드의 되돌리기 한 번에 새 맵까지 사라진다. 카드 요약은 `새 맵 <이름>` 을 붙인다(`countRegionChanges.newMaps`).
+- 시험 `test/regionPlaceTools.test.ts`(외관·실내·왕복·품목·병합 무손실·되돌리기·거부), 능력 표 `scripts/qa/region-directives/`.

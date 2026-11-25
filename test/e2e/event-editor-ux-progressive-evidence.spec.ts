@@ -192,11 +192,9 @@ test("capture event editor progressive disclosure evidence", async ({ page }) =>
   await modalShot(page, "05b-modal-only-aux-flow.png");
   await modal.getByTestId("event-view-toggle-storyboard").click({ force: true });
 
-  // 6) AI 도크는 툴바 버튼으로 연다. 접힌 details 요약은 화면에 없다.
-  const ai = modal.getByTestId("ai-event-assist");
-  await modal.getByTestId("event-command-quick-ai").click();
-  await expect(ai).toHaveJSProperty("open", true);
-  await page.waitForTimeout(250);
+  // 6) 조수 입구는 맨 아래 한 줄 입력칸이다.
+  await modal.getByTestId("event-edit-line-input").focus();
+  await expect(modal.getByTestId("event-edit-line-input")).toBeFocused();
   await screenshotEvidence(page, EVIDENCE_DIR, "06-aux-ai-open.png");
   await modalShot(page, "06b-modal-only-aux-ai.png");
 

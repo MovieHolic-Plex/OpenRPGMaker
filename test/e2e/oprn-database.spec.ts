@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { exportedProject } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 test("RM2K3 database modal exposes footer status without duplicate workbench text row", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
@@ -22,6 +23,7 @@ test("BM88 Classes tab exposes Korean ontology fields and persists class setting
 
   await page.getByTestId("toolbar-database").click();
   await expect(page.getByTestId("database-modal")).toBeVisible();
+  await revealDbRailTab(page, "classes");
   await page.getByTestId("db-tab-classes").click({ force: true });
 
   await expect(page.getByTestId("db-classes-bm88-workbench")).toBeVisible();
@@ -108,6 +110,7 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
     "db-tab-variables",
   ]) {
     // 전투 애니메이션은 도트 연출 레일 탭 아래 하위 보기다.
+    await revealDbRailTab(page, "retro-choreographies");
     if (id === "db-subview-animations") await page.getByTestId("db-tab-retro-choreographies").click();
     await page.getByTestId(id).click();
     await expect(page.getByTestId("db-detail-form")).toBeVisible();
@@ -116,6 +119,7 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
     await expect(page.getByTestId("database-modal")).not.toContainText(/generated-(?!battle-reference-forest)/);
   }
 
+  await revealDbRailTab(page, "skills");
   await page.getByTestId("db-tab-skills").click();
   await page.getByTestId("db-add-record").click();
   await page.getByTestId("db-field-name").fill("Spark QA");
@@ -125,9 +129,11 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
   await page.getByTestId("db-field-skill-mp-percent").fill("12");
   await page.getByTestId("db-field-skill-success").fill("96");
   await expect(page.getByTestId("db-field-scope")).toContainText("적 전체");
+  await revealDbRailTab(page, "classes");
   await page.getByTestId("db-tab-classes").click();
   await expect(page.getByTestId("db-picker-class-skill")).toContainText("Spark QA");
 
+  await revealDbRailTab(page, "actors");
   await page.getByTestId("db-tab-actors").click();
   await expect(page.getByTestId("db-actor-state-rate-manual-note")).toContainText("States Page");
   await expect(page.getByTestId("db-actor-state-rate-state_poison")).toContainText("60%");
@@ -143,6 +149,7 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
   await page.getByTestId("db-field-actor-skill-level-0").fill("7");
   await page.getByTestId("db-picker-actor-skill-0").selectOption({ label: "Spark QA" });
 
+  await revealDbRailTab(page, "classes");
   await page.getByTestId("db-tab-classes").click();
   await expect(page.getByTestId("db-classes-bm88-workbench")).toBeVisible();
   await expect(page.getByTestId("db-classes-bm88-workbench")).toContainText("옵션");
@@ -162,6 +169,7 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
   await page.getByTestId("db-field-class-skill-level").fill("12");
   await page.getByTestId("db-picker-class-skill").selectOption({ label: "Spark QA" });
 
+  await revealDbRailTab(page, "items");
   await page.getByTestId("db-tab-items").click();
   await page.getByTestId("db-field-name").fill("Item QA");
   await page.getByTestId("db-field-item-description").fill("Potion with battle metadata");
@@ -173,6 +181,7 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
   await page.getByTestId("db-field-item-occasion").selectOption("field");
   await expect(page.getByTestId("db-picker-skill")).toHaveCount(0);
 
+  await revealDbRailTab(page, "items");
   await page.getByTestId("db-tab-items").click();
   await page.getByTestId("db-catalog-filter-equipment").click();
   await page.locator('.db-catalog-rows [data-collection="equipment"]').first().click();
@@ -183,6 +192,7 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
   await page.getByTestId("db-field-equipment-cursed").check();
   await page.getByTestId("db-picker-equipment-use-skill").selectOption({ label: "Spark QA" });
 
+  await revealDbRailTab(page, "enemies");
   await page.getByTestId("db-tab-enemies").click();
   await page.getByTestId("db-add-record").click();
   await page.getByTestId("db-field-name").fill("Enemy QA");
@@ -191,6 +201,7 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
   await page.getByTestId("db-picker-enemy-drop").selectOption({ label: "Item QA" });
   await page.getByTestId("db-picker-enemy-action-skill").selectOption({ label: "Spark QA" });
 
+  await revealDbRailTab(page, "troops");
   await page.getByTestId("db-tab-troops").click();
   await page.getByTestId("db-field-name").fill("Troop QA");
   await page.getByTestId("db-picker-troop-member-enemy").selectOption({ label: "Enemy QA" });
@@ -199,24 +210,30 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
   await page.getByTestId("db-field-troop-member-hidden").check();
   await page.getByTestId("db-field-troop-backdrop").fill("battleback_qa");
 
+  await revealDbRailTab(page, "states");
   await page.getByTestId("db-tab-states").click();
   await page.getByTestId("db-field-name").fill("State QA");
+  await revealDbRailTab(page, "retro-choreographies");
   await page.getByTestId("db-tab-retro-choreographies").click();
   await page.getByTestId("db-subview-animations").click();
   await page.getByTestId("db-field-name").fill("Animation QA");
+  await revealDbRailTab(page, "system");
   await page.getByTestId("db-tab-system").click();
   // 타이틀 리소스 필드는 리소스 섹션에 있다(T11 섹션 내비 이후 기본 섹션은 초기 파티).
   await page.getByTestId("db-system-nav-resources").click();
   await page.getByTestId("db-field-title-resource").fill("title_qa");
+  await revealDbRailTab(page, "terms");
   await page.getByTestId("db-tab-terms").click();
   await page.getByTestId("db-field-gold").fill("Zenny");
   await page.getByTestId("db-field-skill-term").fill("Arts");
 
+  await revealDbRailTab(page, "skills");
   await page.getByTestId("db-tab-skills").click();
   await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
   await page.getByTestId("db-delete-selected").click();
   // fix(db): 삭제 거부 메시지가 어떤 레코드가 참조하는지(이름)도 포함하도록 풍부화됐다.
   await expect(page.getByTestId("toast")).toContainText("주인공 'Actor QA'이 이 스킬을 사용 중입니다.");
+  await revealDbRailTab(page, "enemies");
   await page.getByTestId("db-tab-enemies").click();
   await page.locator(".db-search input").fill("");
   await page.getByRole("button", { name: /Enemy QA/ }).click();

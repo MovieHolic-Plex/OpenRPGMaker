@@ -1,5 +1,6 @@
 import { expect, type Page } from "@playwright/test";
 import type { Project } from "../../src/project/types";
+import { revealDbRailTab } from "./dbRail";
 
 /** Mount the shipping database component without starting unrelated editor/game services. */
 export async function openRecoveredDatabase(page: Page, baseURL: string): Promise<void> {
@@ -21,6 +22,7 @@ export async function openRecoveredDatabase(page: Page, baseURL: string): Promis
     await store.load(); // dev factory explicitly disables remote persistence for this test fixture.
     database.openDatabaseModal("items");
   });
+  await revealDbRailTab(page, "items");
   await expect(page.getByTestId("db-tab-items")).toBeVisible();
 }
 

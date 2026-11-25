@@ -1,6 +1,7 @@
 import { mkdirSync } from "node:fs";
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { LIFE_SIM_ENABLED, openDatabase } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 // 생활 시스템이 닫혀 있는 동안(electron/shared/lifeSim.ts LIFE_SIM_ENABLED=false) 생활 편집 화면이 없다 — 깃발을 켤 때 다시 돈다.
 test.skip(!LIFE_SIM_ENABLED, "생활 시스템 닫힘(LIFE_SIM_ENABLED=false)");
@@ -50,6 +51,7 @@ test("P1 계절·날씨와 동물·축사 저작 화면을 두 해상도에서 �
     await page.setViewportSize(viewport);
     const size = `${viewport.width}x${viewport.height}`;
 
+    await revealDbRailTab(page, "daily-weather");
     await page.getByTestId("db-tab-daily-weather").click({ force: true });
     await expect(page.getByTestId("db-weather-workspace")).toBeVisible();
     await expect(page.getByTestId("db-weather-enabled")).toBeChecked();
@@ -62,6 +64,7 @@ test("P1 계절·날씨와 동물·축사 저작 화면을 두 해상도에서 �
     await expectNoHorizontalOverflow(page.getByTestId("db-weather-workspace"), `${size} weather workspace`);
     await page.getByTestId("database-modal").screenshot({ path: `${EVIDENCE_DIR}/editor-weather-${size}.png` });
 
+    await revealDbRailTab(page, "farm-animals");
     await page.getByTestId("db-tab-farm-animals").click({ force: true });
     await expect(page.getByTestId("db-farm-animals-workspace")).toBeVisible();
     await expect(page.getByTestId("db-farm-species-animal_chicken").locator("input").first()).toHaveValue("닭");

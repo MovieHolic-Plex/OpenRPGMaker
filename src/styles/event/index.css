@@ -40,3 +40,4 @@
 @import "./command-workbench.css" layer(event);
 @import "./settings-rail.css" layer(event);
 @import "./editor-chrome.css" layer(event);
+@import "./scene-cards.css" layer(event);

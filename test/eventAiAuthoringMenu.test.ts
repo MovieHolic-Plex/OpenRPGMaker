@@ -8,6 +8,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { resetEventAiStagedForTest } from "@/editor/panels/eventEditor/aiAssist";
+import { resetEventEditLineForTest } from "@/editor/panels/eventEditor/eventEditLine";
 import { clearCommandInspector } from "@/editor/panels/eventEditor/commandInspector";
 import { renderEventEditorDynamic } from "@/editor/panels/eventEditor/content";
 import { eventLayerContextMenuItems } from "@/editor/panels/eventLayerContextMenu";
@@ -105,52 +106,47 @@ describe("AI 이벤트 저작 우클릭 진입점", () => {
   });
 });
 
-describe("AI 도크 열림 예약", () => {
+describe("조수 입구 예약 — 한 줄 입력칸", () => {
+  // 조수 창(도크)은 없다(목업 v2). 우클릭 「AI 로 이벤트 …」로 들어오면 맨 아래 한 줄 입력칸이 초점을 받는다.
   beforeEach(() => {
     resetEventAiStagedForTest();
+    resetEventEditLineForTest();
     clearCommandInspector();
     vi.clearAllMocks();
   });
-
-  /**
-   * 재렌더를 **새 호스트**에 그린다. `renderEventEditorDynamic` 은 자기를 담은 컨테이너에
-   * append 만 하므로, 같은 호스트에 두 번 그리면 `querySelector` 가 **옛 도크**를 돌려주고
-   * 새 도크가 잘못 태어나도 테스트가 통과한다. 매 렌더마다 빈 호스트를 써서 "이번에 그려진
-   * 도크"만 본다.
-   */
-  function renderFresh(mapId: string, eventId: string): { host: HTMLElement; dock: HTMLDetailsElement | null } {
-    const host = document.createElement("div");
-    document.body.append(host);
-    renderEventEditorDynamic(host, mapId, eventId);
-    return { host, dock: host.querySelector<HTMLDetailsElement>('[data-testid="ai-event-assist"]') };
-  }
 
   afterEach(() => {
     vi.restoreAllMocks();
     document.body.replaceChildren();
   });
 
-  it("예약이 있으면 도크가 펼쳐진 채로 태어나고, 다음 재렌더에서는 다시 펼치지 않는다", async () => {
+  function renderFresh(mapId: string, eventId: string): HTMLElement {
+    const host = document.createElement("div");
+    document.body.append(host);
+    renderEventEditorDynamic(host, mapId, eventId);
+    return host;
+  }
+
+  it("예약이 있으면 한 줄 입력칸이 초점을 받고, 다음 재렌더에서는 다시 뺏지 않는다", async () => {
     const { mapId } = seedProject(true);
     const { requestEventAiDockOpen } = await import("@/editor/panels/eventEditor/aiDockOpenRequest");
-    // 편집기 첫 렌더 **전** 예약 — modal.ts 의 순서와 같다.
     requestEventAiDockOpen(mapId, EXISTING_ID);
     const first = renderFresh(mapId, EXISTING_ID);
-    expect(first.dock?.open).toBe(true);
+    await Promise.resolve();
+    expect(document.activeElement).toBe(first.querySelector('[data-testid="event-edit-line-input"]'));
 
-    // 사용자가 접었다고 치자. 그 뒤 재렌더가 도로 펼치면 예약이 샌 것이다.
-    if (first.dock) first.dock.open = false;
+    (document.activeElement as HTMLElement | null)?.blur();
     const second = renderFresh(mapId, EXISTING_ID);
-    expect(second.dock?.open).toBe(false);
-    // 이번 렌더가 정말 새 도크인지 확인한다 — 같으면 위 단언은 옛 DOM 을 본 것이다.
-    expect(second.dock).not.toBe(first.dock);
+    await Promise.resolve();
+    expect(document.activeElement).not.toBe(second.querySelector('[data-testid="event-edit-line-input"]'));
   });
 
-  it("예약 없이 열면 도크는 닫힌 채로 태어난다 — 기본 동작은 그대로다", async () => {
+  it("조수 창(도크)은 그리지 않는다 — 입구는 한 줄 입력칸 하나다", () => {
     const { mapId } = seedProject(true);
-    const { dock } = renderFresh(mapId, EXISTING_ID);
-    expect(dock).not.toBeNull();
-    expect(dock?.open).toBe(false);
+    const host = renderFresh(mapId, EXISTING_ID);
+    expect(host.querySelector('[data-testid="ai-event-assist"]')).toBeNull();
+    expect(host.querySelector('[data-testid="event-command-quick-ai"]')).toBeNull();
+    expect(host.querySelector('[data-testid="event-edit-line-input"]')).not.toBeNull();
   });
 
   it("예약은 소비되면 사라진다 — 나중에 다른 이벤트로 새지 않는다", async () => {
@@ -164,60 +160,13 @@ describe("AI 도크 열림 예약", () => {
     expect(pendingEventAiDockOpenCountForTest()).toBe(0);
   });
 
-  it("편집기가 도크를 그리기 전에 닫히면 예약은 폐기된다 — 나중에 저절로 펼쳐지지 않는다", async () => {
+  it("이미 그 이벤트를 편집 중이면 예약 없이 지금 입력칸으로 초점을 준다", async () => {
     const { mapId } = seedProject(true);
-    const { clearEventAiDockOpenRequest, pendingEventAiDockOpenCountForTest, requestEventAiDockOpen } = await import(
-      "@/editor/panels/eventEditor/aiDockOpenRequest"
-    );
-    // 본문 렌더가 던져 도크가 태어나지 못한 상황을 흉내낸다: 예약만 남고 소비자가 없다.
-    requestEventAiDockOpen(mapId, EXISTING_ID);
-    expect(pendingEventAiDockOpenCountForTest()).toBe(1);
-
-    // modal.ts 의 closeHandler 가 하는 일.
-    clearEventAiDockOpenRequest(mapId, EXISTING_ID);
-    expect(pendingEventAiDockOpenCountForTest()).toBe(0);
-
-    const { dock } = renderFresh(mapId, EXISTING_ID);
-    expect(dock?.open).toBe(false);
-  });
-
-  it("이미 그 이벤트를 편집 중이면 예약을 남기지 않고 지금 도크를 펼친다", async () => {
-    const { mapId } = seedProject(true);
-    const { focusEventAiDockInOpenEditor, resetEventAiStagedForTest } = await import(
-      "@/editor/panels/eventEditor/aiAssist"
-    );
+    const { focusEventEditLine } = await import("@/editor/panels/eventEditor/eventEditLine");
     const { pendingEventAiDockOpenCountForTest } = await import("@/editor/panels/eventEditor/aiDockOpenRequest");
-    const { host, dock } = renderFresh(mapId, EXISTING_ID);
-    expect(dock?.open).toBe(false);
-
-    expect(focusEventAiDockInOpenEditor()).toBe(true);
-    expect(dock?.open).toBe(true);
-    // 예약을 남기지 않는다 — 남기면 다음 재렌더까지 떠돌다 다른 열기에 샌다.
+    const host = renderFresh(mapId, EXISTING_ID);
+    expect(focusEventEditLine()).toBe(true);
+    expect(document.activeElement).toBe(host.querySelector('[data-testid="event-edit-line-input"]'));
     expect(pendingEventAiDockOpenCountForTest()).toBe(0);
-
-    // 재렌더가 펼침을 유지한다(state.open 을 함께 세운 근거). 새 호스트로 그린다.
-    const again = renderFresh(mapId, EXISTING_ID);
-    expect(again.dock?.open).toBe(true);
-    resetEventAiStagedForTest();
-    void host;
-  });
-
-  // 적대적 리뷰가 재현한 결함: 전역 `selectedEventPageId` 로 도크 키를 재구성하면, 다른
-  // 이벤트의 페이지가 선택돼 있을 때(A 를 최소화한 채 B 를 복사한 뒤 A 로 돌아옴) 엉뚱한 키를
-  // 만져 아무 일도 일어나지 않는다. 도크가 자기 키를 스스로 아는지 확인한다.
-  it("다른 이벤트의 페이지가 선택돼 있어도 이 도크는 자기 페이지로 열린다", async () => {
-    const { mapId } = seedProject(true);
-    const { focusEventAiDockInOpenEditor, resetEventAiStagedForTest } = await import(
-      "@/editor/panels/eventEditor/aiAssist"
-    );
-    const { dock } = renderFresh(mapId, EXISTING_ID);
-    expect(dock?.open).toBe(false);
-
-    // 다른 이벤트의 페이지가 선택된 상태를 흉내낸다.
-    editorState.set({ selectedEventId: "ev_someone_else", selectedEventPageId: "page_of_other_event" });
-
-    expect(focusEventAiDockInOpenEditor()).toBe(true);
-    expect(dock?.open).toBe(true);
-    resetEventAiStagedForTest();
   });
 });

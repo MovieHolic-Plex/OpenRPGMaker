@@ -1,0 +1,395 @@
+/* 장면 카드 보기(쉬움·보통, sceneCardsView.ts). 목업 v2: 대사는 게임 대화창 그림, 상점은 상점 창 그림, 갈림은 갈래. */
+.event-scene-host {
+  min-height: 0;
+  overflow: auto;
+  padding: 4px 2px 12px;
+}
+
+.event-scene-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.event-scene-empty {
+  color: var(--text-3);
+  font: 13px/1.5 var(--font-ui);
+  margin: 12px 4px;
+}
+
+.event-scene-card {
+  background: var(--bg-raised);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.event-scene-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.event-scene-card.is-changed {
+  border-color: var(--warning);
+  box-shadow: 0 0 0 2px var(--gold);
+}
+
+.event-scene-card-head {
+  align-items: baseline;
+  display: flex;
+  gap: 8px;
+  min-width: 0;
+}
+
+.event-scene-card-kind {
+  background: var(--bg-inset);
+  border-radius: 6px;
+  color: var(--text-2);
+  flex: 0 0 auto;
+  font: 600 11px/1.6 var(--font-ui);
+  padding: 0 6px;
+}
+
+.event-scene-card.is-talk .event-scene-card-kind { background: var(--accent-muted); color: var(--accent); }
+.event-scene-card.is-shop .event-scene-card-kind { background: var(--success-muted); color: var(--success); }
+.event-scene-card.is-battle .event-scene-card-kind { background: var(--danger-muted); color: var(--danger); }
+.event-scene-card.is-branch .event-scene-card-kind,
+.event-scene-card.is-choice .event-scene-card-kind { background: var(--warning-muted); color: var(--text-1); }
+
+.event-scene-card-title {
+  color: var(--text-1);
+  font: 600 14px/1.4 var(--font-ui);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-scene-card-count {
+  color: var(--text-3);
+  flex: 0 0 auto;
+  font: 12px/1.4 var(--font-ui);
+}
+
+.event-scene-card-changed {
+  background: var(--gold-wash);
+  border-radius: 6px;
+  color: var(--text-1);
+  flex: 0 0 auto;
+  font: 600 11px/1.6 var(--font-ui);
+  margin-left: auto;
+  padding: 0 6px;
+}
+
+/* 게임 대화창: 어두운 창, 흰 글, 이름표. */
+.event-scene-dialogue {
+  background: var(--cinema-night);
+  border: 2px solid var(--white-soft);
+  border-radius: 6px;
+  color: var(--cinema-paper);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px;
+}
+
+.event-scene-line {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.event-scene-speaker {
+  color: var(--gold);
+  font: 600 12px/1.3 var(--font-ui);
+}
+
+.event-scene-body {
+  font: 13px/1.5 var(--font-ui);
+  overflow-wrap: anywhere;
+}
+
+.event-scene-more {
+  color: var(--text-3);
+  font: 12px/1.4 var(--font-ui);
+  margin: 0;
+}
+
+.event-scene-bits {
+  color: var(--text-2);
+  font: 13px/1.5 var(--font-ui);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* 상점 창 그림. */
+.event-scene-shop {
+  background: var(--cinema-night);
+  border: 2px solid var(--white-soft);
+  border-radius: 6px;
+  color: var(--cinema-paper);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 320px;
+  padding: 8px 10px;
+}
+
+.event-scene-shop-title {
+  color: var(--gold);
+  font: 600 13px/1.3 var(--font-ui);
+}
+
+.event-scene-shop-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.event-scene-shop-items li {
+  display: flex;
+  font: 13px/1.5 var(--font-ui);
+  justify-content: space-between;
+}
+
+.event-scene-shop-price {
+  color: var(--white-soft);
+}
+
+.event-scene-shop-tabs {
+  display: flex;
+  gap: 12px;
+  font: 600 12px/1.4 var(--font-ui);
+}
+
+.event-scene-shop .event-scene-more {
+  color: var(--white-soft);
+}
+
+/* 갈림·전투 갈래. */
+.event-scene-branches {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.event-scene-branch {
+  align-items: baseline;
+  border-left: 3px solid var(--border-strong);
+  display: flex;
+  gap: 8px;
+  padding-left: 8px;
+}
+
+.event-scene-branch-label {
+  color: var(--text-1);
+  flex: 0 0 auto;
+  font: 600 12px/1.5 var(--font-ui);
+  min-width: 44px;
+}
+
+.event-scene-branch-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  min-width: 0;
+}
+
+.event-scene-branch-step {
+  background: var(--bg-inset);
+  border-radius: 6px;
+  color: var(--text-2);
+  font: 12px/1.6 var(--font-ui);
+  padding: 0 6px;
+}
+
+.event-scene-branch-step.is-empty {
+  background: transparent;
+  color: var(--text-3);
+}
+
+.event-scene-hidden,
+.event-scene-add {
+  align-self: flex-start;
+  background: transparent;
+  border: 1px dashed var(--border-strong);
+  border-radius: 8px;
+  color: var(--text-2);
+  cursor: pointer;
+  font: 600 12px/1.4 var(--font-ui);
+  padding: 4px 10px;
+}
+
+.event-scene-hidden:hover,
+.event-scene-add:hover {
+  background: var(--bg-hover);
+}
+
+.event-scene-raw {
+  border-top: 1px solid var(--border-default);
+  color: var(--text-2);
+  font: 12px/1.6 var(--font-mono, var(--font-ui));
+  margin: 0;
+  padding: 6px 0 0 20px;
+}
+
+.event-scene-raw-row {
+  overflow-wrap: anywhere;
+}
+
+/* 쉬움·보통: 명령 도구줄은 숨긴다(카드가 고치는 면이고, 조수 입구는 맨 아래 한 줄이다). */
+.event-editor.is-level-easy .event-editor-command-toolbar,
+.event-editor.is-level-normal .event-editor-command-toolbar,
+.event-editor.is-level-easy [data-testid="event-editor-command-count"],
+.event-editor.is-level-easy .event-editor-column-hint,
+.event-editor.is-level-normal .event-editor-column-hint {
+  display: none;
+}
+
+/* ⋯ 메뉴 맨 위 한 줄: 보기 쉬움 · 보통 · 고급. */
+.event-editor-view-level {
+  align-items: center;
+  border-bottom: 1px solid var(--border-default);
+  display: flex;
+  gap: 4px;
+  margin-bottom: 4px;
+  padding: 2px 0 6px;
+}
+
+.event-editor-view-level-label {
+  color: var(--text-2);
+  font: 600 12px/1.4 var(--font-ui);
+  margin-right: 4px;
+}
+
+.event-editor-view-level-option {
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: 6px;
+  color: var(--text-1);
+  cursor: pointer;
+  font: 12px/1.4 var(--font-ui);
+  padding: 3px 10px;
+}
+
+.event-editor-view-level-option.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+/* 쉬움: 이벤트 이름은 글자로만(이름 칸은 보통·고급). */
+.event-editor-modal-window .event-editor-name-text {
+  display: none;
+}
+
+.event-editor-modal-window:has(.event-editor.is-level-easy) .event-editor-name-field {
+  display: none;
+}
+
+.event-editor-modal-window:has(.event-editor.is-level-easy) .event-editor-name-text {
+  color: var(--text-1);
+  display: block;
+  font: 600 15px/1.4 var(--font-ui);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 맨 아래 한 줄 고치기(eventEditLine.ts): 무엇이 바뀌었나 한 줄 + 입력칸 + 되돌리기. */
+.event-edit-line {
+  border-top: 1px solid var(--border-default);
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 2px 2px;
+}
+
+.event-edit-line-summary {
+  color: var(--text-2);
+  font: 13px/1.4 var(--font-ui);
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.event-edit-line-summary[data-kind="ok"] {
+  color: var(--text-1);
+}
+
+.event-edit-line-summary[data-kind="hint"] {
+  color: var(--accent);
+}
+
+.event-edit-line-summary[data-kind="fail"] {
+  color: var(--danger);
+}
+
+.event-edit-line-row {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
+.event-edit-line-input {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-default);
+  border-radius: 10px;
+  color: var(--text-1);
+  flex: 1 1 auto;
+  font: 14px/1.4 var(--font-ui);
+  min-width: 0;
+  padding: 9px 12px;
+}
+
+.event-edit-line-input:focus-visible {
+  border-color: var(--accent);
+  outline: 2px solid var(--accent-muted);
+}
+
+.event-edit-line-undo {
+  align-items: center;
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  color: var(--text-1);
+  cursor: pointer;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font: 12px/1.4 var(--font-ui);
+  gap: 6px;
+  padding: 7px 10px;
+}
+
+.event-edit-line-undo[hidden] {
+  display: none;
+}
+
+.event-edit-line-undo-count {
+  background: var(--bg-inset);
+  border-radius: 999px;
+  font-weight: 600;
+  min-width: 18px;
+  padding: 0 5px;
+  text-align: center;
+}
+
+.event-editor .cmd-item.is-line-changed {
+  box-shadow: 0 0 0 2px var(--gold);
+}
+
+@media (max-width: 600px) {
+  .event-edit-line-undo-label {
+    display: none;
+  }
+}

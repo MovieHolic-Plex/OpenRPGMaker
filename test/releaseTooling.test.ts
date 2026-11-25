@@ -23,6 +23,14 @@ import {
   gitAnnotateTagArgs,
   writeReleaseNotesFile,
 } from "../scripts/lib/releaseFiles.mjs";
+import {
+  decideAutoRelease,
+  diffFailedFiles,
+  layerBaselines,
+  runCompleteness,
+  selectUserFacingCommits,
+  summarizeShardReports,
+} from "../scripts/lib/releaseGate.mjs";
 import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -408,6 +416,92 @@ describe("git tag and gh release note files", () => {
       expect(readFileSync(path, "utf8")).toBe(body);
     } finally {
       rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
+
+describe("조건 기반 자동 릴리스 판정 (releaseGate)", () => {
+  it("사용자 체감 변경은 feat·fix 만, 시험·CI 범위는 빼고 센다", () => {
+    const picked = selectUserFacingCommits([
+      { sha: "a", subject: "feat(database): 자료집 머리줄" },
+      { sha: "b", subject: "fix: 저장 오류" },
+      { sha: "c", subject: "fix(test): 기대값" },
+      { sha: "d", subject: "ci(full): 밤 1회" },
+      { sha: "e", subject: "perf(test): 픽스처" },
+      { sha: "f", subject: "chore(release): v0.419.0" },
+      { sha: "g", subject: "feat(editor)!: 깨지는 변경" },
+    ]);
+    expect(picked.map((commit) => commit.sha)).toEqual(["a", "b", "g"]);
+  });
+
+  it("플레이크(단독 재실행 통과)는 실패에서 빠지고, 기준 판에서 통과한 파일의 실패만 새 실패다", () => {
+    const candidate = summarizeShardReports([
+      { tests: { failedFiles: ["test/a.test.ts", "test/flaky.test.ts"], testFiles: ["test/a.test.ts", "test/b.test.ts", "test/flaky.test.ts"] }, flakeRetries: ["test/flaky.test.ts"] },
+      { tests: { failedFiles: ["test/old.test.ts", "test/brandnew.test.ts"], testFiles: ["test/old.test.ts", "test/brandnew.test.ts", "test/fixed.test.ts"] } },
+    ]);
+    const baseline = summarizeShardReports([
+      { tests: { failedFiles: ["test/old.test.ts", "test/fixed.test.ts"], testFiles: ["test/a.test.ts", "test/b.test.ts", "test/old.test.ts", "test/fixed.test.ts", "test/flaky.test.ts"] } },
+    ]);
+    expect(diffFailedFiles(candidate, baseline)).toEqual({
+      ok: false,
+      newFailures: ["test/a.test.ts"],
+      notInBaseline: ["test/brandnew.test.ts"],
+      stillFailing: ["test/old.test.ts"],
+      fixed: ["test/fixed.test.ts"],
+    });
+  });
+
+  it("가장 새 기준 판이 파일을 돌렸으면 그 결과를, 빠진 샤드의 파일만 앞 판에서 채운다", () => {
+    const newest = { failedFiles: ["test/x.test.ts"], ranFiles: ["test/x.test.ts", "test/y.test.ts"] };
+    const older = { failedFiles: ["test/y.test.ts", "test/z.test.ts"], ranFiles: ["test/x.test.ts", "test/y.test.ts", "test/z.test.ts"] };
+    expect(layerBaselines([newest, older])).toEqual({
+      failedFiles: ["test/x.test.ts", "test/z.test.ts"],
+      ranFiles: ["test/x.test.ts", "test/y.test.ts", "test/z.test.ts"],
+    });
+  });
+
+  it("샤드 잡이 취소됐거나 리포트가 빠지면 불완전한 판이다", () => {
+    const jobs = [{ name: "tests (1)", conclusion: "failure" }, { name: "tests (2)", conclusion: "success" }];
+    expect(runCompleteness({ testJobs: jobs, reportCount: 2 }).complete).toBe(true);
+    expect(runCompleteness({ testJobs: jobs, reportCount: 1 }).complete).toBe(false);
+    expect(runCompleteness({ testJobs: [jobs[0], { name: "tests (2)", conclusion: "cancelled" }], reportCount: 2 }).complete).toBe(false);
+  });
+
+  const passing = () => ({
+    userCommits: Array.from({ length: 5 }, (_, index) => ({ sha: String(index), subject: "feat: x" })),
+    sinceTag: "v0.419.0",
+    ciDiff: { ok: true, newFailures: [], notInBaseline: [] },
+    lastPublishedAt: "2026-11-24T00:00:00Z",
+    recentReleaseTags: ["v0.419.0"],
+    holdPrs: [],
+    draftTags: [],
+    openReleasePr: null,
+    now: "2026-11-24T12:00:00Z",
+  });
+
+  it("네 조건과 하루 상한이 다 맞으면 발행한다(12시간 경계 포함)", () => {
+    const decision = decideAutoRelease(passing());
+    expect(decision.release).toBe(true);
+    expect(decision.reasons).toEqual([]);
+  });
+
+  it("하나라도 안 맞으면 넘어가고 안 맞는 것마다 이유를 남긴다", () => {
+    const cases = [
+      [{ userCommits: passing().userCommits.slice(0, 4) }, "user-commits"],
+      [{ ciDiff: { ok: false, newFailures: ["test/a.test.ts"], notInBaseline: [] } }, "ci-full"],
+      [{ ciDiff: { ok: false, error: "판 없음" } }, "ci-full"],
+      [{ ciDiff: null }, "ci-full"],
+      [{ now: "2026-11-24T11:59:00Z" }, "since-publish"],
+      [{ holdPrs: [{ number: 5040 }] }, "hold-label"],
+      [{ recentReleaseTags: ["v0.418.0", "v0.419.0"] }, "daily-cap"],
+      [{ draftTags: ["v0.420.0"] }, "no-draft"],
+      [{ openReleasePr: { number: 5041, auto: true } }, "no-open-release-pr"],
+    ];
+    for (const [override, id] of cases) {
+      const decision = decideAutoRelease({ ...passing(), ...override });
+      expect(decision.release).toBe(false);
+      expect(decision.checks.filter((check) => !check.ok).map((check) => check.id)).toEqual([id]);
+      expect(decision.reasons).toHaveLength(1);
     }
   });
 });

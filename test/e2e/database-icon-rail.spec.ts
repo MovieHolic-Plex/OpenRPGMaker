@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { DATABASE_TAB_SPECS, openDatabase, switchDatabaseTab } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 /* 이 파일은 원래 56px 크림색 아이콘 레일을 고정했다. 그 디자인은 폐기됐다 —
  * 지금은 220px 라벨 레일 + 그룹 아코디언(#160)이고 팔레트는 크림이 아니라
@@ -102,15 +103,19 @@ test("every tab keeps a painted SVG icon in the labeled rail", async ({ page }) 
 test("the rail search filters tabs and stays wide enough to read", async ({ page }) => {
   // Break named: the search collapses to an unusable width or stops filtering the rail.
   await switchDatabaseTab(page, ACTORS_TAB);
+  await revealDbRailTab(page);
   const search = page.getByTestId("db-tab-search");
   await expect(search).toBeVisible();
   const width = (await search.boundingBox())?.width ?? 0;
   expect(width, "search is top-resident at rail width, not a 44px overlay").toBeGreaterThanOrEqual(150);
 
   await search.fill("아이템");
+  await revealDbRailTab(page, "items");
   await expect(page.getByTestId("db-tab-items")).toBeVisible();
+  await revealDbRailTab(page, "actors");
   await expect(page.getByTestId("db-tab-actors")).toBeHidden();
   await search.fill("");
+  await revealDbRailTab(page, "actors");
   await expect(page.getByTestId("db-tab-actors")).toBeVisible();
 });
 

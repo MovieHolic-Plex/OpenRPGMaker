@@ -57,6 +57,23 @@ describe("piAgent mapBundle", () => {
     expect(gate.ok).toBe(true);
   });
 
+  it("영역 턴이 단 돌아오는 문(다른 맵)과 묶음 안 탈것은 옮기고, 다른 맵 타일은 여전히 버린다", () => {
+    const base = seed();
+    const linked = clone(base);
+    const pair = runTool({ project: linked }, "create_transfer_pair", { a: { mapId: "map_east", x: 5, y: 5 }, b: { mapId: "map_west", x: 6, y: 6 } });
+    expect(pair.ok, pair.summary).toBe(true);
+    const boat = runTool({ project: linked }, "place_vehicle", { vehicle: "cart", mapId: "map_east", x: 3, y: 3 });
+    expect(boat.ok, boat.summary).toBe(true);
+    const merged = mergeMapBundles(base, [{ mapIds: ["map_east"], project: linked }]);
+    expect(merged.spills).toEqual([]);
+    expect(merged.project.maps.map_west!.events.length).toBe(base.maps.map_west!.events.length + 1);
+    expect(merged.project.system.vehicles?.map((entry) => entry.mapId)).toEqual(["map_east"]);
+
+    const painted = clone(base);
+    painted.maps.map_west!.lowerTiles[0] = 99;
+    expect(mergeMapBundles(base, [{ mapIds: ["map_east"], project: painted }]).spills.flatMap((spill) => spill.keys)).toEqual(["maps.map_west"]);
+  });
+
   it("묶음 밖 변경은 버리고 spill 로 보고한다", () => {
     const base = seed();
     const a = clone(base);

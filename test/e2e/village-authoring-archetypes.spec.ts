@@ -2,6 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { seedProjectForEditor } from "./projectSeed";
 import { exportedProject, openDatabase } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 /**
  * 데이터베이스 「마을」탭의 저작 표면을 실제 브라우저에서 본다.
@@ -27,6 +28,7 @@ async function openVillageTab(page: Page): Promise<void> {
   await openDatabase(page);
   // 29개 탭은 아코디언 안이고 한 그룹만 펼쳐진다 — 「마을」은 「세계」 소속이다.
   await page.getByTestId("db-tab-group-world").click();
+  await revealDbRailTab(page, "villages");
   await page.getByTestId("db-tab-villages").click();
   await expect(page.getByTestId("db-village-workspace")).toBeVisible();
 }

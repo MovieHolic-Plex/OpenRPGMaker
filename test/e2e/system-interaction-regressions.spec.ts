@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { revealDbRailTab } from "./dbRail";
 
 async function openSystem(page: Page): Promise<void> {
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
@@ -18,6 +19,7 @@ async function openSystem(page: Page): Promise<void> {
   }
   await page.getByTestId("toolbar-database").click();
   await page.getByTestId("db-tab-group-system").click();
+  await revealDbRailTab(page, "system");
   await page.getByTestId("db-tab-system").click();
   expect(await page.evaluate(async () => {
     const modulePath = "/src/project/store.ts";
@@ -202,7 +204,9 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
       await expect(page.getByTestId(start)).toHaveValue("0");
       await expect(page.getByTestId(end)).toHaveValue("1");
       await expect(page.getByTestId(end)).toHaveAttribute("min", "1");
+      await revealDbRailTab(page, "terms");
       await page.getByTestId("db-tab-terms").click();
+      await revealDbRailTab(page, "system");
       await page.getByTestId("db-tab-system").click();
       await navigate(page, "time");
       await expect(page.getByTestId(end)).toHaveValue("1");

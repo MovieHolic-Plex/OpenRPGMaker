@@ -54,6 +54,13 @@ describe("게임 하나 요청 — 짓는 턴", () => {
     for (const name of ["write_blueprint", "build_blueprint_path", "add_event", "add_people", "define_ending", "set_objective", "run_scene_test", "patch_event_page", "list_endings"]) expect(first.upFront, name).toContain(name);
   });
   it("처음 목록은 7만 자 안이다(전에는 12만 자)", () => expect(first.chars).toBeLessThan(70_000));
+  // 2026-11-24 ideal-flow-draft: 첫 판이 세계관을 비웠다 — 짓는 턴에는 세계 허리 도구가 처음부터 있다(고치는 턴에는 없다). 인물은 청사진 cast 칸으로.
+  it("세계 허리 도구를 처음부터 싣고, 청사진에 인물 칸이 있다", () => {
+    expect(first.upFront).toContain("set_world_canon");
+    expect(offer(project(3), FINISH).upFront).not.toContain("set_world_canon");
+    expect(first.exposure.lazy.has("upsert_character_profile")).toBe(true);
+    expect(JSON.stringify(first.exposure.tools.find((t) => t.name === "write_blueprint")!.parameters)).toContain('"cast"');
+  });
   it("단계가 하나라도 안 지어졌으면 아직 짓는 턴이다", () => {
     const partial = offer(project(2), FINISH);
     expect(partial.intent.wholeGame).toBe(true);

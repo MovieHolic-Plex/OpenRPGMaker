@@ -1,6 +1,7 @@
 import { mkdirSync } from "node:fs";
 import { expect, test, type Page } from "@playwright/test";
 import { LIFE_SIM_ENABLED, openDatabase, switchDatabaseTab, type DatabaseTabSpec } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 // 생활 시스템이 닫혀 있는 동안(electron/shared/lifeSim.ts LIFE_SIM_ENABLED=false) 생활 편집 화면이 없다 — 깃발을 켤 때 다시 돈다.
 test.skip(!LIFE_SIM_ENABLED, "생활 시스템 닫힘(LIFE_SIM_ENABLED=false)");
@@ -100,14 +101,17 @@ test("원격 Stardew 생활 DB가 완성 상태이며 1024/1440 화면에서 읽
 
   await switchDatabaseTab(page, CROPS_TAB);
   await page.getByTestId("db-crop-readiness-tools-action").click();
+  await revealDbRailTab(page, "items");
   await expect(page.getByTestId("db-tab-items")).toHaveClass(/active/);
 
   await switchDatabaseTab(page, CHARACTERS_TAB);
   await page.getByTestId("db-character-readiness-gifts-action").click();
+  await revealDbRailTab(page, "system");
   await expect(page.getByTestId("db-tab-system")).toHaveClass(/active/);
 
   await switchDatabaseTab(page, SPECIES_TAB);
   await openMonsterPipeline(page);
   await page.getByTestId("db-monster-pipeline-links-action").click();
+  await revealDbRailTab(page, "enemies");
   await expect(page.getByTestId("db-tab-enemies")).toHaveClass(/active/);
 });

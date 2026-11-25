@@ -166,6 +166,8 @@ function mapToolCalls(town: string, blank: string): Array<[string, Record<string
     ["author_snow_route", { fromMapId: town, side: "east", count: 1 }],
     ["author_worldmap_structure", { id: "world_trap", structure: "region-routes" }],
     ["derive_map_variant", { sourceMapId: blank, variants: [{ id: "map_trap_variant", era: "중세" }] }],
+    ["create_map", { id: "map_trap_place", name: "덫 장소", width: 40, height: 30, tilesetId: "beodeul_city" }],
+    ["build_region_place", { mapId: "map_trap_place", region: { x: 14, y: 8, width: 13, height: 12 }, kind: "inn" }],
     ["duplicate_map", { mapId: "map_trap_jp", id: "map_trap_copy" }],
     ["shift_map", { mapId: "map_trap_copy", dx: 1, dy: 0 }],
     ["clear_map", { mapId: "map_trap_copy", confirmDestroy: true }],

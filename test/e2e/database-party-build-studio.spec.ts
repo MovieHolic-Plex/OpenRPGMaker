@@ -1,6 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { createBlankProject } from "@/project/defaults";
 import { seedProjectForEditor } from "./projectSeed";
+import { revealDbRailTab } from "./dbRail";
 
 function partyBuildFixture() {
   const project = createBlankProject();
@@ -30,6 +31,7 @@ async function openPreviewSection(page: Page): Promise<void> {
 
 async function openActorBuild(page: Page, actorId: string): Promise<void> {
   await page.getByTestId("toolbar-database").click();
+  await revealDbRailTab(page, "actors");
   await page.getByTestId("db-tab-actors").click();
   await page.getByTestId(`db-record-row-${actorId}`).click();
   // 배우 편집기는 섹션 탭으로 갈렸고 기본은 "기본"(identity) 뿐이다 — actorSection() 이
@@ -57,6 +59,7 @@ test("Party Studio follows exact non-first records and keeps broken references i
   await expect(page.getByTestId("db-actor-build-open-equipment-equip_missing_preview")).toHaveCount(0);
 
   await page.getByTestId("db-actor-build-open-class").click();
+  await revealDbRailTab(page, "classes");
   await expect(page.getByTestId("db-tab-classes")).toHaveClass(/active/);
   await expect(page.getByTestId(`db-record-row-${klass.id}`)).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByTestId("db-field-name")).toHaveValue(klass.name);
@@ -67,14 +70,17 @@ test("Party Studio follows exact non-first records and keeps broken references i
   await expect(page.getByTestId(`db-record-row-${actor.id}`)).toHaveAttribute("aria-selected", "true");
   await openPreviewSection(page);
   await page.getByTestId(`db-actor-build-open-equipment-${equipment.id}`).click();
+  await revealDbRailTab(page, "items");
   await expect(page.getByTestId("db-tab-items")).toHaveClass(/active/);
   await expect(page.getByTestId(`db-record-row-${equipment.id}`)).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByTestId("db-field-name")).toHaveValue(equipment.name);
 
+  await revealDbRailTab(page, "actors");
   await page.getByTestId("db-tab-actors").click();
   await page.getByTestId(`db-record-row-${actor.id}`).click();
   await openPreviewSection(page);
   await page.getByTestId(`db-actor-build-open-skill-${skill.id}`).click();
+  await revealDbRailTab(page, "skills");
   await expect(page.getByTestId("db-tab-skills")).toHaveClass(/active/);
   await expect(page.getByTestId(`db-record-row-${skill.id}`)).toHaveAttribute("aria-pressed", "true");
   await expect(page.getByTestId("db-field-name")).toHaveValue(skill.name);

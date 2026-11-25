@@ -1,0 +1,74 @@
+name: auto-release
+
+# 조건 기반 자동 릴리스 (오너 2026-11-24 「자동 주기 릴리즈 조건을 기반으로 해라 니추천대로」).
+# 3시간마다 판정하고, 아래를 모두 만족할 때만 기존 릴리스 경로(release/next PR → merge-pr → 태그·초안 →
+# desktop-release 검증 뒤 발행)를 탄다. 판정·이유는 매 회차 이 실행의 요약과 아티팩트 JSON 에 남는다.
+#   (1) 지난 발행 태그 이후 사용자 체감 변경(feat/fix) 5개 이상
+#   (2) main 의 마지막 완전한 ci-full 판이 직전 기준 판보다 새 실패 0 (실패 파일 대조, scripts/ci-full-diff.mjs)
+#   (3) 마지막 발행에서 12시간 이상
+#   (4) 열린 PR 에 hold-release 라벨 없음
+#   + 최근 24시간 2판 미만, 산출물 대기 중인 초안 없음, 열린 release/next PR 없음
+# 규칙 숫자는 scripts/lib/releaseGate.mjs 의 AUTO_RELEASE_RULES 한 곳에 있다. 문서: openwiki/release-and-version.md 「조건 기반 자동 릴리스」.
+#
+# 토큰: 저장소 Actions 설정이 GITHUB_TOKEN 의 PR 생성을 막으면 ① 단계에서 멈추고 이슈에 남긴다.
+#   RELEASE_BOT_TOKEN 시크릿이 있으면 그것을 쓴다(없으면 github.token).
+#   GITHUB_TOKEN 의 푸시는 다른 워크플로를 깨우지 않아서, release/next 의 ci-fast 는 스크립트가 직접 디스패치한다.
+#
+# 수동 실행의 기본은 건조 실행(dry_run=true)이다 — 판정만 하고 아무것도 쓰지 않는다.
+
+on:
+  schedule:
+    - cron: "41 */3 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 판정만 하고 아무것도 쓰지 않는다
+        required: false
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+  issues: write
+
+concurrency:
+  group: auto-release
+  cancel-in-progress: false
+
+jobs:
+  decide:
+    if: github.repository == 'MovieHolic-Plex/OpenRPGMaker'
+    runs-on: ubuntu-latest
+    # merge-pr 가 ci-fast 를 최대 60분 기다린다.
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_BOT_TOKEN || github.token }}
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+
+      - name: 판정 (조건이 맞고 건조 실행이 아니면 발행)
+        env:
+          GH_TOKEN: ${{ secrets.RELEASE_BOT_TOKEN || github.token }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && 'true' || 'false' }}
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          flags=(--json "$RUNNER_TEMP/auto-release.json" --summary "$GITHUB_STEP_SUMMARY")
+          if [[ "$DRY_RUN" == "true" ]]; then flags+=(--dry-run); fi
+          node scripts/release-scheduled.mjs "${flags[@]}"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        continue-on-error: true
+        with:
+          name: auto-release-decision
+          path: ${{ runner.temp }}/auto-release.json
+          if-no-files-found: warn

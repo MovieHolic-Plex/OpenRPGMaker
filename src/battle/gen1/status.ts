@@ -111,6 +111,7 @@ export function readGen1MajorStatus(
   stateTurns: Readonly<Record<string, number>>,
   stateRecords: readonly Gen1StateRecordRef[],
 ): Gen1MajorStatusView | undefined {
+  if (!stateIds.length) return undefined;
   const records = new Map(stateRecords.map((record) => [record.id, record]));
   for (const stateId of stateIds) {
     const kind = records.get(stateId)?.gen1MajorStatus;

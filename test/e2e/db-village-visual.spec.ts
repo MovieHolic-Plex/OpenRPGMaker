@@ -2,6 +2,7 @@ import { expect, test, type Locator, type Page } from "@playwright/test";
 import { createEmptyToolProject } from "@/editor/tools/emptyProject";
 import { seedProjectForEditor } from "./projectSeed";
 import { openDatabase } from "./oprn-database-helpers";
+import { revealDbRailTab } from "./dbRail";
 
 /**
  * 데이터베이스 「마을」탭의 **픽셀**을 본다.
@@ -41,6 +42,7 @@ test.beforeEach(async ({ page }) => {
 async function openVillageTab(page: Page): Promise<void> {
   await openDatabase(page);
   await page.getByTestId("db-tab-group-world").click();
+  await revealDbRailTab(page, "villages");
   await page.getByTestId("db-tab-villages").click();
   await expect(page.getByTestId("db-village-workspace")).toBeVisible();
 }

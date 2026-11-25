@@ -8,6 +8,8 @@ import {
   formatIntentClarifyMessage,
   formatIntentNote,
   formatScopeNote,
+  formatRegionPlaceNote,
+  formatV2RegionNote,
   INTENT_SYSTEM_PROMPT,
   intentEscapesRegion,
   intentToolDomains,
@@ -192,6 +194,18 @@ describe("모델에 주는 입력과 모델이 낸 것의 표현", () => {
     expect(outside).toContain("참고용");
     // 폴백 선언은 안전한 쪽(영역 안)으로 본다.
     expect(formatScopeNote(scope, fallbackIntentDeclaration(FACTS))).toContain("영역 밖 타일·이벤트는 수정하지 말 것");
+  });
+
+  it("영역에 장소를 짓는 지시는 새 맵 금지 대신 build_region_place 한 번을 그 사각형·종류로 이른다(v1·v2 같은 노트)", () => {
+    const scope = { mapId: "map_start", region: { x: 2, y: 3, width: 8, height: 6 } };
+    const call = 'build_region_place({mapId:"map_start", region:{x:2,y:3,width:8,height:6}, kind:"shop"})';
+    const inside = formatScopeNote(scope, declaredIntent({ useSelection: true }), "여기 상점 만들어 줘");
+    expect(inside).toContain(call);
+    expect(inside).not.toContain("create_map·duplicate_map 으로 새 맵을 만들지 말고");
+    expect(formatV2RegionNote(scope, "여기 상점 만들어 줘")).toContain(call);
+    expect(formatV2RegionNote(scope, "여기 나무 심어 줘")).not.toContain("build_region_place");
+    expect(formatV2RegionNote(scope, "여기 나무 심어 줘")).toContain("`map_start` 의 (2,3) 8×6 사각형");
+    expect(formatRegionPlaceNote(scope, "상점 앞에 나무")).toBeNull();
   });
 
   it("감사 한 줄에 출처·모드·공간·시설·툴·소요가 실린다", () => {

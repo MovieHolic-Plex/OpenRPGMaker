@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { openRecoveredDatabase, recoveredDatabaseExport } from "./recovered-database-harness";
+import { revealDbRailTab } from "./dbRail";
 
 // The shipping modal imports the complete database module graph. Allow bounded
 // cold loading on the shared host without retries or fixed delays.
@@ -10,6 +11,7 @@ test.beforeEach(async ({ page, baseURL }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await openRecoveredDatabase(page, baseURL);
   await page.getByTestId("db-tab-group-world").click();
+  await revealDbRailTab(page, "scratch-concepts");
   await page.getByTestId("db-tab-scratch-concepts").click();
   await page.getByTestId("scratch-concept-tileset-select").selectOption("easyrpg_chipset_interior");
 });
@@ -21,6 +23,7 @@ test("concept selection survives child navigation", async ({ page }) => {
 
   // When the author edits through the auxiliary library and returns.
   await page.getByTestId("db-context-structureKits").click();
+  await revealDbRailTab(page, "scratch-concepts");
   await expect(page.getByTestId("db-tab-scratch-concepts")).toHaveClass(/active/);
   await page.getByTestId("db-context-back").click();
 
@@ -64,9 +67,11 @@ test("graphic edits preserve the selected object and serialize its referenced co
 test("retired entry search routes to the correct tileset mode and retains it on return", async ({ page }) => {
   // Given the old autotile entry is only available through search.
   await expect(page.locator(".db-tabs [data-testid='db-tab-tileset-autotile']")).toHaveCount(0);
+  await revealDbRailTab(page);
   await page.getByTestId("db-tab-search").fill("오토타일");
 
   // When the author follows the result, changes mode and visits terrain effects.
+  await revealDbRailTab(page, "tileset-autotile");
   await page.getByTestId("db-tab-tileset-autotile").click();
   await expect(page.getByTestId("tileset-section-tab-compose")).toHaveAttribute("aria-selected", "true");
   await page.getByTestId("tileset-section-tab-rules").click();
@@ -75,8 +80,10 @@ test("retired entry search routes to the correct tileset mode and retains it on 
   await page.getByTestId("db-context-back").click();
 
   // Then the primary entry and mode match, with no revived legacy rail rows.
+  await revealDbRailTab(page, "tilesets");
   await expect(page.getByTestId("db-tab-tilesets")).toHaveClass(/active/);
   await expect(page.getByTestId("tileset-edit-mode-terrain")).toHaveAttribute("aria-selected", "true");
+  await revealDbRailTab(page);
   await expect(page.getByTestId("db-tab-search")).toHaveValue("");
   await expect(page.locator(".db-tabs [data-search-secondary]")).toHaveCount(0);
 });

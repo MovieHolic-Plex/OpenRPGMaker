@@ -29,6 +29,7 @@ import { hideLockCodes } from "@/ai/v2/story/codeLeaks";
 import { ensureBossRest } from "@/ai/v2/story/healingAccess";
 import { namedFoeArt } from "@/ai/v2/story/currentFoes";
 import { isCurrentMonsterArt } from "@/assets/currentMonsterArt";
+import { parseArtGap } from "@/project/artGap";
 import { databaseChangeReport, unaskedChanges } from "@/ai/v2/judge/sideEffectChecks";
 import { sceneCraftFindings } from "@/ai/v2/judge/sceneCraft";
 import { REST_LINE } from "@/ai/v2/story/restLine";
@@ -215,7 +216,9 @@ describe("길을 막는 적의 자리 — 확인 빌드 r6", () => {
     // 새 프로젝트는 옛 묶음 그림을 싣지 않는다(2026-11-24 qa1124) — 해골 보스도 현행 그림으로 선다.
     expect(isCurrentMonsterArt(lead.monsterResourceId)).toBe(true);
     expect(res.missingArt.join("\n")).not.toContain("want=person");
-    expect(res.missingArt.join("\n")).not.toContain("want=boss");
+    // 해골 그림은 현행 세트에 없다 — 대역(창백한 유령)으로 서고, 없는 그림은 그릴 목록에 «바란 그림 skeleton-bone» 으로 남는다(#4984: 바란 그림은 원래 그림).
+    const bossGaps = res.missingArt.map((line) => parseArtGap(line)).filter((gap) => gap?.want === "boss");
+    expect(bossGaps.map((gap) => [gap?.wanted, gap?.where, gap?.standIn])).toEqual([["skeleton-bone", "문지기 해골", "창백한 유령"]]);
   }, 60_000);
 });
 
