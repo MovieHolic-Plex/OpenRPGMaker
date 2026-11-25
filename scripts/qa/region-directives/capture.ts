@@ -2,7 +2,9 @@
 // 조수 응답은 대본(scripted transport)이다: /v1/agent/run 요청이 오면 편집기가 보낸 프로젝트에 build_region_place 를 그대로 돌려
 // 그 결과를 done 으로 돌려준다(assistant-capability matrix-live 와 같은 방식). 모델 판단은 이 캡처의 축이 아니다.
 //
-// 실행: bun scripts/qa/region-directives/capture.ts <출력 폴더> <kind> [지시 문장] [live]
+// 실행: bun scripts/qa/region-directives/capture.ts <출력 폴더> <kind> [지시 문장] [live|away]
+//   away = 턴이 도는 동안 사람이 다른 맵(잿불 마을)을 열어 둔다 — 턴이 끝나면 영역 맵으로 돌아와 결과 카드가 떠야 한다.
+//   다리·성문·농장·시장(새 맵 없는 야외 레시피)은 실내 단계를 건너뛰고 테스트 플레이에서 바깥만 찍는다.
 //   live = 대본 없이 조수 출하 기본(로컬 Claude CLI · Sonnet 5.5 high, ai-configs/local-claude-sonnet-5-5-high.json)으로 실제 턴을 돌려 부른 도구·시간·카드를 남긴다.
 //   빌드가 있어야 한다(dist/ · dist-electron/browser-bridge.js) — openwiki/harnesses/assistant-capability.md.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -40,7 +42,9 @@ function body(request: { postDataBuffer(): Buffer | null }): any {
   return JSON.parse((raw[0] === 31 ? gunzipSync(raw) : raw).toString("utf8"));
 }
 
-export async function capture(root: string, kind: string, instruction: string, live = false): Promise<void> {
+const OUTDOOR = new Set(["bridge", "gate", "farm", "market"]);
+
+export async function capture(root: string, kind: string, instruction: string, live = false, away = false): Promise<void> {
   mkdirSync(root, { recursive: true });
   const { projectDir, mapId } = await prepare(root);
   const host = await startHost(projectDir, root);
@@ -52,7 +56,11 @@ export async function capture(root: string, kind: string, instruction: string, l
     const editor = await newEditor(browser, host.url, projectDir, { piApply: "yolo", piApplyPolicyVersion: 1, piTeam: false, autonomyLevel: "balanced", assistantVersion: "v2", ...pin }, { bootTimeoutMs: 360000 });
     const page = editor.page;
     if (!live) await page.route("**/v1/chat/completions**", (route: any) => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ choices: [{ finish_reason: "stop", message: { role: "assistant", content: "{}" } }] }) }));
+    let release: () => void = () => {};
+    const released = new Promise<void>((resolve) => { release = resolve; });
+    if (!away) release();
     if (!live) await page.route("**/v1/agent/run**", async (route: any) => {
+      await released;
       const request = body(route.request());
       const project = structuredClone(request.project) as Project;
       const ctx = { project, currentMapId: mapId, assistantRun: true };
@@ -77,6 +85,15 @@ export async function capture(root: string, kind: string, instruction: string, l
     await shot(page, "1-before");
     const started = Date.now();
     await page.getByTestId("ai-send").click();
+    if (away) {
+      // 턴이 도는 동안 다른 맵을 연다(실측: 턴이 실내 맵을 보여 준 채 끝나 결과 카드가 뜨지 않았다).
+      await page.waitForTimeout(1500);
+      await page.getByTestId("map-tree").getByText("잿불 마을").first().click();
+      await page.waitForTimeout(2000);
+      await shot(page, "1b-elsewhere-during-turn");
+      log.awayMap = await page.evaluate(() => (window as any).__oprnEditorState?.get?.().currentMapId ?? null).catch(() => null);
+      release();
+    }
     if (live) {
       await page.waitForFunction(() => (window as any).__oprnAiBridge?.status().turnBusy === true, null, { timeout: 60000 }).catch(() => {});
       await page.waitForFunction(() => (window as any).__oprnAiBridge?.status().turnBusy === false, null, { timeout: 1500000, polling: 2000 });
@@ -95,6 +112,15 @@ export async function capture(root: string, kind: string, instruction: string, l
     await page.waitForTimeout(1200);
     await shot(page, "3-compare-before");
     await page.getByTestId("region-result-compare").click();
+    if (OUTDOOR.has(kind) || away) {
+      if (away) return;
+      await page.getByTestId("topbar-test-play").click();
+      await page.getByText("방향키 이동").first().waitFor({ timeout: 120000 }).catch((error: Error) => { log.playReady = error.message.slice(0, 200); });
+      await page.waitForTimeout(2500);
+      await page.mouse.click(720, 600);
+      await shot(page, "5-play-outside");
+      return;
+    }
     const innerName = String((log.result as { summary?: string }).summary ?? "").split(":")[0]!.trim();
     log.innerName = innerName;
     const tree = page.getByTestId("map-tree");
@@ -111,10 +137,19 @@ export async function capture(root: string, kind: string, instruction: string, l
     const walk = async (key: string, steps: number) => {
       for (let i = 0; i < steps; i += 1) { await page.keyboard.down(key); await page.waitForTimeout(260); await page.keyboard.up(key); await page.waitForTimeout(200); }
     };
-    await walk("ArrowUp", kind.endsWith("_entrance") ? 7 : 4);
+    // 한 칸씩 끊어 최대 10번 걷는다(머리줄 글자가 바뀌면 일찍 멈춘다). 몰아 누르면 입구형은 도착 바로 위 나가는 계단을 밟아 되돌아 나온다.
+    const playMap = () => page.evaluate(() => {
+      const bar = [...document.querySelectorAll("*")].filter((n) => n.textContent?.includes("타이틀 건너뛰기")).sort((a, b) => (a.textContent?.length ?? 0) - (b.textContent?.length ?? 0)).find((n) => (n.textContent?.length ?? 0) > 20);
+      return bar?.textContent ?? "";
+    });
+    const outsideBar = await playMap();
+    for (let i = 0; i < 10 && (await playMap()) === outsideBar; i += 1) await walk("ArrowUp", 1);
     await page.waitForTimeout(3000);
     await shot(page, "6-play-inside");
-    await walk("ArrowDown", 2);
+    if (kind.endsWith("_entrance")) {
+      // 던전 도착점 바로 위가 나가는 계단이다 — 위로 한 칸 길게 눌러 밖으로 나온다.
+      await page.keyboard.down("ArrowUp"); await page.waitForTimeout(600); await page.keyboard.up("ArrowUp"); await page.waitForTimeout(900);
+    } else await walk("ArrowDown", 2);
     await page.waitForTimeout(3000);
     await shot(page, "7-play-back-outside");
   } finally {
@@ -126,6 +161,6 @@ export async function capture(root: string, kind: string, instruction: string, l
 
 if (import.meta.main) {
   const [out, kind, text, mode] = process.argv.slice(2);
-  if (!out || !kind) throw new Error("capture.ts <출력 폴더> <kind> [지시] [live]");
-  await capture(resolve(out), kind, text ?? "여기 상점 만들어 줘", mode === "live");
+  if (!out || !kind) throw new Error("capture.ts <출력 폴더> <kind> [지시] [live|away]");
+  await capture(resolve(out), kind, text ?? "여기 상점 만들어 줘", mode === "live", mode === "away");
 }
