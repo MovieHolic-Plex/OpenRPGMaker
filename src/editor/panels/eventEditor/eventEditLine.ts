@@ -6,6 +6,7 @@
 // 조수 초안(`deferApply`)이 그 밖(다른 맵·자료집·이벤트 모습·조건)을 건드리면 통째로 버린다.
 // 적용은 페이지마다 명령 기록(commandToolbarHistory)을 거치므로 Ctrl+Z 와 같은 기록에 쌓이고,
 // 여러 이벤트를 고친 한 번은 되돌리기 한 단계다.
+import { AI_PREWARM_EVENT } from "@/editor/aiPrewarm";
 import { discardAiAssistantProposal, getAiAssistantStatus, sendAiAssistantMessage, abortAiAssistantTurn } from "@/editor/aiAssistantBridge";
 import { store } from "@/project/store";
 import type { Command, EventPage, GameEvent, MapId, Project } from "@/project/types";
@@ -316,6 +317,9 @@ export function renderEventEditLine(options: EventEditLineOptions): HTMLElement 
   }) as HTMLInputElement;
   input.value = state.draft;
   input.disabled = state.busy;
+  // 편집기를 여는 동안 조수 세션을 미리 만든다 — 큰 프로젝트에서 엔터 뒤 수 초를 줄인다(없으면 아무 것도 안 함).
+  // 패널이 듣는 창 사건 — 브리지를 거치지 않아 패널이 없으면(시험·도크 없는 표면) 아무 일도 없다.
+  if (typeof window !== "undefined") setTimeout(() => window.dispatchEvent(new Event(AI_PREWARM_EVENT)), 300);
   const undoCount = el("span", { class: "event-edit-line-undo-count", text: String(state.steps.length) });
   const undo = el("button", {
     class: "event-edit-line-undo",
@@ -356,7 +360,9 @@ export function renderEventEditLine(options: EventEditLineOptions): HTMLElement 
         deferApply: true,
         eventCommandScope: { mapId: options.mapId, eventId: options.eventId, pageId: options.activePageId, mode: "edit" },
       });
-      if (response.ok && !response.pendingProposal
+      // 범위 턴이 실패로 끝난 경우(예: 퍼즐 정답 바꾸기 — 두 손잡이를 함께 고쳐야 해서 한 페이지 생성기가 명령을 지워 거절됨)도 넘긴다.
+      // 실측(2026-11-25 fast-apply): response.ok 가 false 라 이어진 이벤트가 있어도 전체 길로 가지 않고 바로 실패했다.
+      if (!response.pendingProposal && !/중단/u.test(response.error ?? "")
         && linkedMapEvents(store.getCurrent(), options.mapId, options.eventId).length > 0) {
         setStatus("이어진 이벤트까지 보고 있어요…", "busy");
         response = await sendAiAssistantMessage(promptFor(options, text), { deferApply: true });
