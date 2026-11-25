@@ -83,7 +83,168 @@ const DUNGEONS: readonly DungeonRecipe[] = [
   { kind: "cave_entrance", label: "동굴", dungeonType: "cave" },
 ];
 
-export const REGION_PLACE_KINDS: readonly RegionPlaceKind[] = [...BUILDINGS.map((r) => r.kind), ...DUNGEONS.map((r) => r.kind)];
+/**
+ * 실내 없이 영역 안에만 서는 장소(다리·성문·농장·시장). 버들항 구조 키트를 정해진 자리에 찍고 사람 하나를 세운다.
+ * 키트는 버들항 칩셋에만 있어 다른 칩셋은 거부한다.
+ */
+interface OutdoorRecipe {
+  readonly kind: RegionPlaceKind;
+  readonly label: string;
+  readonly min: { readonly width: number; readonly height: number };
+  readonly build: (work: Project, mapId: MapId, region: Rect) => OutdoorBuilt;
+}
+
+interface OutdoorBuilt {
+  readonly pieces: string[];
+  readonly npc?: { readonly x: number; readonly y: number; readonly name: string; readonly graphic: string; readonly lines: string[]; readonly commands?: Record<string, unknown>[] };
+  readonly warnings?: string[];
+}
+
+const BD = "beodeul_city";
+
+function stampKit(work: Project, mapId: MapId, kitId: string, x: number, y: number): void {
+  callTool(work, "stamp_object", { objectId: `kit:${BD}/${kitId}`, mapId, x, y });
+}
+
+function kitDef(work: Project, kitId: string): { width: number; height: number; rows: { tiles: number[]; upperTiles?: number[] }[] } {
+  const kit = work.tilesets[BD]?.structureKits?.find((entry) => entry.id === kitId) as { width: number; height: number; rows: { tiles: number[]; upperTiles?: number[] }[] } | undefined;
+  if (!kit) throw new ToolError(`버들항 키트 ${kitId} 가 없다`, { code: "kit-not-found" });
+  return kit;
+}
+
+/** 강 조각(남북 4×4)의 줄을 돌려 가며 아래층에 칠한다 — 영역 높이가 4의 배수가 아니어도 영역 안에서 끝난다. */
+function paintRiver(work: Project, mapId: MapId, x: number, y0: number, y1: number): void {
+  const map = requireMap(work, mapId);
+  const river = kitDef(work, "bd-river-straight-ns");
+  for (let y = y0; y < y1; y += 1) {
+    const row = river.rows[(y - y0) % river.height]!;
+    for (let dx = 0; dx < river.width; dx += 1) {
+      const i = y * map.width + x + dx;
+      if (row.tiles[dx]! >= 0) map.lowerTiles[i] = row.tiles[dx]!;
+      map.upperTiles[i] = row.upperTiles?.[dx] ?? -1;
+    }
+  }
+}
+
+/**
+ * 영역 가운데 줄에 이미 물(강 조각·버들항 물·강/운하 오토타일)이 있으면 그 물줄기 가운데에 맞춘 폭 4칸의 왼쪽 열.
+ * 물이 없으면 null. 다리는 폭 4칸 남북 강 조각에 맞게 그려져 있어, 물줄기는 다시 강 조각으로 고른다.
+ */
+function riverColumn(work: Project, mapId: MapId, region: Rect): number | null {
+  const map = requireMap(work, mapId);
+  const tileset = work.tilesets[BD];
+  const water = new Set<number>([
+    ...kitDef(work, "bd-river-straight-ns").rows.flatMap((row) => row.tiles),
+    ...(tileset?.tileGroups ?? []).filter((group) => group.id === "beodeul:water").flatMap((group) => group.tileIds),
+    ...(tileset?.autotileGroups ?? []).filter((group) => group.id === "beodeul_canal_lake_47").flatMap((group) => group.memberTileIds),
+  ]);
+  const y = region.y + Math.floor(region.height / 2);
+  const wet: number[] = [];
+  for (let x = region.x; x < region.x + region.width; x += 1) if (water.has(map.lowerTiles[y * map.width + x]!)) wet.push(x);
+  if (wet.length === 0) return null;
+  const middle = Math.round((wet[0]! + wet[wet.length - 1]!) / 2);
+  return Math.min(Math.max(middle - 2, region.x), region.x + region.width - 4);
+}
+
+const OUTDOORS: readonly OutdoorRecipe[] = [
+  {
+    kind: "bridge", label: "다리", min: { width: 6, height: 7 },
+    build(work, mapId, region) {
+      const found = riverColumn(work, mapId, region);
+      const x = found ?? region.x + Math.floor((region.width - 4) / 2);
+      const bridgeY = region.y + Math.floor((region.height - 5) / 2);
+      const warnings: string[] = [];
+      paintRiver(work, mapId, x, region.y, region.y + region.height);
+      if (found === null) {
+        warnings.push(`영역에 강이 없어 남북으로 흐르는 강(폭 4칸, x ${x}~${x + 3})을 영역 안에만 냈다 — 강을 더 잇으려면 영역을 위아래로 더 잡는다`);
+      }
+      stampKit(work, mapId, "bd-bridge-arch", x, bridgeY);
+      const npcX = x + 4 < region.x + region.width ? x + 4 : x - 1;
+      return { pieces: [found === null ? "강(남북)" : "있던 강", "아치 다리"], warnings,
+        npc: { x: npcX, y: bridgeY + 2, name: "다리지기", graphic: "마을 사람", lines: ["이 다리 덕에 강 건너 마을까지 반나절이면 가지."] } };
+    },
+  },
+  {
+    kind: "gate", label: "성문", min: { width: 4, height: 9 },
+    build(work, mapId, region) {
+      const wallY = region.y + region.height - 8;
+      const runs = Math.floor((region.width - 4) / 8);
+      const gateX = region.x + Math.floor((region.width - 4 - runs * 8) / 2) + runs * 4;
+      stampKit(work, mapId, "bd-wall-gatehouse", gateX, wallY - 1);
+      for (let i = 0; i < runs; i += 1) {
+        stampKit(work, mapId, "bd-wall-run-south-4", gateX - 4 * (i + 1), wallY);
+        stampKit(work, mapId, "bd-wall-run-south-4", gateX + 4 + 4 * i, wallY);
+      }
+      const guardX = gateX + 3 + 1 < region.x + region.width ? gateX + 4 : gateX - 1;
+      return { pieces: ["성문루(열린 아치)", ...(runs > 0 ? [`성벽 토막 ${runs * 2}`] : [])],
+        npc: { x: guardX, y: wallY + 6, name: "문지기", graphic: "병사", lines: ["해가 지기 전에는 문을 닫는다. 서두르게."] } };
+    },
+  },
+  {
+    kind: "farm", label: "농장", min: { width: 9, height: 7 },
+    build(work, mapId, region) {
+      const fieldX = region.x + Math.floor((region.width - 8) / 2);
+      const rows = region.height >= 11 ? 2 : 1;
+      for (let r = 0; r < rows; r += 1) stampKit(work, mapId, "bd-pick-vineyard-vine-field", fieldX, region.y + 1 + r * 4);
+      const fenceY = region.y + 1 + rows * 4;
+      const fences = Math.floor(region.width / 4);
+      const fenceX = region.x + Math.floor((region.width - fences * 4) / 2);
+      for (let i = 0; i < fences; i += 1) stampKit(work, mapId, "bd-out-fence-run", fenceX + i * 4, fenceY);
+      return { pieces: [`밭 8×${rows * 4}`, `울타리 ${fences}`],
+        npc: { x: fenceX + 2, y: Math.min(fenceY + 1, region.y + region.height - 1), name: "농부", graphic: "마을 사람", lines: ["올해 포도는 달게 익었어. 밭은 밟지 말고 사잇길로 다니게."] } };
+    },
+  },
+  {
+    kind: "market", label: "시장", min: { width: 10, height: 9 },
+    build(work, mapId, region) {
+      const x = region.x + Math.floor((region.width - 10) / 2);
+      const y = region.y + Math.floor((region.height - 9) / 2);
+      stampKit(work, mapId, "bd-block-market-10x8", x, y);
+      const goods = pickGoods(work, "food");
+      return { pieces: ["시장 블록(노점·우물·가로등)"],
+        ...(goods.length ? {} : { warnings: ["이 게임 데이터베이스에 팔 만한 소모품이 없어 상인은 인사만 한다"] }),
+        npc: { x: x + 4, y: y + 8, name: "시장 상인", graphic: "상인", lines: ["오늘 들어온 물건이에요, 구경하고 가세요!"],
+          commands: goods.length ? [{ kind: "shop", itemIds: goods, allowSell: true, title: "시장" }] : [] } };
+    },
+  },
+];
+
+export const REGION_PLACE_KINDS: readonly RegionPlaceKind[] = [...BUILDINGS.map((r) => r.kind), ...DUNGEONS.map((r) => r.kind), ...OUTDOORS.map((r) => r.kind)];
+
+function outdoorRecipe(work: Project, mapId: MapId, region: Rect, recipe: OutdoorRecipe, name: string): ToolExecResult & { project: Project } {
+  const map = requireMap(work, mapId);
+  if (map.tilesetId !== BD) {
+    throw new ToolError(`맵 '${map.name}' 의 칩셋 '${map.tilesetId}' 에는 ${recipe.label} 키트가 없다(버들항 칩셋만). 그 칩셋의 구성 도구를 쓴다.`, { code: "unsupported-tileset", mapId });
+  }
+  if (region.width < recipe.min.width || region.height < recipe.min.height) {
+    throw new ToolError(`${recipe.label} 은(는) 영역이 가로 ${recipe.min.width}·세로 ${recipe.min.height} 이상이어야 한다 — 지금 ${region.width}×${region.height}`, { code: "region-too-small", mapId });
+  }
+  const project = forkProject(work);
+  const built = recipe.build(project, mapId, region);
+  const eventIds: string[] = [];
+  let keeper: { eventId: string; x: number; y: number; service: string } | null = null;
+  if (built.npc && inside(region, built.npc.x, built.npc.y)) {
+    const npc = callTool(project, "place_npc", {
+      mapId, x: built.npc.x, y: built.npc.y, name: built.npc.name, graphic: { query: built.npc.graphic },
+      pages: [{ lines: built.npc.lines, commands: built.npc.commands ?? [] }],
+    }).data as { eventId: string; x: number; y: number };
+    if (!inside(region, npc.x, npc.y)) throw new ToolError(`${built.npc.name} 이(가) 영역 밖(${npc.x},${npc.y})에 섰다`, { code: "npc-outside-region" });
+    eventIds.push(npc.eventId);
+    keeper = { eventId: npc.eventId, x: npc.x, y: npc.y, service: built.npc.commands?.length ? "상점" : "대화" };
+  }
+  return {
+    project,
+    summary: `${name}: 영역 (${region.x},${region.y}) ${region.width}×${region.height} 안에 ${built.pieces.join(" · ")}${keeper ? ` · ${built.npc!.name}(${keeper.service})` : ""}`,
+    ...(built.warnings?.length ? { warnings: built.warnings } : {}),
+    data: {
+      kind: recipe.kind, mapId, region,
+      createdMapIds: [],
+      eventIds,
+      ...(keeper ? { keeper } : {}),
+      parts: { exterior: true, interior: false, link: false, keeper: keeper !== null, service: keeper?.service === "상점" },
+    },
+  };
+}
 
 interface Rect { readonly x: number; readonly y: number; readonly width: number; readonly height: number }
 
@@ -391,7 +552,7 @@ const buildRegionPlace: ToolDefinition = {
   domains: ["map", "event"],
   description:
     "사용자가 맵에서 고른 영역(region) 한 곳에 장소 하나를 통째로 짓는다 — 「여기 상점 만들어 줘」 한 번으로 외관(지붕·벽·문) + 실내 맵(방·가구·계산대) + 문 왕복 이동 + 주인 NPC(상점은 이 게임 DB 품목으로 상점 명령, 여관은 숙박 명령, 교회는 세이브 포인트) 까지 끝낸다. "
-    + "kind: shop 도구점·상점 · weapon_shop 무기점 · smithy 대장간 · inn 여관 · tavern 주점 · house 집 · chapel 교회 · bakery 빵집 · pharmacy 약방 · warehouse 창고 · stable 마구간 · school 학교 · guard_post 경비 초소 · windmill 풍차 · lighthouse 등대 · dungeon_entrance 던전 입구(새 던전 맵) · cave_entrance 동굴 입구(새 동굴 맵). "
+    + "kind: shop 도구점·상점 · weapon_shop 무기점 · smithy 대장간 · inn 여관 · tavern 주점 · house 집 · chapel 교회 · bakery 빵집 · pharmacy 약방 · warehouse 창고 · stable 마구간 · school 학교 · guard_post 경비 초소 · windmill 풍차 · lighthouse 등대 · bridge 다리(강이 없으면 영역 안에 남북 강을 낸다) · gate 성문(성문루+양쪽 성벽) · farm 농장(밭+울타리+농부) · market 시장(노점 블록+상인) · dungeon_entrance 던전 입구(새 던전 맵) · cave_entrance 동굴 입구(새 동굴 맵). "
     + "바깥 맵은 영역 사각형 안만 바뀐다(외관과 문 앞 칸이 영역 안에 서야 한다). 영역 밖에 생기는 것은 새 맵(실내·던전)뿐이고 결과 카드에서 같이 되돌린다. "
     + "외관·실내·문·주인을 따로 부르지 말고 이 도구 한 번으로 짓는다. 외관 칩셋: 버들항(beodeul_city)·기본 마을. 다른 칩셋은 거부되므로 그 칩셋의 구성 도구와 link_*_interior 를 쓴다.",
   invalidArgsExample: { mapId: "map_1", region: { x: 10, y: 6, width: 11, height: 10 }, kind: "shop" },
@@ -422,10 +583,13 @@ const buildRegionPlace: ToolDefinition = {
     const kind = args.kind as RegionPlaceKind;
     const building = BUILDINGS.find((r) => r.kind === kind);
     const dungeon = DUNGEONS.find((r) => r.kind === kind);
-    if (!building && !dungeon) throw new ToolError(`kind '${String(args.kind)}' 는 없다 — ${REGION_PLACE_KINDS.join(" · ")}`, { code: "invalid-args" });
-    const name = typeof args.name === "string" && args.name.trim() ? args.name.trim() : (building?.label ?? dungeon!.label);
+    const outdoor = OUTDOORS.find((r) => r.kind === kind);
+    if (!building && !dungeon && !outdoor) throw new ToolError(`kind '${String(args.kind)}' 는 없다 — ${REGION_PLACE_KINDS.join(" · ")}`, { code: "invalid-args" });
+    const name = typeof args.name === "string" && args.name.trim() ? args.name.trim() : (building?.label ?? dungeon?.label ?? outdoor!.label);
     const work = forkProject(draft);
-    const result = building ? buildingRecipe(work, mapId, region, building, name) : dungeonRecipe(work, mapId, region, dungeon!, name);
+    const result = building ? buildingRecipe(work, mapId, region, building, name)
+      : dungeon ? dungeonRecipe(work, mapId, region, dungeon, name)
+      : outdoorRecipe(work, mapId, region, outdoor!, name);
     nestUnder(result.project, mapId, (result.data as { createdMapIds: string[] }).createdMapIds);
     for (const key of Object.keys(result.project) as (keyof Project)[]) {
       (draft as unknown as Record<string, unknown>)[key] = result.project[key];
