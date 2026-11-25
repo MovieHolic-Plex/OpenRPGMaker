@@ -122,6 +122,12 @@ describe("pickVariation", () => {
       expect(v.places[0]!.kind).toBe("village");
       expect(v.pinned.length).toBeGreaterThan(0);
     }
+    // «할머니 집» 처럼 사람이 이름 붙인 집도 카드 장소로 고정된다(전에는 부엌·주방 낱말만 걸려 카드가 사용자 장소와 어긋났다).
+    for (let i = 0; i < 30; i++) {
+      const v = pickVariation({ text: "할머니 집에서 옛 추억을 되짚으며 대화하는 이야기 게임을 만들어 줘.", key: keyOf(i), allowedWorlds: ALL_WORLDS })!;
+      expect(v.pinned).toContain("할머니 집 부엌");
+      expect(v.places[0]!.ko).toBe("할머니 집 부엌");
+    }
     const season = pickVariation({ text: "비 오는 날의 회상 게임", key: keyOf(3), allowedWorlds: ALL_WORLDS })!;
     expect(season.mood).toBeUndefined();
     expect(season.skipped).toContain("mood");

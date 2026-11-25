@@ -94,7 +94,7 @@ export const DECKS: readonly Deck[] = [
     places: [
       P("home-village", "village", "고향 마을", vl("river"), /마을|고향|동네/u),
       P("fishing-port", "port", "포구 마을", vl("coast"), /포구|항구|어촌|바닷가/u),
-      P("grandma-kitchen", "kitchen", "할머니 집 부엌", iv("kitchen"), /부엌|주방/u),
+      P("grandma-kitchen", "kitchen", "할머니 집 부엌", iv("kitchen"), /부엌|주방|(?:할머니|외할머니|할아버지)\s*(?:집|댁)/u),
       P("attic", "attic", "먼지 쌓인 다락방", iv("storeroom"), /다락/u),
       P("childhood-room", "bedroom", "어릴 적 내 방", iv("bedroom"), /침실|아이\s*방|내\s*방/u),
       P("old-library", "library", "오래된 도서관", hk("도서관"), /도서관|서재/u),
