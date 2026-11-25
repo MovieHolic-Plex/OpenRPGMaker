@@ -251,8 +251,18 @@
 .event-editor.is-level-normal .event-editor-command-toolbar,
 .event-editor.is-level-easy [data-testid="event-editor-command-count"],
 .event-editor.is-level-easy .event-editor-column-hint,
-.event-editor.is-level-normal .event-editor-column-hint {
+.event-editor.is-level-normal .event-editor-column-hint,
+.event-editor.is-beginner.is-level-easy .event-editor-beginner-heading,
+.event-editor.is-beginner.is-level-normal .event-editor-beginner-heading {
   display: none;
+}
+
+/* 쉬움·보통 페이지 줄 머리말(「때」·「상태」, content.ts). */
+.event-scene-page-label {
+  align-self: center;
+  color: var(--text-3);
+  flex: 0 0 auto;
+  font: 12px/1.4 var(--font-ui);
 }
 
 /* ⋯ 메뉴 맨 위 한 줄: 보기 쉬움 · 보통 · 고급. */
