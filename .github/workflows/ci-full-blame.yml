@@ -1,0 +1,80 @@
+name: ci-full-blame
+
+# main 의 ci-full 이 실패로 끝나면 새로 실패한 시험 파일마다 원인 후보 PR 에 댓글을 달고 이슈 하나를 연다 (2026-11-25 ci-speed).
+# 왜: ci-full 은 밤 1회·릴리스 전에만 돌아 여러 레인의 머지가 한 판에 섞인다. 원인 찾기에 반나절이 걸렸다(v0.420, 새 실패 14 → 9 → 7).
+# 판정·후보 규칙은 scripts/ci-full-blame.mjs 머리말. 기준 판은 «그 전의 완전한 main 판» 이다(릴리스 판정의 태그 기준과 다르다 —
+#   알림은 «이번 판에서 처음 보인 실패» 를 짚는 일이다). 같은 판으로 두 번 달지 않는다(댓글·이슈의 표식 줄).
+# ci-full.yml 은 바꾸지 않는다(샤드 설정은 test-diet 레인 몫). 이 워크플로는 끝난 판을 읽기만 한다.
+# 수동: gh workflow run ci-full-blame.yml -f run=<ci-full run id> [-f baseline=<run id>]
+
+on:
+  workflow_run:
+    workflows: [ci-full]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      run:
+        description: "ci-full run id (비우면 main 의 가장 최근 실패 판)"
+        required: false
+        type: string
+      baseline:
+        description: "기준 run id (비우면 그 전의 main 판)"
+        required: false
+        type: string
+
+concurrency:
+  group: ci-full-blame-${{ github.event.workflow_run.id || inputs.run || github.run_id }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  blame:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'failure'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      # 이번 판 머리를 전체 이력으로 — 기준 판 머리..이번 판 머리 의 커밋과, 그 머리의 import 그래프를 본다.
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      # 수동 실행은 고른 판의 머리로 옮긴다(그 머리의 import 그래프로 봐야 한다). 그 머리에 이 스크립트가 없으면 지금 것을 쓴다.
+      - name: 고른 판의 머리로
+        if: github.event_name == 'workflow_dispatch' && inputs.run != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.run }}
+        run: |
+          set -euo pipefail
+          sha=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID" --jq .head_sha)
+          mkdir -p "$RUNNER_TEMP/tool/lib"
+          cp scripts/ci-full-blame.mjs scripts/ci-full-diff.mjs "$RUNNER_TEMP/tool/"
+          cp scripts/lib/testImportGraph.mjs scripts/lib/releaseGate.mjs "$RUNNER_TEMP/tool/lib/"
+          git checkout -q "$sha"
+          for f in ci-full-blame.mjs ci-full-diff.mjs; do cp "$RUNNER_TEMP/tool/$f" "scripts/$f"; done
+          cp "$RUNNER_TEMP/tool/lib/"*.mjs scripts/lib/
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 24
+
+      - name: 원인 후보 PR 에 댓글·이슈
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ github.event.workflow_run.id || inputs.run }}
+          BASELINE_ID: ${{ inputs.baseline }}
+        run: |
+          set -euo pipefail
+          args=(--out "$RUNNER_TEMP/blame.json" --post)
+          if [ -n "${RUN_ID:-}" ]; then args+=(--run "$RUN_ID"); fi
+          if [ -n "${BASELINE_ID:-}" ]; then args+=(--baseline "$BASELINE_ID"); fi
+          node scripts/ci-full-blame.mjs "${args[@]}" | tee "$RUNNER_TEMP/blame.log"
+          { echo '### ci-full-blame'; echo; echo '```'; cat "$RUNNER_TEMP/blame.log"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"

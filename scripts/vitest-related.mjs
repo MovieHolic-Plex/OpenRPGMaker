@@ -32,6 +32,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { posix } from "node:path";
 import { pathToFileURL } from "node:url";
+import { distances, loadRepoGraph } from "./lib/testImportGraph.mjs";
 
 // 2026-11-24 실측(PR #5003 의 수동 실행 7회). 시간 기록(.omo/test-timings.json)은 «케이스 실행 시간» 이라 파일마다 드는 고정 비용(모듈 import·jsdom 설정)이 빠져 있다.
 //   mdc2-heavy(박스 load 약 38/40코어): 같은 36파일(기록 합 377초)이 워커 4 로 11분에 20파일, 워커 2 로 11분에 14파일 — 워커 시간으로 파일당 70~90초, 첫 파일 완료까지 2~4분.
@@ -39,9 +40,17 @@ import { pathToFileURL } from "node:url";
 //   그래서 파일 하나의 비용 = perFileSeconds + factor × 기록 초(워커 초), 예상 벽시계 = startupSeconds + Σ비용 / workers 로 본다.
 //   기본값(85 + 2×초, 시작 200초)은 mdc2-heavy·워커 4 실측 4회에 맞췄다: 7파일(기록 합 18초) 예상 358초 → 실제 vitest 393초, 6파일(합 74초) 예상 365초 → 450초 시간 상자에 끊김.
 //   즉 파일 수가 비용을 지배한다(기록 초는 거의 비례하지 않는다). 러너나 박스 부하가 바뀌면 워크플로의 selector_args 로 보정한다.
-export const DEFAULTS = Object.freeze({ budgetSeconds: 380, workers: 4, factor: 2, perFileSeconds: 85, startupSeconds: 200, defaultSeconds: 6.4 });
+// 2026-11-25 ci-speed: 러너가 호스티드(ubuntu-latest 4코어)로 바뀌어 다시 맞췄다. 실측: 같은 워크플로 14판에서 4~8파일이 vitest 스텝 61~177초(중앙 약 110초),
+//   ci-vitest-files 45678290373 에서 16파일(기록 합 133초)이 140초. 파일당 고정 비용 20초 + 기록 초, 실효 워커 3, 시작 90초로 보면
+//   위 판들을 모두 조금 남게 잡는다(보수적). 옛 기본값(85 + 2×, 시작 200)은 부하 38/40 의 mdc2-heavy 기준이라 파일을 4분의 1만 담았다.
+//   chunks: 한 PR 의 관련 시험을 몇 개의 잡(조각)으로 나눌 수 있나. 조각마다 같은 상한이 걸린다.
+//   넓은 변경(wide): 그래프로 닿는 시험이 wideTests(1200 — 최근 150 PR 중 16%, 500 이면 29% 라 호스티드 자리를 평균 11개 묶는다)를 넘거나 바뀐 파일이 wideFiles 를 넘으면 상한 없이 닿는 시험 전부를 wideChunks 개 조각으로 돌린다.
+export const DEFAULTS = Object.freeze({
+  budgetSeconds: 380, workers: 3, factor: 1, perFileSeconds: 20, startupSeconds: 90, defaultSeconds: 6.4,
+  chunks: 4, wideTests: 1200, wideFiles: 80, wideChunks: 12,
+});
 
-const TIERS = ["changed-test", "direct-import", "string-literal"];
+const TIERS = ["changed-test", "direct-import", "string-literal", "import-graph"];
 const CODE_EXTENSION = /\.(?:[cm]?[jt]sx?|vue|svelte)$/u;
 const RESOLVE_EXTENSIONS = [".ts", ".mts", ".tsx", ".js", ".mjs"];
 const GENERIC_BASENAMES = new Set([
@@ -170,7 +179,7 @@ export function findLiteralReferences(testSources, changedNonCode) {
 export function applyBudget(candidates, timings, options = {}) {
   const { budgetSeconds, workers, factor, perFileSeconds, startupSeconds, defaultSeconds } = { ...DEFAULTS, ...options };
   const sized = candidates.map((candidate) => ({ ...candidate, sec: timings[candidate.file]?.sec ?? defaultSeconds, known: timings[candidate.file] != null }));
-  sized.sort((a, b) => TIERS.indexOf(a.tier) - TIERS.indexOf(b.tier) || a.sec - b.sec || (a.file < b.file ? -1 : 1));
+  sized.sort((a, b) => TIERS.indexOf(a.tier) - TIERS.indexOf(b.tier) || (a.depth ?? 1) - (b.depth ?? 1) || a.sec - b.sec || (a.file < b.file ? -1 : 1));
   const selected = [];
   const skipped = [];
   let sum = 0;
@@ -199,7 +208,8 @@ export function applyBudget(candidates, timings, options = {}) {
  * @param {ReadonlyMap<string, string>} input.testSources  vitest 가 모으는 시험 파일 → 소스
  * @param {(path: string) => boolean} input.exists   바뀐 시험 파일이 체크아웃에 있는지(삭제된 파일 거르기)
  */
-export function selectRelated({ changed, testSources, exists, timings = {}, options = {} }) {
+export function selectRelated({ changed, testSources, exists, timings = {}, options = {}, reverseGraph = null }) {
+  const settings = { ...DEFAULTS, ...options };
   const safetyNet = changed.filter(isSafetyNet);
   const changedNonCode = changed.filter((path) => !isCodeFile(path));
   const candidates = new Map();
@@ -211,8 +221,45 @@ export function selectRelated({ changed, testSources, exists, timings = {}, opti
   for (const path of changed) if (isVitestFile(path) && exists(path)) add(path, "changed-test", [path]);
   for (const [test, reasons] of findDirectImporters(testSources, changed)) add(test, "direct-import", reasons);
   for (const [test, reasons] of findLiteralReferences(testSources, changedNonCode)) add(test, "string-literal", reasons);
-  const budget = applyBudget([...candidates.values()], timings, options);
-  return { changed, safetyNet, candidateCount: candidates.size, ...budget };
+  // 깊이 2 이상: 런타임 import 그래프를 거꾸로 타고 닿는 시험(가까운 것부터 담긴다).
+  if (reverseGraph) {
+    for (const [file, depth] of distances(reverseGraph, changed)) {
+      if (depth < 1 || !isVitestFile(file) || candidates.has(file)) continue;
+      candidates.set(file, { file, tier: "import-graph", reasons: [], depth });
+    }
+  }
+  const all = [...candidates.values()];
+  const wideReasons = [];
+  if (all.length > settings.wideTests) wideReasons.push(`닿는 시험 ${all.length}개 > ${settings.wideTests}`);
+  if (changed.length > settings.wideFiles) wideReasons.push(`바뀐 파일 ${changed.length}개 > ${settings.wideFiles}`);
+  if (wideReasons.length > 0) {
+    const selected = all.map((entry) => ({ ...entry, sec: timings[entry.file]?.sec ?? settings.defaultSeconds, known: timings[entry.file] != null }));
+    selected.sort((a, b) => (a.file < b.file ? -1 : 1));
+    const chunks = planChunks(selected, Math.min(settings.wideChunks, Math.max(1, selected.length)), settings);
+    const sum = selected.reduce((total, entry) => total + entry.sec, 0);
+    return { changed, safetyNet, candidateCount: all.length, mode: "wide", wideReasons, selected, skipped: [], sumSeconds: Math.round(sum), estWallSeconds: Math.max(0, ...chunks.map((chunk) => chunk.estWallSeconds)), chunks };
+  }
+  // 조각 n 개를 쓰면 같은 벽시계 상한에 워커가 n 배다. 담은 뒤 필요한 만큼만 조각을 쓴다.
+  const budget = applyBudget(all, timings, { ...settings, workers: settings.workers * settings.chunks });
+  const cost = budget.selected.reduce((total, entry) => total + settings.perFileSeconds + settings.factor * entry.sec, 0);
+  const room = Math.max(1, (settings.budgetSeconds - settings.startupSeconds) * settings.workers);
+  const count = Math.max(1, Math.min(settings.chunks, Math.ceil(cost / room), budget.selected.length));
+  const chunks = budget.selected.length === 0 ? [] : planChunks(budget.selected, count, settings);
+  const estWallSeconds = Math.max(0, ...chunks.map((chunk) => chunk.estWallSeconds));
+  return { changed, safetyNet, candidateCount: all.length, mode: "narrow", wideReasons, ...budget, estWallSeconds, chunks };
+}
+
+/** 파일을 비용(고정 + 기록 초) LPT 로 n 조각에 나눈다. 같은 입력이면 같은 분할이다. */
+export function planChunks(entries, count, options = {}) {
+  const { workers, factor, perFileSeconds, startupSeconds } = { ...DEFAULTS, ...options };
+  const chunks = Array.from({ length: count }, (_, index) => ({ id: index + 1, files: [], cost: 0 }));
+  const ordered = [...entries].sort((a, b) => b.sec - a.sec || (a.file < b.file ? -1 : 1));
+  for (const entry of ordered) {
+    const target = chunks.reduce((best, chunk) => (chunk.cost < best.cost ? chunk : best));
+    target.files.push(entry.file);
+    target.cost += perFileSeconds + factor * entry.sec;
+  }
+  return chunks.filter((chunk) => chunk.files.length > 0).map((chunk) => ({ id: chunk.id, files: chunk.files.sort(), estWallSeconds: Math.round(startupSeconds + chunk.cost / workers) }));
 }
 
 const seconds = (value) => `${Math.round(value)}초(${(value / 60).toFixed(1)}분)`;
@@ -225,7 +272,8 @@ function tierCounts(entries) {
 export function formatReport(result, options = {}) {
   const { budgetSeconds, workers, factor, perFileSeconds, startupSeconds } = { ...DEFAULTS, ...options };
   const lines = [`vitest-related: 바뀐 파일 ${result.changed.length}개 → 후보 ${result.candidateCount}개`];
-  for (const path of result.safetyNet) lines.push(`safety-net hit: ${path} — full suite runs nightly (PR 에서는 깊이 1 + 시간 상한만 돈다)`);
+  lines.push(result.mode === "wide" ? `MODE: wide (${result.wideReasons.join(", ")}) — 닿는 시험 전부를 조각 ${result.chunks.length}개로 돈다` : `MODE: narrow — 조각 ${result.chunks?.length ?? 0}개`);
+  for (const path of result.safetyNet) lines.push(`safety-net hit: ${path} — full suite runs nightly (PR 에서는 import 그래프 + 시간 상한만 돈다)`);
   lines.push(
     `선택 ${result.selected.length}개 (${tierCounts(result.selected)}) — 시험 시간 합 ${seconds(result.sumSeconds)}(호스티드 기준), ` +
       `예상 벽시계 ${seconds(result.estWallSeconds)} (워커 ${workers} · 파일당 ${perFileSeconds}초 + ${factor}× · 시작 ${startupSeconds}초 · 상한 ${seconds(budgetSeconds)})`,
@@ -245,6 +293,7 @@ export function formatSummary(result, options = {}) {
     "### ci-related-tests",
     "",
     `- 바뀐 파일 ${result.changed.length}개 → 후보 ${result.candidateCount}개, **선택 ${result.selected.length}개** (${tierCounts(result.selected)})`,
+    result.mode === "wide" ? `- **넓은 변경** (${result.wideReasons.join(", ")}) — 닿는 시험 전부를 조각 ${result.chunks.length}개로 돈다` : `- 조각 ${result.chunks?.length ?? 0}개`,
     `- 시험 시간 합 ${seconds(result.sumSeconds)}(호스티드 기준) · 예상 벽시계 ${seconds(result.estWallSeconds)} (워커 ${workers} · 파일당 ${perFileSeconds}초 + ${factor}× · 시작 ${startupSeconds}초 · 상한 ${seconds(budgetSeconds)})`,
   ];
   for (const path of result.safetyNet) lines.push(`- safety-net hit: \`${path}\` — full suite runs nightly`);
@@ -291,6 +340,10 @@ function main(argv) {
     perFileSeconds: numberOption(args["per-file-seconds"], DEFAULTS.perFileSeconds, "per-file-seconds", 0),
     startupSeconds: numberOption(args["startup-seconds"], DEFAULTS.startupSeconds, "startup-seconds", 0),
     defaultSeconds: numberOption(args["default-seconds"], DEFAULTS.defaultSeconds, "default-seconds"),
+    chunks: numberOption(args.chunks, DEFAULTS.chunks, "chunks", 1),
+    wideTests: numberOption(args["wide-tests"], DEFAULTS.wideTests, "wide-tests", 1),
+    wideFiles: numberOption(args["wide-files"], DEFAULTS.wideFiles, "wide-files", 1),
+    wideChunks: numberOption(args["wide-chunks"], DEFAULTS.wideChunks, "wide-chunks", 1),
   };
   const git = (...gitArgs) => execFileSync("git", gitArgs, { encoding: "utf8", maxBuffer: 256 * 1024 * 1024 });
   const changed = git("diff", "--name-only", "--no-renames", "-z", `${args.base}...${args.head ?? "HEAD"}`).split("\0").filter(Boolean).sort();
@@ -303,19 +356,25 @@ function main(argv) {
     console.log(`시간 기록(${timingsPath})을 읽지 못했다 — 모든 파일을 ${options.defaultSeconds}초로 본다.`);
   }
 
-  // 시험 소스는 필요할 때만 읽는다: 바뀐 파일이 시험뿐이거나 없으면 건너뛴다.
+  // 시험 소스·그래프는 필요할 때만 읽는다: 바뀐 파일이 시험뿐이거나 없으면 건너뛴다.
   const testSources = new Map();
+  let reverseGraph = null;
   if (changed.some((path) => !isVitestFile(path))) {
-    for (const path of git("ls-files", "-z", "--", "test").split("\0").filter(isVitestFile)) {
-      try {
-        testSources.set(path, readFileSync(path, "utf8"));
-      } catch { /* 작업 트리에서 지워진 파일 */ }
-    }
+    const graph = loadRepoGraph(process.cwd());
+    reverseGraph = graph.reverse;
+    for (const [path, source] of graph.sources) if (isVitestFile(path)) testSources.set(path, source);
   }
 
-  const result = selectRelated({ changed, testSources, exists: existsSync, timings, options });
+  const result = selectRelated({ changed, testSources, exists: existsSync, timings, options, reverseGraph });
   console.log(formatReport(result, options));
   if (args.out) writeFileSync(args.out, result.selected.map((entry) => `${entry.file}\n`).join(""));
+  // 워크플로 matrix: {"chunk":[1..n]}(matrix 값은 배열만 된다) 와 조각별 목록 파일(<matrix 폴더>/chunk-<n>.list), 모드는 mode.txt.
+  if (args.matrix) {
+    const dir = posix.dirname(args.matrix);
+    for (const chunk of result.chunks) writeFileSync(posix.join(dir, `chunk-${chunk.id}.list`), chunk.files.map((file) => `${file}\n`).join(""));
+    writeFileSync(args.matrix, JSON.stringify({ chunk: result.chunks.map((chunk) => chunk.id) }));
+    writeFileSync(posix.join(dir, "mode.txt"), `${result.mode}\n`);
+  }
   if (args.summary) writeFileSync(args.summary, formatSummary(result, options), { flag: "a" });
 }
 
