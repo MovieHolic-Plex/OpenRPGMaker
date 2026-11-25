@@ -29,7 +29,18 @@ const fitSimCache = new WeakMap<Project, Map<string, ReturnType<typeof simulateB
  */
 const carriedFitCaches: { key: string; cache: Map<string, ReturnType<typeof simulateBattle>> }[] = [];
 const CARRIED_FIT_CACHES = 4;
-const fitContentKey = (project: Project) => JSON.stringify([project.database, project.system]);
+/**
+ * 열쇠는 모의전이 읽는 것만 담는다. 적·트룹·파티는 판마다의 열쇠(fitSimulate)에 이미 있다. 그림·이름·설명은 승패를 바꾸지 않는다.
+ * 데이터베이스·시스템 통째로 재면 두 끝맺음 사이에 다른 단계(맞지 않는 전투 맞추기·대사 흉상·초안 인물)가 적·얼굴을 바꿔
+ * 열쇠가 늘 달랐다(2026-11-25 m4 몬스터: 둘째 끝맺음도 91초).
+ */
+const FIT_SYSTEM_KEYS = ["genre", "battleModel", "typeChart", "rewardPolicy", "battleParty", "monsterCollection", "monsterBattleParty", "battleTeams", "limitGauge", "weaknessExtraAction", "partyGauge", "monsterCampaign", "escapeBonusPercent", "emotionCycle", "battleFormationRoll", "battleFlow", "atbMode", "activeSlots", "teamSwapCost", "startActorIds", "monsterStatRules"] as const;
+const FIT_DATABASE_SKIP = new Set(["enemies", "troops", "battleAnimations"]);
+const COSMETIC = /^(name|description|dexNote|message|looks)$|graphic|^face|portrait|bust|charset|sprite|resourceId|^icon/iu;
+const fitContentKey = (project: Project) => JSON.stringify([
+  Object.fromEntries(Object.entries(project.database).filter(([key]) => !FIT_DATABASE_SKIP.has(key))),
+  Object.fromEntries(FIT_SYSTEM_KEYS.map((key) => [key, (project.system as unknown as Record<string, unknown>)[key]])),
+], (key, value) => (key && COSMETIC.test(key) ? undefined : value));
 
 /** 맞춤을 마친 상태의 캐시를 남긴다(applyShipDefaults 가 맞춤 바퀴 뒤에 부른다). */
 export function rememberFitCache(project: Project): void {
