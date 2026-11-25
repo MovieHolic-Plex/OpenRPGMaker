@@ -44,7 +44,8 @@ const AXES = [
   { path: "test/eventEditorPortalSurface.baseline.test.ts", required: true, label: "포털(피커/모달)" },
   { path: "test/eventEditorInteractionSurface.baseline.test.ts", required: true, label: "상호작용 후 폼" },
   // 스냅샷이 아니라 동작 계약이지만 같은 리팩터를 감시하므로 함께 돈다.
-  { path: "test/eventEditorStagedState.test.ts", required: true, label: "연속 편집 누적" },
+  // 연속 편집 누적 시험은 #5043 에서 commandBodyCommerce 로 합쳐졌다(describe "event command staged-state regressions").
+  { path: "test/commandBodyCommerce.test.ts", required: true, label: "연속 편집 누적" },
 ];
 
 /** 기준선을 다시 쓰는 환경변수. 게이트 실행 중에 켜져 있으면 그 자체가 실패다. */
