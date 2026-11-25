@@ -4,6 +4,7 @@ import { startAiCanvasProgress, type AiCanvasProgress } from "@/editor/aiCanvasP
 import { createAiLiveStatus } from "@/editor/panels/aiLiveStatus";
 import { createAiRunStream, type AiRunStream } from "@/editor/panels/aiRunStream";
 import { selectEditorMap } from "@/editor/mapSelection";
+import { withAssistantViewTransition } from "@/editor/assistantViewSwitch";
 import { createAiReferenceView } from "@/editor/aiReferenceView";
 import { clearPromptInspection } from "@/ai/authoring/promptInspection";
 import { openAiAuthoringModal, closeAiAuthoringModal, type AiAuthoringTab } from "./aiAuthoring/modal";
@@ -56,7 +57,7 @@ import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import { editorState, editorStateChangedOnlyCanvasOverlay, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
 import { AI_REGION_HANDOFF_EVENT, aiRegionHandoffDetail, requestAiRegionHandoff } from "@/editor/aiRegionHandoff";
-import { regionTurnTouched, showRegionResultCard } from "@/editor/regionResultCard";
+import { regionTurnTouched, showRegionResultCard, showRegionResultCardOnRegionMap } from "@/editor/regionResultCard";
 import { formatSelectionTerrain } from "@/editor/selectionTerrainSummary";
 import { isStampPlaceOn, setStampPlaceOn, subscribeStampPlace } from "@/editor/stampPlaceMode";
 import {
@@ -1014,7 +1015,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (scoped && (scoped.mapId === input.mapId || regionTurnTouched(input.before, input.after, scoped.mapId, scoped.region))) {
       // 좁은 창(<1000px)에서는 조수 패널이 캔버스를 덮는다(C-57) — 결과는 맵 위 카드가 말하므로 패널을 접어 그 자리를 보인다.
       if (!collapsed && typeof window !== "undefined" && window.innerWidth < 1000) toggleCollapsed();
-      showRegionResultCard({
+      const card = {
         mapId: scoped.mapId,
         region: scoped.region,
         instruction: scoped.instruction,
@@ -1022,7 +1023,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         after: input.after,
         onUndo: preview.onUndo!,
         onRetry: () => requestAiRegionHandoff({ mapId: scoped.mapId, region: scoped.region, instruction: scoped.instruction, autoRun: true, stamp: false }),
-      });
+      };
+      // 턴이 실내·던전 맵으로 화면을 옮겨 두었으면 영역 맵으로 돌아와 카드를 띄운다(돌아오는 것도 조수 화면 전환이다).
+      if (editorState.get().currentMapId === scoped.mapId) showRegionResultCard(card);
+      else withAssistantViewTransition(scoped.mapId, () => { showRegionResultCardOnRegionMap(card, (id) => selectEditorMap(id, { clearEventSelection: false })); });
     }
   };
 
