@@ -29,7 +29,7 @@ import { addPiAgentUsage, changedProjectKeys, PI_MAP_LOSS_DECLINED_PREFIX, resto
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { firstMvpRoute } from "../../src/ai/piAgent/firstMvpRoute.ts";
 import { applyDraftCast } from "../../src/ai/v2/story/draftCast.ts";
-import { checkTeamMvp, FIRST_MVP_MEMBER_TURNS } from "../../src/ai/piAgent/teamMvp.ts";
+import { checkTeamMvp, FIRST_MVP_BUILDER_TOOLS, FIRST_MVP_MEMBER_TURNS } from "../../src/ai/piAgent/teamMvp.ts";
 import { repairWorldTransfers } from "../../src/project/world/transferRepair.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
 import { FIRST_PLAY_TOOLS, firstPlayEvents, firstPlaySignature, inspectFirstPlay, type FirstPlayReceipt } from '../../src/ai/piAgent/firstPlay.ts';
@@ -184,6 +184,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let subUsage: PiAgentUsage | undefined;
   let finished: string | null = null;
   let finishAccepted = false;
+  /** 팀장이 finish 없이 끝난 첫 MVP 를 런타임이 마무리하는 중(아래 firstMvpTeam 자동 마무리). */
+  let autoFinishing = false;
   const reviewingMaps = new Set<string>();
   const repairingMaps = new Set<string>();
   /**
@@ -468,6 +470,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
           },
           { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider),
+            ...(firstMvpTeam ? { toolNames: [...FIRST_MVP_BUILDER_TOOLS] } : {}),
             ...(options.onCheckpoint ? { onCheckpoint: checkpointFor(mapId, snapshot, independent) } : {}) },
         );
         const { spills, conflicts } = mergeOutcome(agentId, mapId, snapshot, done, independent);
@@ -793,7 +796,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           throw new Error(`아직 ${running.map((assignment) => `${assignment.memberId}(${assignment.agentId}, ${assignment.mapId})`).join(", ")} 가 작업 중입니다. wait_agents 로 결과를 받은 뒤 보고하세요.`);
         }
         if (mapOwners.busy()) throw new Error("진행 중인 맵 검수가 있습니다. 완료 후 finish 하세요.");
-        if (mailbox.unread("orchestrator-1")) throw new Error("팀장에게 미열람 메시지 또는 반영 확인이 있습니다. read_team_messages로 확인하고 질문에 답한 뒤 finish 하세요.");
+        if (!autoFinishing && mailbox.unread("orchestrator-1")) throw new Error("팀장에게 미열람 메시지 또는 반영 확인이 있습니다. read_team_messages로 확인하고 질문에 답한 뒤 finish 하세요.");
         // 429 로 끊긴 배정은 쿨다운을 쉰 뒤 같은 일을 한 번 자동으로 다시 맡긴다 — 아래 검사들이 다시 한 일의 결과를 보게 맨 앞에 둔다.
         await retryRateLimitedAssignments();
         // 맵 묶음 병합은 맵만 합쳐 담당이 놓은 인물 수가 늘어도 프리셋 기한 판정에는 인물 엔딩이 안 얹힌 채 끝났다(romance-loop-3 rom-c) — 병합본에서 한 번 맞춘다.
@@ -1307,6 +1310,16 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   // 팀장이 wait 없이 끝났을 수 있다(턴 상한·조기 finish 실패). 남은 배정을 거두어 병합한다 —
   // 여기서 놓치면 이미 끝난 시공 결과가 조용히 사라진다.
   await Promise.all(inflight.map((entry) => entry.promise));
+  // 첫 MVP 팀장이 finish 없이 턴을 끝내면(A2A 답장으로 끝낸 판, 2026-11-25 team-mvp-revive r6) 첫 판 관문·끝 지점 변환·문 도착 칸 수리가 돌지 않았다.
+  // 런타임이 finish 를 직접 돌린다 — 관문의 거절 횟수 상한(두 번)을 넘기면 남은 문제를 보고에 적고 받는다. 미열람 메시지는 팀장이 없으니 막지 않는다.
+  if (firstMvpTeam && !finishAccepted) {
+    autoFinishing = true;
+    const finishTool = orchestratorTools.find((tool) => tool.name === "finish")!;
+    for (let attempt = 0; attempt < 6 && !finishAccepted; attempt += 1) {
+      try { await finishTool.execute(`auto-finish-${attempt}`, { report: summaryOf(orchDone) }); }
+      catch (error) { emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `자동 마무리 거절(${attempt + 1}): ${error instanceof Error ? error.message : String(error)}`.slice(0, 400) } }); }
+    }
+  }
   if (coreFirst && !finishAccepted) throw new Error('첫 제작이 검증된 finish까지 끝나지 않았습니다. 저장된 핵심 플레이는 보존했습니다.');
   const authoringCompletion = inspectAuthoringHarness(working, base);
   if (authoringCompletion && (!finishAccepted || !authoringCompletion.ok || !authoringReview?.ok || authoringReview.signature !== authoringSignature(working))) {

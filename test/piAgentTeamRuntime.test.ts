@@ -151,6 +151,24 @@ describe("첫 MVP 팀장의 세계 뼈대", () => {
     expect(done.project.maps.map_cave).toBeDefined();
   });
 
+  // r6: 팀장이 finish 없이 A2A 답장으로 턴을 끝내 첫 판 관문이 돌지 않았고, 맵 담당 한 명이 find_tools 로 손 시공까지 넓혀 22분을 썼다.
+  it("맵 담당은 생성기 위주 도구만 받고, 팀장이 finish 없이 끝나도 런타임이 마무리한다", async () => {
+    const toolLists: (readonly string[] | undefined)[] = [];
+    const reports: string[] = [];
+    await runPiTeam({ ...request(seeded()), task: "용사가 마을에서 출발해 동굴의 마물을 물리치는 모험 게임을 만들어 줘." }, { onEvent: (event) => { if (event.type === "team_report") reports.push(event.text); }, runAgent: async (child, options) => {
+      if (options.extraTools?.some((t) => t.name === "assign_map_agent")) {
+        await options.extraTools.find((t) => t.name === "build_world")!.execute("call", { plan });
+        await callTool(options.extraTools, "assign_map_agent", { mapId: "map_town", task: "짓는다" });
+        await callTool(options.extraTools, "wait_agents", {});
+      } else toolLists.push((options as { toolNames?: readonly string[] }).toolNames);
+      return doneWith(child.project);
+    } });
+    expect(toolLists[0]).toContain("author_dungeon");
+    expect(toolLists[0]).not.toContain("paint_tiles");
+    expect(reports.some((text) => text.includes("finish를 호출하지 않았습니다"))).toBe(false);
+    expect(reports.length).toBeGreaterThan(0);
+  });
+
   it("다른 요청의 팀장에게는 build_world 가 없다", async () => {
     let names: string[] = [];
     await runPiTeam({ ...request(seeded()), task: "마을에 여관을 하나 더 지어 줘" }, { runAgent: async (child, options) => {
