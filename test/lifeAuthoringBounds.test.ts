@@ -5,7 +5,7 @@ import { renderDailyWeatherTab } from "@/editor/panels/databaseDailyWeatherView"
 import { renderLifeCraftingTab } from "@/editor/panels/databaseLifeCraftingView";
 import { getMapEditHistoryState, resetMapEditHistory } from "@/editor/mapEditHistory";
 import { _resetEditActivityForTest } from "@/editor/editActivityLog";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { dailyWeatherForecast } from "@/project/dailyWeather";
 import { deserialize, serialize } from "@/project/io";
 import { store } from "@/project/store";

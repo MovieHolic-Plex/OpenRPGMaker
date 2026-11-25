@@ -6,7 +6,8 @@ import { commandsToScript } from "@/editor/script/eventToScript";
 import { runTool } from "@/editor/tools";
 import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 import { preloadScriptEngine } from "@/player/script/engine";
-import { createBlankProject, DEFAULT_ITEM_ID } from "@/project/defaults";
+import { DEFAULT_ITEM_ID } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import type { Command, Project } from "@/project/types";
 import type { ToolContext } from "@/editor/tools/types";
 

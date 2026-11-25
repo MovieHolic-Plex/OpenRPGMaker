@@ -6,7 +6,7 @@
 // layoutPlan 은 바이트 동일하고, 되돌림은 한 번이며, 이름 충돌은 보이고, 재시공은 복제하지 않는다.
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { DEFAULT_TILESET_ID, TILE } from "@/project/defaults/constants";
 import { blankFillTileFor } from "@/project/defaults/defaultMaps";
 

@@ -5,7 +5,7 @@ import { getDatabaseActiveTab, renderDatabasePanel, setDatabaseActiveTab, switch
 import { getSelectedMonsterSpeciesId, setSelectedMonsterSpeciesId } from "@/editor/panels/databaseMonsterSpeciesView";
 import { resetDatabaseRecordViewSession } from "@/editor/panels/databaseRecordViews";
 import { searchQueryForCollection, setListScrollTopForCollection, setSearchQueryForCollection, setSelectedRecordId, setViewModeForCollection } from "@/editor/panels/databaseRecordViewSession";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { normalizeMonsterSpeciesRecord } from "@/project/monsterCollection";
 import { store } from "@/project/store";
 

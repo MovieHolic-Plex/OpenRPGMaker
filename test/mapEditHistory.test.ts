@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { handleHistoryHotkey, isTextEditingFocus } from "@/editor/hotkeys";
 import { resetMapEditHistory, getMapEditHistoryState, undoMapEdit, getMapEditHistoryEntries, getMapEditRedoEntries, recordProjectSnapshot, redoMapEdit, redoToHistoryIndex, pendingHistoryLabels, recordMapEditIfChanged } from "@/editor/mapEditHistory";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store, type ProjectChangeDescriptor } from "@/project/store";
 import { FakeElement, installFakeDom } from "./fakeDom";
 import { deleteMap, deleteMapsInOrder, duplicateMap, resizeMap, setStartPos } from "@/editor/actions";
