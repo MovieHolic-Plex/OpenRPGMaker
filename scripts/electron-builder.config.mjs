@@ -33,8 +33,9 @@ export default {
   // 제외 패턴이 최상위의 dist-electron/** 를 못 이긴다(실측 2026-09-27: 두 OS 패키지 모두 워커 4개).
   // 각 OS 가 자기 전체 목록을 갖는다.
   // AI 워커는 실행 파일이라 asar 밖에 있어야 한다. 윈도 워커가 읽는 pi_natives 애드온은 로더가 워커 옆 폴더에서 찾으므로 같이 풀어 둔다.
+  // 워커가 읽는 큰 JSON(worker-data)도 bun 이 asar 를 못 읽으므로 풀어 둔다.
   // 리눅스 워커는 애드온 없이 굽는다(scripts/build-ai-worker.ts).
-  asarUnpack: ["scripts/**", "dist-electron/oprn-agent-mode-mcp.mjs", "dist-electron/agent-npm/**", "dist-electron/oh-my-pi-worker", "dist-electron/oh-my-pi-worker.exe", "dist-electron/pi_natives.*.node"],
+  asarUnpack: ["scripts/**", "dist-electron/oprn-agent-mode-mcp.mjs", "dist-electron/agent-npm/**", "dist-electron/oh-my-pi-worker", "dist-electron/oh-my-pi-worker.exe", "dist-electron/pi_natives.*.node", "dist-electron/worker-data/**"],
   extraMetadata: { main: "dist-electron/main.cjs" },
   asar: true,
   // 스토어 웹사이트의 「에디터에서 열기」(oprn://store/install?…). macOS Info.plist·Linux .desktop MimeType 에 들어간다.
