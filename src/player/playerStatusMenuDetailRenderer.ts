@@ -556,11 +556,12 @@ function itemEffectTokenLabel(project: Project, token: string): string {
     case "state": return `상태 ${project.database.states.find((state) => state.id === value)?.name ?? value} ${amount}%`;
     case "learn": return `습득 ${project.database.skills.find((skill) => skill.id === value)?.name ?? value}`;
     case "skill": {
-      // 쓰면 스킬이 도는 아이템 — 스킬 이름 대신 그 스킬이 하는 일(능력 상승·상태·회복)을 쓴다. 「스킬 투지 강장제」는 효과가 안 읽혔다.
+      // 쓰면 스킬이 도는 아이템 — 그 스킬이 하는 일(능력 상승·상태·회복)을 앞에 쓰고 이름은 뒤 괄호로.
+      // 「스킬 투지 강장제」만 쓰면 효과가 안 읽혔다(ESC 메뉴 조사 2026-11-26 문제 3).
       const skill = project.database.skills.find((record) => record.id === value);
-      if (!skill) return "특수 효과";
+      if (!skill) return `스킬 ${value}`;
       const tags = skillHelpTags(project, skill).slice(1);
-      return tags.length ? tags.join(" · ") : skill.description.split("\n")[0]?.trim() || "특수 효과";
+      return tags.length ? `${tags.join(" · ")} (${skill.name})` : `스킬 ${skill.name}`;
     }
     case "switch": return `장치 ${project.switches.find((entry) => entry.id === value)?.name || value}`;
     case "care": return `${value === "toy" ? "장난감" : "먹이"} · 친밀도 ${signedItemAmount(Number(amount))} · EXP ${signedItemAmount(Number(extra))}${Number(levelUp) > 0 ? ` · 레벨 +${Number(levelUp)}` : ""}`;

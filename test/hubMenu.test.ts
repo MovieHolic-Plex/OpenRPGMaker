@@ -2,6 +2,7 @@
 import { describe, expect, it } from "vitest";
 import { hubMenuEnabled, hubPageFor, renderHubMenu } from "@/player/hubMenu";
 import type { PlayerStatusMenuActions } from "@/player/playerStatusMenuTypes";
+import { normalizeSystemRecords } from "@/project/databaseRecordModel";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import type { Project } from "@/project/types";
@@ -25,6 +26,16 @@ describe("ESC 허브 메뉴", () => {
     expect(hubMenuEnabled(project, session)).toBe(true);
     project.system.menuLayout = "legacy";
     expect(hubMenuEnabled(project, session)).toBe(false);
+  });
+
+  it("저장 정규화가 menuLayout·menuTheme 를 남기고 모르는 값은 버린다", () => {
+    const project = createBlankProject();
+    const kept = normalizeSystemRecords({ ...project.system, menuLayout: "hub", menuTheme: { window: "#203060", accent: "#ffcc66" } });
+    expect(kept.menuLayout).toBe("hub");
+    expect(kept.menuTheme).toEqual({ window: "#203060", accent: "#ffcc66" });
+    const dropped = normalizeSystemRecords({ ...project.system, menuLayout: "fancy" as never });
+    expect(dropped.menuLayout).toBeUndefined();
+    expect(dropped.menuTheme).toBeUndefined();
   });
 
   it("전투 없는 게임은 허브를 켜도 옛 메뉴다", () => {

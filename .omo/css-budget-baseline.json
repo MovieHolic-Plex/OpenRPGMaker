@@ -1,12 +1,12 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-27T04:52:12.050Z",
+  "generatedAt": "2026-11-27T05:24:17.756Z",
   "metrics": {
-    "hexLiterals": 2756,
+    "hexLiterals": 2771,
     "important": 388,
     "undefinedVars": 56,
     "globalRootFiles": 11,
-    "cssFileCount": 443
+    "cssFileCount": 444
   },
   "details": {
     "hexByFile": {
@@ -158,6 +158,7 @@
       "src/styles/runtime/from-map-resource-system-part-1.css": 1,
       "src/styles/runtime/galleryMenu.css": 3,
       "src/styles/runtime/gameOver.css": 57,
+      "src/styles/runtime/hubMenu.css": 15,
       "src/styles/runtime/keyboardNav.css": 6,
       "src/styles/runtime/minimap.css": 2,
       "src/styles/runtime/mobileUi.css": 8,
@@ -885,6 +886,7 @@
       "src/styles/runtime/galleryMenu.css",
       "src/styles/runtime/gameOver.css",
       "src/styles/runtime/handSlot.css",
+      "src/styles/runtime/hubMenu.css",
       "src/styles/runtime/index.css",
       "src/styles/runtime/juice.css",
       "src/styles/runtime/keyboardNav.css",

@@ -71,8 +71,25 @@
       {
        "kind": "setVitals",
        "hp": 312,
+       "mp": 47,
        "actorIds": [
         "actor_hero"
+       ]
+      },
+      {
+       "kind": "setVitals",
+       "hp": 537,
+       "mp": 19,
+       "actorIds": [
+        "actor_fs_elena"
+       ]
+      },
+      {
+       "kind": "setVitals",
+       "hp": 158,
+       "mp": 43,
+       "actorIds": [
+        "actor_fs_iris"
        ]
       }
      ],
@@ -223,7 +240,14 @@
      ],
      "shot": true
     }
-   ]
+   ],
+   "sessionPatch": {
+    "actorStateIds": {
+     "actor_hero": [
+      "state_poison"
+     ]
+    }
+   }
   }
  ]
 }
