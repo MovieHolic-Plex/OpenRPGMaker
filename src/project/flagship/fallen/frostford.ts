@@ -416,7 +416,28 @@ function frostford(project: Project, exec: Exec, hubId: string): void {
         narrate("「은빛 송어」를 낚았다.", { context: "system" }),
         setSw(SW_Q5_FISH),
       ]),
-      page(`ev_fs2_frost_hole_${k}_done`, "끝", [sw(SW_Q5_FISH)], [narrate("물이 잠잠하다. 한 마리면 됐다.")]),
+      page(`ev_fs2_frost_hole_${k}_done`, "얼음낚시", [sw(SW_Q5_FISH)], [
+        narrate("얼음 구멍 아래로 찬물이 천천히 돈다. 줄을 한 번 더 내려 볼까?"),
+        {
+          kind: "choices",
+          options: [
+            {
+              text: "줄을 내린다",
+              branch: [
+                narrate("낚싯줄을 천천히 드리운다…"),
+                wait(700),
+                se("cc0-se-osx-splash-01"),
+                emote("player", "exclamation", 600),
+                narrate("묵직한 입질이다! 얼음 밑에서 차가운 물보라가 튀었다."),
+                item("item_fs2_frost_crystal", 1),
+                narrate("얼음 송어가 물고 있던 「서리 결정」을 건져 올렸다.", { context: "system" }),
+              ],
+            },
+            { text: "그만둔다", branch: [] },
+          ],
+          cancelBehavior: "choice2",
+        } as unknown as Command,
+      ]),
     ]);
   });
 

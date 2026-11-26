@@ -34,6 +34,9 @@ const SW_VALEN_GUEST = "sw_fs2_b13_valen_guest";
 const SW_BOSS_LOST = "sw_fs2_b13_lost";
 export const FS2_SW_B13_WON = "sw_fs2_b13_collector_down";
 export const FS2_SW_STOP_B13 = "sw_fs2_release_stop_b13";
+export const FS2_ENDING_TRUE = "end_fs_true";
+export const FS2_ENDING_NORMAL = "end_fs_normal";
+export const FS2_ENDING_CLOSED_SKY = "end_fs_closed_sky";
 
 const VALEN_ACTOR = "actor_fs2_valen_guest";
 const E_COLLECTOR = "enemy_fs2_ash_collector";
@@ -215,10 +218,96 @@ function lensRoom(project: Project, exec: Exec): void {
   exec(project, "set_lighting_volume", { mapId: FS2_TOP, applyMode: "map", ambient: 0.5, color: "#0a1020", sources });
 }
 
-function summitScenes(project: Project): void {
+function summitEndings(project: Project, exec: Exec): void {
+  const endingBgm = "cc0-bgm-rtp-emo-002";
+  const baseCredits = [
+    "카엘 — 견습 별지기",
+    "엘레나 — 천문대의 마도학자",
+    "이리스 — 넷째 아이, 별의 중계기",
+    "새라 — 북방 관문의 창기사",
+    "",
+    "천문대장 하넬 · 숲지기 브람 · 심문관 발렌",
+    "왕도 아스텔과 서리나루의 사람들",
+    "",
+    "OPRN Studio 대표 데모 · 폴른 스타",
+    "Music: OPRN BGM (AI-generated, Google Lyria)",
+  ];
+
+  exec(project, "define_ending", {
+    id: FS2_ENDING_TRUE,
+    name: "진 엔딩 · 오늘도, 잘 지내",
+    conditions: [],
+    epilogue: [
+      { kind: "say", speaker: "이리스", text: "카엘, 일지가 벌써 두꺼워졌어요. 이번엔 한 줄도 안 잊어버릴게요." },
+      { kind: "say", speaker: "발렌", text: "세린… 문은 열어 뒀다. 이번엔 아무도 밖에 세워 두지 않아." },
+      { kind: "say", speaker: "카엘", text: "서른 밤이나 남았어. 아스텔 빵집부터 다시 한 바퀴 돌자, 다 같이." },
+    ],
+    presentation: {
+      kicker: "TRUE ENDING · 오늘도, 잘 지내",
+      musicResourceId: endingBgm,
+      credits: [
+        ...baseCredits,
+        "",
+        "서른 해 만에 멈춰 있던 시계가 다시 돌았다.",
+        "닫혔던 문이 열리고, 하늘의 흰 배가 천천히 내려온다.",
+        "",
+        "타이틀에서 「다시 별을 올려다본다(New Game+)」가 열렸습니다.",
+      ].join("\n"),
+    },
+  });
+
+  exec(project, "define_ending", {
+    id: FS2_ENDING_NORMAL,
+    name: "엔딩 · 빌린 불의 답장",
+    conditions: [],
+    epilogue: [
+      { kind: "say", speaker: "이리스", text: "신호가 닿았어요. 서른 밤 뒤에 배가 내려온대요." },
+      { kind: "say", speaker: "엘레나", text: "그동안 할 일이 산더미야. 왕도 불도 다시 켜야지." },
+      { kind: "say", speaker: "카엘", text: "가자. 내려가면 토마 아저씨 빵부터 먹자." },
+    ],
+    presentation: {
+      kicker: "ENDING · 빌린 불의 답장",
+      musicResourceId: endingBgm,
+      credits: [
+        ...baseCredits,
+        "",
+        "하늘을 향해 쏘아 올린 네 번째 대답.",
+        "서른 날의 약속을 안고, 일행은 아침이 밝아 오는 왕도로 발걸음을 옮겼다.",
+        "",
+        "타이틀에서 「다시 별을 올려다본다(New Game+)」로 다른 결말을 찾아보세요.",
+      ].join("\n"),
+    },
+  });
+
+  exec(project, "define_ending", {
+    id: FS2_ENDING_CLOSED_SKY,
+    name: "분기 엔딩 · 닫힌 하늘",
+    conditions: [],
+    epilogue: [
+      { kind: "say", speaker: "발렌", text: "…네가 그 버튼을 누를 줄은 몰랐다. 손이 안 떨렸나." },
+      { kind: "say", speaker: "이리스", text: "괜찮아요, 카엘. 이제 하늘이 안 부르면… 여기서 같이 늙어 가면 되죠." },
+      { kind: "say", speaker: "카엘", text: "더는 누구도 불타지 않게. 이 땅은 이제 우리끼리 지켜." },
+    ],
+    presentation: {
+      kicker: "ALTERNATE ENDING · 닫힌 하늘",
+      musicResourceId: endingBgm,
+      credits: [
+        ...baseCredits,
+        "",
+        "렌즈의 빛이 꺼지자 북쪽 하늘의 흰 배가 구름 너머로 멀어졌다.",
+        "다시는 별이 떨어지지 않는 밤. 땅의 사람들은 빌린 불 없이 스스로 불을 피우기 시작했다.",
+        "",
+        "타이틀에서 「다시 별을 올려다본다(New Game+)」로 진 엔딩에 도전해 보세요.",
+      ].join("\n"),
+    },
+  });
+}
+
+function summitScenes(project: Project, exec: Exec): void {
   const k = towerKit;
-  const { say, narrate, sys, wait, sw, setSw, se, bgm, emote, route, walk, shake, flash, fx, letterbox, clearLetterbox, fadeOut, fadeIn,
+  const { say, narrate, wait, sw, setSw, se, bgm, emote, route, walk, shake, flash, fx, letterbox, clearLetterbox, fadeOut, fadeIn,
     camTo, camBack, cutBegin, cutEnd, cutLabel, page, chip, addEv, ensureSwitch, mustWalk, KAEL, ELENA, IRIS, SARAH, IRIS_BGM, TOWER_BGM } = k;
+  summitEndings(project, exec);
   for (const [id, name] of [
     [SW_TOP_ARRIVE, "B12: 꼭대기 렌즈실에 들어섬"], [SW_HANEL_COME, "B12: 하넬과 브람이 올라옴"], [FS2_SW_B12_DONE, "B12: 하넬의 고백 · 회수 기구 기동"],
     [SW_VALEN_GUEST, "B13: 발렌과 함께 싸운다"], [SW_BOSS_LOST, "B13: 회수자에게 한 번 졌다"], [FS2_SW_B13_WON, "B13: 재의 회수자를 쓰러뜨림"], [FS2_SW_STOP_B13, "판본 끝: 제2막 끝"],
@@ -227,23 +316,23 @@ function summitScenes(project: Project): void {
   const at = (id: string, c: Cell): Command => ({ kind: "m2Command", commandId: "m2-040-set-event-location", fields: { target: id, mapId: FS2_TOP, x: c.x, y: c.y } } as unknown as Command);
   const player = (moves: Rec[]): Command => route("@player", moves);
   const face = (id: string, dir: string): Command => route(id, [{ kind: "turn", dir }]);
-  // 칩은 이미 나온 이벤트 그림(발렌: 서리나루 호수 · 하넬: 천문대 · 브람: 광장)과 같은 칸.
+  const fork = (condition: unknown, then: Command[], otherwise: Command[] = []): Command => ({ kind: "fork", condition, then, else: otherwise } as unknown as Command);
   const valenFacing = (dir: "up" | "down" | "left" | "right"): Rec => chip("oprn-charset-fs-valen", 0, dir);
   const HANEL_CHIP: [string, number] = ["tex_easyrpg_charset_people3", 4];
   const BRAM_CHIP: [string, number] = ["tex_easyrpg_charset_actor2", 2];
 
   // 발렌 — 처음엔 렌즈를 본다(등). 회수자를 쓰러뜨린 뒤엔 렌즈 곁.
   addEv(project, FS2_TOP, "ev_fs2_top_valen", VALEN, TOP.valen, [
-    page("ev_fs2_top_valen_p", "단말 앞", [], [say(VALEN, "…물러서라. 손이 떨린다.")], { graphic: valenFacing("up"), priority: "same", overlapForbidden: true }),
-    page("ev_fs2_top_valen_after", "렌즈 곁", [sw(FS2_SW_STOP_B13)], [say(VALEN, "…세린은 문을 세 번 두드렸다.\n이번엔 열어 둔다. 그것만 하마.")], { graphic: valenFacing("down"), priority: "same", overlapForbidden: true }),
+    page("ev_fs2_top_valen_p", "단말 앞", [], [say(VALEN, "…비켜 서. 손이 떨려서 말을 안 들어.")], { graphic: valenFacing("up"), priority: "same", overlapForbidden: true }),
+    page("ev_fs2_top_valen_after", "렌즈 곁", [sw(FS2_SW_STOP_B13)], [say(VALEN, "…세린은 문을 세 번 두드렸지.\n이번엔 열어 둘게. 그 정도는 해야지.")], { graphic: valenFacing("down"), priority: "same", overlapForbidden: true }),
   ]);
   addEv(project, FS2_TOP, "ev_fs2_top_hanel", HANEL, TOP.hanel, [
     page("ev_fs2_top_hanel_none", "없음", [], [], { priority: "below" }),
-    page("ev_fs2_top_hanel_on", "하넬", [sw(SW_HANEL_COME)], [say(HANEL, "일지는 계속 쓰거라.\n나도 오늘부터 한 줄씩 쓰마.")], { graphic: chip(HANEL_CHIP[0], HANEL_CHIP[1], "up"), priority: "same", overlapForbidden: true }),
+    page("ev_fs2_top_hanel_on", "하넬", [sw(SW_HANEL_COME)], [say(HANEL, "일지 계속 써라.\n나도 오늘부터 한 줄씩 적을란다.")], { graphic: chip(HANEL_CHIP[0], HANEL_CHIP[1], "up"), priority: "same", overlapForbidden: true }),
   ]);
   addEv(project, FS2_TOP, "ev_fs2_top_bram", BRAM, TOP.bram, [
     page("ev_fs2_top_bram_none", "없음", [], [], { priority: "below" }),
-    page("ev_fs2_top_bram_on", "브람", [sw(SW_HANEL_COME)], [say(BRAM, "그 늙은이, 서른 해 묵은 말을 이제야 했군.\n…잘했다.")], { graphic: chip(BRAM_CHIP[0], BRAM_CHIP[1], "up"), priority: "same", overlapForbidden: true }),
+    page("ev_fs2_top_bram_on", "브람", [sw(SW_HANEL_COME)], [say(BRAM, "저 늙은이, 서른 해 묵은 속말을 이제야 꺼내네.\n…속 다 시원하다.")], { graphic: chip(BRAM_CHIP[0], BRAM_CHIP[1], "up"), priority: "same", overlapForbidden: true }),
   ]);
 
   // B12 — 렌즈실에 들어서면(통로 끝 세 칸).
@@ -253,45 +342,42 @@ function summitScenes(project: Project): void {
     player(walk(["up", "up", "up"])),
     camTo("ev_fs2_top_valen", 1300, 2, 16),
     se("cc0-se-osx-machine-03"),
-    narrate("커다란 렌즈 앞, 발렌이 단말에 손을 얹고 있다.\n렌즈 속 글자가 붉게 흐른다."),
-    say(VALEN, "반은 보냈다. 나머지 반만 넣으면\n달은 다시는 아이를 내려보내지 않는다."),
-    say(KAEL, "그 신호, 이리스한테\n「오지 마」라고 하는 거잖아요."),
-    say(IRIS, "들려요. 「돌아오지 마」, 「대답하지 마」.\n…차가운 말이에요."),
+    narrate("거대한 렌즈 앞. 발렌이 단말에 손을 얹고 있다.\n렌즈 안쪽으로 붉은 글자가 쉼 없이 흐른다."),
+    say(VALEN, "절반은 보냈어. 나머지 반만 밀어 넣으면\n달은 다시는 아이를 내려보내지 않아."),
+    say(KAEL, "그 신호, 이리스한테\n다신 오지 말라고 내쫓는 거잖아요!"),
+    say(IRIS, "들려요… 오지 말래요. 대답하지 말래요.\n…너무 차가워요."),
     face("ev_fs2_top_valen", "down"),
-    say(VALEN, "삼십 년 전에 새벽샘이 탔다.\n대답한 값이었다. 두 번은 없다."),
-    say(SARAH, "발렌 님. 그 손 떼십시오.\n…명령 아닙니다. 부탁입니다."),
+    say(VALEN, "서른 해 전에 새벽샘이 불탔다.\n대답한 대가였지. 두 번은 못 겪어."),
+    say(SARAH, "발렌 님, 손 떼십시오.\n…명령 따위는 아닙니다. 부탁드리는 겁니다."),
     wait(400),
-    // 하넬·브람 — 아래 계단에서 올라온다.
     setSw(SW_HANEL_COME),
     at("ev_fs2_top_hanel", TOP.hanelStart), at("ev_fs2_top_bram", TOP.bramStart),
-    // 한 화면에 — 발렌(10줄)·일행(12줄)·올라오는 둘(14줄)이 대화창 위에 다 보이게 1배로 물러나 조금 내려 잡는다.
     camTo("ev_fs2_top_valen", 900, 1, 32),
     route("ev_fs2_top_hanel", [...walk(["up", "up", "up", "up", "up", "up", "up", "left"]), { kind: "turn", dir: "up" }], false),
     route("ev_fs2_top_bram", [...walk(["up", "up", "up", "up", "up", "up", "up", "right"]), { kind: "turn", dir: "up" }]),
     wait(200),
     say(HANEL, "발렌."),
     emote("ev_fs2_top_valen", "exclamation", 800),
-    say(VALEN, "…선생님."),
-    say(BRAM, "숨 차서 죽는 줄 알았다.\n하넬, 할 말 있으면 지금 해라."),
+    say(VALEN, "…선생님?"),
+    say(BRAM, "계단 오르다 숨 넘어가는 줄 알았네.\n하넬, 숨겨 둔 말 지금 다 털어놔."),
     camTo("ev_fs2_top_hanel", 1000, 2, 12),
-    say(HANEL, "거부를 보낸 건 나다, 발렌.\n별지기 회의가 정했다. 내 손은 떨리지도 않았지."),
-    say(VALEN, "그럼 그 아이가 두드린 문은…\n선생님이 보낸 답장이었습니까."),
-    say(HANEL, "그래. 그래서 서른 해 동안\n너한테 별 이름만 가르쳤다."),
-    say(HANEL, "…다른 걸 가르칠 낯이 없어서."),
+    say(HANEL, "거부 신호를 보낸 건 나다, 발렌.\n별지기 회의가 정했고, 내 손으로 눌렀어. 떨리지도 않았지."),
+    say(VALEN, "그럼 그날 밤 그 아이가 두드린 문은…\n선생님이 보낸 답장이었단 말입니까?"),
+    say(HANEL, "그래. 그래서 서른 해 내내\n네한테 별 이름밖에 못 가르쳤다."),
+    say(HANEL, "…다른 걸 입에 올릴 낯이 없어서."),
     camTo("ev_fs2_top_valen", 900, 2, 16),
-    narrate("발렌이 왼손 장갑을 쥐었다 편다."),
+    narrate("발렌이 왼손 장갑을 꽉 쥐었다 편다."),
     say(VALEN, "세린."),
-    say(VALEN, "…문 너머에서, 그 아이 이름이 세린이었다."),
+    say(VALEN, "…닫힌 문 너머에서 부르던 이름, 세린이었어."),
     wait(600),
-    // 반쯤 나간 거부와 넷째 접수가 겹친다.
     se("cc0-se-osx-machine-03"), flash("red", 400), shake(4, 900),
     fx("fire", TOP.lens.x + 1, TOP.lens.y + 3, 1600),
     say(TERMINAL, "[접수 4/4]\n[거부 신호 50% ── 충돌]"),
     camBack(600, TOP_ZOOM),
-    say(IRIS, "경고. 회수 기구 기동."),
-    say(IRIS, "저 아래에서, 불을 거두러 와요."),
+    say(IRIS, "경고예요! 회수 기구가 깨어나고 있어요."),
+    say(IRIS, "발밑에서… 불을 거두러 올라와요!"),
     shake(6, 1400), se("cc0-se-ors-creature-roar-03"),
-    narrate("탑 깊은 곳에서 무언가가 올라오고 있다.\n바닥 틈으로 재가 솟구친다."),
+    narrate("탑 깊은 곳에서 거대한 쇳소리가 울린다.\n돌바닥 틈으로 시커먼 재가 솟구친다."),
     setSw(FS2_SW_B12_DONE),
     cutLabel(), clearLetterbox(), cutEnd(), setSw(SW_HANEL_COME), setSw(FS2_SW_B12_DONE),
   ];
@@ -304,49 +390,41 @@ function summitScenes(project: Project): void {
   const win: Command[] = [setSw(FS2_SW_B13_WON)];
   const lose: Command[] = [
     fadeOut(900), { kind: "recoverAll" } as unknown as Command, setSw(SW_BOSS_LOST), fadeIn(700),
-    say(HANEL, "…일어나거라. 아직 대답 안 했다."),
+    say(HANEL, "…일어나라. 아직 대답 못 끝냈잖아."),
     { kind: "transfer", mapId: FS2_TOP, x: TOP.kael.x, y: TOP.kael.y, direction: "up", fade: "black" } as unknown as Command,
   ];
   const fight: Command[] = [
     cutBegin(),
-    say(VALEN, "내가 연 일이다. 내 칼로 막는다."),
-    { kind: "choices", prompt: "발렌을 어떻게 할까?", options: [
-      { text: "같이 싸워요", branch: [
-        say(KAEL, "같이 막아요. 혼자 하지 마요."),
-        say(VALEN, "…어린 별지기가 날 부리는군.\n좋다. 등은 맡겨라."),
+    say(VALEN, "내가 저지른 판이야. 내 칼로 막는다."),
+    { kind: "choices", prompt: "발렌에게 뭐라고 할까?", options: [
+      { text: "같이 막아요. 혼자 떠안지 말고", branch: [
+        say(KAEL, "같이 막아요. 여기서 혼자 쓰러질 셈이에요?"),
+        say(VALEN, "…어린 별지기한테 잔소리까지 듣네.\n알았다. 뒤는 맡겨."),
         setSw(SW_VALEN_GUEST),
       ] },
-      { text: "물러나 계세요", branch: [
-        say(KAEL, "단말 지켜 주세요.\n거부 신호, 더 나가지 않게요."),
-        say(VALEN, "알았다. 쓰러지면 바로 나간다."),
+      { text: "뒤에서 단말을 지켜 주세요", branch: [
+        say(KAEL, "단말 쪽을 막아 주세요.\n거부 신호가 더 나가지 않게."),
+        say(VALEN, "알았다. 너희가 밀리면 내가 바로 뛰어든다."),
         setSw(SW_VALEN_GUEST, false),
       ] },
     ] } as unknown as Command,
-    say(ELENA, "재야, 전부.\n…어디든 틈은 있어."),
+    say(ELENA, "전부 재로 뭉친 괴물이야.\n…그래도 틈은 꼭 있어. 집중해!"),
     cutLabel(), cutEnd(),
     se("cc0-se-ors-creature-roar-02"), shake(5, 800), flash("red", 300),
     { kind: "battleProcessing", troopId: FS2_TROOP_COLLECTOR, canEscape: false, canLose: true, branchOnResult: true, victoryBranch: win, defeatBranch: lose, escapeBranch: [] } as unknown as Command,
   ];
-  // B13 끝 — 다시 대답한다 → 막 끝.
-  const ending: Command[] = [
-    cutBegin(), letterbox(),
-    bgm(IRIS_BGM, 2500),
-    narrate("재가 가라앉는다.\n렌즈의 붉은 글자가 하나씩 꺼져 간다."),
-    // 렌즈 앞을 비운다 — 발렌은 동쪽으로 한 칸, 하넬·브람은 양옆. 카엘이 렌즈 바로 앞(발렌이 섰던 칸)까지 걸어간다.
-    at("ev_fs2_top_hanel", TOP.hanelLens), at("ev_fs2_top_bram", TOP.bramLens), at("ev_fs2_top_valen", TOP.valenLens),
-    face("ev_fs2_top_valen", "left"), face("ev_fs2_top_hanel", "up"), face("ev_fs2_top_bram", "up"),
-    player(walk(["up", "up"])), player([{ kind: "turn", dir: "up" }]),
-    camTo("ev_fs2_top_valen", 1400, 2, 16),
-    say(IRIS, "거부 신호, 아직 반이 남아 있어요.\n…지울 수는 없어요. 덮을 수만 있어요."),
-    say(KAEL, "그럼 덮자. 대답 하나 더 하면 되잖아."),
-    narrate("카엘이 렌즈에 손을 얹는다."),
+
+  // B13 끝 — 최후의 선택 → 진 엔딩 / 보통 엔딩 / 닫힌 하늘 엔딩(3종 분기)
+  const answerRoute: Command[] = [
+    say(KAEL, "그럼 덮어쓰자. 대답 하나 더 얹으면 되잖아."),
+    narrate("카엘이 따뜻한 렌즈 위에 손을 얹는다."),
     fx("sparkle", TOP.lens.x + 1, TOP.lens.y + 3, 1600),
-    say(ELENA, "나도. 불씨 지키는 사람도 한 줄은 써야지."),
-    say(SARAH, "아버지 몫까지 얹는다."),
-    say(HANEL, "…서른 해 늦었다. 그래도 얹으마."),
+    say(ELENA, "나도 얹을게. 불씨 지키는 사람도 한 줄은 써야지."),
+    say(SARAH, "아버지 몫까지 같이 얹는다."),
+    say(HANEL, "…서른 해 늦었지. 그래도 내 손도 보태마."),
     face("ev_fs2_top_valen", "up"),
-    narrate("발렌이 장갑을 벗어 렌즈 위에 얹는다."),
-    say(VALEN, "…세린. 이번엔 문을 열어 두마."),
+    narrate("발렌이 왼손 장갑을 천천히 벗어 렌즈 위에 올려둔다."),
+    say(VALEN, "…세린. 이번엔 문 열어 둘게."),
     wait(500),
     say(KAEL, "잘 지내. …오늘도."),
     se("easyrpg-sound-recovery7"), flash("white", 700),
@@ -354,18 +432,54 @@ function summitScenes(project: Project): void {
     say(TERMINAL, "[정착 확인 재접수]\n[귀환선 하강 개시]"),
     say(TERMINAL, "[중계기 이리스 회수 예정 ── 현지 시각 30일]"),
     camBack(1200, TOP_ZOOM),
-    narrate("북쪽 하늘의 흰 배가 움직인다.\n사람들이 달이라 부르던 것이."),
-    say(IRIS, "30일이에요. 카엘, 그동안\n일지를 아주 두껍게 써 주세요."),
-    say(KAEL, "응. 매일 쓸게."),
+    narrate("북쪽 하늘의 흰 배가 천천히 방향을 튼다.\n사람들이 달이라 부르던 그것이, 마침내 대답을 들었다."),
+    say(IRIS, "서른 밤이래요. 카엘, 그동안\n일지가 찢어질 만큼 빼곡하게 써 주세요."),
+    say(KAEL, "응. 하루도 안 빼먹을게."),
     cutLabel(), clearLetterbox(), cutEnd(),
-    fadeOut(1200),
     { kind: "recoverAll" } as unknown as Command,
-    narrate("제2막 「빌린 불」 끝", { position: "center", context: "narration" }),
-    narrate("제3막 「귀환선」은\n다음 업데이트에서 이어집니다.", { position: "center", context: "narration" }),
-    fadeIn(800),
     setSw(FS2_SW_STOP_B13),
-    sys("다음 업데이트에서 여기부터 이어 하려면\n지금 저장해 두자."),
-    { kind: "openSaveMenu" } as unknown as Command,
+    // 진 엔딩 판정: 세린의 정착 확인서를 찾았고, 발렌과 함께 싸웠거나 이리스의 일지를 끝까지 복원했을 때.
+    fork(
+      { kind: "all", conditions: [sw("sw_fs2_serin_form"), { kind: "any", conditions: [sw(SW_VALEN_GUEST), sw("sw_fs2_iris_be_well")] }] },
+      [{ kind: "triggerEnding", endingId: FS2_ENDING_TRUE } as unknown as Command],
+      [{ kind: "triggerEnding", endingId: FS2_ENDING_NORMAL } as unknown as Command],
+    ),
+  ];
+
+  const closeSkyRoute: Command[] = [
+    say(KAEL, "…미안해, 이리스. 하늘이 계속 시험을 내려보낸다면,\n누군가는 또 불타고 말아."),
+    say(ELENA, "카엘, 너 지금 진심이야?!"),
+    say(VALEN, "…어린 별지기. 네 손으로 끊겠다는 건가."),
+    say(KAEL, "내가 짊어질게. 빌린 불 따위 돌려주고,\n이 땅은 우리 손으로만 살아갈래."),
+    narrate("카엘이 붉게 빛나는 거부 단말을 끝까지 밀어 넣는다."),
+    se("cc0-se-osx-machine-03"), flash("red", 600), shake(4, 1000),
+    say(TERMINAL, "[거부 신호 100% 송신 완료]\n[궤도 회선 영구 차단]"),
+    camBack(1200, TOP_ZOOM),
+    narrate("렌즈의 빛이 꺼지고, 탑 꼭대기에 차가운 밤바람만 남는다.\n하늘의 흰 배가 구름 너머로 천천히 멀어진다."),
+    say(IRIS, "…신호가 끊겼어요. 이제 집에서 부르지 않아요.\n그래도 괜찮아요, 카엘. 여기 남아 있을게요."),
+    cutLabel(), clearLetterbox(), cutEnd(),
+    { kind: "recoverAll" } as unknown as Command,
+    setSw(FS2_SW_STOP_B13),
+    { kind: "triggerEnding", endingId: FS2_ENDING_CLOSED_SKY } as unknown as Command,
+  ];
+
+  const ending: Command[] = [
+    cutBegin(), letterbox(),
+    bgm(IRIS_BGM, 2500),
+    narrate("거센 재가 천천히 가라앉는다.\n렌즈의 붉은 글자가 하나씩 희미해진다."),
+    at("ev_fs2_top_hanel", TOP.hanelLens), at("ev_fs2_top_bram", TOP.bramLens), at("ev_fs2_top_valen", TOP.valenLens),
+    face("ev_fs2_top_valen", "left"), face("ev_fs2_top_hanel", "up"), face("ev_fs2_top_bram", "up"),
+    player(walk(["up", "up"])), player([{ kind: "turn", dir: "up" }]),
+    camTo("ev_fs2_top_valen", 1400, 2, 16),
+    say(IRIS, "거부 신호가 아직 반쯤 남아 있어요.\n지우지는 못해요… 덮어쓰거나, 끝까지 밀어 넣을 수밖에 없어요."),
+    {
+      kind: "choices",
+      prompt: "렌즈 앞에서 마지막 결정을 내리자.",
+      options: [
+        { text: "대답을 덮어쓴다 — 「잘 지내, 오늘도」", branch: answerRoute },
+        { text: "거부 신호를 마저 보낸다 — 하늘을 닫는다", branch: closeSkyRoute },
+      ],
+    } as unknown as Command,
   ];
   addEv(project, FS2_TOP, "ev_fs2_top_collector", "재의 회수자", { x: 0, y: 1 }, [
     page("ev_fs2_top_collector_idle", "대기", [], [], { priority: "below" }),
@@ -377,8 +491,8 @@ function summitScenes(project: Project): void {
   addEv(project, FS2_TOP, "ev_fs2_top_arrive", "하늘탑 꼭대기", { x: 0, y: 1 }, [
     page("ev_fs2_top_arrive_p", "도착", [], [
       bgm(TOWER_BGM, 1200), wait(400),
-      say(SARAH, "위에서 붉은 빛이 새어 나와.\n발렌 님이다."),
-      say(IRIS, "렌즈가 뭔가 보내고 있어요.\n…나쁜 말이에요."),
+      say(SARAH, "위에서 붉은 빛이 새어 나와.\n발렌 님이야."),
+      say(IRIS, "렌즈가 뭔가를 쏘고 있어요.\n…차갑고, 무서운 말이에요."),
       setSw(SW_TOP_ARRIVE),
     ], { trigger: { kind: "auto" }, priority: "below" }),
     page("ev_fs2_top_arrive_done", "끝", [sw(SW_TOP_ARRIVE)], [], { priority: "below" }),
@@ -388,7 +502,7 @@ function summitScenes(project: Project): void {
 export function applyFallenAct2Summit(project: Project, exec: Exec): void {
   summitData(project, exec);
   lensRoom(project, exec);
-  summitScenes(project);
+  summitScenes(project, exec);
   // 밸런스는 simulate_battle 로 쟀다(빌드마다 돌리지 않는다 — 브라우저에서 데모를 지을 때 느려진다):
   //   2026-10-31 완화(HP 5200→4900, 회수 132→118, 끊김 피해 650→520, 흩뿌리기 46→42) — scripts/qa/runtime/fs2-boss-sim.mts, Lv14 넷, 회복약 6, n=60:
   //   기술 쓰는 판 발렌 없이 85%·행동 46 / 발렌 손님 98%·행동 38. 「공격」만 누르는 판은 여전히 0% — 회수(힘 모으기)를 얼음·큰 기술로 끊어야 이긴다.
