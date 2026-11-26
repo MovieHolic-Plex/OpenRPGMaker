@@ -152,10 +152,12 @@ describe("깔기 요청의 도구 층 — 거절이 다음 길을 막지 않는�
     expect(made.ok, made.body.slice(0, 600)).toBe(true);
     const mapId = t.ctx.project.startMapId;
     const same = { name: "", size: "medium", floors: 1, features: ["plaza", "market stalls"] };
-    const refused = await t.call("edit_place", { patch: { mapId, set: same, addAnchors: [{ zone: "광장", what: "시장 노점", near: { x: 21, y: 25 } }], variant: 0, dressing: 0 } });
-    expect(refused.ok).toBe(false);
-    expect(refused.body).toContain(`draw_object({"object":{"what":"시장 노점","mapId":"${mapId}","at":{"x":21,"y":25}}})`);
-    expect(refused.body).not.toContain("[Next call]");
+    // 물건 하나만 더하는 고침은 다시 깔지 않고 선 맵에 그 이름의 칩셋 물건을 놓는다(#4766 «거절은 게임이 깨질 때만»).
+    // 버들항 칩셋에 노점이 생긴 뒤로 «시장 노점» 은 거절이 아니라 그 자리 곁에 놓인다 — 놓인 칸을 결과에 적는다.
+    const added = await t.call("edit_place", { patch: { mapId, set: same, addAnchors: [{ zone: "광장", what: "시장 노점", near: { x: 21, y: 25 } }], variant: 0, dressing: 0 } });
+    expect(added.ok, added.body.slice(0, 600)).toBe(true);
+    expect(added.body).toMatch(/Placed on the standing map[^»]*«시장 노점» → [^(]+ at \(\d+,\d+\)/u);
+    expect(added.body).not.toContain("[Next call]");
     // draw_object 는 이름이 맞는 칩셋 물건이 있으면 그것을 놓는 place_object 를 실제 id·칸으로 이른다.
     const drawn = await t.call("draw_object", { object: { what: "시장 노점", mapId, at: { x: 21, y: 25 } } });
     const next = /Next call: place_object\((\{.*?\})\) —/u.exec(drawn.body.replace(/\\"/gu, '"'))?.[1];

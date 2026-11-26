@@ -22,7 +22,9 @@ const COND = "Page condition. kind=switch → switchId + value(boolean). kind=va
 
 export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   // ── up front ──────────────────────────────────────────────────────────────
-  get_event: { d: "Read one event in full (position, graphic, pages, commands). Read it before changing it." },
+  // commandHashTarget 은 작은 일 실행기(Pi small-task)의 줄 해시 읽기다 — v2 는 includeCommandHashes 로 충분하고, 이 하위 스키마가 작은 일 도구 글자 상한을 먹어
+  // 「돌아다니는 적」 요청에서 place_field_enemy 가 밀려났다(#4833 뒤 aiV2PromptBudget).
+  get_event: { d: "Read one event in full (position, graphic, pages, commands). Read it before changing it.", hide: ["commandHashTarget"] },
   find_events: { d: "Search events by name, id, dialogue text, command kind or switch reference. Returns ids, page counts and condition kinds." },
   get_database_records: {
     d: "Read database records ({position,id,name}; include:'full' = all fields). Pick by ids or query (name/id part, or «#3» = list number 3). Page on with offset:nextOffset. collection also takes system (settings) and terms (battle words, currency).",
