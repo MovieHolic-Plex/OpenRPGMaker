@@ -147,9 +147,21 @@ jobs:
       matrix:
         shard: [1, 2]
     steps:
+      # 그림·소리(png 1.09GB·mp3·ogg·wav·gif, 트리 2.25GB 의 절반)는 받지 않는다 (2026-11-26 dev-bottlenecks-r2).
+      # parity 는 src 의 코드와 JSON 만 import 한다(src 에 png·소리 import 0, glob 0). png 는 압축이 안 돼 받는 바이트의 대부분이다.
+      # 1회차 #5150 은 json 위주 폴더(압축 잘 됨)를 빼서 차이가 없었다.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !*.png
+            !*.gif
+            !*.mp3
+            !*.ogg
+            !*.wav
 
       - uses: ./.github/actions/linux-ci
 
