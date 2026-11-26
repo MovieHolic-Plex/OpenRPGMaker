@@ -29,6 +29,8 @@ import { addPiAgentUsage, changedProjectKeys, PI_MAP_LOSS_DECLINED_PREFIX, resto
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { firstMvpRoute } from "../../src/ai/piAgent/firstMvpRoute.ts";
 import { applyDraftCast } from "../../src/ai/v2/story/draftCast.ts";
+import { gameVariation } from "../../src/ai/v2/request/world.ts";
+import { variationStructureProblems } from "../../src/ai/v2/judge/variationChecks.ts";
 import { checkTeamMvp, FIRST_MVP_BUILDER_TOOLS, FIRST_MVP_MEMBER_TURNS, FIRST_MVP_PREBUILT_TOOLS, mvpBuilderProblems } from "../../src/ai/piAgent/teamMvp.ts";
 import { isWorldSkeletonMap, prebuildMvpWorld, type PrebuildNodeHint } from "../../src/ai/piAgent/teamMvpPrebuild.ts";
 import { MVP_PLACES } from "../../src/ai/v2/judge/blueprintScale.ts";
@@ -224,6 +226,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   // 엄격한 맵 범위(mapIds + scopeStrict)는 프로젝트 전체를 쓰지 않는다 — 프로젝트 작업 배정 거절과 같은 경계라 build_world 도 주지 않는다.
   const firstMvpTeam = !goalCampaign && !coreFirst && !isGenrePresetBriefRequest(request.task) && !request.readOnly && !options.readOnlyTools
     && !(request.scopeStrict !== false && request.mapIds.length > 0) && firstMvpRoute(base, request.task).firstMvp;
+  // 변주 카드 구조 축이 이름 댄 도구(decks.ts AxisOption.tools — 추격·시간대·파티 분할…)는 맵 담당 목록에도 싣는다. 목록 밖 도구는 call_tool 로도 못 부르니
+  // 카드가 «make_chase_scene 로 지어라» 라고 해도 짓지 못했다(2026-11-26 variant-remeasure: 첫 MVP 가 팀으로 바뀐 뒤 호러 after3).
+  const structureTools = firstMvpTeam ? [...(gameVariation(base, request.projectKey ? String(request.projectKey) : undefined, request.task, { v1: true, preset: true }).variation?.structure?.tools ?? [])] : [];
   let firstPlay: FirstPlayReceipt | undefined;
   let reviewedFirstPlay: string | undefined;
   let reviewedFirstScene: string | undefined;
@@ -243,7 +248,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   /** 런타임이 생성기로 미리 지은 세계 장소 맵(teamMvpPrebuild.ts) — 그 담당은 생성기 없이 사람·이벤트만 놓는다. */
   const prebuilt = new Set<string>();
   /** finish 의 첫 MVP 관문이 맵에 묶인 문제를 그 맵 담당에게 바로 맡겼는지(한 번뿐). */
-  let mvpAutoFixed = false;
+  let mvpAutoFixes = 0;
   /** 첫 MVP 팀장이 finish 를 한 번이라도 불렀는지 — 그 전에는 이미 끝난 맵에 두 번째 배정(보강)을 받지 않는다. */
   let mvpFinishTried = false;
   // A review belongs to the inspected snapshot, not merely to a map id.
@@ -489,7 +494,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
           },
           { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider),
-            ...(firstMvpTeam ? { toolNames: [...(prebuilt.has(mapId) ? FIRST_MVP_PREBUILT_TOOLS : FIRST_MVP_BUILDER_TOOLS)] } : {}),
+            ...(firstMvpTeam ? { toolNames: [...(prebuilt.has(mapId) ? FIRST_MVP_PREBUILT_TOOLS : FIRST_MVP_BUILDER_TOOLS), ...structureTools] } : {}),
             ...(options.onCheckpoint ? { onCheckpoint: checkpointFor(mapId, snapshot, independent) } : {}) },
         );
         const { spills, conflicts } = mergeOutcome(agentId, mapId, snapshot, done, independent);
@@ -864,13 +869,17 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           // 맵 담당이 자기 맵을 생성기로 다시 지어 바뀐 도착 칸을 여기서 한 번 맞춘다 — 이음새를 LLM 수정 배정으로 왕복하지 않는다(src/project/world/transferRepair.ts).
           const seams = repairWorldTransfers(mvp);
           if (seams.length) emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `맵 사이 도착 칸 ${seams.length}곳을 맞췄습니다: ${seams.slice(0, 6).join(" / ")}` } });
-          const verdict = checkTeamMvp(mvp);
+          // 변주 카드의 구조 장치·층 순서도 첫 판 약속과 같이 센다(v2 단일의 끝맺음 관문과 같은 검사, judge/variationChecks.ts).
+          const checked = checkTeamMvp(mvp);
+          const shape = variationStructureProblems(base, mvp, request.task, request.projectKey ? String(request.projectKey) : undefined).map((finding) => finding.ko);
+          const verdict = shape.length ? { ...checked, problems: [...checked.problems, ...shape] } : checked;
           working = mvp;
           if (verdict.applied.length) emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: verdict.applied.join(" / ") } });
           // 맵에 묶인 문제(끝 지점 없음·못 닿는 장소)는 팀장에게 돌려보내지 않고 그 맵 담당에게 바로 맡긴 뒤 다시 본다(한 번) —
           // 거절 → 팀장 LLM 재배정 → wait → 다시 finish 왕복이 판마다 10분 넘게 걸렸다(2026-11-25 team-mvp-revive r8·r9).
-          if (verdict.problems.length && verdict.fixes.length && !mvpAutoFixed) {
-            mvpAutoFixed = true;
+          // 맵 담당 바로 고침은 두 번까지 — 첫 고침이 다른 칸을 막거나 새 길 문제를 드러내는 일이 잦다(2026-11-26 호러 팀 2/2 가 한 번 고친 뒤 거절 두 번으로 깨진 채 나갔다).
+          if (verdict.problems.length && verdict.fixes.length && mvpAutoFixes < 2) {
+            mvpAutoFixes += 1;
             emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `첫 MVP 관문: 맵 담당에게 바로 고침을 맡깁니다 — ${verdict.fixes.map((fix) => fix.mapId).join(", ")}` } });
             const launched: Promise<AgentOutcome>[] = [];
             for (const fix of verdict.fixes.filter((fix, index, all) => all.findIndex((other) => other.mapId === fix.mapId) === index)) {
@@ -1445,7 +1454,21 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   // 첫 MVP 팀도 v2 단일(finishTurn.ts)처럼 답 끝에 «첫 판까지» 안내와 «다음에 해 볼 것» 칩을 붙인다 — 없으면 팀장 보고가 «더 할까요?» 로 끝나
   // 사용자가 이어 할 말을 못 찾고, 작은 일 다섯째 묶음 판정도 «안내 없음» 으로 떨어졌다(2026-11-26 team-mvp-revive-r3 t3: 맵 3장·끝 지점 도달·첫 턴 4분).
   if (firstMvpTeam && finishAccepted && finished && !splitNextSteps(finished).steps.length) {
-    finished = `${finished}\n\n${MVP_DONE_LINE}\n\n${nextStepsBlock(mvpNextSteps(working))}`;
+    // 관문 고침을 다 써도 첫 판 약속(끝 지점까지 걸어감 등)이 남으면 «첫 판까지 만들었다» 고 넘기지 않는다 — 막지 않고 경고와 고치기 칩을 준다(오너 원칙).
+    // 2026-11-26 variant-remeasure: 호러 팀 2/2 가 끝 지점에 못 닿은 채 «첫 판까지 만들었습니다» 로 조용히 나갔다.
+    // 사용자에게 보이는 글이라 맵 id(map_blank_start)는 표시 이름으로 바꾼다 — «감옥(map_prison)» 처럼 이름 뒤 괄호 id 는 지운다(VM QA 묶음 8: 원시 id 노출).
+    const shown = (line: string): string => Object.values(working.maps).reduce((text, map) => map.name
+      ? text.split(`${map.name}(${map.id})`).join(map.name).split(map.id).join(map.name) : text, line);
+    // 조사는 앞말에 붙이고 받침에 맞춘다(«미술관 에서 감옥 으로» → «미술관에서 감옥으로», «시장으로»), 어려운 말 «(현재 스위치 상태로는)» 은 «지금은».
+    // 받침이 없거나 ㄹ 받침이면 «로», 나머지 받침은 «으로»(시장으로·감옥으로·학교로·출구로).
+    const toward = (word: string): string => { const code = word.charCodeAt(word.length - 1) - 0xac00; const jong = code >= 0 && code < 11172 ? code % 28 : 0; return jong === 0 || jong === 8 ? "로" : "으로"; };
+    const tidy = (text: string): string => text.replace(/\s*\(현재 스위치 상태로는\)\s*/gu, " 지금은 ")
+      .replace(/(\S+) 에서 /gu, "$1에서 ")
+      .replace(/(\S+) (?:으로|로)(?=\s|$)/gu, (_m, word: string) => `${word}${toward(word)}`);
+    const left = mvpLeft.map((line) => tidy(shown(line.replace(/\s+—\s+[^—]*$/u, "").replace(/^.*:\s*/u, ""))).replace(/\s+/gu, " ").trim().slice(0, 120));
+    finished = left.length
+      ? `${finished}\n\n주의: 첫 판이 아직 끝까지 이어지지 않습니다. 끝까지 못 가는 곳: ${left.join(" / ")}\n\n${nextStepsBlock([`끝까지 가는 길 고쳐 줘: ${left[0]}`, ...mvpNextSteps(working)])}`
+      : `${finished}\n\n${MVP_DONE_LINE}\n\n${nextStepsBlock(mvpNextSteps(working))}`;
     emit({ type: "team_report", text: finished });
     // 답 말풍선은 마지막 assistant/team_report 다 — 팀장이 finish 뒤에도 «못 한 것» 글을 더 내 안내가 묻혔다(t5 2026-11-26). 첫 판 보고를 마지막 답으로 둔다.
     emit({ type: "assistant", text: finished });
