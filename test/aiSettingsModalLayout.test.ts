@@ -242,6 +242,8 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
     fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
     seedChatGptConfig();
     const modal = await openModal();
+    const { refreshAiConnectionStatus } = await import("@/editor/panels/aiConnectionStatus");
+    await refreshAiConnectionStatus();
     await vi.waitFor(() => {
       expect(findByTestId(modal, "ai-oauth-status")?.textContent).toBe("로그인 필요");
     });
@@ -251,6 +253,9 @@ describe("AI 설정 모달 섹션 레이아웃", () => {
 
     fetchChatGptAuthStatus.mockResolvedValue({ connected: true, authKind: "oauth" });
     findByTestId(modal, "ai-settings-connection-check")?.click();
+    // 고정 시간(waitFor 기본 1초) 대신 단추가 건 조회가 끝나기를 기다린다 — 같은 열쇠의 조회에 합류해 그 끝을 받는다.
+    // CI 부하에서는 조회가 1초를 넘겨 «ChatGPT 확인 중…» 에서 끊겼다(run 45767234275, #5187).
+    await refreshAiConnectionStatus();
     await vi.waitFor(() => {
       // 「연결 확인」 뒤에는 확인 시각이 붙는다(C-67, 92a6aba61e) — 시각 문자열은 로케일·시계에 따라 달라 형식만 본다.
       expect(summary?.textContent).toMatch(/^ChatGPT · 사용 준비됨 · .+ 확인함$/u);
