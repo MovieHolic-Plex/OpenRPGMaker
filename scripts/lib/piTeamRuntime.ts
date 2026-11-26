@@ -29,6 +29,8 @@ import { addPiAgentUsage, changedProjectKeys, PI_MAP_LOSS_DECLINED_PREFIX, resto
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { firstMvpRoute } from "../../src/ai/piAgent/firstMvpRoute.ts";
 import { applyDraftCast } from "../../src/ai/v2/story/draftCast.ts";
+import { gameVariation } from "../../src/ai/v2/request/world.ts";
+import { variationStructureProblems } from "../../src/ai/v2/judge/variationChecks.ts";
 import { checkTeamMvp, FIRST_MVP_BUILDER_TOOLS, FIRST_MVP_MEMBER_TURNS, FIRST_MVP_PREBUILT_TOOLS, mvpBuilderProblems } from "../../src/ai/piAgent/teamMvp.ts";
 import { isWorldSkeletonMap, prebuildMvpWorld, type PrebuildNodeHint } from "../../src/ai/piAgent/teamMvpPrebuild.ts";
 import { MVP_PLACES } from "../../src/ai/v2/judge/blueprintScale.ts";
@@ -224,6 +226,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   // 엄격한 맵 범위(mapIds + scopeStrict)는 프로젝트 전체를 쓰지 않는다 — 프로젝트 작업 배정 거절과 같은 경계라 build_world 도 주지 않는다.
   const firstMvpTeam = !goalCampaign && !coreFirst && !isGenrePresetBriefRequest(request.task) && !request.readOnly && !options.readOnlyTools
     && !(request.scopeStrict !== false && request.mapIds.length > 0) && firstMvpRoute(base, request.task).firstMvp;
+  // 변주 카드 구조 축이 이름 댄 도구(decks.ts AxisOption.tools — 추격·시간대·파티 분할…)는 맵 담당 목록에도 싣는다. 목록 밖 도구는 call_tool 로도 못 부르니
+  // 카드가 «make_chase_scene 로 지어라» 라고 해도 짓지 못했다(2026-11-26 variant-remeasure: 첫 MVP 가 팀으로 바뀐 뒤 호러 after3).
+  const structureTools = firstMvpTeam ? [...(gameVariation(base, request.projectKey ? String(request.projectKey) : undefined, request.task, { v1: true, preset: true }).variation?.structure?.tools ?? [])] : [];
   let firstPlay: FirstPlayReceipt | undefined;
   let reviewedFirstPlay: string | undefined;
   let reviewedFirstScene: string | undefined;
@@ -489,7 +494,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
           },
           { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider),
-            ...(firstMvpTeam ? { toolNames: [...(prebuilt.has(mapId) ? FIRST_MVP_PREBUILT_TOOLS : FIRST_MVP_BUILDER_TOOLS)] } : {}),
+            ...(firstMvpTeam ? { toolNames: [...(prebuilt.has(mapId) ? FIRST_MVP_PREBUILT_TOOLS : FIRST_MVP_BUILDER_TOOLS), ...structureTools] } : {}),
             ...(options.onCheckpoint ? { onCheckpoint: checkpointFor(mapId, snapshot, independent) } : {}) },
         );
         const { spills, conflicts } = mergeOutcome(agentId, mapId, snapshot, done, independent);
@@ -864,7 +869,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           // 맵 담당이 자기 맵을 생성기로 다시 지어 바뀐 도착 칸을 여기서 한 번 맞춘다 — 이음새를 LLM 수정 배정으로 왕복하지 않는다(src/project/world/transferRepair.ts).
           const seams = repairWorldTransfers(mvp);
           if (seams.length) emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `맵 사이 도착 칸 ${seams.length}곳을 맞췄습니다: ${seams.slice(0, 6).join(" / ")}` } });
-          const verdict = checkTeamMvp(mvp);
+          // 변주 카드의 구조 장치·층 순서도 첫 판 약속과 같이 센다(v2 단일의 끝맺음 관문과 같은 검사, judge/variationChecks.ts).
+          const checked = checkTeamMvp(mvp);
+          const shape = variationStructureProblems(base, mvp, request.task, request.projectKey ? String(request.projectKey) : undefined).map((finding) => finding.ko);
+          const verdict = shape.length ? { ...checked, problems: [...checked.problems, ...shape] } : checked;
           working = mvp;
           if (verdict.applied.length) emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: verdict.applied.join(" / ") } });
           // 맵에 묶인 문제(끝 지점 없음·못 닿는 장소)는 팀장에게 돌려보내지 않고 그 맵 담당에게 바로 맡긴 뒤 다시 본다(한 번) —
