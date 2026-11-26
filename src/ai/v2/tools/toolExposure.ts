@@ -18,7 +18,7 @@ import type { PiAssistantV2Env } from "../shared/env";
 import { V2_TOOL_EN, type ToolTextEn } from "./toolTextEn";
 import { classifyRequest, describeIntent } from "../request/intent";
 import { PLACE_BUILD_VERBS } from "../prompt/placeSpecs";
-import { composedWorldFor } from "../request/world";
+import { composedWorldFor, gameVariation } from "../request/world";
 import { leanPromptFor } from "../request/readers";
 
 /**
@@ -260,7 +260,10 @@ export function exposeV2Tools(env: PiAssistantV2Env, allTools: readonly PiToolSh
   // 뒤로 돌린 v2 동사도 load_tools 설명의 앞쪽 목록(이름 — 한 줄 뜻)에 든다.
   const offeredSet = new Set([...intent.tools.extra, ...(placeLazy ? PLACE_BUILD_VERBS : []), ...(intent.wholeGame ? tools.filter((t) => !getTool(t.name) && later(t.name)).map((t) => t.name) : [])]);
   // 처음부터 = 이 요청 묶음에 들었고(offered) 기록에서 쓴 것(V2_UP_FRONT). 묶음 밖 도구(v2ToolPool 로만 들어온 것)는 늘 필요할 때.
-  const pinned = (name: string) => intent.wholeGame && (WHOLE_GAME_ALWAYS.has(name) || (repairTurn ? WHOLE_GAME_REPAIR.has(name) : WHOLE_GAME_FIRST_BUILD.has(name)));
+  // 변주 카드의 구조 축이 이름 댄 도구(decks.ts AxisOption.tools)도 짓는 턴에 처음부터 싣는다 — 카드가 «이 도구로 지어라» 라고 하는데 목록에 없으면 모델이 찾지 않는다
+  // (2026-11-26 variant-remeasure 호러: «낮과 밤 두 번» 판이 configure_time_system 을 한 번도 싣지 않았다).
+  const structureTools = new Set(intent.wholeGame && !repairTurn ? gameVariation(env.ctx.project, env.request.projectKey ? String(env.request.projectKey) : undefined, task).variation?.structure?.tools ?? [] : []);
+  const pinned = (name: string) => intent.wholeGame && (WHOLE_GAME_ALWAYS.has(name) || structureTools.has(name) || (repairTurn ? WHOLE_GAME_REPAIR.has(name) : WHOLE_GAME_FIRST_BUILD.has(name)));
   const isLazy = (t: PiToolShape) => small ? !small.has(t.name) : pinned(t.name) ? false : later(t.name) || (placeLazy && PLACE_BUILD_VERBS.has(t.name))
     || (lazyOn && !!getTool(t.name) && (!V2_UP_FRONT.has(t.name) || !offeredSet.has(t.name)));
   const seen: ShapeIndex = new Map();

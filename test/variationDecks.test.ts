@@ -1,6 +1,10 @@
 // 장르 변주 데크·뽑기·카드 — 짓는 길이 실제 코드의 표에 있는지, 같은 씨앗은 같은 결과인지, 사용자 말이 이기는지, 카드가 600자 안인지.
 // 지시문 글(문장)은 못박지 않는다 — 기계가 읽는 값(길 낱말·개수·순서·길이)만 본다.
 import { describe, expect, it } from "vitest";
+import { getTool } from "@/editor/tools/toolRegistry";
+import { createV2Tools } from "@/ai/v2/tools/verbs";
+import { V2Session } from "@/ai/v2/turn/session";
+import { createBlankProject } from "@/project/defaults";
 import { DECKS, type PlaceCandidate } from "@/ai/variation/decks";
 import { deckFor, hash32, pickVariation } from "@/ai/variation/pick";
 import { VARIATION_CARD_MAX, VARIATION_MARK, buildPath, variationCard } from "@/ai/variation/card";
@@ -191,5 +195,17 @@ describe("variationCard", () => {
     const v = pickVariation({ text: "비 오는 날 유품 편지를 따라 갈림길 선택으로 가는 회상 게임", key: keyOf(1), allowedWorlds: ALL_WORLDS, worldFixed: true })!;
     expect([...v.skipped].sort()).toEqual(["event", "mood", "places", "structure"]);
     expect(variationCard(v, { lang: "en" })).toBeUndefined();
+  });
+});
+
+describe("structure tools", () => {
+  // 카드가 이름 대는 도구(AxisOption.tools)가 실제로 부를 수 있는 도구다 — 편집기 레지스트리 또는 v2 동사.
+  it("every tool a structure names exists", () => {
+    const p = createBlankProject();
+    const env = { ctx: { project: p, currentMapId: p.startMapId, assistantRun: true }, request: { task: "", provider: "local-cli:claude", mapIds: [], project: p }, emit() {}, record() {}, sideChat: async () => "{}", render: async () => "", checkpoint: async () => {} } as never;
+    const verbs = new Set(createV2Tools(env, new V2Session()).map((t) => t.name));
+    const named = DECKS.flatMap((d) => [...d.structures, ...d.events].flatMap((o) => o.tools ?? []));
+    expect(named.length).toBeGreaterThan(5);
+    for (const name of named) expect(!!getTool(name) || verbs.has(name), name).toBe(true);
   });
 });
