@@ -1,3 +1,4 @@
+import { interruptedPiRequest, PI_RUN_IN_FLIGHT } from "./aiPiRunInterrupted";
 import type { ActivityVisual } from "@/ai/activityVisual";
 import { conversationScroll, followConversationLog } from "./aiConversationScroll";
 import { startAiCanvasProgress, type AiCanvasProgress } from "@/editor/aiCanvasProgress";
@@ -1246,7 +1247,20 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshExportButton();
     syncConversationState();
     if (source === "manual") appendBubble("system", "이전 대화를 열었습니다.");
-    void panelPendingWork.track(loadConversationCheckpoint());
+    const interrupted = interruptedPiRequest(record.entries);
+    if (interrupted !== null) {
+      // 앱이 실행 도중 꺼졌다. 부팅 때 저절로 다시 보내지 않는다(아래 restoreLatestForBoot 주석) — 사용자가 고른다.
+      clearRecovery();
+      const notice = el("div", { class: "ai-retry-row", dataset: { testid: "ai-run-recovery", state: "interrupted" },
+        children: [el("span", { text: "앱이 꺼져 이 실행이 중단됐습니다. 이미 적용된 단계는 프로젝트에 남아 있습니다." })] });
+      notice.append(el("button", { text: "다시 보내기", attrs: { type: "button" }, dataset: { testid: "ai-run-resend" },
+        on: { click: () => { clearRecovery(); input.value = interrupted; input.dispatchEvent(new Event("input")); void send(); } } }));
+      recoveryNotice = notice;
+      log.append(notice);
+      followConversationLog(log);
+    } else {
+      void panelPendingWork.track(loadConversationCheckpoint());
+    }
     refreshContextMeter();
   };
 
@@ -2302,6 +2316,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     pendingReviewPrompt = null;
     workCardTitle = (displayText || command.task).replace(/\s+/gu, " ").trim().slice(0, 48);
     if (displayText && !opts?.echoed) appendBubble("user", displayText);
+    // 앱이 실행 도중 꺼지면(강제 종료·충돌) 이 대화는 저장되지 않아 다시 켰을 때 요청까지 사라졌다(#5188-4, 데스크톱 빌드 실측).
+    // 시작할 때 요청과 «실행 중» 표지를 먼저 남긴다 — 정상으로 끝나면 아래 finally 가 표지 없는 기록으로 덮는다.
+    const turnConversation0 = conversationId, turnScope0 = conversationScope;
+    const turnUserEntry: AuditEntry = { kind: "user", text: displayText || command.task, at: new Date().toISOString() };
+    const settledTurnEntries = (): AuditEntry[] => {
+      const entries = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])];
+      return entries.some((entry) => entry.kind === "user" && entry.text === turnUserEntry.text) ? entries : [...entries, turnUserEntry];
+    };
+    persistConversation({ id: turnConversation0, scope: turnScope0, entries: [...settledTurnEntries(), { kind: "status", text: PI_RUN_IN_FLIGHT, at: turnUserEntry.at }] });
     if (opts?.questionPromoted) appendBubble("system", "프로젝트를 바꾸지 않고 확인해서 답할게요.");
     const progress = canvasProgress ?? startAiCanvasProgress(displayText || command.task);
     canvasProgress = progress;
@@ -2435,6 +2458,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       runSurface.turnBusy = false;
       refreshAbortButton();
       syncGlassIdle();
+      // 실행이 끝났다(성공·실패·중지 모두) — «실행 중» 표지 없는 기록으로 덮는다.
+      persistConversation({ id: turnConversation0, scope: turnScope0, entries: settledTurnEntries() });
     }
     if (tilesetQuestion && !disposed && turnConversation === conversationId) showTilesetChangeCard(tilesetQuestion);
     if (storeCards.length && !disposed && turnConversation === conversationId) showStoreCards(storeCards);
