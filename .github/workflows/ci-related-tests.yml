@@ -17,7 +17,7 @@ name: ci-related-tests
 #   고르는 규칙·시간 상한·안전망은 scripts/vitest-related.mjs 머리말에 있다. 시간 상한(예상 벽시계 380초 — 파일당 고정 비용·시작 비용 포함, mdc2 실측)을 넘는 만큼은 «nightly 로 미룸 n개» 로
 #   요약에 찍고 돌리지 않는다 — 미룬 파일은 ci-full(밤 1회·릴리스 전)이 본다. 안전망 파일(package.json·vitest 설정·ci-*.yml …)이 바뀌어도 전체로 넓히지 않는다.
 #
-# vitest 는 시간 상자(450초)에 걸려 있다 — 넘으면 끊고 «끝까지 본 만큼» 만 `RESULT: INCOMPLETE` 로 보고한다(새 실패가 보일 때만 빨강). 잡 전체가 10분을 넘지 않게 하는 마지막 보루다.
+# vitest 는 시간 상자(450초)에 걸려 있다 — 넘으면 끊고 «끝까지 본 만큼» 을 `RESULT: INCOMPLETE` 로 보고하고 **빨강**으로 끝난다(돌리지 못한 파일 목록을 남긴다, 2026-11-26).
 #
 # 이 체크는 **정보용**이다 (필수 체크 아님 — scripts/merge-pr.mjs 는 `fast`·`fast-static`·`fast-parity` 만 기다린다). 판정은 ci-vitest-files 와 같은 기준선 대조다:
 #   vitest 가 실패해도 떨어진 파일이 모두 .omo/gates-baseline.json 의 tests.failedFiles(main 에서 이미 빨간 파일)이면 초록이다.
@@ -187,7 +187,7 @@ jobs:
               line="RESULT: PASS ${total} files" ;;
             failure)
               if [ -n "$incomplete" ]; then
-                line="RESULT: INCOMPLETE ${total} files (시간 상자 ${VITEST_TIMEBOX_SECONDS}초에 끊겼다, 조각 ${CHUNK} — 결과가 보인 파일 ${seen}개, 나머지는 nightly 가 본다)"
+                line="RESULT: INCOMPLETE ${total} files (시간 상자 ${VITEST_TIMEBOX_SECONDS}초에 끊겼다, 조각 ${CHUNK} — 결과가 보인 파일 ${seen}개)"
               else
               failed=$(sed 's/\x1b\[[0-9;]*m//g' "$RUNNER_TEMP/vitest.log" 2>/dev/null \
                 | grep -oE 'FAIL +[^ >]+\.(test|spec)\.[cm]?[jt]sx?' | awk '{print $2}' | sort -u || true)
@@ -212,11 +212,17 @@ jobs:
           echo "$more"
           note=$({ printf '%s\n' "$verdict"; printf '%s\n' "$more" | head -n 3; } | paste -sd'|' - | sed 's/|/ · /g')
           # 통과: vitest 가 성공했거나, 실패한 파일이 전부 기준선에 있다(VERDICT: CLEAN). 그 밖(NEW-FAIL · UNKNOWN · 설정 실패)은 빨강.
-          # 끊긴 실행(INCOMPLETE)은 새로 떨어진 파일이 보일 때만 빨강이다 — 안 끝난 것은 선택기 상한을 보정할 일이지 PR 의 잘못이 아니다.
+          # 끊긴 실행(INCOMPLETE)은 빨강이다(2026-11-26 리드): 돌리지 못한 시험은 «통과» 가 아니다. 예전에는 새 실패가 안 보이면 경고만 남기고
+          # 초록이라, 시간 상자 뒤의 파일이 깨져도 PR 이 초록으로 머지됐다(ci-full 45844823105). 돌리지 못한 파일 목록을 남긴다.
+          if [ -n "$incomplete" ]; then
+            seen_list=$(sed 's/\x1b\[[0-9;]*m//g' "$RUNNER_TEMP/vitest.log" | grep -oE '^ *(✓|×) +test/[^ ]+\.test\.ts' | awk '{print $2}' | sort -u || true)
+            unrun=$(printf '%s\n' "${files[@]}" | sort -u | comm -23 - <(printf '%s\n' "$seen_list" | grep . || true) | paste -sd, - | sed 's/,/, /g')
+            printf '돌리지 못한 파일: %s\n' "${unrun:-(알 수 없음)}" | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "::error title=ci-related-tests::${line} · 돌리지 못한 파일이 있다 — 시간 상자 ${VITEST_TIMEBOX_SECONDS}초 · ${note}"
+            exit 1
+          fi
           if [ "$OUTCOME" = "success" ] || { [ "$OUTCOME" = "failure" ] && [ "$verdict" = "VERDICT: CLEAN" ]; }; then
             echo "::notice title=ci-related-tests::${line} · ${note}"
-          elif [ -n "$incomplete" ] && [ "${verdict#VERDICT: NEW-FAIL}" = "$verdict" ]; then
-            echo "::warning title=ci-related-tests::${line} · ${note}"
           else
             echo "::error title=ci-related-tests::${line} · ${note}"
             exit 1
