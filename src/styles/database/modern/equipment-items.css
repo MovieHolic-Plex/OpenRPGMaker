@@ -528,3 +528,22 @@
   outline: 2px solid var(--db-studio-accent);
   outline-offset: -2px;
 }
+
+/* 좁은 창(980px 이하)에서는 목록 위·편집 아래로 쌓고 작업면 전체가 스크롤한다. 넓은 창의 한 줄(minmax(0,1fr)) 격자가
+   남아 390 에서 목록 줄이 0px 로 접히고 편집 패널이 그 위를 덮었다(vm-qa15 #14·#23: 장비 탭·목록 이름이 가려짐).
+   목록 위 조작(검색·분류·추가)만 280px 라 비율로 나누면 행이 0줄이 되므로, 목록 행만 높이를 정해 그 안에서 스크롤한다. */
+@media (max-width: 980px) {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-inventory-catalog {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden auto;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-inventory-catalog > .db-ws-list-pane,
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-inventory-catalog > .db-detail-pane {
+    flex: 0 0 auto;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-inventory-catalog .db-catalog-rows {
+    flex: 0 0 auto;
+    max-height: 240px;
+  }
+}
