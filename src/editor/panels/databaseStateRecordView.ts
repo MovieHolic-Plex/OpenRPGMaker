@@ -184,7 +184,7 @@ let stateAdvancedOpen = false;
 
 function advancedToggle(panels: readonly HTMLElement[]): { readonly button: HTMLElement; readonly paint: () => void } {
   const button = el("button", {
-    class: "btn small db-state-advanced-toggle",
+    class: "btn small",
     attrs: { type: "button" },
     dataset: { testid: "db-state-advanced-toggle" },
   }) as HTMLButtonElement;
