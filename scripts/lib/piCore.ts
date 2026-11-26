@@ -90,6 +90,8 @@ function forceToolChoice(payload: unknown, api: string | undefined, choice: Forc
   const named = choice === "required" ? undefined : choice.name;
   switch (api) {
     case "anthropic-messages":
+      // 원조 pi 는 thinkingLevel 을 안 줘도 Sonnet 5.5 에 adaptive thinking 을 켠다. 이름 강제와 같이 보내면 400 이다(2026-11-26 실측).
+      if (body.thinking && (body.thinking as { type?: string }).type !== "disabled") return undefined;
       body.tool_choice = named ? { type: "tool", name: named } : { type: "any" };
       return body;
     case "openai-completions":
