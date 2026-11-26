@@ -142,7 +142,8 @@ test.describe("QA editor honesty", () => {
     await expect(page.getByTestId("ai-settings-modal")).toBeVisible({ timeout: 20_000 });
     await page.getByTestId("ai-settings-close").click();
 
-    await page.getByTestId("topbar-assistant").click();
+    // 열린 조수 위에서는 상단 「조수」 가 걷힌다(버튼 줄이기 2회차) — 접혀 있을 때만 연다.
+    if (await page.getByTestId("ai-panel").evaluate((n) => n.classList.contains("is-collapsed")).catch(() => false)) await page.getByTestId("topbar-assistant").click();
     await page.getByTestId("ai-command-menu-toggle").click();
     const meter = page.getByTestId("ai-context-meter");
     await expect(meter).toBeVisible({ timeout: 15_000 });

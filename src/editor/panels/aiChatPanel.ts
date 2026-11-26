@@ -3859,10 +3859,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   // 작업 목록 입구 — 열린 도크 위쪽(rail.actions)과 접힌 레일(collapsedRestore 옆). 둘 다 상태 줄의 「작업 N개」 와 같은 목록을 연다.
   const dockJobEntry = createJobEntry("dock");
   const railJobEntry = createJobEntry("rail");
-  rail.actions.append(dockJobEntry.button, peek.headerButton, composerShell.newChatButton, composerShell.menuToggle, collapseButton);
+  // 버튼 줄이기 2회차: 「새 대화」·모델 칩은 ⋯ 메뉴 안으로(아래 secondaryActions). 레일 머리는 ⋯ 와 접기만 남는다.
+  rail.actions.append(dockJobEntry.button, peek.headerButton, composerShell.menuToggle, collapseButton);
   peek.headerButton.addEventListener("click", () => suggestions.refresh());
   const secondaryActions = el("div", { class: "ai-chat-secondary-actions" });
   for (const [button, label] of [
+    [composerShell.newChatButton, "새 대화"],
     [composerShell.conversationsButton, "이전 대화"],
     [composerShell.preferenceToggle, "AI가 기억한 취향"],
     [composerShell.planningToggle, "저장한 기획"],
@@ -3872,10 +3874,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     secondaryActions.append(button);
   }
   secondaryActions.append(contextMeter.button);
+  // 메뉴 안에서 새 대화를 시작하면 메뉴를 닫는다 — 빈 대화 위에 메뉴가 남아 입력칸을 가리지 않게.
+  composerShell.newChatButton.addEventListener("click", () => { if (composerPopoverKind() === "menu") openComposerPopover(null); });
   // 상태 문장은 레일이 든다 — 컴포저 행의 상태 그룹은 멈추기 버튼 자리만 남는다.
   rail.statusSlot.append(status);
   const quotaChip = renderAiQuotaChip(() => openAiSettings("first"));
-  rail.statusSlot.before(quotaChip.element);
+  // 모델·연결 칩은 ⋯ 메뉴 안의 한 줄이다(버튼 줄이기 2회차) — 레일에는 상태 문장만 남는다. 연결이 없을 때는 잠금 막의 「AI 연결하기」가 같은 창을 연다.
+  secondaryActions.append(quotaChip.element);
   // ⋯ 메뉴·성향·맥락 팝오버는 토글이 있는 레일 아래 오른쪽에 붙는다 — 열림/닫힘 기계는 컴포저 것 그대로.
   // 컴포저 위로 띄우면 기록과 레일을 덮어 토글 자신이 가려진다(실측 2026-09-03).
   rail.root.append(commandMenu, composerShell.preferencePopover, composerShell.planningPopover, contextMeter.popover);
@@ -4141,6 +4146,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 대화 카드가 화면에 있는지 — 지도 위·아래 진행 표시가 대화 카드와 같은 말을 되풀이하지 않게 CSS·상태 줄이 읽는다.
     // 알림(아래 dispatch)을 받는 쪽이 읽으므로 클래스를 먼저 맞춘다.
     if (typeof document !== "undefined" && document.body) document.body.classList.toggle("ai-dock-collapsed", collapsed);
+    // 열린 조수 — 셸·맵 표면이 읽는 공용 상태 클래스(버튼 줄이기 2회차: 열린 동안 상단 「조수」·알약 「조수에게 맡기기」 를 걷는다).
+    if (typeof document !== "undefined" && document.body) document.body.classList.toggle("has-assistant-open", !collapsed);
     panel.dispatchEvent(new Event("oprn:ai-panel-collapse", { bubbles: true }));
     if (typeof document !== "undefined" && document.body) document.body.classList.add("ai-command-bar-active");
     applySize(); // 접힘 상태에서는 커스텀 크기를 해제한다.
@@ -4758,7 +4765,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (typeof document !== "undefined") {
       document.removeEventListener("pointerdown", onMoreMenuPointerDown);
       document.removeEventListener("keydown", onMoreMenuKeyDown);
-      document.body?.classList.remove("ai-command-bar-active", "ai-panel-docked", "ai-studio-open", "ai-dock-collapsed");
+      document.body?.classList.remove("ai-command-bar-active", "ai-panel-docked", "ai-studio-open", "ai-dock-collapsed", "has-assistant-open");
     }
 
     cleanupAiAssistBridge?.();
