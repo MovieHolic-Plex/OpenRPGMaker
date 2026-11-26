@@ -1,0 +1,340 @@
+{
+ "set": "esc-hub-desktop",
+ "note": "ESC 허브 메뉴(시안 B 변형 8) 실제 플레이어 캡처. 픽스처는 esc-hub-fixture.mjs.",
+ "projectFixture": ".omo/esc-hub/fixture.json",
+ "query": {
+  "e2eVitals": "1"
+ },
+ "viewport": {
+  "width": 1440,
+  "height": 900
+ },
+ "checkpoints": [
+  {
+   "id": "menu-tour",
+   "label": "천문대 — ESC 허브 메뉴 한 바퀴",
+   "mapId": "fs_observatory",
+   "x": 15,
+   "y": 21,
+   "facing": "up",
+   "switches": {
+    "sw_fs_valen_marched": true,
+    "sw_fs_main_started": true
+   },
+   "party": [
+    {
+     "actorId": "actor_hero",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_elena",
+     "level": 8
+    },
+    {
+     "actorId": "actor_fs_iris",
+     "level": 8
+    }
+   ],
+   "items": {
+    "item_potion": 4,
+    "item_ether": 2,
+    "item_antidote": 2,
+    "item_phoenix_down": 1,
+    "item_fs_star_scent": 1,
+    "item_fs_tonic": 5,
+    "item_fs_fire_flask": 2,
+    "item_fs_water_flask": 3,
+    "item_fs_smoke_pellet": 4,
+    "item_fs_wolf_fang": 7,
+    "item_fs_wolf_hide": 3,
+    "item_fs_spider_silk": 2,
+    "item_fs_stariron_shard": 2,
+    "item_fs_star_key": 1,
+    "equip_fs_sword_gale": 1,
+    "equip_fs_spear_pike": 1,
+    "equip_fs_sword_star": 1
+   },
+   "gold": 1240,
+   "beats": [
+    {
+     "id": "field",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      },
+      {
+       "kind": "setVitals",
+       "hp": 312,
+       "actorIds": [
+        "actor_hero"
+       ]
+      },
+      {
+       "kind": "setVitals",
+       "mp": 19,
+       "actorIds": [
+        "actor_fs_elena"
+       ]
+      },
+      {
+       "kind": "setVitals",
+       "hp": 158,
+       "actorIds": [
+        "actor_fs_iris"
+       ]
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "hub",
+     "note": "첫 화면 — 동료 카드·네 칸·시스템 줄",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Escape",
+       "times": 1
+      },
+      {
+       "kind": "waitFor",
+       "testid": "hub-tile-items"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "items",
+     "note": "1 → 아이템, 첫 칸 상세(설명 전문)",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter",
+       "times": 1
+      },
+      {
+       "kind": "waitFor",
+       "testid": "hub-item-description"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "items-target",
+     "note": "Enter → 누구에게(효과 있는 동료 초록, HP 늘어날 몫)",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter",
+       "times": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "items-used",
+     "note": "Enter → 카엘에게 회복약",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter",
+       "times": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 900
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "items-battle",
+     "note": "목록으로 · 전투용 아이템 상세",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Escape",
+       "times": 1
+      },
+      {
+       "kind": "key",
+       "key": "ArrowRight",
+       "times": 5
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "equip",
+     "note": "Esc → 허브, 3 → 장비, Enter → 후보 수치 비교",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Escape",
+       "times": 1
+      },
+      {
+       "kind": "key",
+       "key": "3",
+       "times": 1
+      },
+      {
+       "kind": "waitFor",
+       "testid": "hub-slot-weapon"
+      },
+      {
+       "kind": "key",
+       "key": "Enter",
+       "times": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "key",
+       "key": "ArrowRight",
+       "times": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "skills",
+     "note": "스킬(엘레나, Q/E)",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Escape",
+       "times": 1
+      },
+      {
+       "kind": "key",
+       "key": "Escape",
+       "times": 1
+      },
+      {
+       "kind": "key",
+       "key": "2",
+       "times": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "key",
+       "key": "e",
+       "times": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "status",
+     "note": "상태",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Escape",
+       "times": 1
+      },
+      {
+       "kind": "key",
+       "key": "4",
+       "times": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "system",
+     "note": "저장 단추 → 같은 틀의 저장 목록",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Escape",
+       "times": 1
+      },
+      {
+       "kind": "click",
+       "testid": "hub-sys-save"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "closed",
+     "note": "Esc 두 번 → 필드",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Escape",
+       "times": 1
+      },
+      {
+       "kind": "key",
+       "key": "Escape",
+       "times": 1
+      },
+      {
+       "kind": "waitFor",
+       "testid": "main-menu",
+       "state": "absent"
+      }
+     ],
+     "expect": {
+      "testidAbsent": [
+       "main-menu"
+      ]
+     },
+     "shot": true
+    }
+   ]
+  }
+ ]
+}
