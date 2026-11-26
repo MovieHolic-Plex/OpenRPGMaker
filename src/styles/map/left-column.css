@@ -111,3 +111,8 @@
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-card-window,
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-card-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
 .editor-layout .left-panel-stack[data-testid="left-palette-root"] .palette-smart-tabs { background: transparent; padding: 0 6px; }
+
+/* 폰 폭: 펼친 왼쪽 열(aside)이 캔버스 위에 덮도록 기준 상자를 만든다 — 덮는 규칙은 18-assistant-deck.css(vm-qa15 묶음 1). */
+@media (max-width: 699px) {
+  .editor-layout:has(> aside:not(.is-collapsed)) { position: relative; }
+}
