@@ -34,11 +34,44 @@ export const FIRST_MVP_BUILDER_TOOLS = [
   "place_npc", "list_npc_graphics", "upsert_event", "declare_story_flag", "set_map_properties",
 ] as const;
 
+/**
+ * 런타임이 생성기로 이미 지은 장소 맵(teamMvpPrebuild.ts)의 담당 도구 — 생성기·지역 장소를 뺀다. 새 맵을 만들 도구가 없어 첫 판이 3~5장을 넘지 않는다
+ * (2026-11-25 r8: build_region_place 집이 실내 맵 둘을 더해 6장 · r9: mapId 없는 author_dungeon 이 같은 이름 맵을 둘 더해 7장).
+ */
+export const FIRST_MVP_PREBUILT_TOOLS = FIRST_MVP_BUILDER_TOOLS.filter((name) => name !== "author_beodeul_town" && name !== "author_dungeon" && name !== "build_region_place");
+
 export interface TeamMvpCheck {
   /** finish 가 고친 것(엔딩 호출 → 끝 지점 스위치, 엔딩 정의 걷기). */
   readonly applied: string[];
   /** 아직 첫 판 약속을 못 지킨 것 — 팀장에게 돌려줄 글. */
   readonly problems: string[];
+  /** 맵 하나에 묶인 문제 — 런타임이 팀장을 거치지 않고 그 맵 담당에게 바로 맡긴다. */
+  readonly fixes: { readonly mapId: string; readonly task: string }[];
+}
+
+function hasEndpointOn(map: Project["maps"][string]): boolean {
+  let found = false;
+  const visit = (value: unknown): void => {
+    if (found || !value || typeof value !== "object") return;
+    if (Array.isArray(value)) { for (const item of value) visit(item); return; }
+    const record = value as Record<string, unknown>;
+    if (record.kind === "setSwitch" && record.switchId === MVP_REACHED_SWITCH && record.value !== false) { found = true; return; }
+    for (const child of Object.values(record)) visit(child);
+  };
+  visit(map.events);
+  return found;
+}
+
+/**
+ * 맵 담당이 반납하기 전 자기 맵만 보는 첫 MVP 검사 — 걸리면 런타임이 같은 담당에게 바로 한 번 더 맡긴다(팀장 왕복 없음).
+ * 2026-11-25 r6·r8: 끝 지점 없이 반납 → finish 관문 거절 → 팀장이 다시 배정하는 데 10분 넘게 걸렸다.
+ */
+export function mvpBuilderProblems(project: Project, mapId: string, task: string, stillSkeleton: (map: Project["maps"][string]) => boolean): string | null {
+  const map = project.maps[mapId];
+  if (!map) return null;
+  if (stillSkeleton(map)) return `맵 '${map.name ?? mapId}'(${mapId})이 아직 비어 있다 — author_dungeon 또는 author_beodeul_town 에 mapId:"${mapId}" 를 주어 이 자리에 짓고, 사람·이벤트를 놓는다. 새 맵은 만들지 않는다.`;
+  if (task.includes(MVP_REACHED_SWITCH) && !hasEndpointOn(map)) return `끝 지점이 없다 — 맵 '${map.name ?? mapId}'(${mapId})의 핵심 경로 마지막 이벤트(보스 승리 뒤·목표 대화 끝)가 스위치 ${MVP_REACHED_SWITCH} 를 켜게 upsert_event 로 넣는다({kind:"setSwitch", switchId:"${MVP_REACHED_SWITCH}", value:true}). 그 이벤트는 시작 문에서 걸어 닿는 칸에 둔다.`;
+  return null;
 }
 
 const PLAY_BUDGET_MS = 90_000;
@@ -48,17 +81,23 @@ const TIMED_OUT = "자동 플레이 시간 상한 초과";
 export function checkTeamMvp(project: Project): TeamMvpCheck {
   const applied = endMvpAtLastStep(project);
   const problems: string[] = [];
+  const fixes: { mapId: string; task: string }[] = [];
   const res = countMaps(project);
   const maps = Object.keys(project.maps).length;
   const unreachable = res.uncounted.filter((m) => m.reason === "unreachable").map((m) => m.name);
   if (maps < MVP_PLACES.min || maps > MVP_PLACES.max) problems.push(`맵이 ${maps}장이다 — 첫 MVP 는 ${MVP_PLACES.min}~${MVP_PLACES.max}장(${maps > MVP_PLACES.max ? "남는 맵을 remove_map 으로 지우거나 합친다" : "목표 장소까지 맵을 더 짓고 문으로 잇는다"}).`);
+  for (const m of res.uncounted.filter((u) => u.reason === "unreachable")) if ((project.worldGraph?.nodes ?? []).some((node) => node.mapId === m.id)) fixes.push({ mapId: m.id, task: `이 맵은 시작 맵에서 걸어서 못 닿는다 — 세계 문(ev_world_gate*)이 내려설 수 있는 칸에 있고 그 문에서 이 맵의 이벤트까지 길이 이어지게 고친다. 다른 맵은 건드리지 않는다.` });
   if (unreachable.length) problems.push(`시작에서 걸어서 못 닿는 맵: ${unreachable.join(", ").slice(0, 160)} — 그 맵 담당에게 앞 맵과 잇는 문·이동 칸(또는 빈 맵이면 바닥과 내용)을 배정한다.`);
   let target: Parameters<typeof runSwitchPlay>[2] | undefined;
   for (const page of allPages(project)) {
     if (target || !page.map || !page.event) continue;
     visitPageCommands(page, (visit) => { if (!target && visit.command.kind === "setSwitch" && visit.command.switchId === MVP_REACHED_SWITCH && visit.command.value !== false) target = visit; });
   }
-  if (!target) problems.push(`끝 지점이 없다 — 핵심 경로 마지막 이벤트가 스위치 ${MVP_REACHED_SWITCH} 를 켜게 그 맵 담당에게 배정한다.`);
+  if (!target) {
+    problems.push(`끝 지점이 없다 — 핵심 경로 마지막 이벤트가 스위치 ${MVP_REACHED_SWITCH} 를 켜게 그 맵 담당에게 배정한다.`);
+    const goal = (project.worldGraph?.nodes ?? []).map((node) => node.mapId).filter((id) => project.maps[id]).at(-1);
+    if (goal) fixes.push({ mapId: goal, task: `이 맵이 첫 판의 목표 장소다. 끝 지점 스위치 ${MVP_REACHED_SWITCH} 를 켜는 이벤트가 없다 — 핵심 경로 마지막 이벤트(보스 승리 뒤·목표 대화 끝)에 upsert_event 로 {kind:"setSwitch", switchId:"${MVP_REACHED_SWITCH}", value:true} 를 넣는다. 그 이벤트는 세계 문에서 걸어 닿는 칸에 둔다.` });
+  }
   else {
     try {
       const run = runSwitchPlay(project, "첫 판 끝 지점", target, MVP_REACHED_SWITCH, PLAY_BUDGET_MS);
@@ -66,5 +105,5 @@ export function checkTeamMvp(project: Project): TeamMvpCheck {
       if (!run.ok && !detail.includes(TIMED_OUT)) problems.push(`시작에서 끝 지점(${target.where.mapName ?? target.where.mapId})까지 걸어서 못 간다: ${detail.slice(0, 200)} — 막힌 길·조건을 고치게 배정한다.`);
     } catch (error) { problems.push(`끝 지점 자동 플레이 오류: ${error instanceof Error ? error.message : String(error)}`.slice(0, 200)); }
   }
-  return { applied, problems };
+  return { applied, problems, fixes };
 }
