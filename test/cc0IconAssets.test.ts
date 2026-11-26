@@ -4,6 +4,7 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { createBlankProject } from "@/project/defaults";
 import { ensureDefaultDatabaseIconResources } from "@/project/defaults/defaultDatabaseIconResources";
 import { deserialize, serialize } from "@/project/io";
+import { FS_STAR_MARK_ICONS } from "@/project/flagship/fallen/heroSkillIdentity";
 
 describe("safe CC0 item and equipment icons", () => {
   it("ships every declared icon file and resolves it at runtime", async () => {
@@ -41,7 +42,10 @@ describe("safe CC0 item and equipment icons", () => {
     const itemIds = new Set(project.database.items.map((item) => item.id));
 
     expect(project.database.items.length).toBeGreaterThanOrEqual(100);
+    // 별 표식 Ⅰ~Ⅲ(#4528)은 아이템이 아니라 폴른 스타 카엘의 표식 상태 아이콘이다 — 상태가 쓴다(heroSkillIdentity).
+    const stateOnlyIcons = new Set<string>(FS_STAR_MARK_ICONS);
     for (const asset of CC0_ICON_ASSETS) {
+      if (stateOnlyIcons.has(asset.id)) continue;
       expect(usedIcons).toContain(asset.id);
     }
     expect([...itemIds]).toEqual(

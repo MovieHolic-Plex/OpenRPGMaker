@@ -20,13 +20,17 @@ import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom } from "./
 // 컴파일 시점 계약: "movie" 가 ResourceKind 유니온의 멤버다.
 const MOVIE_KIND = "movie" satisfies ResourceKind;
 
-/** 미디어 타입 추측으로는 절대 동영상으로 안 보이는 업로드 — 종류(kind)만이 근거다. */
+/**
+ * movie 종류로 올라간 동영상 업로드. #4820(32587a346) 부터 동영상 목록은 플레이어와 같은 해석 순서로
+ * 재생할 수 있는 것만 담는다 — 동영상이 아닌 데이터 URL(octet-stream)은 플레이어가 못 틀므로 목록에서 빠진다.
+ * 그래서 여기서는 실제 가져오기 규칙(data:video/)으로 들어오는 모양을 쓴다.
+ */
 function withMovieUpload(project: Project): Project {
   project.assets.uploaded["movie-intro"] = {
     id: "movie-intro",
     name: "인트로",
     kind: MOVIE_KIND,
-    dataUrl: "data:application/octet-stream;base64,AAAA",
+    dataUrl: "data:video/webm;base64,AAAA",
     meta: {},
   };
   return project;
@@ -114,7 +118,7 @@ describe("movie ResourceKind", () => {
     expect(RESOURCE_PROFILE_SPECS.map((spec) => spec.kind)).toContain(source);
   });
 
-  it("동영상 목록은 미디어 추측이 아니라 리소스 종류로 업로드를 담는다", () => {
+  it("동영상 목록은 플레이어가 재생할 수 있는 movie 업로드를 담는다", () => {
     const entries = listMovieResources(store.getCurrent());
 
     expect(entries.map((entry) => entry.id)).toContain("movie-intro");
