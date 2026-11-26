@@ -19,7 +19,7 @@ test("heavy Linux CI runs on GitHub-hosted runners and only light or release job
   for (const [workflow, jobs] of Object.entries({
     "ci-fast": { fast: hosted, "fast-parity": hosted, "fast-static": hosted },
     "ci-full": { static: hosted, "shard-plan": hosted, tests: hosted },
-    "ci-vitest-files": { vitest: hosted },
+    "ci-vitest-files": { covered: hosted, vitest: hosted },
     "ci-related-tests": { select: hosted, "related-tests": hosted },
     "ci-full-blame": { blame: hosted },
     "security-audit": { audit: fastRunner },
