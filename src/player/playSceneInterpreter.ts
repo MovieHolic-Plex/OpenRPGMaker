@@ -349,7 +349,11 @@ export async function runCommands(
       // 컷신 안에서 연 전투·메뉴 동안에는 「Esc 두 번: 컷신 건너뛰기」를 내린다 — 전투 화면 오른쪽 위 배속 표시 자리를 덮고
       // 전투 안내 띠와 겹쳤고(폴른 스타 1막 VQA 2026-10-31), 저장 메뉴의 명령 목록 머리를 덮었다(2막 첫 플레이 B13).
       // 화면 전체를 차지하는 UI 걸음(SCREEN_UI_STEPS)이 끝나 다음 걸음이 오면 다시 뜬다.
-      if (SCREEN_UI_STEPS.has(step.kind)) scene.clearRuntimeOverlay("cutscene-skip-hint");
+      // 선택지·입력·전투·메뉴처럼 플레이어가 고르는 걸음 동안에는 건너뛰기를 받지 않는다 — 그 창의 취소 키도 Esc 라,
+      // 취소하려고 두 번 누른 Esc 가 몰래 빨리 감기를 걸어 고른 뒤의 대사가 사라졌다. 안내도 내린다.
+      const choosing = fastForwardAction(step) === "stop";
+      skipController.setChoosing(choosing);
+      if (choosing || SCREEN_UI_STEPS.has(step.kind)) scene.clearRuntimeOverlay("cutscene-skip-hint");
       else if (isCutsceneSkippable(activeSession)) scene.showRuntimeOverlay("cutscene-skip-hint", isTouchUiHost(scene.game?.canvas) ? "B 두 번: 컷신 건너뛰기" : "Esc 두 번: 컷신 건너뛰기");
       if (step.kind === "changeTile") changedTerrainMaps.add(step.mapId);
       if (interpreter.isFastForwarding()) {
@@ -407,10 +411,13 @@ type CutsceneSkipController = {
   dispose(): void;
   takeResult(): StepResult | null;
   waitForSkip(): Promise<void>;
+  /** 지금 걸음이 플레이어가 고르는 창(선택지·입력·전투·메뉴)이면 Esc 두 번을 건너뛰기로 읽지 않는다. */
+  setChoosing(choosing: boolean): void;
 };
 
 function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Interpreter): CutsceneSkipController {
-  let lastEscapeAt = 0;
+  let lastEscapeAt = -Infinity;
+  let choosing = false;
   let result: StepResult | null = null;
   let waiters: Array<() => void> = [];
   const notify = (): void => {
@@ -420,10 +427,13 @@ function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Inte
   };
   const requestSkip = (event: KeyboardEvent): void => {
     if (event.key !== "Escape" || !isCutsceneSkippable(scene.session) || result) return;
+    if (choosing) { lastEscapeAt = -Infinity; return; }
     const now = performance.now();
     const secondEscape = now - lastEscapeAt <= 900;
     lastEscapeAt = now;
     if (!secondEscape) return;
+    // 한 번 건너뛴 뒤 연타의 셋째 Esc 가 다음 건너뛰기의 「첫 번」이 되지 않게 새로 시작한다.
+    lastEscapeAt = -Infinity;
     event.preventDefault();
     // 라벨까지 빨리 감는다(cutsceneFastForward.ts) — 라벨이 없는 장면만 예전처럼 끝낸다.
     if (!interpreter.beginFastForward(CUTSCENE_END_LABEL)) result = interpreter.jumpToLabel(CUTSCENE_END_LABEL);
@@ -441,6 +451,9 @@ function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Inte
       const next = result;
       result = null;
       return next;
+    },
+    setChoosing(next: boolean): void {
+      choosing = next;
     },
     waitForSkip(): Promise<void> {
       if (result || interpreter.isFastForwarding()) return Promise.resolve();
