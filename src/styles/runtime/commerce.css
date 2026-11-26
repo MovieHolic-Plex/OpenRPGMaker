@@ -66,13 +66,73 @@
   color: var(--runtime-window-text);
 }
 
-/* 숙박 휴식 연출: 화면 전체가 잠깐 어두워졌다가(fade) 기상 메시지와 함께 밝아진다. */
+/* 숙박 휴식 연출: 밤하늘(초승달·별·Zzz)로 어두워졌다가 따스한 아침 기상 카드로 밝아진다. */
 .runtime-inn-fade {
   position: fixed;
   inset: 0;
-  background: #000;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(ellipse at 50% 38%, rgba(20, 30, 72, 0.98) 0%, rgba(5, 8, 22, 0.99) 76%);
   z-index: 60;
   animation: runtime-inn-fade-in 480ms ease forwards;
+}
+
+.runtime-inn-sleep-scene {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+  color: rgba(235, 240, 255, 0.95);
+  font-family: var(--runtime-pixel-font, var(--runtime-ui-font));
+  text-shadow: 1px 1px 0 rgba(5, 8, 24, 1);
+}
+
+.runtime-inn-moon {
+  width: 24px;
+  height: 24px;
+  display: block;
+  image-rendering: pixelated;
+  background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath fill='%23ffe680' d='M6 2h4v1H8v1H7v2H6v4h1v2h1v1h2v1H6v-1H4v-2H3V5h1V3h2z'/%3E%3Cpath fill='%23fff6cc' d='M12 3h1v1h-1z M13 6h1v1h-1z M2 10h1v1H2z M11 11h1v1h-1z'/%3E%3C/svg%3E");
+  animation: runtime-inn-moon-glow 1.4s ease-in-out infinite alternate;
+}
+
+.runtime-inn-zzz {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  color: rgba(255, 232, 148, 0.96);
+  font-size: 8px;
+  line-height: 1;
+}
+
+.runtime-inn-z {
+  display: inline-block;
+  animation: runtime-inn-z-float 1.2s ease-in-out infinite;
+}
+
+.runtime-inn-z:nth-child(2) {
+  animation-delay: 0.22s;
+  font-size: 7px;
+  opacity: 0.88;
+}
+
+.runtime-inn-z:nth-child(3) {
+  animation-delay: 0.44s;
+  font-size: 6px;
+  opacity: 0.76;
+}
+
+.runtime-inn-sleep-label {
+  color: rgba(196, 208, 248, 0.92);
+  font-size: 7px;
+  letter-spacing: 0.04em;
+}
+
+.runtime-inn-sun {
+  width: 18px;
+  height: 18px;
+  display: block;
+  image-rendering: pixelated;
+  background: no-repeat center / contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath fill='%23ffd966' d='M7 1h2v2H7z M7 13h2v2H7z M1 7h2v2H1z M13 7h2v2h-2z M3 3h2v2H3z M11 3h2v2h-2z M3 11h2v2H3z M11 11h2v2h-2z'/%3E%3Cpath fill='%23ffef99' d='M6 4h4v1h1v1h1v4h-1v1h-1v1H6v-1H5v-1H4V6h1V5h1z'/%3E%3C/svg%3E");
 }
 
 @keyframes runtime-inn-fade-in {
@@ -84,8 +144,36 @@
   }
 }
 
+@keyframes runtime-inn-moon-glow {
+  from {
+    opacity: 0.82;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-1px);
+  }
+}
+
+@keyframes runtime-inn-z-float {
+  0%, 100% {
+    opacity: 0.45;
+    transform: translateY(1px);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
 .runtime-inn-wake-view {
   text-align: center;
+}
+
+.runtime-inn-wake-card {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
 }
 
 .runtime-inn-wake-view .runtime-commerce-status {

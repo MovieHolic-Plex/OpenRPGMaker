@@ -75,7 +75,7 @@ export function childLists(command: RawCommand): { key: string; segment: PathSeg
       push("escapeBranch", { kind: "battle", command, result: "escape" }, command.escapeBranch);
       return out;
     default:
-      for (const key of ["successBranch", "failureBranch", "transactionBranch", "failedTransactionBranch", "notEnoughBranch"]) {
+      for (const key of ["successBranch", "failureBranch", "transactionBranch", "failedTransactionBranch", "stayedBranch", "cancelledBranch", "notEnoughBranch"]) {
         push(key, { kind: "branch", command, key }, command[key]);
       }
       return out;

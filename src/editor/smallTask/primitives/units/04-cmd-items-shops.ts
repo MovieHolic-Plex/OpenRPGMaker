@@ -1,7 +1,11 @@
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { newCommand } from "@/editor/eventCommandFactory";
 import {
-  INN_NOT_ENOUGH_BRANCH_INDEX, resolveCommandAtPath, resolveCommandListAtPath,
+  INN_CANCELLED_BRANCH_INDEX,
+  INN_NOT_ENOUGH_BRANCH_INDEX,
+  INN_STAYED_BRANCH_INDEX,
+  resolveCommandAtPath,
+  resolveCommandListAtPath,
   SHOP_FAILED_TRANSACTION_BRANCH_INDEX, SHOP_TRANSACTION_BRANCH_INDEX,
 } from "@/editor/eventCommandPaths";
 import { commandSummary, commandSummaryParts } from "@/editor/panels/eventEditor/commandSummary";
@@ -229,7 +233,7 @@ function validateReferences(project: Project, command: EconomyCommand, args: Arg
     troopIds: none, speciesIds: none, resourceIds: none,
   };
   const row = command.kind === "shop" ? { ...command, transactionBranch: [], failedTransactionBranch: [] }
-    : command.kind === "inn" ? { ...command, notEnoughBranch: [] } : command;
+    : command.kind === "inn" ? { ...command, stayedBranch: [], cancelledBranch: [], notEnoughBranch: [] } : command;
   try {
     validateCommands([row], context);
   } catch {
@@ -348,6 +352,8 @@ function assertActiveShopInnBranches(page: EventPage, branchPath: readonly numbe
     if (
       (parent?.kind === "shop" && branch === SHOP_TRANSACTION_BRANCH_INDEX && parent.branchOnTransaction !== true)
       || (parent?.kind === "shop" && branch === SHOP_FAILED_TRANSACTION_BRANCH_INDEX && parent.branchOnFailedTransaction !== true)
+      || (parent?.kind === "inn" && branch === INN_STAYED_BRANCH_INDEX && parent.branchOnStay !== true)
+      || (parent?.kind === "inn" && branch === INN_CANCELLED_BRANCH_INDEX && parent.branchOnCancel !== true)
       || (parent?.kind === "inn" && branch === INN_NOT_ENOUGH_BRANCH_INDEX && parent.branchOnNotEnoughGold !== true)
     ) {
       throw new PrimitiveError("꺼져 있는 상점·여관 분기의 명령은 추가하거나 수정할 수 없습니다.");

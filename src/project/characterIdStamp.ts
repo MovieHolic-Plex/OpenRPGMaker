@@ -62,7 +62,9 @@ function commandIsSocial(command: Command): boolean {
     case "shop":
       return commandsHaveSocial(command.transactionBranch);
     case "inn":
-      return commandsHaveSocial(command.notEnoughBranch);
+      return commandsHaveSocial(command.stayedBranch)
+        || commandsHaveSocial(command.cancelledBranch)
+        || commandsHaveSocial(command.notEnoughBranch);
     case "promoteActor":
       return commandsHaveSocial(command.successBranch) || commandsHaveSocial(command.failureBranch);
     case "evolveMonster":

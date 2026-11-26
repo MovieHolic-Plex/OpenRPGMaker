@@ -356,11 +356,17 @@ defineCommand({
     recoverMp: f.bool("MP도 회복", { optional: true }),
     advanceToMorning: f.bool("아침으로 시간 이동", { optional: true }),
     restDurationMs: f.number("암전 시간", { min: 0, unit: "ms", optional: true }),
+    wakeDurationMs: f.number("기상 표시 시간", { min: 0, unit: "ms", optional: true }),
+    branchOnStay: f.bool("숙박 시 분기", { optional: true }),
+    branchOnCancel: f.bool("거절 시 분기", { optional: true }),
     branchOnNotEnoughGold: f.bool("골드 부족 시 분기", { optional: true }),
   },
   // battleProcessing 과 동일한 branches() 선언 — 명령이 달라도 분기 구조는 한 가지 방식이다.
-  branches: (c) =>
-    c.branchOnNotEnoughGold ? [{ key: "notEnoughBranch", label: "골드 부족", tone: "danger" as const }] : [],
+  branches: (c) => [
+    ...(c.branchOnStay ? [{ key: "stayedBranch", label: "숙박했을 때", tone: "ok" as const }] : []),
+    ...(c.branchOnCancel ? [{ key: "cancelledBranch", label: "거절했을 때", tone: "neutral" as const }] : []),
+    ...(c.branchOnNotEnoughGold ? [{ key: "notEnoughBranch", label: "골드 부족", tone: "danger" as const }] : []),
+  ],
   summary: (c) => `여관 · ${num(c.price)}G`,
 });
 

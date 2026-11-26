@@ -432,6 +432,11 @@
   align-items: center;
 }
 
+.commerce-command-field[hidden],
+.inn-command-presets[hidden] {
+  display: none;
+}
+
 .commerce-command-title {
   color: var(--text-2, #5C5348);
   font: 700 12px/1.3 Inter, "Segoe UI", "Malgun Gothic", system-ui, sans-serif;

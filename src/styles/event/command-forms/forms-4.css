@@ -21,6 +21,12 @@
   gap: 6px;
 }
 
+[data-testid="inn-branch-options"] .inn-command-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+
 .inn-command-timing {
   display: grid;
   gap: 8px;
