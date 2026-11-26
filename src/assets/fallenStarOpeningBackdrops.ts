@@ -8,7 +8,20 @@
  * 후보 비교: ~/claude-viz/fallen-star-title-pick-1.html. 타이틀·town·fall·morning 은 다시 짠 왕도(fallenTown.ts)를
  * 참고 그림으로 다시 뽑았다(2026-10-21, ~/claude-viz/fallen-town-match.html, 이름 앞 fallen-town). 플레이어·내보내기는 generatedAssetResourceResolver 가 id 로 찾는다.
  */
-export type FallenStarArtId = 'title' | 'town' | 'fall' | 'observatory' | 'crash' | 'morning' | 'town-ground' | 'fall-ground' | 'town-street';
+export type FallenStarArtId =
+  | 'title'
+  | 'town'
+  | 'fall'
+  | 'observatory'
+  | 'crash'
+  | 'morning'
+  | 'town-ground'
+  | 'fall-ground'
+  | 'town-street'
+  | 'act2-curfew'
+  | 'act2-carriage'
+  | 'act2-tower'
+  | 'act2-title';
 
 export type FallenStarArt = {
   readonly id: FallenStarArtId;
@@ -38,6 +51,11 @@ export const FALLEN_STAR_ART: readonly FallenStarArt[] = [
   // 왕도의 밤 거리(2026-11-04 월드 정비): 구운 왕도 맵(fs_hub)을 1배 그대로 그린 것 — 광장·남쪽 거리의 간판·공방. 새 화소 없음.
   // 생성: scripts/content/fallen-star-opening-town-street.mts (마을을 고치면 다시 뽑는다).
   art('town-street', 528, 297, 'fs_hub 1배 렌더 · scripts/content/fallen-star-opening-town-street.mts'),
+  // 제2막 「빌린 불」 전용 신규 일러스트 4컷 (2026-11-26 생성형 16비트 도트 컷신 → 528×297 128색 MAXCOVERAGE).
+  art('act2-curfew', 528, 297, 'act2 bespoke curfew street · generated 528x297'),
+  art('act2-carriage', 528, 297, 'act2 bespoke iron carriage north gate · generated 528x297'),
+  art('act2-tower', 528, 297, 'act2 bespoke awakening sky tower over ashen ruins · generated 528x297'),
+  art('act2-title', 528, 297, 'act2 bespoke borrowed fire title key art · generated 528x297'),
 ];
 
 export const FALLEN_STAR_BACKDROP_URLS: Readonly<Record<string, string>> = Object.fromEntries(

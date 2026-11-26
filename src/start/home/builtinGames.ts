@@ -28,8 +28,8 @@ export const BUILTIN_GAMES: readonly BuiltinGame[] = [
   {
     id: "chrono-bell",
     title: "폴른 스타: 떨어진 별",
-    genre: "판타지 JRPG · 제1막 약 20분",
-    description: "북쪽 숲에 떨어진 별 속에서 기계 소녀가 깨어난다. 심문관보다 먼저, 그 아이를 집에 보낼 신호를 찾아라.",
+    genre: "판타지 JRPG · 제1~2막 완결 · 엔딩 3종",
+    description: "북쪽 숲에 떨어진 별에서 깨어난 기계 소녀 이리스. 왕도와 설원, 하늘탑 너머까지 이어지는 대답의 여정.",
     cover: ART + "fallen-title.webp",
     frames: [ART + "fallen-title.webp", ART + "fallen-op1.webp", ART + "fallen-op2.webp", ART + "fallen-field.webp"],
   },

@@ -26,6 +26,9 @@ import { clearOrphanShadows, rimPit } from "./fallenStarMapPolish";
 import { FS_VALEN_START, FS_VAULT_LENS, rebuildFallenRooms } from "./fallenStarRooms";
 import { FALLEN_STAR_ACT1, FS_NAMES, FS_PREFIX, FS_STAR_KEY_ITEM } from "./fallenStarStory";
 import { applyFallenLoreAndHanel } from "./fallen/loreAndHanel";
+import { applyFallenCombatOverhaul } from "./fallen/overhaulCombat";
+import { applyFallenSystemsOverhaul } from "./fallen/overhaulSystems";
+import { applyFallenDialogueOverhaul } from "./fallen/overhaulDialogue";
 import { reworkFallenTown } from "./fallenTown";
 import { withFrozenTowns } from "./fallen/frozenTowns";
 import { applyFallenBattleItems, FS_SPEAR_PIKE, FS_SWORD_GALE } from "./fallen/battleItems";
@@ -2399,7 +2402,7 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     ],
   });
   if (project.system.titleScreen) {
-    project.system.titleScreen.logoSubtitle = "제1막 · 떨어진 별";
+    project.system.titleScreen.logoSubtitle = "떨어진 별 · 완전판";
     project.system.titleScreen.logoStyle = "gold";
     // 가혹 검수 r12: 메뉴 글자가 480 폭에서 작다 — 18px.
     project.system.titleScreen.menuFontPx = 18;
@@ -2566,6 +2569,12 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenHeroSkillIdentity(project);
   // 아이템·장비 개성 1차 — 무기별 평타 특성·방어구 계열 반감·던지는 병 상태·새라 창 장착(fallen/itemIdentity.ts). 별 표식 다음.
   applyFallenItemIdentity(project);
+  // 공격적 개편 · 4인 전투 루프·관찰 수첩·선제/기습·전용 pixelfx 4종(fallen/overhaulCombat.ts).
+  applyFallenCombatOverhaul(project, execTool);
+  // 공격적 개편 · 1~2막 일지·유대·2막 제작/강화·효과음·챕터·New Game+(fallen/overhaulSystems.ts).
+  applyFallenSystemsOverhaul(project, execTool);
+  // 공격적 개편 · 번역체 말투 전면 청산 및 인물별 구어체 재집필(fallen/overhaulDialogue.ts).
+  applyFallenDialogueOverhaul(project);
   // 표시 이름 정비(파이어볼→불덩이 등, id 는 그대로) — 기술·물건을 다시 쓰는 단계가 모두 끝난 뒤(fallen/displayNames.ts).
   applyFallenDisplayNames(project);
   // 전투곡 — 일반은 프로젝트·지역 맵 곡, 보스·우두머리만 보스곡(fallen/battleMusic.ts). 전투가 다 놓인 뒤.

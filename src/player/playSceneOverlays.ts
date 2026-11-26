@@ -590,7 +590,25 @@ export function showEndingScreen(scene: PlaySceneContext, title: string, message
     // 앞 막 마지막 장면의 레터박스·연출 카메라는 다음 막으로 가져가지 않는다 — 폴른 스타 1막 포위 장면이 띠를 켜 둔 채
     // 엔딩을 불러 2막 내내 화면이 좁았다(2026-11-04 오너 플레이).
     const button = continueTo
-      ? terminalButton("continue-next", continueTo.label || endingText("ending.nextAct"), () => { void exitTerminal(terminal, () => { clearCinematicCarryOver(scene); void scene.transferTo({ mapId: continueTo.mapId, x: continueTo.x, y: continueTo.y, direction: continueTo.direction ?? "down", fade: "black" }); }); })
+      ? terminalButton("continue-next", continueTo.label || endingText("ending.nextAct"), () => {
+          const seq = continueTo.sequence;
+          if (seq?.enabled && seq.scenes.length) {
+            void (async () => {
+              terminal.menu(() => () => undefined);
+              terminal.root.querySelectorAll<HTMLAudioElement>("audio[data-terminal-music]").forEach((a) => a.pause());
+              terminal.root.querySelector(".ending-final")?.remove();
+              terminal.root.querySelector(".ending-cg")?.remove();
+              terminal.phase("silence");
+              const result = await playCinematicSequence({ host: terminal.root, project: store.getCurrent(), sequence: seq, signal: terminal.signal }).done;
+              if (result === "aborted" || terminal.signal.aborted) return;
+              terminal.cleanup();
+              clearCinematicCarryOver(scene);
+              void scene.transferTo({ mapId: continueTo.mapId, x: continueTo.x, y: continueTo.y, direction: continueTo.direction ?? "down", fade: "black" });
+            })();
+            return;
+          }
+          void exitTerminal(terminal, () => { clearCinematicCarryOver(scene); void scene.transferTo({ mapId: continueTo.mapId, x: continueTo.x, y: continueTo.y, direction: continueTo.direction ?? "down", fade: "black" }); });
+        })
       : terminalButton("return-title", endingText("ending.returnTitle"), () => { void exitTerminal(terminal, () => scene.returnToTitle()); });
     actions.append(button); final.append(actions); terminal.root.append(final);
     const fitFinal = (): void => {

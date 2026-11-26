@@ -11,6 +11,10 @@ export const PIXEL_FX_CUSTOM: readonly PixelFxCustomEntry[] = [
   { id: "fallenstar/falling-star", load: () => import("./fallenstar/falling-star.js") },
   { id: "fallenstar/flame-sword", load: () => import("./fallenstar/flame-sword.js") },
   { id: "fallenstar/moonlight-breath", load: () => import("./fallenstar/moonlight-breath.js") },
+  { id: "fallenstar/fourth-answer", load: () => import("./fallenstar/fourth-answer.js") },
+  { id: "fallenstar/lance-dive", load: () => import("./fallenstar/lance-dive.js") },
+  { id: "fallenstar/iris-beam", load: () => import("./fallenstar/iris-beam.js") },
+  { id: "fallenstar/ash-recall", load: () => import("./fallenstar/ash-recall.js") },
 ];
 
 const BY_ID = new Map(PIXEL_FX_CUSTOM.map((entry) => [entry.id, entry]));

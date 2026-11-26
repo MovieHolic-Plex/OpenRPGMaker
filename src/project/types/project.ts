@@ -849,7 +849,15 @@ export interface EndingDef {
   continueTo?: EndingContinueTo;
 }
 
-export interface EndingContinueTo { mapId: string; x: number; y: number; direction?: "up" | "down" | "left" | "right"; label?: string }
+export interface EndingContinueTo {
+  mapId: string;
+  x: number;
+  y: number;
+  direction?: "up" | "down" | "left" | "right";
+  label?: string;
+  /** 다음 막 맵으로 옮기기 직전에 재생할 막 진입 시네마틱(애니메틱 등). */
+  sequence?: import("../cinematicSettings").CinematicSequence;
+}
 
 export type StoryFlagKind = "switch" | "variable";
 
