@@ -447,6 +447,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     if (firstMvpTeam) member = { ...member, maxTurns: Math.min(member.maxTurns, FIRST_MVP_MEMBER_TURNS.map) };
     // 2026-11-26 t1: 첫 배정이 5.8분에 끝났는데 팀장이 finish 대신 BGM·시작 위치·퍼즐 정리 «보강 2차»를 맵마다 다시 맡겨 3분을 더 썼다.
     // 남은 문제는 finish 관문이 그 맵 담당에게 바로 맡기므로, 처음 finish 전에는 끝난 맵에 다시 배정하지 않는다.
+    // t6(2026-11-26): finish 가 7.6분에 받아진 뒤에도 팀장이 두 번 더 맵마다 보강을 맡겨 4분을 더 썼다 — 첫 판이 끝나면 배정을 닫는다.
+    if (firstMvpTeam && !selfFix && finishAccepted) throw new Error("첫 MVP 는 이미 finish 됐다 — 더 배정하지 않고 이 턴을 끝낸다. 보강은 다음 요청으로 남긴다.");
     if (firstMvpTeam && !selfFix && !mvpFinishTried && [...outcomes.values()].some((outcome) => outcome.mapId === mapId && outcome.ok)) {
       throw new Error(`첫 MVP 는 맵마다 한 번 배정한다 — '${mapId}' 담당은 이미 끝났다. 지금 finish 를 부른다(관문이 남은 문제를 그 맵 담당에게 바로 맡긴다). 보강은 다음 요청으로 적는다.`);
     }
@@ -534,6 +536,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     if (coreFirst && mode === 'project' && firstBuildAssignments >= 3) throw new Error('첫 제작의 후속 배정은 3회까지입니다. 추가 작업은 다음 할 일로 보고하고 finish 하세요.');
     if (coreFirst) member = { ...member, maxTurns: Math.min(member.maxTurns, 24) };
     if (firstMvpTeam && mode === "project") member = { ...member, maxTurns: Math.min(member.maxTurns, FIRST_MVP_MEMBER_TURNS.project) };
+    if (firstMvpTeam && finishAccepted) throw new Error("첫 MVP 는 이미 finish 됐다 — 더 배정하지 않고 이 턴을 끝낸다.");
     if (request.applyMode === "step" && (runningAssignments(ledger).length || runningTasks().length)) throw new Error("단계별 적용은 앞 작업 승인·완료 후 이어집니다. wait_agents를 먼저 호출하세요.");
     if (tasks.size >= 64) throw new Error("팀 작업 배정 상한(64)에 도달했습니다. 남은 작업을 보고하세요.");
     if (mode === "project") {
