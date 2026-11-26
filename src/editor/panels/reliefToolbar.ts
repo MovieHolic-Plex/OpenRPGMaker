@@ -31,7 +31,6 @@ import { openTerrainHelpModal } from "./terrainHelpModal";
 import { openMapPropertiesDialog } from "./mapPropertiesDialog";
 import { terrainToolbarIcon } from "./terrainToolbarIcons";
 import { isTerrainDesignTool, selectTerrainDesignTool, TERRAIN_DESIGN_TOOLS, commitTerrainDesign } from "../terrainDesignActions";
-import { selectSidebarLayer } from "./leftLayerSwitcher";
 import { TERRAIN_PRESETS, type TerrainPreset } from "../terrainPresets";
 import { brushSizePatch, TERRAIN_BRUSH_SIZES, TERRAIN_LAND_SIZES, TERRAIN_LANDS, terrainLandLabel, type TerrainLand, type TerrainLandSize } from "../terrainLandBrush";
 
@@ -372,6 +371,18 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     landSizeButtons.set(size, button);
     landSizes.append(button);
   }
+  // 처음 보이는 자리에는 붓 크기 단추 하나 — 누를 때마다 1·3·5·7·사각형을 돈다. 다섯 칸 줄은 고급에 남는다(버튼 줄이기 2회차).
+  const sizeCycleLabel = (size: TerrainLandSize): string => size === "rect" ? "붓 크기 · 사각형" : `붓 크기 · ${size}칸`;
+  const sizeCycle = el("button", {
+    class: "relief-bar-size relief-size-cycle",
+    attrs: { type: "button", title: "누를 때마다 1·3·5·7칸·사각형 · [ ] 로도 바꾼다" },
+    dataset: { testid: "terrain-land-size-cycle" },
+    on: { click: () => {
+      const current = TERRAIN_LAND_SIZES.indexOf(editorState.get().terrainLandSize);
+      const next = TERRAIN_LAND_SIZES[(current + 1) % TERRAIN_LAND_SIZES.length]!;
+      editorState.set(next === "rect" ? { terrainLandSize: "rect" } : brushSizePatch(next));
+    } },
+  }) as HTMLButtonElement;
   const frameLock = el("button", {
     class: "relief-bar-toggle relief-frame-lock", text: "땅 모양 잠금 (조수만)",
     attrs: { type: "button", "aria-pressed": "false", title: "조수(AI)가 높이·절벽·물 깊이를 바꾸지 못하게 막는다. 내 붓과 타일 칠하기는 그대로 된다." },
@@ -442,8 +453,7 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     class: "relief-main-palette", dataset: { testid: "terrain-main-tools" },
     children: [
       el("h4", { class: "relief-side-subtitle", text: "도구" }), mainGrid,
-      el("h4", { class: "relief-side-subtitle", text: "붓 크기" }), landSizes,
-      el("h4", { class: "relief-side-subtitle", text: "한 번에" }), presetRow,
+      sizeCycle,
     ],
   });
   const landPalette = el("section", {
@@ -586,18 +596,10 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
   head.addEventListener("pointerup", () => { drag = null; });
   head.addEventListener("pointercancel", () => { drag = null; });
 
+  // 「타일 그리기」 되돌아가기 단추는 뚝었다 — 상단 「바닥」 칸이 같은 일을 한다(버튼 줄이기 2회차).
   const sideHeader = el("div", {
     class: "relief-side-head",
-    children: [
-      el("h3", { text: "지형" }),
-      el("button", {
-        class: "btn relief-side-back",
-        text: "타일 그리기",
-        attrs: { type: "button", title: "타일 그리기 팔레트로 돌아가기" },
-        dataset: { testid: "relief-back-to-paint" },
-        on: { click: () => selectSidebarLayer("lower") },
-      }),
-    ],
+    children: [el("h3", { text: "지형" })],
   });
   // 처음 열 때만 보이는 3단계 안내 카드. 화면을 덮는 코치 마크가 아니라 패널 안 글이고, 닫으면 다시 뜨지 않는다.
   const guide = el("section", {
@@ -622,7 +624,11 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
   const advancedSection = el("details", {
     class: "relief-advanced", dataset: { testid: "terrain-advanced" },
     children: [
-      el("summary", { dataset: { testid: "terrain-advanced-toggle" }, children: [el("b", { text: "고급" }), el("small", { text: "높이 붓·바닥 칠·절벽 모양·집·설계·땅 모양 잠금" })] }),
+      el("summary", { dataset: { testid: "terrain-advanced-toggle" }, children: [el("b", { text: "고급" }), el("small", { text: "붓 크기 칸·한 번에·통행 보기·높이 붓·바닥 칠·절벽 모양·집·설계·땅 모양 잠금" })] }),
+      // 드문 조작은 고급 안 — 「한 번에」 언덕·강·오솛길은 영역을 잡고 조수에게 말해도 된다(버튼 줄이기 2회차).
+      el("h4", { class: "relief-side-subtitle", text: "붓 크기" }), landSizes,
+      el("h4", { class: "relief-side-subtitle", text: "한 번에" }), presetRow,
+      reachRow,
       landPalette,
       context,
       el("h4", { class: "relief-side-subtitle", text: "세부 도구" }),
@@ -639,7 +645,6 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
       guide,
       mainTools,
       rampQuickAction,
-      reachRow,
       advancedSection,
     ],
   });
@@ -690,6 +695,8 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     mainButtons.get("forest")!.disabled = !treeDoodad();
     for (const [land, button] of landButtons) { const on = landMode && !presetOn && !state.terrainLandStep && land === state.terrainLand; button.classList.toggle("is-active", on); button.setAttribute("aria-pressed", String(on)); }
     for (const [size, button] of landSizeButtons) { const on = size === state.terrainLandSize; button.classList.toggle("is-active", on); button.setAttribute("aria-pressed", String(on)); }
+    const cycleText = sizeCycleLabel(state.terrainLandSize);
+    if (sizeCycle.textContent !== cycleText) sizeCycle.textContent = cycleText;
     for(const [value,b] of terrainButtons){const on=value===state.terrainBrush&&!state.reliefDoodad;b.classList.toggle("is-active",on);b.setAttribute("aria-pressed",String(on));}
     const heightMode=state.terrainBrush==="height"&&!state.reliefDoodad;
     modes.hidden=level.hidden=grass.hidden=style.hidden=!heightMode;
