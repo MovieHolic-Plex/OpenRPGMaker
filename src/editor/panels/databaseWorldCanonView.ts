@@ -353,8 +353,15 @@ function buildBodyAiAssist(area: HTMLTextAreaElement, onApplied: () => void): HT
   draftButton.addEventListener("click", () => { void run("draft"); });
   continueButton.addEventListener("click", () => { void run("continue"); });
 
+  // 초안 잡기·이어쓰기·지시 칸은 접힌 「조수에게 본문 맡기기」 하나 뒤에 둔다(btn-trim-r2, 오너 2026-11-24
+  // 「사용자는 많은 버튼을 원하지 않는다」). 상태·조수가 지어낸 것 목록은 접기 밖이라 결과는 늘 보인다.
   wrap.append(
-    el("div", { class: "world-canon-body-ai-row", children: [draftButton, continueButton, instruction] }),
+    el("details", {
+      children: [
+        el("summary", { text: "조수에게 본문 맡기기 — 초안 잡기·이어쓰기", dataset: { testid: "world-canon-body-ai-toggle" } }),
+        el("div", { class: "world-canon-body-ai-row", children: [draftButton, continueButton, instruction] }),
+      ],
+    }),
     status,
     notes,
   );

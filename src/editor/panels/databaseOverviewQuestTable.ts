@@ -169,6 +169,9 @@ export function renderQuestTable(): HTMLElement {
     const counts = questTableCounts(rows);
     const shown = filterQuestTableRows(rows, currentFilter);
     summary.textContent = `등록 ${counts.registered + counts.unreachable}개 · 제안 ${counts.suggested}개${counts.unreachable > 0 ? ` · 닿지 않음 ${counts.unreachable}개` : ""}`;
+    // 퀘스트가 하나도 없으면 거를 것도 없다 — 0 짜리 칩 셋을 보이지 않는다(btn-trim-r2). CSS 가 display 를 정해 인라인으로도 끈다.
+    chips.hidden = rows.length === 0;
+    chips.style.display = rows.length === 0 ? "none" : "";
     chips.replaceChildren(...FILTERS.map((filter) => el("button", {
       class: `db-quest-table-filter${filter.id === currentFilter ? " is-active" : ""}`,
       attrs: { type: "button", "aria-pressed": String(filter.id === currentFilter) },

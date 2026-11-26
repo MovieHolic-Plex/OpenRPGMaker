@@ -30,6 +30,9 @@ test("world canon AI help evidence", async ({ page }) => {
   // 본문 탭 = 도화지 + AI 도움 버튼
   await expect(page.getByTestId("db-ws-section-tab-body")).toHaveClass(/active/);
   await expect(page.getByTestId("world-canon-body-ai")).toBeVisible();
+  // 초안 잡기·이어쓰기는 접힌 「조수에게 본문 맡기기」 안에 있다(btn-trim-r2).
+  await expect(page.getByTestId("world-canon-body-ai-draft")).toBeHidden();
+  await page.getByTestId("world-canon-body-ai-toggle").click();
   await expect(page.getByTestId("world-canon-body-ai-draft")).toBeVisible();
   await expect(page.getByTestId("world-canon-body-ai-continue")).toBeVisible();
   await page.screenshot({ path: SHOT_DIR + "/01-body-ai-controls.png" });

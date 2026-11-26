@@ -109,10 +109,12 @@ export function renderOverviewTab(host: HTMLElement, _rerender: () => void): voi
           // 그리드의 암묵 행에 auto-place 돼 1349px 전폭 바가 됐고, 접힘선 아래라
           // 대부분 보이지도 않았다. 헤더 하나로 합친다 — 테스트가 잡고 있는 계약은
           // `db-overview-ai` 쪽이라 그 testid 를 여기로 옮긴다.
+          // 머리줄 「말로 고치기」가 같은 조수를 여는 하나뿐인 입구다 — 이 사본은 숨긴다(btn-trim-r2,
+          // 오너 2026-11-24 「사용자는 많은 버튼을 원하지 않는다」). 요소·testid·배선은 그대로 둔다.
           el("button", {
             class: "db-overview-assistant-cta db-overview-ai",
             text: "AI 조수에게 물어보기",
-            attrs: { type: "button", title: "조수 열기" },
+            attrs: { type: "button", title: "조수 열기", hidden: "" },
             dataset: { testid: "db-overview-ai" },
             on: { click: openDatabaseAiBar },
           }),
