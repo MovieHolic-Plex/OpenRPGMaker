@@ -10,11 +10,17 @@ import { MVP_REACHED_SWITCH } from "@/project/gameBlueprint";
 describe("firstMvpRoute", () => {
   const fresh = () => createNewProjectSeed(null);
 
-  it("marks a whole-game request on a fresh project as the first MVP and runs it as a team", () => {
-    for (const text of ["회상 형 게임 만들어 줘", buildWelcomeFreeTextPrompt("추리 게임 만들어 줘")]) {
+  it("runs a first MVP as a team only for the measured genres (recall, JRPG adventure); other genres stay on the v2 single run", () => {
+    for (const text of ["회상 형 게임 만들어 줘", "용사가 마을에서 출발해 숲 너머 동굴의 마물을 물리치는 모험 게임을 만들어 줘."]) {
       const route = firstMvpRoute(fresh(), text);
-      expect(route.firstMvp).toBe(true);
-      expect(route.team).toBe(true);
+      expect(route.firstMvp, text).toBe(true);
+      expect(route.team, text).toBe(true);
+    }
+    // 호러는 팀 2/2 가 끝 지점에 못 닿은 채 나갔다(2026-11-26 variant-remeasure) — 재지 않은 장르는 단일.
+    for (const text of ["밤의 미술관에 갇힌 아이가 단서를 모아 빠져나가는 공포 게임을 만들어 줘.", buildWelcomeFreeTextPrompt("추리 게임 만들어 줘")]) {
+      const route = firstMvpRoute(fresh(), text);
+      expect(route.firstMvp, text).toBe(true);
+      expect(route.team, text).toBe(false);
     }
   });
 
