@@ -163,3 +163,11 @@
 body.has-assistant-open .canvas-tool-pill .small-task-trigger {
   display: none;
 }
+
+/* 폰 폭(버튼 줄이기 2회차): 「조수에게 맡기기」 는 걷는다 — 영역을 잡으면 그 자리에 지시 막대가 뜨고, 상단 「조수」 가 같은 조수를 연다.
+   좁은 캔버스에서 알약 폭도 그만큼 줄어 왼쪽 열 옆에 들어간다(left-column.css 의 오른쪽 붙이기와 함께). */
+@media (max-width: 600px) {
+  .canvas-tool-pill .small-task-trigger {
+    display: none;
+  }
+}
