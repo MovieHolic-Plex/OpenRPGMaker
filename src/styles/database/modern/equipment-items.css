@@ -473,6 +473,18 @@
   padding: 8px 0;
   border-top: 1px solid var(--db-studio-border-subtle);
 }
+/* 카탈로그 ⋯ 메뉴에는 거르기 칩·보기 방식까지 들어가 넓다 — ⋯ 기준으로 펴면 목록 칸 밖이 잘리니 도구 줄 폭에 맞춰 편다(btn-trim-r2). */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-actions .db-toolbar {
+  position: relative;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-actions .db-toolbar .db-toolbar-more {
+  position: static;
+}
+.database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-actions .db-toolbar .db-toolbar-more[open] > .db-toolbar-more-menu {
+  left: 0;
+  min-width: 0;
+  right: 0;
+}
 .database-modal-backdrop .database-modal-window .database-modal-body .db-catalog-detail {
   display: grid;
   grid-template-rows: minmax(0, 1fr);

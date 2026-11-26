@@ -612,6 +612,7 @@ test('equipment filtering, selection and gallery', async ({ page }) => {
     if (!item) throw new Error('Missing Equipment fixture');
     return { id: item.id, name: item.name };
   });
+  await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
   await page.getByTestId('db-catalog-filter-equipment').click();
   await page.getByTestId(`db-record-row-${equipment.id}`).click();
   const search = page.getByTestId('db-catalog-search');
@@ -842,6 +843,7 @@ test('shared action hover and disabled native states', async ({ page }) => {
   await navigate(page, 'items');
   const length = () => page.evaluate(async () => (await import('/src/project/store.ts')).store.getCurrent().database.equipment.length);
   const before = await length();
+  await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
   const add = page.getByTestId('db-catalog-add-equipment');
   const idleAdd = await add.evaluate(node => getComputedStyle(node).backgroundColor);
   await add.hover();
@@ -857,6 +859,7 @@ test('CRUD confirmation and representative shared text contrast', async ({ page 
   await navigate(page, 'items');
   const length = () => page.evaluate(async () => (await import('/src/project/store.ts')).store.getCurrent().database.equipment.length);
   const before = await length();
+  await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
   await page.getByTestId('db-catalog-add-equipment').press('Enter');
   expect(await length()).toBe(before + 1);
   // The confirmation window is time behavior. Freeze its clock, rather than

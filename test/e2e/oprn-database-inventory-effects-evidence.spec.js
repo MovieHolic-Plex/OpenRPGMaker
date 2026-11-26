@@ -104,6 +104,8 @@ async function editInventoryEffects(page) {
   await page.getByTestId("db-field-item-type").selectOption("medicine");
   await page.getByTestId("db-field-item-consumption-limit").selectOption("2");
   // 대상은 T9 이후 세그먼트 컨트롤(네이티브 radio) — 레이블 클릭으로 선택.
+  // 대상·사용 시점·상태 변화·연출·외형은 「기본」 카드의 「고급」 뒤에 있다(btn-trim-r2).
+  await page.getByTestId("db-item-advanced-toggle").click();
   await page.getByTestId("db-field-item-scope").getByText("아군 전체").click();
   await page.getByTestId("db-field-item-state-state_poison").check();
   // 회복 % 는 T9 이후 슬라이더+스테퍼 쌍 — 스테퍼(number input)에 값을 입력한다.
@@ -112,6 +114,7 @@ async function editInventoryEffects(page) {
 
   await revealDbRailTab(page, "items");
   await page.getByTestId("db-tab-items").click();
+  await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
   await page.getByTestId("db-catalog-filter-equipment").click();
   await page.locator('.db-catalog-rows [data-collection="equipment"]').first().click();
   await page.getByTestId("db-field-name").fill("QA 부적검");

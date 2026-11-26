@@ -334,6 +334,23 @@ describe("database item inspector form", () => {
     ]);
   });
 
+  // btn-trim-r2: 드문 카드는 「기본」 카드의 「고급」 단추 뒤에 있다. 펼친 상태는 다시 그려도 유지한다.
+  it("keeps rare cards behind the basics 고급 toggle and remembers it across rerenders", () => {
+    const rare = ["db-item-card-state-effects", "db-item-card-animation", "db-item-card-targeting", "db-item-card-usable", "db-item-card-graphic", "db-field-item-key"];
+    const form = renderForm();
+    const toggle = byTestId(form, "db-item-advanced-toggle");
+    expect(toggle.getAttribute("aria-expanded")).toBe("false");
+    for (const testid of rare) expect(hiddenByAncestor(byTestId(form, testid)), testid).toBe(true);
+    expect(byTestId(form, "db-items-medicine-panel").hidden).toBe(false);
+    toggle.click();
+    for (const testid of rare) expect(hiddenByAncestor(byTestId(form, testid)), testid).toBe(false);
+    const again = renderForm();
+    expect(byTestId(again, "db-item-advanced-toggle").getAttribute("aria-expanded")).toBe("true");
+    // 모듈 상태라 다음 시험을 위해 접어 둔다.
+    byTestId(again, "db-item-advanced-toggle").click();
+    expect(byTestId(again, "db-item-card-targeting").hidden).toBe(true);
+  });
+
   // Break caught: stateEffects 는 스키마·뮤테이터·전투 런타임에 모두 있는데 저작 UI 가 없어서
   // "적에게 맹독을 거는 아이템"을 에디터만으로는 만들 수 없었다(도구/JSON 편집 필요).
   it("authors item state effects through add, edit and delete rows", () => {
@@ -557,6 +574,11 @@ function firstItem(): ItemRecord {
   const item = store.getCurrent().database.items[0];
   if (!item) throw new Error("fixture needs at least one item");
   return item;
+}
+
+function hiddenByAncestor(node: FakeElement): boolean {
+  for (let current: FakeElement | null = node; current; current = current.parentElement) if (current.hidden) return true;
+  return false;
 }
 
 function byTestId(root: FakeElement, testid: string): FakeElement {
