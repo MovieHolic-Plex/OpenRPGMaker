@@ -34,6 +34,9 @@ describe("editor-added item persistence", () => {
     await store.load();
     expect(store.getCurrent().database.items.some((item) => item.id === itemId)).toBe(false);
     expect(store.getAutoSaveState()).toMatchObject({ kind: "error", code: "session-not-persisted" });
-    expect(freshProjectStorage.length).toBe(0);
+    // #4862: 임시 세션은 이벤트 초안 금고만 탭 열쇠(session:<탭 id>)로 남긴다. 그 밖의 열쇠도, 추가한 아이템도 남지 않는다.
+    const keys = Array.from({ length: freshProjectStorage.length }, (_, index) => freshProjectStorage.key(index)!);
+    expect(keys.every((key) => key.startsWith("oprn:event-draft-vault:session:"))).toBe(true);
+    expect(keys.some((key) => freshProjectStorage.getItem(key)!.includes(itemId))).toBe(false);
   });
 });

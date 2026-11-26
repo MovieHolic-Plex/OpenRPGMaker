@@ -1419,6 +1419,10 @@ function m2ReferenceFieldApplies(
   if (entry.title === "Region Trigger" && (fieldKey === "eventId" || fieldKey === "switchId")) {
     return value.length > 0;
   }
+  // 시스템 BGM·SE 의 빈 소리는 「무음」 또는 「기본값으로 되돌리기」다. 옛 { slot, value } 형식은 resourceId 칸이 없다.
+  if ((entry.title === "Change System BGM" || entry.title === "Change System SE") && fieldKey === "resourceId") {
+    return value.length > 0;
+  }
   return true;
 }
 

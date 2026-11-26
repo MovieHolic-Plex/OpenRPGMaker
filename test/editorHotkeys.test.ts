@@ -1,9 +1,17 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { applyLayer, handleEditorKey } from "@/editor/hotkeys";
+import { requestEditorEventDeletion } from "@/editor/eventDeletion";
 import { editorState } from "@/editor/editorState";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import type { GameEvent } from "@/project/types";
+
+// #4862: 이벤트 삭제는 브라우저 confirm 이 아니라 앱 확인 창(showConfirm, 비동기)을 쓴다.
+const modal = vi.hoisted(() => ({ showConfirm: vi.fn(async () => true) }));
+vi.mock("@/editor/ui/modal", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/editor/ui/modal")>()),
+  showConfirm: modal.showConfirm,
+}));
 
 // RM2K3 스타일 단축키 매핑 검증. 순수 editorState 변경 로직만 검증한다.
 // (shouldIgnoreEditorShortcut 의 DOM 가드는 jsdom 환경이 필요해 여기서는 제외.)
@@ -126,7 +134,7 @@ describe("editor keyboard shortcuts", () => {
     expect(editorState.get().layer).toBe("lower");
   });
 
-  it("deletes the selected event on the event layer", () => {
+  it("deletes the selected event on the event layer", async () => {
     const project = createBlankProject();
     const map = project.maps[project.startMapId];
     const event: GameEvent = {
@@ -149,9 +157,12 @@ describe("editor keyboard shortcuts", () => {
       selection: { mapId: project.startMapId, x: 1, y: 1, width: 1, height: 1 },
     });
 
-    vi.stubGlobal("confirm", vi.fn(() => true));
+    modal.showConfirm.mockClear();
 
     expect(handleEditorKey(keyEvent("Delete"))).toBe(true);
+    expect(modal.showConfirm).toHaveBeenCalledTimes(1);
+    // 같은 이벤트의 삭제 요청은 열린 확인 창의 약속을 그대로 돌려준다 — 그 확인이 끝날 때까지 기다린다.
+    await expect(requestEditorEventDeletion(project.startMapId, event.id)).resolves.toBe(true);
 
     expect(store.getCurrent().maps[project.startMapId]?.events).toEqual([]);
     expect(editorState.get().selectedEventId).toBeNull();

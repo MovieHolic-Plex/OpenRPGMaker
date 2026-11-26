@@ -28,11 +28,30 @@ import {
 const sheet = (name: string, css: string, layer: string | null = null) => ({ name, css, layer });
 const where = (w: Record<string, { where: string }>, key: string) => w[key]?.where;
 
-it("pairs the settings option popup's system background and text colors", () => {
-  const css = readFileSync(new URL("../src/start/settings/settings.css", import.meta.url), "utf8");
-  const winners = computeWinners({ sheets: [sheet("settings.css", css)] });
-  expect(winners[".st-select option|background"]?.value).toBe("Canvas");
-  expect(winners[".st-select option|color"]?.value).toBe("CanvasText");
+// #4791 이 시작 화면 설정을 에디터와 같은 AI 설정 창(.ai-settings-window)으로 바꾸며 .st-select 를 지웠다.
+// 언어 목록은 이제 공용 .ai-config-select 다. 지킬 것은 #4787 의 회귀 — 펼친 목록(option)의 글자색만 칠하고
+// 바탕은 시스템(다크 Canvas)에 맡겨 글자가 안 보이던 것 — 이므로, 두 시트에서 option 색은 바탕과 짝으로만 칠한다.
+it("pairs option popup background and text colors in the launcher settings sheets", () => {
+  const sheets = [
+    "../src/start/settings/settings.css",
+    "../src/styles/shell/dialogs/ai-settings-modal.css",
+  ].map((path) => sheet(path, readFileSync(new URL(path, import.meta.url), "utf8")));
+  const winners = computeWinners({ sheets });
+  const optionProps = new Map<string, Set<string>>();
+  for (const key of Object.keys(winners)) {
+    const [selector, property] = key.split("|");
+    if (!selector || !property || !/\boption\b/.test(selector)) continue;
+    if (!["color", "background", "background-color"].includes(property)) continue;
+    const props = optionProps.get(selector) ?? new Set<string>();
+    props.add(property === "background-color" ? "background" : property);
+    optionProps.set(selector, props);
+  }
+  for (const [selector, props] of optionProps) {
+    expect({ selector, props: [...props].sort() }).toEqual({ selector, props: ["background", "color"] });
+  }
+  // 위 짝 검사가 실제 판정기 키 모양을 읽는지 — 글자색만 칠한 #4787 이전 규칙은 짝이 없다.
+  const lone = computeWinners({ sheets: [sheet("lone.css", ".st-select option { color: #111; }")] });
+  expect(Object.keys(lone)).toEqual([".st-select option|color"]);
 });
 
 describe("computeWinners — 캐스케이드 우선순위", () => {
