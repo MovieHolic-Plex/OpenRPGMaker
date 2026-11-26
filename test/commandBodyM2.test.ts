@@ -277,7 +277,7 @@ describe("eventEditorM2CommandBody", () => {
       expect(findByTestId(body, "show-animation-m2-command-body")).not.toBeNull();
       const notice = findByTestId(body, "m2-command-deprecated-notice");
       expect(notice).not.toBeNull();
-      expect(notice?.textContent).toContain("m2-054-show-animation");
+      expect(notice?.textContent).toContain("통합");
     });
   });
 });

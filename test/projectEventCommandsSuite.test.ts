@@ -1090,8 +1090,9 @@ describe("m2Catalog", () => {
         const mapVisible = M2_COMMAND_CATALOG.filter(
           (e) => e.title === "Show Animation" && isM2CatalogEntrySelectableInMap(e),
         );
-        // 2026-08-27 픽스: m2-055는 맵 피커에서 숨겨지므로(중복 등재 제거) 맵 노출 행은 m2-054 하나
-        expect(mapVisible.map((e) => e.index)).toEqual([54]);
+        // 2026-08-27 픽스: m2-055는 맵 피커에서 숨겨진다(중복 등재 제거).
+        // 2026-11-26: m2-054 도 네이티브 showAnimation 으로 통합돼 맵 피커의 m2 행은 없다.
+        expect(mapVisible.map((e) => e.index)).toEqual([]);
       });
 
       it("배틀 전용 Show Animation(m2-103)은 맵 피커에서 숨겨진다", () => {
@@ -1665,9 +1666,10 @@ describe("runtimeSupport", () => {
         const mapRows = M2_COMMAND_CATALOG.filter((entry) => entry.index <= 108 && isM2CatalogEntrySelectableInMap(entry));
 
         // m2-055(Show Animation 중복 등재)는 2026-08-27 초보자 UX 픽스로 맵 피커에서 제외됐다.
+        // m2-050·054·066 은 2026-11-26 네이티브(setWeather·showAnimation·playMovie)로 통합돼 제외됐다.
         // 판정 정본은 `DEPRECATED_M2_COMMAND_IDS` (은퇴 레지스트리) 다.
         expect(mapRows.map((entry) => entry.index)).toEqual(
-          Array.from({ length: 97 }, (_, index) => index + 1).filter((index) => index !== 55),
+          Array.from({ length: 97 }, (_, index) => index + 1).filter((index) => ![50, 54, 55, 66].includes(index)),
         );
         const pageOneRows = mapRows.filter((entry) => entry.pickerPage === 1);
         const pageOneGroupsByTitle = new Map(pageOneRows.map((entry) => [entry.title, entry.pickerGroup]));
