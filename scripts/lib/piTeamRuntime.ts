@@ -1459,7 +1459,13 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     // 사용자에게 보이는 글이라 맵 id(map_blank_start)는 표시 이름으로 바꾼다 — «감옥(map_prison)» 처럼 이름 뒤 괄호 id 는 지운다(VM QA 묶음 8: 원시 id 노출).
     const shown = (line: string): string => Object.values(working.maps).reduce((text, map) => map.name
       ? text.split(`${map.name}(${map.id})`).join(map.name).split(map.id).join(map.name) : text, line);
-    const left = mvpLeft.map((line) => shown(line.replace(/\s+—\s+[^—]*$/u, "").replace(/^.*:\s*/u, "")).slice(0, 120));
+    // 조사는 앞말에 붙이고 받침에 맞춘다(«미술관 에서 감옥 으로» → «미술관에서 감옥으로», «시장으로»), 어려운 말 «(현재 스위치 상태로는)» 은 «지금은».
+    // 받침이 없거나 ㄹ 받침이면 «로», 나머지 받침은 «으로»(시장으로·감옥으로·학교로·출구로).
+    const toward = (word: string): string => { const code = word.charCodeAt(word.length - 1) - 0xac00; const jong = code >= 0 && code < 11172 ? code % 28 : 0; return jong === 0 || jong === 8 ? "로" : "으로"; };
+    const tidy = (text: string): string => text.replace(/\s*\(현재 스위치 상태로는\)\s*/gu, " 지금은 ")
+      .replace(/(\S+) 에서 /gu, "$1에서 ")
+      .replace(/(\S+) (?:으로|로)(?=\s|$)/gu, (_m, word: string) => `${word}${toward(word)}`);
+    const left = mvpLeft.map((line) => tidy(shown(line.replace(/\s+—\s+[^—]*$/u, "").replace(/^.*:\s*/u, ""))).replace(/\s+/gu, " ").trim().slice(0, 120));
     finished = left.length
       ? `${finished}\n\n주의: 첫 판이 아직 끝까지 이어지지 않습니다. 끝까지 못 가는 곳: ${left.join(" / ")}\n\n${nextStepsBlock([`끝까지 가는 길 고쳐 줘: ${left[0]}`, ...mvpNextSteps(working)])}`
       : `${finished}\n\n${MVP_DONE_LINE}\n\n${nextStepsBlock(mvpNextSteps(working))}`;
