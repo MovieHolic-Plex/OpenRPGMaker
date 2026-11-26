@@ -32,6 +32,8 @@ type ContextMenuItem =
       readonly testId: string;
       readonly run: () => void;
       readonly disabled?: boolean;
+      /** 메뉴에 그리지 않는다(단축키로만). DOM·testid 는 남긴다 — btn-trim-r2: 행 우클릭 8→4. */
+      readonly quiet?: boolean;
       readonly separator?: false;
     }
   | { readonly separator: true };
@@ -159,6 +161,14 @@ export function handleCommandShortcut(
         return;
     }
   }
+  // Alt+↑/↓: 줄을 위·아래로 옮긴다(선택 줄의 위·아래 아이콘과 같은 일, 키보드 길).
+  if (event.altKey && !event.ctrlKey && !event.metaKey && (event.key === "ArrowUp" || event.key === "ArrowDown")) {
+    event.preventDefault();
+    event.stopPropagation();
+    closeMenu?.();
+    request.actions.moveCommand(request.path, event.key === "ArrowUp" ? -1 : 1);
+    return;
+  }
   if (event.ctrlKey || event.metaKey || event.altKey) return;
   if (event.key === "Enter") {
     event.preventDefault();
@@ -197,6 +207,7 @@ function contextMenuNodes(request: CommandShortcutRequest, close: () => void): H
       shortcut: "Ctrl+/",
       icon: "insert",
       testId: "event-command-menu-insert-comment",
+      quiet: true,
       run: () => {
         close();
         insertCommentCommand(request);
@@ -216,7 +227,7 @@ function contextMenuNodes(request: CommandShortcutRequest, close: () => void): H
     contextMenuAction("잘라내기", "Ctrl+X", "cut", "event-command-menu-cut", () => {
       cutCommand(request);
       close();
-    }),
+    }, false, true),
     contextMenuAction("복사", "Ctrl+C", "copy", "event-command-menu-copy", () => {
       copyCommands(request);
       close();
@@ -225,6 +236,7 @@ function contextMenuNodes(request: CommandShortcutRequest, close: () => void): H
       pasteCommand(request);
       close();
     }, !hasEventCommandClipboard()),
+    // 쓸 수 없는 붙여넣기는 그리지 않는다(아래 contextMenuButton: disabled 면 quiet).
     contextMenuAction("삭제", "Del", "delete", "event-command-menu-delete", () => {
       deleteCommands(request);
       close();
@@ -232,7 +244,7 @@ function contextMenuNodes(request: CommandShortcutRequest, close: () => void): H
     contextMenuAction("전체 선택", "Ctrl+A", "select-all", "event-command-menu-select-all", () => {
       selectAllAuthoredCommands(request.commands ?? [request.command]);
       close();
-    }),
+    }, false, true),
   ];
   return items.map((item) =>
     item.separator
@@ -247,15 +259,20 @@ function contextMenuAction(
   icon: string,
   testId: string,
   run: () => void,
-  disabled = false
+  disabled = false,
+  quiet = false
 ): ContextMenuItem {
-  return { label, shortcut, icon, testId, run, disabled };
+  return { label, shortcut, icon, testId, run, disabled, quiet };
 }
 
 function contextMenuButton(item: Extract<ContextMenuItem, { readonly separator?: false }>): HTMLButtonElement {
+  const quiet = item.quiet === true || item.disabled === true;
   return el("button", {
     class: "event-command-menu-item",
-    attrs: item.disabled ? { type: "button", disabled: "", role: "menuitem" } : { type: "button", role: "menuitem" },
+    attrs: {
+      ...(item.disabled ? { type: "button", disabled: "", role: "menuitem" } : { type: "button", role: "menuitem" }),
+      ...(quiet ? { style: "display:none" } : {}),
+    },
     children: [
       el("span", {
         class: `event-command-menu-icon ${item.icon}`,

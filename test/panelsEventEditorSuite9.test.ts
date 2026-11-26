@@ -806,6 +806,21 @@ describe("commentCommandBody", () => {
       document.querySelector<HTMLButtonElement>('[data-testid="event-command-edit-ok"]')?.click();
       expect(inserted).toEqual({ kind: "m2Command", commandId: "m2-088-comment", fields: { comment: "shortcut comment", color: "green" } });
     });
+
+    it("moves the focused command with Alt+Up / Alt+Down (keyboard path for the row arrows)", () => {
+      const moves: Array<[readonly number[], number]> = [];
+      const item = new FakeElement("div");
+      for (const [key, dir] of [["ArrowUp", -1], ["ArrowDown", 1]] as const) {
+        const event = new Event("keydown", { bubbles: true, cancelable: true });
+        Object.defineProperties(event, { ctrlKey: { value: false }, metaKey: { value: false }, altKey: { value: true }, key: { value: key } });
+        handleCommandShortcut(event as KeyboardEvent, {
+          x: 0, y: 0, item: item as unknown as HTMLElement, command: { kind: "text", body: "x" }, path: [2],
+          actions: { ...actions, moveCommand: (path, d) => moves.push([path, d]) }, openEditor: () => {},
+        });
+        expect(event.defaultPrevented).toBe(true);
+        expect(moves.at(-1)).toEqual([[2], dir]);
+      }
+    });
   });
 });
 
