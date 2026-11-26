@@ -3,6 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { mapTarget } from "@/editor/smallTask/target";
 import { CUTSCENE_END_LABEL } from "@/player/cutsceneControl";
+import { fastForwardAction } from "@/player/cutsceneFastForward";
 import { nameplateSpeaker } from "@/player/dialogue";
 import { runCommands } from "@/player/playSceneInterpreter";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
@@ -435,5 +436,74 @@ describe("field input wait lifecycle", () => {
     expect(fixture.scene.session.variables.key).toBe(77);
     expect(oldSession.switches.inputTail).toBeUndefined();
     expect(fixture.scene.session.switches.inputTail).toBeUndefined();
+  });
+});
+
+describe("cutscene skip review (2026-11-26)", () => {
+  const cameraWait: Command = { kind: "m2Command", commandId: "m2-201-camera-control", fields: { mode: "panTo", target: "screen", x: 3, y: 4, durationMs: 300, wait: true } };
+
+  it("does not treat Escape pressed to cancel an open choice as a skip, so the line after the pick still plays", async () => {
+    const fixture = createFixture();
+    store.replaceProject(fixture.project);
+    const dialogue = fixture.scene.game.registry.get("dialogue") as { showChoices: ReturnType<typeof vi.fn>; showText: ReturnType<typeof vi.fn> };
+    let pick: (index: number) => void = () => undefined;
+    dialogue.showChoices.mockImplementation(() => new Promise<number>((resolve) => { pick = resolve; }));
+    const running = runCommands(fixture.scene, [
+      { kind: "cutsceneControl", mode: "begin", skippable: true },
+      { kind: "choices", prompt: "갈까?", options: [{ text: "간다", branch: [] }, { text: "안 간다", branch: [] }] } as unknown as Command,
+      { kind: "text", body: "고른 뒤 대사" },
+      { kind: "label", name: CUTSCENE_END_LABEL },
+      { kind: "cutsceneControl", mode: "end" },
+    ]);
+    await Promise.resolve();
+    expect(fixture.visibleOverlays.has(SKIP_HINT_TESTID)).toBe(false);
+    pressEscape();
+    pressEscape();
+    pick(1);
+    await running;
+    expect(dialogue.showText).toHaveBeenCalledWith(expect.objectContaining({ body: "고른 뒤 대사" }));
+  });
+
+  it("stops fast-forward on the question line so the choice is not shown without its question", async () => {
+    const fixture = createFixture();
+    store.replaceProject(fixture.project);
+    const dialogue = fixture.scene.game.registry.get("dialogue") as { showChoices: ReturnType<typeof vi.fn>; showText: ReturnType<typeof vi.fn> };
+    const running = runCommands(fixture.scene, [
+      { kind: "cutsceneControl", mode: "begin", skippable: true },
+      cameraWait,
+      { kind: "text", body: "어느 길로 갈래?" },
+      { kind: "choices", options: [{ text: "왼쪽", branch: [] }, { text: "오른쪽", branch: [] }] } as unknown as Command,
+      { kind: "label", name: CUTSCENE_END_LABEL },
+      { kind: "cutsceneControl", mode: "end" },
+    ]);
+    await Promise.resolve();
+    pressEscape();
+    pressEscape();
+    await running;
+    expect(dialogue.showText).toHaveBeenCalledWith(expect.objectContaining({ body: "어느 길로 갈래?" }));
+    expect(dialogue.showChoices).toHaveBeenCalledOnce();
+  });
+
+  it("still starts a repeating patrol route that the skipped part of the scene sets up", async () => {
+    const fixture = createFixture();
+    store.replaceProject(fixture.project);
+    const running = runCommands(fixture.scene, [
+      { kind: "cutsceneControl", mode: "begin", skippable: true },
+      cameraWait,
+      { kind: "moveEvent", eventId: "ev_guard", route: { moves: [{ kind: "move", dir: "right" }, { kind: "move", dir: "left" }], repeat: true, wait: false } } as unknown as Command,
+      { kind: "label", name: CUTSCENE_END_LABEL },
+      { kind: "cutsceneControl", mode: "end" },
+    ]);
+    await Promise.resolve();
+    pressEscape();
+    pressEscape();
+    await running;
+    expect(fixture.scene.autonomousNPCs.has("ev_guard")).toBe(true);
+  });
+
+  it("applies a lift ride that carries the party to another floor instead of skipping it", () => {
+    const ride = { kind: "liftRide", mode: "move", direction: "down", distance: 3, width: 1, depth: 1, riders: "party", wait: true } as const;
+    expect(fastForwardAction(ride as never)).toBe("apply");
+    expect(fastForwardAction({ ...ride, riders: "none" } as never)).toBe("skip");
   });
 });

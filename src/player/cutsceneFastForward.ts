@@ -25,6 +25,12 @@ const SKIP_KINDS: ReadonlySet<string> = new Set([
 
 export function fastForwardAction(step: FastForwardStep): FastForwardAction {
   if (STOP_KINDS.has(step.kind)) return "stop";
+  // 선택지 바로 앞 질문 대사는 선택지와 한 덩어리다 — 건너뛰면 질문 없이 「왼쪽/오른쪽」만 떴다. 여기서 멈춰 질문부터 보인다.
+  if (step.kind === "text" && step.beforeChoices) return "stop";
+  // 되풀이 경로(순찰)는 장면 뒤에도 남는 상태다 — 건너뛰면 순찰이 아예 시작되지 않았다. 기다림 없이 걸어 둔다.
+  if (step.kind === "moveEvent" && step.repeat) return "apply";
+  // 주인공을 태워 층을 옮기는 승강기는 위치를 바꾼다 — 건너뛰면 주인공이 출발 층에 남았다.
+  if (step.kind === "liftRide" && step.mode === "move" && step.riders !== "none") return "apply";
   if (SKIP_KINDS.has(step.kind)) return "skip";
   // 한 번 울리는 효과음은 건너뛴다. 배경음·환경음은 장면 뒤에도 흐를 소리라 상태로 남긴다.
   if (step.kind === "playAudio" && !step.loop) return "skip";
@@ -36,5 +42,6 @@ export function withoutWait(step: FastForwardStep): FastForwardStep {
   if (step.kind === "setLighting") return { ...step, transitionMs: 0 };
   if (step.kind === "setWeather") return { ...step, transitionMs: 0 };
   if (step.kind === "showPicture") return { ...step, waitForPicture: false };
+  if (step.kind === "moveEvent") return { ...step, wait: false };
   return step;
 }
