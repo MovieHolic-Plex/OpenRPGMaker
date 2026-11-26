@@ -2,6 +2,7 @@
 // 왜(2026-11-04 폴른 스타): 전투 76개(맵 22개) 중 75개가 같은 곡(보스곡 재의 왕관)이었고, 효과음 하나(inventory-cloth)가
 // 아이템·장비·합류·기어 나가기에 26번 쓰였다. 전투곡은 런타임과 같은 resolveBattleBgmResourceId(project/mapMusic.ts)로 푼다.
 import type { LintIssue } from "@/project/lint/projectLint";
+import { usesMonsterSfxSet } from "@/assets/monsterSfxAssets";
 import { resolveBattleBgmResourceId } from "@/project/mapMusic";
 import type { Project } from "@/project/types";
 
@@ -115,4 +116,27 @@ export function lintAudioVariety(project: Project): LintIssue[] {
     });
   }
   return issues;
+}
+
+/** 전투 효과음 자리표(system.seCues)의 핵심 자리가 전부 비었는가(몬스터 수집 제외 — 그쪽은 자체 소리 세트). */
+export const CORE_BATTLE_SE_CUES: readonly string[] = ["attack", "damage", "actorDamage", "critical", "miss", "heal", "defend"];
+
+/**
+ * 전투가 나는 게임인가(이벤트 전투·무작위 조우·필드 적). combatChecks.battleSites 와 같은 기준이지만 여기서 따로 센다 —
+ * combatChecks 를 import 하면 queryTools → audioVarietyLint → combatChecks → request/readers → … → toolRegistry → tileQueryTool 순환이 생겨
+ * QUERY_TOOLS 가 아직 비어 있는 채 byName 이 불렸다(2026-11-27 CI 넓은 모드: editorToolsSuite5/7 가져오기 실패).
+ */
+function hasBattles(project: Project): boolean {
+  const maps = Object.values(project.maps);
+  if (maps.some((m) => (m.fieldSpawns?.length ?? 0) > 0 || ((m.encounterRate ?? 0) > 0 && ((m.encounterTable?.length ?? 0) > 0 || (m.troopIds?.length ?? 0) > 0)))) return true;
+  return collect(project).battles.length > 0;
+}
+
+export function lintBattleSeSlots(project: Project): LintIssue[] {
+  if (usesMonsterSfxSet(project) || !hasBattles(project)) return [];
+  if (CORE_BATTLE_SE_CUES.some((cue) => project.system.seCues?.[cue]?.trim())) return [];
+  return [{
+    severity: "warning", code: "audio-battle-se-empty",
+    message: `전투 효과음 자리(${CORE_BATTLE_SE_CUES.join("·")})가 모두 비어 있다 — 모든 전투가 엔진 기본(EasyRPG) 소리 그대로다. set_game_audio{role:"se", cue:<자리>, resourceId:<효과음>} 으로 칸을 채우거나(예: cue:"damage"), 스토어 효과음 팩(sfx-style)을 건다. 소리는 get_audio_resource/카탈로그 설명(전투 · 타격·마법)으로 고른다.`,
+  }];
 }

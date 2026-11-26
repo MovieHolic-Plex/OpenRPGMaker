@@ -16,6 +16,7 @@ import { fitRequiredBattlesToStarters } from "./monsterRequiredBattles";
 import { equipMonsterCampaign } from "./monsterCampaignGifts";
 import { beginFitBudget, enterFastFit, FitBudgetExceeded, rememberFitCache, restoreFitState, snapshotFitState } from "./monsterFitBudget";
 import { redressHeroTwins } from "./heroTwins";
+import { fillBattleSeCues } from "./shipBattleSe";
 import { Obj, reconcileFieldHud, premiseOf, fillBattleBgm, fillBattleBackgrounds, fillEnemyHpLook, fillPartyLooks, fillPartyNames, fillUiLook } from "./shipLookDefaults";
 import { moveEntrancesOntoArt, fillStaleObjectives, moveRepeatingStartObjective, pullBackStartObjective, fillGymArrivalObjectives, hasFinal, quietFieldGuides } from "./shipObjectiveDefaults";
 import { endsAtMvp, MVP_REACHED_SWITCH } from "../judge/blueprintScale";
@@ -95,6 +96,7 @@ export function applyLookDefaults(project: Project, story = "", lookSeed = ""): 
   const applied: string[] = [];
   const left = new Set(editorDefaultsLeft(project).map((b) => b.id));
   if (left.has("battle-bgm")) applied.push(...fillBattleBgm(project, story));
+  applied.push(...fillBattleSeCues(project));
   // 출하 검사는 맵 다섯 장까지만 이른다 — 전투가 나는 맵이 더 많으면 남은 맵이 런타임 짐작(실내 = 동굴 · 모르면 숲)으로 떨어지므로 다 채울 때까지 돈다.
   for (let round = 0; round < 40; round += 1) {
     const filled = fillBattleBackgrounds(project, editorDefaultsLeft(project).find((b) => b.id === "battle-background")?.evidence ?? "");
