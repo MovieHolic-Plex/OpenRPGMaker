@@ -88,6 +88,8 @@ async function bakeDemos(): Promise<void> {
 
 if (!process.argv.includes("--bgm-only")) await bakeDemos();
 
+// `--no-bgm`: 입구(bake-flagship-demos.mjs)가 데모를 두 프로세스로 나눠 구울 때 각 프로세스는 BGM 을 건너뛰고, 끝에 `--bgm-only` 한 번으로 받는다.
+if (!process.argv.includes("--no-bgm")) {
 // 데모가 쓰는 카탈로그 BGM 을 산출물에 함께 싣는다. 데스크톱 앱은 BGM 팩 없이 나가서 폴른 스타가 27곡 중 3곡만 울렸다(2026-10-27).
 // 이미 있으면(웹 빌드가 public 의 팩을 복사) 그대로, 체크아웃에 받아 둔 곡이면 복사, 없으면 공개 CDN 에서 받아 SHA-256 을 확인한다.
 // 데모 밖의 곡은 데스크톱이 처음 재생할 때 받는다(electron/main/bgmOnDemand.ts).
@@ -116,3 +118,4 @@ for (const track of used.values()) {
   downloaded += 1;
 }
 console.log(`demo bgm: ${used.size} tracks (copied ${copied}, downloaded ${downloaded}, already present ${used.size - copied - downloaded})`);
+}

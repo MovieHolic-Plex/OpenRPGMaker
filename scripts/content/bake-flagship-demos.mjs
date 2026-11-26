@@ -1,5 +1,5 @@
 // npm run bake:demos 의 입구. Windows 에서도 같은 환경 변수로 굽기 본체를 띄운다.
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import {
   copyFileSync, existsSync, globSync, mkdirSync, mkdtempSync, readFileSync, readdirSync,
@@ -26,6 +26,42 @@ const codeLoaders = new Map([
   [".ts", "ts"], [".mts", "ts"], [".cts", "ts"], [".tsx", "tsx"],
   [".js", "js"], [".mjs", "js"], [".cjs", "js"], [".jsx", "jsx"],
 ]);
+
+// 데모 하나가 굽기의 대부분을 쓴다(2026-11-26 dev-bottlenecks-r2, v0.420 릴리스 run 45731187237 mdc2: chrono-bell 493초,
+// 나머지 넷 합 131초, 모듈 적재 약 80초). 그 데모와 나머지를 프로세스 둘로 동시에 구워 벽시계를 «가장 무거운 쪽» 으로 줄인다.
+// 산출 파일은 데모마다 따로라 겹치지 않고, BGM 은 둘 다 끝난 뒤 한 번 받는다(같은 곡을 두 프로세스가 동시에 쓰지 않게).
+const HEAVY_DEMO = "chrono-bell";
+
+function spawnBake(extra) {
+  return new Promise((resolveStatus) => {
+    const child = spawn(process.execPath, [
+      "--max-old-space-size=12000",
+      "node_modules/vite-node/dist/cli.mjs",
+      "--script",
+      entry,
+      ...forwarded,
+      ...extra,
+    ], { cwd: root, stdio: "inherit", env: { ...process.env, OPRN_ASSUME_ALL_BGM_INSTALLED: "1" } });
+    child.on("error", (error) => { console.error(error.message); resolveStatus(1); });
+    child.on("exit", (code) => resolveStatus(code ?? 1));
+  });
+}
+
+async function bakeAll() {
+  if (forwarded.includes("--only") || forwarded.includes("--bgm-only")) return bake();
+  const { FLAGSHIP_DEMO_IDS } = await import("../../src/project/flagship/types.ts");
+  const rest = FLAGSHIP_DEMO_IDS.filter((id) => id !== HEAVY_DEMO);
+  if (rest.length === FLAGSHIP_DEMO_IDS.length || rest.length === 0) return bake();
+  const started = performance.now();
+  const statuses = await Promise.all([
+    spawnBake(["--only", HEAVY_DEMO, "--no-bgm"]),
+    spawnBake(["--only", rest.join(","), "--no-bgm"]),
+  ]);
+  console.log(`bake:demos parallel (${HEAVY_DEMO} | ${rest.length} others) ${((performance.now() - started) / 1000).toFixed(1)}s`);
+  const failed = statuses.find((status) => status !== 0);
+  if (failed !== undefined) process.exit(failed);
+  bake(true);
+}
 
 function bake(bgmOnly = false) {
   const result = spawnSync(process.execPath, [
@@ -169,7 +205,7 @@ async function main() {
   else reason = args.find((arg) => ["--no-cache", "--force", "--only", "--bgm-only"].includes(arg));
   if (reason) {
     console.log(`bake:demos cache disabled (${reason})`);
-    return bake();
+    return bakeAll();
   }
 
   const started = performance.now();
@@ -184,7 +220,7 @@ async function main() {
   } finally {
     console.log(`bake:demos cache key ${((performance.now() - started) / 1000).toFixed(2)}s`);
   }
-  if (!key) return bake();
+  if (!key) return bakeAll();
 
   const cachePath = join(cacheDir, key);
   let hit = false;
@@ -204,7 +240,7 @@ async function main() {
     bake(true);
   } else {
     console.log(`bake:demos cache miss ${short}`);
-    bake();
+    await bakeAll();
   }
   try {
     if (!hit) storeCache(cachePath, names);
