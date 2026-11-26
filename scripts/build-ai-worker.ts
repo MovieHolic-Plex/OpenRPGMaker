@@ -88,7 +88,8 @@ function stageAddon(tag: string): void {
 
 // 큰 JSON(번들 타일셋·참고문서 등 약 150개, 148MB)을 실행 파일에 박지 않고 <출력 폴더>/worker-data 에 두고 실행 때 읽는다 (2026-11-26, worker-slim).
 // 박아 두면 워커 실행 파일이 리눅스 341MB 가 되고, 켤 때마다 그 JSON 을 스크립트로 훑느라 첫 조수 요청 기동이 약 7초 걸렸다(밖에 두면 약 2.5초, omp-to-pi 실측).
-// 경로 해석·없을 때의 문구는 scripts/lib/workerData.ts. node_modules 의 JSON 은 그대로 둔다.
+// 경로 해석·없을 때의 문구는 scripts/lib/workerData.ts. node_modules 의 JSON 은 그대로 둔다. 같은 폴더를 프로젝트 코어도 쓰므로(build-electron.mjs)
+// 여기서는 폴더를 비우지 않는다. build-electron.mjs 가 빌드 처음에 비운다.
 const DATA_MIN_BYTES = 64 * 1024;
 const dataDir = join(outDir, "worker-data");
 const RESERVED = new Set("arguments await break case catch class const continue debugger default delete do else enum eval export extends false finally for function if implements import in instanceof interface let new null package private protected public return static super switch this throw true try typeof var void while with yield".split(" "));
@@ -123,7 +124,6 @@ const externalJson: import("bun").BunPlugin = {
     });
   },
 };
-rmSync(dataDir, { recursive: true, force: true });
 
 for (const key of wanted) {
   const { target, name, addon } = TARGETS[key];

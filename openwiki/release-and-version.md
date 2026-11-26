@@ -199,6 +199,10 @@ DISPLAY=:78 xwininfo -root -tree | grep -i oprn   # 1272x766 창이 잡히면 �
   파일이 없으면 워커가 한 줄(«조수 워커 자료를 읽지 못했습니다(파일이 없습니다): <경로>. 앱 설치가 깨졌을 수 있습니다 …»)을 남기고
   코드 78 로 끝나며, 호스트가 그 줄을 조수 오류로 보인다. 실측(2026-11-26): 리눅스 워커 341.2MB → 160.3MB, 윈도 347.3MB → 166.4MB,
   READY 6.9~7.5초 → 2.35~2.52초. 소스로 띄우는 워커(`bun scripts/oh-my-pi-worker.ts`)는 JSON 을 그대로 import 한다.
+- 메인 프로세스의 프로젝트 코어(`dist-electron/project-core.cjs`)도 같은 폴더·같은 경로 규칙으로 큰 JSON 을 읽는다(`build-electron.mjs` 의
+  `externalDataJson`, `join(__dirname, "worker-data", <경로>)`). Electron 의 fs 가 `app.asar/dist-electron/worker-data` 를 풀린 폴더로 이어 준다.
+  그래서 번들 타일셋 JSON 이 코어·워커에 한 벌만 있다(코어 123MB → 5.1MB). 폴더는 `build-electron.mjs` 가 처음에 비우고 코어·워커가 채운다.
+  렌더러(`dist/assets`)의 JSON 은 vite 가 따로 굽는 것이라 아직 따로 있다.
 - 옛 방식(2026-09-27~11-26): `--compile` 이 런타임에 계산한 경로의 애드온을 따라가지 못해 워커가 시작하자마자
   `Failed to load pi_natives native addon` 으로 죽었고(«로그인은 되는데 채팅만 안 된다»), 애드온을 워커 옆에 두고 lock 의 tarball 로
   윈도 애드온을 받았다. 두 버전이 섞이면 윈도 워커가 `~/.omp/natives/<판>/` 을 찾다 죽은 일도 있었다(2026-11-04).
