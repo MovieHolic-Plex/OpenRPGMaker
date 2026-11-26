@@ -1,5 +1,5 @@
 import type { Project } from "../types";
-import { createBlankProject } from "./blankProject";
+import { createBlankProject, type BlankProjectOptions } from "./blankProject";
 import { applyDefaultElementAffinities } from "./defaultElementAffinities";
 
 /**
@@ -90,8 +90,8 @@ export function slimStarterProject(project: Project): Project {
 }
 
 /** 사용자가 만드는 「빈 프로젝트」. 전체 기본 DB 가 필요하면 `createBlankProject()` 를 쓴다. */
-export function createStarterBlankProject(): Project {
-  const project = slimStarterProject(createBlankProject());
+export function createStarterBlankProject(options: BlankProjectOptions = {}): Project {
+  const project = slimStarterProject(createBlankProject(options));
   // 사용자가 만드는 새 프로젝트만 예시 상성을 싣는다(데모·테스트·헤드리스의 createBlankProject 는 그대로 — 균형을 바꾸지 않는다).
   applyDefaultElementAffinities(project.database.enemies, project.database.elements ?? []);
   return project;
