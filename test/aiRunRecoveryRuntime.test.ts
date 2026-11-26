@@ -109,7 +109,8 @@ it("keeps event editor tool checkpoints compact on a fresh project with all bund
       observedTools.push(event.name);
       identityCounts.push(identity.mock.calls.length);
     }, undefined, { eventCommandScope: scope, goalAction: "new-goal" }));
-    expect(result.stoppedReason).toBe("final");
+    // 실패하면 무엇이 턴을 멈췄는지 바로 보이게(ci-full 에서 «'error' to be 'final'» 만 남아 원인을 못 봤다).
+    expect(result.stoppedReason, `${result.error ?? ""}\n${String(result.errorDetail ?? "").slice(0, 1500)}`).toBe("final");
     expect(observedTools).toEqual(["get_project_summary", "get_map_region", "find_events"]);
     expect(captured).toHaveLength(3);
     expect(identityCounts).toEqual([identityCounts[0], identityCounts[0], identityCounts[0]]);
