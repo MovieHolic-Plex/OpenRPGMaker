@@ -12,7 +12,12 @@ const specCategories = {
 type PlaceableCatalog = "current" | "pre-ingest";
 
 // The compact saves from before this ingest still reference the first 129 objects and the 2×2 crate.
-const preIngestObjects = BEODEUL_PLACEABLE_OBJECTS.slice(0, 129).map(object => object.id !== "crate_stack" ? object : {
+// Those 129 (#4849, starting at anchor_decor) sit after the modern-city objects that merged first, so find them by id, not position.
+const PRE_INGEST_FIRST_ID = "anchor_decor";
+const PRE_INGEST_COUNT = 129;
+const preIngestStart = BEODEUL_PLACEABLE_OBJECTS.findIndex(object => object.id === PRE_INGEST_FIRST_ID);
+const assetByObjectId = new Map(BEODEUL_PLACEABLE_OBJECTS.map((object, index) => [object.id, BEODEUL_OBJECT_IMAGE_ASSETS[index]!]));
+const preIngestObjects = BEODEUL_PLACEABLE_OBJECTS.slice(preIngestStart, preIngestStart + PRE_INGEST_COUNT).map(object => object.id !== "crate_stack" ? object : {
   ...object, sourceFile: "crate_stack_v3.png", widthPx: 32, widthTiles: 2,
   footprint: ["**", "XX"], tags: ["harbor", "market", "창고"],
 });
@@ -23,7 +28,7 @@ function sourceKits(target: TilesetDef, catalog: PlaceableCatalog) {
   const tileMeta: NonNullable<TilesetDef["tileMeta"]> = [];
   const tileGrafts: NonNullable<TilesetDef["tileGrafts"]> = [];
   const objects = catalog === "pre-ingest" ? preIngestObjects : BEODEUL_PLACEABLE_OBJECTS;
-  const kits = objects.map((object, index): SectionStructureKitDef => {
+  const kits = objects.map((object): SectionStructureKitDef => {
     const { widthTiles: width, heightTiles: height, footprint, set, growthAxis, surface } = object;
     const id = BEODEUL_OBJECT_KIT_PREFIX + object.id;
     const description = object.nameKo;
@@ -46,7 +51,7 @@ function sourceKits(target: TilesetDef, catalog: PlaceableCatalog) {
           role, defaultLayer: "upper", repeatability: repeat, source: "bundled-default",
           passage: mark === "X" ? "solid" : mark === "*" ? "star" : "passable",
         });
-        tileGrafts.push({ targetTile: slot, sourceChipset: BEODEUL_OBJECT_IMAGE_ASSETS[index]!.textureKey, sourceTile: dy * width + dx });
+        tileGrafts.push({ targetTile: slot, sourceChipset: assetByObjectId.get(object.id)!.textureKey, sourceTile: dy * width + dx });
         return slot;
       }),
     }));

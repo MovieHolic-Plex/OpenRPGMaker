@@ -29,7 +29,8 @@ const objectSchema = z.strictObject({
   widthTiles: size,
   heightTiles: size,
   footprint: z.array(z.string().regex(/^[X.* ]+$/u)).min(1),
-  tags: z.array(z.string().trim().min(1)).min(1),
+  // 키트 태그는 기물 명세(objectSpec) 규칙 «16개 이하, 각 1~24자»를 따른다 — 긴 영문 이름 태그 8개가 그 명세를 깨뜨렸다(#5185).
+  tags: z.array(z.string().trim().min(1).max(24)).min(1).max(15),
   set: z.strictObject({ id: key, piece: key }).optional(),
   growthAxis: z.enum(["horizontal", "vertical", "both"]).optional(),
   surface: z.enum(["water", "wall"]).optional(),
