@@ -28,6 +28,8 @@ export interface PiRunJournal {
   /** 원래 실행의 연결(공급자 id)·모델 — 이어 하기는 이것으로 잇는다(editor/panels/aiResumeProvider.ts). */
   readonly provider?: string;
   readonly model?: string;
+  /** 팀 실행: 담당이 끝까지 해낸(agent_done ok) 맵 배정. 배정이 끝날 때마다 표지를 다시 쓴다. */
+  readonly doneMaps?: readonly string[];
 }
 
 /** 워커가 프로젝트에 같이 싣는 이어 하기 기억(`assistantTodo.memory.resume`). */
@@ -48,6 +50,8 @@ export interface PiAppliedCall {
 export interface PiRunResumeRequest {
   readonly key: string;
   readonly from?: string;
+  /** 앞 팀 실행에서 끝난 맵 배정 — 팀장이 같은 맵을 다시 맡기면 한 번 돌려보낸다(piTeamRuntime startAssign). */
+  readonly doneMapIds?: readonly string[];
 }
 
 function canonical(value: unknown): unknown {
@@ -126,6 +130,7 @@ export function parseInFlightMarker(text: string): PiRunJournal | null | undefin
       ...(Array.isArray(raw.mapIds) ? { mapIds: raw.mapIds.filter((id): id is string => typeof id === "string") } : {}),
       ...(typeof raw.provider === "string" ? { provider: raw.provider } : {}),
       ...(typeof raw.model === "string" ? { model: raw.model } : {}),
+      ...(Array.isArray(raw.doneMaps) ? { doneMaps: raw.doneMaps.filter((id): id is string => typeof id === "string") } : {}),
     };
   } catch {
     return null;
@@ -140,8 +145,20 @@ export function appliedByInterruptedRun(journal: PiRunJournal, memory: PiRunResu
   return memory && memory.key === journal.key ? memory.applied.length : 0;
 }
 
+/** 팀 실행의 맵 배정 진행 — agent_spawn 으로 담당→맵을 알고, 그 담당의 agent_done 이 ok 면 그 맵을 끝난 배정으로 센다. 끝난 맵이 늘었으면 true. */
+export interface TeamProgress { readonly spawned: Map<string, string>; readonly done: Set<string> }
+export function noteTeamProgress(progress: TeamProgress, event: { readonly type: string; readonly agentId?: string; readonly mapId?: string | null; readonly ok?: boolean }): boolean {
+  if (event.type === "agent_spawn" && event.agentId && event.mapId) { progress.spawned.set(event.agentId, event.mapId); return false; }
+  if (event.type !== "agent_done" || !event.ok || !event.agentId) return false;
+  const mapId = progress.spawned.get(event.agentId);
+  if (!mapId || progress.done.has(mapId)) return false;
+  progress.done.add(mapId);
+  return true;
+}
+
 /** 이어 하기 실행의 요청 글. 마지막 문장 «이어서 해 줘.» 가 v2 의 «계속» 판정(할 일 되살리기)을 켠다(src/ai/v2/request/scope.ts asksToContinue). */
-export function resumeTaskText(journal: PiRunJournal, applied: number): string {
-  const done = applied > 0 ? ` 그 실행에서 이미 적용된 단계 ${applied}개는 프로젝트에 남아 있으니 다시 하지 말고 남은 일만 해라.` : "";
+export function resumeTaskText(journal: PiRunJournal, applied: number, doneMapNames: readonly string[] = []): string {
+  const done = (applied > 0 ? ` 그 실행에서 이미 적용된 단계 ${applied}개는 프로젝트에 남아 있으니 다시 하지 말고 남은 일만 해라.` : "")
+    + (doneMapNames.length ? ` 그 실행에서 끝난 맵: ${doneMapNames.join(", ")} — 이 맵들은 다시 짓지 말고 남은 맵·일만 해라.` : "");
   return `[이어 하기] 앱이 꺼져 앞 실행이 중단됐다. 원래 요청: «${journal.task}».${done}\n이어서 해 줘.`;
 }

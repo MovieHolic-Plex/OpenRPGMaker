@@ -1,5 +1,5 @@
 import { interruptedPiRun } from "./aiPiRunInterrupted";
-import { appliedByInterruptedRun, inFlightMarkerText, readResumeMemory, resumeTaskText, type PiRunJournal } from "@/ai/piAgent/runResume";
+import { appliedByInterruptedRun, inFlightMarkerText, noteTeamProgress, readResumeMemory, resumeTaskText, type PiRunJournal, type TeamProgress } from "@/ai/piAgent/runResume";
 import { applyAutoPick, collectProviderRoutes, currentProviderId } from "./aiAutoProvider";
 import { decideResumeProvider } from "./aiResumeProvider";
 import { providerLimitedUntil } from "@/ai/providerLimits";
@@ -1267,18 +1267,22 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (interrupted !== null) {
       // 앱이 실행 도중 꺼졌다. 부팅 때 저절로 다시 보내지 않는다(아래 restoreLatestForBoot 주석) — 사용자가 고른다.
       clearRecovery();
-      // 이어 하기(#5239): 단일 실행이면 프로젝트에 실린 진행 기록(assistantTodo.memory.resume)으로 남은 일만 잇는다. 팀 실행은 아직 다시 보내기만.
-      const journal = interrupted.journal?.mode === "single" ? interrupted.journal : null;
-      const applied = journal ? appliedByInterruptedRun(journal, readResumeMemory(store.getCurrent().assistantTodo)) : 0;
-      const notice = el("div", { class: "ai-retry-row", dataset: { testid: "ai-run-recovery", state: "interrupted", applied: String(applied) },
-        children: [el("span", { text: applied > 0
-          ? `앱이 꺼져 이 실행이 중단됐습니다. 적용된 단계 ${applied}개는 프로젝트에 남아 있고, 이어 하기는 남은 일만 합니다.`
+      // 이어 하기(#5239): 단일 실행은 프로젝트에 실린 진행 기록(assistantTodo.memory.resume)으로, 팀 실행은 표지의 끝난 맵 배정으로 남은 일만 잇는다.
+      // 끝난 맵은 지금 프로젝트에 있는 것만 센다 — 표지가 자동 저장보다 먼저 저장됐을 수 있다.
+      const journal = interrupted.journal;
+      const current = store.getCurrent();
+      const applied = journal ? appliedByInterruptedRun(journal, readResumeMemory(current.assistantTodo)) : 0;
+      const doneMapIds = (journal?.doneMaps ?? []).filter((id) => current.maps[id]);
+      const done = applied + doneMapIds.length;
+      const notice = el("div", { class: "ai-retry-row", dataset: { testid: "ai-run-recovery", state: "interrupted", applied: String(applied), doneMaps: String(doneMapIds.length) },
+        children: [el("span", { text: done > 0
+          ? `앱이 꺼져 이 실행이 중단됐습니다. ${doneMapIds.length ? `끝난 맵 ${doneMapIds.length}개` : `적용된 단계 ${applied}개`}는 프로젝트에 남아 있고, 이어 하기는 남은 일만 합니다.`
           : "앱이 꺼져 이 실행이 중단됐습니다. 이미 적용된 단계는 프로젝트에 남아 있습니다." })] });
       if (journal) {
         const sendResume = (): void => {
           clearRecovery();
-          const text = resumeTaskText(journal, applied);
-          pendingResume = { from: journal.key, task: text.trim() };
+          const text = resumeTaskText(journal, applied, doneMapIds.map((id) => `${current.maps[id]?.name?.trim() || id}(${id})`));
+          pendingResume = { from: journal.key, task: text.trim(), doneMapIds };
           input.value = text; input.dispatchEvent(new Event("input")); void send();
         };
         notice.append(el("button", { text: "이어 하기", attrs: { type: "button" }, dataset: { testid: "ai-run-resume" },
@@ -2325,7 +2329,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     ...(opts?.intentNote ? { intentNote: opts.intentNote } : {}),
   } : {};
   /** «이어 하기» 단추가 평소 전송 경로(맵 소유권·분류)로 보낸 요청 — 같은 글의 runPiTurn 이 한 번 가져간다. */
-  let pendingResume: { readonly from: string; readonly task: string } | null = null;
+  let pendingResume: { readonly from: string; readonly task: string; readonly doneMapIds: readonly string[] } | null = null;
   /**
    * 이어 하기는 원래 실행의 연결·모델로 잇는다(aiResumeProvider.ts). 지금 연결이 다르면 원래 연결을 쓸 수 있는지 보고 되돌린다.
    * 쓸 수 없으면 알림 자리에서 사용자가 고른다 — 저절로 다른 연결로 잇지 않는다.
@@ -2383,13 +2387,18 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       return entries.some((entry) => entry.kind === "user" && entry.text === turnUserEntry.text) ? entries : [...entries, turnUserEntry];
     };
     // 표지에 이어 하기 기록을 붙인다(src/ai/piAgent/runResume.ts) — 같은 열쇠를 워커가 적용 호출 기록과 함께 프로젝트에 싣는다.
-    const resumeFrom = pendingResume && pendingResume.task === command.task ? pendingResume.from : undefined;
+    const resumed = pendingResume && pendingResume.task === command.task ? pendingResume : null;
     pendingResume = null;
     const runResumeKey = crypto.randomUUID();
-    const inFlight = inFlightMarkerText({ key: runResumeKey, task: command.task, ...(displayText && displayText !== command.task ? { shown: displayText } : {}),
-      mode: command.mode === "team" ? "team" : "single", ...(command.mapIds.length ? { mapIds: [...command.mapIds] } : {}), startedAt: Date.now(),
-      provider: currentProviderId(), model: loadAiConfig().model });
-    persistConversation({ id: turnConversation0, scope: turnScope0, entries: [...settledTurnEntries(), { kind: "status", text: inFlight, at: turnUserEntry.at }] });
+    const turnStartedAt = Date.now();
+    const turnProvider = currentProviderId(), turnModel = loadAiConfig().model;
+    // 이어 한 팀 실행은 앞에서 끝난 맵도 이 실행 것으로 이어 받는다 — 두 번 꺼져도 남는다.
+    const teamProgress: TeamProgress = { spawned: new Map(), done: new Set(resumed?.doneMapIds ?? []) };
+    const turnJournal = (): PiRunJournal => ({ key: runResumeKey, task: command.task, ...(displayText && displayText !== command.task ? { shown: displayText } : {}),
+      mode: command.mode === "team" ? "team" : "single", ...(command.mapIds.length ? { mapIds: [...command.mapIds] } : {}), startedAt: turnStartedAt,
+      ...(teamProgress.done.size ? { doneMaps: [...teamProgress.done] } : {}), provider: turnProvider, model: turnModel });
+    const persistInFlight = (): void => persistConversation({ id: turnConversation0, scope: turnScope0, entries: [...settledTurnEntries(), { kind: "status", text: inFlightMarkerText(turnJournal()), at: turnUserEntry.at }] });
+    persistInFlight();
     if (opts?.questionPromoted) appendBubble("system", "프로젝트를 바꾸지 않고 확인해서 답할게요.");
     const progress = canvasProgress ?? startAiCanvasProgress(displayText || command.task);
     canvasProgress = progress;
@@ -2459,7 +2468,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     });
     try {
       await runPiCommand(command, {
-        onEvent: event => { progress.event(event); featureChecklist.event(event); turnLiveStatus.event(event); turnReference.event(event); reportPiImageUnavailable(event); regionWarnings = regionWarningsFromEvent(event) ?? regionWarnings; },
+        onEvent: event => { if (noteTeamProgress(teamProgress, event)) persistInFlight(); progress.event(event); featureChecklist.event(event); turnLiveStatus.event(event); turnReference.event(event); reportPiImageUnavailable(event); regionWarnings = regionWarningsFromEvent(event) ?? regionWarnings; },
         getApprovedTilesetFamilies: () => approvedTilesetFamilies,
         onTilesetChangeQuestion: (question) => { tilesetQuestion = question; },
         onStoreCard: (request) => { storeCards.push(request); },
@@ -2498,7 +2507,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         },
       }, {
         ...piRunOptionsFor(plan, opts),
-        resume: { key: runResumeKey, ...(resumeFrom ? { from: resumeFrom } : {}) },
+        resume: { key: runResumeKey, ...(resumed ? { from: resumed.from, ...(resumed.doneMapIds.length ? { doneMapIds: resumed.doneMapIds } : {}) } : {}) },
         ...(opts?.images?.length ? { userImages: opts.images } : {}),
         ...(command.goalMode ? { maxTurns: GOAL_MAX_TURNS, timeoutMs: GOAL_TIMEOUT_MS } : {}),
         // 다듬기: 바퀴마다 모델 차례가 10~20번 든다 — 차례·시간 상한을 다듬기 한도에 맞춘다.

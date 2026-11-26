@@ -240,6 +240,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let rateLimitAutoRetried = false;
   /** 배정 id → 원래 task 문구. 429 자동 재시도가 같은 일을 다시 맡길 때 쓴다. */
   const assignedTask = new Map<string, string>();
+  /** 앱 재시작 뒤 이어 하기 — 앞 실행에서 끝난 맵 배정(한 번씩 돌려보낸다). */
+  const resumeDoneMaps = new Set(request.resume?.from ? request.resume.doneMapIds ?? [] : []);
   /** 구간 게이트(프리셋 첫 생성)와 별개로 연애 게임 완료 검사가 finish 를 돌려보낸 횟수 — 채팅 한 줄 경로(기획서 없음)도 같은 검사를 받는다. */
   let romanceRejections = 0;
   let jrpgChatRejections = 0;
@@ -460,6 +462,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     if (request.applyMode === "step" && (runningAssignments(ledger).length || runningTasks().length)) throw new Error("단계별 적용은 앞 작업 승인·완료 후 다음 작업을 배정합니다. wait_agents를 먼저 호출하세요.");
     if (projectWriter()) throw new Error("프로젝트 공통 데이터 제작 중입니다. wait_agents 후 맵 작업을 배정하세요.");
     if (!working.maps[mapId]) throw new Error(`맵 '${mapId}' 이 프로젝트에 없습니다. 후보: ${candidateMaps.join(", ")}`);
+    // 앱 재시작 뒤 이어 하기(src/ai/piAgent/runResume.ts): 앞 실행에서 끝난 맵 배정은 한 번 돌려보낸다. 팀장이 그래도 맡기면(고칠 것이 있어서) 받는다.
+    if (!reviewRepair && !selfFix && resumeDoneMaps.delete(mapId)) {
+      throw new Error(`앞 실행(앱이 꺼지기 전)에서 '${mapId}' 담당은 이미 끝났다 — 다시 짓지 말고 남은 맵만 배정한다. 그 맵에 꼭 고칠 것이 있으면 고칠 것만 적어 한 번 더 배정하라.`);
+    }
     const agentId = `builder-${counters.builder + 1}`;
     const claim = claimAssignment(ledger, { mapId, agentId, memberId: member.id });
     if (!claim.ok) throw new Error(claim.reason);

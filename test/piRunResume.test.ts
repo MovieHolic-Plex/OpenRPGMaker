@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { freshBlankProject as createBlankProject } from "./support/blankProject";
-import { appliedByInterruptedRun, appliedCallKey, inFlightMarkerText, PI_RUN_IN_FLIGHT, readResumeMemory, RESUME_MAX_APPLIED, resumeTaskText, withAppliedCall, type PiRunJournal } from "@/ai/piAgent/runResume";
+import { appliedByInterruptedRun, appliedCallKey, inFlightMarkerText, noteTeamProgress, PI_RUN_IN_FLIGHT, readResumeMemory, RESUME_MAX_APPLIED, resumeTaskText, withAppliedCall, type PiRunJournal, type TeamProgress } from "@/ai/piAgent/runResume";
 import { interruptedPiRun } from "@/editor/panels/aiPiRunInterrupted";
 import { CONTINUE_WORDS } from "@/ai/v2/request/readers";
 import { createV2Turn } from "@/ai/v2/turn/turn";
@@ -66,6 +66,22 @@ describe("Pi 실행 이어 하기 기록(runResume)", () => {
   it("이어 하기 요청 글은 v2 의 «계속» 판정을 켠다(할 일 목록을 되살리는 길)", () => {
     expect(CONTINUE_WORDS.test(resumeTaskText(journal, 3))).toBe(true);
     expect(CONTINUE_WORDS.test(resumeTaskText(journal, 0))).toBe(true);
+  });
+
+  it("팀 실행: 담당이 ok 로 끝난 맵만 끝난 배정으로 세고, 표지에 실어 되읽으며, 이어 하기 글에 그 맵을 적는다", () => {
+    const progress: TeamProgress = { spawned: new Map(), done: new Set() };
+    expect(noteTeamProgress(progress, { type: "agent_spawn", agentId: "builder-1", mapId: "map_town" })).toBe(false);
+    expect(noteTeamProgress(progress, { type: "agent_spawn", agentId: "builder-2", mapId: "map_cave" })).toBe(false);
+    expect(noteTeamProgress(progress, { type: "agent_spawn", agentId: "lead-task-1", mapId: null })).toBe(false);
+    expect(noteTeamProgress(progress, { type: "agent_done", agentId: "builder-2", ok: false })).toBe(false);
+    expect(noteTeamProgress(progress, { type: "agent_done", agentId: "builder-1", ok: true })).toBe(true);
+    expect(noteTeamProgress(progress, { type: "agent_done", agentId: "builder-1", ok: true })).toBe(false);
+    expect([...progress.done]).toEqual(["map_town"]);
+    const team: PiRunJournal = { ...journal, mode: "team", doneMaps: [...progress.done] };
+    expect(interruptedPiRun([{ kind: "user", text: "r" }, { kind: "status", text: inFlightMarkerText(team) }])?.journal?.doneMaps).toEqual(["map_town"]);
+    const text = resumeTaskText(team, 0, ["마을(map_town)"]);
+    expect(text).toContain("마을(map_town)");
+    expect(CONTINUE_WORDS.test(text)).toBe(true);
   });
 
   it("v2 턴: 체크포인트마다 적용 호출 키를 프로젝트에 싣고, 이어 하기 실행은 그 호출을 한 번만 건너뛴다", () => {
