@@ -177,6 +177,17 @@ async function clickScenario({ oldImage, info }) {
   console.log(`[칩] 기록: ${order.join(" → ")}`);
   if (inOrder(order, [`start@${OLD}`, `downloaded@${OLD}`, `install@${OLD}`, `start@${NEW}`])) pass("linux-click-restart", order.join(" → "));
   else fail("linux-click-restart", `${order.join(" → ") || "(기록 없음)"}\n앱 출력 끝:\n${run.output.text.slice(-4000)}`);
+  // 새 판은 옛 판이 process.env 에 쓴 워커·렌더러 경로를 물려받지 않고 자기 마운트에서 찾아야 한다
+  // (2026-11-26 v0.419→0.420 실측: 새 판 조수 워커가 옛 마운트의 0.419 바이너리로 떴다).
+  const fresh = events.find((event) => event.event === "start" && event.version === NEW);
+  if (fresh) {
+    const inherited = Object.entries(fresh.inherited ?? {}).filter(([, value]) => value != null);
+    const resolved = Object.values(fresh.resolved ?? {}).filter((value) => value != null);
+    const own = resolved.length > 0 && resolved.every((value) => String(value).startsWith(String(fresh.resourcesPath)));
+    const detail = `resourcesPath=${fresh.resourcesPath} resolved=${JSON.stringify(fresh.resolved)} inherited=${JSON.stringify(fresh.inherited)}`;
+    if (inherited.length === 0 && own) pass("linux-click-own-paths", detail);
+    else fail("linux-click-own-paths", detail);
+  }
   if (existsSync(run.installed) && sha512(run.installed) === info.sha512) pass("linux-click-file-replaced", "같은 자리 파일이 0.0.2 와 같은 sha512");
   else fail("linux-click-file-replaced", "sha512 가 latest-linux.yml 과 다르다");
 }

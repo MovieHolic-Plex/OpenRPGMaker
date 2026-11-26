@@ -64,6 +64,8 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     if (busy) return;
     const text = status.enabled || status.state.kind === "ready" ? appUpdateChipText(status.state) : null;
     button.hidden = text === null;
+    // 빌린 단추 클래스(ln-btn·studio-tool-button)의 display 가 [hidden] 을 이겨, 숨긴 칩이 빈 파란 네모로 남았다(2026-11-26 실측).
+    button.style.display = text === null ? "none" : "";
     button.textContent = text ?? "";
     button.title = status.state.kind === "ready"
       ? `저장하고 다시 시작하면 v${shortVersion(status.state.version)} 으로 바뀌어요. 그냥 두면 앱을 끌 때 바뀌어요.`

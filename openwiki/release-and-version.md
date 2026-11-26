@@ -238,6 +238,11 @@ Node 쪽 `aiAuthRuntime.ts` 라 워커 없이 된다). 워커는 `@oh-my-pi/pi-n
   `boot.ts` 가 바로 끝낸다. AppImage 이름에 공백이 있으면 gh 업로드가 점으로 바꿔 `latest-linux.yml` 과 어긋나므로
   `linux.artifactName` 을 `OPRN.Studio-${version}.${ext}` 로 고정했다. AppImage 의 차등 받기는 파일 안 blockmap 을 쓴다
   (별도 `.blockmap` 은 NSIS 만).
+- 물려주는 환경 변수: electron-updater 는 새 AppImage·NSIS 설치기를 이 실행의 `process.env` 로 띄운다. 메인이 실행 중에 쓴
+  `OPRN_OH_MY_PI_WORKER_BIN`·`OPRN_OH_MY_PI_WORKER_SCRIPT`·`OPRN_RENDERER_DIR` 는 `installAppUpdate` 가 켜질 때 값으로 돌린다
+  (`APP_UPDATE_RUNTIME_PATH_ENV`). 안 돌리면 AppImage 새 판이 옛 마운트의 조수 워커·렌더러를 쓰고 옛 마운트가 풀리지 않는다
+  (2026-11-26 v0.419→0.420 실측). 윈도 설치판은 설치 폴더가 같아 같은 경로의 새 파일을 가리켜 드러나지 않았다.
+  e2e 가 새 판 `start` 기록의 물려받은 값이 없고 경로가 자기 `resourcesPath` 안인지 본다(`linux-click-own-paths`).
 - 릴리스 자산: 0.420.0 부터 `latest.yml`·`latest-linux.yml`·`OPRN.Studio-Setup-<판>.exe.blockmap` 도 발행 전 필수다
   (`releaseAssets.mjs` `requiredUpdateAssets`, `UPDATE_FEED_SINCE` — desktop-release.yml 의 jq `feed()` 와 같은 판). 이름은 바꾸지 않고
   올린다(README 고정 이름과 겹치지 않는다). 그 전 판은 요구하지 않는다 — 옛 빌드 설정은 이 파일을 만들지 못한다.
@@ -357,7 +362,9 @@ npm run release:auto -- --dry-run    # 계획만 (아무것도 쓰지 않음)
 
 안 맞으면 아무것도 쓰지 않고 그 실행의 요약과 아티팩트 `auto-release-decision`(JSON)에 이유만 남긴다.
 맞으면 새 발행기를 만들지 않고 기존 경로를 탄다: `release-auto --skip-publish`(PR·사용자 말 CHANGELOG) →
-ci-fast 를 release/next 에 디스패치(GITHUB_TOKEN 푸시는 워크플로를 깨우지 않는다) → `merge-pr.mjs` →
+ci-fast·ci-related-tests·app-update-e2e 를 release/next 에 디스패치(GITHUB_TOKEN 푸시는 워크플로를 깨우지 않고,
+봇이 연 PR 의 pull_request 런은 잡 0개로 머물다 머지 때 «workflow file issue» 실패로 닫힌다 — v0.420 PR #5159) →
+app-update-e2e 초록을 기다림(ci-related-tests 는 정보용이라 안 기다린다) → `merge-pr.mjs` →
 `release-auto --skip-propose`(태그·초안) → `desktop-release` 디스패치(검증 뒤 발행). 발행하거나 도중에 멈추면
 이슈 «자동 릴리스 기록» 에 한 줄 남긴다(리드가 보는 한 곳).
 

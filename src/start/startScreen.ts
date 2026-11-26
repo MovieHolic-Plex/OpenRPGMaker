@@ -14,6 +14,9 @@
 import "./startScreen.css";
 // 창 단추의 지연 툴팁 모양. 편집기는 지도 스타일 층에서 싣지만 시작 화면에는 그 층이 없다 — 없으면 「닫기」가 맨글자로 레일 위에 남았다.
 import "@/styles/map/delayed-tooltip.css";
+// 토스트(util/toast) 꼴. 없으면 업데이트 뒤 «바뀐 점» 토스트가 화면 밖(y=창 높이)에 꼴 없이 붙어 보이지 않았다
+// (2026-11-26 0.420 실측). 재시작하면 시작 화면이 먼저 뜨고 바뀐 점은 한 번만 나오므로 여기서 보여야 한다.
+import "@/styles/map/palette-player.css";
 import { mountWindowControls } from "./windowControls";
 import type { RecentProjectEntry, RecentTeamEntry } from "../../electron/shared/start";
 import type { OprnBridgeStart } from "@/project/persistence/electronRepository";
@@ -176,10 +179,11 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     aiReady: loadEngineChoice() !== null,
   };
   host.dataset.testid = START_SCREEN_TESTIDS.root;
-  // 앱 업데이트 칩 — 받아 둔 새 판이 있을 때만 위 가운데에 뜬다. 오른쪽 위는 창 단추 자리다.
+  // 앱 업데이트 칩 — 받아 둔 새 판이 있을 때만 위 가운데, 머리줄 바로 아래에 뜬다. 오른쪽 위는 창 단추 자리다.
+  // 머리줄 안(top 10px)에 두면 영어·넓은 AI 상태 글자(«ChatGPT connected · …»)를 가렸다(2026-11-26 실측).
   const updateChip = renderAppUpdateChip({ className: "ln-btn ln-btn-primary" });
   if (updateChip) {
-    Object.assign(updateChip.element.style, { position: "fixed", top: "10px", left: "50%", transform: "translateX(-50%)", zIndex: "20", color: "" });
+    Object.assign(updateChip.element.style, { position: "fixed", top: "56px", left: "50%", transform: "translateX(-50%)", zIndex: "20", color: "" });
     document.body.append(updateChip.element);
   }
   const errorBox = el("p", { class: "ln-error", attrs: { role: "alert" }, dataset: { testid: START_SCREEN_TESTIDS.error } });

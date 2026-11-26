@@ -5,7 +5,8 @@
 //
 // 조건이 다 맞으면 기존 릴리스 경로를 그대로 탄다(새 발행기를 만들지 않는다):
 //   ① release-auto.mjs --skip-publish  → release/next PR(버전 범프 + 사용자 말 CHANGELOG)
-//   ② ci-fast 를 release/next 에 디스패치(GITHUB_TOKEN 푸시는 워크플로를 깨우지 않는다)
+//   ② ci-fast·ci-related-tests·app-update-e2e 를 release/next 에 디스패치(GITHUB_TOKEN 푸시는 워크플로를 깨우지 않는다)
+//      → app-update-e2e 가 초록일 때만 ③ 으로 간다(앱 자동 업데이트가 깨진 판을 내보내지 않는다).
 //   ③ merge-pr.mjs <PR>                → fast·fast-static·패리티 초록일 때만 그 머리 커밋을 squash
 //   ④ release-auto.mjs --skip-propose  → 태그 + 초안 릴리스(본문 = CHANGELOG 그 절)
 //   ⑤ desktop-release 디스패치          → 산출물 검증 뒤 발행(30분 cron 도 같은 초안을 집는다)
@@ -116,6 +117,21 @@ function assertNoHold(stage) {
   }
 }
 
+/** release/next 에 디스패치한 워크플로의 그 머리 커밋 판을 찾아 끝날 때까지 본다. 초록이 아니면 던진다(머지하지 않는다). */
+function waitDispatchedRun(workflow, headSha, timeoutMin) {
+  const deadline = Date.now() + timeoutMin * 60_000;
+  let id = null;
+  while (!id && Date.now() < deadline) {
+    const runs = ghJson(["run", "list", "--workflow", workflow, "--branch", "release/next", "--event", "workflow_dispatch", "--limit", "10", "--json", "databaseId,headSha"]) ?? [];
+    id = runs.find((entry) => entry.headSha === headSha)?.databaseId ?? null;
+    if (!id) run("sleep", ["10"]);
+  }
+  if (!id) throw new Error(`${workflow} 판이 ${headSha.slice(0, 10)} 에 생기지 않았다`);
+  // gh run watch 는 실패하면 0 이 아닌 코드로 끝난다 → run() 이 던진다.
+  run("timeout", [`${Math.max(1, Math.round((deadline - Date.now()) / 1000))}`, "gh", "run", "watch", String(id), "--exit-status", "--interval", "30"]);
+  return `run ${id} 초록`;
+}
+
 function execute(repo, decision) {
   const steps = [];
   const step = (name, fn) => {
@@ -130,6 +146,14 @@ function execute(repo, decision) {
   gh(["label", "create", AUTO_RELEASE_RULES.autoLabel, "--color", "0e8a16", "--description", "조건 기반 자동 릴리스", "--force"], { allowFailure: true });
   step("label", () => gh(["pr", "edit", String(pr.number), "--add-label", AUTO_RELEASE_RULES.autoLabel]) || `#${pr.number}`);
   step("ci-fast", () => gh(["workflow", "run", "ci-fast.yml", "--ref", "release/next"]) || "디스패치");
+  // 봇(GITHUB_TOKEN)이 연 PR 의 pull_request 런은 잡 0개로 멈췄다가 머지 때 실패로 닫힌다 — 시험이 하나도 돌지 않는다.
+  // 실측: v0.420 PR #5159 의 ci-fast·ci-related-tests·app-update-e2e 셋 다(run 45730826290 «workflow file issue»).
+  // 그래서 PR 에 걸린 나머지 두 검사도 같은 머리에 직접 디스패치한다.
+  const base = git(["rev-parse", "origin/main"]);
+  step("ci-related-tests", () => gh(["workflow", "run", "ci-related-tests.yml", "--ref", "release/next", "-f", `base=${base}`]) || "디스패치");
+  step("app-update-e2e", () => gh(["workflow", "run", "app-update-e2e.yml", "--ref", "release/next"]) || "디스패치");
+  // ci-related-tests 는 정보용(필수 아님, 릴리스는 ci-full 대조가 막는다)이라 기다리지 않는다. 업데이트 e2e 는 기다린다.
+  step("app-update-e2e-wait", () => waitDispatchedRun("app-update-e2e.yml", pr.headRefOid, 50));
   // merge-pr 가 CI 를 기다리는 동안 누가 hold-release 를 붙일 수 있다. merge-pr 가 머지 직전에, 여기서 태그 직전에 다시 본다.
   assertNoHold("merge");
   step("merge", () => run("node", ["scripts/merge-pr.mjs", String(pr.number), "--timeout-min=60", `--refuse-if-label=${AUTO_RELEASE_RULES.holdLabel}`]));

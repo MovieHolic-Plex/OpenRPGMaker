@@ -20179,5 +20179,11 @@
 "제작·강화·판매가 편집 (아이템)":"Edit crafting, upgrades & sell prices (Items)",
 "제작·강화·판매가 종류":"Crafting, upgrade & sell price types",
 "아이템 편집":"Edit items",
-"조수 작업 기록을 저장하지 못했어요. 지금 앱을 끄면 이 작업을 이어서 할 수 없어요.":"Couldn't save the assistant's work record. If you close the app now, this task can't be resumed."
+"조수 작업 기록을 저장하지 못했어요. 지금 앱을 끄면 이 작업을 이어서 할 수 없어요.":"Couldn't save the assistant's work record. If you close the app now, this task can't be resumed.",
+"v{0} 준비됨 · 다시 시작":"v{0} ready · Restart",
+"새 버전 있음 · 내려받기":"Update available · Download",
+"v{0} 으로 업데이트했어요":"Updated to v{0}",
+"v{0} 으로 업데이트했어요 · {1}":"Updated to v{0} · {1}",
+"저장하고 다시 시작하면 v{0} 으로 바뀌어요. 그냥 두면 앱을 끌 때 바뀌어요.":"Save and restart to switch to v{0}. Otherwise it switches when you quit the app.",
+"v{0} 을 내려받아요":"Download v{0}"
 }

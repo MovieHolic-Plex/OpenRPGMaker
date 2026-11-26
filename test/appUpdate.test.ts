@@ -2,7 +2,7 @@
 // 앱 자동 업데이트의 순수 판단(electron/shared/appUpdate.ts). 설치 형태 판정이 틀리면 portable 이 스스로를
 // 지우려 하거나(설치판 경로), 설치판이 칩만 띄우고 끝난다. 실제 교체·재시작은 CI e2e(app-update-e2e.yml)가 본다.
 import { describe, expect, it } from "vitest";
-import { appUpdateChipText, appUpdateModeFor, portableDownloadUrl, summarizeReleaseNotes } from "../electron/shared/appUpdate";
+import { appUpdateChipText, appUpdateModeFor, portableDownloadUrl, restoreLaunchEnv, snapshotLaunchEnv, summarizeReleaseNotes } from "../electron/shared/appUpdate";
 
 describe("appUpdateModeFor", () => {
   it("윈도 portable 은 알리기만, 설치판은 자동", () => {
@@ -41,8 +41,25 @@ describe("summarizeReleaseNotes", () => {
     expect(summarizeReleaseNotes("## 주요 변경\n- 하나\n## 개발\n- 내부")).toEqual(["하나"]);
   });
 
+  it("릴리스 본문 항목 끝의 PR 번호와 커밋 해시를 함께 뗈다", () => {
+    expect(summarizeReleaseNotes("## 주요 변경\n- ai — 영역 지시에 다리를 더한다 (#5084) (e875d17)")).toEqual(["ai — 영역 지시에 다리를 더한다"]);
+  });
+
   it("항목이 없거나 본문이 아니면 빈 배열", () => {
     expect(summarizeReleaseNotes("그냥 문장")).toEqual([]);
     expect(summarizeReleaseNotes(null)).toEqual([]);
+  });
+});
+
+describe("restoreLaunchEnv", () => {
+  it("새 판에 물려줄 환경에서 실행이 쓴 경로는 지우고 켜질 때 값은 돌려놓는다", () => {
+    const launch = snapshotLaunchEnv({ OPRN_RENDERER_DIR: "/user/dist" });
+    const env: Record<string, string | undefined> = {
+      PATH: "/bin",
+      OPRN_OH_MY_PI_WORKER_BIN: "/tmp/.mount_old/resources/app.asar.unpacked/dist-electron/oh-my-pi-worker",
+      OPRN_RENDERER_DIR: "/tmp/.mount_old/resources/app.asar/dist",
+    };
+    restoreLaunchEnv(env, launch);
+    expect(env).toEqual({ PATH: "/bin", OPRN_RENDERER_DIR: "/user/dist" });
   });
 });
