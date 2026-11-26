@@ -1456,7 +1456,10 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   if (firstMvpTeam && finishAccepted && finished && !splitNextSteps(finished).steps.length) {
     // 관문 고침을 다 써도 첫 판 약속(끝 지점까지 걸어감 등)이 남으면 «첫 판까지 만들었다» 고 넘기지 않는다 — 막지 않고 경고와 고치기 칩을 준다(오너 원칙).
     // 2026-11-26 variant-remeasure: 호러 팀 2/2 가 끝 지점에 못 닿은 채 «첫 판까지 만들었습니다» 로 조용히 나갔다.
-    const left = mvpLeft.map((line) => line.replace(/\s+—\s+[^—]*$/u, "").replace(/^.*:\s*/u, "").slice(0, 120));
+    // 사용자에게 보이는 글이라 맵 id(map_blank_start)는 표시 이름으로 바꾼다 — «감옥(map_prison)» 처럼 이름 뒤 괄호 id 는 지운다(VM QA 묶음 8: 원시 id 노출).
+    const shown = (line: string): string => Object.values(working.maps).reduce((text, map) => map.name
+      ? text.split(`${map.name}(${map.id})`).join(map.name).split(map.id).join(map.name) : text, line);
+    const left = mvpLeft.map((line) => shown(line.replace(/\s+—\s+[^—]*$/u, "").replace(/^.*:\s*/u, "")).slice(0, 120));
     finished = left.length
       ? `${finished}\n\n주의: 첫 판이 아직 끝까지 이어지지 않습니다. 끝까지 못 가는 곳: ${left.join(" / ")}\n\n${nextStepsBlock([`끝까지 가는 길 고쳐 줘: ${left[0]}`, ...mvpNextSteps(working)])}`
       : `${finished}\n\n${MVP_DONE_LINE}\n\n${nextStepsBlock(mvpNextSteps(working))}`;
