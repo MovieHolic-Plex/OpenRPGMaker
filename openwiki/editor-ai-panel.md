@@ -5,10 +5,18 @@
 2026-11-24 오너 결정(레인 fix1124-ai-gen)으로 기본이 v2 다. v1 기본이라 v2 다양화 수정(#4955·#4960~#4962)이 사용자 화면에 닿지 않았다.
 되돌리는 길: `?assistant=v1` 또는 `localStorage['oprn:assistant-v2']='0'`(하네스 v1 비교 판은 `'0'` 을 적는다).
 
-**첫 MVP 생성은 v2 단일이다**(2026-11-24 리드 결정, 같은 날 팀 기본을 되돌림). 팀 경로는 v1 Pi 팀이라 v2 MVP 관문(엔딩 없음·끝 지점 `mvp_reached`·3~5맵)을
-비켜 갔다(assistant-measure 실측: start-jrpg 단일 16분 합격 → 팀 40분 시간 초과·엔딩 2). 팀장이 MVP 규칙을 지킬 때까지 `src/ai/piAgent/firstMvpRoute.ts` 는
-빈 프로젝트의 게임 하나 요청을 `firstMvp`(작업 카드 «MVP까지 만들었어요»)로만 표시하고 팀으로 보내지 않는다. 장르 프리셋 첫 요청은 예전처럼 팀이다. 몬스터 수집 요청은
-`classifyPlainPiTurn` 의 몬스터 갈래가 단일 제작자로 되돌린다. `/goal` 은 자기 경로다.
+**첫 MVP 생성은 팀 실행이다 — 몬스터 수집만 v2 단일**(2026-11-26 team-mvp-revive-r3; 11-24 에 단일로 되돌렸던 것을 다시 켬다).
+`src/ai/piAgent/firstMvpRoute.ts` 는 빈 프로젝트의 게임 하나 요청을 `firstMvp`(작업 카드 «MVP까지 만들었어요»)로 표시하고 팀으로 보낸다.
+몬스터 수집(`system.genre === "monster-collect"` 또는 `isMonsterRequestTurn`)은 자기 캠페인 경로라 단일이다. 장르 프리셋 첫 요청은 예전처럼 팀, `/goal` 은 자기 경로다.
+첫 MVP 팀의 흐름(`scripts/lib/piTeamRuntime.ts` `firstMvpTeam`):
+1. 팀장이 `build_world` 로 장소 3~5장과 문을 선언한다(노드 5개 초과·맵 5장 초과는 거절). 그 직후 런타임이 `src/ai/piAgent/teamMvpPrebuild.ts` 로
+   장소 맵마다 결정적 생성기를 한 번 돌린다 — 마을 `author_beodeul_town`, 던전·들판 `author_dungeon`(장치 없음), 실내 `build_hand_interior_room`.
+   세계 문을 떼었다 걸어 닿는 칸에 다시 놓고, 다른 맵에서 들어오는 문의 도착 칸을 같은 커밋에서 맞춘다(`repairWorldTransfers`).
+2. 맵 담당은 지어진 맵에 사람·이벤트·끝 지점만 놓는다(`FIRST_MVP_PREBUILT_TOOLS` — 생성기·지역 장소가 없어 새 맵을 못 만든다).
+   반납 전 자기 맵 검사(`mvpBuilderProblems`)가 걸리면 같은 담당에게 바로 한 번 더 맡긴다. 처음 finish 전에는 끝난 맵에 보강 배정을 받지 않는다.
+3. finish 의 첫 MVP 관문(`checkTeamMvp`)은 못 닿는 끝 지점 이벤트를 걸어 닿는 칸으로 옮기고, 맵에 묶인 문제는 팀장을 거치지 않고 그 맵 담당에게 바로 맡긴다(한 번).
+   통과하면 읽기 전용 최종 검토는 건너뛰고, 답 끝에 첫 판 안내와 «다음에 해 볼 것»(`src/ai/nextSteps.ts`)을 붙인다. 제목은 팀장이 `set_title_screen` 으로 짓는다.
+측정·간트: http://mdc2:18301/team-mvp-revive-r3.html
 
 이 패널의 평범한 요청 턴(`plainPiTurn` → `runPiCommand`)이
 의도 분류·계획 턴·조화 검수를 건너뛰고 워커의 `runAssistantV2` 로 간다(동사 8개, 결정론 빌더, 독립 비평가).

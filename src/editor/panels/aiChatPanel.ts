@@ -2532,7 +2532,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 실제로 1.2~7.5s 를 삼킨다(2026-09-16 실측). 이걸 벽시계 밖에 두면 표의 total 이 그만큼 짧게 나와
     // 「어느 단계도 오래 안 걸렸는데 턴은 느렸다」는 모순이 생긴다.
     const timing = createTurnTiming();
-    // 장르 프리셋 첫 생성만 팀이다. 첫 MVP(빈 프로젝트에서 게임 하나)는 v2 단일 — 팀 경로는 v2 MVP 관문을 비켜 간다(firstMvpRoute.ts).
+    // 장르 프리셋 첫 생성과 첫 MVP(빈 프로젝트에서 게임 하나)는 팀이다 — 몬스터 수집만 v2 단일(firstMvpRoute.ts).
     const team = turnOptions?.team === true || firstMvpRoute(store.getCurrent(), text).team;
     // 조수 v2(기본 켜짐): 의도 선언 모델 호출을 건너뛴다 — v2 는 실행 모델이 요청을 짓기 명세로 바로 해석한다(src/ai/v2).
     if (isAssistantV2Enabled() && !team) {
