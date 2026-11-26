@@ -461,7 +461,11 @@ export class AssistantSession {
     // 조용히 넘어가면 사용자는 앱을 끈 뒤에야 이어 할 기록이 없다는 것을 안다(#5188: 16MiB 예산을 빈 프로젝트에서도 넘어 늘 실패했다).
     checkpointLog.error("Checkpoint persistence failed", cause);
     this.pushAudit({ kind: "status", text: `agent_run:checkpoint-write-failed — ${message}` });
-    if (first) toast("조수 작업 기록을 저장하지 못했어요. 지금 앱을 끄면 이 작업을 이어서 할 수 없어요.", { kind: "error", durationMs: 8000 });
+    // 알림은 덤이다 — 알림이 실패해도(문서가 없거나 가짜 DOM) 턴을 멈추지 않는다. 실패는 로그에 남긴다.
+    if (first) {
+      try { toast("조수 작업 기록을 저장하지 못했어요. 지금 앱을 끄면 이 작업을 이어서 할 수 없어요.", { kind: "error", durationMs: 8000 }); }
+      catch (toastError) { checkpointLog.warn("Checkpoint failure notice could not be shown", toastError); }
+    }
   }
 
   private async checkpointBestEffort(): Promise<void> {
