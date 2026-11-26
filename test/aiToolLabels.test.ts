@@ -79,7 +79,10 @@ describe("aiToolLabels — 툴 이름을 사람 말로", () => {
 
   it("조수 v2 동사도 모두 사전에 있다 — v2 가 기본이 된 뒤 작업 표시에 «make place» 같은 영문이 떴다(qa1124 20개)", () => {
     // Break: v2 동사를 더하고 사전을 빠뜨리면 여기서 잡힌다. todo 는 단계로 세지 않는 조용한 도구다.
-    const env = { ctx: { project: { maps: {} } }, request: { task: "", mapIds: [] }, emit() {}, record() {}, checkpoint: async () => {} } as never;
+    // request.project 는 요청 시작 때의 프로젝트다 — createV2Tools 가 시작 맵을 읽는다(#4648).
+    // 빈 요청은 늘 싣는 동사 20개뿐이다 — 요청에 따라 붙는 동사(보스전·엔딩·퍼즐)와 게임 도구 묶음까지 실리게 요청 글을 준다.
+    const task = "퍼즐을 풀면 보스전이 열리고 엔딩 장면으로 끝나게 해줘";
+    const env = { ctx: { project: { maps: {} } }, request: { task, mapIds: [], project: { maps: {} } }, emit() {}, record() {}, checkpoint: async () => {} } as never;
     const names = createV2Tools(env, new V2Session()).map(tool => tool.name).filter(name => name !== "todo");
     expect(names.length).toBeGreaterThan(20);
     expect(names.filter(name => !TOOL_LABELS[name])).toEqual([]);
