@@ -118,7 +118,7 @@ export function renderTroopRecordForm(form: HTMLElement, record: TroopRecord, re
     el("div", {
       class: "db-troops-classic-workbench db-troop-studio",
       dataset: { testid: "db-troops-classic-workbench" },
-      children: [troopHeader(record, rerender), ...troopSectionTabs(sections)],
+      children: [troopHeader(record), ...troopSectionTabs(sections)],
     })
   );
 }
@@ -220,7 +220,7 @@ function topControls(record: TroopRecord, rerender: () => void): HTMLElement {
  * 머리줄 — 이름 칸 + 한 줄 요약 + 전투 테스트/이름 생성. 구획 탭 위에 있어 어느 구획에서도 보인다.
  * testid `db-troop-identity-card` 는 옛 「이름」 카드의 것을 물려받는다.
  */
-function troopHeader(record: TroopRecord, rerender: () => void): HTMLElement {
+function troopHeader(record: TroopRecord): HTMLElement {
   const nameField = textField("이름", "db-field-name", record.name, (name) => {
     updateDatabaseRecord("troops", record.id, { name });
     // troops는 databaseRecordViews.ts의 공용 nameField(onRename→updateRecordRowLabel)
