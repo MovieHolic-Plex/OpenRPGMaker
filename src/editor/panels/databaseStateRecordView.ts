@@ -40,6 +40,12 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
   const ontology = resolvedStateValues(state.id, state.name, state);
   const baseOntology = stateOntologyFor(state.id, state.name);
   const update = (patch: Partial<StateRecord>) => updateDatabaseRecord("states", state.id, patch);
+  const advancedPanels: HTMLElement[] = [];
+  const advanced = (node: HTMLElement): HTMLElement => {
+    advancedPanels.push(node);
+    return node;
+  };
+  const toggle = advancedToggle(advancedPanels);
 
   form.append(
     el("div", {
@@ -62,15 +68,16 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
           selectLiteral("제한", "db-state-restriction", ontology.restriction, RESTRICTION_OPTIONS, (restriction) =>
             update({ restriction })
           ),
+          toggle.button,
         ], "db-state-panel-base"),
-        panel("명중률 보정", [
+        advanced(panel("명중률 보정", [
           numberField("성공률", "db-state-accuracy", ontology.accuracyModifier, (accuracyModifier) =>
             update({ accuracyModifier }), { min: 0, max: 100 }
           ),
-        ], "db-state-panel-acc"),
-        panel("특수", specialFlags(baseOntology, state, update), "db-state-panel-special"),
-        panel("상태 유효도", rateRows(ontology), "db-state-panel-rate"),
-        panel("회복 방법", [
+        ], "db-state-panel-acc")),
+        advanced(panel("특수", specialFlags(baseOntology, state, update), "db-state-panel-special")),
+        advanced(panel("상태 유효도", rateRows(ontology), "db-state-panel-rate")),
+        advanced(panel("회복 방법", [
           numberField("자연 회복(턴부터)", "db-state-recover-turn", ontology.recoverNaturallyFromTurn, (recoverNaturallyFromTurn) =>
             update({ recoverNaturallyFromTurn }), { min: 0, max: 999 }
           ),
@@ -80,13 +87,13 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
           numberField("피격 회복(%)", "db-state-hit-recover", ontology.recoverWhenHitChance, (recoverWhenHitChance) =>
             update({ recoverWhenHitChance }), { min: 0, max: 100 }
           ),
-        ], "db-state-panel-heal"),
-        panel("행동 제한", [
+        ], "db-state-panel-heal")),
+        advanced(panel("행동 제한", [
           readonlyControl("능력치", ontology.actorStatus, "db-state-actor-status"),
           readonlyControl("스킬 제한", ontology.skillLimit, "db-state-skill-limit"),
           readonlyControl("고정 항목", ontology.lockedParameters.join(", ") || "없음", "db-state-locked-params"),
-        ], "db-state-panel-restrict"),
-        panel("HP", [
+        ], "db-state-panel-restrict")),
+        advanced(panel("HP", [
           numberField("전투 중(턴당%)", "db-state-hp-turn", numericRelease(state.hpReleaseTurn, baseOntology.hpTurn), (hpReleaseTurn) =>
             update({ hpReleaseTurn }), { min: -100, max: 100 }
           ),
@@ -107,39 +114,40 @@ export function renderStateRecordForm(form: HTMLElement, state: StateRecord): HT
           numberField("걸음 피해로 쓰러짐(1=예)", "db-state-step-can-kill", state.fieldStepCanKill ? 1 : 0, (value) =>
             update({ fieldStepCanKill: value >= 1 }), { min: 0, max: 1 }
           ),
-        ], "db-state-panel-hp"),
-        panel("MP", [
+        ], "db-state-panel-hp")),
+        advanced(panel("MP", [
           numberField("전투 중(턴당%)", "db-state-mp-turn", numericRelease(state.mpReleaseTurn, baseOntology.mpTurn), (mpReleaseTurn) =>
             update({ mpReleaseTurn }), { min: -100, max: 100 }
           ),
           numberField("맵 이동(걸음당)", "db-state-mp-move", numericRelease(state.mpReleaseStep, baseOntology.mpMove), (mpReleaseStep) =>
             update({ mpReleaseStep }), { min: -999, max: 999 }
           ),
-        ], "db-state-panel-mp"),
-        animationPanel(state, ontology, update),
+        ], "db-state-panel-mp")),
+        advanced(animationPanel(state, ontology, update)),
         referencePanel(referencingSkills.map((skill) => `${skill.name} (${skill.id})`), referencingItems.map((item) => `${item.name} (${item.id})`)),
         // 배치는 DOM 순서가 아니라 패널이 직접 들고 있는 `db-state-panel-*` 클래스가 정한다.
         // 예전에는 states.css 가 nth-child(1..9) → grid-area 로 잡아서, 중간에 패널을
         // 하나 끼우면 이후 전부가 다른 영역으로 밀렸다(실제로 그렇게 깨졌고 이 주석이
         // 그 흔적이었다). 이제는 어디에 넣어도 안전하다.
-        runtimeEffectsPanel(state, update),
-        panel("부위 손실", [
+        advanced(runtimeEffectsPanel(state, update)),
+        advanced(panel("부위 손실", [
           selectLiteral("잃는 장비 슬롯", "db-state-disables-equip-slot", state.disablesEquipSlot ?? "",
             ["", ...equipmentSlots(store.getCurrent()).map((slot) => slot.id)], (slot) => update({ disablesEquipSlot: slot || undefined })),
           el("p", { class: "db-skill-card-note", text: "이 상태인 동안 그 슬롯 장비의 능력치를 잃습니다(팔 부상 → 무기 등)." }),
-        ], "db-state-panel-part-loss"),
-        panel("전투 오라", [
+        ], "db-state-panel-part-loss")),
+        advanced(panel("전투 오라", [
           selectField("걸려 있는 동안 몸에 남는 표시", "db-state-battle-aura", normalizeBattleAura(state.battleAura) ?? "", [
             { id: "", name: autoAuraLabel(state) },
             { id: "none", name: "끔" },
             ...BATTLE_AURA_IDS.map((id) => ({ id, name: BATTLE_AURA_LABELS[id] })),
           ], (aura) => update({ battleAura: aura || undefined })),
           el("p", { class: "db-skill-card-note", text: "retro2003 전투에서 이 상태가 걸린 동안 그 배틀러 몸에 계속 남는 색·입자 표시입니다(그림 시트 없음)." }),
-        ], "db-state-panel-battle-aura"),
+        ], "db-state-panel-battle-aura")),
         el("div", { class: "db-state-summary", dataset: { testid: "db-state-ontology-summary" }, text: ontology.summary }),
       ],
     }),
   );
+  toggle.paint();
   return form;
 }
 
@@ -164,6 +172,37 @@ function stateIconSlot(stateId: string): HTMLElement {
   };
   render();
   return slot;
+}
+
+/**
+ * 드문 칸(명중률·특수·유효도·회복·HP/MP·전투 규칙·애니메이션·부위 손실·오라)은 「고급」 뒤에 둔다
+ * (btn-trim-r2, 오너 2026-11-24 「사용자는 많은 버튼을 원하지 않는다」 · 고칠 땐 머리줄 「말로 고치기」).
+ * 패널은 격자 직계 자식 그대로 `hidden` 만 바꾼다 — grid-area 배치·testid·저장 경로가 그대로다.
+ * 펼친 상태는 레코드를 바꾸거나 다시 그려도 유지한다.
+ */
+let stateAdvancedOpen = false;
+
+function advancedToggle(panels: readonly HTMLElement[]): { readonly button: HTMLElement; readonly paint: () => void } {
+  const button = el("button", {
+    class: "btn small",
+    attrs: { type: "button" },
+    dataset: { testid: "db-state-advanced-toggle" },
+  }) as HTMLButtonElement;
+  const paint = (): void => {
+    // 패널 CSS 가 display 를 정해 hidden 속성만으로는 안 숨는다 — 인라인 display 도 함께 끈다.
+    for (const node of panels) {
+      node.hidden = !stateAdvancedOpen;
+      node.style.display = stateAdvancedOpen ? "" : "none";
+    }
+    button.textContent = stateAdvancedOpen ? "고급 접기" : "고급 — 명중·유효도·회복·전투 규칙…";
+    button.setAttribute("aria-expanded", String(stateAdvancedOpen));
+  };
+  button.addEventListener("click", () => {
+    stateAdvancedOpen = !stateAdvancedOpen;
+    paint();
+  });
+  // 패널은 이 단추보다 뒤에 만들어진다 — 폼을 다 붙인 뒤 부르는 쪽이 칠한다.
+  return { button, paint };
 }
 
 function numericRelease(value: number | undefined, ontologyText: string): number {

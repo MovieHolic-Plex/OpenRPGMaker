@@ -13,6 +13,8 @@ test("Database States tab exposes readable Korean RM-style ontology controls", a
 
   const workbench = page.getByTestId("db-states-oprn-workbench");
   await expect(workbench).toBeVisible();
+  // 드문 패널은 「고급」 뒤에 있다(btn-trim-r2).
+  await page.getByTestId("db-state-advanced-toggle").click();
   for (const text of ["해제 조건", "색상", "우선도", "제한", "명중률 보정", "상태 유효도", "회복 방법", "행동 제한", "HP", "MP", "애니메이션", "참조"]) {
     await expect(workbench).toContainText(text);
   }

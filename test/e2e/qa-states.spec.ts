@@ -101,6 +101,8 @@ test.describe("QA sweep: states tab", () => {
     await page.getByTestId("db-state-restriction").selectOption("행동 불가");
     // 2파: 상태 수치 필드에 뷰 레벨 클램프가 배선됨 — 999 는 상한 100 으로 즉시 교정된다.
     await page.getByTestId("db-state-rating").fill("999");
+    // 드문 칸은 「고급」 뒤에 있다(btn-trim-r2).
+    await page.getByTestId("db-state-advanced-toggle").click();
     await page.getByTestId("db-state-accuracy").fill("0");
     await page.getByTestId("db-state-recover-turn").fill("-5");
     await page.getByTestId("db-state-recover-chance").fill("150");
