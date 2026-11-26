@@ -1,7 +1,7 @@
 // Pi 스트림의 «살아 있음» 계약(2026-09-14). 실측: 런타임이 턴·툴 경계에만 줄을 써 모델이 생각하는 동안
 // 와이어가 비었고, Bun 유휴 타임아웃이 그 침묵을 끊어 팀 모드 「마을 만들어줘」가 매번 `terminated` 로 죽었다.
 // 세 겹으로 막는다: 델타 중계(내용) · 워커 heartbeat(맥박) · 브라우저 워치독(침묵 = 워커 사망).
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { gunzipSync } from "node:zlib";
 import { createDeltaRelay, type PiDeltaEvent } from "@/ai/piAgent/deltaRelay";
 import { PiAgentClientError, runPiAgentViaCompanion } from "@/ai/piAgent/client";
@@ -41,6 +41,24 @@ function ndjsonResponse(feed: (write: (event: PiAgentEvent) => void, close: () =
   });
   return new Response(body, { status: 200, headers: { "Content-Type": "application/x-ndjson" } });
 }
+
+/**
+ * 워치독(staleMs)과 시험 쪽 타이머(heartbeat·체크포인트 지연)의 순서를 실제 시계에 맡기면 CI 부하에서 순서가 뒤집혔다
+ * (#5171·#5230: 늦게 울린 워치독, 늦게 온 heartbeat). 가짜 시계로 타이머를 정해진 순서대로 울리고, 그 사이 진짜 I/O(gzip 등)는
+ * setImmediate 로 한 바퀴씩 흘려보낸다 — 시간 길이가 아니라 순서만 본다.
+ */
+async function settleWithFakeTimers<T>(run: () => Promise<T>): Promise<T> {
+  vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval", "Date"] });
+  let settled = false;
+  const result = run().finally(() => { settled = true; });
+  result.catch(() => undefined);
+  for (let step = 0; !settled && step < 5_000; step += 1) {
+    await vi.advanceTimersByTimeAsync(5);
+    await new Promise((resolve) => setImmediate(resolve));
+  }
+  return result;
+}
+afterEach(() => { vi.useRealTimers(); });
 
 const request = { provider: "google-antigravity", task: "t", mapIds: [], project: createBlankProject() } as const;
 
@@ -107,7 +125,7 @@ describe("브라우저 워치독 — 침묵은 워커 사망", () => {
     const fetchImpl = (async () => ndjsonResponse((write) => {
       write({ type: "start", provider: "p", model: "m", toolCount: 1 });
     })) as unknown as typeof fetch;
-    await expect(runPiAgentViaCompanion(request, { fetchImpl, staleMs: 40 })).rejects.toSatisfy((error: unknown) =>
+    await expect(settleWithFakeTimers(() => runPiAgentViaCompanion(request, { fetchImpl, staleMs: 40 }))).rejects.toSatisfy((error: unknown) =>
       error instanceof PiAgentClientError && /신호가 없어 연결을 끊었습니다/.test(error.message));
   });
 
@@ -124,7 +142,7 @@ describe("브라우저 워치독 — 침묵은 워커 사망", () => {
         }
       }, 10);
     })) as unknown as typeof fetch;
-    const done = await runPiAgentViaCompanion(request, { fetchImpl, staleMs: 200, onEvent: (event) => seen.push(event.type) });
+    const done = await settleWithFakeTimers(() => runPiAgentViaCompanion(request, { fetchImpl, staleMs: 200, onEvent: (event) => seen.push(event.type) }));
     expect(done.type).toBe("done");
     expect(seen.filter((type) => type === "heartbeat")).toHaveLength(8);
   });
@@ -164,10 +182,10 @@ describe("브라우저 워치독 — 우리가 적용 중인 침묵은 끊지 �
         }, 5);
       });
     }) as unknown as typeof fetch;
-    const done = await runPiAgentViaCompanion(request, {
+    const done = await settleWithFakeTimers(() => runPiAgentViaCompanion(request, {
       fetchImpl, staleMs: 30,
       onCheckpoint: () => new Promise(resolve => setTimeout(() => resolve(request.project), 120)),
-    });
+    }));
     expect(done.type).toBe("done");
     expect(ackBody).toMatchObject({ ok: true });
   });
@@ -180,7 +198,7 @@ describe("브라우저 워치독 — 우리가 적용 중인 침묵은 끊지 �
         setTimeout(() => write({ type: "checkpoint", checkpointId: "c1", project: request.project, label: "t", toolName: "t" } as never), 80);
       });
     }) as unknown as typeof fetch;
-    await expect(runPiAgentViaCompanion(request, { fetchImpl, staleMs: 40, onCheckpoint: async () => request.project }))
+    await expect(settleWithFakeTimers(() => runPiAgentViaCompanion(request, { fetchImpl, staleMs: 40, onCheckpoint: async () => request.project })))
       .rejects.toSatisfy((error: unknown) => error instanceof PiAgentClientError && /신호가 없어 연결을 끊었습니다/.test(error.message));
   });
 });
