@@ -47,6 +47,27 @@ export function appUpdateModeFor(input: {
   return "off";
 }
 
+/**
+ * 실행 중에 메인이 process.env 에 써 넣는 경로(electron/main/main.ts startApp). 새 판을 띄울 때 물려주면 안 된다.
+ * electron-updater 는 새 판(AppImage)·설치기(NSIS)를 이 실행의 process.env 로 띄운다. AppImage 는 판마다 마운트 경로가 달라
+ * 새 판이 옛 마운트의 조수 워커·렌더러 폴더를 썼고, 옛 마운트가 풀리지 않았다(2026-11-26 v0.419→0.420 실측).
+ */
+export const APP_UPDATE_RUNTIME_PATH_ENV = ["OPRN_OH_MY_PI_WORKER_BIN", "OPRN_OH_MY_PI_WORKER_SCRIPT", "OPRN_RENDERER_DIR"] as const;
+
+export type AppUpdateLaunchEnv = Readonly<Record<(typeof APP_UPDATE_RUNTIME_PATH_ENV)[number], string | undefined>>;
+
+export function snapshotLaunchEnv(env: Readonly<Record<string, string | undefined>>): AppUpdateLaunchEnv {
+  return Object.fromEntries(APP_UPDATE_RUNTIME_PATH_ENV.map((key) => [key, env[key]])) as AppUpdateLaunchEnv;
+}
+
+/** 실행이 써 넣은 경로를 켜질 때 값으로 돌린다(켜질 때 없었으면 지운다). 사용자가 직접 준 값은 그대로 남는다. */
+export function restoreLaunchEnv(env: Record<string, string | undefined>, launch: AppUpdateLaunchEnv): void {
+  for (const key of APP_UPDATE_RUNTIME_PATH_ENV) {
+    if (launch[key] === undefined) delete env[key];
+    else env[key] = launch[key];
+  }
+}
+
 /** portable 사용자가 누를 링크 — 그 판의 portable exe 를 바로 받는다(고정 이름은 릴리스 워크플로가 붙인다). */
 export function portableDownloadUrl(version: string): string {
   const plain = String(version).replace(/^v/, "");
@@ -82,7 +103,8 @@ export function summarizeReleaseNotes(notes: unknown, max = 3): string[] {
     if (headingIndex >= 0 && /^#{1,6}\s/.test(line)) break;
     const match = /^(?:[-*•]|\d+\.)\s+(.+)$/.exec(line);
     if (!match) continue;
-    const item = match[1].replace(/\s*\(#\d+\)\s*$/, "").replace(/\*\*/g, "").trim();
+    // 끝의 PR 번호·커밋 해시 괄호를 난다 — 릴리스 본문 항목은 «… (#5097) (92ea21e)» 꼴이다.
+    const item = match[1].replace(/(?:\s*\((?:#\d+|[0-9a-f]{7,40})\))+\s*$/i, "").replace(/\*\*/g, "").trim();
     if (item) items.push(item.length > 70 ? `${item.slice(0, 69)}…` : item);
   }
   return items;

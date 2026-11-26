@@ -11,6 +11,8 @@ import {
   APP_UPDATE_INTERVAL_MS,
   appUpdateModeFor,
   portableDownloadUrl,
+  restoreLaunchEnv,
+  snapshotLaunchEnv,
   summarizeReleaseNotes,
   type AppUpdateMode,
   type AppUpdateState,
@@ -33,6 +35,8 @@ let whatsNew: AppUpdateWhatsNew | null = null;
 let updater: Updater | null = null;
 let timer: ReturnType<typeof setInterval> | null = null;
 let installing = false;
+/** 켜질 때의 경로 환경 변수. 이 모듈은 main.ts 가 import 할 때 평가되므로 startApp 이 값을 쓰기 전이다. */
+const launchEnv = snapshotLaunchEnv(process.env);
 
 const prefsPath = (): string => join(app.getPath("userData"), "app-update.json");
 /** CI 업데이트 e2e(scripts/qa/app-update-e2e.mjs)만 켠다. 다 받으면 칩을 누르거나(install) 앱을 끄고(quit) 줄을 남긴다. */
@@ -145,6 +149,8 @@ async function attachUpdater(): Promise<void> {
 export function installAppUpdate(): boolean {
   if (!updater || state.kind !== "ready" || installing) return false;
   installing = true;
+  // 새 판은 이 실행의 process.env 를 물려받는다 — 이 실행이 쓴 워커·렌더러 경로를 떼야 새 판이 자기 경로를 찾는다.
+  restoreLaunchEnv(process.env, launchEnv);
   e2eNote("install");
   // 설치 후 새 판을 띄운다. AppImage 는 새 파일을 바로 띄우므로 그 실행이 아직 이 실행의 한 번만 실행 잠금과 겹친다 —
   // 새 실행은 APPIMAGE_SILENT_INSTALL 표시를 보고 잠금이 풀릴 때까지 기다린다(boot.ts). app.relaunch 는 쓰지 않는다:
@@ -161,7 +167,13 @@ export function registerAppUpdate(): void {
   mode = appUpdateModeFor({ platform: process.platform, isPackaged: app.isPackaged, env: process.env });
   prefs = readPrefs();
   adoptWhatsNew();
-  e2eNote("start", { mode });
+  // registerAppUpdate 는 startApp 이 워커·렌더러 경로를 정한 뒤에 불린다. e2e 는 새 판이 옛 판 경로를 물려받지 않았는지 본다.
+  e2eNote("start", {
+    mode,
+    resourcesPath: process.resourcesPath,
+    inherited: launchEnv,
+    resolved: { rendererDir: process.env.OPRN_RENDERER_DIR ?? null, workerBin: process.env.OPRN_OH_MY_PI_WORKER_BIN ?? null },
+  });
 
   ipcMain.handle(OPRN_CHANNELS.updateStatus, () => status());
   ipcMain.handle(OPRN_CHANNELS.updateInstall, () => installAppUpdate());
