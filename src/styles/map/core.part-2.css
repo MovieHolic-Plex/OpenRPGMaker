@@ -432,6 +432,12 @@ body.palette-select-keeps-scroll .chipset-sheet.tile-palette {
   line-height: 1;
 }
 
+/* 버튼 줄이기 2회차: 배너 단추(내보내기·닫기)는 DOM 에만 남는다 — 내보내기는 톱바 저장 칸·프로젝트 메뉴가 맡는다. */
+.persistence-mode-banner-action[hidden],
+.persistence-mode-banner-close[hidden] {
+  display: none;
+}
+
 .persistence-mode-banner.is-local-only {
   background: var(--bg-inset);
   color: var(--text-1);

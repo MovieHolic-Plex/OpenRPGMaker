@@ -661,7 +661,8 @@ function mountAssistantOverlay(): void {
 
 // 저장 스킵/로컬 저장 모드 배너: 임시 URL 모드 등에서
 // 저장이 조용히 스킵되어 세션 작업물이 통째로 증발하던 문제 — 모드를 화면에 명시한다.
-// 임시 세션 배너는 오류가 아니라 정보 — 인라인 '내보내기' + 닫기(세션 동안 유지)를 제공한다.
+// 임시 세션 배너는 오류가 아니라 정보 — 글자만 보인다(버튼 줄이기 2회차: 저장 알림이 둘이던 것을 하나로). 내보내기는 톱바 저장 칸
+// (「저장 안 됨 · 이 탭만」 → 저장 → 토스트 「내보내기」)과 프로젝트 메뉴 「내보내기」가 맡는다. 데스크톱 앱 저장 세션에는 이 배너가 없다.
 let persistenceBannerDismissed = false;
 
 /** 배너 출력은 (상태 종류 · 사유 · 임시 세션 여부 · 닫힘) 의 함수다 — 같으면 clearChildren 으로 body 스타일을 흔들지 않는다. */
@@ -732,8 +733,9 @@ function renderPersistenceModeBanner(): HTMLElement | null {
         el("button", {
           class: "persistence-mode-banner-action",
           text: exportedAt !== null ? "다시 내보내기" : "내보내기",
-          attrs: { type: "button", title: "프로젝트를 파일로 내보내 보존합니다" },
           dataset: { testid: "save-skip-banner-export" },
+          // 버튼 줄이기 2회차: 저장 알림 하나로 — 내보내기는 톱바 저장 칸(저장 → 「내보내기」)·프로젝트 메뉴가 맡는다. DOM 에만 남긴다.
+          attrs: { type: "button", title: "프로젝트를 파일로 내보내 보존합니다", hidden: "" },
           on: {
             click: () => void exportTemporarySession(),
           },
@@ -741,7 +743,7 @@ function renderPersistenceModeBanner(): HTMLElement | null {
         el("button", {
           class: "persistence-mode-banner-close",
           html: '<svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
-          attrs: { type: "button", title: "이 세션 동안 배너 숨기기", "aria-label": "임시 세션 배너 닫기" },
+          attrs: { type: "button", title: "이 세션 동안 배너 숨기기", "aria-label": "임시 세션 배너 닫기", hidden: "" },
           dataset: { testid: "save-skip-banner-close" },
           on: {
             click: () => {
