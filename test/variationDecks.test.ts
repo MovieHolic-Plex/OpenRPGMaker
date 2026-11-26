@@ -9,6 +9,7 @@ import { DECKS, type PlaceCandidate } from "@/ai/variation/decks";
 import { deckFor, hash32, pickVariation } from "@/ai/variation/pick";
 import { VARIATION_CARD_MAX, VARIATION_MARK, buildPath, variationCard } from "@/ai/variation/card";
 import { WORLDS } from "@/ai/v2/place/world";
+import { gameVariation } from "@/ai/v2/request/world";
 import { INTERIOR_CARD } from "@/ai/v2/place/builders/interior";
 import { MODERN_KR_CARD } from "@/ai/v2/place/builders/modernCity";
 import { JP_CITY_CARD } from "@/ai/v2/place/builders/jpCity";
@@ -217,6 +218,25 @@ describe("structure tools", () => {
     const verbs = new Set(createV2Tools(env, new V2Session()).map((t) => t.name));
     const named = DECKS.flatMap((d) => [...d.structures, ...d.events].flatMap((o) => o.tools ?? []));
     expect(named.length).toBeGreaterThan(5);
-    for (const name of named) expect(!!getTool(name) || verbs.has(name), name).toBe(true);
+    for (const name of named) expect(!!getTool(name) || verbs.has(name) || cardVerbs(name).has(name), name).toBe(true);
+  });
+
+  // 낱말에 묶인 v2 동사(퍼즐 사슬)는 요청에 그 낱말이 없어도 그 동사를 이름 댄 카드의 게임에서는 실린다.
+  it("a card that names author_puzzle_chain gets the puzzle verb without the word «퍼즐»", () => {
+    expect(cardVerbs("author_puzzle_chain").has("author_puzzle_chain")).toBe(true);
   });
 });
+
+const HORROR_TASK = "밤의 미술관에 갇힌 아이가 빠져나가는 공포 게임을 만들어 줘.";
+
+/** 카드 구조가 name 을 이름 대는 호러 게임 하나의 v2 동사 이름들(그런 카드가 없으면 빈 묶음). */
+function cardVerbs(name: string): Set<string> {
+  const p = createBlankProject();
+  for (let i = 0; i < 200; i++) {
+    const projectKey = JSON.stringify(["project", `card-verbs-${i}`]);
+    if (!gameVariation(p, projectKey, HORROR_TASK).variation?.structure?.tools?.includes(name)) continue;
+    const env = { ctx: { project: p, currentMapId: p.startMapId, assistantRun: true }, request: { task: HORROR_TASK, projectKey, provider: "local-cli:claude", mapIds: [], project: p }, emit() {}, record() {}, sideChat: async () => "{}", render: async () => "", checkpoint: async () => {} } as never;
+    return new Set(createV2Tools(env, new V2Session()).map((t) => t.name));
+  }
+  return new Set();
+}
