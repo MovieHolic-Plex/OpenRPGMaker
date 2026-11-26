@@ -131,7 +131,8 @@ describe("aiRunCheckpointStore", () => {
     const { saveRunCheckpoint, readRunCheckpoint } = await api();
     await saveRunCheckpoint(fixture());
     const clone = vi.spyOn(globalThis, "structuredClone");
-    const request = { ...fixture().request, text: "x".repeat(9 * 1024 * 1024) };
+    const { MAX_CHECKPOINT_BYTES } = await import("@/ai/checkpointPayload");
+    const request = { ...fixture().request, text: "x".repeat(MAX_CHECKPOINT_BYTES / 2 + 1) };
     await expect(saveRunCheckpoint(fixture({ savedAt: 2, request }))).rejects.toThrow("snapshot budget");
     expect(clone).not.toHaveBeenCalled();
     clone.mockRestore();
