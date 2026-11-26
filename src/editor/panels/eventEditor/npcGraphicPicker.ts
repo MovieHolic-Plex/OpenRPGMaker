@@ -122,7 +122,14 @@ export function renderNpcGraphicPicker(
   const teach = renderCharsetTeachForm(() => selection, () => {
     refresh();
   });
-  optionArea.append(directionGroup.root, patternGroup.root, teach.root);
+  // 처음 고를 때 필요한 것은 그림과 확인뿐이다(btn-trim-r2: 모습 창 15→6). 방향·걸음 패턴·이름 가르치기는 접어 둔다.
+  const more = document.createElement("details");
+  more.className = "npc-graphic-more";
+  more.dataset.testid = "npc-graphic-more";
+  const moreSummary = document.createElement("summary");
+  moreSummary.textContent = "방향 · 걸음 · 이름";
+  more.append(moreSummary, directionGroup.root, patternGroup.root, teach.root);
+  optionArea.append(more);
 
   const directBox = document.createElement("div");
   directBox.className = "event-graphic-direct-box";

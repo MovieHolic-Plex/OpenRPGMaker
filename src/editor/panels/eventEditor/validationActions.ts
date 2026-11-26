@@ -40,8 +40,9 @@ export function renderEventValidationActions(close: () => void): HTMLElement {
       }
       toast("진단을 미전송 초안에 추가했습니다. 지시를 더 적고 직접 전송하세요.", "info");
     } } });
+  // 복사 형식(Markdown/JSON)은 개발자용이라 처음 화면에서 뺀다(btn-trim-r2). 기본 Markdown, testid 는 그대로.
   return el("div", { class: "event-draft-validation-actions", children: [
-    el("label", { children: [el("span", { text: "복사 형식" }), format] }),
+    el("label", { attrs: { style: "display:none" }, children: [el("span", { text: "복사 형식" }), format] }),
     copy,
     ask,
   ] });
