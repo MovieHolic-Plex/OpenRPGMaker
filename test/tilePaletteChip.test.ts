@@ -40,6 +40,8 @@ describe("타일 팔레트 선택 칩", () => {
     expect(tilesetName?.tagName).toBe("BUTTON");
     expect(tilesetName?.textContent).toBe(project.tilesets[map.tilesetId]?.name);
     expect(tilesetName?.getAttribute("aria-label")).toContain("맵 설정");
+    // 버튼 줄이기 2회차: 단추는 머리가 아니라 접힌 「전체 ▾」 칸 안에 있다 — 머리에는 같은 이름이 글자로만 남는다.
+    expect((tilesetName?.parentElement as FakeElement | null)?.dataset.testid).toBe("palette-view-filters");
 
     tilesetName?.click();
 

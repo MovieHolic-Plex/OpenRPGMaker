@@ -84,6 +84,11 @@
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;
 }
 .tile-section-tileset:hover { background: var(--bg-hover); color: var(--text-1); }
+/* 버튼 줄이기 2회차: 머리의 이름은 글자, 바꾸는 단추는 「전체 ▾」 칸의 한 줄이다. */
+.tile-section-tileset.is-label { cursor: default; }
+.tile-section-tileset.is-label:hover { background: transparent; color: inherit; }
+.tile-view-filters > .tile-section-tileset { align-self: flex-start; margin-left: 0; }
+.tile-view-filters > .tile-section-tileset::before { content: "그림판 바꾸기 · "; }
 .palette-work-pane.is-event > .tile-section-head .tile-section-title {
   align-items: baseline;
   flex: 1 1 auto;
