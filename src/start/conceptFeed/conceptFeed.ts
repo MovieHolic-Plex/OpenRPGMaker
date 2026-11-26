@@ -247,31 +247,40 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
     on: { click: () => { if (!making) run(); } },
     children: [cover, el("span", { class: "fr-gcard-name", text: name }), el("span", { class: "fr-gcard-meta", text: meta })],
   });
+  // 예시는 단추 하나 「예시 넣기」(누를 때마다 다음 예시), 장르 카드 넷은 「둘러보기」 안 — 버튼 줄이기 2회차.
+  // 장르 카드는 프롬프트와 같은 일을 한 번 더 하고, 빈 프로젝트(AI 없이 그리는 사람)도 드문 입구다 — 둘 다 둘러보기를 열면 첫 줄에 있다.
+  let exampleIndex = 0;
   const overlayHome = launcher ? null : el("div", { class: "fr-main", children: [
     el("h1", { class: "fr-title", text: "어떤 게임을 만들까요?" }),
     el("p", { class: "fr-sub", text: "한 줄로 적으면 AI가 컨셉을 잡아 보여 줘요." }),
     searchBox,
-    el("div", { class: "fr-chips", attrs: { role: "group", "aria-label": "예시" }, children: FIRST_RUN_EXAMPLES.map((example, index) => el("button", {
-      class: "fr-chip", attrs: { type: "button" }, dataset: { testid: `${CONCEPT_FEED_TESTIDS.example}-${index}` }, text: example,
-      on: { click: () => { if (making) return; search.value = t(example); search.dispatchEvent(new Event("input")); search.focus(); } },
-    })) }),
-    el("section", { class: "fr-games", dataset: { testid: CONCEPT_FEED_TESTIDS.quick }, children: [
-      el("div", { class: "fr-builtin-head", children: [el("h2", { class: "fr-builtin-title", text: "장르로 시작" })] }),
-      el("div", { class: "fr-games-row", children: [
-        ...(options.onInterview ? QUICK_GENRES.map(([id, label, preset]) => startCard(
-          CONCEPT_FEED_TESTIDS.quickGenre,
-          el("span", { class: "fr-gcard-cov", children: [el("img", { attrs: { src: CONCEPT_FALLBACK_THUMB[preset], alt: "", decoding: "async", draggable: "false" } })] }),
-          label, "질문 셋으로 시작", () => void openQuick(id), { genre: id },
-        )) : []),
-        ...(options.onBlank ? [startCard(
-          CONCEPT_FEED_TESTIDS.blank,
-          el("span", { class: "fr-gcard-cov", attrs: { "aria-hidden": "true" }, text: "+" }),
-          "빈 프로젝트", "AI 없이 직접 그리기", () => options.onBlank?.(),
-        )] : []),
-      ] }),
-    ] }),
+    el("div", { class: "fr-chips", attrs: { role: "group", "aria-label": "예시" }, children: [el("button", {
+      class: "fr-chip", attrs: { type: "button", title: "누를 때마다 다른 예시를 입력창에 넣어요" }, dataset: { testid: `${CONCEPT_FEED_TESTIDS.example}-0` }, text: "예시 넣기",
+      on: { click: () => {
+        if (making) return;
+        search.value = t(FIRST_RUN_EXAMPLES[exampleIndex % FIRST_RUN_EXAMPLES.length]!);
+        exampleIndex += 1;
+        search.dispatchEvent(new Event("input"));
+        search.focus();
+      } },
+    })] }),
     el("details", { class: "fr-builtin cf-browse", dataset: { testid: CONCEPT_FEED_TESTIDS.browse }, children: [
-      el("summary", { class: "fr-builtin-head", children: [el("span", { class: "fr-builtin-title", text: "아이디어·예제 둘러보기" })] }),
+      el("summary", { class: "fr-builtin-head", children: [el("span", { class: "fr-builtin-title", text: "빈 프로젝트·장르·예제 둘러보기" })] }),
+      ...(options.onInterview || options.onBlank ? [el("section", { class: "fr-games", dataset: { testid: CONCEPT_FEED_TESTIDS.quick }, children: [
+        el("div", { class: "fr-builtin-head", children: [el("h2", { class: "fr-builtin-title", text: "장르로 시작" })] }),
+        el("div", { class: "fr-games-row", children: [
+          ...(options.onInterview ? QUICK_GENRES.map(([id, label, preset]) => startCard(
+            CONCEPT_FEED_TESTIDS.quickGenre,
+            el("span", { class: "fr-gcard-cov", children: [el("img", { attrs: { src: CONCEPT_FALLBACK_THUMB[preset], alt: "", decoding: "async", draggable: "false" } })] }),
+            label, "질문 셋으로 시작", () => void openQuick(id), { genre: id },
+          )) : []),
+          ...(options.onBlank ? [startCard(
+            CONCEPT_FEED_TESTIDS.blank,
+            el("span", { class: "fr-gcard-cov", attrs: { "aria-hidden": "true" }, text: "+" }),
+            "빈 프로젝트", "AI 없이 직접 그리기", () => options.onBlank?.(),
+          )] : []),
+        ] }),
+      ] })] : []),
       el("div", { class: "fr-builtin-row", dataset: { testid: CONCEPT_FEED_TESTIDS.builtinDemos }, children: BUILTIN_GAMES.map((game) => el("button", {
         class: "fr-bcard", attrs: { type: "button", "aria-label": `${game.title} — 편집기에서 열기` },
         dataset: { testid: `builtin-demo-open-${game.id}` },

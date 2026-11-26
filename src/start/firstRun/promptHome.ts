@@ -106,13 +106,21 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
     dataset: { testid: PROMPT_HOME_TESTIDS.submit },
     children: [submitLabel, startIcon("arrow", "fr-icon")],
   });
-  const chips = FIRST_RUN_EXAMPLES.map((example, index) => el("button", {
+  // 예시는 단추 하나 「예시 넣기」 — 누를 때마다 다음 예시를 입력창에 넣는다(버튼 줄이기 2회차, 예시 칩 넷을 하나로).
+  let exampleIndex = 0;
+  const chips = [el("button", {
     class: "fr-chip",
-    attrs: { type: "button" },
-    dataset: { testid: `${PROMPT_HOME_TESTIDS.chip}-${index}` },
-    text: example,
-    on: { click: () => { if (busy) return; input.value = t(example); syncSubmit(); input.focus(); } },
-  }));
+    attrs: { type: "button", title: "누를 때마다 다른 예시를 입력창에 넣어요" },
+    dataset: { testid: `${PROMPT_HOME_TESTIDS.chip}-0` },
+    text: "예시 넣기",
+    on: { click: () => {
+      if (busy) return;
+      input.value = t(FIRST_RUN_EXAMPLES[exampleIndex % FIRST_RUN_EXAMPLES.length]!);
+      exampleIndex += 1;
+      syncSubmit();
+      input.focus();
+    } },
+  })];
   const syncSubmit = (): void => { submit.disabled = busy || input.value.trim() === ""; };
   // 참고 그림 — 고르거나 붙여 넣은 그림을 긴 변 768px 로 줄여 들고 있다가 「만들기 시작」 때 함께 넘긴다.
   let images: string[] = [];
@@ -193,7 +201,6 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
   const link = (text: string, testid: string, run: () => void): HTMLButtonElement => el("button", {
     class: "fr-link", attrs: { type: "button" }, dataset: { testid }, text, on: { click: () => { if (!busy) run(); } },
   });
-  const dot = (): HTMLElement => el("span", { class: "fr-dot", text: "·", attrs: { "aria-hidden": "true" } });
 
   // 오른쪽 위: AI 상태 글자 · 언어 · 「⋯」(자주 쓰지 않는 것). 예전 런처의 레일 바닥 줄이 여기로 왔다.
   const aiStatus = el("button", {
@@ -201,10 +208,16 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
     on: { click: () => { if (!busy) actions.openAi?.(); } },
   });
   const moreItems = actions.more ?? [];
-  const moreMenu = el("div", { class: "fr-more-menu", attrs: { role: "menu", hidden: "" }, children: moreItems.map((item) => el("button", {
-    class: "fr-more-item", attrs: { type: "button", role: "menuitem" }, dataset: { testid: item.testid }, text: item.label,
-    on: { click: () => { closeMore(); moreButton.focus(); if (!busy) item.run(); } },
-  })) });
+  const menuItem = (label: string, testid: string, run: () => void): HTMLButtonElement => el("button", {
+    class: "fr-more-item", attrs: { type: "button", role: "menuitem" }, dataset: { testid }, text: label,
+    on: { click: () => { closeMore(); moreButton.focus(); if (!busy) run(); } },
+  });
+  // 폴더 열기·빈 프로젝트·게임 파일 열기는 ⋯ 안에 둔다 — 첫 화면에는 입력창·예시·예제만 남긴다(버튼 줄이기 2회차).
+  const fileItems = el("div", { class: "fr-more-group", attrs: { role: "none" } });
+  const moreMenu = el("div", { class: "fr-more-menu", attrs: { role: "menu", hidden: "" }, children: [
+    fileItems,
+    ...moreItems.map((item) => menuItem(item.label, item.testid, item.run)),
+  ] });
   const moreButton = el("button", {
     class: "fr-more", attrs: { type: "button", "aria-label": "더 보기", "aria-haspopup": "menu", "aria-expanded": "false" },
     dataset: { testid: "first-run-more" }, text: "⋯",
@@ -220,7 +233,7 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
     moreMenu.hidden = true; moreButton.setAttribute("aria-expanded", "false");
     document.removeEventListener("pointerdown", onOutside); document.removeEventListener("keydown", onKey);
   }
-  const moreWrap = el("div", { class: "fr-more-wrap", children: moreItems.length ? [moreButton, moreMenu] : [] });
+  const moreWrap = el("div", { class: "fr-more-wrap", children: [moreButton, moreMenu] });
 
   // 「내 게임」 줄 — 다시 온 사람도 같은 한 장을 본다(2026-11-04, 어두운 레일 런처를 대신한다).
   const gamesRow = el("div", { class: "fr-games-row" });
@@ -234,11 +247,10 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
     on: { click: () => { if (!busy) actions.blank(); } },
     children: [el("span", { class: "fr-gcard-cov fr-gcard-plus", attrs: { "aria-hidden": "true" }, text: "+" }), el("span", { class: "fr-gcard-name", text: "빈 프로젝트" }), el("span", { class: "fr-gcard-meta", text: "AI 없이 직접 그리기" })],
   });
-  const links = el("nav", { class: "fr-links" });
   const renderLinks = (hasGames: boolean): void => {
-    links.replaceChildren(...(hasGames
-      ? [link("폴더 열기", PROMPT_HOME_TESTIDS.openFolder, actions.openFolder), ...(actions.openGameFile ? [dot(), link("게임 파일 열기", PROMPT_HOME_TESTIDS.gameFile, actions.openGameFile)] : [])]
-      : [link("폴더 열기", PROMPT_HOME_TESTIDS.openFolder, actions.openFolder), dot(), link("빈 프로젝트", PROMPT_HOME_TESTIDS.blank, actions.blank)]));
+    fileItems.replaceChildren(...(hasGames
+      ? [menuItem("폴더 열기", PROMPT_HOME_TESTIDS.openFolder, actions.openFolder), ...(actions.openGameFile ? [menuItem("게임 파일 열기", PROMPT_HOME_TESTIDS.gameFile, actions.openGameFile)] : [])]
+      : [menuItem("폴더 열기", PROMPT_HOME_TESTIDS.openFolder, actions.openFolder), menuItem("빈 프로젝트", PROMPT_HOME_TESTIDS.blank, actions.blank)]));
   };
   renderLinks(false);
   const localeLabel = el("span", { attrs: { "data-i18n-skip": "" } });
@@ -252,15 +264,7 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
   const root = el("div", { class: "fr-root", dataset: { testid: PROMPT_HOME_TESTIDS.root }, children: [
     el("header", { class: "fr-top", children: [
       el("span", { class: "fr-brand", attrs: { translate: "no" }, children: [el("span", { class: "fr-brand-mark", html: BRAND_MARK_SVG }), el("span", { text: "OPRN Studio" })] }),
-      el("div", { class: "fr-top-right", children: [
-        aiStatus,
-        el("button", {
-          class: "fr-locale", attrs: { type: "button", "aria-label": "언어" }, dataset: { testid: PROMPT_HOME_TESTIDS.locale },
-          on: { click: () => { if (!busy) actions.openLocale(); } },
-          children: [startIcon("globe", "fr-icon"), localeLabel],
-        }),
-        moreWrap,
-      ] }),
+      el("div", { class: "fr-top-right", children: [aiStatus, moreWrap] }),
     ] }),
     el("main", { class: "fr-main", children: [
       el("h1", { class: "fr-title", text: "어떤 게임을 만들까요?" }),
@@ -271,8 +275,9 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
       gamesSection,
       // 「예제 열어 보기」 작은 행 세 개(2026-11-04, Studio/런타임 분리 B안 http://mdc-server:18301/studio-runtime-split.html).
       // 누르면 편집기에서 연다 — 첫 화면이 「할 게임 고르기」로 보이지 않게, 바로 플레이하는 그림 카드를 버렸다.
-      el("section", { class: "fr-builtin", attrs: { "aria-labelledby": "fr-builtin-h" }, children: [
-        el("div", { class: "fr-builtin-head", children: [
+      // 버튼 줄이기 2회차: 세 행은 접힌 한 줄 「예제 열어 보기 ▾」 안에 둔다(새 게임 창의 둘러보기와 같은 모양).
+      el("details", { class: "fr-builtin cf-browse", attrs: { "aria-labelledby": "fr-builtin-h" }, dataset: { testid: "first-run-builtin-toggle" }, children: [
+        el("summary", { class: "fr-builtin-head", children: [
           el("h2", { class: "fr-builtin-title", attrs: { id: "fr-builtin-h" }, children: [
             el("span", { text: "예제 열어 보기" }),
             el("span", { class: "fr-builtin-tag", text: "고쳐 보며 배우기" }),
@@ -292,9 +297,14 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
           ],
         })) }),
       ] }),
-      links,
     ] }),
   ] });
+  // 언어는 ⋯ 안의 한 줄(눌러 고르는 일은 드물다 — 시스템 언어를 따른다).
+  fileItems.before(el("button", {
+    class: "fr-more-item fr-locale", attrs: { type: "button", role: "menuitem", "aria-label": "언어" }, dataset: { testid: PROMPT_HOME_TESTIDS.locale },
+    on: { click: () => { closeMore(); moreButton.focus(); if (!busy) actions.openLocale(); } },
+    children: [startIcon("globe", "fr-icon"), localeLabel],
+  }));
 
   const setGames = (games: readonly PromptHomeGame[], total: number): void => {
     const has = games.length > 0;
