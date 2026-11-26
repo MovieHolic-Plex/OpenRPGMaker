@@ -319,7 +319,7 @@ export function renderEventEditLine(options: EventEditLineOptions): HTMLElement 
   input.disabled = state.busy;
   // 편집기를 여는 동안 조수 세션을 미리 만든다 — 큰 프로젝트에서 엔터 뒤 수 초를 줄인다(없으면 아무 것도 안 함).
   // 패널이 듣는 창 사건 — 브리지를 거치지 않아 패널이 없으면(시험·도크 없는 표면) 아무 일도 없다.
-  if (typeof window !== "undefined") setTimeout(() => window.dispatchEvent(new Event(AI_PREWARM_EVENT)), 300);
+  if (typeof window !== "undefined") setTimeout(() => { if (typeof window !== "undefined" && typeof window.dispatchEvent === "function") window.dispatchEvent(new Event(AI_PREWARM_EVENT)); }, 300);
   const undoCount = el("span", { class: "event-edit-line-undo-count", text: String(state.steps.length) });
   const undo = el("button", {
     class: "event-edit-line-undo",

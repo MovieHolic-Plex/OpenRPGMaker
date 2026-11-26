@@ -52,6 +52,7 @@ function mockModeDependencies(): {
     markWelcomeIntentAppliedThisBoot: vi.fn(),
     peekPendingAiBootIntent: vi.fn(() => null),
     setPendingAiBootIntent: vi.fn(),
+    setPendingAiBootReferenceImages: vi.fn(),
     setPendingWelcomePipeline: vi.fn(),
     wasWelcomeIntentAppliedThisBoot: vi.fn(() => false),
   }));
