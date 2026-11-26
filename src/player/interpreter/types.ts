@@ -307,6 +307,8 @@ export interface InterpreterState {
   scriptRuns?: Map<Frame, import("@/player/script/scriptRun").ScriptRun>;
   /** 컷신 건너뛰기 빨리 감기 중이면 멈출 라벨 이름. 그 라벨 명령을 실행하면 지운다(commandCatalog «label»). */
   fastForwardLabel?: string;
+  /** 빨리 감기가 라벨에 닿은 순간(그 라벨 뒤 명령보다 먼저) 부른다 — 건너뛰기가 미뤄 둔 카메라·레터박스 복원. */
+  onFastForwardEnd?: () => void;
 }
 
 /** 테스트 플레이 계측(src/player/eventRunLog.ts)이 보는 프레임 위치. top 은 지금 맨 위 프레임의 명령 배열. */
@@ -341,6 +343,7 @@ export interface InterpreterOptions {
   readonly onFactionStanceChanged?: () => void;
   /** 호감이 바뀐 직후 — 관계 중심 게임은 화면 구석에 짧은 알림을 띄운다(playSceneRelationshipPulse). */
   readonly onFriendshipChanged?: (npcKey: string, delta: number) => void;
+  readonly onFastForwardEnd?: () => void;
 }
 
 export interface Interpreter {

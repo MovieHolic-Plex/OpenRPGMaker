@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { applyCameraControl, applyStoredCameraState, calculateScrollMapPanTarget } from "@/player/playSceneCamera";
+import { applyCameraControl, applyStoredCameraState, calculateScrollMapPanTarget, interruptCameraForCutsceneSkip, restoreCameraAfterCutsceneSkip } from "@/player/playSceneCamera";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { createBlankProject, DEFAULT_EASYRPG_CHARSET_ID, TILE } from "@/project/defaults";
 import { startSession } from "@/project/session";
@@ -191,6 +191,49 @@ describe("playSceneCamera", () => {
       const restored = applySaveSnapshot(project, snapshot);
 
       expect(restored.camera).toEqual(scene.session.camera);
+    });
+  });
+  describe("컷신 건너뛰기와 진행 중인 카메라 연출", () => {
+    class SlowPanCamera extends CameraStub {
+      private pending: (() => void) | null = null;
+      shakeCompleted = 0;
+      panEffect = { isRunning: false, effectComplete: (): void => { this.panEffect.isRunning = false; this.pending?.(); this.pending = null; } };
+      shakeEffect = { isRunning: true, effectComplete: (): void => { this.shakeCompleted += 1; } };
+      override once(eventName: string, listener: () => void): void {
+        if (eventName === "camerapancomplete") this.pending = listener;
+      }
+      override pan(x: number, y: number, duration: number): void {
+        this.panCalls.push({ x, y, duration });
+        this.panEffect.isRunning = true;
+      }
+    }
+    const panFar = { mode: "pan", target: { kind: "position", x: 9, y: 7 }, zoom: 2, durationMs: 6000, wait: true, returnToPlayer: false } as const;
+
+    it("a skip mid-pan settles on the shot the pan was heading to, even after the skip refresh reset the camera", async () => {
+      const scene = cameraScene(new SlowPanCamera());
+      const panning = applyCameraControl(scene, panFar);
+      interruptCameraForCutsceneSkip(scene);
+      applyStoredCameraState(scene); // the refresh that runs right after the skip, before the pan settles
+      await panning;
+      expect(scene.session.camera).toMatchObject({ mode: "fixed", target: { kind: "position", x: 9, y: 7 }, zoom: 2 });
+      expect(scene.camera.zoom).toBe(2);
+      expect(scene.camera.followTarget).toBeNull();
+      expect(scene.camera.centerCalls.at(-1)).toEqual({ x: 152, y: 128 });
+    });
+
+    it("the end-label restore wins over a pan that settles after it", async () => {
+      const scene = cameraScene(new SlowPanCamera());
+      const panning = applyCameraControl(scene, panFar);
+      restoreCameraAfterCutsceneSkip(scene);
+      await panning;
+      expect(scene.session.camera).toBeUndefined();
+      expect(scene.camera.followTarget).toBe(scene.player);
+    });
+
+    it("a skip ends a running screen shake", () => {
+      const camera = new SlowPanCamera();
+      interruptCameraForCutsceneSkip(cameraScene(camera));
+      expect(camera.shakeCompleted).toBe(1);
     });
   });
   // 이벤트 스프라이트를 파괴·재생성하는 갱신 경로(refreshRuntimeEntities)는 카메라를 새

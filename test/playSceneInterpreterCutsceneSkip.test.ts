@@ -2,7 +2,7 @@ import { EventEmitter } from "node:events";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { mapTarget } from "@/editor/smallTask/target";
-import { CUTSCENE_END_LABEL } from "@/player/cutsceneControl";
+import { CUTSCENE_END_LABEL, beginCutsceneControl, endCutsceneControl, isCutsceneInputLocked, isCutsceneSkippable } from "@/player/cutsceneControl";
 import { fastForwardAction } from "@/player/cutsceneFastForward";
 import { nameplateSpeaker } from "@/player/dialogue";
 import { runCommands } from "@/player/playSceneInterpreter";
@@ -15,11 +15,13 @@ import { installFakeDom } from "./fakeDom";
 import { LocalDiagnosticSession } from "@/util/localDiagnosticSession";
 
 const cameraControl = vi.hoisted(() => vi.fn<() => Promise<void>>());
+const cameraSkip = vi.hoisted(() => ({ restore: vi.fn(), interrupt: vi.fn() }));
 
 vi.mock("@/player/playSceneCamera", () => ({
   applyCameraControl: cameraControl,
   // 스킵은 카메라를 컷신 전 상태로 되돌린다(playSceneInterpreter requestSkip) — 이 시험은 스킵 흐름만 보므로 빈 구현.
-  restoreCameraAfterCutsceneSkip: () => undefined,
+  restoreCameraAfterCutsceneSkip: cameraSkip.restore,
+  interruptCameraForCutsceneSkip: cameraSkip.interrupt,
 }));
 
 const SKIPPED_SWITCH = "sw_skipped_command";
@@ -131,6 +133,8 @@ beforeEach(() => {
   previousProject = store.getCurrent();
   vi.spyOn(performance, "now").mockReturnValue(1_000);
   cameraControl.mockReset();
+  cameraSkip.restore.mockReset();
+  cameraSkip.interrupt.mockReset();
   cameraControl.mockImplementation(() => new Promise(() => undefined));
 });
 
@@ -505,5 +509,90 @@ describe("cutscene skip review (2026-11-26)", () => {
     const ride = { kind: "liftRide", mode: "move", direction: "down", distance: 3, width: 1, depth: 1, riders: "party", wait: true } as const;
     expect(fastForwardAction(ride as never)).toBe("apply");
     expect(fastForwardAction({ ...ride, riders: "none" } as never)).toBe("skip");
+  });
+});
+
+describe("cutscene skip owner decisions (2026-11-26 D1-D4)", () => {
+  const cameraWait: Command = { kind: "m2Command", commandId: "m2-201-camera-control", fields: { mode: "panTo", target: "screen", x: 3, y: 4, durationMs: 300, wait: true } };
+  async function skipThrough(fixture: Fixture, commands: readonly Command[], options?: Parameters<typeof runCommands>[3]): Promise<void> {
+    store.replaceProject(fixture.project);
+    const running = runCommands(fixture.scene, commands, undefined, options);
+    await Promise.resolve();
+    pressEscape();
+    pressEscape();
+    await running;
+  }
+
+  it("D1: keeps fast-forwarding after a map transfer instead of replaying the rest of the scene", async () => {
+    const fixture = createFixture();
+    Object.assign(fixture.scene, { transferTo: vi.fn(async () => undefined) });
+    const dialogue = fixture.scene.game.registry.get("dialogue") as { showText: ReturnType<typeof vi.fn> };
+    await skipThrough(fixture, [
+      { kind: "cutsceneControl", mode: "begin", skippable: true },
+      cameraWait,
+      { kind: "transfer", mapId: fixture.project.startMapId, x: 1, y: 1, direction: "down" } as unknown as Command,
+      { kind: "text", body: "이동 뒤 대사" },
+      { kind: "setSwitch", switchId: SKIPPED_SWITCH, value: true },
+      { kind: "label", name: CUTSCENE_END_LABEL },
+      { kind: "cutsceneControl", mode: "end" },
+    ], { continueAfterTransfer: true });
+    expect(dialogue.showText).not.toHaveBeenCalledWith(expect.objectContaining({ body: "이동 뒤 대사" }));
+    expect(fixture.scene.session.switches[SKIPPED_SWITCH]).toBe(true);
+  });
+
+  it("D2: places a one-shot route's walker on the cell where the route ends, keeping blocked steps blocked", async () => {
+    for (const blocked of [false, true]) {
+      const fixture = createFixture();
+      Object.assign(fixture.scene, { pageMoveRouteEventIds: new Set(), tileX: 0, tileY: 0 });
+      const map = fixture.project.maps[fixture.project.startMapId]!;
+      const npc = (id: string, x: number): GameEvent => ({
+        id, name: id, x, y: 3, trigger: { kind: "action" }, commands: [],
+        pages: [{ id: "p", name: "p", conditions: [], graphic: { spriteId: "actor1" } as never, trigger: { kind: "action" }, priority: "same", movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [] }],
+      } as unknown as GameEvent);
+      map.events.push(npc("ev_walker", 3));
+      if (blocked) map.events.push(npc("ev_wall", 5));
+      await skipThrough(fixture, [
+        { kind: "cutsceneControl", mode: "begin", skippable: true },
+        cameraWait,
+        { kind: "moveEvent", eventId: "ev_walker", route: { moves: [{ kind: "move", dir: "right" }, { kind: "move", dir: "right" }, { kind: "move", dir: "right" }], repeat: false, wait: true } } as unknown as Command,
+        { kind: "label", name: CUTSCENE_END_LABEL },
+        { kind: "cutsceneControl", mode: "end" },
+      ]);
+      expect(fixture.scene.eventPositions.ev_walker).toMatchObject(blocked ? { x: 4, y: 3, direction: "right" } : { x: 6, y: 3, direction: "right" });
+    }
+  });
+
+  it("D3: restores the camera when fast-forward reaches the end label, not when it stops at a choice", async () => {
+    const choiceOnly = createFixture();
+    await skipThrough(choiceOnly, [
+      { kind: "cutsceneControl", mode: "begin", skippable: true },
+      cameraWait,
+      { kind: "choices", options: [{ text: "a", branch: [] }, { text: "b", branch: [] }] } as unknown as Command,
+      { kind: "label", name: CUTSCENE_END_LABEL },
+      { kind: "cutsceneControl", mode: "end" },
+    ]);
+    expect(cameraSkip.interrupt).toHaveBeenCalledOnce();
+    expect(cameraSkip.restore).not.toHaveBeenCalled();
+
+    cameraSkip.restore.mockReset();
+    const straight = createFixture();
+    await skipThrough(straight, skippableCutscene(cameraWait));
+    expect(cameraSkip.restore).toHaveBeenCalledOnce();
+  });
+
+  it("D4: an inner event's cutscene end does not release the outer cutscene's lock", () => {
+    const session = startSession(createBlankProject(), 1);
+    beginCutsceneControl(session, "ev_outer", true);
+    beginCutsceneControl(session, undefined, false);
+    endCutsceneControl(session, undefined);
+    expect(isCutsceneInputLocked(session)).toBe(true);
+    expect(isCutsceneSkippable(session)).toBe(true);
+    endCutsceneControl(session, "ev_outer");
+    expect(isCutsceneInputLocked(session)).toBe(false);
+
+    // A legacy end from an owner that never began still clears the lock.
+    beginCutsceneControl(session, undefined, true);
+    endCutsceneControl(session, "ev_other");
+    expect(isCutsceneInputLocked(session)).toBe(false);
   });
 });

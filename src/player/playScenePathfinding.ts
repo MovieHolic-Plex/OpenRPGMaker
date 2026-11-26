@@ -13,7 +13,8 @@ import { startPlayerRoute } from "@/player/playerRouteState";
 import { clampNpcSetting, npcMoveDurationMs } from "@/player/playScenePageMoveRoutes";
 import type { StepResult } from "@/player/interpreter";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
-import type { MoveCommand } from "@/project/types";
+import type { Dir, MoveCommand } from "@/project/types";
+import { placeAtRouteEnd } from "@/player/cutsceneInstantMove";
 
 type PathfindStep = Extract<StepResult, { kind: "pathfindMove" }>;
 // The public result flag belongs to the latest request, including immediate no-ops.
@@ -216,4 +217,36 @@ function destinationBlocked(
     if (scene.moving && rectsOverlap(rect, playerPassageRect(playerBody, scene.movingTo.x, scene.movingTo.y))) return true;
   }
   return false;
+}
+
+/**
+ * 컷신 빨리 감기의 길 찾기(오너 결정 2026-11-26 D2): 걷지 않고 찾은 길의 끝 칸에 세운다. 결과 변수·스위치·성공 플래그는
+ * 실제로 걸었을 때와 같이 적는다 — 막힘·길 없음·맵 밖도 같은 결과로 갈라 「실패하면 중단」 분기가 그대로 산다.
+ */
+export function settlePathfindInstantly(scene: PlaySceneContext, step: PathfindStep, currentEventId?: string): MovementResult {
+  const session = scene.session;
+  const request = {};
+  latestPathfind.set(session, request);
+  const settle = (result: MovementResult): MovementResult => {
+    session.flags.pathfindSucceeded = result === "arrived";
+    recordMovementResult(session, step, result);
+    return result;
+  };
+  const destination = classifyDestination(scene, step);
+  if (destination.kind !== "ok") return settle(destination.kind);
+  const effective: PathfindStep = { ...step, x: destination.x, y: destination.y };
+  const plan = planPathfindMove(scene, effective, currentEventId);
+  if (!plan) return settle("missingTarget");
+  if (!plan.moves.length && (plan.from.x !== effective.x || plan.from.y !== effective.y)) {
+    return settle(destinationBlocked(scene, plan, effective) ? "blocked" : "unreachable");
+  }
+  let end = { ...plan.from };
+  let facing: Dir | undefined;
+  for (const move of plan.moves) {
+    if (move.kind !== "move") continue;
+    end = { x: end.x + (move.dir === "right" ? 1 : move.dir === "left" ? -1 : 0), y: end.y + (move.dir === "down" ? 1 : move.dir === "up" ? -1 : 0) };
+    facing = move.dir;
+  }
+  placeAtRouteEnd(scene, plan.target, { x: end.x, y: end.y, ...(facing ? { facing } : {}) });
+  return settle("arrived");
 }

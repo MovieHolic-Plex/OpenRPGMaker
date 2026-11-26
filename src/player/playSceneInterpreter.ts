@@ -51,12 +51,13 @@ import type { Command, MessageWindowSettings, MoveCommand } from "@/project/type
 import { characterSpriteY, footprintSpriteX } from "@/player/characterDepth";
 import { waitForEventKey } from "@/player/eventInput";
 import { abortHop, PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
-import { applyCameraControl, restoreCameraAfterCutsceneSkip } from "@/player/playSceneCamera";
+import { applyCameraControl, interruptCameraForCutsceneSkip, restoreCameraAfterCutsceneSkip } from "@/player/playSceneCamera";
+import { cutsceneRouteEnd, placeAtRouteEnd } from "@/player/cutsceneInstantMove";
 import { fastForwardAction, withoutWait } from "@/player/cutsceneFastForward";
 import { cameraViewOrigin } from "@/player/cameraScreen";
 import { applyLightingStep } from "@/player/playSceneLighting";
 import { playMapAnimation } from "@/player/playSceneMapAnimations";
-import { playPathfindMove } from "@/player/playScenePathfinding";
+import { playPathfindMove, settlePathfindInstantly } from "@/player/playScenePathfinding";
 import { conditionWaitScenes, isRuntimeEventIdle } from "@/player/runtimeConditionWait";
 import { playMovieOverlay } from "@/player/playSceneMovies";
 import { applyWeatherStep } from "@/player/playSceneWeather";
@@ -328,10 +329,13 @@ export async function runCommands(
     onFactionStanceChanged: () => invalidateFactionRetargetCache(scene),
     onFriendshipChanged: (npcKey, delta) => showRelationshipPulse(scene, npcKey, delta),
     onSafetyStop: (stop) => recordSceneSafetyStop(scene, stop),
+    // 건너뛴 장면의 카메라·레터박스는 라벨에 닿는 순간 되돌린다 — 라벨 뒤 정리 명령이 그 위에 다시 정할 수 있게(D3).
+    onFastForwardEnd: () => { cameraRestorePending = false; restoreCameraAfterCutsceneSkip(scene); },
   });
+  let cameraRestorePending = false;
   // An awaited UI result must never resume commands after its owner/page/session was cancelled.
   const interpreter: Interpreter = { ...base, resume: value => current() ? base.resume(value) : { kind: "done" } };
-  const skipController = createCutsceneSkipController(scene, interpreter);
+  const skipController = createCutsceneSkipController(scene, interpreter, () => { cameraRestorePending = true; });
   const diagnosticOwner = diagnosticToken();
   const changedTerrainMaps = new Set<string>();
   const observe = (phase: "started" | "completed" | "cancelled" | "failed") => {
@@ -360,9 +364,14 @@ export async function runCommands(
         const action = fastForwardAction(step);
         if (action === "stop" || ++fastForwardSteps > FAST_FORWARD_STEP_LIMIT) {
           // 고르기·전투·맵 이동은 대신하지 않는다. 상한을 넘긴 빨리 감기(끝나지 않는 Wait Until 등)는 예전처럼 라벨로 뛴다.
-          if (action === "stop") interpreter.endFastForward();
+          // 멈추면 남은 장면은 연출 카메라 그대로 본다 — 되돌리지 않는다(D3).
+          if (action === "stop") { interpreter.endFastForward(); cameraRestorePending = false; }
           else { result = interpreter.jumpToLabel(CUTSCENE_END_LABEL); scene.refreshRuntimeSurfaces(); continue; }
           scene.refreshRuntimeSurfaces();
+        } else if (action === "place") {
+          result = placeDuringFastForward(scene, interpreter, step, currentEventId)
+            ?? await consumeBlockingStep(scene, interpreter, withoutWait(step), currentEventId, skipController, current, () => { handledFailure = true; });
+          continue;
         } else if (action === "skip") {
           result = interpreter.resume(undefined);
           if (!interpreter.isFastForwarding()) scene.refreshRuntimeSurfaces();
@@ -389,6 +398,8 @@ export async function runCommands(
     throw error;
   } finally {
     skipController.dispose(); releaseCutsceneControlForOwner(activeSession, currentEventId);
+    // 빨리 감다가 라벨 전에 이벤트가 끝났다(맵 이동으로 끝나는 이벤트 등) — 연출 카메라를 남기지 않는다.
+    if (cameraRestorePending && scene.session === activeSession) restoreCameraAfterCutsceneSkip(scene);
     const owns = scene.session === activeSession && foregroundOwner(scene) === owner && !owner?.signal.aborted
       && !scene.battleAbortController && scene.sys?.isActive() !== false;
     if (owns) {
@@ -415,7 +426,7 @@ type CutsceneSkipController = {
   setChoosing(choosing: boolean): void;
 };
 
-function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Interpreter): CutsceneSkipController {
+function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Interpreter, onFastForwardBegin: () => void): CutsceneSkipController {
   let lastEscapeAt = -Infinity;
   let choosing = false;
   let result: StepResult | null = null;
@@ -436,8 +447,13 @@ function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Inte
     lastEscapeAt = -Infinity;
     event.preventDefault();
     // 라벨까지 빨리 감는다(cutsceneFastForward.ts) — 라벨이 없는 장면만 예전처럼 끝낸다.
-    if (!interpreter.beginFastForward(CUTSCENE_END_LABEL)) result = interpreter.jumpToLabel(CUTSCENE_END_LABEL);
-    restoreCameraAfterCutsceneSkip(scene);
+    if (interpreter.beginFastForward(CUTSCENE_END_LABEL)) {
+      onFastForwardBegin();
+      interruptCameraForCutsceneSkip(scene);
+    } else {
+      result = interpreter.jumpToLabel(CUTSCENE_END_LABEL);
+      restoreCameraAfterCutsceneSkip(scene);
+    }
     scene.refreshRuntimeSurfaces();
     notify();
   };
@@ -920,6 +936,32 @@ async function consumeBlockingStep(
     default:
       return assertNever(step);
   }
+}
+
+/**
+ * 빨리 감기의 이동 걸음(D2): 걷지 않고 끝 칸에 세운다. 걸음 말고 다른 일이 섞인 경로는 null — 호출부가 기다림 없이 그대로 건다.
+ * 길 찾기의 「실패하면 중단」은 실제로 걸었을 때와 같이 이벤트를 끝낸다.
+ */
+function placeDuringFastForward(
+  scene: PlaySceneContext,
+  interpreter: Interpreter,
+  step: Exclude<StepResult, { kind: "done" }>,
+  currentEventId: string | undefined,
+): StepResult | null {
+  if (step.kind === "pathfindMove") {
+    const outcome = settlePathfindInstantly(scene, step, currentEventId);
+    if (step.wait && step.onFailure === "stop" && outcome !== "arrived") {
+      scene.refreshRuntimeSurfaces();
+      return { kind: "done" };
+    }
+    return resumeAfterSurface(scene, interpreter);
+  }
+  if (step.kind !== "moveEvent") return null;
+  const target = resolveMoveEventTarget(step.eventId, currentEventId);
+  const end = cutsceneRouteEnd(scene, target, bindStageTargets(step.moves, currentEventId));
+  if (!end) return null;
+  placeAtRouteEnd(scene, target, end);
+  return resumeAfterSurface(scene, interpreter);
 }
 
 function resolveMoveEventTarget(eventId: string, currentEventId: string | undefined): string {
