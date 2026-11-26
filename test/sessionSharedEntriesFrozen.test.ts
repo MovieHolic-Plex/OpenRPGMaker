@@ -160,6 +160,7 @@ function mapToolCalls(town: string, blank: string): Array<[string, Record<string
     ["create_map", { id: "map_trap_room", name: "덫 방", width: 20, height: 15 }],
     ["author_map_puzzle", { mapId: "map_trap_room", presetId: "lever_secret_passage", x: 10, y: 7 }],
     ["create_map", { id: "map_trap_route", name: "덫 길", width: 20, height: 15 }],
+    ["set_time_limit", { mapId: "map_trap_room", seconds: 30 }],
     ["make_timed_escape", { mapId: blank, seconds: 60, start: { x: 8, y: 13, width: 3, height: 1 }, exit: { x: 8, y: 0, width: 4, height: 1 }, checkpoint: { x: 10, y: 12 }, area: { x: 0, y: 0, width: 20, height: 15 }, from: "south", bands: 3 }],
     ["author_wild_route", { mapId: "map_trap_route", exits: [{ x: 10, y: 14 }, { x: 10, y: 0 }], grassPatches: 2, encounters: [{ troopId: "troop_slime", weight: 1 }] }],
     ["author_forest_route", { fromMapId: town, side: "north", count: 1 }],
@@ -206,6 +207,7 @@ const MAP_TOOLS_NOT_CALLED: Readonly<Record<string, string>> = {
   edit_world_terrain: "월드맵 빌드가 필요하다",
   derive_world_variant: "월드맵이 필요하다",
   link_world_entrance: "월드맵이 필요하다",
+  build_sheer_terrain: "깎아지른 지형 그림(setSheerArt)을 시험이 넣어야 한다 — 시공은 streetWalkers 시험이 본다",
 };
 
 let frozen: { tilesets: Record<string, unknown>; uploaded: Record<string, unknown> };

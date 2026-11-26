@@ -165,11 +165,12 @@ describe("에디터 헤더 복구", () => {
     }
   });
 
-  it("⌘K 「AI 설정 열기」 명령이 설정 모달을 연다 — 톱바에는 ⋯ 가 없다", async () => {
-    // Break: settings remains buried in the assistant panel, or the ⋯ button returns without a ⌘K home for it.
+  it("⌘K 「AI 설정 열기」 명령이 설정 모달을 연다 — 톱바 끝 ⋯ 「도움말 · 설정」 도 있다", async () => {
+    // Break: settings remains buried in the assistant panel, or the ⋯ entry loses its ⌘K home.
+    // ⋯ 는 #4918(2026-11-23)이 「도움말 · 설정」 으로 되살렸다 — 초보가 ⌘K 만으로는 설정을 찾지 못했다.
     const topbar = document.createElement("div");
     renderTopbar(topbar);
-    expect(findByTestId(fakeElement(topbar), "menu-more-tools")).toBeNull();
+    expect(findByTestId(fakeElement(topbar), "menu-more-tools")?.getAttribute("aria-label")).toBe("도움말 · 설정");
 
     const { listEditorCommands } = await import("@/editor/commandRegistry");
     listEditorCommands().find((command) => command.id === "topbar-ai-settings")?.run();
