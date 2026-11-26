@@ -58,7 +58,7 @@ function pillIcon(name: keyof typeof PILL_ICONS): SVGSVGElement {
 }
 
 type PillTool = {
-  readonly id: "paint" | "select" | "fill";
+  readonly id: "paint" | "select";
   readonly label: string;
   readonly hotkey?: string;
   /** 지형·이벤트 레이어에서도 보이는가 — 영역 선택만 그렇다. */
@@ -75,8 +75,8 @@ export const REGION_SELECT_LABEL = "영역 선택";
 const PILL_TOOLS: readonly PillTool[] = [
   { id: "paint", label: toolLabel("paint"), hotkey: "B", active: (s) => isTileToolbarItemActive("pen", s.tool, s.paintShape), select: () => selectTileTool("pen") },
   { id: "select", label: REGION_SELECT_LABEL, hotkey: "V", anyLayer: true, text: "영역", active: (s) => !isLocationDrawMode() && s.tool === "select", select: () => selectTileTool("select") },
-  { id: "fill", label: toolLabel("fill"), hotkey: "G", active: (s) => isTileToolbarItemActive("fill", s.tool, s.paintShape), select: () => selectTileTool("fill") },
 ];
+// 「채우기」 는 알약에서 뺐다(버튼 줄이기 2회차) — 팔레트 「붓 설정」 의 채우기(palette-tool-fill)·G 키·⌘K 「도구: 채우기」 가 같은 도구를 고른다.
 
 /** 이 레이어·도구 상태에서 알약에 보일 도구 id. 지형(relief)·이벤트에서는 영역 선택 하나. */
 export function visiblePillToolIds(state: Pick<EditorState, "layer" | "tool">): readonly PillTool["id"][] {

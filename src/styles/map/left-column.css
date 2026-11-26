@@ -121,3 +121,13 @@
 @media (max-width: 699px) {
   .editor-layout:has(> aside:not(.is-collapsed)) { position: relative; }
 }
+
+/* 폰 폭: 펼친 왼쪽 열이 캔버스 왼쪽을 덮는 동안 캔버스 알약을 가운데가 아니라 오른쪽 끝에 붙인다 —
+   가운데에 두면 「영역」·「되돌리기」가 열 밑으로 들어가 이벤트 레이어(왼쪽 열이 이벤트 목록으로 열린다)에서 알약이 잘렸다(1회차 VQA, 버튼 줄이기 2회차). */
+@media (max-width: 699px) {
+  .editor-layout:has(> aside:not(.is-collapsed)) .canvas-area > .canvas-tool-pill {
+    left: auto;
+    right: 8px;
+    transform: none;
+  }
+}

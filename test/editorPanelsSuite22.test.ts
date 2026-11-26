@@ -573,7 +573,6 @@ describe("editorCanvasToolbarBasicZoom", () => {
       expect(ids(fake)).toEqual([
         "tool-paint",
         "tool-select",
-        "tool-fill",
         "canvas-tool-pill-divider",
         "canvas-tool-undo",
         "editor-zoom-group",
@@ -589,6 +588,8 @@ describe("editorCanvasToolbarBasicZoom", () => {
         "editor-map-screenshot-button",
         "tool-rect",
         "tool-pan",
+        // 버튼 줄이기 2회차: 채우기는 팔레트 「붓 설정」·G 키·⌘K 가 맡는다.
+        "tool-fill",
       ]) {
         expect(fake.querySelector(`[data-testid="${gone}"]`), gone).toBeNull();
       }
@@ -613,8 +614,8 @@ describe("editorCanvasToolbarBasicZoom", () => {
       expect(fake.querySelector('[data-testid="tool-select"]')?.getAttribute("aria-pressed")).toBe("true");
       expect(fake.querySelector('[data-testid="tool-select"]')?.getAttribute("aria-label")).toBe("영역 선택");
       expect(fake.querySelector('[data-testid="tool-paint"]')?.getAttribute("aria-pressed")).toBe("false");
-      (fake.querySelector('[data-testid="tool-fill"]') as FakeElement).click();
-      expect(editorState.get().tool).toBe("fill");
+      (fake.querySelector('[data-testid="tool-paint"]') as FakeElement).click();
+      expect(editorState.get().tool).toBe("paint");
     });
 
     it("disables undo while the history stack is empty", () => {

@@ -187,7 +187,8 @@ test("map editor paints, fills, selects, copies, pastes, edits passability, and 
     const state = await debugState(page);
     return state.project.tilesets[currentMap(state).tilesetId].terrain[FILL_TILE];
   }).toBe(7);
-  await page.getByTestId("tool-fill").click();
+  // 채우기는 알약에서 빠졌다(버튼 줄이기 2회차) — 단축키 G 로 고른다.
+  await page.keyboard.press("g");
   await clickMapCenter(page);
   await expect.poll(async () => {
     const state = await debugState(page);

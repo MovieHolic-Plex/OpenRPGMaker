@@ -477,7 +477,7 @@ test("left sidebar tool buttons use visible icons with accessible names", async 
   // testid는 승계, 아이콘은 rm-tool-icon(CSS) → SVG.
   const expectedTools = [
     { testId: "tool-paint", label: "칠하기" },
-    { testId: "tool-fill", label: "채우기" },
+    { testId: "palette-tool-fill", label: "이어진 영역 채우기" },
     { testId: "tool-eyedropper", label: "타일 집기" },
     { testId: "tool-select", label: "영역 선택" },
     { testId: "tool-collision", label: "통행" },

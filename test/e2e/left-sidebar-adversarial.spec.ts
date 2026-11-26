@@ -73,7 +73,7 @@ test("sidebar retains focus, reachable controls and usable map space", async ({ 
     await page.keyboard.press("Enter");
     await expect(page.getByTestId("tool-erase")).toBeFocused();
     await expect(page.locator("body")).toHaveAttribute("data-editor-tool", "erase");
-    for (const id of ["tool-paint", "tool-fill", "tool-event", "layer-lower", "layer-upper", "layer-event"]) {
+    for (const id of ["tool-paint", "palette-tool-fill", "tool-event", "layer-lower", "layer-upper", "layer-event"]) {
       await hitVisible(page.getByTestId(id));
     }
     await hitVisible(page.getByTestId("oprn-tool-overflow"));

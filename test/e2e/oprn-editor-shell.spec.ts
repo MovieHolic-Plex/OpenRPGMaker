@@ -21,7 +21,7 @@ test("editor shell keeps RM2K3 workbench controls visible and mode switches clea
   await expect(page.getByTestId("layer-event")).toBeVisible();
   await expect(page.getByTestId("tool-grid")).toBeVisible();
   await expect(page.getByTestId("tool-paint")).toBeVisible();
-  await expect(page.getByTestId("tool-fill")).toBeVisible();
+  await expect(page.getByTestId("palette-tool-fill")).toBeVisible();
   await expect(page.getByTestId("tool-erase")).toBeVisible();
   await showIndividualTiles(page);
   await expect(page.getByTestId("tile-palette")).toBeVisible();
