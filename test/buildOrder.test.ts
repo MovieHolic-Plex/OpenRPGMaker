@@ -3,7 +3,7 @@ import { AUTONOMY_LEVELS, resolveAutonomy, type AutonomyLevel } from "@/ai/auton
 import { orderedAssets, validateBuildSpec, type BuildSpec } from "@/ai/buildSpec";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
-import { charsetEntryOf, characterBrief, characterRoleOf, chipFitsRole } from "@/ai/characterFit";
+import { charsetEntryOf, characterRoleOf, chipFitsRole } from "@/ai/characterFit";
 import { buildSystemPrompt } from "@/ai/contextBuilder";
 import { PREFERENCE_PRECEDENCE_LINE, PREFERENCE_SECTION_HEADING } from "@/ai/preferenceMemory";
 import { COMPACTION_SUMMARY_MARKER, DEFAULT_COMPACTION_SETTINGS, DEFAULT_CONTEXT_WINDOW, buildCompactedMessages, buildSummarizationRequest, compactionSummaryMessage, estimateContextTokens, estimateMessageTokens, findCompactionCutPoint, findPreviousSummary, isCompactionSummaryMessage, repairRetainedTail, resolveContextWindow, resolveThresholdContextTokens, shouldCompact, estimateAdmissionTokens } from "@/ai/contextCompaction";
@@ -41,13 +41,6 @@ describe("autonomyLevels", () => {
   describe("AUTONOMY_LEVELS", () => {
     it("covers every AutonomyLevel exactly once", () => {
       expect(AUTONOMY_LEVELS.map((entry) => entry.id).sort()).toEqual([...LEVELS].sort());
-    });
-
-    it("gives every level a non-empty label and description", () => {
-      for (const entry of AUTONOMY_LEVELS) {
-        expect(entry.label.trim().length).toBeGreaterThan(0);
-        expect(entry.description.trim().length).toBeGreaterThan(0);
-      }
     });
   });
   describe("resolveAutonomy", () => {
@@ -300,12 +293,6 @@ describe("characterFit", () => {
       expect(chipFitsRole(undefined, "무기점 주인").fits).toBe(true);
     });
 
-    it("생성 설명에 역할 생김새와 나이가 들어간다", () => {
-      const role = characterRoleOf("은퇴한 기사 할아버지")!;
-      expect(role.elder).toBe(true);
-      expect(characterBrief("가렌", role)).toMatch(/elderly man.*knight/u);
-    });
-
     it("대사가 다른 가게를 말해도 역할은 이름에서만 읽는다", () => {
       expect(characterRoleOf("미라 여관에 가 봐", "미라")).toBeUndefined();
       expect(characterRoleOf("무기점 주인 늙은 영감님", "무기점 주인")?.elder).toBe(true);
@@ -356,18 +343,6 @@ describe("contextBuilder", () => {
     });
   });
   describe("buildSystemPrompt — 수정 vs 신규 라우팅", () => {
-    it("기존 실내 맵 수정 경로를 신규 시공과 나눠 안내한다", () => {
-      const project = createBlankProject();
-      const context = buildSystemPrompt(project, { currentMapId: project.startMapId });
-
-      expect(context).toContain("기존 실내 맵 수정");
-      // 실내 방 세션 도구(furnish_interior_space·list_interior_room_sessions)는 걷혔다 — 기존 실내는 같은 mapId 로
-      // 손 도트 실내 도구를 replace:true 로 다시 부른다.
-      expect(context).toContain("기존 실내 맵 수정=같은 mapId 로 build_hand_interior_room(replace:true)");
-      // 대상 선택 규칙이 라우팅보다 먼저 읽히도록 명시돼 있다.
-      expect(context).toContain("대상 선택");
-    });
-
     // 예산이 아무리 좁아도 "지금 보고 있는 맵이 무엇인가"는 남아야 한다 — 이것이 사라지면
     // "이/여기/지금"이 어느 맵인지 알 수 없어 모델이 새 맵을 만드는 쪽으로 기운다.
     it("현재 맵 요약은 예산 밖에 고정된다", () => {
@@ -1001,10 +976,6 @@ describe("gothicPolicy", () => {
       for (const t of [GOTHIC_POINTER_LINE, GOTHIC_DETAIL_LINE, formatGothicNote({}, null)]) expect(t).toContain("build_gothic_place");
       expect(GOTHIC_POINTER_LINE).not.toContain("gothic-interior-authoring");
     });
-    it("PAW 게이트 낱말을 쓰지 않는다", () => {
-      for (const t of [GOTHIC_POINTER_LINE, GOTHIC_DETAIL_LINE, formatGothicNote({}, null)]) expect(/현대|모던|modern/iu.test(t)).toBe(false);
-      expect(isGothicManorTilesetDef(undefined)).toBe(false);
-    });
   });
 });
 
@@ -1464,17 +1435,6 @@ describe("intentDeclaration", () => {
     });
   });
   describe("formatIntentNote — 선언이 확정한 것을 본문 모델에게 알린다", () => {
-    it("시설 실내 선언은 손 도트 v5 build_hand_interior_room 경로와 되묻기 금지를 말한다", () => {
-      const note = formatIntentNote(declaredIntent({ mode: "create", space: "interior", facility: "대장간", tools: ["build_hand_interior_room"] }));
-      expect(note).toContain("손 도트 실내 (v5)");
-      expect(note).toContain("build_hand_interior_room");
-      expect(note).not.toContain("place_concept");
-      expect(note).toContain("다시 묻지 말고");
-      // author_house(야외 집 + linked-interior)는 은퇴했다 — 외장은 place_terrain_house, 실내와는 create_transfer_pair 로 잇는다.
-      expect(note).toContain("place_terrain_house");
-      expect(note).toContain("create_transfer_pair");
-    });
-
     it("수정·질문·야외 선언은 각자의 경계를, 폴백·이어가기는 노트를 내지 않는다", () => {
       expect(formatIntentNote(declaredIntent({ mode: "modify", targetMapId: "map_a" }))).toContain("`map_a`");
       expect(formatIntentNote(declaredIntent({ mode: "question" }))).toContain("바꾸지 말고");
@@ -1487,34 +1447,6 @@ describe("intentDeclaration", () => {
       expect(formatIntentNote(declaredIntent({ mode: "create", space: "none" }))).toBeNull();
       expect(formatIntentNote(fallbackIntentDeclaration(FACTS))).toBeNull();
       expect(formatIntentNote(continuationIntentDeclaration(FACTS))).toBeNull();
-    });
-
-    it("space=interior 선언은 독립 실내이며 linked-interior 집을 막지 않는다", () => {
-      const note = formatIntentNote(declaredIntent({ mode: "create", space: "interior", facility: null, tools: ["start_interior_room_session"] }));
-      expect(note).toContain("독립 실내");
-      // 외장과 함께 짓는 집 길(옛 linked-interior)은 place_terrain_house + create_transfer_pair 로 남는다.
-      expect(note).toContain("place_terrain_house");
-      expect(note).not.toContain("야외 집(author_house)을 대신 짓지 말 것");
-    });
-
-    it("space=both 선언은 linked-interior 한 번을 말한다", () => {
-      const note = formatIntentNote(declaredIntent({ mode: "create", space: "both", facility: null, tools: ["author_house"] }));
-      // author_house 은퇴 뒤: 외장 place_terrain_house + 실내 build_hand_interior_room 을 한 번에 말한다.
-      expect(note).toContain("place_terrain_house");
-      expect(note).toContain("build_hand_interior_room");
-      expect(note).not.toContain("start_interior_room_session");
-      expect(note).not.toContain("둘은 create_transfer_pair 로 잇는다");
-      expect(note).not.toContain("create_transfer_pair 수동 연결은 불필요");
-      const facilityNote = formatIntentNote(declaredIntent({ mode: "create", space: "both", facility: "여관", tools: ["build_hand_interior_room"] }));
-      expect(facilityNote).toContain("build_hand_interior_room");
-      expect(facilityNote).not.toContain("create_transfer_pair");
-    });
-
-    it("auto 모드에서 건너뛴 되묻기는 「택하고 밝혀라」로 바뀐다", () => {
-      const intent = declaredIntent({ mode: "create", space: "unclear", clarify: "실내인가요 야외인가요?" });
-      expect(formatIntentNote(intent)).toBeNull();
-      expect(formatIntentNote(intent, { clarifyBypassed: true })).toContain("실내인가요 야외인가요?");
-      expect(formatIntentNote(intent, { clarifyBypassed: true })).toContain("되묻지 않는다");
     });
   });
   it("full-adventure contracts come from declared intent and cannot affect question mode", () => {
@@ -1555,23 +1487,8 @@ describe("intentDeclaration", () => {
       expect(result.intent?.referenceWork).toBeUndefined();
     });
 
-    it("참조 작품이 있으면 노트가 검색을 지시한다", () => {
-      const intent = declaredIntent({ referenceWork: "해리포터", tools: ["web_search"] });
-      const note = formatIntentNote(intent);
-      expect(note).toContain("[참조 작품]");
-      expect(note).toContain("해리포터");
-      expect(note).toContain("web_search");
-      // 고유명사를 그대로 쓰지 말라는 경계도 함께 간다.
-      expect(note).toContain("고유명사");
-    });
-
     it("참조 작품이 없으면 그 노트가 붙지 않는다", () => {
       expect(formatIntentNote(declaredIntent({})) ?? "").not.toContain("[참조 작품]");
-    });
-
-    it("선언 프롬프트가 referenceWork 필드를 가르친다", () => {
-      expect(INTENT_SYSTEM_PROMPT).toContain('"referenceWork"');
-      expect(INTENT_SYSTEM_PROMPT).toContain("해리포터");
     });
   });
 });

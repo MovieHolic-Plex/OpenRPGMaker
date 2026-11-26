@@ -6,7 +6,7 @@ import type { AiRunSurface } from "@/editor/panels/aiRunSurface";
 import { agentBlueprintForMap, clearAgentBlueprint, getAgentBlueprintState, syncAgentBlueprintWithSpec } from "@/editor/agentBlueprint";
 import { appendAgentGhostPreviewForToolCall, clearAgentGhostPreview, getAgentGhostPreviewState, setAgentGhostRunningTool, replaceAgentGhostPreviewFromProjectDiff, getAgentGhostDraftMap } from "@/editor/agentGhostPreview";
 import { getPendingRegionApply, setPendingRegionApply } from "@/editor/regionTask/pendingRegionApply";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 import { installFakeDom } from "./fakeDom";
@@ -27,7 +27,7 @@ beforeEach(() => {
   restoreDom = installFakeDom();
   clearAgentBlueprint(); clearAgentGhostPreview(); observed.activity.mockClear();
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
-  store.replace(createBlankProject());
+  store.replace(createSharedTilesetBlankProject());
 });
 afterEach(() => {
   getPendingRegionApply()?.discard();

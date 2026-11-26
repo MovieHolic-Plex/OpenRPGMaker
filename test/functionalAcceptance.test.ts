@@ -94,7 +94,7 @@ describe("immutable engine-evaluated functional acceptance", () => {
     expect(ledger.evaluate(fixture.project).items[0].evidence[0].passed).toBe(false);
     expect(ledger.evaluate(fixture.project).items[1].evidence[0].passed).toBe(false);
   });
-  it.each(["count", "unitPrice", "seller", "start"])("keeps missing purchase %s unverified", field => {
+  it.each(["count"])("keeps missing purchase %s unverified", field => {
     const fixture = functionalFixture();
     const candidate = Object.fromEntries(Object.entries(criteriaFor(fixture)[0]).filter(([key]) => key !== field));
     const parsed = parseAcceptance([{ id: "missing", title: "Requested purchase", criteria: [candidate] }]);

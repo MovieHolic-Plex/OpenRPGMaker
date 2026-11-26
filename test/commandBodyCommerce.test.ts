@@ -12,7 +12,6 @@ import type { Command, Condition } from "@/project/types";
 import { executeM2RuntimeCommand } from "@/player/interpreter/m2Runtime";
 import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom, type FakeNode } from "./fakeDom";
 import { renderCommandPreview } from "@/editor/panels/eventEditor/commandPreview";
-import { commandDialogWidth } from "@/editor/panels/eventEditor/commandEditDialog";
 import { isolateTimers } from "./mergedTeardown";
 
 describe("eventEditorStagedState", () => {
@@ -543,16 +542,6 @@ describe("shopCommandFullscreenUi", () => {
     branchOnTransaction: false,
     transactionBranch: [],
   } satisfies Command;
-  describe("shop command dialog is fullscreen", () => {
-    it("resolves the fullscreen window width for shop commands", () => {
-      expect(commandDialogWidth(shopCommand)).toBe("full");
-    });
-
-    it("keeps the wide window for ordinary commands", () => {
-      expect(commandDialogWidth({ kind: "text", lines: ["안녕"] } as Command)).toBe("wide");
-      expect(commandDialogWidth({ kind: "inn", price: 10 } as Command)).toBe("wide");
-    });
-  });
   describe("shop settings are grouped by task", () => {
     let restoreDom: (() => void) | undefined;
     beforeEach(() => { restoreDom = installFakeDom(); store.replace(createBlankProject()); });

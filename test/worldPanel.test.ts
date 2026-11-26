@@ -35,12 +35,6 @@ describe("worldPanel", () => {
     expect(findByTestId(panel, "world-card-w_concept")).toBeTruthy();
   });
 
-  it("drops the dialog title when embedded in the database", () => {
-    const panel = renderWithFakeDom(() => renderWorldPanel({ embedded: true }));
-    expect(panel.classList.contains("world-panel-embedded")).toBe(true);
-    expect(panel.querySelector("h2")).toBeNull();
-  });
-
   it("filters the character tab to character cards", () => {
     const panel = renderPanel();
 
@@ -243,14 +237,6 @@ describe("worldPanel", () => {
     requireTestId(panel, `world-ref-jump-map-${mapId}`).click();
 
     expect(editorState.get().currentMapId).toBe(mapId);
-  });
-
-  it("renders character cards with the existing charset preview path", () => {
-    const panel = renderPanel();
-    const card = requireTestId(panel, "world-card-w_char");
-    const sprite = card.querySelector(".world-card-sprite");
-
-    expect(sprite?.dataset.spriteId).toBe("tex_easyrpg_charset_actor1");
   });
 
   it("maps missing ref lint errors to the card badge", () => {

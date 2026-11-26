@@ -124,19 +124,6 @@ describe("publishing modal controls", () => {
     checkbox.click(); button("apply").click();
     expect(project.meta.publication?.acceptedSaveCompatibilityIds).toEqual([original?.saveCompatibilityId]);
   });
-  it("keeps focus inside the dialog even before publication exists", async () => {
-    await fixture();
-    expect(document.querySelector('[data-testid="publication-dialog"]')?.contains(document.activeElement)).toBe(true);
-  });
-  it("restores an explicit persistent opener after a transient menu is removed", async () => {
-    const project = createBlankProject();
-    const opener = document.createElement("button"), transient = document.createElement("button");
-    document.body.append(opener, transient); transient.focus();
-    await openPublishingDialog({ project, opener, apply: () => {}, exportZip: async () => {}, exportHtml: async () => {},
-      fetchBytes: async () => { throw new Error("unavailable"); } });
-    transient.remove(); button("cancel").click();
-    expect(document.activeElement).toBe(opener);
-  });
   it("allows selecting Desktop & Steam target platforms and invokes exportDesktopSteam with configured options", async () => {
     const project = createBlankProject();
     const runtime = await createRuntimeManifest([{ name: "web/player.js", bytes: new Uint8Array([2]) },

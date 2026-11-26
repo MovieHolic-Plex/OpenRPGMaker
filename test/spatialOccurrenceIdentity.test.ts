@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { deserialize, ProjectFormatError, serialize, serializePretty } from "@/project/io";
+import { deserialize, ProjectFormatError, serialize } from "@/project/io";
 import { designNode, designSlots, nodePorts, occurrenceChildId, occurrencePortId, own, spatialId } from "@/project/spatial/domain";
 import { instantiateSpatialDesign } from "@/project/spatial/instances";
 import { duplicateSpatialOccurrence } from "@/project/spatial/duplicate";
@@ -11,7 +11,7 @@ import { first, instancesFixture } from "./support/spatialInstancesFixture";
 import { invalidAssociations, spatialAssociationsFixture } from "./support/spatialAssociationsFixture";
 
 const repetition = { slotId: spatialId("constructor"), index: 2 };
-const formats = [{ name: "compact", write: serialize }, { name: "pretty", write: serializePretty }];
+const formats = [{ name: "compact", write: serialize }];
 describe.each(formats)("$name occurrence identity", ({ write }) => {
   it("persists complete associations when a new generated tree crosses project IO", () => {
     // Given

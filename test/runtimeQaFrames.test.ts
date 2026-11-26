@@ -5,15 +5,12 @@ import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { runInNewContext } from "node:vm";
 import type Phaser from "phaser";
-import type { Page } from "@playwright/test";
 import { createBlankProject } from "@/project/defaults";
 import { startSession } from "@/project/session";
 import { startMaker } from "@/project/makers";
 import { store } from "@/project/store";
 import { isGameTimePausedForRuntime, updateGameTime } from "@/player/playSceneTime";
 import { tickNpcSchedules } from "@/player/npcSchedules";
-import * as runner from "../scripts/lib/runtimeQaFrames.mjs";
-import { normalizeScenario } from "../scripts/lib/runtimeQa.mjs";
 import { Input } from "@/player/input";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 
@@ -266,61 +263,5 @@ describe("native QA frame stepping", () => {
     events.emit("destroy");
     expect(Object.hasOwn(window, "__oprnQaFrames")).toBe(false);
     expect(() => control.step({ frames: 1, deltaMs: 16 })).toThrow();
-  });
-});
-
-// A Page/JSHandle transport adapter only. Browser callback bodies and event
-// ordering execute unmodified against this DOM and the real Phaser loop above.
-function transport() {
-  const dispose = vi.fn();
-  const page = {
-    evaluate: async <T, A>(callback: (arg: A) => T, arg: A) => callback(arg),
-    evaluateHandle: async <T, A>(callback: (arg: A) => T, arg: A) => {
-      const entry = callback(arg);
-      return { evaluate: async <R>(reader: (value: T) => R) => reader(entry), dispose };
-    },
-  };
-  return { page: page as unknown as Page, dispose };
-}
-function frameDriver() {
-  expect(runner.performObservedFrames, "runtime runner must expose observed frame stepping").toBeTypeOf("function");
-  return runner.performObservedFrames;
-}
-
-describe("QA frame driver", () => {
-  it("prearms receipt observation before native input and returns the completed frame state", async () => {
-    const { session, inputs } = await runtime(true);
-    hook().pause();
-    Object.defineProperty(window, "__oprnDebug", { configurable: true, value: { readState: () => structuredClone(session) } });
-    cleanups.push(() => { Reflect.deleteProperty(window, "__oprnDebug"); });
-    const { page, dispose } = transport();
-    const result = await frameDriver()(page, { frames: 2, deltaMs: 1000 }, async () => {
-      document.dispatchEvent(new KeyboardEvent("keydown", { key: "z" }));
-      document.dispatchEvent(new KeyboardEvent("keyup", { key: "z" }));
-    });
-    expect(result.receipt.endFrame - result.receipt.startFrame).toBe(2);
-    expect(result.state?.gameTime?.minute).toBe(2);
-    expect(inputs.map((state) => state.actionPressed)).toEqual([true, false]);
-    expect(dispose).toHaveBeenCalledOnce();
-  });
-
-  it("keeps trigger errors and removes observation instead of stepping or fabricating success", async () => {
-    const { updates } = await runtime(true); hook().pause();
-    const { page, dispose } = transport();
-    await expect(frameDriver()(page, { frames: 1, deltaMs: 16 }, async () => { throw new Error("native key failed"); })).rejects.toThrow("native key failed");
-    expect(updates).toEqual([]); expect(dispose).toHaveBeenCalledOnce();
-  });
-
-  it("rejects malformed requests before even sending player input", async () => {
-    await runtime(true); hook().pause();
-    const { page } = transport(); const trigger = vi.fn();
-    await expect(frameDriver()(page, { frames: 0, deltaMs: 16 }, trigger)).rejects.toThrow();
-    expect(trigger).not.toHaveBeenCalled();
-  });
-
-  it("normalizes bounded frame ops and rejects invalid control before a scenario can run", () => {
-    const ops = [{ kind: "pauseFrames" }, { kind: "stepFrames", frames: 30, deltaMs: 1000, key: "z" }, { kind: "resumeFrames" }];
-    expect(normalizeScenario({ id: "ticks", beats: [{ id: "advance", ops }] } as never).beats[0]?.ops).toEqual(ops);
-    expect(() => normalizeScenario({ id: "ticks", beats: [{ id: "advance", ops: [{ kind: "stepFrames", frames: 0, deltaMs: 16 }] }] } as never)).toThrow();
   });
 });

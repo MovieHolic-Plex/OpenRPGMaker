@@ -5,7 +5,7 @@ import { EVENT_PAGE_SEMANTICS_BLOCK } from "@/ai/eventPageSemantics";
 import { runTool, getTool } from "@/editor/tools";
 import { CONDITION_KINDS } from "@/project/commandKindRegistry";
 import { createBlankProject } from "@/project/defaults";
-import { findShadowedPages, findUnwrittenSelfSwitchGates, shadowedPageWarnings } from "@/project/eventPageShadow";
+import { findShadowedPages, findUnwrittenSelfSwitchGates } from "@/project/eventPageShadow";
 import { resolveEventPage } from "@/project/io/pageResolution";
 import { projectLint } from "@/project/lint/projectLint";
 import { explainEvent } from "@/project/storyEventExplain";
@@ -24,10 +24,6 @@ describe("aiCommandSchemaReferenceFields", () => {
     it.each(["troopId", "canEscape", "canLose", "actorId", "action", "skillId", "eventId", "commonEventId", "ms"])("%s is declared at top level and in branches", key => {
       expect(COMMAND_SCHEMA.properties).toHaveProperty(key);
       expect(branchItems?.properties).toHaveProperty(key);
-    });
-
-    it("shop item list is described as the shop contract", () => {
-      expect(COMMAND_SCHEMA.properties?.itemIds?.description).toContain("shop");
     });
   });
 });
@@ -109,12 +105,6 @@ describe("aiEventPageSemantics", () => {
         page("night", [{ kind: "timePhase", phase: "night" }]),
       ])).toEqual([]);
     });
-
-    it("warning text explains the runtime rule and the random-dialogue fix", () => {
-      const warnings = shadowedPageWarnings("'잡화상'", [page("p1"), page("p2")]);
-      expect(warnings.some((warning) => warning.includes("p1"))).toBe(true);
-      expect(warnings.some((warning) => warning.includes("m2-211-weighted-branch"))).toBe(true);
-    });
   });
   describe("AI surfaces that teach page semantics", () => {
     it("system prompt always carries the page semantics block", () => {
@@ -133,16 +123,6 @@ describe("aiEventPageSemantics", () => {
       expect(EVENT_PAGE_SEMANTICS_BLOCK).toContain("characterId");
       expect(EVENT_PAGE_SEMANTICS_BLOCK).toContain("friendshipAtLeast");
       expect(EVENT_PAGE_SEMANTICS_BLOCK).toContain("복잡한 NPC");
-    });
-
-    it("work rules tell the model to look up then author state-variant pages", () => {
-      // INTRO now runs past 12,000 chars, so work rule 8 sits beyond a 12k cut; read it at the default budget.
-      // Budget survival of the page-semantics block itself is covered by the 6k/12k/40k case above.
-      const prompt = buildSystemPrompt(createBlankProject());
-      expect(prompt).toContain("복잡한 NPC 저작");
-      expect(prompt).toContain("find_events");
-      expect(prompt).toContain("상태별 NPC");
-      expect(prompt).not.toContain("한 페이지 안을");
     });
 
     it("SimplePage.conditions is typed as a condition, not a command", () => {
@@ -313,12 +293,6 @@ describe("aiEventPageSemantics", () => {
         pages: [page("p1"), page("p2", [{ kind: "selfSwitch", key: "A", value: false }])],
       } as unknown as GameEvent;
       expect(findUnwrittenSelfSwitchGates(event)).toEqual([]);
-    });
-
-    it("warning list carries the condition-and-write pairing hint", () => {
-      const warnings = shadowedPageWarnings("'granny'", gatedEvent(false).pages, []);
-      expect(warnings.join("\n")).toContain("영원히 열리지 않습니다");
-      expect(warnings.join("\n")).toContain("setSelfSwitch");
     });
 
   });

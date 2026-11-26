@@ -19,7 +19,6 @@ import { runtimeEventViewById } from "@/project/runtimeEventState";
 import { EMPTY_SCRIPT_EFFECTS } from "@/project/script/types";
 import { startSession } from "@/project/session";
 import type { Command, GameEvent, M2CommandFields, Project } from "@/project/types";
-import corpusJson from "../../harness-data/small-task-corpus/12-m2-map-move.json";
 import seededCorpusJson from "./12-m2-map-move/seeded-corpus.json";
 import { cloneProject, createBlankProjectCopy, eventTarget, expectKoreanSentence, expectUndoRestores, loadFixture } from "./harness";
 
@@ -665,7 +664,8 @@ it("기존 제거 명령의 대상 맵과 저장된 제거 플래그를 검사�
 });
 
 type SeededCorpusCase = CorpusCase & { setup?: { commands: Command[] }; refusalMessage?: string };
-const corpus = [...corpusJson, ...seededCorpusJson] as readonly SeededCorpusCase[];
+// The shared harness-data corpus for this unit runs in corpus-5.test.ts (CORPUS_SHARDS); only the seeded rows run here.
+const corpus = seededCorpusJson as readonly SeededCorpusCase[];
 
 describe("지도·이동 요청 코퍼스", () => {
   it.each(corpus)("$request", entry => {

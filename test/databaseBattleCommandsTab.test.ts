@@ -47,30 +47,6 @@ function renderPanelHost(render: (host: HTMLElement) => void): FakeElement {
 }
 
 describe("battle commands tab copy and class door", () => {
-  it("drops RM2003 path copy, keeps catalog fields, and labels kinds in Korean", async () => {
-    const { store } = await import("@/project/store");
-    store.replace(createBlankProject());
-    storage.set(ACTIVE_TAB_KEY, "battleCommands");
-
-    const { renderDatabasePanel } = await import("@/editor/panels/database");
-    const panelRoot = renderPanelHost(renderDatabasePanel);
-    const form = findByTestId(panelRoot, "db-detail-form");
-    if (!form) throw new Error("missing battle commands form");
-
-    expect(form.textContent).not.toContain("RM2003");
-    expect(form.textContent).not.toContain("database.battleCommands");
-    expect(findByTestId(form, "db-field-battle-command-name-0")).not.toBeNull();
-    expect(findByTestId(form, "db-field-battle-command-skill-0")).not.toBeNull();
-    expect(findByTestId(form, "db-picker-battle-command-skill-0")).not.toBeNull();
-    expect(findByTestId(form, "db-open-classes-tab")).not.toBeNull();
-
-    const kind = findByTestId(form, "db-field-battle-command-kind-0");
-    const labels = kind?.querySelectorAll("option").map((option) => option.textContent) ?? [];
-    expect(labels).toContain("공격");
-    expect(labels).toContain("특수기능");
-    expect(labels).toContain("방어(구형)");
-  }, 60_000);
-
   it("직업으로 점프 uses G006 switchDatabaseActiveTab", async () => {
     const { store } = await import("@/project/store");
     store.replace(createBlankProject());

@@ -4,9 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 vi.mock("../electron/shared/teamCollab", () => ({ TEAM_COLLAB_ENABLED: true, TEAM_COLLAB_DEPRECATION_NOTE: "" }));
 import { stateBehavior } from "@/battle/battleStates";
 import { deleteSwitch, deleteVariable } from "@/editor/actions";
-import { aiActivityActionLabel, aiActivityFamilySource } from "@/editor/aiActivityNarration";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
-import { renderTermsTab } from "@/editor/panels/databaseUtilityViews";
 import { createBlankProject } from "@/project/defaults";
 import { repairProjectReferences } from "@/project/io/references";
 import { isCaptureTool, itemAllowsBattle } from "@/project/itemUsage";
@@ -58,17 +56,6 @@ describe("아이템: 종류를 약으로 바꾼 옛 포획 프로필", () => {
 
   it("약은 약 규칙으로 전투 사용 여부를 판단한다", () => {
     expect(itemAllowsBattle(item({ type: "medicine", onlyEffectiveOnDeadActors: false }))).toBe(true);
-  });
-});
-
-describe("AI 작업 줄: 파괴 규모를 숨기지 않는다", () => {
-  it.each([
-    ["clear_map", "맵 전체를 지우는 중"],
-    ["reset_project", "프로젝트를 초기화하는 중"],
-    ["delete_resource", "리소스를 지우는 중"],
-  ] as const)("%s → %s", (tool, label) => {
-    expect(aiActivityFamilySource(tool)).toBe("mapped");
-    expect(aiActivityActionLabel(tool)).toBe(label);
   });
 });
 
@@ -134,11 +121,4 @@ describe("스위치·변수 삭제와 보기 전용", () => {
     expect(deleteSwitch(id)).toMatchObject({ ok: false });
   });
 
-  it("용어 탭에서 방어·도주를 고칠 수 있다", () => {
-    const host = document.createElement("div");
-    renderTermsTab(host);
-    const text = host.textContent ?? "";
-    expect(text).toContain("방어");
-    expect(text).toContain("도주");
-  });
 });

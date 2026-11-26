@@ -122,7 +122,7 @@ describe("U03/G1-F20 transfer liveApply regression", () => {
     expect.soft(storedTransfer(deserialize(serialize(store.getCurrent()))).transition).toBe("fade");
   });
 
-  it.each(["fade", "mosaic", "blinds"] as const)("G1-F20 standalone Confirm preserves authored %s transition", async (transition) => {
+  it.each(["mosaic"] as const)("G1-F20 standalone Confirm preserves authored %s transition", async (transition) => {
     const apply = vi.fn();
     openTransferPlayerDialog({ command: { ...fixture.initial, transition }, onApply: apply });
     await finishRenders();

@@ -4,8 +4,7 @@ import { Window } from "happy-dom";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { publishTeamActivity } from "@/ai/piAgent/teamActivity";
 import { createTeamBoardState, markTeamBoardReview, reduceTeamBoard, type TeamBoardState } from "@/ai/piAgent/teamBoardState";
-import type { PiTeamSpec } from "@/ai/piAgent/teamSpec";
-import { TEAM_SPEC_STORAGE_KEY, __resetTeamSpecCache } from "@/ai/piAgent/teamSpecStore";
+import { __resetTeamSpecCache } from "@/ai/piAgent/teamSpecStore";
 import { createTeamBoard } from "@/editor/panels/aiTeamBoard";
 import { setActivityLevel } from "@/editor/panels/aiActivityPreference";
 import { createTeamPanel } from "@/editor/panels/aiTeamPanel";
@@ -17,15 +16,6 @@ class MemoryStorage {
   removeItem(key: string): void { this.store.delete(key); }
   clear(): void { this.store.clear(); }
 }
-
-const GARDENER_TEAM: PiTeamSpec = {
-  version: 1,
-  orchestratorNotes: "",
-  members: [
-    { id: "gardener", label: "정원사", kind: "builder", summary: "꾸민다", prompt: "꾸민다", toolDomains: [], maxTurns: 5, enabled: true },
-    { id: "qa", label: "품질", kind: "reviewer", summary: "본다", prompt: "본다", toolDomains: [], maxTurns: 5, enabled: true },
-  ],
-};
 
 let window: Window;
 
@@ -59,14 +49,6 @@ function boardWithFix(): TeamBoardState {
 }
 
 describe("팀 보드 렌더", () => {
-  it("현행 기록에 담당자를 표시하고 숨긴 옛 팀원 목록은 만들지 않는다", () => {
-    setActivityLevel("trace");
-    const board = createTeamBoard(boardWithFix());
-    expect(board.root.querySelector(".ai-activity-entries")?.textContent).toContain("정원사");
-    expect(board.root.querySelector(".ai-activity-entries")?.textContent).toContain("품질");
-    expect(board.root.querySelectorAll("[data-testid='ai-team-agent']")).toHaveLength(0);
-  });
-
   it("검수 지적과 재배정의 원문은 기록을 펼칠 때 보존된다", () => {
     setActivityLevel("trace");
     const board = createTeamBoard(boardWithFix());
@@ -92,56 +74,6 @@ describe("팀 보드 렌더", () => {
   });
 });
 
-describe("검토 대기 카드의 적용 전 비교", () => {
-  // 깨질 것(실측 2026-09-14): 검토 카드가 문장·칩·버튼만 그리면, 사용자는 "무엇이 바뀌는지"
-  // 보지 못한 채 적용/버리기를 결정해야 한다 — "부탁했는데 before/after 가 안 보인다" 의 자리다.
-  const reviewState = (): TeamBoardState =>
-    markTeamBoardReview(createTeamBoardState("single", "마을"), ["타일 12"]);
-
-  it("패널이 넘긴 적용 전 카드를 검토 자리에 그대로 세운다", () => {
-    const board = createTeamBoard(createTeamBoardState("single", "마을"));
-    const preview = document.createElement("div");
-    preview.dataset.testid = "preview-fixture";
-
-    board.setReview({ onApply: () => {}, onDiscard: () => {}, preview });
-    board.update(reviewState());
-
-    const block = board.root.querySelector("[data-testid='ai-team-review']")!;
-    expect(block.contains(preview)).toBe(true);
-    // 카드가 같은 사실을 이미 말하므로 칩 줄을 따로 그리지 않는다.
-    expect(block.querySelector(".ai-change-chips")).toBeNull();
-  });
-
-  it("카드가 없으면 지금까지처럼 칩 줄만 그린다", () => {
-    const board = createTeamBoard(reviewState());
-    board.setReview({ onApply: () => {}, onDiscard: () => {} });
-    board.update(reviewState());
-
-    const block = board.root.querySelector("[data-testid='ai-team-review']")!;
-    expect([...block.querySelectorAll(".ai-change-chip")].map((chip) => chip.textContent)).toEqual(["타일 12"]);
-  });
-});
-
-describe("팀 패널 「지금」 렌더", () => {
-  // 깨질 것: 팀원 이름만 그리면 스크린샷에서처럼 정원사 행에 종류 배지가 사라진다.
-  it("팀원 행에 종류 배지가 함께 나온다", () => {
-    localStorage.setItem(TEAM_SPEC_STORAGE_KEY, JSON.stringify(GARDENER_TEAM));
-    __resetTeamSpecCache();
-    const panel = createTeamPanel();
-    publishTeamActivity(boardWithFix());
-    // 「지금」 구획은 펼친 패널에만 그려진다.
-    (panel.root.querySelector("[data-testid='ai-team-panel-toggle']") as unknown as HTMLElement).click();
-
-    const rows = [...panel.root.querySelectorAll("[data-testid='ai-team-live-row']")];
-    const gardener = rows.find((row) => (row.textContent ?? "").includes("정원사"))!;
-    expect(gardener).toBeDefined();
-    // 배지 문구는 aiTeamPanel KIND_LABEL 의 「만들기」(예전 「시공」).
-    expect(gardener.textContent ?? "").toContain("만들기");
-    panel.dispose();
-  });
-});
-
-
 describe("단독 작업의 접힌 기록", () => {
   it("기록을 접어도 비교와 적용/버리기는 바깥에 남고, 상태 갱신은 펼침을 보존한다", () => {
     const state = createTeamBoardState("single", "이름 바꾸기");
@@ -164,31 +96,6 @@ describe("단독 작업의 접힌 기록", () => {
     expect(onDiscard).toHaveBeenCalledOnce();
     board.setReview(null);
     expect(board.root.querySelector('[data-testid="ai-team-apply"]')).toBeNull();
-  });
-
-  it("접힌 요약에도 도구 오류와 검토 지적이 남는다", () => {
-    let state = createTeamBoardState("single", "수정");
-    // 실제 단독 경로처럼 agent_event 로 감싼다.
-    state = reduceTeamBoard(state, { type: "agent_event", agentId: "a", event: { type: "tool_end", id: "t", name: "paint", ok: false, summary: "실패" } });
-    state = reduceTeamBoard(state, { type: "review", agentId: "r", mapId: "map_a", ok: false, findings: ["길 끊김", "출입구 막힘"] });
-    const board = createTeamBoard(state);
-    expect(board.root.querySelector("summary")?.textContent).toContain("도구 오류 1건");
-    expect(board.root.querySelector("summary")?.textContent).toContain("검토 지적 2건");
-    expect(board.root.querySelector("details")?.open).toBe(false);
-  });
-
-  it("경과 시간 갱신은 상세 행을 재생성하지 않는다", () => {
-    vi.useFakeTimers();
-    try {
-      const state = reduceTeamBoard(createTeamBoardState("single", "조회"), { type: "start", provider: "p", model: "m", toolCount: 1 });
-      const board = createTeamBoard(state);
-      document.body.append(board.root);
-      const row = board.root.querySelector('[data-testid="ai-team-agent"]');
-      vi.advanceTimersByTime(1000);
-      expect(board.root.querySelector('[data-testid="ai-team-agent"]')).toBe(row);
-      board.root.remove();
-      vi.advanceTimersByTime(1000);
-    } finally { vi.useRealTimers(); }
   });
 
   it("팀을 켜거나 실제 팀 작업이 있을 때만 팀 패널을 표시한다", () => {

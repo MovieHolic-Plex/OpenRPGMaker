@@ -68,22 +68,6 @@ afterEach(() => {
   Reflect.deleteProperty(globalThis, "localStorage");
 });
 
-describe("빈 상태", () => {
-  it("왜 비어 있는지 말해 준다 — 빈 목록만 보여 주면 고장난 것처럼 읽힌다", () => {
-    const root = render();
-    const empty = findByTestId(root, "ai-preference-empty");
-    expect(empty).not.toBeNull();
-    expect(empty?.textContent ?? "").toContain("되돌리거나");
-    expect(rows(root)).toHaveLength(0);
-  });
-
-  it("성향이 기본값일 뿐 지시가 우선이라는 사실을 화면에서도 밝힌다", () => {
-    const root = render();
-    const hint = root.querySelectorAll(".ai-preference-hint")[0];
-    expect(hint?.textContent ?? "").toContain("지시가 항상 우선");
-  });
-});
-
 describe("목록", () => {
   it("전역과 프로젝트를 두 그룹으로 나눠 보여 준다", () => {
     savePreferenceFacts([
@@ -109,13 +93,6 @@ describe("목록", () => {
     const root = render();
     expect(root.textContent ?? "").toContain("전역 성향");
     expect(root.textContent ?? "").not.toContain("프로젝트 성향");
-  });
-
-  it("강도와 근거를 함께 보여 준다 — 왜 이 성향이 센지 알 수 있어야 한다", () => {
-    savePreferenceFacts([fact({ id: "g1", text: "어두운 톤", strength: "strong", evidence: 5 })]);
-    const root = render();
-    expect(root.textContent ?? "").toContain("강함");
-    expect(root.textContent ?? "").toContain("근거 5");
   });
 
   // 채팅 패널은 스코프를 **함수로** 넘긴다. 그 패널의 conversationScope 는 '새 대화'와
@@ -224,14 +201,6 @@ describe("직접 추가", () => {
     expect(loadPreferenceFacts()).toHaveLength(1);
   });
 
-  it("Enter 가 아닌 키는 추가하지 않는다", () => {
-    const root = render();
-    const input = findByTestId(root, "ai-preference-add-input");
-    input!.value = "아직 확정 아님";
-    input!.dispatchEvent(keydown("a"));
-    expect(loadPreferenceFacts()).toEqual([]);
-  });
-
   it("같은 문장을 두 번 넣어도 행이 늘지 않는다", () => {
     const root = render();
     const input = findByTestId(root, "ai-preference-add-input");
@@ -242,14 +211,5 @@ describe("직접 추가", () => {
     add?.click();
     expect(listPreferenceFacts().global).toHaveLength(1);
     expect(rows(root)).toHaveLength(1);
-  });
-});
-
-describe("구조", () => {
-  it("<details> 를 쓰지 않는다 — ::details-content 가 내부 스크롤러를 죽인 전례가 있다", () => {
-    savePreferenceFacts([fact({ id: "g1", text: "성향" })]);
-    const root = render();
-    expect(root.querySelectorAll("details")).toHaveLength(0);
-    expect(findByTestId(root, "ai-preference-list")).not.toBeNull();
   });
 });

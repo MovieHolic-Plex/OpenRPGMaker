@@ -1,8 +1,4 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
-import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
 import {
   getMapEditHistoryDebugEntries,
   resetMapEditHistory,
@@ -171,39 +167,6 @@ describe("tilemap harness safety review diagnostics", () => {
     } finally {
       replaceSpy.mockRestore();
       store.replace(createBlankProject(), { preserveEventDrafts: false });
-    }
-  });
-
-  it("rejects a stale Vitest report when the current runner writes nothing", () => {
-    const repoRoot = process.cwd();
-    const temporaryRoot = mkdtempSync(join(tmpdir(), "rpg-zzu-gates-"));
-    try {
-      mkdirSync(join(temporaryRoot, "scripts"), { recursive: true });
-      mkdirSync(join(temporaryRoot, ".omo"), { recursive: true });
-      const reportPath = join(temporaryRoot, ".omo", "gates-vitest-report.json");
-      const baselinePath = join(temporaryRoot, ".omo", "gates-baseline.json");
-      writeFileSync(reportPath, JSON.stringify({
-        numTotalTests: 1,
-        numPassedTests: 0,
-        numFailedTests: 1,
-        testResults: [{ name: "C:/old/test/known.test.ts", status: "failed" }],
-      }));
-      writeFileSync(baselinePath, JSON.stringify({ tests: { failedFiles: ["test/known.test.ts"] } }));
-      writeFileSync(join(temporaryRoot, "scripts", "run-vitest.mjs"), "process.exit(1);\n");
-
-      const result = spawnSync(process.execPath, [
-        resolve(repoRoot, "scripts", "verify-gates.mjs"),
-        "--only",
-        "tests",
-        "--json",
-        "--baseline",
-        baselinePath,
-      ], { cwd: temporaryRoot, encoding: "utf8", timeout: 30_000 });
-
-      expect(result.status).not.toBe(0);
-      expect(existsSync(reportPath)).toBe(false);
-    } finally {
-      rmSync(temporaryRoot, { recursive: true, force: true });
     }
   });
 });

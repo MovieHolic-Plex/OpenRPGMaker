@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { defaultAiConfig } from "@/ai/llmClient";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject } from "./support/sharedBlankProject";
 
 // 턴이 도는 동안에만 탭 freeze 가드를 쥔다. 놓치면 백그라운드에서 턴이 통째로 얼어붙는다.
 function makeSession(chat: () => Promise<unknown>, log: string[]) {
-  return new AssistantSession(createBlankProject(), {
+  return new AssistantSession(createSharedTilesetBlankProject(), {
     config: { ...defaultAiConfig(), agentMode: "chat", apiKey: "sk-test" },
     chat: chat as never,
     yieldToUi: async () => {},

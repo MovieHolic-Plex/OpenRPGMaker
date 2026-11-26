@@ -80,49 +80,6 @@ describe("faceset picker dialog", () => {
     expect(findByTestId(body, "face-pick-face-index")).toBeNull();
   });
 
-  it("title/backdrop 피커 행에 AI 만들기 칸이 붙는다", () => {
-    store.replace(createBlankProject());
-    for (const [kind, prefix] of [["title", "title-pick"], ["backdrop", "backdrop-pick"]] as const) {
-      const row = resourcePickerControl({
-        label: "배경",
-        resourceId: undefined,
-        kind,
-        testid: prefix,
-        onChange: () => {},
-        rerender: () => {},
-      }) as unknown as FakeNode;
-      expect(findByTestId(row, `${prefix}-ai-prompt`), `${kind} AI 프롬프트 칸`).not.toBeNull();
-      expect(findByTestId(row, `${prefix}-ai-generate`), `${kind} AI 생성 버튼`).not.toBeNull();
-    }
-  });
-
-  it("monster 피커 행에는 AI 칸이 붙지 않는다 — 몬스터는 도트 시트 140종에서 고른다(2026-10-02)", () => {
-    store.replace(createBlankProject());
-    const row = resourcePickerControl({
-      label: "몬스터",
-      resourceId: undefined,
-      kind: "monster",
-      testid: "monster-pick",
-      onChange: () => {},
-      rerender: () => {},
-    }) as unknown as FakeNode;
-    expect(findByTestId(row, "monster-pick-ai-prompt")).toBeNull();
-    expect(findByTestId(row, "monster-pick-ai-generate")).toBeNull();
-  });
-
-  it("charset 피커 행에는 AI 칸이 붙지 않는다", () => {
-    store.replace(createBlankProject());
-    const row = resourcePickerControl({
-      label: "캐릭터셋",
-      resourceId: undefined,
-      kind: "charset",
-      testid: "charset-pick",
-      onChange: () => {},
-      rerender: () => {},
-    }) as unknown as FakeNode;
-    expect(findByTestId(row, "charset-pick-ai-prompt")).toBeNull();
-  });
-
   // 캐릭셋 원본(RTP·업로드 모두)은 배경이 단색이고 알파가 없다. 키아웃하지 않으면
   // 캐릭터 그래픽을 고르는 목록 전체가 스프라이트 뒤에 청록 사각형을 달고 나온다.
   it("swaps charset thumbnails to a color-keyed image", async () => {

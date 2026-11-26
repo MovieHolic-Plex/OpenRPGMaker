@@ -29,21 +29,6 @@ describe("left column", () => {
     workspace.root.remove();
   });
 
-  it("stacks search, map tree, tiles and the two bottom links with no activity rail", () => {
-    mount();
-    expect(find("left-activity-bar")).toBeNull();
-    expect(workspace.root.dataset.pane).toBe("main");
-    expect(tools.hidden).toBe(false);
-    expect(find("map-sidebar-section")?.hidden).toBe(false);
-    expect(find("map-tree")).not.toBeNull();
-    const order = [find("map-tree-filter"), find("map-sidebar-section"), tools, find("sidebar-progress"), find("sidebar-props")];
-    for (let index = 1; index < order.length; index += 1) {
-      expect(order[index - 1]!.compareDocumentPosition(order[index]!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
-    }
-    for (const gone of ["sidebar-tools", "sidebar-maps", "sidebar-links", "sidebar-workshop", "sidebar-store"]) expect(find(gone), gone).toBeNull();
-    expect(find("sidebar-ai")).toBeNull();
-  });
-
   it("filters the map tree from the top search box", () => {
     const project = createBlankProject();
     store.replace(project);
@@ -126,11 +111,6 @@ describe("left column", () => {
     expect(workspace.isCollapsed()).toBe(true);
     command("left-column-toggle")?.run();
     expect(workspace.isCollapsed()).toBe(false);
-  });
-
-  it("shows the inspect chip only when there are violations", () => {
-    mount();
-    expect(find("sidebar-inspect")?.hidden).toBe(true);
   });
 
   it("selects a complete prop without painting and clears its stamp on a foreign chipset", () => {

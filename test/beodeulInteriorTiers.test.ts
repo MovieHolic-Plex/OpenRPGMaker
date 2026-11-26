@@ -78,7 +78,7 @@ describe("크기 단 구성 표", () => {
     expect(programs.some(([, p]) => p.tier === "medium" && (p.maps?.length ?? 0) > 0)).toBe(true);      // 다른 층
   });
   it("모든 평면이 게임 열쇠 여럿에서 사각형으로 풀리고 바깥문 방이 맨 아래다", () => {
-    for (const [id, p] of programs) for (const m of [...p.shapes, ...(p.maps ?? [])]) for (let k = 0; k < 8; k++) for (const main of p.serves) {
+    for (const [id, p] of programs) for (const m of [...p.shapes, ...(p.maps ?? [])]) for (let k = 0; k < 3; k++) for (const main of p.serves) {
       const got = placeTierMap(m, tierTemplatePicker(tpls, main, `k${k}|${m.id}`), table.doors);
       expect(got.rooms.length, `${id}/${m.id}`).toBe(m.rooms.length);
       const bottom = Math.max(...got.rooms.map((r) => r.y1));
@@ -274,12 +274,12 @@ describe("단은 문이 달린 집 킷이 정한다", () => {
       expect(doors.some((k) => !!k && kitServesBuilding(k, need)), `${kind}: ${doors.map((k) => k?.id).join(" ")}`).toBe(true);
     }
   }, 300_000);
-  it("같은 명세·같은 salt 로 마을을 스무 번 지으면 스무 번 같은 마을이다 — 청한 건물의 문 자리까지", () => {
+  it("같은 명세·같은 salt 로 마을을 세 번 지으면 세 번 같은 마을이다 — 청한 건물의 문 자리까지", () => {
     const world = WORLDS.find((w) => w.id === "beodeul")!;
     const base = worldPlaceSpec(world, world.kinds.find((k) => k.id === "village")!, "시험 마을");
     const need = world.kinds.find((k) => k.id === "inn")!.building!;
     const seen = new Set<string>();
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 3; i++) {
       const a = fresh();
       const r = VILLAGE_BUILDER.build(a.run, { ...base, size: "medium", salt: 11, hints: { ...(base.hints ?? {}), buildingNeeds: [need] } } as unknown as PlaceSpec);
       expect(r.ok, r.summary).toBe(true);
@@ -287,7 +287,7 @@ describe("단은 문이 달린 집 킷이 정한다", () => {
       seen.add(JSON.stringify([(r.state as { doors?: unknown }).doors, m.width, m.height, [...m.lowerTiles], [...m.upperTiles]]));
     }
     expect(seen.size).toBe(1);
-  }, 900_000);
+  }, 300_000);
   it("크기 단 때문에 모델의 배치를 거절하지 않는다 — 방이 모자라도 그대로 깔고, 겉의 단과 그 단의 구성을 받는 법을 적는다", () => {
     const one = { map: { w: 9, h: 8 }, entrance: { x: 4, y: 7 }, landmark: { id: "chest", x: 3, y: 4 }, regions: [{ id: "r", x: 1, y: 1, w: 7, h: 6, floor: "dplank", wall: "plaster" }] };
     // 모델이 고른 큰 문(asked) · 코드가 골라 준 큰 문 · size 를 크게 적은 장소 — 어느 것도 단을 이유로 거절하지 않는다

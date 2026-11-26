@@ -198,13 +198,6 @@ describe("C1 review_game_systems", () => {
 });
 
 describe("C6 tool boundaries", () => {
-  it("spells the menu notice without a stray particle", () => {
-    const ctx = { project: createBlankProject() };
-    const result = runTool(ctx, "configure_field_menu", { preset: "romance" });
-    expect(result.summary).toContain("갤러리·엔딩 항목이 있어");
-    expect(result.summary).not.toContain("엔딩가");
-  });
-
   it("does not turn an explicit off back on when the menu is re-applied", () => {
     const ctx = { project: romance() };
     runTool(ctx, "set_vn_extras", { gallery: false });

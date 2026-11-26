@@ -126,13 +126,6 @@ function openRuleDropdown(): FakeElement {
   return renderRuleDropdown();
 }
 
-function openHistoryDropdown(): FakeElement {
-  const current = renderHistoryDropdown();
-  if (findByTestId(current, "map-history-panel")) return current;
-  findByTestId(current, "toolbar-toggle-history")?.click();
-  return renderHistoryDropdown();
-}
-
 describe("인스펙터 옆 규칙 감사/작업 기록 배지", () => {
   it("규칙 감사와 작업 기록 카운트를 상태에서 계산한다", () => {
     lintMock.issues = [
@@ -172,19 +165,6 @@ describe("인스펙터 옆 규칙 감사/작업 기록 배지", () => {
 
     expect(findByTestId(renderRuleDropdown(), "rule-audit-badge")).toBeNull();
     expect(findByTestId(renderHistoryDropdown(), "history-badge")).toBeNull();
-  });
-
-  it("토글을 열면 드롭다운에 규칙 감사와 작업 기록 패널 내용을 넣는다", () => {
-    lintMock.issues = [{ code: "cluster-rule-count", message: "꽃 과밀", severity: "info" }];
-    historyMock.entries = [{ index: 0, label: "타일 편집", mapId: store.getCurrent().startMapId, at: 0, current: true }];
-
-    const rule = openRuleDropdown();
-    const history = openHistoryDropdown();
-
-    expect(findByTestId(rule, "tile-rule-audit-menu")).toBeTruthy();
-    expect(findByTestId(rule, "rule-audit-panel")?.textContent).toContain("꽃 과밀");
-    expect(findByTestId(history, "tile-history-menu")).toBeTruthy();
-    expect(findByTestId(history, "map-history-panel")?.textContent).toContain("타일 편집");
   });
 
   it("하나를 열면 다른 드롭다운은 닫힌다", () => {

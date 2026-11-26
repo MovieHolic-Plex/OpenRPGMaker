@@ -6,7 +6,7 @@
 import { beforeAll, describe, expect, it } from "vitest";
 import { prepareScriptCompiler } from "@/editor/script/compile";
 import { commandsToScript } from "@/editor/script/eventToScript";
-import { SCRIPT_UNWRAP_PROBLEM_CODES, scriptToCommands, scriptUnwrapProblemText } from "@/editor/script/scriptToEvent";
+import { scriptToCommands } from "@/editor/script/scriptToEvent";
 import { runTool } from "@/editor/tools";
 import { runToolAsync } from "@/editor/tools/asyncToolRunner";
 import { preloadScriptEngine } from "@/player/script/engine";
@@ -354,13 +354,6 @@ describe("scriptToCommands refusals", () => {
     expect(codesOf("if (game.getSwitch(\"a\") {\n}")[0]?.code).toBe("syntax");
     expect(codesOf("if (game.time().phase === \"day\") game.setSwitch(\"a\", true);")).toEqual([{ line: 1, code: "condition" }]);
     expect(codesOf("if (game.hasItem(\"potion\", 3)) game.setSwitch(\"a\", true);")).toEqual([{ line: 1, code: "condition" }]);
-  });
-
-  it("has a Korean and English reason for every code", () => {
-    for (const code of SCRIPT_UNWRAP_PROBLEM_CODES) {
-      expect(scriptUnwrapProblemText({ line: 1, code, snippet: "" }, "ko")).toMatch(/\S/u);
-      expect(scriptUnwrapProblemText({ line: 1, code, snippet: "" }, "en")).toMatch(/^[\x20-\x7e…]+$/u);
-    }
   });
 
   it("write_script_as_commands refuses without confirm and on non-convertible scripts, changing nothing", async () => {

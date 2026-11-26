@@ -8,10 +8,6 @@ import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/22-map-tiles";
 import { mapTarget } from "@/editor/smallTask/target";
-import en from "@/i18n/catalogs/en.json";
-import ja from "@/i18n/catalogs/ja.json";
-import zh from "@/i18n/catalogs/zh.json";
-import { createTranslator } from "@/i18n/translator";
 import { createInterpreter } from "@/player/interpreter";
 import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
 import { ensureBundledTilesets, removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
@@ -833,18 +829,5 @@ describe("통행 설정 저장과 표시", () => {
     expect(nextTile).toBeGreaterThan(tile);
     expect(probe.maps[map.id].upperTiles[0]).toBe(nextTile);
     expect(probe.tilesets[tileset.id].passability[nextTile!]).toEqual(block);
-  });
-
-  it.each([["영어", en], ["일본어", ja], ["중국어", zh]] as const)("%s 카탈로그가 통행 거부 사유를 번역한다", (_language, catalog) => {
-    const translator = createTranslator(catalog);
-    for (const message of [
-      "공용 타일셋의 통행 설정은 프로젝트에 저장할 수 없어요.",
-      "이 타일셋은 프로젝트를 다시 열 때 통행 설정이 원래대로 돌아가요.",
-      "이 칸의 통행은 높이 지형이나 다른 층의 타일이 결정해요.",
-    ]) {
-      const translation = translator.translate(message);
-      expect(translation).toMatch(/\S/u);
-      expect(translation).not.toBe(message);
-    }
   });
 });

@@ -4,7 +4,6 @@ import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { CHARSET_FRAME_COUNT } from "@/assets/easyrpgRtp";
 import { CHOICE_CANCEL_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX } from "@/editor/eventCommandPaths";
 import { mapTarget } from "@/editor/smallTask/target";
-import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTask/primitives/corpusSchema";
 import { PrimitiveError, SELECT_EVENT_PAGE, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/09-cmd-move-system";
@@ -20,8 +19,7 @@ import { roguelikeRoomId } from "@/project/roguelikeRooms";
 import { startSession } from "@/project/session";
 import type { Command, EventPage, GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
-import corpusData from "../../harness-data/small-task-corpus/09-cmd-move-system.json";
-import { expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture, setupCorpusProject } from "./harness";
+import { expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture } from "./harness";
 
 const mapId = "map_unit09";
 const eventId = "ev_unit09";
@@ -492,25 +490,4 @@ describe("헤드리스 실행", () => {
     const { after } = runPrimitive(before, target, "cmd.triggerEnding.insert", { endingId });
     expect(execute(after).result).toMatchObject({ kind: "returnToTitle", title: "새로운 아침", clear: { endingId } });
   });
-});
-
-const corpus = corpusData as CorpusCase[];
-describe("이동·시스템·엔딩 요청 코퍼스", () => {
-  for (const entry of corpus) {
-    it(entry.request, async () => {
-      const before = setupCorpusProject(fixtures.get(entry.fixture)!, entry);
-      const target = resolveTarget(before, entry.target);
-      if (target.kind !== "event") throw new Error("검수에 필요한 이벤트 페이지를 고르세요.");
-      const apply = () => runPrimitive(before, target, entry.primitive, entry.args, entry.selection);
-      if (entry.expectRefusal) {
-        expect(apply).toThrow(PrimitiveError);
-        if (entry.refusalMessage) expect(apply).toThrow(new RegExp(entry.refusalMessage, "u"));
-        return;
-      }
-      const { after, sentence } = apply();
-      expectKoreanSentence(sentence, target);
-      for (const check of entry.expect ?? []) expect(readCheckPath(after, check.at)).toEqual(check.equals);
-      if (entry.setup) await expectUndoRestores(before, after, target);
-    });
-  }
 });

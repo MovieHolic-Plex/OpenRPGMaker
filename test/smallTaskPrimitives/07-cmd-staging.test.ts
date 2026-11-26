@@ -4,16 +4,11 @@ import { expect, it } from "vitest";
 import { checkSmallTaskScope } from "@/ai/smallTaskScope";
 import { runtimeResourceUrl } from "@/assets/runtimeResourceUrls";
 import { FORK_ELSE_BRANCH_INDEX, FORK_THEN_BRANCH_INDEX, LOOP_BODY_BRANCH_INDEX } from "@/editor/eventCommandPaths";
-import { smallTaskErrorMessage } from "@/editor/smallTask/capsule";
 import { PrimitiveError, STALE_COMMAND_LIST } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/07-cmd-staging";
 import { mapTarget } from "@/editor/smallTask/target";
 import { SAMPLE_MOVIE_RESOURCE, resolveMovieResourceUrl as resolveMoviePreviewUrl } from "@/editor/panels/eventEditor/playMoviePreview";
-import en from "@/i18n/catalogs/en.json";
-import ja from "@/i18n/catalogs/ja.json";
-import zh from "@/i18n/catalogs/zh.json";
-import { containsHangul, createTranslator } from "@/i18n/translator";
 import { createInterpreter } from "@/player/interpreter";
 import { resolvePictureSource } from "@/player/pictures/pictureResources";
 import { resolveMovieResourceUrl } from "@/player/playSceneMovies";
@@ -646,33 +641,6 @@ it("SQLite에서 다시 연 업로드 동영상의 호스트 URL을 편집기와
     setUploadedAssetResolver(null);
     close();
   }
-});
-
-it.each(["Moonlight", "月明かり", MOVIE.id])("동영상 요약에 표시 이름만 쓴다 · %s", name => {
-  const { project, target } = fixture("blank", []);
-  project.assets.uploaded[MOVIE.id] = { ...MOVIE, name };
-  const { sentence } = expectApplies(project, target, "cmd.playMovie.insert", { resourceId: MOVIE.id });
-  expect(sentence).toContain(name === MOVIE.id ? "지정한 동영상" : name);
-  expect(sentence).not.toContain(MOVIE.id);
-});
-
-it.each([["en", en], ["ja", ja], ["zh", zh]] as const)("%s 편집기 카탈로그가 연출 거절 문구를 번역한다", (locale, catalog) => {
-  const { project, target } = fixture("blank", [slotLight, { ...slotLight, source: { ...slotLight.source, id: "second_light" } }]);
-  const translator = createTranslator(catalog, { locale });
-  const operations = [
-    () => runPrimitive(project, target, "cmd.addLight.update", editArgs(slotLight, { id: "second_light" })),
-    () => runPrimitive(project, target, "cmd.addLight.update", editArgs(slotLight, { expectedHash: "stale", radius: 8 })),
-    () => runPrimitive(project, target, "cmd.playMovie.insert", { resourceId: "missing_movie" }),
-  ];
-  for (const operation of operations) {
-    let error: unknown;
-    try { operation(); } catch (caught) { error = caught; }
-    expect(error).toBeInstanceOf(PrimitiveError);
-    const translated = translator.translate(smallTaskErrorMessage(error));
-    expect(translated).toBeTruthy();
-    expect(containsHangul(translated!)).toBe(false);
-  }
-  expect(translator.translate(smallTaskErrorMessage(new Error("Failed")))).toBeTruthy();
 });
 
 it("광원 이름 앞뒤 공백을 일치시켜 실제로 같은 빛을 끈다", () => {

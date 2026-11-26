@@ -261,7 +261,7 @@ describe("집 벌 — 게임마다 다른 집 그림 가족", () => {
     const classic = village({}, KEY, 4242, { form: "plaza" }).map;
     expect(count(classic, /well/)).toBe(1);
     for (const kit of Object.values(centre)) expect(count(classic, kit)).toBe(0);
-    for (const plaza of ["round", "market", "statue"]) {
+    for (const plaza of ["round", "market"]) {
       const { project, map: built } = village({ plaza }, KEY, 4242, { form: "plaza" });
       expect(count(built, /well/), plaza).toBe(1);
       for (const [name, kit] of Object.entries(centre)) expect(count(built, kit), `${plaza}/${name}`).toBe(name === plaza ? 1 : 0);

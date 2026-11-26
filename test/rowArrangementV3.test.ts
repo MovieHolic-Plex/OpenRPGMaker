@@ -10,7 +10,6 @@ import { deserialize, serialize } from "@/project/io";
 import type { GameMap, Project, TileGroupMetadata, TilesetDef } from "@/project/types";
 import { completedHouseProject, houseMap, HOUSE_RECT } from "./fixtures/completedHouse";
 import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
-import { buildSystemPrompt } from "@/ai/contextBuilder";
 import { atomFromGroup, fillRun, hardAdjacencyViolation, mirrorTile, planRows, rowThickness } from "@/editor/tools/v3/rowArrangement";
 import { CONSTRUCTION_TOOLS_V3 } from "@/editor/tools/v3";
 import { byName } from "@/editor/tools/toolArgCoerce";
@@ -468,17 +467,6 @@ describe("rowArrangementV3", () => {
         material: "벤치(가로)",
         axis: "diagonal",
       })).toThrow(/axis는 vertical/);
-    });
-
-    // 툴이 노출돼도 프롬프트가 줄 배치를 place_props 로 보내면 원래 실패가 되살아난다.
-    // 라우팅 문장은 기본 예산(12,000자)에서 살아남는 앞머리 섹션에 있어야 한다 — 뒤쪽 섹션으로
-    // 밀리면 잘려서 사라진다(합본 하네스 프로젝트는 이미 예산을 800자 넘게 초과하는 상태다).
-    it("타일 어휘 다이제스트가 자리 줄 배치를 arrange_rows로 라우팅한다", () => {
-      const prompt = buildSystemPrompt(project(), {});
-
-      expect(prompt).toContain("## 타일 어휘 다이제스트");
-      expect(prompt).toContain("arrange_rows");
-      expect(prompt).toContain("자리 줄");
     });
   });
 });

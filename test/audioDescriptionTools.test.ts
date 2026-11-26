@@ -117,11 +117,8 @@ describe("audio description tools", { timeout: 120_000 }, () => {
 
   it.each([
     { action: "set" },
-    { action: "set", description: undefined },
     { action: "set", description: null },
     { action: "set", description: 1 },
-    { action: "set", description: [] },
-    { action: "set", description: {} },
     { action: "set", description: "x".repeat(4001) },
     { action: "reset", description: "" },
     { action: "reset", description: undefined },

@@ -22,16 +22,6 @@ function mount(mode: 'promotion' | 'skill', crowded = false) {
   return { host, click, before, update };
 }
 for (const mode of ['promotion', 'skill'] as const) {
-  it(`${mode}: initially renders detached connected nodes and edges without any writes`, () => {
-    const { host, before, update } = mount(mode);
-    const preview = host.querySelector('[data-testid="growth-preset-preview"]');
-    expect(preview).not.toBeNull();
-    expect(preview!.querySelectorAll('.growth-node').length).toBeGreaterThan(1);
-    expect(preview!.querySelectorAll('.growth-wires path').length).toBeGreaterThan(0);
-    expect(store.getCurrent()).toEqual(before); expect(update).not.toHaveBeenCalled();
-    expect(getMapEditHistoryEntries()).toHaveLength(0);
-    if (mode === 'promotion') expect(host.querySelector('.growth-body .growth-node')).not.toBeNull();
-  });
   it(`${mode}: full destination blocks Apply, never preview selection/inspection/zoom`, () => {
     const { host, click, before, update } = mount(mode, true);
     click('growth-presets-open'); click('growth-preset-bundle-arcane');

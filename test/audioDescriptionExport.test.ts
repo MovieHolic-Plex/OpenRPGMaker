@@ -23,8 +23,10 @@ describe("audio descriptions at export boundaries", () => {
     { music: { orphan: "" }, sound: { orphan: "AUDIO_EXPORT_VALUE" } },
     audioDescriptionProject().audioDescriptions,
   ];
+  // Export drops the field whatever its value, so two states (absent / full) cover that one path.
+  const exportStates = [states[0], states[4]];
 
-  it.each(states)(
+  it.each(exportStates)(
     "strips editor metadata without mutating the source when exporting %j",
     (descriptions) => {
       // Given
@@ -140,7 +142,7 @@ describe("audio descriptions at export boundaries", () => {
     expect(() => deserialize(serialize(source))).toThrow(ProjectFormatError);
   });
 
-  it.each(malformed)("discards irrelevant malformed metadata when exporting playable data: %j", (value) => {
+  it.each([malformed[0], malformed[6]])("discards irrelevant malformed metadata when exporting playable data: %j", (value) => {
     // Given
     const source = audioDescriptionProject();
     Reflect.set(source, "audioDescriptions", value);

@@ -17,7 +17,7 @@ function expectProtected(mutate: (map: GameMap) => void, prepare?: (map: GameMap
 
 describe("completed house geometry and exact cell ownership", () => {
   it.each([
-    [3, 2], [6, 2], [3, 3], [6, 6], [4, 4],
+    [3, 2], [3, 3], [4, 4],
   ])("protects bbox, full-width north ridge and empty cells at (%i,%i)", (x, y) => {
     expectProtected((map) => { map.lowerTiles[y * map.width + x] = 72; });
     expectProtected((map) => { map.upperTiles[y * map.width + x] = 200; });

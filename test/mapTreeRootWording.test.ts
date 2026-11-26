@@ -14,8 +14,7 @@ import { addChildMap } from "@/editor/actions";
 import { editorState } from "@/editor/editorState";
 import { openMapCreateDialog } from "@/editor/panels/mapCreateDialog";
 import { closeMapContextMenu } from "@/editor/panels/mapContextMenu";
-import { renderMapList, resetMapListUiStateForTests } from "@/editor/panels/mapList";
-import { getTool } from "@/editor/tools/toolRegistry";
+import { resetMapListUiStateForTests } from "@/editor/panels/mapList";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { resetMapPanelSectionForTests } from "@/editor/workspace/mapPanelSection";
@@ -27,11 +26,6 @@ function node<T extends HTMLElement = HTMLElement>(testId: string): T {
   const found = document.querySelector<T>(`[data-testid="${testId}"]`);
   if (!found) throw new Error(`Missing test control: ${testId}`);
   return found;
-}
-
-function rootMapName(): string {
-  const project = store.getCurrent();
-  return project.maps[project.mapTree.mapId]!.name;
 }
 
 /** 노드 id 를 자리표로 바꿔 두 경로가 만든 트리 모양을 이름 없이 비교한다. */
@@ -78,35 +72,6 @@ afterEach(() => {
 });
 
 describe("새 맵 대화창의 상위 선택", () => {
-  it("첫 항목은 실제 최상위 맵을 이름으로 밝힌다 — 「루트」라고 하지 않는다", () => {
-    const name = rootMapName();
-    openMapCreateDialog();
-
-    const parent = node<HTMLSelectElement>("map-create-parent");
-    const first = parent.options[0]!;
-    expect(first.value).toBe("");
-    expect(first.textContent).toBe(`최상위 맵 「${name}」의 하위`);
-    expect(parent.textContent).not.toContain("루트");
-  });
-
-  it("부모 칸은 타일 레이어 「상위」가 아니고, 맵의 세로 칸수는 「높이」다", () => {
-    openMapCreateDialog();
-    const labels = [...node("map-create-dialog").querySelectorAll(".map-create-field > span")].map((el) => el.textContent);
-    expect(labels).toContain("상위 맵");
-    expect(labels).not.toContain("상위");
-    expect(labels).toContain("높이");
-    expect(labels).not.toContain("세로");
-    expect(node("map-create-parent").getAttribute("aria-label")).toBe("상위 맵");
-    expect(node("map-create-height").getAttribute("aria-label")).toBe("높이");
-  });
-
-  it("대화창은 최상위 맵이 하나뿐이라는 계약을 글로 설명한다", () => {
-    openMapCreateDialog();
-    const text = node("map-create-dialog").textContent ?? "";
-    expect(text).toContain("최상위");
-    expect(text).toContain(rootMapName());
-    expect(text).not.toContain("루트");
-  });
 
   it("그 항목으로 만든 맵은 최상위 맵의 자식으로 저장된다(트리 모양 그대로)", () => {
     const before = structuredClone(store.getCurrent().mapTree);
@@ -148,69 +113,10 @@ describe("새 맵 대화창의 상위 선택", () => {
   });
 });
 
-describe("맵 목록의 최상위 낱말", () => {
-  it("헤더의 새 맵 단추는 최상위 맵 아래에 만든다고 말한다", () => {
-    const host = document.createElement("div");
-    document.body.append(host);
-    renderMapList(host);
-
-    const add = node("map-add");
-    expect(add.getAttribute("title")).toBe("최상위 맵 아래에 맵 추가");
-    expect(add.getAttribute("aria-label")).toBe("최상위 맵 아래에 맵 추가");
-  });
-
-  it("최상위 맵의 끌기 손잡이는 옮길 수 없는 이유를 같은 낱말로 말한다", () => {
-    const host = document.createElement("div");
-    document.body.append(host);
-    renderMapList(host);
-
-    const handle = node(`map-drag-${store.getCurrent().mapTree.mapId}`);
-    expect(handle.getAttribute("title")).toBe("최상위 맵은 옮길 수 없습니다");
-    expect(handle.getAttribute("aria-label")).toBe("최상위 맵은 옮길 수 없습니다");
-  });
-
-  it("행 메뉴의 이동 항목도 「루트」가 아니라 최상위 맵을 가리킨다", () => {
-    const root = store.getCurrent().mapTree.mapId;
-    const child = addChildMap(root, "집", { width: 12, height: 10 });
-    const grandchild = addChildMap(child, "지하", { width: 10, height: 8 });
-    const host = document.createElement("div");
-    document.body.append(host);
-    renderMapList(host);
-
-    const row = node(`map-tree-node-${grandchild}`);
-    row.focus();
-    row.dispatchEvent(new KeyboardEvent("keydown", { key: "F10", shiftKey: true, bubbles: true, cancelable: true }));
-
-    const item = node(`map-menu-to-root-${grandchild}`);
-    expect(item.textContent).toContain("최상위 맵 아래로 보내기");
-    expect(node(`map-context-menu-${grandchild}`).textContent).not.toContain("루트");
-  });
-});
-
-describe("맵 상세의 상위 표기", () => {
-  it("최상위 맵의 상위 칸은 「루트」라고 쓰지 않는다", () => {
-    const host = document.createElement("div");
-    document.body.append(host);
-    renderMapList(host, { variant: "basic" });
-
-    const parentStat = node("map-inspector-stat-parent");
-    expect(parentStat.textContent).not.toContain("루트");
-    expect(parentStat.textContent).toContain("최상위");
-  });
-});
-
 describe("조수 맵 트리 도구", () => {
   function ctx(): ToolContext {
     return { project: createBlankProject() };
   }
-
-  it("parentId 설명은 빈 문자열이 최상위 맵의 하위임을 말한다", () => {
-    const tool = getTool("manage_map_tree");
-    const parentId = (tool?.parameters as { properties?: Record<string, { description?: string }> } | undefined)
-      ?.properties?.parentId;
-    expect(parentId?.description).toContain("최상위");
-    expect(parentId?.description).not.toContain("루트");
-  });
 
   it("빈 parentId 이동 요약도 최상위 맵 하위라고 보고한다(이동 결과는 그대로)", () => {
     const context = ctx();

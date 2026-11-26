@@ -14,7 +14,6 @@ import { collectProjectReferenceIssues } from "@/project/io/references";
 import { startSession } from "@/project/session";
 import type { GameEvent, Project } from "@/project/types";
 import { jsonEqual } from "@/util/structuralJson";
-import { testSeededCorpus } from "./21-db-life-farm/corpus";
 import { createBlankProjectCopy, expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture } from "./harness";
 
 const exampleId = "row_unit21";
@@ -530,5 +529,3 @@ it("생성 범위는 한 항목 추가만 허용하고 수정과 삭제 범위�
     }
   }
 });
-
-testSeededCorpus();

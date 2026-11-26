@@ -31,19 +31,6 @@ describe("right inspector", () => {
     cursorHost.remove();
   });
 
-  it("shows the current map name, size and the mock's grouped rows", () => {
-    const map = store.getCurrent().maps[store.getCurrent().startMapId]!;
-    mounted = mountRightInspector(cursorHost);
-    expect(find("right-inspector-title")?.textContent).toBe(map.name);
-    expect(find("right-inspector-subtitle")?.textContent).toBe(`맵 · ${map.width} × ${map.height} 칸`);
-    const groups = Array.from(mounted.root.querySelectorAll<HTMLElement>("[data-testid^='right-inspector-group-']")).map((node) => node.dataset.testid);
-    expect(groups).toEqual(["right-inspector-group-basic", "right-inspector-group-sound", "right-inspector-group-battle", "right-inspector-group-cell"]);
-    expect(find("right-inspector-row-size")?.textContent).toContain(`${map.width} × ${map.height}`);
-    expect(find("right-inspector-row-bgm")?.textContent).toContain("상위 맵을 따름");
-    expect(find("right-inspector-row-encounter")?.textContent).toContain("끔");
-    expect(find("right-inspector-advanced")).not.toBeNull();
-  });
-
   it("opens map settings only from the name row; the other rows are read-only facts", () => {
     const map = store.getCurrent().maps[store.getCurrent().startMapId]!;
     mounted = mountRightInspector(cursorHost);

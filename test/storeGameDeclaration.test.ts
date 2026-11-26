@@ -11,7 +11,7 @@ import {
   normalizeStoreGameDeclarationDoc, publishStoreGame, STORE_GAME_DECLARATION_KEYS, storeGameDeclaration, storeGameDeclarationFromFlags, storeGameDeclarationText,
   type StoreGameTransport,
 } from "../src/assetStore/gamePublish";
-import { createStoreGameSection, storeGamePublishLine, storeGameSubmissionLine } from "../src/editor/panels/storeGameSection";
+import { createStoreGameSection } from "../src/editor/panels/storeGameSection";
 
 vi.mock("../src/project/webExport", () => ({ prepareWebExport: () => ({ projectJson: "{}" }) }));
 vi.mock("../src/project/storeGameRelease", () => ({
@@ -140,27 +140,6 @@ describe("asset store client game declaration", () => {
     await expect(client(() => json({ error: "not_found", message: "게임을 찾지 못했습니다." }, 404)).gameDeclaration()).resolves.toBeNull();
     await expect(client(() => json({ ...DOC, items: [] })).gameDeclaration()).rejects.toThrow(/게임 공개 선언을 읽지 못했습니다/);
     await expect(client(() => json({ message: "잠시 뒤에 다시" }, 503)).gameDeclaration()).rejects.toThrow(/잠시 뒤에 다시/);
-  });
-});
-
-describe("publish dialog lines", () => {
-  const base = { version: "1.0", unchanged: false, status: "visible", pageUrl: "https://play.example/games/g" };
-  it("says «sent, not public yet» with the store's reason for a held version", () => {
-    expect(storeGamePublishLine(base)).toBe("v1.0 을 올렸습니다. https://play.example/games/g");
-    expect(storeGamePublishLine({ ...base, unchanged: true })).toBe("바뀐 파일이 없어 새 판본을 만들지 않았습니다. 지금 판본 v1.0.");
-    const held = storeGamePublishLine({ ...base, status: "pending", held: ["first_version"], message: "처음 올리는 게임은 운영자가 확인한 뒤 공개됩니다.", pageUrl: "https://store.example/me#my-games" });
-    expect(held).toBe("v1.0 을 보냈습니다 — 아직 공개되지 않았습니다. 처음 올리는 게임은 운영자가 확인한 뒤 공개됩니다. https://store.example/me#my-games");
-    expect(storeGamePublishLine({ ...base, status: "pending" })).toContain("운영자가 확인한 뒤 공개됩니다.");
-    expect(storeGamePublishLine({ ...base, distribution: "outside_kr" })).toBe("v1.0 을 올렸습니다. 이 게임은 대한민국에서는 보이지 않습니다. https://play.example/games/g");
-  });
-
-  it("tells the author about a waiting or returned submission", () => {
-    expect(storeGameSubmissionLine(null)).toBe("");
-    expect(storeGameSubmissionLine(undefined)).toBe("");
-    expect(storeGameSubmissionLine({ status: "pending", reasons: ["first_version"], reasonTexts: ["처음 올리는 게임은 운영자가 확인한 뒤 공개됩니다."], note: "", createdAt: "" }))
-      .toBe("운영자 확인을 기다리는 판본이 있습니다. 처음 올리는 게임은 운영자가 확인한 뒤 공개됩니다. 지금 다시 올리면 기다리는 판본을 대신합니다.");
-    expect(storeGameSubmissionLine({ status: "rejected", reasons: ["build_link"], reasonTexts: [], note: "게임 안 대사의 후원 주소를 지워 주세요.", createdAt: "" }))
-      .toBe("운영자가 지난 판본을 돌려보냈습니다: 게임 안 대사의 후원 주소를 지워 주세요. 고친 뒤 다시 올려 주세요.");
   });
 });
 

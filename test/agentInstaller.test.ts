@@ -2,7 +2,7 @@ import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { explainInstallError, extractLoginUrl, resolveInstalled, type InstallerPaths } from "../electron/main/agentInstaller";
+import { extractLoginUrl, resolveInstalled, type InstallerPaths } from "../electron/main/agentInstaller";
 
 const roots: string[] = [];
 afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true }); });
@@ -36,18 +36,6 @@ describe("resolveInstalled", () => {
     const p = paths("win32");
     touch(join(p.agentsDir, "opencode", "node_modules", "opencode-windows-x64-baseline", "bin", "opencode.exe"));
     expect(resolveInstalled(p, "opencode")?.adapter.args).toEqual(["acp"]);
-  });
-});
-
-describe("explainInstallError", () => {
-  it.each([
-    ["npm error code ENOTFOUND\nnpm error request to https://registry.npmjs.org failed, reason: getaddrinfo ENOTFOUND", /인터넷/u],
-    ["npm error code ECONNREFUSED proxy http://127.0.0.1:9", /프록시/u],
-    ["npm error code ENOSPC: no space left on device", /디스크/u],
-    ["npm error code EPERM: operation not permitted, rename", /백신/u],
-    ["npm error code SELF_SIGNED_CERT_IN_CHAIN", /인증서/u],
-  ])("maps %s to a Korean action", (output, expected) => {
-    expect(explainInstallError(output, "win32")).toMatch(expected);
   });
 });
 

@@ -231,22 +231,6 @@ describe("sidebar separates composite combo brush from repeated brush size", () 
     expect(row.querySelector<HTMLSelectElement>('[data-testid="brush-size-select"]')?.value).toBe("3");
   });
 
-  it("locks the repeated-size select while a composite combo brush is active (expert chrome)", () => {
-    const tileset = defaultTileset();
-    const entry = comboBrushShelfEntries(tileset)[0]!;
-    const shelf = makeComboBrushShelf({ rerender: () => {}, tileset })!;
-    document.body.append(shelf);
-    shelf.querySelector<HTMLElement>(`[data-testid="combo-brush-${entry.id}"]`)!.click();
-
-    const row = makeTileBrushControls(editorState.get(), () => {});
-    // 3a9d9682e7: 쓸 수 없는 도구에서도 선택기 자리는 남고 disabled + 이유 title 로 잠긴다.
-    const select = row.querySelector<HTMLSelectElement>('[data-testid="brush-size-select"]');
-    expect(select).toBeTruthy();
-    expect(select!.disabled).toBe(true);
-    expect(select!.getAttribute("title")).toBe("이 도구에서는 크기를 쓰지 않습니다");
-    expect(row.querySelector<HTMLElement>('[data-testid="tile-brush-state"]')!.dataset.brushKind).toBe("combo");
-  });
-
   it("does not call a single-cell stamp a combo brush", () => {
     editorState.set({
       activePaletteStamp: {

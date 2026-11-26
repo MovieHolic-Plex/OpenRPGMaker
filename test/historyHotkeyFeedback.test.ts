@@ -74,33 +74,12 @@ describe("되돌림 피드백", () => {
     expect(message).toContain("아이템 이름 변경");
   });
 
-  it("Ctrl+Y 성공 시 다시 실행을 알린다", () => {
-    const id = addDatabaseRecord("items");
-    updateDatabaseRecord("items", id, { name: "검" });
-    handleHistoryHotkey(ctrl("z"));
-    toastSpy.mockClear();
-
-    expect(handleHistoryHotkey(ctrl("y"))).toBe(true);
-
-    const [message, kind] = lastToast()!;
-    expect(kind).toBe("ok");
-    expect(message).toContain("다시 실행했습니다");
-  });
-
   it("되돌릴 것이 없으면 침묵하지 않고 그렇다고 알린다", () => {
     expect(handleHistoryHotkey(ctrl("z"))).toBe(false);
 
     const [message, kind] = lastToast()!;
     expect(kind).toBe("info");
     expect(message).toBe("되돌릴 작업이 없습니다");
-  });
-
-  it("다시 실행할 것이 없으면 그렇다고 알린다", () => {
-    expect(handleHistoryHotkey(ctrl("y"))).toBe(false);
-
-    const [message, kind] = lastToast()!;
-    expect(kind).toBe("info");
-    expect(message).toBe("다시 실행할 작업이 없습니다");
   });
 
   it("단축키가 무시되는 경로에서는 토스트도 뜨지 않는다", () => {

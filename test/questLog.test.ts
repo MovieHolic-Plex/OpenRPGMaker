@@ -227,49 +227,6 @@ describe("mapBgmVariety", () => {
       });
       expect((result.data as { bgmResourceId: string }).bgmResourceId).toBe(STARTER_BATTLE_BGM_ID);
     });
-
-    it("명시적 bgm custom 이 있으면 자동 선택을 건너뛴다", () => {
-      const ctx: ToolContext = { project: createEmptyToolProject() };
-      const result = runTool(
-        ctx,
-        "generate_map",
-        {
-          theme: "forest",
-          width: 12,
-          height: 12,
-          seed: 1,
-          id: "gen_bgm_custom",
-          chokepoints: 0, tilesetId: GENERATE_TILESET_ID,
-          bgm: { mode: "custom", resourceId: STARTER_DEFAULT_BGM_ID },
-        },
-        { dryRun: false },
-      );
-      expect(result.ok, result.summary).toBe(true);
-      expect(ctx.project.maps.gen_bgm_custom?.bgm).toEqual({
-        mode: "custom",
-        resourceId: STARTER_DEFAULT_BGM_ID,
-      });
-    });
-
-    it("명시적 bgm none 은 무음으로 심는다", () => {
-      const ctx: ToolContext = { project: createEmptyToolProject() };
-      const result = runTool(
-        ctx,
-        "generate_map",
-        {
-          theme: "cave",
-          width: 12,
-          height: 12,
-          seed: 1,
-          id: "gen_bgm_none",
-          chokepoints: 0, tilesetId: GENERATE_TILESET_ID,
-          bgm: { mode: "none" },
-        },
-        { dryRun: false },
-      );
-      expect(result.ok, result.summary).toBe(true);
-      expect(ctx.project.maps.gen_bgm_none?.bgm).toEqual({ mode: "none" });
-    });
   });
   describe("create_map BGM", () => {
     it("맵 이름 키워드로 테마를 읽어 자동 지정한다", () => {

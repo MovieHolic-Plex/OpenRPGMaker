@@ -18,15 +18,14 @@ describe.each(paths)("atomic verification adoption via %s", { timeout: 120_000 }
       rejected(await f.replace(path, f.candidate([f.check(f.changed, original.checkId)])), original.checkId);
     });
 
-  it.each(["passed", "unverified", "stale"] as const)("rejects criterion-reference replacement while %s", async status => {
+  // 2026-11-26 test-diet r3: 위와 같은 까닭으로 criterion 참조 교체 거절도 상태를 읽지 않는다(preflightWorkPlan 1440-1464) — unverified 한 행으로 지킨다.
+  it("rejects criterion-reference replacement while unverified", async () => {
     const f = fixture();
     const initial = f.plan([f.check()]);
     const routePromise = { id: "other-route", title: "Other", criteria: [{ kind: "reachability", target: { mapId: f.mapId }, from: f.other.from, to: f.other.targets }] };
-    await f.send([{ name: "set_work_plan", args: { ...initial, acceptance: [...initial.acceptance, routePromise] } },
-      ...(status === "unverified" ? [] : [f.probe(), f.probe(f.other)])]);
-    if (status === "stale") { const edited = f.session.getProposedProject(); edited.session.gold = (edited.session.gold ?? 0) + 1; f.session.syncBaselineFromStoreIfClean(edited); }
+    await f.send([{ name: "set_work_plan", args: { ...initial, acceptance: [...initial.acceptance, routePromise] } }]);
     const original = f.session.getVerificationSnapshot().requirements.find(check => !check.criterion)!;
-    expect(original.status).toBe(status);
+    expect(original.status).toBe("unverified");
     rejected(await f.replace(path, f.candidate([{ tool: f.name, checkId: original.checkId, criterion: { promiseId: "other-route", criterionIndex: 0 } }])), original.checkId);
   });
 

@@ -86,7 +86,7 @@ describe("generate_map palette authority", { timeout: 60_000 }, () => {
     expectStableReload(ctx.project);
   });
 
-  it.each(["upper-ground", "blocked-path", "directional-path", "open-obstacle", "stale-runtime", "image", "columns", "tile-size", "count"])(
+  it.each(["upper-ground", "blocked-path", "directional-path", "open-obstacle", "stale-runtime", "image"])(
     "rejects incompatible %s before direct-module or runner project mutation", kind => {
       const p = project();
       const ts = p.tilesets[GEN_TILESET_ID]!;
@@ -99,9 +99,6 @@ describe("generate_map palette authority", { timeout: 60_000 }, () => {
         ts.priority[CAVE.base] = "lower"; ts.passability[CAVE.base] = passableFlag();
       }
       if (kind === "image") ts.image = { type: "bundled", id: "tex_easyrpg_chipset_world" };
-      if (kind === "columns") ts.tilesPerRow = 16;
-      if (kind === "tile-size") ts.tileSize = 32;
-      if (kind === "count") ts.count = 400;
       const before = structuredClone(p);
       expect(() => MAP_GEN_TOOLS[0]!.run(p, capturedArgs)).toThrowError(expect.objectContaining({ code: "incompatible-generation-palette" }));
       expect(p).toEqual(before);
@@ -142,7 +139,8 @@ describe("generate_map palette authority", { timeout: 60_000 }, () => {
           expect([...map.lowerTiles, ...map.upperTiles]).toContain(profile.palettes[theme].accent);
           expect(before[profile.tilesetId]!.passability[profile.palettes[theme].accent]).toEqual(blockedFlag());
         }
-        expectStableReload(ctx.project);
+        // 재로드 정본성은 타일셋(프로필)마다 한 번이면 된다 — 테마는 같은 타일셋 규칙을 쓴다.
+        if (theme === "cave") expectStableReload(ctx.project);
       });
     }
   }

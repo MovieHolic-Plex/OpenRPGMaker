@@ -2,7 +2,7 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY, chatCompletion, defaultAiConfig } from "@/ai/llmClient";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import { editorState } from "@/editor/editorState";
 import * as history from "@/editor/mapEditHistory";
@@ -30,7 +30,7 @@ beforeEach(() => {
     ? new Response(JSON.stringify({ document: defaultSharedCharacterGraphics() }), { status: 200, headers: { "content-type": "application/json" } })
     : new Response(null, { status: 201 })));
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
-  store.replace(createBlankProject());
+  store.replace(createSharedTilesetBlankProject());
   editorState.set({ currentMapId: store.getCurrent().startMapId, selection: null });
   history.resetMapEditHistory();
   let wrote = false;

@@ -5,7 +5,8 @@ import { fixture, paths, rejected } from "./helpers/verificationPlanAtomicityFix
 
 // Heavy under CI load (15s default is too tight): runs real verification tools over full fixtures.
 describe.each(paths)("atomic verification adoption via %s", { timeout: 120_000 }, path => {
-  it.each(["check_reachability", "run_lint", "run_scene_test", "run_action_combat_test"])("%s exact reuse preserves ownership and proof", async name => {
+  // 2026-11-26 test-diet r3: 도구마다의 정확 재사용은 tool 경로가 지키고, planner 경로는 같은 preflightWorkPlan 을 거친 적용 전달을 한 도구로 지킨다.
+  it.each(path === "tool" ? ["check_reachability", "run_lint", "run_scene_test", "run_action_combat_test"] : ["check_reachability"])("%s exact reuse preserves ownership and proof", async name => {
     const f = fixture(name);
     const original = await f.setup(name === "run_action_combat_test" ? "unverified" : "passed");
     const turn = await f.replace(path, f.plan([f.check(f.args, original.checkId)]));
@@ -14,7 +15,7 @@ describe.each(paths)("atomic verification adoption via %s", { timeout: 120_000 }
     expect(f.session.getVerificationSnapshot().requirements).toEqual([original]);
   });
 
-  it.each(["check_reachability", "run_lint"])("%s distinct scope needs fresh proof and invalid mixed candidates add nothing", async name => {
+  it.each(path === "tool" ? ["check_reachability", "run_lint"] : ["check_reachability"])("%s distinct scope needs fresh proof and invalid mixed candidates add nothing", async name => {
     const f = fixture(name);
     const original = await f.setup("passed");
     await f.send([f.probe(f.changed)]);

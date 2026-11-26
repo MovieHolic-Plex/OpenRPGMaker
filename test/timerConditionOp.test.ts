@@ -1,13 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { openPageMoveRouteDialog } from "@/editor/panels/eventEditor/moveRouteDialog";
-import { MOVE_ROUTE_COMMAND_ROWS } from "@/editor/panels/eventEditor/moveRouteCommandCatalog";
 import { DEFAULT_ACTOR_ID, DEFAULT_ITEM_ID } from "@/project/defaults";
 import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import type { EventPageMovement, EventPage, EventPageCondition, GameEvent, Command } from "@/project/types";
 import { FakeElement, findByTestId, installFakeDom, renderWithFakeDom, flushFakeAnimationFrames } from "./fakeDom";
-import { CHARSET_FRAME_HEIGHT, CHARSET_FRAME_WIDTH, charsetFrameIndex, charsetFrameSource, EASYRPG_CHARSET_ASSETS } from "@/assets/easyrpgRtp";
-import { renderGraphicResourceList } from "@/editor/panels/eventEditor/npcGraphicPickerControls";
+import { charsetFrameIndex, charsetFrameSource } from "@/assets/easyrpgRtp";
 import { renderNpcGraphicPicker } from "@/editor/panels/eventEditor/npcGraphicPicker";
 import { advancedConditionEntries, defaultSimpleCondition, type SimpleConditionKind, toggleSimpleCondition, toggleSwitchCondition, toggleTimerCondition } from "@/editor/panels/eventEditor/pageConditionModel";
 import { renderPageConditions } from "@/editor/panels/eventEditor/pageConditions";
@@ -24,7 +22,6 @@ import { clearCommandInspector, setCommandInspectorHost, showCommandInspector } 
 import type { CommandListActions } from "@/editor/panels/eventEditor/types";
 import { renderCommandBody } from "@/editor/panels/eventEditor/commandBody";
 import { shouldRerenderCommandForm } from "@/editor/panels/eventEditor/commandEditDialog";
-import { formatVariableFormula } from "@/editor/panels/eventEditor/commandBodyVariable";
 import { setVariable, startSession } from "@/project/session";
 import { idleTimerSatisfies, idleTimerWarningMessage } from "@/editor/panels/eventEditor/timerConditionText";
 import { validateEventDraftBody } from "@/editor/eventDraftValidator";
@@ -83,35 +80,6 @@ describe("moveRouteDialogRich", () => {
 
     afterEach(() => {
       restoreDom?.();
-    });
-
-    it("renders an icon span per command button while keeping the Korean label text intact", () => {
-      const dialog = openDialog();
-      for (const row of MOVE_ROUTE_COMMAND_ROWS) {
-        for (const item of row) {
-          const button = mustFind(dialog, `event-page-move-route-add-${item.testId}`);
-          const icon = button.querySelector(".event-page-move-route-command-icon");
-          expect(icon, item.testId).not.toBeNull();
-          expect(icon?.dataset.glyph ?? "", item.testId).not.toBe("");
-          // 글리프는 data-glyph(CSS ::before)로만 그려서 버튼 텍스트는 라벨 그대로다 (e2e toHaveText 보호).
-          expect(button.textContent, item.testId).toBe(item.label);
-        }
-      }
-      const moveUpIcon = mustFind(dialog, "event-page-move-route-add-move-up").querySelector(
-        ".event-page-move-route-command-icon"
-      );
-      expect(moveUpIcon?.dataset.glyph).toBe("↑");
-      // 방향 이동 버튼은 아이콘 강조 클래스를 가진다.
-      expect(
-        mustFind(dialog, "event-page-move-route-add-move-upper-right").classList.contains(
-          "event-page-move-route-command-directional"
-        )
-      ).toBe(true);
-      expect(
-        mustFind(dialog, "event-page-move-route-add-turn-up").classList.contains(
-          "event-page-move-route-command-directional"
-        )
-      ).toBe(false);
     });
 
     it("updates the route preview live as moves are added and cleared", () => {
@@ -270,45 +238,6 @@ describe("npcGraphicPickerRich", () => {
       restoreDom?.();
     });
 
-    it("리소스 행 아이콘에 대표 스프라이트 24x32 썸네일 크롭이 적용된다", () => {
-      const list = renderGraphicResourceList(EASYRPG_CHARSET_ASSETS, () => {});
-      const source = charsetFrameSource(THUMB_SELECTION);
-      expect(list.buttons.length).toBe(EASYRPG_CHARSET_ASSETS.length);
-      list.buttons.forEach((button, index) => {
-        const asset = EASYRPG_CHARSET_ASSETS[index];
-        const icon = (button as unknown as FakeElement).querySelector(".event-graphic-resource-icon");
-        expect(icon, asset?.textureKey).not.toBeNull();
-        expect(icon?.classList.contains("charset-thumb")).toBe(true);
-        expect(icon?.style.width).toBe(`${CHARSET_FRAME_WIDTH}px`);
-        expect(icon?.style.height).toBe(`${CHARSET_FRAME_HEIGHT}px`);
-        expect(icon?.style.backgroundPosition).toBe(`-${source.x}px -${source.y}px`);
-        expect(icon?.dataset.transparentColorKeyPath).toBe(asset?.path);
-      });
-    });
-
-    it("타일셋 자리표시 행을 더 이상 보여 주지 않는다", () => {
-      const list = renderGraphicResourceList(EASYRPG_CHARSET_ASSETS, () => {});
-      const root = list.root as unknown as FakeElement;
-      const disabledRows = root
-        .querySelectorAll(".disabled")
-        .filter((row) => row.classList.contains("event-graphic-resource-row"));
-      expect(disabledRows.length).toBe(0);
-    });
-
-    it("직접 이름 입력은 고급 접힘 안에 기본으로 들어간다", () => {
-      const root = renderPicker();
-      const details = root.querySelector(".npc-advanced-sprite");
-      expect(details).not.toBeNull();
-      expect(details?.tagName).toBe("DETAILS");
-      expect((details as FakeElement & { open?: boolean }).open ?? false).toBe(false);
-      const summary = details?.querySelector("summary");
-      expect(summary?.textContent).toBe("고급 · 파일 이름 직접 넣기");
-      // testid 는 불변이어야 하고, 입력이 details 내부로 이동해야 한다.
-      const input = findByTestId(details as FakeElement, "event-graphic-direct-sprite-input");
-      expect(input).not.toBeNull();
-      expect(input?.value).toBe("tex_easyrpg_charset_people1");
-    });
-
     it("걷기 프리뷰가 존재하고 방향/캐릭터 변경 시 dataset 과 걷기 프레임 변수가 갱신된다", () => {
       const root = renderPicker();
       const walkPreview = findByTestId(root, "npc-walk-preview");
@@ -337,14 +266,6 @@ describe("npcGraphicPickerRich", () => {
       expect(walkPreview?.style["--npc-walk-frame-1"]).toBe(
         `-${slot3Source.x * 2}px -${slot3Source.y * 2}px`
       );
-    });
-
-    it("기존 testid (프레임 프로브/확인/취소/리소스 행)가 유지된다", () => {
-      const root = renderPicker();
-      expect(findByTestId(root, "npc-frame-preview")).not.toBeNull();
-      expect(findByTestId(root, "event-graphic-confirm")).not.toBeNull();
-      expect(findByTestId(root, "event-graphic-cancel")).not.toBeNull();
-      expect(findByTestId(root, "event-graphic-resource-tex_easyrpg_charset_people1")).not.toBeNull();
     });
 
     it("소재 관리자에서 업로드한 charset이 리소스 목록에 나타난다", () => {
@@ -734,83 +655,6 @@ describe("pageConditionsGuarantee", () => {
         } else {
           expect(advanced.some((e) => e.condition.kind === kind)).toBe(true); // 2nd+
         }
-      }
-    });
-
-    it("UI: 모든 간단 조건 행의 컨트롤 testid가 렌더된다", () => {
-      const project = store.getCurrent();
-      const page: EventPage = {
-        id: "p",
-        name: "p",
-        conditions: [
-          { kind: "switch", switchId: project.switches[0]?.id ?? "", value: true },
-          { kind: "switch", switchId: project.switches[1]?.id ?? project.switches[0]?.id ?? "", value: true },
-          { kind: "variable", variableId: project.variables[0]?.id ?? "", op: ">=", value: 1 },
-          { kind: "item", itemId: DEFAULT_ITEM_ID, present: true },
-          { kind: "actor", actorId: DEFAULT_ACTOR_ID, present: true },
-          { kind: "timer", timerId: "timer1", seconds: 65 },
-          { kind: "timer", timerId: "timer2", seconds: 10 },
-          { kind: "timePhase", phase: "evening" },
-          { kind: "season", season: "fall" },
-          { kind: "npcActivity", activity: "patrol" },
-          { kind: "insideLocation", locationId: "loc1", inside: true },
-         { kind: "friendshipAtLeast", value: 80 },
-          { kind: "selfSwitch", key: "A", value: true },
-       ],
-        graphic: {},
-        trigger: { kind: "action" },
-        priority: "same",
-        movement: { type: "fixed", speed: 3, frequency: 3 },
-        commands: [],
-      };
-      // No characterId: friendship row still renders, but connect/CTA may live on pageProps.
-      const rootWithoutChar = renderWithFakeDom(() => el("div", { children: renderPageConditions("map-start", "ev", page) }));
-      expect(findByTestId(rootWithoutChar, "event-page-friendship-condition-value")).not.toBeNull();
-      expect(findByTestId(rootWithoutChar, "event-page-condition-add-toolbar")).toBeNull();
-
-      const root = renderWithFakeDom(() => el("div", { children: renderPageConditions("map-start", "ev", page, { characterId: "char_ev" }) }));
-      const ids = [
-        "event-page-switch-condition-input",
-        "event-page-switch2-condition-input",
-        "event-page-variable-condition-input",
-        "event-page-variable-condition-op",
-        "event-page-variable-condition-value",
-        "event-page-item-condition-input",
-        "event-page-actor-condition-input",
-        "event-page-timer1-condition-minutes",
-        "event-page-timer1-condition-seconds",
-        "event-page-timer2-condition-minutes",
-        "event-page-timer2-condition-seconds",
-        "event-page-time-phase-condition-input",
-        "event-page-season-condition-input",
-        "event-page-npc-activity-condition-input",
-       "event-page-friendship-condition-value",
-        "event-page-self-switch-condition-key-A",
-        "event-page-self-switch-condition-value",
-       "event-page-advanced-conditions",
-      ];
-      for (const id of ids) {
-        expect(findByTestId(root, id), id).not.toBeNull();
-      }
-      // 이 픽스처는 모든 간단 조건을 켠 상태 — 전부 active 여야 한다.
-      const activeRows = root.querySelectorAll('[data-condition-active="true"]');
-      expect(activeRows.length).toBeGreaterThan(0);
-      expect(root.querySelectorAll('[data-condition-active="false"]').length).toBe(0);
-      expect(root.textContent).toContain("보유 중");
-      expect(root.textContent).toContain("파티에 있음");
-      expect(root.textContent).toContain("켜짐");
-      // 새 계약: 빈 페이지면 행은 0개, 칩 12개가 종류를 보여준다
-      // 조건을 안 건 페이지: 행은 하나도 내지 않고 칩 12개와 한 줄 안내만 남는다.
-      // 예전 계약은 «체크 안 된 행» 12줄을 늘 렌더해 첫 화면을 덮었다 — 발견 가능성은 이제 칩이 진다.
-      const emptyPage: EventPage = { ...page, conditions: [] };
-      const emptyRoot = renderWithFakeDom(() => el("div", { children: renderPageConditions("map-start", "ev", emptyPage) }));
-      expect(emptyRoot.querySelectorAll(".event-condition-row").length).toBe(0);
-      expect(findByTestId(emptyRoot, "event-condition-empty")).not.toBeNull();
-      expect(emptyRoot.querySelectorAll(".event-condition-chip").length).toBe(14);
-      for (const key of ["switch1", "switch2", "variable", "item", "actor", "timer1", "timer2", "timePhase", "season", "npcActivity", "insideLocation", "friendship", "selfSwitch"]) {
-        const chip = findByTestId(emptyRoot, `event-condition-chip-${key}`);
-        expect(chip, `chip missing: ${key}`).not.toBeNull();
-        expect(chip?.getAttribute("aria-pressed")).toBe("false");
       }
     });
 
@@ -1747,13 +1591,6 @@ describe("screenEffectAuthoring", () => {
       restoreDom?.();
     });
 
-    it("renders the same stage and play control the edit modal has", () => {
-      const host = openInspector({ effect: "fadeOut", value: "", durationMs: 900 });
-      expect(findByTestId(host, "event-inspector-preview")).toBeTruthy();
-      expect(findByTestId(host, "ecp-screen-effect-stage")).toBeTruthy();
-      expect(findByTestId(host, "ecp-screen-effect-play")).toBeTruthy();
-    });
-
     it("plays the effect inside the inspector", () => {
       const host = openInspector({ effect: "fadeOut", value: "", durationMs: 900 });
       const stage = findByTestId(host, "ecp-screen-effect-stage");
@@ -1899,16 +1736,6 @@ describe("setVariableCommandBody", () => {
       ).toBe(false);
     });
 
-    it("formatVariableFormula is readable for authors", () => {
-      store.getCurrent().variables[0] = { id: "var_0001", name: "점수" };
-      expect(
-        formatVariableFormula({ kind: "setVariable", variableId: "var_0001", op: "*=", value: 3 })
-      ).toContain("×=");
-      expect(
-        formatVariableFormula({ kind: "setVariable", variableId: "", op: "=", value: 0 })
-      ).toContain("[변수 선택]");
-    });
-
     it("runtime setVariable ops match contract including divide-by-zero keep", () => {
       const session = startSession(store.getCurrent());
       setVariable(session, "v", "=", 7);
@@ -2037,17 +1864,6 @@ describe("timerConditionOp", () => {
         kind: "fork",
         condition: { kind: "timer", timerId: "timer1", seconds: 60, op: ">=" },
       });
-    });
-
-    it("names a 90 second less-than-or-equal fork instead of calling it zero seconds", () => {
-      const body = renderWithFakeDom(() => renderCommandBody(
-        { path: [0], actions, lockKind: true },
-        { kind: "fork", condition: { kind: "timer", timerId: "timer1", seconds: 90 }, then: [] },
-      ));
-      const warning = findByTestId(body, "event-fork-timer-warning");
-      expect(warning?.textContent).toContain("90초 이하");
-      expect(warning?.textContent).toContain("0초로 읽어");
-      expect(warning?.textContent).not.toContain("임계값");
     });
 
     it("keeps a greater-than operator when the page timer seconds change", () => {

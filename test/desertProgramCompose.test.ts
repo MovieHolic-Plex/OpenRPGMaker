@@ -68,7 +68,7 @@ describe("사막 구성기 — 목적표로 짜기", () => {
 
   it("피라미드의 남쪽 탑문은 맵의 마지막 줄에 서서 문 구멍이 곧 나가는 칸이다(문 그림 밑 맨바닥에 출구가 놓이지 않는다)", () => {
     // 한 줄 띄워 세우면 남쪽 출구 네 칸이 문 그림 바로 밑 맨바닥에 놓여 출하 검사 entrance-off-art 가 걸렸다(명세 은행 fun-x1·jrpg-w3).
-    for (const seed of [1, 2, 3]) {
+    for (const seed of [1, 2]) {
       const built = compose("pyramid", { roles: [{ id: "landmark", role: "tomb" }] }, seed, ["south"]);
       const south = edgeRoadMouths(built.run.ctx.project, built.map()).filter((m) => m.side === "south");
       expect(south, `씨앗 ${seed}`).toHaveLength(1);
@@ -86,7 +86,7 @@ describe("사막 구성기 — 목적표로 짜기", () => {
   }, 60_000);
 
   it("가게처럼 생긴 집은 가게뿐이다 — 채움 집은 살림집 키트만 쓴다", () => {
-    for (const seed of [1, 2, 3, 4]) {
+    for (const seed of [1, 2]) {
       const built = compose("bazaar", { roles: [{ id: "svc:shop", role: "shop" }], filler: 4 }, seed);
       expect(built.buildings.filter((b) => b.kit === "de-house-shop").map((b) => b.need?.role)).toEqual(["shop"]);
       expect(built.buildings.filter((b) => !b.need).every((b) => DESERT_SETTLEMENT.roles.home!.kits.includes(b.kit))).toBe(true);

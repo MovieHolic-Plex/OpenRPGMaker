@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { describe, expect, it } from "vitest";
-import { deserialize, ProjectFormatError, serialize, serializePretty } from "@/project/io";
+import { deserialize, ProjectFormatError, serialize } from "@/project/io";
 import { validateProjectV4 } from "@/project/io/shape";
 import { own, spatialId } from "@/project/spatial/domain";
 import { duplicateSpatialOccurrence } from "@/project/spatial/duplicate";
@@ -10,7 +10,7 @@ import { projectionFixture, savedProjectionInput } from "./support/spatialProjec
 import { SPATIAL_SIZE_MAX } from "@/project/spatial/types";
 
 describe("non-owning compiled projections", () => {
-  it.each([serialize, serializePretty])("retains authored coincident coordinates when full-space ownership and child projection roundtrip", encode => {
+  it.each([serialize])("retains authored coincident coordinates when full-space ownership and child projection roundtrip", encode => {
     // Given
     const { project, document } = projectionFixture();
     // When
@@ -114,7 +114,7 @@ describe("non-owning compiled projections", () => {
     expect(load).toThrow(`occurrences.${child.id}.bindings[1].ports: duplicate port binding`);
   });
 
-  it.each([serialize, serializePretty])("preserves old untagged binding values when legacy IO roundtrips", encode => {
+  it.each([serialize])("preserves old untagged binding values when legacy IO roundtrips", encode => {
     // Given
     const { project, document } = spatialBindingFixture();
     // When

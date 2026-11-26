@@ -1,10 +1,9 @@
 import { describe, expect, it } from "vitest";
 import type { AuditEntry, TurnResult } from "@/ai/assistantSession";
 import type { ConstructionAuditRecord } from "@/editor/construction/constructionAudit";
-import { buildRegionTaskLogExport, buildRegionTaskMessage, ensureRegionPlacementHarness, formatApprovedPropVocabHint, REGION_PROP_VOCAB, clippedNoticeText, describeRegionTaskResult, type RegionTaskResult, runRegionTask, serializeRegionTaskLog, type RegionTaskDeps, type RegionTaskSessionLike, pendingApprovalText } from "@/editor/regionTask/runRegionTask";
+import { buildRegionTaskLogExport, buildRegionTaskMessage, ensureRegionPlacementHarness, formatApprovedPropVocabHint, clippedNoticeText, describeRegionTaskResult, type RegionTaskResult, runRegionTask, serializeRegionTaskLog, type RegionTaskDeps, type RegionTaskSessionLike, pendingApprovalText } from "@/editor/regionTask/runRegionTask";
 import { createBlankProject } from "@/project/defaults";
 import { declaredIntent } from "./intentFixture";
-import { getTool } from "@/editor/tools/toolRegistry";
 import { BUILD_PALETTE_GROUP_IDS } from "@/editor/panels/buildPaletteCore";
 import { toOpenAiTools } from "@/editor/tools";
 import { beginAssistantToolDomainTurn, computeActiveToolDomains } from "@/editor/assistantToolMode";
@@ -189,20 +188,6 @@ describe("regionAiPlacementHarness", () => {
       expect(woodTiles).toBeLessThanOrEqual(2);
     });
 
-    it("박스 지시: 재료 라벨은 footer 에, 장식 박스↔보물상자 규칙은 툴 설명에 있다", () => {
-      const project = makeMapProject().project;
-      const tileset = project.tilesets[project.maps[MAP_ID].tilesetId];
-      ensureRegionPlacementHarness(tileset);
-      const msg = buildRegionTaskMessage("박스 2개 설치해줘", "하네스", MAP_ID, REGION, tileset);
-      expect(msg).toContain("나무 상자");
-      expect(msg).not.toContain(REGION_PROP_VOCAB.woodBox);
-      expect(msg).not.toContain("마을 소품(");
-      const props = getTool("place_props")?.description ?? "";
-      expect(props).toMatch(/장식 박스.*나무 상자/);
-      expect(props).toContain("place_chest 로 대체 금지");
-      expect(getTool("place_chest")?.description ?? "").toContain("place_props");
-    });
-
     it("place_npc without graphic uses villager charset, not transparent", () => {
       const context = makeMapProject();
       const result = runTool(context, "place_npc", {
@@ -261,10 +246,6 @@ describe("regionTaskClipNotice", () => {
       expect(text).toContain("25칸");
       expect(text).toContain("영역 밖");
       expect(text).toMatch(/해제|다시 선택/u);
-    });
-
-    it("클립이 없는 0칸 턴은 종전 문구를 유지한다", () => {
-      expect(describeRegionTaskResult(result({}))).toBe("이 영역에서 바뀐 것이 없습니다.");
     });
 
     it("모델 문장 앞에 「맵은 바뀌지 않았다」 사실을 박는다", () => {

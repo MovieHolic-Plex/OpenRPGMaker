@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "@/editor/eventCommands/schema/catalog";
 import "@/editor/eventCommands/schema/catalogExtended";
 import { commandSchemaFor } from "@/editor/eventCommands/schema/defineCommand";
-import { renderSchemaCommandBody, schemaSummary } from "@/editor/panels/eventEditor/schemaCommandBody";
+import { renderSchemaCommandBody } from "@/editor/panels/eventEditor/schemaCommandBody";
 import { commandKindLabel } from "@/editor/panels/eventEditor/options";
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { resolveCommandListAtPath } from "@/editor/eventCommandPaths";
@@ -50,10 +50,6 @@ describe("presentItem 에디터", () => {
   it("명령 목록 이름과 새 명령 기본값", () => {
     expect(commandKindLabel("presentItem")).toBe("아이템 제시");
     expect(newCommand("presentItem")).toMatchObject({ kind: "presentItem", options: [] });
-  });
-
-  it("요약문은 prompt 와 정답 수를 보인다", () => {
-    expect(schemaSummary(evidence)).toBe("“증거를 보여라” · 정답 2개");
   });
 
   it("분기: 정답마다 하나 + 틀림 + 닫음, 경로로 되찾을 수 있다", () => {

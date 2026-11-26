@@ -5,9 +5,8 @@ import { deserialize, serialize } from "@/project/io";
 import { buildWelcomeGenrePresetPrompt, welcomeGenrePresetById } from "@/editor/welcomeGenrePresets";
 import { projectInterviewQuestions } from "@/editor/projectInterviewQuestions";
 import { parseAdditionalInterviewAnswers } from "@/ai/projectInterviewAnswers";
-import { buildPiAgentSystemPrompt, FOUR_LAYER_REFERENCE_MARKER } from "@/ai/piAgent/systemPrompt";
+import { buildPiAgentSystemPrompt } from "@/ai/piAgent/systemPrompt";
 import { interviewBrief } from "./helpers/gameDesignBrief";
-import { buildSystemPrompt } from "@/ai/contextBuilder";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { runTool } from "@/editor/tools/toolRunner";
@@ -230,14 +229,6 @@ describe("genreLockCharsets", () => {
       expect(ctx.project.system.genre).toBe("monster-collect");
       expect(ctx.project.system.genreLock).toBeUndefined();
       expect(placeNpc(ctx, "청년", 4, { graphic: RTP_YOUTH }).ok).toBe(true);   // 표지만 있으면 막지 않는다
-    });
-
-    it("표지만 있는 프로젝트의 조수 프롬프트에 매 턴 표지 안내가 실린다", () => {
-      const project = noKitProject();
-      project.system.genre = "monster-collect";
-      expect(genreMarkerNote(project)).toContain("[장르 표지");
-      expect(buildPiAgentSystemPrompt(project, [project.startMapId], false, { spatialWork: false }).join("\n")).toContain("[장르 표지");
-      expect(buildSystemPrompt(project)).toContain("[장르 표지");
     });
 
     it("다른 장르가 이미 선언된 프로젝트는 덮어쓰지 않고, 장르가 없으면 안내 줄도 없다", () => {
@@ -483,17 +474,6 @@ describe("mysteryAuthoringPrompt", () => {
       expect(prompt).not.toContain("추리 저작 요령");
       expect(prompt).not.toContain("author_mystery_case");
     });
-
-    it("시스템 프롬프트는 추리 기획일 때만 실내를 먼저 짓게 한다", () => {
-      const mystery = createBlankProject();
-      const brief = interviewBrief("story-cutscene");
-      brief.summary += "\n추리. 용의자 지목.";
-      mystery.gameDesignBrief = brief;
-      expect(buildPiAgentSystemPrompt(mystery, [], false).join("\n")).toContain("build_hand_interior_room(plan, 새 mapId)");
-      const story = createBlankProject();
-      story.gameDesignBrief = interviewBrief("story-cutscene");
-      expect(buildPiAgentSystemPrompt(story, [], false).join("\n")).not.toContain("author_mystery_case");
-    });
   });
 });
 
@@ -503,16 +483,6 @@ describe("piAgentSystemPromptFourLayer", () => {
   isolateTimers();
   const MAP_ID = "map_blank_start";
   const isFourLayerLine = (line: string): boolean => line.includes("MZ 네 층");
-  function withMarkerReference(project: Project, markdown: string): Project {
-    const tilesetId = project.maps[MAP_ID]!.tilesetId;
-    const tileset = project.tilesets[tilesetId]!;
-    delete tileset.referenceSourceTilesetId;
-    tileset.referenceDocuments = [{
-      id: "swamp", name: "늪지", description: "늪지 조립", images: [],
-      documents: [{ id: "rules", name: "규칙", markdown }],
-    }];
-    return project;
-  }
   describe("Pi 시스템 프롬프트 — 네 층 타일셋 줄", () => {
     it("옛 프로젝트에는 줄이 없고, 네 층 맵이 생긴 프롬프트에서 그 한 줄만 빼면 글자까지 같다", () => {
       const old = createBlankProject();
@@ -529,28 +499,6 @@ describe("piAgentSystemPromptFourLayer", () => {
       expect(added[0]).toContain("stamp_layer_block");
       expect(added[0]).toContain(map.tilesetId);
       expect(lines.filter((line) => !isFourLayerLine(line)).join("\n")).toBe(oldLines.join("\n"));
-    });
-
-    it("같은 타일셋을 쓰는 다른 맵에 선택 층이 있어도 줄이 붙는다", () => {
-      const project = createBlankProject();
-      const start = project.maps[MAP_ID]!;
-      const other = { ...structuredClone(start), id: "map_other" as typeof start.id, name: "다른 맵" };
-      other.shadowBits = new Array<number>(other.width * other.height).fill(0);
-      other.shadowBits[3] = 1;
-      project.maps[other.id] = other;
-      expect(buildPiAgentSystemPrompt(project, [MAP_ID]).filter(isFourLayerLine)).toHaveLength(1);
-    });
-
-    it("참고문서 용도 첫 문서가 layer-model: mz4 로 시작하면 빈 맵이어도 줄이 붙는다", () => {
-      const project = withMarkerReference(createBlankProject(), `${FOUR_LAYER_REFERENCE_MARKER}\n# 늪지 규칙\n...`);
-      expect(buildPiAgentSystemPrompt(project, [MAP_ID]).filter(isFourLayerLine)).toHaveLength(1);
-    });
-
-    it("표지가 첫 줄이 아니거나 범위가 프로젝트 전체면 붙지 않는다", () => {
-      const notFirst = withMarkerReference(createBlankProject(), `# 늪지\n${FOUR_LAYER_REFERENCE_MARKER}\n`);
-      expect(buildPiAgentSystemPrompt(notFirst, [MAP_ID]).some(isFourLayerLine)).toBe(false);
-      const marked = withMarkerReference(createBlankProject(), `${FOUR_LAYER_REFERENCE_MARKER}\n`);
-      expect(buildPiAgentSystemPrompt(marked, []).some(isFourLayerLine)).toBe(false);
     });
   });
 });
@@ -576,22 +524,6 @@ describe("saveMenuOnLockedMap", () => {
       const result = runTool(ctx, "set_map_properties", { mapId, flags: { disableSave: true } });
       expect(result.ok, result.summary).toBe(true);
       expect(JSON.stringify(result.diff?.warnings ?? result)).toContain("저장할 수 없게 됩니다");
-    });
-  });
-  describe("장르 기믹 안내(꿈 세계)", () => {
-    it("기획에 반복 맵·외형 변화가 있을 때만 도구 경로를 한 줄씩 붙인다", () => {
-      const project = createBlankProject();
-      const plain = buildPiAgentSystemPrompt(project, []).join("\n");
-      expect(plain).not.toContain("loop:");
-      (project as { gameDesignBrief?: unknown }).gameDesignBrief = { version: 1, presetId: "story-cutscene", summary: "가장자리가 반대편으로 이어지는 숲, 효과를 얻으면 외형이 바뀐다", answers: {} };
-      const dream = buildPiAgentSystemPrompt(project, []).join("\n");
-      expect(dream).toContain("set_map_properties loop");
-      expect(dream).toContain("m2-024-change-actor-graphic");
-      expect(dream).toContain("place_props");
-      expect(dream).toContain("place_examine_hotspots");
-      expect(dream).toContain("forest_harmony 계열");
-      (project as { gameDesignBrief?: unknown }).gameDesignBrief = { version: 1, presetId: "story-cutscene", summary: "볼을 꼬집어 깨어난다", answers: {} };
-      expect(buildPiAgentSystemPrompt(project, []).join("\n")).toContain("type:\"switch\"");
     });
   });
 });

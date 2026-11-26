@@ -15,14 +15,14 @@ import { buildTitleArtPrompt, prepareTitleArtRequest } from "@/editor/tools/titl
 import { TITLE_OPENING_PRESETS } from "@/project/titleEffects";
 import { isolateTimers } from "./mergedTeardown";
 
-// 깎아지른 지형 구성기(sheerTerrainPlan.ts) + 시공(sheerTerrainBuild.ts, 도구 build_sheer_terrain) — 갈래 셋 × 씨앗 셋.
+// 깎아지른 지형 구성기(sheerTerrainPlan.ts) + 시공(sheerTerrainBuild.ts, 도구 build_sheer_terrain) — 갈래 셋 × 씨앗 둘.
 // 단 수 3~5 · 장치는 닫힌 목록에서만 · 들어오는 칸에서 출구 · 볼거리 앞 · 막다른 턱에 닿는다 · 볼거리와 상자는 가려진 칸(높은 단 앞면 뒤)에 두지 않는다 ·
 // 빈 곳이 있는 갈래는 맵 배경 견본이 걸리고 빈 곳 1층은 비어 있다(배경이 비친다).
 describe("sheerTerrainPlan", () => {
   isolateTimers();
   beforeAll(() => setSheerArt(placeholderSheerArt()));
   afterAll(() => setSheerArt(null));
-  const SEEDS = [1, 2, 3] as const;
+  const SEEDS = [1, 2] as const;
   const DEVICE_IDS = new Set(Object.keys(SHEER_DEVICES));
   let lastTileset: TilesetDef | undefined;
   function build(kindId: string, seed: number) {

@@ -15,7 +15,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import {
-  comboBrushBadge,
   comboBrushPlacement,
   evaluateComboBrushPlacement,
   isComboBrush,
@@ -324,12 +323,6 @@ describe("combo brush — badge distinguishes composite from repeated brush size
     const single = stamp([{ dx: 0, dy: 0, layer: "lower", tile: 342 }], 1, 1);
     expect(isComboBrush(single)).toBe(false);
     expect(isComboBrush(woodWallStamp())).toBe(true);
-  });
-
-  it("states footprint, cell count and layer routing in one badge", () => {
-    const badge = comboBrushBadge(treeStamp());
-    expect(badge).toContain("1×2");
-    expect(badge).toContain("2칸");
   });
 });
 

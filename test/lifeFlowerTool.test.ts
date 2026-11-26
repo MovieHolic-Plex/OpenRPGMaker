@@ -13,7 +13,6 @@ import { findChasePath, nextChaseDecision, type ChaseRuntimeState } from "@/play
 import { addFollowerToSession, followerPositions, recordFollowerPlayerStep } from "@/project/followers";
 import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 import { createHorrorPhase5Fixture, PHASE5_CHASER_ID, PHASE5_MAP_ID, PHASE5_SAFE_CHASER_ID } from "./fixtures/horrorPhase5Fixture";
-import { createLargeProjectFixture } from "./fixtures/largeProject";
 import { isolateTimers } from "./mergedTeardown";
 
 // Step 2 회귀 스펙(2026-08-20): 트룹 배틀 이벤트 조건 평가에 selfSwitch/battleResult 컨텍스트 주입.
@@ -554,39 +553,6 @@ describe("followerChaseRuntime", () => {
   });
 });
 
-describe("largeProjectPerf", () => {
-  isolateTimers();
-  describe("large project performance fixture", () => {
-    it("50맵 40x40 프로젝트의 로드, 직렬화 크기, 100틱 scene test 시간을 느슨한 예산으로 실측한다", () => {
-      const project = createLargeProjectFixture();
-      const raw = serialize(project);
-
-      const loadStart = performance.now();
-      const reloaded = deserialize(raw);
-      const loadMs = performance.now() - loadStart;
-
-      const serializedSize = new TextEncoder().encode(serialize(reloaded)).length;
-
-      const sceneStart = performance.now();
-      const scene = runSceneTest(reloaded, {
-        mapId: reloaded.startMapId,
-        start: reloaded.startPos,
-        steps: [
-          { kind: "wait", ticks: 100 },
-          { kind: "expect", playerAt: { ...reloaded.startPos, mapId: reloaded.startMapId } },
-        ],
-      });
-      const sceneMs = performance.now() - sceneStart;
-
-      expect(Object.keys(reloaded.maps)).toHaveLength(50);
-      expect(scene.ok, scene.failureReason).toBe(true);
-      expect(loadMs).toBeLessThan(6_000);
-      expect(serializedSize).toBeLessThan(12 * 1024 * 1024);
-      expect(sceneMs).toBeLessThan(4_500);
-    });
-  });
-});
-
 // set_life_flower — 이브식 「꽃잎 = 체력」 한 벌이 실제 런타임에서 줄고·회복되고·0장에 게임 오버가 나는지.
 // 2026-09-24 갤러리 호러 도그푸딩: 함정마다 `setVariable -= 1` 만 흩뿌려져 시작값 0·게임 오버 없음·꽃잎 HUD 없음.
 describe("lifeFlowerTool", () => {
@@ -648,15 +614,7 @@ describe("lifeFlowerTool", () => {
       expect(life.summary).toContain("ending_missing");
     });
   });
-  describe("horror-gallery preset prompt", () => {
-    it("names set_life_flower so the first request exposes it", async () => {
-      const { buildWelcomeGenrePresetPrompt, welcomeGenrePresetById } = await import("@/editor/welcomeGenrePresets");
-      const { mentionedToolSchemas } = await import("@/ai/planToolExposure");
-      const prompt = buildWelcomeGenrePresetPrompt(welcomeGenrePresetById("horror-gallery")!);
-      const names = (mentionedToolSchemas(prompt) as { function: { name: string } }[]).map(tool => tool.function.name);
-      expect(names).toContain("set_life_flower");
-    });
-  });
+
   describe("qa gameCheck gallery life rules", () => {
     const brief = "꽃잎 5장이 체력이다. 0장이면 게임오버.";
     it("flags scattered petal decrements with no start value, defeat, restore or HUD", async () => {

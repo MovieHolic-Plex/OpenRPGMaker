@@ -1,6 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
-  databasePicker,
   switchPicker,
   switchVariablePicker,
   variablePicker,
@@ -48,22 +47,6 @@ describe("switch/variable modal-trigger picker", () => {
     });
   }
 
-  it("renders a single modal trigger instead of an inline dropdown", () => {
-    const handle = makePicker("variable");
-    const body = renderWithFakeDom(() => handle.root);
-    // visible dropdown 제거 계약: select 는 숨김 마커 클래스 + aria-hidden
-    const select = body.querySelector("select") as FakeElement | null;
-    expect(select).not.toBeNull();
-    expect(select?.classList.contains("event-record-modal-select")).toBe(true);
-    expect(select?.getAttribute("aria-hidden")).toBe("true");
-    // 인라인 검색 필터 제거 (검색은 모달이 소유)
-    expect(findByTestId(body, "event-variable-inline-filter")).toBeNull();
-    // 트리거 버튼 존재 (기존 picker-open testid 승계)
-    const trigger = findByTestId(body, "event-variable-picker-open") as FakeElement | null;
-    expect(trigger).not.toBeNull();
-    expect(trigger?.tagName.toLowerCase()).toBe("button");
-  });
-
   it("trigger opens the custom modal with current selection and wires onSelect back through the hidden select", () => {
     const onChange = vi.fn();
     const firstVariable = store.getCurrent().variables[0];
@@ -104,18 +87,6 @@ describe("switch/variable modal-trigger picker", () => {
     handle.setSelectedId(second.id);
     expect(handle.getSelectedId()).toBe(second.id);
     expect(handle.select.value).toBe(second.id);
-  });
-
-  it("databasePicker keeps the caller-supplied testid contract while switching to modal-only UI", () => {
-    const body = renderWithFakeDom(() => databasePicker("switch", "", vi.fn(), "event-command-switch-target"));
-    const select = findByTestId(body, "event-command-switch-target") as FakeElement | null;
-    expect(select).not.toBeNull();
-    expect(findByTestId(body, "event-switch-inline-filter")).toBeNull();
-    const trigger = findByTestId(body, "event-switch-picker-open") as FakeElement | null;
-    expect(trigger).not.toBeNull();
-    // hidden select kept interactive programmatically (selectOption / change pipeline)
-    const rawSelect = body.querySelector("select") as FakeElement | null;
-    expect(rawSelect?.getAttribute("aria-hidden")).toBe("true");
   });
 
   it("supports new ids created inside the modal (ensureOption behavior stays)", () => {

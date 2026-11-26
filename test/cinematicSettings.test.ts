@@ -121,7 +121,8 @@ describe.each(["opening", "gameOver"] as const)("%s strict wire validation", (ta
     return { startActorIds: [], [target]: target === "opening" ? value : { sequence: value } };
   }
 
-  it.each(malformedScenes)("rejects malformed scene: %s before normalization", (_label, scene) => {
+  // Both targets share one scene validator: the full table runs for opening, gameOver only proves the wiring.
+  it.each(target === "opening" ? malformedScenes : malformedScenes.slice(0, 2))("rejects malformed scene: %s before normalization", (_label, scene) => {
     const system = systemWithSequence({ enabled: false, skippable: true, scenes: [scene] });
     expect(() => validateSystem(system)).toThrow(ProjectFormatError);
     expect(() => deserialize(JSON.stringify({ ...createBlankProject(), system }))).toThrow(ProjectFormatError);

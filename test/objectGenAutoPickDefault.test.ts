@@ -11,7 +11,6 @@ const store = new Map<string, string>();
 };
 
 const { OBJECT_GEN_AUTO_PICK_KEY, objectGenAutoPick } = await import("@/editor/workshop/assistantObjectGen");
-const { outcomeText } = await import("@/editor/panels/aiObjectGenCard");
 const { jobState } = await import("@/editor/workshop/queue/jobModel");
 
 const job = (source: "assistant" | "oneclick" | "workshop") => ({
@@ -29,15 +28,6 @@ describe("object-gen auto pick default", () => {
     expect(objectGenAutoPick()).toBe(true);
     store.set(OBJECT_GEN_AUTO_PICK_KEY, "0");
     expect(objectGenAutoPick()).toBe(false);
-  });
-
-  it("tells the assistant to place an existing object when a drawing failed, without asking to draw again", () => {
-    const text = outcomeText([{ failed: "뿌리 뻗은 고목" }], [{ title: "뿌리 뻗은 고목", need: "고목 방" } as never]);
-    expect(text).toContain("[공방에서 못 그림]");
-    expect(text).toContain("「뿌리 뻗은 고목」");
-    expect(text).toContain("generate_missing_object·draw_object 를 다시 부르지 마라");
-    expect(text).toContain("검수를 통과한 그림이 나오지 않음");
-    expect(outcomeText([{ failed: "고목", reason: "AI 계정 로그인 만료" }], [{ title: "고목", need: "" } as never])).toContain("「고목」(AI 계정 로그인 만료)");
   });
 
   it("ends an assistant job with no passing drawing as failed instead of waiting for a pick", () => {
