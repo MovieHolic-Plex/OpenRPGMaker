@@ -995,6 +995,15 @@ describe("databaseModalFooter", () => {
       expect(applyButton?.textContent).toBe("지금 저장");
     });
 
+    // 「지금 저장」은 자동 저장과 같은 일이라 평소에는 숨고, 저장이 실패하면 다시 보인다(btn-trim-r2).
+    it("hides 「지금 저장」 and the empty footer while auto-save works", () => {
+      openDatabaseModal("actors");
+      const applyButton = document.querySelector<HTMLElement>(`[data-testid='${DATABASE_FOOTER_ACTION_TEST_IDS.apply}']`);
+      const footer = document.querySelector<HTMLElement>(".database-modal-footer");
+      expect(applyButton?.hidden).toBe(true);
+      expect(footer?.hidden).toBe(true);
+    });
+
     it("closes and keeps store edits from the header X", () => {
       openDatabaseModal("actors");
       const actorId = store.getCurrent().database.actors[0]?.id ?? "";

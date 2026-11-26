@@ -215,8 +215,9 @@ export async function closeAndReopenDatabase(page: Page): Promise<void> {
 
 export async function applyDatabaseChanges(page: Page): Promise<void> {
   await expect(page.getByTestId("database-modal")).toBeVisible();
-  await expect(page.getByTestId("database-footer-apply")).toBeVisible();
-  await page.getByTestId("database-footer-apply").click();
+  // 「지금 저장」은 저장 실패·설정집 초안 때만 보인다(btn-trim-r2) — 평소에는 숨은 단추로 즉시 확정한다.
+  await expect(page.getByTestId("database-footer-apply")).toBeAttached();
+  await page.getByTestId("database-footer-apply").evaluate((button: HTMLElement) => button.click());
   await expect(page.getByTestId("db-footer-status")).toContainText("적용했습니다");
 }
 

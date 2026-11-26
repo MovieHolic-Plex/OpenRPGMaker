@@ -13,7 +13,8 @@ test("RM2K3 database modal exposes footer status without duplicate workbench tex
   await expect(page.getByTestId("db-workbench-status")).toHaveCount(0);
   await expect(page.getByTestId("db-footer-status")).toContainText("선택");
   await expect(page.getByTestId("database-modal-close")).toBeVisible();
-  await expect(page.getByTestId("database-footer-apply")).toBeVisible();
+  // 평소에는 자동 저장이라 「지금 저장」은 숨는다 — 실패·설정집 초안 때만 보인다(btn-trim-r2).
+  await expect(page.getByTestId("database-footer-apply")).toBeHidden();
 });
 test("BM88 Classes tab exposes Korean ontology fields and persists class settings", async ({ page }, testInfo) => {
   test.setTimeout(60_000);
