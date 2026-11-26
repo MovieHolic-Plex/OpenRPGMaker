@@ -1101,7 +1101,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     return Array.from(commandHost.querySelectorAll<HTMLButtonElement>("button.battle-command:not(:disabled)"));
   }
 
-  function markMenuCursor(snapshot: BattleSnapshot, preferredTestId?: string): HTMLButtonElement | undefined {
+  /** `rebuilt` 는 패널을 방금 새로 그렸을 때만 true — 같은 패널을 다시 표시할 뿐이면 방향키로 선 「뒤로」 커서를 지우지 않는다. */
+  function markMenuCursor(snapshot: BattleSnapshot, preferredTestId?: string, rebuilt = false): HTMLButtonElement | undefined {
     const buttons = enabledMenuButtons();
     for (const node of root.querySelectorAll<HTMLElement>("[data-battle-command-cursor]")) {
       node.removeAttribute("data-battle-command-cursor");
@@ -1122,7 +1123,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 기억한 커서가 「뒤로」 역할 행(data-command-icon=back: 목록 뒤로·대상 취소)이면 복원하지 않는다 —
     // 다시 열 때마다 커서가 뒤로에 서서 확인키가 「닫히지 않는 목록」처럼 보였다(fs2 N01, ultrabrain #4216 후속).
     const remembered = buttons.find((button) => button.dataset.testid === savedId);
-    const restorable = remembered && (preferredTestId !== undefined || remembered.dataset.commandIcon !== "back") ? remembered : undefined;
+    // 새로 그린 패널에서만 「뒤로」를 복원하지 않는다. 같은 패널의 재표시(매 프레임 syncView)까지 막으면 ↑ 로 「뒤로」에 선 커서가
+    // 곧바로 첫 행으로 튕겨, 목록 맨 위에서 ↑ 가 먹지 않거나 한 번 더 누르면 맨 아래로 감겼다(2026-11-26 battle-skill-nav).
+    const restorable = remembered && (preferredTestId !== undefined || !rebuilt || remembered.dataset.commandIcon !== "back") ? remembered : undefined;
     // 메뉴를 처음 열 때는 **쓸 수 있는** 첫 행에 선다. 비활성 행에도 커서가 설 수 있다는
     // 계약(aria-disabled 경로)은 그대로다 — 화살표로 가서 사유를 읽을 수 있다. 다만 기본
     // 자리로 삼지는 않는다: gen1 전투는 「공격」이 영구 비활성인데(“사용 가능한 기술이 있어
@@ -1610,7 +1613,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       syncEnemyTargetCursor(snapshot);
       return;
     }
-    const selected = markMenuCursor(snapshot);
+    const selected = markMenuCursor(snapshot, undefined, true);
     // 시퀀스(인트로·액션 비트)가 도는 동안 명령 패널은 숨어 있다. 여기서 focus() 하면 숨은 버튼에 포커스를 주려고
     // 동기 레이아웃만 강제된다(첫 전투 진입 focus 64ms 실측). 명령 국면이 되면 syncView 가 커서 버튼에 포커스를 준다.
     if (selected && !sequenceBusy && document.activeElement !== selected) selected.focus({ preventScroll: true });

@@ -322,6 +322,24 @@ describe("playerSuite", () => {
         controller.destroy();
       });
 
+      it("keeps the cursor on the back row after ArrowUp from the first row while the panel re-syncs", () => {
+        // battle-skill-nav: 목록 맨 위에서 ↑ 로 「뒤로」에 서도, 매 틱 같은 패널을 다시 표시하는 markMenuCursor 가
+        // 「뒤로」를 복원하지 않아 커서가 첫 행으로 튕겼다 — ↑ 가 먹지 않거나, 한 번 더 누르면 맨 아래로 감겼다.
+        vi.useFakeTimers();
+        const { runtime, controller } = setup();
+        untilActorCommand(runtime);
+        vi.advanceTimersByTime(250);
+        const cursor = () => controller.root.querySelector<HTMLElement>("[data-battle-command-cursor='true']")?.dataset.testid;
+
+        controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-item']")?.click();
+        expect(cursor()).toMatch(/^actor-item-/);
+        pressKey("ArrowUp");
+        expect(cursor()).toBe("actor-command-back");
+        vi.advanceTimersByTime(1_000);
+        expect(cursor()).toBe("actor-command-back");
+        controller.destroy();
+      });
+
       it("does not reopen an ally target menu on the cancel row after cancelling from it", () => {
         // ultrabrain #4216 후속: 「뒤로」 역할(data-command-icon=back)은 목록 뒤로와 대상 취소 모두 복원하지 않는다.
         vi.useFakeTimers();
