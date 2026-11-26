@@ -29,6 +29,12 @@ describe("left column", () => {
     workspace.root.remove();
   });
 
+  it("진행·기물 단추와 Ctrl K 글자는 DOM 에만 남고 화면에서 걷힌다", () => {
+    mount();
+    // 버튼 줄이기 2회차: 입구는 프로젝트 메뉴(menu-more-progress·menu-more-props)와 단축키다.
+    for (const hidden of ["sidebar-progress", "sidebar-props", "left-column-command-palette"]) expect(find(hidden)?.hidden, hidden).toBe(true);
+  });
+
   it("filters the map tree from the top search box", () => {
     const project = createBlankProject();
     store.replace(project);

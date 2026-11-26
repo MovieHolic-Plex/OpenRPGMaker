@@ -11,7 +11,9 @@ test("the object palette opens catalog groups and searches them from one input",
   });
   await page.goto("/?freshProject=1&blankProject=1&lang=ko", { waitUntil: "domcontentloaded" });
   await expect(page.getByTestId("edit-canvas")).toBeVisible({ timeout: 90_000 });
-  await page.getByTestId("sidebar-props").click();
+  // 「기물」 서랍 입구는 프로젝트 메뉴 안이다(버튼 줄이기 2회차).
+  await page.getByTestId("menu-project").click();
+  await page.getByTestId("menu-more-props").click();
 
   const palette = page.getByTestId("left-props-pane");
   const groups = palette.locator("details[data-prop-group]");

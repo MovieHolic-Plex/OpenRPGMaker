@@ -93,6 +93,8 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
     dataset: { testid: "left-column-command-palette" },
     on: { click: () => window.dispatchEvent(new Event(COMMAND_PALETTE_OPEN_EVENT)) },
   });
+  // 버튼 줄이기 2회차: 「Ctrl K」 글자 단추는 걷는다 — 단축키 자체가 입구다. DOM·testid 는 남긴다.
+  shortcut.hidden = true;
   const badge = el("span", { class: "left-column-inspect-count", dataset: { testid: "sidebar-inspect-badge" } });
   const inspectChip = el("button", {
     class: "left-column-inspect",
@@ -140,6 +142,9 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
     on: { click: () => (drawer === id ? closeDrawer() : openDrawer(id)) },
   }) as HTMLButtonElement;
   const links = { progress: link("progress", "flag", "진행"), props: link("props", "box", "기물") };
+  // 버튼 줄이기 2회차: 「진행」·「기물」 서랍 입구는 톱바 프로젝트 메뉴로 옮겼다(openLeftDrawer). 단추는 DOM 에만 남긴다.
+  links.progress.hidden = true;
+  links.props.hidden = true;
   const collapseButton = el("button", {
     class: "left-column-collapse",
     attrs: { type: "button", "aria-label": "왼쪽 열", title: "왼쪽 열 접기" },

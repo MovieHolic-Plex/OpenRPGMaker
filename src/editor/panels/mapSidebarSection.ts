@@ -21,6 +21,9 @@ export function createMapSidebarSection(search: HTMLInputElement | null = null):
     renderMapList(list, { externalFilter: search !== null });
     // 맵 보이기(revealMapInDock)는 필터를 지운다 — 검색칸 글자도 그 상태를 따라간다.
     if (search && document.activeElement !== search && search.value !== getMapFilterQuery()) search.value = getMapFilterQuery();
+    // 맵이 하나뿐이면 거를 것이 없다 — 검색칸을 걷는다(버튼 줄이기 2회차). 글자가 남아 있으면 지울 수 있게 둔다.
+    const searchBox = search?.parentElement;
+    if (searchBox) searchBox.hidden = Object.keys(store.getCurrent().maps).length <= 1 && !search.value;
   }
   const unsubscribeEditor = editorState.subscribe(() => {
     const next = editorState.get().currentMapId;

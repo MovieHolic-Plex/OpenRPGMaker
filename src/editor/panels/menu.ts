@@ -1,6 +1,7 @@
 import { editorState } from "@/editor/editorState";
 import { renderHostConnectionIndicator } from "@/editor/teamSession";
 import { makeLeftLayerSwitcher, paintLayerSwitcher, selectSidebarLayer } from "./leftLayerSwitcher";
+import { openLeftDrawer } from "./leftColumnDrawer";
 import { isTextEditingElement } from "@/editor/hotkeys";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { captureFocus, restoreFocus } from "./sidebarFocus";
@@ -1035,6 +1036,9 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
         // 톱바에서 내린 창 입구(버튼 줄이기 2회차). 자료집은 톱바에도 있지만 좁은 폭(넘침 맞춤 4단계)에서는 톱바 단추를 걷는다.
         item(headerLabel("database"), "menu-more-database", () => openDatabaseModalLazy(), "database"),
         item(headerLabel("resourceLibrary"), "menu-more-resources", () => openResourceModal(), "image"),
+        // 왼쪽 열의 「진행」·「기물」 서랍 입구(버튼 줄이기 2회차) — 왼쪽 열 아래 단추를 걷고 이 메뉴가 같은 서랍을 연다.
+        item("진행", "menu-more-progress", () => openLeftDrawer("progress")),
+        item("기물", "menu-more-props", () => openLeftDrawer("props")),
         // 좁은 폭(넘침 맞춤 4단계)에서는 톱바의 「상위」 칸을 걷는다 — Shift+2·⌘K 와 이 항목이 같은 일을 한다.
         ...(topbar.querySelector<HTMLElement>(".studio-bar")?.dataset.fitLevel === "4"
           ? [item("상위 레이어 (Shift+2)", "menu-more-layer-upper", () => selectSidebarLayer("upper"))]
