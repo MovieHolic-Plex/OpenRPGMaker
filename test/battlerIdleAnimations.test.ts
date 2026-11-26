@@ -1,0 +1,558 @@
+// @vitest-environment happy-dom
+
+import { describe, expect, it, afterEach, beforeAll, vi } from "vitest";
+import { readFileSync } from "node:fs";
+import path from "node:path";
+import { PNG } from "pngjs";
+import { BATTLER_IDLE_ANIMATIONS, battlerIdleAnimation, battlerIdleAnimationUrl } from "@/assets/battlerIdleAnimations";
+import { POSE_FRAME } from "@/battle/battlePose";
+import { createBattleRuntime, type BattleSnapshot } from "@/battle/runtime";
+import { applyBattlerPoseForTest, battleField } from "@/player/battleFieldDom";
+import { createBlankProject } from "@/project/defaults";
+import { store } from "@/project/store";
+import { listBundledPlayAssetPaths, resetBundledPlayAssetWarmup, warmBundledPlayAssets } from "@/assets/bundledAssetWarmup";
+import type Phaser from "phaser";
+import type { TilesetDef } from "@/project/types";
+import { loadBundledAssets, TEX_TILESET } from "@/assets/bundled";
+import { registerUploadedTilesets, uploadedTilesetTextureKey } from "@/assets/uploadedTilesets";
+import { ensureTilesetTexture, tilesetAnimationKeyForTile, tilesetTextureKey } from "@/editor/tilesetImage";
+import { isolateTimers } from "./mergedTeardown";
+import { BATTLER_HIRES_SHEETS, battlerHiresSheet, battlerHiresSheetUrl, battlerSheetAssetScale } from "@/assets/battlerHiresSheets";
+import { deserialize } from "@/project/io";
+import { xbr2x } from "../scripts/lib/pixelUpscale.mjs";
+import battleFixture from "./fixtures/projects/battle-v3.json";
+
+describe("assetsSuite", () => {
+  isolateTimers();
+  describe("battlerIdleAnimation", () => {
+    isolateTimers();
+    // 이 테스트가 지키는 것 — 배틀러 idle 애니메이션 계약 4가지.
+    //
+    //  1. **카탈로그가 정본이다.** 등록된 항목의 PNG 는 실제로 있고 프레임 수 × 셀 = 실측 폭이어야 한다.
+    //     그림과 선언이 어긋나면 런타임이 존재하지 않는 칸을 샘플링하는 조용한 회귀가 된다
+    //     (`generatedEffectSheets` 가 같은 이유로 카탈로그 단일 정본을 못 박아 뒀다).
+    //  2. **`<img>` 배틀러는 여전히 `<img>` 다.** 애니메이션은 배경으로 얹고 내용 이미지만 상자 밖으로
+    //     밀어낸다. 엘리먼트 종류를 바꾸면 12종 스킨의 width/height 규칙·rect 프로브·`naturalWidth`
+    //     대기(scripts/capture-*.mts)·`src` 계약(test/battleEnemyGraphicFidelity.test.ts)이 전부
+    //     동시에 깨진다. 그래서 `src` 는 **정적 원본 그대로**여야 한다 — 애니메이션 CSS 가 없는
+    //     환경에서 그 정적 그림이 그대로 폴백이다.
+    //  3. **POSE_FRAME 이 이긴다.** idle 이 아닌 포즈에서는 애니메이션을 끄고 정적 시트의 포즈 칸으로
+    //     즉시 돌아가야 한다. 포즈 산식(`test/battlerPoseFrame.test.ts`)은 한 글자도 바뀌지 않는다.
+    //  4. **감속 모드에서 멈춘다.** CSS 에 `prefers-reduced-motion: reduce` 분기가 있어야 한다.
+    const ROOT = path.resolve(__dirname, "..");
+    const BATTLERS_CSS = path.join(ROOT, "src/styles/runtime/battle-skins/_battlers.css");
+    /** PNG IHDR 에서 크기를 읽는다 — 테스트에 이미지 라이브러리를 끌어오지 않기 위해서다. */
+    function pngSize(relativePath: string): { width: number; height: number } {
+      const bytes = readFileSync(path.join(ROOT, "public", relativePath));
+      if (bytes.readUInt32BE(12) !== 0x49484452) throw new Error(`IHDR 가 없다: ${relativePath}`);
+      return { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) };
+    }
+    /** 셀 하나의 알파 잉크 박스. 빈 칸(전부 투명)이면 null. */
+    function cellInkBox(
+      png: PNG,
+      cellIndex: number,
+      cellWidth: number
+    ): { x: number; y: number; w: number; h: number } | null {
+      let minX = cellWidth;
+      let minY = png.height;
+      let maxX = -1;
+      let maxY = -1;
+      for (let y = 0; y < png.height; y += 1) {
+        for (let x = 0; x < cellWidth; x += 1) {
+          const alpha = png.data[(y * png.width + cellIndex * cellWidth + x) * 4 + 3];
+          if (alpha > 8) {
+            if (x < minX) minX = x;
+            if (y < minY) minY = y;
+            if (x > maxX) maxX = x;
+            if (y > maxY) maxY = y;
+          }
+        }
+      }
+      if (maxX < 0) return null;
+      return { x: minX, y: minY, w: maxX - minX + 1, h: maxY - minY + 1 };
+    }
+    function readPng(relativePath: string): PNG {
+      return PNG.sync.read(readFileSync(path.join(ROOT, "public", relativePath)));
+    }
+    function fieldFor(troopId: string): HTMLElement {
+      const project = createBlankProject();
+      store.replace(project);
+      const runtime = createBattleRuntime({ project, troopId, canEscape: true, canLose: false, rng: () => 0 });
+      return battleField(runtime.snapshot());
+    }
+    describe("배틀러 idle 애니메이션 — 카탈로그", () => {
+      it("등록된 모든 스트립이 존재하고 선언한 프레임 수와 실측 폭이 일치한다", () => {
+        expect(BATTLER_IDLE_ANIMATIONS.length).toBeGreaterThan(0);
+        for (const entry of BATTLER_IDLE_ANIMATIONS) {
+          const size = pngSize(entry.path);
+          expect(entry.frameCount, `${entry.resourceId}: 프레임이 2장 미만이면 애니메이션이 아니다`).toBeGreaterThan(1);
+          expect(size.width, `${entry.resourceId}: 폭 = 프레임 수 × 셀`).toBe(entry.frameCount * entry.cellWidth);
+          expect(size.height, `${entry.resourceId}: 높이 = 셀 높이`).toBe(entry.cellHeight);
+          expect(entry.frameDurationMs).toBeGreaterThan(0);
+        }
+      });
+
+      it("모든 칸에 그림이 있고, 칸마다 실루엣이 실제로 움직인다", () => {
+        for (const entry of BATTLER_IDLE_ANIMATIONS) {
+          const png = readPng(entry.path);
+          const boxes = Array.from({ length: entry.frameCount }, (_, index) =>
+            cellInkBox(png, index, entry.cellWidth)
+          );
+          boxes.forEach((box, index) => {
+            // 빈 칸은 재생 중 배틀러가 한 프레임 사라지는 것으로 보인다 — 폭 단언만으로는 안 잡힌다.
+            expect(box, `${entry.resourceId}: 칸 ${index} 가 비어 있다`).not.toBeNull();
+          });
+          // 인접 칸의 **픽셀 내용**을 비교한다. 실루엣 박스만 보면 피사체가 셀을 꽉 채우는 티어
+          // (후면 배틀러)에서 숨을 쉬어도 박스가 같아서 정지 화면 8장을 통과시킨다(실측).
+          const changeRatios: number[] = [];
+          for (let index = 1; index < entry.frameCount; index += 1) {
+            let changed = 0;
+            let counted = 0;
+            for (let y = 0; y < entry.cellHeight; y += 2) {
+              for (let x = 0; x < entry.cellWidth; x += 2) {
+                const a = (y * png.width + (index - 1) * entry.cellWidth + x) * 4;
+                const b = (y * png.width + index * entry.cellWidth + x) * 4;
+                const delta =
+                  Math.abs(png.data[a] - png.data[b]) +
+                  Math.abs(png.data[a + 1] - png.data[b + 1]) +
+                  Math.abs(png.data[a + 2] - png.data[b + 2]) +
+                  Math.abs(png.data[a + 3] - png.data[b + 3]);
+                if (delta > 24) changed += 1;
+                counted += 1;
+              }
+            }
+            changeRatios.push(changed / counted);
+          }
+          expect(
+            Math.max(...changeRatios),
+            `${entry.resourceId}: 프레임 간 변화가 없다 = 같은 그림 ${entry.frameCount}장이다`
+          ).toBeGreaterThan(0.01);
+        }
+      });
+
+      it("폐기된 starter 전투 시트의 idle 스트립을 등록하지 않는다", () => {
+        expect(BATTLER_IDLE_ANIMATIONS.filter(entry => entry.tier === "sheet-cell")).toEqual([]);
+        for (let index = 1; index <= 6; index += 1) {
+          expect(battlerIdleAnimation(`generated-actor-hero-0${index}-battle`)).toBeUndefined();
+        }
+        expect(battlerIdleAnimation("hero")).toBeUndefined();
+      });
+
+      it("영상 티어의 피크 실루엣이 정적 원본과 같은 크기다", () => {
+        // 이 배율이 어긋나면 애니메이션이 켜진 몬스터만 화면에서 작아 보인다(실측으로 잡은 결함:
+        // 프레임 전집합 대신 한 프레임에 맞추면 박쥐가 원본의 절반이 된다).
+        // 개별 프레임은 모션이므로 좁을 수 있고, **피크**가 원본과 맞아야 한다.
+        for (const entry of BATTLER_IDLE_ANIMATIONS.filter((item) => item.tier === "image-strip")) {
+          const strip = readPng(entry.path);
+          const source = readPng(entry.path.replace("/idle/", "/"));
+          const sourceBox = cellInkBox(source, 0, source.width);
+          const peakWidth = Math.max(
+            ...Array.from({ length: entry.frameCount }, (_, index) => cellInkBox(strip, index, entry.cellWidth)?.w ?? 0)
+          );
+          expect(sourceBox).not.toBeNull();
+          expect(
+            peakWidth / entry.cellWidth,
+            `${entry.resourceId}: 피크 실루엣 폭이 원본과 다르다`
+          ).toBeCloseTo((sourceBox?.w ?? 0) / source.width, 1);
+        }
+      });
+
+      it("등록되지 않은 리소스 id 는 undefined 를 돌려준다 (정적 폴백)", () => {
+        expect(battlerIdleAnimation("generated-enemy-dragon-01")).toBeUndefined();
+        expect(battlerIdleAnimation(undefined)).toBeUndefined();
+        expect(battlerIdleAnimation("generated-enemy-slime-01")).toBeUndefined();
+      });
+
+      it("URL 은 public 기준 절대 경로다", () => {
+        const entry = battlerIdleAnimation("generated-actor-hero-01-back");
+        if (!entry) throw new Error("후면 액터 항목이 등록돼 있어야 한다");
+        expect(battlerIdleAnimationUrl(entry)).toBe(`/${entry.path}`);
+      });
+    });
+    describe("배틀러 idle 애니메이션 — 적 배틀러(<img> 유지)", () => {
+      it("필드 적은 정적 원본만 그린다 — idle 스트립을 붙이지 않는다", () => {
+        const field = fieldFor("troop_golem_guard");
+        const golem = field.querySelector<HTMLElement>('[data-record-id="enemy_stone_golem"] .battle-enemy-image');
+        expect(golem).toBeTruthy();
+        expect(golem?.tagName).toBe("IMG");
+        // 새 프로젝트 기본 돌 골렘은 현행 종 golem_stone 그림을 쓴다(#4984 currentMonsterStandIns).
+        expect((golem as HTMLImageElement).getAttribute("src")).toContain("pixel-enemy-portraits/golem-stone.png");
+        expect((golem as HTMLImageElement).getAttribute("src")).not.toContain("/idle/");
+        expect(golem?.dataset.battlerAnim).toBeUndefined();
+        expect(golem?.style.getPropertyValue("--battler-anim-url")).toBe("");
+      });
+
+      it("등록되지 않은 적은 애니메이션 속성이 붙지 않는다", () => {
+        const field = fieldFor("troop_dragon");
+        const dragon = field.querySelector<HTMLElement>('[data-record-id="enemy_dragon"] .battle-enemy-image');
+        expect(dragon).toBeTruthy();
+        expect(dragon?.tagName).toBe("IMG");
+        expect(dragon?.dataset.battlerAnim).toBeUndefined();
+        expect(dragon?.style.getPropertyValue("--battler-anim-frames")).toBe("");
+      });
+    });
+    describe("배틀러 idle 애니메이션 — 액터 전투 시트(48px 셀)", () => {
+      function actorSprite(resourceId = "generated-actor-hero-01-battle"): HTMLElement {
+        const sprite = document.createElement("span");
+        sprite.className = "battle-actor-sprite";
+        sprite.dataset.testid = `battle-actor-sprite-${resourceId}`;
+        // 런타임의 actorBattleImage 가 심는 것과 같은 집합을 심는다.
+        sprite.dataset.battlerResourceId = resourceId;
+        sprite.dataset.battlerSheetUrl = "/assets/custom/hero-01-battle.png";
+        sprite.dataset.battlerSheetSize = "288px 768px";
+        sprite.style.setProperty("--battle-sprite-frame-width", "96px");
+        sprite.style.setProperty("--battle-sprite-frame-height", "96px");
+        sprite.style.backgroundImage = 'url("/assets/custom/hero-01-battle.png")';
+        sprite.style.backgroundSize = "288px 768px";
+        sprite.style.backgroundPosition = "0 0";
+        const node = document.createElement("div");
+        node.append(sprite);
+        return node;
+      }
+
+      it("폐기된 ID를 직접 업로드한 시트는 idle에서 정적 칸을 쓴다", () => {
+        const node = actorSprite();
+        applyBattlerPoseForTest(node, "idle");
+        const sprite = node.querySelector<HTMLElement>(".battle-actor-sprite");
+        expect(sprite?.dataset.battlerAnim).toBeUndefined();
+        expect(sprite?.style.backgroundImage).toContain("custom/hero-01-battle.png");
+        expect(sprite?.style.backgroundPosition).toBe("0px 0px");
+        expect(sprite?.style.getPropertyValue("--battler-anim-frames")).toBe("");
+        expect(sprite?.style.backgroundSize).toBe("288px 768px");
+      });
+
+      it("idle 이 아닌 포즈는 애니메이션을 끄고 정적 시트의 POSE_FRAME 칸으로 돌아간다", () => {
+        const node = actorSprite();
+        applyBattlerPoseForTest(node, "idle");
+        applyBattlerPoseForTest(node, "attack");
+        const sprite = node.querySelector<HTMLElement>(".battle-actor-sprite");
+        expect(sprite?.dataset.battlerAnim).toBeUndefined();
+        expect(sprite?.style.backgroundImage).toContain("hero-01-battle.png");
+        expect(sprite?.style.backgroundImage).not.toContain("/idle/");
+        expect(sprite?.style.backgroundSize).toBe("288px 768px");
+        // (3) 포즈 산식은 그대로다 — attack = 열 1, 행 0.
+        expect(sprite?.style.backgroundPosition).toBe(`-${POSE_FRAME.attack.col * 96}px 0px`);
+      });
+
+      it("idle→attack→idle 왕복과 dead(행 1) 에서 배경 좌표가 오염되지 않는다", () => {
+        const node = actorSprite();
+        const sprite = node.querySelector<HTMLElement>(".battle-actor-sprite");
+        applyBattlerPoseForTest(node, "idle");
+        applyBattlerPoseForTest(node, "attack");
+        applyBattlerPoseForTest(node, "idle");
+        expect(sprite?.dataset.battlerAnim).toBeUndefined();
+        expect(sprite?.style.backgroundImage).toContain("custom/hero-01-battle.png");
+        expect(sprite?.style.backgroundSize).toBe("288px 768px");
+        // dead 는 행 1 을 쓴다 — 애니메이션이 남기고 간 세로 오프셋이 살아 있으면 칸이 어긋난다.
+        applyBattlerPoseForTest(node, "dead");
+        expect(sprite?.dataset.battlerAnim).toBeUndefined();
+        expect(sprite?.style.backgroundSize).toBe("288px 768px");
+        expect(sprite?.style.backgroundPosition).toBe(
+          `-${POSE_FRAME.dead.col * 96}px -${POSE_FRAME.dead.row * 96}px`
+        );
+      });
+
+      it("애니메이션이 등록되지 않은 시트는 idle 에서도 정적 칸을 쓴다", () => {
+        const node = actorSprite("generated-actor-hero-99-battle");
+        const sprite = node.querySelector<HTMLElement>(".battle-actor-sprite");
+        applyBattlerPoseForTest(node, "idle");
+        expect(sprite?.dataset.battlerAnim).toBeUndefined();
+        expect(sprite?.style.backgroundImage).toContain("hero-01-battle.png");
+        expect(sprite?.style.backgroundPosition).toBe("0px 0px");
+      });
+    });
+    describe("배틀러 idle 애니메이션 — CSS 계약", () => {
+      const css = readFileSync(BATTLERS_CSS, "utf8");
+
+      it("프레임 경계에 정확히 멈추는 스텝 함수를 쓴다", () => {
+        // jump-none 이어야 첫·끝 프레임을 모두 포함해 N 프레임에 N 번 멈춘다.
+        // 기본 steps(N) 은 첫 프레임을 건너뛴다.
+        expect(css).toContain("steps(var(--battler-anim-frames), jump-none)");
+        // 백분율은 (엘리먼트 폭 − 배경 폭)에 대해 계산되므로 0%→100% 가 첫→끝 프레임이다.
+        // `-100% × N` 으로 밀면 배틀러가 상자 밖으로 나간다(실측).
+        expect(css).toMatch(/background-position-x:\s*0%/);
+        expect(css).toMatch(/background-position-x:\s*100%/);
+      });
+
+      it("내용 이미지를 상자 밖으로 밀어 배경만 보이게 한다", () => {
+        // 선언만 본다 — 주석에 `object-fit: contain` 이 설명으로 나온다.
+        const declarations = css.replace(/\/\*[\s\S]*?\*\//g, "");
+        const rule = declarations.slice(declarations.indexOf(".battle-enemy-image[data-battler-anim]"));
+        const body = rule.slice(0, rule.indexOf("}"));
+        expect(body).toContain("object-position: -99999px -99999px");
+        // `object-fit` 을 여기서 바꾸려 들면 안 된다 — 스킨의 `contain` 규칙이 특정도로 이긴다.
+        // 숨김은 `object-position` 하나에만 의존한다는 것이 계약이다.
+        expect(body).not.toContain("object-fit");
+      });
+
+      it("칸의 종횡비를 지킨다 (상자 종횡비로 늘리지 않는다)", () => {
+        // 세로를 `100%` 로 묶으면 정사각 칸이 상자(적 56×64)에 맞춰 늘어나, 정적 경로의
+        // `object-fit: contain` 레터박스와 다른 그림이 된다.
+        expect(css).toContain("background-size: calc(100% * var(--battler-anim-frames)) auto");
+        expect(css).not.toContain("background-size: calc(100% * var(--battler-anim-frames)) 100%");
+      });
+
+      it("죽은 배틀러는 숨을 쉬지 않고, 원본 그림으로 눕는다", () => {
+        const declarations = css.replace(/\/\*[\s\S]*?\*\//g, "");
+        const dead = declarations.slice(declarations.indexOf(".battle-pose-dead .battle-enemy-image[data-battler-anim]"));
+        const body = dead.slice(0, dead.indexOf("}"));
+        expect(body).toMatch(/animation:\s*none/);
+        // 멈추기만 하면 영상 프레임 0(원본과 다른 순간)으로 굳는다.
+        expect(body).toContain("object-position: 50% 50%");
+        expect(body).toMatch(/background-image:\s*none/);
+      });
+
+      it("감속·고대비·인쇄에서 <img> 배틀러는 정적 src 로 되돌아간다", () => {
+        // 영상 티어의 프레임 0 은 원본과 다른 순간이라, 멈추는 것만으로는 이전 화면이 되지 않는다.
+        const query = css.slice(css.indexOf("@media (prefers-reduced-motion: reduce), (forced-colors: active), print"));
+        const block = query.slice(0, query.indexOf("\n}"));
+        expect(block).toContain(".battle-enemy-image[data-battler-anim]");
+        expect(block).toContain("object-position: 50% 50%");
+        expect(block).toMatch(/background-image:\s*none/);
+        expect(block).toMatch(/animation:\s*none/);
+      });
+
+      it("48px 시트 액터는 감속 모드에서 첫 칸에 멈춘다", () => {
+        // 이 티어의 프레임 0 은 원본 idle 칸과 픽셀 단위로 같다(위 계약).
+        const query = css.slice(css.lastIndexOf("@media (prefers-reduced-motion: reduce) {"));
+        expect(query).toContain(".battle-actor-sprite[data-battler-anim]");
+        expect(query).toContain("background-position-x: 0px");
+      });
+
+      it("감속 모드에서 애니메이션을 멈춘다", () => {
+        const reduced = css.slice(css.indexOf("prefers-reduced-motion"));
+        expect(reduced).toContain("data-battler-anim");
+        expect(reduced).toMatch(/animation:\s*none/);
+      });
+
+      it("!important 를 새로 늘리지 않는다 (CSS 예산 래칫)", () => {
+        // 주석 산문에도 `!important` 라는 단어가 나온다(기존 스킨 규칙을 설명하는 대목).
+        // 선언만 보려면 주석을 지우고 재야 한다.
+        const withoutComments = css.replace(/\/\*[\s\S]*?\*\//g, "");
+        const section = withoutComments.slice(withoutComments.indexOf("data-battler-anim"));
+        expect(section).not.toContain("!important");
+      });
+    });
+  });
+  describe("bundledAssetWarmup", () => {
+    isolateTimers();
+    describe("bundledAssetWarmup", () => {
+      let project: ReturnType<typeof createBlankProject>;
+
+      beforeAll(() => {
+        project = createBlankProject();
+      });
+
+      afterEach(() => {
+        resetBundledPlayAssetWarmup();
+      });
+
+      it("lists core chipset path and project-referenced textures only", () => {
+        const paths = listBundledPlayAssetPaths(project);
+        expect(paths).toContain("assets/blank-chipset.png");
+        expect(paths).toContain("assets/dialogue-frame.png");
+        // blank project still references default actor charset / tileset strings
+        expect(paths.length).toBeGreaterThan(2);
+        expect(paths.some(path => path.startsWith("assets/beodeul-objects/"))).toBe(false);
+      });
+
+      it("shares one in-flight warm promise per asset set", async () => {
+        const first = warmBundledPlayAssets(project);
+        const second = warmBundledPlayAssets(project);
+        expect(second).toBe(first);
+        // 테스트 환경 Image 로드는 타임아웃 폴백으로 끝난다.
+        await expect(first).resolves.toBeUndefined();
+      }, 5_000);
+    });
+  });
+  describe("uploadedTilesetRendering", () => {
+    isolateTimers();
+    function fixture() {
+      const project = createBlankProject();
+      const tileset: TilesetDef = {
+        id: 'reference', name: 'Reference field', kind: 'custom', image: { type: 'uploaded', id: 'field-atlas' },
+        tileSize: 16, tilesPerRow: 30, count: 540,
+        passability: Array.from({ length: 540 }, () => ({ up: true, down: true, left: true, right: true })),
+        priority: Array(540).fill('lower'), terrain: Array(540).fill(0),
+        animationStrips: [{ baseTile: 510, frames: 4, fps: 4 }],
+      };
+      project.tilesets[tileset.id] = tileset;
+      project.assets.uploaded['field-atlas'] = { id: 'field-atlas', name: 'Atlas', kind: 'tileset', dataUrl: 'data:image/png;base64,AA==', meta: { width: 480, height: 288 } };
+      return { project, tileset };
+    }
+    function textureScene(keys: string[]) {
+      const frames = new Map(keys.map(key => [key, new Map<string, number[]>()]));
+      const animations = new Map<string, { key: string; frameRate: number; frames: { key: string; frame: string }[] }>();
+      const scene = {
+        textures: {
+          exists: (key: string) => frames.has(key),
+          get: (key: string) => ({
+            getFrameNames: () => [...frames.get(key)!.keys()],
+            add: (name: string, ...rectangle: number[]) => frames.get(key)!.set(name, rectangle),
+          }),
+        },
+        anims: { exists: (key: string) => animations.has(key), create: (value: { key: string; frameRate: number; frames: { key: string; frame: string }[] }) => animations.set(value.key, value) },
+      } as unknown as Phaser.Scene;
+      return { scene, frames, animations };
+    }
+    describe('uploaded tilesets in Phaser editor and player', () => {
+      it('preloads the saved atlas under the exact key used to draw it, not the bundled exterior', () => {
+        const { project, tileset } = fixture();
+        const image = vi.fn();
+        loadBundledAssets({ load: { image, on: vi.fn() } }, project);
+        const key = tilesetTextureKey(tileset);
+        expect(key).not.toBe(TEX_TILESET);
+        expect(image).toHaveBeenCalledWith(key, project.assets.uploaded['field-atlas'].dataUrl);
+        const { scene } = textureScene([key, TEX_TILESET]);
+        expect(ensureTilesetTexture(scene, tileset)).toBe(key);
+      });
+
+      it('editor preload queues only the uploaded atlases a map uses; the player keeps every atlas for transfers', () => {
+        const { project, tileset } = fixture();
+        const unused: TilesetDef = { ...tileset, id: 'unused', image: { type: 'uploaded', id: 'unused-atlas' } };
+        project.tilesets[unused.id] = unused;
+        project.assets.uploaded['unused-atlas'] = { ...project.assets.uploaded['field-atlas']!, id: 'unused-atlas' };
+        project.maps[project.startMapId]!.tilesetId = tileset.id;
+        const queue = (options?: { onlyMapTilesets?: boolean }) => {
+          const keys: string[] = [];
+          loadBundledAssets({ load: { image: (key: string) => { keys.push(key); }, on: vi.fn() } as never }, project, options);
+          return keys;
+        };
+        const editor = queue({ onlyMapTilesets: true });
+        expect(editor).toContain(uploadedTilesetTextureKey(tileset));
+        expect(editor).not.toContain(uploadedTilesetTextureKey(unused));
+        expect(queue()).toContain(uploadedTilesetTextureKey(unused));
+      });
+
+      it('preserves the authored atlas geometry and registers tiles beyond the old 480-frame limit', () => {
+        const { project, tileset } = fixture();
+        const key = uploadedTilesetTextureKey(tileset);
+        const { scene, frames } = textureScene([key]);
+        registerUploadedTilesets(scene, project);
+        expect(frames.get(key)!.get('tile_510')).toEqual([0, 0, 272, 16, 16]);
+        expect(frames.get(key)!.get('tile_539')).toEqual([0, 464, 272, 16, 16]);
+        expect(frames.get(key)!.size).toBe(540);
+        registerUploadedTilesets(scene, project);
+        expect(frames.get(key)!.size).toBe(540);
+      });
+
+      it.each([32, 48])('keeps two uploaded images and a %ipx slicing independent', (size) => {
+        const { project, tileset } = fixture();
+        const other = { ...tileset, id: 'other', image: { type: 'uploaded' as const, id: 'other-image' } };
+        const large = { ...tileset, id: 'large', tileSize: size, tilesPerRow: 480 / size, count: (480 / size) * (288 / size), animationStrips: [] };
+        project.tilesets.other = other; project.tilesets.large = large;
+        const keys = [tileset, other, large].map(tilesetTextureKey);
+        expect(new Set(keys).size).toBe(3);
+        const { scene, frames } = textureScene(keys);
+        registerUploadedTilesets(scene, project);
+        expect(frames.get(keys[2])!.get('tile_16')).toEqual([0, (16 % large.tilesPerRow) * size, Math.floor(16 / large.tilesPerRow) * size, size, size]);
+        expect(frames.get(keys[0])!.get('tile_16')).toEqual([0, 256, 0, 16, 16]);
+      });
+
+      it('binds an authored waterfall strip to the same uploaded frames the renderer requests', () => {
+        const { project, tileset } = fixture();
+        const key = tilesetTextureKey(tileset);
+        const { scene, animations } = textureScene([key]);
+        registerUploadedTilesets(scene, project);
+        const requested = `${key}:${tilesetAnimationKeyForTile(tileset, 510)}`;
+        expect(animations.get(requested)).toMatchObject({ frameRate: 4, frames: [510, 511, 512, 513].map(tile => ({ key, frame: `tile_${tile}` })) });
+        expect(tilesetAnimationKeyForTile(tileset, 240)).toBeNull();
+        expect(tilesetAnimationKeyForTile(tileset, 513)).toBe(tilesetAnimationKeyForTile(tileset, 510));
+      });
+
+      it('does not silently draw the default atlas when uploaded bytes are missing', () => {
+        const { project, tileset } = fixture();
+        delete project.assets.uploaded['field-atlas'];
+        const image = vi.fn();
+        loadBundledAssets({ load: { image, on: vi.fn() } }, project);
+        expect(image.mock.calls.some(([key]) => key === tilesetTextureKey(tileset))).toBe(false);
+        const { scene } = textureScene([TEX_TILESET]);
+        expect(ensureTilesetTexture(scene, tileset)).not.toBe(TEX_TILESET);
+      });
+    });
+  });
+});
+
+// Starter companions are retired; the reusable upscale kernel remains independent.
+describe("battlerHiresSheets", () => {
+  isolateTimers();
+  describe("폐기된 starter 고해상도 짝", () => {
+    it("전투 시트와 idle 스트립을 등록하지 않는다", () => {
+      expect(BATTLER_HIRES_SHEETS).toEqual([]);
+      for (const id of ["hero", ...[1, 2, 3, 4, 5, 6].map(i => `generated-actor-hero-0${i}-battle`)]) {
+        expect(battlerHiresSheet(id)).toBeUndefined();
+        expect(battlerIdleAnimation(id)).toBeUndefined();
+      }
+      expect(battlerHiresSheet(undefined)).toBeUndefined();
+      expect(battlerSheetAssetScale(undefined)).toBe(2);
+    });
+
+    it("직접 등록한 짝의 URL과 논리 크기는 기존 계약을 유지한다", () => {
+      const entry = { resourceId: "uploaded-custom-battler", path: "assets/custom/hires.png", cellWidth: 192, cellHeight: 192 };
+      expect(battlerSheetAssetScale(entry)).toBe(0.5);
+      expect(battlerHiresSheetUrl(entry)).toBe("/assets/custom/hires.png");
+    });
+  });
+  describe("xBR 2배 커널", () => {
+    /** 8×8: 좌하 삼각형(x <= y)은 검정, 나머지 투명 — 대각 계단 경계. */
+    function staircase(): { width: number; height: number; data: Uint8Array } {
+      const size = 8;
+      const data = new Uint8Array(size * size * 4);
+      for (let y = 0; y < size; y += 1) {
+        for (let x = 0; x < size; x += 1) {
+          if (x <= y) data.set([0, 0, 0, 255], (y * size + x) * 4);
+        }
+      }
+      return { width: size, height: size, data };
+    }
+
+    it("대각 계단은 중간 알파로 이어지고, 경계에서 먼 안쪽·바깥은 그대로다", () => {
+      const image = staircase();
+      const up = xbr2x(image.width, image.height, image.data);
+      expect(up.width).toBe(16);
+      const alpha = (x: number, y: number) => up.data[(y * 16 + x) * 4 + 3]!;
+      let blended = 0;
+      for (let y = 0; y < 16; y += 1) for (let x = 0; x < 16; x += 1) if (alpha(x, y) > 0 && alpha(x, y) < 255) blended += 1;
+      expect(blended, "계단을 잇는 중간 알파 픽셀이 있어야 한다").toBeGreaterThan(0);
+      // 안쪽(좌하 깊숙이)은 완전 불투명, 바깥(우상 깊숙이)은 완전 투명.
+      expect(alpha(1, 14)).toBe(255);
+      expect(alpha(14, 1)).toBe(0);
+    });
+
+    it("단색 면은 가장자리까지 그대로다 — 이미지 밖을 투명으로 보지 않는다", () => {
+      const red = [200, 40, 40, 255];
+      const data = new Uint8Array([...red, ...red, ...red, ...red]);
+      const up = xbr2x(2, 2, data);
+      for (let i = 0; i < 16; i += 1) expect([...up.data.subarray(i * 4, i * 4 + 4)]).toEqual(red);
+    });
+  });
+  describe("런타임 — 필드의 액터 스프라이트", () => {
+    function renderField(battleCharacterResourceId: string): HTMLElement {
+      const project = deserialize(JSON.stringify(battleFixture));
+      (project.system as { battleUiStyle?: string }).battleUiStyle = "retro2003";
+      store.replace(project);
+      const runtime = createBattleRuntime({ project, troopId: "troop_slime", canEscape: true, canLose: true, rng: () => 0.5 });
+      const snapshot: BattleSnapshot = runtime.snapshot();
+      const actor = snapshot.actors[0];
+      expect(actor).toBeTruthy();
+      (actor as { battleCharacterResourceId?: string }).battleCharacterResourceId = battleCharacterResourceId;
+      return battleField(snapshot);
+    }
+
+    it("삭제된 영웅 시트는 starter URL을 그리지 않는다", () => {
+      const field = renderField("generated-actor-hero-03-battle");
+      expect(field.querySelector("[data-testid='battle-actor-sprite-generated-actor-hero-03-battle']")).toBeNull();
+      expect(field.innerHTML).not.toContain("generated/starter/");
+    });
+
+    it("현재 걷기 칩 전투 시트는 48px 셀을 정수 배율로 그린다", () => {
+      const field = renderField("charset-battler-actor1-0");
+      const sprite = field.querySelector<HTMLElement>("[data-testid='battle-actor-sprite-charset-battler-actor1-0']");
+      expect(sprite?.dataset.rendering).toBe("pixelated");
+      expect(sprite?.dataset.battlerSheetSize).toBe("288px 768px");
+      expect(sprite?.style.getPropertyValue("--battle-sprite-frame-width")).toBe("96px");
+      expect(sprite?.style.backgroundImage).toContain("charset-battlers/actor1-0.png");
+      expect(sprite?.style.backgroundImage).not.toContain("starter/");
+    });
+  });
+});
