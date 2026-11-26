@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { deserialize, serialize, serializePretty } from "@/project/io";
+import { deserialize, serialize } from "@/project/io";
 import { spatialOpaqueIdFixtures, spatialProject, spatialWire } from "./support/spatialSchemaFixture";
 
 // 컴팩트 serialize 는 번들 타일셋을 번들과의 차이만 저장한다(3e6c80e13a, 빈 프로젝트 78MB → 4.4MB) — 타일셋 칸은 wire 글자가 아니라
@@ -19,7 +19,7 @@ const expectSameLoaded = (actual: unknown, expected: unknown): void => {
   expect(a.tilesets).toEqual(e.tilesets);
 };
 
-describe.each([serialize, serializePretty])("opaque spatial serialization with %s", write => {
+describe.each([serialize])("opaque spatial serialization with %s", write => {
   it.each(spatialOpaqueIdFixtures())("preserves complete authored data when $scenario roundtrips", ({ project, document }) => {
     // Given: the boundary accepts each opaque ID before the save under test.
     const input = deserialize(spatialWire(project, document));

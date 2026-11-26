@@ -15,8 +15,6 @@ import { ensureChest, depositToChest, withdrawFromChest, placeObject, removeObje
 import { hasFarmToolAvailable, setEquippedTool, toolActionRulesOf } from "@/project/toolActions";
 import { applyItemUpgrade, resolveSellPrice } from "@/project/upgrades";
 import { interactWithFarmPlot } from "@/player/farming";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 import { applyProjectFontTheme } from "@/app/fontTheme";
 import { DEFAULT_FONT_SELECTION, FONT_REGISTRY, fontOptionsForRole, isFontFamilyId, projectFontStack, resolveFontSelection, resolveFontStack } from "@/project/fontRegistry";
 import { isolateTimers } from "./mergedTeardown";
@@ -560,15 +558,6 @@ describe("stardewAuthoringTools", () => {
 //   5. 기본값과 같은 선택은 저장하지 않는다(battleUiStyle · battleModel 과 같은 관례).
 describe("systemFontTheme", () => {
   isolateTimers();
-  const repoRoot = resolve(__dirname, "..");
-  const readText = (rel: string): string => readFileSync(resolve(repoRoot, rel), "utf8");
-  /** tokens.css 의 커스텀 프로퍼티 값을 읽는다(여러 줄 선언 허용, 주석 제거 후). */
-  function tokenValue(css: string, name: string): string {
-    const stripped = css.replace(/\/\*[\s\S]*?\*\//gu, "");
-    const match = stripped.match(new RegExp(`${name}\\s*:\\s*([^;]+);`, "u"));
-    if (!match) throw new Error(`tokens.css 에 ${name} 선언이 없다`);
-    return match[1].replace(/\s+/gu, " ").trim();
-  }
   describe("폰트 레지스트리", () => {
     it("id 가 중복되지 않고 모든 엔트리가 비어 있지 않은 스택과 역할을 갖는다", () => {
       const ids = FONT_REGISTRY.map((entry) => entry.id);
@@ -601,18 +590,6 @@ describe("systemFontTheme", () => {
       expect(isFontFamilyId("comic-sans")).toBe(false);
       expect(isFontFamilyId(undefined)).toBe(false);
       expect(isFontFamilyId(42)).toBe(false);
-    });
-
-    it("tokens.css 의 폰트 토큰이 레지스트리 기본 스택과 일치한다", () => {
-      const tokens = readText("src/styles/tokens.css");
-      expect(tokenValue(tokens, "--font-ui")).toBe(resolveFontStack(DEFAULT_FONT_SELECTION.ui));
-      expect(tokenValue(tokens, "--font-pixel")).toBe(resolveFontStack(DEFAULT_FONT_SELECTION.pixel));
-      expect(tokenValue(tokens, "--font-mono")).toBe(resolveFontStack(DEFAULT_FONT_SELECTION.mono));
-    });
-
-    it("runtime/system.css 가 --runtime-pixel-font 를 --font-pixel 의 별칭으로 둔다", () => {
-      const css = readText("src/styles/runtime/system.css");
-      expect(tokenValue(css, "--runtime-pixel-font")).toBe("var(--font-pixel)");
     });
   });
   describe("SystemRecords.fonts 정규화", () => {

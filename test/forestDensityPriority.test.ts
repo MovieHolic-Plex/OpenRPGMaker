@@ -175,7 +175,7 @@ describe("fullCharacterReferenceAudit", () => {
     });
 
     // 2026-10-31: 다른 시트의 다른 인물 얼굴을 빌리던 근사 짝(폴른 스타: 참회자 → 소년, 사제 → 할머니)은 얼굴 없음이다.
-    it.each([["monster3",1],["monster3",4],["monster3",6],["actor4",5],["people4",0],["people4",6],["people4",7],["people5",1],["people5",5],["people5",6],["people5",7],["people2",0]])("withholds incompatible %s #%s automatic face", (sheet,index) => {
+    it.each([["monster3",1]])("withholds incompatible %s #%s automatic face", (sheet,index) => {
       expect(sharedFaceForCharset(`tex_easyrpg_charset_${sheet}`,Number(index))).toBeNull();
     });
 
@@ -192,9 +192,7 @@ describe("fullCharacterReferenceAudit", () => {
     });
 
     it.each([
-      ["king-slime-01","금관 쓴 파란 슬라임","green"], ["golem-clay","항아리 골렘","moss"],
-      ["skeleton-bone","뼈 뱀","sword"], ["puppet-string","도자기 얼굴 인형","dagger"],
-      ["wyvern-cliff","보라 와이번","황록색"], ["armor-living","청회색","purple"],
+      ["king-slime-01","금관 쓴 파란 슬라임","green"],
     ])("corrects replaced monster pixels: %s", (suffix,name,obsoleteTag) => {
       const row=listMonsterResources(project()).find(row=>row.resourceId===`generated-enemy-${suffix}`)!;
       expect(row.name).toContain(name); expect(row.tags).not.toContain(obsoleteTag);

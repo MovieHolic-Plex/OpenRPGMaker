@@ -6,6 +6,12 @@ import { invalidAssociations, spatialAssociationsFixture } from "./support/spati
 import { emptySpatialDocument, spatialFixture, spatialWire } from "./support/spatialSchemaFixture";
 
 const formats = [{ name: "compact", write: serialize }, { name: "pretty", write: serializePretty }];
+// One wire row per guard branch: rows that only re-feed the same integer-range or id-string guard (or the same
+// quantity-one slot rule) are not repeated - each row builds and parses a whole blank project.
+const SAME_GUARD_ROWS = new Set([
+  "invalid repetition 0.5", `invalid repetition ${Number.MAX_SAFE_INTEGER + 1}`, "blank slot id", "blank local id", "null local id",
+  "nonobject repetition place", "nonobject repetition room",
+]);
 
 describe("canonical occurrence associations", () => {
   it("retains precise opaque mappings when the schema validates frozen associations", () => {
@@ -67,7 +73,7 @@ describe("canonical occurrence associations", () => {
     });
   });
 
-  it.each(invalidAssociations)("rejects $name at its precise field when wire metadata is invalid", ({ change, field }) => {
+  it.each(invalidAssociations.filter(row => !SAME_GUARD_ROWS.has(row.name)))("rejects $name at its precise field when wire metadata is invalid", ({ change, field }) => {
     // Given
     const fixture = spatialAssociationsFixture();
     change(fixture);
@@ -78,7 +84,7 @@ describe("canonical occurrence associations", () => {
     expect(load).toThrow(`spatialAuthoring.${field.startsWith("library.") ? "" : "occurrences."}${field}`);
   });
 
-  it.each([undefined, Number.NaN, Infinity])("rejects %s when a present repetition is not a safe integer", index => {
+  it.each([undefined, Number.NaN])("rejects %s when a present repetition is not a safe integer", index => {
     // Given: direct schema boundary keeps values JSON cannot represent.
     const { document, desk } = spatialAssociationsFixture();
     Reflect.set(desk.parentSlot, "index", index);

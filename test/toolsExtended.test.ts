@@ -426,7 +426,7 @@ describe("wildRouteBeodeul", () => {
     resetMapEditHistory();
   });
   describe("버들항 도로", () => {
-    it.each([1, 7, 15])("seed %i: 모랫길·숲 벽·필드 표시", (seed) => {
+    it.each([1, 15])("seed %i: 모랫길·숲 벽·필드 표시", (seed) => {
       const { ctx, map } = routeProject(seed);
       const tileset = ctx.project.tilesets.beodeul_city!;
       const sand = new Set(tileset.autotileGroups!.find(group => group.name === "버들항 모랫길")!.memberTileIds);

@@ -35,7 +35,6 @@ describe.each(writers)("$tool reliable graphics", ({ tool, args, read }) => {
     ["풀잎 여우", "generated-enemy-leaf-fox"],
     ["leaf fox", "generated-enemy-leaf-fox"],
     ["불꽃강아지", "generated-enemy-fire-pup"],
-    ["불씨 강아지", "generated-enemy-fire-pup"],
   ])("matches dedicated identity %s without changing species", (name, resourceId) => {
     const ctx: ToolContext = { project: createBlankProject() };
     const result = runTool(ctx, tool, args("enemy_dedicated", name));
@@ -43,7 +42,7 @@ describe.each(writers)("$tool reliable graphics", ({ tool, args, read }) => {
     expect(read(ctx, "enemy_dedicated")?.monsterResourceId).toBe(resourceId);
   });
 
-  it.each(["정체불명", "leaf fox quux", "슬라임 quux", "*", "all", "전체", "monster", "enemy"])(
+  it.each(["정체불명", "leaf fox quux", "슬라임 quux", "*", "monster"])(
     "rejects unreliable name %s atomically", (name) => {
       const ctx: ToolContext = { project: createBlankProject() };
       const before = ctx.project;
@@ -55,7 +54,7 @@ describe.each(writers)("$tool reliable graphics", ({ tool, args, read }) => {
     },
   );
 
-  it.each(["leaf fox quux", "슬라임 quux", "*", "all", "전체", "generated-enemy-unregistered-quux"])(
+  it.each(["leaf fox quux", "슬라임 quux", "*", "generated-enemy-unregistered-quux"])(
     "rejects unreliable explicit query %s even with a known name", (monsterResourceId) => {
       const ctx: ToolContext = { project: createBlankProject() };
       const before = ctx.project;

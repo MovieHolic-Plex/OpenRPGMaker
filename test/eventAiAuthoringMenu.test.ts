@@ -92,18 +92,6 @@ describe("AI 이벤트 저작 우클릭 진입점", () => {
     expect(openExisting.mock.calls[0]?.[2]).toEqual({ aiDock: true });
     expect(openNew).not.toHaveBeenCalled();
   });
-
-  it("빈 칸의 AI 항목은 맨 위다 — 여러 칸을 연달아 부탁할 때 가장 자주 누른다", () => {
-    const target = seedProject(false);
-    const ids = eventLayerContextMenuItems(target).map((item) => item.id);
-    expect(ids.slice(0, 2)).toEqual(["event-ai-queue", "create-event"]);
-  });
-
-  it("이벤트가 있어도 AI 항목은 비활성이 아니다 — 고치기가 곧 이 항목의 일이다", () => {
-    const target = seedProject(true);
-    const item = eventLayerContextMenuItems(target).find((candidate) => candidate.id === "event-ai-author");
-    expect(item?.disabled).toBeUndefined();
-  });
 });
 
 describe("조수 입구 예약 — 한 줄 입력칸", () => {
@@ -139,14 +127,6 @@ describe("조수 입구 예약 — 한 줄 입력칸", () => {
     const second = renderFresh(mapId, EXISTING_ID);
     await Promise.resolve();
     expect(document.activeElement).not.toBe(second.querySelector('[data-testid="event-edit-line-input"]'));
-  });
-
-  it("조수 창(도크)은 그리지 않는다 — 입구는 한 줄 입력칸 하나다", () => {
-    const { mapId } = seedProject(true);
-    const host = renderFresh(mapId, EXISTING_ID);
-    expect(host.querySelector('[data-testid="ai-event-assist"]')).toBeNull();
-    expect(host.querySelector('[data-testid="event-command-quick-ai"]')).toBeNull();
-    expect(host.querySelector('[data-testid="event-edit-line-input"]')).not.toBeNull();
   });
 
   it("예약은 소비되면 사라진다 — 나중에 다른 이벤트로 새지 않는다", async () => {

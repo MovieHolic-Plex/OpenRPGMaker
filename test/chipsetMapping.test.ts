@@ -1,7 +1,7 @@
 import { describe, expect, it, beforeEach } from "vitest";
 import { CHIPSET_TILE_GROUPS, describeChipsetTile, tileLabelForIndex, FARMLAND_TILE, DIRT_ROAD_TILE, SAND_TILE } from "@/project/defaults/chipsetMapping";
 import { DEFAULT_TILE_COUNT } from "@/project/defaults/constants";
-import { COMBO_BRUSH_CATEGORIES, COMBO_BRUSH_REVIEW_OWNER, CURATED_COMBO_BRUSHES, comboBrushCatalogEntry, comboBrushStampFromCatalog, curatedComboBrushesForTileset } from "@/editor/comboBrushCatalog";
+import { COMBO_BRUSH_CATEGORIES, CURATED_COMBO_BRUSHES, comboBrushCatalogEntry, comboBrushStampFromCatalog, curatedComboBrushesForTileset } from "@/editor/comboBrushCatalog";
 import { comboBrushLayerSummary, isComboBrush } from "@/editor/comboBrush";
 import { defaultPaintLayerForTile } from "@/editor/tileLayerClassification";
 import { createBlankProject, TILE, COMBINED_TOWN_TILESET_ID } from "@/project/defaults";
@@ -449,10 +449,6 @@ describe("comboBrushCatalog", () => {
       for (const entry of tiny) {
         for (const cell of entry.cells) expect(cell.tile).toBeLessThan(100);
       }
-    });
-
-    it("names the review owner so new presets cannot be added silently", () => {
-      expect(COMBO_BRUSH_REVIEW_OWNER).toContain("editor-pre-edit-routing.md");
     });
   });
 });

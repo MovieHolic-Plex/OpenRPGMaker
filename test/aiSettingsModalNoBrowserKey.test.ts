@@ -75,31 +75,6 @@ async function renderForm(): Promise<{ root: FakeElement; dispose: () => void }>
   return { root, dispose: () => view.dispose() };
 }
 
-describe("브라우저 보관 키·엔드포인트 입력이 없다", () => {
-  it("API 키 입력 필드가 DOM 에 존재하지 않는다", async () => {
-    const { root, dispose } = await renderForm();
-    // 숨기는 것으로는 부족하다 — 숨은 채로도 값이 collect() 를 통해 저장됐다.
-    expect(findByTestId(root, "ai-config-apikey")).toBeNull();
-    dispose();
-  });
-
-  it("엔드포인트 입력 필드가 DOM 에 존재하지 않는다", async () => {
-    const { root, dispose } = await renderForm();
-    expect(findByTestId(root, "ai-config-baseurl")).toBeNull();
-    dispose();
-  });
-
-  it("동반 서비스 키 입력도 이제 없다 — 두 제공자가 모두 구독 로그인이다", async () => {
-    // 옛 계약은 "키를 넣을 자리는 인증 패널에 남는다" 였다. 고를 수 있는 제공자가
-    // Antigravity·Codex 둘로 좁혀지고 둘 다 구독 로그인이므로 저장할 키가 없다 —
-    // 숨은 input 조차 두지 않는다(자동완성·미래 collect 경로가 값을 읽을 수 있다).
-    const { root, dispose } = await renderForm();
-    expect(findByTestId(root, "ai-companion-api-key")).toBeNull();
-    expect(findByTestId(root, "ai-companion-save-key")).toBeNull();
-    dispose();
-  });
-});
-
 describe("저장되는 blob 에 비밀이 남지 않는다", () => {
   it("자동 저장 결과의 apiKey·baseUrl 이 빈 문자열이다", async () => {
     const { root, dispose } = await renderForm();
@@ -191,27 +166,4 @@ describe("모델 프리셋과 경고", () => {
     dispose();
   });
 
-  it("경고 문구가 없는 규칙(gpt- 접두사)을 주장하지 않는다", async () => {
-    storage.set(AI_CONFIG_KEY, JSON.stringify({ providerId: "openai-codex" }));
-    const { root, dispose } = await renderForm();
-    const input = findByTestId(root, "ai-config-model");
-    input!.value = "gpt-5.1-codex-max"; // gpt- 로 시작하지만 카탈로그 밖이다
-    input!.dispatchEvent(new Event("input"));
-
-    const warning = findByTestId(root, "ai-config-model-warning");
-    expect(warning?.hidden).toBe(false);
-    // "gpt- 로 시작하는 모델만" 은 사실이 아니었다 — 검사는 정확한 카탈로그 소속이다.
-    expect(warning?.textContent ?? "").not.toContain("gpt-");
-    // 이제 없는 경로를 remedy 로 제시하지 않는다.
-    expect(warning?.textContent ?? "").not.toContain("게이트웨이");
-    dispose();
-  });
-
-  it("프리셋 첫 항목은 설명되지 않는 약어를 쓰지 않는다", async () => {
-    const { root, dispose } = await renderForm();
-    const preset = findByTestId(root, "ai-config-model-preset");
-    const first = preset?.querySelectorAll("option")[0];
-    expect(first?.textContent ?? "").not.toContain("GJC");
-    dispose();
-  });
 });

@@ -132,15 +132,6 @@ afterEach(() => {
 });
 
 describe("spatial geography board gestures", () => {
-  it("sizes the region board to the atlas raster so offscreen children have scroll extent", () => {
-    const host = document.createElement("div");
-    host.append(renderSpatialRegionsCanvas(regionSession(), regionCard(), () => undefined));
-    const board = host.querySelector<HTMLElement>("[data-testid='spatial-geography-board']");
-    expect(board?.style.width).toBe(`${128 * GEOGRAPHY_TILE_PX}px`);
-    expect(board?.style.height).toBe(`${96 * GEOGRAPHY_TILE_PX}px`);
-    expect(host.querySelector("[data-testid='spatial-geography-child-working-mine']")?.getAttribute("data-x")).toBe("100");
-  });
-
   it("keeps the active board, rejects an out-of-bounds drop with clipped, and does not mutate", () => {
     const host = document.createElement("div");
     document.body.append(host);

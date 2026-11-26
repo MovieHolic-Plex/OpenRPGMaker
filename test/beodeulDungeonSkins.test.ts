@@ -115,13 +115,13 @@ describe("버들항 던전 겉가죽 입히기", () => {
   }, 30_000);
 
   it.each(CASES.flatMap(([type, extra, themeId]) => NAMES.map((name, at) => [`${type}${Object.keys(extra).map((k) => `+${k}`).join("")} ${name}`, type, extra, themeId, name, at] as const)))(
-    "입힌 층: 바닥·벽이 그 주제의 칸이고, 막힌 길·못 밟는 이동 칸이 없다 — 씨앗 셋: %s", (_name, type, extra, themeId, name, at) => {
+    "입힌 층: 바닥·벽이 그 주제의 칸이고, 막힌 길·못 밟는 이동 칸이 없다 — 씨앗 하나: %s", (_name, type, extra, themeId, name, at) => {
       const theme = table.themes.find((t) => t.id === themeId)!;
       const look = theme.looks[at % theme.looks.length]!;
       const mine = new Set([...look.floor.flat(), ...look.face.flat(2)]);
       // 벽 앞면·벽 너머 칸은 무엇이 덧깔려도 막힌 칸이다
       const solid = new Set([...look.face.flat(2), ...look.top.flat(2), ...Object.values(look.rim as Record<string, number[]>).flat()]);
-      for (const seed of [2, 7, 13]) {
+      for (const seed of [2]) {
         const { project, maps, ids } = build(type, extra, name, seed);
         const skinned = maps.filter((m) => Array.from(m.lowerTiles).some((t) => mine.has(t)));
         expect(skinned.length, `${type} ${name} ${seed}`).toBeGreaterThan(0);

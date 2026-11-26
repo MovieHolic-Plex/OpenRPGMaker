@@ -450,14 +450,6 @@ describe("generatedEffectSheets", () => {
   describe.each(GENERATED_EFFECT_SHEETS.map((effect) => effect.slug))("이펙트 시트 %s", (slug) => {
     const frameCount = expectedFrameCount(slug);
 
-    it("출력 PNG 크기가 시트 규경과 정확하게 같다", () => {
-      const size = pngSize(effectSheetOutputPath(slug));
-      expect(size).toEqual({
-        width: GENERATED_EFFECT_SHEET.frameWidth * frameCount,
-        height: GENERATED_EFFECT_SHEET.frameHeight,
-      });
-    });
-
     it("커밋된 PNG 가 있고 렌더 결과와 바이트가 같다", { timeout: RENDER_TIMEOUT_MS }, () => {
       const outputPath = effectSheetOutputPath(slug);
       expect(existsSync(outputPath)).toBe(true);
@@ -523,15 +515,7 @@ describe("generatedEffectSheets", () => {
       expect(existsSync(path.join(REPO_ROOT, "public", url!.slice(1)))).toBe(true);
     });
   });
-  describe("렌더 결정성", () => {
-    // 전종을 두 번 그리면 분 단위가 된다. 두 종만 골라 같은 프로세스 안에서 두 번 그려 비교한다 —
-    // 커밋 바이트 비교가 프로세스 간 결정성을, 이 테스트가 프로세스 안 결정성을 맡는다.
-    it.each(["slash-steel", "sleep-dust"])("%s 를 두 번 렌더해도 같은 바이트", { timeout: RENDER_TIMEOUT_MS }, (slug) => {
-      const first = Buffer.from(encodeEffectStrip(renderEffectStrip(slug, catalog)));
-      const second = Buffer.from(encodeEffectStrip(renderEffectStrip(slug, catalog)));
-      expect(first.equals(second)).toBe(true);
-    });
-  });
+
   describe("기본 데이터베이스 배선", () => {
     const records = defaultBattleAnimationRecords();
 

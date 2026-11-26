@@ -9,7 +9,7 @@ import { fixedDeclarer } from "./intentFixture";
 import { AssistantSession } from "@/ai/assistantSession";
 import type { AiConfig, ChatResult } from "@/ai/llmClient";
 import type { AutonomyLevel } from "@/ai/autonomyLevels";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject } from "./support/sharedBlankProject";
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -35,7 +35,7 @@ async function runTurn(config: AiConfig, seen: AiConfig[]): Promise<void> {
     seen.push(used);
     return finalResult("ok");
   };
-  const session = new AssistantSession(createBlankProject(), {
+  const session = new AssistantSession(createSharedTilesetBlankProject(), {
     config,
     chat,
     declareIntent: fixedDeclarer({ mode: "other", needsPlan: false }),
@@ -74,7 +74,7 @@ describe("지시줄 effort — 세션 effort 우선순위", () => {
       }
       return finalResult("ok");
     };
-    const session = new AssistantSession(createBlankProject(), {
+    const session = new AssistantSession(createSharedTilesetBlankProject(), {
       config: { ...BASE, autonomyLevel: "max" as AutonomyLevel, agentMode: "chat" as const, reasoningEffort: "low" as const },
       chat,
       declareIntent: fixedDeclarer({ mode: "other", needsPlan: true }),

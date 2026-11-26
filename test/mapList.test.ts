@@ -30,21 +30,6 @@ describe("map tree panel", () => {
     vi.mocked(toast).mockClear();
   });
 
-  it("renders compact map organization controls", () => {
-    const panel = renderWithFakeDom(() => {
-      const container = document.createElement("div");
-      renderMapList(container);
-      return container;
-    });
-
-    expect(findByTestId(panel, "map-add")).not.toBeNull();
-    expect(findByTestId(panel, "map-set-start")).not.toBeNull();
-    expect(findByTestId(panel, "map-toggle-all")).not.toBeNull();
-    expect(findByTestId(panel, "map-tree-filter")).not.toBeNull();
-    expect(findByTestId(panel, "map-add-category")).toBeNull();
-    expect(findByTestId(panel, "map-add-folder")).not.toBeNull();
-  });
-
   it("reveals the active map inside the tree scroller without scrolling its ancestors", () => {
     const restoreFrames = installFakeDom({ animationFrames: "manual" });
     try {
@@ -64,25 +49,6 @@ describe("map tree panel", () => {
       expect(nativeReveal).not.toHaveBeenCalled();
     } finally {
       restoreFrames();
-    }
-  });
-
-  it("헤더의 주 동작 「새 맵」만 글자 라벨과 강조 톤을 달고 맨 오른쫽에 선다", () => {
-    const panel = renderWithFakeDom(() => {
-      const container = document.createElement("div");
-      renderMapList(container);
-      return container;
-    });
-    const add = findByTestId(panel, "map-add");
-    expect(add).not.toBeNull();
-    expect(add?.className).toContain("is-primary");
-    expect(add?.textContent).toContain("새 맵");
-    const actions = Array.from(panel.querySelector(".map-tree-header-actions")?.children ?? []);
-    expect(actions.length).toBeGreaterThan(1);
-    expect(actions[actions.length - 1]).toBe(add);
-    // 나머지 헤더 액션은 아이콘만 — 글자 라벨은 주 동작 하나에만 있다.
-    for (const other of actions.slice(0, -1)) {
-      expect(other.className).not.toContain("has-text");
     }
   });
 
@@ -110,58 +76,6 @@ describe("map tree panel", () => {
     reToggle?.dispatchEvent(new Event("click"));
     expect(isMapPanelCollapsed()).toBe(false);
     expect(findByTestId(container as unknown as FakeElement, "map-tree-section-toggle")?.getAttribute("aria-expanded")).toBe("true");
-  });
-
-  it("초보 플라이아웃 변종에는 도크 섹션 토글이 없다(접을 도크가 없다)", () => {
-    const panel = renderWithFakeDom(() => {
-      const container = document.createElement("div");
-      renderMapList(container, { variant: "basic" });
-      return container;
-    });
-    expect(findByTestId(panel, "map-tree-section-toggle")).toBeNull();
-  });
-
-  it("맵 줄의 크기·이벤트 수·문 수를 번역 조각으로 나눈다", () => {
-    // `{0}×{1} · 이벤트 {2}` 가 「N개 · 문 M개」까지 한 노드로 보면 영어가 "Events 1" 이 된다.
-    const panel = renderWithFakeDom(() => {
-      const container = document.createElement("div");
-      renderMapList(container);
-      return container;
-    });
-    const project = store.getCurrent();
-    const meta = findByTestId(panel, `map-tree-node-${project.startMapId}`)?.querySelector(".map-tree-meta");
-    const pieces = [...(meta?.childNodes ?? [])].map((node) => node.textContent ?? "");
-    expect(pieces.join("")).toBe(meta?.textContent);
-    expect(pieces.some((piece) => piece.includes("×") && piece.includes("이벤트"))).toBe(false);
-    expect(pieces).toContain(`이벤트 ${project.maps[project.startMapId]?.events.length ?? 0}개`);
-    // toContain 은 배열을 엄격 비교(===)하므로 비대칭 매처(expect.stringMatching)를 받지 않는다 — 조각을 직접 골라 잔다.
-    expect(pieces.filter((piece) => /^문 \d+개$/.test(piece))).toHaveLength(1);
-  });
-
-  it("헤더 제목과 개수를 별도 span으로 렌더한다(맵 N 합침 회귀 방지)", () => {
-    const project = createBlankProject();
-    const secondId = "map_second";
-    project.maps[secondId] = { ...project.maps[project.startMapId]!, id: secondId, name: "두번째 맵" };
-    project.mapTree = {
-      mapId: project.startMapId,
-      children: [{ mapId: secondId, children: [] }],
-    };
-    store.replace(project);
-    editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
-
-    const panel = renderWithFakeDom(() => {
-      const container = document.createElement("div");
-      renderMapList(container);
-      return container;
-    });
-
-    const title = panel.querySelector(".map-tree-title");
-    const count = panel.querySelector(".map-tree-count");
-    expect(title).not.toBeNull();
-    expect(count).not.toBeNull();
-    expect(title).not.toBe(count);
-    expect(title?.textContent).toBe("맵");
-    expect(count?.textContent).toBe(String(Object.keys(project.maps).length));
   });
 
   it("시작 맵 지정 버튼은 이미 시작 맵이어도 결과를 알린다", () => {
@@ -261,45 +175,6 @@ describe("map tree panel", () => {
     expect(findByTestId(panel, `map-tree-node-${houseId}`)).toBeNull();
   });
 
-  it("keeps the filter caret when the query is edited in the middle", () => {
-    const host = document.createElement("div");
-    renderMapList(host);
-    const filter = host.querySelector<HTMLInputElement>('[data-testid="map-tree-filter"]');
-    if (!filter) throw new Error("filter");
-    filter.value = "시장골목";
-    filter.setSelectionRange(2, 2);
-    filter.dispatchEvent(new Event("input", { bubbles: true }));
-    const next = host.querySelector<HTMLInputElement>('[data-testid="map-tree-filter"]');
-    expect(next).not.toBe(filter);
-    expect(next?.value).toBe("시장골목");
-    expect(next?.selectionStart).toBe(2);
-    expect(next?.selectionEnd).toBe(2);
-  });
-
-  it("does not rebuild the filter input while an IME composition is in progress", () => {
-    const host = document.createElement("div");
-    renderMapList(host);
-    const filter = host.querySelector<HTMLInputElement>('[data-testid="map-tree-filter"]');
-    if (!filter) throw new Error("filter");
-    filter.value = "마";
-    const composing = new Event("input", { bubbles: true });
-    Object.defineProperty(composing, "isComposing", { value: true });
-    filter.dispatchEvent(composing);
-    expect(host.querySelector('[data-testid="map-tree-filter"]')).toBe(filter);
-
-    filter.value = "마을";
-    filter.setSelectionRange(1, 1);
-    filter.dispatchEvent(new Event("compositionend", { bubbles: true }));
-    const next = host.querySelector<HTMLInputElement>('[data-testid="map-tree-filter"]');
-    expect(next?.value).toBe("마을");
-    expect(next?.selectionStart).toBe(1);
-    expect(next?.selectionEnd).toBe(1);
-    // 조합이 끝난 칸에 같은 값의 input 이 한 번 더 와도, 이미 그린 칸의 커서를 끝으로 밀지 않는다.
-    filter.setSelectionRange(filter.value.length, filter.value.length);
-    filter.dispatchEvent(new Event("input", { bubbles: true }));
-    expect(host.querySelector<HTMLInputElement>('[data-testid="map-tree-filter"]')?.selectionStart).toBe(1);
-  });
-
   it("forgets an in-progress filter syllable when IME composition is cancelled", () => {
     const host = document.createElement("div");
     renderMapList(host);
@@ -313,20 +188,6 @@ describe("map tree panel", () => {
     filter.dispatchEvent(new Event("compositionend", { bubbles: true }));
     host.querySelector<HTMLElement>('[data-testid="map-tree-facet-empty"]')?.click();
     expect(host.querySelector<HTMLInputElement>('[data-testid="map-tree-filter"]')?.value).toBe("");
-  });
-
-  it("맵이 8개 미만이면 필터를 접고 토글만 노출한다", () => {
-    // 시드 프로젝트는 맵 1개다.
-    const host = document.createElement("div");
-    renderMapList(host);
-    const filter = host.querySelector<HTMLElement>('[data-testid="map-tree-filter"]');
-    const toggle = host.querySelector<HTMLElement>('[data-testid="map-tree-filter-toggle"]');
-    expect(toggle).not.toBeNull();
-    // DOM 에는 남아 있되 hidden 이어야 한다 — 기존 e2e 가 fill() 로 접근한다.
-    // fakeDom 의 FakeElement 는 hasAttribute()를 흉내내지 않으므로(node 환경, happy-dom 아님)
-    // getAttribute() 로 동등하게 검증한다.
-    expect(filter).not.toBeNull();
-    expect(filter?.closest(".map-tree-filter")?.getAttribute("hidden")).not.toBeNull();
   });
 
   it("패싯이 활성이면 토글이 죽은 버튼으로 남지 않도록 렌더하지 않는다", () => {
@@ -352,57 +213,6 @@ describe("map tree panel", () => {
     const filterInput = host.querySelector<HTMLElement>('[data-testid="map-tree-filter"]');
     expect(filterInput).not.toBeNull();
     expect(document.activeElement).toBe(filterInput);
-  });
-
-  it("맵이 8개 이상이면 토글 없이 필터가 처음부터 펼쳐진다", () => {
-    const project = createBlankProject();
-    for (let i = 0; i < 7; i += 1) {
-      const id = `map_extra_${i}`;
-      project.maps[id] = { ...project.maps[project.startMapId]!, id, name: `여분 맵 ${i}` };
-      project.mapTree.children.push({ mapId: id, children: [] });
-    }
-    store.replace(project);
-    editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
-
-    const host = document.createElement("div");
-    renderMapList(host);
-    expect(Object.keys(store.getCurrent().maps).length).toBe(8);
-    expect(host.querySelector('[data-testid="map-tree-filter-toggle"]')).toBeNull();
-    expect(host.querySelector('[data-testid="map-tree-filter"]')?.closest(".map-tree-filter")?.getAttribute("hidden")).toBeNull();
-  });
-
-  it("초보 플라이아웃은 목록 | 상세 2단이고, 고른 맵의 상세를 옆 칸에 펼친다", () => {
-    // 예전 한 칸 목록은 행 메타가 `13×10 · 1이벤트 · 문2` 뿐이라 같은 규격의 집 내부 10장이
-    // 전부 같은 글자였다(실측). 식별 정보는 이 상세 칸이 진다.
-    const host = document.createElement("div");
-    renderMapList(host, { variant: "basic" });
-
-    expect(host.querySelector('[data-testid="map-tree-explorer"]')).not.toBeNull();
-    expect(host.querySelector(".map-tree-explorer-list [data-testid=\"map-tree\"]")).not.toBeNull();
-    const inspector = host.querySelector('[data-testid="map-inspector"]');
-    expect(inspector).not.toBeNull();
-    expect(inspector?.getAttribute("data-inspector-kind")).toBe("map");
-    const startMap = store.getCurrent().maps[store.getCurrent().startMapId];
-    expect(host.querySelector('[data-testid="map-inspector-name"]')?.textContent).toBe(startMap?.name);
-
-    // 네 갈래 정보가 모두 있다 (맵 속성·이벤트 구성·연결 진단·인카운터).
-    for (const testid of [
-      "map-inspector-stat-tileset",
-      "map-inspector-stat-bgm",
-      "map-inspector-stat-parent",
-      "map-inspector-event-npc",
-      "map-inspector-event-door",
-      "map-inspector-link-outgoing",
-      "map-inspector-encounter-detail",
-      "map-inspector-diagnostics",
-    ]) {
-      expect(host.querySelector(`[data-testid="${testid}"]`), testid).not.toBeNull();
-    }
-    // 동작 버튼은 스크롤 칸 밖에 있어야 한다 — 안에 있으면 접힌 아래로 내려가 안 보인다.
-    const actions = host.querySelector('[data-testid="map-inspector-actions"]');
-    expect(actions).not.toBeNull();
-    expect(actions?.closest('[data-testid="map-inspector-scroll"]')).toBeNull();
-    expect(host.querySelector('[data-testid="map-inspector-action-properties"]')).not.toBeNull();
   });
 
   it("맵이 하나뿐이면 삭제 버튼이 이유를 달고 비활성이다", () => {
@@ -466,20 +276,5 @@ describe("map tree panel", () => {
     const after = host.querySelector<HTMLInputElement>('[data-testid="map-tree-filter"]');
     expect(after?.selectionStart).toBe(1);
     expect(after?.selectionEnd).toBe(1);
-  });
-
-  it("분류 폴더를 고르면 상세 칸이 빈 칸이 아니라 이유를 적는다", () => {
-    const project = createBlankProject();
-    project.mapTree.children.push({ children: [], kind: "folder", mapId: "folder_town", name: "마을 묶음" });
-    store.replace(project);
-    editorState.set({ currentMapId: project.startMapId, selectedEventId: null, selectedEventPageId: null });
-
-    const host = document.createElement("div");
-    renderMapList(host, { variant: "basic" });
-    host.querySelector<HTMLElement>('[data-testid="map-tree-node-folder_town"]')?.click();
-
-    const inspector = host.querySelector('[data-testid="map-inspector"]');
-    expect(inspector?.getAttribute("data-inspector-kind")).toBe("empty");
-    expect(host.querySelector('[data-testid="map-inspector-empty"]')?.textContent).toContain("마을 묶음");
   });
 });

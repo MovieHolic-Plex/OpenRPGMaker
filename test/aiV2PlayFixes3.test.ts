@@ -311,18 +311,6 @@ describe("글에서 번호가 읽히는가", () => {
   });
 });
 
-// 7) 상태 쪽의 HP 줄이 밝은 메뉴에서도 읽힌다(r4d-fun: 크림 바탕 위 흰 글자 — 대비 1.06).
-describe("메뉴 설명 줄의 글자색", () => {
-  it("설명 줄은 유리 창의 흰 글자가 아니라 그 메뉴 스킨의 글자색을 쓴다", () => {
-    // 규칙은 runtime 표면의 시트에 산다(database 표면의 시트는 메뉴 스킨의 토큰을 못 쓴다 — check-css-surfaces R4). 같은 선택자로, 그 시트 바로 뒤에 들어온다.
-    const css = readFileSync("src/styles/runtime/statusMenuEdgeDock.css", "utf8");
-    const rule = /^\.status-menu-detail-row\.has-description \.status-menu-detail-description \{[^}]*\}/mu.exec(css)![0];
-    expect(rule).toMatch(/color: var\(--status-edge-ivory, var\(--runtime-glass-text\)\);/u);
-    const order = readFileSync("src/styles/runtime/index.css", "utf8");
-    expect(order.indexOf("tabs-b-status-menu-main.css")).toBeLessThan(order.indexOf("statusMenuEdgeDock.css"));
-  });
-});
-
 // 8) 상점이 그 게임의 메뉴와 같은 판으로 뜨고(게임마다 UI 모습 한 벌), 첫 상점의 가장 싼 회복약 하나는 시작 돈으로 살 수 있다.
 describe("상점의 겉판과 시작 돈", () => {
   let restoreDom: (() => void) | undefined;

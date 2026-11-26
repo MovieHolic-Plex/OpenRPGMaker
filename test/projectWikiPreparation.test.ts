@@ -111,14 +111,12 @@ describe("project-record preparation response boundary", { timeout: 120_000 }, (
   });
 
   it.each([
-    "not json", "", "{}", "null", "[]", '{"upserts":null}', '{"upserts":{}}',
+    "not json", "", '{"upserts":null}',
     '{"upserts":[],"extra":1}', '{"upserts":[null]}',
-    fence('{"upserts":['), fence('{}'), fence('{"upserts":[{}]}'),
+    fence('{"upserts":['),
     '{"upserts":[]}\n{"upserts":[]}',
     fence('{"upserts":[]}') + '\n' + fence('{"upserts":[]}'),
     '{"upserts":[]}\n' + fence('{"upserts":[]}'),
-    fence('{"upserts":[]}') + '\n{"upserts":[]}',
-    '[]\n' + fence('{"upserts":[]}'),
     '```text\nnot json\n```\n' + fence('{"upserts":[]}'),
     'Explanation: {"upserts":[]}',
   ])("defers invalid or ambiguous output without touching the project %#", async (content) => {

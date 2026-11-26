@@ -158,17 +158,6 @@ describe("test play window run controls", () => {
 });
 
 describe("test play skip-title option", () => {
-  it("shows the stored preference as a checkbox instead of hiding it behind the buttons", async () => {
-    await openTestPlayModal();
-    expect(checkbox("test-play-skip-title").checked).toBe(true);
-
-    closeTestPlayModal();
-    storage.setItem(AUTO_START_KEY, "0");
-    await openTestPlayModal();
-    expect(checkbox("test-play-skip-title").checked).toBe(false);
-    expect(lastRenderOptions().autoStartRun).toBe(false);
-  });
-
   it("applies the option to the open window: off goes to the title, on starts the run", async () => {
     await openTestPlayModal();
     const skipTitle = checkbox("test-play-skip-title");

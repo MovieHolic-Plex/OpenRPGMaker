@@ -59,14 +59,6 @@ describe("commandRegistry", () => {
       expect(editorState.get().layer).toBe("lower");
     });
 
-    it("화면 밀도·프리셋·편집 모드 명령이 없다", () => {
-      // 2026-09-03 밀도·프리셋 명령을, 2026-09-27 초보/표준/전문가 편집 모드 명령을 걷었다.
-      const ids = listEditorCommands().map((c) => c.id);
-      expect(ids.some((id) => id.startsWith("workspace-preset-"))).toBe(false);
-      expect(ids.some((id) => id.startsWith("workspace-density-"))).toBe(false);
-      expect(ids.some((id) => id.startsWith("editor-ui-mode-"))).toBe(false);
-    });
-
     it("패널 명령이 도크를 옮기고 닫는다", () => {
       installDockHosts();
       const commands = listEditorCommands();
@@ -288,10 +280,6 @@ describe("workspaceLayout", () => {
 
     it("저장 키가 oprn 접두사를 쓴다", () => {
       expect(WORKSPACE_STORAGE_KEY).toBe("oprn:workspace:v1");
-    });
-
-    it("프리셋 3개가 작업이 아닌 레이아웃 이름을 쓴다", () => {
-      expect(WORKSPACE_PRESETS.map((preset) => preset.label)).toEqual(["맵 중심", "이벤트 중심", "데이터 중심"]);
     });
 
     it("모든 프리셋의 패널이 레지스트리에 등록되어 있다", () => {

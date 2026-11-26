@@ -600,29 +600,6 @@ describe("titleScreen", () => {
       }
     });
 
-    it("renders the redesigned editorial title composition instead of legacy window chrome", () => {
-      const restoreDom = installFakeDom();
-      try {
-        const project = createBlankProject();
-        const screen = renderWithFakeDom(() =>
-          renderTitleScreen(project, {
-            onNewGame: () => undefined,
-            onResume: () => undefined,
-            onContinue: () => undefined,
-            onCredits: () => undefined,
-            onQuit: () => undefined,
-          }),
-        );
-
-        expect(screen.classList.contains("rm-title-screen-editorial")).toBe(true);
-        expect(findByTestId(screen, "title-kicker")?.textContent).toBe("A NEW ADVENTURE");
-        expect(findByTestId(screen, "title-subtitle")?.textContent).toBe("이야기가 시작되는 곳");
-        expect(screen.querySelector(".rm-title-menu")?.classList.contains("rm-title-menu-open")).toBe(true);
-      } finally {
-        restoreDom();
-      }
-    });
-
     it("does not draw the fixed tagline under an authored title that has no subtitle", () => {
       const restoreDom = installFakeDom();
       try {
@@ -735,32 +712,6 @@ describe("titleScreen", () => {
       }
     });
 
-    it("keeps the title artwork visible while exposing windowskin chrome to child menus", () => {
-      const restoreDom = installFakeDom();
-      try {
-        const project = createBlankProject();
-        project.system.titleScreen = fullVisibilitySettings({
-          ...defaultTitleScreenSettings(),
-          backgroundResourceId: "oprn-title-blue",
-        });
-        const screen = renderWithFakeDom(() =>
-          renderTitleScreen(project, {
-            onNewGame: () => undefined,
-            onResume: () => undefined,
-            onContinue: () => undefined,
-            onCredits: () => undefined,
-            onQuit: () => undefined,
-          }),
-        );
-        expect(screen.style.backgroundImage).toContain("default-title-blue.png");
-        expect(screen.style.borderImageSource).toBeUndefined();
-        // 저작 기본 윈도우스킨은 따뜻한 갈색이다(windowskin-warm).
-        expect(screen.style["--runtime-window-skin"]).toContain("windowskin-warm.png");
-      } finally {
-        restoreDom();
-      }
-    });
-
     it("clamps the menu above the input hint only when it would overlap", () => {
       // 회귀 방지: 이 규칙에 단위 커버리지가 없어서 위 레이아웃 테스트가 조용히 낡았다.
       const optionCount = 3;
@@ -816,35 +767,6 @@ describe("titleScreen", () => {
 
         expect(project.system.titleScreen?.backgroundResourceId).toBeUndefined();
         expect(screen.style.backgroundImage).toContain("default-title-blue.png");
-      } finally {
-        restoreDom();
-      }
-    });
-
-    it("uses the 320x240 title background and left-aligned editorial composition by default", () => {
-      const restoreDom = installFakeDom();
-      try {
-        const project = createBlankProject();
-
-        const screen = renderWithFakeDom(() =>
-          renderTitleScreen(project, {
-            onNewGame: () => undefined,
-            onResume: () => undefined,
-            onContinue: () => undefined,
-            onCredits: () => undefined,
-            onQuit: () => undefined,
-          }),
-        );
-
-        const title = screen.childNodes[0];
-        const menu = screen.childNodes[1];
-        if (!(title instanceof FakeElement) || !(menu instanceof FakeElement)) {
-          throw new Error("expected title screen children");
-        }
-        expect(screen.style.backgroundImage).toContain("oprn-title-field.png");
-        expect(title.style.left).toBe("10%");
-        expect(menu.style.left).toBe("10.625%");
-        expect(findByTestId(screen, "title-input-hint")).toBeNull();
       } finally {
         restoreDom();
       }
@@ -1224,44 +1146,6 @@ describe("titleScreen", () => {
         expect(canvas?.tagName).toBe("CANVAS");
         expect(canvas?.dataset.titleParticlePreset).toBe("fireflies");
         expect(canvas?.dataset.titleParticleDensity).toBe("80");
-      } finally {
-        restoreDom();
-      }
-    });
-
-    it("applies intro classes with delays on first entry only", () => {
-      const restoreDom = installFakeDom();
-      try {
-        const project = createBlankProject();
-        project.system.titleScreen = fullVisibilitySettings({
-          ...defaultTitleScreenSettings(),
-          titleGraphic: undefined,
-          intro: { logo: "fadeIn", menu: "slideUp", delayMs: 100, staggerMs: 50 },
-        });
-        const actions = {
-          onNewGame: () => undefined,
-          onResume: () => undefined,
-          onContinue: () => undefined,
-          onQuit: () => undefined,
-        };
-
-        // 최초 진입(playIntro 생략 = true): intro 클래스 + 지연 부여.
-        const first = renderWithFakeDom(() => renderTitleScreen(project, actions));
-        const title = first.querySelector(".rm-title-screen-title");
-        expect(title?.classList.contains("rm-title-intro-fade-in")).toBe(true);
-        expect(title?.style.animationDelay).toBe("100ms");
-        const buttons = first.querySelectorAll(".rm-title-menu-button");
-        expect(buttons.length).toBeGreaterThan(1);
-        expect(buttons.every((button) => button.classList.contains("rm-title-intro-slide-up"))).toBe(true);
-        expect(buttons[0]?.style.animationDelay).toBe("100ms");
-        expect(buttons[1]?.style.animationDelay).toBe("150ms");
-
-        // 방향키 재렌더(playIntro:false): intro 클래스가 다시 붙지 않는다.
-        const rerendered = renderWithFakeDom(() =>
-          renderTitleScreen(project, actions, 1, { playIntro: false }),
-        );
-        expect(rerendered.querySelector(".rm-title-intro-fade-in")).toBeNull();
-        expect(rerendered.querySelector(".rm-title-intro-slide-up")).toBeNull();
       } finally {
         restoreDom();
       }

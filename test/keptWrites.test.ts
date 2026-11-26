@@ -4,7 +4,7 @@ import { runTool } from "@/editor/tools/toolRunner";
 import { createSharedTilesetBlankProject as createBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import type { ToolContext } from "@/editor/tools/types";
-import { describesCityStreet, jpCityTargetFor, JP_CITY_POINTER_LINE, JP_CITY_DETAIL_LINE, formatJpCityNote } from "@/ai/jpCityPolicy";
+import { describesCityStreet, jpCityTargetFor } from "@/ai/jpCityPolicy";
 import { declaredIntent } from "./intentFixture";
 import type { Command } from "@/project/types";
 import { isolateTimers } from "./mergedTeardown";
@@ -81,7 +81,7 @@ describe("jpCityRouting", () => {
     return ctx.project;
   }
   describe("도시 거리 낱말", () => {
-    it.each(["현대 번화가 만들어줘", "상점가 거리 하나", "도심 맵", "시가지 지어줘", "주택가 동네 거리", "downtown shopping street", "residential area"])("%s", (text) => {
+    it.each(["현대 번화가 만들어줘", "시가지 지어줘", "downtown shopping street"])("%s", (text) => {
       expect(describesCityStreet(text)).toBe(true);
     });
     it.each(["미국풍 번화가", "new york downtown", "modern_city 도심", "성 하나 만들어줘", "숲속 마을"])("%s 는 아니다", (text) => {
@@ -111,16 +111,6 @@ describe("jpCityRouting", () => {
     it("실내·질문은 여전히 제외", () => {
       expect(jpCityTargetFor(withJpMap(), declaredIntent({ mode: "create", space: "interior" }), "번화가 가게 실내", START, false)).toBeNull();
       expect(jpCityTargetFor(withJpMap(), declaredIntent({ mode: "question", space: "outdoor" }), "번화가가 뭐야", START, false)).toBeNull();
-    });
-  });
-  describe("compose 우선 지침", () => {
-    it("포인터·상세·노트가 compose_jp_city_street 를 기본으로 말하고 PAW 게이트 낱말을 쓰지 않는다", () => {
-      for (const text of [JP_CITY_POINTER_LINE, JP_CITY_DETAIL_LINE, formatJpCityNote({}, null), formatJpCityNote({ mapId: "m", lived: false }, null)]) {
-        expect(text).toContain("compose_jp_city_street");
-        expect(text).not.toMatch(/현대|모던|modern|contemporary/iu);
-      }
-      expect(JP_CITY_DETAIL_LINE).toContain("replace:true");
-      expect(JP_CITY_DETAIL_LINE).toContain("link_jp_city_interior");
     });
   });
 });

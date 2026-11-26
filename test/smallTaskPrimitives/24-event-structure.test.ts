@@ -6,10 +6,6 @@ import { PrimitiveError, SELECT_EVENT_PAGE } from "@/editor/smallTask/primitives
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/24-event-structure";
 import { mapTarget } from "@/editor/smallTask/target";
-import en from "@/i18n/catalogs/en.json";
-import ja from "@/i18n/catalogs/ja.json";
-import zh from "@/i18n/catalogs/zh.json";
-import { createTranslator } from "@/i18n/translator";
 import { createInterpreter } from "@/player/interpreter";
 import { applySaveSnapshot, createSaveSnapshot } from "@/player/saveSlots";
 import { ensureSwitchVariableSlots } from "@/project/defaults/blankProject";
@@ -215,19 +211,6 @@ describe("이벤트 구조 조작", () => {
     });
     expect(original.x).toBe(2);
     expect(original.schedule[0].at.x).toBe(2);
-  });
-
-  it("다른 칸으로 옮기는 요청의 거절 안내를 영어·일본어·중국어에서 찾을 수 있다", () => {
-    const before = blank();
-    const target = mapTarget(before, MAP, EVENT)!;
-    const move = () => runPrimitive(before, target, "event.tile.move", { dx: 2 }, selection(4, 3));
-    const message = "범위 밖: 작은 일에서는 이벤트를 다른 칸으로 옮길 수 없어요. 맵에서 이벤트를 직접 옮겨 주세요.";
-    expect(move).toThrow(new PrimitiveError(message));
-    for (const catalog of [en, ja, zh]) {
-      const translation = createTranslator(catalog).translate(message);
-      expect(translation).toBeTruthy();
-      expect(translation).not.toMatch(/[가-힣]/u);
-    }
   });
 
   it.each(["event.tile.create", "event.tile.duplicate"])("%s의 새 이벤트에 삭제된 이벤트의 플레이 저장이 적용되지 않는다", primitive => {

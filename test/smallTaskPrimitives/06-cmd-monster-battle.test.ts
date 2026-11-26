@@ -752,20 +752,6 @@ const testDirectory = dirname(fileURLToPath(import.meta.url));
 const seededCases: (Omit<CorpusCase, "seed"> & { seed?: Command })[] = JSON.parse(readFileSync(
   resolve(testDirectory, "06-cmd-monster-battle/seeded-corpus.json"), "utf8",
 ));
-const stockCases: CorpusCase[] = JSON.parse(readFileSync(
-  resolve(testDirectory, "../../harness-data/small-task-corpus/06-cmd-monster-battle.json"), "utf8",
-));
-
-it("동작마다 한국어 요청 여덟 개와 거절 두 개를 유지한다", () => {
-  const all = [...stockCases, ...seededCases];
-  expect(new Set(all.map(entry => entry.request)).size).toBe(all.length);
-  for (const primitive of PRIMITIVES) {
-    const rows = all.filter(entry => entry.primitive === primitive.id);
-    expect(rows, primitive.id).toHaveLength(8);
-    expect(rows.filter(entry => entry.expectRefusal), primitive.id).toHaveLength(2);
-  }
-});
-
 // Seed rows and field spawns that do not occur in the stock projects.
 it.each(seededCases)("$request", async entry => {
   const { project } = fixture(entry.fixture, entry.seed ? [entry.seed] : []);

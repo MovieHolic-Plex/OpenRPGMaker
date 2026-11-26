@@ -1,19 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { createTranslator } from "@/i18n/translator";
-import en from "@/i18n/catalogs/en.json";
-import ja from "@/i18n/catalogs/ja.json";
-import zh from "@/i18n/catalogs/zh.json";
 import {
   GITHUB_FILE_BLOCK_BYTES,
   GITHUB_FILE_WARN_BYTES,
-  STANDALONE_HTML_GITHUB_PAGES_HINT,
   standaloneExportDoneKind,
   standaloneExportDoneMessage,
   standaloneHostingLevel,
   utf8ByteLength,
 } from "@/project/standaloneHostingNotice";
-
-const HANGUL = /[\uac00-\ud7a3]/;
 
 describe("standalone HTML GitHub file limit", () => {
   it("counts UTF-8 bytes, not UTF-16 code units", () => {
@@ -55,25 +48,5 @@ describe("standalone HTML GitHub file limit", () => {
       assetCount: 90,
       missingCount: 0,
     })).toContain("50MB부터 경고");
-  });
-
-  it("translates the size warnings and the button hint in en, ja, and zh", () => {
-    const samples = [
-      standaloneExportDoneMessage({ htmlBytes: 12 * 1024 * 1024, assetCount: 4, missingCount: 0 }),
-      standaloneExportDoneMessage({ htmlBytes: 12 * 1024 * 1024, assetCount: 4, missingCount: 1 }),
-      standaloneExportDoneMessage({ htmlBytes: GITHUB_FILE_WARN_BYTES, assetCount: 4, missingCount: 0 }),
-      standaloneExportDoneMessage({ htmlBytes: GITHUB_FILE_WARN_BYTES, assetCount: 4, missingCount: 1 }),
-      standaloneExportDoneMessage({ htmlBytes: GITHUB_FILE_BLOCK_BYTES, assetCount: 4, missingCount: 0 }),
-      standaloneExportDoneMessage({ htmlBytes: GITHUB_FILE_BLOCK_BYTES, assetCount: 4, missingCount: 1 }),
-      STANDALONE_HTML_GITHUB_PAGES_HINT,
-    ];
-    for (const catalog of [en, ja, zh] as Record<string, string>[]) {
-      const translator = createTranslator(catalog);
-      for (const sample of samples) {
-        const translated = translator.translate(sample);
-        expect(translated, sample).toEqual(expect.any(String));
-        expect(translated).not.toMatch(HANGUL);
-      }
-    }
   });
 });

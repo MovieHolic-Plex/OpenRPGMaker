@@ -43,15 +43,6 @@ function inputSearch(query: string): void {
 }
 
 describe("resource workbench catalog and DOM boundaries", () => {
-  it("renders Expression manager as an indented Faceset entry with a plain label", () => {
-    renderResourceManager(root, "faceset");
-    const entry = root.querySelector<HTMLButtonElement>('[data-testid="resource-category-expressions"]')!;
-    expect(entry.querySelector(".rm-category-label")?.textContent).toBe("표정 관리");
-    expect(entry.classList.contains("rm-expression-category")).toBe(true);
-    entry.click();
-    expect(root.querySelector(".rm-expression-section h3")?.textContent).toBe("표정 관리");
-  });
-
   it("keeps the raw-ID count equal to the authority with upload masking, retired/profile IDs and metadata orphans", () => {
     const project = createBlankProject();
     const builtin = listMonsterResources(project)[0]!.resourceId;

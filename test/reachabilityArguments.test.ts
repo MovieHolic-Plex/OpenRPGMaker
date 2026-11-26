@@ -30,6 +30,11 @@ const malformedPoints: Array<[string, unknown]> = [
   ["multiple object array point", [{ x: 10, y: 8 }, { x: 11, y: 8 }]],
   ["nested malformed array point", [[{}]]],
 ];
+// Tool-level rejection: one point per argument-normalization path (object, numeric string, array forms).
+const toolLevelPoints = malformedPoints.filter(([label]) => [
+  "missing x", "NaN", "fractional numeric string", "nested object coordinate", "nested array coordinate",
+  "null point", "multiple object array point", "nested malformed array point",
+].includes(label));
 
 describe("reachability coordinate argument boundary", () => {
   it("rejects wire114 before artifact evidence and permits a valid retry through real history", () => {
@@ -56,7 +61,7 @@ describe("reachability coordinate argument boundary", () => {
   });
 
   describe.each(["from", "targets"] as const)("%s", field => {
-    it.each(malformedPoints)("rejects %s without producing a verdict or changing the project", (_label, point) => {
+    it.each(toolLevelPoints)("rejects %s without producing a verdict or changing the project", (_label, point) => {
       const ctx = { project: createBlankProject() };
       const before = JSON.stringify(ctx.project);
       const args = { ...validArgs, [field]: field === "from" ? point : [validArgs.targets[0], point] };

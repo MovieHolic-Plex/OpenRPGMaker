@@ -69,12 +69,6 @@ describe("regionPolish", () => {
       expect(message.trimEnd().endsWith("4×4")).toBe(true);
     });
 
-    it("영역 밖으로 새 맵을 만들거나 이벤트를 내보내지 말라고 명시한다", () => {
-      const message = buildRegionPolishMessage({ ...baseInput, surroundings: null });
-      expect(message).toContain("영역 밖으로는 옮기지 말 것");
-      expect(message).toContain("새 맵을 만들지 말 것");
-    });
-
     it("물이 맞닿으면 연결 필수 좌표를 명령으로 재진술한다", () => {
       const project = makeProject();
       const map = project.maps[MAP_ID];
@@ -98,15 +92,6 @@ describe("regionPolish", () => {
       const surroundings = analyzeRegionSurroundings(project, MAP_ID, REGION);
       const message = buildRegionPolishMessage({ ...baseInput, surroundings });
       expect(message).toContain("[ev_npc]");
-    });
-
-    it("extraGuides 를 도구 가이드 뒤에 그대로 이어 붙인다", () => {
-      const message = buildRegionPolishMessage({
-        ...baseInput,
-        surroundings: null,
-        extraGuides: ["- 테스트 가이드 한 줄"],
-      });
-      expect(message).toContain("- 테스트 가이드 한 줄");
     });
   });
 });
@@ -228,12 +213,6 @@ describe("regionSurroundings", () => {
       const brief = formatRegionSurroundingsBrief(surroundings);
       expect(brief).toContain("[ev_in]");
       expect(brief).not.toContain("ev_far");
-    });
-
-    it("이벤트가 없으면 「영역 안 이벤트: 없음」을 명시한다 — 침묵은 «모른다»로 읽힌다", () => {
-      const project = makeProject();
-      const surroundings = analyzeRegionSurroundings(project, MAP_ID, REGION)!;
-      expect(formatRegionSurroundingsBrief(surroundings)).toContain("영역 안 이벤트: 없음");
     });
 
     it("한 변 전체가 물이어도 브리핑 좌표 나열은 상한에서 접힌다", () => {

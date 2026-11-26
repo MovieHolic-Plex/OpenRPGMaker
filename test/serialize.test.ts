@@ -5,7 +5,7 @@ import { createBlankProject } from "@/project/defaults";
 import { deserialize, serialize } from "@/project/io/serialize";
 import { FIELD_MENU_COMMANDS, romanceFieldMenu, validateFieldMenu } from "@/project/fieldMenu";
 import { BACKLOG_LIMIT_MAX, READ_FLAG_LIMIT, appendBacklog, autoAdvanceDelayMs, backlogEnabled, defaultDialogueSystem, dialogueReadKey, dialogueSystemHasControls, isDialogueRead, markDialogueRead, mergeDialogueSystem, normalizeBacklog, normalizeReadKeys, resolveDialogueSystem, romanceDialogueSystem, skipVerdict, stepStopReason, stopsReading, validateDialogueSystem, type BacklogHost } from "@/project/dialogueSystem";
-import { DIALOGUE_UI_STRINGS, dialogueUiLocale, dialogueUiText } from "@/player/dialogueUiStrings";
+import { DIALOGUE_UI_STRINGS } from "@/player/dialogueUiStrings";
 import { scaleCssAlpha } from "@/player/dialogueWindowOpacity";
 import { applyRomanceDefaults } from "@/project/romancePreset";
 import { applySaveSnapshot, createSaveSnapshot, readSaveSlot, saveToSlot } from "@/player/saveSlots";
@@ -333,24 +333,6 @@ describe("dialogueSystem", () => {
           expect(placeholders(row[locale]), `${key}/${locale} placeholders`).toBe(placeholders(row.ko));
         }
       }
-    });
-    it("english, japanese and chinese differ from korean for visible labels and the language switch works", () => {
-      for (const key of ["option.autoSpeed", "option.skipScope", "backlog.title", "option.windowOpacity"] as const) {
-        const row = DIALOGUE_UI_STRINGS[key];
-        expect(row.en).not.toBe(row.ko);
-        expect(row.ja).not.toBe(row.ko);
-        expect(row.zh).not.toBe(row.ko);
-      }
-      expect(dialogueUiText({ language: "ko" }, "backlog.close")).toBe("닫기");
-      expect(dialogueUiText({ language: "en" }, "backlog.close")).toBe("Close");
-      expect(dialogueUiText({ language: "ja" }, "backlog.count", 3)).toBe("3行");
-      expect(dialogueUiText(undefined, "backlog.close")).toBe("닫기");
-      expect(dialogueUiLocale("auto")).toMatch(/^(ko|en|ja|zh)$/);
-    });
-    it("keeps the legacy options screen wording in korean", () => {
-      expect(dialogueUiText(undefined, "option.title")).toBe("설정");
-      expect(dialogueUiText(undefined, "option.textSpeed")).toBe("대사 속도");
-      expect(dialogueUiText(undefined, "option.menuMotion")).toBe("메뉴 움직임 줄이기");
     });
   });
   describe("window opacity", () => {

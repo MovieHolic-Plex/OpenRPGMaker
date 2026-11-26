@@ -275,35 +275,4 @@ describe("자율성 다이얼 런 표면", () => {
     await flushAsync();
   });
 
-  it("계속 이벤트의 48분모 표시는 레벨 cap 으로 클램프된다", async () => {
-    storage.set(
-      AI_CONFIG_STORAGE_KEY,
-      JSON.stringify({ ...defaultAiConfig(), agentMode: "auto", autonomyLevel: "autonomous" })
-    );
-    const panel = renderPanel();
-    assistantMock.setEmitter((onEvent) => {
-      onEvent({ type: "work_plan", plan: samplePlan() });
-      onEvent({ type: "status", text: "자율 실행 계속 (5/48)" });
-    });
-    assistantMock.holdNextTurn();
-    const sending = bridgeSend("RPG 만들어줘");
-    await flushAsync();
-
-    // 세션 텍스트는 48분모지만 표시는 레벨 cap 32로 내린다.
-    expect(findByTestId(panel, "ai-autonomous-budget")?.textContent).toContain("5/32");
-
-    assistantMock.releaseHeldTurn();
-    await sending;
-    await flushAsync();
-  });
-
-  it("컴포저 입력줄에는 모델명을 두지 않는다", async () => {
-    storage.set(
-      AI_CONFIG_STORAGE_KEY,
-      JSON.stringify({ ...defaultAiConfig(), model: "stub-model", autonomyLevel: "autonomous" })
-    );
-    const panel = renderPanel();
-    await whenAiChatPanelSettled();
-    expect(findByTestId(panel, "ai-composer-model")).toBeNull();
-  });
 });

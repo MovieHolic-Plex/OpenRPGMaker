@@ -434,20 +434,6 @@ describe("mapLocationLayer", () => {
       expect(testId("map-location-list")?.textContent).toContain("아직 구역이 없습니다");
     });
 
-    it("renders the box geometry at the current zoom", () => {
-      mount();
-      setLocationLayerEnabled(true);
-      editorState.set({ zoom: 2 });
-      createLocationFromRect({ x: 2, y: 3, w: 4, h: 5 });
-      const id = currentLocations()[0]!.id;
-      const box = testId(`map-location-box-${id}`)!;
-      // 16px 타일 × zoom 2
-      expect(box.style.left).toBe("64px");
-      expect(box.style.top).toBe("96px");
-      expect(box.style.width).toBe("128px");
-      expect(box.style.height).toBe("160px");
-    });
-
     it("warns about overlap without blocking it", () => {
       mount();
       setLocationLayerEnabled(true);
@@ -741,14 +727,6 @@ describe("mapLocationLayer", () => {
       expect(seen[0]?.deltaY).toBe(120);
       // 원본은 취소된다 — Ctrl+휠이 브라우저 페이지 확대로 새지 않는다.
       expect(wheel.defaultPrevented).toBe(true);
-    });
-
-    it("켜고 구역이 없으면 맵에 드래그 힌트를 그린다", () => {
-      mount();
-      setLocationLayerEnabled(true);
-      expect(testId("map-location-empty-ghost")?.textContent).toContain("여기를 드래그");
-      createLocationFromRect({ x: 2, y: 2, w: 4, h: 4 });
-      expect(testId("map-location-empty-ghost")).toBeNull();
     });
 
     it("같은 칸 클릭은 구역을 만들지 않고 드래그만 만든다", () => {

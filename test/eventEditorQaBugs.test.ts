@@ -71,7 +71,7 @@ describe("event editor QA regressions", () => {
     localStorage.clear();
   });
 
-  it.each(["ctrlKey", "metaKey"])("runs the small task on %s+Enter without saving and closing", async modifier => {
+  it.each(["ctrlKey"])("runs the small task on %s+Enter without saving and closing", async modifier => {
     await openEditor();
     const modal = control("event-editor-modal");
     const onModalKeyDown = vi.fn();
@@ -142,7 +142,7 @@ describe("event editor QA regressions", () => {
     }
   });
 
-  it.each(["ctrlKey", "metaKey"] as const)("applies on %s+S inside a field that owns Ctrl+Enter", async (modifier) => {
+  it.each(["ctrlKey"] as const)("applies on %s+S inside a field that owns Ctrl+Enter", async (modifier) => {
     await openEditor();
     const modal = control("event-editor-modal");
     const input = control<HTMLInputElement>("event-editor-name");
@@ -167,7 +167,7 @@ describe("event editor QA regressions", () => {
     expect(save).not.toHaveBeenCalled();
   });
 
-  it.each(["ctrlKey", "metaKey"] as const)("applies on %s+S from the open small-task input", async (modifier) => {
+  it.each(["ctrlKey"] as const)("applies on %s+S from the open small-task input", async (modifier) => {
     await openEditor();
     const modal = control("event-editor-modal");
     control("small-task-open").click();

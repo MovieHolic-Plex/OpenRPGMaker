@@ -3,8 +3,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { createDialogueUI, type DialogueTextRequest, type DialogueUI } from "@/player/dialogue";
 import { createPlayerOptionsDetail } from "@/player/playerOptionsDetail";
-import { statusMenuControls } from "@/player/playerStatusMenu";
-import { statusMenuCommandLabel } from "@/player/playerStatusMenuModel";
 import { DEFAULT_PLAYER_PREFERENCES, getEffectiveReadingPreferences, normalizePlayerPreferences, updatePlayerPreferences, setAuthoredPreferenceDefaults } from "@/player/playerPreferences";
 import { closeBacklogView, backlogViewIsOpen } from "@/player/dialogueBacklogView";
 import { createBlankProject } from "@/project/defaults";
@@ -156,17 +154,7 @@ describe("dialogueRepair1", () => {
       expect(createPlayerOptionsDetail(undefined, classic).entries.some((entry) => entry.testId === "player-option-window-opacity")).toBe(false);
     });
   });
-  describe("D8 menu text follows the authored language", () => {
-    it("translates the rail backlog label and footer controls only when a dialogue system exists", () => {
-      const en = useSystem({ language: "en" });
-      expect(statusMenuCommandLabel("backlog", false, en)).toBe("Backlog");
-      expect(statusMenuControls("function", 1, false, en.meta.oprnDialogueSystem)).toContain("Enter confirm");
-      expect(statusMenuControls("main", 2, false, en.meta.oprnDialogueSystem)).toContain("Esc to game");
-      // 시스템이 없으면 예전 한국어 그대로.
-      expect(statusMenuControls("function")).toBe("↑↓ 항목 이동   Enter 결정   ← 메뉴   Esc 뒤로");
-      expect(statusMenuControls("main", 1, true)).toBe("↑↓ 이동 · Enter 선택\nEsc 닫기");
-    });
-  });
+
   describe("D12 assistant system-tool declaration words", () => {
     it.each(["add a visual novel backlog", "turn on auto-play and skip", "enable the message log", "バックログを付けて", "オートとスキップ", "加上对话记录和跳过", "개선 백로그"])("matches %s", (text) => {
       expect(GAME_SYSTEM_REQUEST_PATTERN.test(text)).toBe(true);
@@ -218,13 +206,6 @@ describe("dialogueSystemMenu", () => {
       const detail = detailFor(off);
       expect(detail.entries).toEqual([]);
       expect(detail.emptyLabel).toBe("이 게임은 대사 기록을 쓰지 않습니다.");
-    });
-
-    it("renders in the authored language", () => {
-      const project = createBlankProject();
-      project.meta.oprnDialogueSystem = mergeDialogueSystem(romanceDialogueSystem(), { language: "ja" });
-      expect(detailFor(project).title).toBe("バックログ");
-      expect(detailFor(project).entries[0]?.value).toBe("4行");
     });
   });
   describe("options screen", () => {

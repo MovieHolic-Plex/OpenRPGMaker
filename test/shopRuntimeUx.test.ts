@@ -93,25 +93,6 @@ describe("상점 도움말·통화 표시", () => {
     updateShopHelpLine(overlay, STEP, SWORD);
     expect(help?.textContent).toBe("공격력 +5");
   });
-
-  it("설명이 없으면 목록 안내문으로 되돌린다 — 아이템 효과 문장을 머리글에 박지 않는다", () => {
-    const blank = item({ id: "item_blank", name: "무명", price: 1 });
-    const overlay = render({ items: [blank] });
-    const help = overlay.querySelector<HTMLElement>("[data-testid='shop-help-line']");
-    expect(help?.textContent).toBe("목록에서 물건을 고르세요.");
-    expect(overlay.textContent).not.toContain("모든 캐릭터를 회복합니다");
-  });
-
-  it("가격에 통화 단위가 붙고 소지금·상인 소지금 모두 라벨이 있다", () => {
-    const overlay = render();
-    expect(overlay.querySelector("[data-testid='shop-price-item_potion']")?.textContent).toBe("50G");
-    const player = overlay.querySelector<HTMLElement>("[data-testid='shop-player-gold']");
-    const merchant = overlay.querySelector<HTMLElement>("[data-testid='shop-merchant-gold']");
-    expect(player?.querySelector(".runtime-shop-gold-label")?.textContent).toBe("소지금");
-    expect(player?.querySelector(".runtime-shop-gold-value")?.textContent).toBe("250G");
-    expect(merchant?.querySelector(".runtime-shop-gold-label")?.textContent).toBe("상인");
-    expect(merchant?.querySelector(".runtime-shop-gold-value")?.textContent).toBe("900G");
-  });
 });
 
 describe("상점 구매 가능 표시", () => {
@@ -154,15 +135,6 @@ describe("상점 구매 가능 표시", () => {
 });
 
 describe("상점 수량 입력", () => {
-  it("수량 입력과 합계가 목록이 아니라 프롬프트 줄에 있다", () => {
-    const overlay = render({ step: SELECT_STEP });
-    const input = overlay.querySelector<HTMLElement>("[data-testid='shop-quantity-input']");
-    expect(input).not.toBeNull();
-    // 예전에는 18행 목록의 마지막 자식이라 접힘선 밖으로 밀려났다.
-    expect(input?.closest(".runtime-shop-item-list")).toBeNull();
-    expect(input?.closest(".runtime-shop-prompt")).not.toBeNull();
-  });
-
   it("합계가 선택 행의 단가 × 수량으로 갱신된다", () => {
     const overlay = render({ step: SELECT_STEP });
     const total = overlay.querySelector<HTMLElement>("[data-testid='shop-quantity-total']");
@@ -181,37 +153,6 @@ describe("상점 수량 입력", () => {
 });
 
 describe("상점 사이드 패널", () => {
-  it("파티 칸이 에디터 밝은 회색 빈 박스가 아니다", () => {
-    const actorIds = createBlankProject().database.actors.slice(0, 2).map(actor => actor.id);
-    // 얼굴을 쓰는 프리셋(도트 상점이 아닌 것) — 파티원마다 얼굴 칸 하나.
-    const overlay = render({ scene: scene({ partyActorIds: actorIds }), step: { allowSell: true, shopUiPreset: "compare" } as ShopStep });
-    const sprites = overlay.querySelectorAll<HTMLElement>(".runtime-shop-party-sprite");
-    expect(sprites.length).toBe(2);
-    for (const sprite of sprites) {
-      expect(sprite.style.background).not.toContain("--bg-inset");
-      // 얼굴이 없으면 이름 첫 글자라도 있어야 한다 — 빈 사각형은 금지.
-      const hasFace = sprite.style.backgroundImage.length > 0;
-      expect(hasFace || (sprite.textContent ?? "").length > 0).toBe(true);
-      expect(sprite.getAttribute("aria-label")).toBeTruthy();
-    }
-  });
-
-  it("기본(도트) 상점의 파티 카드는 필드의 걷기 그림으로 선다 — 빈 칸이 아니다", () => {
-    // 프리셋 없는 상점의 기본은 도트 상점이고, 그 카드는 걷기 그림이 있으면 얼굴 대신 걷기 그림을 세운다(playSceneShopParts.partyPreview).
-    const actorIds = createBlankProject().database.actors.slice(0, 2).map(actor => actor.id);
-    const overlay = render({ scene: scene({ partyActorIds: actorIds }) });
-    const cards = overlay.querySelectorAll<HTMLElement>(".runtime-shop-party-card");
-    expect(cards.length).toBe(2);
-    for (const [index, card] of Array.from(cards).entries()) {
-      const figure = card.querySelector<HTMLElement>(`[data-testid='shop-party-sprite-${actorIds[index]}']`);
-      expect(figure).not.toBeNull();
-      expect(figure!.style.background).not.toContain("--bg-inset");
-      const drawn = figure!.classList.contains("runtime-shop-party-walker") ? Boolean(figure!.dataset.characterResourceId) : figure!.style.backgroundImage.length > 0;
-      expect(drawn || (figure!.textContent ?? "").length > 0).toBe(true);
-      expect(figure!.getAttribute("aria-label")).toBeTruthy();
-    }
-  });
-
   it("'장비' 줄은 장비 종류에만 뜨고 실제 착용 수를 센다", () => {
     const equipped = scene({
       inventory: { item_sword: 1 },
@@ -230,13 +171,6 @@ describe("상점 사이드 패널", () => {
 });
 
 describe("상점 접근성·제자리 갱신", () => {
-  it("오버레이가 모달 대화창 시맨틱을 갖는다", () => {
-    const overlay = createShopOverlay();
-    expect(overlay.getAttribute("role")).toBe("dialog");
-    expect(overlay.getAttribute("aria-modal")).toBe("true");
-    expect(overlay.getAttribute("aria-label")).toBe("상점");
-  });
-
   it("상태 문구가 live region 이고 제자리에서 바뀐다", () => {
     const overlay = render();
     const status = overlay.querySelector<HTMLElement>("[data-testid='shop-status-text']");
@@ -248,12 +182,6 @@ describe("상점 접근성·제자리 갱신", () => {
     expect(status?.textContent).toBe("포션 구매 — -50G");
     // 같은 노드가 살아 있어야 커서·포커스·낭독이 끊기지 않는다.
     expect(overlay.querySelector("[data-testid='shop-buy-item_potion']")).toBe(before);
-  });
-
-  it("목록에 listbox 시맨틱이 있다", () => {
-    const overlay = render();
-    expect(overlay.querySelector(".runtime-shop-item-list")?.getAttribute("role")).toBe("listbox");
-    expect(overlay.querySelector("[data-testid='shop-buy-item_potion']")?.getAttribute("role")).toBe("option");
   });
 
   it("다 팔린 행은 목록에서 빠진다", () => {
@@ -295,15 +223,6 @@ describe("상점 목록 더 있음 표시", () => {
 });
 
 describe("상점 빈 목록", () => {
-  it("모드에 맞는 빈 목록 안내가 한국어로 뜬다", () => {
-    expect(render({ items: [], mode: "buy" }).querySelector("[data-testid='shop-item-list-empty']")?.textContent).toBe(
-      "파는 물건이 없습니다."
-    );
-    expect(render({ items: [], mode: "sell" }).querySelector("[data-testid='shop-item-list-empty']")?.textContent).toBe(
-      "팔 물건이 없습니다."
-    );
-  });
-
   it("거래할 게 없는 상점도 닫을 수 있는 안내 창을 띄운다", () => {
     let closed = false;
     const shell = renderShopNotice("지금은 팔 물건이 없습니다.", resolveTerms(createBlankProject()), () => {

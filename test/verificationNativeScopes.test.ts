@@ -107,7 +107,8 @@ describe("native verification scopes through the real session and terminal accep
     // 나머지는 12.4~15.0s). 자매 통합 테스트처럼 자기 예산을 준다(aiAssistantSession 은 30~600초).
   }, 60_000);
 
-  it.each(nonMapTools)("%s resolves a pending checkId without changing owner or targets or borrowing a prior pass", async name => {
+  // 2026-11-26 test-diet r3: 미해소 ID 해소는 도구와 무관한 세션 경로다 — run_lint 와 매 턴 다시 도는 evaluate_game_quality 분기만 남긴다.
+  it.each(["run_lint", "evaluate_game_quality"])("%s resolves a pending checkId without changing owner or targets or borrowing a prior pass", async name => {
     const project = createBlankProject();
     const call = nativeCall(name, project);
     const f = rig(project);

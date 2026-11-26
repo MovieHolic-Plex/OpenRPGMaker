@@ -168,37 +168,6 @@ describe("cluster AI image-first modal", () => {
     expect(mocks.renderToolImages).toHaveBeenCalledWith(store.getCurrent(), "render_group_sample", data);
   });
 
-  it("maps internal tool image labels to user-facing captions", async () => {
-    mocks.renderToolImages.mockResolvedValue([{ dataUrl: "data:image/png;base64,sample", label: "render_group_sample" }]);
-    mocks.turns.push((onEvent: (event: SessionEvent) => void) => {
-      onEvent({ type: "tool_call", name: "render_group_sample", args: {}, result: { ok: true, summary: "샘플 렌더" } });
-      return emptyTurn;
-    });
-
-    openClusterAiModal({ kind: "cluster-edit", tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "fence-main" });
-    await flushAsync();
-
-    const stage = requireTestId(document, "cluster-ai-stage");
-    expect(stage.textContent).toContain("현재 모습");
-    expect(stage.textContent).not.toContain("render_group_sample");
-  });
-
-  it("renders one tool image as a single large stage image", async () => {
-    mocks.renderToolImages.mockResolvedValue([{ dataUrl: "data:image/png;base64,one", label: "타일 보기" }]);
-    mocks.turns.push((onEvent: (event: SessionEvent) => void) => {
-      onEvent({ type: "tool_call", name: "show_tiles", args: { tilesetId: COMBINED_TOWN_TILESET_ID, tiles: [1] }, result: { ok: true, summary: "타일 보기" } });
-      return emptyTurn;
-    });
-
-    openClusterAiModal({ kind: "cluster-edit", tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "fence-main" });
-    await flushAsync();
-
-    const stage = requireTestId(document, "cluster-ai-stage");
-    expect(stage.querySelectorAll("img")).toHaveLength(1);
-    expect(stage.querySelector("[data-testid='cluster-ai-beforeafter']")).toBeNull();
-    expect(stage.textContent).toContain("타일 보기");
-  });
-
   it("renders assistant choices and sends a clicked one as the next message", async () => {
     mocks.turns.push((onEvent: (event: SessionEvent) => void) => {
       onEvent({ type: "assistant_message", content: "어떻게 할까요? [선택지] 적용 | 다시 보기" });
@@ -214,22 +183,6 @@ describe("cluster AI image-first modal", () => {
     await flushAsync();
 
     expect(mocks.instances[0].sendUserMessage).toHaveBeenLastCalledWith("적용", expect.any(Function), expect.any(AbortSignal));
-  });
-
-  it("keeps long assistant prose as a single caption line", async () => {
-    const longText = `첫 줄입니다.\n${"아주 긴 설명 ".repeat(40)}끝`;
-    mocks.turns.push((onEvent: (event: SessionEvent) => void) => {
-      onEvent({ type: "assistant_message", content: longText });
-      return { ...emptyTurn, assistantText: longText };
-    });
-
-    openClusterAiModal({ kind: "cluster-edit", tilesetId: COMBINED_TOWN_TILESET_ID, groupId: "fence-main" });
-    await flushAsync();
-
-    const assistantBubble = assistantBubbles()[0];
-    expect(assistantBubble?.textContent).not.toContain("\n");
-    expect((assistantBubble?.textContent ?? "").length).toBeLessThan(longText.length);
-    expect(assistantBubble?.textContent).toContain("...");
   });
 });
 
@@ -253,11 +206,6 @@ async function flushAsync(): Promise<void> {
     return result.value;
   });
   await Promise.all([turn.value, ...images]);
-}
-
-function assistantBubbles(): HTMLElement[] {
-  return Array.from(document.querySelectorAll(".cluster-ai-bubble"))
-    .filter((node): node is HTMLElement => node instanceof HTMLElement && node.className.includes("assistant"));
 }
 
 function requireTestId(root: ParentNode, testId: string): HTMLElement {

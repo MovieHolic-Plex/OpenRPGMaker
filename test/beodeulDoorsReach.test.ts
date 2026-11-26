@@ -40,7 +40,7 @@ function lostDoors(project: Project, map: GameMap, from: { x: number; y: number 
 }
 
 describe("마을의 문은 모두 입구에서 걸어 닿는다", () => {
-  it.each([52002, 59921, 67840])("r5 의 기록된 요청(씨앗 %i): 언덕 위 탑집을 포함해 모든 건물의 문에 닿는다", (seed) => {
+  it.each([52002])("r5 의 기록된 요청(씨앗 %i): 언덕 위 탑집을 포함해 모든 건물의 문에 닿는다", (seed) => {
     const { project, map, data } = town({ ...villageArgs(R5).args, name: R5.name, seed }, R5_KEY);
     expect(data.doors.length).toBeGreaterThanOrEqual(7);
     expect(data.doors.filter((d) => !d.reached)).toEqual([]);

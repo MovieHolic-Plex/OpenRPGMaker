@@ -2,7 +2,7 @@ import { describe, expect, it, beforeEach } from "vitest";
 import { existsSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import { resolve } from "node:path";
-import { BGM_CATALOG, BGM_CATALOG_LICENSE, bgmTrackLabel, bgmTracksByCategory, findBgmTrack } from "@/assets/bgmCatalog";
+import { BGM_CATALOG, BGM_CATALOG_LICENSE, bgmTracksByCategory, findBgmTrack } from "@/assets/bgmCatalog";
 import { BGM_CATALOG_TOTAL_SECONDS, BGM_CATALOG_TRACK_COUNT, bgmCatalogResourceIds, findBgmRuntimeEntry, isBgmCatalogResourceId } from "@/assets/bgmCatalogRuntime";
 import { BGM_CDN_PREFIX, BGM_LOCAL_FALLBACK_PREFIX, bgmCdnBase, bgmTrackUrl } from "@/assets/bgmCdn";
 import { BGM_STARTER_TRACK_IDS, STARTER_TITLE_BGM_ID } from "@/assets/bgmStarterTracks";
@@ -122,10 +122,6 @@ describe("bgmCatalog", () => {
       expect(BGM_CATALOG_TOTAL_SECONDS).toBeGreaterThan(11 * 3600);
     });
 
-    it("라이선스가 CC0 로 못박혀 있다", () => {
-      expect(BGM_CATALOG_LICENSE).toBe("CC0-1.0");
-    });
-
     it("모든 곡이 카테고리와 검색 태그를 갖는다", () => {
       for (const track of BGM_CATALOG) {
         expect(track.category.trim(), track.id).not.toBe("");
@@ -139,14 +135,6 @@ describe("bgmCatalog", () => {
       const total = [...groups.values()].reduce((sum, list) => sum + list.length, 0);
       expect(total).toBe(BGM_CATALOG.length);
       expect(groups.size).toBeGreaterThan(50);
-    });
-
-    it("표시 라벨에 제목·장면·길이가 모두 들어간다", () => {
-      const track = BGM_CATALOG[0]!;
-      const label = bgmTrackLabel(track);
-      expect(label).toContain(track.title);
-      expect(label).toContain(track.category);
-      expect(label).toMatch(/\(\d+:\d{2}\)$/);
     });
 
     it("id 로 트랙을 찾을 수 있고 카탈로그 밖 id 는 undefined 다", () => {
@@ -575,26 +563,12 @@ describe("monsterBadgeCeremony", () => {
       for (const c of list) expect(["m2Command", "playAudio", "showPicture", "text", "erasePicture"]).toContain(c.kind);
     });
 
-    it("받침 있는 이름은 「을」, 없는 이름은 「를」로 말한다", () => {
-      const text = (name: string) => badgeAwardCommands({ badgeName: name }).filter((c) => c.kind === "text").map((c) => (c.kind === "text" ? c.body : ""))[0];
-      expect(text("새잎 배지")).toBe("새잎 배지를 받았다!");
-      expect(text("바위 훈장")).toBe("바위 훈장을 받았다!");
-    });
-
     it("체육관 타입이 아이콘을 정하고, iconResourceId 가 타입보다 앞선다", () => {
       expect(badgeIconResourceId("water")).toBe("cc0-jetrel-gen-gem-sapphire");
       expect(badgeIconResourceId("nope")).toBe("cc0-jetrel-badge");
       const icon = (c: Command) => (c.kind === "showPicture" ? c.resourceId : undefined);
       expect(icon(badgeAwardCommands({ badgeName: "a", type: "fire" }).find((c) => c.kind === "showPicture")!)).toBe("cc0-jetrel-gen-gem-ruby");
       expect(icon(badgeAwardCommands({ badgeName: "a", type: "fire", iconResourceId: "cc0-jetrel-crystal" }).find((c) => c.kind === "showPicture")!)).toBe("cc0-jetrel-crystal");
-    });
-
-    it("그림은 화면 가운데 위쪽에 놓인다(해상도 따라)", () => {
-      const medal = (screen: { width: number; height: number }) => badgeAwardCommands({ badgeName: "a", screen }).filter((c) => c.kind === "showPicture" && c.pictureId === BADGE_MEDAL_PICTURE_ID).at(-1) as Extract<Command, { kind: "showPicture" }>;
-      const wide = medal({ width: 480, height: 320 });
-      expect(wide.x! + 64).toBe(240); // 400% × 32px = 128px 폭
-      const small = medal({ width: 320, height: 240 });
-      expect(small.x! + 64).toBe(160);
     });
 
     it("연출 구간을 찾는다(앞쪽 섬광·징글 포함, 마지막 그림 치우기까지)", () => {

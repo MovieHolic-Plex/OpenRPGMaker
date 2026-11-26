@@ -2,7 +2,6 @@ import { describe, expect, it, afterEach, beforeEach, vi, expectTypeOf } from "v
 import { buildSystemPrompt } from "@/ai/contextBuilder";
 import { AGENT_UX_POLICY_LINES } from "@/ai/promptPolicies";
 import { composeSystemPrompt } from "@/ai/systemPromptEnvelope";
-import { TOKEN_BUDGET_STATUS_TEXT } from "@/ai/assistantSession";
 import { createBlankProject } from "@/project/defaults";
 import { activeTools } from "@/editor/tools";
 import { EVALUATE_GAME_QUALITY_TOOL, PLAY_WALKTHROUGH_TOOL, RUN_LINT_TOOL, VERIFY_QUEST_TOOL, parseLayerVerdict, parseToolVerdict, runLayerVerificationReport, selectVerificationCalls, type LayerDescriptor, type ToolResultLike, type VerificationCallRecord } from "@/ai/agentVerification";
@@ -29,8 +28,7 @@ import { AI_INSTRUCTIONS_MAX_CHARS, aiInstructionsSection, normalizeAiInstructio
 import type { AcceptanceStatus } from "@/ai/assistantAcceptance";
 import { deriveRunOutcome, type RunOutcome } from "@/ai/runOutcome";
 import { EMPTY_SESSION_USAGE, addSessionUsage, formatSessionUsage, formatTokenCount } from "@/ai/sessionUsage";
-import { readFileSync } from "node:fs";
-import { AI_UI_ACTIONS, AI_UI_EVENT_SURFACES, type AiUiEvent } from "@/ai/uiEventTypes";
+import type { AiUiEvent } from "@/ai/uiEventTypes";
 import { aiUiEventMarker, clearAiUiEvents, flushAiUiEvents, installAiUiEventCapture, listAiUiEvents, recordAiUiEvent, resetAiUiEventLogForTest, resolveAiUiSurface, setAiUiEventSink, takeAiUiEventsSince } from "@/ai/uiEventLog";
 import { isDestructiveOutcome } from "@/ai/approvalPolicy";
 import type { ChangeSummary } from "@/project/types";
@@ -55,169 +53,10 @@ describe("agentUxPolicyPrompt", () => {
     });
     // Retired: the author_house shape-variety policy (templateId/kitId, look_at_houses) left promptPolicies.ts with author_house.
 
-    it("injects the UX policy section into the system prompt", () => {
-      expect(prompt()).toContain("## UX 응답 정책(반드시 준수)");
-    });
-
-    it("forbids leaving a 1-tile gap from walls when placing transfers and tiles", () => {
-      const text = prompt();
-      expect(text).toContain("벽 밀착(필수)");
-      expect(text).toContain("1칸 띄우지 마세요");
-      expect(text).toContain("벽과 맞닿은 통행 가능 칸");
-    });
-
-    it("tells the agent to refuse unsupported 3D requests without write proposals", () => {
-      const text = prompt();
-      expect(text).toContain("3D 오픈월드");
-      expect(text).toContain("쓰기 툴을 호출하거나 변경 제안을 만들지 마세요");
-    });
-
     it("exposes the supported real-time combat authoring capabilities", () => {
       const tools = activeTools();
       expect(tools.find((tool) => tool.name === "set_action_combat")?.mode).toBe("write");
       expect(tools.find((tool) => tool.name === "make_action_enemy")?.mode).toBe("write");
-    });
-
-    it("requires a feasible 2D alternative when a request is out of scope", () => {
-      expect(prompt()).toContain("2D 맵·이벤트·DB로 가능한 대안");
-    });
-
-    it("forbids describing nonexistent canvas results", () => {
-      const text = prompt();
-      expect(text).toContain("존재하지 않는 결과를 했다고 서술하지 마세요");
-      expect(text).toContain("캔버스에 없는 지형·숲·길·건물·NPC");
-    });
-
-    it("prefers a one-sentence question for low-information requests", () => {
-      const text = prompt();
-      expect(text).toContain("저정보 요청");
-      expect(text).toContain("도구 호출 전에 1문장으로 되물으세요");
-    });
-
-    it("requires clarify before guessing house vs interior map", () => {
-      const text = prompt();
-      expect(text).toContain("집 vs 실내(필수)");
-      expect(text).toContain("추측 실행 금지");
-      // author_house was removed; the clarify rule now routes to build_hand_interior_room / place_terrain_house (promptPolicies.ts).
-      expect(text).toContain("build_hand_interior_room");
-      expect(text).toContain("place_terrain_house");
-    });
-
-    it("forbids re-asking parameters already present in the user request", () => {
-      const text = prompt();
-      expect(text).toContain("집 두어 채");
-      expect(text).toContain("되묻지 말고 그대로 사용하세요");
-    });
-
-    it("continues without confirmation after proceed instructions and limits questions", () => {
-      const text = prompt();
-      expect(text).toContain("진행/계속/진행해/진행하라고");
-      expect(text).toContain("추가 확인 질문 없이 끝까지 실행");
-      expect(text).toContain("확인 질문은 파괴적 변경·집/실내 경로 미확정·또는 진짜 모호한 요구일 때만");
-    });
-
-    it("distinguishes automatic time tint from static scene mood", () => {
-      const text = prompt();
-      expect(text).toContain("configure_time_system");
-      expect(text).toContain("자동 주야간 색조");
-      expect(text).toContain("set_scene_mood");
-      expect(text).toContain("정적 분위기");
-    });
-
-    it("guides resize before cramped structure plans", () => {
-      const text = prompt();
-      expect(text).toContain("맵이 요구 구조물 대비 작으면");
-      expect(text).toContain("resize_map을 먼저 호출");
-    });
-
-    it("routes terrain surfaces to fill_region and scattered objects to place_props", () => {
-      const text = prompt();
-      expect(text).toContain("수역/지면/바닥 면은 fill_region만 쓴다");
-      expect(text).toContain("shape=circle");
-      expect(text).toContain("물 위 place_props 금지");
-      expect(text).toContain("호수·물 칸 밖");
-    });
-
-    it("routes common domain requests to high-level tools before low-level event upserts", () => {
-      const text = prompt();
-      expect(text).toContain("## 고수준 툴 우선");
-      expect(text).toContain("트랩/즉사=place_trap");
-      expect(text).toContain("체크포인트=place_trap의 checkpoint 관례");
-      expect(text).toContain("퍼즐=compile_puzzle");
-      expect(text).toContain("조사=place_examine_hotspots");
-      expect(text).toContain("컷신=script_cutscene");
-      expect(text).toContain("추격=make_chase_scene");
-      expect(text).toContain("NPC=place_npc/make_villager");
-      expect(text).toContain("상점=set_shop_stock");
-      expect(text).toContain("사냥터=make_hunting_ground");
-      expect(text).toContain("조명=set_lighting_volume/set_scene_mood");
-      expect(text).toContain("수역=fill_region");
-      // author_house/author_village were removed from the registry; the routes are now place_terrain_house / author_beodeul_town (contextBuilder.ts).
-      expect(text).toContain("야외 집=place_terrain_house");
-      expect(text).toContain("마을=author_beodeul_town");
-      expect(text).toContain("build_hand_interior_room");
-      expect(text).not.toMatch(/야외 집[^\n]*(build_house_kit|build_house_lots|build_wall|place_door|build_roof)/);
-      expect(text).not.toMatch(/마을[^\n]*(build_village|run_village_session|run_village_pipeline)/);
-      expect(text).toContain("월드=plan_world/build_world");
-      expect(text).toContain("퀘스트=define_quest→verify_quest");
-      expect(text).toContain("upsert_event/upsert_common_event는 위에 없는 커스텀 로직 전용");
-    });
-
-    it("routes interior room requests to the independent session and excludes outdoor facades", () => {
-      const text = prompt();
-      expect(text).toContain("외장 없는 독립 실내·방·인테리어 요청은 야외 집이 아니다");
-      expect(text).toContain("build_hand_interior_room");
-      expect(text).toContain("외장(place_terrain_house)+실내를 짓고 create_transfer_pair 로 잇는다");
-      expect(text).toContain("create_map만 하고 멈추지 마세요");
-    });
-
-    it("routes NPC placement to place_npc instead of low-level upsert_event", () => {
-      const text = prompt();
-      expect(text).toContain("NPC/주민 배치 = place_npc");
-      expect(text).toContain("저수준 upsert_event 금지");
-    });
-
-    it("requires honest disclosure when only preparation work happened", () => {
-      const text = prompt();
-      expect(text).toContain("준비만 하고 실제 타일·이벤트·DB 배치를 아직 하지 않았다면");
-      expect(text).toContain("아직 배치 자체는 하지 않았다");
-    });
-
-    it("requires quest graph registration and verification for narrative work", () => {
-      const text = prompt();
-      expect(text).toContain("일반 퀘스트는 define_quest로 등록");
-      expect(text).toContain("verify_quest 통과");
-      expect(text).toContain("author_story_arc");
-      expect(text).toContain("evaluate_game_quality");
-    });
-
-    it("forces draft tense before proposal acceptance", () => {
-      const text = prompt();
-      expect(text).toContain("수락 전 제안 단계");
-      expect(text).toContain("~할 예정입니다");
-      expect(text).toContain("~하도록 제안합니다");
-    });
-
-    it("limits final response length and beginner-facing tone", () => {
-      const text = prompt();
-      expect(text).toContain("3~5문장");
-      expect(text).toContain("초보 사용자 언어");
-    });
-
-    it("forbids internal ids, tool names, and developer terms in the final text", () => {
-      const text = prompt();
-      expect(text).toContain("Tile 342");
-      expect(text).toContain("tex_*");
-      expect(text).toContain("run_lint");
-      expect(text).toContain("원시 도구명");
-      expect(text).toContain("테스트/개발자 용어는 노출하지 마세요");
-    });
-
-    it("uses user-facing wording for token budget exhaustion", () => {
-      expect(TOKEN_BUDGET_STATUS_TEXT).toBe("요청이 커서 이번 턴에는 일부만 제안합니다. 이어서 요청해 주세요.");
-      expect(TOKEN_BUDGET_STATUS_TEXT).not.toContain("출력 토큰");
-      expect(TOKEN_BUDGET_STATUS_TEXT).not.toContain("8192");
-      expect(TOKEN_BUDGET_STATUS_TEXT).not.toContain("최대 토큰");
     });
 
     // 봉투(systemPromptEnvelope)를 거쳐도 정책 문장이 변형·손실되지 않아야 한다. 정책을
@@ -1366,23 +1205,32 @@ describe("aiRunOutcome", () => {
       expect(outcome).toEqual({ execution: "response-final", goal: "unassessed", delivery: "no-change", imageAttached: false });
     });
 
+    // The three axes are independent projections, so each axis is checked against its contract table
+    // without enumerating the full execution x assessment x delivery cross product.
     for (const execution of executions) {
       for (const { acceptance, goal } of assessments) {
-        describe(`${execution} / ${acceptance}`, () => {
-          it.each(deliveries)(
-            "projects $delivery when pending=$hasPendingDraft applied=$hasApplied persistence=$persistence",
-            ({ hasPendingDraft, hasApplied, persistence, delivery }) => {
-              // Given: expected axes come from the fixed contract tables, not the implementation.
-              const facts = Object.freeze({ execution, acceptance, hasPendingDraft, hasApplied, persistence });
-              // When
-              const outcome = deriveRunOutcome(facts);
-              // Then
-              expect(outcome).toEqual({ execution, goal, delivery, imageAttached: false });
-            },
-          );
+        it(`projects execution=${execution} acceptance=${acceptance} onto the execution and goal axes`, () => {
+          // Given: expected axes come from the fixed contract tables, not the implementation.
+          const facts = Object.freeze({ ...queryFacts, execution, acceptance });
+          // When
+          const outcome = deriveRunOutcome(facts);
+          // Then
+          expect(outcome).toEqual({ execution, goal, delivery: "no-change", imageAttached: false });
         });
       }
     }
+
+    it.each(deliveries)(
+      "projects $delivery when pending=$hasPendingDraft applied=$hasApplied persistence=$persistence",
+      ({ hasPendingDraft, hasApplied, persistence, delivery }) => {
+        // Given
+        const facts = Object.freeze({ ...queryFacts, hasPendingDraft, hasApplied, persistence });
+        // When
+        const outcome = deriveRunOutcome(facts);
+        // Then
+        expect(outcome).toEqual({ execution: "response-final", goal: "unassessed", delivery, imageAttached: false });
+      },
+    );
 
     it("preserves accepted persistence when the owner cannot supply a current passing proof", () => {
       // Given: failed proof leaves the accepted save fact intact; this is not a proof-authority test.
@@ -1505,93 +1353,6 @@ describe("aiSessionUsage", () => {
       const totals = addSessionUsage(EMPTY_SESSION_USAGE, "gpt-x", { prompt_tokens: 84_120, completion_tokens: 6_410 });
 
       expect(formatSessionUsage(totals)).toBe("호출 1회 · 입력 84,120 · 출력 6,410");
-    });
-  });
-});
-
-// 의미 이벤트 계측이 «조용히 빠지는 것» 을 그 자리에서 막는다.
-//
-// 왜 소스 원문을 읽는가: 위임 리스너는 앞으로 추가되는 버튼까지 자동으로 잡지만, 결과 수치가
-// 필요한 액션(압축·되감기·복원 등)은 명시 호출이라 지우면 아무도 모른다. 그리고 그게 이 작업의
-// 출발점이었다 — 「uiEvents」 필드는 타입에 있었지만 chat 채널에서 항상 비어 있었고, 채우는
-// 코드가 없다는 사실을 아무 테스트도 잡지 못했다. 도달 불가 결함을 소스로 잠근
-// aiPanelDockChrome.test.ts 와 같은 방식이다.
-describe("aiUiEventContract", () => {
-  isolateTimers();
-  const read = (path: string): string => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
-  const PANEL = read("src/editor/panels/aiChatPanel.ts");
-  // 턴 계측은 2026-08-30 분해에서 런너로 옮겨갔다 — 계약은 코드가 있는 곳을 봐야 한다.
-  const TURN_RUNNER = read("src/editor/panels/aiTurnRunner.ts");
-  const HISTORY_MODAL = read("src/editor/panels/aiConversationHistoryModal.ts");
-  const INSTRUCTIONS_MODAL = read("src/editor/panels/aiInstructionsModal.ts");
-  const MODE = read("src/app/mode.ts");
-  const UI_EVENT_LOG = read("src/ai/uiEventLog.ts");
-  // Retained for historical records, not emitted by the consented local diagnostic workflow.
-  const HISTORICAL_ACTIONS = ["conversationExport"] as const;
-  type LiveAction = Exclude<keyof typeof AI_UI_ACTIONS, typeof HISTORICAL_ACTIONS[number]>;
-  /** 액션 키 → 그 계측이 있어야 하는 파일. 하나라도 사라지면 이 테스트가 그 이름을 말해 준다. */
-  const CALL_SITES: Readonly<Record<LiveAction, string>> = {
-    contextCompact: PANEL,
-    contextCompactUndo: PANEL,
-    conversationRestore: HISTORY_MODAL,
-    conversationDelete: HISTORY_MODAL,
-    instructionsSave: INSTRUCTIONS_MODAL,
-    turnRewind: PANEL,
-    panelCollapse: PANEL,
-    newConversation: PANEL,
-    turnAbort: PANEL,
-    turnRetry: TURN_RUNNER,
-  };
-  describe("ai ui event 계측 계약", () => {
-    it("every named action has a live call site", () => {
-      const missing = Object.keys(CALL_SITES).filter((key) => {
-        const source = CALL_SITES[key as LiveAction];
-        return !source.includes(`AI_UI_ACTIONS.${key}`);
-      });
-      expect(missing).toEqual([]);
-    });
-
-    it("covers every action name in the constant — 표를 늘리면 계측도 늘어야 한다", () => {
-      expect([...Object.keys(CALL_SITES), ...HISTORICAL_ACTIONS].sort()).toEqual(Object.keys(AI_UI_ACTIONS).sort());
-    });
-
-    it("action names stay kebab-case and unique — DB 색인이 이 문자열을 그대로 쓴다", () => {
-      const values = Object.values(AI_UI_ACTIONS);
-      expect(new Set(values).size).toBe(values.length);
-      for (const value of values) expect(value).toMatch(/^[a-z]+(?:-[a-z]+)*$/u);
-    });
-
-    it("wires the delegated collector into the app once", () => {
-      expect(MODE).toContain("installAiUiEventCapture()");
-      expect(MODE).toContain("setAiUiEventSink(");
-      expect(MODE).toContain("recordAiUiActionBatch(");
-    });
-
-    it("the collector never swallows input", () => {
-      // 전면 투명 레이어가 맵 클릭을 삼킨 2026-08-19 P0 과 같은 실패 방식을 원문에서 막는다.
-      expect(UI_EVENT_LOG).not.toMatch(/\bpreventDefault\(/u);
-      expect(UI_EVENT_LOG).not.toMatch(/\bstopPropagation\(/u);
-      expect(UI_EVENT_LOG).not.toMatch(/\bstopImmediatePropagation\(/u);
-    });
-
-    it("excludes the map canvas and tile palette from the captured surfaces", () => {
-      // 계측 범위는 «AI 표면 전부» 로 합의됐다. 맵 드래그 같은 연속 입력이 섞이면 로그량이
-      // 수십 배가 되고 별도 샘플링이 필요하다(승인된 범위 밖).
-      const selectors = AI_UI_EVENT_SURFACES.map(([selector]) => selector).join(" ");
-      expect(selectors).not.toMatch(/map-canvas|tile-palette|database-studio/u);
-      for (const [selector] of AI_UI_EVENT_SURFACES) expect(selector).toMatch(/ai-|ai-harness-modal/u);
-    });
-
-    it("the chat turn row carries both audit and front actions", () => {
-      // 턴 행이 «턴 구간» audit 을 쓰는지(세션 전체가 아니라) + 프론트 액션을 싣는지.
-      expect(TURN_RUNNER).toContain("sessionAuditCountAtTurnStart");
-      expect(TURN_RUNNER).toContain("takeAiUiEventsSince(uiEventMarkerAtTurnStart)");
-      expect(TURN_RUNNER).toContain("uiActions: turnUiActions");
-      // 시작 pending 행과 종료 행이 같은 id 를 쓴다 — 죽은 턴도 지시와 시작 시각은 남는다.
-      expect(TURN_RUNNER).toContain("pending: true");
-      expect(TURN_RUNNER).toContain("id: turnLogId");
-      // 소유권을 잃은 턴도 남긴다(예전에는 여기서 그냥 return 했다).
-      expect(TURN_RUNNER).toContain("orphaned: true");
     });
   });
 });

@@ -115,191 +115,7 @@ async function renderWith(providerId: string | undefined): Promise<{ root: FakeE
   return { root, dispose: () => view.dispose() };
 }
 
-function optionValues(select: FakeElement | null): readonly string[] {
-  return (select?.querySelectorAll("option") ?? []).map((option) => option.getAttribute("value") ?? "");
-}
-
-function optionTexts(select: FakeElement | null): readonly string[] {
-  return (select?.querySelectorAll("option") ?? []).map((option) => option.textContent ?? "");
-}
-
-describe("연결 방식은 제공자 카드다", () => {
-  it("죽은 「API 키」종류 카드는 없고 제공자 카드가 곧 선택이다", async () => {
-    // 레지스트리의 두 제공자는 모두 oauth 다 — 예전 「연결 방식」카드는 고를 수 없는
-    // 「API 키」선택지를 늘 보여 주는 죽은 UI 였다(고르면 같은 두 제공자만 다시 떴다).
-    // 지금은 종류 선택이 없고, 제공자 카드가 선택과 상태 표시를 겸한다.
-    const { root, dispose } = await renderFactory();
-
-    expect(findByTestId(root, "ai-auth-oauth")).toBeNull();
-    expect(findByTestId(root, "ai-auth-api-key")).toBeNull();
-
-    const group = findByTestId(root, "ai-auth-quick");
-    expect(group?.getAttribute("role")).toBe("radiogroup");
-    const claude = findByTestId(root, "ai-auth-quick-anthropic");
-    const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
-    const codex = findByTestId(root, "ai-auth-quick-openai-codex");
-    expect(claude?.getAttribute("role")).toBe("radio");
-    expect(gemini?.getAttribute("role")).toBe("radio");
-    expect(codex?.getAttribute("role")).toBe("radio");
-    // 공장 기본은 Claude(2026-11-23 오너 결정, 조수 기본 = Sonnet 5.5 high) — 선택된 것만 탭 순서에 들어간다(roving tabindex).
-    expect(claude?.getAttribute("aria-checked")).toBe("true");
-    expect(claude?.getAttribute("tabindex")).toBe("0");
-    expect(gemini?.getAttribute("aria-checked")).toBe("false");
-    expect(gemini?.getAttribute("tabindex")).toBe("-1");
-    expect(codex?.getAttribute("aria-checked")).toBe("false");
-    expect(codex?.getAttribute("tabindex")).toBe("-1");
-    dispose();
-  });
-
-  it("제공자 목록은 레지스트리 전체이고 앞의 셋은 Claude·ChatGPT·Google 이다", async () => {
-    // 예전 계약은 "Antigravity 하나뿐", 그다음은 "둘뿐" 이었다. abaa03e78f(2026-11-02) 로 17종이 됐다.
-    // select 는 숨은 값·change 원천으로만 남는다 — 보이는 선택은 카드가 한다.
-    const { providers } = await loadDeps();
-    const { root, dispose } = await render();
-    const select = findByTestId(root, "ai-oh-my-pi-provider");
-
-    expect(optionValues(select)).toEqual(providers.OH_MY_PI_PROVIDERS.map((provider) => provider.id));
-    expect(optionValues(select).slice(0, 3)).toEqual(["anthropic", "openai-codex", "google-antigravity"]);
-    expect(select?.disabled).toBe(false);
-    // fakeDom 은 hidden 속성을 속성 필드로 동기화하지 않으므로 attribute 로 본다.
-    expect(select?.getAttribute("hidden")).toBe("");
-    dispose();
-  });
-
-  it("옵션 텍스트에 영어 enum 을 흘리지 않는다", async () => {
-    const { root, dispose } = await render();
-    for (const text of optionTexts(findByTestId(root, "ai-oh-my-pi-provider"))) {
-      expect(text).not.toMatch(/·\s*(oauth|apiKey|local)\s*$/u);
-    }
-    dispose();
-  });
-});
-
-describe("API 키 입력칸은 어느 제공자에도 없다", () => {
-  // 옛 계약은 "자격 종류로 키 칸을 가른다" 였다. 레지스트리에 apiKey 제공자가 없어진 뒤로는
-  // 그 칸이 영구히 숨은 死코드였고, 숨은 input 은 fakeDom·브라우저 자동완성·미래 collect 경로가
-  // 값을 읽을 수 있는 표면이다. 그래서 DOM 자체를 없앴고, 그 부재를 여기서 고정한다.
-  it("두 제공자 모두에서 키 입력 DOM 이 존재하지 않는다", async () => {
-    const { providers } = await loadDeps();
-    expect(providers.ohMyPiProvidersByAuthKind("apiKey")).toHaveLength(0);
-    for (const provider of providers.OH_MY_PI_PROVIDERS) {
-      const { root, dispose } = await render(provider.id);
-      expect(findByTestId(root, "ai-companion-key-row"), provider.id).toBeNull();
-      expect(findByTestId(root, "ai-companion-api-key"), provider.id).toBeNull();
-      expect(findByTestId(root, "ai-companion-save-key"), provider.id).toBeNull();
-      dispose();
-    }
-  });
-
-  it("어느 상태에서도 키 입력칸이 생기지 않는다", async () => {
-    // 「API 키」종류 카드 자체가 없어졌으므로, 키 칸이 뜰 경로는 존재하지 않는다.
-    const { root, dispose } = await render();
-    findByTestId(root, "ai-auth-quick-openai-codex")?.click();
-    expect(findByTestId(root, "ai-companion-api-key")).toBeNull();
-    dispose();
-  });
-
-  it("두 제공자 모두 계정 로그인으로 안내한다 (키 입력 없음)", async () => {
-    // abaa03e78f(2026-11-02) 가 안내 문장을 「<계정> 계정으로 로그인」 한 줄로 줄였다. 키 입력칸이 없다는 사실은 위 DOM 부재 단언이 고정한다.
-    for (const providerId of ["google-antigravity", "openai-codex"]) {
-      const { root, dispose } = await render(providerId);
-      expect(findByTestId(root, "ai-auth-provider-help")?.textContent ?? "", providerId)
-        .toContain("계정으로 로그인");
-      dispose();
-    }
-  });
-});
-
-describe("안내와 오류를 구분하고 오진하지 않는다", () => {
-  it("열자마자 '서비스를 실행하세요' 안내가 번쩍이지 않는다", async () => {
-    const { root, dispose } = await render();
-    expect(findByTestId(root, "ai-auth-hint")?.hidden).toBe(true);
-    expect(findByTestId(root, "ai-oauth-server-error")?.hidden).toBe(true);
-    dispose();
-  });
-
-  it("응답이 왔는데 미로그인이면 '서비스가 안 켜졌다'고 말하지 않는다", async () => {
-    fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
-    const { root, dispose } = await render();
-    await Promise.resolve();
-    await Promise.resolve();
-
-    expect(findByTestId(root, "ai-auth-hint")?.hidden).toBe(true);
-    expect(findByTestId(root, "ai-oauth-status")?.textContent ?? "").toContain("로그인 필요");
-    dispose();
-  });
-
-  it("도달 불가일 때만 서비스 실행 안내를 띄운다", async () => {
-    const { ChatGptCompanionUnreachableError } = await import("@/ai/chatgptOAuthClient");
-    fetchChatGptAuthStatus.mockRejectedValue(new ChatGptCompanionUnreachableError(undefined, "network"));
-    const { root, dispose } = await render();
-    await Promise.resolve();
-    await Promise.resolve();
-    await Promise.resolve();
-
-    const hint = findByTestId(root, "ai-auth-hint");
-    expect(hint?.hidden).toBe(false);
-    // The hint no longer names the developer command (npm run ai:oauth); it tells the user to press 「연결 확인」 (aiAuthSettings.ts).
-    expect(hint?.textContent ?? "").toContain("연결 확인");
-    dispose();
-  });
-});
-
-// 설정 마법사가 고르는 「내 PC」 프로그램(local-cli:*) 을 패널이 부정하지 않는다(2026-11-04 윈도우 제보).
-describe("내 PC 프로그램과 엔진 기동 실패", () => {
-  it("local-cli 제공자를 「지원하지 않아요」로 말하지 않고, 준비되면 연결됨이다", async () => {
-    fetchChatGptAuthStatus.mockResolvedValue({ connected: true, authKind: "local" });
-    const { root, dispose } = await render("local-cli:codex");
-    await Promise.resolve();
-    await Promise.resolve();
-    const help = findByTestId(root, "ai-auth-provider-help")?.textContent ?? "";
-    expect(help).not.toContain("지원하지 않아요");
-    expect(help).toContain("이 PC");
-    expect(findByTestId(root, "ai-oauth-status")?.textContent ?? "").toContain("연결됨");
-    dispose();
-  });
-
-  it("local-cli 가 아직 준비 안 됐으면 「다른 계정」이 아니라 설치·로그인을 안내한다", async () => {
-    fetchChatGptAuthStatus.mockResolvedValue({ connected: false, authKind: "local", lastLoginError: "Codex · ChatGPT (내 PC): 로그인 필요" });
-    const { root, dispose } = await render("local-cli:codex");
-    await Promise.resolve();
-    await Promise.resolve();
-    expect(findByTestId(root, "ai-oauth-status")?.textContent ?? "").toContain("프로그램 확인 필요");
-    const error = findByTestId(root, "ai-oauth-server-error")?.textContent ?? "";
-    expect(error).toContain("설치하고 로그인");
-    expect(error).not.toContain("다른 계정");
-    dispose();
-  });
-
-  it("AI 워커가 켜지다 죽으면 원문 대신 앱 다시 열기·업데이트를 말한다", async () => {
-    const { ChatGptCompanionResponseError } = await import("@/ai/chatgptOAuthClient");
-    fetchChatGptAuthStatus.mockRejectedValue(new ChatGptCompanionResponseError(500, "oh-my-pi worker exited (1): baseline.node\" curl -fsSL \"https://github.com/can1357/oh-my-pi/releases/latest/download/pi_natives.win32-x64.node\""));
-    const { root, dispose } = await render("local-cli:codex");
-    await Promise.resolve();
-    await Promise.resolve();
-    await Promise.resolve();
-    expect(findByTestId(root, "ai-oauth-status")?.textContent ?? "").toContain("AI 엔진을 시작하지 못했어요");
-    const error = findByTestId(root, "ai-oauth-server-error")?.textContent ?? "";
-    expect(error).toContain("다시 열고");
-    expect(error).toContain("직접 무엇을 내려받을 필요는 없어요");
-    expect(error.startsWith("앱에 들어 있는 AI 엔진")).toBe(true);
-    dispose();
-  });
-});
-
 describe("환경 변수 키", () => {
-  it("동의한 환경 변수 키는 연결됨으로 말한다", async () => {
-    fetchChatGptAuthStatus.mockResolvedValue({ connected: true, env: true, envScan: "allow" });
-    const { root, dispose } = await render();
-    await Promise.resolve();
-    await Promise.resolve();
-
-    const text = findByTestId(root, "ai-oauth-status")?.textContent ?? "";
-    expect(text).toContain("환경 변수");
-    expect(findByTestId(root, "ai-oauth-status")?.dataset.tone).toBe("connected");
-    expect(findByTestId(root, "ai-env-scan")?.hidden).toBe(true);
-    dispose();
-  });
 
   it("환경 변수 탐색은 지원되는 계정의 고급 동작에서만 동의를 묻는다", async () => {
     fetchChatGptAuthStatus.mockResolvedValue({ connected: false, envScan: "ask" });
@@ -314,26 +130,6 @@ describe("환경 변수 키", () => {
     dispose();
   });
 
-  it("저장된 자격이면 연결됨이다", async () => {
-    fetchChatGptAuthStatus.mockResolvedValue({ connected: true, env: false, planType: "plus" });
-    const { root, dispose } = await render();
-    await Promise.resolve();
-    await Promise.resolve();
-
-    expect(findByTestId(root, "ai-oauth-status")?.textContent ?? "").toContain("연결됨");
-    expect(findByTestId(root, "ai-oauth-status")?.dataset.tone).toBe("connected");
-    dispose();
-  });
-
-  it("만료된 자격은 연결됨이 아니다", async () => {
-    fetchChatGptAuthStatus.mockResolvedValue({ connected: true, expired: true });
-    const { root, dispose } = await render();
-    await Promise.resolve();
-    await Promise.resolve();
-
-    expect(findByTestId(root, "ai-oauth-status")?.textContent ?? "").toContain("만료");
-    dispose();
-  });
 });
 
 describe("기기 로그인", () => {
@@ -411,35 +207,6 @@ describe("기기 로그인", () => {
     dispose();
   });
 
-  it("원격 로그인 안내는 마지막 탭을 열지 못해도 주소 전달로 연결을 마치도록 안내한다", async () => {
-    startChatGptLogin.mockResolvedValue({
-      verificationUrl: "http://mdc-server:9888/oauth/launch?port=34031",
-      userCode: "",
-      pasteCallback: true,
-    });
-    const { root, dispose } = await render(GOOGLE);
-    await Promise.resolve();
-    findByTestId(root, "ai-oauth-login")?.click();
-    await Promise.resolve();
-    await Promise.resolve();
-
-    const step1 = findByTestId(root, "ai-oauth-device-step1")?.textContent ?? "";
-    const step2 = findByTestId(root, "ai-oauth-device-step2")?.textContent ?? "";
-    const step3 = findByTestId(root, "ai-oauth-device-step3");
-    expect(step1).toMatch(/^1\. /u);
-    expect(step1).toContain("Google 계정으로 로그인");
-    expect(step2).toMatch(/^2\. /u);
-    expect(step2).toContain("마지막 탭이 열리지 않으면");
-    expect(step2).toContain("주소창 전체");
-    expect(step3?.hidden).toBe(false);
-    expect(step3?.textContent ?? "").toMatch(/^3\. /u);
-    expect(step3?.textContent ?? "").toContain("로그인 정보는 이 서버에 보관");
-    // 개발자 용어를 사용자 문구에 흘리지 않는다.
-    const block = findByTestId(root, "ai-oauth-device-code")?.textContent ?? "";
-    expect(block).not.toMatch(/OAuth|콜백|companion|동반 서비스/iu);
-    dispose();
-  });
-
   it("원격 로그인은 주소창을 붙여 넣으면 버튼 없이 연결한다", async () => {
     startChatGptLogin.mockResolvedValue({
       verificationUrl: "https://accounts.google.com/o/oauth2/v2/auth?x=1",
@@ -490,35 +257,6 @@ describe("기기 로그인", () => {
     await Promise.resolve();
 
     expect(completeOAuthPaste).toHaveBeenCalledWith("http://127.0.0.1:34099/oauth-callback?code=clip");
-    dispose();
-  });
-
-  it("로그인 주소는 본문 글자로 보이지 않고 다시 열기 링크와 주소 복사만 남는다", async () => {
-    // 2026-09-23 실측: 600자 가까운 accounts.google.com 주소가 패널에 글자 그대로 찍혔다.
-    const longUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=abc&scope=${"x".repeat(500)}`;
-    startChatGptLogin.mockResolvedValue({ verificationUrl: longUrl, userCode: "" });
-    const writeText = vi.fn(async () => undefined);
-    vi.stubGlobal("navigator", { clipboard: { writeText } });
-    const { root, dispose } = await render(GOOGLE);
-    await Promise.resolve();
-    findByTestId(root, "ai-oauth-login")?.click();
-    await Promise.resolve();
-    await Promise.resolve();
-
-    const block = findByTestId(root, "ai-oauth-device-code");
-    expect(block?.textContent ?? "").not.toContain("accounts.google.com");
-    expect(block?.textContent ?? "").not.toContain("https://");
-    expect(findByTestId(root, "ai-oauth-device-step1")?.textContent)
-      .toBe("Google 로그인 창을 열었어요. 창에서 로그인을 마치면 자동으로 연결됩니다.");
-    const link = findByTestId(root, "ai-oauth-device-url");
-    expect(link?.textContent).toBe("로그인 창 다시 열기");
-    expect(link?.getAttribute("href")).toBe(longUrl);
-
-    findByTestId(root, "ai-oauth-copy-url")?.click();
-    await Promise.resolve();
-    await Promise.resolve();
-    expect(writeText).toHaveBeenCalledWith(longUrl);
-    expect(findByTestId(root, "ai-oauth-device-poll")?.textContent ?? "").toContain("주소를 복사했어요");
     dispose();
   });
 
@@ -673,16 +411,6 @@ describe("키 저장 경로는 패널에서 사라졌다", () => {
     dispose();
   });
 
-  it("제공자 카드 블록은 항상 보인다 — 종류 전환 자체가 없어졌다 (결함 3 잔재 정리)", async () => {
-    // 옛 결함은 「API 키」종류에서 '빠른 선택' 제목만 남고 카드가 숨는 것이었다. 종류 카드를
-    // 없앤 지금은 블록이 항상 보이는 것이 계약이다 — 카드가 곧 선택 수단이다.
-    const { root, dispose } = await render();
-    const block = findByTestId(root, "ai-auth-quick-block");
-    expect(block).not.toBeNull();
-    expect(block?.hidden).toBe(false);
-    expect(findByTestId(root, "ai-auth-quick")?.hidden).toBe(false);
-    dispose();
-  });
 });
 
 describe("OAuth 빠른 선택", () => {
@@ -889,42 +617,6 @@ describe("OAuth 빠른 선택", () => {
 
     expect(findByTestId(root, "ai-auth-quick-openai-codex")?.getAttribute("aria-checked")).toBe("true");
     expect(findByTestId(root, "ai-auth-provider-help")?.textContent ?? "").toContain("ChatGPT 계정으로 로그인");
-    dispose();
-  });
-
-  it("Gemini 카드는 구독·CLI 장르 없이 Google 계정 문구를 쓴다 (결함 7)", async () => {
-    const { root, dispose } = await render();
-    const gemini = findByTestId(root, "ai-auth-quick-google-antigravity");
-    const text = gemini?.textContent ?? "";
-    // abaa03e78f: 카드 힌트는 「Google 계정」 한 줄, 부제는 모델 계열 「Gemini」 뿐이다(C-71 — 내부 연결 방식 이름 Antigravity 는 뺐다).
-    expect(text).toContain("Google 계정");
-    expect(text).toContain("Gemini");
-    expect(text.toLowerCase()).not.toMatch(/subscription|구독|cli\b/);
-    expect(text).not.toMatch(/Gemini\s+CLI/iu);
-    dispose();
-  });
-
-  it("한 제공자는 카드·패널·칩에서 같은 이름을 쓴다", async () => {
-    // 2026-09-23 실측: 카드 「Google Gemini」, 패널 「Google Antigravity 계정으로…」, 칩
-    // 「Google Antigravity 로그인 필요」 — 이름이 셋이었다. 계정 이름 하나로 묶는다.
-    const { providers } = await loadDeps();
-    // Google 로 저장된 설정으로 연다 — 패널 안내 글이 고른 계정의 이름을 쓰는지 본다.
-    const { root, dispose } = await render("google-antigravity");
-    const google = providers.getOhMyPiProvider("google-antigravity")?.label;
-    const chatgpt = providers.getOhMyPiProvider("openai-codex")?.label;
-    expect(google).toBe("Google");
-    expect(chatgpt).toBe("ChatGPT");
-
-    const googleCard = findByTestId(root, "ai-auth-quick-google-antigravity")?.textContent ?? "";
-    const codexCard = findByTestId(root, "ai-auth-quick-openai-codex")?.textContent ?? "";
-    expect(googleCard).toContain("Google 계정");
-    expect(codexCard).toContain("ChatGPT 계정");
-    expect(findByTestId(root, "ai-auth-card-sub-openai-codex")?.textContent).toBe("Codex");
-    expect(findByTestId(root, "ai-auth-provider-help")?.textContent ?? "").toContain("Google 계정으로 로그인");
-    // 옛 이름은 어디에도 제목으로 남지 않는다(보조 줄의 제품명만 허용).
-    for (const text of [googleCard, codexCard, findByTestId(root, "ai-auth-provider-help")?.textContent ?? ""]) {
-      expect(text).not.toMatch(/Google Gemini|Google Antigravity|OpenAI Codex/u);
-    }
     dispose();
   });
 

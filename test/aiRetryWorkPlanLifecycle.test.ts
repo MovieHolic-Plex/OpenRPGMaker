@@ -8,7 +8,7 @@ import type { AutonomyLevel } from "@/ai/autonomyLevels";
 import type { WorkPlan } from "@/ai/workPlan";
 import { editorState } from "@/editor/editorState";
 import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import * as turnRunner from "@/editor/panels/aiTurnRunner";
 
@@ -75,7 +75,7 @@ beforeEach(async () => {
   localStorage.clear();
   await clearConversations();
   store._setPersistenceStateForTest({ loaded: false, remotePersistenceEnabled: false, disabledReason: null });
-  store.replace(createBlankProject());
+  store.replace(createSharedTilesetBlankProject());
   editorState.set({ currentMapId: store.getCurrent().startMapId, selection: null });
 });
 

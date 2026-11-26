@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
-import { createBlankProject } from "@/project/defaults";
+import { createSharedTilesetBlankProject } from "./support/sharedBlankProject";
 import { store } from "@/project/store";
 import * as history from "@/editor/mapEditHistory";
 import * as commits from "@/project/projectCommitLog";
@@ -23,7 +23,7 @@ afterEach(() => { vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 // 완성된 뒤 모델의 마지막 응답(결정적 검사 직전)을 붙잡아 그 사이에 실 편집을 넣는다. 지키는 것은 같다 —
 // 낡은 기준선 위의 초안은 검사가 통과해도 적용되지 않는다.
 it.each([true, false])("rejects an actual held approval after a live price edit, before stale undo or commit (refresh=%s)", async refresh => {
-  const project = createBlankProject();
+  const project = createSharedTilesetBlankProject();
   store.replace(project);
   history.resetMapEditHistory();
   const entered = Promise.withResolvers<void>();
@@ -71,7 +71,7 @@ it.each([true, false])("rejects an actual held approval after a live price edit,
 });
 
 it.each(["standalone", "wiki-checkpoint"] as const)("keeps %s ownership independent of unrelated live authored state", async mode => {
-  const project = createBlankProject();
+  const project = createSharedTilesetBlankProject();
   const unrelated = structuredClone(project);
   unrelated.meta.title = "Unrelated live project";
   store.replace(mode === "standalone" ? unrelated : project);

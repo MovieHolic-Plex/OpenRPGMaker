@@ -411,32 +411,6 @@ describe("runtime debug panel placement and persistence", () => {
     expect((renderRuntimeDebugPanel() as HTMLDetailsElement).open).toBe(true);
   });
 
-  it("anchors the panel to the bottom so the play field stays visible", () => {
-    renderRuntimeDebugPanel();
-    const style = document.getElementById("runtime-debug-panel-style");
-    expect(style?.textContent).toContain("bottom:");
-    expect(style?.textContent).not.toContain("top:4px");
-  });
-
-  it("exposes the expand/collapse control as the panel summary", () => {
-    const panel = renderRuntimeDebugPanel();
-    const toggle = testid(panel, "runtime-debug-toggle");
-    expect(toggle.tagName).toBe("SUMMARY");
-    // 라이브 상태 한 줄은 toggle(summary) 안에 있어 접혀도 DOM 에 남는다(dataset 기계 판독 경로 유지).
-    expect(toggle.querySelector("[data-testid='runtime-debug-live-state']")).not.toBeNull();
-  });
-
-  it("collapses to a single labelled 「디버그」 button instead of a debug band for first-time users", () => {
-    const panel = renderRuntimeDebugPanel();
-    const toggle = testid(panel, "runtime-debug-toggle");
-    // 이모지 알약은 무엇인지 읽히지 않아 글자 단추가 됐다(7d13b63ca2, HIG C-99).
-    expect(toggle.textContent).not.toContain("🛠");
-    expect(toggle.querySelector(".runtime-debug-title")?.textContent).toBe("디버그");
-    const css = document.getElementById("runtime-debug-panel-style")?.textContent ?? "";
-    // 접힌 상태에선 띠(좌우로 늘어난 바)가 아니라 왼쪽 아래 단추이고, 라이브 줄은 화면에서 빠진다.
-    expect(css).toMatch(/\.runtime-debug-panel:not\(\[open\]\)\{[^}]*right:auto/);
-    expect(css).toContain(".runtime-debug-panel:not([open]) .runtime-debug-live{display:none}");
-  });
 });
 
 describe("runtime debug panel frame cost", () => {

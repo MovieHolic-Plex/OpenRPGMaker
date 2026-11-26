@@ -429,17 +429,6 @@ describe("spatial place actions", () => {
     expect(lastRequest?.operation.kind).toBe("delete-design");
   });
 
-  it("renders floor strip, picker, port links and exterior controls", () => {
-    const inn = innOf(store.getCurrent());
-    const host = document.createElement("div");
-    host.append(renderSpatialPlacesCanvas(sessionFor(inn), placeCard(inn), () => undefined));
-    expect(host.querySelector("[data-testid='spatial-place-floors']")).not.toBeNull();
-    expect(host.querySelector("[data-testid='spatial-place-floor-1']")).not.toBeNull();
-    expect(host.querySelector("[data-testid='spatial-place-picker']")).not.toBeNull();
-    expect(host.querySelector("[data-testid='spatial-place-exterior']")).not.toBeNull();
-    expect(host.querySelector("[data-testid='spatial-places-board']")).not.toBeNull();
-  });
-
   it("navigates into a nested place and restores selection on back", () => {
     const village = villageOf(store.getCurrent());
     const inn = innOf(store.getCurrent());

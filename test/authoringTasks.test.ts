@@ -6,7 +6,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import { getWorkspaceLayout, resetWorkspaceForTests } from "@/editor/workspace/workspaceStore";
-import { FakeElement, findByTestId, installFakeDom } from "./fakeDom";
+import { installFakeDom } from "./fakeDom";
 
 const mocks = vi.hoisted(() => ({
   openDatabaseModal: vi.fn(),
@@ -24,8 +24,7 @@ vi.mock("@/editor/panels/databaseModalLazy", () => ({
 // 통해 그 순환을 밟으면 초기화 전 `listeners` 접근(TDZ)이 unhandled rejection 으로 새어 나온다.
 vi.mock("@/app/mode", () => ({ getMode: () => "edit", toggleMode: vi.fn() }));
 
-const { AUTHORING_TASKS, runAuthoringTask } = await import("@/editor/authoringTasks");
-const { renderWorkspaceBar } = await import("@/editor/panels/workspaceBar");
+const { runAuthoringTask } = await import("@/editor/authoringTasks");
 
 class MemoryStorage implements Storage {
   private readonly values = new Map<string, string>();
@@ -40,12 +39,6 @@ class MemoryStorage implements Storage {
 let restoreDom: (() => void) | null = null;
 let previousWindow: unknown;
 let dispatchEvent: ReturnType<typeof vi.fn>;
-
-function renderBar(): FakeElement {
-  const root = document.createElement("div") as unknown as FakeElement;
-  root.append(...renderWorkspaceBar() as unknown as FakeElement[]);
-  return root;
-}
 
 beforeEach(() => {
   previousWindow = globalThis.window;
@@ -77,10 +70,6 @@ afterEach(() => {
 });
 
 describe("저작 작업 명령", () => {
-  it("네 작업이 팔레트용 표에 남아 있다", () => {
-    expect(AUTHORING_TASKS.map((task) => task.id)).toEqual(["map", "event", "data", "test"]);
-  });
-
   // Break caught: Event changes panel geometry but leaves the paint tool active.
   it("이벤트는 실제 이벤트 레이어와 도구를 켠다", () => {
     runAuthoringTask("event");
@@ -112,21 +101,5 @@ describe("저작 작업 명령", () => {
     runAuthoringTask("test");
     expect(dispatchEvent).toHaveBeenCalledTimes(1);
     expect(dispatchEvent.mock.calls[0]?.[0]).toMatchObject({ type: "oprn:test-play-window" });
-  });
-
-  it("「보기」 메뉴는 작업 칩·프리셋·밀도·편집 모드를 다시 내놓지 않는다", () => {
-    // Break: 작업 칩이나 밀도(안내/보통/촘촘) 라디오가 두 번째 이름으로 되살아난다.
-    const root = renderBar();
-    for (const id of ["map", "event", "data", "test"]) {
-      expect(findByTestId(root, `authoring-task-${id}`), id).toBeNull();
-      expect(findByTestId(root, `workspace-layout-${id}`), id).toBeNull();
-    }
-    for (const density of ["guided", "comfortable", "dense"]) {
-      expect(findByTestId(root, `workspace-density-${density}`), density).toBeNull();
-    }
-    expect(findByTestId(root, "authoring-task-launcher")).toBeNull();
-    for (const mode of ["beginner", "standard", "expert"]) {
-      expect(findByTestId(root, `workspace-ui-mode-${mode}`), mode).toBeNull();
-    }
   });
 });

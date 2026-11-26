@@ -16,6 +16,8 @@ import { applyGrowthPreset, GROWTH_PRESETS } from '@/project/growth/presets';
 
 const roles = ['vanguard', 'arcane', 'ranger'] as const;
 const ids = roles.flatMap(role => [`promotion-${role}`, `skill-${role}`]);
+// Same apply/serialize path for every role — one promotion and one skill preset are enough for these contracts.
+const pairIds = ['promotion-vanguard', 'skill-vanguard'];
 function required<T>(value: T | undefined): T {
   if (value === undefined) throw new Error('Missing required test record');
   return value;
@@ -60,7 +62,7 @@ describe('curated growth preset contracts', () => {
       expect(preset.edgeCount).toBe(preset.kind === 'promotion' ? 4 : 7);
     }
   });
-  it.each(ids)('%s preserves every authored record, condition, position and budget', id => {
+  it.each(pairIds)('%s preserves every authored record, condition, position and budget', id => {
     const project = customProject(), before = structuredClone(project);
     const result = applyGrowthPreset(project, id);
     expect(collectProjectReferenceIssues(project)).toEqual([]);
@@ -145,7 +147,7 @@ describe('curated growth preset contracts', () => {
     expect(() => applyGrowthPreset(project, '__proto__')).toThrow();
     expect(project).toEqual(before);
   });
-  it.each(ids)('%s previews on a clone and survives actual wire serialization', id => {
+  it.each(pairIds)('%s previews on a clone and survives actual wire serialization', id => {
     const project = customProject(), before = structuredClone(project), preview = structuredClone(project);
     const planned = applyGrowthPreset(preview, id);
     expect(project).toEqual(before);
@@ -160,7 +162,7 @@ describe('curated growth preset contracts', () => {
       expect(loaded.database.skills.find(s => s.id === skill.id)).toEqual(skill);
     }
   });
-  it.each(roles)('rejects an exhausted authored canvas for promotion-%s without partial records or settings', role => {
+  it.each(['vanguard'] as const)('rejects an exhausted authored canvas for promotion-%s without partial records or settings', role => {
     const project = createBlankProject();
     project.growth = emptyGrowth();
     for (let y = 60; y <= 9848; y += 456) for (let x = 56; x <= 9504; x += 744) {
@@ -193,7 +195,7 @@ describe('curated growth preset contracts', () => {
 });
 
 describe.each([false, true])('imported promotion cycles (authored positions: %s)', authored => {
-  it.each(roles)('places promotion-%s apart from post-apply effective existing positions', role => {
+  it.each(['vanguard'] as const)('places promotion-%s apart from post-apply effective existing positions', role => {
     // Given: an actual imported, reference-valid cycle, with optional authored overrides and an orphan reservation.
     const source = createBlankProject();
     const first = required(source.database.classes[0]), second = required(source.database.classes[1]);

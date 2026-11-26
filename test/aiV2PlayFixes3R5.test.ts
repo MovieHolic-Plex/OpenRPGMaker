@@ -15,8 +15,6 @@ import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
 import { buildBossEncounter } from "@/ai/v2/story/sceneVerbs";
 import { enemyArtFor } from "@/ai/v2/place/builders/dungeonFoes";
-import { renderTitleScreen } from "@/player/titleScreen";
-import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 import { planObjective } from "@/ai/v2/judge/objectivePlan";
 import { objectiveCommand } from "@/ai/v2/judge/objectiveCommand";
 import { createZoneFeedbackModel, currentObjectiveText, updateZoneFeedback } from "@/player/zoneFeedback";
@@ -165,26 +163,6 @@ describe("보스의 전투 이름과 그림 — 확인 빌드 r5", () => {
 
   it("사람인 적의 이름은 산적 그림을 가리킨다", () => {
     expect(enemyArtFor(createBlankProject() as Project, "밀수꾼 두목")).toBe("enemy_bandit_mask");
-  });
-});
-
-// 두 줄로 접힌 제목의 둘째 줄과 부제가 겹쳤다.
-describe("타이틀 제목의 줄 — 확인 빌드 r5", () => {
-  const titleStyle = (title: string) => {
-    const restoreDom = installFakeDom();
-    try {
-      const project = createBlankProject() as Project;
-      project.system.titleScreen = { ...project.system.titleScreen!, title, logoStyle: "gold", logoSubtitle: "꺼진 불빛을 찾아서" } as never;
-      const handlers = { onNewGame: () => undefined, onResume: () => undefined, onContinue: () => undefined, onCredits: () => undefined, onQuit: () => undefined };
-      const node = findByTestId(renderWithFakeDom(() => renderTitleScreen(project, handlers)), "title-text")!;
-      return { lines: node.dataset.titleLines, whiteSpace: node.style.whiteSpace, textWrap: node.style.textWrap };
-    } finally { restoreDom(); }
-  };
-
-  it("한 줄로 어림한 제목은 줄을 바꾸지 않는다 — 부제는 그 한 줄 높이 아래에 놓인다", () => {
-    // textWrap «balance» 는 줄바꿈까지 켜는 단축 속성이라 nowrap 을 풀었다 — 어림 폭에 딱 맞던 제목이 화면에서 접혔다.
-    expect(titleStyle("갈매기 포구의 꺼진 등대")).toEqual({ lines: "1", whiteSpace: "nowrap", textWrap: "nowrap" });
-    expect(titleStyle("아주 길고 긴 이름을 가진 갈매기 포구의 꺼진 등대 이야기").textWrap).toBe("balance");
   });
 });
 

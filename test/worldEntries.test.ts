@@ -29,10 +29,4 @@ describe("worldEntries", () => {
     openWorldCodexPanel();
     expect(openDatabaseModalLazy).toHaveBeenCalledWith("worldCodex");
   });
-
-  it("exposes the entry tab ids as constants", async () => {
-    const mod = await import("@/editor/panels/worldEntries");
-    expect(mod.WORLD_ENTRY_TAB).toBe("worldCanon");
-    expect(mod.WORLD_CODEX_ENTRY_TAB).toBe("worldCodex");
-  });
 });

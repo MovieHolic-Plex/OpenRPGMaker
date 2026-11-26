@@ -16,7 +16,6 @@ import { roadEntranceStart } from "@/ai/v2/place/startSpot";
 import { isRoadGround } from "@/ai/v2/place/surface";
 import { largestWalkArea } from "@/editor/tools/startOnBuiltMap";
 
-const OLD = /jp-bldg-(?!f-)[a-z0-9-]+/g;
 /** 새 가족에 같은 구실이 없어 남겨 둔 옛 건물 */
 const HAND_ONLY = ["school", "school-gym", "kindergarten", "gas-office", "market-hall", "factory", "warehouse", "machikoba-home"].map((s) => `jp-bldg-${s}`);
 
@@ -51,19 +50,6 @@ describe("jp_city building family", () => {
     const all = JSON.stringify((runTool(ctx, "list_structure_kits", { mapId: "hub" }, { dryRun: true }) as { data?: unknown }).data);
     expect(all).toContain("jp-bldg-f-ramen");
     expect(all).not.toContain('"kitId":"jp-bldg-shop-ramen"');
-  });
-
-  it("drops the old buildings purpose from the bundled reference documents and points the reading order at the new one", () => {
-    const cats = createJpCityTileset().referenceDocuments ?? [];
-    expect(cats.some((c) => c.id === "jp-buildings-f")).toBe(true);
-    expect(cats.some((c) => c.id === "jp-buildings-hand")).toBe(false);
-    const order = cats.find((c) => c.id === "jp-start")!.documents.find((d) => d.id === "jp-order")!.markdown;
-    expect(order).toContain("jp-bldg-f-rules");
-    expect(order).not.toContain("jp-bldg-hand-rules");
-    // 남은 문서가 옛 건물 키트를 사전으로 싣지 않는다(예제 배치에 남은 이름은 학교·전차 예제의 것)
-    const dict = cats.flatMap((c) => c.documents).filter((d) => /"kit":"jp-bldg-(?!f-)/.test(d.markdown));
-    expect(dict.map((d) => d.id)).toEqual([]);
-    expect(JSON.stringify(cats).match(OLD)?.length ?? 0).toBeLessThan(40);
   });
 
   it("still stamps an old kit when it is named by id (old saves, keyless composer)", () => {

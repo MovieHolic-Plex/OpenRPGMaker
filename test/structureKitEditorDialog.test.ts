@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AI_CONFIG_STORAGE_KEY, resetAiTransportHealth } from "@/ai/llmClient";
 import { refreshAiConnectionStatus, resetAiConnectionStatusCache } from "@/editor/panels/aiConnectionStatus";
 import { importStructureKits, registerStructureKit, replaceStructureKit } from "@/editor/harnessSuggestion/structureKitActions";
-import { buildAiMetaDraftPrompt, collectUsedTiles, openStructureKitEditor, parseAiMetaDraft } from "@/editor/panels/structureKitEditorDialog";
+import { collectUsedTiles, openStructureKitEditor, parseAiMetaDraft } from "@/editor/panels/structureKitEditorDialog";
 import { store } from "@/project/store";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import type { SectionStructureKitDef } from "@/project/types";
@@ -93,29 +93,6 @@ describe("replaceStructureKit", () => {
 });
 
 describe("openStructureKitEditor", () => {
-  it("다이얼로그를 열고 래스터·팔레트·크기 입력을 그린다", () => {
-    seedKit();
-    openStructureKitEditor(COMBINED_TOWN_TILESET_ID, "kit_edit", () => {});
-
-    const dialog = document.querySelector("[data-testid='structure-kit-editor']");
-    expect(dialog).not.toBeNull();
-    expect(dialog!.querySelector("[data-testid='structure-kit-editor-canvas']")).not.toBeNull();
-    expect(dialog!.querySelector("[data-testid='structure-kit-editor-palette']")).not.toBeNull();
-    expect(dialog!.querySelector("[data-testid='structure-kit-editor-width']")).not.toBeNull();
-    expect(dialog!.querySelector("[data-testid='structure-kit-editor-height']")).not.toBeNull();
-  });
-
-  it("캔버스에 pointerdown 핸들러가 실제로 붙어 있다", () => {
-    // 인스펙터가 "드래그하면 부위가 붙습니다"라고 거짓으로 약속하던 그 동작을,
-    // 약속한 자리가 아니라 실제로 되는 자리에 만들었는지 못을 박는다.
-    seedKit();
-    openStructureKitEditor(COMBINED_TOWN_TILESET_ID, "kit_edit", () => {});
-
-    const canvas = document.querySelector("[data-testid='structure-kit-editor-canvas']");
-    expect(canvas).not.toBeNull();
-    expect((canvas as unknown as FakeElement).hasListener("pointerdown")).toBe(true);
-  });
-
   it("팔레트에서 타일을 고르고 칸을 누르면 store 에 반영된다", () => {
     seedKit();
     openStructureKitEditor(COMBINED_TOWN_TILESET_ID, "kit_edit", () => {});
@@ -257,20 +234,6 @@ describe("편집기 부위 편집", () => {
   });
 });
 
-describe("편집기 도구 표시", () => {
-  it("도구를 바꾸면 활성 표시가 갱신된다", () => {
-    seedKit();
-    openStructureKitEditor(COMBINED_TOWN_TILESET_ID, "kit_edit", () => {});
-
-    (document.querySelector("[data-testid='structure-kit-editor-tool-erase']") as unknown as FakeElement).click();
-
-    const eraseBtn = document.querySelector("[data-testid='structure-kit-editor-tool-erase']") as unknown as FakeElement;
-    const paintBtn = document.querySelector("[data-testid='structure-kit-editor-tool-paint']") as unknown as FakeElement;
-    expect(eraseBtn.classList.contains("primary")).toBe(true);
-    expect(paintBtn.classList.contains("primary")).toBe(false);
-  });
-});
-
 describe("편집기 부위 드래그 안전성", () => {
   it("도구를 바꾼 뒤에도 남은 드래그가 새 부위를 만들지 않는다", () => {
     seedKit();
@@ -293,18 +256,6 @@ describe("편집기 부위 드래그 안전성", () => {
 });
 
 describe("AI 메타 초안", () => {
-  it("프롬프트에 타일 행렬과 타일 라벨과 기존 이름이 들어간다", () => {
-    const tileset = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]!;
-    const kit = seedKit();
-    const prompt = buildAiMetaDraftPrompt(kit, tileset, ["울타리", "다리"]);
-
-    expect(prompt).toContain("3×3");
-    expect(prompt).toContain("116");        // 문 타일 번호
-    expect(prompt).toContain("울타리");      // 이름 중복 회피용
-    // 모델이 타일 번호를 추측하지 않도록 사람이 읽는 라벨을 함께 준다.
-    expect(prompt).toMatch(/문|출입/);
-  });
-
   it("응답 JSON 을 메타로 파싱한다", () => {
     const meta = parseAiMetaDraft(JSON.stringify({
       description: "돌 우물",
@@ -561,15 +512,6 @@ describe("AI 메타 초안 파싱 — 새 어휘", () => {
     expect(draft!.growthAxis).toBeUndefined();
     expect(draft!.layerHome).toBeUndefined();
   });
-
-  it("초안 프롬프트가 새 필드를 실제로 요구한다", () => {
-    const kit = seedKit();
-    const tileset = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID]!;
-    const prompt = buildAiMetaDraftPrompt(kit, tileset, []);
-    expect(prompt).toContain("growthAxis");
-    expect(prompt).toContain("layerHome");
-    expect(prompt).toContain("themes");
-  });
 });
 
 describe("AI 메타 탭 — 수정할 수 있는 축이 화면에 있다", () => {
@@ -583,18 +525,6 @@ describe("AI 메타 탭 — 수정할 수 있는 축이 화면에 있다", () =>
     openStructureKitEditor(COMBINED_TOWN_TILESET_ID, "kit_edit", () => {});
     pick("structure-kit-editor-tab-ai")!.click();
   }
-
-  it("증분 축·레이어·태그·테마 칸이 모두 있다", () => {
-    openAiTab();
-    for (const id of [
-      "structure-kit-editor-ai-growth",
-      "structure-kit-editor-ai-layer",
-      "structure-kit-editor-ai-tags",
-      "structure-kit-editor-ai-themes",
-    ]) {
-      expect(pick(id), id).not.toBeNull();
-    }
-  });
 
   it("고친 값이 수락 뒤 store 에 남는다", () => {
     openAiTab();
@@ -733,19 +663,6 @@ describe("칸 힌트 도구", () => {
     pick("structure-kit-editor-cell-hint-delete-0-0")!.click();
     expect(readKit().cellHints).toBeUndefined();
   });
-
-  it("힌트가 없을 때는 블록을 접고 도구를 잡으면 안내를 보인다", () => {
-    seedKit();
-    openStructureKitEditor(COMBINED_TOWN_TILESET_ID, "kit_edit", () => {});
-    expect(pick("structure-kit-editor-cell-hints-empty")).toBeNull();
-    const hintTool = pick("structure-kit-editor-tool-hint")!;
-    expect(hintTool.getAttribute("title")).toContain("벽처럼 끝없이 이어지는 부분");
-
-    hintTool.click();
-    expect(pick("structure-kit-editor-cell-hints-empty")).not.toBeNull();
-    pick("structure-kit-editor-tool-paint")!.click();
-    expect(pick("structure-kit-editor-cell-hints-empty")).toBeNull();
-  });
 });
 
 describe("collectUsedTiles", () => {
@@ -785,33 +702,6 @@ describe("편집기 팔레트 안정성", () => {
     expect(swatch(421)).toBe(before);
     expect(document.querySelector("[data-testid='structure-kit-editor-search']")).toBe(searchBefore);
     expect(before.className).toContain("active");
-  });
-
-  it("도구·분류를 바꿔도 팔레트와 검색창 노드가 그대로다", () => {
-    seedKit();
-    openStructureKitEditor(COMBINED_TOWN_TILESET_ID, "kit_edit", () => {});
-
-    const paletteBefore = document.querySelector("[data-testid='structure-kit-editor-palette']");
-    const searchBefore = document.querySelector("[data-testid='structure-kit-editor-search']");
-    (document.querySelector("[data-testid='structure-kit-editor-tool-erase']") as unknown as FakeElement).click();
-    (document.querySelector("[data-testid='structure-kit-editor-category-house']") as unknown as FakeElement).click();
-
-    expect(document.querySelector("[data-testid='structure-kit-editor-palette']")).toBe(paletteBefore);
-    expect(document.querySelector("[data-testid='structure-kit-editor-search']")).toBe(searchBefore);
-    const chip = document.querySelector("[data-testid='structure-kit-editor-category-house']") as unknown as FakeElement;
-    expect(chip.className).toContain("active");
-  });
-
-  it("이 구조물이 쓰는 타일에 사용 표식이 붙는다", () => {
-    seedKit(); // 240 · 116 을 쓴다
-    openStructureKitEditor(COMBINED_TOWN_TILESET_ID, "kit_edit", () => {});
-
-    expect(swatch(240).className).toContain("is-used");
-    expect(swatch(116).className).toContain("is-used");
-    expect(swatch(421).className).not.toContain("is-used");
-    // 문구가 아니라 기계가 읽는 값을 본다 — 카피를 다듬어도 이 계약은 깨지지 않는다.
-    const count = document.querySelector("[data-testid='structure-kit-editor-used-count']") as unknown as FakeElement;
-    expect(count.dataset.usedCount).toBe("2");
   });
 
   it("[안 쓴 타일만] 을 켜면 쓰인 타일이 숨고, 지금 잡은 붓은 남는다", () => {

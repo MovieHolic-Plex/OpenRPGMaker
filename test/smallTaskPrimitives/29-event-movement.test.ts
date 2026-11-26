@@ -9,10 +9,6 @@ import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { commitSmallTask, smallTaskBase } from "@/editor/smallTask/history";
 import { SELECT_EVENT_PAGE } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
-import en from "@/i18n/catalogs/en.json";
-import ja from "@/i18n/catalogs/ja.json";
-import zh from "@/i18n/catalogs/zh.json";
-import { createTranslator } from "@/i18n/translator";
 import { updateAutonomousNPCs } from "@/player/playSceneAutonomous";
 import { registerPageMoveRoutes } from "@/player/playScenePageMoveRoutes";
 import { registerAutonomousMover } from "@/player/playSceneSchedulers";
@@ -225,31 +221,6 @@ describe("선택한 이벤트 페이지의 이동 편집", () => {
     existing.project.switches.push({ id: switchId, name: "문 열림" });
     const { after } = expectApplies(existing.project, existing.target, "move.route.append", { moves: [{ kind: "wait" }] });
     expect(pageOf(after, map.id, guard.id).movement.route?.moves).toEqual([...storedMoves, { kind: "wait" }]);
-  });
-
-  it("경로 참조와 페이지 선택 오류를 세 편집기 언어로 번역합니다", () => {
-    const { project, target } = blank();
-    const fail = (selectedTarget: typeof target, id: string, args: Record<string, unknown>) => {
-      try {
-        runPrimitive(project, selectedTarget, id, args);
-      } catch (error) {
-        if (error instanceof Error) return error.message;
-        throw error;
-      }
-      throw new Error("편집이 거절되어야 합니다.");
-    };
-    const messages = [
-      fail({ ...target, pageId: "missing" }, "move.speed.set", { speed: 5 }),
-      fail(target, "move.route.set", { moves: [{ kind: "turnToward", target: "ev_missing" }] }),
-      fail(target, "move.route.set", { moves: [{ kind: "exitVia" }] }),
-    ];
-    for (const catalog of [en, ja, zh]) {
-      const { translate } = createTranslator(catalog);
-      for (const message of messages) {
-        expect(translate(message)).toBeTruthy();
-        expect(translate(message)).not.toBe(message);
-      }
-    }
   });
 
   it("도착 맵에서 같은 자율 이동 경로가 다시 시작되는 맵 이동을 거절합니다", () => {

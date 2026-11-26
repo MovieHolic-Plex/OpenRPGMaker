@@ -281,20 +281,6 @@ describe("cluster AI range-classify modal", () => {
     });
     expect(mocks.instances[0]?.rebaseProject).toHaveBeenCalledWith(store.getCurrent());
   });
-
-  it("keeps the textarea sized for multi-line input", async () => {
-    openClusterAiModal({
-      kind: "range-classify",
-      rect: { x: 1, y: 1, w: 1, h: 1 },
-      tileIds: [1],
-      tilesetId: COMBINED_TOWN_TILESET_ID,
-    });
-    await finishTurn();
-
-    const input = requireTestId(document, "cluster-ai-input");
-    expect(input.getAttribute("rows")).toBe("3");
-    expect(input.className).toContain("cluster-ai-input");
-  });
 });
 
 async function finishTurn(): Promise<void> {

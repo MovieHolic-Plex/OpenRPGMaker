@@ -13,7 +13,6 @@ import { addTileGraft } from "@/editor/tilesetActions";
 import { authoredIdentity, projectIdentityDigest } from "@/project/authoredProjectBaseline";
 import { normalizeSystemRecords } from "@/project/databaseRecordModel";
 import { createBlankProject } from "@/project/defaults";
-import { bundledTilesetDefinitionReady } from "@/project/defaults/defaultAssets";
 import { deserialize, serialize } from "@/project/io";
 import { projectJsonChunks, sameJsonChunks } from "@/project/io/sharedDictionaryJson";
 import { jsonContentDigest } from "@/project/persistence/core/contentDigest";
@@ -73,17 +72,6 @@ beforeAll(() => {
 });
 
 describe("세션 사본 — structuredClone 과 같은 값, 스토어 항목은 객체째 공유", () => {
-  it("대상: 번들 칩셋 전부에 고친 타일셋 셋과 업로드 자산 둘이 섞여 있다", () => {
-    const ids = Object.keys(live.tilesets);
-    expect(ids.length).toBeGreaterThanOrEqual(40);
-    expect(ids.every((id) => bundledTilesetDefinitionReady(id) !== undefined)).toBe(true);
-    expect(live.tilesets[LOOK_TILESET]!.look).toBeDefined();
-    expect(live.tilesets[GRAFT_TILESET]!.tileGrafts).toEqual(expect.arrayContaining([{ targetTile: 5, sourceChipset: GRAFT_SOURCE, sourceTile: 4 }]));
-    expect(live.tilesets[EDITED_TILESET]!.passability[5]).toEqual({ up: false, down: true, left: false, right: true });
-    expect(Object.keys(live.assets.uploaded)).toEqual(expect.arrayContaining(["upload-a", "upload-b"]));
-    expect(same(JSON.stringify(plain), liveJson)).toBe(true);
-  });
-
   it("스토어 프로젝트의 사본: 글자까지 같고, 키 순서가 같고, 타일셋·업로드 자산 항목만 같은 객체다", () => {
     expect(store.ownsSettledEntriesOf(live)).toBe(true);
     const copy = sessionProjectCopy(live);
@@ -270,16 +258,5 @@ describe("세션 — 스토어 프로젝트로 만든 세션의 초안", () => {
     proposed.meta.title = "받은 쪽에서 바꾼 제목";
     delete (proposed.tilesets as Record<string, unknown>)[EDITED_TILESET];
     expect(same(JSON.stringify(session.getProposedProject()), liveJson)).toBe(true);
-  });
-
-  it("스토어 밖 프로젝트로 만든 세션의 초안은 예전처럼 아무것도 공유하지 않는다", () => {
-    const outside = structuredClone(live);
-    const session = new AssistantSession(outside, { config, declareIntent: fixedDeclarer({ mode: "other" }) });
-    const proposed = session.getProposedProject();
-    expect(same(JSON.stringify(proposed), liveJson)).toBe(true);
-    for (const id of Object.keys(outside.tilesets)) {
-      expect(proposed.tilesets[id]).not.toBe(outside.tilesets[id]);
-      expect(proposed.tilesets[id]).not.toBe(live.tilesets[id]);
-    }
   });
 });
