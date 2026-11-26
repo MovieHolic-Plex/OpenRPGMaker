@@ -382,6 +382,7 @@
   "98a8d57a6623": "[event] 0",
   "9909caccc333": "[event] center",
   "998b32b39722": "[event] 400 11px/16px \"Segoe UI\", \"Malgun Gothic\", system-ui, sans-serif",
+  "99afe57334b8": "[event] repeat(2, minmax(0, 1fr))",
   "99c5bf2b73c6": "[event] auto",
   "99db7fa02e90": "[event] \"\"",
   "99efcd8e7c52": "[event] 12px",

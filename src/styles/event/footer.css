@@ -443,6 +443,10 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 6px 8px;
+  /* 목록이 스크롤 끝에서 바로 진단 복사 줄로 이어져 마지막 항목이 버튼에 가려진 듯 보였다(vm-qa15 #21).
+     줄을 그어 목록과 동작을 나눈다. */
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 8px;
 }
 
 .event-editor-modal-header .event-draft-validation-actions > label {

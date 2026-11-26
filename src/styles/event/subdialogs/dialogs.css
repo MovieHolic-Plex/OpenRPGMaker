@@ -726,6 +726,13 @@
   }
 }
 
+/* 휴대 폭: 3열이면 버튼이 100px 남짓이라 「오른쪽…」처럼 이름이 잘렸다(vm-qa15 #96). 두 열로. */
+@media (max-width: 599px) {
+  .move-route-editor .move-route-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (max-width: 1518px) {
   .event-subdialog-backdrop[data-testid="event-page-move-route-dialog"] {
     justify-content: flex-start;
