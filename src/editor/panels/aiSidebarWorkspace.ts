@@ -107,9 +107,9 @@ export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement 
     children: [
       el("label", {
         class: "left-column-search",
-        children: [el("span", { class: "left-column-search-icon", attrs: { "aria-hidden": "true" }, children: [deckIcon("search")] }), search],
+        // 「Ctrl K」 는 검색칸 안 끝에 흐름으로 둔다 — 절대 위치일 때는 입력칸 위를 덮어 긴 검색어가 그 밑으로 숨었다(vm-qa15 묶음 2).
+        children: [el("span", { class: "left-column-search-icon", attrs: { "aria-hidden": "true" }, children: [deckIcon("search")] }), search, shortcut],
       }),
-      shortcut,
       inspectChip,
     ],
   });

@@ -703,6 +703,12 @@ html[data-ai-render="off"] {
   padding: 8px 6px 6px; gap: 2px; background: var(--bg-surface); border-right: 1px solid var(--border-subtle);
 }
 .ai-chat-sidebar.left-column.is-collapsed { min-width: 12px; max-width: 12px; padding: 0; }
+/* 폰 폭: 펼친 왼쪽 열은 캔버스를 밀지 않고 위에 덮는다 — 밀면 캔버스가 164px 로 줄어 배율·조수에게 맡기기·배너 닫기가 화면 밖으로 나갔다(vm-qa15 묶음 1). */
+@media (max-width: 699px) {
+  .editor-layout:has(> .ai-chat-sidebar.left-column:not(.is-collapsed)) { position: relative; }
+  .editor-layout > .ai-chat-sidebar.left-column:not(.is-collapsed) { position: absolute; inset: 0 auto 0 0; z-index: 46; box-shadow: var(--shadow-pop); }
+  .editor-layout:has(> .ai-chat-sidebar.left-column:not(.is-collapsed)) > .resizer-left { display: none; }
+}
 .ai-chat-sidebar.left-column:focus-within { outline: 0; }
 .left-column-head { display: flex; align-items: center; gap: 4px; flex: none; padding: 0 2px 6px; }
 .left-column-head[hidden], .left-column-links[hidden], .left-column-restore[hidden], .left-column-inspect[hidden] { display: none; }
@@ -721,11 +727,11 @@ html[data-ai-render="off"] {
 .left-column-search-input::-webkit-search-cancel-button { display: none; }
 .left-column-search-shortcut {
   /* 누르는 단추라 조밀 하한 24px(전에는 18px — editor-main-ui-vqa 10번, app-ux-vqa 12·24·100번). 가운데는 그대로 둔다. */
-  position: absolute; top: 11px; right: 16px; height: 24px; padding: 0 6px; border: 0; border-radius: 5px;
+  /* 검색칸 안 흐름 항목이다(입력칸 위를 덮지 않는다 — vm-qa15 묶음 2). */
+  flex: none; height: 24px; margin-right: -6px; padding: 0 6px; border: 0; border-radius: 5px;
   background: transparent; color: var(--text-3); font: 500 12px var(--font-ui); cursor: pointer;
 }
 .left-column-search-shortcut:hover { background: var(--bg-hover); color: var(--text-1); }
-.left-column-head:has(.left-column-inspect:not([hidden])) .left-column-search-shortcut { right: 52px; }
 .left-column-inspect {
   display: inline-flex; align-items: center; gap: 3px; flex: none; height: 26px; padding: 0 6px; border: 0;
   border-radius: 13px; background: var(--accent-muted); color: var(--warning, var(--accent)); font: 600 12px var(--font-ui); cursor: pointer;
@@ -778,6 +784,8 @@ html[data-ai-render="off"] {
 /* Fold the conversation itself, keeping the live deck and draft mounted. */
 /* 접힌 조수는 띠를 남기지 않는다 — 다시 여는 길은 상단바 「조수」 단추 하나다(2026-11 목업). */
 .ai-right-dock.is-collapsed { flex: 0 0 0; width: 0; min-width: 0; border-left: 0; overflow: hidden; }
+/* 폭 0 도크 안에 남은 접힘 알약·되돌리기는 잘려 안 보이면서 탭 순서에는 남고 화면 밖(x=1420~1460)으로 재졌다(vm-qa15 묶음 1). 여는 길은 상단바 「조수」 하나다. */
+.ai-right-dock.is-collapsed > .ai-chat-float-host .ai-chat-panel.is-collapsed:not(.is-studio) > :is(.ai-collapsed-restore, .ai-collapsed-undo) { display: none; }
 .ai-chat-panel.is-left-sidebar.is-collapsed:not(.is-studio) {
   position: relative; inset: auto; display: flex; flex-direction: column; align-items: center;
   width: 100%; min-width: 0; max-width: none; height: 100%; min-height: 0; padding: 6px 0;
