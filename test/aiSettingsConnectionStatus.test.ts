@@ -151,7 +151,10 @@ describe("AI settings connection status", () => {
     expect(byId("start-settings").textContent).toContain("AI 프로그램 목록을 확인하지 못했어요.");
     expect(byId("start-settings-detect").textContent).toBe("다시 시도");
     expect(codexRequests).toHaveLength(1);
-    expect(cliRequests).toEqual(["/v1/local-agents"]);
+    // 펼침 확인 한 번 + 자동 연결 고르기(#4940)가 길을 모으며 하는 캐시 허용 조회(있을 수 있다). 모두 fresh 가 아니다.
+    expect(cliRequests.every((request) => request === "/v1/local-agents")).toBe(true);
+    const beforeRetry = cliRequests.length;
+    expect(beforeRetry).toBeGreaterThanOrEqual(1);
 
     authResponse = () => Response.json(account);
     cliResponse = () => Response.json(noClis);
@@ -159,7 +162,8 @@ describe("AI settings connection status", () => {
     byId("start-settings-detect").click();
     await vi.advanceTimersByTimeAsync(0);
     expect(codexRequests.length).toBeGreaterThan(1);
-    expect(cliRequests).toEqual(["/v1/local-agents", "/v1/local-agents"]);
+    // 「다시 시도」는 조회를 정확히 한 번 더 한다.
+    expect(cliRequests).toEqual([...Array(beforeRetry + 1)].map(() => "/v1/local-agents"));
     expect(byId("ai-settings-chatgpt-account").hidden).toBe(false);
     expect(byId("start-settings-engine-codex").dataset.state).toBe("not-installed");
     expect(byId("start-settings-engine-claude").dataset.state).toBe("not-installed");
