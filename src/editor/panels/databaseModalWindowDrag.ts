@@ -9,7 +9,8 @@ let modalDragState: ModalDragState | null = null;
 export function startModalDrag(windowEl: HTMLElement, event: MouseEvent): void {
   if (event.button !== 0 || windowEl.classList.contains("maximized")) return;
   const target = event.target;
-  if (target instanceof Element && target.closest("button, [popover]")) return;
+  // 선택자 목록 대신 두 번 묻는다 — 같은 뜻이고, 시험용 가짜 DOM(test/fakeDom.ts closest)은 목록을 나누지 않는다.
+  if (target instanceof Element && (target.closest("button") || target.closest("[popover]"))) return;
   event.preventDefault();
   const rect = windowEl.getBoundingClientRect();
   windowEl.classList.add("floating");
