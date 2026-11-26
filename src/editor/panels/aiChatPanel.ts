@@ -1119,6 +1119,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       backupProjectSnapshot();
       const priorTranscript = pendingPriorTranscript;
       pendingPriorTranscript = null;
+      // 세션 시작 시간을 성능 항목으로 남긴다(«oprn:assistant-session-create») — 첫 세션이 느리다는 신고(#5188)를 실제 앱에서 잰다.
+      const sessionStartedAt = performance.now();
       controller.session = new AssistantSession(store.getCurrent(), {
         checkpoint: { conversationId, projectId: store.getProjectIdentity().id, projectContextKey: conversationScope },
         config: resolveSurfaceAiConfig("chat"),
@@ -1153,6 +1155,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         // 컨텍스트 모드 스코핑(§2.2): 활성 UI 상태에서 결정론으로 계산 — 턴마다 재평가된다.
         toolMode: computeAssistantToolMode,
       });
+      performance.measure("oprn:assistant-session-create", { start: sessionStartedAt, end: performance.now() });
     }
     return controller.session;
   };
