@@ -219,7 +219,7 @@ async function stageWorkerPayloads() {
   }
 
   // 데스크톱 앱은 사용자 PC에 bun 이 없다. 리눅스·윈도우 워커를 실행 파일로 넣어 채팅이 그 파일을 띄운다.
-  // pi_natives 애드온은 싣지 않는다(scripts/build-ai-worker.ts 머리말). 옛 빌드가 남긴 애드온 파일은 지워 패키지에 딸려 가지 않게 한다.
+  // 리눅스 워커는 pi_natives 애드온 없이, 윈도 워커는 애드온을 옆에 두고 굽는다(scripts/build-ai-worker.ts 머리말). 옛 빌드가 남긴 애드온 파일은 먼저 지운다.
   for (const name of readdirSync(OUT_DIR)) if (/^pi_natives\..*\.node$/.test(name)) rmSync(resolve(OUT_DIR, name), { force: true });
   const worker = spawnSync("bun", [resolve(REPO_ROOT, "scripts/build-ai-worker.ts"), OUT_DIR, "linux", "windows"], { cwd: REPO_ROOT, stdio: "inherit" });
   if (worker.status !== 0) throw new Error("AI 워커 컴파일 실패");
