@@ -251,7 +251,8 @@ async function mapBackgrounds(page: Page, id: string, log: Log): Promise<Backgro
     const ctx = canvas.getContext("2d")!; ctx.drawImage(img, 0, 0);
     return [[0.25, 0.25], [0.5, 0.5], [0.75, 0.25]].map(([x, y]) => Array.from(ctx.getImageData(Math.floor(img.width * x!), Math.floor(img.height * y!), 1, 1).data).slice(0, 3));
   }, image.toString("base64"));
-  await page.getByTestId("topbar-assistant").click();
+  // 열린 조수 위에서는 상단 「조수」 가 걷힌다(버튼 줄이기 2회차) — 접혀 있을 때만 연다.
+  if (await page.getByTestId("ai-panel").evaluate((n) => n.classList.contains("is-collapsed")).catch(() => false)) await page.getByTestId("topbar-assistant").click();
   const backgrounds = [...pixels.map((rgb, i) => ({ name: `actual-map-sample-${i}`, rgb })), { name: "dark-bound", rgb: [0, 0, 0] }, { name: "light-bound", rgb: [255, 255, 255] }, { name: "representative-grass", rgb: [65, 120, 45] }, { name: "representative-water", rgb: [40, 90, 160] }, { name: "representative-sand", rgb: [215, 190, 135] }];
   log.push({ action: "map-background-sampling-and-analytical-bounds", backgrounds });
   return backgrounds;
@@ -328,6 +329,8 @@ test.describe("adjustable assistant glass - real editor", () => {
         await pill.focus(); await pill.press("Enter");
         expect((await measure(page, backgrounds)).token).toBe("78%");
         log.push({ action: "collapse-restore-retains-setting", pillStyle, value: 78 });
+        // 「새 대화」 는 ⋯ 메뉴 안이다(버튼 줄이기 2회차).
+        await page.getByTestId("ai-command-menu-toggle").press("Enter");
         await page.getByTestId("ai-new-chat").press("Enter");
         await page.getByTestId("ai-input").focus(); await noPromotions(page);
         await page.getByTestId("ai-open-conversations").press("Enter");

@@ -45,6 +45,8 @@ test("「새 대화」 컨트롤이 보이고, 누르면 대화가 비워진다"
   await bootWithSeededConversation(page);
 
   await expect(page.getByTestId("ai-chat-log")).toContainText("reset marker");
+  // 「새 대화」 는 조수 ⋯ 메뉴 안이다(버튼 줄이기 2회차).
+  await page.getByTestId("ai-command-menu-toggle").click();
   const newChat = page.getByTestId("ai-new-chat");
   await expect(newChat).toBeVisible();
   await expect(newChat).toHaveAttribute("title", "새 대화");

@@ -163,6 +163,8 @@ describe("AI 패널 크롬", () => {
     const menu = findByTestId(panel, "ai-command-menu");
     expect(rail?.contains(menu!)).toBe(true);
     expect(menu?.hidden).toBe(true);
+    // 버튼 줄이기 2회차: 「새 대화」 는 레일 머리가 아니라 ⋯ 메뉴 안에 있다.
+    expect(menu?.contains(findByTestId(panel, "ai-new-chat")!)).toBe(true);
   });
 
   it("존재 줄 문구는 여전히 계산되지만 화면에 심지 않는다", () => {

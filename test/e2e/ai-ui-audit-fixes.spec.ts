@@ -303,7 +303,11 @@ for (const viewport of [{ width: 1440, height: 900 }, { width: 1024, height: 768
       expect(download.suggestedFilename()).toBe("ai-session-audit.json");
       expect(await download.failure()).toBeNull();
       await download.delete();
+      // 메뉴 항목(내보내기)을 누르면 메뉴가 닫힌다 — 「새 대화」 도 ⋯ 메뉴 안이므로 다시 연다(버튼 줄이기 2회차).
+      await page.getByTestId("ai-command-menu-toggle").click();
       await page.getByTestId("ai-new-chat").click();
+      // 「새 대화」 는 ⋯ 메뉴 안이고 누르면 메뉴가 닫힌다(버튼 줄이기 2회차) — 이전 대화는 메뉴를 다시 열어 고른다.
+      await page.getByTestId("ai-command-menu-toggle").click();
       await page.getByTestId("ai-open-conversations").click();
       await page.getByTestId("ai-history-open").first().click();
       await expect(page.getByTestId("ai-chat-log")).toContainText(sentinel);

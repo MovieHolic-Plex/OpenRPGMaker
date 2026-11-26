@@ -89,6 +89,8 @@ test("ordinary dialogue persists sourced wiki and a new chat recalls it", async 
 
   await send("몬스터에 닿으면 전투 화면에서 명령을 골라 싸우는 게임으로 만들자. 왕국 이름은 푸른별이야.");
   await expect(page.getByTestId("ai-chat-log")).toContainText("푸른별 전투: contact");
+  // 「새 대화」 는 조수 ⋯ 메뉴 안이다(버튼 줄이기 2회차).
+  await page.getByTestId("ai-command-menu-toggle").click();
   await page.getByTestId("ai-new-chat").click();
   await send("이 게임의 전투 방식과 왕국 이름을 알려줘");
   await expect(page.getByTestId("ai-chat-log")).toContainText("푸른별 전투: contact");

@@ -389,6 +389,17 @@ body.ai-studio-open .ai-suggestion-peek { display: none; }
 /* 입구 하나(C-61): 조수 패널이 열려 있으면 같은 팝오버를 패널 머리의 점검표 버튼이 연다 — 캔버스 위 떠 있는 버튼은 숨긴다.
    팝오버(.ai-suggestion-peek-popover)는 그대로 캔버스 오른쪽 아래에 열린다. */
 body:not(.ai-dock-collapsed) .ai-suggestion-peek-button { display: none; }
+/* 입구 하나(버튼 줄이기 2회차): 조수 패널이 열려 있으면 상단 「조수」 와 캔버스 알약 「조수에게 맡기기」 는 걷는다 — 패널 자신이 입구다.
+   접으면(ai-dock-collapsed) 둘 다 돌아온다. ai-command-bar-active 는 패널이 붙은 뒤에만 서므로 패널이 없는 화면에서는 숨지 않는다. */
+body.ai-command-bar-active:not(.ai-dock-collapsed) .studio-bar [data-testid="topbar-assistant"],
+body.ai-command-bar-active:not(.ai-dock-collapsed) .canvas-tool-pill .small-task-trigger { display: none; }
+/* AI 연결 전(잠금)에는 보내기·작업 설정이 할 일이 없다 — 잠금 막의 「AI 연결하기」 하나만 남긴다. */
+.is-ai-locked .ai-composer-actions .ai-chat-send[data-testid="ai-send"],
+.is-ai-locked [data-testid="ai-composer-settings"] { display: none; }
+/* 폰 폭: 열린 조수가 캔버스를 덮는 동안 레이어 칸은 고를 것이 없다 — 접으면 돌아온다. */
+@media (max-width: 600px) {
+  body.ai-command-bar-active:not(.ai-dock-collapsed) .studio-bar .studio-layer-segment { display: none; }
+}
 .ai-suggestion-peek-header { position: relative; }
 .ai-suggestion-peek-header .ai-suggestion-peek-badge { right: -4px; top: -4px; }
 /* 카드 행동: 「AI와 이어가기」가 주 행동, 「살펴본 내용」 펼침 줄은 24px 이상(V-shell-topbar-40). */

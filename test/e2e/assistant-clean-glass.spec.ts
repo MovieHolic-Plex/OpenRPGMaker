@@ -280,6 +280,7 @@ test.describe("assistant clean glass - real editor lifecycle", () => {
         await followupDone;
         await clean(page);
         await expect(page.getByTestId("ai-chat-log")).toContainText(FOLLOWUP);
+        await page.getByTestId("ai-command-menu-toggle").click(); // 「새 대화」 는 ⋯ 메뉴 안(버튼 줄이기 2회차)
         await page.getByTestId("ai-new-chat").click();
         await noPromotions(page);
         await page.getByTestId("ai-input").focus();

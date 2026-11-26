@@ -1,0 +1,1 @@
+{"extends":"./tsconfig.json","include":[],"files":["src/editor/panels/aiChatPanel.ts","test/aiPanelChrome.test.ts","test/e2e/ai-ui-audit-fixes.spec.ts","test/e2e/assistant-glass-settings.spec.ts"]}

@@ -235,6 +235,7 @@ test("real panel rejects early completion, verifies applied dimensions and keeps
     await expect(page.getByTestId("ai-sticky-item").first()).not.toHaveAttribute("data-status", "verified");
     artifacts.invalidated = await capture(page, "sticky-invalidated");
     await page.getByTestId("topbar-assistant").click();
+    await page.getByTestId("ai-command-menu-toggle").click(); // 「새 대화」 는 ⋯ 메뉴 안(버튼 줄이기 2회차)
     await page.getByTestId("ai-new-chat").click();
     await expect(note).toHaveCount(0);
     artifacts.newChat = { noteCount: await note.count() };
@@ -287,6 +288,7 @@ test("stopping a real turn retains unverified promises and new chat clears their
     await expect(page.getByTestId("ai-sticky-item").first()).toHaveAttribute("data-status", "blocked");
     const stopped = await capture(page, "sticky-stopped");
     expect(stopped.rows.every((row) => row.status !== "verified")).toBe(true);
+    await page.getByTestId("ai-command-menu-toggle").click(); // 「새 대화」 는 ⋯ 메뉴 안(버튼 줄이기 2회차)
     await page.getByTestId("ai-new-chat").click();
     await expect(page.getByTestId("ai-sticky-checklist")).toHaveCount(0);
     writeFileSync(path.join(evidence, "browser-stop.json"), JSON.stringify({ stopped, newChatNoteCount: 0 }, null, 2));
