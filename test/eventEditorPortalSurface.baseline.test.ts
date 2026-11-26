@@ -52,12 +52,13 @@ const FLOOR = resolve(process.cwd(), "test/fixtures/eventEditorPortalSurface.flo
 // 2026-10-13: 탭 2·3·4 에 파티/전투/연출 명령이 더해져 그 세 탭 해시만 갱신했다.
 // 2026-10-25: 탭 3 에 「승강기 타기」(m2-226-lift-ride)가 더해져 탭 3 해시만 갱신했다(#3509).
 // 2026-10-26: 탭 1·즐겨찾기·그리드에 「일지」(m2-227-journal-line)가 더해져 그 세 해시를 갱신했다(#3546).
+// 2026-11-26: 중복 m2 행(날씨 m2-050·애니메이션 m2-054·동영상 m2-066)을 네이티브 하나로 합쳐 피커에서 뺐다 — 탭 3·검색 해시만 갱신했다(#5195).
 const PRE_FEATURE_PICKER_CONTROL_SHA256 = {
   commandPicker: "c5072b9c4624b7fd8565e8771505dba6637d8a33d6e481def877c238cf95541f",
   commandPickerTab2: "03aa5e4513d6d74f2b777adb102676559b67656765e68c79080095c305138ea9",
-  commandPickerTab3: "71cbfedd8f1be6481f105c787337b059b5c4ac2e6b6b4b50ec1a5140429e5e0d",
+  commandPickerTab3: "c95ea884a807682f089965787cc116b02751ef5058a48cf56936652e203c5cbe",
   commandPickerTab4: "c529651ffe981ec5e62ba18ca4a28472d8264ae2e105ceecf187645c99ff728d",
-  commandPickerSearch: "8ed69ecef4ef73962ab06aafa4c8a340684783e3fc833ba7f110d3170f8b1366",
+  commandPickerSearch: "6039d102a269623f1f244bc665669496012b8ef5596590e730fed52f706879d2",
   commandPickerSearchInformational: "1f94b355d4aa302c096fd5fd0c3f7d0d70abb5543bba8b752d0b20893ae5f5dc",
   commandPickerSearchEmpty: "9958c02a4288731e18cf62a97656f15b6f5bdc1a4da839ff508539b1851c587d",
   commandPickerFavorites: "e17705ef922d7aa2ba21f26d17f8f6c89e9acc96f647169f51c145b51d9f42d8",

@@ -12,8 +12,8 @@
   "rootCount": 1
  },
  "commandPickerTab3": {
-  "testidCount": 116,
-  "controlCount": 102,
+  "testidCount": 108,
+  "controlCount": 96,
   "classCount": 40,
   "rootCount": 1
  },
@@ -24,8 +24,8 @@
   "rootCount": 1
  },
  "commandPickerSearch": {
-  "testidCount": 21,
-  "controlCount": 18,
+  "testidCount": 19,
+  "controlCount": 16,
   "classCount": 40,
   "rootCount": 1
  },
