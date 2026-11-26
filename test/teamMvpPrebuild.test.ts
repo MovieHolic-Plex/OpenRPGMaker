@@ -45,10 +45,13 @@ describe("prebuildMvpWorld", () => {
     expect(verdict.fixes.map((fix) => fix.mapId)).toEqual(["map_cave"]);
   });
 
-  it("leaves interior nodes to the map builder", () => {
-    const pre = prebuildMvpWorld(skeleton(), [{ mapId: "map_forest", role: "interior", label: "할머니 집" }]);
-    expect(pre.built).toEqual([]);
-    expect(pre.skipped[0]?.mapId).toBe("map_forest");
+  it("builds an interior node as a hand-dot room in place and puts its world gate on a walkable floor", () => {
+    const pre = prebuildMvpWorld(skeleton(), [{ mapId: "map_forest", role: "interior", label: "할머니 집 부엌" }]);
+    expect(pre.built).toEqual(["map_forest"]);
+    const room = pre.project.maps.map_forest!;
+    expect(room.tilesetId).toBe("atlas_biome_interior");
+    for (const gate of room.events.filter((event) => event.id.startsWith("ev_world_gate"))) expect(isPassableLanding(pre.project, room, gate.x, gate.y)).toBe(true);
+    expect(projectLint(pre.project, { skipRoundtrip: true }).filter((issue) => issue.severity === "error")).toEqual([]);
   });
 
   it("reads the dungeon kind from the place name", () => {

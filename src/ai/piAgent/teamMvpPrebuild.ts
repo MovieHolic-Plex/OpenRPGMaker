@@ -61,6 +61,15 @@ function edgeMid(map: GameMap, edge: Edge): Pt {
   return edge === "west" ? { x: 0, y: cy } : edge === "east" ? { x: map.width - 1, y: cy } : edge === "north" ? { x: cx, y: 0 } : { x: cx, y: map.height - 1 };
 }
 
+function nearestLanding(project: Project, map: GameMap, target: Pt): Pt | undefined {
+  let best: Pt | undefined, bestD = Infinity;
+  for (let y = 0; y < map.height; y += 1) for (let x = 0; x < map.width; x += 1) {
+    const d = Math.abs(x - target.x) + Math.abs(y - target.y);
+    if (d < bestD && isPassableLanding(project, map, x, y)) { best = { x, y }; bestD = d; }
+  }
+  return best;
+}
+
 function reachable(project: Project, map: GameMap, from: Pt): Pt[] {
   const seen = new Set<number>();
   const out: Pt[] = [];
@@ -93,17 +102,59 @@ function townRun(base: ToolDefinition): ToolDefinition {
       map.events = [];
       const exec = base.run(draft, edges.length ? { ...args, layout: { exits: edges } } : args);
       const built = draft.maps[map.id]!;
-      const from = draft.startMapId === built.id && draft.startPos ? draft.startPos : { x: Math.floor(built.width / 2), y: Math.floor(built.height / 2) };
-      const walk = reachable(draft, built, from);
+      const from = draft.startMapId === built.id && draft.startPos ? draft.startPos : nearestLanding(draft, built, { x: Math.floor(built.width / 2), y: Math.floor(built.height / 2) });
+      const walk = from ? reachable(draft, built, from) : [];
       const placed: string[] = [];
       for (const [index, gate] of gates.entries()) {
         const target = edgeMid(built, gateEdges[index]!);
-        const free = walk.filter((p) => !built.events.some((e) => Math.abs(e.x - p.x) + Math.abs(e.y - p.y) <= 1) && !(p.x === from.x && p.y === from.y));
+        const free = walk.filter((p) => !built.events.some((e) => Math.abs(e.x - p.x) + Math.abs(e.y - p.y) <= 1) && !(from && p.x === from.x && p.y === from.y));
         const at = [...free].sort((a, b) => (Math.abs(a.x - target.x) + Math.abs(a.y - target.y)) - (Math.abs(b.x - target.x) + Math.abs(b.y - target.y)))[0];
         if (!at) throw new Error(`${built.name}: 세계 문 ${gate.id} 를 둘 걸어 닿는 칸이 없다`);
         const trigger = { kind: "playerTouch" } as GameEvent["trigger"];
         built.events.push({ ...gate, x: at.x, y: at.y, trigger, pages: (gate.pages ?? []).map((page) => ({ ...page, trigger, priority: "below" })) } as GameEvent);
         placed.push(`${gate.id}(${at.x},${at.y})`);
+      }
+      repairWorldTransfers(draft, { toMapId: built.id });
+      return { ...exec, summary: `${exec.summary} · 세계 문 ${placed.join(", ")}` };
+    },
+  };
+}
+
+function interiorRooms(text: string): { kind: string }[] {
+  if (/부엌|주방|식탁|kitchen/iu.test(text)) return [{ kind: "kitchen" }, { kind: "dining" }];
+  if (/침실|다락|bedroom/iu.test(text)) return [{ kind: "bedroom" }];
+  if (/창고|광|저장|storeroom/iu.test(text)) return [{ kind: "storeroom" }];
+  return [{ kind: "dining" }, { kind: "bedroom" }];
+}
+
+/**
+ * 실내: 세계 문을 떼어 빈 맵으로 만든 뒤 같은 mapId 에 손 도트 실내(방 구성 + 견본 가구)를 짓고, 문은 남쪽 출구 칸에 다시 놓는다.
+ * 2026-11-26 t2(회상): 실내 노드는 맵 담당 도구에 실내 생성기가 없어 부엌 담당이 막혔다.
+ */
+function interiorRun(base: ToolDefinition): ToolDefinition {
+  return {
+    ...base,
+    run(draft, args) {
+      const map = draft.maps[String(args.mapId)]!;
+      const gates = map.events;
+      map.events = [];
+      const exec = base.run(draft, args);
+      const built = draft.maps[map.id]!;
+      const cells: Pt[] = [];
+      for (let y = 0; y < built.height; y += 1) for (let x = 0; x < built.width; x += 1) if (isPassableLanding(draft, built, x, y)) cells.push({ x, y });
+      const cx = built.width / 2;
+      cells.sort((a, b) => (b.y - a.y) || (Math.abs(a.x - cx) - Math.abs(b.x - cx)));
+      const placed: string[] = [];
+      for (const gate of gates) {
+        const at = cells.find((p) => !built.events.some((e) => Math.abs(e.x - p.x) + Math.abs(e.y - p.y) <= 1) && !(draft.startMapId === built.id && draft.startPos?.x === p.x && draft.startPos?.y === p.y));
+        if (!at) throw new Error(`${built.name}: 세계 문 ${gate.id} 를 둘 바닥이 없다`);
+        const trigger = { kind: "playerTouch" } as GameEvent["trigger"];
+        built.events.push({ ...gate, x: at.x, y: at.y, trigger, pages: (gate.pages ?? []).map((page) => ({ ...page, trigger, priority: "below" })) } as GameEvent);
+        placed.push(`${gate.id}(${at.x},${at.y})`);
+      }
+      if (draft.startMapId === built.id && draft.startPos && !isPassableLanding(draft, built, draft.startPos.x, draft.startPos.y)) {
+        const start = nearestLanding(draft, built, { x: Math.floor(built.width / 2), y: Math.floor(built.height / 2) });
+        if (start) draft.startPos = { ...draft.startPos, ...start };
       }
       repairWorldTransfers(draft, { toMapId: built.id });
       return { ...exec, summary: `${exec.summary} · 세계 문 ${placed.join(", ")}` };
@@ -130,7 +181,8 @@ function dungeonRun(base: ToolDefinition): ToolDefinition {
 export function prebuildMvpWorld(project: Project, hints: readonly PrebuildNodeHint[]): PrebuildResult {
   const town = getTool("author_beodeul_town");
   const dungeon = getTool("author_dungeon");
-  if (!town || !dungeon) return { project, built: [], skipped: hints.map((hint) => ({ mapId: hint.mapId, why: "생성 도구 없음" })) };
+  const interior = getTool("build_hand_interior_room");
+  if (!town || !dungeon || !interior) return { project, built: [], skipped: hints.map((hint) => ({ mapId: hint.mapId, why: "생성 도구 없음" })) };
   let working = project;
   const built: string[] = [];
   const skipped: { mapId: string; why: string }[] = [];
@@ -138,12 +190,13 @@ export function prebuildMvpWorld(project: Project, hints: readonly PrebuildNodeH
     const map = working.maps[hint.mapId];
     const role = hint.role ?? working.worldGraph?.nodes.find((node) => node.mapId === hint.mapId)?.role;
     if (!map) { skipped.push({ mapId: hint.mapId, why: "맵 없음" }); continue; }
-    if (role === "interior") { skipped.push({ mapId: hint.mapId, why: "실내는 맵 담당이 짓는다" }); continue; }
     if (!isWorldSkeletonMap(map)) { skipped.push({ mapId: hint.mapId, why: "이미 내용이 있다" }); continue; }
     const text = `${hint.label ?? ""} ${hint.concept ?? ""} ${map.name ?? ""}`;
     const name = hint.label?.trim() || undefined;
     const ctx = { project: working };
-    const result = role === "town"
+    const result = role === "interior"
+      ? runToolDefinition(ctx, interiorRun(interior), { mapId: hint.mapId, tileset: "atlas_biome_interior", ...(name ? { name } : {}), layout: { rooms: interiorRooms(text) } }, { advisory: false })
+      : role === "town"
       ? runToolDefinition(ctx, townRun(town), { mapId: hint.mapId, ...(name ? { name } : {}), houseCount: 3 }, { advisory: false })
       : runToolDefinition(ctx, dungeonRun(dungeon), { mapId: hint.mapId, type: dungeonTypeFor(role, text), size: "small", gimmick: "none", ...(name ? { name } : {}), ...(hint.concept ? { inspiration: hint.concept.slice(0, 120) } : {}) }, { advisory: false });
     if (result.ok && ctx.project !== working) { working = ctx.project; built.push(hint.mapId); }
