@@ -11,11 +11,14 @@ let factoryIndex: Map<string, Map<string, Set<string>>> | undefined;
 const verdicts = new WeakMap<object, boolean>();
 
 // 새 프로젝트가 태어나는 세 갈래(전체 기본 DB · 슬림 스타터 · 장르 팩 = 전체 + 예시 상성)가 다듬은 레코드도 엔진 것이다.
-function factoryDatabases(): readonly Record<string, unknown>[] {
-  const full = createBlankProject();
-  const genre = createBlankProject();
+// 자료집만 본다 — 타일셋 정의(빈 새 프로젝트 77MiB 중 74MiB)는 싣지 않는다. 실으면 자료집 창을 미리 만들 때(부팅) 세 벌을 짓느라
+// 메인 스레드가 약 5s 멈췄고, 그동안 연 조수 첫 세션이 1.5s → 3.4s 로 늘었다(2026-11-26 데스크톱 빌드 프로파일, #5188).
+export function factoryDatabases(): readonly Record<string, unknown>[] {
+  const light = { withTilesets: false } as const;
+  const full = createBlankProject(light);
+  const genre = createBlankProject(light);
   applyDefaultElementAffinities(genre.database.enemies, genre.database.elements ?? []);
-  return [full, createStarterBlankProject(), genre].map((project) => project.database as unknown as Record<string, unknown>);
+  return [full, createStarterBlankProject(light), genre].map((project) => project.database as unknown as Record<string, unknown>);
 }
 
 function index(): Map<string, Map<string, Set<string>>> {

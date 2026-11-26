@@ -77,7 +77,10 @@ function ensureDefinitionSlots<TValue>(options: {
   return changed;
 }
 
-export function createProjectWithMaps(starters: readonly GameMap[], selectedIndex: number): Project {
+/** `withTilesets: false` — 타일셋 정의(빈 새 프로젝트 77MiB 중 74MiB)를 싣지 않는다. 기본 자료집만 필요한 곳(databasePresetRecords)이 쓴다. */
+export type BlankProjectOptions = { readonly withTilesets?: boolean };
+
+export function createProjectWithMaps(starters: readonly GameMap[], selectedIndex: number, options: BlankProjectOptions = {}): Project {
   const starter = starters[Math.max(0, Math.min(selectedIndex, starters.length - 1))] ?? createStarterMap();
   const startMapId: MapId = starter.id;
   const switches: SwitchDef[] = initialDefinitionSlots("sw");
@@ -89,7 +92,7 @@ export function createProjectWithMaps(starters: readonly GameMap[], selectedInde
     meta: { title: "새 프로젝트", author: "", terms: defaultTerms() },
     assets: defaultAssetSet(),
     resourceProfiles: defaultResourceProfiles(),
-    tilesets: defaultTilesets(),
+    tilesets: options.withTilesets === false ? {} : defaultTilesets(),
     switches,
     variables,
     commonEvents,
@@ -120,10 +123,10 @@ export function createProjectWithMaps(starters: readonly GameMap[], selectedInde
   return project;
 }
 
-export function createBlankProject(): Project {
+export function createBlankProject(options: BlankProjectOptions = {}): Project {
   const map = createBlankMap("빈 맵", BLANK_PROJECT_MAP_WIDTH, BLANK_PROJECT_MAP_HEIGHT, DEFAULT_TILESET_ID);
   map.id = BLANK_PROJECT_START_MAP_ID;
-  const project = createProjectWithMaps([map], 0);
+  const project = createProjectWithMaps([map], 0, options);
   project.system = { ...project.system, startActorIds: [DEFAULT_ACTOR_ID] };
   project.system.opening = defaultOpeningSequence();
   project.session = { ...project.session, partyActorIds: [DEFAULT_ACTOR_ID] };
