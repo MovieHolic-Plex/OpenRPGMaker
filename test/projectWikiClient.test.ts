@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { beforeAll, describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { extractProjectWiki } from "@/ai/projectWikiClient";
 import type { AiConfig, ChatRequest, ChatResult } from "@/ai/llmClient";
@@ -10,6 +10,9 @@ function response(value: unknown): ChatResult { return { message: { role: "assis
 const patch = { upserts: [{ id: "w_moon", type: "concept", name: "Moon", summary: "The moon is glass", wiki: { kind: "knowledge", basis: "explicit", sourceIds: [source.id], topic: "moon" } }] };
 
 describe("OAuth wiki extraction adapter", () => {
+  // 새 프로젝트는 번들 타일셋 정의를 모두 지어 CI 에서 1초를 넘긴다(81MB) — 아래 취소 시험의 1초 상한은 취소만 재도록 입력을 미리 만든다.
+  let hangInput: ReturnType<typeof input>;
+  beforeAll(() => { hangInput = input(); }, 30_000);
   it("uses the existing user config and prepares sources, maps, current docs, and read-only canon", async () => {
     const requestInput = input();
     requestInput.project.system.genre = "adventure-jrpg";
@@ -52,7 +55,7 @@ describe("OAuth wiki extraction adapter", () => {
     const controller = new AbortController();
     let signalStarted: () => void = () => { throw new Error("start signal not subscribed"); };
     const started = new Promise<void>((resolve) => { signalStarted = resolve; });
-    const pending = extractProjectWiki({ ...input(), signal: controller.signal }, { chat: () => { signalStarted(); return new Promise<ChatResult>(() => {}); }, getConfig: () => config });
+    const pending = extractProjectWiki({ ...hangInput, signal: controller.signal }, { chat: () => { signalStarted(); return new Promise<ChatResult>(() => {}); }, getConfig: () => config });
     const rejection = expect(pending).rejects.toMatchObject({ name: "AbortError" });
     await started;
     controller.abort();

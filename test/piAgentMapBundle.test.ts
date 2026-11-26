@@ -61,12 +61,13 @@ describe("piAgent mapBundle", () => {
 
   it("영역 턴이 단 돌아오는 문(다른 맵)과 묶음 안 탈것은 옮기고, 다른 맵 타일은 여전히 버린다", () => {
     const base = seed();
-    const linked = clone(base);
-    const pair = runTool({ project: linked }, "create_transfer_pair", { a: { mapId: "map_east", x: 5, y: 5 }, b: { mapId: "map_west", x: 6, y: 6 } });
+    // runTool 은 결과 프로젝트를 ctx.project 에 새로 단다(제자리 수정이 아니다) — 같은 ctx 를 이어 쓰고 그 project 를 병합한다.
+    const linked = { project: clone(base) };
+    const pair = runTool(linked, "create_transfer_pair", { a: { mapId: "map_east", x: 5, y: 5 }, b: { mapId: "map_west", x: 6, y: 6 } });
     expect(pair.ok, pair.summary).toBe(true);
-    const boat = runTool({ project: linked }, "place_vehicle", { vehicle: "cart", mapId: "map_east", x: 3, y: 3 });
+    const boat = runTool(linked, "place_vehicle", { vehicle: "cart", mapId: "map_east", x: 3, y: 3 });
     expect(boat.ok, boat.summary).toBe(true);
-    const merged = mergeMapBundles(base, [{ mapIds: ["map_east"], project: linked }]);
+    const merged = mergeMapBundles(base, [{ mapIds: ["map_east"], project: linked.project }]);
     expect(merged.spills).toEqual([]);
     expect(merged.project.maps.map_west!.events.length).toBe(base.maps.map_west!.events.length + 1);
     expect(merged.project.system.vehicles?.map((entry) => entry.mapId)).toEqual(["map_east"]);

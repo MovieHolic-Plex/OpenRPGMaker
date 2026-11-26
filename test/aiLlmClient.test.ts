@@ -58,13 +58,15 @@ describe("aiConfig 저장/로드", () => {
     vi.stubEnv("VITE_LLM_API_URL", "");
     vi.stubEnv("VITE_LLM_API_KEY", "");
     installLocalStorage();
-    const { loadAiConfig, saveAiConfig, DEFAULT_LITE_MODEL, DEFAULT_MAX_TOKENS, DEFAULT_MODEL } = await loadClient();
+    const { loadAiConfig, saveAiConfig, DEFAULT_MAX_TOKENS } = await loadClient();
+    // 공장 기본은 Claude Sonnet 5.5 한 모델이다(#4939) — 옛 상수 DEFAULT_MODEL·DEFAULT_LITE_MODEL(gemini-4-argon)이 아니다.
+    const { CLAUDE_DEFAULT_MODEL } = await import("@/ai/ohMyPiProviders");
 
     const initial = loadAiConfig();
     // 인증은 무조건 OAuth — 환경과 무관하게 chatgpt 하나다.
     expect(initial.authMode).toBe("chatgpt");
-    expect(initial.model).toBe(DEFAULT_MODEL);
-    expect(initial.liteModel).toBe(DEFAULT_LITE_MODEL);
+    expect(initial.model).toBe(CLAUDE_DEFAULT_MODEL);
+    expect(initial.liteModel).toBe(CLAUDE_DEFAULT_MODEL);
     // OAuth 는 클라이언트 키를 쓰지 않는다 — env 키 폴백도 없앴다.
     expect(initial.apiKey).toBe("");
     expect(initial.maxTokens).toBe(DEFAULT_MAX_TOKENS); // 사용자 제한은 출력 토큰 예산 하나.
@@ -74,8 +76,8 @@ describe("aiConfig 저장/로드", () => {
     saveAiConfig({ ...initial, maxTokens: 4000 });
     const reloaded = loadAiConfig();
     expect(reloaded.maxTokens).toBe(4000);
-    expect(reloaded.model).toBe(DEFAULT_MODEL);
-    expect(reloaded.liteModel).toBe(DEFAULT_LITE_MODEL);
+    expect(reloaded.model).toBe(CLAUDE_DEFAULT_MODEL);
+    expect(reloaded.liteModel).toBe(CLAUDE_DEFAULT_MODEL);
     // 기본 모델은 OAuth(Codex) 카탈로그 ID 여야 한다. 옛 기본값 cpen/gpt-5-6-luna 는 게이트웨이
     // ID 라서, OAuth 경로에서 오류 없이 제공자 기본 모델로 강등됐다(감독이 고른 모델이 답하지 않음).
     expect(DEFAULT_MODEL).toBe("gemini-4-argon");
@@ -175,8 +177,9 @@ describe("aiConfig 저장/로드", () => {
     const { defaultAiConfig } = await loadClient();
     const cfg = defaultAiConfig();
     expect(cfg.authMode).toBe("chatgpt");
-    expect(cfg.providerId).toBe("google-antigravity");
-    expect(cfg.model).toBe("gemini-4-argon");
+    // 공장 기본 = Claude Sonnet 5.5 · high(#4939, 오너 결정 2026-11-23).
+    expect(cfg.providerId).toBe("anthropic");
+    expect(cfg.model).toBe("claude-sonnet-5-5");
     expect(cfg.baseUrl).toBe("");
     expect(cfg.apiKey).toBe("");
   });
@@ -306,7 +309,7 @@ describe("chatCompletion 스트리밍 SSE 파서", () => {
     // 동반 서비스 입구가 헤더를 Headers 객체로 다시 싼다(#3152) — 값으로 비교한다.
     expect(Object.fromEntries(new Headers((init as RequestInit | undefined)?.headers).entries())).toEqual({
       "content-type": "application/json",
-      "x-oprn-provider": "google-antigravity",
+      "x-oprn-provider": "anthropic",
     });
   });
 
