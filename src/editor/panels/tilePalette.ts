@@ -587,6 +587,16 @@ function attachPaletteFilters(head: HTMLElement, label: string): HTMLElement {
   // 머리는 한 줄 「타일 · 타일셋   전체 ▾」 — 「붓 설정」 단추는 이 칸의 첫 줄로 내린다.
   const settingsToggle = head.querySelector<HTMLElement>('[data-testid="palette-brush-settings-toggle"]');
   if (settingsToggle) body.append(settingsToggle);
+  // 버튼 줄이기 2회차: 머리의 타일셋 이름은 글자로만 두고, 맵 설정을 여는 단추는 이 칸 안으로 내린다 — 머리 단추는 「전체 ▾」 하나다.
+  const tilesetButton = head.querySelector<HTMLElement>('[data-testid="palette-tileset-name"]');
+  if (tilesetButton?.parentElement) {
+    tilesetButton.parentElement.insertBefore(el("span", {
+      class: "tile-section-tileset is-label",
+      text: tilesetButton.textContent ?? "",
+      attrs: { translate: "no", title: tilesetButton.getAttribute("title") ?? "" },
+    }), tilesetButton);
+    body.append(tilesetButton);
+  }
   head.append(toggle);
   return body;
 }
