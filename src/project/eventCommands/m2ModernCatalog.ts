@@ -484,7 +484,7 @@ export function modernFieldsFor(title: string): readonly M2CommandFieldSpec[] | 
         { key: "writer", label: "필체(일지 필체 id 또는 이름)", type: "text", defaultValue: "" },
         { key: "date", label: "날짜 칸", type: "text", defaultValue: "" },
         { key: "text", label: "내용", type: "textarea", defaultValue: "" },
-        { key: "learnActorId", label: "다시 읽을 때 기술을 배울 배우", type: "text", defaultValue: "" },
+        { key: "learnActorId", label: "다시 읽을 때 기술을 배울 주인공", type: "text", defaultValue: "" },
         { key: "learnSkillId", label: "다시 읽을 때 배울 기술", type: "text", defaultValue: "" },
         { key: "resultSwitchId", label: "실제로 바뀌면 켤 스위치", type: "text", defaultValue: "" },
       ];

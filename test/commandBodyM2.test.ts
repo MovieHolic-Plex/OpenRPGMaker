@@ -55,6 +55,14 @@ describe("eventEditorM2CommandBody", () => {
       restoreDom?.();
     });
 
+    it("offers pickers instead of free text for the journal line actor, skill and result switch ids", () => {
+      const body = renderWithFakeDom(() =>
+        renderCommandBody(contextWithReplaceSpy(vi.fn()), { kind: "m2Command", commandId: "m2-227-journal-line", fields: {} })
+      );
+      expect(findByTestId(body, "m2-command-learnActorId-record-select")).not.toBeNull();
+      expect(findByTestId(body, "m2-command-learnSkillId-record-select")).not.toBeNull();
+    });
+
     it("renders Move Picture as the canonical rich picture-slot movement form", () => {
       const context = contextWithReplaceSpy(vi.fn());
 
