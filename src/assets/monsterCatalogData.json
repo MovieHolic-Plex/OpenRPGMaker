@@ -1,173 +1,4 @@
 {
-  "generated-enemy-slime-01": {
-    "name": "푸른 슬라임",
-    "tags": [
-      "슬라임",
-      "slime",
-      "푸른색",
-      "blue",
-      "젤리",
-      "gel"
-    ],
-    "description": "청록색 비대칭 젤리 몸에 두꺼운 밝은 반사 띠와 돌출한 눈살, 작은 코와 입이 있다."
-  },
-  "generated-enemy-bat-01": {
-    "name": "회갈색 털 분홍 날개 박쥐",
-    "tags": [
-      "박쥐",
-      "bat",
-      "날개",
-      "wing",
-      "비행",
-      "flying",
-      "회갈색",
-      "grey brown",
-      "분홍 날개",
-      "pink wings"
-    ],
-    "description": "회갈색 두꺼운 털과 분홍빛 주름 날개막, 길고 뾰족한 귀를 가진 박쥐다."
-  },
-  "generated-enemy-golem-01": {
-    "name": "이끼 바위 골렘",
-    "tags": [
-      "골렘",
-      "golem",
-      "바위",
-      "stone",
-      "인간형",
-      "humanoid",
-      "이끼",
-      "moss",
-      "청록색",
-      "teal"
-    ],
-    "description": "이끼가 덮인 청록빛 바위 거인이 넓은 등과 층층이 쌓인 주먹, 가슴 보석을 갖는다."
-  },
-  "generated-enemy-dragon-01": {
-    "name": "황토빛 드래곤",
-    "tags": [
-      "드래곤",
-      "dragon",
-      "날개",
-      "wing",
-      "꼬리",
-      "tail",
-      "황토색",
-      "ochre"
-    ],
-    "description": "황토색 비늘과 청동빛 넓은 날개, 구부러진 두 뿔, 두꺼운 꼬리와 송곳니를 가진 용이다."
-  },
-  "generated-enemy-sylph-hornet": {
-    "name": "적갈색 벌",
-    "tags": [
-      "벌",
-      "곤충",
-      "wasp",
-      "bee",
-      "insect"
-    ],
-    "description": "적갈색 벌이 배를 몸 아래 앞으로 내질러 독침으로 찌르고, 독침에서 초록 독 바늘 셋을 연달아 쏜다."
-  },
-  "generated-troop-preview-slime": {
-    "name": "푸른 슬라임",
-    "tags": [
-      "슬라임",
-      "slime",
-      "푸른색",
-      "blue",
-      "젤리",
-      "gel"
-    ],
-    "description": "청록색 둥근 젤리 몸에 밝은 반사 덩어리와 오른쪽을 보는 두 눈이 있다."
-  },
-  "generated-enemy-ontology-8da61312": {
-    "name": "룬 둘러싼 부유 조각돌",
-    "tags": [
-      "광물",
-      "룬",
-      "mineral",
-      "rune",
-      "돌",
-      "stone",
-      "부유",
-      "floating"
-    ],
-    "description": "룬 조각돌이 궤도를 돌던 석판 조각 하나를 창처럼 쏘아 찌르고, 조각들을 핵 곁으로 끌어모아 달군 뒤 활짝 터뜨리며 청록 룬 파편 셋을 아군 쪽으로 쏜다."
-  },
-  "generated-enemy-zombie-01": {
-    "name": "좀비",
-    "tags": [
-      "언데드",
-      "undead",
-      "좀비",
-      "zombie",
-      "인간형",
-      "humanoid"
-    ],
-    "description": "잿빛 녹색 피부의 좀비가 썩어 꺼진 볼과 벌어진 입의 이빨, 찢어진 남색 외투와 드러난 굵은 팔다리를 갖고 땅에서 썩은 손을 솟게 한다."
-  },
-  "generated-enemy-skeleton-01": {
-    "name": "뼈 몽둥이를 든 해골",
-    "tags": [
-      "해골",
-      "skeleton",
-      "언데드",
-      "undead",
-      "몽둥이",
-      "club"
-    ],
-    "description": "상아색 맨 해골이 붉은 불씨 눈의 비스듬한 두개골, 늑골과 척추, 붉은 허리 천, 혹 둘 달린 뼈 몽둥이를 갖고 뼈 조각을 흩뿌린다."
-  },
-  "generated-enemy-orc-01": {
-    "name": "곤봉 든 갈색 오크",
-    "tags": [
-      "오크",
-      "orc",
-      "인간형",
-      "humanoid",
-      "곤봉",
-      "club",
-      "갈색",
-      "brown"
-    ],
-    "description": "갈색 피부와 두 엄니, 붉은 얼굴 흉터의 오크가 털가죽 어깨 망토와 가죽 띠, 붉은 치마, 쇠테 두른 곤봉을 들고 전투 함성을 지른다."
-  },
-  "generated-enemy-ghost-01": {
-    "name": "푸른빛 망령",
-    "tags": [
-      "유령",
-      "망령",
-      "언데드",
-      "ghost",
-      "specter",
-      "undead"
-    ],
-    "description": "푸른 망령이 들린 큰 얼굴과 드러난 늑골, 뒤로 말린 굵은 꼬리, 갈고리 손을 갖고 손에서 차가운 소용돌이 혼불을 쏜다."
-  },
-  "generated-enemy-crab-01": {
-    "name": "바위 게",
-    "tags": [
-      "게",
-      "crab",
-      "갑각류",
-      "crustacean",
-      "동물",
-      "animal"
-    ],
-    "description": "붉은 갯바위 게가 큰 집게로 꽉 집고, 집게를 들어 올려 거품 덩어리를 뿜는다."
-  },
-  "generated-enemy-spider-01": {
-    "name": "보라색 가시 거미",
-    "tags": [
-      "거미",
-      "spider",
-      "괴물",
-      "monster",
-      "보라색",
-      "가시"
-    ],
-    "description": "보라 가시 거미가 독니로 물고, 배를 치켜들어 등의 노란 가시를 앞으로 쏘아 날린다."
-  },
   "generated-enemy-snake-01": {
     "name": "초록색 코브라",
     "tags": [
@@ -179,319 +10,6 @@
       "reptile"
     ],
     "description": "청록 코브라가 똬리에서 몸을 세워 안경 무늬 후드를 펼치고, 고개를 숙여 초록 독액 줄기를 뿜는다."
-  },
-  "generated-enemy-scorpion-01": {
-    "name": "남청색 전갈",
-    "tags": [
-      "전갈",
-      "scorpion",
-      "절지동물",
-      "arthropod",
-      "거미류",
-      "arachnid",
-      "남청색",
-      "dark blue"
-    ],
-    "description": "남청 전갈이 꼬리를 내리꽂아 찌르고, 독침에서 청록 독침 세 발을 쏜다."
-  },
-  "generated-enemy-wolf-01": {
-    "name": "회색 늑대",
-    "tags": [
-      "늑대",
-      "동물",
-      "야수",
-      "wolf",
-      "animal",
-      "beast"
-    ],
-    "description": "넓은 은회색 가슴털과 각진 긴 주둥이, 굵은 발목의 큰 늑대가 하늘을 향해 울부짖어 푸른 음파와 서리 별빛을 퍼뜨린다."
-  },
-  "generated-enemy-harpy-01": {
-    "name": "청회색 날개 하피",
-    "tags": [
-      "하피",
-      "harpy",
-      "반인반조",
-      "demihuman",
-      "괴물",
-      "monster",
-      "새",
-      "bird",
-      "청회색 날개",
-      "blue grey wings"
-    ],
-    "description": "청회색 날개 팔의 하피가 발톱으로 할퀴고, 날개를 앞으로 쳐서 칼날 깃털을 날린다."
-  },
-  "generated-enemy-centipede-01": {
-    "name": "거대 지네",
-    "tags": [
-      "지네",
-      "centipede",
-      "절지동물",
-      "arthropod",
-      "자주색",
-      "주황색 다리"
-    ],
-    "description": "거대 지네가 물결치듯 기어와 집게 턱으로 물고, 머리를 높이 들어 보라 독 방울을 튀긴다."
-  },
-  "generated-enemy-plant-01": {
-    "name": "거대한 식충 식물",
-    "tags": [
-      "식물",
-      "plant",
-      "몬스터",
-      "monster",
-      "식충식물",
-      "점액"
-    ],
-    "description": "항아리 주머니 식충 식물이 덩굴손을 채찍처럼 휘두르고, 주머니를 기울여 녹색 소화액을 쏟아 뿌린다."
-  },
-  "generated-enemy-horse-01": {
-    "name": "갈색 말",
-    "tags": [
-      "말",
-      "horse",
-      "동물",
-      "animal",
-      "갈색",
-      "brown"
-    ],
-    "description": "밤색 말이 갈기를 휘날리며 달려들고, 뒷발로 일어서 앞발을 내리꽂아 땅의 충격파를 퍼뜨린다."
-  },
-  "generated-enemy-unicorn-01": {
-    "name": "하얀 유니콘",
-    "tags": [
-      "유니콘",
-      "unicorn",
-      "말",
-      "horse",
-      "동물",
-      "animal"
-    ],
-    "description": "흰 유니콘이 금빛 뿔을 앞으로 겨눠 뿔끝에서 성광 빛줄기를 쏜다."
-  },
-  "generated-enemy-salamander-01": {
-    "name": "청회색 목지느러미 도마뱀",
-    "tags": [
-      "도마뱀",
-      "파충류",
-      "몬스터",
-      "lizard",
-      "reptile",
-      "monster",
-      "청회색",
-      "blue grey",
-      "목지느러미"
-    ],
-    "description": "목지느러미 도롱뇽이 머리를 내밀어 물고, 아가미를 펴고 고개를 쳐들어 차가운 물안개를 뿜는다."
-  },
-  "generated-enemy-carbuncle-01": {
-    "name": "금빛 이마 보석 카벙클",
-    "tags": [
-      "여우",
-      "fox",
-      "동물",
-      "animal",
-      "보석",
-      "gem",
-      "금빛 보석",
-      "gold gem",
-      "청록색",
-      "teal"
-    ],
-    "description": "카벙클이 몸을 날려 앞발로 할퀴고, 이마 보석을 번쩍여 금빛 무지개 광선과 보석 조각을 쏜다."
-  },
-  "generated-enemy-cat-01": {
-    "name": "황갈색 줄무늬 고양이",
-    "tags": [
-      "고양이",
-      "cat",
-      "동물",
-      "animal",
-      "줄무늬",
-      "tabby",
-      "황갈색",
-      "ochre"
-    ],
-    "description": "황갈색 줄무늬 고양이가 둥근 얼굴의 큰 초록 눈과 삼각 귀, 수염, 길게 휜 꼬리를 갖고 앞발 연타로 발자국 충격을 찍는다."
-  },
-  "generated-enemy-kappa-01": {
-    "name": "물접시 갓파",
-    "tags": [
-      "갓파",
-      "kappa",
-      "거북",
-      "turtle",
-      "물접시",
-      "등껍질"
-    ],
-    "description": "접시 머리 갓파가 물갈퀴 손으로 치고, 몸을 숙여 부리로 물대포를 뿜는다."
-  },
-  "generated-enemy-cockatrice-01": {
-    "name": "비늘 코카트리스",
-    "tags": [
-      "코카트리스",
-      "cockatrice",
-      "닭",
-      "chicken",
-      "비늘",
-      "긴 꼬리"
-    ],
-    "description": "수탉 앞몸과 뱀 꼬리의 코카트리스가 부리로 쪼고, 눈에서 초록 석화 광선을 쏘아 돌 조각을 만든다."
-  },
-  "generated-enemy-parasite-01": {
-    "name": "분홍 마디 기생충",
-    "tags": [
-      "벌레",
-      "worm",
-      "괴물",
-      "monster",
-      "분홍색",
-      "pink",
-      "마디",
-      "segmented",
-      "갈고리 다리"
-    ],
-    "description": "분홍 기생충이 빨판 입으로 들이받아 물고, 몸을 세워 끈적한 알 덩어리를 쏟는다."
-  },
-  "generated-enemy-mantis-01": {
-    "name": "거대 사마귀",
-    "tags": [
-      "사마귀",
-      "곤충",
-      "초록색",
-      "mantis",
-      "insect",
-      "green"
-    ],
-    "description": "마른 잎 사마귀가 낫 앞다리로 낚아채고, 눈알 무늬 날개를 펼쳐 마른 잎 회오리를 날린다."
-  },
-  "generated-enemy-jackolantern-01": {
-    "name": "잭 오 랜턴",
-    "tags": [
-      "호박",
-      "pumpkin",
-      "잭 오 랜턴",
-      "jack-o'-lantern",
-      "식물",
-      "plant"
-    ],
-    "description": "호박 머리 잭 오 랜턴이 덩굴 손으로 할퀴고, 입에서 주황 불덩이를 토해 날린다."
-  },
-  "generated-enemy-fish-01": {
-    "name": "파란 이빨물고기",
-    "tags": [
-      "물고기",
-      "fish",
-      "이빨",
-      "비늘",
-      "파란색",
-      "주황색"
-    ],
-    "description": "파란 이빨물고기가 S 자로 헤엄쳐 물어뜯고, 몸을 튕겨 물보라 고리와 거품을 쏜다."
-  },
-  "generated-enemy-spirit-01": {
-    "name": "연보라 가면 정령",
-    "tags": [
-      "유령",
-      "언데드",
-      "영혼",
-      "ghost",
-      "undead",
-      "spirit",
-      "연보라색",
-      "light purple",
-      "가면",
-      "mask"
-    ],
-    "description": "연보라 가면 정령이 작은 유령 손으로 할퀴고, 손을 내밀어 보라 혼불 셋을 날린다."
-  },
-  "generated-enemy-ghoul-01": {
-    "name": "초록색 언데드",
-    "tags": [
-      "언데드",
-      "undead",
-      "좀비",
-      "zombie",
-      "몬스터",
-      "monster"
-    ],
-    "description": "검록색 구울이 낮게 웅크린 몸과 긴 갈고리 팔, 엄니 솟은 큰 턱과 드러난 갈비뼈를 갖고 하늘을 향해 굶주림의 포효를 터뜨린다."
-  },
-  "generated-enemy-specter-01": {
-    "name": "보라 후드 해골 유령",
-    "tags": [
-      "유령",
-      "악령",
-      "언데드",
-      "ghost",
-      "spirit",
-      "undead",
-      "보라색",
-      "purple",
-      "후드",
-      "hood",
-      "해골",
-      "skeleton"
-    ],
-    "description": "보라 후드 속 해골 얼굴의 스펙터가 깊이 접힌 망토와 찢긴 옷자락, 굵은 뼈 손을 갖고 청록 저주 사슬을 내쏜다."
-  },
-  "generated-enemy-lemora-01": {
-    "name": "푸른 비늘 해룡",
-    "tags": [
-      "해룡",
-      "바다뱀",
-      "몬스터",
-      "seadragon",
-      "seaserpent",
-      "monster"
-    ],
-    "description": "해룡이 목을 내뻗어 물어뜯고, 곧추선 채 벌린 입에서 굵은 물줄기와 물보라를 뿜는다."
-  },
-  "generated-enemy-sylph-01": {
-    "name": "청록 잎날개 요정",
-    "tags": [
-      "정령",
-      "spirit",
-      "바람",
-      "wind",
-      "잎날개",
-      "leaf wings",
-      "요정",
-      "fairy"
-    ],
-    "description": "청록 잎날개 요정이 날아들며 발차기로 바람 칼날을 일으키고, 날개를 활짝 펴 청록 초승달 바람 칼날과 잎사귀 돌풍을 아군 쪽으로 날린다."
-  },
-  "generated-enemy-leaf-fox": {
-    "name": "풀잎 여우",
-    "tags": [
-      "여우",
-      "fox",
-      "식물",
-      "plant",
-      "나뭇잎",
-      "leaf",
-      "풀잎여우",
-      "풀잎 여우",
-      "leaf fox"
-    ],
-    "description": "풀잎 여우가 큰 꼬리를 휘둘러 날카로운 초록 잎 회오리를 날린다."
-  },
-  "generated-enemy-fire-pup": {
-    "name": "불꽃 강아지",
-    "tags": [
-      "강아지",
-      "dog",
-      "puppy",
-      "불꽃",
-      "fire",
-      "불꽃강아지",
-      "불꽃 강아지",
-      "불씨강아지",
-      "불씨 강아지",
-      "불씨"
-    ],
-    "description": "주황색 두꺼운 털과 밝은 목덜미, 큰 귀의 불강아지가 불꽃 꼬리를 흔들며 짖어 불덩이를 뱉는다."
   },
   "generated-enemy-sparkit-fire": {
     "name": "스파킷",
@@ -519,69 +37,6 @@
     ],
     "description": "나뭇잎 정령이 덩굴 팔을 채찍처럼 휘두르고, 땅에 뿌리를 내려 가시 돋친 뿌리 창을 아군 쪽으로 차례로 솟구치게 한다."
   },
-  "generated-enemy-sparkit-01": {
-    "name": "번개 정령",
-    "tags": [
-      "정령",
-      "elemental",
-      "번개",
-      "lightning",
-      "괴물",
-      "monster"
-    ],
-    "description": "번개 정령이 불꽃을 튀기며 몸통 박치기를 하고, 뺨의 전기 주머니에서 노란 지그재그 번개를 쏜다."
-  },
-  "generated-enemy-aqualing-01": {
-    "name": "물고기형 물 정령",
-    "tags": [
-      "물정령",
-      "water elemental",
-      "물고기",
-      "fish",
-      "괴물",
-      "monster"
-    ],
-    "description": "우파루파 물 정령이 머리로 들이받아 물을 튀기고, 볼을 부풀려 입에서 큰 물방울 셋을 쏜다."
-  },
-  "generated-enemy-king-slime-01": {
-    "name": "금관 쓴 파란 슬라임",
-    "tags": [
-      "슬라임",
-      "slime",
-      "몬스터",
-      "monster",
-      "왕관",
-      "crown",
-      "파란색",
-      "blue",
-      "금관"
-    ],
-    "description": "거대한 파랑 젤리 왕이 바닥에 흘러내린 두 단 몸, 세 갈래 금빛 왕관과 붉은 보석, 크게 벌어지는 넓은 턱을 갖고 젤리 파도로 짓누른다."
-  },
-  "generated-enemy-slime-blue": {
-    "name": "푸른 슬라임",
-    "tags": [
-      "슬라임",
-      "slime",
-      "파란색",
-      "blue",
-      "괴물",
-      "monster"
-    ],
-    "description": "군청색 넓적한 떡 모양 젤리가 각진 두꺼운 윗면과 밝은 물결 띠, 떠오르는 기포, 두 눈 위를 덮는 굵은 눈살을 갖고 입에서 물방울 줄기를 쏜다."
-  },
-  "generated-enemy-slime-red": {
-    "name": "붉은 슬라임",
-    "tags": [
-      "슬라임",
-      "slime",
-      "붉은색",
-      "red",
-      "젤리",
-      "gel"
-    ],
-    "description": "붉은 젤리의 갈라진 불꽃 볏과 깊은 입 안, 주황색 반사 덩어리가 보인다."
-  },
   "generated-enemy-slime-green": {
     "name": "초록 슬라임",
     "tags": [
@@ -594,75 +49,6 @@
       "젤리"
     ],
     "description": "연두색 풀잎 젤리가 정수리의 긴 잎 볏과 등 뒤 잎 주름, 작은 녹색 기포를 갖고 볏을 휘둘러 잎날을 날린다."
-  },
-  "generated-enemy-slime-metal": {
-    "name": "은빛 슬라임",
-    "tags": [
-      "슬라임",
-      "slime",
-      "은색",
-      "silver",
-      "점액",
-      "monster"
-    ],
-    "description": "수은처럼 흐르는 은빛 액체 금속이 납작한 웅덩이 위 각진 돔, 사선 반사 띠, 납작한 큰 코 혹을 갖고 몸을 강철 가시로 굳혀 찌른다."
-  },
-  "generated-enemy-slime-king": {
-    "name": "붉은 왕실 모자 보라 슬라임",
-    "tags": [
-      "슬라임",
-      "slime",
-      "몬스터",
-      "monster",
-      "보라색",
-      "purple",
-      "왕실 모자",
-      "royal hat"
-    ],
-    "description": "키 큰 조롱박 모양 보라 슬라임이 금빛 띠와 방울 달린 붉은 왕실 모자, 졸린 눈, 턱 아래 수염 같은 젤리 주름을 갖고 독 방울 비를 뿌린다."
-  },
-  "generated-enemy-slime-cube": {
-    "name": "초록 큐브 슬라임",
-    "tags": [
-      "슬라임",
-      "slime",
-      "큐브",
-      "cube",
-      "초록색",
-      "green",
-      "괴물",
-      "monster"
-    ],
-    "description": "초록 투명 큐브가 세 면의 반사 띠와 몸속에 갇힌 뼈 조각, 앞면의 눈과 네모 입을 갖고 입을 벌려 점액 판으로 삼킨다."
-  },
-  "generated-enemy-ooze-black": {
-    "name": "먹보라 우즈",
-    "tags": [
-      "슬라임",
-      "slime",
-      "점액",
-      "blob",
-      "얼룩무늬",
-      "먹보라색",
-      "dark purple"
-    ],
-    "description": "먹보라 우즈가 낮은 비대칭 웅덩이로 흐르며 노란 눈의 촉수 눈자루 둘과 톱니 입을 갖고 앞에 늪을 깔아 가시 촉수를 솟게 한다."
-  },
-  "generated-enemy-ooze-acid": {
-    "name": "노란 산성 슬라임",
-    "tags": [
-      "슬라임",
-      "slime",
-      "젤리",
-      "jelly",
-      "몬스터",
-      "monster",
-      "노란색",
-      "yellow",
-      "산성",
-      "acid"
-    ],
-    "description": "노란 산성 우즈가 기포 끓는 목 끝의 얼굴과 길게 굽은 앞 촉수, 밝은 점액 주름을 갖고 산성 줄기를 쏜다."
   },
   "generated-enemy-bat-cave": {
     "name": "청회색 동굴 박쥐",
@@ -678,22 +64,6 @@
       "분홍 날개"
     ],
     "description": "청회색 동굴 박쥐가 큰 귀를 세우고 입을 벌려 고리 모양 초음파를 쏜다."
-  },
-  "generated-enemy-bat-vampire": {
-    "name": "분홍 날개 보라 흡혈 박쥐",
-    "tags": [
-      "박쥐",
-      "bat",
-      "흡혈",
-      "vampire",
-      "날개",
-      "wing",
-      "보라색",
-      "purple",
-      "분홍 날개",
-      "pink wings"
-    ],
-    "description": "짙은 보라색 털과 분홍빛 날개막, 큰 흡혈 송곳니와 긴 귀를 가진 박쥐다."
   },
   "generated-enemy-bee-giant": {
     "name": "거대 벌",
@@ -720,32 +90,6 @@
       "legs"
     ],
     "description": "넓은 자주색 등과 돌기 난 다리, 큰 황금 눈과 독니가 있는 동굴거미다."
-  },
-  "generated-enemy-spider-widow": {
-    "name": "가시 돋친 흑거미",
-    "tags": [
-      "거미",
-      "spider",
-      "벌레",
-      "bug",
-      "절지동물",
-      "arthropod"
-    ],
-    "description": "검푸른 큰 둥근 배와 붉은 모래시계 무늬, 긴 굵은 다리와 붉은 독니가 있는 과부거미다."
-  },
-  "generated-enemy-scorpion-sand": {
-    "name": "모래 전갈",
-    "tags": [
-      "전갈",
-      "scorpion",
-      "황갈색",
-      "ochre",
-      "집게",
-      "claw",
-      "꼬리침",
-      "sting"
-    ],
-    "description": "금갈색 마디 갑옷과 굽은 독침 꼬리, 큰 두 앞집게를 가진 모래전갈이다."
   },
   "generated-enemy-beetle-horn": {
     "name": "푸른 장수풍뎅이",
@@ -797,31 +141,6 @@
       "눈무늬"
     ],
     "description": "아이보리색 넓은 네 날개에 보라색 눈무늬와 겹비늘, 긴 더듬이가 있는 나방이다."
-  },
-  "generated-enemy-worm-sand": {
-    "name": "갈색 거대 벌레",
-    "tags": [
-      "벌레",
-      "worm",
-      "괴물",
-      "monster",
-      "모래벌레",
-      "sand worm",
-      "갈라진 이빨 입"
-    ],
-    "description": "황갈색 굵은 마디 몸과 네 겹으로 벌어진 이빨 입을 가진 큰 모래벌레다."
-  },
-  "generated-enemy-ant-soldier": {
-    "name": "붉은 개미",
-    "tags": [
-      "개미",
-      "ant",
-      "곤충",
-      "insect",
-      "붉은색",
-      "red"
-    ],
-    "description": "적갈색 단단한 머리와 둥근 배, 가는 허리와 큰 밝은 턱집게를 가진 병정개미다."
   },
   "generated-enemy-wolf-grey": {
     "name": "회색 늑대",
@@ -875,34 +194,6 @@
     ],
     "description": "두꺼운 갈색 몸과 큰 어깨, 둥근 귀와 밝은 주둥이, 넓은 발톱 발을 가진 곰이다."
   },
-  "generated-enemy-tiger-saber": {
-    "name": "거대 검치호랑이",
-    "tags": [
-      "호랑이",
-      "tiger",
-      "야수",
-      "beast",
-      "검치호",
-      "saber-toothed cat",
-      "송곳니",
-      "fang"
-    ],
-    "description": "황금빛 줄무늬 털과 육중한 앞어깨, 두 개의 큰 곡선 송곳니를 가진 검치호랑이다."
-  },
-  "generated-enemy-rat-giant": {
-    "name": "거대 갈색 쥐",
-    "tags": [
-      "쥐",
-      "rat",
-      "동물",
-      "animal",
-      "설치류",
-      "rodent",
-      "갈색",
-      "brown"
-    ],
-    "description": "갈색 두꺼운 몸과 큰 분홍 귀, 날카로운 앞니와 긴 맨살 꼬리를 가진 거대한 쥐다."
-  },
   "generated-enemy-bird-hawk": {
     "name": "갈색 매",
     "tags": [
@@ -928,32 +219,6 @@
       "teal"
     ],
     "description": "청녹색 얼룩 비늘과 낮은 감긴 몸, 굵은 삼각 머리와 긴 독니가 있는 독사다."
-  },
-  "generated-enemy-cat-shadow": {
-    "name": "보라색 줄무늬 고양이",
-    "tags": [
-      "고양이",
-      "짐승",
-      "보라색",
-      "줄무늬",
-      "cat",
-      "beast",
-      "purple",
-      "stripe"
-    ],
-    "description": "보랏빛 그림자 고양이가 낮게 웅크린 몸과 금빛 눈, 연기 피어오르는 말린 꼬리를 갖고 그림자 발톱 세 줄을 뻗는다."
-  },
-  "generated-enemy-goat-mountain": {
-    "name": "갈색 큰뿔 산양",
-    "tags": [
-      "산양",
-      "염소",
-      "동물",
-      "goat",
-      "animal",
-      "brown"
-    ],
-    "description": "큰뿔 산양이 뒷발로 일어섰다가 고리 뿔로 들이받아 바위를 깨뜨려 파편을 튀긴다."
   },
   "generated-enemy-crab-rock": {
     "name": "바위게",
@@ -985,110 +250,6 @@
     ],
     "description": "검붉은 비늘 털과 뿔, 금빛 균열과 큰 턱을 가진 불타는 지옥 사냥개다."
   },
-  "generated-enemy-ape-stone": {
-    "name": "돌판 몸 바위 유인원",
-    "tags": [
-      "고릴라",
-      "gorilla",
-      "바위",
-      "stone",
-      "유인원",
-      "ape",
-      "돌판",
-      "stone plates",
-      "회녹색",
-      "grey green"
-    ],
-    "description": "돌판을 두른 바위 유인원이 너클로 돌진하고, 일어서서 가슴을 두드려 주황 충격파를 퍼뜨린다."
-  },
-  "generated-enemy-deer-forest": {
-    "name": "숲사슴",
-    "tags": [
-      "사슴",
-      "deer",
-      "동물",
-      "animal",
-      "뿔",
-      "antlers",
-      "등반점",
-      "spots"
-    ],
-    "description": "숲사슴이 뿔로 들이받고, 고개를 쳐들어 울어 뿔에서 초록 잎과 빛을 흩날린다."
-  },
-  "generated-enemy-skeleton-bone": {
-    "name": "뿔 두개골 뼈 뱀",
-    "tags": [
-      "해골",
-      "skeleton",
-      "언데드",
-      "undead",
-      "뼈 뱀",
-      "bone snake",
-      "뿔",
-      "horn"
-    ],
-    "description": "갈라진 뿔 두개골에서 굵은 척추와 양옆 늑골이 이어져 바닥을 휘감는 뼈 뱀이 입을 벌려 앞쪽 땅에서 뼈 가시를 솟게 한다."
-  },
-  "generated-enemy-skeleton-archer": {
-    "name": "해골 궁수",
-    "tags": [
-      "해골",
-      "skeleton",
-      "궁수",
-      "archer",
-      "활",
-      "bow",
-      "뼈",
-      "bone"
-    ],
-    "description": "큰 상아색 두개골과 굵은 늑골을 드러낸 궁수가 붉은 두건과 나무 활, 등 화살통을 갖는다."
-  },
-  "generated-enemy-skeleton-knight": {
-    "name": "해골 기사",
-    "tags": [
-      "해골",
-      "skeleton",
-      "기사",
-      "knight",
-      "갑옷",
-      "armor",
-      "칼",
-      "sword",
-      "방패",
-      "shield"
-    ],
-    "description": "낡은 철제 투구와 넓은 검, 닳은 초승달 방패를 들고 갈비뼈를 드러낸 해골 전사다."
-  },
-  "generated-enemy-zombie-rot": {
-    "name": "녹색 좀비",
-    "tags": [
-      "좀비",
-      "zombie",
-      "언데드",
-      "undead",
-      "녹색",
-      "green",
-      "인간형",
-      "humanoid"
-    ],
-    "description": "썩은 녹색 얼굴의 넓은 코와 벌어진 턱, 찢긴 붉은 셔츠와 부풀어 오른 어깨가 보인다."
-  },
-  "generated-enemy-ghoul-grave": {
-    "name": "망토 입은 녹색 구울",
-    "tags": [
-      "언데드",
-      "undead",
-      "괴물",
-      "monster",
-      "구울",
-      "ghoul",
-      "망토",
-      "cloak",
-      "녹색",
-      "green"
-    ],
-    "description": "찢긴 흙빛 망토 아래 낮게 웅크린 무덤 구울이 매부리 코와 붉은 눈, 넓은 갈고리 손을 갖고 무덤 흙과 뼛가루를 흩뿌린다."
-  },
   "generated-enemy-ghost-pale": {
     "name": "창백한 유령",
     "tags": [
@@ -1116,79 +277,6 @@
       "scythe"
     ],
     "description": "먹보라 후드 속 노란 눈의 레이스가 넓게 찢긴 망토와 긴 휘어진 낫을 들고 보랏빛 초승달 칼바람을 날린다."
-  },
-  "generated-enemy-lich-frost": {
-    "name": "서리 리치",
-    "tags": [
-      "리치",
-      "lich",
-      "해골",
-      "skeleton",
-      "마법사",
-      "mage",
-      "푸른색",
-      "blue",
-      "지팡이",
-      "staff"
-    ],
-    "description": "넓은 얼음장식 보라 로브의 리치가 큰 해골 얼굴과 얼음 관, 장식된 결정 지팡이를 갖는다."
-  },
-  "generated-enemy-mummy-bandage": {
-    "name": "붕대 미라",
-    "tags": [
-      "미라",
-      "mummy",
-      "붕대",
-      "bandage",
-      "언데드",
-      "undead",
-      "인간형",
-      "humanoid"
-    ],
-    "description": "두꺼운 모래색 붕대와 깊은 눈구멍의 미라가 굽은 관절과 풀린 붕대 끈을 갖는다."
-  },
-  "generated-enemy-banshee-wail": {
-    "name": "창백한 망령",
-    "tags": [
-      "유령",
-      "ghost",
-      "망령",
-      "wraith",
-      "언데드",
-      "undead"
-    ],
-    "description": "청회색 긴 머리카락을 뒤로 흩날리는 밴시가 긴 코와 찢어지게 벌어지는 입, 주름 많은 치마를 갖고 겹겹의 음파 통곡을 내지른다."
-  },
-  "generated-enemy-revenant-vengeful": {
-    "name": "검은 강철 투구 복수자",
-    "tags": [
-      "언데드",
-      "undead",
-      "검사",
-      "swordsman",
-      "갑옷",
-      "armor",
-      "복수자",
-      "revenant",
-      "검은 강철",
-      "black steel",
-      "붉은 망토"
-    ],
-    "description": "뿔 달린 검은 강철 투구와 찢긴 붉은 망토, 칼자국 흉갑의 복수자가 붉은 대검을 땅에 꽂아 원한의 불길을 솟게 한다."
-  },
-  "generated-enemy-bonepile-crawler": {
-    "name": "사족보행 해골 괴수",
-    "tags": [
-      "해골",
-      "skeleton",
-      "뼈",
-      "bone",
-      "언데드",
-      "undead",
-      "괴수",
-      "monster"
-    ],
-    "description": "뼈 무더기가 뼈 팔로 할퀴고, 팔을 치켜들어 초록 혼불이 꼬리처럼 붙은 뼈 조각을 흩뿌린다."
   },
   "generated-enemy-spirit-fire": {
     "name": "불의 정령",
@@ -1218,71 +306,6 @@
     ],
     "description": "큰 청록 파도 소용돌이와 물결 가슴을 가진 물 정령이 긴 코와 흐르는 팔을 내민다."
   },
-  "generated-enemy-spirit-earth": {
-    "name": "떠 있는 이끼 암석 정령",
-    "tags": [
-      "골렘",
-      "golem",
-      "바위",
-      "rock",
-      "이끼",
-      "moss",
-      "떠 있는",
-      "floating",
-      "정령",
-      "spirit"
-    ],
-    "description": "이끼와 휘어진 뿌리로 연결된 서로 다른 크기의 암석과 돌 얼굴이 따로 떠 있다."
-  },
-  "generated-enemy-spirit-wind": {
-    "name": "회청색 바람 정령",
-    "tags": [
-      "유령",
-      "ghost",
-      "악령",
-      "wraith",
-      "망령",
-      "specter",
-      "바람",
-      "wind",
-      "회청색",
-      "blue grey"
-    ],
-    "description": "회청색 구름 얼굴 아래 굵은 바람 띠가 두 겹으로 말리고 깃 같은 공기 날개가 뻗는다."
-  },
-  "generated-enemy-spirit-light": {
-    "name": "금빛 광륜 정령",
-    "tags": [
-      "유령",
-      "망령",
-      "ghost",
-      "wraith",
-      "undead",
-      "금빛",
-      "gold",
-      "광륜",
-      "halo",
-      "날개",
-      "wings"
-    ],
-    "description": "금빛 광륜과 큰 상아색 깃날개, 깊은 황금색 주름의 빛 정령이 밝은 손을 뻗는다."
-  },
-  "generated-enemy-spirit-dark": {
-    "name": "먹보라 여섯 팔 정령",
-    "tags": [
-      "유령",
-      "악령",
-      "언데드",
-      "ghost",
-      "spirit",
-      "undead",
-      "먹보라색",
-      "dark purple",
-      "여섯 팔",
-      "six arms"
-    ],
-    "description": "커다란 초승달 볏과 여섯 굵은 그림자 팔의 어둠 정령이 보라색 가슴 틈과 노란 눈을 갖는다."
-  },
   "generated-enemy-wisp-blue": {
     "name": "푸른 불꽃 정령",
     "tags": [
@@ -1296,50 +319,6 @@
       "floating"
     ],
     "description": "파란 불꽃 도깨비불이 큰 비대칭 불꽃 볏과 밝은 중심, 뾰족한 코와 갈라진 꼬리를 갖는다."
-  },
-  "generated-enemy-sylph-air": {
-    "name": "흰 깃날개 바람 요정",
-    "tags": [
-      "정령",
-      "spirit",
-      "파란색",
-      "blue",
-      "요정",
-      "fairy",
-      "바람",
-      "wind",
-      "깃날개",
-      "feather wings"
-    ],
-    "description": "긴 휜 깃날개와 쓸린 흰 볏, 두꺼운 파랑 바람 리본을 가진 요정이 손을 뻗는다."
-  },
-  "generated-enemy-undine-sea": {
-    "name": "물의 정령",
-    "tags": [
-      "정령",
-      "elemental",
-      "물",
-      "water",
-      "여성형",
-      "humanoid"
-    ],
-    "description": "금색 조개 관과 긴 물결 머리의 운디네가 비늘 배판과 크게 말린 물고기 꼬리를 갖는다."
-  },
-  "generated-enemy-salamander-flame": {
-    "name": "금빛 불꽃등 붉은 도마뱀",
-    "tags": [
-      "도마뱀",
-      "lizard",
-      "파충류",
-      "reptile",
-      "비늘",
-      "가시",
-      "붉은색",
-      "red",
-      "금빛 불꽃",
-      "gold flame"
-    ],
-    "description": "불꽃 도롱뇽이 등의 불길을 키운 뒤 입에서 불줄기를 뿜는다."
   },
   "generated-enemy-golem-stone": {
     "name": "바위 골렘",
@@ -1402,91 +381,6 @@
     ],
     "description": "보라색 결정 골렘의 넓은 흉곽과 큰 비대칭 어깨, 긴 손가락에 자수정 면이 겹친다."
   },
-  "generated-enemy-armor-living": {
-    "name": "청회색 살아 있는 갑옷",
-    "tags": [
-      "갑옷",
-      "armor",
-      "기사",
-      "knight",
-      "칼",
-      "sword",
-      "청회색",
-      "blue grey"
-    ],
-    "description": "두꺼운 청회색 판금의 빈 갑옷이 뾰족한 투구, 넓은 어깨와 장식된 검을 갖는다."
-  },
-  "generated-enemy-sword-flying": {
-    "name": "보석 해골 손잡이 부유 검",
-    "tags": [
-      "검",
-      "sword",
-      "무기",
-      "weapon",
-      "보석",
-      "gem",
-      "해골 손잡이",
-      "skull hilt",
-      "부유",
-      "floating"
-    ],
-    "description": "떠도는 검이 비스듬히 내리꽂혀 찌르고, 크게 휘돌며 보라 유령 칼 셋을 불러 날린다."
-  },
-  "generated-enemy-mimic-chest": {
-    "name": "이빨 미믹",
-    "tags": [
-      "미믹",
-      "mimic",
-      "상자",
-      "chest",
-      "갈색",
-      "brown",
-      "이빨",
-      "teeth"
-    ],
-    "description": "금속 띠와 목재 결의 큰 미믹 상자가 비스듬히 열린 경첩 뚜껑, 두꺼운 이빨과 긴 혀를 갖는다."
-  },
-  "generated-enemy-scarecrow-field": {
-    "name": "붉은 외투 허수아비",
-    "tags": [
-      "허수아비",
-      "scarecrow",
-      "짚모자",
-      "straw hat",
-      "붉은 외투"
-    ],
-    "description": "붉은 외투 허수아비가 기둥으로 깡충 뛰며 낫을 휘두르고, 팔을 벌려 외투 속 까마귀 떼를 날려 보낸다."
-  },
-  "generated-enemy-puppet-string": {
-    "name": "줄에 매달린 도자기 얼굴 인형",
-    "tags": [
-      "꼭두각시",
-      "marionette",
-      "인형",
-      "puppet",
-      "줄",
-      "string",
-      "도자기",
-      "porcelain"
-    ],
-    "description": "실에 매달린 도자기 인형이 팔을 휘둘러 할퀴고, 손끝에서 보라 저주의 실을 뻗어 감는다."
-  },
-  "generated-enemy-totem-cursed": {
-    "name": "나무 토템",
-    "tags": [
-      "토템",
-      "totem",
-      "나무",
-      "wood",
-      "괴물",
-      "monster",
-      "잎",
-      "leaf",
-      "가면",
-      "mask"
-    ],
-    "description": "나무 토템이 통째로 쿵쿵 뛰며 뿌리 팔로 땅을 내리치고, 가면들의 눈을 보랏빛으로 태워 보라·초록 저주 빛줄기와 해골 도깨비불을 아군 쪽으로 쏜다."
-  },
   "generated-enemy-goblin-scout": {
     "name": "고블린 정찰병",
     "tags": [
@@ -1500,64 +394,6 @@
       "humanoid"
     ],
     "description": "초록색 피부와 긴 귀, 뾰족한 코와 이빨을 가진 고블린 정찰병은 갈색 가죽 조끼와 띠, 굽은 두 다리와 단검을 지닌다."
-  },
-  "generated-enemy-goblin-brute": {
-    "name": "송곳니 고블린",
-    "tags": [
-      "고블린",
-      "goblin",
-      "인간형",
-      "humanoid",
-      "녹색 피부",
-      "송곳니",
-      "곤봉",
-      "club"
-    ],
-    "description": "넓은 초록 가슴과 큰 엄니, 볼의 흉터를 가진 고블린 장사가 붉은 가죽 치마와 못 박힌 곤봉을 들고 땅을 내리쳐 충격파를 일으킨다."
-  },
-  "generated-enemy-orc-warrior": {
-    "name": "도끼 오크",
-    "tags": [
-      "오크",
-      "orc",
-      "녹색",
-      "green",
-      "도끼",
-      "axe",
-      "갑옷",
-      "armor"
-    ],
-    "description": "큰 주둥이와 두 엄니를 가진 초록색 오크는 여러 겹의 강철 흉갑과 어깨 판, 청동 중심 장식 방패와 큰 도끼를 갖춘다."
-  },
-  "generated-enemy-orc-shaman": {
-    "name": "오크 주술사",
-    "tags": [
-      "오크",
-      "orc",
-      "주술사",
-      "shaman",
-      "녹색",
-      "green",
-      "지팡이",
-      "staff",
-      "뼈",
-      "bone"
-    ],
-    "description": "초록색 피부의 오크 샤먼은 뼈 장식 머리띠와 붉은 긴 로브, 뼈 목걸이와 보석 지팡이를 지닌다."
-  },
-  "generated-enemy-kobold-digger": {
-    "name": "곡괭이 든 개형 코볼트",
-    "tags": [
-      "괴물",
-      "곡괭이",
-      "monster",
-      "pickaxe",
-      "코볼트",
-      "kobold",
-      "개 주둥이",
-      "canine"
-    ],
-    "description": "광부 모자를 쓴 개머리 코볼트가 큰 곡괭이를 휘두르고, 땅을 파헤쳐 흙과 돌 조각을 퍼붓는다."
   },
   "generated-enemy-bandit-mask": {
     "name": "복면 산적",
@@ -1575,176 +411,6 @@
     ],
     "description": "검은 모자와 얼굴 가면을 쓴 도적은 청회색 가죽옷과 붉은 망토, 가죽 장화와 강철 검을 지닌다."
   },
-  "generated-enemy-mage-rogue": {
-    "name": "보라 지팡이 후드 마법사",
-    "tags": [
-      "인간형",
-      "humanoid",
-      "마법사",
-      "mage",
-      "지팡이",
-      "staff",
-      "로브"
-    ],
-    "description": "보라 후드 마법사가 지팡이 수정에 힘을 모아 아군 쪽으로 보라 비전 화살 세 갈래를 쏜다."
-  },
-  "generated-enemy-knight-fallen": {
-    "name": "청회색 강철 갑옷 기사",
-    "tags": [
-      "기사",
-      "knight",
-      "갑옷",
-      "armor",
-      "인간형",
-      "humanoid",
-      "청회색",
-      "blue grey"
-    ],
-    "description": "겹친 청회색 강철 갑옷과 붉은 투구 깃을 가진 기사는 어두운 시야 틈과 코 가리개, 붉은 망토와 강철 검을 지닌다."
-  },
-  "generated-enemy-lizardman-spear": {
-    "name": "푸른 창 리자드맨",
-    "tags": [
-      "리자드맨",
-      "lizardman",
-      "파충류",
-      "reptile",
-      "푸른색",
-      "blue",
-      "창",
-      "spear",
-      "꼬리",
-      "tail"
-    ],
-    "description": "청록 비늘과 긴 주둥이, 붉은 목 지느러미와 굽은 꼬리를 가진 리자드맨은 작은 어깨 판과 금갈색 배판, 긴 창을 지닌다."
-  },
-  "generated-enemy-harpy-cliff": {
-    "name": "보라색 하피",
-    "tags": [
-      "하피",
-      "harpy",
-      "보라색",
-      "purple",
-      "날개",
-      "wing",
-      "새",
-      "bird",
-      "인간형",
-      "humanoid"
-    ],
-    "description": "갈색 긴 머리와 드러난 코, 자줏빛 겹깃 날개를 가진 하피는 갈색 가슴띠와 갈퀴 발, 넓은 꼬리깃을 지닌다."
-  },
-  "generated-enemy-minotaur-maze": {
-    "name": "도끼 미노타우로스",
-    "tags": [
-      "미노타우로스",
-      "minotaur",
-      "소",
-      "bull",
-      "갈색",
-      "brown",
-      "도끼",
-      "axe",
-      "뿔",
-      "horn"
-    ],
-    "description": "갈색 털과 굵은 황소뿔, 콧고리, 붉은 허리천과 양날 도끼를 가진 미노타우로스다."
-  },
-  "generated-enemy-centaur-plains": {
-    "name": "켄타우로스 전사",
-    "tags": [
-      "켄타우로스",
-      "centaur",
-      "반인반마",
-      "창",
-      "spear",
-      "갑옷",
-      "armor"
-    ],
-    "description": "켄타우로스 전사가 창으로 찌르고, 앞발을 들어 올리며 창끝에서 바람 쐐기를 뻗는다."
-  },
-  "generated-enemy-troll-cave": {
-    "name": "이끼빛 동굴 트롤",
-    "tags": [
-      "트롤",
-      "troll",
-      "곤봉",
-      "club",
-      "인간형",
-      "humanoid",
-      "이끼색",
-      "녹색",
-      "green"
-    ],
-    "description": "이끼빛 두꺼운 피부와 큰 코, 삐죽한 엄니, 거친 가죽 치마와 돌 몽둥이를 든 트롤이다."
-  },
-  "generated-enemy-ogre-club": {
-    "name": "곤봉 든 누런 오거",
-    "tags": [
-      "인간형",
-      "humanoid",
-      "괴물",
-      "monster",
-      "오거",
-      "ogre",
-      "곤봉",
-      "club",
-      "누런색",
-      "yellow"
-    ],
-    "description": "배불뚝이 누런 오거가 통나무 곤봉을 휘두르고, 땅에 내리꽂아 갈라진 땅에서 돌이 튀게 한다."
-  },
-  "generated-enemy-imp-mischief": {
-    "name": "붉은 꼬마 악마",
-    "tags": [
-      "악마",
-      "demon",
-      "임프",
-      "imp",
-      "괴물",
-      "monster"
-    ],
-    "description": "뿔 달린 붉은 꼬마 악마가 박쥐 날개로 날며 쇠스랑을 찌르고, 깔깔 웃으며 보라 불꽃 구슬을 흩뿌린다."
-  },
-  "generated-enemy-fish-piranha": {
-    "name": "청색 주황 비늘 괴어",
-    "tags": [
-      "물고기",
-      "fish",
-      "어류",
-      "괴어",
-      "monster fish",
-      "이빨",
-      "teeth"
-    ],
-    "description": "주걱턱 피라냐가 입을 크게 벌려 몸을 던지며 이빨 자국 세 줄을 남긴다."
-  },
-  "generated-enemy-squid-deep": {
-    "name": "보라색 부리 오징어",
-    "tags": [
-      "두족류",
-      "오징어",
-      "보라색",
-      "cephalopod",
-      "squid",
-      "purple"
-    ],
-    "description": "짙은 보라색 두꺼운 외투막과 큰 청록빛 눈, 굵은 흡반 팔을 펼친 심해오징어다."
-  },
-  "generated-enemy-shark-land": {
-    "name": "여섯 다리 육상 상어",
-    "tags": [
-      "상어",
-      "괴물",
-      "shark",
-      "monster",
-      "여섯 다리",
-      "six legs",
-      "육상",
-      "land"
-    ],
-    "description": "여섯 다리 육상 상어가 몸을 던져 물어뜯고, 땅에 파묻혀 등지느러미만 내민 채 흙 물결을 밀어 보낸다."
-  },
   "generated-enemy-eel-electric": {
     "name": "푸른 번개장어",
     "tags": [
@@ -1756,83 +422,6 @@
       "lightning"
     ],
     "description": "번개장어가 머리를 내리꽂아 물고, 몸을 감아 빛내며 번개 갈래를 뻗는다."
-  },
-  "generated-enemy-griffin-sky": {
-    "name": "갈색 그리핀",
-    "tags": [
-      "그리핀",
-      "griffin",
-      "환수",
-      "짐승",
-      "beast",
-      "새",
-      "bird",
-      "날개"
-    ],
-    "description": "독수리 앞몸과 사자 뒷몸의 그리핀이 갈고리 발톱으로 내리찍고, 날개를 활짝 펴 날갯짓으로 바람 칼날 셋을 날린다."
-  },
-  "generated-enemy-wyvern-cliff": {
-    "name": "보라 와이번",
-    "tags": [
-      "드래곤",
-      "dragon",
-      "파충류",
-      "reptile",
-      "비행",
-      "연기",
-      "용",
-      "와이번",
-      "wyvern",
-      "보라색",
-      "purple"
-    ],
-    "description": "보라 와이번이 날개 팔로 땅을 짚고 물어뜯으며, 솟구쳐 꼬리 독침에서 보라 독 방울을 흩뿌린다."
-  },
-  "generated-enemy-roc-giant": {
-    "name": "청회색 거대 독수리",
-    "tags": [
-      "새",
-      "bird",
-      "독수리",
-      "eagle",
-      "맹금류",
-      "raptor",
-      "청회색",
-      "blue grey",
-      "거대",
-      "giant"
-    ],
-    "description": "흰 머리 거대 독수리가 발톱으로 낚아채고, 날개를 내리쳐 번개 섞인 회오리 돌풍을 일으킨다."
-  },
-  "generated-enemy-gargoyle-stone": {
-    "name": "돌 가고일",
-    "tags": [
-      "가고일",
-      "gargoyle",
-      "회색",
-      "gray",
-      "돌",
-      "stone",
-      "뿔",
-      "horn",
-      "날개",
-      "wing"
-    ],
-    "description": "청회색 돌 피부와 큰 코, 뿔과 긴 이빨을 가진 가고일은 각진 돌막 날개와 근육질 가슴, 두꺼운 다리와 발톱을 가진다."
-  },
-  "generated-enemy-phoenix-rebirth": {
-    "name": "불새",
-    "tags": [
-      "불새",
-      "phoenix",
-      "새",
-      "bird",
-      "불꽃",
-      "flame",
-      "붉은색",
-      "날개"
-    ],
-    "description": "불새가 날개를 크게 펼쳐 환생의 불길로 온몸을 감싸고 불꽃 깃을 흩뿌린다."
   },
   "generated-enemy-dragon-whelp": {
     "name": "청록 새끼용",
@@ -1851,20 +440,6 @@
     ],
     "description": "청록 새끼용이 작은 날개를 파닥이며 볼을 부풀렸다가 아기 불꽃을 뿜는다."
   },
-  "generated-enemy-dragon-red": {
-    "name": "붉은 드래곤",
-    "tags": [
-      "드래곤",
-      "dragon",
-      "괴물",
-      "monster",
-      "빨간색",
-      "비늘",
-      "날개",
-      "용"
-    ],
-    "description": "붉은 갑판 비늘과 뺨의 가시, 검붉은 날개막, 긴 송곳니를 드러낸 붉은 용이다."
-  },
   "generated-enemy-dragon-blue": {
     "name": "푸른 드래곤",
     "tags": [
@@ -1879,83 +454,6 @@
       "용"
     ],
     "description": "청푸른 비늘과 얼음빛 긴 뿔, 지느러미 같은 뺨과 넓은 푸른 날개를 가진 용이다."
-  },
-  "generated-enemy-dragon-bone": {
-    "name": "회백색 드래곤",
-    "tags": [
-      "드래곤",
-      "dragon",
-      "괴물",
-      "monster",
-      "파충류",
-      "reptile",
-      "용"
-    ],
-    "description": "텅 빈 갈비뼈와 뼈 날개, 긴 두개골, 끊어진 꼬리 마디를 가진 뼈 용이다."
-  },
-  "generated-enemy-hydra-three": {
-    "name": "녹색 삼두룡",
-    "tags": [
-      "용",
-      "dragon",
-      "삼두룡",
-      "hydra",
-      "몬스터",
-      "monster"
-    ],
-    "description": "녹색 삼두룡의 세 머리가 따로 움직이며 물어뜯고, 세 입에서 독 숨결을 한꺼번에 뿜는다."
-  },
-  "generated-enemy-behemoth-horn": {
-    "name": "보랏빛 뿔 마수",
-    "tags": [
-      "마수",
-      "beast",
-      "괴물",
-      "monster",
-      "뿔",
-      "horns",
-      "보라색",
-      "purple",
-      "네발",
-      "quadruped"
-    ],
-    "description": "보랏빛 거대한 사족 짐승은 솟은 목과 어깨, 큰 코와 두 뿔, 위로 휜 긴 엄니, 여러 겹 어깨 판과 넓은 네 다리를 가진다."
-  },
-  "generated-enemy-demon-lord": {
-    "name": "날개 달린 마왕",
-    "tags": [
-      "마왕",
-      "demon",
-      "보라색",
-      "purple",
-      "붉은색",
-      "red",
-      "갑옷",
-      "armor",
-      "날개",
-      "wing",
-      "뿔",
-      "horn"
-    ],
-    "description": "자줏빛 피부와 검은 뿔, 붉은 박쥐날개, 금속 갑옷과 낫 모양 검을 가진 마왕이다."
-  },
-  "generated-enemy-angel-fallen": {
-    "name": "청회색 날개 타락천사",
-    "tags": [
-      "인간형",
-      "humanoid",
-      "날개",
-      "wing",
-      "기사",
-      "knight",
-      "검",
-      "sword",
-      "청회색 날개",
-      "blue grey wings",
-      "천사",
-      "angel"
-    ],
-    "description": "은빛 머리와 금빛 머리 고리, 청회색 겹깃 날개를 가진 타락천사는 코와 입이 드러나며 강철 흉갑과 붉은 망토, 검을 지닌다."
   },
   "generated-enemy-eye-floating": {
     "name": "분홍 촉수 외눈",
@@ -2241,5 +739,129 @@
       "flame"
     ],
     "description": "노란색과 갈색이 섞인 단단한 등딱지를 메고 두 발로 서 있는 주황색 짐승입니다. 머리에 긴 귀가 솟아 있으며 꼬리 끝부분이 불꽃 모양을 띠고 있습니다."
+  },
+  "generated-enemy-jelly-lantern": {
+    "name": "등불해파리",
+    "tags": [
+      "해파리",
+      "등불",
+      "부유",
+      "발광",
+      "수생",
+      "몬스터",
+      "적"
+    ],
+    "description": "어둠 속에서 은은한 등불빛을 내며 떠다니는 해파리 몬스터."
+  },
+  "generated-enemy-yeti-frost": {
+    "name": "서리예티",
+    "tags": [
+      "예티",
+      "서리",
+      "설원",
+      "얼음",
+      "야수",
+      "몬스터",
+      "적"
+    ],
+    "description": "눈보라 속을 거니는 거대한 설원의 서리 예티."
+  },
+  "generated-enemy-well-olm": {
+    "name": "우물 밑 눈먼 영주",
+    "tags": [
+      "도롱뇽",
+      "영주",
+      "보스",
+      "수생",
+      "동굴",
+      "몬스터",
+      "적"
+    ],
+    "description": "어두운 지하 저수조에 웅크려 소리로 먹이를 찾는 눈먼 거대 도롱뇽."
+  },
+  "generated-enemy-triceratops": {
+    "name": "트리케라톱스",
+    "tags": [
+      "공룡",
+      "트리케라톱스",
+      "선사",
+      "뿔",
+      "야수",
+      "보스",
+      "몬스터",
+      "적"
+    ],
+    "description": "세 개의 뿔과 단단한 프릴로 돌진하는 선사 시대의 대형 초식 공룡."
+  },
+  "generated-enemy-inq-soldier": {
+    "name": "심문회 병사",
+    "tags": [
+      "인간형",
+      "병사",
+      "심문회",
+      "검사",
+      "폴른스타",
+      "적"
+    ],
+    "description": "제복과 검으로 무장한 심문회 소속 일반 병사."
+  },
+  "generated-enemy-cult-preacher": {
+    "name": "광신도 설교자",
+    "tags": [
+      "인간형",
+      "광신도",
+      "설교자",
+      "마법사",
+      "폴른스타",
+      "적"
+    ],
+    "description": "지팡이를 들고 광신적인 주문을 외는 설교자."
+  },
+  "generated-enemy-inq-shield": {
+    "name": "심문회 방패병",
+    "tags": [
+      "인간형",
+      "방패병",
+      "중장",
+      "심문회",
+      "폴른스타",
+      "적"
+    ],
+    "description": "커다란 방패로 앞열을 지키는 심문회 중장 방패병."
+  },
+  "generated-enemy-sarah": {
+    "name": "새라",
+    "tags": [
+      "인간형",
+      "새라",
+      "기사",
+      "보스",
+      "폴른스타",
+      "적"
+    ],
+    "description": "예리한 검술과 빠른 발놀림으로 싸우는 전투형 인물."
+  },
+  "generated-enemy-inq-spearman": {
+    "name": "심문회 창병",
+    "tags": [
+      "인간형",
+      "창병",
+      "심문회",
+      "폴른스타",
+      "적"
+    ],
+    "description": "긴 창으로 거리를 재며 찌르는 심문회 창병."
+  },
+  "generated-enemy-flagellant": {
+    "name": "채찍 고행자",
+    "tags": [
+      "인간형",
+      "고행자",
+      "채찍",
+      "광신도",
+      "폴른스타",
+      "적"
+    ],
+    "description": "채찍을 휘두르며 광기 어린 연타를 퍼붓는 고행자."
   }
 }

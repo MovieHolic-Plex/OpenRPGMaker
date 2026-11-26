@@ -59,7 +59,7 @@ import { applyFallenPixelFx } from "./fallen/pixelfx";
 import { applyFallenHeroSkillIdentity } from "./fallen/heroSkillIdentity";
 import { applyFallenItemIdentity } from "./fallen/itemIdentity";
 import { applyFallenMobBalance } from "./fallen/mobBalance";
-import { applyFallenMonsterArt16, installFallenMonsterArtWithoutBundle } from "./fallen/monsterArt16";
+import { applyFallenMonsterArt16 } from "./fallen/monsterArt16";
 import { finishFallenWellBeastArt } from "./fallen/wellBeast";
 import { applyFallenAreaBackdrops } from "./fallen/areaBackdrops";
 import { applyFallenBattleMusic } from "./fallen/battleMusic";
@@ -1580,7 +1580,6 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   setupCast(project);
   const troops = setupFoes(project);
   applyFallenBattleItems(project); // 속성 상성·검/창·회복약·기믹 잡화·드롭 (fallen/battleItems.ts)
-  installFallenMonsterArtWithoutBundle(project); // 번들 시트가 없는 그림(등불해파리·서리예티)은 적보다 먼저 (fallen/monsterArt16.ts)
   applyFallenBattleRoles(project); // 기술 역할·새 적·발렌 재설계·시그니처 무기·MP 회복 (fallen/battleRoles.ts)
   applyFallenBattleDepth(project, execTool); // 깔기→거두기·도발·정화·화상·연계기 셋 (fallen/battleDepth.ts)
   applyFallenGrowthCurves(project); // 역할별 성장 곡선 — 매 레벨 모든 능력치가 오른다 (fallen/battleDepth.ts)
@@ -2546,7 +2545,7 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenFieldRules(project, execTool);
   // 잡몹 무리 승률 60~90%·구역마다 우두머리(HP 1000 안팎) 하나 — 능력치는 여기 한곳에서 마지막에 덮는다(fallen/mobBalance.ts).
   applyFallenMobBalance(project, execTool);
-  // 몬스터 새 그림 24종(16칸 4×4)과 그 체급 배율 — 배율은 우두머리 표 다음에 덮는다(fallen/monsterArt16.ts).
+  // 인간형 적 6종 번들 5×4 시트 교체와 보스·정예 체급 배율 — 배율은 우두머리 표 다음에 덮는다(fallen/monsterArt16.ts).
   applyFallenMonsterArt16(project);
   // 새라의 관통상 — 2막 보통 적이 1막 복제로 물려받은 관통상 E 를 푼다(보스·결투·우두머리는 그대로). 무리 나누기·우두머리 복제 뒤.
   if (letAct2PierceWoundLand(project).length === 0) throw new Error("[fallen-star] 2막 보통 적 관통상 면역 해제가 아무 적도 바꾸지 않았다 — 복제·이름 규칙이 바뀌었는지 확인");

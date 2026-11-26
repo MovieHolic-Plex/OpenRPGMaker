@@ -567,8 +567,11 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 
 지금:
 
-- **현행 세트**(`src/assets/currentMonsterArt.ts`): id 목록(34) + `installCurrentMonsterArt(project, ids)`. 그림 데이터(0.9MB)는 그 자리에 두고 늦게 읽는다 — 턴 첫 지시 앞(`turn/modelHooks.firstPromptSuffix`)과 끝맺음 `step-foes` 앞에서 `preloadCurrentMonsterArt()`.
-- **모든 프로젝트의 기본 적에도 설치(2026-11-24, qa1124 항목 4):** 편집기 로드 정규화(`store.normalizeCurrentProject` 의 `currentMonsterArt`)와 `headless.normalizeHeadlessProject` 가 `ensureCurrentMonsterArt(project)` 를 부른다 — 적 레코드가 현행 id 를 쓰는데 같은 id 업로드가 없으면 그 그림(초상 + 20칸 시트)을 넣는다. 사용자·스토어·조수가 넣은 같은 id 업로드는 건드리지 않는다. 새 프로젝트 기준 32종, 업로드 약 0.83MB. 자료집 칸 표(`databaseEnemyPixelPreview.enemyPixelCellOrder`)는 시트 격자를 읽어 3×3 9칸 · 4×4 15칸 · 5×4 20칸을 보인다.
+- **정식 번들 승격·구형 3×3 삭제 (2026-11-26):** 『폴른 스타』 40종(괴물 34 + 인간형 적 6)과 `battle-gen gif20` 순증 4종 = **총 44종 5×4(20칸) 시트·초상**을 `public/assets/generated/pixel-enemies/`·`pixel-enemy-portraits/` 정식 번들(`PIXEL_ENEMY_SHEETS`)로 승격하고, 구형 3×3 PNG 106종(212파일)과 base64 TS 모듈(`monsterSheets16.ts`·`currentMonsterSheets20.ts`·`currentMonsterArt20.ts`)을 삭제했다.
+  - 『폴른 스타』(`chronoBell.ts`·`fallen/monsterArt16.ts`·`fallen/wellBeast.ts`)도 `project.assets.uploaded` 에 80개 base64를 복사하지 않고 정식 번들을 직접 쓴다.
+  - 로드 정규화(`ensureCurrentMonsterArt`)는 기존 저장 프로젝트에 남아 있는 중복 `battle-gen:fallen-star`·`battle-gen:gif20` 업로드 복사본만 정리해 번들로 전환한다(사용자 업로드는 보존).
+  - 고르기 목록(`monsterResourceCatalog.ts`)에는 현행 44종만 노출되고, 폐기된 구형 106종 ID 는 `RETIRED_PIXEL_ENEMY_ALIASES` 를 통해 가장 가까운 현행 5×4 번들로 호환 해석된다. `defaultBattleRecords().monsterSpecies` 10종도 현행 5×4 ID 로 갱신했다.
+- **현행 세트**(`src/assets/currentMonsterArt.ts`): 조수 v2·기본 적 대역이 고르는 괴물 38종 목록(`CURRENT_MONSTER_ART_IDS`, 폴른 스타 이야기 인간형 6종 제외). 정식 번들로 승격되어 `preloadCurrentMonsterArt`·`installCurrentMonsterArt` 는 무비용 호환 래퍼로 유지한다.
 - **새 프로젝트의 옛 그림 적은 대역 그림으로(2026-11-24, 리드 지시):** `createBlankProject` 가 `defaults/currentMonsterStandIns.applyCurrentMonsterStandIns` 로 현행 그림이 없던 기본 적 74종의 `monsterResourceId` 를 대역 표(`CURRENT_MONSTER_STAND_IN`, 이 문서 아래 대역 표와 같은 것 + 미믹 상자→철 골렘, 허수아비→식충 식물)의 현행 그림으로 바꿔 싣는다. 기본 적 106종 모두 현행 그림이다. 저장된 프로젝트는 바꾸지 않는다. 조수 v2 는 `standInOriginalArt` 로 그 적의 원래 그림을 읽어 «바란 그림» 줄을 예전처럼 쓰고, 옛 묶음 그림으로 세우던 `namedFoe` 경로(2026-11-16 «에셋을 자유롭게»)는 새 프로젝트에서 대역 현행 그림 + 그릴 목록이 된다.
 - **고르는 한 곳**(`story/currentFoes.ts`): `currentFoe(project, 적 id)` → 그 적의 그림이 현행이면 그 적, 아니면 가장 가까운 현행 종(대역 표 — 해골·좀비·미라 → 창백한 유령, 리자드맨 → 독사, 검치호·곰 → 다이어 울프, 용류 → 청룡 …) + 바란 그림 이름. 대역도 없으면 undefined. 위 네 고르기가 모두 여기에 묻는다 — 구형 그림은 v2 가 세우는 적에 나오지 않는다.
 - **테마 표**: 적 목록 = 그 장소가 바라는 종 + 현행 그림이 있는 그 장소의 종. 서는 것은 현행 그림이 있는 종뿐(`drawn`)이고, 없는 종은 종마다 없는 그림 줄 `[art-gap] theme=prehistoric/swamp want=foe wanted=«lizardman-spear» …` 로 남는다 — 그 종이 그려지면 표를 고치지 않아도 선다. 테마 표에 없는 세계(버들항)의 싸우는 단계는 흔한 판타지 목록(`COMMON`)과 이름의 적 낱말(`enemyArtFor` → `currentFoe`)에서.

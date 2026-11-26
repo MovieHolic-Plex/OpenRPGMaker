@@ -183,8 +183,8 @@ describe("assetAccessors", () => {
         // When: the dragon resource id is resolved through the generated asset resolver.
         const url = resolveGeneratedAssetResourceUrl("generated-enemy-dragon-01", GENERATED_ASSET_PLAN);
 
-        // Then: battle previews can load the promoted monster PNG from public assets.
-        expect(url).toBe("/assets/generated/pixel-enemy-portraits/dragon.png");
+        // Then: battle previews resolve the legacy dragon id to the current bundled 5x4 portrait.
+        expect(url).toBe("/assets/generated/pixel-enemy-portraits/dragon-blue.png");
       });
 
       it("resolves the horror mystery title art shipped with the prototype", () => {
@@ -284,13 +284,13 @@ describe("assetAccessors", () => {
     });
     describe("retired numbered enemy art", () => {
       it("preserves species for named legacy IDs and refuses unidentifiable numbers", () => {
-        expect(resolveGeneratedAssetResourceUrl("generated-enemy-slime-01-enemy_extra_06")).toBe("/assets/generated/pixel-enemy-portraits/slime.png");
-        expect(resolveGeneratedAssetResourceUrl("generated-enemy-zombie-01-enemy_extra_016")).toBe("/assets/generated/pixel-enemy-portraits/zombie-01.png");
+        expect(resolveGeneratedAssetResourceUrl("generated-enemy-slime-01-enemy_extra_06")).toBe("/assets/generated/pixel-enemy-portraits/slime-green.png");
+        expect(resolveGeneratedAssetResourceUrl("generated-enemy-zombie-01-enemy_extra_016")).toBe("/assets/generated/pixel-enemy-portraits/ghost-pale.png");
         expect(resolveGeneratedAssetResourceUrl("enemy_extra_6")).toBeNull();
         expect(resolveGeneratedAssetResourceUrl("legacy-enemy_extra_105")).toBeNull();
         expect(resolveGeneratedAssetResourceUrl("generated-enemy-unknown-slime")).toBeNull();
         expect(generatedAssetPromotedPathToUrl("public/assets/generated/monsters/enemy-art-006.png")).toBeNull();
-        expect(generatedAssetPromotedPathToUrl("public/assets/generated/starter/monster-slime-01.png")).toBe("/assets/generated/pixel-enemy-portraits/slime.png");
+        expect(generatedAssetPromotedPathToUrl("public/assets/generated/starter/monster-slime-01.png")).toBe("/assets/generated/pixel-enemy-portraits/slime-green.png");
       });
     });
     afterEach(() => setUploadedAssetResolver(null));

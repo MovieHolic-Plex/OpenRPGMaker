@@ -30,6 +30,12 @@ const RETIRED_MONSTER_IDS: ReadonlySet<string> = new Set([
   "generated-enemy-reference-seed-back",
   "generated-troop-preview-slime",
   "easyrpg-monster-hornet",
+  // 2026-11-26 구형 3×3 번들 폐기(현행 5×4 44종으로 승격). 저장본 호환 별칭만 남기고 고르기 목록에서 뺀다.
+  "generated-enemy-slime-01",
+  "generated-enemy-bat-01",
+  "generated-enemy-golem-01",
+  "generated-enemy-dragon-01",
+  "generated-enemy-sylph-hornet",
 ]);
 
 /** One raw-ID authority for editor/AI selection; metadata never registers resources. */

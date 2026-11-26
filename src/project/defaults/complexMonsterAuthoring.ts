@@ -251,7 +251,7 @@ export function seedHomeDungeonComplexTroops(project: Project): {
     {
       id: "enemy_lava_ember_slime",
       name: "불꽃 슬라임",
-      monsterResourceId: "generated-enemy-slime-01",
+      monsterResourceId: "generated-enemy-slime-green",
       stats: { maxHp: 36, maxMp: 8, attack: 14, defense: 9, mind: 8, agility: 12 },
       rewards: { exp: 12, gold: 10, dropRatePercent: 15 },
       skillIds: ["skill_fire"],
@@ -260,7 +260,7 @@ export function seedHomeDungeonComplexTroops(project: Project): {
     {
       id: "enemy_lava_ash_bat",
       name: "재 박쥐",
-      monsterResourceId: "generated-enemy-bat-01",
+      monsterResourceId: "generated-enemy-bat-cave",
       stats: { maxHp: 28, maxMp: 10, attack: 12, defense: 7, mind: 10, agility: 20 },
       flying: true,
       rewards: { exp: 10, gold: 8 },
@@ -269,7 +269,7 @@ export function seedHomeDungeonComplexTroops(project: Project): {
     {
       id: "enemy_stone_ruin_golem",
       name: "유적 골렘",
-      monsterResourceId: "generated-enemy-golem-01",
+      monsterResourceId: "generated-enemy-golem-stone",
       stats: { maxHp: 90, maxMp: 12, attack: 20, defense: 24, mind: 8, agility: 4 },
       rewards: { exp: 40, gold: 28, dropRatePercent: 12 },
       skillIds: ["skill_weaken"],
@@ -277,7 +277,7 @@ export function seedHomeDungeonComplexTroops(project: Project): {
     {
       id: "enemy_stone_bone_guard",
       name: "해골 병사",
-      monsterResourceId: "generated-enemy-skeleton-01",
+      monsterResourceId: "generated-enemy-ghost-pale",
       stats: { maxHp: 42, maxMp: 6, attack: 16, defense: 12, mind: 6, agility: 11 },
       rewards: { exp: 16, gold: 12 },
       skillIds: [DEFAULT_SKILL_ID],
@@ -295,7 +295,7 @@ export function seedHomeDungeonComplexTroops(project: Project): {
     {
       id: "enemy_ice_azure_drake",
       name: "얼음 비룡",
-      monsterResourceId: "generated-enemy-dragon-01",
+      monsterResourceId: "generated-enemy-dragon-blue",
       stats: { maxHp: 110, maxMp: 20, attack: 26, defense: 22, mind: 16, agility: 12 },
       rewards: { exp: 60, gold: 50, dropRatePercent: 20 },
       skillIds: ["skill_arcane_bolt", "skill_fire"],

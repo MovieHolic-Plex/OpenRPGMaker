@@ -23,7 +23,7 @@ import type { SkillChoreographyRecord } from "@/project/types/database";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { charsetBattler } from "@/assets/charsetBattlers";
 import { pixelEnemyGridDims } from "@/assets/pixelEnemyGrid";
-import { PIXEL_ENEMY_SHEETS, pixelEnemyCell, pixelEnemyFrame, pixelEnemySheetUrl, type PixelEnemyCell, type PixelEnemySheet, type RetroMonsterCell } from "@/assets/pixelEnemySheets";
+import { PIXEL_ENEMY_SHEETS, bundledPixelEnemySheet, pixelEnemyCell, pixelEnemyFrame, pixelEnemySheetUrl, type PixelEnemyCell, type PixelEnemySheet, type RetroMonsterCell } from "@/assets/pixelEnemySheets";
 import type { RetroFxAnchor, RetroFxLayer } from "@/assets/retroClassSkills";
 import { RETRO_MONSTER_SKILLS, RETRO_MONSTER_SKILLSETS, retroMonsterSkill, type RetroMonsterSkill, type RetroMonsterSkillMotion } from "@/assets/retroMonsterSkills";
 import { EXTENDED_POSE_FRAME, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
@@ -66,7 +66,11 @@ export function monsterSkillsForSlug(slug: string): readonly RetroMonsterSkill[]
 export function monsterCasterFor(skillId: string): { readonly slug: string; readonly sheet: PixelEnemySheet | undefined } | undefined {
   const slug = Object.keys(RETRO_MONSTER_SKILLSETS).find((key) => RETRO_MONSTER_SKILLSETS[key]!.includes(skillId));
   if (!slug) return undefined;
-  return { slug, sheet: PIXEL_ENEMY_SHEETS.find((entry) => pixelEnemySlug(entry) === slug) };
+  const sheet = PIXEL_ENEMY_SHEETS.find((entry) => pixelEnemySlug(entry) === slug)
+    ?? bundledPixelEnemySheet(`generated-enemy-${slug}`)
+    ?? bundledPixelEnemySheet(`generated-enemy-${slug}-01`)
+    ?? PIXEL_ENEMY_SHEETS[0];
+  return { slug, sheet };
 }
 
 /** 몬스터 필터 판정: 계약 스킬이거나 skill_mon_ 접두사. */
@@ -427,7 +431,7 @@ export function renderMonsterSkillStage(skill: RetroMonsterSkill, name?: string,
     : applyChoreographyHandles(baseTimeline,record);
   let previewHit=true,previewTriggered=true;
   const extraNodes=new Map<string,HTMLElement>();
-  const caster = monsterCasterFor(skill.id) ?? (record?.movement ? {slug:"slime",sheet:PIXEL_ENEMY_SHEETS.find(s=>s.resourceId==="generated-enemy-slime-01")} : undefined);
+  const caster = monsterCasterFor(skill.id) ?? (record?.movement ? {slug:"slime",sheet:PIXEL_ENEMY_SHEETS.find(s=>s.resourceId==="generated-enemy-slime-green") ?? PIXEL_ENEMY_SHEETS[0]} : undefined);
   const sheet = caster?.sheet;
   const cell = sheet ? pixelEnemyCell(sheet) : CELL;
   const grow = Math.max(0, cell - CELL);

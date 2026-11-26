@@ -24,7 +24,8 @@ import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver
 import { charsetBattler, charsetBattlerIdForChip, resolvePartyBattleCharset } from "@/assets/charsetBattlers";
 import { partyPixelFrame, partyPixelSheet, partyPixelSheetUrl, PARTY_PIXEL_SHEETS, type PartyPixelSheet } from "@/assets/partyPixelSheets";
 import { RETRO_ROSTER, type RetroRosterClass } from "@/assets/retroRoster";
-import { PIXEL_ENEMY_FRAME, pixelEnemyCell, pixelEnemySheet, pixelEnemySheetUrl, type PixelEnemyCell } from "@/assets/pixelEnemySheets";
+import { pixelEnemyGridDims } from "@/assets/pixelEnemyGrid";
+import { pixelEnemyCell, pixelEnemyFrame, pixelEnemySheet, pixelEnemySheetUrl, type PixelEnemyCell, type PixelEnemySheet } from "@/assets/pixelEnemySheets";
 import { RETRO_CLASS_SKILLS, type RetroClassSkill, type RetroFxAnchor, type RetroSkillMotion } from "@/assets/retroClassSkills";
 import { applyChoreographyHandles } from "@/battle/retroChoreographyHandles";
 import { resolveSkillChoreography, retroClassFamilyOf, retroClassSkill, type RetroChoreographyRecords } from "@/assets/retroSkillCatalog";
@@ -108,17 +109,17 @@ export const RETRO_MONSTER_FILTER_ID = "monster";
 // ---- 적 편 구성 ----
 
 const E = {
-  slime: "generated-enemy-slime-01", bat: "generated-enemy-bat-01", golem: "generated-enemy-golem-01", dragon: "generated-enemy-dragon-01",
-  archer: "generated-enemy-skeleton-archer", wolf: "generated-enemy-wolf-grey", spider: "generated-enemy-spider-cave",
-  wisp: "generated-enemy-wisp-blue", redSlime: "generated-enemy-slime-red", zombie: "generated-enemy-zombie-rot",
-  // 2026-09-28 확장(retroMonsterPlan). 시트가 아직 없으면 그 자리만 빈다.
-  ghost: "generated-enemy-ghost-pale", lich: "generated-enemy-lich-frost", knight: "generated-enemy-skeleton-knight",
+  slime: "generated-enemy-slime-green", bat: "generated-enemy-bat-cave", golem: "generated-enemy-golem-stone", dragon: "generated-enemy-dragon-blue",
+  archer: "generated-enemy-ghost-pale", wolf: "generated-enemy-wolf-grey", spider: "generated-enemy-spider-cave",
+  wisp: "generated-enemy-wisp-blue", redSlime: "generated-enemy-slime-green", zombie: "generated-enemy-ghost-pale",
+  // 현행 5×4 번들 시트(PIXEL_ENEMY_SHEETS)에서 고른다.
+  ghost: "generated-enemy-ghost-pale", lich: "generated-enemy-wraith-dark", knight: "generated-enemy-golem-iron",
   fireSpirit: "generated-enemy-spirit-fire", waterSpirit: "generated-enemy-spirit-water", ironGolem: "generated-enemy-golem-iron",
-  goblin: "generated-enemy-goblin-scout", orc: "generated-enemy-orc-warrior", bandit: "generated-enemy-bandit-mask",
-  harpy: "generated-enemy-harpy-cliff", bee: "generated-enemy-bee-giant", mantis: "generated-enemy-mantis-blade",
-  snake: "generated-enemy-snake-viper", vampire: "generated-enemy-bat-vampire", eye: "generated-enemy-eye-floating",
-  plant: "generated-enemy-plant-carnivore", troll: "generated-enemy-troll-cave", demon: "generated-enemy-demon-lord",
-  mimic: "generated-enemy-mimic-chest", lizard: "generated-enemy-lizardman-spear", boar: "generated-enemy-boar-tusk",
+  goblin: "generated-enemy-goblin-scout", orc: "generated-enemy-goblin-scout", bandit: "generated-enemy-bandit-mask",
+  harpy: "generated-enemy-bird-hawk", bee: "generated-enemy-bee-giant", mantis: "generated-enemy-mantis-blade",
+  snake: "generated-enemy-snake-viper", vampire: "generated-enemy-bat-cave", eye: "generated-enemy-eye-floating",
+  plant: "generated-enemy-plant-carnivore", troll: "generated-enemy-golem-stone", demon: "generated-enemy-wraith-dark",
+  mimic: "generated-enemy-golem-iron", lizard: "generated-enemy-snake-viper", boar: "generated-enemy-boar-tusk",
 } as const;
 /** [뒤 위, 앞(한 대상 스킬의 과녁), 뒤 아래]. 앞자리만 큰 적(64·96px)을 쓴다 — 뒤 둘은 48px. */
 type Lineup = readonly [string, string, string];
@@ -364,7 +365,7 @@ function probeSheet(url: string): Promise<boolean> {
 
 type Point = { readonly x: number; readonly y: number };
 type Actor = { readonly node: HTMLElement; sheet: string; cast?: string; castOk: boolean; readonly home: Point; readonly pixel?: PartyPixelSheet };
-type Enemy = { readonly node: HTMLElement; readonly home: Point; readonly cell: number; readonly idleMs: number };
+type Enemy = { readonly node: HTMLElement; readonly home: Point; readonly cell: number; readonly idleMs: number; readonly sheet?: PixelEnemySheet };
 
 /** 발 위치(논리 px). 파티는 오른쪽 사선 계단, 가운데가 시전자. 적은 왼쪽 삼각형. */
 const PARTY_HOMES: readonly Point[] = [{ x: 176, y: 90 }, { x: 196, y: 106 }, { x: 216, y: 122 }];
@@ -517,14 +518,15 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
     const node = el("span", { class: "db-skill-retro-enemy", dataset: { enemy: entry?.resourceId ?? "" } });
     node.style.width = cell + "px";
     node.style.height = cell + "px";
-    node.style.backgroundSize = cell * 3 + "px " + cell * 3 + "px";
+    const { cols, rows } = pixelEnemyGridDims(entry?.grid);
+    node.style.backgroundSize = cell * cols + "px " + cell * rows + "px";
     if (entry) {
       const url = pixelEnemySheetUrl(entry);
       node.style.backgroundImage = 'url("' + url + '")';
       // 없는 시트(404)는 그 적만 조용히 빼고 무대는 그대로 돈다.
       void probeSheet(url).then((ok) => { if (!ok) node.hidden = true; });
     } else node.hidden = true;
-    return { node, home: homes[index]!, cell, idleMs: entry?.idleFrameMs ?? 220 };
+    return { node, home: homes[index]!, cell, idleMs: entry?.idleFrameMs ?? 220, sheet: entry };
   });
   const stageEnemyIds = lineup.join(",");
   // 발 y 순으로 쌓아 앞사람이 뒷사람을 가린다.
@@ -734,7 +736,7 @@ function renderSkillRetroStageForActor(record: SkillRecord, project: Project, se
       // 종마다 시트 계약의 대기 한 칸 길이로 돈다(박쥐 110ms · 골렘 300ms …).
       const idle = idleCells[Math.floor(clock / enemy.idleMs) % 4]!;
       const movement=index===FRONT_ENEMY?motionSample("target"):undefined;
-      placeCell(enemy.node, PIXEL_ENEMY_FRAME[movement?.pose==="hit"||struck>0.3?"hit":idle], enemy.cell);
+      placeCell(enemy.node, pixelEnemyFrame(enemy.sheet, movement?.pose === "hit" || struck > 0.3 ? "hit" : idle), enemy.cell);
       const knock = struck > 0 ? Math.round(-5 * struck) + (Math.floor(clock / 40) % 2 === 0 ? 1 : -1) : 0;
       // 시트 계약: 바닥 기준선 y = cell − 4.
       placeSprite(enemy.node, movement??{ x: enemy.home.x + knock, y: enemy.home.y }, enemy.cell, enemy.cell - 4);
