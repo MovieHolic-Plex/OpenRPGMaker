@@ -176,6 +176,31 @@
   color: var(--on-accent);
 }
 
+/* 휴대 폭: 캔버스가 100~160px 만 남아 줄이 입력칸 88px·동작 5개 잘림으로 찌그러졌다(vm-qa15 #36·#37).
+   EditScene 이 left 8px · max-width(화면-16px)로 놓고, 여기서는 폭을 화면에 맞추고 버튼을 34px 로 키운다(터치 #61:
+   30px 는 작다. 34px 아홉 개가 390 한 줄에 들어간다).
+   경계 600px 는 EditScene 의 SELECTION_CHIPS_NARROW_VIEWPORT 와 같다. */
+@media (max-width: 599px) {
+  .selection-action-chips,
+  .selection-action-chips.build-palette-floating {
+    width: calc(100vw - 16px);
+  }
+  .selection-action-prompt {
+    flex-basis: 100%;
+  }
+  .selection-action-tools {
+    flex-wrap: wrap;
+    flex: 1 1 auto;
+  }
+  .selection-action-chip {
+    height: 34px;
+    min-width: 34px;
+  }
+  .selection-action-chip.is-icon {
+    width: 34px;
+  }
+}
+
 .agent-ghost-preview {
   pointer-events: none;
 }

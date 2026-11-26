@@ -350,7 +350,7 @@
   "b8ecb992307a": "[database] var(--radius-s)",
   "b92cb0ce537b": "[database] var(--radius-pill)",
   "b9883bb3d41b": "[database] relative",
-  "ba486ff0515b": "[database] repeat(4, minmax(0, 1fr))",
+  "ba486ff0515b": "[database] repeat(auto-fit, minmax(104px, 1fr))",
   "baa7d2628c45": "[database] 4px",
   "bbae3643a420": "[database] 13px",
   "bbbe128da332": "[database] flex",

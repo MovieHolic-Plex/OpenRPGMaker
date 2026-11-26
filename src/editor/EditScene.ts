@@ -221,6 +221,8 @@ const EVENT_LAYER_DOUBLE_CLICK_MS = 500;
 const EVENT_LAYER_PAN_THRESHOLD_PX = 4;
 /** 캔버스·조수 가림 사각형을 재는 주기. 매 프레임 DOM 을 재면 레이아웃이 흔들린다. */
 const OVERLAY_GEOMETRY_TTL_MS = 250;
+/** 이 폭보다 좁은 화면에서는 영역 지시 줄이 캔버스가 아니라 화면 폭을 쓴다(inline-assist.css 의 같은 경계 미디어 쿼리). */
+const SELECTION_CHIPS_NARROW_VIEWPORT = 600;
 
 function overlayGeometryNowMs(): number {
   return typeof performance !== "undefined" && typeof performance.now === "function" ? performance.now() : Date.now();
@@ -3745,9 +3747,14 @@ export class EditScene extends PhaserRuntime.Scene {
     }, this.activeTileSize());
     const canvasRect = { left: geometry.canvasLeft, top: geometry.canvasTop, width: geometry.canvasWidth, height: geometry.canvasHeight };
     const hostRect = { left: geometry.hostLeft, top: geometry.hostTop };
+    // 좁은 화면(휴대 폭)에서는 캔버스가 왼쪽 패널·조수 패널에 밀려 100~160px 만 남는다 — 그 폭에 맞추면
+    // 입력칸이 88px 로 찌그러지고 동작 버튼이 넘쳐 사라졌다(vm-qa15 #36·#37). 그때는 화면 폭 전체를 쓴다.
+    const narrowViewport = isChips && window.innerWidth < SELECTION_CHIPS_NARROW_VIEWPORT;
     // Bound the wrapping selection toolbar before measuring and anchoring it.
     if (isChips) {
-      const maxWidth = `${Math.max(1, Math.min(640, canvasRect.width - 16))}px`;
+      const maxWidth = narrowViewport
+        ? `${Math.max(1, window.innerWidth - 16)}px`
+        : `${Math.max(1, Math.min(640, canvasRect.width - 16))}px`;
       if (popup.style.maxWidth !== maxWidth) popup.style.maxWidth = maxWidth;
     }
     // visibility:hidden 첫 프레임에서 0 크기가 나올 수 있어 칩/팔레트 기본값을 다르게 둔다.
@@ -3790,7 +3797,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (isChips) {
       // overflow:hidden 호스트/상태바 클리핑을 피하려고 viewport fixed 로 올린다.
       setStyle("position", "fixed");
-      setStyle("left", `${Math.round(canvasRect.left + point.x)}px`);
+      setStyle("left", narrowViewport ? "8px" : `${Math.round(canvasRect.left + point.x)}px`);
       setStyle("top", `${Math.round(canvasRect.top + point.y)}px`);
       setStyle("right", "auto");
       setStyle("bottom", "auto");
