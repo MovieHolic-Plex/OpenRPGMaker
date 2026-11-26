@@ -26,7 +26,7 @@
 | `electron/shared/channels.ts` | `windowControl`(invoke), `windowFullscreen`(기존), **`windowState`**(조회 invoke + 변화 push, 같은 이름) |
 | `electron/main/main.ts` | `chromeOptions`, 동작 검증(`isWindowControlAction` 밖의 값은 `false`), maximize/unmaximize/restore/minimize/enter·leave-full-screen → `windowState` push, 닫기 저장·Quit 처리, 아직 안 보인 창을 앞으로 가져올 때 전체화면 |
 | `electron/main/windowShow.ts` | 숨은 창을 처음 보이는 순서(macOS 는 보인 뒤 전체화면, 그 밖은 전체화면 뒤 보이기) |
-| `electron/main/closeFlow.ts` | 자동 저장 결과와 확인 대화상자의 버튼 판정 |
+| `electron/shared/closeFlow.ts` | 자동 저장 결과와 확인 대화상자의 버튼 판정 |
 | `electron/main/directoryDialog.ts` | 폴더 선택 대화상자를 살아 있는 앱 창에 붙인다. 파일 메뉴는 스플래시·팀 창이 아니라 그 창을 고른다 |
 | `electron/shared/folderSwitch.ts` | 파일 메뉴가 다른 폴더로 넘어가기 전에 보는 저장 결과. 미저장이 남으면 거절 |
 | `electron/preload/index.ts` | `oprn.platform`(동기), `oprn.windowState()`, `oprn.onWindowState(cb)` |

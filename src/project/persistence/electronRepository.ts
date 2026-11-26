@@ -1,4 +1,4 @@
-import type { CloseSaveMode } from "../../../electron/main/closeFlow";
+import type { CloseSaveMode } from "../../../electron/shared/closeFlow";
 import { collectLoadRepairs } from "@/project/loadRepairReport";
 import { deserialize, serialize } from "../io";
 import { yieldToTask } from "@/util/yieldToTask";

@@ -16,7 +16,7 @@ import { acceptStoreDeepLink, registerAssetStore } from "./assetStore";
 import { isInstallingAppUpdate, registerAppUpdate } from "./appUpdate";
 import { findStoreDeepLinkArg } from "../../src/assetStore/deepLink";
 import { electronUserArgIndex, inspectCliProjectArgs, inspectCurrentCliProject, projectDirFromOpenPath } from "./cliProject";
-import { decideAfterCloseFlush, decideCloseResponse, type CloseSaveMode } from "./closeFlow";
+import { decideAfterCloseFlush, decideCloseResponse, type CloseSaveMode } from "../shared/closeFlow";
 import { planWindowReload } from "../shared/reloadFlow";
 import { planRendererCrashRecovery } from "./rendererCrashPolicy";
 import { chosenDirectory, directoryDialogParent, directoryDialogProperties, pickAppWindow } from "./directoryDialog";

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { decideAfterCloseFlush, decideCloseResponse, flushProjectForClose } from "../electron/main/closeFlow";
+import { decideAfterCloseFlush, decideCloseResponse, flushProjectForClose } from "../electron/shared/closeFlow";
 
 describe("desktop close decisions", () => {
   it("closes after either save attempt reports success", () => {

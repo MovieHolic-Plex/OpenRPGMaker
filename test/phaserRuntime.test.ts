@@ -7,8 +7,10 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { _resetPhaserRuntimeForTest, ensurePhaser } from "@/app/phaserRuntime";
 
+// ensurePhaser 는 로드 뒤 칩셋 업로드 가드를 Loader.FileTypes.ImageFile 원형에 깐다(#4865) — 가짜도 그 자리를 갖는다.
 function fakePhaser(): typeof import("phaser") {
-  return { AUTO: 1 } as unknown as typeof import("phaser");
+  const Loader = { FILE_PROCESSING: 3, FILE_LOADED: 2, FileTypes: { ImageFile: { prototype: {} } } };
+  return { AUTO: 1, Loader } as unknown as typeof import("phaser");
 }
 
 function interceptScripts(): HTMLScriptElement[] {

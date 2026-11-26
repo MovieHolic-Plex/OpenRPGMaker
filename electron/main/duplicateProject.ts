@@ -32,10 +32,15 @@ async function publishCopyFolder(staging: string, source: string): Promise<strin
 
 /** Stage the database and files together, then publish the completed sibling folder. */
 export async function duplicateProjectFolder(source: string): Promise<{ projectDir: string; title: string }> {
-  const staging = await mkdtemp(join(dirname(source), ".oprn-copy-"));
+  const stagingRoot = await mkdtemp(join(dirname(source), ".oprn-copy-"));
+  // cp must create its destination: Node's native cp rejects an existing directory under errorOnExist (ERR_FS_CP_EEXIST).
+  const staging = join(stagingRoot, "project");
   try {
-    const snapshotPath = join(staging, PROJECT_STORE_FILE);
     const sourceDb = join(source, PROJECT_STORE_FILE);
+    const excluded = new Set(["", "-wal", "-shm", "-journal"].map((suffix) => sourceDb + suffix));
+    await cp(source, staging, { recursive: true, force: false, errorOnExist: true, verbatimSymlinks: true, filter: (path) => !excluded.has(path) });
+
+    const snapshotPath = join(staging, PROJECT_STORE_FILE);
     const db = openNodeSqliteDriver(sourceDb, { readOnly: true });
     try {
       // Snapshot committed pages, including WAL, without copying live SQLite sidecars.
@@ -52,12 +57,9 @@ export async function duplicateProjectFolder(source: string): Promise<{ projectD
       assignCopiedProjectId(copy, sourceId);
     } finally { copy.close(); }
 
-    const excluded = new Set(["", "-wal", "-shm", "-journal"].map((suffix) => sourceDb + suffix));
-    await cp(source, staging, { recursive: true, force: false, errorOnExist: true, verbatimSymlinks: true, filter: (path) => !excluded.has(path) });
     const projectDir = await publishCopyFolder(staging, source);
     return { projectDir, title: title ?? basename(projectDir) };
-  } catch (error) {
-    await rm(staging, { recursive: true, force: true }).catch((cleanupError: unknown) => console.warn("[project] 사본 정리 실패:", cleanupError));
-    throw error;
+  } finally {
+    await rm(stagingRoot, { recursive: true, force: true }).catch((cleanupError: unknown) => console.warn("[project] 사본 정리 실패:", cleanupError));
   }
 }
