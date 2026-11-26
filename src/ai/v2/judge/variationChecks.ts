@@ -59,7 +59,7 @@ export function variationStructureProblems(before: Project, after: Project, task
     const named = floors.filter((f): f is number => f !== undefined);
     const up = floors.findIndex((f, i) => i > 0 && f !== undefined && floors.slice(0, i).some((g) => g !== undefined && g < f));
     if (named.length < 2 || up >= 0) {
-      problems.push(tagged("game", "변주 구조", `카드 구조 «${structure.ko}» 인데 장소 순서가 층을 내려가지 않는다(${route.join(" → ")}). 장소(맵) 이름에 층을 붙이고(1층 → 지하 1층 → 지하 2층) 뒤 장소일수록 낮은 층에 둔다(청사진이 있으면 write_blueprint 를 다시 부른다).`));
+      problems.push(tagged("game", "변주 구조", `카드 구조 «${structure.ko}» 인데 장소 순서가 층을 내려가지 않는다(${route.join(" → ")}). 카드에 적힌 장소 이름은 그대로 두고 앞에 층을 붙여(1층 미술관 → 지하 1층 감옥) 뒤 장소일수록 낮은 층에 둔다(청사진이 있으면 write_blueprint 를 다시 부른다).`));
     }
   }
   if (v.event?.order === "days" && bp?.steps.length) {

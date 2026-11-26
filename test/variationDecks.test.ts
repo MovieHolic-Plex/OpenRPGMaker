@@ -191,6 +191,17 @@ describe("variationCard", () => {
     expect(longest).toBeGreaterThan(200);
   });
 
+  it("a descend card puts the floor in front of each written place name, so the place names stay as written", () => {
+    for (let i = 0; i < 200; i++) {
+      const v = pickVariation({ text: "밤의 미술관에 갇힌 아이가 빠져나가는 공포 게임", key: keyOf(i), allowedWorlds: ALL_WORLDS });
+      if (v?.structure?.order !== "descend" || v.places.length < 2) continue;
+      const card = variationCard(v, { lang: "ko" })!;
+      expect(card).toContain(`지하 1층 ${v.places[1]!.ko}`);
+      return;
+    }
+    throw new Error("no descend card in 200 keys");
+  });
+
   it("has no card when the user's words settled every axis", () => {
     const v = pickVariation({ text: "비 오는 날 유품 편지를 따라 갈림길 선택으로 가는 회상 게임", key: keyOf(1), allowedWorlds: ALL_WORLDS, worldFixed: true })!;
     expect([...v.skipped].sort()).toEqual(["event", "mood", "places", "structure"]);
