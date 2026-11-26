@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-// 데스크톱 앱에 싣는 조수 워커(dist-electron/oh-my-pi-worker[.exe])를 만든다. build-electron.mjs 가 부르고, ci-fast 도 같은 것을 부른다.
+// 데스크톱 앱에 싣는 조수 워커(dist-electron/oh-my-pi-worker[.exe])와 그 옆 자료 폴더(worker-data)를 만든다. build-electron.mjs 가 부르고, ci-fast 도 같은 것을 부른다.
 // 사용: bun scripts/build-ai-worker.ts <출력 폴더> [linux|windows ...]   (대상 생략 = 둘 다)
 //
 // 리눅스 워커에는 pi_natives 애드온을 싣지 않는다 (2026-11-26, worker-slim). 윈도 워커는 싣는다(아래 «윈도는 애드온이 필요하다»).
@@ -15,9 +15,9 @@
 // 윈도 애드온은 리눅스 호스트의 node_modules 에 설치되지 않는다(os 필터). package-lock 의 resolved·integrity 로 받아 검증하고 캐시한다.
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { chmodSync, copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { chmodSync, copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -86,13 +86,52 @@ function stageAddon(tag: string): void {
   console.log(`staged ${filename}`);
 }
 
+// 큰 JSON(번들 타일셋·참고문서 등 약 150개, 148MB)을 실행 파일에 박지 않고 <출력 폴더>/worker-data 에 두고 실행 때 읽는다 (2026-11-26, worker-slim).
+// 박아 두면 워커 실행 파일이 리눅스 341MB 가 되고, 켤 때마다 그 JSON 을 스크립트로 훑느라 첫 조수 요청 기동이 약 7초 걸렸다(밖에 두면 약 2.5초, omp-to-pi 실측).
+// 경로 해석·없을 때의 문구는 scripts/lib/workerData.ts. node_modules 의 JSON 은 그대로 둔다.
+const DATA_MIN_BYTES = 64 * 1024;
+const dataDir = join(outDir, "worker-data");
+const RESERVED = new Set("arguments await break case catch class const continue debugger default delete do else enum eval export extends false finally for function if implements import in instanceof interface let new null package private protected public return static super switch this throw true try typeof var void while with yield".split(" "));
+const externalized = new Map<string, number>();
+const externalJson: import("bun").BunPlugin = {
+  name: "oprn-worker-data-json",
+  setup(build) {
+    build.onLoad({ filter: /\.json$/ }, (args) => {
+      if (args.path.split(sep).includes("node_modules")) return undefined;
+      const bytes = statSync(args.path).size;
+      if (bytes < DATA_MIN_BYTES) return undefined;
+      const rel = relative(REPO_ROOT, args.path).split(sep).join("/");
+      if (rel.startsWith("../")) return undefined;
+      if (!externalized.has(rel)) {
+        mkdirSync(dirname(join(dataDir, rel)), { recursive: true });
+        copyFileSync(args.path, join(dataDir, rel));
+        externalized.set(rel, bytes);
+      }
+      const data = JSON.parse(readFileSync(args.path, "utf8"));
+      const names = data && typeof data === "object" && !Array.isArray(data)
+        ? Object.keys(data).filter((name) => /^[A-Za-z_$][\w$]*$/.test(name) && !RESERVED.has(name))
+        : [];
+      return {
+        loader: "js",
+        contents: [
+          `import { readWorkerJson } from ${JSON.stringify(join(REPO_ROOT, "scripts/lib/workerData.ts"))};`,
+          `const data = readWorkerJson(${JSON.stringify(rel)});`,
+          "export default data;",
+          ...names.map((name) => `export const ${name} = data[${JSON.stringify(name)}];`),
+        ].join("\n"),
+      };
+    });
+  },
+};
+rmSync(dataDir, { recursive: true, force: true });
+
 for (const key of wanted) {
   const { target, name, addon } = TARGETS[key];
   const outfile = join(outDir, name);
   const result = await Bun.build({
     entrypoints: [join(REPO_ROOT, "scripts/oh-my-pi-worker.ts")],
     compile: { target, outfile },
-    plugins: addon ? [] : [noNativeAddon],
+    plugins: addon ? [externalJson] : [noNativeAddon, externalJson],
   } as Parameters<typeof Bun.build>[0]);
   if (!result.success) {
     for (const log of result.logs) console.error(String(log));
@@ -102,3 +141,5 @@ for (const key of wanted) {
   if (addon) stageAddon(addon);
   console.log(`built ${outfile.replace(`${REPO_ROOT}/`, "")}`);
 }
+const dataBytes = [...externalized.values()].reduce((sum, bytes) => sum + bytes, 0);
+console.log(`staged ${relative(REPO_ROOT, dataDir) || dataDir}: ${externalized.size} JSON, ${(dataBytes / 1048576).toFixed(1)}MB`);

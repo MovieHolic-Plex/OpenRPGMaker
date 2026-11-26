@@ -191,6 +191,14 @@ DISPLAY=:78 xwininfo -root -tree | grep -i oprn   # 1272x766 창이 잡히면 �
   윈도 애드온은 리눅스 호스트의 `node_modules` 에 설치되지 않으므로(os 필터) `package-lock.json` 의 `resolved`·`integrity` 로 받아 검증하고
   `node_modules/.cache/oprn-pi-natives/` 에 캐시한다. lock 의 pi-natives 가 두 버전이면 빌드를 멈춘다(2026-11-04 윈도 사고).
   **리눅스 실측(호출 0건)을 윈도에 옮기지 않는다.** 워커·애드온을 바꾸면 윈도 워커를 실제 윈도에서 띄워 본다.
+- 큰 JSON(64KB 이상, 번들 타일셋·참고문서 등 152개·148MB)은 실행 파일에 박지 않고 `dist-electron/worker-data/<저장소 상대 경로>` 에
+  둔다. 빌드 플러그인이 그 import 를 `scripts/lib/workerData.ts` 의 `readWorkerJson()` 호출로 바꾸고, 워커는 **실행 파일 옆
+  `worker-data`**(`dirname(process.execPath)`)에서 읽는다. 그래서 설치 폴더·portable 임시 폴더·AppImage 마운트 어디서든 실행 파일과 같이
+  움직이고, 앱 자동 업데이트가 경로 환경 변수를 되돌려도(`APP_UPDATE_RUNTIME_PATH_ENV`) 따로 고칠 것이 없다. `OPRN_WORKER_DATA_DIR` 로
+  바꿀 수 있다. bun 은 asar 를 못 읽으므로 builder 가 `dist-electron/worker-data/**` 를 `asarUnpack` 한다.
+  파일이 없으면 워커가 한 줄(«조수 워커 자료를 읽지 못했습니다(파일이 없습니다): <경로>. 앱 설치가 깨졌을 수 있습니다 …»)을 남기고
+  코드 78 로 끝나며, 호스트가 그 줄을 조수 오류로 보인다. 실측(2026-11-26): 리눅스 워커 341.2MB → 160.3MB, 윈도 347.3MB → 166.4MB,
+  READY 6.9~7.5초 → 2.35~2.52초. 소스로 띄우는 워커(`bun scripts/oh-my-pi-worker.ts`)는 JSON 을 그대로 import 한다.
 - 옛 방식(2026-09-27~11-26): `--compile` 이 런타임에 계산한 경로의 애드온을 따라가지 못해 워커가 시작하자마자
   `Failed to load pi_natives native addon` 으로 죽었고(«로그인은 되는데 채팅만 안 된다»), 애드온을 워커 옆에 두고 lock 의 tarball 로
   윈도 애드온을 받았다. 두 버전이 섞이면 윈도 워커가 `~/.omp/natives/<판>/` 을 찾다 죽은 일도 있었다(2026-11-04).
