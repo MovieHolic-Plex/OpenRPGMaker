@@ -40,6 +40,11 @@ on:
         description: "공백으로 나눈 테스트 파일 경로(또는 vitest 필터)"
         required: true
         type: string
+      force:
+        description: "같은 커밋의 ci-related-tests 가 이미 이 파일들을 돌아도 다시 돌린다"
+        required: false
+        type: boolean
+        default: false
 
 concurrency:
   group: ci-vitest-files-${{ github.ref_name }}
@@ -49,7 +54,51 @@ permissions:
   contents: read
 
 jobs:
+  # 같은 커밋을 PR 의 ci-related-tests 가 이미 돌고 있거나 통과했고, 요청한 파일이 그 선택(all.list)에 모두 들어 있으면
+  # vitest 를 다시 돌리지 않는다 (2026-11-26 dev-bottlenecks-r2).
+  # 왜: 30시간 248판 중 239판이 agent/* 레인의 수동 실행이었고(잡-시간 56시간), 호스티드 동시 자리를 ci-fast 와 나눠 쓴다.
+  # 레인은 PR 을 연 브랜치에서 같은 커밋의 관련 시험을 다시 거는 일이 많았다, 그 판의 답은 ci-related-tests 에 이미 있다.
+  # 체크아웃 없이 gh 로 그 판의 아티팩트만 본다(10초 안팎). 실패하거나 판단할 수 없으면 그냥 돌린다.
+  # 끝줄은 `VERDICT: COVERED (ci-related-tests <url>)` 다. 그래도 돌리려면 `-f force=true`.
+  covered:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: read
+    outputs:
+      covered: ${{ steps.check.outputs.covered }}
+    steps:
+      - id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.sha }}
+          FILES: ${{ inputs.files }}
+          FORCE: ${{ inputs.force }}
+        run: |
+          set -uo pipefail
+          echo "covered=false" >> "$GITHUB_OUTPUT"
+          if [ "$FORCE" = "true" ]; then echo "force=true, 그대로 돌린다"; exit 0; fi
+          run=$(gh api "repos/$REPO/actions/workflows/ci-related-tests.yml/runs?head_sha=$SHA&event=pull_request&per_page=20" \
+            --jq '[.workflow_runs[] | select(.status != "completed" or .conclusion == "success")] | sort_by(.created_at) | last | "\(.id) \(.html_url)"' 2>/dev/null) || run=""
+          if [ -z "$run" ] || [ "$run" = "null null" ]; then echo "같은 커밋($SHA)의 ci-related-tests 판 없음, 돌린다"; exit 0; fi
+          id=${run%% *}; url=${run#* }
+          dir="$RUNNER_TEMP/related"
+          if ! gh run download "$id" -R "$REPO" -n related-lists -D "$dir" >/dev/null 2>&1 || [ ! -s "$dir/all.list" ]; then
+            echo "ci-related-tests $url 에 선택 목록이 아직 없다, 돌린다"; exit 0
+          fi
+          missing=""
+          for f in $FILES; do grep -qxF "$f" "$dir/all.list" || missing="$missing $f"; done
+          if [ -n "$missing" ]; then echo "ci-related-tests 선택에 없는 파일:$missing, 돌린다"; exit 0; fi
+          echo "covered=true" >> "$GITHUB_OUTPUT"
+          line="VERDICT: COVERED (ci-related-tests $url 가 같은 커밋에서 이 파일들을 돈다. 결과는 그 판의 RESULT·VERDICT 줄. 그래도 돌리려면 -f force=true)"
+          echo "$line"
+          printf '### ci-vitest-files\n\n```\n%s\n```\n' "$line" >> "$GITHUB_STEP_SUMMARY"
+          echo "::notice title=ci-vitest-files::$line"
+
   vitest:
+    needs: covered
+    if: needs.covered.outputs.covered != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 90
     steps:
