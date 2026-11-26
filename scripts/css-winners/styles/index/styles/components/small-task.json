@@ -69,6 +69,7 @@
   "b04c9cbb7db6": "[components] color-mix(in srgb, var(--bg-overlay) 94%, transparent)",
   "b1ca838a1e38": "[components] 1px solid var(--border-subtle)",
   "b785aee9fbb5": "[components] none",
+  "baab6847bfec": "[components] 32px",
   "bb4374deda35": "[components] 2px solid var(--border-subtle)",
   "c48a5a32485f": "[components] var(--bg-hover)",
   "d3e3be665dba": "[components] var(--accent-hover)",

@@ -1,0 +1,8 @@
+/* 휴대 폭(599px 이하) 터치 크기 — vm-qa15 묶음 3. 390 에서 22~30px 이던 단추를 좁은 화면에서만 최소 32px 로 키운다.
+   버튼 수는 그대로, 넓은 화면은 그대로다. 표면마다 같은 이름의 파일이 있다(shell·map·database, 컴포넌트는 small-task.css). */
+@media (max-width: 599px) {
+  body .topbar-test-play,
+  .ai-settings-tab {
+    min-height: 32px;
+  }
+}

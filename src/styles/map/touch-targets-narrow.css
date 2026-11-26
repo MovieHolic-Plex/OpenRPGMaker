@@ -1,0 +1,20 @@
+/* 휴대 폭(599px 이하) 터치 크기 — vm-qa15 묶음 3. 390 에서 22~30px 이던 단추를 좁은 화면에서만 최소 32px 로 키운다.
+   버튼 수는 그대로, 넓은 화면은 그대로다. 표면마다 같은 이름의 파일이 있다(shell·map·database, 컴포넌트는 small-task.css). */
+@media (max-width: 599px) {
+  .canvas-tool-pill-button,
+  .canvas-tool-pill-zoom-current,
+  .map-tree-section-toggle,
+  .map-tree-action,
+  .tile-section-tileset,
+  .tile-section-settings,
+  .map-sidebar-section .map-tree-panel .map-item .map-context-trigger {
+    min-height: 32px;
+  }
+
+  /* 토글·맵 메뉴·머리 동작은 left-column.css 의 같은 경로 규칙(min-width 0·24·28px)과 같은 특이도여야 이긴다. */
+  .map-tree-panel .map-tree-section-toggle,
+  .map-sidebar-section .map-tree-panel .map-item .map-context-trigger,
+  .editor-layout .map-sidebar-section .map-tree-panel .map-tree-header-actions .map-tree-action {
+    min-width: 32px;
+  }
+}

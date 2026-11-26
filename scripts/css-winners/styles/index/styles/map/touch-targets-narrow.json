@@ -1,0 +1,17 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/map/touch-targets-narrow.css",
+ "contested": {},
+ "winners": {
+  "1afb26837a3d": "[map] 32px",
+  "1ef5adccb2a6": "[map] 32px",
+  "7fd3636a4d65": "[map] 32px",
+  "9086c320e762": "[map] 32px",
+  "90d49b1e4458": "[map] 32px",
+  "91e8c53b6464": "[map] 32px",
+  "a5d85417c186": "[map] 32px",
+  "a7bb64674542": "[map] 32px",
+  "ba63fa1abdbd": "[map] 32px",
+  "c0e3d9df333a": "[map] 32px"
+ }
+}
