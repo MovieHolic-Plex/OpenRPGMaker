@@ -111,6 +111,13 @@ export interface PiAssistantV2Hooks {
    * 왜(2026-11-01 cheap r7 flash): 재주입에 한 번 강제하면 한 번 부르고 바로 글로 멈춰, 재주입 한 번이 도구 하나에 그쳤고 «진척 없음» 으로 고리가 멈췄다.
    */
   readonly keepToolsOn?: (env: PiAssistantV2Env) => boolean;
+  /**
+   * 체크포인트를 편집기로 보내기 직전(프로젝트가 바뀐 때만) — 그 체크포인트를 낳은 호출(있으면)을 이어 하기 기록에 더하고
+   * 할 일·기억을 env.ctx.project 에 싣는다. 같은 체크포인트에 실려 저장본과 원자적으로 맞는다(src/ai/piAgent/runResume.ts).
+   */
+  readonly beforeCheckpoint?: (env: PiAssistantV2Env, call: { readonly name: string; readonly args: unknown } | undefined) => void;
+  /** 이어 하기 실행에서 앞 실행이 이미 적용한 호출이면 모델에 돌려줄 글(실행하지 않는다). 아니면 undefined. */
+  readonly skipAppliedCall?: (env: PiAssistantV2Env, name: string, args: unknown) => string | undefined;
   /** afterMain 이 몇 차례까지 돌 수 있나(기본 2). v2 할 일 고리는 자체 상한(묶음당 8·진척 없음 2)으로 멈추므로 넉넉히 준다. */
   readonly maxRounds?: number;
 }

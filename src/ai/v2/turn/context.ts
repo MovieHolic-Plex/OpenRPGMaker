@@ -12,6 +12,7 @@ import { type V2ToolExposure } from "../tools/toolExposure";
 import { changedSince, indexProject } from "../loop/refs";
 import { vqaEnabled } from "./support";
 import { loadPlaces } from "../tools/placeMemory";
+import { readResumeMemory, type PiRunResumeMemory } from "../../piAgent/runResume";
 
 /** 실행기가 넘기는 것 가운데 턴 정책이 쓰는 것 — 사용자 화면으로 가는 이벤트와 중단 신호. */
 export interface TurnOptions {
@@ -56,6 +57,10 @@ export function createTurnContext(request: PiAgentRequest, options: TurnOptions,
     exposure: undefined as V2ToolExposure | undefined,
     leadPlan: undefined as string | undefined,
     leadReviews: 0,
+    /** 이어 하기 기록(src/ai/piAgent/runResume.ts) — 체크포인트마다 적용 호출 키를 더해 assistantTodo.memory.resume 에 싣는다. 요청에 resume 이 없으면 쓰지 않는다. */
+    resume: undefined as PiRunResumeMemory | undefined,
+    /** 이어 하기 실행에서 건너뛸 앞 실행의 적용 호출 키(한 번씩만). */
+    resumeSkip: new Set<string>(),
   };
   // 판정 기준선 — 「만들어 달라」 항목(fresh)은 이 시점에 원래 있던 것으로는 ✓ 가 나지 않는다.
   try { store.baseline = indexProject(request.project as Project); } catch { store.baseline = undefined; }
@@ -63,6 +68,15 @@ export function createTurnContext(request: PiAgentRequest, options: TurnOptions,
   // 판정자 기억(화면 검수 장부)은 목록을 이어 받지 않는 턴에도 읽는다.
   const priorTodo = (request.project as { assistantTodo?: unknown }).assistantTodo;
   store.loadMemory(priorTodo);
+  if (request.resume) {
+    const prior = readResumeMemory(priorTodo);
+    const carried = request.resume.from && prior?.key === request.resume.from ? prior : undefined;
+    state.resume = { key: request.resume.key, task: request.task, applied: carried?.applied ?? [], ...(carried?.dropped ? { dropped: carried.dropped } : {}) };
+    for (const call of carried?.applied ?? []) state.resumeSkip.add(call.k);
+    if (request.resume.from) options.onEvent?.({ type: "execution_status", name: "v2.resume.restore", ok: !!carried, at: Date.now(),
+      summary: carried ? `앱 재시작 뒤 이어 하기 — 앞 실행이 적용한 호출 ${carried.applied.length}개는 다시 하지 않음` : "앱 재시작 뒤 이어 하기 — 프로젝트에 앞 실행의 적용 기록이 없어 건너뛸 호출 없음",
+      data: { from: request.resume.from, applied: carried?.applied.length ?? 0 } });
+  }
   // 앞 턴이 지은 장소의 설계 — 맵이 그대로일 때만 이어 받는다(다음 턴의 edit_place 가 그 설계에서 고친다, tools/placeMemory.ts).
   const carriedPlaces = loadPlaces(store.memory.places, session, request.project as Project, store.baseline);
   if (carriedPlaces.restored || carriedPlaces.stale) options.onEvent?.({ type: "execution_status", name: "v2.places.restore", ok: true, at: Date.now(), summary: `앞 턴의 장소 설계 ${carriedPlaces.restored}곳을 이어 받음${carriedPlaces.stale ? ` · ${carriedPlaces.stale}곳은 맵이 조수 밖에서 바뀌어 버림` : ""}`, data: carriedPlaces });

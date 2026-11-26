@@ -51,6 +51,8 @@ export interface PiAgentRequest {
    * 없으면 예전처럼 실행마다 새 대화다. 대화를 잇지 않는 편이 나은 호출자(병렬 레인)는 비운다.
    */
   readonly sessionKey?: string;
+  /** 앱 재시작 뒤 이어 하기 열쇠(runResume.ts). v2 가 적용 호출 키를 프로젝트에 싣고, from 이 있으면 그 실행의 적용 호출을 건너뛴다. */
+  readonly resume?: import("./runResume").PiRunResumeRequest;
   /**
    * 조수 v2 팀장(src/ai/v2/turn/split.ts). 편집기 엔진 선택의 팀장(localCliEngine.assistantEngineLead) 또는 요청이 직접 실어 온 팀장.
    * 워커는 OPRN_V2_SPLIT 이 없을 때만 이 값을 쓴다. 로컬 CLI·사용자 지정 엔드포인트·레지스트리 계정 팀장을 받고, 워커와 다른 계정이어도 된다

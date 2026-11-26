@@ -1,4 +1,5 @@
-import { interruptedPiRequest, PI_RUN_IN_FLIGHT } from "./aiPiRunInterrupted";
+import { interruptedPiRun } from "./aiPiRunInterrupted";
+import { appliedByInterruptedRun, inFlightMarkerText, readResumeMemory, resumeTaskText } from "@/ai/piAgent/runResume";
 import type { ActivityVisual } from "@/ai/activityVisual";
 import { conversationScroll, followConversationLog } from "./aiConversationScroll";
 import { startAiCanvasProgress, type AiCanvasProgress } from "@/editor/aiCanvasProgress";
@@ -1247,14 +1248,28 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshExportButton();
     syncConversationState();
     if (source === "manual") appendBubble("system", "이전 대화를 열었습니다.");
-    const interrupted = interruptedPiRequest(record.entries);
+    const interrupted = interruptedPiRun(record.entries);
     if (interrupted !== null) {
       // 앱이 실행 도중 꺼졌다. 부팅 때 저절로 다시 보내지 않는다(아래 restoreLatestForBoot 주석) — 사용자가 고른다.
       clearRecovery();
-      const notice = el("div", { class: "ai-retry-row", dataset: { testid: "ai-run-recovery", state: "interrupted" },
-        children: [el("span", { text: "앱이 꺼져 이 실행이 중단됐습니다. 이미 적용된 단계는 프로젝트에 남아 있습니다." })] });
+      // 이어 하기(#5239): 단일 실행이면 프로젝트에 실린 진행 기록(assistantTodo.memory.resume)으로 남은 일만 잇는다. 팀 실행은 아직 다시 보내기만.
+      const journal = interrupted.journal?.mode === "single" ? interrupted.journal : null;
+      const applied = journal ? appliedByInterruptedRun(journal, readResumeMemory(store.getCurrent().assistantTodo)) : 0;
+      const notice = el("div", { class: "ai-retry-row", dataset: { testid: "ai-run-recovery", state: "interrupted", applied: String(applied) },
+        children: [el("span", { text: applied > 0
+          ? `앱이 꺼져 이 실행이 중단됐습니다. 적용된 단계 ${applied}개는 프로젝트에 남아 있고, 이어 하기는 남은 일만 합니다.`
+          : "앱이 꺼져 이 실행이 중단됐습니다. 이미 적용된 단계는 프로젝트에 남아 있습니다." })] });
+      if (journal) {
+        notice.append(el("button", { text: "이어 하기", attrs: { type: "button" }, dataset: { testid: "ai-run-resume" },
+          on: { click: () => {
+            clearRecovery();
+            const text = resumeTaskText(journal, applied);
+            pendingResume = { from: journal.key, task: text.trim() };
+            input.value = text; input.dispatchEvent(new Event("input")); void send();
+          } } }));
+      }
       notice.append(el("button", { text: "다시 보내기", attrs: { type: "button" }, dataset: { testid: "ai-run-resend" },
-        on: { click: () => { clearRecovery(); input.value = interrupted; input.dispatchEvent(new Event("input")); void send(); } } }));
+        on: { click: () => { clearRecovery(); input.value = interrupted.request; input.dispatchEvent(new Event("input")); void send(); } } }));
       recoveryNotice = notice;
       log.append(notice);
       followConversationLog(log);
@@ -2293,6 +2308,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     ...(opts?.initialToolNames ? { initialToolNames: opts.initialToolNames } : {}),
     ...(opts?.intentNote ? { intentNote: opts.intentNote } : {}),
   } : {};
+  /** «이어 하기» 단추가 평소 전송 경로(맵 소유권·분류)로 보낸 요청 — 같은 글의 runPiTurn 이 한 번 가져간다. */
+  let pendingResume: { readonly from: string; readonly task: string } | null = null;
   const runPiTurn = async (command: ParsedPiCommand, displayText: string, plan: PiRunPlan | null, opts?: { readonly questionPromoted?: boolean; readonly slotClaimed?: boolean; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null;
     /** 보낸 문장 말풍선을 send() 가 분류 전에 이미 붙였다. */
     readonly echoed?: boolean;
@@ -2324,7 +2341,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const entries = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])];
       return entries.some((entry) => entry.kind === "user" && entry.text === turnUserEntry.text) ? entries : [...entries, turnUserEntry];
     };
-    persistConversation({ id: turnConversation0, scope: turnScope0, entries: [...settledTurnEntries(), { kind: "status", text: PI_RUN_IN_FLIGHT, at: turnUserEntry.at }] });
+    // 표지에 이어 하기 기록을 붙인다(src/ai/piAgent/runResume.ts) — 같은 열쇠를 워커가 적용 호출 기록과 함께 프로젝트에 싣는다.
+    const resumeFrom = pendingResume && pendingResume.task === command.task ? pendingResume.from : undefined;
+    pendingResume = null;
+    const runResumeKey = crypto.randomUUID();
+    const inFlight = inFlightMarkerText({ key: runResumeKey, task: command.task, ...(displayText && displayText !== command.task ? { shown: displayText } : {}),
+      mode: command.mode === "team" ? "team" : "single", ...(command.mapIds.length ? { mapIds: [...command.mapIds] } : {}), startedAt: Date.now() });
+    persistConversation({ id: turnConversation0, scope: turnScope0, entries: [...settledTurnEntries(), { kind: "status", text: inFlight, at: turnUserEntry.at }] });
     if (opts?.questionPromoted) appendBubble("system", "프로젝트를 바꾸지 않고 확인해서 답할게요.");
     const progress = canvasProgress ?? startAiCanvasProgress(displayText || command.task);
     canvasProgress = progress;
@@ -2433,6 +2456,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         },
       }, {
         ...piRunOptionsFor(plan, opts),
+        resume: { key: runResumeKey, ...(resumeFrom ? { from: resumeFrom } : {}) },
         ...(opts?.images?.length ? { userImages: opts.images } : {}),
         ...(command.goalMode ? { maxTurns: GOAL_MAX_TURNS, timeoutMs: GOAL_TIMEOUT_MS } : {}),
         // 다듬기: 바퀴마다 모델 차례가 10~20번 든다 — 차례·시간 상한을 다듬기 한도에 맞춘다.
