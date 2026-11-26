@@ -13717,6 +13717,14 @@
     "cc0-sound-monster-hm-rock-smash",
     "cc0-sound-monster-hm-cut",
     "cc0-sound-monster-hm-surf",
+    "cc0-sound-mk-op-dread",
+    "cc0-sound-mk-op-doors",
+    "cc0-sound-mk-op-scratch",
+    "cc0-sound-mk-op-vanish",
+    "cc0-sound-mk-op-fluoro",
+    "cc0-sound-mk-op-room",
+    "cc0-sound-mk-op-sad-horn",
+    "cc0-sound-mk-op-mailslot",
     "cc0-sound-puzzle-secret-solved",
     "cc0-sound-puzzle-stone-push",
     "cc0-sound-puzzle-plate-press",
@@ -13836,7 +13844,7 @@
   "tags": {
    "div": 13,
    "label": 2,
-   "option": 419,
+   "option": 427,
    "select": 2,
    "small": 1,
    "span": 1
@@ -14445,7 +14453,8 @@
   },
   "selectOptions": {
    "set-event-location-event-select": [
-    ""
+    "",
+    "this-event"
    ],
    "set-event-location-map-select": [
     "",
@@ -14456,7 +14465,7 @@
   "tags": {
    "div": 16,
    "input": 2,
-   "option": 3,
+   "option": 4,
    "p": 3,
    "select": 2,
    "span": 8
@@ -14521,16 +14530,18 @@
   },
   "selectOptions": {
    "swap-event-location-event-a": [
-    ""
+    "",
+    "this-event"
    ],
    "swap-event-location-event-b": [
-    ""
+    "",
+    "this-event"
    ]
   },
   "labels": [],
   "tags": {
    "div": 12,
-   "option": 2,
+   "option": 4,
    "p": 3,
    "select": 2,
    "span": 8
@@ -19628,6 +19639,14 @@
     "cc0-sound-monster-hm-rock-smash",
     "cc0-sound-monster-hm-cut",
     "cc0-sound-monster-hm-surf",
+    "cc0-sound-mk-op-dread",
+    "cc0-sound-mk-op-doors",
+    "cc0-sound-mk-op-scratch",
+    "cc0-sound-mk-op-vanish",
+    "cc0-sound-mk-op-fluoro",
+    "cc0-sound-mk-op-room",
+    "cc0-sound-mk-op-sad-horn",
+    "cc0-sound-mk-op-mailslot",
     "cc0-sound-puzzle-secret-solved",
     "cc0-sound-puzzle-stone-push",
     "cc0-sound-puzzle-plate-press",
@@ -19746,7 +19765,7 @@
    "div": 15,
    "input": 2,
    "label": 4,
-   "option": 747,
+   "option": 755,
    "select": 2,
    "small": 1,
    "span": 1

@@ -3214,7 +3214,7 @@
    "input": 21,
    "label": 23,
    "legend": 5,
-   "option": 420,
+   "option": 421,
    "path": 1,
    "polyline": 1,
    "section": 1,
@@ -3404,9 +3404,9 @@
   },
   "selectOptions": {
    "event-page-move-route-graphic-select": [
-    "<378개>",
+    "<379개>",
     "",
-    "tex_oprn_charset_refmap_doll321"
+    "tex_oprn_charset_fallen_mirror1"
    ],
    "event-page-move-route-npc-target-direction": [
     "down",
@@ -3480,7 +3480,7 @@
    "드묾",
    "말 거리",
    "매우 자주",
-   "모습(직접 입력)Actor# (Actor)Actor# (Actor)Actor# (Actor)Actor# (Actor)Animal (Animal)Monster# (Monster)Monster# (Monster)Monster# (Monster)Object# (Object)Object# (Object)People# (People)People# (People)People# (People)People# (People)People# (People)Template (Template)Vehicles (Vehicles)scarloxy-charset-people# (Scarloxy)scarloxy-charset-people# (Scarloxy)chicken (Farm)cow (Farm)Monster# (Monster)Monster# (Monster)Monster# (Monster)dawning-skybirds (Monster)chips-# (Monster)chips-# (Monster)chips-# (Monster)chips-# (Monster)chips-# (Monster)chips-# (Monster)chips-# (Monster)chips-# (Monster)Wizarding# (Wizarding)Wizarding# (Wizarding)Wizarding# (Wizarding)Wizarding# (Wizarding)Wizarding# (Wizarding)Heroes# (Heroes)Modern# (Modern)Modern# (Modern)Modern# (Modern)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)People# (People)",
+   "모습(직접 입력)Actor# (Actor)Actor# (Actor)Actor# (Actor)Actor# (Actor)Animal (Animal)Monster# (Monster)Monster# (Monster)Monster# (Monster)Object# (Object)Object# (Object)People# (People)People# (People)People# (People)People# (People)People# (People)Template (Template)Vehicles (Vehicles)scarloxy-charset-people# (Scarloxy)scarloxy-charset-people# (Scarloxy)chicken (Farm)cow (Farm)Monster# (Monster)Monster# (Monster)Monster# (Monster)dawning-skybirds (Monster)chips-# (Monster)chips-# (Monster)chips-# (Monster)chips-# (Monster)chips-# (Monster)chips-# (Monster)chips-# (Monster)chips-# (Monster)Wizarding# (Wizarding)Wizarding# (Wizarding)Wizarding# (Wizarding)Wizarding# (Wizarding)Wizarding# (Wizarding)Heroes# (Heroes)Modern# (Modern)Modern# (Modern)Modern# (Modern)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)ScarloxyPeople# (ScarloxyPeople)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)RefmapDoll# (RefmapDoll)FallenMirror# (OPRN 기물)People# (People)",
    "모습: People# (People)",
    "반복 실행",
    "보통",
@@ -3551,6 +3551,7 @@
    "event-graphic-resource-tex_farming_charset_chicken",
    "event-graphic-resource-tex_farming_charset_cow",
    "event-graphic-resource-tex_oprn_charset_dawning_skybirds",
+   "event-graphic-resource-tex_oprn_charset_fallen_mirror1",
    "event-graphic-resource-tex_oprn_charset_harness_monster1",
    "event-graphic-resource-tex_oprn_charset_harness_monster2",
    "event-graphic-resource-tex_oprn_charset_harness_monster3",
@@ -3970,7 +3971,7 @@
    "primary"
   ],
   "tags": {
-   "button": 390,
+   "button": 391,
    "details": 1,
    "div": 16,
    "fieldset": 2,
@@ -3981,7 +3982,7 @@
    "p": 3,
    "path": 1,
    "section": 1,
-   "span": 379,
+   "span": 380,
    "summary": 1,
    "svg": 1
   },
@@ -4018,6 +4019,7 @@
    "event-graphic-resource-tex_farming_charset_chicken": "button",
    "event-graphic-resource-tex_farming_charset_cow": "button",
    "event-graphic-resource-tex_oprn_charset_dawning_skybirds": "button",
+   "event-graphic-resource-tex_oprn_charset_fallen_mirror1": "button",
    "event-graphic-resource-tex_oprn_charset_harness_monster1": "button",
    "event-graphic-resource-tex_oprn_charset_harness_monster2": "button",
    "event-graphic-resource-tex_oprn_charset_harness_monster3": "button",
@@ -4425,6 +4427,7 @@
    "event-graphic-resource-tex_farming_charset_chicken": "button[button]{}",
    "event-graphic-resource-tex_farming_charset_cow": "button[button]{}",
    "event-graphic-resource-tex_oprn_charset_dawning_skybirds": "button[button]{}",
+   "event-graphic-resource-tex_oprn_charset_fallen_mirror1": "button[button]{}",
    "event-graphic-resource-tex_oprn_charset_harness_monster1": "button[button]{}",
    "event-graphic-resource-tex_oprn_charset_harness_monster2": "button[button]{}",
    "event-graphic-resource-tex_oprn_charset_harness_monster3": "button[button]{}",
@@ -4825,8 +4828,8 @@
    "태그, 쉼표로 구분",
    "패턴"
   ],
-  "testidCount": 409,
-  "controlCount": 400,
+  "testidCount": 410,
+  "controlCount": 401,
   "classCount": 38,
   "rootCount": 1
  },
@@ -5524,6 +5527,7 @@
    "event-command-edit-dialog",
    "event-command-edit-form",
    "event-command-edit-ok",
+   "event-command-edit-required",
    "event-command-edit-summary",
    "event-command-preview",
    "event-command-preview-body",
@@ -5609,6 +5613,7 @@
    "event-command-text-voice-pick"
   ],
   "classes": [
+   "battle-processing-warning",
    "body",
    "btn",
    "cream-command-form",
@@ -5633,6 +5638,7 @@
    "event-command-edit-body",
    "event-command-edit-columns",
    "event-command-edit-dialog",
+   "event-command-edit-required",
    "event-command-preview",
    "event-command-preview-panel",
    "event-command-text-advanced",
@@ -5700,7 +5706,7 @@
   "tags": {
    "button": 60,
    "details": 2,
-   "div": 55,
+   "div": 56,
    "h3": 1,
    "input": 6,
    "label": 7,
@@ -5724,6 +5730,7 @@
    "event-command-edit-dialog": "div",
    "event-command-edit-form": "div",
    "event-command-edit-ok": "button",
+   "event-command-edit-required": "div",
    "event-command-edit-summary": "div",
    "event-command-preview": "div",
    "event-command-preview-body": "div",
@@ -6008,9 +6015,9 @@
    "화자·프로젝트 기본",
    "흔들 태그"
   ],
-  "testidCount": 90,
+  "testidCount": 91,
   "controlCount": 72,
-  "classCount": 87,
+  "classCount": 89,
   "rootCount": 1
  },
  "commandListContextMenu": {

@@ -3994,9 +3994,15 @@
    "event-condition-form",
    "event-condition-hint",
    "event-condition-mode",
+   "event-condition-sees-dark",
+   "event-condition-sees-doors",
    "event-condition-sees-event",
+   "event-condition-sees-night",
    "event-condition-sees-range",
    "event-condition-sees-value",
+   "event-condition-sees-watch-character",
+   "event-condition-sees-watch-location",
+   "event-condition-sees-watch-name",
    "event-fork-body-hint",
    "event-fork-branch-summary",
    "event-fork-condition-title",
@@ -4032,9 +4038,15 @@
   ],
   "controls": {
    "event-condition-mode": "select{}",
+   "event-condition-sees-dark": "input[number]{}",
+   "event-condition-sees-doors": "select{}",
    "event-condition-sees-event": "input[text]{}",
+   "event-condition-sees-night": "input[number]{}",
    "event-condition-sees-range": "input[number]{}",
    "event-condition-sees-value": "select{}",
+   "event-condition-sees-watch-character": "input[text]{}",
+   "event-condition-sees-watch-location": "input[text]{}",
+   "event-condition-sees-watch-name": "input[text]{}",
    "event-fork-else-enabled": "input[checkbox]{checked}"
   },
   "selectOptions": {
@@ -4077,6 +4089,10 @@
     "any",
     "not"
    ],
+   "event-condition-sees-doors": [
+    "true",
+    "false"
+   ],
    "event-condition-sees-value": [
     "true",
     "false"
@@ -4084,19 +4100,25 @@
   },
   "labels": [
    "거리(칸)",
+   "닫힌 문시선을 막음막지 않음",
+   "또는 이름에",
+   "또는 인물 키",
+   "또는 장소 안",
+   "밤 거리(칸)",
    "보는 이벤트 id",
+   "어둠 거리(칸)",
    "조건이 맞지 않을 때 처리 (그 외 분기)",
    "판정보임안 보임"
   ],
   "tags": {
    "div": 15,
-   "input": 3,
-   "label": 5,
-   "option": 39,
+   "input": 8,
+   "label": 11,
+   "option": 41,
    "p": 2,
    "section": 2,
-   "select": 2,
-   "span": 5
+   "select": 3,
+   "span": 11
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
@@ -4109,9 +4131,15 @@
    "event-condition-form": "div",
    "event-condition-hint": "p",
    "event-condition-mode": "select",
+   "event-condition-sees-dark": "input",
+   "event-condition-sees-doors": "select",
    "event-condition-sees-event": "input",
+   "event-condition-sees-night": "input",
    "event-condition-sees-range": "input",
    "event-condition-sees-value": "select",
+   "event-condition-sees-watch-character": "input",
+   "event-condition-sees-watch-location": "input",
+   "event-condition-sees-watch-name": "input",
    "event-fork-body-hint": "p",
    "event-fork-branch-summary": "div",
    "event-fork-condition-title": "div",
@@ -4123,14 +4151,14 @@
    "event-command-edit-summary": "조건 분기",
    "event-condition-eval-badge": "판정 불가",
    "event-condition-eval-summary": "ev_probe이(가) 주인공을 봄 (#칸)",
-   "event-condition-hint": "이벤트(집주인·경비)가 지금 주인공을 볼 수 있는지 봅니다. 같은 방(맵 장소 사각형) 안에서, 바라보는 쪽 앞 시야 범위 이내일 때 참. 방 밖이면 거짓. 훔쳐보기·들키기 판정에 씁니다.",
+   "event-condition-hint": "이벤트(집주인·경비)가 지금 주인공을 볼 수 있는지 봅니다. 같은 방(맵 장소 사각형) 안에서, 바라보는 쪽 앞 시야 범위 이내일 때 참. 방 밖·벽 너머면 거짓. 훔쳐보기·들키기 판정에 씁니다. id 대신 인물 키·이름 낱말·장소로 «그 중 누구든»을 고를 수 있고, 닫힌 문·밤·어둠에 시야를 줄일 수 있습니다(비워 두면 그대로).",
    "event-fork-body-hint": "조건이 맞을 때/맞지 않을 때 안의 명령은 왼쪽 목록에서 고칩니다.",
    "event-fork-branch-summary": "조건이 맞을 때 · #개 명령조건이 맞지 않을 때 · #개 명령",
    "event-fork-summary-else": "조건이 맞지 않을 때 · #개 명령",
    "event-fork-summary-then": "조건이 맞을 때 · #개 명령"
   },
-  "testidCount": 19,
-  "controlCount": 5
+  "testidCount": 25,
+  "controlCount": 11
  },
  "fork:clearCount": {
   "testids": [
