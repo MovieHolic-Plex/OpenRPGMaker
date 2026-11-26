@@ -8,6 +8,7 @@ import { wantsWholeGame } from "@/ai/v2/request/readers";
 import { isFreshProject } from "@/ai/v2/request/scope";
 import { isGoalCommand } from "./goalCommand";
 import { isMonsterRequestTurn } from "./monsterGameRequest";
+import { deckFor } from "@/ai/variation/pick";
 
 export interface FirstMvpRoute {
   /** 빈 프로젝트에서 게임 하나를 만드는 첫 요청이다(작업 카드의 «MVP까지 만들었어요» 문구). */
@@ -17,7 +18,7 @@ export interface FirstMvpRoute {
 }
 
 /**
- * 빈 프로젝트(이벤트·엔딩 없음)에서 게임 하나를 만들라는 요청은 첫 MVP 다 — 팀으로 돈다(몬스터 수집은 v2 단일).
+ * 빈 프로젝트(이벤트·엔딩 없음)에서 게임 하나를 만들라는 요청은 첫 MVP 다 — JRPG 모험·회상은 팀, 나머지 장르(몬스터 수집 포함)는 v2 단일.
  * 장르 프리셋 첫 요청도 팀이다. /goal 은 자기 경로(장기 캠페인 팀)가 따로 정한다.
  */
 export function firstMvpRoute(project: Pick<Project, "maps" | "endings"> & { readonly system?: Pick<Project["system"], "genre"> }, text: string): FirstMvpRoute {
@@ -27,9 +28,13 @@ export function firstMvpRoute(project: Pick<Project, "maps" | "endings"> & { rea
   // 2026-11-26 team-mvp-revive-r3: 팀이 세계 뼈대를 런타임 생성기로 짓고(teamMvpPrebuild.ts) 첫 MVP 관문을 지키며 단일보다 빨랐다 — 몬스터 수집은 자기 캐페인 경로라 단일을 유지한다.
   if (wantsWholeGame(text)) {
     const monster = project.system?.genre === "monster-collect" || isMonsterRequestTurn(text);
-    return monster
-      ? { firstMvp: true, team: false, why: "monster-collect first build stays on the v2 single campaign path" }
-      : { firstMvp: true, team: true, why: "whole game on a fresh project: team prebuilds the world and keeps the first-MVP gates" };
+    if (monster) return { firstMvp: true, team: false, why: "monster-collect first build stays on the v2 single campaign path" };
+    // 팀은 첫 MVP 3연속 합격을 잰 장르(JRPG 모험 · 회상)만 — 호러는 팀 2/2 가 끝 지점에 못 닿은 채 관문 두 번 거절 뒤 나갔다(2026-11-26 variant-remeasure after3).
+    // 장르를 못 가르거나 다른 장르(호러·연애·추리·감동)는 v2 단일로 둔다.
+    const deck = deckFor(text, true)?.id;
+    return deck === "recall" || deck === "adventure"
+      ? { firstMvp: true, team: true, why: `whole game on a fresh project (${deck}): team prebuilds the world and keeps the first-MVP gates` }
+      : { firstMvp: true, team: false, why: `whole game on a fresh project (${deck ?? "no genre"}): v2 single until the team path is measured for this genre` };
   }
   return { firstMvp: false, team: false, why: "not a whole-game request" };
 }
