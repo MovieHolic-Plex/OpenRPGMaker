@@ -72,7 +72,10 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
   }
   const restoredScrollTop = listScrollTopForCollection("items");
   const initial = entries();
-  const selected = initial.find(isSelected) ?? initial.find((entry) => entry.collection === session.collection) ?? initial[0];
+  // 장비로 가는 길(장비 탭 바로가기·무기 종류 아이템의 문)은 거르기를 장비로 둔다. 「이 게임 것만」 범위에 장비가 하나도
+  // 없을 때 첫 아이템을 고르면 그 길이 조용히 아이템으로 되돌아간다(#5026 뒤 회귀). 그때는 고르지 않고 빈 장비 목록을 보인다.
+  const selected = initial.find(isSelected) ?? initial.find((entry) => entry.collection === session.collection)
+    ?? (session.filter === "all" ? initial[0] : undefined);
   if (selected) setSelectedRecordId(selected.collection, selected.record.id);
   const detail = el("div", { class: "db-detail-pane oprn-record-detail-pane db-catalog-detail" });
   const rows = el("div", { class: "db-list db-ws-list db-catalog-rows", dataset: { testid: "db-catalog-rows" },
