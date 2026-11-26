@@ -22,6 +22,11 @@ run-name: "ci-vitest-files ${{ inputs.files }}"
 #   main·diag/*·fix/* 같은 agent/ 가 아닌 ref 는 예전처럼 vitest 실패가 곧 실행 실패다.
 #   설정 스텝(files 검사·bun·python·npm ci·playwright)의 실패는 어느 ref 에서도 실행 실패다 — continue-on-error 는 vitest 스텝에만 건다.
 #
+# 조각 (2026-11-26 test-diet-r3): `-f shards=N`(1~8, 기본 1)이면 같은 파일 목록을 vitest --shard i/N 으로 나눠 잡 N개로 돌린다.
+#   왜: 호스티드 러너는 워커 1개라(cgroup 4코어/11GiB) 파일 178개 쌍 실행 한 판이 약 1시간 걸렸다. 조각 4~6이면 판당 15분 안쪽.
+#   조각마다 끝줄 다섯을 따로 찍는다 — Tests 수는 조각 합, VERDICT 는 조각 모두 CLEAN 이어야 CLEAN 이다.
+#   NOW-PASSING 은 조각에 들지 않은 기준선 파일도 «통과»로 셀 수 있으니 조각 판에서는 읽지 않는다.
+#
 # 끝줄 다섯 (2026-11-15) — 실행 결론은 위 규칙 그대로 두고, `RESULT:` 줄(글자는 그대로) 뒤에 넷을 더 찍는다:
 #   RESULT: PASS n files | RESULT: FAIL n files (a.test.ts, ...)
 #   NEW-FAIL: <이번에 떨어졌고 기준선에 없는 파일>
@@ -46,6 +51,11 @@ on:
         required: false
         type: boolean
         default: false
+      shards:
+        description: "조각 수(1~8). 파일 목록을 vitest --shard i/N 으로 나눠 잡 N개로 돌린다 — 조각마다 끝줄 다섯을 따로 찍는다"
+        required: false
+        type: number
+        default: 1
 
 concurrency:
   group: ci-vitest-files-${{ github.ref_name }}
@@ -68,7 +78,15 @@ jobs:
       actions: read
     outputs:
       covered: ${{ steps.check.outputs.covered }}
+      shards: ${{ steps.shards.outputs.list }}
     steps:
+      # 조각 목록 [1..N] (N = inputs.shards, 1~8 로 자른다) — vitest 잡의 matrix 가 쓴다.
+      - id: shards
+        env:
+          N: ${{ inputs.shards }}
+        run: |
+          n=${N:-1}; [ "$n" -ge 1 ] 2>/dev/null || n=1; [ "$n" -le 8 ] || n=8
+          echo "list=[$(seq -s, 1 "$n")]" >> "$GITHUB_OUTPUT"
       - id: check
         env:
           GH_TOKEN: ${{ github.token }}
@@ -115,8 +133,13 @@ jobs:
   vitest:
     needs: covered
     if: needs.covered.outputs.covered != 'true'
+    name: vitest (${{ matrix.shard }}/${{ inputs.shards || 1 }})
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: ${{ fromJSON(needs.covered.outputs.shards || '[1]') }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
@@ -159,12 +182,16 @@ jobs:
         continue-on-error: ${{ startsWith(github.ref_name, 'agent/') }}
         env:
           FILES: ${{ inputs.files }}
+          SHARD: ${{ matrix.shard }}
+          SHARDS: ${{ inputs.shards || 1 }}
         run: |
           set -euo pipefail
           # 마지막 스텝이 실패한 파일 이름을 읽도록 로그를 남긴다. pipefail 이라 vitest 종료 코드는 그대로 전달된다.
           # JSON 리포트는 마지막 스텝이 «무엇이 돌았고 무엇이 떨어졌나» 를 읽는 데 쓴다(verify-gates 와 같은 조합 — verbose 출력은 그대로다).
           # shellcheck disable=SC2086 — 공백으로 나눈 목록을 인자로 펼친다.
-          node scripts/run-vitest.mjs run --configLoader bundle --reporter=verbose --reporter=json --outputFile "$RUNNER_TEMP/vitest.json" --maxWorkers=4 --minWorkers=1 $FILES 2>&1 | tee "$RUNNER_TEMP/vitest.log"
+          shard=()
+          if [ "$SHARDS" -gt 1 ]; then shard=(--shard="$SHARD/$SHARDS" --passWithNoTests); fi
+          node scripts/run-vitest.mjs run --configLoader bundle --reporter=verbose --reporter=json --outputFile "$RUNNER_TEMP/vitest.json" --maxWorkers=4 --minWorkers=1 "${shard[@]}" $FILES 2>&1 | tee "$RUNNER_TEMP/vitest.log"
 
       # 결과 — 로그의 끝줄 다섯(RESULT · NEW-FAIL · KNOWN-FAIL · NOW-PASSING · VERDICT), 요약, 주석. 이 스텝 자체는 실패하지 않는다.
       # vitest 스텝이 skipped 면 앞선 설정 스텝이 이미 실행을 실패시킨 것이므로 그 사실만 적는다.
