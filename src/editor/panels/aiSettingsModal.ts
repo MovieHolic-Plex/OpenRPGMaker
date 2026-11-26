@@ -1292,7 +1292,8 @@ export function renderAiSettingsForm(options: {
       settingsSection("work", "작업 방식", "", [
         autonomyRow, applyRow, externalAgentRow, piTeam.row, imagePlanCountRow, maxTokens.row, reasoningRow, agentModeRow,
       ]),
-      settingsSection("image", "그림 제공자", "", [imageSource.element]),
+      // 섹션 제목과 행 제목이 「제공자 제공자」로 읽혔다(2026-11-26 QA vm-qa15 #87).
+      settingsSection("image", "그림 생성", "", [imageSource.element]),
       ...(options.extraSections ?? []).map(section => settingsSection(section.id, section.title, section.description, [section.content])),
     ]),
     display: settingsPane("display", [

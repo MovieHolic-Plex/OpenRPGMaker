@@ -153,7 +153,7 @@ export function renderAiRoleMatrixSettings(onChange: () => void, onApplyMain?: (
     }
     const families = [...new Set(available.map((route) => FAMILY_LABEL[route.provider]))];
     summary.textContent = available.length
-      ? `연결된 계정: ${families.join(" · ")} — 역할 ${filled}/${ASSISTANT_ROLES.length}개를 채웠습니다.`
+      ? `역할을 맡길 수 있는 모델: ${families.join(" · ")} — 역할 ${filled}/${ASSISTANT_ROLES.length}개를 채웠습니다.`
       : "연결된 계정이 없습니다 — 첫 화면 「계정 추가」에서 계정을 하나 연결하면 역할이 자동으로 채워집니다.";
   };
 

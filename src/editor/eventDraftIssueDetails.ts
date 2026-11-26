@@ -19,16 +19,21 @@ const RULES: Readonly<Record<string, readonly [string, string, string, string]>>
   "callMapEvent.target-page-empty": ["이 이벤트를 부르는 맵 위 이벤트 부르기가 있는데 실행 명령이 없습니다.", "소리·전이 등 실행될 명령", "문 본체에 열기 명령을 다시 입력하거나 부르는 명령을 제거하세요.", "event-page-tab-add"],
 };
 
-const REFERENCE_TYPES = new Set(["actor", "animation", "class", "common-event", "ending", "equipment", "event",
-  "faction", "item", "life-skill", "map", "recipe", "resource", "skill", "species", "switch", "troop", "upgrade", "variable"]);
+// 화면에 나가는 낱말이다 — 영문 종류 이름(switch 등)을 그대로 보이지 않는다(2026-11-26 QA vm-qa15 #95).
+const REFERENCE_LABELS: Readonly<Record<string, string>> = {
+  actor: "배우", animation: "애니메이션", class: "직업", "common-event": "공통 이벤트", ending: "엔딩", equipment: "장비",
+  event: "이벤트", faction: "세력", item: "아이템", "life-skill": "생활 기술", map: "맵", recipe: "제작법", resource: "리소스",
+  skill: "스킬", species: "종족", switch: "스위치", troop: "적 그룹", upgrade: "강화", variable: "변수",
+};
 
 export function eventDraftRuleGuidance(code: string) {
   const rule = RULES[code];
   if (rule) return { code, cause: rule[0], expected: rule[1], hint: rule[2], testId: rule[3] };
   const reference = /^reference\.([a-z-]+)\.missing$/u.exec(code)?.[1];
-  if (reference && REFERENCE_TYPES.has(reference)) return {
-    code, cause: "필수 참조가 비어 있거나 대상이 삭제되었습니다.", expected: `현재 프로젝트에 있는 ${reference} 참조`,
-    hint: "해당 선택기에서 존재하는 대상을 다시 선택하세요.", testId: "event-inspector-body",
+  const label = reference ? REFERENCE_LABELS[reference] : undefined;
+  if (label) return {
+    code, cause: "필수 참조가 비어 있거나 대상이 삭제되었습니다.", expected: `프로젝트에 있는 ${label}`,
+    hint: `이 칸의 목록에서 ${label} 하나를 다시 고르세요.`, testId: "event-inspector-body",
   };
   // Unknown/advisory rules never echo arbitrary input into a handoff.
   return { code: "validation.advisory", cause: "이벤트 설정을 검토해야 합니다.", expected: "의도한 실행 조건과 지원 명령",

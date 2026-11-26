@@ -73,7 +73,7 @@ export function renderAiSettingsOverview(): { readonly element: HTMLElement; rea
 
     const connected = lastAutoRoutes().filter((route) => route.connected);
     if (!connected.length) {
-      accounts.replaceChildren(el("li", { class: "ai-settings-accounts-empty", text: "연결된 계정이 없어요. 아래에서 계정을 연결하세요." }));
+      accounts.replaceChildren(el("li", { class: "ai-settings-accounts-empty", text: "연결된 계정이 없어요. 로그인이 끝났다면 아래에서 다시 로그인하세요." }));
       return;
     }
     accounts.replaceChildren(...connected.map((route) => {
