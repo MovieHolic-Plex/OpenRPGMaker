@@ -168,7 +168,11 @@
 }
 .fr-bcard-text { display: flex; flex-direction: column; min-width: 0; }
 .fr-bcard-name { overflow: hidden; font-size: var(--font-13); font-weight: var(--font-weight-semibold); white-space: nowrap; text-overflow: ellipsis; }
-.fr-bcard-meta { overflow: hidden; color: var(--text-3); font-size: var(--font-12); white-space: nowrap; text-overflow: ellipsis; }
+/* 장르·플레이 시간은 두 줄까지 감싼다 — 한 줄 말줄임이면 1440 에서도 「약 20…」 처럼 플레이 시간이 잘렸다(vm-qa15 묶음 9). */
+.fr-bcard-meta {
+  display: -webkit-box; overflow: hidden; color: var(--text-3); font-size: var(--font-12); line-height: 1.35;
+  -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow-wrap: anywhere;
+}
 .fr-root ~ .ln-error {
   border: var(--stroke-1) solid var(--border-default); border-radius: var(--radius-3);
   background: var(--bg-overlay); color: var(--danger); font-size: var(--font-13); box-shadow: var(--shadow-pop);
