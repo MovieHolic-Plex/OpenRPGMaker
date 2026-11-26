@@ -12,6 +12,7 @@ import { normalizeChapterSettings, normalizeNewGamePlusSettings } from "@/projec
 import { normalizePartyBonds } from "@/project/partyBonds";
 import { normalizeSeCues } from "@/project/seCues";
 import type { Command, Condition, GameMap, Project } from "@/project/types";
+import { SW_FROST_ARRIVE, SW_HARMA } from "./frostford";
 
 type Exec = (project: Project, name: string, args: Record<string, unknown>) => unknown;
 type Rec = Record<string, unknown>;
@@ -49,35 +50,56 @@ function journalWrite(lineId: string, writer: string, date: string, text: string
   } as unknown as Command;
 }
 
-/** Command 목록 트리를 순회하며 특정 스위치를 켜는 setSwitch 직후에 명령을 1회 끼워 넣는다. */
+/** Command 목록 트리를 순회하며 각 페이지(경로)마다 특정 스위치를 켜는 setSwitch 직후에 명령을 1회 끼워 넣는다. */
 function injectAfterSetSwitch(map: GameMap | undefined, switchId: string, insert: Command[], markerId: string): boolean {
   if (!map) return false;
-  let injected = false;
-  const walk = (list: Command[]): void => {
-    for (let i = 0; i < list.length; i += 1) {
-      const cmd = list[i] as unknown as Rec;
-      if (cmd?.kind === "m2Command" && (cmd.fields as Rec | undefined)?.lineId === markerId) return;
-      if (cmd?.kind === "setSwitch" && cmd.switchId === switchId && cmd.value !== false && !injected) {
-        list.splice(i + 1, 0, ...insert);
-        injected = true;
-        i += insert.length;
-        continue;
-      }
+  let anyInjected = false;
+  const hasMarker = (list: Command[]): boolean => {
+    for (const raw of list) {
+      const cmd = raw as unknown as Rec;
+      if (cmd?.kind === "m2Command" && (cmd.fields as Rec | undefined)?.lineId === markerId) return true;
       for (const key of ["then", "else", "cancelBranch", "commands"]) {
-        if (Array.isArray(cmd?.[key])) walk(cmd[key] as Command[]);
+        if (Array.isArray(cmd?.[key]) && hasMarker(cmd[key] as Command[])) return true;
       }
       if (Array.isArray(cmd?.options)) {
         for (const opt of cmd.options as { branch?: Command[] }[]) {
-          if (Array.isArray(opt.branch)) walk(opt.branch);
+          if (Array.isArray(opt.branch) && hasMarker(opt.branch)) return true;
         }
       }
     }
+    return false;
+  };
+  const walkTree = (root: Command[]): void => {
+    if (hasMarker(root)) return;
+    let pageInjected = false;
+    const walk = (list: Command[]): void => {
+      for (let i = 0; i < list.length; i += 1) {
+        const cmd = list[i] as unknown as Rec;
+        if (cmd?.kind === "setSwitch" && cmd.switchId === switchId && cmd.value !== false && !pageInjected) {
+          const cloned = insert.map((c) => JSON.parse(JSON.stringify(c)) as Command);
+          list.splice(i + 1, 0, ...cloned);
+          pageInjected = true;
+          anyInjected = true;
+          i += cloned.length;
+          continue;
+        }
+        for (const key of ["then", "else", "cancelBranch", "commands"]) {
+          if (Array.isArray(cmd?.[key])) walk(cmd[key] as Command[]);
+        }
+        if (Array.isArray(cmd?.options)) {
+          for (const opt of cmd.options as { branch?: Command[] }[]) {
+            if (Array.isArray(opt.branch)) walk(opt.branch);
+          }
+        }
+      }
+    };
+    walk(root);
   };
   for (const event of map.events) {
-    for (const page of event.pages ?? []) walk(page.commands as Command[]);
-    if (Array.isArray(event.commands)) walk(event.commands as Command[]);
+    for (const page of event.pages ?? []) walkTree(page.commands as Command[]);
+    if (Array.isArray(event.commands)) walkTree(event.commands as Command[]);
   }
-  return injected;
+  return anyInjected;
 }
 
 function applySeCues(project: Project): void {
@@ -197,7 +219,7 @@ function applyCrossActJournal(project: Project): void {
   // 2막 서리나루 — 하르마에게 세린 이야기를 들음
   injectAfterSetSwitch(
     project.maps.fs2_frostford,
-    "sw_fs2_harma_talked",
+    SW_HARMA,
     [journalWrite("fs2_frostford", "sarah", "서리나루", "발렌 님이 해마다 얼음 위에 등을 띄운다는 걸 오늘 알았다. 세린의 아들이었다.")],
     "fs2_frostford",
   );
@@ -387,7 +409,7 @@ function applyChaptersAndNewGamePlus(project: Project): void {
   injectAfterSetSwitch(project.maps.fs_vault, "sw_fs_vault_seal_open", [setVar(VAR_FS_CHAPTER, 2)], "__ch2__");
   injectAfterSetSwitch(project.maps.fs2_cell, "sw_fs2_act2_started", [setVar(VAR_FS_CHAPTER, 3)], "__ch3__");
   injectAfterSetSwitch(project.maps.fs2_dawnwell, "sw_fs2_serin_form", [setVar(VAR_FS_CHAPTER, 4)], "__ch4__");
-  injectAfterSetSwitch(project.maps.fs2_frostford, "sw_fs2_frost_arrive", [setVar(VAR_FS_CHAPTER, 5)], "__ch5__");
+  injectAfterSetSwitch(project.maps.fs2_frostford, SW_FROST_ARRIVE, [setVar(VAR_FS_CHAPTER, 5)], "__ch5__");
   injectAfterSetSwitch(project.maps.fs2_sky_tower_top, "sw_fs2_top_arrive", [setVar(VAR_FS_CHAPTER, 6)], "__ch6__");
 }
 

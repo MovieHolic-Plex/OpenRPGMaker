@@ -1,6 +1,50 @@
 {
  "effects": [
   {
+   "id": "fallenstar/ash-recall",
+   "category": "fallenstar",
+   "name": "Ash recall",
+   "desc": "A vortex of charcoal ash pulls inward around the target, then detonates in a crimson-ember nova with drifting ash flakes.",
+   "tags": [
+    "fire",
+    "ash",
+    "boss",
+    "aoe",
+    "explosion",
+    "one-shot"
+   ],
+   "size": [
+    220,
+    180
+   ],
+   "origin": [
+    110,
+    138
+   ],
+   "duration": 1.55,
+   "loop": false,
+   "fps": 30,
+   "palette": [
+    "#161314",
+    "#362d2b",
+    "#645652",
+    "#9e3018",
+    "#e8541a",
+    "#ff9a3c",
+    "#ffd88a",
+    "#ffffff"
+   ],
+   "actor": 0,
+   "back": 0,
+   "act": {
+    "windup": 0.5,
+    "recovery": 0,
+    "onBody": false,
+    "hits": 1,
+    "targets": 1
+   }
+  },
+  {
    "id": "fallenstar/falling-star",
    "category": "fallenstar",
    "name": "Falling star",
@@ -89,6 +133,138 @@
    }
   },
   {
+   "id": "fallenstar/fourth-answer",
+   "category": "fallenstar",
+   "name": "Fourth answer",
+   "desc": "Four colored starlight streams spiral into the target and erupt in a towering golden-prism beam, dual shockwave rings, and drifting star shards.",
+   "tags": [
+    "star",
+    "holy",
+    "combo",
+    "pillar",
+    "aoe",
+    "one-shot"
+   ],
+   "size": [
+    240,
+    240
+   ],
+   "origin": [
+    120,
+    204
+   ],
+   "duration": 1.85,
+   "loop": false,
+   "fps": 30,
+   "palette": [
+    "#1a1438",
+    "#d0283c",
+    "#8a4fd8",
+    "#6ec8ff",
+    "#ffd86b",
+    "#fff1b8",
+    "#e8fbff",
+    "#ffffff"
+   ],
+   "actor": 0,
+   "back": 0,
+   "act": {
+    "windup": 0.6,
+    "recovery": 0,
+    "onBody": false,
+    "hits": 1,
+    "targets": 1
+   }
+  },
+  {
+   "id": "fallenstar/iris-beam",
+   "category": "fallenstar",
+   "name": "Iris prism beam",
+   "desc": "A violet-cyan geometric lock-on ring snaps onto the target, charges up, and fires a piercing starlight beam that shatters into prism sparks.",
+   "tags": [
+    "beam",
+    "laser",
+    "holy",
+    "scifi",
+    "pierce",
+    "one-shot"
+   ],
+   "size": [
+    220,
+    140
+   ],
+   "origin": [
+    152,
+    86
+   ],
+   "duration": 1.1,
+   "loop": false,
+   "fps": 30,
+   "palette": [
+    "#161036",
+    "#462888",
+    "#8a4fd8",
+    "#48b8e8",
+    "#90f4ff",
+    "#d8fbff",
+    "#f6f0ff",
+    "#ffffff"
+   ],
+   "actor": 0,
+   "back": 0,
+   "act": {
+    "windup": 0.4,
+    "recovery": 0,
+    "onBody": false,
+    "hits": 1,
+    "targets": 1
+   }
+  },
+  {
+   "id": "fallenstar/lance-dive",
+   "category": "fallenstar",
+   "name": "Lance dive",
+   "desc": "A crimson-steel spear plunges steeply from above, slamming into the target with a ruby flare, dual ground shockwaves, and flying stone splinters.",
+   "tags": [
+    "spear",
+    "pierce",
+    "jump",
+    "crimson",
+    "impact",
+    "one-shot"
+   ],
+   "size": [
+    180,
+    220
+   ],
+   "origin": [
+    90,
+    192
+   ],
+   "duration": 1.15,
+   "loop": false,
+   "fps": 30,
+   "palette": [
+    "#26080e",
+    "#6e1424",
+    "#b82438",
+    "#e24858",
+    "#ff8a7a",
+    "#ffd0b8",
+    "#e6eef8",
+    "#ffffff"
+   ],
+   "actor": 0,
+   "back": 0,
+   "act": {
+    "windup": 0.4,
+    "recovery": 0,
+    "onBody": false,
+    "hits": 1,
+    "targets": 1
+   }
+  },
+  {
    "id": "fallenstar/moonlight-breath",
    "category": "fallenstar",
    "name": "Moonlight breath",
@@ -124,66 +300,6 @@
     "#f4fbff",
     "#ffffff"
    ],
-   "actor": 0,
-   "back": 0
-  },
-  {
-   "id": "fallenstar/fourth-answer",
-   "category": "fallenstar",
-   "name": "Fourth answer",
-   "desc": "Four colored starlight streams spiral into the target and erupt in a towering golden-prism beam, dual shockwave rings, and drifting star shards.",
-   "tags": ["star", "holy", "combo", "pillar", "aoe", "one-shot"],
-   "size": [240, 240],
-   "origin": [120, 204],
-   "duration": 1.85,
-   "loop": false,
-   "fps": 30,
-   "palette": ["#1a1438", "#d0283c", "#8a4fd8", "#6ec8ff", "#ffd86b", "#fff1b8", "#e8fbff", "#ffffff"],
-   "actor": 0,
-   "back": 0
-  },
-  {
-   "id": "fallenstar/lance-dive",
-   "category": "fallenstar",
-   "name": "Lance dive",
-   "desc": "A crimson-steel spear plunges steeply from above, slamming into the target with a ruby flare, dual ground shockwaves, and flying stone splinters.",
-   "tags": ["spear", "pierce", "jump", "crimson", "impact", "one-shot"],
-   "size": [180, 220],
-   "origin": [90, 192],
-   "duration": 1.15,
-   "loop": false,
-   "fps": 30,
-   "palette": ["#26080e", "#6e1424", "#b82438", "#e24858", "#ff8a7a", "#ffd0b8", "#e6eef8", "#ffffff"],
-   "actor": 0,
-   "back": 0
-  },
-  {
-   "id": "fallenstar/iris-beam",
-   "category": "fallenstar",
-   "name": "Iris prism beam",
-   "desc": "A violet-cyan geometric lock-on ring snaps onto the target, charges up, and fires a piercing starlight beam that shatters into prism sparks.",
-   "tags": ["beam", "laser", "holy", "scifi", "pierce", "one-shot"],
-   "size": [220, 140],
-   "origin": [152, 86],
-   "duration": 1.1,
-   "loop": false,
-   "fps": 30,
-   "palette": ["#161036", "#462888", "#8a4fd8", "#48b8e8", "#90f4ff", "#d8fbff", "#f6f0ff", "#ffffff"],
-   "actor": 0,
-   "back": 0
-  },
-  {
-   "id": "fallenstar/ash-recall",
-   "category": "fallenstar",
-   "name": "Ash recall",
-   "desc": "A vortex of charcoal ash pulls inward around the target, then detonates in a crimson-ember nova with drifting ash flakes.",
-   "tags": ["fire", "ash", "boss", "aoe", "explosion", "one-shot"],
-   "size": [220, 180],
-   "origin": [110, 138],
-   "duration": 1.55,
-   "loop": false,
-   "fps": 30,
-   "palette": ["#161314", "#362d2b", "#645652", "#9e3018", "#e8541a", "#ff9a3c", "#ffd88a", "#ffffff"],
    "actor": 0,
    "back": 0
   }
