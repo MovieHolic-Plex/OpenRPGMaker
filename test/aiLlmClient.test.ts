@@ -58,7 +58,7 @@ describe("aiConfig 저장/로드", () => {
     vi.stubEnv("VITE_LLM_API_URL", "");
     vi.stubEnv("VITE_LLM_API_KEY", "");
     installLocalStorage();
-    const { loadAiConfig, saveAiConfig, DEFAULT_MAX_TOKENS } = await loadClient();
+    const { loadAiConfig, saveAiConfig, DEFAULT_LITE_MODEL, DEFAULT_MAX_TOKENS, DEFAULT_MODEL } = await loadClient();
     // 공장 기본은 Claude Sonnet 5.5 한 모델이다(#4939) — 옛 상수 DEFAULT_MODEL·DEFAULT_LITE_MODEL(gemini-4-argon)이 아니다.
     const { CLAUDE_DEFAULT_MODEL } = await import("@/ai/ohMyPiProviders");
 
