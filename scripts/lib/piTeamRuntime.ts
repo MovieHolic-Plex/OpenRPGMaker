@@ -243,6 +243,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   const prebuilt = new Set<string>();
   /** finish 의 첫 MVP 관문이 맵에 묶인 문제를 그 맵 담당에게 바로 맡겼는지(한 번뿐). */
   let mvpAutoFixed = false;
+  /** 첫 MVP 팀장이 finish 를 한 번이라도 불렀는지 — 그 전에는 이미 끝난 맵에 두 번째 배정(보강)을 받지 않는다. */
+  let mvpFinishTried = false;
   // A review belongs to the inspected snapshot, not merely to a map id.
   let authoringReview: { signature: string; ok: boolean } | undefined;
   const authoringSignature = (project: Project): string => createHash('sha256').update(JSON.stringify(project)).digest('hex');
@@ -442,6 +444,11 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     if (coreFirst && firstBuildAssignments >= 3) throw new Error('첫 제작의 후속 배정은 3회까지입니다. 핵심 플레이는 이미 작성했습니다. 남은 장식은 다음 할 일로 보고하고 finish 하세요.');
     if (coreFirst) member = { ...member, maxTurns: Math.min(member.maxTurns, 24) };
     if (firstMvpTeam) member = { ...member, maxTurns: Math.min(member.maxTurns, FIRST_MVP_MEMBER_TURNS.map) };
+    // 2026-11-26 t1: 첫 배정이 5.8분에 끝났는데 팀장이 finish 대신 BGM·시작 위치·퍼즐 정리 «보강 2차»를 맵마다 다시 맡겨 3분을 더 썼다.
+    // 남은 문제는 finish 관문이 그 맵 담당에게 바로 맡기므로, 처음 finish 전에는 끝난 맵에 다시 배정하지 않는다.
+    if (firstMvpTeam && !selfFix && !mvpFinishTried && [...outcomes.values()].some((outcome) => outcome.mapId === mapId && outcome.ok)) {
+      throw new Error(`첫 MVP 는 맵마다 한 번 배정한다 — '${mapId}' 담당은 이미 끝났다. 지금 finish 를 부른다(관문이 남은 문제를 그 맵 담당에게 바로 맡긴다). 보강은 다음 요청으로 적는다.`);
+    }
     if (request.applyMode === "step" && (runningAssignments(ledger).length || runningTasks().length)) throw new Error("단계별 적용은 앞 작업 승인·완료 후 다음 작업을 배정합니다. wait_agents를 먼저 호출하세요.");
     if (projectWriter()) throw new Error("프로젝트 공통 데이터 제작 중입니다. wait_agents 후 맵 작업을 배정하세요.");
     if (!working.maps[mapId]) throw new Error(`맵 '${mapId}' 이 프로젝트에 없습니다. 후보: ${candidateMaps.join(", ")}`);
@@ -814,6 +821,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       parameters: { type: "object", properties: { report: { type: "string" } }, required: ["report"], additionalProperties: false },
       async execute(_id, params) {
         if (reviewingMaps.size) throw new Error('맵 검수·자동 수정이 진행 중이므로 완료 처리할 수 없습니다.');
+        mvpFinishTried = true;
         const running = runningAssignments(ledger);
         if (runningTasks().length) throw new Error("설계·프로젝트 작업이 아직 실행 중입니다. wait_agents로 결과를 받으세요.");
         if (running.length > 0) {

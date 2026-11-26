@@ -102,7 +102,12 @@ export function checkTeamMvp(project: Project): TeamMvpCheck {
     try {
       const run = runSwitchPlay(project, "첫 판 끝 지점", target, MVP_REACHED_SWITCH, PLAY_BUDGET_MS);
       const detail = run.failure ? `${run.failure.goal}: ${run.failure.detail}` : "";
-      if (!run.ok && !detail.includes(TIMED_OUT)) problems.push(`시작에서 끝 지점(${target.where.mapName ?? target.where.mapId})까지 걸어서 못 간다: ${detail.slice(0, 200)} — 막힌 길·조건을 고치게 배정한다.`);
+      if (!run.ok && !detail.includes(TIMED_OUT)) {
+        // 막힌 길은 그 길이 있는 장소 맵 담당 몸이다 — 실패 글에 나오는 세계 장소 맵 이름으로 찾는다(t1 2026-11-26: 숲의 레버 바위 문이 숲 착지에서 동굴 문까지 길을 막았다).
+        const blocked = (project.worldGraph?.nodes ?? []).map((node) => project.maps[node.mapId]).find((map) => map?.name && detail.includes(map.name));
+        if (blocked) fixes.push({ mapId: blocked.id, task: `시작에서 끝 지점까지 걸어서 못 간다: ${detail.slice(0, 240)} — 이 맵에서 길을 막는 문·레버 장치·이벤트를 치우거나 길을 튼다(세계 문 ev_world_gate* 은 옮기지 않는다). 다른 맵은 건드리지 않는다.` });
+        problems.push(`시작에서 끝 지점(${target.where.mapName ?? target.where.mapId})까지 걸어서 못 간다: ${detail.slice(0, 200)} — 막힌 길·조건을 고치게 배정한다.`);
+      }
     } catch (error) { problems.push(`끝 지점 자동 플레이 오류: ${error instanceof Error ? error.message : String(error)}`.slice(0, 200)); }
   }
   return { applied, problems, fixes };

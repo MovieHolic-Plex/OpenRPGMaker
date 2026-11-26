@@ -145,7 +145,7 @@ export function prebuildMvpWorld(project: Project, hints: readonly PrebuildNodeH
     const ctx = { project: working };
     const result = role === "town"
       ? runToolDefinition(ctx, townRun(town), { mapId: hint.mapId, ...(name ? { name } : {}), houseCount: 3 }, { advisory: false })
-      : runToolDefinition(ctx, dungeonRun(dungeon), { mapId: hint.mapId, type: dungeonTypeFor(role, text), size: "small", ...(name ? { name } : {}), ...(hint.concept ? { inspiration: hint.concept.slice(0, 120) } : {}) }, { advisory: false });
+      : runToolDefinition(ctx, dungeonRun(dungeon), { mapId: hint.mapId, type: dungeonTypeFor(role, text), size: "small", gimmick: "none", ...(name ? { name } : {}), ...(hint.concept ? { inspiration: hint.concept.slice(0, 120) } : {}) }, { advisory: false });
     if (result.ok && ctx.project !== working) { working = ctx.project; built.push(hint.mapId); }
     else skipped.push({ mapId: hint.mapId, why: result.summary.slice(0, 200) });
   }
