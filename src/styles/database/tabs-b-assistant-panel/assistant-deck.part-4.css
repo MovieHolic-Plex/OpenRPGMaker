@@ -393,9 +393,6 @@ body:not(.ai-dock-collapsed) .ai-suggestion-peek-button { display: none; }
    접으면(ai-dock-collapsed) 둘 다 돌아온다. ai-command-bar-active 는 패널이 붙은 뒤에만 서므로 패널이 없는 화면에서는 숨지 않는다. */
 body.ai-command-bar-active:not(.ai-dock-collapsed) .studio-bar [data-testid="topbar-assistant"],
 body.ai-command-bar-active:not(.ai-dock-collapsed) .canvas-tool-pill .small-task-trigger { display: none; }
-/* AI 연결 전(잠금)에는 보내기·작업 설정이 할 일이 없다 — 잠금 막의 「AI 연결하기」 하나만 남긴다. */
-.is-ai-locked .ai-composer-actions .ai-chat-send[data-testid="ai-send"],
-.is-ai-locked [data-testid="ai-composer-settings"] { display: none; }
 /* 폰 폭: 열린 조수가 캔버스를 덮는 동안 레이어 칸은 고를 것이 없다 — 접으면 돌아온다. */
 @media (max-width: 600px) {
   body.ai-command-bar-active:not(.ai-dock-collapsed) .studio-bar .studio-layer-segment { display: none; }
