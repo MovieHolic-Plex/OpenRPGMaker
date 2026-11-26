@@ -146,6 +146,8 @@
 .cf-browse > summary::after { content: "▾"; color: var(--text-3); }
 .cf-browse[open] > summary::after { content: "▴"; }
 .cf-browse > .fr-builtin-row { margin: var(--space-2) 0 var(--space-3); }
+/* 둘러보기 안 분류 칩은 감싼다 — 스크롤바 없는 한 줄이라 「학원」 뒤 분류가 잘려 보이지 않았다(vm-qa15 묶음 9). */
+.cf-browse > .cf-chips { flex-wrap: wrap; overflow-x: visible; }
 .cf-browse .cf-grid { grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); }
 @media (max-width: 600px) {
   .cf-root.cf-overlay .fr-games-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
