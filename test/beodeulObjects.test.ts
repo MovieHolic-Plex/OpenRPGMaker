@@ -13,11 +13,16 @@ import { buildObjectGenRequest, existingMatches } from "@/editor/tools/objectGen
 import { canMove, isPassable } from "@/project/collision";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import { runTool } from "@/editor/tools";
-import type { Project, StructureKitDef } from "@/project/types";
+import type { Project, StructureKitDef, TilesetDef } from "@/project/types";
+import { BEODEUL_OBJECT_KIT_PREFIX } from "@/assets/beodeulPlaceableObjects";
 import catalog from "../tiledata/beodeul-objects/catalog.json";
 import kindTable from "../tiledata/beodeul-objects/kinds.json";
 
 const own = (kits: readonly StructureKitDef[] | undefined) => (kits ?? []).filter((kit) => kit.id.startsWith(BEODEUL_OBJECTS_KIT_PREFIX));
+// 배치 기물 묶음(bd-object:, #4849·#4850)은 종류 낱말(우물·통발…)을 태그로 그대로 달아 existingMatches 의 «태그 선언»(순위 1)으로
+// 이름만 든 원본 킷(순위 2)보다 앞선다. 아래 순서 시험은 원본·변형·이야기 기물 사이의 순서를 본다 — 묶음 행은 건너 첫째를 읽는다.
+const firstBesidesPlaceablePack = (project: Project, ts: TilesetDef, title: string) =>
+  existingMatches(project, ts, title).find((row) => !row.id.startsWith(BEODEUL_OBJECT_KIT_PREFIX))?.id;
 type CatalogItem = (typeof catalog.items)[number] & { variantOf?: string; on?: string; kinds?: string[]; growth?: string };
 const ITEMS = catalog.items as CatalogItem[];
 const NEW_WAIVER = "fable-objects100-beodeul-2026-11-14";
@@ -125,7 +130,7 @@ describe("버들항 이야기 기물 꼬리", () => {
   it("종류 이름은 여전히 원본 킷을 첫째로 짚고, 변형만의 낱말은 그 변형을 짚는다", () => {
     const project = createBlankProject() as Project;
     const ts = project.tilesets[project.maps[project.startMapId]!.tilesetId]!;
-    const first = (title: string) => existingMatches(project, ts, title)[0]?.id;
+    const first = (title: string) => firstBesidesPlaceablePack(project, ts, title);
     expect(first("우물")).toBe("bd-prop-well_roofed");
     expect(first("벤치")).toBe("bd-prop-bench_wood");
     expect(first("이정표")).toBe("bd-out-signpost");
@@ -157,7 +162,7 @@ describe("버들항 이야기 기물 꼬리", () => {
       expect(item.words.some((word) => /[가-힣]/u.test(word)), item.kit).toBe(true);
       expect(item.words.some((word) => /^[a-z' -]+$/iu.test(word)), item.kit).toBe(true);
     }
-    const first = (title: string) => existingMatches(project, ts, title)[0]?.id;
+    const first = (title: string) => firstBesidesPlaceablePack(project, ts, title);
     expect(first("벌통")).toBe("bd-obj-beehive-skeps");
     expect(first("뗏목")).toBe("bd-obj-raft-log");
     expect(first("부표")).toBe("bd-obj-buoy");
@@ -239,7 +244,7 @@ describe("버들항 이야기 기물 꼬리", () => {
     for (const id of kindIds) expect(KINDS.filter((item) => item.kinds!.includes(id)).length, id).toBeGreaterThanOrEqual(5);
     expect(KINDS.filter((item) => item.kinds!.includes("common")).length).toBeGreaterThanOrEqual(50);
     // 낱말이 그 킷을 첫째로 짚고, 옛 킷이 이름으로 가진 말은 옛 킷이 그대로 받는다
-    const first = (title: string) => existingMatches(project, ts, title)[0]?.id;
+    const first = (title: string) => firstBesidesPlaceablePack(project, ts, title);
     const has = (id: string) => KINDS.some((item) => item.id === id);
     for (const [word, id] of [["담금 구유", "quench-trough"], ["편자 걸이", "horseshoe-rack"], ["소금 가마", "salt-pan"], ["사과 압착기", "cider-press"], ["층 분수", "tiered-fountain"], ["빵집 간판", "sign-bakery"], ["cider press", "cider-press"], ["quench trough", "quench-trough"]] as const) {
       if (has(id)) expect(first(word), word).toBe(`bd-obj-${id}`);
