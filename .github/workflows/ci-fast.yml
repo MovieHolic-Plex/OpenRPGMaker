@@ -39,9 +39,13 @@ on:
 
 concurrency:
   # PR 번호로 묶어 포크의 같은 브랜치 이름이 다른 PR/푸시를 취소하지 않게 한다.
-  # main 은 이미 실행 중인 검사를 완료한다.
+  # main 푸시도 새 푸시가 오면 앞 판을 취소한다 (2026-11-26 dev-bottlenecks-r2).
+  # 왜: PR 판이 「PR 머리 + 그때 main」 병합 커밋을 이미 검사했고, main 판은 머지 뒤 겹침만 본다. 새 main 커밋은 앞 커밋을 품으니
+  # 최신 판 하나로 충분하다. 실측(2026-11-24T22Z~ 26.5시간): main 푸시 86판 중 54판이 끝나기 전에 다음 푸시가 왔고,
+  # 그 뒤로 쓴 잡-시간 3.1시간(전체 9.8시간)이 머지가 몰리는 순간 호스티드 자리를 PR 과 다퉜다.
+  # 타입체크 기록은 끝까지 간 마지막 판이 저장한다(PR 은 restore-keys 로 가장 새 기록을 받는다).
   group: ci-fast-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+  cancel-in-progress: true
 
 # 2026-11-08 실측에서 직렬 실행의 단계 합은 중앙 440초, 벽시계는 448초였다.
 # 독립적인 정적 검사를 fast-static 으로 떼어 병렬로 돌려 임계 경로를 약 100초 줄이는 구성이었다.
