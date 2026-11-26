@@ -30,10 +30,14 @@ async function readAllLines(stream: ReadableStream<Uint8Array>, onEvent?: (event
 
 function ndjsonResponse(feed: (write: (event: PiAgentEvent) => void, close: () => void) => void): Response {
   const encoder = new TextEncoder();
+  // 받는 쪽이 먼저 끊으면(done·워치독·시험 끝) 쓰기를 멈춘다 — 닫힌 스트림에 계속 쓰면 타이머가 시험이 끝난 뒤에도
+  // «Controller is already closed» 를 수백 번 던져 vitest 가 unhandled 로 셌다(ci-full 45756073694: 348번).
+  let open = true;
   const body = new ReadableStream<Uint8Array>({
     start(controller) {
-      feed((event) => controller.enqueue(encoder.encode(encodePiAgentEvent(event))), () => controller.close());
+      feed((event) => { if (open) controller.enqueue(encoder.encode(encodePiAgentEvent(event))); }, () => { if (open) { open = false; controller.close(); } });
     },
+    cancel() { open = false; },
   });
   return new Response(body, { status: 200, headers: { "Content-Type": "application/x-ndjson" } });
 }

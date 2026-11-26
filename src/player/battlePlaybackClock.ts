@@ -124,7 +124,8 @@ export class BattlePlaybackClock {
     this.disposed = true;
     if (this.frame !== undefined) window.cancelAnimationFrame(this.frame);
     this.frame = undefined;
-    for (const animation of this.animations.keys()) animation.cancel();
+    // cancel() 은 finished 를 거절한다 — 아무도 기다리지 않으면 처리 안 된 거절로 남는다.
+    for (const animation of this.animations.keys()) { animation.finished?.catch(() => {}); animation.cancel(); }
     this.animations.clear();
     for (const task of this.tasks)
       if (task.timer !== undefined) cancelBattleTimer(task.timer);

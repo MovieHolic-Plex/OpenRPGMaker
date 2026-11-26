@@ -952,8 +952,14 @@ export function retroPartyPixelCell(node: HTMLElement, pose: Pose = "idle"): Par
   return "idle";
 }
 
+/** cancel() 은 finished 를 거절한다 — 아무도 기다리지 않으면 처리 안 된 거절로 남아 시험·콘솔에 쌓였다. */
+function cancelQuietly(animation: Animation | undefined): void {
+  animation?.finished?.catch(() => {});
+  animation?.cancel();
+}
+
 function resetPixelEnemy(node: HTMLElement): void {
-  pixelAnimations.get(node)?.cancel();
+  cancelQuietly(pixelAnimations.get(node));
   pixelAnimations.delete(node);
   delete node.dataset.retroPixelCell;
 }
@@ -1171,7 +1177,7 @@ function animatePixelEnemyBeat(node: HTMLElement, beat: BattleActionBeat): void 
     }
   }
   if (reduced() || length === 0) cells = [[0, cells[0]![1]]];
-  pixelAnimations.get(node)?.cancel();
+  cancelQuietly(pixelAnimations.get(node));
   pixelAnimations.delete(node);
   // 길이 0 비트(빗나간 착탄)도 도착 자리를 붙잡아야 한다 — 애니메이션을 걷으면 한 프레임 제자리로 튄다.
   if (!reduced() && typeof node.animate === "function") {

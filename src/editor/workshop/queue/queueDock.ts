@@ -132,7 +132,8 @@ function render(force: boolean): void {
   const next = signature(snapshot);
   if (!force && next === lastSignature) return;
   lastSignature = next;
-  requestAnimationFrame(clearFloatingNeighbours);
+  // 대기열 준비(ensure)는 늦게 끝난다 — 그 사이 창이 걷힌 환경(시험 끝)에는 프레임 예약이 없다.
+  if (typeof requestAnimationFrame === "function") requestAnimationFrame(clearFloatingNeighbours);
   // 공방 큰 화면이 열려 있는 동안은 알약을 숨긴다(공방 머리에 「작업 줄」 단추가 있다) — 알약이 후보 카드 단추를 가렸다(2026-10-21 VQA).
   const visible = (pillWanted(snapshot) && !suppressed) || open;
   root.hidden = !visible;

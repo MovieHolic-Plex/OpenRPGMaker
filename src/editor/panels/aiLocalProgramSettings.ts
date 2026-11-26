@@ -168,7 +168,8 @@ export function renderAiLocalProgramSettings(): { element: HTMLDetailsElement; d
   }
 
   element.addEventListener("toggle", () => {
-    if (element.hasAttribute("open") && !report && !detectFailed) void detect(false);
+    // getAttribute 로 묻는다 — 같은 뜻이고, 시험용 가짜 DOM 에는 hasAttribute 가 없어 토글 콜백이 처리 안 된 오류를 냈다.
+    if (element.getAttribute("open") !== null && !report && !detectFailed) void detect(false);
   });
   const syncChoice = (): void => { health.textContent = ""; render(); };
   window.addEventListener(ASSISTANT_ENGINE_CHANGED_EVENT, syncChoice);

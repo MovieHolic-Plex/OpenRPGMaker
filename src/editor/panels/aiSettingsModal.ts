@@ -1189,6 +1189,8 @@ export function renderAiSettingsForm(options: {
   const qualitySection = settingsSection("presets", "품질", "", [presetGroup]);
   qualitySection.append(qualityCaption);
   function syncChatGptAccount(): void {
+    // 계정 확인은 늦게 돌아온다 — 그 사이 창이 닫히고 문서가 걷혔으면 그릴 곳이 없다.
+    if (typeof document === "undefined") return;
     const status = getAiConnectionStatus();
     const sharesAccount = status.providerId === CODEX_PROVIDER_ID && status.authMode === "chatgpt";
     const account = (sharesAccount ? status.account : undefined) ?? chatGptAccount;

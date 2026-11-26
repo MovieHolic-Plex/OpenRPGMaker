@@ -110,7 +110,10 @@ describe("AI settings connection status", () => {
     const accountRow = byId("ai-settings-chatgpt-account");
     expect(accountRow.hidden).toBe(false);
     expect(accountRow.textContent).toContain(account.accountEmail);
-    expect(cliRequests).toEqual([]);
+    // #4940(자동 연결 고르기) 뒤로 설정을 열면 고르기가 길을 모으며 로컬 프로그램을 «한 번, 캐시 허용(fresh 아님)» 묻는다 — 설계된 동작이다.
+    // 이 시험이 지키는 것은 설정 창이 펼치기 전에 따로(다시 확인·fresh) 묻지 않는다는 것이다.
+    expect(cliRequests.filter((request) => request !== "/v1/local-agents")).toEqual([]);
+    expect(cliRequests.length).toBeLessThanOrEqual(1);
 
     byId("start-settings-tab-general").click();
     byId("start-settings-tab-ai").click();
