@@ -29,7 +29,10 @@ import { addPiAgentUsage, changedProjectKeys, PI_MAP_LOSS_DECLINED_PREFIX, resto
 import { PI_TEAM_ROLES, teamRoleSummaries } from "../../src/ai/piAgent/team.ts";
 import { firstMvpRoute } from "../../src/ai/piAgent/firstMvpRoute.ts";
 import { applyDraftCast } from "../../src/ai/v2/story/draftCast.ts";
-import { checkTeamMvp, FIRST_MVP_BUILDER_TOOLS, FIRST_MVP_MEMBER_TURNS } from "../../src/ai/piAgent/teamMvp.ts";
+import { checkTeamMvp, FIRST_MVP_BUILDER_TOOLS, FIRST_MVP_MEMBER_TURNS, FIRST_MVP_PREBUILT_TOOLS, mvpBuilderProblems } from "../../src/ai/piAgent/teamMvp.ts";
+import { isWorldSkeletonMap, prebuildMvpWorld, type PrebuildNodeHint } from "../../src/ai/piAgent/teamMvpPrebuild.ts";
+import { MVP_PLACES } from "../../src/ai/v2/judge/blueprintScale.ts";
+import { MVP_DONE_LINE, mvpNextSteps, nextStepsBlock, splitNextSteps } from "../../src/ai/nextSteps.ts";
 import { repairWorldTransfers } from "../../src/project/world/transferRepair.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
 import { FIRST_PLAY_TOOLS, firstPlayEvents, firstPlaySignature, inspectFirstPlay, type FirstPlayReceipt } from '../../src/ai/piAgent/firstPlay.ts';
@@ -237,6 +240,12 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   let jrpgChatRejections = 0;
   let mvpRejections = 0;
   let mvpLeft: string[] = [];
+  /** 런타임이 생성기로 미리 지은 세계 장소 맵(teamMvpPrebuild.ts) — 그 담당은 생성기 없이 사람·이벤트만 놓는다. */
+  const prebuilt = new Set<string>();
+  /** finish 의 첫 MVP 관문이 맵에 묶인 문제를 그 맵 담당에게 바로 맡겼는지(한 번뿐). */
+  let mvpAutoFixed = false;
+  /** 첫 MVP 팀장이 finish 를 한 번이라도 불렀는지 — 그 전에는 이미 끝난 맵에 두 번째 배정(보강)을 받지 않는다. */
+  let mvpFinishTried = false;
   // A review belongs to the inspected snapshot, not merely to a map id.
   let authoringReview: { signature: string; ok: boolean } | undefined;
   const authoringSignature = (project: Project): string => createHash('sha256').update(JSON.stringify(project)).digest('hex');
@@ -430,12 +439,19 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     return await next;
   };
 
-  function startAssign(mapId: string, task: string, member: PiTeamMember, reviewRepair = false): AgentOutcome | Record<string, unknown> {
+  function startAssign(mapId: string, task: string, member: PiTeamMember, reviewRepair = false, selfFix = false): AgentOutcome | Record<string, unknown> {
     if (request.readOnly || options.readOnlyTools) throw new Error('읽기 전용 요청에서 맵을 제작할 수 없습니다.');
     if (reviewingMaps.has(mapId) && !reviewRepair) throw new Error(`맵 '${mapId}'의 검수·자동 수정이 진행 중입니다. 완료 후 배정하세요.`);
     if (coreFirst && firstBuildAssignments >= 3) throw new Error('첫 제작의 후속 배정은 3회까지입니다. 핵심 플레이는 이미 작성했습니다. 남은 장식은 다음 할 일로 보고하고 finish 하세요.');
     if (coreFirst) member = { ...member, maxTurns: Math.min(member.maxTurns, 24) };
     if (firstMvpTeam) member = { ...member, maxTurns: Math.min(member.maxTurns, FIRST_MVP_MEMBER_TURNS.map) };
+    // 2026-11-26 t1: 첫 배정이 5.8분에 끝났는데 팀장이 finish 대신 BGM·시작 위치·퍼즐 정리 «보강 2차»를 맵마다 다시 맡겨 3분을 더 썼다.
+    // 남은 문제는 finish 관문이 그 맵 담당에게 바로 맡기므로, 처음 finish 전에는 끝난 맵에 다시 배정하지 않는다.
+    // t6(2026-11-26): finish 가 7.6분에 받아진 뒤에도 팀장이 두 번 더 맵마다 보강을 맡겨 4분을 더 썼다 — 첫 판이 끝나면 배정을 닫는다.
+    if (firstMvpTeam && !selfFix && finishAccepted) throw new Error("첫 MVP 는 이미 finish 됐다 — 더 배정하지 않고 이 턴을 끝낸다. 보강은 다음 요청으로 남긴다.");
+    if (firstMvpTeam && !selfFix && !mvpFinishTried && [...outcomes.values()].some((outcome) => outcome.mapId === mapId && outcome.ok)) {
+      throw new Error(`첫 MVP 는 맵마다 한 번 배정한다 — '${mapId}' 담당은 이미 끝났다. 지금 finish 를 부른다(관문이 남은 문제를 그 맵 담당에게 바로 맡긴다). 보강은 다음 요청으로 적는다.`);
+    }
     if (request.applyMode === "step" && (runningAssignments(ledger).length || runningTasks().length)) throw new Error("단계별 적용은 앞 작업 승인·완료 후 다음 작업을 배정합니다. wait_agents를 먼저 호출하세요.");
     if (projectWriter()) throw new Error("프로젝트 공통 데이터 제작 중입니다. wait_agents 후 맵 작업을 배정하세요.");
     if (!working.maps[mapId]) throw new Error(`맵 '${mapId}' 이 프로젝트에 없습니다. 후보: ${candidateMaps.join(", ")}`);
@@ -457,7 +473,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       memberId: member.id, label: member.label, ...(fixOf ? { fixOf } : {}),
     });
     mailbox.register(agentId, member.label, mapId);
-    const promise = (async (): Promise<AgentOutcome> => {
+    const run = (async (): Promise<AgentOutcome> => {
       try {
         const snapshot = cloneProjectSharingSharedDictionaries(working);
         const done = await runAgent(
@@ -467,12 +483,13 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
             ...(independent.length ? { independentMapIds: independent, mapBundleMerge: true } : {}),
             systemPrompt: [...memberSystemPrompt(member, snapshot, [mapId]), ...describeMapSeams(snapshot, mapId), teamCommunicationPrompt(agentId),
               // r8: 동굴 담당이 mapId 없이 author_dungeon 을 불러 새 던전 맵을 하나 더 만들어 첫 판이 6장으로 «MVP 크기 밖» 불합격(13분).
-              ...(firstMvpTeam ? [`[첫 MVP 맵 담당] 맵 '${mapId}' 하나를 그 자리에서 짓는다: author_dungeon·author_beodeul_town 과 바깥 장소 종류의 build_region_place 에 mapId:"${mapId}" 를 준다. 가게·여관·던전 입구 같은 실내·입구 종류는 새 맵을 만드니 첫 판(3~5장)에서는 쓰지 않는다. 세계 문은 생성기가 다시 놓는다.`] : [])], maxTurns: member.maxTurns,
+              ...(firstMvpTeam && prebuilt.has(mapId) ? [`[첫 MVP 맵 담당] 맵 '${mapId}' 은 런타임이 생성기로 이미 지었다(지형·길·세계 문·던전이면 적·상자·보스). 다시 짓지 않고 새 맵도 만들지 않는다 — get_map_region·find_events 로 자리를 보고 사람(place_npc)·이벤트(upsert_event)·끝 지점만 놓는다. 세계 문(ev_world_gate*)은 옮기지 않는다. 다 놓으면 바로 끝낸다.`]
+                : firstMvpTeam ? [`[첫 MVP 맵 담당] 맵 '${mapId}' 하나를 그 자리에서 짓는다: author_dungeon·author_beodeul_town 과 바깥 장소 종류의 build_region_place 에 mapId:"${mapId}" 를 준다. 가게·여관·던전 입구 같은 실내·입구 종류는 새 맵을 만드니 첫 판(3~5장)에서는 쓰지 않는다. 세계 문은 생성기가 다시 놓는다.`] : [])], maxTurns: member.maxTurns,
             ...(!request.roleModels?.deep && member.model ? { model: member.model } : {}),
             ...(member.toolDomains.length > 0 ? { toolDomains: member.toolDomains } : {}),
           },
           { ...child(agentId, request.roleModels?.deep?.provider ?? request.provider),
-            ...(firstMvpTeam ? { toolNames: [...FIRST_MVP_BUILDER_TOOLS] } : {}),
+            ...(firstMvpTeam ? { toolNames: [...(prebuilt.has(mapId) ? FIRST_MVP_PREBUILT_TOOLS : FIRST_MVP_BUILDER_TOOLS)] } : {}),
             ...(options.onCheckpoint ? { onCheckpoint: checkpointFor(mapId, snapshot, independent) } : {}) },
         );
         const { spills, conflicts } = mergeOutcome(agentId, mapId, snapshot, done, independent);
@@ -498,7 +515,19 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         ownership.release();
       }
     })();
-    inflight.push({ agentId, promise });
+    // 첫 MVP 맵 담당은 반납 전에 자기 맵을 검사하고, 걸리면 같은 담당에게 바로 한 번 더 맡긴다 — 팀장의 wait_agents 는 그 고침까지 한 배정으로 기다린다
+    // (2026-11-25 r6·r8: 끝 지점 없이 반납 → finish 관문 거절 → 팀장 재배정 왕복 10분+).
+    const settled = firstMvpTeam && !selfFix ? run.then(async (outcome) => {
+      const problem = mvpBuilderProblems(working, mapId, task, isWorldSkeletonMap);
+      if (!problem) return outcome;
+      emit({ type: "agent_event", agentId, event: { type: "assistant", text: `반납 전 자체 검사: ${problem}`.slice(0, 400) } });
+      try {
+        const next = startAssign(mapId, `${problem}\n앞 배정 요약: ${outcome.summary.slice(0, 400)}`, member, false, true) as { agentId?: string };
+        const entry = inflight.find((candidate) => candidate.agentId === next.agentId);
+        return entry ? await entry.promise : outcome;
+      } catch { return outcome; }
+    }) : run;
+    inflight.push({ agentId, promise: settled });
     return { ok: true, agentId, mapId, member: member.id, phase, state: "실행 중" as AgentState };
   }
 
@@ -507,6 +536,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     if (coreFirst && mode === 'project' && firstBuildAssignments >= 3) throw new Error('첫 제작의 후속 배정은 3회까지입니다. 추가 작업은 다음 할 일로 보고하고 finish 하세요.');
     if (coreFirst) member = { ...member, maxTurns: Math.min(member.maxTurns, 24) };
     if (firstMvpTeam && mode === "project") member = { ...member, maxTurns: Math.min(member.maxTurns, FIRST_MVP_MEMBER_TURNS.project) };
+    if (firstMvpTeam && finishAccepted) throw new Error("첫 MVP 는 이미 finish 됐다 — 더 배정하지 않고 이 턴을 끝낸다.");
     if (request.applyMode === "step" && (runningAssignments(ledger).length || runningTasks().length)) throw new Error("단계별 적용은 앞 작업 승인·완료 후 이어집니다. wait_agents를 먼저 호출하세요.");
     if (tasks.size >= 64) throw new Error("팀 작업 배정 상한(64)에 도달했습니다. 남은 작업을 보고하세요.");
     if (mode === "project") {
@@ -795,6 +825,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
       parameters: { type: "object", properties: { report: { type: "string" } }, required: ["report"], additionalProperties: false },
       async execute(_id, params) {
         if (reviewingMaps.size) throw new Error('맵 검수·자동 수정이 진행 중이므로 완료 처리할 수 없습니다.');
+        mvpFinishTried = true;
         const running = runningAssignments(ledger);
         if (runningTasks().length) throw new Error("설계·프로젝트 작업이 아직 실행 중입니다. wait_agents로 결과를 받으세요.");
         if (running.length > 0) {
@@ -828,7 +859,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           }
         }
         // 첫 MVP 약속(맵 3~5장 · 엔딩 없음 · 끝 지점까지 걸어서 감) — v2 단일 실행의 끝맺음과 같은 셈(src/ai/piAgent/teamMvp.ts). 거절은 두 번까지, 그 뒤에는 보고에 남긴다.
-        if (firstMvp && !isGoalCampaignTask(request.task)) {
+        if (firstMvp && !isGoalCampaignTask(request.task)) for (;;) {
           const mvp: Project = { ...working, maps: structuredClone(working.maps), commonEvents: structuredClone(working.commonEvents ?? []), endings: [...(working.endings ?? [])], switches: [...working.switches] };
           // 맵 담당이 자기 맵을 생성기로 다시 지어 바뀐 도착 칸을 여기서 한 번 맞춘다 — 이음새를 LLM 수정 배정으로 왕복하지 않는다(src/project/world/transferRepair.ts).
           const seams = repairWorldTransfers(mvp);
@@ -836,12 +867,29 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           const verdict = checkTeamMvp(mvp);
           working = mvp;
           if (verdict.applied.length) emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: verdict.applied.join(" / ") } });
+          // 맵에 묶인 문제(끝 지점 없음·못 닿는 장소)는 팀장에게 돌려보내지 않고 그 맵 담당에게 바로 맡긴 뒤 다시 본다(한 번) —
+          // 거절 → 팀장 LLM 재배정 → wait → 다시 finish 왕복이 판마다 10분 넘게 걸렸다(2026-11-25 team-mvp-revive r8·r9).
+          if (verdict.problems.length && verdict.fixes.length && !mvpAutoFixed) {
+            mvpAutoFixed = true;
+            emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `첫 MVP 관문: 맵 담당에게 바로 고침을 맡깁니다 — ${verdict.fixes.map((fix) => fix.mapId).join(", ")}` } });
+            const launched: Promise<AgentOutcome>[] = [];
+            for (const fix of verdict.fixes.filter((fix, index, all) => all.findIndex((other) => other.mapId === fix.mapId) === index)) {
+              try {
+                const next = startAssign(fix.mapId, fix.task, builders[0]!, false, true) as { agentId?: string };
+                const entry = inflight.find((candidate) => candidate.agentId === next.agentId);
+                if (entry) launched.push(entry.promise);
+              } catch (error) { emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `고침 배정 실패(${fix.mapId}): ${error instanceof Error ? error.message : String(error)}`.slice(0, 300) } }); }
+            }
+            await Promise.all(launched);
+            continue;
+          }
           if (verdict.problems.length && mvpRejections < 2) {
             mvpRejections += 1;
             emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `첫 MVP 미완(${mvpRejections}/2): ${verdict.problems.join(" / ")}` } });
             throw new Error(`첫 MVP 로는 아직 끝낼 수 없어 finish 를 받지 않습니다(${mvpRejections}/2). ${verdict.problems.join(" / ")} — 담당에게 배정하고 wait_agents 로 받은 뒤 다시 finish 하세요. 두 번 거절된 뒤에는 남은 항목을 보고에 적고 끝낼 수 있습니다.`);
           }
           mvpLeft = verdict.problems;
+          break;
         }
         if (firstPlay) {
           const issues = inspectFirstPlay(base, working, firstPlay);
@@ -893,7 +941,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         }
         // JRPG 도 같은 구멍이 있었다 — 위 JRPG 가드는 기획서 프롬프트(segmentGate)에서만 돌아, 채팅 한 줄(「크로노 트리거 같은 JRPG 만들어 줘」)로 지으면
         // 파티 능력치 동일·보스 무해·제목 카드뿐인 오프닝이 그대로 통과했다(jrpg-loop-1 ct1: 같은 프로젝트에 qa:game check 경고 4건). 거절은 두 번까지, 그 뒤에는 보고에 남기고 받는다.
-        if (!segmentGate && jrpgChatRejections < 2 && !request.readOnly && jrpgCompletionGateApplies(working, stripSystemIntentNote(request.task))) {
+        // 첫 MVP 팀은 첫 판 관문(위 checkTeamMvp)이 기준이다 — 이 JRPG 마무리 검사(제목·6샷 오프닝·파티 능력치)는 완성 게임 기준이라, 도구가 없는 팀장이 두 번 거절당하며
+        // 오프닝 도구를 찾다 2~3분을 썼다(t3·t5 2026-11-26). 남은 항목은 아래 보고(jrpgLeft)에 그대로 적힌다.
+        if (!segmentGate && !firstMvpTeam && jrpgChatRejections < 2 && !request.readOnly && jrpgCompletionGateApplies(working, stripSystemIntentNote(request.task))) {
           const jrpgGaps = jrpgCompletionGaps(working, undefined, { task: stripSystemIntentNote(request.task) });
           // 채팅 한 줄 JRPG 는 첫 구간 게이트(segmentGate)를 안 타서 「끝까지 갈 수 없음」이 그대로 통과했다(jrpg-loop-2 ff1: 시간의 문이 절벽 위에 갇혀
           // qa:game check 막힘 1건인데 finish 가 받아졌다). 뼈대가 있으면 같은 자동 플레이 판정의 막힌 곳을 마무리 항목에 더한다.
@@ -943,17 +993,60 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   ];
   // 첫 MVP 팀은 팀장이 세계 뼈대(build_world)를 직접 한 번 선언한다 — 뼈대를 프로젝트 작업으로 맡기면 그 팀원이 메뉴·음악·시스템 검수까지 하며
   // 10~15분을 쓰고(2026-11-25 team-mvp-revive r4·r5 실측), 프로젝트 작업은 맵 작업과 배타라 맵 담당 전부가 그 뒤에 섬다. 빈 칸(세계관·인물·도구)은 finish 가 draft-cast 로 채운다.
+  /**
+   * 팀장 자리에서 바뀐 프로젝트(세계 뼈대·미리 지은 장소 맵이 만든 적·트룹)를 편집기에 한 번 보낸다.
+   * 팀원 체크포인트는 `working` 과 같은 DB 를 «안 바뀜» 으로 빼고 보내서, 편집기에는 트룹이 없는데 맵은 그 트룹을 부르는 상태가 됐다 —
+   * t7(2026-11-26) 에서 맵 담당 쓰기가 «직렬화 왕복 실패: troopId 가 없습니다» 로 모두 되돌려져 저장본이 빈 맵 한 장이었다.
+   */
+  const publishOrchestratorWork = async (editorKnown: Project, label: string, toolName: string): Promise<void> => {
+    if (!options.onCheckpoint) return;
+    const next = publication.then(async () => {
+      const proposed = working;
+      const wire = slimProjectForWire(editorKnown, proposed);
+      const accepted = await options.onCheckpoint!({ project: wire.project, label, toolName, unchangedKeys: wire.unchangedKeys,
+        ...(wire.unchangedTilesetIds.length ? { unchangedTilesetIds: wire.unchangedTilesetIds } : {}), spatialProof: exportSpatialToolProof(proposed) });
+      if (working === proposed && accepted) working = cloneProjectSharingSharedDictionaries(restoreCheckpointProject(proposed, accepted, wire.unchangedKeys, wire.unchangedTilesetIds));
+    });
+    publication = next.catch(() => undefined);
+    try { await next; }
+    catch (error) { emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `${label}을 편집기에 보내지 못했습니다: ${error instanceof Error ? error.message : String(error)}`.slice(0, 300) } }); }
+  };
   if (firstMvpTeam) {
     orchestratorTools.push({
       ...resolvePiToolShape({ project: working }, "build_world")!,
       async execute(id, params) {
         if (runningTasks().length || runningAssignments(ledger).length) throw new Error("진행 중인 배정이 있습니다. build_world 는 맵 배정 전에 한 번 부릅니다.");
+        // 맵 수 상한은 청사진(세계 뼈대)에서 지킨다 — 첫 판은 장소 3~5장이고, 맵 담당은 배정받은 맵만 짓는다(r8 6장·r9 7장 불합격).
+        const nodes = Array.isArray((params as { plan?: { nodes?: unknown } })?.plan?.nodes) ? (params as { plan: { nodes: PrebuildNodeHint[] } }).plan.nodes : [];
+        if (nodes.length > MVP_PLACES.max) throw new Error(`첫 MVP 는 장소 ${MVP_PLACES.min}~${MVP_PLACES.max}장이다 — 노드 ${nodes.length}개를 ${MVP_PLACES.max}개 이하로 줄여 다시 부른다.`);
+        const editorKnown = working;
         const ctx = { project: working };
         const result = await resolvePiToolShape(ctx, "build_world")!.execute(id, params);
-        if (ctx.project !== working) {
-          working = ctx.project;
-          emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: "세계 뼈대를 직접 선언했습니다(build_world)." } });
-        }
+        if (ctx.project === working) return result;
+        if (Object.keys(ctx.project.maps).length > MVP_PLACES.max) throw new Error(`이 세계를 지으면 맵이 ${Object.keys(ctx.project.maps).length}장이 된다 — 첫 MVP 는 ${MVP_PLACES.max}장까지다. 있던 맵(시작 맵 포함)을 노드로 다시 쓰거나 노드를 줄인다.`);
+        working = ctx.project;
+        emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: "세계 뼈대를 직접 선언했습니다(build_world)." } });
+        // 장소 맵은 런타임이 생성기로 바로 짓는다(src/ai/piAgent/teamMvpPrebuild.ts) — 맵 담당은 사람·이벤트·끝 지점만 놓는다.
+        const pre = prebuildMvpWorld(working, nodes.filter((node) => typeof node?.mapId === "string"));
+        working = pre.project;
+        for (const mapId of pre.built) prebuilt.add(mapId);
+        await publishOrchestratorWork(editorKnown, "세계 뼈대·장소 맵", "build_world");
+        const note = `장소 맵을 생성기로 지었습니다: ${pre.built.map((mapId) => working.maps[mapId]?.name ?? mapId).join(", ") || "없음"}${pre.skipped.length ? ` · 담당이 지을 맵: ${pre.skipped.map((s) => `${s.mapId}(${s.why})`).join("; ")}` : ""}`;
+        emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: note.slice(0, 600) } });
+        const first = (result as { content?: { text?: string }[] })?.content?.[0]?.text ?? "";
+        return text({ buildWorld: first.slice(0, 1500), prebuilt: pre.built, skipped: pre.skipped,
+          next: "지은 장소 맵 담당에게는 다시 짓지 말고 사람·이벤트·(목표 장소면) 끝 지점만 맡긴다. 장소마다 assign_map_agent 를 한 턴에 모두 띄운다. wait_agents 로 모두 끝난 뒤 finish 직전에 set_title_screen({title}) 으로 이 게임의 제목을 짓는다." });
+      },
+    });
+    // 제목은 팀장이 직접 짓는다 — 프로젝트 작업은 첫 MVP 에서 거절되고 맵 담당은 맵 범위라, t3(2026-11-26) 에서 제목이 «새 프로젝트» 로 남아
+    // JRPG 마무리 관문이 두 번 거절했고 팀장은 도구를 찾다 2분을 썼다.
+    orchestratorTools.push({
+      ...resolvePiToolShape({ project: working }, "set_title_screen")!,
+      async execute(id, params) {
+        if (runningAssignments(ledger).length) throw new Error("맵 담당이 아직 짓고 있다 — wait_agents 뒤에 제목을 짓는다.");
+        const ctx = { project: working };
+        const result = await resolvePiToolShape(ctx, "set_title_screen")!.execute(id, params);
+        if (ctx.project !== working) working = ctx.project;
         return result;
       },
     });
@@ -1334,7 +1427,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   // The mandatory current-image review + executable contract already cover this
   // bounded first build. A second narrative audit delayed the terminal done even
   // after finish, and could time out a fully published, verified scene.
-  const verifiedFirstBuild = isGenrePresetBriefRequest(request.task) && !!authoringCompletion;
+  // 첫 MVP 팀은 finish 관문(맵 수·도달·끝 지점 자동 플레이)이 이미 봤다 — 읽기 전용 최종 검토가 판마다 2분을 더했다(2026-11-25 r8 reviewer-1 632~752초).
+  const verifiedFirstBuild = isGenrePresetBriefRequest(request.task) && !!authoringCompletion || firstMvpTeam && finishAccepted;
   if (skipFinalReview && request.applyMode !== "yolo") {
     finished = `${finished ?? summaryOf(orchDone)}\n완료 후 검토: 켜진 검수 담당이 없어 생략했습니다.`;
     emit({ type: "team_report", text: finished });
@@ -1347,6 +1441,14 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     if (!outcome.ok) throw new Error(`완료 후 검토를 끝내지 못했습니다: ${outcome.summary}`);
     finished = `${finished ?? summaryOf(orchDone)}\n완료 후 검토: ${outcome.summary}`;
     emit({ type: "team_report", text: finished });
+  }
+  // 첫 MVP 팀도 v2 단일(finishTurn.ts)처럼 답 끝에 «첫 판까지» 안내와 «다음에 해 볼 것» 칩을 붙인다 — 없으면 팀장 보고가 «더 할까요?» 로 끝나
+  // 사용자가 이어 할 말을 못 찾고, 작은 일 다섯째 묶음 판정도 «안내 없음» 으로 떨어졌다(2026-11-26 team-mvp-revive-r3 t3: 맵 3장·끝 지점 도달·첫 턴 4분).
+  if (firstMvpTeam && finishAccepted && finished && !splitNextSteps(finished).steps.length) {
+    finished = `${finished}\n\n${MVP_DONE_LINE}\n\n${nextStepsBlock(mvpNextSteps(working))}`;
+    emit({ type: "team_report", text: finished });
+    // 답 말풍선은 마지막 assistant/team_report 다 — 팀장이 finish 뒤에도 «못 한 것» 글을 더 내 안내가 묻혔다(t5 2026-11-26). 첫 판 보고를 마지막 답으로 둔다.
+    emit({ type: "assistant", text: finished });
   }
   // The coordinator's snapshot is not a new per-map repair receipt. Preserve child failures.
   for (const report of orchDone.interiorCompletion ?? []) interiorReports.set(report.mapId, report);
