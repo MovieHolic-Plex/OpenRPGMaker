@@ -122,6 +122,8 @@
     "agent-rules:skill": "vite-node --script scripts/content/build-agent-rules-skill.mts && node scripts/content/bundle-assistant-skills.mjs"
   },
   "dependencies": {
+    "@earendil-works/pi-agent-core": "1.6.1",
+    "@earendil-works/pi-ai": "1.6.1",
     "@jitl/quickjs-singlefile-browser-release-sync": "0.32.0",
     "@oh-my-pi/pi-agent-core": "18.22.0",
     "electron-updater": "^6.8.11",

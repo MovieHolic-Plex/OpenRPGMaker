@@ -27,6 +27,7 @@ import { applyLegacyEnvAliases } from "./lib/oprnEnv.mjs";
 import { piTimer } from "./lib/piRunTiming.mjs";
 import { registerOpenAiCompatEndpoints } from "./lib/openAiCompatModel.ts";
 import { configureWorkerStore } from "./lib/workerStore.ts";
+import { serveWorker } from "./lib/workerServe.ts";
 
 applyLegacyEnvAliases();
 
@@ -74,21 +75,19 @@ function resolveWorkerHeavy(project: PiAgentRequest["project"], refs: Record<str
   return { project: next as unknown as PiAgentRequest["project"] };
 }
 
-const server = Bun.serve({
-  hostname: "127.0.0.1",
+const server = await serveWorker({
   port,
   // Bun.serve 의 idleTimeout 기본값은 10초다 — 연결에 바이트가 오가지 않으면 소켓을 끊는다.
   // /agent/run 은 턴 시작·툴 호출·응답 끝에만 이벤트를 쓰므로 모델이 10초 넘게 생각하면 스트림이
   // 끊기고, Node 쪽 fetch 는 `terminated` 를 던지고 워커는 클라이언트 중단으로 오해해 에이전트를
   // 전부 abort 했다(실측 2026-09-14: 팀 모드 "마을 만들어줘" 가 매번 25~110초 만에 실패). 실행
   // 상한은 piAgentRuntime 의 timeoutMs(기본 PI_AGENT_DEFAULT_TIMEOUT_MS, 3000초)가 따로 들고 있으므로 유휴 타임아웃은 끈다.
-  idleTimeout: 0,
   // 요청 본문 상한. Bun.serve 기본값은 128MiB 이고, 넘으면 응답 없이 소켓을 닫아 호스트 fetch 가 `EPIPE`(「fetch failed」)로 끝난다.
   // /agent/run 은 프로젝트 사본 전체(타일셋 이미지·에셋 dataURL)를 싣는다 — 2026-09-27 새 프로젝트 기본 자료가 늘어
   // 몬스터 수집 프리셋 첫 요청이 151MB 가 됐고, 팀 첫 생성이 한 턴도 못 돌고 매번 이 오류로 죽었다.
   // 호스트가 압축 요청을 풀 때 쓰는 상한(`readRequestJson` maxOutputLength 256MiB)과 같게 둔다.
   maxRequestBodySize: 256 * 1024 * 1024,
-  async fetch(request) {
+  async fetch(request: Request) {
     const url = new URL(request.url);
     try {
       if (request.method === "POST" && url.pathname === "/complete") {

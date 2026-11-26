@@ -63,8 +63,7 @@ import { presentationArtIds, presentationArtImages } from '../../src/editor/tool
 // 이 파일만 oh-my-pi 코어를 알고 있다. 어댑터(src/ai/piAgent/*)는 순수라서, 코어를 바꾸려면
 // 이 파일 하나를 다시 쓰면 된다.
 
-import { Agent, type StreamFn } from "@oh-my-pi/pi-agent-core";
-import { streamSimple, validateToolArguments, type Effort } from "@oh-my-pi/pi-ai";
+import { Agent, streamSimple, validateToolArguments, type Effort, type StreamFn } from "./piCore.ts";
 import { isCliContextExhaustedError } from "../../src/ai/piAgent/cliContextBudget.ts";
 import { CLI_CALL_TOOL, CLI_LAZY_TOOLS_LINE, cliToolFreezeOn } from "../../src/ai/piAgent/cliToolFreeze.ts";
 import { coerceToolArgs } from "../../src/ai/piAgent/argCoerce.ts";

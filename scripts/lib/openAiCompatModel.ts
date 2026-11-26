@@ -7,7 +7,7 @@
 // 워커에는 인증·저장소가 없다(oh-my-pi-worker.ts 머리말). 호스트가 요청마다 `compatEndpoints` 를 실어 보내고,
 // 키는 기존 providerApiKeys 로 따로 온다. 브라우저가 보낸 값은 여기에 닿지 않는다 — 주소는 항상 호스트 저장소의 것이다.
 
-import { buildModel } from "@oh-my-pi/pi-catalog/build";
+import { buildModel } from "./piCore.ts";
 import { lookup } from "node:dns/promises";
 import {
   checkOpenAiCompatBaseUrl,

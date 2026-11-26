@@ -6,7 +6,7 @@
 
 import { localCliIdOf } from "./localCliAgent/types.ts";
 import { LOCAL_CLI_ADAPTERS, localCliBinary } from "./localCliAgent/registry.ts";
-import { completeSimple } from "@oh-my-pi/pi-ai";
+import { completeSimple } from "./piCore.ts";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import { getOhMyPiProvider } from "../../src/ai/ohMyPiProviders.ts";
 import type { ImageDelivery } from "../../src/ai/imageDelivery.ts";

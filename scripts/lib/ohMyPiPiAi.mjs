@@ -109,8 +109,12 @@ function startWorker() {
     // Tests point this at a script that crashes on startup to pin the failure contract.
     const command = process.env.OPRN_OH_MY_PI_WORKER_COMMAND;
     const packedBin = process.env.OPRN_OH_MY_PI_WORKER_BIN;
+    // omp-to-pi 시제품: 번들된 JS 워커는 지금 프로세스의 실행 파일(Electron 이면 ELECTRON_RUN_AS_NODE 로 Node 처럼)로 띄운다.
+    const workerJs = process.env.OPRN_PI_WORKER_JS;
     const child = command
       ? spawn(command, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env }, shell: true })
+      : workerJs && existsSync(workerJs)
+        ? spawn(process.execPath, [workerJs], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env, ELECTRON_RUN_AS_NODE: "1" } })
       : packedBin && existsSync(packedBin)
         ? spawn(packedBin, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env } })
         : spawn(bun, [workerScript()], {

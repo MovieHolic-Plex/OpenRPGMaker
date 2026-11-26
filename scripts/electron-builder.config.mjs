@@ -34,7 +34,7 @@ export default {
   // 각 OS 가 자기 전체 목록을 갖는다.
   // AI 워커는 실행 파일이라 asar 밖에 있어야 하고, 워커가 require 하는 pi_natives 애드온은 로더가
   // 워커 옆 폴더에서 찾는다(scripts/build-electron.mjs). 둘 다 풀어 둔다.
-  asarUnpack: ["scripts/**", "dist-electron/oprn-agent-mode-mcp.mjs", "dist-electron/agent-npm/**", "dist-electron/oh-my-pi-worker", "dist-electron/oh-my-pi-worker.exe", "dist-electron/pi_natives.*.node"],
+  asarUnpack: ["scripts/**", "dist-electron/oprn-agent-mode-mcp.mjs", "dist-electron/agent-npm/**", "dist-electron/oprn-pi-worker.mjs"],
   extraMetadata: { main: "dist-electron/main.cjs" },
   asar: true,
   // 스토어 웹사이트의 「에디터에서 열기」(oprn://store/install?…). macOS Info.plist·Linux .desktop MimeType 에 들어간다.
@@ -55,7 +55,7 @@ export default {
     // 띄어쓰기 없는 이름. 기본값 「OPRN Studio-<판>.AppImage」 는 gh 가 올릴 때 「OPRN.Studio-…」 로 바꿔서
     // latest-linux.yml 의 path 와 릴리스 자산 이름이 어긋난다(자동 업데이트가 404). 릴리스의 옛 이름과 같다.
     artifactName: "OPRN.Studio-${version}.${ext}",
-    files: [...APP_FILES, "!dist-electron/oh-my-pi-worker.exe", "!dist-electron/pi_natives.win32-*.node"],
+    files: APP_FILES,
   },
   // NSIS exe(portable)는 electron-builder 가 내려받은 makensis 를 직접 돌려 리눅스에서도 만든다
   // — 실측 2026-10-10: wine 없이 nsis-3.0.4.1/nsis-resources-3.4.1 만 내려받아 생성됨.
@@ -70,7 +70,7 @@ export default {
   win: {
     target: ["nsis", "portable"],
     ...(AZURE_SIGN ? { azureSignOptions: AZURE_SIGN } : {}),
-    files: [...APP_FILES, "!dist-electron/oh-my-pi-worker", "!dist-electron/pi_natives.linux-*.node"],
+    files: APP_FILES,
   },
   nsis: {
     oneClick: true,
