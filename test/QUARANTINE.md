@@ -199,3 +199,9 @@ git mv test/foo.quarantine.test.ts test/foo.test.ts
 ```bash
 find test -name '*.quarantine.test.ts' | wc -l
 ```
+
+
+## 2026-11-26 지움 (test-diet-r3)
+
+지킬 영역(저장 형식 호환·플레이어 런타임·빌드/릴리스/업데이트·조수 도구 계약·생성기 결정성)에 걸리지 않는 격리 파일 72개를 지웠다.
+목록·무엇을 확인하던 시험인지·살릴 후보는 이슈 #5172 에 있다. 스크립트·src 가 경로로 부르는 3개(toolCatalog, originalContext, storeMutationInstrumentation)는 남겼다.
