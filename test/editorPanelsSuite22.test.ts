@@ -86,6 +86,23 @@ describe("databaseWave2BatchC", () => {
       expect(references.textContent).toContain("(참조하는 스킬 없음)");
     });
   });
+  describe("state rare panels sit behind 「고급」 (btn-trim-r2)", () => {
+    it("keeps 기본 설정·참조 visible and toggles the rare panels with one button", () => {
+      const form = renderStateForm("state_poison");
+      const toggle = findByTestId(form, "db-state-advanced-toggle");
+      const runtime = findByTestId(form, "db-state-runtime-hint")?.parentElement;
+      const references = findByTestId(form, "db-state-references");
+      if (!toggle || !runtime || !references) throw new Error("missing state panels");
+      expect(references.hidden).toBe(false);
+      expect(runtime.hidden).toBe(true);
+      expect(toggle.getAttribute("aria-expanded")).toBe("false");
+      toggle.click();
+      expect(runtime.hidden).toBe(false);
+      expect(toggle.getAttribute("aria-expanded")).toBe("true");
+      toggle.click();
+      expect(runtime.hidden).toBe(true);
+    });
+  });
   describe("state numeric fields clamp at the view level (P10)", () => {
     it("clamps 회복 확률 999 → 100 and 명중률 보정 -50 → 0 with display write-back", () => {
       const form = renderStateForm("state_poison");

@@ -138,6 +138,8 @@ test("Tier0-1/2: 데모가 gen1 게이트를 켜고, 상태 runtimeEffects 가 �
   await page.getByTestId("db-tab-states").click();
   const workbench = page.getByTestId("db-states-rm2k3-workbench");
   await expect(workbench).toBeVisible();
+  // 전투 규칙 패널은 「고급」 뒤에 있다(btn-trim-r2).
+  await page.getByTestId("db-state-advanced-toggle").click();
   await expect(workbench).toContainText("전투 규칙 (Gen1 knob)");
 
   const attackMult = page.getByTestId("db-state-rt-attack-mult");
