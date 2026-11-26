@@ -5,6 +5,7 @@ import { CONDITION_OP_OPTIONS } from "./options";
 import { npcActivitySuggestionList, renderFriendshipAtLeastCondition, renderInsideLocationCondition, renderRelationshipAtLeastCondition, selfSwitchControl, SEASON_OPTIONS, TIME_PHASE_OPTIONS } from "./conditionForm";
 import { hasCharacterId } from "@/project/socialKey";
 import { renderAdvancedConditions } from "./pageAdvancedConditions";
+import { advancedConditionEntries } from "./pageConditionLayout";
 import { databaseRecordSelect, switchVariableIdPicker } from "./pageConditionControls";
 import {
   type PageConditionContext,
@@ -185,6 +186,24 @@ export function renderPageConditions(
     dataset: { testid: "event-condition-palette" },
     children: specs.map((spec) => conditionChip(spec)),
   });
+  // 칩 14개와 「고급 조건」 추가 줄은 같은 일(조건 담기)을 하는 두 길이었다(btn-trim-r2, 조건 창 19→4).
+  // 「조건 추가 ▾」 하나를 눌렀을 때만 둘 다 펼친다. 칩을 누르면 다시 그려지며 접힌다 — 고르면 닫히는 메뉴다.
+  const advanced = renderAdvancedConditions(context);
+  const advancedHasEntries = advancedConditionEntries(context.page).length > 0;
+  // hidden 속성은 이 칸들의 display 규칙에 져서 style 로 접는다.
+  const setOpen = (open: boolean): void => {
+    palette.style.display = open ? "" : "none";
+    if (!advancedHasEntries) advanced.style.display = open ? "" : "none";
+    addToggle.setAttribute("aria-expanded", String(open));
+  };
+  const addToggle = el("button", {
+    class: "btn small event-condition-add-toggle",
+    attrs: { type: "button", "aria-expanded": "false", style: "justify-self:start;align-self:flex-start;width:auto" },
+    dataset: { testid: "event-condition-add-toggle" },
+    text: "조건 추가 ▾",
+  });
+  addToggle.addEventListener("click", () => setOpen(addToggle.getAttribute("aria-expanded") !== "true"));
+  setOpen(false);
 
   const picked = specs.filter((spec) => spec.enabled);
   const list = el("div", {
@@ -196,15 +215,16 @@ export function renderPageConditions(
           el("p", {
             class: "event-condition-empty",
             dataset: { testid: "event-condition-empty" },
-            text: "조건을 안 걸면 이 페이지가 늘 쓰입니다. 위에서 골라 담으세요.",
+            text: "조건을 안 걸면 이 페이지가 늘 쓰입니다. 「조건 추가」에서 골라 담으세요.",
           }),
         ],
   });
 
   return [
+    addToggle,
     palette,
     list,
-    renderAdvancedConditions(context),
+    advanced,
   ];
 }
 
