@@ -65,8 +65,11 @@ test("T5 battle-domain tabs persist enemy, troop, and battle screen settings int
   await switchDatabaseTab(page, troopsTab);
   await page.getByTestId("db-field-name").fill("T5 Runtime Troop");
   await page.getByTestId("db-picker-troop-member-enemy").selectOption({ label: "T5 Runtime Hornet" });
+  // 좌표와 배경은 접기 안이다(btn-trim-r2).
+  await page.getByTestId("db-troop-member-advanced-toggle").click();
   await page.getByTestId("db-field-troop-member-x").fill("188");
   await page.getByTestId("db-field-troop-member-y").fill("104");
+  await page.getByTestId("db-troop-config-toggle").click();
   await page.getByTestId("db-field-troop-backdrop").fill("easyrpg-backdrop-dawn1");
 
   const edited = await exportedProject(page);

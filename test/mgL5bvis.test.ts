@@ -209,11 +209,12 @@ describe("mgL5bvisBackdropMotion", () => {
       renderTroopRecordForm(form, troop, () => undefined);
       expect(form.querySelector("[data-testid='db-troop-backdrop-motion']")).toBeNull();
       expect(form.querySelector("[data-testid='db-troop-scenery-scenery']")).not.toBeNull();
-      // 배경 카드는 접힌 「배경 고르기」 뒤에 있다(버튼 줄이기). 「배경 변경」 은 밖에 남는다.
+      // 배경 카드는 접힌 「배경 고르기」 뒤에 있다(버튼 줄이기). 「배경 변경」 은 그 밖, 「설정」 접기 안에 남는다(btn-trim-r2).
       const fold = form.querySelector("[data-testid='db-troop-scenery-toggle']")?.parentElement as HTMLDetailsElement | null;
       expect(fold?.open).toBe(false);
       expect(form.querySelector<HTMLElement>("[data-testid='db-troop-scenery-scenery']")?.closest("[hidden]")).not.toBeNull();
-      expect(form.querySelector("[data-testid='db-troop-change-background']")?.closest("details")).toBeNull();
+      const cycleFold = form.querySelector("[data-testid='db-troop-change-background']")?.closest("details");
+      expect(cycleFold?.querySelector("summary")?.getAttribute("data-testid")).toBe("db-troop-config-toggle");
       form.remove();
     });
 

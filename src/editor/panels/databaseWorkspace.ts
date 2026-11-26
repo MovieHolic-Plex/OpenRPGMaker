@@ -261,6 +261,26 @@ export function listToolbar(actions: readonly ToolbarAction[]): HTMLElement {
   });
 }
 
+// 목록 도구는 「+ 추가」만 남기고 나머지(복제·삭제·갤러리/목록·AI로 생성·소재)는 ⋯ 하나 뒤로 모은다(btn-vqa-db PR 3,
+// 오너 2026-11-24 「사용자는 많은 버튼을 원하지 않는다」). 단추 요소·testid·배선은 그대로다.
+// `.db-toolbar` 안에 두어야 ⋯ 모양·위로 여는 메뉴 CSS 가 붙는다.
+export function toolbarMore(
+  children: readonly HTMLElement[],
+  options: { readonly title?: string; readonly ariaLabel?: string; readonly testid?: string } = {},
+): HTMLElement {
+  return el("details", {
+    class: "db-toolbar-more",
+    children: [
+      el("summary", {
+        text: "⋯",
+        attrs: { title: options.title ?? "복제·삭제·보기 방식", "aria-label": options.ariaLabel ?? "목록 도구 더 보기" },
+        dataset: { testid: options.testid ?? "db-toolbar-more" },
+      }),
+      el("div", { class: "db-toolbar-more-menu", children: [...children] }),
+    ],
+  });
+}
+
 // ---------------------------------------------------------------------------
 // 상세(검사) 창
 // ---------------------------------------------------------------------------

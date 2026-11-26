@@ -116,7 +116,8 @@ test.describe("QA — troops tab", () => {
     await page.getByTestId("db-troop-member-add").click();
     await expect(page.getByTestId("db-troop-member-row-2")).toBeVisible();
 
-    // placement X/Y on selected (2nd) member
+    // placement X/Y on selected (2nd) member — 숨김·부위·좌표는 접기 안(btn-trim-r2)
+    await page.getByTestId("db-troop-member-advanced-toggle").click();
     await page.getByTestId("db-field-troop-member-x").fill("200");
     await page.getByTestId("db-field-troop-member-y").fill("80");
     await expect(page.getByTestId("db-troop-member-row-2")).toContainText("X200 Y80");
@@ -131,7 +132,8 @@ test.describe("QA — troops tab", () => {
     const altEnemy = await enemyOptions[1].getAttribute("value");
     if (altEnemy) await enemySelect.selectOption(altEnemy);
 
-    // 이름 생성 button: derives name from member enemy names
+    // 이름 생성 button: derives name from member enemy names — 배치 도구 ⋯ 안(btn-trim-r2)
+    await page.getByTestId("db-troop-member-more").evaluate((summary) => summary.parentElement?.setAttribute("open", ""));
     await page.getByTestId("db-troop-generate-name").click();
     const generated = await page.getByTestId("db-field-name").inputValue();
     expect(generated).toContain("부대");
@@ -139,6 +141,8 @@ test.describe("QA — troops tab", () => {
     // 배경 변경 button cycles the scenery kind (도트 측면, 2026-10-02 — 그림 칸이 아니라 종류 카드가 바뀐다)
     const checkedScenery = (): Promise<string | null> =>
       page.locator('[data-testid^="db-troop-scenery-"][aria-checked="true"]').first().getAttribute("data-testid");
+    // 배경·배치 방식·인원 칸은 「설정」 접기 안(btn-trim-r2). 펼친 접기는 다시 그려도 열린 채다.
+    await page.getByTestId("db-troop-config-toggle").click();
     await page.getByTestId("db-troop-change-background").click();
     const backdrop1 = await checkedScenery();
     expect(backdrop1).toMatch(/^db-troop-scenery-(plains|forest|cave|snow|desert)$/);
@@ -186,12 +190,15 @@ test.describe("QA — troops tab", () => {
     await expect(page.getByTestId("db-troop-member-row-1")).toHaveClass(/active/);
 
     // 정렬 / RM2003 / 지우기
+    await page.getByTestId("db-troop-member-more").evaluate((summary) => summary.parentElement?.setAttribute("open", ""));
     await page.getByTestId("db-troop-member-arrange").click();
     await expect(page.getByTestId("db-troop-member-row-1")).toContainText("X92 Y92");
+    await page.getByTestId("db-troop-member-more").evaluate((summary) => summary.parentElement?.setAttribute("open", ""));
     await page.getByTestId("db-troop-member-rm2003-preset").click();
     await expect(page.getByTestId("db-troop-member-row-4")).toBeVisible();
     const rm2003 = (await troopsFromExport(page)).find((entry) => entry.id === id);
     expect(rm2003?.members?.length).toBe(4);
+    await page.getByTestId("db-troop-member-more").evaluate((summary) => summary.parentElement?.setAttribute("open", ""));
     await page.getByTestId("db-troop-member-clear").click();
     await expect(page.locator(".db-troop-member-row.empty")).toBeVisible();
 
@@ -339,7 +346,8 @@ test.describe("QA — troops tab", () => {
 
       await page.getByTestId("db-troop-member-add").click();
 
-      // 참전 수 clamps 0/negative → cleared(미지정), huge → 99
+      // 참전 수 clamps 0/negative → cleared(미지정), huge → 99 — 「설정」 접기 안(btn-trim-r2)
+      await page.getByTestId("db-troop-config-toggle").click();
       await page.getByTestId("db-field-troop-active-slots").fill("-5");
       await switchDatabaseTab(page, ENEMIES_TAB);
       await switchDatabaseTab(page, TROOPS_TAB);
@@ -354,6 +362,7 @@ test.describe("QA — troops tab", () => {
       expect(troop?.activeSlots).toBe(99);
 
       // extreme member X: preview must not explode; capture what is stored
+      await page.getByTestId("db-troop-member-advanced-toggle").click();
       await page.getByTestId("db-field-troop-member-x").fill("9999");
       await page.getByTestId("db-field-troop-member-y").fill("-50");
       troop = (await troopsFromExport(page)).find((entry) => entry.id === id);
