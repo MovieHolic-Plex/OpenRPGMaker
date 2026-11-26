@@ -1269,6 +1269,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // 정방향에 없으면 반대편 끝으로 랩 — 반대 방향으로 가장 먼(=primary 최대) 버튼 중
     // 보조축이 가장 맞는 것을 고른다.
     let next = pick(buttons, sign);
+    // 목록 맨 끝에서 ↓ 로 감길 때는 ↑ 와 같은 순환(… 첫 행 ↔ 「뒤로」 ↔ 맨 아래 행)대로 먼저 「뒤로」(머리줄 오른쪽 행)에 선다.
+    // 아래 일반 랩은 보조축(가로) 어긋남에 벌점을 줘, 머리줄 오른쪽의 「뒤로」를 건너뛰고 첫 행으로 갔다(2026-11-26 battle-skill-nav 후속).
+    if (!next && axis === "y" && sign > 0) {
+      next = buttons.find((button) => button !== current && button.dataset.commandIcon === "back" && center(button).y < from.y - 2);
+    }
     if (!next) {
       let bestScore = -Infinity;
       for (const button of buttons) {

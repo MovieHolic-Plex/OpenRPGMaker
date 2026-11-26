@@ -492,6 +492,7 @@ SQLite 저장소를 자동 변경하는 이관은 수행하지 않는다.
 ## 전투 스킨은 둘뿐 — retro2003(RM2003식) / pokemon (2026-10-02, 사용자 결정 「RM2003 식만 남기고 정리」)
 - **스킬 목록은 폭을 넓힌다(jrpg-loop-1)**: retro2003 에서 스킬·아이템 하위 메뉴가 열려 있는 동안 명령 호스트를 파티 창 폭까지 넓힌다(`_retro2003.css`). 이름 잘림(「십자…」) 해소. 속성 배지는 `skillElementBadgeLabel`(battleCommandDom.ts)이 기본 영문 속성명(Sword·Fire…)을 한글로 바꾼다.
 - **스킬 목록 행 배치(2026-10-29)**: 무기 꼬리표(「검」)는 이름 바로 뒤에 붙고, 비용 배지(MP n)만 `margin-left:auto` 로 오른쪽 끝에 민다(`_rm2000.css` 하위 메뉴 `.battle-command-text` 가 space-between 이던 때는 꼬리표가 행 가운데 떴다). retro2003 측면 전투에서 「뒤로」 행은 머리줄(「스킬」) 오른쪽에 앉는다(`_retro2003.css`, grid-row 1) — 목록 끝 행이면 기술 3개만으로 4행 스크롤포트가 차서 「▾」 가 기술 행 위에 떴다. 기술이 4개 이상이면 「▾」 는 여전히 뜬다. 증거 `ledger/evidence/camera/battle-skilllist-{before,after}.png`.
+- **목록 키 순환은 위·아래가 대칭이다(2026-11-26).** 머리줄 오른쪽의 「뒤로」는 순환에 낀 한 자리다: ↑ 로 첫 행 위에서 「뒤로」, 한 번 더 누르면 맨 아래 행. ↓ 로 맨 아래 행에서 「뒤로」(`moveMenuCursor` 의 랩이 먼저 위쪽 「뒤로」 행을 고른다), 한 번 더 누르면 첫 행. 일반 랩은 가로 어긋남에 벌점을 줘 오른쪽 「뒤로」를 건너뛰고 첫 행으로 갔다. 시험 `test/playerSuite.test.ts`(좌표를 흉내 낸 getBoundingClientRect).
 
 - 등록 스킨은 `retro2003`·`pokemon` 둘(`BattleSkinId`·`BattleUiStyle` 도 둘). 창 색만 다르던 측면 여섯
   `rm2003`(유리)·`octopath`(먹빛)·`chrono`(청람)·`bravely`(세피아)·`ff`(코발트)·`goldensun`(금갈색)을 **지웠다** —
