@@ -205,3 +205,9 @@ find test -name '*.quarantine.test.ts' | wc -l
 
 지킬 영역(저장 형식 호환·플레이어 런타임·빌드/릴리스/업데이트·조수 도구 계약·생성기 결정성)에 걸리지 않는 격리 파일 72개를 지웠다.
 목록·무엇을 확인하던 시험인지·살릴 후보는 이슈 #5172 에 있다. 스크립트·src 가 경로로 부르는 3개(toolCatalog, originalContext, storeMutationInstrumentation)는 남겼다.
+
+## 2026-11-26 지움 2차 (test-diet-r3, 오너 승인)
+
+1차에서 「살릴 후보」로 남겼던 56개(저장 형식 호환·플레이어 런타임·빌드/릴리스·조수 도구 계약·생성기 결정성)도 오너가 지우라고 해서 지웠다.
+목록은 이슈 #5172 의 「살릴 후보 56개」 표 그대로다. 56개 모두 스크립트·src·설정이 경로로 부르지 않는 것을 `git grep` 으로 확인했다(위키 두 줄만 있어 같이 고침).
+남은 격리 시험은 3개뿐이다: toolCatalog, originalContext, storeMutationInstrumentation(스크립트·src 가 경로로 부른다). 위 목록 표의 행은 옛 기록이라 그대로 둔다.

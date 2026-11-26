@@ -91,8 +91,7 @@ canonical project through `assertSpatialToolChange`: schema/reference checks plu
 pairs, even when `spatialAuthoring` JSON is unchanged. This happens before baseline
 lint subtraction. An existing projection error cannot waive another mutation with
 the same lint atom (T17-AV-1). Genuine repairs producing valid projections remain
-allowed, as do unrelated edits with pre-existing legacy lint errors. The quarantined
-`test/spatialToolProjectionBoundary.quarantine.test.ts` (outside `npm test`) covers registered runner -> shared
+allowed, as do unrelated edits with pre-existing legacy lint errors. The former quarantined suite `spatialToolProjectionBoundary` (outside `npm test`; deleted 2026-11-26) covered registered runner -> shared
 acceptance -> real store/history -> deserialize, including the clean-baseline
 rejection control and independent entry/return acceptance checks.
 Generic hierarchy edits cannot gain authority by passing an otherwise well-formed
@@ -129,10 +128,9 @@ canonical 프로젝트를 만들고 `scripts/capture-pi-spatial-apply.mjs` 를 �
 `verify-shots/pi-spatial-apply/` 에 남긴다(2026-09-16 실측: 팀·증거 있음 = `적용했습니다 — 팀, 툴콜 3회,
 바뀐 맵·항목 1개.` + 영수증, 팀·증거 없음 = `적용 실패(commit-rejected): Canonical AI acceptance
 requires an issued tool proposal`, 맵 범위·증거 있음 = 병합 경로도 적용 완료).
-격리 스위트인 `test/spatialToolAcceptance.quarantine.test.ts` 와
-`test/spatialToolProjectionBoundary.quarantine.test.ts` 는 `applyProposedProject` 가
-`base`/`baseline` 을 필수로 받게 바뀐 뒤 갱신되지 않아 지금은 게이트에 도달하기 전에
-`TypeError` 로 죽는다(격리라 기본 실행에서 빠져 이 경계를 지키지 못했다).
+격리 스위트였던 `spatialToolAcceptance` 와 `spatialToolProjectionBoundary` 는 `applyProposedProject` 가
+`base`/`baseline` 을 필수로 받게 바뀐 뒤 갱신되지 않아 게이트에 도달하기 전에 `TypeError` 로 죽었고,
+격리라 기본 실행에서 빠져 이 경계를 지키지 못했다. 2026-11-26 에 두 파일을 지웠다(#5172).
 
 The actual `approvalPolicy.ts` at this base returns `apply-now` for successful
 writes. These tools do not replace that policy with a new approval gate. Conversely,
