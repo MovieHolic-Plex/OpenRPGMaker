@@ -143,7 +143,10 @@ export function checkTeamMvp(project: Project): TeamMvpCheck {
       const detail = run.failure ? `${run.failure.goal}: ${run.failure.detail}` : "";
       if (!run.ok && !detail.includes(TIMED_OUT)) {
         // 막힌 길은 그 길이 있는 장소 맵 담당 몸이다 — 실패 글에 나오는 세계 장소 맵 이름으로 찾는다(t1 2026-11-26: 숲의 레버 바위 문이 숲 착지에서 동굴 문까지 길을 막았다).
-        const blocked = (project.worldGraph?.nodes ?? []).map((node) => project.maps[node.mapId]).find((map) => map?.name && detail.includes(map.name));
+        // 실패 글에 가장 먼저 나오는 장소 맵이 고칠 맵이다 — «A 에서 B 로 가는 문이 없다» 면 문을 놓을 곳은 A 다. 이름과 id(map_blank_start 처럼 이름 대신 id 로 나온다) 둘 다로 찾는다.
+        // (2026-11-26 variant-remeasure 호러 after3 r2: 시작 맵에서 감옥으로 가는 문이 없는데 이름만 찾아 감옥 담당에게 맡겨 두 번 다 못 고쳤다.)
+        const at = (map: Project["maps"][string] | undefined): number => !map ? -1 : Math.min(...[map.name, map.id].map((key) => key ? detail.indexOf(key) : -1).map((i) => (i < 0 ? Infinity : i)));
+        const blocked = (project.worldGraph?.nodes ?? []).map((node) => project.maps[node.mapId]).filter((map) => map && at(map) !== Infinity).sort((p, q) => at(p) - at(q))[0];
         if (blocked) fixes.push({ mapId: blocked.id, task: `시작에서 끝 지점까지 걸어서 못 간다: ${detail.slice(0, 240)} — 이 맵에서 길을 막는 문·레버 장치·이벤트를 치우거나 길을 튼다(세계 문 ev_world_gate* 은 옮기지 않는다). 다른 맵은 건드리지 않는다.` });
         problems.push(`시작에서 끝 지점(${target.where.mapName ?? target.where.mapId})까지 걸어서 못 간다: ${detail.slice(0, 200)} — 막힌 길·조건을 고치게 배정한다.`);
       }

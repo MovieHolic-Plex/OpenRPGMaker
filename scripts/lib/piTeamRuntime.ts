@@ -248,7 +248,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   /** 런타임이 생성기로 미리 지은 세계 장소 맵(teamMvpPrebuild.ts) — 그 담당은 생성기 없이 사람·이벤트만 놓는다. */
   const prebuilt = new Set<string>();
   /** finish 의 첫 MVP 관문이 맵에 묶인 문제를 그 맵 담당에게 바로 맡겼는지(한 번뿐). */
-  let mvpAutoFixed = false;
+  let mvpAutoFixes = 0;
   /** 첫 MVP 팀장이 finish 를 한 번이라도 불렀는지 — 그 전에는 이미 끝난 맵에 두 번째 배정(보강)을 받지 않는다. */
   let mvpFinishTried = false;
   // A review belongs to the inspected snapshot, not merely to a map id.
@@ -877,8 +877,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
           if (verdict.applied.length) emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: verdict.applied.join(" / ") } });
           // 맵에 묶인 문제(끝 지점 없음·못 닿는 장소)는 팀장에게 돌려보내지 않고 그 맵 담당에게 바로 맡긴 뒤 다시 본다(한 번) —
           // 거절 → 팀장 LLM 재배정 → wait → 다시 finish 왕복이 판마다 10분 넘게 걸렸다(2026-11-25 team-mvp-revive r8·r9).
-          if (verdict.problems.length && verdict.fixes.length && !mvpAutoFixed) {
-            mvpAutoFixed = true;
+          // 맵 담당 바로 고침은 두 번까지 — 첫 고침이 다른 칸을 막거나 새 길 문제를 드러내는 일이 잦다(2026-11-26 호러 팀 2/2 가 한 번 고친 뒤 거절 두 번으로 깨진 채 나갔다).
+          if (verdict.problems.length && verdict.fixes.length && mvpAutoFixes < 2) {
+            mvpAutoFixes += 1;
             emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `첫 MVP 관문: 맵 담당에게 바로 고침을 맡깁니다 — ${verdict.fixes.map((fix) => fix.mapId).join(", ")}` } });
             const launched: Promise<AgentOutcome>[] = [];
             for (const fix of verdict.fixes.filter((fix, index, all) => all.findIndex((other) => other.mapId === fix.mapId) === index)) {
