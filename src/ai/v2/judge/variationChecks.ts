@@ -61,11 +61,11 @@ export function variationStructureProblems(before: Project, after: Project, task
     }
   }
   if (v.event?.order === "days") {
-    const days = bp.steps.map((step) => dayOf(`${step.place} ${step.action} ${step.goal ?? ""}`));
+    const days = bp.steps.map((step) => dayOf(`${step.place} ${step.action} ${step.needs ?? ""} ${json(step.text)}`));
     const distinct = new Set(days.filter((d): d is number => d !== undefined));
     const back = days.findIndex((d, i) => i > 0 && d !== undefined && days.slice(0, i).some((e) => e !== undefined && e > d));
     if (distinct.size < 2 || back >= 0) {
-      problems.push(tagged("game", "변주 사건", `카드 사건 «${v.event.ko}» 인데 청사진 걸음에 날 단계가 없다. 걸음 action 이나 goal 을 «첫째 날 → 둘째 날 → 셋째 날» 순으로 나누어 write_blueprint 를 다시 부른다.`));
+      problems.push(tagged("game", "변주 사건", `카드 사건 «${v.event.ko}» 인데 청사진 걸음에 날 단계가 없다. 걸음 action 을 «첫째 날 → 둘째 날 → 셋째 날» 순으로 나누어 write_blueprint 를 다시 부른다.`));
     }
   }
   return problems;
