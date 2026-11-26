@@ -31,6 +31,7 @@ export const PROMPT_HOME_TESTIDS = {
   gamesMore: "first-run-my-games-more",
   gameFile: "first-run-open-game-file",
   aiStatus: "first-run-ai-status",
+  error: "first-run-error",
 } as const;
 
 /** 홈의 「내 게임」 줄에 놓는 카드 수(마지막 칸은 「빈 프로젝트」). 더 있으면 「모두 보기」. */
@@ -81,6 +82,8 @@ export type PromptHome = {
   /** 내 게임 줄을 다시 그린다. 빈 배열이면 줄을 감추고 처음 온 사람의 화면이 된다. */
   setGames(games: readonly PromptHomeGame[], total: number): void;
   setAiStatus(status: AiStatusSummary): void;
+  /** 만들기 실패 문구를 입력칸 바로 아래에 둔다. 빈 문자열이면 감춘다. */
+  setError(message: string): void;
 };
 
 const SUBMIT_LABEL = "만들기 시작";
@@ -183,6 +186,9 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
   });
   submit.addEventListener("click", send);
   syncSubmit();
+  // 실패는 누른 버튼 곁에서 말한다 — 화면 맨 아래 작은 줄만 바뀌면 클릭이 무시된 것처럼 보였다(2026-11-26 QA vm-qa15 #34·#50).
+  const errorLine = el("p", { class: "cf-error", attrs: { role: "alert", hidden: "" }, dataset: { testid: PROMPT_HOME_TESTIDS.error } });
+  const setError = (message: string): void => { errorLine.textContent = message; errorLine.hidden = message === ""; };
 
   const link = (text: string, testid: string, run: () => void): HTMLButtonElement => el("button", {
     class: "fr-link", attrs: { type: "button" }, dataset: { testid }, text, on: { click: () => { if (!busy) run(); } },
@@ -260,6 +266,7 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
       el("h1", { class: "fr-title", text: "어떤 게임을 만들까요?" }),
       el("p", { class: "fr-sub", text: "한 줄로 적으면 AI가 맵·인물·이야기를 지금 바로 만들어요." }),
       el("div", { class: "fr-composer", children: [input, el("div", { class: "fr-composer-foot", children: [attach, thumbs, fileInput, submit] })] }),
+      errorLine,
       el("div", { class: "fr-chips", attrs: { role: "group", "aria-label": "예시" }, children: chips }),
       gamesSection,
       // 「예제 열어 보기」 작은 행 세 개(2026-11-04, Studio/런타임 분리 B안 http://mdc-server:18301/studio-runtime-split.html).
@@ -315,5 +322,5 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
     aiStatus.replaceChildren(el("span", { class: "fr-ai-dot", attrs: { "aria-hidden": "true" } }), label);
   };
 
-  return { element: root, focus: () => input.focus(), syncLocale, setGames, setAiStatus };
+  return { element: root, focus: () => input.focus(), syncLocale, setGames, setAiStatus, setError };
 }

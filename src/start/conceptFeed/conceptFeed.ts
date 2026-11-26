@@ -39,6 +39,9 @@ export const CONCEPT_FEED_TESTIDS = {
   offline: "concept-feed-offline",
   close: "concept-feed-close",
   error: "concept-feed-error",
+  draftError: "concept-feed-draft-error",
+  retry: "concept-feed-retry",
+  retryInput: "concept-feed-retry-input",
   quick: "concept-feed-quick",
   quickGenre: "concept-feed-quick-genre",
   quickStart: "concept-feed-quick-start",
@@ -114,6 +117,29 @@ function defaultObserve(target: Element, onVisible: () => void): () => void {
   const observer = new IntersectionObserver((entries) => { if (entries.some((entry) => entry.isIntersecting)) onVisible(); }, { rootMargin: "600px 0px" });
   observer.observe(target);
   return () => observer.disconnect();
+}
+
+/** 컨셉 초안 실패를 원인과 다음 할 일 한 문장으로. 원시 응답(JSON)은 보이지 않는다. */
+export function draftFailureReason(error: unknown): string {
+  const message = error instanceof Error ? error.message : String(error);
+  if (/429|한도|usage limit|rate limit/iu.test(message)) {
+    return "AI 사용 한도에 걸렸어요. 잠시 뒤 다시 시도하거나 AI 설정에서 다른 계정을 고르세요.";
+  }
+  if (/Failed to fetch|NetworkError|ECONN|401|403|로그인|연결|브리지|bridge|Invalid URL/iu.test(message)) {
+    return "AI 에 연결하지 못했어요. AI 설정에서 계정 연결을 확인한 뒤 다시 시도해 주세요.";
+  }
+  const plain = message.replace(/\s*[—-]\s*\{.*$/su, "").trim();
+  return plain || "컨셉을 만들지 못했어요. 문장을 조금 바꿔 다시 시도해 주세요.";
+}
+
+// 답이 없는 연결은 「만드는 중…」에 끝없이 머물렀다(2026-11-26 실측: 3분 넘게 변화 없음). 두 번 묻는 초안도 보통 1분 안에 끝난다.
+const DRAFT_TIMEOUT_MS = 120_000;
+const DRAFT_TIMEOUT_MESSAGE = "AI 가 2분 동안 답하지 않았어요. AI 설정에서 계정을 확인하거나 잠시 뒤 다시 시도해 주세요.";
+
+function withDraftTimeout<T>(work: Promise<T>): Promise<T> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const timeout = new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error(DRAFT_TIMEOUT_MESSAGE)), DRAFT_TIMEOUT_MS); });
+  return Promise.race([work, timeout]).finally(() => clearTimeout(timer));
 }
 
 async function defaultDraft(text: string): Promise<DraftedConcept> {
@@ -565,7 +591,7 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
       el("p", { class: "cf-detail-hook", text: `“${text}”`, attrs: { translate: "no" } }),
     ] }));
     try {
-      const drafted = await draft(text);
+      const drafted = await withDraftTimeout(draft(text));
       if (mine !== detailSeq || detail.hidden) return;
       renderDetail(drafted.concept, items.filter((other) => other.presetId === drafted.concept.presetId).slice(0, 6), drafted.thumb);
       // 피드가 검색어로 걸러져 있으면 위 목록이 비기 쉽다 — 출처의 비슷한 컨셉(태그·장르 틀)으로 채운다.
@@ -574,8 +600,31 @@ export function createConceptFeed(options: ConceptFeedOptions): ConceptFeed {
       }, () => undefined);
     } catch (error) {
       if (mine !== detailSeq) return;
-      setError(error instanceof Error ? error.message : String(error));
+      renderDraftFailure(text, error);
     }
+  }
+
+  // 실패하면 「만드는 중…」을 지우고 원인·고칠 수 있는 문장·다시 시도를 한자리에 둔다 — 예전엔 화면 맨 아래 빨간 줄만 남아
+  // 막다른 길이었다(2026-11-26 QA vm-qa15 #52·#57·#93). 다시 시도는 openCustom 을 다시 불러 AI 연결 확인부터 거친다.
+  function renderDraftFailure(text: string, error: unknown): void {
+    const input = el("textarea", {
+      class: "fr-input",
+      attrs: { rows: "3", maxlength: "200", spellcheck: "false", "aria-label": "만들고 싶은 게임" },
+      dataset: { testid: CONCEPT_FEED_TESTIDS.retryInput },
+    }) as HTMLTextAreaElement;
+    input.value = text;
+    const retry = el("button", {
+      class: "fr-submit", attrs: { type: "button" }, dataset: { testid: CONCEPT_FEED_TESTIDS.retry },
+      children: [el("span", { text: "다시 시도" })],
+      on: { click: () => { const next = input.value.trim(); if (next) void openCustom(next); } },
+    });
+    detail.replaceChildren(el("div", { class: "cf-detail-main", children: [
+      el("button", { class: "cf-back cf-link", attrs: { type: "button" }, text: "← 피드로", dataset: { testid: CONCEPT_FEED_TESTIDS.back }, on: { click: showFeed } }),
+      el("h2", { class: "cf-detail-title", text: "컨셉을 만들지 못했어요" }),
+      el("p", { class: "cf-error", attrs: { role: "alert" }, dataset: { testid: CONCEPT_FEED_TESTIDS.draftError }, text: draftFailureReason(error) }),
+      el("div", { class: "fr-composer", children: [input, el("div", { class: "fr-composer-foot", children: [retry] })] }),
+    ] }));
+    input.focus();
   }
 
   const escape = (): boolean => {

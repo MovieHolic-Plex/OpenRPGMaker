@@ -54,6 +54,8 @@ export const START_SCREEN_TESTIDS = {
 } as const;
 
 const BLANK_TITLE = "새 게임";
+// 브라우저 미리보기에는 폴더를 만들 데스크톱 저장 다리가 없다 — 어디서 만들 수 있는지까지 말한다(2026-11-26 QA vm-qa15 #34).
+const DESKTOP_ONLY_CREATE = "브라우저 미리보기에서는 새 게임을 만들 수 없어요. 데스크톱 앱(OPRN Studio)에서 만들어 주세요.";
 const OPRN_PLAY_URL = "https://play.openrpgmaker.com";
 /** 카드 그림 굽기를 시작하기 전 기다림 — 첫 그림·프로젝트 코어 미리 읽기(fast-start, 1.5초)와 겹치지 않게. */
 const COVER_IDLE_DELAY_MS = 2_500;
@@ -181,9 +183,13 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     document.body.append(updateChip.element);
   }
   const errorBox = el("p", { class: "ln-error", attrs: { role: "alert" }, dataset: { testid: START_SCREEN_TESTIDS.error } });
+  // 프롬프트 홈이 만들어지면 그 입력칸 아래 줄로도 보낸다(아래 showPromptHome).
+  let promptErrorSink: ((message: string) => void) | null = null;
   const setError = (message: string): void => {
     errorBox.textContent = message;
     errorBox.hidden = message === "";
+    // 프롬프트 홈은 입력칸 아래에 같은 문구를 보인다(하단 토스트는 그 화면에 붙이지 않는다).
+    promptErrorSink?.(message);
   };
   setError("");
 
@@ -249,7 +255,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
 
   /** 빈 프로젝트 — 장르 없이 기본 위치에 새 폴더. */
   const createBlank = (): void => void run(async () => {
-    if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");
+    if (!bridge) throw new Error(DESKTOP_ONLY_CREATE);
     const title = t(BLANK_TITLE);
     const suggested = await bridge.suggestProjectDir?.({ title }).catch(() => null);
     const created = await bridge.createProject({ title, ...(suggested?.projectDir ? { projectDir: suggested.projectDir } : {}) });
@@ -391,7 +397,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   // 보낼 때 AI 연결을 묻는다. 연결되면 문장 → 컨셉 초안 → 기획, 거절했거나 초안이 실패하면 낱말로 장르를 고른 기획으로
   // 그래도 폴더를 만든다 — 빈 화면으로 되돌리지 않는다. 편집기는 연결을 기다렸다가 이어 짓는다(projectInterviewStartup).
   const submitFirstRun = (text: string, referenceImages: readonly string[]): Promise<void> => run(async () => {
-    if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");
+    if (!bridge) throw new Error(DESKTOP_ONLY_CREATE);
     const preset = pickFirstRunPreset(text);
     const connected = await ensureAiConnected(NEW_PROJECT_CHOICES.find((choice) => choice.id === preset)?.label ?? firstRunTitle(text));
     let brief: GameDesignBrief = firstRunBrief(text, preset);
@@ -451,10 +457,11 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         { label: "설정", testid: "first-run-more-settings", run: () => openSettings("ai") },
       ],
     });
+    promptErrorSink = promptHome.setError;
     if (lastAiStatus) promptHome.setAiStatus(lastAiStatus);
     renderPromptGames();
     if (promptShown()) return;
-    host.replaceChildren(promptHome.element, errorBox);
+    host.replaceChildren(promptHome.element);
     promptHome.focus();
   };
   const showShell = (): void => { if (shell.element.parentElement !== host) host.replaceChildren(shell.element, errorBox); };
@@ -468,7 +475,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     lead: createLead,
     beforeDraft: () => ensureAiConnected("내가 쓴 컨셉"),
     onMake: async (concept, tweak) => {
-      if (!bridge) throw new Error("데스크톱 앱에서만 새 게임을 만들 수 있습니다.");
+      if (!bridge) throw new Error(DESKTOP_ONLY_CREATE);
       if (state.busy) return false;
       state.busy = true;
       try {
