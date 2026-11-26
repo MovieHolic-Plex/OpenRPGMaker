@@ -61,6 +61,26 @@ describe("prebuildMvpWorld", () => {
   });
 });
 
+describe("checkTeamMvp endpoint reach", () => {
+  it("moves an endpoint event that stands out of reach to the nearest walkable cell instead of rejecting finish", () => {
+    const project = prebuildMvpWorld(skeleton(), NODES).project;
+    const cave = project.maps.map_cave!;
+    let wall: { x: number; y: number } | undefined;
+    for (let y = 1; y < cave.height - 1 && !wall; y += 1) for (let x = 1; x < cave.width - 1 && !wall; x += 1) {
+      const around = [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]].every(([dx, dy]) => !isPassableLanding(project, cave, x + dx!, y + dy!));
+      if (around) wall = { x, y };
+    }
+    expect(wall).toBeDefined();
+    const gate = cave.events.find((event) => event.id.startsWith("ev_world_gate"))!;
+    const page = gate.pages![0]!;
+    cave.events.push({ ...gate, id: "ev_goal", name: "끝", x: wall!.x, y: wall!.y, trigger: { kind: "action" },
+      pages: [{ ...page, trigger: { kind: "action" }, commands: [{ kind: "setSwitch", switchId: MVP_REACHED_SWITCH, value: true }] }] } as never);
+    const verdict = checkTeamMvp(project);
+    expect(verdict.problems).toEqual([]);
+    expect(verdict.applied.some((line) => line.includes("ev_goal"))).toBe(true);
+  });
+});
+
 describe("mvpBuilderProblems", () => {
   it("sends the goal-map builder back when its map has no endpoint, and passes once the switch is set", () => {
     const project = prebuildMvpWorld(skeleton(), NODES).project;

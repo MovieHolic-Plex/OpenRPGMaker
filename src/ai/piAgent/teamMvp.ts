@@ -8,6 +8,8 @@ import { MVP_PLACES } from "@/ai/v2/judge/blueprintScale";
 import { endMvpAtLastStep } from "@/ai/v2/story/shipDefaults";
 import { runSwitchPlay } from "@/qa/gameCheck/autoPlay";
 import { allPages, visitPageCommands } from "@/qa/gameCheck/walk";
+import { isPassable, isPassableLanding } from "@/project/collision";
+import type { GameEvent, GameMap } from "@/project/types";
 
 export const FIRST_MVP_TEAM_RULES = [
   `[첫 MVP 범위] 빈 프로젝트의 첫 판이다. 맵은 ${MVP_PLACES.min}~${MVP_PLACES.max}장(시작 장소 1, 이어지는 장소 1~3, 목표 장소 1), 핵심 루프 하나(만나고 → 하고 → 끝 지점), 5~10분 분량이다.`,
@@ -77,6 +79,34 @@ export function mvpBuilderProblems(project: Project, mapId: string, task: string
 const PLAY_BUDGET_MS = 90_000;
 const TIMED_OUT = "자동 플레이 시간 상한 초과";
 
+/** 그 맵의 세계 문(또는 시작 칸)에서 걸어 닿는, 이벤트가 없고 옆에 설 칸이 있는 가장 가까운 칸으로 이벤트를 옮긴다. 옮겼으면 true. */
+function relocateIntoReach(project: Project, map: GameMap, event: GameEvent): boolean {
+  const key = (x: number, y: number) => y * map.width + x;
+  const occupied = new Set(map.events.filter((other) => other !== event).map((other) => key(other.x, other.y)));
+  const seeds = map.events.filter((other) => other.id.startsWith("ev_world_gate")).map((gate) => ({ x: gate.x, y: gate.y }));
+  if (project.startMapId === map.id && project.startPos) seeds.push({ x: project.startPos.x, y: project.startPos.y });
+  const seen = new Set<number>();
+  const queue = seeds.filter((p) => isPassable(project, map, p.x, p.y));
+  for (const p of queue) seen.add(key(p.x, p.y));
+  const reach: { x: number; y: number }[] = [];
+  for (let i = 0; i < queue.length; i += 1) {
+    const p = queue[i]!;
+    reach.push(p);
+    for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]] as const) {
+      const x = p.x + dx, y = p.y + dy;
+      if (x < 0 || y < 0 || x >= map.width || y >= map.height || seen.has(key(x, y)) || occupied.has(key(x, y)) || !isPassableLanding(project, map, x, y)) continue;
+      seen.add(key(x, y)); queue.push({ x, y });
+    }
+  }
+  const nearGate = (x: number, y: number) => seeds.some((s) => Math.abs(s.x - x) + Math.abs(s.y - y) <= 1);
+  const spots = reach.filter((p) => !occupied.has(key(p.x, p.y)) && !nearGate(p.x, p.y)
+    && reach.some((q) => Math.abs(q.x - p.x) + Math.abs(q.y - p.y) === 1));
+  const best = spots.sort((a, b) => (Math.abs(a.x - event.x) + Math.abs(a.y - event.y)) - (Math.abs(b.x - event.x) + Math.abs(b.y - event.y)))[0];
+  if (!best || (best.x === event.x && best.y === event.y)) return false;
+  event.x = best.x; event.y = best.y;
+  return true;
+}
+
 /** 엔딩을 끝 지점 스위치로 바꾸고(제자리), 맵 수·도달·끝 지점까지의 자동 플레이를 본다. */
 export function checkTeamMvp(project: Project): TeamMvpCheck {
   const applied = endMvpAtLastStep(project);
@@ -100,7 +130,16 @@ export function checkTeamMvp(project: Project): TeamMvpCheck {
   }
   else {
     try {
-      const run = runSwitchPlay(project, "첫 판 끝 지점", target, MVP_REACHED_SWITCH, PLAY_BUDGET_MS);
+      let run = runSwitchPlay(project, "첫 판 끝 지점", target, MVP_REACHED_SWITCH, PLAY_BUDGET_MS);
+      // 끝 지점 이벤트가 가구 뒤·벽 틈에 서서 못 닿으면 같은 맵에서 걸어 닿는 가장 가까운 빈 칸으로 옮긴다(내용은 그대로).
+      // t4(2026-11-26 회상): 다락방 상자 이벤트 (2,8) 옆에 설 칸이 없어 관문이 두 번 거절하고 고침 배정 세 번이 8분을 썼다.
+      const goalEvent = target.page.event;
+      const was = goalEvent ? { x: goalEvent.x, y: goalEvent.y } : undefined;
+      if (!run.ok && goalEvent && target.page.map && relocateIntoReach(project, target.page.map, goalEvent)) {
+        const moved = runSwitchPlay(project, "첫 판 끝 지점", target, MVP_REACHED_SWITCH, PLAY_BUDGET_MS);
+        if (moved.ok) { applied.push(`끝 지점 이벤트 ${goalEvent.id} 를 걸어 닿는 칸 (${goalEvent.x},${goalEvent.y})으로 옮겼다`); run = moved; }
+        else if (was) { goalEvent.x = was.x; goalEvent.y = was.y; }
+      }
       const detail = run.failure ? `${run.failure.goal}: ${run.failure.detail}` : "";
       if (!run.ok && !detail.includes(TIMED_OUT)) {
         // 막힌 길은 그 길이 있는 장소 맵 담당 몸이다 — 실패 글에 나오는 세계 장소 맵 이름으로 찾는다(t1 2026-11-26: 숲의 레버 바위 문이 숲 착지에서 동굴 문까지 길을 막았다).
