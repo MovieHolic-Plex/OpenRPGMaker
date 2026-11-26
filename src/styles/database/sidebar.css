@@ -93,10 +93,14 @@
   overflow: hidden !important;
 }
 
-.database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-tabs {
-  /* 그룹 띠(64px)가 곁에 서므로 목록은 196px 이다. 좁은 창·도크는 아래 규칙이 다시 줄인다. */
-  flex: 0 0 196px !important;
-  width: 196px !important;
+/* 그룹 띠는 넓은 창(800px 이상)에서만 서므로 196px 목록도 그때만 쓴다. 예전에는 조건 없이 :not(.is-docked) 로 걸려
+   좁은 창의 56px 레일 규칙보다 특이도가 높아 390 에서도 196px 레일이 두 줄로 내용을 덮었다(vm-qa15 #43·#97). */
+@container db-modal (min-width: 800px) {
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-tabs {
+    /* 그룹 띠(64px)가 곁에 서므로 목록은 196px 이다. */
+    flex: 0 0 196px !important;
+    width: 196px !important;
+  }
 }
 
 .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab {
@@ -178,12 +182,9 @@
   }
 }
 
-/* 아래 두 규칙은 위 196px 규칙(:not(.is-docked) 로 특이도가 한 단계 높다)과 같은 특이도여야 이긴다.
-   예전에는 낮아서 390 에서도 레일이 196px 로 남고, tabs-a 의 620px 이하 flex-wrap:wrap 이 아이콘을 두 줄로 세워
-   목록·편집 패널을 덮었다(vm-qa15 #43·#97). 좁은 창의 아이콘 레일은 한 줄·세로 스크롤이다. */
+/* 좁은 창의 아이콘 레일은 한 줄·세로 스크롤이다 — tabs-a 의 620px 이하 flex-wrap:wrap 이 아이콘을 두 줄로 세웠다. */
 @container db-modal (max-width: 799px) {
-  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs,
-  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-tabs {
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs {
     flex: 0 0 56px !important;
     flex-wrap: nowrap;
     width: 56px !important;
@@ -191,8 +192,7 @@
 }
 
 @media (max-width: 799px) {
-  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs,
-  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-tabs {
+  .database-modal-backdrop .database-modal-window:has(.db-shared-workspace) .db-tabs {
     flex: 0 0 56px !important;
     flex-wrap: nowrap;
     width: 56px !important;
