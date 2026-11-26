@@ -19,10 +19,12 @@ describe("storeParty 계약", () => {
     expect(result.finished).toBe(true);
   });
 
-  it("빈 이름은 저장하지 않고 계속 진행한다", () => {
+  // #4832: 저장 실패(빈 이름)는 flags.storePartySuccess=false 를 남기고 현재 이벤트 실행을 끝낸다.
+  it("빈 이름은 저장하지 않고 실패를 기록한 뒤 이벤트를 끝낸다", () => {
     const result = runCommandContract([{ kind: "storeParty", partySetId: "  " }], { mutateSession: seedParty });
     expect((result.session as { partySets?: unknown }).partySets).toBeUndefined();
-    expect(result.finished).toBe(true);
+    expect(result.session.flags.storePartySuccess).toBe(false);
+    expect(result.finished).toBe(false);
   });
 
   it("왕복 동일성", () => {
