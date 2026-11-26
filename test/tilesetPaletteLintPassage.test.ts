@@ -87,5 +87,6 @@ describe("tilesetPaletteLint — 통행 일관성 (구성된 위반)", () => {
       expect(passageIssues(projectWithRoleTile(role, true).project), `${role} blocked`).toHaveLength(0);
       expect(passageIssues(projectWithRoleTile(role, false).project), `${role} passable`).toHaveLength(0);
     }
-  });
+    // 빈 프로젝트 12개를 만들고 검사한다 — 한산하면 몇 초지만 ci-full 부하에서 15초 기본 한도를 넘겨 세 판에서 시간 초과로 떨어졌다.
+  }, 60_000);
 });

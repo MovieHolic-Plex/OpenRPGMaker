@@ -311,7 +311,10 @@ function setImmediateColor(host: HTMLElement, color: Rgba, mode: string): void {
 
 function applyTintColor(host: HTMLElement, target: Rgba, durationMs: number, mode: string): void {
   const anim = animFor(host);
-  if (rgbaEqual(anim.to, target) && anim.durationMs > 0 && anim.mode === mode && durationMs === anim.durationMs) return;
+  // 화면 숨기기 페이드는 시간을 한 번만 읽는다(hideFadeMs) — 다음 갱신은 0 으로 오므로, 같은 검정으로 가는 중이면 그대로 둔다.
+  // (#3743 의 «시간이 바뀐 명령은 새로 시작» 과 #3831 의 «갱신이 숨기기를 끊지 않는다» 를 함께 지킨다. 두 병합이 시간 같음 조건만 남겨 후자가 깨졌다.)
+  const sameTween = durationMs === anim.durationMs || (durationMs <= 0 && mode === "screen-hidden");
+  if (rgbaEqual(anim.to, target) && anim.durationMs > 0 && anim.mode === mode && sameTween) return;
   if (durationMs <= 0 || rgbaEqual(anim.displayed, target)) {
     anim.displayed = target;
     anim.from = target;

@@ -94,6 +94,9 @@ describe("battle audio", () => {
     });
     expect(out.battleVictoryMeResourceId).toBe("cc0-bgm-rtp-ttl-001");
     expect(out.battleDefeatSeResourceId).toBe("easyrpg-sound-collapse1");
+    expect(out.battleEscapeSeResourceId).toBe("easyrpg-sound-escape");
+  });
+
   it("지금 맵의 전투곡이 프로젝트 전투곡보다 먼저이고, 이벤트가 건 보스곡이 그보다 먼저다", () => {
     vi.mocked(playAudioCommand).mockClear();
     const project = {
