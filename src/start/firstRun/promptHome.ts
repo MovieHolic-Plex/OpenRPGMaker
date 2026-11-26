@@ -330,6 +330,8 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
       label.append(" · ", el("bdi", { attrs: { "data-i18n-skip": "" }, text: status.model }));
     }
     aiStatus.replaceChildren(el("span", { class: "fr-ai-dot", attrs: { "aria-hidden": "true" } }), label);
+    // 좁은 폭에서는 점만 남는다 — 이름이 내부 testid 로 읽히지 않게 상태 글자를 접근성 이름으로 둔다(2026-11-26 QA vm-qa15 #49).
+    aiStatus.setAttribute("aria-label", label.textContent ?? "");
   };
 
   return { element: root, focus: () => input.focus(), syncLocale, setGames, setAiStatus, setError };

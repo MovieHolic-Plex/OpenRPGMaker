@@ -10,7 +10,7 @@ export const DEFAULT_IMAGE_PROVIDER_ID = RECOMMENDED_IMAGE_PROVIDER_ID;
 export const DEFAULT_IMAGE_MODEL = RECOMMENDED_IMAGE_MODEL;
 
 export const IMAGE_CHATGPT_LOGIN_REQUIRED =
-  "그림은 ChatGPT 로만 그려요. AI 설정에서 ChatGPT 로그인을 연결해 주세요.";
+  "그림은 ChatGPT 로만 그려요(대화 AI 와는 따로예요). AI 설정에서 ChatGPT 로그인을 연결해 주세요.";
 
 export const IMAGE_MODEL_CATALOG = [{
   providerId: DEFAULT_IMAGE_PROVIDER_ID,

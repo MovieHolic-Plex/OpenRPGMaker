@@ -90,7 +90,9 @@ function renderMapEventList(mapId: MapId, events: readonly GameEvent[], selected
     return list;
   }
   for (const event of events) {
-    const displayName = eventDisplayName(event);
+    // 이름이 없으면 내부 ID(ev_…) 대신 「이름 없는 이벤트」 — 위치는 옆 칸이 말해 준다(2026-11-26 QA vm-qa15 #64).
+    const named = eventDisplayName(event);
+    const displayName = named === event.id ? "이름 없는 이벤트" : named;
     const icon = renderEventGraphicIcon(eventListGraphic(event));
     // Custom hover panel already covers details — no native title/alt tooltip.
     const row = el("button", {

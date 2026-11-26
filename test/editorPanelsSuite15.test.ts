@@ -404,7 +404,7 @@ describe("assistantRoles", () => {
         smol: "google-antigravity/gemini-3.8-flash",
         advisor: "google-antigravity/gemini-3.8-flash",
         vision: "google-antigravity/gemini-4-argon",
-        image: "missing: 그림은 ChatGPT 로만 그려요. AI 설정에서 ChatGPT 로그인을 연결해 주세요.",
+        image: "missing: 그림은 ChatGPT 로만 그려요(대화 AI 와는 따로예요). AI 설정에서 ChatGPT 로그인을 연결해 주세요.",
         pixel: "google-antigravity/gemini-4-argon",
       });
     });
