@@ -238,6 +238,8 @@ export function createAiRunStream(options: AiRunStreamOptions): AiRunStream {
       options.live.finish();
       timeline.finish(ok);
       if (ticker) { clearInterval(ticker); ticker = null; }
+      // 패널이 이미 내려갔으면(문서가 없음 — 시험 해체·창 닫힘 뒤 늦게 끝난 실행) 그릴 곳이 없다.
+      if (typeof document === "undefined") return;
       paint();
       root.scrollTop = 0;
     },

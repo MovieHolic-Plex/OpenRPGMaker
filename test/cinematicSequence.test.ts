@@ -428,7 +428,10 @@ describe("shared sequence playback", () => {
   });
   it("ignores late play rejection after advance", async () => {
     let rejectPlay: (error: Error) => void = () => undefined;
-    play.mockReturnValueOnce(new Promise<void>((_resolve, reject) => { rejectPlay = reject; }));
+    const late = new Promise<void>((_resolve, reject) => { rejectPlay = reject; });
+    // Enter 가 재생 요청보다 먼저 오면 장면은 이 약속을 받지 않는다 — 시험이 만든 거절이 아무에게도 안 잡혀 «Unhandled Rejection» 이 됐다(#5185).
+    late.catch(() => undefined);
+    play.mockReturnValueOnce(late);
     start([video, text]); key("Enter"); rejectPlay(new Error("late")); await Promise.resolve();
     expect(root().dataset.sceneId).toBe("text"); expect(root().dataset.mediaState).toBe("ready");
   });

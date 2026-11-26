@@ -37,11 +37,12 @@ describe("play-to-battle condition state bridge", () => {
       game: { registry: { get: (key: string) => key === "dialogueHost" ? host : undefined } },
     };
 
-    void playBattle(
+    // 전투는 끝까지 돌리지 않는다(넘긴 세션 필드만 본다) — 시험이 끝난 뒤 문서가 내려가며 나는 거절은 이 시험의 대상이 아니다(#5185 누수).
+    playBattle(
       scene as Parameters<typeof playBattle>[0],
       { kind: "battleProcessing", troopId: project.database.troops[0]?.id ?? "", canEscape: false, canLose: false },
       0,
-    );
+    ).catch(() => undefined);
 
     expect(battleMocks.createBattleRuntime).toHaveBeenCalledOnce();
     const options = battleMocks.createBattleRuntime.mock.calls[0]?.[0] as BattleRuntimeOptions;

@@ -34,6 +34,8 @@ function sessionlessGame() {
     applySession: () => undefined,
     getSession: () => undefined,
     refreshRuntimeSurfaces: () => undefined,
+    // 오프닝 뒤 첫 연출을 거는 자리(player.ts) — 없으면 시험이 끝난 뒤 늦게 TypeError 가 났다(#5185 누수).
+    activateInitialPresentation: () => undefined,
     sys: { settings: { status: 5 } },
     session: undefined,
   };
