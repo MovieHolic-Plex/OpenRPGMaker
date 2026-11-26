@@ -28,7 +28,10 @@ const GROUND_TAGS = new Set(["grass", "풀밭", "sand", "모래", "dirt", "흙",
 /** 나무·덤불·바위처럼 맨땅에 흩어 두는 자연 소품(키트 tags 로 가른다). 영어 낱말은 앞뒤가 글자가 아닐 때만(fld_rock_s 는 된다) — «prop-street» 의 tree 가 가로등·신호등·자판기를 나무로 만들었다. */
 const NATURE = /나무|숲|덤불|풀|꽃|바위|돌|선인장|야자|고사리|버섯|수정|그루터기|(?<![a-z])(?:trees?|bush(?:es)?|shrubs?|rocks?|boulders?|stones?|flowers?|grass|cactus|palms?|ferns?|mushrooms?|stumps?|logs?)(?![a-z])/iu;
 /** 어느 한 장소·던전 주제에 딸린 소품(사막 마을의 대추야자, 숲 던전의 룬 선돌) — 이름을 대지 않으면 고르지 않는다. */
-const THEMED = /장소|던전|dungeon|주제/iu;
+/** 현대 도시 기물(#4886 버들항 현대 도시 기물 359종, 꼬리표 city·현대)도 한 장소에 딸린 것이다 — 풀밭 마을에 떡볶이 노점 냅킨 통이 서지 않게. */
+const THEMED = /장소|던전|dungeon|주제|현대|(?<![a-z])city(?![a-z])/iu;
+/** 재료 낱말(나무 의자·돌 벤치·벚꽃 꽃줄)이 자연 낱말에 걸리는 사람이 만든 물건. 버들항 기본 기물(도시 벤치·가로등·진열대)이 시트에 실리며 «나무» 로 풀밭 마을에 깔렸다. */
+const ARTIFACT = /벤치|의자|걸상|가로등|진열대|가판대|상자|사다리|(?<![a-z])(?:benche?s?|chairs?|lamps?|racks?|crates?|ladders?)(?![a-z])/iu;
 
 type Meta = { label?: string; role?: string; passage?: string; tags?: readonly string[] };
 
@@ -82,7 +85,7 @@ export function openGroundProps(tileset: TilesetDef, wanted?: readonly string[])
     return kit.rows.some((row) => (row.upperTiles ?? []).some((tile) => tile >= 0));
   });
   const tagsOf = (kit: (typeof kits)[number]) => ((kit.ai as { tags?: readonly string[] } | undefined)?.tags ?? []).join(" ");
-  const nature = (kit: (typeof kits)[number]) => NATURE.test(tagsOf(kit));
+  const nature = (kit: (typeof kits)[number]) => NATURE.test(tagsOf(kit)) && !ARTIFACT.test(`${kit.name} ${tagsOf(kit)}`);
   const all = kits.map((kit) => kit.name);
   const unknown: string[] = [];
   // 기본 고르기는 어디에나 어울리는 자연 소품만 — 한 장소에 딸린 것까지 섞으면 풀밭 마을에 대추야자와 설원 소나무가 같이 선다. 전부가 딸린 것이면 그대로 쓴다.

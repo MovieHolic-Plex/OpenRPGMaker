@@ -17,13 +17,26 @@ beforeAll(async () => {
   base = ctx.project;
 }, 60_000);
 
+// 진짜 길목만 고른다: 가로 폭 3..10, 줄 양끝 바깥은 위·아래 줄에서도 막혔고(갈래길이 아니다), 세로로는 더 길게 이어지며(도구가 가로 축을 고른다)
+// 줄 안에 이벤트가 없다. 예전엔 «가로 폭 3..10» 만 봤는데, 필드 생성기가 바뀐 뒤 첫 후보가 들판 가장자리 주머니((4,24) 폭 4)라
+// 폭 전체를 막아도 옆 줄로 돌아가는 것이 맞았다(도구의 bypass:true 는 정답) — 시험이 길이 아닌 곳을 골랐다.
 function roadCell(project: Project): { map: GameMap; x: number; y: number; width: number } {
   const map = project.maps.mx_map_meadow ?? Object.values(project.maps).find((m) => m.width >= 20)!;
+  const open = (x: number, y: number) => x >= 0 && y >= 0 && x < map.width && y < map.height && isPassable(project, map, x, y);
   for (let y = 3; y < map.height - 3; y += 1) for (let x = 3; x < map.width - 3; x += 1) {
-    if (!isPassable(project, map, x, y) || map.events.some((e) => e.x === x && e.y === y)) continue;
-    let width = 1;
-    for (const step of [1, -1]) for (let cx = x + step; cx >= 0 && cx < map.width && isPassable(project, map, cx, y); cx += step) width += 1;
-    if (width >= 3 && width <= 10) return { map, x, y, width };
+    if (!open(x, y) || !open(x, y - 1) || !open(x, y + 1)) continue;
+    let left = x, right = x;
+    while (open(left - 1, y)) left -= 1;
+    while (open(right + 1, y)) right += 1;
+    const width = right - left + 1;
+    if (width < 3 || width > 10) continue;
+    if ([y - 1, y + 1].some((row) => open(left - 1, row) || open(right + 1, row))) continue;
+    if (map.events.some((e) => e.y === y && e.x >= left && e.x <= right)) continue;
+    let top = y, bottom = y;
+    while (open(x, top - 1)) top -= 1;
+    while (open(x, bottom + 1)) bottom += 1;
+    if (bottom - top + 1 <= width) continue;
+    return { map, x, y, width };
   }
   throw new Error("no road cell");
 }
