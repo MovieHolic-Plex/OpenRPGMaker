@@ -392,26 +392,24 @@ test("event layer canvas opens the RPG Maker context menu on right click", async
   await rightClickMapTile(page, 3, 1);
 
   await expect(page.getByTestId("map-context-menu-map_layer")).toBeVisible();
+  // 빈 칸: AI · 생성 · 더 보기만. 쓸 수 없는 잘라내기·복사·붙여넣기·삭제는 숨는다(btn-trim-r2).
+  await expect(page.getByTestId("event-layer-event-ai-queue")).toContainText("AI로 여기에 이벤트...");
   await expect(page.getByTestId("event-layer-create-event")).toContainText("이벤트 생성...");
-  // 빈 칸: 「AI 로 이벤트 만들기...」 — 이벤트가 있는 칸에서는 라벨이 「고치기」로 바뀐다.
-  await expect(page.getByTestId("event-layer-event-ai-author")).toContainText("AI 로 이벤트 만들기...");
-  await expect(page.getByTestId("event-layer-cut")).toHaveAttribute("aria-disabled", "true");
-  await expect(page.getByTestId("event-layer-cut")).toContainText("잘라내기");
-  await expect(page.getByTestId("event-layer-copy")).toContainText("복사");
-  await expect(page.getByTestId("event-layer-paste")).toContainText("붙여넣기");
-  await expect(page.getByTestId("event-layer-delete")).toContainText("삭제");
+  await expect(page.getByTestId("event-layer-cut")).toHaveCount(0);
+  await expect(page.getByTestId("event-layer-paste")).toHaveCount(0);
+  await page.screenshot({ path: testInfo.outputPath("event-layer-context-menu.png"), fullPage: true });
+  await page.screenshot({ path: "evidence/browser-screenshots/event-layer-context-menu.png", fullPage: true });
+  await page.getByTestId("event-layer-more").click();
   await expect(page.getByTestId("event-layer-create-transfer-event")).toContainText("장소 이동 이벤트 생성...");
   await expect(page.getByTestId("event-layer-set-player-start")).toContainText("주인공 시작 위치 설정");
   await expect(page.getByTestId("event-layer-set-vehicle-start")).toContainText("탈것 시작 위치 설정...");
-  await page.screenshot({ path: testInfo.outputPath("event-layer-context-menu.png"), fullPage: true });
-  await page.screenshot({ path: "evidence/browser-screenshots/event-layer-context-menu.png", fullPage: true });
 
   await page.getByTestId("event-layer-set-player-start").click();
   await expect.poll(async () => (await debugState(page)).project.startPos).toEqual({ x: 3, y: 1 });
 
   await rightClickMapTile(page, 2, 2);
+  await expect(page.getByTestId("event-layer-open-event")).toContainText("이벤트 편집...");
   await expect(page.getByTestId("event-layer-copy")).toHaveAttribute("aria-disabled", "false");
-  await expect(page.getByTestId("event-layer-cut")).toHaveAttribute("aria-disabled", "false");
   await expect(page.getByTestId("event-layer-delete")).toHaveAttribute("aria-disabled", "false");
   await expect(page.getByTestId("event-layer-event-ai-author")).toContainText("이 이벤트를 AI 로 고치기...");
   await page.getByTestId("event-layer-copy").click();
@@ -423,6 +421,7 @@ test("event layer canvas opens the RPG Maker context menu on right click", async
   await expect.poll(async () => eventAt(page, 3, 1)).not.toBeUndefined();
 
   await rightClickMapTile(page, 3, 1);
+  await page.getByTestId("event-layer-more").click();
   await page.getByTestId("event-layer-cut").click();
   await expect.poll(async () => eventAt(page, 3, 1)).toBeUndefined();
 

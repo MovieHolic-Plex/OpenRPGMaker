@@ -6,6 +6,7 @@ import { openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import {
   clearEventLayerClipboard,
   eventLayerContextMenuItems,
+  eventLayerContextMenuShownItems,
   type EventLayerContextMenuTarget,
 } from "@/editor/panels/eventLayerContextMenu";
 import { createBlankProject } from "@/project/defaults";
@@ -32,6 +33,27 @@ describe("event layer context menu", () => {
   afterEach(() => {
     clearEventLayerClipboard();
     vi.clearAllMocks();
+  });
+
+  it("shows few items first and keeps the rare ones behind 「더 보기」 (btn-trim-r2)", () => {
+    const empty = eventLayerContextMenuShownItems(target);
+    expect(empty.primary.map((item) => item.id)).toEqual(["event-ai-queue", "create-event"]);
+    expect(empty.more.map((item) => item.id)).toEqual(["create-transfer-event", "player-start", "vehicle-start", "test-here"]);
+
+    store.update((project) => {
+      project.maps[target.mapId]?.events.push({
+        id: "ev_here", x: target.x, y: target.y, commands: [],
+        pages: [{ id: "p1", name: "", conditions: [], graphic: {}, trigger: { kind: "action" }, priority: "same", movement: { type: "fixed", speed: 3, frequency: 3 }, commands: [] }],
+      });
+    });
+    const occupied = eventLayerContextMenuShownItems(target);
+    expect(occupied.primary.map((item) => item.id)).toEqual(["open-event", "event-ai-author", "copy", "delete"]);
+    expect(occupied.more.map((item) => item.id)).toEqual(["cut", "player-start", "test-here", "test-event"]);
+    expect(occupied.primary[0]?.testId).toBe("event-layer-open-event");
+
+    occupied.primary.find((item) => item.id === "copy")?.action();
+    expect(eventLayerContextMenuShownItems({ ...target, x: 0, y: 0 }).primary.map((item) => item.id))
+      .toEqual(["event-ai-queue", "create-event", "paste"]);
   });
 
   it("offers the RPG Maker event-layer commands when right-clicking a tile", () => {

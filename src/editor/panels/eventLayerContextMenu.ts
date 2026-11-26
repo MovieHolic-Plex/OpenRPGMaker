@@ -38,12 +38,56 @@ export function openEventLayerContextMenu(request: OpenEventLayerContextMenuRequ
   const map = store.getCurrent().maps[request.mapId];
   if (!map) return;
   if (request.x < 0 || request.y < 0 || request.x >= map.width || request.y >= map.height) return;
+  const mapName = `${map.name} (${request.x},${request.y})`;
+  const { primary, more } = eventLayerContextMenuShownItems(request);
+  const moreItem: MapContextMenuItem = {
+    action: () => openMapContextMenu({ items: more, mapId: request.mapId, mapName, point: request.point }),
+    icon: "more",
+    id: "more",
+    label: "더 보기...",
+    separatorBefore: true,
+    testId: "event-layer-more",
+  };
   openMapContextMenu({
-    items: eventLayerContextMenuItems(request),
+    items: more.length > 0 ? [...primary, moreItem] : primary,
     mapId: request.mapId,
-    mapName: `${map.name} (${request.x},${request.y})`,
+    mapName,
     point: request.point,
   });
+}
+
+/** 처음 메뉴에 남는 항목. 나머지(잘라내기·장소 이동 틀·시작 위치·테스트)는 「더 보기...」 뒤로 간다(btn-trim-r2). */
+/** 그 칸에 새 이벤트를 놓는 항목 — 이미 이벤트가 있는 칸에서는 거절되므로 보이지 않는다(refuseOccupiedCell). */
+const CREATES_ON_CELL: ReadonlySet<string> = new Set(["create-event", "create-transfer-event", "vehicle-start"]);
+
+const PRIMARY_ITEM_IDS: ReadonlySet<string> = new Set(["event-ai-queue", "create-event", "open-event", "event-ai-author", "copy", "paste", "delete"]);
+
+/**
+ * 메뉴에 실제로 그리는 항목. 지금 쓸 수 없는 항목(빈 칸의 잘라내기·복사·삭제, 클립보드가 빈 붙여넣기)은 숨긴다.
+ * 이벤트가 있는 칸은 「이벤트 생성」(그 칸에서는 거절된다) 대신 「이벤트 편집」을 둔다.
+ */
+export function eventLayerContextMenuShownItems(target: EventLayerContextMenuTarget): {
+  readonly primary: readonly MapContextMenuItem[];
+  readonly more: readonly MapContextMenuItem[];
+} {
+  const existing = eventAtTarget(target);
+  const shown = eventLayerContextMenuItems(target).filter((item) => !item.disabled && !(existing && CREATES_ON_CELL.has(item.id)));
+  const openItem: readonly MapContextMenuItem[] = existing ? [{
+    action: () => {
+      const current = eventAtTarget(target);
+      if (current) openEventEditorModal(target.mapId, current.id);
+    },
+    icon: "event",
+    id: "open-event",
+    label: "이벤트 편집...",
+    shortcut: "Enter",
+    testId: "event-layer-open-event",
+  }] : [];
+  const primary = [...openItem, ...shown.filter((item) => PRIMARY_ITEM_IDS.has(item.id))]
+    .map((item, index) => index === 0 || !item.separatorBefore ? item : { ...item, separatorBefore: false });
+  const more = shown.filter((item) => !PRIMARY_ITEM_IDS.has(item.id))
+    .map((item, index) => index === 0 ? { ...item, separatorBefore: false } : item);
+  return { primary, more };
 }
 
 export function eventLayerContextMenuItems(target: EventLayerContextMenuTarget): readonly MapContextMenuItem[] {

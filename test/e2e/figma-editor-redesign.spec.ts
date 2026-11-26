@@ -205,11 +205,10 @@ test("Figma-like editor shell and Korean event context menu match the dark mocku
   await mkdir(EVIDENCE_DIR, { recursive: true });
   await openEventLayerContextMenu(page, 1680, 945);
 
+  // 빈 칸 메뉴는 AI · 생성 · 더 보기만 보인다(btn-trim-r2). 드문 항목은 「더 보기...」 뒤.
   await expect(page.getByTestId("event-layer-create-event")).toContainText("이벤트 생성...");
-  await expect(page.getByTestId("event-layer-cut")).toContainText("잘라내기");
-  await expect(page.getByTestId("event-layer-copy")).toContainText("복사");
-  await expect(page.getByTestId("event-layer-paste")).toContainText("붙여넣기");
-  await expect(page.getByTestId("event-layer-delete")).toContainText("삭제");
+  await expect(page.getByTestId("event-layer-more")).toContainText("더 보기...");
+  await page.getByTestId("event-layer-more").click();
   await expect(page.getByTestId("event-layer-create-transfer-event")).toContainText("장소 이동 이벤트 생성...");
   await expect(page.getByTestId("event-layer-set-player-start")).toContainText("주인공 시작 위치 설정");
   await expect(page.getByTestId("event-layer-set-vehicle-start")).toContainText("탈것 시작 위치 설정...");
