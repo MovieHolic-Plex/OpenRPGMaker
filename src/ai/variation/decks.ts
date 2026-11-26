@@ -296,6 +296,8 @@ export const DECKS: readonly Deck[] = [
       P("villa-night", "villa", "불 꺼진 빌라촌", sk("villa-town"), /빌라/u),
       P("apartment-night", "apartment", "한밤의 아파트 단지", sk("apt-complex"), /아파트/u),
       P("subway", "subway", "막차 지하철역", hk("지하철역"), /지하철/u),
+      // «밤의 미술관에 갇힌 아이» 가 카드 장소에 없어 사용자 말과 어긋난 장소 셋을 받았다(2026-11-26 variant-remeasure, 장소 0/3).
+      P("night-museum", "gallery", "미술관", hk("미술관"), /미술관|박물관|전시실/u),
       P("alley-night", "alley", "비 오는 상가 골목", sk("sangga-alley"), /골목/u),
       P("swamp-village", "swamp-village", "늪 위의 마을", vl("swamp"), /늪/u),
       P("hill-village", "village", "인적 끊긴 마을", vl("river"), /마을/u),
