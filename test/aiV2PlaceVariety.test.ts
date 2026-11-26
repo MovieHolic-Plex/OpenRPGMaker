@@ -19,6 +19,8 @@ import { chipsetCatalog } from "@/ai/v2/place/interiorCatalog";
 import { builderFor } from "@/ai/v2/place/builders";
 import { createBuildRun } from "@/ai/v2/shared/buildRun";
 import type { PlaceSpec } from "@/ai/v2/shared/types";
+import { defaultTownSeed } from "@/editor/tools/authorBeodeulTown";
+import { withKitLook } from "@/project/kitLook";
 
 const S = HAND_INTERIOR_SPECS.atlas_biome_interior!;
 const KEYS = Array.from({ length: 6 }, (_, n) => JSON.stringify(["project", `variety-game-${n}`]));
@@ -192,6 +194,14 @@ describe("포구 마을의 일터·작은 집", () => {
     hints: { houseCount: 4, landform: "flat", settle: "low", tiers: 1, high: "north", width: 84, height: 38, terrainSeed: 55069, layout: { gather: { x: 31, y: 23, plaza: true }, landmark: { x: 58, y: 5 }, anchor: { x: 22, y: 22 }, work: { x: 39, y: 24 },
       houses: [{ x: 8, y: 23, kind: "small" }, { x: 15, y: 16, kind: "medium" }, { x: 32, y: 14, kind: "large" }, { x: 45, y: 15, kind: "small" }, { x: 58, y: 17, kind: "medium" }],
       fields: [{ x: 8, y: 13 }], forests: [{ x: 70, y: 12 }], props: [{ x: 29, y: 27 }, { x: 38, y: 20 }, { x: 18, y: 26 }], exits: ["west"] } } } as unknown as PlaceSpec;
+  it("씨앗을 맡긴 마을의 씨앗은 빈 프로젝트를 새로 만들어도 같고, 게임 열쇠마다 다르다(오프닝 장면의 무작위 id 가 씨앗에 들어가지 않는다)", () => {
+    const args = { name: "항구 마을", theme: "coast" };
+    const seedOf = (key?: string) => withKitLook(key, () => defaultTownSeed(createBlankProject() as Project, args));
+    expect(seedOf()).toBe(seedOf());
+    expect(seedOf("k2")).toBe(seedOf("k2"));
+    expect(new Set(["k1", "k2", "k3", "k4"].map(seedOf)).size).toBeGreaterThanOrEqual(3);
+  });
+
   it("종류의 일터 건물은 늘 선다 — 어느 킷인지만 씨앗이 고른다(은행 lay-base-harbor: 씨앗이 먼저 앉힌 창고 문에 길이 닿지 않아 일터가 통째로 빠졌다)", () => {
     const missing: string[] = [];
     const runs: [string, PlaceSpec, number][] = [

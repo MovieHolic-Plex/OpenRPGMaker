@@ -826,11 +826,14 @@ function villageDefaultSize(theme: BeodeulVillageTheme, houseCount: unknown): [n
 
 /**
  * seed 를 생략했을 때의 값 — 같은 프로젝트·같은 상태면 같은 값(도구를 다시 돌려도 같은 마을), 프로젝트가 다르거나 맵이 늘면 다른 값.
- * 새 프로젝트도 시스템 설정의 오프닝 장면 id(무작위)가 달라 서로 다른 값이 나온다.
+ * 게임마다 다른 값은 게임 열쇠(activeKitLook)에서 온다. 시스템 설정 안의 UUID(새 프로젝트의 오프닝 장면 id)는 빼고 해시한다 —
+ * 전에는 그 무작위 id 가 씨앗에 들어가 같은 게임·같은 요청도 빈 프로젝트를 만들 때마다 다른 마을이 되었다(ci-full 45711428113 aiV2PlaceVariety k2/2).
  */
-function defaultTownSeed(draft: Project, args: Record<string, unknown>): number {
+const UUID_RE = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/giu;
+export function defaultTownSeed(draft: Project, args: Record<string, unknown>): number {
   const parts = [
-    JSON.stringify((draft as { system?: unknown }).system ?? null),
+    JSON.stringify((draft as { system?: unknown }).system ?? null).replace(UUID_RE, ""),
+    activeKitLook() ?? "",
     draft.meta?.title ?? "",
     Object.keys(draft.maps).sort().join(","),
     String(args.name ?? ""), String(args.id ?? ""), String(args.mapId ?? ""), String(args.theme ?? ""),
