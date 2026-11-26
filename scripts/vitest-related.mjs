@@ -44,10 +44,10 @@ import { distances, loadRepoGraph } from "./lib/testImportGraph.mjs";
 //   ci-vitest-files 45678290373 에서 16파일(기록 합 133초)이 140초. 파일당 고정 비용 20초 + 기록 초, 실효 워커 3, 시작 90초로 보면
 //   위 판들을 모두 조금 남게 잡는다(보수적). 옛 기본값(85 + 2×, 시작 200)은 부하 38/40 의 mdc2-heavy 기준이라 파일을 4분의 1만 담았다.
 //   chunks: 한 PR 의 관련 시험을 몇 개의 잡(조각)으로 나눌 수 있나. 조각마다 같은 상한이 걸린다.
-//   넓은 변경(wide): 그래프로 닿는 시험이 wideTests(1200 — 최근 150 PR 중 16%, 500 이면 29% 라 호스티드 자리를 평균 11개 묶는다)를 넘거나 바뀐 파일이 wideFiles 를 넘으면 상한 없이 닿는 시험 전부를 wideChunks 개 조각으로 돌린다.
+//   넓은 변경(wide): 그래프로 닿는 시험이 wideTests(1000 — 2026-11-26 최근 머지 60건 재현: 넓은 모드 18%·PR 당 러너 시험 0.58h, 800 이면 38%·1.88h, 400 이면 45%·2.24h)를 넘거나 바뀐 파일이 wideFiles 를 넘으면 상한 없이 닿는 시험 전부를 wideChunks 개 조각으로 돌린다.
 export const DEFAULTS = Object.freeze({
   budgetSeconds: 380, workers: 3, factor: 1, perFileSeconds: 20, startupSeconds: 90, defaultSeconds: 6.4,
-  chunks: 4, wideTests: 400, wideFiles: 80, wideChunks: 12,
+  chunks: 4, wideTests: 1000, wideFiles: 80, wideChunks: 12,
 });
 
 const TIERS = ["changed-test", "direct-import", "string-literal", "import-graph"];
