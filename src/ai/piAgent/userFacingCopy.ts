@@ -20,9 +20,13 @@ export function friendlyExecutionError(message: string): string {
   if (isQuotaOrRateLimitError(message)) return "AI 사용 한도(쿼터·속도 제한)에 걸려 멈췄어요. 한도가 풀리길 기다리거나 다른 AI 연결로 바꾸세요.";
   if (/timeout|timed.out|시간.*상한/i.test(message)) return "응답을 기다리다가 작업이 멈췄어요. 다시 시도해 주세요.";
   if (/fetch|network|connection|503|연결/i.test(message)) return "AI에 연결하지 못했어요. 연결 상태를 확인하고 다시 시도해 주세요.";
+  // 작업기가 아무 결과 없이 끝났다(client.ts 의 마지막 오류) — 원문 「Pi 에이전트가 결과를 돌려주지 않았습니다」는 내부 이름이고
+  // 다음 할 일이 없었다(vm-qa15 #59). 원인과 다음 할 일을 같이 말한다.
+  if (/결과를 돌려주지 않았/u.test(message)) return "AI가 아무 결과도 돌려주지 않고 끝났어요. 같은 지시를 다시 보내 보고, 또 그러면 설정에서 AI 연결을 확인하거나 다른 모델로 바꿔 주세요.";
   return GENERIC_EXECUTION_ERROR;
 }
-export const GENERIC_EXECUTION_ERROR = "작업을 끝내지 못했어요. 작업 과정에서 자세한 내용을 확인할 수 있어요.";
+/** 원인을 모를 때도 다음 할 일은 말한다(vm-qa15 #59: 「작업 과정에서 확인」만 있으면 무엇을 할지 몰랐다). */
+export const GENERIC_EXECUTION_ERROR = "작업을 끝내지 못했어요. 같은 지시를 다시 보내 보고, 또 그러면 작업 과정에서 멈춘 단계를 확인해 주세요.";
 /**
  * 적용 직후 채팅에 붙는 되돌리기 안내.
  * `[되돌리기](Ctrl+Z)` 처럼 적으면 채팅 마크다운이 http(s)가 아닌 주소를 버리고

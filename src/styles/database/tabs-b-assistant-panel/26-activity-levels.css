@@ -100,7 +100,8 @@
 .ai-act-pipeline-badges { display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; }
 .ai-act-badge { display: inline-flex; align-items: center; padding: 1px 7px; border-radius: var(--radius-pill); border: 1px solid var(--border-subtle); background: var(--bg-raised); font: 500 10.5px/1.5 var(--font-mono); color: var(--text-2); }
 .ai-act-badge.is-model { color: var(--accent); border-color: var(--accent-border); background: var(--bg-raised); }
-.ai-act-pipeline-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; list-style: none; margin: 0; padding: 0; }
+/* 카드 폭이 좁으면(조수 패널·휴대 폭) 넷을 한 줄에 우겨 「의도…」처럼 잘렸다(vm-qa15 #19) — 이름이 다 보이는 폭(104px)보다 좁아지면 두 줄로 접는다. */
+.ai-act-pipeline-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); gap: 4px; list-style: none; margin: 0; padding: 0; }
 .ai-act-pipeline-step { display: flex; align-items: center; gap: 3px; padding: 4px 6px; border-radius: var(--radius-s); border: 1px solid var(--border-subtle); background: var(--bg-raised); font: 500 10.5px/1.25 var(--font-ui); color: var(--text-3); min-width: 0; }
 .ai-act-pipeline-step-num { font-weight: 700; flex: none; }
 .ai-act-pipeline-step-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
