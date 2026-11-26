@@ -332,6 +332,8 @@ it("keeps checkpointing on the same session after one failed write instead of sk
   await bounded(session.sendUserMessage("First request"));
   expect(session.getAuditEntries().some(entry => entry.kind === "status"
     && entry.text.startsWith("agent_run:checkpoint-write-failed"))).toBe(true);
+  // 사용자에게도 한 번 보인다 — 감사 줄만으로는 아무도 몰랐다(#5188).
+  expect(document.body.textContent).toContain("조수 작업 기록을 저장하지 못했어요");
   await bounded(session.sendUserMessage("Second request"));
   await bounded(session.whenCheckpointed());
   const saved = await checkpoint();
