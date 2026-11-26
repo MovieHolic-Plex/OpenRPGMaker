@@ -1,7 +1,7 @@
 // Pi 스트림의 «살아 있음» 계약(2026-09-14). 실측: 런타임이 턴·툴 경계에만 줄을 써 모델이 생각하는 동안
 // 와이어가 비었고, Bun 유휴 타임아웃이 그 침묵을 끊어 팀 모드 「마을 만들어줘」가 매번 `terminated` 로 죽었다.
 // 세 겹으로 막는다: 델타 중계(내용) · 워커 heartbeat(맥박) · 브라우저 워치독(침묵 = 워커 사망).
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { gunzipSync } from "node:zlib";
 import { createDeltaRelay, type PiDeltaEvent } from "@/ai/piAgent/deltaRelay";
 import { PiAgentClientError, runPiAgentViaCompanion } from "@/ai/piAgent/client";
@@ -41,24 +41,6 @@ function ndjsonResponse(feed: (write: (event: PiAgentEvent) => void, close: () =
   });
   return new Response(body, { status: 200, headers: { "Content-Type": "application/x-ndjson" } });
 }
-
-/**
- * 워치독(staleMs)과 시험 쪽 타이머(heartbeat·체크포인트 지연)의 순서를 실제 시계에 맡기면 CI 부하에서 순서가 뒤집혔다
- * (#5171·#5230: 늦게 울린 워치독, 늦게 온 heartbeat). 가짜 시계로 타이머를 정해진 순서대로 울리고, 그 사이 진짜 I/O(gzip 등)는
- * setImmediate 로 한 바퀴씩 흘려보낸다 — 시간 길이가 아니라 순서만 본다.
- */
-async function settleWithFakeTimers<T>(run: () => Promise<T>): Promise<T> {
-  vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout", "setInterval", "clearInterval", "Date"] });
-  let settled = false;
-  const result = run().finally(() => { settled = true; });
-  result.catch(() => undefined);
-  for (let step = 0; !settled && step < 5_000; step += 1) {
-    await vi.advanceTimersByTimeAsync(5);
-    await new Promise((resolve) => setImmediate(resolve));
-  }
-  return result;
-}
-afterEach(() => { vi.useRealTimers(); });
 
 const request = { provider: "google-antigravity", task: "t", mapIds: [], project: createBlankProject() } as const;
 
@@ -125,24 +107,26 @@ describe("브라우저 워치독 — 침묵은 워커 사망", () => {
     const fetchImpl = (async () => ndjsonResponse((write) => {
       write({ type: "start", provider: "p", model: "m", toolCount: 1 });
     })) as unknown as typeof fetch;
-    await expect(settleWithFakeTimers(() => runPiAgentViaCompanion(request, { fetchImpl, staleMs: 40 }))).rejects.toSatisfy((error: unknown) =>
+    await expect(runPiAgentViaCompanion(request, { fetchImpl, staleMs: 40 })).rejects.toSatisfy((error: unknown) =>
       error instanceof PiAgentClientError && /신호가 없어 연결을 끊었습니다/.test(error.message));
   });
 
   it("heartbeat 가 오는 동안은 끊지 않고 done 까지 기다린다", async () => {
+    // heartbeat 를 고정 간격 타이머가 아니라 앞 heartbeat 를 받은 뒤에 쓴다 — 타이머가 늦게 울려 간격이 staleMs 를 넘는 일이 없다(#5171·#5230 플레이크).
     const seen: string[] = [];
+    let beats = 0;
+    let feed: ((event: PiAgentEvent) => void) | null = null, finish: (() => void) | null = null;
     const fetchImpl = (async () => ndjsonResponse((write, close) => {
-      let beats = 0;
-      const timer = setInterval(() => {
-        write({ type: "heartbeat", at: Date.now() });
-        if (++beats === 8) {
-          clearInterval(timer);
-          write({ type: "done", project: request.project, stats: { ms: 1, turns: 1, toolCalls: 0, toolErrors: 0 }, changedKeys: [] });
-          close();
-        }
-      }, 10);
+      feed = write; finish = close;
+      write({ type: "heartbeat", at: Date.now() });
     })) as unknown as typeof fetch;
-    const done = await settleWithFakeTimers(() => runPiAgentViaCompanion(request, { fetchImpl, staleMs: 200, onEvent: (event) => seen.push(event.type) }));
+    const done = await runPiAgentViaCompanion(request, { fetchImpl, staleMs: 2_000, onEvent: (event) => {
+      seen.push(event.type);
+      if (event.type !== "heartbeat") return;
+      if (++beats < 8) { feed?.({ type: "heartbeat", at: Date.now() }); return; }
+      feed?.({ type: "done", project: request.project, stats: { ms: 1, turns: 1, toolCalls: 0, toolErrors: 0 }, changedKeys: [] });
+      finish?.();
+    } });
     expect(done.type).toBe("done");
     expect(seen.filter((type) => type === "heartbeat")).toHaveLength(8);
   });
@@ -164,28 +148,30 @@ describe("보드 — delta 는 「생각 중」 한 줄, heartbeat 는 무시", 
 describe("브라우저 워치독 — 우리가 적용 중인 침묵은 끊지 않는다", () => {
   it("체크포인트 적용이 staleMs 보다 길어도 실행을 끊지 않고 done 을 받는다", async () => {
     let ackBody: { ok?: boolean } | null = null;
+    let afterAck: (() => void) | null = null;
     const fetchImpl = (async (url: string, init?: RequestInit) => {
       if (String(url).includes("/v1/agent/checkpoint")) {
         // 큰 프로젝트를 실은 ACK 는 gzip 바이트로 간다(piRequestBody) — 몸통 모양대로 푼다.
         const raw = init?.body;
         ackBody = JSON.parse(raw instanceof ArrayBuffer || ArrayBuffer.isView(raw) ? gunzipSync(Buffer.from(raw as ArrayBuffer)).toString("utf8") : String(raw));
+        queueMicrotask(() => afterAck?.());
         return new Response("{}", { status: 200 });
       }
       return ndjsonResponse((write, close) => {
         write({ type: "checkpoint", checkpointId: "c1", project: request.project, label: "t", toolName: "t" } as never);
-        // 워커는 ACK 를 기다리며 조용하다(heartbeat 도 페이지가 바빠 못 읽은 상황).
-        const wait = setInterval(() => {
-          if (!ackBody) return;
-          clearInterval(wait);
+        // 워커는 ACK 를 기다리며 조용하다(heartbeat 도 페이지가 바빠 못 읽은 상황). ACK 를 받는 즉시 done 을 쓴다 —
+        // 예전에는 5ms 폴링이라 부하에서 ACK 뒤 done 이 staleMs 보다 늦게 와 워치독이 끊었다(#5171·#5230).
+        afterAck = () => {
           write({ type: "done", project: request.project, stats: { ms: 1, turns: 1, toolCalls: 1, toolErrors: 0 }, changedKeys: [] });
           close();
-        }, 5);
+        };
       });
     }) as unknown as typeof fetch;
-    const done = await settleWithFakeTimers(() => runPiAgentViaCompanion(request, {
-      fetchImpl, staleMs: 30,
-      onCheckpoint: () => new Promise(resolve => setTimeout(() => resolve(request.project), 120)),
-    }));
+    const done = await runPiAgentViaCompanion(request, {
+      fetchImpl, staleMs: 100,
+      // 적용이 staleMs 의 네 배 — 그동안 워치독은 끊지 않아야 한다.
+      onCheckpoint: () => new Promise(resolve => setTimeout(() => resolve(request.project), 400)),
+    });
     expect(done.type).toBe("done");
     expect(ackBody).toMatchObject({ ok: true });
   });
@@ -195,10 +181,11 @@ describe("브라우저 워치독 — 우리가 적용 중인 침묵은 끊지 �
       if (String(url).includes("/v1/agent/checkpoint")) return new Response("{}", { status: 409 });
       return ndjsonResponse((write) => {
         write({ type: "start", provider: "p", model: "m", toolCount: 1 });
-        setTimeout(() => write({ type: "checkpoint", checkpointId: "c1", project: request.project, label: "t", toolName: "t" } as never), 80);
+        // 체크포인트는 워치독(40ms)이 끊은 한참 뒤에 온다 — 예전 80ms 는 부하에서 워치독보다 먼저 와 ACK 실패가 원인으로 보고됐다(#5171·#5230).
+        setTimeout(() => write({ type: "checkpoint", checkpointId: "c1", project: request.project, label: "t", toolName: "t" } as never), 2_000);
       });
     }) as unknown as typeof fetch;
-    await expect(settleWithFakeTimers(() => runPiAgentViaCompanion(request, { fetchImpl, staleMs: 40, onCheckpoint: async () => request.project })))
+    await expect(runPiAgentViaCompanion(request, { fetchImpl, staleMs: 40, onCheckpoint: async () => request.project }))
       .rejects.toSatisfy((error: unknown) => error instanceof PiAgentClientError && /신호가 없어 연결을 끊었습니다/.test(error.message));
   });
 });
