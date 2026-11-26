@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { build } from "esbuild";
 import { readOAuthClientsFromPiAi } from "./lib/oauthClients.mjs";
@@ -27,6 +27,35 @@ const jsonParseModules = {
 
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_DIR = resolve(REPO_ROOT, "dist-electron");
+
+/**
+ * 프로젝트 코어(project-core.cjs)의 큰 JSON(64KB 이상)을 번들에 넣지 않고 dist-electron/worker-data/<저장소 상대 경로> 에서 읽는다 (2026-11-26, worker-slim).
+ * 조수 워커(scripts/build-ai-worker.ts)가 같은 폴더·같은 경로 규칙을 쓰므로 번들 타일셋 JSON 이 앱 안에 한 벌만 남는다(전에는 코어 123MB·워커 각각).
+ * 폴더는 builder 가 asarUnpack 한다. Electron 의 fs 는 app.asar/dist-electron/worker-data 경로를 풀린 폴더로 이어 준다.
+ */
+const WORKER_DATA_DIR = resolve(OUT_DIR, "worker-data");
+const externalDataJson = {
+  name: "oprn-worker-data-json",
+  setup(pluginBuild) {
+    pluginBuild.onLoad({ filter: /\.json$/ }, (args) => {
+      if (args.path.split(sep).includes("node_modules") || statSync(args.path).size < 64 * 1024) return undefined;
+      const rel = relative(REPO_ROOT, args.path).split(sep).join("/");
+      if (rel.startsWith("../")) return undefined;
+      mkdirSync(dirname(join(WORKER_DATA_DIR, rel)), { recursive: true });
+      copyFileSync(args.path, join(WORKER_DATA_DIR, rel));
+      return {
+        loader: "js",
+        contents: [
+          `const { readFileSync } = require("node:fs");`,
+          `const file = require("node:path").join(__dirname, "worker-data", ${JSON.stringify(rel)});`,
+          `let text;`,
+          `try { text = readFileSync(file, "utf8"); } catch (error) { throw new Error(\`프로젝트 코어 자료를 읽지 못했습니다(\${error.code ?? error.message}): \${file}. 앱 설치가 깨졌을 수 있습니다. 앱을 다시 설치하거나 업데이트하세요.\`); }`,
+          `module.exports = JSON.parse(text);`,
+        ].join("\n"),
+      };
+    });
+  },
+};
 
 const ENTRIES = [
   {
@@ -141,6 +170,8 @@ function lazyProjectCorePlugin(exportNames) {
 }
 
 await mkdir(OUT_DIR, { recursive: true });
+// 코어와 워커가 같이 채운다. 지난 빌드의 파일이 남아 패키지에 딸려 가지 않게 여기서 한 번만 비운다.
+rmSync(WORKER_DATA_DIR, { recursive: true, force: true });
 // 자산 브라우저가 받은 RAR 팩(예: Rasak Modern)을 메인 프로세스에서 푼다 — node-unrar-js 는 wasm 을 따로 읽는다.
 // 번들(main.cjs) 옆에 두고 electron/main/rarPack.ts 가 __dirname 에서 읽는다.
 copyFileSync(resolve(REPO_ROOT, "node_modules/node-unrar-js/dist/js/unrar.wasm"), resolve(OUT_DIR, "unrar.wasm"));
@@ -157,7 +188,7 @@ await build({
   platform: "node",
   target: "node22",
   external: ["electron", "node:*"],
-  plugins: [jsonParseModules],
+  plugins: [externalDataJson, jsonParseModules],
 });
 assertNoTopLevelImportMeta(PROJECT_CORE_OUT);
 const projectCoreExports = JSON.parse(spawnSync(process.execPath, ["-e",
