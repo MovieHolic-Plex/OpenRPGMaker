@@ -49,6 +49,9 @@ export function hash32(text: string): number {
   return h >>> 0;
 }
 
+/** 사용자 글이 한 건물 안에 갇힌 이야기인가 — 카드의 나머지 장소는 그 안의 방이다. */
+const CONFINED = /갇히|갇혀|갇힌|빠져나가|빠져나오|탈출|밀실|못\s*나가/u;
+
 const PARTICLE = "(?:을|를|이|가|은|는|에|에서|의|으로|로|과|와|도|만){0,2}";
 /** 계절·시간·날씨를 사용자가 말했나 — 분위기 축은 그때 뽑지 않는다. */
 const MOOD_STATED = new RegExp(`(?<![가-힣])(?:봄|여름|가을|겨울|새벽|아침|한낮|저녁|노을|밤|비|눈|안개|폭우|폭풍|벚꽃)(?=${PARTICLE}(?![가-힣]))|비\\s*오는|눈\\s*내리는|해\\s*질\\s*녘`, "u");
@@ -109,8 +112,11 @@ export function pickVariation(input: VariationInput): Variation | undefined {
     } else {
       const first = pinned.find((p) => !p.indoor) ?? pinned[0] ?? weighted(deck.places.filter((p) => eligible(p) && !p.indoor), `${seed}|first`);
       const world = first.build.via === "world" ? first.build.world : undefined;
+      // 사용자가 말한 건물에 갇힌 이야기(«밤의 미술관에 갇힌 아이»)는 밖으로 나가지 못한다 — 나머지 장소는 그 건물 안의 방(interior)에서 뽑는다.
+      // 2026-11-26 variant-remeasure: 늤 위의 마을·버려진 신전을 받은 모델은 미술관 한 맵만 지었다(장소 1/3).
+      const confined = pinned.includes(first) && first.build.via !== "world" && first.build.via !== "village" && CONFINED.test(text);
       const rest = deck.places
-        .filter((p) => p.id !== first.id && eligible(p) && (world ? p.build.via === "world" && p.build.world === world : p.build.via !== "world"))
+        .filter((p) => p.id !== first.id && eligible(p) && (world ? p.build.via === "world" && p.build.world === world : p.build.via !== "world") && (!confined || p.build.via === "interior"))
         .sort((a, b) => Number(pinned.includes(b)) - Number(pinned.includes(a)) || hash32(`${seed}|p|${a.id}`) - hash32(`${seed}|p|${b.id}`));
       places = [first];
       for (const p of rest) { if (places.length >= 3) break; if (!places.some((q) => q.kind === p.kind)) places.push(p); }
