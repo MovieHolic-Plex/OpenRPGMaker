@@ -573,6 +573,44 @@
   width: min(1120px, calc(100vw - 24px));
 }
 
+/* 창 높이가 고정(720px)인데 본문 전체가 한 덩어리로 스크롤돼, 바닥에 붙은(sticky) 확인·취소 줄이 명령 격자와
+   경로 미리보기의 아래를 덮고 격자 끝이 잘려 보였다(vm-qa15 #38·#96). 상점 전체화면(.full)처럼 본문 칸만 스크롤하고
+   확인·취소 줄은 그 아래 제자리에 둔다. */
+.event-subdialog-window.wide:has(.move-route-editor) .event-subdialog-body {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.event-subdialog-window.wide:has(.move-route-editor) .event-command-edit-dialog {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  width: 100%;
+}
+
+.event-subdialog-window.wide:has(.move-route-editor) .event-command-edit-columns {
+  align-items: stretch;
+  flex: 1 1 auto;
+  grid-template-rows: minmax(0, 1fr);
+  min-height: 0;
+}
+
+.event-subdialog-window.wide:has(.move-route-editor) .event-command-edit-body {
+  max-height: none;
+  min-height: 0;
+  overflow: auto;
+}
+
+.event-subdialog-window.wide:has(.move-route-editor) .event-command-edit-actions {
+  bottom: auto;
+  margin-bottom: 0;
+  padding-bottom: 0;
+  position: static;
+}
+
 /* 이벤트 프레임 변경: RM2003 그래픽 피커 전체 폭. 우측 범용 프리뷰 숨김. */
 .event-subdialog-window.wide:has(.event-command-frame-editor) {
   height: min(720px, calc(100vh - 24px));
