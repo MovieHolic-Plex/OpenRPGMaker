@@ -526,7 +526,10 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseMo
     for (const callback of onClose) callback();
     onClose.clear();
   };
-  const hideDirtyPrompt = (): void => dirtyPrompt.replaceChildren();
+  const hideDirtyPrompt = (): void => {
+    dirtyPrompt.replaceChildren();
+    syncFooterVisibility();
+  };
   const saveAndMarkClean = async (): Promise<boolean> => {
     // 플래그는 commit()/refresh 가 codex 구독을 통해 플래그를 도로 내린 **뒤에** 세운다.
     // 이 흐름이 쓰는 문구는 autosave 구독의 재도색보다 우선한다(아래 paintFooterStatus 참고).
@@ -580,6 +583,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseMo
     const active = document.activeElement;
     if (!promptReturnFocus && active instanceof HTMLElement && windowEl?.contains(active)) promptReturnFocus = active;
     dirtyPrompt.replaceChildren(renderDirtyPrompt(attempt, handleDirtyDecision));
+    syncFooterVisibility();
     // 띠가 뜨면 포커스는 띠의 첫 단추(안전한 「계속 편집」)로 간다 — 그대로 두면 키보드 사용자는 Tab 으로
     // 띠를 찾아가야 했다(J-p6-keyboard-04).
     dirtyPrompt.querySelector<HTMLElement>("button")?.focus();
@@ -659,6 +663,10 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseMo
     footerStatus.dataset.statusKind = status.kind;
     saveErrorButton.hidden = !failed;
     saveErrorDetails.setMessage(failed ? status.text : null);
+    // 「지금 저장」은 저장이 실패했거나 설정집 카드 초안이 남았을 때만 보인다 — 평소에는 자동 저장과 같은 일이다
+    // (btn-vqa-db PR 1, 오너 2026-11-24 「사용자는 많은 버튼을 원하지 않는다」). 단추·testid·배선은 그대로다.
+    if (applyButton) setShown(applyButton, failed || codexSession.isDirty());
+    syncFooterVisibility();
   };
   // 설정집 카드 초안이 우선, 그다음이 store 의 autosave 상태. 둘 다 여기 한 곳에서만 칠한다
   // — 예전처럼 두 구독자가 textContent 를 각자 덮으면 비동기 저장 결과가 지워진다.
@@ -680,6 +688,17 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseMo
     applyButton?.classList.toggle("primary", status.kind !== "info");
   };
   let applyButton: HTMLElement | null = null;
+  let footerEl: HTMLElement | null = null;
+  // 발 줄에 보일 것(저장 단추·닫기 결정 띠)이 없으면 발 줄을 통째로 접는다 — 빈 52px 띠를 남기지 않는다.
+  function syncFooterVisibility(): void {
+    if (!footerEl) return;
+    setShown(footerEl, !(applyButton?.hidden ?? true) || dirtyPrompt.childElementCount > 0);
+  }
+  // 발 줄·단추 CSS 가 display 를 정해 hidden 속성만으로는 안 숨는다 — 인라인 display 도 함께 끈다.
+  function setShown(node: HTMLElement, shown: boolean): void {
+    node.hidden = !shown;
+    node.style.display = shown ? "" : "none";
+  }
   paintFooterStatus();
   // 설정집 초안이 움직이면 사용자가 이미 다음 작업으로 넘어간 것 — 붙잡아 둔 문구를 놓는다.
   const unsubscribeCodex = codexSession.subscribe(() => {
@@ -747,7 +766,7 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseMo
     }),
     undoButton,
   );
-  const footer = el("footer", {
+  const footer = footerEl = el("footer", {
     class: "database-modal-footer",
     children: [
       footerStatus,

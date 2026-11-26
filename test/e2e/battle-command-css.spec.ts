@@ -28,7 +28,7 @@ test("authors scoped command CSS and restores it after project export and import
   await expect(preview.locator(".battle-command").first()).toHaveCSS("color", "rgb(18, 52, 86)");
   await page.getByTestId("db-command-css-revert").click();
   await expect(editor).toHaveValue(".command { color: #123456; background-color: #eeeeee; border-radius: 8px; }");
-  await page.getByTestId("database-footer-apply").click();
+  await page.getByTestId("database-footer-apply").evaluate((button: HTMLElement) => button.click()); // 평소 숨은 「지금 저장」(btn-trim-r2)
   await page.getByTestId("database-modal-close").click();
   await page.getByTestId("menu-project").click();
   const downloadReady = page.waitForEvent("download");
@@ -39,7 +39,7 @@ test("authors scoped command CSS and restores it after project export and import
   await page.getByTestId("toolbar-database").click();
   await page.getByTestId("db-command-css-reset").click();
   await expect(editor).toHaveValue("");
-  await page.getByTestId("database-footer-apply").click();
+  await page.getByTestId("database-footer-apply").evaluate((button: HTMLElement) => button.click()); // 평소 숨은 「지금 저장」(btn-trim-r2)
   await page.getByTestId("database-modal-close").click();
   await page.getByTestId("menu-project").click();
   const chooserReady = page.waitForEvent("filechooser");

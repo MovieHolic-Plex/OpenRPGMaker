@@ -64,7 +64,7 @@ test("class command placement uses actual class menus", async ({ page }) => {
     const { store } = await import(path);
     return structuredClone(store.getCurrent().database.classes);
   });
-  await page.getByTestId("database-footer-apply").click();
+  await page.getByTestId("database-footer-apply").evaluate((button: HTMLElement) => button.click()); // 평소 숨은 「지금 저장」(btn-trim-r2)
   await page.getByTestId("database-modal-close").click();
   await expect(page.getByTestId("database-modal")).toBeHidden();
   await page.getByTestId("menu-project").click();

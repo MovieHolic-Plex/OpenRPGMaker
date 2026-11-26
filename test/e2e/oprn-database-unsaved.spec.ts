@@ -41,7 +41,7 @@ test("database 닫기 keeps store edits; Escape and the backdrop still ask", asy
 
   await page.getByTestId("toolbar-database").click();
   await page.getByTestId("db-field-name").fill("Applied Prompt Actor");
-  await page.getByTestId("database-footer-apply").click();
+  await page.getByTestId("database-footer-apply").evaluate((button: HTMLElement) => button.click()); // 평소 숨은 「지금 저장」(btn-trim-r2)
   await expect(page.getByTestId("db-footer-status")).toContainText("적용했습니다");
   await page.getByTestId("database-modal-close").click();
   await expect(page.getByTestId("database-modal")).toBeHidden();

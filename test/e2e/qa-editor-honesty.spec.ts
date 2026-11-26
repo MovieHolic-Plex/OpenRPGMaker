@@ -71,7 +71,7 @@ test.describe("QA editor honesty", () => {
     await expect(page.getByTestId("db-tab-actors")).toBeVisible({ timeout: 60_000 });
     await revealDbRailTab(page, "actors");
     await page.getByTestId("db-tab-actors").click();
-    await page.getByTestId("database-footer-apply").click();
+    await page.getByTestId("database-footer-apply").evaluate((button: HTMLElement) => button.click()); // 평소 숨은 「지금 저장」(btn-trim-r2)
     await expect(save).toHaveAttribute("data-autosave-kind", "unsaved-session");
     await expect(save).not.toHaveClass(/is-failing/);
     await expect(page.getByTestId("db-footer-status")).not.toHaveAttribute("data-status-kind", "error");

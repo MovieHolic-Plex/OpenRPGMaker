@@ -42,7 +42,7 @@ test("T2 inventory/effects evidence packet", async ({ page }) => {
   await page.goto("/?freshProject=1");
   await openDatabase(page);
   await editInventoryEffects(page);
-  await page.getByTestId("database-footer-apply").click();
+  await page.getByTestId("database-footer-apply").evaluate((button) => button.click()); // 평소 숨은 「지금 저장」(btn-trim-r2)
   await page.getByTestId("database-modal-close").click();
   await expect(page.getByTestId("database-modal")).toBeHidden();
   await openDatabase(page);
