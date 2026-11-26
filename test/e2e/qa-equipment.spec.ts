@@ -27,6 +27,7 @@ test.describe("QA sweep: equipment tab", () => {
     await page.screenshot({ path: ".superpowers/sdd/qa-shots/equipment-initial.png" });
 
     const rowsBefore = await page.locator('.db-catalog-rows [data-collection="equipment"]').count();
+    await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
     await page.getByTestId("db-catalog-add-equipment").click();
     await expect(page.locator('.db-catalog-rows [data-collection="equipment"]')).toHaveCount(rowsBefore + 1);
 
@@ -113,6 +114,7 @@ test.describe("QA sweep: equipment tab", () => {
     await openDatabase(page);
     await switchDatabaseTab(page, EQUIPMENT_TAB);
 
+    await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
     await page.getByTestId("db-catalog-add-equipment").click();
     await page.getByTestId("db-field-name").fill("QA 연동 검");
     await page.getByTestId("db-field-equipment-slot").selectOption("weapon");
@@ -142,6 +144,7 @@ test.describe("QA sweep: equipment tab", () => {
     });
     page.on("pageerror", (err) => consoleErrors.push(String(err)));
 
+    await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
     await page.getByTestId("db-catalog-add-equipment").click();
 
     // empty name

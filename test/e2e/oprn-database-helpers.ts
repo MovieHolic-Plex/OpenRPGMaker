@@ -235,6 +235,7 @@ export async function switchDatabaseTab(page: Page, tab: DatabaseTabSpec): Promi
   await button.click({ force: true });
   await expect(button).toHaveClass(/active/);
   if (tab.slug === "equipment") {
+    await page.locator(".db-toolbar-more").evaluateAll((menus) => menus.forEach((menu) => menu.setAttribute("open", "")));
     await page.getByTestId("db-catalog-filter-equipment").click();
     const selected = page.locator('.db-catalog-rows [data-collection="equipment"][aria-pressed="true"]');
     if (await selected.count() === 0) await page.locator('.db-catalog-rows [data-collection="equipment"]').first().click();

@@ -13,6 +13,8 @@ test("item state, animation and care controls persist across tab changes and exp
   await page.getByTestId("db-add-record").click();
   await page.getByTestId("db-field-name").fill("QA 상태와 돌봄");
   await page.getByTestId("db-field-item-type").selectOption("medicine");
+  // 대상·사용 시점·상태 변화·연출·외형은 「기본」 카드의 「고급」 뒤에 있다(btn-trim-r2).
+  await page.getByTestId("db-item-advanced-toggle").click();
   await page.getByTestId("db-item-card-state-effects").getByRole("button", { name: "상태 변화" }).click();
   await page.getByTestId("db-item-state-effect-add").click();
   const stateId = await page.getByTestId("db-field-item-state-effect-state-0").inputValue();

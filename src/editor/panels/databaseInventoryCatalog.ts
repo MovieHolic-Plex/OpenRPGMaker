@@ -2,7 +2,7 @@ import { el } from "@/util/dom";
 import { store } from "@/project/store";
 import { addDatabaseRecord, duplicateDatabaseRecord } from "@/editor/databaseActions";
 import { matchesNameOrId } from "@/editor/panels/databaseControls";
-import { emptyState, listPane, listRow, listToolbar, workspaceShell } from "@/editor/panels/databaseWorkspace";
+import { emptyState, listPane, listRow, listToolbar, toolbarMore, workspaceShell } from "@/editor/panels/databaseWorkspace";
 import { aiGenerateButton, deleteButton, recordCategoryLabel, recordForm } from "@/editor/panels/databaseRecordViews";
 import { createVirtualList } from "@/editor/panels/databaseListVirtualizer";
 import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
@@ -110,7 +110,7 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
   const filterButtons = (["all", "items", "equipment"] as const).map((filter) => {
     const button = el("button", {
       class: "db-filter-chip", attrs: { type: "button" }, dataset: { testid: `db-catalog-filter-${filter}` },
-      on: { click: () => { session.filter = filter; session.subtype = "all"; updateSubtypes(); renderRows(); } },
+      on: { click: () => { session.filter = filter; session.subtype = "all"; updateSubtypes(); renderRows(); closeMenu(); } },
     });
     filters.append(button);
     return { filter, button };
@@ -119,7 +119,7 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
     viewToggle.append(el("button", {
       class: "db-view-toggle", text: mode === "list" ? "목록" : "갤러리",
       attrs: { type: "button" }, dataset: { testid: `db-view-toggle-${mode}` },
-      on: { click: () => { setViewModeForCollection("items", mode); renderRows(); } },
+      on: { click: () => { setViewModeForCollection("items", mode); renderRows(); closeMenu(); } },
     }));
   }
   const revealSelected = (): void => {
@@ -136,13 +136,17 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
     setSelectedRecordId(session.collection, selectedRecordIdForSession(session.collection), { reveal: true });
     rerender();
   };
+  // 목록 도구는 「+ 아이템」만 남기고 「+ 장비」·복제·삭제·AI 아이템·종류 거르기 칩·보기 방식은 ⋯ 하나 뒤로 모은다
+  // (btn-trim-r2, 오너 2026-11-24 「사용자는 많은 버튼을 원하지 않는다」). 단추 요소·testid·배선은 그대로다.
+  // 거르기·보기 방식을 고르면 메뉴를 닫는다 — 위로 여는 메뉴가 목록 아래쪽 행을 가리지 않게.
+  const closeMenu = (): void => { actions.querySelector("details")?.removeAttribute("open"); };
   const renderActions = (): void => {
     const current = allEntries().find(isSelected);
-    actions.replaceChildren(listToolbar((["items", "equipment"] as const).map((collection) => ({
+    const [addItem, addEquipment] = (["items", "equipment"] as const).map((collection) => ({
       label: `+ ${LABELS[collection]}`, testid: `db-catalog-add-${collection}`,
       onClick: () => { setSelectedRecordId(collection, addDatabaseRecord(collection)); refreshAfterMutation(); },
-    }))));
-    const recordActions = listToolbar([{
+    }));
+    const recordActions = listToolbar([addEquipment, {
       label: "복제", testid: "db-catalog-duplicate", disabled: !current,
       ariaLabel: current ? `선택한 ${LABELS[current.collection]} 복제` : "선택한 항목 복제",
       onClick: () => {
@@ -155,7 +159,11 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
     const ai = aiGenerateButton("items", refreshAfterMutation);
     ai.textContent = "AI 아이템";
     recordActions.append(ai);
-    actions.append(recordActions);
+    const toolbar = listToolbar([addItem]);
+    toolbar.append(toolbarMore([...Array.from(recordActions.children) as HTMLElement[], filters, subtypeSelect, viewToggle], {
+      title: "+ 장비·복제·삭제·AI 아이템·종류 거르기·보기 방식",
+    }));
+    actions.replaceChildren(toolbar);
   };
   const renderDetail = (): void => {
     const entry = allEntries().find(isSelected);
@@ -317,9 +325,9 @@ export function renderInventoryCatalog(host: HTMLElement, rerender: () => void):
     })] : []));
   };
   search.addEventListener("input", () => { setSearchQueryForCollection("items", search.value); renderRows(); });
-  subtypeSelect.addEventListener("change", () => { session.subtype = subtypeSelect.value; renderRows(); });
+  subtypeSelect.addEventListener("change", () => { session.subtype = subtypeSelect.value; renderRows(); closeMenu(); });
   const pane = listPane({ title: "카탈로그", search: el("div", { class: "db-search db-ws-search", children: [search] }),
-    chips: el("div", { class: "db-catalog-controls", children: [filters, subtypeSelect, viewToggle, selectionNotice] }),
+    chips: el("div", { class: "db-catalog-controls", children: [selectionNotice] }),
     rows: [], toolbar: actions,
   });
   pane.querySelector(".db-ws-list-head")?.append(scopeButton, count);

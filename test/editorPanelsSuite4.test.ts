@@ -114,6 +114,19 @@ describe("databaseInventoryCatalog", () => {
     expect(store.getCurrent().database.items).toHaveLength(2);
     expect(host.querySelector<HTMLElement>('.db-catalog-rows [aria-pressed="true"]')?.dataset.collection).toBe("equipment");
   });
+  // btn-trim-r2: 목록 도구는 「+ 아이템」만 밖에 두고 나머지는 ⋯ 하나 뒤로. 거르기를 고르면 메뉴가 닫힌다.
+  it("keeps only + 아이템 outside the catalog ⋯ menu and closes it after a filter pick", () => {
+    const more = host.querySelector<HTMLDetailsElement>(".db-catalog-actions details.db-toolbar-more");
+    if (!more) throw new Error("missing catalog ⋯");
+    expect(control("db-catalog-add-items").closest("details")).toBeNull();
+    for (const testid of ["db-catalog-add-equipment", "db-catalog-duplicate", "db-delete-selected", "db-catalog-filter-equipment", "db-catalog-subtype", "db-view-toggle-gallery"]) {
+      expect(more.contains(control(testid)), testid).toBe(true);
+    }
+    more.open = true;
+    control("db-catalog-filter-equipment").click();
+    expect(more.open).toBe(false);
+    expect(rowIds()).toEqual(["sword", "shield"]);
+  });
   it("retains both kinds and the selected row in gallery mode", () => {
     control("db-record-row-sword").click();
     // When

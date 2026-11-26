@@ -223,22 +223,62 @@ function itemWorkbenchCards(
   if (isEquipmentItemType(record.type)) {
     return [story, basicsCard(record, rerender, refreshStory), graphicCard(record, rerender), equipmentRedirect(form), supportNotice()];
   }
-  return [
-    story,
-    sectionLabel("정의", "definition"),
-    basicsCard(record, rerender, refreshStory),
-    sectionLabel("효과", "effect"),
-    ...typePanels(record, refreshStory),
-    ...(record.type === "medicine" || (record.type === "special" && !record.captureProfile && !record.careProfile) ? [stateEffectsCard(record, rerender, refreshStory)] : []),
-    ...(hasUseEffects(record.type) && (record.type === "medicine" || (!record.captureProfile && !record.careProfile)) ? [animationCard(record, refreshStory)] : []),
-    ...(record.type !== "normalGoods" ? [targetingCard(record, refreshStory)] : []),
-    sectionLabel("사용 제한", "limits"),
-    ...(hasActorRestrictions(record.type) ? [usableCard(record, refreshStory)] : []),
+  const advanced = itemAdvancedSet();
+  const limitCards = [
     ...(record.type === "special" && !record.careProfile ? [captureCard(record, refreshStory, rerender)] : []),
     ...(record.type === "special" && !record.captureProfile ? [careCard(record, rerender, refreshStory)] : []),
-    graphicCard(record, rerender),
-    supportNotice(),
   ];
+  const limitsLabel = sectionLabel("사용 제한", "limits");
+  const cards = [
+    story,
+    sectionLabel("정의", "definition"),
+    basicsCard(record, rerender, refreshStory, advanced),
+    sectionLabel("효과", "effect"),
+    ...typePanels(record, refreshStory),
+    ...(record.type === "medicine" || (record.type === "special" && !record.captureProfile && !record.careProfile) ? [advanced.add(stateEffectsCard(record, rerender, refreshStory))] : []),
+    ...(hasUseEffects(record.type) && (record.type === "medicine" || (!record.captureProfile && !record.careProfile)) ? [advanced.add(animationCard(record, refreshStory))] : []),
+    ...(record.type !== "normalGoods" ? [advanced.add(targetingCard(record, refreshStory))] : []),
+    // 포획·돌봄 카드는 그 종류의 본 칸이라 늘 보인다. 남는 카드가 모두 고급이면 구획 이름도 함께 숨긴다.
+    limitCards.length ? limitsLabel : advanced.add(limitsLabel),
+    ...(hasActorRestrictions(record.type) ? [advanced.add(usableCard(record, refreshStory))] : []),
+    ...limitCards,
+    advanced.add(graphicCard(record, rerender)),
+    advanced.add(supportNotice()),
+  ];
+  advanced.paint();
+  return cards;
+}
+
+/**
+ * 드문 칸(중요한 물건·상태 변화·전투 연출·대상·사용 시점·사용 가능·외형·필드 적용 안내)은 「기본」 카드의 「고급」 단추 뒤에 둔다
+ * (btn-trim-r2, 오너 2026-11-24 「사용자는 많은 버튼을 원하지 않는다」 · 고칠 땐 머리줄 「말로 고치기」).
+ * 카드는 격자 직계 자식 그대로 `hidden`(+인라인 display)만 바뀐다 — 배치·testid·저장 경로가 그대로다.
+ * 펼친 상태는 레코드를 바꾸거나 다시 그려도 유지한다.
+ */
+let itemAdvancedOpen = false;
+
+type ItemAdvancedSet = { readonly add: (node: HTMLElement) => HTMLElement; readonly button: HTMLElement; readonly paint: () => void };
+
+function itemAdvancedSet(): ItemAdvancedSet {
+  const nodes: HTMLElement[] = [];
+  const button = el("button", {
+    class: "btn small",
+    attrs: { type: "button" },
+    dataset: { testid: "db-item-advanced-toggle" },
+  }) as HTMLButtonElement;
+  const paint = (): void => {
+    for (const node of nodes) {
+      node.hidden = !itemAdvancedOpen;
+      node.style.display = itemAdvancedOpen ? "" : "none";
+    }
+    button.textContent = itemAdvancedOpen ? "고급 접기" : "고급 — 대상·사용 시점·상태 변화·연출·외형…";
+    button.setAttribute("aria-expanded", String(itemAdvancedOpen));
+  };
+  button.addEventListener("click", () => {
+    itemAdvancedOpen = !itemAdvancedOpen;
+    paint();
+  });
+  return { add: (node) => { nodes.push(node); return node; }, button, paint };
 }
 
 /** 카드 제목(2단계)·필드 라벨(3단계) 위에 한 단계를 더한 카드 묶음 구분자. */
@@ -250,7 +290,7 @@ function sectionLabel(text: string, slug: string): HTMLElement {
   });
 }
 
-function basicsCard(record: ItemRecord, rerender: () => void, refreshStory: () => void): HTMLElement {
+function basicsCard(record: ItemRecord, rerender: () => void, refreshStory: () => void, advanced?: ItemAdvancedSet): HTMLElement {
   const card = sectionCard({
     title: "기본",
     testid: "db-item-card-basics",
@@ -267,7 +307,8 @@ function basicsCard(record: ItemRecord, rerender: () => void, refreshStory: () =
       itemPriceField(record.id),
       ...(!isEquipmentItemType(record.type) ? [consumptionLimitField(record, refreshStory)] : []),
       ...(record.type === "normalGoods" || record.farmTool ? [farmToolField(record, refreshStory)] : []),
-      ...(!isEquipmentItemType(record.type) ? [keyItemField(record, rerender)] : []),
+      ...(!isEquipmentItemType(record.type) ? [advanced ? advanced.add(keyItemField(record, rerender)) : keyItemField(record, rerender)] : []),
+      ...(advanced ? [advanced.button] : []),
     ],
   });
   card.classList.add("db-item-basics", "db-ws-span");
