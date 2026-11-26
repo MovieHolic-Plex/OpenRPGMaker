@@ -281,7 +281,7 @@
   overflow-x: auto;
   /* 반만 보이는 끝 칩이 「더 보기」 와 겹친 것처럼 보였다(vm-qa15 묶음 9) — 끝을 흐리게 지우고, 작은 가로 막대는 숨긴다. 나머지는 「더 보기」 로 펼친다. */
   scrollbar-width: none;
-  mask-image: linear-gradient(to right, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(to right, black calc(100% - 28px), transparent);
 }
 .palette-smart-chip-more {
   background: transparent;
