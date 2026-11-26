@@ -127,8 +127,9 @@ test("all event-editor button families keep visible background context", async (
     await expectOriginalEditorBackdrop(modal);
   }
 
-  // 도움말은 헤더의 보이는 ? 다. 전체 보기는 ⋯ 메뉴 안에 있다.
-  await modal.getByTestId("event-editor-help").click();
+  // 도움말은 ⋯ 메뉴 안에 있다(머리의 ? 는 btn-trim-r2 에서 숨겼다).
+  await modal.locator('summary[aria-label="더보기"]').click();
+  await modal.getByTestId("event-editor-help-more").click();
   const help = page.getByTestId("event-editor-help-modal");
   await expectTranslucentScrim(help);
   await page.getByTestId("event-editor-help-close").click();

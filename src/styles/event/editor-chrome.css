@@ -260,6 +260,21 @@
   display: none;
 }
 
+/*
+ * 고급을 펴도 같은 일을 하는 다른 길이 있는 조작은 처음 화면에 두지 않는다(btn-trim-r2, 고급 펼침 41→32).
+ * 되돌리기·다시 실행 = Ctrl+Z/Y, 페이지 ⋯ = 페이지 탭 우클릭, 머리 ? = ⋯ 안 도움말,
+ * 미리보기 이전·다음 = 자동 재생·처음으로, 「전체 맥락 보기」 = 위 무대 스크롤. 코드·testid 는 그대로.
+ */
+.event-editor-modal-window:has(.event-editor) [data-testid="event-command-toolbar-undo"],
+.event-editor-modal-window:has(.event-editor) [data-testid="event-command-toolbar-redo"],
+.event-editor-modal-window:has(.event-editor) [data-testid="event-page-more"],
+.event-editor-modal-window:has(.event-editor) [data-testid="event-script-live-prev"],
+.event-editor-modal-window:has(.event-editor) [data-testid="event-script-live-next"],
+.event-editor-modal-window:has(.event-editor) .event-script-live-context,
+.event-editor-modal-window:has(.event-editor) [data-testid="event-editor-help"] {
+  display: none;
+}
+
 /* 필드셋은 레일 시트가 display:grid 로 더 세게 그린다. 초보에서 빼는 상시 효과는 그 규칙보다 세야 한다. */
 .event-editor-modal-window .event-editor.is-beginner [data-testid="event-classic-pixel-fx"],
 .event-editor-modal-window .event-editor.is-beginner .presence,

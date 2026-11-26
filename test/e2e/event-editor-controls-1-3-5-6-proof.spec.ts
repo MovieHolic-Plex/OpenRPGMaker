@@ -48,11 +48,13 @@ test("event editor controls 1,3,5,6 work from the browser surface", async ({ pag
   await openCommandEditMenu(editor);
   await editor.getByTestId("event-command-toolbar-cut").click();
   await expect(editor.getByTestId("event-command-text")).toHaveCount(initialCommandCount - 1);
-  await editor.getByTestId("event-command-toolbar-undo").click();
+  // 되돌리기·다시 실행 단추는 고급에서도 숨는다(btn-trim-r2) — 같은 일을 Ctrl+Z / Ctrl+Y 로.
+  await editor.locator(".cmd-item .cmd-head").first().click();
+  await page.keyboard.press("Control+z");
   await expect(editor.getByTestId("event-command-text")).toHaveCount(initialCommandCount);
-  await editor.getByTestId("event-command-toolbar-redo").click();
+  await page.keyboard.press("Control+y");
   await expect(editor.getByTestId("event-command-text")).toHaveCount(initialCommandCount - 1);
-  await editor.getByTestId("event-command-toolbar-undo").click();
+  await page.keyboard.press("Control+z");
   await expect(editor.getByTestId("event-command-text")).toHaveCount(initialCommandCount);
 
   await openSettingsRail(editor, "memory");

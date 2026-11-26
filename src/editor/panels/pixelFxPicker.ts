@@ -354,10 +354,14 @@ export function renderPagePixelFxControl(mapId: MapId, eventId: string, page: Ev
   });
   const clear = el("button", { class: "btn small", text: "떼기", attrs: { type: "button" }, dataset: { testid: "event-page-pixel-fx-clear" } });
   clear.hidden = !current;
+  // 효과가 없으면 층·떼기는 할 일이 없다 — 「효과 고르기」만 보인다(btn-trim-r2). hidden 은 .btn 규칙에 지고,
+  // 층 select 는 사용자 지정 select 로 감싸지므로 둘을 한 상자에 넣어 상자째 끈다.
+  const extras = el("span", { class: "event-page-pixel-fx-extras", children: [layer, clear] });
+  extras.style.display = current ? "contents" : "none";
   clear.addEventListener("click", () => updateEventPage(mapId, eventId, page.id, { pixelFx: undefined }, "상시 효과 떼기"));
   return el("div", {
     class: "event-page-pixel-fx",
     dataset: { testid: "event-page-pixel-fx" },
-    children: [label, pick, layer, clear],
+    children: [label, pick, extras],
   });
 }
