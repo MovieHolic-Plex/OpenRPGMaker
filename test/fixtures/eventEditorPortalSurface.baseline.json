@@ -3924,6 +3924,7 @@
    "npc-direction-right",
    "npc-direction-up",
    "npc-frame-preview",
+   "npc-graphic-more",
    "npc-graphic-picker",
    "npc-pattern-0",
    "npc-pattern-1",
@@ -3966,13 +3967,14 @@
    "npc-charset-teach-heading",
    "npc-charset-teach-status",
    "npc-frame-preview",
+   "npc-graphic-more",
    "npc-graphic-picker",
    "npc-walk-preview",
    "primary"
   ],
   "tags": {
    "button": 391,
-   "details": 1,
+   "details": 2,
    "div": 16,
    "fieldset": 2,
    "h3": 1,
@@ -3983,7 +3985,7 @@
    "path": 1,
    "section": 1,
    "span": 380,
-   "summary": 1,
+   "summary": 2,
    "svg": 1
   },
   "tagByTestid": {
@@ -4392,6 +4394,7 @@
    "npc-direction-right": "label",
    "npc-direction-up": "label",
    "npc-frame-preview": "div",
+   "npc-graphic-more": "details",
    "npc-graphic-picker": "div",
    "npc-pattern-0": "label",
    "npc-pattern-1": "label",
@@ -4828,9 +4831,9 @@
    "태그, 쉼표로 구분",
    "패턴"
   ],
-  "testidCount": 410,
+  "testidCount": 411,
   "controlCount": 401,
-  "classCount": 38,
+  "classCount": 39,
   "rootCount": 1
  },
  "mapPoint": {
