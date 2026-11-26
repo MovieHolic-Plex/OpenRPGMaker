@@ -3,16 +3,17 @@
 // 왜 (2026-11-10 ai-quota-aware): 조수가 한도 소진으로 멈췄을 때 사용자는 남은 양을 볼 곳이 없었다.
 // pi-ai 18.16 은 제공자별 사용량 조회기(usage/*)를 이미 들고 있다 — Codex 는 계정 사용량 경로, Antigravity 는
 // 모델별 quotaInfo. 토큰은 응답에 싣지 않는다(브라우저로 비밀이 나가지 않는다는 동반 서비스 불변식).
-import { antigravityUsageProvider, openaiCodexUsageProvider, type UsageCredential, type UsageProvider, type UsageReport } from "@oh-my-pi/pi-ai";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "../../src/ai/oauth/credentials.ts";
+
+// omp-to-pi 시제품: 원조 pi 에는 사용량 조회기가 없다. omp 의 조회기 타입만 옮겨 두고 조회기는 비운다(한도 칩이 「알려 주지 않아요」로 보인다).
+type UsageCredential = { type: "oauth"; accessToken: string; projectId?: string; expiresAt?: number; email?: string };
+type UsageReport = { fetchedAt?: number; limits: { label: string; amount: { usedFraction?: number; remainingFraction?: number }; window?: { resetsAt?: number }; status?: string }[] };
+type UsageProvider = { fetchUsage(request: { provider: never; credential: UsageCredential; signal: AbortSignal }, deps: { fetch: never }): Promise<UsageReport | null> };
 import type { ProviderUsageSnapshot, ProviderUsageWindow } from "../../src/ai/providerQuota.ts";
 
 const USAGE_TIMEOUT_MS = 10_000;
 
-const USAGE_PROVIDERS: Readonly<Record<string, UsageProvider>> = {
-  [CODEX_PROVIDER_ID]: openaiCodexUsageProvider,
-  [ANTIGRAVITY_PROVIDER_ID]: antigravityUsageProvider,
-};
+const USAGE_PROVIDERS: Readonly<Record<string, UsageProvider>> = {};
 
 function credentialFor(provider: string, apiKey: string): UsageCredential | null {
   if (provider === CODEX_PROVIDER_ID) return { type: "oauth", accessToken: apiKey };

@@ -1,4 +1,4 @@
-import { getBundledModel } from "@oh-my-pi/pi-catalog";
+import { getBundledModel } from "./piCore.ts";
 import { getOhMyPiProvider } from "../../src/ai/ohMyPiProviders.ts";
 import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
 import { resolveOpenAiCompatModel } from "./openAiCompatModel.ts";

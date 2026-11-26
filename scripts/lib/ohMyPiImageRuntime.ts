@@ -1,5 +1,4 @@
-import { complete } from "@oh-my-pi/pi-ai";
-import { getBundledModel, getBundledModels } from "@oh-my-pi/pi-catalog";
+import { complete, getBundledModel, getBundledModels } from "./piCore.ts";
 import { ImageReferenceError, parseImageReferences } from "../../src/ai/imageReferences";
 import { pickNewestImageModel, reportedImageModel, type ImageModelCandidate } from "../../src/ai/imageModelResolution";
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";

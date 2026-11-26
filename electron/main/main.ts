@@ -1128,6 +1128,12 @@ export async function startApp(boot: BootContext): Promise<void> {
     join(app.getAppPath(), "dist-electron", workerBinName),
   ].find((candidate) => candidate && existsSync(candidate));
   if (workerBin) process.env.OPRN_OH_MY_PI_WORKER_BIN = workerBin;
+  const workerJs = [
+    process.env.OPRN_PI_WORKER_JS,
+    join(process.resourcesPath ?? "", "app.asar.unpacked", "dist-electron", "oprn-pi-worker.mjs"),
+    join(app.getAppPath(), "dist-electron", "oprn-pi-worker.mjs"),
+  ].find((candidate) => candidate && existsSync(candidate));
+  if (workerJs) process.env.OPRN_PI_WORKER_JS = workerJs;
   const workerScript = [
     process.env.OPRN_OH_MY_PI_WORKER_SCRIPT,
     join(process.resourcesPath ?? "", "app.asar.unpacked", "scripts", "oh-my-pi-worker.ts"),

@@ -1,4 +1,4 @@
-import type { ImageContent, TextContent } from "@oh-my-pi/pi-ai";
+import type { ImageContent, TextContent } from "./piCore.ts";
 
 export class ImageTransportError extends Error {
   readonly status = 400;
