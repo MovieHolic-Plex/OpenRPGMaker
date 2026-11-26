@@ -1454,7 +1454,12 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   // 첫 MVP 팀도 v2 단일(finishTurn.ts)처럼 답 끝에 «첫 판까지» 안내와 «다음에 해 볼 것» 칩을 붙인다 — 없으면 팀장 보고가 «더 할까요?» 로 끝나
   // 사용자가 이어 할 말을 못 찾고, 작은 일 다섯째 묶음 판정도 «안내 없음» 으로 떨어졌다(2026-11-26 team-mvp-revive-r3 t3: 맵 3장·끝 지점 도달·첫 턴 4분).
   if (firstMvpTeam && finishAccepted && finished && !splitNextSteps(finished).steps.length) {
-    finished = `${finished}\n\n${MVP_DONE_LINE}\n\n${nextStepsBlock(mvpNextSteps(working))}`;
+    // 관문 고침을 다 써도 첫 판 약속(끝 지점까지 걸어감 등)이 남으면 «첫 판까지 만들었다» 고 넘기지 않는다 — 막지 않고 경고와 고치기 칩을 준다(오너 원칙).
+    // 2026-11-26 variant-remeasure: 호러 팀 2/2 가 끝 지점에 못 닿은 채 «첫 판까지 만들었습니다» 로 조용히 나갔다.
+    const left = mvpLeft.map((line) => line.replace(/\s+—\s+[^—]*$/u, "").replace(/^.*:\s*/u, "").slice(0, 120));
+    finished = left.length
+      ? `${finished}\n\n주의: 첫 판이 아직 끝까지 이어지지 않습니다. 끝까지 못 가는 곳: ${left.join(" / ")}\n\n${nextStepsBlock([`끝까지 가는 길 고쳐 줘: ${left[0]}`, ...mvpNextSteps(working)])}`
+      : `${finished}\n\n${MVP_DONE_LINE}\n\n${nextStepsBlock(mvpNextSteps(working))}`;
     emit({ type: "team_report", text: finished });
     // 답 말풍선은 마지막 assistant/team_report 다 — 팀장이 finish 뒤에도 «못 한 것» 글을 더 내 안내가 묻혔다(t5 2026-11-26). 첫 판 보고를 마지막 답으로 둔다.
     emit({ type: "assistant", text: finished });
