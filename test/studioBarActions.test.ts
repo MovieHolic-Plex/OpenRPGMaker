@@ -248,8 +248,11 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     const ids = popup.children.map((child) => child.dataset.testid).filter(Boolean);
     expect(ids).toEqual([
       "menu-project-new", "menu-project-load", "menu-project-save", "menu-project-reload-db",
+      // 버튼 줄이기 2회차: 톱바에서 내린 창 입구(자료집·소재)와 예전 ⋯ 항목(도움말·언어·AI 설정)이 이 메뉴에 모인다.
+      "menu-more-database", "menu-more-resources",
       "menu-project-samples",
       "menu-project-import", "menu-project-backup", "menu-project-restore-backup", "menu-project-export-group",
+      "menu-help", "menu-language", "topbar-ai-settings",
     ]);
     expect(findByTestId(popup, "menu-project-save")?.querySelector("kbd")?.textContent).toBe("Ctrl+S");
 
