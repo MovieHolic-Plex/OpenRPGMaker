@@ -29,3 +29,4 @@
 @import "./dialogs/project-start.css" layer(shell);
 @import "./dialogs/jp-city-pin-repair.css" layer(shell);
 @import "./header-layer-switcher.css" layer(shell);
+@import "./touch-targets-narrow.css" layer(shell);

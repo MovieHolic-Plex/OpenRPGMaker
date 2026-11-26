@@ -1,0 +1,15 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/database/touch-targets-narrow.css",
+ "contested": {},
+ "winners": {
+  "209f9876d46f": "[database] 32px",
+  "536d9678fcb5": "[database] 32px",
+  "54eb8220ae1c": "[database] 32px",
+  "865f0a90a9f1": "[database] 32px",
+  "981a39d4dbc2": "[database] 32px",
+  "b685764cfb6b": "[database] 32px",
+  "b9d9c43ba1a8": "[database] 32px",
+  "fa37c4aad318": "[database] 32px"
+ }
+}

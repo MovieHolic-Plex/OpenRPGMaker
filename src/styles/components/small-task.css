@@ -8,6 +8,10 @@
     white-space: nowrap;
   }
   .small-task-trigger:hover, .small-task button:hover { background: var(--accent-muted); }
+  /* 휴대 폭: 「조수에게 맡기기」 26px → 32px(vm-qa15 묶음 3). */
+  @media (max-width: 599px) {
+    .small-task-trigger { min-height: 32px; }
+  }
   .small-task {
     position: fixed;
     inset: auto;

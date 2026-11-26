@@ -1,0 +1,9 @@
+{
+ "entry": "src/styles/index.css",
+ "file": "src/styles/shell/touch-targets-narrow.css",
+ "contested": {},
+ "winners": {
+  "2b695a0d7aa2": "[shell] 32px",
+  "c286369a890e": "[shell] 32px"
+ }
+}
