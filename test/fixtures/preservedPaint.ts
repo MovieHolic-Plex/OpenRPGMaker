@@ -3,6 +3,7 @@ import { createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { runTool } from "@/editor/tools";
 import type { ToolContext } from "@/editor/tools/types";
+import type { Project } from "@/project/types";
 import { withRetiredEasyRpgTilesets } from "../support/retiredEasyRpgTilesets";
 
 // P7's exact native paint geometry; no live content or saved evidence is loaded.
@@ -33,8 +34,9 @@ export function nativePaintCall(ctx: ToolContext, args: Record<string, unknown>)
 // P7's tile ids (112 floor, 306 wall, 342 basement floor) and its builtin_stone_court group are the retired
 // combined-town sheet's. On the current default (beodeul_city) those ids mean other tiles and paint_tiles is refused
 // by the tileset-reference read gate, so the basement is built on the retired sheet explicitly.
-export function preservedPaintContext(): ToolContext {
-  const ctx = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+/** `createProject` — 세션을 여러 번 여는 시험은 번들 타일셋을 공유하는 빈 프로젝트(test/support/sharedBlankProject)를 넘긴다. */
+export function preservedPaintContext(createProject: () => Project = createBlankProject): ToolContext {
+  const ctx = { project: withRetiredEasyRpgTilesets(createProject()) };
   const created = runTool(ctx, "create_map", { id: "map_basement", name: "P7 accounting", width: 12, height: 10, tilesetId: COMBINED_TOWN_TILESET_ID });
   if (!created.ok) throw new Error(created.summary);
   const map = ctx.project.maps.map_basement;

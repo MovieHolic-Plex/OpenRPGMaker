@@ -347,7 +347,8 @@ function hideInspector(target: HTMLElement): void {
   delete target.dataset.commandPath;
   target.replaceChildren();
   target.hidden = !emptyPreview;
-  if (emptyPreview) target.append(el("h3", { class: "event-preview-heading", text: "미리보기" }), emptyPreview());
+  // 닫는 처리가 문서가 내려간 뒤 늦게 돌면(시험 해체) 빈 미리보기를 새로 만들 곳이 없다.
+  if (emptyPreview && typeof document !== "undefined") target.append(el("h3", { class: "event-preview-heading", text: "미리보기" }), emptyPreview());
   target.closest(".event-editor-workbench")?.classList.remove("has-command-inspector");
 }
 
