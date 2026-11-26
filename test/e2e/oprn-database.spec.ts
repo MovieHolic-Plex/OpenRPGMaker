@@ -205,9 +205,12 @@ test("RM2K3 database editor edits records, updates dependent pickers, and blocks
   await page.getByTestId("db-tab-troops").click();
   await page.getByTestId("db-field-name").fill("Troop QA");
   await page.getByTestId("db-picker-troop-member-enemy").selectOption({ label: "Enemy QA" });
+  // 숨김·좌표와 배경은 접기 안이다(btn-trim-r2).
+  await page.getByTestId("db-troop-member-advanced-toggle").click();
   await page.getByTestId("db-field-troop-member-x").fill("144");
   await page.getByTestId("db-field-troop-member-y").fill("88");
   await page.getByTestId("db-field-troop-member-hidden").check();
+  await page.getByTestId("db-troop-config-toggle").click();
   await page.getByTestId("db-field-troop-backdrop").fill("battleback_qa");
 
   await revealDbRailTab(page, "states");

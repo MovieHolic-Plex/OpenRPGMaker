@@ -40,6 +40,7 @@ import {
   listToolbar,
   sectionCard,
   statStrip,
+  toolbarMore,
   type ToolbarAction,
 } from "@/editor/panels/databaseWorkspace";
 import { openTroopBattleTestModal } from "@/editor/panels/testPlayModal";
@@ -233,20 +234,6 @@ function troopHeader(record: TroopRecord, rerender: () => void): HTMLElement {
 
   const actions: ToolbarAction[] = [
     {
-      label: "이름 생성",
-      testid: "db-troop-generate-name",
-      title: "배치한 적 이름을 이어 붙여 그룹 이름을 만듭니다",
-      onClick: () => {
-        // 사람이 쓴 이름을 즉시 덮어쓴다. updateDatabaseRecord 가 스냅샷을 남기므로 되돌릴
-        // 수는 있지만, 그 사실을 알리지 않으면 저작물이 조용히 사라진 것처럼 보인다.
-        const previous = record.name;
-        const next = generatedTroopName(record);
-        updateDatabaseRecord("troops", record.id, { name: next });
-        toast(`이름을 "${next}"로 바꿨습니다 (이전 "${previous}") — Ctrl+Z로 되돌릴 수 있습니다.`, "ok");
-        rerender();
-      },
-    },
-    {
       label: "전투 테스트",
       kind: "primary",
       testid: "db-troop-battle-test",
@@ -304,7 +291,7 @@ function configurationPanel(record: TroopRecord, rerender: () => void): HTMLElem
     hint: side
       ? "전투 배경은 종류(풀밭·숲·동굴·설원·사막)로 고릅니다. 자동이면 싸우는 곳의 지형 효과를 따릅니다."
       : "전투 배경은 지형 레코드에 등록된 것에서 고릅니다.",
-    children: [
+    children: [troopFold("config", "배경·배치 방식·인원·겹·트레이너·결투", "db-troop-config-toggle", el("div", { children: [
       el("div", {
         class: "db-troop-config-grid",
         children: [
@@ -343,7 +330,7 @@ function configurationPanel(record: TroopRecord, rerender: () => void): HTMLElem
       }),
       duelRulesField(record, rerender),
       victoryBannerField(record),
-    ],
+    ] }))],
     testid: "db-troop-config-card",
     extraClass: "db-troop-card-config",
   });
@@ -402,14 +389,29 @@ function backdropField(record: TroopRecord, rerender: () => void): HTMLElement {
 }
 
 // 배경 카드 일곱 장은 접힌 「배경 고르기」 뒤에 둔다 — 보통은 「배경 변경」 한 번으로 넘기고, 고를 때만 펼친다
-// (btn-vqa-db PR 5, 오너 2026-11-24 「사용자는 많은 버튼을 원하지 않는다」). 닫힌 details 내용은 브라우저에 따라
-// 상자가 남아 탭 순서에 걸리므로 hidden 으로도 감춘다. 카드·testid 는 그대로다.
+// (btn-vqa-db PR 5, 오너 2026-11-24 「사용자는 많은 버튼을 원하지 않는다」). 카드·testid 는 그대로다.
 function sceneryFold(field: HTMLElement): HTMLElement {
-  field.hidden = true;
+  return troopFold("scenery", "배경 고르기", "db-troop-scenery-toggle", field);
+}
+
+/**
+ * 드문 칸 접기(btn-trim-r2). 닫힌 details 내용은 브라우저에 따라 상자가 남아 탭 순서에 걸리므로 hidden 으로도
+ * 감춘다. 펼친 접기는 레코드를 바꾸거나 다시 그려도(편집마다 rerender) 열린 채로 둔다. 칸·testid 는 그대로다.
+ */
+const openTroopFolds = new Set<string>();
+
+function troopFold(key: string, summary: string, testid: string, body: HTMLElement): HTMLElement {
+  const open = openTroopFolds.has(key);
+  body.hidden = !open;
   const fold = el("details", {
-    children: [el("summary", { text: "배경 고르기", dataset: { testid: "db-troop-scenery-toggle" } }), field],
+    children: [el("summary", { text: summary, dataset: { testid } }), body],
   }) as HTMLDetailsElement;
-  fold.addEventListener("toggle", () => { field.hidden = !fold.open; });
+  fold.open = open;
+  fold.addEventListener("toggle", () => {
+    body.hidden = !fold.open;
+    if (fold.open) openTroopFolds.add(key);
+    else openTroopFolds.delete(key);
+  });
   return fold;
 }
 
@@ -540,8 +542,7 @@ function memberEditor(
   const enemies = store.getCurrent().database.enemies;
   const hasEnemies = enemies.length > 0;
 
-  const actions: ToolbarAction[] = [
-    {
+  const addAction: ToolbarAction = {
       label: "＋ 추가",
       kind: "primary",
       testid: "db-troop-member-add",
@@ -555,7 +556,9 @@ function memberEditor(
         updateDatabaseRecord("troops", record.id, { members: nextMembers });
         rerender();
       },
-    },
+  };
+  // 정렬·예시 배치·삭제·전체 지우기·이름 생성은 「＋ 추가」 옆 ⋯ 하나 뒤로 모은다(btn-trim-r2). 단추·testid 는 그대로다.
+  const moreActions: ToolbarAction[] = [
     {
       label: "정렬",
       testid: "db-troop-member-arrange",
@@ -609,7 +612,27 @@ function memberEditor(
         rerender();
       },
     },
+    {
+      label: "이름 생성",
+      testid: "db-troop-generate-name",
+      title: "배치한 적 이름을 이어 붙여 그룹 이름을 만듭니다",
+      onClick: () => {
+        // 사람이 쓴 이름을 즉시 덮어쓴다. updateDatabaseRecord 가 스냅샷을 남기므로 되돌릴
+        // 수는 있지만, 그 사실을 알리지 않으면 저작물이 조용히 사라진 것처럼 보인다.
+        const previous = record.name;
+        const next = generatedTroopName(record);
+        updateDatabaseRecord("troops", record.id, { name: next });
+        toast(`이름을 "${next}"로 바꿨습니다 (이전 "${previous}") — Ctrl+Z로 되돌릴 수 있습니다.`, "ok");
+        rerender();
+      },
+    },
   ];
+  const memberToolbar = listToolbar([addAction]);
+  memberToolbar.append(toolbarMore(Array.from(listToolbar(moreActions).children) as HTMLElement[], {
+    title: "정렬·예시 배치·삭제·이름 생성",
+    ariaLabel: "배치 도구 더 보기",
+    testid: "db-troop-member-more",
+  }));
 
   // 미리보기에서 적을 누르면 이 카드가 그 슬롯을 연다 — 슬롯 편집(적·등장·좌표)과 팔레트를
   // 미리보기 오른쪽 한 열에 모아, 한 동작을 위해 화면 세 곳을 오가지 않게 한다.
@@ -621,6 +644,8 @@ function memberEditor(
           updateSelectedMember(record, selectedIndex, enemyId ? { ...member, enemyId } : undefined);
           rerender();
         }),
+        // 숨김·부위·좌표·몬스터 탭 바로가기는 드문 칸이라 접는다(btn-trim-r2). 좌표는 미리보기에서 끌어도 바뀐다.
+        troopFold("member", "숨김·부위·좌표", "db-troop-member-advanced-toggle", el("div", { children: [
         checkboxField("연출 전까지 숨김 (전투 이벤트로 등장)", "db-field-troop-member-hidden", member.hidden ?? false, (hidden) => {
           updateSelectedMember(record, selectedIndex, { ...member, hidden });
           rerender();
@@ -650,6 +675,7 @@ function memberEditor(
           ],
         }),
         openEnemyButton(member.enemyId),
+        ] })),
       ]
       // 슬롯이 없을 때의 안내는 아래 목록의 빈 상태 하나가 맡는다(같은 말을 두 번 하지 않는다).
       : [],
@@ -660,7 +686,7 @@ function memberEditor(
     children: [
       el("span", { class: "db-troop-field-label", text: `배치한 적 ${members.length}` }),
       memberRows(record, selectedIndex, rerender),
-      listToolbar(actions),
+      memberToolbar,
     ],
   });
 
@@ -678,7 +704,10 @@ function memberEditor(
       studioCard({
         title: "적 팔레트",
         hint: members.length > 0 ? "누르면 선택한 슬롯의 적이 바뀝니다." : "고른 적으로 첫 슬롯을 만듭니다.",
-        children: [enemyList(record, selectedIndex, selectedEnemy?.id ?? member.enemyId, rerender)],
+        // 팔레트는 위 「적」 고르기와 같은 일이라 접어 둔다(btn-trim-r2). 슬롯이 없을 때는 첫 슬롯을 만드는 길이라 편다.
+        children: members.length > 0
+          ? [troopFold("palette", "적 그림으로 고르기", "db-troop-enemy-palette-toggle", enemyList(record, selectedIndex, selectedEnemy?.id ?? member.enemyId, rerender))]
+          : [enemyList(record, selectedIndex, selectedEnemy?.id ?? member.enemyId, rerender)],
         testid: "db-troop-enemy-palette-card",
         extraClass: "db-troop-card-palette",
       }),
