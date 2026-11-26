@@ -8,6 +8,7 @@ import { type StageWrites } from "../shared/stageWrites";
 import type { Project } from "@/project/types";
 import { audioOnly } from "../request/readers";
 import { gameContentProblems } from "./gameChecks";
+import { variationStructureProblems } from "./variationChecks";
 import { unaskedChanges } from "./sideEffectChecks";
 import { AUTOPLAY_GATE_PREFIX, playProblems } from "./playCheck";
 import { combatProblems } from "./combatChecks";
@@ -106,6 +107,8 @@ export function v2GateProblems(session: V2Session, env?: PiAssistantV2Env): { pr
   const fixable = open.filter((o) => o.rounds < o.cap);
   // 게임 내용 검사(날씨·엔딩·상태·물건 고르기·깃발·부작용) — 요청 낱말과 실제로 바뀐 이벤트를 맞댄다.
   let game: Finding[] = env ? gameFindings(env.request.project, env.ctx.project, env.request.task, session.stageWrites) : [];
+  // 변주 카드의 구조 장치·순서(2026-11-26 variant-remeasure) — 카드 씨앗이 프로젝트 열쇠라 env 가 있을 때만 잰다.
+  if (env) try { game.push(...variationStructureProblems(env.request.project, env.ctx.project, env.request.task, env.request.projectKey ? String(env.request.projectKey) : undefined)); } catch { /* 검사 실패는 무시 */ }
   // 첫 판 MVP 는 엔딩을 만들지 않는다 — 요청 글(첫 화면 지시문)의 «엔딩» 낱말로 엔딩을 요구하지 않는다(judge/blueprintScale.endsAtMvp).
   if (env && endsAtMvp(env.ctx.project)) game = game.filter((g) => g.id !== "엔딩");
   // 아무것도 안 바꾸고 «도구가 없다»며 끝내기(2026-10-24 g3-edit-move: 대장장이 옮기기를 묻기만 했다, g3-apple-count: 그림 카드만 남겼다).

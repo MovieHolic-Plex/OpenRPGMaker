@@ -40,6 +40,13 @@ export interface AxisOption {
   readonly ko: string;
   /** 사용자 글이 이미 이 축을 말하는 낱말 — 맞으면 그 축은 뽑지 않는다. */
   readonly words?: RegExp;
+  /**
+   * 이 구조를 실제로 짓는 도구 — 카드가 이름을 대고 처음 도구 목록에 싣는다(toolExposure). 구조 축에만 쓴다.
+   * 왜(2026-11-26 variant-remeasure 호러 판별): «낮과 밤 두 번» 판은 configure_time_system 이 처음 목록·카드에 없어 모델이 찾지 않았다.
+   */
+  readonly tools?: readonly string[];
+  /** 청사진 걸음이 지켜야 할 순서 — descend = 뒤 걸음일수록 낮은 층, days = 첫째 날 → 셋째 날. 끝맺음 관문이 센다(judge/variationChecks.ts). */
+  readonly order?: "descend" | "days";
 }
 
 export type DeckId = "recall" | "mystery" | "warm" | "horror" | "romance" | "adventure";
@@ -74,7 +81,7 @@ const INDOOR_WORLD_KINDS: ReadonlySet<string> = new Set([
   "snow_north/cabin", "snow_north/tavern", "snow_north/longhall", "snow_north/ice-cave", "pirate_isles/hut", "pirate_isles/tavern",
   "steampunk_city/inn", "steampunk_city/workshop", "steampunk_city/lab", "steampunk_city/boiler-room", "steampunk_city/engine-room",
 ]);
-const O = (ko: string, words?: RegExp): AxisOption => ({ ko, ...(words ? { words } : {}) });
+const O = (ko: string, words?: RegExp, tools?: readonly string[], order?: AxisOption["order"]): AxisOption => ({ ko, ...(words ? { words } : {}), ...(tools ? { tools } : {}), ...(order ? { order } : {}) });
 
 /** 계절·시간·날씨 분위기 — 장르마다 이 위에 몇 줄을 더한다. */
 const MOOD_COMMON: readonly AxisOption[] = [
@@ -142,20 +149,20 @@ export const DECKS: readonly Deck[] = [
       O("잃어버린 물건이 기억을 불러내는 순간", /잃어버린/u),
       O("이사 가기 전날 밤의 짐 정리", /이사/u),
       O("고장 난 오르골을 고쳐 소리를 되찾기", /오르골|시계/u),
-      O("장례 뒤 남겨진 집을 비우는 사흘", /장례|유산|집\s*정리/u),
+      O("장례 뒤 남겨진 집을 비우는 사흘", /장례|유산|집\s*정리/u, undefined, "days"),
       O("어릴 때 묻어 둔 타임캡슐을 파내는 날", /타임캡슐/u),
       O("끝을 모르는 옛 노래의 가사를 이어 가기", /노래|가사/u),
       O("첫눈이 오면 열리는 가게 문", /첫눈/u),
     ],
     moods: [...MOOD_COMMON, O("먼지 낀 햇살이 비스듬히 드는 오후", /먼지/u), O("겨울 저녁 난로 불빛과 김 서린 창", /난로/u)],
     structures: [
-      O("한 장소를 현재와 과거 두 시대로 겹쳐 보여 준다", /두\s*시대|겹쳐/u),
+      O("한 장소를 현재와 과거 두 시대로 겹쳐 보여 준다", /두\s*시대|겹쳐/u, ["create_time_gate"]),
       O("기억 조각마다 다른 장소를 찾아가 모으는 수집형", /조각/u),
       O("갈림길 회상 — 선택에 따라 기억의 결말이 달라진다", /갈림길|선택/u),
-      O("한 집 안의 여러 방을 한 방씩 열어 가는 구조", /방을\s*열/u),
+      O("한 집 안의 여러 방을 한 방씩 열어 가는 구조", /방을\s*열/u, ["seal_locked_room", "author_puzzle_chain"]),
       O("현재에서 과거로 거꾸로 거슬러 오르는 구조", /거꾸로|거슬러/u),
       O("한 사람이 아닌 세 사람의 기억을 이어 붙이는 구조", /세\s*사람|여러\s*사람/u),
-      O("낮의 현재와 밤의 꿈속 기억을 오가는 이중 구조", /꿈속|이중/u),
+      O("낮의 현재와 밤의 꿈속 기억을 오가는 이중 구조", /꿈속|이중/u, ["configure_time_system", "add_event_page"]),
     ],
   },
   {
@@ -206,7 +213,7 @@ export const DECKS: readonly Deck[] = [
       O("오래전 사건의 진범이 다시 나타난다", /진범/u),
       O("딱 한 사람만 거짓을 말하는 증언", /거짓|증언/u),
       O("폭풍우로 고립된 곳에서 이어지는 사건", /폭풍|고립/u),
-      O("실종자의 마지막 행적을 되짚는 사흘", /실종/u),
+      O("실종자의 마지막 행적을 되짚는 사흘", /실종/u, undefined, "days"),
       O("의뢰인이 사실은 범인의 가족이었다", /의뢰인/u),
       O("사진 속 시계가 가리키는 시각의 모순", /시계|사진/u),
       O("도난당한 것이 아무 가치 없는 물건", /도난/u),
@@ -217,7 +224,7 @@ export const DECKS: readonly Deck[] = [
       O("장소마다 한 명씩 심문해 모순을 모은다", /심문/u),
       O("한 현장을 시간 순으로 세 번 다시 본다", /다시\s*본/u),
       O("용의자별 챕터를 돌고 마지막에 지목한다", /챕터|지목/u),
-      O("현장은 한 건물, 단서는 방마다 흩어져 있다", /한\s*건물/u),
+      O("현장은 한 건물, 단서는 방마다 흩어져 있다", /한\s*건물/u, ["place_examine_hotspots"]),
       O("결말부터 보여 주고 과정을 재구성한다", /재구성/u),
       O("두 사건이 하나의 진상으로 이어진다", /두\s*사건/u),
     ],
@@ -276,7 +283,7 @@ export const DECKS: readonly Deck[] = [
     ],
     moods: [...MOOD_COMMON, O("따뜻한 난로와 김이 오르는 찻잔", /난로|찻잔/u), O("해가 막 뜬 이른 아침의 상쾌함", /이른\s*아침|새벽/u)],
     structures: [
-      O("하루를 아침·낮·밤 세 장면으로 나누는 구조", /하루/u),
+      O("하루를 아침·낮·밤 세 장면으로 나누는 구조", /하루/u, ["configure_time_system", "add_event_page"]),
       O("이웃 집을 한 집씩 돌며 사연을 모으는 구조", /이웃/u),
       O("계절이 한 장소를 네 번 다르게 바꾼다", /계절/u),
       O("한 사람의 부탁이 다음 사람의 부탁으로 이어지는 릴레이", /릴레이|부탁/u),
@@ -328,7 +335,7 @@ export const DECKS: readonly Deck[] = [
       O("숨바꼭질이 끝나지 않는 밤", /숨바꼭질/u),
       O("실종자가 남긴 녹음테이프", /녹음|테이프/u),
       O("한 번 들어가면 문이 사라지는 방", /문이\s*사라/u),
-      O("오래된 괴담이 하나씩 현실이 되는 사흘", /괴담/u),
+      O("오래된 괴담이 하나씩 현실이 되는 사흘", /괴담/u, undefined, "days"),
       O("전화기 너머에서 부르는 이미 죽은 사람", /전화/u),
       O("사진을 찍을 때마다 한 사람씩 늘어나는 얼굴", /사진/u),
       O("봉인이 풀린 물건과 그 주인", /봉인/u),
@@ -336,12 +343,12 @@ export const DECKS: readonly Deck[] = [
     ],
     moods: [...MOOD_COMMON.slice(1), O("정전된 밤, 손전등 하나의 빛", /정전|손전등/u), O("폭우와 천둥이 이어지는 밤", /폭우|천둥/u), O("달이 없는 칠흑 같은 밤", /칠흑/u), O("싸늘한 새벽 안개", /새벽/u)],
     structures: [
-      O("한 건물 안에서 열쇠를 모아 층을 내려간다", /열쇠/u),
-      O("숨고 도망치며 추적자를 피하는 추격 구조", /추격|도망/u),
+      O("한 건물 안에서 열쇠를 모아 층을 내려간다", /열쇠/u, ["seal_locked_room", "author_puzzle_chain"], "descend"),
+      O("숨고 도망치며 추적자를 피하는 추격 구조", /추격|도망/u, ["make_chase_scene"]),
       O("괴담 하나마다 한 장소를 해결하는 옴니버스", /옴니버스/u),
-      O("같은 장소를 낮과 밤 두 번 다르게 겪는다", /낮과\s*밤/u),
-      O("정체를 알아 갈수록 장소의 뜻이 바뀐다", /정체/u),
-      O("한 사람이 아니라 둘이 번갈아 조작하는 구조", /번갈아/u),
+      O("같은 장소를 낮과 밤 두 번 다르게 겪는다", /낮과\s*밤/u, ["configure_time_system", "add_event_page"]),
+      O("정체를 알아 갈수록 장소의 뜻이 바뀐다", /정체/u, ["stage_map_reveal"]),
+      O("한 사람이 아니라 둘이 번갈아 조작하는 구조", /번갈아/u, ["author_party_split"]),
     ],
   },
   {
@@ -397,8 +404,8 @@ export const DECKS: readonly Deck[] = [
     moods: [...MOOD_COMMON, O("벚꽃이 흩날리는 하굣길", /벚꽃/u), O("불꽃놀이가 터지는 여름밤", /불꽃/u)],
     structures: [
       O("만날 사람을 고르는 갈래 — 장소마다 다른 사람", /갈래|공략/u),
-      O("한 사람과의 일주일을 하루씩 풀어 간다", /일주일/u),
-      O("대화 선택으로 호감도가 쌓이고 마지막에 고백한다", /호감도/u),
+      O("한 사람과의 일주일을 하루씩 풀어 간다", /일주일/u, ["configure_time_system"]),
+      O("대화 선택으로 호감도가 쌓이고 마지막에 고백한다", /호감도/u, ["set_npc_affection"]),
       O("오해가 생겼다 풀리는 3막 구조", /오해/u),
       O("계절이 바뀔 때마다 관계가 한 단계 변한다", /계절/u),
       O("같은 하루를 두 사람의 시점으로 번갈아 본다", /시점/u),
@@ -440,8 +447,8 @@ export const DECKS: readonly Deck[] = [
     moods: [...MOOD_COMMON.slice(0, 6), O("먼 산 위로 구름이 갈라지는 아침", /구름/u), O("폭풍 직전의 어둑한 하늘", /폭풍/u)],
     structures: [
       O("거점 하나에서 방사형으로 지역을 돌고 돌아온다", /거점/u),
-      O("세 지역에서 조각 셋을 모아 마지막 문을 연다", /조각|세\s*지역/u),
-      O("앞 장소에서 얻은 것이 뒤 장소의 길을 연다", /열쇠|길을\s*연다/u),
+      O("세 지역에서 조각 셋을 모아 마지막 문을 연다", /조각|세\s*지역/u, ["author_puzzle_chain"]),
+      O("앞 장소에서 얻은 것이 뒤 장소의 길을 연다", /열쇠|길을\s*연다/u, ["author_puzzle_chain", "seal_locked_room"]),
       O("두 세력 사이에서 편을 고르면 길이 갈린다", /세력|편을/u),
       O("마지막에 처음 마을로 돌아와 달라진 점을 본다", /돌아와/u),
     ],

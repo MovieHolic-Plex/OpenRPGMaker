@@ -37,9 +37,11 @@ export function variationCard(v: Variation, options: CardOptions): string | unde
       : (en ? "path = make_place type:detail; one map each, named as written, steps' place spread over all" : "길 = make_place type:세부; 장소마다 맵 하나, 적힌 이름 그대로, 걸음 place 를 모두에 나눔");
     parts.push(en ? `Places (1st = the start; ${how}): ${places.join(" ")}.` : `장소(첫째 = 시작하는 곳; ${how}): ${places.join(" ")}.`);
   }
-  if (v.event) parts.push(`${en ? "Event" : "사건"}: ${v.event.ko}.`);
+  const orderNote = (order: "descend" | "days" | undefined): string => order === "descend" ? (en ? " — name places by floor (1층 → 지하 1층 → 지하 2층), later steps lower" : " — 장소에 층을 붙이고(1층 → 지하 1층 → 지하 2층) 뒤 걸음일수록 낮은 층")
+    : order === "days" ? (en ? " — split the steps 첫째 날 → 둘째 날 → 셋째 날" : " — 걸음을 첫째 날 → 둘째 날 → 셋째 날로 나눈다") : "";
+  if (v.event) parts.push(`${en ? "Event" : "사건"}: ${v.event.ko}${orderNote(v.event.order)}.`);
   if (v.mood) parts.push(`${en ? "Mood" : "분위기"}: ${v.mood.ko}.`);
-  if (v.structure) parts.push(`${en ? "Structure" : "구조"}: ${v.structure.ko}.`);
+  if (v.structure) parts.push(`${en ? "Structure" : "구조"}: ${v.structure.ko}${v.structure.tools?.length ? ` (${en ? "build it with" : "짓는 도구"} ${v.structure.tools.join(", ")})` : ""}${orderNote(v.structure.order)}.`);
   if (!parts.length) return undefined;
   const head = en
     ? `${VARIATION_MARK} Fill what the user left open (user wins); in write_blueprint: event→premise, mood→tones+opening, structure→step links.`
