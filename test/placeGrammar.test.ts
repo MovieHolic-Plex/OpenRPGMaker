@@ -44,7 +44,8 @@ describe("grammarDesign", () => {
     expect(d.rooms?.filter((r) => r.role === "entrance")).toHaveLength(1);
     expect(d.rooms?.filter((r) => r.role === "boss")).toHaveLength(1);
     const [x] = String(d.rooms?.find((r) => r.role === "entrance")?.at).split(",").map(Number);
-    expect(x).toBeGreaterThan(0.7);
+    // 서쪽 입구 = 맵 왼쪽(designLayout 의 west 자리 [0.1, 0.5], sideScore 의 -x).
+    expect(x).toBeLessThan(0.3);
   });
 
   it("gives the lake grammar a lake room", () => {

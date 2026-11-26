@@ -5,6 +5,7 @@ import { ensureBundledTilesets } from "@/project/defaults/defaultAssets";
 import { ATLAS_BIOME_INTERIOR_COUNT, ensureAtlasBiomeInteriorCurrent } from "@/project/defaults/atlasBiomeInterior";
 import { attachWorkshopTiles, bakeWorkshopObject, detachWorkshopTiles, workshopHandObjects, workshopObjectId, type WorkshopObjectInput } from "@/project/workshopTiles";
 import { runTool } from "@/editor/tools";
+import { BEODEUL_OBJECT_KIT_PREFIX } from "@/assets/beodeulPlaceableObjects";
 import type { Project } from "@/project/types";
 
 const ID = "atlas_biome_interior";
@@ -121,7 +122,10 @@ describe("조수 도구가 공방 물체를 쓴다", () => {
     const kit = ctx.project.tilesets[ID]!.structureKits!.find((k) => k.id === "workshop:약초-선반")!;
     expect(ctx.project.maps.herb!.upperTiles.concat(ctx.project.maps.herb!.upperOverlayTiles ?? [])).toContain(kit.rows[1]!.upperTiles![0]);
     const listed = runTool(ctx, "list_tileset_objects", { mapId: "herb", query: "약초" });
-    expect((listed.data as { objects: { id: string }[] }).objects.map((o) => o.id)).toEqual(["workshop:약초-선반"]);
+    // 같은 oprn-atlas 계열의 버들항 기물(bd-object:*)도 실내 맵 목록에 뜬다(#4920 계열 기반 기물 묶음) — 공방 물체가 첫째, 나머지는 그 묶음뿐이다.
+    const listedIds = (listed.data as { objects: { id: string }[] }).objects.map((o) => o.id);
+    expect(listedIds[0]).toBe("workshop:약초-선반");
+    expect(listedIds.slice(1).filter((id) => !id.startsWith(BEODEUL_OBJECT_KIT_PREFIX))).toEqual([]);
     const stamped = runTool(ctx, "stamp_tileset_object", { mapId: "herb", objectId: "workshop:약초-선반", base: { x: 5, y: 4 } });
     expect(stamped.ok, stamped.summary).toBe(true);
   });

@@ -113,7 +113,8 @@ export function buildSceneKit<T extends SceneCandidate>(
   const perWord = options.perWord ?? 2;
   const perRole = options.perRole ?? 6;
   const triggerKey = squash(found.trigger);
-  const context = contextWords.map(norm).filter(word => word.length >= 1 && !triggerKey.includes(squash(word)));
+  // 장면을 고른 trigger 그 자체만 뺀다. 여러 낱말 장소 이름의 한 낱말(「조선 장터」의 「조선」)은 어느 계열 기물인지 가르는 다른 낱말이다.
+  const context = contextWords.map(norm).filter(word => word.length >= 1 && squash(word) !== triggerKey);
   const contextScore = (row: T) => {
     const fields = [row.name, ...row.tags].map(norm);
     return context.filter(word => fields.some(field => field.includes(word))).length;

@@ -113,7 +113,8 @@ export function existingMatches(project: Project, tileset: TilesetDef, title: st
           if (object.hit && object.hit.split("/")[0] !== object.hit.split("/")[1]) continue;
           const exact = same(object.ko ?? "", object.id);
           if (!exact && !hit(object.ko ?? "") && !hit(object.id)) continue;
-          if (!out.some((row) => row.id === object.id)) out.push({ id: object.id, name: object.ko ?? object.id, how: "build_hand_interior_room objects[].id (이미 있는 방이면 같은 방을 다시 지으며 더한다)", exact });
+          // 칩셋에 이미 구운 같은 부품(킷 hand-interior:<id>)은 다시 내지 않는다 — 정확 일치 정렬이 그 사본을 다른 킷 앞에 세웠다.
+          if (!out.some((row) => row.id === object.id || row.id === `hand-interior:${object.id}`)) out.push({ id: object.id, name: object.ko ?? object.id, how: "build_hand_interior_room objects[].id (이미 있는 방이면 같은 방을 다시 지으며 더한다)", exact });
         }
       } catch { /* 부품 사전을 못 읽어도 칩셋 킷 검사는 남는다 */ }
     }

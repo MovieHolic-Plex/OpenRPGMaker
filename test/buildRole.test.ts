@@ -14,12 +14,13 @@ describe("execution role by kind of work", () => {
     expect(executionRoleFor("뭔가", undefined)).toBe("deep");
   });
 
-  it("falls back to deep when build is not set, and a ChatGPT account seeds build with Gemini", () => {
+  it("falls back to deep when build is not set, and a ChatGPT account seeds build with GPT-6.2 Sol", () => {
     const config = { providerId: "openai-codex", model: "gpt-6.1-sol",
       roleModels: { deep: { provider: "openai-codex", model: "gpt-6.1-sol", thinkingLevel: "medium" } } } as unknown as AiConfig;
     expect(modelForRole(config, "build")).toEqual(modelForRole(config, "deep"));
     const seeded = configForProviderSelection(config, "openai-codex", true);
-    expect(seeded.roleModels?.build).toEqual({ provider: "google-antigravity", model: "gemini-4-argon", thinkingLevel: "medium" });
-    expect(seeded.roleModels?.deep?.model).toBe("gpt-6.1-sol");
+    // #4775(오너 결정 2026-11-19): ChatGPT 계정의 작문·제작은 더 이상 Gemini Argon 이 아니고, 두 티어 모두 GPT-6.2 Sol 이다.
+    expect(seeded.roleModels?.build).toEqual({ provider: "openai-codex", model: "gpt-6.2-sol", thinkingLevel: "medium" });
+    expect(seeded.roleModels?.deep).toEqual({ provider: "openai-codex", model: "gpt-6.2-sol", thinkingLevel: "medium" });
   });
 });
