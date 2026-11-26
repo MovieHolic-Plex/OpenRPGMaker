@@ -340,6 +340,8 @@ class ProjectStore {
    * 실패하면 `failed` 가 남아 저장이 계속 거절된다(정규화 안 된 문서를 덮어쓰지 않는다).
    */
   private deferredBootNormalization: { readonly lineage: number; promise: Promise<void> | null; failed: unknown } | null = null;
+  /** load() 가 빈 로컬 폴더에 새로 지은 시작 프로젝트(아직 저장 전). 그 뒤 문서가 바뀌면 같은 객체가 아니므로 저절로 틀린다. */
+  private freshSeededProject: Project | null = null;
 
   /** 부를 때마다 고른다 — 테스트가 import 뒤 setProjectRepositoryForTest 로 바꿔 끼우기 때문이다. */
   private get repository(): ProjectRepository {
@@ -442,6 +444,7 @@ class ProjectStore {
         await this.normalizeCurrentProject({ persistIfChanged: false });
       }
       bootMark("project-normalized");
+      this.freshSeededProject = seededNewLocalProject ? this.current : null;
     } catch (error) {
       if (error instanceof DbConnectionRequiredError) {
         this.loaded = false;
@@ -465,6 +468,11 @@ class ProjectStore {
 
   isLoaded(): boolean {
     return this.loaded;
+  }
+
+  /** 지금 문서가 load() 가 빈 로컬 폴더에 지은 그대로의 시작 프로젝트인가(편집·교체·저장 전후 구분 없이 객체가 같을 때만). */
+  isFreshSeededProject(): boolean {
+    return this.freshSeededProject !== null && this.freshSeededProject === this.current;
   }
 
   /** 미룬 부팅 정규화가 없거나 끝났으면 바로 풀린다. 아직이면 시작시키고 끝날 때까지 기다린다. 실패했으면 그 오류로 거절한다. */
