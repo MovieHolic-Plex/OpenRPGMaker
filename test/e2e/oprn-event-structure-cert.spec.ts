@@ -202,8 +202,9 @@ async function pasteCommandBefore(page: Page, command: Locator): Promise<void> {
 }
 
 async function cutCommand(page: Page, command: Locator): Promise<void> {
-  await command.locator(".cmd-head").click({ button: "right" });
-  await page.getByTestId("event-command-menu-cut").click();
+  // 행 우클릭 메뉴의 「잘라내기」는 단축키로만 남았다(btn-trim-r2). 줄을 고르고 Ctrl+X.
+  await command.locator(".cmd-head").click();
+  await page.keyboard.press("Control+x");
 }
 
 async function deleteCommand(page: Page, command: Locator): Promise<void> {

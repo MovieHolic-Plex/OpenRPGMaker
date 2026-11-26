@@ -149,6 +149,8 @@ export function notifyCommandSelectionChanged(): void {
 /** Shared by List/Story: navigation and unhandled keys must not change selection. */
 export function isCommandActionKey(event: KeyboardEvent): boolean {
   if ((event.ctrlKey || event.metaKey) && !event.altKey) return ["z", "y", "x", "c", "v", "a", "k", "/", "?"].includes(event.key.toLowerCase());
+  // Alt+↑/↓ — 줄 옮기기(handleCommandShortcut).
+  if (event.altKey && !event.ctrlKey && !event.metaKey) return event.key === "ArrowUp" || event.key === "ArrowDown";
   return !event.ctrlKey && !event.metaKey && !event.altKey && ["Enter", " ", "Spacebar", "Delete", "Del", "Backspace"].includes(event.key);
 }
 
