@@ -94,7 +94,9 @@ describe("sidebarFocusR1", () => {
       renderMapList(dock);
       expect(get('map-tree-section-toggle').getAttribute('aria-expanded')).toBe('false');
       get('sidebar-map-switcher').click();
-      expect(get('map-tree-section-toggle').getAttribute('aria-expanded')).toBe('true');
+      // 펼치면 맵 하나짜리 제목은 글자로만 선다 — 접기 단추가 사라지고 펼친 목록이 남는다.
+      expect(document.querySelector('[data-testid="map-tree-section-toggle"]')).toBeNull();
+      expect(dock.querySelector('.map-tree-section-toggle.is-static')).not.toBeNull();
       expect(dock.querySelector('.is-section-collapsed')).toBeNull();
       expect(document.activeElement).toBe(get(`map-tree-node-${store.getCurrent().startMapId}`));
     });
