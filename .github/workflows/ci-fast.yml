@@ -241,6 +241,11 @@ jobs:
       - name: 관련 시험 선택·ci-full 원인 후보 테스트
         run: node --test scripts/vitest-related.test.mjs scripts/ci-full-blame.test.mjs
 
+      # 번역 카탈로그는 키 정렬 · 한 줄에 한 항목이다(openwiki/i18n.md). 끝에 덧붙이면 카탈로그를 건드리는 PR 끼리
+      # 같은 끝 줄을 고쳐 매번 충돌했다(2026-11-26 #5187·#5203). 어긋나면 `node scripts/i18n/sort-catalogs.mjs` 로 고친다. 1초 안.
+      - name: 번역 카탈로그 정렬
+        run: node scripts/i18n/sort-catalogs.mjs --check
+
       # 새 시험 파일 경고(실패 아님) — 회귀 시험은 그 모듈의 기존 시험 파일에 더한다(AGENTS.md). 2026-11-25 test-diet.
       - name: 새 시험 파일 경고
         run: |
