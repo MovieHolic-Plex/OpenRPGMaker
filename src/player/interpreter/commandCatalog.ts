@@ -788,7 +788,10 @@ export function executeCommand(
         settings: state.session.messageWindowSettings ?? DEFAULT_MESSAGE_WINDOW_SETTINGS,
       });
     case "label":
-      if (state.fastForwardLabel === command.name) state.fastForwardLabel = undefined;
+      if (state.fastForwardLabel === command.name) {
+        state.fastForwardLabel = undefined;
+        state.onFastForwardEnd?.();
+      }
       return resumeNext(frame);
     case "gotoLabel":
       if (!gotoLabel(state.stack, command.name)) {
@@ -898,7 +901,7 @@ export function executeCommand(
       return pause("stopAudio", command.channel === undefined ? { kind: "stopAudio" } : { kind: "stopAudio", channel: command.channel });
     case "cutsceneControl":
       if (command.mode === "begin") beginCutsceneControl(state.session, state.currentEventId, command.skippable === true);
-      else endCutsceneControl(state.session);
+      else endCutsceneControl(state.session, state.currentEventId);
       return resumeNext(frame);
     case "displayTextSettings": {
       state.session.messageWindowSettings = {

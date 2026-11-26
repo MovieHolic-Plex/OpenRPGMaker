@@ -47,6 +47,7 @@ export function createInterpreter(
     isEventIdle: options?.isEventIdle,
     onFactionStanceChanged: options?.onFactionStanceChanged,
     onFriendshipChanged: options?.onFriendshipChanged,
+    onFastForwardEnd: options?.onFastForwardEnd,
     project,
   };
   let done = false;

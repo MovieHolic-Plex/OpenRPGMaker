@@ -8,8 +8,15 @@ export const CUTSCENE_HIDE_HUD_FLAG = "cutscene:hideHud";
 /** `.play-stage` 에 붙는 클래스. HUD 억제 규칙은 styles/runtime/playSurface.css 가 소유한다. */
 export const CUTSCENE_HUD_HIDDEN_CLASS = "cutscene-hud-hidden";
 
+const OWNER_PREFIX = "cutscene:owner:";
+const OWNER_SKIPPABLE_PREFIX = "cutscene:ownerSkippable:";
+
 function ownerFlag(ownerId: string | undefined): string {
-  return `cutscene:owner:${ownerId || "anonymous"}`;
+  return `${OWNER_PREFIX}${ownerId || "anonymous"}`;
+}
+
+function ownerSkippableFlag(ownerId: string | undefined): string {
+  return `${OWNER_SKIPPABLE_PREFIX}${ownerId || "anonymous"}`;
 }
 
 export function beginCutsceneControl(
@@ -20,16 +27,39 @@ export function beginCutsceneControl(
   session.flags[CUTSCENE_LOCK_FLAG] = true;
   session.flags[CUTSCENE_SKIPPABLE_FLAG] = skippable;
   session.flags[ownerFlag(ownerId)] = true;
+  session.flags[ownerSkippableFlag(ownerId)] = skippable;
   const runtime = ensureM2Runtime(session);
   runtime.cutscene.lockPlayer = true;
   runtime.cutscene.skippable = skippable;
 }
 
-export function endCutsceneControl(session: PlaySessionLike): void {
+/**
+ * 이 owner(이벤트)의 컷신 제어만 푼다. 다른 owner 가 아직 잡고 있으면 잠금은 남고 건너뛰기 가능 여부는 남은 owner 를 따른다 —
+ * 전투 뒤 무리 이벤트·잠자기 이벤트처럼 안에서 도는 이벤트의 「컷신 끝」이 바깥 컷신의 잠금까지 풀던 결함(2026-11-26 오너 결정 D4).
+ * 이 owner 가 잡은 적이 없는 「끝」(옛 세이브, 다른 명령으로 연 잠금)은 예전처럼 다 푼다 — 잠금이 영영 남지 않게.
+ */
+export function endCutsceneControl(session: PlaySessionLike, ownerId?: string): void {
+  if (session.flags[ownerFlag(ownerId)] !== true) {
+    clearCutsceneControl(session);
+    return;
+  }
+  delete session.flags[ownerFlag(ownerId)];
+  delete session.flags[ownerSkippableFlag(ownerId)];
+  const remaining = Object.keys(session.flags).filter((key) => key.startsWith(OWNER_PREFIX) && session.flags[key] === true);
+  if (remaining.length > 0) {
+    const skippable = remaining.some((key) => session.flags[`${OWNER_SKIPPABLE_PREFIX}${key.slice(OWNER_PREFIX.length)}`] === true);
+    session.flags[CUTSCENE_SKIPPABLE_FLAG] = skippable;
+    ensureM2Runtime(session).cutscene.skippable = skippable;
+    return;
+  }
+  clearCutsceneControl(session);
+}
+
+function clearCutsceneControl(session: PlaySessionLike): void {
   delete session.flags[CUTSCENE_LOCK_FLAG];
   delete session.flags[CUTSCENE_SKIPPABLE_FLAG];
   for (const key of Object.keys(session.flags)) {
-    if (key.startsWith("cutscene:owner:")) delete session.flags[key];
+    if (key.startsWith(OWNER_PREFIX) || key.startsWith(OWNER_SKIPPABLE_PREFIX)) delete session.flags[key];
   }
   const runtime = ensureM2Runtime(session);
   runtime.cutscene.lockPlayer = false;
@@ -37,7 +67,7 @@ export function endCutsceneControl(session: PlaySessionLike): void {
 }
 
 export function releaseCutsceneControlForOwner(session: PlaySessionLike, ownerId: string | undefined): void {
-  if (session.flags[ownerFlag(ownerId)] === true) endCutsceneControl(session);
+  if (session.flags[ownerFlag(ownerId)] === true) endCutsceneControl(session, ownerId);
 }
 
 export function isCutsceneInputLocked(session: Pick<PlaySessionLike, "flags">): boolean {

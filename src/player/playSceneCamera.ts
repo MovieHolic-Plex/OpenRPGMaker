@@ -44,7 +44,7 @@ const cameraSkipGeneration = new WeakMap<Phaser.Cameras.Scene2D.Camera, number>(
 const skipGeneration = (camera: Phaser.Cameras.Scene2D.Camera): number => cameraSkipGeneration.get(camera) ?? 0;
 
 /**
- * 컷신을 건너뛰었을 때(Esc 두 번·터치 B 두 번) 카메라를 플레이 상태로 되돌린다(2026-10-25).
+ * 건너뛴 컷신이 끝날 때(빨리 감기가 `cutscene_end` 라벨에 닿을 때) 카메라를 플레이 상태로 되돌린다(2026-10-25, 2026-11-26 D3 로 라벨 시점).
  * 건너뛰기는 `cutscene_end` 라벨로 바로 뛰므로 컷신 끝의 「카메라 → 주인공」·배율·레터박스 해제 명령이 실행되지 않아
  * 카메라가 행렬 쪽에 멈춰 있었다. 진행 중인 pan/zoom 효과는 끝낸 것으로 치고(기다리던 명령이 풀리게),
  * 연출 카메라 상태를 지워 프로젝트 기본 배율 + 주인공 따라가기로, 레터박스는 즉시 걷는다.
@@ -53,10 +53,7 @@ const skipGeneration = (camera: Phaser.Cameras.Scene2D.Camera): number => camera
 export function restoreCameraAfterCutsceneSkip(scene: PlaySceneContext): void {
   const camera = scene.cameras?.main;
   if (!camera) return;
-  cameraSkipGeneration.set(camera, skipGeneration(camera) + 1);
-  for (const effect of [camera.panEffect, camera.zoomEffect] as Array<{ isRunning?: boolean; effectComplete?: () => void } | undefined>) {
-    if (effect?.isRunning) effect.effectComplete?.();
-  }
+  interruptCameraForCutsceneSkip(scene);
   scene.session.camera = undefined;
   const screen = scene.session.m2Runtime?.screen;
   if (screen && screen.letterbox) {
@@ -65,6 +62,20 @@ export function restoreCameraAfterCutsceneSkip(scene: PlaySceneContext): void {
   }
   applyStoredCameraState(scene);
   scene.syncRuntimeState();
+}
+
+/**
+ * 건너뛰기를 누른 순간: 진행 중인 pan/zoom 을 끝난 것으로 치고(기다리던 명령이 풀리게) 세대를 올려 늦게 끝나는 명령이
+ * 카메라를 다시 쥐지 못하게 한다. 연출 카메라·레터박스는 그대로 둔다 — 되돌림은 빨리 감기가 라벨에 닿을 때
+ * restoreCameraAfterCutsceneSkip 이 한다(오너 결정 2026-11-26 D3). 선택지·전투에서 멈추면 남은 장면은 연출 카메라로 이어진다.
+ */
+export function interruptCameraForCutsceneSkip(scene: PlaySceneContext): void {
+  const camera = scene.cameras?.main;
+  if (!camera) return;
+  cameraSkipGeneration.set(camera, skipGeneration(camera) + 1);
+  for (const effect of [camera.panEffect, camera.zoomEffect] as Array<{ isRunning?: boolean; effectComplete?: () => void } | undefined>) {
+    if (effect?.isRunning) effect.effectComplete?.();
+  }
 }
 
 /** `viewZoom` 은 이 맵의 보기 배율이다. 저작 배율은 뒤이은 applyStoredCameraState 가 얹는다. */
