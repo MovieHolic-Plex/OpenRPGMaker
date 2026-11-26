@@ -993,6 +993,24 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   ];
   // 첫 MVP 팀은 팀장이 세계 뼈대(build_world)를 직접 한 번 선언한다 — 뼈대를 프로젝트 작업으로 맡기면 그 팀원이 메뉴·음악·시스템 검수까지 하며
   // 10~15분을 쓰고(2026-11-25 team-mvp-revive r4·r5 실측), 프로젝트 작업은 맵 작업과 배타라 맵 담당 전부가 그 뒤에 섬다. 빈 칸(세계관·인물·도구)은 finish 가 draft-cast 로 채운다.
+  /**
+   * 팀장 자리에서 바뀐 프로젝트(세계 뼈대·미리 지은 장소 맵이 만든 적·트룹)를 편집기에 한 번 보낸다.
+   * 팀원 체크포인트는 `working` 과 같은 DB 를 «안 바뀜» 으로 빼고 보내서, 편집기에는 트룹이 없는데 맵은 그 트룹을 부르는 상태가 됐다 —
+   * t7(2026-11-26) 에서 맵 담당 쓰기가 «직렬화 왕복 실패: troopId 가 없습니다» 로 모두 되돌려져 저장본이 빈 맵 한 장이었다.
+   */
+  const publishOrchestratorWork = async (editorKnown: Project, label: string, toolName: string): Promise<void> => {
+    if (!options.onCheckpoint) return;
+    const next = publication.then(async () => {
+      const proposed = working;
+      const wire = slimProjectForWire(editorKnown, proposed);
+      const accepted = await options.onCheckpoint!({ project: wire.project, label, toolName, unchangedKeys: wire.unchangedKeys,
+        ...(wire.unchangedTilesetIds.length ? { unchangedTilesetIds: wire.unchangedTilesetIds } : {}), spatialProof: exportSpatialToolProof(proposed) });
+      if (working === proposed && accepted) working = cloneProjectSharingSharedDictionaries(restoreCheckpointProject(proposed, accepted, wire.unchangedKeys, wire.unchangedTilesetIds));
+    });
+    publication = next.catch(() => undefined);
+    try { await next; }
+    catch (error) { emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: `${label}을 편집기에 보내지 못했습니다: ${error instanceof Error ? error.message : String(error)}`.slice(0, 300) } }); }
+  };
   if (firstMvpTeam) {
     orchestratorTools.push({
       ...resolvePiToolShape({ project: working }, "build_world")!,
@@ -1001,6 +1019,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         // 맵 수 상한은 청사진(세계 뼈대)에서 지킨다 — 첫 판은 장소 3~5장이고, 맵 담당은 배정받은 맵만 짓는다(r8 6장·r9 7장 불합격).
         const nodes = Array.isArray((params as { plan?: { nodes?: unknown } })?.plan?.nodes) ? (params as { plan: { nodes: PrebuildNodeHint[] } }).plan.nodes : [];
         if (nodes.length > MVP_PLACES.max) throw new Error(`첫 MVP 는 장소 ${MVP_PLACES.min}~${MVP_PLACES.max}장이다 — 노드 ${nodes.length}개를 ${MVP_PLACES.max}개 이하로 줄여 다시 부른다.`);
+        const editorKnown = working;
         const ctx = { project: working };
         const result = await resolvePiToolShape(ctx, "build_world")!.execute(id, params);
         if (ctx.project === working) return result;
@@ -1011,6 +1030,7 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         const pre = prebuildMvpWorld(working, nodes.filter((node) => typeof node?.mapId === "string"));
         working = pre.project;
         for (const mapId of pre.built) prebuilt.add(mapId);
+        await publishOrchestratorWork(editorKnown, "세계 뼈대·장소 맵", "build_world");
         const note = `장소 맵을 생성기로 지었습니다: ${pre.built.map((mapId) => working.maps[mapId]?.name ?? mapId).join(", ") || "없음"}${pre.skipped.length ? ` · 담당이 지을 맵: ${pre.skipped.map((s) => `${s.mapId}(${s.why})`).join("; ")}` : ""}`;
         emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: note.slice(0, 600) } });
         const first = (result as { content?: { text?: string }[] })?.content?.[0]?.text ?? "";
