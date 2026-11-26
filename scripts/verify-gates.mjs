@@ -558,7 +558,9 @@ if (baseline && regressions.length > 0 && !flag("--no-flake-retry") && !flakeSki
     if (existsSync(soloPath)) {
       try {
         const solo = JSON.parse(readFileSync(soloPath, "utf8"));
-        soloFailures = solo.numFailedTests ?? 0;
+        // 파일을 읽지도 못한 실패(문법 오류·import 실패)는 테스트가 0개라 numFailedTests 가 0 이다 — 스위트 실패도 센다.
+        // 실측(2026-11-26): 깨진 병합으로 문법이 틀린 시험 파일 넷이 한 달 동안 «부하 플레이크» 로 빠져 아무 단언도 돌지 않았다.
+        soloFailures = (solo.numFailedTests ?? 0) + (solo.numFailedTestSuites ?? 0) + (solo.numTotalTests === 0 ? 1 : 0);
       } catch {
         soloFailures = null;
       }
