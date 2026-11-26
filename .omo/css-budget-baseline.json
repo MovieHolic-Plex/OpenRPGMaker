@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-26T18:19:43.975Z",
+  "generatedAt": "2026-11-27T04:52:12.050Z",
   "metrics": {
     "hexLiterals": 2756,
-    "important": 386,
+    "important": 388,
     "undefinedVars": 56,
     "globalRootFiles": 11,
     "cssFileCount": 443
@@ -195,6 +195,7 @@
       "src/styles/database/play-resolution.css": 1,
       "src/styles/database/sidebar.css": 55,
       "src/styles/database/studio-theme.css": 65,
+      "src/styles/database/tabs-a.part-2.css": 2,
       "src/styles/database/tabs-b-assistant-panel/03-three-tier-ia.css": 1,
       "src/styles/database/tabs-b-assistant-panel/08-studio-mode-start-screen.css": 2,
       "src/styles/database/tabs-b-assistant-panel/25-team-sidebar.css": 1,
