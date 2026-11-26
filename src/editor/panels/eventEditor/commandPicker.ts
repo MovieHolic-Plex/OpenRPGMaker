@@ -344,6 +344,8 @@ export function openEventCommandPicker(request: EventCommandPickerRequest): void
         dataset: { testid: "event-command-picker-view-toggle" },
         text: viewMode === "grid" ? "▤ 리스트" : "▦ 그리드",
       }) as HTMLButtonElement;
+      // 보기 방식 전환은 거의 안 쓴다 — 처음 보이는 조작에서 뺀다(btn-trim-r2). 기억된 보기와 testid 는 그대로.
+      gridToggle.style.display = "none";
       const render = () => {
         const focusSnapshot = captureCommandPickerFocus(commandArea);
         clearChildren(commandArea);

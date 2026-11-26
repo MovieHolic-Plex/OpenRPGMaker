@@ -784,6 +784,11 @@
   color: var(--status-warning, var(--gold));
 }
 
+/* 별은 그 줄에 마우스를 올리거나 초점이 갔을 때, 또는 이미 즐겨찾기일 때만 보인다(btn-trim-r2: 명령 추가 창 21→7). */
+.event-command-picker-command-wrap:not(:hover, :focus-within) .event-command-picker-favorite:not(.is-favorite) {
+  opacity: 0;
+}
+
 .event-command-picker-favorite:hover,
 .event-command-picker-favorite:focus-visible {
   border-color: var(--accent, var(--accent-border));
