@@ -1401,6 +1401,9 @@ function m2ReferenceFieldApplies(
   }
   // 결과 기록처는 선택이다 — 비워 두는 것이 기본이고, 값이 있을 때만 실재를 따진다.
   if (fieldKey === "resultVariableId" || fieldKey === "resultSwitchId") return value.length > 0;
+  // 시스템 BGM·효과음 바꾸기의 빈 소리는 뜻이 있다 — 「기본으로 되돌리기(reset)」·「무음 큐」. 옛 저장 모양({slot, value})은 소리를 value 에 둔다.
+  // 빈 칸을 「리소스가 선택되지 않았습니다」로 막으면 명령 설정 창의 확인이 막혔다(#5023 뒤 commandEditModalPreview 세 시험).
+  if ((command.commandId === "m2-027-change-system-bgm" || command.commandId === "m2-028-change-system-se") && fieldKey === "resourceId") return value.length > 0;
   if (entry.title === "Spawn Event") {
     if (fieldKey === "eventId") return false;
     if (fieldKey === "mapId") return value.length > 0;

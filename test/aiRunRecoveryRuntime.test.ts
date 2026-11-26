@@ -109,7 +109,8 @@ it("keeps event editor tool checkpoints compact on a fresh project with all bund
       observedTools.push(event.name);
       identityCounts.push(identity.mock.calls.length);
     }, undefined, { eventCommandScope: scope, goalAction: "new-goal" }));
-    expect(result.stoppedReason).toBe("final");
+    // 실패하면 무엇이 턴을 멈췄는지 바로 보이게(ci-full 에서 «'error' to be 'final'» 만 남아 원인을 못 봤다).
+    expect(result.stoppedReason, `${result.error ?? ""}\n${String(result.errorDetail ?? "").slice(0, 1500)}`).toBe("final");
     expect(observedTools).toEqual(["get_project_summary", "get_map_region", "find_events"]);
     expect(captured).toHaveLength(3);
     expect(identityCounts).toEqual([identityCounts[0], identityCounts[0], identityCounts[0]]);
@@ -332,6 +333,8 @@ it("keeps checkpointing on the same session after one failed write instead of sk
   await bounded(session.sendUserMessage("First request"));
   expect(session.getAuditEntries().some(entry => entry.kind === "status"
     && entry.text.startsWith("agent_run:checkpoint-write-failed"))).toBe(true);
+  // 사용자에게도 한 번 보인다 — 감사 줄만으로는 아무도 몰랐다(#5188).
+  expect(document.body.textContent).toContain("조수 작업 기록을 저장하지 못했어요");
   await bounded(session.sendUserMessage("Second request"));
   await bounded(session.whenCheckpointed());
   const saved = await checkpoint();
