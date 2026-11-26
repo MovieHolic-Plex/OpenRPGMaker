@@ -14676,6 +14676,7 @@
    "event-graphic-resource-tex_farming_charset_chicken",
    "event-graphic-resource-tex_farming_charset_cow",
    "event-graphic-resource-tex_oprn_charset_dawning_skybirds",
+   "event-graphic-resource-tex_oprn_charset_fallen_mirror1",
    "event-graphic-resource-tex_oprn_charset_harness_monster1",
    "event-graphic-resource-tex_oprn_charset_harness_monster2",
    "event-graphic-resource-tex_oprn_charset_harness_monster3",
@@ -15109,6 +15110,7 @@
    "event-graphic-resource-tex_farming_charset_chicken": "button{}",
    "event-graphic-resource-tex_farming_charset_cow": "button{}",
    "event-graphic-resource-tex_oprn_charset_dawning_skybirds": "button{}",
+   "event-graphic-resource-tex_oprn_charset_fallen_mirror1": "button{}",
    "event-graphic-resource-tex_oprn_charset_harness_monster1": "button{}",
    "event-graphic-resource-tex_oprn_charset_harness_monster2": "button{}",
    "event-graphic-resource-tex_oprn_charset_harness_monster3": "button{}",
@@ -15483,6 +15485,7 @@
    "1 아래",
    "2 오른쪽",
    "3 위",
+   "FallenMirror1",
    "Heroes1",
    "Modern1",
    "Modern2",
@@ -15870,7 +15873,7 @@
    "패턴"
   ],
   "tags": {
-   "button": 388,
+   "button": 389,
    "div": 15,
    "fieldset": 2,
    "input": 8,
@@ -15878,7 +15881,7 @@
    "legend": 2,
    "option": 2,
    "select": 1,
-   "span": 377
+   "span": 378
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
@@ -15924,6 +15927,7 @@
    "event-graphic-resource-tex_farming_charset_chicken": "button",
    "event-graphic-resource-tex_farming_charset_cow": "button",
    "event-graphic-resource-tex_oprn_charset_dawning_skybirds": "button",
+   "event-graphic-resource-tex_oprn_charset_fallen_mirror1": "button",
    "event-graphic-resource-tex_oprn_charset_harness_monster1": "button",
    "event-graphic-resource-tex_oprn_charset_harness_monster2": "button",
    "event-graphic-resource-tex_oprn_charset_harness_monster3": "button",
@@ -16292,8 +16296,8 @@
    "event-command-edit-summary": "모습 바꾸기",
    "event-command-frame-walk-preview": ""
   },
-  "testidCount": 406,
-  "controlCount": 397
+  "testidCount": 407,
+  "controlCount": 398
  },
  "changeTile": {
   "testids": [
@@ -20679,6 +20683,14 @@
     "cc0-sound-monster-hm-rock-smash",
     "cc0-sound-monster-hm-cut",
     "cc0-sound-monster-hm-surf",
+    "cc0-sound-mk-op-dread",
+    "cc0-sound-mk-op-doors",
+    "cc0-sound-mk-op-scratch",
+    "cc0-sound-mk-op-vanish",
+    "cc0-sound-mk-op-fluoro",
+    "cc0-sound-mk-op-room",
+    "cc0-sound-mk-op-sad-horn",
+    "cc0-sound-mk-op-mailslot",
     "cc0-sound-puzzle-secret-solved",
     "cc0-sound-puzzle-stone-push",
     "cc0-sound-puzzle-plate-press",
@@ -20801,7 +20813,7 @@
    "div": 16,
    "input": 3,
    "label": 2,
-   "option": 418,
+   "option": 426,
    "p": 2,
    "select": 1,
    "small": 1,

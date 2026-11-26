@@ -1,25 +1,25 @@
 {
  "commandPicker": {
-  "testidCount": 88,
-  "controlCount": 82,
+  "testidCount": 98,
+  "controlCount": 92,
   "classCount": 41,
   "rootCount": 1
  },
  "commandPickerTab2": {
-  "testidCount": 61,
-  "controlCount": 53,
+  "testidCount": 76,
+  "controlCount": 67,
   "classCount": 45,
   "rootCount": 1
  },
  "commandPickerTab3": {
-  "testidCount": 112,
-  "controlCount": 96,
+  "testidCount": 116,
+  "controlCount": 102,
   "classCount": 40,
   "rootCount": 1
  },
  "commandPickerTab4": {
-  "testidCount": 78,
-  "controlCount": 60,
+  "testidCount": 94,
+  "controlCount": 74,
   "classCount": 37,
   "rootCount": 1
  },
@@ -42,27 +42,27 @@
   "rootCount": 1
  },
  "commandPickerFavorites": {
-  "testidCount": 98,
-  "controlCount": 90,
+  "testidCount": 108,
+  "controlCount": 100,
   "classCount": 47,
   "rootCount": 1
  },
  "commandPickerGrid": {
-  "testidCount": 88,
-  "controlCount": 82,
+  "testidCount": 98,
+  "controlCount": 92,
   "classCount": 42,
   "rootCount": 1
  },
  "pageMoveRoute": {
-  "testidCount": 83,
-  "controlCount": 81,
+  "testidCount": 89,
+  "controlCount": 87,
   "classCount": 62,
   "rootCount": 1
  },
  "npcGraphic": {
-  "testidCount": 53,
-  "controlCount": 44,
-  "classCount": 37,
+  "testidCount": 410,
+  "controlCount": 401,
+  "classCount": 38,
   "rootCount": 1
  },
  "mapPoint": {
@@ -78,8 +78,8 @@
   "rootCount": 1
  },
  "transferPlayer": {
-  "testidCount": 14,
-  "controlCount": 14,
+  "testidCount": 13,
+  "controlCount": 13,
   "classCount": 22,
   "rootCount": 1
  },
@@ -90,21 +90,21 @@
   "rootCount": 1
  },
  "recordPickerSwitch": {
-  "testidCount": 27,
-  "controlCount": 26,
+  "testidCount": 42,
+  "controlCount": 40,
   "classCount": 33,
   "rootCount": 1
  },
  "recordPickerItem": {
   "testidCount": 6,
-  "controlCount": 7,
+  "controlCount": 6,
   "classCount": 26,
   "rootCount": 1
  },
  "commandEditDialog": {
-  "testidCount": 43,
-  "controlCount": 29,
-  "classCount": 63,
+  "testidCount": 91,
+  "controlCount": 72,
+  "classCount": 89,
   "rootCount": 1
  },
  "commandListContextMenu": {
@@ -114,9 +114,9 @@
   "rootCount": 1
  },
  "eventEditorHelp": {
-  "testidCount": 26,
-  "controlCount": 13,
-  "classCount": 25,
+  "testidCount": 25,
+  "controlCount": 12,
+  "classCount": 23,
   "rootCount": 1
  },
  "characterIdAutocomplete": {
