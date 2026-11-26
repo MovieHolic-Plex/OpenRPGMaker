@@ -1,4 +1,4 @@
-import type { CloseSaveMode } from "../main/closeFlow";
+import type { CloseSaveMode } from "../shared/closeFlow";
 import { contextBridge, ipcRenderer } from "electron";
 import { OPRN_APP_SCHEME, OPRN_CHANNELS } from "../shared/channels";
 import { windowChromeFor } from "../shared/windowControl";

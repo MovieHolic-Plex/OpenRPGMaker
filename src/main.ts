@@ -26,7 +26,7 @@ import { preloadBundledJsonForProject } from "@/project/defaults/bundledJson";
 import { abortAiAssistantTurn } from "@/editor/aiAssistantBridge";
 import { settleMonsterResourceDraftsForClose } from "@/editor/panels/databaseMonsterResourceEditor";
 import { hasEventDraftVaultEntries, persistEventDraftVaultNow } from "@/project/eventDraftVault";
-import { flushProjectForClose } from "../electron/main/closeFlow";
+import { flushProjectForClose } from "../electron/shared/closeFlow";
 import { provideAppUpdateRestartFlush } from "@/app/appUpdateChip";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
