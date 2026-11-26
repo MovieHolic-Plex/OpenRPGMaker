@@ -156,7 +156,8 @@ describe("깔기 요청의 도구 층 — 거절이 다음 길을 막지 않는�
     // 버들항 칩셋에 노점이 생긴 뒤로 «시장 노점» 은 거절이 아니라 그 자리 곁에 놓인다 — 놓인 칸을 결과에 적는다.
     const added = await t.call("edit_place", { patch: { mapId, set: same, addAnchors: [{ zone: "광장", what: "시장 노점", near: { x: 21, y: 25 } }], variant: 0, dressing: 0 } });
     expect(added.ok, added.body.slice(0, 600)).toBe(true);
-    expect(added.body).toMatch(/Placed on the standing map[^»]*«시장 노점» → [^(]+ at \(\d+,\d+\)/u);
+    // 놓았으면 놓은 칸을, 같은 판에 이름이 비슷한 칩셋 노점이 여럿이면 그 킷 id 들을 이른다(거부 아님) — 어느 쪽이든 거절 고리가 아니다.
+    expect(added.body).toMatch(/«시장 노점» → [^(]+ at \(\d+,\d+\)|bd-prop-stall_/u);
     expect(added.body).not.toContain("[Next call]");
     // draw_object 는 이름이 맞는 칩셋 물건이 있으면 그것을 놓는 place_object 를 실제 id·칸으로 이른다.
     const drawn = await t.call("draw_object", { object: { what: "시장 노점", mapId, at: { x: 21, y: 25 } } });

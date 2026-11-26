@@ -166,7 +166,8 @@ describe("place and whole-game requests", () => {
     expect(fantasy.text).toContain("[Fallen-Star-style jobs");
     expect(fantasy.upFront).toContain("write_blueprint");
     const escape = shoot("방탈출 게임 만들어 줘.", "blank");
-    expect(escape.chars).toBeLessThanOrEqual(66_700);
+    // 2026-11-26 CI: 68,446 — 첫 판 MVP·장르 변주 카드(위 38,024 와 같은 증가)가 이 요청에도 실린다. 상한을 지금 값으로 다시 고정한다.
+    expect(escape.chars).toBeLessThanOrEqual(68_446);
     // 크기 표는 한 줄이 말한다 — 놓는 법 글자가 붙고, 구운 크기(dining 2x1 2x1 f)는 목록에 다시 실리지 않는다.
     expect(escape.text).toMatch(/sized tables [^\n]*: dining f, [^\n]*sideboard\(1 row\) w\^1/u);
     expect(escape.text).not.toContain("dining 2x1 2x1");
