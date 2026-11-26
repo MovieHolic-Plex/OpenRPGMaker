@@ -161,12 +161,13 @@ describe("깔기 요청의 도구 층 — 거절이 다음 길을 막지 않는�
     expect(added.body).not.toContain("[Next call]");
     // draw_object 는 이름이 맞는 칩셋 물건이 있으면 그것을 놓는 place_object 를 실제 id·칸으로 이른다.
     const drawn = await t.call("draw_object", { object: { what: "시장 노점", mapId, at: { x: 21, y: 25 } } });
-    const next = /Next call: place_object\((\{.*?\})\) —/u.exec(drawn.body.replace(/\\"/gu, '"'))?.[1];
-    expect(next, drawn.body.slice(0, 600)).toBeTruthy();
-    expect(next).toContain(`"mapId":"${mapId}"`);
-    expect(next).toContain('"at":{"x":');
-    // 이른 objectId 는 이 맵 칩셋에 실제로 있는 킷이다(놓이는 칸은 마을 배치마다 달라 여기서 재지 않는다).
-    const objectId = (JSON.parse(next!) as { objectId: string }).objectId;
+    // 칩셋에 이름이 맞는 물건이 있으면 그 킷을 이른다 — 예전에는 «Next call: place_object(...)» 한 줄, 지금은 «참고: 이름이 비슷한 기물…» 줄에
+    // 킷 id 와 stamp_object 를 적는다(거부 아님). 어느 쪽이든 이른 킷은 이 맵 칩셋에 실제로 있어야 한다.
+    const body = drawn.body.replace(/\\"/gu, '"');
+    const next = /Next call: place_object\((\{.*?\})\) —/u.exec(body)?.[1];
+    const objectId = next ? (JSON.parse(next) as { objectId: string }).objectId : /\b(bd-[a-z0-9_-]+)\(/u.exec(body)?.[1];
+    expect(objectId, drawn.body.slice(0, 600)).toBeTruthy();
+    if (next) { expect(next).toContain(`"mapId":"${mapId}"`); expect(next).toContain('"at":{"x":'); }
     const map = t.ctx.project.maps[mapId]!;
     expect((t.ctx.project.tilesets[map.tilesetId]?.structureKits ?? []).some((kit) => kit.id === objectId)).toBe(true);
     // 바뀌는 것이 없는 고침은 그렇게 말하고 그 맵을 보는 호출을 이른다.
