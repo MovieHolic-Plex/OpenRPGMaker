@@ -12,7 +12,6 @@ import { readCheckPath, resolveTarget, type CorpusCase } from "@/editor/smallTas
 import { PrimitiveError } from "@/editor/smallTask/primitives/errors";
 import { runPrimitive } from "@/editor/smallTask/primitives/run";
 import { PRIMITIVES } from "@/editor/smallTask/primitives/units/19-db-items-equipment";
-import * as smallTaskRun from "@/editor/smallTask/run";
 import { dbTarget, type SmallTaskTarget } from "@/editor/smallTask/target";
 import { runSmallTaskPrimitiveTool } from "@/editor/tools/smallTaskPrimitiveTools";
 import { createTranslator } from "@/i18n/translator";
@@ -603,61 +602,30 @@ describe("자료집 프리미티브", () => {
 });
 
 describe("자료집 작은 일 진입점", () => {
+  // AI 입구는 자료집 머리줄 「말로 고치기」 하나다(impl-database PR-B, #5027) — 장비 칸·속성 행마다 따로 붙지 않는다.
   it.each([
-    ["equipmentSlots", "weapon", "무기", "오른손", { label: "오른손" }],
-    ["equipmentSlots", ids.equipmentSlots, names.equipmentSlots, "보조 손", { label: "보조 손" }],
-    ["elements", ids.elements, names.elements, "별빛", { name: "별빛" }],
-  ] as const)("%s %s 행에서 작업을 열고 적용·되돌린다", async (collection, id, name, renamed, args) => {
+    ["equipmentSlots", "weapon"],
+    ["equipmentSlots", ids.equipmentSlots],
+    ["elements", ids.elements],
+  ] as const)("%s %s 행에는 레코드별 조수 버튼이 없다", (collection, id) => {
     const project = setup("blank");
     store.replaceProject(project);
-    resetMapEditHistory();
     const host = document.createElement("div");
-    host.setAttribute("role", "dialog");
     document.body.append(host);
-    const selected = dbTarget(project, collection, id);
-    expect(selected).toMatchObject({ kind: "dbEntry", collection, id, label: expect.stringContaining(name) });
-    const before = store.getCurrent();
-    const run = vi.spyOn(smallTaskRun, "runSmallTask").mockImplementation(async (base, target) =>
-      runPrimitive(base, target, `db.${collection}.update`, args).after);
-    const needsPopoverShim = typeof HTMLElement.prototype.showPopover !== "function";
-    if (needsPopoverShim) {
-      Object.defineProperty(HTMLElement.prototype, "showPopover", { configurable: true, value: () => {} });
-    }
     try {
-      let button: HTMLButtonElement | null | undefined;
       if (collection === "equipmentSlots") {
-        expect(project.database.equipmentSlots?.some(slot => slot.id === "weapon")).toBe(false);
         const manager = equipmentSlotManager(ids.equipment, () => {});
         host.append(manager);
-        button = manager.querySelector(`[data-testid="db-equipment-slot-label-${id}"]`)
-          ?.parentElement?.querySelector<HTMLButtonElement>('.small-task-trigger');
+        expect(manager.querySelector(`[data-testid="db-equipment-slot-label-${id}"]`)).not.toBeNull();
       } else {
         renderElementsTab(host);
         const index = project.database.elements!.findIndex(row => row.id === id);
         host.querySelector<HTMLElement>(`[data-testid="db-elements-row-${index}"]`)?.click();
-        button = host.querySelector<HTMLButtonElement>('[data-testid="db-elements-hero"] .small-task-trigger');
+        expect(host.querySelector('[data-testid="db-elements-hero"]')).not.toBeNull();
       }
-      expect(button?.textContent).toBe("조수에게 맡기기");
-      button!.click();
-      const box = host.querySelector<HTMLElement>(".small-task")!;
-      expect(box.querySelector("strong")?.textContent).toBe(selected?.label);
-      const input = box.querySelector("input")!;
-      expect(input.disabled).toBe(false);
-      input.value = `${renamed}(으)로 이름을 바꿔 줘`;
-      input.dispatchEvent(new Event("input", { bubbles: true }));
-      box.querySelector<HTMLFormElement>("form")!.dispatchEvent(new Event("submit", { cancelable: true }));
-      await vi.waitFor(() => expect(box.querySelector('[role="status"] button')?.textContent).toBe("되돌리기"));
-      expect(run).toHaveBeenCalledExactlyOnceWith(before, selected, input.value, expect.any(AbortSignal), before);
-      expect(dbTarget(store.getCurrent(), collection, id)?.label).toContain(renamed);
-      box.querySelector<HTMLButtonElement>('[role="status"] button')!.click();
-      await vi.waitFor(() => expect(box.querySelector('[role="status"]')?.textContent).toBe("되돌렸어요."));
-      expect(store.getCurrent().database[collection]).toEqual(before.database[collection]);
+      expect(host.querySelectorAll('[data-testid="small-task-open"]')).toHaveLength(0);
     } finally {
-      host.querySelector<HTMLButtonElement>(".small-task header button")?.click();
       host.remove();
-      if (needsPopoverShim) Reflect.deleteProperty(HTMLElement.prototype, "showPopover");
-      run.mockRestore();
-      resetMapEditHistory();
     }
   });
 
