@@ -1046,7 +1046,7 @@
 
 /* 휴대 폭 탭 고르기 (db-390-trim, 오너 2026-11-26) — 599px 이하에서는 아이콘 레일 20칸을 지금 탭 이름 단추 하나로 접는다.
    레일은 본문 위 한 줄이 되고, 단추를 누르면(data-rail-open="1") 검색·탭 목록이 이름과 함께 펼쳐진다.
-   넓은 창·도크에서는 단추가 숨고 레일은 그대로다. */
+   넓은 창·도크에서는 단추가 숨고 레일은 그대로다. 창 자체가 db-modal 컨테이너라 미디어 폴백은 두지 않는다. */
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tabs > .db-tab-switcher {
   display: none;
 }
@@ -1076,7 +1076,7 @@
     background: transparent;
     border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.10));
     border-radius: 8px;
-    color: var(--db-studio-text-1, #0F172A);
+    color: var(--db-studio-text-1);
     cursor: pointer;
     display: flex;
     font-size: 14px;
@@ -1097,71 +1097,14 @@
     text-align: left;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-tab-switcher > .db-tab-switcher-chevron {
+    color: var(--db-studio-text-2, var(--text-2));
+    font-size: 12px;
   }
   /* 펼친 목록은 아이콘만이 아니라 이름도 보인다 — 폭이 충분하다. */
   .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab {
-    color: var(--db-studio-text-1, #0F172A) !important;
-    font-size: 14px !important;
-    gap: 10px;
-    justify-content: flex-start !important;
-    max-width: none !important;
-    padding: 0 12px !important;
-    width: 100% !important;
-  }
-  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab > .db-tab-label {
-    display: inline;
-  }
-}
-
-@media (max-width: 599px) {
-  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body {
-    flex-direction: column !important;
-  }
-  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body > .db-tabs {
-    align-items: stretch;
-    border-bottom: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.10));
-    border-right: none;
-    flex: 0 0 auto !important;
-    max-height: 60%;
-    padding: 6px 10px;
-    width: 100% !important;
-  }
-  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body > .db-body.db-shared-workspace {
-    flex: 1 1 0;
-    width: auto;
-  }
-  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body:not([data-rail-open="1"]) > .db-tabs > :not(.db-tab-switcher) {
-    display: none !important;
-  }
-  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body > .db-tabs > .db-tab-switcher {
-    align-items: center;
-    background: transparent;
-    border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.10));
-    border-radius: 8px;
-    color: var(--db-studio-text-1, #0F172A);
-    cursor: pointer;
-    display: flex;
-    font-size: 14px;
-    font-weight: 600;
-    gap: 8px;
-    min-height: 40px;
-    padding: 0 12px;
-    width: 100%;
-  }
-  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-tab-switcher > .db-tab-icon {
-    flex: 0 0 auto;
-    height: 18px;
-    width: 18px;
-  }
-  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-tab-switcher > .db-tab-switcher-label {
-    flex: 1 1 auto;
-    overflow: hidden;
-    text-align: left;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab {
-    color: var(--db-studio-text-1, #0F172A) !important;
+    color: var(--db-studio-text-1) !important;
     font-size: 14px !important;
     gap: 10px;
     justify-content: flex-start !important;
