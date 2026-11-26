@@ -52,7 +52,22 @@ describe("map tree panel", () => {
     }
   });
 
+  it("맵이 하나뿐이면 제목은 글자로만 서고 접기 단추가 없다", () => {
+    const container = document.createElement("div");
+    renderWithFakeDom(() => {
+      renderMapList(container);
+      return container;
+    });
+    expect(Object.keys(store.getCurrent().maps)).toHaveLength(1);
+    expect(findByTestId(container as unknown as FakeElement, "map-tree-section-toggle")).toBeNull();
+    expect(container.querySelector(".map-tree-title")?.textContent).toBe("맵");
+  });
+
   it("제목 토글이 도크 섹션을 접고 펴며, 접힘은 aria-expanded 와 패널 클래스로 드러난다", () => {
+    // 접기 단추는 맵이 둘 이상일 때만 선다(버튼 줄이기 2회차).
+    const project = store.getCurrent();
+    const second = `${project.startMapId}-second`;
+    store.replace({ ...project, maps: { ...project.maps, [second]: { ...project.maps[project.startMapId], id: second } } });
     const container = document.createElement("div");
     renderWithFakeDom(() => {
       renderMapList(container);

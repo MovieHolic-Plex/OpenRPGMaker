@@ -709,7 +709,8 @@ html[data-ai-render="off"] {
 }
 .ai-chat-sidebar.left-column:focus-within { outline: 0; }
 .left-column-head { display: flex; align-items: center; gap: 4px; flex: none; padding: 0 2px 6px; }
-.left-column-head[hidden], .left-column-links[hidden], .left-column-restore[hidden], .left-column-inspect[hidden] { display: none; }
+.left-column-head[hidden], .left-column-links[hidden], .left-column-restore[hidden], .left-column-inspect[hidden],
+.left-column-link[hidden], .left-column-search[hidden], .left-column-search-shortcut[hidden] { display: none; }
 .left-column-search {
   display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; height: 30px; padding: 0 10px;
   border-radius: 7px; background: var(--bg-inset); color: var(--text-3); cursor: text;

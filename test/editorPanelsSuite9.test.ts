@@ -6,7 +6,7 @@ import { renderTilePalette } from "@/editor/panels/tilePalette";
 import { resetTileToolbarMenusForTests } from "@/editor/panels/tileToolbarMenus";
 import { closeMapContextMenu } from "@/editor/panels/mapContextMenu";
 import { renderMapList, resetMapListUiStateForTests } from "@/editor/panels/mapList";
-import { resetMapPanelSectionForTests } from "@/editor/workspace/mapPanelSection";
+import { resetMapPanelSectionForTests, setMapPanelCollapsed } from "@/editor/workspace/mapPanelSection";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
 import { listEditorCommands } from "@/editor/commandRegistry";
@@ -89,7 +89,9 @@ describe("sidebarFocusR1", () => {
       // 맵 도크가 붙은 뒤 다시 그려야 스위처가 도크 모드(목록에서 보기)로 바뀐다.
       renderTilePalette(host);
       renderMapList(dock);
-      get('map-tree-section-toggle').click();
+      // 맵이 하나뿐이면 접기 단추가 없다(버튼 줄이기 2회차) — 접힌 채 저장된 상태에서 시작한다.
+      setMapPanelCollapsed(true);
+      renderMapList(dock);
       expect(get('map-tree-section-toggle').getAttribute('aria-expanded')).toBe('false');
       get('sidebar-map-switcher').click();
       expect(get('map-tree-section-toggle').getAttribute('aria-expanded')).toBe('true');

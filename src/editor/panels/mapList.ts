@@ -126,32 +126,37 @@ export function renderMapList(container: HTMLElement, options?: MapListOptions):
     ? makeBasicHeader(mapCount)
     : (() => {
       const node = el("div", { class: "map-tree-header" });
+      const titleParts = (): HTMLElement[] => [
+        el("span", {
+          class: `rm-tool-icon oprn-icon-tree-${sectionCollapsed ? "closed" : "open"}`,
+          attrs: { "aria-hidden": "true" },
+        }),
+        el("span", { class: "map-tree-title", text: "맵" }),
+        el("span", { class: "map-tree-count", text: String(mapCount) }),
+      ];
+      // 맵이 하나뿐이면 접을 목록이 없다 — 제목은 글자로만 둔다(버튼 줄이기 2회차). 접힌 채 저장된 패널은 펼 단추가 남는다.
+      const staticTitle = !sectionCollapsed && mapCount <= 1;
       node.append(el("h3", {
         children: [
-          el("button", {
-            class: "map-tree-section-toggle",
-            attrs: {
-              type: "button",
-              "aria-expanded": String(!sectionCollapsed),
-              title: sectionCollapsed ? "맵 패널 펼치기" : "맵 패널 접기",
-            },
-            dataset: { testid: "map-tree-section-toggle" },
-            children: [
-              el("span", {
-                class: `rm-tool-icon oprn-icon-tree-${sectionCollapsed ? "closed" : "open"}`,
-                attrs: { "aria-hidden": "true" },
-              }),
-              el("span", { class: "map-tree-title", text: "맵" }),
-              el("span", { class: "map-tree-count", text: String(mapCount) }),
-            ],
-            on: {
-              click: (event) => {
-                event.stopPropagation();
-                toggleMapPanelCollapsed();
-                rerenderMapList();
+          staticTitle
+            ? el("span", { class: "map-tree-section-toggle is-static", children: titleParts() })
+            : el("button", {
+              class: "map-tree-section-toggle",
+              attrs: {
+                type: "button",
+                "aria-expanded": String(!sectionCollapsed),
+                title: sectionCollapsed ? "맵 패널 펼치기" : "맵 패널 접기",
               },
-            },
-          }),
+              dataset: { testid: "map-tree-section-toggle" },
+              children: titleParts(),
+              on: {
+                click: (event) => {
+                  event.stopPropagation();
+                  toggleMapPanelCollapsed();
+                  rerenderMapList();
+                },
+              },
+            }),
         ],
       }));
       node.append(makeMapTreeHeaderActions(project.mapTree, mapCount));
