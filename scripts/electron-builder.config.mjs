@@ -32,8 +32,9 @@ export default {
   // files 는 최상위에 두지 않는다. 최상위와 플랫폼 files 는 별개 매처로 합집합이 돼서, 플랫폼 쪽
   // 제외 패턴이 최상위의 dist-electron/** 를 못 이긴다(실측 2026-09-27: 두 OS 패키지 모두 워커 4개).
   // 각 OS 가 자기 전체 목록을 갖는다.
-  // AI 워커는 실행 파일이라 asar 밖에 있어야 한다. pi_natives 애드온은 싣지 않는다(scripts/build-ai-worker.ts).
-  asarUnpack: ["scripts/**", "dist-electron/oprn-agent-mode-mcp.mjs", "dist-electron/agent-npm/**", "dist-electron/oh-my-pi-worker", "dist-electron/oh-my-pi-worker.exe"],
+  // AI 워커는 실행 파일이라 asar 밖에 있어야 한다. 윈도 워커가 읽는 pi_natives 애드온은 로더가 워커 옆 폴더에서 찾으므로 같이 풀어 둔다.
+  // 리눅스 워커는 애드온 없이 굽는다(scripts/build-ai-worker.ts).
+  asarUnpack: ["scripts/**", "dist-electron/oprn-agent-mode-mcp.mjs", "dist-electron/agent-npm/**", "dist-electron/oh-my-pi-worker", "dist-electron/oh-my-pi-worker.exe", "dist-electron/pi_natives.*.node"],
   extraMetadata: { main: "dist-electron/main.cjs" },
   asar: true,
   // 스토어 웹사이트의 「에디터에서 열기」(oprn://store/install?…). macOS Info.plist·Linux .desktop MimeType 에 들어간다.
@@ -54,7 +55,7 @@ export default {
     // 띄어쓰기 없는 이름. 기본값 「OPRN Studio-<판>.AppImage」 는 gh 가 올릴 때 「OPRN.Studio-…」 로 바꿔서
     // latest-linux.yml 의 path 와 릴리스 자산 이름이 어긋난다(자동 업데이트가 404). 릴리스의 옛 이름과 같다.
     artifactName: "OPRN.Studio-${version}.${ext}",
-    files: [...APP_FILES, "!dist-electron/oh-my-pi-worker.exe"],
+    files: [...APP_FILES, "!dist-electron/oh-my-pi-worker.exe", "!dist-electron/pi_natives.*.node"],
   },
   // NSIS exe(portable)는 electron-builder 가 내려받은 makensis 를 직접 돌려 리눅스에서도 만든다
   // — 실측 2026-10-10: wine 없이 nsis-3.0.4.1/nsis-resources-3.4.1 만 내려받아 생성됨.
