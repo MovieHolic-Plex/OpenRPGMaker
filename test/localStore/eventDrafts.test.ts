@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { existsSync, readdirSync, writeFileSync } from "node:fs";
+import { afterEach, beforeEach, describe, expect, it, afterAll } from "vitest";
+import { existsSync, readdirSync, writeFileSync, mkdtempSync, rmSync } from "node:fs";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -11,178 +11,222 @@ import { createProjectSessionRegistry } from "../../electron/main/sessions";
 import { serialize } from "@/project/io";
 import { sha256HexTextSync } from "@/util/sha256";
 import { isolateTimers } from "../mergedTeardown";
+import { execFileSync } from "node:child_process";
 
-describe("mediaSeparation", () => {
+describe("eventDrafts", () => {
   isolateTimers();
-  const PNG_BYTES = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
-  const DATA_URL = `data:image/png;base64,${Buffer.from(PNG_BYTES).toString("base64")}`;
-  const MEDIA_COMMIT_SUMMARY = "미디어 분리";
-  let projectDir: string;
-  let store: LocalProjectStore;
-  beforeEach(async () => {
-    projectDir = await mkdtemp(join(tmpdir(), "oprn-media-"));
-    store = await initLocalProjectStore({ projectDir });
-  });
-  afterEach(async () => {
-    store.close();
-    await rm(projectDir, { force: true, recursive: true });
-  });
-  function projectWithInlineAsset(): Project {
-    const base = projectWithoutEventDrafts(createScarloxyDemoProject());
-    return {
-      ...base,
-      assets: {
-        ...base.assets,
-        uploaded: {
-          ...base.assets.uploaded,
-          asset_inline: { id: "asset_inline", name: "인라인 자산", kind: "sprite", dataUrl: DATA_URL, meta: {} },
-        },
-      },
-    };
-  }
-  describe("local store assets", () => {
-    it("손상된 기존 파일은 읽기를 거절하고 정상 원본 재업로드로 복구한다", async () => {
-      const ref = await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png" });
-      writeFileSync(join(projectDir, "assets", `${ref.sha256}.png`), PNG_BYTES.slice(0, 3));
-      await expect(store.assetBytes(ref.sha256)).rejects.toThrow("손상");
-      await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png" });
-      expect(new Uint8Array(await store.assetBytes(ref.sha256))).toEqual(PNG_BYTES); // assetBytes 는 Node Buffer 를 돌려준다 — 바이트만 비교한다.
-      expect(readdirSync(join(projectDir, "assets")).some(name => name.endsWith(".pending"))).toBe(false);
+  describe("mediaSeparation", () => {
+    isolateTimers();
+    const PNG_BYTES = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+    const DATA_URL = `data:image/png;base64,${Buffer.from(PNG_BYTES).toString("base64")}`;
+    const MEDIA_COMMIT_SUMMARY = "미디어 분리";
+    let projectDir: string;
+    let store: LocalProjectStore;
+    beforeEach(async () => {
+      projectDir = await mkdtemp(join(tmpdir(), "oprn-media-"));
+      store = await initLocalProjectStore({ projectDir });
     });
-
-    it("행 없이 assets/ 에만 있는 파일은 해시가 맞을 때만 찾기에서 등록한다", async () => {
-      const { createHash } = await import("node:crypto");
-      const sha256 = createHash("sha256").update(PNG_BYTES).digest("hex");
-      writeFileSync(join(projectDir, "assets", `${sha256}.png`), PNG_BYTES);
-      expect(store.listAssets()).toHaveLength(0);
-      expect(store.findAsset(sha256)).toMatchObject({ sha256, mime: "image/png", extension: "png", bytes: PNG_BYTES.byteLength });
-      expect(new Uint8Array(await store.assetBytes(sha256))).toEqual(PNG_BYTES);
-      const wrong = "0".repeat(64);
-      writeFileSync(join(projectDir, "assets", `${wrong}.png`), PNG_BYTES);
-      expect(store.findAsset(wrong)).toBeNull();
+    afterEach(async () => {
+      store.close();
+      await rm(projectDir, { force: true, recursive: true });
     });
-
-    it("putAsset 은 sha256 파일명으로 쓰고 같은 바이트는 한 벌만 남다", async () => {
-      const ref = await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png", originalName: "a.png", kind: "sprite" });
-      const again = await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png", originalName: "b.png", kind: "sprite" });
-
-      expect(ref.sha256).toMatch(/^[0-9a-f]{64}$/);
-      expect(ref.bytes).toBe(PNG_BYTES.byteLength);
-      expect(again.sha256).toBe(ref.sha256);
-      expect(existsSync(join(projectDir, "assets", `${ref.sha256}.png`))).toBe(true);
-      expect(store.listAssets()).toHaveLength(1);
-      expect(new Uint8Array(await store.assetBytes(ref.sha256))).toEqual(PNG_BYTES); // assetBytes 는 Node Buffer 를 돌려준다 — 바이트만 비교한다.
-    });
-
-    it("separateInlineMedia 가 base64 를 파일로 기고 두 번째 호출은 no-op 이다", async () => {
-      const first = await store.separateInlineMedia(projectWithInlineAsset());
-
-      expect(first.changed).toBe(true);
-      expect(first.migratedAssetIds).toEqual(["asset_inline"]);
-      const migrated = first.project.assets.uploaded.asset_inline;
-      expect(migrated?.dataUrl).toBeUndefined();
-      expect(migrated?.ref?.mime).toBe("image/png");
-      expect(migrated?.ref?.extension).toBe("png");
-      expect(new Uint8Array(await store.assetBytes(migrated?.ref?.sha256 ?? ""))).toEqual(PNG_BYTES); // assetBytes 는 Node Buffer 를 돌려준다 — 바이트만 비교한다.
-      expect(store.loadSnapshot()?.sha256).toBe(first.sha256);
-      expect(store.listCommits(5).filter((commit) => commit.summary === MEDIA_COMMIT_SUMMARY)).toHaveLength(1);
-
-      const second = await store.separateInlineMedia(first.project);
-      expect(second.changed).toBe(false);
-      expect(second.migratedAssetIds).toEqual([]);
-      expect(store.listCommits(5).filter((commit) => commit.summary === MEDIA_COMMIT_SUMMARY)).toHaveLength(1);
-    });
-
-    it("이미 ref 인 자산은 건드리지 않는다", async () => {
-      const ref = await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png", originalName: "x.png", kind: "sprite" });
+    function projectWithInlineAsset(): Project {
       const base = projectWithoutEventDrafts(createScarloxyDemoProject());
-      const project: Project = {
+      return {
         ...base,
         assets: {
           ...base.assets,
-          uploaded: { asset_ref: { id: "asset_ref", name: "이미 참조", kind: "sprite", ref, meta: {} } },
+          uploaded: {
+            ...base.assets.uploaded,
+            asset_inline: { id: "asset_inline", name: "인라인 자산", kind: "sprite", dataUrl: DATA_URL, meta: {} },
+          },
         },
       };
+    }
+    describe("local store assets", () => {
+      it("손상된 기존 파일은 읽기를 거절하고 정상 원본 재업로드로 복구한다", async () => {
+        const ref = await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png" });
+        writeFileSync(join(projectDir, "assets", `${ref.sha256}.png`), PNG_BYTES.slice(0, 3));
+        await expect(store.assetBytes(ref.sha256)).rejects.toThrow("손상");
+        await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png" });
+        expect(new Uint8Array(await store.assetBytes(ref.sha256))).toEqual(PNG_BYTES); // assetBytes 는 Node Buffer 를 돌려준다 — 바이트만 비교한다.
+        expect(readdirSync(join(projectDir, "assets")).some(name => name.endsWith(".pending"))).toBe(false);
+      });
 
-      const result = await store.separateInlineMedia(project);
+      it("행 없이 assets/ 에만 있는 파일은 해시가 맞을 때만 찾기에서 등록한다", async () => {
+        const { createHash } = await import("node:crypto");
+        const sha256 = createHash("sha256").update(PNG_BYTES).digest("hex");
+        writeFileSync(join(projectDir, "assets", `${sha256}.png`), PNG_BYTES);
+        expect(store.listAssets()).toHaveLength(0);
+        expect(store.findAsset(sha256)).toMatchObject({ sha256, mime: "image/png", extension: "png", bytes: PNG_BYTES.byteLength });
+        expect(new Uint8Array(await store.assetBytes(sha256))).toEqual(PNG_BYTES);
+        const wrong = "0".repeat(64);
+        writeFileSync(join(projectDir, "assets", `${wrong}.png`), PNG_BYTES);
+        expect(store.findAsset(wrong)).toBeNull();
+      });
 
-      expect(result.changed).toBe(false);
-      expect(result.migratedAssetIds).toEqual([]);
+      it("putAsset 은 sha256 파일명으로 쓰고 같은 바이트는 한 벌만 남다", async () => {
+        const ref = await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png", originalName: "a.png", kind: "sprite" });
+        const again = await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png", originalName: "b.png", kind: "sprite" });
+
+        expect(ref.sha256).toMatch(/^[0-9a-f]{64}$/);
+        expect(ref.bytes).toBe(PNG_BYTES.byteLength);
+        expect(again.sha256).toBe(ref.sha256);
+        expect(existsSync(join(projectDir, "assets", `${ref.sha256}.png`))).toBe(true);
+        expect(store.listAssets()).toHaveLength(1);
+        expect(new Uint8Array(await store.assetBytes(ref.sha256))).toEqual(PNG_BYTES); // assetBytes 는 Node Buffer 를 돌려준다 — 바이트만 비교한다.
+      });
+
+      it("separateInlineMedia 가 base64 를 파일로 기고 두 번째 호출은 no-op 이다", async () => {
+        const first = await store.separateInlineMedia(projectWithInlineAsset());
+
+        expect(first.changed).toBe(true);
+        expect(first.migratedAssetIds).toEqual(["asset_inline"]);
+        const migrated = first.project.assets.uploaded.asset_inline;
+        expect(migrated?.dataUrl).toBeUndefined();
+        expect(migrated?.ref?.mime).toBe("image/png");
+        expect(migrated?.ref?.extension).toBe("png");
+        expect(new Uint8Array(await store.assetBytes(migrated?.ref?.sha256 ?? ""))).toEqual(PNG_BYTES); // assetBytes 는 Node Buffer 를 돌려준다 — 바이트만 비교한다.
+        expect(store.loadSnapshot()?.sha256).toBe(first.sha256);
+        expect(store.listCommits(5).filter((commit) => commit.summary === MEDIA_COMMIT_SUMMARY)).toHaveLength(1);
+
+        const second = await store.separateInlineMedia(first.project);
+        expect(second.changed).toBe(false);
+        expect(second.migratedAssetIds).toEqual([]);
+        expect(store.listCommits(5).filter((commit) => commit.summary === MEDIA_COMMIT_SUMMARY)).toHaveLength(1);
+      });
+
+      it("이미 ref 인 자산은 건드리지 않는다", async () => {
+        const ref = await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png", originalName: "x.png", kind: "sprite" });
+        const base = projectWithoutEventDrafts(createScarloxyDemoProject());
+        const project: Project = {
+          ...base,
+          assets: {
+            ...base.assets,
+            uploaded: { asset_ref: { id: "asset_ref", name: "이미 참조", kind: "sprite", ref, meta: {} } },
+          },
+        };
+
+        const result = await store.separateInlineMedia(project);
+
+        expect(result.changed).toBe(false);
+        expect(result.migratedAssetIds).toEqual([]);
+      });
+
+      it("pruneUnusedAssets 는 참조되지 않는 파일과 행을 지운다", async () => {
+        const used = await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png", originalName: "used.png", kind: "sprite" });
+        const orphan = await store.putAsset(new Uint8Array([1, 2, 3]), { mime: "image/png", extension: "png", originalName: "orphan.png", kind: "sprite" });
+
+        const removed = await store.pruneUnusedAssets([used.sha256]);
+
+        expect(removed).toEqual([orphan.sha256]);
+        expect(existsSync(join(projectDir, "assets", `${orphan.sha256}.png`))).toBe(false);
+        expect(existsSync(join(projectDir, "assets", `${used.sha256}.png`))).toBe(true);
+        expect(store.listAssets().map((asset) => asset.sha256)).toEqual([used.sha256]);
+      });
     });
+    describe("폴더를 열 때 인라인 미디어를 자동으로 분리한다", () => {
+      it("open 이 base64 를 파일로 옮기고 분리 커밋을 한 번만 남긴다", async () => {
+        const dir = await mkdtemp(join(tmpdir(), "oprn-open-migrate-"));
+        const seeded = await initLocalProjectStore({ projectDir: dir });
+        await seeded.saveProject(projectWithInlineAsset());
+        seeded.close();
 
-    it("pruneUnusedAssets 는 참조되지 않는 파일과 행을 지운다", async () => {
-      const used = await store.putAsset(PNG_BYTES, { mime: "image/png", extension: "png", originalName: "used.png", kind: "sprite" });
-      const orphan = await store.putAsset(new Uint8Array([1, 2, 3]), { mime: "image/png", extension: "png", originalName: "orphan.png", kind: "sprite" });
+        const sessions = createProjectSessionRegistry();
+        const session = await sessions.open(1, dir);
 
-      const removed = await store.pruneUnusedAssets([used.sha256]);
+        const migrated = session.store.loadSnapshot()?.project.assets.uploaded.asset_inline;
+        expect(migrated?.dataUrl).toBeUndefined();
+        expect(migrated?.ref?.sha256).toMatch(/^[0-9a-f]{64}$/);
+        expect(session.store.listCommits(5).filter((commit) => commit.summary === MEDIA_COMMIT_SUMMARY)).toHaveLength(1);
 
-      expect(removed).toEqual([orphan.sha256]);
-      expect(existsSync(join(projectDir, "assets", `${orphan.sha256}.png`))).toBe(false);
-      expect(existsSync(join(projectDir, "assets", `${used.sha256}.png`))).toBe(true);
-      expect(store.listAssets().map((asset) => asset.sha256)).toEqual([used.sha256]);
+        sessions.close(1);
+        await rm(dir, { force: true, recursive: true });
+      });
     });
   });
-  describe("폴더를 열 때 인라인 미디어를 자동으로 분리한다", () => {
-    it("open 이 base64 를 파일로 옮기고 분리 커밋을 한 번만 남긴다", async () => {
-      const dir = await mkdtemp(join(tmpdir(), "oprn-open-migrate-"));
-      const seeded = await initLocalProjectStore({ projectDir: dir });
-      await seeded.saveProject(projectWithInlineAsset());
-      seeded.close();
+  describe("saveSerialized", () => {
+    isolateTimers();
+    let projectDir: string;
+    let store: LocalProjectStore;
+    beforeEach(async () => {
+      projectDir = await mkdtemp(join(tmpdir(), "oprn-serialized-"));
+      store = await initLocalProjectStore({ projectDir });
+    });
+    afterEach(async () => {
+      store.close();
+      await rm(projectDir, { force: true, recursive: true });
+    });
+    describe("local store saveSerialized", () => {
+      it("보낸 텍스트를 그대로 저장하고 그 텍스트의 해시를 쓴다", async () => {
+        const project = projectWithoutEventDrafts(createScarloxyDemoProject());
+        const serialized = serialize(project);
 
-      const sessions = createProjectSessionRegistry();
-      const session = await sessions.open(1, dir);
+        const saved = await store.saveSerialized(serialized);
 
-      const migrated = session.store.loadSnapshot()?.project.assets.uploaded.asset_inline;
-      expect(migrated?.dataUrl).toBeUndefined();
-      expect(migrated?.ref?.sha256).toMatch(/^[0-9a-f]{64}$/);
-      expect(session.store.listCommits(5).filter((commit) => commit.summary === MEDIA_COMMIT_SUMMARY)).toHaveLength(1);
+        expect(saved.kind).toBe("saved");
+        if (saved.kind !== "saved") return;
+        expect(saved.sha256).toBe(sha256HexTextSync(serialized));
+        expect(store.exportSerialized()).toBe(serialized);
+        expect(existsSync(join(projectDir, "project.sqlite"))).toBe(true);
+        expect(store.loadSnapshot()?.project.maps).toBeDefined();
+        expect(store.info().revision).toBe(1);
+      });
 
-      sessions.close(1);
-      await rm(dir, { force: true, recursive: true });
+      it("맵 미러 행을 텍스트에서 다시 만든다", async () => {
+        const project = projectWithoutEventDrafts(createScarloxyDemoProject());
+        await store.saveSerialized(serialize(project));
+
+        const mirrors = store.mapMirrors();
+
+        expect([...mirrors.keys()].sort()).toEqual(Object.keys(project.maps).sort());
+      });
+
+      it("맵이 아닌 JSON 은 거절한다", async () => {
+        await expect(store.saveSerialized('{"version":4}')).rejects.toThrow();
+        expect(store.loadSnapshot()).toBeNull();
+      });
     });
   });
 });
 
-describe("saveSerialized", () => {
+describe("headlessProjectDir", () => {
   isolateTimers();
-  let projectDir: string;
-  let store: LocalProjectStore;
-  beforeEach(async () => {
-    projectDir = await mkdtemp(join(tmpdir(), "oprn-serialized-"));
-    store = await initLocalProjectStore({ projectDir });
+  const projectDir = mkdtempSync(join(tmpdir(), "oprn-headless-"));
+  afterAll(() => {
+    rmSync(projectDir, { force: true, recursive: true });
   });
-  afterEach(async () => {
-    store.close();
-    await rm(projectDir, { force: true, recursive: true });
-  });
-  describe("local store saveSerialized", () => {
-    it("보낸 텍스트를 그대로 저장하고 그 텍스트의 해시를 쓴다", async () => {
-      const project = projectWithoutEventDrafts(createScarloxyDemoProject());
-      const serialized = serialize(project);
-
-      const saved = await store.saveSerialized(serialized);
-
-      expect(saved.kind).toBe("saved");
-      if (saved.kind !== "saved") return;
-      expect(saved.sha256).toBe(sha256HexTextSync(serialized));
-      expect(store.exportSerialized()).toBe(serialized);
-      expect(existsSync(join(projectDir, "project.sqlite"))).toBe(true);
-      expect(store.loadSnapshot()?.project.maps).toBeDefined();
-      expect(store.info().revision).toBe(1);
+  function runTool(args: readonly string[]): unknown {
+    const output = execFileSync("node", ["scripts/oprn-tools.mjs", ...args], {
+      encoding: "utf8",
+      stdio: ["ignore", "pipe", "pipe"],
+      // --list 는 도구 카탈로그 전체(약 2.4MB)를 찍는다 — 기본 1MB 버퍼로는 ENOBUFS 로 끊겼다.
+      maxBuffer: 64 * 1024 * 1024,
     });
+    return JSON.parse(output) as unknown;
+  }
+  describe("headless tools open a project folder", () => {
+    it("--project-dir 로 폴더 프로젝트를 열어 도구를 돌린다", async () => {
+      const store = await initLocalProjectStore({ projectDir });
+      await store.saveProject(projectWithoutEventDrafts(createScarloxyDemoProject()));
+      store.close();
 
-    it("맵 미러 행을 텍스트에서 다시 만든다", async () => {
-      const project = projectWithoutEventDrafts(createScarloxyDemoProject());
-      await store.saveSerialized(serialize(project));
+      const result = runTool([
+        "--project-dir",
+        projectDir,
+        "create_map",
+        JSON.stringify({ name: "폴더 맵", width: 12, height: 10 }),
+      ]) as { readonly ok?: boolean; readonly diff?: { readonly mapsAdded?: number } };
 
-      const mirrors = store.mapMirrors();
+      expect(result.ok).toBe(true);
+      expect(result.diff?.mapsAdded).toBe(1);
+    }, 180_000);
 
-      expect([...mirrors.keys()].sort()).toEqual(Object.keys(project.maps).sort());
-    });
+    it("--list 는 폴더 없이도 그대로 동작한다", () => {
+      const listed = runTool(["--list"]) as { readonly tools?: readonly unknown[] };
 
-    it("맵이 아닌 JSON 은 거절한다", async () => {
-      await expect(store.saveSerialized('{"version":4}')).rejects.toThrow();
-      expect(store.loadSnapshot()).toBeNull();
-    });
+      expect(Array.isArray(listed.tools)).toBe(true);
+      expect((listed.tools ?? []).length).toBeGreaterThan(0);
+    }, 180_000);
   });
 });

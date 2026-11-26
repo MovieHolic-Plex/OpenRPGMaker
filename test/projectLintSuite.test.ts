@@ -7,7 +7,7 @@ import { initialRuntimeEventPositions, runtimeEventViewsForMap } from "@/project
 import { pushObject, toggleHiding, pursuitTarget, carryPursuitThroughDoor, advancePursuitDoors } from "@/player/horrorRuntime";
 import { isHorrorState } from "@/project/horrorState";
 import { lintHorrorAuthoring } from "@/project/lint/horrorAuthoringLint";
-import type { GameEvent, GameMap, Project } from "@/project/types";
+import type { GameEvent, GameMap, Project, Command, EventPage } from "@/project/types";
 import type { AutonomousMover } from "@/player/playSceneTypes";
 import { CHASE_LEGACY_SEARCH_MIN_MS } from "@/project/chaseTempo";
 import { canMove } from "@/project/collision";
@@ -15,186 +15,222 @@ import { rampCode, reliefSlopes } from "@/project/relief/walk";
 import { normalizeRelief } from "@/project/relief/edit";
 import { computeReachableCells } from "@/project/lint/reachability";
 import { isolateTimers } from "./mergedTeardown";
+import { lintSceneStaging } from "@/project/lint/sceneStagingLint";
 
-describe("horrorObjectRuntime", () => {
+describe("projectLintSuite", () => {
   isolateTimers();
-  function fixture() {
-    const project = createBlankProject();
-    const map = project.maps[project.startMapId]!;
-    map.width = 12; map.height = 12; map.lowerTiles = Array(144).fill(0); map.upperTiles = Array(144).fill(-1);
-    // Explicit passable test terrain, independent of the art catalog.
-    project.tilesets[map.tilesetId]!.passability[0] = {up:true,down:true,left:true,right:true};
-    const event = (id: string, x: number, y: number): GameEvent => ({ id, x, y, trigger: { kind: 'action' }, commands: [], pages: [{ id: `${id}_page`, name: id, conditions: [], graphic: {}, trigger: { kind: 'action' }, priority: 'same', overlapForbidden: true, movement: { type: 'fixed', speed: 3, frequency: 3 }, commands: [] }] });
-    const monster = event('monster', 7, 5);
-    monster.pages![0]!.movement = { type: 'chase', speed: 4, frequency: 4, sightRange: 8, pursuit: { scope: 'connected', doorDelayMs: 500, searchMs: 1000, onLost: 'return' } };
-    const chair = event('chair', 4, 5); chair.pages![0]!.interaction = { kind: 'pushable' };
-    const closet = event('closet', 3, 4); closet.pages![0]!.interaction = { kind: 'hiding' };
-    map.events = [monster, chair, closet];
-    const next = structuredClone(map); next.id = 'next'; next.events = []; project.maps.next = next;
-    const third = structuredClone(next); third.id = 'third'; project.maps.third = third;
-    const session = startSession(project); session.x = 3; session.y = 5;
-    const world = { project, map, session, positions: initialRuntimeEventPositions(map.events) };
-    const view = (id: string) => runtimeEventViewsForMap(project, world.map, session, world.positions).find(v => v.event.id === id)!;
-    const mover = { timer: 0, moveIntervalMs: 80, moveDurationMs: 100, chaseActive: true } as AutonomousMover;
-    return { world, view, mover, monster, chair, closet, next, third };
-  }
-  describe('horror authoring and runtime contracts', () => {
-    it('roundtrips authored properties and old projects without adding behavior', () => {
-      const { world } = fixture();
-      const loaded = deserialize(serialize(world.project));
-      expect(loaded.maps[world.map.id]!.events).toEqual(world.map.events);
-      const old = createBlankProject(); expect(deserialize(serialize(old)).maps[old.startMapId]!.events).toEqual(old.maps[old.startMapId]!.events);
+  describe("horrorObjectRuntime", () => {
+    isolateTimers();
+    function fixture() {
+      const project = createBlankProject();
+      const map = project.maps[project.startMapId]!;
+      map.width = 12; map.height = 12; map.lowerTiles = Array(144).fill(0); map.upperTiles = Array(144).fill(-1);
+      // Explicit passable test terrain, independent of the art catalog.
+      project.tilesets[map.tilesetId]!.passability[0] = {up:true,down:true,left:true,right:true};
+      const event = (id: string, x: number, y: number): GameEvent => ({ id, x, y, trigger: { kind: 'action' }, commands: [], pages: [{ id: `${id}_page`, name: id, conditions: [], graphic: {}, trigger: { kind: 'action' }, priority: 'same', overlapForbidden: true, movement: { type: 'fixed', speed: 3, frequency: 3 }, commands: [] }] });
+      const monster = event('monster', 7, 5);
+      monster.pages![0]!.movement = { type: 'chase', speed: 4, frequency: 4, sightRange: 8, pursuit: { scope: 'connected', doorDelayMs: 500, searchMs: 1000, onLost: 'return' } };
+      const chair = event('chair', 4, 5); chair.pages![0]!.interaction = { kind: 'pushable' };
+      const closet = event('closet', 3, 4); closet.pages![0]!.interaction = { kind: 'hiding' };
+      map.events = [monster, chair, closet];
+      const next = structuredClone(map); next.id = 'next'; next.events = []; project.maps.next = next;
+      const third = structuredClone(next); third.id = 'third'; project.maps.third = third;
+      const session = startSession(project); session.x = 3; session.y = 5;
+      const world = { project, map, session, positions: initialRuntimeEventPositions(map.events) };
+      const view = (id: string) => runtimeEventViewsForMap(project, world.map, session, world.positions).find(v => v.event.id === id)!;
+      const mover = { timer: 0, moveIntervalMs: 80, moveDurationMs: 100, chaseActive: true } as AutonomousMover;
+      return { world, view, mover, monster, chair, closet, next, third };
+    }
+    describe('horror authoring and runtime contracts', () => {
+      it('roundtrips authored properties and old projects without adding behavior', () => {
+        const { world } = fixture();
+        const loaded = deserialize(serialize(world.project));
+        expect(loaded.maps[world.map.id]!.events).toEqual(world.map.events);
+        const old = createBlankProject(); expect(deserialize(serialize(old)).maps[old.startMapId]!.events).toEqual(old.maps[old.startMapId]!.events);
+      });
+      it('pushes a chair one tile and preserves position through save storage and reload', () => {
+        const { world, view } = fixture();
+        expect(pushObject(world, view('chair'), 'right')).toBe(true);
+        const data = new Map<string,string>();
+        const storage = { getItem: (k: string) => data.get(k) ?? null, setItem: (k: string,v: string) => data.set(k,v) } as Storage;
+        saveToSlot(storage, 1, createSaveSnapshot(world.project, world.session));
+        const read = readSaveSlot(storage, 1); expect(read.kind).toBe('present');
+        if (read.kind !== 'present') throw Error('snapshot missing');
+        const loaded = applySaveSnapshot(world.project, read.snapshot);
+        expect(loaded.eventLocations.chair).toMatchObject({ x: 5, y: 5 });
+        expect(world.map.events.find(e => e.id === 'chair')!.x).toBe(4);
+      });
+      it('rejects blocked, disallowed, and chain pushes without mutation', () => {
+        const { world, view, chair } = fixture();
+        chair.pages![0]!.interaction!.directions = ['up'];
+        expect(pushObject(world, view('chair'), 'right')).toBe(false);
+        world.session.eventLocations.closet = { mapId: world.map.id, x: 4, y: 4 };
+        expect(pushObject(world, view('chair'), 'up')).toBe(false);
+        expect(world.session.eventLocations.chair).toBeUndefined();
+        world.session.eventLocations.closet = { mapId: world.map.id, x: 8, y: 8 };
+        world.map.lowerTiles[4*12+4] = 1; world.project.tilesets[world.map.tilesetId]!.passability[1] = {up:false,down:false,left:false,right:false};
+        expect(pushObject(world, view('chair'), 'up')).toBe(false);
+      });
+      it('hiding behind furniture breaks detection, searches then returns, and can be exited', () => {
+        const { world, view, mover } = fixture();
+        world.session.eventLocations.chair = { mapId: world.map.id, x: 8, y: 8 };
+        expect(pursuitTarget(world, view('monster'), mover, 20)).toMatchObject({ x: 3, y: 5, searching: false });
+        world.positions.monster = { x: 6, y: 5 };
+        world.session.eventLocations.monster = { mapId: world.map.id, x: 6, y: 5 };
+        world.session.eventLocations.chair = { mapId: world.map.id, x: 4, y: 5 };
+        toggleHiding(world, view('closet'));
+        expect(world.session.horror!.hiding!.witnessedBy).toEqual([]);
+        expect(pursuitTarget(world, view('monster'), mover, 500)).toEqual({ x: 3, y: 5, searching: true });
+        // 박자(chaseStepMs)를 적지 않은 추격자의 수색은 CHASE_LEGACY_SEARCH_MIN_MS 아래로 내려가지 않는다(4127a63455) — 저작 searchMs 1000 은 그보다 짧다.
+        expect(pursuitTarget(world, view('monster'), mover, CHASE_LEGACY_SEARCH_MIN_MS)).toEqual({ mapId: world.map.id, x: 7, y: 5, searching: true });
+        world.positions.monster = { x: 7, y: 5 };
+        world.session.eventLocations.monster = { mapId: world.map.id, x: 7, y: 5 };
+        expect(pursuitTarget(world, view('monster'), mover, 20)).toBeNull();
+        expect(world.session.horror!.pursuits.monster!.active).toBe(false);
+        toggleHiding(world); expect(world.session.horror!.hiding).toBeUndefined();
+      });
+      it('a monster that saw entry can still capture; saved hiding state is restored', () => {
+        const { world, view, mover } = fixture();
+        world.session.eventLocations.chair = { mapId: world.map.id, x: 8, y: 8 };
+        toggleHiding(world, view('closet'));
+        expect(world.session.horror!.hiding!.witnessedBy).toEqual(['monster']);
+        expect(pursuitTarget(world, view('monster'), mover, 50)).toMatchObject({ x: 3, y: 5, searching: false });
+        const snapshot = createSaveSnapshot(world.project, world.session);
+        expect(applySaveSnapshot(world.project, snapshot).horror).toEqual(world.session.horror);
+      });
+      it('follows a real transfer after travel and door delay, without duplicating the event', () => {
+        const { world, view, mover, next } = fixture();
+        world.session.x = 8; world.session.y = 5;
+        pursuitTarget(world, view('monster'), mover, 20);
+        carryPursuitThroughDoor(world, new Map([['monster', mover]]), { mapId: next.id, x: 2, y: 2 });
+        world.map = next; world.session.currentMapId = next.id; world.session.x = 3; world.session.y = 2;
+        expect(advancePursuitDoors(world, 499)).toBe(false);
+        expect(view('monster')).toBeUndefined();
+        expect(advancePursuitDoors(world, 200)).toBe(true);
+        expect(view('monster')).toMatchObject({ x: 2, y: 2 });
+        expect(world.project.maps[world.project.startMapId]!.events.filter(e => e.id === 'monster')).toHaveLength(1);
+        const saved = applySaveSnapshot(world.project, createSaveSnapshot(world.project, world.session));
+        expect(saved.eventLocations.monster?.mapId).toBe('next');
+      });
+      it('retains a pending door trail across quick second transfer and save reload', () => {
+        const { world, view, mover, next, third } = fixture();
+        world.session.x = 8; world.session.y = 5;
+        pursuitTarget(world, view('monster'), mover, 20);
+        carryPursuitThroughDoor(world, new Map([['monster', mover]]), { mapId: next.id, x: 2, y: 2 });
+        world.map = next; world.session.currentMapId = next.id; world.session.x = 3;
+        carryPursuitThroughDoor(world, new Map(), { mapId: third.id, x: 2, y: 2 });
+        expect(world.session.horror!.pursuits.monster!.doors.map(d => d.mapId)).toEqual(['next','third']);
+        world.session = applySaveSnapshot(world.project, createSaveSnapshot(world.project, world.session));
+        world.map = third; world.session.currentMapId = third.id;
+        advancePursuitDoors(world, 10000); advancePursuitDoors(world, 10000);
+        expect(world.session.eventLocations.monster?.mapId).toBe('third');
+      });
+      it('map-only chasers never follow and erased pursuers cancel transit', () => {
+        const { world, monster, mover, next } = fixture();
+        monster.pages![0]!.movement.pursuit!.scope = 'map';
+        carryPursuitThroughDoor(world, new Map([['monster',mover]]), { mapId: next.id, x: 2,y: 2 });
+        expect(world.session.horror?.pursuits.monster).toBeUndefined();
+        monster.pages![0]!.movement.pursuit!.scope = 'connected';
+        world.session.x = 8; world.session.y = 5;
+        carryPursuitThroughDoor(world, new Map([['monster',mover]]), { mapId: next.id,x: 2,y: 2 });
+        world.session.erasedEventIds.push('monster'); advancePursuitDoors(world, 10000);
+        expect(world.session.horror!.pursuits.monster!.doors).toEqual([]);
+      });
+      it('rejects malformed persisted timers and reports incomplete object authoring', () => {
+        expect(isHorrorState({ pursuits: { m: { home: {mapId:'a',x:0,y:0}, active:true, searchMs: NaN, doors:[] } } })).toBe(false);
+        const { world } = fixture();
+        expect(lintHorrorAuthoring(world.project).some(i => i.code === 'authoring:object-graphic')).toBe(true);
+      });
     });
-    it('pushes a chair one tile and preserves position through save storage and reload', () => {
-      const { world, view } = fixture();
-      expect(pushObject(world, view('chair'), 'right')).toBe(true);
-      const data = new Map<string,string>();
-      const storage = { getItem: (k: string) => data.get(k) ?? null, setItem: (k: string,v: string) => data.set(k,v) } as Storage;
-      saveToSlot(storage, 1, createSaveSnapshot(world.project, world.session));
-      const read = readSaveSlot(storage, 1); expect(read.kind).toBe('present');
-      if (read.kind !== 'present') throw Error('snapshot missing');
-      const loaded = applySaveSnapshot(world.project, read.snapshot);
-      expect(loaded.eventLocations.chair).toMatchObject({ x: 5, y: 5 });
-      expect(world.map.events.find(e => e.id === 'chair')!.x).toBe(4);
-    });
-    it('rejects blocked, disallowed, and chain pushes without mutation', () => {
-      const { world, view, chair } = fixture();
-      chair.pages![0]!.interaction!.directions = ['up'];
-      expect(pushObject(world, view('chair'), 'right')).toBe(false);
-      world.session.eventLocations.closet = { mapId: world.map.id, x: 4, y: 4 };
-      expect(pushObject(world, view('chair'), 'up')).toBe(false);
-      expect(world.session.eventLocations.chair).toBeUndefined();
-      world.session.eventLocations.closet = { mapId: world.map.id, x: 8, y: 8 };
-      world.map.lowerTiles[4*12+4] = 1; world.project.tilesets[world.map.tilesetId]!.passability[1] = {up:false,down:false,left:false,right:false};
-      expect(pushObject(world, view('chair'), 'up')).toBe(false);
-    });
-    it('hiding behind furniture breaks detection, searches then returns, and can be exited', () => {
-      const { world, view, mover } = fixture();
-      world.session.eventLocations.chair = { mapId: world.map.id, x: 8, y: 8 };
-      expect(pursuitTarget(world, view('monster'), mover, 20)).toMatchObject({ x: 3, y: 5, searching: false });
-      world.positions.monster = { x: 6, y: 5 };
-      world.session.eventLocations.monster = { mapId: world.map.id, x: 6, y: 5 };
-      world.session.eventLocations.chair = { mapId: world.map.id, x: 4, y: 5 };
-      toggleHiding(world, view('closet'));
-      expect(world.session.horror!.hiding!.witnessedBy).toEqual([]);
-      expect(pursuitTarget(world, view('monster'), mover, 500)).toEqual({ x: 3, y: 5, searching: true });
-      // 박자(chaseStepMs)를 적지 않은 추격자의 수색은 CHASE_LEGACY_SEARCH_MIN_MS 아래로 내려가지 않는다(4127a63455) — 저작 searchMs 1000 은 그보다 짧다.
-      expect(pursuitTarget(world, view('monster'), mover, CHASE_LEGACY_SEARCH_MIN_MS)).toEqual({ mapId: world.map.id, x: 7, y: 5, searching: true });
-      world.positions.monster = { x: 7, y: 5 };
-      world.session.eventLocations.monster = { mapId: world.map.id, x: 7, y: 5 };
-      expect(pursuitTarget(world, view('monster'), mover, 20)).toBeNull();
-      expect(world.session.horror!.pursuits.monster!.active).toBe(false);
-      toggleHiding(world); expect(world.session.horror!.hiding).toBeUndefined();
-    });
-    it('a monster that saw entry can still capture; saved hiding state is restored', () => {
-      const { world, view, mover } = fixture();
-      world.session.eventLocations.chair = { mapId: world.map.id, x: 8, y: 8 };
-      toggleHiding(world, view('closet'));
-      expect(world.session.horror!.hiding!.witnessedBy).toEqual(['monster']);
-      expect(pursuitTarget(world, view('monster'), mover, 50)).toMatchObject({ x: 3, y: 5, searching: false });
-      const snapshot = createSaveSnapshot(world.project, world.session);
-      expect(applySaveSnapshot(world.project, snapshot).horror).toEqual(world.session.horror);
-    });
-    it('follows a real transfer after travel and door delay, without duplicating the event', () => {
-      const { world, view, mover, next } = fixture();
-      world.session.x = 8; world.session.y = 5;
-      pursuitTarget(world, view('monster'), mover, 20);
-      carryPursuitThroughDoor(world, new Map([['monster', mover]]), { mapId: next.id, x: 2, y: 2 });
-      world.map = next; world.session.currentMapId = next.id; world.session.x = 3; world.session.y = 2;
-      expect(advancePursuitDoors(world, 499)).toBe(false);
-      expect(view('monster')).toBeUndefined();
-      expect(advancePursuitDoors(world, 200)).toBe(true);
-      expect(view('monster')).toMatchObject({ x: 2, y: 2 });
-      expect(world.project.maps[world.project.startMapId]!.events.filter(e => e.id === 'monster')).toHaveLength(1);
-      const saved = applySaveSnapshot(world.project, createSaveSnapshot(world.project, world.session));
-      expect(saved.eventLocations.monster?.mapId).toBe('next');
-    });
-    it('retains a pending door trail across quick second transfer and save reload', () => {
-      const { world, view, mover, next, third } = fixture();
-      world.session.x = 8; world.session.y = 5;
-      pursuitTarget(world, view('monster'), mover, 20);
-      carryPursuitThroughDoor(world, new Map([['monster', mover]]), { mapId: next.id, x: 2, y: 2 });
-      world.map = next; world.session.currentMapId = next.id; world.session.x = 3;
-      carryPursuitThroughDoor(world, new Map(), { mapId: third.id, x: 2, y: 2 });
-      expect(world.session.horror!.pursuits.monster!.doors.map(d => d.mapId)).toEqual(['next','third']);
-      world.session = applySaveSnapshot(world.project, createSaveSnapshot(world.project, world.session));
-      world.map = third; world.session.currentMapId = third.id;
-      advancePursuitDoors(world, 10000); advancePursuitDoors(world, 10000);
-      expect(world.session.eventLocations.monster?.mapId).toBe('third');
-    });
-    it('map-only chasers never follow and erased pursuers cancel transit', () => {
-      const { world, monster, mover, next } = fixture();
-      monster.pages![0]!.movement.pursuit!.scope = 'map';
-      carryPursuitThroughDoor(world, new Map([['monster',mover]]), { mapId: next.id, x: 2,y: 2 });
-      expect(world.session.horror?.pursuits.monster).toBeUndefined();
-      monster.pages![0]!.movement.pursuit!.scope = 'connected';
-      world.session.x = 8; world.session.y = 5;
-      carryPursuitThroughDoor(world, new Map([['monster',mover]]), { mapId: next.id,x: 2,y: 2 });
-      world.session.erasedEventIds.push('monster'); advancePursuitDoors(world, 10000);
-      expect(world.session.horror!.pursuits.monster!.doors).toEqual([]);
-    });
-    it('rejects malformed persisted timers and reports incomplete object authoring', () => {
-      expect(isHorrorState({ pursuits: { m: { home: {mapId:'a',x:0,y:0}, active:true, searchMs: NaN, doors:[] } } })).toBe(false);
-      const { world } = fixture();
-      expect(lintHorrorAuthoring(world.project).some(i => i.code === 'authoring:object-graphic')).toBe(true);
+  });
+  // test/reliefWalk.test.ts
+  // 높이 지형(map.relief) 걷기 규칙 — canMove 가 단 차를 막고 경사로 축으로만 오르내리게 한다.
+  describe("reliefWalk", () => {
+    isolateTimers();
+    // 평지 맵 위에 x ≥ 6 이 2단 대지, (5, 3) 은 동쪽으로 오르는 경사로(낮은 끝 0단).
+    function hill(): { project: Project; map: GameMap } {
+      const project = createBlankProject();
+      const map = project.maps[project.startMapId]!;
+      const levels = new Array(map.width * map.height).fill(0).map((_, i) => ((i % map.width) >= 6 ? 2 : 0));
+      const ramps = new Array(map.width * map.height).fill(0);
+      ramps[3 * map.width + 5] = rampCode("e");
+      map.relief = { width: map.width, height: map.height, levels, ramps };
+      return { project, map };
+    }
+    describe("relief walk rule", () => {
+      it("단이 다른 이웃으로는 못 간다", () => {
+        const { project, map } = hill();
+        expect(canMove(project, map, 5, 1, 6, 1)).toBe(false);
+        expect(canMove(project, map, 6, 1, 5, 1)).toBe(false);
+      });
+      it("같은 단 안에서는 그대로 걷는다", () => {
+        const { project, map } = hill();
+        expect(canMove(project, map, 2, 1, 3, 1)).toBe(true);
+        expect(canMove(project, map, 7, 1, 8, 1)).toBe(true);
+      });
+      it("경사로 칸에서 오르막 방향으로 윗단에 오르고, 윗단에서 경사로로 내려선다", () => {
+        const { project, map } = hill();
+        expect(canMove(project, map, 4, 3, 5, 3)).toBe(true);
+        expect(canMove(project, map, 5, 3, 6, 3)).toBe(true);
+        expect(canMove(project, map, 6, 3, 5, 3)).toBe(true);
+      });
+      it("경사로 옆구리로는 드나들지 않는다", () => {
+        const { project, map } = hill();
+        expect(canMove(project, map, 5, 2, 5, 3)).toBe(false);
+        expect(canMove(project, map, 5, 3, 5, 4)).toBe(false);
+      });
+      it("경사로 표기는 불러오기 정규화를 지나도 남고 렌더 사각형이 된다", () => {
+        const { map } = hill();
+        const back = normalizeRelief(JSON.parse(JSON.stringify(map.relief)), map.width, map.height)!;
+        expect(back.ramps?.[3 * map.width + 5]).toBe(rampCode("e"));
+        expect(reliefSlopes(back)).toEqual([{ x: 5, y: 3, w: 1, h: 1, dir: "e", lo: 0, hi: 2 }]);
+      });
+      it("도달성 BFS 도 경사로로만 윗단에 닿는다 — 경사로를 막으면 윗단은 닿지 않는다", () => {
+        const { project, map } = hill();
+        expect(computeReachableCells(project, map, 1, 1).has("8,1")).toBe(true);
+        map.relief!.ramps = new Array(map.width * map.height).fill(0);
+        const cut = computeReachableCells(project, map, 1, 1);
+        expect(cut.has("8,1")).toBe(false);
+        expect(cut.has("5,1")).toBe(true);
+      });
+      it("relief 가 없는 맵은 예전과 같다", () => {
+        const { project, map } = hill();
+        delete map.relief;
+        expect(canMove(project, map, 5, 1, 6, 1)).toBe(true);
+      });
     });
   });
 });
 
-// test/reliefWalk.test.ts
-// 높이 지형(map.relief) 걷기 규칙 — canMove 가 단 차를 막고 경사로 축으로만 오르내리게 한다.
-describe("reliefWalk", () => {
+describe("sceneTalkStackedLint", () => {
   isolateTimers();
-  // 평지 맵 위에 x ≥ 6 이 2단 대지, (5, 3) 은 동쪽으로 오르는 경사로(낮은 끝 0단).
-  function hill(): { project: Project; map: GameMap } {
-    const project = createBlankProject();
-    const map = project.maps[project.startMapId]!;
-    const levels = new Array(map.width * map.height).fill(0).map((_, i) => ((i % map.width) >= 6 ? 2 : 0));
-    const ramps = new Array(map.width * map.height).fill(0);
-    ramps[3 * map.width + 5] = rampCode("e");
-    map.relief = { width: map.width, height: map.height, levels, ramps };
-    return { project, map };
+  // 첫사랑 r7 재회: 지후가 서하 두 칸 «아래»(같은 열)에 서서 배율 2 장면이 지후 뒤통수만 찍었다 — 같은 열 세로 1~2칸을 경고한다.
+  function page(commands: Command[], extra: Partial<EventPage> = {}): EventPage {
+    return {
+      id: `p${Math.random().toString(36).slice(2, 7)}`, name: "", conditions: [], graphic: { sprite: { type: "bundled", id: "Actor1" } },
+      trigger: { kind: "action" }, priority: "same", movement: { type: "fixed", speed: 3, frequency: 3 }, commands, ...extra,
+    } as unknown as EventPage;
   }
-  describe("relief walk rule", () => {
-    it("단이 다른 이웃으로는 못 간다", () => {
-      const { project, map } = hill();
-      expect(canMove(project, map, 5, 1, 6, 1)).toBe(false);
-      expect(canMove(project, map, 6, 1, 5, 1)).toBe(false);
+  const ev = (id: string, x: number, y: number, pages: EventPage[], name = id): GameEvent => ({ id, name, x, y, pages } as unknown as GameEvent);
+  const text = (speaker: string, body: string): Command => ({ kind: "text", speaker, body, position: "bottom" } as unknown as Command);
+  /** 서하(ev_a)가 지후(ev_b)에게 말한다 — 두 사람의 칸만 바꿔 경고가 나는지 본다. */
+  function stackedCodes(a: { x: number; y: number }, b: { x: number; y: number }): string[] {
+    const project: Project = createBlankProject();
+    const map = Object.values(project.maps)[0]!;
+    map.events = [
+      ev("ev_a", a.x, a.y, [page([{ kind: "text", speaker: "서하", body: "안녕하세요.", position: "bottom", addressee: "ev_b" } as unknown as Command, text("지후", "…네.")])], "서하"),
+      ev("ev_b", b.x, b.y, [page([])], "지후"),
+    ];
+    return lintSceneStaging(project).filter((i) => i.code === "scene-talk-stacked").map((i) => i.code);
+  }
+  describe("scene-talk-stacked — 위·아래 한 열로 서서 말하면 경고", () => {
+    it("바로 아래 칸(세로 1)과 두 칸 아래(세로 2)는 경고", () => {
+      expect(stackedCodes({ x: 5, y: 4 }, { x: 5, y: 5 })).toEqual(["scene-talk-stacked"]);
+      expect(stackedCodes({ x: 5, y: 4 }, { x: 5, y: 6 })).toEqual(["scene-talk-stacked"]);
     });
-    it("같은 단 안에서는 그대로 걷는다", () => {
-      const { project, map } = hill();
-      expect(canMove(project, map, 2, 1, 3, 1)).toBe(true);
-      expect(canMove(project, map, 7, 1, 8, 1)).toBe(true);
-    });
-    it("경사로 칸에서 오르막 방향으로 윗단에 오르고, 윗단에서 경사로로 내려선다", () => {
-      const { project, map } = hill();
-      expect(canMove(project, map, 4, 3, 5, 3)).toBe(true);
-      expect(canMove(project, map, 5, 3, 6, 3)).toBe(true);
-      expect(canMove(project, map, 6, 3, 5, 3)).toBe(true);
-    });
-    it("경사로 옆구리로는 드나들지 않는다", () => {
-      const { project, map } = hill();
-      expect(canMove(project, map, 5, 2, 5, 3)).toBe(false);
-      expect(canMove(project, map, 5, 3, 5, 4)).toBe(false);
-    });
-    it("경사로 표기는 불러오기 정규화를 지나도 남고 렌더 사각형이 된다", () => {
-      const { map } = hill();
-      const back = normalizeRelief(JSON.parse(JSON.stringify(map.relief)), map.width, map.height)!;
-      expect(back.ramps?.[3 * map.width + 5]).toBe(rampCode("e"));
-      expect(reliefSlopes(back)).toEqual([{ x: 5, y: 3, w: 1, h: 1, dir: "e", lo: 0, hi: 2 }]);
-    });
-    it("도달성 BFS 도 경사로로만 윗단에 닿는다 — 경사로를 막으면 윗단은 닿지 않는다", () => {
-      const { project, map } = hill();
-      expect(computeReachableCells(project, map, 1, 1).has("8,1")).toBe(true);
-      map.relief!.ramps = new Array(map.width * map.height).fill(0);
-      const cut = computeReachableCells(project, map, 1, 1);
-      expect(cut.has("8,1")).toBe(false);
-      expect(cut.has("5,1")).toBe(true);
-    });
-    it("relief 가 없는 맵은 예전과 같다", () => {
-      const { project, map } = hill();
-      delete map.relief;
-      expect(canMove(project, map, 5, 1, 6, 1)).toBe(true);
+    it("같은 줄 한 칸 띄운 옆(16,4)/(18,4)과 비스듬한 (16,4)/(17,6)은 경고 없음", () => {
+      expect(stackedCodes({ x: 5, y: 4 }, { x: 7, y: 4 })).toEqual([]);
+      expect(stackedCodes({ x: 5, y: 4 }, { x: 6, y: 6 })).toEqual([]);
     });
   });
 });
