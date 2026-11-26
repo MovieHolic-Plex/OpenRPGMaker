@@ -31,7 +31,9 @@ async function enablePreview(page: Page) {
     }
   });
   await page.goto("/start-screen.html?lang=ko", { waitUntil: "commit" });
-  await page.getByTestId("first-run-locale").click({ timeout: 120_000 });
+  // 언어는 ⋯ 안에 있다(버튼 줄이기 2회차).
+  await page.getByTestId("first-run-more").click({ timeout: 120_000 });
+  await page.getByTestId("first-run-locale").click();
   const settings = page.getByTestId("start-settings");
   await expect(settings).toBeVisible({ timeout: 90_000 });
   const toggle = settings.getByRole("checkbox", { name: settingLabel });

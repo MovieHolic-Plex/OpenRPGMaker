@@ -58,6 +58,8 @@
   background: transparent; color: var(--text-1); font: inherit; font-size: var(--font-13); text-align: left; cursor: pointer;
 }
 .fr-more-item:hover { background: var(--bg-hover); }
+.fr-more-group { display: contents; }
+.fr-more-item.fr-locale { gap: var(--space-2); }
 
 .fr-main {
   display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 720px;
@@ -120,13 +122,11 @@
 .fr-chip:hover:not(:disabled) { background: var(--bg-hover); color: var(--text-1); }
 .fr-chip:disabled { cursor: default; }
 
-.fr-links { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: var(--space-1) var(--space-2); margin-top: var(--space-6); }
 .fr-link {
   min-height: var(--hit-min-dense); padding: 0 var(--space-1); border: 0; border-radius: var(--radius-1);
   background: transparent; color: var(--text-3); font: inherit; font-size: var(--font-13); cursor: pointer;
 }
 .fr-link:hover { color: var(--text-1); text-decoration: underline; text-underline-offset: 3px; }
-.fr-dot { color: var(--text-disabled); }
 
 /* 「내 게임」 줄 — 최근 3개 + 빈 프로젝트(설계 studio-runtime-split 시안). 게임이 있으면 위 여백을 줄여 한 화면에 들어오게 한다. */
 .fr-root.has-games .fr-main { padding-top: clamp(var(--space-6), 8vh, 96px); }
@@ -156,6 +156,12 @@
 /* 세 행이 전부다 — 「모두 보기」 링크는 DOM 에만 남긴다. */
 .fr-builtin > .fr-builtin-head > .fr-link, .fr-games .fr-link[hidden] { display: none; }
 .fr-builtin-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+/* 예제 세 행은 접힌 한 줄 「예제 열어 보기 ▾」 안에 있다(버튼 줄이기 2회차). */
+details.fr-builtin > summary { margin-bottom: 0; padding: var(--space-2) 0; cursor: pointer; list-style: none; }
+details.fr-builtin > summary::-webkit-details-marker { display: none; }
+details.fr-builtin > summary::after { content: "▾"; color: var(--text-3); }
+details.fr-builtin[open] > summary::after { content: "▴"; }
+details.fr-builtin > .fr-builtin-row { margin-top: var(--space-2); }
 .fr-bcard {
   display: flex; align-items: center; gap: 10px; min-width: 0; padding: 8px; border: 0; border-radius: var(--radius-3);
   background: var(--bg-surface); color: var(--text-1); font: inherit; text-align: left; cursor: pointer;
@@ -187,7 +193,8 @@
   .fr-games-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   .fr-root.has-games .fr-chip:nth-child(n+3) { display: none; }
   .fr-ai[data-tone="ok"] span:last-child { display: none; }
-  .fr-locale span:last-child { display: none; }
+  /* 좁은 화면의 AI 상태는 ⋯ 「설정」 이 맡는다 — 첫 화면 조작은 입력·예시·예제·⋯ 만. */
+  .fr-ai { display: none; }
 }
 
 /* 데스크톱 창 단추(shell/window-controls.css): 단추 밑으로 들어가지 않게 양 끝을 비우고, 빈 곳은 창 끌기 영역으로 쓴다. */
