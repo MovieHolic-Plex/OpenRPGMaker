@@ -76,7 +76,7 @@ test("capture help guide images", async ({ page }) => {
   await settle(page, 400);
 
   // 5) 소재 관리자
-  await page.getByTestId("toolbar-resource-manager").click();
+  await page.getByTestId("menu-project").click(); await page.getByTestId("menu-more-resources").click();
   await expect(page.getByTestId("resource-modal")).toBeVisible();
   await settle(page, 800);
   await page.screenshot({ path: "public/assets/help/resource.png" });

@@ -33,7 +33,7 @@ test("editor shell keeps RM2K3 workbench controls visible and mode switches clea
   await expect(page.getByTestId("db-tab-enemies")).toBeVisible();
   await page.getByTestId("database-modal-close").click();
   await expect(page.getByTestId("database-modal")).toHaveCount(0);
-  await page.getByTestId("toolbar-resource-manager").click();
+  await page.getByTestId("menu-project").click(); await page.getByTestId("menu-more-resources").click();
   await expect(page.getByTestId("resource-modal")).toBeVisible();
   await expect(page.getByTestId("resource-kind-select")).toBeVisible();
   await page.screenshot({ path: testInfo.outputPath("editor-desktop.png"), fullPage: true });

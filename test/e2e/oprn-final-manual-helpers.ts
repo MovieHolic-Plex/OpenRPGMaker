@@ -214,7 +214,7 @@ export async function openEveryDatabaseTab(page: Page): Promise<void> {
 }
 
 export async function importResource(page: Page): Promise<void> {
-  await page.getByTestId("toolbar-resource-manager").click();
+  await page.getByTestId("menu-project").click(); await page.getByTestId("menu-more-resources").click();
   await page.getByTestId("resource-kind-select").selectOption("chipset");
   await page.getByTestId("resource-file-input").setInputFiles("test/fixtures/resources/chipset-valid-480x256.png");
   await expect(page.getByTestId("resource-profile-chipset").last()).toContainText("480x256");

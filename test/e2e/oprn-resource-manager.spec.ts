@@ -5,7 +5,7 @@ test("resource manager uses Korean classic three-pane RM2K3 layout", async ({ pa
   // 자동화 기본 부팅은 standard 이므로 명시적으로 켠다 (editorUiMode.ts DEFAULT/isLikelyAutomationBoot).
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1&resourceManagerClassicLayout=1");
-  await page.getByTestId("toolbar-resource-manager").click();
+  await page.getByTestId("menu-project").click(); await page.getByTestId("menu-more-resources").click();
   await expect(page.getByTestId("resource-modal")).toBeVisible();
 
   // The resource surface can be the first modal opened; it must provide its
@@ -32,7 +32,7 @@ test("resource manager uses Korean classic three-pane RM2K3 layout", async ({ pa
 test("resource URL importer keeps its own centered modal shell", async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1");
-  await page.getByTestId("toolbar-resource-manager").click();
+  await page.getByTestId("menu-project").click(); await page.getByTestId("menu-more-resources").click();
   await expect(page.getByTestId("resource-modal")).toBeVisible();
 
   await page.locator(".rm-url-btn").click();
@@ -50,7 +50,7 @@ test("resource manager faceset category hides the generated hero face series", a
   // 얼굴 그래픽 카테고리에는 EasyRPG 낱장 80장만 보여야 한다.
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1&resourceManagerFaceset=1");
-  await page.getByTestId("toolbar-resource-manager").click();
+  await page.getByTestId("menu-project").click(); await page.getByTestId("menu-more-resources").click();
   await expect(page.getByTestId("resource-modal")).toBeVisible();
 
   await page.getByTestId("resource-category-list").getByRole("option", { name: "얼굴 그래픽" }).click();
@@ -70,7 +70,7 @@ test("resource manager faceset category hides the generated hero face series", a
 test("resource manager imports and protects RM2K3-shaped image profiles", async ({ page }, testInfo) => {
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1&resourceManagerWave=1");
-  await page.getByTestId("toolbar-resource-manager").click();
+  await page.getByTestId("menu-project").click(); await page.getByTestId("menu-more-resources").click();
   await expect(page.getByTestId("resource-modal")).toBeVisible();
   await expect(page.getByText("사용 중인 리소스는 삭제할 수 없습니다.")).toBeVisible();
 
@@ -106,7 +106,7 @@ test("resource manager imports and protects RM2K3-shaped image profiles", async 
 test("resource manager reports invalid image imports in Korean", async ({ page }, testInfo) => {
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1&resourceManagerErrors=1");
-  await page.getByTestId("toolbar-resource-manager").click();
+  await page.getByTestId("menu-project").click(); await page.getByTestId("menu-more-resources").click();
   await expect(page.getByTestId("resource-modal")).toBeVisible();
   await page.getByTestId("resource-kind-select").selectOption("chipset");
   await page.getByTestId("resource-file-input").evaluate((node) => {

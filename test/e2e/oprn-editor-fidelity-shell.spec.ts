@@ -19,7 +19,8 @@ test("editor exposes RM2003-style chrome and bitmap chipset palette", async ({ p
   await expect(page.getByTestId("oprn-menu-bar")).toBeVisible();
   await expect(page.getByTestId("menu-project")).toBeVisible();
   await expect(page.getByTestId("menu-project")).toHaveAttribute("title", /^프로젝트 메뉴 — /);
-  await expect(page.getByTestId("menu-more-tools")).toHaveCount(0);
+  // 버튼 줄이기 2회차: ⋯ 의 항목은 프로젝트 메뉴가 함께 든다 — ⋯ 단추는 숨긴 채 DOM 에만 남는다.
+  await expect(page.getByTestId("menu-more-tools")).toBeHidden();
   await openHelpShortcuts(page);
   await expect(page.getByTestId("help-modal")).toBeVisible();
   await page.keyboard.press("Escape");

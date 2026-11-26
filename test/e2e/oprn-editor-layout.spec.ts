@@ -201,7 +201,7 @@ test("editor shell contains Basic and Expert regions at every supported viewport
   await page.getByTestId("toolbar-database").click();
   await expectCenterClickable(page, "[data-testid='db-tab-enemies']");
   await page.getByTestId("database-modal-close").click();
-  await page.getByTestId("toolbar-resource-manager").click();
+  await page.getByTestId("menu-project").click(); await page.getByTestId("menu-more-resources").click();
   await expectCenterClickable(page, "[data-testid='resource-kind-select']");
   await page.getByTestId("resource-modal-close").click();
   await expectCenterClickable(page, "[data-testid='edit-canvas'] canvas");

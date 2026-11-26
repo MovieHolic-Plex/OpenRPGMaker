@@ -15,13 +15,13 @@ test("edit mode restores existing chrome, removes the bottom bar, and exposes sc
     "menu-project",
     "toolbar-save",
     "toolbar-database",
-    "toolbar-resource-manager",
     "topbar-assistant",
     "topbar-test-play",
   ]) {
     await expect(page.getByTestId(testId)).toBeVisible();
   }
-  await expect(page.getByTestId("menu-more-tools")).toHaveCount(0);
+  // 버튼 줄이기 2회차: 소재·⋯ 는 프로젝트 메뉴 안으로 옮겼다(DOM 에는 숨긴 채 남는다).
+  for (const moved of ["toolbar-resource-manager", "menu-more-tools"]) await expect(page.getByTestId(moved)).toBeHidden();
   for (const moved of ["toolbar-world", "workspace-panels-button", "workspace-command-palette-button", "topbar-battle-test"]) {
     await expect(page.getByTestId(moved)).toHaveCount(0);
   }

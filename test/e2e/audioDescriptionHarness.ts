@@ -4,7 +4,7 @@ import { expect, type Page } from "@playwright/test";
 export async function prepareAudioEditor(page: Page): Promise<void> {
   await page.addInitScript(() => localStorage.setItem("oprn:editor-ui-mode", "expert"));
   await page.goto("/?freshProject=1", { waitUntil: "domcontentloaded" });
-  await expect(page.getByTestId("toolbar-resource-manager")).toBeVisible({ timeout: 60000 });
+  await expect(page.getByTestId("menu-project")).toBeVisible({ timeout: 60000 });
   await page.evaluate(async () => {
     const storePath = "/src/project/store.ts";
     const defaultsPath = "/src/project/defaults.ts";

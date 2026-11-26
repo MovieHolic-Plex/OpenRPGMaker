@@ -5,7 +5,7 @@ import { prepareAudioEditor } from "./audioDescriptionHarness";
 test.describe.configure({ retries: 0 });
 
 async function openMusic(page: Page): Promise<void> {
-  await page.getByTestId("toolbar-resource-manager").click();
+  await page.getByTestId("menu-project").click(); await page.getByTestId("menu-more-resources").click();
   await page.getByTestId("resource-category-list").getByRole("option", { name: "음악 (BGM)", exact: true }).click();
 }
 
@@ -61,7 +61,7 @@ for (const viewport of [{ width: 1024, height: 768 }, { width: 1440, height: 900
 
     test("edits SE descriptions with matching search and AI detail", async ({ page }, info) => {
       const openSound = async (): Promise<void> => {
-        await page.getByTestId("toolbar-resource-manager").click();
+        await page.getByTestId("menu-project").click(); await page.getByTestId("menu-more-resources").click();
         await page.getByTestId("resource-category-list")
           .getByRole("option", { name: "효과음 (SE)", exact: true }).click();
       };
