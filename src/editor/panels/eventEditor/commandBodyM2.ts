@@ -454,12 +454,13 @@ function controlForField(request: FieldControlRequest): HTMLElement {
   const semantic = fieldSemantic(request);
   if (semantic?.kind === "record") {
     // 스위치/변수 레코드는 이벤트 에디터 전체 계약에 맞춰 모달 트리거 픽커로 통일한다.
-    if (request.spec.key === "switchId" || request.spec.key === "variableId") {
+    const flagKind = switchVariableKeyKind(request.spec.key);
+    if (flagKind) {
       return m2SwitchVariableControl({
         context: request.context,
         cmd: request.cmd,
         key: request.spec.key,
-        kind: request.spec.key === "switchId" ? "switch" : "variable",
+        kind: flagKind,
         value: String(request.value),
       });
     }
@@ -912,6 +913,13 @@ function fieldSemantic(request: FieldControlRequest): FieldSemantic | undefined 
   if (spec.key === "animationId") return recordSemantic("전투 애니메이션 선택", "전투 애니메이션 선택", namedRecords(project.database.battleAnimations));
   if (spec.key === "variableId") return recordSemantic("변수 선택", "변수 선택", switchVariableRecords(project, "variable"));
   if (spec.key === "mapId") return recordSemantic("맵 선택", "맵 선택", namedRecords(Object.values(project.maps)));
+  // 범용 폼이 id 를 글자로 치게 하던 칸(명령 검토 a: 일지, b PR1). 키 이름의 끝으로 기존 고르기를 붙인다.
+  // 퀴스트 목표의 questId 는 프로젝트 퀴스트가 아니라 자유 이름표(m2ModernRuntime recordQuestObjective)라 글자 칸으로 둔다.
+  const flagKind = switchVariableKeyKind(spec.key);
+  if (flagKind === "switch") return recordSemantic("스위치 선택", "스위치 선택", switchVariableRecords(project, "switch"));
+  if (flagKind === "variable") return recordSemantic("변수 선택", "변수 선택", switchVariableRecords(project, "variable"));
+  if (spec.key.endsWith("ActorId")) return recordSemantic("주인공 선택", "주인공 선택", namedRecords(project.database.actors));
+  if (spec.key.endsWith("SkillId")) return recordSemantic("스킬 선택", "스킬 선택", namedRecords(project.database.skills));
   if (spec.key === "target") {
     const semantic = targetSemantic(title, project);
     if (semantic) return semantic;
@@ -960,6 +968,13 @@ function resourceSemantic(title: string): ResourceFieldSemantic {
 
 function recordSemantic(label: string, emptyText: string, items: readonly RecordPickerItem[]): RecordFieldSemantic {
   return { kind: "record", label, emptyText, items };
+}
+
+/** 「…SwitchId」「…VariableId」 키는 스위치·변수 고르기를 쓴다(예: resultSwitchId, mapVariableId). */
+function switchVariableKeyKind(key: string): "switch" | "variable" | undefined {
+  if (key === "switchId" || key.endsWith("SwitchId")) return "switch";
+  if (key === "variableId" || key.endsWith("VariableId")) return "variable";
+  return undefined;
 }
 
 function namedRecords(records: readonly { readonly id: string; readonly name?: string }[]): readonly RecordPickerItem[] {
