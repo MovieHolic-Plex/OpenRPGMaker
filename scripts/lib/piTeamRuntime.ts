@@ -32,6 +32,7 @@ import { applyDraftCast } from "../../src/ai/v2/story/draftCast.ts";
 import { checkTeamMvp, FIRST_MVP_BUILDER_TOOLS, FIRST_MVP_MEMBER_TURNS, FIRST_MVP_PREBUILT_TOOLS, mvpBuilderProblems } from "../../src/ai/piAgent/teamMvp.ts";
 import { isWorldSkeletonMap, prebuildMvpWorld, type PrebuildNodeHint } from "../../src/ai/piAgent/teamMvpPrebuild.ts";
 import { MVP_PLACES } from "../../src/ai/v2/judge/blueprintScale.ts";
+import { MVP_DONE_LINE, mvpNextSteps, nextStepsBlock, splitNextSteps } from "../../src/ai/nextSteps.ts";
 import { repairWorldTransfers } from "../../src/project/world/transferRepair.ts";
 import { PRESET_FIRST_BUILD_MEMBER_TURNS } from "../../src/ai/piAgent/team.ts";
 import { FIRST_PLAY_TOOLS, firstPlayEvents, firstPlaySignature, inspectFirstPlay, type FirstPlayReceipt } from '../../src/ai/piAgent/firstPlay.ts';
@@ -1009,7 +1010,19 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         emit({ type: "agent_event", agentId: "orchestrator-1", event: { type: "assistant", text: note.slice(0, 600) } });
         const first = (result as { content?: { text?: string }[] })?.content?.[0]?.text ?? "";
         return text({ buildWorld: first.slice(0, 1500), prebuilt: pre.built, skipped: pre.skipped,
-          next: "지은 장소 맵 담당에게는 다시 짓지 말고 사람·이벤트·(목표 장소면) 끝 지점만 맡긴다. 장소마다 assign_map_agent 를 한 턴에 모두 띄운다." });
+          next: "지은 장소 맵 담당에게는 다시 짓지 말고 사람·이벤트·(목표 장소면) 끝 지점만 맡긴다. 장소마다 assign_map_agent 를 한 턴에 모두 띄운다. wait_agents 로 모두 끝난 뒤 finish 직전에 set_title_screen({title}) 으로 이 게임의 제목을 짓는다." });
+      },
+    });
+    // 제목은 팀장이 직접 짓는다 — 프로젝트 작업은 첫 MVP 에서 거절되고 맵 담당은 맵 범위라, t3(2026-11-26) 에서 제목이 «새 프로젝트» 로 남아
+    // JRPG 마무리 관문이 두 번 거절했고 팀장은 도구를 찾다 2분을 썼다.
+    orchestratorTools.push({
+      ...resolvePiToolShape({ project: working }, "set_title_screen")!,
+      async execute(id, params) {
+        if (runningAssignments(ledger).length) throw new Error("맵 담당이 아직 짓고 있다 — wait_agents 뒤에 제목을 짓는다.");
+        const ctx = { project: working };
+        const result = await resolvePiToolShape(ctx, "set_title_screen")!.execute(id, params);
+        if (ctx.project !== working) working = ctx.project;
+        return result;
       },
     });
   }
@@ -1402,6 +1415,12 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
     const outcome = await inflight.find(entry => entry.agentId === finalReview.agentId)!.promise;
     if (!outcome.ok) throw new Error(`완료 후 검토를 끝내지 못했습니다: ${outcome.summary}`);
     finished = `${finished ?? summaryOf(orchDone)}\n완료 후 검토: ${outcome.summary}`;
+    emit({ type: "team_report", text: finished });
+  }
+  // 첫 MVP 팀도 v2 단일(finishTurn.ts)처럼 답 끝에 «첫 판까지» 안내와 «다음에 해 볼 것» 칩을 붙인다 — 없으면 팀장 보고가 «더 할까요?» 로 끝나
+  // 사용자가 이어 할 말을 못 찾고, 작은 일 다섯째 묶음 판정도 «안내 없음» 으로 떨어졌다(2026-11-26 team-mvp-revive-r3 t3: 맵 3장·끝 지점 도달·첫 턴 4분).
+  if (firstMvpTeam && finishAccepted && finished && !splitNextSteps(finished).steps.length) {
+    finished = `${finished}\n\n${MVP_DONE_LINE}\n\n${nextStepsBlock(mvpNextSteps(working))}`;
     emit({ type: "team_report", text: finished });
   }
   // The coordinator's snapshot is not a new per-map repair receipt. Preserve child failures.
