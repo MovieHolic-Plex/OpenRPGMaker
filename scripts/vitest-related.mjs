@@ -46,8 +46,11 @@ import { distances, loadRepoGraph } from "./lib/testImportGraph.mjs";
 //   chunks: 한 PR 의 관련 시험을 몇 개의 잡(조각)으로 나눌 수 있나. 조각마다 같은 상한이 걸린다.
 //   넓은 변경(wide): 그래프로 닿는 시험이 wideTests(1000 — 2026-11-26 최근 머지 60건 재현: 넓은 모드 18%·PR 당 러너 시험 0.58h, 800 이면 38%·1.88h, 400 이면 45%·2.24h)를 넘거나 바뀐 파일이 wideFiles 를 넘으면 상한 없이 닿는 시험 전부를 wideChunks 개 조각으로 돌린다.
 export const DEFAULTS = Object.freeze({
-  budgetSeconds: 380, workers: 3, factor: 1, perFileSeconds: 20, startupSeconds: 90, defaultSeconds: 6.4,
-  chunks: 4, wideTests: 1000, wideFiles: 80, wideChunks: 12,
+  // 2026-11-26 재보정(최근 related-tests 조각 153개, 끝난 41개): 호스티드 4코어/11GiB 에서 run-vitest.mjs 가 메모리로 워커를 1개로 낮추고,
+  // vitest 시작·환경 준비가 조각당 약 250초다. 이 모델(시작 250 + Σ(20 + 기록 초))로 실제/예상 p95 1.31·최대 1.41 → 예상 480초 조각은 실제 약 630초,
+  // 시간 상자 720초 안이다. 옛 모델(워커 3·시작 90)은 실제를 2~3배 낮게 봐 조각 104/153 이 450초 상자에 끊겼다.
+  budgetSeconds: 480, workers: 1, factor: 1, perFileSeconds: 20, startupSeconds: 250, defaultSeconds: 6.4,
+  chunks: 8, wideTests: 1000, wideFiles: 80, wideChunks: 12,
 });
 
 const TIERS = ["changed-test", "direct-import", "string-literal", "import-graph"];
