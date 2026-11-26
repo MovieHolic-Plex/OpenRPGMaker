@@ -133,6 +133,24 @@ function reachFrom(project: Project, map: GameMap, blocked: ReadonlySet<string>,
 }
 const pt = (key: string) => { const [x, y] = key.split(",").map(Number); return { x: x!, y: y! }; };
 
+/** 한 칸 막으면 시작에서 닿는 칸이 줄어드는 좁은 목(양옆 또는 위아래가 막힌 통로 칸) — cut = 그 칸을 막으면 끊기는 칸 수(4칸 이상만). */
+function chokepoints(project: Project, map: GameMap, blocked: ReadonlySet<string>): { x: number; y: number; cut: number }[] {
+  const base = reachFrom(project, map, blocked);
+  if (!base) return [];
+  const pass = (x: number, y: number) => x >= 0 && y >= 0 && x < map.width && y < map.height && isPassable(project, map, x, y);
+  const out: { x: number; y: number; cut: number }[] = [];
+  for (const key of base.keys()) {
+    const c = pt(key);
+    const ns = pass(c.x, c.y - 1) && pass(c.x, c.y + 1) && !pass(c.x - 1, c.y) && !pass(c.x + 1, c.y);
+    const ew = pass(c.x - 1, c.y) && pass(c.x + 1, c.y) && !pass(c.x, c.y - 1) && !pass(c.x, c.y + 1);
+    if (!ns && !ew) continue;
+    const without = reachFrom(project, map, new Set([...blocked, key]));
+    const cut = without ? base.size - without.size - 1 : 0;
+    if (cut >= 4) out.push({ ...c, cut });
+  }
+  return out;
+}
+
 /**
  * 잠긴 문(eventId) 너머가 문을 거치지 않고 닿으면 그 틈을 막는다. 틈 = 돌아가는 길 위에서 양옆이 막힌 한 칸(벽 틈·좁은 복도).
  * 그 칸에 옆 벽 칸의 타일을 그대로 옮겨 벽으로 만든다(옆에 벽이 없으면 보이지 않는 막이 이벤트). 최대 6군데.
@@ -205,7 +223,15 @@ export function sealLockedRoom(run: BuildRun, mapId: string, eventId: string): C
         });
       }
     }
-    if (!gaps.length) { warnings.push("문 너머로 돌아가는 길에서 막아도 방이 문에서 끊기지 않는 틈·벽 줄을 못 찾았다(넓게 트였다) — 방 벽을 다시 짓거나 문 자리를 옮긴다"); break; }
+    if (!gaps.length) {
+      // 문이 트인 바닥 한가운데 섰다 — 막을 자리가 없다. 막연히 «옮겨라» 대신 옮길 칸을 댄다: 그 칸 하나를 막으면 맵이 둘로 갈리는 좁은 목(양옆이 벽인 통로 칸) 중 문에서 가까운 것.
+      // (2026-11-26 variant-remeasure 호러: 32×20 미술관에 선 잠긴 문 둘이 이 거절만 받고, 모델은 수장고 맵을 빼 버렸다.)
+      const necks = chokepoints(project, map, blocked).sort((p, q) => Math.abs(p.x - door.x) + Math.abs(p.y - door.y) - (Math.abs(q.x - door.x) + Math.abs(q.y - door.y))).slice(0, 3);
+      warnings.push(necks.length
+        ? `문 ${eventId}(${door.x},${door.y})는 트인 바닥에 서서 막을 틈이 없다 — 문을 좁은 목으로 옮긴다(move_event): ${necks.map((n) => `(${n.x},${n.y}) 너머 ${n.cut}칸`).join(" · ")}. 옮긴 뒤 이 도구를 다시 부른다. 아니면 잠긴 방을 따로 맵으로 짓고 create_transfer_pair 출입구를 잠근다`
+        : `문 ${eventId}(${door.x},${door.y})는 트인 바닥에 서서 막을 틈이 없고, 이 맵에는 한 칸 좁은 목도 없다 — 잠긴 방을 따로 맵으로 짓고(make_place) create_transfer_pair 출입구를 잠근다`);
+      break;
+    }
     for (const gap of gaps) {
       const donor = gap.donor ?? gaps.find((g) => g.donor)?.donor;
       if (donor) {
