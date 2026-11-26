@@ -8,6 +8,9 @@ export function friendlyExecutionError(message: string): string {
   if (/이미 실행 중입니다|map-busy/u.test(message)) return "이 맵에서 앞선 조수 작업이 아직 끝나지 않았어요. 그 작업이 끝나거나 멈춘 뒤(최대 몇 분) 다시 보내 주세요.";
   // 편집기가 단계 적용 결과를 작업기에 돌려주지 못했다(부하로 연결이 잠깐 끊김) — 일반 문장 대신 무슨 일인지 말한다(G43).
   if (/(적용|맵 이미지) 응답을 전달하지 못했습니다/u.test(message)) return "작업 도중 편집기와 AI 작업기 사이 연결이 끊겨 멈췄어요.";
+  // 데스크톱 워커가 실행 파일 옆 worker-data 를 못 찾고 끝났다(scripts/lib/workerData.ts, 코드 78). 「다시 보내면 처음부터」는 틀린 안내다.
+  // 몇 번을 다시 보내도 같다. 설치를 고쳐야 한다(2026-11-26 worker-slim 데스크톱 QA 에서 이 문장이 일반 «갑자기 멈췄어요» 에 묻혔다).
+  if (/조수 워커 자료를 읽지 못했습니다/u.test(message)) return WORKER_DATA_MISSING;
   // 작업기(bun)가 죽으면 스트림이 「terminated」로 끝난다(2026-10-25 G45 실제 강제 종료 시험) — 맵 예약은 풀린다.
   if (/^terminated$|worker (exited|crashed)|작업기가 (종료|멈)/iu.test(message.trim())) return "AI 작업기가 갑자기 멈췄어요. 같은 요청을 다시 보내면 처음부터 다시 해요.";
   if (/^Request was aborted\.?$|첫 응답이 늦어/i.test(message)) return "AI 모델의 첫 응답이 너무 늦어 요청이 끊겼어요. 같은 요청을 다시 보내면 이어서 해요.";
@@ -25,6 +28,7 @@ export function friendlyExecutionError(message: string): string {
   if (/결과를 돌려주지 않았/u.test(message)) return "AI가 아무 결과도 돌려주지 않고 끝났어요. 같은 지시를 다시 보내 보고, 또 그러면 설정에서 AI 연결을 확인하거나 다른 모델로 바꿔 주세요.";
   return GENERIC_EXECUTION_ERROR;
 }
+export const WORKER_DATA_MISSING = "AI 작업기에 필요한 자료 파일이 없어 시작하지 못했어요. 앱 설치가 깨졌을 수 있어요. 앱을 다시 설치하거나 업데이트해 주세요.";
 /** 원인을 모를 때도 다음 할 일은 말한다(vm-qa15 #59: 「작업 과정에서 확인」만 있으면 무엇을 할지 몰랐다). */
 export const GENERIC_EXECUTION_ERROR = "작업을 끝내지 못했어요. 같은 지시를 다시 보내 보고, 또 그러면 작업 과정에서 멈춘 단계를 확인해 주세요.";
 /**
