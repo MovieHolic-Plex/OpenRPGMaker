@@ -1,6 +1,6 @@
 import { editorState } from "@/editor/editorState";
 import { renderHostConnectionIndicator } from "@/editor/teamSession";
-import { makeLeftLayerSwitcher, paintLayerSwitcher } from "./leftLayerSwitcher";
+import { makeLeftLayerSwitcher, paintLayerSwitcher, selectSidebarLayer } from "./leftLayerSwitcher";
 import { isTextEditingElement } from "@/editor/hotkeys";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { captureFocus, restoreFocus } from "./sidebarFocus";
@@ -219,7 +219,8 @@ function rebuildTopbar(topbar: HTMLElement): void {
   // 왼쪽 — 상품 점과 경로 「프로젝트 ▾ / 지금 맵」.
   const lead = el("div", { class: "studio-bar-lead", dataset: { testid: "studio-bar-lead" } });
   const projectLabel = projectMenuLabel();
-  const projectButton = renderMenu("project", projectLabel, menuCommands("project", topbar), { className: "studio-project-button", title: `프로젝트 메뉴 — ${projectLabel}` });
+  // 프로젝트 이름 ▾ 이 톱바의 메뉴 하나다 — 소재·도움말·언어·AI 설정(예전 ⋯)도 이 안에 둔다(버튼 줄이기 2회차).
+  const projectButton = renderMenu("project", projectLabel, () => menuCommands("project", topbar), { className: "studio-project-button", chevron: true, title: `프로젝트 메뉴 — ${projectLabel}` });
   disposeProjectLabel = watchProjectMenuLabel(projectButton);
   lead.append(renderProductBrand(), projectButton, ...(mode === "edit" ? [renderMapCrumb()] : []));
   menuBar.append(lead);
@@ -253,7 +254,7 @@ function rebuildTopbar(topbar: HTMLElement): void {
   });
   trailing.append(
     toolButton({ testId: "toolbar-database", icon: "database", label: headerLabel("databaseShort"), title: headerLabel("database"), onClick: () => openDatabaseModalLazy() }),
-    toolButton({ testId: "toolbar-resource-manager", icon: "image", label: headerLabel("resources"), title: headerLabel("resourceLibrary"), onClick: () => openResourceModal() }),
+    hiddenTopbarControl(toolButton({ testId: "toolbar-resource-manager", icon: "image", label: headerLabel("resources"), title: headerLabel("resourceLibrary"), onClick: () => openResourceModal() })),
     toolButton({ testId: "topbar-assistant", icon: TOPBAR_ICONS.sparkle, label: "조수", title: "조수 열기", onClick: () => openAssistantDock() }),
     ...(mode === "edit" ? [renderHostConnectionIndicator()] : []),
     renderSaveButton(),
@@ -266,7 +267,9 @@ function rebuildTopbar(topbar: HTMLElement): void {
     trailing.append(updateChip.element);
   }
   // ⋯ 더 보기 — 도움말·언어·AI 설정의 화면 입구. ⌘K 만으로는 초보가 찾지 못한다(editor-main-ui-vqa 6번, 2026-11-23).
-  trailing.append(renderMoreMenu(topbar));
+  // 버튼 줄이기 2회차: 같은 항목을 왼쪽 프로젝트 메뉴가 함께 든다 — 메뉴 단추가 둘이면 어느 쪽에 무엇이 있는지 헷갈렸다.
+  // ⋯ 는 DOM 에만 남긴다(단축·시험이 testid 로 닿는다).
+  trailing.append(hiddenTopbarControl(renderMoreMenu(topbar)));
   menuBar.append(trailing);
 
   topbar.append(menuBar);
@@ -468,6 +471,13 @@ export const RETIRED_TOPBAR_CONTROLS = {
   audioButton: (): HTMLElement => toolButton({ testId: "toolbar-sound-test", icon: "music", title: headerLabel("audio"), keys: "Control+Alt+M", onClick: () => openAudioTestDialog() }),
   searchButton: (): HTMLElement => toolButton({ testId: "toolbar-search", icon: "docSearch", title: headerLabel("mapEventSearch"), keys: "Control+Shift+F", onClick: () => openMapEventSearchModal() }),
 } as const;
+
+/** 톱바에서 떼어 프로젝트 메뉴로 옮긴 단추 — DOM 과 testid 는 남기고 보이지만 않는다(버튼 줄이기 2회차). */
+function hiddenTopbarControl(node: HTMLElement): HTMLElement {
+  node.hidden = true;
+  node.setAttribute("aria-hidden", "true");
+  return node;
+}
 
 function renderMoreMenu(topbar: HTMLElement): HTMLElement {
   return renderMenu("more-tools", "도움말 · 설정", () => menuCommands("more-tools", topbar), { icon: "more", className: "studio-icon-button studio-more-button" });
@@ -1022,6 +1032,14 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
         { ...item("저장", "menu-project-save", () => void saveProjectNow()), shortcut: "Ctrl+S", keys: "Control+S" },
         item("저장본 다시 불러오기…", "menu-project-reload-db", () => void reloadProjectFromDb(topbar)),
         { kind: "separator" },
+        // 톱바에서 내린 창 입구(버튼 줄이기 2회차). 자료집은 톱바에도 있지만 좁은 폭(넘침 맞춤 4단계)에서는 톱바 단추를 걷는다.
+        item(headerLabel("database"), "menu-more-database", () => openDatabaseModalLazy(), "database"),
+        item(headerLabel("resourceLibrary"), "menu-more-resources", () => openResourceModal(), "image"),
+        // 좁은 폭(넘침 맞춤 4단계)에서는 톱바의 「상위」 칸을 걷는다 — Shift+2·⌘K 와 이 항목이 같은 일을 한다.
+        ...(topbar.querySelector<HTMLElement>(".studio-bar")?.dataset.fitLevel === "4"
+          ? [item("상위 레이어 (Shift+2)", "menu-more-layer-upper", () => selectSidebarLayer("upper"))]
+          : []),
+        { kind: "separator" },
         // 데모 로더 9개가 이 메뉴 최상위에 나란히 붙어 14줄을 만들고 있었다 — 하위 메뉴로 접는다.
         {
           kind: "submenu",
@@ -1047,6 +1065,9 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
             item("Windows Steam Depot…", "menu-project-export-standalone", () => void doExportDesktopSteamGame({ platform: "win64-steam" })),
           ],
         },
+        // 예전 ⋯ 「도움말 · 설정」 의 항목 — 톱바 메뉴는 이제 이 하나다.
+        { kind: "separator" },
+        ...menuCommands("more-tools", topbar),
       ];
     case "more-tools": {
       // ⋯ 더 보기 — 초보자에게도 필요한 세션 설정 셋만. 나머지(세계관·음악·찾기·전투 테스트·스튜디오·패널·저장 기록·

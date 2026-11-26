@@ -115,7 +115,7 @@ test("RM2K3 sample fixture loads in the editor, exports cleanly, and plays title
   await expect(page.getByTestId("map-tree-node-map_interior")).toContainText("샘플 실내");
   await expect(page.getByTestId("map-tree-node-map_dungeon")).toContainText("샘플 던전");
 
-  await page.getByTestId("toolbar-resource-manager").click();
+  await page.getByTestId("menu-project").click(); await page.getByTestId("menu-more-resources").click();
   await expect(page.getByTestId("resource-profile-chipset")).toContainText("tex_tiles_default");
   await expect(page.getByTestId("resource-profile-charset").first()).toContainText("sample_hero");
   await expect(page.getByTestId("resource-profile-battleCharset")).toContainText("sample_hero");

@@ -338,6 +338,9 @@ describe("스튜디오 바 — 한 줄, 집 하나", () => {
     walk(trailing);
     const shown = ["toolbar-database", "toolbar-resource-manager", "topbar-assistant", "toolbar-save", "topbar-test-play", "menu-more-tools"];
     expect(order.filter((id) => shown.includes(id))).toEqual(shown);
+    // 버튼 줄이기 2회차: 소재·⋯ 는 DOM 에만 남고 보이지 않는다 — 둘 다 왼쪽 프로젝트 메뉴 항목이 맡는다.
+    for (const moved of ["toolbar-resource-manager", "menu-more-tools"]) expect(findByTestId(topbar, moved)?.getAttribute("aria-hidden"), moved).toBe("true");
+    for (const kept of ["toolbar-database", "topbar-assistant", "topbar-test-play"]) expect(findByTestId(topbar, kept)?.getAttribute("aria-hidden"), kept).not.toBe("true");
     // ⌘K 로만 닿는 것 — 톱바 어디에도 단추가 없다.
     for (const gone of [
       "toolbar-world", "toolbar-sound-test", "toolbar-search", "topbar-battle-test", "topbar-ai-studio",

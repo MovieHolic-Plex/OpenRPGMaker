@@ -994,6 +994,17 @@
   display: none;
 }
 
+/* 프로젝트 메뉴로 옮긴 단추(소재·⋯)는 DOM 에만 남는다 — 단추 표시 규칙이 hidden 을 덮지 않게 한다. */
+.studio-bar .studio-bar-trailing [hidden] {
+  display: none;
+}
+
+/* 자료집·상위 레이어 칸도 걷는다 — 프로젝트 메뉴 「자료집」·「상위 레이어」 가 같은 일을 한다(버튼 줄이기 2회차, 390 폭). */
+.oprn-menu-bar.studio-bar[data-fit-level="4"] .studio-bar-trailing [data-testid="toolbar-database"],
+.oprn-menu-bar.studio-bar[data-fit-level="4"] .studio-bar-center [data-testid="layer-upper"] {
+  display: none;
+}
+
 
 /* ── 15. 상태 줄 — 지금 도구와 저장 상태를 글자로(IS-009·IS-036) ─────────────────────────── */
 .studio-status-strip {
