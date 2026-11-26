@@ -938,7 +938,9 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
         }
         // JRPG 도 같은 구멍이 있었다 — 위 JRPG 가드는 기획서 프롬프트(segmentGate)에서만 돌아, 채팅 한 줄(「크로노 트리거 같은 JRPG 만들어 줘」)로 지으면
         // 파티 능력치 동일·보스 무해·제목 카드뿐인 오프닝이 그대로 통과했다(jrpg-loop-1 ct1: 같은 프로젝트에 qa:game check 경고 4건). 거절은 두 번까지, 그 뒤에는 보고에 남기고 받는다.
-        if (!segmentGate && jrpgChatRejections < 2 && !request.readOnly && jrpgCompletionGateApplies(working, stripSystemIntentNote(request.task))) {
+        // 첫 MVP 팀은 첫 판 관문(위 checkTeamMvp)이 기준이다 — 이 JRPG 마무리 검사(제목·6샷 오프닝·파티 능력치)는 완성 게임 기준이라, 도구가 없는 팀장이 두 번 거절당하며
+        // 오프닝 도구를 찾다 2~3분을 썼다(t3·t5 2026-11-26). 남은 항목은 아래 보고(jrpgLeft)에 그대로 적힌다.
+        if (!segmentGate && !firstMvpTeam && jrpgChatRejections < 2 && !request.readOnly && jrpgCompletionGateApplies(working, stripSystemIntentNote(request.task))) {
           const jrpgGaps = jrpgCompletionGaps(working, undefined, { task: stripSystemIntentNote(request.task) });
           // 채팅 한 줄 JRPG 는 첫 구간 게이트(segmentGate)를 안 타서 「끝까지 갈 수 없음」이 그대로 통과했다(jrpg-loop-2 ff1: 시간의 문이 절벽 위에 갇혀
           // qa:game check 막힘 1건인데 finish 가 받아졌다). 뼈대가 있으면 같은 자동 플레이 판정의 막힌 곳을 마무리 항목에 더한다.
@@ -1422,6 +1424,8 @@ export async function runPiTeam(request: PiAgentRequest, options: RunPiTeamOptio
   if (firstMvpTeam && finishAccepted && finished && !splitNextSteps(finished).steps.length) {
     finished = `${finished}\n\n${MVP_DONE_LINE}\n\n${nextStepsBlock(mvpNextSteps(working))}`;
     emit({ type: "team_report", text: finished });
+    // 답 말풍선은 마지막 assistant/team_report 다 — 팀장이 finish 뒤에도 «못 한 것» 글을 더 내 안내가 묻혔다(t5 2026-11-26). 첫 판 보고를 마지막 답으로 둔다.
+    emit({ type: "assistant", text: finished });
   }
   // The coordinator's snapshot is not a new per-map repair receipt. Preserve child failures.
   for (const report of orchDone.interiorCompletion ?? []) interiorReports.set(report.mapId, report);
