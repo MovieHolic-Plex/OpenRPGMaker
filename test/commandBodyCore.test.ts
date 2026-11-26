@@ -253,10 +253,73 @@ describe("advancedDialogueMerge", () => {
       expect(registered.length).toBeGreaterThan(0);
       for (const [id, deprecation] of registered) {
         expect(ids.has(id), id).toBe(true);
-        expect(ids.has(deprecation!.supersededBy), deprecation!.supersededBy).toBe(true);
-        expect(DEPRECATED_M2_COMMAND_IDS[deprecation!.supersededBy]).toBeUndefined();
         expect(deprecation!.reason.length).toBeGreaterThan(0);
+        if (deprecation!.supersededByKind) {
+          expect(deprecation!.supersededBy, id).toBeUndefined();
+          continue;
+        }
+        expect(ids.has(deprecation!.supersededBy!), deprecation!.supersededBy).toBe(true);
+        expect(DEPRECATED_M2_COMMAND_IDS[deprecation!.supersededBy!]).toBeUndefined();
       }
+    });
+  });
+
+  describe("duplicate m2 commands merged into native kinds (load migration)", () => {
+    const m2 = (commandId: string, fields: Record<string, string | number | boolean>): Command =>
+      ({ kind: "m2Command", commandId, fields });
+
+    function projectWith(commands: Command[]) {
+      const project = createBlankProject();
+      const map = project.maps[project.startMapId]!;
+      const event: GameEvent = {
+        id: "ev_merge",
+        x: 1,
+        y: 1,
+        trigger: { kind: "action" },
+        pages: [{
+          id: "p1", name: "", conditions: [], commands,
+          graphic: { transparent: true }, trigger: { kind: "action" }, priority: "same",
+          movement: { type: "fixed", speed: 3, frequency: 3 },
+        }],
+        commands: [],
+      };
+      map.events = [event];
+      project.commonEvents = [{ id: "common-merge", name: "c", trigger: "none", commands: [m2("m2-066-play-movie", { value: "intro.webm" })] }];
+      return { project, event };
+    }
+
+    it("rewrites an old save holding both kinds into one native kind per command, then is idempotent", () => {
+      const { project, event } = projectWith([
+        m2("m2-050-set-weather-effects", { value: "rain", intensity: 0.8, transitionMs: 400 }),
+        { kind: "setWeather", weather: "snow", intensity: 0.5, transitionMs: 0 },
+        m2("m2-054-show-animation", { target: "this-event", animationId: "anim_hit", wait: "true" }),
+        m2("m2-055-show-animation", { target: "player", animationId: "anim_heal", wait: "false" }),
+        m2("m2-054-show-animation", { target: "ev_other", animationId: "anim_hit", wait: "false" }),
+        { kind: "showAnimation", target: "player", animationId: "anim_hit", wait: false },
+        m2("m2-066-play-movie", { resourceId: "finale.webm", value: "old", wait: false, skippable: false }),
+        { kind: "fork", condition: { kind: "selfSwitch", key: "A", value: true }, then: [m2("m2-050-set-weather-effects", { value: "fog" })] },
+      ]);
+
+      expect(rewriteLegacyAdvancedDialogueInProject(project)).toBe(true);
+      const commands = event.pages![0]!.commands;
+      expect(commands.slice(0, 7)).toEqual([
+        { kind: "setWeather", weather: "rain", intensity: 0.8, transitionMs: 400 },
+        { kind: "setWeather", weather: "snow", intensity: 0.5, transitionMs: 0 },
+        { kind: "showAnimation", target: { eventId: "" }, animationId: "anim_hit", wait: true },
+        { kind: "showAnimation", target: "player", animationId: "anim_heal", wait: false },
+        { kind: "showAnimation", target: { eventId: "ev_other" }, animationId: "anim_hit", wait: false },
+        { kind: "showAnimation", target: "player", animationId: "anim_hit", wait: false },
+        { kind: "playMovie", resourceId: "finale.webm", wait: false, skippable: false },
+      ]);
+      const fork = commands[7] as Extract<Command, { kind: "fork" }>;
+      expect(fork.then[0]).toMatchObject({ kind: "setWeather", weather: "fog", transitionMs: 0 });
+      expect(project.commonEvents[0]!.commands[0]).toEqual({ kind: "playMovie", resourceId: "intro.webm", wait: true, skippable: true });
+
+      const merged = new Set(["m2-050-set-weather-effects", "m2-054-show-animation", "m2-055-show-animation", "m2-066-play-movie"]);
+      const leftovers = JSON.stringify(project.maps).match(/m2-0(50|54|55|66)-/g) ?? [];
+      expect(leftovers).toEqual([]);
+      expect([...merged].every((id) => m2CommandById(id)?.deprecated)).toBe(true);
+      expect(rewriteLegacyAdvancedDialogueInProject(project)).toBe(false);
     });
   });
 });

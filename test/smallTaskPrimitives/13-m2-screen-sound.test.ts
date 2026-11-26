@@ -156,7 +156,7 @@ describe.each(cases)("화면·소리 명령 $row", sample => {
 
 it("은퇴한 애니메이션 중복 행의 추가를 한국어로 거절합니다", () => {
   const { project, target } = setup("blank");
-  expect(DEPRECATED_M2_COMMAND_IDS["m2-055-show-animation"]?.supersededBy).toBe("m2-054-show-animation");
+  expect(DEPRECATED_M2_COMMAND_IDS["m2-055-show-animation"]?.supersededByKind).toBe("showAnimation");
   expect(PRIMITIVES.some(p => p.id.startsWith("m2.055."))).toBe(false);
   try {
     runPrimitive(project, target, "m2.055.insert", {});

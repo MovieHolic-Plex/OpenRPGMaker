@@ -346,17 +346,25 @@ export const EXISTING_KIND_BY_TITLE: Partial<Record<string, Command["kind"]>> = 
  * 라벨은 제품 문구라 언제든 바뀌므로 필터 열쇠로 쓰지 않는다.
  */
 export type M2CommandDeprecation = {
-  /** 이 행을 대신하는 카탈로그 id. 대체 경로의 정본. */
-  readonly supersededBy: string;
+  /** 이 행을 대신하는 카탈로그 id. 대체 경로의 정본. 네이티브 명령이 대신하면 비운다. */
+  readonly supersededBy?: string;
+  /** 이 행을 대신하는 네이티브 명령 종류. 저장된 행은 로드 때 이 종류로 바뀐다(project/io/rewriteLegacyDialogue.ts). */
+  readonly supersededByKind?: Command["kind"];
   /** 왜 은퇴했는지 — 되살리려는 다음 사람이 읽을 근거. */
   readonly reason: string;
 };
 
+const MERGED_INTO_NATIVE_REASON =
+  "같은 명령이 피커에 두 번(네이티브·m2) 보였고 조수는 네이티브를 썼다. 네이티브로 통합 — 저장된 행은 로드 시 네이티브로 정규화된다(project/io/rewriteLegacyDialogue.ts, 2026-11-26).";
+
 export const DEPRECATED_M2_COMMAND_IDS: Partial<Record<string, M2CommandDeprecation>> = {
   "m2-055-show-animation": {
-    supersededBy: "m2-054-show-animation",
-    reason: "Show Animation 중복 등재 — 같은 명령이 피커에 두 번 보여 초보자가 구분하지 못했다(2026-08-27).",
+    supersededByKind: "showAnimation",
+    reason: "Show Animation 중복 등재 — 같은 명령이 피커에 두 번 보여 초보자가 구분하지 못했다(2026-08-27). m2-054 와 함께 네이티브로 통합(2026-11-26).",
   },
+  "m2-054-show-animation": { supersededByKind: "showAnimation", reason: MERGED_INTO_NATIVE_REASON },
+  "m2-050-set-weather-effects": { supersededByKind: "setWeather", reason: MERGED_INTO_NATIVE_REASON },
+  "m2-066-play-movie": { supersededByKind: "playMovie", reason: MERGED_INTO_NATIVE_REASON },
   "m2-209-advanced-dialogue": {
     supersededBy: "m2-001-show-text",
     reason:

@@ -15297,6 +15297,7 @@
  "m2-050-set-weather-effects": {
   "testids": [
    "event-command-edit-summary",
+   "m2-command-deprecated-notice",
    "set-weather-effects-command-body",
    "set-weather-effects-intensity-input",
    "set-weather-effects-intensity-slider",
@@ -15338,6 +15339,7 @@
    "change-parameters-field",
    "change-parameters-field-label",
    "cream-command-form-head",
+   "empty-hint",
    "is-active",
    "page3-command-body",
    "page3-preview-stage",
@@ -15371,13 +15373,14 @@
   ],
   "tags": {
    "button": 5,
-   "div": 18,
+   "div": 19,
    "input": 3,
    "p": 3,
    "span": 11
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
+   "m2-command-deprecated-notice": "div",
    "set-weather-effects-command-body": "div",
    "set-weather-effects-intensity-input": "input",
    "set-weather-effects-intensity-slider": "input",
@@ -15405,7 +15408,7 @@
    "set-weather-effects-preview-overlay": "",
    "set-weather-effects-preview-stage": "없음"
   },
-  "testidCount": 20,
+  "testidCount": 21,
   "controlCount": 8
  },
  "m2-051-show-picture": {
@@ -15608,6 +15611,7 @@
  "m2-054-show-animation": {
   "testids": [
    "event-command-edit-summary",
+   "m2-command-deprecated-notice",
    "show-animation-m2-animation-select",
    "show-animation-m2-animation-select-card",
    "show-animation-m2-command-body",
@@ -15633,6 +15637,7 @@
    "change-parameters-field-label",
    "cream-command-form-head",
    "empty",
+   "empty-hint",
    "page3-command-body",
    "party-member-intent",
    "party-member-intent-body",
@@ -15675,7 +15680,7 @@
   ],
   "tags": {
    "button": 2,
-   "div": 14,
+   "div": 15,
    "option": 7,
    "p": 3,
    "select": 3,
@@ -15683,6 +15688,7 @@
   },
   "tagByTestid": {
    "event-command-edit-summary": "div",
+   "m2-command-deprecated-notice": "div",
    "show-animation-m2-animation-select": "select",
    "show-animation-m2-animation-select-card": "span",
    "show-animation-m2-command-body": "div",
@@ -15700,7 +15706,7 @@
    "show-animation-m2-intent": "애니메이션 표시대상 위에 전투 애니메이션을 재생합니다.",
    "show-animation-m2-preview": "주인공 · (미선택)전투 애니메이션을 맵에서 재생합니다."
   },
-  "testidCount": 12,
+  "testidCount": 13,
   "controlCount": 5
  },
  "m2-055-show-animation": {
@@ -16041,6 +16047,7 @@
   "testids": [
    "event-command-edit-summary",
    "m2-command-body-m2-066-play-movie",
+   "m2-command-deprecated-notice",
    "m2-command-resourceId-picker",
    "m2-command-resourceId-preview",
    "m2-command-resourceId-selected-name",
@@ -16074,7 +16081,7 @@
    "볼륨"
   ],
   "tags": {
-   "div": 12,
+   "div": 13,
    "input": 1,
    "label": 2,
    "option": 1,
@@ -16084,6 +16091,7 @@
   "tagByTestid": {
    "event-command-edit-summary": "div",
    "m2-command-body-m2-066-play-movie": "div",
+   "m2-command-deprecated-notice": "div",
    "m2-command-resourceId-picker": "select",
    "m2-command-resourceId-preview": "div",
    "m2-command-resourceId-selected-name": "div",
@@ -16095,7 +16103,7 @@
    "m2-command-resourceId-preview": "동영상을 고르세요",
    "m2-play-movie-intent": "동영상 재생동영상 파일을 화면 전체에 재생하고, 끝날 때까지 다음 명령을 기다립니다. 배경에 깔아 두는 음악·효과음이 아닙니다."
   },
-  "testidCount": 7,
+  "testidCount": 8,
   "controlCount": 2
  },
  "m2-067-key-input-processing": {

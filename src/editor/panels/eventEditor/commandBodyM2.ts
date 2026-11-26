@@ -19,6 +19,7 @@ import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { switchVariablePicker } from "./switchVariablePicker";
 import { field as fieldRow } from "./dom";
+import { commandKindLabel } from "./options";
 import type { CommandEditContext } from "./types";
 
 type M2Command = Extract<Command, { kind: "m2Command" }>;
@@ -60,7 +61,7 @@ export function renderM2CommandBody(context: CommandEditContext, cmd: Command): 
     body.prepend(el("div", {
       class: "empty-hint",
       dataset: { testid: "m2-command-deprecated-notice" },
-      text: `이 명령은 ${deprecated.supersededBy}로 통합되었습니다. ${deprecated.reason}`,
+      text: `이 명령은 ${deprecated.supersededBy ?? `「${commandKindLabel(deprecated.supersededByKind!)}」`}로 통합되었습니다. ${deprecated.reason}`,
     }));
   }
   return body;

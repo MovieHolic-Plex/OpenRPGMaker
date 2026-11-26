@@ -390,7 +390,7 @@ describe("mapScreenAuthoringSurface", () => {
    * - 조명 · 날씨 · 그림 · 화면 효과를 탭 3에서 찾는다(탭 4로 숨지 않는다).
    * - 화면 효과 / 카메라 미리보기는 토큰 요약 카드가 아니라 필드에 반응하는 그림이다.
    * - 지형 변경은 칩셋 크롭을 보여 준다. 번호 입력만으로는 무슨 그림인지 알 수 없다.
-   * - 같은 일을 하는 레거시 RM 행(`m2-050`)은 네이티브 구현(`setWeather`) 위로 올라오지 않는다.
+   * - 같은 일을 하는 레거시 RM 행(`m2-050`·`054`·`066`)은 네이티브로 통합돼 피커에 없다(2026-11-26).
    */
   describe("picker tab 3 information architecture", () => {
     it("puts zero informational (unselectable) rows on the tab-3 grid", () => {
@@ -433,16 +433,16 @@ describe("mapScreenAuthoringSurface", () => {
       expect(tabThree.find((entry) => entry.commandId === "showAnimation")?.group).toBe("화면 연출");
     });
 
-    it("ranks the native 날씨 설정 above the legacy m2-050 catalog row", () => {
+    it("shows only the native 날씨·애니메이션·동영상 rows (legacy m2 twins are merged)", () => {
       const tabThree = eventCommandPickerTabEntries(3).map((entry) => entry.commandId);
-      const search = eventCommandPickerSearchEntries()
-        .filter((entry) => entry.label.includes("날씨"))
-        .map((entry) => entry.commandId);
+      const search = eventCommandPickerSearchEntries().map((entry) => entry.commandId);
 
-      expect(tabThree.indexOf("setWeather")).toBeGreaterThanOrEqual(0);
-      expect(tabThree.indexOf("setWeather")).toBeLessThan(tabThree.indexOf("m2-050-set-weather-effects"));
-      expect(search[0]).toBe("setWeather");
-      expect(search).toContain("m2-050-set-weather-effects");
+      for (const native of ["setWeather", "showAnimation", "playMovie"]) expect(tabThree).toContain(native);
+      for (const legacy of ["m2-050-set-weather-effects", "m2-054-show-animation", "m2-066-play-movie"]) {
+        expect(tabThree).not.toContain(legacy);
+        expect(search).not.toContain(legacy);
+      }
+      expect(search.filter((id) => id === "setWeather")).toHaveLength(1);
     });
   });
   describe("map and screen previews react to fields", () => {

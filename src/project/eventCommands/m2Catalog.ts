@@ -178,6 +178,10 @@ for (const [id, deprecation] of Object.entries(DEPRECATED_M2_COMMAND_IDS)) {
   if (!M2_COMMAND_CATALOG.some((entry) => entry.id === id)) {
     throw new Error(`Deprecated m2 command id is not in the catalog: ${id}`);
   }
+  if ((deprecation.supersededBy === undefined) === (deprecation.supersededByKind === undefined)) {
+    throw new Error(`Deprecated m2 command ${id} needs exactly one replacement (catalog id or native kind)`);
+  }
+  if (deprecation.supersededBy === undefined) continue;
   if (!M2_COMMAND_CATALOG.some((entry) => entry.id === deprecation.supersededBy)) {
     throw new Error(`Deprecated m2 command ${id} points at an unknown replacement: ${deprecation.supersededBy}`);
   }

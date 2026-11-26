@@ -1,7 +1,15 @@
-import type { Command, Project } from "@/project/types";
+import type { Command, M2CommandFields, Project } from "@/project/types";
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
+import { normalizeWeatherParams, parseWeather, weatherToRuntimeString } from "@/player/weather/weatherModel";
 
-/** m2-209 Advanced Dialogue → native text (emotion/autoAdvance 보존). 로드 시 1회 정규화. */
+/**
+ * 로드 시 1회 정규화: 은퇴한 m2 행을 같은 일을 하는 네이티브 명령으로 바꾼다.
+ * - m2-209 Advanced Dialogue → text (emotion/autoAdvance 보존).
+ * - 중복 명령 통합(2026-11-26): m2-050 날씨 효과 → setWeather, m2-054·055 애니메이션 표시 → showAnimation,
+ *   m2-066 동영상 재생 → playMovie. 피커에 같은 명령이 두 번 보였고, 조수(small-task 별칭)는 이미 네이티브를 썼다.
+ *   값 대응은 플레이어가 m2 행을 실행하던 방식(commandCatalog·m2Runtime)과 같다. 설계: btn-trim-r2 migration-design.md.
+ *   플레이어는 m2 실행 경로를 그대로 두므로 이관 전에 내보낸 게임도 전처럼 돈다.
+ */
 export function rewriteLegacyAdvancedDialogueInProject(project: Project): boolean {
   let changed = false;
   const walk = (commands: Command[] | undefined): void => {
@@ -79,6 +87,8 @@ export function textBodyOf(command: { readonly kind: string } & Record<string, u
 function rewriteCommand(command: Command): Command {
   if (command.kind === "text") return normalizeLegacyTextLines(command);
   if (command.kind !== "m2Command") return command;
+  const merged = mergedNativeCommand(command.commandId, command.fields ?? {});
+  if (merged) return merged;
   if (command.commandId !== "m2-209-advanced-dialogue") return command;
   const fields = command.fields ?? {};
   const speaker = String(fields.speaker ?? "").trim();
@@ -96,6 +106,66 @@ function rewriteCommand(command: Command): Command {
     ...(emotion && emotion !== "neutral" ? { emotion } : {}),
     ...(autoAdvance ? { autoAdvance: true } : {}),
   };
+}
+
+function fieldText(fields: M2CommandFields, key: string, fallback: string): string {
+  const value = fields[key];
+  if (typeof value === "string") return value;
+  if (typeof value === "number" || typeof value === "boolean") return String(value);
+  return fallback;
+}
+
+function fieldNum(fields: M2CommandFields, key: string, fallback: number): number {
+  const value = fields[key];
+  if (typeof value === "number") return value;
+  if (typeof value === "string") {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  }
+  return fallback;
+}
+
+function fieldFlag(fields: M2CommandFields, key: string, fallback: boolean): boolean {
+  const value = fields[key];
+  if (typeof value === "boolean") return value;
+  if (typeof value === "string") return value === "true";
+  return fallback;
+}
+
+/** 중복 m2 행 → 네이티브. 대상이 아니면 undefined. */
+function mergedNativeCommand(commandId: string, fields: M2CommandFields): Command | undefined {
+  switch (commandId) {
+    case "m2-050-set-weather-effects": {
+      // m2Runtime: intensity 가 없으면 value 문자열 그대로, 있으면 (종류, 강도) 로 정규화한 뒤 parseWeather 로 읽었다.
+      const raw = fields.value === undefined ? "none" : fieldText(fields, "value", "none");
+      const screen = fields.intensity === undefined
+        ? raw
+        : weatherToRuntimeString(normalizeWeatherParams({ kind: parseWeather(raw).kind, intensity: fieldNum(fields, "intensity", 0.5) }));
+      const weather = parseWeather(screen);
+      const transitionMs = Math.max(0, Math.round(fieldNum(fields, "transitionMs", fieldNum(fields, "durationMs", 0))));
+      return { kind: "setWeather", weather: weather.kind, intensity: weather.intensity, transitionMs };
+    }
+    case "m2-054-show-animation":
+    case "m2-055-show-animation": {
+      const target = fieldText(fields, "target", "player").trim();
+      return {
+        kind: "showAnimation",
+        // "this-event" 는 실행 중인 이벤트 — 네이티브 { eventId: "" } 가 같은 뜻이다(playSceneMapAnimations).
+        target: !target || target === "player" ? "player" : { eventId: target === "this-event" ? "" : target },
+        animationId: fieldText(fields, "animationId", ""),
+        wait: fieldFlag(fields, "wait", false),
+      };
+    }
+    case "m2-066-play-movie":
+      return {
+        kind: "playMovie",
+        resourceId: fields.resourceId !== undefined ? fieldText(fields, "resourceId", "") : fieldText(fields, "value", ""),
+        wait: fieldFlag(fields, "wait", true),
+        skippable: fieldFlag(fields, "skippable", true),
+      };
+    default:
+      return undefined;
+  }
 }
 
 /** 구 저장본 text 명령({kind:"text", lines:["..."]})을 현행 모양(body)으로 고친다.

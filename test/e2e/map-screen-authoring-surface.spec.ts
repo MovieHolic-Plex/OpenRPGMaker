@@ -66,14 +66,14 @@ test("map and screen tab is a staging work surface: effects, camera, lighting, w
     await expect(pickerGrid(picker).getByTestId(testId).first()).toBeVisible();
   }
 
-  // 날씨 통일: 네이티브 「날씨 설정」이 레거시 m2-050 위에 온다.
+  // 날씨 통일: 레거시 m2-050 은 네이티브 「날씨 설정」으로 통합돼 피커에 없다(2026-11-26).
   const weatherOrder = await pickerGrid(picker).evaluate((grid) => {
     const ids = Array.from(grid.querySelectorAll<HTMLElement>(".event-command-picker-command-wrap"))
       .map((wrap) => wrap.dataset.commandId ?? "");
     return { native: ids.indexOf("setWeather"), legacy: ids.indexOf("m2-050-set-weather-effects") };
   });
   expect(weatherOrder.native).toBeGreaterThanOrEqual(0);
-  expect(weatherOrder.legacy).toBeGreaterThan(weatherOrder.native);
+  expect(weatherOrder.legacy).toBe(-1);
 
   // ── 화면 효과: 공용 미니 모니터 무대 + 필드 반응 ────────────────
   const effectDialog = await pickCommand(page, picker, "화면 효과...");

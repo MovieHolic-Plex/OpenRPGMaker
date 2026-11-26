@@ -1,5 +1,13 @@
 # Editor Event Commands & Tools
 
+## 중복 명령 통합 — 날씨·애니메이션·동영상은 네이티브 하나 (2026-11-26)
+
+- 명령 추가 창에 같은 명령이 두 번 보였다: `setWeather`/`m2-050`, `showAnimation`/`m2-054`, `playMovie`/`m2-066`. 조수(small-task 별칭·조명 도구·컨신)는 네이티브를, 피커는 둘 다를 냈다.
+- 남는 것은 **네이티브**. m2 세 행(과 이미 은퇴한 055)은 `DEPRECATED_M2_COMMAND_IDS` 에 `supersededByKind` 로 올라 모든 피커·검색에서 빠진다.
+- 저장된 행은 부팅 정규화(`rewriteLegacyAdvancedDialogueInProject`, `project/io/rewriteLegacyDialogue.ts`)가 네이티브로 바꾼다. 값 대응은 플레이어가 m2 행을 돌리던 식과 같다(`this-event` → `{ eventId: "" }`).
+- 플레이어의 m2 실행 경로는 지우지 않는다 — 정규화 전에 내보낸 게임·.oprn 이 그대로 돈다. m2-054 는 맵에서 그리지 않았는데(기록만), 네이티브로 바뀐 뒤에는 실제로 재생된다.
+- 「화면 효과」(m2-202)는 네이티브 쌍이 없어 그대로다. 그 안의 색조·플래시·날씨 선택이 m2-046/047·setWeather 와 겹치지만 값 형식이 달라 이번에 합치지 않았다.
+
 ## 선택지 줄 조건 — 숨김(showWhen)·흐리게(enableWhen) (2026-10-30)
 
 왜: 이미 받은 계약·이미 한 질문을 목록에서 빼려면 페이지를 쪼개거나 `fork` 로 선택지 명령을 통째로 여러 벌 복사해야 했다(사냥꾼 계약 설계 공백 C1).
