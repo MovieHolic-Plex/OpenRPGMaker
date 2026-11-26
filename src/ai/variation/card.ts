@@ -34,7 +34,7 @@ export function variationCard(v: Variation, options: CardOptions): string | unde
     // 세계가 아닌 장소는 청사진에 places 칸이 없다(blueprint.ts places 는 세계 카드가 있을 때만) — 걸음의 place 로 옮겨 적으라고 말해야 모델이 사용자 집 한 채로 줄이지 않는다(2026-11-26 variant-remeasure).
     const how = v.world
       ? (en ? `world:W/K = kind K of world ${v.world}, built by build_places from the World card` : `world:W/K = 세계 ${v.world} 의 장소 종류 K, 그 세계의 compose_* 구성기를 find_tools 로 찾아 짓는다`)
-      : (en ? "path = make_place type:detail; one map each, named as written, with the blueprint steps' place spread over all of them" : "길 = make_place type:세부; 장소마다 맵 하나를 적힌 이름 그대로 짓고, 청사진 걸음의 place 를 모든 장소에 나눈다");
+      : (en ? "path = make_place type:detail; one map each, named as written, steps' place spread over all" : "길 = make_place type:세부; 장소마다 맵 하나, 적힌 이름 그대로, 걸음 place 를 모두에 나눔");
     parts.push(en ? `Places (1st = the start; ${how}): ${places.join(" ")}.` : `장소(첫째 = 시작하는 곳; ${how}): ${places.join(" ")}.`);
   }
   if (v.event) parts.push(`${en ? "Event" : "사건"}: ${v.event.ko}.`);
@@ -42,7 +42,7 @@ export function variationCard(v: Variation, options: CardOptions): string | unde
   if (v.structure) parts.push(`${en ? "Structure" : "구조"}: ${v.structure.ko}.`);
   if (!parts.length) return undefined;
   const head = en
-    ? `${VARIATION_MARK} Use these where the user left it open (user's words win) so games of one genre differ; carry them into write_blueprint (event = premise, mood = world.tones + opening, structure = how steps link).`
-    : `${VARIATION_MARK} 사용자가 말하지 않은 부분은 이것을 쓴다(사용자 말이 이긴다). 청사진에 옮겨 적는다(사건 = 전제, 분위기 = world.tones 와 오프닝, 구조 = 걸음을 잇는 방식).`;
+    ? `${VARIATION_MARK} Fill what the user left open (user wins); in write_blueprint: event→premise, mood→tones+opening, structure→step links.`
+    : `${VARIATION_MARK} 사용자가 말하지 않은 부분은 이것으로 채운다(사용자 말이 이긴다). 청사진에: 사건→전제, 분위기→tones·오프닝, 구조→걸음 잇기.`;
   return [head, ...parts].join(" ");
 }
