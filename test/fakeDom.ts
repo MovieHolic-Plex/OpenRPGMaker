@@ -652,13 +652,9 @@ export class FakeElement extends FakeNode {
   }
 
   closest(selector: string): FakeElement | null {
-    // 선택자 목록("button, [popover]")은 하나라도 맞으면 된다 — querySelectorAll 과 같이 쉼표로 나눈다.
-    // 나누지 않으면 마지막 조각만 보여, b24e29468 이 드래그 제외를 "button, [popover]" 로 넓힌 뒤 databaseModalDockMode 가 깨졌다.
-    const parts = selector.split(",").map((item) => item.trim()).filter(Boolean);
     let current: FakeElement | null = this;
     while (current) {
-      const at = current;
-      if (parts.some((part) => matchesSelector(at, part))) return current;
+      if (matchesSelector(current, selector)) return current;
       current = current.parentElement;
     }
     return null;
