@@ -224,10 +224,10 @@ function contextMenuNodes(request: CommandShortcutRequest, close: () => void): H
       },
     },
     { separator: true },
-    { ...contextMenuAction("잘라내기", "Ctrl+X", "cut", "event-command-menu-cut", () => {
+    contextMenuAction("잘라내기", "Ctrl+X", "cut", "event-command-menu-cut", () => {
       cutCommand(request);
       close();
-    }), quiet: true },
+    }, false, true),
     contextMenuAction("복사", "Ctrl+C", "copy", "event-command-menu-copy", () => {
       copyCommands(request);
       close();
@@ -241,10 +241,10 @@ function contextMenuNodes(request: CommandShortcutRequest, close: () => void): H
       deleteCommands(request);
       close();
     }),
-    { ...contextMenuAction("전체 선택", "Ctrl+A", "select-all", "event-command-menu-select-all", () => {
+    contextMenuAction("전체 선택", "Ctrl+A", "select-all", "event-command-menu-select-all", () => {
       selectAllAuthoredCommands(request.commands ?? [request.command]);
       close();
-    }), quiet: true },
+    }, false, true),
   ];
   return items.map((item) =>
     item.separator
@@ -259,9 +259,10 @@ function contextMenuAction(
   icon: string,
   testId: string,
   run: () => void,
-  disabled = false
+  disabled = false,
+  quiet = false
 ): ContextMenuItem {
-  return { label, shortcut, icon, testId, run, disabled };
+  return { label, shortcut, icon, testId, run, disabled, quiet };
 }
 
 function contextMenuButton(item: Extract<ContextMenuItem, { readonly separator?: false }>): HTMLButtonElement {
