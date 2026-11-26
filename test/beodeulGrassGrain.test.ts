@@ -28,7 +28,9 @@ function village(look: Partial<TilesetLook>): { project: Project; map: GameMap }
   const project = createBlankProject() as Project;
   project.tilesets[TS]!.look = { textureKey: looks.texture, ...look };
   const ctx = { project, currentMapId: project.startMapId, assistantRun: true, lookKey: JSON.stringify(["project", "grain-village"]) } as ToolContext;
-  const spec = { type: "village", name: "버들 마을", salt: 250118 } as PlaceSpec;
+  // #4961(장소 구성 문법) 뒤로 이름·열쇠 해시가 마을 문법을 고른다 — 이 판은 plaza 가 뽑혀 풀밭 모양이 바뀌었다.
+  // 이 시험은 풀 결을 보므로 예전 «강 하나 낀 길가 마을» 꼴(riverline)로 고정한다. plaza 꼴의 외톨이 결 10% 는 #5185 에서 따로 본다.
+  const spec = { type: "village", name: "버들 마을", salt: 250118, hints: { grammar: "riverline" } } as PlaceSpec;
   const res = builderFor(spec)!.build(createBuildRun(ctx), spec);
   expect(res.ok).toBe(true);
   return { project: ctx.project, map: ctx.project.maps[res.mapIds[0]!]! };
