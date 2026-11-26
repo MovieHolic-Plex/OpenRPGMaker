@@ -128,6 +128,15 @@ describe("pickVariation", () => {
       expect(v.pinned).toContain("할머니 집 부엌");
       expect(v.places[0]!.ko).toBe("할머니 집 부엌");
     }
+    // 공포 덱도 사용자가 말한 «미술관» 을 첫 장소로 고정한다(전에는 후보가 없어 카드 장소 셋이 사용자 말과 어긋났다).
+    for (let i = 0; i < 30; i++) {
+      const v = pickVariation({ text: "밤의 미술관에 갇힌 아이가 단서를 모아 빠져나가는 공포 게임을 만들어 줘.", key: keyOf(i), allowedWorlds: ALL_WORLDS })!;
+      expect(v.deck).toBe("horror");
+      expect(v.places[0]!.ko).toBe("미술관");
+      // 갇힌 이야기다 — 나머지 장소는 그 건물 안의 방이다(밖 마을·신전을 받은 모델은 미술관 한 맵만 지었다).
+      expect(v.places.length).toBe(3);
+      for (const p of v.places.slice(1)) expect(p.build.via).toBe("interior");
+    }
     const season = pickVariation({ text: "비 오는 날의 회상 게임", key: keyOf(3), allowedWorlds: ALL_WORLDS })!;
     expect(season.mood).toBeUndefined();
     expect(season.skipped).toContain("mood");

@@ -31,17 +31,18 @@ export function variationCard(v: Variation, options: CardOptions): string | unde
   const places = v.places.map((p, i) => `${CIRCLED[i]}«${p.ko}»${v.pinned.includes(p.ko) ? (en ? "(named by the user)" : "(사용자가 말함)") : ""} ${buildPath(p.build)}`);
   const parts: string[] = [];
   if (places.length) {
-    const worldNote = v.world ? (en ? ` All places are kinds of the world ${v.world} (World card, build_places).` : ` 모든 장소는 세계 ${v.world} 의 종류다(그 세계의 compose_* 구성기를 find_tools 로 찾아 짓는다).`) : "";
-    parts.push(en
-      ? `Places (1st = where the game starts; path = make_place type:detail, world:W/K = place kind K of this game's world): ${places.join(" ")}.${worldNote}`
-      : `장소(첫째 = 게임이 시작하는 곳; 길 = make_place type:세부, world:W/K = 이 게임 세계의 장소 종류 K): ${places.join(" ")}.${worldNote}`);
+    // 세계가 아닌 장소는 청사진에 places 칸이 없다(blueprint.ts places 는 세계 카드가 있을 때만) — 걸음의 place 로 옮겨 적으라고 말해야 모델이 사용자 집 한 채로 줄이지 않는다(2026-11-26 variant-remeasure).
+    const how = v.world
+      ? (en ? `world:W/K = kind K of world ${v.world}, built by build_places from the World card` : `world:W/K = 세계 ${v.world} 의 장소 종류 K, 그 세계의 compose_* 구성기를 find_tools 로 찾아 짓는다`)
+      : (en ? "path = make_place type:detail; one map each, named as written, steps' place spread over all" : "길 = make_place type:세부; 장소마다 맵 하나, 적힌 이름 그대로, 걸음 place 를 모두에 나눔");
+    parts.push(en ? `Places (1st = the start; ${how}): ${places.join(" ")}.` : `장소(첫째 = 시작하는 곳; ${how}): ${places.join(" ")}.`);
   }
   if (v.event) parts.push(`${en ? "Event" : "사건"}: ${v.event.ko}.`);
   if (v.mood) parts.push(`${en ? "Mood" : "분위기"}: ${v.mood.ko}.`);
   if (v.structure) parts.push(`${en ? "Structure" : "구조"}: ${v.structure.ko}.`);
   if (!parts.length) return undefined;
   const head = en
-    ? `${VARIATION_MARK} Defaults for what the user left open — the user's own words always win; this only breaks ties so games of one genre differ.`
-    : `${VARIATION_MARK} 사용자가 말하지 않은 부분의 기본값이다. 사용자 말이 늘 우선이고, 같은 장르의 게임이 서로 다르게 나오게 하는 용도다.`;
+    ? `${VARIATION_MARK} Fill what the user left open (user wins); in write_blueprint: event→premise, mood→tones+opening, structure→step links.`
+    : `${VARIATION_MARK} 사용자가 말하지 않은 부분은 이것으로 채운다(사용자 말이 이긴다). 청사진에: 사건→전제, 분위기→tones·오프닝, 구조→걸음 잇기.`;
   return [head, ...parts].join(" ");
 }
