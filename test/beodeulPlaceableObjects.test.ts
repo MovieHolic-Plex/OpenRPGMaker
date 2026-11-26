@@ -96,7 +96,8 @@ describe("bundled Beodeul placeable objects", () => {
           drawn.add(y * widthTiles + x);
         }
       }
-      expect(hasTransparency).toBe(true);
+      // 밟고 지나가는 바닥 데칼(모든 칸 ".": 점자 블록·맨홀·진입로, #4877)은 칸을 다 칠한다. 그 밖의 기물은 투명 여백이 있어야 한다.
+      if (!footprint.every(row => /^\.+$/u.test(row))) expect(hasTransparency, id).toBe(true);
       expect(drawn.size).toBeGreaterThan(0);
       for (const [y, row] of footprint.entries()) {
         expect(row).toHaveLength(widthTiles);
