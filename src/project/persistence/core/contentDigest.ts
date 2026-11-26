@@ -159,6 +159,19 @@ export async function primeSharedEntryDigests(view: unknown, yieldNow: () => Pro
   }
 }
 
+/**
+ * 공유 항목(번들 타일셋 정의와 JSON 값이 같은 타일셋 항목) 하나에 미리 구운 요약을 심고 믿는다. 부르는 쪽이 값이 같음을 확인한다
+ * (bundledTilesetDigests.ts). 심은 기억은 자식 기록이 없어(length -1) 믿음 밖의 요약에서는 절대 «그대로» 로 지나가지 않고 끝까지 다시 센다 —
+ * 틀린 «안 바뀜» 은 믿음 안에서만, 그리고 항목을 제자리에서 고치지 않는다는 공유 항목 계약이 깨졌을 때만 생길 수 있다(trustedShared 와 같다).
+ *
+ * 왜(2026-11-26 실측, 빈 새 프로젝트 77MiB 중 번들 타일셋 74MiB): 조수 세션 첫 적용 권위 요약이 타일셋 49개를 처음부터 훑어 5.0s 였다.
+ */
+export function seedTrustedEntryDigest(entry: object, digest: string): void {
+  if (memos.has(entry)) return;
+  memos.set(entry, { keys: null, values: NO_SLOTS, tokens: NO_SLOTS, length: -1, token: `#${digest}` });
+  trustedShared.add(entry);
+}
+
 /** 믿은 공유 항목 기록을 모두 버린다 — 항목을 제자리에서 고칠 수 있는 구간(로드 정규화 등) 앞뒤에서 부른다. 이후 첫 요약은 끝까지 대조한다. */
 export function forgetTrustedSharedEntries(): void {
   trustedShared = new WeakSet<object>();

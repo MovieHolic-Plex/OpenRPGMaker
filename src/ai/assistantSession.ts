@@ -63,6 +63,7 @@ import {
 import { buildWorldDigest, normalizeProjectWorld } from "@/project/world";
 import { applyProposedProject, captureProposalBase, type ProposalBase, type ApplyProposedProjectResult } from "@/editor/tools/applyChangesetToStore";
 import { AuthoredProjectBaseline, projectIdentityDigest } from "@/project/authoredProjectBaseline";
+import { seedBundledTilesetDigests } from "@/project/bundledTilesetDigests";
 import { withContentDigestEpoch } from "@/project/persistence/core/contentDigest";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { isDestructiveOutcome, isMapDestruction } from "@/ai/approvalPolicy";
@@ -1055,6 +1056,8 @@ export class AssistantSession {
     this.getTurnSelection = options.getTurnSelection;
     this.declareIntent = options.declareIntent ?? null;
     this.prepareProjectWiki = options.prepareProjectWiki;
+    // 번들 타일셋 정의와 같은 항목은 구운 요약을 쓴다 — 첫 세션의 적용 권위 요약 5.0s → 값 비교 0.4s(#5188).
+    seedBundledTilesetDigests(project);
     this.draftBaseline = new AuthoredProjectBaseline(project);
     this.observedLiveWorld = structuredClone(project.world);
     this.baselineProject = sessionProjectCopy(project);
