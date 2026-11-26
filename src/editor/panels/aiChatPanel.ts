@@ -4146,6 +4146,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 대화 카드가 화면에 있는지 — 지도 위·아래 진행 표시가 대화 카드와 같은 말을 되풀이하지 않게 CSS·상태 줄이 읽는다.
     // 알림(아래 dispatch)을 받는 쪽이 읽으므로 클래스를 먼저 맞춘다.
     if (typeof document !== "undefined" && document.body) document.body.classList.toggle("ai-dock-collapsed", collapsed);
+    // 열린 조수 — 셸·맵 표면이 읽는 공용 상태 클래스(버튼 줄이기 2회차: 열린 동안 상단 「조수」·알약 「조수에게 맡기기」 를 걷는다).
+    if (typeof document !== "undefined" && document.body) document.body.classList.toggle("has-assistant-open", !collapsed);
     panel.dispatchEvent(new Event("oprn:ai-panel-collapse", { bubbles: true }));
     if (typeof document !== "undefined" && document.body) document.body.classList.add("ai-command-bar-active");
     applySize(); // 접힘 상태에서는 커스텀 크기를 해제한다.
@@ -4763,7 +4765,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (typeof document !== "undefined") {
       document.removeEventListener("pointerdown", onMoreMenuPointerDown);
       document.removeEventListener("keydown", onMoreMenuKeyDown);
-      document.body?.classList.remove("ai-command-bar-active", "ai-panel-docked", "ai-studio-open", "ai-dock-collapsed");
+      document.body?.classList.remove("ai-command-bar-active", "ai-panel-docked", "ai-studio-open", "ai-dock-collapsed", "has-assistant-open");
     }
 
     cleanupAiAssistBridge?.();
