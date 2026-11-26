@@ -85,9 +85,7 @@ jobs:
 
       - name: AI 워커 컴파일 (릴리스와 같은 엔트리포인트)
         run: |
-          bun build scripts/oh-my-pi-worker.ts \
-            --compile --target=bun-linux-x64 \
-            --outfile="$RUNNER_TEMP/oh-my-pi-worker"
+          bun scripts/build-ai-worker.ts "$RUNNER_TEMP" linux
           test -s "$RUNNER_TEMP/oh-my-pi-worker"
 
       # 생성기 고정판(tiledata/gen-kits.lock.json)은 로컬에서만 본다: npm run gen-kits:check.

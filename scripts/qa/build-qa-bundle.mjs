@@ -161,7 +161,6 @@ async function main() {
   }
   if (withWorker) required.push(
     "dist-electron/oh-my-pi-worker",
-    "dist-electron/pi_natives.linux-x64-baseline.node",
     "dist-electron/agent-npm/bin/npm-cli.js",
   );
   for (const file of required) {
