@@ -1,0 +1,703 @@
+/* ── 안 B: 우측 2단 자석 팀 날개 (Magnetic Team Wing) ──
+   - 하단 팀 바를 제거하고 우측 플로팅 조수 카드 바로 왼쪽에 자석처럼 붙는 글래스 팀 날개
+   - 평상시(팀/첫 빌드 미실행): [hidden] 으로 완전 숨김
+   - 1121px 이상: 우측 조수 카드 왼쪽(8px 간격)에 216px 날개 / 38px 세로 레일 도킹
+   - 1120px 이하: 2단 날개를 숨기고 조수 카드 상단 1줄 슬림 팀 스트립으로 자동 폴백
+   - 색은 tokens.css 변수만 사용(hex 0, !important 0). */
+
+.ai-team-wing {
+  position: fixed;
+  top: auto;
+  left: auto;
+  right: calc(14px + min(392px, calc(100vw - 28px)) + 8px);
+  bottom: 22px;
+  width: 216px;
+  height: min(636px, calc(100vh - 96px));
+  max-height: calc(100vh - 84px);
+  border-radius: 14px;
+  border: 1px solid var(--border-default);
+  background: color-mix(in srgb, var(--bg-overlay) 95%, transparent);
+  backdrop-filter: none;
+  box-shadow: var(--shadow-pop);
+  color: var(--text-1);
+  font-family: var(--font-ui);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  pointer-events: auto;
+  z-index: 44;
+  transition: width 160ms ease, border-color 160ms ease;
+}
+
+html[data-ai-render="heavy"] .ai-team-wing {
+  backdrop-filter: blur(22px) saturate(1.08);
+}
+
+.ai-team-wing[hidden] {
+  display: none;
+}
+
+.ai-team-wing[data-phase="building"] {
+  border-color: color-mix(in srgb, var(--accent) 44%, var(--border-default));
+}
+
+.ai-team-wing[data-phase="review"] {
+  border-color: color-mix(in srgb, var(--warning) 56%, var(--border-default));
+}
+
+.ai-team-wing[data-phase="ready"] {
+  border-color: color-mix(in srgb, var(--success) 48%, var(--border-default));
+}
+
+.ai-team-wing[data-phase="failed"] {
+  border-color: color-mix(in srgb, var(--danger) 50%, var(--border-default));
+}
+
+/* 접힌 38px 세로 손잡이 레일 */
+.ai-team-wing[data-mode="rail"] {
+  width: 38px;
+}
+
+.ai-team-wing-rail-btn {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--text-1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  cursor: pointer;
+  font-family: var(--font-ui);
+}
+
+.ai-team-wing-rail-btn:hover {
+  background: var(--bg-hover);
+}
+
+.ai-team-wing-rail-chevron {
+  font-size: 12px;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.ai-team-wing-rail-dots {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+
+.ai-team-wing-rail-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--text-1) 18%, transparent);
+}
+
+.ai-team-wing-rail-dot.is-role-lead { background: var(--accent); }
+.ai-team-wing-rail-dot.is-role-builder { background: var(--warning); }
+.ai-team-wing-rail-dot.is-role-qa { background: var(--success); }
+.ai-team-wing-rail-dot.is-error { background: var(--danger); }
+
+.ai-team-wing-rail-text {
+  writing-mode: vertical-rl;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-2);
+  letter-spacing: 0.04em;
+}
+
+/* 상단 헤더 (4단계 마일스톤 + 라이브 상태) */
+.ai-team-wing-head {
+  padding: 10px 11px 9px;
+  background: color-mix(in srgb, var(--bg-surface) 92%, var(--accent-muted));
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: none;
+}
+
+.ai-team-wing-head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.ai-team-wing-title-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ai-team-wing-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: none;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.ai-team-wing-live-dot.is-done {
+  background: var(--success);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--success) 20%, transparent);
+}
+
+.ai-team-wing-live-dot.is-review {
+  background: var(--warning);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--warning) 22%, transparent);
+}
+
+.ai-team-wing-live-dot.is-error {
+  background: var(--danger);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 22%, transparent);
+}
+
+.ai-team-wing-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ai-team-wing-head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex: none;
+}
+
+.ai-team-wing-icon-btn {
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+  color: var(--text-2);
+  font: 700 11px/1 var(--font-ui);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ai-team-wing-icon-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+  border-color: var(--border-default);
+}
+
+.ai-team-wing-icon-btn.is-stop {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 40%, var(--border-subtle));
+  background: color-mix(in srgb, var(--danger) 12%, var(--bg-raised));
+}
+
+.ai-team-wing-icon-btn.is-stop:hover {
+  background: color-mix(in srgb, var(--danger) 22%, var(--bg-raised));
+}
+
+.ai-team-wing-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.ai-team-wing-step-seg {
+  height: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text-3) 26%, transparent);
+}
+
+.ai-team-wing-step-seg.is-done {
+  background: var(--success);
+}
+
+.ai-team-wing-step-seg.is-active {
+  background: var(--accent);
+}
+
+.ai-team-wing-step-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.ai-team-wing-step-name {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ai-team-wing-clock {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-3);
+  flex: none;
+}
+
+.ai-team-wing-status {
+  margin: 0;
+  font-size: 11px;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ai-team-wing-status.is-error {
+  color: var(--danger);
+}
+
+/* 본문: 팀원 카드 목록 */
+.ai-team-wing-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.ai-team-wing-section-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--text-3);
+  padding: 4px 2px 0;
+}
+
+.ai-team-wing-agent {
+  appearance: none;
+  width: 100%;
+  text-align: left;
+  padding: 7px 8px;
+  border-radius: var(--radius-m);
+  border: 1px solid var(--border-subtle);
+  border-left-width: 3px;
+  border-left-color: var(--accent);
+  background: var(--bg-surface);
+  color: var(--text-1);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  cursor: pointer;
+  font-family: var(--font-ui);
+  transition: border-color 130ms ease, background-color 130ms ease;
+}
+
+.ai-team-wing-agent:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-default);
+}
+
+.ai-team-wing-agent.is-selected {
+  background: color-mix(in srgb, var(--accent-muted) 60%, var(--bg-surface));
+  border-color: var(--accent-border);
+}
+
+.ai-team-wing-agent.is-role-lead { border-left-color: var(--accent); }
+.ai-team-wing-agent.is-role-builder { border-left-color: var(--warning); }
+.ai-team-wing-agent.is-role-qa { border-left-color: var(--success); }
+.ai-team-wing-agent.is-error { border-left-color: var(--danger); }
+
+.ai-team-wing-agent-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.ai-team-wing-agent-who {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-width: 0;
+}
+
+.ai-team-wing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex: none;
+  background: var(--accent);
+}
+
+.ai-team-wing-dot.is-role-lead { background: var(--accent); }
+.ai-team-wing-dot.is-role-builder { background: var(--warning); }
+.ai-team-wing-dot.is-role-qa { background: var(--success); }
+.ai-team-wing-dot.is-error { background: var(--danger); }
+
+.ai-team-wing-dot.is-pulse,
+.ai-team-wing-rail-dot.is-pulse {
+  animation: aiTeamWingPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes aiTeamWingPulse {
+  0%, 100% { opacity: 0.45; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.ai-team-wing-agent-name {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ai-team-wing-agent-state {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  flex: none;
+}
+
+.ai-team-wing-agent-state.is-done { color: var(--success); }
+.ai-team-wing-agent-state.is-error { color: var(--danger); }
+
+.ai-team-wing-thumb-wrap {
+  position: relative;
+  width: 100%;
+  height: 68px;
+  border-radius: var(--radius-s);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-inset);
+  pointer-events: none;
+}
+
+.ai-team-wing-thumb-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
+.ai-team-wing-thumb-label {
+  position: absolute;
+  left: 4px;
+  bottom: 4px;
+  max-width: calc(100% - 8px);
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--bg-overlay) 84%, transparent);
+  color: var(--text-1);
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ai-team-wing-map-chip {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text-2);
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--bg-inset);
+  align-self: flex-start;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ai-team-wing-agent-line {
+  margin: 0;
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 완료 요약 카드 */
+.ai-team-wing-done-card {
+  padding: 10px;
+  border-radius: var(--radius-m);
+  background: color-mix(in srgb, var(--success) 8%, var(--bg-surface));
+  border: 1px solid color-mix(in srgb, var(--success) 34%, var(--border-subtle));
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ai-team-wing-done-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--success);
+}
+
+.ai-team-wing-done-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ai-team-wing-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.ai-team-wing-stat {
+  padding: 6px 8px;
+  border-radius: var(--radius-s);
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ai-team-wing-stat strong {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.ai-team-wing-stat span {
+  font-size: 10px;
+  color: var(--text-3);
+}
+
+.ai-team-wing-cta {
+  width: 100%;
+  padding: 7px 10px;
+  border-radius: var(--radius-s);
+  border: 1px solid var(--border-default);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  font: 700 11.5px/1.2 var(--font-ui);
+  cursor: pointer;
+  text-align: center;
+}
+
+.ai-team-wing-cta:hover {
+  background: var(--bg-hover);
+}
+
+.ai-team-wing-cta.is-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.ai-team-wing-cta.is-primary:hover {
+  filter: brightness(1.06);
+}
+
+.ai-team-wing-empty {
+  padding: 14px 10px;
+  border-radius: var(--radius-m);
+  background: var(--bg-surface);
+  border: 1px dashed var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  color: var(--text-2);
+}
+
+.ai-team-wing-foot {
+  padding: 9px;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: none;
+}
+
+/* ── 좁은 화면(<= 1120px) 자동 폴백: 조수 카드 상단 1줄 슬림 팀 스트립 ── */
+.ai-team-wing-inline {
+  display: none;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--accent-muted) 38%, var(--bg-surface));
+  border-bottom: 1px solid var(--border-subtle);
+  flex: none;
+}
+
+.ai-team-wing-inline[hidden] {
+  display: none;
+}
+
+.ai-team-wing-inline-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.ai-team-wing-inline-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 11.5px;
+  color: var(--text-1);
+}
+
+.ai-team-wing-inline-title strong {
+  white-space: nowrap;
+}
+
+.ai-team-wing-inline-sub {
+  font-size: 11px;
+  color: var(--text-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ai-team-wing-inline-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+
+.ai-team-wing-mini-btn {
+  height: 22px;
+  padding: 0 7px;
+  border-radius: var(--radius-s);
+  border: 1px solid var(--border-default);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  font: 600 10.5px/1 var(--font-ui);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ai-team-wing-mini-btn.is-stop {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 42%, var(--border-subtle));
+}
+
+.ai-team-wing-mini-btn.is-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.ai-team-wing-inline-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.ai-team-wing-inline-pill {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 7px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-raised);
+  color: var(--text-2);
+  font: 600 10.5px/1 var(--font-ui);
+  cursor: pointer;
+}
+
+.ai-team-wing-inline-pill.is-selected {
+  border-color: var(--accent-border);
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+@media (max-width: 1120px) {
+  .ai-team-wing {
+    display: none;
+  }
+
+  .ai-team-wing-inline:not([hidden]) {
+    display: flex;
+  }
+}
+
+/* ── 복구된 컴포저 작업/팀 설정 칩 스타일 ── */
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-composer-team-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-raised);
+  color: var(--text-2);
+  font: 600 11px/1 var(--font-ui);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-composer-team-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+  border-color: var(--border-default);
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-composer-team-toggle[data-team="true"] {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+/* ── 접힘 우하단 통합 알약 라이브 팀 배지 ── */
+.fap-badge.is-team-running {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.fap-badge.is-team-done {
+  background: color-mix(in srgb, var(--success) 16%, transparent);
+  border-color: color-mix(in srgb, var(--success) 42%, transparent);
+  color: var(--success);
+}
+
+.fap-badge.is-team-review {
+  background: color-mix(in srgb, var(--warning) 16%, transparent);
+  border-color: color-mix(in srgb, var(--warning) 44%, transparent);
+  color: var(--warning);
+}
+
+.fap-badge.is-team-failed {
+  background: color-mix(in srgb, var(--danger) 16%, transparent);
+  border-color: color-mix(in srgb, var(--danger) 44%, transparent);
+  color: var(--danger);
+}
+
+/* 선택된 팀원 레인 강조 */
+.ai-run-lane.is-team-focused {
+  outline: 1.5px solid var(--accent-border);
+  border-radius: var(--radius-s);
+}

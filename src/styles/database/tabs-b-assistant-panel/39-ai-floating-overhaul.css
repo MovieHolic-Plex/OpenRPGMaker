@@ -316,7 +316,6 @@ html[data-ai-render="heavy"] .ai-right-dock .ai-chat-panel.is-workspace.is-left-
 .ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-composer-spend,
 .ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-composer-model,
 .ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-composer-stamp-toggle,
-.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-composer-team-toggle,
 .ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-composer-effort-select,
 .ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-conversation-outcome {
   display: none;

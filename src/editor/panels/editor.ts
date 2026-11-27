@@ -89,7 +89,7 @@ import { mountCanvasStatus } from "@/editor/panels/canvasToolPill";
 import { installPointerStrokeGate, runWhenPointerReleased } from "@/editor/pointerStrokeGate";
 import { mountEventAiQueueView, unmountEventAiQueueView } from "@/editor/eventAiQueue/eventAiQueueView";
 import { mountFirstRunGuide } from "./firstRunGuide";
-import { mountFirstBuildTheater } from "./firstBuildTheater";
+import { mountAiTeamWing } from "./aiTeamWing";
 
 /** 자동 연결 선택·한도 전환 감시는 편집기 수명 동안 한 번만 건다(편집기를 다시 열어도 중복되지 않게). */
 let autoProviderSwitchingInstalled = false;
@@ -368,7 +368,7 @@ export function renderEditor(main: HTMLElement): void {
   disposeFirstRunGuide?.();
   disposeFirstRunGuide = mountFirstRunGuide(aiDock, layout);
   disposeFirstBuildTheater?.();
-  disposeFirstBuildTheater = mountFirstBuildTheater(canvasArea, layout, () => { applyLayout(); scheduleFitCanvas(); });
+  disposeFirstBuildTheater = mountAiTeamWing(aiPanel, canvasArea, layout, () => { applyLayout(); scheduleFitCanvas(); });
 
   leftRoot = left;
   phaserHost = phaserContainer;
