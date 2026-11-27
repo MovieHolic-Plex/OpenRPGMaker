@@ -2,7 +2,11 @@
 import { describe, expect, it } from "vitest";
 import { createStarterBlankProject } from "@/project/defaults";
 import { createFreshStarterBlankProject } from "@/project/defaults/freshStarter";
-import { ensureBundledTilesets, removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
+import { ensureBundledResourceProfiles, ensureBundledTilesets, removeLegacySpriteReferences } from "@/project/defaults/defaultAssets";
+import { reshapeJpCityMapBorders } from "@/project/defaults/jpCityEdgeMigration";
+import { repairInteriorTransparentPropLayers } from "@/project/defaults/interiorTransparentPropLayerRepair";
+import { ensureSharedTileReferences } from "@/project/sharedTileReferences";
+import { externalizeBundledReferenceImages } from "@/project/bundledReferenceImages";
 import { deserialize, serialize } from "@/project/io";
 import { isFreshBundledTileset, isPendingLazyTileset } from "@/project/bundledTilesetLazy";
 import { cloneProjectSharingReferenceDocuments } from "@/project/projectClone";
@@ -17,8 +21,14 @@ describe("구운 새 번들 타일셋으로 짓는 빈 프로젝트", () => {
       expect(isFreshBundledTileset(project.tilesets[id])).toBe(true);
       expect(isPendingLazyTileset(project.tilesets[id])).toBe(!mapTilesets.has(id));
     }
+    // store.normalizeCurrentProject 가 타일셋을 읽는 정규화기들.
     ensureBundledTilesets(project);
+    reshapeJpCityMapBorders(project);
+    ensureSharedTileReferences(project);
+    externalizeBundledReferenceImages(project);
+    repairInteriorTransparentPropLayers(project);
     removeLegacySpriteReferences(project);
+    ensureBundledResourceProfiles(project);
     cloneProjectSharingReferenceDocuments(project);
     const wire = serialize(project);
     for (const id of ids) if (!mapTilesets.has(id)) expect(isPendingLazyTileset(project.tilesets[id])).toBe(true);
