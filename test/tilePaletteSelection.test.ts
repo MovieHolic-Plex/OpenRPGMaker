@@ -3,12 +3,18 @@ import { editorState } from "@/editor/editorState";
 import { paintTile } from "@/editor/actions";
 import { selectPaletteTile } from "@/editor/panels/tilePalette";
 import { SAND_TILE } from "@/project/defaults/chipsetMapping";
-import { createBlankProject, TILE } from "@/project/defaults";
+import { combinedTownTileset, createBlankProject, TILE } from "@/project/defaults";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 
 describe("tile palette selection", () => {
   beforeEach(() => {
-    store.replace(createBlankProject());
+    // TILE.*·SAND_TILE·378·441 은 합본 마을 칸 번호다. 새 프로젝트 시작 맵은 버들항(beodeul_city)이라 그 칸이
+    // 다른 그림·홈 레이어를 가리킨다(#5185) — 맵마다 합본 마을 타일셋을 걸어 시험 전제를 맞춘다.
+    const project = createBlankProject();
+    project.tilesets[COMBINED_TOWN_TILESET_ID] = combinedTownTileset();
+    for (const map of Object.values(project.maps)) map.tilesetId = COMBINED_TOWN_TILESET_ID;
+    store.replace(project);
     editorState.set({ currentMapId: null, layer: "upper", tool: "fill", selectedTile: TILE.GRASS });
   });
 
