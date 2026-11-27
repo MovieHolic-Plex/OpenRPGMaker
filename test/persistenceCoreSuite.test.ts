@@ -1,4 +1,4 @@
-import { expect, it, vi, describe, beforeAll } from "vitest";
+import { expect, it, vi, describe } from "vitest";
 import { canonicalJsonOf, canonicalJsonString } from "@/project/persistence/core/canonicalJson";
 import { authoredIdentity, composeProjectIdentity, contentIdentity, projectIdentityParts } from "@/project/authoredProjectBaseline";
 import { createBlankProject } from "@/project/defaults";
@@ -13,13 +13,11 @@ import { createMemoryRepository } from "@/project/persistence/memoryRepository";
 import { createLocalRepositoryFixture, type LocalRepositoryFixture } from "./localStore/localRepositoryFixture";
 import { isolateTimers } from "./mergedTeardown";
 
-describe("canonicalJsonIdentity", () => {
+describe("canonicalJsonIdentity", { timeout: 120000 }, () => {
   isolateTimers();
-  beforeAll(() => {
-    // createBlankProject() builds the ~63MB blank project; each test here builds it (beforeEach/inline) and CI runs 4 workers at once, so
-    // single tests measured 8-15s+ — past vitest's 15s default. Same per-file budget other blank-project files use (e.g. actionAcceptanceProof).
-    vi.setConfig({ testTimeout: 120_000 });
-  });
+  // 시험 시간 한도는 수집 때 읽혀 beforeAll 안 vi.setConfig 는 듣지 않는다 — describe 옵션 timeout 으로 둔다.
+  // createBlankProject() builds the ~63MB blank project; each test here builds it (beforeEach/inline) and CI runs 4 workers at once, so
+  // single tests measured 8-15s+ — past vitest's 15s default. Same per-file budget other blank-project files use (e.g. actionAcceptanceProof).
   // 체크포인트 적용 권위는 이 문자열의 **동일성**에 산다. 빠른 경로는 예전 왕복과 글자까지 같아야 한다.
   const roundtrip = (value: unknown): string => canonicalJsonString(JSON.parse(JSON.stringify(value)));
   it("matches the stringify → parse → canonical round trip on JSON edge cases", () => {

@@ -4,6 +4,7 @@ import type { CharacterMotionProfile } from "@/battle/characterMotion";
 const characterProfiles=new WeakMap<HTMLElement,CharacterMotionProfile>();
 import { sampleBasicMotion } from "@/battle/battleMotionProgram";
 import { beginEnemyCollapse } from "@/player/battleEnemyCollapse";
+import { animateBattleItemMotion, battleItemRecordForEntry, classifyBattleItem, isThrownItemKind } from "@/player/battleItemMotion";
 import { animateRetroSkillFx, battleEntrySkillRecord, clearRetroSkillFx, driveRetroClassSkill, isRetroClassSkillActor, preloadRetroClassSkillFx, preloadRetroSkillFx, retroSkillForEntry, setRetroSkillEntry, type RetroSkillRecipe } from "@/player/retroSkillChoreography";
 import { CAST_TYPES, EXTENDED_POSE_FRAME, castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import { isExtendedPixelGrid } from "@/assets/pixelEnemyGrid";
@@ -113,6 +114,7 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
       delete node.dataset.retroBeat;
       delete node.dataset.retroAction;
       delete node.dataset.retroSkill;
+      delete node.dataset.retroItemThrow;
       actorRecipes.delete(node);
       delete node.dataset.retroReach;
       delete node.dataset.retroStyle;
@@ -164,6 +166,10 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
           : recipe ? (recipe.approach === "still" ? "cast" : "attack")
           : entry && entry.commandKind === "skill" && isMeleeEntry(entry) ? "attack"
             : entry?.commandKind === "skill" || entry?.commandKind === "item" ? "cast" : "attack";
+    const itemRecord = entry?.commandKind === "item" ? battleItemRecordForEntry(entry) : undefined;
+    const itemVisual = entry?.commandKind === "item" ? classifyBattleItem(itemRecord) : undefined;
+    if (itemVisual && isThrownItemKind(itemVisual)) user.dataset.retroItemThrow = "true";
+    else delete user.dataset.retroItemThrow;
     // 마법 종류별 시전 칸(cast 시트). 걷기 칩 시트가 아니면 기존 시전 칸으로 떨어진다.
     const castType = recipe?.cast ?? (user.dataset.retroAction === "cast" && skill ? castTypeForSkill(skill) : undefined);
     if (castType) user.dataset.retroCast = castType;
@@ -214,6 +220,7 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     }
   }
   animateRetroSkillFx(field, user, beat);
+  animateBattleItemMotion(field, user, currentEntries.get(field), beat);
   user.dataset.retroBeat = beat.kind;
   user.style.setProperty("--retro-beat-ms", `${Math.max(1, beat.durationMs)}ms`);
   if (user.classList.contains("battle-enemy")) driveEnemyStillBeat(user, beat);
@@ -372,7 +379,15 @@ function animateExtendedBeat(node: HTMLElement, beat: BattleActionBeat): void {
         : [[0, recipe.release], [recipe.approach === "still" ? 0.72 : 0.2, "idle"]];
   }
   else if (action === "defend") frames = [[0, "defend"]];
-  else if (action === "item") frames = [[0, "item"]];
+  else if (action === "item") {
+    if (node.dataset.retroItemThrow === "true") {
+      frames = beat.kind === "approach" ? [[0, "attack_windup"], [0.65, "attack_strike"]]
+        : beat.kind === "impact" ? [[0, "attack"]]
+          : [[0, "attack_follow"], [0.55, "idle"]];
+    } else {
+      frames = [[0, "item"]];
+    }
+  }
   else if (action === "cast") {
     frames = beat.kind === "approach" ? [[0, "cast_charge"], [0.55, "cast_raise"]]
       : beat.kind === "impact" ? [[0, finisher ? "skill" : "cast_release"]]
@@ -401,7 +416,15 @@ function animateExtendedBeat(node: HTMLElement, beat: BattleActionBeat): void {
     ];
     }
   } else if (beat.kind === "impact") frames = [[0, "attack"]];
-  else frames = [[0, "attack_follow"], [0.18, "evade"], [0.86, "idle"]];
+  else {
+    // OT2식 잔심(Zanshin): 베기 마무리(attack_follow)를 28% 동안 지면에 박아 두고, 낮고 절도 있는 백스텝(evade)으로 복귀.
+    frames = [[0, "attack_follow"], [0.28, "evade"], [0.84, "idle"]];
+    if (action === "attack" && !recipe && (!character || character.returnMode === "hop") && node.dataset.retroStyle !== "blink" && !reduced() && length > 0) {
+      scheduleBattleTimer(() => {
+        if (node.isConnected && beatGenerations.get(node) === generation) spawnDust(node);
+      }, Math.round(length * 0.83));
+    }
+  }
   if(beat.kind==="recover"&&action==="attack"&&!recipe&&character&&character.returnMode!=="hop"&&!reduced()&&length>0&&node.animate){
     const dx=Number.parseFloat(node.style.getPropertyValue("--retro-travel"))||0,dy=Number.parseFloat(node.style.getPropertyValue("--retro-travel-y"))||0;
     approachAnimations.get(node)?.cancel();
@@ -630,9 +653,9 @@ export function retroApproachStyle(actorId: string | undefined): RetroApproachSt
 function approachMsFor(style: RetroApproachStyle, path: number): number {
   const clamp = (value: number, min: number, max: number) => Math.round(Math.max(min, Math.min(max, value)));
   if (style === "blink") return 400;
-  if (style === "flash") return 290;
+  if (style === "flash") return 280;
   if (style === "leap") return clamp(220 + path / 1.3, 360, 500);
-  return clamp(170 + path / 1.2, 300, 440);
+  return clamp(150 + path / 1.4, 260, 380);
 }
 
 const approachAnimations = new WeakMap<HTMLElement, Animation>();
@@ -647,7 +670,9 @@ function animateMeleeApproach(node: HTMLElement, length: number): readonly [numb
   const dy = Number.parseFloat(node.style.getPropertyValue("--retro-travel-y")) || 0;
   const start = Number.parseFloat(node.style.getPropertyValue("--retro-start")) || 0;
   const character=characterProfiles.get(node);
-  const swing = Math.min(0.48, 200*(character?.anticipation??1) / Math.max(1, length));
+  const swing = style === "dash"
+    ? Math.min(0.28, 95 * (character?.anticipation ?? 1) / Math.max(1, length))
+    : Math.min(0.48, 200 * (character?.anticipation ?? 1) / Math.max(1, length));
   const arrive = 1 - swing;
   type Key = { offset: number; translate: string; opacity?: number; filter?: string; easing?: string };
   const at = (fx: number, fy: number, lift = 0) => `${Math.round(start + (dx - start) * fx)}px ${Math.round(dy * fy - lift*(character?.jump??1))}px`;
@@ -687,15 +712,23 @@ function animateMeleeApproach(node: HTMLElement, length: number): readonly [numb
     ];
     frames = [[0, "attack_windup"], [ready, "walk_c"], [hit, "attack_strike"]];
   } else {
-    const lean = Math.min(0.38, 110*(character?.anticipation??1) / Math.max(1, length));
+    // 질주 중 마지막 구간에서 이미 검을 젖혀(attack_windup) 멈춤 없이 진입하고, 착탄 직전 ~40ms만 스미어(attack_strike)를 번쩍인다.
+    const lean = Math.min(0.26, 75 * (character?.anticipation ?? 1) / Math.max(1, length));
+    const smearAt = Math.max(arrive + 0.06, Math.min(0.92, 1 - 42 / Math.max(1, length)));
     keys = [
       { offset: 0, translate: at(0, 0) },
-      { offset: lean, translate: at(-0.05, 0, -1), easing: "cubic-bezier(.5,0,.2,1)" },
-      { offset: arrive - 0.06, translate: at(1.06, 1) },
-      { offset: arrive, translate: at(1, 1) },
+      { offset: lean, translate: at(-0.07, 0, -2), easing: "cubic-bezier(.5,0,.2,1)" },
+      { offset: arrive, translate: at(0.98, 1) },
+      { offset: smearAt, translate: at(1.08, 1) },
       { offset: 1, translate: at(1, 1) },
     ];
-    frames = [[0, "attack_windup"], [lean, "walk_a"], [lean + (arrive - lean) * 0.4, "walk_c"], [arrive - 0.06, "attack_strike"]];
+    frames = [
+      [0, "attack_windup"],
+      [lean, "walk_a"],
+      [lean + (arrive - lean) * 0.42, "walk_c"],
+      [Math.max(lean + 0.08, arrive - 0.12), "attack_windup"],
+      [smearAt, "attack_strike"],
+    ];
   }
   approachAnimations.get(node)?.cancel();
   const sampled=style==="blink"?keys:Array.from({length:Math.max(2,Math.ceil(length/16)+1)},(_,i)=>{const u=i/(Math.max(2,Math.ceil(length/16)+1)-1),p=sampleBasicMotion(keys,u,style);return {offset:u,translate:`${p.x}px ${p.y}px`};});
@@ -706,8 +739,11 @@ function animateMeleeApproach(node: HTMLElement, length: number): readonly [numb
   const cue: MotionCue = style;
   scheduleBattleTimer(() => { if (node.isConnected) motionSe(cue, style === "blink" ? 0.34 : 0.26); }, Math.round(length * departAt));
   if (style === "leap") scheduleBattleTimer(() => { if (node.isConnected) motionSe("land", 0.32); }, Math.round(length * arrive));
-  // 잔상: 질주·섬광은 지나간 자리에 스프라이트 사본을 짧게 남긴다(도트 게임의 잔상 문법).
-  if (style === "dash" || style === "flash") spawnAfterimages(node, keys, length, style === "flash" ? 4 : 3);
+  // 잔상·발밑 먼지: 질주·섬광은 출발 먼지와 잔상을, 도약은 착지 먼지를 남긴다.
+  if (style === "dash" || style === "flash") {
+    spawnAfterimages(node, keys, length, style === "flash" ? 4 : 3);
+    scheduleBattleTimer(() => spawnDust(node), Math.round(length * departAt));
+  }
   if (style === "leap") scheduleBattleTimer(() => spawnDust(node), Math.round(length * arrive));
   return frames;
 }
