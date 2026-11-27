@@ -1395,6 +1395,7 @@ bytes after real remote reload and Test Play. The default is not remote proof.
     - 왜: 패키지 앱의 새 빈 프로젝트가 정의 약 47MB 읽기·74MiB 짓기(1.9s) → 번들 정규화(1.3s) → 첫 저장의 복제·차이(3.3s)와 78MB 쓰기를 편집 화면 앞에서 했다.
     - 만든 항목은 «새 항목» 표지(`isFreshBundledTileset`, `bundledTilesetLazy.ts`)를 단다. 구운 보기는 이미 정규화를 거친 값이라 `ensureBundledTilesets`·`removeLegacySpriteReferences`·`forgetBundledTilesetDiffViews` 는 그 항목을 건너뛰고, `store.normalizeCurrentProject` 는 그 정의를 미리 읽지 않는다(`preloadBundledTilesetDefinitionsForNormalization`). 표지는 메모리에만 있다 — 저장본을 다시 열면(다른 빌드 포함) 평범한 지연 항목이다.
     - 저장 형식은 바뀌지 않는다: 저장본에는 위 차이 보기(대개 머리 + 키 목록)가 그대로 실린다. 내보내기·플레이어·조수 체크포인트·구운 요약(`bundledTilesetDigests`)은 다시 열기의 지연 항목과 같은 길을 탄다.
+    - 호스트(Electron main `saveSerialized`)도 구운 보기와 글자까지 같은 항목은 되돌려 검사하지 않는다(`freshBundledViewsHost.ts`, 지연으로 두고 제목·맵 거울만 쓴다) — 빈 새 프로젝트 첫 저장에서 정의 49개 짓기·검사 약 1.4s. 저자가 고친 항목은 예전처럼 되돌려 검사한다.
     - **번들 타일셋 정의나 그 정규화기를 바꾸면** `node_modules/.bin/vite-node --script scripts/content/bake-fresh-bundled-tileset-views.mts` 로 다시 굽는다. ci-fast 가 `--check` 로 낡음을 막고, `test/freshStarter.test.ts` 가 «되돌린 값 = 정규화한 새 타일셋, 정규화기가 더 바꿀 것 없음»을 지킨다.
   - **기억:** 차이 보기는 타일셋 객체별로 기억하고, 필드 정체 + 배열 필드의 길이·원소 정체가 모두 같을 때만 쓴다(로드 정규화가 되돌린 객체를 제자리에서 고쳐도 잡는다). 같은 원소 객체 안 속성의 제자리 수정은 못 잡는다 — `sharedDictionaryJson` 의 글 기억과 같은 전제(스토어 항목은 `store.update` 가 읽을 때 복제한다).
   - 저장 왕복 검사(`serializeForRoundtripCheck`)는 차이 보기 대신 온전한 항목의 투영본을 넣는다 — 체크포인트마다 번들 정의를 다시 만들지 않는다.

@@ -10,6 +10,7 @@ import { externalizeBundledReferenceImages } from "@/project/bundledReferenceIma
 import { deserialize, serialize } from "@/project/io";
 import { isFreshBundledTileset, isPendingLazyTileset } from "@/project/bundledTilesetLazy";
 import { cloneProjectSharingReferenceDocuments } from "@/project/projectClone";
+import { untouchedFreshBundledTilesetIds } from "@/project/defaults/freshBundledViewsHost";
 
 describe("구운 새 번들 타일셋으로 짓는 빈 프로젝트", () => {
   it("맵이 쓰는 타일셋만 되돌리고, 정규화기는 나머지를 되돌리지 않으며, 저장본에는 차이만 싣는다", async () => {
@@ -56,5 +57,16 @@ describe("구운 새 번들 타일셋으로 짓는 빈 프로젝트", () => {
     const fresh = await createFreshStarterBlankProject();
     const reloaded = deserialize(serialize(fresh));
     expect(JSON.stringify(reloaded.tilesets)).toBe(JSON.stringify(fresh.tilesets));
+  }, 300_000);
+
+  it("호스트 저장 검사는 구운 보기와 같은 항목만 건너뛴다 — 저자가 고친 항목은 되돌려 검사한다", async () => {
+    const fresh = await createFreshStarterBlankProject();
+    const ids = Object.keys(fresh.tilesets);
+    expect([...untouchedFreshBundledTilesetIds(JSON.parse(serialize(fresh)))].sort()).toEqual([...ids].sort());
+    const edited = fresh.tilesets.sf_station!;
+    fresh.tilesets.sf_station = { ...edited, name: "고친 이름" };
+    const untouched = untouchedFreshBundledTilesetIds(JSON.parse(serialize(fresh)));
+    expect(untouched.has("sf_station")).toBe(false);
+    expect(untouched.size).toBe(ids.length - 1);
   }, 300_000);
 });
