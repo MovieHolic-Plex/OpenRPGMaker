@@ -441,7 +441,7 @@ const authorInteractivePropTool: ToolDefinition = {
       baseGrid: {
         type: "array",
         items: { type: "string" },
-        description: "모드 B: 0번 정지 프레임 픽셀 문자 격자(가로·세로 8~64px, 권장 16x16~32x32).",
+        description: "모드 B: 0번 정지 프레임 픽셀 문자 격자(24×32 캐릭터 1:1 도트 밀도 기준 — 소형 항아리·상자 16×16~24×20, 세로 가구·문 16×32~24×36, 대형 제단·석상 32×32~48×48).",
       },
       motionRecipe: {
         type: "string",
