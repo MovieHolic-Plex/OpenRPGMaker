@@ -12,7 +12,7 @@
 import { openAiAssistantPanel } from "@/editor/aiAssistantBridge";
 import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
-import { currentTeamReviewActions, subscribeTeamActivity } from "@/ai/piAgent/teamActivity";
+import { currentTeamReviewActions, subscribeTeamActivity, type TeamReviewActions } from "@/ai/piAgent/teamActivity";
 import { teamBoardTotals, type TeamBoardAgent, type TeamBoardState } from "@/ai/piAgent/teamBoardState";
 import { store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
@@ -214,6 +214,8 @@ export function mountAiTeamWing(
 
   let latestBoard: TeamBoardState | null = null;
   let dismissedTeamBoardRef: TeamBoardState | null = null;
+  let ignoredScopeBoardRef: TeamBoardState | null = null;
+  const ignoredScopeTraceIds = new Set<string>();
   let folded = loadFolded();
   let selectedAgentId: string | null = null;
   let runStartedAt: number | null = null;
@@ -223,6 +225,16 @@ export function mountAiTeamWing(
   let lastPillSig = "";
   let lastFocusActive = false;
   let activeClockEl: HTMLElement | null = null;
+
+  const isBoardOwnedByCurrentProject = (board: TeamBoardState | null): boolean => {
+    if (!board) return false;
+    if (board === ignoredScopeBoardRef) return false;
+    const traceId = board.trace?.id;
+    if (traceId && ignoredScopeTraceIds.has(traceId)) return false;
+    const boardProjectId = board.trace?.projectId;
+    if (boardProjectId && boardProjectId !== store.getProjectIdentity().id) return false;
+    return true;
+  };
 
   const updateClockText = (): void => {
     if (!activeClockEl) return;
@@ -312,7 +324,12 @@ export function mountAiTeamWing(
       firstBuildDismissed = false;
       dismissedBriefKey = null;
       ignoredFirstBuildBoardRef = latestBoard;
+      ignoredScopeBoardRef = latestBoard;
+      if (latestBoard?.trace?.id) ignoredScopeTraceIds.add(latestBoard.trace.id);
+      dismissedTeamBoardRef = latestBoard;
       firstBuildBoard = null;
+      runStartedAt = null;
+      lastBoardWasRunning = false;
       autoOpenedForFirstBuild = false;
       selectedAgentId = null;
     } else if (shouldRearmFirstBuild({
@@ -345,6 +362,7 @@ export function mountAiTeamWing(
 
     const teamBoardVisible =
       latestBoard !== null &&
+      isBoardOwnedByCurrentProject(latestBoard) &&
       latestBoard !== dismissedTeamBoardRef &&
       latestBoard.mode === "team" &&
       latestBoard.phase !== "버림";
@@ -570,6 +588,7 @@ export function mountAiTeamWing(
     agents: readonly TeamBoardAgent[],
     workerCount: number,
     isFirstBuild: boolean,
+    reviewActions: TeamReviewActions | null,
   ): void => {
     const stepLabel = phase === "ready"
       ? (isFirstBuild ? "MVP 준비 완료" : "팀 작업 완료")
@@ -587,6 +606,23 @@ export function mountAiTeamWing(
           text: "■ 멈춤",
           attrs: { type: "button", title: "팀 작업 멈춤" },
           on: { click: () => stopAllPresences() },
+        }),
+      );
+    } else if (phase === "review" && reviewActions) {
+      actionBtns.push(
+        el("button", {
+          class: "ai-team-wing-mini-btn is-primary",
+          text: "변경 적용",
+          attrs: { type: "button" },
+          dataset: { testid: "ai-team-wing-inline-apply" },
+          on: { click: () => reviewActions.apply() },
+        }),
+        el("button", {
+          class: "ai-team-wing-mini-btn",
+          text: "버리기",
+          attrs: { type: "button" },
+          dataset: { testid: "ai-team-wing-inline-discard" },
+          on: { click: () => reviewActions.discard() },
         }),
       );
     } else if (phase === "ready") {
@@ -634,7 +670,7 @@ export function mountAiTeamWing(
           el("span", {
             class: "ai-team-wing-inline-title",
             children: [
-              el("span", { class: `ai-team-wing-live-dot${phase === "ready" ? " is-done" : phase === "failed" ? " is-error" : ""}`, attrs: { "aria-hidden": "true" } }),
+              el("span", { class: `ai-team-wing-live-dot${phase === "ready" ? " is-done" : phase === "failed" ? " is-error" : phase === "review" ? " is-review" : ""}`, attrs: { "aria-hidden": "true" } }),
               el("strong", { text: `팀 ${Math.max(1, workerCount)}명 · ${stepLabel}` }),
               el("span", { class: "ai-team-wing-inline-sub", text: statusLine }),
             ],
@@ -725,7 +761,7 @@ export function mountAiTeamWing(
     }
     lastRenderSig = sig;
 
-    renderInlineFallback(state.phase, state.stepIndex, state.statusLine, agents, workerCount, state.isFirstBuild);
+    renderInlineFallback(state.phase, state.stepIndex, state.statusLine, agents, workerCount, state.isFirstBuild, reviewActions);
 
     if (folded) {
       activeClockEl = null;
@@ -932,14 +968,28 @@ export function mountAiTeamWing(
   const unsubEditor = editorState.subscribe(() => render());
   const unsubTeam = subscribeTeamActivity((next) => {
     latestBoard = next;
-    if (next && next !== dismissedTeamBoardRef && isRunningBoard(next)) {
+    const owned = isBoardOwnedByCurrentProject(next);
+    if (next && owned && next !== dismissedTeamBoardRef && isRunningBoard(next)) {
       dismissedTeamBoardRef = null;
     }
     if (!initialized) {
       ignoredFirstBuildBoardRef = next;
       return;
     }
-    if (firstBuildTracked && !completedFirstBuild && next !== ignoredFirstBuildBoardRef) {
+    // 첫 빌드 완료 요약이 남아 있는 상태에서 현재 프로젝트의 새 팀 실행이 시작되면 완료 요약을 종료하고 새 팀 보드로 전환한다.
+    const isFreshTeamRun =
+      next !== null &&
+      owned &&
+      next.mode === "team" &&
+      isRunningBoard(next) &&
+      next !== ignoredFirstBuildBoardRef &&
+      next !== firstBuildBoard &&
+      (!firstBuildBoard?.trace?.id || next.trace?.id !== firstBuildBoard.trace.id);
+    if (completedFirstBuild && isFreshTeamRun) {
+      firstBuildTracked = false;
+      completedFirstBuild = false;
+      firstBuildBoard = null;
+    } else if (firstBuildTracked && !completedFirstBuild && owned && next !== ignoredFirstBuildBoardRef) {
       firstBuildBoard = next;
     }
     render();
