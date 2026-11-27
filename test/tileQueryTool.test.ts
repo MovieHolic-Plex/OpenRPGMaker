@@ -93,14 +93,15 @@ describe("tile_query authored knowledge", () => {
       def.passability[tileId] = { down: true, left: false, right: false, up: false };
     }
 
-    const vocabResult = runTool(ctx, "tile_query", { ask: "vocab" }, { dryRun: true });
+    // 시작 맵은 버들항이라 타일셋을 생략하면 그쪽 어휘가 나온다(#5185) — 그룹을 심은 합본 마을을 명시한다.
+    const vocabResult = runTool(ctx, "tile_query", { ask: "vocab", tilesetId: COMBINED_TOWN_TILESET_ID }, { dryRun: true });
     expect(vocabResult.ok, vocabResult.summary).toBe(true);
     const vocabData = vocabResult.data as { groups: { name: string; blockSize?: { width: number; height: number }; passage?: unknown }[] };
     const group = vocabData.groups.find((entry) => entry.name === "북쪽 반복 절벽");
     expect(group?.blockSize).toEqual({ height: 3, width: 2 });
     expect(group?.passage).toEqual({ down: true, left: false, right: false, up: false });
 
-    const labelsResult = runTool(ctx, "tile_query", { ask: "labels", query: "반복 절벽" }, { dryRun: true });
+    const labelsResult = runTool(ctx, "tile_query", { ask: "labels", query: "반복 절벽", tilesetId: COMBINED_TOWN_TILESET_ID }, { dryRun: true });
     expect(labelsResult.ok, labelsResult.summary).toBe(true);
     const labelsData = labelsResult.data as { labels: { kind: string; label: string; patternKind?: string; placementRules?: string }[] };
     expect(labelsData.labels).toContainEqual(expect.objectContaining({
