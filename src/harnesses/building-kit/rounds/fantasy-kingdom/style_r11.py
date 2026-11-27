@@ -242,24 +242,28 @@ def _make_wall_veranda(line):
     if line == 'A':
         pl_h, pl_l, pl_m, pl_s = 'p4', 'p3', 'p2', 'p1'
         tm_h, tm_l, tm_m, tm_d = 'w6', 'w5', 't4', 't1'
-        dk_h, dk_l, dk_m, dk_s = 'w6', 'w5', 'w4', 't3'   # 밝은 황금 덱 바닥(위쪽 노출)
-        sh_bg, sh_lo = 't2', 't3'                         # 난간살 뒤 그늘진 발코니 안쪽 바닥(난간살 w6과 2단 대비!)
+        dk_h, dk_l, dk_m, dk_s = 'w6', 'w5', 'w4', 't3'
+        sh_bg, sh_lo = 't2', 't3'
         void_d, void_m = 't1', 't2'
-        gl_d, gl_m, gl_h = 's0', 's2', 'p4'
+        # 형광 보라(s2) 폐기 → 차분한 먹청 유리(c0/c2/c4) + 아랫단 따뜻한 촛불 커튼(r3/r4)!
+        gl_d, gl_m, gl_h, gl_w = 'c0', 'c2', 'c4', 'r4'
+        hdr = 'r1'
     elif line == 'B':
         pl_h, pl_l, pl_m, pl_s = 'a6', 'a5', 'a4', 'a2'
         tm_h, tm_l, tm_m, tm_d = 'a6', 'a5', 'k3', 'k0'
         dk_h, dk_l, dk_m, dk_s = 'a6', 'a5', 'a4', 'a2'
         sh_bg, sh_lo = 'a1', 'a2'
         void_d, void_m = 'i0', 'a1'
-        gl_d, gl_m, gl_h = 's0', 's2', 's3'
+        gl_d, gl_m, gl_h, gl_w = 'i0', 'c2', 'a6', 'r4'
+        hdr = 's0'
     else:
         pl_h, pl_l, pl_m, pl_s = 'w6', 'w5', 'w4', 'w2'
         tm_h, tm_l, tm_m, tm_d = 'g6', 'g5', 'w4', 'w1'
         dk_h, dk_l, dk_m, dk_s = 'g6', 'g5', 'g4', 'w3'
         sh_bg, sh_lo = 'w2', 'w3'
         void_d, void_m = 'w1', 'w2'
-        gl_d, gl_m, gl_h = 's0', 's2', 'p3'
+        gl_d, gl_m, gl_h, gl_w = 'c0', 'c2', 'w6', 'r4'
+        hdr = 'r0'
 
     def bg_upper(lx, y):
         if y == 0:
@@ -382,37 +386,40 @@ def _make_wall_veranda(line):
             return bg_upper(lx, y)
 
         if pidx == 1:
-            # m: 숨통 트이는 중앙 후퇴 베란다 출입구(RM2000 우상단처럼 굵은 어두운 문틀 + 넓은 밝은 회벽 여백!)
+            # m: 따뜻한 실내 불빛이 살짝 비치는 후퇴 베란다 출입구(형광 파랑 제거!)
             if 3 <= y <= 14 and 4 <= lx <= 11:
                 if y == 3:
-                    return tm_m if lx <= 9 else tm_d  # 굵은 상인방
+                    return tm_m if lx <= 9 else tm_d
                 if lx in (4, 11):
                     return tm_d
                 if y == 4 or lx == 5:
-                    return void_d  # 깊은 실내 그림자
+                    return void_d
                 if 5 <= y <= 9 and 6 <= lx <= 9:
                     if lx == 7 or y == 7:
                         return tm_m
-                    if (lx, y) in ((6, 6), (8, 6)):
-                        return gl_h
-                    return gl_m if y >= 8 else gl_d
+                    if (lx, y) in ((6, 6), (8, 8)):
+                        return gl_w  # 따뜻한 실내 촛불 반사!
+                    return 'r3' if y >= 8 else gl_d
                 return void_d if lx <= 7 else void_m
             return bg_upper(lx, y)
 
         if pidx == 2:
-            # w: 주변에 밝은 회벽 여백(2px)을 둔 깔끔한 2층 베란다 창(복잡한 덧문 과밀 제거 → 1× 가독성 극대화!)
+            # w: 적갈색/청석 장식 상인방 + 먹청 유리 & 하단 따뜻한 촛불 커튼(wall.timber와 완전히 다른 디자인!)
             if 3 <= y <= 13 and 3 <= lx <= 12:
                 if y == 3:
-                    return tm_h if lx < 10 else tm_d
+                    return hdr if lx < 11 else tm_d
                 if y == 13:
-                    return tm_h if lx <= 8 else tm_d  # 밝은 창턱
+                    return tm_h if lx <= 8 else tm_d
                 if lx in (3, 12) or y == 4:
                     return tm_d
                 if lx in (7, 8) or y == 8:
                     return tm_m
-                if (lx, y) in ((5, 6), (6, 6), (9, 6), (5, 10)):
+                if y >= 10:
+                    # 하단 따뜻한 커튼·촛불 은은한 광택
+                    return gl_w if lx in (5, 10) else ('r3' if line != 'B' else gl_m)
+                if (lx, y) in ((5, 6), (6, 6), (9, 6)):
                     return gl_h
-                return gl_m if y >= 9 else gl_d
+                return gl_m if y >= 7 else gl_d
             return bg_upper(lx, y)
 
         # d(3): 2층 발코니 큰 문
@@ -545,8 +552,8 @@ def _make_wall_tower(line):
                 if lx in (5, 10) or y in (7, 19):
                     return st_h if lx == 5 else st_d
                 if (lx, y) in ((7, 10), (7, 11)):
-                    return gl_h
-                return 's0' if y < 14 else 's2'
+                    return 'c4' if line != 'B' else 'a6'
+                return 'i0' if y < 14 else 'c2'
             return stone_cyl(8 + lx, y)
         # d(3)
         if 7 <= y <= 29 and 3 <= lx <= 12:
@@ -797,15 +804,16 @@ def _make_extra_gable_peak(line, green=False):
     if line == 'A':
         pl_l, pl_m, pl_s = 'p3', 'p2', 'p1'
         tm_h, tm_l, tm_m, tm_d = 't6', 't4', 't3', 't1'
-        gl_d, gl_m, gl_h = 's0', 's2', 'p4'
+        # 청록 박공은 차분한 먹청 유리(c0/c2/c4), 기본(붉은) 박공은 따뜻한 촛불 다락창(r2/r3/r4)!
+        gl_d, gl_m, gl_h = ('c0', 'c2', 'c4') if green else ('r2', 'r3', 'r4')
     elif line == 'B':
         pl_l, pl_m, pl_s = 'a5', 'a4', 'a2'
         tm_h, tm_l, tm_m, tm_d = 'k5', 'k4', 'k2', 'k0'
-        gl_d, gl_m, gl_h = 's0', 's2', 's3'
+        gl_d, gl_m, gl_h = ('i0', 'c2', 'a6') if green else ('c0', 'c3', 'a6')
     else:
         pl_l, pl_m, pl_s = 'w5', 'w4', 'w2'
         tm_h, tm_l, tm_m, tm_d = 'w6', 'w4', 'w2', 'w1'
-        gl_d, gl_m, gl_h = 's0', 's2', 'p3'
+        gl_d, gl_m, gl_h = ('c0', 'c2', 'w6') if green else ('w2', 'w5', 'r4')
 
     # 진짜 뾰족 삼각 박공(^): y=1 꼭대기 2px(x=23,24) → y=19 처마 양끝(0..47),
     # 빗변 바깥 3px 은 지붕 기와/박공널, 안쪽 삼각(y=7..31)은 진짜 삼각 반목조 박공벽 + 마룻대공 + 다락창!
@@ -899,15 +907,15 @@ def _make_gable_dormer_teal(line):
     if line == 'A':
         pl_l, pl_m = 'p3', 'p2'
         tm_l, tm_m, tm_d = 't4', 't3', 't1'
-        gl_d, gl_m, gl_h = 's0', 's2', 'p4'
+        gl_d, gl_m, gl_h = 'c0', 'c2', 'r4'   # 먹청 유리 + 따뜻한 촛불 반짝임!
     elif line == 'B':
         pl_l, pl_m = 'a5', 'a4'
         tm_l, tm_m, tm_d = 'k4', 'k2', 'k0'
-        gl_d, gl_m, gl_h = 's0', 's2', 's3'
+        gl_d, gl_m, gl_h = 'i0', 'c2', 'a6'
     else:
         pl_l, pl_m = 'w5', 'w4'
         tm_l, tm_m, tm_d = 'w4', 'w2', 'w1'
-        gl_d, gl_m, gl_h = 's0', 's2', 'p3'
+        gl_d, gl_m, gl_h = 'c0', 'c2', 'r4'
 
     rows = []
     for y in range(32):
@@ -1560,17 +1568,20 @@ def _make_wall_balcony_upper(line):
     if line == 'A':
         pl_h, pl_l, pl_m, pl_s = 'p4', 'p3', 'p2', 'p1'
         tm_h, tm_l, tm_m, tm_d = 'w5', 't4', 't3', 't1'
-        gl_d, gl_m, gl_h = 's0', 's2', 'p4'
+        gl_d, gl_m, gl_h, gl_w = 'c0', 'c2', 'c4', 'r4'   # 먹청 하늘 반사 + 따뜻한 실내 불빛(형광 보라 폐기!)
+        drp_l, drp_d = 'r1', 'r0'                          # 버건디/테라코타 드레이프 커튼!
         sh_l, sh_d = 'r3', 'r0'
     elif line == 'B':
         pl_h, pl_l, pl_m, pl_s = 'a6', 'a5', 'a4', 'a2'
         tm_h, tm_l, tm_m, tm_d = 'k5', 'k4', 'k2', 'k0'
-        gl_d, gl_m, gl_h = 's0', 's2', 's3'
-        sh_l, sh_d = 's2', 'i0'
+        gl_d, gl_m, gl_h, gl_w = 'i0', 'c2', 'a6', 'r4'
+        drp_l, drp_d = 's1', 's0'
+        sh_l, sh_d = 'c3', 'i0'
     else:
         pl_h, pl_l, pl_m, pl_s = 'w6', 'w5', 'w4', 'w2'
         tm_h, tm_l, tm_m, tm_d = 'g6', 'g5', 'w3', 'w1'
-        gl_d, gl_m, gl_h = 's0', 's2', 'p3'
+        gl_d, gl_m, gl_h, gl_w = 'c0', 'c2', 'w6', 'r4'
+        drp_l, drp_d = 'r1', 'r0'
         sh_l, sh_d = 'w4', 'w1'
 
     def bg_px(lx, y):
@@ -1598,11 +1609,10 @@ def _make_wall_balcony_upper(line):
             return tm_d
         if (pidx == 0 and lx == 0) or (pidx == 4 and lx == 15):
             return tm_d
-        # 하단 목재 굽도리(y=29..31 — m 프렌치 도어 발코니 출입구 lx=4..11 에서는 바닥까지 열려 밝은 문턱!)
         if y >= 29:
             if pidx in (1, 3) and 4 <= lx <= 11:
                 if y == 31:
-                    return tm_h if lx <= 8 else tm_l  # 덱 바닥으로 이어지는 밝은 문턱!
+                    return tm_h if lx <= 8 else tm_l
                 if lx in (4, 11):
                     return tm_d
                 if lx in (7, 8):
@@ -1613,7 +1623,6 @@ def _make_wall_balcony_upper(line):
             return tm_l if (y == 29 and lx % 4 != 2) else tm_m
 
         if pidx in (0, 4):
-            # l/r: 코너 목조 기둥 + 가로 중방(y=17) + 사선 가새
             if (pidx == 0 and lx == 1) or (pidx == 4 and lx == 14):
                 return tm_l if pidx == 0 else tm_m
             if y in (17, 18):
@@ -1625,23 +1634,24 @@ def _make_wall_balcony_upper(line):
             return bg_px(lx, y)
 
         if pidx == 1:
-            # ★ m: 2층 발코니 덱 바닥까지 닿는 프렌치 유리 이중 발코니 도어(y=5..31, lx=4..11)!
-            #    양끝 lx=0..3 / 12..15 는 깨끗한 회벽 + 수평 허리보(y=17..18)로 S=0 유지!
+            # ★ m: 둥근 아치 상단 + 하늘 반사 먹청 유리 & 하단 따뜻한 촛불 반사 프렌치 발코니 이중문(y=5..31)!
             if 5 <= y <= 28 and 4 <= lx <= 11:
+                if y == 5 and lx in (4, 11):
+                    return bg_px(lx, y)
                 if y == 5:
-                    return tm_h if lx <= 9 else tm_d  # 상인방
-                if lx in (4, 11) or y == 6:
+                    return tm_h if lx <= 8 else tm_d
+                if lx in (4, 11) or (y == 6 and lx in (5, 10)):
                     return tm_d
                 if lx in (7, 8):
-                    return tm_m if y < 20 else tm_d  # 이중문 중앙 여닫이 틈
+                    return tm_m if y < 20 else tm_d
                 if y <= 19:
-                    # 상단 유리 격자창(발코니 프렌치 도어!)
                     if y in (12, 19):
                         return tm_m
-                    if (lx, y) in ((5, 8), (6, 8), (9, 8), (5, 14)):
+                    if y >= 14:
+                        return gl_w if lx in (6, 9) else ('r3' if line != 'B' else gl_m)
+                    if (lx, y) in ((5, 8), (6, 8), (9, 8), (6, 9)):
                         return gl_h
-                    return gl_m if y >= 14 else gl_d
-                # 하단 목재 도어 패널(y=20..28) + 문손잡이(y=21, lx=6/9)
+                    return gl_m if y >= 10 else gl_d
                 if y == 21 and lx in (6, 9):
                     return 'r4' if line == 'A' else 'k5'
                 return tm_l if lx <= 7 else tm_m
@@ -1650,26 +1660,31 @@ def _make_wall_balcony_upper(line):
             return bg_px(lx, y)
 
         if pidx == 2:
-            # w: 넓은 회벽 여백 + 깔끔한 2층 창 + 화분 상자
-            if 6 <= y <= 22 and 3 <= lx <= 12:
-                if y == 6:
+            # ★ w: 양옆 버건디 드레이프 커튼 + 중앙 따뜻한 촛불 반사 유리 + 철제 화분 난간(저택풍 베네치안 창!)
+            if 5 <= y <= 23 and 3 <= lx <= 12:
+                if y == 5:
                     return tm_h if lx <= 9 else tm_d
                 if y == 22:
                     return tm_h if lx <= 8 else tm_d
-                if lx in (3, 12) or y == 7:
+                if y == 23:
+                    return 'i0' if lx % 2 == 0 else sh_l  # 철제 장식 창턱
+                if lx in (3, 12) or y == 6:
                     return tm_d
+                if lx in (4, 11) and y <= 18:
+                    # 양옆 드레이프 커튼!
+                    return drp_l if (y % 3 != 0) else drp_d
                 if lx in (7, 8) or y == 14:
                     return tm_m
-                if (lx, y) in ((5, 9), (6, 9), (9, 9), (5, 16)):
+                if y >= 15:
+                    return gl_w if lx in (5, 6, 9) else ('r3' if line != 'B' else gl_m)
+                if (lx, y) in ((5, 8), (6, 9), (9, 8)):
                     return gl_h
-                return gl_m if y >= 15 else gl_d
-            if y == 23 and 4 <= lx <= 11:
-                return sh_l if lx % 2 == 0 else sh_d
+                return gl_m if y >= 10 else gl_d
             if y in (17, 18) and (lx < 3 or lx > 12):
                 return tm_l if y == 17 else tm_d
             return bg_px(lx, y)
 
-        # d(3): 큰 아치 출입문
+        # d(3): 아치형 큰 문
         if 5 <= y <= 28 and 4 <= lx <= 11:
             if y == 5 or lx in (4, 11):
                 return tm_d
@@ -1681,7 +1696,230 @@ def _make_wall_balcony_upper(line):
         return bg_px(lx, y)
 
     rows = [[cell_px(pidx, lx, y) for pidx in range(5) for lx in range(16)] for y in range(32)]
-    return _grid_tokens(rows), {'note': f'style-r11 발코니 덱 직결 프렌치 도어 2층 벽 ({line})'}
+    return _grid_tokens(rows), {'note': f'style-r11 아치 프렌치 도어+드레이프 저택창 2층 벽 ({line})'}
+
+
+# ---------------------------------------------------------------------------
+# 15. style-r11 창·문 대개편 오버라이드(wall.stone / wall.timber / wall.shop / wall.arcade / extra.gable_dormer)
+#     — 형광 보라파랑(s2=#5650b5) 전면 폐기 + 벽 종류마다 완전히 다른 창·문 디자인!
+# ---------------------------------------------------------------------------
+_PAL_RGBA_TO_TOK = None
+
+
+def _rows_from_grid(cv):
+    global _PAL_RGBA_TO_TOK
+    if _PAL_RGBA_TO_TOK is None:
+        pal = dot.palette(THEME)
+        _PAL_RGBA_TO_TOK = {}
+        for tok, (ramp, idx) in TOK.items():
+            hx = pal['ramps'][ramp][idx].lstrip('#')
+            rgb = (int(hx[0:2], 16), int(hx[2:4], 16), int(hx[4:6], 16), 255)
+            _PAL_RGBA_TO_TOK.setdefault(rgb, tok)
+    im = cv.img().convert('RGBA')
+    px = im.load()
+    rows = []
+    for y in range(im.height):
+        r = []
+        for x in range(im.width):
+            c = px[x, y]
+            r.append('.' if c[3] == 0 else _PAL_RGBA_TO_TOK[c])
+        rows.append(r)
+    return rows
+
+
+def _make_wall_stone_r11(line):
+    # R10의 버들항 불규칙 막돌 몸통은 그대로 유지하고, W(먹청 아치 납유리+꽃화분)와 D(철징 아치문+벽 랜턴!) 전면 교체!
+    base_grid, _ = R10._make_wall_stone(line)
+    rows = _rows_from_grid(base_grid)
+    if line == 'A':
+        gl_d, gl_m, gl_h, gl_k = 'c0', 'c2', 'c4', 'i0'
+        lnt_h, lnt_m, lnt_d = 'r4', 'r3', 'i0'
+        st_h, st_l, st_m, st_d = 'p2', 'k4', 'k2', 'k0'
+        fl_g, fl_l, fl_a, fl_b = 'v0', 'v2', 'r3', 'r4'
+    elif line == 'B':
+        gl_d, gl_m, gl_h, gl_k = 'i0', 'c2', 'a6', 'a0'
+        lnt_h, lnt_m, lnt_d = 'r4', 'a5', 'i0'
+        st_h, st_l, st_m, st_d = 'a6', 'a5', 'a3', 'a0'
+        fl_g, fl_l, fl_a, fl_b = 'v0', 'v2', 'a6', 'r4'
+    else:
+        gl_d, gl_m, gl_h, gl_k = 'c0', 'c2', 'w6', 'w1'
+        lnt_h, lnt_m, lnt_d = 'r4', 'w6', 'i0'
+        st_h, st_l, st_m, st_d = 'k4', 'c4', 'c2', 'c0'
+        fl_g, fl_l, fl_a, fl_b = 'v0', 'v3', 'r4', 'w6'
+
+    # W (cols 32..47): 깊은 석조 아치 + 차분한 먹청 납유리(대각 반사 + 다이아 격자) + 풍성한 꽃상자!
+    for y in range(7, 20):
+        for lx in range(4, 12):
+            gx = 32 + lx
+            cur = rows[y][gx]
+            if cur in ('s0', 's1', 's2', 's3', 'p4', 'p3'):
+                # 대각 납유리 격자 + 부드러운 사선 하늘 반사광
+                if (lx == 7 and y <= 18) or y == 13:
+                    rows[y][gx] = gl_k
+                elif (lx - y) in (-4, -3) and y <= 12:
+                    rows[y][gx] = gl_h
+                elif (lx + y) % 5 == 0 and y >= 14:
+                    rows[y][gx] = gl_m
+                else:
+                    rows[y][gx] = gl_m if y >= 14 else gl_d
+    # 꽃상자 입체 보강(y=19..21)
+    for lx in range(4, 12):
+        rows[19][32 + lx] = fl_b if lx in (6, 9) else (fl_a if lx in (5, 10) else (fl_l if lx % 2 == 0 else fl_g))
+
+    # D (cols 48..63): 문 오른쪽 석조 기둥에 따뜻한 벽걸이 철제 랜턴(lx=13..15, y=10..15) 추가!
+    for y in range(10, 16):
+        for lx in range(13, 16):
+            gx = 48 + lx
+            if y == 10 and lx in (13, 14):
+                rows[y][gx] = lnt_d  # 철제 걸이 팔
+            elif y == 11 and lx == 14:
+                rows[y][gx] = lnt_d  # 랜턴 갓
+            elif y in (12, 13) and lx in (13, 14, 15):
+                rows[y][gx] = lnt_h if (lx == 14 and y == 12) else lnt_m  # 따뜻한 촛불 발광!
+            elif y == 14 and lx == 14:
+                rows[y][gx] = lnt_d
+    return _grid_tokens(rows), {'note': f'style-r11 석조 아치 먹청 납유리창 + 랜턴 철징 아치문 ({line})'}
+
+
+def _make_wall_timber_r11(line):
+    # R10의 반목조 몸통 유지 + W(따뜻한 촛불 황금 유리 + 초록/슬레이트/버건디 열린 덧문!) + D(색칠 코티지 채광문!)
+    base_grid, _ = R10._make_wall_timber(line)
+    rows = _rows_from_grid(base_grid)
+    if line == 'A':
+        # A: 숲초록 덧문(v0/v1) + 따뜻한 촛불 황금 유리(r4/r3/w6/r2) + 숲초록 코티지 채광문!
+        sh_l, sh_d = 'v1', 'v0'
+        gl_h, gl_l, gl_m, gl_d = 'r4', 'w6', 'r3', 'r2'
+        dr_l, dr_m, dr_d = 'v1', 'v0', 't1'
+        tm_m, tm_d = 't3', 't1'
+    elif line == 'B':
+        # B: 청회색 고딕 아치 창(먹청 유리 + 중앙 촛불 광택) + 철장식 다크 슬레이트 아치문!
+        sh_l, sh_d = 'c2', 'c0'
+        gl_h, gl_l, gl_m, gl_d = 'r4', 'c4', 'c2', 'i0'
+        dr_l, dr_m, dr_d = 'c2', 'c0', 'i0'
+        tm_m, tm_d = 'k2', 'k0'
+    else:
+        # C: 버건디 덧문(r1/r0) + 따뜻한 촛불 통나무 창 + 사선 보강 삼나무 채광문!
+        sh_l, sh_d = 'r1', 'r0'
+        gl_h, gl_l, gl_m, gl_d = 'r4', 'g6', 'w5', 'w3'
+        dr_l, dr_m, dr_d = 'g5', 'w4', 'w1'
+        tm_m, tm_d = 'w2', 'w1'
+
+    # W (cols 32..47): 열린 덧문 색칠 + 따뜻한 촛불 황금 유리로 전면 교체!
+    for y in range(4, 21):
+        for lx in range(1, 15):
+            gx = 32 + lx
+            cur = rows[y][gx]
+            if line != 'B' and 6 <= y <= 19 and (lx in (2, 3) or lx in (12, 13)):
+                rows[y][gx] = sh_l if (y % 3 != 0) else sh_d
+            elif cur in ('s0', 's1', 's2', 's3', 'p4', 'p3'):
+                if (lx, y) in ((6, 10), (9, 10), (6, 15), (9, 15)):
+                    rows[y][gx] = gl_h  # 따뜻한 촛불 하이라이트!
+                elif y >= 13:
+                    rows[y][gx] = gl_l if lx in (5, 6, 9, 10) else gl_m
+                elif y <= 8:
+                    rows[y][gx] = gl_d
+                else:
+                    rows[y][gx] = gl_m
+
+    # D (cols 48..63): 색칠 코티지 문 + 상부 4분할 따뜻한 촛불 채광창(y=9..15, lx=5..10)!
+    for y in range(8, 28):
+        for lx in range(4, 12):
+            gx = 48 + lx
+            if 9 <= y <= 15 and 5 <= lx <= 10:
+                if y in (9, 15) or lx in (5, 10):
+                    rows[y][gx] = tm_d
+                elif lx in (7, 8) or y == 12:
+                    rows[y][gx] = tm_m
+                elif (lx, y) in ((6, 10), (9, 13)):
+                    rows[y][gx] = gl_h
+                else:
+                    rows[y][gx] = gl_l if y >= 13 else gl_m
+            elif y >= 16:
+                if lx in (4, 11) or y == 28:
+                    rows[y][gx] = tm_d
+                elif (lx, y) in ((10, 20), (10, 21)):
+                    rows[y][gx] = 'r4'  # 황동 손잡이
+                elif lx in (7, 8):
+                    rows[y][gx] = dr_d
+                else:
+                    rows[y][gx] = dr_l if lx <= 7 else dr_m
+    return _grid_tokens(rows), {'note': f'style-r11 촛불 유리+색칠 덧문+채광 코티지문 반목조 벽 ({line})'}
+
+
+def _make_wall_shop_r11(line):
+    # R10의 상점 쇼윈도 몸통 유지 + 형광 보라(s2) 제거 → 따뜻한 상점 백라이트(r4/r3/w6) + 진열 상품 실루엣!
+    base_grid, _ = R10._make_wall_shop(line)
+    rows = _rows_from_grid(base_grid)
+    if line == 'A':
+        gl_h, gl_l, gl_m, gl_d = 'r4', 'w6', 'r3', 'r2'
+        ware_a, ware_b = 'v1', 'r1'
+    elif line == 'B':
+        gl_h, gl_l, gl_m, gl_d = 'r4', 'a6', 'c3', 'c0'
+        ware_a, ware_b = 'c2', 's0'
+    else:
+        gl_h, gl_l, gl_m, gl_d = 'r4', 'g6', 'w5', 'w3'
+        ware_a, ware_b = 'v1', 'r1'
+
+    # M (cols 16..31) + W (cols 32..47) + D (cols 48..63) 의 s0/s2/p4 → 따뜻한 상점 백라이트 + 진열대 소품!
+    for pidx in (1, 2, 3):
+        x0 = pidx * 16
+        for y in range(5, 22):
+            for lx in range(1, 15):
+                gx = x0 + lx
+                cur = rows[y][gx]
+                if cur in ('s0', 's1', 's2', 's3', 'p4', 'p3'):
+                    if pidx == 2 and y in (15, 16) and lx in (4, 5, 10, 11):
+                        rows[y][gx] = ware_a if lx <= 6 else ware_b  # 쇼윈도 진열 병·빵 소품!
+                    elif y <= 8:
+                        rows[y][gx] = gl_d if y == 6 else gl_m
+                    elif (lx + y) % 5 == 0:
+                        rows[y][gx] = gl_h
+                    else:
+                        rows[y][gx] = gl_l if y >= 13 else gl_m
+    return _grid_tokens(rows), {'note': f'style-r11 따뜻한 상점 백라이트 진열창+채광 상점문 ({line})'}
+
+
+def _make_wall_arcade_r11(line):
+    import style_r9 as R9
+    base_grid, _ = R9._make_wall_arcade(line)
+    rows = _rows_from_grid(base_grid)
+    lnt_h = 'r4'
+    lnt_m = 'r3' if line != 'B' else 'a5'
+    lnt_d = 'i0' if line != 'C' else 'w1'
+    # W (cols 32..47): 아치 상단에서 내려오는 쇠사슬 + 따뜻한 황금 랜턴 발광!
+    for y in range(10, 18):
+        if y <= 12:
+            rows[y][32 + 7] = lnt_d
+        elif y == 13:
+            rows[y][32 + 6] = lnt_d
+            rows[y][32 + 7] = lnt_d
+            rows[y][32 + 8] = lnt_d
+        elif y in (14, 15):
+            rows[y][32 + 6] = lnt_m
+            rows[y][32 + 7] = lnt_h
+            rows[y][32 + 8] = lnt_m
+        elif y == 16:
+            rows[y][32 + 7] = lnt_m
+        else:
+            rows[y][32 + 7] = lnt_d
+    # D (cols 48..63): 이중 길드문 양쪽 황동 링 손잡이 + 철제 띠 징 광택!
+    rows[19][48 + 5] = 'r4'
+    rows[19][48 + 9] = 'r4'
+    rows[16][48 + 5] = 'i3' if line != 'C' else 'w6'
+    rows[16][48 + 10] = 'i3' if line != 'C' else 'w6'
+    return _grid_tokens(rows), {'note': f'style-r11 랜턴 발광 아치 회랑 + 이중 철징 길드문 ({line})'}
+
+
+def _make_gable_dormer_warm_r11(line):
+    # R10 기본 도머 기반 + 보라 유리(s1/s0) → 따뜻한 촛불 다락창(r4/r3/w6)으로 교체!
+    base_grid, _ = R10._make_gable_dormer(line, green=False)
+    rows = _rows_from_grid(base_grid)
+    gl_h, gl_m = ('r4', 'r3') if line == 'A' else (('r4', 'c2') if line == 'B' else ('r4', 'w5'))
+    for y in range(18, 28):
+        for x in range(8, 24):
+            if rows[y][x] in ('s0', 's1', 's2', 's3'):
+                rows[y][x] = gl_h if (y >= 22 and x % 3 == 0) else gl_m
+    return _grid_tokens(rows), {'note': f'style-r11 따뜻한 촛불 다락창 도머 ({line})'}
 
 
 def _bind(fn, *args):
@@ -1700,6 +1938,10 @@ CANDIDATES = {
     'band.roof_skirt': {ln: _bind(_make_roof_skirt, ln, False) for ln in ('A', 'B', 'C')},
     'band.roof_skirt.green': {ln: _bind(_make_roof_skirt, ln, True) for ln in ('A', 'B', 'C')},
     'band.balcony_deck': {ln: _bind(_make_band_balcony_deck, ln) for ln in ('A', 'B', 'C')},
+    'wall.stone': {ln: _bind(_make_wall_stone_r11, ln) for ln in ('A', 'B', 'C')},
+    'wall.timber': {ln: _bind(_make_wall_timber_r11, ln) for ln in ('A', 'B', 'C')},
+    'wall.shop': {ln: _bind(_make_wall_shop_r11, ln) for ln in ('A', 'B', 'C')},
+    'wall.arcade': {ln: _bind(_make_wall_arcade_r11, ln) for ln in ('A', 'B', 'C')},
     'wall.veranda': {ln: _bind(_make_wall_veranda, ln) for ln in ('A', 'B', 'C')},
     'wall.balcony_upper': {ln: _bind(_make_wall_balcony_upper, ln) for ln in ('A', 'B', 'C')},
     'wall.tower': {ln: _bind(_make_wall_tower, ln) for ln in ('A', 'B', 'C')},
@@ -1708,5 +1950,6 @@ CANDIDATES = {
     'roof.gf.back3': {ln: _bind(_make_roof_gf_back3, ln) for ln in ('A', 'B', 'C')},
     'extra.gable_peak': {ln: _bind(_make_extra_gable_peak, ln, False) for ln in ('A', 'B', 'C')},
     'extra.gable_peak.green': {ln: _bind(_make_extra_gable_peak, ln, True) for ln in ('A', 'B', 'C')},
+    'extra.gable_dormer': {ln: _bind(_make_gable_dormer_warm_r11, ln) for ln in ('A', 'B', 'C')},
     'extra.gable_dormer.green': {ln: _bind(_make_gable_dormer_teal, ln) for ln in ('A', 'B', 'C')},
 }
