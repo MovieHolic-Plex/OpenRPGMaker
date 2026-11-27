@@ -1,4 +1,5 @@
-import { setBattleMotionContext, battleTargetRecoil } from "@/player/battleMotionContext";
+import { setBattleMotionContext, battleTargetRecoil, battleCharacterMotion } from "@/player/battleMotionContext";
+import { attackFamilyOfStyle, battleEntrySeCue, type AttackFamily } from "@/player/battleSeSlots";
 import { cssMixBlendMode, isBlendModeName } from "@/project/blendMode";
 import { remainingEnemyCollapseMs } from "@/player/battleEnemyCollapse";
 import { battleEntrySkillRecord, holdRetroSkillPlayback, stopRetroClassSkill, hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, isStoreBattleAnimationId, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
@@ -45,7 +46,7 @@ import { battleSkinFamily, getBattleSkin, resolveSkinId } from "@/battle/skins/r
 import type { BattleFieldPresentation } from "@/player/battleFieldDom";
 import { applyActionMotion, applyFieldBackdrop, battleField, battlePartyStatus, blinkBattlerNode, findBattlerNode, playCaptureCinematic, settleBattleTopPads, spawnHitSparks, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
 import { battleAnimationSheetUrls, deferUntilBattleReady, whenBattleStageReady } from "@/player/battleReadiness";
-import { emitBattleJuice as emitContextBattleJuice, fadeBattleCue, flashBattleField, playBattleCue as playContextBattleCue, playSkillCastCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleCueShape, type BattleJuiceEvent } from "@/player/battleJuice";
+import { emitBattleJuice as emitContextBattleJuice, fadeBattleCue, flashBattleField, playBattleCue as playContextBattleCue, playAuthoredSeCue, playSkillCastCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleCueShape, type BattleJuiceEvent } from "@/player/battleJuice";
 import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
 import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
 import { hitIntensity } from "@/player/battleHitIntensity";
@@ -192,7 +193,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // 기술 이펙트의 타이밍 소리도 — 행동 시작 때(preloadBattleAnimationSounds) 받으면 3배속에서는 approach 가 60~110ms 라
   // 디코딩이 끝나기 전에 착탄이 와서 요소 재생(0.2~0.4초 늦음)으로 떨어졌다.
   deferUntilBattleReady(preloadAllBattleAnimationSounds);
-  const playBattleCue = (event: BattleJuiceEvent): void => playContextBattleCue(event, options.audioContext);
+  const playBattleCue = (event: BattleJuiceEvent, shape?: BattleCueShape): void => playContextBattleCue(event, options.audioContext, shape);
   const emitBattleJuice = (event: BattleJuiceEvent, target?: HTMLElement | null, shape?: BattleCueShape): void =>
     emitContextBattleJuice(event, target, options.audioContext, shape);
   // 같은 host에 이전 컨트롤러가 살아있으면 먼저 정리한다.
@@ -270,6 +271,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const pokemonPhaseFinishers = new Map<string, () => void>();
   /** impact · 평타 확정 뒤 처음 오는 접근 비트에 베기 궤적과 휘두름 소리를 한 번 둔다. */
   let swingArmed = false;
+  /** 이번 행동 공격자의 무기·몸 계열이 정한 공격 소리 계열(emitSwingJuice). */
+  let swingFamily: AttackFamily | undefined;
   // 방금 확정한 직업 스킬(훔치기 등 special 결과만 남는 기술의 연출 시작점).
   let pendingRetroSkillId: string | undefined;
   let pendingRetroSkillUserId: string | undefined;
@@ -572,6 +575,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 몬스터 장르: 상태 이상 걸림·능력 단계 변화·날씨 시작 소리(다른 장르는 playMonsterSfx 가 false 라 무음 변화 없음).
       const timelineCue = monsterTimelineCue(entry, store.getCurrent().database.states);
       if (timelineCue) playMonsterSfx(store.getCurrent(), timelineCue);
+      // 상태 걸림·능력 단계·흡수·부활의 자리 소리(저작했을 때만 — 몬스터 세트가 이미 낸 사건은 겹치지 않는다).
+      else {
+        const seCue = battleEntrySeCue(entry, store.getCurrent().database.states);
+        if (seCue) playAuthoredSeCue(store.getCurrent(), seCue);
+      }
       playedTimelineSequence = Math.max(playedTimelineSequence, entry.sequence);
       // 상태 피해(stateUpkeep)는 맞은 본인이 userRecordId 로 기록된다 — 자기 섬광 색을 자기에게 칠하지 않는다.
       entryHitFlash = entry.side === "actor" && entry.userRecordId && entry.userId && entry.userId !== entry.targetId
@@ -775,7 +783,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
           if (destroyed) return;
           const target = findBattlerNode(field, targetId);
           if (!target || !target.classList.contains("battle-enemy")) return;
-          playBattleCue("attack-swing");
+          playBattleCue("attack-swing", swingFamily ? { attackFamily: swingFamily } : undefined);
           if (!pokemonMotion) spawnSlashTrail(target);
         }, Math.max(0, beat.durationMs - SWING_LEAD_MS));
       }
@@ -2042,6 +2050,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const skillRecord = command.kind === "skill" ? store.getCurrent().database.skills.find((skill) => skill.id === command.skillId) : undefined;
     // 지난 명령의 무장이 남아 있으면(막힌 행동·비트 없는 행동) 다음 돌진에서 엉뚱한 휘두름이 났다 — 명령마다 새로 정한다.
     swingArmed = false;
+    swingFamily = attackFamilyOfStyle(battleCharacterMotion(field, snapshot.activeActorId)?.style);
     pendingRetroSkillId = retroMotion && hasRetroSkillContract(skillRecord) ? skillRecord?.id : undefined;
     pendingRetroSkillUserId = snapshot.activeActorId;
     // 저작한 시전 소리(자리 magic-<속성> → cast)가 있으면 확정 순간에 한 번 — 없으면 아무것도 하지 않는다(기술 애니메이션 소리는 그대로).
@@ -2058,7 +2067,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       const pokemonRanged = pokemonMotion && command.kind === "skill" && pokemonMoveMotion(skillRecord) !== "contact";
       // 포켓몬 스킨은 타격감 프리셋(light 포함)과 무관하게 돌진 직전에 울린다 — light 에서 확정 순간으로 돌아가면 같은 어긋남이 난다.
       swingArmed = !pokemonRanged && (pokemonMotion || (hitFeel === "impact" && command.kind === "attack"));
-      if (!swingArmed && !pokemonRanged) emitBattleJuice("attack-swing", actorNode ?? undefined);
+      if (!swingArmed && !pokemonRanged) emitBattleJuice("attack-swing", actorNode ?? undefined, swingFamily ? { attackFamily: swingFamily } : undefined);
     } else if (command.kind === "defend") {
       emitBattleJuice("defend", actorNode ?? undefined);
     }
