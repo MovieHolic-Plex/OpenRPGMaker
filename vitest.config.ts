@@ -2,6 +2,7 @@ import { configDefaults, defineConfig } from "vitest/config";
 import { fileURLToPath, URL } from "node:url";
 import { applyLegacyEnvAliases } from "./scripts/lib/oprnEnv.mjs";
 import { assertCiOnlyTests } from "./scripts/lib/ciOnlyTests.mjs";
+import { bundledJsonNodePlugin } from "./scripts/lib/bundledJsonLazy.mjs";
 
 assertCiOnlyTests("vitest");
 
@@ -23,6 +24,7 @@ export default defineConfig({
   // import 만으로 힙 3.97GB 였고, 문자열화하면 1.43GB 다(vite-node 실측, #5008). ci-full 샤드 시간의 29~45% 가 import 다.
   // 이름 있는 JSON import(`import { x } from "*.json"`)는 src·test 에 0건이다.
   json: { namedExports: false, stringify: true },
+  plugins: [bundledJsonNodePlugin()],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),

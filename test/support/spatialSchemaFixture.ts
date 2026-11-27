@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { DEFAULT_TILESET_ID } from "../../src/project/defaults/constants";
 import { createBlankProject } from "../../src/project/defaults/defaultProject";
 
 export function emptySpatialDocument() {
@@ -16,7 +17,7 @@ export function emptySpatialDocument() {
 }
 
 export function spatialProject() {
-  const project = createBlankProject();
+  const project = createBlankProject({ tilesetIds: [DEFAULT_TILESET_ID] });
   const tileset = Object.values(project.tilesets)[0];
   if (!tileset) throw new Error("Blank fixture has no tileset");
   tileset.structureKits = [{ id: "kit", kind: "section", width: 1, height: 1, rows: [{ tiles: [0] }], learnedFrom: "user-paint" }];

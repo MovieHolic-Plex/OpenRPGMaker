@@ -296,6 +296,9 @@ export default defineConfig(({ mode }) => {
   // (npm run dev · dev:worktree · playwright webServer)는 공유 node_modules 를 보면 스스로
   // `<체크아웃>/.vite-cache/dev` 를 넣는다(scripts/lib/viteCacheDir.mjs). vite 를 직접 부르면 안 걸린다.
   cacheDir: process.env.VITE_CACHE_DIR,
+  // vitest.config.ts 와 같은 빠른 JSON 경로: vite-node(check:runtime-assets·bake-digests 등)가 대형 참고문서 JSON(~25MB)을
+  // JS 객체 리터럴 모듈로 변환하지 않게 한다(이름 있는 JSON import 는 저장소에 0건).
+  json: { namedExports: false, stringify: true },
   plugins: [{ name: "oprn-shared-content-sqlite", configureServer(server) { server.middlewares.use(sharedContentMiddleware); }, configurePreviewServer(server) { server.middlewares.use(sharedContentMiddleware); } }, sharedTileReferencesPlugin(), { name: "oprn-shared-character-graphics", configureServer(server) { server.middlewares.use(sharedCharacterGraphicsMiddleware); }, configurePreviewServer(server) { server.middlewares.use(sharedCharacterGraphicsMiddleware); } }, bgmInstallPlugin(), audioDeliveryPlugin(), stillPackDeliveryPlugin(), devPlayerBundlesPlugin(), activityMirrorPlugin(), codexOAuthPlugin(), localOnlyAiProxyPlugin(), appVersionPlugin(), normalizerFingerprintPlugin(), genKitsDriftPlugin(), deferStylesheetsPlugin(), jsonParseModulesPlugin(), bundledJsonLazyPlugin(), referenceLimitsGuardPlugin()],
   // src/styles/index.css 는 @import 로 243개 파일을 한 모듈로 인라인한다. 소스맵이 없으면
   // DevTools 가 그 모든 규칙을 `index.css` 한 파일로 귀속시켜, 계산된 스타일에서 소유 파일을

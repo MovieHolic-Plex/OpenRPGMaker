@@ -1,6 +1,7 @@
 import type { Project } from "../types";
 import { projectWireView } from "./serialize";
 import { isBundledTilesetDiffView, materializeLazyBundledTileset } from "../bundledTilesetDiff";
+import { pendingDefaultTilesetBuilder } from "../defaults/lazyDefaultTilesets";
 import { isStoreOwnedEntry } from "../projectClone";
 
 /**
@@ -199,7 +200,12 @@ const roundtripPassed = new WeakSet<object>();
 
 /** 왕복을 통과한 문서의 타일셋·업로드 자산 항목을 기억한다. 검사가 통과한 **뒤에만** 부른다. */
 export function markRoundtripPassed(project: Project): void {
-  for (const entry of Object.values(project.tilesets ?? {})) if (isPlainRecord(entry)) roundtripPassed.add(entry);
+  const tilesets = project.tilesets ?? {};
+  for (const id of Object.keys(tilesets)) {
+    if (pendingDefaultTilesetBuilder(tilesets, id)) continue;
+    const entry = tilesets[id];
+    if (isPlainRecord(entry)) roundtripPassed.add(entry);
+  }
   // Owned-reference wire views have their own immutable identity. They passed
   // the same boundary and must not disable reuse solely because of that wrapper.
   for (const entry of Object.values(roundtripWireView(project).tilesets)) if (isPlainRecord(entry)) roundtripPassed.add(entry);

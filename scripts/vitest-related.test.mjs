@@ -193,6 +193,9 @@ test("planChunks spreads files by cost (LPT) deterministically", () => {
   const chunks = planChunks(entries, 2, { perFileSeconds: 0, factor: 1, workers: 1, startupSeconds: 0 });
   assert.deepEqual(chunks.map((chunk) => chunk.files), [["test/a.test.ts", "test/d.test.ts"], ["test/b.test.ts", "test/c.test.ts"]]);
   assert.deepEqual(chunks.map((chunk) => chunk.estWallSeconds), [110, 110]);
+  // 한 파일은 여러 워커로 쪼개지지 않으므로 조각 예상 시간은 가장 큰 파일 비용 아래로 내려가지 않는다.
+  const multi = planChunks([{ file: "test/huge.test.ts", sec: 300 }], 1, { perFileSeconds: 10, factor: 1, workers: 3, startupSeconds: 20 });
+  assert.equal(multi[0].estWallSeconds, 330);
 });
 
 test("CLI diffs base...head in a real git repo and writes the list and the nightly-deferred summary", () => {
