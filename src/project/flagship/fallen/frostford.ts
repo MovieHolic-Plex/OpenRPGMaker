@@ -799,7 +799,7 @@ function lanternNightEvents(project: Project): void {
           ] },
           { text: "조금 더 마을을 둘러본다", branch: [
             say(OSA, "그래요, 볼일 마저 보고 오세요. 필요하면 쉬어 가셔도 되고요."),
-            { kind: "inn", price: 20 } as unknown as Command,
+            { kind: "fork", condition: sw(SW_Q6_DONE), then: [{ kind: "inn", price: 0 }], else: [{ kind: "inn", price: 20 }] } as unknown as Command,
           ] },
         ] } as unknown as Command,
       ], { graphic: look }),

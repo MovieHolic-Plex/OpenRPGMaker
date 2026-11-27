@@ -168,7 +168,7 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
     scope: "allEnemies", kind: "damage", statistic: "attack", power: 100, elementId: "holy", combinedStats: true,
     choreographyId: "skill_mage_starfall",
   });
-  const starfall = db.skills.find((s) => s.id === FS_COMBO_STARFALL);
+  const starfall = project.database.skills.find((s) => s.id === FS_COMBO_STARFALL);
   if (starfall) starfall.damageFormula = "power + (a.atk + a.mind) * 0.5 - b.def / 2";
 }
 

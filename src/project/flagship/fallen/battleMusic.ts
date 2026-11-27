@@ -83,13 +83,16 @@ export function applyFallenBattleMusic(project: Project): void {
     map.battleBgmResourceId = resourceId;
   }
   const bossCue = new Map<string, string>([...FS_BOSS_TROOPS.map((id) => [id, FS_BATTLE_BOSS] as const), ...FS_ACT_FINAL_TROOPS.map((id) => [id, FS_BATTLE_ACT_FINAL] as const)]);
+  const lists = allLists(project);
+  if (lists.some((l) => l.some(isBattleCue))) throw new Error("[fallen-star] 전투곡 덮어쓰기는 battleMusic.ts 한곳에서만 건다 — 다른 곳에 남은 m2-027 cue battle 을 지워라");
   let wrapped = 0;
-  for (const list of allLists(project)) {
-    if (list.some(isBattleCue)) throw new Error("[fallen-star] 전투곡 덮어쓰기는 battleMusic.ts 한곳에서만 건다 — 다른 곳에 남은 m2-027 cue battle 을 지워라");
+  for (const list of lists) {
     for (let i = list.length - 1; i >= 0; i -= 1) {
-      const c = list[i] as unknown as { kind: string; troopId?: string };
+      const c = list[i] as unknown as { kind: string; troopId?: string; defeatBranch?: CommandList; escapeBranch?: CommandList };
       const resourceId = c.troopId ? bossCue.get(c.troopId) : undefined;
       if (c.kind !== "battleProcessing" || !resourceId) continue;
+      if (Array.isArray(c.defeatBranch) && c.defeatBranch.length > 0) c.defeatBranch.unshift(cue({ operation: "reset" }));
+      if (Array.isArray(c.escapeBranch) && c.escapeBranch.length > 0) c.escapeBranch.unshift(cue({ operation: "reset" }));
       list.splice(i + 1, 0, cue({ operation: "reset" }));
       list.splice(i, 0, cue({ operation: "set", resourceId, volume: "100" }));
       wrapped += 1;

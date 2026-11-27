@@ -66,6 +66,6 @@ export function applyFallenAreaBackdrops(project: Project, exec: Exec): void {
     if (!troop) continue;
     if (troop.previewBackgroundResourceId && !BIOME.test(troop.previewBackgroundResourceId)) continue;
     const ids = new Set([...maps].map((m) => areaOf.get(m)).filter((id): id is string => !!id));
-    if (ids.size >= 1) troop.previewBackgroundResourceId = [...ids][0]!;
+    if (ids.size === 1) troop.previewBackgroundResourceId = [...ids][0]!;
   }
 }
