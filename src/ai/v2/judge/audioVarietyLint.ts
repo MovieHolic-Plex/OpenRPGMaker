@@ -64,10 +64,11 @@ function collect(project: Project): { battles: Battle[]; se: Map<string, { calls
   return { battles, se };
 }
 
-function looksLikeBoss(project: Project, troopId: string): boolean {
+export function looksLikeBoss(project: Project, troopId: string): boolean {
   const troop = project.database.troops.find((t) => t.id === troopId);
   if (!troop) return false;
-  if (BOSS_NAME.test(troop.name)) return true;
+  // 이름(「동굴의 과부 거미」처럼 낱말이 없는 보스)만으로 못 알아본 판이 있었다(2026-11-26 조수 JRPG: 부대 id troop_dg_cave_boss) — id 의 boss 도 본다.
+  if (BOSS_NAME.test(troop.name) || /boss/i.test(troop.id)) return true;
   const enemyIds = troop.members?.map((m) => m.enemyId) ?? troop.enemyIds;
   return enemyIds.some((id) => project.database.enemies.find((e) => e.id === id)?.collapseEffect === "bossSink");
 }
