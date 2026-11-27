@@ -778,6 +778,12 @@ function menuSkinFieldset(project: Project): HTMLElement {
     gallery.append(card);
   }
   return rm2k3Fieldset("게임 메뉴 디자인", [
+    checkboxField("허브 메뉴(동료 카드 · 타이틀 배경)", "db-field-system-menu-layout-hub", project.system.menuLayout === "hub", (checked) => {
+      updateSystem((draft) => {
+        if (checked) draft.system.menuLayout = "hub";
+        else delete draft.system.menuLayout;
+      });
+    }),
     systemHelp("원하는 디자인을 눌러 선택하세요. ESC(X) 메뉴에 다음 테스트 플레이부터 적용됩니다."),
     status,
     gallery,

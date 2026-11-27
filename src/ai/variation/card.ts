@@ -35,7 +35,7 @@ export function variationCard(v: Variation, options: CardOptions): string | unde
     const how = v.world
       ? (en ? `world:W/K = kind K of world ${v.world}, built by build_places from the World card` : `world:W/K = 세계 ${v.world} 의 장소 종류 K, 그 세계의 compose_* 구성기를 find_tools 로 찾아 짓는다`)
       : (en ? "path = make_place type:detail; one map each, named as written, steps' place spread over all" : "길 = make_place type:세부; 장소마다 맵 하나, 적힌 이름 그대로, 걸음 place 를 모두에 나눔");
-    parts.push(en ? `Places (1st = the start; ${how}): ${places.join(" ")}.` : `장소(첫째 = 시작하는 곳; ${how}): ${places.join(" ")}.`);
+    parts.push(en ? `Places (1st = start; ${how}): ${places.join(" ")}.` : `장소(첫째 = 시작하는 곳; ${how}): ${places.join(" ")}.`);
   }
   // 층 이름은 적힌 장소 이름 앞에 붙인다 — «지하 2층 응접실» 처럼 이름을 줄이면 카드 장소(«저택 응접실»)를 못 따른 것이 된다(2026-11-26 variant-remeasure after6 r1: 장소 2/3).
   const FLOORS = ["1층", "지하 1층", "지하 2층"] as const;
@@ -44,7 +44,7 @@ export function variationCard(v: Variation, options: CardOptions): string | unde
     : order === "days" ? (en ? " — split the steps 첫째 날 → 둘째 날 → 셋째 날" : " — 걸음을 첫째 날 → 둘째 날 → 셋째 날로 나눈다") : "";
   if (v.event) parts.push(`${en ? "Event" : "사건"}: ${v.event.ko}${orderNote(v.event.order)}.`);
   if (v.mood) parts.push(`${en ? "Mood" : "분위기"}: ${v.mood.ko}.`);
-  if (v.structure) parts.push(`${en ? "Structure" : "구조"}: ${v.structure.ko}${v.structure.tools?.length ? ` (${en ? "build it with" : "짓는 도구"} ${v.structure.tools.join(", ")})` : ""}${orderNote(v.structure.order)}.`);
+  if (v.structure) parts.push(`${en ? "Structure" : "구조"}: ${v.structure.ko}${v.structure.tools?.length ? ` (${en ? "tools:" : "짓는 도구"} ${v.structure.tools.join(", ")})` : ""}${orderNote(v.structure.order)}.`);
   if (!parts.length) return undefined;
   const head = en
     ? `${VARIATION_MARK} Fill what the user left open (user wins); in write_blueprint: event→premise, mood→tones+opening, structure→step links.`

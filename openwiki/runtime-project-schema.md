@@ -1670,6 +1670,19 @@ collector/classic/horror/chase/hearts 프리셋을 추가했다. 기존 미설�
 빈 HUD에서도 구성 정규화를 매 프레임 반복하지 않도록 최초 초기화 여부를 별도로 추적한다.
 추격형은 상시 액션 HUD와 미니맵도 억제한다. 대화·메뉴·전투 UI는 기존대로 작동한다.
 
+### ESC 허브 메뉴 (2026-11-26)
+
+`system.menuLayout?: "hub" | "legacy"`, `system.menuTheme?: { window?: string; accent?: string }`(CSS 색 두 개)를 추가했다.
+`hub` 이면 배우 파티로 싸우는 게임(몬스터 파티·에메랄드·연애 메뉴·전투 없는 게임 제외, `hubMenuEnabled`)의 ESC 메뉴가
+시안 B 변형 8(허브 카드형 · 타이틀 별밤)로 그려진다 — 첫 화면 동료 카드 + 아이템·스킬·장비·상태 칸 + 돈·장소·시간과 나머지 명령 단추,
+각 쪽은 동료 열·격자·상세(설명 전문). 렌더러는 `src/player/hubMenu.ts`, 스타일은 `src/styles/runtime/hubMenu.css`.
+상태·동작은 옛 컨트롤러(`playerStatusMenuController.ts`)의 것을 그대로 쓰고 항목은 `createStatusMenuDetail` 을 읽는다
+(옛 메뉴와 같은 사용·장착 규칙, 같은 `statusMenuDetailOptions`). 저장·설정·대열 같은 그 밖의 명령은 같은 틀 안에 옛 상세 목록을 그린다.
+배경은 타이틀 그림(`titleScreen.backgroundResourceId ?? titleResourceId`)을 어둡게, 없으면 어두운 기본.
+판 크기는 무대 해상도를 480×270 기준 정수배로 나눈 논리 px, 폰 세로 창 칸(320×300~400)과 폭 440 미만은 세로 배치.
+키: 방향키는 화면 위 가장 가까운 칸, Enter 실행, Esc 한 단계 뒤로(첫 화면이면 닫기), 첫 화면 1~4, 스킬·장비·상태 쪽 Q·E·PageUp·PageDown 동료.
+생략 = 옛 메뉴(menuUiStyle 스킨). 저장 형식 변환은 없다 — 생략 필드라 옛 프로젝트·내보낸 게임은 그대로 열린다.
+
 
 ## 타일셋 참고문서 데이터 (2026-09-21)
 

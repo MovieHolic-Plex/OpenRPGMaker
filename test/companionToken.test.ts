@@ -1,4 +1,4 @@
-import { describe, expect, it, afterEach, beforeEach, vi, beforeAll } from "vitest";
+import { describe, expect, it, afterEach, beforeEach, vi } from "vitest";
 import { createServer } from "node:http";
 import type { AddressInfo } from "node:net";
 import { createCompanionMiddleware } from "../scripts/lib/companion/middleware.mjs";
@@ -90,12 +90,10 @@ describe("companionToken", () => {
 // 실측 2026-09-23: /auth/* 만 토큰을 실어, 칩은 「연결됨」인데 조수 요청(/v1/chat/completions)은
 // 403 `companion token required` 로 막혀 「의도 읽는 중…」에서 조용히 멈췄다.
 // 조수·에이전트·그림 요청 모두 같은 토큰을 실어야 한다.
-describe("companionTokenOnAiRequests", () => {
+describe("companionTokenOnAiRequests", { timeout: 60000 }, () => {
   isolateTimers();
-  beforeAll(() => {
-    // 첫 import 가 무겁다(llmClient 가 끌어오는 모듈 그래프) — 기본 15초로는 콜드 로드에서 넘친다.
-    vi.setConfig({ testTimeout: 60_000 });
-  });
+  // 시험 시간 한도는 수집 때 읽혀 beforeAll 안 vi.setConfig 는 듣지 않는다 — describe 옵션 timeout 으로 둔다.
+  // 첫 import 가 무겁다(llmClient 가 끌어오는 모듈 그래프) — 기본 15초로는 콜드 로드에서 넘친다.
   const TOKEN = "run-token-1234";
   let calls: { url: string; headers: Record<string, string> }[] = [];
   function headersOf(init: RequestInit | undefined): Record<string, string> {

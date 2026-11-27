@@ -975,6 +975,10 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
         return;
       }
     }
+    if (menu && !overlayActive && !event.repeat && statusMenu.handleExtraKey(key)) {
+      event.preventDefault();
+      return;
+    }
     if (!isRuntimeMenuKey(key)) return;
     if (overlayActive) return;
     // Holding a key may navigate a list, but must not confirm another screen,
