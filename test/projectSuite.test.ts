@@ -79,6 +79,9 @@ describe("projectJsonWithoutEventDrafts", () => {
         makeEvent("event_plain", 1),
         { ...makeEvent("event_new", 2), draft: { kind: "new" } } as GameEvent,
       ];
+      // #5300 부터 빈 프로젝트의 번들 타일셋은 처음 읽을 때 만들어진다(만들 때 structuredClone). 예전처럼 만들어 둔 뒤에
+      // 재야 «이 함수가 프로젝트를 깊게 복제하지 않는다» 만 잔다(ci-full 46024239707).
+      void Object.values(project.tilesets);
       const clone = vi.spyOn(globalThis, "structuredClone");
       projectJsonWithoutEventDrafts(project);
       expect(clone).not.toHaveBeenCalled();
