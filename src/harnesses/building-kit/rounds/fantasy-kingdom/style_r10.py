@@ -516,6 +516,580 @@ def _make_extra_terrace(line):
     return _grid_tokens(rows), {'note': f'style-r10 유기적 옥상 화단·테라스 ({line})'}
 
 
+
+# ---------------------------------------------------------------------------
+# 6. wall.stone (5x2 = 80x32 — 버들항·FSM급 불규칙 막돌 + 깊은 아치 문 + 꽃상자 창)
+# ---------------------------------------------------------------------------
+def _make_wall_stone(line):
+    if line == 'A':
+        # 따뜻한 버들항 막돌(ashlar + stone + cobble + plaster 하이라이트)
+        st = ('k0', 'k1', 'k2', 'k3', 'k4', 'p2')
+        mt = 'k0'
+        sh = 't1'
+        dr_d, dr_m, dr_l, dr_h = 't1', 't3', 't5', 't6'
+        ir_d, ir_l = 'i0', 'i2'
+        gl_d, gl_m, gl_h = 's0', 's2', 'p4'
+        fl_g, fl_a, fl_b = 'v3', 'r3', 'r4'
+    elif line == 'B':
+        # 정교한 밝은 마름돌 석재(청석 관청/길드)
+        st = ('a0', 'a1', 'a2', 'a3', 'a4', 'a6')
+        mt = 'a0'
+        sh = 'i0'
+        dr_d, dr_m, dr_l, dr_h = 't1', 't2', 't4', 't5'
+        ir_d, ir_l = 'i0', 'i3'
+        gl_d, gl_m, gl_h = 's0', 's2', 's3'
+        fl_g, fl_a, fl_b = 'v2', 's3', 'p4'
+    else:
+        # 소박한 거친 들돌(촌락 기초/대장간 — 먹 w0 대신 w1 사용)
+        st = ('c0', 'c1', 'c2', 'c3', 'c4', 'k4')
+        mt = 'c0'
+        sh = 'w1'
+        dr_d, dr_m, dr_l, dr_h = 'w1', 'w2', 'w4', 'w6'
+        ir_d, ir_l = 'i0', 'i2'
+        gl_d, gl_m, gl_h = 's0', 's1', 'p3'
+        fl_g, fl_a, fl_b = 'v4', 'r4', 'w6'
+
+    # 불규칙 막돌 줄 패턴(16px 주기 타일링 유지하면서 크기 3~7px 다양하게 섞음 — 도장 네모돌 제거!)
+    # 각 행: (y0, y1, [(x_start, x_end, tone_idx), ...])
+    courses_A = [
+        (3, 8,   [(0, 5, 3), (5, 11, 4), (11, 16, 2)]),
+        (8, 13,  [(0, 3, 2), (3, 10, 5), (10, 14, 3), (14, 16, 2)]),
+        (13, 19, [(0, 6, 4), (6, 10, 2), (10, 16, 3)]),
+        (19, 24, [(0, 4, 3), (4, 9, 4), (9, 15, 2), (15, 16, 3)]),
+        (24, 29, [(0, 7, 2), (7, 12, 4), (12, 16, 3)]),
+    ]
+    courses_B = [
+        (3, 7,   [(0, 8, 4), (8, 16, 3)]),
+        (7, 12,  [(0, 4, 3), (4, 12, 5), (12, 16, 3)]),
+        (12, 17, [(0, 7, 4), (7, 16, 3)]),
+        (17, 22, [(0, 5, 3), (5, 13, 4), (13, 16, 3)]),
+        (22, 29, [(0, 8, 3), (8, 16, 2)]),
+    ]
+    courses_C = [
+        (3, 9,   [(0, 5, 3), (5, 11, 2), (11, 16, 3)]),
+        (9, 14,  [(0, 4, 3), (4, 11, 4), (11, 16, 3)]),
+        (14, 20, [(0, 6, 3), (6, 12, 4), (12, 16, 3)]),
+        (20, 25, [(0, 5, 3), (5, 10, 2), (10, 16, 3)]),
+        (25, 29, [(0, 8, 3), (8, 16, 3)]),
+    ]
+    courses = courses_A if line == 'A' else (courses_B if line == 'B' else courses_C)
+
+    def stone_bg(lx, y):
+        if y == 0:
+            return sh
+        if y == 1:
+            return mt
+        if y == 2:
+            # 처마 아래 3px 부드러운 드리운 그림자(AO)
+            return st[1] if lx % 5 != 0 else mt
+        if y >= 29:
+            # 묵직한 바닥 기초 주춧돌(y=29..31)
+            if y == 31:
+                return mt
+            if y == 29:
+                return st[2] if lx % 8 != 4 else mt
+            return st[1] if lx % 8 != 4 else mt
+        for y0, y1, blocks in courses:
+            if y0 <= y < y1:
+                for x0, x1, tid in blocks:
+                    if x0 <= lx < x1:
+                        # 가로 줄눈(y==y1-1) & 세로 줄눈(lx==x1-1, 단 x1==16 은 x=0 과 맞닿아 경계 이음 유지)
+                        if y == y1 - 1:
+                            return mt
+                        if lx == x1 - 1 and x1 < 16:
+                            return mt
+                        if lx == 0 and x0 == 0 and (y0 in (3, 13, 24)):
+                            return st[1]
+                        # 윗변 빛 받는 베벨(1px 밝게)
+                        if y == y0:
+                            return st[min(5, tid + 1)]
+                        # 아랫변 살짝 어둡게
+                        if y == y1 - 2 and lx > x0 + 1:
+                            return st[max(1, tid - 1)]
+                        return st[tid]
+        return st[2]
+
+    def cell_px(pidx, lx, y):
+        # l(0) / r(4): 엇갈린 코너 마름돌(quoin) + 안쪽 막돌
+        if pidx == 0:
+            if y >= 2 and y <= 28:
+                qrow = (y - 2) // 5
+                qw = 6 if qrow % 2 == 0 else 4
+                if lx < qw:
+                    if y == 2 or (y - 2) % 5 == 4 or lx == qw - 1:
+                        return mt
+                    if lx == 0:
+                        return st[1]
+                    return st[5] if (y - 2) % 5 == 0 else st[4]
+            return stone_bg(lx, y)
+        if pidx == 4:
+            if y >= 2 and y <= 28:
+                qrow = (y - 2) // 5
+                qw = 6 if qrow % 2 == 0 else 4
+                if lx >= 16 - qw:
+                    if y == 2 or (y - 2) % 5 == 4 or lx == 16 - qw:
+                        return mt
+                    if lx == 15:
+                        return mt
+                    return st[4] if (y - 2) % 5 == 0 else st[3]
+            return stone_bg(lx, y)
+
+        # w(2): 깊은 아치 돌창틀 + 반사광 유리 + 돌출 꽃상자
+        if pidx == 2:
+            # 아치형 돌 테두리(lx=2..13, y=5..22)
+            if 5 <= y <= 22 and 2 <= lx <= 13:
+                # 윗 아치 귀퉁이 둥글게
+                if y == 5 and lx in (2, 3, 12, 13):
+                    return stone_bg(lx, y)
+                if y == 6 and lx in (2, 13):
+                    return stone_bg(lx, y)
+                # 바깥 돌 아치 틀
+                is_frame = (
+                    (y == 5 and 4 <= lx <= 11)
+                    or (y == 6 and lx in (3, 4, 11, 12))
+                    or (y == 7 and lx in (2, 3, 12, 13))
+                    or (8 <= y <= 19 and lx in (2, 3, 12, 13))
+                )
+                if is_frame:
+                    if lx in (7, 8) and y == 5:
+                        return st[5]  # 아치 쐐기돌
+                    return st[4] if lx <= 7 else st[2]
+                # 창턱 + 꽃상자(y=20..22)
+                if y == 20:
+                    if 3 <= lx <= 12:
+                        return fl_a if lx in (5, 10) else (fl_b if lx in (6, 9) else fl_g)
+                    return st[4] if lx == 2 else st[1]
+                if y == 21:
+                    return dr_l if lx <= 7 else dr_m
+                if y == 22:
+                    return dr_d
+                # 안쪽 깊은 창틀 그림자 + 유리 반사광 + 창살
+                if y == 6 or (y == 7 and lx in (4, 11)) or lx == 4:
+                    return mt  # 깊은 리세스 그림자
+                if lx in (7, 8) or y == 13:
+                    return dr_d
+                if (lx, y) in ((5, 9), (6, 9), (5, 10), (9, 9), (10, 9), (6, 15), (10, 15)):
+                    return gl_h
+                return gl_m if y >= 13 else gl_d
+            return stone_bg(lx, y)
+
+        # d(3): 버들항·FSM급 묵직한 아치 석조 문 + 깊은 리세스 음영 + 쇠 경첩 + 돌 문턱!
+        if pidx == 3:
+            if y >= 5 and 1 <= lx <= 14:
+                # 윗 아치 윤곽
+                if y == 5 and lx in (1, 2, 13, 14):
+                    return stone_bg(lx, y)
+                if y == 6 and lx in (1, 14):
+                    return stone_bg(lx, y)
+                # 굵은 돌 아치 프레임(2px 폭)
+                in_outer = (
+                    (y == 5 and 3 <= lx <= 12)
+                    or (y == 6 and 2 <= lx <= 13)
+                    or (y >= 7 and 1 <= lx <= 14)
+                )
+                in_door = (
+                    (y == 7 and 5 <= lx <= 10)
+                    or (y == 8 and 4 <= lx <= 11)
+                    or (9 <= y <= 28 and 3 <= lx <= 12)
+                )
+                # 돌 문턱 계단(y=29..31)
+                if y >= 29:
+                    if y == 29 and 2 <= lx <= 13:
+                        return st[5] if lx <= 8 else st[3]
+                    if y == 30 and 2 <= lx <= 13:
+                        return st[3] if lx <= 8 else st[1]
+                    return mt
+                if in_door:
+                    # 문틀 안쪽 1px 깊은 어둠(문짝이 벽 안으로 들어간 입체감!)
+                    if (y == 7) or (y == 8 and lx in (4, 11)) or lx == 3:
+                        return dr_d
+                    if lx == 12:
+                        return ir_d
+                    # 쇠 띠 경첩 2줄(y=13, 23) + 징 광택
+                    if y in (13, 23) and 4 <= lx <= 11:
+                        return ir_l if lx in (5, 8, 10) else ir_d
+                    # 황동 링 손잡이(오른쪽)
+                    if (lx, y) in ((10, 18), (10, 19)):
+                        return fl_b
+                    # 나무 널빤지 세로 결(3px 폭 판자 3장)
+                    if lx in (6, 9):
+                        return dr_d
+                    if lx in (4, 7, 10) and y > 9:
+                        return dr_h if (y % 4 == 0) else dr_l
+                    return dr_l if lx <= 7 else dr_m
+                if in_outer:
+                    if y == 5 and lx in (7, 8):
+                        return st[5]  # 중앙 쐐기돌
+                    if (y - 6) % 4 == 0:
+                        return mt
+                    return st[4] if lx <= 7 else st[2]
+            return stone_bg(lx, y)
+
+        # m(1): 순수 불규칙 막돌 벽
+        return stone_bg(lx, y)
+
+    rows = [[cell_px(pidx, lx, y) for pidx in range(5) for lx in range(16)] for y in range(32)]
+    return _grid_tokens(rows), {'note': f'style-r10 버들항·FSM급 불규칙 막돌+아치문+꽃상자 ({line})'}
+
+
+# ---------------------------------------------------------------------------
+# 7. wall.timber (5x2 = 80x32 — 고운 회벽 점묘 + 나뭇결 보 + 열린 나무 덧문 창 + 아치 목조 문)
+# ---------------------------------------------------------------------------
+def _make_wall_timber(line):
+    if line == 'A':
+        pl_h, pl_l, pl_m, pl_s = 'p4', 'p3', 'p2', 'p0'
+        tm_h, tm_l, tm_m, tm_d = 't6', 't4', 't3', 't1'
+        sh_l, sh_d = 't5', 't2'
+        gl_d, gl_m, gl_h = 's0', 's2', 'p4'
+        fl_g, fl_a, fl_b = 'v4', 'r3', 'r4'
+        base_l, base_d = 'k3', 'k0'
+    elif line == 'B':
+        # B: 석회 회벽 + 어두운 목조/철제 반목조 + 청회색 덧문
+        pl_h, pl_l, pl_m, pl_s = 'p4', 'a6', 'a5', 'a3'
+        tm_h, tm_l, tm_m, tm_d = 't5', 't3', 't2', 't1'
+        sh_l, sh_d = 's2', 's0'
+        gl_d, gl_m, gl_h = 's0', 's2', 's3'
+        fl_g, fl_a, fl_b = 'v3', 's3', 'p4'
+        base_l, base_d = 'a4', 'a0'
+    else:
+        # C: 따뜻한 통나무 벽(FSM 3번 나무 판자벽 스타일!)
+        pl_h, pl_l, pl_m, pl_s = 'w6', 'w5', 'w4', 'w2'
+        tm_h, tm_l, tm_m, tm_d = 'w5', 'w3', 'w2', 'w0'
+        sh_l, sh_d = 'g5', 'g1'
+        gl_d, gl_m, gl_h = 's0', 's2', 'p3'
+        fl_g, fl_a, fl_b = 'v5', 'r4', 'w6'
+        base_l, base_d = 'k3', 'k0'
+
+    def plaster_bg(lx, y):
+        if y == 0:
+            return tm_d
+        if y == 1:
+            return tm_m if line == 'C' else pl_s
+        if y == 2:
+            return pl_s
+        if y == 3:
+            return pl_m
+        if y >= 30:
+            return base_d if y == 31 else (base_l if lx % 5 != 0 else base_d)
+        if y == 29:
+            return tm_d
+        if line == 'C':
+            # 통나무 가로 널빤지 결(4px 주기 + 빛받는 윗결)
+            yy = (y - 3) % 4
+            if yy == 3:
+                return tm_d
+            if yy == 0:
+                return pl_h if (lx // 3) % 2 == 0 else pl_l
+            return pl_l if yy == 1 else pl_m
+        # A/B: 고운 회벽 점묘(2px 패치 — 1px 잡티 N 경고 방지)
+        patch = ((lx // 2) * 7 + (y // 2) * 11) % 13
+        if patch == 0 and y > 5:
+            return pl_m
+        if patch == 1 and y > 18:
+            return pl_s
+        return pl_l
+
+    def cell_px(pidx, lx, y):
+        # 공통 가로 목조 보(y=15,16) + 기둥 경계(lx=0,15)
+        if y in (15, 16) and pidx != 3:
+            return tm_l if y == 15 else tm_d
+        if pidx == 0 and lx in (0, 1):
+            return tm_l if (lx == 1 and y % 5 != 0) else tm_d
+        if pidx == 4 and lx in (14, 15):
+            return tm_d if lx == 15 else tm_m
+        if lx == 0 and pidx in (1, 2, 3, 4):
+            return tm_m if y % 6 != 0 else tm_d
+        if lx == 15 and pidx in (0, 1, 2, 3):
+            return tm_m if (pidx == 1 and y % 6 != 0) else tm_d
+
+        # l(0) / r(4): 대각선 목조 가새(줄 B 는 고딕 다이아 격자로 A 와 구조 차별화)
+        if pidx in (0, 4) and 17 <= y <= 28:
+            if line == 'B':
+                d1 = (y - 17) + 2
+                d2 = 13 - (y - 17)
+                if lx in (d1, d2):
+                    return tm_m
+            else:
+                d = (y - 17) + 3 if pidx == 0 else 13 - (y - 17)
+                if lx in (d, d + 1):
+                    return tm_l if lx == d else tm_d
+        if pidx == 1 and 17 <= y <= 28:
+            if line == 'B':
+                # B: 아래층 X자 격자 보 + 위층 아치 띠
+                d1 = (y - 17) + 2
+                d2 = 13 - (y - 17)
+                if lx in (d1, d2):
+                    return tm_m
+            elif lx in (7, 8):
+                return tm_l if lx == 7 else tm_d
+        if pidx == 1 and line == 'B' and 4 <= y <= 14:
+            if y in (8, 9) and 3 <= lx <= 12:
+                return tm_m
+            if lx in (4, 11):
+                return tm_l
+
+        # w(2): FSM 스타일 양옆 열린 나무 덧문 + 반사광 격자창 + 꽃상자!
+        if pidx == 2 and 5 <= y <= 23 and 1 <= lx <= 14:
+            if line == 'B':
+                # B: 높은 고딕 석조 테두리 아치 창(A 의 사각 덧문 창과 뚜렷이 다른 실루엣)
+                if 4 <= y <= 21 and 3 <= lx <= 12:
+                    if y == 4 and lx in (3, 4, 11, 12):
+                        return plaster_bg(lx, y)
+                    if y == 5 and lx in (3, 12):
+                        return plaster_bg(lx, y)
+                    if (y == 4 and 5 <= lx <= 10) or (y == 5 and lx in (4, 11)) or lx in (3, 12) or y == 21:
+                        return base_l if lx <= 7 else base_d
+                    if lx in (7, 8) or y in (11, 16):
+                        return tm_m
+                    if (lx, y) in ((5, 7), (6, 7), (5, 13), (9, 13)):
+                        return gl_h
+                    return gl_m if y >= 12 else gl_d
+                return plaster_bg(lx, y)
+            # 양옆 열린 나무 덧문(lx=1..3, 12..14, y=6..19)
+            if 6 <= y <= 19 and (1 <= lx <= 3 or 12 <= lx <= 14):
+                if lx in (1, 14) or y in (6, 19):
+                    return tm_d
+                return sh_l if (y % 3 != 0) else sh_d
+            # 창 위 굵은 나무 상인방(y=5)
+            if y == 5 and 3 <= lx <= 12:
+                return tm_l if lx < 10 else tm_d
+            # 창틀 + 4분할 유리(lx=4..11, y=6..19)
+            if 6 <= y <= 19 and 4 <= lx <= 11:
+                if lx in (4, 11) or y in (6, 19):
+                    return tm_d
+                if lx in (7, 8) or y == 12:
+                    return tm_m
+                if (lx, y) in ((5, 8), (6, 8), (5, 9), (9, 8), (6, 14), (10, 14)):
+                    return gl_h
+                return gl_m if y >= 13 else gl_d
+            # 창 아래 돌출 꽃상자(y=20..23, lx=3..12)
+            if y == 20 and 3 <= lx <= 12:
+                return fl_a if lx in (5, 10) else (fl_b if lx in (6, 9) else fl_g)
+            if y == 21 and 3 <= lx <= 12:
+                return tm_h if lx <= 7 else tm_m
+            if y == 22 and 3 <= lx <= 12:
+                return tm_m if lx <= 7 else tm_d
+            if y == 23 and 4 <= lx <= 11:
+                return tm_d
+
+        # d(3): 굵은 목조 아치 포털 문 + 깊은 문틀 + 쇠 경첩 + 돌 문턱!
+        if pidx == 3 and y >= 5 and 1 <= lx <= 14:
+            if y >= 29:
+                if y == 29 and 2 <= lx <= 13:
+                    return base_l if lx <= 8 else base_d
+                return base_d
+            # 상단 포털 상인방(y=5..6)
+            if y in (5, 6):
+                return tm_h if (y == 5 and lx < 11) else tm_d
+            # 양옆 굵은 문설주(lx=1..2, 13..14)
+            if lx in (1, 2, 13, 14):
+                return tm_l if lx in (1, 13) else tm_d
+            # 문짝(lx=3..12, y=7..28)
+            if y == 7 or lx == 3:
+                return tm_d  # 깊은 리세스 음영
+            if lx == 12:
+                return 'i0'
+            if y in (13, 23):
+                return 'i2' if lx in (5, 8, 10) else 'i0'
+            if (lx, y) in ((10, 18), (10, 19)):
+                return fl_b
+            if lx in (6, 9):
+                return tm_d
+            return tm_h if (lx in (4, 7, 10) and y % 4 == 0) else (tm_l if lx <= 7 else tm_m)
+
+        return plaster_bg(lx, y)
+
+    rows = [[cell_px(pidx, lx, y) for pidx in range(5) for lx in range(16)] for y in range(32)]
+    return _grid_tokens(rows), {'note': f'style-r10 버들항·FSM급 반목조+덧문꽃상자+목조아치문 ({line})'}
+
+
+# ---------------------------------------------------------------------------
+# 8. band.trim (3x1 = 48x16 — 거대 16px 회색 띠 제거 → 슬림 들보 + 까치발 + 상하 자연 연결!)
+# ---------------------------------------------------------------------------
+def _make_band_trim(line):
+    if line == 'A':
+        top_l, top_m = 'p3', 'p2'
+        bm_h, bm_l, bm_m, bm_d = 't6', 't4', 't3', 't1'
+        st_l, st_d = 'k3', 'k0'
+    elif line == 'B':
+        top_l, top_m = 'a5', 'a4'
+        bm_h, bm_l, bm_m, bm_d = 'k5', 'k4', 'k2', 'k0'
+        st_l, st_d = 'a3', 'a0'
+    else:
+        top_l, top_m = 'w5', 'w4'
+        bm_h, bm_l, bm_m, bm_d = 'w6', 'w4', 'w2', 'w0'
+        st_l, st_d = 'w2', 'w0'
+
+    rows = []
+    for y in range(16):
+        r = []
+        for pidx in range(3):
+            for lx in range(16):
+                if line == 'B':
+                    # B: 석조 치형 몰딩(dentil frieze) — y=0 은 2층 바닥과 매끄러운 어두운 이음
+                    if y == 0:
+                        ch = bm_m if lx % 4 != 2 else bm_d
+                    elif y == 1:
+                        ch = bm_h if lx % 4 != 2 else bm_l
+                    elif y <= 4:
+                        ch = bm_l if (lx % 4 != 2) else bm_d
+                    elif y == 5:
+                        ch = bm_d
+                    elif 6 <= y <= 10:
+                        if lx in (2, 3, 6, 7, 10, 11, 14, 15) and y <= 9:
+                            ch = bm_h if (lx % 4 == 2 and y == 6) else bm_l
+                        else:
+                            ch = st_d
+                    elif y <= 13:
+                        ch = bm_m if y == 11 else st_l
+                    else:
+                        ch = st_d
+                elif line == 'C':
+                    # C: 이중 통나무 장선 머리(돌출 둥근 통나무 끝단)
+                    if y <= 3:
+                        ch = top_l if y < 3 else bm_d
+                    elif 4 <= y <= 7:
+                        ch = bm_h if y == 4 else (bm_l if y <= 6 else bm_d)
+                    elif 8 <= y <= 13:
+                        in_log = (3 <= lx <= 6) or (11 <= lx <= 14)
+                        if in_log:
+                            if y in (8, 13) or lx in (3, 6, 11, 14):
+                                ch = bm_d
+                            else:
+                                ch = bm_h if y == 9 else bm_l
+                        else:
+                            ch = st_d if y <= 10 else st_l
+                    else:
+                        ch = st_d
+                else:
+                    # A: 상단 2층 목조 밑보(y=0 — 위 벽 바닥과 이음 A5 매끄럽게) + 얇은 회벽 스커트 + 슬림 들보 + 까치발
+                    if y == 0:
+                        ch = bm_m if lx % 4 != 0 else bm_d
+                    elif y <= 2:
+                        if (pidx == 0 and lx == 0) or (pidx == 2 and lx == 15):
+                            ch = bm_d
+                        elif lx in (0, 15):
+                            ch = bm_m
+                        else:
+                            ch = top_l if y == 1 else top_m
+                    elif y == 3:
+                        ch = bm_d
+                    elif y == 4:
+                        ch = bm_h if (lx % 8 != 4) else bm_l
+                    elif y <= 6:
+                        ch = bm_l if (lx % 8 != 4) else bm_m
+                    elif y == 7:
+                        ch = bm_m
+                    elif y == 8:
+                        ch = bm_d
+                    elif 9 <= y <= 12:
+                        if lx in (2, 3, 4, 10, 11, 12):
+                            ch = bm_l if (lx in (2, 10) and y <= 10) else (bm_m if y <= 11 else bm_d)
+                        else:
+                            ch = st_d if y <= 10 else st_l
+                    else:
+                        ch = st_d if (y == 15 or lx % 8 == 4) else st_l
+                r.append(ch)
+        rows.append(r)
+    return _grid_tokens(rows), {'note': f'style-r10 슬림 들보·까치발 층 띠 ({line})'}
+
+
+# ---------------------------------------------------------------------------
+# 9. roof.hip / roof.hip.low / roof.hip.tall (버들항급 엇갈린 둥근 낱장 기와 + 빛받는 모임 사선!)
+# ---------------------------------------------------------------------------
+def _make_hip_roof(line, rows_h):
+    H = rows_h * 16
+    if line == 'A':
+        hi, lit, mid, sh, dk, edge = 'r4', 'r3', 'r2', 'r1', 'r0', 'r0'
+    elif line == 'B':
+        hi, lit, mid, sh, dk, edge = 's3', 's2', 's1', 's0', 'i0', 'i0'
+    else:
+        hi, lit, mid, sh, dk, edge = 'g6', 'g5', 'g4', 'g2', 'g1', 'g0'
+
+    cut_top = min(H - 16, 14 if rows_h == 2 else (18 if rows_h == 3 else 22))
+    lower_y = H - 16
+
+    def tile_px(gx, y, shade=False):
+        if y <= 1:
+            return hi if ((gx + 1) % 4 != 0) else lit
+        if y == 2:
+            return lit if ((gx + 1) % 4 != 0) else mid
+        if y == 3:
+            return sh
+        if y >= H - 3:
+            return edge if y == H - 1 else (dk if gx % 4 != 2 else edge)
+
+        lower = y >= lower_y
+        step_y = 5 if line != 'C' else 6
+        row_i = (y - 4) // step_y
+        yy = (y - 4) % step_y
+        if line == 'A':
+            # 버들항식 엇갈린 테라코타 둥근 기와(x=0/15 모두 타일 몸통 — S 가로 이음 0)
+            tx = (gx + 1 + (2 if row_i % 2 else 0)) % 4
+            var = ((gx // 4) + row_i * 3) % 3
+            is_gap = (yy == step_y - 1) or (tx == 3 and yy >= 1)
+            is_hi = (yy == 0 and tx == 1 and var == 0)
+            if shade:
+                return edge if (lower and is_gap) else (dk if (is_gap or lower) else sh)
+            if lower:
+                return dk if is_gap else (mid if (yy <= 1 and tx in (0, 1)) else sh)
+            if is_gap:
+                return sh
+            if is_hi:
+                return hi
+            return lit if (tx in (0, 1) and (yy <= 2 or var != 2)) else mid
+        if line == 'B':
+            # 청석 8px 엇갈린 슬레이트 판(x=0/15 경계 안전)
+            tx8 = (gx + 2 + (4 if row_i % 2 else 0)) % 8
+            is_gap = (yy == step_y - 1) or (tx8 == 4)
+            is_hi = (yy == 0 and tx8 in (1, 2))
+            if shade:
+                return edge if (is_gap or lower) else sh
+            if lower:
+                return dk if is_gap else (mid if is_hi else sh)
+            return sh if is_gap else (hi if is_hi else (lit if yy <= 2 else mid))
+        # C: 너와 나무 판자 지붕(줄마다 어긋난 나뭇결)
+        tx4 = (gx + (2 if row_i % 2 else 0)) % 4
+        is_gap = (yy == step_y - 1) or (tx4 == 3 and yy >= 2)
+        if shade:
+            return dk if (is_gap or lower) else sh
+        if lower:
+            return dk if is_gap else (mid if (yy == 0 and tx4 == 1) else sh)
+        return sh if is_gap else (hi if (yy == 0 and tx4 == 1) else (lit if tx4 in (0, 1) else mid))
+
+    rows = []
+    for y in range(H):
+        r = ['.'] * 80
+        for x in range(32):
+            cut = max(0, cut_top - y) if y < cut_top else 0
+            if x < cut:
+                r[x] = '.'
+            elif x == cut and y < cut_top:
+                r[x] = sh
+            else:
+                hip = 22 - (y * 22) // (H - 1)
+                if abs(x - hip) <= 1 and y >= 3:
+                    r[x] = hi if x == hip else lit
+                else:
+                    r[x] = tile_px(x, y, shade=False)
+        for x in range(16):
+            r[32 + x] = tile_px(x, y, shade=False)
+        for x in range(32):
+            cut = max(0, cut_top - y) if y < cut_top else 0
+            if x >= 32 - cut:
+                r[48 + x] = '.'
+            elif x == 31 - cut and y < cut_top:
+                r[48 + x] = dk
+            else:
+                hip = 9 + (y * 22) // (H - 1)
+                if abs(x - hip) <= 1 and y >= 3:
+                    r[48 + x] = dk
+                else:
+                    r[48 + x] = tile_px(x, y, shade=(x > hip))
+        rows.append(r)
+    return _grid_tokens(rows), {'note': f'style-r10 버들항급 모임지붕 {rows_h}행 ({line})'}
+
+
 def _bind(fn, *args):
     def _f():
         return fn(*args)
@@ -524,8 +1098,14 @@ def _bind(fn, *args):
 
 
 CANDIDATES = {
-    'roof.hip.low': dict(R4.CANDIDATES['roof.hip.low']),
-    'roof.hip.tall': dict(R3.CANDIDATES['roof.hip.tall']),
+    # 옛 style-r5 핵심 4대 부품 + 지붕 높이 변형까지 style-r10 에서 전면 리메이크(override)!
+    'wall.stone': {ln: _bind(_make_wall_stone, ln) for ln in ('A', 'B', 'C')},
+    'wall.timber': {ln: _bind(_make_wall_timber, ln) for ln in ('A', 'B', 'C')},
+    'band.trim': {ln: _bind(_make_band_trim, ln) for ln in ('A', 'B', 'C')},
+    'roof.hip': {ln: _bind(_make_hip_roof, ln, 3) for ln in ('A', 'B', 'C')},
+    'roof.hip.low': {ln: _bind(_make_hip_roof, ln, 2) for ln in ('A', 'B', 'C')},
+    'roof.hip.tall': {ln: _bind(_make_hip_roof, ln, 4) for ln in ('A', 'B', 'C')},
+    # style-r10 신규 쯔꾸르 지붕·처마 부품 6종
     'roof.flat': {ln: _bind(_make_roof_flat, ln) for ln in ('A', 'B', 'C')},
     'roof.hip.green': {ln: _bind(_make_roof_hip_green, ln) for ln in ('A', 'B', 'C')},
     'extra.gable_dormer': {ln: _bind(_make_gable_dormer, ln, False) for ln in ('A', 'B', 'C')},
