@@ -23,6 +23,8 @@ from build_wave4 import build_wave4
 from build_wave5 import build_wave5
 from build_wave6 import build_wave6
 from build_wave7 import build_wave7
+from build_wave8 import build_wave8
+import taxonomy as TAX
 
 
 def main() -> int:
@@ -34,6 +36,7 @@ def main() -> int:
         ("wave5-scifi-steampunk", build_wave5()),
         ("wave6-doors-env", build_wave6()),
         ("wave7-push-doors", build_wave7()),
+        ("wave8-horror", build_wave8()),
     ]
 
     seed_items = []
@@ -43,16 +46,22 @@ def main() -> int:
         out_dir = ROOT / "qa-runs/harnesses/interactive-props" / wave_tag
         for it in items:
             strip_paths.append((it["id"], out_dir / f"{it['id']}.png"))
-            rec = {k: v for k, v in it.items() if k != "frames_img"}
+            rec = TAX.enrich_taxonomy({k: v for k, v in it.items() if k != "frames_img"})
             seed_items.append(rec)
 
-    assert len(seed_items) == 136, f"Expected 136 items, got {len(seed_items)}"
+    assert len(seed_items) == 156, f"Expected 156 items, got {len(seed_items)}"
 
     seed = {
-        "version": 2,
+        "version": 3,
         "targetCount": len(seed_items),
-        "notes": "100% real-source high-quality repository PNGs as Frame 0 across 7 eras and 7 waves (136 props).",
+        "notes": "100% real-source high-quality repository PNGs as Frame 0 across 5-axis taxonomy (world/genres/category/zone+mount/roles) and 8 waves (156 props).",
         "eras": ["fantasy", "dungeon", "modern", "joseon", "murim", "scifi", "steampunk"],
+        "worlds": list(TAX.WORLDS),
+        "genres": list(TAX.GENRES),
+        "categories": list(TAX.CATEGORIES),
+        "zones": list(TAX.ZONES),
+        "mounts": list(TAX.MOUNTS),
+        "roles": list(TAX.ROLES),
         "motions": [
             "hinge-lid",
             "drop-flap",

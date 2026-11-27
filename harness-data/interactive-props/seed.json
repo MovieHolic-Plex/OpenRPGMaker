@@ -1,7 +1,7 @@
 {
-  "version": 2,
-  "targetCount": 136,
-  "notes": "100% real-source high-quality repository PNGs as Frame 0 across 7 eras and 7 waves (136 props).",
+  "version": 3,
+  "targetCount": 156,
+  "notes": "100% real-source high-quality repository PNGs as Frame 0 across 5-axis taxonomy (world/genres/category/zone+mount/roles) and 8 waves (156 props).",
   "eras": [
     "fantasy",
     "dungeon",
@@ -10,6 +10,58 @@
     "murim",
     "scifi",
     "steampunk"
+  ],
+  "worlds": [
+    "fantasy",
+    "modern",
+    "joseon",
+    "murim",
+    "desert",
+    "snow",
+    "pirate",
+    "wasteland",
+    "dungeon",
+    "scifi",
+    "steampunk"
+  ],
+  "genres": [
+    "horror",
+    "puzzle-escape",
+    "adventure",
+    "romance-daily",
+    "monster-collect",
+    "life-survival",
+    "eastern",
+    "cyber-scifi"
+  ],
+  "categories": [
+    "door-pass",
+    "container",
+    "breakable",
+    "machine",
+    "light-fire",
+    "water-env",
+    "gimmick",
+    "outdoor-ride"
+  ],
+  "zones": [
+    "indoor",
+    "outdoor",
+    "both"
+  ],
+  "mounts": [
+    "floor",
+    "wall",
+    "doorway",
+    "counter"
+  ],
+  "roles": [
+    "loot",
+    "passage",
+    "hide",
+    "puzzle-clue",
+    "ambient-light",
+    "hazard-trap"
   ],
   "motions": [
     "hinge-lid",
@@ -58,7 +110,17 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "fantasy",
+      "category": "container",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "beodeul-wardrobe",
@@ -86,7 +148,18 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 50,
-      "frameHeight": 53
+      "frameHeight": 53,
+      "world": "fantasy",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "hide"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "beodeul-drawers",
@@ -113,7 +186,17 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 36
+      "frameHeight": 36,
+      "world": "fantasy",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "beodeul-bookshelf",
@@ -139,7 +222,19 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 48,
-      "frameHeight": 48
+      "frameHeight": 48,
+      "world": "fantasy",
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "passage",
+        "puzzle-clue"
+      ],
+      "genres": [
+        "puzzle-escape",
+        "adventure"
+      ]
     },
     {
       "id": "interior-strongbox",
@@ -166,7 +261,19 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "fantasy",
+      "category": "container",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "puzzle-clue"
+      ],
+      "genres": [
+        "puzzle-escape",
+        "adventure"
+      ]
     },
     {
       "id": "interior-chest",
@@ -193,7 +300,17 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "fantasy",
+      "category": "container",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "interior-wardrobe",
@@ -220,7 +337,18 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 50,
-      "frameHeight": 53
+      "frameHeight": 53,
+      "world": "fantasy",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "hide"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "interior-dresser",
@@ -247,7 +375,17 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 48,
-      "frameHeight": 52
+      "frameHeight": 52,
+      "world": "fantasy",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "interior-china-cabinet",
@@ -274,7 +412,18 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 48,
-      "frameHeight": 52
+      "frameHeight": 52,
+      "world": "fantasy",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "hide"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "interior-nightstand",
@@ -301,7 +450,17 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 35
+      "frameHeight": 35,
+      "world": "fantasy",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "interior-vanity",
@@ -328,7 +487,17 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 51
+      "frameHeight": 51,
+      "world": "fantasy",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "interior-writing-desk",
@@ -355,7 +524,17 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 35
+      "frameHeight": 35,
+      "world": "fantasy",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "interior-cashbox",
@@ -382,7 +561,18 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 20
+      "frameHeight": 20,
+      "world": "fantasy",
+      "category": "container",
+      "zone": "both",
+      "mount": "counter",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "puzzle-escape",
+        "adventure"
+      ]
     },
     {
       "id": "interior-cellar-hatch",
@@ -408,7 +598,20 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 22
+      "frameHeight": 22,
+      "world": "fantasy",
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "passage",
+        "puzzle-clue"
+      ],
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ]
     },
     {
       "id": "interior-vault-door",
@@ -434,7 +637,19 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 48
+      "frameHeight": 48,
+      "world": "fantasy",
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage",
+        "puzzle-clue"
+      ],
+      "genres": [
+        "puzzle-escape",
+        "adventure"
+      ]
     },
     {
       "id": "interior-cell-door",
@@ -460,7 +675,20 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "fantasy",
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage",
+        "puzzle-clue"
+      ],
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ]
     },
     {
       "id": "fireplace-stone",
@@ -487,7 +715,17 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 48,
-      "frameHeight": 48
+      "frameHeight": 48,
+      "world": "fantasy",
+      "category": "light-fire",
+      "zone": "indoor",
+      "mount": "wall",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "brick-fireplace",
@@ -514,7 +752,17 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 48,
-      "frameHeight": 48
+      "frameHeight": 48,
+      "world": "fantasy",
+      "category": "light-fire",
+      "zone": "indoor",
+      "mount": "wall",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "bread-oven",
@@ -541,7 +789,18 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 48,
-      "frameHeight": 48
+      "frameHeight": 48,
+      "world": "fantasy",
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "adventure",
+        "life-survival"
+      ]
     },
     {
       "id": "well-bucket-crank",
@@ -567,7 +826,18 @@
       "wave": "wave1-fantasy",
       "frames": 5,
       "frameWidth": 48,
-      "frameHeight": 48
+      "frameHeight": 48,
+      "world": "fantasy",
+      "category": "water-env",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "adventure",
+        "life-survival"
+      ]
     },
     {
       "id": "water-jug-smash",
@@ -595,7 +865,17 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 28,
-      "frameHeight": 24
+      "frameHeight": 24,
+      "world": "fantasy",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "clay-pots-smash",
@@ -623,7 +903,18 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 40,
-      "frameHeight": 24
+      "frameHeight": 24,
+      "world": "fantasy",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure",
+        "life-survival"
+      ]
     },
     {
       "id": "storage-jars-smash",
@@ -650,7 +941,17 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 56,
-      "frameHeight": 36
+      "frameHeight": 36,
+      "world": "fantasy",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "terracotta-pot-smash",
@@ -677,7 +978,18 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 28,
-      "frameHeight": 34
+      "frameHeight": 34,
+      "world": "fantasy",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure",
+        "life-survival"
+      ]
     },
     {
       "id": "sweet-jar-smash",
@@ -704,7 +1016,17 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 26,
-      "frameHeight": 22
+      "frameHeight": 22,
+      "world": "fantasy",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "counter",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "dungeon-amphora-smash",
@@ -732,7 +1054,17 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 28,
-      "frameHeight": 24
+      "frameHeight": 24,
+      "world": "dungeon",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "pyramid-jars-smash",
@@ -760,7 +1092,17 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 42,
-      "frameHeight": 34
+      "frameHeight": 34,
+      "world": "desert",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "dungeon-crate-smash",
@@ -788,7 +1130,18 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 28,
-      "frameHeight": 24
+      "frameHeight": 24,
+      "world": "dungeon",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure",
+        "life-survival"
+      ]
     },
     {
       "id": "dungeon-barrel-smash",
@@ -816,7 +1169,18 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 28,
-      "frameHeight": 24
+      "frameHeight": 24,
+      "world": "dungeon",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure",
+        "life-survival"
+      ]
     },
     {
       "id": "crate-stack-smash",
@@ -843,7 +1207,18 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 56,
-      "frameHeight": 36
+      "frameHeight": 36,
+      "world": "dungeon",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure",
+        "life-survival"
+      ]
     },
     {
       "id": "sack-pile-search",
@@ -870,7 +1245,18 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 35
+      "frameHeight": 35,
+      "world": "dungeon",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure",
+        "life-survival"
+      ]
     },
     {
       "id": "hay-stack-search",
@@ -897,7 +1283,18 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 35
+      "frameHeight": 35,
+      "world": "dungeon",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure",
+        "life-survival"
+      ]
     },
     {
       "id": "dungeon-sarcophagus",
@@ -925,7 +1322,18 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 24,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "dungeon",
+      "category": "gimmick",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "horror",
+        "adventure"
+      ]
     },
     {
       "id": "dungeon-brazier",
@@ -952,7 +1360,17 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 28
+      "frameHeight": 28,
+      "world": "dungeon",
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "dungeon-wall-torch",
@@ -979,7 +1397,17 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "dungeon",
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "wall",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "dungeon-crystal-smash",
@@ -1006,7 +1434,17 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 42,
-      "frameHeight": 34
+      "frameHeight": 34,
+      "world": "dungeon",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "dungeon-ice-crystal-smash",
@@ -1033,7 +1471,17 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 28,
-      "frameHeight": 34
+      "frameHeight": 34,
+      "world": "dungeon",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "dungeon-skulls-scatter",
@@ -1060,7 +1508,20 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 28,
-      "frameHeight": 24
+      "frameHeight": 24,
+      "world": "dungeon",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "puzzle-clue"
+      ],
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ]
     },
     {
       "id": "dungeon-sewer-valve",
@@ -1086,7 +1547,20 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "dungeon",
+      "category": "gimmick",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue",
+        "hazard-trap"
+      ],
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ]
     },
     {
       "id": "dungeon-sewer-bars",
@@ -1113,7 +1587,19 @@
       "wave": "wave2-smash-dungeon",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "dungeon",
+      "category": "gimmick",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ]
     },
     {
       "id": "modern-vending",
@@ -1139,7 +1625,19 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 48
+      "frameHeight": 48,
+      "world": "modern",
+      "category": "machine",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "horror",
+        "romance-daily",
+        "monster-collect"
+      ]
     },
     {
       "id": "modern-lockers",
@@ -1166,7 +1664,20 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 40,
-      "frameHeight": 34
+      "frameHeight": 34,
+      "world": "modern",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "hide"
+      ],
+      "genres": [
+        "puzzle-escape",
+        "romance-daily",
+        "monster-collect"
+      ]
     },
     {
       "id": "modern-toolbox",
@@ -1193,7 +1704,17 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 21
+      "frameHeight": 21,
+      "world": "modern",
+      "category": "container",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "romance-daily"
+      ]
     },
     {
       "id": "modern-arcade",
@@ -1220,7 +1741,18 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "modern",
+      "category": "machine",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "hide"
+      ],
+      "genres": [
+        "romance-daily",
+        "monster-collect"
+      ]
     },
     {
       "id": "modern-claw-machine",
@@ -1246,7 +1778,18 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "modern",
+      "category": "machine",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "romance-daily",
+        "monster-collect"
+      ]
     },
     {
       "id": "modern-cooler-box",
@@ -1273,7 +1816,17 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 20
+      "frameHeight": 20,
+      "world": "modern",
+      "category": "container",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "romance-daily"
+      ]
     },
     {
       "id": "modern-waste-bin",
@@ -1300,7 +1853,17 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 20
+      "frameHeight": 20,
+      "world": "modern",
+      "category": "container",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "romance-daily"
+      ]
     },
     {
       "id": "modern-recycle-bins",
@@ -1327,7 +1890,17 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 20
+      "frameHeight": 20,
+      "world": "modern",
+      "category": "container",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "romance-daily"
+      ]
     },
     {
       "id": "modern-parcel-locker",
@@ -1354,7 +1927,20 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 40,
-      "frameHeight": 34
+      "frameHeight": 34,
+      "world": "modern",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "hide"
+      ],
+      "genres": [
+        "puzzle-escape",
+        "romance-daily",
+        "monster-collect"
+      ]
     },
     {
       "id": "modern-parcel-boxes",
@@ -1381,7 +1967,18 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 35
+      "frameHeight": 35,
+      "world": "modern",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "romance-daily",
+        "monster-collect"
+      ]
     },
     {
       "id": "modern-fire-hose-box",
@@ -1408,7 +2005,17 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 28,
-      "frameHeight": 34
+      "frameHeight": 34,
+      "world": "modern",
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "wall",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "romance-daily"
+      ]
     },
     {
       "id": "modern-signal-box",
@@ -1434,7 +2041,19 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 28,
-      "frameHeight": 34
+      "frameHeight": 34,
+      "world": "modern",
+      "category": "machine",
+      "zone": "outdoor",
+      "mount": "wall",
+      "roles": [
+        "puzzle-clue",
+        "ambient-light"
+      ],
+      "genres": [
+        "puzzle-escape",
+        "romance-daily"
+      ]
     },
     {
       "id": "modern-battery-swap",
@@ -1460,7 +2079,17 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "modern",
+      "category": "machine",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "hide"
+      ],
+      "genres": [
+        "romance-daily"
+      ]
     },
     {
       "id": "modern-charging-kiosk",
@@ -1487,7 +2116,18 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "modern",
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "romance-daily",
+        "monster-collect"
+      ]
     },
     {
       "id": "modern-phone-booth",
@@ -1513,7 +2153,18 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 28,
-      "frameHeight": 35
+      "frameHeight": 35,
+      "world": "modern",
+      "category": "machine",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "hide"
+      ],
+      "genres": [
+        "romance-daily",
+        "monster-collect"
+      ]
     },
     {
       "id": "modern-mask-vending",
@@ -1539,7 +2190,18 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "modern",
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "romance-daily",
+        "monster-collect"
+      ]
     },
     {
       "id": "modern-ticket-machine",
@@ -1565,7 +2227,19 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "modern",
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "romance-daily",
+        "life-survival",
+        "eastern"
+      ]
     },
     {
       "id": "modern-coin-changer",
@@ -1591,7 +2265,17 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "modern",
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "romance-daily"
+      ]
     },
     {
       "id": "modern-bottle-return",
@@ -1617,7 +2301,17 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "modern",
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "romance-daily"
+      ]
     },
     {
       "id": "modern-storage-cabinet",
@@ -1645,7 +2339,18 @@
       "wave": "wave3-modern",
       "frames": 5,
       "frameWidth": 28,
-      "frameHeight": 35
+      "frameHeight": 35,
+      "world": "modern",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "hide"
+      ],
+      "genres": [
+        "romance-daily"
+      ]
     },
     {
       "id": "joseon-pal-jangnong",
@@ -1673,7 +2378,18 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 50,
-      "frameHeight": 52
+      "frameHeight": 52,
+      "world": "joseon",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "hide"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "joseon-bandaji",
@@ -1700,7 +2416,17 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 21
+      "frameHeight": 21,
+      "world": "joseon",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "joseon-dwiju",
@@ -1727,7 +2453,17 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 36
+      "frameHeight": 36,
+      "world": "joseon",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "joseon-yakjang",
@@ -1754,7 +2490,17 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 35
+      "frameHeight": 35,
+      "world": "joseon",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "joseon-nong",
@@ -1781,7 +2527,18 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 50,
-      "frameHeight": 36
+      "frameHeight": 36,
+      "world": "joseon",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "hide"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "joseon-mungap",
@@ -1808,7 +2565,17 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 16
+      "frameHeight": 16,
+      "world": "joseon",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "joseon-hwajangdae",
@@ -1835,7 +2602,17 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 35
+      "frameHeight": 35,
+      "world": "joseon",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "joseon-stove-pot",
@@ -1862,7 +2639,18 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 38
+      "frameHeight": 38,
+      "world": "joseon",
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "life-survival",
+        "eastern"
+      ]
     },
     {
       "id": "joseon-hwaro",
@@ -1889,7 +2677,17 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 22
+      "frameHeight": 22,
+      "world": "joseon",
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "joseon-hwadeok",
@@ -1916,7 +2714,17 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "joseon",
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "joseon-hangari-smash",
@@ -1944,7 +2752,17 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 28,
-      "frameHeight": 24
+      "frameHeight": 24,
+      "world": "joseon",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "joseon-jangdok-smash",
@@ -1972,7 +2790,17 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 28,
-      "frameHeight": 34
+      "frameHeight": 34,
+      "world": "joseon",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "joseon-onggi-smash",
@@ -2000,7 +2828,17 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 42,
-      "frameHeight": 34
+      "frameHeight": 34,
+      "world": "joseon",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "murim-suldok-smash",
@@ -2028,7 +2866,17 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 28,
-      "frameHeight": 24
+      "frameHeight": 24,
+      "world": "murim",
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "murim-hyangro",
@@ -2055,7 +2903,17 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 36
+      "frameHeight": 36,
+      "world": "murim",
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "counter",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "murim-munseo-ham",
@@ -2082,7 +2940,17 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 20
+      "frameHeight": 20,
+      "world": "murim",
+      "category": "container",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "murim-seoga-secret",
@@ -2108,7 +2976,19 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 48,
-      "frameHeight": 48
+      "frameHeight": 48,
+      "world": "murim",
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "passage",
+        "puzzle-clue"
+      ],
+      "genres": [
+        "puzzle-escape",
+        "eastern"
+      ]
     },
     {
       "id": "murim-temple-bell",
@@ -2134,7 +3014,17 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "murim",
+      "category": "water-env",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "murim-war-drum",
@@ -2160,7 +3050,17 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "murim",
+      "category": "water-env",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "murim-palace-lantern",
@@ -2187,7 +3087,17 @@
       "wave": "wave4-joseon-murim",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "murim",
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "scifi-cryo-pod",
@@ -2213,7 +3123,17 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 22,
-      "frameHeight": 34
+      "frameHeight": 34,
+      "world": "scifi",
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "hide"
+      ],
+      "genres": [
+        "cyber-scifi"
+      ]
     },
     {
       "id": "scifi-cargo-crate",
@@ -2240,7 +3160,18 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 21
+      "frameHeight": 21,
+      "world": "scifi",
+      "category": "outdoor-ride",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "life-survival",
+        "cyber-scifi"
+      ]
     },
     {
       "id": "scifi-terminal",
@@ -2267,7 +3198,18 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "scifi",
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue"
+      ],
+      "genres": [
+        "puzzle-escape",
+        "cyber-scifi"
+      ]
     },
     {
       "id": "scifi-server-rack",
@@ -2294,7 +3236,17 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "scifi",
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "cyber-scifi"
+      ]
     },
     {
       "id": "scifi-locker",
@@ -2321,7 +3273,19 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 28,
-      "frameHeight": 35
+      "frameHeight": 35,
+      "world": "scifi",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "hide"
+      ],
+      "genres": [
+        "puzzle-escape",
+        "cyber-scifi"
+      ]
     },
     {
       "id": "scifi-fridge",
@@ -2348,7 +3312,17 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 28,
-      "frameHeight": 34
+      "frameHeight": 34,
+      "world": "scifi",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "cyber-scifi"
+      ]
     },
     {
       "id": "scifi-supply-capsule",
@@ -2375,7 +3349,17 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 38
+      "frameHeight": 38,
+      "world": "scifi",
+      "category": "container",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "genres": [
+        "cyber-scifi"
+      ]
     },
     {
       "id": "scifi-airlock",
@@ -2401,7 +3385,18 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 48,
-      "frameHeight": 48
+      "frameHeight": 48,
+      "world": "scifi",
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "puzzle-escape",
+        "cyber-scifi"
+      ]
     },
     {
       "id": "scifi-elevator-door",
@@ -2427,7 +3422,17 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "scifi",
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "cyber-scifi"
+      ]
     },
     {
       "id": "scifi-floor-hatch",
@@ -2453,7 +3458,17 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 16
+      "frameHeight": 16,
+      "world": "scifi",
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "cyber-scifi"
+      ]
     },
     {
       "id": "scifi-holo-table",
@@ -2480,7 +3495,17 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "scifi",
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "cyber-scifi"
+      ]
     },
     {
       "id": "scifi-reactor",
@@ -2507,7 +3532,17 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "scifi",
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "hazard-trap"
+      ],
+      "genres": [
+        "cyber-scifi"
+      ]
     },
     {
       "id": "steampunk-regulator",
@@ -2533,7 +3568,18 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "steampunk",
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue"
+      ],
+      "genres": [
+        "puzzle-escape",
+        "cyber-scifi"
+      ]
     },
     {
       "id": "steampunk-alarm",
@@ -2559,7 +3605,17 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "steampunk",
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "hazard-trap"
+      ],
+      "genres": [
+        "cyber-scifi"
+      ]
     },
     {
       "id": "steampunk-terminal",
@@ -2586,7 +3642,18 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "steampunk",
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue"
+      ],
+      "genres": [
+        "puzzle-escape",
+        "cyber-scifi"
+      ]
     },
     {
       "id": "steampunk-gas-lamp",
@@ -2613,7 +3680,17 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 48
+      "frameHeight": 48,
+      "world": "steampunk",
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "cyber-scifi"
+      ]
     },
     {
       "id": "steampunk-plaza-lamp",
@@ -2640,7 +3717,17 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 48
+      "frameHeight": 48,
+      "world": "steampunk",
+      "category": "light-fire",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "cyber-scifi"
+      ]
     },
     {
       "id": "desert-seal-altar",
@@ -2668,7 +3755,18 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "desert",
+      "category": "gimmick",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue"
+      ],
+      "genres": [
+        "puzzle-escape",
+        "adventure"
+      ]
     },
     {
       "id": "sky-seal-altar",
@@ -2696,7 +3794,18 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "dungeon",
+      "category": "gimmick",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue"
+      ],
+      "genres": [
+        "puzzle-escape",
+        "adventure"
+      ]
     },
     {
       "id": "dungeon-magic-pedestal",
@@ -2723,7 +3832,18 @@
       "wave": "wave5-scifi-steampunk",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "dungeon",
+      "category": "gimmick",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue"
+      ],
+      "genres": [
+        "puzzle-escape",
+        "adventure"
+      ]
     },
     {
       "id": "door-wooden-gate",
@@ -2750,7 +3870,17 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 60,
-      "frameHeight": 37
+      "frameHeight": 37,
+      "world": "fantasy",
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "door-fence-gate",
@@ -2777,7 +3907,17 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 42,
-      "frameHeight": 20
+      "frameHeight": 20,
+      "world": "fantasy",
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "door-stone-gate",
@@ -2804,7 +3944,17 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 42,
-      "frameHeight": 20
+      "frameHeight": 20,
+      "world": "fantasy",
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "door-hedge-gate",
@@ -2830,7 +3980,18 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 42,
-      "frameHeight": 20
+      "frameHeight": 20,
+      "world": "fantasy",
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "adventure",
+        "life-survival"
+      ]
     },
     {
       "id": "door-ruin-sealed",
@@ -2857,7 +4018,19 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 56
+      "frameHeight": 56,
+      "world": "dungeon",
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage",
+        "puzzle-clue"
+      ],
+      "genres": [
+        "puzzle-escape",
+        "adventure"
+      ]
     },
     {
       "id": "door-joseon-hanji",
@@ -2884,7 +4057,17 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "joseon",
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "door-joseon-palace",
@@ -2910,7 +4093,17 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 28,
-      "frameHeight": 35
+      "frameHeight": 35,
+      "world": "joseon",
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "eastern"
+      ]
     },
     {
       "id": "door-modern-gate",
@@ -2936,7 +4129,17 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 28,
-      "frameHeight": 35
+      "frameHeight": 35,
+      "world": "modern",
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "romance-daily"
+      ]
     },
     {
       "id": "env-wall-clock",
@@ -2963,7 +4166,20 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "fantasy",
+      "category": "water-env",
+      "zone": "indoor",
+      "mount": "wall",
+      "roles": [
+        "puzzle-clue",
+        "ambient-light"
+      ],
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ]
     },
     {
       "id": "env-anvil-forge",
@@ -2991,7 +4207,17 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 48,
-      "frameHeight": 48
+      "frameHeight": 48,
+      "world": "fantasy",
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "env-campfire",
@@ -3019,7 +4245,18 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "fantasy",
+      "category": "light-fire",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "adventure",
+        "life-survival"
+      ]
     },
     {
       "id": "env-candle-stand",
@@ -3046,7 +4283,18 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "fantasy",
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "horror",
+        "adventure"
+      ]
     },
     {
       "id": "env-cooking-pot",
@@ -3074,7 +4322,18 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 52
+      "frameHeight": 52,
+      "world": "fantasy",
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "adventure",
+        "life-survival"
+      ]
     },
     {
       "id": "env-wall-fountain",
@@ -3101,7 +4360,18 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "fantasy",
+      "category": "water-env",
+      "zone": "both",
+      "mount": "wall",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "adventure",
+        "life-survival"
+      ]
     },
     {
       "id": "env-weather-vane",
@@ -3127,7 +4397,18 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "fantasy",
+      "category": "water-env",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "adventure",
+        "life-survival"
+      ]
     },
     {
       "id": "env-yeonja-mill",
@@ -3155,7 +4436,18 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "joseon",
+      "category": "water-env",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "life-survival",
+        "eastern"
+      ]
     },
     {
       "id": "env-fishcake-cart",
@@ -3184,7 +4476,18 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 38
+      "frameHeight": 38,
+      "world": "modern",
+      "category": "light-fire",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "romance-daily",
+        "life-survival"
+      ]
     },
     {
       "id": "env-ramen-pot",
@@ -3213,7 +4516,19 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 37
+      "frameHeight": 37,
+      "world": "modern",
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "romance-daily",
+        "life-survival",
+        "eastern"
+      ]
     },
     {
       "id": "env-grill-cart",
@@ -3242,7 +4557,18 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 38
+      "frameHeight": 38,
+      "world": "modern",
+      "category": "light-fire",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "romance-daily",
+        "life-survival"
+      ]
     },
     {
       "id": "env-wind-turbine",
@@ -3271,7 +4597,18 @@
       "wave": "wave6-doors-env",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "modern",
+      "category": "water-env",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "genres": [
+        "romance-daily",
+        "life-survival"
+      ]
     },
     {
       "id": "door-push-house-oak",
@@ -3300,7 +4637,17 @@
       "wave": "wave7-push-doors",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "fantasy",
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "door-push-desert-arch",
@@ -3329,7 +4676,17 @@
       "wave": "wave7-push-doors",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "desert",
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "door-push-dungeon-cell",
@@ -3357,7 +4714,20 @@
       "wave": "wave7-push-doors",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "dungeon",
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage",
+        "puzzle-clue"
+      ],
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ]
     },
     {
       "id": "door-push-confessional",
@@ -3385,7 +4755,19 @@
       "wave": "wave7-push-doors",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 48
+      "frameHeight": 48,
+      "world": "fantasy",
+      "category": "door-pass",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "passage",
+        "hide"
+      ],
+      "genres": [
+        "horror",
+        "adventure"
+      ]
     },
     {
       "id": "door-push-paddock-gate",
@@ -3413,7 +4795,18 @@
       "wave": "wave7-push-doors",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 20
+      "frameHeight": 20,
+      "world": "fantasy",
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "adventure",
+        "life-survival"
+      ]
     },
     {
       "id": "door-push-picket-gate",
@@ -3441,7 +4834,18 @@
       "wave": "wave7-push-doors",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 19
+      "frameHeight": 19,
+      "world": "fantasy",
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "adventure",
+        "life-survival"
+      ]
     },
     {
       "id": "door-push-iron-garden",
@@ -3469,7 +4873,17 @@
       "wave": "wave7-push-doors",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 19
+      "frameHeight": 19,
+      "world": "fantasy",
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "adventure"
+      ]
     },
     {
       "id": "door-push-hedge-rustic",
@@ -3497,7 +4911,18 @@
       "wave": "wave7-push-doors",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "fantasy",
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "adventure",
+        "life-survival"
+      ]
     },
     {
       "id": "door-push-lock-sluice",
@@ -3524,7 +4949,18 @@
       "wave": "wave7-push-doors",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "fantasy",
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "puzzle-escape",
+        "adventure"
+      ]
     },
     {
       "id": "door-push-tent-canvas",
@@ -3552,7 +4988,19 @@
       "wave": "wave7-push-doors",
       "frames": 5,
       "frameWidth": 48,
-      "frameHeight": 48
+      "frameHeight": 48,
+      "world": "fantasy",
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "passage",
+        "hide"
+      ],
+      "genres": [
+        "adventure",
+        "life-survival"
+      ]
     },
     {
       "id": "door-push-dome-tent",
@@ -3579,7 +5027,19 @@
       "wave": "wave7-push-doors",
       "frames": 5,
       "frameWidth": 48,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "modern",
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "passage",
+        "hide"
+      ],
+      "genres": [
+        "romance-daily",
+        "life-survival"
+      ]
     },
     {
       "id": "door-push-curtain-booth",
@@ -3606,7 +5066,17 @@
       "wave": "wave7-push-doors",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "modern",
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "romance-daily"
+      ]
     },
     {
       "id": "door-push-izakaya-noren",
@@ -3633,7 +5103,18 @@
       "wave": "wave7-push-doors",
       "frames": 5,
       "frameWidth": 16,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "modern",
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "romance-daily",
+        "eastern"
+      ]
     },
     {
       "id": "door-push-photo-curtain",
@@ -3660,7 +5141,18 @@
       "wave": "wave7-push-doors",
       "frames": 5,
       "frameWidth": 32,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "modern",
+      "category": "door-pass",
+      "zone": "indoor",
+      "mount": "doorway",
+      "roles": [
+        "passage",
+        "hide"
+      ],
+      "genres": [
+        "romance-daily"
+      ]
     },
     {
       "id": "door-push-subway-gate",
@@ -3687,7 +5179,18 @@
       "wave": "wave7-push-doors",
       "frames": 5,
       "frameWidth": 48,
-      "frameHeight": 32
+      "frameHeight": 32,
+      "world": "modern",
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "romance-daily",
+        "monster-collect"
+      ]
     },
     {
       "id": "door-push-parking-barrier",
@@ -3714,7 +5217,822 @@
       "wave": "wave7-push-doors",
       "frames": 5,
       "frameWidth": 48,
-      "frameHeight": 56
+      "frameHeight": 56,
+      "world": "modern",
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "genres": [
+        "romance-daily"
+      ]
+    },
+    {
+      "id": "horror-mansion-portrait",
+      "name": "저택의 저주받은 초상화",
+      "era": "fantasy",
+      "world": "fantasy",
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "wall",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "roles": [
+        "puzzle-clue",
+        "hazard-trap"
+      ],
+      "motion": "toggle-switch",
+      "playback": "toggle",
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "frameMs": 120,
+      "se": "wood_creak",
+      "tags": [
+        "공포",
+        "초상화",
+        "액자",
+        "저택",
+        "귀신",
+        "눈동자"
+      ],
+      "sourcePng": "tiledata/beodeul-interiors/pieces/portrait.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 16,
+      "frameHeight": 32
+    },
+    {
+      "id": "horror-pipe-organ",
+      "name": "유령이 연주하는 파이프 오르간",
+      "era": "fantasy",
+      "world": "fantasy",
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "roles": [
+        "puzzle-clue",
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "loopFromFrame": 1,
+      "footprint": [
+        3,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "frameMs": 130,
+      "se": "bell_gong",
+      "tags": [
+        "공포",
+        "오르간",
+        "성당",
+        "저택",
+        "유령",
+        "연주"
+      ],
+      "sourcePng": "tiledata/beodeul-interiors/pieces/organ.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 48,
+      "frameHeight": 48
+    },
+    {
+      "id": "horror-gothic-chandelier",
+      "name": "깜빡이는 고딕 샹들리에",
+      "era": "fantasy",
+      "world": "fantasy",
+      "category": "light-fire",
+      "zone": "indoor",
+      "mount": "wall",
+      "genres": [
+        "horror",
+        "adventure"
+      ],
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "loopFromFrame": 1,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.85,
+      "frameMs": 115,
+      "se": "fire_ignite",
+      "tags": [
+        "공포",
+        "샹들리에",
+        "촛불",
+        "깜빡임",
+        "저택"
+      ],
+      "sourcePng": "tiledata/beodeul-interiors/pieces/chandelier.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 32,
+      "frameHeight": 32
+    },
+    {
+      "id": "horror-knight-statue",
+      "name": "움직이는 갑옷 기사 석상",
+      "era": "fantasy",
+      "world": "fantasy",
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "roles": [
+        "puzzle-clue",
+        "hazard-trap"
+      ],
+      "motion": "toggle-switch",
+      "playback": "toggle",
+      "footprint": [
+        1,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.95,
+      "frameMs": 120,
+      "se": "stone_scrape",
+      "tags": [
+        "공포",
+        "석상",
+        "기사",
+        "저택",
+        "안광",
+        "기믹"
+      ],
+      "sourcePng": "tiledata/beodeul-interiors/pieces/knight-statue.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 16,
+      "frameHeight": 48
+    },
+    {
+      "id": "horror-standing-mirror",
+      "name": "귀신 스치는 전신 거울",
+      "era": "fantasy",
+      "world": "fantasy",
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "genres": [
+        "horror",
+        "puzzle-escape"
+      ],
+      "roles": [
+        "puzzle-clue",
+        "hazard-trap"
+      ],
+      "motion": "toggle-switch",
+      "playback": "oneshot",
+      "footprint": [
+        2,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "frameMs": 135,
+      "se": "glass_break",
+      "tags": [
+        "공포",
+        "거울",
+        "전신거울",
+        "귀신",
+        "유령",
+        "균열"
+      ],
+      "sourcePng": "public/assets/beodeul-objects/mirror_standing.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 32,
+      "frameHeight": 48
+    },
+    {
+      "id": "horror-weeping-angel",
+      "name": "피눈물 흘리는 천사 석상",
+      "era": "dungeon",
+      "world": "dungeon",
+      "category": "gimmick",
+      "zone": "both",
+      "mount": "floor",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "roles": [
+        "puzzle-clue",
+        "hazard-trap"
+      ],
+      "motion": "toggle-switch",
+      "playback": "toggle",
+      "footprint": [
+        2,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "frameMs": 125,
+      "se": "stone_scrape",
+      "tags": [
+        "공포",
+        "천사석상",
+        "납골당",
+        "피눈물",
+        "던전",
+        "기믹"
+      ],
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/cr-angel.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 32,
+      "frameHeight": 48
+    },
+    {
+      "id": "horror-crypt-candelabra",
+      "name": "납골당 푸른 도깨비불 촛대",
+      "era": "dungeon",
+      "world": "dungeon",
+      "category": "light-fire",
+      "zone": "indoor",
+      "mount": "floor",
+      "genres": [
+        "horror",
+        "adventure"
+      ],
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "loopFromFrame": 2,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "frameMs": 115,
+      "se": "magic_chime",
+      "tags": [
+        "공포",
+        "촛대",
+        "도깨비불",
+        "유령불",
+        "납골당"
+      ],
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/cr-candelabra.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 16,
+      "frameHeight": 32
+    },
+    {
+      "id": "horror-crypt-altar",
+      "name": "지하 납골당 저주 제단",
+      "era": "dungeon",
+      "world": "dungeon",
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "roles": [
+        "puzzle-clue",
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "loopFromFrame": 2,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "frameMs": 120,
+      "se": "magic_chime",
+      "tags": [
+        "공포",
+        "제단",
+        "해골",
+        "납골당",
+        "저주",
+        "던전"
+      ],
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/cr-altar.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 32,
+      "frameHeight": 32
+    },
+    {
+      "id": "horror-skull-niche",
+      "name": "벽면 해골 감실 안광",
+      "era": "dungeon",
+      "world": "dungeon",
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "wall",
+      "genres": [
+        "horror",
+        "puzzle-escape"
+      ],
+      "roles": [
+        "puzzle-clue",
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "loopFromFrame": 1,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "frameMs": 125,
+      "se": "bone_rattle",
+      "tags": [
+        "공포",
+        "해골",
+        "벽감실",
+        "안광",
+        "납골당",
+        "던전"
+      ],
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/cr-niche-skull.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 16,
+      "frameHeight": 32
+    },
+    {
+      "id": "horror-tomb-slab",
+      "name": "밀려 열리는 지하 묘비 석판",
+      "era": "dungeon",
+      "world": "dungeon",
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "roles": [
+        "passage",
+        "puzzle-clue"
+      ],
+      "motion": "slide-door",
+      "playback": "toggle",
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "frameMs": 125,
+      "se": "stone_scrape",
+      "tags": [
+        "공포",
+        "묘비",
+        "석판",
+        "비밀통로",
+        "납골당",
+        "탈출"
+      ],
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/cr-tomb-slab.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 46,
+      "frameHeight": 32
+    },
+    {
+      "id": "horror-ossuary-wall",
+      "name": "덜컹거리는 납골당 해골 벽",
+      "era": "dungeon",
+      "world": "dungeon",
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "wall",
+      "genres": [
+        "horror",
+        "puzzle-escape"
+      ],
+      "roles": [
+        "puzzle-clue",
+        "hazard-trap"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "loopFromFrame": 1,
+      "footprint": [
+        3,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "frameMs": 120,
+      "se": "bone_rattle",
+      "tags": [
+        "공포",
+        "납골당",
+        "해골벽",
+        "안광",
+        "덜컹",
+        "던전"
+      ],
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/cr-ossuary.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 48,
+      "frameHeight": 32
+    },
+    {
+      "id": "horror-torture-cage",
+      "name": "흔들리는 지하 철창 우리",
+      "era": "dungeon",
+      "world": "dungeon",
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "genres": [
+        "horror",
+        "puzzle-escape"
+      ],
+      "roles": [
+        "hide",
+        "hazard-trap"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "loopFromFrame": 1,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "frameMs": 115,
+      "se": "metal_grate",
+      "tags": [
+        "공포",
+        "철창",
+        "감옥",
+        "우리",
+        "던전",
+        "눈빛"
+      ],
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/hd-cage.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 32,
+      "frameHeight": 32
+    },
+    {
+      "id": "horror-cemetery-arch",
+      "name": "공동묘지 안개 유령 아치문",
+      "era": "fantasy",
+      "world": "fantasy",
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "genres": [
+        "horror",
+        "adventure"
+      ],
+      "roles": [
+        "passage",
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "loopFromFrame": 1,
+      "footprint": [
+        3,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "frameMs": 130,
+      "se": "magic_chime",
+      "tags": [
+        "공포",
+        "공동묘지",
+        "묘지문",
+        "안개",
+        "도깨비불",
+        "아치"
+      ],
+      "sourcePng": "tiledata/beodeul-objects/pieces/bd-cemetery-gate.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 48,
+      "frameHeight": 32
+    },
+    {
+      "id": "horror-scarecrow-twitch",
+      "name": "움찔하는 저주 허수아비",
+      "era": "fantasy",
+      "world": "fantasy",
+      "category": "gimmick",
+      "zone": "outdoor",
+      "mount": "floor",
+      "genres": [
+        "horror",
+        "life-survival"
+      ],
+      "roles": [
+        "hazard-trap"
+      ],
+      "motion": "toggle-switch",
+      "playback": "oneshot",
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "frameMs": 115,
+      "se": "wood_creak",
+      "tags": [
+        "공포",
+        "허수아비",
+        "밭",
+        "깜짝",
+        "안광"
+      ],
+      "sourcePng": "public/assets/beodeul-objects/scarecrow.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 32,
+      "frameHeight": 32
+    },
+    {
+      "id": "horror-gothic-lamp",
+      "name": "깜빡이는 고딕 철제 가로등",
+      "era": "fantasy",
+      "world": "fantasy",
+      "category": "light-fire",
+      "zone": "outdoor",
+      "mount": "floor",
+      "genres": [
+        "horror",
+        "adventure"
+      ],
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "loopFromFrame": 1,
+      "footprint": [
+        1,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.95,
+      "frameMs": 115,
+      "se": "steam_click",
+      "tags": [
+        "공포",
+        "가로등",
+        "깜빡임",
+        "밤거리",
+        "고딕"
+      ],
+      "sourcePng": "public/assets/beodeul-objects/street_lamp_iron.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 16,
+      "frameHeight": 48
+    },
+    {
+      "id": "horror-clinic-wheelchair",
+      "name": "저절로 굴러가는 폐병원 휠체어",
+      "era": "modern",
+      "world": "modern",
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "genres": [
+        "horror",
+        "puzzle-escape"
+      ],
+      "roles": [
+        "hazard-trap"
+      ],
+      "motion": "toggle-switch",
+      "playback": "oneshot",
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "frameMs": 120,
+      "se": "metal_latch",
+      "tags": [
+        "공포",
+        "폐병원",
+        "병원",
+        "휠체어",
+        "현대",
+        "귀신"
+      ],
+      "sourcePng": "public/assets/beodeul-objects/city_clinic_wheelchairs.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 32,
+      "frameHeight": 32
+    },
+    {
+      "id": "horror-clinic-stretcher",
+      "name": "덜컹거리는 폐병원 이동 들것",
+      "era": "modern",
+      "world": "modern",
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "genres": [
+        "horror",
+        "puzzle-escape"
+      ],
+      "roles": [
+        "hazard-trap"
+      ],
+      "motion": "toggle-switch",
+      "playback": "oneshot",
+      "footprint": [
+        3,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "frameMs": 110,
+      "se": "metal_grate",
+      "tags": [
+        "공포",
+        "폐병원",
+        "병원",
+        "들것",
+        "현대"
+      ],
+      "sourcePng": "public/assets/beodeul-objects/city_clinic_folded_stretcher.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 48,
+      "frameHeight": 32
+    },
+    {
+      "id": "horror-clinic-medbin",
+      "name": "폐병원 의료 폐기물함 열기",
+      "era": "modern",
+      "world": "modern",
+      "category": "container",
+      "zone": "indoor",
+      "mount": "counter",
+      "genres": [
+        "horror",
+        "puzzle-escape"
+      ],
+      "roles": [
+        "loot",
+        "puzzle-clue"
+      ],
+      "motion": "hinge-lid",
+      "playback": "toggle",
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "frameMs": 105,
+      "se": "plastic_lid",
+      "tags": [
+        "공포",
+        "폐병원",
+        "병원",
+        "폐기물함",
+        "단서",
+        "현대"
+      ],
+      "sourcePng": "public/assets/beodeul-objects/city_clinic_medical_waste_bin.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 16,
+      "frameHeight": 16
+    },
+    {
+      "id": "horror-tailor-mannequin",
+      "name": "고개 돌리는 폐건물 마네킹",
+      "era": "modern",
+      "world": "modern",
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "genres": [
+        "horror",
+        "puzzle-escape"
+      ],
+      "roles": [
+        "hazard-trap",
+        "puzzle-clue"
+      ],
+      "motion": "toggle-switch",
+      "playback": "toggle",
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "frameMs": 130,
+      "se": "wood_creak",
+      "tags": [
+        "공포",
+        "마네킹",
+        "폐건물",
+        "폐교",
+        "깜짝",
+        "현대"
+      ],
+      "sourcePng": "public/assets/beodeul-objects/city_tailo_mannequin_torso_stand.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 16,
+      "frameHeight": 32
+    },
+    {
+      "id": "horror-worklamp-flicker",
+      "name": "폐가 작업등 치직 점멸",
+      "era": "modern",
+      "world": "modern",
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "genres": [
+        "horror",
+        "puzzle-escape"
+      ],
+      "roles": [
+        "ambient-light",
+        "hazard-trap"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "loopFromFrame": 1,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "frameMs": 105,
+      "se": "sci_beep",
+      "tags": [
+        "공포",
+        "폐가",
+        "작업등",
+        "깜빡임",
+        "정전",
+        "현대"
+      ],
+      "sourcePng": "public/assets/beodeul-objects/city_auto_portable_worklamp.png",
+      "wave": "wave8-horror",
+      "frames": 5,
+      "frameWidth": 16,
+      "frameHeight": 32
     }
   ]
 }

@@ -26,7 +26,13 @@ from pathlib import Path
 from PIL import Image, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[3]
+HERE = Path(__file__).resolve().parent
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+import taxonomy as TAX
+
 SEED_PATH = ROOT / "harness-data" / "interactive-props" / "seed.json"
+QUOTAS_PATH = ROOT / "harness-data" / "interactive-props" / "quotas.json"
 LEDGER_PATH = ROOT / "harness-data" / "interactive-props" / "ledger.json"
 PICKED_DIR = ROOT / "harness-data" / "interactive-props" / "picked"
 PUBLIC_DIR = ROOT / "public" / "assets" / "harnesses" / "interactive-props"
@@ -134,6 +140,20 @@ def cmd_validate(_args) -> int:
         seen.add(iid)
         if item.get("era") not in eras:
             errors.append(f"{iid}: unknown era {item.get('era')!r}")
+        if item.get("world") not in TAX.WORLDS:
+            errors.append(f"{iid}: unknown world {item.get('world')!r}")
+        if item.get("category") not in TAX.CATEGORIES:
+            errors.append(f"{iid}: unknown category {item.get('category')!r}")
+        if item.get("zone") not in TAX.ZONES:
+            errors.append(f"{iid}: unknown zone {item.get('zone')!r}")
+        if item.get("mount") not in TAX.MOUNTS:
+            errors.append(f"{iid}: unknown mount {item.get('mount')!r}")
+        genres = item.get("genres") or []
+        if not genres or any(g not in TAX.GENRES for g in genres):
+            errors.append(f"{iid}: invalid genres {genres!r}")
+        roles = item.get("roles") or []
+        if not roles or any(r not in TAX.ROLES for r in roles):
+            errors.append(f"{iid}: invalid roles {roles!r}")
         if item.get("motion") not in motions:
             errors.append(f"{iid}: unknown motion {item.get('motion')!r}")
         if item.get("playback") not in playbacks:
@@ -283,6 +303,12 @@ def cmd_build(_args) -> int:
             "name": item["name"],
             "wave": item["wave"],
             "era": item["era"],
+            "world": item["world"],
+            "genres": item["genres"],
+            "category": item["category"],
+            "zone": item["zone"],
+            "mount": item["mount"],
+            "roles": item["roles"],
             "motion": item["motion"],
             "playback": item["playback"],
             "stripPath": f"assets/harnesses/interactive-props/{iid}.png",
@@ -430,6 +456,24 @@ def cmd_status(_args) -> int:
         p = sum(1 for x in items if x["id"] in picks and (PICKED_DIR / f"{x['id']}.png").exists())
         b = sum(1 for x in items if (PUBLIC_DIR / f"{x['id']}.png").exists())
         print(f"  {e:14} {p:2d}/{len(items):2d} picked   {b:2d}/{len(items):2d} built")
+
+    if QUOTAS_PATH.exists():
+        quotas = json.loads(QUOTAS_PATH.read_text(encoding="utf-8"))
+        m1 = quotas["milestones"]["m1"]
+        full = quotas["milestones"]["full"]
+        print(f"\n5-Axis Quota Progress (Built {built_n} / M1 {m1} / Full {full}):")
+        print("  By Category:")
+        for cat, q in quotas["byCategory"].items():
+            cnt = sum(1 for x in seed["items"] if x.get("category") == cat)
+            print(f"    {cat:14} {cnt:3d} / M1 {q['m1']:3d} (rem {max(0, q['m1'] - cnt):2d})  Full {q['full']:3d}  {q['label']}")
+        print("  By Genre (multi-tag):")
+        for gen, q in quotas["byGenre"].items():
+            cnt = sum(1 for x in seed["items"] if gen in (x.get("genres") or []))
+            print(f"    {gen:16} {cnt:3d} / M1 {q['m1']:3d} (rem {max(0, q['m1'] - cnt):2d})  Full {q['full']:3d}  {q['label']}")
+        print("  By Role (multi-tag):")
+        for rol, q in quotas["byRole"].items():
+            cnt = sum(1 for x in seed["items"] if rol in (x.get("roles") or []))
+            print(f"    {rol:14} {cnt:3d} / M1 {q['m1']:3d} (rem {max(0, q['m1'] - cnt):2d})  Full {q['full']:3d}  {q['label']}")
     return 0
 
 

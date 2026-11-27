@@ -6,13 +6,20 @@
 import { buildContainerSearchEvent, ownerNoticeCommands, withLootPopups } from "@/project/containerSearchPattern";
 import { CONTAINER_STYLES, isContainerStyle, propFxId, type ContainerStyle } from "@/project/containerFx";
 import {
+  INTERACTIVE_PROP_CATEGORIES,
   INTERACTIVE_PROP_ERAS,
   INTERACTIVE_PROP_ERA_LABELS,
+  INTERACTIVE_PROP_GENRES,
+  INTERACTIVE_PROP_ROLES,
   inferInteractivePropEra,
   interactivePropById,
   searchInteractiveProps,
+  type InteractivePropCategory,
   type InteractivePropEra,
+  type InteractivePropGenre,
   type InteractivePropPlayback,
+  type InteractivePropRole,
+  type InteractivePropZone,
 } from "@/project/interactiveProps";
 import type { Command, GameEvent, Project } from "@/project/types";
 import { withJosa } from "@/util/josa";
@@ -175,15 +182,18 @@ const placeSearchContainers: ToolDefinition = {
 const listInteractivePropsTool: ToolDefinition = {
   name: "list_interactive_props",
   description:
-    "시대별 고퀄리티 원본 기반 상호작용 오브젝트 100종 카탈로그를 검색한다. "
-    + "항아리/상자/수정 파괴(break), 옷장·서랍·문·금고·에어록 열닫기(toggle), 벽난로·화로·등롱·원자로·제단 점화/가동(loopAfterOpen), "
-    + "자판기·우물·종·북·석관(oneshot)을 시대(fantasy·dungeon·modern·joseon·murim·scifi·steampunk)나 키워드로 찾아 place_interactive_props 에 넘긴다.",
+    "5축(세계·장르·기능 카테고리·배치 공간·게임플레이 역할) 기반 실원본 상호작용 오브젝트 카탈로그를 검색한다. "
+    + "공포(horror)·퍼즐탈출(puzzle-escape)·일상(romance-daily)·숨기(hide)·밀기문(door-pass)·파괴(breakable) 등으로 정확히 찾아 place_interactive_props 에 넘긴다.",
   mode: "read",
   parameters: {
     type: "object",
     properties: {
-      query: { type: "string", description: "검색어(예: 항아리, 옷장, 자판기, 화로, 에어록, 비밀, 파괴)" },
+      query: { type: "string", description: "검색어(예: 공포, 밀기문, 항아리, 옷장, 숨기, 자판기, 거울)" },
       era: { type: "string", enum: [...INTERACTIVE_PROP_ERAS], description: "시대 필터(생략 시 전체 또는 mapId 추론)" },
+      genre: { type: "string", enum: [...INTERACTIVE_PROP_GENRES], description: "장르 필터(horror·puzzle-escape·adventure·romance-daily·monster-collect·life-survival·eastern·cyber-scifi)" },
+      category: { type: "string", enum: [...INTERACTIVE_PROP_CATEGORIES], description: "기능 카테고리(door-pass·container·breakable·machine·light-fire·water-env·gimmick·outdoor-ride)" },
+      zone: { type: "string", enum: ["indoor", "outdoor", "both"], description: "배치 공간(실내/실외)" },
+      role: { type: "string", enum: [...INTERACTIVE_PROP_ROLES], description: "게임플레이 역할(loot·passage·hide·puzzle-clue·ambient-light·hazard-trap)" },
       mapId: { type: "string", description: "선택: 맵 칩셋에서 어울리는 시대를 자동 추론" },
       playback: { type: "string", enum: ["oneshot", "toggle", "break", "loopAfterOpen"] },
       limit: { type: "integer", description: "최대 반환 개수(기본 30)" },
@@ -195,19 +205,38 @@ const listInteractivePropsTool: ToolDefinition = {
     const inferredEra = map ? inferInteractivePropEra(map.tilesetId, draft.tilesets[map.tilesetId]?.name) : undefined;
     const era = typeof args.era === "string" && (INTERACTIVE_PROP_ERAS as readonly string[]).includes(args.era)
       ? (args.era as InteractivePropEra)
-      : (!args.query && inferredEra ? inferredEra : undefined);
+      : (!args.query && !args.genre && !args.category && !args.role && inferredEra ? inferredEra : undefined);
+    const genre = typeof args.genre === "string" && (INTERACTIVE_PROP_GENRES as readonly string[]).includes(args.genre)
+      ? (args.genre as InteractivePropGenre) : undefined;
+    const category = typeof args.category === "string" && (INTERACTIVE_PROP_CATEGORIES as readonly string[]).includes(args.category)
+      ? (args.category as InteractivePropCategory) : undefined;
+    const zone = typeof args.zone === "string" && ["indoor", "outdoor", "both"].includes(args.zone)
+      ? (args.zone as InteractivePropZone) : undefined;
+    const role = typeof args.role === "string" && (INTERACTIVE_PROP_ROLES as readonly string[]).includes(args.role)
+      ? (args.role as InteractivePropRole) : undefined;
     const playback = typeof args.playback === "string" ? (args.playback as InteractivePropPlayback) : undefined;
     const matches = searchInteractiveProps({
       query: typeof args.query === "string" ? args.query : undefined,
       era,
+      genre,
+      category,
+      zone,
+      role,
       playback,
     });
     const limit = Math.max(1, Math.min(100, Number(args.limit ?? 30) || 30));
     const sliced = matches.slice(0, limit);
-    const lines = sliced.map((p) => `${p.id} | ${p.name} | ${INTERACTIVE_PROP_ERA_LABELS[p.era]} | ${p.motion}/${p.playback}`);
+    const lines = sliced.map((p) => `${p.id} | ${p.name} | ${INTERACTIVE_PROP_ERA_LABELS[p.era]} | ${p.category ?? "-"}/${p.zone ?? "-"} | [${(p.genres ?? []).join(",")}]`);
     return {
       summary: `상호작용 오브젝트 ${matches.length}건 중 ${sliced.length}건:\n${lines.join("\n")}`,
-      data: { total: matches.length, props: sliced.map((p) => ({ id: p.id, name: p.name, era: p.era, motion: p.motion, playback: p.playback, tags: p.tags })) },
+      data: {
+        total: matches.length,
+        props: sliced.map((p) => ({
+          id: p.id, name: p.name, era: p.era, world: p.world, category: p.category,
+          genres: p.genres, zone: p.zone, mount: p.mount, roles: p.roles,
+          motion: p.motion, playback: p.playback, tags: p.tags,
+        })),
+      },
     };
   },
 };

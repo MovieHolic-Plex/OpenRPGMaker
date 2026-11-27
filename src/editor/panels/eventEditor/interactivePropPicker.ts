@@ -2,13 +2,19 @@
 // 시대별·검색어로 골라 바로 선택하고 멀티프레임 미리보기를 재생하는 피커 컴포넌트.
 import { propFxId } from "@/project/containerFx";
 import {
+  INTERACTIVE_PROP_CATEGORIES,
+  INTERACTIVE_PROP_CATEGORY_LABELS,
   INTERACTIVE_PROP_ERAS,
   INTERACTIVE_PROP_ERA_LABELS,
+  INTERACTIVE_PROP_GENRES,
+  INTERACTIVE_PROP_GENRE_LABELS,
   INTERACTIVE_PROPS,
   interactivePropStripUrl,
   searchInteractiveProps,
+  type InteractivePropCategory,
   type InteractivePropEntry,
   type InteractivePropEra,
+  type InteractivePropGenre,
 } from "@/project/interactiveProps";
 import { el } from "@/util/dom";
 
@@ -81,6 +87,8 @@ export function interactivePropPickButton(options: {
       dialog = null;
     }
     let activeEra: InteractivePropEra | "all" = "all";
+    let activeGenre: InteractivePropGenre | "all" = "all";
+    let activeCategory: InteractivePropCategory | "all" = "all";
     let query = "";
     let mode: "open" | "close" = options.currentAnimationId?.endsWith(":close") ? "close" : "open";
 
@@ -107,6 +115,30 @@ export function interactivePropPickButton(options: {
     search.style.border = "1px solid var(--border, #3c4252)";
     search.style.background = "var(--surface-2, #262a36)";
     search.style.color = "inherit";
+
+    const genreSelect = el("select", {
+      attrs: { "aria-label": "장르" },
+      children: [
+        el("option", { value: "all", text: "전체 장르" }),
+        ...INTERACTIVE_PROP_GENRES.map((g) => el("option", { value: g, text: INTERACTIVE_PROP_GENRE_LABELS[g] })),
+      ],
+    }) as HTMLSelectElement;
+    genreSelect.style.padding = "6px 8px";
+    genreSelect.style.borderRadius = "6px";
+    genreSelect.style.background = "var(--surface-2, #262a36)";
+    genreSelect.style.color = "inherit";
+
+    const catSelect = el("select", {
+      attrs: { "aria-label": "카테고리" },
+      children: [
+        el("option", { value: "all", text: "전체 카테고리" }),
+        ...INTERACTIVE_PROP_CATEGORIES.map((c) => el("option", { value: c, text: INTERACTIVE_PROP_CATEGORY_LABELS[c] })),
+      ],
+    }) as HTMLSelectElement;
+    catSelect.style.padding = "6px 8px";
+    catSelect.style.borderRadius = "6px";
+    catSelect.style.background = "var(--surface-2, #262a36)";
+    catSelect.style.color = "inherit";
 
     const modeSelect = el("select", {
       attrs: { "aria-label": "재생 방향" },
@@ -143,6 +175,8 @@ export function interactivePropPickButton(options: {
       const list = searchInteractiveProps({
         query,
         era: activeEra === "all" ? undefined : activeEra,
+        genre: activeGenre === "all" ? undefined : activeGenre,
+        category: activeCategory === "all" ? undefined : activeCategory,
       });
       countEl.textContent = `${list.length} / ${INTERACTIVE_PROPS.length}종`;
       grid.replaceChildren(
@@ -214,6 +248,14 @@ export function interactivePropPickButton(options: {
       query = search.value;
       renderGrid();
     });
+    genreSelect.addEventListener("change", () => {
+      activeGenre = genreSelect.value as typeof activeGenre;
+      renderGrid();
+    });
+    catSelect.addEventListener("change", () => {
+      activeCategory = catSelect.value as typeof activeCategory;
+      renderGrid();
+    });
     modeSelect.addEventListener("change", () => {
       mode = modeSelect.value === "close" ? "close" : "open";
       renderGrid();
@@ -237,8 +279,9 @@ export function interactivePropPickButton(options: {
     header.style.gap = "8px";
     header.style.marginBottom = "10px";
 
-    const bar = el("div", { children: [search, modeSelect] });
+    const bar = el("div", { children: [search, genreSelect, catSelect, modeSelect] });
     bar.style.display = "flex";
+    bar.style.flexWrap = "wrap";
     bar.style.gap = "8px";
 
     dlg.append(header, bar, tabs, grid);

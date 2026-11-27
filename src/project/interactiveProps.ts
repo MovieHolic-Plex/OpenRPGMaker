@@ -36,6 +36,106 @@ export const INTERACTIVE_PROP_ERA_LABELS: Readonly<Record<InteractivePropEra, st
   steampunk: "스팀펑크",
 };
 
+export type InteractivePropWorld =
+  | InteractivePropEra
+  | "desert"
+  | "snow"
+  | "pirate"
+  | "wasteland";
+
+export type InteractivePropGenre =
+  | "horror"
+  | "puzzle-escape"
+  | "adventure"
+  | "romance-daily"
+  | "monster-collect"
+  | "life-survival"
+  | "eastern"
+  | "cyber-scifi";
+
+export const INTERACTIVE_PROP_GENRES: readonly InteractivePropGenre[] = [
+  "horror",
+  "puzzle-escape",
+  "adventure",
+  "romance-daily",
+  "monster-collect",
+  "life-survival",
+  "eastern",
+  "cyber-scifi",
+];
+
+export const INTERACTIVE_PROP_GENRE_LABELS: Readonly<Record<InteractivePropGenre, string>> = {
+  horror: "공포·미스터리",
+  "puzzle-escape": "퍼즐·탈출",
+  adventure: "JRPG·모험",
+  "romance-daily": "일상·학원·연애",
+  "monster-collect": "몬스터 수집",
+  "life-survival": "농장·생존",
+  eastern: "동양·민속",
+  "cyber-scifi": "사이버·SF",
+};
+
+export type InteractivePropCategory =
+  | "door-pass"
+  | "container"
+  | "breakable"
+  | "machine"
+  | "light-fire"
+  | "water-env"
+  | "gimmick"
+  | "outdoor-ride";
+
+export const INTERACTIVE_PROP_CATEGORIES: readonly InteractivePropCategory[] = [
+  "door-pass",
+  "container",
+  "breakable",
+  "machine",
+  "light-fire",
+  "water-env",
+  "gimmick",
+  "outdoor-ride",
+];
+
+export const INTERACTIVE_PROP_CATEGORY_LABELS: Readonly<Record<InteractivePropCategory, string>> = {
+  "door-pass": "출입문·밀기문·커튼",
+  container: "수납·가구·상자",
+  breakable: "파괴·채집",
+  machine: "기계·가전·키오스크",
+  "light-fire": "불·조명·요리",
+  "water-env": "물·바람·환경",
+  gimmick: "기믹·함정·제단",
+  "outdoor-ride": "탈것·야외시설",
+};
+
+export type InteractivePropZone = "indoor" | "outdoor" | "both";
+export type InteractivePropMount = "floor" | "wall" | "doorway" | "counter";
+
+export type InteractivePropRole =
+  | "loot"
+  | "passage"
+  | "hide"
+  | "puzzle-clue"
+  | "ambient-light"
+  | "hazard-trap";
+
+export const INTERACTIVE_PROP_ROLES: readonly InteractivePropRole[] = [
+  "loot",
+  "passage",
+  "hide",
+  "puzzle-clue",
+  "ambient-light",
+  "hazard-trap",
+];
+
+export const INTERACTIVE_PROP_ROLE_LABELS: Readonly<Record<InteractivePropRole, string>> = {
+  loot: "탐색·획득",
+  passage: "통로·개방",
+  hide: "숨기(공포)",
+  "puzzle-clue": "단서·잠금",
+  "ambient-light": "광원·환경",
+  "hazard-trap": "함정·위험",
+};
+
 export type InteractivePropMotion =
   | "hinge-lid"
   | "drop-flap"
@@ -57,6 +157,12 @@ export interface InteractivePropEntry {
   readonly name: string;
   readonly wave: string;
   readonly era: InteractivePropEra;
+  readonly world?: InteractivePropWorld;
+  readonly genres?: readonly InteractivePropGenre[];
+  readonly category?: InteractivePropCategory;
+  readonly zone?: InteractivePropZone;
+  readonly mount?: InteractivePropMount;
+  readonly roles?: readonly InteractivePropRole[];
   readonly motion: InteractivePropMotion;
   readonly playback: InteractivePropPlayback;
   readonly containerStyle?: ContainerStyle;
@@ -171,10 +277,16 @@ export function interactivePropsByEra(era: InteractivePropEra): readonly Interac
   return INTERACTIVE_PROPS.filter((prop) => prop.era === era);
 }
 
-/** 에디터·조수 공통 검색: 시대·모션·자유 키워드로 100종을 필터링한다. */
+/** 에디터·조수 공통 5축 검색: 시대/세계·장르·카테고리·공간·역할·자유 키워드로 필터링한다. */
 export function searchInteractiveProps(options: {
   readonly query?: string;
   readonly era?: InteractivePropEra;
+  readonly world?: InteractivePropWorld;
+  readonly genre?: InteractivePropGenre;
+  readonly category?: InteractivePropCategory;
+  readonly zone?: InteractivePropZone;
+  readonly mount?: InteractivePropMount;
+  readonly role?: InteractivePropRole;
   readonly motion?: InteractivePropMotion;
   readonly playback?: InteractivePropPlayback;
 } = {}): readonly InteractivePropEntry[] {
@@ -182,10 +294,19 @@ export function searchInteractiveProps(options: {
   const tokens = q ? q.split(/\s+/).filter(Boolean) : [];
   return INTERACTIVE_PROPS.filter((prop) => {
     if (options.era && prop.era !== options.era) return false;
+    if (options.world && (prop.world ?? prop.era) !== options.world) return false;
+    if (options.genre && !(prop.genres ?? []).includes(options.genre)) return false;
+    if (options.category && prop.category !== options.category) return false;
+    if (options.zone && prop.zone && prop.zone !== "both" && prop.zone !== options.zone) return false;
+    if (options.mount && prop.mount !== options.mount) return false;
+    if (options.role && !(prop.roles ?? []).includes(options.role)) return false;
     if (options.motion && prop.motion !== options.motion) return false;
     if (options.playback && prop.playback !== options.playback) return false;
     if (tokens.length === 0) return true;
-    const hay = `${prop.id} ${prop.name} ${prop.era} ${INTERACTIVE_PROP_ERA_LABELS[prop.era]} ${prop.motion} ${prop.tags.join(" ")}`.toLowerCase();
+    const genreLabels = (prop.genres ?? []).map((g) => `${g} ${INTERACTIVE_PROP_GENRE_LABELS[g]}`).join(" ");
+    const catLabel = prop.category ? `${prop.category} ${INTERACTIVE_PROP_CATEGORY_LABELS[prop.category]}` : "";
+    const roleLabels = (prop.roles ?? []).map((r) => `${r} ${INTERACTIVE_PROP_ROLE_LABELS[r]}`).join(" ");
+    const hay = `${prop.id} ${prop.name} ${prop.era} ${INTERACTIVE_PROP_ERA_LABELS[prop.era]} ${prop.world ?? ""} ${genreLabels} ${catLabel} ${prop.zone ?? ""} ${prop.mount ?? ""} ${roleLabels} ${prop.motion} ${prop.tags.join(" ")}`.toLowerCase();
     return tokens.every((tok) => hay.includes(tok));
   });
 }

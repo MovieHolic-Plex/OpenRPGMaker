@@ -3,817 +3,937 @@
   "picks": {
     "treasure-chest": {
       "sha256": "3db368755ad22964d725df582b906bec8a82cdca9d24f963f78535d3053c3690",
-      "pickedAt": "2026-11-27T09:23:07.078402+00:00",
+      "pickedAt": "2026-11-27T10:07:37.536081+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "beodeul-wardrobe": {
       "sha256": "1992d59cf77575f01aa1559f742f60c8d0ea3becf02a22f04ed93863307268a4",
-      "pickedAt": "2026-11-27T09:23:07.297237+00:00",
+      "pickedAt": "2026-11-27T10:07:37.703935+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "beodeul-drawers": {
       "sha256": "965ef76f44c3eeed56cf240e2b60c72828eb7a2eab0dbe9630bde51e432b5cb3",
-      "pickedAt": "2026-11-27T09:23:07.546621+00:00",
+      "pickedAt": "2026-11-27T10:07:37.861398+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "beodeul-bookshelf": {
       "sha256": "6d0abf11182a4efb70144242cfe5a84ae9699cd359c48b59dfd387ccf5b22d48",
-      "pickedAt": "2026-11-27T09:23:07.798819+00:00",
+      "pickedAt": "2026-11-27T10:07:38.051466+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "interior-strongbox": {
       "sha256": "ea26d1696f094c5e4b328631b4fb9b897ddd734390ce7ebcdf2ccfd87a59252d",
-      "pickedAt": "2026-11-27T09:23:08.009126+00:00",
+      "pickedAt": "2026-11-27T10:07:38.232295+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "interior-chest": {
       "sha256": "f4092f444247357ca3b9f86f66a951004f9b1b7dbf8625561ddc18d4931c360f",
-      "pickedAt": "2026-11-27T09:23:08.219384+00:00",
+      "pickedAt": "2026-11-27T10:07:38.405270+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "interior-wardrobe": {
       "sha256": "1b82986bedb3b2ba0f48624c537a768ad3ddbc5387f85d0a4bd30e76a13f718f",
-      "pickedAt": "2026-11-27T09:23:08.413040+00:00",
+      "pickedAt": "2026-11-27T10:07:38.630471+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "interior-dresser": {
       "sha256": "47fa492f6260492276d3f4a24ebf546f4c395277c3928959fbe557f5670f23f4",
-      "pickedAt": "2026-11-27T09:23:08.635495+00:00",
+      "pickedAt": "2026-11-27T10:07:38.865240+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "interior-china-cabinet": {
       "sha256": "e0e60662dc6d0625d9fbb4a69f08dd89799fe4c82f85bfc4c770bdbb47db873d",
-      "pickedAt": "2026-11-27T09:23:08.899498+00:00",
+      "pickedAt": "2026-11-27T10:07:39.103236+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "interior-nightstand": {
       "sha256": "e61cfabf2b364979372ca39f5855c16b1ae4a595b73c589431f63854c48fcbcc",
-      "pickedAt": "2026-11-27T09:23:09.140066+00:00",
+      "pickedAt": "2026-11-27T10:07:39.271248+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "interior-vanity": {
       "sha256": "2a2bb83800d1f2a927ebae6110435ffec48060f5b2e66d82124343b15f8d1a9f",
-      "pickedAt": "2026-11-27T09:23:09.352382+00:00",
+      "pickedAt": "2026-11-27T10:07:39.431821+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "interior-writing-desk": {
       "sha256": "5e956bf86a0fdbaca80fff3a88632451f57fb215ce1f6a1e1c7489b943c93445",
-      "pickedAt": "2026-11-27T09:23:09.568668+00:00",
+      "pickedAt": "2026-11-27T10:07:39.621103+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "interior-cashbox": {
       "sha256": "6a5684abf6877ca84f1172a1076787a7d6a709bfbcdf1332cf2eccaefcfeed7b",
-      "pickedAt": "2026-11-27T09:23:09.779849+00:00",
+      "pickedAt": "2026-11-27T10:07:39.764139+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "interior-cellar-hatch": {
       "sha256": "1cec5f24e60aa2846ce10f8cfc9d7459d9e91eb27df9164ed720b51762aab85a",
-      "pickedAt": "2026-11-27T09:23:09.977674+00:00",
+      "pickedAt": "2026-11-27T10:07:39.906057+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "interior-vault-door": {
       "sha256": "0a00040721c2442c5333db1f6c2650002f3c92f57c49d57d9d4a1ba9a41d699c",
-      "pickedAt": "2026-11-27T09:23:10.273074+00:00",
+      "pickedAt": "2026-11-27T10:07:40.093168+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "interior-cell-door": {
       "sha256": "fb11eea5d6272a2f0fbfc700b8e682873dd650fe182952399201f52ce233116f",
-      "pickedAt": "2026-11-27T09:23:10.510558+00:00",
+      "pickedAt": "2026-11-27T10:07:40.285955+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "fireplace-stone": {
       "sha256": "d9ec204f17b8c13bb8ca325608e5ec244324ad1486bdba514dcadec42d49b43b",
-      "pickedAt": "2026-11-27T09:23:10.736691+00:00",
+      "pickedAt": "2026-11-27T10:07:40.473575+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "brick-fireplace": {
       "sha256": "1d46bb24a9ac7cc9a688f154905c07f21f79a4c664867d175302273364dc06fc",
-      "pickedAt": "2026-11-27T09:23:10.990768+00:00",
+      "pickedAt": "2026-11-27T10:07:40.650606+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "bread-oven": {
       "sha256": "331c680169e0542dfb5b460929c94de15fb68a1abad81ef1e1c0fd6f09b3d680",
-      "pickedAt": "2026-11-27T09:23:11.201054+00:00",
+      "pickedAt": "2026-11-27T10:07:40.834861+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "well-bucket-crank": {
       "sha256": "7513b54b3f8e9352182e748340481d49162c7b3052f98b7172163a0c42f9983a",
-      "pickedAt": "2026-11-27T09:23:11.422286+00:00",
+      "pickedAt": "2026-11-27T10:07:40.994053+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "water-jug-smash": {
       "sha256": "8cbabced5d884b9558be1af35a6a860a21f145dadbb4f34169db86cf42ff354b",
-      "pickedAt": "2026-11-27T09:23:11.622345+00:00",
+      "pickedAt": "2026-11-27T10:07:41.156246+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "clay-pots-smash": {
       "sha256": "62340dffb74cfb40816bbb64f02eb02143217135164d587947028d8d1b2ecea8",
-      "pickedAt": "2026-11-27T09:23:11.800505+00:00",
+      "pickedAt": "2026-11-27T10:07:41.319432+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "storage-jars-smash": {
       "sha256": "4d897a204ae203edadbc76de7bc85e97dc1ed722468bbad3ee855551607ca3f3",
-      "pickedAt": "2026-11-27T09:23:12.008620+00:00",
+      "pickedAt": "2026-11-27T10:07:41.503514+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "terracotta-pot-smash": {
       "sha256": "451d5e5650729e637da8dd713be8e427f8b70425bd937927fdaaffb6f2006237",
-      "pickedAt": "2026-11-27T09:23:12.226931+00:00",
+      "pickedAt": "2026-11-27T10:07:41.662981+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "sweet-jar-smash": {
       "sha256": "da793fc38a2510befda4901af6b29a07ff1f4a789b4a554af1fa90f7596ca1d1",
-      "pickedAt": "2026-11-27T09:23:12.431024+00:00",
+      "pickedAt": "2026-11-27T10:07:41.798271+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "dungeon-amphora-smash": {
       "sha256": "08e79bf2fe1be90d965c5bed610d1593bc58aeaf3bbf0dd3a9eeb7a32b600e12",
-      "pickedAt": "2026-11-27T09:23:12.623553+00:00",
+      "pickedAt": "2026-11-27T10:07:41.954568+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "pyramid-jars-smash": {
       "sha256": "223bf9aeb5d9028a48c652553bfcdc3a02a35c541f2defb768919c6f2839aa68",
-      "pickedAt": "2026-11-27T09:23:12.848858+00:00",
+      "pickedAt": "2026-11-27T10:07:42.128986+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "dungeon-crate-smash": {
       "sha256": "1343784ae850c3b0e9b41f291304ed36c9d7957dc55b3e44d2810cdec098a7fa",
-      "pickedAt": "2026-11-27T09:23:13.066441+00:00",
+      "pickedAt": "2026-11-27T10:07:42.306385+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "dungeon-barrel-smash": {
       "sha256": "e855b09b60c65e487c9de27dae53a16b736c4625b60a97f59c13c3f84202b7c4",
-      "pickedAt": "2026-11-27T09:23:13.293819+00:00",
+      "pickedAt": "2026-11-27T10:07:42.484099+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "crate-stack-smash": {
       "sha256": "c5476d5f7045726e1f2d09b144c57146e4878f07fe589825a802639395c217a3",
-      "pickedAt": "2026-11-27T09:23:13.496265+00:00",
+      "pickedAt": "2026-11-27T10:07:42.635977+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "sack-pile-search": {
       "sha256": "0a1b1b6a24e3c9d2c0a808a4d8886a4b2112dc6b9f5661251d44eac502a509be",
-      "pickedAt": "2026-11-27T09:23:13.676392+00:00",
+      "pickedAt": "2026-11-27T10:07:42.804491+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "hay-stack-search": {
       "sha256": "36bc74bd9f73dd8af57d62119c8eec628befd25e4e56339b25f271c9cc45a7c6",
-      "pickedAt": "2026-11-27T09:23:13.869919+00:00",
+      "pickedAt": "2026-11-27T10:07:42.968851+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "dungeon-sarcophagus": {
       "sha256": "21c6e9acbd7bbaf66610ce183079815de41229a627147fb14af8cb2557c94c9e",
-      "pickedAt": "2026-11-27T09:23:14.059240+00:00",
+      "pickedAt": "2026-11-27T10:07:43.108678+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "dungeon-brazier": {
       "sha256": "5880d2e1f5068c25977200505841d90a337003cc91946ac6e8bab45b153b613c",
-      "pickedAt": "2026-11-27T09:23:14.262823+00:00",
+      "pickedAt": "2026-11-27T10:07:43.247930+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "dungeon-wall-torch": {
       "sha256": "cae5251162b1fbd6be574a31526f2046473a702bc216c5a4c40288aba43fcec9",
-      "pickedAt": "2026-11-27T09:23:14.488651+00:00",
+      "pickedAt": "2026-11-27T10:07:43.397875+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "dungeon-crystal-smash": {
       "sha256": "99f3adb9b2bd86635ac4e461eb7023aa7e29190800e2ed54aa0b5f18e58eacf9",
-      "pickedAt": "2026-11-27T09:23:14.691916+00:00",
+      "pickedAt": "2026-11-27T10:07:43.577543+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "dungeon-ice-crystal-smash": {
       "sha256": "ab8497cdf8a3eb0de94cc1e97bb20f6877854bea31cdac3bf31d7b6cc7d9b66f",
-      "pickedAt": "2026-11-27T09:23:14.874512+00:00",
+      "pickedAt": "2026-11-27T10:07:43.743419+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "dungeon-skulls-scatter": {
       "sha256": "c7cf66db8f222650f62670832a0a4bb72cae094747566c9b302cca6d44c75b2b",
-      "pickedAt": "2026-11-27T09:23:15.075002+00:00",
+      "pickedAt": "2026-11-27T10:07:43.923075+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "dungeon-sewer-valve": {
       "sha256": "ea889062b4a60f24d6642d92616fd5f456e93d3c0eb6376641ad82862b1e364d",
-      "pickedAt": "2026-11-27T09:23:15.260915+00:00",
+      "pickedAt": "2026-11-27T10:07:44.072244+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "dungeon-sewer-bars": {
       "sha256": "25f29c2fd4daf570eefd8b8bbe27565fc10695231ac5e5fab0c28fc3878fbcf5",
-      "pickedAt": "2026-11-27T09:23:15.470280+00:00",
+      "pickedAt": "2026-11-27T10:07:44.217435+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-vending": {
       "sha256": "641d210d6275ad9b3103aa79ebac462dd62aa5c035592bdf151a8d03945d11bc",
-      "pickedAt": "2026-11-27T09:23:15.688964+00:00",
+      "pickedAt": "2026-11-27T10:07:44.386572+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-lockers": {
       "sha256": "beadd0457464cb114542947ef605dace2f781b3aea0b0130b7e918f043662ad4",
-      "pickedAt": "2026-11-27T09:23:15.878539+00:00",
+      "pickedAt": "2026-11-27T10:07:44.545627+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-toolbox": {
       "sha256": "d7ff70861a8b297d8a61b8d31321ae3a5e394a33de8d89f04071d1c9820d9ac3",
-      "pickedAt": "2026-11-27T09:23:16.051742+00:00",
+      "pickedAt": "2026-11-27T10:07:44.698632+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-arcade": {
       "sha256": "b17e60e9f2ef8c96dab597bfb9b73105400a50ad56504eea8d64ad26909164b6",
-      "pickedAt": "2026-11-27T09:23:16.256027+00:00",
+      "pickedAt": "2026-11-27T10:07:44.848695+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-claw-machine": {
       "sha256": "5e5114e32f460b0d8806ff63075840822aeba1d9c8de2a2f062fc7892f6fab5e",
-      "pickedAt": "2026-11-27T09:23:16.464409+00:00",
+      "pickedAt": "2026-11-27T10:07:44.991129+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-cooler-box": {
       "sha256": "528a34778edfe43cf71f51fb88574dc6b7600216ddbfabb38f7f81bc7185aa0c",
-      "pickedAt": "2026-11-27T09:23:16.656841+00:00",
+      "pickedAt": "2026-11-27T10:07:45.171250+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-waste-bin": {
       "sha256": "d26f69babbcc7e19b8d22e23504ebf9992cc4af556de88bd62203b0ebafb3471",
-      "pickedAt": "2026-11-27T09:23:16.837942+00:00",
+      "pickedAt": "2026-11-27T10:07:45.342442+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-recycle-bins": {
       "sha256": "7771c8f86f73f7e7eeec6cd1803ed51c1ddc1887d05033f8ef813f9814795608",
-      "pickedAt": "2026-11-27T09:23:17.066325+00:00",
+      "pickedAt": "2026-11-27T10:07:45.486064+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-parcel-locker": {
       "sha256": "c103146b0f8b22208af009d5704573bb3ea83f26ec23dd756fdaca49d7900e59",
-      "pickedAt": "2026-11-27T09:23:17.291263+00:00",
+      "pickedAt": "2026-11-27T10:07:45.626926+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-parcel-boxes": {
       "sha256": "58e09871166d084d3eb2424f5327417896e1f1fac5d8866dcf60fe134524d4a3",
-      "pickedAt": "2026-11-27T09:23:17.510848+00:00",
+      "pickedAt": "2026-11-27T10:07:45.769047+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-fire-hose-box": {
       "sha256": "84214d140744cfec174c9702d782262f589a06476cde05de1c13b37f05b30f58",
-      "pickedAt": "2026-11-27T09:23:17.735243+00:00",
+      "pickedAt": "2026-11-27T10:07:45.920373+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-signal-box": {
       "sha256": "d8c88cc8a0f3dbc8246affebe8d176db8fbeea627ac1b0fe1db12ff3a1f54aae",
-      "pickedAt": "2026-11-27T09:23:17.922824+00:00",
+      "pickedAt": "2026-11-27T10:07:46.110890+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-battery-swap": {
       "sha256": "b9c9c4335ae48903cf9b9b614a88c6024c7e9b09ededa553b4fab051acd2fd6b",
-      "pickedAt": "2026-11-27T09:23:18.155817+00:00",
+      "pickedAt": "2026-11-27T10:07:46.276917+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-charging-kiosk": {
       "sha256": "d20cd8a1782916f6c1a087e33845611f674bd62877c7448803afb74a44f783d2",
-      "pickedAt": "2026-11-27T09:23:18.432625+00:00",
+      "pickedAt": "2026-11-27T10:07:46.436276+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-phone-booth": {
       "sha256": "ced19577c73a85c1beb895e5f8016a238d6f28b5394b3124f8457236b72b5c21",
-      "pickedAt": "2026-11-27T09:23:18.712214+00:00",
+      "pickedAt": "2026-11-27T10:07:46.609671+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-mask-vending": {
       "sha256": "7571b5f52f20c9dfb76c557e56056b95074a09e1b5dd4eb0ff5ce0a5b3359847",
-      "pickedAt": "2026-11-27T09:23:18.976516+00:00",
+      "pickedAt": "2026-11-27T10:07:46.768508+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-ticket-machine": {
       "sha256": "513104666dad5c3cfb262ed7f441d165b17ebd31414d7fd61939f019418cd00f",
-      "pickedAt": "2026-11-27T09:23:19.232233+00:00",
+      "pickedAt": "2026-11-27T10:07:46.953231+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-coin-changer": {
       "sha256": "a19aef7fe1379eee253d8957fca73a8196f14df42d5148e9e7a4f2860ccc6ea4",
-      "pickedAt": "2026-11-27T09:23:19.456147+00:00",
+      "pickedAt": "2026-11-27T10:07:47.114393+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-bottle-return": {
       "sha256": "263f6e94e3dbb627bf970ab51a38b46cb236d305925291cb26cc5fa7fa36d31f",
-      "pickedAt": "2026-11-27T09:23:19.709413+00:00",
+      "pickedAt": "2026-11-27T10:07:47.291574+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "modern-storage-cabinet": {
       "sha256": "7ac16ef5079e7d3f08679fea453e69fd6d2725a083a4004012f7bab8f0220edf",
-      "pickedAt": "2026-11-27T09:23:19.957981+00:00",
+      "pickedAt": "2026-11-27T10:07:47.451748+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "joseon-pal-jangnong": {
       "sha256": "7e35f3ae1f9b14d54e058a9a491c2373db3cb1bc62c325644623a5aa4317c09b",
-      "pickedAt": "2026-11-27T09:23:20.164621+00:00",
+      "pickedAt": "2026-11-27T10:07:47.647237+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "joseon-bandaji": {
       "sha256": "0eb4545a726f5ec7e2ea784d3f379138b20dac055b79256a557c9a3730709935",
-      "pickedAt": "2026-11-27T09:23:20.384551+00:00",
+      "pickedAt": "2026-11-27T10:07:47.800479+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "joseon-dwiju": {
       "sha256": "7b5725309e4343e9f973a3f9b15ef3643fdac5b64375ea1b0427d75a7e645078",
-      "pickedAt": "2026-11-27T09:23:20.594942+00:00",
+      "pickedAt": "2026-11-27T10:07:47.970353+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "joseon-yakjang": {
       "sha256": "c7175f439e2f28001949f3e1872c7fbfcdc42261c8470b74643e580c8f7fd20b",
-      "pickedAt": "2026-11-27T09:23:20.765634+00:00",
+      "pickedAt": "2026-11-27T10:07:48.113118+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "joseon-nong": {
       "sha256": "08646fcdb13e1bf1673c345404f6225ff0044e28ba75fa3fd5381b696df1b9e9",
-      "pickedAt": "2026-11-27T09:23:20.949432+00:00",
+      "pickedAt": "2026-11-27T10:07:48.273610+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "joseon-mungap": {
       "sha256": "3d91147cbf7cf95b9a2edb785031870a0eed19e1efa838ed6d194bb42474f79c",
-      "pickedAt": "2026-11-27T09:23:21.142909+00:00",
+      "pickedAt": "2026-11-27T10:07:48.453802+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "joseon-hwajangdae": {
       "sha256": "fcca2ceb8b25f7bd5c8d95c5a077a9f73ff60460f995d1060fb4a4858787b6a4",
-      "pickedAt": "2026-11-27T09:23:21.343772+00:00",
+      "pickedAt": "2026-11-27T10:07:48.622880+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "joseon-stove-pot": {
       "sha256": "5aa932b5e4fe12d3e121c3844696b37f17a39d5e3a1cabfb18b88f9b93286c2b",
-      "pickedAt": "2026-11-27T09:23:21.563111+00:00",
+      "pickedAt": "2026-11-27T10:07:48.785432+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "joseon-hwaro": {
       "sha256": "b1e0094d4ae40709783d2efb0e0269532a419e2e397cb6c1d545a46dfa92920c",
-      "pickedAt": "2026-11-27T09:23:21.787144+00:00",
+      "pickedAt": "2026-11-27T10:07:48.943258+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "joseon-hwadeok": {
       "sha256": "86ead2d705127d6bf8be4b7b813684d2caca3c48379c21b1fe5504790873e3bf",
-      "pickedAt": "2026-11-27T09:23:21.998736+00:00",
+      "pickedAt": "2026-11-27T10:07:49.105223+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "joseon-hangari-smash": {
       "sha256": "8335230294af2d2c58768d3bc05c01736c1f516b95e013a0e6b4df4b7d6ab455",
-      "pickedAt": "2026-11-27T09:23:22.194790+00:00",
+      "pickedAt": "2026-11-27T10:07:49.280522+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "joseon-jangdok-smash": {
       "sha256": "6ad540d2d4f7da253f0fbf9c31e4579e886dd6d6d963942c15cd13aafd98631f",
-      "pickedAt": "2026-11-27T09:23:22.422878+00:00",
+      "pickedAt": "2026-11-27T10:07:49.438213+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "joseon-onggi-smash": {
       "sha256": "13953c6a7d9411757ed9c8a89c80676adff3205d86252545f9fa6e5f26aa9022",
-      "pickedAt": "2026-11-27T09:23:22.704773+00:00",
+      "pickedAt": "2026-11-27T10:07:49.595619+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "murim-suldok-smash": {
       "sha256": "7e486dcd7770ab82ce5d944e43745951a5dbc95288603d7162c6388dc379aeb9",
-      "pickedAt": "2026-11-27T09:23:22.953772+00:00",
+      "pickedAt": "2026-11-27T10:07:49.778267+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "murim-hyangro": {
       "sha256": "9a4a66ebe96a9e7c2b52fba0af3416213c6f173ee735cfe24ac4c7765109ab82",
-      "pickedAt": "2026-11-27T09:23:23.167192+00:00",
+      "pickedAt": "2026-11-27T10:07:49.952734+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "murim-munseo-ham": {
       "sha256": "a8353c064cc4cbd9219cab8e85f11f29e78fa9a4222b150a634f5b9583026e47",
-      "pickedAt": "2026-11-27T09:23:23.358852+00:00",
+      "pickedAt": "2026-11-27T10:07:50.122487+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "murim-seoga-secret": {
       "sha256": "ca415586093b464300b2210324ac0690e13d072f6ef8989a1815b1bb635fd535",
-      "pickedAt": "2026-11-27T09:23:23.591566+00:00",
+      "pickedAt": "2026-11-27T10:07:50.288240+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "murim-temple-bell": {
       "sha256": "03efa84e8cfbe5f907e8c313963165def71870dc7ee594b2b84eaa880da2b68e",
-      "pickedAt": "2026-11-27T09:23:23.815312+00:00",
+      "pickedAt": "2026-11-27T10:07:50.418708+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "murim-war-drum": {
       "sha256": "e821c4a069d6eb76b696557cd4fdcf45ace25ffac924885930540efe0d8b23f5",
-      "pickedAt": "2026-11-27T09:23:24.041498+00:00",
+      "pickedAt": "2026-11-27T10:07:50.559289+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "murim-palace-lantern": {
       "sha256": "eda184023ab223d30adaa03ad5116ac0df383e1bbaf6c24ae0541e11c2bae57a",
-      "pickedAt": "2026-11-27T09:23:24.288711+00:00",
+      "pickedAt": "2026-11-27T10:07:50.705863+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "scifi-cryo-pod": {
       "sha256": "b9ddcb4467cf5108d7c0a2307bdf61d1e1598e6e20dcda325f3ecbef6af7e289",
-      "pickedAt": "2026-11-27T09:23:24.507552+00:00",
+      "pickedAt": "2026-11-27T10:07:50.871124+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "scifi-cargo-crate": {
       "sha256": "efeac13b979220b10ee075fa3346ecbb9c9025677e658c4f1a28852719a4bc70",
-      "pickedAt": "2026-11-27T09:23:24.693979+00:00",
+      "pickedAt": "2026-11-27T10:07:51.034669+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "scifi-terminal": {
       "sha256": "ce2c9cf8b648259c2195babdef6f0c9e00aa6792988d68a0a24a0016458bad92",
-      "pickedAt": "2026-11-27T09:23:24.898513+00:00",
+      "pickedAt": "2026-11-27T10:07:51.227510+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "scifi-server-rack": {
       "sha256": "a3464210a21eeb6351e67db7c53d213da024da122d27cde32ab9d7f481faf060",
-      "pickedAt": "2026-11-27T09:23:25.068628+00:00",
+      "pickedAt": "2026-11-27T10:07:51.463826+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "scifi-locker": {
       "sha256": "3045055320812235509403d72f3709d43b5beb165a3dd1fc382222942e079336",
-      "pickedAt": "2026-11-27T09:23:25.250637+00:00",
+      "pickedAt": "2026-11-27T10:07:51.665079+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "scifi-fridge": {
       "sha256": "386ba81fb23bb97f6afb5f7e97a918393e50c6aa7f1b80663e2ee78f21f24d47",
-      "pickedAt": "2026-11-27T09:23:25.496237+00:00",
+      "pickedAt": "2026-11-27T10:07:51.895461+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "scifi-supply-capsule": {
       "sha256": "4238c8bbdfe03327c872733c337e9cd0d16547dc066924315f07cb28c692ec62",
-      "pickedAt": "2026-11-27T09:23:25.722608+00:00",
+      "pickedAt": "2026-11-27T10:07:52.125046+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "scifi-airlock": {
       "sha256": "00273b9b4077eb347ad771f4b0097e4c26107057e96c50e548576fa2a55389a7",
-      "pickedAt": "2026-11-27T09:23:25.978714+00:00",
+      "pickedAt": "2026-11-27T10:07:52.352317+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "scifi-elevator-door": {
       "sha256": "0be8b4586b3ec31566dc25e1c7f619ba7dc7fd16078736e6f3ea5c51c2c8dd51",
-      "pickedAt": "2026-11-27T09:23:26.175426+00:00",
+      "pickedAt": "2026-11-27T10:07:52.578126+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "scifi-floor-hatch": {
       "sha256": "47bc26b556f3bb693e4beb2b92beb2e462214c023b82149465ae98faacb19e90",
-      "pickedAt": "2026-11-27T09:23:26.358402+00:00",
+      "pickedAt": "2026-11-27T10:07:52.734689+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "scifi-holo-table": {
       "sha256": "3f208142b26fed677bd4d339c7022ae5bb2b9c7cb8907f8fe8b46a74b9961844",
-      "pickedAt": "2026-11-27T09:23:26.524979+00:00",
+      "pickedAt": "2026-11-27T10:07:52.886787+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "scifi-reactor": {
       "sha256": "a72b559fede6bb342b0973725c1f69d8b58dd2764f779cdae589012b05aaa508",
-      "pickedAt": "2026-11-27T09:23:26.736990+00:00",
+      "pickedAt": "2026-11-27T10:07:53.034911+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "steampunk-regulator": {
       "sha256": "ad833277fe62e8a9d4f87f12b73e02341178799f9079c0feaabc51fce965083a",
-      "pickedAt": "2026-11-27T09:23:26.969087+00:00",
+      "pickedAt": "2026-11-27T10:07:53.188710+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "steampunk-alarm": {
       "sha256": "716df90c7a60b331dec0a684af40a3170492a9817505bbd128d26077c3d143a4",
-      "pickedAt": "2026-11-27T09:23:27.181340+00:00",
+      "pickedAt": "2026-11-27T10:07:53.341399+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "steampunk-terminal": {
       "sha256": "c1b029c85edd7b04afe11cc40b218112cffd53e4d6ed4513f27902a466ffd246",
-      "pickedAt": "2026-11-27T09:23:27.406251+00:00",
+      "pickedAt": "2026-11-27T10:07:53.530878+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "steampunk-gas-lamp": {
       "sha256": "d6cb1406599597c5fa5229deff6dc189cd1c47b6d9e22885df39a3992030403f",
-      "pickedAt": "2026-11-27T09:23:27.602221+00:00",
+      "pickedAt": "2026-11-27T10:07:53.717483+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "steampunk-plaza-lamp": {
       "sha256": "1ca4363565414d591b5e5b30877170ceaf85ff673f92e4ba3b9a45d28c0dd788",
-      "pickedAt": "2026-11-27T09:23:27.811502+00:00",
+      "pickedAt": "2026-11-27T10:07:53.905271+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "desert-seal-altar": {
       "sha256": "8bc24ff3199c1f64940e25442053be46b1bf4c4c3945f097907d6d729a6c5fef",
-      "pickedAt": "2026-11-27T09:23:28.054956+00:00",
+      "pickedAt": "2026-11-27T10:07:54.062056+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "sky-seal-altar": {
       "sha256": "e9792e2ba2e781c152dde2ed9fa78ec6fae8122643f5dc43569732e2d527448c",
-      "pickedAt": "2026-11-27T09:23:28.261848+00:00",
+      "pickedAt": "2026-11-27T10:07:54.228072+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "dungeon-magic-pedestal": {
       "sha256": "be6e6c230ac458571fc6909a3e124212eb1a7652b1fdfa973ea5c5c2fe668d1d",
-      "pickedAt": "2026-11-27T09:23:28.488792+00:00",
+      "pickedAt": "2026-11-27T10:07:54.398945+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-wooden-gate": {
       "sha256": "94362b5b9132acd64b8dfc72d8948aa5539fb4b54911ef39f58b5342ee22747d",
-      "pickedAt": "2026-11-27T09:23:28.727099+00:00",
+      "pickedAt": "2026-11-27T10:07:54.607764+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-fence-gate": {
       "sha256": "995782ec12e78314224d590bdf8b00770272783efda2e32ea9075c6f517a1e6e",
-      "pickedAt": "2026-11-27T09:23:28.910635+00:00",
+      "pickedAt": "2026-11-27T10:07:54.793701+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-stone-gate": {
       "sha256": "9d6b92a445f8fd1a531ec54b1be704b1879dedb3b6bf10b35216235843503302",
-      "pickedAt": "2026-11-27T09:23:29.117019+00:00",
+      "pickedAt": "2026-11-27T10:07:54.962437+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-hedge-gate": {
       "sha256": "04374ed48dc5c84a3d0950254b9f6ddf56d6483672743b6f88eaf23eac370a29",
-      "pickedAt": "2026-11-27T09:23:29.333660+00:00",
+      "pickedAt": "2026-11-27T10:07:55.112865+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-ruin-sealed": {
       "sha256": "5072815ca6aa14a296e13e1b9fe72a23a674840feb6743aaaf38c7aad2fe358a",
-      "pickedAt": "2026-11-27T09:23:29.524544+00:00",
+      "pickedAt": "2026-11-27T10:07:55.264487+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-joseon-hanji": {
       "sha256": "2b47e47dc36031e623cfa8a3a9af72ee5bf9837a46d7e91ee64b69d50ab09ca4",
-      "pickedAt": "2026-11-27T09:23:29.731647+00:00",
+      "pickedAt": "2026-11-27T10:07:55.452525+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-joseon-palace": {
       "sha256": "58f9d622c092ac7ba85a3a40bdc24a6807319437d2a8136091689d3705974b84",
-      "pickedAt": "2026-11-27T09:23:29.929468+00:00",
+      "pickedAt": "2026-11-27T10:07:55.619648+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-modern-gate": {
       "sha256": "eec55525e49eb1bd4c0052dc36b6085228aca896afed177eaad189b48c133e57",
-      "pickedAt": "2026-11-27T09:23:30.123969+00:00",
+      "pickedAt": "2026-11-27T10:07:55.782852+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "env-wall-clock": {
       "sha256": "01f7a4d6859f9baf01a50fd4c054a8a317a34e2cde59522df0fe6a0da81352bd",
-      "pickedAt": "2026-11-27T09:23:30.301992+00:00",
+      "pickedAt": "2026-11-27T10:07:55.965166+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "env-anvil-forge": {
       "sha256": "4fa7870f4661770809a66329f7b0c3e6ca00f7289cd4c94b96a58771799d0e5b",
-      "pickedAt": "2026-11-27T09:23:30.502613+00:00",
+      "pickedAt": "2026-11-27T10:07:56.172133+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "env-campfire": {
       "sha256": "159d23b6d78240a258a58076decab9b0742a6114619d2f433bc8e0239fdb1b7d",
-      "pickedAt": "2026-11-27T09:23:30.674614+00:00",
+      "pickedAt": "2026-11-27T10:07:56.347722+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "env-candle-stand": {
       "sha256": "41e61a12230326d3aba40816de8a604b46911ffa9b865feb62900cff8fc4357e",
-      "pickedAt": "2026-11-27T09:23:30.861618+00:00",
+      "pickedAt": "2026-11-27T10:07:56.511765+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "env-cooking-pot": {
       "sha256": "9af458e6ea3cb4d2425d68d43fed4ccff0feb069e2f26678ef721180096c5cf5",
-      "pickedAt": "2026-11-27T09:23:31.049803+00:00",
+      "pickedAt": "2026-11-27T10:07:56.683976+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "env-wall-fountain": {
       "sha256": "c49a602173e211cc4a9b09aeee900025cb564f72fcc3fc109c80f107e6d9c0bd",
-      "pickedAt": "2026-11-27T09:23:31.229333+00:00",
+      "pickedAt": "2026-11-27T10:07:56.867842+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "env-weather-vane": {
       "sha256": "c9416f4f27b08e74200be50769732cccaa30257b409d588a4300bea41a87a492",
-      "pickedAt": "2026-11-27T09:23:31.442548+00:00",
+      "pickedAt": "2026-11-27T10:07:57.016941+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "env-yeonja-mill": {
       "sha256": "ba8ef289d911d1884de588071f39422998225bc3a4025ab5414b71b733c28763",
-      "pickedAt": "2026-11-27T09:23:31.624243+00:00",
+      "pickedAt": "2026-11-27T10:07:57.164959+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "env-fishcake-cart": {
       "sha256": "3f8404c592292321ff6ec229bae3dde8cbf6f9101d5077d9763fdf37be876244",
-      "pickedAt": "2026-11-27T09:23:31.836434+00:00",
+      "pickedAt": "2026-11-27T10:07:57.307532+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "env-ramen-pot": {
       "sha256": "a93370502630abeff48de562fd6a252cf2dfe7bae1931cd3978a8c034ac3dc9b",
-      "pickedAt": "2026-11-27T09:23:32.043191+00:00",
+      "pickedAt": "2026-11-27T10:07:57.460614+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "env-grill-cart": {
       "sha256": "1731f526f056371545334028f297ce10e920494b667441d17e1c05c0a82c5472",
-      "pickedAt": "2026-11-27T09:23:32.222505+00:00",
+      "pickedAt": "2026-11-27T10:07:57.609024+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "env-wind-turbine": {
       "sha256": "8e1fd0adf117f5080e9443bc659600adea8b412b823f650685b92668ce3669b8",
-      "pickedAt": "2026-11-27T09:23:32.415720+00:00",
+      "pickedAt": "2026-11-27T10:07:57.767509+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-push-house-oak": {
       "sha256": "75214965cf49a3d28849c54ca58ed20a288b174f4d0b3f9402c098ecd5190d05",
-      "pickedAt": "2026-11-27T09:23:32.684727+00:00",
+      "pickedAt": "2026-11-27T10:07:57.967168+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-push-desert-arch": {
       "sha256": "5843a2aacd613f6ef9b6ec9056ae569d1bf03abc085cc41c68e4f5009c5a9b2a",
-      "pickedAt": "2026-11-27T09:23:32.905738+00:00",
+      "pickedAt": "2026-11-27T10:07:58.164843+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-push-dungeon-cell": {
       "sha256": "672b177bcaeeff587dce3c7af711ad6441347c84f1a5095ca35ba68d44a61e37",
-      "pickedAt": "2026-11-27T09:23:33.093913+00:00",
+      "pickedAt": "2026-11-27T10:07:58.353966+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-push-confessional": {
       "sha256": "366aae4e8fb6f39b274d37466e45eb00b6557c5fee0353fc138e61ef31bd18e9",
-      "pickedAt": "2026-11-27T09:23:33.303910+00:00",
+      "pickedAt": "2026-11-27T10:07:58.562729+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-push-paddock-gate": {
       "sha256": "4d0333ac624b8d11e39d1c4c0953dbfbf9d9cf7e9691cf146500bc59322d29e1",
-      "pickedAt": "2026-11-27T09:23:33.485266+00:00",
+      "pickedAt": "2026-11-27T10:07:58.754168+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-push-picket-gate": {
       "sha256": "845ce26d6f120fef4a4815fbc1cfdade425fd72c9fa750f96dad735c1b2b7662",
-      "pickedAt": "2026-11-27T09:23:33.659499+00:00",
+      "pickedAt": "2026-11-27T10:07:58.988126+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-push-iron-garden": {
       "sha256": "8e911d056be8b81e3d8f6547cfaf6a6902d195fa2a1318655ff5b64e6709dd19",
-      "pickedAt": "2026-11-27T09:23:33.850991+00:00",
+      "pickedAt": "2026-11-27T10:07:59.188632+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-push-hedge-rustic": {
       "sha256": "cc4fbd2be25d3b9f7333491462fc50c7115e7b7ffb6b3729a5fce9edad1f83c3",
-      "pickedAt": "2026-11-27T09:23:34.044985+00:00",
+      "pickedAt": "2026-11-27T10:07:59.416019+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-push-lock-sluice": {
       "sha256": "d65542e66084c74438822ba3bc63326616b06517ee0369f89afadb6d00f3339c",
-      "pickedAt": "2026-11-27T09:23:34.238976+00:00",
+      "pickedAt": "2026-11-27T10:07:59.599750+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-push-tent-canvas": {
       "sha256": "cc7e5f4855c68ab37691719bec7b8f70c73a503225b805c773b86b65840c5176",
-      "pickedAt": "2026-11-27T09:23:34.443503+00:00",
+      "pickedAt": "2026-11-27T10:07:59.774929+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-push-dome-tent": {
       "sha256": "5ece4560da615223edcdd4ba5587b496a018ee5fdb3d88694c1697bd0278331b",
-      "pickedAt": "2026-11-27T09:23:34.621715+00:00",
+      "pickedAt": "2026-11-27T10:07:59.959127+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-push-curtain-booth": {
       "sha256": "979d438c5a4808df2e87444a4a28dde19480e0341d04aeba66e5fc1072dcc7bc",
-      "pickedAt": "2026-11-27T09:23:34.848244+00:00",
+      "pickedAt": "2026-11-27T10:08:00.124333+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-push-izakaya-noren": {
       "sha256": "04df7dd9302d5e1c42cfcb8c4d016373d6b27910216e098576ec06339f63fd76",
-      "pickedAt": "2026-11-27T09:23:35.020153+00:00",
+      "pickedAt": "2026-11-27T10:08:00.290525+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-push-photo-curtain": {
       "sha256": "08b3b6d7edf9d4213e7a50404eae3025f1a3cfecf938b8b3edcdcceb28648a10",
-      "pickedAt": "2026-11-27T09:23:35.232528+00:00",
+      "pickedAt": "2026-11-27T10:08:00.483542+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-push-subway-gate": {
       "sha256": "d93283ca221ee84667b5570304c83b66f75874eec1f65a1be797a0085f9c2c30",
-      "pickedAt": "2026-11-27T09:23:35.430277+00:00",
+      "pickedAt": "2026-11-27T10:08:00.680674+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     },
     "door-push-parking-barrier": {
       "sha256": "8c7551996c44f2436c86c05dcb6bd3db04d75d363dfb873f9d5b39744f95322e",
-      "pickedAt": "2026-11-27T09:23:35.662999+00:00",
+      "pickedAt": "2026-11-27T10:08:00.882099+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-mansion-portrait": {
+      "sha256": "7729ea1c22335d1ab9318bfdb59de8fbb2e95c7ad1a2f5cc712aaa24daeab5df",
+      "pickedAt": "2026-11-27T10:08:01.064272+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-pipe-organ": {
+      "sha256": "35c733e70011af3b2fe17c283fe477ee468dbf0eec617c234000895339babf9c",
+      "pickedAt": "2026-11-27T10:08:01.245249+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-gothic-chandelier": {
+      "sha256": "b071d91fdd6ef811f4f1fa6357fb5b638860aebf92a385b049b19f61bdb6bb2f",
+      "pickedAt": "2026-11-27T10:08:01.448063+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-knight-statue": {
+      "sha256": "4b5fd81679fb5ed836771aadcd736c2a7085264f0f17ea4e519b72416b46ac72",
+      "pickedAt": "2026-11-27T10:08:01.622785+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-standing-mirror": {
+      "sha256": "51cb462bc4dfe22917a8182a9edb09ca75c07b48d88dcfaefe6956e019fad28f",
+      "pickedAt": "2026-11-27T10:08:01.807891+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-weeping-angel": {
+      "sha256": "1b6c1d672cde19dae2f479f9dcaad10ca82562443f694f48508f180ccdfb5695",
+      "pickedAt": "2026-11-27T10:08:01.986562+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-crypt-candelabra": {
+      "sha256": "f61a7dd5d080dbfc19ad6b19254d540d981e9db180e93efb6cff75d596745183",
+      "pickedAt": "2026-11-27T10:08:02.160798+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-crypt-altar": {
+      "sha256": "13b2c47ddd2d0a5d760927d068d5b7e65dfd7d773e77bdba82a41dbee8d94d9d",
+      "pickedAt": "2026-11-27T10:08:02.336272+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-skull-niche": {
+      "sha256": "d27cde895ec8989ea0deed6a5adb2990c0ba456ba152733e99a02f557b21c521",
+      "pickedAt": "2026-11-27T10:08:02.515096+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-tomb-slab": {
+      "sha256": "2c87e96df68c2a2318d33fb258ef0752ceea80aa497e731f54fececa98a69aa1",
+      "pickedAt": "2026-11-27T10:08:02.698957+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-ossuary-wall": {
+      "sha256": "65857f575f15bb1869472abad8acaa926bb038dd6cc54cc627121e02a4052597",
+      "pickedAt": "2026-11-27T10:08:02.874760+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-torture-cage": {
+      "sha256": "27dd3e9577fac117de89959f4b1f6fc6a643a60970fe56a9175d2ecb74bfc9ea",
+      "pickedAt": "2026-11-27T10:08:03.016542+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-cemetery-arch": {
+      "sha256": "2de377b52f498c3ebdf218d039e485639aa6e80cc2452d8cb78718b386796af1",
+      "pickedAt": "2026-11-27T10:08:03.160346+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-scarecrow-twitch": {
+      "sha256": "cbc9769c8bb2d89d8c669f2dea200a51cac7c890c5a574317efcd022f1e12047",
+      "pickedAt": "2026-11-27T10:08:03.307522+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-gothic-lamp": {
+      "sha256": "fa5f153780cc8b4892ced3631894bd86d26e913e7a3ddb08209f684c002b3c66",
+      "pickedAt": "2026-11-27T10:08:03.457417+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-clinic-wheelchair": {
+      "sha256": "98a57ba0a2f5f905d8a2ae94bbe724add3ca57111c37ee7bb76dab52d2c4672a",
+      "pickedAt": "2026-11-27T10:08:03.630910+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-clinic-stretcher": {
+      "sha256": "70e936423f7451a41e18e0fabd1d099212e2b308592d050cc6fc1410860ab883",
+      "pickedAt": "2026-11-27T10:08:03.805149+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-clinic-medbin": {
+      "sha256": "866410354442b0d22167c044ca25800fc7dc167fccb9f0a69e895d8be2181554",
+      "pickedAt": "2026-11-27T10:08:03.966328+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-tailor-mannequin": {
+      "sha256": "3fd0522ba0b7ab3719cf3a2bac5f79d80af703b77f952beb2cb4c41fc452992d",
+      "pickedAt": "2026-11-27T10:08:04.291462+00:00",
+      "by": "owner-real-source",
+      "note": "Real repo PNG Frame-0 verified"
+    },
+    "horror-worklamp-flicker": {
+      "sha256": "bbdd641504cb0dcd58d854a004ddbff26d329370341a2015665df3405899a89c",
+      "pickedAt": "2026-11-27T10:08:04.557344+00:00",
       "by": "owner-real-source",
       "note": "Real repo PNG Frame-0 verified"
     }

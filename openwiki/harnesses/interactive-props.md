@@ -1,14 +1,16 @@
-# `interactive-props` 하네스 — 시대별 상호작용 오브젝트 멀티프레임 PNG 136종
+# `interactive-props` 하네스 — 5축 분류 시대·장르별 상호작용 오브젝트 멀티프레임 PNG (현재 156종 / 목표 300·500종)
 
 ## 목적
-기존 `openStatePixels` 코드 화소 자르기(닫힌 타일 상단을 임의로 잘라 위로 띄움)와 `Graphics.fillRect` 대체 그림을 없애고, **저장소의 기존 고퀄리티 원본 PNG(`beodeul-objects`, `beodeul-interiors`, `beodeul-door`, `beodeul-dungeon`, `sf-station`, `joseon-baram`, `steampunk-city`, `desert-east`, `sky-island`)를 0번 프레임 그대로 보존**한 5프레임 가로 PNG 스트립(`public/assets/harnesses/interactive-props/<id>.png`) 136종과 정본 카탈로그(`src/assets/interactivePropsCatalog.json`)를 관리한다.
+기존 `openStatePixels` 코드 화소 자르기(닫힌 타일 상단을 임의로 잘라 위로 띄움)와 `Graphics.fillRect` 대체 그림을 없애고, **저장소의 기존 고퀄리티 원본 PNG(`beodeul-objects`, `beodeul-interiors`, `beodeul-door`, `beodeul-dungeon`, `sf-station`, `joseon-baram`, `steampunk-city`, `desert-east`, `sky-island`)를 0번 프레임 그대로 보존**한 5프레임 가로 PNG 스트립(`public/assets/harnesses/interactive-props/<id>.png`)과 5축 분류 카탈로그(`src/assets/interactivePropsCatalog.json`) · 쿼터 원장(`harness-data/interactive-props/quotas.json`)을 관리한다.
 
-## 핵심 불변식 (v2 · 실원본 기반)
-1. **0번 프레임 = 기존 고퀄리티 원본 PNG 무손실 유지** (`seed.json` 과 카탈로그에 `sourcePng` 경로 필수 기록, `validate` 가 실존 검증).
-2. **단색 사각형 즉석 그리기 금지**: 문짝 회전(바깥 열림·안쪽 밀기)·커튼/노렌 헤치기·서랍 인출·뚜껑 개방·보로노이 파편 파괴·화염/증기/화면 작동 모두 원본 PNG에서 추출한 실제 픽셀 질감과 팔레트를 기반으로 생성한다([animator.py](file:///home/main/OpenRPGMaker/src/harnesses/interactive-props/animator.py)).
-3. **기계 관문 + SHA-256 원장**: `gate` 통과 후 `pick` 으로 `harness-data/interactive-props/picked/` + `ledger.json` 에 해시 고정하고, `build` 로 `public/assets/harnesses/interactive-props/` 및 `src/assets/interactivePropsCatalog.json` 을 생성한다.
+## 5축 마스터 분류 체계 (`taxonomy.py`)
+1. **`world` (세계관·시대, 단일)**: `fantasy` · `modern` · `joseon` · `murim` · `desert` · `snow` · `pirate` · `wasteland` · `dungeon` · `scifi` · `steampunk`
+2. **`genres[]` (장르·무드, 다중)**: `horror` · `puzzle-escape` · `adventure` · `romance-daily` · `monster-collect` · `life-survival` · `eastern` · `cyber-scifi`
+3. **`category` (기능 카테고리, 단일)**: `door-pass` · `container` · `breakable` · `machine` · `light-fire` · `water-env` · `gimmick` · `outdoor-ride`
+4. **`zone` + `mount` (배치 공간·부착면)**: `indoor|outdoor|both` × `floor|wall|doorway|counter`
+5. **`roles[]` (게임플레이 역할, 다중)**: `loot` · `passage` · `hide` · `puzzle-clue` · `ambient-light` · `hazard-trap`
 
-## 7개 웨이브 · 7개 시대 · 136종 구성
+## 8개 웨이브 · 현재 156종 구성
 
 | 웨이브 | 수량 | 시대 분포 | 주요 오브젝트 |
 |---|---:|---|---|
@@ -17,8 +19,9 @@
 | `wave3-modern` | 20 | `modern` 20 | 음료·마스크·식권 자판기, 동전교환기, 빈병회수기, 학교 사물함, 택배 보관함·상자, 공구함, 아이스박스, 쓰레기통·분리수거함, 소화전함, 신호제어함, 배터리교환함, 충전 키오스크, 공중전화 부스, 리듬 오락기, 인형뽑기, 사무실 철제 캐비닛 |
 | `wave4-joseon-murim` | 20 | `joseon` 13 · `murim` 7 | 궁중 자개장롱, 반닫이, 뒤주, 약장, 안방 나무농, 사랑방 문갑, 궁중 경대, 가마솥, 숯불 화로, 부엌 화덕, **조선 항아리·김장 물독·장독대 옹기·객잔 술독 파괴 4종**, 청동 향로, 비급 문서함, 비밀 서가, 사찰 대종, 전고 대북, 궁중 홍등롱 |
 | `wave5-scifi-steampunk` | 20 | `scifi` 12 · `steampunk` 5 · `dungeon` 3 | 냉동 캡슐, 화물 상자, 단말기, 서버 랙, 로커, 우주 냉장고, 보급 캡슐, 대형 에어록, 엘리베이터 문, 갑판 해치, 홀로 테이블, 원자로, 증기 밸브·경보벨·제어반·가스등·광장등, 사막·하늘섬 봉인 제단, 마법 보주 받침대 |
-| `wave6-doors-env` | 20 | `fantasy` 11 · `modern` 5 · `joseon` 3 · `dungeon` 1 | **출입문·대문 8종**(마을 나무대문·울타리문·돌담문·생울타리문·유적 봉인석문·한옥 창호지 미닫이·궁궐 붉은 대문·현대 게이트) + **환경 모션 12종**(괘종시계·대장간 모루불꽃·모닥불·촛대·걸이솥·돌벽 분수대·풍향계·연자방아·어묵 포장마차·라멘솥·숯불구이 수레·풍력 발전기) |
-| `wave7-push-doors` | 16 | `fantasy` 9 · `modern` 6 · `dungeon` 1 | **밀고 들어가는 문·커튼·통과 게이트 16종**(버들항 참나무 밀기문·사막 아치형 밀기문·던전 철격자 감옥 밀기문·성당 고해실 밀기문+커튼·목장/하얀 울타리/철제 양문/판자/수로 수문 밀기문·모험가 천막/캠핑 돔텐트 들추기·입구 커튼/선술집 노렌/포토부스 커튼 젖히기·지하철 개찰구·주차장 차단바) |
+| `wave6-doors-env` | 20 | `fantasy` 11 · `modern` 5 · `joseon` 3 · `dungeon` 1 | **출입문·대문 8종** + **환경 모션 12종**(괘종시계·대장간 모루불꽃·모닥불·촛대·걸이솥·돌벽 분수대·풍향계·연자방아·어묵 포장마차·라멘솥·숯불구이 수레·풍력 발전기) |
+| `wave7-push-doors` | 16 | `fantasy` 9 · `modern` 6 · `dungeon` 1 | **밀고 들어가는 문·커튼·통과 게이트 16종**(버들항 참나무 밀기문·사막 아치형 밀기문·던전 철격자 감옥 밀기문·성당 고해실·울타리/수문 밀기문·천막/돔텐트·커튼/노렌/포토부스·개찰구·차단바) |
+| `wave8-horror` | 20 | `fantasy` 8 · `dungeon` 7 · `modern` 5 | **공포·폐가·병원·납골당 전용 팩 20종**(저주받은 초상화·유령 파이프 오르간·고딕 샹들리에·움직이는 갑옷 석상·귀신 스치는 전신 거울·피눈물 천사 석상·푸른 도깨비불 촛대·저주 제단·해골 감실·밀리는 묘비 석판·납골당 해골 벽·철창 우리·공동묘지 안개 아치·허수아비·고딕 가로등·폐병원 휠체어·이동 들것·의료 폐기물함·고개 돌리는 마네킹·작업등 점멸) |
 
 ## 실행 명령
 
