@@ -892,27 +892,25 @@ async function consumeBlockingStep(
       );
       return resumeAfterSurface(scene, interpreter);
     case "playMovie": {
+      if (!step.wait) {
+        // wait:false 는 이벤트가 끝난 뒤에도 계속 재생되어야 하므로 ownerSignal(이벤트 종료)에 묶지 않는다.
+        // 씬 종료(shutdown/destroy)와 세션 교체(applySession → cancelSceneMovieOverlays)가 정리를 맡는다.
+        void playMovieOverlay(scene, step);
+        return resumeAfterSurface(scene, interpreter);
+      }
       const movieAbort = new AbortController();
       const ownerSignal = foregroundOwner(scene)?.signal;
       const forwardOwnerAbort = (): void => movieAbort.abort();
       ownerSignal?.addEventListener("abort", forwardOwnerAbort, { once: true });
       const played = playMovieOverlay(scene, step, { signal: movieAbort.signal });
-      // wait === false 에서도 재생이 끝날 때까지 ownerSignal 을 유지해 세션 전환(applySession) 시 오버레이가 남지 않게 한다.
-      void played.finally(() => {
-        ownerSignal?.removeEventListener("abort", forwardOwnerAbort);
-      });
       try {
-        if (step.wait) {
-          void skipController.waitForSkip().then(() => movieAbort.abort());
-          await played;
-          const skipped = skipController.takeResult();
-          if (skipped) return skipped;
-        }
+        void skipController.waitForSkip().then(() => movieAbort.abort());
+        await played;
+        const skipped = skipController.takeResult();
+        if (skipped) return skipped;
       } finally {
-        if (step.wait) {
-          ownerSignal?.removeEventListener("abort", forwardOwnerAbort);
-          movieAbort.abort();
-        }
+        ownerSignal?.removeEventListener("abort", forwardOwnerAbort);
+        movieAbort.abort();
       }
       return resumeAfterSurface(scene, interpreter);
     }

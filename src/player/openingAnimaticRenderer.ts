@@ -969,6 +969,7 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
   const activeSignal = internalAbort.signal;
   let frame = 0, stopped = false, started = 0, clock = 0, lastNow = 0;
   let preloadTimer: number | undefined;
+  let settlePreload: (() => void) | undefined;
   const elapsed = (now: number): number => {
     if (!options.holdClockThroughStalls) return now - started;
     clock += Math.min(STALL_FRAME_MS, Math.max(0, now - lastNow)); lastNow = now; return clock;
@@ -987,12 +988,20 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
       el.load();
     }
     // 느린 망에서도 장면을 오래 붙잡지 않는다(0.8초) — 다 못 받으면 큐 시각에 받으며 튼다(예전 동작). 다음 컷 소리는 cinematicAssets.warm 이 미리 받는다.
-    if (waits.length) {
+    if (waits.length && !stopped) {
       await Promise.race([
         Promise.all(waits),
-        new Promise<void>((resolve) => { preloadTimer = view.setTimeout(() => { preloadTimer = undefined; resolve(); }, 800); }),
+        new Promise<void>((resolve) => {
+          settlePreload = () => {
+            if (preloadTimer !== undefined) { view.clearTimeout(preloadTimer); preloadTimer = undefined; }
+            settlePreload = undefined;
+            resolve();
+          };
+          preloadTimer = view.setTimeout(() => { preloadTimer = undefined; settlePreload?.(); }, 800);
+        }),
       ]);
       if (preloadTimer !== undefined) { view.clearTimeout(preloadTimer); preloadTimer = undefined; }
+      settlePreload = undefined;
     }
   };
   // 브라우저 자동재생 막힘(첫 화면에 사용자 입력이 없을 때 정상)은 그림을 멈출 이유가 아니다 — 소리만 미뤘다가 첫 입력에 다시 튼다.
@@ -1009,6 +1018,7 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
   const stop = () => {
     if (stopped) return;
     stopped = true;
+    settlePreload?.();
     internalAbort.abort();
     if (preloadTimer !== undefined) { view.clearTimeout(preloadTimer); preloadTimer = undefined; }
     view.cancelAnimationFrame(frame);

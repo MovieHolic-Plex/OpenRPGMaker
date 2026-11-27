@@ -882,9 +882,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       root.dataset.battleSequenceBusy = busy ? "true" : "false";
       // 시퀀스가 끝나면 원장을 버리고 실제 스냅샷으로 복귀한다.
       if (!busy) presentation = undefined;
+      // 인트로·액션 시퀀스가 끝나 명령 국면이 열릴 때 커서 버튼에 즉시 포커스를 준다(200ms 폴링 없이).
+      if (!busy && directorState.step === "command" && !commandHost.contains(document.activeElement)) {
+        const cursor = commandHost.querySelector<HTMLButtonElement>("button.battle-command[data-battle-command-cursor='true']:not(:disabled)");
+        cursor?.focus({ preventScroll: true });
+      }
       // battle-feel r2: 도트 측면 전투는 연출이 끝나면 다음 게이지 틱(최대 200ms 뒤)을 기다리지 않고 바로 한 틱 돈다.
       if (!busy && root.dataset.battleMotion === "retro") scheduleBattleTimer(() => { if (!destroyed && root.isConnected) battleTick(); }, 0);
-      if (!busy && autoBattle) queueMicrotask(() => {
+      if (!busy) queueMicrotask(() => {
         if (!destroyed && root.isConnected) syncView();
       });
     },
@@ -2277,8 +2282,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // Active ATB: 명령·대상 메뉴가 열려 있어도 시간이 흐른다. 런타임이 적만 행동시키고 메뉴를 되돌려 준다.
     const menuTime = activeAtb && (before.phase === "actorCommand" || before.phase === "targetSelect") && !eventSurfaceOpen;
     if (before.phase !== "charging" && !menuTime) {
-      // 명령 대기 중 수동 조작(autoBattle=false)일 때는 200ms마다 전체 DOM/스냅샷을 다시 그리지 않는다.
-      if (before.phase === "actorCommand" && autoBattle) syncView();
+      // 명령 대기 중 수동 조작(autoBattle=false)이고 화면·포커스가 이미 현재 액터의 명령 상태라면 200ms마다 전체 DOM/스냅샷을 다시 그리지 않는다.
+      const needsCommandSync = before.phase === "actorCommand" && (
+        autoBattle
+        || directorState.step !== "command"
+        || directorState.activeActorRecordId !== before.activeActorId
+        || !commandHost.contains(document.activeElement)
+      );
+      if (needsCommandSync) syncView();
       return;
     }
     options.runtime.tick(BATTLE_TICK_MS);

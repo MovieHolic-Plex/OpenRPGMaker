@@ -200,6 +200,7 @@ export async function openTestPlayModal(
     });
   } catch (error) {
     console.error("[test-play] failed to open test play:", error);
+    if (generation !== openGeneration || !body.isConnected) return;
     setSaveSlotStorageNamespace(null);
     releaseEventTestSnapshot?.();
     releaseEventTestSnapshot = null;
@@ -254,6 +255,7 @@ export async function openSelectedEventTestModal(mapId: MapId, eventId: string):
     });
   } catch (error) {
     console.error("[test-play] failed to open selected-event test:", error);
+    if (generation !== openGeneration || !body.isConnected) return false;
     setSaveSlotStorageNamespace(null);
     releaseEventTestSnapshot?.();
     releaseEventTestSnapshot = null;

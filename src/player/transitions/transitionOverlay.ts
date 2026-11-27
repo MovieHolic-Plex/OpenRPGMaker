@@ -55,7 +55,9 @@ export function runTransitionPhase(
   ownerToken?: string,
 ): Promise<void> {
   const overlay = upsertOverlay(host, kind, ownerToken);
+  const stillOwned = (): boolean => host.contains(overlay) && overlay.dataset.ownerToken === ownerToken;
   const render = (progress: number): void => {
+    if (!stillOwned()) return;
     if (kind === "mosaic") {
       renderMosaic(overlay, progress, phase);
     } else {
@@ -65,16 +67,20 @@ export function runTransitionPhase(
   render(0);
   if (typeof requestAnimationFrame !== "function") {
     render(1);
-    if (phase === "in") removeOverlay(host);
+    if (phase === "in" && stillOwned()) removeOverlay(host);
     return Promise.resolve();
   }
   return new Promise<void>((resolve) => {
     const startedAt = nowMs();
     const tick = (): void => {
+      if (!stillOwned()) {
+        resolve();
+        return;
+      }
       const progress = transitionProgress(nowMs() - startedAt, durationMs);
       render(progress);
       if (progress >= 1) {
-        if (phase === "in") removeOverlay(host);
+        if (phase === "in" && stillOwned()) removeOverlay(host);
         resolve();
         return;
       }

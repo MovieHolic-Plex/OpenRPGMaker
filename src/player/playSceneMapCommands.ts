@@ -101,12 +101,6 @@ export function invalidateSceneTransfers(scene: object): void {
 export async function transferTo(scene: PlaySceneContext, request: TransferRequest): Promise<void> {
   const diagnosticOwner = diagnosticToken();
   const activeSession = scene.session;
-  const generation = (transferGenerations.get(scene) ?? 0) + 1;
-  transferGenerations.set(scene, generation);
-  const stillValid = (): boolean =>
-    scene.session === activeSession
-    && transferGenerations.get(scene) === generation
-    && scene.sys?.isActive() !== false;
   const project = store.getCurrent();
   const targetMap = project.maps[request.mapId];
   const atlas=worldAtlasForMap(project,scene.getMapId());
@@ -118,6 +112,12 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
     console.warn(`[player] transfer target map missing: ${request.mapId}`);
     return;
   }
+  const generation = (transferGenerations.get(scene) ?? 0) + 1;
+  transferGenerations.set(scene, generation);
+  const stillValid = (): boolean =>
+    scene.session === activeSession
+    && transferGenerations.get(scene) === generation
+    && scene.sys?.isActive() !== false;
   armDialogueConfirmRelease();
   // 전환 연출: 모자이크/블라인드는 DOM 오버레이, 그 외(기본)는 카메라 페이드.
   const transition = parseTransitionKind(request.transition);
@@ -206,7 +206,7 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   clearPlayerRouteThrough(scene);
   scene.centerCamera();
   if (host) {
-    await runTransitionPhase(host, transition, "in", TRANSFER_FADE_DURATION_MS);
+    await runTransitionPhase(host, transition, "in", TRANSFER_FADE_DURATION_MS, overlayOwner);
   } else if (fadeColor) {
     // 화면 효과 층이 아직 불투명하면 카메라 페이드인은 보이지 않는다 — 기다리지 않고 바로 걷어,
     // 도착 맵의 자동 장면(보통 「화면 효과 fadeIn」)이 곧장 이어받게 한다. 예전에는 이 0.5초 + 맵 짓기가

@@ -1,4 +1,5 @@
 import { syncSessionWithDeviceRecords } from "@/player/deviceRecords";
+import { cancelSceneMovieOverlays } from "@/player/playSceneMovies";
 import { safeLocalStorage } from "@/player/saveSlots";
 import { updatePixelFx } from "@/player/playScenePixelFx";
 import { syncPlayerOcclusionGhost } from "@/player/playerOcclusionGhost";
@@ -788,6 +789,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
 
   applySession(session: PlaySession): void {
     invalidateSceneTransfers(this);
+    cancelSceneMovieOverlays(this);
     this.battleAbortController?.abort();
     foregroundOwner(this)?.release(false);
     dialogueUi(this)?.close();
