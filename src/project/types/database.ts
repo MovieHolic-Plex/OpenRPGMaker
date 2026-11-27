@@ -2285,6 +2285,8 @@ export interface SystemRecords {
   enemyStillMotion?: import("@/project/enemyStillMotion").EnemyStillMotionMode;
   /** 화면 표시 필터(project/displayFilter.ts) — 주사선·브라운관. 생략 = 없음. */
   displayFilter?: "scanlines" | "crt";
+  /** 게임 기본 HD-2D 필름 후처리(project/postFx.ts) — 맵별 `map.postFx` 가 없을 때 적용. */
+  postFx?: import("../postFx").MapPostFx;
   /**
    * 플레이 화면을 창에 키우는 방식(project/playSurfaceScaleMode.ts). integer = 정수 배율+여백, fit = 창에 꽉.
    * 생략하면 해상도를 저장한 프로젝트는 integer, 옛 320×240 프로젝트는 fit.

@@ -215,6 +215,8 @@ export interface GameMap {
   doors?: import("../eventCommands/doorAnimation").MapDoorDef[];
   /** Fixed sun; absent/off preserves existing maps. Shared editor/player shadow projection. */
   sunlight?: import("../sunlight").MapSunlight;
+  /** HD-2D camera post-processing (filmic color grade + emissive-safe bloom + tilt-shift DoF + god-rays + vignette). */
+  postFx?: import("../postFx").MapPostFx;
   /** Optional map-wide decorative layers; independent of gameplay weather. */
   atmosphereEffects?: import("../atmosphere").AtmosphereEffect[];
   /**

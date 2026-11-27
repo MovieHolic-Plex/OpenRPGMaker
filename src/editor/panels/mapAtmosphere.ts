@@ -2,9 +2,65 @@ import { el } from "@/util/dom";
 import { store } from "@/project/store";
 import type { GameMap } from "@/project/types";
 import { ATMOSPHERE_PRESETS, ATMOSPHERE_GENRES, ATMOSPHERE_SCENES, ATMOSPHERE_SOUNDS, normalizeAtmosphereEffects, type AtmosphereEffect, type AtmosphereSound } from "@/project/atmosphere";
-import { setMapAtmosphereEffects } from "@/editor/actions";
+import { POST_FX_PRESETS, POST_FX_PRESET_IDS, normalizePostFx, type PostFxPresetId } from "@/project/postFx";
+import { setMapAtmosphereEffects, setMapPostFx } from "@/editor/actions";
+
+function renderPostFxSection(host: HTMLElement, map: GameMap, refresh: () => void): void {
+  const section = el("div", { class: "panel-section map-props-section", dataset: { testid: "map-postfx-section" } });
+  section.append(el("h3", { text: "HD-2D 필름 후처리 (색감 · 블룸 · 심도 · 햇살)" }));
+  const current = normalizePostFx(map.postFx);
+  const select = el("select", { attrs: { "aria-label": "HD-2D 필름 후처리 프리셋" }, dataset: { testid: "map-postfx-preset" } }) as HTMLSelectElement;
+  for (const id of POST_FX_PRESET_IDS) {
+    const spec = POST_FX_PRESETS[id];
+    select.append(el("option", { attrs: { value: id }, text: `${spec.label} — ${spec.summary}` }));
+  }
+  select.value = current.preset;
+  select.addEventListener("change", () => {
+    const next = select.value as PostFxPresetId;
+    setMapPostFx(map.id, next === "none" ? null : { preset: next });
+    refresh();
+  });
+  section.append(select);
+  section.append(el("p", {
+    class: "map-props-hint",
+    text: current.preset === "none"
+      ? "원본 타일·캐릭터·기물을 바꾸지 않고 화면 전체에 옥토패스풍 필름 색감, 발광 블룸, 상하 심도(DoF), 햇살을 실시간으로 입힙니다."
+      : `${POST_FX_PRESETS[current.preset].summary} — 실제 화면은 플레이에서 WebGL 1패스로 렌더링됩니다.`,
+  }));
+
+  if (current.preset !== "none") {
+    const sliders: Array<readonly [key: "intensity" | "bloom" | "dof" | "godRays" | "vignette", label: string]> = [
+      ["intensity", "전체 강도"],
+      ["bloom", "광원 블룸"],
+      ["dof", "상하 심도 (DoF)"],
+      ["godRays", "대각선 햇살"],
+      ["vignette", "가장자리 비네트"],
+    ];
+    for (const [key, label] of sliders) {
+      const val = Math.round((current[key] ?? 0) * 100);
+      const line = el("label", { class: "map-props-check-row" });
+      const out = el("span", { text: `${val}%` });
+      const input = el("input", {
+        attrs: { type: "range", min: "0", max: "100", step: "5", value: String(val), "aria-label": `후처리 ${label}` },
+        dataset: { testid: `map-postfx-${key}` },
+      }) as HTMLInputElement;
+      input.addEventListener("input", () => { out.textContent = `${input.value}%`; });
+      input.addEventListener("change", () => setMapPostFx(map.id, { [key]: Number(input.value) / 100 }));
+      line.append(el("span", { text: label }), input, out);
+      section.append(line);
+    }
+    const emCheck = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "map-postfx-preserve-emissive" } }) as HTMLInputElement;
+    emCheck.checked = current.preserveEmissive !== false;
+    emCheck.addEventListener("change", () => setMapPostFx(map.id, { preserveEmissive: emCheck.checked }));
+    const emRow = el("label", { class: "map-props-check-row" });
+    emRow.append(emCheck, el("span", { text: "불·촛불·네온 고유 발광색 보존 (Emissive)" }));
+    section.append(emRow);
+  }
+  host.append(section);
+}
 
 export function renderMapAtmosphere(host: HTMLElement, map: GameMap, refresh: () => void): void {
+  renderPostFxSection(host, map, refresh);
   host.append(el("p", { class: "map-props-hint", text: "맵 전체에 적용됩니다. 여러 효과를 함께 켤 수 있으며 비·눈·구름과도 겹쳐집니다. 실제 모습은 플레이 화면에서 확인하세요." }));
   const presetRow = el("div", { class: "panel-section map-props-section" });
   presetRow.append(el("h3", { text: "분위기 프리셋" }));

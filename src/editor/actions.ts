@@ -1,5 +1,6 @@
 import { MAP_CHARACTER_SCALE_MIN } from "@/project/characterScale";
 import { patchSunlight } from "@/project/sunlight";
+import { patchPostFx } from "@/project/postFx";
 import { normalizeAtmosphereEffects } from "@/project/atmosphere";
 import { normalizeMapClimate, type MapClimate } from "@/project/mapClimate";
 // editor/actions.ts
@@ -610,6 +611,16 @@ export function setMapSunlight(mapId: MapId, patch: Partial<import("@/project/su
     if (patch === null) delete map.sunlight;
     else map.sunlight = patchSunlight(map.sunlight, patch);
   }, { scope: "map", mapId, label: "태양과 지형 그림자" });
+}
+
+export function setMapPostFx(mapId: MapId, patch: Partial<import("@/project/postFx").MapPostFx> | null): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (patch === null || patch.preset === "none") delete map.postFx;
+    else map.postFx = patchPostFx(map.postFx, patch);
+  }, { scope: "map", mapId, label: "HD-2D 필름 후처리" });
 }
 
 function allowMapMutation(mapId: MapId): boolean {

@@ -2,6 +2,7 @@ import { genId } from "@/util/id";
 import { isPassable } from "@/project/collision";
 import { normalizeLightingState, normalizeLightSource } from "@/project/lightingRules";
 import { patchSunlight, type MapSunlight } from "@/project/sunlight";
+import { POST_FX_PRESET_IDS, POST_FX_PRESETS, patchPostFx, type MapPostFx } from "@/project/postFx";
 import type { Command, EventPage, GameEvent, LightingBlend, LightingState, LightSource, LightSourceAnchor, Rect, WeatherKind } from "@/project/types";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
@@ -148,6 +149,20 @@ const setSceneMood: ToolDefinition = {
         },
         additionalProperties: false,
       },
+      postFx: {
+        type: "object",
+        description: "applyMode map 만. HD-2D 화면 전체 필름 후처리(Emissive 발광색 보존). preset: none|hd2d-warm|ghibli-day|dawn-mist|gothic-horror|dungeon-torch|cyber-neon|eastern-ink, intensity/bloom/dof/godRays/vignette(0~1), preserveEmissive(기본 true).",
+        properties: {
+          preset: { type: "string", enum: [...POST_FX_PRESET_IDS] },
+          intensity: { type: "number", minimum: 0, maximum: 1 },
+          bloom: { type: "number", minimum: 0, maximum: 1 },
+          dof: { type: "number", minimum: 0, maximum: 1 },
+          godRays: { type: "number", minimum: 0, maximum: 1 },
+          vignette: { type: "number", minimum: 0, maximum: 1 },
+          preserveEmissive: { type: "boolean" },
+        },
+        additionalProperties: false,
+      },
     },
     required: ["mapId"],
   },
@@ -162,19 +177,25 @@ const setSceneMood: ToolDefinition = {
     const weather = weatherCommandArg(args.weather);
     const lighting = lightingStateArg(args.lighting);
     const sun = args.sunlight && typeof args.sunlight === "object" && !Array.isArray(args.sunlight) ? args.sunlight as Partial<MapSunlight> : undefined;
-    if (!weather && !lighting && !sun) {
-      throw new ToolError("weather·lighting·sunlight 중 하나는 필요합니다.", { code: "scene-mood-empty", mapId: map.id });
+    const postFxArg = args.postFx && typeof args.postFx === "object" && !Array.isArray(args.postFx) ? args.postFx as Partial<MapPostFx> : undefined;
+    if (!weather && !lighting && !sun && !postFxArg) {
+      throw new ToolError("weather·lighting·sunlight·postFx 중 하나는 필요합니다.", { code: "scene-mood-empty", mapId: map.id });
     }
     const applyMode = args.applyMode === "event" ? "event" : "map";
-    if (sun && applyMode !== "map") throw new ToolError("sunlight 는 applyMode 'map' 에서만 씁니다(맵 전체의 해).", { code: "invalid-args", mapId: map.id });
+    if ((sun || postFxArg) && applyMode !== "map") throw new ToolError("sunlight/postFx 는 applyMode 'map' 에서만 씁니다.", { code: "invalid-args", mapId: map.id });
     if (applyMode === "map") {
       if (lighting) map.defaultLighting = lighting;
       if (sun) map.sunlight = patchSunlight(map.sunlight, { enabled: true, ...sun });
+      if (postFxArg) {
+        const nextFx = patchPostFx(map.postFx, postFxArg);
+        if (nextFx.preset === "none") delete map.postFx;
+        else map.postFx = nextFx;
+      }
       const casters = (map.structurePlacements?.length ?? 0) + (map.doodadGroups?.length ?? 0);
       const moodEventId = weather ? upsertSceneMoodAutoEvent(map, [weather]) : undefined;
       return {
-        summary: `${map.name} 분위기 설정 — ${weather ? `날씨 ${weather.weather}` : "날씨 유지"}, ${lighting ? `ambient ${lighting.ambient.toFixed(2)}` : "조명 유지"}${map.sunlight && sun ? `, 태양 그림자 방향 ${map.sunlight.azimuth}°·고도 ${map.sunlight.altitude}°${casters ? "" : " (이 맵엔 그림자를 던질 집·나무 기록이 없다 — 마을·숲 도구로 지은 맵에서 보인다)"}` : ""}`,
-        data: { mapId: map.id, applyMode, weatherKind: weather?.weather, lightCount: lighting?.sources.length ?? 0, eventIds: moodEventId ? [moodEventId] : [] },
+        summary: `${map.name} 분위기 설정 — ${weather ? `날씨 ${weather.weather}` : "날씨 유지"}, ${lighting ? `ambient ${lighting.ambient.toFixed(2)}` : "조명 유지"}${map.sunlight && sun ? `, 태양 그림자 방향 ${map.sunlight.azimuth}°·고도 ${map.sunlight.altitude}°${casters ? "" : " (이 맵엔 그림자를 던질 집·나무 기록이 없다 — 마을·숲 도구로 지은 맵에서 보인다)"}` : ""}${postFxArg ? `, 후처리 ${map.postFx ? POST_FX_PRESETS[map.postFx.preset].label : "끔"}` : ""}`,
+        data: { mapId: map.id, applyMode, weatherKind: weather?.weather, lightCount: lighting?.sources.length ?? 0, postFxPreset: map.postFx?.preset ?? "none", eventIds: moodEventId ? [moodEventId] : [] },
       };
     }
 
