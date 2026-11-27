@@ -2107,7 +2107,7 @@ const sunlightSchema: JsonSchema = {
 
 const postFxSchema: JsonSchema = {
   type: "object",
-  description: "HD-2D 화면 전체 필름 후처리(Emissive 발광색 보존). preset: none|hd2d-warm(황혼 옥토패스풍)|ghibli-day(맑은 낮)|dawn-mist(새벽 여명)|gothic-horror(고딕 공포)|dungeon-torch(던전 횃불)|cyber-neon(사이버 네온)|eastern-ink(동양 한지·노을). intensity/bloom/dof/godRays/vignette는 0~1.",
+  description: "HD-2D 화면 전체 필름 후처리(Emissive 발광색 보존). preset: none|hd2d-warm(황혼)|ghibli-day(맑은 낮)|dawn-mist(새벽 여명)|gothic-horror(고딕 공포)|dungeon-torch(던전 횃불)|cyber-neon(사이버 네온)|eastern-ink(동양 한지)|arctic-blizzard(설원 빙청)|cataclysm-fire(화염 보스전). intensity/bloom/dof/godRays/vignette는 0~1.",
   properties: {
     preset: { type: "string", enum: [...POST_FX_PRESET_IDS] },
     intensity: { type: "number", minimum: 0, maximum: 1 },
@@ -2116,6 +2116,7 @@ const postFxSchema: JsonSchema = {
     godRays: { type: "number", minimum: 0, maximum: 1 },
     vignette: { type: "number", minimum: 0, maximum: 1 },
     preserveEmissive: { type: "boolean" },
+    adaptWeather: { type: "boolean" },
   },
   additionalProperties: false,
 };

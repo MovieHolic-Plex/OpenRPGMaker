@@ -2,10 +2,44 @@ import { el } from "@/util/dom";
 import { store } from "@/project/store";
 import type { GameMap } from "@/project/types";
 import { ATMOSPHERE_PRESETS, ATMOSPHERE_GENRES, ATMOSPHERE_SCENES, ATMOSPHERE_SOUNDS, normalizeAtmosphereEffects, type AtmosphereEffect, type AtmosphereSound } from "@/project/atmosphere";
-import { POST_FX_PRESETS, POST_FX_PRESET_IDS, normalizePostFx, type PostFxPresetId } from "@/project/postFx";
-import { setMapAtmosphereEffects, setMapPostFx } from "@/editor/actions";
+import {
+  CINEMATIC_COMBO_IDS,
+  CINEMATIC_COMBO_PRESETS,
+  POST_FX_PRESETS,
+  POST_FX_PRESET_IDS,
+  normalizePostFx,
+  type CinematicComboId,
+  type PostFxPresetId,
+} from "@/project/postFx";
+import { applyCinematicCombo, setMapAtmosphereEffects, setMapPostFx } from "@/editor/actions";
 
 function renderPostFxSection(host: HTMLElement, map: GameMap, refresh: () => void): void {
+  // ① 원클릭 시네마틱 콤보 (아무것도 안 넣기 / 원본 초기화 포함 7종)
+  const comboBox = el("div", { class: "panel-section map-props-section", dataset: { testid: "map-cinematic-combo-section" } });
+  comboBox.append(el("h3", { text: "원클릭 시네마틱 콤보 (후처리 + 조명 + 환경효과 일괄)" }));
+  const comboSelect = el("select", { attrs: { "aria-label": "시네마틱 콤보 선택" }, dataset: { testid: "map-cinematic-combo-select" } }) as HTMLSelectElement;
+  for (const cid of CINEMATIC_COMBO_IDS) {
+    const c = CINEMATIC_COMBO_PRESETS[cid];
+    comboSelect.append(el("option", { attrs: { value: cid }, text: c.label }));
+  }
+  const comboDesc = el("p", { class: "map-props-hint", text: CINEMATIC_COMBO_PRESETS[CINEMATIC_COMBO_IDS[0]].summary });
+  comboSelect.addEventListener("change", () => {
+    comboDesc.textContent = CINEMATIC_COMBO_PRESETS[comboSelect.value as CinematicComboId].summary;
+  });
+  const comboApply = el("button", { text: "콤보 적용", attrs: { type: "button" }, dataset: { testid: "map-cinematic-combo-apply" } });
+  comboApply.addEventListener("click", () => {
+    applyCinematicCombo(map.id, comboSelect.value as CinematicComboId);
+    refresh();
+  });
+  const comboReset = el("button", { text: "아무것도 안 넣기 (원본)", attrs: { type: "button" }, dataset: { testid: "map-cinematic-combo-reset" } });
+  comboReset.addEventListener("click", () => {
+    applyCinematicCombo(map.id, "classic-clean");
+    refresh();
+  });
+  comboBox.append(comboSelect, comboApply, comboReset, comboDesc);
+  host.append(comboBox);
+
+  // ② 개별 HD-2D 필름 후처리 세부 조절
   const section = el("div", { class: "panel-section map-props-section", dataset: { testid: "map-postfx-section" } });
   section.append(el("h3", { text: "HD-2D 필름 후처리 (색감 · 블룸 · 심도 · 햇살)" }));
   const current = normalizePostFx(map.postFx);
@@ -55,6 +89,13 @@ function renderPostFxSection(host: HTMLElement, map: GameMap, refresh: () => voi
     const emRow = el("label", { class: "map-props-check-row" });
     emRow.append(emCheck, el("span", { text: "불·촛불·네온 고유 발광색 보존 (Emissive)" }));
     section.append(emRow);
+
+    const wCheck = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "map-postfx-adapt-weather" } }) as HTMLInputElement;
+    wCheck.checked = current.adaptWeather !== false;
+    wCheck.addEventListener("change", () => setMapPostFx(map.id, { adaptWeather: wCheck.checked }));
+    const wRow = el("label", { class: "map-props-check-row" });
+    wRow.append(wCheck, el("span", { text: "비·폭풍·밤에는 대각선 햇살 자동 끄기" }));
+    section.append(wRow);
   }
   host.append(section);
 }

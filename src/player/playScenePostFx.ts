@@ -4,6 +4,7 @@ import { ensureFilterShaderNode } from "@/player/playSceneFilterShader";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import { store } from "@/project/store";
 import { resolvePostFx, type MapPostFx, type ResolvedPostFx } from "@/project/postFx";
+import { resolveTimeSystem, timePhaseFor } from "@/project/gameTime";
 
 /**
  * HD-2D 화면 전체 필름 후처리 렌더러 — 단일 Phaser 4 카메라 필터(`OprnFilmicPostFx`).
@@ -230,6 +231,28 @@ function applyResolved(scene: PlaySceneContext, state: PostFxState, resolved: Re
   const w = Math.max(64, camera.width || 640);
   const h = Math.max(64, camera.height || 360);
   const f = state.filter;
+
+  // 날씨·밤 자동 정합 보정(adaptWeather): 비·폭풍·안개·밤에는 대각선 햇살(godRays)만 부드럽게 꺼서
+  // 물리적 모순을 막고, 어둠·비네트는 공포 게임의 짙은 암흑 연출 여지를 그대로 보존한다.
+  let godRays = resolved.godRays;
+  let bloom = resolved.bloom;
+  if (resolved.adaptWeather && godRays > 0.001) {
+    const weather = scene.weatherDisplayed;
+    if (weather && (weather.kind === "rain" || weather.kind === "storm" || weather.kind === "fog")) {
+      const atten = Math.max(0, 1 - Math.min(1, weather.intensity * 1.35));
+      godRays *= atten;
+    }
+    const project = store.getCurrent();
+    const timeSys = resolveTimeSystem(project);
+    if (timeSys?.enabled && scene.session?.gameTime) {
+      const phase = timePhaseFor(scene.session.gameTime);
+      if (phase === "night") {
+        godRays = 0;
+        bloom = Math.min(1, bloom + 0.08);
+      }
+    }
+  }
+
   f.texelX = 1 / w;
   f.texelY = 1 / h;
   f.intensity = resolved.intensity;
@@ -239,9 +262,9 @@ function applyResolved(scene: PlaySceneContext, state: PostFxState, resolved: Re
   f.lift = [resolved.lift[0], resolved.lift[1], resolved.lift[2]];
   f.gamma = [resolved.gamma[0], resolved.gamma[1], resolved.gamma[2]];
   f.gain = [resolved.gain[0], resolved.gain[1], resolved.gain[2]];
-  f.bloom = resolved.bloom;
+  f.bloom = bloom;
   f.dof = resolved.dof;
-  f.godRays = resolved.godRays;
+  f.godRays = godRays;
   f.vignette = resolved.vignette;
   f.rayColor = [resolved.rayColor[0], resolved.rayColor[1], resolved.rayColor[2]];
   f.preserveEmissive = resolved.preserveEmissive ? 1 : 0;

@@ -1,7 +1,8 @@
 import { MAP_CHARACTER_SCALE_MIN } from "@/project/characterScale";
 import { patchSunlight } from "@/project/sunlight";
-import { patchPostFx } from "@/project/postFx";
+import { CINEMATIC_COMBO_PRESETS, patchPostFx, type CinematicComboId } from "@/project/postFx";
 import { normalizeAtmosphereEffects } from "@/project/atmosphere";
+import { normalizeLightingState } from "@/project/lightingRules";
 import { normalizeMapClimate, type MapClimate } from "@/project/mapClimate";
 // editor/actions.ts
 // 에디터에서 Project를 갱신하는 모든 액션. store.update(mutator) 경유.
@@ -621,6 +622,35 @@ export function setMapPostFx(mapId: MapId, patch: Partial<import("@/project/post
     if (patch === null || patch.preset === "none") delete map.postFx;
     else map.postFx = patchPostFx(map.postFx, patch);
   }, { scope: "map", mapId, label: "HD-2D 필름 후처리" });
+}
+
+export function applyCinematicCombo(mapId: MapId, comboId: CinematicComboId): void {
+  if (!allowMapMutation(mapId)) return;
+  const combo = CINEMATIC_COMBO_PRESETS[comboId];
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    if (combo.postFx === null) delete map.postFx;
+    else map.postFx = patchPostFx(undefined, combo.postFx);
+
+    if (combo.sunlight === null) delete map.sunlight;
+    else if (combo.sunlight) map.sunlight = patchSunlight(map.sunlight, combo.sunlight);
+
+    const normalizedAtmo = normalizeAtmosphereEffects(combo.atmosphereEffects);
+    if (normalizedAtmo.length === 0) delete map.atmosphereEffects;
+    else map.atmosphereEffects = normalizedAtmo;
+
+    if (combo.lighting === null) delete map.defaultLighting;
+    else if (combo.lighting) {
+      map.defaultLighting = normalizeLightingState({
+        ambient: combo.lighting.ambient,
+        color: combo.lighting.color,
+        sources: combo.lighting.playerFlashlightRadius
+          ? [{ id: "combo-flashlight", at: "player", radius: combo.lighting.playerFlashlightRadius, intensity: 1 }]
+          : [],
+      });
+    }
+  }, { scope: "map", mapId, label: `시네마틱 콤보: ${combo.label}` });
 }
 
 function allowMapMutation(mapId: MapId): boolean {
