@@ -1661,8 +1661,13 @@ function pruneDanglingCommandRefs(
       pruned.push({ ...command, transactionBranch: recurse(command.transactionBranch) });
       continue;
     }
-    if (command.kind === "inn" && command.notEnoughBranch) {
-      pruned.push({ ...command, notEnoughBranch: recurse(command.notEnoughBranch) });
+    if (command.kind === "inn" && (command.stayedBranch || command.cancelledBranch || command.notEnoughBranch)) {
+      pruned.push({
+        ...command,
+        ...(command.stayedBranch ? { stayedBranch: recurse(command.stayedBranch) } : {}),
+        ...(command.cancelledBranch ? { cancelledBranch: recurse(command.cancelledBranch) } : {}),
+        ...(command.notEnoughBranch ? { notEnoughBranch: recurse(command.notEnoughBranch) } : {}),
+      });
       continue;
     }
     pruned.push(command);

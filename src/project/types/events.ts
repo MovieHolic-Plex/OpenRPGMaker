@@ -703,6 +703,12 @@ export type Command =
       restDurationMs?: number;
       /** 기상 메시지 표시 ms. 기본 750. */
       wakeDurationMs?: number;
+      /** true면 숙박 완료 시 stayedBranch 실행. */
+      branchOnStay?: boolean;
+      stayedBranch?: Command[];
+      /** true면 숙박 거절/취소 시 cancelledBranch 실행. */
+      branchOnCancel?: boolean;
+      cancelledBranch?: Command[];
       /** true면 골드 부족 시 notEnoughBranch 실행. */
       branchOnNotEnoughGold?: boolean;
       notEnoughBranch?: Command[];

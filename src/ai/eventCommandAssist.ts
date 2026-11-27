@@ -722,6 +722,8 @@ function validateSupplementalReferences(commands: readonly Command[], context: R
         validateSupplementalReferences(command.transactionBranch ?? [], context);
         break;
       case "inn":
+        validateSupplementalReferences(command.stayedBranch ?? [], context);
+        validateSupplementalReferences(command.cancelledBranch ?? [], context);
         validateSupplementalReferences(command.notEnoughBranch ?? [], context);
         break;
       default:

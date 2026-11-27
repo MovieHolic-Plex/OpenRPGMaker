@@ -1281,6 +1281,11 @@ function validateCommand(
         if (option.enableWhen) validateForkCondition(option.enableWhen, pageId, refs, issues, path, [], mapId);
       });
       return;
+    case "inn":
+      if (typeof command.price !== "number") {
+        require("reference.variable.missing", "여관 요금 변수", command.price.id, refs.variables);
+      }
+      return;
     case "text":
     case "label":
     case "gotoLabel":
@@ -1303,7 +1308,6 @@ function validateCommand(
     case "stopAudio":
     case "cutsceneControl":
     case "displayTextSettings":
-    case "inn":
     case "checkpointSave":
     case "openSaveMenu":
     case "despawnFieldEnemy":

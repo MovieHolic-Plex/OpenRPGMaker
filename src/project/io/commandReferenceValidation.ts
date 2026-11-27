@@ -135,6 +135,8 @@ function collectCommandItemReferences(command: Command, ids: Set<string>): void 
       collectCommandItemReferenceIds(command.failureBranch ?? [], ids);
       return;
     case "inn":
+      collectCommandItemReferenceIds(command.stayedBranch ?? [], ids);
+      collectCommandItemReferenceIds(command.cancelledBranch ?? [], ids);
       collectCommandItemReferenceIds(command.notEnoughBranch ?? [], ids);
       return;
     case "script":
@@ -264,6 +266,11 @@ function validateCommandReferences(command: Command, context: ReferenceContext):
       assert(context.variableIds.has(command.variableId), `getFriendship: variableId가 존재하지 않습니다: ${command.variableId}`);
       return;
     case "inn":
+      if (typeof command.price !== "number") {
+        assert(context.variableIds.has(command.price.id), `inn: price variableId가 존재하지 않습니다: ${command.price.id}`);
+      }
+      validateCommands(command.stayedBranch ?? [], context);
+      validateCommands(command.cancelledBranch ?? [], context);
       validateCommands(command.notEnoughBranch ?? [], context);
       return;
     case "craftRecipe":

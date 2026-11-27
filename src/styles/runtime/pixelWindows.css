@@ -479,7 +479,8 @@
 /* ── 여관 · 도트 창(기본 메뉴 스킨 pixel) ─────────────────────────────────────
    .play-stage(320×240 논리, transform: scale) 안. 머리 창 · 왼쪽 파티 창 · 오른쪽 선택/요약 창 · 아래 질문 줄. */
 .runtime-commerce-overlay.runtime-inn-pixel {
-  background: var(--px-stage);
+  background: radial-gradient(ellipse at 50% 35%, rgba(20, 28, 66, 0.72) 0%, rgba(9, 13, 36, 0.88) 100%);
+  backdrop-filter: blur(1.5px);
   border: 0;
   border-radius: 0;
   bottom: 0;
@@ -584,10 +585,35 @@
 .runtime-inn-pixel .runtime-inn-foot .runtime-commerce-status { font-size: 7.5px; }
 .runtime-inn-pixel .runtime-inn-foot .runtime-commerce-status[data-inn-status="not-enough"] { color: var(--px-loss); }
 /* 휴식·기상 연출은 창을 비운다 — 도트 창 격자를 풀고 가운데 한 줄만. */
-.runtime-commerce-overlay.runtime-inn-pixel:is(.runtime-inn-rest, .runtime-inn-wake-view) { align-content: center; background: transparent; display: grid; grid-template-areas: none; grid-template-columns: none; grid-template-rows: none; justify-items: center; }
-.runtime-commerce-overlay.runtime-inn-pixel.runtime-inn-wake-view > * { background: var(--px-surface); border: 1px solid var(--px-edge); box-shadow: var(--px-edge-shadow); padding: 4px 10px; }
+.runtime-commerce-overlay.runtime-inn-pixel:is(.runtime-inn-rest, .runtime-inn-wake-view) { align-content: center; backdrop-filter: none; background: transparent; display: grid; grid-template-areas: none; grid-template-columns: none; grid-template-rows: none; justify-items: center; }
+.runtime-commerce-overlay.runtime-inn-pixel.runtime-inn-wake-view {
+  background: radial-gradient(ellipse at 50% 42%, rgba(255, 224, 148, 0.24) 0%, rgba(16, 24, 58, 0.66) 100%);
+}
+.runtime-commerce-overlay.runtime-inn-pixel.runtime-inn-wake-view > .runtime-inn-wake-card {
+  align-items: center;
+  background: var(--px-surface);
+  border: 1px solid var(--px-edge);
+  border-radius: 2px;
+  box-shadow: var(--px-edge-shadow);
+  display: grid;
+  gap: 3px;
+  justify-items: center;
+  min-width: 196px;
+  padding: 8px 14px;
+}
+.runtime-commerce-overlay.runtime-inn-pixel.runtime-inn-wake-view .runtime-overlay-title {
+  border: 0;
+  color: var(--px-accent);
+  font-size: 7px;
+  padding: 0;
+}
+.runtime-commerce-overlay.runtime-inn-pixel.runtime-inn-wake-view .runtime-commerce-status {
+  color: var(--px-ink);
+  font-size: 7.5px;
+  font-weight: 400;
+}
 @media (prefers-reduced-motion: reduce) {
-  .runtime-inn-pixel :is(.runtime-inn-walker, .runtime-inn-track-gain, .runtime-commerce-actions button.selected::before) { animation: none; }
+  .runtime-inn-pixel :is(.runtime-inn-walker, .runtime-inn-track-gain, .runtime-commerce-actions button.selected::before, .runtime-inn-z, .runtime-inn-moon, .runtime-inn-sun) { animation: none; }
 }
 
 

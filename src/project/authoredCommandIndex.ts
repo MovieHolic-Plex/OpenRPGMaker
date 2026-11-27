@@ -67,7 +67,7 @@ export function nestedCommandLists(command: Command): readonly (readonly Command
     case "shop":
       return [command.transactionBranch, command.failedTransactionBranch].filter(isCommandList);
     case "inn":
-      return command.notEnoughBranch ? [command.notEnoughBranch] : [];
+      return [command.stayedBranch, command.cancelledBranch, command.notEnoughBranch].filter(isCommandList);
     default:
       return [];
   }
