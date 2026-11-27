@@ -1,17 +1,4 @@
 @layer shell {
-  /* 첫 빌드 집중 뷰: 좌측 팔레트·리사이저·우측 인스펙터를 접어 캔버스 실시간 제작에 시선을 모은다.
-     left-column.css(map)·18-assistant-deck.css(database) 가 shell 보다 뒤 레이어라 first-run-guide.css 와 같이 !important 로 가린다. */
-  .editor-layout.is-first-build-focus > .ai-chat-sidebar,
-  .editor-layout.is-first-build-focus > .resizer-left,
-  .editor-layout.is-first-build-focus > .right-inspector {
-    display: none !important;
-  }
-
-  /* 첫 빌드 진행 바가 떠 있는 동안은 하단 중복 AI 상태 줄을 숨겨 겹침을 막는다. */
-  body:has(.first-build-theater[data-phase="building"]:not([hidden])) .ai-status-bar {
-    display: none !important;
-  }
-
   .first-build-theater {
     position: absolute;
     left: 50%;
@@ -24,7 +11,7 @@
     border: 1px solid rgba(255, 255, 255, 0.14);
     background: rgba(11, 13, 20, 0.88);
     backdrop-filter: blur(16px);
-    color: #f8fafc;
+    color: rgb(248 250 252);
     box-shadow: 0 14px 36px rgba(0, 0, 0, 0.42);
     display: flex;
     flex-direction: column;
@@ -46,7 +33,7 @@
     font-size: 12px;
     font-weight: 600;
   }
-  .fbt-step.is-active { color: #ffffff; }
+  .fbt-step.is-active { color: rgb(255 255 255); }
   .fbt-step.is-done { color: rgba(167, 243, 208, 0.92); }
 
   .fbt-dot {
@@ -61,14 +48,14 @@
     font-weight: 700;
   }
   .fbt-step.is-active .fbt-dot {
-    border-color: #60a5fa;
-    background: rgba(96, 165, 250, 0.22);
-    color: #ffffff;
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 24%, transparent);
+    color: rgb(255 255 255);
   }
   .fbt-step.is-done .fbt-dot {
-    border-color: #34d399;
-    background: rgba(52, 211, 153, 0.2);
-    color: #6ee7b7;
+    border-color: var(--success);
+    background: color-mix(in srgb, var(--success) 22%, transparent);
+    color: var(--success);
   }
   .fbt-label {
     overflow: hidden;
@@ -90,8 +77,8 @@
     height: 7px;
     border-radius: 50%;
     flex: none;
-    background: #60a5fa;
-    box-shadow: 0 0 10px rgba(96, 165, 250, 0.85);
+    background: var(--accent);
+    box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 85%, transparent);
     animation: fbtPulse 1.5s ease-in-out infinite;
   }
   @keyframes fbtPulse {
@@ -108,7 +95,7 @@
   .fbt-ready-title {
     font-size: 13.5px;
     font-weight: 800;
-    color: #ffffff;
+    color: rgb(255 255 255);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -122,7 +109,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .fbt-status.is-error { color: #fda4af; }
+  .fbt-status.is-error { color: var(--danger); }
 
   .fbt-actions {
     display: flex;
@@ -149,21 +136,21 @@
     background: transparent;
     color: rgba(203, 213, 225, 0.78);
   }
-  .fbt-btn.is-subtle:hover { background: rgba(255, 255, 255, 0.1); color: #ffffff; }
+  .fbt-btn.is-subtle:hover { background: rgba(255, 255, 255, 0.1); color: rgb(255 255 255); }
   .fbt-btn.is-stop {
-    border-color: rgba(248, 113, 113, 0.38);
-    background: rgba(248, 113, 113, 0.14);
-    color: #fecaca;
+    border-color: color-mix(in srgb, var(--danger) 42%, transparent);
+    background: color-mix(in srgb, var(--danger) 16%, transparent);
+    color: rgb(254 202 202);
   }
-  .fbt-btn.is-stop:hover { background: rgba(248, 113, 113, 0.26); color: #ffffff; }
+  .fbt-btn.is-stop:hover { background: color-mix(in srgb, var(--danger) 28%, transparent); color: rgb(255 255 255); }
   .fbt-btn.is-primary {
     border-color: rgba(255, 255, 255, 0.3);
-    background: #ffffff;
-    color: #090a0f;
+    background: rgb(255 255 255);
+    color: rgb(9 10 15);
     font-weight: 750;
     padding: 7px 15px;
   }
-  .fbt-btn.is-primary:hover { transform: translateY(-1px); background: #f8fafc; }
+  .fbt-btn.is-primary:hover { transform: translateY(-1px); background: rgb(248 250 252); }
 
   @media (max-width: 720px) {
     .fbt-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }

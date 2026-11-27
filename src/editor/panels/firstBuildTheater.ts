@@ -151,13 +151,34 @@ export function mountFirstBuildTheater(
   let focusSuppressed = false;
   let board: TeamBoardState | null = null;
   let lastFocused = false;
+  let lastBuildingBar = false;
   let lastRenderKey = "";
 
+  const applyFocusChrome = (focused: boolean): void => {
+    const leftSidebar = layout.querySelector<HTMLElement>(":scope > .ai-chat-sidebar");
+    const leftResizer = layout.querySelector<HTMLElement>(":scope > .resizer-left");
+    const rightInspector = layout.querySelector<HTMLElement>(":scope > .right-inspector");
+    if (leftSidebar) leftSidebar.style.display = focused ? "none" : "";
+    if (leftResizer) leftResizer.style.display = focused ? "none" : "";
+    if (rightInspector) rightInspector.style.display = focused ? "none" : "";
+  };
+
+  const syncStatusBarHidden = (hideStatusBar: boolean): void => {
+    if (hideStatusBar === lastBuildingBar) return;
+    lastBuildingBar = hideStatusBar;
+    const statusBar = document.querySelector<HTMLElement>('[data-testid="ai-status-bar"]');
+    if (statusBar) statusBar.style.display = hideStatusBar ? "none" : "";
+  };
+
   const syncFocusClass = (nextFocused: boolean): void => {
-    if (nextFocused === lastFocused) return;
+    if (nextFocused === lastFocused) {
+      if (nextFocused) applyFocusChrome(true);
+      return;
+    }
     lastFocused = nextFocused;
     layout.classList.toggle("is-first-build-focus", nextFocused);
     onLayoutChange();
+    applyFocusChrome(nextFocused);
   };
 
   const render = (): void => {
@@ -188,6 +209,7 @@ export function mountFirstBuildTheater(
     root.hidden = !visible;
     root.dataset.phase = vm.phase;
     syncFocusClass(focused);
+    syncStatusBarHidden(vm.phase === "building");
     if (!visible) return;
 
     const renderKey = `${vm.phase}|${vm.stepIndex}|${vm.statusLine}|${vm.title}|${focusSuppressed ? 1 : 0}`;
@@ -289,6 +311,8 @@ export function mountFirstBuildTheater(
   return () => {
     unsubStore();
     unsubTeam();
+    applyFocusChrome(false);
+    syncStatusBarHidden(false);
     layout.classList.remove("is-first-build-focus");
     root.remove();
   };
