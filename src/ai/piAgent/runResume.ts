@@ -25,6 +25,9 @@ export interface PiRunJournal {
   readonly mode: "single" | "team";
   readonly mapIds?: readonly string[];
   readonly startedAt: number;
+  /** 원래 실행의 연결(공급자 id)·모델 — 이어 하기는 이것으로 잇는다(editor/panels/aiResumeProvider.ts). */
+  readonly provider?: string;
+  readonly model?: string;
 }
 
 /** 워커가 프로젝트에 같이 싣는 이어 하기 기억(`assistantTodo.memory.resume`). */
@@ -121,6 +124,8 @@ export function parseInFlightMarker(text: string): PiRunJournal | null | undefin
       mode: raw.mode === "team" ? "team" : "single",
       ...(typeof raw.shown === "string" ? { shown: raw.shown } : {}),
       ...(Array.isArray(raw.mapIds) ? { mapIds: raw.mapIds.filter((id): id is string => typeof id === "string") } : {}),
+      ...(typeof raw.provider === "string" ? { provider: raw.provider } : {}),
+      ...(typeof raw.model === "string" ? { model: raw.model } : {}),
     };
   } catch {
     return null;

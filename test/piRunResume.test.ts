@@ -6,9 +6,10 @@ import { CONTINUE_WORDS } from "@/ai/v2/request/readers";
 import { createV2Turn } from "@/ai/v2/turn/turn";
 import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
 import type { Project } from "@/project/types";
+import { decideResumeProvider } from "@/editor/panels/aiResumeProvider";
 
 const SLOW = 60_000;
-const journal: PiRunJournal = { key: "run-a", task: "작은 호러 게임을 만들어 줘", mode: "single", startedAt: 1 };
+const journal: PiRunJournal = { key: "run-a", task: "작은 호러 게임을 만들어 줘", mode: "single", startedAt: 1, provider: "local-cli:claude", model: "claude-sonnet-5-5" };
 
 function v2Run(project: Project, resume: { key: string; from?: string }, task = "작은 호러 게임을 만들어 줘") {
   const request = { task, provider: "local-cli:claude", mapIds: [], project, currentMapId: project.startMapId, resume } as never;
@@ -49,6 +50,17 @@ describe("Pi 실행 이어 하기 기록(runResume)", () => {
     expect(appliedByInterruptedRun(journal, memory)).toBe(1);
     expect(appliedByInterruptedRun(journal, { ...memory, key: "older-run" })).toBe(0);
     expect(appliedByInterruptedRun(journal, undefined)).toBe(0);
+  });
+
+  it("이어 하기는 원래 연결로 — 쓸 수 있으면 되돌리고, 끊겼거나 한도면 고르게 한다", () => {
+    const claude = "local-cli:claude", codex = "openai-codex";
+    expect(decideResumeProvider(claude, claude, [], 0)).toEqual({ kind: "same" });
+    expect(decideResumeProvider(undefined, codex, [], 0)).toEqual({ kind: "same" });
+    expect(decideResumeProvider(claude, codex, [{ providerId: claude, connected: true }], 0)).toEqual({ kind: "switch", providerId: claude });
+    expect(decideResumeProvider(claude, codex, [{ providerId: claude, connected: false }], 0)).toEqual({ kind: "unavailable", providerId: claude, reason: "disconnected" });
+    expect(decideResumeProvider(claude, codex, [], 0)).toEqual({ kind: "unavailable", providerId: claude, reason: "disconnected" });
+    expect(decideResumeProvider(claude, codex, [{ providerId: claude, connected: true, limitedUntil: 100 }], 50)).toEqual({ kind: "unavailable", providerId: claude, reason: "limited" });
+    expect(decideResumeProvider(claude, codex, [{ providerId: claude, connected: true, limitedUntil: 100 }], 150)).toEqual({ kind: "switch", providerId: claude });
   });
 
   it("이어 하기 요청 글은 v2 의 «계속» 판정을 켠다(할 일 목록을 되살리는 길)", () => {
