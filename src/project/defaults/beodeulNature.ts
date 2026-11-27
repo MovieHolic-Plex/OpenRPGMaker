@@ -2,13 +2,13 @@
 // 모두 2층(lowerOverlayTiles) 투명 덧그림이라 ★(통행 + 상위)다 — ★ 는 통행 판정에서 건너뛰므로 칸의 통행은 1·3층(물·물체)이 정한다.
 // ○(아래층)로 두면 2층이 1층 물의 × 를 덮어 물 위를 걷는다. 2층은 캐릭터 밑 묶음이라 상위여도 인물 아래에 그린다.
 // 마을 시공기(beodeulVillage.ts)가 translateTiles 로 버들항 시트 뒤에 이식해 쓴다. 이웃 비트 = 북서1 북2 북동4 서8 동16 남서32 남64 남동128.
-import catalog from '@/assets/beodeulNatureCatalog.json' with { type: "json" };
+import { bundledJson } from './bundledJson';
 import type { TilesetDef } from '../types';
 
 export const BEODEUL_NATURE_ID = 'beodeul_nature';
 export const BEODEUL_NATURE_TEXTURE = 'tex_beodeul_nature';
 export interface NatureShadow { dx: number; dy: number; rows: number[][]; kind: 'tall' | 'block' }
-export const BEODEUL_NATURE = catalog as unknown as {
+type BeodeulNatureCatalog = {
   count: number; tilesPerRow: number;
   shadows: Record<string, NatureShadow>;
   bankGrass: number[]; bankLawn: number[]; edgeLawn: number[]; bankSnow: number[]; bankBog: number[]; bankMud: number[]; /** 용암 둑(흑요석) — bankBog 와 같은 256 비트 모양, 색만 다르다. */ bankLava: number[]; /** 성검 꽂힌 바위 1×2 — [위칸, 아래칸]. */ swordStone: number[];
@@ -24,8 +24,16 @@ export const BEODEUL_NATURE = catalog as unknown as {
   /** 숲 남쪽 바로 아래 칸 그늘 — [양식][(x%P)*4 + (북서 숲 ? 2 : 0) + (북동 숲 ? 1 : 0)]. */
   forestShade: Record<'leaf' | 'snow', number[]>;
 };
+const loadNature = (): BeodeulNatureCatalog => bundledJson('beodeulNatureCatalog') as unknown as BeodeulNatureCatalog;
+export const BEODEUL_NATURE: BeodeulNatureCatalog = new Proxy({} as BeodeulNatureCatalog, {
+  get(_target, prop) { return Reflect.get(loadNature(), prop); },
+  has(_target, prop) { return Reflect.has(loadNature(), prop); },
+  ownKeys() { return Reflect.ownKeys(loadNature()); },
+  getOwnPropertyDescriptor(_target, prop) { return Reflect.getOwnPropertyDescriptor(loadNature(), prop); },
+});
 
 export function createBeodeulNatureTileset(): TilesetDef {
+  const catalog = loadNature();
   const n = catalog.count;
   return {
     id: BEODEUL_NATURE_ID, name: '버들항 · 자연 덧그림(그림자·물가·풀밭 가장자리)',

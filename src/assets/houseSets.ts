@@ -9,7 +9,8 @@
 // 한 벌 안에서도 집마다 그림이 갈린다: 킷마다 변형 2~3장을 굽고, 찍는 자리(맵·칸)와 게임 열쇠로 한 장을 고른다 — 같은 집 여덟 채가 한 마을에 서지 않게.
 // 벌 이름은 겉모습(tileset.look.houses)에 한 번 적힌다(project/tilesetLook.ts) — 그 게임의 모든 맵이 같은 벌이다.
 // 그림판·표는 scripts/content/beodeul-houses/bake.py 가 굽는다(부품은 벌마다 한 번 그리고 코드가 조립 — assemble.py). 찍을 때 갈아 끼우기는 project/houseSetKit.ts.
-import beodeulHouseSets from "./beodeulHouseSets.json" with { type: "json" };
+import bundledSheetCounts from "./bundledSheetCounts.json" with { type: "json" };
+import { bundledLookJson } from "./bundledLookJson";
 
 /** kits[원본 킷 id] = 그 킷의 벌 그림들(같은 벌 안 변형 — 지붕 색조·아래층 재질·문/덧문 색이 다른 2~3장), 그림마다 줄 × 칸의 그림판 칸 번호. */
 type HouseSet = { readonly label: string; readonly en?: string; readonly kits: Readonly<Record<string, readonly (readonly (readonly number[])[])[]>> };
@@ -25,15 +26,16 @@ export type HouseSetTable = {
   readonly sets: Readonly<Record<string, HouseSet>>;
 };
 
-const TABLES: readonly HouseSetTable[] = [beodeulHouseSets as unknown as HouseSetTable];
+const HOUSE_SET_TILESET_ID = "beodeul_city";
+const HOUSE_SET_TEXTURE_KEY = "tex_beodeul_houses";
 
 /** 집 벌 그림판 textureKey → 칸 수(bundledChipsetFrameCount 가 쓴다). */
 export function houseSetSheetCount(textureKey: string): number | undefined {
-  return TABLES.find((table) => table.texture === textureKey)?.count;
+  return textureKey === HOUSE_SET_TEXTURE_KEY ? bundledSheetCounts.tex_beodeul_houses.count : undefined;
 }
 
 export function houseSetTableFor(tilesetId: string): HouseSetTable | undefined {
-  return TABLES.find((table) => table.tilesetId === tilesetId);
+  return tilesetId === HOUSE_SET_TILESET_ID ? (bundledLookJson("beodeulHouseSets") as unknown as HouseSetTable) : undefined;
 }
 
 /** 그 타일셋의 벌 이름들(표 순서). */

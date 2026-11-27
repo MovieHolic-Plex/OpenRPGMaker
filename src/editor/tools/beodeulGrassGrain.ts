@@ -13,6 +13,7 @@
 // 난수는 칸 좌표·씨앗 해시뿐이다(시공기의 난수 줄을 쓰지 않는다 — 결을 깔아도 나머지 배치가 달라지지 않는다).
 import forestComposer from "@/assets/beodeulForestComposer.json" with { type: "json" };
 import { tilesetLookGround } from "@/assets/tilesetLooks";
+import bundledSheetCounts from "@/assets/bundledSheetCounts.json" with { type: "json" };
 import { standGrainTile, standOverlaySource, tilesetStandTableFor, type GrassGrainCells, type GrassGrainMix } from "@/assets/tilesetStands";
 import { activeTilesetLook } from "@/project/kitLook";
 import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
@@ -284,7 +285,7 @@ const GRASS_KINDS: Record<string, GrassDrift> = {
   tall: { tone: "deep" }, pale: { tone: "pale" },
   tufts: { sprigs: ["tuft", "tufts"] }, flowers: { sprigs: ["white", "yellow"] }, clover: { sprigs: ["clover"] }, pebbles: { sprigs: ["pebble"] },
 };
-const GRAIN_MIXES = Object.keys(tilesetStandTableFor("beodeul_city")?.grains ?? {});
+const GRAIN_MIXES = [...bundledSheetCounts.tex_beodeul_stands.grainMixes];
 
 /** 조수·사람이 풀 결을 고른 자리에 까는 도구 — 풀밭(737) 위의 2층 덧그림만 쓴다(1층·통행 그대로). */
 export const BEODEUL_GRASS_TOOLS: readonly ToolDefinition[] = [{

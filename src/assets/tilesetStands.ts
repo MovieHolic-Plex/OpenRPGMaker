@@ -7,7 +7,8 @@
 //   · 시공기는 역할별 킷 목록(kits)으로 «주 수종 많이 · 곁 수종 섞어 · 강조 나무 드물게» 를 고른다.
 // 숲 바닥·풀밭 얼룩은 2층 투명 덧그림 칸이다(overlays — 꼭짓점 넷의 안팎 15꼴). 1층 바닥 칸·통행은 그대로다(editor/tools/beodeulGroundCover.ts).
 // 그림판·표는 scripts/content/beodeul-looks/bake_stands.py 가 굽는다. 고르기는 겉모습의 stand·meadow 갈래(project/tilesetLook.ts).
-import beodeulStands from "./beodeulStands.json" with { type: "json" };
+import bundledSheetCounts from "./bundledSheetCounts.json" with { type: "json" };
+import { bundledLookJson } from "./bundledLookJson";
 import type { TilesetDef } from "@/project/types";
 
 export type StandRole = "dominant" | "companion" | "accent" | "shrub" | "water" | "row" | "fruit";
@@ -89,7 +90,11 @@ export type TilesetStandTable = {
   readonly grainLabels?: Readonly<Record<string, string>>;
 };
 
-const TABLES: readonly TilesetStandTable[] = [beodeulStands as unknown as TilesetStandTable];
+const STAND_TILESET_ID = "beodeul_city";
+const STAND_TEXTURE_KEY = "tex_beodeul_stands";
+function loadStandTable(): TilesetStandTable {
+  return bundledLookJson("beodeulStands") as unknown as TilesetStandTable;
+}
 
 const coverMemo = new WeakMap<object, { readonly grafts: unknown; readonly length: number; readonly cover: ReadonlySet<number> }>();
 /**
@@ -98,7 +103,7 @@ const coverMemo = new WeakMap<object, { readonly grafts: unknown; readonly lengt
  * «2층이 빈 칸» 을 고르는 도구가 덧그림이 깔린 게임에서도 덧그림 없는 게임과 같은 칸을 고르게 한다(v2 던전의 적·상자 자리).
  */
 export function standGroundCoverTile(tileset: TilesetDef | undefined): (tile: number) => boolean {
-  const table = tileset ? TABLES.find((entry) => entry.tilesetId === tileset.id) : undefined;
+  const table = tileset ? tilesetStandTableFor(tileset.id) : undefined;
   if (!tileset || !table) return () => false;
   const grafts = tileset.tileGrafts, hit = coverMemo.get(tileset);
   if (hit && hit.grafts === grafts && hit.length === (grafts?.length ?? 0)) return (tile) => hit.cover.has(tile);
@@ -135,7 +140,7 @@ function grainCellKinds(table: TilesetStandTable): Map<number, string> {
  * 풀 결은 기본 풀 바닥의 한 부분이다 — «2층이 빈 칸» 을 찾는 도구는 1·2 를 빈 칸으로 본다.
  */
 export function standGrainTile(tileset: TilesetDef | undefined): (tile: number) => 0 | 1 | 2 {
-  const table = tileset ? TABLES.find((entry) => entry.tilesetId === tileset.id) : undefined;
+  const table = tileset ? tilesetStandTableFor(tileset.id) : undefined;
   if (!tileset || !table?.grain) return () => 0;
   const grafts = tileset.tileGrafts, hit = grainMemo.get(tileset);
   if (hit && hit.grafts === grafts && hit.length === (grafts?.length ?? 0)) return (tile) => hit.of.get(tile) ?? 0;
@@ -151,11 +156,11 @@ export function standGrainTile(tileset: TilesetDef | undefined): (tile: number) 
 
 /** 숲 그림판 textureKey → 칸 수(bundledChipsetFrameCount 가 쓴다). */
 export function tilesetStandSheetCount(textureKey: string): number | undefined {
-  return TABLES.find((table) => table.texture === textureKey)?.count;
+  return textureKey === STAND_TEXTURE_KEY ? bundledSheetCounts.tex_beodeul_stands.count : undefined;
 }
 
 export function tilesetStandTableFor(tilesetId: string): TilesetStandTable | undefined {
-  return TABLES.find((table) => table.tilesetId === tilesetId);
+  return tilesetId === STAND_TILESET_ID ? loadStandTable() : undefined;
 }
 
 /** 그 겉모습의 숲 구성(없으면 undefined — 원래 숲). */

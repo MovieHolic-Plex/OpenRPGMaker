@@ -6,7 +6,8 @@
 //     칸 번호·통행·오토타일·8프레임 물결 띠는 그대로다(프레임 칸마다 다시 칠한 칸이 있다).
 //   · 물가 둑(shore)·깊이 띠(deep)·폭포(fall): 2층 투명 덧그림과 절벽면 그림 칸. 시공기가 이식해 쓴다(editor/tools/beodeulWater.ts).
 // 그림판·표는 scripts/content/beodeul-water/bake.py 가 굽는다 — 버들항 시트 화소와 수식뿐이다(새로 그린 그림 없음).
-import beodeulWater from "./beodeulWater.json" with { type: "json" };
+import bundledSheetCounts from "./bundledSheetCounts.json" with { type: "json" };
+import { bundledLookJson } from "./bundledLookJson";
 import type { TilesetDef } from "@/project/types";
 
 type Pairs = readonly number[];
@@ -41,15 +42,16 @@ export type TilesetWaterTable = {
   readonly looks: Readonly<Record<string, TilesetWaterLook>>;
 };
 
-const TABLES: readonly TilesetWaterTable[] = [beodeulWater as unknown as TilesetWaterTable];
+const WATER_TILESET_ID = "beodeul_city";
+const WATER_TEXTURE_KEY = "tex_beodeul_water";
 
 /** 물 그림판 textureKey → 칸 수(bundledChipsetFrameCount 가 쓴다). */
 export function tilesetWaterSheetCount(textureKey: string): number | undefined {
-  return TABLES.find((table) => table.texture === textureKey)?.count;
+  return textureKey === WATER_TEXTURE_KEY ? bundledSheetCounts.tex_beodeul_water.count : undefined;
 }
 
 export function tilesetWaterTableFor(tilesetId: string): TilesetWaterTable | undefined {
-  return TABLES.find((table) => table.tilesetId === tilesetId);
+  return tilesetId === WATER_TILESET_ID ? (bundledLookJson("beodeulWater") as unknown as TilesetWaterTable) : undefined;
 }
 
 const mixedIndex = new WeakMap<object, { readonly ground: Map<number, number>; readonly paved: Map<number, number> }>();

@@ -31,8 +31,12 @@ import monsterKitGyms from "@/assets/monsterKit/monster-gyms.json" with { type: 
 import monsterKitOverworld from "@/assets/monsterKit/monster-overworld.json" with { type: "json" };
 import monsterKitRooms from "@/assets/monsterKit/monster-rooms.json" with { type: "json" };
 import monsterKitWild from "@/assets/monsterKit/monster-wild.json" with { type: "json" };
-import reliefRampArt from "@/project/relief/rampArt.json" with { type: "json" };
-import reliefSheerArt from "@/project/relief/sheerArt.json" with { type: "json" };
+import atlasVehiclesTileset from "@/assets/atlasVehiclesTileset.json" with { type: "json" };
+import worldmapAuthoringSheet from "@/assets/worldmapAuthoringSheet.json" with { type: "json" };
+import beodeulReviewedCatalog from "@/assets/beodeulReviewedCatalog.json" with { type: "json" };
+import beodeulMassingCatalog from "@/assets/beodeulMassingCatalog.json" with { type: "json" };
+import beodeulNatureCatalog from "@/assets/beodeulNatureCatalog.json" with { type: "json" };
+import jpCityStreetCatalog from "@/assets/jpCityStreetCatalog.json" with { type: "json" };
 
 const ALL = {
   jpCityTileset,
@@ -60,8 +64,12 @@ const ALL = {
   monsterKitOverworld,
   monsterKitRooms,
   monsterKitWild,
-  reliefRampArt,
-  reliefSheerArt,
+  atlasVehiclesTileset,
+  worldmapAuthoringSheet,
+  beodeulReviewedCatalog,
+  beodeulMassingCatalog,
+  beodeulNatureCatalog,
+  jpCityStreetCatalog,
 };
 
 export type BundledJsonData = typeof ALL;

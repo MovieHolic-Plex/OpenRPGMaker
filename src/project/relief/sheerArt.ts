@@ -3,7 +3,7 @@
 // 굽기 전까지 저장소는 코드로 만든 자리 표시 조각(placeholderSheerArt: 색 줄 몇 개의 단색 덩이)을 쓴다. 조각을 바꿔도 칸·걷기는 같다.
 import type { ReliefArtPatch } from "./render";
 // 구운 조각(scripts/content/sheer-terrain/bake.py — 3/4 관문 미통과 · 오너 면제 묶음 fable-terrain-2026-11-16). 지연 번들 JSON 으로 읽는다.
-import { bundledJson } from "../defaults/bundledJson";
+import { bundledLookJson } from "@/assets/bundledLookJson";
 
 export interface SheerArt {
   /** 단 차 1(48px) 앞면 판, 64×48. 윗테 0~15 · 몸통 16~31 · 밑동 32~47. */
@@ -189,7 +189,7 @@ export function sheerArtFromJson(raw: unknown): SheerArt | undefined {
 let baked: SheerArt | null | undefined;
 /** 구운 조각 한 벌(처음 부를 때 한 번 푼다). 굽기 전이면 null. */
 export function bakedSheerArtOrNull(): SheerArt | null {
-  if (baked === undefined) baked = sheerArtFromJson(bundledJson("reliefSheerArt")) ?? null;
+  if (baked === undefined) baked = sheerArtFromJson(bundledLookJson("reliefSheerArt")) ?? null;
   return baked;
 }
 

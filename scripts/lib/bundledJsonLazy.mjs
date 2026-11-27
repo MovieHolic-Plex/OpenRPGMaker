@@ -12,12 +12,15 @@ import { fileURLToPath, URL } from "node:url";
 /** @returns {import("vite").Plugin} */
 export function bundledJsonLazyPlugin() {
   const lazy = fileURLToPath(new URL("../../src/project/defaults/bundledJsonSources.lazy.ts", import.meta.url));
+  const lazyLook = fileURLToPath(new URL("../../src/assets/bundledLookJsonSources.lazy.ts", import.meta.url));
   return {
     name: "oprn-bundled-json-lazy",
     enforce: "pre",
     resolveId(source, _importer, options) {
-      if (source !== "./bundledJsonSources" || options?.ssr) return null;
-      return lazy;
+      if (options?.ssr) return null;
+      if (source === "./bundledJsonSources") return lazy;
+      if (source === "./bundledLookJsonSources") return lazyLook;
+      return null;
     },
   };
 }

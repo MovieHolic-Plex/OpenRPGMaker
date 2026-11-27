@@ -9,7 +9,7 @@ import {translateTiles} from '../objectStamp';
  */
 export interface BuildingCatalog{count:number;priority:unknown[];passability:unknown[];buildings:{id:string;name:string;source:string;material?:string;width:number;height:number;rows:number[][];shadowRows:number[][];foundationRows:number[][];parts:unknown[]}[]}
 export interface BuildingBundleConfig{
- tilesetId:string;texture:string;name:string;label:string;catalog:BuildingCatalog;references:unknown;
+ tilesetId:string;texture:string;name:string;label:string;catalog:BuildingCatalog | (() => BuildingCatalog);references:unknown;
  hostTilesetId:string;hostTexture:string;ids:{house:string;shadow:string;foundation:string;docs:string};tags:string[];
  /** 허용 출처 문구(없으면 「사람이 허용」). building-kit massing 은 사용자 위임 + 독립 검수 둘 + object-gate. */
  approval?:{tag:string;text:string};
@@ -28,12 +28,14 @@ export function fitTileMetaToCount(ts:TilesetDef):boolean{
 }
 
 export function defineBuildingBundle(cfg:BuildingBundleConfig){
- const {catalog,ids}=cfg;
+ const {ids}=cfg;
+ const getCatalog=typeof cfg.catalog==='function'?cfg.catalog:()=>cfg.catalog as BuildingCatalog;
  const prefixes=[ids.house,ids.shadow,ids.foundation];
  const isKit=(id:string)=>prefixes.some(p=>id.startsWith(p));
  const kidOf=(buildingId:string)=>buildingId.slice(ids.house.length);
 
  function createTileset():TilesetDef{
+  const catalog=getCatalog();
   const structureKits:StructureKitDef[]=catalog.buildings.map(b=>({id:b.id,name:b.name,kind:'section',learnedFrom:'pack-preset',
    width:b.width,height:b.height,tileSize:16,rows:b.rows.map(r=>({tiles:r.map(()=>-1),upperTiles:[...r]})),parts:structuredClone(b.parts) as StructureKitDef['parts'],
    ai:{role:'building',repeatability:'fixed',layerHome:'upper',tags:[...cfg.tags,cfg.approval?.tag??'사람이 허용',b.material==='log'?'통나무':'목골·돌','문 1개'],
