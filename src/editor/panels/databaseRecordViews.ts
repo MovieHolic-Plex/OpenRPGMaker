@@ -104,6 +104,10 @@ const ITEM_TYPE_CHIP_LABELS: Record<(typeof ITEM_TYPES)[number], string> = {
   switch: "장치 작동",
 };
 
+// 휴대 폭(599px 이하)에서는 목록과 편집을 한 화면씩 보인다(db-390-trim). 행을 누른 커렉션만 편집 화면으로 열고,
+// 편집때문에 탭을 다시 그려도 그 화면에 머문다. 넓은 창에서는 CSS 가 이 값을 보지 않는다(목록·편집 나란히).
+let phoneDetailCollection: DatabaseCollection | null = null;
+
 export function renderRecordTab(host: HTMLElement, collection: DatabaseCollection, rerender: () => void): void {
   const records = store.getCurrent().database[collection];
   const scope = recordScope(collection, records);
@@ -131,7 +135,7 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
     const form = recordForm(collection, record, rerender, host, onRename);
     form.classList.add("oprn-detail-form", `oprn-detail-${collection}`);
     stopSkillAnimationStagesIn(detailPane);
-    detailPane.replaceChildren(recordIdentity(COLLECTION_LABELS[collection], record.id, record.name, index), form);
+    detailPane.replaceChildren(phoneBack, recordIdentity(COLLECTION_LABELS[collection], record.id, record.name, index), form);
   };
 
   // 레코드 선택 시: 리스트를 통째로 재빌드하지 않고 활성 행 표시 + 디테일만 교체한다.
@@ -142,6 +146,18 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
     markActiveRow(listEl, id);
     renderDetail(id);
   };
+  const phoneBack = el("button", {
+    class: "db-phone-back",
+    text: `← ${COLLECTION_LABELS[collection]} 목록`,
+    attrs: { type: "button" },
+    dataset: { testid: "db-phone-back" },
+    on: {
+      click: () => {
+        phoneDetailCollection = null;
+        workspace.dataset.phonePane = "list";
+      },
+    },
+  });
 
   let listEl: HTMLElement;
   let listPane: HTMLElement;
@@ -191,9 +207,21 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
       toolbar(collection, rerender),
     );
   }
-  renderDetail(selected?.id);
+  // 행을 누르면(이미 고른 행이어도) 휴대 폭에서 편집 화면으로 넘어간다. 방향키 선택(onSelect)은 목록에 머문다.
+  listEl.addEventListener("click", (event) => {
+    // instanceof Element 대신 closest 유무로 본다 — fake DOM 시험에는 Element 전역이 없다.
+    const target = event.target as { closest?: (selector: string) => unknown } | null;
+    if (!target?.closest?.(".db-list-row") && !target?.closest?.(".db-gallery-card")) return;
+    phoneDetailCollection = collection;
+    workspace.dataset.phonePane = "detail";
+  });
   const studioClass = actorStudioActive ? " db-actor-studio-workspace" : "";
-  const workspace = el("div", { class: `db-record-workspace oprn-record-workspace oprn-record-${collection}${studioClass}`, children: [listPane, detailPane] });
+  const workspace = el("div", {
+    class: `db-record-workspace oprn-record-workspace oprn-record-${collection}${studioClass}`,
+    dataset: { phonePane: phoneDetailCollection === collection ? "detail" : "list" },
+    children: [listPane, detailPane],
+  });
+  renderDetail(selected?.id);
   host.append(workspace);
 }
 
