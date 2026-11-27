@@ -46,9 +46,9 @@ import { destroyBattleSceneOnHost } from "@/player/battleDom";
 import { markPlayRender } from "@/app/perfMetrics";
 import type { PlayScene } from "@/player/PlayScene";
 import { isPlayScene } from "@/player/playerGuards";
-import { createPlaySurface } from "@/player/playSurface";
+import { createPlaySurface, type PlaySurface } from "@/player/playSurface";
 import type { PlaySurfaceScaleMode } from "@/player/playSurfaceScale";
-import { resolvePlaySurfaceScaleMode } from "@/project/playSurfaceScaleMode";
+import { resolvePlaySurfaceScaleMode, resolvePortraitLayout } from "@/project/playSurfaceScaleMode";
 import type { Project } from "@/project/types";
 import { createTouchPad, isTouchDevice, type TouchPadHandle } from "@/player/touchPad";
 import { installTapConfirm } from "@/player/touchTap";
@@ -214,6 +214,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   let cleanupPlaySurface: (() => void) | null = null;
   let touchPad: TouchPadHandle | null = null;
   let playStage: HTMLElement | null = null;
+  let activeSurface: PlaySurface | null = null;
   let firstScreenShown = false;
   const firstScreen = (): void => {
     if (firstScreenShown) return;
@@ -237,7 +238,15 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const pointerInput = emeraldStyle || options.touchInput === true;
   // 터치 UI: 조작이 게임을 가리지 않게 자리를 떼는 배치 + 모든 화면(타이틀·메뉴·상점·전투)에 조작 패드(2026-10-24).
   const touchUi = pointerInput && isTouchDevice();
-  const surfaceOptions = { topAlignPortrait: pointerInput, touchUi } as const;
+  const surfaceOptionsFor = (
+    project: Project,
+    onLogicalResize?: (size: Readonly<{ width: number; height: number }>) => void,
+  ) => ({
+    topAlignPortrait: pointerInput,
+    touchUi,
+    portraitLayout: resolvePortraitLayout(project),
+    ...(onLogicalResize ? { onLogicalResize } : {}),
+  });
   // 터치 화면의 패드는 무대 밖 뷰포트에 붙는다. 데스크톱은 기존처럼 무대 안 env 오버라이드만.
   const mountTouchPad = (surface: { readonly viewport: HTMLElement; readonly stage: HTMLElement }): void => {
     touchPad?.cleanup();
@@ -287,6 +296,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     cleanupPlaySurface?.();
     cleanupPlaySurface = null;
     playStage = null;
+    activeSurface = null;
     // 고친 프로젝트 스냅숏은 런과 수명이 같다. LIFO 로 풀어야 호스트(테스트 플레이 창)가
     // 올려 둔 샌드박스 스냅숏이 되돌아온다.
     releaseBootProject?.();
@@ -367,8 +377,17 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const heldTitle = opening ? layout.querySelector<HTMLElement>("[data-testid='title-screen'].rm-title-transition-hold") : null;
     heldTitle?.remove();
     clearChildren(layout);
-    const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleFor(store.getCurrent()), store.getCurrent().system.displayFilter, surfaceOptions);
+    const currentProject = store.getCurrent();
+    const surface = createPlaySurface(
+      resolvePlayResolution(currentProject.system),
+      surfaceScaleFor(currentProject),
+      currentProject.system.displayFilter,
+      surfaceOptionsFor(currentProject, (next) => {
+        activeScene()?.resizeViewport(next.width, next.height);
+      }),
+    );
     playStage = surface.stage;
+    activeSurface = surface;
     layout.append(surface.viewport);
     mountHostControls(surface.viewport);
     // 엔진/에셋 기동 동안 검은 화면만 보이지 않도록 단계 표시.
@@ -566,6 +585,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
         keyboardOnly: true,
         initialEventTestId: eventTestId,
         trackGlobalGame: options.trackGlobalGame,
+        initialLogicalResolution: activeSurface?.logicalResolution(),
         onPlayLoadProgress: (ratio: number) => {
           if (run !== startRun) return;
           loading.setStage("assets");
@@ -645,6 +665,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       try {
         const scene = nextGame.scene.getScene("PlayScene");
         if (isPlayScene(scene)) {
+          const liveRes = activeSurface?.logicalResolution();
+          if (liveRes) scene.resizeViewport(liveRes.width, liveRes.height);
           bootDiag("refresh", true, { detail: "refreshRuntimeSurfaces" });
           scene.refreshRuntimeSurfaces();
         }
@@ -806,7 +828,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       onLoadAutosave: () => loadAutosave(fromTitle),
     });
     if (fromTitle) {
-      const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleFor(store.getCurrent()), store.getCurrent().system.displayFilter, surfaceOptions);
+      const currentProject = store.getCurrent();
+      const surface = createPlaySurface(resolvePlayResolution(currentProject.system), surfaceScaleFor(currentProject), currentProject.system.displayFilter, surfaceOptionsFor(currentProject));
       clearChildren(surface.stage);
       playStage = surface.stage;
       cleanupPlaySurface = surface.cleanup;
@@ -1027,7 +1050,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     titleMenuIndex = clampTitleMenuIndex(titleMenuIndex, options.length);
     // 타이틀을 보는 동안 맵/캐릭셋 이미지를 HTTP 캐시에 미리 올려
     // "새 게임" 직후 로딩 체감을 줄인다(Phaser 텍스처 등록은 여전히 씬 preload).
-    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), project.system.displayFilter, surfaceOptions);
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), project.system.displayFilter, surfaceOptionsFor(project));
     clearChildren(surface.stage);
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;
@@ -1104,7 +1127,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const sequence = intro?.enabled && intro.scenes.length ? intro : project.system.opening;
     if (!sequence?.enabled || (sequence !== intro && sequence.entry?.mode !== 'before-title') || !sequence.scenes.length) { renderTitle(); return; }
     stopGame(); stopAllAudio();
-    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), undefined, surfaceOptions);
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), undefined, surfaceOptionsFor(project));
     playStage = surface.stage; cleanupPlaySurface = surface.cleanup; layout.append(surface.viewport); mountTouchPad(surface); surface.sync();
     const controller = new AbortController(); openingController = controller;
     const playback = playCinematicSequence({ host: surface.stage, project, sequence, signal: controller.signal, dismissOnAnyInput: true });
@@ -1141,7 +1164,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     stopGame();
     clearChildren(layout);
     const project = store.getCurrent();
-    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), project.system.displayFilter, surfaceOptions);
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), project.system.displayFilter, surfaceOptionsFor(project));
     clearChildren(surface.stage);
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;

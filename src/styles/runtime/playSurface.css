@@ -598,3 +598,21 @@
 [data-hires-ui] .play-stage > .runtime-overlay[data-testid="cutscene-skip-hint"] {
   zoom: var(--hires-ui-zoom, 1);
 }
+
+/* ── 반응형 정수 도트 뷰포트(data-adaptive="true", 2026-11-26) ──
+   1. 데스크톱 전체화면 토글: 무대가 뷰포트를 꽉 채우므로 우상단 안전 위치에 고정한다.
+   2. QHD·울트라와이드처럼 가로 논리 폭이 480px 을 넘을 때도 대사창 줄 길이가 너무 길어지지 않게
+      가운데 480 게임 px 안쪽에 정돈한다.
+   3. 타이틀 일러스트는 cover 로 채워 세로·16:10 비율에서도 검은 띠 없이 꽉 차게 보이게 한다. */
+[data-play-input-owner="keyboard-only"] .play-viewport[data-adaptive="true"] > [data-play-input-owner="host-fullscreen"].play-fullscreen-toggle {
+  right: 8px;
+  top: 8px;
+}
+.player-layout .play-viewport[data-adaptive="true"]:not([data-touch-layout="portrait"]) > .play-stage > .dialogue-overlay:is(.position-bottom, .position-top):not(.balloon-active):not([data-vn-layout="bar"]) {
+  max-width: 480px;
+  margin-inline: auto;
+}
+.play-viewport[data-adaptive="true"] .rm-title-screen {
+  background-position: center;
+  background-size: cover;
+}

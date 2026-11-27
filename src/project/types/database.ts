@@ -2286,10 +2286,17 @@ export interface SystemRecords {
   /** 화면 표시 필터(project/displayFilter.ts) — 주사선·브라운관. 생략 = 없음. */
   displayFilter?: "scanlines" | "crt";
   /**
-   * 플레이 화면을 창에 키우는 방식(project/playSurfaceScaleMode.ts). integer = 정수 배율+여백, fit = 창에 꽉.
-   * 생략하면 해상도를 저장한 프로젝트는 integer, 옛 320×240 프로젝트는 fit.
+   * 플레이 화면을 창에 키우는 방식(project/playSurfaceScaleMode.ts).
+   * adaptive = 반응형 정수 도트(여백 없음, 추천 기본), integer = 고정 정수 배율+여백, fit = 창에 꽉.
+   * 생략하면 해상도를 저장한 프로젝트는 adaptive(몬스터 수집·양쪽 전신은 integer), 옛 320×240 프로젝트는 fit.
    */
-  playSurfaceScale?: "integer" | "fit";
+  playSurfaceScale?: "adaptive" | "integer" | "fit";
+  /**
+   * 모바일 세로 화면 배치 방식(adaptive 모드, project/playSurfaceScaleMode.ts).
+   * ds = 상단 55% 세로 카메라 + 하단 45% 전용 대사·전투·패드 덱(기본),
+   * fullbleed = 화면 100% 전체 월드 + 반투명 플로팅 UI/패드.
+   */
+  portraitLayout?: "ds" | "fullbleed";
   /**
    * 화면보다 작은 맵을 정수 캔버스 배율로 키워 화면을 채울지(project/smallMapFill.ts).
    * 생략 = SMALL_MAP_FILL_DEFAULT(끔, 2026-11-04 오너 결정) — 작은 맵은 원래 크기로 가운데.

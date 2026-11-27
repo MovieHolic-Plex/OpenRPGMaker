@@ -118,7 +118,16 @@ import {
 } from "@/project/playResolution";
 import { setDatabaseSubLocation } from "@/editor/panels/databaseWayfinding";
 import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
-import { PLAY_SURFACE_SCALE_MODES, normalizePlaySurfaceScale, resolvePlaySurfaceScaleMode, type PlaySurfaceScaleMode } from "@/project/playSurfaceScaleMode";
+import {
+  PLAY_SURFACE_SCALE_MODES,
+  PORTRAIT_LAYOUT_MODES,
+  normalizePlaySurfaceScale,
+  normalizePortraitLayout,
+  resolvePlaySurfaceScaleMode,
+  resolvePortraitLayout,
+  type PlaySurfaceScaleMode,
+  type PortraitLayoutMode,
+} from "@/project/playSurfaceScaleMode";
 import { SMALL_MAP_FILL_DEFAULT, resolveSmallMapFill } from "@/project/smallMapFill";
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, normalizeDisplayFilter } from "@/project/displayFilter";
 import type { PlayResolution, RewardPolicy, SystemRecords } from "@/project/types";
@@ -920,21 +929,41 @@ function companionDisplayField(project: Project): HTMLElement {
   });
 }
 
-/** 화면 맞춤 — 정수 배율(도트 굵기 고름, 남는 창은 여백) 또는 창에 꽉 맞춤. 생략 = 프로젝트 규칙(resolvePlaySurfaceScaleMode). */
+/** 화면 맞춤 — 반응형 정수 도트(여백 없음, 추천) · 고정 정수 배율 · 창에 꽉 맞춤 + 모바일 세로 배치(DS식 / 풀블리드). */
 function surfaceScaleField(project: Project): HTMLElement {
   const select = el("select", { dataset: { testid: "db-field-system-surface-scale" } }) as HTMLSelectElement;
   const labels: Record<PlaySurfaceScaleMode, string> = {
-    integer: "정수 배율 · 도트가 고르게, 남는 창은 검은 여백 (추천)",
+    adaptive: "반응형 정수 도트 · 창·기기 비율에 맞춰 여백 없이 채움 (추천)",
+    integer: "고정 정수 배율 · 도트가 고르게, 남는 창은 검은 여백",
     fit: "창에 꽉 맞춤 · 여백 없음, 도트 굵기가 조금 섞임",
   };
   for (const mode of PLAY_SURFACE_SCALE_MODES) select.append(el("option", { text: labels[mode], attrs: { value: mode } }));
-  select.value = resolvePlaySurfaceScaleMode(project);
+  const currentScale = resolvePlaySurfaceScaleMode(project);
+  select.value = currentScale;
+
+  const portraitSelect = el("select", { dataset: { testid: "db-field-system-portrait-layout" } }) as HTMLSelectElement;
+  const portraitLabels: Record<PortraitLayoutMode, string> = {
+    ds: "DS식 상하 분할 · 상단 55% 게임(2배) + 하단 대사·전투·패드 (추천)",
+    fullbleed: "전체화면 풀블리드 · 화면 100% 게임(2배) + 반투명 플로팅 UI",
+  };
+  for (const mode of PORTRAIT_LAYOUT_MODES) portraitSelect.append(el("option", { text: portraitLabels[mode], attrs: { value: mode } }));
+  portraitSelect.value = resolvePortraitLayout(project);
+  portraitSelect.disabled = currentScale !== "adaptive";
+
   select.addEventListener("change", () => {
+    const next = normalizePlaySurfaceScale(select.value);
+    portraitSelect.disabled = next !== "adaptive";
     updateSystem((draft) => {
-      const next = normalizePlaySurfaceScale(select.value);
       if (next) draft.system.playSurfaceScale = next;
       else delete draft.system.playSurfaceScale;
     }, "system:surface-scale");
+  });
+  portraitSelect.addEventListener("change", () => {
+    const next = normalizePortraitLayout(portraitSelect.value);
+    updateSystem((draft) => {
+      if (next && next !== "ds") draft.system.portraitLayout = next;
+      else delete draft.system.portraitLayout;
+    }, "system:portrait-layout");
   });
   const fill = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "db-field-system-small-map-fill" } }) as HTMLInputElement;
   fill.checked = resolveSmallMapFill(project);
@@ -945,8 +974,12 @@ function surfaceScaleField(project: Project): HTMLElement {
     }, "system:small-map-fill");
   });
   return rm2k3Fieldset("화면 맞춤", [
-    el("p", { class: "db-system-resolution-help", text: "게임 화면을 창 크기에 맞춰 키우는 방식입니다. 480 × 270 은 FHD 에서 4배, 4K 에서 8배로 꽉 차고 QHD 에서만 얇은 여백이 남습니다. 다음 플레이부터 적용됩니다." }),
+    el("p", {
+      class: "db-system-resolution-help",
+      text: "게임 화면을 창·기기 크기에 맞춰 키우는 방식입니다. 「반응형 정수 도트」는 PC/노트북에서 검은 여백 없이 정수 배율로 채우고, 모바일 세로에서는 2배 확대 세로 카메라(DS식 또는 풀블리드)로 보여 줍니다.",
+    }),
     field("맞춤", select),
+    field("모바일 세로 배치", portraitSelect),
     field("작은 방 화면 채우기", fill),
   ]);
 }
@@ -3943,7 +3976,13 @@ function refreshSystemDerived(form: HTMLElement, kind: "values" | "effects"): vo
   const view = form.querySelector<HTMLSelectElement>('[data-testid="db-field-system-view-preset"]');
   if (view) view.value = viewPresetIdFor(project.system);
   const scale = form.querySelector<HTMLSelectElement>('[data-testid="db-field-system-surface-scale"]');
-  if (scale) scale.value = resolvePlaySurfaceScaleMode(project);
+  const scaleMode = resolvePlaySurfaceScaleMode(project);
+  if (scale) scale.value = scaleMode;
+  const portraitLayout = form.querySelector<HTMLSelectElement>('[data-testid="db-field-system-portrait-layout"]');
+  if (portraitLayout) {
+    portraitLayout.value = resolvePortraitLayout(project);
+    portraitLayout.disabled = scaleMode !== "adaptive";
+  }
   const veil = form.querySelector<HTMLElement>('[data-testid="db-system-resolution-veil-note"]');
   if (veil) veil.hidden = project.system.dialogueStyle !== "dual-fullbody-veil";
   refreshTimeSummary(form);
