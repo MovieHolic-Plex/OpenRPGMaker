@@ -515,7 +515,9 @@ describe("audioDescriptionPersistence", () => {
       expect(packaged.audioDescriptions).toEqual(descriptions);
       expect(Object.hasOwn(packaged, "audioDescriptions")).toBe(descriptions !== undefined);
       expect(source.audioDescriptions).toEqual({ music: { replacement: "AFTER_BACKUP" } });
-    }, 15_000);
+    // 빈 프로젝트를 백업·편집기 패키지로 두 번 왕복한다. ci-full 46024239707 에서 11.7~11.9초, 46034884144(4코어 2워커)에서 15.4~16.2초로
+    // 15초 한도를 넘었다 — 판정은 그대로, 한도만 다른 무거운 왕복 시험처럼 60초로 둔다.
+    }, 60_000);
   });
 });
 
