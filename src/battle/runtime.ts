@@ -1535,11 +1535,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         if (result) return;
         // 선고로 방금 쓰러졌으면 차례만 소비한다.
         if (ready.battler.hp <= 0) {
+          releaseHeldActors();
           ready.battler.gauge = 0;
           applyTroopEvents(finishGaugeTurnSlot, markGaugeActionCycle(ready.battler));
           return;
         }
         if (!canBattlerAct(options.project, ready.battler)) {
+          releaseHeldActors();
           recordIncapacitated(ready.battler);
           ready.battler.gauge = 0;
           // 행동 불가 스킵도 행동 슬롯을 소비한다 — 적 스킵(performEnemyTurn)과 같은
@@ -1550,6 +1552,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         // 힘 모으기 중이면 메뉴 없이 모은 기술을 이어 간다(예고 → 발동).
         const charging = pendingCharges.get(ready.battler.id)?.command;
         if (charging) {
+          releaseHeldActors();
           activeActorId = ready.battler.recordId;
           applyActorCommandEffect(ready.battler, charging);
           applyTroopEvents(() => finishGaugeActorCommand(ready.battler), markGaugeActionCycle(ready.battler));
@@ -1558,6 +1561,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         // 버서크: 명령 메뉴 없이 무작위 적을 통상 공격한다.
         const forced = berserkAttackCommand(ready.battler);
         if (forced) {
+          releaseHeldActors();
           activeActorId = ready.battler.recordId;
           applyActorCommandEffect(ready.battler, forced);
           applyTroopEvents(() => finishGaugeActorCommand(ready.battler), markGaugeActionCycle(ready.battler));
