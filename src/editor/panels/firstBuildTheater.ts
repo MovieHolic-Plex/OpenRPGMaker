@@ -16,6 +16,7 @@ export const FIRST_BUILD_THEATER_TESTIDS = {
   step: "first-build-step",
   status: "first-build-status",
   toolsToggle: "first-build-tools-toggle",
+  stop: "first-build-stop",
   playNow: "first-build-play-now",
   dismiss: "first-build-dismiss",
 } as const;
@@ -89,12 +90,21 @@ function liveStatusText(board: TeamBoardState | null, stepIndex: number): string
 export function deriveFirstBuildViewModel(input: {
   readonly tracked: boolean;
   readonly generationPending: boolean;
+  readonly completed?: boolean;
   readonly board: TeamBoardState | null;
   readonly title: string;
 }): FirstBuildViewModel {
-  const { tracked, generationPending, board, title } = input;
+  const { tracked, generationPending, completed = false, board, title } = input;
   if (!tracked && !generationPending) {
     return { phase: "idle", stepIndex: 0, statusLine: "", title };
+  }
+  if (completed && !generationPending) {
+    return {
+      phase: "ready",
+      stepIndex: FIRST_BUILD_STEPS.length,
+      statusLine: "첫 구간 준비 완료",
+      title,
+    };
   }
   if (board && (board.phase === "실패" || board.phase === "중단")) {
     return {
@@ -147,12 +157,26 @@ export function mountFirstBuildTheater(
 
   let projectScope = JSON.stringify(store.getProjectIdentity());
   let tracked = store.getCurrent().gameDesignBrief?.generationPending === true;
+  let completedFirstBuild = false;
   let dismissed = false;
   let focusSuppressed = false;
-  let board: TeamBoardState | null = null;
+  let latestBoard: TeamBoardState | null = null;
+  /** 프로젝트 전환 이전이나 첫 빌드 시작 전에 이미 떠 있던 보드는 무시한다. */
+  let ignoredBoardRef: TeamBoardState | null = null;
+  let activeBoard: TeamBoardState | null = null;
   let lastFocused = false;
   let lastBuildingBar = false;
   let lastRenderKey = "";
+
+  const restoreFocusTestId = (): string | null => {
+    const active = document.activeElement;
+    if (!(active instanceof HTMLElement) || !root.contains(active)) return null;
+    return active.dataset.testid ?? null;
+  };
+  const focusIfMatch = (testid: string | null): void => {
+    if (!testid) return;
+    root.querySelector<HTMLElement>(`[data-testid="${testid}"]`)?.focus();
+  };
 
   const applyFocusChrome = (focused: boolean): void => {
     const leftSidebar = layout.querySelector<HTMLElement>(":scope > .ai-chat-sidebar");
@@ -184,25 +208,35 @@ export function mountFirstBuildTheater(
   const render = (): void => {
     const project = store.getCurrent();
     const scope = JSON.stringify(store.getProjectIdentity());
+    const pending = project.gameDesignBrief?.generationPending === true;
     if (scope !== projectScope) {
       projectScope = scope;
-      tracked = project.gameDesignBrief?.generationPending === true;
+      tracked = pending;
+      completedFirstBuild = false;
       dismissed = false;
       focusSuppressed = false;
+      ignoredBoardRef = latestBoard;
+      activeBoard = null;
       lastRenderKey = "";
-    } else if (project.gameDesignBrief?.generationPending === true) {
+    } else if (pending && !tracked) {
       tracked = true;
+      completedFirstBuild = false;
       dismissed = false;
+      ignoredBoardRef = latestBoard;
+      activeBoard = null;
     }
 
     const vm = dismissed
       ? { phase: "idle" as const, stepIndex: 0, statusLine: "", title: project.meta.title }
       : deriveFirstBuildViewModel({
           tracked,
-          generationPending: project.gameDesignBrief?.generationPending === true,
-          board,
+          generationPending: pending,
+          completed: completedFirstBuild,
+          board: activeBoard,
           title: project.meta.title || "새 게임",
         });
+
+    if (vm.phase === "ready") completedFirstBuild = true;
 
     const visible = vm.phase !== "idle";
     const focused = vm.phase === "building" && !focusSuppressed;
@@ -212,9 +246,10 @@ export function mountFirstBuildTheater(
     syncStatusBarHidden(vm.phase === "building");
     if (!visible) return;
 
-    const renderKey = `${vm.phase}|${vm.stepIndex}|${vm.statusLine}|${vm.title}|${focusSuppressed ? 1 : 0}`;
+    const renderKey = `${vm.phase}|${vm.stepIndex}|${vm.statusLine}|${vm.title}|${focusSuppressed ? 1 : 0}|${activeBoard ? 1 : 0}`;
     if (renderKey === lastRenderKey) return;
     lastRenderKey = renderKey;
+    const focusedTestId = restoreFocusTestId();
 
     const stepNodes = FIRST_BUILD_STEPS.map((step, idx) => {
       const done = vm.phase === "ready" || idx < vm.stepIndex;
@@ -255,6 +290,7 @@ export function mountFirstBuildTheater(
           ] }),
         ] }),
       );
+      focusIfMatch(focusedTestId);
       return;
     }
 
@@ -273,6 +309,7 @@ export function mountFirstBuildTheater(
           ] }),
         ] }),
       );
+      focusIfMatch(focusedTestId);
       return;
     }
 
@@ -290,22 +327,34 @@ export function mountFirstBuildTheater(
             text: focusSuppressed ? "집중 보기" : "편집 도구 보기",
             on: { click: () => { focusSuppressed = !focusSuppressed; render(); } },
           }),
-          ...(board ? [el("button", {
+          ...(activeBoard ? [el("button", {
             class: "fbt-btn is-stop",
             attrs: { type: "button" },
+            dataset: { testid: FIRST_BUILD_THEATER_TESTIDS.stop },
             text: "■ 멈춤",
             on: { click: () => { stopAllPresences(); } },
           })] : []),
         ] }),
       ] }),
     );
+    focusIfMatch(focusedTestId);
   };
 
+  let initialized = false;
   const unsubStore = store.subscribe(() => render());
   const unsubTeam = subscribeTeamActivity((next) => {
-    board = next;
+    latestBoard = next;
+    if (!initialized) {
+      // 마운트 시점에 이미 남아 있던 이전 프로젝트/이전 실행 보드는 첫 빌드 신호로 쓰지 않는다.
+      ignoredBoardRef = next;
+      return;
+    }
+    if (tracked && !completedFirstBuild && next !== ignoredBoardRef) {
+      activeBoard = next;
+    }
     render();
   });
+  initialized = true;
   render();
 
   return () => {

@@ -228,6 +228,8 @@
   left: 50%;
   bottom: 28px;
   width: min(860px, calc(100% - 48px));
+  max-height: calc(100% - 76px);
+  overflow-y: auto;
   z-index: 30;
   background: rgba(11, 13, 20, 0.88);
   backdrop-filter: blur(18px);

@@ -305,7 +305,7 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
     attrs: { type: "button" },
     dataset: { testid: PROMPT_HOME_TESTIDS.bladesToggle },
     text: "장르 고르기",
-    on: { click: () => { if (!busy) { manualMode = "blades"; closeSheet(); applyMode(); } } },
+    on: { click: () => { if (!busy) { manualMode = "blades"; closeSheet(false); applyMode(); } } },
   });
   const topBlankBtn = el("button", {
     class: "fr-top-action",
@@ -350,7 +350,7 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
   const slotsHost = el("div", { class: "fr-slots" });
   const sheet = el("section", {
     class: "fr-sheet",
-    attrs: { "aria-label": "키워드 조합", "aria-hidden": "true" },
+    attrs: { "aria-label": "키워드 조합", "aria-hidden": "true", inert: "" },
     dataset: { testid: PROMPT_HOME_TESTIDS.sheet },
     children: [
       el("div", { class: "fr-sheet-top", children: [sheetTitle, bladeBackBtn] }),
@@ -359,6 +359,8 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
       el("div", { class: "fr-sheet-foot", children: [rerollAllBtn, bladeSubmitBtn] }),
     ],
   });
+  sheet.inert = true;
+  let sheetOpener: HTMLElement | null = null;
 
   const bladeNodes: HTMLElement[] = FIRST_RUN_BLADES.map((blade, idx) => {
     const pickBtn = el("button", {
@@ -442,6 +444,8 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
   }
 
   function renderSlots(rollingIndices: readonly number[] = []): void {
+    const active = document.activeElement;
+    const focusedTestId = active instanceof HTMLElement && slotsHost.contains(active) ? (active.dataset.testid ?? null) : null;
     const blade = FIRST_RUN_BLADES[activeBladeIdx] ?? FIRST_RUN_BLADES[0]!;
     sheetTitle.textContent = blade.title;
     slotsHost.replaceChildren(...BLADE_SLOT_ROLES.map((role, idx) => {
@@ -506,27 +510,42 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
       });
       return box;
     }));
+    if (focusedTestId) {
+      slotsHost.querySelector<HTMLElement>(`[data-testid="${focusedTestId}"]`)?.focus();
+    }
   }
 
   function openSheet(idx: number): void {
+    sheetOpener = document.activeElement instanceof HTMLElement ? document.activeElement : bladeNodes[idx] ?? null;
     activeBladeIdx = idx;
     sheetOpen = true;
     slotLocks = [false, false, false];
     slotValues = rollKeywordSlots(slotValues, slotLocks);
     syncBladeActive();
     bladeTrack.classList.add("is-locked");
+    sheet.inert = false;
+    sheet.removeAttribute("inert");
     sheet.classList.add("is-open");
     sheet.setAttribute("aria-hidden", "false");
     setError("");
     renderSlots([0, 1, 2]);
+    slotsHost.querySelector<HTMLInputElement>(".fr-slot-input")?.focus();
   }
 
-  function closeSheet(): void {
+  function closeSheet(restoreFocus = true): void {
+    const wasOpen = sheetOpen;
     sheetOpen = false;
     bladeTrack.classList.remove("is-locked");
     sheet.classList.remove("is-open");
     sheet.setAttribute("aria-hidden", "true");
+    sheet.inert = true;
+    sheet.setAttribute("inert", "");
     setError("");
+    if (wasOpen && restoreFocus) {
+      const target = sheetOpener && root.contains(sheetOpener) ? sheetOpener : bladeNodes[activeBladeIdx];
+      target?.focus();
+    }
+    sheetOpener = null;
   }
 
   rerollAllBtn.addEventListener("click", () => {

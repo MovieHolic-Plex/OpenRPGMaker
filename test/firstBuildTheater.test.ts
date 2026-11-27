@@ -59,5 +59,14 @@ describe("편집기 첫 빌드 집중 뷰 상태 유도", () => {
       title: "새 게임",
       board: baseBoard({ phase: "적용됨" }),
     })).toMatchObject({ phase: "ready", stepIndex: 4 });
+
+    // 첫 빌드가 끝난 뒤의 일반 팀 실행은 첫 빌드 집중 뷰로 되돌리지 않는다.
+    expect(deriveFirstBuildViewModel({
+      tracked: true,
+      generationPending: false,
+      completed: true,
+      title: "새 게임",
+      board: baseBoard({ phase: "실행 중" }),
+    })).toMatchObject({ phase: "ready", stepIndex: 4 });
   });
 });
