@@ -192,7 +192,7 @@ describe("fullCharacterReferenceAudit", () => {
     });
 
     it.each([
-      ["king-slime-01","금관 쓴 파란 슬라임","green"],
+      ["dragon-blue","푸른 드래곤","red"],
     ])("corrects replaced monster pixels: %s", (suffix,name,obsoleteTag) => {
       const row=listMonsterResources(project()).find(row=>row.resourceId===`generated-enemy-${suffix}`)!;
       expect(row.name).toContain(name); expect(row.tags).not.toContain(obsoleteTag);

@@ -2,6 +2,7 @@
 // semantic term; unrelated hash fallbacks must never become persisted monster art.
 import { searchResources } from "@/assets/resourceSearch";
 import { getMonsterResource, listMonsterResources } from "@/assets/monsterResourceCatalog";
+import { isRetiredPixelEnemyResourceId } from "@/assets/pixelEnemySheets";
 import { charsetBattler } from "@/assets/charsetBattlers";
 import { activeGenreLockVisualCatalog } from "@/project/genreLockVisuals";
 import type { Project } from "@/project/types";
@@ -149,6 +150,9 @@ export function ensureMonsterGraphic(
     // 사람 적(기사·동료의 적 판): 아군과 같은 걷기 칩 전투 시트(charset-battler-*)는 전투가 적으로 그린다(battleFieldDom charsetEnemy).
     // 몬스터 목록에는 없으니 정확한 id 일 때만 그대로 받는다 — 이름 해석으로 사람 시트를 고르지는 않는다.
     if (!Object.hasOwn(project.assets.uploaded, value) && charsetBattler(value)) return;
+    // 폐기된 구형 3×3 번들 적 id 도 기존 저장본·기본 DB 부분 수정이나 명시적 호환 지정에서는 그대로 통과시킨다
+    // (런타임은 RETIRED_PIXEL_ENEMY_ALIASES 로 현행 5×4 번들을 그린다. 이름 자동 배정 후보에는 넣지 않는다).
+    if (!Object.hasOwn(project.assets.uploaded, value) && isRetiredPixelEnemyResourceId(value)) return;
     if (Object.hasOwn(project.assets.uploaded, value)) {
       throw missingGraphicError(project, value, label, "invalid-args");
     }

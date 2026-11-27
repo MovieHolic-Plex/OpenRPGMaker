@@ -84,11 +84,11 @@ function expectDeferred(event: ToolEvent, reason: string): void {
 }
 
 const readMap = call("get_map_region", { mapId: "m1", x: 0, y: 0, w: 12, h: 8 });
-const readSlime = call("get_monster_resource", { resourceId: "generated-enemy-slime-01" });
+const readSlime = call("get_monster_resource", { resourceId: "generated-enemy-slime-green" });
 
 function expectSlimeReadDelivered(request: ChatRequest, event: ToolEvent): void {
   expect(event.name).toBe("get_monster_resource");
-  expect(event.result).toMatchObject({ ok: true, data: { resource: { resourceId: "generated-enemy-slime-01", tags: expect.arrayContaining(["slime"]) } } });
+  expect(event.result).toMatchObject({ ok: true, data: { resource: { resourceId: "generated-enemy-slime-green", tags: expect.arrayContaining(["slime"]) } } });
   const response = request.messages.find((message) => message.role === "tool" && message.name === "get_monster_resource");
   expect(response).toBeDefined();
   if (typeof response?.content !== "string") throw new Error("Missing serialized monster read");
@@ -154,11 +154,11 @@ describe("batch prerequisites through AssistantSession", () => {
 
   // 2026-11-16 db-review B #11: 레코드 맨 위의 모르는 칸은 이제 빼고 저장한다(알림 붙임) — 이 시험들은 실패를 만들려고 하위 칸 오타(stats.attackPower)를 쓴다.
   it.each([false, true])("failed record creation defers only ID dependents, then creation/read/correction succeeds (read contract=%s)", async (references) => {
-    const enemy = call("upsert_enemy", { enemy: { id: "enemy_dependency", name: "Dependency", monsterResourceId: "generated-enemy-slime-01" }, appearanceTags: ["slime"] });
+    const enemy = call("upsert_enemy", { enemy: { id: "enemy_dependency", name: "Dependency", monsterResourceId: "generated-enemy-slime-green" }, appearanceTags: ["slime"] });
     const troop = call("upsert_troop", { troop: { id: "troop_dependency", name: "Dependency troop", enemyIds: ["enemy_dependency"] } });
     const { session, events, collect, requests } = setup([
       [readSlime],
-      [call("upsert_enemy", { enemy: { id: "enemy_dependency", name: "Dependency", monsterResourceId: "generated-enemy-slime-01", stats: { attackPower: 99 } }, appearanceTags: ["slime"] }), troop, title(1), call("get_project_summary"), enemy, troop],
+      [call("upsert_enemy", { enemy: { id: "enemy_dependency", name: "Dependency", monsterResourceId: "generated-enemy-slime-green", stats: { attackPower: 99 } }, appearanceTags: ["slime"] }), troop, title(1), call("get_project_summary"), enemy, troop],
       [call("get_database_records", { collection: "enemies", ids: ["enemy_dependency"] })],
       [troop],
     ], { references });
@@ -179,7 +179,7 @@ describe("batch prerequisites through AssistantSession", () => {
   });
 
   it.each([false, true])("defers new-record dependents transitively without charging their retries (read contract=%s)", async (references) => {
-    const enemy = call("upsert_enemy", { enemy: { id: "enemy_deferred", name: "Deferred slime", monsterResourceId: "generated-enemy-slime-01" }, appearanceTags: ["slime"] });
+    const enemy = call("upsert_enemy", { enemy: { id: "enemy_deferred", name: "Deferred slime", monsterResourceId: "generated-enemy-slime-green" }, appearanceTags: ["slime"] });
     const troop = call("upsert_troop", { troop: { id: "troop_deferred", name: "Deferred troop", enemyIds: ["enemy_deferred"] } });
     const encounter = call("set_encounter_table", { mapId: "m1", entries: [{ troopId: "troop_deferred", weight: 1 }] });
     const { session, events, collect, requests } = setup([
@@ -217,7 +217,7 @@ describe("batch prerequisites through AssistantSession", () => {
     const rounds: Call[][] = [];
     const { session, events, collect, project } = setup(rounds, { references: true });
     const existing = project.database.enemies[0];
-    const resourceId = existing.monsterResourceId === "generated-enemy-slime-01" ? "generated-enemy-goblin-scout" : "generated-enemy-slime-01";
+    const resourceId = existing.monsterResourceId === "generated-enemy-slime-green" ? "generated-enemy-goblin-scout" : "generated-enemy-slime-green";
     rounds.push(
       [call("get_database_records", { collection: "enemies", ids: [existing.id], include: "full" })],
       [call("upsert_enemy", { enemy: { id: existing.id, ...(outcome === "deferred" ? { monsterResourceId: resourceId, transparent: false } : { stats: { attackPower: 99 } }) } }),
@@ -269,8 +269,8 @@ describe("stable target retry budgets through AssistantSession", () => {
   });
 
   it("does not charge downstream same-batch refusals against their independent retry target", async () => {
-    const failedEnemy = call("upsert_enemy", { enemy: { id: "enemy_budget", name: "Budget", monsterResourceId: "generated-enemy-slime-01", stats: { attackPower: 99 } }, appearanceTags: ["slime"] });
-    const enemy = call("upsert_enemy", { enemy: { id: "enemy_budget", name: "Budget", monsterResourceId: "generated-enemy-slime-01" }, appearanceTags: ["slime"] });
+    const failedEnemy = call("upsert_enemy", { enemy: { id: "enemy_budget", name: "Budget", monsterResourceId: "generated-enemy-slime-green", stats: { attackPower: 99 } }, appearanceTags: ["slime"] });
+    const enemy = call("upsert_enemy", { enemy: { id: "enemy_budget", name: "Budget", monsterResourceId: "generated-enemy-slime-green" }, appearanceTags: ["slime"] });
     const troop = call("upsert_troop", { troop: { id: "troop_budget", name: "Budget troop", enemyIds: ["enemy_budget"] } });
     const { session, events, collect, requests } = setup([
       [readSlime],
