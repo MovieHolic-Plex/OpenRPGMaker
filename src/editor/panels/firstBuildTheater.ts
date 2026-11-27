@@ -201,8 +201,13 @@ export function mountFirstBuildTheater(
     }
     lastFocused = nextFocused;
     layout.classList.toggle("is-first-build-focus", nextFocused);
-    onLayoutChange();
-    applyFocusChrome(nextFocused);
+    if (nextFocused) {
+      onLayoutChange();
+      applyFocusChrome(true);
+    } else {
+      applyFocusChrome(false);
+      onLayoutChange();
+    }
   };
 
   const render = (): void => {
