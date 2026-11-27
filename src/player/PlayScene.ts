@@ -104,6 +104,7 @@ import { syncMapBackgroundLayers, updateMapBackground } from "@/player/playScene
 import { updateMode7 } from "@/player/playSceneMode7";
 import { updateScreenDistortion } from "@/player/playSceneScreenDistortion";
 import { updatePostFx } from "@/player/playScenePostFx";
+import { updateForegroundAndRimLight } from "@/player/playSceneForeground";
 import { updateFieldStaging } from "@/player/playSceneFieldStaging";
 import { installWeatherLayer, syncWeatherLayer, updateWeather } from "@/player/playSceneWeather";
 import { installCloudShadowLayer, syncCloudShadowLayer, updateCloudShadows } from "@/player/playSceneCloudShadows";
@@ -456,6 +457,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     updateLighting(this, deltaMs);
     updateMapBackground(this, deltaMs);
     updateScreenDistortion(this);
+    updateForegroundAndRimLight(this);
     updatePostFx(this);
     updateMode7(this, deltaMs);
     updateFieldStaging(this);

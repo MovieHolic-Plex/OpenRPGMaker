@@ -5,10 +5,13 @@ import { ATMOSPHERE_PRESETS, ATMOSPHERE_GENRES, ATMOSPHERE_SCENES, ATMOSPHERE_SO
 import {
   CINEMATIC_COMBO_IDS,
   CINEMATIC_COMBO_PRESETS,
+  FOREGROUND_PARALLAX_LABELS,
+  FOREGROUND_PARALLAX_MODES,
   POST_FX_PRESETS,
   POST_FX_PRESET_IDS,
   normalizePostFx,
   type CinematicComboId,
+  type ForegroundParallaxMode,
   type PostFxPresetId,
 } from "@/project/postFx";
 import { applyCinematicCombo, setMapAtmosphereEffects, setMapPostFx } from "@/editor/actions";
@@ -63,12 +66,15 @@ function renderPostFxSection(host: HTMLElement, map: GameMap, refresh: () => voi
   }));
 
   if (current.preset !== "none") {
-    const sliders: Array<readonly [key: "intensity" | "bloom" | "dof" | "godRays" | "vignette", label: string]> = [
+    const sliders: Array<readonly [key: "intensity" | "bloom" | "dof" | "godRays" | "vignette" | "grain" | "chromaticAberration" | "bayerDither", label: string]> = [
       ["intensity", "전체 강도"],
       ["bloom", "광원 블룸"],
       ["dof", "상하 심도 (DoF)"],
       ["godRays", "대각선 햇살"],
       ["vignette", "가장자리 비네트"],
+      ["grain", "필름 그레인"],
+      ["chromaticAberration", "RGB 색수차"],
+      ["bayerDither", "Bayer 4×4 디더링"],
     ];
     for (const [key, label] of sliders) {
       const val = Math.round((current[key] ?? 0) * 100);
@@ -83,19 +89,31 @@ function renderPostFxSection(host: HTMLElement, map: GameMap, refresh: () => voi
       line.append(el("span", { text: label }), input, out);
       section.append(line);
     }
-    const emCheck = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "map-postfx-preserve-emissive" } }) as HTMLInputElement;
-    emCheck.checked = current.preserveEmissive !== false;
-    emCheck.addEventListener("change", () => setMapPostFx(map.id, { preserveEmissive: emCheck.checked }));
-    const emRow = el("label", { class: "map-props-check-row" });
-    emRow.append(emCheck, el("span", { text: "불·촛불·네온 고유 발광색 보존 (Emissive)" }));
-    section.append(emRow);
 
-    const wCheck = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "map-postfx-adapt-weather" } }) as HTMLInputElement;
-    wCheck.checked = current.adaptWeather !== false;
-    wCheck.addEventListener("change", () => setMapPostFx(map.id, { adaptWeather: wCheck.checked }));
-    const wRow = el("label", { class: "map-props-check-row" });
-    wRow.append(wCheck, el("span", { text: "비·폭풍·밤에는 대각선 햇살 자동 끄기" }));
-    section.append(wRow);
+    const fgRow = el("label", { class: "map-props-check-row" });
+    const fgSel = el("select", { attrs: { "aria-label": "전경 패럴랙스 실루엣" }, dataset: { testid: "map-postfx-foreground" } }) as HTMLSelectElement;
+    for (const fm of FOREGROUND_PARALLAX_MODES) {
+      fgSel.append(el("option", { attrs: { value: fm }, text: FOREGROUND_PARALLAX_LABELS[fm] }));
+    }
+    fgSel.value = current.foreground ?? "none";
+    fgSel.addEventListener("change", () => setMapPostFx(map.id, { foreground: fgSel.value as ForegroundParallaxMode }));
+    fgRow.append(el("span", { text: "전경 실루엣 패럴랙스" }), fgSel);
+    section.append(fgRow);
+
+    const toggles: Array<readonly [key: "preserveEmissive" | "adaptWeather" | "horrorReactive" | "spriteRimLight", label: string, testid: string]> = [
+      ["preserveEmissive", "불·촛불·네온 고유 발광색 보존 (Emissive)", "map-postfx-preserve-emissive"],
+      ["adaptWeather", "비·폭풍·밤에는 대각선 햇살 자동 끄기", "map-postfx-adapt-weather"],
+      ["horrorReactive", "추격 패닉(심장박동·색수차) & 옷장 문틈 시야 자동 연동", "map-postfx-horror-reactive"],
+      ["spriteRimLight", "모닥불·조명 근처 주인공 광원 물듦 (림라이트)", "map-postfx-sprite-rim"],
+    ];
+    for (const [key, label, testid] of toggles) {
+      const ck = el("input", { attrs: { type: "checkbox" }, dataset: { testid } }) as HTMLInputElement;
+      ck.checked = current[key] !== false;
+      ck.addEventListener("change", () => setMapPostFx(map.id, { [key]: ck.checked }));
+      const row = el("label", { class: "map-props-check-row" });
+      row.append(ck, el("span", { text: label }));
+      section.append(row);
+    }
   }
   host.append(section);
 }
