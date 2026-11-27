@@ -608,6 +608,37 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     syncLightingLayer(this);
   }
 
+  /** 반응형(adaptive) 뷰포트 크기가 바뀔 때 캔버스·카메라·경계·시야 컬링을 실시간 동기화한다. */
+  resizeViewport(logicalWidth: number, logicalHeight: number): void {
+    if (!Number.isFinite(logicalWidth) || !Number.isFinite(logicalHeight) || logicalWidth <= 0 || logicalHeight <= 0) return;
+    const density = runtimePixelDensity(this);
+    const canvasW = Math.max(1, Math.round(logicalWidth * density));
+    const canvasH = Math.max(1, Math.round(logicalHeight * density));
+    if (this.scale && (this.scale.width !== canvasW || this.scale.height !== canvasH)) {
+      this.scale.resize(canvasW, canvasH);
+    }
+    const camera = this.cameras?.main;
+    if (camera) {
+      camera.setViewport(0, 0, canvasW, canvasH);
+    }
+    if (!this.map) return;
+    applyStoredCameraState(this);
+    if (camera && this.player && !this.session.camera) {
+      camera.centerOn(this.player.x, this.player.y);
+    }
+    syncMapSkirt(this);
+    syncMapBackgroundLayers(this);
+    syncWeatherLayer(this);
+    syncCloudShadowLayer(this);
+    installTimeTintLayer(this);
+    syncLightingLayer(this);
+    if (camera) {
+      const tileView = runtimeCameraTileView(camera);
+      syncRuntimeTileWindow(this, tileView);
+      syncTileCulling(this, tileView, mapTileSize(this.map));
+    }
+  }
+
   setInputEnabled(enabled: boolean): void {
     this.inputEnabled = enabled;
     this.input_.setEnabled(enabled);

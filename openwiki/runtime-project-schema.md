@@ -1730,11 +1730,12 @@ DB 시스템 화면: 「보기 범위」(`db-field-system-view-preset`)가 해�
   `troop_<prefix>_boss` 를 만들므로 같은 id 로 무리를 미리 만들면 덮인다 · `fill_region` 같은 도구는 맵 객체를 바꿔 끼우므로 도구 뒤에는 `M(id)` 로 다시 집는다 ·
   타이틀 입장 연출 중 첫 Enter 는 연출만 건너뛴다(QA 는 오프닝이 뜰 때까지 누른다). 질문+보기 셋 선택창은 #3128 로 480×270 에 들어간다 — 질문을 앞 대사로 빼던 우회는 지웠다.
 
-`system.playSurfaceScale?: "integer" | "fit"`(2026-10-20, `src/project/playSurfaceScaleMode.ts`): 플레이 화면을 창에 키우는 방식. 생략값 규칙 `resolvePlaySurfaceScaleMode` —
-몬스터 수집(에메랄드)은 항상 integer, 저작값이 있으면 그 값, 해상도를 저장한 프로젝트는 integer(정수 배율, 남는 창은 여백, 창이 1배보다 작을 때만 비정수 축소),
-해상도를 저장하지 않은 옛 320×240 프로젝트는 fit(2026-10-04 결정 유지). 내보낸 플레이어(`exportEntry.ts`)·편집기 테스트 플레이 창(`testPlayModal.ts`)·편집기 play 모드가
-모두 이 규칙을 쓴다(`renderPlayer` 의 `surfaceScaleMode` 는 덮어쓰기 전용). DB 시스템 「화면 맞춤」(`db-field-system-surface-scale`)에서 바꾼다.
-알 수 없는 값은 `databaseRecordModel` 정규화가 버린다. 검사: `test/playSurfaceScaleModeResolve.test.ts`, 캡처 `scripts/qa/runtime/res480-ui.scenario.mjs`(픽스처 `res480-fixture.mts`).
+`system.playSurfaceScale?: "adaptive" | "integer" | "fit"` 및 `system.portraitLayout?: "ds" | "fullbleed"`(2026-10-20 신설, 2026-11-26 반응형 개편, `src/project/playSurfaceScaleMode.ts`): 플레이 화면을 창·기기에 맞추는 방식과 모바일 세로 배치. 생략값 규칙 `resolvePlaySurfaceScaleMode` —
+몬스터 수집(에메랄드)과 양쪽 전신(`dual-fullbody-veil`)은 integer, 저작값이 있으면 그 값, 해상도를 저장한 프로젝트는 **adaptive**(반응형 정수 도트 카메라: 창·기기 비율에 맞춰 최적 정수 배율 `z` 를 고르고 Phaser 캔버스 논리 크기를 동적으로 채워 레터박스를 없앰 — `calculateAdaptiveViewport` · `PlayScene.resizeViewport`),
+해상도를 저장하지 않은 옛 320×240 프로젝트는 fit(2026-10-04 결정 유지).
+모바일 세로(`system.portraitLayout`, `resolvePortraitLayout`, adaptive 모드): 생략 = **ds**(상단 ~55% 정수 2배 세로 카메라 + 하단 ~45% 전용 1배 대사·전투·터치 패드 덱), 선택 = **fullbleed**(화면 100% 정수 2배 세로 월드 + 하단 반투명 플로팅 패드·대사창). 세로 전투에서는 가상 패드를 숨기고 하단 덱을 터치 가능한 파티·커맨드 영역으로 쓴다.
+내보낸 플레이어(`exportEntry.ts`)·편집기 테스트 플레이 창(`testPlayModal.ts`)·편집기 play 모드가 모두 이 규칙을 쓴다(`renderPlayer` 의 `surfaceScaleMode` 는 덮어쓰기 전용). DB 시스템 「화면 맞춤」(`db-field-system-surface-scale`, `db-field-system-portrait-layout`)에서 바꾼다.
+알 수 없는 값은 `databaseRecordModel` 정규화가 버린다. 검사: `test/adaptiveViewport.test.ts`, `test/playerRunControls.test.ts`, 캡처 `scripts/qa/runtime/res480-ui.scenario.mjs`(픽스처 `res480-fixture.mts`).
 필드가 없는 옛 인계는 장르가 있으면 AI, 없으면 빈 프로젝트로 해석한다. 알 수 없는 값은 거절한다.
 예제 경로는 장르별 플레이 가능한 첫 구간을 저장하고 AI 인터뷰/자동 생성을 시작하지 않는다.
 AI 경로는 기존 연결 관문 → 기획 인터뷰 → 확정 기획 저장 → 팀 첫 생성 계약을 유지한다.

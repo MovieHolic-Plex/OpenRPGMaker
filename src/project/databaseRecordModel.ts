@@ -26,7 +26,7 @@ import { DEFAULT_BATTLE_SKIN_ID, resolveSkinId, retiredSkinLookWindow } from "@/
 import { isPokemonMoveMotion } from "@/battle/pokemonMoveMotion";
 import { DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { normalizeDisplayFilter } from "@/project/displayFilter";
-import { normalizePlaySurfaceScale } from "@/project/playSurfaceScaleMode";
+import { normalizePlaySurfaceScale, normalizePortraitLayout } from "@/project/playSurfaceScaleMode";
 import { normalizeSmallMapFill } from "@/project/smallMapFill";
 import { normalizeTouchControls } from "@/project/touchControls";
 import { normalizeBattleLook } from "@/project/battleLook";
@@ -282,6 +282,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   const cameraZoom = normalizeCameraZoom(system.cameraZoom, { keepDefault: keepDefaults });
   const displayFilter = normalizeDisplayFilter(system.displayFilter);
   const playSurfaceScale = normalizePlaySurfaceScale(system.playSurfaceScale);
+  const portraitLayout = normalizePortraitLayout(system.portraitLayout);
   const smallMapFill = normalizeSmallMapFill(system.smallMapFill);
   const battleLook = normalizeBattleLook(battleLookWithRetiredSkinWindow(system));
   const fullPortrait = normalizeDialogueFullPortraitSettings(system.dialogueFullPortrait);
@@ -355,6 +356,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (isBattleHitFeel(system.battleHitFeel) && system.battleHitFeel !== DEFAULT_BATTLE_HIT_FEEL) records.battleHitFeel = system.battleHitFeel;
   if (displayFilter) records.displayFilter = displayFilter;
   if (playSurfaceScale) records.playSurfaceScale = playSurfaceScale;
+  if (portraitLayout) records.portraitLayout = portraitLayout;
   if (smallMapFill !== undefined) records.smallMapFill = smallMapFill;
   // 전투 화면 꾸미기도 같은 계약 — 프리셋과 같은 칸·미등록 값은 저장하지 않는다(project/battleLook.ts).
   if (battleLook) records.battleLook = battleLook;
