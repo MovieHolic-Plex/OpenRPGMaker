@@ -6,7 +6,7 @@ import { afterBootSettled } from "@/util/bootSettled";
 import { deserializeParsed, projectWireView } from "../io/serialize";
 import { preloadAllBundledTilesetDefinitions, preloadBundledTilesetDefinitions } from "../defaults/defaultAssets";
 import { isPendingLazyTileset } from "../bundledTilesetLazy";
-import { withLazyBundledTilesets } from "../bundledTilesetDiff";
+import { bundledTilesetDiffIds, withLazyBundledTilesets } from "../bundledTilesetDiff";
 
 /** 문서 트리(검사 전)의 맵이 쓰는 타일셋 id. */
 function mapTilesetIds(document: Record<string, unknown>): Set<string> {
@@ -406,6 +406,8 @@ export function createElectronRepository(): ElectronRepository {
       if ([...tilesetShas, ...assetShas].some((sha) => !blobs.has(sha))) continue;
       restoreAssetBlobs(folded.document, blobs);
       const tree = unfoldedDocumentTree(folded, blobs, (id) => reusable.get(id));
+      // 번들 차이 보기로 실린 타일셋(되돌리기가 싸다)은 다음 재로드 재사용 요약을 만들지 않는다 — 버들항 하나의 요약이 첫 화면 뒤 약 1.2s 멈춤이었다(2026-11-27).
+      const diffTilesets = new Set(bundledTilesetDiffIds(tree));
       const project = collectLoadRepairs(() => withLazyBundledTilesets(eagerTilesets, () => deserializeParsed(tree)));
       // 검증·정규화를 지난 뒤의 객체와 **그 순간의** 요약을 기억한다(deserializeParsed 는 파싱한 트리를 그대로 채택한다).
       // 요약은 여기서 세야 한다 — 늦게 세면 그사이 제자리에서 고친 내용을 호스트 본문으로 착각한다. 비용이 더해지지는 않는다:
@@ -427,6 +429,7 @@ export function createElectronRepository(): ElectronRepository {
         if (tileset === undefined) continue;
         // 지연 번들 타일셋은 요약하지 않는다(요약이 정의를 읽어 되돌린다). 다음 재로드에서 재사용하지 않을 뿐이다.
         if (isPendingLazyTileset(tileset)) continue;
+        if (diffTilesets.has(id)) continue;
         const previous = parsedTilesets.get(id);
         if (previous && previous.tileset === tileset) { next.set(id, previous); continue; }
         const entry: ParsedTileset = { sha, tileset, digest: deferDigests ? undefined : jsonContentDigest(tileset) };

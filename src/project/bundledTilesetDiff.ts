@@ -605,7 +605,13 @@ export function restoreBundledTilesetDiffs(data: { tilesets?: unknown }): Bundle
     if (!tileset) {
       const base = restoreBase(id, value);
       if (!base) throw new BundledTilesetDiffError(`번들 타일셋 ${id} 의 정의가 이 앱에 없습니다 — 이 프로젝트를 저장한 앱(같은 판 이상)으로 열어 주세요.`);
-      tileset = restoreOne(id, value, base, counters);
+      const own = { rebased: 0, missing: 0 };
+      tileset = restoreOne(id, value, base, own);
+      counters.rebased += own.rebased;
+      counters.missing += own.missing;
+      // 같은 판의 번들에 얹었으면 되돌린 값의 차이가 곧 받은 보기다(바이트 동일 계약) — 첫 저장 보기·한가한 예열이 정의와 다시
+      // 비교하지 않게 기억한다(버들항 약 0.5s 멈춤, 2026-11-27 다시 열기 프로파일). 정규화가 제자리에서 고치면 forgetBundledTilesetDiffViews 가 버린다.
+      if (!frozen && own.rebased === 0 && own.missing === 0) views.set(tileset, { fingerprint: fingerprintOf(tileset), view: value });
       if (frozen) {
         // 번들 정의 생성자가 정의 JSON 기억과 원소를 공유할 수 있다 — 그 기억까지 얼리지 않게 떼어 낸 사본을 얼린다.
         tileset = deepFreeze(structuredClone(tileset));
