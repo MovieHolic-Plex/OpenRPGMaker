@@ -58,6 +58,10 @@ export function renderEventValidationBell(): HTMLDetailsElement {
       tally,
     ],
   });
+  const statusChip = el("span", {
+    class: "event-draft-validation-status",
+    dataset: { testid: "event-draft-validation-status" },
+  });
   const issues = el("div", { class: "event-draft-validation-issues" });
   const details = el("details", {
     class: "event-draft-validation",
@@ -70,7 +74,8 @@ export function renderEventValidationBell(): HTMLDetailsElement {
           el("div", {
             class: "event-draft-validation-head",
             children: [
-              el("span", { class: "event-draft-validation-title", text: "검토할 항목" }),
+              el("span", { class: "event-draft-validation-title", text: "고쳐야 할 점" }),
+              statusChip,
             ],
           }),
           issues,
@@ -91,6 +96,8 @@ export function refreshEventValidationBell(root: ParentNode, validation: EventDr
   const summary = details.querySelector<HTMLElement>('[data-testid="event-draft-validation-summary"]');
   const count = details.querySelector<HTMLElement>('[data-testid="event-draft-validation-count"]');
   const tally = details.querySelector<HTMLElement>('[data-testid="event-draft-validation-tally"]');
+  const statusChip = details.querySelector<HTMLElement>('[data-testid="event-draft-validation-status"]');
+  const titleEl = details.querySelector<HTMLElement>(".event-draft-validation-title");
   const issues = details.querySelector<HTMLElement>(".event-draft-validation-issues");
   if (!summary || !count || !tally || !issues) return;
 
@@ -107,6 +114,17 @@ export function refreshEventValidationBell(root: ParentNode, validation: EventDr
   count.textContent = total > 99 ? "99+" : String(total);
   const tallyText = tallyLabel(validation);
   tally.textContent = tallyText;
+  if (titleEl) {
+    titleEl.textContent = validation.errorCount > 0 ? "고쳐야 할 점" : "확인할 항목";
+  }
+  if (statusChip) {
+    statusChip.textContent = validation.errorCount > 0
+      ? `저장 전 오류 ${validation.errorCount}건`
+      : validation.warningCount > 0
+        ? "저장은 가능"
+        : "참고 안내";
+    statusChip.dataset.severity = bellSeverity(validation);
+  }
   const label = `검토 필요 ${total}건 · ${tallyText}`;
   summary.setAttribute("aria-label", label);
   summary.title = `${label}\n종을 눌러 목록을 열고, 항목을 누르면 그 자리로 이동합니다.`;
@@ -118,17 +136,25 @@ export function refreshEventValidationBell(root: ParentNode, validation: EventDr
 
 export function navigateToEventDraftIssue(issue: EventDraftIssue): void {
   const modal = document.querySelector<HTMLElement>('[data-testid="event-editor-modal"]');
+  const wantsCommandEditor = Boolean(
+    issue.commandPath && issue.field && issue.field.testId !== "event-inspector-body",
+  );
   if (issue.commandPath) {
     const mapId = modal?.dataset.mapId;
     const eventId = modal?.dataset.eventId;
-    if (!mapId || !eventId || !navigateToEventCommand(mapId, eventId, issue.pageId, issue.commandPath)) return;
+    if (!mapId || !eventId || !navigateToEventCommand(mapId, eventId, issue.pageId, issue.commandPath, { openEditor: wantsCommandEditor })) return;
   } else if (issue.pageId) {
     editorState.set({ selectedEventPageId: issue.pageId });
   }
   if (!issue.field) return;
   if (issue.field.openTestId) modal?.querySelector<HTMLElement>(`[data-testid="${issue.field.openTestId}"]`)?.click();
-  const root = issue.field.openTestId ? document.body : (issue.commandPath
-    ? modal?.querySelector<HTMLElement>('[data-testid="event-editor-inspector"]') : modal) ?? document.body;
+  const commandDialog = issue.commandPath
+    ? document.querySelector<HTMLElement>('[data-testid="event-command-edit-dialog"]')
+    : null;
+  const root = issue.field.openTestId
+    ? document.body
+    : (commandDialog ?? (issue.commandPath
+      ? modal?.querySelector<HTMLElement>('[data-testid="event-editor-inspector"]') : modal)) ?? document.body;
   const scope = issue.field.conditionPath
     ? Array.from(root.querySelectorAll<HTMLElement>("[data-condition-path]"))
       .find(form => form.dataset.conditionPath === JSON.stringify(issue.field?.conditionPath))
@@ -136,13 +162,16 @@ export function navigateToEventDraftIssue(issue: EventDraftIssue): void {
       ? root.querySelector<HTMLElement>(`[data-testid="${issue.field.scopeTestId}"]`)
       : root;
   if (issue.field.selectTestId) scope?.querySelector<HTMLElement>(`[data-testid="${issue.field.selectTestId}"]`)?.click();
-  const findField = () => scope?.querySelector<HTMLElement>(`[data-testid="${issue.field?.testId}"]`);
+  const findField = (testId = issue.field?.testId) => (testId ? scope?.querySelector<HTMLElement>(`[data-testid="${testId}"]`) : null);
   const initialField = findField();
   if (issue.field.selectBeforeFocus) initialField?.click();
-  const field = findField();
+  let field = findField();
+  if (!field && issue.field.testId === "event-page-safety-warning") {
+    field = findField("event-classic-trigger");
+  }
   if (!field) return;
   // Both custom selects and record pickers keep a hidden native select for form state.
-  const target = scope?.querySelector<HTMLElement>(`[data-custom-select-for="${issue.field.testId}"]`)
+  let target = scope?.querySelector<HTMLElement>(`[data-custom-select-for="${issue.field.testId}"]`)
     ?? (field.tagName === "SELECT" && field.classList.contains("event-record-modal-select")
       ? field.parentElement?.querySelector<HTMLElement>(".event-record-picker-trigger") : null)
     ?? field.querySelector<HTMLElement>(".event-record-picker-trigger, input[type=search], button")
@@ -151,9 +180,19 @@ export function navigateToEventDraftIssue(issue: EventDraftIssue): void {
   for (let ancestor: HTMLElement | null = target; ancestor; ancestor = ancestor.parentElement) {
     if (ancestor.tagName === "DETAILS") (ancestor as HTMLDetailsElement).open = true;
   }
-  for (let ancestor: HTMLElement | null = target; ancestor; ancestor = ancestor.parentElement) {
-    const style = typeof getComputedStyle === "function" ? getComputedStyle(ancestor) : undefined;
-    if (ancestor.hidden || style?.display === "none" || style?.visibility === "hidden") return;
+  const isHidden = (node: HTMLElement): boolean => {
+    for (let ancestor: HTMLElement | null = node; ancestor; ancestor = ancestor.parentElement) {
+      const style = typeof getComputedStyle === "function" ? getComputedStyle(ancestor) : undefined;
+      if (ancestor.hidden || style?.display === "none" || style?.visibility === "hidden") return true;
+    }
+    return false;
+  };
+  if (isHidden(target)) {
+    const fallback = issue.field.testId === "event-page-safety-warning"
+      ? modal?.querySelector<HTMLElement>('[data-testid="event-classic-trigger"] button, [data-testid="event-classic-trigger"] select, [data-testid="event-classic-trigger"]')
+      : null;
+    if (fallback && !isHidden(fallback)) target = fallback;
+    else return;
   }
   if (target.getAttribute("tabindex") === null && !/^(BUTTON|INPUT|SELECT|TEXTAREA)$/u.test(target.tagName)) {
     target.setAttribute("tabindex", "-1");
@@ -164,6 +203,10 @@ export function navigateToEventDraftIssue(issue: EventDraftIssue): void {
 }
 
 function renderIssueRow(issue: EventDraftIssue, index: number, details: HTMLDetailsElement): HTMLElement {
+  const opensCommandEditor = Boolean(
+    issue.commandPath && issue.field && issue.field.testId !== "event-inspector-body",
+  );
+  const actionLabel = opensCommandEditor ? "고치기 →" : "이동 →";
   return el("button", {
     class: "event-draft-validation-issue",
     attrs: { type: "button" },
@@ -177,14 +220,13 @@ function renderIssueRow(issue: EventDraftIssue, index: number, details: HTMLDeta
     },
     children: [
       el("span", { class: "event-draft-validation-severity", text: SEVERITY_LABEL[issue.severity] }),
-      // 사람이 읽는 줄만 보인다: 무슨 일인지(원인) → 어떻게 하면 되는지(힌트). 코드·페이지 ID·
-      // 명령 경로·testid 는 진단 복사(validationActions)와 dataset 에 남긴다 — 화면에 `page.invisible-collision ·
-      // page_e869… · []` 같은 내부 토큰을 늘어놓는 것은 위키 «조건 문구에 내부 토큰을 넣지 마라» 위반이었다.
+      // 사람용 팝오버는 2줄만(무슨 문제인지 → 어떻게 고치는지). 기계 스키마(expected/code/path)는
+      // 개발자·AI 진단 복사(eventValidationDiagnostics)와 title·dataset 에만 남긴다.
       el("span", { class: "event-draft-validation-message", attrs: { title: `${issue.code} · ${issue.pageId}${issue.commandPath?.length ? ` · ${JSON.stringify(issue.commandPath)}` : ""}` }, children: [
         el("span", { class: "event-draft-validation-cause", text: issue.cause ?? issue.message }),
-        ...(issue.expected && issue.expected !== issue.hint ? [el("span", { class: "event-draft-validation-expected", text: issue.expected })] : []),
         ...(issue.hint ? [el("span", { class: "event-draft-validation-hint", text: issue.hint })] : []),
       ] }),
+      el("span", { class: "event-draft-validation-go", text: actionLabel, attrs: { "aria-hidden": "true" } }),
     ],
     on: {
       click: () => {

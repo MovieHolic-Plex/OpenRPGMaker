@@ -4,10 +4,12 @@ import { eventDraftRuleGuidance } from "./eventDraftIssueDetails";
 
 /** A projection, not a string redactor: no authored values, IDs, logs or project payload. */
 export function eventValidationDiagnosticReport(validation: EventDraftValidation, event: GameEvent) {
+  const actionable = validation.issues.filter(issue => issue.severity === "error" || issue.severity === "warning");
+  const selected = actionable.length > 0 ? actionable : validation.issues;
   return {
     schemaVersion: 1 as const,
     status: "UNSENT" as const,
-    issues: validation.issues.filter(issue => issue.severity === "error").map(issue => {
+    issues: selected.map(issue => {
       const rule = eventDraftRuleGuidance(issue.code);
       return {
         code: rule.code,
@@ -30,5 +32,5 @@ export type EventValidationDiagnosticReport = ReturnType<typeof eventValidationD
 export function formatEventValidationDiagnostics(report: EventValidationDiagnosticReport, format: "markdown" | "json"): string {
   const json = JSON.stringify(report, null, 2);
   if (format === "json") return json;
-  return `# 이벤트 검증 진단 (UNSENT)\n\n현재 이벤트의 오류만 포함합니다. 이름·입력값·프로젝트 데이터는 제외했습니다.\n\n\`\`\`json\n${json}\n\`\`\``;
+  return `# 이벤트 검증 진단 (UNSENT)\n\n현재 이벤트의 오류·경고를 포함합니다. 이름·입력값·프로젝트 데이터는 제외했습니다.\n\n\`\`\`json\n${json}\n\`\`\``;
 }

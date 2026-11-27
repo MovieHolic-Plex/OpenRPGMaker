@@ -31,6 +31,7 @@ import { textBodyOf } from "@/project/io/rewriteLegacyDialogue";
 import { josa, withJosa } from "@/util/josa";
 import { lookupLocation } from "@/editor/mapLocationLabels";
 import { findLocationById } from "@/project/mapNamedLocations";
+import { findShadowedPages, findUnwrittenSelfSwitchGates } from "@/project/eventPageShadow";
 import type {
   Command,
   Condition,
@@ -162,7 +163,7 @@ export function validateEventDraftBody(
       code: "page.missing",
       message: "이벤트에는 최소 한 개의 페이지가 필요합니다.",
       pageId: "",
-      field: { testId: "event-page-tab-add" },
+      field: { testId: "evt-page-add" },
     });
     return validationFromIssues(issues);
   }
@@ -181,12 +182,41 @@ export function validateEventDraftBody(
   }
   if (event.condition) validateCondition(event.condition, firstPageId, refs, issues, undefined, mapId);
 
-  for (const page of pages) {
-    validatePage(working, mapId, event, page, refs, issues);
+  for (const [pageIndex, page] of pages.entries()) {
+    validatePage(working, mapId, event, page, pageIndex, pages, refs, issues);
   }
+  validatePageReachability(event, pages, issues);
   checkCallDepth(working, pages, issues);
   validateSchedule(working, event, refs, firstPageId, issues);
   return validationFromIssues(issues);
+}
+
+function validatePageReachability(
+  event: GameEvent,
+  pages: readonly EventPage[],
+  issues: EventDraftIssue[],
+): void {
+  for (const shadow of findShadowedPages(pages)) {
+    const reason = shadow.byUnconditional
+      ? `뒤의 페이지 ${shadow.byIndex + 1}에 조건이 없어 항상 먼저 선택됩니다`
+      : `뒤의 페이지 ${shadow.byIndex + 1} 조건이 이 페이지 조건에 포함됩니다`;
+    issues.push({
+      severity: "warning",
+      code: "page.shadowed",
+      message: `페이지 ${shadow.index + 1}은 실행되지 않습니다 — ${reason}.`,
+      pageId: shadow.pageId,
+      field: { testId: `evt-page-segment-${shadow.index + 1}` },
+    });
+  }
+  for (const gate of findUnwrittenSelfSwitchGates({ pages, commands: event.commands })) {
+    issues.push({
+      severity: "warning",
+      code: "page.self-switch-unwritten",
+      message: `페이지 ${gate.index + 1}의 셀프 스위치 ${gate.keys.join(", ")}를 켜는 명령이 이 이벤트에 없습니다.`,
+      pageId: gate.pageId,
+      field: { testId: `evt-page-segment-${gate.index + 1}` },
+    });
+  }
 }
 
 export function hasRecursivePageCondition(conditions: readonly Condition[]): boolean {
@@ -272,11 +302,49 @@ function findInertCallMapEventCallers(project: Project, mapId: MapId, target: Ga
   return callers;
 }
 
+function pageSelfSwitchesConditionedOn(conditions: readonly Condition[]): Set<string> {
+  const keys = new Set<string>();
+  const collect = (cond: Condition): void => {
+    if (cond.kind === "selfSwitch" && cond.value) { keys.add(cond.key); return; }
+    if (cond.kind === "all" || cond.kind === "any") { cond.conditions.forEach(collect); return; }
+    if (cond.kind === "not") collect(cond.condition);
+  };
+  conditions.forEach(collect);
+  return keys;
+}
+
+function autoPageExitsOrPromotes(
+  page: EventPage,
+  pageIndex: number,
+  pages: readonly EventPage[],
+): boolean {
+  const visits = walkCommands(page.commands ?? []);
+  if (visits.some(({ command }) => command.kind === "transfer" || command.kind === "gameOver" || command.kind === "returnToTitle")) {
+    return true;
+  }
+  const writtenSelfSwitches = new Set(
+    visits
+      .filter((v): v is { readonly command: Extract<Command, { kind: "setSelfSwitch" }>; readonly path: readonly number[] } =>
+        v.command.kind === "setSelfSwitch" && v.command.value === true)
+      .map((v) => v.command.key),
+  );
+  if (writtenSelfSwitches.size === 0) return false;
+  for (let i = pageIndex + 1; i < pages.length; i += 1) {
+    const laterKeys = pageSelfSwitchesConditionedOn(pages[i]?.conditions ?? []);
+    for (const key of writtenSelfSwitches) {
+      if (laterKeys.has(key)) return true;
+    }
+  }
+  return false;
+}
+
 function validatePage(
   project: Project,
   mapId: MapId,
   event: GameEvent,
   page: EventPage,
+  pageIndex: number,
+  pages: readonly EventPage[],
   refs: ReferenceSets,
   issues: EventDraftIssue[],
 ): void {
@@ -313,7 +381,7 @@ function validatePage(
       issues.push({
         severity: "error",
         code: "page.trigger.location-missing",
-        message: `로케이션 '${trigger.locationId}' 이 삭제됐습니다. 다른 구역을 고르거나 시작 방식을 바꿔 주세요.`,
+        message: `로케이션 '${trigger.locationId}'${josa(trigger.locationId, "이/가")} 삭제됐습니다. 다른 구역을 고르거나 시작 방식을 바꿔 주세요.`,
         pageId: page.id,
         field: { testId: "event-page-trigger-location" },
       });
@@ -321,7 +389,8 @@ function validatePage(
   }
 
   const riskyTrigger = trigger.kind === "auto" || trigger.kind === "parallel";
-  if (riskyTrigger && !hasRecursivePageCondition(conditions)) {
+  const oneShotAuto = trigger.kind === "auto" && autoPageExitsOrPromotes(page, pageIndex, pages);
+  if (riskyTrigger && !hasRecursivePageCondition(conditions) && !oneShotAuto) {
     issues.push({
       severity: "warning",
       code: "page.auto-parallel-ungated",
@@ -348,8 +417,9 @@ function validatePage(
 
   const commands = page.commands ?? [];
   if (commands.length === 0) {
-    // 이 페이지를 부르는 callMapEvent 가 있는지 찾는다. 있다면 info가 아니라 경고로 결정한다.
-    const callers = findInertCallMapEventCallers(project, mapId, event);
+    // 이 이벤트를 부르는 callMapEvent 가 있고 다른 페이지에도 실행 명령이 전혀 없을 때 경고한다.
+    const anyPageHasCommands = pages.some((candidate) => (candidate.commands ?? []).length > 0);
+    const callers = anyPageHasCommands ? [] : findInertCallMapEventCallers(project, mapId, event);
     const severity = callers.length > 0 ? "warning" : "info";
     issues.push({
       severity,
@@ -358,7 +428,7 @@ function validatePage(
         ? "실행 명령이 없는 페이지입니다. 이 이벤트를 맵 위 이벤트 부르기로 부르는 " + callers.length + "개 이벤트가 있습니다 — 게임에서는 아무 것도 없는 것처럼 지나갑니다."
         : "실행 명령이 없습니다. 상태 표시용 빈 페이지라면 그대로 둘 수 있습니다.",
       pageId: page.id,
-      ...(callers.length > 0 ? { hint: "문 본체에 열기(소리·전이)명령을 다시 입력하거나, 부르는 쪽의 명령을 제거하세요." } : {}),
+      ...(callers.length > 0 ? { hint: "이 이벤트에 실행 명령을 추가하거나, 부르는 쪽의 명령을 제거하세요." } : {}),
     });
     return;
   }
@@ -903,13 +973,32 @@ function validateBreakLoopPlacement(commands: readonly Command[], pageId: string
       issues.push({
         severity: "error",
         code: "loop.break-outside-loop",
-        message: "반복 탈출은 반복 안에서만 쓸 수 있습니다. 바깥에서 쓰면 이벤트가 중단됩니다.",
+        message: "반복 탈출은 반복 안에서만 쓸 수 있습니다. 반복 밖에서는 무시됩니다.",
         pageId,
         commandPath: [...visit.path],
-        field: { testId: "event-break-loop" },
+        field: { testId: "break-loop-editor" },
       });
     }
   }
+}
+
+/** 중첩된 내부 loop 의 breakLoop 은 안쪽 루프만 탈출하므로, 현재 루프 스코프에 직접 속한 탈출만 인정한다. */
+function hasDirectLoopExit(commands: readonly Command[]): boolean {
+  for (const command of commands) {
+    if (
+      command.kind === "breakLoop"
+      || command.kind === "transfer"
+      || command.kind === "gameOver"
+      || command.kind === "returnToTitle"
+    ) {
+      return true;
+    }
+    if (command.kind === "loop") continue;
+    for (const branch of commandBranches(command)) {
+      if (hasDirectLoopExit(branch.commands)) return true;
+    }
+  }
+  return false;
 }
 
 function validateLoopBodies(commands: readonly Command[], pageId: string, issues: EventDraftIssue[]): void {
@@ -926,8 +1015,7 @@ function validateLoopBodies(commands: readonly Command[], pageId: string, issues
       });
       continue;
     }
-    const hasBreak = walkCommands(body).some((entry) => entry.command.kind === "breakLoop");
-    if (!hasBreak) {
+    if (!hasDirectLoopExit(body)) {
       issues.push({
         severity: "warning",
         code: "loop.no-break",
@@ -951,7 +1039,7 @@ function validateVariableDivideByZero(commands: readonly Command[], pageId: stri
         message: "0으로 나누기는 무시됩니다. 값을 확인하세요.",
         pageId,
         commandPath: [...visit.path],
-        field: { testId: "event-variable-divide-zero" },
+        field: { testId: "event-command-variable-operand" },
       });
     }
   }
@@ -1358,6 +1446,14 @@ const M2_REFERENCE_RULES: Readonly<Record<string, M2ReferenceRule>> = {
   yVariableId: { code: "reference.variable.missing", label: "M2 Y 변수", known: (refs) => refs.variables },
 };
 
+const M2_ACTOR_TARGET_REQUIRED_IDS = new Set([
+  "m2-022-change-actor-name",
+  "m2-023-change-actor-nickname",
+  "m2-024-change-actor-graphic",
+  "m2-025-change-actor-faceset",
+  "m2-091-change-actor-class",
+]);
+
 function validateM2CommandReferences(
   command: Extract<Command, { kind: "m2Command" }>,
   pageId: string,
@@ -1367,6 +1463,26 @@ function validateM2CommandReferences(
 ): M2CatalogEntry | undefined {
   const entry = m2CommandById(command.commandId);
   if (!entry) return undefined;
+  if (M2_ACTOR_TARGET_REQUIRED_IDS.has(command.commandId) && !String(m2FieldValue(command, entry, "target")).trim()) {
+    issues.push({
+      severity: "warning",
+      code: "m2.required.empty",
+      message: `${entry.label}에서 바꿀 주인공을 선택하지 않았습니다.`,
+      pageId,
+      commandPath: [...commandPath],
+      field: m2ReferenceField(entry.title, "target"),
+    });
+  }
+  if (command.commandId === "m2-091-change-actor-class" && !String(m2FieldValue(command, entry, "value")).trim()) {
+    issues.push({
+      severity: "warning",
+      code: "m2.required.empty",
+      message: `${entry.label}에서 바꿀 직업을 선택하지 않았습니다.`,
+      pageId,
+      commandPath: [...commandPath],
+      field: m2ReferenceField(entry.title, "value"),
+    });
+  }
   for (const field of entry.fields) {
     const rule = M2_REFERENCE_RULES[field.key];
     if (!rule || !m2ReferenceFieldApplies(command, entry, field.key)) continue;
@@ -1543,7 +1659,7 @@ function validateCoordinateSourceAxes(
         issues.push({
           severity: "error",
           code: "m2.coordinate.variable.unselected",
-          message: `${entry.label} 의 ${axis.toUpperCase()} 좌표를 「변수」로 곰냈지만 어떤 변수인지 정하지 않았습니다.`,
+          message: `${entry.label} 의 ${axis.toUpperCase()} 좌표를 「변수」로 골랐지만 어떤 변수인지 정하지 않았습니다.`,
           pageId,
           commandPath: [...commandPath],
           field: m2ReferenceField(entry.title, `${axis}VariableId`),

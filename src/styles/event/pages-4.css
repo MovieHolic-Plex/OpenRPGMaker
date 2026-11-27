@@ -206,6 +206,11 @@
   margin-left: auto;
 }
 
+.event-editor .pages-meta .err-text {
+  color: var(--danger);
+  font-weight: 600;
+}
+
 .event-editor .pages-meta .warn-text {
   color: var(--warning);
   font-weight: 600;
@@ -526,8 +531,17 @@
 }
 
 .event-editor .evt-page-segment > .warn {
+  background: var(--warning);
+  border-radius: 50%;
+  display: inline-block;
   grid-column: 3;
   grid-row: 1;
+  height: 7px;
+  width: 7px;
+}
+
+.event-editor .evt-page-segment > .warn.is-error {
+  background: var(--danger);
 }
 
 .event-editor .evt-page-segments .evt-page-segment[draggable="true"] {

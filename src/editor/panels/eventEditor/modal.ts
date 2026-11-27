@@ -344,9 +344,81 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   }
   const resizeHandle = renderModalResizeHandle();
   attachWindowResize(resizeHandle, windowEl);
+  const bubbleTail = el("div", { class: "event-editor-bubble-tail", attrs: { "aria-hidden": "true" } });
   const footer = renderModalFooter(request, closeHandler, requestClose);
-  windowEl.append(header, body, footer, resizeHandle);
+  windowEl.append(header, body, footer, resizeHandle, bubbleTail);
   backdrop.append(windowEl);
+
+  // 쉬움·보통 보기는 맵이 보이는 초콤팩트 말풍선으로 열리고, [↗ 크게]를 누르면 미리보기 포함 2칼럼으로 넓어진다.
+  let sceneExpanded = false;
+  let bubbleDragged = false;
+  header.addEventListener("pointerdown", (event) => {
+    if ((event.target as HTMLElement | null)?.closest("button, input, select, details, summary, a")) return;
+    if (windowEl.classList.contains("is-bubble")) {
+      bubbleDragged = true;
+      windowEl.classList.add("is-bubble-detached");
+    }
+  });
+  const resetWindowInlineGeometry = (): void => {
+    windowEl.style.left = "";
+    windowEl.style.top = "";
+    windowEl.style.width = "";
+    windowEl.style.height = "";
+    windowEl.style.position = "";
+    windowEl.style.margin = "";
+  };
+  const positionBubbleNearCanvas = (): void => {
+    if (bubbleDragged || typeof window === "undefined") return;
+    const canvas = document.querySelector<HTMLElement>('[data-testid="edit-canvas"]');
+    const bubbleW = Math.min(450, window.innerWidth - 24);
+    const bubbleH = Math.min(500, window.innerHeight - 90);
+    if (!canvas) {
+      resetWindowInlineGeometry();
+      return;
+    }
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width < 120 || rect.height < 120) {
+      resetWindowInlineGeometry();
+      return;
+    }
+    // 캔버스 중앙 NPC 지점 바로 오른쪽에 말풍선을 띄워 뒤쪽 맵을 가리지 않는다.
+    const desiredLeft = Math.round(rect.left + rect.width * 0.44);
+    const desiredTop = Math.round(rect.top + Math.max(16, (rect.height - bubbleH) * 0.32));
+    const left = Math.max(12, Math.min(desiredLeft, window.innerWidth - bubbleW - 12));
+    const top = Math.max(56, Math.min(desiredTop, window.innerHeight - bubbleH - 16));
+    windowEl.style.position = "fixed";
+    windowEl.style.left = `${left}px`;
+    windowEl.style.top = `${top}px`;
+    windowEl.style.margin = "0";
+  };
+  const expandButton = header.querySelector<HTMLButtonElement>('[data-testid="event-editor-bubble-expand"]');
+  const syncModalPresentation = (): void => {
+    const level = eventEditorViewLevel();
+    const isScene = level === "easy" || level === "normal";
+    const isBubble = isScene && !sceneExpanded;
+    const isExpanded = isScene && sceneExpanded;
+    const wasBubble = windowEl.classList.contains("is-bubble");
+    backdrop.classList.toggle("is-bubble-backdrop", isBubble);
+    windowEl.classList.toggle("is-bubble", isBubble);
+    windowEl.classList.toggle("is-scene-expanded", isExpanded);
+    if (!isBubble && wasBubble) {
+      bubbleDragged = false;
+      windowEl.classList.remove("is-bubble-detached");
+      resetWindowInlineGeometry();
+    } else if (isBubble && !wasBubble) {
+      positionBubbleNearCanvas();
+    }
+    if (expandButton) {
+      expandButton.hidden = !isScene;
+      expandButton.textContent = isExpanded ? "↙ 작게" : "↗ 크게";
+      expandButton.title = isExpanded ? "작은 말풍선으로 접기" : "미리보기와 함께 넓게 보기";
+      expandButton.setAttribute("aria-pressed", isExpanded ? "true" : "false");
+    }
+  };
+  expandButton?.addEventListener("click", () => {
+    sceneExpanded = !sceneExpanded;
+    syncModalPresentation();
+  });
   // 맵 더블클릭으로 열면 pointerdown 은 캔버스에서 나고, 모달이 붙는 순간
   // 이어지는 click 이 백드롭(창 바깥)으로 떨어질 수 있다. 스튜디오 모니터는
   // 뷰포트 중앙이 아니라서 그 click 이 창이 아니라 어두운 면에 맞는다.
@@ -383,6 +455,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     if (closed || minimized || opening) return;
     const scrollSnapshots = captureEventEditorScroll(dynamicBody);
     const interactionSnapshot = captureEventEditorInteraction(dynamicBody);
+    let latestValidation: EventDraftValidation | undefined;
     try {
       const live = store.getCurrent().maps[request.mapId]?.events.some((event) => event.id === request.eventId);
       if (!live && !store.restoreEventDraftFromVault(request.mapId, request.eventId)) {
@@ -397,9 +470,10 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       // 새 본문을 별도 버퍼에 먼저 그린다. 렌더가 던져도 기존 화면은 살아남는다 —
       // 예전에는 clearChildren 뒤에 그려서 명령 하나가 터지면 이벤트 전체가 흰 화면이 됐다.
       const staged = document.createElement("div");
-      renderEventEditorDynamic(staged, request.mapId, request.eventId);
+      const renderedValidation = renderEventEditorDynamic(staged, request.mapId, request.eventId);
       clearChildren(dynamicBody);
       dynamicBody.append(...Array.from(staged.childNodes));
+      latestValidation = renderedValidation;
     } catch (error) {
       // 스테이징이 터지면 기존 본문은 그대로 두고 배너만 얹는다. 읽기와 멀쩡한 부분의
       // 편집은 계속 된다 — "다시 그리기" 전에도 내용은 볼 수 있어야 한다.
@@ -412,9 +486,10 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       restoreEventEditorScroll(dynamicBody, scrollSnapshots);
       restoreEventEditorInteraction(dynamicBody, interactionSnapshot);
       refreshHeaderPageSegments(header, request);
-      refreshEventValidationBell(header, validateEventDraft(store.getCurrent(), request.mapId, request.eventId));
+      refreshEventValidationBell(header, latestValidation ?? validateEventDraft(store.getCurrent(), request.mapId, request.eventId));
       refreshModalFooterStatus(footer, request);
       refreshModalHeaderSaveState(header, footer);
+      syncModalPresentation();
     } catch (error) {
       console.error("[event-editor] failed to restore editor chrome", error);
     }
@@ -784,6 +859,12 @@ function renderModalHeader(
         class: "header-actions",
         children: [
           renderEventValidationBell(),
+          el("button", {
+            class: "btn ghost event-editor-bubble-expand",
+            text: "↗ 크게",
+            attrs: { type: "button", title: "미리보기와 함께 넓게 보기", "aria-pressed": "false" },
+            dataset: { testid: "event-editor-bubble-expand" },
+          }),
           el("button", {
             class: "btn ghost event-editor-header-test",
             text: "테스트",

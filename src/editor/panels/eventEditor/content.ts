@@ -78,11 +78,12 @@ import { openEventCommandPicker } from "./commandPicker";
 import { defaultInsertionPath, describeInsertionPath } from "./commandInspector";
 import { scrollIntoNearestScroller } from "./scrollIntoNearestScroller";
 import { applyStoredSettingsColumnWidth, attachColumnResize } from "./layoutResize";
-import { eventEditorAdvancedOpen, eventEditorViewLevel, setEventEditorAdvancedOpen } from "./beginnerChrome";
+import { eventEditorAdvancedOpen, eventEditorViewLevel, setEventEditorAdvancedOpen, setEventEditorViewLevel } from "./beginnerChrome";
 import { renderSceneCards } from "./sceneCardsView";
 import { bindDetailsEscape } from "./detailsPopover";
 import {
   appendEventRailGroup,
+  pageTabConditionLabels,
   renderClassicPageTabStrip,
   renderEventCharacterIdField,
   renderEventCharacterSocialExtras,
@@ -122,19 +123,23 @@ import { resolveCommandAtPath, resolveCommandListAtPath } from "@/editor/eventCo
 type CommandNavigation = {
   readonly key: string;
   readonly root: HTMLElement;
-  readonly navigate: (path: readonly number[]) => boolean;
+  readonly navigate: (path: readonly number[], options?: { readonly openEditor?: boolean }) => boolean;
   readonly refreshMove: () => boolean;
 };
 let commandNavigation: CommandNavigation | undefined;
 
 /** Validation/search callers use this instead of painting a positional CSS selection. */
 export function navigateToEventCommand(
-  mapId: MapId, eventId: string, pageId: string, commandPath: readonly number[],
+  mapId: MapId,
+  eventId: string,
+  pageId: string,
+  commandPath: readonly number[],
+  options?: { readonly openEditor?: boolean },
 ): boolean {
   if (!resolveCommandAtPath(activePageCommands(mapId, eventId, pageId), commandPath)) return false;
   editorState.set({ selectedEventPageId: pageId });
   if (commandNavigation?.key !== `${mapId}:${eventId}:${pageId}` || !commandNavigation.root.isConnected) return false;
-  return commandNavigation.navigate(commandPath);
+  return commandNavigation.navigate(commandPath, options);
 }
 
 /** Reuse the active List workbench for an array-only move. Other mutations/pages
@@ -170,7 +175,7 @@ export function renderEventEditorStable(container: HTMLElement, mapId: MapId, ev
   container.append(section);
 }
 
-export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, eventId: string): void {
+export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, eventId: string): import("@/editor/eventDraftValidator").EventDraftValidation | undefined {
   const viewLevel = eventEditorViewLevel();
   // 쉬움·보통은 장면 카드를 그리고, 고급만 명령 목록과 옛 「고급 설정 펼치기」를 쓴다.
   const sceneLevel = viewLevel === "advanced" ? null : viewLevel;
@@ -387,6 +392,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         onOpen: (path) => openStoryboardEditor([...path]),
         onAddCard: () => openCommandPickerForActions(actions, undefined, activePage.commands),
         changedPaths: eventEditLineChangedPaths(mapId, eventId, activePage.id),
+        issues: activePageIssues,
         onRevealHidden: () => { noteViewLevelSignal("hidden-command"); },
       }));
     }
@@ -505,6 +511,36 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
   // 선택이 바뀌면(목록·스토리 어느 쪽이든) 편집 버튼 상태를 즉시 다시 계산한다.
   setCommandSelectionListener(commandToolbar.syncSelection);
   applyViewMode();
+  const quickAddBar = sceneLevel
+    ? el("div", {
+        class: "event-scene-quick-add",
+        dataset: { testid: "event-scene-quick-add" },
+        children: [
+          el("span", { class: "event-scene-quick-add-label", text: "빠른 추가" }),
+          ...(
+            [
+              { kind: "text", label: "+ 대사" },
+              { kind: "choices", label: "+ 선택지" },
+              { kind: "changeItem", label: "+ 아이템" },
+              { kind: "transfer", label: "+ 이동" },
+              { kind: "shop", label: "+ 상점" },
+            ] as const
+          ).map(({ kind, label }) =>
+            el("button", {
+              class: "event-scene-quick-add-chip",
+              text: label,
+              attrs: { type: "button" },
+              dataset: { testid: `event-scene-quick-add-${kind}` },
+              on: {
+                click: () => {
+                  openNewEventCommandDialog(newCommand(kind), (command) => actions.addCommand([], command));
+                },
+              },
+            }),
+          ),
+        ],
+      })
+    : null;
   commandsColumn.append(
     columnLabel(
       "commands",
@@ -524,6 +560,7 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         cmdList,
       ],
     }),
+    ...(quickAddBar ? [quickAddBar] : []),
     editLine,
   );
 
@@ -569,6 +606,29 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
           .filter((node): node is HTMLElement => node !== null),
       })
     : null;
+  const condLabels = sceneLevel
+    ? pageTabConditionLabels(activePage).filter((text) => text.trim() && text.trim() !== "·")
+    : [];
+  const showConditionBar = Boolean(sceneLevel && (pages.length > 1 || activePage.conditions.length > 0));
+  const conditionBar = showConditionBar
+    ? el("div", {
+        class: "event-scene-condition-bar",
+        dataset: { testid: "event-scene-condition-bar" },
+        children: [
+          el("span", { class: "event-scene-condition-label", text: "켜지는 조건" }),
+          ...(condLabels.length > 0
+            ? condLabels.map((label) => el("span", { class: "event-scene-condition-chip", text: label }))
+            : [el("span", { class: "event-scene-condition-chip is-always", text: "항상 켜짐" })]),
+          el("button", {
+            class: "event-scene-condition-edit",
+            text: "조건 편집",
+            attrs: { type: "button", title: "고급 보기에서 이 페이지의 출현 조건을 편집합니다" },
+            dataset: { testid: "event-scene-condition-edit" },
+            on: { click: () => setEventEditorViewLevel("advanced") },
+          }),
+        ],
+      })
+    : null;
   section.append(
     el("div", {
       class: "event-editor-pagebar",
@@ -583,8 +643,9 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
               dataset: { testid: "event-scene-page-label" },
             })]
           : [advancedToggle]),
-        renderClassicPageTabStrip(mapId, evForRender, activePage),
+        renderClassicPageTabStrip(mapId, evForRender, activePage, validation),
         renderPageActions(mapId, evForRender, activePage),
+        ...(conditionBar ? [conditionBar] : []),
       ],
     }),
     workbench,
@@ -615,9 +676,29 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       commandToolbar.sync();
       return true;
     },
-    navigate: path => {
+    navigate: (path, options) => {
       const command = resolveCommandAtPath(activePage.commands, path);
       if (!command) return false;
+      if (sceneLevel) {
+        const serialized = JSON.stringify(path);
+        const card = Array.from(sceneHost.querySelectorAll<HTMLElement>(".event-scene-card")).find((node) => {
+          try {
+            const paths = JSON.parse(node.dataset.cmdPaths ?? "[]") as number[][];
+            return paths.some((entry) => {
+              const raw = JSON.stringify(entry);
+              return serialized === raw || serialized.startsWith(`${raw.slice(0, -1)},`);
+            });
+          } catch {
+            return false;
+          }
+        });
+        if (card) {
+          card.focus({ preventScroll: true });
+          scrollIntoNearestScroller(card, "center");
+        }
+        if (options?.openEditor !== false) openStoryboardEditor([...path]);
+        return true;
+      }
       currentMode = "list";
       setStoryboardMode("list");
       setCommandQuery("");
@@ -632,9 +713,11 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       if (!target) return false;
       target.focus({ preventScroll: true });
       scrollIntoNearestScroller(target, "center");
+      if (options?.openEditor) openStoryboardEditor([...path]);
       return true;
     },
   };
+  return validation;
 }
 
 function columnLabel(

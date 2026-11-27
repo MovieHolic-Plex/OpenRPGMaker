@@ -413,9 +413,15 @@ body.event-editor-modal-open .canvas-toolbar {
 /* 휴대 폭(599px 이하) 머리줄: 이름·검토 종(개수+「안내 1」)·테스트·?·⋯·닫기가 324px 에 들어가지 않아 테스트·?·⋯ 가
    닫기 아래로 밀려 겹쳤다(vm-qa15 #4). 「?」는 ⋯ 메뉴의 「도움말」로 가고, 종은 개수만 보인다(목록은 눌러서 본다). */
 @media (max-width: 599px) {
-  .event-editor-modal-window .event-editor-modal-header .event-editor-header-help,
-  .event-editor-modal-window .event-editor-modal-header .event-draft-validation-tally {
+  .event-editor-modal-window .event-editor-modal-header .event-editor-header-help {
     display: none;
+  }
+  .event-editor-modal-window .event-editor-modal-header .event-draft-validation-tally {
+    font-size: 10.5px;
+    max-width: 92px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .event-editor-modal-window .event-editor-modal-header .event-editor-name-field {
     flex: 1 1 0;
