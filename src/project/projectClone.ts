@@ -6,6 +6,7 @@ import { isPendingLazyTileset } from "@/project/bundledTilesetLazy";
 import { registerLazyTilesets, unregisterLazyTilesets } from "@/project/lazyTilesetRead";
 import {
   copyTilesetDictionaryPreservingLazy,
+  freshDefaultTilesetBuilder,
   hasPendingDefaultTilesets,
   pendingDefaultTilesetBuilder,
   registerLazyDefaultTileset,
@@ -49,7 +50,8 @@ export function cloneProjectSharingReferenceDocuments(project: Project): Project
     tilesets[id] = { ...tileset, referenceDocuments: [] };
   }
   const cloned = structuredClone({ ...project, tilesets });
-  for (const [id, build] of pendingDefaults) registerLazyDefaultTileset(cloned.tilesets, id, build);
+  // 편집용 깊은 복제다 — 원본과 객체를 나누지 않는 새 생성기로 등록한다.
+  for (const [id, build] of pendingDefaults) registerLazyDefaultTileset(cloned.tilesets, id, freshDefaultTilesetBuilder(build));
   for (const [id, tileset] of lazy) cloned.tilesets[id] = tileset;
   for (const [id, documents] of shared) {
     const tileset = cloned.tilesets[id];

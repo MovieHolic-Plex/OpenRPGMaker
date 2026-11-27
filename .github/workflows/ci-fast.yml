@@ -280,7 +280,7 @@ jobs:
       # verify-gates 의 cssGate 가 실패한 하위 기준선을 다시 뜨는 명령을 ::error:: 로 찍는다.
       # css-winners 기준선은 2026-11-24 부터 엔트리×승자 파일 조각(scripts/css-winners/**)이다 — 서로 다른
       # CSS 를 건드린 PR 끼리는 같은 조각을 쓰지 않고, 같은 조각이 충돌하면 `npm run css-baseline:rebase` 가 다시 뜬다.
-      - name: 런타임 에셋 · 구운 타일셋 요약 · CSS 래칫 · openwiki 색인 (병렬)
+      - name: 런타임 에셋 · 구운 타일셋 요약·새 타일셋 보기 · CSS 래칫 · openwiki 색인 (병렬)
         env:
           NODE_OPTIONS: --max-old-space-size=6144
         run: |
@@ -292,6 +292,11 @@ jobs:
           TIMEFORMAT='구운 타일셋 요약: %3Rs'
           (time npx vite-node --script scripts/content/bake-bundled-tileset-digests.mts --check) > "$RUNNER_TEMP/digests.log" 2>&1 &
           digests_pid=$!
+          # 빈 새 프로젝트의 구운 «정규화한 새 번들 타일셋» 보기(src/assets/bundledTilesetFreshViews.json)가 지금 정의·정규화기와 같은가.
+          # 낡으면 새 프로젝트가 정규화기를 건너뛴 채 옛 칸 표를 들고 태어난다(src/project/defaults/freshStarter.ts).
+          TIMEFORMAT='구운 새 타일셋 보기: %3Rs'
+          (time npx vite-node --script scripts/content/bake-fresh-bundled-tileset-views.mts --check) > "$RUNNER_TEMP/fresh-views.log" 2>&1 &
+          fresh_pid=$!
           status=0
           TIMEFORMAT='CSS 래칫: %3Rs'
           time node scripts/verify-gates.mjs --only css || status=$?
@@ -299,6 +304,8 @@ jobs:
           time node scripts/openwiki-index.mjs || status=$?
           wait "$digests_pid" || status=$?
           cat "$RUNNER_TEMP/digests.log"
+          wait "$fresh_pid" || status=$?
+          cat "$RUNNER_TEMP/fresh-views.log"
           wait "$assets_pid" || status=$?
           cat "$RUNNER_TEMP/runtime-assets.log"
           exit "$status"

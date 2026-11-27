@@ -1678,6 +1678,11 @@ describe("dialogueReading", () => {
     });
 
     it("wheel up over the window opens it and L reopens it", async () => {
+      // 앞 시험이 백로그를 닫은 직후라면 휠 다시 열기 쿨다운(450ms, dialogueBacklogView.closedAt 은 모듈 상태)에 걸려 휠이 무시된다.
+      // 시험이 빨라지자(#5300) 그 쿨다운 안으로 들어와 흔들렸다(run 46020355127) — 시계를 쿨다운 너머로 고정해 순서·속도에 기대지 않게 한다.
+      const realNow = Date.now.bind(Date);
+      const clock = vi.spyOn(Date, "now").mockImplementation(() => realNow() + 60_000);
+      try {
       useSystem({});
       const dialogue = ui();
       const line = request(dialogue, "휠 시험");
@@ -1693,6 +1698,9 @@ describe("dialogueReading", () => {
       press("Escape");
       press("Enter"); press("Enter");
       await line.promise;
+      } finally {
+        clock.mockRestore();
+      }
     });
 
     it("never grows past the authored limit even over a very long session", async () => {
