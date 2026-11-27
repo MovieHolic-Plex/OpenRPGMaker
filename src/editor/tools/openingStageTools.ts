@@ -3,6 +3,7 @@
 // 무대 = system.opening.stage(src/project/openingStage.ts). 새 게임이 무대 맵의 그 칸에서 열리고, 무대 컷신(자동 실행·한 번·건너뛰기 가능)이
 // 맵의 조명·날씨·BGM 그대로 인물을 이동 경로로 걷게 하며, 끝(건너뛰기로도)은 프로젝트 시작 위치로 옮긴다.
 import { clearOpeningStageCommand } from "@/project/openingStage";
+import { inBounds, isPassable } from "@/project/collision";
 import { compileCutscene, type CutsceneBeat } from "@/editor/cutscene";
 import { resolveWhere } from "@/ai/v2/place/where";
 import { BLUEPRINT_OPENING_SHOT_PREFIX } from "./blueprintOpening";
@@ -37,6 +38,15 @@ const authorOpeningStage: ToolDefinition = {
   run(draft, args): ToolExecResult {
     if (!SCRIPT_CUTSCENE) throw new ToolError("script_cutscene 도구를 찾지 못했습니다.", { code: "tool-missing" });
     const map = requireMap(draft, args.mapId as string);
+    const startMap = draft.maps[draft.startMapId];
+    if (!startMap) throw new ToolError("프로젝트 시작 맵이 없습니다 — 무대가 끝난 뒤 옮길 곳이 필요합니다.", { code: "opening-stage-invalid" });
+    // 시작 좌표가 맵 밖이거나 통행 불가 타일일 때만 가장 가까운 통행 가능 칸으로 보정해 커밋 거부 루프를 막는다.
+    if (!inBounds(startMap, draft.startPos.x, draft.startPos.y) || !isPassable(draft, startMap, draft.startPos.x, draft.startPos.y)) {
+      const dest = resolveWhere(draft, startMap, undefined, { at: { x: draft.startPos.x, y: draft.startPos.y } }).cell;
+      if (inBounds(startMap, dest.x, dest.y) && isPassable(draft, startMap, dest.x, dest.y)) {
+        draft.startPos = { x: dest.x, y: dest.y };
+      }
+    }
     // 칸을 안 주면 도구가 고른다(좌표를 얻으려고 맵을 다시 읽는 호출을 없앤다): 시작 맵이면 시작 위치, 아니면 맵 가운데에서 가까운 빈 칸.
     const given = args.x !== undefined && args.y !== undefined;
     const picked = given ? undefined : map.id === draft.startMapId ? draft.startPos
@@ -47,8 +57,6 @@ const authorOpeningStage: ToolDefinition = {
     }
     if (!Array.isArray(args.beats) || args.beats.length === 0) throw new ToolError("beats 가 비었습니다 — 무대에서 무엇이 움직이는지 비트로 적으세요.", { code: "opening-stage-invalid" });
     const eventId = typeof args.eventId === "string" && args.eventId.trim() ? args.eventId.trim() : "ev_opening_stage";
-    const startMap = draft.maps[draft.startMapId];
-    if (!startMap) throw new ToolError("프로젝트 시작 맵이 없습니다 — 무대가 끝난 뒤 옮길 곳이 필요합니다.", { code: "opening-stage-invalid" });
     // 다시 지을 때 예전 무대 이벤트를 걷어 낸다 — 남으면 본편에서 그 맵에 들어서는 순간 자동 실행되어 시작 위치로 되돌려 보낸다.
     const previous = draft.system.opening?.stage;
     if (previous && (previous.mapId !== map.id || previous.eventId !== eventId)) {

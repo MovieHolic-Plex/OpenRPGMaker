@@ -1,6 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { normalizeGameDesignBrief } from "@/project/gameDesignBrief";
-import { FIRST_RUN_DEFAULT_PRESET, firstRunBrief, firstRunTitle, pickFirstRunPreset } from "@/start/firstRun/firstRunBrief";
+import {
+  BLADE_EVENTS,
+  BLADE_HEROES,
+  BLADE_PLACES,
+  FIRST_RUN_BLADES,
+  composeBladeSentence,
+  findPlaceTilesetHint,
+  rollKeywordSlots,
+} from "@/start/firstRun/firstRunBlades";
+import { FIRST_RUN_DEFAULT_PRESET, firstRunBladeBrief, firstRunBrief, firstRunTitle, pickFirstRunPreset } from "@/start/firstRun/firstRunBrief";
 
 describe("첫 사용자 프롬프트 — AI 없이 장르 고르기", () => {
   it("예시 칩 네 문장은 각자 맞는 장르 틀로 간다", () => {
@@ -35,5 +44,34 @@ describe("첫 사용자 프롬프트 — AI 없이 장르 고르기", () => {
     expect(firstRunTitle("  짧은 제목 ")).toBe("짧은 제목");
     expect(firstRunTitle("가".repeat(60))).toBe("가".repeat(40) + "…");
     expect(firstRunTitle("   ")).toBe("새 게임");
+  });
+
+  it("5개 사선 블레이드는 원작 게임 이름을 포함하지 않고, 잠긴 슬롯만 유지하며 섞는다", () => {
+    expect(FIRST_RUN_BLADES).toHaveLength(5);
+    const forbidden = /포켓몬|투더문|다크소울|아오오니|이브|드퀘|파판/u;
+    for (const blade of FIRST_RUN_BLADES) {
+      expect(`${blade.spine} ${blade.kicker} ${blade.title} ${blade.desc}`).not.toMatch(forbidden);
+    }
+    const initial: [string, string, string] = [BLADE_PLACES[0]!.label, "직접 적은 주인공", BLADE_EVENTS[0]!];
+    const next = rollKeywordSlots(initial, [false, true, false], () => 0.42);
+    expect(next[1]).toBe("직접 적은 주인공");
+    expect(next[0]).not.toBe(initial[0]);
+    expect(next[2]).not.toBe(initial[2]);
+    expect(BLADE_HEROES.length).toBeGreaterThanOrEqual(10);
+  });
+
+  it("3키워드 조합 기획은 normalizeGameDesignBrief 계약을 통과하고 선택한 presetId 를 보존한다", () => {
+    const souls = FIRST_RUN_BLADES.find((b) => b.id === "souls")!;
+    const place = BLADE_PLACES[10]!.label;
+    const { brief, title, sentence } = firstRunBladeBrief({
+      blade: souls,
+      keywords: [place, "심야 편의점 알바생", "첫 체육관 배지 도전"],
+      tilesetHint: findPlaceTilesetHint(place),
+    });
+    expect(brief.presetId).toBe("action-rpg");
+    expect(title).toBe("첫 체육관 배지 도전");
+    expect(sentence).toBe(composeBladeSentence(souls, [place, "심야 편의점 알바생", "첫 체육관 배지 도전"]));
+    expect(brief.answers.detail.text).toContain("joseon_baram");
+    expect(normalizeGameDesignBrief(brief)).toEqual(brief);
   });
 });

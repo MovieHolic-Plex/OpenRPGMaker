@@ -91,6 +91,8 @@ const subwayPm = at("fl_street_pm", "ev_fl_subway_pm");
 
 export default {
   id: `first-love-${PATH}`,
+  // 옛 ESC 메뉴(menuUiStyle 스킨) 화면을 검사한다 — 기본이 허브 메뉴가 된 뒤에도 같은 화면을 본다.
+  systemPatch: { menuLayout: "legacy" },
   // 출하 경로 그대로: player.html?demo=first-love 가 데모를 스스로 짓는다(픽스처 JSON 은 좌표 읽기에만 쓴다).
   projectFixture: "scripts/qa/runtime/first-love-empty.json",
   query: { demo: "first-love" },

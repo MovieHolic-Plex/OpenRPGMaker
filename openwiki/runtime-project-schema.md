@@ -1670,6 +1670,20 @@ collector/classic/horror/chase/hearts 프리셋을 추가했다. 기존 미설�
 빈 HUD에서도 구성 정규화를 매 프레임 반복하지 않도록 최초 초기화 여부를 별도로 추적한다.
 추격형은 상시 액션 HUD와 미니맵도 억제한다. 대화·메뉴·전투 UI는 기존대로 작동한다.
 
+### ESC 허브 메뉴 (2026-11-26)
+
+`system.menuLayout?: "hub" | "legacy"`, `system.menuTheme?: { window?: string; accent?: string }`(CSS 색 두 개)를 추가했다.
+`hub` 이면 배우 파티로 싸우는 게임(몬스터 파티·에메랄드·연애 메뉴·전투 없는 게임 제외, `hubMenuEnabled`)의 ESC 메뉴가
+시안 B 변형 8(허브 카드형 · 타이틀 별밤)로 그려진다 — 첫 화면 동료 카드 + 아이템·스킬·장비·상태 칸 + 돈·장소·시간과 나머지 명령 단추,
+각 쪽은 동료 열·격자·상세(설명 전문). 렌더러는 `src/player/hubMenu.ts`, 스타일은 `src/styles/runtime/hubMenu.css`.
+상태·동작은 옛 컨트롤러(`playerStatusMenuController.ts`)의 것을 그대로 쓰고 항목은 `createStatusMenuDetail` 을 읽는다
+(옛 메뉴와 같은 사용·장착 규칙, 같은 `statusMenuDetailOptions`). 저장·설정·대열 같은 그 밖의 명령은 같은 틀 안에 옛 상세 목록을 그린다.
+배경은 타이틀 그림(`titleScreen.backgroundResourceId ?? titleResourceId`)을 어둡게, 없으면 어두운 기본.
+판 크기는 무대 해상도를 480×270 기준 정수배로 나눈 논리 px, 폰 세로 창 칸(320×300~400)과 폭 440 미만은 세로 배치.
+키: 방향키는 화면 위 가장 가까운 칸, Enter 실행, Esc 한 단계 뒤로(첫 화면이면 닫기), 첫 화면 1~4, 스킬·장비·상태 쪽 Q·E·PageUp·PageDown 동료.
+생략 = 허브 메뉴(2026-11-27 기본 전환 — 옛 프로젝트·내보낸 게임도 메뉴만 새로 보인다), `legacy` = 옛 메뉴(menuUiStyle 스킨, 자료집 → 시스템 → 게임 메뉴 디자인의 「옛 메뉴 쓰기」). 저장 형식 변환은 없다.
+터치: 허브 판은 전역 `touchListTap`(첫 탭=커서) 밖이다 — 격자 칸·후보·슬롯은 첫 탭 고르기·두 번째 탭 실행, 단추·칸·카드는 한 번 탭.
+
 
 ## 타일셋 참고문서 데이터 (2026-09-21)
 
@@ -1694,8 +1708,12 @@ collector/classic/horror/chase/hearts 프리셋을 추가했다. 기존 미설�
 
 `StartScreenIntent`(sessionStorage, version 1)의 선택 필드 `startMode?: "example" | "ai" | "blank"`,
 `screenSize?: "classic" | "wide"`가 런처 선택을 같은 새 SQLite 폴더로 전달한다.
-화면 크기 기본값(2026-10-20, 사용자 결정 — 같은 날 #3057 의 640×360 을 대체): `wide` = 내부 해상도 **480×270 · 카메라 배율 1**
-(`START_SCREEN_RESOLUTIONS`, `src/start/projectStart.ts`). 16px 칸 30×17 이 보인다. 배율은 새 프로젝트 시드에서 건드리지 않아 `DEFAULT_CAMERA_ZOOM`(1)이 그대로 쓰인다.
+화면 크기 기본값(2026-10-20 480×270 기본, 2026-11-27 장르별 3단계 차등 — `GENRE_START_VIEW_PROFILES` / `resolveStartViewProfile`, `src/start/projectStart.ts`):
+- `farm-life` · `action-rpg`: **640×360**(FHD 3배, 40×22.5칸) + `smallMapFill: true`(작은 실내 방 자동 확대)
+- `adventure-jrpg` · `story-cutscene` · 빈 프로젝트: **480×270**(FHD 4배, 30×17칸)
+- `horror-chase`: **384×216**(FHD 5배, 24×13.5칸)
+- `monster-collect`: 에메랄드 전용 규격(480×320, `configureEmeraldMonsterStyle`)을 보존한다.
+배율은 새 프로젝트 시드에서 건드리지 않아 `DEFAULT_CAMERA_ZOOM`(1)이 그대로 쓰인다.
 화면은 정수 배율+여백이 기본이라 FHD 4배·4K 8배로 꽉 차고 QHD 는 5배(2400×1350)+얇은 여백이다 — 아래 `system.playSurfaceScale`.
 저장된 옛 프로젝트의 `playResolution`·`cameraZoom` 은 마이그레이션이 다시 쓰지 않는다(생략값 320×240·1 유지).
 DB 시스템 화면: 「보기 범위」(`db-field-system-view-preset`)가 해상도+배율을 한 번에 고른다 — 넓게 640×360·1(40×22칸) / **기본 480×270·1(30×17칸, 추천)** / 가깝게 640×360·2(20×11칸).
@@ -1717,11 +1735,12 @@ DB 시스템 화면: 「보기 범위」(`db-field-system-view-preset`)가 해�
   `troop_<prefix>_boss` 를 만들므로 같은 id 로 무리를 미리 만들면 덮인다 · `fill_region` 같은 도구는 맵 객체를 바꿔 끼우므로 도구 뒤에는 `M(id)` 로 다시 집는다 ·
   타이틀 입장 연출 중 첫 Enter 는 연출만 건너뛴다(QA 는 오프닝이 뜰 때까지 누른다). 질문+보기 셋 선택창은 #3128 로 480×270 에 들어간다 — 질문을 앞 대사로 빼던 우회는 지웠다.
 
-`system.playSurfaceScale?: "integer" | "fit"`(2026-10-20, `src/project/playSurfaceScaleMode.ts`): 플레이 화면을 창에 키우는 방식. 생략값 규칙 `resolvePlaySurfaceScaleMode` —
-몬스터 수집(에메랄드)은 항상 integer, 저작값이 있으면 그 값, 해상도를 저장한 프로젝트는 integer(정수 배율, 남는 창은 여백, 창이 1배보다 작을 때만 비정수 축소),
-해상도를 저장하지 않은 옛 320×240 프로젝트는 fit(2026-10-04 결정 유지). 내보낸 플레이어(`exportEntry.ts`)·편집기 테스트 플레이 창(`testPlayModal.ts`)·편집기 play 모드가
-모두 이 규칙을 쓴다(`renderPlayer` 의 `surfaceScaleMode` 는 덮어쓰기 전용). DB 시스템 「화면 맞춤」(`db-field-system-surface-scale`)에서 바꾼다.
-알 수 없는 값은 `databaseRecordModel` 정규화가 버린다. 검사: `test/playSurfaceScaleModeResolve.test.ts`, 캡처 `scripts/qa/runtime/res480-ui.scenario.mjs`(픽스처 `res480-fixture.mts`).
+`system.playSurfaceScale?: "adaptive" | "integer" | "fit"` 및 `system.portraitLayout?: "ds" | "fullbleed"`(2026-10-20 신설, 2026-11-26 반응형 개편, `src/project/playSurfaceScaleMode.ts`): 플레이 화면을 창·기기에 맞추는 방식과 모바일 세로 배치. 생략값 규칙 `resolvePlaySurfaceScaleMode` —
+몬스터 수집(에메랄드)과 양쪽 전신(`dual-fullbody-veil`)은 integer, 저작값이 있으면 그 값, 해상도를 저장한 프로젝트는 **adaptive**(반응형 정수 도트 카메라: 창·기기 비율에 맞춰 최적 정수 배율 `z` 를 고르고 Phaser 캔버스 논리 크기를 동적으로 채워 레터박스를 없앰 — `calculateAdaptiveViewport` · `PlayScene.resizeViewport`),
+해상도를 저장하지 않은 옛 320×240 프로젝트는 fit(2026-10-04 결정 유지).
+모바일 세로(`system.portraitLayout`, `resolvePortraitLayout`, adaptive 모드): 생략 = **ds**(상단 ~55% 정수 2배 세로 카메라 + 하단 ~45% 전용 1배 대사·전투·터치 패드 덱), 선택 = **fullbleed**(화면 100% 정수 2배 세로 월드 + 하단 반투명 플로팅 패드·대사창). 세로 전투에서는 가상 패드를 숨기고 하단 덱을 터치 가능한 파티·커맨드 영역으로 쓴다.
+내보낸 플레이어(`exportEntry.ts`)·편집기 테스트 플레이 창(`testPlayModal.ts`)·편집기 play 모드가 모두 이 규칙을 쓴다(`renderPlayer` 의 `surfaceScaleMode` 는 덮어쓰기 전용). DB 시스템 「화면 맞춤」(`db-field-system-surface-scale`, `db-field-system-portrait-layout`)에서 바꾼다.
+알 수 없는 값은 `databaseRecordModel` 정규화가 버린다. 검사: `test/adaptiveViewport.test.ts`, `test/playerRunControls.test.ts`, 캡처 `scripts/qa/runtime/res480-ui.scenario.mjs`(픽스처 `res480-fixture.mts`).
 필드가 없는 옛 인계는 장르가 있으면 AI, 없으면 빈 프로젝트로 해석한다. 알 수 없는 값은 거절한다.
 예제 경로는 장르별 플레이 가능한 첫 구간을 저장하고 AI 인터뷰/자동 생성을 시작하지 않는다.
 AI 경로는 기존 연결 관문 → 기획 인터뷰 → 확정 기획 저장 → 팀 첫 생성 계약을 유지한다.
@@ -1872,6 +1891,8 @@ project-v4 에 선택 필드만 추가한다(스키마 승격·마이그레이�
 ## 효과음 자리 표 `system.seCues` (2026-10-30)
 
 `SystemRecords.seCues?: Record<자리 id, 리소스 id>` — 프로젝트에 저장되는 시스템 효과음. 자리 목록·묶음·가족 물러섬은 `src/project/seCues.ts`(`SE_CUE_SPECS`) 하나가 정한다. 자리 id 는 스토어 효과음 팩의 `meta.oprnSound.slots` 와 같은 id 다(제작자와 맞춘 목록 — 바꾸지 말 것): 시스템 13자리(`SYSTEM_SE_CUES`) + `menuOpen` `equip` `save` `load` `shop` `useItem` `itemGet` `levelUp` · `battleStart` `actorDamage` `bossCollapse` `cast` `attack-blunt|pierce|claw` · `magic-<fire|ice|thunder|wind|earth|water|holy|dark>` `buff` `debuff` `poison` `sleep` `paralyze` `reflect` `absorb` `revive` · `door` `doorClose` `chest` `key` `stairs` `switch` `water` `footstep-<grass|stone|wood|sand|snow|water>`. 2026-10-31 판: `footstep-<metal|carpet|mud|ice>` `jump` `land` `explosion` `teleport` `notify` `textBlip` `emote-<종류>` `questComplete` `partyJoin` `innRest` `chapterStart`(징글 넷은 ME 채널, `seCueChannel`). 맵 환경음 `GameMap.bgs`(선택, 없으면 유지) — `openwiki/asset-store.md` 「환경음(BGS)」.
+
+전투가 읽는 자리(2026-11-26): 공격 휘두름은 무기·몸의 모션 계열(`battleMotionStyle`)로 `attack-blunt`(heavy·martial·soft)·`attack-pierce`(agile·lancer·ranged)·`attack-claw`(beast)를 먼저 보고 비면 `attack`(`src/player/battleSeSlots.ts` `attackFamilyOfStyle`, `battleJuice.authoredBattleCue`). 상태 걸림·능력 단계·흡수·부활은 타임라인 엔트리에서 `buff`·`debuff`·`poison`·`sleep`·`paralyze`·`reflect`·`absorb`·`revive` 를 부른다(`battleEntrySeCue` — 상태 이름이 아니라 `stateBehavior` 가 하는 일로 가른다). 저작한 소리가 있을 때만 울려 옛 프로젝트는 그대로다. 출하 기본값(`ai/v2/story/shipBattleSe.ts`)은 전투가 있는 비몬스터 게임의 핵심 자리가 모두 비었을 때 번들 CC0 소리로 14칸을 채우고, 비어 있으면 `run_lint` 가 `audio-battle-se-empty` 경고를 낸다. 시전(`cast`·`magic-*`)은 기술 애니메이션 소리가 있어 채우지 않는다. 회귀: `test/battleSeSlots.test.ts`.
 
 - **모르는 자리 id 도 저장한다**(꼴 `SE_CUE_ID_PATTERN`: camelCase 또는 kebab 가족 하나, 최대 128개). 새 스토어 자리에 코드 수정이 필요 없다 — 런타임이 그 자리를 부르는 곳이 생기면 그때 울린다. 자료집 표는 모르는 자리를 「그 밖의 자리」로 보여 비울 수 있게 한다.
 - 화이트리스트 정규화(`normalizeSystemRecords`)에 들어 있다. 빈 표·빈 값은 저장하지 않는다(옛 JSON 바이트 그대로) — 이주 없음. 형태 검사 `validateSystem`, 리소스 검사 `validateSystemResources`(`system.seCues.<자리>`), 오디오 삭제 막기(`resourceManagerAudioDelete`)가 이 표를 본다. 내보내기는 프로젝트 문자열 훑기로 표의 리소스를 싣는다(별도 목록 불필요).

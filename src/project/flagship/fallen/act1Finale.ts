@@ -1508,10 +1508,16 @@ function siege(project: Project, hubId: string, front: Cell): void {
     ]);
   }
   const hanelId = `ev_${FS_PREFIX}_siege_hanel`;
-  addEvent(hub, hanelId, H, door, [
+  addEvent(hub, hanelId, H, hanelStop, [
     page(`${hanelId}_off`, "아직", [], [], { priority: "below" }),
     page(`${hanelId}_on`, "나온다", [sw(SW_SIEGE_HANEL)], [], { graphic: chip(HANEL_CHIP[0], HANEL_CHIP[1], "down"), priority: "same", animationType: "normal" }),
   ]);
+  for (const crowdId of ["ev_fs_baker", "ev_fs_crowd_b", "ev_fs_kid_run_c"]) {
+    const npc = hub.events.find((e) => e.id === crowdId);
+    if (npc?.pages && !npc.pages.some((p) => p.id === `${crowdId}_siege_hide`)) {
+      npc.pages.push(page(`${crowdId}_siege_hide`, "포위 시 대피", [sw(SW_SIEGE)], [], { graphic: { transparent: true }, priority: "below" }));
+    }
+  }
   const valenId = `ev_${FS_PREFIX}_siege_valen`;
   addEvent(hub, valenId, VALEN, valenSpawn, [
     page(`${valenId}_off`, "아직", [], [], { priority: "below" }),
@@ -1564,7 +1570,7 @@ function siege(project: Project, hubId: string, front: Cell): void {
       say(VALEN, "새벽샘도 그 한마디를 기다렸다.\n…아무도 하지 않았지. 그래서 탔다."),
       se("cc0-se-osx-door-open"),
       setSw(SW_SIEGE_HANEL),
-      route(hanelId, [{ kind: "setThrough", enabled: true }, { kind: "move", dir: "down" }, { kind: "setThrough", enabled: false }, { kind: "turn", dir: "down" }]),
+      route(hanelId, [{ kind: "turn", dir: "down" }]),
       say(H, "그 아이들은 놔둬라, 발렌."),
       emote(valenId, "ellipsis", 1000),
       say(VALEN, "…선생님."),
@@ -1580,6 +1586,8 @@ function siege(project: Project, hubId: string, front: Cell): void {
       wait(1600),
       narrate("그날 밤, 별을 보던 마을의 불이\n하나씩 꺼졌다."),
       cutLabel(),
+      clearLetterbox(),
+      cutEnd(),
       setSw(SW_DONE),
       { kind: "triggerEnding", endingId: "end_fs_act1" } as unknown as Command,
     ], { trigger: { kind: "auto" } }),

@@ -180,14 +180,14 @@ describe("dbToolsIntegrity", () => {
         enemy: { id: "enemy_query_slime", name: "검색 슬라임", monsterResourceId: "slime" },
       }, { dryRun: false });
       expect(enemy.ok, JSON.stringify(enemy.issues)).toBe(true);
-      expect(ctx.project.database.enemies.find((record) => record.id === "enemy_query_slime")?.monsterResourceId).toBe("generated-enemy-slime-01");
+      expect(ctx.project.database.enemies.find((record) => record.id === "enemy_query_slime")?.monsterResourceId).toBe("generated-enemy-slime-green");
       expect(enemy.diff?.warnings.some((warning) => warning.includes("enemy.monsterResourceId 자동 해석"))).toBe(true);
 
       const species = runTool(ctx, "define_monster_species", {
         species: { id: "species_query_dragon", name: "검색 드래곤", graphic: { monsterResourceId: "dragon" } },
       }, { dryRun: false });
       expect(species.ok, JSON.stringify(species.issues)).toBe(true);
-      expect(ctx.project.database.monsterSpecies?.find((record) => record.id === "species_query_dragon")?.graphic.monsterResourceId).toBe("generated-enemy-dragon-01");
+      expect(ctx.project.database.monsterSpecies?.find((record) => record.id === "species_query_dragon")?.graphic.monsterResourceId).toBe("generated-enemy-dragon-blue");
 
       const missing = runTool(ctx, "define_monster_species", {
         species: { id: "species_missing_graphic", name: "없는 그래픽", graphic: { monsterResourceId: "definitely_missing_monster_graphic" } },

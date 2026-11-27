@@ -16,8 +16,11 @@ import { refreshGrowthVitals } from "@/project/growth/vitals";
 import type { GrowthMenuTab } from "@/player/playerGrowthMenu";
 import { store } from "@/project/store";
 import { getPlayerPreferences, updatePlayerPreferences } from "@/player/playerPreferences";
-import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, readAutosave, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
+import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, readAutosave, safeLocalStorage, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
 import { renderPlayerStatusMenu, statusMenuControls } from "@/player/playerStatusMenu";
+import { activateHubElement, hubBoardFor, hubMenuEnabled, isHubTileCommand, nextHubFocus, renderHubMenu, HUB_TILE_COMMANDS } from "@/player/hubMenu";
+import { equipmentSlots } from "@/project/equipmentSlots";
+import type { PlayerStatusMenuOptions } from "@/player/playerStatusMenuTypes";
 import { adjustStatusMenuDetailRow, updateStatusMenuDetailSelection } from "@/player/playerStatusMenuDetailRenderer";
 import { animateStatusMenuPage, animateStatusMenuVitals, readStatusMenuVitals } from "@/player/playerStatusMenuMotion";
 import {
@@ -111,6 +114,12 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   // 필드로 돌아가려는 것이고 한 단계씩 닫혀 Esc 를 여러 번 눌러야 했다(2026-10-29 vm3 terra jrpg 판정). 다른 키·마우스를 쓰면 풀린다.
   let justSaved = false;
   let confirmToTitlePending = false;
+  // 허브 메뉴(player/hubMenu) 커서 — 칸 키 하나, 격자에서 고른 칸, 장비 후보, 쪽의 동료, 첫 화면으로 돌아갈 때 설 칸.
+  let hubFocus: string | undefined;
+  let hubSel = 0;
+  let hubCand = -1;
+  let hubActorId: string | undefined;
+  let hubReturnFocus: string | undefined;
   // 「대기」 ON = 명령 메뉴가 열린 동안 시간이 멈춘다(wait). 플레이어 장치 설정이 게임 저작 기본(system.atbMode)을 덮는다.
   const currentWaitMode = (): boolean => (getPlayerPreferences().atbMode ?? store.getCurrent().system.atbMode ?? "wait") !== "active";
   let waitModeEnabled = currentWaitMode();
@@ -186,11 +195,12 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       ? nextCommand : available[0] ?? "items";
     initialMenuSelection = false;
     selectedDetailActionIndex = detailCursors.get(detailStateKey()) ?? defaultDetailCursor();
-    const panel = renderPlayerStatusMenu({
+    const storage = safeLocalStorage();
+    const menuOptions: PlayerStatusMenuOptions = {
       project,
       session,
-      slots: listSaveSlots(window.localStorage),
-      autosave: readAutosave(window.localStorage),
+      slots: storage ? listSaveSlots(storage) : [],
+      autosave: storage ? readAutosave(storage) : { kind: "empty" },
       message,
       selectedCommand,
       mode,
@@ -250,6 +260,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
           rememberDetailCursorFromTestId(`status-menu-item-${itemId}`);
           itemActionId = undefined;
           targetItemId = itemId;
+          hubFocus = "a0";
           options.emitMenuJuice("menu-confirm", renderMenu(undefined, "items"));
         },
         onUseItem: useItem,
@@ -374,7 +385,17 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onRest: restFromMenu,
         onToTitle: confirmToTitle,
       },
-    });
+    };
+    const hub = hubMenuEnabled(project, session);
+    if (hub && mode === "main" && !/^[tcs]\d/.test(hubFocus ?? "")) hubFocus = hubReturnFocus;
+    const panel = hub
+      ? renderHubMenu({
+        ...menuOptions,
+        board: hubBoardFor(project, (options.getPlayStage() ?? options.layout).closest<HTMLElement>(".play-viewport")),
+        hubFocus, hubSel, hubCand, hubActorId,
+        hubActions: { focus: focusHub, openPage: openHubPage, back: hubBack },
+      })
+      : renderPlayerStatusMenu(menuOptions);
     panel.dataset.detailState = detailStateKey();
     const changedPage = currentMenu()?.dataset.detailState !== panel.dataset.detailState;
     const live = replaceMenu(panel);
@@ -431,7 +452,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     // 첫 화면이 작업 패널이 아닌 스킨(파티 개요·허브·시트)은 main 과 function 의 오른쪽 내용이 다르다.
     // 포커스만 옮기면 빈 자리에 커서가 서므로 모드가 바뀔 때 한 번 다시 그린다. workbench 는 그대로 포커스만 옮긴다.
     const landing = currentMenu()?.dataset.menuSkinLanding;
-    if (landing && landing !== "work") renderMenu(undefined, selectedCommand);
+    if (hubOn() || (landing && landing !== "work")) renderMenu(undefined, selectedCommand);
     const menu = currentMenu();
     if (!menu) return;
     menu.dataset.statusMenuScreen = mode;
@@ -461,7 +482,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     if (session?.m2Runtime?.access?.menu === false && !currentMenu()) return;
     const menu = currentMenu();
     if (menu?.dataset.statusMenuScreen === "function") {
-      backOneStep();
+      if (hubOn()) hubBack();
+      else backOneStep();
       return;
     }
     if (menu) {
@@ -477,6 +499,10 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       : statusMenuRailIdForCommand(selectedCommand, store.getCurrent(), session);
     openGroupId = undefined;
     resetSubscreenState();
+    hubFocus = undefined;
+    hubReturnFocus = undefined;
+    hubSel = 0;
+    hubCand = -1;
     options.emitMenuJuice("menu-open", renderMenu());
   };
 
@@ -501,6 +527,10 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         return true;
       }
       return false;
+    }
+    if (hubOn()) {
+      const handled = handleHubKey(key, afterSave);
+      if (handled || currentMenu()?.dataset.hubPage !== "generic") return handled;
     }
     const direction = directionForKey(key);
     if (mode === "function" && direction && boxGridActive()) {
@@ -603,7 +633,12 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       rejectInput("지금은 저장할 수 없습니다");
       return;
     }
-    const slots = listSaveSlots(window.localStorage);
+    const storage = safeLocalStorage();
+    if (!storage) {
+      rejectInput("저장소에 접근할 수 없습니다");
+      return;
+    }
+    const slots = listSaveSlots(storage);
     const slotState = getSaveSlotStatus(slots, slot);
     if (slotState.kind === "present" && confirmSaveSlot !== slot) {
       confirmSaveSlot = slot;
@@ -620,7 +655,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       rejectInput(`${slot}번 저장 칸에 저장하지 못했습니다`);
       return;
     }
-    const written = saveToSlot(window.localStorage, slot, snapshot);
+    const written = saveToSlot(storage, slot, snapshot);
     if (!written.ok) {
       rejectInput(`${slot}번 저장 칸에 저장하지 못했습니다 — ${written.message}`);
       return;
@@ -667,7 +702,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       ]);
       return;
     }
-    if (result.kind === "used" && (scene.getSession().inventory[itemId] ?? 0) === 0) targetItemId = undefined;
+    if (result.kind === "used" && (scene.getSession().inventory[itemId] ?? 0) === 0) { targetItemId = undefined; hubFocus = `i${hubSel}`; }
     const panel = renderMenu(result.message, "items");
     if (panel && result.kind === "used") animateStatusMenuVitals(panel, beforeVitals);
     emitMutationResult(result, panel, "useItem");
@@ -751,7 +786,11 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     if (!scene) return;
     rememberDetailCursorFromTestId(`status-menu-equipment-item-${equipmentId}`);
     const result = equipStatusMenuItem(scene, actorId, slotId, equipmentId);
-    if (result.kind === "used") equipmentSlotId = undefined;
+    if (result.kind === "used") {
+      // 허브 장비 쪽은 그 부위에 남아 바뀐 수치를 보인다. 옛 메뉴는 부위 목록으로 돌아간다.
+      if (hubOn()) { hubCand = -1; hubFocus = `q${Math.max(0, equipmentSlots(store.getCurrent()).findIndex((slot) => slot.id === slotId))}`; }
+      else equipmentSlotId = undefined;
+    }
     emitMutationResult(result, renderMenu(result.message, "equipment"), "equip");
   }
 
@@ -760,7 +799,11 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     if (!scene) return;
     rememberDetailCursorFromTestId("status-menu-equipment-item-none");
     const result = unequipStatusMenuItem(scene, actorId, slotId);
-    if (result.kind === "used") equipmentSlotId = undefined;
+    if (result.kind === "used") {
+      // 허브 장비 쪽은 그 부위에 남아 바뀐 수치를 보인다. 옛 메뉴는 부위 목록으로 돌아간다.
+      if (hubOn()) { hubCand = -1; hubFocus = `q${Math.max(0, equipmentSlots(store.getCurrent()).findIndex((slot) => slot.id === slotId))}`; }
+      else equipmentSlotId = undefined;
+    }
     emitMutationResult(result, renderMenu(result.message, "equipment"), "equip");
   }
 
@@ -1230,6 +1273,152 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
 
   const currentMenu = (): HTMLElement | null => currentStatusMenu(options.layout);
 
+  // ── 허브 메뉴(player/hubMenu) ── 상태는 위의 옛 메뉴 상태를 그대로 쓰고, 커서·쪽 이동만 여기서 맡는다.
+  function hubOn(): boolean {
+    return currentMenu()?.dataset.hubMenu === "true";
+  }
+
+  function hubParty(): readonly string[] {
+    return options.getActiveScene()?.getSession().partyActorIds ?? [];
+  }
+
+  function openHubPage(command: StatusMenuCommandId, actorId?: string): void {
+    if (!isHubTileCommand(command)) {
+      hubReturnFocus = currentMenu()?.dataset.hubFocus ?? hubReturnFocus;
+      enterCommand(command);
+      return;
+    }
+    if (mode === "main") hubReturnFocus = currentMenu()?.dataset.hubFocus ?? hubReturnFocus;
+    const party = hubParty();
+    const actor = actorId && party.includes(actorId) ? actorId : hubActorId && party.includes(hubActorId) ? hubActorId : party[0];
+    const samePage = mode === "function" && selectedCommand === command;
+    resetSubscreenState();
+    selectedCommand = command;
+    mode = "function";
+    hubActorId = actor;
+    if (command === "skills") skillActorId = actor;
+    if (command === "equipment") {
+      equipmentActorId = actor;
+      equipmentSlotId = equipmentSlots(store.getCurrent())[0]?.id as keyof ActorInitialEquipment | undefined;
+    }
+    if (!samePage) { hubSel = 0; hubFocus = undefined; }
+    hubCand = -1;
+    options.emitMenuJuice(samePage ? "menu-select" : "menu-confirm", renderMenu(undefined, command));
+  }
+
+  function focusHub(key: string): void {
+    hubFocus = key;
+    const n = Number(key.slice(1));
+    const head = key[0];
+    if ((head === "i" || head === "k") && Number.isFinite(n)) hubSel = n;
+    if (head === "q" && Number.isFinite(n) && selectedCommand === "equipment") {
+      const slot = equipmentSlots(store.getCurrent())[n];
+      if (slot) equipmentSlotId = slot.id as keyof ActorInitialEquipment;
+      hubCand = -1;
+    }
+    if (head === "n" && Number.isFinite(n)) hubCand = n;
+    if (head !== "n" && head !== "o" && selectedCommand === "equipment" && head !== "q") hubCand = -1;
+    // 스킬·장비·상태 쪽의 동료 열에 커서가 오면 그 동료의 쪽으로 바꾼다(아이템 대상 고르기는 제외).
+    if (head === "a" && mode === "function" && (selectedCommand === "skills" || selectedCommand === "equipment" || selectedCommand === "status")) {
+      const actor = hubParty()[n];
+      if (actor && actor !== hubActorId) {
+        hubActorId = actor;
+        if (selectedCommand === "skills") { skillActorId = actor; hubSel = 0; }
+        if (selectedCommand === "equipment") { equipmentActorId = actor; hubCand = -1; }
+      }
+    }
+    options.emitMenuJuice("menu-select", renderMenu(undefined, selectedCommand));
+  }
+
+  function hubBack(): void {
+    if (mode === "main") {
+      options.closeMenuWithJuice();
+      return;
+    }
+    if (selectedCommand === "items" && targetItemId) {
+      targetItemId = undefined;
+      hubFocus = `i${hubSel}`;
+      options.emitMenuJuice("menu-back", renderMenu(undefined, "items"));
+      return;
+    }
+    if (selectedCommand === "equipment" && (hubCand >= 0 || /^[no]\d/.test(hubFocus ?? ""))) {
+      hubCand = -1;
+      const index = Math.max(0, equipmentSlots(store.getCurrent()).findIndex((slot) => slot.id === equipmentSlotId));
+      hubFocus = `q${index}`;
+      options.emitMenuJuice("menu-back", renderMenu(undefined, "equipment"));
+      return;
+    }
+    if (currentMenu()?.dataset.hubPage === "generic") {
+      backOneStep();
+      return;
+    }
+    selectedCommand = statusMenuRailIdForCommand(selectedCommand, store.getCurrent(), options.getActiveScene()?.getSession());
+    resetSubscreenState();
+    mode = "main";
+    hubFocus = hubReturnFocus;
+    options.emitMenuJuice("menu-back", renderMenu(undefined, selectedCommand));
+  }
+
+  function handleHubKey(key: RuntimeMenuKey, afterSave: boolean): boolean {
+    const panel = currentMenu();
+    if (!panel) return false;
+    const generic = panel.dataset.hubPage === "generic";
+    if (generic && mode === "function") {
+      // 옛 상세 목록 — 위아래·결정·값 조절은 옛 규칙. 왼쪽·Esc 는 한 단계 뒤로(첫 화면까지).
+      if (isCancelMenuKey(key)) {
+        if (afterSave) options.closeMenuWithJuice();
+        else backOneStep();
+        return true;
+      }
+      return false;
+    }
+    const direction = directionForKey(key);
+    if (direction) {
+      const next = nextHubFocus(panel, direction);
+      if (!next) return true;
+      focusHub(next);
+      return true;
+    }
+    if (isConfirmMenuKey(key)) {
+      const focused = panel.querySelector<HTMLElement>(".hub-foc");
+      if (!focused) return rejectInput();
+      const result = activateHubElement(focused, { hubActions: { focus: focusHub, openPage: openHubPage, back: hubBack } });
+      if (result !== "done") return rejectInput(result.rejected);
+      return true;
+    }
+    if (isCancelMenuKey(key)) {
+      if (afterSave) options.closeMenuWithJuice();
+      else hubBack();
+      return true;
+    }
+    return false;
+  }
+
+  /** 허브 메뉴만 쓰는 키: 첫 화면의 1~4(칸 바로 열기), 스킬·장비·상태 쪽의 Q·E·PageUp·PageDown(동료 넘기기). */
+  function handleExtraKey(key: string): boolean {
+    if (!hubOn()) return false;
+    const lower = key.toLowerCase();
+    if (mode === "main" && /^[1-4]$/.test(lower)) {
+      const session = options.getActiveScene()?.getSession();
+      if (!session) return false;
+      const commands = listStatusMenuCommandIds(store.getCurrent(), session);
+      const tiles = HUB_TILE_COMMANDS.filter((command) => commands.includes(command));
+      const command = tiles[Number(lower) - 1];
+      if (!command) return false;
+      openHubPage(command);
+      return true;
+    }
+    const step = lower === "q" || lower === "pageup" ? -1 : lower === "e" || lower === "pagedown" ? 1 : 0;
+    if (step && mode === "function" && (selectedCommand === "skills" || selectedCommand === "equipment" || selectedCommand === "status") && currentMenu()?.dataset.hubPage !== "generic") {
+      const party = hubParty();
+      if (party.length < 2) return true;
+      const at = Math.max(0, party.indexOf(hubActorId ?? party[0]!));
+      openHubPage(selectedCommand, party[(at + step + party.length) % party.length]);
+      return true;
+    }
+    return false;
+  }
+
   function moveSelectedDetailAction(delta: -1 | 1): boolean {
     const actions = detailActionButtons();
     if (mode !== "function") return false;
@@ -1395,7 +1584,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     return session.m2Runtime?.access.save !== false;
   }
 
-  return { reset, renderMenu, openSaveMenu, openMonsterBox, openSkillScreen, openLifeRecoveryLedger, toggleMenu, handleKey };
+  return { reset, renderMenu, openSaveMenu, openMonsterBox, openSkillScreen, openLifeRecoveryLedger, toggleMenu, handleKey, handleExtraKey };
 }
 
 function isRailNavKey(key: RuntimeMenuKey): boolean {

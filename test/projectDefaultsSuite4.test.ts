@@ -34,6 +34,7 @@ import { normalizeEnemyActionProfile } from "@/project/actionCombat";
 import { defaultBattleRecords } from "@/project/defaults/defaultDatabaseBattleRecords";
 import { readFileSync, existsSync } from "node:fs";
 import { PIXEL_ENEMY_SHEETS, pixelEnemyCell } from "@/assets/pixelEnemySheets";
+import { pixelEnemyGridDims } from "@/assets/pixelEnemyGrid";
 import { pixelEnemyPortraitPath } from "@/assets/pixelEnemyPortraits";
 import { actorBattlers } from "@/battle/battleBattlers";
 import { createScarloxyDemoProject } from "@/project/defaults/defaultProject";
@@ -267,16 +268,16 @@ describe("complexMonsterAuthoring", () => {
           "species_king_slime", "species_leafling", "species_mine_skeleton", "species_sparkit",
           "species_stone_golem", "species_wild_slime",
         ]);
-        expect(bySpecies.species_wild_slime).toBe("generated-enemy-slime-01");
-        expect(bySpecies.species_king_slime).toBe("generated-enemy-slime-01");
-        expect(bySpecies.species_cave_bat).toBe("generated-enemy-bat-01");
-        expect(bySpecies.species_stone_golem).toBe("generated-enemy-golem-01");
-        expect(bySpecies.species_ember_drake).toBe("generated-enemy-dragon-01");
+        expect(bySpecies.species_wild_slime).toBe("generated-enemy-slime-green");
+        expect(bySpecies.species_king_slime).toBe("generated-enemy-slime-green");
+        expect(bySpecies.species_cave_bat).toBe("generated-enemy-bat-cave");
+        expect(bySpecies.species_stone_golem).toBe("generated-enemy-golem-stone");
+        expect(bySpecies.species_ember_drake).toBe("generated-enemy-dragon-blue");
         expect(bySpecies.species_leafling).toBe("generated-enemy-leafling-01");
-        expect(bySpecies.species_forest_hornet).toBe("generated-enemy-sylph-hornet");
+        expect(bySpecies.species_forest_hornet).toBe("generated-enemy-bee-giant");
         expect(bySpecies.species_sparkit).toBe("generated-enemy-sparkit-fire");
-        expect(bySpecies.species_aqualing).toBe("generated-enemy-aqualing-01");
-        expect(bySpecies.species_mine_skeleton).toBe("generated-enemy-skeleton-01");
+        expect(bySpecies.species_aqualing).toBe("generated-enemy-spirit-water");
+        expect(bySpecies.species_mine_skeleton).toBe("generated-enemy-ghost-pale");
         for (const id of ["species_leafling", "species_sparkit", "species_aqualing"]) {
           expect(project.database.monsterSpecies?.find((species) => species.id === id)?.graphic.graphicHue).toBe(0);
         }
@@ -317,13 +318,13 @@ describe("complexMonsterAuthoring", () => {
         }
       });
 
-      it("seeds dungeon bone guards with skeleton art instead of bat art", () => {
+      it("seeds dungeon bone guards with bundled ghost-pale art instead of bat art", () => {
         const project = createBlankProject();
         const { enemies } = seedHomeDungeonComplexTroops(project);
         const bone = enemies.find((enemy) => enemy.id === "enemy_stone_bone_guard");
-        expect(bone?.monsterResourceId).toBe("generated-enemy-skeleton-01");
-        expect(resolveAssetResourceUrl("generated-enemy-skeleton-01")).toBe(
-          "/assets/generated/pixel-enemy-portraits/skeleton-01.png",
+        expect(bone?.monsterResourceId).toBe("generated-enemy-ghost-pale");
+        expect(resolveAssetResourceUrl("generated-enemy-ghost-pale")).toBe(
+          "/assets/generated/pixel-enemy-portraits/ghost-pale.png",
         );
       });
     });
@@ -1279,7 +1280,7 @@ describe("defaultDatabaseBattleRecords", () => {
     describe("native enemy battler files", () => {
       it("resolves every registered generated enemy to an existing public image", () => {
         const ids = builtinGeneratedResourceIds().filter((id) => id.startsWith("generated-enemy-"));
-        expect(ids.length).toBeGreaterThanOrEqual(140);
+        expect(ids.length).toBeGreaterThanOrEqual(44);
         for (const id of ids) {
           const url = resolveAssetResourceUrl(id);
           expect(url, id).not.toBeNull();
@@ -1292,13 +1293,14 @@ describe("defaultDatabaseBattleRecords", () => {
       it("uses one exact idle cell for whole-image consumers rather than exposing a pose grid", () => {
         for (const sheet of PIXEL_ENEMY_SHEETS) {
           const cell = pixelEnemyCell(sheet);
+          const { cols, rows } = pixelEnemyGridDims(sheet.grid);
           const source = PNG.sync.read(readFileSync(`public/${sheet.path}`));
           const portraitPath = pixelEnemyPortraitPath(sheet);
           const portrait = PNG.sync.read(readFileSync(`public/${portraitPath}`));
           expect(resolveAssetResourceUrl(sheet.resourceId)).toBe(`/${portraitPath}`);
-          expect([source.width, source.height]).toEqual([cell * 3, cell * 3]);
+          expect([source.width, source.height]).toEqual([cell * cols, cell * rows]);
           expect([portrait.width, portrait.height]).toEqual([cell, cell]);
-          // 완전 투명 칸의 RGB 는 그림이 아니다 — 다시 그린 시트(#2931 등)와 초상은 투명 칸 RGB 가 다르게 저장됐다. 보이는 화소만 같아야 한다.
+          // 완전 투명 칸의 RGB 는 그림이 아니다 — 보이는 화소만 같아야 한다.
           for (let y = 0; y < cell; y++) {
             expect(visibleBytes(portrait.data.subarray(y * cell * 4, (y + 1) * cell * 4)).equals(
               visibleBytes(source.data.subarray(y * source.width * 4, (y * source.width + cell) * 4)),
@@ -1314,10 +1316,9 @@ describe("defaultDatabaseBattleRecords", () => {
         expect(defaultBattleRecords().enemies.filter((enemy) => /^enemy_extra_\d+$/.test(enemy.id))).toEqual([]);
       });
 
-      it("gives every common default enemy a registered resource", () => {
-        const registered = new Set(builtinGeneratedResourceIds());
+      it("gives every common default enemy a resolvable bundled resource", () => {
         const missing = defaultBattleRecords().enemies
-          .filter((enemy) => enemy.monsterResourceId && !registered.has(enemy.monsterResourceId))
+          .filter((enemy) => enemy.monsterResourceId && !resolveAssetResourceUrl(enemy.monsterResourceId))
           .map((enemy) => `${enemy.id} -> ${enemy.monsterResourceId}`);
         expect(missing).toEqual([]);
       });

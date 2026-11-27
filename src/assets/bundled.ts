@@ -688,7 +688,11 @@ function uploadedSourceHeight(source: HTMLImageElement | HTMLCanvasElement): num
   return source instanceof HTMLImageElement ? source.naturalHeight || source.height : source.height;
 }
 
+const bundledTextureKeyCache = new WeakMap<Project, Set<string>>();
+
 function projectBundledTextureKeys(project: Project): Set<string> {
+  const cached = bundledTextureKeyCache.get(project);
+  if (cached) return cached;
   const strings = collectPlayReferencedStrings(project);
   const keys = new Set<string>([TEX_TILESET, TEX_DIALOGUE_FRAME]);
   for (const id of strings) {
@@ -737,6 +741,7 @@ function projectBundledTextureKeys(project: Project): Set<string> {
   // Rock/gem charset + tree chipset frames are hardcoded by the placeable overlay renderer,
   // so they are not always present as project strings even when rocks/trees exist in session.
   for (const textureKey of PLACEABLE_OVERLAY_TEXTURE_KEYS) keys.add(textureKey);
+  bundledTextureKeyCache.set(project, keys);
   return keys;
 }
 

@@ -84,13 +84,28 @@ export function advanceResume(
     frame.pc += 1;
   } else if (pending === "inn") {
     const command = frame.commands[frame.pc];
-    if (
-      command?.kind === "inn" &&
-      command.branchOnNotEnoughGold === true &&
-      value === "notEnough" &&
-      pushFrame(state, command.notEnoughBranch ?? [])
-    ) {
-      return "continue";
+    if (command?.kind === "inn") {
+      if (
+        command.branchOnStay === true &&
+        value === "stayed" &&
+        pushFrame(state, command.stayedBranch ?? [])
+      ) {
+        return "continue";
+      }
+      if (
+        command.branchOnCancel === true &&
+        value === "cancelled" &&
+        pushFrame(state, command.cancelledBranch ?? [])
+      ) {
+        return "continue";
+      }
+      if (
+        command.branchOnNotEnoughGold === true &&
+        value === "notEnough" &&
+        pushFrame(state, command.notEnoughBranch ?? [])
+      ) {
+        return "continue";
+      }
     }
     frame.pc += 1;
   } else if (pending === "inputNumber") {

@@ -342,6 +342,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   configure_time_system: system("시간 시스템"),
   configure_monster_system: system("몬스터 수집 시스템"),
   get_opening: inspect("오프닝 읽기", "book"),
+  compose_opening: build("오프닝 시네마틱 조립", "spark"),
   set_opening: system("오프닝 설정"),
   edit_opening: system("오프닝 장면 고치기"),
   remove_opening: system("오프닝 삭제"),

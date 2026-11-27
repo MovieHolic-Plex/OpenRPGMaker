@@ -15,6 +15,7 @@
  *   하넬 대사 한 줄이 덧붙는다(하넬 대화의 분기 — 이긴 뒤에만). 지면 전멸이 아니라 R1 로 물러난다(이야기 진행 불변).
  * 무대는 왕도 옛 상수도의 가장 오래된 저수조(R4) — 영주는 녹슨 관 사이 물가에 산다(뼈·둥지 소품 없음).
  */
+import { bundledPixelEnemySheet } from "@/assets/pixelEnemySheets";
 import type { Command, Condition, EventPage, GameEvent, GameMap, Project } from "@/project/types";
 import { FS_NAMES } from "../fallenStarStory";
 import { WELL } from "./wellShaftRooms";
@@ -148,7 +149,7 @@ export function wellData(project: Project, exec: Exec): void {
   // ⑤ 흙탕물 뿜기 — 한 사람 암흑 + 젖음(젖으면 번개를 맞는 쪽이 된다 — 엘레나에게 쏘면 번개 운용이 꼬인다).
   skill({ id: SKILL_MUD, name: "흙탕물 뿜기", scope: "enemy", type: "normal", power: 40, description: "썩은 흙탕물을 얼굴에 뿜는다. 눈이 흐려지고 몸이 젖는다.",
     effect: { kind: "damage", statistic: "mind", affects: "hp" }, elementId: "water",
-    stateEffects: [{ stateId: "state_blind", chance: 80, operation: "add" }, { stateId: "state_silence", chance: 50, operation: "add" }], animationId: "anim_gen_power_aura" });
+    stateEffects: [{ stateId: "state_blind", chance: 80, operation: "add" }, { stateId: "state_wet", chance: 80, operation: "add" }], animationId: "anim_gen_power_aura" });
   // ⑥ 물 속 탈피 — 예고(물에 몸을 담근다) 뒤 재생. 크게 때리면 끊긴다.
   skill({ id: SKILL_MOLT, name: "물 속 탈피", scope: "self", type: "normal", power: 0, variance: 0, hitRate: 100,
     description: "물에 몸을 담그고 허물을 벗는다. 새 살이 돋는 동안 상처가 아문다.\n담그는 동안 크게 다치면 물 밖으로 뛰쳐나온다.",
@@ -411,11 +412,13 @@ export function wellBeastHanelLine(hanel: string): Command {
 }
 
 /**
- * 그림은 monsterArt16(굽기 끝 단계)이 uploaded 리소스로 넣는다. 그 전에는 리소스가 없어 도구·무결성 검사가 이 id 를 거절하므로
- * 지을 때는 자리 그림(돌 골렘·몬스터 칩)으로 두고, 그림 설치 바로 뒤(chronoBell, applyFallenMonsterArt16 다음)에 여기서 바꿔 끼운다.
+ * 눈먼 영주 그림(`generated-enemy-well-olm`)은 정식 번들 5×4 시트다. 지을 때는 자리 그림(돌 골렘·몬스터 칩)으로 두고,
+ * `applyFallenMonsterArt16` 바로 뒤(`chronoBell`)에서 여기서 번들 그림으로 바꿔 끼운다.
  */
 export function finishFallenWellBeastArt(project: Project, mapId: string): void {
-  if (!Object.hasOwn(project.assets.uploaded, FS2_WELL_BEAST_ART)) throw new Error(`[fallen-star well] 눈먼 영주 그림 ${FS2_WELL_BEAST_ART} 가 설치되지 않았다 — applyFallenMonsterArt16 다음에 부른다`);
+  if (!bundledPixelEnemySheet(FS2_WELL_BEAST_ART) && !Object.hasOwn(project.assets.uploaded, FS2_WELL_BEAST_ART)) {
+    throw new Error(`[fallen-star well] 눈먼 영주 그림 ${FS2_WELL_BEAST_ART} 번들 시트가 없다`);
+  }
   const beast = project.database.enemies.find((e) => e.id === FS2_WELL_BEAST_ENEMY);
   if (!beast) throw new Error("[fallen-star well] 눈먼 영주 적 레코드가 없다");
   beast.monsterResourceId = FS2_WELL_BEAST_ART;
@@ -423,6 +426,6 @@ export function finishFallenWellBeastArt(project: Project, mapId: string): void 
   if (!ev?.pages?.length) throw new Error("[fallen-star well] 잠든 영주 이벤트(페이지)가 없다");
   for (const pg of ev.pages) {
     const g = pg.graphic as { sprite?: { type: string; id: string } } | undefined;
-    if (g?.sprite) g.sprite = { type: "uploaded", id: FS2_WELL_BEAST_ART };
+    if (g?.sprite) g.sprite = { type: "bundled", id: FS2_WELL_BEAST_ART };
   }
 }

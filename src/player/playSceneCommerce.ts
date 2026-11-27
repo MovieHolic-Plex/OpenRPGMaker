@@ -3,8 +3,11 @@ import { recoverPartyVitals } from "@/project/sessionVitals";
 import { store } from "@/project/store";
 import { resolveTerms, type ResolvedTerms } from "@/project/terms";
 import { dialogueHost } from "@/player/playSceneDom";
-import { applySystemGraphic } from "@/player/systemGraphics";
+import { applySystemGraphic, applySystemWindowSkinVariable } from "@/player/systemGraphics";
 import { attachCursorMenu } from "@/player/runtimeCursorMenu";
+import { duckBgmForEffect } from "@/player/audio";
+import { playInnRestJingle, playInnWakeChime } from "@/player/innSfx";
+import { emitRuntimeJuice } from "@/player/runtimeJuice";
 import { menuSkinFor } from "@/player/menuSkins/registry";
 import { partyWalker } from "@/player/partyWalker";
 import { getPlayerPreferences } from "@/player/playerPreferences";
@@ -28,18 +31,27 @@ type CommerceOverlayOptions = {
   readonly testId: string;
   readonly title: string;
   readonly note: string;
+  /** true면 풀블리드 도트 창 — 루트에 9슬라이스 윈도스킨을 칠하지 않아 뒤 배경이 깨지지 않는다. */
+  readonly pixelLayout?: boolean;
 };
+
+const DEFAULT_INN_REST_MS = 1500;
+const DEFAULT_INN_WAKE_MS = 1100;
 
 export function playInn(scene: PlaySceneContext, step: InnStep): Promise<InnOutcome> {
   // RM2003 여관 처리: 인사 → "N <돈 단위> 묵으시겠습니까?" 예/아니오 → (예) 요금 차감·회복 →
-  // 화면이 어두워졌다가(휴식) 기상 메시지와 함께 밝아지고 이벤트가 계속된다.
+  // BGM 덕킹 + 자장가 징글 + 밤하늘 휴식 연출 → 기상 차임/메시지 후 이벤트가 계속된다.
   // 골드 부족 시 기본은 상태 문구만 갱신. branchOnNotEnoughGold 면 notEnough 로 resume 분기.
-  const text = innTextModel(step, resolveTerms(store.getCurrent()));
+  const project = store.getCurrent();
+  const pixelLayout = menuSkinFor(project).partyStats;
+  const price = Math.max(0, Math.trunc(step.price) || 0);
+  const text = innTextModel(step, resolveTerms(project));
   return new Promise((resolve) => {
     const overlay = createCommerceOverlay({
       testId: "inn-scene",
       title: text.title,
       note: text.note,
+      pixelLayout,
     });
     const question = commerceStatus(text.question);
     const actions = document.createElement("div");
@@ -56,7 +68,8 @@ export function playInn(scene: PlaySceneContext, step: InnStep): Promise<InnOutc
     const stayButton = closeButton(
       text.yes,
       () => {
-        if (scene.session.gold < step.price) {
+        if (scene.session.gold < price) {
+          emitRuntimeJuice({ event: "menu-invalid", project, session: scene.session });
           question.textContent = text.notEnoughGold;
           question.dataset.testid = "commerce-status";
           question.dataset.innStatus = "not-enough";
@@ -68,21 +81,26 @@ export function playInn(scene: PlaySceneContext, step: InnStep): Promise<InnOutc
         }
         // 회복/차감은 즉시 반영하고, 이후 휴식 연출을 거쳐 이벤트를 재개한다.
         teardownCursor();
-        changeGold(scene.session, "-=", step.price);
+        changeGold(scene.session, "-=", price);
         recoverPartyVitals(scene.session.actorVitals, scene.session.partyActorIds, {
           recoverMp: step.recoverMp !== false,
         });
         clearPartyStates(scene);
         scene.syncRuntimeState();
-        // 여관 휴식 징글(innRest 자리, ME 채널). 자리가 비면 예전처럼 연출만.
-        playProjectSeCue("innRest");
-        void playInnRest(scene, overlay, step, text, () => resolve("stayed"));
+        const restMs = clampDurationMs(step.restDurationMs, DEFAULT_INN_REST_MS);
+        const wakeMs = clampDurationMs(step.wakeDurationMs, DEFAULT_INN_WAKE_MS);
+        // 잠자는 동안 필드 BGM 을 잠깐 낮추고, 저작된 여관 징글이 없으면 기본 자장가 멜로디를 재생한다.
+        duckBgmForEffect(0.08, restMs + wakeMs + 350);
+        const playedAuthored = playProjectSeCue("innRest", project);
+        if (!playedAuthored) playInnRestJingle(restMs);
+        void playInnRest(scene, overlay, step, text, playedAuthored, () => resolve("stayed"));
       },
       "inn-stay"
     );
     const cancelButton = closeButton(
       text.no,
       () => {
+        emitRuntimeJuice({ event: "menu-back", project, session: scene.session });
         finish("cancelled");
       },
       "inn-cancel"
@@ -90,8 +108,6 @@ export function playInn(scene: PlaySceneContext, step: InnStep): Promise<InnOutc
     actions.append(stayButton, cancelButton);
     overlay.append(question, actions);
     // 도트 창(기본 메뉴 스킨 pixel) — 묵기 전에 누가 얼마나 회복되는지와 소지금 전후를 한 화면에 보인다.
-    const project = store.getCurrent();
-    const pixelLayout = menuSkinFor(project).partyStats;
     if (pixelLayout) layoutPixelInn(overlay, project, scene.session, step);
     mountCommerceOverlay(scene, overlay);
     // 예/아니오 를 방향키로 선택, Z/Enter 결정, X/Esc(=아니오) 취소.
@@ -237,20 +253,39 @@ async function playInnRest(
   overlay: HTMLElement,
   step: InnStep,
   text: InnTextModel,
+  playedAuthoredCue: boolean,
   resolve: () => void
 ): Promise<void> {
-  const restMs = clampDurationMs(step.restDurationMs, 500);
-  const wakeMs = clampDurationMs(step.wakeDurationMs, 750);
+  const restMs = clampDurationMs(step.restDurationMs, DEFAULT_INN_REST_MS);
+  const wakeMs = clampDurationMs(step.wakeDurationMs, DEFAULT_INN_WAKE_MS);
+  const reduced = innReducedMotion();
   overlay.classList.add("runtime-inn-rest");
   const fade = document.createElement("div");
   fade.className = "runtime-inn-fade";
   fade.dataset.testid = "inn-resting";
   fade.setAttribute("role", "status");
   fade.setAttribute("aria-label", "휴식 중");
-  if (innReducedMotion()) {
+  if (reduced) {
     fade.style.animation = "none";
     fade.style.opacity = "0.96";
   }
+  const sleepStage = el("div", {
+    class: "runtime-inn-sleep-scene",
+    children: [
+      el("span", { class: "runtime-inn-moon", attrs: { "aria-hidden": "true" } }),
+      el("div", {
+        class: "runtime-inn-zzz",
+        attrs: { "aria-hidden": "true" },
+        children: [
+          el("span", { class: "runtime-inn-z", text: "Z" }),
+          el("span", { class: "runtime-inn-z", text: "z" }),
+          el("span", { class: "runtime-inn-z", text: "z" }),
+        ],
+      }),
+      el("span", { class: "runtime-inn-sleep-label", text: "편히 쉬는 중…" }),
+    ],
+  });
+  fade.append(sleepStage);
   overlay.replaceChildren(fade);
   scene.syncRuntimeState();
 
@@ -267,6 +302,8 @@ async function playInnRest(
     }
   }
 
+  if (!playedAuthoredCue) playInnWakeChime();
+
   const wake = commerceStatus(text.wakeMessage);
   wake.dataset.testid = "inn-wake";
   overlay.classList.remove("runtime-inn-rest");
@@ -274,7 +311,15 @@ async function playInnRest(
   const title = document.createElement("div");
   title.className = "runtime-overlay-title";
   title.textContent = text.title;
-  overlay.replaceChildren(title, wake);
+  const wakeCard = el("div", {
+    class: "runtime-inn-wake-card",
+    children: [
+      el("span", { class: "runtime-inn-sun", attrs: { "aria-hidden": "true" } }),
+      title,
+      wake,
+    ],
+  });
+  overlay.replaceChildren(wakeCard);
   scene.syncRuntimeState();
   await delay(scene, wakeMs);
   finishCommerce(scene, overlay, resolve);
@@ -345,7 +390,10 @@ function createCommerceOverlay(options: CommerceOverlayOptions): HTMLElement {
   overlay.setAttribute("role", "dialog");
   overlay.setAttribute("aria-modal", "true");
   overlay.setAttribute("aria-label", options.title);
-  applySystemGraphic(overlay);
+  // 풀블리드 도트 창은 자식 카드들이 창 틀을 가지므로 루트에 9슬라이스 border-image 를 칠하지 않는다
+  // (칠하면 windowskin-default 가운데 갈색 텍스처가 화면 전체에 늘어나 배경이 깨진다).
+  if (options.pixelLayout) applySystemWindowSkinVariable(overlay);
+  else applySystemGraphic(overlay);
   const title = document.createElement("div");
   title.className = "runtime-overlay-title";
   title.textContent = options.title;

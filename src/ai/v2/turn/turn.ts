@@ -13,6 +13,7 @@ import { turnModelHooks } from "./modelHooks";
 import { turnRecheck } from "./recheck";
 import { turnReinject } from "./reinject";
 import { turnVqa } from "./vqaRound";
+import { appliedCallKey, withAppliedCall } from "../../piAgent/runResume";
 
 /** store = 이 턴의 할 일 목록(시스템 지시가 읽는다) · onEvent = 실행기 이벤트 모으개 · hooks = runPiAgent 의 v2 갈고리 · finishTurn = 실행이 끝난 뒤 최종 보고. */
 export function createV2Turn(request: PiAgentRequest, options: TurnOptions, io: TurnIo) {
@@ -41,6 +42,21 @@ export function createV2Turn(request: PiAgentRequest, options: TurnOptions, io: 
     maxRounds: 64,
     keepToolsOn,
     afterMain,
+    // 앱 재시작 뒤 이어 하기(src/ai/piAgent/runResume.ts): 적용 호출 키를 그 체크포인트와 같은 프로젝트에 싣는다.
+    beforeCheckpoint: (env, call) => {
+      if (!state.resume) return;
+      if (call && call.name !== "todo") {
+        const before = state.resume.dropped ?? 0;
+        state.resume = withAppliedCall(state.resume, { k: appliedCallKey(call.name, call.args), tool: call.name, at: Date.now() });
+        if ((state.resume.dropped ?? 0) > before && before === 0) env.emit({ type: "execution_status", name: "v2.resume.trimmed", ok: false, summary: `이어 하기 기록이 상한을 넘어 오래된 호출부터 버림 — 앱이 꺼지면 그 호출들은 중복 검사 없이 다시 불릴 수 있다` });
+      }
+      stamp(env);
+    },
+    skipAppliedCall: (env, name, args) => {
+      if (!state.resumeSkip.size || !state.resumeSkip.delete(appliedCallKey(name, args))) return undefined;
+      env.emit({ type: "execution_status", name: "v2.resume.skip", ok: true, summary: `이어 하기 — ${name} 는 앞 실행에서 이미 적용돼 다시 하지 않음` });
+      return `Already applied: the run interrupted by the app restart made this exact ${name} call and its result is in the project now, so it was not run again. Check the project and move on to the next open item.`;
+    },
   };
   return { store, onEvent, hooks, finishTurn };
 }

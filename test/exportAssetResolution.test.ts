@@ -82,7 +82,7 @@ describe("exported player asset resolution", { timeout: 120_000 }, () => {
     // Then
     expect(resolveAssetResourceUrl("oprn-title-field")).toBe(`${base}assets/generated/title/oprn-title-field.png`);
     expect(resolveAssetResourceUrl("easyrpg-sound-decision1")).toBe(`${base}assets/easyrpg/sound/Decision1.wav`);
-    expect(resolveAssetResourceUrl("generated-enemy-slime-01")).toBe(`${base}assets/generated/pixel-enemy-portraits/slime.png`);
+    expect(resolveAssetResourceUrl("generated-enemy-slime-01")).toBe(`${base}assets/generated/pixel-enemy-portraits/slime-green.png`);
     expect(normalizeWarmUrl("assets/dialogue-frame.png")).toBe(`${base}assets/dialogue-frame.png`);
   });
 

@@ -314,7 +314,7 @@ function commandBranches(command: Command): readonly Command[][] {
     case "shop":
       return [command.transactionBranch ?? [], command.failedTransactionBranch ?? []];
     case "inn":
-      return [command.notEnoughBranch ?? []];
+      return [command.stayedBranch ?? [], command.cancelledBranch ?? [], command.notEnoughBranch ?? []];
     default:
       return [];
   }
@@ -439,10 +439,19 @@ function repairCommands(
         ...(failed === undefined ? {} : { failedTransactionBranch: failed.commands }),
       };
     }
-    if (command.kind === "inn" && command.notEnoughBranch) {
-      const branch = repairCommands(command.notEnoughBranch, missingId, plan);
-      changed += branch.changed;
-      return { ...command, notEnoughBranch: branch.commands };
+    if (command.kind === "inn") {
+      const stayed = command.stayedBranch ? repairCommands(command.stayedBranch, missingId, plan) : undefined;
+      const cancelled = command.cancelledBranch ? repairCommands(command.cancelledBranch, missingId, plan) : undefined;
+      const notEnough = command.notEnoughBranch ? repairCommands(command.notEnoughBranch, missingId, plan) : undefined;
+      if (stayed) changed += stayed.changed;
+      if (cancelled) changed += cancelled.changed;
+      if (notEnough) changed += notEnough.changed;
+      return {
+        ...command,
+        ...(stayed === undefined ? {} : { stayedBranch: stayed.commands }),
+        ...(cancelled === undefined ? {} : { cancelledBranch: cancelled.commands }),
+        ...(notEnough === undefined ? {} : { notEnoughBranch: notEnough.commands }),
+      };
     }
     return command;
   });

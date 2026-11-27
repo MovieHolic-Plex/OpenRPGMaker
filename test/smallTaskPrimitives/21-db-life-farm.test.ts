@@ -17,7 +17,7 @@ import { jsonEqual } from "@/util/structuralJson";
 import { createBlankProjectCopy, expectKoreanSentence, expectRefused, expectUndoRestores, loadFixture } from "./harness";
 
 const exampleId = "row_unit21";
-const graphicResourceId = "generated-enemy-slime-01";
+const graphicResourceId = "generated-enemy-slime-green";
 const seasons = ["spring", "summer", "fall", "winter"];
 
 const examples = {

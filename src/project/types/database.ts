@@ -2286,10 +2286,17 @@ export interface SystemRecords {
   /** 화면 표시 필터(project/displayFilter.ts) — 주사선·브라운관. 생략 = 없음. */
   displayFilter?: "scanlines" | "crt";
   /**
-   * 플레이 화면을 창에 키우는 방식(project/playSurfaceScaleMode.ts). integer = 정수 배율+여백, fit = 창에 꽉.
-   * 생략하면 해상도를 저장한 프로젝트는 integer, 옛 320×240 프로젝트는 fit.
+   * 플레이 화면을 창에 키우는 방식(project/playSurfaceScaleMode.ts).
+   * adaptive = 반응형 정수 도트(여백 없음, 추천 기본), integer = 고정 정수 배율+여백, fit = 창에 꽉.
+   * 생략하면 해상도를 저장한 프로젝트는 adaptive(몬스터 수집·양쪽 전신은 integer), 옛 320×240 프로젝트는 fit.
    */
-  playSurfaceScale?: "integer" | "fit";
+  playSurfaceScale?: "adaptive" | "integer" | "fit";
+  /**
+   * 모바일 세로 화면 배치 방식(adaptive 모드, project/playSurfaceScaleMode.ts).
+   * ds = 상단 55% 세로 카메라 + 하단 45% 전용 대사·전투·패드 덱(기본),
+   * fullbleed = 화면 100% 전체 월드 + 반투명 플로팅 UI/패드.
+   */
+  portraitLayout?: "ds" | "fullbleed";
   /**
    * 화면보다 작은 맵을 정수 캔버스 배율로 키워 화면을 채울지(project/smallMapFill.ts).
    * 생략 = SMALL_MAP_FILL_DEFAULT(끔, 2026-11-04 오너 결정) — 작은 맵은 원래 크기로 가운데.
@@ -2297,6 +2304,13 @@ export interface SystemRecords {
   smallMapFill?: boolean;
   /** ESC(X) 게임 메뉴 디자인. 생략 = workbench(작업대, 지금 화면). */
   menuUiStyle?: MenuUiStyle;
+  /**
+   * ESC 메뉴 틀(player/hubMenu). "hub" = 허브 카드형(첫 화면 동료 카드 + 아이템·스킬·장비·상태 칸, 타이틀 그림 배경),
+   * "legacy" = 옛 메뉴(menuUiStyle 스킨). 허브는 배우 파티로 싸우는 게임에서만 켜진다(몬스터 파티·연애·전투 없는 게임은 옛 메뉴).
+   */
+  menuLayout?: "hub" | "legacy";
+  /** 허브 메뉴 색 두 개(CSS 색). 생략하면 남색 창 + 노란 강조. 창 색 하나에서 테두리·칸·그림자를 섞어 만든다. */
+  menuTheme?: { readonly window?: string; readonly accent?: string };
   /**
    * 조수가 입힌 UI 모습 한 벌의 id(project/uiLook.ts) — 대사창·메뉴·전투 창·타이틀·HUD 껍질을 이 세트의 값으로 채웠다는 기록.
    * 런타임은 읽지 않는다(축마다의 값이 정본). 다음 끝맺음이 같은 모습을 지키고, 청사진의 look 이 바뀌면 이 세트 값 그대로인 축만 새 세트로 옮긴다.

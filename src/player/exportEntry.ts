@@ -15,7 +15,14 @@ setBundledJsonReader(async (url, onBytes) => {
 import { PRODUCT_BRAND } from "@/brand";
 import { deserialize, deserializeParsed } from "@/project/io";
 import { preloadBundledTilesetDefinitions } from "@/project/defaults/defaultAssets";
-import { setBundledJsonReader, type BundledJsonProgress } from "@/project/defaults/bundledJson";
+import {
+  bundledJsonKeyForTexture,
+  preloadBundledJson,
+  preloadBundledJsonForProject,
+  setBundledJsonReader,
+  type BundledJsonKey,
+  type BundledJsonProgress,
+} from "@/project/defaults/bundledJson";
 import { OPRN_EXTENSION } from "@/project/package";
 import { isFlagshipDemoId, type FlagshipDemoId } from "@/project/flagship/types";
 import type { Project } from "@/project/types";
@@ -116,6 +123,8 @@ function installTouchUpgrade(): void {
 }
 
 async function bootExportedPlayer(root: HTMLElement): Promise<void> {
+  // Phaser·PlayScene 청크는 project.json 에 의존하지 않으므로 부팅 첫 시점에 병렬로 미리 받는다.
+  void warmPlayGameRuntime().catch(() => undefined);
   const boot = await withDevCheckpointParam(readBootConfig());
   const storeGame = parseStoreGameBoot(boot.storeGame);
   if (storeGame && !storeGameEmbedderAllowed(storeGame)) {
@@ -210,11 +219,12 @@ async function prepareFirstScreen(loader: BootLoader, project: Project, autoStar
   // 불러오는 화면은 여기서 걷지 않는다 — 플레이어가 첫 화면을 그리면(onFirstScreen) 걷는다. 그 사이 엔진 기동의
   // 검은 «• • •»·두 번째 로딩 카드가 비쳤다(2026-10-26 첫사랑 op5: 시작 전 4초 검은 화면).
   // 시작한 뒤: 가까운 맵부터 나머지를 낮은 우선순위로 받는다(맵 이동 때 기다림을 줄인다).
-  const background = backgroundUrls(project, project.startMapId);
+  // backgroundUrls 계산도 클릭 직후 메인 스레드를 막지 않도록 지연 타이머 안에서 수행한다.
   setTimeout(() => {
     // QA 가 «뒤에서 받은 것» 과 «화면이 늦게 부른 것» 을 가르는 기준 시각(측정용, 비밀 아님).
     document.documentElement.dataset.preloadBackgroundAt = String(Math.round(performance.now()));
     void (async () => {
+      const background = backgroundUrls(project, project.startMapId);
       // 판본의 파일 목록(preload-files.json)이 있으면 프로젝트 글자로 안 보이는 것(코드 조각·스킬 효과 시트·코드가 고르는
       // 전투 그림)까지 전부 받는다. 순서: 가까운 맵 → 코드 조각·효과 시트(assets/ 바로 아래) → 나머지.
       // 작은 그림은 묶음으로(요청 수천 → 수십, preloadPacks.ts) — 서비스 워커가 이 문서를 맡았을 때만.
@@ -274,7 +284,25 @@ async function deserializeWithBundledTilesets(text: string, onDefinitions?: Bund
     return deserialize(text); // 같은 형식 오류 문구를 낸다.
   }
   const tilesets = parsed && typeof parsed === "object" ? (parsed as { tilesets?: unknown }).tilesets : undefined;
-  if (tilesets && typeof tilesets === "object") await preloadBundledTilesetDefinitions(Object.keys(tilesets), onDefinitions);
+  const maps = parsed && typeof parsed === "object" ? (parsed as { maps?: unknown }).maps : undefined;
+  const extraKeys = new Set<BundledJsonKey>();
+  if (tilesets && typeof tilesets === "object") {
+    for (const entry of Object.values(tilesets as Record<string, { image?: { type?: unknown; id?: unknown } }>)) {
+      if (entry?.image?.type === "bundled" && typeof entry.image.id === "string") {
+        const key = bundledJsonKeyForTexture(entry.image.id);
+        if (key) extraKeys.add(key);
+      }
+    }
+  }
+  const hasRelief = maps && typeof maps === "object" && Object.values(maps as Record<string, { relief?: unknown }>).some((map) => Boolean(map?.relief));
+  if (hasRelief) {
+    extraKeys.add("reliefRampArt");
+    extraKeys.add("reliefSheerArt");
+  }
+  await Promise.all([
+    tilesets && typeof tilesets === "object" ? preloadBundledTilesetDefinitions(Object.keys(tilesets), onDefinitions) : null,
+    extraKeys.size > 0 ? preloadBundledJson([...extraKeys]) : null,
+  ]);
   return deserializeParsed(parsed);
 }
 
@@ -400,6 +428,9 @@ async function startPlayer(
   // renderPlayer 는 root 를 비운다 — 불러오는 화면은 문서 맨 위로 옮겨 그 위를 덮는다.
   if (loader) { document.body.append(loader.root); loader.root.style.zIndex = "2147483000"; }
   try {
+    if (source === "opened-file") {
+      await preloadBundledJsonForProject(project);
+    }
     installExportUploadedAssets(project);
     // 옛 저장본에서 내보낸 게임도 에디터와 같은 얼굴을 보여 준다(faceMatchRepair.ts — 걷기 그림의 짝으로 교정).
     repairFaceMatches(project);

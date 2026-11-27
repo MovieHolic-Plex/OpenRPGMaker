@@ -12,6 +12,8 @@ project.database.equipmentSlots = [{ id: "slot_boots", label: "신발" }];
 const boots = {
   ...template,
   id: "equip_qa_boots",
+  // 옛 ESC 메뉴(menuUiStyle 스킨) 화면을 검사한다 — 기본이 허브 메뉴가 된 뒤에도 같은 화면을 본다.
+  systemPatch: { menuLayout: "legacy" },
   name: "여행용 장화",
   slot: "slot_boots",
   twoHanded: false,

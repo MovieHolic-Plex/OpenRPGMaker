@@ -1045,12 +1045,12 @@ describe("aiV2PlayFixes4", () => {
       expect(kinds(run.ctx.project)).toEqual(["text", "fork"]);
     });
   });
-  // P6: «녹슨 갑옷과 방패를 든 해골 병사» 가 창백한 유령으로, «거대한 해골 종지기» 가 던전의 푸른 용으로 섰다 — 해골 그림은 옛 묶음에 있었다.
+  // P6: 이름과 그림 설계 글이 둘 이상 겹치는 현행 정식 번들 적을 고른다 — 2026-11-26 구형 3×3(해골 기사 등)은 삭제되어 고르지 않는다.
   describe("글이 짚은 적 그림은 어느 묶음에 있든 그대로 — 확인 빌드 r6 · r7a", () => {
     it("이름과 그림 설계 글이 둘 이상 겹치는 적 하나 — 한 낱말만 겹치거나 여럿이 겨루면 고르지 않는다", () => {
       const project = createBlankProject() as Project;
-      expect(namedFoeArt(project, "해골 병사 녹슨 갑옷과 방패를 든 해골 병사")).toBe("enemy_skeleton_knight");
-      expect(namedFoeArt(project, "해골 병사")).toBeUndefined();
+      expect(namedFoeArt(project, "두건 쓰고 복면 두른 산적")).toBe("enemy_bandit_mask");
+      expect(namedFoeArt(project, "산적")).toBeUndefined();
       expect(namedFoeArt(project, "강의 주인 두꺼비")).toBeUndefined();
     });
   });

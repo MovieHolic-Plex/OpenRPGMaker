@@ -6,6 +6,7 @@ import type { GameDesignAnswer, GameDesignBrief, GamePresetId } from "@/project/
 import { GAME_BRIEF_SLOTS, type GameBriefSlot } from "@/project/gameDesignIds";
 import { NEW_PROJECT_CHOICES } from "@/editor/newProjectChoices";
 import { LIFE_SIM_ENABLED } from "../../../electron/shared/lifeSim";
+import { composeBladeSentence, type FirstRunBladeSelection } from "./firstRunBlades";
 
 /** 입력창 글자 수 상한 — 컨셉 초안도 400자까지만 읽는다(src/concepts/draft.ts draftPrompt). */
 export const FIRST_RUN_TEXT_LIMIT = 400;
@@ -67,4 +68,45 @@ export function firstRunBrief(text: string, presetId: GamePresetId = pickFirstRu
     ...GAME_BRIEF_SLOTS.filter((slot) => slot !== "experience").map((slot) => `${SLOTS[slot].label}: ${SLOTS[slot].recommended} (추천안)`),
   ].join("\n");
   return { version: 1, presetId, answers, summary };
+}
+
+/** 사선 블레이드 + 3키워드(무대 · 주인공 · 사건) 조합 → LLM 대기 없이 즉시 편집기로 넘기는 확정 기획. */
+export function firstRunBladeBrief(selection: FirstRunBladeSelection): {
+  readonly brief: GameDesignBrief;
+  readonly title: string;
+  readonly sentence: string;
+} {
+  const { blade } = selection;
+  const place = cleanFirstRunText(selection.keywords[0]);
+  const hero = cleanFirstRunText(selection.keywords[1]);
+  const event = cleanFirstRunText(selection.keywords[2]);
+  const sentence = cleanFirstRunText(composeBladeSentence(blade, [place, hero, event]));
+  const detailText = [
+    place ? `무대: ${place}` : "",
+    hero ? `주인공: ${hero}` : "",
+    event ? `핵심 사건: ${event}` : "",
+    selection.tilesetHint ? `참고 칩셋: ${selection.tilesetHint}` : "",
+  ].filter(Boolean).join(" / ") || SLOTS.detail.recommended;
+
+  const experienceText = blade.toneDirective ? `${sentence}. ${blade.toneDirective}` : sentence;
+  const answers: Record<GameBriefSlot, GameDesignAnswer> = {
+    experience: { label: SLOTS.experience.label, question: SLOTS.experience.question, text: experienceText, source: "user" },
+    activity: { label: SLOTS.activity.label, question: SLOTS.activity.question, text: `${blade.title} (${blade.kicker})`, source: "user" },
+    progression: { label: SLOTS.progression.label, question: SLOTS.progression.question, text: event ? `${event}을(를) 중심으로 첫 구간을 완료한다.` : SLOTS.progression.recommended, source: event ? "user" : "recommended" },
+    detail: { label: SLOTS.detail.label, question: SLOTS.detail.question, text: detailText, source: "user" },
+    scope: { label: SLOTS.scope.label, question: SLOTS.scope.question, text: SLOTS.scope.recommended, source: "recommended" },
+  };
+  const summary = [
+    `사용자 문장: ${sentence}`,
+    `시작 장르: ${blade.title}`,
+    ...(blade.toneDirective ? [`장르 방향: ${blade.toneDirective}`] : []),
+    `인물과 무대: ${detailText}`,
+    `${SLOTS.scope.label}: ${SLOTS.scope.recommended}`,
+  ].join("\n");
+  const title = firstRunTitle(event || place || blade.title);
+  return {
+    brief: { version: 1, presetId: blade.presetId, answers, summary },
+    title,
+    sentence,
+  };
 }

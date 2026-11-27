@@ -28,12 +28,14 @@ import { readClearRecord, recordEndingClear } from "@/player/clearRecord";
 import { syncSessionWithDeviceRecords } from "@/player/deviceRecords";
 import { applyStatePreset, testHerePreset } from "@/testing/debugSession";
 import { el, clearChildren } from "@/util/dom";
+import { clearRememberedChipsetImages } from "@/assets/chipsetTextureBands";
 import {
   applySaveSnapshot,
   readAutosave,
   latestResumableSave,
   readLatestSave,
   readSaveSlot,
+  safeLocalStorage,
   snapshotLoadBlocker,
   setSavePublication,
   type LatestSave,
@@ -46,9 +48,9 @@ import { destroyBattleSceneOnHost } from "@/player/battleDom";
 import { markPlayRender } from "@/app/perfMetrics";
 import type { PlayScene } from "@/player/PlayScene";
 import { isPlayScene } from "@/player/playerGuards";
-import { createPlaySurface } from "@/player/playSurface";
+import { createPlaySurface, type PlaySurface } from "@/player/playSurface";
 import type { PlaySurfaceScaleMode } from "@/player/playSurfaceScale";
-import { resolvePlaySurfaceScaleMode } from "@/project/playSurfaceScaleMode";
+import { resolvePlaySurfaceScaleMode, resolvePortraitLayout } from "@/project/playSurfaceScaleMode";
 import type { Project } from "@/project/types";
 import { createTouchPad, isTouchDevice, type TouchPadHandle } from "@/player/touchPad";
 import { installTapConfirm } from "@/player/touchTap";
@@ -214,6 +216,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   let cleanupPlaySurface: (() => void) | null = null;
   let touchPad: TouchPadHandle | null = null;
   let playStage: HTMLElement | null = null;
+  let activeSurface: PlaySurface | null = null;
   let firstScreenShown = false;
   const firstScreen = (): void => {
     if (firstScreenShown) return;
@@ -237,7 +240,15 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const pointerInput = emeraldStyle || options.touchInput === true;
   // 터치 UI: 조작이 게임을 가리지 않게 자리를 떼는 배치 + 모든 화면(타이틀·메뉴·상점·전투)에 조작 패드(2026-10-24).
   const touchUi = pointerInput && isTouchDevice();
-  const surfaceOptions = { topAlignPortrait: pointerInput, touchUi } as const;
+  const surfaceOptionsFor = (
+    project: Project,
+    onLogicalResize?: (size: Readonly<{ width: number; height: number }>) => void,
+  ) => ({
+    topAlignPortrait: pointerInput,
+    touchUi,
+    portraitLayout: resolvePortraitLayout(project),
+    ...(onLogicalResize ? { onLogicalResize } : {}),
+  });
   // 터치 화면의 패드는 무대 밖 뷰포트에 붙는다. 데스크톱은 기존처럼 무대 안 env 오버라이드만.
   const mountTouchPad = (surface: { readonly viewport: HTMLElement; readonly stage: HTMLElement }): void => {
     touchPad?.cleanup();
@@ -287,6 +298,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     cleanupPlaySurface?.();
     cleanupPlaySurface = null;
     playStage = null;
+    activeSurface = null;
     // 고친 프로젝트 스냅숏은 런과 수명이 같다. LIFO 로 풀어야 호스트(테스트 플레이 창)가
     // 올려 둔 샌드박스 스냅숏이 되돌아온다.
     releaseBootProject?.();
@@ -367,8 +379,17 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const heldTitle = opening ? layout.querySelector<HTMLElement>("[data-testid='title-screen'].rm-title-transition-hold") : null;
     heldTitle?.remove();
     clearChildren(layout);
-    const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleFor(store.getCurrent()), store.getCurrent().system.displayFilter, surfaceOptions);
+    const currentProject = store.getCurrent();
+    const surface = createPlaySurface(
+      resolvePlayResolution(currentProject.system),
+      surfaceScaleFor(currentProject),
+      currentProject.system.displayFilter,
+      surfaceOptionsFor(currentProject, (next) => {
+        activeScene()?.resizeViewport(next.width, next.height);
+      }),
+    );
     playStage = surface.stage;
+    activeSurface = surface;
     layout.append(surface.viewport);
     mountHostControls(surface.viewport);
     // 엔진/에셋 기동 동안 검은 화면만 보이지 않도록 단계 표시.
@@ -397,10 +418,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       session.currentMapId = stage.mapId; session.x = stage.x; session.y = stage.y;
       session.flags[openingStageFlag(stage.mapId, stage.eventId)] = true;
     }
-    const clear = readClearRecord(window.localStorage);
+    const storage = safeLocalStorage();
+    const clear = storage ? readClearRecord(storage) : undefined;
     if (!request.session && request.newGamePlus && clear) applyClearCarry(bootProject, session, clear.carry);
     // 회차·본 엔딩·연 CG 는 기기 기록이다 — 새 게임이든 불러오기든 부팅마다 최신 기록을 세션에 비춘다(ESC 불러오기는 PlayScene.applySession 이 같은 함수로).
-    syncSessionWithDeviceRecords(window.localStorage, bootProject, session);
+    if (storage) syncSessionWithDeviceRecords(storage, bootProject, session);
     if (!request.session && request.difficultyId) setSessionDifficulty(bootProject.system, session, request.difficultyId);
     if (!opening) {
       void bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs);
@@ -566,6 +588,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
         keyboardOnly: true,
         initialEventTestId: eventTestId,
         trackGlobalGame: options.trackGlobalGame,
+        initialLogicalResolution: activeSurface?.logicalResolution(),
         onPlayLoadProgress: (ratio: number) => {
           if (run !== startRun) return;
           loading.setStage("assets");
@@ -605,7 +628,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       game.registry.set("returnToTitle", () => renderTitle());
       game.registry.set("recordEndingClear", (endingId: string, endedSession: PlaySession) => {
         try {
-          recordEndingClear(window.localStorage, store.getCurrent(), endedSession, endingId);
+          const storage = safeLocalStorage();
+          if (storage) recordEndingClear(storage, store.getCurrent(), endedSession, endingId);
         } catch (error) {
           console.error("[player] 클리어 기록을 저장하지 못했습니다:", error);
         }
@@ -645,6 +669,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       try {
         const scene = nextGame.scene.getScene("PlayScene");
         if (isPlayScene(scene)) {
+          const liveRes = activeSurface?.logicalResolution();
+          if (liveRes) scene.resizeViewport(liveRes.width, liveRes.height);
           bootDiag("refresh", true, { detail: "refreshRuntimeSurfaces" });
           scene.refreshRuntimeSurfaces();
         }
@@ -657,7 +683,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       firstScreen();
       bootDiag("ready", true, { detail: "boot complete" });
       signalReady();
-      clearStaleModuleReloadMark();
+      try {
+        clearStaleModuleReloadMark();
+      } catch (markError) {
+        console.error("[player] 모듈 재로드 표식 정리에 실패했습니다:", markError);
+      }
       try {
         options.onPlayBootSuccess?.();
       } catch (callbackError) {
@@ -688,7 +718,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   };
 
   const loadSlot = (slot: SaveSlotIndex, fromTitle: boolean): void => {
-    const result = readSaveSlot(window.localStorage, slot);
+    const storage = safeLocalStorage();
+    const result = storage ? readSaveSlot(storage, slot) : { kind: "empty" as const, slot };
     if (result.kind !== "present") {
       renderLoad(fromTitle, `${slot}번 저장 칸을 불러올 수 없습니다`);
       return;
@@ -717,7 +748,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   // 타이틀 "이어하기" / 로드 패널 오토세이브 카드 — loadSlot 과 동형: 파싱 성공 시
   // applySaveSnapshot → startGame(restored), 실패 시 로드 패널로 안내한다.
   const loadAutosave = (fromTitle: boolean): void => {
-    const result = readAutosave(window.localStorage);
+    const storage = safeLocalStorage();
+    const result = storage ? readAutosave(storage) : { kind: "empty" as const };
     if (result.kind !== "present") {
       renderLoad(fromTitle, "자동 저장을 불러올 수 없습니다");
       return;
@@ -748,9 +780,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   // 가장 새 저장이 불러올 수 없으면(맵 없음 등) 불러올 수 있는 자동 저장으로 물러난다.
   const resumableSave = (): LatestSave | undefined => {
     try {
-      const latest = readLatestSave(window.localStorage);
+      const storage = safeLocalStorage();
+      if (!storage) return undefined;
+      const latest = readLatestSave(storage);
       if (latest && snapshotLoadBlocker(store.getCurrent(), latest.snapshot) === null) return latest;
-      const auto = readAutosave(window.localStorage);
+      const auto = readAutosave(storage);
       if (auto.kind === "present" && snapshotLoadBlocker(store.getCurrent(), auto.snapshot) === null) {
         return { source: "autosave", snapshot: auto.snapshot };
       }
@@ -761,7 +795,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   };
 
   const loadLatest = (fromTitle: boolean): void => {
-    const latest = resumableSave() ?? readLatestSave(window.localStorage);
+    const storage = safeLocalStorage();
+    const latest = resumableSave() ?? (storage ? readLatestSave(storage) : undefined);
     if (!latest) {
       renderLoad(fromTitle, "불러올 저장이 없습니다");
       return;
@@ -777,7 +812,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const isAutosaveAvailable = (): boolean => {
     const latest = resumableSave();
     if (!latest) return false;
-    const cleared = Date.parse(readClearRecord(window.localStorage)?.clearedAt ?? "");
+    const storage = safeLocalStorage();
+    const cleared = Date.parse((storage ? readClearRecord(storage)?.clearedAt : undefined) ?? "");
     const saved = Date.parse(latest.snapshot.savedAt ?? "");
     return !(Number.isFinite(cleared) && Number.isFinite(saved) && saved < cleared);
   };
@@ -787,7 +823,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const project = store.getCurrent();
     if (project.system.newGamePlus?.enabled !== true) return undefined;
     try {
-      return readClearRecord(window.localStorage) ? newGamePlusMenuLabel(project) : undefined;
+      const storage = safeLocalStorage();
+      return storage && readClearRecord(storage) ? newGamePlusMenuLabel(project) : undefined;
     } catch {
       return undefined;
     }
@@ -806,7 +843,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       onLoadAutosave: () => loadAutosave(fromTitle),
     });
     if (fromTitle) {
-      const surface = createPlaySurface(resolvePlayResolution(store.getCurrent().system), surfaceScaleFor(store.getCurrent()), store.getCurrent().system.displayFilter, surfaceOptions);
+      const currentProject = store.getCurrent();
+      const surface = createPlaySurface(resolvePlayResolution(currentProject.system), surfaceScaleFor(currentProject), currentProject.system.displayFilter, surfaceOptionsFor(currentProject));
       clearChildren(surface.stage);
       playStage = surface.stage;
       cleanupPlaySurface = surface.cleanup;
@@ -964,6 +1002,10 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
         return;
       }
     }
+    if (menu && !overlayActive && !event.repeat && statusMenu.handleExtraKey(key)) {
+      event.preventDefault();
+      return;
+    }
     if (!isRuntimeMenuKey(key)) return;
     if (overlayActive) return;
     // Holding a key may navigate a list, but must not confirm another screen,
@@ -1027,7 +1069,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     titleMenuIndex = clampTitleMenuIndex(titleMenuIndex, options.length);
     // 타이틀을 보는 동안 맵/캐릭셋 이미지를 HTTP 캐시에 미리 올려
     // "새 게임" 직후 로딩 체감을 줄인다(Phaser 텍스처 등록은 여전히 씬 preload).
-    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), project.system.displayFilter, surfaceOptions);
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), project.system.displayFilter, surfaceOptionsFor(project));
     clearChildren(surface.stage);
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;
@@ -1104,7 +1146,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const sequence = intro?.enabled && intro.scenes.length ? intro : project.system.opening;
     if (!sequence?.enabled || (sequence !== intro && sequence.entry?.mode !== 'before-title') || !sequence.scenes.length) { renderTitle(); return; }
     stopGame(); stopAllAudio();
-    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), undefined, surfaceOptions);
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), undefined, surfaceOptionsFor(project));
     playStage = surface.stage; cleanupPlaySurface = surface.cleanup; layout.append(surface.viewport); mountTouchPad(surface); surface.sync();
     const controller = new AbortController(); openingController = controller;
     const playback = playCinematicSequence({ host: surface.stage, project, sequence, signal: controller.signal, dismissOnAnyInput: true });
@@ -1126,9 +1168,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const settings = project.system.titleScreen ?? defaultTitleScreenSettings();
     if (!settings.variants?.length) return settings;
     try {
-      const latest = readLatestSave(window.localStorage);
+      const storage = safeLocalStorage();
+      if (!storage) return settings;
+      const latest = readLatestSave(storage);
       return applyTitleVariant(settings, {
-        endingIds: readClearRecord(window.localStorage)?.endingIds ?? [],
+        endingIds: readClearRecord(storage)?.endingIds ?? [],
         lastSaveMapId: latest?.snapshot.session.currentMapId,
       });
     } catch {
@@ -1141,7 +1185,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     stopGame();
     clearChildren(layout);
     const project = store.getCurrent();
-    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), project.system.displayFilter, surfaceOptions);
+    const surface = createPlaySurface(resolvePlayResolution(project.system), surfaceScaleFor(project), project.system.displayFilter, surfaceOptionsFor(project));
     clearChildren(surface.stage);
     playStage = surface.stage;
     cleanupPlaySurface = surface.cleanup;
@@ -1176,7 +1220,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const tryResumeOnLaunch = (): boolean => {
     let latest: ReturnType<typeof latestResumableSave>;
     try {
-      latest = latestResumableSave(store.getCurrent(), window.localStorage);
+      const storage = safeLocalStorage();
+      if (!storage) return false;
+      latest = latestResumableSave(store.getCurrent(), storage);
     } catch {
       return false;
     }
@@ -1313,6 +1359,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     cleanupTapConfirm();
     cleanupListTap();
     stopGame();
+    if (options.trackGlobalGame !== false) clearRememberedChipsetImages();
     audioEngine.setQaInstrumentation(false);
     clearChildren(layout);
   };

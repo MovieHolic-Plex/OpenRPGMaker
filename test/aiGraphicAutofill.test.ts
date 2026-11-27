@@ -18,9 +18,9 @@ describe("한국어 몬스터 리소스 검색", () => {
     const cases: readonly [string, string][] = [
       ["슬라임", "slime"],
       ["박쥐", "bat"],
-      ["해골 궁수", "skeleton-archer"],
+      ["동굴 거미", "spider-cave"],
       ["고블린", "goblin"],
-      ["붉은 용", "dragon-red"],
+      ["푸른 드래곤", "dragon-blue"],
       ["돌 골렘", "golem-stone"],
       ["불의 정령", "spirit-fire"],
     ];
@@ -36,12 +36,12 @@ describe("upsert_enemy 외형 자동 부여", () => {
   it("monsterResourceId 를 생략하면 이름에 맞는 리소스를 붙이고 경고한다", () => {
     const ctx = context();
     const result = runTool(ctx, "upsert_enemy", {
-      enemy: { id: "enemy_bone_archer", name: "해골 궁수", stats: { maxHp: 40 } },
+      enemy: { id: "enemy_cave_spider_test", name: "동굴 거미", stats: { maxHp: 40 } },
     });
 
     expect(result.ok, result.summary).toBe(true);
-    const enemy = ctx.project.database.enemies.find((entry) => entry.id === "enemy_bone_archer");
-    expect(enemy?.monsterResourceId).toBe("generated-enemy-skeleton-archer");
+    const enemy = ctx.project.database.enemies.find((entry) => entry.id === "enemy_cave_spider_test");
+    expect(enemy?.monsterResourceId).toBe("generated-enemy-spider-cave");
     expect((result.diff?.warnings ?? []).join(" ")).toContain("monsterResourceId");
   });
 
@@ -83,13 +83,12 @@ describe("define_monster_species 외형 자동 부여", () => {
   it("graphic.monsterResourceId 를 생략하면 이름으로 붙인다", () => {
     const ctx = context();
     const result = runTool(ctx, "define_monster_species", {
-      species: { id: "species_slime", name: "푸른 슬라임", captureRate: 0.5 },
+      species: { id: "species_slime", name: "초록 슬라임", captureRate: 0.5 },
     });
 
     expect(result.ok, result.summary).toBe(true);
     const species = ctx.project.database.monsterSpecies?.find((entry) => entry.id === "species_slime");
-    // Two catalog sprites are labelled 「푸른 슬라임」 (slime-blue and the later slime-01); either is the right look.
-    expect(["generated-enemy-slime-blue", "generated-enemy-slime-01"]).toContain(species?.graphic.monsterResourceId);
+    expect(species?.graphic.monsterResourceId).toBe("generated-enemy-slime-green");
     expect((result.diff?.warnings ?? []).join(" ")).toContain("species.graphic.monsterResourceId");
   });
 });

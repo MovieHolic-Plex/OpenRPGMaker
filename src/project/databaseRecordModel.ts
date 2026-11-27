@@ -26,7 +26,7 @@ import { DEFAULT_BATTLE_SKIN_ID, resolveSkinId, retiredSkinLookWindow } from "@/
 import { isPokemonMoveMotion } from "@/battle/pokemonMoveMotion";
 import { DEFAULT_BATTLE_HIT_FEEL, isBattleHitFeel } from "@/project/battleHitFeel";
 import { normalizeDisplayFilter } from "@/project/displayFilter";
-import { normalizePlaySurfaceScale } from "@/project/playSurfaceScaleMode";
+import { normalizePlaySurfaceScale, normalizePortraitLayout } from "@/project/playSurfaceScaleMode";
 import { normalizeSmallMapFill } from "@/project/smallMapFill";
 import { normalizeTouchControls } from "@/project/touchControls";
 import { normalizeBattleLook } from "@/project/battleLook";
@@ -260,6 +260,14 @@ function normalizeGenreLock(value: unknown): GenreLock | undefined {
   };
 }
 
+function normalizeMenuTheme(value: unknown): SystemRecords["menuTheme"] {
+  if (!value || typeof value !== "object") return undefined;
+  const raw = value as Record<string, unknown>;
+  const pick = (color: unknown) => (typeof color === "string" && color.trim() && color.length <= 64 ? color.trim() : undefined);
+  const window = pick(raw.window), accent = pick(raw.accent);
+  return window || accent ? { ...(window ? { window } : {}), ...(accent ? { accent } : {}) } : undefined;
+}
+
 export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<SystemRecords, "startActorIds">): SystemRecords {
   const titleResourceId = cleanOptionalId(system.titleResourceId);
   const typeChart = normalizeTypeChart(system.typeChart);
@@ -274,6 +282,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   const cameraZoom = normalizeCameraZoom(system.cameraZoom, { keepDefault: keepDefaults });
   const displayFilter = normalizeDisplayFilter(system.displayFilter);
   const playSurfaceScale = normalizePlaySurfaceScale(system.playSurfaceScale);
+  const portraitLayout = normalizePortraitLayout(system.portraitLayout);
   const smallMapFill = normalizeSmallMapFill(system.smallMapFill);
   const battleLook = normalizeBattleLook(battleLookWithRetiredSkinWindow(system));
   const fullPortrait = normalizeDialogueFullPortraitSettings(system.dialogueFullPortrait);
@@ -347,6 +356,7 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (isBattleHitFeel(system.battleHitFeel) && system.battleHitFeel !== DEFAULT_BATTLE_HIT_FEEL) records.battleHitFeel = system.battleHitFeel;
   if (displayFilter) records.displayFilter = displayFilter;
   if (playSurfaceScale) records.playSurfaceScale = playSurfaceScale;
+  if (portraitLayout) records.portraitLayout = portraitLayout;
   if (smallMapFill !== undefined) records.smallMapFill = smallMapFill;
   // 전투 화면 꾸미기도 같은 계약 — 프리셋과 같은 칸·미등록 값은 저장하지 않는다(project/battleLook.ts).
   if (battleLook) records.battleLook = battleLook;
@@ -361,6 +371,10 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (enemyStillMotion && enemyStillMotion !== ENEMY_STILL_MOTION_DEFAULT) records.enemyStillMotion = enemyStillMotion;
   // ESC 메뉴 스킨도 같은 계약 — 기본(workbench)과 미등록 값은 저장하지 않고 명시 선택만 남긴다.
   if (isMenuSkinId(system.menuUiStyle) && system.menuUiStyle !== DEFAULT_MENU_SKIN_ID) records.menuUiStyle = system.menuUiStyle;
+  // ESC 메뉴 틀(player/hubMenu) — 화이트리스트라 여기 없으면 저장·불러오기 한 번에 사라진다. 알 수 없는 값은 버린다.
+  if (system.menuLayout === "hub" || system.menuLayout === "legacy") records.menuLayout = system.menuLayout;
+  const menuTheme = normalizeMenuTheme(system.menuTheme);
+  if (menuTheme) records.menuTheme = menuTheme;
   // 대화창 스타일도 같은 계약 — 기본(glass)과 미등록 값은 저장하지 않는다.
   if (isDialogueStyleId(system.dialogueStyle) && system.dialogueStyle !== DEFAULT_DIALOGUE_STYLE_ID) records.dialogueStyle = system.dialogueStyle;
   // 조수가 입힌 UI 모습 한 벌의 id(project/uiLook.ts) — 목록에 없는 값은 버린다.

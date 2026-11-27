@@ -84,6 +84,7 @@ import { mountCanvasStatus } from "@/editor/panels/canvasToolPill";
 import { installPointerStrokeGate, runWhenPointerReleased } from "@/editor/pointerStrokeGate";
 import { mountEventAiQueueView, unmountEventAiQueueView } from "@/editor/eventAiQueue/eventAiQueueView";
 import { mountFirstRunGuide } from "./firstRunGuide";
+import { mountFirstBuildTheater } from "./firstBuildTheater";
 
 /** 자동 연결 선택·한도 전환 감시는 편집기 수명 동안 한 번만 건다(편집기를 다시 열어도 중복되지 않게). */
 let autoProviderSwitchingInstalled = false;
@@ -173,6 +174,7 @@ let unsubMapBackgroundPreview: (() => void) | null = null;
 let lastRenderedLocationLayerEnabled: boolean | null = null;
 let unsubWorkspace: (() => void) | null = null;
 let disposeFirstRunGuide: (() => void) | null = null;
+let disposeFirstBuildTheater: (() => void) | null = null;
 let disposeAgentModeDock: (() => void) | null = null;
 // 좌측 도크 마운트 — 패널 호스트를 레이아웃 데이터에서 만든 결과. 구성이 바뀔 때만 다시 짓는다.
 let leftDock: DockMount | null = null;
@@ -345,6 +347,8 @@ export function renderEditor(main: HTMLElement): void {
   });
   disposeFirstRunGuide?.();
   disposeFirstRunGuide = mountFirstRunGuide(aiDock, layout);
+  disposeFirstBuildTheater?.();
+  disposeFirstBuildTheater = mountFirstBuildTheater(canvasArea, layout, () => { applyLayout(); scheduleFitCanvas(); });
 
   leftRoot = left;
   phaserHost = phaserContainer;
@@ -560,6 +564,8 @@ export function teardownEditor(): void {
   void import("@/editor/workshop/queue/queueDock").then(({ unmountWorkshopQueueDock }) => unmountWorkshopQueueDock()).catch(() => undefined);
   disposeFirstRunGuide?.();
   disposeFirstRunGuide = null;
+  disposeFirstBuildTheater?.();
+  disposeFirstBuildTheater = null;
   panelRefreshEpoch += 1;
   pendingStoreChange = undefined;
   fullPanelRefreshQueued = false;

@@ -6,7 +6,7 @@
 // 데스크톱 앱(saveCover 가 있는 브리지)의 로컬 폴더에서만 돈다. 실패는 조용히 넘긴다 — 저장을 막을 이유가 없다.
 
 import { loadTilesetImage } from "@/editor/mapTileDraw";
-import { renderMapCoverJpeg } from "@/editor/mapCoverRender";
+import { isMostlyEmptyMap, renderMapCoverJpeg } from "@/editor/mapCoverRender";
 import { projectRepository } from "@/project/persistence/repository";
 import { isLocalTarget } from "@/project/persistence/target";
 import { store } from "@/project/store";
@@ -32,6 +32,9 @@ async function captureNow(): Promise<void> {
     const map = project.maps[project.startMapId] ?? Object.values(project.maps)[0];
     const tileset = map ? project.tilesets[map.tilesetId] : undefined;
     if (!map || !tileset) return;
+    // 시작 화면도 빈 맵(풀밭 한 장)은 그림 대신 빈 카드로 그린다(startCover.renderProjectCover) — 타일셋 그림을 읽고 굽지 않는다.
+    // 새 빈 프로젝트의 첫 편집 화면 뒤 약 0.6~0.9s 멈춤이 이 굽기였다(2026-11-27 패키지 프로파일).
+    if (isMostlyEmptyMap(map)) return;
     const focus = map.id === project.startMapId ? project.startPos : undefined;
     const image = await loadTilesetImage(tileset);
     if ("complete" in image && (!image.complete || image.naturalWidth === 0)) return;

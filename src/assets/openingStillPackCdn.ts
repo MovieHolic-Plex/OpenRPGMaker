@@ -12,7 +12,7 @@ export type StillCdnEnv = {
 
 function ambientEnv(): StillCdnEnv {
   try {
-    return { VITE_STILL_CDN_BASE: import.meta.env.VITE_STILL_CDN_BASE };
+    return { VITE_STILL_CDN_BASE: import.meta.env.OPENRPG_PLAYER_STILL_CDN_BASE ?? import.meta.env.VITE_STILL_CDN_BASE };
   } catch {
     return {};
   }

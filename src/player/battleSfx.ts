@@ -28,32 +28,74 @@ export type BattleSfxKind =
   | "levelUp"
   | "skillLearned";
 
+const BASE_MASTER_GAIN = 0.14;
+const BASE_IMPACT_GAIN = 0.42;
+
 let ctx: AudioContext | undefined;
 let master: GainNode | undefined;
 /** 착탄 아래층 전용 버스 — 샘플(0.4, 곧장 출력)과 같은 크기로 들려야 해서 UI 합성음 master(0.14)를 거치지 않는다.
  *  master 를 거치면 녹화의 저음 대역 에너지가 층을 넣기 전과 같았다(2026-10-02 측정). */
 let impactBus: GainNode | undefined;
+let sharedContextProvider: (() => AudioContext | null) | undefined;
+let seVolume = 0.8;
+
+export function setBattleSfxContextProvider(provider: (() => AudioContext | null) | undefined): void {
+  if (sharedContextProvider === provider) return;
+  sharedContextProvider = provider;
+  ctx = undefined;
+  master = undefined;
+  impactBus = undefined;
+}
+
+export function setBattleSfxVolume(volume: number): void {
+  seVolume = Number.isFinite(volume) ? Math.max(0, Math.min(1, volume)) : 0.8;
+  if (master) master.gain.value = BASE_MASTER_GAIN * seVolume;
+  if (impactBus) impactBus.gain.value = BASE_IMPACT_GAIN * seVolume;
+}
 
 function ensureContext(): AudioContext | undefined {
   // 편집기 전투 미리보기가 소리를 잠근 동안은 컨텍스트를 주지 않는다 — 합성음·샘플·몬스터 세트가 모두 이 컨텍스트를 거친다.
   if (isBattleAudioMuted()) return undefined;
-  if (typeof window === "undefined" || typeof AudioContext === "undefined") return undefined;
-  if (!ctx) {
-    ctx = new AudioContext();
-    master = ctx.createGain();
-    master.gain.value = 0.14;
-    master.connect(ctx.destination);
-    impactBus = ctx.createGain();
-    impactBus.gain.value = 0.42;
-    impactBus.connect(ctx.destination);
+  if (typeof window === "undefined") return undefined;
+  if (ctx && ctx.state === "closed") {
+    ctx = undefined;
+    master = undefined;
+    impactBus = undefined;
   }
-  if (ctx.state === "suspended") void ctx.resume();
+  if (!ctx) {
+    let candidate: AudioContext | null = null;
+    try {
+      const shared = sharedContextProvider?.() ?? null;
+      if (shared && shared.state !== "closed") {
+        candidate = shared;
+      } else if (typeof AudioContext !== "undefined") {
+        candidate = new AudioContext();
+      }
+      if (!candidate || typeof candidate.createGain !== "function") return undefined;
+      const nextMaster = candidate.createGain();
+      nextMaster.gain.value = BASE_MASTER_GAIN * seVolume;
+      nextMaster.connect(candidate.destination);
+      const nextImpact = candidate.createGain();
+      nextImpact.gain.value = BASE_IMPACT_GAIN * seVolume;
+      nextImpact.connect(candidate.destination);
+      ctx = candidate;
+      master = nextMaster;
+      impactBus = nextImpact;
+    } catch {
+      return undefined;
+    }
+  }
+  if (ctx.state === "suspended" && typeof ctx.resume === "function") {
+    void ctx.resume().catch(() => {});
+  }
   return ctx;
 }
 
-/** 브라우저 autoplay 정책 통과용 — 전투의 첫 사용자 입력(키/클릭)에서 호출한다. */
+/** 브라우저 autoplay 정책 통과용 — 이미 만들어진 전투 오디오 컨텍스트가 잠겨 있으면 깨운다(전투 없는 게임에서 컨텍스트를 미리 만들지 않는다). */
 export function unlockBattleSfx(): void {
-  ensureContext();
+  if (ctx && ctx.state === "suspended" && typeof ctx.resume === "function") {
+    void ctx.resume().catch(() => {});
+  }
 }
 
 /** 샘플 캐시(battleSeSamples)가 합성 보이스와 같은 컨텍스트를 쓰게 내준다 —

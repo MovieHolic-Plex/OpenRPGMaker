@@ -1423,7 +1423,9 @@
    도트 비교 상점은 늘 청색 도트 창이었다 — 크림 메뉴·흰 대사창 게임에서 가게만 다른 게임처럼 보였다(2026-11-14 r4d-fun).
    창 배치는 그대로, 색 변수를 그 메뉴 스킨의 값으로 바꾼다 — 화면 글꼴을 쓰는 메뉴의 상점은 틀·글꼴·커서도 그 메뉴의 것(이 블록 끝).
    표식이 없으면(청색 창 계열 메뉴 · 고전 윈도스킨 게임) 아무것도 바꾸지 않는다. */
+.runtime-shop-overlay.runtime-craft-shop-overlay[data-shop-surface],
 .runtime-shop-overlay.runtime-shop-preset-pixel[data-shop-surface] { --shop-focus-line: var(--shop-accent); }
+.runtime-shop-overlay.runtime-craft-shop-overlay:is([data-shop-surface="paper"], [data-shop-surface="cream"]),
 .runtime-shop-overlay.runtime-shop-preset-pixel:is([data-shop-surface="paper"], [data-shop-surface="cream"]) {
   --shop-gain: rgba(38, 112, 66, 1);
   --shop-loss: rgba(170, 45, 40, 1);
@@ -1431,6 +1433,7 @@
 }
 .runtime-shop-overlay.runtime-shop-preset-pixel:is([data-shop-surface="paper"], [data-shop-surface="cream"]) .runtime-shop-stat-bar { background: var(--shop-line); }
 .runtime-shop-overlay.runtime-shop-preset-pixel:is([data-shop-surface="paper"], [data-shop-surface="cream"]) .runtime-shop-chip.is-active .runtime-shop-chip-count { color: var(--shop-on-accent); }
+.runtime-shop-overlay.runtime-craft-shop-overlay[data-shop-surface="paper"],
 .runtime-shop-overlay.runtime-shop-preset-pixel[data-shop-surface="paper"] {
   --shop-surface: linear-gradient(90deg, rgba(227, 211, 176, 1), rgba(251, 243, 220, 1) 8%, rgba(244, 232, 202, 1));
   --shop-surface-flat: rgba(244, 232, 202, 1);
@@ -1446,6 +1449,7 @@
   --shop-window-edge: 2px 2px 0 rgba(90, 60, 37, 0.8);
   background: radial-gradient(ellipse at 30% 20%, rgba(96, 72, 48, 1) 0%, rgba(56, 40, 26, 1) 70%);
 }
+.runtime-shop-overlay.runtime-craft-shop-overlay[data-shop-surface="cream"],
 .runtime-shop-overlay.runtime-shop-preset-pixel[data-shop-surface="cream"] {
   --shop-surface: rgba(250, 249, 235, 1);
   --shop-surface-flat: rgba(250, 249, 235, 1);
@@ -1461,6 +1465,7 @@
   --shop-window-edge: inset 0 0 0 2px rgba(255, 255, 255, 1), 0 2px 0 rgba(37, 54, 60, 1);
   background: radial-gradient(ellipse at 30% 20%, rgba(58, 80, 85, 1) 0%, rgba(37, 54, 60, 1) 70%);
 }
+.runtime-shop-overlay.runtime-craft-shop-overlay[data-shop-surface="navy"],
 .runtime-shop-overlay.runtime-shop-preset-pixel[data-shop-surface="navy"] {
   --shop-surface: linear-gradient(180deg, rgba(24, 30, 66, 0.97), rgba(10, 14, 40, 0.98));
   --shop-surface-flat: rgba(10, 14, 40, 0.98);
@@ -1475,6 +1480,7 @@
   --shop-window-edge: 0 0 0 calc(var(--play-scale, 2) * 1px) rgba(10, 14, 40, 0.9), 0 0 0 calc(var(--play-scale, 2) * 2px) rgba(227, 196, 120, 0.22);
   background: radial-gradient(ellipse at 30% 20%, rgba(16, 20, 44, 1) 0%, rgba(5, 7, 20, 1) 70%);
 }
+.runtime-shop-overlay.runtime-craft-shop-overlay[data-shop-surface="glass"],
 .runtime-shop-overlay.runtime-shop-preset-pixel[data-shop-surface="glass"] {
   --shop-surface: var(--runtime-glass-surface);
   --shop-surface-flat: var(--runtime-glass-panel);
@@ -1494,6 +1500,7 @@
 /* 틀·글꼴·커서 — 화면 글꼴을 쓰는 메뉴(일지 · 남색과 금 · 유리)의 상점은 그 메뉴처럼 화면 글꼴 · 가는 테 · 둥근 모서리 · 줄 강조 커서다.
    왜(2026-11-15 확인 빌드 r5): 색만 맞춘 상점이 도트 글꼴 · 굵은 테 · 손가락 커서라 메뉴와 다른 게임의 창으로 보였다.
    도트 글꼴 메뉴(field-list = cream)의 상점은 도트 글꼴 · 2px 테 그대로다 — 그 메뉴가 그렇게 생겼다. 값은 메뉴 판(statusMenuEdgeDock.css)의 것: 테 1px · 모서리 5px · 고른 줄 3px(논리 화면 기준). */
+.runtime-shop-overlay.runtime-craft-shop-overlay:is([data-shop-surface="paper"], [data-shop-surface="navy"], [data-shop-surface="glass"]),
 .runtime-shop-overlay.runtime-shop-preset-pixel:is([data-shop-surface="paper"], [data-shop-surface="navy"], [data-shop-surface="glass"]) {
   --shop-ui-font: var(--runtime-ui-font);
   --shop-radius: calc(var(--play-scale, 2) * 5px);

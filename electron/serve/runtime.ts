@@ -6,8 +6,8 @@ import { SHARED_TILE_REFERENCES_ENDPOINT } from "../../src/project/sharedTileRef
 import { createHash, randomUUID } from "node:crypto";
 import { mkdir, readFile, realpath, rm, writeFile, rename, readdir } from "node:fs/promises";
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { hostname as osHostname, networkInterfaces } from "node:os";
-import { extname, normalize, resolve, sep, basename } from "node:path";
+import { hostname as osHostname, networkInterfaces, tmpdir } from "node:os";
+import { extname, join, normalize, resolve, sep, basename } from "node:path";
 import { createStoreHandlers } from "../main/dispatch";
 import { createProjectSessionRegistry, separateInlineMediaOnOpen, type SessionRegistry } from "../main/sessions";
 import { ASSET_RESPONSE_CSP, assetCacheControl, safeAssetContentType } from "../shared/assetMime";
@@ -218,7 +218,8 @@ export async function startLocalProjectServer(options: LocalProjectServerOptions
     if (shared || !options.agentMcpScript) throw new Error("이 호스트에서는 에이전트 모드를 쓸 수 없습니다");
     agentHost ??= createAgentHost({
       mcpCommand: { command: process.execPath, args: [options.agentMcpScript] },
-      workDir: resolve(projectDir, ".oprn-agent-workspace"),
+      // 프로젝트 폴더 밖에 작업 폴더를 둔다 — projectDir 안쪽에 두면 에이전트가 상위 폴더의 project.sqlite 에 닿거나 폴더를 오염시킬 수 있다.
+      workDir: join(tmpdir(), "oprn-agent-workspace", createHash("sha256").update(projectDir).digest("hex").slice(0, 12)),
     });
     return agentHost;
   };

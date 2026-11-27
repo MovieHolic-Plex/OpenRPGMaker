@@ -657,7 +657,7 @@ export function rebuildFallenRooms(project: Project, exec: Exec, ids: { hub: str
   });
   const solved = { kind: "switch", switchId: "sw_puzzle_fs_braziers_solved", value: true } as const;
   gate.events = gate.events.filter((e) => !String(e.id).startsWith("ev_fs_vault_gate_"));
-  GATE_STAIRS.forEach((cell, i) => gate.events.push(touchDoor(`ev_fs_vault_gate_up${i}`, cell, { mapId: ids.observatory, x: 3, y: 21, direction: "down" })));
+  GATE_STAIRS.forEach((cell, i) => gate.events.push(touchDoor(`ev_fs_vault_gate_up${i}`, cell, { mapId: ids.observatory, x: 4, y: 18, direction: "up" })));
   for (let dx = 0; dx < 2; dx += 1) {
     const x = PORTCULLIS.x + dx;
     gate.events.push(touchDoor(`ev_fs_vault_gate_in${dx}`, { x, y: PORTCULLIS.y }, { mapId: ids.vault, x: 15, y: 25, direction: "up" }));
@@ -716,5 +716,5 @@ export function rebuildFallenRooms(project: Project, exec: Exec, ids: { hub: str
   pointTransfers(M(ids.gate), ids.vault, { x: 15, y: 25, direction: "up" });
   pointTransfers(M(ids.vault), ids.gate, { x: 15, y: 2, direction: "down" });
   pointTransfers(M(ids.observatory), ids.gate, { x: 26, y: 4, direction: "down" });
-  pointTransfers(M(ids.gate), ids.observatory, { x: 3, y: 21, direction: "down" });
+  pointTransfers(M(ids.gate), ids.observatory, { x: 4, y: 18, direction: "up" });
 }

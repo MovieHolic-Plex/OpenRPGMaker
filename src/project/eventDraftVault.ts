@@ -4,6 +4,7 @@ import type { GameEvent, MapId, Project } from "@/project/types";
 import { projectRepository } from "@/project/persistence/repository";
 import { shareContentDigests } from "@/project/persistence/core/contentDigest";
 import { shareUploadedAssets, withoutSharedDictionaries } from "@/project/projectClone";
+import { copyTilesetDictionaryPreservingLazy } from "@/project/defaults/lazyDefaultTilesets";
 import { randomUuid } from "@/util/id";
 
 /**
@@ -18,7 +19,7 @@ import { randomUuid } from "@/util/id";
 function cloneKeepingDigests(project: Project): Project {
   // 키 순서를 지키려고 빈 사전을 같은 자리에 두고 복제한 뒤 갈아 끼운다(직렬화 바이트가 같아야 한다).
   const next = structuredClone(withoutSharedDictionaries(project)) as Project;
-  next.tilesets = { ...project.tilesets };
+  next.tilesets = copyTilesetDictionaryPreservingLazy(project.tilesets);
   shareUploadedAssets(project, next);
   shareContentDigests(project, next);
   return next;

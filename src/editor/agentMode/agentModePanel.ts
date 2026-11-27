@@ -8,7 +8,7 @@ import type { OprnAgentBridge } from "@/project/persistence/electronRepository";
 import { getTool } from "@/editor/tools/toolRegistry";
 import { callAgentModeTool, listAgentModeTools, newAgentTurn, type AgentTurn } from "./agentModeTools";
 
-type Availability = { id: string; label: string; cliFound: boolean; adapterFound: boolean; ready: boolean; installHint: string; loginHint: string; appInstalled?: boolean; loggedIn?: boolean | null };
+type Availability = { id: string; label: string; cliFound: boolean; adapterFound: boolean; ready: boolean; installHint: string; loginHint: string; appInstalled?: boolean; canInstall?: boolean; loggedIn?: boolean | null };
 type SetupState = { phase: string; message: string; progress?: number; url?: string };
 type AgentEvent = { seq: number; type: string; [key: string]: unknown };
 type ToolCard = { root: HTMLElement; status: HTMLElement; title: HTMLElement; detail: HTMLElement };
@@ -47,11 +47,12 @@ function readableTool(title: string, rawInput: unknown): string {
   return TOOL_LABELS[name] ? `${TOOL_LABELS[name]} (${name})` : name;
 }
 
-/** 읽기만 하는 호출은 묻지 않는다 — 승인은 맵을 바꾸는 호출에만 뜬다. */
+/** 읽기만 하는 호출은 묻지 않는다 — 승인은 맵을 바꾸는 호출에만 뜬다. 셸 명령 인자가 섞인 호출은 자동 승인하지 않는다. */
 function isReadOnlyCall(title: string, rawInput: unknown): boolean {
+  const input = rawInput && typeof rawInput === "object" ? rawInput as Record<string, unknown> : {};
+  if (typeof input.CommandLine === "string" || typeof input.command === "string") return false;
   const name = toolNameOf(title);
   if (name === "oprn_tools" || name === "oprn_schema") return true;
-  const input = rawInput && typeof rawInput === "object" ? rawInput as Record<string, unknown> : {};
   const target = name === "oprn_call" && typeof input.name === "string" ? input.name : name;
   return getTool(target)?.mode === "read";
 }
@@ -130,7 +131,8 @@ export function renderAgentModePanel(bridge: OprnAgentBridge, onReadyChange?: (r
       class: `agent-mode-btn ${kind}`.trim(), text, attrs: { type: "button", ...(installing ? { disabled: "" } : {}) }, dataset: { testid }, on: { click: onClick },
     });
     const actions: HTMLElement[] = [];
-    if (canInstall) {
+    const agentInstallable = agent.canInstall ?? canInstall;
+    if (agentInstallable) {
       if (!agent.ready && !installing) actions.push(button("설치", `agent-setup-install-${agent.id}`, () => call(bridge.install?.({ agent: agent.id }), agent.id), "primary"));
       if (agent.ready && agent.loggedIn === false && !loggingIn) actions.push(button("로그인", `agent-setup-login-${agent.id}`, () => call(bridge.login?.({ agent: agent.id }), agent.id), "primary"));
       if (loggingIn) actions.push(button("로그인 취소", `agent-setup-cancel-login-${agent.id}`, () => { call(bridge.cancelLogin?.({ agent: agent.id }), agent.id); setupStates.delete(agent.id); renderAvailability(agentsNow); }));
@@ -156,7 +158,7 @@ export function renderAgentModePanel(bridge: OprnAgentBridge, onReadyChange?: (r
       const submit = el("button", { class: "agent-mode-btn primary", text: "확인", attrs: { type: "button" }, on: { click: () => { if (codeInput.value.trim()) call(bridge.loginCode?.({ agent: agent.id, code: codeInput.value.trim() }), agent.id); codeInput.value = ""; } } });
       extra.push(el("div", { class: "agent-mode-row", children: [codeInput, submit] }));
     }
-    if (!canInstall && !agent.ready) extra.push(el("code", { text: agent.installHint }));
+    if (!agentInstallable && !agent.ready) extra.push(el("code", { text: agent.installHint }));
     return el("div", {
       class: `agent-mode-avail ${usable(agent) ? "is-ready" : "is-missing"}`,
       dataset: { agent: agent.id, testid: `agent-setup-${agent.id}` },

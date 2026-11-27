@@ -554,8 +554,12 @@ describe("emberQuestToolReplay", () => {
 
     // 3) 적 5종.
     const enemyNames = ["슬라임", "말벌", "박쥐", "돌 골렘", "붉은 용"];
+    const enemyArt: Partial<Record<string, string>> = {
+      en_bee: "generated-enemy-bee-giant",
+      en_dragon: "generated-enemy-dragon-blue",
+    };
     ENEMY_IDS.forEach((id, index) => {
-      calls.push({ name: "upsert_enemy", args: { enemy: { id, name: enemyNames[index], ...(id === "en_bee" ? { monsterResourceId: "generated-enemy-sylph-hornet" } : {}), stats: { maxHp: 40 + index * 30, attack: 60 } } } });
+      calls.push({ name: "upsert_enemy", args: { enemy: { id, name: enemyNames[index], ...(enemyArt[id] ? { monsterResourceId: enemyArt[id] } : {}), stats: { maxHp: 40 + index * 30, attack: 60 } } } });
     });
 
     // 4) 트룹 5개.

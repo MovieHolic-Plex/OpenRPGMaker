@@ -298,7 +298,7 @@ describe("mapRole", () => {
     });
     describe("스킨 공용 정면 적 그림", () => {
       it.each(["rm2003", "rm2000", "dragonquest", "mother", "octopath", "chrono", "bravely", "ff", "goldensun"])("bskin-enemy-%s 는 도트 슬라임 초상으로 풀린다", (id) => {
-        expect(resolveAssetResourceUrl(`bskin-enemy-${id}`)).toBe(PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-slime-01"]);
+        expect(resolveAssetResourceUrl(`bskin-enemy-${id}`)).toBe(PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-slime-green"]);
       });
     });
     describe("자료집 AI 적 생성", () => {
@@ -308,7 +308,7 @@ describe("mapRole", () => {
         expect(parseGeneratedRecord("enemy", '{"name":"동굴 박쥐","monsterResourceId":"bat"}').monsterResourceId)
           .toMatch(/^generated-enemy-bat/);
         expect(parseGeneratedRecord("enemy", '{"name":"이름없는 것","monsterResourceId":"quux"}').monsterResourceId)
-          .toBe("generated-enemy-slime-01");
+          .toBe("generated-enemy-slime-green");
       });
     });
     describe("몬스터 그림 생성 금지", () => {

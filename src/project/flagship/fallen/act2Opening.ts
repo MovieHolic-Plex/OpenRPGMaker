@@ -381,26 +381,13 @@ function cellEvents(map: GameMap): void {
       { kind: "changeParty", actorId: "actor_fs_iris", action: "remove" } as unknown as Command,
       fadeOut(1),
       wait(700),
-      // 붙잡히던 밤의 회상 — 1막 끝 「…잡아라」 와 감방 사이를 잇는다(1막→2막 연결 검수 2026-11-04: 크레딧 뒤 곧장 감방이라
-      // 어떻게 갇혔는지가 빠졌다). 어둠 위 네 줄. 하넬의 「작은 것부터」 가 빵 속 열쇠(「작은 일들이 먼저 대답을 해」)로 이어진다.
+      // 붙잡히던 밤의 회상 — 1막→2막 오프닝 애니매틱이 이미 제2막 제목 카드를 보여 주므로 중복 카드를 빼고 바로 감방으로 잇는다.
       se("cc0-se-orp-inventory-cloth-heavy"),
       narrate("손목에 밧줄이 감긴다.", { position: "center", context: "narration" }),
       say(IRIS, "카엘…!"),
       say(VALEN, "아이는 따로 모셔라.\n선생님은 천문대에."),
       say(HANEL, "…별을 세거라, 카엘. 작은 것부터."),
-      wait(900),
-      // 막 제목 카드 — 1막 끝 카드와 같은 꼴(작은 머리글·큰 제목·금빛 밑줄)의 그림 한 장. 대화창에 띄우지 않는다.
-      // 화면 효과(페이드)는 다음 「멈추는」 명령 뒤 화면 갱신 때 칠해진다 — 페이드 바로 뒤 wait(1) 로 그 자리에서 칠하게 한다.
-      // 없으면 「fadeIn → wait → fadeOut」 의 fadeIn 이 한 번도 칠해지지 않아 카드가 검은 막 밑에 묻혔다(QA 2026-11-04 탐침).
-      { kind: "showPicture", pictureId: "fs2_act2_title_9", resourceId: act2TitleCard.resource.id, x: 0, y: 0, scale: 100, opacity: 255, waitForPicture: false } as unknown as Command,
-      fadeIn(1400),
-      wait(1),
-      wait(3000),
-      fadeOut(1000),
-      wait(1),
-      wait(1100),
-      { kind: "erasePicture", pictureId: "fs2_act2_title_9" } as unknown as Command,
-      wait(300),
+      wait(700),
       narrate("이튿날 밤, 심문회 초소 지하.", { position: "center", context: "narration" }),
       // 첫 장면 — 카엘이 젖은 바닥에 엎어져 있다가 몸을 일으킨다.
       m2("m2-225-sprite-look", { target: "player", pose: "fallen" }),
@@ -430,6 +417,16 @@ function cellEvents(map: GameMap): void {
       say(KAEL, "반죽이 또 안 부풀었나 봐."),
       cutLabel(),
       cutEnd(),
+      // 컷신을 넘겨도 감방 소프트락이 나지 않게 이리스 이탈·포즈 복원·페이드인·무거운 납작빵 지급을 멱등으로 보장한다.
+      { kind: "changeParty", actorId: "actor_fs_iris", action: "remove" } as unknown as Command,
+      m2("m2-225-sprite-look", { target: "player", reset: true }),
+      fadeIn(400),
+      { kind: "fork", condition: sw(SW_BREAD, false), then: [
+        item("fs_bread_flat", 1),
+        item(FS2_BREAD_ITEM, 1),
+        setSw(SW_BREAD),
+      ] } as unknown as Command,
+      setSw(SW_ACT2),
     ], { trigger: { kind: "auto" } }),
   ]);
   // 빵 — 짚 침대 위에서 쪼개 본다(아무 데서나: 감방 쪽 침대 둘 앞). 열쇠가 나온다.
@@ -2140,14 +2137,14 @@ function sarahCombos(project: Project, exec: Exec): void {
     actorIds: [HERO, FS2_SARAH_ACTOR],
     requires: [{ actorId: HERO, skillId: "skill_hero_rush_pierce" }, { actorId: FS2_SARAH_ACTOR, skillId: FS2_SKILL_HEADS_UP }],
     mpCosts: [{ actorId: HERO, mp: 4 }, { actorId: FS2_SARAH_ACTOR, mp: 5 }],
-    scope: "enemy", kind: "damage", statistic: "attack", power: 66, elementId: "spear", hits: 2,
+    scope: "enemy", kind: "damage", statistic: "attack", power: 84, elementId: "spear", hits: 2, combinedStats: true,
     stateEffects: [{ stateId: PIERCED, chance: 100, operation: "add" }],
     choreographyId: "skill_hero_rush_pierce",
   });
   // 듀얼 — 엘레나+새라. 새라가 앞을 막는 동안 엘레나의 불이 창날에 감긴다.
   exec(project, "upsert_combo_tech", {
     id: FS2_COMBO_EMBER_WALL, name: "불씨 창벽",
-    description: "새라가 창을 세우고\n엘레나가 그 창날에 불을 감는다.\n아군 전체에 「반격」. 맞으면 불로 되받아친다.",
+    description: "새라가 창을 세우고 엘레나가 방벽을 덧씌운다.\n아군 전체에 방어 상승과 물리 반격을 건다.",
     actorIds: [MAGE, FS2_SARAH_ACTOR],
     requires: [{ actorId: MAGE, skillId: "skill_mage_fireball" }, { actorId: FS2_SARAH_ACTOR, skillId: FS2_SKILL_HOLD }],
     mpCosts: [{ actorId: MAGE, mp: 6 }, { actorId: FS2_SARAH_ACTOR, mp: 4 }],
@@ -2158,33 +2155,33 @@ function sarahCombos(project: Project, exec: Exec): void {
   // 듀얼 — 새라+이리스(이리스가 돌아온 뒤). 창에 전격을 실어 꽂는다.
   exec(project, "upsert_combo_tech", {
     id: FS2_COMBO_THUNDER_LANCE, name: "뇌창",
-    description: "이리스의 광선이 새라의 창끝에 번개를 싣는다.\n적 하나에 번개 피해. 기계에게 특히 잘 듣는다.",
+    description: "이리스의 광선이 새라의 창끝에 번개를 싣는다.\n적 하나에 큰 번개 피해 · 60% 확률로 관통상. 기계에게 특히 잘 듣는다.",
     actorIds: [FS2_SARAH_ACTOR, GUNNER],
     requires: [{ actorId: FS2_SARAH_ACTOR, skillId: FS2_SKILL_PIERCE }, { actorId: GUNNER, skillId: "skill_gunner_shot" }],
     mpCosts: [{ actorId: FS2_SARAH_ACTOR, mp: 5 }, { actorId: GUNNER, mp: 5 }],
-    scope: "enemy", kind: "damage", statistic: "attack", power: 90, elementId: "thunder",
+    scope: "enemy", kind: "damage", statistic: "attack", power: 145, elementId: "thunder", combinedStats: true,
     stateEffects: [{ stateId: PIERCED, chance: 60, operation: "add" }],
     choreographyId: "skill_mage_chain_lightning",
   });
   // 트리플 — 엘레나+새라+이리스. 회수자 3단계의 열쇠.
   exec(project, "upsert_combo_tech", {
     id: FS2_COMBO_FROST_STARS, name: "서리 별무리",
-    description: "엘레나의 눈보라에 창과 광선이 별처럼\n박힌다. 적 전체에 얼음 피해.\n「관통상」 60% 확률, 둔화는 반드시 건다.",
+    description: "엘레나의 눈보라에 창과 광선이 별처럼 박힌다.\n적 전체에 큰 얼음 피해 · 관통상 60% · 둔화 100%.",
     actorIds: [MAGE, FS2_SARAH_ACTOR, GUNNER],
     requires: [{ actorId: MAGE, skillId: "skill_mage_blizzard" }, { actorId: FS2_SARAH_ACTOR, skillId: FS2_SKILL_PIERCE }, { actorId: GUNNER, skillId: "skill_gunner_snipe" }],
     mpCosts: [{ actorId: MAGE, mp: 9 }, { actorId: FS2_SARAH_ACTOR, mp: 6 }, { actorId: GUNNER, mp: 6 }],
-    scope: "allEnemies", kind: "damage", statistic: "mind", power: 64, elementId: "ice", combinedStats: true,
+    scope: "allEnemies", kind: "damage", statistic: "mind", power: 140, elementId: "ice", combinedStats: true,
     stateEffects: [{ stateId: PIERCED, chance: 60, operation: "add" }, { stateId: "state_agility_down", chance: 100, operation: "add" }],
     choreographyId: "skill_ranger_storm_arrow",
   });
-  // 듀얼 — 카엘+엘레나 강화판. 엘레나 유대 3(불씨 지키기)이 열쇠.
+  // 듀얼 — 카엘+엘레나 강화판. 엘레나 유대(불씨 지키기)가 열쇠.
   exec(project, "upsert_combo_tech", {
     id: FS2_COMBO_FLAME_CROSS_TWIN, name: "불꽃 십자참·겹",
     description: "엘레나가 지켜 온 불씨를\n카엘의 검에 통째로 옮긴다.\n불로 세 번 베고 화상을 반드시 입힌다.",
     actorIds: [HERO, MAGE],
     requires: [{ actorId: HERO, skillId: "skill_hero_cross_slash" }, { actorId: MAGE, skillId: FS2_SKILL_EMBER_KEEP }],
     mpCosts: [{ actorId: HERO, mp: 4 }, { actorId: MAGE, mp: 7 }],
-    scope: "enemy", kind: "damage", statistic: "attack", power: 58, elementId: "fire", hits: 3,
+    scope: "enemy", kind: "damage", statistic: "attack", power: 54, elementId: "fire", hits: 3, combinedStats: true,
     stateEffects: [{ stateId: "fs_state_burn", chance: 100, operation: "add" }],
     choreographyId: "skill_hero_cross_slash",
   });
@@ -2227,7 +2224,8 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
   for (const [id, name] of [[SW_ON_WALL, "B6: 성벽 위에 나왔다"], [SW_SARAH, "B6: 새라 합류"], [SW_SPEAR_BACK, "B6 선택1: 창을 돌려줬다"], [SW_SPEAR_KEPT, "B6 선택1: 창을 맡아 뒀다"], [SW_SARAH_LOST, "B6: 성벽 위에서 한 번 졌다"]] as const) ensureSwitch(project, id, name);
   exec(project, "upsert_item", { item: {
     id: FS2_STAR_IRON, name: "별쇠 조각", type: "special", occasion: "never", consumable: false, price: 0,
-    description: "새라의 창끝에서 떼어 낸 별쇠.\n로한이라면 이걸로 창을 한 번 더 벼려 줄 거다.",
+    iconResourceId: "cc0-jetrel-gem-sapphire", imageResourceId: "cc0-jetrel-gem-sapphire",
+    description: "새라의 창끝에서 떼어 낸 별쇠.\n서리 가도의 행상 베른 공방에서 창 강화 재료로 쓸 수 있다.",
   } });
   sarahKit(project, exec);
   // 새라 — 창기사(꿰뚫는 창·막아서기는 합류 때, 감싸기는 합류 +1). 합류 레벨 = 1막에서 이어 한 파티가 새라에게 닿는 레벨
@@ -2255,6 +2253,7 @@ function northFortress(project: Project, exec: Exec, hubId: string): void {
   copyEnemy(project, exec, "enemy_fs_valen_spearman", {
     id: FS2_SARAH_ENEMY, name: SARAH, level: 10, monsterResourceId: "charset-battler-actor1-3",
     stats: { maxHp: 1400, maxMp: 60, attack: 66, defense: 50, mind: 30, agility: 64 },
+    stateRates: { state_sleep: "E", state_stop: "E", state_paralysis: "D", state_silence: "D" },
     skillIds: ["skill_attack", "skill_dragoon_lance_thrust", "skill_fs_taunt"],
     actions: [act("skill_attack", 6), act("skill_dragoon_lance_thrust", 5), act("skill_fs_taunt", 3)],
     rewards: { exp: 450, gold: 0, dropRatePercent: 0, drops: [] },
@@ -2510,14 +2509,16 @@ function fortressEvents(project: Project, exec: Exec): void {
     say(SARAH, "창살 사이로 한 줄 보여 주더라.\n「오늘은 아무도 대답하지 않았다」."),
     emote("player", "ellipsis", 900),
     say(SARAH, "그 창, 아버지가 너한테 줬구나.\n…나한텐 편지 한 줄 없더니."),
-    { kind: "choices", prompt: "창을 어떻게 할까?", options: [
+    cutLabel(),
+    cutEnd(),
+    { kind: "choices", prompt: "창을 어떻게 할까?", cancelBehavior: "disallow", options: [
       { text: "창을 돌려준다", branch: [
         say(KAEL, "아저씨는 처음부터 새라 씨 주라고\n저한테 맡기셨나 봐요."),
         say(SARAH, "…고개 들어라. 아버지 말버릇이야."),
-        // 돌려준다 = 정말 돌려준다. 카엘은 1막 검으로 돌아가고 새라가 아버지 창을 든다(공격 40 을 내주고 유대 +1).
-        { kind: "changeEquipment", actorId: "actor_hero", slot: "weapon", equipmentId: "equip_sword" } as unknown as Command,
+        // 돌려준다 = 새라가 아버지 창을 들고, 카엘은 1막 초보자 검이 아닌 강철 검을 쥔다(유대 +1).
+        { kind: "changeEquipment", actorId: "actor_hero", slot: "weapon", equipmentId: "equip_gen_sword_steel" } as unknown as Command,
         { kind: "changeEquipment", actorId: FS2_SARAH_ACTOR, slot: "weapon", equipmentId: FS2_ROHAN_SPEAR } as unknown as Command,
-        narrate("카엘이 「로한의 별쇠 창」을 새라에게 건넨다.\n손에는 쓰던 검을 다시 쥔다.", { context: "system" }),
+        narrate("카엘이 「로한의 별쇠 창」을 새라에게 건네고 강철 검을 다시 쥔다.", { context: "system" }),
         setSw(SW_SPEAR_BACK),
         { kind: "setVariable", variableId: VAR_BOND_SARAH, op: "+=", value: 1 } as unknown as Command,
         narrate("새라와의 유대가 깊어졌다.", { context: "system" }),
@@ -2525,7 +2526,7 @@ function fortressEvents(project: Project, exec: Exec): void {
       ] },
       { text: "창을 맡아 둔다", branch: [
         say(KAEL, "북쪽까지는 제가 들고 갈게요.\n돌려드리는 건 그다음에."),
-        say(SARAH, "…그래. 대신 내 창끝 별쇠는 떼어 가라.\n아버지라면 그걸로 네 창을 한 번 더 벼릴 거다."),
+        say(SARAH, "…그래. 대신 내 창끝 별쇠는 떼어 가라.\n북쪽 공방이라면 그걸로 창을 한 번 더 벼려 줄 거다."),
         se("cc0-se-osx-bell-01"),
         item(FS2_STAR_IRON, 1),
         narrate("「별쇠 조각」을 받았다.", { context: "system" }),
@@ -2537,8 +2538,6 @@ function fortressEvents(project: Project, exec: Exec): void {
     { kind: "changeParty", actorId: FS2_SARAH_ACTOR, action: "add" } as unknown as Command,
     narrate("새라가 동료가 되었다.", { context: "system" }),
     setSw(SW_SARAH),
-    cutLabel(),
-    cutEnd(),
     say(SARAH, "북문 쇠창살은 내가 올리지. 따라와."),
     fadeOut(900),
     transfer(FS2_SNOW.mapIds[0]!, FS2_SNOW.entry, "up"),
@@ -2701,7 +2700,7 @@ function snowPass(project: Project, exec: Exec): void {
     // 유대 3 — 듀얼 연계기 해금(계획 4-4). 새라는 창을 돌려줬으면(B6 +1)·모닥불·장작(Q6)·여관 밤으로 닿는다.
     unlocks: [
       { actorId: FS2_SARAH_ACTOR, atLeast: 3, comboTechId: FS2_COMBO_TWIN_LANCE, message: "새라가 「고개 들어라」를 익혔다!\n카엘과의 연계기 「쌍창 돌파」가 열렸다." },
-      { actorId: "actor_fs_elena", atLeast: 3, comboTechId: FS2_COMBO_FLAME_CROSS_TWIN, message: "엘레나가 「불씨 지키기」를 익혔다!\n카엘과의 연계기 「불꽃 십자참·겹」이 열렸다." },
+      { actorId: "actor_fs_elena", atLeast: 2, comboTechId: FS2_COMBO_FLAME_CROSS_TWIN, message: "엘레나가 「불씨 지키기」를 익혔다!\n카엘과의 연계기 「불꽃 십자참·겹」이 열렸다." },
     ],
     campfires: [{ mapId: FS2_SNOW.mapIds[1]!, x: fire.x, y: fire.y + 1, id: "ev_fs2_snow_fire", name: "모닥불" }],
   });
@@ -2903,8 +2902,10 @@ const WAVE_FLOOR_RECTS: Record<string, { x: number; y: number; w: number; h: num
  * 요새 두 층도 성 던전 시공기가 곡을 다시 고르므로 예전 곡으로 고정한다.
  */
 const WAVE_BGM: Record<string, string> = {
-  map_field_north_2: "cc0-bgm-rtp-vlc-001", [FS2_DAWNWELL_ID]: "cc0-bgm-rtp-orc-001", [FS2_FORT_COURT_ID]: "cc0-bgm-rtp-fld-003",
-  [FS2_ICE_LAKE_ID]: "cc0-bgm-rtp-alg-005", [FS2_FORTRESS_ID]: "cc0-bgm-rtp-ftw-012", [FS2_FORT_TOP_ID]: "cc0-bgm-rtp-aut-001",
+  fs2_smithy_night: "cc0-bgm-rtp-mys-002",
+  map_field_north_2: "cc0-bgm-rtp-vlc-001", [FS2_DAWNWELL_ID]: "cc0-bgm-rtp-orc-001",
+  [FS2_FORT_COURT_ID]: "cc0-bgm-rtp-mys-002", [FS2_FORTRESS_ID]: "cc0-bgm-rtp-mys-002", [FS2_FORT_TOP_ID]: "cc0-bgm-rtp-mys-002",
+  map_snow_north_2: "cc0-bgm-rtp-orc-001", [FS2_ICE_LAKE_ID]: "cc0-bgm-rtp-orc-001",
 };
 function waveBgm(project: Project, exec: Exec): void {
   for (const [mapId, resourceId] of Object.entries(WAVE_BGM)) {

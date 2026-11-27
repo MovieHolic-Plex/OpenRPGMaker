@@ -599,12 +599,20 @@ export async function enterMode(mode: Mode): Promise<void> {
     afterFirstShellDom = null;
     reveal?.();
   } else {
-    const [{ renderPlayer }] = await Promise.all([import("@/player/player"), preloadRuntimeStyles()]);
+    const [{ renderPlayer }, { isTouchDevice }, { isEmeraldMonsterStyle }] = await Promise.all([
+      import("@/player/player"),
+      import("@/player/touchPad"),
+      import("@/project/emeraldMonsterStyle"),
+      preloadRuntimeStyles(),
+    ]);
     if (run !== modeRun) return;
     // Editor play mode is an authoring surface, not the shipped export player: QA
     // instrumentation stays on so debug hooks/state mirrors remain available here.
+    const activeProject = store.getCurrent();
     renderPlayer(elements.main, {
       qaInstrumentation: true,
+      pointerInput: isEmeraldMonsterStyle(activeProject),
+      touchInput: isTouchDevice(),
       diagnosticSink: editorPlayBootDiagnosticSink,
     });
   }

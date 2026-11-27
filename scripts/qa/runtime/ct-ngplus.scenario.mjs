@@ -19,6 +19,8 @@ const key = (name, times = 1) => ({ kind: "key", key: name, times });
 
 export default {
   id: "ct-ngplus",
+  // 옛 ESC 메뉴(menuUiStyle 스킨) 화면을 검사한다 — 기본이 허브 메뉴가 된 뒤에도 같은 화면을 본다.
+  systemPatch: { menuLayout: "legacy" },
   projectFixture: fixture,
   beats: [
     { id: "first-title", note: "클리어 기록이 없으니 강하게 다시 하기 항목이 없다", expect: {

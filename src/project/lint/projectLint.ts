@@ -896,8 +896,10 @@ function visitCommand(command: Command, visit: (command: Command) => void, issue
   if (command.kind === "shop" && (command as unknown as { failedTransactionBranch?: Command[] }).failedTransactionBranch) {
     visitCommands((command as unknown as { failedTransactionBranch: Command[] }).failedTransactionBranch, visit, issues, `${label}.failedTransactionBranch`);
   }
-  if (command.kind === "inn" && command.notEnoughBranch) {
-    visitCommands(command.notEnoughBranch, visit, issues, `${label}.notEnoughBranch`);
+  if (command.kind === "inn") {
+    if (command.stayedBranch) visitCommands(command.stayedBranch, visit, issues, `${label}.stayedBranch`);
+    if (command.cancelledBranch) visitCommands(command.cancelledBranch, visit, issues, `${label}.cancelledBranch`);
+    if (command.notEnoughBranch) visitCommands(command.notEnoughBranch, visit, issues, `${label}.notEnoughBranch`);
   }
 }
 

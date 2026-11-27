@@ -672,7 +672,7 @@ describe("eventCompile", () => {
         expect(openedChanged.dataUrl).toBe(withChest.dataUrl);
       });
 
-      it("draws an enemy picture installed in the project (uploaded monster) as the runtime does: the whole portrait in a two-tile box", async () => {
+      it("draws a current-set enemy picture straight from the bundle (no project upload since #5277)", async () => {
         // 2026-11-12 r1s-fun: v2 가 현행 세트 적 그림을 프로젝트에 넣자(업로드 kind monster) 그 적이 선 맵 셋이 통째로
         // «map-event-rendering-unavailable» 이라 화면 검수가 그 맵을 못 봤다. 번들 그림만 알던 줄이 업로드 앞에서 비켰기 때문이다.
         restoreDom = installToolImageRasterDom();
@@ -685,13 +685,12 @@ describe("eventCompile", () => {
 
         await preloadCurrentMonsterArt();
         expect([...installCurrentMonsterArt(project, [id])]).toEqual([id]);
-        expect(project.assets.uploaded[id]?.kind).toBe("monster");
+        // #5277(2026-11-27): 현행 5×4 세트가 정식 번들이 되어 프로젝트 업로드에 복사하지 않는다 — 맵 그림은 번들 그대로다.
+        expect(project.assets.uploaded[id]).toBeUndefined();
         const sprites = resolveRegionEventSprites(project, map, { x: 0, y: 0, w: 10, h: 8 }, 16);
-        expect(sprites.ok && sprites.sprites.map((sprite) => [sprite.eventId, sprite.wholeImage, sprite.destW, sprite.destH])).toEqual([["foe", true, 32, 32]]);
+        expect(sprites.ok && sprites.sprites.map((sprite) => sprite.eventId)).toEqual(["foe"]);
         const installed = await renderRegion(project, map.id);
-        expect(pixelDiffRatio(empty.raster, installed.raster)).toBeGreaterThan(0.001);
-        // 넣은 그림은 번들 3×3 시트의 그림과 다른 그림이다(현행 세트).
-        expect(pixelDiffRatio(bundled.raster, installed.raster)).toBeGreaterThan(0);
+        expect(installed.dataUrl).toBe(bundled.dataUrl);
       });
 
       it("fails closed instead of tile-only proof when a claimed graphic is unsupported", async () => {

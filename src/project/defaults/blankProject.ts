@@ -77,8 +77,11 @@ function ensureDefinitionSlots<TValue>(options: {
   return changed;
 }
 
-/** `withTilesets: false` — 타일셋 정의(빈 새 프로젝트 77MiB 중 74MiB)를 싣지 않는다. 기본 자료집만 필요한 곳(databasePresetRecords)이 쓴다. */
-export type BlankProjectOptions = { readonly withTilesets?: boolean };
+/** `withTilesets: false` — 타일셋 정의(빈 새 프로젝트 77MiB 중 74MiB)를 싣지 않는다. `tilesetIds` 를 주면 해당 타일셋(과 시작 맵 타일셋)만 싣는다. */
+export type BlankProjectOptions = {
+  readonly withTilesets?: boolean;
+  readonly tilesetIds?: readonly string[];
+};
 
 export function createProjectWithMaps(starters: readonly GameMap[], selectedIndex: number, options: BlankProjectOptions = {}): Project {
   const starter = starters[Math.max(0, Math.min(selectedIndex, starters.length - 1))] ?? createStarterMap();
@@ -87,12 +90,15 @@ export function createProjectWithMaps(starters: readonly GameMap[], selectedInde
   const variables: VariableDef[] = initialDefinitionSlots("var");
   const commonEvents: CommonEvent[] = [];
   const maps = Object.fromEntries(starters.map((map) => [map.id, map])) as Record<MapId, GameMap>;
+  const scopedTilesetIds = options.tilesetIds
+    ? new Set<string>([...options.tilesetIds, ...starters.map((map) => map.tilesetId)])
+    : undefined;
   const project: Project = {
     version: SCHEMA_VERSION,
     meta: { title: "새 프로젝트", author: "", terms: defaultTerms() },
     assets: defaultAssetSet(),
     resourceProfiles: defaultResourceProfiles(),
-    tilesets: options.withTilesets === false ? {} : defaultTilesets(),
+    tilesets: options.withTilesets === false ? {} : defaultTilesets(scopedTilesetIds),
     switches,
     variables,
     commonEvents,

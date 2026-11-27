@@ -1,4 +1,4 @@
-import { describe, expect, it, afterEach, beforeEach, vi, beforeAll } from "vitest";
+import { describe, expect, it, afterEach, beforeEach, vi } from "vitest";
 import { changeCountsLine, changedSinceRun, listChangeItems, revertChangeItem } from "@/editor/panels/aiChangeSummaryCard";
 import { runTool } from "@/editor/tools";
 import { createBlankProject } from "@/project/defaults";
@@ -142,6 +142,7 @@ describe("aiChatPanel", () => {
       installFakeLocalStorage();
     });
     afterEach(() => {
+      teardownAiChatPanel();
       restoreDom?.();
       restoreDom = null;
       Reflect.deleteProperty(globalThis, "localStorage");
@@ -460,6 +461,7 @@ describe("aiChatPanel", () => {
       installFakeLocalStorage();
     });
     afterEach(() => {
+      teardownAiChatPanel();
       restoreDom?.();
       restoreDom = null;
       Reflect.deleteProperty(globalThis, "localStorage");
@@ -587,6 +589,7 @@ describe("aiChatPanel", () => {
       });
     });
     afterEach(() => {
+      teardownAiChatPanel();
       restoreDom?.();
       restoreDom = null;
       Reflect.deleteProperty(globalThis, "localStorage");
@@ -672,14 +675,12 @@ describe("aiChatPanel", () => {
   });
 });
 
-describe("aiEditorFullToolSafety", () => {
+describe("aiEditorFullToolSafety", { timeout: 120000 }, () => {
   isolateTimers();
-  beforeAll(() => {
-    // Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
-    // panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
-    // single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
-    vi.setConfig({ testTimeout: 120_000 });
-  });
+  // 시험 시간 한도는 수집 때 읽혀 beforeAll 안 vi.setConfig 는 듣지 않는다 — describe 옵션 timeout 으로 둔다.
+  // Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+  // panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+  // single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
   const CHAT_CONFIG = {
     authMode: "apiKey" as const,
     agentMode: "chat" as const,

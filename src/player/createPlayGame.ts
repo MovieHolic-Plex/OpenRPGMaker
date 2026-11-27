@@ -2,6 +2,7 @@ import type Phaser from "phaser";
 import { preloadScriptEngine, projectUsesScripts } from "@/player/script/engine";
 import { ensurePhaser } from "@/app/phaserRuntime";
 import type { PlaySession } from "@/project/session";
+import type { PlayResolution } from "@/project/types";
 import { resolveCameraZoom } from "@/project/cameraZoom";
 import { playPixelDensity, smallMapFillDensity } from "@/project/mapViewScale";
 import { resolveSmallMapFill } from "@/project/smallMapFill";
@@ -26,6 +27,8 @@ export type PlayGameBootOptions = {
   readonly onPlayLoadStage?: (stage: "map" | "ready") => void;
   /** Fired when PlayScene.create finishes. */
   readonly onPlaySceneReady?: () => void;
+  /** adaptive 모드에서 현재 뷰포트에 맞춰 계산된 초기 논리 해상도. 생략하면 프로젝트 설정 해상도를 쓴다. */
+  readonly initialLogicalResolution?: Readonly<PlayResolution>;
 };
 
 /**
@@ -97,6 +100,7 @@ export async function createPlayGame(
   // `script` commands run in QuickJS-wasm; the interpreter is synchronous, so load it before the first event.
   if (projectUsesScripts(project)) await preloadScriptEngine().catch((error: unknown) => console.error("[script] engine load failed", error));
   const resolution = resolvePlayResolution(project.system);
+  const activeResolution = options.initialLogicalResolution ?? resolution;
   // 타일 크기가 섞인 프로젝트는 큰 칸의 맵을 도트 손실 없이 그리도록 캔버스만 촘촘하게 만든다.
   // 캔버스 CSS 는 논리 해상도에 맞춰지므로(playSurface.css) 레이아웃·DOM 좌표는 그대로다.
   // 한 크기뿐인 프로젝트에 작은 방이 있으면 그 방을 정수 캔버스 배율로 화면에 채울 밀도를 고른다(smallMapFillDensity).
@@ -114,8 +118,8 @@ export async function createPlayGame(
       : { mouse: false, touch: false },
     scale: {
       mode: PhaserRuntime.Scale.NONE,
-      width: resolution.width * density,
-      height: resolution.height * density,
+      width: activeResolution.width * density,
+      height: activeResolution.height * density,
       parent,
     },
     scene: [PlayScene],

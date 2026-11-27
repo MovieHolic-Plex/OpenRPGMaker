@@ -539,9 +539,11 @@
 
 .ecp-inn-stage {
   align-items: center;
+  aspect-ratio: auto;
   display: grid;
   justify-items: stretch;
   min-height: 140px;
+  overflow: visible;
 }
 
 .ecp-inn-price-chip {

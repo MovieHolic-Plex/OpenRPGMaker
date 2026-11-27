@@ -28,6 +28,7 @@ import { layerTileAt } from "@/project/mapLayers";
 import { store } from "@/project/store";
 import { mapTileSize } from "@/project/tileGeometry";
 import { DOOR_KIND_SOUNDS, inferMapDoor, mapDoorAt } from "@/project/mapDoorKinds";
+import { tileWindowRevision } from "@/player/playSceneMapRuntime";
 import type { GameMap, Project, TilesetDef } from "@/project/types";
 
 type PanelPiece = {
@@ -59,7 +60,13 @@ type DoorView = {
   readonly hole: { readonly l: number; readonly r: number; readonly t: number; readonly b: number };
   /** 숨긴 원래 타일의 프레임 이름(문 칸 안). */
   readonly artFrames: ReadonlySet<string>;
+  /** 문짝/문틀 자체 객체 집합(매 프레임 Set 할당 방지). */
+  readonly own: ReadonlySet<unknown>;
   readonly textureKey: string;
+  /** hideOriginalArt 를 마지막으로 수행한 타일 창 리비전. */
+  lastTileRev: number;
+  /** applyPose 를 마지막으로 수행한 열림 비율 t. */
+  lastAppliedT: number;
   t: number;
   target: boolean;
   from: number;
@@ -251,8 +258,10 @@ function createView(scene: PlaySceneContext, key: string, state: RuntimeDoorStat
       }
     }
   }
+  const own = new Set<unknown>([...pieces.map((p) => p.image), ...frames]);
   return {
-    key, mapId: map.id, state, interior, interiorGlow, pieces, frames, hole, artFrames, textureKey,
+    key, mapId: map.id, state, interior, interiorGlow, pieces, frames, hole, artFrames, own, textureKey,
+    lastTileRev: -1, lastAppliedT: Number.NaN,
     t: 0, target: state.open, from: 0, startedAt: scene.time?.now ?? 0,
     durationMs: Math.max(1, state.durationMs || DOOR_DEFAULT_MS), hidden: new Set(),
   };
@@ -267,12 +276,12 @@ function destroyView(view: DoorView): void {
   view.hidden.clear();
 }
 
-/** 원래 문 그림(상층 타일)을 숨긴다 — 타일 창이 다시 그리면 새 이미지가 생기므로 매 프레임 다시 본다. */
+/** 원래 문 그림(상층 타일)을 숨긴다 — 타일 창이 갱신될 때(tileWindowRevision 변경 시)만 다시 훑는다. */
 function hideOriginalArt(scene: PlaySceneContext, view: DoorView): void {
   if (!view.artFrames.size) return;
   const S = mapTileSize(scene.map);
   const x0 = view.state.x * S, y0 = view.state.y * S, x1 = x0 + view.state.w * S, y1 = y0 + view.state.h * S;
-  const own = new Set<unknown>([...view.pieces.map((p) => p.image), ...view.frames]);
+  const own = view.own;
   const lists: unknown[][] = [];
   const rootList = (scene.children as unknown as { list?: unknown[] } | undefined)?.list;
   if (rootList) lists.push(rootList);
@@ -492,10 +501,15 @@ export function syncDoors(scene: PlaySceneContext): void {
   const mapId = scene.map?.id;
   // 다른 맵의 문은 닫힌 것으로 친다(그 맵을 떠나면 문은 닫힌다).
   if (doors) for (const [key, state] of Object.entries(doors)) if (state.mapId !== mapId) delete doors[key];
+  let poseChanged = false;
   for (const [key, view] of byKey) {
-    if (view.mapId !== mapId || !doors?.[key]) { destroyView(view); byKey.delete(key); }
+    if (view.mapId !== mapId || !doors?.[key]) { destroyView(view); byKey.delete(key); poseChanged = true; }
   }
-  if (!doors) return;
+  if (!doors) {
+    if (poseChanged) (scene as unknown as { __doorPose?: string }).__doorPose = "";
+    return;
+  }
+  const tileRev = tileWindowRevision(scene);
   for (const [key, state] of Object.entries(doors)) {
     let view = byKey.get(key);
     if (!view) {
@@ -503,6 +517,7 @@ export function syncDoors(scene: PlaySceneContext): void {
       view = createView(scene, key, state) ?? undefined;
       if (!view) continue;
       byKey.set(key, view);
+      poseChanged = true;
     }
     if (view.target !== state.open) {
       view.target = state.open; view.from = view.t; view.startedAt = now;
@@ -511,12 +526,21 @@ export function syncDoors(scene: PlaySceneContext): void {
     const goal = view.target ? 1 : 0;
     const k = Math.min(1, Math.max(0, (now - view.startedAt) / view.durationMs));
     view.t = view.from + (goal - view.from) * k;
-    hideOriginalArt(scene, view);
-    applyPose(scene, view);
+    if (view.lastTileRev !== tileRev) {
+      view.lastTileRev = tileRev;
+      hideOriginalArt(scene, view);
+    }
+    if (view.t !== view.lastAppliedT) {
+      view.lastAppliedT = view.t;
+      applyPose(scene, view);
+      poseChanged = true;
+    }
     centreCabinOccupant(scene, state);
   }
-  // QA 기록기(runtimeQaRun recordUntilJs)가 문이 움직이는 동안 프레임을 찍도록 열림 정도를 남긴다.
-  (scene as unknown as { __doorPose?: string }).__doorPose = [...byKey.values()].map((v) => v.t.toFixed(2)).join(",");
+  // QA 기록기(runtimeQaRun recordUntilJs)가 문이 움직이는 동안 프레임을 찍도록 열림 정도를 남긴다(바뀐 프레임에만 갱신).
+  if (poseChanged) {
+    (scene as unknown as { __doorPose?: string }).__doorPose = [...byKey.values()].map((v) => v.t.toFixed(2)).join(",");
+  }
 }
 
 /**

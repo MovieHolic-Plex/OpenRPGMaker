@@ -1,10 +1,15 @@
-// 지금 쓰는 몬스터 그림(현행 세트) — 『폴른 스타』가 쓰는 새 전투 시트(5×4 20칸)와 한 칸 초상 + 같은 방식으로 더 그린 종(currentMonsterSheets20.ts).
-// 번들 3×3 시트(구형)와 리소스 id 가 같다. 프로젝트에 같은 id 의 업로드(초상 + 시트)를 넣으면 전투 그림(pixelEnemySheets)과
-// 맵 위 그림(eventSpriteResources — 업로드 monster 가 먼저) 둘 다 새 그림으로 잡힌다. 넣지 않은 프로젝트는 종전 번들 그림 그대로다.
-// 그림 데이터는 flagship/fallen/monsterSheets16.ts(0.9MB)와 currentMonsterSheets20.ts(0.14MB)에 있다 — 편집기 번들에 싣지 않으려고 여기는 id 목록만 들고, 쓸 때 한 번 늦게 읽는다.
+// 지금 쓰는 몬스터 그림(현행 세트) — 5×4(20칸) 정식 번들(`src/assets/pixelEnemySheets.ts`).
+// 2026-11-26 승격: 이전에는 『폴른 스타』(`monsterSheets16.ts`)와 `currentMonsterSheets20.ts` 의 base64 시트를
+// 프로젝트 `assets.uploaded` 에 복사해 덮어썼으나, 이제 44종(괴물 38 + 폴른 스타 인간형 적 6) 전부
+// `public/assets/generated/pixel-enemies/`·`pixel-enemy-portraits/` 정식 번들로 승격했고 구형 3×3 106종은 삭제했다.
+//
+// `CURRENT_MONSTER_ART_IDS` 는 조수 v2·기본 적 대역이 고르는 괴물 38종 목록이다(폴른 스타 이야기 인간형 6종 제외).
+// 이미 저장된 프로젝트에 남아 있는 예전 `battle-gen:fallen-star`·`battle-gen:gif20` 중복 업로드 복사본은
+// `ensureCurrentMonsterArt` 가 로드 정규화 때 정리해 번들을 직접 보게 한다(사용자 커스텀 업로드는 건드리지 않는다).
+import { PIXEL_ENEMY_SHEETS } from "@/assets/pixelEnemySheets";
 import type { Project } from "@/project/types";
 
-/** 현행 세트의 리소스 id(monsterSheets16.ts 와 currentMonsterSheets20.ts 의 것 전부 — test/aiV2CurrentFoes.test.ts 가 맞춘다). */
+/** 현행 괴물 세트의 리소스 id 38종(번들 5×4 정본 중 폴른 스타 전용 인간형 적 6종을 뺀 것). */
 export const CURRENT_MONSTER_ART_IDS: readonly string[] = [
   "generated-enemy-bandit-mask",
   "generated-enemy-bat-cave",
@@ -47,52 +52,53 @@ export const CURRENT_MONSTER_ART_IDS: readonly string[] = [
 ];
 
 const CURRENT = new Set(CURRENT_MONSTER_ART_IDS);
+const BUNDLED_5X4 = new Set(PIXEL_ENEMY_SHEETS.map((sheet) => sheet.resourceId));
+const LEGACY_GENERATED_BY = new Set(["battle-gen:fallen-star", "battle-gen:gif20"]);
 
 export const isCurrentMonsterArt = (resourceId: string | undefined): boolean => !!resourceId && CURRENT.has(resourceId);
 
-type Installer = (project: Project, resourceIds: ReadonlySet<string>) => Set<string>;
-let installer: Installer | undefined;
-let loading: Promise<void> | undefined;
-
-/** 그림 데이터를 읽어 둔다(한 번). 그 뒤로 installCurrentMonsterArt 가 동기로 돈다. */
+/** 정식 번들로 승격되어 별도 비동기 로드가 필요 없다. 호출부 호환을 위해 유지. */
 export function preloadCurrentMonsterArt(): Promise<void> {
-  loading ??= Promise.all([import("@/project/flagship/fallen/monsterArt16"), import("@/assets/currentMonsterArt20")]).then(([fallen, more]) => {
-    // 한 id 는 한 곳에서만 넣는다 — 더 그린 종(20)은 『폴른 스타』에도 있는 id 를 건너뛴다.
-    installer = (project, ids) => new Set([...fallen.installMonsterArt16For(project, ids), ...more.installMonsterArt20For(project, ids)]);
-  });
-  return loading;
+  return Promise.resolve();
 }
 
 /**
- * 이 프로젝트에 그 id 들의 현행 그림을 넣는다(이미 있으면 그대로). 넣었거나 이미 있던 id 를 돌려준다.
- * 그림 데이터를 아직 못 읽었으면(preloadCurrentMonsterArt 를 기다리지 않은 호출) 빈 집합 — 그 프로젝트는 번들 그림으로 남는다.
+ * 현행 세트가 정식 번들(`public/assets/generated/pixel-enemies/`)에 들어 있으므로 프로젝트 업로드에 복사하지 않는다.
+ * 요청한 id 중 현행 세트에 속하는 id 집합을 돌려준다.
  */
-export function installCurrentMonsterArt(project: Project, resourceIds: Iterable<string>): Set<string> {
-  const want = new Set([...resourceIds].filter((id) => CURRENT.has(id)));
-  if (!installer || !want.size) return new Set();
-  return installer(project, want);
+export function installCurrentMonsterArt(_project: Project, resourceIds: Iterable<string>): Set<string> {
+  return new Set([...resourceIds].filter((id) => CURRENT.has(id)));
 }
 
 /**
- * 로드 정규화(store.normalizeCurrentProject·headless): 적 레코드가 현행 세트 id 를 쓰는데 그림이 아직 없으면 넣는다.
- * 같은 id 의 업로드가 이미 있으면(사용자 그림·스토어 팩·조수·폴른 스타가 넣은 것) 건드리지 않는다. 넣었으면 true.
- * 왜(qa1124 항목 4, 오너 2026-11-24 «최신 몬스터들 반영»): 새 프로젝트 기본 적 32종이 현행 id 인데 설치 0 — 자료집·전투에 옛 3×3 그림이 보였다.
- * 그림 데이터를 아직 못 읽었으면(preloadCurrentMonsterArt 전) 아무것도 하지 않는다.
+ * 로드 정규화(store.normalizeCurrentProject·headless):
+ * 예전에 `battle-gen:fallen-star`·`battle-gen:gif20` 이 프로젝트 `assets.uploaded` 에 중복 복사해 둔
+ * 현행 번들 5×4 시트·초상을 정리하고, 그 업로드를 가리키던 맵 이벤트 스프라이트는 `bundled` 로 바꾼다.
+ * 사용자가 직접 올렸거나 공방·스토어에서 넣은 업로드는 절대 건드리지 않는다. 정리했으면 true.
  */
 export function ensureCurrentMonsterArt(project: Project): boolean {
-  if (!installer) return false;
   const uploaded = project.assets.uploaded;
-  const want = new Set<string>();
-  for (const enemy of project.database.enemies ?? []) {
-    const id = enemy.monsterResourceId;
-    if (id && CURRENT.has(id) && !Object.hasOwn(uploaded, id) && !Object.hasOwn(uploaded, `${id}-sheet20`)) want.add(id);
+  const redundantIds = new Set<string>();
+  for (const [id, asset] of Object.entries(uploaded)) {
+    if (!asset?.generatedBy || !LEGACY_GENERATED_BY.has(asset.generatedBy)) continue;
+    const baseId = id.replace(/-sheet(?:16|20)$/u, "");
+    if (BUNDLED_5X4.has(baseId)) redundantIds.add(id);
   }
-  if (!want.size) return false;
-  const before = Object.keys(uploaded).length;
-  installer(project, want);
-  return Object.keys(uploaded).length !== before;
+  if (!redundantIds.size) return false;
+  for (const map of Object.values(project.maps ?? {})) {
+    for (const ev of map.events ?? []) {
+      for (const page of ev.pages ?? []) {
+        const sprite = (page.graphic as { sprite?: { type?: string; id?: string } } | undefined)?.sprite;
+        if (sprite?.type === "uploaded" && sprite.id && redundantIds.has(sprite.id) && BUNDLED_5X4.has(sprite.id)) {
+          sprite.type = "bundled";
+        }
+      }
+    }
+  }
+  for (const id of redundantIds) delete uploaded[id];
+  return true;
 }
 
-/** 이 프로젝트에 그 id 의 현행 그림이 들어 있나. */
-export const hasCurrentMonsterArt = (project: Project, resourceId: string | undefined): boolean =>
-  isCurrentMonsterArt(resourceId) && project.assets.uploaded[resourceId!]?.kind === "monster";
+/** 이 리소스가 현행 5×4 몬스터 그림을 쓸 수 있는가(정식 번들이므로 늘 사용 가능). */
+export const hasCurrentMonsterArt = (_project: Project, resourceId: string | undefined): boolean =>
+  isCurrentMonsterArt(resourceId);

@@ -1,6 +1,6 @@
-import { createNewProjectSeed } from "./genrePacks";
+import { applyNewProjectTitle, createNewProjectSeed } from "./genrePacks";
 import { newProjectChoiceById, type NewProjectChoiceId } from "./newProjectChoices";
-import { DEFAULT_START_SCREEN_SIZE, START_EXAMPLE_DETAILS, START_SCREEN_RESOLUTIONS, projectStartMode, type ProjectStartMode, type ProjectStartScreenSize } from "@/start/projectStart";
+import { DEFAULT_START_SCREEN_SIZE, START_EXAMPLE_DETAILS, projectStartMode, resolveStartViewProfile, type ProjectStartMode, type ProjectStartScreenSize } from "@/start/projectStart";
 import { grandfatherGenreLockViolations } from "@/project/genreLock";
 import type { Project } from "@/project/types";
 
@@ -50,8 +50,30 @@ export async function createProjectStartSeed(choiceId: NewProjectChoiceId | null
     project.system.opening = { ...project.system.opening!, enabled: false };
     project.flags.starterExample = true;
   }
-  if (startMode !== "ai") project.flags.firstRunGuide = true;
-  const resolution = START_SCREEN_RESOLUTIONS[size];
-  if (resolution) project.system.playResolution = { ...resolution };
+  applyProjectStartOptions(project, startMode, size, choice?.packId);
   return project;
+}
+
+function applyProjectStartOptions(
+  project: Project,
+  startMode: ProjectStartMode,
+  size: ProjectStartScreenSize,
+  packId?: import("@/project/genrePackId").GenrePackId | null,
+): void {
+  if (startMode !== "ai") project.flags.firstRunGuide = true;
+  const viewProfile = resolveStartViewProfile(packId, size);
+  if (viewProfile) {
+    project.system.playResolution = { ...viewProfile.resolution };
+    if (viewProfile.smallMapFill) project.system.smallMapFill = true;
+  }
+}
+
+/**
+ * 장르 없는 «빈 프로젝트» 씨앗을 이미 있는 빈 시작 프로젝트 위에 제자리로 얹는다 — `createProjectStartSeed(null, title, "blank", size)` 와
+ * 같은 내용(제목·오프닝·타이틀 제목·첫 안내·화면 크기)이다. 새 폴더의 편집기 로드가 이미 빈 시작 프로젝트(createStarterBlankProject)를
+ * 지었으므로, 같은 것을 한 벌 더 짓고 통째로 갈아 끼우지 않는다(2026-11-26 실측: 데스크톱 부팅에서 다시 짓기 1.3s + 교체 0.9s).
+ */
+export function applyBlankProjectStart(project: Project, title: string, size: ProjectStartScreenSize = DEFAULT_START_SCREEN_SIZE): void {
+  applyNewProjectTitle(project, title);
+  applyProjectStartOptions(project, "blank", size, null);
 }

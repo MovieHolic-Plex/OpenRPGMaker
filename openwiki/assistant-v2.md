@@ -567,8 +567,11 @@ v2 장소 낱말이 village·dungeon·cave·interior 넷뿐이었고, 테마 구
 
 지금:
 
-- **현행 세트**(`src/assets/currentMonsterArt.ts`): id 목록(34) + `installCurrentMonsterArt(project, ids)`. 그림 데이터(0.9MB)는 그 자리에 두고 늦게 읽는다 — 턴 첫 지시 앞(`turn/modelHooks.firstPromptSuffix`)과 끝맺음 `step-foes` 앞에서 `preloadCurrentMonsterArt()`.
-- **모든 프로젝트의 기본 적에도 설치(2026-11-24, qa1124 항목 4):** 편집기 로드 정규화(`store.normalizeCurrentProject` 의 `currentMonsterArt`)와 `headless.normalizeHeadlessProject` 가 `ensureCurrentMonsterArt(project)` 를 부른다 — 적 레코드가 현행 id 를 쓰는데 같은 id 업로드가 없으면 그 그림(초상 + 20칸 시트)을 넣는다. 사용자·스토어·조수가 넣은 같은 id 업로드는 건드리지 않는다. 새 프로젝트 기준 32종, 업로드 약 0.83MB. 자료집 칸 표(`databaseEnemyPixelPreview.enemyPixelCellOrder`)는 시트 격자를 읽어 3×3 9칸 · 4×4 15칸 · 5×4 20칸을 보인다.
+- **정식 번들 승격·구형 3×3 삭제 (2026-11-26):** 『폴른 스타』 40종(괴물 34 + 인간형 적 6)과 `battle-gen gif20` 순증 4종 = **총 44종 5×4(20칸) 시트·초상**을 `public/assets/generated/pixel-enemies/`·`pixel-enemy-portraits/` 정식 번들(`PIXEL_ENEMY_SHEETS`)로 승격하고, 구형 3×3 PNG 106종(212파일)과 base64 TS 모듈(`monsterSheets16.ts`·`currentMonsterSheets20.ts`·`currentMonsterArt20.ts`)을 삭제했다.
+  - 『폴른 스타』(`chronoBell.ts`·`fallen/monsterArt16.ts`·`fallen/wellBeast.ts`)도 `project.assets.uploaded` 에 80개 base64를 복사하지 않고 정식 번들을 직접 쓴다.
+  - 로드 정규화(`ensureCurrentMonsterArt`)는 기존 저장 프로젝트에 남아 있는 중복 `battle-gen:fallen-star`·`battle-gen:gif20` 업로드 복사본만 정리해 번들로 전환한다(사용자 업로드는 보존).
+  - 고르기 목록(`monsterResourceCatalog.ts`)에는 현행 44종만 노출되고, 폐기된 구형 106종 ID 는 `RETIRED_PIXEL_ENEMY_ALIASES` 를 통해 가장 가까운 현행 5×4 번들로 호환 해석된다. `defaultBattleRecords().monsterSpecies` 10종도 현행 5×4 ID 로 갱신했다.
+- **현행 세트**(`src/assets/currentMonsterArt.ts`): 조수 v2·기본 적 대역이 고르는 괴물 38종 목록(`CURRENT_MONSTER_ART_IDS`, 폴른 스타 이야기 인간형 6종 제외). 정식 번들로 승격되어 `preloadCurrentMonsterArt`·`installCurrentMonsterArt` 는 무비용 호환 래퍼로 유지한다.
 - **새 프로젝트의 옛 그림 적은 대역 그림으로(2026-11-24, 리드 지시):** `createBlankProject` 가 `defaults/currentMonsterStandIns.applyCurrentMonsterStandIns` 로 현행 그림이 없던 기본 적 74종의 `monsterResourceId` 를 대역 표(`CURRENT_MONSTER_STAND_IN`, 이 문서 아래 대역 표와 같은 것 + 미믹 상자→철 골렘, 허수아비→식충 식물)의 현행 그림으로 바꿔 싣는다. 기본 적 106종 모두 현행 그림이다. 저장된 프로젝트는 바꾸지 않는다. 조수 v2 는 `standInOriginalArt` 로 그 적의 원래 그림을 읽어 «바란 그림» 줄을 예전처럼 쓰고, 옛 묶음 그림으로 세우던 `namedFoe` 경로(2026-11-16 «에셋을 자유롭게»)는 새 프로젝트에서 대역 현행 그림 + 그릴 목록이 된다.
 - **고르는 한 곳**(`story/currentFoes.ts`): `currentFoe(project, 적 id)` → 그 적의 그림이 현행이면 그 적, 아니면 가장 가까운 현행 종(대역 표 — 해골·좀비·미라 → 창백한 유령, 리자드맨 → 독사, 검치호·곰 → 다이어 울프, 용류 → 청룡 …) + 바란 그림 이름. 대역도 없으면 undefined. 위 네 고르기가 모두 여기에 묻는다 — 구형 그림은 v2 가 세우는 적에 나오지 않는다.
 - **테마 표**: 적 목록 = 그 장소가 바라는 종 + 현행 그림이 있는 그 장소의 종. 서는 것은 현행 그림이 있는 종뿐(`drawn`)이고, 없는 종은 종마다 없는 그림 줄 `[art-gap] theme=prehistoric/swamp want=foe wanted=«lizardman-spear» …` 로 남는다 — 그 종이 그려지면 표를 고치지 않아도 선다. 테마 표에 없는 세계(버들항)의 싸우는 단계는 흔한 판타지 목록(`COMMON`)과 이름의 적 낱말(`enemyArtFor` → `currentFoe`)에서.
@@ -818,6 +821,37 @@ main 에서도 남쪽으로 이으면 같은 결함이 났다. 목적표 판의 
 코드: `src/ai/v2/turn/vqaItems.ts`(장부 `VqaFinding` · `noteVqaRound` · `closeVqaUnchanged` · `vqaLedgerLines` · `vqaUnofferedBlockers`), `src/ai/v2/judge/vqa.ts`, `src/ai/v2/judge/finalReport.ts`, `src/ai/v2/loop/todoStore.ts`(`holds` · `markOffered` · `byKey`).
 시험: `test/aiV2VqaJudge.test.ts` · `test/aiV2FinalReport.test.ts`(결함 글은 판 기록 그대로).
 아직 아닌 것: 화면 검수 분류의 나머지는 여전히 검수자 글의 낱말로 가른다. (턴 사이 기억은 아래 절.)
+
+## 앱 재시작 뒤 이어 하기 — 적용 호출 키를 프로젝트와 같이 싣는다 (2026-11-26, #5239 B안)
+
+앞 단계(#5238): 실행 도중 앱이 꺼지면 다시 켰을 때 요청과 «중단됨 · 다시 보내기»만 남았다. 다시 보내기는 처음부터 다시 해서 이미 적용된 단계를 두 번 할 수 있었다.
+
+**무엇을 언제 저장하나** (`src/ai/piAgent/runResume.ts`):
+
+| 때 | 어디에 | 무엇을 |
+|---|---|---|
+| 실행 시작 | 대화 기록 끝 «실행 중» 표지 `agent_run:in-flight {json}` (화면에 안 보인다) | 이어 하기 열쇠·요청 글·모드·맵·시작 시각 |
+| 쓰기 도구가 프로젝트를 바꿔 체크포인트를 보낼 때마다 | 그 체크포인트의 `project.assistantTodo.memory.resume` | 그 호출의 멱등 키(도구 + 키를 정렬한 인자 해시, `todoId` 빼고) — 할 일 목록도 같이 실린다(`stamp`) |
+| 끝(성공·실패·중지) | 대화 기록 | 표지 없는 기록으로 덮는다 |
+
+왜 프로젝트에 싣나: 편집기는 ACK 된 체크포인트를 저장본으로 남긴다. 적용 기록이 그 프로젝트 안에 있으면 «저장된 프로젝트»와 «적용된 단계»가 항상
+같은 순간의 것이다(원자적). 따로 두면 자동 저장 전에 꺼졌을 때 «적용했다»는 기록만 남아 그 단계를 잃는다. 크기는 호출 300개 상한(넘으면 오래된 것부터 버리고
+`v2.resume.trimmed` 경고), 표지의 요청 글은 4000자까지 — 체크포인트 줄에는 수 KB 만 더해진다. 싣지 못하면 `v2.resume.record_failed`.
+
+**다시 켰을 때.** 표지가 남아 있고 단일 실행이면 «이어 하기»(`ai-run-resume`)·«다시 보내기»(`ai-run-resend`)를 보인다. 알림의
+`data-applied` = 프로젝트 기억의 열쇠가 표지 열쇠와 같을 때의 적용 수(다르면 0 — 그 기억은 앞서 끝난 실행 것이다).
+«이어 하기»는 평소 전송 경로(맵 소유권·분류 그대로)로 `«원래 요청» … 이어서 해 줘.` 를 보내고 요청에 `resume: { key: 새 열쇠, from: 옛 열쇠 }` 를 싣는다.
+마지막 문장이 «계속» 판정을 켜 할 일 목록이 아래 규칙대로 되살아난다.
+
+**중복 적용 막기.** 워커는 `from` 이 프로젝트 기억의 열쇠와 같으면 그 적용 키를 건너뛸 집합으로 두고(`v2.resume.restore`), 같은 키의 호출을
+**한 번** 실행하지 않고 «Already applied» 글을 돌려준다(`v2.resume.skip`, 실행기 `wrapTool`). 앞 실행의 적용 키는 새 기록에 이어 붙는다 — 두 번 꺼져도 유지.
+한계: 모델이 같은 일을 다른 인자로 부르면 키가 달라 막지 못한다 — 그건 되살아난 할 일 목록(끝난 항목은 끝난 채)과 기계 확인이 막는다.
+
+**팀 실행(배정 단위).** 담당이 ok 로 끝낸 맵 배정(`agent_spawn` 의 맵 + `agent_done` ok, `noteTeamProgress`)을 표지 기록 `doneMaps` 에 남기고
+배정이 끝날 때마다 표지를 다시 쓴다. 다시 켜면 지금 프로젝트에 있는 맵만 끝난 배정으로 센다(표지가 자동 저장보다 먼저 남을 수 있다). «이어 하기»는 요청 글에 끝난 맵 이름을 적고
+`resume.doneMapIds` 를 싣는다. 팀 런타임 `startAssign` 은 팀장이 그 맵을 다시 맡기면 **한 번** 돌려보낸다(고칠 것이 있어 다시 맡기면 받는다, 검수 수리·자기 수리는 막지 않는다).
+한계: 첫 MVP 팀(JRPG 모험·회상)은 다시 켜면 프로젝트가 비어 있지 않아 평소 경로상 v2 단일로 이어 간다 — 그때는 요청 글의 끝난 맵 목록이 중복을 막는다.
+실행 단계가 워커 여럿(맵 묶음 병렬)이면 열쇠를 싣지 않는다.
 
 ## 턴 사이 기억 — 막힌 항목은 막힌 채로 이어 받는다 (2026-11-11 리팩토링 B4)
 

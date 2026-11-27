@@ -40,9 +40,7 @@ export function reliefLiftPx(map: Pick<GameMap, "relief">, x: number, y: number,
 export function reliefTopOverhangPx(map: Pick<GameMap, "relief">, tileSize: number): number {
   const field = reliefFieldOf(map.relief);
   if (!field) return 0;
-  let overhang = 0;
-  for (let y = 0; y < field.height; y++) for (let x = 0; x < field.width; x++) overhang = Math.max(overhang, cellLift(field, x, y) - y);
-  return overhang * tileSize;
+  return field.topOverhang * tileSize;
 }
 
 interface ReliefImage {

@@ -165,6 +165,14 @@ Event command edit dialogs, cutscene/horror/puzzle authoring tools, place_npc/ma
 - **조수:** `COMMAND_SCHEMA` 의 `recipeIds`·`title` 설명이 손으로 짜는 패턴 대신 한 줄을 쓰라고 알린다. 전투 이벤트에서는 실행하지 않는다(unsupported 로그).
 - **저장 호환:** 명령 추가만, 이름 바꾼 것 없음. SCHEMA_VERSION 불변.
 
+## 여관(`inn`): 입력·미리보기·변수 요금·결과 분기 정리 (2026-11-26)
+
+- **입력/IME 보존(`commandBodyCommerce.ts`):** `note`·`question`·`price`·`restDurationMs`·`wakeDurationMs` 의 `input` 이벤트에서 `.trim()`/`String()` 으로 `input.value` 를 덮어쓰지 않는다(예전에는 스페이스가 즉시 지워지고 한글 IME 조합이 깨졌으며, 숫자를 지우면 `0` 이 강제 삽입됐다). 정규화는 `blur`/`change` 에서만 수행한다. 암전/기상 라벨에 `(ms)` 단위를 명시한다.
+- **중복 미리보기 제거·용어 통일:** 왼쪽 폼 내부의 `inn-command-dialog-mock` 을 없애고 오른쪽 `commandPreview.innStage` 하나만 둔다. `innStage` 는 `resolveTerms(store.getCurrent())` (`innTitle`·`yes`·`no`·`gold`)와 변수 요금 표시 이름(`변수 <이름>`), 기상 문구, 분기·연출 칩을 실제 런타임(`playSceneCommerce.ts`)과 같은 기준으로 그린다(예전에는 변수 요금이 `(무료)` 로 표시되고 좌우 모형 버튼이 `숙박/거절` vs `예/아니오` 로 갈렸다).
+- **변수 요금 편집 및 참조 추적:** `요금 방식` 세그먼트(`고정 요금` / `변수 요금`)와 `databasePicker("variable", ...)` 를 추가하고, `commandReferenceValidation`·`databaseCommandReferences`·`eventDraftValidator`·`refactorTools`·`storyFlagUsage` 가 `inn.price` 변수 참조를 검증·추적한다.
+- **결과별 분기(`stayedBranch` · `cancelledBranch` · `notEnoughBranch`):** `playInn` 이 돌려주는 `"stayed" | "cancelled" | "notEnough"` 셋 모두를 `interpreter/resume.ts` 와 `eventCommandBranches.ts` (`INN_STAYED_BRANCH_INDEX = -14`, `INN_CANCELLED_BRANCH_INDEX = -15`, `INN_NOT_ENOUGH_BRANCH_INDEX = -8`)가 분기한다. 모달 안의 불투명한 분기 명령 추가 버튼 대신, 켠 분기와 명령 개수를 요약으로 보여 주고 메인 이벤트 목록에서 편집한다(`shouldRerenderCommandForm` 도 `inn` 에서 재마운트하지 않는다).
+- **런타임 여관 배경·숙박 연출·음수 요금 방어(`playSceneCommerce.ts`, `innSfx.ts`, `pixelWindows.css`, `commerce.css`):** 풀블리드 도트 여관 창(`.runtime-inn-pixel`)은 루트에 `applySystemGraphic`(9슬라이스 `border-image` 채우기) 대신 `applySystemWindowSkinVariable` 을 써서 갈색 윈도스킨이 화면 전체에 늘어지는 현상을 없앴고, 반투명 밤빛 비네트 위로 맵이 은은하게 비친다. 숙박 시 필드 BGM 을 덕킹(`duckBgmForEffect`)하고 프로젝트 `seCues.innRest` 가 비어 있으면 내장 Web Audio 자장가 징글(`playInnRestJingle`)과 기상 차임(`playInnWakeChime`)을 재생하며, 초승달·별·`Zzz` 밤하늘 휴식 화면(기본 1500ms) → 아침 해 기상 카드(기본 1100ms)로 이어진다. 변수 요금이 음수일 때는 `price = Math.max(0, Math.trunc(step.price) || 0)` 로 클램프한다.
+
 ## 상점: 진열 상품과 상품 상세 중심 편집 (2026-09-05)
 
 - 2026-09-06 저장 계약: `shapeCommandFields.ts`는 피커와 런타임의 정본인 `SHOP_MESSAGE_TYPES`를 그대로 검증한다. `festival`·`closingSale`·`vip`도 다른 세 유형처럼 프로젝트 재로드를 통과하며, 목록 밖 값은 계속 거부한다. `eventCommandRemediationShopMessages.test.ts`가 여섯 유형의 전체 프로젝트 serialize/deserialize와 인접 상점 설정 보존을 검증한다.

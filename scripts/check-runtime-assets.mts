@@ -20,6 +20,7 @@ import { resolve } from "node:path";
 import runtimeAssetInventory from "../src/player/runtimeAssets.json" with { type: "json" };
 import { BUNDLED_IMAGE_ASSETS } from "@/assets/bundled";
 import { createBlankProject } from "@/project/defaults/blankProject";
+import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
 import { deserialize } from "@/project/io";
 import { prepareWebExport } from "@/project/webExport";
 import { collectReleaseDependencies } from "@/project/releaseDependencyCollector";
@@ -82,9 +83,10 @@ for (const match of readFileSync(resolve(ROOT, "src/battle/retroSkillTimeline.ts
   if (!timelineIds.has(match[1]!)) unresolved.push(`${match[1]} (src/battle/retroSkillTimeline.ts literal not in retroTimelineSoundIds)`);
 }
 
-const retroBlank = createBlankProject();
+const blank = createBlankProject();
+const retroBlank = cloneProjectSharingSharedDictionaries(blank);
 retroBlank.system.battleUiStyle = "retro2003";
-const projects: Array<[string, Project]> = [["blank project", createBlankProject()], ["blank project (retro2003 battle)", retroBlank]];
+const projects: Array<[string, Project]> = [["blank project", blank], ["blank project (retro2003 battle)", retroBlank]];
 for (const fixture of FIXTURES) projects.push([fixture, deserialize(readFileSync(resolve(ROOT, fixture), "utf8"))]);
 
 for (const [label, project] of projects) {

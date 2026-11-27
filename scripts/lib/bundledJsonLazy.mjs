@@ -11,13 +11,31 @@ import { fileURLToPath, URL } from "node:url";
 
 /** @returns {import("vite").Plugin} */
 export function bundledJsonLazyPlugin() {
-  const lazy = fileURLToPath(new URL("../../src/project/defaults/bundledJsonSources.lazy.ts", import.meta.url));
+  const lazyBrowser = fileURLToPath(new URL("../../src/project/defaults/bundledJsonSources.lazy.ts", import.meta.url));
+  const lazyNode = fileURLToPath(new URL("../../src/project/defaults/bundledJsonSources.node.ts", import.meta.url));
   return {
     name: "oprn-bundled-json-lazy",
     enforce: "pre",
     resolveId(source, _importer, options) {
-      if (source !== "./bundledJsonSources" || options?.ssr) return null;
-      return lazy;
+      if (source !== "./bundledJsonSources") return null;
+      return options?.ssr ? lazyNode : lazyBrowser;
+    },
+  };
+}
+
+/**
+ * Vitest 전용: environment 가 node 든 happy-dom 이든 항상 Node 지연 출처(fs.readFileSync)로 연결한다.
+ * 테스트 파일 import 시점에 18개 대형 타일셋 JSON(60MB+)을 ESM 으로 변환·파싱하지 않는다.
+ * @returns {import("vite").Plugin}
+ */
+export function bundledJsonNodePlugin() {
+  const lazyNode = fileURLToPath(new URL("../../src/project/defaults/bundledJsonSources.node.ts", import.meta.url));
+  return {
+    name: "oprn-bundled-json-node",
+    enforce: "pre",
+    resolveId(source) {
+      if (source !== "./bundledJsonSources") return null;
+      return lazyNode;
     },
   };
 }

@@ -87,7 +87,7 @@ import { eventMayMatchTrigger, initialRuntimeEventPositions,
 runtimeEventViewsForMap,
 type RuntimeEventView, } from "@/project/runtimeEventState"
 import { buildLifeRuntimeSnapshot, type RuntimeEventSnapshot, type RuntimeStateSnapshot } from "@/player/runtimeDom";
-import { resetCullableTiles, trackCullableTile } from "@/player/playSceneTileCulling";
+import { resetCullableTiles, trackCullableTile, untrackCullableTile } from "@/player/playSceneTileCulling";
 import { bumpPerfCounter, type RuntimePerfCounters } from "@/player/runtimePerfCounters";
 import { RuntimeTileWindow, runtimeCameraTileView } from './runtimeTileWindow';
 import type { CullViewport } from './playSceneTileCulling';
@@ -395,13 +395,16 @@ export function renderTiles<
         const images: RenderedTileImage[] = [];
         tileCaptures.set(host, images);
         try { drawCell(drawingScene, x, y); } finally { tileCaptures.delete(host); }
+        for (const image of images) trackCullableTile(host, image, x, y);
         return images;
       }, image => {
         rootYSortTiles.get(host)?.delete(image);
+        untrackCullableTile(host, image);
         image.destroy?.(true);
       }));
       tileAnimationLeaders.delete(host);
       if (!changed) return;
+      bumpTileWindowRevision(host);
       // Official batch add preserves parent links, destroy listeners and sprite
       // UpdateList hooks without an indexOf for every growing-list insertion.
       if (lowerBatch.length) scene.tileLayer.add(lowerBatch);
@@ -413,14 +416,11 @@ export function renderTiles<
         resident.sortRoots(scene.children.list, beforeRootTiles);
         scene.children.queueDepthSort();
       }
-      resetCullableTiles(host);
-      for (const [index, images] of resident.cells) {
-        for (const image of images) trackCullableTile(host, image, index % map.width, Math.floor(index / map.width));
-      }
     };
     tileWindows.set(host, { sync });
     sync(runtimeCameraTileView(scene.cameras.main));
   } else {
+    bumpTileWindowRevision(host);
     withWorldCoastRenderPass(() => {
       for (let y = 0; y < map.height; y++) {
         for (let x = 0; x < map.width; x++) drawCell(scene, x, y);
@@ -430,6 +430,15 @@ export function renderTiles<
   renderFarmOverlays(scene, store.getCurrent().database.crops ?? []);
   renderPlaceableOverlays(scene);
   renderEvents(scene);
+}
+
+const tileWindowRevisions = new WeakMap<object, number>();
+function bumpTileWindowRevision(host: object): void {
+  tileWindowRevisions.set(host, (tileWindowRevisions.get(host) ?? 0) + 1);
+}
+/** 타일 창/렌더가 갱신될 때마다 단조 증가하는 리비전(문 가림 등 타일 의존 패스의 불필요한 매 프레임 스캔 방지). */
+export function tileWindowRevision(host: object): number {
+  return tileWindowRevisions.get(host) ?? 0;
 }
 
 /** Called before culling, including after camera jumps, zoom and resize. */
@@ -489,14 +498,35 @@ function tileLayerSignature<TImage extends RenderedTileImage, TSprite extends Re
       map.shadowBits ?? [],
     ),
     relief: reliefSignature(map.relief),
-    overlays: JSON.stringify([
-      session.farmPlots?.[map.id] ?? null,
-      session.placeables ?? null,
-      session.farmBuildingPlacements ?? null,
-      session.homeDecorationPlacements ?? null,
-    ]),
+    overlays: mapOverlaysSignature(map.id, session),
     crops: project.database.crops,
   };
+}
+
+/** 현재 맵(mapId)에 속한 배치물만 직렬화한다 — 전 세계 배치물 전체를 매 renderTiles 마다 JSON.stringify 하지 않는다. */
+function mapOverlaysSignature(mapId: MapId, session: PlaySceneContext["session"]): string {
+  const farmPlots = session.farmPlots?.[mapId] ?? null;
+  const placeables = filterMapScopedRecord(session.placeables, mapId, `${mapId}:`);
+  const farmBuildings = filterMapScopedRecord(session.farmBuildingPlacements, mapId);
+  const homeDecor = filterMapScopedRecord(session.homeDecorationPlacements, mapId);
+  if (!farmPlots && !placeables && !farmBuildings && !homeDecor) return "";
+  return JSON.stringify([farmPlots, placeables, farmBuildings, homeDecor]);
+}
+
+function filterMapScopedRecord<T extends { readonly mapId?: string }>(
+  record: Readonly<Record<string, T>> | undefined,
+  mapId: MapId,
+  keyPrefix?: string,
+): Record<string, T> | null {
+  if (!record) return null;
+  let scoped: Record<string, T> | null = null;
+  for (const [key, entry] of Object.entries(record)) {
+    const matches = entry?.mapId !== undefined ? entry.mapId === mapId : (keyPrefix ? key.startsWith(keyPrefix) : true);
+    if (!matches) continue;
+    scoped ??= {};
+    scoped[key] = entry;
+  }
+  return scoped;
 }
 
 function sameTileLayerSignature(left: TileLayerSignature, right: TileLayerSignature): boolean {

@@ -1,4 +1,5 @@
-import { setBattleMotionContext, battleTargetRecoil } from "@/player/battleMotionContext";
+import { setBattleMotionContext, battleTargetRecoil, battleCharacterMotion } from "@/player/battleMotionContext";
+import { attackFamilyOfStyle, battleEntrySeCue, type AttackFamily } from "@/player/battleSeSlots";
 import { cssMixBlendMode, isBlendModeName } from "@/project/blendMode";
 import { remainingEnemyCollapseMs } from "@/player/battleEnemyCollapse";
 import { battleEntrySkillRecord, holdRetroSkillPlayback, stopRetroClassSkill, hasRetroChoreography, retroClassSkillBeatMs, retroClassSkillWeight, hasRetroSkillContract, isStoreBattleAnimationId, retroSkillForEntry, retroSkillRecipe, startRetroSpecialSkill } from "@/player/retroSkillChoreography";
@@ -24,7 +25,7 @@ import type { BattleAnimationPlayback } from "@/player/battleAnimationDom";
 import { battleAnimationImpactMs, battleAnimationLeadPlan, preloadAllBattleAnimationSounds, preloadBattleAnimationSounds, syncBattleAnimationLayer } from "@/player/battleAnimationDom";
 import { createPresentationLedger, type BattlePresentationLedger } from "@/player/battlePresentation";
 import { comboImpact, endComboAction, playComboCutIn, preloadComboBusts } from "@/player/battleComboCutIn";
-import { comboPartnersStrike, finishComboPartners, startComboPartners } from "@/player/battleComboPartners";
+import { comboPartnersStrike, finishComboPartners, startComboPartners, stopComboPartners } from "@/player/battleComboPartners";
 import { commandPanel, enemyListPanel, syncEnemyListPanel, syncBattleSkillHelp, type BattleCommandSubmenu } from "@/player/battleCommandDom";
 import {
   advanceBattleResultLevelUps,
@@ -45,7 +46,7 @@ import { battleSkinFamily, getBattleSkin, resolveSkinId } from "@/battle/skins/r
 import type { BattleFieldPresentation } from "@/player/battleFieldDom";
 import { applyActionMotion, applyFieldBackdrop, battleField, battlePartyStatus, blinkBattlerNode, findBattlerNode, playCaptureCinematic, settleBattleTopPads, spawnHitSparks, syncBattleField, syncBattleParty, syncSceneBackdropVar } from "@/player/battleFieldDom";
 import { battleAnimationSheetUrls, deferUntilBattleReady, whenBattleStageReady } from "@/player/battleReadiness";
-import { emitBattleJuice as emitContextBattleJuice, fadeBattleCue, flashBattleField, playBattleCue as playContextBattleCue, playSkillCastCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleCueShape, type BattleJuiceEvent } from "@/player/battleJuice";
+import { emitBattleJuice as emitContextBattleJuice, fadeBattleCue, flashBattleField, playBattleCue as playContextBattleCue, playAuthoredSeCue, playSkillCastCue, preloadBattleJuiceSamples, type BattleAudioContext, type BattleCueShape, type BattleJuiceEvent } from "@/player/battleJuice";
 import { ensureBattleFlashFilter } from "@/player/battleFlashFilter";
 import { applyHitIntensity, battlerMaxHp } from "@/player/battleHitIntensityDom";
 import { hitIntensity } from "@/player/battleHitIntensity";
@@ -192,7 +193,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   // 기술 이펙트의 타이밍 소리도 — 행동 시작 때(preloadBattleAnimationSounds) 받으면 3배속에서는 approach 가 60~110ms 라
   // 디코딩이 끝나기 전에 착탄이 와서 요소 재생(0.2~0.4초 늦음)으로 떨어졌다.
   deferUntilBattleReady(preloadAllBattleAnimationSounds);
-  const playBattleCue = (event: BattleJuiceEvent): void => playContextBattleCue(event, options.audioContext);
+  const playBattleCue = (event: BattleJuiceEvent, shape?: BattleCueShape): void => playContextBattleCue(event, options.audioContext, shape);
   const emitBattleJuice = (event: BattleJuiceEvent, target?: HTMLElement | null, shape?: BattleCueShape): void =>
     emitContextBattleJuice(event, target, options.audioContext, shape);
   // 같은 host에 이전 컨트롤러가 살아있으면 먼저 정리한다.
@@ -270,6 +271,8 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   const pokemonPhaseFinishers = new Map<string, () => void>();
   /** impact · 평타 확정 뒤 처음 오는 접근 비트에 베기 궤적과 휘두름 소리를 한 번 둔다. */
   let swingArmed = false;
+  /** 이번 행동 공격자의 무기·몸 계열이 정한 공격 소리 계열(emitSwingJuice). */
+  let swingFamily: AttackFamily | undefined;
   // 방금 확정한 직업 스킬(훔치기 등 special 결과만 남는 기술의 연출 시작점).
   let pendingRetroSkillId: string | undefined;
   let pendingRetroSkillUserId: string | undefined;
@@ -536,6 +539,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       eventSurfaceOpen = true;
       syncView();
       const showChoices = options.showEventChoices;
+      choiceController?.abort();
       const input = new AbortController();
       choiceController = input;
       void Promise.resolve().then(() => {
@@ -572,6 +576,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 몬스터 장르: 상태 이상 걸림·능력 단계 변화·날씨 시작 소리(다른 장르는 playMonsterSfx 가 false 라 무음 변화 없음).
       const timelineCue = monsterTimelineCue(entry, store.getCurrent().database.states);
       if (timelineCue) playMonsterSfx(store.getCurrent(), timelineCue);
+      // 상태 걸림·능력 단계·흡수·부활의 자리 소리(저작했을 때만 — 몬스터 세트가 이미 낸 사건은 겹치지 않는다).
+      else {
+        const seCue = battleEntrySeCue(entry, store.getCurrent().database.states);
+        if (seCue) playAuthoredSeCue(store.getCurrent(), seCue);
+      }
       playedTimelineSequence = Math.max(playedTimelineSequence, entry.sequence);
       // 상태 피해(stateUpkeep)는 맞은 본인이 userRecordId 로 기록된다 — 자기 섬광 색을 자기에게 칠하지 않는다.
       entryHitFlash = entry.side === "actor" && entry.userRecordId && entry.userId && entry.userId !== entry.targetId
@@ -775,7 +784,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
           if (destroyed) return;
           const target = findBattlerNode(field, targetId);
           if (!target || !target.classList.contains("battle-enemy")) return;
-          playBattleCue("attack-swing");
+          playBattleCue("attack-swing", swingFamily ? { attackFamily: swingFamily } : undefined);
           if (!pokemonMotion) spawnSlashTrail(target);
         }, Math.max(0, beat.durationMs - SWING_LEAD_MS));
       }
@@ -861,16 +870,22 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (panel) syncBattleResultPanel(panel, options.runtime.snapshot(), resultRevealStage);
     },
     onSequenceBusy(busy) {
+      if (destroyed) return;
       sequenceBusy = busy;
       if (!busy) readyAt = performance.now();
       if (!busy) endSkip();
       root.dataset.battleSequenceBusy = busy ? "true" : "false";
       // 시퀀스가 끝나면 원장을 버리고 실제 스냅샷으로 복귀한다.
       if (!busy) presentation = undefined;
+      // 인트로·액션 시퀀스가 끝나 명령 국면이 열릴 때 커서 버튼에 즉시 포커스를 준다(200ms 폴링 없이).
+      if (!busy && directorState.step === "command" && !commandHost.contains(document.activeElement)) {
+        const cursor = commandHost.querySelector<HTMLButtonElement>("button.battle-command[data-battle-command-cursor='true']:not(:disabled)");
+        cursor?.focus({ preventScroll: true });
+      }
       // battle-feel r2: 도트 측면 전투는 연출이 끝나면 다음 게이지 틱(최대 200ms 뒤)을 기다리지 않고 바로 한 틱 돈다.
-      if (!busy && root.dataset.battleMotion === "retro") window.setTimeout(() => { if (root.isConnected) battleTick(); }, 0);
-      if (!busy && autoBattle) queueMicrotask(() => {
-        if (root.isConnected) syncView();
+      if (!busy && root.dataset.battleMotion === "retro") scheduleBattleTimer(() => { if (!destroyed && root.isConnected) battleTick(); }, 0);
+      if (!busy) queueMicrotask(() => {
+        if (!destroyed && root.isConnected) syncView();
       });
     },
   });
@@ -1058,7 +1073,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   function onWindowKeyup(event: KeyboardEvent): void {
     // keydown 과 같이, IME 가 key 를 Process 로 바꿔도 Shift 를 놓친 것으로 본다.
     const key = keyboardEventKey(event);
-    if (key !== "Shift") return;
+    if (key !== "Shift") {
+      // Enter 등 다른 키를 누른 채 Shift 가 들어왔다 나가는 조합(가상 패드 A 등)은 단독 Shift 로 치지 않는다.
+      if (shiftHeld) shiftCombined = true;
+      return;
+    }
     if (options.runtime.snapshot().eventChoice || options.runtime.snapshot().eventPause) { shiftHeld = false; shiftCombined = false; return; }
     // 텍스트 입력 중에는 토글하지 않는다. 연출 중에는 허용한다 — 배속은 재생을
     // 보면서 조절하는 컨트롤이다(코덱스 리뷰 C6).
@@ -1466,9 +1485,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
 
   function syncView(): void {
-    setBattleMotionContext(field, options.runtime.snapshot());
     if (destroyed) return;
     const runtimeSnapshot = options.runtime.snapshot();
+    setBattleMotionContext(field, runtimeSnapshot);
     options.onSnapshot?.(runtimeSnapshot);
     const snapshot = withoutUnannouncedEnemies(runtimeSnapshot);
     syncComboHeld(runtimeSnapshot.heldActorIds);
@@ -2042,6 +2061,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const skillRecord = command.kind === "skill" ? store.getCurrent().database.skills.find((skill) => skill.id === command.skillId) : undefined;
     // 지난 명령의 무장이 남아 있으면(막힌 행동·비트 없는 행동) 다음 돌진에서 엉뚱한 휘두름이 났다 — 명령마다 새로 정한다.
     swingArmed = false;
+    swingFamily = attackFamilyOfStyle(battleCharacterMotion(field, snapshot.activeActorId)?.style);
     pendingRetroSkillId = retroMotion && hasRetroSkillContract(skillRecord) ? skillRecord?.id : undefined;
     pendingRetroSkillUserId = snapshot.activeActorId;
     // 저작한 시전 소리(자리 magic-<속성> → cast)가 있으면 확정 순간에 한 번 — 없으면 아무것도 하지 않는다(기술 애니메이션 소리는 그대로).
@@ -2058,7 +2078,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       const pokemonRanged = pokemonMotion && command.kind === "skill" && pokemonMoveMotion(skillRecord) !== "contact";
       // 포켓몬 스킨은 타격감 프리셋(light 포함)과 무관하게 돌진 직전에 울린다 — light 에서 확정 순간으로 돌아가면 같은 어긋남이 난다.
       swingArmed = !pokemonRanged && (pokemonMotion || (hitFeel === "impact" && command.kind === "attack"));
-      if (!swingArmed && !pokemonRanged) emitBattleJuice("attack-swing", actorNode ?? undefined);
+      if (!swingArmed && !pokemonRanged) emitBattleJuice("attack-swing", actorNode ?? undefined, swingFamily ? { attackFamily: swingFamily } : undefined);
     } else if (command.kind === "defend") {
       emitBattleJuice("defend", actorNode ?? undefined);
     }
@@ -2257,7 +2277,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // Active ATB: 명령·대상 메뉴가 열려 있어도 시간이 흐른다. 런타임이 적만 행동시키고 메뉴를 되돌려 준다.
     const menuTime = activeAtb && (before.phase === "actorCommand" || before.phase === "targetSelect") && !eventSurfaceOpen;
     if (before.phase !== "charging" && !menuTime) {
-      if (before.phase === "actorCommand") syncView();
+      // 명령 대기 중 수동 조작(autoBattle=false)이고 화면·포커스가 이미 현재 액터의 명령 상태라면 200ms마다 전체 DOM/스냅샷을 다시 그리지 않는다.
+      const needsCommandSync = before.phase === "actorCommand" && (
+        autoBattle
+        || directorState.step !== "command"
+        || directorState.activeActorRecordId !== before.activeActorId
+        || !commandHost.contains(document.activeElement)
+      );
+      if (needsCommandSync) syncView();
       return;
     }
     options.runtime.tick(BATTLE_TICK_MS);
@@ -2298,7 +2325,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 멱등 — 여러 경로(onResult, teardown, 재마운트)에서 중복 호출돼도 안전해야 한다.
       if (destroyed) return;
       destroyed = true;
+      window.clearTimeout(playbackStatusTimer);
+      playbackStatusTimer = 0;
       animationBlendObserver.disconnect();
+      stopComboPartners(root, true);
       stopRetroClassSkill(field);
       clearEnemyMotion(field);
       impactContact.destroy();

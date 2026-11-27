@@ -20,6 +20,8 @@ async function writeFixture() {
 const key = (key, times = 1) => ({ kind: 'key', key, times });
 export default {
   id: 'esc-classic-skin',
+  // 옛 ESC 메뉴(menuUiStyle 스킨) 화면을 검사한다 — 기본이 허브 메뉴가 된 뒤에도 같은 화면을 본다.
+  systemPatch: { menuLayout: "legacy" },
   projectFixture: await writeFixture(),
   beats: [
     { id: 'title', expect: { testidPresent: ['title-screen'] } },
