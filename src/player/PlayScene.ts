@@ -1,4 +1,5 @@
 import { syncSessionWithDeviceRecords } from "@/player/deviceRecords";
+import { safeLocalStorage } from "@/player/saveSlots";
 import { updatePixelFx } from "@/player/playScenePixelFx";
 import { syncPlayerOcclusionGhost } from "@/player/playerOcclusionGhost";
 import { setCharacterBaseOrigin } from "./characterOrigin";
@@ -61,9 +62,11 @@ import {
 import {
   applyChangeTileStep as applySceneChangeTileStep,
   flashCamera,
+  invalidateSceneTransfers,
   shakeCamera,
   transferTo as transferSceneTo,
 } from "@/player/playSceneMapCommands";
+import { foregroundOwner } from "@/player/foregroundControl";
 import { armDialogueConfirmRelease } from "@/player/confirmMashGuard";
 import { findRuntimeEventInScene, resetEncounterCounter, updatePlayScene } from "@/player/playSceneMovement";
 import { prefetchBattleAssetsForMap } from "@/player/battleAssetPrefetch";
@@ -98,7 +101,7 @@ import { syncFollowerSceneVisibility, syncFollowerSprites } from "@/player/playS
 import { startChaseSpawnGrace, startEscapeGrace } from "@/player/chaseSpawnGrace";
 import { syncPartyFollowers } from "@/project/followers";
 import { seedLocationOccupancyForScene } from "@/player/playSceneLocationTransitions";
-import { installLightingLayer, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
+import { installLightingLayer, resetLightingTransition, syncLightingLayer, updateLighting } from "@/player/playSceneLighting";
 import type { LightingAmbientTransition } from "@/project/lightingRules";
 import { syncMapBackgroundLayers, updateMapBackground } from "@/player/playSceneMapBackground";
 import { updateMode7 } from "@/player/playSceneMode7";
@@ -123,7 +126,7 @@ import {
   type PlaySceneZoneFeedback,
 } from "@/player/playSceneZoneFeedback";
 import { mountHandSlotChip, type HandSlotChip } from "@/player/handSlotChip";
-import { dialogueHost } from "@/player/playSceneDom";
+import { dialogueHost, dialogueUi } from "@/player/playSceneDom";
 import {
   createMinimap,
   destroyMinimap,
@@ -198,6 +201,7 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   private minimap: MinimapRuntimeState | null = null;
   /** 미니맵 생성 세대. 앞선 비동기 생성이 늦게 끝나면 그 결과를 버린다(겹친 미니맵이 남지 않게). */
   private minimapGeneration = 0;
+  private minimapRetryTimer: ReturnType<typeof setTimeout> | null = null;
   private handSlotChip: HandSlotChip | null = null;
   private handSlotHost: HTMLElement | null = null;
   private minimapUserHidden = false;
@@ -401,12 +405,18 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     this.events.once("destroy", destroyHandSlotChip);
     const destroyMinimapLocal = (): void => {
       this.minimapGeneration += 1;
+      if (this.minimapRetryTimer !== null) {
+        clearTimeout(this.minimapRetryTimer);
+        this.minimapRetryTimer = null;
+      }
       if (!this.minimap) return;
       destroyMinimap(this.minimap);
       this.minimap = null;
     };
     this.events.once("shutdown", destroyMinimapLocal);
     this.events.once("destroy", destroyMinimapLocal);
+    this.events.once("shutdown", () => invalidateSceneTransfers(this));
+    this.events.once("destroy", () => invalidateSceneTransfers(this));
     this.events.once("shutdown", destroyZoneFeedback);
     this.events.once("destroy", destroyZoneFeedback);
     // 컬링의 직전 짝 기억은 모듈 스코프의 **강한** 참조다(WeakMap 인 본체와 다르다).
@@ -745,12 +755,26 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   applySession(session: PlaySession): void {
+    invalidateSceneTransfers(this);
     this.battleAbortController?.abort();
+    foregroundOwner(this)?.release(false);
+    dialogueUi(this)?.close();
+    this.playerRoute = null;
+    this.playerHop = null;
+    resetLightingTransition(this);
+    this.cameras?.main?.fadeEffect?.reset?.();
+    this.cameras?.main?.flashEffect?.reset?.();
+    this.cameras?.main?.shakeEffect?.reset?.();
+    this.weatherTransition = null;
+    this.weatherTargetSignature = "";
+    this.timeTintTransition = null;
+    this.timeSleepInProgress = false;
     this.session = structuredClone(session);
     // 불러오기·체크포인트·패배 복구는 주인공을 새로 세운다 — 추격자가 곧바로 잡지 않게 은총 시간을 다시 준다(J61).
     startChaseSpawnGrace(this);
     // 엔딩·CG 해금은 세이브가 아니라 이 기기 기록이다 — 불러오기·체크포인트·패배 복구로 세션을 갈아 끼워도 목록이 0 으로 돌아가지 않게 다시 비춘다.
-    if (typeof window !== "undefined" && window.localStorage) syncSessionWithDeviceRecords(window.localStorage, store.getCurrent(), this.session);
+    const storage = safeLocalStorage();
+    if (storage) syncSessionWithDeviceRecords(storage, store.getCurrent(), this.session);
     this.clearRuntimeOverlay("runtime-error");
     // Loading replaces the old event run; its pending menu must not own the new session.
     this.running = false;
@@ -852,11 +876,20 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
   }
 
   private async syncMinimap(): Promise<void> {
+    if (this.sys?.isActive() === false) return;
     const host = this.game.registry.get("dialogueHost") as HTMLElement | undefined;
     if (!host) {
-      // dialogueHost may not exist yet at create() — retry on next frame once.
-      setTimeout(() => void this.syncMinimap(), 300);
+      // dialogueHost may not exist yet at create() — retry once until shutdown/destroy clears the timer.
+      if (this.minimapRetryTimer !== null) return;
+      this.minimapRetryTimer = setTimeout(() => {
+        this.minimapRetryTimer = null;
+        void this.syncMinimap();
+      }, 300);
       return;
+    }
+    if (this.minimapRetryTimer !== null) {
+      clearTimeout(this.minimapRetryTimer);
+      this.minimapRetryTimer = null;
     }
     if (this.minimap) {
       destroyMinimap(this.minimap);

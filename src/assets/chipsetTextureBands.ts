@@ -18,7 +18,10 @@ type BandTexture = {
 
 const chipsetTextureKeys = new Set<string>();
 const chipsetTileSizes = new Map<string, number>();
+/** 대형 시트(2048px 초과) 원본 비트맵 캐시 — 이미 띠 분할이 끝난 시트만 LRU 상한으로 정리한다. */
+const MAX_REMEMBERED_FULL_SHEETS = 24;
 const fullSheets = new Map<string, SizedImage>();
+const firstBandCanvases = new Map<string, HTMLCanvasElement>();
 
 /** 로더가 이 키를 칩셋으로 알게 한다. 초상·그림은 자르지 않는다. tileSize 는 띠 경계가 칸을 가로지르지 않게 한다. */
 export function markChipsetTextureKey(key: string, tileSize = 16): void {
@@ -96,23 +99,64 @@ export function sliceChipsetBands(image: SizedImage, tileSize = 16): HTMLCanvasE
   return sliceChipsetBandSources(image, tileSize)?.canvases ?? null;
 }
 
-export function rememberChipsetImage(key: string, image: SizedImage): void {
-  if (key) fullSheets.set(key, image);
+function evictRememberedOverflow(): void {
+  if (fullSheets.size <= MAX_REMEMBERED_FULL_SHEETS) return;
+  for (const key of fullSheets.keys()) {
+    if (fullSheets.size <= MAX_REMEMBERED_FULL_SHEETS) break;
+    // 아직 applyRememberedChipsetBands 가 돌지 않은 대기 시트는 배치 프리로드 중 퇴출하지 않는다.
+    if (firstBandCanvases.has(key)) continue;
+    fullSheets.delete(key);
+  }
+}
+
+export function rememberChipsetImage(key: string, image: SizedImage, firstBand?: HTMLCanvasElement): void {
+  if (!key) return;
+  fullSheets.delete(key);
+  fullSheets.set(key, image);
+  if (firstBand) firstBandCanvases.set(key, firstBand);
+  else firstBandCanvases.delete(key);
+  evictRememberedOverflow();
+}
+
+/** 플레이어 종료/테스트 플레이 닫기 시 대형 디코딩 시트 비트맵 참조를 즉시 비운다. */
+export function clearRememberedChipsetImages(): void {
+  fullSheets.clear();
+  firstBandCanvases.clear();
 }
 
 /** 로더가 남긴 시트 전체. GL 소스는 첫 띠뿐이라 이식 굽기는 이것을 쓴다. */
 export function rememberedChipsetImage(key: string): SizedImage | null {
-  return fullSheets.get(key) ?? null;
+  const image = fullSheets.get(key);
+  if (!image) return null;
+  // LRU 갱신
+  fullSheets.delete(key);
+  fullSheets.set(key, image);
+  return image;
 }
 
-/** 프레임을 만들기 전에, 기억된 시트가 있으면 텍스처 소스를 띠로 바꾼다. */
+/** 프레임을 만들기 전에, 기억된 시트가 있으면 텍스처 소스를 띠로 바꾼다. 첫 띠는 이미 잘라 둔 캔버스를 재사용한다. */
 export function applyRememberedChipsetBands(texture: BandTexture): void {
-  const image = texture.key ? fullSheets.get(texture.key) : undefined;
+  const key = texture.key;
+  const image = key ? fullSheets.get(key) : undefined;
   if (!image || !texture.setSource || (texture.source?.length ?? 0) > 1) return;
-  const sliced = sliceChipsetBandSources(image, tileSizeForKey(texture.key));
-  if (!sliced || sliced.canvases.length < 2) return;
-  texture.setSource(sliced.canvases, 0, true);
-  texture[BAND_COLUMNS] = sliced.columns;
+  const tileSize = tileSizeForKey(key);
+  const { width, height } = imageSize(image);
+  const rects = chipsetBandRects(width, height, tileSize);
+  if (!rects || rects.length < 2) return;
+  const canvases: HTMLCanvasElement[] = [];
+  const cachedFirst = key ? firstBandCanvases.get(key) : undefined;
+  for (let index = 0; index < rects.length; index += 1) {
+    const rect = rects[index]!;
+    const canvas = index === 0 && cachedFirst && cachedFirst.width === rect.width && cachedFirst.height === rect.height
+      ? cachedFirst
+      : cropChipsetBand(image, rect);
+    if (!canvas) return;
+    canvases.push(canvas);
+  }
+  texture.setSource(canvases, 0, true);
+  texture[BAND_COLUMNS] = rects[0]!.columns;
+  if (key) firstBandCanvases.delete(key);
+  evictRememberedOverflow();
 }
 
 /**
@@ -186,7 +230,7 @@ function keepFirstBand(file: ImageFileProto, image: SizedImage): void {
     const rects = chipsetBandRects(width, height, tileSizeForKey(file.key));
     const first = rects && rects.length > 1 ? cropChipsetBand(image, rects[0]!) : null;
     if (!first) return;
-    rememberChipsetImage(file.key, image);
+    rememberChipsetImage(file.key, image, first);
     file.data = first;
   } catch (error) {
     console.warn(`[chipset] 시트 띠 나누기 실패: ${file.key}`, error);

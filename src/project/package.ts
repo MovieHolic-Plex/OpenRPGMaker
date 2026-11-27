@@ -1,4 +1,6 @@
-import { deserialize, serializePretty } from "@/project/io";
+import { deserialize, deserializeParsed, serializePretty } from "@/project/io";
+import { preloadBundledTilesetDefinitions } from "@/project/defaults/defaultAssets";
+import { bundledJsonKeyForTexture, preloadBundledJson, type BundledJsonKey } from "@/project/defaults/bundledJson";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { uploadedAssetBytes } from "@/project/persistence/assetAccessors";
 import { encodeDataUrlBytes } from "@/project/persistence/core/dataUrl";
@@ -67,7 +69,41 @@ export async function readProjectPackage(file: Blob): Promise<Project> {
   const bytes = new Uint8Array(await file.arrayBuffer());
   const projectEntry = readPackageEntry(bytes, "project.json");
   if (!projectEntry) throw new ProjectPackageError("project.json entry is missing");
-  const project = deserialize(decoder.decode(projectEntry));
+  const text = decoder.decode(projectEntry);
+  let project: Project;
+  let parsed: unknown;
+  let parsedOk = false;
+  try {
+    parsed = JSON.parse(text) as unknown;
+    parsedOk = true;
+  } catch {
+    parsedOk = false;
+  }
+  if (parsedOk && parsed && typeof parsed === "object") {
+    const tilesets = (parsed as { tilesets?: unknown }).tilesets;
+    const maps = (parsed as { maps?: unknown }).maps;
+    const extraKeys = new Set<BundledJsonKey>();
+    if (tilesets && typeof tilesets === "object") {
+      for (const entry of Object.values(tilesets as Record<string, { image?: { type?: unknown; id?: unknown } }>)) {
+        if (entry?.image?.type === "bundled" && typeof entry.image.id === "string") {
+          const key = bundledJsonKeyForTexture(entry.image.id);
+          if (key) extraKeys.add(key);
+        }
+      }
+    }
+    const hasRelief = maps && typeof maps === "object" && Object.values(maps as Record<string, { relief?: unknown }>).some((map) => Boolean(map?.relief));
+    if (hasRelief) {
+      extraKeys.add("reliefRampArt");
+      extraKeys.add("reliefSheerArt");
+    }
+    await Promise.all([
+      tilesets && typeof tilesets === "object" ? preloadBundledTilesetDefinitions(Object.keys(tilesets)) : null,
+      extraKeys.size > 0 ? preloadBundledJson([...extraKeys]) : null,
+    ]);
+    project = deserializeParsed(parsed);
+  } else {
+    project = deserialize(text);
+  }
   for (const asset of Object.values(project.assets.uploaded)) {
     if (asset.ref && !asset.dataUrl) {
       const assetBytes = readPackageEntry(bytes, `assets/${asset.ref.sha256}.${asset.ref.extension}`);

@@ -319,7 +319,6 @@ export async function runCommands(
     && owner?.current() !== false && options.isCurrent?.() !== false;
   scene.running = true; scene.setInputEnabled(false);
   const project = store.getCurrent();
-  activeSession.commonEvents = project.commonEvents;
   const runTrace = activeEventRunLog()?.trace("foreground", activeSession, currentEventId);
   const base = createInterpreter([...commands], activeSession, project, {
     onScreenFade: armDialogueConfirmRelease,
@@ -478,13 +477,27 @@ function createCutsceneSkipController(scene: PlaySceneContext, interpreter: Inte
   };
 }
 
-function waitWithCutsceneSkip(ms: number, skipController: CutsceneSkipController): Promise<void> {
+function waitWithCutsceneSkip(ms: number, skipController: CutsceneSkipController, signal?: AbortSignal): Promise<void> {
   const duration = Number.isFinite(ms) ? Math.min(2 ** 31 - 1, Math.max(0, Math.round(ms))) : 0;
-  if (duration === 0) return Promise.resolve();
-  return Promise.race([
-    new Promise<void>((resolve) => window.setTimeout(resolve, duration)),
-    skipController.waitForSkip(),
-  ]);
+  if (duration === 0 || signal?.aborted) return Promise.resolve();
+  return new Promise<void>((resolve) => {
+    let settled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const finish = (): void => {
+      if (settled) return;
+      settled = true;
+      if (timer !== undefined) {
+        clearTimeout(timer);
+        timer = undefined;
+      }
+      signal?.removeEventListener("abort", finish);
+      resolve();
+    };
+    const setTimer = typeof window !== "undefined" && typeof window.setTimeout === "function" ? window.setTimeout : setTimeout;
+    timer = setTimer(finish, duration);
+    signal?.addEventListener("abort", finish, { once: true });
+    void skipController.waitForSkip().then(finish);
+  });
 }
 
 /**
@@ -601,7 +614,7 @@ async function consumeBlockingStep(
     }
     case "wait":
       if (step.allowParallelEvents) conditionWaitScenes.add(scene);
-      try { await waitWithCutsceneSkip(step.ms, skipController); }
+      try { await waitWithCutsceneSkip(step.ms, skipController, foregroundOwner(scene)?.signal); }
       finally { if (step.allowParallelEvents) conditionWaitScenes.delete(scene); }
       {
         const skipped = skipController.takeResult();
@@ -744,19 +757,25 @@ async function consumeBlockingStep(
     case "moveEvent": {
       const target = resolveMoveEventTarget(step.eventId, currentEventId);
       const moves = bindStageTargets(step.moves, currentEventId);
+      const waitAbort = new AbortController();
+      const onSkip = (): void => waitAbort.abort();
       if (target === PLAYER_MOVE_TARGET) {
         // 주인공 강제 이동: 이벤트 무버가 아니라 플레이어를 한 칸씩 걷게 한다.
         startPlayerRoute(scene, moves, step.repeat);
         if (step.skippable === false && scene.playerRoute) scene.playerRoute.preserveBlockedSteps = true;
         if (step.wait) {
-          await Promise.race([waitForPlayerRouteComplete(scene), skipController.waitForSkip()]);
+          void skipController.waitForSkip().then(onSkip);
+          await waitForPlayerRouteComplete(scene, waitAbort.signal);
+          waitAbort.abort();
         }
       } else {
         scene.registerAutonomousMover(target, moves, step.repeat);
         scene.commandMoveRouteEventIds.add(target);
         if (step.skippable === false) holdBlockedCommandRoute(scene.autonomousNPCs.get(target));
         if (step.wait) {
-          await Promise.race([waitForMoverComplete(scene, target), skipController.waitForSkip()]);
+          void skipController.waitForSkip().then(onSkip);
+          await waitForMoverComplete(scene, target, waitAbort.signal);
+          waitAbort.abort();
         }
       }
       {
@@ -769,7 +788,10 @@ async function consumeBlockingStep(
       eraseRuntimeEvent(scene, step.eventId ?? currentEventId);
       return resumeAfterSurface(scene, interpreter);
     case "waitForAllMovement": {
-      await Promise.race([waitForAllCommandMovement(scene), skipController.waitForSkip()]);
+      const waitAbort = new AbortController();
+      void skipController.waitForSkip().then(() => waitAbort.abort());
+      await waitForAllCommandMovement(scene, waitAbort.signal);
+      waitAbort.abort();
       const skipped = skipController.takeResult();
       if (skipped) return skipped;
       return resumeAfterSurface(scene, interpreter);
@@ -795,7 +817,7 @@ async function consumeBlockingStep(
       scene.showRuntimeOverlay("picture-overlay", resourceDisplayName(step.resourceId, step.pictureId || step.resourceId));
       scene.syncRuntimeState();
       if (step.waitForPicture === true) {
-        await waitWithCutsceneSkip(step.durationMs ?? 0, skipController);
+        await waitWithCutsceneSkip(step.durationMs ?? 0, skipController, foregroundOwner(scene)?.signal);
         const skipped = skipController.takeResult();
         if (skipped) return skipped;
       }
@@ -870,11 +892,27 @@ async function consumeBlockingStep(
       );
       return resumeAfterSurface(scene, interpreter);
     case "playMovie": {
-      const played = playMovieOverlay(scene, step);
-      if (step.wait) {
-        await Promise.race([played, skipController.waitForSkip()]);
-        const skipped = skipController.takeResult();
-        if (skipped) return skipped;
+      const movieAbort = new AbortController();
+      const ownerSignal = foregroundOwner(scene)?.signal;
+      const forwardOwnerAbort = (): void => movieAbort.abort();
+      ownerSignal?.addEventListener("abort", forwardOwnerAbort, { once: true });
+      const played = playMovieOverlay(scene, step, { signal: movieAbort.signal });
+      // wait === false 에서도 재생이 끝날 때까지 ownerSignal 을 유지해 세션 전환(applySession) 시 오버레이가 남지 않게 한다.
+      void played.finally(() => {
+        ownerSignal?.removeEventListener("abort", forwardOwnerAbort);
+      });
+      try {
+        if (step.wait) {
+          void skipController.waitForSkip().then(() => movieAbort.abort());
+          await played;
+          const skipped = skipController.takeResult();
+          if (skipped) return skipped;
+        }
+      } finally {
+        if (step.wait) {
+          ownerSignal?.removeEventListener("abort", forwardOwnerAbort);
+          movieAbort.abort();
+        }
       }
       return resumeAfterSurface(scene, interpreter);
     }
@@ -981,62 +1019,59 @@ function applyEventGraphicPatternStep(
   scene.syncRuntimeState();
 }
 
+function pollUntilOrAbort(scene: PlaySceneContext, isDone: () => boolean, signal?: AbortSignal, timeoutMs = 30000): Promise<void> {
+  if (signal?.aborted || isDone()) return Promise.resolve();
+  return new Promise((resolve) => {
+    let settled = false;
+    let rafId: number | undefined;
+    const ownerSignal = foregroundOwner(scene)?.signal;
+    const startedAt = performance.now();
+    const finish = (): void => {
+      if (settled) return;
+      settled = true;
+      if (rafId !== undefined) {
+        cancelAnimationFrame(rafId);
+        rafId = undefined;
+      }
+      signal?.removeEventListener("abort", finish);
+      ownerSignal?.removeEventListener("abort", finish);
+      scene.events?.off("shutdown", finish);
+      scene.events?.off("destroy", finish);
+      resolve();
+    };
+    signal?.addEventListener("abort", finish, { once: true });
+    ownerSignal?.addEventListener("abort", finish, { once: true });
+    scene.events?.once("shutdown", finish);
+    scene.events?.once("destroy", finish);
+    const check = (): void => {
+      if (settled) return;
+      if (signal?.aborted || ownerSignal?.aborted || scene.sys?.isActive() === false || isDone() || performance.now() - startedAt >= timeoutMs) {
+        finish();
+        return;
+      }
+      rafId = requestAnimationFrame(check);
+    };
+    rafId = requestAnimationFrame(check);
+  });
+}
+
 // moveEvent 의 wait 옵션: mover 가 활동을 마칠 때(autonomousNPCs 에서 제거될 때)까지 대기.
 // 반복(repeat) mover는 완료되지 않으므로 wait 와 함께 쓰면 무한 대기가 되나,
 // RM2K3 동작과 일관되게 비반복 경로에만 의미를 둔다. 안전 가드로 최대 30초 후 타임아웃.
-function waitForMoverComplete(scene: PlaySceneContext, eventId: string): Promise<void> {
-  return new Promise((resolve) => {
-    const timeoutMs = 30000;
-    const startedAt = performance.now();
-    const check = () => {
-      if (!scene.autonomousNPCs.has(eventId)) {
-        resolve();
-        return;
-      }
-      if (performance.now() - startedAt >= timeoutMs) {
-        resolve();
-        return;
-      }
-      requestAnimationFrame(check);
-    };
-    requestAnimationFrame(check);
-  });
+function waitForMoverComplete(scene: PlaySceneContext, eventId: string, signal?: AbortSignal): Promise<void> {
+  return pollUntilOrAbort(scene, () => !scene.autonomousNPCs.has(eventId), signal);
 }
 
-function waitForAllCommandMovement(scene: PlaySceneContext): Promise<void> {
-  return new Promise((resolve) => {
-    const timeoutMs = 30000;
-    const startedAt = performance.now();
-    const check = () => {
-      const hasCommandMover = [...scene.commandMoveRouteEventIds].some((eventId) => scene.autonomousNPCs.has(eventId));
-      if (!hasCommandMover && !scene.playerRoute && !scene.moving) {
-        resolve();
-        return;
-      }
-      if (performance.now() - startedAt >= timeoutMs) {
-        resolve();
-        return;
-      }
-      requestAnimationFrame(check);
-    };
-    requestAnimationFrame(check);
-  });
+function waitForAllCommandMovement(scene: PlaySceneContext, signal?: AbortSignal): Promise<void> {
+  return pollUntilOrAbort(scene, () => {
+    const hasCommandMover = [...scene.commandMoveRouteEventIds].some((eventId) => scene.autonomousNPCs.has(eventId));
+    return !hasCommandMover && !scene.playerRoute && !scene.moving;
+  }, signal);
 }
 
 // 주인공 강제 이동 루트가 끝날 때(scene.playerRoute 가 비워질 때)까지 대기. 안전 타임아웃 30초.
-function waitForPlayerRouteComplete(scene: PlaySceneContext): Promise<void> {
-  return new Promise((resolve) => {
-    const timeoutMs = 30000;
-    const startedAt = performance.now();
-    const check = () => {
-      if (!scene.playerRoute || performance.now() - startedAt >= timeoutMs) {
-        resolve();
-        return;
-      }
-      requestAnimationFrame(check);
-    };
-    requestAnimationFrame(check);
-  });
+function waitForPlayerRouteComplete(scene: PlaySceneContext, signal?: AbortSignal): Promise<void> {
+  return pollUntilOrAbort(scene, () => !scene.playerRoute, signal);
 }
 
 function eraseRuntimeEvent(scene: PlaySceneContext, eventId: string | undefined): void {

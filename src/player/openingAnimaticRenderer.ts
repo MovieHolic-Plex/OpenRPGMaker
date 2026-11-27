@@ -610,14 +610,43 @@ function walkFrame(l: AnimaticLayer, at: number): number {
 const overlayLayer = (l: AnimaticLayer) => l.kind === 'caption';
 /** Fixed 4×4×4 family palette: every pixel-grid frame has at most 64 opaque RGB colours. */
 type PixelRgb = readonly [number, number, number];
-const gridPalettes = new WeakMap<OpeningAnimatic, readonly PixelRgb[]>();
+type PixelGridPaletteCache = { readonly palette: readonly PixelRgb[]; readonly lut: Uint8Array };
+const gridPalettes = new WeakMap<OpeningAnimatic, PixelGridPaletteCache>();
+
+/** 5-bit RGB(32×32×32 = 32,768) 룩업 테이블 — 픽셀마다 64색 선형 스캔(369만 회/프레임)을 O(1) 조회로 바꾼다. */
+function buildPixelGridLut(palette: readonly PixelRgb[]): Uint8Array {
+  const lut = new Uint8Array(32_768);
+  const count = palette.length;
+  for (let r5 = 0; r5 < 32; r5 += 1) {
+    const r = (r5 << 3) | (r5 >> 2);
+    for (let g5 = 0; g5 < 32; g5 += 1) {
+      const g = (g5 << 3) | (g5 >> 2);
+      for (let b5 = 0; b5 < 32; b5 += 1) {
+        const b = (b5 << 3) | (b5 >> 2);
+        const inputGreenish = g > Math.max(r, b) + 12;
+        let bestIdx = 0;
+        let distance = Infinity;
+        for (let idx = 0; idx < count; idx += 1) {
+          const color = palette[idx]!;
+          const greenPenalty = !inputGreenish && color[1] > color[0] + 28 && color[1] > color[2] + 28 ? 18000 : 0;
+          const dr = color[0] - r, dg = color[1] - g, db = color[2] - b;
+          const d = dr * dr + dg * dg + db * db + greenPenalty;
+          if (d < distance) { distance = d; bestIdx = idx; if (d === 0) break; }
+        }
+        lut[(r5 << 10) | (g5 << 5) | b5] = bestIdx;
+      }
+    }
+  }
+  return lut;
+}
+
 function quantizePixelGrid(canvas: HTMLCanvasElement, composition: OpeningAnimatic): void {
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
   if (!ctx) return;
   const image = ctx.getImageData(0, 0, canvas.width, canvas.height);
   const data = image.data;
-  let palette = gridPalettes.get(composition);
-  if (!palette) {
+  let cached = gridPalettes.get(composition);
+  if (!cached) {
     const counts = new Map<number, number>();
     for (let i = 0; i < data.length; i += 4) {
       if (data[i + 3] === 0) continue;
@@ -633,22 +662,15 @@ function quantizePixelGrid(canvas: HTMLCanvasElement, composition: OpeningAnimat
     }
     for (let r = 0; r < 2; r += 1) for (let g = 0; g < 2; g += 1) for (let b = 0; b < 4; b += 1) fixed.push([r * 255, g * 255, b * 85] as const);
     fixed.splice(-3, 3, [192, 80, 80], [80, 192, 80], [80, 80, 192]);
-    palette = fixed.slice(0, 64);
-    gridPalettes.set(composition, palette);
+    const palette = fixed.slice(0, 64);
+    cached = { palette, lut: buildPixelGridLut(palette) };
+    gridPalettes.set(composition, cached);
   }
-  const nearest = (r: number, g: number, b: number): readonly [number, number, number] => {
-    let best = palette[0] ?? [0, 0, 0], distance = Infinity;
-    const inputGreenish = g > Math.max(r, b) + 12;
-    for (const color of palette) {
-      const greenPenalty = !inputGreenish && color[1] > color[0] + 28 && color[1] > color[2] + 28 ? 18000 : 0;
-      const d = (color[0] - r) ** 2 + (color[1] - g) ** 2 + (color[2] - b) ** 2 + greenPenalty;
-      if (d < distance) { distance = d; best = color; if (d === 0) break; }
-    }
-    return best;
-  };
+  const { palette, lut } = cached;
   for (let i = 0; i < data.length; i += 4) {
     if (data[i + 3] === 0) continue;
-    const color = nearest(data[i]!, data[i + 1]!, data[i + 2]!);
+    const key = ((data[i]! >> 3) << 10) | ((data[i + 1]! >> 3) << 5) | (data[i + 2]! >> 3);
+    const color = palette[lut[key]!] ?? palette[0] ?? [0, 0, 0];
     data[i] = color[0]; data[i + 1] = color[1]; data[i + 2] = color[2];
   }
   ctx.putImageData(image, 0, 0);
@@ -714,14 +736,20 @@ export function drawAnimaticFrame(canvas: HTMLCanvasElement, a: OpeningAnimatic,
   const ctx = canvas.getContext('2d'); if (!ctx) throw Error('2D 무대를 만들 수 없습니다.');
   const grid = a.pixelGrid;
   if (!grid) { drawStage(ctx, canvas.width / a.width, canvas.height / a.height, 0, a, images, atMs, options); return; }
-  const scene = scratchCanvas(`stage:${grid.width}x${grid.height}`, grid.width, grid.height);
+  // getImageData 를 매 프레임 부르므로 최초 생성부터 willReadFrequently: true 로 컨텍스트를 연다(GPU→CPU readback 스톨 방지).
+  const scene = scratchCanvas(`stage-read:${grid.width}x${grid.height}`, grid.width, grid.height, true);
+  const sceneCtx = scene.getContext('2d', { willReadFrequently: true })!;
+  let quantizedCurrentFrame = false;
   if (!gridPalettes.has(a)) {
     const paletteAt = Math.min(options.durationMs ?? a.transition?.durationMs ?? 0, (a.transition?.durationMs ?? 0) + 1000);
-    drawStage(scene.getContext('2d')!, grid.width / a.width, grid.height / a.height, grid.width / a.width, a, images, paletteAt, options);
+    drawStage(sceneCtx, grid.width / a.width, grid.height / a.height, grid.width / a.width, a, images, paletteAt, options);
+    quantizePixelGrid(scene, a);
+    quantizedCurrentFrame = paletteAt === atMs;
+  }
+  if (!quantizedCurrentFrame) {
+    drawStage(sceneCtx, grid.width / a.width, grid.height / a.height, grid.width / a.width, a, images, atMs, options);
     quantizePixelGrid(scene, a);
   }
-  drawStage(scene.getContext('2d')!, grid.width / a.width, grid.height / a.height, grid.width / a.width, a, images, atMs, options);
-  quantizePixelGrid(scene, a);
   const scale = Math.max(1, Math.floor(Math.min(canvas.width / grid.width, canvas.height / grid.height)));
   const width = grid.width * scale, height = grid.height * scale;
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
@@ -838,12 +866,23 @@ function drawStage(ctx: CanvasRenderingContext2D, sx: number, sy: number, snappi
 
 export type AnimaticPlayback = { ready: Promise<void>; stop: () => void };
 /** 컷 경계에서 소리를 짧게 줄이고 치운다. */
-function fadeTail(view: Window, audio: HTMLAudioElement, ms: number): void {
+function fadeTail(view: Window, audio: HTMLAudioElement, ms: number, signal?: AbortSignal): void {
   const from = audio.volume, start = view.performance.now();
+  let timer: number | undefined;
+  const cleanup = (): void => {
+    if (timer !== undefined) { view.clearTimeout(timer); timer = undefined; }
+    signal?.removeEventListener('abort', cleanup);
+    audio.pause(); audio.removeAttribute('src'); audio.load(); audio.remove();
+  };
+  if (signal?.aborted) { cleanup(); return; }
+  signal?.addEventListener('abort', cleanup, { once: true });
   const step = (): void => {
+    timer = undefined;
+    if (signal?.aborted) { cleanup(); return; }
     const u = (view.performance.now() - start) / ms;
-    if (u >= 1) { audio.pause(); audio.removeAttribute('src'); audio.load(); audio.remove(); return; }
-    audio.volume = Math.max(0, from * (1 - u)); view.setTimeout(step, 20);
+    if (u >= 1) { cleanup(); return; }
+    audio.volume = Math.max(0, from * (1 - u));
+    timer = view.setTimeout(step, 20);
   };
   step();
 }
@@ -866,8 +905,12 @@ export const ANIMATIC_CUE_EVENT = 'oprn-animatic-cue';
 
 export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCanvasElement; composition: OpeningAnimatic; durationMs: number; signal: AbortSignal; reducedMotion?: boolean; bottomInset?: () => number; holdClockThroughStalls?: boolean; softCutTails?: boolean; onReady: () => void; onError: (message: string) => void; onDone: () => void }): AnimaticPlayback {
   const { canvas, composition: a, signal } = options, view = canvas.ownerDocument.defaultView!;
-  const draw: DrawOptions = { reducedMotion: options.reducedMotion, durationMs: options.durationMs, bottomInset: options.bottomInset };
+  const durationMs = Number.isFinite(options.durationMs) ? Math.max(0, options.durationMs) : 0;
+  const draw: DrawOptions = { reducedMotion: options.reducedMotion, durationMs, bottomInset: options.bottomInset };
+  const internalAbort = new AbortController();
+  const activeSignal = internalAbort.signal;
   let frame = 0, stopped = false, started = 0, clock = 0, lastNow = 0;
+  let preloadTimer: number | undefined;
   const elapsed = (now: number): number => {
     if (!options.holdClockThroughStalls) return now - started;
     clock += Math.min(STALL_FRAME_MS, Math.max(0, now - lastNow)); lastNow = now; return clock;
@@ -882,11 +925,17 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
       const url = resolveAssetResourceUrl(cue.resourceId, { project: options.project }); if (!url || preloaded.has(cue.id)) continue;
       const el = canvas.ownerDocument.createElement('audio'); el.preload = 'auto'; el.src = url; preloaded.set(cue.id, el);
       // 컷을 붙잡고 기다리는 것은 첫 1초 안에 울릴 큐뿐이다. 뒤의 큐는 컷이 도는 동안 받힌다.
-      if (cue.atMs < 1000) waits.push(new Promise<void>((resolve) => { for (const type of ['canplay', 'error'] as const) el.addEventListener(type, () => resolve(), { once: true, signal }); }));
+      if (cue.atMs < 1000) waits.push(new Promise<void>((resolve) => { for (const type of ['canplay', 'error'] as const) el.addEventListener(type, () => resolve(), { once: true, signal: activeSignal }); }));
       el.load();
     }
     // 느린 망에서도 장면을 오래 붙잡지 않는다(0.8초) — 다 못 받으면 큐 시각에 받으며 튼다(예전 동작). 다음 컷 소리는 cinematicAssets.warm 이 미리 받는다.
-    if (waits.length) await Promise.race([Promise.all(waits), new Promise<void>((resolve) => view.setTimeout(resolve, 800))]);
+    if (waits.length) {
+      await Promise.race([
+        Promise.all(waits),
+        new Promise<void>((resolve) => { preloadTimer = view.setTimeout(() => { preloadTimer = undefined; resolve(); }, 800); }),
+      ]);
+      if (preloadTimer !== undefined) { view.clearTimeout(preloadTimer); preloadTimer = undefined; }
+    }
   };
   // 브라우저 자동재생 막힘(첫 화면에 사용자 입력이 없을 때 정상)은 그림을 멈출 이유가 아니다 — 소리만 미뤘다가 첫 입력에 다시 튼다.
   // 예전에는 장면 전체를 멈추고 「오디오 큐 자동재생 차단: …」 개발자 글을 화면에 남겼다(2026-10-25 J26).
@@ -897,13 +946,25 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
     if (retryArmed || stopped) return; retryArmed = true;
     const doc = canvas.ownerDocument;
     const retry = () => { retryArmed = false; for (const a of [...blocked]) { blocked.delete(a); if (!stopped && !a.paused) continue; if (!stopped) void a.play().catch(() => { blocked.add(a); armRetry(); }); } };
-    for (const type of ['pointerdown', 'keydown', 'touchstart'] as const) doc.addEventListener(type, retry, { once: true, capture: true, signal });
+    for (const type of ['pointerdown', 'keydown', 'touchstart'] as const) doc.addEventListener(type, retry, { once: true, capture: true, signal: activeSignal });
   };
-  const stop = () => { if (stopped) return; stopped = true; view.cancelAnimationFrame(frame); signal.removeEventListener('abort', stop); for (const audio of cues.values()) { audio.pause(); audio.removeAttribute('src'); audio.load(); audio.remove(); } cues.clear(); for (const audio of preloaded.values()) { audio.removeAttribute('src'); audio.load(); } preloaded.clear(); };
+  const stop = () => {
+    if (stopped) return;
+    stopped = true;
+    internalAbort.abort();
+    if (preloadTimer !== undefined) { view.clearTimeout(preloadTimer); preloadTimer = undefined; }
+    view.cancelAnimationFrame(frame);
+    signal.removeEventListener('abort', stop);
+    blocked.clear();
+    for (const audio of cues.values()) { audio.pause(); audio.removeAttribute('src'); audio.load(); audio.remove(); }
+    cues.clear();
+    for (const audio of preloaded.values()) { audio.removeAttribute('src'); audio.load(); }
+    preloaded.clear();
+  };
   signal.addEventListener('abort', stop, { once: true });
   const ready = (async () => {
     try {
-      const [images] = await Promise.all([loadAnimaticImages(options.project, a, signal), preloadCues()]); if (stopped || signal.aborted) return;
+      const [images] = await Promise.all([loadAnimaticImages(options.project, a, activeSignal), preloadCues()]); if (stopped || signal.aborted) return;
       const box = canvas.getBoundingClientRect(), dpr = view.devicePixelRatio || 1;
       const k = a.upscale === 'nearest' && !a.pixelGrid && box.width > 0 && box.height > 0
         ? Math.max(1, Math.min(8, Math.floor(Math.min(box.width * dpr / a.width, box.height * dpr / a.height)))) : 1;
@@ -912,8 +973,8 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
       started = lastNow = view.performance.now(); options.onReady();
       const tick = (now: number) => {
         if (stopped || signal.aborted) return;
-        const t = Math.min(options.durationMs, elapsed(now)); canvas.dataset.timeMs = String(Math.round(t));
-        const ending = t >= options.durationMs;
+        const t = Math.min(durationMs, elapsed(now)); canvas.dataset.timeMs = String(Math.round(t));
+        const ending = t >= durationMs;
         try { drawAnimaticFrame(canvas, a, images, t, draw); }
         catch (error) { stop(); options.onError(String(error)); return; }
         for (const cue of a.audioCues ?? []) {
@@ -925,8 +986,8 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
             audio = warm ?? canvas.ownerDocument.createElement('audio'); if (!warm) audio.src = url; audio.loop = cue.loop ?? false; audio.dataset.testid = 'animatic-audio-cue'; audio.dataset.cueId = cue.id; audio.volume = animaticCueVolume(cue, t); canvas.parentElement?.append(audio); cues.set(cue.id, audio);
             if (!audio.loop) canvas.dispatchEvent(new CustomEvent(ANIMATIC_CUE_EVENT, { bubbles: true, detail: { durationMs: cue.durationMs } }));
             const seek = () => { if (!stopped && audio!.duration > 0 && Number.isFinite(audio!.duration)) { const now = options.holdClockThroughStalls ? Number(canvas.dataset.timeMs ?? 0) : view.performance.now() - started; const offset = (cue.offsetMs ?? 0) / 1000 + Math.max(0, now - cue.atMs) / 1000; audio!.currentTime = audio!.loop ? offset % audio!.duration : Math.min(offset, audio!.duration); } };
-            if (audio.readyState >= 1) seek(); else audio.addEventListener('loadedmetadata', seek, { once: true, signal });
-            audio.addEventListener('error', () => { if (!stopped) console.warn('[animatic] audio cue failed to load:', cue.resourceId); }, { once: true, signal });
+            if (audio.readyState >= 1) seek(); else audio.addEventListener('loadedmetadata', seek, { once: true, signal: activeSignal });
+            audio.addEventListener('error', () => { if (!stopped) console.warn('[animatic] audio cue failed to load:', cue.resourceId); }, { once: true, signal: activeSignal });
             void audio.play().catch((error: unknown) => {
               // 짧은 큐(0.5초 시계 소리)는 play() 가 끝나기 전에 pause() 되어 AbortError 로 거절된다 — 정상이다(판정자 J26 근본 원인). 무시한다.
               // 자동재생 막힘(NotAllowedError)만 첫 입력에 다시 튼다. 어떤 소리 실패도 그림을 멈추지 않는다.
@@ -934,14 +995,14 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
             });
           }
           // 컷 끝까지 울리던 소리는 끊지 않고 꼬리를 남긴다(아래). 그 밖의 소리는 제 구간이 끝나면 멈춘다.
-          const runsToCut = ending && !!options.softCutTails && !audio?.paused && cue.atMs + cue.durationMs >= options.durationMs - 1;
+          const runsToCut = ending && !!options.softCutTails && !audio?.paused && cue.atMs + cue.durationMs >= durationMs - 1;
           if (audio) { if (!runsToCut) audio.volume = animaticCueVolume(cue, t); if (!active && !runsToCut) audio.pause(); }
         }
         if (ending && options.softCutTails) {
           for (const cue of a.audioCues ?? []) {
             const audio = cues.get(cue.id);
-            if (!audio || audio.paused || cue.atMs + cue.durationMs < options.durationMs - 1) continue;
-            cues.delete(cue.id); fadeTail(view, audio, CUT_TAIL_MS);
+            if (!audio || audio.paused || cue.atMs + cue.durationMs < durationMs - 1) continue;
+            cues.delete(cue.id); fadeTail(view, audio, CUT_TAIL_MS, signal);
           }
         }
         if (ending) { stop(); options.onDone(); } else frame = view.requestAnimationFrame(tick);

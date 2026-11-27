@@ -82,9 +82,12 @@ export function parseBeodeulObjectCatalog(catalogInput: unknown, manifestInput: 
   return { objects, groups: groups.sort((a, b) => a.order - b.order), setsById };
 }
 
-const loaded = parseBeodeulObjectCatalog(catalog, manifest);
-export const BEODEUL_PLACEABLE_OBJECTS: readonly BeodeulPlaceableObject[] = loaded.objects;
-export const BEODEUL_OBJECT_GROUPS: readonly BeodeulObjectGroup[] = loaded.groups;
+// 번들 JSON 은 빌드/CI 시험(parseBeodeulObjectCatalog)에서 이미 검증된다.
+// 모듈 평가 시점에 1,770+ 객체 전체에 동기 Zod 파싱을 돌리지 않는다(콜드 부팅 스톨 제거).
+export const BEODEUL_PLACEABLE_OBJECTS: readonly BeodeulPlaceableObject[] = catalog as unknown as readonly BeodeulPlaceableObject[];
+export const BEODEUL_OBJECT_GROUPS: readonly BeodeulObjectGroup[] = [...(manifest.groups as unknown as readonly BeodeulObjectGroup[])].sort((a, b) => a.order - b.order);
+type BeodeulObjectSet = Readonly<z.infer<typeof manifestSchema>["sets"][number]>;
+const setsById = new Map((manifest.sets as unknown as readonly BeodeulObjectSet[]).map(set => [set.id, set]));
 const byGroupId = new Map(BEODEUL_OBJECT_GROUPS.map(group => [group.id, group]));
 const textureKey = (id: string) => `tex_beodeul_object_${id}`;
 const byTexture = new Map(BEODEUL_PLACEABLE_OBJECTS.map(object => [textureKey(object.id), object]));
@@ -109,5 +112,5 @@ export function beodeulObjectGroup(id: string): BeodeulObjectGroup | undefined {
 }
 
 export function beodeulObjectSetRole(setId: string) {
-  return loaded.setsById.get(setId)?.role;
+  return setsById.get(setId)?.role;
 }

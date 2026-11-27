@@ -89,6 +89,13 @@ const TEXTURE_KEYS: Readonly<Record<string, BundledJsonKey>> = {
   tex_prehistoric: "prehistoricTileset",
   tex_sky_island: "skyIslandTileset",
   tex_beodeul_wave_places: "beodeulWavePlacesTileset",
+  tex_monster_climate: "monsterKitClimate",
+  tex_monster_coast: "monsterKitCoast",
+  tex_monster_dungeon: "monsterKitDungeon",
+  tex_monster_gyms: "monsterKitGyms",
+  tex_monster_overworld: "monsterKitOverworld",
+  tex_monster_rooms: "monsterKitRooms",
+  tex_monster_wild: "monsterKitWild",
 };
 
 /** 번들 텍스처 키에 딸린 정의 JSON 키(없으면 undefined). */
@@ -97,18 +104,24 @@ export function bundledJsonKeyForTexture(textureKey: string): BundledJsonKey | u
 }
 
 /**
- * 프로젝트의 맵이 실제로 쓰는 번들 타일셋의 정의 JSON 을 읽어 둔다(타일셋 id → 그 사본의 번들 텍스처 키).
- * 조립 도구·팔레트가 번들 판본을 동기로 물을 때 동기 읽기로 떨어지지 않게 한다.
+ * 프로젝트의 맵이 실제로 쓰는 번들 타일셋의 정의 JSON 과 릴리프 지형 아트 JSON 을 읽어 둔다.
+ * 조립 도구·팔레트·렌더러가 동기로 물을 때 동기 XHR 로 떨어지지 않게 한다.
  */
 export function preloadBundledJsonForProject(project: {
-  readonly maps?: Readonly<Record<string, { readonly tilesetId?: string }>>;
+  readonly maps?: Readonly<Record<string, { readonly tilesetId?: string; readonly relief?: unknown }>>;
   readonly tilesets?: Readonly<Record<string, { readonly image?: { readonly type: string; readonly id?: string } }>>;
 }): Promise<void> {
   const keys = new Set<BundledJsonKey>();
+  let needsRelief = false;
   for (const map of Object.values(project.maps ?? {})) {
+    if (map.relief) needsRelief = true;
     const image = map.tilesetId ? project.tilesets?.[map.tilesetId]?.image : undefined;
     const key = image?.type === "bundled" && image.id ? TEXTURE_KEYS[image.id] : undefined;
     if (key) keys.add(key);
+  }
+  if (needsRelief) {
+    keys.add("reliefRampArt");
+    keys.add("reliefSheerArt");
   }
   return preloadBundledJson([...keys]);
 }

@@ -7,6 +7,10 @@ import { mountBattleScene, type BattleDomController } from "@/player/battleDom";
 import { mountPlayLoadingOverlay } from "@/player/playLoadingOverlay";
 import { describeBootFailure } from "@/player/playBootRecovery";
 import { renderPlayer, teardownPlayer, type PlayerRunControls } from "@/player/player";
+import { exportedProjectId } from "@/player/exportProjectStoreShim";
+import { setSaveSlotStorageNamespace } from "@/player/saveSlots";
+import { isTouchDevice } from "@/player/touchPad";
+import { isEmeraldMonsterStyle } from "@/project/emeraldMonsterStyle";
 import { nextSessionRandom, startSession, type PlaySession } from "@/project/session";
 import { renderRuntimeDebugPanel } from "@/player/runtimeDebugPanel";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
@@ -153,9 +157,12 @@ export async function openTestPlayModal(
     // 먼저 차지하고, dev 서버는 no-cache 라 같은 파일을 한 번 더 받는다.
     // Give the browser a paint before heavy player bootstrap.
     await yieldToRuntimeSurface();
+    setSaveSlotStorageNamespace(`oprn-test-play:${exportedProjectId(project)}`);
     renderPlayer(body, {
       // Authoring surface, not the shipped export player — keep QA hooks/state mirrors.
       qaInstrumentation: true,
+      pointerInput: isEmeraldMonsterStyle(project),
+      touchInput: isTouchDevice(),
       onExit: closeTestPlayModal,
       trackGlobalGame: false,
       startOverride,
@@ -179,6 +186,7 @@ export async function openTestPlayModal(
     });
   } catch (error) {
     console.error("[test-play] failed to open test play:", error);
+    setSaveSlotStorageNamespace(null);
     releaseEventTestSnapshot?.();
     releaseEventTestSnapshot = null;
     presentOpenFailure(loading, "테스트 실행을 열지 못했습니다", error, {
@@ -212,9 +220,12 @@ export async function openSelectedEventTestModal(mapId: MapId, eventId: string):
     }
     if (preparation.spawn.diagnostic) toast(preparation.spawn.diagnostic, "info");
     await yieldToRuntimeSurface();
+    setSaveSlotStorageNamespace(`oprn-test-play:${exportedProjectId(preparation.project)}`);
     renderPlayer(body, {
       // Authoring surface, not the shipped export player — keep QA hooks/state mirrors.
       qaInstrumentation: true,
+      pointerInput: isEmeraldMonsterStyle(preparation.project),
+      touchInput: isTouchDevice(),
       initialEventTestId: eventId,
       initialSession: selectedEventTestSession(preparation),
       onExit: closeTestPlayModal,
@@ -223,6 +234,7 @@ export async function openSelectedEventTestModal(mapId: MapId, eventId: string):
     });
   } catch (error) {
     console.error("[test-play] failed to open selected-event test:", error);
+    setSaveSlotStorageNamespace(null);
     releaseEventTestSnapshot?.();
     releaseEventTestSnapshot = null;
     loading.setStage("error", "이벤트 테스트를 열지 못했습니다");
@@ -352,6 +364,7 @@ export function closeTestPlayModal(): void {
   // Runtime teardown must finish while store.getCurrent() still resolves to the
   // sandbox. Only then expose the canonical editor project again.
   teardownPlayer();
+  setSaveSlotStorageNamespace(null);
   releaseEventTestSnapshot?.();
   releaseEventTestSnapshot = null;
   if (modalRoot) unregisterModal(modalRoot);

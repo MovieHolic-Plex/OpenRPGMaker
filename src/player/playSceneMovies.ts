@@ -39,7 +39,12 @@ export function resolveMovieResourceUrl(
   return withInlineAsset(`/assets/movies/${encodeURIComponent(fileName)}`);
 }
 
-export function playMovieOverlay(scene: PlaySceneContext, step: PlayMovieStep): Promise<void> {
+export function playMovieOverlay(
+  scene: PlaySceneContext,
+  step: PlayMovieStep,
+  options?: { readonly signal?: AbortSignal },
+): Promise<void> {
+  if (options?.signal?.aborted) return Promise.resolve();
   const host = movieHost(scene);
   const url = resolveMovieResourceUrl(step.resourceId);
   if (!host || !url) {
@@ -69,9 +74,14 @@ export function playMovieOverlay(scene: PlaySceneContext, step: PlayMovieStep): 
     const finish = (): void => {
       if (settled) return;
       settled = true;
-      if (loadTimer !== undefined) clearTimeout(loadTimer);
+      if (loadTimer !== undefined) {
+        clearTimeout(loadTimer);
+        loadTimer = undefined;
+      }
       for (const off of finishers) off();
       video.pause?.();
+      video.removeAttribute("src");
+      if (typeof video.load === "function") video.load();
       overlay.remove();
       resolve();
     };
@@ -94,12 +104,18 @@ export function playMovieOverlay(scene: PlaySceneContext, step: PlayMovieStep): 
     video.addEventListener("loadeddata", onLoaded);
     video.addEventListener("playing", onLoaded);
     document.addEventListener("keydown", onKeyDown);
+    scene.events?.once("shutdown", finish);
+    scene.events?.once("destroy", finish);
+    options?.signal?.addEventListener("abort", finish, { once: true });
     finishers.push(() => {
       video.removeEventListener("ended", onEnded);
       video.removeEventListener("error", onError);
       video.removeEventListener("loadeddata", onLoaded);
       video.removeEventListener("playing", onLoaded);
       document.removeEventListener("keydown", onKeyDown);
+      scene.events?.off("shutdown", finish);
+      scene.events?.off("destroy", finish);
+      options?.signal?.removeEventListener("abort", finish);
     });
     loadTimer = setTimeout(() => {
       console.warn(`[player] playMovie 로드 시간 초과: ${step.resourceId}`);

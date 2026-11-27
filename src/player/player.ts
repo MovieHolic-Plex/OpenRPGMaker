@@ -28,12 +28,14 @@ import { readClearRecord, recordEndingClear } from "@/player/clearRecord";
 import { syncSessionWithDeviceRecords } from "@/player/deviceRecords";
 import { applyStatePreset, testHerePreset } from "@/testing/debugSession";
 import { el, clearChildren } from "@/util/dom";
+import { clearRememberedChipsetImages } from "@/assets/chipsetTextureBands";
 import {
   applySaveSnapshot,
   readAutosave,
   latestResumableSave,
   readLatestSave,
   readSaveSlot,
+  safeLocalStorage,
   snapshotLoadBlocker,
   setSavePublication,
   type LatestSave,
@@ -397,10 +399,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       session.currentMapId = stage.mapId; session.x = stage.x; session.y = stage.y;
       session.flags[openingStageFlag(stage.mapId, stage.eventId)] = true;
     }
-    const clear = readClearRecord(window.localStorage);
+    const storage = safeLocalStorage();
+    const clear = storage ? readClearRecord(storage) : undefined;
     if (!request.session && request.newGamePlus && clear) applyClearCarry(bootProject, session, clear.carry);
     // 회차·본 엔딩·연 CG 는 기기 기록이다 — 새 게임이든 불러오기든 부팅마다 최신 기록을 세션에 비춘다(ESC 불러오기는 PlayScene.applySession 이 같은 함수로).
-    syncSessionWithDeviceRecords(window.localStorage, bootProject, session);
+    if (storage) syncSessionWithDeviceRecords(storage, bootProject, session);
     if (!request.session && request.difficultyId) setSessionDifficulty(bootProject.system, session, request.difficultyId);
     if (!opening) {
       void bootPlayGame(surface.phaserContainer, session, eventTestId, loading, run, startedAt, repairs);
@@ -605,7 +608,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       game.registry.set("returnToTitle", () => renderTitle());
       game.registry.set("recordEndingClear", (endingId: string, endedSession: PlaySession) => {
         try {
-          recordEndingClear(window.localStorage, store.getCurrent(), endedSession, endingId);
+          const storage = safeLocalStorage();
+          if (storage) recordEndingClear(storage, store.getCurrent(), endedSession, endingId);
         } catch (error) {
           console.error("[player] 클리어 기록을 저장하지 못했습니다:", error);
         }
@@ -688,7 +692,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   };
 
   const loadSlot = (slot: SaveSlotIndex, fromTitle: boolean): void => {
-    const result = readSaveSlot(window.localStorage, slot);
+    const storage = safeLocalStorage();
+    const result = storage ? readSaveSlot(storage, slot) : { kind: "empty" as const, slot };
     if (result.kind !== "present") {
       renderLoad(fromTitle, `${slot}번 저장 칸을 불러올 수 없습니다`);
       return;
@@ -717,7 +722,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   // 타이틀 "이어하기" / 로드 패널 오토세이브 카드 — loadSlot 과 동형: 파싱 성공 시
   // applySaveSnapshot → startGame(restored), 실패 시 로드 패널로 안내한다.
   const loadAutosave = (fromTitle: boolean): void => {
-    const result = readAutosave(window.localStorage);
+    const storage = safeLocalStorage();
+    const result = storage ? readAutosave(storage) : { kind: "empty" as const };
     if (result.kind !== "present") {
       renderLoad(fromTitle, "자동 저장을 불러올 수 없습니다");
       return;
@@ -748,9 +754,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   // 가장 새 저장이 불러올 수 없으면(맵 없음 등) 불러올 수 있는 자동 저장으로 물러난다.
   const resumableSave = (): LatestSave | undefined => {
     try {
-      const latest = readLatestSave(window.localStorage);
+      const storage = safeLocalStorage();
+      if (!storage) return undefined;
+      const latest = readLatestSave(storage);
       if (latest && snapshotLoadBlocker(store.getCurrent(), latest.snapshot) === null) return latest;
-      const auto = readAutosave(window.localStorage);
+      const auto = readAutosave(storage);
       if (auto.kind === "present" && snapshotLoadBlocker(store.getCurrent(), auto.snapshot) === null) {
         return { source: "autosave", snapshot: auto.snapshot };
       }
@@ -761,7 +769,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   };
 
   const loadLatest = (fromTitle: boolean): void => {
-    const latest = resumableSave() ?? readLatestSave(window.localStorage);
+    const storage = safeLocalStorage();
+    const latest = resumableSave() ?? (storage ? readLatestSave(storage) : undefined);
     if (!latest) {
       renderLoad(fromTitle, "불러올 저장이 없습니다");
       return;
@@ -777,7 +786,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const isAutosaveAvailable = (): boolean => {
     const latest = resumableSave();
     if (!latest) return false;
-    const cleared = Date.parse(readClearRecord(window.localStorage)?.clearedAt ?? "");
+    const storage = safeLocalStorage();
+    const cleared = Date.parse((storage ? readClearRecord(storage)?.clearedAt : undefined) ?? "");
     const saved = Date.parse(latest.snapshot.savedAt ?? "");
     return !(Number.isFinite(cleared) && Number.isFinite(saved) && saved < cleared);
   };
@@ -787,7 +797,8 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const project = store.getCurrent();
     if (project.system.newGamePlus?.enabled !== true) return undefined;
     try {
-      return readClearRecord(window.localStorage) ? newGamePlusMenuLabel(project) : undefined;
+      const storage = safeLocalStorage();
+      return storage && readClearRecord(storage) ? newGamePlusMenuLabel(project) : undefined;
     } catch {
       return undefined;
     }
@@ -1126,9 +1137,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const settings = project.system.titleScreen ?? defaultTitleScreenSettings();
     if (!settings.variants?.length) return settings;
     try {
-      const latest = readLatestSave(window.localStorage);
+      const storage = safeLocalStorage();
+      if (!storage) return settings;
+      const latest = readLatestSave(storage);
       return applyTitleVariant(settings, {
-        endingIds: readClearRecord(window.localStorage)?.endingIds ?? [],
+        endingIds: readClearRecord(storage)?.endingIds ?? [],
         lastSaveMapId: latest?.snapshot.session.currentMapId,
       });
     } catch {
@@ -1176,7 +1189,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const tryResumeOnLaunch = (): boolean => {
     let latest: ReturnType<typeof latestResumableSave>;
     try {
-      latest = latestResumableSave(store.getCurrent(), window.localStorage);
+      const storage = safeLocalStorage();
+      if (!storage) return false;
+      latest = latestResumableSave(store.getCurrent(), storage);
     } catch {
       return false;
     }
@@ -1313,6 +1328,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     cleanupTapConfirm();
     cleanupListTap();
     stopGame();
+    if (options.trackGlobalGame !== false) clearRememberedChipsetImages();
     audioEngine.setQaInstrumentation(false);
     clearChildren(layout);
   };

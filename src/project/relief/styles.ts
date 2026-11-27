@@ -8,7 +8,7 @@
 // 렌더(render.ts renderRelief)는 벽 화소마다 입술(윗면 바로 밑 줄) → 몸통(화면 좌표로 이어지는 무늬) → 덧그림(윗단 밑에 매달림) 순서로 고른다.
 
 import type { ReliefRampArt } from "./render";
-import rampArt from "./rampArt.json" with { type: "json" };
+import { bundledJson } from "../defaults/bundledJson";
 export type ReliefWallFamily = "earth" | "strata" | "snow" | "masonry" | "basalt" | "crystal" | "peat";
 
 export interface ReliefWallArt {
@@ -596,8 +596,9 @@ export function compileReliefStyle(style: string | undefined): ReliefWallStyle |
 /** 바이옴 경사로 도트(tiledata/relief-art/<style>-ramp.ase → scripts/content/build-relief-ramp-art.mjs → rampArt.json). 없으면 undefined. */
 export function reliefRampArt(style: string | undefined): ReliefRampArt | undefined {
   // 바닥 재질 변형(grass-steps@ground-…)은 원래 양식의 계단 도트를, 절벽 모습 양식은 빌려 쓰는 양식(rampArtOf)의 도트를 쓴다
-  const art = rampArt as Record<string, ReliefRampArt>, base = style?.split("@")[0];
-  return style ? art[style] ?? art[base!] ?? art[reliefStyleSpec(base)?.rampArtOf ?? ""] : undefined;
+  if (!style) return undefined;
+  const art = bundledJson("reliefRampArt") as Record<string, ReliefRampArt>, base = style.split("@")[0];
+  return art[style] ?? art[base!] ?? art[reliefStyleSpec(base)?.rampArtOf ?? ""];
 }
 
 /**

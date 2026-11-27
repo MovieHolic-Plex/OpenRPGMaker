@@ -35,7 +35,7 @@ export type BgmCdnEnv = {
  */
 function ambientEnv(): BgmCdnEnv {
   try {
-    return { VITE_BGM_CDN_BASE: import.meta.env.VITE_BGM_CDN_BASE };
+    return { VITE_BGM_CDN_BASE: import.meta.env.OPENRPG_PLAYER_BGM_CDN_BASE ?? import.meta.env.VITE_BGM_CDN_BASE };
   } catch {
     return {};
   }

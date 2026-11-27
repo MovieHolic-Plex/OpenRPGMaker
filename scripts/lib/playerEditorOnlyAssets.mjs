@@ -36,6 +36,14 @@ export const PLAYER_EDITOR_ONLY_ASSETS = Object.freeze({
   "src/assets/modernCampusInteriorReferences.json": "whole",
   "src/assets/modernCampusReferences.json": "whole",
   "src/assets/modernCityReferences.json": "whole",
+  "src/assets/monsterKitReferences.json": "whole",
+  "src/assets/monsterKit/monster-climate.json": "field",
+  "src/assets/monsterKit/monster-coast.json": "field",
+  "src/assets/monsterKit/monster-dungeon.json": "field",
+  "src/assets/monsterKit/monster-gyms.json": "field",
+  "src/assets/monsterKit/monster-overworld.json": "field",
+  "src/assets/monsterKit/monster-rooms.json": "field",
+  "src/assets/monsterKit/monster-wild.json": "field",
   "src/assets/pirateIslesReferences.json": "whole",
   "src/assets/prehistoricReferences.json": "whole",
   "src/assets/sengokuEdoReferences.json": "whole",
@@ -73,11 +81,27 @@ async function loadStripped(repoRoot, id) {
 /** Vite/Rollup plugin: runs before vite:json, which then turns the stripped text into a module. */
 export function playerEditorOnlyAssetsVitePlugin() {
   let repoRoot = process.cwd();
+  let isBuild = true;
   return {
     name: "oprn-player-editor-only-assets",
     enforce: "pre",
-    configResolved(config) { repoRoot = config.root; },
-    load(id) { return loadStripped(repoRoot, id); },
+    configResolved(config) {
+      repoRoot = config.root;
+      isBuild = config.command === "build";
+    },
+    async load(id) {
+      const stripped = await loadStripped(repoRoot, id);
+      if (stripped === undefined) return undefined;
+      const qIndex = id.indexOf("?");
+      const query = qIndex >= 0 ? id.slice(qIndex) : "";
+      if (query && /(?:^\?|&)url(?:&|$)/.test(query)) {
+        if (!isBuild) return undefined;
+        const file = id.slice(0, qIndex);
+        const refId = this.emitFile({ type: "asset", name: path.basename(file), source: stripped });
+        return `export default import.meta.ROLLUP_FILE_URL_${refId};`;
+      }
+      return stripped;
+    },
   };
 }
 

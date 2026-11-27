@@ -233,6 +233,8 @@ export class RuntimeKeyHoldTracker {
     this.pendingActionEdge = false;
     this.pendingAttackEdge = false;
     this.pendingSkillEdge = false;
+    this.pendingSkillCycleEdge = false;
+    this.pendingLeaderSwitchEdge = false;
   }
 
   heldDirections(): readonly Dir[] {
@@ -256,6 +258,7 @@ export class RuntimeKeyHoldTracker {
 }
 
 export class Input {
+  private keyboard: Phaser.Input.Keyboard.KeyboardPlugin | null = null;
   private keys: Partial<Record<string, Phaser.Input.Keyboard.Key>> = {};
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
   private priority: Dir[] = []; // 눌린 순서
@@ -293,6 +296,7 @@ export class Input {
   constructor(scene: Phaser.Scene) {
     const kb = scene.input.keyboard;
     if (!kb) return;
+    this.keyboard = kb;
     this.cursors = kb.createCursorKeys();
     this.keys = kb.addKeys("W,A,S,D,SPACE,ENTER,E") as Record<
       string,
@@ -338,8 +342,9 @@ export class Input {
     this.runtimeKeys.keyUp(key);
   }
 
-  // 포커스 이탈 시 눌림 상태 해제. 주입 방향과 priority 까지 함께 비운다.
+  // 포커스 이탈 시 눌림 상태 해제. Phaser Key.isDown 과 주입 방향·priority 까지 함께 비운다.
   releaseAllKeys(): void {
+    this.keyboard?.resetKeys?.();
     this.runtimeKeys.releaseAll();
     this.priority = [];
     this.injectedDir = null;
