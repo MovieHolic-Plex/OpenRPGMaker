@@ -1,0 +1,204 @@
+{
+  "batch": "pack03_jp_shotengai",
+  "kind": "buildings",
+  "items": [
+    {
+      "id": "mf-bldg-jp_ramen_shop",
+      "name": "일본 골목 라멘집 (2층)",
+      "category": "jp-shotengai",
+      "w": 5,
+      "h": 6,
+      "pixelSize": [
+        80,
+        96
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "jp-shotengai",
+        "restaurant",
+        "ramen",
+        "noren",
+        "lantern",
+        "kawara"
+      ]
+    },
+    {
+      "id": "mf-bldg-jp_sushi_bar",
+      "name": "히노키 스시야 (2층)",
+      "category": "jp-shotengai",
+      "w": 5,
+      "h": 6,
+      "pixelSize": [
+        80,
+        96
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "jp-shotengai",
+        "restaurant",
+        "sushi",
+        "hinoki",
+        "ibushi",
+        "noren"
+      ]
+    },
+    {
+      "id": "mf-bldg-jp_izakaya_corner",
+      "name": "목조 코너 이자카야 (2층)",
+      "category": "jp-shotengai",
+      "w": 6,
+      "h": 6,
+      "pixelSize": [
+        96,
+        96
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "jp-shotengai",
+        "tavern",
+        "izakaya",
+        "lantern",
+        "balcony",
+        "midori"
+      ]
+    },
+    {
+      "id": "mf-bldg-jp_kissaten_cafe",
+      "name": "쇼와 벽돌 킷사텐 카페 (2층)",
+      "category": "jp-shotengai",
+      "w": 5,
+      "h": 6,
+      "pixelSize": [
+        80,
+        96
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "jp-shotengai",
+        "cafe",
+        "kissaten",
+        "brick",
+        "stained-glass",
+        "showa"
+      ]
+    },
+    {
+      "id": "mf-bldg-jp_wagashi_gable",
+      "name": "마치야 화과자점 (박공 2층)",
+      "category": "jp-shotengai",
+      "w": 6,
+      "h": 6,
+      "pixelSize": [
+        96,
+        96
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "jp-shotengai",
+        "sweets",
+        "wagashi",
+        "machiya",
+        "gable",
+        "kawara"
+      ]
+    },
+    {
+      "id": "mf-bldg-jp_vinyl_records",
+      "name": "시모키타자와 바이닐 레코드샵 (2.5층)",
+      "category": "jp-shotengai",
+      "w": 5,
+      "h": 7,
+      "pixelSize": [
+        80,
+        112
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "jp-shotengai",
+        "music",
+        "vinyl",
+        "records",
+        "shimokitazawa",
+        "flat-roof"
+      ]
+    },
+    {
+      "id": "mf-bldg-jp_bike_repair",
+      "name": "동네 자전거 수리 공방 (2층)",
+      "category": "jp-shotengai",
+      "w": 6,
+      "h": 6,
+      "pixelSize": [
+        96,
+        96
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "jp-shotengai",
+        "workshop",
+        "bicycle",
+        "shutter",
+        "balcony",
+        "tin-roof"
+      ]
+    },
+    {
+      "id": "mf-bldg-jp_flower_greenhouse",
+      "name": "온실 플라워 샵 (2층)",
+      "category": "jp-shotengai",
+      "w": 6,
+      "h": 6,
+      "pixelSize": [
+        96,
+        96
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "jp-shotengai",
+        "florist",
+        "greenhouse",
+        "conservatory",
+        "flowers"
+      ]
+    },
+    {
+      "id": "mf-bldg-jp_secondhand_books",
+      "name": "진보초 헌책방 (2층)",
+      "category": "jp-shotengai",
+      "w": 5,
+      "h": 6,
+      "pixelSize": [
+        80,
+        96
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "jp-shotengai",
+        "bookstore",
+        "jimbocho",
+        "books",
+        "kawara"
+      ]
+    },
+    {
+      "id": "mf-bldg-jp_bakery_terrace",
+      "name": "테라스 불랑주리 베이커리 (2층)",
+      "category": "jp-shotengai",
+      "w": 7,
+      "h": 7,
+      "pixelSize": [
+        112,
+        112
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "jp-shotengai",
+        "bakery",
+        "boulangerie",
+        "terrace",
+        "pergola",
+        "cafe"
+      ]
+    }
+  ]
+}

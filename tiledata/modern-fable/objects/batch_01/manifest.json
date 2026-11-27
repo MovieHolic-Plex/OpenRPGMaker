@@ -1,0 +1,331 @@
+{
+  "batch": "batch_01",
+  "items": [
+    {
+      "id": "mf-obj-utility_pole",
+      "name": "전봇대 (변압기·애자)",
+      "category": "street-infra",
+      "w": 1,
+      "h": 4,
+      "passableTopRows": 3,
+      "tags": [
+        "street-infra",
+        "pole",
+        "power",
+        "urban"
+      ]
+    },
+    {
+      "id": "mf-obj-streetlamp_single",
+      "name": "단등 가로등",
+      "category": "street-infra",
+      "w": 1,
+      "h": 3,
+      "passableTopRows": 2,
+      "tags": [
+        "street-infra",
+        "lamp",
+        "lighting",
+        "urban"
+      ],
+      "lightAnchor": [
+        11,
+        9
+      ]
+    },
+    {
+      "id": "mf-obj-streetlamp_double",
+      "name": "대로 쌍등 가로등",
+      "category": "street-infra",
+      "w": 2,
+      "h": 3,
+      "passableTopRows": 2,
+      "tags": [
+        "street-infra",
+        "lamp",
+        "lighting",
+        "avenue"
+      ],
+      "lightAnchor": [
+        16,
+        9
+      ]
+    },
+    {
+      "id": "mf-obj-traffic_signal",
+      "name": "교차로 3색 신호등",
+      "category": "street-infra",
+      "w": 2,
+      "h": 3,
+      "passableTopRows": 2,
+      "tags": [
+        "street-infra",
+        "traffic",
+        "signal",
+        "crosswalk"
+      ]
+    },
+    {
+      "id": "mf-obj-ped_signal",
+      "name": "보행자 신호등",
+      "category": "street-infra",
+      "w": 1,
+      "h": 3,
+      "passableTopRows": 2,
+      "tags": [
+        "street-infra",
+        "traffic",
+        "pedestrian",
+        "crosswalk"
+      ]
+    },
+    {
+      "id": "mf-obj-elec_box",
+      "name": "거리 배전함",
+      "category": "street-infra",
+      "w": 2,
+      "h": 2,
+      "passableTopRows": 1,
+      "tags": [
+        "street-infra",
+        "utility",
+        "transformer",
+        "sidewalk"
+      ]
+    },
+    {
+      "id": "mf-obj-fire_hydrant",
+      "name": "붉은 소화전",
+      "category": "street-infra",
+      "w": 1,
+      "h": 1,
+      "passableTopRows": 0,
+      "tags": [
+        "street-infra",
+        "hydrant",
+        "safety",
+        "sidewalk"
+      ]
+    },
+    {
+      "id": "mf-obj-convex_mirror",
+      "name": "도로 반사경",
+      "category": "street-infra",
+      "w": 1,
+      "h": 2,
+      "passableTopRows": 1,
+      "tags": [
+        "street-infra",
+        "mirror",
+        "safety",
+        "corner"
+      ]
+    },
+    {
+      "id": "mf-obj-bus_shelter",
+      "name": "유리 버스 정류장 쉘터",
+      "category": "street-infra",
+      "w": 4,
+      "h": 3,
+      "passableTopRows": 2,
+      "tags": [
+        "street-infra",
+        "bus",
+        "transit",
+        "shelter",
+        "bench"
+      ],
+      "lightAnchor": [
+        48,
+        24
+      ]
+    },
+    {
+      "id": "mf-obj-subway_pylon",
+      "name": "지하철 출구 안내 기둥",
+      "category": "street-infra",
+      "w": 1,
+      "h": 3,
+      "passableTopRows": 2,
+      "tags": [
+        "street-infra",
+        "subway",
+        "metro",
+        "transit",
+        "pylon"
+      ],
+      "lightAnchor": [
+        8,
+        10
+      ]
+    },
+    {
+      "id": "mf-obj-aframe_chalkboard",
+      "name": "카페 A형 칠판 입간판",
+      "category": "signage-lighting",
+      "w": 1,
+      "h": 1,
+      "passableTopRows": 0,
+      "tags": [
+        "signage-lighting",
+        "cafe",
+        "chalkboard",
+        "sidewalk"
+      ]
+    },
+    {
+      "id": "mf-obj-neon_blade_cafe",
+      "name": "카페·바 세로 네온 간판",
+      "category": "signage-lighting",
+      "w": 1,
+      "h": 2,
+      "passableTopRows": 1,
+      "tags": [
+        "signage-lighting",
+        "neon",
+        "cafe",
+        "sign"
+      ],
+      "lightAnchor": [
+        10,
+        13
+      ]
+    },
+    {
+      "id": "mf-obj-conv_pylon_sign",
+      "name": "24시 편의점 지주 간판",
+      "category": "signage-lighting",
+      "w": 1,
+      "h": 3,
+      "passableTopRows": 2,
+      "tags": [
+        "signage-lighting",
+        "convenience",
+        "pylon",
+        "sign"
+      ],
+      "lightAnchor": [
+        8,
+        13
+      ]
+    },
+    {
+      "id": "mf-obj-lantern_stand",
+      "name": "목제 초롱 등불 스탠드",
+      "category": "signage-lighting",
+      "w": 1,
+      "h": 2,
+      "passableTopRows": 1,
+      "tags": [
+        "signage-lighting",
+        "lantern",
+        "traditional",
+        "lighting"
+      ],
+      "lightAnchor": [
+        10,
+        17
+      ]
+    },
+    {
+      "id": "mf-obj-menu_board",
+      "name": "조명 식당 메뉴 진열대",
+      "category": "signage-lighting",
+      "w": 1,
+      "h": 2,
+      "passableTopRows": 1,
+      "tags": [
+        "signage-lighting",
+        "menu",
+        "restaurant",
+        "display"
+      ],
+      "lightAnchor": [
+        8,
+        14
+      ]
+    },
+    {
+      "id": "mf-obj-pharmacy_cross",
+      "name": "약국 LED 녹색 십자 간판",
+      "category": "signage-lighting",
+      "w": 1,
+      "h": 2,
+      "passableTopRows": 1,
+      "tags": [
+        "signage-lighting",
+        "pharmacy",
+        "led",
+        "sign"
+      ],
+      "lightAnchor": [
+        10,
+        12
+      ]
+    },
+    {
+      "id": "mf-obj-barber_pole",
+      "name": "이발소 회전 싸인볼",
+      "category": "signage-lighting",
+      "w": 1,
+      "h": 2,
+      "passableTopRows": 1,
+      "tags": [
+        "signage-lighting",
+        "barber",
+        "retro",
+        "sign"
+      ],
+      "lightAnchor": [
+        8,
+        14
+      ]
+    },
+    {
+      "id": "mf-obj-street_name_sign",
+      "name": "도로명 이정표 기둥",
+      "category": "signage-lighting",
+      "w": 2,
+      "h": 3,
+      "passableTopRows": 2,
+      "tags": [
+        "signage-lighting",
+        "road-sign",
+        "directional",
+        "street"
+      ]
+    },
+    {
+      "id": "mf-obj-kr_shade_umbrella",
+      "name": "횡단보도 접이식 그늘막",
+      "category": "signage-lighting",
+      "w": 2,
+      "h": 2,
+      "passableTopRows": 1,
+      "tags": [
+        "signage-lighting",
+        "parasol",
+        "crosswalk",
+        "korea"
+      ]
+    },
+    {
+      "id": "mf-obj-construction_barrier",
+      "name": "공사 안전 바리케이드·라바콘",
+      "category": "signage-lighting",
+      "w": 2,
+      "h": 1,
+      "passableTopRows": 0,
+      "tags": [
+        "signage-lighting",
+        "construction",
+        "barrier",
+        "cone"
+      ],
+      "lightAnchor": [
+        16,
+        2
+      ]
+    }
+  ]
+}

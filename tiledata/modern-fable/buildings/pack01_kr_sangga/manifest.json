@@ -1,0 +1,366 @@
+{
+  "pack": "pack01_kr_sangga",
+  "items": [
+    {
+      "id": "mf-bldg-kr_chicken_pub",
+      "name": "치킨호프 적벽돌 3층 상가",
+      "pack": "pack01_kr_sangga",
+      "w": 6,
+      "h": 7,
+      "doorCol": 3,
+      "lightAnchors": [
+        [
+          26,
+          93
+        ],
+        [
+          56,
+          91
+        ],
+        [
+          90,
+          48
+        ],
+        [
+          22,
+          36
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "pub",
+        "chicken",
+        "brick",
+        "commercial",
+        "3f"
+      ]
+    },
+    {
+      "id": "mf-bldg-kr_hagwon_cafe",
+      "name": "학원·에스프레소 카페 화강석 3층 상가",
+      "pack": "pack01_kr_sangga",
+      "w": 6,
+      "h": 8,
+      "doorCol": 3,
+      "lightAnchors": [
+        [
+          27,
+          108
+        ],
+        [
+          60,
+          108
+        ],
+        [
+          18,
+          36
+        ],
+        [
+          25,
+          66
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "hagwon",
+        "cafe",
+        "granite",
+        "commercial",
+        "3f"
+      ]
+    },
+    {
+      "id": "mf-bldg-kr_bakery_clinic",
+      "name": "베이커리·치과 크림스투코 3층 상가",
+      "pack": "pack01_kr_sangga",
+      "w": 7,
+      "h": 7,
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          32,
+          95
+        ],
+        [
+          68,
+          93
+        ],
+        [
+          30,
+          35
+        ],
+        [
+          50,
+          60
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "bakery",
+        "clinic",
+        "stucco",
+        "commercial",
+        "3f"
+      ]
+    },
+    {
+      "id": "mf-bldg-kr_pcbang_billiard",
+      "name": "PC방·당구장·국수집 4층 유흥상가",
+      "pack": "pack01_kr_sangga",
+      "w": 6,
+      "h": 8,
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          44,
+          48
+        ],
+        [
+          26,
+          78
+        ],
+        [
+          90,
+          62
+        ],
+        [
+          20,
+          118
+        ],
+        [
+          66,
+          114
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "pcbang",
+        "billiard",
+        "neon",
+        "commercial",
+        "4f"
+      ]
+    },
+    {
+      "id": "mf-bldg-kr_corner_conv24",
+      "name": "24시 코너 편의점·적벽돌 2층 상가",
+      "pack": "pack01_kr_sangga",
+      "w": 6,
+      "h": 6,
+      "doorCol": 3,
+      "lightAnchors": [
+        [
+          20,
+          76
+        ],
+        [
+          49,
+          74
+        ],
+        [
+          77,
+          72
+        ],
+        [
+          22,
+          34
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "convenience",
+        "24h",
+        "brick",
+        "corner",
+        "2f"
+      ]
+    },
+    {
+      "id": "mf-bldg-kr_rooftop_cafe",
+      "name": "성수 적벽돌 루프탑 테라스 카페",
+      "pack": "pack01_kr_sangga",
+      "w": 6,
+      "h": 7,
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          31,
+          84
+        ],
+        [
+          68,
+          90
+        ],
+        [
+          31,
+          38
+        ],
+        [
+          32,
+          8
+        ],
+        [
+          72,
+          8
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "cafe",
+        "rooftop",
+        "brick",
+        "terrace",
+        "2f"
+      ]
+    },
+    {
+      "id": "mf-bldg-kr_narrow_alley_shop",
+      "name": "골목 분식집 슬레이트 2.5층 협소상가",
+      "pack": "pack01_kr_sangga",
+      "w": 4,
+      "h": 6,
+      "doorCol": 2,
+      "lightAnchors": [
+        [
+          20,
+          82
+        ],
+        [
+          44,
+          84
+        ],
+        [
+          58,
+          50
+        ],
+        [
+          20,
+          44
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "alley",
+        "snack",
+        "tteokbokki",
+        "compact",
+        "2f"
+      ]
+    },
+    {
+      "id": "mf-bldg-kr_glass_salon",
+      "name": "모던 콘크리트·우드 헤어살롱 3층 상가",
+      "pack": "pack01_kr_sangga",
+      "w": 5,
+      "h": 7,
+      "doorCol": 3,
+      "lightAnchors": [
+        [
+          28,
+          92
+        ],
+        [
+          62,
+          94
+        ],
+        [
+          24,
+          58
+        ],
+        [
+          46,
+          35
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "salon",
+        "boutique",
+        "modern",
+        "glass",
+        "3f"
+      ]
+    },
+    {
+      "id": "mf-bldg-kr_market_arcade",
+      "name": "전통시장 아케이드·청과·떡집 2층 상가",
+      "pack": "pack01_kr_sangga",
+      "w": 8,
+      "h": 6,
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          64,
+          72
+        ],
+        [
+          21,
+          68
+        ],
+        [
+          106,
+          68
+        ],
+        [
+          64,
+          20
+        ],
+        [
+          18,
+          36
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "market",
+        "arcade",
+        "stalls",
+        "commercial",
+        "2f"
+      ]
+    },
+    {
+      "id": "mf-bldg-kr_corner_pharmacy",
+      "name": "민트·화이트 코너 약국 2층 상가",
+      "pack": "pack01_kr_sangga",
+      "w": 5,
+      "h": 6,
+      "doorCol": 3,
+      "lightAnchors": [
+        [
+          23,
+          78
+        ],
+        [
+          55,
+          78
+        ],
+        [
+          73,
+          44
+        ],
+        [
+          20,
+          38
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "pharmacy",
+        "corner",
+        "white-tile",
+        "2f"
+      ]
+    }
+  ]
+}

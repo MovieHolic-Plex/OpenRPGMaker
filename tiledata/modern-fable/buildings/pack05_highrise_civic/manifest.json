@@ -1,0 +1,188 @@
+{
+  "batch": "pack05_highrise_civic",
+  "kind": "buildings",
+  "items": [
+    {
+      "id": "mf-bldg-hi_apt_tower_varied",
+      "name": "6층 변화형 주상복합 아파트 타워",
+      "category": "highrise",
+      "w": 7,
+      "h": 11,
+      "pxW": 112,
+      "pxH": 176,
+      "passableTopRows": 2,
+      "tags": [
+        "highrise",
+        "apartment",
+        "tower",
+        "residential",
+        "penthouse",
+        "balcony",
+        "non-cloned"
+      ]
+    },
+    {
+      "id": "mf-bldg-hi_glass_corp_tower",
+      "name": "6층 계단식 유리 오피스 타워",
+      "category": "highrise",
+      "w": 7,
+      "h": 12,
+      "pxW": 112,
+      "pxH": 192,
+      "passableTopRows": 2,
+      "tags": [
+        "highrise",
+        "office",
+        "glass",
+        "corporate",
+        "sky-garden",
+        "tower",
+        "non-cloned"
+      ]
+    },
+    {
+      "id": "mf-bldg-hi_setback_depato",
+      "name": "5층 대형 백화점 (옥상 유원지)",
+      "category": "highrise",
+      "w": 9,
+      "h": 10,
+      "pxW": 144,
+      "pxH": 160,
+      "passableTopRows": 2,
+      "tags": [
+        "highrise",
+        "department-store",
+        "depato",
+        "commercial",
+        "ferris-wheel",
+        "rooftop",
+        "landmark"
+      ]
+    },
+    {
+      "id": "mf-bldg-civic_city_hall_clock",
+      "name": "시청사 시계탑 랜드마크",
+      "category": "civic",
+      "w": 9,
+      "h": 9,
+      "pxW": 144,
+      "pxH": 144,
+      "passableTopRows": 2,
+      "tags": [
+        "civic",
+        "city-hall",
+        "clock-tower",
+        "landmark",
+        "government",
+        "colonnade"
+      ]
+    },
+    {
+      "id": "mf-bldg-civic_general_hospital",
+      "name": "4층 종합병원 (옥상 헬기장·응급실)",
+      "category": "civic",
+      "w": 9,
+      "h": 9,
+      "pxW": 144,
+      "pxH": 144,
+      "passableTopRows": 2,
+      "tags": [
+        "civic",
+        "hospital",
+        "medical",
+        "ambulance",
+        "helipad",
+        "non-cloned"
+      ]
+    },
+    {
+      "id": "mf-bldg-civic_central_bank",
+      "name": "신고전주의 중앙은행",
+      "category": "civic",
+      "w": 8,
+      "h": 7,
+      "pxW": 128,
+      "pxH": 112,
+      "passableTopRows": 2,
+      "tags": [
+        "civic",
+        "bank",
+        "neoclassical",
+        "columns",
+        "finance",
+        "landmark"
+      ]
+    },
+    {
+      "id": "mf-bldg-civic_police_station",
+      "name": "3층 지구대·경찰서",
+      "category": "civic",
+      "w": 7,
+      "h": 7,
+      "pxW": 112,
+      "pxH": 112,
+      "passableTopRows": 2,
+      "tags": [
+        "civic",
+        "police",
+        "koban",
+        "station",
+        "safety",
+        "antenna"
+      ]
+    },
+    {
+      "id": "mf-bldg-civic_fire_station",
+      "name": "2.5층 소방서·망루",
+      "category": "civic",
+      "w": 8,
+      "h": 7,
+      "pxW": 128,
+      "pxH": 112,
+      "passableTopRows": 2,
+      "tags": [
+        "civic",
+        "fire-station",
+        "fire-engine",
+        "watchtower",
+        "garage",
+        "safety"
+      ]
+    },
+    {
+      "id": "mf-bldg-civic_post_office",
+      "name": "2층 벽돌 우체국",
+      "category": "civic",
+      "w": 7,
+      "h": 6,
+      "pxW": 112,
+      "pxH": 96,
+      "passableTopRows": 2,
+      "tags": [
+        "civic",
+        "post-office",
+        "mail",
+        "brick",
+        "pitched-roof"
+      ]
+    },
+    {
+      "id": "mf-bldg-civic_public_museum",
+      "name": "시립 미술관·박물관 (유리 아트리움)",
+      "category": "civic",
+      "w": 9,
+      "h": 8,
+      "pxW": 144,
+      "pxH": 128,
+      "passableTopRows": 2,
+      "tags": [
+        "civic",
+        "museum",
+        "gallery",
+        "skylight",
+        "banners",
+        "landmark"
+      ]
+    }
+  ]
+}

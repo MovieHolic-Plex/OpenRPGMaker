@@ -1,0 +1,186 @@
+{
+  "batch": "pack07_transit_harbor",
+  "kind": "buildings",
+  "items": [
+    {
+      "id": "mf-bldg-tr_train_station_clock",
+      "name": "시계탑 근교 철도역사",
+      "category": "transit",
+      "w": 10,
+      "h": 7,
+      "pxW": 160,
+      "pxH": 112,
+      "passableTopRows": 2,
+      "tags": [
+        "transit",
+        "station",
+        "train",
+        "clock-tower",
+        "brick",
+        "landmark"
+      ]
+    },
+    {
+      "id": "mf-bldg-tr_subway_plaza",
+      "name": "지하철 유리 캐노피 출입구 광장",
+      "category": "transit",
+      "w": 6,
+      "h": 5,
+      "pxW": 96,
+      "pxH": 80,
+      "passableTopRows": 2,
+      "tags": [
+        "transit",
+        "subway",
+        "metro",
+        "glass-canopy",
+        "escalator",
+        "plaza"
+      ]
+    },
+    {
+      "id": "mf-bldg-tr_viaduct_shops",
+      "name": "철도 고가 아치 상가 (라멘·서점·바)",
+      "category": "transit",
+      "w": 9,
+      "h": 6,
+      "pxW": 144,
+      "pxH": 96,
+      "passableTopRows": 2,
+      "tags": [
+        "transit",
+        "viaduct",
+        "railway",
+        "arches",
+        "shops",
+        "brick"
+      ]
+    },
+    {
+      "id": "mf-bldg-tr_bus_terminal",
+      "name": "2층 광역 시외버스 터미널",
+      "category": "transit",
+      "w": 9,
+      "h": 6,
+      "pxW": 144,
+      "pxH": 96,
+      "passableTopRows": 2,
+      "tags": [
+        "transit",
+        "bus-terminal",
+        "canopy",
+        "boarding-bays",
+        "departure-board"
+      ]
+    },
+    {
+      "id": "mf-bldg-tr_parking_garage",
+      "name": "4층 도심 주차타워 (옥상 주차장)",
+      "category": "transit",
+      "w": 7,
+      "h": 8,
+      "pxW": 112,
+      "pxH": 128,
+      "passableTopRows": 2,
+      "tags": [
+        "transit",
+        "parking-garage",
+        "cars",
+        "ramp",
+        "neon-sign",
+        "non-cloned"
+      ]
+    },
+    {
+      "id": "mf-bldg-hb_ferry_terminal",
+      "name": "해안 여객선 페리 터미널",
+      "category": "harbor",
+      "w": 9,
+      "h": 7,
+      "pxW": 144,
+      "pxH": 112,
+      "passableTopRows": 2,
+      "tags": [
+        "harbor",
+        "ferry",
+        "terminal",
+        "nautical",
+        "wave-roof",
+        "landmark"
+      ]
+    },
+    {
+      "id": "mf-bldg-hb_coastal_lighthouse",
+      "name": "적백 줄무늬 항구 등대·등대지기 오두막",
+      "category": "harbor",
+      "w": 4,
+      "h": 9,
+      "pxW": 64,
+      "pxH": 144,
+      "passableTopRows": 2,
+      "tags": [
+        "harbor",
+        "lighthouse",
+        "coastal",
+        "cottage",
+        "lantern",
+        "landmark"
+      ]
+    },
+    {
+      "id": "mf-bldg-hb_seafood_market",
+      "name": "항구 수산시장 어시장 창고",
+      "category": "harbor",
+      "w": 8,
+      "h": 6,
+      "pxW": 128,
+      "pxH": 96,
+      "passableTopRows": 2,
+      "tags": [
+        "harbor",
+        "seafood",
+        "fish-market",
+        "stalls",
+        "warehouse",
+        "banners"
+      ]
+    },
+    {
+      "id": "mf-bldg-hb_pier_terrace_pub",
+      "name": "부두 2층 바다 테라스 펍·해산물 그릴",
+      "category": "harbor",
+      "w": 7,
+      "h": 7,
+      "pxW": 112,
+      "pxH": 112,
+      "passableTopRows": 2,
+      "tags": [
+        "harbor",
+        "pier",
+        "pub",
+        "terrace",
+        "string-lights",
+        "waterfront"
+      ]
+    },
+    {
+      "id": "mf-bldg-hb_canal_crane_loft",
+      "name": "운하 적벽돌 크레인 호이스트 창고 로프트",
+      "category": "harbor",
+      "w": 7,
+      "h": 8,
+      "pxW": 112,
+      "pxH": 128,
+      "passableTopRows": 2,
+      "tags": [
+        "harbor",
+        "canal",
+        "warehouse",
+        "loft",
+        "crane-hoist",
+        "brick",
+        "non-cloned"
+      ]
+    }
+  ]
+}

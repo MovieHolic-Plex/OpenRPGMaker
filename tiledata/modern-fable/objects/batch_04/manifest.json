@@ -1,0 +1,386 @@
+{
+  "batch": "batch_04",
+  "kind": "objects",
+  "palette": "tiledata/jp-city/fable-city/palette.json",
+  "count": 20,
+  "items": [
+    {
+      "id": "mf-obj-plastic_crates",
+      "name": "배달 플라스틱 상자 더미",
+      "en": "stacked plastic delivery crates",
+      "category": "alley-utility",
+      "w": 2,
+      "h": 1,
+      "px": [
+        32,
+        16
+      ],
+      "tags": [
+        "alley",
+        "utility",
+        "crates",
+        "delivery"
+      ]
+    },
+    {
+      "id": "mf-obj-recycle_bin_trio",
+      "name": "3색 분리수거함",
+      "en": "color-coded recycle bin trio",
+      "category": "alley-utility",
+      "w": 2,
+      "h": 1,
+      "px": [
+        32,
+        16
+      ],
+      "tags": [
+        "alley",
+        "utility",
+        "recycle",
+        "bins"
+      ]
+    },
+    {
+      "id": "mf-obj-metal_dumpster",
+      "name": "골목 대형 철제 쓰레기통",
+      "en": "weathered commercial metal dumpster",
+      "category": "alley-utility",
+      "w": 2,
+      "h": 2,
+      "px": [
+        32,
+        32
+      ],
+      "tags": [
+        "alley",
+        "utility",
+        "dumpster",
+        "trash"
+      ]
+    },
+    {
+      "id": "mf-obj-garbage_net_cage",
+      "name": "접이식 쓰레기 수거 그물망",
+      "en": "folding garbage collection net cage",
+      "category": "alley-utility",
+      "w": 2,
+      "h": 1,
+      "px": [
+        32,
+        16
+      ],
+      "tags": [
+        "alley",
+        "utility",
+        "trash",
+        "net"
+      ]
+    },
+    {
+      "id": "mf-obj-wall_ac_unit",
+      "name": "에어컨 실외기",
+      "en": "outdoor split AC condenser unit",
+      "category": "alley-utility",
+      "w": 1,
+      "h": 1,
+      "px": [
+        16,
+        16
+      ],
+      "tags": [
+        "alley",
+        "utility",
+        "ac",
+        "machinery"
+      ]
+    },
+    {
+      "id": "mf-obj-gas_meter_pipes",
+      "name": "가스 계량기·배관",
+      "en": "exterior gas meter and yellow riser pipes",
+      "category": "alley-utility",
+      "w": 1,
+      "h": 2,
+      "px": [
+        16,
+        32
+      ],
+      "tags": [
+        "alley",
+        "utility",
+        "gas",
+        "pipes"
+      ]
+    },
+    {
+      "id": "mf-obj-propane_cylinders",
+      "name": "LPG 프로판 가스통 2구",
+      "en": "chained LPG propane cylinders",
+      "category": "alley-utility",
+      "w": 1,
+      "h": 2,
+      "px": [
+        16,
+        32
+      ],
+      "tags": [
+        "alley",
+        "utility",
+        "propane",
+        "gas"
+      ]
+    },
+    {
+      "id": "mf-obj-cardboard_stack",
+      "name": "묶은 택배 골판지 상자",
+      "en": "tied and stacked delivery cardboard boxes",
+      "category": "alley-utility",
+      "w": 2,
+      "h": 1,
+      "px": [
+        32,
+        16
+      ],
+      "tags": [
+        "alley",
+        "utility",
+        "cardboard",
+        "boxes"
+      ]
+    },
+    {
+      "id": "mf-obj-wood_pallet_sacks",
+      "name": "목재 팔레트 쌀·밀가루 포대",
+      "en": "wooden shipping pallet with rice and flour sacks",
+      "category": "alley-utility",
+      "w": 2,
+      "h": 1,
+      "px": [
+        32,
+        16
+      ],
+      "tags": [
+        "alley",
+        "utility",
+        "pallet",
+        "sacks"
+      ]
+    },
+    {
+      "id": "mf-obj-mop_bucket_broom",
+      "name": "청소 양동이·빗자루·대걸레",
+      "en": "wringer mop bucket and leaning broom",
+      "category": "alley-utility",
+      "w": 1,
+      "h": 1,
+      "px": [
+        16,
+        16
+      ],
+      "tags": [
+        "alley",
+        "utility",
+        "cleaning",
+        "shopkeeping"
+      ]
+    },
+    {
+      "id": "mf-obj-fruit_veg_stand",
+      "name": "청과물 야채 가판대",
+      "en": "slanted wooden greengrocer fruit and veg stand",
+      "category": "shopfront-life",
+      "w": 2,
+      "h": 2,
+      "px": [
+        32,
+        32
+      ],
+      "tags": [
+        "shopfront",
+        "market",
+        "fruit",
+        "produce"
+      ]
+    },
+    {
+      "id": "mf-obj-bakery_bread_rack",
+      "name": "베이커리 노천 빵 진열대",
+      "en": "tiered bakery sidewalk bread display rack",
+      "category": "shopfront-life",
+      "w": 2,
+      "h": 2,
+      "px": [
+        32,
+        32
+      ],
+      "tags": [
+        "shopfront",
+        "bakery",
+        "bread",
+        "canopy"
+      ]
+    },
+    {
+      "id": "mf-obj-flower_bucket_stand",
+      "name": "꽃집 양동이 계단 진열대",
+      "en": "stepped florist flower bucket stand",
+      "category": "shopfront-life",
+      "w": 2,
+      "h": 2,
+      "px": [
+        32,
+        32
+      ],
+      "tags": [
+        "shopfront",
+        "florist",
+        "flowers",
+        "plants"
+      ]
+    },
+    {
+      "id": "mf-obj-book_stall",
+      "name": "헌책방 100원 균일가 책 가판대",
+      "en": "secondhand bookstore outdoor book trough stall",
+      "category": "shopfront-life",
+      "w": 2,
+      "h": 2,
+      "px": [
+        32,
+        32
+      ],
+      "tags": [
+        "shopfront",
+        "bookstore",
+        "books",
+        "retro"
+      ]
+    },
+    {
+      "id": "mf-obj-clothing_rack",
+      "name": "부티크 이동식 의류 행거",
+      "en": "rolling chrome boutique clothing rack",
+      "category": "shopfront-life",
+      "w": 2,
+      "h": 2,
+      "px": [
+        32,
+        32
+      ],
+      "tags": [
+        "shopfront",
+        "boutique",
+        "clothing",
+        "fashion"
+      ]
+    },
+    {
+      "id": "mf-obj-noren_lantern_stand",
+      "name": "이자카야 노렌·초롱 입구대",
+      "en": "izakaya wooden noren curtain and paper lantern stand",
+      "category": "shopfront-life",
+      "w": 2,
+      "h": 2,
+      "px": [
+        32,
+        32
+      ],
+      "tags": [
+        "shopfront",
+        "izakaya",
+        "noren",
+        "lantern",
+        "lit"
+      ],
+      "lightAnchor": {
+        "x": 25,
+        "y": 16,
+        "color": "#e8a448",
+        "radius": 3
+      }
+    },
+    {
+      "id": "mf-obj-umbrella_stand",
+      "name": "가게 앞 우산꽂이",
+      "en": "compact shop-door umbrella holder stand",
+      "category": "shopfront-life",
+      "w": 1,
+      "h": 1,
+      "px": [
+        16,
+        16
+      ],
+      "tags": [
+        "shopfront",
+        "umbrella",
+        "entryway"
+      ]
+    },
+    {
+      "id": "mf-obj-pastry_case",
+      "name": "카페 케이크·디저트 쇼케이스",
+      "en": "warm-lit glass pastry display case",
+      "category": "shopfront-life",
+      "w": 2,
+      "h": 2,
+      "px": [
+        32,
+        32
+      ],
+      "tags": [
+        "shopfront",
+        "cafe",
+        "pastry",
+        "lit"
+      ],
+      "lightAnchor": {
+        "x": 16,
+        "y": 14,
+        "color": "#f2e8c4",
+        "radius": 3
+      }
+    },
+    {
+      "id": "mf-obj-retro_arcade_cab",
+      "name": "레트로 캔디캐비닛 오락기",
+      "en": "classic Japanese candy-cab retro arcade cabinet",
+      "category": "shopfront-life",
+      "w": 1,
+      "h": 2,
+      "px": [
+        16,
+        32
+      ],
+      "tags": [
+        "shopfront",
+        "arcade",
+        "retro",
+        "lit"
+      ],
+      "lightAnchor": {
+        "x": 8,
+        "y": 11,
+        "color": "#86b8c8",
+        "radius": 2
+      }
+    },
+    {
+      "id": "mf-obj-laundry_basket_cart",
+      "name": "코인세탁소 이동식 빨래 카트",
+      "en": "coin-laundry rolling wire basket trolley",
+      "category": "shopfront-life",
+      "w": 1,
+      "h": 1,
+      "px": [
+        16,
+        16
+      ],
+      "tags": [
+        "shopfront",
+        "laundry",
+        "cart",
+        "daily"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,207 @@
+{
+  "batch": "pack08_alley_nightlife",
+  "kind": "buildings",
+  "items": [
+    {
+      "id": "mf-bldg-nl_coin_laundry",
+      "name": "24시 코인 세탁방 (2층)",
+      "category": "alley-nightlife",
+      "w": 5,
+      "h": 6,
+      "pixelSize": [
+        80,
+        96
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "alley-nightlife",
+        "laundromat",
+        "coin-laundry",
+        "24h",
+        "retro",
+        "kawara"
+      ]
+    },
+    {
+      "id": "mf-bldg-nl_sento_chimney",
+      "name": "굴뚝 동네 목욕탕·센토",
+      "category": "alley-nightlife",
+      "w": 7,
+      "h": 8,
+      "pixelSize": [
+        112,
+        128
+      ],
+      "passableTopRows": 3,
+      "tags": [
+        "alley-nightlife",
+        "sento",
+        "bathhouse",
+        "chimney",
+        "noren",
+        "kawara",
+        "landmark"
+      ]
+    },
+    {
+      "id": "mf-bldg-nl_retro_arcade",
+      "name": "레트로 골목 오락실 (3층)",
+      "category": "alley-nightlife",
+      "w": 6,
+      "h": 7,
+      "pixelSize": [
+        96,
+        112
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "alley-nightlife",
+        "arcade",
+        "game-center",
+        "neon",
+        "retro",
+        "nightlife"
+      ]
+    },
+    {
+      "id": "mf-bldg-nl_karaoke_neon_tower",
+      "name": "네온 노래방 타워 (4층)",
+      "category": "alley-nightlife",
+      "w": 5,
+      "h": 9,
+      "pixelSize": [
+        80,
+        144
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "alley-nightlife",
+        "karaoke",
+        "noraebang",
+        "neon",
+        "tower",
+        "nightlife"
+      ]
+    },
+    {
+      "id": "mf-bldg-nl_pojangmacha_hall",
+      "name": "골목 포장마차 홀",
+      "category": "alley-nightlife",
+      "w": 7,
+      "h": 5,
+      "pixelSize": [
+        112,
+        80
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "alley-nightlife",
+        "pojangmacha",
+        "street-food",
+        "tavern",
+        "nightlife",
+        "awning"
+      ]
+    },
+    {
+      "id": "mf-bldg-nl_lp_bar_extstair",
+      "name": "외부계단 LP 바이닐 바 (2.5층)",
+      "category": "alley-nightlife",
+      "w": 5,
+      "h": 7,
+      "pixelSize": [
+        80,
+        112
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "alley-nightlife",
+        "lp-bar",
+        "vinyl",
+        "ext-stair",
+        "brick",
+        "nightlife"
+      ]
+    },
+    {
+      "id": "mf-bldg-nl_bowling_alley",
+      "name": "레트로 볼링장 (볼링핀 간판)",
+      "category": "alley-nightlife",
+      "w": 8,
+      "h": 6,
+      "pixelSize": [
+        128,
+        96
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "alley-nightlife",
+        "bowling",
+        "retro",
+        "marquee",
+        "landmark",
+        "nightlife"
+      ]
+    },
+    {
+      "id": "mf-bldg-nl_barbershop_home",
+      "name": "동네 레트로 이발소 (2층)",
+      "category": "alley-nightlife",
+      "w": 4,
+      "h": 6,
+      "pixelSize": [
+        64,
+        96
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "alley-nightlife",
+        "barbershop",
+        "retro",
+        "alley",
+        "mint-tile",
+        "kawara"
+      ]
+    },
+    {
+      "id": "mf-bldg-nl_repair_workshop",
+      "name": "골목 수리 공방·정비소",
+      "category": "alley-nightlife",
+      "w": 6,
+      "h": 5,
+      "pixelSize": [
+        96,
+        80
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "alley-nightlife",
+        "workshop",
+        "repair",
+        "garage",
+        "industrial",
+        "corrugated"
+      ]
+    },
+    {
+      "id": "mf-bldg-nl_antique_corner",
+      "name": "모퉁이 골동품·앤티크샵 (2층)",
+      "category": "alley-nightlife",
+      "w": 5,
+      "h": 6,
+      "pixelSize": [
+        80,
+        96
+      ],
+      "passableTopRows": 2,
+      "tags": [
+        "alley-nightlife",
+        "antique",
+        "vintage",
+        "curiosity",
+        "dormer",
+        "kawara"
+      ]
+    }
+  ]
+}
