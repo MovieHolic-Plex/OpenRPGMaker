@@ -184,8 +184,13 @@ test("selectRelated opens enough chunks for the must-run tiers (up to mustChunks
   // 24 × 50초 = 1,200초 / 상한 100초 = 12 조각, 조각마다 2파일·100초.
   assert.equal(result.chunks.length, 12);
   assert.ok(result.chunks.every((chunk) => chunk.estWallSeconds <= options.budgetSeconds));
-  // mustChunks 를 넘어서는 늘리지 않는다.
-  assert.equal(selectRelated({ changed: ["src/hub.ts"], testSources, exists: () => true, options: { ...options, mustChunks: 5 } }).chunks.length, 5);
+  // mustChunks 개로도 넘치면(#5293: 직접 import 505개) 좀은 상자로는 어떻게 나눠도 끊긴다 — 넓은 모드(긴 상자)로 올린다.
+  const overflow = selectRelated({ changed: ["src/hub.ts"], testSources, exists: () => true, options: { ...options, mustChunks: 5, wideBudgetSeconds: 300 } });
+  assert.equal(overflow.mode, "wide");
+  assert.match(overflow.wideReasons.join(" "), /늘 담는 시험 예상 1200초 > 조각 5개 여유 500초/u);
+  // 넓은 모드 조각 수 = max(wideChunks 3, 비용 1200 / 상한 300) = 4, 조각마다 300초.
+  assert.equal(overflow.chunks.length, 4);
+  assert.ok(overflow.chunks.every((chunk) => chunk.estWallSeconds <= 300));
 });
 
 test("planChunks spreads files by cost (LPT) deterministically", () => {
