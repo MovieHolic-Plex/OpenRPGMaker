@@ -3,7 +3,16 @@ import { editorState } from "@/editor/editorState";
 import { renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { filterProps, groupProps, PROP_CATEGORIES, propRecommendationContext, recommendProps, type PropCategoryId, type PropChoice, type PropRecommendation } from "@/editor/propRecommendations";
 import { resolveCurrentMapId } from "@/editor/mapSelection";
-import { selectPaletteStamp } from "@/editor/panels/tileToolbarActions";
+import { selectInteractivePropBrush, selectPaletteStamp } from "@/editor/panels/tileToolbarActions";
+import { createInteractivePropStripPreview } from "@/editor/panels/eventEditor/interactivePropPicker";
+import {
+  INTERACTIVE_PROP_ERAS,
+  INTERACTIVE_PROP_ERA_LABELS,
+  INTERACTIVE_PROPS,
+  interactivePropById,
+  searchInteractiveProps,
+  type InteractivePropEra,
+} from "@/project/interactiveProps";
 import { sourceTextOf } from "@/i18n";
 import { isTileCellChange, store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
@@ -48,6 +57,9 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
   let choices: readonly PropRecommendation[] = [];
   let visibleCount = PAGE_SIZE;
   let category: "recommended" | "all" | PropCategoryId = "recommended";
+  let paneTab: "tileset" | "interactive" = "tileset";
+  let interactiveEra: "all" | InteractivePropEra = "all";
+  let interactiveQuery = "";
   let choseCategory = false;
   const openGroups = new Set<string>();
   let query = "";
@@ -88,6 +100,20 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
 
   function syncSelection(): void {
     if (root.hidden || !results || !status) return;
+    if (paneTab === "interactive") {
+      const activeId = editorState.get().activeInteractivePropId ?? "";
+      if (selectionKey === `ip:${activeId}`) return;
+      selectionKey = `ip:${activeId}`;
+      for (const button of results.querySelectorAll<HTMLButtonElement>("[data-interactive-prop-id]")) {
+        button.setAttribute("aria-pressed", String(button.dataset.interactivePropId === activeId));
+      }
+      const activeProp = interactivePropById(activeId || undefined);
+      status.replaceChildren(
+        ...(activeProp ? [el("strong", { attrs: { translate: "no" }, text: activeProp.name })] : []),
+        el("span", { text: activeProp ? "맵을 클릭해 상호작용 오브젝트를 놓으세요." : "상호작용 오브젝트를 고른 뒤 맵을 클릭해 놓으세요." }),
+      );
+      return;
+    }
     const active = choices.find(entry => selected(entry.choice))?.choice;
     const key = active?.id ?? "";
     if (selectionKey === key) return;
@@ -203,7 +229,7 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
   function render(): void {
     if (root.hidden || disposed) return;
     const next = current();
-    const key = next.map ? `${next.map.id}|${next.map.width}x${next.map.height}|${next.map.tileSize}|${propRecommendationContext(next.map)}` : "";
+    const key = `${paneTab}|${next.map ? `${next.map.id}|${next.map.width}x${next.map.height}|${next.map.tileSize}|${propRecommendationContext(next.map)}` : ""}`;
     if (next.tileset === lastTileset && key === lastContext) { syncSelection(); return; }
     lastTileset = tileset = next.tileset;
     lastContext = key;
@@ -214,6 +240,104 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
       root.replaceChildren(el("p", { class: "left-props-empty", text: "맵을 열면 이 맵에서 쓸 기물을 볼 수 있습니다." }));
       return;
     }
+
+    const tabBar = el("div", {
+      class: "left-props-tabs",
+      dataset: { testid: "left-props-tabs" },
+      children: [
+        el("button", {
+          class: "btn small",
+          attrs: { type: "button", "aria-pressed": String(paneTab === "tileset") },
+          dataset: { testid: "left-props-tab-tileset" },
+          text: "칩셋 기물",
+          on: { click: () => { if (paneTab !== "tileset") { paneTab = "tileset"; selectInteractivePropBrush(null); render(); } } },
+        }),
+        el("button", {
+          class: "btn small",
+          attrs: { type: "button", "aria-pressed": String(paneTab === "interactive") },
+          dataset: { testid: "left-props-tab-interactive" },
+          text: `상호작용 (${INTERACTIVE_PROPS.length})`,
+          on: { click: () => { if (paneTab !== "interactive") { paneTab = "interactive"; editorState.set({ activePaletteStamp: null }); render(); } } },
+        }),
+      ],
+    });
+    tabBar.style.display = "flex";
+    tabBar.style.gap = "6px";
+    tabBar.style.marginBottom = "8px";
+
+    if (paneTab === "interactive") {
+      const eraSelect = el("select", {
+        attrs: { "aria-label": "시대" },
+        dataset: { testid: "left-interactive-era" },
+        children: [
+          el("option", { value: "all", text: `전체 시대 (${INTERACTIVE_PROPS.length})` }),
+          ...INTERACTIVE_PROP_ERAS.map((era) => el("option", { value: era, text: INTERACTIVE_PROP_ERA_LABELS[era] })),
+        ],
+        on: { change: () => { interactiveEra = eraSelect.value as typeof interactiveEra; fillInteractiveGrid(); } },
+      }) as HTMLSelectElement;
+      eraSelect.value = interactiveEra;
+
+      const iSearch = el("input", {
+        attrs: { type: "search", "aria-label": "상호작용 오브젝트 검색", placeholder: "항아리, 옷장, 자판기, 문…", autocomplete: "off" },
+        value: interactiveQuery,
+        dataset: { testid: "left-interactive-search" },
+        on: { input: () => { interactiveQuery = iSearch.value; fillInteractiveGrid(); } },
+      }) as HTMLInputElement;
+
+      listTitle = el("h3", { class: "left-props-title", text: "상호작용 오브젝트" });
+      resultCount = el("span", { class: "left-props-result-count", attrs: { translate: "no" } });
+      noResults = el("p", { class: "left-props-empty", text: "검색 결과가 없습니다." });
+      results = el("div", { class: "left-props-results" });
+      status = el("div", { class: "left-props-selection", attrs: { "aria-live": "polite" }, dataset: { testid: "left-props-selection" } });
+
+      function fillInteractiveGrid(): void {
+        const list = searchInteractiveProps({
+          query: interactiveQuery,
+          era: interactiveEra === "all" ? undefined : interactiveEra,
+        });
+        if (resultCount) resultCount.textContent = `(${list.length})`;
+        if (noResults) noResults.hidden = list.length !== 0;
+        const activeId = editorState.get().activeInteractivePropId;
+        results?.replaceChildren(
+          ...(list.length ? [el("div", {
+            class: "left-props-grid",
+            attrs: { role: "group", "aria-label": "상호작용 오브젝트 목록" },
+            children: list.map((prop) => el("button", {
+              class: "left-props-card",
+              attrs: { type: "button", "aria-pressed": String(activeId === prop.id), title: `${prop.name} (${prop.id})` },
+              dataset: { testid: `left-interactive-card-${prop.id}`, interactivePropId: prop.id },
+              children: [
+                el("span", { class: "left-props-preview", children: [createInteractivePropStripPreview(prop, { animate: false })] }),
+                el("span", { class: "left-props-name", attrs: { translate: "no" }, text: prop.name }),
+                el("span", { class: "left-props-size", text: `${INTERACTIVE_PROP_ERA_LABELS[prop.era]} · ${prop.playback}` }),
+              ],
+              on: { click: () => {
+                const cur = editorState.get().activeInteractivePropId;
+                selectInteractivePropBrush(cur === prop.id ? null : prop.id);
+              } },
+            })),
+          })] : []),
+        );
+        selectionKey = null;
+        syncSelection();
+      }
+
+      root.replaceChildren(
+        el("header", { class: "left-props-head", children: [el("h2", { text: "기물" }), el("span", { class: "left-props-map", children: [el("span", { class: "left-props-map-label", text: "맵:" }), " ", el("span", { attrs: { translate: "no" }, text: next.map.name })] })] }),
+        tabBar,
+        el("div", { class: "left-props-browser", children: [
+          el("label", { children: [el("span", { text: "오브젝트 검색" }), iSearch] }),
+          el("label", { children: [el("span", { text: "시대별 필터" }), eraSelect] }),
+        ] }),
+        el("div", { class: "left-props-results-head", children: [listTitle, resultCount] }),
+        noResults,
+        results,
+        status,
+      );
+      fillInteractiveGrid();
+      return;
+    }
+
     choices = recommendProps(next.map, tileset);
     const available = PROP_CATEGORIES.filter(kind => choices.some(entry => entry.choice.category === kind.id));
     if (!choseCategory) category = query.trim() || choices.some(entry => entry.choice.beodeul) ? "all" : "recommended";
@@ -249,6 +373,7 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
     status = el("div", { class: "left-props-selection", attrs: { "aria-live": "polite" }, dataset: { testid: "left-props-selection" } });
     root.replaceChildren(
       el("header", { class: "left-props-head", children: [el("h2", { text: "기물" }), el("span", { class: "left-props-map", children: [el("span", { class: "left-props-map-label", text: "맵:" }), " ", el("span", { attrs: { translate: "no" }, text: next.map.name })] })] }),
+      tabBar,
       el("div", { class: "left-props-context", children: [el("span", { text: "현재 맵의 칩셋" }), el("strong", { attrs: { translate: "no" }, text: tileset.name })] }),
       ...(choices.length ? [
         el("div", { class: "left-props-browser", children: [

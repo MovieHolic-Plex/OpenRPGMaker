@@ -1,5 +1,8 @@
 // Page 3 native command rich forms (맵·연출): lighting, weather, animation, picture, tile.
 import { pixelFxAnimationPickButton } from "@/editor/panels/pixelFxPicker";
+import { parseFieldFxId } from "@/project/containerFx";
+import { INTERACTIVE_PROP_ERA_LABELS, interactivePropById } from "@/project/interactiveProps";
+import { createInteractivePropStripPreview, interactivePropPickButton } from "./interactivePropPicker";
 import { mountPixelFxDom } from "@/pixelfx/domPlayer";
 import { openDatabaseResourcePickerDialog } from "@/editor/panels/databaseResourcePickerDialog";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
@@ -873,10 +876,14 @@ export function showAnimationBody(
     "show-animation-position-field"
   );
 
+  let customFieldFxId = parseFieldFxId(cmd.animationId)?.kind === "prop" ? cmd.animationId : "";
+  const activeAnimationId = () => customFieldFxId || animation.select.value || project.database.battleAnimations[0]?.id || "";
+
   const pixelFxButton = pixelFxAnimationPickButton({
     testid: "show-animation-pixel-fx",
     currentAnimationId: cmd.animationId,
     onAnimationId: (animationId) => {
+      customFieldFxId = "";
       context.actions.replaceCommand(context.path, {
         kind: "showAnimation",
         target: showAnimationTargetFromControls(target.select.value, eventId.value, x.value, y.value),
@@ -885,13 +892,27 @@ export function showAnimationBody(
       });
     },
   });
-  animation.root.append(pixelFxButton);
+  const propFxButton = interactivePropPickButton({
+    testid: "show-animation-prop-fx",
+    currentAnimationId: cmd.animationId,
+    onAnimationId: (animationId) => {
+      customFieldFxId = animationId;
+      context.actions.replaceCommand(context.path, {
+        kind: "showAnimation",
+        target: showAnimationTargetFromControls(target.select.value, eventId.value, x.value, y.value),
+        animationId,
+        ...(wait.select.value === "true" ? { wait: true } : {}),
+      });
+      renderPreview();
+    },
+  });
+  animation.root.append(pixelFxButton, propFxButton);
 
   const commit = () => {
     context.actions.replaceCommand(context.path, {
       kind: "showAnimation",
       target: showAnimationTargetFromControls(target.select.value, eventId.value, x.value, y.value),
-      animationId: animation.select.value || project.database.battleAnimations[0]?.id || "",
+      animationId: activeAnimationId(),
       ...(wait.select.value === "true" ? { wait: true } : {}),
     });
     renderPreview();
@@ -910,13 +931,26 @@ export function showAnimationBody(
   preview.append(stageHost, caption, note);
 
   const renderStage = () => {
-    const anim = project.database.battleAnimations.find((entry) => entry.id === animation.select.value);
+    const curId = activeAnimationId();
+    const fieldFx = parseFieldFxId(curId);
+    const propFx = fieldFx?.kind === "prop" ? interactivePropById(fieldFx.propId) : undefined;
+    const anim = propFx ? undefined : project.database.battleAnimations.find((entry) => entry.id === curId);
     const stage = el("div", {
       class: "page3-preview-stage page3-preview-animation page3-anim-stage",
       dataset: { testid: "show-animation-preview-stage" },
     });
-    const source = anim?.pixelFx ? undefined : showAnimationPlaybackSource(anim, project);
-    if (anim?.pixelFx) {
+    const source = anim?.pixelFx || propFx ? undefined : showAnimationPlaybackSource(anim, project);
+    if (propFx && fieldFx?.kind === "prop") {
+      playHost.replaceChildren();
+      stage.style.display = "flex";
+      stage.style.flexDirection = "column";
+      stage.style.alignItems = "center";
+      stage.style.justifyContent = "center";
+      stage.append(
+        el("span", { class: "page3-preview-stage-label", text: `${INTERACTIVE_PROP_ERA_LABELS[propFx.era]} · ${propFx.frames}프레임` }),
+        createInteractivePropStripPreview(propFx, { animate: true, reverse: fieldFx.reverse === true }),
+      );
+    } else if (anim?.pixelFx) {
       // 코드 픽셀 효과(pixelfx) — 런타임과 같은 그리기로 계속 돈다(게임 1화소 = 미리보기 2px, 원점 = 대상 발밑).
       playHost.replaceChildren();
       stage.style.position = "relative";
@@ -958,24 +992,30 @@ export function showAnimationBody(
       renderShowAnimationFallback(stage, anim?.name ?? "없는 애니메이션");
     }
     stageHost.replaceChildren(stage);
-    stagedAnimationId = animation.select.value;
+    stagedAnimationId = curId;
   };
 
   const renderCaption = () => {
-    const anim = project.database.battleAnimations.find((entry) => entry.id === animation.select.value);
+    const curId = activeAnimationId();
+    const fieldFx = parseFieldFxId(curId);
+    const propFx = fieldFx?.kind === "prop" ? interactivePropById(fieldFx.propId) : undefined;
+    const anim = propFx ? undefined : project.database.battleAnimations.find((entry) => entry.id === curId);
     const where =
       target.select.value === "player"
         ? "플레이어"
         : target.select.value === "event"
           ? `이벤트 ${eventId.value.trim() || "(현재/미선택)"}`
           : `(${parseInt(x.value, 10) || 0}, ${parseInt(y.value, 10) || 0})`;
-    caption.textContent = `${anim?.name ?? (animation.select.value || "(선택 없음)")} · ${where}`;
+    const label = propFx
+      ? `${fieldFx?.kind === "prop" && fieldFx.reverse ? "오브젝트 닫기: " : "오브젝트 연출: "}${propFx.name}`
+      : (anim?.name ?? (curId || "(선택 없음)"));
+    caption.textContent = `${label} · ${where}`;
     note.textContent =
       wait.select.value === "true" ? "재생이 끝날 때까지 대기" : "대기 없이 다음 명령 진행";
   };
 
   const renderPreview = () => {
-    if (stagedAnimationId !== animation.select.value) renderStage();
+    if (stagedAnimationId !== activeAnimationId()) renderStage();
     renderCaption();
   };
 
@@ -988,7 +1028,10 @@ export function showAnimationBody(
     commit();
   });
   wait.select.addEventListener("change", commit);
-  animation.select.addEventListener("change", commit);
+  animation.select.addEventListener("change", () => {
+    customFieldFxId = "";
+    commit();
+  });
 
   syncVisibility();
   renderPreview();

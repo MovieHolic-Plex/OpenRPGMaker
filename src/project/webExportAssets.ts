@@ -32,6 +32,8 @@ import type { Project } from "@/project/types";
 import type { WebExportAsset } from "@/project/webExportTypes";
 import { webUploadedAssetPath } from './webUploadedAssetPath';
 import { transitVehicle } from "@/project/mapTransit";
+import { parseFieldFxId } from "@/project/containerFx";
+import { inferInteractivePropEra, interactivePropById, interactivePropForContainer } from "@/project/interactiveProps";
 import battleTrainerSpriteFiles from "@/assets/battleTrainerSpriteFiles.json" with { type: "json" };
 export { safeFileName } from './webUploadedAssetPath';
 
@@ -147,6 +149,8 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   // /assets/battle-trainers/<role>/<file>.png). 프로젝트에는 역할 id 만 있어 출하 판본에 폴더가 통째로 빠졌고,
   // 아스트라 1.19 트레이너 전투 그림 10종이 404 였다(QA-AH119-001).
   for (const path of trainerSpriteImagePaths(project)) assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
+  // 상호작용 오브젝트 100종 멀티프레임 PNG 스트립(interaction.propId / fx:prop:<id> / wardrobe 자동 업그레이드)을 출하 판본에 싣는다.
+  for (const path of interactivePropStripPaths(project)) assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
   if (ids.has('tex_worldmap_selected')) {
     const path = 'assets/worldmap-icons/ATTRIBUTION.md';
     assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });
@@ -348,6 +352,50 @@ function collectStrings(value: unknown, out: Set<string>): void {
     }
     collectStrings(child, out);
   }
+}
+
+function interactivePropStripPaths(project: Project): readonly string[] {
+  const paths = new Set<string>();
+  const addProp = (id: string | undefined) => {
+    const prop = interactivePropById(id);
+    if (prop) paths.add(prop.stripPath);
+  };
+  const scanCommands = (commands: readonly unknown[] | undefined) => {
+    if (!Array.isArray(commands)) return;
+    for (const raw of commands) {
+      if (!raw || typeof raw !== "object") continue;
+      const cmd = raw as { kind?: unknown; animationId?: unknown; then?: unknown[]; else?: unknown[]; cases?: Array<{ commands?: unknown[] }> };
+      if (cmd.kind === "showAnimation" && typeof cmd.animationId === "string") {
+        const fx = parseFieldFxId(cmd.animationId);
+        if (fx?.kind === "prop") addProp(fx.propId);
+      }
+      if (Array.isArray(cmd.then)) scanCommands(cmd.then);
+      if (Array.isArray(cmd.else)) scanCommands(cmd.else);
+      if (Array.isArray(cmd.cases)) {
+        for (const c of cmd.cases) scanCommands(c?.commands);
+      }
+    }
+  };
+  for (const map of Object.values(project.maps)) {
+    const tileset = project.tilesets[map.tilesetId];
+    const era = inferInteractivePropEra(map.tilesetId, tileset?.name);
+    for (const event of map.events) {
+      for (const page of event.pages ?? []) {
+        const inter = page.interaction;
+        if (inter?.kind === "container") {
+          if (inter.propId) addProp(inter.propId);
+          else if (inter.style === "wardrobe") {
+            const auto = interactivePropForContainer("wardrobe", event.name, era);
+            if (auto) paths.add(auto.stripPath);
+          }
+        }
+        scanCommands(page.commands);
+      }
+      scanCommands(event.commands);
+    }
+  }
+  for (const common of project.commonEvents ?? []) scanCommands(common.commands);
+  return [...paths];
 }
 
 function localPublicPath(url: string | null): string | null {

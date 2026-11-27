@@ -24,6 +24,8 @@ import { beodeulPlaceableObjectForKit } from "@/assets/beodeulPlaceableObjects";
 import { layerTilePickAt, visibleTilePickAt, type VisibleTilePick } from "@/editor/tilePicking";
 import { checkKitPlacement } from "@/project/kitPlacementRules";
 import { store } from "@/project/store";
+import { interactivePropById } from "@/project/interactiveProps";
+import { SEARCH_CONTAINER_TOOLS } from "@/editor/tools/searchContainerTools";
 import { stairApproachProblem } from "@/project/stairs/placement";
 import type { MapId, TilesetDef } from "@/project/types";
 import { reliefHistoryLabel, reliefInverseMode } from "@/editor/reliefBrushMode";
@@ -130,7 +132,7 @@ export class TilePaintEngine {
       toastMapEditLockNotice(mid);
       return;
     }
-    const { activePaletteStamp, autoConnectMode, brushSize, clusterAssistMode, selectedTile } = editorState.get();
+    const { activePaletteStamp, activeInteractivePropId, autoConnectMode, brushSize, clusterAssistMode, selectedTile } = editorState.get();
     const key = tool === "relief" ? `${x},${pointerTile.groundY ?? y}` : `${x},${y}`;
     const previousKey = this.deps.getPaintState().lastPaintKey;
     const firstStrokeTile = previousKey === "";
@@ -150,6 +152,35 @@ export class TilePaintEngine {
     if (layer === "event") this.deps.showEventLayerClickFeedback(mid, x, y);
 
     if (layer === "event" && clickCount >= 2 && this.deps.openExistingEventAt(mid, x, y)) {
+      return;
+    }
+
+    // 왼쪽 기물 패널 「상호작용」 탭에서 고른 120종 프롭을 클릭 한 번으로 이벤트 배치한다.
+    if (tool === "paint" && activeInteractivePropId) {
+      if (!firstStrokeTile) return;
+      const prop = interactivePropById(activeInteractivePropId);
+      const placeTool = SEARCH_CONTAINER_TOOLS.find((t) => t.name === "place_interactive_props");
+      if (!prop || !placeTool) return;
+      let placedId: string | undefined;
+      let warningText: string | undefined;
+      store.update((draft) => {
+        const beforeCount = draft.maps[mid]?.events.length ?? 0;
+        const res = placeTool.run(draft, {
+          mapId: mid,
+          props: [{ x, y, propId: prop.id, toggleable: prop.playback === "toggle" }],
+        });
+        warningText = res.warnings?.[0];
+        const mapAfter = draft.maps[mid];
+        if (mapAfter && mapAfter.events.length > beforeCount) {
+          placedId = mapAfter.events[mapAfter.events.length - 1]?.id;
+        }
+      }, { scope: "project" });
+      if (placedId) {
+        editorState.set({ selectedEventId: placedId });
+        toast(`「${prop.name}」 배치 (${x}, ${y})`, "info");
+      } else if (warningText) {
+        toast(warningText, "error");
+      }
       return;
     }
 
