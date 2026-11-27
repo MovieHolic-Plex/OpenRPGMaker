@@ -52,6 +52,10 @@ export interface MapPostFx {
   horrorReactive?: boolean;
   /** 모닥불·촛대·조명 옆을 지날 때 주인공 스프라이트 림라이트 물듦 (기본 true). */
   spriteRimLight?: boolean;
+  /** 손전등·포인트 조명의 벽면 레이캐스트 차단 (Darkwood풍 모퉁이 그림자, 기본 true). */
+  wallOcclusion?: boolean;
+  /** 수면 윤슬(Shimmer) 및 물가 캐릭터 Y반전 반사 (옥토패스 2풍, 기본 true). */
+  waterReflections?: boolean;
 }
 
 export interface PostFxPresetSpec {
@@ -388,6 +392,8 @@ export interface ResolvedPostFx {
   readonly adaptWeather: boolean;
   readonly horrorReactive: boolean;
   readonly spriteRimLight: boolean;
+  readonly wallOcclusion: boolean;
+  readonly waterReflections: boolean;
 }
 
 function clamp01(v: unknown, fallback: number): number {
@@ -412,6 +418,8 @@ export function normalizePostFx(raw: unknown): MapPostFx {
       preset: "none",
       ...(obj.horrorReactive === false ? { horrorReactive: false } : {}),
       ...(obj.spriteRimLight === false ? { spriteRimLight: false } : {}),
+      ...(obj.wallOcclusion === false ? { wallOcclusion: false } : {}),
+      ...(obj.waterReflections === false ? { waterReflections: false } : {}),
     };
   }
   const spec = POST_FX_PRESETS[preset];
@@ -429,6 +437,8 @@ export function normalizePostFx(raw: unknown): MapPostFx {
     adaptWeather: obj.adaptWeather !== false,
     horrorReactive: obj.horrorReactive !== false,
     spriteRimLight: obj.spriteRimLight !== false,
+    wallOcclusion: obj.wallOcclusion !== false,
+    waterReflections: obj.waterReflections !== false,
   };
 }
 
@@ -441,6 +451,8 @@ export function patchPostFx(current: MapPostFx | undefined, patch: Partial<MapPo
       preset: "none",
       ...(patch.horrorReactive !== undefined ? { horrorReactive: patch.horrorReactive } : {}),
       ...(patch.spriteRimLight !== undefined ? { spriteRimLight: patch.spriteRimLight } : {}),
+      ...(patch.wallOcclusion !== undefined ? { wallOcclusion: patch.wallOcclusion } : {}),
+      ...(patch.waterReflections !== undefined ? { waterReflections: patch.waterReflections } : {}),
     });
   }
   const presetChanged = !current || current.preset !== nextPreset;
@@ -460,6 +472,8 @@ export function patchPostFx(current: MapPostFx | undefined, patch: Partial<MapPo
       adaptWeather: current?.adaptWeather ?? true,
       horrorReactive: current?.horrorReactive ?? true,
       spriteRimLight: current?.spriteRimLight ?? true,
+      wallOcclusion: current?.wallOcclusion ?? true,
+      waterReflections: current?.waterReflections ?? true,
     }
     : normalizePostFx(current);
   return normalizePostFx({
@@ -497,5 +511,7 @@ export function resolvePostFx(mapPostFx: MapPostFx | undefined, systemPostFx?: M
     adaptWeather: effective.adaptWeather !== false,
     horrorReactive: effective.horrorReactive !== false,
     spriteRimLight: effective.spriteRimLight !== false,
+    wallOcclusion: effective.wallOcclusion !== false,
+    waterReflections: effective.waterReflections !== false,
   };
 }

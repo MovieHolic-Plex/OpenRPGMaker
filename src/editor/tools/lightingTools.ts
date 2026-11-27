@@ -175,6 +175,8 @@ const setSceneMood: ToolDefinition = {
           adaptWeather: { type: "boolean" },
           horrorReactive: { type: "boolean" },
           spriteRimLight: { type: "boolean" },
+          wallOcclusion: { type: "boolean" },
+          waterReflections: { type: "boolean" },
         },
         additionalProperties: false,
       },

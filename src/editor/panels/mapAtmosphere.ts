@@ -87,11 +87,13 @@ function renderPostFxSection(host: HTMLElement, map: GameMap, refresh: () => voi
       section.append(line);
     }
 
-    const toggles: Array<readonly [key: "preserveEmissive" | "adaptWeather" | "horrorReactive" | "spriteRimLight", label: string, testid: string]> = [
+    const toggles: Array<readonly [key: "preserveEmissive" | "adaptWeather" | "horrorReactive" | "spriteRimLight" | "wallOcclusion" | "waterReflections", label: string, testid: string]> = [
       ["preserveEmissive", "불·촛불·네온 고유 발광색 보존 (Emissive)", "map-postfx-preserve-emissive"],
       ["adaptWeather", "비·폭풍·밤에는 대각선 햇살 자동 끄기", "map-postfx-adapt-weather"],
       ["horrorReactive", "추격 패닉(심장박동·색수차) & 옷장 문틈 시야 자동 연동", "map-postfx-horror-reactive"],
       ["spriteRimLight", "모닥불·조명 근처 주인공 광원 물듦 (림라이트)", "map-postfx-sprite-rim"],
+      ["wallOcclusion", "손전등·조명 벽면 레이캐스트 차단 (Darkwood 모퉁이 그림자)", "map-postfx-wall-occlusion"],
+      ["waterReflections", "수면 윤슬(Shimmer) & 물가 캐릭터 반사 (옥토패스 2풍)", "map-postfx-water-reflections"],
     ];
     for (const [key, label, testid] of toggles) {
       const ck = el("input", { attrs: { type: "checkbox" }, dataset: { testid } }) as HTMLInputElement;

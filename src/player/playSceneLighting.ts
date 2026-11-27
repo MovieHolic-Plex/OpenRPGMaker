@@ -18,6 +18,9 @@ import {
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { LightSource, LightSourceAnchor } from "@/project/types";
 import { store } from "@/project/store";
+import { isPassable } from "@/project/collision";
+import { isWaterTagged } from "@/project/vehicles";
+import { resolvePostFx } from "@/project/postFx";
 import { runtimeEventViewById } from "@/project/runtimeEventState"
 import { reliefTopOverhangPx } from "@/player/playSceneRelief";
 import { normalizeVisualTopOverhangPx } from "@/project/mapVisualBounds";
@@ -84,6 +87,17 @@ export function syncLightingLayer(scene: PlaySceneContext): void {
     return;
   }
   const camera = scene.cameras.main;
+  const project = store.getCurrent();
+  const postFx = resolvePostFx(scene.map?.postFx, project?.system?.postFx);
+  const map = scene.map;
+  const isOpaqueTile = postFx.wallOcclusion && map && project
+    ? (tx: number, ty: number): boolean => {
+      if (tx < 0 || ty < 0 || tx >= map.width || ty >= map.height) return true;
+      if (isPassable(project, map, tx, ty)) return false;
+      // 강·호수·분수는 걸을 수는 없지만 빛이 통과하는 투명 수면이다.
+      return !isWaterTagged(project, map, tx, ty);
+    }
+    : undefined;
   const params = lightingGradientParams(lighting, {
     viewportWidth: camera.width || PLAY_RESOLUTION.width,
     viewportHeight: camera.height || PLAY_RESOLUTION.height,
@@ -96,6 +110,7 @@ export function syncLightingLayer(scene: PlaySceneContext): void {
     mapBounds: mapWorldBounds(scene),
     darkMargin: scene.map?.background?.showInEmptyCells === true,
     bleed: shakeBleedPx(camera),
+    ...(isOpaqueTile ? { isOpaqueTile } : {}),
   });
   const bleed = params.bleed ?? 0;
   const resized = texture.width !== params.width || texture.height !== params.height;
