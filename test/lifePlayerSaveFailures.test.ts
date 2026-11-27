@@ -127,6 +127,9 @@ function click(id: string): void {
   button!.click();
 }
 
+// 불러오기 창의 조작 힌트 줄(#5299, data-testid=player-load-controls)도 같은 oprn-load-message 모양을 쓴다 — 거절 문구만 센다.
+const LOAD_MESSAGE = ".oprn-load-message:not([data-testid='player-load-controls'])";
+
 // Subscribe to the exact failure DOM change before activation, not a settling delay.
 async function observeMessage(selector: string, trigger: () => void, textOnly = true): Promise<void> {
   const previous = main.querySelector(selector)?.textContent;
@@ -134,7 +137,7 @@ async function observeMessage(selector: string, trigger: () => void, textOnly = 
   const state = () => ({
     selectedTitle: main.querySelector(".rm-title-menu-button[aria-selected='true']")?.getAttribute("data-testid"),
     loadWindows: main.querySelectorAll("[data-testid='player-load-window']").length,
-    message: main.querySelector(".oprn-load-message")?.textContent,
+    message: main.querySelector(LOAD_MESSAGE)?.textContent,
     startedSessions: mode.startPlayGame.mock.calls.length,
   });
   let atDeadline: ReturnType<typeof state> | undefined;
@@ -200,7 +203,7 @@ describe("player save/load reconciliation refusal boundaries", () => {
     registry.get("openLoadMenu")!();
     const render = vi.spyOn(loadPanel, "renderPlayerLoadPanel");
     const reads = vi.spyOn(window.localStorage, "getItem");
-    await observeMessage(".oprn-load-message", () => click(`save-slot-${slot}`));
+    await observeMessage(LOAD_MESSAGE, () => click(`save-slot-${slot}`));
     expect(render).toHaveBeenCalledTimes(1);
     expect(render.mock.calls[0][0]).toMatchObject({ fromTitle: false, message: expect.any(String) });
     expect(reads.mock.calls.some(([key]) => key === "oprn:save-slot:1" || key === "oprn:save-slot:auto")).toBe(false);
@@ -217,7 +220,7 @@ describe("player save/load reconciliation refusal boundaries", () => {
     renderPlayer(main, { trackGlobalGame: false });
     await openTitleLoadPanel();
     const render = vi.spyOn(loadPanel, "renderPlayerLoadPanel");
-    await observeMessage(".oprn-load-message", () => click(`save-slot-${slot}`));
+    await observeMessage(LOAD_MESSAGE, () => click(`save-slot-${slot}`));
     expect(render).toHaveBeenCalledTimes(1);
     expect(render.mock.calls[0][0]).toMatchObject({ fromTitle: true, message: expect.any(String) });
     expect(disk()).toEqual(bytes);
