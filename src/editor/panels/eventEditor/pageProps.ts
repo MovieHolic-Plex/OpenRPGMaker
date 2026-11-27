@@ -435,7 +435,7 @@ export function renderClassicPageTabStrip(
   const warningCount = validation?.warningCount ?? 0;
   if (errorCount > 0 || warningCount > 0) {
     const metaChildren: HTMLElement[] = [];
-    if (errorCount > 0) metaChildren.push(el("span", { class: "err-text", text: `오류 ${errorCount}`, dataset: { testid: "evt-pages-meta-errors" } }));
+    if (errorCount > 0) metaChildren.push(el("span", { class: "event-pages-meta-error", text: `오류 ${errorCount}`, dataset: { testid: "evt-pages-meta-errors" } }));
     if (warningCount > 0) metaChildren.push(el("span", { class: "warn-text", text: `경고 ${warningCount}`, dataset: { testid: "evt-pages-meta-warnings" } }));
     pageButtons.append(
       el("div", {

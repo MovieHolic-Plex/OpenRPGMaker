@@ -91,7 +91,7 @@ export function focusEventEditLine(): boolean {
  */
 export function submitEventEditLine(text: string): boolean {
   const trimmed = text.trim();
-  if (!trimmed || !liveInput?.isConnected || !liveRun) return false;
+  if (!trimmed || !liveInput?.isConnected || liveInput.disabled || !liveRun) return false;
   liveInput.value = trimmed;
   liveInput.dispatchEvent(new Event("input", { bubbles: true }));
   liveInput.focus();

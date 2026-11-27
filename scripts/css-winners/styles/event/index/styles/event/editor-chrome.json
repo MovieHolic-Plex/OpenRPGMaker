@@ -43,6 +43,7 @@
   "1da03b232541": "[event] 100%",
   "20432f872e59": "[event] none",
   "20b09004d0a6": "[event] normal",
+  "232af88c16e7": "[event] nowrap",
   "23c9558f55cc": "[event] none",
   "241ed3081ff4": "[event] relative",
   "2612f9fc7423": "[event] 0",
@@ -73,6 +74,7 @@
   "40f11c833935": "[event] 1px",
   "430cdc121f01": "[event] inline-block",
   "43f1c03fe435": "[event] var(--text-3)",
+  "43fed3aa34c7": "[event] ellipsis",
   "442a71e1344d": "[event] normal",
   "44ac65cd6603": "[event] 0",
   "44d9b2eaef09": "[event] var(--bg-inset)",
@@ -246,6 +248,7 @@
   "dad6bb362171": "[event] none",
   "dd12a7c1b2bd": "[event] var(--accent)",
   "dd32d999022b": "[event] 600 16px/1 var(--font-ui)",
+  "dd446281ad3f": "[event] 92px",
   "de659af74417": "[event] var(--text-1)",
   "df055f30ac62": "[event] flex-start",
   "df35da2461ee": "[event] minmax(220px, 300px) 6px minmax(0, 1fr)",
@@ -258,6 +261,7 @@
   "e673f02cf3ce": "[event] var(--text-3)",
   "e7831e6c18e8": "[event] 8px",
   "e843153ae9fd": "[event] 100%",
+  "e8c87ab19d43": "[event] hidden",
   "e943aec6bfc3": "[event] pointer",
   "eb9b28ef6ff2": "[event] none",
   "ec93537b4ca6": "[event] 32px",
@@ -277,9 +281,9 @@
   "f4df923a8cf6": "[event] 1px",
   "f88b3f3ffa94": "[event] center",
   "fa65494213ce": "[event] none",
-  "fa930554f33a": "[event] none",
   "fd3bf44de3b6": "[event] 0 10px",
   "fed414116856": "[event] flex-start",
+  "ff3a82b663c4": "[event] 10.5px",
   "fffcadd34559": "[event] 0 12px 28px rgba(15, 23, 42, 0.18)"
  }
 }

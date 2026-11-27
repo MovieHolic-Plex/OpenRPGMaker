@@ -206,7 +206,7 @@
   margin-left: auto;
 }
 
-.event-editor .pages-meta .err-text {
+.event-editor .pages-meta .event-pages-meta-error {
   color: var(--danger);
   font-weight: 600;
 }

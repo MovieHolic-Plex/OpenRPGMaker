@@ -471,11 +471,10 @@ function renderCommandIssueBadge(path: readonly number[], issues: readonly Event
       ? "warning"
       : "info";
   const summaryText = matches.map((issue) => issue.message).join("\n");
-  const severityWord = severity === "error" ? "오류" : severity === "warning" ? "경고" : "안내";
   return el("span", {
     class: `event-command-issue-badge ${severity}`,
     children: [renderEditorIcon(severity === "info" ? "info" : "warning"), el("span", { text: String(matches.length) })],
-    attrs: { title: summaryText, "aria-label": `${severityWord} ${matches.length}개: ${matches.map((issue) => issue.message).join("; ")}` },
+    attrs: { title: summaryText, "aria-label": `검사 문제 ${matches.length}개` },
     dataset: { testid: `event-command-issue-badge-${path.join("-")}`, severity },
   });
 }

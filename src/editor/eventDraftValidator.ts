@@ -304,12 +304,18 @@ function findInertCallMapEventCallers(project: Project, mapId: MapId, target: Ga
 
 function pageSelfSwitchesConditionedOn(conditions: readonly Condition[]): Set<string> {
   const keys = new Set<string>();
-  const collect = (cond: Condition): void => {
-    if (cond.kind === "selfSwitch" && cond.value) { keys.add(cond.key); return; }
-    if (cond.kind === "all" || cond.kind === "any") { cond.conditions.forEach(collect); return; }
-    if (cond.kind === "not") collect(cond.condition);
+  const collect = (cond: Condition, negated = false): void => {
+    if (cond.kind === "selfSwitch") {
+      if (negated ? !cond.value : cond.value) keys.add(cond.key);
+      return;
+    }
+    if (cond.kind === "all" || cond.kind === "any") {
+      cond.conditions.forEach((child) => collect(child, negated));
+      return;
+    }
+    if (cond.kind === "not") collect(cond.condition, !negated);
   };
-  conditions.forEach(collect);
+  conditions.forEach((cond) => collect(cond, false));
   return keys;
 }
 

@@ -662,7 +662,7 @@
 }
 
 .event-editor-modal-backdrop > .event-editor-modal-window.is-scene-expanded .event-editor.event-editor-command-focused.is-beginner:is(.is-level-easy, .is-level-normal) .event-editor-workbench > .event-editor-inspector-column {
-  background: var(--bg-subtle);
+  background: var(--bg-surface);
   border-left: 1px solid var(--border-subtle);
   display: flex;
   flex-direction: column;
@@ -675,7 +675,7 @@
 /* 조건 요약 1줄 바 & 바닥 밀착 빠른 추가 칩 */
 .event-scene-condition-bar {
   align-items: center;
-  background: var(--bg-subtle);
+  background: var(--bg-surface);
   border-radius: 8px;
   border: 1px solid var(--border-subtle);
   display: flex;
@@ -753,15 +753,15 @@
 }
 
 @media (max-width: 820px) {
-  .event-editor-modal-window.is-bubble > .event-editor-bubble-tail {
+  .event-editor-modal-backdrop > .event-editor-modal-window.is-bubble > .event-editor-bubble-tail {
     display: none;
   }
 
-  .event-editor-modal-window.is-scene-expanded .event-editor.event-editor-command-focused.is-beginner:is(.is-level-easy, .is-level-normal) .event-editor-workbench {
+  .event-editor-modal-backdrop > .event-editor-modal-window.is-scene-expanded .event-editor.event-editor-command-focused.is-beginner:is(.is-level-easy, .is-level-normal) .event-editor-workbench {
     grid-template-columns: minmax(0, 1fr);
   }
 
-  .event-editor-modal-window.is-scene-expanded .event-editor.event-editor-command-focused.is-beginner:is(.is-level-easy, .is-level-normal) .event-editor-workbench > .event-editor-inspector-column {
+  .event-editor-modal-backdrop > .event-editor-modal-window.is-scene-expanded .event-editor.event-editor-command-focused.is-beginner:is(.is-level-easy, .is-level-normal) .event-editor-workbench > .event-editor-inspector-column {
     display: none;
   }
 }
