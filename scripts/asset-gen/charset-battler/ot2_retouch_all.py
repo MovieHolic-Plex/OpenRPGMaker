@@ -92,11 +92,19 @@ C_CORK  = (186, 122, 68, 255)
 C_BLL   = (206, 224, 236, 255)
 C_BLM   = (138, 160, 180, 255)
 
-def load_orig_git(cid, pose):
-    """Always read clean HEAD baseline so rerunning this script is 100% idempotent!"""
+# Pre-retouch immutable baseline commit so rerunning stays 100% repeatable after commits.
+DEFAULT_BASE_REV = "7a24d7159e18d51ecd258cc628c5314812ba3b47"
+STAMPABLE_WEAPONS = (
+    "sword", "greatsword", "dagger", "staff", "mace", "spear",
+    "axe", "bow", "katana", "kunai", "lute", "druid_staff", "witch_staff",
+)
+NO_STAMP_KINDS = ("bow", "gun", "fist", "fan", "lute")
+
+def load_orig_git(cid, pose, base_rev=DEFAULT_BASE_REV):
+    """Read from the fixed pre-retouch git revision so regeneration is always idempotent."""
     try:
         b = subprocess.check_output(
-            ["git", "show", f"HEAD:tiledata/charset-battlers/{cid}/{pose}.png"],
+            ["git", "show", f"{base_rev}:tiledata/charset-battlers/{cid}/{pose}.png"],
             cwd=str(ROOT), stderr=subprocess.DEVNULL
         )
         return Image.open(io.BytesIO(b)).convert("RGBA")
@@ -133,10 +141,11 @@ def draw_sparkle(im, cx, cy, c_core, c_arm, big=False):
             px_set(im, cx + dx, cy + dy, c_arm)
 
 def safe_stamp_weapon(layer, kind, angle, hand):
-    """Stamp genuine hand-pixelled equipment from weapons.py with safe fitting."""
-    wk = kind if kind in ("sword","greatsword","dagger","staff","mace","spear","axe","bow","katana","kunai","lute","druid_staff","witch_staff") else "sword"
-    fh = fitting_hand(wk, angle, hand)
-    stamp_weapon(layer, wk, angle, fh)
+    """Stamp genuine hand-pixelled equipment from weapons.py with safe fitting (no silent fallback)."""
+    if kind not in STAMPABLE_WEAPONS:
+        raise ValueError(f"Unsupported stamp weapon kind: {kind!r}")
+    fh = fitting_hand(kind, angle, hand)
+    stamp_weapon(layer, kind, angle, fh)
 
 def sample_char_colors(idle_im, front_im):
     """Sample this character's OWN dominant sleeve/tunic colors and skin tone!"""
@@ -294,15 +303,15 @@ def recolor_layer_aura(layer, aura):
             elif lum < 210: px[x, y] = C_L
             else: px[x, y] = C_W
 
-def retouch_character(cid, dry_run=False):
+def retouch_character(cid, dry_run=False, base_rev=DEFAULT_BASE_REV):
     is_people = cid.startswith("people")
     is_hero6 = cid in HEROES6
     kind, theme = ROLE_META.get(cid, ("sword", "cyan"))
     aura = AURA[theme]
     C_W, C_L, C_M, C_D = aura
 
-    # Load clean git HEAD poses
-    orig = {p[0]: load_orig_git(cid, p[0]) for p in POSES}
+    # Load clean pre-retouch baseline poses
+    orig = {p[0]: load_orig_git(cid, p[0], base_rev=base_rev) for p in POSES}
     t_dark, t_mid, t_light, s_mid, s_light = sample_char_colors(orig["idle"], orig["front"])
     out = {}
 
@@ -316,8 +325,8 @@ def retouch_character(cid, dry_run=False):
             im = Image.new("RGBA", (48, 48), (0, 0, 0, 0))
             legs = orig["attack_windup"].crop((12, 38, 37, 45))
             im.alpha_composite(legs, (11, 38))
-            upper = idle_cur.crop((0, 12, 46, 39))
-            im.alpha_composite(upper, (0, 12))
+            upper = idle_cur.crop((0, 0, 46, 39))
+            im.alpha_composite(upper, (0, 0))
             if not validate(cid, "idle", im):
                 idle_cur = im
                 out["idle"] = im
@@ -327,8 +336,8 @@ def retouch_character(cid, dry_run=False):
         src_w = orig[wk_name]
         im = Image.new("RGBA", (48, 48), (0, 0, 0, 0))
         im.alpha_composite(src_w.crop((8, 38, 38, 45)), (8 + stride, 38))
-        # Lean upper body 1px forward-left & 1px lower into the sprint!
-        im.alpha_composite(src_w.crop((2, 12, 46, 39)), (1, 13))
+        # Lean full upper body (from y=0 so tall hats/plumes are never clipped) 1px forward-left & 1px down!
+        im.alpha_composite(src_w.crop((2, 0, 46, 39)), (1, 1))
         if not validate(cid, wk_name, im):
             out[wk_name] = im
 
@@ -336,9 +345,9 @@ def retouch_character(cid, dry_run=False):
     wu = orig["attack_windup"]
     im_wu = Image.new("RGBA", (48, 48), (0, 0, 0, 0))
     im_wu.alpha_composite(wu.crop((8, 39, 40, 45)), (8, 39))
-    # Shift upper body +1px right & +1px down for real back-weight coil (clamped cleanly!)
-    ub = wu.crop((0, 8, 46, 40))
-    im_wu.alpha_composite(ub, (1, 9))
+    # Shift full upper body (from y=0) +1px right & +1px down for real back-weight coil!
+    ub = wu.crop((0, 0, 46, 40))
+    im_wu.alpha_composite(ub, (1, 1))
     tip = detect_top_right_tip(im_wu)
     if tip and tip[0] < 46 and tip[1] > 2:
         draw_sparkle(im_wu, min(46, tip[0] + 1), max(2, tip[1] - 1), C_SPARK_W, C_SPARK_Y, big=False)
@@ -443,16 +452,16 @@ def retouch_character(cid, dry_run=False):
         # Subtle fading wind wisp on left showing full 270-deg whip-through
         for x, y, c in [(3, 35, C_D), (4, 36, C_M), (5, 37, C_L), (6, 37, C_M), (7, 37, C_D), (5, 39, C_D), (6, 39, C_M)]:
             px_set(af, x, y, c)
-    # Zanshin 1px lower settle on upper body (keeps legs grounded on y=44!)
+    # Zanshin 1px lower settle on full upper body (from y=0 so tall hats/weapons are never clipped; keeps legs on y=44!)
     af_z = Image.new("RGBA", (48, 48), (0, 0, 0, 0))
     af_z.alpha_composite(af.crop((0, 38, 48, 45)), (0, 38))
-    af_z.alpha_composite(af.crop((0, 16, 48, 39)), (0, 17))
+    af_z.alpha_composite(af.crop((0, 0, 48, 39)), (0, 1))
     if not validate(cid, "attack_follow", af_z):
         out["attack_follow"] = af_z
 
     # ── 7) DEFEND & GUARD_HIT: Vertical guard weapon + braced parry sparks! ──
     def_im = orig["defend"].copy()
-    if not is_people and not is_hero6 and kind not in ("bow", "gun", "fist", "lute", "fan"):
+    if not is_people and not is_hero6 and kind not in NO_STAMP_KINDS:
         # Build vertical guard from clean idle (keeping any shield on right untouched!)
         base_def = idle_cur.copy()
         erase_region(base_def, 0, 18, 17, 37)
@@ -480,44 +489,55 @@ def retouch_character(cid, dry_run=False):
 
     # ── 8) CAST_CHARGE / CAST_RAISE / CAST_RELEASE (fix Actor1~4 rubber-hose noodle arms!) ──
     if not is_people and not is_hero6:
-        # Base without left weapon
-        clean_idle = idle_cur.copy()
-        if kind not in ("bow", "gun", "fist"):
-            erase_region(clean_idle, 0, 18, 17, 37)
-        # cast_charge: upright glowing own weapon in front + mana orb
-        cc = clean_idle.copy()
-        if kind not in ("bow", "gun", "fist"):
-            sw_c = Image.new("RGBA", (48, 48), (0, 0, 0, 0))
-            safe_stamp_weapon(sw_c, kind, 90, (16, 35))
-            recolor_layer_aura(sw_c, aura)
-            erase_region(sw_c, 0, 44, 48, 48)
-            cc.alpha_composite(sw_c)
-        draw_sparkle(cc, 15, 28, C_W, C_L, big=True)
-        for x, y, c in [(12, 31, C_M), (12, 25, C_L), (19, 24, C_M), (11, 34, C_D)]:
-            px_set(cc, x, y, c)
-        if not validate(cid, "cast_charge", cc):
-            out["cast_charge"] = cc
+        if kind == "fan":
+            # Preserve dancer's fan poses (weapons.py has no fan stamp); add magic sparkles only.
+            cc = orig["cast_charge"].copy()
+            draw_sparkle(cc, 15, 28, C_W, C_L, big=True)
+            if not validate(cid, "cast_charge", cc):
+                out["cast_charge"] = cc
+            cr = orig["cast_raise"].copy()
+            draw_sparkle(cr, 15, 13, C_W, C_L, big=True)
+            if not validate(cid, "cast_raise", cr):
+                out["cast_raise"] = cr
+        else:
+            # Base without left weapon
+            clean_idle = idle_cur.copy()
+            if kind not in NO_STAMP_KINDS:
+                erase_region(clean_idle, 0, 18, 17, 37)
+            # cast_charge: upright glowing own weapon in front + mana orb
+            cc = clean_idle.copy()
+            if kind not in NO_STAMP_KINDS:
+                sw_c = Image.new("RGBA", (48, 48), (0, 0, 0, 0))
+                safe_stamp_weapon(sw_c, kind, 90, (16, 35))
+                recolor_layer_aura(sw_c, aura)
+                erase_region(sw_c, 0, 44, 48, 48)
+                cc.alpha_composite(sw_c)
+            draw_sparkle(cc, 15, 28, C_W, C_L, big=True)
+            for x, y, c in [(12, 31, C_M), (12, 25, C_L), (19, 24, C_M), (11, 34, C_D)]:
+                px_set(cc, x, y, c)
+            if not validate(cid, "cast_charge", cc):
+                out["cast_charge"] = cc
 
-        # cast_raise: clean own-palette raised forearm + glowing weapon overhead (NO head noodle!)
-        cr = clean_idle.copy()
-        arm = Image.new("RGBA", (48, 48), (0, 0, 0, 0))
-        for x, y, c in [
-            (17, 33, t_mid), (18, 33, t_dark), (16, 32, t_mid), (17, 32, t_light),
-            (15, 31, t_mid), (16, 31, t_light), (15, 30, s_mid), (16, 30, s_light),
-        ]:
-            px_set(arm, x, y, c)
-        if kind not in ("bow", "gun", "fist"):
-            sw_r = Image.new("RGBA", (48, 48), (0, 0, 0, 0))
-            safe_stamp_weapon(sw_r, kind, 90, (15, 28))
-            recolor_layer_aura(sw_r, aura)
-            erase_region(sw_r, 0, 44, 48, 48)
-            cr.alpha_composite(sw_r)
-        cr.alpha_composite(add_outline(arm, C_WOUT))
-        draw_sparkle(cr, 15, 13, C_W, C_L, big=True)
-        for x, y, c in [(11, 19, C_L), (19, 17, C_L), (10, 25, C_M), (20, 22, C_M), (13, 38, C_M), (31, 38, C_M)]:
-            px_set(cr, x, y, c)
-        if not validate(cid, "cast_raise", cr):
-            out["cast_raise"] = cr
+            # cast_raise: clean own-palette raised forearm + glowing weapon overhead (NO head noodle!)
+            cr = clean_idle.copy()
+            arm = Image.new("RGBA", (48, 48), (0, 0, 0, 0))
+            for x, y, c in [
+                (17, 33, t_mid), (18, 33, t_dark), (16, 32, t_mid), (17, 32, t_light),
+                (15, 31, t_mid), (16, 31, t_light), (15, 30, s_mid), (16, 30, s_light),
+            ]:
+                px_set(arm, x, y, c)
+            if kind not in NO_STAMP_KINDS:
+                sw_r = Image.new("RGBA", (48, 48), (0, 0, 0, 0))
+                safe_stamp_weapon(sw_r, kind, 90, (15, 28))
+                recolor_layer_aura(sw_r, aura)
+                erase_region(sw_r, 0, 44, 48, 48)
+                cr.alpha_composite(sw_r)
+            cr.alpha_composite(add_outline(arm, C_WOUT))
+            draw_sparkle(cr, 15, 13, C_W, C_L, big=True)
+            for x, y, c in [(11, 19, C_L), (19, 17, C_L), (10, 25, C_M), (20, 22, C_M), (13, 38, C_M), (31, 38, C_M)]:
+                px_set(cr, x, y, c)
+            if not validate(cid, "cast_raise", cr):
+                out["cast_raise"] = cr
 
         # cast_release: own attack lunge body + blazing magic release flare from weapon tip!
         crel = orig["attack"].copy()
@@ -583,7 +603,7 @@ def retouch_character(cid, dry_run=False):
             (31, 36, t_dark), (32, 36, s_mid), (32, 35, s_light),
         ]:
             px_set(arm, x, y, c)
-        if kind not in ("bow", "gun", "fist"):
+        if kind not in NO_STAMP_KINDS:
             sw_f = Image.new("RGBA", (48, 48), (0, 0, 0, 0))
             safe_stamp_weapon(sw_f, kind, 135, (33, 35))
             erase_region(sw_f, 0, 44, 48, 48)
@@ -612,7 +632,7 @@ def retouch_character(cid, dry_run=False):
             (31, 30, s_mid), (32, 30, s_light), (31, 29, s_light), (32, 29, s_mid),
         ]:
             px_set(r_arm, x, y, c)
-        if kind not in ("bow", "gun", "fist"):
+        if kind not in NO_STAMP_KINDS:
             sw_v = Image.new("RGBA", (48, 48), (0, 0, 0, 0))
             safe_stamp_weapon(sw_v, kind, 90, (31, 28))
             vbase.alpha_composite(sw_v)
@@ -648,16 +668,28 @@ def retouch_character(cid, dry_run=False):
     return list(out.keys())
 
 def main():
-    args = [a for a in sys.argv[1:] if not a.startswith("--")]
-    dry = "--dry-run" in sys.argv
+    raw = sys.argv[1:]
+    dry = False
+    base_rev = DEFAULT_BASE_REV
+    args = []
+    i = 0
+    while i < len(raw):
+        if raw[i] == "--dry-run":
+            dry = True
+        elif raw[i] == "--base-rev" and i + 1 < len(raw):
+            base_rev = raw[i + 1]
+            i += 1
+        elif not raw[i].startswith("--"):
+            args.append(raw[i])
+        i += 1
     targets = args or sorted(d.name for d in SRC.iterdir() if d.is_dir() and d.name not in SKIP_ALL)
     total_poses = 0
     for cid in targets:
         if cid in SKIP_ALL: continue
-        updated = retouch_character(cid, dry_run=dry)
+        updated = retouch_character(cid, dry_run=dry, base_rev=base_rev)
         total_poses += len(updated)
         print(f"{cid:18s}: {len(updated):2d} poses ({', '.join(updated)})")
-    print(f"\nDone! Retouched {len(targets)} characters, {total_poses} pose files total (dry_run={dry}).")
+    print(f"\nDone! Retouched {len(targets)} characters, {total_poses} pose files total (dry_run={dry}, base_rev={base_rev[:10]}).")
 
 if __name__ == "__main__":
     main()
