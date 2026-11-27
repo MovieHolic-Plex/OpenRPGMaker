@@ -7,6 +7,9 @@
   color: var(--text-1); font: 400 13px/1.45 var(--font-ui);
 }
 .editor-layout.is-assistant-open > .right-inspector { display: none; }
+/* Phase 1 풀-블리드 캔버스: 기본 맵 정보는 플로팅 미니맵 ⚙ 맵 설정으로 옮기고,
+   오른쪽 300px 열은 이벤트 선택 시에만 노출한다(Phase 3에서 플로팅 AI×인스펙터로 흡수). */
+.editor-layout > .right-inspector:not([data-inspector-kind="event"]) { display: none; }
 @media (max-width: 1199.98px) {
   .editor-layout > .right-inspector { display: none; }
 }

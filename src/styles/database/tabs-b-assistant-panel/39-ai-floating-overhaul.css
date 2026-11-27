@@ -1,0 +1,400 @@
+/* ── Phase 3: AI 조수 플로팅 글래스 카드 리뉴얼 × 선택 컨텍스트 통합 ──
+   - 캔버스를 밀어내지 않는 우하단 플로팅 글래스 카드(B × C 하이브리드)
+   - 기존 오른쪽 인스펙터 열은 완전히 숨기고, 조수 카드 상단 컨텍스트 스트립으로 통합
+   - 레일/컴포저의 불필요한 잡음(쿼터·맥락 게이지·토큰·모델·팀·스탬프 칩)을 공격적으로 정리
+   - 색은 tokens.css 변수만 사용(hex 0, !important 0). */
+
+/* 1. 오른쪽 인스펙터 열 완전 통합: 조수 컨텍스트 스트립 + 유닛 팔레트가 대체한다. */
+.editor-layout > .right-inspector,
+.editor-layout > .right-inspector[data-inspector-kind="event"] {
+  display: none;
+}
+
+/* 2. 조수 도크는 캔버스 폭을 밀어내지 않는 0px 오버레이 앵커로 유지한다. */
+.ai-right-dock,
+.ai-right-dock:not(.is-collapsed) {
+  flex: 0 0 0;
+  width: 0;
+  min-width: 0;
+  border-left: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+@media (min-width: 1000px) {
+  .ai-right-dock:not(.is-collapsed) {
+    flex: 0 0 0;
+    width: 0;
+    min-width: 0;
+  }
+}
+
+.ai-right-dock.is-collapsed {
+  flex: 0 0 0;
+  width: 0;
+  min-width: 0;
+  border-left: 0;
+  overflow: hidden;
+}
+
+.ai-right-dock .ai-chat-float-host {
+  pointer-events: none;
+}
+
+/* 3. 열린 조수 패널 — 우하단 플로팅 글래스 카드 */
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio):not(.is-collapsed) {
+  position: fixed;
+  top: auto;
+  left: auto;
+  right: 14px;
+  bottom: 22px;
+  width: min(392px, calc(100vw - 28px));
+  height: min(636px, calc(100vh - 96px));
+  min-width: 0;
+  max-width: calc(100vw - 28px);
+  max-height: calc(100vh - 84px);
+  border-radius: 14px;
+  border: 1px solid var(--border-default);
+  background: color-mix(in srgb, var(--bg-overlay) 95%, transparent);
+  backdrop-filter: blur(22px) saturate(1.08);
+  box-shadow: var(--shadow-pop);
+  overflow: hidden;
+  pointer-events: auto;
+  z-index: 44;
+}
+
+@media (max-width: 960px) {
+  .ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio):not(.is-collapsed) {
+    width: min(360px, calc(100vw - 24px));
+    height: min(580px, calc(100vh - 88px));
+    right: 12px;
+    bottom: 16px;
+  }
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio):not(.is-collapsed) > .ai-deck {
+  background: transparent;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* 4. 상단 레일 — 군더더기 제거, 깔끔한 「● 조수」 + 3개 핵심 버튼(+ 새 대화 · ⋯ · ✕) */
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-deck-rail {
+  padding: 10px 12px;
+  gap: 8px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  min-height: 42px;
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-deck-rail-who {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-deck-rail-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.01em;
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-deck-rail-actions {
+  margin-left: auto;
+  gap: 3px;
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-deck-rail-actions button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: var(--radius-s);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-2);
+  background: transparent;
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-deck-rail-actions button:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+/* 맵 이름은 아래 컨텍스트 스트립이 더 풍부하게 보여주므로 레일 중복 텍스트·보조 트리거는 숨긴다 */
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-deck-rail-ctx,
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-deck-rail-state,
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-quota-chip,
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-context-meter,
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-deck-rail-actions .ai-workspace-log-trigger,
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-deck-rail-actions .ai-suggestion-peek-header,
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-deck-rail-actions .ai-deck-wide-open,
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-chat-resize-handle {
+  display: none;
+}
+
+/* 5. 선택 컨텍스트 통합 스트립 (레일 바로 아래) */
+.ai-sel-context-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: color-mix(in srgb, var(--bg-inset) 86%, transparent);
+  border-bottom: 1px solid var(--border-subtle);
+  flex: 0 0 auto;
+  min-height: 46px;
+}
+
+.ai-sel-bar {
+  width: 3px;
+  height: 28px;
+  border-radius: 2px;
+  flex: none;
+  background: var(--accent);
+}
+
+.ai-sel-bar.is-npc { background: var(--warning); }
+.ai-sel-bar.is-enemy { background: var(--danger); }
+.ai-sel-bar.is-portal { background: var(--accent); }
+.ai-sel-bar.is-map { background: var(--success); }
+
+.ai-sel-thumb {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-s);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex: none;
+}
+
+.ai-sel-thumb.is-fallback {
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.ai-sel-meta {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ai-sel-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ai-sel-sub {
+  font-size: 10.5px;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ai-sel-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+
+.ai-sel-btn {
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+  color: var(--text-2);
+  font: 600 11px/1 var(--font-ui);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.ai-sel-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+  border-color: var(--border-default);
+}
+
+.ai-sel-btn.is-accent {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.ai-sel-btn.is-accent:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.ai-sel-btn:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* 6. 대화 본문 & 스타터 화면 — 밀도·가독성 정리 */
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-workspace-starter {
+  padding: 18px 14px 14px;
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-workspace-starter h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-workspace-starter p {
+  font-size: 12px;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-workspace-starter button {
+  padding: 8px 11px;
+  margin-top: 6px;
+  font-size: 12px;
+  border-radius: var(--radius-m);
+  background: var(--bg-surface);
+  border-color: var(--border-subtle);
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-chat-log {
+  gap: 14px;
+  padding: 12px 14px 18px;
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-bubble {
+  font-size: 12.5px;
+  line-height: 1.65;
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-bubble.user {
+  margin-left: 28px;
+  padding: 8px 12px;
+  border-radius: 12px 12px 4px 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+}
+
+/* 7. 하단 컴포저 — 지저분한 메타/칩을 걷어내고 Cursor/Linear 스타일로 정제 */
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-deck > .ai-command-bar {
+  padding: 10px 12px 12px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-subtle);
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-composer {
+  border: 1px solid var(--border-default);
+  border-radius: 11px;
+  background: var(--bg-inset);
+  padding: 8px 10px 7px;
+  transition: border-color 140ms ease;
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-composer:focus-within {
+  border-color: var(--accent);
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-assistant-input {
+  min-height: 38px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--text-1);
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-composer-spend,
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-composer-model,
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-composer-stamp-toggle,
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-composer-team-toggle,
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-composer-effort-select,
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-conversation-outcome {
+  display: none;
+}
+
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-composer-actions {
+  margin-top: 6px;
+  padding-top: 4px;
+  border-top: 1px solid color-mix(in srgb, var(--border-subtle) 65%, transparent);
+}
+
+/* AI 미연결 잠금 막도 플로팅 카드 톤에 맞춘다 */
+.ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio) .ai-lock-scrim {
+  background: color-mix(in srgb, var(--bg-overlay) 96%, transparent);
+  padding: 20px 18px;
+}
+
+/* 8. 우하단 플로팅 「✦ 조수」 퀵 오픈 알약 (조수가 접혀 있을 때 표시) */
+.floating-ai-pill {
+  position: absolute;
+  right: 14px;
+  bottom: 34px;
+  z-index: 36;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 13px;
+  border-radius: var(--radius-m);
+  border: 1px solid var(--border-default);
+  background: color-mix(in srgb, var(--bg-overlay) 95%, transparent);
+  backdrop-filter: blur(18px) saturate(1.06);
+  box-shadow: var(--shadow-pop);
+  color: var(--text-1);
+  font: 600 12.5px/1 var(--font-ui);
+  cursor: pointer;
+  pointer-events: auto;
+  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+}
+
+.floating-ai-pill[hidden] {
+  display: none;
+}
+
+.floating-ai-pill:hover {
+  border-color: var(--accent-border);
+  background: var(--bg-raised);
+  transform: translateY(-1px);
+}
+
+.floating-ai-pill:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.fap-sparkle {
+  color: var(--accent);
+  font-size: 13px;
+  line-height: 1;
+}
+
+.fap-badge {
+  max-width: 120px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--accent-muted);
+  border: 1px solid var(--accent-border);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fap-badge[hidden] {
+  display: none;
+}

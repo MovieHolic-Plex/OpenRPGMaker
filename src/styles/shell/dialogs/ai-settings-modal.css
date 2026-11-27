@@ -453,6 +453,9 @@
 .ai-quick-connect-kind[aria-checked="true"] {
   background: var(--shell-ai-settings-segment-selected);
   box-shadow: var(--shadow-control);
+  color: var(--text-1);
+  font-weight: 700;
+  border: 1px solid var(--border-default);
 }
 
 .ai-settings-caption {

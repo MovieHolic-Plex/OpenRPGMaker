@@ -1,0 +1,459 @@
+/* ── Phase 4: M키 월드 보드 & 캔버스 문/포털 원클릭 워프 배지 ──
+   색은 tokens.css 변수만 사용(hex 0, !important 0). */
+
+/* 1. 캔버스 위 원클릭 포털 워프 배지 */
+.canvas-portal-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 26;
+  pointer-events: none;
+  overflow: hidden;
+  font-family: var(--font-ui);
+}
+
+.cpb-badge {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 24px;
+  max-width: 164px;
+  padding: 0 9px;
+  border-radius: 999px;
+  border: 1px solid var(--accent-border);
+  background: color-mix(in srgb, var(--bg-overlay) 92%, transparent);
+  backdrop-filter: blur(12px) saturate(1.06);
+  box-shadow: var(--shadow-pop);
+  color: var(--text-1);
+  font: 600 11px/1 var(--font-ui);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 120ms ease, background 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+
+.cpb-badge:hover {
+  transform: translate(-50%, calc(-100% - 2px));
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.cpb-badge:hover .cpb-arrow {
+  color: var(--on-accent);
+}
+
+.cpb-badge:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.cpb-arrow {
+  color: var(--accent);
+  font-size: 12px;
+  line-height: 1;
+  flex: none;
+}
+
+.cpb-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* 2. M키 월드 보드 모달 */
+.wb-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: color-mix(in srgb, var(--text-1) 36%, transparent);
+  backdrop-filter: blur(6px);
+  font-family: var(--font-ui);
+}
+
+.wb-window {
+  width: min(1140px, calc(100vw - 48px));
+  height: min(740px, calc(100vh - 56px));
+  display: flex;
+  flex-direction: column;
+  border-radius: 14px;
+  border: 1px solid var(--border-default);
+  background: color-mix(in srgb, var(--bg-overlay) 97%, transparent);
+  box-shadow: var(--shadow-pop);
+  color: var(--text-1);
+  overflow: hidden;
+}
+
+.wb-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  flex: none;
+}
+
+.wb-head-left,
+.wb-head-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.wb-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.wb-kbd {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-inset);
+  color: var(--text-3);
+}
+
+.wb-summary {
+  font-size: 11.5px;
+  color: var(--text-2);
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  white-space: nowrap;
+}
+
+.wb-search {
+  width: 196px;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  background: var(--bg-inset);
+  color: var(--text-1);
+  font: 400 12px/1 var(--font-ui);
+}
+
+.wb-search::placeholder {
+  color: var(--text-placeholder);
+}
+
+.wb-zoom-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border-radius: var(--radius-s);
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+}
+
+.wb-zoom-btn {
+  height: 24px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-2);
+  font: 600 11px/1 var(--font-mono);
+  cursor: pointer;
+}
+
+.wb-zoom-btn.is-active {
+  background: var(--bg-raised);
+  color: var(--text-1);
+}
+
+.wb-primary-btn {
+  height: 30px;
+  padding: 0 11px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-s);
+  background: var(--accent);
+  color: var(--on-accent);
+  font: 600 12px/1 var(--font-ui);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.wb-primary-btn:hover {
+  background: var(--accent-hover);
+}
+
+.wb-close-btn {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+  color: var(--text-2);
+  font: 600 13px/1 var(--font-ui);
+  cursor: pointer;
+}
+
+.wb-close-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.wb-stage {
+  position: relative;
+  flex: 1 1 auto;
+  overflow: auto;
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--border-default) 65%, transparent) 1px, transparent 1px) 0 0 / 20px 20px,
+    var(--bg-canvas);
+}
+
+.wb-board-inner {
+  position: relative;
+  transform-origin: top left;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.wb-svg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.wb-edge {
+  fill: none;
+  stroke: var(--border-default);
+  stroke-width: 2;
+  stroke-dasharray: 5 4;
+}
+
+.wb-edge.is-accent {
+  stroke: var(--accent);
+  stroke-width: 2.25;
+  stroke-dasharray: none;
+}
+
+.wb-edge.is-hot {
+  stroke-width: 3;
+}
+
+.wb-arrow-fill.is-accent {
+  fill: var(--accent);
+}
+
+.wb-arrow-fill.is-muted {
+  fill: var(--text-3);
+}
+
+.wb-edge-pill {
+  fill: var(--bg-raised);
+  stroke: var(--border-default);
+  stroke-width: 1;
+}
+
+.wb-edge-pill.is-accent {
+  fill: var(--bg-overlay);
+  stroke: var(--accent-border);
+}
+
+.wb-edge-text {
+  fill: var(--text-2);
+  font: 700 10px/1 var(--font-mono);
+}
+
+.wb-edge-text.is-accent {
+  fill: var(--accent);
+}
+
+.wb-card {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-m);
+  border: 1px solid var(--border-default);
+  background: var(--bg-raised);
+  box-shadow: var(--shadow-pop);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 140ms ease, border-color 140ms ease, opacity 140ms ease;
+}
+
+.wb-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.wb-card.is-current {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-muted), var(--shadow-pop);
+}
+
+.wb-card.is-dimmed {
+  opacity: 0.3;
+}
+
+.wb-card:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.wb-card-thumb {
+  position: relative;
+  height: 118px;
+  background: var(--bg-canvas);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.wb-card-thumb canvas,
+.wb-card-thumb img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  display: block;
+}
+
+.wb-card-badges {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  display: flex;
+  gap: 4px;
+}
+
+.wb-pill {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: var(--bg-overlay);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-1);
+}
+
+.wb-pill.is-start {
+  background: color-mix(in srgb, var(--bg-overlay) 92%, var(--success));
+  border-color: color-mix(in srgb, var(--success) 48%, transparent);
+  color: var(--success);
+}
+
+.wb-pill.is-current {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.wb-pill.is-warn {
+  background: color-mix(in srgb, var(--warning) 18%, var(--bg-overlay));
+  border-color: color-mix(in srgb, var(--warning) 42%, transparent);
+  color: var(--warning);
+}
+
+.wb-card-settings {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: color-mix(in srgb, var(--bg-overlay) 90%, transparent);
+  color: var(--text-2);
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.wb-card:hover .wb-card-settings,
+.wb-card:focus-within .wb-card-settings {
+  opacity: 1;
+}
+
+.wb-card-settings:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.wb-card-body {
+  padding: 9px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.wb-card-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wb-card-meta {
+  font-size: 10.5px;
+  color: var(--text-3);
+}
+
+.wb-card-warps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.wb-warp-chip {
+  height: 20px;
+  max-width: 100%;
+  padding: 0 6px;
+  border: 1px solid var(--accent-border);
+  border-radius: 999px;
+  background: var(--accent-muted);
+  color: var(--accent);
+  font: 600 10px/1 var(--font-ui);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.wb-warp-chip:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.wb-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 16px;
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-subtle);
+  font-size: 11px;
+  color: var(--text-3);
+  flex: none;
+}
+
+.wb-foot-hint {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+}

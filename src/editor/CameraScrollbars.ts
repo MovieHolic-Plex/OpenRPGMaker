@@ -1,5 +1,6 @@
 import { el } from "@/util/dom";
 import { CAMERA_INSPECTION_PADDING, type CanvasRect } from "@/editor/cameraFocusViewport";
+import { publishEditorCameraViewport } from "@/editor/editorCameraViewport";
 
 type Area = { readonly canvas: CanvasRect; readonly unoccluded: CanvasRect; readonly worldView: CanvasRect; readonly zoom: number };
 
@@ -39,6 +40,19 @@ export class CameraScrollbars {
     if (projection === this.projection) return;
     this.projection = projection;
     this.zoom = zoom;
+    publishEditorCameraViewport({
+      mapWidthPx: mapWidth,
+      mapHeightPx: mapHeight,
+      viewX: worldView.x + (view.x - canvas.x) / zoom,
+      viewY: worldView.y + (view.y - canvas.y) / zoom,
+      viewWidthPx: view.width / zoom,
+      viewHeightPx: view.height / zoom,
+      zoom,
+      worldViewX: worldView.x,
+      worldViewY: worldView.y,
+      canvasX: canvas.x,
+      canvasY: canvas.y,
+    });
     for (const entry of this.axes) {
       const horizontal = entry.axis === "x";
       const span = horizontal ? view.width : view.height;
