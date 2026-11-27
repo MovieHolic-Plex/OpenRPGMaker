@@ -332,6 +332,20 @@ const RETIRED_PIXEL_ENEMY_ALIASES: Readonly<Record<string, string>> = {
   "generated-enemy-ontology-8da61312": "generated-enemy-eye-floating",
 };
 
+/**
+ * 2026-11-26 폐기·삭제한 구형 3×3 번들 적 리소스 id 목록(`generated-enemy-*`).
+ * 피커·카탈로그에는 노출하지 않지만 기본 DB(generatedEnemyRecords)와 기존 저장본이
+ * 참조 검증·역직렬화를 통과하고 현행 5×4 번들로 해석되도록 유지한다.
+ */
+export const RETIRED_PIXEL_ENEMY_RESOURCE_IDS: readonly string[] = Object.keys(RETIRED_PIXEL_ENEMY_ALIASES)
+  .filter((id) => id.startsWith("generated-enemy-"));
+
+const RETIRED_PIXEL_ENEMY_RESOURCE_ID_SET: ReadonlySet<string> = new Set(RETIRED_PIXEL_ENEMY_RESOURCE_IDS);
+
+export function isRetiredPixelEnemyResourceId(id: string): boolean {
+  return RETIRED_PIXEL_ENEMY_RESOURCE_ID_SET.has(id);
+}
+
 /** 번들(public) 시트만. 웹 내보내기처럼 public 파일을 싣는 쪽이 쓴다. */
 export function bundledPixelEnemySheet(resourceId: string | undefined): PixelEnemySheet | undefined {
   if (!resourceId) return undefined;

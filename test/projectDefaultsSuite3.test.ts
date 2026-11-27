@@ -632,7 +632,7 @@ describe("blankProject", () => {
 
       it("upsert_enemy 가 collapseEffect 를 받아 저장하고 dissolve 로 되돌린다", () => {
         const ctx = { project: createBlankProject() };
-        const set = runTool(ctx, "upsert_enemy", { enemy: { id: "enemy_boss_fx", name: "마왕", collapseEffect: "bossSink" } });
+        const set = runTool(ctx, "upsert_enemy", { enemy: { id: "enemy_boss_fx", name: "마왕", monsterResourceId: "generated-enemy-wraith-dark", collapseEffect: "bossSink" } });
         expect(set.ok, JSON.stringify(set.issues)).toBe(true);
         expect(ctx.project.database.enemies.find((enemy) => enemy.id === "enemy_boss_fx")?.collapseEffect).toBe("bossSink");
         runTool(ctx, "upsert_enemy", { enemy: { id: "enemy_boss_fx", name: "마왕", collapseEffect: "dissolve" } });

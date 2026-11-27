@@ -186,6 +186,8 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "generated-item-potion-red-icon": null,
   "generated-item-potion-red-image": null,
   "generated-troop-preview-slime": PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-slime-green"],
+  // 현행 5×4 도트 몬스터 정식 번들 44종이 카탈로그 맨 앞에 서도록 sparkit-fire 앞에 둔다.
+  ...PIXEL_ENEMY_PORTRAIT_URLS,
   // The existing human selection from monster-collect-species/ledger.json.
   "generated-enemy-sparkit-fire": "/assets/harnesses/monster-collect-species/sparkit/front.png",
   // 옛 전투 배경(은퇴 스킨 13장·숲 레퍼런스)은 2026-10-03 deprecated/ 로 옮겼다. id 는 저장본·공용 장소가
@@ -237,7 +239,6 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "starter-preview-card": "/assets/ui/starter-preview-card.png",
   // 생성 얼굴 낱장 32장(hero-01-face / hero-02-face × 16). 분할 산출물 목록에서 펼쳐 넣는다 —
   // 그래야 builtinGeneratedResourceIds() 에도 실려 collectResourceIds 가 알아본다.
-  ...PIXEL_ENEMY_PORTRAIT_URLS,
   ...generatedFacesetFaceUrls(),
   ...Object.fromEntries([1, 2].flatMap((hero) =>
     Array.from({ length: 16 }, (_, cell) => [

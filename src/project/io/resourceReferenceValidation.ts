@@ -13,6 +13,7 @@ import type {
   SystemRecords,
 } from "../types";
 import { builtinGeneratedResourceIds } from "@/assets/generatedAssetResourceResolver";
+import { RETIRED_PIXEL_ENEMY_RESOURCE_IDS } from "@/assets/pixelEnemySheets";
 import { bgmCatalogResourceIds } from "@/assets/bgmCatalogRuntime";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
 import { CC0_AUDIO_ASSETS } from "@/assets/cc0AudioAssets";
@@ -51,6 +52,9 @@ export function collectResourceIds(project: Project): Set<string> {
     if (asset.status === "promoted") ids.add(asset.resourceId);
   }
   for (const id of builtinGeneratedResourceIds(true)) ids.add(id);
+  // 폐기된 구형 3×3 번들 적 id — 피커·카탈로그에는 노출하지 않지만 기본 DB(generatedEnemyRecords)와
+  // 기존 저장본이 참조 검증·역직렬화를 통과하고 런타임에서 현행 5×4 번들로 해석되도록 유지한다.
+  for (const id of RETIRED_PIXEL_ENEMY_RESOURCE_IDS) ids.add(id);
   for (const id of listOpeningStillPackIds()) ids.add(id);
   for (const asset of EASYRPG_RTP_ASSETS) {
     ids.add(asset.id);

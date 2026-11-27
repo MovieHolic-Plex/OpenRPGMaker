@@ -25,7 +25,7 @@ export type MonsterResource = MonsterMetadata & {
  * 고르는 목록·조수 목록에서 뺀 옛 적 그림(2026-10-03 deprecated/). id 는 리졸버가 도트 그림으로 돌린다.
  * 슬라임 미리보기는 도트 슬라임과 같은 그림의 중복이다.
  */
-const RETIRED_MONSTER_IDS: ReadonlySet<string> = new Set([
+export const RETIRED_MONSTER_IDS: ReadonlySet<string> = new Set([
   "generated-enemy-reference-cocoon",
   "generated-enemy-reference-seed-back",
   "generated-troop-preview-slime",

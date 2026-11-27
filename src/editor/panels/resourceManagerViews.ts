@@ -6,7 +6,7 @@ import { findBundledImageAsset } from "@/assets/bundled";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
 import { HARNESS_MONSTER_RESOURCE_IDS } from "@/assets/harnessMonsterArt";
 import { EMERALD_SPECIES_V4_RESOURCE_IDS } from "@/assets/emeraldSpeciesV4Art";
-import { listMonsterResources, type MonsterResource } from "@/assets/monsterResourceCatalog";
+import { listMonsterResources, RETIRED_MONSTER_IDS, type MonsterResource } from "@/assets/monsterResourceCatalog";
 import { EASYRPG_MONSTER_ASSETS } from "@/assets/easyrpgRtp";
 import { SCARLOXY_MONSTER_ASSETS } from "@/assets/scarloxyPack";
 import { GENERATED_ASSET_PLAN } from "@/assets/oprnGeneratedAssetPlan";
@@ -72,16 +72,12 @@ let currentFilterTab: FilterTab = "all";
 // Raw registration projection mirrors listMonsterResources (including upload masking).
 // It deliberately never resolves names/tags/descriptions. The equivalence contract is
 // exercised in resourceManagerPerformance.test.ts when the catalog authority changes.
-const retiredGeneratedMonsters = new Set([
-  "generated-enemy-reference-cocoon", "generated-enemy-reference-seed-back",
-  "generated-troop-preview-slime", "easyrpg-monster-hornet",
-]);
 let bundledMonsterIds: ReadonlySet<string> | undefined;
 function monsterIds(): ReadonlySet<string> {
   return bundledMonsterIds ??= new Set([
     ...GENERATED_ASSET_PLAN.assets.filter(a => a.status === "promoted" && a.resourceKind === "monster"
-      && !retiredGeneratedMonsters.has(a.resourceId)).map(a => a.resourceId),
-    ...builtinGeneratedResourceIds().filter(id => id.startsWith("generated-enemy-") && !retiredGeneratedMonsters.has(id)),
+      && !RETIRED_MONSTER_IDS.has(a.resourceId)).map(a => a.resourceId),
+    ...builtinGeneratedResourceIds().filter(id => id.startsWith("generated-enemy-") && !RETIRED_MONSTER_IDS.has(id)),
     ...EASYRPG_MONSTER_ASSETS.map(a => a.id), ...SCARLOXY_MONSTER_ASSETS.map(a => a.id),
     ...HARNESS_MONSTER_RESOURCE_IDS, ...EMERALD_SPECIES_V4_RESOURCE_IDS,
   ].filter(Boolean));
