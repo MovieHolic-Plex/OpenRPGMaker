@@ -1,6 +1,7 @@
 // 조수 v2 가 runPiAgent(scripts/lib/piAgentRuntime.ts)에 끼우는 두 갈고리와 그 환경. 순수 타입.
 import type { PiAgentEvent, PiAgentRequest } from "@/ai/piAgent/protocol";
 import type { PiToolCallRecord, PiToolShape, ResolvePiToolOptions } from "@/ai/piAgent/toolAdapter";
+import type { ImageReference } from "@/ai/imageReferences";
 import type { ToolContext } from "@/editor/tools/types";
 
 /** 조수 v2 가 runPiAgent 에 끼우는 두 갈고리. 환경은 이 실행의 사본·기록·보조 호출·1배 렌더를 그대로 넘긴다. */
@@ -33,7 +34,9 @@ export interface PiAssistantV2Env {
    * 그림 한 장을 이미지 모델로 만든다(워커의 createWorkerImageGenerator — 같은 키·제공자·모델 해석). generate_art 동사가 쓴다.
    * 이미지 제공자 키가 없거나 읽기 전용 실행이면 없다(그 경우 generate_art 는 «생성 불가» 를 기록으로 남기고 map-view 를 허용한다).
    */
-  readonly generateImage?: (request: { readonly prompt: string; readonly signal?: AbortSignal }) => Promise<{ readonly dataUrl: string; readonly mimeType: string; readonly model: string; readonly provider: string }>;
+  readonly generateImage?: (request: { readonly prompt: string; readonly referenceImages?: readonly ImageReference[]; readonly signal?: AbortSignal }) => Promise<{ readonly dataUrl: string; readonly mimeType: string; readonly model: string; readonly provider: string }>;
+  /** 이 실행에서 생성형 이미지 제공자 인증이 준비되어 있는지(사전 판별). 없으면 오프닝은 0-생성 경로로 완결한다. */
+  readonly canGenerateImages?: boolean;
   /** 역할 모델 하나로 따로 부르기(그림 포함 가능). 그 계정 키가 없으면 던진다. */
   readonly roleChat?: (role: { readonly provider: string; readonly model: string; readonly effort?: "low" | "medium" | "high" }, messages: readonly unknown[], signal?: AbortSignal) => Promise<string>;
   /** 이 실행에 키가 실린 계정 id(로컬 CLI 포함). 검수자 고르기에 쓴다. */

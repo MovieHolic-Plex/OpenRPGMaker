@@ -5,6 +5,8 @@ import { PNG } from "pngjs";
 import { applyMapLighting, litShotNote, type LitShot } from "../../src/ai/v2/judge/vqaLighting.ts";
 import type { GameMap, Project } from "../../src/project/types.ts";
 import { runPiAgent, type RunPiAgentOptions } from "./piAgentRuntime.ts";
+import { hasCodexImageAuth } from "./codexImageRuntime.ts";
+import { DEFAULT_IMAGE_PROVIDER_ID } from "../../src/ai/imageModelCatalog.ts";
 import type { PiAgentDoneEvent, PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
 import { buildV2SystemPrompt } from "../../src/ai/v2/prompt/systemPrompt.ts";
 import { vqaShotPlan, type VqaShot } from "../../src/ai/v2/judge/vqa.ts";
@@ -57,9 +59,19 @@ async function captureVqaShots(env: PiAssistantV2Env): Promise<{ shots: VqaShot[
 export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgentOptions = {}): Promise<PiAgentDoneEvent> {
   // 그림을 찍는 일(PNG 해독·조명 입히기)은 Node 쪽 일이라 여기 남는다 — 턴 정책(src/ai/v2/turn)에는 이 구멍으로만 넘긴다.
   const turn = createV2Turn(request, options, { captureVqaShots });
+  const imageKey = options.providerApiKeys?.[DEFAULT_IMAGE_PROVIDER_ID]
+    ?? (DEFAULT_IMAGE_PROVIDER_ID === request.provider ? options.apiKey : undefined);
+  const canGenerateImages = !request.readOnly && !options.readOnlyTools && await hasCodexImageAuth(imageKey);
   const done = await runPiAgent({
     ...request,
-    systemPrompt: buildV2SystemPrompt(request.project, request.currentMapId, request.task, turn.store, request.projectKey ? String(request.projectKey) : undefined),
+    systemPrompt: buildV2SystemPrompt(
+      request.project,
+      request.currentMapId,
+      request.task,
+      turn.store,
+      request.projectKey ? String(request.projectKey) : undefined,
+      { model: request.model, canGenerateImages },
+    ),
     initialToolNames: [],
     openingProduction: false,
   }, {

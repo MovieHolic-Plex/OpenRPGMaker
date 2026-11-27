@@ -49,6 +49,11 @@ const authorOpeningStage: ToolDefinition = {
     const eventId = typeof args.eventId === "string" && args.eventId.trim() ? args.eventId.trim() : "ev_opening_stage";
     const startMap = draft.maps[draft.startMapId];
     if (!startMap) throw new ToolError("프로젝트 시작 맵이 없습니다 — 무대가 끝난 뒤 옮길 곳이 필요합니다.", { code: "opening-stage-invalid" });
+    // 시작 좌표가 통행 불가 타일이면 가장 가까운 통행 가능 칸으로 자동 보정해 커밋 거부 루프를 막는다.
+    const dest = resolveWhere(draft, startMap, undefined, { at: { x: draft.startPos.x, y: draft.startPos.y } }).cell;
+    if (dest.x !== draft.startPos.x || dest.y !== draft.startPos.y) {
+      draft.startPos = { x: dest.x, y: dest.y };
+    }
     // 다시 지을 때 예전 무대 이벤트를 걷어 낸다 — 남으면 본편에서 그 맵에 들어서는 순간 자동 실행되어 시작 위치로 되돌려 보낸다.
     const previous = draft.system.opening?.stage;
     if (previous && (previous.mapId !== map.id || previous.eventId !== eventId)) {

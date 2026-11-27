@@ -412,3 +412,28 @@ hides the campaign and causes unrelated repair attempts in system tasks.
 - Image layers accept `tint: { color, amount? }` (source-atop fill, amount 1 = flat silhouette).
 - Particle preset `meteors` draws diagonal streaks as a pure function of time.
 - Reference build: `src/project/flagship/astraTitleIntro.ts` (27 s, five beat-aligned shots). Details in `title-opening-effects.md` 「타이틀 앞 인트로 트랙」.
+
+## Assistant v2 opening model tier & zero-generation policy (2026-11-26)
+
+- Single source of truth: `src/ai/v2/request/openingPolicy.ts`.
+- **Two-tier model split (`resolveOpeningModelTier`)**:
+  - `high`: strictly limited to `Sonnet`, `Opus`, `Fable`, `Astra`, `Neon`, `Carbon`, `Argon` (case-insensitive family match on model ID). Gets full engine-stage (`author_opening_stage`) + multi-layer 2D animatic directing (`create_opening_animatic_shot`, `upsert_opening_layer`, `animate_opening_camera`, `animate_opening_layer`, `set_opening_transition`, `upsert_opening_audio_cue`).
+  - `medium`: every other model (Flash, Haiku, Terra, Sol, Luna, DeepSeek, unknown/empty). Excludes `HIGH_ONLY_OPENING_TOOLS` from up-front/offered exposure in `src/ai/v2/tools/toolExposure.ts` and steers to high-reliability routes: 1-scene engine stage (`author_opening_stage`), simple `map-view` / text / backdrop scenes (`set_opening`), or confirm storybook (`make_opening_storybook`).
+- **Generative images are optional, never required**:
+  - `hasCodexImageAuth` (`scripts/lib/codexImageRuntime.ts`) checks image-provider auth upfront without network calls and passes `canGenerateImages` into `buildV2SystemPrompt` and `PiAssistantV2Env`.
+  - When `canGenerateImages === false`, v2 omits `generateImage` on `v2Env`, hides `generate_art` on opening-only runs, and directs the assistant to finish 100% with engine stage (`author_opening_stage`), live `map-view:<mapId>`, bundled seamless panoramas (`oprn-pano-*`) + built-in FX (`shaft`/`glow`/`particles`/`tint`), and typography/storybook.
+  - When `canGenerateImages === true`, `generate_art` (`src/ai/v2/tools/verbs/art.ts`) now also supports `target: "opening"` to register 1–2 optional key close-up CG stills (`kind: "backdrop"`) and returns the `resourceId` for `set_opening` or `place_opening_background` without ever blocking finish gates on failure.
+
+## High-level director composer (`compose_opening`) & tool bug fixes (2026-11-27)
+
+- **Why**: Forensic replay of real v2 opening runs showed five tool/renderer traps when models hand-assembled 15–20 low-level pixel-grid calls:
+  1. `384×216` + `pixelGrid` shrank the 960×540 viewport to `768×432` (36% wasted black border), quantized full-color CGs to a 64-color (4×4×4) RGB cube, and triggered `lockGridBg` (`openingAnimaticRenderer.ts`), freezing camera motion on full-stage backgrounds.
+  2. `animate_opening_camera` emitted an integer-zoom warning even when `pixelGrid` was absent, pushing models toward ugly `zoom: 2` jumps instead of smooth Ken Burns motion (`1.03 → 1.15`).
+  3. `argCoerce.ts` wrongly rewrote `author_opening_stage` `beats[i].kind: "say"` into `{ kind: "text", body }`, and unwalkable `startPos` rejected the stage commit repeatedly.
+- **Fixes**:
+  - **`compose_opening` (`src/editor/tools/openingDirectorTools.ts`)**: Single-call declarative director tool wired to both `high` and `medium` v2 tiers (`V2_UP_FRONT`). Builds Fallen-Star-grade **480×270 full-bleed (`upscale: "nearest"`, NO `pixelGrid`)** animatic sequences from 9 verified templates (`night-sky`, `sunset-sky`, `day-sky`, `cloud-sea`, `mountains`, `sea`, `key-cg`, `map-tour`, `title-card`), 14 FX presets, 6 beat-synced bundled CC0 SFX cues (with automatic BGM ducking), auto-timed bottom-bar captions, and preserves `system.opening.stage`. Works with **zero** generative images and upgrades cleanly when `key-cg` uses a `resourceId` from `generate_art{target:'opening'}`.
+  - **`openingAnimaticTools.ts`**: `openingCameraZoomWarning` now only fires when `composition.pixelGrid` is set.
+  - **`argCoerce.ts`**: `forkBranches` no longer rewrites `kind: "say"` inside `beats[...]` arrays.
+  - **`openingStageTools.ts`**: `author_opening_stage` auto-snaps an unwalkable `draft.startPos` to the nearest walkable tile via `resolveWhere`.
+  - **`openingAnimaticRenderer.ts` (crisp native-res canvas + pre-scaled backdrop cache)**: Non-`pixelGrid` playback now sizes the backing canvas to exact display resolution × `dpr` (capped at `1920×1080`) whenever `upscale !== "nearest"` or the integer factor `k < 2` (fixing the `480×270` → `720×405` 1.5× CSS stretch that made captions and CG muddy on 4:3 viewports; `upscale: "nearest"` at `k >= 2` stays byte-identical). Oversized full-frame linear backdrops (e.g. 2.3 MB `1536×1024` generated PNGs) are pre-downscaled once into a cached offscreen canvas (`prescaledBackdrop`) to eliminate per-frame 60 fps CPU downsampling stutter, and non-grid captions/titles add crisp dark outline strokes. `compose_opening` now defaults to `upscale: "smooth"`.
+  - **`openingPolicy.ts` & `art.ts` (active CG + style continuity)**: When `canGenerateImages === true`, both `high` and `medium` tiers actively generate 2–4 genre-matching key CGs via `generate_art{target:'opening', prompt, style, referenceResourceId}` (passing shot 1's `resourceId` as `referenceResourceId` forwards `referenceImages` to `codexImageRuntime` so subsequent shots lock the same art style and palette). When `canGenerateImages === false`, v2 finishes 100% without generation. `compose_opening`'s `title-card` without `resourceId` now uses a genre-neutral `mood` (`dark|noir|warm|dusk|bright`) backdrop instead of hardcoding `night-sky` + stars.

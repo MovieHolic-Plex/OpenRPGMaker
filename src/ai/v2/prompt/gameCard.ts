@@ -1,6 +1,7 @@
 // 게임 요소 카드 — 퀘스트·아이템·상점·전투·파티·스위치를 v1 게임 도구로 짓는 법. 줄마다 주제 표지가 붙는다(request/topics.ts).
 import { assistantScriptsOn } from "@/ai/scriptsSwitch";
 import type { GameTopic } from "../request/topics";
+import { openingGameCardLine, type OpeningAuthoringPolicy } from "../request/openingPolicy";
 import { SHEER_KINDS_FOREST_NOTE } from "../place/sheerKindLines";
 
 /**
@@ -73,9 +74,11 @@ const PRE_SCRIPT_RANDOM_LINE = "- The engine has no random-number command (setVa
  * 게임 카드 글. topics 를 주면(작은 요청) 그 주제의 줄만, 안 주면(게임 하나) 전부.
  * OPRN_V2_SCRIPTS=0 이면 스크립트 이전 글(스크립트 줄 없음, 난수는 순서 돌리기)로 돌려준다(src/ai/scriptsSwitch.ts).
  */
-export function gameCard(topics?: readonly GameTopic[]): string {
+export function gameCard(topics?: readonly GameTopic[], openingPolicy?: OpeningAuthoringPolicy): string {
   const want = topics && new Set<string>(["core", ...topics]);
-  const picked = GAME_LINES.filter(([key], i) => !want || (key === "fallen" ? GAME_LINES.slice(i + 1).some(([k, line]) => line.startsWith("  · ") && want.has(k)) : want.has(key))).map(([, line]) => line);
+  const picked = GAME_LINES
+    .filter(([key], i) => !want || (key === "fallen" ? GAME_LINES.slice(i + 1).some(([k, line]) => line.startsWith("  · ") && want.has(k)) : want.has(key)))
+    .map(([key, line]) => (key === "opening" && openingPolicy ? openingGameCardLine(openingPolicy) : line));
   if (assistantScriptsOn()) return picked.join("\n");
   return picked.filter((line) => line !== SCRIPT_CARD_LINE).map((line) => (line === SCRIPT_RANDOM_LINE ? PRE_SCRIPT_RANDOM_LINE : line)).join("\n");
 }

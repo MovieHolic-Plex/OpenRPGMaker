@@ -54,6 +54,8 @@ import { setCutsceneAssetFetcher } from '../../src/editor/cutsceneArt/charsetFra
 import { appendFileSync, readFileSync as readBundledAsset } from 'node:fs';
 import { join as joinBundledAsset } from 'node:path';
 import { createPiPresentationTool, createWorkerDotTextChat, createWorkerImageGenerator, PI_PRESENTATION_GENERATORS } from './piPresentationTools';
+import { hasCodexImageAuth } from './codexImageRuntime.ts';
+import { DEFAULT_IMAGE_PROVIDER_ID } from '../../src/ai/imageModelCatalog.ts';
 import { setDotTextChat } from '../../src/ai/dotTextArt';
 import { presentationArtIds, presentationArtImages } from '../../src/editor/tools/presentationTools';
 // Bun 전용 Pi 에이전트 런타임. `@oh-my-pi/pi-agent-core` 루프에 레지스트리 툴을 붙여 프로젝트
@@ -1387,6 +1389,7 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     const lazy = options.v2?.lazyTool?.(name);
     if (lazy) declare(wrapTool(lazy));
   };
+  const canGenerateImages = !request.readOnly && !options.readOnlyTools && await hasCodexImageAuth(workerKeyFor(DEFAULT_IMAGE_PROVIDER_ID));
   const v2Env: PiAssistantV2Env | undefined = options.v2 ? {
     ctx, request, emit, record: recordCall,
     requireToolNextTurn: (toolName?: string) => { if (toolName) ensureV2Tool(toolName); forceToolTurn = toolName ?? true; },
@@ -1402,8 +1405,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const reply = await eventAssistChat(null, { messages, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
       return typeof reply.message.content === "string" ? reply.message.content : "";
     },
-    // 그림 생성(generate_art): 읽기 전용이 아니면 워커의 이미지 생성기를 그대로 준다 — 키가 없으면 호출이 던지고 동사가 그 오류를 기록한다.
-    ...(!request.readOnly && !options.readOnlyTools ? { generateImage: createWorkerImageGenerator(request, workerKeyFor) } : {}),
+    // 그림 생성(generate_art): Codex 이미지 인증이 준비돼 있을 때만 생성기를 준다 — 인증이 없으면 사전 판별로 무생성 경로를 탄다.
+    canGenerateImages,
+    ...(canGenerateImages ? { generateImage: createWorkerImageGenerator(request, workerKeyFor) } : {}),
     ...(advisorChat ? { advisorChat, advisorModel: `${advisorRole!.provider}/${advisorRole!.model}` } : {}),
     ...(leadChat ? { leadChat, leadModel: `${split!.lead.provider}/${split!.lead.model}${split!.lead.effort ? `@${split!.lead.effort}` : ""}` } : {}),
     ...(renderToEditor ? { renderArt: async (art: { resourceId: string } | { shotId: string; atMs: readonly number[] }) => {
