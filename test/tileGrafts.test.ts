@@ -11,6 +11,7 @@ import { addTileGraft, removeTileGraft } from "@/editor/tilesetActions";
 import { tilesetTextureKey } from "@/editor/tilesetImage";
 import {
   activeTileGrafts,
+  createGraftedTilesetCanvas,
   rowAlignedTileCount,
   tileCountWithGrafts,
   tileGraftsTextureSuffix,
@@ -213,5 +214,47 @@ describe("프로젝트 전체 무결성", () => {
     const before: Project = store.getCurrent();
     const restored = deserialize(serialize(before));
     expect(serialize(restored)).toBe(serialize(before));
+  });
+});
+
+describe("이식 합성 그리기", () => {
+  it("같은 소스·같은 줄의 이웃 칸은 한 번에 그리되, 칸마다 그린 것과 같은 자리로 옮긴다", () => {
+    const draws: number[][] = [];
+    const context = { imageSmoothingEnabled: true, clearRect: () => undefined, drawImage: (_s: unknown, ...rest: number[]) => draws.push(rest) };
+    const canvas = { width: 0, height: 0, getContext: () => context };
+    const host = globalThis as { document?: unknown; HTMLImageElement?: unknown };
+    const original = { document: host.document, image: host.HTMLImageElement };
+    host.document = { createElement: () => canvas };
+    host.HTMLImageElement ??= class {};
+    try {
+      const grafts = [
+        { targetTile: 8, sourceChipset: RETRO_HOUSE, sourceTile: 30, sourceTileSize: 16, sourceTilesPerRow: 32 },
+        { targetTile: 9, sourceChipset: RETRO_HOUSE, sourceTile: 31, sourceTileSize: 16, sourceTilesPerRow: 32 },
+        { targetTile: 10, sourceChipset: RETRO_HOUSE, sourceTile: 32, sourceTileSize: 16, sourceTilesPerRow: 32 },
+        { targetTile: 15, sourceChipset: RETRO_HOUSE, sourceTile: 40, sourceTileSize: 16, sourceTilesPerRow: 32 },
+        { targetTile: 16, sourceChipset: RETRO_HOUSE, sourceTile: 41, sourceTileSize: 16, sourceTilesPerRow: 32 },
+      ];
+      const source = { width: 512, height: 512 } as unknown as HTMLCanvasElement;
+      createGraftedTilesetCanvas({ count: 32, tileSize: 16, tilesPerRow: 8, tileGrafts: grafts }, { width: 128, height: 64 } as unknown as HTMLCanvasElement, () => source);
+      // 바탕 한 번 + 띠 셋: 30→8·31→9 (32 는 소스 줄 시작이라 끊는다), 32→10, 40→15 (16 은 대상 줄 시작이라 끊는다), 41→16.
+      expect(draws.slice(1)).toEqual([
+        [480, 0, 32, 16, 0, 16, 32, 16],
+        [0, 16, 16, 16, 32, 16, 16, 16],
+        [128, 16, 16, 16, 112, 16, 16, 16],
+        [144, 16, 16, 16, 0, 32, 16, 16],
+      ]);
+    } finally {
+      host.document = original.document;
+      host.HTMLImageElement = original.image;
+    }
+  });
+
+  it("이식 목록 기억은 배열을 덧붙이면 다시 만들고, 돌려준 배열을 고쳐도 기억이 바뀌지 않는다", () => {
+    const grafts = [{ targetTile: 3, sourceChipset: RETRO_HOUSE, sourceTile: 1 }];
+    const first = activeTileGrafts({ tileGrafts: grafts });
+    first.push({ targetTile: 9, sourceChipset: RETRO_HOUSE, sourceTile: 2 });
+    expect(activeTileGrafts({ tileGrafts: grafts })).toHaveLength(1);
+    grafts.push({ targetTile: 4, sourceChipset: RETRO_HOUSE, sourceTile: 5 });
+    expect(activeTileGrafts({ tileGrafts: grafts }).map((graft) => graft.targetTile)).toEqual([3, 4]);
   });
 });
