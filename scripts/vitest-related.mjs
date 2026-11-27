@@ -53,6 +53,9 @@ export const DEFAULTS = Object.freeze({
   // 옛 모델(워커 3·시작 90·기록 없음 6.4)은 실제를 2~3배 낮게 봐 조각 104/153 이 450초 상자에 끊겼다. LPT 분할이라 큰 파일은 먼저 혼자 조각을 잡는다.
   budgetSeconds: 480, workers: 1, factor: 1, perFileSeconds: 20, startupSeconds: 150, defaultSeconds: 90,
   chunks: 8, wideTests: 1000, wideFiles: 80, wideChunks: 12,
+  // 늘 담는 세 단계(바뀐 시험·직접 import·문자열)만으로 상한을 넘을 때 쓸 수 있는 조각 수. 2026-11-27 #5283: 직접 import 104개가
+  // 예상 7,970초(필요 조각 25)인데 wideChunks 12 에 막혀 조각 하나가 예상 819초 → 720초 상자에 끊겼다. ci-full 샤드 수(24)까지 늘린다.
+  mustChunks: 24,
 });
 
 const TIERS = ["changed-test", "direct-import", "string-literal", "import-graph"];
@@ -265,9 +268,9 @@ export function selectRelated({ changed, testSources, exists, timings = {}, opti
   const budget = applyBudget(all, timings, { ...settings, workers: settings.workers * settings.chunks });
   const cost = budget.selected.reduce((total, entry) => total + settings.perFileSeconds + settings.factor * entry.sec, 0);
   const room = Math.max(1, (settings.budgetSeconds - settings.startupSeconds) * settings.workers);
-  // 늘 담는 세 단계만으로 조각 상한(chunks)을 넘으면 넓은 변경의 조각 수(wideChunks)까지 늘린다 — 시간 상자에 끊기면 빨강이다.
+  // 늘 담는 세 단계만으로 조각 상한(chunks)을 넘으면 필요한 만큼(mustChunks 까지) 조각을 늘린다 — 시간 상자에 끊기면 빨강이다.
   const mustCost = budget.selected.filter((entry) => entry.tier !== "import-graph").reduce((total, entry) => total + settings.perFileSeconds + settings.factor * entry.sec, 0);
-  const cap = Math.max(settings.chunks, Math.min(settings.wideChunks, Math.ceil(mustCost / room)));
+  const cap = Math.max(settings.chunks, Math.min(settings.mustChunks, Math.ceil(mustCost / room)));
   const count = Math.max(1, Math.min(cap, Math.ceil(cost / room), budget.selected.length));
   const chunks = budget.selected.length === 0 ? [] : planChunks(budget.selected, count, settings);
   const estWallSeconds = Math.max(0, ...chunks.map((chunk) => chunk.estWallSeconds));
@@ -371,6 +374,7 @@ function main(argv) {
     wideTests: numberOption(args["wide-tests"], DEFAULTS.wideTests, "wide-tests", 1),
     wideFiles: numberOption(args["wide-files"], DEFAULTS.wideFiles, "wide-files", 1),
     wideChunks: numberOption(args["wide-chunks"], DEFAULTS.wideChunks, "wide-chunks", 1),
+    mustChunks: numberOption(args["must-chunks"], DEFAULTS.mustChunks, "must-chunks", 1),
   };
   const git = (...gitArgs) => execFileSync("git", gitArgs, { encoding: "utf8", maxBuffer: 256 * 1024 * 1024 });
   const changed = git("diff", "--name-only", "--no-renames", "-z", `${args.base}...${args.head ?? "HEAD"}`).split("\0").filter(Boolean).sort();
