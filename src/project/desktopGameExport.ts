@@ -1,15 +1,18 @@
 /**
- * 데스크톱 & Steam Depot 게임 내보내기 빌더.
+ * 데스크톱 & Steam Depot 게임 패키징 키트 내보내기 빌더.
  *
- * 단순 HTML 내보내기 대신, 스팀(SteamPipe)과 데스크톱 환경(Windows x64 / Linux·SteamOS / macOS .app)에
- * 바로 배포할 수 있는 완결된 게임 패키지 ZIP 을 조립한다:
- *   1. 네이티브 런처 실행 파일/스크립트 (<GameSlug>.exe / .x86_64 / Launch-<GameSlug>.bat·.sh / .app 번들)
- *      + 데스크톱 창·전체화면·게임패드 런타임 구성(desktop-runtime.json)
- *   2. 바이너리 에셋 아카이브 (resources/game.pak / resources/app.asar 헤더 + 에셋 테이블)
- *      — 루트 폴더에 날것의 .html 이나 산재한 JSON/PNG 가 노출되지 않도록 보호
- *   3. Steam Auto-Cloud 호환 파일 세이브 디렉터리 (saves/*.oprn-save.json, saves/config.json)
- *   4. Steamworks 배포 키트 (steamworks/steam_appid.txt, app_build_<appId>.vdf,
- *      depot_build_<depotId>.vdf, steam_input_manifest.vdf, STEAM_LAUNCH_CHECKLIST.md)
+ * 브라우저 안에서 가짜 .exe / .x86_64 스텁을 만들지 않고, 실제로 동작하는 패키징 키트를 조립한다:
+ *   1. 바이너리 에셋 아카이브 (`resources/game.pak`, OPAK v1) 또는 비압축 `resources/app/` 중 하나만 수록
+ *      — 동일 파일의 평문 중복 복사를 없애고 Electron `oprn-game://` 핸들러와 로컬 런처가 직접 읽는다.
+ *   2. 즉시 실행 가능한 로컬 루프백 HTTP 런처 (`play-local.mjs` + `Launch-<slug>.bat` / `.sh` / `.command`)
+ *      — `file://` CORS 실패 없이 `resources/game.pak`을 `http://127.0.0.1:<port>/`로 서빙하고
+ *        `saves/*.oprn-save.json`에 실제 디스크 저장/복원까지 수행한다.
+ *   3. Electron 네이티브 앱 패키징 입력 (`resources/desktop-runtime.json`)
+ *      — `npm run build:desktop-game -- --input <내보낸.zip>`으로 Windows(.exe) / Linux / macOS(.app)
+ *        실제 실행 앱을 생성한다.
+ *   4. Steamworks 배포 키트 (`steam_appid.txt`, `steamworks/app_build_<appId>.vdf`,
+ *      `steamworks/depot_build_<depotId>.vdf` [saves/* 제외 포함], `steam_input_manifest.vdf`,
+ *      `STEAM_LAUNCH_CHECKLIST.md`) — 빈 더미 세이브 파일은 배포하지 않는다.
  */
 import { writeStoredZip, type ZipEntry } from "@/project/packageZip";
 import {
@@ -46,6 +49,10 @@ export interface DesktopSteamExportOptions {
   readonly enableSteamInputGamepad?: boolean;
   readonly versionLabel?: string;
   readonly executableName?: string;
+  /** 체험판 → 본편 세이브 인계용 공유 그룹 ID (동일 ID를 지정하면 saveNamespace를 공유한다). */
+  readonly sharedSaveGroup?: string;
+  /** 세이브 네임스페이스를 직접 덮어쓸 때 사용한다(지정 시 sharedSaveGroup·AppID 기본값보다 우선). */
+  readonly saveNamespace?: string;
   readonly bundleBase?: string;
   readonly fetchBytes?: FetchBytes;
 }
@@ -72,7 +79,11 @@ export interface DesktopSteamExportSummary extends WebExportSummary {
   readonly steamAppId: number;
   readonly steamDepotId: number;
   readonly displayMode: DesktopDisplayMode;
+  /** 압축 해제 후 바로 실행할 수 있는 키트 진입점 (`Launch-*.bat` / `.sh` / `.command` 또는 `index.html`). */
   readonly executablePath: string;
+  /** `npm run build:desktop-game` Electron 패키징 후 Steam Launch Option에 지정할 최종 실행 파일 경로. */
+  readonly nativeExecutablePath: string;
+  readonly saveNamespace: string;
   readonly pakArchivePath: string;
   readonly pakArchiveBytes: number;
   readonly pakEntryCount: number;
@@ -102,25 +113,25 @@ export const DESKTOP_PLATFORM_SPECS: Readonly<Record<DesktopExportPlatform, {
 }>> = {
   "win64-steam": {
     id: "win64-steam",
-    label: "Windows x64 (.exe) · Steam Depot 패키지",
-    badge: "권장 · Steam 기본",
-    subtitle: "네이티브 실행 런처(.exe) + resources/game.pak 아카이브 + saves/ Auto-Cloud + SteamPipe VDF",
+    label: "Windows x64 · 데스크톱 / Steam 패키징 키트",
+    badge: "Steam 기본 · Electron 입력",
+    subtitle: "resources/game.pak + 로컬 HTTP 실행 런처 + Auto-Cloud 설정 + SteamPipe VDF (Electron .exe 빌드용)",
     steamOsList: "windows",
     steamArch: "64",
   },
   "linux64-steamos": {
     id: "linux64-steamos",
-    label: "Linux x64 / Steam Deck (SteamOS) 패키지",
-    badge: "Steam Deck Verified 호환",
-    subtitle: "ELF x86_64 런처 + XInput/Steam Input 패드 매핑 + 1280×800 전체화면 대응",
+    label: "Linux x64 / Steam Deck (SteamOS) 패키징 키트",
+    badge: "Steam Deck 패드 대응",
+    subtitle: "resources/game.pak + 로컬 실행 스크립트 + Steam Input 매핑 + SteamPipe VDF (Electron Linux 빌드용)",
     steamOsList: "linux",
     steamArch: "64",
   },
   "macos-universal": {
     id: "macos-universal",
-    label: "macOS Universal (.app) 번들 패키지",
+    label: "macOS (.app) 데스크톱 / Steam 패키징 키트",
     badge: "Apple Silicon & Intel",
-    subtitle: ".app/Contents/MacOS 번들 구조 + Info.plist + resources/game.pak",
+    subtitle: "resources/game.pak + 로컬 실행 .command + 공증 체크리스트 (Electron .app 빌드용)",
     steamOsList: "macos",
     steamArch: "64",
   },
@@ -140,6 +151,27 @@ export function desktopExportSlug(project: Project, customExecutableName?: strin
   return slug.length > 0 ? slug : "oprn-game";
 }
 
+export function resolveDesktopSaveNamespace(options: {
+  readonly steamAppId: number;
+  readonly slug: string;
+  readonly saveNamespace?: string;
+  readonly sharedSaveGroup?: string;
+}): string {
+  const explicit = sanitizeNamespaceToken(options.saveNamespace);
+  if (explicit) return explicit;
+  const shared = sanitizeNamespaceToken(options.sharedSaveGroup);
+  if (shared) return `shared-save-${shared}`;
+  return `steam-app-${options.steamAppId}-${options.slug}`;
+}
+
+function sanitizeNamespaceToken(raw: string | undefined): string {
+  if (!raw) return "";
+  return raw
+    .trim()
+    .replace(/[^a-zA-Z0-9._-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 export function desktopSteamExportFileName(
   project: Project,
   options: Pick<DesktopSteamExportOptions, "platform" | "versionLabel" | "executableName"> = {},
@@ -151,8 +183,15 @@ export function desktopSteamExportFileName(
   return `${slug}-${platform}-v${cleanVersion}.zip`;
 }
 
+export function nativeExecutablePathForPlatform(platform: DesktopExportPlatform, slug: string): string {
+  if (platform === "win64-steam") return `${slug}.exe`;
+  if (platform === "linux64-steamos") return slug;
+  if (platform === "macos-universal") return `${slug}.app/Contents/MacOS/${slug}`;
+  return "index.html";
+}
+
 /**
- * `OPAK` 바이너리 아카이브 포맷 조립기 (`resources/game.pak` 및 `resources/app.asar` 호환 인덱스).
+ * `OPAK` 바이너리 아카이브 포맷 조립기 (`resources/game.pak`).
  *
  * 구조:
  *   [0..3]   Magic: "OPAK" (0x4F, 0x50, 0x41, 0x4B)
@@ -248,19 +287,42 @@ export async function createDesktopSteamExportPackage(
   const steamAppId = normalizePositiveInt(options.steamAppId, 480);
   const steamDepotId = normalizePositiveInt(options.steamDepotId, steamAppId + 1);
   const displayMode: DesktopDisplayMode = options.displayMode ?? "fullscreen";
-  const packAssetsArchive = options.packAssetsArchive !== false;
+  const packAssetsArchive = options.packAssetsArchive !== false && platform !== "web-pwa";
   const enableSteamAutoCloud = options.enableSteamAutoCloud !== false;
   const enableSteamInputGamepad = options.enableSteamInputGamepad !== false;
   const versionLabel = options.versionLabel?.trim() || project.meta.publication?.versionLabel?.trim() || "1.0.0";
   const slug = desktopExportSlug(project, options.executableName);
   const title = project.meta.title?.trim() || "OPRN Game";
+  const saveNamespace = resolveDesktopSaveNamespace({
+    steamAppId,
+    slug,
+    saveNamespace: options.saveNamespace,
+    sharedSaveGroup: options.sharedSaveGroup,
+  });
+  const nativeExecutablePath = nativeExecutablePathForPlatform(platform, slug);
 
   const prepared = prepareWebExport(project);
   const fetchBytes = options.fetchBytes ?? defaultFetchBytes;
-  const runtimeEntries = await collectVerifiedRuntimeEntries(prepared, options.bundleBase, fetchBytes);
+  const rawRuntimeEntries = await collectVerifiedRuntimeEntries(prepared, options.bundleBase, fetchBytes);
 
-  // Pack game data & assets into resources/game.pak (OPAK binary container)
-  const { bytes: pakBytes, manifest: pakManifest } = await buildOprnPakArchive(title, runtimeEntries);
+  // Inject desktop boot config into index.html ONCE before packing into game.pak or resources/app/.
+  const bootInjectedEntries: ZipEntry[] = rawRuntimeEntries.map((entry) => {
+    if (entry.name === "player.html") {
+      const htmlText = decoder.decode(entry.bytes);
+      const injectedHtml = injectDesktopBootConfig(htmlText, {
+        title,
+        slug,
+        platform,
+        steamAppId,
+        displayMode,
+        saveNamespace,
+        enableSteamAutoCloud,
+        enableSteamInputGamepad,
+      });
+      return { name: "index.html", bytes: encoder.encode(injectedHtml) };
+    }
+    return entry;
+  });
 
   const zipEntries: ZipEntry[] = [];
   const addText = (name: string, content: string, unixMode?: number) => {
@@ -270,7 +332,7 @@ export async function createDesktopSteamExportPackage(
     zipEntries.push({ name, bytes, ...(unixMode === undefined ? {} : { unixMode }) });
   };
 
-  // 1. Platform Native Executable Stub & Launchers
+  // 1. Real CORS-free Local Launcher Scripts (no fake PE/ELF stubs!)
   const executablePath = addPlatformLaunchers({
     platform,
     slug,
@@ -279,201 +341,191 @@ export async function createDesktopSteamExportPackage(
     steamAppId,
     displayMode,
     addText,
-    addBytes,
   });
 
-  // 2. Desktop Runtime Configuration & Packaged Resources (`resources/`)
-  const pakArchivePath = "resources/game.pak";
-  addBytes(pakArchivePath, pakBytes);
-  addText(
-    "resources/pak-manifest.json",
-    JSON.stringify(pakManifest, null, 2),
-  );
-  addText(
-    "resources/desktop-runtime.json",
-    JSON.stringify(
-      {
-        schema: "oprn/desktop-runtime-v1",
-        gameTitle: title,
-        executableSlug: slug,
-        version: versionLabel,
-        platform,
-        window: {
-          defaultMode: displayMode,
-          width: displayMode === "windowed-640p" ? 960 : 1280,
-          height: displayMode === "windowed-640p" ? 640 : 720,
-          resizable: true,
-          fullscreenShortcuts: ["F11", "Alt+Enter"],
-          screenshotShortcut: "F12",
-          pixelArtIntegerScaling: true,
-        },
-        storage: {
-          steamAutoCloud: enableSteamAutoCloud,
-          saveDirectory: "saves",
-          saveFilePattern: "*.oprn-save.json",
-          configFile: "saves/config.json",
-        },
-        input: {
-          steamInput: enableSteamInputGamepad,
-          html5GamepadPolling: true,
-          mappings: {
-            confirm: ["ButtonA", "ButtonSouth", "Z", "Enter", "Space"],
-            cancel: ["ButtonB", "ButtonEast", "X", "Escape"],
-            menu: ["ButtonY", "ButtonNorth", "ButtonStart", "X", "Escape"],
-            dash: ["ButtonX", "ButtonWest", "LeftShoulder", "Shift"],
-            move: ["LeftStick", "DPad", "ArrowKeys", "WASD"],
-          },
-        },
-        archive: {
-          pakPath: pakArchivePath,
-          packed: packAssetsArchive,
-          entryCount: pakManifest.entryCount,
-          totalPayloadBytes: pakManifest.totalPayloadBytes,
-        },
-      },
-      null,
-      2,
-    ),
-  );
+  // 2. Packaged Game Resources — EITHER resources/game.pak (OPAK) OR resources/app/ (unpacked), never duplicated!
+  let pakArchivePath = "";
+  let pakArchiveBytes = 0;
+  let pakEntryCount = 0;
 
-  // Runtime files inside resources/app/ so the embedded WebView2 / Electron shell boots cleanly
-  // while keeping the root directory 100% clean (no raw .html or scattered JSON in root!).
-  for (const entry of runtimeEntries) {
-    if (entry.name === "player.html") {
-      const htmlText = decoder.decode(entry.bytes);
-      const injectedHtml = injectDesktopBootConfig(htmlText, {
-        title,
-        slug,
-        platform,
-        steamAppId,
-        displayMode,
-        enableSteamAutoCloud,
-        enableSteamInputGamepad,
-      });
-      addText("resources/app/index.html", injectedHtml);
-      if (platform === "web-pwa") {
-        addText("index.html", injectedHtml);
-      }
-    } else {
+  if (platform === "web-pwa") {
+    for (const entry of bootInjectedEntries) {
+      addBytes(entry.name, entry.bytes);
+    }
+  } else if (packAssetsArchive) {
+    const { bytes: pakBytes, manifest: pakManifest } = await buildOprnPakArchive(title, bootInjectedEntries);
+    pakArchivePath = "resources/game.pak";
+    pakArchiveBytes = pakBytes.length;
+    pakEntryCount = pakManifest.entryCount;
+    addBytes(pakArchivePath, pakBytes);
+    addText("resources/pak-manifest.json", JSON.stringify(pakManifest, null, 2));
+  } else {
+    for (const entry of bootInjectedEntries) {
       addBytes(`resources/app/${entry.name}`, entry.bytes);
-      if (platform === "web-pwa") {
-        addBytes(entry.name, entry.bytes);
-      }
     }
   }
 
-  // 3. Steam Auto-Cloud Save Directory (`saves/`)
-  const savePattern = "*.oprn-save.json";
-  addText(
-    "saves/config.json",
-    JSON.stringify(
-      {
-        schema: "oprn/desktop-save-config-v1",
-        gameTitle: title,
-        executableSlug: slug,
-        steamAppId,
-        autoCloudSync: enableSteamAutoCloud,
-        displayMode,
-        audioVolume: { bgm: 100, bgs: 100, me: 100, se: 100 },
-        slots: {
-          slot1: "saves/slot-01.oprn-save.json",
-          slot2: "saves/slot-02.oprn-save.json",
-          slot3: "saves/slot-03.oprn-save.json",
-          autosave: "saves/autosave.oprn-save.json",
-          clearRecord: "saves/clear-record.oprn-save.json",
-        },
-      },
-      null,
-      2,
-    ),
-  );
-  addText(
-    "saves/slot-01.oprn-save.json",
-    JSON.stringify(
-      {
-        schemaVersion: 5,
-        slot: 1,
-        status: "empty-slot-placeholder",
-        gameTitle: title,
-        steamAutoCloudReady: true,
-        note: "이 파일은 Steam Auto-Cloud 동기화 경로(saves/*.oprn-save.json) 확인용 초기 슬롯 파일입니다. 인게임 저장 시 실제 세이브 스냅샷으로 덮어써집니다.",
-      },
-      null,
-      2,
-    ),
-  );
-  addText(
-    "saves/README-STEAM-CLOUD.txt",
-    [
-      "====================================================================",
-      `  ${title} — Steam Auto-Cloud Save Directory (saves/)`,
-      "====================================================================",
-      "",
-      "이 폴더(saves/)는 플레이어 세이브 파일과 환경설정이 저장되는 로컬 경로입니다.",
-      "Steamworks 파트너 포털 -> Steam Cloud -> Auto-Cloud 설정에서 아래와 같이 등록하세요:",
-      "",
-      "  - Root (루트 경로)   : WinAppDataLocalLow 또는 GameInstall (게임 설치 폴더)",
-      "  - Subdirectory (하위): saves",
-      `  - Pattern (패턴)     : ${savePattern}`,
-      "  - OS                 : All (Windows / macOS / Linux & SteamOS)",
-      "",
-      "저장 파일 목록:",
-      "  - saves/slot-01.oprn-save.json ~ slot-03.oprn-save.json (수동 슬롯 1~3)",
-      "  - saves/autosave.oprn-save.json (맵 이동·전투 승리 자동 저장)",
-      "  - saves/clear-record.oprn-save.json (다회차 New Game+ 및 갤러리 해금 기록)",
-      "  - saves/config.json (해상도·전체화면·볼륨 설정)",
-      "",
-    ].join("\n"),
-  );
+  const fileName = desktopSteamExportFileName(project, {
+    platform,
+    versionLabel,
+    executableName: options.executableName,
+  });
 
-  // 4. Steamworks SDK & SteamPipe Depot Builder Scripts (`steamworks/`)
-  addText("steam_appid.txt", `${steamAppId}\n`);
-  addText("steamworks/steam_appid.txt", `${steamAppId}\n`);
-  addText(
-    `steamworks/app_build_${steamAppId}.vdf`,
-    buildSteamAppVdf({
-      steamAppId,
-      steamDepotId,
-      title,
-      versionLabel,
-      platform,
-    }),
-  );
-  addText(
-    `steamworks/depot_build_${steamDepotId}.vdf`,
-    buildSteamDepotVdf({
-      steamDepotId,
-    }),
-  );
-  addText(
-    "steamworks/steam_input_manifest.vdf",
-    buildSteamInputManifestVdf(title),
-  );
-  addText(
-    "steamworks/STEAM_LAUNCH_CHECKLIST.md",
-    buildSteamLaunchChecklistMd({
-      title,
-      slug,
-      platform,
-      executablePath,
-      steamAppId,
-      steamDepotId,
-      displayMode,
-      savePattern,
-      versionLabel,
-    }),
-  );
+  if (platform !== "web-pwa") {
+    addText(
+      "resources/desktop-runtime.json",
+      JSON.stringify(
+        {
+          schema: "oprn/desktop-runtime-v1",
+          gameTitle: title,
+          executableSlug: slug,
+          version: versionLabel,
+          platform,
+          nativeBuild: {
+            packagerCommand: `npm run build:desktop-game -- --input ${fileName}`,
+            expectedExecutable: nativeExecutablePath,
+            kitLauncher: executablePath,
+          },
+          window: {
+            defaultMode: displayMode,
+            width: displayMode === "windowed-640p" ? 960 : 1280,
+            height: displayMode === "windowed-640p" ? 640 : 720,
+            resizable: true,
+            fullscreenShortcuts: ["F11", "Alt+Enter"],
+            screenshotShortcut: "F12",
+            pixelArtIntegerScaling: true,
+          },
+          storage: {
+            steamAutoCloud: enableSteamAutoCloud,
+            saveDirectory: "saves",
+            saveNamespace,
+            ...(options.sharedSaveGroup?.trim() ? { sharedSaveGroup: options.sharedSaveGroup.trim() } : {}),
+            saveFilePattern: "*.oprn-save.json",
+            configFile: "saves/config.json",
+          },
+          input: {
+            steamInput: enableSteamInputGamepad,
+            html5GamepadPolling: true,
+            mappings: {
+              confirm: ["ButtonA", "ButtonSouth", "Z", "Enter", "Space"],
+              cancel: ["ButtonB", "ButtonEast", "X", "Escape"],
+              menu: ["ButtonY", "ButtonNorth", "ButtonStart", "X", "Escape"],
+              dash: ["ButtonX", "ButtonWest", "LeftShoulder", "Shift"],
+              move: ["LeftStick", "DPad", "ArrowKeys", "WASD"],
+            },
+          },
+          archive: {
+            pakPath: pakArchivePath || null,
+            packed: packAssetsArchive,
+            entryCount: pakEntryCount,
+            totalPayloadBytes: pakArchiveBytes,
+          },
+        },
+        null,
+        2,
+      ),
+    );
+  }
+
+  // 3. Steam Auto-Cloud Save Documentation (NO dummy slot-01.oprn-save.json placeholder!)
+  const savePattern = "*.oprn-save.json";
+  if (platform !== "web-pwa") {
+    addText(
+      "saves/config.json",
+      JSON.stringify(
+        {
+          schema: "oprn/desktop-save-config-v1",
+          gameTitle: title,
+          executableSlug: slug,
+          steamAppId,
+          saveNamespace,
+          autoCloudSync: enableSteamAutoCloud,
+          displayMode,
+          audioVolume: { bgm: 100, bgs: 100, me: 100, se: 100 },
+          slots: {
+            pattern: "saves/slot-XX.oprn-save.json",
+            autosave: "saves/autosave.oprn-save.json",
+            clearRecord: "saves/clear-record.oprn-save.json",
+            galleryRecord: "saves/gallery-record.oprn-save.json",
+          },
+        },
+        null,
+        2,
+      ),
+    );
+    addText(
+      "saves/README-STEAM-CLOUD.txt",
+      [
+        "====================================================================",
+        `  ${title} — Steam Auto-Cloud Save Directory (saves/)`,
+        "====================================================================",
+        "",
+        "이 폴더(saves/)는 플레이어 세이브 파일이 저장되는 로컬 경로입니다.",
+        "depot_build.vdf에는 \"FileExclusion\" \"saves/*\" 규칙이 들어 있어 Steam 업데이트가 유저 세이브를 덮어쓰지 않습니다.",
+        "",
+        "Steamworks 파트너 포털 -> Steam Cloud -> Auto-Cloud 설정:",
+        "  - Root (루트 경로)   : GameInstall (포터블 설치 폴더) 또는 OS별 AppData/userData",
+        `  - Subdirectory (하위): saves (OS userData 사용 시 OPRN-Games/${saveNamespace}/saves)`,
+        `  - Pattern (패턴)     : ${savePattern}`,
+        "  - OS                 : All (Windows / macOS / Linux & SteamOS)",
+        "",
+        "실제 인게임 저장 시 생성되는 파일:",
+        "  - saves/slot-01.oprn-save.json ~ slot-20.oprn-save.json (수동 슬롯)",
+        "  - saves/autosave.oprn-save.json (자동 저장)",
+        "  - saves/clear-record.oprn-save.json (클리어 / New Game+ 기록)",
+        "  - saves/gallery-record.oprn-save.json (갤러리 해금 기록)",
+        "",
+      ].join("\n"),
+    );
+
+    // 4. Steamworks SDK & SteamPipe Depot Builder Scripts (`steamworks/`)
+    addText("steam_appid.txt", `${steamAppId}\n`);
+    addText("steamworks/steam_appid.txt", `${steamAppId}\n`);
+    addText(
+      `steamworks/app_build_${steamAppId}.vdf`,
+      buildSteamAppVdf({
+        steamAppId,
+        steamDepotId,
+        title,
+        versionLabel,
+        platform,
+      }),
+    );
+    addText(
+      `steamworks/depot_build_${steamDepotId}.vdf`,
+      buildSteamDepotVdf({
+        steamDepotId,
+      }),
+    );
+    addText(
+      "steamworks/steam_input_manifest.vdf",
+      buildSteamInputManifestVdf(title),
+    );
+    addText(
+      "steamworks/STEAM_LAUNCH_CHECKLIST.md",
+      buildSteamLaunchChecklistMd({
+        title,
+        slug,
+        fileName,
+        platform,
+        executablePath,
+        nativeExecutablePath,
+        steamAppId,
+        steamDepotId,
+        displayMode,
+        savePattern,
+        saveNamespace,
+        versionLabel,
+      }),
+    );
+  }
 
   const sortedZipEntries = [...zipEntries].sort((a, b) => a.name.localeCompare(b.name));
   const blob = writeStoredZip(sortedZipEntries);
 
   return {
     blob,
-    fileName: desktopSteamExportFileName(project, {
-      platform,
-      versionLabel,
-      executableName: options.executableName,
-    }),
+    fileName,
     summary: {
       ...prepared.summary,
       platform,
@@ -481,9 +533,11 @@ export async function createDesktopSteamExportPackage(
       steamDepotId,
       displayMode,
       executablePath,
+      nativeExecutablePath,
+      saveNamespace,
       pakArchivePath,
-      pakArchiveBytes: pakBytes.length,
-      pakEntryCount: pakManifest.entryCount,
+      pakArchiveBytes,
+      pakEntryCount,
       savePattern: `saves/${savePattern}`,
       zipEntryCount: sortedZipEntries.length,
       entryNames: sortedZipEntries.map((entry) => entry.name),
@@ -528,21 +582,21 @@ function addPlatformLaunchers(options: {
   readonly steamAppId: number;
   readonly displayMode: DesktopDisplayMode;
   readonly addText: (name: string, content: string, unixMode?: number) => void;
-  readonly addBytes: (name: string, bytes: Uint8Array, unixMode?: number) => void;
 }): string {
-  const { platform, slug, title, versionLabel, steamAppId, displayMode, addText, addBytes } = options;
-  const windowFlags =
-    displayMode === "fullscreen"
-      ? "--start-fullscreen --window-size=1280,720"
-      : displayMode === "windowed-640p"
-        ? "--window-size=960,640"
-        : "--window-size=1280,720";
+  const { platform, slug, title, versionLabel, steamAppId, displayMode, addText } = options;
+
+  if (platform === "web-pwa") {
+    return "index.html";
+  }
+
+  // Zero-dependency local loopback HTTP launcher that reads resources/game.pak (OPAK) directly
+  // without CORS failures and bridges saves/*.oprn-save.json to disk.
+  addText("play-local.mjs", buildLocalPakHttpLauncherScript({ title, slug, displayMode }), UNIX_EXECUTABLE);
 
   if (platform === "win64-steam") {
-    const exeName = `${slug}.exe`;
-    addBytes(exeName, buildWindowsPe64LauncherStub(slug, title, steamAppId));
+    const launcherName = `Launch-${slug}.bat`;
     addText(
-      `Launch-${slug}.bat`,
+      launcherName,
       [
         "@echo off",
         "chcp 65001 >nul",
@@ -550,151 +604,244 @@ function addPlatformLaunchers(options: {
         "setlocal",
         `set STEAM_APPID=${steamAppId}`,
         'set "GAME_ROOT=%~dp0"',
-        'set "APP_INDEX=%GAME_ROOT%resources\\app\\index.html"',
-        'set "SAVE_DIR=%GAME_ROOT%saves"',
-        'if not exist "%SAVE_DIR%" mkdir "%SAVE_DIR%"',
-        "",
-        "REM Launch in dedicated borderless/app shell via Edge WebView2 / Chromium App Mode",
-        'for %%B in ("msedge.exe" "chrome.exe") do (',
-        '  where %%~B >nul 2>nul && (',
-        `    start "" %%~B --app="file:///%APP_INDEX:\\=/%" ${windowFlags} --user-data-dir="%SAVE_DIR%\\runtime-profile" --disable-features=Translate`,
-        "    exit /b 0",
-        "  )",
+        'where node >nul 2>nul',
+        "if errorlevel 1 (",
+        "  echo [OPRN] Node.js 20+ is required to run this local test launcher.",
+        "  echo [OPRN] For standalone Steam distribution without Node.js, package with:",
+        "  echo        npm run build:desktop-game -- --input ^<exported-kit.zip^> --platform win",
+        "  pause",
+        "  exit /b 1",
         ")",
-        'start "" "%APP_INDEX%"',
+        'node "%GAME_ROOT%play-local.mjs" %*',
         "",
       ].join("\r\n"),
     );
-    return exeName;
+    return launcherName;
   }
 
   if (platform === "linux64-steamos") {
-    const binName = `${slug}.x86_64`;
-    addBytes(binName, buildLinuxElf64LauncherStub(slug, title, steamAppId), UNIX_EXECUTABLE);
+    const launcherName = `Launch-${slug}.sh`;
     addText(
-      `Launch-${slug}.sh`,
+      launcherName,
       [
         "#!/usr/bin/env bash",
         "set -euo pipefail",
         'SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"',
         `export SteamAppId="${steamAppId}"`,
         `export SteamGameId="${steamAppId}"`,
-        'mkdir -p "${SCRIPT_DIR}/saves"',
-        'APP_PATH="${SCRIPT_DIR}/resources/app/index.html"',
-        '# Chromium cuts a file URL at the first space. Steam library folders often contain one.',
-        'APP_URL="file://${APP_PATH// /%20}"',
-        // flatpak-spawn is a sandbox helper, not a browser. SteamOS has it on PATH,
-        // so listing it here used to exec it and never reach xdg-open.
-        'for BROWSER in chromium chromium-browser google-chrome xdg-open; do',
-        '  if command -v "$BROWSER" >/dev/null 2>&1; then',
-        '    if [[ "$BROWSER" == "xdg-open" ]]; then',
-        '      exec xdg-open "${APP_PATH}"',
-        "    else",
-        `      exec "$BROWSER" --app="\${APP_URL}" ${windowFlags} --user-data-dir="\${SCRIPT_DIR}/saves/runtime-profile"`,
-        "    fi",
-        "  fi",
-        "done",
-        "printf '%s\\n' 'No browser found. Open resources/app/index.html yourself.' >&2",
-        "exit 1",
+        'if ! command -v node >/dev/null 2>&1; then',
+        "  printf '%s\\n' '[OPRN] Node.js 20+ is required for this local test launcher.' >&2",
+        "  printf '%s\\n' '[OPRN] Build a standalone Electron binary with: npm run build:desktop-game -- --input <kit.zip> --platform linux' >&2",
+        "  exit 1",
+        "fi",
+        'exec node "${SCRIPT_DIR}/play-local.mjs" "$@"',
         "",
       ].join("\n"),
       UNIX_EXECUTABLE,
     );
-    return binName;
+    return launcherName;
   }
 
-  if (platform === "macos-universal") {
-    const appExecutable = `${slug}.app/Contents/MacOS/${slug}`;
-    addText(
-      `${slug}.app/Contents/Info.plist`,
-      [
-        '<?xml version="1.0" encoding="UTF-8"?>',
-        '<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">',
-        '<plist version="1.0">',
-        "<dict>",
-        "  <key>CFBundleDisplayName</key>",
-        `  <string>${escapeXml(title)}</string>`,
-        "  <key>CFBundleExecutable</key>",
-        `  <string>${escapeXml(slug)}</string>`,
-        "  <key>CFBundleIdentifier</key>",
-        `  <string>com.oprn.game.${escapeXml(slug.toLowerCase())}</string>`,
-        "  <key>CFBundleName</key>",
-        `  <string>${escapeXml(title)}</string>`,
-        "  <key>CFBundlePackageType</key>",
-        "  <string>APPL</string>",
-        "  <key>CFBundleShortVersionString</key>",
-        `  <string>${escapeXml(versionLabel)}</string>`,
-        "  <key>NSHighResolutionCapable</key>",
-        "  <true/>",
-        "</dict>",
-        "</plist>",
-        "",
-      ].join("\n"),
-    );
-    addText(
-      appExecutable,
-      [
-        "#!/usr/bin/env bash",
-        "set -euo pipefail",
-        'MACOS_DIR="$(cd "$(dirname "$0")" && pwd)"',
-        'ROOT_DIR="$(cd "${MACOS_DIR}/../../.." && pwd)"',
-        `export SteamAppId="${steamAppId}"`,
-        'mkdir -p "${ROOT_DIR}/saves"',
-        'APP_PATH="${ROOT_DIR}/resources/app/index.html"',
-        'APP_URL="file://${APP_PATH// /%20}"',
-        'open -a "Google Chrome" --args --app="${APP_URL}" ' + windowFlags + ' || open "${APP_PATH}"',
-        "",
-      ].join("\n"),
-      UNIX_EXECUTABLE,
-    );
-    return appExecutable;
-  }
-
-  return "index.html";
+  // macos-universal
+  const launcherName = `Launch-${slug}.command`;
+  addText(
+    launcherName,
+    [
+      "#!/usr/bin/env bash",
+      "set -euo pipefail",
+      'SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"',
+      `export SteamAppId="${steamAppId}"`,
+      'if ! command -v node >/dev/null 2>&1; then',
+      "  printf '%s\\n' '[OPRN] Node.js 20+ is required for this local test launcher.' >&2",
+      "  printf '%s\\n' '[OPRN] Build a standalone Electron .app with: npm run build:desktop-game -- --input <kit.zip> --platform mac' >&2",
+      "  exit 1",
+      "fi",
+      'exec node "${SCRIPT_DIR}/play-local.mjs" "$@"',
+      "",
+    ].join("\n"),
+    UNIX_EXECUTABLE,
+  );
+  return launcherName;
 }
 
 /**
- * Windows x64 PE 헤더 스텁 + 런처 메타데이터 블록.
- * SteamPipe depot_build 검증 및 Windows 파일 탐색기/Steam 클라이언트 타겟 지정에 사용된다.
+ * Generates a self-contained Node ESM loopback server (`play-local.mjs`) that serves
+ * `resources/game.pak` (OPAK v1) or `resources/app/` over `http://127.0.0.1:<port>/`
+ * with zero CORS failures and real file-backed save sync (`saves/*.oprn-save.json`).
  */
-function buildWindowsPe64LauncherStub(slug: string, title: string, steamAppId: number): Uint8Array {
-  const banner = `OPRN-WIN64-STEAM-LAUNCHER|slug=${slug}|title=${title}|steamAppId=${steamAppId}|entry=resources/app/index.html|pak=resources/game.pak`;
-  const bannerBytes = encoder.encode(banner);
-  const size = Math.max(512, 128 + bannerBytes.length);
-  const bytes = new Uint8Array(size);
-  // MZ header magic
-  bytes[0] = 0x4d; // 'M'
-  bytes[1] = 0x5a; // 'Z'
-  bytes[0x3c] = 0x40; // e_lfanew -> 0x40
-  // PE\0\0 signature at 0x40
-  bytes[0x40] = 0x50; // 'P'
-  bytes[0x41] = 0x45; // 'E'
-  bytes[0x42] = 0x00;
-  bytes[0x43] = 0x00;
-  // Machine: IMAGE_FILE_MACHINE_AMD64 (0x8664)
-  bytes[0x44] = 0x64;
-  bytes[0x45] = 0x86;
-  bytes.set(bannerBytes, 128);
-  return bytes;
+function buildLocalPakHttpLauncherScript(options: {
+  readonly title: string;
+  readonly slug: string;
+  readonly displayMode: DesktopDisplayMode;
+}): string {
+  const defaultMode = JSON.stringify(options.displayMode);
+  const titleJson = JSON.stringify(options.title);
+  return `#!/usr/bin/env node
+// OPRN Local Loopback Launcher — serves resources/game.pak (OPAK v1) over 127.0.0.1 with zero CORS errors.
+import { spawn } from "node:child_process";
+import { closeSync, existsSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, renameSync, statSync, writeFileSync } from "node:fs";
+import { createServer } from "node:http";
+import { dirname, extname, join, resolve, sep } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const ROOT = dirname(fileURLToPath(import.meta.url));
+const RESOURCES = join(ROOT, "resources");
+const SAVES_DIR = join(ROOT, "saves");
+const PAK_PATH = join(RESOURCES, "game.pak");
+const APP_DIR = join(RESOURCES, "app");
+const MIME = {
+  ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8",
+  ".mjs": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8",
+  ".json": "application/json; charset=utf-8", ".wasm": "application/wasm",
+  ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
+  ".gif": "image/gif", ".webp": "image/webp", ".svg": "image/svg+xml",
+  ".woff": "font/woff", ".woff2": "font/woff2", ".ttf": "font/ttf",
+  ".mp3": "audio/mpeg", ".ogg": "audio/ogg", ".wav": "audio/wav",
+  ".mp4": "video/mp4", ".webm": "video/webm",
+};
+
+function openPak(filePath) {
+  const fd = openSync(filePath, "r");
+  const prefix = Buffer.allocUnsafe(12);
+  readSync(fd, prefix, 0, 12, 0);
+  if (prefix.toString("ascii", 0, 4) !== "OPAK") throw new Error("Invalid OPAK header");
+  const headerLen = prefix.readUInt32LE(8);
+  const headerBuf = Buffer.allocUnsafe(headerLen);
+  readSync(fd, headerBuf, 0, headerLen, 12);
+  const manifest = JSON.parse(headerBuf.toString("utf8"));
+  const map = new Map(manifest.entries.map((e) => [e.path, e]));
+  const payloadStart = 12 + headerLen;
+  return {
+    read(relPath) {
+      const meta = map.get(relPath) || (relPath === "index.html" ? map.get("player.html") : null);
+      if (!meta) return null;
+      const out = Buffer.allocUnsafe(meta.size);
+      readSync(fd, out, 0, meta.size, payloadStart + meta.offset);
+      return out;
+    },
+    close() { closeSync(fd); },
+  };
 }
 
-/** Linux x86_64 ELF 헤더 스텁 + 런처 메타데이터 블록 (SteamOS / Proton / Native Linux Depot 용). */
-function buildLinuxElf64LauncherStub(slug: string, title: string, steamAppId: number): Uint8Array {
-  const banner = `OPRN-LINUX64-STEAMOS-LAUNCHER|slug=${slug}|title=${title}|steamAppId=${steamAppId}|entry=resources/app/index.html|pak=resources/game.pak`;
-  const bannerBytes = encoder.encode(banner);
-  const size = Math.max(256, 64 + bannerBytes.length);
-  const bytes = new Uint8Array(size);
-  // \x7FELF magic
-  bytes[0] = 0x7f;
-  bytes[1] = 0x45; // 'E'
-  bytes[2] = 0x4c; // 'L'
-  bytes[3] = 0x46; // 'F'
-  bytes[4] = 2; // ELFCLASS64
-  bytes[5] = 1; // ELFDATA2LSB
-  bytes[6] = 1; // EV_CURRENT
-  bytes[18] = 0x3e; // EM_X86_64
-  bytes.set(bannerBytes, 64);
-  return bytes;
+function safeSavePath(raw) {
+  const clean = String(raw || "").replaceAll("\\\\", "/").replace(/^saves\\//, "");
+  if (!/^[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}$/.test(clean) || clean.includes("..")) {
+    throw new Error("Unsafe save path");
+  }
+  const abs = resolve(SAVES_DIR, clean);
+  if (!abs.startsWith(resolve(SAVES_DIR) + sep)) throw new Error("Escapes saves/");
+  return abs;
+}
+
+const LOCAL_BRIDGE_SCRIPT = \`<script>
+window.__oprnDesktopPlayer = window.__oprnDesktopPlayer || {
+  async writeSaveFile(path, content) {
+    await fetch("/__oprn-desktop/save?path=" + encodeURIComponent(path), { method: "PUT", body: content });
+  },
+  async readSaveFile(path) {
+    const r = await fetch("/__oprn-desktop/save?path=" + encodeURIComponent(path));
+    return r.ok ? r.text() : null;
+  },
+  async listSaveFiles() {
+    const r = await fetch("/__oprn-desktop/saves");
+    return r.ok ? r.json() : [];
+  },
+  async quit() {
+    await fetch("/__oprn-desktop/quit", { method: "POST" }).catch(() => {});
+    window.close();
+  },
+};
+</script>\`;
+
+const pak = existsSync(PAK_PATH) ? openPak(PAK_PATH) : null;
+mkdirSync(SAVES_DIR, { recursive: true });
+
+const server = createServer(async (req, res) => {
+  try {
+    const url = new URL(req.url || "/", "http://127.0.0.1");
+    if (url.pathname === "/__oprn-desktop/saves" && req.method === "GET") {
+      const files = readdirSync(SAVES_DIR)
+        .filter((f) => f.endsWith(".oprn-save.json") && statSync(join(SAVES_DIR, f)).isFile())
+        .sort()
+        .map((f) => "saves/" + f);
+      res.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+      res.end(JSON.stringify(files));
+      return;
+    }
+    if (url.pathname === "/__oprn-desktop/save") {
+      const abs = safeSavePath(url.searchParams.get("path"));
+      if (req.method === "GET") {
+        if (!existsSync(abs)) { res.writeHead(404); res.end(); return; }
+        res.writeHead(200, { "content-type": "application/json; charset=utf-8" });
+        res.end(readFileSync(abs, "utf8"));
+        return;
+      }
+      if (req.method === "PUT") {
+        const chunks = [];
+        for await (const c of req) chunks.push(c);
+        const tmp = abs + ".tmp-" + process.pid;
+        writeFileSync(tmp, Buffer.concat(chunks));
+        renameSync(tmp, abs);
+        res.writeHead(204);
+        res.end();
+        return;
+      }
+    }
+    if (url.pathname === "/__oprn-desktop/quit" && req.method === "POST") {
+      res.writeHead(204);
+      res.end();
+      setTimeout(() => { pak?.close(); server.close(() => process.exit(0)); }, 100);
+      return;
+    }
+
+    const rawPath = decodeURIComponent(url.pathname).replace(/^\\/+/, "") || "index.html";
+    if (rawPath.includes("..") || rawPath.includes("\\0")) { res.writeHead(400); res.end("Bad path"); return; }
+
+    let body = pak ? pak.read(rawPath) : null;
+    if (!body && !pak) {
+      const abs = resolve(APP_DIR, rawPath);
+      if (abs.startsWith(resolve(APP_DIR) + sep) && existsSync(abs)) body = readFileSync(abs);
+    }
+    if (!body) { res.writeHead(404); res.end("Not Found"); return; }
+
+    const mime = MIME[extname(rawPath).toLowerCase()] || "application/octet-stream";
+    if (rawPath === "index.html" || rawPath === "player.html") {
+      const html = body.toString("utf8").replace("</head>", LOCAL_BRIDGE_SCRIPT + "\\n</head>");
+      res.writeHead(200, { "content-type": mime, "cache-control": "no-store" });
+      res.end(html);
+      return;
+    }
+    res.writeHead(200, { "content-type": mime, "cache-control": "no-store" });
+    res.end(body);
+  } catch (error) {
+    res.writeHead(500);
+    res.end(String(error));
+  }
+});
+
+const portArgIdx = process.argv.indexOf("--port");
+const listenPort = portArgIdx >= 0 ? Number.parseInt(process.argv[portArgIdx + 1] || "0", 10) : 0;
+server.listen(listenPort, "127.0.0.1", () => {
+  const addr = server.address();
+  const url = \`http://127.0.0.1:\${addr.port}/\`;
+  process.stdout.write(\`[\${${titleJson}}] Running at \${url} (Ctrl+C to stop)\\n\`);
+  if (process.argv.includes("--no-open")) return;
+  const fullscreen = process.argv.includes("--fullscreen") || (!process.argv.includes("--windowed") && ${defaultMode} === "fullscreen");
+  const flags = fullscreen ? ["--start-fullscreen", "--window-size=1280,720"] : ["--window-size=1280,720"];
+  if (process.platform === "win32") {
+    spawn("cmd", ["/c", "start", "", url], { detached: true, stdio: "ignore" }).unref();
+  } else if (process.platform === "darwin") {
+    spawn("open", [url], { detached: true, stdio: "ignore" }).unref();
+  } else {
+    const child = spawn("xdg-open", [url], { detached: true, stdio: "ignore" });
+    child.on("error", () => {
+      spawn("chromium", [\`--app=\${url}\`, ...flags], { detached: true, stdio: "ignore" }).unref();
+    });
+    child.unref();
+  }
+});
+process.on("SIGINT", () => { pak?.close(); server.close(() => process.exit(0)); });
+`;
 }
 
 function injectDesktopBootConfig(
@@ -705,19 +852,21 @@ function injectDesktopBootConfig(
     readonly platform: DesktopExportPlatform;
     readonly steamAppId: number;
     readonly displayMode: DesktopDisplayMode;
+    readonly saveNamespace: string;
     readonly enableSteamAutoCloud: boolean;
     readonly enableSteamInputGamepad: boolean;
   },
 ): string {
   const bootPayload = {
     hostFeatures: ["fullscreen", "exit"],
-    saveNamespace: `steam-app-${config.steamAppId}-${config.slug}`,
+    saveNamespace: config.saveNamespace,
     desktopShell: {
       enabled: true,
       platform: config.platform,
       steamAppId: config.steamAppId,
       displayMode: config.displayMode,
       saveDirectory: "saves",
+      saveNamespace: config.saveNamespace,
       savePattern: "saves/*.oprn-save.json",
       pakArchive: "resources/game.pak",
       steamAutoCloud: config.enableSteamAutoCloud,
@@ -769,7 +918,10 @@ function buildSteamDepotVdf(options: { readonly steamDepotId: number }): string 
     '    "DepotPath" "."',
     '    "recursive" "1"',
     "  }",
+    '  "FileExclusion" "saves/*"',
     '  "FileExclusion" "steamworks/*"',
+    '  "FileExclusion" "play-local.mjs"',
+    '  "FileExclusion" "Launch-*"',
     '  "FileExclusion" "*.pdb"',
     "}",
     "",
@@ -824,51 +976,79 @@ function buildSteamInputManifestVdf(title: string): string {
 function buildSteamLaunchChecklistMd(options: {
   readonly title: string;
   readonly slug: string;
+  readonly fileName: string;
   readonly platform: DesktopExportPlatform;
   readonly executablePath: string;
+  readonly nativeExecutablePath: string;
   readonly steamAppId: number;
   readonly steamDepotId: number;
   readonly displayMode: DesktopDisplayMode;
   readonly savePattern: string;
+  readonly saveNamespace: string;
   readonly versionLabel: string;
 }): string {
   const spec = DESKTOP_PLATFORM_SPECS[options.platform];
+  const cliPlatform =
+    options.platform === "win64-steam"
+      ? "win"
+      : options.platform === "linux64-steamos"
+        ? "linux"
+        : "mac";
   return [
     `# ${options.title} — Steamworks & 데스크톱 출시 체크리스트 (v${options.versionLabel})`,
     "",
-    "## 1. 패키지 구조 요약",
+    "## 1. 이 ZIP(패키징 키트)의 역할과 즉시 테스트",
     `- **빌드 타겟**: ${spec.label}`,
-    `- **실행 진입점 (Executable)**: \`${options.executablePath}\``,
-    "- **패키징된 에셋 아카이브**: `resources/game.pak` (`OPAK` 바이너리 컨테이너 — 원본 JSON/PNG 루트 노출 차단)",
-    `- **로컬 세이브 경로**: \`saves/${options.savePattern}\` (Steam Auto-Cloud 자동 동기화 대응)`,
+    `- **로컬 즉시 실행 테스트**: 압축 해제 후 \`${options.executablePath}\` (또는 \`node play-local.mjs\`) 실행`,
+    "  - `play-local.mjs`는 `resources/game.pak`을 `http://127.0.0.1` 루프백으로 서빙하여 `file://` CORS 오류 없이 바로 실행되고 `saves/`에 실제 저장됩니다.",
+    "- **에셋 아카이브**: `resources/game.pak` (`OPAK` v1 바이너리 컨테이너 — 평문 중복 복사 없음)",
+    `- **세이브 네임스페이스**: \`${options.saveNamespace}\` (체험판→본편 인계 시 동일 그룹 ID 유지)`,
     `- **Steam App ID / Depot ID**: \`${options.steamAppId}\` / \`${options.steamDepotId}\``,
     "",
-    "## 2. Steamworks Partner 포털 설정 (Installation -> General)",
+    "## 2. Electron 네이티브 실행 앱(.exe / Linux / .app) 패키징 (Steam 업로드 전 필수)",
+    "플레이어 PC에 Node.js나 브라우저가 없어도 실행되는 실제 Electron 앱으로 감쌉니다:",
+    "```bash",
+    `npm run build:desktop-game -- --input "./${options.fileName}" --platform ${cliPlatform}`,
+    "```",
+    `- 생성된 unpacked 앱 폴더(\`dist-desktop-games/${options.slug}-${cliPlatform}/\`)에 실제 \`${options.nativeExecutablePath}\`와 \`resources/game.pak\`이 포함됩니다.`,
+    "- Electron 플레이어는 `oprn-game://app/` 커스텀 프로토콜로 `resources/game.pak`을 직접 읽고 `window.__oprnDesktopPlayer`로 원자적 파일 세이브·전체화면·스크린샷·앱 종료를 처리합니다.",
+    "",
+    "## 3. Steamworks Partner 포털 설정 (Installation -> General)",
     "- **Launch Option 0**:",
-    `  - **Executable**: \`${options.executablePath}\``,
+    `  - **Executable**: \`${options.nativeExecutablePath}\``,
     `  - **Arguments**: \`${options.displayMode === "fullscreen" ? "--fullscreen" : "--windowed"}\``,
     `  - **Operating System**: \`${spec.steamOsList}\` (${spec.steamArch}-bit)`,
     "",
-    "## 3. Steam Auto-Cloud 설정 (Application -> Steam Cloud)",
-    "- 별도의 C++ Steamworks SDK 연동 없이 **Steam Auto-Cloud** 만으로 PC · Steam Deck 간 세이브가 완벽히 동기화됩니다.",
-    "- **Root**: `GameInstall` (게임 설치 폴더)",
-    "- **Subdirectory**: `saves`",
-    `- **Pattern**: \`${options.savePattern}\``,
-    "- **OS**: `All`",
+    "## 4. Steam Auto-Cloud 설정 (Application -> Steam Cloud)",
+    "- `depot_build.vdf`는 `saves/*`를 업로드에서 자동 제외하므로 게임 업데이트가 유저 세이브를 덮어쓰지 않습니다.",
+    "- **Windows / Linux (설치 폴더 쓰기 가능 시)**:",
+    "  - **Root**: `GameInstall`",
+    "  - **Subdirectory**: `saves`",
+    `  - **Pattern**: \`${options.savePattern}\``,
+    "- **macOS / 읽기 전용 설치 폴더 폴백 (OS 표준 userData)**:",
+    "  - Windows: `WinAppDataRoaming` · Subdirectory: `OPRN-Games/" + options.saveNamespace + "/saves`",
+    "  - macOS: `MacAppSupport` · Subdirectory: `OPRN-Games/" + options.saveNamespace + "/saves`",
+    "  - Linux: `LinuxXdgConfigHome` · Subdirectory: `OPRN-Games/" + options.saveNamespace + "/saves`",
     "",
-    "## 4. SteamPipe 업로드 명령어",
+    "## 5. macOS 코드 서명 및 공증 (macOS 출시 시 필수)",
+    "- macOS Gatekeeper 경고를 피하려면 Apple Developer ID 인증서로 `.app` 번들을 서명하고 공증해야 합니다:",
+    "```bash",
+    `codesign --deep --force --options runtime --sign "Developer ID Application: <Your Name>" "${options.slug}.app"`,
+    `xcrun notarytool submit "${options.slug}.zip" --keychain-profile "<profile>" --wait`,
+    `xcrun stapler staple "${options.slug}.app"`,
+    "```",
+    "",
+    "## 6. SteamPipe 업로드 명령어",
+    "Electron 패키징 출력 폴더 안에서 `steamworks/` VDF를 실행합니다:",
     "```bash",
     `steamcmd +login <steam_partner_username> +run_app_build "./steamworks/app_build_${options.steamAppId}.vdf" +quit`,
     "```",
     "",
-    "## 5. 내장 데스크톱 단축키 및 컨트롤러 지원",
-    "- **전체화면 전환**: `F11` 또는 `Alt + Enter` (창 우상단 ⛶ 버튼 포함)",
+    "## 7. 내장 데스크톱 단축키 및 컨트롤러 지원",
+    "- **전체화면 전환**: `F11` 또는 `Alt + Enter`",
+    "- **스크린샷 저장**: `F12` (`saves/screenshots/` PNG 저장)",
+    "- **게임 종료**: 타이틀 메뉴 「게임 종료」 → 네이티브 앱 즉시 종료",
     "- **게임패드 자동 인식**: Xbox / DualSense / Steam Deck 내장 패드 즉시 지원",
-    "  - 좌측 스틱 / D-Pad: 방향키 이동",
-    "  - A (남쪽 버튼): 결정 / 조사 (`Enter` / `Z`)",
-    "  - B (동쪽 버튼): 취소 / 메뉴 (`Escape` / `X`)",
-    "  - X (서쪽 버튼) / LB: 대시 (`Shift`)",
-    "  - Start / Y: 시스템 메뉴 (`Escape`)",
     "",
   ].join("\n");
 }
@@ -894,12 +1074,4 @@ function vdfText(text: string): string {
 function normalizePositiveInt(value: number | undefined, fallback: number): number {
   if (typeof value !== "number" || !Number.isFinite(value) || value < 1) return fallback;
   return Math.trunc(value);
-}
-
-function escapeXml(text: string): string {
-  return text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }

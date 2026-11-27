@@ -1,6 +1,8 @@
 /** Device preferences deliberately live outside project/session/save codecs. */
 import { isTouchStickMode, type TouchStickMode } from '@/project/touchControls';
 import { DIALOGUE_SPEEDS, SKIP_SCOPES, WINDOW_OPACITY_MAX, WINDOW_OPACITY_MIN, type AuthoredDialogueSystem, type DialogueSpeed, type SkipScope } from '@/project/dialogueSystem';
+import { normalizeCustomKeyBindings, setCustomKeyBindings, type RemappableAction } from '@/player/keyBindings';
+import type { PlaySurfaceScaleMode } from '@/project/playSurfaceScaleMode';
 export const PLAYER_PREFERENCES_KEY = 'oprn:player-preferences:v1';
 export type PlayerPreferences = {
   bgm: number;
@@ -27,6 +29,10 @@ export type PlayerPreferences = {
   touchHaptics?: boolean;
   /** 플레이어가 대사 속도를 직접 골랐다. 이게 없으면 게임 저작 값이 시작값이다(textSpeed 는 늘 값이 있어 따로 표시한다). */
   textSpeedChosen?: true;
+  /** 화면 스케일 모드(정수 픽셀 vs 화면 맞춤). 생략 = 프로젝트 저작 값. */
+  displayScaleMode?: PlaySurfaceScaleMode;
+  /** 사용자 지정 키보드 조작 매핑. 생략 = 기본 RM2003/WASD 바인딩. */
+  keyBindings?: Partial<Record<RemappableAction, string[]>>;
 };
 export const DEFAULT_PLAYER_PREFERENCES: Readonly<PlayerPreferences> = {
   bgm: 0.7, se: 0.8, voice: 0.8, textSpeed: 'normal', reduceMenuMotion: false,
@@ -36,6 +42,7 @@ export function normalizePlayerPreferences(value: unknown): PlayerPreferences {
   const input = value && typeof value === 'object' ? value as Partial<PlayerPreferences> : {};
   const volume = (v: unknown, fallback: number) => typeof v === 'number' && Number.isFinite(v)
     ? Math.max(0, Math.min(1, v)) : fallback;
+  const keyBindings = normalizeCustomKeyBindings(input.keyBindings);
   return {
     bgm: volume(input.bgm, 0.7), se: volume(input.se, 0.8), voice: volume(input.voice, 0.8),
     textSpeed: input.textSpeed === 'slow' || input.textSpeed === 'fast' ? input.textSpeed : 'normal',
@@ -51,6 +58,8 @@ export function normalizePlayerPreferences(value: unknown): PlayerPreferences {
     ...(typeof input.touchHaptics === 'boolean' ? { touchHaptics: input.touchHaptics } : {}),
     // 표식이 없던 예전 저장본(이 필드가 생기기 전)에서 보통이 아닌 속도는 플레이어가 직접 고른 값이다 — 한 번 승격해 연애 게임의 저작 시작값에 덮이지 않게 한다.
     ...(input.textSpeedChosen === true || input.textSpeed === 'slow' || input.textSpeed === 'fast' ? { textSpeedChosen: true as const } : {}),
+    ...(input.displayScaleMode === 'integer' || input.displayScaleMode === 'fit' ? { displayScaleMode: input.displayScaleMode } : {}),
+    ...(keyBindings ? { keyBindings } : {}),
   };
 }
 function deviceStorage(): PreferenceStorage | undefined {
@@ -61,23 +70,39 @@ export function readPlayerPreferences(storage = deviceStorage()): PlayerPreferen
   catch { return { ...DEFAULT_PLAYER_PREFERENCES }; }
 }
 let current: PlayerPreferences | undefined;
+function ensureCurrentPreferences(): PlayerPreferences {
+  if (!current) {
+    current = readPlayerPreferences();
+    setCustomKeyBindings(current.keyBindings);
+  }
+  return current;
+}
 export function getPlayerPreferences(): PlayerPreferences {
-  return { ...(current ??= readPlayerPreferences()) };
+  const prefs = ensureCurrentPreferences();
+  return {
+    ...prefs,
+    ...(prefs.keyBindings ? { keyBindings: Object.fromEntries(Object.entries(prefs.keyBindings).map(([k, v]) => [k, v ? [...v] : v])) as PlayerPreferences['keyBindings'] } : {}),
+  };
 }
 /** 매 프레임 읽는다 — 복사본을 만들지 않는다. */
 export function playerAlwaysRun(): boolean {
-  return (current ??= readPlayerPreferences()).alwaysRun === true;
+  return ensureCurrentPreferences().alwaysRun === true;
 }
 export function updatePlayerPreferences(patch: Partial<PlayerPreferences>, storage = deviceStorage()): boolean {
   // textSpeed 를 주면 플레이어가 직접 고른 것이다(게임 저작 시작값보다 우선). 호출자가 textSpeedChosen 을 직접 주면(초기화 등) 그 값을 따른다.
   current = normalizePlayerPreferences({ ...getPlayerPreferences(), ...patch, ...(patch.textSpeed !== undefined && !('textSpeedChosen' in patch) ? { textSpeedChosen: true } : {}) });
-  // 같은 창의 다른 UI(터치 달리기 단추 등)가 바뀐 값을 바로 그리게 알린다.
+  setCustomKeyBindings(current.keyBindings);
+  // 같은 창의 다른 UI(터치 달리기 단추·화면 스케일 등)가 바뀐 값을 바로 그리게 알린다.
   try { if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('oprn:player-preferences')); } catch { /* 이벤트 없음 */ }
   try {
     if (!storage) return false;
     storage.setItem(PLAYER_PREFERENCES_KEY, JSON.stringify(current));
     return true;
   } catch { return false; }
+}
+/** 사용자 지정 키 바인딩을 전부 기본값으로 되돌린다. */
+export function resetKeyBindings(storage = deviceStorage()): boolean {
+  return updatePlayerPreferences({ keyBindings: undefined }, storage);
 }
 /** 지금 실행 중인 게임이 저작한 시작값. 대사창·설정 화면이 프로젝트를 읽을 때마다 맞춘다(없으면 undefined = 옛 동작). */
 let authoredDefaults: AuthoredDialogueSystem['defaults'] | undefined;

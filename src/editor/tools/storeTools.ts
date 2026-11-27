@@ -322,7 +322,7 @@ export function clearStoreMusicCache(): void {
 }
 
 /** 음악 팩 목록(전부) → 매니페스트(slug@판본 캐시) → 곡. 목록이 상한에 걸렸을 때만 검색어로 한 번 더 찾아 앞에 둔다(서버 검색은 팩 제목·태그만 본다). */
-async function loadStoreMusic(access: StoreReadAccess, query: string): Promise<StoreMusicTrack[]> {
+export async function loadStoreMusic(access: StoreReadAccess, query: string): Promise<StoreMusicTrack[]> {
   const listed = await listAllStoreMusicPacks(access);
   const searched = query && !listed.complete ? ((await searchStoreCatalog((input) => access.catalog(input), query, "music").catch(() => null))?.items ?? []).filter((item) => item.kind === "music") : [];
   const items = [...new Map([...searched, ...listed.items].map((item) => [item.slug, item])).values()].slice(0, MUSIC_PACK_CAP);

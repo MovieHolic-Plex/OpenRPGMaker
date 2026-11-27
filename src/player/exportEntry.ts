@@ -25,8 +25,10 @@ import {
 } from "@/project/defaults/bundledJson";
 import { OPRN_EXTENSION } from "@/project/package";
 import { isFlagshipDemoId, type FlagshipDemoId } from "@/project/flagship/types";
+import { translateProjectContent } from "@/project/localization";
 import type { Project } from "@/project/types";
 import { renderPlayer } from "@/player/player";
+import { runtimeUiLocale } from "@/player/runtimeUiStrings";
 import { renderOprnGameFilePicker } from "@/player/oprnGameFilePicker";
 import { readStandalonePayload } from "@/player/standalonePayload";
 import { adoptLegacyExportSaves, setSaveSlotStorageNamespace } from "@/player/saveSlots";
@@ -37,7 +39,12 @@ import {
   type ExportProjectSource,
 } from "@/player/exportSaveNamespace";
 import { hostExitReturnUrl, parseHostBridge, type HostBridge } from "@/player/hostBridge";
-import { installDesktopShellBridge, type DesktopShellBootConfig } from "@/player/desktopShellBridge";
+import {
+  hydrateSavesFromDesktopHost,
+  installDesktopShellBridge,
+  quitDesktopPlayer,
+  type DesktopShellBootConfig,
+} from "@/player/desktopShellBridge";
 import { getAudioEngine, stopAllAudio } from "@/player/audio";
 import { fetchTextWithProgress, mountBootLoader, readLoadingInfo, type BootLoader } from "@/player/bootLoader";
 import { backgroundUrls, enableScenePreload, fetchBlobWithRetry, firstPlayableUrls, preloadUrls } from "@/player/scenePreload";
@@ -422,14 +429,21 @@ async function startPlayer(
     if (source === "opened-file") {
       await preloadBundledJsonForProject(project);
     }
-    installExportUploadedAssets(project);
+    // Derive save namespace from the authored (pre-translation) project so switching locales keeps saves intact.
+    const authoredProject = project;
+    const activeLocale = runtimeUiLocale(project);
+    const localizedProject = project.meta.localizations && Object.keys(project.meta.localizations).length > 0
+      ? translateProjectContent(project, activeLocale)
+      : project;
+    installExportUploadedAssets(localizedProject);
     // 옛 저장본에서 내보낸 게임도 에디터와 같은 얼굴을 보여 준다(faceMatchRepair.ts — 걷기 그림의 짝으로 교정).
-    repairFaceMatches(project);
-    setExportedProject(project);
+    repairFaceMatches(localizedProject);
+    setExportedProject(localizedProject);
+    project = localizedProject;
     // 에디터 boot 를 거치지 않는 웹·단일 HTML 플레이어도 저장된 공통 글꼴을 쓴다.
     syncProjectFontTheme(project);
     const storeGame = parseStoreGameBoot(boot.storeGame);
-    const saveNamespace = storeGame && source === "bundled" ? storeGameSaveNamespace(storeGame) : resolveExportSaveNamespace(project, {
+    const saveNamespace = storeGame && source === "bundled" ? storeGameSaveNamespace(storeGame) : resolveExportSaveNamespace(authoredProject, {
       source,
       hostSaveNamespace: boot.saveNamespace,
       pathname: window.location.pathname,
@@ -440,6 +454,12 @@ async function startPlayer(
       adoptLegacyExportSaves(window.localStorage, saveNamespace);
     } catch (error) {
       console.warn("[oprn] 옛 세이브 입양을 건너뜁니다:", error);
+    }
+    // 데스크톱 호스트(Electron / 로컬 런처)의 saves/*.oprn-save.json 을 localStorage 로 복원·동기화한다.
+    try {
+      await hydrateSavesFromDesktopHost(saveNamespace, window.localStorage);
+    } catch (error) {
+      console.warn("[oprn] 데스크톱 세이브 파일 동기화를 건너뜁니다:", error);
     }
     // 스토어 웹 게임: 계정 클라우드 세이브와 맞춘다(storeCloudSync.ts). 다리가 없으면(새 창·내보낸 게임) 아무것도 하지 않는다.
     if (storeGame && source === "bundled") {
@@ -497,15 +517,25 @@ function renderBootError(root: HTMLElement, message: string): void {
   root.append(panel);
 }
 
-// 타이틀 "게임 종료": exit 기능 + 유효한 returnUrl 이면 호스트 페이지로 복귀, 아니면 기존 안내 유지.
+// 타이틀 "게임 종료": 데스크톱 네이티브 호스트면 앱 종료(실패 시 폴백), 웹 호스트 returnUrl 이면 복귀, 아니면 기존 안내 유지.
 function exitToHost(root: HTMLElement, host: HostBridge): void {
-  const returnUrl = hostExitReturnUrl(host);
-  if (returnUrl) {
+  const runFallback = (): void => {
+    const returnUrl = hostExitReturnUrl(host);
+    if (returnUrl) {
+      stopAllAudio();
+      window.location.assign(returnUrl);
+      return;
+    }
+    renderTitleExit(root);
+  };
+  if (typeof window.__oprnDesktopPlayer?.quit === "function") {
     stopAllAudio();
-    window.location.assign(returnUrl);
+    void quitDesktopPlayer().then((closed) => {
+      if (!closed) runFallback();
+    });
     return;
   }
-  renderTitleExit(root);
+  runFallback();
 }
 
 function renderTitleExit(root: HTMLElement): void {

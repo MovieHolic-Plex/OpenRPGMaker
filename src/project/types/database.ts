@@ -1821,6 +1821,8 @@ export interface TitleScreenMenuVisibility {
   quit: boolean;
   /** 오토세이브 "이어하기" 표시 여부. 생략은 true(!== false 패턴) — 구 JSON 전후방 호환. */
   resume?: boolean;
+  /** 크레딧 표시 여부. 생략은 true. 법적 표기 의무가 없는 100% 자체 에셋 게임에서만 false 로 숨길 수 있다. */
+  credits?: boolean;
 }
 
 export interface TitleScreenSounds {

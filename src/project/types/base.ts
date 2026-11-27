@@ -21,6 +21,13 @@ export type MonsterInstanceId = string;
 
 export type Dir = "down" | "left" | "right" | "up";
 
+/** 프로젝트 기본 런타임 언어 설정. 생략 시 한국어(구 프로젝트 호환), "auto" 는 플레이어 기기 언어. */
+export type ProjectLanguage = "ko" | "en" | "ja" | "zh" | "auto";
+/** 단일 로캘의 콘텐츠 번역 테이블(결정론적 문자열 키 → 번역문). */
+export type ProjectLocalizationTable = Record<string, string>;
+/** 로캘 코드("en", "ja", "zh" 등) → 번역 테이블. */
+export type ProjectLocalizations = Record<string, ProjectLocalizationTable>;
+
 export interface AssetRef {
   type: "bundled" | "uploaded";
   id: string;

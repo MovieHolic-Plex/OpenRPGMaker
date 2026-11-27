@@ -27,6 +27,8 @@ interface ImportMetaEnv {
   /** CC0 BGM 카탈로그 CDN 베이스. 미설정이면 같은 오리진 로컬 경로로 떨어진다. */
   readonly VITE_BGM_CDN_BASE?: string;
   readonly VITE_STILL_CDN_BASE?: string;
+  /** 공개 에셋 스토어 주소 오버라이드(웹 dev 실행 시 워커 스토어 읽기용, "off" 면 끔). */
+  readonly VITE_STORE_URL?: string;
   // 플레이어 익스포트 빌드(vite.player.config.ts, envPrefix "OPENRPG_PLAYER_")용 오버라이드.
   readonly OPENRPG_PLAYER_TOUCH_CONTROLS?: string;
   readonly OPENRPG_PLAYER_BGM_CDN_BASE?: string;

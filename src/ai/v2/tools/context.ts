@@ -31,6 +31,7 @@ import { mapBundleIds } from "@/ai/piAgent/mapBundle";
 import { buildBlueprintPath } from "../story/blueprintPath";
 import { type PathStepText } from "../story/blueprintPathNames";
 import { spreadCrowdedPeople } from "../place/reachRepairs";
+import { assignStoreBgmToNewMaps } from "../place/autoStoreBgm";
 import { dungeonGateSpot, pickTransferSpot, stairWay } from "../place/transferSpot";
 import { critiqueStaging } from "../judge/critic";
 import { edgeCell, isInside, isOutdoor, oppositeSide, pickDoor, villageDoors } from "../story/makeGame";
@@ -173,6 +174,15 @@ export function makeVerbContext(env: PiAssistantV2Env, session: V2Session) {
     for (const mapId of result.mapIds) session.places.set(mapId, record);
     // 다시 짓기로 사라진 층(새 id 로 바뀐 위층)은 기록·검사에서 뺀다 — 남겨 두면 없는 맵의 옛 major 를 「남은 문제」로 들고 다닌다.
     for (const mapId of [...session.places.keys()]) if (!env.ctx.project.maps[mapId]) { session.places.delete(mapId); session.seen.delete(mapId); }
+    // 새로 지은 맵이면 스토어 음악 팩에서 장면·장르에 맞는 BGM 1곡을 자동 설치·배정한다(미연결·먼저 묻기 시 내장 곡 유지).
+    if (verb === "make_place" && !before) {
+      const hints = Object.fromEntries(result.mapIds.map((mapId) => [mapId, { specType: spec.type }]));
+      const bgms = await assignStoreBgmToNewMaps(env, result.mapIds, { hints, task: String(task ?? "") });
+      if (bgms.length) {
+        const bgmLine = `BGM: ${bgms.map((b) => `${b.mapName} ← 「${b.title}」(스토어)`).join(" · ")}.`;
+        result = { ...result, summary: `${result.summary} ${bgmLine}` };
+      }
+    }
     // 첫 짓기를 비평 전에 편집기에 싣는다 — 사용자는 비평을 기다리지 않고 지어지는 것을 본다.
     await env.checkpoint(verb);
     const seen0 = await see(env, session, task, spec.type, result.mapIds, result.entrance, true);

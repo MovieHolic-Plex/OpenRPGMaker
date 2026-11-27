@@ -211,8 +211,48 @@ const tokens = (text: string): string[] => text.toLowerCase().split(/[\s,·/]+/u
  * 공포 낱말(공포·호러·무서운·괴담 …) → 공포 계열 줄. 장면(마을·던전 …)이 무엇이든 이 줄 곡이 다른 줄 곡보다 앞에 선다.
  * 2026-10-30: 「공포 게임」+town 에 캐주얼 레이스 로비 곡이 1위였고, 「무서운」「괴담」은 어느 공포 줄도 끌어오지 못했다.
  */
-const HORROR_ASK = /공포|호러|무서|무섭|괴담|오싹|으스스|소름|귀신|유령|horror|scary|creepy|spooky|haunted/iu;
-export const HORROR_FAMILY_LINES: readonly string[] = ["horror", "chase-horror", "school-horror", "dark-fairytale", "eerie-minimal"];
+const HORROR_ASK = /공포|호러|무서|무섭|괴담|오싹|으스스|소름|귀신|유령|잔혹\s*동화|기괴|섬뜩|마녀의\s*집|horror|scary|creepy|spooky|haunted|dark\s*fairy|macabre/iu;
+export const HORROR_FAMILY_LINES: readonly string[] = ["horror", "chase-horror", "school-horror", "dark-fairytale", "eerie-minimal", "gallery-mystery"];
+
+/** 곡 개별 청취 메타(mood·feelTags·summaryKo)가 요청 분위기/장르와 정면 상충하는지 판정하는 규칙(팩 이름 과신 방지). */
+const TRACK_HORROR_HEARD = /공포|호러|무서|으스스|오싹|음산|기괴|불안|긴장|공허|어두|어둡|위협|추격|미스터리|서늘|소름|불길|horror|scary|creepy|eerie|dark|tense|ominous|unsettling|haunt|suspense|dread|chase|sinister/iu;
+const TRACK_COZY_HEARD = /평온|평화|편안|따뜻|포근|아늑|밝은|경쾌|활기|정겨|힐링|낭만|재즈|탱고|카바레|야간\s*바|쓸쓸한\s*바|술집|카페|relax|cozy|peaceful|warm|cheerful|bright|romantic|jazzy|tango|cabaret|night\s*bar|lounge|healing|upbeat/iu;
+const PEACEFUL_TOWN_ASK = /평화|평온|따뜻|포근|한적|밝은|조용|peaceful|calm|cozy|warm|quiet/iu;
+const QUIET_MELANCHOLIC_ASK = /고요|쓸쓸|비\s*오는|빗속|밤|애절|슬픈|외로|황량|폐허|quiet|lonely|rainy|melancholic|desolate|bleak/iu;
+const TRACK_TENSE_MARCH_HEARD = /비장|긴박|장엄|행진곡|강렬|전투|위압|marching|intense|epic|dramatic/iu;
+const SACRED_ASK = /신전|성소|성당|교회|수도원|사원|제단|기도|경건|성스러|신비|몽환|temple|shrine|sanctuary|church|cathedral|sacred|holy|mystic/iu;
+const TRACK_SACRED_AMBIENT = /경건|성스러|기도|성소|신전|sacred|holy|ethereal/iu;
+const TRACK_AMBIENT_HINT = /앰비언트|ambient|신비|에스닉/iu;
+const RETRO_ASK = /칩튠|8비트|8-?bit|16비트|16-?bit|레트로|retro|chiptune|snes|슈퍼패미컴|슈패|패미컴|언더테일|크로노/iu;
+const TRACK_TRUE_RETRO_HEARD = /8-?bit|8비트|16-?bit|16비트|칩튠|chiptune|레트로|retro|피코피코|게임보이|sfc|snes|nes|90년대|아케이드|arcade/iu;
+const TRACK_MODERN_EDM_HEARD = /사이버펑크|cyberpunk|synthwave|신스웨이브|edm|일렉트로닉|electronic|하우스|테크노|클럽|club/iu;
+const TRACK_ACOUSTIC_HEARD = /하프|harp|오보에|oboe|아코디언|accordion|어쿠스틱|acoustic|바이올린|violin|첼로|cello|오케스트라|orchestra|목가적|pastoral/iu;
+const FANTASY_BOSS_ASK = /판타지|심포닉|오케스트라|중세|마왕|드래곤|용사|기사|fantasy|symphonic|orchestra|medieval/iu;
+const TRACK_POP_JAZZ_HEARD = /신스팝|synth-?pop|재즈|jazzy|jazz|디스코|disco|펑크|funk|8-?bit\s*retro|복고풍\s*사운드|시티팝|city\s*pop/iu;
+const SERIOUS_BATTLE_ASK = /긴박|비장|결전|최종|위기|치열|심각|어두|처절|serious|climactic|desperate|intense|final/iu;
+const PLAYFUL_ASK = /장난|코믹|유쾌|경쾌|발랄|귀여|펑키|신나는|playful|silly|comic|funky|quirky|upbeat/iu;
+const TRACK_PLAYFUL_FUNK_HEARD = /장난스러운|유쾌|코믹|글리치\s*펑크|재즈\s*펑크|펑크\s*트랙|playful|silly|funk/iu;
+
+/**
+ * 실제 오디오 블라인드 청취 감사(2026-11-27)에서 스토어 oprnMusic 메타와 실제 소리가 정면 충돌함을 확인한 트랙 보정표.
+ * 서버 측 재라벨링이 끝나면 제거한다.
+ */
+const AUDITED_AUDIO_OVERRIDES: Readonly<Record<string, {
+  readonly notRetro?: boolean;
+  readonly highIntensityBattle?: boolean;
+  readonly livelyDaytime?: boolean;
+}>> = {
+  // 실제 청취: 휘파람·플루트·어쿠스틱 기타·손박수 카툰곡(8비트 아님)
+  "oprn-bgm-chiptune-indie-rpg-v1-silly-1": { notRetro: true },
+  // 실제 청취: 어쿠스틱 플루트·실로폰·퍼커션 상점곡(8비트 칩튠 음색 없음)
+  "oprn-bgm-chiptune-indie-rpg-v1-shop-1": { notRetro: true },
+  // 실제 청취: 어쿠스틱 틴 휘슬·피들 켈틱 포크 춤곡(8/16비트 아님)
+  "oprn-bgm-snes-jrpg-sea-2": { notRetro: true },
+  // 실제 청취: 초고속 바로크 바이올린 보스전풍(차분한 설원/신스 아님)
+  "oprn-bgm-dark-folk-fantasy-v1-isles-1": { highIntensityBattle: true },
+  // 실제 청취: 활기차고 경쾌한 낮 장터 국악 리듬(비 오는 밤 쓸쓸한 마을 아님)
+  "oprn-bgm-joseon-town-200-r2": { livelyDaytime: true },
+};
 
 export interface StoreMusicQuery {
   readonly scene?: StoreMusicScene; readonly query?: string; readonly mood?: string;
@@ -303,10 +343,45 @@ export function scoreStoreMusic(track: StoreMusicTrack, want: StoreMusicQuery): 
   const share = lines[m.genre] ?? 0;
   // 사용자가 장르를 말했는데(어느 팩 줄 낱말과 맞음) 이 곡은 그 장르가 아니면 분위기가 맞아도 뒤로.
   const asked = expanded.lines.length > 0 || queryWords.some((word) => Object.values(LINE_WORDS).some((words) => words.some((line) => wordHits(line, word))));
+  // 곡 개별 청취 메타(실제 소리 설명) — 팩 껍데기 이름보다 우선해 정면 상충하는 곡을 거른다.
+  const wantText = `${want.query ?? ""} ${want.mood ?? ""}`;
+  const heardText = `${m.summaryKo} ${m.mood.join(" ")} ${m.feelTags.join(" ")}`;
   // 공포 낱말: 공포 계열 줄은 앞으로(+4, 장르 맞음), 그 밖의 줄은 사용자가 그 줄을 말하지 않았으면 결·설명 낱말이 맞아도 뒤로(−8).
-  const horrorAsked = HORROR_ASK.test(`${want.query ?? ""} ${want.mood ?? ""}`);
-  if (horrorAsked && HORROR_FAMILY_LINES.includes(m.genre)) { score += 4; named = true; }
+  // 단, 공포 팩 안에 섞인 평온·편안·포근·재즈 바 곡(공포/긴장/어두움 낱말 전무)은 공포 요청에서 완전 배제한다.
+  const horrorAsked = HORROR_ASK.test(wantText);
+  const cozyNotHorror = horrorAsked && TRACK_COZY_HEARD.test(heardText) && !TRACK_HORROR_HEARD.test(heardText);
+  if (cozyNotHorror) return -1;
+  else if (horrorAsked && HORROR_FAMILY_LINES.includes(m.genre)) { score += 4; named = true; }
   else if (horrorAsked && !lineNamed) score -= 8;
+  // 실청취 보정표: 실제 오디오가 메타와 정면 충돌하는 트랙의 오배정을 막는다.
+  const audioOverride = AUDITED_AUDIO_OVERRIDES[track.assetId];
+  // 일반 마을(town)에서 신전·성소 앰비언트는 요청이 신전·성소일 때만 우선하고, 평화로운 마을 요청에 비장한 행진곡이 걸리지 않게 한다.
+  if (want.scene === "town" && !SACRED_ASK.test(wantText) && TRACK_SACRED_AMBIENT.test(heardText) && TRACK_AMBIENT_HINT.test(heardText)) {
+    score -= 5;
+  }
+  if (want.scene === "town" && PEACEFUL_TOWN_ASK.test(wantText) && !horrorAsked && TRACK_TENSE_MARCH_HEARD.test(heardText)) {
+    score -= 6;
+  }
+  // 고요·쓸쓸·비 오는 밤 요청에 실제로는 활기찬 낮 장터 리듬이나 격렬한 전투풍 곡이 걸리지 않게 한다.
+  if (QUIET_MELANCHOLIC_ASK.test(wantText) && (audioOverride?.livelyDaytime || audioOverride?.highIntensityBattle)) {
+    score -= 18;
+  }
+  // 칩튠·8비트·16비트 요청인데 어쿠스틱뿐이거나 현대 EDM/사이버펑크(레트로 언급 없음), 또는 실청취 비레트로 확인 곡은 크게 감점한다.
+  const retroAsked = RETRO_ASK.test(wantText);
+  if (retroAsked) {
+    if (audioOverride?.notRetro) score -= 20;
+    else if (!TRACK_TRUE_RETRO_HEARD.test(heardText) && (TRACK_ACOUSTIC_HEARD.test(heardText) || TRACK_MODERN_EDM_HEARD.test(heardText))) {
+      score -= 12;
+    }
+  }
+  // 판타지/심포닉 보스·전투 요청(레트로 제외)에 신스팝·재즈·펑크 곡이 팩 이름만 타고 올라오지 않게 한다.
+  if ((want.scene === "boss" || want.scene === "battle") && FANTASY_BOSS_ASK.test(wantText) && !retroAsked && TRACK_POP_JAZZ_HEARD.test(heardText)) {
+    score -= 8;
+  }
+  // 긴박·비장·결전 전투 요청에 장난스러운 글리치 펑크/어반 재즈 펑크 전투곡이 팩 이름만으로 이기지 못하게 한다.
+  if ((want.scene === "boss" || want.scene === "battle") && SERIOUS_BATTLE_ASK.test(wantText) && !PLAYFUL_ASK.test(wantText) && TRACK_PLAYFUL_FUNK_HEARD.test(heardText)) {
+    score -= 20;
+  }
   if (asked && !named) score -= 6;
   score += 4 * share;
   // 분위기 낱말 몇 개(최대 약 9점)보다 장르가 어긋나는 것이 더 크게 틀린다 — 그래서 감점이 분위기 점수만큼 크다.

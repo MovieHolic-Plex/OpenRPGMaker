@@ -428,10 +428,16 @@
 
 .player-layout.system-shell .oprn-load-slots {
   display: grid;
+  flex: 1 1 auto;
   grid-auto-rows: max-content;
   gap: 3px;
   min-height: 0;
+  overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-right: 2px;
+  scrollbar-color: rgba(255, 255, 255, 0.45) transparent;
+  scrollbar-width: thin;
 }
 
 .player-layout.system-shell .oprn-load-slot,
@@ -545,7 +551,7 @@
 
 .player-layout.system-shell .play-stage > .oprn-load-panel .oprn-load-window {
   max-height: calc(100% - 16px);
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 /* ── 오프닝 영역 효과 (WebGL) ─────────────────────────────────────────────

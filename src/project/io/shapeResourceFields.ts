@@ -72,6 +72,22 @@ export function validateMeta(value: unknown): void {
     for(const value of Object.values(scores)) validateMusicScore(requireRecord('music score', value).score);
   }
   if (meta.publication !== undefined) parsePublication(meta.publication);
+  if (meta.language !== undefined) {
+    const lang = requireString("meta.language", meta.language);
+    assert(lang === "ko" || lang === "en" || lang === "ja" || lang === "zh" || lang === "auto", `meta.language가 올바르지 않습니다: ${lang}`);
+  }
+  if (meta.customCredits !== undefined) {
+    requireString("meta.customCredits", meta.customCredits);
+  }
+  if (meta.localizations !== undefined) {
+    const localizations = requireRecord("meta.localizations", meta.localizations);
+    for (const [locale, rawTable] of Object.entries(localizations)) {
+      const table = requireRecord(`meta.localizations.${locale}`, rawTable);
+      for (const [key, text] of Object.entries(table)) {
+        requireString(`meta.localizations.${locale}.${key}`, text);
+      }
+    }
+  }
   repairTerms(meta);
 }
 

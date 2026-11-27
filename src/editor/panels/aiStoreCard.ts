@@ -540,9 +540,14 @@ export function createStoreMusicNote(choices: readonly StoreMusicChoice[], follo
             for (const node of buttons) node.disabled = true;
             status.textContent = `「${track.title}」 받는 중…`;
             try {
-              await addStoreItemToProject(track.slug, { assetIds: [track.assetId] });
-              status.textContent = `「${track.title}」로 바꿔요.`;
-              followUp(`[사용자가 바꿈] ${row.need}: 「${row.installed.title}」(리소스 id ${storeProjectId(row.installed.slug, row.installed.assetId)}) → 「${track.title}」 리소스 id ${storeProjectId(track.slug, track.assetId)}. set_game_audio 로 앞 곡이 연결된 자리를 이 곡으로 바꿔라(새로 찾지 말 것).`);
+              if (storeBridge()) {
+                await addStoreItemToProject(track.slug, { assetIds: [track.assetId] });
+                status.textContent = `「${track.title}」로 바꿔요.`;
+                followUp(`[사용자가 바꿈] ${row.need}: 「${row.installed.title}」(리소스 id ${storeProjectId(row.installed.slug, row.installed.assetId)}) → 「${track.title}」 리소스 id ${storeProjectId(track.slug, track.assetId)}. set_game_audio 로 앞 곡이 연결된 자리를 이 곡으로 바꿔라(새로 찾지 말 것).`);
+              } else {
+                status.textContent = `「${track.title}」로 바꿀게요.`;
+                followUp(`[사용자가 스토어에서 바꿈] ${row.need}: 「${row.installed.title}」(리소스 id ${storeProjectId(row.installed.slug, row.installed.assetId)}) → 「${track.title}」(slug ${track.slug}, assetId ${track.assetId}). store_install{slug:"${track.slug}", assetIds:["${track.assetId}"], userAsked:true} 로 넣고 set_game_audio 로 앞 곡이 연결된 자리를 이 곡으로 바꿔라(새로 찾지 말 것).`);
+              }
             } catch (error) {
               for (const node of buttons) node.disabled = false;
               status.textContent = `바꾸지 못했어요: ${storeFailure(error).message}`;
@@ -557,7 +562,7 @@ export function createStoreMusicNote(choices: readonly StoreMusicChoice[], follo
     if (!row.others.length) swap.disabled = true;
     buttons.push(swap);
     return el("div", { class: "ai-store-music-note-row", children: [
-      el("p", { children: [el("span", { text: "넣었어요: " }), el("strong", { text: row.installed.title }), el("small", { text: ` ${[row.installed.scenes[0], row.installed.mood[0]].filter(Boolean).join(" · ")}` }), swap] }),
+      el("p", { children: [el("span", { text: "넣었어요: " }), el("strong", { text: row.installed.title }), el("small", { text: ` ${[row.need, row.installed.scenes[0], row.installed.mood[0]].filter(Boolean).join(" · ")}` }), swap] }),
       list,
     ] });
   });

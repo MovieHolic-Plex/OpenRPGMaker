@@ -21,6 +21,9 @@ export type MediaImportRule = {
   readonly dataError: string;
 };
 
+export const AUDIO_IMPORT_MAX_BYTES = 32 * 1024 * 1024;
+export const MOVIE_IMPORT_MAX_BYTES = 128 * 1024 * 1024;
+
 const AUDIO_ACCEPT = "audio/wav,audio/mpeg,audio/ogg,.wav,.mp3,.ogg";
 const AUDIO_PATTERN = /\.(wav|mp3|ogg)$/i;
 const AUDIO_FILE_ERROR = "WAV/MP3/OGG 파일만 가져올 수 있습니다.";
@@ -30,7 +33,7 @@ const MEDIA_IMPORT_RULES: Partial<Record<ResourceKind, MediaImportRule>> = {
   music: {
     kind: "music",
     accept: AUDIO_ACCEPT,
-    maxBytes: 8 * 1024 * 1024,
+    maxBytes: AUDIO_IMPORT_MAX_BYTES,
     filePattern: AUDIO_PATTERN,
     dataUrlPrefix: "data:audio/",
     idPrefix: "bgm",
@@ -40,7 +43,7 @@ const MEDIA_IMPORT_RULES: Partial<Record<ResourceKind, MediaImportRule>> = {
   sound: {
     kind: "sound",
     accept: AUDIO_ACCEPT,
-    maxBytes: 8 * 1024 * 1024,
+    maxBytes: AUDIO_IMPORT_MAX_BYTES,
     filePattern: AUDIO_PATTERN,
     dataUrlPrefix: "data:audio/",
     idPrefix: "se",
@@ -51,7 +54,7 @@ const MEDIA_IMPORT_RULES: Partial<Record<ResourceKind, MediaImportRule>> = {
     kind: "movie",
     // 브라우저 <video> 가 확실히 재생하는 컨테이너만. playMoviePreview 의 화이트리스트와 같은 집합이다.
     accept: "video/webm,video/mp4,video/ogg,.webm,.mp4,.m4v,.ogv",
-    maxBytes: 32 * 1024 * 1024,
+    maxBytes: MOVIE_IMPORT_MAX_BYTES,
     filePattern: /\.(webm|mp4|m4v|ogv)$/i,
     dataUrlPrefix: "data:video/",
     idPrefix: "movie",

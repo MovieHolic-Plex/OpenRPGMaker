@@ -64,9 +64,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
+      # tiledata/(593MB, 작업용 PNG/픽셀 시트)는 fast(워커 컴파일·타입체크·캐릭터 하네스·앱 빌드)에서 쓰지 않는다.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !tiledata/**
 
       - uses: ./.github/actions/linux-ci
         with:
@@ -83,27 +89,30 @@ jobs:
           key: tsc-app-${{ hashFiles('package-lock.json', 'tsconfig*.json') }}-${{ github.sha }}
           restore-keys: tsc-app-${{ hashFiles('package-lock.json', 'tsconfig*.json') }}-
 
-      - name: AI 워커 컴파일 (릴리스와 같은 엔트리포인트)
-        run: |
-          bun scripts/build-ai-worker.ts "$RUNNER_TEMP" linux
-          test -s "$RUNNER_TEMP/oh-my-pi-worker"
-
       # 생성기 고정판(tiledata/gen-kits.lock.json)은 로컬에서만 본다: npm run gen-kits:check.
       # object-gen 도 char-gen·tile-gen 과 같이 비공개라 호스티드 러너는 복제할 수 없다(2026-10-22 실측:
       # git clone 이 Username 을 묻다 실패하고, 그 뒤의 타입체크·패리티가 시작도 못 했다).
       # 공개로 바뀌기 전에는 이 워크플로에 넣지 않는다. 자격 없는 러너에 비공개 지시문을 받지 않는다.
-      # 2026-10-04 타입체크 상주 집합이 7GB 를 넘어 7168 힙에서 exit 134 로 죽었다.
-      # Python 하네스는 타입체크와 파일이나 산출물을 공유하지 않는다.
-      - name: 타입체크 (src 만) 및 캐릭터 하네스 계약
+      # AI 워커 컴파일 · 앱 타입체크 · 앱 빌드 · 캐릭터 하네스(Python)는 산출물을 공유하지 않으므로
+      # 4코어 호스티드 VM 에서 병렬로 돌려 벽시계를 줄인다.
+      - name: 워커 컴파일 · 타입체크 · 앱 빌드 · 캐릭터 하네스 (병렬)
         env:
           NODE_OPTIONS: --max-old-space-size=8192
         run: |
           set -euo pipefail
           charset() {
-            local venv="$RUNNER_TEMP/charset-harness-venv"
-            python3 -m venv "$venv"
-            "$venv/bin/pip" install 'Pillow>=10,<14'
-            "$venv/bin/python" src/harnesses/charset-actor/verify.py
+            if python3 -c "import PIL" 2>/dev/null; then
+              python3 src/harnesses/charset-actor/verify.py
+            else
+              local venv="$RUNNER_TEMP/charset-harness-venv"
+              python3 -m venv "$venv"
+              "$venv/bin/pip" install -q 'Pillow>=10,<14'
+              "$venv/bin/python" src/harnesses/charset-actor/verify.py
+            fi
+          }
+          build_worker() {
+            bun scripts/build-ai-worker.ts "$RUNNER_TEMP" linux
+            test -s "$RUNNER_TEMP/oh-my-pi-worker"
           }
           check_types() {
             if [[ -n "${OPRN_CI_CACHE:-}" ]]; then
@@ -115,9 +124,20 @@ jobs:
           TIMEFORMAT='캐릭터 하네스: %3Rs'
           (time charset) > "$RUNNER_TEMP/charset.log" 2>&1 &
           charset_pid=$!
-          TIMEFORMAT='앱 타입체크: %3Rs'
+          TIMEFORMAT='AI 워커 컴파일: %3Rs'
+          (time build_worker) > "$RUNNER_TEMP/worker.log" 2>&1 &
+          worker_pid=$!
+          TIMEFORMAT='앱 빌드: %3Rs'
+          (time npm run build:app) > "$RUNNER_TEMP/build.log" 2>&1 &
+          build_pid=$!
+
           status=0
+          TIMEFORMAT='앱 타입체크: %3Rs'
           time check_types || status=$?
+          wait "$worker_pid" || status=$?
+          cat "$RUNNER_TEMP/worker.log"
+          wait "$build_pid" || status=$?
+          cat "$RUNNER_TEMP/build.log"
           wait "$charset_pid" || status=$?
           cat "$RUNNER_TEMP/charset.log"
           exit "$status"
@@ -128,10 +148,6 @@ jobs:
         with:
           path: .cache/typecheck-app.tsbuildinfo
           key: tsc-app-${{ hashFiles('package-lock.json', 'tsconfig*.json') }}-${{ github.sha }}
-
-      # 앱 번들만. 전체 npm run build(플레이어·standalone·아카이브까지)는 ci-full 몫이다.
-      - name: 앱 빌드
-        run: npm run build:app
 
   # 샤드 둘인 이유 (2026-11-24): 호스티드 동시 잡 20개가 한도라 푸시마다 쓰는 잡 수가 곧 대기 시간이다.
   # mdc2 4샤드는 샤드당 시험 79~141초였고, 호스티드 `fast`·`fast-static` 이 약 3분이다. 둘로 나눠도
@@ -178,10 +194,17 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
+      # tiledata/(593MB) 중 jp-city/pins.json 한 파일만 쓰므로 나머지는 받지 않는다.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 2   # jp_city 핀 검사가 HEAD~1 의 pins.json 과 비교한다
           persist-credentials: false
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !tiledata/**
+            tiledata/jp-city/pins.json
 
       - uses: ./.github/actions/linux-ci
 
@@ -257,27 +280,25 @@ jobs:
       # verify-gates 의 cssGate 가 실패한 하위 기준선을 다시 뜨는 명령을 ::error:: 로 찍는다.
       # css-winners 기준선은 2026-11-24 부터 엔트리×승자 파일 조각(scripts/css-winners/**)이다 — 서로 다른
       # CSS 를 건드린 PR 끼리는 같은 조각을 쓰지 않고, 같은 조각이 충돌하면 `npm run css-baseline:rebase` 가 다시 뜬다.
-      - name: 런타임 에셋 존재, CSS 래칫 및 openwiki 색인 생성기
+      - name: 런타임 에셋 · 구운 타일셋 요약 · CSS 래칫 · openwiki 색인 (병렬)
         env:
           NODE_OPTIONS: --max-old-space-size=6144
         run: |
           set -euo pipefail
-          # 런타임 에셋 검사 중 독립적인 CSS 래칫과 생성기 검사를 끝낸다.
+          # 독립적인 정적 검사들을 4코어 VM 에서 동시에 실행한다.
           TIMEFORMAT='런타임 에셋: %3Rs'
           (time npm run check:runtime-assets) > "$RUNNER_TEMP/runtime-assets.log" 2>&1 &
           assets_pid=$!
+          TIMEFORMAT='구운 타일셋 요약: %3Rs'
+          (time npx vite-node --script scripts/content/bake-bundled-tileset-digests.mts --check) > "$RUNNER_TEMP/digests.log" 2>&1 &
+          digests_pid=$!
           status=0
           TIMEFORMAT='CSS 래칫: %3Rs'
           time node scripts/verify-gates.mjs --only css || status=$?
           TIMEFORMAT='openwiki 색인: %3Rs'
           time node scripts/openwiki-index.mjs || status=$?
+          wait "$digests_pid" || status=$?
+          cat "$RUNNER_TEMP/digests.log"
           wait "$assets_pid" || status=$?
           cat "$RUNNER_TEMP/runtime-assets.log"
           exit "$status"
-
-      # 구운 번들 타일셋 요약(src/assets/bundledTilesetDigests.json)이 지금 정의와 같은가. 낡으면 조수 적용이 «기준 프로젝트가
-      # 변경되었습니다»로 막혔다(ci-full 45844823105, #5235 뒤 beodeul_city 가 바뀜). 관련 시험 선택(그래프 상한)에 기대지 않고 여기서 바로 실패한다.
-      - name: 구운 타일셋 요약 낡음 검사
-        env:
-          NODE_OPTIONS: --max-old-space-size=6144
-        run: npx vite-node --script scripts/content/bake-bundled-tileset-digests.mts --check

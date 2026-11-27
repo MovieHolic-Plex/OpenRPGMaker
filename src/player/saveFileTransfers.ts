@@ -1,4 +1,4 @@
-import { importSelectedSaveFileCopy, listSaveSlots, readAutosave, readSaveSlot, saveSlotKey, type SaveSlotIndex } from "./saveSlots";
+import { importSelectedSaveFileCopy, listSaveSlots, readAutosave, readSaveSlot, SAVE_SLOT_INDICES, saveSlotKey, type SaveSlotIndex } from "./saveSlots";
 import { downloadBlob } from "../util/downloadBlob";
 import { el } from "../util/dom";
 import type { Project } from "../project/types";
@@ -10,7 +10,7 @@ export function appendSaveFileTransfers(host: HTMLElement, options: {
   readonly onLoadSlot: (slot: SaveSlotIndex) => void;
 }): void {
   if (!options.project.meta.publication) return;
-  for (const slot of [1, 2, 3, "auto"] as const) {
+  for (const slot of [...SAVE_SLOT_INDICES, "auto"] as const) {
     const read = () => slot === "auto" ? readAutosave(options.storage) : readSaveSlot(options.storage, slot);
     if (read().kind !== "present") continue;
     host.append(el("button", {

@@ -1,5 +1,6 @@
 import manifest from "../assets/bundledReferenceImageManifest.json" with { type: "json" };
 import { isBundledReferenceImage, isSharedReferenceImage, parseSharedReferenceImage, referenceImageDigest } from "./bundledReferenceImagePath";
+import { pendingDefaultTilesetBuilder } from "./defaults/lazyDefaultTilesets";
 import type { Project } from "./types";
 
 export { isBundledReferenceImage, referenceImageDigest };
@@ -9,7 +10,9 @@ const bundledPaths = manifest as Readonly<Record<string, string>>;
 /** Replace inline copies of shipped images with their static path. Authored images are untouched. */
 export function externalizeBundledReferenceImages(project: Project): boolean {
   let changed = false;
-  for (const tileset of Object.values(project.tilesets)) {
+  for (const id of Object.keys(project.tilesets)) {
+    if (pendingDefaultTilesetBuilder(project.tilesets, id)) continue;
+    const tileset = project.tilesets[id]!;
     const categories = tileset.referenceDocuments;
     if (!categories?.length) continue;
     let tilesetChanged = false;

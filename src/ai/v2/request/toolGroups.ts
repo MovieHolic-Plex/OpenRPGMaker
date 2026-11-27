@@ -88,7 +88,7 @@ export const FALLEN_TIERS: readonly ToolTier[] = [
   // 2026-11-09 fs-use-tools E1: 게임 하나를 만드는 요청에 적·기술 도구를 이름으로 내놓는다(load_tools 목록에 뜬다 — 처음부터 싣지는 않는다).
   // 보상 레인 43판에서 upsert_enemy·upsert_skill 호출 0 — 빌더가 만든 적이 기술을 서로 똑같이 갖는다. 관문은 enemyChecks.ts.
   { whole: true, tools: ["upsert_enemy", "upsert_skill", "upsert_equipment"], card: "· Fights: after the path is built, give each boss its own skill and each other foe kind its own skill — upsert_skill{skill:{id,name,…}} then upsert_enemy{enemy:{id, skillIds, actions}} on the existing enemy ids (get_database_records{collection:'enemies', include:'full'}). Skip it if the game has no battles." },
-  { whole: true, tools: ["recommend_bgm", "set_game_audio"] },
+  { whole: true, tools: ["recommend_bgm", "store_find_music", "store_install", "set_game_audio"] },
   // 2026-11-09 fs-use-tools G1: 게임 하나를 만드는 요청에 퀘스트 도구를 내놓는다(load_tools 목록에 뜬다 — 처음부터 싣지는 않는다).
   // 보상 레인 43판에서 create_quest 0 — 퀘스트 묶음 낱말이 「모험·탐험·추리」 요청에 안 걸렸다. 중심 경로는 청사진+set_objective 가 이미 덮으므로 관문은 두지 않는다
   // (2026-11-09 실측: 그림 없는 giver/target 을 create 하면 [게임 검사 보임] 2건 + var_*_progress 미사용 [게임 검사 깃발] 이 나온다 → 카드가 기존 인물·graphicQuery 를 요구).

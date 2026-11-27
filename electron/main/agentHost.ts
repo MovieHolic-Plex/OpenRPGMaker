@@ -29,6 +29,8 @@ export type AgentAvailability = {
   readonly loginHint: string;
   /** 앱 전용 폴더에 설치한 것인가(앱이 설치·제거할 수 있다). */
   readonly appInstalled: boolean;
+  /** 앱 안 설치기(npm)로 이 에이전트를 설치·제거할 수 있는가. */
+  readonly canInstall: boolean;
   /** 공식 상태 명령으로 물은 로그인 여부. 모르면 null. */
   readonly loggedIn: boolean | null;
 };
@@ -39,23 +41,24 @@ type AgentSpec = {
   readonly cli: string;
   readonly adapter: string;
   readonly adapterArgs: readonly string[];
+  readonly installable: boolean;
   readonly installHint: string;
   readonly loginHint: string;
 };
 
 const AGENT_SPECS: readonly AgentSpec[] = [
   {
-    id: "claude", label: "Claude Code", cli: "claude", adapter: "claude-agent-acp", adapterArgs: [],
+    id: "claude", label: "Claude Code", cli: "claude", adapter: "claude-agent-acp", adapterArgs: [], installable: true,
     installHint: "npm install -g @anthropic-ai/claude-code @agentclientprotocol/claude-agent-acp",
     loginHint: "Claude 공식 로그인 창(브라우저)에서 본인 계정으로 로그인합니다. OPRN 은 로그인 정보를 보지 않습니다.",
   },
   {
-    id: "codex", label: "Codex", cli: "codex", adapter: "codex-acp", adapterArgs: [],
+    id: "codex", label: "Codex", cli: "codex", adapter: "codex-acp", adapterArgs: [], installable: true,
     installHint: "npm install -g @agentclientprotocol/codex-acp",
     loginHint: "Codex 공식 로그인 창(브라우저)에서 본인 ChatGPT 계정으로 로그인합니다.",
   },
   {
-    id: "opencode", label: "opencode", cli: "opencode", adapter: "opencode", adapterArgs: ["acp"],
+    id: "opencode", label: "opencode", cli: "opencode", adapter: "opencode", adapterArgs: ["acp"], installable: true,
     installHint: "npm install -g opencode-ai",
     loginHint: "로그인 없이 무료 모델로 바로 쓸 수 있습니다. 다른 제공자는 opencode 의 auth login 으로 추가합니다.",
   },
@@ -76,21 +79,46 @@ export function findOnPath(name: string, env: NodeJS.ProcessEnv = process.env): 
   return null;
 }
 
+/** GUI 실행(Electron)은 ~/.local/bin·Homebrew 경로가 PATH 에서 빠질 수 있어 보조 경로까지 함께 찾는다. */
+function findAgentExecutable(name: string, env: NodeJS.ProcessEnv = process.env): string | null {
+  const direct = findOnPath(name, env);
+  if (direct) return direct;
+  if (process.platform === "win32") return null;
+  const home = env.HOME?.trim();
+  const extras = [...(home ? [join(home, ".local", "bin")] : []), "/opt/homebrew/bin", "/usr/local/bin"];
+  for (const dir of extras) {
+    const candidate = join(dir, name);
+    if (existsSync(candidate)) return candidate;
+  }
+  return null;
+}
+
+/** Electron 부모 프로세스의 내부 환경 변수가 자식 에이전트 프로세스로 새어 나가지 않게 걷어낸다. */
+function childAgentEnv(hostEnv: NodeJS.ProcessEnv, launchEnv: Readonly<Record<string, string>>): NodeJS.ProcessEnv {
+  const merged: NodeJS.ProcessEnv = { ...hostEnv };
+  delete merged.CHROME_CRASHPAD_PIPE_NAME;
+  delete merged.ELECTRON_RUN_AS_NODE;
+  return { ...merged, ...launchEnv };
+}
+
 export function detectAgents(env: NodeJS.ProcessEnv = process.env): readonly AgentAvailability[] {
   return AGENT_SPECS.map((spec) => {
-    const cliFound = findOnPath(spec.cli, env) !== null;
-    const adapterFound = findOnPath(spec.adapter, env) !== null;
-    return { id: spec.id, label: spec.label, cliFound, adapterFound, ready: cliFound && adapterFound, installHint: spec.installHint, loginHint: spec.loginHint, appInstalled: false, loggedIn: null };
+    const cliFound = findAgentExecutable(spec.cli, env) !== null;
+    const adapterFound = findAgentExecutable(spec.adapter, env) !== null;
+    return {
+      id: spec.id, label: spec.label, cliFound, adapterFound, ready: cliFound && adapterFound,
+      installHint: spec.installHint, loginHint: spec.loginHint, appInstalled: false, canInstall: false, loggedIn: null,
+    };
   });
 }
 
 type LaunchCommand = { readonly command: string; readonly args: readonly string[]; readonly env: Readonly<Record<string, string>> };
 
-/** 앱 폴더에 설치한 것을 먼저, 없으면 PATH 의 것을 쓴다. */
+/** 앱 폴더에 설치한 것을 먼저, 없으면 PATH(및 GUI 표준 설치 경로)의 것을 쓴다. */
 function resolveAdapter(spec: AgentSpec, installer: AgentInstaller | null, env: NodeJS.ProcessEnv): LaunchCommand | null {
-  const installed = installer?.installed(spec.id);
+  const installed = spec.installable ? installer?.installed(spec.id) : null;
   if (installed) return installed.adapter;
-  const onPath = findOnPath(spec.adapter, env);
+  const onPath = findAgentExecutable(spec.adapter, env);
   return onPath ? { command: onPath, args: spec.adapterArgs, env: {} } : null;
 }
 
@@ -252,9 +280,11 @@ export function createAgentHost(options: AgentHostOptions) {
     async detect(): Promise<readonly AgentAvailability[]> {
       const onPath = detectAgents(hostEnv);
       return await Promise.all(onPath.map(async (agent) => {
-        const installed = installer?.installed(agent.id);
-        if (!installed) return agent;
-        return { ...agent, cliFound: true, adapterFound: true, appInstalled: true, loggedIn: await installer!.loggedIn(agent.id), ready: true };
+        const spec = AGENT_SPECS.find((candidate) => candidate.id === agent.id);
+        const canInstallAgent = Boolean(installer && spec?.installable);
+        const installed = canInstallAgent ? installer!.installed(agent.id) : null;
+        if (!installed) return { ...agent, canInstall: canInstallAgent };
+        return { ...agent, cliFound: true, adapterFound: true, appInstalled: true, canInstall: canInstallAgent, loggedIn: await installer!.loggedIn(agent.id), ready: true };
       }));
     },
 
@@ -263,7 +293,8 @@ export function createAgentHost(options: AgentHostOptions) {
     },
 
     install(kind: AgentKind): { started: boolean } {
-      if (!installer) throw new Error("이 화면에서는 앱 안 설치를 쓸 수 없습니다(데스크톱 앱에서 설치하세요)");
+      const spec = AGENT_SPECS.find((candidate) => candidate.id === kind);
+      if (!installer || !spec?.installable) throw new Error("이 화면에서는 앱 안 설치를 쓸 수 없습니다(데스크톱 앱에서 설치하세요)");
       if (installer.isBusy(kind)) return { started: false };
       if (agent === kind && child) stopChild();
       void installer.install(kind as InstallableAgent);
@@ -271,13 +302,15 @@ export function createAgentHost(options: AgentHostOptions) {
     },
 
     uninstall(kind: AgentKind): void {
-      if (!installer) throw new Error("이 화면에서는 앱 안 설치를 쓸 수 없습니다");
+      const spec = AGENT_SPECS.find((candidate) => candidate.id === kind);
+      if (!installer || !spec?.installable) throw new Error("이 화면에서는 앱 안 설치를 쓸 수 없습니다");
       if (agent === kind) { stopChild(); push({ type: "status", state: "stopped", detail: "에이전트를 지워 세션을 닫았습니다" }); }
       installer.uninstall(kind as InstallableAgent);
     },
 
     login(kind: AgentKind): void {
-      if (!installer) throw new Error("이 화면에서는 앱 안 로그인을 쓸 수 없습니다");
+      const spec = AGENT_SPECS.find((candidate) => candidate.id === kind);
+      if (!installer || !spec?.installable) throw new Error("이 화면에서는 앱 안 로그인을 쓸 수 없습니다");
       installer.login(kind as InstallableAgent);
     },
 
@@ -305,7 +338,7 @@ export function createAgentHost(options: AgentHostOptions) {
       mkdirSync(options.workDir, { recursive: true });
       writeAgentRulesFiles(options.workDir);
       // 윈도 .cmd 래퍼는 shell 없이 띄울 수 없다.
-      const spawned = spawn(launch.command, [...launch.args], { cwd: options.workDir, env: { ...hostEnv, ...launch.env }, stdio: ["pipe", "pipe", "pipe"], shell: process.platform === "win32" && /\.(cmd|bat)$/i.test(launch.command), windowsHide: true });
+      const spawned = spawn(launch.command, [...launch.args], { cwd: options.workDir, env: childAgentEnv(hostEnv, launch.env), stdio: ["pipe", "pipe", "pipe"], shell: process.platform === "win32" && /\.(cmd|bat)$/i.test(launch.command), windowsHide: true });
       child = spawned;
       spawned.stderr.on("data", (chunk: Buffer) => {
         const text = chunk.toString("utf8").trim();
@@ -320,7 +353,7 @@ export function createAgentHost(options: AgentHostOptions) {
       });
       spawned.on("error", (error) => push({ type: "status", state: "error", detail: error.message }));
       createInterface({ input: spawned.stdout }).on("line", (line) => {
-        let message: { id?: number | string; method?: string; params?: Record<string, unknown>; result?: unknown; error?: { message?: string } };
+        let message: { id?: number | string; method?: string; params?: Record<string, unknown>; result?: unknown; error?: { code?: number; message?: string } };
         try { message = JSON.parse(line) as typeof message; } catch { return; }
         if (message.method && message.id !== undefined) { onAgentRequest(message as { id: number | string; method: string; params?: Record<string, unknown> }); return; }
         if (message.method === "session/update") {
@@ -331,7 +364,7 @@ export function createAgentHost(options: AgentHostOptions) {
         if (typeof message.id === "number" && rpcPending.has(message.id)) {
           const pending = rpcPending.get(message.id)!;
           rpcPending.delete(message.id);
-          if (message.error) pending.reject(new Error(message.error.message ?? "agent error"));
+          if (message.error) pending.reject(Object.assign(new Error(message.error.message ?? "agent error"), typeof message.error.code === "number" ? { code: message.error.code } : {}));
           else pending.resolve(message.result);
         }
       });

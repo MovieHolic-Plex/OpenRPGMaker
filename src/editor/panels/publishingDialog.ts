@@ -19,6 +19,8 @@ import {
   createDesktopSteamExportPackage,
   desktopExportSlug,
   desktopSteamExportFileName,
+  nativeExecutablePathForPlatform,
+  resolveDesktopSaveNamespace,
   type DesktopDisplayMode,
   type DesktopExportPlatform,
   type DesktopSteamExportOptions,
@@ -26,6 +28,7 @@ import {
 import { downloadBlob } from "../../util/downloadBlob";
 import { toast } from "../../util/toast";
 import { t } from "../../i18n";
+import { auditProjectAssetLicenses } from "../../project/assetLicenseAudit";
 import type { FetchBytes } from "../../project/playerDeploymentTypes";
 import type { Project } from "../../project/types";
 
@@ -79,6 +82,7 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
   let selectedDisplayMode: DesktopDisplayMode = "fullscreen";
   let steamAppIdValue = 480;
   let steamDepotIdValue = 481;
+  let sharedSaveGroupValue = "";
   let packAssetsArchive = true;
   let enableSteamAutoCloud = true;
   let enableSteamInputGamepad = true;
@@ -109,6 +113,36 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
     // Fallback counts if prepareWebExport fails on synthetic test fixtures
   }
 
+  let licenseAuditBanner: HTMLElement | undefined;
+  try {
+    const audit = auditProjectAssetLicenses(options.project);
+    const hasAi = audit.requiresSteamAiDisclosure;
+    const summaryParts: string[] = [];
+    if (hasAi) {
+      summaryParts.push(
+        `Steam AI 생성 콘텐츠 공시 필요 (${audit.steamAiDisclosureReasons.map((r) => r.ko).join(" · ")})`,
+      );
+    } else {
+      summaryParts.push("AI 생성 에셋 미감지 (Steam AI 공시 불필요)");
+    }
+    summaryParts.push(
+      audit.requiresAttribution
+        ? "저작자 표기 필수 에셋 사용 중 (타이틀 크레딧 자동 포함)"
+        : "외부 저작자 표기 의무 없음 (자체 에셋 게임)",
+    );
+    licenseAuditBanner = el("div", {
+      dataset: { testid: "publication-license-audit", aiDisclosure: String(hasAi) },
+      attrs: {
+        style: hasAi
+          ? "padding: 8px 12px; border-radius: 8px; background: #fffbeb; border: 1px solid #f59e0b; color: #92400e; font-size: 11.5px; line-height: 1.45; font-weight: 600;"
+          : "padding: 7px 12px; border-radius: 8px; background: #f0fdf4; border: 1px solid #86efac; color: #166534; font-size: 11.5px; line-height: 1.45; font-weight: 600;",
+      },
+      text: summaryParts.join(" | "),
+    });
+  } catch {
+    // Synthetic test fixtures without full asset structure
+  }
+
   // ── Header ──────────────────────────────────────────────────────────
   const headerBar = el("div", {
     attrs: {
@@ -121,11 +155,11 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
             attrs: {
               style: "display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: #0284c7; margin-bottom: 2px;",
             },
-            text: "STEAMWORKS PIPE · DESKTOP NATIVE PACKAGE BUILDER",
+            text: "DESKTOP · STEAM PACKAGING KIT",
           })),
           el("h2", {
             class: "app-modal-title",
-            text: "데스크톱 · Steam 게임 빌드 및 배포 스튜디오",
+            text: "게임 내보내기 · 데스크톱 · Steam 패키징",
             attrs: { id: "publication-title", style: "margin: 0; font-size: 18px; font-weight: 800; color: #0f172a;" },
           }),
         ],
@@ -139,13 +173,13 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
             attrs: {
               style: "padding: 4px 10px; border-radius: 999px; background: #ecfdf5; border: 1px solid #6ee7b7; color: #047857; font-size: 11.5px; font-weight: 700;",
             },
-            text: `맵 ${mapCount}개 · 패키징 에셋 ${assetCount}개`,
+            text: `맵 ${mapCount}개 · 에셋 ${assetCount}개`,
           }),
           (platformChip = el("span", {
             attrs: {
               style: "padding: 4px 10px; border-radius: 999px; background: #eff6ff; border: 1px solid #93c5fd; color: #1d4ed8; font-size: 11.5px; font-weight: 700;",
             },
-            text: "Steam Auto-Cloud · XInput 패드 내장",
+            text: "game.pak · Steam Auto-Cloud · 패드 지원",
           })),
         ],
       }),
@@ -185,7 +219,7 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
     if (web) {
       packagePreviewCode.textContent = [
         `📦 ${webExportFileName(options.project)}  (약 ${estimatedMb}MB · 맵 ${mapCount}장 · 파일 ${assetCount}개)`,
-        `├── player.html                        (브라우저에서 이 파일을 엽니다)`,
+        `├── player.html                        (웹 서버에서 이 파일을 엽니다)`,
         `├── project.json                       (게임 데이터)`,
         `├── loading.json                       (불러오는 중 안내)`,
         `└── assets/                            (이 게임이 쓰는 그림·소리)`,
@@ -197,37 +231,54 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
         platform: selectedPlatform,
         versionLabel: ver,
       });
-      const exeLine =
+      const cliPlatform =
         selectedPlatform === "win64-steam"
-          ? `├── ${slug}.exe                        (Windows x64 네이티브 런처 + Launch-${slug}.bat)`
+          ? "win"
           : selectedPlatform === "linux64-steamos"
-            ? `├── ${slug}.x86_64                     (Linux x64 / SteamOS 런처 + Launch-${slug}.sh)`
-            : `├── ${slug}.app/Contents/MacOS/${slug} (macOS Universal 앱 번들)`;
+            ? "linux"
+            : "mac";
+      const launcherLine =
+        selectedPlatform === "win64-steam"
+          ? `├── Launch-${slug}.bat + play-local.mjs  (로컬 HTTP 즉시 실행 테스트 — CORS 없음)`
+          : selectedPlatform === "linux64-steamos"
+            ? `├── Launch-${slug}.sh + play-local.mjs   (로컬 HTTP 즉시 실행 테스트 — CORS 없음)`
+            : `├── Launch-${slug}.command + play-local.mjs (로컬 HTTP 즉시 실행 테스트 — CORS 없음)`;
+      const archiveLine = packAssetsArchive
+        ? `├── resources/game.pak                 (OPAK 바이너리 아카이브 · 중복 복사 없음 + desktop-runtime.json: ${selectedDisplayMode})`
+        : `├── resources/app/                     (비압축 게임 리소스 + desktop-runtime.json: ${selectedDisplayMode})`;
+      const saveNs = resolveDesktopSaveNamespace({
+        steamAppId: steamAppIdValue,
+        slug,
+        sharedSaveGroup: sharedSaveGroupValue,
+      });
+      const nativeTarget = nativeExecutablePathForPlatform(selectedPlatform, slug);
 
       packagePreviewCode.textContent = [
-        `📦 ${zipName}  (예상 용량 ~${estimatedMb} MB · 에셋 ${assetCount}개 · 단일 HTML 노출 차단)`,
-        exeLine,
+        `📦 ${zipName}  (예상 용량 ~${estimatedMb} MB · 에셋 ${assetCount}개)`,
+        launcherLine,
         `├── steam_appid.txt                    (Steam AppID: ${steamAppIdValue} · DepotID: ${steamDepotIdValue})`,
-        `├── resources/game.pak                 (OPAK 바이너리 아카이브 패킹 + desktop-runtime.json: ${selectedDisplayMode})`,
-        `├── saves/slot-01.oprn-save.json       (Steam Auto-Cloud 로컬 파일 세이브 슬롯 1~3 · autosave · config.json)`,
-        `└── steamworks/app_build_${steamAppIdValue}.vdf   (SteamPipe 빌드 스크립트 · steam_input_manifest.vdf · 출시 체크리스트)`,
+        archiveLine,
+        `├── saves/config.json                  (세이브 네임스페이스: ${saveNs} · depot_build에서 saves/* 자동 제외)`,
+        `└── steamworks/app_build_${steamAppIdValue}.vdf   (SteamPipe VDF · 패드 매핑 · 출시 체크리스트)`,
+        ``,
+        `💡 네이티브 실행 앱(${nativeTarget}) 생성: npm run build:desktop-game -- --input "${zipName}" --platform ${cliPlatform}`,
       ].join("\n");
     }
 
     if (platformEyebrow) {
       platformEyebrow.textContent = web
         ? "WEB HOSTING · 브라우저에서 여는 게임"
-        : "STEAMWORKS PIPE · DESKTOP NATIVE PACKAGE BUILDER";
+        : "DESKTOP · STEAM PACKAGING KIT";
     }
     if (platformChip) {
       platformChip.textContent = web
         ? "player.html · project.json · 쓰는 그림과 소리"
-        : "Steam Auto-Cloud · XInput 패드 내장";
+        : "game.pak · Steam Auto-Cloud · 패드 지원";
     }
     if (desktopConfigTitle) {
       desktopConfigTitle.textContent = web
         ? "웹 서버 번들 — Steam 설정은 이 압축에 들어가지 않습니다"
-        : "Steamworks & 데스크톱 런타임 구성 (SteamPipe · Auto-Cloud · XInput)";
+        : "데스크톱 · Steam 패키징 키트 구성 (Electron 빌드 입력 · Auto-Cloud · 패드)";
     }
     if (desktopConfigNote) desktopConfigNote.hidden = !web;
     if (desktopConfigControls) {
@@ -239,7 +290,7 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
     if (primaryBuildButton) {
       primaryBuildButton.textContent = web
         ? "웹 서버 번들 내보내기 (.zip)"
-        : "🚀 선택한 플랫폼으로 데스크톱 · Steam 패키지 빌드 (.zip)";
+        : "데스크톱 · Steam 패키징 키트 내보내기 (.zip)";
     }
 
     for (const [platformId, btn] of platformButtons.entries()) {
@@ -355,6 +406,17 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
     }
   });
 
+  const sharedSaveGroupInput = document.createElement("input");
+  sharedSaveGroupInput.className = "app-modal-input";
+  sharedSaveGroupInput.type = "text";
+  sharedSaveGroupInput.maxLength = 64;
+  sharedSaveGroupInput.placeholder = "비우면 App ID 기준 (예: my-rpg-series)";
+  sharedSaveGroupInput.dataset.testid = "publication-shared-save-group";
+  sharedSaveGroupInput.addEventListener("input", () => {
+    sharedSaveGroupValue = sharedSaveGroupInput.value;
+    updatePackagePreview();
+  });
+
   const makeFeatureToggle = (
     testId: string,
     label: string,
@@ -383,7 +445,7 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
     children: [
       (desktopConfigTitle = el("div", {
         attrs: { style: "font-size: 12px; font-weight: 800; color: #0f172a;" },
-        text: "Steamworks & 데스크톱 런타임 구성 (SteamPipe · Auto-Cloud · XInput)",
+        text: "데스크톱 · Steam 패키징 키트 구성 (Electron 빌드 입력 · Auto-Cloud · 패드)",
       })),
       (desktopConfigNote = el("p", {
         dataset: { testid: "publication-web-platform-note" },
@@ -391,14 +453,14 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
           hidden: "hidden",
           style: "margin: 0; font-size: 12px; font-weight: 600; line-height: 1.45; color: #0f172a;",
         },
-        text: "아래 App ID, Depot, game.pak, Auto-Cloud는 데스크톱·Steam 패키지용입니다. 웹 서버 번들에는 들어가지 않습니다.",
+        text: "아래 App ID, Depot, game.pak, Auto-Cloud는 데스크톱·Steam 패키징 키트용입니다. 웹 서버 번들에는 들어가지 않습니다.",
       })),
       (desktopConfigControls = el("div", {
         dataset: { testid: "publication-desktop-options" },
         attrs: { style: "display: flex; flex-direction: column; gap: 8px;" },
         children: [
           el("div", {
-            attrs: { style: "display: grid; grid-template-columns: 1fr 1fr 1.8fr; gap: 10px;" },
+            attrs: { style: "display: grid; grid-template-columns: 1fr 1fr 1.6fr; gap: 10px;" },
             children: [
               el("label", {
                 class: "app-modal-message",
@@ -413,8 +475,16 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
               el("label", {
                 class: "app-modal-message",
                 attrs: { style: "display: flex; flex-direction: column; gap: 3px; margin: 0; font-size: 11px; font-weight: 700; color: #334155;" },
-                children: [el("span", { text: "기본 디스플레이 모드" }), displayModeSelect],
+                children: [el("span", { text: "기본 화면 모드" }), displayModeSelect],
               }),
+            ],
+          }),
+          el("label", {
+            class: "app-modal-message",
+            attrs: { style: "display: flex; flex-direction: column; gap: 3px; margin: 0; font-size: 11px; font-weight: 700; color: #334155;" },
+            children: [
+              el("span", { text: "체험판 → 본편 세이브 공유 ID (선택 · 같은 ID를 쓰면 체험판 세이브가 본편으로 이어집니다)" }),
+              sharedSaveGroupInput,
             ],
           }),
           el("div", {
@@ -446,15 +516,13 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
     ],
   });
 
-  // ── Section 3: Engine Lineage & Save Compatibility Contract (Preserves all unit test contracts!) ──
-  const fields = el("div", {
-    class: "app-modal-choices",
-    attrs: {
-      style: "display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px 10px; padding: 10px 12px; border-radius: 10px; background: #f1f5f9; border: 1px solid #cbd5e1;",
-    },
-  });
-
-  const input = (label: string, id: string, readonly = false) => {
+  // ── Section 3: Version & Collapsible Advanced Engine / Save Compatibility ──
+  const createFieldInput = (
+    container: HTMLElement,
+    label: string,
+    id: string,
+    readonly = false,
+  ) => {
     const control = document.createElement("input");
     control.className = "app-modal-input";
     control.id = `publication-${id}`;
@@ -473,13 +541,18 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
         control,
       ],
     });
-    fields.append(wrapper);
+    container.append(wrapper);
     return control;
   };
 
-  const gameId = input("게임 고유 ID", "game-id", true);
+  const versionRow = el("div", {
+    attrs: {
+      style: "display: grid; grid-template-columns: 1fr; gap: 6px; padding: 10px 12px; border-radius: 10px; background: #f8fafc; border: 1px solid #cbd5e1;",
+    },
+  });
+
   // 출시 버전은 자동이다(스토어가 아는 다음 번호, 아니면 지난 번 번호). 칸에 적으면 그 번호로 덮어쓴다.
-  const version = input("출시 버전 — 비우면 자동, 적으면 그 번호", "version");
+  const version = createFieldInput(versionRow, "출시 버전 — 비우면 자동, 직접 적으면 그 번호로 내보냅니다", "version");
   version.maxLength = 80;
   const autoVersion = (): string => storeSection?.autoVersion() ?? draft?.versionLabel ?? "1.0";
   const effectiveVersion = (): string => version.value.trim() || autoVersion();
@@ -493,26 +566,41 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
   const showAutoVersion = () => { version.placeholder = `자동: ${autoVersion()}`; updatePackagePreview(); };
   storeSection?.onAutoVersion(showAutoVersion);
   version.addEventListener("input", () => { showAutoVersion(); storeSection?.onVersionInput(); });
-  const target = input("선택된 런타임 해시", "runtime", true);
-  const lineage = input("세이브 호환 계보 ID", "lineage", true);
-  const selectedCollector = input("선택 엔진 수집 계약", "selected-collector", true);
-  const installedCollector = input("설치 엔진 수집 계약", "installed-collector", true);
-  const predecessors = input("허용할 이전 저장 호환 ID", "predecessors");
+
+  const advancedGrid = el("div", {
+    class: "app-modal-choices",
+    attrs: {
+      style: "display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 10px; padding-top: 8px;",
+    },
+  });
+
+  const gameId = createFieldInput(advancedGrid, "게임 고유 ID", "game-id", true);
+  const target = createFieldInput(advancedGrid, "적용된 엔진 빌드 ID", "runtime", true);
+  const lineage = createFieldInput(advancedGrid, "현재 세이브 호환 ID", "lineage", true);
+  const selectedCollector = createFieldInput(advancedGrid, "현재 적용된 리소스 규격", "selected-collector", true);
+  const installedCollector = createFieldInput(advancedGrid, "설치된 최신 리소스 규격", "installed-collector", true);
+  const predecessors = createFieldInput(advancedGrid, "이전 버전 세이브 호환 목록", "predecessors");
 
   const acceptPredecessor = document.createElement("input");
   acceptPredecessor.type = "checkbox";
   acceptPredecessor.dataset.testid = "publication-accept-predecessor";
   acceptPredecessor.disabled = true;
-  fields.append(
-    el("label", {
-      class: "app-modal-choice",
-      attrs: { style: "display: flex; align-items: center; gap: 6px; font-size: 11px; padding: 4px 8px; align-self: end;" },
-      children: [
-        acceptPredecessor,
-        el("span", { text: "이전 저장 호환 허용" }),
-      ],
-    }),
-  );
+
+  const predecessorWarning = el("p", {
+    dataset: { testid: "publication-predecessor-warning" },
+    attrs: {
+      hidden: "hidden",
+      role: "alert",
+      style: "margin: 6px 0 0; padding: 6px 10px; border-radius: 6px; background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; font-size: 11.5px; font-weight: 700;",
+    },
+    text: "주의: 이전 세이브 호환을 해제하면 업데이트 후 기존 플레이어가 예전 세이브 파일을 불러올 수 없습니다.",
+  });
+
+  const syncPredecessorWarning = () => {
+    const showWarning = Boolean(upgradePredecessor) && !acceptPredecessor.checked;
+    predecessorWarning.hidden = !showWarning;
+  };
+
   acceptPredecessor.addEventListener("change", () => {
     if (!upgradePredecessor) return;
     const values = predecessors.value
@@ -521,7 +609,26 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
       .filter((value) => value && value !== upgradePredecessor);
     if (acceptPredecessor.checked) values.push(upgradePredecessor);
     predecessors.value = values.join(", ");
+    syncPredecessorWarning();
   });
+
+  const advancedDetails = document.createElement("details");
+  advancedDetails.dataset.testid = "publication-advanced-details";
+  advancedDetails.style.cssText =
+    "padding: 8px 12px; border-radius: 10px; background: #f1f5f9; border: 1px solid #cbd5e1;";
+  const advancedSummary = el("summary", {
+    attrs: { style: "cursor: pointer; font-size: 12px; font-weight: 700; color: #334155; user-select: none;" },
+    text: "고급 설정: 게임 ID · 엔진 업그레이드 · 세이브 호환성",
+  });
+  const compatRow = el("label", {
+    class: "app-modal-choice",
+    attrs: { style: "display: flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 600; color: #1e293b; padding: 6px 8px; margin-top: 8px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 6px;" },
+    children: [
+      acceptPredecessor,
+      el("span", { text: "업데이트 후에도 기존 유저 세이브 유지 (권장)" }),
+    ],
+  });
+  advancedDetails.append(advancedSummary, advancedGrid, compatRow, predecessorWarning);
 
   const refreshCollectors = () => {
     selectedCollector.value = String(verifiedRuntimes.get(draft?.runtimeTarget ?? "")?.collectorVersion ?? "");
@@ -541,6 +648,7 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
     upgrade.disabled = !installed || !draft || draft.runtimeTarget === installed;
     fork.disabled = !draft;
     acceptPredecessor.disabled = !upgradePredecessor;
+    syncPredecessorWarning();
     updatePackagePreview();
   };
 
@@ -593,11 +701,19 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
   const upgrade = action("upgrade", "설치된 엔진으로 업그레이드", () => {
     if (!installed || !draft) return;
     upgradePredecessor = draft.saveCompatibilityId;
-    acceptPredecessor.checked = false;
-    draft = upgradePublication(sync(), installed);
+    const upgraded = upgradePublication(sync(), installed);
+    const mergedPredecessors = upgraded.acceptedSaveCompatibilityIds.includes(upgradePredecessor)
+      ? upgraded.acceptedSaveCompatibilityIds
+      : [...upgraded.acceptedSaveCompatibilityIds, upgradePredecessor];
+    draft = parsePublication({
+      ...upgraded,
+      acceptedSaveCompatibilityIds: mergedPredecessors,
+    });
+    acceptPredecessor.checked = true;
+    advancedDetails.open = true;
     refresh();
     version.focus();
-    status.textContent = "엔진을 바꾸고 새 저장 호환 ID를 준비했습니다. 적용 전까지 원본은 바뀌지 않습니다.";
+    status.textContent = "새 엔진으로 업그레이드했습니다. 기존 유저 세이브 호환이 기본으로 켜져 있으며, 적용 전까지 원본은 바뀌지 않습니다.";
   });
 
   const fork = action("fork", "새 게임으로 분기", () => {
@@ -631,6 +747,7 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
       enableSteamAutoCloud,
       enableSteamInputGamepad,
       versionLabel: effectiveVersion(),
+      ...(sharedSaveGroupValue.trim() ? { sharedSaveGroup: sharedSaveGroupValue.trim() } : {}),
     };
     close();
     if (options.exportDesktopSteam) {
@@ -641,17 +758,17 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
     }
     void (async () => {
       try {
-        toast("데스크톱 · Steam Depot 패키지를 조립하는 중...", "info");
+        toast("데스크톱 · Steam 패키징 키트를 조립하는 중...", "info");
         const result = await createDesktopSteamExportPackage(options.project, buildOptions);
         downloadBlob(result.blob, result.fileName);
         const mb = (result.summary.pakArchiveBytes / 1048576).toFixed(1);
         toast(
-          t(`Steam · 데스크톱 빌드 완료: ${result.fileName} (game.pak ${mb}MB, 에셋 ${result.summary.assetCount}개)`),
+          t(`패키징 키트 내보내기 완료: ${result.fileName} (game.pak ${mb}MB, 에셋 ${result.summary.assetCount}개)`),
           "ok",
         );
       } catch (error) {
         toast(
-          t(`데스크톱 빌드 실패: ${error instanceof Error ? error.message : String(error)}`),
+          t(`데스크톱 패키징 실패: ${error instanceof Error ? error.message : String(error)}`),
           "error",
         );
       }
@@ -673,7 +790,7 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
 
   const buildDesktopButton = action(
     "export-desktop-steam",
-    "🚀 선택한 플랫폼으로 데스크톱 · Steam 패키지 빌드 (.zip)",
+    "데스크톱 · Steam 패키징 키트 내보내기 (.zip)",
     () => {
       if (selectedPlatform === "web-pwa") exportAction("zip");
       else runDesktopSteamBuild();
@@ -685,9 +802,11 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
   card.append(
     headerBar,
     status,
+    ...(licenseAuditBanner ? [licenseAuditBanner] : []),
     platformGrid,
     desktopConfigPanel,
-    fields,
+    versionRow,
+    advancedDetails,
     ...(storeSection ? [storeSection.element] : []),
     el("div", {
       class: "app-modal-choices",
@@ -700,7 +819,7 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
             upgrade,
             fork,
             action("zip", "웹 서버 ZIP 내보내기", () => exportAction("zip")),
-            action("html", "고급: 디버그 단일 HTML", () => exportAction("html"), false, STANDALONE_HTML_GITHUB_PAGES_HINT),
+            action("html", "단일 HTML 파일 내보내기 (더블클릭 실행)", () => exportAction("html"), false, STANDALONE_HTML_GITHUB_PAGES_HINT),
           ],
         }),
         buildDesktopButton,
@@ -734,7 +853,7 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
   document.body.append(overlay);
   registerModal(overlay, close);
   refresh();
-  (draft ? version : gameId).focus();
+  version.focus();
 
   const fetchBytes = options.fetchBytes ?? defaultFetchBytes;
   const verifyRuntime = async (runtimeTarget: string) => {
@@ -752,7 +871,7 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
     prepare.disabled = !!draft;
     upgrade.disabled = !draft || draft.runtimeTarget === installed;
     refreshCollectors();
-    status.textContent = `설치된 엔진 검증 완료: ${current.slice(0, 16)} · Steam Depot 및 데스크톱 실행 패키지 빌드 준비됨`;
+    status.textContent = `설치된 엔진 검증 완료 (${current.slice(0, 12)}) · 웹 번들 / 단일 HTML / 데스크톱·Steam 패키징 키트 내보내기 준비됨`;
     if (draft && draft.runtimeTarget !== current) {
       await verifyRuntime(draft.runtimeTarget);
       if (!closed) refreshCollectors();
@@ -761,7 +880,7 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
     if (!closed) {
       const rawMsg = error instanceof Error ? error.message : String(error);
       const cleanMsg = rawMsg.includes("<!doctype") || rawMsg.includes("Unexpected token '<'")
-        ? "로컬 런타임 아카이브 미설치 — 데스크톱 · Steam 패키지 빌드는 현재 엔진으로 즉시 생성 가능합니다"
+        ? "로컬 런타임 아카이브 미설치 — 데스크톱·Steam 패키징 키트는 현재 엔진으로 내보낼 수 있습니다"
         : rawMsg;
       status.textContent = `엔진을 사용할 수 없습니다. 자동 대체하지 않습니다. (${cleanMsg})`;
     }

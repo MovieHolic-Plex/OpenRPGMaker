@@ -1466,23 +1466,24 @@ function openDesktopSteamStudio(topbar: HTMLElement): void {
 }
 
 async function doExportDesktopSteamGame(options: DesktopSteamExportOptions = {}): Promise<void> {
-  if (!beginGameExport("데스크톱 · Steam Depot 패키지를 조립하는 중... (resources/game.pak 아카이브 패킹)")) return;
+  if (!beginGameExport("데스크톱 · Steam 패키징 키트를 조립하는 중... (resources/game.pak 아카이브 패킹)")) return;
   try {
     await store.flush().catch((error) => {
       console.error("[desktop-steam-export] flush before export failed:", error);
-      toast("저장은 실패했지만 현재 상태로 데스크톱 · Steam 패키지를 만듭니다", { kind: "info", durationMs: 8_000 });
+      toast("저장은 실패했지만 현재 상태로 데스크톱 · Steam 패키징 키트를 만듭니다", { kind: "info", durationMs: 8_000 });
     });
     const project = store.getCurrent();
     const result = await createDesktopSteamExportPackage(project, options);
     downloadBlob(result.blob, result.fileName);
     const pakMb = (result.summary.pakArchiveBytes / 1048576).toFixed(1);
+    const archiveNote = result.summary.pakArchiveBytes > 0 ? `game.pak ${pakMb}MB` : "비압축 리소스";
     endGameExport(
-      `Steam · 데스크톱 빌드 완료: ${result.summary.executablePath} (game.pak ${pakMb}MB, 에셋 ${result.summary.assetCount}개)`,
+      `패키징 키트 내보내기 완료: ${result.fileName} (${archiveNote}, 에셋 ${result.summary.assetCount}개)`,
       "ok",
     );
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    endGameExport(`데스크톱 · Steam 패키지 빌드 실패: ${message}`, "error");
+    endGameExport(`데스크톱 · Steam 패키징 키트 내보내기 실패: ${message}`, "error");
   }
 }
 

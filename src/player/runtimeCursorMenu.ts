@@ -1,4 +1,4 @@
-import { keyboardEventKey } from "@/player/keyBindings";
+import { keyboardEventKey, normalizeKey } from "@/player/keyBindings";
 import { emitRuntimeJuice, type RuntimeJuiceOptions } from "@/player/runtimeJuice";
 import {
   isCancelKey,
@@ -85,6 +85,21 @@ export function attachCursorMenu(root: HTMLElement, opts: CursorMenuOptions): ()
     const key = keyboardEventKey(event);
     if (key === "Process" || key === "Unidentified") return;
     if (event.isComposing && key === event.key) return;
+    const normalized = normalizeKey(key);
+    if (items.length && (normalized === "pageup" || normalized === "pagedown" || normalized === "home" || normalized === "end")) {
+      event.preventDefault();
+      event.stopPropagation();
+      const pageStep = 5 * Math.max(1, opts.columns ?? 1);
+      const next = normalized === "home"
+        ? 0
+        : normalized === "end"
+          ? items.length - 1
+          : normalized === "pageup"
+            ? Math.max(0, index - pageStep)
+            : Math.min(items.length - 1, index + pageStep);
+      setIndex(next);
+      return;
+    }
     const dir = navDirection(key);
     if (dir) {
       if ((dir === "left" || dir === "right") && opts.onHorizontal) {

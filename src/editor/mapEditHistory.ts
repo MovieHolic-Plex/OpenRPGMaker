@@ -4,6 +4,7 @@ import { hasEventDraftVaultEntries } from "@/project/eventDraftVault";
 import { hasChangedWorkingEventDraft, store, type ProjectChangeAnnotation, type ProjectChangeCell, type WorkingEventAdoption } from "@/project/store";
 import { canWriteTeamProject } from "@/project/teamAccess";
 import { cloneProjectSharingSharedDictionaries } from "@/project/projectClone";
+import { cloneTilesetDictionaryPreservingLazy, copyTilesetDictionaryPreservingLazy } from "@/project/defaults/lazyDefaultTilesets";
 import { jsonEqual } from "@/util/structuralJson";
 import { reliefChangedCells, type ReliefChangeCell } from "@/project/relief/changes";
 import { applyProjectDocumentPatch, type ProjectDocumentPatch } from "@/project/persistence/core/projectPatch";
@@ -28,7 +29,7 @@ function projectSnapshotSharingTilesets(project: Project): Project {
   const ordered: Record<string, unknown> = {};
   for (const key of Object.keys(project)) {
     ordered[key] = key === "tilesets"
-      ? { ...tilesets }
+      ? copyTilesetDictionaryPreservingLazy(tilesets)
       : key === "assets"
         ? { ...(snapshot.assets as object), uploaded: { ...assets.uploaded } }
         : (snapshot as unknown as Record<string, unknown>)[key];
@@ -167,7 +168,7 @@ function makeSnapshotFromCurrent(mapId: string | null | undefined, options?: Map
         mapId: snapshotMapId,
         before: options.includeEventDrafts ? structuredClone(map) : mapWithCommittedEvents(map),
         ...(options.includeEventDrafts ? { includeEventDrafts: true } : {}),
-        ...(options.includeTilesets ? { beforeTilesets: structuredClone(current.tilesets) } : {}),
+        ...(options.includeTilesets ? { beforeTilesets: cloneTilesetDictionaryPreservingLazy(current.tilesets) } : {}),
       };
     }
   }
@@ -188,7 +189,7 @@ function makeCurrentSnapshotForEntry(entry: HistoryEntry): HistorySnapshot | nul
         mapId: entry.snapshot.mapId,
         before: entry.snapshot.includeEventDrafts ? structuredClone(map) : mapWithCommittedEvents(map),
         ...(entry.snapshot.includeEventDrafts ? { includeEventDrafts: true } : {}),
-        ...(entry.snapshot.beforeTilesets ? { beforeTilesets: structuredClone(current.tilesets) } : {}),
+        ...(entry.snapshot.beforeTilesets ? { beforeTilesets: cloneTilesetDictionaryPreservingLazy(current.tilesets) } : {}),
       }
       : null;
   }
@@ -234,7 +235,7 @@ function applySnapshotToProject(base: Project, snapshot: HistorySnapshot): Proje
   if (snapshot.kind === "project") return cloneProjectSharingSharedDictionaries(snapshot.before);
   const next = cloneProjectSharingSharedDictionaries(base);
   next.maps[snapshot.mapId] = structuredClone(snapshot.before);
-  if (snapshot.beforeTilesets) next.tilesets = structuredClone(snapshot.beforeTilesets);
+  if (snapshot.beforeTilesets) next.tilesets = cloneTilesetDictionaryPreservingLazy(snapshot.beforeTilesets);
   if (snapshot.mapId === next.startMapId) keepStartInsideRestoredMap(next);
   return next;
 }
@@ -258,7 +259,7 @@ function applyHistorySnapshots(base: Project, snapshots: readonly HistorySnapsho
   // the established COW contract; no snapshot/current map is mutated in place.
   const next = cloneProjectSharingSharedDictionaries(source);
   for (const [mapId, snapshot] of maps) next.maps[mapId] = structuredClone(snapshot.before);
-  if (tilesets) next.tilesets = structuredClone(tilesets);
+  if (tilesets) next.tilesets = cloneTilesetDictionaryPreservingLazy(tilesets);
   if (maps.has(next.startMapId)) keepStartInsideRestoredMap(next);
   return next;
 }
@@ -549,7 +550,7 @@ export function recordMapEditIfChanged(
     kind: "map",
     mapId,
     before: mapWithCommittedEvents(beforeMap),
-    ...(options.includeTilesets ? { beforeTilesets: structuredClone(before.tilesets) } : {}),
+    ...(options.includeTilesets ? { beforeTilesets: cloneTilesetDictionaryPreservingLazy(before.tilesets) } : {}),
   }, options.label, mapId);
   return true;
 }

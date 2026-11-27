@@ -8,6 +8,10 @@ export type RuntimeMenuKey =
   | "ArrowRight"
   | "ArrowDown"
   | "ArrowUp"
+  | "PageUp"
+  | "PageDown"
+  | "Home"
+  | "End"
   | "w"
   | "a"
   | "s"
@@ -17,7 +21,8 @@ export type RuntimeMenuKey =
   | "z"
   | "e"
   | "x"
-  | "Escape";
+  | "Escape"
+  | (string & {});
 
 export type StatusMenuKeyboardMode = "function" | "main";
 
