@@ -57,6 +57,7 @@
     "build:app": "vite build --configLoader runner",
     "build:fast": "vite build --configLoader runner",
     "build:electron": "node scripts/build-electron.mjs",
+    "build:desktop-game": "node scripts/build-desktop-game.mjs",
     "build:packaged": "vite build --mode packaged --configLoader runner",
     "package": "npm run build:packaged && npm run bake:demos && npm run build:electron && electron-builder --config electron-builder.config.mjs",
     "package:dir": "npm run build:packaged && npm run bake:demos && npm run build:electron && electron-builder --config electron-builder.config.mjs --dir",

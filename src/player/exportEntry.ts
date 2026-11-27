@@ -30,7 +30,12 @@ import {
   type ExportProjectSource,
 } from "@/player/exportSaveNamespace";
 import { hostExitReturnUrl, parseHostBridge, type HostBridge } from "@/player/hostBridge";
-import { installDesktopShellBridge, type DesktopShellBootConfig } from "@/player/desktopShellBridge";
+import {
+  hydrateSavesFromDesktopHost,
+  installDesktopShellBridge,
+  quitDesktopPlayer,
+  type DesktopShellBootConfig,
+} from "@/player/desktopShellBridge";
 import { getAudioEngine, stopAllAudio } from "@/player/audio";
 import { fetchTextWithProgress, mountBootLoader, readLoadingInfo, type BootLoader } from "@/player/bootLoader";
 import { backgroundUrls, enableScenePreload, fetchBlobWithRetry, firstPlayableUrls, preloadUrls } from "@/player/scenePreload";
@@ -419,6 +424,12 @@ async function startPlayer(
     } catch (error) {
       console.warn("[oprn] 옛 세이브 입양을 건너뜁니다:", error);
     }
+    // 데스크톱 호스트(Electron / 로컬 런처)의 saves/*.oprn-save.json 을 localStorage 로 복원·동기화한다.
+    try {
+      await hydrateSavesFromDesktopHost(saveNamespace, window.localStorage);
+    } catch (error) {
+      console.warn("[oprn] 데스크톱 세이브 파일 동기화를 건너뜁니다:", error);
+    }
     // 스토어 웹 게임: 계정 클라우드 세이브와 맞춘다(storeCloudSync.ts). 다리가 없으면(새 창·내보낸 게임) 아무것도 하지 않는다.
     if (storeGame && source === "bundled") {
       setSavePublication(project.meta.publication, resolveCommunitySaveScope(window.location.pathname));
@@ -475,8 +486,13 @@ function renderBootError(root: HTMLElement, message: string): void {
   root.append(panel);
 }
 
-// 타이틀 "게임 종료": exit 기능 + 유효한 returnUrl 이면 호스트 페이지로 복귀, 아니면 기존 안내 유지.
+// 타이틀 "게임 종료": 데스크톱 네이티브 호스트면 앱 종료, 웹 호스트 returnUrl 이면 복귀, 아니면 기존 안내 유지.
 function exitToHost(root: HTMLElement, host: HostBridge): void {
+  if (typeof window.__oprnDesktopPlayer?.quit === "function") {
+    stopAllAudio();
+    void quitDesktopPlayer();
+    return;
+  }
   const returnUrl = hostExitReturnUrl(host);
   if (returnUrl) {
     stopAllAudio();

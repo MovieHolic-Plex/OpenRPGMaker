@@ -101,13 +101,20 @@ describe("publishing modal controls", () => {
     expect(project.meta.publication?.runtimeTarget).toBe(runtime.runtimeTarget);
     expect(mutations()).toBe(1);
   });
-  it("keeps game identity but isolates saves on explicit engine upgrade", async () => {
+  it("keeps game identity and preserves predecessor save compatibility by default on engine upgrade", async () => {
     const { project, runtime } = await fixture(true);
     const original = project.meta.publication;
-    button("upgrade").click(); button("apply").click();
+    button("upgrade").click();
+    const checkbox = document.querySelector('[data-testid="publication-accept-predecessor"]');
+    const warning = document.querySelector('[data-testid="publication-predecessor-warning"]');
+    if (!(checkbox instanceof HTMLInputElement) || !(warning instanceof HTMLElement)) throw new Error("Missing compatibility controls");
+    expect(checkbox.checked).toBe(true);
+    expect(warning.hidden).toBe(true);
+    button("apply").click();
     expect(project.meta.publication?.gameId).toBe(original?.gameId);
     expect(project.meta.publication?.saveCompatibilityId).not.toBe(original?.saveCompatibilityId);
     expect(project.meta.publication?.runtimeTarget).toBe(runtime.runtimeTarget);
+    expect(project.meta.publication?.acceptedSaveCompatibilityIds).toEqual([original?.saveCompatibilityId]);
   });
   it("forks only when the staged fork is applied", async () => {
     const { project } = await fixture(true);
@@ -115,14 +122,18 @@ describe("publishing modal controls", () => {
     button("fork").click(); button("apply").click();
     expect(project.meta.publication?.gameId).not.toBe(original?.gameId);
   });
-  it("accepts the immediate predecessor only after an explicit checkbox action", async () => {
+  it("warns and isolates predecessor saves only when the creator explicitly unchecks compatibility", async () => {
     const { project } = await fixture(true);
-    const original = project.meta.publication;
     button("upgrade").click();
     const checkbox = document.querySelector('[data-testid="publication-accept-predecessor"]');
-    if (!(checkbox instanceof HTMLInputElement)) throw new Error("Missing compatibility choice");
-    checkbox.click(); button("apply").click();
-    expect(project.meta.publication?.acceptedSaveCompatibilityIds).toEqual([original?.saveCompatibilityId]);
+    const warning = document.querySelector('[data-testid="publication-predecessor-warning"]');
+    if (!(checkbox instanceof HTMLInputElement) || !(warning instanceof HTMLElement)) throw new Error("Missing compatibility choice");
+    expect(checkbox.checked).toBe(true);
+    checkbox.click();
+    expect(checkbox.checked).toBe(false);
+    expect(warning.hidden).toBe(false);
+    button("apply").click();
+    expect(project.meta.publication?.acceptedSaveCompatibilityIds).toEqual([]);
   });
   it("allows selecting Desktop & Steam target platforms and invokes exportDesktopSteam with configured options", async () => {
     const project = createBlankProject();
@@ -145,6 +156,9 @@ describe("publishing modal controls", () => {
     const appIdInput = document.querySelector<HTMLInputElement>('[data-testid="publication-steam-appid"]')!;
     appIdInput.value = "245010";
     appIdInput.dispatchEvent(new Event("input"));
+    const sharedSaveInput = document.querySelector<HTMLInputElement>('[data-testid="publication-shared-save-group"]')!;
+    sharedSaveInput.value = "demo-to-full-rpg";
+    sharedSaveInput.dispatchEvent(new Event("input"));
     const buildBtn = document.querySelector<HTMLButtonElement>('[data-testid="publication-export-desktop-steam"]')!;
     buildBtn.click();
     expect(capturedOptions).toMatchObject({
@@ -155,6 +169,7 @@ describe("publishing modal controls", () => {
       packAssetsArchive: true,
       enableSteamAutoCloud: true,
       enableSteamInputGamepad: true,
+      sharedSaveGroup: "demo-to-full-rpg",
     });
   });
   it("previews and exports the web player zip from the web platform card", async () => {
