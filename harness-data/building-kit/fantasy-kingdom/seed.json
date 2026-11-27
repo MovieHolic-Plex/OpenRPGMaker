@@ -2863,11 +2863,7 @@
             2,
             2
           ],
-          "kind": "extra",
-          "top": [
-            0,
-            1
-          ]
+          "kind": "extra"
         }
       ],
       "joins": []
@@ -3495,11 +3491,7 @@
             3,
             2
           ],
-          "kind": "extra",
-          "top": [
-            0,
-            1
-          ]
+          "kind": "extra"
         }
       ],
       "joins": []
@@ -3532,14 +3524,93 @@
             3,
             2
           ],
-          "kind": "extra",
-          "top": [
-            0,
-            1
-          ]
+          "kind": "extra"
         }
       ],
       "joins": []
+    },
+    {
+      "id": "roof.hip.low.green",
+      "wave": "roof",
+      "kind": "set",
+      "title": "깊은 청록·슬레이트 낮은 모임지붕(2행 · 현관 포치용)",
+      "size": [
+        5,
+        2
+      ],
+      "layer": "upper",
+      "walk": "★",
+      "brief": "RM2000 청록 여관·상점의 1층 돌출 현관 포치용 2행 낮은 청록 지붕. 2층 베란다 난간·창턱 아래에 딱 맞게 떨어져 2층을 가리지 않는다.",
+      "accept": [
+        "2층 베란다 아래에 깔끔하게 들어맞는 낮은 청록 지붕으로 읽힌다"
+      ],
+      "end": 2,
+      "pieces": [
+        {
+          "id": "l",
+          "role": "l",
+          "title": "왼끝 2칸",
+          "at": [
+            0,
+            0
+          ],
+          "size": [
+            2,
+            2
+          ],
+          "kind": "roof",
+          "qMin": 0.72,
+          "qTopRow": false
+        },
+        {
+          "id": "m",
+          "role": "m",
+          "title": "가운데(반복)",
+          "at": [
+            2,
+            0
+          ],
+          "size": [
+            1,
+            2
+          ],
+          "kind": "roof",
+          "tileable": "x"
+        },
+        {
+          "id": "r",
+          "role": "r",
+          "title": "오른끝 2칸",
+          "at": [
+            3,
+            0
+          ],
+          "size": [
+            2,
+            2
+          ],
+          "kind": "roof",
+          "qMin": 0.72,
+          "qTopRow": false
+        }
+      ],
+      "joins": [
+        [
+          "l",
+          "m",
+          "x"
+        ],
+        [
+          "m",
+          "m",
+          "x"
+        ],
+        [
+          "m",
+          "r",
+          "x"
+        ]
+      ]
     }
   ],
   "buildings": [
@@ -5550,25 +5621,31 @@
         },
         {
           "id": "porch",
-          "kind": "gable_front",
-          "cols": 3,
-          "depth_rows": 1,
+          "kind": "ridge_side",
+          "cols": 4,
           "storeys": 1,
           "x": 2,
           "depth": 0,
-          "back_end": "gable",
-          "roof": "roof.gf.slope",
-          "gable": "gable.front",
-          "back": "roof.gf.back3",
+          "roof": "roof.hip.low.green",
           "walls": [
             {
-              "item": "wall.timber",
-              "letters": "L D R"
+              "item": "wall.stone",
+              "letters": "L W D R"
+            }
+          ],
+          "extras": [
+            {
+              "part": "extra.gable_dormer.green",
+              "at": [
+                1,
+                0
+              ],
+              "on": "roof"
             }
           ]
         }
       ],
-      "note": "RM2000 우상단 대여관 — 층간 기와 차양 + 2층 전폭 베란다 + M자 쌍박공 + 앞 돌출 3칸 현관"
+      "note": "RM2000 우상단 대여관 — 깊은 청록 층간 차양 + 4px 노출 덱 2층 베란다 + 뾰족 M자 쌍박공 + 2층 안 가리는 낮은 청록 현관"
     },
     {
       "id": "rm2k_pub_twin_gable.r11",
@@ -5625,7 +5702,7 @@
     },
     {
       "id": "rm2k_dual_roof_guild.r11",
-      "title": "RM2000 이색 지붕(목재+청록) 교차 길드",
+      "title": "RM2000 이색 지붕(너와+청록) 교차 길드",
       "use": "guild",
       "masses": [
         {
@@ -5675,25 +5752,31 @@
         },
         {
           "id": "entry",
-          "kind": "gable_front",
-          "cols": 3,
-          "depth_rows": 1,
+          "kind": "ridge_side",
+          "cols": 4,
           "storeys": 1,
           "x": 1,
           "depth": 0,
-          "back_end": "gable",
-          "roof": "roof.gf.slope",
-          "gable": "gable.front",
-          "back": "roof.gf.back3",
+          "roof": "roof.hip.low",
           "walls": [
             {
               "item": "wall.timber",
-              "letters": "L D R"
+              "letters": "L W D R"
+            }
+          ],
+          "extras": [
+            {
+              "part": "extra.gable_dormer",
+              "at": [
+                1,
+                0
+              ],
+              "on": "roof"
             }
           ]
         }
       ],
-      "note": "RM2000 좌상단 이색 지붕 집 — 갈색 목재 널판 2층 본채 + 청록 1층 날개 + 붉은 3칸 돌출 현관"
+      "note": "RM2000 좌상단 이색 지붕 길드 — 짧은 나무 너와 본채 + 깊은 청록 날개 + 2층 창 안 가리는 낮은 현관"
     },
     {
       "id": "rm2k_cascade_inn.r11",
@@ -5712,11 +5795,11 @@
           "walls": [
             {
               "item": "wall.timber",
-              "letters": "L W M M W R"
+              "letters": "L W W M W R"
             },
             {
               "item": "wall.stone",
-              "letters": "L W M M W R"
+              "letters": "L W W M W R"
             }
           ],
           "extras": [
@@ -5752,29 +5835,35 @@
         },
         {
           "id": "front",
-          "kind": "gable_front",
-          "cols": 3,
-          "depth_rows": 1,
+          "kind": "ridge_side",
+          "cols": 4,
           "storeys": 1,
-          "x": 1,
+          "x": 4,
           "depth": 0,
-          "back_end": "gable",
-          "roof": "roof.gf.slope",
-          "gable": "gable.front",
-          "back": "roof.gf.back3",
+          "roof": "roof.hip.low",
           "walls": [
             {
-              "item": "wall.timber",
-              "letters": "L D R"
+              "item": "wall.stone",
+              "letters": "L W D R"
+            }
+          ],
+          "extras": [
+            {
+              "part": "extra.gable_dormer",
+              "at": [
+                1,
+                0
+              ],
+              "on": "roof"
             }
           ]
         }
       ],
-      "note": "RM2000 좌중단 INN — 3단계 깊이(depth 2→1→0)로 비대칭 계단처럼 겹쳐 내려오는 다층 여관"
+      "note": "RM2000 좌중단 INN — 좌후(d2)→중간 베란다(d1)→우전방 낮은 현관(d0) 진짜 3단 계단식 비대칭 여관"
     },
     {
       "id": "rm2k_narrow_stacked.r11",
-      "title": "RM2000 협소 4칸 앞뒤 3단 중첩 타운하우스",
+      "title": "RM2000 협소 계단식 타운하우스",
       "use": "home",
       "masses": [
         {
@@ -5809,25 +5898,31 @@
         },
         {
           "id": "front",
-          "kind": "gable_front",
-          "cols": 3,
-          "depth_rows": 1,
+          "kind": "ridge_side",
+          "cols": 4,
           "storeys": 1,
-          "x": 1,
+          "x": 2,
           "depth": 0,
-          "back_end": "gable",
-          "roof": "roof.gf.slope",
-          "gable": "gable.front",
-          "back": "roof.gf.back3",
+          "roof": "roof.hip.low.green",
           "walls": [
             {
               "item": "wall.timber",
-              "letters": "L D R"
+              "letters": "L W D R"
+            }
+          ],
+          "extras": [
+            {
+              "part": "extra.gable_dormer.green",
+              "at": [
+                1,
+                0
+              ],
+              "on": "roof"
             }
           ]
         }
       ],
-      "note": "RM2000 우중단 협소 주택 — 4칸 좁은 부지 위에 뒤 2층 베란다 + 앞 3칸 박공 현관 중첩"
+      "note": "RM2000 협소 계단식 도시 주택 — 뒤 2층 청록 베란다 + 앞 우측 엇갈린 낮은 청록 현관(2층 안 가림)"
     },
     {
       "id": "rm2k_twin_tower_manor.r11",
@@ -5858,7 +5953,7 @@
           ]
         },
         {
-          "id": "hall",
+          "id": "sanctuary",
           "kind": "ridge_side",
           "cols": 7,
           "storeys": 2,
@@ -5872,8 +5967,8 @@
               "letters": "L W W M W W R"
             },
             {
-              "item": "wall.arcade",
-              "letters": "L W M M M W R"
+              "item": "wall.stone",
+              "letters": "L W W M W W R"
             }
           ],
           "extras": [
@@ -5888,21 +5983,27 @@
           ]
         },
         {
-          "id": "porch",
-          "kind": "gable_front",
-          "cols": 3,
-          "depth_rows": 1,
+          "id": "nave",
+          "kind": "ridge_side",
+          "cols": 7,
           "storeys": 1,
-          "x": 4,
+          "x": 2,
           "depth": 0,
-          "back_end": "gable",
-          "roof": "roof.gf.slope",
-          "gable": "gable.front",
-          "back": "roof.gf.back3",
+          "roof": "roof.hip.low",
           "walls": [
             {
               "item": "wall.stone",
-              "letters": "L D R"
+              "letters": "L W W D W W R"
+            }
+          ],
+          "extras": [
+            {
+              "part": "extra.gable_dormer",
+              "at": [
+                2,
+                0
+              ],
+              "on": "roof"
             }
           ]
         },
@@ -5930,7 +6031,7 @@
           ]
         }
       ],
-      "note": "RM2000 중앙 대성당/성채 저택 — 좌우 3층 원형 돌 포탑 + 중앙 페디먼트 홀 + 돌출 박공 현관"
+      "note": "RM2000 중앙 성당·대저택 — 도로변 연속 석조 기단(잔디 틈 0px) + 좌우 3층 원통 돌 포탑 + 2단 성당 지붕 캐스케이드"
     },
     {
       "id": "rm2k_corner_turret_shop.r11",
@@ -6377,7 +6478,8 @@
         "roof.hip.wood",
         "roof.gf.back3",
         "extra.gable_peak",
-        "extra.gable_peak.green"
+        "extra.gable_peak.green",
+        "roof.hip.low.green"
       ],
       "buildings": [
         "rm2k_veranda_inn.r11",
