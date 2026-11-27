@@ -19798,6 +19798,7 @@
    "show-animation-position-field",
    "show-animation-preview",
    "show-animation-preview-stage",
+   "show-animation-prop-fx",
    "show-animation-surface",
    "show-animation-surface-title",
    "show-animation-target-kind-select",
@@ -19827,6 +19828,7 @@
    "cream-command-form-head",
    "db-animation-stage-cell-sprite",
    "db-animation-stage-cells",
+   "iprop-picker-host",
    "page3-anim-cell",
    "page3-anim-cells",
    "page3-anim-play",
@@ -19864,6 +19866,7 @@
    "show-animation-event-id-input": "input[text]{hidden}",
    "show-animation-pixel-fx": "button{}",
    "show-animation-play": "button{}",
+   "show-animation-prop-fx": "button{}",
    "show-animation-target-kind-select": "select{hidden}",
    "show-animation-target-kind-select-segment-event": "button{}",
    "show-animation-target-kind-select-segment-player": "button{}",
@@ -19895,14 +19898,15 @@
    "■ 정지",
    "아니오",
    "예",
+   "오브젝트 연출 (156종)",
    "이벤트",
    "좌표",
    "주인공",
    "픽셀 효과…"
   ],
   "tags": {
-   "button": 7,
-   "div": 21,
+   "button": 8,
+   "div": 22,
    "h4": 1,
    "input": 3,
    "option": 9,
@@ -19925,6 +19929,7 @@
    "show-animation-position-field": "div",
    "show-animation-preview": "div",
    "show-animation-preview-stage": "div",
+   "show-animation-prop-fx": "button",
    "show-animation-surface": "section",
    "show-animation-surface-title": "h4",
    "show-animation-target-kind-select": "select",
@@ -19942,8 +19947,8 @@
    "show-animation-preview": "재생타격 · 플레이어재생이 끝날 때까지 대기",
    "show-animation-preview-stage": "재생"
   },
-  "testidCount": 24,
-  "controlCount": 13
+  "testidCount": 25,
+  "controlCount": 14
  },
  "showEmote": {
   "testids": [
