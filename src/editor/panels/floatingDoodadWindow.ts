@@ -1,38 +1,52 @@
 // editor/panels/floatingDoodadWindow.ts
-// Phase 2 (SCMDraft 2 감성): 드래그 가능한 독립 플로팅 「두댓 팔레트」 창.
+// Phase 2 & 5 (SCMDraft 2 감성): 드래그·리사이즈 가능한 독립 플로팅 「두댓(오브젝트) 팔레트」 창.
 // - D 키 또는 좌하단 독 「두댓」으로 토글
-// - propsForTileset(건물·나무·소품 스탬프) + reliefDoodadCatalog(경사로·계단·다리·벽면) 통합 카탈로그
-// - SCMDraft 2 그리드 뷰(기본) ↔ StarEdit 분할 프리뷰 뷰 전환 가능
+// - 100% 오브젝트 단위 카탈로그:
+//   1) propsForTileset(완성 건물·나무·소품 다중타일 스탬프) + paletteCatalogFor prefabs
+//   2) Scarloxy 팩 매니페스트(scarloxyPackManifest.json) 완성 오브젝트(집 5×5 · 치료소 6×6 · 나무 2×3 · 유적 아치 3×3 등)
+//   3) 상호작용 오브젝트(보물상자·옷장·항아리·문·횃불·책장 등 156종 멀티프레임 프롭)
+//   4) 지형지물(경사로·계단·다리·벽면)
+// - 우하단 자유 리사이즈 + 하단 최근 두댓 1~6 숫자키 즉시 전환
 
+import scarloxyManifest from "@/assets/scarloxyPackManifest.json";
 import { editorState } from "@/editor/editorState";
 import { renderTileCellsToCanvas } from "@/editor/harnessSuggestion/kitRender";
 import { paletteStampFromKit } from "@/editor/harnessSuggestion/structureKitModel";
 import { shouldIgnoreEditorShortcut } from "@/editor/hotkeys";
 import { resolveCurrentMapId } from "@/editor/mapSelection";
+import { createInteractivePropStripPreview } from "@/editor/panels/eventEditor/interactivePropPicker";
 import { paletteCatalogFor } from "@/editor/panels/tilePaletteCatalog";
-import { selectMapModeTool, selectPaletteStamp } from "@/editor/panels/tileToolbarActions";
+import { selectInteractivePropBrush, selectMapModeTool, selectPaletteStamp } from "@/editor/panels/tileToolbarActions";
 import { propsForTileset, type PropCategoryId, type PropChoice } from "@/editor/propRecommendations";
 import { reliefTopGrassTile } from "@/editor/reliefActions";
 import { reliefDoodadCatalog, type ReliefDoodad } from "@/editor/reliefDoodads";
-import { tileLayerHome } from "@/editor/tileLayerClassification";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
+import { allInteractiveProps, type InteractivePropEntry } from "@/project/interactiveProps";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 
 export const FLOATING_DOODAD_PALETTE_TOGGLE_EVENT = "oprn:floating-doodad-palette-toggle";
 
-type DoodadTabId = "all" | "nature" | "structure" | "prop" | "relief";
+type DoodadTabId = "all" | "nature" | "structure" | "prop" | "interactive" | "relief";
 type DoodadViewMode = "grid" | "split";
 
 type UnifiedDoodad =
   | {
       readonly key: string;
       readonly source: "stamp";
-      readonly tab: Exclude<DoodadTabId, "all" | "relief">;
+      readonly tab: "nature" | "structure" | "prop";
       readonly name: string;
       readonly sizeLabel: string;
       readonly choice: PropChoice;
+    }
+  | {
+      readonly key: string;
+      readonly source: "interactive";
+      readonly tab: "interactive";
+      readonly name: string;
+      readonly sizeLabel: string;
+      readonly prop: InteractivePropEntry;
     }
   | {
       readonly key: string;
@@ -48,13 +62,53 @@ const TABS: readonly { readonly id: DoodadTabId; readonly label: string }[] = [
   { id: "nature", label: "자연" },
   { id: "structure", label: "건물" },
   { id: "prop", label: "소품" },
+  { id: "interactive", label: "상호작용" },
   { id: "relief", label: "경사로·다리" },
 ];
 
 const INITIAL_PAGE_SIZE = 36;
 const PAGE_INCREMENT = 36;
+const DOODAD_SIZE_STORAGE_KEY = "oprn:floating-doodad-size";
+const DOODAD_RECENT_STORAGE_KEY = "oprn:floating-doodad-recent";
+const MAX_RECENT_DOODADS = 6;
 
-function tabForPropCategory(category: PropCategoryId | undefined): Exclude<DoodadTabId, "all" | "relief"> {
+const SCARLOXY_BLOCK_LABELS: Readonly<Record<string, string>> = {
+  "green-tree": "초록 나무",
+  "green-tree-bushy": "풍성한 나무",
+  "teal-tree": "침엽수",
+  "teal-tree-bushy": "풍성한 침엽수",
+  "green-tree-small": "작은 나무",
+  "teal-tree-small": "작은 침엽수",
+  "grass-tuft": "풀숲 장식",
+  "grass-rock-1": "바위 A",
+  "grass-rock-2": "바위 B",
+  "gate-pillar": "문 기둥",
+  "gate-top": "문 아치",
+  "house-small": "초록 지붕 집",
+  "house-small-alt": "보라 지붕 집",
+  "house-large": "큰 민가 A",
+  "house-large-alt": "큰 민가 B",
+  "hospital": "마을 치료소",
+  "palm": "야자수 A",
+  "palm-alt": "야자수 B",
+  "palm-small": "작은 야자수",
+  "ice-tree": "설원 나무",
+  "sand-rock-1": "사막 바위 A",
+  "sand-rock-2": "사막 바위 B",
+  "ice-rock-1": "얼음 바위 A",
+  "ice-rock-2": "얼음 바위 B",
+  "grass-ice-tuft": "설원 풀숲",
+  "ruin-gate": "유적 아치문",
+  "ruin-pillar": "유적 기둥",
+  "ruin-pillar-broke": "부서진 기둥 A",
+  "ruin-pillar-broke-alt": "부서진 기둥 B",
+  "arena-plant": "풀 도장 건물",
+  "arena-fire": "불 도장 건물",
+  "arena-water": "물 도장 건물",
+  "bed-mint": "민트 침대",
+};
+
+function tabForPropCategory(category: PropCategoryId | undefined): "nature" | "structure" | "prop" {
   if (category === "plants") return "nature";
   if (category === "structures") return "structure";
   return "prop";
@@ -64,6 +118,65 @@ function cleanDoodadName(raw: string, w: number, h: number): string {
   const tail = raw.includes("·") ? raw.slice(raw.lastIndexOf("·") + 1).trim() : raw;
   const trimmed = tail.replace(new RegExp(`\\s*${w}\\s*[×x]\\s*${h}$`, "i"), "").trim();
   return trimmed || raw;
+}
+
+function scarloxyObjectStampsFor(tileset: TilesetDef): readonly UnifiedDoodad[] {
+  const idLower = tileset.id.toLowerCase();
+  const match = scarloxyManifest.chipsets.find((cs) => {
+    const stem = cs.file.replace(/\.png$/i, "");
+    const underscore = stem.replace(/-/g, "_");
+    return idLower.includes(stem) || idLower.includes(underscore);
+  });
+  if (!match) return [];
+
+  const cols = 30;
+  const results: UnifiedDoodad[] = [];
+
+  for (const block of match.blocks) {
+    if (block.kind === "terrain" || block.kind === "water") continue;
+    const cells: { dx: number; dy: number; layer: "upper"; tile: number }[] = [];
+    for (let dy = 0; dy < block.h; dy += 1) {
+      for (let dx = 0; dx < block.w; dx += 1) {
+        const tile = (block.row + dy) * cols + (block.col + dx);
+        if (tile >= 0 && tile < tileset.count) {
+          cells.push({ dx, dy, layer: "upper", tile });
+        }
+      }
+    }
+    if (cells.length === 0) continue;
+    const label = SCARLOXY_BLOCK_LABELS[block.name] ?? block.name;
+    const tab: "nature" | "structure" | "prop" =
+      block.kind === "tree" || block.kind === "rock" || block.kind === "deco"
+        ? "nature"
+        : block.kind === "structure" || block.kind === "overhead"
+          ? "structure"
+          : "prop";
+    const startTile = cells[0]!.tile;
+    const endTile = cells[cells.length - 1]!.tile;
+    results.push({
+      key: `scarloxy:${match.file}:${block.name}`,
+      source: "stamp",
+      tab,
+      name: label,
+      sizeLabel: `${block.w}×${block.h}`,
+      choice: {
+        id: `scarloxy-${block.name}`,
+        name: label,
+        stamp: {
+          source: { tilesetId: tileset.id, tileSize: tileset.tileSize, startTile, endTile },
+          label,
+          width: block.w,
+          height: block.h,
+          cells,
+        },
+        description: `${label} (${block.w}×${block.h})`,
+        terms: [label, block.name, block.kind],
+        preference: 3,
+        family: tileset.id,
+      },
+    });
+  }
+  return results;
 }
 
 const catalogCache = new WeakMap<TilesetDef, readonly UnifiedDoodad[]>();
@@ -77,6 +190,7 @@ function unifiedDoodadsFor(tileset: TilesetDef | undefined): readonly UnifiedDoo
   const seenKeys = new Set<string>();
   const seenKitIds = new Set<string>();
 
+  // 1) Curated multi-tile object stamps for this tileset
   for (const choice of propsForTileset(tileset)) {
     const w = choice.stamp.width;
     const h = choice.stamp.height;
@@ -94,14 +208,14 @@ function unifiedDoodadsFor(tileset: TilesetDef | undefined): readonly UnifiedDoo
     });
   }
 
-  // Fallback / supplement: prefabs from tileset structureKits (paletteCatalogFor)
+  // 2) Prefabs from tileset structureKits
   for (const prefab of paletteCatalogFor(tileset).prefabs) {
     if (seenKitIds.has(prefab.id)) continue;
     const stamp = paletteStampFromKit(prefab.kit);
     if (!stamp.cells.length) continue;
     seenKitIds.add(prefab.id);
     const key = `prefab:${prefab.id}`;
-    const tab: Exclude<DoodadTabId, "all" | "relief"> = /나무|풀|꽃|바위|숲|tree|plant|bush|rock/i.test(prefab.searchBlob)
+    const tab: "nature" | "structure" | "prop" = /나무|풀|꽃|바위|숲|tree|plant|bush|rock/i.test(prefab.searchBlob)
       ? "nature"
       : ["building", "castle", "roof", "wall", "fence"].includes(prefab.role)
         ? "structure"
@@ -124,82 +238,14 @@ function unifiedDoodadsFor(tileset: TilesetDef | undefined): readonly UnifiedDoo
     });
   }
 
-  // Fallback for compact custom tilesets without kits (e.g. demo chipsets): upper-layer tileGroups or labeled upper tiles
-  if (out.length === 0) {
-    for (const group of tileset.tileGroups ?? []) {
-      if (out.length >= 36) break;
-      const tileIds = group.tileIds.filter((t) => t >= 0 && t < tileset.count);
-      if (tileIds.length === 0) continue;
-      const isUpper = tileIds.some((t) => tileLayerHome(tileset, t) === "upper");
-      if (!isUpper && (group.role === "terrain" || group.role === "water")) continue;
-      const cols = Math.max(1, Math.min(4, Math.ceil(Math.sqrt(tileIds.length))));
-      const rows = Math.max(1, Math.ceil(tileIds.length / cols));
-      const repTile = tileIds[0]!;
-      const label = group.name?.trim() || group.id;
-      const tab: Exclude<DoodadTabId, "all" | "relief"> = /나무|풀|꽃|바위|tree|rock|bush|flower/i.test(label)
-        ? "nature"
-        : /집|지붕|벽|문|건물|울타리|house|roof|wall|door|fence|building/i.test(label)
-          ? "structure"
-          : "prop";
-      out.push({
-        key: `group:${group.id}`,
-        source: "stamp",
-        tab,
-        name: cleanDoodadName(label, cols, rows),
-        sizeLabel: tileIds.length === 1 ? "1×1" : `${cols}×${rows}`,
-        choice: {
-          id: group.id,
-          name: label,
-          stamp: {
-            source: { tilesetId: tileset.id, tileSize: tileset.tileSize, startTile: repTile, endTile: repTile },
-            label,
-            width: 1,
-            height: 1,
-            cells: [{ dx: 0, dy: 0, layer: "upper", tile: repTile }],
-          },
-          description: label,
-          terms: [label],
-          preference: 1,
-          family: tileset.id,
-        },
-      });
-    }
-  }
-  if (out.length === 0) {
-    for (let t = 0; t < tileset.count && out.length < 30; t += 1) {
-      if (tileLayerHome(tileset, t) !== "upper") continue;
-      const meta = tileset.tileMeta?.[t];
-      const label = meta?.label?.trim() || `소품 #${t}`;
-      const tab: Exclude<DoodadTabId, "all" | "relief"> = /나무|풀|꽃|바위|tree|rock|bush/i.test(label)
-        ? "nature"
-        : /집|지붕|벽|문|건물|house|roof|wall|door/i.test(label)
-          ? "structure"
-          : "prop";
-      out.push({
-        key: `tile:${t}`,
-        source: "stamp",
-        tab,
-        name: label,
-        sizeLabel: "1×1",
-        choice: {
-          id: `tile-${t}`,
-          name: label,
-          stamp: {
-            source: { tilesetId: tileset.id, tileSize: tileset.tileSize, startTile: t, endTile: t },
-            label,
-            width: 1,
-            height: 1,
-            cells: [{ dx: 0, dy: 0, layer: "upper", tile: t }],
-          },
-          description: label,
-          terms: [label],
-          preference: 0,
-          family: tileset.id,
-        },
-      });
-    }
+  // 3) Scarloxy manifest whole multi-tile object blocks (houses, hospital, trees, ruin gates, arenas)
+  for (const entry of scarloxyObjectStampsFor(tileset)) {
+    if (seenKeys.has(entry.key)) continue;
+    seenKeys.add(entry.key);
+    out.push(entry);
   }
 
+  // 4) Relief doodads (ramps, stairs, bridges, walls)
   for (const doodad of reliefDoodadCatalog(tileset)) {
     const sizeLabel = doodad.kind === "ramp"
       ? (doodad.stairs ? "2×N" : "4×N")
@@ -215,6 +261,24 @@ function unifiedDoodadsFor(tileset: TilesetDef | undefined): readonly UnifiedDoo
       doodad,
     });
   }
+
+  // 5) Real multi-frame Interactive Props (chests, wardrobes, jars, torches, signs, doors...)
+  for (const prop of allInteractiveProps(store.getCurrent())) {
+    const key = `interactive:${prop.id}`;
+    if (seenKeys.has(key)) continue;
+    seenKeys.add(key);
+    const tw = Math.max(1, Math.round(prop.frameWidth / 16));
+    const th = Math.max(1, Math.round(prop.frameHeight / 16));
+    out.push({
+      key,
+      source: "interactive",
+      tab: "interactive",
+      name: prop.name,
+      sizeLabel: `${tw}×${th}`,
+      prop,
+    });
+  }
+
   catalogCache.set(tileset, out);
   return out;
 }
@@ -260,7 +324,13 @@ function drawRampIcon(stairs: boolean, bridgeAxis?: "horizontal" | "vertical"): 
   return canvas;
 }
 
-function renderDoodadPreview(item: UnifiedDoodad, tileset: TilesetDef | undefined, scale = 1): HTMLCanvasElement {
+function renderDoodadPreview(item: UnifiedDoodad, tileset: TilesetDef | undefined, targetPx = 62): HTMLElement {
+  if (item.source === "interactive") {
+    const scale = Math.max(1, Math.min(3, Math.floor(targetPx / Math.max(item.prop.frameWidth, item.prop.frameHeight))));
+    const elNode = createInteractivePropStripPreview(item.prop, { scale });
+    elNode.classList.add("fdw-cell-canvas");
+    return elNode;
+  }
   if (item.source === "relief") {
     const d = item.doodad;
     if (d.kind === "ramp") return drawRampIcon(d.stairs);
@@ -273,6 +343,8 @@ function renderDoodadPreview(item: UnifiedDoodad, tileset: TilesetDef | undefine
         if (tile >= 0) cells.push({ dx, dy, layer: "upper" as const, tile });
       }
     }
+    const maxDim = Math.max(d.kit.width, d.kit.height) * tileset.tileSize;
+    const scale = Math.max(0.5, Math.min(3, targetPx / Math.max(16, maxDim)));
     return renderTileCellsToCanvas({
       tileset,
       widthTiles: d.kit.width,
@@ -284,6 +356,8 @@ function renderDoodadPreview(item: UnifiedDoodad, tileset: TilesetDef | undefine
     });
   }
   if (!tileset) return drawRampIcon(false);
+  const maxDim = Math.max(item.choice.stamp.width, item.choice.stamp.height) * tileset.tileSize;
+  const scale = Math.max(0.5, Math.min(3, targetPx / Math.max(16, maxDim)));
   return renderTileCellsToCanvas({
     tileset,
     widthTiles: item.choice.stamp.width,
@@ -293,17 +367,6 @@ function renderDoodadPreview(item: UnifiedDoodad, tileset: TilesetDef | undefine
     transparentBackground: true,
   });
 }
-
-export interface FloatingDoodadWindowMount {
-  readonly isOpen: () => boolean;
-  readonly setOpen: (next: boolean) => void;
-  readonly toggle: () => void;
-  readonly dispose: () => void;
-}
-
-const DOODAD_SIZE_STORAGE_KEY = "oprn:floating-doodad-size";
-const DOODAD_RECENT_STORAGE_KEY = "oprn:floating-doodad-recent";
-const MAX_RECENT_DOODADS = 6;
 
 function loadSavedWindowSize(): { width: number; bodyHeight: number } | null {
   try {
@@ -335,6 +398,13 @@ function loadRecentKeys(): string[] {
 
 function saveRecentKeys(keys: readonly string[]): void {
   try { localStorage.setItem(DOODAD_RECENT_STORAGE_KEY, JSON.stringify(keys.slice(0, MAX_RECENT_DOODADS))); } catch { /* ignore */ }
+}
+
+export interface FloatingDoodadWindowMount {
+  readonly isOpen: () => boolean;
+  readonly setOpen: (next: boolean) => void;
+  readonly toggle: () => void;
+  readonly dispose: () => void;
 }
 
 export function mountFloatingDoodadWindow(
@@ -391,7 +461,7 @@ export function mountFloatingDoodadWindow(
 
   const searchInput = el("input", {
     class: "fdw-search",
-    attrs: { type: "search", placeholder: "나무·집·다리·소품 찾기…", "aria-label": "두댓 찾기", autocomplete: "off", spellcheck: "false" },
+    attrs: { type: "search", placeholder: "집·나무·치료소·상자·계단 찾기…", "aria-label": "두댓 찾기", autocomplete: "off", spellcheck: "false" },
     dataset: { testid: "floating-doodad-search" },
   }) as HTMLInputElement;
 
@@ -419,7 +489,7 @@ export function mountFloatingDoodadWindow(
   const body = el("div", { class: "fdw-body", dataset: { testid: "floating-doodad-body" } });
   const recentBar = el("div", { class: "fdw-recent-bar", dataset: { testid: "floating-doodad-recent" } });
   recentBar.hidden = true;
-  const statusName = el("span", { class: "fdw-status-name", dataset: { testid: "floating-doodad-status" }, text: "두댓을 골라 맵에 클릭하세요" });
+  const statusName = el("span", { class: "fdw-status-name", dataset: { testid: "floating-doodad-status" }, text: "오브젝트를 골라 맵에 클릭하세요" });
   const clearPickBtn = el("button", {
     class: "fdw-clear-btn",
     attrs: { type: "button", title: "선택 해제" },
@@ -427,6 +497,7 @@ export function mountFloatingDoodadWindow(
     on: {
       click: () => {
         selectedKey = null;
+        selectInteractivePropBrush(null);
         editorState.set({ activePaletteStamp: null, reliefDoodad: null, reliefBridgeStart: null });
         renderBody();
       },
@@ -465,6 +536,9 @@ export function mountFloatingDoodadWindow(
 
   function isItemSelected(item: UnifiedDoodad): boolean {
     const state = editorState.get();
+    if (item.source === "interactive") {
+      return state.activeInteractivePropId === item.prop.id;
+    }
     if (item.source === "relief") {
       return state.tool === "relief" && state.reliefDoodad === item.doodad.id;
     }
@@ -492,8 +566,8 @@ export function mountFloatingDoodadWindow(
     resolved.forEach((item, idx) => {
       const slotNum = idx + 1;
       const active = isItemSelected(item);
-      const thumb = renderDoodadPreview(item, tileset, 1);
-      thumb.className = "fdw-recent-thumb";
+      const thumb = renderDoodadPreview(item, tileset, 18);
+      thumb.classList.add("fdw-recent-thumb");
       recentBar.append(el("button", {
         class: "fdw-recent-slot" + (active ? " is-active" : ""),
         attrs: { type: "button", title: `[${slotNum}] ${item.name} (${item.sizeLabel})` },
@@ -511,7 +585,11 @@ export function mountFloatingDoodadWindow(
   function activateItem(item: UnifiedDoodad): void {
     selectedKey = item.key;
     recordRecent(item.key);
-    if (item.source === "relief") {
+    if (item.source === "interactive") {
+      editorState.set({ reliefDoodad: null, reliefBridgeStart: null });
+      selectInteractivePropBrush(item.prop.id);
+    } else if (item.source === "relief") {
+      selectInteractivePropBrush(null);
       selectMapModeTool("relief");
       editorState.set({
         layer: "lower",
@@ -522,6 +600,7 @@ export function mountFloatingDoodadWindow(
         terrainDesignOpen: false,
       });
     } else {
+      selectInteractivePropBrush(null);
       editorState.set({ reliefDoodad: null, reliefBridgeStart: null });
       selectPaletteStamp(item.choice.stamp);
     }
@@ -532,11 +611,17 @@ export function mountFloatingDoodadWindow(
     const all = unifiedDoodadsFor(tileset);
     const q = searchQuery.trim().toLowerCase();
     return all.filter((item) => {
+      // In "전체" tab without search, keep the map's own objects + relief first so 156 interactive props don't flood the top
+      if (activeTab === "all" && !q && item.source === "interactive") return false;
       if (activeTab !== "all" && item.tab !== activeTab) return false;
       if (!q) return true;
       if (item.name.toLowerCase().includes(q)) return true;
       if (item.source === "stamp") {
         return item.choice.terms.some((term) => term.toLowerCase().includes(q));
+      }
+      if (item.source === "interactive") {
+        return item.prop.id.toLowerCase().includes(q)
+          || item.prop.tags.some((t) => t.toLowerCase().includes(q));
       }
       return item.doodad.id.toLowerCase().includes(q);
     });
@@ -552,11 +637,11 @@ export function mountFloatingDoodadWindow(
     const activeItem = items.find(isItemSelected) ?? (selectedKey ? items.find((it) => it.key === selectedKey) : undefined);
     statusName.textContent = activeItem
       ? `${activeItem.name} (${activeItem.sizeLabel}) · 맵 클릭으로 배치`
-      : `총 ${items.length}개 · 클릭 후 맵에 배치`;
+      : `오브젝트 ${items.length}개 · 클릭 후 맵에 배치`;
     clearPickBtn.hidden = !activeItem;
 
     if (items.length === 0) {
-      body.append(el("div", { class: "fdw-empty", text: "이 분류에 해당하는 두댓이 없습니다." }));
+      body.append(el("div", { class: "fdw-empty", text: "이 분류에 해당하는 오브젝트가 없습니다." }));
       return;
     }
 
@@ -586,14 +671,14 @@ export function mountFloatingDoodadWindow(
         }));
       }
       const focus = activeItem ?? shown[0]!;
-      const previewCanvas = renderDoodadPreview(focus, tileset, 2);
-      previewCanvas.className = "fdw-big-canvas";
+      const previewEl = renderDoodadPreview(focus, tileset, 160);
+      previewEl.classList.add("fdw-big-canvas");
       previewCol.append(
         el("div", {
           class: "fdw-big-stage",
           children: [
             el("span", { class: "fdw-big-meta", text: focus.sizeLabel }),
-            previewCanvas,
+            previewEl,
           ],
         }),
         el("div", { class: "fdw-big-caption", text: focus.name }),
@@ -602,20 +687,19 @@ export function mountFloatingDoodadWindow(
       return;
     }
 
-    // Default: SCMDraft 2 Visual Grid
     const grid = el("div", { class: "fdw-grid" });
     const shown = items.slice(0, visibleLimit);
     for (const item of shown) {
       const active = isItemSelected(item);
-      const canvas = renderDoodadPreview(item, tileset, 1);
-      canvas.className = "fdw-cell-canvas";
+      const previewEl = renderDoodadPreview(item, tileset, 62);
+      previewEl.classList.add("fdw-cell-canvas");
       grid.append(el("button", {
         class: "fdw-cell" + (active ? " is-active" : ""),
         attrs: { type: "button", title: `${item.name} (${item.sizeLabel})`, "aria-pressed": String(active) },
         dataset: { testid: `floating-doodad-item-${item.key}` },
         children: [
           el("span", { class: "fdw-cell-size", text: item.sizeLabel }),
-          el("div", { class: "fdw-cell-stage", children: [canvas] }),
+          el("div", { class: "fdw-cell-stage", children: [previewEl] }),
           el("span", { class: "fdw-cell-label", text: item.name }),
         ],
         on: { click: () => activateItem(item) },
