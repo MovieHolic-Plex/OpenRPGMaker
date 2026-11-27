@@ -212,10 +212,10 @@ def cmd_palette(theme, check):
     return subprocess.run([sys.executable, os.path.join(HERE, 'palette.py'), '--theme', theme] + (['--check'] if check else [])).returncode
 
 
-def cmd_draw(theme, rid, agent=False, lines_=None, jobs=1, cmd=None, quiet=False):
+def cmd_draw(theme, rid, agent=False, lines_=None, jobs=1, cmd=None, quiet=False, backend=None, model=None, effort=None):
     if agent:
         import drawer
-        return drawer.run(theme, rid, lines_, jobs, cmd)
+        return drawer.run(theme, rid, lines_, jobs, cmd, effort=effort, backend=backend, model=model)
     mod, rendered = render_round(theme, rid)
     base = os.path.join(dot.RUNS, theme, rid)
     man = {'theme': theme, 'round': rid, 'wave': getattr(mod, 'WAVE', None), 'at': now(), 'items': {}}
@@ -869,9 +869,9 @@ def cmd_village(theme, rid, line='A', seed=0, size=None, all_=False, quiet=False
     return village.write(theme, rid, line, seed, size or village.DEFAULT_SIZE, all_, quiet, finished=finished)
 
 
-def cmd_finish(theme, rid, line, building=None, jobs=1, cmd=None):
+def cmd_finish(theme, rid, line, building=None, jobs=1, cmd=None, backend=None, model=None, effort=None):
     import finish
-    return finish.run(theme, rid, line, building, jobs, cmd)
+    return finish.run(theme, rid, line, building, jobs, cmd, backend=backend, model=model, effort=effort)
 
 
 def finished_picked_path(theme, line, building):
@@ -976,6 +976,9 @@ def main(argv=None):
     p.add_argument('--agent', action='store_true')
     p.add_argument('--lines')
     p.add_argument('--jobs', type=int, default=1)
+    p.add_argument('--backend', choices=['claude', 'neon', 'agy'])
+    p.add_argument('--model')
+    p.add_argument('--effort')
     p.add_argument('--cmd', dest='agent_cmd')  # dest 'cmd' would overwrite the subcommand name
     p = sub.add_parser('dry')
     p.add_argument('theme')
@@ -998,6 +1001,9 @@ def main(argv=None):
     p.add_argument('--line', required=True)
     p.add_argument('--building')
     p.add_argument('--jobs', type=int, default=1)
+    p.add_argument('--backend', choices=['claude', 'neon', 'agy'])
+    p.add_argument('--model')
+    p.add_argument('--effort')
     p.add_argument('--cmd', dest='agent_cmd')
     p = sub.add_parser('review')
     p.add_argument('theme')
@@ -1053,7 +1059,8 @@ def main(argv=None):
         cmd_list(a.theme)
         return 0
     if a.cmd == 'draw':
-        return cmd_draw(a.theme, a.round, a.agent, (a.lines or '').split(',') if a.lines else None, a.jobs, a.agent_cmd)
+        return cmd_draw(a.theme, a.round, a.agent, (a.lines or '').split(',') if a.lines else None, a.jobs, a.agent_cmd,
+                        backend=a.backend, model=a.model, effort=a.effort)
     if a.cmd == 'dry':
         return cmd_dry(a.theme, a.round, a.key, module=a.module, out=a.out)
     if a.cmd == 'gate':
@@ -1063,7 +1070,8 @@ def main(argv=None):
         _, fails = cmd_assemble(a.theme, a.round, a.line, a.key)
         return 1 if fails else 0
     if a.cmd == 'finish':
-        return cmd_finish(a.theme, a.round, a.line, a.building, a.jobs, a.agent_cmd)
+        return cmd_finish(a.theme, a.round, a.line, a.building, a.jobs, a.agent_cmd,
+                          backend=a.backend, model=a.model, effort=a.effort)
     if a.cmd == 'review':
         return cmd_review(a.theme, a.round, a.runs, a.judge_cmd, a.finished)
     if a.cmd == 'sheet':

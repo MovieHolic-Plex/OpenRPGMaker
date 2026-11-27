@@ -807,7 +807,7 @@ style-r7 ㅜ자 집(fantasy-kingdom 줄 A)을 버들항 광장 여관 옆에 같
   막돌, 창턱·덧문·꽃상자·유리 반짝임, 아치·징·문턱, 쓰임별 소품(글자 없는 간판 받침·등불·벽에 붙은 통·담쟁이, 북방은 눈 덩이),
   굴뚝 그을음, 빛은 왼쪽 위, 테마 팔레트만, 최소 4번 되풀이)
 
-에이전트: `claude -p --model claude-opus-5-5 --effort high`(`BUILDING_KIT_FINISH_MODEL/EFFORT`), 도구 `Read,Write,Edit,Bash(python3:*)`,
+에이전트: 기본 `claude -p --model claude-opus-5-5 --effort high`(`BUILDING_KIT_FINISH_MODEL/EFFORT`), 또는 `--backend neon`(또는 `BUILDING_KIT_BACKEND=neon`)으로 `agy --model gemini-4-neon --effort medium`(`BUILDING_KIT_NEON_MODEL/EFFORT`, `--model`/`--effort` 로 재정의 가능). `draw --agent` 도 같은 `--backend neon|claude` 를 받는다. 도구 `Read,Write,Edit,Bash(python3:*)`,
 작업 폴더 = 샌드박스, 시간 `BUILDING_KIT_FINISH_TIMEOUT`(기본 5400s), 게이트웨이 5xx 재시도는 그리기 실행기(`drawer.subprocess_runner`)를 쓴다.
 에이전트는 `finish_draw.py` 를 쓰고 `python3 finish_draw.py && python3 check.py` 를 되풀이하며 고칠 때마다 preview PNG 를 Read 로 연다.
 

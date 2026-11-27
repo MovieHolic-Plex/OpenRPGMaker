@@ -396,6 +396,14 @@ class FinishedFlowTest(FinishBase):
         self.assertEqual(cands, {})
         self.assertIn('바탕', why[BID])
 
+    def test_neon_backend_command_and_agent_label(self):
+        cmd = finish.agent_command('/tmp/sb', backend='neon', effort='high')
+        self.assertTrue(cmd[0].endswith('agy'))
+        self.assertEqual(cmd[cmd.index('--model') + 1], 'gemini-4-neon')
+        self.assertEqual(cmd[cmd.index('--effort') + 1], 'high')
+        self.assertEqual(finish.agent_label(backend='neon', effort='high'), 'agy/gemini-4-neon/high')
+        self.assertEqual(finish.agent_label(backend='claude'), f'claude/{finish.MODEL}/{finish.EFFORT}')
+
 
 if __name__ == '__main__':
     unittest.main()
