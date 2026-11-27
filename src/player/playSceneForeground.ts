@@ -4,6 +4,7 @@ import { resolvePostFx } from "@/project/postFx";
 import { interactivePropById, interactivePropGlowColor } from "@/project/interactiveProps";
 import { ensureLightingState } from "@/project/lightingRules";
 import { runtimeEventViewsForMap } from "@/project/runtimeEventState";
+import { isEmptySpriteLook, normalizeSpriteLook } from "@/project/eventCommands/cinematicStaging";
 
 /**
  * 캐릭터 광원 물듦 (`spriteRimLight`):
@@ -13,6 +14,7 @@ import { runtimeEventViewsForMap } from "@/project/runtimeEventState";
 
 type RimState = {
   lastRimTint: number;
+  hadPlayerLook: boolean;
 };
 
 const states = new WeakMap<object, RimState>();
@@ -34,6 +36,18 @@ function blendWhiteToColor(color: number, weight: number): number {
 function syncHeroRimLight(scene: PlaySceneContext, state: RimState, enabled: boolean): void {
   const player = scene.player;
   if (!player || typeof player.setTint !== "function") return;
+  const rawPlayerLook = scene.session?.m2Runtime?.screen?.spriteLooks?.player;
+  const playerLook = rawPlayerLook ? normalizeSpriteLook(rawPlayerLook) : undefined;
+  const hasLook = !isEmptySpriteLook(playerLook);
+  // 저작된 명시적 tint(spriteLook.tint)는 최우선으로 보존하고, 끝나는 즉시 림 틴트를 복구할 수 있게 캐시를 비운다.
+  if (playerLook?.tint) {
+    state.lastRimTint = 0xffffff;
+    state.hadPlayerLook = true;
+    return;
+  }
+  const tintClearedByStaging = hasLook || state.hadPlayerLook;
+  state.hadPlayerLook = hasLook;
+
   if (!enabled) {
     if (state.lastRimTint !== 0xffffff) {
       player.clearTint();
@@ -82,9 +96,17 @@ function syncHeroRimLight(scene: PlaySceneContext, state: RimState, enabled: boo
   }
 
   const nextTint = bestWeight > 0.03 ? blendWhiteToColor(bestColor, bestWeight) : 0xffffff;
-  if (nextTint !== state.lastRimTint) {
-    if (nextTint === 0xffffff) player.clearTint();
-    else player.setTint(nextTint);
+  if (nextTint === 0xffffff) {
+    if (state.lastRimTint !== 0xffffff) {
+      player.clearTint();
+      state.lastRimTint = 0xffffff;
+    }
+  } else if (
+    nextTint !== state.lastRimTint
+    || tintClearedByStaging
+    || (typeof player.tintTopLeft === "number" && player.tintTopLeft !== nextTint)
+  ) {
+    player.setTint(nextTint);
     state.lastRimTint = nextTint;
   }
 }
@@ -92,7 +114,7 @@ function syncHeroRimLight(scene: PlaySceneContext, state: RimState, enabled: boo
 export function updateForegroundAndRimLight(scene: PlaySceneContext): void {
   let state = states.get(scene);
   if (!state) {
-    state = { lastRimTint: 0xffffff };
+    state = { lastRimTint: 0xffffff, hadPlayerLook: false };
     states.set(scene, state);
     const cleanup = (): void => {
       states.delete(scene);

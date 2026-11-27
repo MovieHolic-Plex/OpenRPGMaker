@@ -18,7 +18,8 @@ import {
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { LightSource, LightSourceAnchor } from "@/project/types";
 import { store } from "@/project/store";
-import { isPassable } from "@/project/collision";
+import { isPassable, tileAt } from "@/project/collision";
+import { passageMarkForTile } from "@/project/tilesetPassage";
 import { isWaterTagged } from "@/project/vehicles";
 import { resolvePostFx } from "@/project/postFx";
 import { runtimeEventViewById } from "@/project/runtimeEventState"
@@ -108,6 +109,21 @@ export function syncLightingLayer(scene: PlaySceneContext): void {
     ? (tx: number, ty: number): boolean => {
       if (tx < 0 || ty < 0 || tx >= map.width || ty >= map.height) return true;
       if (isPassable(project, map, tx, ty)) return false;
+      // 물 바닥 위에 막힌 상층 벽(2~4층, ★ 제외)이 놓였으면 수면 예외를 주지 않고 빛을 차단한다.
+      const tileset = project.tilesets[map.tilesetId];
+      if (tileset) {
+        const cell = tileAt(map, tx, ty);
+        const upperLayers = [cell.layers[3], cell.upper, cell.layers[1]];
+        for (const tid of upperLayers) {
+          if (tid < 0 || tid >= tileset.passability.length) continue;
+          if (passageMarkForTile(tileset, tid) === "star") continue;
+          const p = tileset.passability[tid];
+          if (p) {
+            if (!(p.up || p.down || p.left || p.right)) return true;
+            break;
+          }
+        }
+      }
       // 강·호수·분수는 걸을 수는 없지만 빛이 통과하는 투명 수면이다.
       return !isWaterTagged(project, map, tx, ty);
     }

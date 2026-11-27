@@ -1226,11 +1226,11 @@ export async function playFieldFx(scene: PlaySceneContext, fx: FieldFx, target: 
   const done = sleep(scene, fieldFxDurationMs(fx, store.getCurrent()));
   switch (fx.kind) {
     case "container":
-      void playContainerFx(scene, fx.style, cell, currentEventId);
+      await playContainerFx(scene, fx.style, cell, currentEventId);
       break;
     case "prop": {
       const prop = interactivePropById(fx.propId, store.getCurrent());
-      if (prop) void playInteractivePropFx(scene, prop, cell, { reverse: fx.reverse });
+      if (prop) await playInteractivePropFx(scene, prop, cell, { reverse: fx.reverse });
       break;
     }
     case "popupItem": {

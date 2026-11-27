@@ -291,8 +291,10 @@ function castLightRayTiles(
   let tMaxX = stepX > 0 ? (tx + 1 - ox) * tDeltaX : stepX < 0 ? (ox - tx) * tDeltaX : 1e9;
   let tMaxY = stepY > 0 ? (ty + 1 - oy) * tDeltaY : stepY < 0 ? (oy - ty) * tDeltaY : 1e9;
   let dist = 0;
+  // 양 축에서 교차 가능한 격자 경계 수만큼 순회해 radius 60 및 대각선 광선도 끝까지 추적한다.
+  const maxSteps = Math.max(8, Math.ceil(maxDist * (Math.abs(dx) + Math.abs(dy))) + 4);
 
-  for (let iter = 0; iter < 48; iter += 1) {
+  for (let iter = 0; iter < maxSteps; iter += 1) {
     if (tMaxX < tMaxY) {
       dist = tMaxX;
       tMaxX += tDeltaX;

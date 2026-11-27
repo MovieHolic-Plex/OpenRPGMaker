@@ -398,7 +398,21 @@ function interactivePropStripPaths(project: Project): readonly string[] {
     // 커스텀 프롭(resourceId 있음)은 collectUsedUploadedAssetIds 가 project.assets.uploaded 에 보존하므로 public/ 경로로 추가하지 않는다.
     if (prop && !prop.resourceId && !prop.stripPath.startsWith("data:")) paths.add(prop.stripPath);
   };
-  const scanCommands = (commands: readonly unknown[] | undefined) => {
+  const mapEras = new Set<ReturnType<typeof inferInteractivePropEra>>();
+  for (const map of Object.values(project.maps)) {
+    const tileset = project.tilesets[map.tilesetId];
+    mapEras.add(inferInteractivePropEra(map.tilesetId, tileset?.name));
+  }
+  const addContainerFallback = (style: string, eventName?: string, era?: ReturnType<typeof inferInteractivePropEra>) => {
+    const auto = interactivePropForContainer(style as Parameters<typeof interactivePropForContainer>[0], eventName, era);
+    if (auto) addProp(auto.id);
+  };
+  const scanCommands = (
+    commands: readonly unknown[] | undefined,
+    eventName?: string,
+    era?: ReturnType<typeof inferInteractivePropEra>,
+    allEras?: boolean,
+  ) => {
     if (!Array.isArray(commands)) return;
     for (const raw of commands) {
       if (!raw || typeof raw !== "object") continue;
@@ -406,11 +420,18 @@ function interactivePropStripPaths(project: Project): readonly string[] {
       if (cmd.kind === "showAnimation" && typeof cmd.animationId === "string") {
         const fx = parseFieldFxId(cmd.animationId);
         if (fx?.kind === "prop") addProp(fx.propId);
+        else if (fx?.kind === "container") {
+          if (allEras && mapEras.size > 0) {
+            for (const mapEra of mapEras) addContainerFallback(fx.style, eventName, mapEra);
+          } else {
+            addContainerFallback(fx.style, eventName, era);
+          }
+        }
       }
-      if (Array.isArray(cmd.then)) scanCommands(cmd.then);
-      if (Array.isArray(cmd.else)) scanCommands(cmd.else);
+      if (Array.isArray(cmd.then)) scanCommands(cmd.then, eventName, era, allEras);
+      if (Array.isArray(cmd.else)) scanCommands(cmd.else, eventName, era, allEras);
       if (Array.isArray(cmd.cases)) {
-        for (const c of cmd.cases) scanCommands(c?.commands);
+        for (const c of cmd.cases) scanCommands(c?.commands, eventName, era, allEras);
       }
     }
   };
@@ -422,17 +443,14 @@ function interactivePropStripPaths(project: Project): readonly string[] {
         const inter = page.interaction;
         if (inter?.kind === "container") {
           if (inter.propId) addProp(inter.propId);
-          else if (inter.style === "wardrobe") {
-            const auto = interactivePropForContainer("wardrobe", event.name, era);
-            if (auto) paths.add(auto.stripPath);
-          }
+          else if (inter.style) addContainerFallback(inter.style, event.name, era);
         }
-        scanCommands(page.commands);
+        scanCommands(page.commands, event.name, era);
       }
-      scanCommands(event.commands);
+      scanCommands(event.commands, event.name, era);
     }
   }
-  for (const common of project.commonEvents ?? []) scanCommands(common.commands);
+  for (const common of project.commonEvents ?? []) scanCommands(common.commands, undefined, undefined, true);
   return [...paths];
 }
 

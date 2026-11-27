@@ -470,11 +470,11 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     updateLighting(this, deltaMs);
     updateMapBackground(this, deltaMs);
     updateScreenDistortion(this);
-    updateForegroundAndRimLight(this);
     updateWaterFx(this);
     updatePostFx(this);
     updateMode7(this, deltaMs);
     updateFieldStaging(this);
+    updateForegroundAndRimLight(this);
     updatePixelFx(this, deltaMs);
     this.dialogueCameraLifted = syncDialogueCameraLift(
       this,

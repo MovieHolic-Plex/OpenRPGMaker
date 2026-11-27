@@ -23,7 +23,11 @@ const FILTER_NODE = "OprnFilmicPostFx";
 
 const FRAG_SHADER = `
 #pragma phaserTemplate(shaderName)
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
 precision mediump float;
+#endif
 uniform sampler2D uMainSampler;
 uniform vec2 uTexel;
 uniform float uIntensity;
@@ -35,6 +39,7 @@ uniform vec4 uParams;   // x=bloom, y=dof, z=godRays, w=vignette
 uniform vec3 uRayColor;
 uniform float uPreserveEmissive;
 uniform float uTime;
+uniform float uBeatPhase;
 uniform vec4 uHorror;   // x=grain, y=chromaticAberration, z=bayerDither, w=panic(0..1)
 uniform float uHidingSlit;
 varying vec2 outTexCoord;
@@ -104,7 +109,9 @@ float bayer4(vec2 p) {
 }
 
 float hash12(vec2 p) {
-  return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453);
+  vec3 p3 = fract(vec3(p.xyx) * 0.1031);
+  p3 += dot(p3, p3.yzx + 33.33);
+  return fract((p3.x + p3.y) * p3.z);
 }
 
 void main() {
@@ -114,18 +121,18 @@ void main() {
   // 0. 추격 패닉 시 미세한 아드레날린 화면 흔들림 (VHS/긴장감)
   if (panic > 0.30) {
     float jitterAmp = (panic - 0.30) * 0.0022;
-    float lineNoise = hash12(vec2(floor(uv.y * 90.0), floor(uTime * 18.0))) - 0.5;
-    uv.x = clamp(uv.x + lineNoise * jitterAmp * step(0.86, hash12(vec2(floor(uTime * 12.0), floor(uv.y * 28.0)))), 0.0, 1.0);
+    float lineNoise = hash12(vec2(floor(uv.y * 90.0), mod(floor(uTime * 18.0), 256.0))) - 0.5;
+    uv.x = clamp(uv.x + lineNoise * jitterAmp * step(0.86, hash12(vec2(mod(floor(uTime * 12.0), 256.0), floor(uv.y * 28.0)))), 0.0, 1.0);
   }
 
   vec4 orig = texture2D(uMainSampler, uv);
   vec3 base = orig.rgb;
 
-  // 1. 상하 틸트시프트 심도(DoF) — 중앙 67%는 도트 100% 선명
+  // 1. 상하 틸트시프트 심도(DoF) — 중앙 67%는 도트 100% 선명, 전체 강도(uIntensity)에 비례
   if (uParams.y > 0.005 && uIntensity > 0.005) {
     float topBand = clamp((0.22 - uv.y) / 0.22, 0.0, 1.0);
     float botBand = clamp((uv.y - 0.89) / 0.11, 0.0, 1.0);
-    float dofMask = clamp(pow(topBand, 1.6) + pow(botBand, 1.6), 0.0, 0.85) * uParams.y;
+    float dofMask = clamp(pow(topBand, 1.6) + pow(botBand, 1.6), 0.0, 0.85) * uParams.y * uIntensity;
     if (dofMask > 0.01) {
       vec3 blurred = sampleBlur(uv, uTexel * (1.8 + 2.4 * dofMask));
       base = mix(base, blurred, dofMask);
@@ -193,10 +200,10 @@ void main() {
     col = mix(col, clamp(quant, 0.0, 1.0), ditherAmt * (0.35 + 0.65 * shadowZone));
   }
 
-  // 7. 아날로그 필름 그레인 (어둠에 은은히 살아 움직이는 입자감)
+  // 7. 아날로그 필름 그레인 (mediump GPU 에서도 소수부 정밀도가 유지되도록 입력 범위를 제한)
   float grainAmt = clamp(uHorror.x * uIntensity + panic * 0.24, 0.0, 1.0);
   if (grainAmt > 0.01) {
-    float g = hash12(floor(gl_FragCoord.xy * 0.5) + vec2(fract(uTime * 17.3) * 193.0, fract(uTime * 11.7) * 257.0)) - 0.5;
+    float g = hash12(mod(floor(gl_FragCoord.xy * 0.5), 256.0) + vec2(fract(uTime * 17.3) * 19.0, fract(uTime * 11.7) * 23.0)) - 0.5;
     float lumG = dot(col, vec3(0.299, 0.587, 0.114));
     float darkBoost = 0.55 + 0.65 * (1.0 - lumG);
     col = clamp(col + g * grainAmt * 0.16 * darkBoost, 0.0, 1.0);
@@ -206,8 +213,7 @@ void main() {
   vec2 v = (uv - 0.5) * 2.0;
   float vr = length(v);
   float baseVig = uParams.w * uIntensity;
-  float beatRate = mix(1.25, 2.65, panic);
-  float phase = fract(uTime * beatRate);
+  float phase = uBeatPhase;
   float p1 = (phase - 0.12) / 0.055;
   float p2 = (phase - 0.28) / 0.065;
   float lubDub = exp(-(p1 * p1)) + exp(-(p2 * p2)) * 0.65;
@@ -255,6 +261,7 @@ type PostFxController = Phaser.Filters.Controller & {
   rayColor: [number, number, number];
   preserveEmissive: number;
   timeSec: number;
+  beatPhase: number;
   grain: number;
   chromaticAberration: number;
   bayerDither: number;
@@ -266,6 +273,9 @@ type PostFxState = {
   filter: PostFxController | null;
   smoothPanic: number;
   smoothSlit: number;
+  beatPhase: number;
+  lastTimeMs: number;
+  session: unknown;
 };
 
 const states = new WeakMap<object, PostFxState>();
@@ -301,6 +311,7 @@ function ensureFilterNode(scene: PlaySceneContext): boolean {
       node.programManager.setUniform("uRayColor", fx.rayColor);
       node.programManager.setUniform("uPreserveEmissive", fx.preserveEmissive);
       node.programManager.setUniform("uTime", fx.timeSec);
+      node.programManager.setUniform("uBeatPhase", fx.beatPhase);
       node.programManager.setUniform("uHorror", [fx.grain, fx.chromaticAberration, fx.bayerDither, fx.panic]);
       node.programManager.setUniform("uHidingSlit", fx.hidingSlit);
     },
@@ -380,6 +391,7 @@ function applyResolved(
     filter.rayColor = [1, 1, 1];
     filter.preserveEmissive = 1;
     filter.timeSec = 0;
+    filter.beatPhase = 0;
     filter.grain = 0;
     filter.chromaticAberration = 0;
     filter.bayerDither = 0;
@@ -408,7 +420,8 @@ function applyResolved(
       const phase = timePhaseFor(scene.session.gameTime);
       if (phase === "night") {
         godRays = 0;
-        bloom = Math.min(1, bloom + 0.08);
+        // 저자가 bloom: 0 으로 명시 비활성화한 경우 밤에도 블룸을 켜지 않는다.
+        if (bloom > 0.001) bloom = Math.min(1, bloom + 0.08);
       }
     }
   }
@@ -428,7 +441,8 @@ function applyResolved(
   f.vignette = resolved.vignette;
   f.rayColor = [resolved.rayColor[0], resolved.rayColor[1], resolved.rayColor[2]];
   f.preserveEmissive = resolved.preserveEmissive ? 1 : 0;
-  f.timeSec = (scene.time?.now ?? 0) * 0.001;
+  f.timeSec = ((scene.time?.now ?? 0) * 0.001) % 120;
+  f.beatPhase = state.beatPhase;
   f.grain = resolved.grain;
   f.chromaticAberration = resolved.chromaticAberration;
   f.bayerDither = resolved.bayerDither;
@@ -438,9 +452,10 @@ function applyResolved(
 
 /** 매 프레임 맵/시스템의 `postFx` + 공포 추격·은신 상태를 카메라 WebGL 후처리 필터에 동기화한다. */
 export function updatePostFx(scene: PlaySceneContext): void {
+  const nowMs = scene.time?.now ?? 0;
   let state = states.get(scene);
   if (!state) {
-    state = { filter: null, smoothPanic: 0, smoothSlit: 0 };
+    state = { filter: null, smoothPanic: 0, smoothSlit: 0, beatPhase: 0, lastTimeMs: nowMs, session: scene.session };
     states.set(scene, state);
     const cleanup = (): void => {
       if (state?.filter && scene.cameras?.main?.filters?.internal) {
@@ -456,13 +471,29 @@ export function updatePostFx(scene: PlaySceneContext): void {
   const effectiveMapFx = liveOverride ?? scene.map?.postFx;
   const resolved = resolvePostFx(effectiveMapFx, project?.system?.postFx);
 
-  const targets = resolved.horrorReactive
-    ? computeHorrorReactiveTargets(scene)
-    : { panic: 0, hiding: 0 };
-  state.smoothPanic += (targets.panic - state.smoothPanic) * 0.12;
-  state.smoothSlit += (targets.hiding - state.smoothSlit) * 0.16;
-  if (state.smoothPanic < 0.005) state.smoothPanic = 0;
-  if (state.smoothSlit < 0.005) state.smoothSlit = 0;
+  // 세션이 바뀌거나(새 게임·불러오기) horrorReactive 가 꺼진 맵이면 이전 세션의 잔류 공포 효과를 즉시 초기화한다.
+  if (state.session !== scene.session) {
+    state.session = scene.session;
+    state.smoothPanic = 0;
+    state.smoothSlit = 0;
+    state.beatPhase = 0;
+    state.lastTimeMs = nowMs;
+  }
+  if (!resolved.horrorReactive) {
+    state.smoothPanic = 0;
+    state.smoothSlit = 0;
+    state.beatPhase = 0;
+  } else {
+    const targets = computeHorrorReactiveTargets(scene);
+    state.smoothPanic += (targets.panic - state.smoothPanic) * 0.12;
+    state.smoothSlit += (targets.hiding - state.smoothSlit) * 0.16;
+    if (state.smoothPanic < 0.005) state.smoothPanic = 0;
+    if (state.smoothSlit < 0.005) state.smoothSlit = 0;
+    const dtSec = Math.min(0.1, Math.max(0, (nowMs - state.lastTimeMs) * 0.001));
+    const beatRate = 1.25 + (2.65 - 1.25) * state.smoothPanic;
+    state.beatPhase = (state.beatPhase + dtSec * beatRate) % 1;
+  }
+  state.lastTimeMs = nowMs;
 
   applyResolved(scene, state, resolved, state.smoothPanic, state.smoothSlit);
 }
