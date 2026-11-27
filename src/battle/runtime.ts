@@ -1528,17 +1528,20 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       // 이 배우도 이어서 「동료 기다리기」를 누를 수 있게. 연계가 아닌 일반 행동을 고르면 performActorCommand 가 대기를 푼다.
       const resumed = resumedFromHold.delete(ready.battler.recordId);
       // 턴 시작 상태 처리(지속 피해/자연 회복). 행동 불가(수면 등)면 명령 없이 턴을 넘긴다.
-      if (!gen1 && !resumed) {
-        rewardTurn = turn + 1;
-        applyUpkeep(ready.battler);
-        resolveOutcome();
-        if (result) return;
-        // 선고로 방금 쓰러졌으면 차례만 소비한다.
-        if (ready.battler.hp <= 0) {
-          releaseHeldActors();
-          ready.battler.gauge = 0;
-          applyTroopEvents(finishGaugeTurnSlot, markGaugeActionCycle(ready.battler));
-          return;
+      // 연계 대기에서 복귀한 경우 유지 피해/회복은 중복 적용하지 않되, 대기 중 걸린 행동 불가·버서크 등은 검사한다.
+      if (!gen1) {
+        if (!resumed) {
+          rewardTurn = turn + 1;
+          applyUpkeep(ready.battler);
+          resolveOutcome();
+          if (result) return;
+          // 선고로 방금 쓰러졌으면 차례만 소비한다.
+          if (ready.battler.hp <= 0) {
+            releaseHeldActors();
+            ready.battler.gauge = 0;
+            applyTroopEvents(finishGaugeTurnSlot, markGaugeActionCycle(ready.battler));
+            return;
+          }
         }
         if (!canBattlerAct(options.project, ready.battler)) {
           releaseHeldActors();
