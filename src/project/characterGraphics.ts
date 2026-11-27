@@ -6,23 +6,36 @@ import { PRODUCT_SLUG } from "@/brand";
 import faceExpressionSources from "../../scripts/shared-face-expression-sources.json" with { type: "json" };
 import { FACESET_PEOPLE1_FACES } from "@/assets/charsetFaceMap";
 import previousFaceNames from "@/assets/previousFaceReferenceNames.json" with { type: "json" };
-import { MODERN_PORTRAIT_SETS, SHARED_PORTRAIT_ASSETS } from "@/assets/sharedPortraitAssets";
 import { sharedCharacterIndices } from './sharedCharacters';
+import {
+  GRAPHIC_ATTRIBUTE_AXES,
+  MODERN_BUST_FACES,
+  array,
+  attributes,
+  canonicalTexture,
+  graphicSpriteKey,
+  mapping,
+  record,
+  text,
+  validateCharacterGraphicsProject,
+  type CharacterGraphicSlot,
+  type GraphicAttributeAxis,
+  type GraphicAttributes,
+  type GraphicMappingStatus,
+  type GraphicMatchQuality,
+} from "./characterGraphicsValidation";
 import type { Project, ResourceProfile } from "./types";
 
-export const GRAPHIC_ATTRIBUTE_AXES = ["kind", "age", "gender", "skin", "hair", "clothing", "role"] as const;
-export type GraphicAttributeAxis = typeof GRAPHIC_ATTRIBUTE_AXES[number];
-export type GraphicAttributes = Partial<Record<GraphicAttributeAxis, string>>;
-export type GraphicMappingStatus = "pending" | "mapped" | "no-face";
-export type GraphicMatchQuality = "unspecified" | "exact" | "approximate";
-export interface CharacterGraphicSlot {
-  characterIndex: number;
-  graphicAttributes: GraphicAttributes;
-  status: GraphicMappingStatus;
-  faceResourceId: string | null;
-  quality: GraphicMatchQuality;
-  note: string;
-}
+export {
+  GRAPHIC_ATTRIBUTE_AXES,
+  graphicSpriteKey,
+  validateCharacterGraphicsProject,
+  type CharacterGraphicSlot,
+  type GraphicAttributeAxis,
+  type GraphicAttributes,
+  type GraphicMappingStatus,
+  type GraphicMatchQuality,
+};
 export interface CharacterSprite extends Omit<CharacterGraphicSlot, "graphicAttributes"> {
   textureKey: string;
   label: string;
@@ -52,8 +65,6 @@ export const NPC_FACE_MAPPING_SCHEMA = `${PRODUCT_SLUG}-npc-face-mapping` as con
 /** 2026-09 제품명 스윕 전 schema id — **읽기 전용**. 사용자가 그때 내보낸 JSON 이 계속 열려야 하므로 parse 만 받는다. */
 const LEGACY_NPC_FACE_MAPPING_SCHEMA = "rpg-zzu-npc-face-mapping";
 const ACCEPTED_SCHEMAS: ReadonlySet<unknown> = new Set([NPC_FACE_MAPPING_SCHEMA, LEGACY_NPC_FACE_MAPPING_SCHEMA]);
-export const graphicSpriteKey = (textureKey: string, characterIndex: number): string => `${textureKey}#${characterIndex}`;
-const canonicalTexture = (id: string): string => findCharsetAsset(id)?.textureKey ?? id;
 
 /** Only literal written traits, never inferred from a paired image or sheet index. Conflicts stay blank. */
 export function seedGraphicAttributes(label: string): GraphicAttributes {
@@ -111,9 +122,6 @@ export function listCharacterSprites(project: Project): CharacterSprite[] {
   }));
 }
 
-const MODERN_BUST_FACES = SHARED_PORTRAIT_ASSETS.filter((asset) => asset.mode === "bust" && asset.expression === "base"
-  && MODERN_PORTRAIT_SETS.some((set) => asset.setId === `shared-${set.stem}-expressions`));
-
 export function listCharacterFaces(project: Project): CharacterFace[] {
   const faces = new Map<string, CharacterFace>();
   const add = (resourceId: string, label: string, attributes?: GraphicAttributes, note = ""): void => {
@@ -142,40 +150,6 @@ export function listCharacterFaces(project: Project): CharacterFace[] {
     add(profile.assetId, label, profile.graphicAttributes ?? (label === existing?.label ? existing.attributes : undefined), profile.graphicNote);
   }
   return [...faces.values()];
-}
-
-function record(value: unknown, path: string): Record<string, unknown> {
-  if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error(`${path}: 객체가 필요합니다.`);
-  return value as Record<string, unknown>;
-}
-function text(value: unknown, path: string, max: number): string {
-  if (typeof value !== "string" || value.length > max) throw new Error(`${path}: ${max}자 이하 문자열이 필요합니다.`);
-  return value;
-}
-function array(value: unknown, path: string): unknown[] {
-  if (!Array.isArray(value)) throw new Error(`${path}: 배열이 필요합니다.`);
-  return value;
-}
-function attributes(value: unknown, path: string): GraphicAttributes {
-  const source = record(value, path);
-  const result: GraphicAttributes = {};
-  for (const key of Object.keys(source)) {
-    if (!GRAPHIC_ATTRIBUTE_AXES.includes(key as GraphicAttributeAxis)) throw new Error(`${path}: 알 수 없는 속성 ${key}`);
-    result[key as GraphicAttributeAxis] = text(source[key], `${path}.${key}`, 80);
-  }
-  return result;
-}
-function mapping(value: unknown, path: string, faceIds: ReadonlySet<string>): Omit<CharacterGraphicSlot, "graphicAttributes"> {
-  const row = record(value, path);
-  const index = row.characterIndex;
-  if (typeof index !== "number" || !Number.isInteger(index) || index < 0 || index > 7) throw new Error(`${path}: 캐릭터 칸은 0~7입니다.`);
-  const status = row.status;
-  if (status !== "pending" && status !== "mapped" && status !== "no-face") throw new Error(`${path}: 검토 상태가 잘못되었습니다.`);
-  const faceResourceId = row.faceResourceId;
-  if (status === "mapped" ? typeof faceResourceId !== "string" || !faceIds.has(faceResourceId) : faceResourceId !== null) throw new Error(`${path}: 얼굴 ID와 검토 상태가 맞지 않거나 알 수 없는 얼굴입니다.`);
-  const quality = row.quality ?? "unspecified";
-  if (quality !== "unspecified" && quality !== "exact" && quality !== "approximate") throw new Error(`${path}: 일치 품질이 잘못되었습니다.`);
-  return { characterIndex: index, status, faceResourceId: faceResourceId as string | null, quality, note: text(row.note, `${path}.note`, 2000) };
 }
 
 /** Parse every row before callers record history or update the store. Source commits are provenance, not an identity remapping rule. */
@@ -253,27 +227,4 @@ export function applyCharacterGraphicsImport(project: Project, imported: Charact
 
 export function exportCharacterGraphics(project: Project): CharacterGraphicsDocument {
   return { schema: NPC_FACE_MAPPING_SCHEMA, version: 2, mappings: listCharacterSprites(project).map(({ path: _path, sheetName: _sheetName, ...row }) => row), faces: listCharacterFaces(project) };
-}
-
-/** Optional profile metadata is validated without seeding or modifying legacy projects. */
-export function validateCharacterGraphicsProject(project: Project): void {
-  const faceIds = new Set(listCharacterFaces(project).map((face) => face.resourceId));
-  const seen = new Set<string>();
-  for (const profile of project.resourceProfiles) {
-    if (profile.graphicAttributes !== undefined || profile.graphicNote !== undefined) {
-      if (profile.kind !== "faceset" || !profile.assetId || LEGACY_FACESET_SHEET_IDS.includes(profile.assetId)) throw new Error("얼굴 메타데이터에는 낱장 faceset 리소스가 필요합니다.");
-      if (profile.graphicAttributes !== undefined) attributes(profile.graphicAttributes, `${profile.assetId}.graphicAttributes`);
-      if (profile.graphicNote !== undefined) text(profile.graphicNote, `${profile.assetId}.graphicNote`, 2000);
-    }
-    if (profile.characterSlots === undefined) continue;
-    if (profile.kind !== "charset" || !profile.assetId) throw new Error("캐릭터 칸에는 charset 리소스 ID가 필요합니다.");
-    for (const value of array(profile.characterSlots, "characterSlots")) {
-      const row = record(value, "characterSlots");
-      const parsed = mapping(row, "characterSlots", faceIds);
-      attributes(row.graphicAttributes, "characterSlots.graphicAttributes");
-      const key = graphicSpriteKey(canonicalTexture(profile.assetId), parsed.characterIndex);
-      if (seen.has(key)) throw new Error(`중복 캐릭터 칸: ${key}`);
-      seen.add(key);
-    }
-  }
 }

@@ -31,6 +31,9 @@ export default defineConfig({
     outDir: "dist/export-player",
     emptyOutDir: true,
     sourcemap: false,
+    // 4KB 이하 도트 이펙트·기물 스트립(536장, ~1.74MB)이 player.js 에 base64 로 인라인되는 것을 막는다.
+    // 단일 HTML 오프라인 배포(vite.standalone.config.ts)만 Infinity 인라인을 유지한다.
+    assetsInlineLimit: 0,
     manifest: "player-manifest.json",
     rollupOptions: {
       input: fileURLToPath(new URL("./player.html", import.meta.url)),

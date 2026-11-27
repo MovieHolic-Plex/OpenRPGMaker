@@ -1,7 +1,7 @@
 import { el } from '@/util/dom';
 import { tilesetTileBackgroundStyle } from '@/editor/tilesetImage';
 import type { TilesetDef } from '@/project/types';
-import { WORLDMAP_BRUSHES } from '@/project/defaults/worldmapAuthoring';
+import { worldmapBrushes } from '@/project/defaults/worldmapAuthoring';
 import { editorState } from '@/editor/editorState';
 import { worldmapBrushMaterial } from '@/project/worldmapAutoBrush';
 import { makeStructureKitShelf } from '@/editor/harnessSuggestion/structureKitShelf';
@@ -50,7 +50,8 @@ export function makeWorldmapBrushShelf(t: TilesetDef, layer: 'lower' | 'upper', 
         }
     const seen = new Set<string>();
     const order = ['grass','sand','snow','river','road','sea','forest','mountain','snowforest','bridge-horizontal','bridge-vertical','conifer','snowmountain'];
-    const brushes = background==='auto' ? [...WORLDMAP_BRUSHES].sort((a,b)=>(order.includes(a.kind)?order.indexOf(a.kind):100)-(order.includes(b.kind)?order.indexOf(b.kind):100)) : WORLDMAP_BRUSHES;
+    const allBrushes = worldmapBrushes();
+    const brushes = background==='auto' ? [...allBrushes].sort((a,b)=>(order.includes(a.kind)?order.indexOf(a.kind):100)-(order.includes(b.kind)?order.indexOf(b.kind):100)) : allBrushes;
     const extra=el('details');extra.append(el('summary',{text:'다른 지형',attrs:{style:'font-size:12px;cursor:pointer;margin:10px 0'}}));
     const extraGrid=el('div',{attrs:{style:'display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px'}});
     for (const brush of brushes) {

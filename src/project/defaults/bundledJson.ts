@@ -14,15 +14,27 @@ import {
   BUNDLED_JSON_LAZY,
   bundledJsonSync,
   loadBundledJsonEntry,
-  setBundledJsonReader,
+  setBundledJsonReader as setCoreBundledJsonReader,
   type BundledJsonData,
   type BundledJsonKey,
+  type BundledJsonReader,
 } from "./bundledJsonSources";
+import {
+  BUNDLED_LOOK_JSON_KEYS,
+  bundledLookJsonLoaded,
+  preloadBundledLookJson,
+  setBundledLookJsonReader,
+  type BundledLookJsonKey,
+} from "@/assets/bundledLookJson";
 import { applyKitDisplayNames } from "../kitDisplayNames";
 
-export type { BundledJsonKey };
-export type { BundledJsonReader } from "./bundledJsonSources";
-export { setBundledJsonReader };
+export type { BundledJsonKey, BundledJsonReader, BundledLookJsonKey };
+export { BUNDLED_JSON_KEYS, BUNDLED_LOOK_JSON_KEYS, bundledLookJsonLoaded, preloadBundledLookJson };
+
+export function setBundledJsonReader(reader: BundledJsonReader | null): void {
+  setCoreBundledJsonReader(reader);
+  setBundledLookJsonReader(reader);
+}
 
 /** 미리 읽기 진행: 끝난 파일 수 / 이번에 받을 파일 수, 받은 바이트(지연 출처만 센다). */
 export type BundledJsonProgress = (done: number, total: number, bytes: number) => void;
@@ -96,11 +108,70 @@ const TEXTURE_KEYS: Readonly<Record<string, BundledJsonKey>> = {
   tex_monster_overworld: "monsterKitOverworld",
   tex_monster_rooms: "monsterKitRooms",
   tex_monster_wild: "monsterKitWild",
+  tex_oprn_atlas_vehicles: "atlasVehiclesTileset",
+  tex_worldmap_authoring: "worldmapAuthoringSheet",
+  tex_beodeul_reviewed: "beodeulReviewedCatalog",
+  tex_beodeul_massing: "beodeulMassingCatalog",
+  tex_beodeul_nature: "beodeulNatureCatalog",
+};
+
+const LOOK_TEXTURE_KEYS: Readonly<Record<string, BundledLookJsonKey>> = {
+  tex_beodeul_stands: "beodeulStands",
+  tex_beodeul_water: "beodeulWater",
+  tex_beodeul_houses: "beodeulHouseSets",
+  tex_beodeul_looks: "beodeulLooks",
 };
 
 /** 번들 텍스처 키에 딸린 정의 JSON 키(없으면 undefined). */
 export function bundledJsonKeyForTexture(textureKey: string): BundledJsonKey | undefined {
   return TEXTURE_KEYS[textureKey];
+}
+
+/** 프로젝트의 맵·타일셋·이식·겉모습·릴리프가 실제로 필요로 하는 지연 JSON 키 목록. */
+export function bundledJsonKeysForProject(project: {
+  readonly maps?: Readonly<Record<string, { readonly tilesetId?: string; readonly relief?: unknown }>>;
+  readonly tilesets?: Readonly<Record<string, {
+    readonly image?: { readonly type?: unknown; readonly id?: unknown };
+    readonly look?: unknown;
+    readonly tileGrafts?: readonly { readonly sourceChipset?: unknown }[];
+  }>>;
+}): { readonly keys: BundledJsonKey[]; readonly lookKeys: BundledLookJsonKey[] } {
+  const keys = new Set<BundledJsonKey>();
+  const lookKeys = new Set<BundledLookJsonKey>();
+  const addForTexture = (textureKey: unknown): void => {
+    if (typeof textureKey !== "string") return;
+    const key = TEXTURE_KEYS[textureKey];
+    if (key) {
+      keys.add(key);
+      if (key === "jpCityTileset") keys.add("jpCityStreetCatalog");
+    }
+    const lookKey = LOOK_TEXTURE_KEYS[textureKey];
+    if (lookKey) lookKeys.add(lookKey);
+  };
+  let needsRelief = false;
+  for (const map of Object.values(project.maps ?? {})) {
+    if (map?.relief) needsRelief = true;
+    const ts = map?.tilesetId ? project.tilesets?.[map.tilesetId] : undefined;
+    if (ts?.image?.type === "bundled") addForTexture(ts.image.id);
+  }
+  for (const ts of Object.values(project.tilesets ?? {})) {
+    if (!ts) continue;
+    if (ts.image?.type === "bundled") addForTexture(ts.image.id);
+    if (ts.look) {
+      lookKeys.add("beodeulLooks");
+      lookKeys.add("beodeulStands");
+      lookKeys.add("beodeulWater");
+      lookKeys.add("beodeulHouseSets");
+    }
+    if (Array.isArray(ts.tileGrafts)) {
+      for (const graft of ts.tileGrafts) addForTexture(graft?.sourceChipset);
+    }
+  }
+  if (needsRelief) {
+    lookKeys.add("reliefRampArt");
+    lookKeys.add("reliefSheerArt");
+  }
+  return { keys: [...keys], lookKeys: [...lookKeys] };
 }
 
 /**
@@ -109,19 +180,15 @@ export function bundledJsonKeyForTexture(textureKey: string): BundledJsonKey | u
  */
 export function preloadBundledJsonForProject(project: {
   readonly maps?: Readonly<Record<string, { readonly tilesetId?: string; readonly relief?: unknown }>>;
-  readonly tilesets?: Readonly<Record<string, { readonly image?: { readonly type: string; readonly id?: string } }>>;
+  readonly tilesets?: Readonly<Record<string, {
+    readonly image?: { readonly type?: unknown; readonly id?: unknown };
+    readonly look?: unknown;
+    readonly tileGrafts?: readonly { readonly sourceChipset?: unknown }[];
+  }>>;
 }): Promise<void> {
-  const keys = new Set<BundledJsonKey>();
-  let needsRelief = false;
-  for (const map of Object.values(project.maps ?? {})) {
-    if (map.relief) needsRelief = true;
-    const image = map.tilesetId ? project.tilesets?.[map.tilesetId]?.image : undefined;
-    const key = image?.type === "bundled" && image.id ? TEXTURE_KEYS[image.id] : undefined;
-    if (key) keys.add(key);
-  }
-  if (needsRelief) {
-    keys.add("reliefRampArt");
-    keys.add("reliefSheerArt");
-  }
-  return preloadBundledJson([...keys]);
+  const { keys, lookKeys } = bundledJsonKeysForProject(project);
+  return Promise.all([
+    keys.length > 0 ? preloadBundledJson(keys) : undefined,
+    lookKeys.length > 0 ? preloadBundledLookJson(lookKeys) : undefined,
+  ]).then(() => undefined);
 }

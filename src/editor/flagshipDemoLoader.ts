@@ -32,15 +32,19 @@ async function loadBakedFlagshipDemo(id: FlagshipDemoId): Promise<Project | null
     // 비어 올 수 있어 «HTML 이 아닐 때» JSON 파싱을 시도한다.
     if (!response.ok || (response.headers.get("content-type") ?? "").includes("html")) return null;
     const { preloadBundledTilesetDefinitions } = await import("@/project/defaults/defaultAssets");
-    const { preloadBundledJson } = await import("@/project/defaults/bundledJson");
+    const { bundledJsonKeysForProject, preloadBundledJson, preloadBundledLookJson } = await import("@/project/defaults/bundledJson");
     const { deserializeParsed } = await import("@/project/io");
     const data: unknown = await response.json();
     const tilesets = (data as { tilesets?: unknown } | null)?.tilesets;
     const maps = (data as { maps?: unknown } | null)?.maps;
-    const hasRelief = maps && typeof maps === "object" && Object.values(maps as Record<string, { relief?: unknown }>).some((map) => Boolean(map?.relief));
+    const { keys: extraKeys, lookKeys } = bundledJsonKeysForProject({
+      maps: maps && typeof maps === "object" ? (maps as Record<string, { tilesetId?: string; relief?: unknown }>) : undefined,
+      tilesets: tilesets && typeof tilesets === "object" ? (tilesets as Record<string, { image?: { type?: unknown; id?: unknown }; look?: unknown; tileGrafts?: readonly { sourceChipset?: unknown }[] }>) : undefined,
+    });
     await Promise.all([
       tilesets && typeof tilesets === "object" ? preloadBundledTilesetDefinitions(Object.keys(tilesets)) : null,
-      hasRelief ? preloadBundledJson(["reliefRampArt", "reliefSheerArt"]) : null,
+      extraKeys.length > 0 ? preloadBundledJson(extraKeys) : null,
+      lookKeys.length > 0 ? preloadBundledLookJson(lookKeys) : null,
     ]);
     return deserializeParsed(data);
   } catch (error) {

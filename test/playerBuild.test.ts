@@ -28,8 +28,8 @@ const TILESET_DEFINITION_MARKERS = [
   /버들항 v6 언덕\(저택·성당\) 성벽/u,
   /조선 지형 동굴 천장\(벽 윗면\)/u,
 ] as const;
-/** bundledJsonSources.lazy.ts 의 지연 키 수 — 각각 assets/<key>-<hash>.json 으로 따로 실린다. */
-const LAZY_TILESET_DEFINITION_COUNT = 17;
+/** bundledJsonSources.lazy.ts 의 `*Tileset.json` 지연 키 수 — 각각 assets/<key>-<hash>.json 으로 따로 실린다. */
+const LAZY_TILESET_DEFINITION_COUNT = 19;
 
 type ScanFinding = {
   readonly label: string;

@@ -16,11 +16,11 @@ import { PRODUCT_BRAND } from "@/brand";
 import { deserialize, deserializeParsed } from "@/project/io";
 import { preloadBundledTilesetDefinitions } from "@/project/defaults/defaultAssets";
 import {
-  bundledJsonKeyForTexture,
+  bundledJsonKeysForProject,
   preloadBundledJson,
   preloadBundledJsonForProject,
+  preloadBundledLookJson,
   setBundledJsonReader,
-  type BundledJsonKey,
   type BundledJsonProgress,
 } from "@/project/defaults/bundledJson";
 import { OPRN_EXTENSION } from "@/project/package";
@@ -292,23 +292,14 @@ async function deserializeWithBundledTilesets(text: string, onDefinitions?: Bund
   }
   const tilesets = parsed && typeof parsed === "object" ? (parsed as { tilesets?: unknown }).tilesets : undefined;
   const maps = parsed && typeof parsed === "object" ? (parsed as { maps?: unknown }).maps : undefined;
-  const extraKeys = new Set<BundledJsonKey>();
-  if (tilesets && typeof tilesets === "object") {
-    for (const entry of Object.values(tilesets as Record<string, { image?: { type?: unknown; id?: unknown } }>)) {
-      if (entry?.image?.type === "bundled" && typeof entry.image.id === "string") {
-        const key = bundledJsonKeyForTexture(entry.image.id);
-        if (key) extraKeys.add(key);
-      }
-    }
-  }
-  const hasRelief = maps && typeof maps === "object" && Object.values(maps as Record<string, { relief?: unknown }>).some((map) => Boolean(map?.relief));
-  if (hasRelief) {
-    extraKeys.add("reliefRampArt");
-    extraKeys.add("reliefSheerArt");
-  }
+  const { keys: extraKeys, lookKeys } = bundledJsonKeysForProject({
+    maps: maps && typeof maps === "object" ? (maps as Record<string, { tilesetId?: string; relief?: unknown }>) : undefined,
+    tilesets: tilesets && typeof tilesets === "object" ? (tilesets as Record<string, { image?: { type?: unknown; id?: unknown }; look?: unknown; tileGrafts?: readonly { sourceChipset?: unknown }[] }>) : undefined,
+  });
   await Promise.all([
     tilesets && typeof tilesets === "object" ? preloadBundledTilesetDefinitions(Object.keys(tilesets), onDefinitions) : null,
-    extraKeys.size > 0 ? preloadBundledJson([...extraKeys]) : null,
+    extraKeys.length > 0 ? preloadBundledJson(extraKeys) : null,
+    lookKeys.length > 0 ? preloadBundledLookJson(lookKeys) : null,
   ]);
   return deserializeParsed(parsed);
 }

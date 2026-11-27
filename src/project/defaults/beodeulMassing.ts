@@ -1,5 +1,5 @@
-import catalog from '../../assets/beodeulMassingCatalog.json' with { type: "json" };
 import references from '../../assets/beodeulMassingReferences.json' with { type: "json" };
+import { bundledJson } from './bundledJson';
 import {defineBuildingBundle,type BuildingCatalog} from './buildingBundle';
 
 /**
@@ -8,7 +8,7 @@ import {defineBuildingBundle,type BuildingCatalog} from './buildingBundle';
  */
 const bundle=defineBuildingBundle({
  tilesetId:'beodeul_massing',texture:'tex_beodeul_massing',name:'버들항 · 중세 건물(덩어리 모형)',label:'버들항 중세 건물',
- catalog:catalog as unknown as BuildingCatalog,references,hostTilesetId:'beodeul_city',hostTexture:'tex_beodeul_city',
+ catalog:()=>bundledJson('beodeulMassingCatalog') as unknown as BuildingCatalog,references,hostTilesetId:'beodeul_city',hostTexture:'tex_beodeul_city',
  ids:{house:'bd-house-mk-',shadow:'bd-mk-shadow-',foundation:'bd-mk-foundation-',docs:'bd-mk-'},tags:['버들항','3/4 탑뷰','중세'],
  approval:{tag:'검수 통과',text:'3/4 관문 영수증과 독립 검수 둘을 통과하고 사용자 위임으로 허용한 그림'},
 });

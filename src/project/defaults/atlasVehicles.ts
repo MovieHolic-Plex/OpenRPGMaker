@@ -1,4 +1,5 @@
-import saved from "@/assets/atlasVehiclesTileset.json" with { type: "json" };
+import bundledSheetCounts from "@/assets/bundledSheetCounts.json" with { type: "json" };
+import { bundledJson } from "./bundledJson";
 import type { TilesetDef } from "../types";
 
 // 탈것·장면 조각(2026-09-25) — 배(범선 셋·돛 폄/접음·뱃머리 양쪽)·비공정·마차·포장마차·손수레·뗏목·나룻배·교수대·형틀·
@@ -10,16 +11,16 @@ import type { TilesetDef } from "../types";
 
 export const ATLAS_VEHICLES_TEXTURE = "tex_oprn_atlas_vehicles";
 export const ATLAS_VEHICLES_ID = "oprn_atlas_vehicles";
-export const ATLAS_VEHICLES_COUNT: number = saved.count;
+export const ATLAS_VEHICLES_COUNT: number = bundledSheetCounts.tex_oprn_atlas_vehicles.count;
 
 export function createAtlasVehiclesTileset(): TilesetDef {
-  return structuredClone(saved) as unknown as TilesetDef;
+  return structuredClone(bundledJson("atlasVehiclesTileset")) as unknown as TilesetDef;
 }
 
 /** Add shipped guidance to older copies without replacing authored documents. */
 export function ensureAtlasVehiclesReferences(tileset: TilesetDef): boolean {
   if (tileset.image.type !== "bundled" || tileset.image.id !== ATLAS_VEHICLES_TEXTURE || tileset.referenceSourceTilesetId) return false;
-  const shipped = (saved as unknown as { referenceDocuments?: NonNullable<TilesetDef["referenceDocuments"]> }).referenceDocuments ?? [];
+  const shipped = (bundledJson("atlasVehiclesTileset") as unknown as { referenceDocuments?: NonNullable<TilesetDef["referenceDocuments"]> }).referenceDocuments ?? [];
   const missing = shipped.filter(category => !(tileset.referenceDocuments ?? []).some(existing => existing.id === category.id));
   if (!missing.length) return false;
   tileset.referenceDocuments = [...(tileset.referenceDocuments ?? []), ...structuredClone(missing)];

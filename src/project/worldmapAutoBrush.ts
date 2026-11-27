@@ -1,5 +1,5 @@
-import sheet from '@/assets/worldmapAuthoringSheet.json' with { type: "json" };
-const WORLDMAP_BRUSHES = sheet.brushes;
+import { bundledJson } from '@/project/defaults/bundledJson';
+const worldmapBrushes = () => bundledJson('worldmapAuthoringSheet').brushes;
 import type { GameMap, TileGroupMetadata, TilesetDef } from './types';
 
 type Material = { kind: string; background: string };
@@ -20,16 +20,17 @@ export function worldmapBrushMaterial(t: TilesetDef | undefined, tile: number): 
 /** Generic material names choose a brush; explicit background names retain their contract. */
 export function worldmapMaterialGroup(t: TilesetDef, query: unknown): TileGroupMetadata | undefined {
   if (typeof query !== 'string' || !t.autotileGroups?.some(g => g.id === 'worldmap-brush-grass-sea')) return;
+  const brushes = worldmapBrushes();
   const raw = query.trim();
-  const kind = ALIASES[raw] ?? WORLDMAP_BRUSHES.find(b => b.name === raw)?.kind;
+  const kind = ALIASES[raw] ?? brushes.find(b => b.name === raw)?.kind;
   if (!kind) return;
-  const brush = WORLDMAP_BRUSHES.find(b => b.kind === kind && b.background === (LAND.has(kind) ? 'sea' : 'any'))
-    ?? WORLDMAP_BRUSHES.find(b => b.kind === kind && b.background === 'grass')
-    ?? WORLDMAP_BRUSHES.find(b => b.kind === kind);
+  const brush = brushes.find(b => b.kind === kind && b.background === (LAND.has(kind) ? 'sea' : 'any'))
+    ?? brushes.find(b => b.kind === kind && b.background === 'grass')
+    ?? brushes.find(b => b.kind === kind);
   return t.tileGroups?.find(g => g.id === brush?.id);
 }
 function representative(t: TilesetDef, kind: string, background: string): number | undefined {
-  const brush = WORLDMAP_BRUSHES.find(b => b.kind === kind && b.background === background);
+  const brush = worldmapBrushes().find(b => b.kind === kind && b.background === background);
   const auto = t.autotileGroups?.find(g => g.id === brush?.id);
   return auto?.variantMap['0'] ?? t.tileGroups?.find(g => g.id === brush?.id)?.tileIds[0];
 }

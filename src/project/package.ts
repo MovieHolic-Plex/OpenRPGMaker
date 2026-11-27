@@ -1,6 +1,6 @@
 import { deserialize, deserializeParsed, serializePretty } from "@/project/io";
 import { preloadBundledTilesetDefinitions } from "@/project/defaults/defaultAssets";
-import { bundledJsonKeyForTexture, preloadBundledJson, type BundledJsonKey } from "@/project/defaults/bundledJson";
+import { bundledJsonKeysForProject, preloadBundledJson, preloadBundledLookJson } from "@/project/defaults/bundledJson";
 import { projectWithoutEventDrafts } from "@/project/eventDrafts";
 import { uploadedAssetBytes } from "@/project/persistence/assetAccessors";
 import { encodeDataUrlBytes } from "@/project/persistence/core/dataUrl";
@@ -82,23 +82,14 @@ export async function readProjectPackage(file: Blob): Promise<Project> {
   if (parsedOk && parsed && typeof parsed === "object") {
     const tilesets = (parsed as { tilesets?: unknown }).tilesets;
     const maps = (parsed as { maps?: unknown }).maps;
-    const extraKeys = new Set<BundledJsonKey>();
-    if (tilesets && typeof tilesets === "object") {
-      for (const entry of Object.values(tilesets as Record<string, { image?: { type?: unknown; id?: unknown } }>)) {
-        if (entry?.image?.type === "bundled" && typeof entry.image.id === "string") {
-          const key = bundledJsonKeyForTexture(entry.image.id);
-          if (key) extraKeys.add(key);
-        }
-      }
-    }
-    const hasRelief = maps && typeof maps === "object" && Object.values(maps as Record<string, { relief?: unknown }>).some((map) => Boolean(map?.relief));
-    if (hasRelief) {
-      extraKeys.add("reliefRampArt");
-      extraKeys.add("reliefSheerArt");
-    }
+    const { keys: extraKeys, lookKeys } = bundledJsonKeysForProject({
+      maps: maps && typeof maps === "object" ? (maps as Record<string, { tilesetId?: string; relief?: unknown }>) : undefined,
+      tilesets: tilesets && typeof tilesets === "object" ? (tilesets as Record<string, { image?: { type?: unknown; id?: unknown }; look?: unknown; tileGrafts?: readonly { sourceChipset?: unknown }[] }>) : undefined,
+    });
     await Promise.all([
       tilesets && typeof tilesets === "object" ? preloadBundledTilesetDefinitions(Object.keys(tilesets)) : null,
-      extraKeys.size > 0 ? preloadBundledJson([...extraKeys]) : null,
+      extraKeys.length > 0 ? preloadBundledJson(extraKeys) : null,
+      lookKeys.length > 0 ? preloadBundledLookJson(lookKeys) : null,
     ]);
     project = deserializeParsed(parsed);
   } else {

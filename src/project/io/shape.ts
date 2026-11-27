@@ -16,7 +16,7 @@ import { validateSpatialProject } from "../spatial/overviewPairs";
 import { validateSpatialAuthoring } from "../spatial/guards";
 import { validateAudioDescriptions } from "../audioDescriptions";
 import { validateMonsterMetadata } from "../monsterMetadata";
-import { validateCharacterGraphicsProject } from "../characterGraphics";
+import { validateCharacterGraphicsProject } from "../characterGraphicsValidation";
 import { villageDesignIssue } from "../villageDesign";
 import { EVENT_ANIMATION_TYPES } from "../types";
 import type { Project, ProjectV1, ProjectV2 } from "../types";

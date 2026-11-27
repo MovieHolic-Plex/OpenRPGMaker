@@ -29,8 +29,12 @@ import monsterKitGymsUrl from "@/assets/monsterKit/monster-gyms.json?url";
 import monsterKitOverworldUrl from "@/assets/monsterKit/monster-overworld.json?url";
 import monsterKitRoomsUrl from "@/assets/monsterKit/monster-rooms.json?url";
 import monsterKitWildUrl from "@/assets/monsterKit/monster-wild.json?url";
-import reliefRampArtUrl from "@/project/relief/rampArt.json?url";
-import reliefSheerArtUrl from "@/project/relief/sheerArt.json?url";
+import atlasVehiclesTilesetUrl from "@/assets/atlasVehiclesTileset.json?url";
+import worldmapAuthoringSheetUrl from "@/assets/worldmapAuthoringSheet.json?url";
+import beodeulReviewedCatalogUrl from "@/assets/beodeulReviewedCatalog.json?url";
+import beodeulMassingCatalogUrl from "@/assets/beodeulMassingCatalog.json?url";
+import beodeulNatureCatalogUrl from "@/assets/beodeulNatureCatalog.json?url";
+import jpCityStreetCatalogUrl from "@/assets/jpCityStreetCatalog.json?url";
 
 const URLS: Record<BundledJsonKey, string> = {
   jpCityTileset: jpCityTilesetUrl,
@@ -58,8 +62,12 @@ const URLS: Record<BundledJsonKey, string> = {
   monsterKitOverworld: monsterKitOverworldUrl,
   monsterKitRooms: monsterKitRoomsUrl,
   monsterKitWild: monsterKitWildUrl,
-  reliefRampArt: reliefRampArtUrl,
-  reliefSheerArt: reliefSheerArtUrl,
+  atlasVehiclesTileset: atlasVehiclesTilesetUrl,
+  worldmapAuthoringSheet: worldmapAuthoringSheetUrl,
+  beodeulReviewedCatalog: beodeulReviewedCatalogUrl,
+  beodeulMassingCatalog: beodeulMassingCatalogUrl,
+  beodeulNatureCatalog: beodeulNatureCatalogUrl,
+  jpCityStreetCatalog: jpCityStreetCatalogUrl,
 };
 
 export type { BundledJsonData, BundledJsonKey, BundledJsonReader };

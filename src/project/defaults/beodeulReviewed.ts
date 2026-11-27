@@ -1,5 +1,5 @@
-import catalog from '../../assets/beodeulReviewedCatalog.json' with { type: "json" };
 import references from '../../assets/beodeulReviewedReferences.json' with { type: "json" };
+import { bundledJson } from './bundledJson';
 import {defineBuildingBundle,type BuildingCatalog} from './buildingBundle';
 
 /**
@@ -8,7 +8,7 @@ import {defineBuildingBundle,type BuildingCatalog} from './buildingBundle';
  */
 const bundle=defineBuildingBundle({
  tilesetId:'beodeul_reviewed',texture:'tex_beodeul_reviewed',name:'버들항 · 사람이 허용한 건물',label:'버들항',
- catalog:catalog as unknown as BuildingCatalog,references,hostTilesetId:'beodeul_city',hostTexture:'tex_beodeul_city',
+ catalog:()=>bundledJson('beodeulReviewedCatalog') as unknown as BuildingCatalog,references,hostTilesetId:'beodeul_city',hostTexture:'tex_beodeul_city',
  ids:{house:'bd-house-rv-',shadow:'bd-rv-shadow-',foundation:'bd-rv-foundation-',docs:'bd-rv-'},tags:['버들항','3/4 탑뷰'],
 });
 export const BEODEUL_REVIEWED_TEXTURE=bundle.TEXTURE;

@@ -35,7 +35,7 @@ import { createMonsterKitTileset, ensureMonsterKitTileset, isMonsterKitTexture, 
 import { removeLegacyStairEntranceReferences } from "./legacyStairEntranceCleanup";
 import { ATLAS_VEHICLES_TEXTURE, createAtlasVehiclesTileset, ensureAtlasVehiclesReferences } from "./atlasVehicles";
 import { ATLAS_BIOME_INTERIOR_TEXTURE, createAtlasBiomeInteriorTileset, ensureAtlasBiomeInteriorCurrent, atlasBiomeInteriorBundledReferenceDocuments } from "./atlasBiomeInterior";
-import { bundledJsonKeyForTexture, bundledJsonLoaded, preloadBundledJson, type BundledJsonKey, type BundledJsonProgress } from "./bundledJson";
+import { BUNDLED_JSON_KEYS, BUNDLED_LOOK_JSON_KEYS, bundledJsonKeyForTexture, bundledJsonLoaded, bundledLookJsonLoaded, preloadBundledJson, preloadBundledLookJson, type BundledJsonKey, type BundledJsonProgress } from "./bundledJson";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 import type { AssetSet, GameMap, PassFlag, ResourceKind, ResourceProfile, SpriteDef, TilesetDef } from "../types";
 import { CC0_ICON_ASSETS } from "@/assets/cc0IconAssets";
@@ -209,6 +209,7 @@ export function preloadBundledTilesetDefinitions(ids: Iterable<string>, progress
     const asset = bundledAssetForTilesetId(id);
     const key = asset ? bundledJsonKeyForTexture(asset.textureKey) : undefined;
     if (key && !bundledJsonLoaded(key)) keys.add(key);
+    if (key === "jpCityTileset" && !bundledJsonLoaded("jpCityStreetCatalog")) keys.add("jpCityStreetCatalog");
   }
   return keys.size > 0 ? preloadBundledJson([...keys], progress) : null;
 }
@@ -258,8 +259,13 @@ export function bundledReferenceDocumentsById(id: string): TilesetDef["reference
  * 이미 다 있으면(정적 출처 = 테스트·헤드리스·Electron 메인, 또는 읽기 끝) null 이다 — 그때는 await 하지 않아 로드 경로의 순서가 예전 그대로다.
  */
 export function preloadAllBundledTilesetDefinitions(): Promise<void> | null {
-  const keys = BUNDLED_EASYRPG_CHIPSET_ASSETS.map((asset) => bundledJsonKeyForTexture(asset.textureKey)).filter((key): key is BundledJsonKey => key !== undefined);
-  return keys.every(bundledJsonLoaded) ? null : preloadBundledJson(keys);
+  const needsCore = !BUNDLED_JSON_KEYS.every(bundledJsonLoaded);
+  const needsLook = !BUNDLED_LOOK_JSON_KEYS.every(bundledLookJsonLoaded);
+  if (!needsCore && !needsLook) return null;
+  return Promise.all([
+    needsCore ? preloadBundledJson(BUNDLED_JSON_KEYS) : undefined,
+    needsLook ? preloadBundledLookJson(BUNDLED_LOOK_JSON_KEYS) : undefined,
+  ]).then(() => undefined);
 }
 
 // 숲마을·기후 마을·선별 소품·Tibo 실내·합본 마을+레트로 월드 시트의 보강 단계는 2026-10-07 저작권 정리로 그 칩셋과 함께 지웠다.
