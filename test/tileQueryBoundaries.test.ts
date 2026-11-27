@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { runTool, type ToolContext } from "@/editor/tools";
-import { createBlankProject } from "@/project/defaults";
-import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
+import { combinedTownTileset, createBlankProject } from "@/project/defaults";
 
 function context(): ToolContext {
   const project = createBlankProject();
   const start = project.maps[project.startMapId];
-  const base = project.tilesets[COMBINED_TOWN_TILESET_ID];
+  // 새 프로젝트에는 합본 마을이 없다(시작 맵은 버들항, #5185) — 내장 정의를 바탕으로 쓴다.
+  const base = combinedTownTileset();
   for (const [id, count] of [["tiles_start", 2], ["tiles_target", 3], ["tiles_explicit", 1]] as const) {
     project.tilesets[id] = {
       ...structuredClone(base), id, count, tilesPerRow: 1,
