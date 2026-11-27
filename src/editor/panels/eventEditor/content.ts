@@ -516,19 +516,22 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
         class: "event-scene-quick-add",
         dataset: { testid: "event-scene-quick-add" },
         children: [
-          el("span", { class: "event-scene-quick-add-label", text: "빠른 추가" }),
+          el("span", { class: "event-scene-quick-add-label", text: "추가" }),
           ...(
             [
-              { kind: "text", label: "+ 대사" },
-              { kind: "choices", label: "+ 선택지" },
-              { kind: "changeItem", label: "+ 아이템" },
-              { kind: "transfer", label: "+ 이동" },
-              { kind: "shop", label: "+ 상점" },
+              { kind: "text", label: "대사" },
+              { kind: "choices", label: "선택지" },
+              { kind: "changeItem", label: "아이템" },
+              { kind: "transfer", label: "이동" },
+              { kind: "shop", label: "상점" },
             ] as const
           ).map(({ kind, label }) =>
             el("button", {
               class: "event-scene-quick-add-chip",
-              text: label,
+              children: [
+                el("span", { text: "+", attrs: { "aria-hidden": "true" } }),
+                el("span", { text: label }),
+              ],
               attrs: { type: "button" },
               dataset: { testid: `event-scene-quick-add-${kind}` },
               on: {
@@ -538,6 +541,16 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
               },
             }),
           ),
+          el("button", {
+            class: "event-scene-quick-add-chip is-more",
+            children: [
+              el("span", { text: "+", attrs: { "aria-hidden": "true" } }),
+              el("span", { text: "더보기" }),
+            ],
+            attrs: { type: "button", title: "전체 이벤트 명령 목록 열기" },
+            dataset: { testid: "event-scene-quick-add-more" },
+            on: { click: () => openCommandPickerForActions(actions, []) },
+          }),
         ],
       })
     : null;
@@ -640,13 +653,15 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       dataset: { pageCount: String(pages.length), testid: "event-editor-pagebar" },
       children: [
         ...(whoWhen ? [whoWhen] : []),
-        // 목업 v2: 쉬움은 「때」, 보통은 「상태」 머리말 뒤에 페이지 탭. 고급은 지금처럼 펼치기 단추.
+        // 목업 v2: 쉬움은 「때」, 보통은 「상태」 머리말 뒤에 페이지 탭(페이지가 2개 이상일 때만). 고급은 지금처럼 펼치기 단추.
         ...(sceneLevel
-          ? [el("span", {
-              class: "event-scene-page-label",
-              text: sceneLevel === "easy" ? "때" : "상태",
-              dataset: { testid: "event-scene-page-label" },
-            })]
+          ? pages.length > 1
+            ? [el("span", {
+                class: "event-scene-page-label",
+                text: sceneLevel === "easy" ? "때" : "상태",
+                dataset: { testid: "event-scene-page-label" },
+              })]
+            : []
           : [advancedToggle]),
         renderClassicPageTabStrip(mapId, evForRender, activePage, validation),
         renderPageActions(mapId, evForRender, activePage),

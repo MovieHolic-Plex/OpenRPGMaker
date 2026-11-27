@@ -532,8 +532,8 @@
   display: none;
 }
 
-.event-editor-modal-backdrop.is-bubble-backdrop {
-  background: rgba(15, 23, 42, 0.08);
+.event-editor-modal-backdrop.event-editor-modal-backdrop.is-bubble-backdrop:not(.is-fullscreen) {
+  background: transparent;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
@@ -542,13 +542,17 @@
   border: 1.5px solid color-mix(in srgb, var(--accent) 34%, var(--border-strong));
   border-radius: 16px;
   box-shadow: 0 18px 48px rgba(15, 23, 42, 0.22), 0 2px 8px rgba(15, 23, 42, 0.08);
-  height: min(510px, calc(100vh - 90px));
-  max-height: min(510px, calc(100vh - 90px));
-  max-width: min(460px, calc(100vw - 24px));
+  height: auto;
+  max-height: min(560px, calc(100vh - 88px));
+  max-width: min(440px, calc(100vw - 24px));
   min-height: 0;
   min-width: 0;
   overflow: visible;
-  width: min(460px, calc(100vw - 24px));
+  width: min(440px, calc(100vw - 24px));
+}
+
+.event-editor-modal-backdrop > .event-editor-modal-window.is-bubble > .event-editor-modal-resize-handle {
+  display: none;
 }
 
 .event-editor-modal-backdrop > .event-editor-modal-window.is-bubble:not(.is-bubble-detached) > .event-editor-bubble-tail {
@@ -561,15 +565,48 @@
   left: -9px;
   pointer-events: none;
   position: absolute;
-  top: 196px;
+  top: var(--event-bubble-tail-top, 120px);
   transform: rotate(45deg);
   width: 16px;
 }
 
+.event-editor-modal-backdrop > .event-editor-modal-window.is-bubble[data-tail-side="right"]:not(.is-bubble-detached) > .event-editor-bubble-tail {
+  border-bottom: 0;
+  border-left: 0;
+  border-right: 1.5px solid color-mix(in srgb, var(--accent) 34%, var(--border-strong));
+  border-top: 1.5px solid color-mix(in srgb, var(--accent) 34%, var(--border-strong));
+  left: auto;
+  right: -9px;
+}
+
 .event-editor-modal-backdrop > .event-editor-modal-window.is-bubble > .event-editor-modal-header {
   border-radius: 15px 15px 0 0;
+  gap: 6px;
   min-height: 44px;
-  padding: 8px 10px 8px 12px;
+  padding: 7px 10px 7px 12px;
+}
+
+.event-editor-modal-backdrop > .event-editor-modal-window.is-bubble > .event-editor-modal-header .event-editor-name-field {
+  flex: 1 1 130px;
+  max-width: none;
+  min-width: 110px;
+}
+
+.event-editor-modal-backdrop > .event-editor-modal-window.is-bubble > .event-editor-modal-header .event-editor-name-field .event-name {
+  min-width: 0;
+  width: 100%;
+}
+
+.event-editor-modal-backdrop > .event-editor-modal-window.is-bubble > .event-editor-modal-header .event-editor-name-text {
+  flex: 1 1 100px;
+  min-width: 80px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-editor-modal-backdrop > .event-editor-modal-window.is-bubble > .event-editor-modal-header .event-draft-validation-tally {
+  display: none;
 }
 
 .event-editor-modal-backdrop > .event-editor-modal-window.is-bubble > .event-editor-modal-header [data-testid="event-editor-test"] {
@@ -577,7 +614,23 @@
 }
 
 .event-editor-modal-backdrop > .event-editor-modal-window.is-bubble > .event-editor-modal-body {
+  flex: 0 1 auto;
+  min-height: 0;
   overflow: hidden;
+}
+
+.event-editor-modal-backdrop > .event-editor-modal-window.is-bubble > .event-editor-modal-body > .event-editor-modal-dynamic {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.event-editor-modal-backdrop > .event-editor-modal-window.is-bubble > .event-editor-modal-body .event-editor {
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .event-editor-modal-backdrop > .event-editor-modal-window.is-bubble > .event-editor-modal-footer {
@@ -587,23 +640,44 @@
 }
 
 .event-editor-modal-backdrop > .event-editor-modal-window.is-bubble .event-editor-pagebar {
+  align-items: center;
   flex-wrap: wrap;
   gap: 6px;
   padding: 6px 12px;
 }
 
-.event-editor-modal-backdrop > .event-editor-modal-window.is-bubble .evt-page-segments {
-  flex-wrap: wrap;
+.event-editor-modal-backdrop > .event-editor-modal-window.is-bubble .event-editor-pagebar > .event-scene-who-when {
+  flex: 1 1 100%;
+}
+
+.event-editor-modal-backdrop > .event-editor-modal-window.is-bubble .event-editor-pagebar > .evt-page-segments {
+  flex: 1 1 0;
+  flex-wrap: nowrap;
   gap: 4px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.event-editor-modal-backdrop > .event-editor-modal-window.is-bubble .event-editor-pagebar > .evt-page-segments > .btn.evt-page-segment {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+.event-editor-modal-backdrop > .event-editor-modal-window.is-bubble .event-editor-pagebar .pages-meta {
+  display: none;
 }
 
 .event-editor-modal-backdrop > .event-editor-modal-window.is-bubble .event-editor.is-beginner .event-editor-workbench {
-  flex: 1 1 auto;
+  display: flex;
+  flex: 0 1 auto;
+  flex-direction: column;
   min-height: 0;
 }
 
 .event-editor-modal-backdrop > .event-editor-modal-window.is-bubble .event-editor.is-beginner .event-editor-commands-column {
   display: flex;
+  flex: 0 1 auto;
   flex-direction: column;
   min-height: 0;
   overflow: hidden;
@@ -611,9 +685,14 @@
 }
 
 .event-editor-modal-backdrop > .event-editor-modal-window.is-bubble .event-editor.is-beginner .event-contents-fieldset {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
+  max-height: 290px;
   min-height: 0;
   overflow-y: auto;
+}
+
+.event-editor-modal-backdrop > .event-editor-modal-window.is-bubble .event-scene-add {
+  display: none;
 }
 
 .event-editor-modal-backdrop > .event-editor-modal-window.is-bubble .event-scene-cards {
@@ -726,25 +805,34 @@
   display: flex;
   flex: 0 0 auto;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 4px;
   margin-top: 6px;
-  padding: 8px 2px 6px;
+  padding: 7px 2px 4px;
 }
 
 .event-scene-quick-add-label {
   color: var(--text-3);
   font: 700 11px/1.2 var(--font-ui);
-  margin-right: 2px;
+  margin-right: 1px;
 }
 
 .event-scene-quick-add-chip {
+  align-items: center;
   background: var(--bg-raised);
   border: 1px dashed var(--border-strong);
   border-radius: 999px;
   color: var(--text-2);
   cursor: pointer;
+  display: inline-flex;
   font: 600 11px/1.2 var(--font-ui);
-  padding: 3px 9px;
+  gap: 2px;
+  padding: 3px 7px;
+  white-space: nowrap;
+}
+
+.event-scene-quick-add-chip.is-more {
+  border-style: solid;
+  color: var(--text-3);
 }
 
 .event-scene-quick-add-chip:hover {

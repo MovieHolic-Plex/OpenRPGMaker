@@ -3,6 +3,7 @@ import "@/styles/event/index.css";
 import { preloadRuntimeStyles } from "@/app/runtimeStyles";
 import { warmEditorPickerAssets } from "@/assets/editorAssetWarmup";
 import { editorState, editorStateNeedsEventEditorRefresh } from "@/editor/editorState";
+import { resolveRegionClientRect } from "@/editor/regionClientRect";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { requestEditorEventDeletion } from "@/editor/eventDeletion";
 import { eventDisplayName } from "@/editor/eventMarkerUx";
@@ -366,24 +367,82 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     windowEl.style.height = "";
     windowEl.style.position = "";
     windowEl.style.margin = "";
+    windowEl.style.removeProperty("--event-bubble-tail-top");
+    delete windowEl.dataset.tailSide;
   };
   const positionBubbleNearCanvas = (): void => {
     if (bubbleDragged || typeof window === "undefined") return;
+    if (!windowEl.classList.contains("is-bubble")) return;
     const canvas = document.querySelector<HTMLElement>('[data-testid="edit-canvas"]');
-    const bubbleW = Math.min(450, window.innerWidth - 24);
-    const bubbleH = Math.min(500, window.innerHeight - 90);
-    if (!canvas) {
+    const measuredRect = windowEl.getBoundingClientRect();
+    const bubbleW = Math.min(440, window.innerWidth - 24);
+    const maxBubbleH = Math.min(560, window.innerHeight - 88);
+    const bubbleH = measuredRect.height > 120 ? Math.min(Math.round(measuredRect.height), maxBubbleH) : Math.min(360, maxBubbleH);
+    const ev = store.getCurrent().maps[request.mapId]?.events.find((entry) => entry.id === request.eventId);
+    const canvasRect = canvas ? canvas.getBoundingClientRect() : null;
+    const tileRect = ev ? resolveRegionClientRect({ x: ev.x, y: ev.y, width: 1, height: 1 }) : null;
+    const tileVisible = Boolean(
+      tileRect
+      && canvasRect
+      && canvasRect.width >= 120
+      && canvasRect.height >= 120
+      && tileRect.x + tileRect.width > canvasRect.left
+      && tileRect.x < canvasRect.right
+      && tileRect.y + tileRect.height > canvasRect.top
+      && tileRect.y < canvasRect.bottom,
+    );
+    if (tileVisible && tileRect && canvasRect) {
+      const tileCenterY = tileRect.y + tileRect.height / 2;
+      const gap = 16;
+      const rightSpaceLeft = Math.round(tileRect.x + tileRect.width + gap);
+      const leftSpaceLeft = Math.round(tileRect.x - gap - bubbleW);
+      const rightLimit = Math.min(canvasRect.right - 8, window.innerWidth - 12);
+      const leftLimit = Math.max(canvasRect.left + 8, 12);
+      let left: number;
+      let tailSide: "left" | "right" | null = null;
+      if (rightSpaceLeft + bubbleW <= rightLimit) {
+        left = rightSpaceLeft;
+        tailSide = "left";
+      } else if (leftSpaceLeft >= leftLimit) {
+        left = leftSpaceLeft;
+        tailSide = "right";
+      } else if (rightSpaceLeft + bubbleW <= window.innerWidth - 12) {
+        left = rightSpaceLeft;
+        tailSide = "left";
+      } else if (leftSpaceLeft >= 12) {
+        left = leftSpaceLeft;
+        tailSide = "right";
+      } else {
+        left = Math.max(12, Math.min(rightSpaceLeft, window.innerWidth - bubbleW - 12));
+        tailSide = null;
+      }
+      const desiredTop = Math.round(tileCenterY - Math.min(bubbleH, 400) * 0.42);
+      const top = Math.max(56, Math.min(desiredTop, window.innerHeight - bubbleH - 16));
+      windowEl.style.position = "fixed";
+      windowEl.style.left = `${left}px`;
+      windowEl.style.top = `${top}px`;
+      windowEl.style.margin = "0";
+      if (tailSide) {
+        windowEl.classList.remove("is-bubble-detached");
+        windowEl.dataset.tailSide = tailSide;
+        const tailTop = Math.max(28, Math.min(bubbleH - 44, Math.round(tileCenterY - top - 8)));
+        windowEl.style.setProperty("--event-bubble-tail-top", `${tailTop}px`);
+      } else {
+        windowEl.classList.add("is-bubble-detached");
+        delete windowEl.dataset.tailSide;
+      }
+      return;
+    }
+    if (!canvasRect || canvasRect.width < 120 || canvasRect.height < 120) {
+      windowEl.classList.add("is-bubble-detached");
       resetWindowInlineGeometry();
       return;
     }
-    const rect = canvas.getBoundingClientRect();
-    if (rect.width < 120 || rect.height < 120) {
-      resetWindowInlineGeometry();
-      return;
-    }
-    // 캔버스 중앙 NPC 지점 바로 오른쪽에 말풍선을 띄워 뒤쪽 맵을 가리지 않는다.
-    const desiredLeft = Math.round(rect.left + rect.width * 0.44);
-    const desiredTop = Math.round(rect.top + Math.max(16, (rect.height - bubbleH) * 0.32));
+    // 이벤트 타일이 현재 뷰포트 밖에 있으면 가짜 꼬리를 숨기고 캔버스 중앙에 깔끔하게 띄운다.
+    windowEl.classList.add("is-bubble-detached");
+    delete windowEl.dataset.tailSide;
+    const desiredLeft = Math.round(canvasRect.left + Math.max(16, (canvasRect.width - bubbleW) / 2));
+    const desiredTop = Math.round(canvasRect.top + Math.max(16, (canvasRect.height - bubbleH) * 0.35));
     const left = Math.max(12, Math.min(desiredLeft, window.innerWidth - bubbleW - 12));
     const top = Math.max(56, Math.min(desiredTop, window.innerHeight - bubbleH - 16));
     windowEl.style.position = "fixed";
@@ -405,8 +464,13 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       bubbleDragged = false;
       windowEl.classList.remove("is-bubble-detached");
       resetWindowInlineGeometry();
-    } else if (isBubble && !wasBubble) {
+    } else if (isBubble) {
       positionBubbleNearCanvas();
+      if (typeof requestAnimationFrame === "function") {
+        requestAnimationFrame(() => {
+          if (!closed && !minimized) positionBubbleNearCanvas();
+        });
+      }
     }
     if (expandButton) {
       expandButton.hidden = !isScene;
@@ -849,7 +913,7 @@ function renderModalHeader(
         ],
       }),
       // 쉬움 보기는 이름 칸 대신 이름 글자만 보인다(목업 v2: 쉬움은 이벤트 이름 칸을 숨긴다).
-      el("span", { class: "event-editor-name-text", text: authoredName || borrowedName, attrs: { translate: "no" }, dataset: { testid: "event-editor-name-text" } }),
+      el("span", { class: "event-editor-name-text", text: authoredName || borrowedName || "새 이벤트", attrs: { translate: "no" }, dataset: { testid: "event-editor-name-text" } }),
       el("div", {
         class: "event-editor-header-save-state",
         attrs: { style: "display: none;" },
@@ -1113,6 +1177,8 @@ function refreshHeaderPageSegments(header: HTMLElement, request: OpenEventEditor
     if (nameInput.value !== authored) nameInput.value = authored;
     nameInput.title = authored || borrowed;
   }
+  const nameText = header.querySelector<HTMLElement>('[data-testid="event-editor-name-text"]');
+  if (nameText) nameText.textContent = authored || borrowed || "새 이벤트";
   const identity = header.querySelector<HTMLElement>('[data-testid="event-editor-identity"]');
   if (identity) {
     identity.hidden = Boolean(authored) || !borrowed;
