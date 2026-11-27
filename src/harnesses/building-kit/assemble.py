@@ -90,8 +90,11 @@ DEPTH_ROWS = (2, 6)
 RECEDING_MIN, RECEDING_MAX = 0.50, 0.85
 # 깊이 땅 문법(r7): 박공 정면 지붕을 짧게(오두막·날개 2행, 회관 3행), 날개 최소 4칸.
 DEPTH_GRAMMAR = 'r7'
+RPGMAKER_GRAMMAR = 'r10'
 GF_COLS_DEPTH = (4, 6)
 GF_DEPTH_ROWS_DEPTH = (2, 3)
+GF_DEPTH_ROWS_RPGMAKER = (1, 3)
+GF_BAND_RPGMAKER = (0.40, 0.75)
 EAVE_DROP = 2
 SHADOW_RGB, SHADOW_ALPHA = (12, 14, 20), 88
 RIDGE_STEP = 6.0
@@ -166,6 +169,14 @@ def is_depth_grammar(grammar):
     m = re.fullmatch(r'r(\d+)', str(grammar or ''))
     return bool(m) and int(m.group(1)) >= int(DEPTH_GRAMMAR[1:])
 
+def is_rpgmaker_grammar(grammar):
+    """grammar 가 쯔꾸르 정석 지붕 다양화 문법(r10 이상)이면 True — 짧은 앞박공(depth_rows 1)·2층 앞날개·평지붕 혼용."""
+    m = re.fullmatch(r'r(\d+)', str(grammar or ''))
+    return bool(m) and int(m.group(1)) >= int(RPGMAKER_GRAMMAR[1:])
+
+def rpgmaker_roof(theme, rid):
+    return is_rpgmaker_grammar(((dot.seed(theme).get('rounds') or {}).get(rid or '') or {}).get('grammar'))
+
 def depth_ground(theme, rid):
     """판이 깊이 땅 문법(grammar r7+)이면 True — 옛 판(r3~r6)은 A10(한 땅 행)을 그대로 둔다(영수증의 조립 해시가 바뀌지 않게)."""
     return is_depth_grammar(((dot.seed(theme).get('rounds') or {}).get(rid or '') or {}).get('grammar'))
@@ -183,6 +194,8 @@ def round_buildings(theme, rid=None):
         out = [dict(b, _requireGableFront=True) for b in out]
     if depth_ground(theme, rid):
         out = [dict(b, _depthGround=True) for b in out]
+    if rpgmaker_roof(theme, rid):
+        out = [dict(b, _rpgmakerRoof=True) for b in out]
     return out
 
 
@@ -284,16 +297,17 @@ def _receding_roof(m, items):
             'back_h': back_pc['size'][1], 'front_h': front_pc['size'][1], 'body_h': max(body_h),
             'body_hs': body_h}, None
 
-def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=None):
+def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=None, rpgmaker_roof=None):
     """items = {항목 id: {'item': 시드 항목, 'img': PIL}}. 반환 {img, kit, checks, pieces, door, height, width, masses}.
 
-    require_gable_front·depth_ground 가 None 이면 레시피의 `_requireGableFront`·`_depthGround`(round_buildings 가 판
-    플래그로 붙인다)를 따른다."""
+    require_gable_front·depth_ground·rpgmaker_roof 가 None 이면 레시피의 판 플래그를 따른다."""
     checks = []
     if require_gable_front is None:
         require_gable_front = bool(recipe.get('_requireGableFront'))
     if depth_ground is None:
         depth_ground = bool(recipe.get('_depthGround'))
+    if rpgmaker_roof is None:
+        rpgmaker_roof = bool(recipe.get('_rpgmakerRoof'))
     lift = (lambda p: p['depth']) if depth_ground else (lambda p: 0)
     missing = sorted(needed(recipe) - set(items))
     if missing:
@@ -550,7 +564,7 @@ def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=N
     for plan in plans:
         tag = plan['m']['id']
         if plan['kind'] in RECEDING:
-            bad3 += _a3_receding(plan, depth_ground)
+            bad3 += _a3_receding(plan, depth_ground, rpgmaker_roof)
             continue
         if roof_kind(plan['roof_item']) == 'spire':
             if plan['cols'] not in (1, 2):
@@ -595,9 +609,10 @@ def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=N
         ratio = plan['rh'] / max(plan['h'], 1)
         kind = plan['roof_kind']
         if kind == GABLE_FRONT and depth_ground:
-            lo, hi = gable_front_band()
+            lo, hi = GF_BAND_RPGMAKER if rpgmaker_roof else gable_front_band()
             ok = lo - 1e-9 <= ratio <= hi + 1e-9
-            span = f'{lo:.2f}~{hi:.2f} (박공 정면 — 투영 안내도 오두막·날개·회관 비율 실측, 짧은 지붕)'
+            span = (f'{lo:.2f}~{hi:.2f} (쯔꾸르 정석 박공 — 짧은 사면·2층 벽 허용)' if rpgmaker_roof
+                    else f'{lo:.2f}~{hi:.2f} (박공 정면 — 투영 안내도 오두막·날개·회관 비율 실측, 짧은 지붕)')
         elif kind in RECEDING:
             ok = RECEDING_MIN <= ratio <= RECEDING_MAX
             span = (f'{RECEDING_MIN:.2f}~{RECEDING_MAX:.2f} ({kind} — 물러나는 지붕이 실루엣의 대부분, '
@@ -1082,18 +1097,20 @@ def _a11(plans, pal):
               '탑 지붕은 탑 몸통 + 좌우 2px 이내이고 주 지붕과 같은 램프' if not bad else '; '.join(bad))
 
 
-def receding_limits(kind, depth_ground=False):
-    """(폭 범위, depth_rows 범위). 깊이 땅 문법의 박공 정면은 폭 4~6·depth_rows 2~3(짧은 지붕, 넓은 날개)."""
+def receding_limits(kind, depth_ground=False, rpgmaker_roof=False):
+    """(폭 범위, depth_rows 범위). 깊이 땅 문법의 박공 정면은 폭 4~6·depth_rows 2~3(r10 은 1~3)."""
     if kind == GABLE_FRONT:
+        if rpgmaker_roof:
+            return GF_COLS_DEPTH, GF_DEPTH_ROWS_RPGMAKER
         return (GF_COLS_DEPTH, GF_DEPTH_ROWS_DEPTH) if depth_ground else (GF_COLS, DEPTH_ROWS)
     return LEAN_COLS, DEPTH_ROWS
 
 
-def _a3_receding(plan, depth_ground=False):
+def _a3_receding(plan, depth_ground=False, rpgmaker_roof=False):
     m = plan['m']
     tag = m['id']
     bad = []
-    (lo, hi), (d0, d1) = receding_limits(plan['kind'], depth_ground)
+    (lo, hi), (d0, d1) = receding_limits(plan['kind'], depth_ground, rpgmaker_roof)
     if not lo <= plan['cols'] <= hi:
         bad.append(f'{tag} {plan["kind"]} 폭 {plan["cols"]}칸 — {lo}~{hi}칸')
     if not d0 <= m['depth_rows'] <= d1:

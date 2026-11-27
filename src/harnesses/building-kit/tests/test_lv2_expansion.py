@@ -71,6 +71,22 @@ class Lv2WallExtrasAndStyleR9Test(unittest.TestCase):
         errs = H._gable_front_round(s, {it['id']: it for it in s['items']}, R9)
         self.assertTrue(any('on: "roof" 또는 "wall"' in e for e in errs), errs)
 
+    def test_style_r10_rpgmaker_roof_families_gate_and_assemble_cleanly(self):
+        mod10, rend10 = H.render_round(THEME, 'style-r10')
+        res = H.run_gate(THEME, 'style-r10', rend10)
+        fails, warns = H.gate_summary(res)
+        self.assertEqual(fails, [], f'style-r10 gate FAIL: {fails}')
+        self.assertEqual(warns, [], f'style-r10 gate WARN: {warns}')
+        recipes10 = {b['id']: b for b in AS.round_buildings(THEME, 'style-r10')}
+        self.assertGreaterEqual(len(recipes10), 10)
+        for ln in ('A', 'B', 'C'):
+            parts10 = H.parts_for(THEME, 'style-r10', ln, rend10)
+            for bid, rec in recipes10.items():
+                with self.subTest(line=ln, building=bid):
+                    out = AS.assemble(rec, parts10, PAL, THEME)
+                    self.assertIsNotNone(out['img'], out['checks'])
+                    self.assertEqual(AS.run_checks(out), [], f'{ln}.{bid}: {AS.run_checks(out)}')
+
 
 if __name__ == '__main__':
     unittest.main()

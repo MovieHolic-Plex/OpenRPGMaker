@@ -2548,6 +2548,291 @@
     }
    ],
    "joins": []
+  },
+  {
+   "id": "roof.flat",
+   "wave": "roof",
+   "kind": "set",
+   "title": "평지붕·옥상 난간 세트(2행, end 1)",
+   "size": [
+    3,
+    2
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감",
+   "brief": "FSM 상점가·항구 빌라식 2행 평지붕 + 테두리 석조/벽돌 난간(파라펫). 윗면(옥상 바닥)이 밝고 앞 난간 처마가 어둡다. 1층 상점과 2층 옥상 테라스 여관에 쓴다.",
+   "accept": [
+    "평평한 옥상 면과 테두리 난간으로 읽힌다",
+    "가운데 반복 이음이 자연스럽다",
+    "윗면이 앞 처마보다 밝다"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝(난간)",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "roof",
+     "qMin": 0.85,
+     "qTopRow": true
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(옥상 반복)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "roof",
+     "tileable": "x"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝(난간)",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "roof",
+     "qMin": 0.85,
+     "qTopRow": true
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "r",
+     "x"
+    ]
+   ],
+   "end": 1
+  },
+  {
+   "id": "roof.hip.green",
+   "wave": "roof",
+   "kind": "set",
+   "title": "초록/청록 기와 모임지붕 세트(2층 3행)",
+   "size": [
+    5,
+    3
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감",
+   "brief": "RMXP·FSM 타운의 초록/청록 기와 지붕 색 변주(grass·slate·iron 잠금 팔레트). 붉은 기와·청석 지붕 옆에 놓아 마을 지붕 색 리듬을 만든다.",
+   "accept": [
+    "초록/청록 기와 질감과 모임 사선이 분명하다",
+    "버들항 잠금 팔레트 안의 색만 쓴다"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝(모임 사선)",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      3
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      3
+     ],
+     "kind": "roof",
+     "tileable": "x"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝(모임 사선)",
+     "at": [
+      3,
+      0
+     ],
+     "size": [
+      2,
+      3
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "r",
+     "x"
+    ]
+   ],
+   "end": 2
+  },
+  {
+   "id": "extra.gable_dormer",
+   "wave": "extra",
+   "kind": "set",
+   "title": "큰 삼각 박공 지붕창 도머(지붕 부착 2×2)",
+   "size": [
+    2,
+    2
+   ],
+   "layer": "upper",
+   "walk": "★",
+   "brief": "FSM 마을·RM2000식 2칸 폭(32×32px) 굵은 삼각 박공 도머. 가로 지붕 사면 위에 얹어 단조로운 수평 지붕선을 깬다. 위 삼각 지붕 윗면(top [0,1]) + 아래 삼각 박공벽·다락 창.",
+   "accept": [
+    "넓은 삼각 박공 지붕과 다락 창으로 읽힌다",
+    "지붕 사면 위에 자연스럽게 앉는다"
+   ],
+   "pieces": [
+    {
+     "id": "c",
+     "role": "c",
+     "title": "큰 삼각 도머",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "kind": "extra",
+     "top": [
+      0,
+      1
+     ]
+    }
+   ],
+   "joins": []
+  },
+  {
+   "id": "extra.porch_roof",
+   "wave": "extra",
+   "kind": "set",
+   "title": "나무 현관·층간 띠지붕(벽 부착 2×1)",
+   "size": [
+    2,
+    1
+   ],
+   "layer": "upper",
+   "walk": "★",
+   "brief": "FSM 현관 덧지붕 및 RM2000 1·2층 사이 띠지붕(32×16px, on: wall). 경사진 나무 널/기와 소지붕 + 아래 처마 그늘 + 양옆 나무 기둥.",
+   "accept": [
+    "1층 입구나 층 사이에 튀어나온 덧지붕으로 읽힌다",
+    "반복 배치해도 자연스럽게 이어진다"
+   ],
+   "pieces": [
+    {
+     "id": "c",
+     "role": "c",
+     "title": "현관 덧지붕",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      1
+     ],
+     "kind": "extra"
+    }
+   ],
+   "joins": []
+  },
+  {
+   "id": "extra.terrace",
+   "wave": "extra",
+   "kind": "set",
+   "title": "옥상 화분·테라스 난간(지붕 부착 3×1)",
+   "size": [
+    3,
+    1
+   ],
+   "layer": "upper",
+   "walk": "★",
+   "brief": "FSM 2층 개방 옥상 테라스식 화분 줄 + 목재/철제 난간(48×16px, on: roof). 평지붕(roof.flat) 위에 얹어 옥상 정원·테라스 여관을 만든다.",
+   "accept": [
+    "평지붕 위 화분과 난간으로 읽힌다",
+    "지붕 면 위에 떠 보이지 않는다"
+   ],
+   "pieces": [
+    {
+     "id": "c",
+     "role": "c",
+     "title": "옥상 테라스",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      3,
+      1
+     ],
+     "kind": "extra"
+    }
+   ],
+   "joins": []
   }
  ],
  "buildings": [
@@ -3864,6 +4149,639 @@
     }
    ],
    "note": "Lv.2 풀세트 — 아치 회랑 + 쇼윈도 + 어닝 + 발코니 + 지붕창 + 간판 + 굴뚝"
+  },
+  {
+   "id": "fsm_dormer_house.r10",
+   "title": "FSM 가로지붕 + 큰 도머 + 현관 처마집",
+   "use": "home",
+   "masses": [
+    {
+     "id": "main",
+     "kind": "ridge_side",
+     "cols": 7,
+     "storeys": 2,
+     "x": 0,
+     "depth": 0,
+     "roof": "roof.hip",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.stone",
+       "letters": "L W W M W W R"
+      },
+      {
+       "item": "wall.shop",
+       "letters": "L W M D M W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.gable_dormer",
+       "at": [
+        2,
+        0
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.chimney",
+       "at": [
+        5,
+        -1
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.porch_roof",
+       "on": "wall",
+       "storey": -1,
+       "col": 1,
+       "dy": -1
+      },
+      {
+       "part": "extra.porch_roof",
+       "on": "wall",
+       "storey": -1,
+       "col": 3,
+       "dy": -1
+      },
+      {
+       "part": "extra.porch_roof",
+       "on": "wall",
+       "storey": -1,
+       "col": 5,
+       "dy": -1
+      }
+     ]
+    }
+   ],
+   "note": "FSM 4번 좌측 스타일 — 순수 가로 모임지붕 + 큰 삼각 도머 + 1·2층 사이 전폭 나무 덧지붕"
+  },
+  {
+   "id": "fsm_green_inn.r10",
+   "title": "초록 기와 가로 여관 + 쌍도머",
+   "use": "inn",
+   "masses": [
+    {
+     "id": "main",
+     "kind": "ridge_side",
+     "cols": 8,
+     "storeys": 2,
+     "x": 0,
+     "depth": 0,
+     "roof": "roof.hip.green",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W W M M W W R"
+      },
+      {
+       "item": "wall.stone",
+       "letters": "L W D M W W M R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.gable_dormer",
+       "at": [
+        1,
+        0
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.gable_dormer",
+       "at": [
+        5,
+        0
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.chimney",
+       "at": [
+        3,
+        -1
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.porch_roof",
+       "on": "wall",
+       "storey": -1,
+       "col": 1,
+       "dy": -1
+      },
+      {
+       "part": "extra.sign",
+       "on": "wall",
+       "storey": -1,
+       "col": 3,
+       "dy": 0
+      }
+     ]
+    }
+   ],
+   "note": "FSM 3번 우측 + RMXP 초록 지붕 — 순수 가로 초록 기와 + 큰 도머×2 + 현관 나무 덧지붕"
+  },
+  {
+   "id": "fsm_t_inn_2f.r10",
+   "title": "FSM 2층 앞날개 T자 여관",
+   "use": "inn",
+   "masses": [
+    {
+     "id": "main",
+     "kind": "ridge_side",
+     "cols": 10,
+     "storeys": 2,
+     "x": 0,
+     "depth": 1,
+     "roof": "roof.hip.tall",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W M M M M M M W R"
+      },
+      {
+       "item": "wall.stone",
+       "letters": "L W M M M M M M W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.gable_dormer",
+       "at": [
+        1,
+        1
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.gable_dormer",
+       "at": [
+        7,
+        1
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.chimney",
+       "at": [
+        6,
+        -1
+       ],
+       "on": "roof"
+      }
+     ]
+    },
+    {
+     "id": "wing",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 1,
+     "storeys": 2,
+     "x": 3,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.valley",
+     "back_end": "valley",
+     "walls": [
+      {
+       "item": "wall.shop",
+       "letters": "L W W R"
+      },
+      {
+       "item": "wall.shop",
+       "letters": "L D W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.sign",
+       "on": "wall",
+       "storey": -1,
+       "col": 0,
+       "dy": 0
+      }
+     ]
+    }
+   ],
+   "note": "FSM 3번 중앙 여관 — 2층 높이 앞박공 날개(dr=1) + 4행 본채 지붕 + 양옆 큰 도머×2"
+  },
+  {
+   "id": "rmxp_short_gable.r10",
+   "title": "RMXP 짧은 박공 2층 타운하우스",
+   "use": "home",
+   "masses": [
+    {
+     "id": "house",
+     "kind": "gable_front",
+     "cols": 5,
+     "depth_rows": 1,
+     "storeys": 2,
+     "x": 0,
+     "depth": 0,
+     "gable": "gable.step",
+     "roof": "roof.gf.slope",
+     "back": "gable.step",
+     "back_end": "gable",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W W W R"
+      },
+      {
+       "item": "wall.stone",
+       "letters": "L W D W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        3,
+        0
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.balcony",
+       "on": "wall",
+       "storey": 0,
+       "col": 1,
+       "dy": 1
+      }
+     ]
+    }
+   ],
+   "note": "RMXP 2번 스타일 — 짧은 사면(dr=1) + 시원한 2층 벽 + 발코니 (지붕 비율 50%)"
+  },
+  {
+   "id": "rmxp_row_duplex.r10",
+   "title": "RMXP 단차 연립 상가",
+   "use": "home",
+   "masses": [
+    {
+     "id": "house",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 1,
+     "storeys": 2,
+     "x": 0,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.back",
+     "back_end": "gable",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W W R"
+      },
+      {
+       "item": "wall.shop",
+       "letters": "L W D R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.porch_roof",
+       "on": "wall",
+       "storey": -1,
+       "col": 1,
+       "dy": -1
+      }
+     ]
+    },
+    {
+     "id": "shop",
+     "kind": "lean_to",
+     "cols": 2,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 4,
+     "depth": 0,
+     "low": "right",
+     "roof": "roof.lean.side",
+     "walls": [
+      {
+       "item": "wall.shop",
+       "letters": "W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.awning",
+       "on": "wall",
+       "storey": 0,
+       "col": 0,
+       "dy": 0
+      }
+     ]
+    }
+   ],
+   "note": "RMXP 연립 리듬 — 짧은 2층 앞박공(dr=1) + 옆 1층 외쪽 어닝 상점"
+  },
+  {
+   "id": "fsm_flat_shop.r10",
+   "title": "FSM 평지붕 어닝 상점",
+   "use": "home",
+   "masses": [
+    {
+     "id": "shop",
+     "kind": "ridge_side",
+     "cols": 6,
+     "storeys": 1,
+     "x": 0,
+     "depth": 0,
+     "roof": "roof.flat",
+     "walls": [
+      {
+       "item": "wall.shop",
+       "letters": "L W W D W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.awning",
+       "on": "wall",
+       "storey": 0,
+       "col": 1,
+       "dy": 0
+      },
+      {
+       "part": "extra.awning",
+       "on": "wall",
+       "storey": 0,
+       "col": 3,
+       "dy": 0
+      },
+      {
+       "part": "extra.sign",
+       "on": "wall",
+       "storey": 0,
+       "col": 5,
+       "dy": 0
+      }
+     ]
+    }
+   ],
+   "note": "FSM 5번 좌측 — 평지붕 난간 단층 상점 + 2연 어닝 + 간판"
+  },
+  {
+   "id": "fsm_terrace_inn.r10",
+   "title": "FSM 평지붕 화분 테라스 여관",
+   "use": "inn",
+   "masses": [
+    {
+     "id": "inn",
+     "kind": "ridge_side",
+     "cols": 8,
+     "storeys": 2,
+     "x": 0,
+     "depth": 0,
+     "roof": "roof.flat",
+     "walls": [
+      {
+       "item": "wall.shop",
+       "letters": "L W W M M W W R"
+      },
+      {
+       "item": "wall.arcade",
+       "letters": "L W M D M W W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.terrace",
+       "at": [
+        1,
+        0
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.terrace",
+       "at": [
+        4,
+        0
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.porch_roof",
+       "on": "wall",
+       "storey": -1,
+       "col": 2,
+       "dy": 0
+      },
+      {
+       "part": "extra.sign",
+       "on": "wall",
+       "storey": -1,
+       "col": 5,
+       "dy": 0
+      }
+     ]
+    }
+   ],
+   "note": "FSM 5번 우측 — 평지붕 옥상 화분 테라스 + 1층 아치 회랑 + 현관 덧지붕"
+  },
+  {
+   "id": "rm2k_banded_manor.r10",
+   "title": "RM2000 띠지붕 쌍도머 저택",
+   "use": "guild",
+   "masses": [
+    {
+     "id": "manor",
+     "kind": "ridge_side",
+     "cols": 10,
+     "storeys": 2,
+     "x": 0,
+     "depth": 0,
+     "roof": "roof.hip",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W W M W W M W W R"
+      },
+      {
+       "item": "wall.arcade",
+       "letters": "L W W M D M M W W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.gable_dormer",
+       "at": [
+        1,
+        0
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.gable_dormer",
+       "at": [
+        7,
+        0
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.chimney",
+       "at": [
+        4,
+        -1
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.porch_roof",
+       "on": "wall",
+       "storey": -1,
+       "col": 1,
+       "dy": -1
+      },
+      {
+       "part": "extra.porch_roof",
+       "on": "wall",
+       "storey": -1,
+       "col": 4,
+       "dy": -1
+      },
+      {
+       "part": "extra.porch_roof",
+       "on": "wall",
+       "storey": -1,
+       "col": 7,
+       "dy": -1
+      }
+     ]
+    }
+   ],
+   "note": "RM2000 1번 우상단 — 1·2층 사이 띠지붕 + 양끝 큰 삼각 도머 + 1층 아치 회랑"
+  },
+  {
+   "id": "beodeul_cafe.r10",
+   "title": "버들항식 순수 모임 어닝 카페",
+   "use": "home",
+   "masses": [
+    {
+     "id": "cafe",
+     "kind": "ridge_side",
+     "cols": 6,
+     "storeys": 1,
+     "x": 0,
+     "depth": 0,
+     "roof": "roof.hip.low",
+     "walls": [
+      {
+       "item": "wall.shop",
+       "letters": "L W D W W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        4,
+        -1
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.awning",
+       "on": "wall",
+       "storey": 0,
+       "col": 1,
+       "dy": 0
+      },
+      {
+       "part": "extra.awning",
+       "on": "wall",
+       "storey": 0,
+       "col": 3,
+       "dy": 0
+      },
+      {
+       "part": "extra.sign",
+       "on": "wall",
+       "storey": 0,
+       "col": 5,
+       "dy": 0
+      }
+     ]
+    }
+   ],
+   "note": "버들항 포룸 카페 스타일 — 2행 낮은 모임지붕 + 전폭 줄무늬 어닝 + 간판"
+  },
+  {
+   "id": "thatch_farm_shed.r10",
+   "title": "초가 가로 농가 + 옆 외쪽 헛간",
+   "use": "home",
+   "masses": [
+    {
+     "id": "farm",
+     "kind": "ridge_side",
+     "cols": 6,
+     "storeys": 2,
+     "x": 0,
+     "depth": 0,
+     "roof": "roof.thatch",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W M M W R"
+      },
+      {
+       "item": "wall.stone",
+       "letters": "L W D M W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        1,
+        -1
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.porch_roof",
+       "on": "wall",
+       "storey": -1,
+       "col": 2,
+       "dy": -1
+      }
+     ]
+    },
+    {
+     "id": "shed",
+     "kind": "lean_to",
+     "cols": 2,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 6,
+     "depth": 0,
+     "low": "right",
+     "roof": "roof.lean.side",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "M R"
+      }
+     ]
+    }
+   ],
+   "note": "버들항 살림집(h101_0) 스타일 — 초가 가로 지붕 + 오른쪽 낮은 외쪽 헛간 + 현관 덧지붕"
   }
  ],
  "rounds": {
@@ -4070,6 +4988,61 @@
    "light": "빛은 왼쪽 위 — 왼쪽 사면이 밝은 단, 오른쪽 사면이 어두운 단(조립 A12 가 사면 띠의 평균 밝기를 재서 왼쪽이 8 이상 밝아야 통과). 용마루는 가운데 2px 의 곧은 세로선으로, 모든 행에서 양옆 사면과 밝기가 6 이상 다르다(보통 가장 밝은 단 한 줄 + 그늘 쪽 어두운 단).",
    "compare": "끝내기 전에 preview/compare.png 를 refs/ 의 버들항 기준 건물과, refs/projection-gable-front-4x.png · refs/projection-wing-depth-4x.png 투영 안내도(회색 도형 — 깊이 계단·마당 띠·그림자 구조 안내, 화풍 기준 아님)와 나란히 견준다.",
    "lead": "Lv.1(레시피 다양화: 쌍박공·ㄷ자 안마당·2층 운하주택·양옆 외쪽 대장간·ㄱ자 저택) + Lv.2(벽 부착 extras on:wall + 아치 회랑·쇼윈도·초가/유리 지붕·어닝·발코니·지붕창·간판) 확장판."
+  },
+  "style-r10": {
+   "wave": "style",
+   "title": "판 10 (쯔꾸르 정석 지붕 개편) — RM2000·RMXP·FSM 5대 지붕 패밀리 10종 + 마을 배치",
+   "module": "src/harnesses/building-kit/rounds/fantasy-kingdom/style_r10.py",
+   "keys": "letter",
+   "items": [
+    "band.trim",
+    "extra.awning",
+    "extra.balcony",
+    "extra.chimney",
+    "extra.dormer",
+    "extra.gable_dormer",
+    "extra.porch_roof",
+    "extra.sign",
+    "extra.terrace",
+    "gable.front",
+    "gable.step",
+    "roof.flat",
+    "roof.gf.back",
+    "roof.gf.slope",
+    "roof.gf.valley",
+    "roof.glass",
+    "roof.hip",
+    "roof.hip.green",
+    "roof.hip.low",
+    "roof.hip.tall",
+    "roof.lean.left",
+    "roof.lean.side",
+    "roof.thatch",
+    "wall.arcade",
+    "wall.shop",
+    "wall.stone",
+    "wall.timber"
+   ],
+   "buildings": [
+    "fsm_dormer_house.r10",
+    "fsm_green_inn.r10",
+    "fsm_t_inn_2f.r10",
+    "rmxp_short_gable.r10",
+    "rmxp_row_duplex.r10",
+    "fsm_flat_shop.r10",
+    "fsm_terrace_inn.r10",
+    "rm2k_banded_manor.r10",
+    "beodeul_cafe.r10",
+    "thatch_farm_shed.r10"
+   ],
+   "grammar": "r10",
+   "requireGableFront": false,
+   "reuseParts": "style-r9",
+   "projection": "박공 정면(gable-front) 투영 — 사용자 판정 2026-10-22: 「집이 이 각도로 보여야 한다 — 지금은 전혀 아니다」. style-r1~r4 의 '정면과 나란한 용마루 지붕 + 평평한 정면 입면'은 반려됐다. ① 박공 끝(삼각 벽, 계단 박공이면 크로스텝)이 남쪽(보는 쪽)을 본다 — 앞 박공 삼각형은 질량 아래 벽 띠 바로 위에 선다. ② 용마루는 북쪽으로 물러난다 — 화면에서는 앞 박공 꼭대기에서 위로 뒤 꼭대기까지 곧은 세로선(질량 가운데 2px)이다. ③ 용마루 왼쪽·오른쪽에 두 사면이 세로로 긴 면으로 보인다(사면 길이 = depth_rows = 지붕이 물러나는 깊이). ④ 뒤 끝은 맨 위의 ^ 모양 — 가운데 용마루 끝이 가장 높고 양 처마 쪽으로 내려간다. 다른 지붕에 박히면 그 ^ 선이 골(valley)이다. ⑤ 높은 3/4 카메라: 지붕이 실루엣의 대부분(질량 높이의 50~85%)이고 벽은 질량 아래 띠다. 옆벽은 처마에 가려 거의 안 보인다. ⑥ 조합: L·T 평면 — 정면과 나란한 용마루의 본채 앞에 박공 정면 날개, 지붕이 만나는 골, 작은 박공 현관, 지붕에서 솟는 굴뚝, 옆의 외쪽(한쪽 경사) 지붕.",
+   "depth": "깊이 땅 문법(사용자 반려 2026-10-22 「ㅜ자 집 — 공간감이 전혀 없다」): depth d 인 질량의 벽 바닥은 앞 땅 행보다 정확히 d 칸 위에 선다. 앞으로 튀어나온 날개 = depth 0, 본채 = depth 1. 날개 이음(사용자 판정 2026-10-22 「ㅜ자 집이 한 채로 안 보인다 — 날개와 본채 사이에 풀이 보이고 날개 뒤 박공이 본채 벽 앞에서 끝난다」, 승인안 http://mdc-server:18301/bk-thouse-joined.html): 날개 뒤 끝이 본채 앞벽이다 — 본채 depth = 날개 depth + 1, 날개 지붕은 본채 처마보다 올라가 본채 지붕 속 V자 골(roof.gf.valley v<폭>, back_end valley)에서 만난다. 위에서 보면 한 윤곽, 날개와 본채 사이에 땅이 없다(A16). 날개 옆 본채 벽 밑 한 줄만 투명(지도 바닥). 조립이 앞 질량 오른쪽·처마 아래 그림자(12,14,20,α88)를 뒤 질량 벽에만 얹는다. 문은 가장 앞 질량, 문 앞 칸은 땅.",
+   "light": "빛은 왼쪽 위 — 왼쪽 사면이 밝은 단, 오른쪽 사면이 어두운 단(조립 A12 가 사면 띠의 평균 밝기를 재서 왼쪽이 8 이상 밝아야 통과). 용마루는 가운데 2px 의 곧은 세로선으로, 모든 행에서 양옆 사면과 밝기가 6 이상 다르다(보통 가장 밝은 단 한 줄 + 그늘 쪽 어두운 단).",
+   "compare": "끝내기 전에 preview/compare.png 를 refs/ 의 버들항 기준 건물과, refs/projection-gable-front-4x.png · refs/projection-wing-depth-4x.png 투영 안내도(회색 도형 — 깊이 계단·마당 띠·그림자 구조 안내, 화풍 기준 아님)와 나란히 견준다.",
+   "lead": "RM2000·RMXP·FSM(REFMAP)·버들항 정석 지붕 개편판 — A15 강제 박공 해제, 짧은 앞박공(depth_rows 1)·2층 앞날개 T자·순수 가로+큰 도머·평지붕 테라스·초록 기와·층간 띠지붕 혼용."
   }
  },
  "plan": {

@@ -613,9 +613,13 @@ def _r4_grammar(s, items, rid):
             if not it or it.get('spire') or m['kind'] != AS.RIDGE_SIDE:
                 continue
             rows = it['pieces'][0]['size'][1]
-            want = 2 if int(m['storeys']) == 1 else 3
-            if rows != want:
-                errs.append(f'판 {rid} {bid}/{m["id"]}: {m["storeys"]}층 지붕 {rows}행 — {want}행이어야 한다')
+            if AS.is_rpgmaker_grammar(s['rounds'][rid].get('grammar')):
+                if rows not in (2, 3, 4):
+                    errs.append(f'판 {rid} {bid}/{m["id"]}: 지붕 {rows}행 — 2~4행이어야 한다')
+            else:
+                want = 2 if int(m['storeys']) == 1 else 3
+                if rows != want:
+                    errs.append(f'판 {rid} {bid}/{m["id"]}: {m["storeys"]}층 지붕 {rows}행 — {want}행이어야 한다')
             if int(it.get('end', AS.ROOF_END)) == AS.ROOF_END and int(m['cols']) < 5:
                 errs.append(f'판 {rid} {bid}/{m["id"]}: 모임지붕 몸통 {m["cols"]}칸 — 용마루가 남으려면 5칸 이상')
         spires = [m for m in ms if (items.get(m['roof']) or {}).get('spire')]
@@ -654,9 +658,10 @@ def _depth_round(s, items, rid):
             errs.append(f'{tag}: 조각 계약 오류 {e}')
             continue
         errs += [f'{tag}: {why}' for why in AS.mass_problems(ms, rows)]
+        rpgmaker = AS.is_rpgmaker_grammar(s['rounds'][rid].get('grammar'))
         for m in ms:
             if m['kind'] in AS.RECEDING:
-                (c0, c1), (d0, d1) = AS.receding_limits(m['kind'], True)
+                (c0, c1), (d0, d1) = AS.receding_limits(m['kind'], True, rpgmaker)
                 if not c0 <= m['cols'] <= c1:
                     errs.append(f'{tag}/{m["id"]}: {m["kind"]} 폭 {m["cols"]}칸 — 깊이 땅 문법은 {c0}~{c1}칸')
                 if not d0 <= int(m.get('depth_rows') or 0) <= d1:
@@ -688,7 +693,7 @@ def _receding_problems(tag, m, items):
     lo, hi = AS.GF_COLS if kind == AS.GABLE_FRONT else AS.LEAN_COLS
     if not lo <= int(m['cols']) <= hi:
         errs.append(f'{tag}: {kind} 폭 {m["cols"]}칸 — {lo}~{hi}칸')
-    d0, d1 = AS.DEPTH_ROWS
+    d0, d1 = (1, AS.DEPTH_ROWS[1]) if kind == AS.GABLE_FRONT else AS.DEPTH_ROWS
     if not d0 <= int(m.get('depth_rows') or 0) <= d1:
         errs.append(f'{tag}: depth_rows {m.get("depth_rows")} — {d0}~{d1}')
     slope = items.get(m.get('roof')) or {}
