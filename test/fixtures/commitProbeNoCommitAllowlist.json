@@ -18,7 +18,6 @@
    "shop :: shop-item-search": "진열 목록 검색(commandBodyCommerce.ts:1110-1114). input(디바운스, 1124)·change(1128) 모두 applySearch → rebuild() 로 끝난다. restoreGoodsView(1213-1227)가 재빌드 후 두 필터에 change 를 일부러 다시 쏘는 것이 이 둘이 뷰 상태라는 증거다.",
    "shop :: shop-transaction-branch-row>select#0": "거래 성공 분기에 '무엇을 추가할지' 고르는 종류 select(commandBodyCommerce.ts:832, 렌더 873). 리스너가 없고 값은 shop-add-transaction-branch-command 버튼(840-843)만 읽는다.",
    "shop :: shop-failed-branch-row>select#0": "거래 실패 분기의 같은 구조(commandBodyCommerce.ts:849, 렌더 882, 소비 855-858).",
-   "inn :: inn-not-enough-branch-controls>select#0": "숙박비 부족 분기의 같은 구조(commandBodyCommerce.ts:529, 렌더 558, 소비 535-538).",
    "moveEvent": "hop 초안 파라미터 4종(dx/dy/height/duration). 이동 경로 «점프» 단계를 추가할 때 쓰는 값으로, 리스너는 persistParameters 로 모듈 스코프 routeParameterDrafts 에만 쓰고 context.actions 를 부르지 않는다. 값은 Add 버튼의 item.createCommand(parameterContext()) 가 소비한다 — move-route-switch-id-input 계열과 같은 구조.",
    "moveEvent :: move-route-npc-target-map-input": "위 초안 파라미터와 **같은 루프**에 있다(commandBodyRoute.ts:272-287 이 switchId/graphic/sound/npcTargetMap/npcTargetX/Y/direction/hop 4종을 한 번에 persistParameters 에 묶는다). 그동안 이 목록에 없었던 이유는 배선이 달라서가 아니라 **프로브가 이 컨트롤을 조작할 수 없었기** 때문이다 — 캡처 프로젝트에 맵이 1개뿐이라 옵션이 하나(allowEmpty: false)여서 single-option 으로 건너뛰어졌다. 캡처 프로젝트가 프로브용 두 번째 맵을 심은 뒤부터 조작이 성립해 형제들과 같은 결과가 관측된다(2026-09-09).",
    "moveEvent :: move-route-stage-target-input": "다가가기·쪽으로 향함의 대상 초안(commandBodyRoute.ts:167-171). 같은 persistParameters 루프(321-322)에 묶여 routeParameterDrafts 에만 쓰고 context.actions 를 부르지 않는다. 값은 Add 버튼의 item.createCommand(parameterContext()) 가 소비한다 — hop·npcTargetMap 형제와 같은 구조.",
@@ -45,9 +44,6 @@
   ],
   "changeFace": [
    "event-command-face-ai-prompt"
-  ],
-  "inn": [
-   "inn-not-enough-branch-controls>select#0"
   ],
   "inputNumber": [
    "input-number-digits"

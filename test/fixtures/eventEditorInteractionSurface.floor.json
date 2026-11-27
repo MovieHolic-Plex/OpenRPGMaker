@@ -390,10 +390,10 @@
   "initialTestidCount": 27
  },
  "inn": {
-  "probeCount": 9,
-  "reactingCount": 4,
-  "classCount": 32,
-  "initialTestidCount": 24
+  "probeCount": 12,
+  "reactingCount": 7,
+  "classCount": 29,
+  "initialTestidCount": 29
  },
  "checkpointSave": {
   "probeCount": 1,
