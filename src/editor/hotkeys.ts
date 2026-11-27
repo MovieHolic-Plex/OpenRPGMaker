@@ -82,6 +82,7 @@ export function shouldIgnoreEditorShortcut(event: KeyboardEvent): boolean {
     if (document.querySelector("[data-testid='database-modal']:not(.is-docked)")) return true;
     if (document.querySelector("[data-testid='resource-modal']")) return true;
     if (document.querySelector("[data-testid='world-panel-modal']")) return true;
+    if (document.querySelector("[data-testid='world-board-modal']")) return true;
     // 공방(전면 오버레이)이 떠 있으면 키는 공방의 것이다 — 배경 맵 편집기로 새면 안 된다.
     if (document.querySelector("[data-testid='workshop-host']")) return true;
     if (document.querySelector("[data-testid='event-command-catalog-modal']")) return true;

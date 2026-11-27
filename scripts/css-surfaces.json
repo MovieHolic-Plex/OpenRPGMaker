@@ -196,7 +196,19 @@
         "sidebar-layer-",
         "zoom-stepper-",
         "image-generation-notice-",
-        "persistence-mode-banner-"
+        "persistence-mode-banner-",
+        "floating-minimap-",
+        "floating-doodad-",
+        "floating-unit-",
+        "fmh-",
+        "cbd-",
+        "fdw-",
+        "fuw-",
+        "cpb-",
+        "wb-",
+        "studio-bar",
+        "studio-layer-",
+        "small-task"
       ],
       "roots": [
         ".editor-layout"
@@ -431,7 +443,12 @@
         "left-links-",
         "left-column-",
         "world-document-workspace",
-        "world-document-workspace-"
+        "world-document-workspace-",
+        "ai-sel-",
+        "ai-quota-",
+        "ai-context-",
+        "fap-",
+        "floating-ai-"
       ],
       "roots": [
         ".database-modal-backdrop",

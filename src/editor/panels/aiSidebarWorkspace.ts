@@ -41,11 +41,23 @@ const isMacPlatform = (): boolean => typeof navigator !== "undefined" && /Mac|iP
  * 검색칸 옆 경고 칩으로 보이고, 늘 ⌘K 「검사: 규칙 위반 보기」로 열 수 있다.
  * 접으면 12px 손잡이만 남는다. 서랍은 열릴 때만 그린다(show).
  */
-export function createAiSidebarWorkspace(tools: HTMLElement, _host: HTMLElement | null = null, onResize: () => void = () => {}): { root: HTMLElement; isCollapsed(): boolean; dispose(): void } {
-  let collapsed = false;
+export type AiSidebarWorkspaceOptions = {
+  /** Phase 1 풀-블리드 캔버스: 저장된 사용자 선호가 없을 때 왼쪽 열을 접힌 상태로 시작한다. */
+  readonly defaultCollapsed?: boolean;
+};
+
+export function createAiSidebarWorkspace(
+  tools: HTMLElement,
+  _host: HTMLElement | null = null,
+  onResize: () => void = () => {},
+  options: AiSidebarWorkspaceOptions = {},
+): { root: HTMLElement; isCollapsed(): boolean; dispose(): void } {
+  let collapsed = options.defaultCollapsed ?? false;
   let drawer: LeftDrawerId | null = null;
   try {
-    collapsed = localStorage.getItem(COLLAPSED_KEY) === "1";
+    const saved = localStorage.getItem(COLLAPSED_KEY);
+    if (saved === "1") collapsed = true;
+    else if (saved === "0") collapsed = false;
   } catch { /* restricted storage */ }
   // 폰 폭(390)에서 왼쪽 열 최소 220px 가 캔버스를 약 160px 로 눌러 맵을 그릴 수 없었다(2026-11-08 autopilot-usability E1).
   // 좁은 창으로 시작하면 접힌 채로 연다 — 저장된 선호는 덮지 않으므로(persist 안 함) 넓은 창에서는 그대로다.

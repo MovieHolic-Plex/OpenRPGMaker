@@ -1098,16 +1098,24 @@ export function renderAiSettingsForm(options: {
   imageSource.value.textContent = imageEntry.providerLabel;
 
   syncModelDisplay = (): void => {
-    const current = qualities.find(({ effort }) => providerId === CODEX_PROVIDER_ID && !loadEngineChoice()
+    const localEngine = loadEngineChoice();
+    const current = qualities.find(({ effort }) => providerId === CODEX_PROVIDER_ID && !localEngine
       && mainRoles.every(control => control.provider.value === CODEX_PROVIDER_ID
         && control.field.input.value.trim() === ASSISTANT_CHATGPT_MODEL && control.effort.value === effort));
+    const localPreset = localEngine
+      ? qualities.find(({ effort }) => {
+          const currentEffort = mainRoles[0]?.effort.value;
+          return currentEffort === effort || (effort === "medium" && (currentEffort === "low" || currentEffort === "off"));
+        })
+      : undefined;
+    const highlighted = current ?? localPreset;
     qualityButtons.forEach((button, i) => {
-      const selected = qualities[i] === current;
+      const selected = qualities[i] === highlighted;
       button.setAttribute("aria-checked", String(selected));
-      button.tabIndex = selected || (!current && i === 0) ? 0 : -1;
+      button.tabIndex = selected || (!highlighted && i === 0) ? 0 : -1;
     });
-    qualityCaption.textContent = loadEngineChoice()
-      ? "이 PC에 설치한 AI 프로그램을 사용 중이에요."
+    qualityCaption.textContent = localEngine
+      ? `이 PC에 설치한 AI 프로그램을 사용 중이에요.${localPreset ? ` (${localPreset.title})` : ""}`
       : current?.caption ?? "고급에서 역할별로 직접 골랐어요.";
     const executionModel = liteModel.input.value.trim();
     const planningModel = brainModel.input.value.trim();
@@ -1265,14 +1273,15 @@ export function renderAiSettingsForm(options: {
       applyDirectConnection(endpoint.id, selectedModel);
     },
   });
-  // 계정 추가 — 연결이 없으면 펼쳐 둔다(할 일이 그것뿐). 연결된 사용자에게는 접힌 한 줄이다(다른 길 안내가 시끄럽게 뜨지 않게).
+  // 계정 추가 — 3버튼(GPT·Claude·Gemini)에서 바로 연결할 수 있으므로 기타 경로(OpenRouter·직접 API·계정 목록)는 한 줄로 접어 둔다.
   const addAccount = el("details", {
     class: "ai-settings-alternatives",
     dataset: { testid: "ai-settings-add-account" },
     children: [
       el("summary", { class: "ai-settings-row", dataset: { testid: "ai-settings-add-account-toggle" },
-        children: [rowCopy("계정 추가", "API 키 · ChatGPT · Claude · Google · 내 PC 프로그램"), chevron()] }),
+        children: [rowCopy("기타 연결 · 연결된 계정 상세", "API 키 · OpenRouter · 직접 서버 · 연결 한도 보기"), chevron()] }),
       el("div", { class: "ai-settings-alternative-body", children: [
+        overview.accounts,
         quickConnectSection, hero, accountRow, accountChecking, accountCheckError, disconnectError,
         directAdvanced,
         alternatives,
@@ -1281,36 +1290,61 @@ export function renderAiSettingsForm(options: {
   }) as HTMLDetailsElement;
   if (getAiConnectionStatus().kind !== "ready") addAccount.setAttribute("open", "");
 
+  const modelAdvanced = el("details", {
+    class: "ai-settings-alternatives",
+    dataset: { testid: "ai-settings-model-advanced" },
+    children: [
+      el("summary", { class: "ai-settings-row", dataset: { testid: "ai-settings-model-advanced-toggle" },
+        children: [rowCopy("세부 역할별 모델 설정 (고급)", "진행 · 검토 · 화면 이해 · 픽셀 아트 · 작문 모델을 따로 지정해요"), chevron()] }),
+      el("div", { class: "ai-settings-alternative-body", children: [
+        settingsSection("roles", "역할별 모델", "필요할 때만 역할마다 모델을 직접 고르면 돼요.",
+          [execution.element, advisor.element, vision.element, image.element, pixel.element]),
+        settingsSection("specialists", "추가 모델 설정", "", [
+          roleControls("writer"),
+          el("p", { class: "ai-config-help ai-roles-help", text: "모델은 목록에서 고르거나 공급자별 모델 ID를 직접 입력하세요." }),
+          settingsRow("제공자별 품질 프리셋", "현재 역할의 제공자에 맞춰 모델과 추론 강도를 조정해요.",
+            el("div", { class: "ai-settings-preset-actions", children: MODEL_PRESETS.map(preset => el("button", {
+              class: "ai-settings-button",
+              text: preset.label,
+              attrs: { type: "button", title: preset.description },
+              dataset: { testid: `ai-model-provider-preset-${preset.id}` },
+              on: { click: () => applyProviderPreset(preset) },
+            })) })),
+        ]),
+        roleMatrixSection,
+      ] }),
+    ],
+  });
+
+  const workAdvanced = el("details", {
+    class: "ai-settings-alternatives",
+    dataset: { testid: "ai-settings-work-advanced" },
+    children: [
+      el("summary", { class: "ai-settings-row", dataset: { testid: "ai-settings-work-advanced-toggle" },
+        children: [rowCopy("고급 작업 옵션", "결과 적용 세분화 · Pi 팀 · 도안 장 수 · 최대 토큰 · 에이전트 모드"), chevron()] }),
+      el("div", { class: "ai-settings-alternative-body", children: [
+        settingsSection("work-advanced", "세부 실행 옵션", "", [
+          applyRow, externalAgentRow, piTeam.row, imagePlanCountRow, maxTokens.row, reasoningRow, agentModeRow,
+        ]),
+      ] }),
+    ],
+  });
+
   // 왼쪽 메뉴 다섯(2026-11-23 오너: 「왼쪽 사이드바에 메뉴를 여러 개 넣는 기존 안이 더 깔끔하다. 다 분배해라.」).
-  // 예전 고급 시트(겹쳐 뜨는 두 번째 창)는 없앴다 — 모든 설정이 메뉴 하나씩에 놓인다.
+  // 각 탭은 첫 화면 핵심만 노출하고, 중복·전문가 옵션은 한 줄 접힘(고급)으로 정리한다.
   const panes = {
-    account: settingsPane("account", [threeProviders.element, primaryFeedback, overview.accounts, addAccount]),
+    account: settingsPane("account", [threeProviders.element, primaryFeedback, addAccount]),
     model: settingsPane("model", [
       overview.current,
       qualitySection,
-      settingsSection("roles", "역할별 모델", "필요할 때만 역할마다 모델을 직접 고르면 돼요.",
-        [execution.element, advisor.element, vision.element, image.element, pixel.element]),
-      settingsSection("specialists", "추가 모델 설정", "", [
-        roleControls("writer"),
-        el("p", { class: "ai-config-help ai-roles-help", text: "모델은 목록에서 고르거나 공급자별 모델 ID를 직접 입력하세요." }),
-        settingsRow("제공자별 품질 프리셋", "현재 역할의 제공자에 맞춰 모델과 추론 강도를 조정해요.",
-          el("div", { class: "ai-settings-preset-actions", children: MODEL_PRESETS.map(preset => el("button", {
-            class: "ai-settings-button",
-            text: preset.label,
-            attrs: { type: "button", title: preset.description },
-            dataset: { testid: `ai-model-provider-preset-${preset.id}` },
-            on: { click: () => applyProviderPreset(preset) },
-          })) })),
-      ]),
-      roleMatrixSection,
+      modelAdvanced,
     ]),
     work: settingsPane("work", [
       settingsSection("behavior", "자주 바꾸는 것", "", [applySwitch.row, dialoguePolish.row, imagePlan.row]),
-      settingsSection("work", "작업 방식", "", [
-        autonomyRow, applyRow, externalAgentRow, piTeam.row, imagePlanCountRow, maxTokens.row, reasoningRow, agentModeRow,
-      ]),
+      settingsSection("work", "작업 방식", "", [autonomyRow]),
       // 섹션 제목과 행 제목이 「제공자 제공자」로 읽혔다(2026-11-26 QA vm-qa15 #87).
       settingsSection("image", "그림 생성", "", [imageSource.element]),
+      workAdvanced,
       ...(options.extraSections ?? []).map(section => settingsSection(section.id, section.title, section.description, [section.content])),
     ]),
     display: settingsPane("display", [

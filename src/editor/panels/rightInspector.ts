@@ -256,6 +256,7 @@ export function mountRightInspector(cursorHost: HTMLElement): RightInspectorMoun
   let advancedOpen = false;
   const paint = (): void => {
     const view = buildInspectorView(store.getCurrent(), editorState.get(), lastCell);
+    root.dataset.inspectorKind = view.kind;
     const next = JSON.stringify(view);
     if (next === fingerprint) return;
     fingerprint = next;
