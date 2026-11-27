@@ -37,6 +37,8 @@ export interface PiAssistantV2Env {
   readonly generateImage?: (request: { readonly prompt: string; readonly referenceImages?: readonly ImageReference[]; readonly signal?: AbortSignal }) => Promise<{ readonly dataUrl: string; readonly mimeType: string; readonly model: string; readonly provider: string }>;
   /** 이 실행에서 생성형 이미지 제공자 인증이 준비되어 있는지(사전 판별). 없으면 오프닝은 0-생성 경로로 완결한다. */
   readonly canGenerateImages?: boolean;
+  /** runPiAgent 가 해석한 실효 모델 ID (request.model 생략 시 provider 기본값·options.model 반영). */
+  readonly modelId?: string;
   /** 역할 모델 하나로 따로 부르기(그림 포함 가능). 그 계정 키가 없으면 던진다. */
   readonly roleChat?: (role: { readonly provider: string; readonly model: string; readonly effort?: "low" | "medium" | "high" }, messages: readonly unknown[], signal?: AbortSignal) => Promise<string>;
   /** 이 실행에 키가 실린 계정 id(로컬 CLI 포함). 검수자 고르기에 쓴다. */

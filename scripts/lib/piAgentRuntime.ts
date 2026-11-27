@@ -55,6 +55,7 @@ import { appendFileSync, readFileSync as readBundledAsset } from 'node:fs';
 import { join as joinBundledAsset } from 'node:path';
 import { createPiPresentationTool, createWorkerDotTextChat, createWorkerImageGenerator, PI_PRESENTATION_GENERATORS } from './piPresentationTools';
 import { hasCodexImageAuth } from './codexImageRuntime.ts';
+import { getOhMyPiProvider } from '../../src/ai/ohMyPiProviders.ts';
 import { DEFAULT_IMAGE_PROVIDER_ID } from '../../src/ai/imageModelCatalog.ts';
 import { setDotTextChat } from '../../src/ai/dotTextArt';
 import { presentationArtIds, presentationArtImages } from '../../src/editor/tools/presentationTools';
@@ -1390,8 +1391,12 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     if (lazy) declare(wrapTool(lazy));
   };
   const canGenerateImages = !request.readOnly && !options.readOnlyTools && await hasCodexImageAuth(workerKeyFor(DEFAULT_IMAGE_PROVIDER_ID));
+  const resolvedModelId = String((model as { id?: unknown }).id ?? "").trim()
+    || getOhMyPiProvider(request.provider)?.defaultModel?.trim()
+    || undefined;
   const v2Env: PiAssistantV2Env | undefined = options.v2 ? {
     ctx, request, emit, record: recordCall,
+    ...(resolvedModelId ? { modelId: resolvedModelId } : {}),
     requireToolNextTurn: (toolName?: string) => { if (toolName) ensureV2Tool(toolName); forceToolTurn = toolName ?? true; },
     preferToolNextTurn: (toolName: string, reminder: string) => { ensureV2Tool(toolName); softPref = { id: `v2-next-${++softSeq}`, toolName, reminder, served: 0 }; },
     declareTool: (tool: PiToolShape) => { if (!exposed.has(tool.name)) declare(wrapTool(tool)); },

@@ -6,6 +6,8 @@ import { applyMapLighting, litShotNote, type LitShot } from "../../src/ai/v2/jud
 import type { GameMap, Project } from "../../src/project/types.ts";
 import { runPiAgent, type RunPiAgentOptions } from "./piAgentRuntime.ts";
 import { hasCodexImageAuth } from "./codexImageRuntime.ts";
+import { localCliIdOf } from "./localCliAgent/types.ts";
+import { getOhMyPiProvider } from "../../src/ai/ohMyPiProviders.ts";
 import { DEFAULT_IMAGE_PROVIDER_ID } from "../../src/ai/imageModelCatalog.ts";
 import type { PiAgentDoneEvent, PiAgentRequest } from "../../src/ai/piAgent/protocol.ts";
 import { buildV2SystemPrompt } from "../../src/ai/v2/prompt/systemPrompt.ts";
@@ -56,12 +58,23 @@ async function captureVqaShots(env: PiAssistantV2Env): Promise<{ shots: VqaShot[
   return { shots, failed };
 }
 
+function resolveEffectiveV2Model(request: PiAgentRequest, options: RunPiAgentOptions): string | undefined {
+  if (!localCliIdOf(request.provider)) {
+    const optionModelId = typeof (options.model as { id?: unknown } | undefined)?.id === "string"
+      ? (options.model as { id: string }).id.trim()
+      : "";
+    if (optionModelId) return optionModelId;
+  }
+  return request.model?.trim() || getOhMyPiProvider(request.provider)?.defaultModel?.trim() || undefined;
+}
+
 export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgentOptions = {}): Promise<PiAgentDoneEvent> {
   // 그림을 찍는 일(PNG 해독·조명 입히기)은 Node 쪽 일이라 여기 남는다 — 턴 정책(src/ai/v2/turn)에는 이 구멍으로만 넘긴다.
   const turn = createV2Turn(request, options, { captureVqaShots });
   const imageKey = options.providerApiKeys?.[DEFAULT_IMAGE_PROVIDER_ID]
     ?? (DEFAULT_IMAGE_PROVIDER_ID === request.provider ? options.apiKey : undefined);
   const canGenerateImages = !request.readOnly && !options.readOnlyTools && await hasCodexImageAuth(imageKey);
+  const effectiveModel = resolveEffectiveV2Model(request, options);
   const done = await runPiAgent({
     ...request,
     systemPrompt: buildV2SystemPrompt(
@@ -70,7 +83,7 @@ export async function runAssistantV2(request: PiAgentRequest, options: RunPiAgen
       request.task,
       turn.store,
       request.projectKey ? String(request.projectKey) : undefined,
-      { model: request.model, canGenerateImages },
+      { model: effectiveModel, canGenerateImages },
     ),
     initialToolNames: [],
     openingProduction: false,

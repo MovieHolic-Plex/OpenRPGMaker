@@ -971,12 +971,22 @@ const composeOpening: ToolDefinition = {
       musicResourceId = STARTER_TITLE_BGM_ID;
     }
 
-    const entryMode = args.entry === "before-title" || args.entry === "attract" ? args.entry : draft.system.opening?.entry?.mode ?? "new-game";
+    const prevEntry = draft.system.opening?.entry;
+    let nextEntry: CinematicSequence["entry"] | undefined;
+    if (args.entry === "new-game") {
+      nextEntry = undefined;
+    } else if (args.entry === "before-title") {
+      nextEntry = { mode: "before-title" };
+    } else if (args.entry === "attract") {
+      nextEntry = prevEntry?.mode === "attract" ? structuredClone(prevEntry) : { mode: "attract" };
+    } else if (prevEntry && prevEntry.mode !== "new-game") {
+      nextEntry = structuredClone(prevEntry);
+    }
     const next: CinematicSequence = keepOpeningStage(draft.system.opening, {
       enabled: true,
       skippable: true,
       ...(musicResourceId ? { musicResourceId } : {}),
-      ...(entryMode !== "new-game" ? { entry: { mode: entryMode } } : {}),
+      ...(nextEntry ? { entry: nextEntry } : {}),
       scenes,
     });
     draft.system.opening = next;

@@ -18,6 +18,7 @@ import type { PiAssistantV2Env } from "../shared/env";
 import { V2_TOOL_EN, type ToolTextEn } from "./toolTextEn";
 import { classifyRequest, describeIntent } from "../request/intent";
 import { HIGH_ONLY_OPENING_TOOLS, resolveOpeningPolicy } from "../request/openingPolicy";
+import { getOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { PLACE_BUILD_VERBS } from "../prompt/placeSpecs";
 import { composedWorldFor, gameVariation } from "../request/world";
 import { leanPromptFor } from "../request/readers";
@@ -243,7 +244,7 @@ export function exposeV2Tools(env: PiAssistantV2Env, allTools: readonly PiToolSh
   // 이 요청을 어떻게 갈랐는지 실행 기록에 한 줄 남긴다 — 지시문·도구·검사가 모두 이 분류를 읽는다.
   const intent = classifyRequest(task, env.ctx.project);
   const openingPolicy = resolveOpeningPolicy({
-    model: env.request.model,
+    model: env.modelId ?? (env.request.model?.trim() || (env.request.provider ? getOhMyPiProvider(env.request.provider)?.defaultModel : undefined)),
     canGenerateImages: env.canGenerateImages ?? Boolean(env.generateImage),
   });
   env.emit({

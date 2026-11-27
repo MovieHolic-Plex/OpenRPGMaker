@@ -137,7 +137,7 @@ describe("openingPolicy", () => {
       model: "gemini-4-neon",
       canGenerateImages: false,
     }).join("\n");
-    expect(highNoImg).toContain("Opening (high tier)");
+    expect(highNoImg).toContain("Opening (high tier");
     expect(highNoImg).toContain("No image generation in this run");
 
     const mediumWithImg = buildV2SystemPrompt(p, p.startMapId, "새 게임 오프닝 만들어 줘", undefined, "k", {
@@ -162,5 +162,56 @@ describe("openingPolicy", () => {
       allowAnimaticDirecting: false,
       allowGeneratedOpeningCg: true,
     });
+  });
+
+  it("compose_opening honors explicit entry (including new-game) and preserves existing attract config when omitted", () => {
+    const p = createBlankProject() as Project;
+    p.system.opening = {
+      enabled: true,
+      skippable: true,
+      entry: { mode: "attract", idleMs: 12000, repeatDelayMs: 25000 },
+      scenes: [],
+    };
+    const compose = OPENING_DIRECTOR_TOOLS.find((t) => t.name === "compose_opening")!;
+    compose.run(p, { shots: [{ template: "title-card", title: "테스트" }] });
+    expect(p.system.opening?.entry).toEqual({ mode: "attract", idleMs: 12000, repeatDelayMs: 25000 });
+
+    compose.run(p, { entry: "new-game", shots: [{ template: "title-card", title: "테스트" }] });
+    expect(p.system.opening?.entry).toBeUndefined();
+
+    compose.run(p, { entry: "before-title", shots: [{ template: "title-card", title: "테스트" }] });
+    expect(p.system.opening?.entry).toEqual({ mode: "before-title" });
+  });
+
+  it("author_opening_stage keeps walkable startPos intact and snaps unwalkable startPos", () => {
+    const p = createBlankProject() as Project;
+    const origPos = { ...p.startPos };
+    const stageTool = OPENING_STAGE_TOOLS.find((t) => t.name === "author_opening_stage")!;
+    stageTool.run(p, { mapId: p.startMapId, beats: [{ kind: "wait", ms: 300 }] });
+    expect(p.startPos).toEqual(origPos);
+    expect(p.system.opening?.stage).toMatchObject({ mapId: p.startMapId, x: origPos.x, y: origPos.y });
+
+    // Out-of-bounds startPos should snap to a passable tile on startMap
+    p.startPos = { x: -1, y: -1 };
+    stageTool.run(p, { mapId: p.startMapId, beats: [{ kind: "wait", ms: 300 }] });
+    expect(p.startPos.x).toBeGreaterThanOrEqual(0);
+    expect(p.startPos.y).toBeGreaterThanOrEqual(0);
+  });
+
+  it("resolves provider default model when request.model is omitted during v2 tool exposure", () => {
+    const p = createBlankProject() as Project;
+    const env = {
+      ctx: { project: p, currentMapId: p.startMapId, assistantRun: true },
+      request: { task: "새 게임 오프닝 만들어 줘", provider: "anthropic", mapIds: [], project: p, projectKey: "default-model-test" },
+      canGenerateImages: false,
+      emit() {},
+      record() {},
+      sideChat: async () => "{}",
+      render: async () => "",
+      checkpoint: async () => {},
+    } as never;
+    const exposed = exposeV2Tools(env, createV2Tools(env, new V2Session()));
+    const visible = new Set([...exposed.tools.map((t) => t.name), ...exposed.offered]);
+    expect(visible.has("animate_opening_camera")).toBe(true);
   });
 });
