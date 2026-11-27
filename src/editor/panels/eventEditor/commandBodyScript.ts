@@ -192,7 +192,10 @@ export function scriptCommandBody(context: CommandEditContext, cmd: ScriptComman
   let typingTimer: ReturnType<typeof setTimeout> | undefined;
   source.addEventListener("input", () => {
     if (typingTimer) clearTimeout(typingTimer);
-    typingTimer = setTimeout(() => showDiagnostics(check()), 600);
+    typingTimer = setTimeout(() => {
+      if (typeof document === "undefined") return;
+      showDiagnostics(check());
+    }, 600);
   });
   source.addEventListener("keydown", (event) => {
     if (event.key !== "Tab" || event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) return;

@@ -100,8 +100,11 @@
   ],
   "inn": [
    "inn-branch-not-enough",
-   "inn-note-input",
+   "inn-branch-on-cancel",
+   "inn-branch-on-stay",
    "inn-price-input",
+   "inn-price-source",
+   "inn-price-variable>select#0",
    "inn-recover-mp"
   ],
   "inputNumber": [

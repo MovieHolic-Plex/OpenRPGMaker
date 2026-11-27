@@ -1,7 +1,8 @@
+import { readFileSync } from "node:fs";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { parseEventDraft, type EventDraft, type EventDraftResult } from "@/ai/eventDraftAuthoring";
 import { EventAiQueue, type EventAiQueueDeps } from "@/editor/eventAiQueue/eventAiQueue";
-import { createBlankProject } from "@/project/defaults";
+import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { store } from "@/project/store";
 import type { GameEvent, Project, Command, EventPageCondition, EventPage, EventPageGraphic, GameMap } from "@/project/types";
 import { ToolReadEvidence } from "@/ai/toolReadEvidence";
@@ -21,7 +22,6 @@ import { stripSpeakerEcho } from "@/project/dialogueSpeakerEcho";
 import { reviewedFaceIdForCharset } from "@/assets/reviewedCharsetFaces";
 import type { ToolContext } from "@/editor/tools/types";
 import { clearToolImageEventSpriteCache, resolveRegionEventSprites } from "@/ai/toolImageEventSprites";
-import { installCurrentMonsterArt, preloadCurrentMonsterArt } from "@/assets/currentMonsterArt";
 import { renderToolImages, type RenderedToolImage } from "@/ai/toolImageRenderer";
 import { renderHarmonyMapImages } from "@/ai/ultrabrainImage";
 import { decodeDataUrlPng, installToolImageRasterDom, pixelDiffRatio, type PngRaster } from "./toolImageRasterDom";
@@ -683,14 +683,23 @@ describe("eventCompile", () => {
         const bundled = await renderRegion(project, map.id);
         expect(pixelDiffRatio(empty.raster, bundled.raster)).toBeGreaterThan(0.001);
 
-        await preloadCurrentMonsterArt();
-        expect([...installCurrentMonsterArt(project, [id])]).toEqual([id]);
+        // 2026-11-26 현행 5×4 몬스터가 정식 번들로 승격됐으므로, 프로젝트에 사용자가 올린 커스텀 monster 초상 업로드가
+        // 번들 적 그림을 덮어쓰며 32×32 두 칸 상자로 온전히 그려지는지 직접 고정한다.
+        const customDataUrl = `data:image/png;base64,${readFileSync("public/assets/generated/pixel-enemy-portraits/slime-green.png").toString("base64")}`;
+        const customRaster = decodeDataUrlPng(customDataUrl);
+        project.assets.uploaded[id] = {
+          id,
+          name: "커스텀 불의 정령",
+          kind: "monster",
+          dataUrl: customDataUrl,
+          meta: { width: customRaster.width, height: customRaster.height },
+        };
         expect(project.assets.uploaded[id]?.kind).toBe("monster");
         const sprites = resolveRegionEventSprites(project, map, { x: 0, y: 0, w: 10, h: 8 }, 16);
         expect(sprites.ok && sprites.sprites.map((sprite) => [sprite.eventId, sprite.wholeImage, sprite.destW, sprite.destH])).toEqual([["foe", true, 32, 32]]);
         const installed = await renderRegion(project, map.id);
         expect(pixelDiffRatio(empty.raster, installed.raster)).toBeGreaterThan(0.001);
-        // 넣은 그림은 번들 3×3 시트의 그림과 다른 그림이다(현행 세트).
+        // 프로젝트에 넣은 커스텀 적 초상이 번들 그림과 다르게 그려진다.
         expect(pixelDiffRatio(bundled.raster, installed.raster)).toBeGreaterThan(0);
       });
 

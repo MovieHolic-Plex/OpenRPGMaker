@@ -238,6 +238,7 @@ function validateReferences(project: Project, command: EconomyCommand, args: Arg
     validateCommands([row], context);
   } catch {
     if (command.kind === "changeGold") throw new PrimitiveError("수량을 읽을 변수를 찾을 수 없습니다.");
+    if (command.kind === "inn") throw new PrimitiveError("숙박 요금을 읽을 변수를 찾을 수 없습니다.");
     if (command.kind === "craftRecipe" || command.kind === "applyItemUpgrade") {
       throw new PrimitiveError("결과를 기록할 변수를 찾을 수 없습니다.");
     }
