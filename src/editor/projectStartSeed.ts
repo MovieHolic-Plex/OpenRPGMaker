@@ -1,6 +1,6 @@
 import { applyNewProjectTitle, createNewProjectSeed } from "./genrePacks";
 import { newProjectChoiceById, type NewProjectChoiceId } from "./newProjectChoices";
-import { DEFAULT_START_SCREEN_SIZE, START_EXAMPLE_DETAILS, START_SCREEN_RESOLUTIONS, projectStartMode, type ProjectStartMode, type ProjectStartScreenSize } from "@/start/projectStart";
+import { DEFAULT_START_SCREEN_SIZE, START_EXAMPLE_DETAILS, projectStartMode, resolveStartViewProfile, type ProjectStartMode, type ProjectStartScreenSize } from "@/start/projectStart";
 import { grandfatherGenreLockViolations } from "@/project/genreLock";
 import type { Project } from "@/project/types";
 
@@ -50,14 +50,22 @@ export async function createProjectStartSeed(choiceId: NewProjectChoiceId | null
     project.system.opening = { ...project.system.opening!, enabled: false };
     project.flags.starterExample = true;
   }
-  applyProjectStartOptions(project, startMode, size);
+  applyProjectStartOptions(project, startMode, size, choice?.packId);
   return project;
 }
 
-function applyProjectStartOptions(project: Project, startMode: ProjectStartMode, size: ProjectStartScreenSize): void {
+function applyProjectStartOptions(
+  project: Project,
+  startMode: ProjectStartMode,
+  size: ProjectStartScreenSize,
+  packId?: import("@/project/genrePackId").GenrePackId | null,
+): void {
   if (startMode !== "ai") project.flags.firstRunGuide = true;
-  const resolution = START_SCREEN_RESOLUTIONS[size];
-  if (resolution) project.system.playResolution = { ...resolution };
+  const viewProfile = resolveStartViewProfile(packId, size);
+  if (viewProfile) {
+    project.system.playResolution = { ...viewProfile.resolution };
+    if (viewProfile.smallMapFill) project.system.smallMapFill = true;
+  }
 }
 
 /**
@@ -67,5 +75,5 @@ function applyProjectStartOptions(project: Project, startMode: ProjectStartMode,
  */
 export function applyBlankProjectStart(project: Project, title: string, size: ProjectStartScreenSize = DEFAULT_START_SCREEN_SIZE): void {
   applyNewProjectTitle(project, title);
-  applyProjectStartOptions(project, "blank", size);
+  applyProjectStartOptions(project, "blank", size, null);
 }
