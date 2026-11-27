@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
-import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
+import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { closeAiSettingsModal, openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import {
   FREQUENT_TOOL_NAMES,
   frequentTools,
@@ -37,6 +37,9 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  // 노드만 떼면 패널·모달의 뒤늦은 조회 응답이 걷힌 문서에 그리려다 미처리 거절을 낸다(run 45943948659) — 먼저 정리한다.
+  teardownAiChatPanel();
+  closeAiSettingsModal();
   try {
     if (typeof document !== "undefined") {
       document.querySelector("[data-testid='ai-settings-modal']")?.remove();

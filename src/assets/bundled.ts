@@ -8,6 +8,7 @@ import beodeulGroundCatalog from './beodeulGroundCatalog.json' with { type: "jso
 import beodeulForestTrunksCatalog from './beodeulForestTrunks.json' with { type: "json" };
 import beodeulNatureCatalog from './beodeulNatureCatalog.json' with { type: "json" };
 import { tilesetLookSheetCount } from './tilesetLooks';
+import { activeTileGrafts } from './tileGrafts';
 import { houseSetSheetCount } from './houseSets';
 import { tilesetStandSheetCount } from './tilesetStands';
 import { tilesetWaterSheetCount } from './tilesetWater';
@@ -73,7 +74,7 @@ import { SCARLOXY_CHIPSET_ASSETS } from "@/assets/scarloxyPack";
 import { EMERALD_MONSTER_KIT_CHIPSET_ASSETS, emeraldMonsterKitSheet } from "@/assets/emeraldMonsterKitAssets";
 import { EMOTE_ASSET_PATH, EMOTE_FRAME_SIZE, EMOTE_KINDS, EMOTE_TEXTURE_KEY } from "@/project/emotes";
 import { PLACEABLE_OVERLAY_IMAGE_ASSETS, PLACEABLE_OVERLAY_TEXTURE_KEYS, PLACEABLE_TREE_FRAME, PLACEABLE_TREE_TEXTURE_KEY } from "@/player/placeableOverlayGraphics";
-import type { Project } from "@/project/types";
+import type { GameMap, Project, TilesetDef } from "@/project/types";
 import { bundledChipsetTileSize, bundledChipsetTilesPerRow } from "./bundledChipsetGeometry";
 export { bundledChipsetTileSize, bundledChipsetTilesPerRow } from "./bundledChipsetGeometry";
 export { isColorKeyedChipsetTextureKey } from "@/assets/chipsetTransparency";
@@ -698,11 +699,12 @@ function projectBundledTextureKeys(project: Project): Set<string> {
   for (const id of fieldSpawnMonsterResourceIds(project)) {
     if (isGeneratedMonsterSprite(id)) keys.add(id);
   }
+  const unusedGraftSources = unusedGraftSourceTextureKeys(project, strings);
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
-    if (strings.has(asset.textureKey)) keys.add(asset.textureKey);
+    if (strings.has(asset.textureKey) && !unusedGraftSources.has(asset.textureKey)) keys.add(asset.textureKey);
   }
   for (const asset of BUNDLED_REFERENCE_CHIPSET_ASSETS) {
-    if (strings.has(asset.textureKey)) keys.add(asset.textureKey);
+    if (strings.has(asset.textureKey) && !unusedGraftSources.has(asset.textureKey)) keys.add(asset.textureKey);
   }
   for (const asset of BUNDLED_EASYRPG_CHARSET_ASSETS) {
     if (strings.has(asset.id) || strings.has(asset.textureKey)) keys.add(asset.textureKey);
@@ -754,6 +756,65 @@ function spatialGraphicResourceIds(project: Project): Set<string> {
     for (const resourceId of Object.values(type.orientationGraphicResourceIds ?? {})) add(resourceId);
   }
   return ids;
+}
+
+/**
+ * 쓰이는 타일셋의 이식 소스 칩셋 중, 그 타일셋의 이식 칸(targetTile)이 프로젝트 어디에도(맵 칸·이벤트 명령·DB — 타일셋·자산 밖의 모든 수)
+ * 안 나오는 것. 씬은 이것을 싣지 않는다 — 이식 칸을 안 쓰는 맵은 바탕 시트만으로 같은 그림이다(ensureTilesetTexture 는 소스가 없으면 바탕 키를 쓴다).
+ * 편집 중 이식 칸을 처음 칠하면 EditScene 이 ensureBundledProjectTextures 로 그때 싣는다. 타일셋 하나라도 이식 칸을 쓰면 굽기가 모든 소스를
+ * 요구하므로 그 타일셋의 소스는 전부 남긴다. 수를 넓게 본다(좌표·값과 겹치면 싣는다) — 틀려도 덜 빨라질 뿐 그림이 빠지지 않는다.
+ * 왜(2026-11-26 데스크톱 부팅 실측): 빈 새 프로젝트의 버들항 칩셋이 이식 소스 그림 1778장(assets/beodeul-objects)을 담아, 맵이 하나도 안 써도
+ * 편집 캔버스 뒤 약 8초 동안 싣고 디코드했다.
+ */
+export function unusedGraftSourceTextureKeys(project: Project, strings: ReadonlySet<string>): Set<string> {
+  const numbers = new Set<number>();
+  collectProjectNumbers({ ...project, tilesets: {}, assets: {}, resourceProfiles: [] }, numbers);
+  const outside = new Set<string>();
+  collectProjectStrings({ ...project, resourceProfiles: [], tilesets: {} }, outside);
+  const keep = new Set<string>();
+  const candidates = new Set<string>();
+  for (const tileset of Object.values(project.tilesets)) {
+    if (!strings.has(tileset.id)) continue;
+    if (tileset.image?.type === "bundled") keep.add(tileset.image.id);
+    const grafts = activeTileGrafts(tileset);
+    const used = grafts.some((graft) => numbers.has(graft.targetTile));
+    for (const graft of grafts) (used ? keep : candidates).add(graft.sourceChipset);
+  }
+  for (const key of keep) candidates.delete(key);
+  for (const key of outside) candidates.delete(key);
+  return candidates;
+}
+
+const graftUseCache = new WeakMap<object, { readonly targets: ReadonlySet<number>; readonly bundledSources: readonly string[] }>();
+
+/**
+ * 이 맵이 타일셋의 이식 칸을 쓰는데 번들 이식 소스 칩셋이 아직 씬에 없는가 — 편집 중 이식 칸을 처음 칠했을 때
+ * EditScene 이 ensureBundledProjectTextures 를 부를지 정한다(unusedGraftSourceTextureKeys 가 부팅에서 뺀 것을 그때 싣는다).
+ */
+export function mapNeedsUnloadedGraftSources(map: GameMap, tileset: TilesetDef, loaded: (textureKey: string) => boolean): boolean {
+  let use = graftUseCache.get(tileset);
+  if (!use) {
+    const grafts = activeTileGrafts(tileset);
+    use = {
+      targets: new Set(grafts.map((graft) => graft.targetTile)),
+      bundledSources: [...new Set(grafts.map((graft) => graft.sourceChipset))].filter((key) => BUNDLED_CHIPSET_TEXTURE_KEYS.has(key)),
+    };
+    graftUseCache.set(tileset, use);
+  }
+  if (use.bundledSources.every((key) => loaded(key) || loaded(rawChipsetTextureKey(key)))) return false;
+  const numbers = new Set<number>();
+  collectProjectNumbers(map, numbers);
+  for (const target of use.targets) if (numbers.has(target)) return true;
+  return false;
+}
+
+const BUNDLED_CHIPSET_TEXTURE_KEYS: ReadonlySet<string> = new Set([...BUNDLED_EASYRPG_CHIPSET_ASSETS, ...BUNDLED_REFERENCE_CHIPSET_ASSETS].map((asset) => asset.textureKey));
+
+function collectProjectNumbers(value: unknown, out: Set<number>): void {
+  if (typeof value === "number") { out.add(value); return; }
+  if (Array.isArray(value)) { for (const item of value) collectProjectNumbers(item, out); return; }
+  if (typeof value !== "object" || value === null) return;
+  for (const child of Object.values(value)) collectProjectNumbers(child, out);
 }
 
 function collectProjectStrings(value: unknown, out: Set<string>): void {

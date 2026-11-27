@@ -9,6 +9,7 @@ import type { Project } from "@/project/types";
 import { stringifyAssets, stringifySharedDictionary } from "@/project/io/sharedDictionaryJson";
 import { pendingLazyBundledTilesetIds, preloadPendingLazyBundledTilesets } from "@/project/bundledTilesetDiff";
 import { jsonContentDigest, trustSharedProjectEntries, withTrustedSharedEntries } from "@/project/persistence/core/contentDigest";
+import { seedBundledTilesetDigests } from "@/project/bundledTilesetDigests";
 
 export const PI_HEAVY_PROJECT_KEYS = ["tilesets", "database", "assets"] as const;
 export type PiHeavyProjectKey = (typeof PI_HEAVY_PROJECT_KEYS)[number];
@@ -115,6 +116,9 @@ function heavyHash(key: PiHeavyProjectKey, value: object): Promise<string | null
 
 async function computeHeavyHash(key: PiHeavyProjectKey, value: object): Promise<string | null> {
   // 타일셋·업로드 자산 항목은 제자리에서 고치지 않는다(projectClone 계약) — 공유 항목을 믿고 요약한다.
+  // 번들 정의와 값이 같은 타일셋 항목은 구운 요약을 심는다(조수 세션과 같은 길, bundledTilesetDigests.ts) — 2026-11-26 실측: 빈 새 프로젝트에서
+  // 이 요약이 타일셋 74MiB 를 처음부터 훑어 4.6s 였다. 심은 요약은 믿음 안에서만 쓰인다.
+  if (key === "tilesets") seedBundledTilesetDigests({ tilesets: value as Project["tilesets"] });
   const digest = withTrustedSharedEntries(() => {
     const token = jsonContentDigest(value);
     if (key === "tilesets") trustSharedProjectEntries({ tilesets: value });

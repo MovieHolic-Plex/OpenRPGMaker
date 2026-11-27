@@ -403,3 +403,44 @@
 }
 
 /* ?? ?덉씠????됲꽣 ?? */
+
+/* 휴대 폭(599px 이하) 목록/편집 한 화면씩 (db-390-trim PR2) — 처음엔 목록만, 행을 누르면 편집만 보이고
+   「← 목록」으로 돌아온다. renderRecordTab 이 .db-record-workspace 의 data-phone-pane 을 정한다.
+   첫 자식이 목록 창, 마지막 자식이 편집 창이다(주인공 스튜디오 목록도 같은 순서). 넓은 창·도크는 나란히 그대로다.
+   창이 db-modal 컨테이너라 미디어 폴백은 두지 않는다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-phone-back {
+  display: none;
+}
+
+@container db-modal (max-width: 599px) {
+  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body .db-record-workspace[data-phone-pane="list"] > :last-child,
+  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body .db-record-workspace[data-phone-pane="detail"] > :first-child {
+    display: none !important;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body .db-record-workspace[data-phone-pane="list"] .db-list {
+    max-height: none;
+  }
+  /* 작업 틀의 overflow-x:hidden 은 스크롤 상자를 만들어 아래 도구 줄 sticky 를 죽인다 — 잘라내기만 하는 clip 으로 바꾼다. */
+  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body .db-record-workspace[data-phone-pane="list"] {
+    overflow: clip visible !important;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body .db-record-workspace[data-phone-pane="list"] .db-toolbar {
+    background: var(--db-studio-surface, var(--surface-workbench));
+    bottom: 0;
+    padding-block: 6px;
+    position: sticky;
+    z-index: 1;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body .db-record-workspace[data-phone-pane="detail"] .db-phone-back {
+    align-self: flex-start;
+    background: transparent;
+    border: 0;
+    color: var(--db-studio-accent, var(--accent));
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 14px;
+    font-weight: 600;
+    min-height: 36px;
+    padding: 0 4px;
+  }
+}

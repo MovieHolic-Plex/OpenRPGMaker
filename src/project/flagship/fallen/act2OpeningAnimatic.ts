@@ -8,7 +8,7 @@
  *
  * 컷 구성 (총 22,500ms):
  *   1. 통금의 왕도 아스텔 (6,000ms) — 달빛 아래 셔터 내린 거리, 창문 촛불이 하나씩 꺼지고 심문회 횃불만 남는다.
- *   2. 북문 밖 쇠 마차 (5,250ms) — 성문 밖 눈길을 달리는 심문회 마차, 쇠창살 너머 푸른 별빛이 세 번 깜박인다.
+ *   2. 북문 밖 쇠 마차 (5,250ms) — 비 젖은 밤길로 빠져나가는 심문회 마차, 쇠창살 너머 푸른 별빛이 세 번 깜박인다.
  *   3. 재의 폐허 너머 깨어나는 하늘탑 (5,500ms) — 불탄 마을 잔해 너머로 붉은 룬과 불기둥이 밤하늘을 가른다.
  *   4. 제2막 타이틀 「빌린 불」 (5,750ms) — 타오르는 하늘탑과 얼어붙은 계곡 위로 막 제목이 떠오른 뒤 암전 → 지하 감방.
  */
@@ -200,46 +200,54 @@ function curfewShot(): OpeningAnimatic {
 // ── 2. 북문을 빠져나가는 쇠 마차 (5,250ms) ─────────────────────────────────
 function carriageShot(): OpeningAnimatic {
   const cam: CamKeys = {
-    x: [key(0, 246), key(5250, 304, "ease-in-out")],
-    y: [key(0, 158), key(5250, 146, "ease-in-out")],
-    zoom: [key(0, 1.03), key(5250, 1.14, "ease-in-out")],
+    x: [key(0, 244), key(5250, 298, "ease-in-out")],
+    y: [key(0, 156), key(5250, 162, "ease-in-out")],
+    zoom: [key(0, 1.03), key(5250, 1.15, "ease-in-out")],
   };
   return shot([
     art("act2-carriage"),
     // 북문 벽 횃불 2개
-    glow("gate-torch-l", "#ff9642", { x: 82, y: 221 }, 46, {
+    glow("gate-torch-l", "#ff9642", { x: 46, y: 179 }, 46, {
       opacity: 0.56,
       glow: { inner: 0.3, pulse: { hz: 4.1, amount: 0.3, pattern: "flicker", seed: 11 } },
     }),
-    glow("gate-torch-r", "#ff9642", { x: 189, y: 260 }, 46, {
+    glow("gate-torch-r", "#ff9642", { x: 128, y: 134 }, 46, {
       opacity: 0.56,
       glow: { inner: 0.3, pulse: { hz: 3.7, amount: 0.3, pattern: "flicker", seed: 19 } },
     }),
-    // 호송 기병 횃불
-    glow("escort-torch", "#ff8438", { x: 454, y: 123 }, 56, {
-      opacity: 0.72,
+    // 호송 기병 횃불 3개
+    glow("escort-torch-1", "#ff8438", { x: 350, y: 184 }, 48, {
+      opacity: 0.68,
       glow: { inner: 0.32, pulse: { hz: 4.8, amount: 0.32, pattern: "flicker", seed: 23 } },
     }),
+    glow("escort-torch-2", "#ff8438", { x: 381, y: 129 }, 44, {
+      opacity: 0.58,
+      glow: { inner: 0.3, pulse: { hz: 4.3, amount: 0.3, pattern: "flicker", seed: 29 } },
+    }),
+    glow("escort-torch-3", "#ff8438", { x: 448, y: 129 }, 44, {
+      opacity: 0.58,
+      glow: { inner: 0.3, pulse: { hz: 3.9, amount: 0.3, pattern: "flicker", seed: 37 } },
+    }),
     // 마차 뒤 쇠창살 안쪽 — 세 번의 노크에 맞춰 푸른 별빛이 깜박인다
-    glow("iris-window-glow", "#94f2ff", { x: 330, y: 159 }, 42, {
+    glow("iris-window-glow", "#94f2ff", { x: 303, y: 188 }, 44, {
       keys: {
         opacity: [
-          key(0, 0.22),
-          key(2600, 0.25),
-          key(2740, 0.92),
-          key(3040, 0.22),
-          key(3240, 0.92),
-          key(3540, 0.22),
-          key(3740, 0.98),
-          key(4350, 0.35, "ease-out"),
-          key(5250, 0.2),
+          key(0, 0.24),
+          key(2600, 0.28),
+          key(2740, 0.94),
+          key(3040, 0.24),
+          key(3240, 0.94),
+          key(3540, 0.24),
+          key(3740, 1.0),
+          key(4350, 0.36, "ease-out"),
+          key(5250, 0.22),
         ],
       },
     }),
-    particles("north-snow", "snow", "#cfe0f5", { x: 0, y: 0, width: 528, height: 297 }, 42, 47, {
+    particles("north-rain", "rain", "#9cb6d8", { x: 0, y: 0, width: 528, height: 297 }, 44, 47, {
       parallax: 1.2,
       blend: undefined,
-      opacity: 0.52,
+      opacity: 0.34,
     }),
     caption("line-carriage", [
       { atMs: 450, text: "쇠로 덮인 마차가 북문을 빠져나갔다." },
