@@ -17,6 +17,7 @@ import {
 import { activeTileGrafts, createGraftedTilesetCanvas } from "@/assets/tileGrafts";
 import type { TilesetDef } from "@/project/types";
 import { decodeDataUrlBytes } from "@/project/persistence/core/dataUrl";
+import { canvasPng, type CanvasPng } from "@/util/canvasPngDataUrl";
 
 export const TILE_GRAFT_IMAGE_BAKED_EVENT = "oprn:tileset-graft-image-baked";
 
@@ -137,10 +138,11 @@ function ensureGraftImageBake(
   if (existing) return existing;
   const generation = cacheGeneration;
   const pending = bakeGraftedTilesetImage(tileset, baseUrl)
-    .then((dataUrl) => {
-      if (!dataUrl || generation !== cacheGeneration) return null;
+    .then((png) => {
+      if (!png || generation !== cacheGeneration) return null;
+      const { dataUrl } = png;
       bakedUrlCache.set(cacheKey, dataUrl);
-      previewUrlCache.set(cacheKey, createPreviewUrl(dataUrl));
+      previewUrlCache.set(cacheKey, createPreviewUrl(png));
       if (typeof window !== "undefined") {
         window.dispatchEvent(new CustomEvent(TILE_GRAFT_IMAGE_BAKED_EVENT, { detail: { cacheKey } }));
       }
@@ -157,9 +159,10 @@ function ensureGraftImageBake(
   return pending;
 }
 
-function createPreviewUrl(dataUrl: string): string {
+function createPreviewUrl({ dataUrl, blob }: CanvasPng): string {
   if (typeof URL === "undefined" || typeof URL.createObjectURL !== "function" || typeof Blob === "undefined") return dataUrl;
   try {
+    if (blob) return URL.createObjectURL(blob);
     const bytes = new Uint8Array(decodeDataUrlBytes(dataUrl));
     return URL.createObjectURL(new Blob([bytes.buffer], { type: "image/png" }));
   } catch {
@@ -171,7 +174,7 @@ async function bakeGraftedTilesetImage(
   tileset: GraftBakeSnapshot,
   baseUrl: string,
   resolveUploadedSource: (key: string) => string | null = uploadedGraftSourceUrl,
-): Promise<string | null> {
+): Promise<CanvasPng | null> {
   const grafts = activeTileGrafts(tileset);
   if (grafts.length === 0) return null;
   const sourceKeys = [...new Set(grafts.map((graft) => graft.sourceChipset))];
@@ -190,7 +193,7 @@ async function bakeGraftedTilesetImage(
   const canvas = createGraftedTilesetCanvas(tileset, base, (key) => sourceByKey.get(key) ?? null);
   if (!canvas) return null;
   try {
-    return canvas.toDataURL("image/png");
+    return await canvasPng(canvas);
   } catch {
     return null;
   }
@@ -200,7 +203,7 @@ async function bakeGraftedTilesetImage(
 export function bakeSnapshotGraftedTilesetImage(tileset: TilesetDef, baseUrl: string, sourceUrls: ReadonlyMap<string, string>): Promise<string | null> {
   const snapshot = snapshotGraftBake(tileset);
   const urls = new Map(sourceUrls);
-  return bakeGraftedTilesetImage(snapshot, baseUrl, key => urls.get(key) ?? null);
+  return bakeGraftedTilesetImage(snapshot, baseUrl, key => urls.get(key) ?? null).then((png) => png?.dataUrl ?? null);
 }
 
 // 번들이 아닌 이식 소스(프로젝트 업로드 그림판 — 생성 건물 시트 등) → URL. 프로젝트를 아는 쪽(tilesetImage.ts)이 등록한다.

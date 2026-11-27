@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it, vi, beforeEach, type MockInstance, beforeAll } from "vitest";
+import { afterEach, describe, expect, it, vi, beforeEach, type MockInstance } from "vitest";
 import { AssistantSession, type SessionEvent, type AuditEntry } from "@/ai/assistantSession";
 import { AssistantAcceptanceLedger } from "@/ai/assistantAcceptanceLedger";
 import { ToolVerificationEvidence, parseVerificationChecks } from "@/ai/toolVerificationEvidence";
@@ -26,14 +26,12 @@ import * as conversations from "@/ai/conversationStore";
 import { installElectronBridgeSession, type ElectronBridgeSession } from "./support/electronBridgeSession";
 import "fake-indexeddb/auto";
 
-describe("assistantVerificationContinuation", () => {
+describe("assistantVerificationContinuation", { timeout: 120000 }, () => {
   isolateTimers();
-  beforeAll(() => {
-    // Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
-    // panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
-    // single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
-    vi.setConfig({ testTimeout: 120_000 });
-  });
+  // 시험 시간 한도는 수집 때 읽혀 beforeAll 안 vi.setConfig 는 듣지 않는다 — describe 옵션 timeout 으로 둔다.
+  // Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+  // panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+  // single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
   const reach = "check_reachability";
   const scene = "run_scene_test";
   type Call = { name: string; args: Record<string, unknown> };

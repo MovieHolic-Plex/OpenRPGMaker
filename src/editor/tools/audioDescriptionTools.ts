@@ -8,6 +8,7 @@ import {
 import { ProjectFormatError } from "@/project/io/errors";
 import type { AudioDescriptionOverrides, Project } from "@/project/types";
 import { resolveMapBgm } from '@/project/mapMusic';
+import { OPRN_BGM_ASSETS } from "@/assets/oprnBgmAssets";
 import { readStoreMusicMeta, type StoreMusicScene } from "@/assets/storeMusicMeta";
 import { ToolError, type JsonSchema, type ToolDefinition } from "./types";
 
@@ -117,9 +118,17 @@ const BGM_SCENE_STORE: Readonly<Record<BgmScene, readonly StoreMusicScene[]>> = 
   town: ["town"], boss: ["boss"], victory: ["victory"], sad: ["sad"], tense: ["tense", "chase"], ending: ["ending"],
 };
 
+// 이름에 「전투」가 들어 있어도 전투 루프가 아닌 곡(「전투 전 마지막 확인」 같은 UI 곡·승리 징글).
+const NOT_BATTLE_LOOP_NAME = /승리|종료|전투 전|준비/u;
+// OPRN BGM 은 곡 이름에 「전투·보스」가 없어 이름 바늘로 못 찾는다 — 곡이 들고 있는 장면(oprnBgmAssets.ts)으로 맞춘다.
+const OPRN_BGM_SCENES = new Map(OPRN_BGM_ASSETS.map((asset) => [asset.id, asset.scenes] as const));
+
 function inScene(project: Project, resource: { id: string; name: string }, scene: BgmScene): boolean {
   const music = readStoreMusicMeta(project.assets.uploaded[resource.id]?.meta);
   if (music) return music.scenes.some((entry) => BGM_SCENE_STORE[scene].includes(entry));
+  const oprn = OPRN_BGM_SCENES.get(resource.id);
+  if (oprn) return scene === "battle" ? oprn.length > 0 : scene === "boss" && oprn.includes("boss");
+  if ((scene === "battle" || scene === "boss") && NOT_BATTLE_LOOP_NAME.test(resource.name)) return false;
   return BGM_SCENE_NEEDLES[scene].some((needle) => resource.name.includes(needle));
 }
 
@@ -139,6 +148,7 @@ function storeMusicFacts(project: Project, resourceId: string) {
 const recommendBgm: ToolDefinition = {
   name: "recommend_bgm",
   description: "분위기/장면 질의로 BGM 후보를 고른다. 제목 목록이 아니라 후보마다 전체 설명을 함께 돌려주므로, 이 결과를 보고 bgmResourceId를 정한다. 자동 선택(create_map/generate_map) 대신 곡을 고를 때 쓴다. "
+    + "전투는 scene:battle(일반)·scene:boss(보스전)으로 장면 곡을 모아 지역·보스마다 다른 곡을 고른다(이미 다른 맵 전투곡으로 쓰는 곡은 뒤로 밀린다). "
     + "scene 과 query 를 같이 주면 그 장면 곡 안에서 분위기·장르(예: scene:boss, query:\"조선 비장한\")로 고른다. 스토어 음악 팩에서 넣은 곡은 music 칸(장르·장면·분위기·빠르기·루프)이 붙는다.",
   mode: "read",
   parameters: {
@@ -177,6 +187,9 @@ const recommendBgm: ToolDefinition = {
     for (const map of Object.values(project.maps)) {
       const effective = resolveMapBgm(project, map.id);
       if (effective.kind === 'play') usedOnMaps.set(effective.resourceId, [...(usedOnMaps.get(effective.resourceId) ?? []), map.id]);
+      // 전투곡을 고를 때는 이미 다른 맵의 전투곡으로 쓰는 곡을 뒤로 민다(같은 곡 하나로 수렴하지 않게).
+      const battleBgm = scene === "battle" || scene === "boss" ? map.battleBgmResourceId?.trim() : undefined;
+      if (battleBgm) usedOnMaps.set(battleBgm, [...(usedOnMaps.get(battleBgm) ?? []), map.id]);
     }
     ordered.sort((a, b) => b.score - a.score || (usedOnMaps.get(a.resourceId)?.length ?? 0) - (usedOnMaps.get(b.resourceId)?.length ?? 0));
     const total = ordered.length;

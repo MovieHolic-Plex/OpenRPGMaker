@@ -60,7 +60,9 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe("project switch invalidates map edit history", () => {
+// 원격 재연결·재로드 케이스는 빈 프로젝트(번들 타일셋 포함 약 77MiB)를 store 가 한두 번 통째로 싣고 정규화한다.
+// ci-full 45920025667(4코어·워커 8)에서 재연결 20.1s·재연결+재로드 42.9s 로 ci 기본 30초를 넘었다 — 판정은 그대로 두고 한도만 다른 무거운 시험처럼 120초로 둔다.
+describe("project switch invalidates map edit history", { timeout: 120_000 }, () => {
   it("drops the undo stack when the project is replaced", () => {
     recordProjectSnapshot("맵 이름 변경");
     store.update((draft) => {

@@ -138,7 +138,7 @@ export function listAudioResources(
     if (asset.kind !== kind) continue;
     add(asset.id, asset.name, {
       tags: ["oprn-bgm", "ai-generated", kind],
-      description: `${asset.name} — ${asset.sourceName}`,
+      description: `${asset.name} — ${asset.brief} (${asset.sourceName})`,
       descriptionSource: "metadata-derived",
     });
   }

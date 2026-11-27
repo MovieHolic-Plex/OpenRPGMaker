@@ -130,8 +130,8 @@
 }
 @keyframes retro-thrust {
   0%, 100% { translate: var(--retro-travel) var(--retro-travel-y, 0px); }
-  /* --retro-face: 아군 1(왼쪽을 보고 찌른다), 사람 적 -1(오른쪽). */
-  40% { translate: calc(var(--retro-travel) - 8px * var(--retro-face, 1)) var(--retro-travel-y, 0px); }
+  /* --retro-face: 아군 1(왼쪽을 보고 찌른다), 사람 적 -1(오른쪽). 착탄 순간 즉시 스냅 찌르기 + 히트스톱 유지. */
+  10%, 66% { translate: calc(var(--retro-travel) - 12px * var(--retro-face, 1)) var(--retro-travel-y, 0px); }
 }
 /* 걸음 구간 = 비트의 앞 60% 안팎(battleRetroMotion 의 swingMs 240ms 를 뺀 나머지). 도착 뒤에는 서서 휘두른다.
    대상 적의 발 높이까지 세로로도 걷는다(--retro-travel-y, retroWalk 가 잰다). */
@@ -146,15 +146,15 @@
 }
 @keyframes retro-cast-hold { from, to { translate: var(--retro-travel) 0; } }
 @keyframes retro-return {
-  0% { translate: var(--retro-travel) var(--retro-travel-y, 0px); }
-  30% { translate: calc(var(--retro-travel) * 0.7) calc(var(--retro-travel-y, 0px) * 0.7 - 10px); }
-  60% { translate: calc(var(--retro-travel) * 0.4) calc(var(--retro-travel-y, 0px) * 0.4 - 12px); }
-  86%, 100% { translate: 0 0; }
+  0%, 28% { translate: var(--retro-travel) var(--retro-travel-y, 0px); }
+  48% { translate: calc(var(--retro-travel) * 0.62) calc(var(--retro-travel-y, 0px) * 0.62 - 10px); }
+  66% { translate: calc(var(--retro-travel) * 0.28) calc(var(--retro-travel-y, 0px) * 0.28 - 8px); }
+  84%, 100% { translate: 0 0; }
 }
 @keyframes retro-shadow-return {
-  0%, 86%, 100% { translate: -50% 0; scale: 1; }
-  30% { translate: -50% 10px; scale: 0.8; }
-  60% { translate: -50% 12px; scale: 0.8; }
+  0%, 28%, 84%, 100% { translate: -50% 0; scale: 1; }
+  48% { translate: -50% 10px; scale: 0.82; }
+  66% { translate: -50% 8px; scale: 0.86; }
 }
 @keyframes retro-cast-ring {
   0% { opacity: 0; scale: 0.5; }
@@ -240,13 +240,15 @@
 .battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-actor-group .battle-actor[data-retro-action="item"][data-retro-beat="recover"] {
   animation-name: retro-cast-return;
 }
-/* 숨쉬기는 칸을 바꾸거나 비정수 확대하지 않고 논리 1px만 움직인다. */
+/* 발끝(GROUND_Y=44, 94%)을 지면에 고정한 호흡 — 부츠가 바닥에서 뜨지 않고 상체만 1도트 눌렸다 올라온다. */
 @media (prefers-reduced-motion: no-preference) {
   .battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style][data-battle-skin-family][data-battle-layout] .battle-actor-group .battle-actor[data-battler-extended="true"][data-battle-pose-frame="idle"]:not([data-retro-beat]):not(.retro-hit-release) .battle-actor-sprite[data-rendering="pixelated"] {
-    animation: retro-pixel-breathe 1600ms steps(1, end) infinite;
+    transform-origin: 50% 94%;
+    animation: retro-pixel-breathe 1200ms steps(1, end) infinite;
+    animation-delay: var(--breathe-delay, 0ms);
   }
 }
-@keyframes retro-pixel-breathe { 0%, 100% { translate: 0 0; } 50% { translate: 0 -1px; } }
+@keyframes retro-pixel-breathe { 0%, 100% { scale: 1 1; } 50% { scale: 1.01 0.968; } }
 
 /* 직업별 접근(battleRetroMotion.animateMeleeApproach): 질주·섬광의 잔상, 도약의 착지 흙먼지. 경로 자체는 Web Animations 가 그린다. */
 .battle-scene[data-battle-motion="retro"][data-battle-motion="retro"][data-battle-ui-style] .battle-actor-group .battle-actor.retro-afterimage {

@@ -1,4 +1,5 @@
 import { applyTransparentColorKey } from "@/assets/transparentColorKey";
+import { canvasPngDataUrl } from "@/util/canvasPngDataUrl";
 
 const transparentImageCache = new Map<string, Promise<string>>();
 
@@ -47,7 +48,7 @@ function createTransparentColorKeyDataUrl(imagePath: string): Promise<string> {
     const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
     applyTransparentColorKey(imageData.data);
     context.putImageData(imageData, 0, 0);
-    return canvas.toDataURL("image/png");
+    return canvasPngDataUrl(canvas);
   });
 }
 
