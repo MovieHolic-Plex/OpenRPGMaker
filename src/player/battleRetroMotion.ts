@@ -118,7 +118,7 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
       actorRecipes.delete(node);
       delete node.dataset.retroReach;
       delete node.dataset.retroStyle;
-      approachAnimations.get(node)?.cancel();
+      cancelQuietly(approachAnimations.get(node));
       approachAnimations.delete(node);
       if (node.dataset.pixelEnemy || node.dataset.pixelParty) resetPixelEnemy(node);
       beatGenerations.set(node, (beatGenerations.get(node) ?? 0) + 1);
@@ -350,7 +350,7 @@ function animateExtendedBeat(node: HTMLElement, beat: BattleActionBeat): void {
   const finisher = node.dataset.retroFinisher === "true";
   // 접근 경로(Web Animations, fill forwards)는 CSS 키프레임보다 위에 쌓인다 — 착탄부터는 CSS(retro-thrust/return)에 넘긴다.
   if (beat.kind !== "approach") {
-    approachAnimations.get(node)?.cancel();
+    cancelQuietly(approachAnimations.get(node));
     approachAnimations.delete(node);
   }
   if (beat.kind === "recover" && node.dataset.retroStyle === "blink" && !reduced() && length > 0 && typeof node.animate === "function") {
@@ -427,7 +427,7 @@ function animateExtendedBeat(node: HTMLElement, beat: BattleActionBeat): void {
   }
   if(beat.kind==="recover"&&action==="attack"&&!recipe&&character&&character.returnMode!=="hop"&&!reduced()&&length>0&&node.animate){
     const dx=Number.parseFloat(node.style.getPropertyValue("--retro-travel"))||0,dy=Number.parseFloat(node.style.getPropertyValue("--retro-travel-y"))||0;
-    approachAnimations.get(node)?.cancel();
+    cancelQuietly(approachAnimations.get(node));
     approachAnimations.set(node,node.animate([{translate:`${dx}px ${dy}px`},{translate:"0px 0px"}],{duration:length,easing:character.returnMode==="step"?"linear":"cubic-bezier(.25,.1,.25,1)",fill:"forwards"}));
     frames=character.returnMode==="step"?[[0,"walk_a"],[0.25,"walk_b"],[0.5,"walk_c"],[0.75,"walk_b"],[0.95,"idle"]]:[[0,"evade"],[0.95,"idle"]];
   }
@@ -730,7 +730,7 @@ function animateMeleeApproach(node: HTMLElement, length: number): readonly [numb
       [smearAt, "attack_strike"],
     ];
   }
-  approachAnimations.get(node)?.cancel();
+  cancelQuietly(approachAnimations.get(node));
   const sampled=style==="blink"?keys:Array.from({length:Math.max(2,Math.ceil(length/16)+1)},(_,i)=>{const u=i/(Math.max(2,Math.ceil(length/16)+1)-1),p=sampleBasicMotion(keys,u,style);return {offset:u,translate:`${p.x}px ${p.y}px`};});
   const animation = node.animate(sampled, { duration: Math.max(1, length), fill: "forwards",easing:"linear" });
   approachAnimations.set(node, animation);

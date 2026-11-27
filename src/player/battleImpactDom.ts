@@ -109,6 +109,7 @@ export function createBattleImpactController(field: HTMLElement) {
   let slashCount = 0;
   const remove = (target: HTMLElement, contact: Contact) => {
     contact.clock.dispose();
+    contact.recoil?.finished?.catch(() => undefined);
     contact.recoil?.cancel();
     contact.burst.remove();
     if (contacts.get(target) === contact) contacts.delete(target);
