@@ -54,6 +54,9 @@ export const DEFAULTS = Object.freeze({
   // 늘 담는 세 단계(바뀐 시험·직접 import·문자열)만으로 상한을 넘을 때 쓸 수 있는 조각 수. 2026-11-27 #5283: 직접 import 104개가
   // 예상 7,970초(필요 조각 25)인데 wideChunks 12 에 막혀 조각 하나가 예상 819초 → 720초 상자에 끊겼다. ci-full 샤드 수(24)까지 늘린다.
   mustChunks: 24,
+  // 넓은 모드 조각 하나의 예상 상한(초). 넓은 모드 시간 상자는 6,600초(ci-related-tests.yml)다 — 예상/실제 최대 1.3배(#5293 조각 4: 예상 1,415초 계획의
+  // 큰 파일 databasePfx31 100→155초·editorPfx34 236→300초)를 견디게 4,800초로 둔다. 조각 수 = max(wideChunks, 비용 / 이 상한), mustChunks 까지.
+  wideBudgetSeconds: 4800,
 });
 
 const TIERS = ["changed-test", "direct-import", "string-literal", "import-graph"];
@@ -255,19 +258,28 @@ export function selectRelated({ changed, testSources, exists, timings = {}, opti
   if (changed.length > settings.wideFiles) wideReasons.push(`바뀐 파일 ${changed.length}개 > ${settings.wideFiles}`);
   const hubs = changed.filter((path) => WIDE_HUBS.some((hub) => path.startsWith(hub)));
   if (hubs.length > 0) wideReasons.push(`허브 파일 ${hubs.length}개 (${hubs.slice(0, 3).join(", ")}${hubs.length > 3 ? " …" : ""})`);
+  // 늘 담는 세 단계만으로 조각 mustChunks 개의 여유를 넘으면 좁은 모드(720초 상자)로는 어떻게 나눠도 끊긴다 — 넓은 모드(긴 상자)로 올린다.
+  // 2026-11-27 #5293: 직접 import 505개(예상 합 약 3만 워커초)를 24조각에 담아 조각 예상 1,415초 → 24조각 전부 720초에 끊겼다.
+  const fileCost = (file) => settings.perFileSeconds + settings.factor * (timings[file]?.sec ?? settings.defaultSeconds);
+  const room = Math.max(1, (settings.budgetSeconds - settings.startupSeconds) * settings.workers);
+  const mustCost = all.filter((entry) => entry.tier !== "import-graph").reduce((total, entry) => total + fileCost(entry.file), 0);
+  if (Math.ceil(mustCost / room) > settings.mustChunks) {
+    wideReasons.push(`늘 담는 시험 예상 ${Math.round(mustCost)}초 > 조각 ${settings.mustChunks}개 여유 ${Math.round(room * settings.mustChunks)}초`);
+  }
   if (wideReasons.length > 0) {
     const selected = all.map((entry) => ({ ...entry, sec: timings[entry.file]?.sec ?? settings.defaultSeconds, known: timings[entry.file] != null }));
     selected.sort((a, b) => (a.file < b.file ? -1 : 1));
-    const chunks = planChunks(selected, Math.min(settings.wideChunks, Math.max(1, selected.length)), settings);
+    const wideRoom = Math.max(1, (settings.wideBudgetSeconds - settings.startupSeconds) * settings.workers);
+    const wideCost = selected.reduce((total, entry) => total + fileCost(entry.file), 0);
+    const wideCount = Math.min(Math.max(settings.wideChunks, settings.mustChunks), Math.max(settings.wideChunks, Math.ceil(wideCost / wideRoom)));
+    const chunks = planChunks(selected, Math.min(wideCount, Math.max(1, selected.length)), settings);
     const sum = selected.reduce((total, entry) => total + entry.sec, 0);
     return { changed, safetyNet, candidateCount: all.length, mode: "wide", wideReasons, selected, skipped: [], sumSeconds: Math.round(sum), estWallSeconds: Math.max(0, ...chunks.map((chunk) => chunk.estWallSeconds)), chunks };
   }
   // 조각 n 개를 쓰면 같은 벽시계 상한에 워커가 n 배다. 담은 뒤 필요한 만큼만 조각을 쓴다.
   const budget = applyBudget(all, timings, { ...settings, workers: settings.workers * settings.chunks });
   const cost = budget.selected.reduce((total, entry) => total + settings.perFileSeconds + settings.factor * entry.sec, 0);
-  const room = Math.max(1, (settings.budgetSeconds - settings.startupSeconds) * settings.workers);
-  // 늘 담는 세 단계만으로 조각 상한(chunks)을 넘으면 필요한 만큼(mustChunks 까지) 조각을 늘린다 — 시간 상자에 끊기면 빨강이다.
-  const mustCost = budget.selected.filter((entry) => entry.tier !== "import-graph").reduce((total, entry) => total + settings.perFileSeconds + settings.factor * entry.sec, 0);
+  // 늘 담는 세 단계만으로 조각 상한(chunks)을 넘으면 필요한 만큼(mustChunks 까지) 조각을 늘린다 — 넘치면 위에서 넓은 모드로 갔다.
   const cap = Math.max(settings.chunks, Math.min(settings.mustChunks, Math.ceil(mustCost / room)));
   const count = Math.max(1, Math.min(cap, Math.ceil(cost / room), budget.selected.length));
   const chunks = budget.selected.length === 0 ? [] : planChunks(budget.selected, count, settings);
@@ -379,6 +391,7 @@ function main(argv) {
     wideFiles: numberOption(args["wide-files"], DEFAULTS.wideFiles, "wide-files", 1),
     wideChunks: numberOption(args["wide-chunks"], DEFAULTS.wideChunks, "wide-chunks", 1),
     mustChunks: numberOption(args["must-chunks"], DEFAULTS.mustChunks, "must-chunks", 1),
+    wideBudgetSeconds: numberOption(args["wide-budget-seconds"], DEFAULTS.wideBudgetSeconds, "wide-budget-seconds", 1),
   };
   const git = (...gitArgs) => execFileSync("git", gitArgs, { encoding: "utf8", maxBuffer: 256 * 1024 * 1024 });
   const changed = git("diff", "--name-only", "--no-renames", "-z", `${args.base}...${args.head ?? "HEAD"}`).split("\0").filter(Boolean).sort();
