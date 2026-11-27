@@ -102,21 +102,21 @@ function saveInlineDialogue(mapId: MapId, ev: GameEvent, nextText: string): void
 function cycleUnitSprite(project: Project, mapId: MapId, ev: GameEvent, step: -1 | 1): void {
   const assets = projectCharsetAssets(project);
   if (assets.length === 0) return;
-  const currentGraphic = unitGraphic(ev);
-  const currentKey = currentGraphic?.sprite?.id ?? ev.sprite?.id ?? "";
-  const curAssetIdx = Math.max(0, assets.findIndex((a) => a.textureKey === currentKey));
-  const nextAssetIdx = (curAssetIdx + step + assets.length) % assets.length;
-  const picked = assets[nextAssetIdx]!;
-  const nextRef = {
-    type: picked.group === "업로드" ? ("uploaded" as const) : ("bundled" as const),
-    id: picked.textureKey,
-  };
   const labelName = eventDisplayName(ev);
 
   store.updateEvent(
     mapId,
     ev.id,
     (target) => {
+      const currentGraphic = unitGraphic(target);
+      const currentKey = currentGraphic?.sprite?.id ?? target.sprite?.id ?? "";
+      const curAssetIdx = Math.max(0, assets.findIndex((a) => a.textureKey === currentKey));
+      const nextAssetIdx = (curAssetIdx + step + assets.length) % assets.length;
+      const picked = assets[nextAssetIdx]!;
+      const nextRef = {
+        type: picked.group === "업로드" ? ("uploaded" as const) : ("bundled" as const),
+        id: picked.textureKey,
+      };
       target.sprite = nextRef;
       if (target.pages?.length) {
         const page = target.pages[0]!;
@@ -327,6 +327,7 @@ export function mountFloatingUnitWindow(
     };
 
     const onEnterSave = (event: KeyboardEvent): void => {
+      if (event.isComposing) return;
       if (event.key === "Enter") {
         event.preventDefault();
         commitQuickEdits();

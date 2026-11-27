@@ -49,11 +49,15 @@
   border-radius: 14px;
   border: 1px solid var(--border-default);
   background: color-mix(in srgb, var(--bg-overlay) 95%, transparent);
-  backdrop-filter: blur(22px) saturate(1.08);
+  backdrop-filter: none;
   box-shadow: var(--shadow-pop);
   overflow: hidden;
   pointer-events: auto;
   z-index: 44;
+}
+
+html[data-ai-render="heavy"] .ai-right-dock .ai-chat-panel.is-workspace.is-left-sidebar:not(.is-studio):not(.is-collapsed) {
+  backdrop-filter: blur(22px) saturate(1.08);
 }
 
 @media (max-width: 960px) {

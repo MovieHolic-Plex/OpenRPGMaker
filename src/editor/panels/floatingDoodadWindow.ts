@@ -181,8 +181,7 @@ function scarloxyObjectStampsFor(tileset: TilesetDef): readonly UnifiedDoodad[] 
 
 const catalogCache = new WeakMap<TilesetDef, readonly UnifiedDoodad[]>();
 
-function unifiedDoodadsFor(tileset: TilesetDef | undefined): readonly UnifiedDoodad[] {
-  if (!tileset) return [];
+function tilesetDoodadsFor(tileset: TilesetDef): readonly UnifiedDoodad[] {
   const cached = catalogCache.get(tileset);
   if (cached) return cached;
 
@@ -262,8 +261,20 @@ function unifiedDoodadsFor(tileset: TilesetDef | undefined): readonly UnifiedDoo
     });
   }
 
+  catalogCache.set(tileset, out);
+  return out;
+}
+
+function unifiedDoodadsFor(tileset: TilesetDef | undefined): readonly UnifiedDoodad[] {
+  if (!tileset) return [];
+  const base = tilesetDoodadsFor(tileset);
+  const props = allInteractiveProps(store.getCurrent());
+  if (props.length === 0) return base;
+
+  const out: UnifiedDoodad[] = [...base];
+  const seenKeys = new Set(base.map((it) => it.key));
   // 5) Real multi-frame Interactive Props (chests, wardrobes, jars, torches, signs, doors...)
-  for (const prop of allInteractiveProps(store.getCurrent())) {
+  for (const prop of props) {
     const key = `interactive:${prop.id}`;
     if (seenKeys.has(key)) continue;
     seenKeys.add(key);
@@ -278,8 +289,6 @@ function unifiedDoodadsFor(tileset: TilesetDef | undefined): readonly UnifiedDoo
       prop,
     });
   }
-
-  catalogCache.set(tileset, out);
   return out;
 }
 
@@ -568,7 +577,12 @@ export function mountFloatingDoodadWindow(
   }) as HTMLButtonElement;
   const resizeGrip = el("div", {
     class: "fdw-resize-grip",
-    attrs: { title: "드래그해 오브젝트 창 크기 조절", "aria-label": "창 크기 조절" },
+    attrs: {
+      tabindex: "0",
+      role: "slider",
+      title: "드래그하거나 방향키로 오브젝트 창 크기 조절",
+      "aria-label": "창 크기 조절",
+    },
     dataset: { testid: "floating-doodad-resize" },
     text: "◿",
   });
@@ -616,9 +630,13 @@ export function mountFloatingDoodadWindow(
     saveRecentKeys(recentKeys);
   }
 
-  function renderRecentBar(allItems: readonly UnifiedDoodad[], tileset: TilesetDef | undefined): void {
+  function resolveRecentItems(allItems: readonly UnifiedDoodad[]): readonly UnifiedDoodad[] {
     const byKey = new Map(allItems.map((it) => [it.key, it]));
-    const resolved = recentKeys.map((k) => byKey.get(k)).filter((it): it is UnifiedDoodad => Boolean(it));
+    return recentKeys.map((k) => byKey.get(k)).filter((it): it is UnifiedDoodad => Boolean(it));
+  }
+
+  function renderRecentBar(allItems: readonly UnifiedDoodad[], tileset: TilesetDef | undefined): void {
+    const resolved = resolveRecentItems(allItems);
     clearChildren(recentBar);
     if (resolved.length === 0) {
       recentBar.hidden = true;
@@ -870,6 +888,27 @@ export function mountFloatingDoodadWindow(
   };
   resizeGrip.addEventListener("pointerup", endResize);
   resizeGrip.addEventListener("pointercancel", endResize);
+  resizeGrip.addEventListener("keydown", (event: KeyboardEvent) => {
+    const step = event.shiftKey ? 48 : 24;
+    let dx = 0;
+    let dy = 0;
+    if (event.key === "ArrowRight") dx = step;
+    else if (event.key === "ArrowLeft") dx = -step;
+    else if (event.key === "ArrowDown") dy = step;
+    else if (event.key === "ArrowUp") dy = -step;
+    else return;
+    event.preventDefault();
+    const hostRect = canvasArea.getBoundingClientRect();
+    const maxW = Math.min(860, Math.max(380, Math.round(hostRect.width - 36)));
+    const curW = customSize?.width ?? Math.round(win.getBoundingClientRect().width || 512);
+    const curH = customSize?.bodyHeight ?? Math.round(body.getBoundingClientRect().height || 384);
+    customSize = {
+      width: Math.max(360, Math.min(maxW, curW + dx)),
+      bodyHeight: Math.max(220, Math.min(620, curH + dy)),
+    };
+    applySize();
+    saveWindowSize(customSize);
+  });
 
   // Smooth drag-to-move title bar inside canvasArea
   let dragging = false;
@@ -925,9 +964,8 @@ export function mountFloatingDoodadWindow(
     }
     if (open && event.key >= "1" && event.key <= String(MAX_RECENT_DOODADS)) {
       const idx = Number(event.key) - 1;
-      const targetKey = recentKeys[idx];
-      if (!targetKey) return;
-      const match = unifiedDoodadsFor(currentTileset()).find((it) => it.key === targetKey);
+      const resolved = resolveRecentItems(unifiedDoodadsFor(currentTileset()));
+      const match = resolved[idx];
       if (match) {
         event.preventDefault();
         activateItem(match);

@@ -374,7 +374,7 @@ function handoffWorldLinkToAi(
   requestAnimationFrame(() => {
     const input = document.querySelector<HTMLTextAreaElement>(".ai-right-dock .ai-assistant-input");
     if (!input) return;
-    input.value = prompt;
+    input.value = input.value.trim().length > 0 ? `${input.value}\n${prompt}` : prompt;
     input.dispatchEvent(new Event("input", { bubbles: true }));
     input.focus();
     const end = input.value.length;
@@ -392,6 +392,7 @@ export function openWorldBoardModal(): void {
   let zoom = 1;
   let hoveredMapId: MapId | null = null;
   let customPositions = loadCustomPositions(store.getCurrent());
+  let activePointerCleanup: (() => void) | null = null;
   let pendingConnection: {
     readonly fromMapId: MapId;
     readonly fromDir: PortDir;
@@ -738,10 +739,22 @@ export function openWorldBoardModal(): void {
             refreshSvgOnly();
           };
 
-          const onUp = (): void => {
+          const cleanupWire = (): void => {
             window.removeEventListener("pointermove", onMove);
             window.removeEventListener("pointerup", onUp);
+            window.removeEventListener("pointercancel", onCancel);
+            if (activePointerCleanup === onCancel) activePointerCleanup = null;
             boardInner.classList.remove("is-wiring");
+          };
+
+          const onCancel = (): void => {
+            cleanupWire();
+            activeDraftWire = null;
+            refreshSvgOnly();
+          };
+
+          const onUp = (): void => {
+            cleanupWire();
             if (activeDraftWire?.targetMapId) {
               pendingConnection = {
                 fromMapId: activeDraftWire.fromMapId,
@@ -756,8 +769,11 @@ export function openWorldBoardModal(): void {
             }
           };
 
+          activePointerCleanup?.();
+          activePointerCleanup = onCancel;
           window.addEventListener("pointermove", onMove);
           window.addEventListener("pointerup", onUp);
+          window.addEventListener("pointercancel", onCancel);
         });
 
         return portBtn;
@@ -847,17 +863,31 @@ export function openWorldBoardModal(): void {
           refreshSvgOnly();
         };
 
-        const onUp = (): void => {
+        const cleanupDrag = (): void => {
           window.removeEventListener("pointermove", onMove);
           window.removeEventListener("pointerup", onUp);
+          window.removeEventListener("pointercancel", onCancel);
+          if (activePointerCleanup === onCancel) activePointerCleanup = null;
           card.classList.remove("is-dragging");
+        };
+
+        const onCancel = (): void => {
+          cleanupDrag();
+          dragMoved = false;
+        };
+
+        const onUp = (): void => {
+          cleanupDrag();
           if (dragMoved) {
             saveCustomPositions(store.getCurrent(), customPositions);
           }
         };
 
+        activePointerCleanup?.();
+        activePointerCleanup = onCancel;
         window.addEventListener("pointermove", onMove);
         window.addEventListener("pointerup", onUp);
+        window.addEventListener("pointercancel", onCancel);
       });
 
       card.style.left = `${pos.x}px`;
@@ -885,6 +915,7 @@ export function openWorldBoardModal(): void {
   const unsubStore = store.subscribe(() => renderBoard());
 
   const close = registerModal(backdrop, () => {
+    activePointerCleanup?.();
     window.removeEventListener("keydown", onKeyDown);
     unsubStore();
     backdrop.remove();
