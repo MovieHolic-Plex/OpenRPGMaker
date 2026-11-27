@@ -26,22 +26,6 @@ export const POST_FX_PRESET_IDS = [
 
 export type PostFxPresetId = (typeof POST_FX_PRESET_IDS)[number];
 
-export const FOREGROUND_PARALLAX_MODES = [
-  "none",
-  "foliage",
-  "cave-arch",
-  "pillars",
-] as const;
-
-export type ForegroundParallaxMode = (typeof FOREGROUND_PARALLAX_MODES)[number];
-
-export const FOREGROUND_PARALLAX_LABELS: Readonly<Record<ForegroundParallaxMode, string>> = {
-  none: "없음",
-  foliage: "숲 · 나뭇가지 보케 (옥토패스풍)",
-  "cave-arch": "동굴 · 바위 천장 실루엣",
-  pillars: "저택 · 성문 기둥 실루엣",
-};
-
 export interface MapPostFx {
   preset: PostFxPresetId;
   /** 전체 후처리 강도 0..1 (기본 1). */
@@ -60,8 +44,6 @@ export interface MapPostFx {
   chromaticAberration?: number;
   /** Signalis풍 4×4 Bayer 레트로 디더링 0..1 (어둠 경계 픽셀 질감). */
   bayerDither?: number;
-  /** 옥토패스 2풍 카메라 전경 패럴랙스 실루엣 (1.16× 속도). */
-  foreground?: ForegroundParallaxMode;
   /** 불·촛불·네온 등 발광체 고유색 보존 (기본 true). */
   preserveEmissive?: boolean;
   /** 비·폭풍·안개·밤일 때 대각선 햇살(godRays)을 자동으로 끄는 물리 정합 보정 (기본 true). */
@@ -312,7 +294,7 @@ export const CINEMATIC_COMBO_PRESETS: Readonly<Record<CinematicComboId, Cinemati
   "classic-clean": {
     id: "classic-clean",
     label: "없음 (원본 초기화)",
-    summary: "후처리·전경·환경효과·태양그림자·야간조명을 모두 끄고 순수 도트 원본으로 복원",
+    summary: "후처리·환경효과·태양그림자·야간조명을 모두 끄고 순수 도트 원본으로 복원",
     postFx: null,
     sunlight: null,
     atmosphereEffects: [],
@@ -322,8 +304,8 @@ export const CINEMATIC_COMBO_PRESETS: Readonly<Record<CinematicComboId, Cinemati
   "octopath-dusk": {
     id: "octopath-dusk",
     label: "정통 HD-2D 황혼 (옥토패스풍)",
-    summary: "황혼 필름 + 숲 전경 패럴랙스 + 서쪽 긴 그림자 + 공기 먼지 + 캐릭터 림라이트",
-    postFx: { preset: "hd2d-warm", foreground: "foliage" },
+    summary: "황혼 필름 + 서쪽 긴 그림자 + 공기 먼지 + 상하 DoF + 캐릭터 림라이트",
+    postFx: { preset: "hd2d-warm" },
     sunlight: { enabled: true, azimuth: 262, altitude: 22, opacity: 0.42, softness: 2, heightScale: 0.85 },
     atmosphereEffects: [{ kind: "dust", amount: 0.45, opacity: 0.55 }],
     lighting: null,
@@ -332,8 +314,8 @@ export const CINEMATIC_COMBO_PRESETS: Readonly<Record<CinematicComboId, Cinemati
   "flashlight-horror": {
     id: "flashlight-horror",
     label: "칠흑 손전등 호러 (패닉 · 은신 연동)",
-    summary: "고딕 공포 + 필름 그레인·색수차·Bayer 디더링 + 기둥 전경 + 손전등 + 추격 심장박동",
-    postFx: { preset: "gothic-horror", godRays: 0, vignette: 0.64, foreground: "pillars", grain: 0.28, bayerDither: 0.22, horrorReactive: true },
+    summary: "고딕 공포 + 필름 그레인·색수차·Bayer 디더링 + 손전등 + 추격 심장박동",
+    postFx: { preset: "gothic-horror", godRays: 0, vignette: 0.64, grain: 0.28, bayerDither: 0.22, horrorReactive: true },
     sunlight: null,
     atmosphereEffects: [{ kind: "shades", amount: 0.35, opacity: 0.45 }],
     lighting: { ambient: 0.78, color: "#070b18", playerFlashlightRadius: 3.6 },
@@ -343,7 +325,7 @@ export const CINEMATIC_COMBO_PRESETS: Readonly<Record<CinematicComboId, Cinemati
     id: "rainy-noir",
     label: "비 오는 사이버 네오누아르",
     summary: "사이버 네온 + 폭우(햇살 자동 OFF) + 색수차·물방울 + 네온/불꽃 블룸",
-    postFx: { preset: "cyber-neon", godRays: 0, foreground: "pillars" },
+    postFx: { preset: "cyber-neon", godRays: 0 },
     sunlight: null,
     atmosphereEffects: [{ kind: "leaks", amount: 0.45, opacity: 0.6 }],
     lighting: null,
@@ -352,8 +334,8 @@ export const CINEMATIC_COMBO_PRESETS: Readonly<Record<CinematicComboId, Cinemati
   "blossom-dawn": {
     id: "blossom-dawn",
     label: "봄바람 벚꽃 여명",
-    summary: "새벽 여명 + 숲 전경 보케 + 흩날리는 꽃잎 + 아침 대각선 햇살",
-    postFx: { preset: "dawn-mist", foreground: "foliage" },
+    summary: "새벽 여명 + 흩날리는 꽃잎 + 아침 대각선 햇살",
+    postFx: { preset: "dawn-mist" },
     sunlight: { enabled: true, azimuth: 105, altitude: 32, opacity: 0.28, softness: 2, heightScale: 0.7 },
     atmosphereEffects: [{ kind: "petals", amount: 0.6, opacity: 0.75 }],
     lighting: null,
@@ -363,7 +345,7 @@ export const CINEMATIC_COMBO_PRESETS: Readonly<Record<CinematicComboId, Cinemati
     id: "arctic-camp",
     label: "눈보라 설원 야영",
     summary: "설원 빙청 톤 + 서리 결정 + 대설 + 모닥불 따뜻한 Emissive 오아시스",
-    postFx: { preset: "arctic-blizzard", godRays: 0, foreground: "foliage" },
+    postFx: { preset: "arctic-blizzard", godRays: 0 },
     sunlight: null,
     atmosphereEffects: [{ kind: "frost", amount: 0.55, opacity: 0.65 }],
     lighting: null,
@@ -372,8 +354,8 @@ export const CINEMATIC_COMBO_PRESETS: Readonly<Record<CinematicComboId, Cinemati
   "cataclysm-boss": {
     id: "cataclysm-boss",
     label: "불타는 마을 · 보스전",
-    summary: "화염 재앙 톤 + 동굴/폐허 전경 + 날리는 불씨·재 + 강한 블룸과 색수차",
-    postFx: { preset: "cataclysm-fire", foreground: "cave-arch" },
+    summary: "화염 재앙 톤 + 날리는 불씨·재 + 강한 블룸과 색수차",
+    postFx: { preset: "cataclysm-fire" },
     sunlight: null,
     atmosphereEffects: [
       { kind: "embers", amount: 0.75, opacity: 0.85 },
@@ -402,7 +384,6 @@ export interface ResolvedPostFx {
   readonly grain: number;
   readonly chromaticAberration: number;
   readonly bayerDither: number;
-  readonly foreground: ForegroundParallaxMode;
   readonly preserveEmissive: boolean;
   readonly adaptWeather: boolean;
   readonly horrorReactive: boolean;
@@ -422,19 +403,13 @@ export function isCinematicComboId(value: unknown): value is CinematicComboId {
   return typeof value === "string" && (CINEMATIC_COMBO_IDS as readonly string[]).includes(value);
 }
 
-export function isForegroundParallaxMode(value: unknown): value is ForegroundParallaxMode {
-  return typeof value === "string" && (FOREGROUND_PARALLAX_MODES as readonly string[]).includes(value);
-}
-
 export function normalizePostFx(raw: unknown): MapPostFx {
   if (!raw || typeof raw !== "object") return { preset: "none" };
   const obj = raw as Record<string, unknown>;
   const preset: PostFxPresetId = isPostFxPresetId(obj.preset) ? obj.preset : "none";
-  const foreground: ForegroundParallaxMode = isForegroundParallaxMode(obj.foreground) ? obj.foreground : "none";
   if (preset === "none") {
     return {
       preset: "none",
-      ...(foreground !== "none" ? { foreground } : {}),
       ...(obj.horrorReactive === false ? { horrorReactive: false } : {}),
       ...(obj.spriteRimLight === false ? { spriteRimLight: false } : {}),
     };
@@ -450,7 +425,6 @@ export function normalizePostFx(raw: unknown): MapPostFx {
     grain: clamp01(obj.grain, spec.grain),
     chromaticAberration: clamp01(obj.chromaticAberration, spec.chromaticAberration),
     bayerDither: clamp01(obj.bayerDither, spec.bayerDither),
-    foreground,
     preserveEmissive: obj.preserveEmissive !== false,
     adaptWeather: obj.adaptWeather !== false,
     horrorReactive: obj.horrorReactive !== false,
@@ -463,10 +437,8 @@ export function patchPostFx(current: MapPostFx | undefined, patch: Partial<MapPo
     ? (isPostFxPresetId(patch.preset) ? patch.preset : "none")
     : (current && isPostFxPresetId(current.preset) ? current.preset : "none");
   if (nextPreset === "none") {
-    const fg = patch.foreground !== undefined ? patch.foreground : current?.foreground;
     return normalizePostFx({
       preset: "none",
-      ...(fg && fg !== "none" ? { foreground: fg } : {}),
       ...(patch.horrorReactive !== undefined ? { horrorReactive: patch.horrorReactive } : {}),
       ...(patch.spriteRimLight !== undefined ? { spriteRimLight: patch.spriteRimLight } : {}),
     });
@@ -484,7 +456,6 @@ export function patchPostFx(current: MapPostFx | undefined, patch: Partial<MapPo
       grain: spec.grain,
       chromaticAberration: spec.chromaticAberration,
       bayerDither: spec.bayerDither,
-      foreground: current?.foreground ?? "none",
       preserveEmissive: current?.preserveEmissive ?? true,
       adaptWeather: current?.adaptWeather ?? true,
       horrorReactive: current?.horrorReactive ?? true,
@@ -522,7 +493,6 @@ export function resolvePostFx(mapPostFx: MapPostFx | undefined, systemPostFx?: M
     grain: effective.preset === "none" ? 0 : clamp01(effective.grain, spec.grain),
     chromaticAberration: effective.preset === "none" ? 0 : clamp01(effective.chromaticAberration, spec.chromaticAberration),
     bayerDither: effective.preset === "none" ? 0 : clamp01(effective.bayerDither, spec.bayerDither),
-    foreground: effective.foreground ?? "none",
     preserveEmissive: effective.preserveEmissive !== false,
     adaptWeather: effective.adaptWeather !== false,
     horrorReactive: effective.horrorReactive !== false,

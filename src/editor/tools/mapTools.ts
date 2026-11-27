@@ -3,7 +3,7 @@ import { normalizeCameraZoom, pixelSnappedCameraZoom, pixelZoomWarning } from "@
 import { mapCharacterSizeFactor } from "@/project/characterScale";
 import { CHASER_SPAWN_MIN_STEPS, chaserThreatLine, chaserThreatsAt } from "@/project/chaserSpawnSafety";
 import { patchSunlight, type MapSunlight } from "@/project/sunlight";
-import { FOREGROUND_PARALLAX_MODES, POST_FX_PRESET_IDS, POST_FX_PRESETS, patchPostFx, type MapPostFx } from "@/project/postFx";
+import { POST_FX_PRESET_IDS, POST_FX_PRESETS, patchPostFx, type MapPostFx } from "@/project/postFx";
 import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
 import { isRetiredEasyRpgTileset, retiredEasyRpgMessage } from "@/project/retiredEasyRpgTilesets";
 import { isMapLoop, mapLoopLabel, mapLoopsX, mapLoopsY, MAP_LOOP_VALUES } from "@/project/mapLoop";
@@ -2118,7 +2118,6 @@ const postFxSchema: JsonSchema = {
     grain: { type: "number", minimum: 0, maximum: 1 },
     chromaticAberration: { type: "number", minimum: 0, maximum: 1 },
     bayerDither: { type: "number", minimum: 0, maximum: 1 },
-    foreground: { type: "string", enum: [...FOREGROUND_PARALLAX_MODES] },
     preserveEmissive: { type: "boolean" },
     adaptWeather: { type: "boolean" },
     horrorReactive: { type: "boolean" },

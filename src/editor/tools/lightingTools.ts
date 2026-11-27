@@ -6,7 +6,6 @@ import { normalizeAtmosphereEffects } from "@/project/atmosphere";
 import {
   CINEMATIC_COMBO_IDS,
   CINEMATIC_COMBO_PRESETS,
-  FOREGROUND_PARALLAX_MODES,
   POST_FX_PRESET_IDS,
   POST_FX_PRESETS,
   isCinematicComboId,
@@ -172,7 +171,6 @@ const setSceneMood: ToolDefinition = {
           grain: { type: "number", minimum: 0, maximum: 1 },
           chromaticAberration: { type: "number", minimum: 0, maximum: 1 },
           bayerDither: { type: "number", minimum: 0, maximum: 1 },
-          foreground: { type: "string", enum: [...FOREGROUND_PARALLAX_MODES] },
           preserveEmissive: { type: "boolean" },
           adaptWeather: { type: "boolean" },
           horrorReactive: { type: "boolean" },

@@ -5,13 +5,10 @@ import { ATMOSPHERE_PRESETS, ATMOSPHERE_GENRES, ATMOSPHERE_SCENES, ATMOSPHERE_SO
 import {
   CINEMATIC_COMBO_IDS,
   CINEMATIC_COMBO_PRESETS,
-  FOREGROUND_PARALLAX_LABELS,
-  FOREGROUND_PARALLAX_MODES,
   POST_FX_PRESETS,
   POST_FX_PRESET_IDS,
   normalizePostFx,
   type CinematicComboId,
-  type ForegroundParallaxMode,
   type PostFxPresetId,
 } from "@/project/postFx";
 import { applyCinematicCombo, setMapAtmosphereEffects, setMapPostFx } from "@/editor/actions";
@@ -89,16 +86,6 @@ function renderPostFxSection(host: HTMLElement, map: GameMap, refresh: () => voi
       line.append(el("span", { text: label }), input, out);
       section.append(line);
     }
-
-    const fgRow = el("label", { class: "map-props-check-row" });
-    const fgSel = el("select", { attrs: { "aria-label": "전경 패럴랙스 실루엣" }, dataset: { testid: "map-postfx-foreground" } }) as HTMLSelectElement;
-    for (const fm of FOREGROUND_PARALLAX_MODES) {
-      fgSel.append(el("option", { attrs: { value: fm }, text: FOREGROUND_PARALLAX_LABELS[fm] }));
-    }
-    fgSel.value = current.foreground ?? "none";
-    fgSel.addEventListener("change", () => setMapPostFx(map.id, { foreground: fgSel.value as ForegroundParallaxMode }));
-    fgRow.append(el("span", { text: "전경 실루엣 패럴랙스" }), fgSel);
-    section.append(fgRow);
 
     const toggles: Array<readonly [key: "preserveEmissive" | "adaptWeather" | "horrorReactive" | "spriteRimLight", label: string, testid: string]> = [
       ["preserveEmissive", "불·촛불·네온 고유 발광색 보존 (Emissive)", "map-postfx-preserve-emissive"],
