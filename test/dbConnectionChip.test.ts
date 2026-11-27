@@ -38,7 +38,8 @@ describe("저장 상태 칩", () => {
       source: "env",
     }, () => undefined));
 
-    expect(chip.textContent).toContain("준비 안 됨");
+    // 칩 문구는 «저장 위치 없음»이다(dbConnectionStatus.ts onlineSaveStatusText). 요점은 주소·키를 묻지 않는 것(#5185).
+    expect(chip.textContent).toContain("저장 위치 없음");
     expect(chip.getAttribute("title") ?? "").not.toMatch(/서버 주소|접속 키|Anon|URL/ui);
   });
 
