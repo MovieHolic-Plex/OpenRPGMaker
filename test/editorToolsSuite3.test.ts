@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeAll } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { createBlankProject } from "@/project/defaults";
 import { AUTHOR_BEODEUL_TOWN_TOOL } from "@/editor/tools/authorBeodeulTown";
 import { landmarkFootprints, parseCellMap, villageArgsFromCells } from "@/ai/imagePlanCells";
@@ -429,13 +429,11 @@ describe("jpCity", () => {
 });
 
 // JRPG 마법사 시작 — 레시피 이름이 게임 제목이 되던 것, JRPG 저작 요령, simulate_battle 파티 지정(2026-09-24 도그푸딩).
-describe("jrpgPresetGuideAndTitle", () => {
+describe("jrpgPresetGuideAndTitle", { timeout: 120000 }, () => {
   isolateTimers();
-  beforeAll(() => {
-    // createBlankProject() 는 호출마다 약 80MB 를 새로 만든다(test/support/blankProject.ts 머리말) — 이 파일의 느린 케이스는 한 케이스에 그것을 여러 번 부르거나 부르는 제품 함수를 돌려
-    // CI(4코어 호스티드 러너)에서 11~15초가 걸려 기본 15초 제한에 걸리거나 닿을 듯하다. 판정은 그대로 두고 제한만 이 파일의 다른 무거운 시험과 같이 넓힌다.
-    vi.setConfig({ testTimeout: 120_000 });
-  });
+  // 시험 시간 한도는 수집 때 읽혀 beforeAll 안 vi.setConfig 는 듣지 않는다 — describe 옵션 timeout 으로 둔다.
+  // createBlankProject() 는 호출마다 약 80MB 를 새로 만든다(test/support/blankProject.ts 머리말) — 이 파일의 느린 케이스는 한 케이스에 그것을 여러 번 부르거나 부르는 제품 함수를 돌려
+  // CI(4코어 호스티드 러너)에서 11~15초가 걸려 기본 15초 제한에 걸리거나 닿을 듯하다. 판정은 그대로 두고 제한만 이 파일의 다른 무거운 시험과 같이 넓힌다.
   const jrpgBrief = () => interviewBrief("adventure-jrpg");
   describe("JRPG 마법사 시작", () => {
     it("인터뷰로 시작한 게임은 레시피 이름 대신 임시 제목을 쓰고, 조수에게 제목을 짓게 한다", async () => {

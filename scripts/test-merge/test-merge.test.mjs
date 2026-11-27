@@ -88,6 +88,27 @@ it("d", () => {
   assert.match(res.text, /const el = \(\) =>/);
 });
 
+test("mergeGroup: 최상위 vi.setConfig({ testTimeout }) 는 beforeAll 이 아니라 describe 옵션이 된다(한도는 수집 때 읽힌다)", () => {
+  const T = `import { it, expect, vi } from "vitest";
+
+vi.setConfig({ testTimeout: 120_000 });
+
+it("t", () => {
+  expect(1).toBe(1);
+});
+`;
+  const res = mergeGroup([
+    { path: "test/a.test.ts", text: A },
+    { path: "test/t.test.ts", text: T },
+  ]);
+  assert.equal(countMismatch(res), null);
+  assert.match(res.text, /describe\("t", \{ timeout: 120000 \}, \(\) => \{/);
+  assert.doesNotMatch(res.text, /setConfig/);
+  assert.doesNotMatch(res.text, /beforeAll/);
+  const hook = `import { it, vi } from "vitest";\nvi.setConfig({ testTimeout: 1, hookTimeout: 2 });\nit("h", () => {});\n`;
+  assert.ok(analyzeFile("test/h.test.ts", hook).reasons.includes("set-config"));
+});
+
 test("analyzeFile: 모킹·최상위 await·수집 때 부르는 호출 앞의 부수효과는 합치지 않는다", () => {
   const mocked = `import { vi, it } from "vitest";\nvi.mock("@/x", () => ({}));\nit("m", () => {});\n`;
   const tla = `import { it } from "vitest";\nconst v = await Promise.resolve(1);\nit("t", () => { void v; });\n`;
