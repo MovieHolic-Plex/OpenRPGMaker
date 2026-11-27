@@ -23,6 +23,7 @@ import {
   collectResourceIds,
   validateActorResources,
   validateAnimationResource,
+  validateCinematicResources,
   validateEnemyResources,
   validateEquipmentResources,
   validateItemResources,
@@ -271,6 +272,7 @@ export function collectProjectReferenceIssues(project: Project, options?: { read
   for (const ending of project.endings ?? []) {
     check(() => validateOptionalResource(`ending ${ending.id}.presentation.backgroundResourceId`, ending.presentation?.backgroundResourceId, resourceIds));
     check(() => validateOptionalResource(`ending ${ending.id}.presentation.musicResourceId`, ending.presentation?.musicResourceId, resourceIds));
+    check(() => validateCinematicResources(`ending ${ending.id}.continueTo.sequence`, ending.continueTo?.sequence, resourceIds));
   }
   if (project.system.defaultGameOverId && !project.system.gameOvers?.some(row => row.id === project.system.defaultGameOverId)) issues.push("system.defaultGameOverId does not exist.");
   const stage = project.system.opening?.stage;

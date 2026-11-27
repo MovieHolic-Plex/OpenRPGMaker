@@ -85,12 +85,13 @@ test("findLiteralReferences matches distinctive names by basename and generic na
 });
 
 test("applyBudget keeps priority tiers first, then cheapest, and reports skipped files deterministically", () => {
+  // 미루는 것은 import-graph 단계뿐이다(바뀐 시험·직접 import·문자열은 늘 담는다).
   const candidates = [
-    { file: "test/imp-big.test.ts", tier: "direct-import", reasons: [] },
+    { file: "test/imp-big.test.ts", tier: "import-graph", reasons: [] },
     { file: "test/imp-small.test.ts", tier: "direct-import", reasons: [] },
     { file: "test/changed.test.ts", tier: "changed-test", reasons: [] },
     { file: "test/lit.test.ts", tier: "string-literal", reasons: [] },
-    { file: "test/huge.test.ts", tier: "direct-import", reasons: [] },
+    { file: "test/huge.test.ts", tier: "import-graph", reasons: [] },
   ];
   const timings = {
     "test/imp-big.test.ts": { sec: 80 }, "test/imp-small.test.ts": { sec: 10 }, "test/changed.test.ts": { sec: 50 },
@@ -109,6 +110,11 @@ test("applyBudget keeps priority tiers first, then cheapest, and reports skipped
   const tight = applyBudget(candidates, timings, { budgetSeconds: 70, workers: 1, factor: 1, startupSeconds: 0, perFileSeconds: 0 });
   assert.deepEqual(tight.selected.map((entry) => entry.file), ["test/changed.test.ts", "test/imp-small.test.ts", "test/lit.test.ts"]);
   assert.deepEqual(tight.skipped.map((entry) => entry.file), ["test/huge.test.ts", "test/imp-big.test.ts"]);
+
+  // 직접 import 한 시험은 상한을 혼자 넘어도 담는다.
+  const direct = applyBudget([{ file: "test/huge.test.ts", tier: "direct-import", reasons: [] }], timings, options);
+  assert.deepEqual(direct.selected.map((entry) => entry.file), ["test/huge.test.ts"]);
+  assert.deepEqual(direct.skipped, []);
 });
 
 test("applyBudget divides summed time across workers but never goes below the largest single file", () => {
@@ -184,7 +190,8 @@ test("CLI diffs base...head in a real git repo and writes the list and the night
     put("src/b.ts", "export const b = 1;\n");
     put("test/a.test.ts", 'import "../src/a";\n');
     put("test/b.test.ts", 'import "@/b";\n');
-    put("test/c.test.ts", 'import "../src/a";\n');
+    put("src/mid.ts", 'import "./a";\nexport const mid = 1;\n');
+    put("test/c.test.ts", 'import "../src/mid";\n');
     put("test/c.browser.test.ts", 'import "../src/a";\n');
     put("test/c.bun.test.ts", 'import "../src/a";\n');
     put(".omo/test-timings.json", JSON.stringify({ version: 1, files: { "test/a.test.ts": { sec: 1 }, "test/b.test.ts": { sec: 1 }, "test/c.test.ts": { sec: 900 } } }));
@@ -203,4 +210,12 @@ test("CLI diffs base...head in a real git repo and writes the list and the night
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test("a hub path sends the PR to the wide mode regardless of reach (WIDE_HUBS)", () => {
+  const result = selectRelated({ changed: ["src/ai/variation/decks.ts"], testSources: new Map([["test/x.test.ts", 'import "../src/ai/variation/decks";']]), exists: () => true });
+  assert.equal(result.mode, "wide");
+  assert.match(result.wideReasons.join(" "), /허브 파일 1개/u);
+  const narrow = selectRelated({ changed: ["src/util/other.ts"], testSources: new Map(), exists: () => true });
+  assert.equal(narrow.mode, "narrow");
 });

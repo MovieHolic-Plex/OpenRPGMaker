@@ -227,9 +227,10 @@ export function inspectPiLayoutQuality(project: Project, baseline: Project, scop
     if (paintedShare(map, baseline.maps[mapId]) < MIN_PAINTED_SHARE) continue;
     const stats = measureLayoutQuality(project, map);
     if (!stats || stats.floorCells < MIN_FLOOR) continue;
-    const interior = !!roomSpecOf(project.tilesets[map.tilesetId]);
-    // 같은 역할표 칩셋으로 까는 거리(modern_city·jp_city)는 실내가 아니다 — 지은 실내(climate indoor)만 대칭을 묻지 않는다.
-    const problems = layoutProblems(stats, interior && map.climate?.mode === "indoor");
+    // 같은 역할표 칩셋으로 까는 거리(modern_city·jp_city)와 기본 칩셋 beodeul_city(#4733 부터 실내 역할표가 있다)의 야외 맵은 실내가 아니다 —
+    // 지은 실내(climate indoor)만 실내로 본다. 칩셋만 보면 버들항 들판·마을이 「지은 실내가 비어 있다 — build_hand_interior_room」 지시를 받았다.
+    const interior = !!roomSpecOf(project.tilesets[map.tilesetId]) && map.climate?.mode === "indoor";
+    const problems = layoutProblems(stats, interior);
     const relief = map.relief;
     const hasRamp = relief?.ramps?.some((v) => v >= 1 && v <= 8) ?? false;
     if (problems.length) issues.push({ mapId, stats, problems, ...(interior ? { interior: true } : {}),

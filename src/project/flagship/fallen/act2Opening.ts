@@ -21,6 +21,7 @@ import { layerTileAt, setLayerTileAt } from "@/project/mapLayers";
 import { mulberry32 } from "@/util/rng";
 import { BEODEUL_PLAIN_GRASS } from "@/editor/tools/wildRouteBeodeul";
 import { assertTownAnchors } from "./frozenTowns";
+import { buildFallenAct2OpeningAnimatic } from "./act2OpeningAnimatic";
 import { applyFallenAct2Tower } from "./act2Tower";
 import { WELL as WELL_PLAN, WELL_SHAFT_BRIDGES, WELL_SHAFT_LAYOUT, WELL_SHAFT_LIGHTS, WELL_SHAFT_TILESET } from "./wellShaftRooms";
 import { applyFallenWellBeast, wellBeastHanelLine } from "./wellBeast";
@@ -330,6 +331,7 @@ function bridge(project: Project, exec: Exec): void {
     continueTo: { mapId: FS2_CELL_ID, x: CELL.start.x, y: CELL.start.y, direction: "down", label: "제2막으로" },
   });
   const now = (project.endings ?? []).find((e) => e.id === "end_fs_act1")!;
+  if (now.continueTo) now.continueTo.sequence = buildFallenAct2OpeningAnimatic();
   if (now.presentation?.credits) now.presentation.credits = now.presentation.credits.replace("제2막에서 계속됩니다.", "제2막 「빌린 불」로 이어집니다.");
 }
 

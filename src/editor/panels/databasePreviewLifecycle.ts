@@ -76,7 +76,8 @@ export function registerDatabasePreview(node: HTMLElement, callbacks: PreviewCal
     },
   };
   bindings.set(node, lifecycle);
-  queueMicrotask(() => { if (requested !== false) lifecycle.setActive(true); });
+  // 등록 직후 한 박자 뒤에 켠다. 그 사이 문서가 내려갔으면(시험 해체) 켤 것이 없다 — 켜면 재생기가 버튼을 다시 그리다 던졌다(#5185).
+  queueMicrotask(() => { if (requested !== false && typeof document !== "undefined") lifecycle.setActive(true); });
   return lifecycle;
 }
 

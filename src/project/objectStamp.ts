@@ -56,6 +56,7 @@ export function translateTiles(source: TilesetDef, target: TilesetDef, tiles: It
   const byPicture = new Map<string, number>();
   for (const [tile, graft] of targetGrafts) byPicture.set(`${graft.sourceChipset}:${graft.sourceTile}`, tile);
   const result = new Map<number, number>();
+  const addedGrafts: TileGraft[] = [];
   let slotsAdded = 0;
   for (const tile of new Set(tiles)) {
     if (tile < 0) continue;
@@ -81,7 +82,7 @@ export function translateTiles(source: TilesetDef, target: TilesetDef, tiles: It
     (target.tileMeta ??= [])[slot] = structuredClone(source.tileMeta?.[tile] ?? { label: "", description: "" });
     const graft: TileGraft = { targetTile: slot, sourceChipset: picture.chip, sourceTile: picture.tile,
       ...(picture.tileSize ? { sourceTileSize: picture.tileSize } : {}), ...(picture.tilesPerRow ? { sourceTilesPerRow: picture.tilesPerRow } : {}) };
-    target.tileGrafts = [...(target.tileGrafts ?? []), graft];
+    addedGrafts.push(graft);
     targetGrafts.set(slot, graft);
     byPicture.set(key, slot);
     result.set(tile, slot);
@@ -89,6 +90,9 @@ export function translateTiles(source: TilesetDef, target: TilesetDef, tiles: It
   }
   // Grafted rows are baked a row at a time; keep the tileset a whole number of rows.
   if (slotsAdded > 0) {
+    // 한 번에 붙인다 — 칸마다 배열을 새로 펼치면 버들항 기물 수천 칸에서 제곱 시간이 들어 새 프로젝트 하나가 2~3초 걸렸다.
+    // 기존 배열은 다른 사본과 공유될 수 있으니 제자리에서 늘리지 않고 새 배열로 바꾼다.
+    target.tileGrafts = [...(target.tileGrafts ?? []), ...addedGrafts];
     const aligned = Math.ceil(target.count / target.tilesPerRow) * target.tilesPerRow;
     for (let slot = target.count; slot < aligned; slot += 1) {
       target.passability[slot] = { up: true, down: true, left: true, right: true };

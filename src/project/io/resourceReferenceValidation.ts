@@ -176,7 +176,7 @@ export function validateSystemResources(system: SystemRecords, resourceIds: Read
   }
 }
 
-function validateCinematicResources(label: string, sequence: CinematicSequence | undefined, resourceIds: ReadonlySet<string>): void {
+export function validateCinematicResources(label: string, sequence: CinematicSequence | undefined, resourceIds: ReadonlySet<string>): void {
   validateOptionalResource(`${label}.musicResourceId`, sequence?.musicResourceId, resourceIds);
   for (const [index, scene] of (sequence?.scenes ?? []).entries()) {
     const sceneLabel = `${label}.scenes[${index}]`;
@@ -184,6 +184,7 @@ function validateCinematicResources(label: string, sequence: CinematicSequence |
     if (scene.kind === "animatic") for (const id of animaticResourceIds(scene.composition)) validateOptionalResource(`${sceneLabel}.composition`, id, resourceIds);
     validateOptionalResource(`${sceneLabel}.narrationAudioResourceId`, scene.narrationAudioResourceId, resourceIds);
     if (scene.kind === 'image') validateOptionalResource(`${sceneLabel}.direction.soundResourceId`, scene.direction?.soundResourceId, resourceIds);
+    if (scene.kind === 'image') for (const [i, cue] of (scene.direction?.sounds ?? []).entries()) validateOptionalResource(`${sceneLabel}.direction.sounds[${i}].resourceId`, cue.resourceId, resourceIds);
     if (scene.kind === 'image') for (const [i, layer] of (scene.direction?.layers ?? []).entries()) validateOptionalResource(`${sceneLabel}.direction.layers[${i}].resourceId`, layer.resourceId, resourceIds);
   }
 }

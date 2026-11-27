@@ -28,17 +28,18 @@ describe.each(paths)("atomic verification adoption via %s", path => {
     expect(f.session.getWorkPlan()?.layers[0]?.items[0]?.status).toBe("done");
   });
 
-  it.each(["omitted", "changed"])("specified retained targets cannot be %s at any proof status", async variant => {
-    for (const name of ["check_reachability", "run_lint"]) for (const status of ["passed", "unverified", "stale"] as const) {
-      const f = fixture(name);
-      const original = await f.setup(status);
-      const candidate = f.candidate([f.check(f.args, original.checkId)]);
-      const item = candidate.layers[0]!.items[0]!;
-      if (variant === "omitted") Reflect.deleteProperty(item, "mapTargets");
-      else item.mapTargets = [f.foreign];
-      rejected(await f.replace(path, candidate), original.checkId);
-    }
-  }, 30000);
+  // 도구 둘 × 증명 상태 셋을 한 케이스에서 돌리면 세션 여섯 개(약 15s)라 CI 부하에서 30s 를 넘겼다(#5221) — 조합마다 케이스로 나눈다.
+  const retainedCases = (["omitted", "changed"] as const).flatMap(variant =>
+    (["check_reachability", "run_lint"] as const).flatMap(name => (["passed", "unverified", "stale"] as const).map(status => [variant, name, status] as const)));
+  it.each(retainedCases)("specified retained targets cannot be %s at any proof status (%s, %s)", async (variant, name, status) => {
+    const f = fixture(name);
+    const original = await f.setup(status);
+    const candidate = f.candidate([f.check(f.args, original.checkId)]);
+    const item = candidate.layers[0]!.items[0]!;
+    if (variant === "omitted") Reflect.deleteProperty(item, "mapTargets");
+    else item.mapTargets = [f.foreign];
+    rejected(await f.replace(path, candidate), original.checkId);
+  });
 
   it("rejection preserves an existing negative finding and its exact proof history", async () => {
     const f = fixture();

@@ -322,6 +322,58 @@ describe("playerSuite", () => {
         controller.destroy();
       });
 
+      it("keeps the cursor on the back row after ArrowUp from the first row while the panel re-syncs", () => {
+        // battle-skill-nav: 목록 맨 위에서 ↑ 로 「뒤로」에 서도, 매 틱 같은 패널을 다시 표시하는 markMenuCursor 가
+        // 「뒤로」를 복원하지 않아 커서가 첫 행으로 튕겼다 — ↑ 가 먹지 않거나, 한 번 더 누르면 맨 아래로 감겼다.
+        vi.useFakeTimers();
+        const { runtime, controller } = setup();
+        untilActorCommand(runtime);
+        vi.advanceTimersByTime(250);
+        const cursor = () => controller.root.querySelector<HTMLElement>("[data-battle-command-cursor='true']")?.dataset.testid;
+
+        controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-item']")?.click();
+        expect(cursor()).toMatch(/^actor-item-/);
+        pressKey("ArrowUp");
+        expect(cursor()).toBe("actor-command-back");
+        vi.advanceTimersByTime(1_000);
+        expect(cursor()).toBe("actor-command-back");
+        controller.destroy();
+      });
+
+      it("wraps ArrowDown from the last row onto the back row, the mirror of ArrowUp from the first row", () => {
+        // battle-skill-nav 후속: 「뒤로」는 머리줄 오른쪽에 있어, 맨 끝에서 ↓ 로 감기는 일반 랩이 가로 어긋남 벌점 때문에 「뒤로」를 건너뛰고 첫 행으로 갔다.
+        // jsdom 은 좌표가 전부 0 이라 목록 순서 폴백을 타므로, 실제 배치(뒤로 = 위·오른쪽, 행 = 왼쪽 세로 줄)를 좌표로 흉내 낸다.
+        vi.useFakeTimers();
+        const { runtime, controller } = setup();
+        untilActorCommand(runtime);
+        vi.advanceTimersByTime(250);
+        const cursor = () => controller.root.querySelector<HTMLElement>("[data-battle-command-cursor='true']")?.dataset.testid;
+
+        controller.root.querySelector<HTMLButtonElement>("[data-testid='actor-command-item']")?.click();
+        const rows = Array.from(controller.root.querySelectorAll<HTMLButtonElement>("button.battle-command[data-testid^='actor-item-']"));
+        expect(rows.length).toBeGreaterThan(0);
+        const rowIds = rows.map((row) => row.dataset.testid);
+        const rowIndex = (el: HTMLElement) => rowIds.indexOf(el.dataset.testid);
+        const rectSpy = vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
+          const isBack = this.dataset.testid === "actor-command-back";
+          const x = isBack ? 300 : 100;
+          const y = isBack ? 0 : 20 * (rowIndex(this) + 1);
+          return { x, y, left: x, top: y, width: 100, height: 16, right: x + 100, bottom: y + 16, toJSON: () => ({}) } as DOMRect;
+        });
+        try {
+          const lastRow = rows[rows.length - 1]!.dataset.testid;
+          controller.root.querySelector<HTMLButtonElement>(`[data-testid='${lastRow}']`)?.dispatchEvent(new MouseEvent("mouseover", { bubbles: true }));
+          expect(cursor()).toBe(lastRow);
+          pressKey("ArrowDown");
+          expect(cursor()).toBe("actor-command-back");
+          pressKey("ArrowDown");
+          expect(cursor()).toBe(rows[0]!.dataset.testid);
+        } finally {
+          rectSpy.mockRestore();
+        }
+        controller.destroy();
+      });
+
       it("does not reopen an ally target menu on the cancel row after cancelling from it", () => {
         // ultrabrain #4216 후속: 「뒤로」 역할(data-command-icon=back)은 목록 뒤로와 대상 취소 모두 복원하지 않는다.
         vi.useFakeTimers();

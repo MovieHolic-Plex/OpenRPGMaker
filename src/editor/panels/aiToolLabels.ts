@@ -153,6 +153,8 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   check_genre_lock: inspect("장르 칩셋 잠금 검사", "shield"),
   run_lint: inspect("맵 검사", "shield"),
   lint_quest: inspect("퀘스트 검사", "shield"),
+  find_quest_candidates: inspect("퀘스트 후보 찾기", "flag"),
+  register_quest_candidate: people("퀘스트 후보 등록", "flag"),
   lint_world: inspect("세계 검사", "shield"),
   // "완성도 평가" 아님 — 이 툴은 재미·독창성·페이싱을 채점하지 않고 참조·빈 맵·미호출 엔딩만 본다.
   // 게이트도 아니어서(자문 계약, agentVerification.ts) 방패 대신 돋보기를 쓴다.
@@ -203,6 +205,7 @@ export const TOOL_LABELS: Readonly<Record<string, ToolLabelEntry>> = {
   list_spatial_designs: inspect("공간 설계 찾기", "map"),
   get_geography_vocabulary: inspect("지형 어휘 읽기", "map"),
   get_spatial_design: inspect("공간 설계 읽기", "map"),
+  show_spatial_design: inspect("공간 설계 그림 보기", "eye"),
   upsert_spatial_design: world("공간 설계", "map"),
   preview_spatial_build: inspect("공간 시공 미리보기", "eye"),
   apply_spatial_build: world("공간 시공", "map"),

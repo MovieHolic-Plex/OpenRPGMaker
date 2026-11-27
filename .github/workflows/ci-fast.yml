@@ -85,9 +85,7 @@ jobs:
 
       - name: AI 워커 컴파일 (릴리스와 같은 엔트리포인트)
         run: |
-          bun build scripts/oh-my-pi-worker.ts \
-            --compile --target=bun-linux-x64 \
-            --outfile="$RUNNER_TEMP/oh-my-pi-worker"
+          bun scripts/build-ai-worker.ts "$RUNNER_TEMP" linux
           test -s "$RUNNER_TEMP/oh-my-pi-worker"
 
       # 생성기 고정판(tiledata/gen-kits.lock.json)은 로컬에서만 본다: npm run gen-kits:check.
@@ -276,3 +274,10 @@ jobs:
           wait "$assets_pid" || status=$?
           cat "$RUNNER_TEMP/runtime-assets.log"
           exit "$status"
+
+      # 구운 번들 타일셋 요약(src/assets/bundledTilesetDigests.json)이 지금 정의와 같은가. 낡으면 조수 적용이 «기준 프로젝트가
+      # 변경되었습니다»로 막혔다(ci-full 45844823105, #5235 뒤 beodeul_city 가 바뀜). 관련 시험 선택(그래프 상한)에 기대지 않고 여기서 바로 실패한다.
+      - name: 구운 타일셋 요약 낡음 검사
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: npx vite-node --script scripts/content/bake-bundled-tileset-digests.mts --check

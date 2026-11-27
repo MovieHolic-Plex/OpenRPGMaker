@@ -197,10 +197,15 @@ describe("upsert_event NPC 외형 자동 부여", () => {
       event: { id, name, x, y: 3, trigger: { kind: "action" }, pages: [{ conditions: [], commands: [{ kind: "text", body: "…" }] }] },
     });
     const pageOf = (id: string) => ctx.project.maps[ctx.project.startMapId]?.events.find((entry) => entry.id === id)?.pages?.[0];
+    // 이름에 맞는 사물 칩이 있으면 그 칩이다 — 「렌즈 거울」 칩(#4543)이 생긴 뒤 거울은 거울 그림을 받는다.
     const mirror = upsert("ev_mirror", "기억의 거울", 3);
     expect(mirror.ok, mirror.summary).toBe(true);
-    expect(pageOf("ev_mirror")?.graphic).toEqual({ transparent: true });
-    expect((mirror.diff?.warnings ?? []).join(" ")).toContain("사물 타일을 칠하거나");
+    expect(pageOf("ev_mirror")?.graphic?.sprite?.id).toBe("tex_oprn_charset_fallen_mirror1");
+    // 맞는 칩이 없는 사물은 주민 대신 투명으로 두고 알린다.
+    const frame = upsert("ev_frame", "기억의 액자", 9);
+    expect(frame.ok, frame.summary).toBe(true);
+    expect(pageOf("ev_frame")?.graphic).toEqual({ transparent: true });
+    expect((frame.diff?.warnings ?? []).join(" ")).toContain("사물 타일을 칠하거나");
     upsert("ev_door", "붉은 문 (촛불 숲)", 5);
     expect(pageOf("ev_door")?.graphic?.sprite?.id).toBe("tex_easyrpg_charset_object1");
     upsert("ev_shadow", "그림자 사람", 7);

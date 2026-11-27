@@ -44,13 +44,24 @@ import { distances, loadRepoGraph } from "./lib/testImportGraph.mjs";
 //   ci-vitest-files 45678290373 에서 16파일(기록 합 133초)이 140초. 파일당 고정 비용 20초 + 기록 초, 실효 워커 3, 시작 90초로 보면
 //   위 판들을 모두 조금 남게 잡는다(보수적). 옛 기본값(85 + 2×, 시작 200)은 부하 38/40 의 mdc2-heavy 기준이라 파일을 4분의 1만 담았다.
 //   chunks: 한 PR 의 관련 시험을 몇 개의 잡(조각)으로 나눌 수 있나. 조각마다 같은 상한이 걸린다.
-//   넓은 변경(wide): 그래프로 닿는 시험이 wideTests(1200 — 최근 150 PR 중 16%, 500 이면 29% 라 호스티드 자리를 평균 11개 묶는다)를 넘거나 바뀐 파일이 wideFiles 를 넘으면 상한 없이 닿는 시험 전부를 wideChunks 개 조각으로 돌린다.
+//   넓은 변경(wide): 그래프로 닿는 시험이 wideTests(1000 — 2026-11-26 최근 머지 60건 재현: 넓은 모드 18%·PR 당 러너 시험 0.58h, 800 이면 38%·1.88h, 400 이면 45%·2.24h)를 넘거나 바뀐 파일이 wideFiles 를 넘으면 상한 없이 닿는 시험 전부를 wideChunks 개 조각으로 돌린다.
 export const DEFAULTS = Object.freeze({
-  budgetSeconds: 380, workers: 3, factor: 1, perFileSeconds: 20, startupSeconds: 90, defaultSeconds: 6.4,
-  chunks: 4, wideTests: 1200, wideFiles: 80, wideChunks: 12,
+  // 2026-11-26 재보정(최근 related-tests 조각 153개, 끝난 41개): 호스티드 4코어/11GiB 에서 run-vitest.mjs 가 메모리로 워커를 1개로 낮추고,
+  // 시간 기록(.omo/test-timings.json, ci-full 샤드 기록)에 없는 파일이 조각 파일의 30% 였다 — 대부분 시험 정리(test-diet)가 합친 큰 묶음이라 6.4초로 세면
+  // 크게 모자랐다. 기록 없는 파일은 90초로 센다. 이 모델(시작 150 + Σ(20 + 기록 초 | 90))로 끝난 조각 41개의 실제/예상 p95 1.00·최대 1.15,
+  // 끊긴 조각 104개는 모두 예상 480초를 넘는다(= 이제 나뉜다). 예상 480초 조각은 실제 최대 약 550초, 시간 상자 720초 안이다.
+  // 옛 모델(워커 3·시작 90·기록 없음 6.4)은 실제를 2~3배 낮게 봐 조각 104/153 이 450초 상자에 끊겼다. LPT 분할이라 큰 파일은 먼저 혼자 조각을 잡는다.
+  budgetSeconds: 480, workers: 1, factor: 1, perFileSeconds: 20, startupSeconds: 150, defaultSeconds: 90,
+  chunks: 8, wideTests: 1000, wideFiles: 80, wideChunks: 12,
 });
 
 const TIERS = ["changed-test", "direct-import", "string-literal", "import-graph"];
+/**
+ * 허브(2026-11-26 리드 C): 이 경로를 바꾼 PR 은 닿는 시험 수와 상관없이 넓은 변경으로 돈다. 조수 v2 의 도구 노출·끝맺음 판정·변주 카드는
+ * 세션 시험 수백 개가 그래프 깊이 2~3 으로 기대는데, 좁은 판에서는 상한으로 미뤄져 #5233 의 회귀(aiAssistantSession 등 4파일)가
+ * ci-full 에서야 잡혔다(45844823105). 최근 머지 60건 재현에서 이 목록이 넓은 변경으로 보내는 PR 은 5건(8%)이다 — 목록을 넓히면 그 비율을 다시 잰다.
+ */
+export const WIDE_HUBS = Object.freeze(["src/ai/v2/tools/", "src/ai/v2/judge/", "src/ai/variation/"]);
 const CODE_EXTENSION = /\.(?:[cm]?[jt]sx?|vue|svelte)$/u;
 const RESOLVE_EXTENSIONS = [".ts", ".mts", ".tsx", ".js", ".mjs"];
 const GENERIC_BASENAMES = new Set([
@@ -172,6 +183,7 @@ export function findLiteralReferences(testSources, changedNonCode) {
 
 /**
  * 후보를 우선순위(changed-test > direct-import > string-literal) → 싼 것 → 경로 순으로 훑으며 예상 벽시계가 상한 안인 것만 담는다.
+ * 앞 세 단계는 상한과 상관없이 늘 담고(조각을 늘린다), 상한으로 미루는 것은 import-graph 단계뿐이다.
  * 파일 비용(워커 초) = perFileSeconds + factor × 초. 예상 벽시계 = startupSeconds + max(Σ비용 / workers, 가장 큰 파일 하나의 비용). 담지 못한 것은 skipped 에 사유와 함께 남는다.
  * @param {{file: string, tier: string, reasons: string[]}[]} candidates
  * @param {Record<string, {sec: number}>} timings
@@ -187,6 +199,14 @@ export function applyBudget(candidates, timings, options = {}) {
   let largest = 0;
   for (const entry of sized) {
     const wall = perFileSeconds + entry.sec * factor;
+    // 바뀐 시험·직접 import·문자열 단계는 상한과 상관없이 늘 담는다(2026-11-26 리드 B) — 미루는 것은 import 그래프 단계뿐이다.
+    if (entry.tier !== "import-graph") {
+      selected.push(entry);
+      sum += entry.sec;
+      cost += wall;
+      largest = Math.max(largest, wall);
+      continue;
+    }
     if (startupSeconds + wall > budgetSeconds) skipped.push({ ...entry, why: `단독 예상 ${Math.round(startupSeconds + wall)}초 > 상한 ${budgetSeconds}초` });
     else if (startupSeconds + Math.max(largest, wall, (cost + wall) / workers) > budgetSeconds) skipped.push({ ...entry, why: "상한 초과" });
     else {
@@ -232,6 +252,8 @@ export function selectRelated({ changed, testSources, exists, timings = {}, opti
   const wideReasons = [];
   if (all.length > settings.wideTests) wideReasons.push(`닿는 시험 ${all.length}개 > ${settings.wideTests}`);
   if (changed.length > settings.wideFiles) wideReasons.push(`바뀐 파일 ${changed.length}개 > ${settings.wideFiles}`);
+  const hubs = changed.filter((path) => WIDE_HUBS.some((hub) => path.startsWith(hub)));
+  if (hubs.length > 0) wideReasons.push(`허브 파일 ${hubs.length}개 (${hubs.slice(0, 3).join(", ")}${hubs.length > 3 ? " …" : ""})`);
   if (wideReasons.length > 0) {
     const selected = all.map((entry) => ({ ...entry, sec: timings[entry.file]?.sec ?? settings.defaultSeconds, known: timings[entry.file] != null }));
     selected.sort((a, b) => (a.file < b.file ? -1 : 1));
@@ -243,7 +265,10 @@ export function selectRelated({ changed, testSources, exists, timings = {}, opti
   const budget = applyBudget(all, timings, { ...settings, workers: settings.workers * settings.chunks });
   const cost = budget.selected.reduce((total, entry) => total + settings.perFileSeconds + settings.factor * entry.sec, 0);
   const room = Math.max(1, (settings.budgetSeconds - settings.startupSeconds) * settings.workers);
-  const count = Math.max(1, Math.min(settings.chunks, Math.ceil(cost / room), budget.selected.length));
+  // 늘 담는 세 단계만으로 조각 상한(chunks)을 넘으면 넓은 변경의 조각 수(wideChunks)까지 늘린다 — 시간 상자에 끊기면 빨강이다.
+  const mustCost = budget.selected.filter((entry) => entry.tier !== "import-graph").reduce((total, entry) => total + settings.perFileSeconds + settings.factor * entry.sec, 0);
+  const cap = Math.max(settings.chunks, Math.min(settings.wideChunks, Math.ceil(mustCost / room)));
+  const count = Math.max(1, Math.min(cap, Math.ceil(cost / room), budget.selected.length));
   const chunks = budget.selected.length === 0 ? [] : planChunks(budget.selected, count, settings);
   const estWallSeconds = Math.max(0, ...chunks.map((chunk) => chunk.estWallSeconds));
   return { changed, safetyNet, candidateCount: all.length, mode: "narrow", wideReasons, ...budget, estWallSeconds, chunks };
@@ -272,6 +297,7 @@ function tierCounts(entries) {
 export function formatReport(result, options = {}) {
   const { budgetSeconds, workers, factor, perFileSeconds, startupSeconds } = { ...DEFAULTS, ...options };
   const lines = [`vitest-related: 바뀐 파일 ${result.changed.length}개 → 후보 ${result.candidateCount}개`];
+  if (result.skipped.length > 0) lines.push(`WARNING: import 그래프로 닿는 시험 ${result.skipped.length}개를 시간 상한으로 미뤘다 — 이 PR 에서는 돌지 않고 머지 뒤 ci-full 이 본다`);
   lines.push(result.mode === "wide" ? `MODE: wide (${result.wideReasons.join(", ")}) — 닿는 시험 전부를 조각 ${result.chunks.length}개로 돈다` : `MODE: narrow — 조각 ${result.chunks?.length ?? 0}개`);
   for (const path of result.safetyNet) lines.push(`safety-net hit: ${path} — full suite runs nightly (PR 에서는 import 그래프 + 시간 상한만 돈다)`);
   lines.push(
@@ -292,6 +318,7 @@ export function formatSummary(result, options = {}) {
   const lines = [
     "### ci-related-tests",
     "",
+    ...(result.skipped.length > 0 ? [`> ⚠️ **import 그래프로 닿는 시험 ${result.skipped.length}개를 시간 상한으로 미뤘다** — 이 PR 에서는 돌지 않는다(머지 뒤 ci-full·ci-full-blame 이 본다). 미룬 목록은 아래에.`, ""] : []),
     `- 바뀐 파일 ${result.changed.length}개 → 후보 ${result.candidateCount}개, **선택 ${result.selected.length}개** (${tierCounts(result.selected)})`,
     result.mode === "wide" ? `- **넓은 변경** (${result.wideReasons.join(", ")}) — 닿는 시험 전부를 조각 ${result.chunks.length}개로 돈다` : `- 조각 ${result.chunks?.length ?? 0}개`,
     `- 시험 시간 합 ${seconds(result.sumSeconds)}(호스티드 기준) · 예상 벽시계 ${seconds(result.estWallSeconds)} (워커 ${workers} · 파일당 ${perFileSeconds}초 + ${factor}× · 시작 ${startupSeconds}초 · 상한 ${seconds(budgetSeconds)})`,

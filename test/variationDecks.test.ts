@@ -9,6 +9,7 @@ import { DECKS, type PlaceCandidate } from "@/ai/variation/decks";
 import { deckFor, hash32, pickVariation } from "@/ai/variation/pick";
 import { VARIATION_CARD_MAX, VARIATION_MARK, buildPath, variationCard } from "@/ai/variation/card";
 import { WORLDS } from "@/ai/v2/place/world";
+import { gameVariation } from "@/ai/v2/request/world";
 import { INTERIOR_CARD } from "@/ai/v2/place/builders/interior";
 import { MODERN_KR_CARD } from "@/ai/v2/place/builders/modernCity";
 import { JP_CITY_CARD } from "@/ai/v2/place/builders/jpCity";
@@ -191,6 +192,17 @@ describe("variationCard", () => {
     expect(longest).toBeGreaterThan(200);
   });
 
+  it("a descend card puts the floor in front of each written place name, so the place names stay as written", () => {
+    for (let i = 0; i < 200; i++) {
+      const v = pickVariation({ text: "밤의 미술관에 갇힌 아이가 빠져나가는 공포 게임", key: keyOf(i), allowedWorlds: ALL_WORLDS });
+      if (v?.structure?.order !== "descend" || v.places.length < 2) continue;
+      const card = variationCard(v, { lang: "ko" })!;
+      expect(card).toContain(`지하 1층 ${v.places[1]!.ko}`);
+      return;
+    }
+    throw new Error("no descend card in 200 keys");
+  });
+
   it("has no card when the user's words settled every axis", () => {
     const v = pickVariation({ text: "비 오는 날 유품 편지를 따라 갈림길 선택으로 가는 회상 게임", key: keyOf(1), allowedWorlds: ALL_WORLDS, worldFixed: true })!;
     expect([...v.skipped].sort()).toEqual(["event", "mood", "places", "structure"]);
@@ -206,6 +218,25 @@ describe("structure tools", () => {
     const verbs = new Set(createV2Tools(env, new V2Session()).map((t) => t.name));
     const named = DECKS.flatMap((d) => [...d.structures, ...d.events].flatMap((o) => o.tools ?? []));
     expect(named.length).toBeGreaterThan(5);
-    for (const name of named) expect(!!getTool(name) || verbs.has(name), name).toBe(true);
+    for (const name of named) expect(!!getTool(name) || verbs.has(name) || cardVerbs(name).has(name), name).toBe(true);
+  });
+
+  // 낱말에 묶인 v2 동사(퍼즐 사슬)는 요청에 그 낱말이 없어도 그 동사를 이름 댄 카드의 게임에서는 실린다.
+  it("a card that names author_puzzle_chain gets the puzzle verb without the word «퍼즐»", () => {
+    expect(cardVerbs("author_puzzle_chain").has("author_puzzle_chain")).toBe(true);
   });
 });
+
+const HORROR_TASK = "밤의 미술관에 갇힌 아이가 빠져나가는 공포 게임을 만들어 줘.";
+
+/** 카드 구조가 name 을 이름 대는 호러 게임 하나의 v2 동사 이름들(그런 카드가 없으면 빈 묶음). */
+function cardVerbs(name: string): Set<string> {
+  const p = createBlankProject();
+  for (let i = 0; i < 200; i++) {
+    const projectKey = JSON.stringify(["project", `card-verbs-${i}`]);
+    if (!gameVariation(p, projectKey, HORROR_TASK).variation?.structure?.tools?.includes(name)) continue;
+    const env = { ctx: { project: p, currentMapId: p.startMapId, assistantRun: true }, request: { task: HORROR_TASK, projectKey, provider: "local-cli:claude", mapIds: [], project: p }, emit() {}, record() {}, sideChat: async () => "{}", render: async () => "", checkpoint: async () => {} } as never;
+    return new Set(createV2Tools(env, new V2Session()).map((t) => t.name));
+  }
+  return new Set();
+}

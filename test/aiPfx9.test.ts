@@ -1,0 +1,408 @@
+import { describe, expect, it } from "vitest";
+import { AssistantSession } from "@/ai/assistantSession";
+import { NON_TILE_SPATIAL_TOOLS, SPATIAL_BUILD_TOOLS } from "@/ai/buildSpec";
+import { runTool } from "@/editor/tools";
+import { createBlankProject } from "@/project/defaults";
+import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
+import type { ToolContext } from "@/editor/tools/types";
+import { createV2Tools } from "@/ai/v2/tools/verbs";
+import { withTodoLoop } from "@/ai/v2/loop/todoTools";
+import { nextAfterFailure } from "@/ai/v2/loop/nextCall";
+import { applyLayoutPatch, layoutPatchIsEmpty, type InteriorLayout, type LayoutPatch } from "@/ai/v2/place/interiorLayout";
+import { dropPatchFill } from "@/ai/v2/tools/support";
+import { V2Session } from "@/ai/v2/turn/session";
+import type { PiAssistantV2Env } from "@/ai/v2/shared/env";
+import type { PlacePatch, PlaceSpec } from "@/ai/v2/shared/types";
+import { isIndoorMap, placeSpecFor, placeTypeFromName } from "@/ai/v2/place/placeGuess";
+import { isolateTimers } from "./mergedTeardown";
+
+describe("aiSpecGateFreshMap", { timeout: 120000 }, () => {
+  isolateTimers();
+  // 시험 시간 한도는 수집 때 읽혀 beforeAll 안 vi.setConfig 는 듣지 않는다 — describe 옵션 timeout 으로 둔다.
+  // Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+  // panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+  // single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
+  type ChatResult = import("@/ai/llmClient").ChatResult;
+  const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "stub-model", apiKey: "sk", maxToolCalls: 12, maxTokens: 8192 };
+  function scriptedChat(steps: readonly ChatResult[]) {
+    let index = 0;
+    return async (): Promise<ChatResult> => {
+      if (index >= steps.length) throw new Error("scripted chat exhausted");
+      return steps[index++];
+    };
+  }
+  function toolCallMsg(name: string, args: unknown, id: string): ChatResult {
+    return {
+      message: { role: "assistant", content: null, tool_calls: [{ id, type: "function", function: { name, arguments: JSON.stringify(args) } }] },
+      finishReason: "tool_calls",
+    } as ChatResult;
+  }
+  function finalMsg(text: string): ChatResult {
+    return { message: { role: "assistant", content: text, tool_calls: undefined }, finishReason: "stop" } as ChatResult;
+  }
+  // m1 sits on the retired combined-town sheet, as in aiSpecGate.test.ts: build_house is that sheet's harness, and on
+  // the current default (beodeul_city) the tileset-reference read gate (tilesetReferenceEvidence) refuses tile writes
+  // before the spec gate is even reached. The assistant refuses EasyRPG-family create_map (2026-10-06), so the map is
+  // made outside the session.
+  function projectWithMap() {
+    const ctx = { project: withRetiredEasyRpgTilesets(createBlankProject()) };
+    expect(runTool(ctx, "create_map", { id: "m1", name: "게이트 테스트", width: 20, height: 20, tilesetId: COMBINED_TOWN_TILESET_ID }).ok).toBe(true);
+    return ctx.project;
+  }
+  async function toolEvents(session: AssistantSession, message: string) {
+    const events: { name: string; ok: boolean; summary: string; messages: string[] }[] = [];
+    await session.sendUserMessage(message, (event) => {
+      if (event.type === "tool_call") {
+        events.push({ name: event.name, ok: event.result.ok, summary: event.result.summary,
+          messages: (event.result.issues ?? []).map(issue => issue.message) });
+      }
+    });
+    return events;
+  }
+  // F2(`.omo/evidence/ai-assistant-failure-modes.md`): 밑그림 없음 차단이 실사용자 실패의 52%였다.
+  // 타일을 덮지 않는 점 배치까지 막을 근거가 없었고, 차단문에는 재제출할 초안이 없었다.
+  describe("스펙 게이트 — 덮어쓰지 않는 배치와 재제출 초안", () => {
+    it("점 배치 툴은 밑그림 없음만을 이유로 막지 않는다", async () => {
+      for (const name of ["place_npc", "place_battle_blocker"]) {
+        expect(SPATIAL_BUILD_TOOLS.has(name)).toBe(true);
+        expect(NON_TILE_SPATIAL_TOOLS.has(name)).toBe(true);
+      }
+      const session = new AssistantSession(projectWithMap(), { config: CONFIG, chat: scriptedChat([
+        toolCallMsg("place_npc", { mapId: "m1", x: 6, y: 6, id: "npc_guide", name: "안내원",
+          graphic: { transparent: true }, pages: [{ lines: ["어서 오세요"] }] }, "c1"),
+        finalMsg("안내원을 세웠습니다."),
+      ]) });
+
+      const placed = (await toolEvents(session, "안내원 한 명 세워줘")).find(event => event.name === "place_npc");
+
+      expect(placed?.ok).toBe(true);
+      expect(session.getProposedProject().maps.m1!.events.some(event => event.id === "npc_guide")).toBe(true);
+    });
+
+    it("타일을 쓰는 툴도 빈 기준선 맵이면 밑그림 없이 실행된다", async () => {
+      const session = new AssistantSession(projectWithMap(), { config: CONFIG, chat: scriptedChat([
+        toolCallMsg("build_house", { mapId: "m1", x: 2, y: 2, width: 6, height: 7, material: "plaster" }, "c1"),
+        finalMsg("지었습니다."),
+      ]) });
+
+      const house = (await toolEvents(session, "집 지어줘")).find(event => event.name === "build_house");
+
+      expect(house?.ok).toBe(true);
+      expect(house?.summary).not.toContain("스펙 게이트");
+    });
+  });
+});
+
+// 「이 장소를 깔아 줘」 한 요청이 거절 고리에 갇히던 일 — 2026-11-11 map-vqa 깔기 24판(Terra high): 장소는 23곳 깔렸는데 «완료» 는 8곳.
+// edit_place 거절 26번(빈 껍데기 layoutPatch 를 진짜 고침으로 읽음) · 다음 호출 줄의 `mapId:""` · «pending action» 에 막힌 맞는 호출 17번.
+// 거절은 값이 다 찬 다음 호출 하나를 이르거나, 가장 가까운 맞는 일을 스스로 한다.
+describe("aiV2LayRefusals", () => {
+  isolateTimers();
+  const SLOW = 120_000;
+  const one = { count: 1, dx: 0, dy: 0 };
+  /** 그 판에서 한 번에 깔린 배치(선술집 12×10) — 엄격 스키마가 채운 빈 칸까지 보낸 그대로. */
+  const TAVERN = {
+    map: { w: 12, h: 10 }, landmark: { id: "counter 4x1", x: 3, y: 5, repeat: one, purpose: "바 카운터", wall: "" },
+    outer_wall: { material: "log", path: [[0, 0], [11, 0], [11, 9], [0, 9], [0, 0]] }, walls: [], doors: [],
+    rooms: [{ id: "hall", at: [5, 7], floor: "boards", purpose: "모험가들이 모여 술을 마시는 작은 선술집", role: "main", landmark: "counter 4x1", stairs: "none", repeat: false, jo: 0 }],
+    wall_items: [{ id: "keg rack", x: 1, y: 3, repeat: one, purpose: "술통 보관대", wall: "outer" }, { id: "window", x: 4, y: 1, repeat: one, purpose: "창", wall: "outer" },
+      { id: "quest board", x: 7, y: 1, repeat: one, purpose: "의뢰 게시판", wall: "outer" }, { id: "cabinet:bottle+bottler+bottley", x: 8, y: 3, repeat: one, purpose: "술병 보관장", wall: "outer" }],
+    rails: [], regions: [], openings: [], entrance: { x: 5, y: 9 }, carpets: [], daises: [], floor_zones: [],
+    objects: [{ id: "roundtable", x: 2, y: 7, repeat: one, purpose: "둥근 탁자" }, { id: "chair E", x: 1, y: 7, repeat: one, purpose: "탁자 의자" }, { id: "chair W", x: 3, y: 7, repeat: one, purpose: "탁자 의자" },
+      { id: "barrel", x: 9, y: 5, repeat: one, purpose: "술통" }, { id: "bar stool", x: 6, y: 7, repeat: one, purpose: "바 의자" }, { id: "barrel", x: 9, y: 7, repeat: one, purpose: "술통" },
+      { id: "crate", x: 10, y: 7, repeat: one, purpose: "물품 상자" }, { id: "armchair", x: 1, y: 5, repeat: one, purpose: "손님 자리" }, { id: "potted fern", x: 10, y: 3, repeat: one, purpose: "화분" }],
+    required: [{ ask: "바 카운터", ids: ["counter 4x1"], missing: "" }, { ask: "술통", ids: ["barrel", "keg rack"], missing: "" }, { ask: "둥근 탁자", ids: ["roundtable"], missing: "" }],
+  };
+  /** 엄격 스키마 모델이 «고칠 것 없음» 자리에 채워 보내는 껍데기. */
+  const SHELL: LayoutPatch = { remove_objects: [], add_objects: [], remove_wall_items: [], add_wall_items: [],
+    replace: { map: { w: 0, h: 0 }, landmark: { id: "", x: 0, y: 0 }, outer_wall: { material: "", path: [] }, walls: [], doors: [], entrance: { x: 0, y: 0 }, rooms: [], objects: [] } } as unknown as LayoutPatch;
+  function turn(task: string) {
+    const project = createBlankProject();
+    const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true };
+    const forced: string[] = [];
+    const env = { ctx, request: { task, provider: "local-cli:claude", mapIds: [], project } as never, emit: () => {}, record: () => {}, sideChat: async () => JSON.stringify({ score: 7, majors: [] }), checkpoint: async () => {},
+      preferToolNextTurn: (name: string) => { forced.push(name); }, clearToolPreference: () => {} } as unknown as PiAssistantV2Env;
+    const session = new V2Session();
+    const tools = withTodoLoop(env, session.todo, session.loop, createV2Tools(env, session), session.hooks);
+    const call = async (name: string, args: unknown): Promise<{ ok: boolean; body: string }> => {
+      const body = await tools.find((t) => t.name === name)!.execute(`c-${name}`, args)
+        .then((r) => (r.content as { type: string; text?: string }[]).filter((c) => c.type === "text").map((c) => c.text ?? "").join("\n"), (e: Error) => JSON.stringify({ ok: false, summary: e.message }));
+      let ok = !/^Rejected:/u.test(body);
+      try { const j = JSON.parse(body.split("\n")[0]!) as { ok?: boolean; notFailure?: boolean }; ok = j.ok !== false || j.notFailure === true; } catch { /* 거절 글은 JSON 이 아니다 */ }
+      return { ok, body };
+    };
+    const todo = (name: string, placeKind: string) => call("todo", { op: "init", list: [{ phase: "p", items: [{ content: `${name} 만들기`, id: "place", check: { kind: "place", name, placeKind, fresh: true } }] }] });
+    return { ctx, call, todo, forced };
+  }
+  describe("칸 배치 고침 — 빈 껍데기는 고침이 아니다", () => {
+    it("엄격 스키마가 채운 layoutPatch 는 빈 고침으로 읽고, 진짜 고침만 고침이다", () => {
+      expect(layoutPatchIsEmpty(SHELL)).toBe(true);
+      expect(layoutPatchIsEmpty({ add_objects: [{ id: "barrel", x: 5, y: 5 }] } as LayoutPatch)).toBe(false);
+      expect(layoutPatchIsEmpty({ replace: { doors: [{ wall: "outer", x: 5, y: 9 }] } } as unknown as LayoutPatch)).toBe(false);
+    });
+
+    it("껍데기 replace 는 벽·문을 지우지 않고, 이미 있는 물건을 또 더하지 않는다", () => {
+      const base = { ...TAVERN, walls: [{ id: "mid", material: "log", path: [[0, 4], [11, 4]] }], doors: [{ wall: "mid", x: 5, y: 4 }] } as unknown as InteriorLayout;
+      const kept = applyLayoutPatch(base, SHELL).layout as unknown as typeof TAVERN;
+      expect(kept.walls).toHaveLength(1);
+      expect(kept.doors).toHaveLength(1);
+      expect(kept.map).toEqual({ w: 12, h: 10 });
+      const twice = applyLayoutPatch(TAVERN as unknown as InteriorLayout, { add_objects: [{ id: "crate", x: 10, y: 7 }, { id: "crate", x: 7, y: 5 }] } as LayoutPatch).layout as unknown as typeof TAVERN;
+      expect(twice.objects.filter((o) => o.id === "crate")).toHaveLength(2);
+    });
+
+    it("edit_place 패치의 빈 칸·0·지금과 같은 값은 «안 보냈다» 다 — 이름·크기·배치가 덮이지 않는다", () => {
+      const spec = { type: "village", name: "새벽 마을", size: "medium", hints: { width: 48 } } as unknown as PlaceSpec;
+      const patch = { mapId: "map_a", set: { name: "", style: "", layout: SHELL.replace, size: "medium", hints: { width: 0, height: 0, walls: false, landmark: "", layout: { gather: { x: 0, y: 0, plaza: false }, houses: [] } } },
+        zones: [], addAnchors: [], removeFeatures: [], variant: 0, dressing: 0, design: { shape: "", areas: [] } } as unknown as PlacePatch;
+      expect(dropPatchFill(patch, spec)).toEqual({ mapId: "map_a" });
+      // 지금 켜진 값을 끄는 false 는 진짜 고침이다.
+      const walled = { ...spec, hints: { width: 48, walls: true } } as unknown as PlaceSpec;
+      expect(dropPatchFill({ mapId: "map_a", set: { hints: { walls: false, width: 0 } } } as unknown as PlacePatch, walled)).toEqual({ mapId: "map_a", set: { hints: { walls: false } } });
+    });
+  });
+  describe("거절 뒤 다음 호출 — 값이 찬 호출만, 없는 맵 id 는 싣지 않는다", () => {
+    const project = createBlankProject();
+    const verbs = new Set(["make_place", "edit_place", "create_transfer_pair", "inspect", "find_pieces", "create_map", "move_event"]);
+
+    it("아직 서지 않은 장소의 칸 배치 거절은 같은 이름의 make_place 를 이른다(따옴표가 \\\" 로 와도)", () => {
+      for (const text of ['Rejected: the interior layout for "무기 가게" cannot be laid as written (1 problem). - unknown catalog id', '{"ok":false,"summary":"Rejected: the interior layout for \\"무기 가게\\" cannot be laid as written']) {
+        const next = nextAfterFailure("make_place", { name: "무기 가게", mapId: "" }, text, project, verbs)!;
+        expect(next.verb).toBe("make_place");
+        expect(next.args.name).toBe("무기 가게");
+        expect(JSON.stringify(next.args)).not.toContain('"mapId":""');
+        expect(next.exact).toBeFalsy();
+      }
+    });
+
+    it("거절 글이 동사 이름만 짚으면 빈 mapId 대신 자리표시를 쓰고 강제하지 않는다", () => {
+      const next = nextAfterFailure("edit_place", { patch: { mapId: "" } }, "nothing was changed — a door to another map: create_transfer_pair", project, verbs)!;
+      expect(next.verb).toBe("create_transfer_pair");
+      expect((next.args.a as { mapId: string }).mapId).toBe("<mapId>");
+      expect(next.exact).toBeFalsy();
+    });
+
+    it("거절 글이 값을 채운 다음 호출을 이미 적었으면 빈 뼈대를 덧붙이지 않는다", () => {
+      expect(nextAfterFailure("edit_place", { patch: { mapId: "map_blank_start" } }, 'nothing was changed.\nNext call: inspect({"mapId":"map_blank_start"}) — then use create_transfer_pair or move_event.', project, verbs)).toBeUndefined();
+    });
+
+    it("칩셋 계열 거절 뒤에는 빈 맵(create_map)이 아니라 그 이름의 make_place 를 이른다", () => {
+      const refusal = "프로젝트에서 칠한 맵 map_a 의 칩셋은 「사막·동양풍」인데 author_forest_route 이 맵 map_field_east_1 에 「버들항 v6」을 쓰려 해 거부했다 — 사용자 승인 없이 타일 그림체를 바꾸지 않는다. create_map(tilesetId=후보) 로 빈 맵을 만든 뒤 칠하기 도구로 직접 깔아라";
+      const next = nextAfterFailure("author_forest_route", { fromMapId: "map_a", names: ["동쪽 들판"] }, refusal, project, verbs)!;
+      expect(next.verb).toBe("make_place");
+      expect(next.args.name).toBe("동쪽 들판");
+    });
+  });
+  describe("깔기 요청의 도구 층 — 거절이 다음 길을 막지 않는다", () => {
+    it("없는 기물 하나로는 거절하지 않고(그 조각만 빼고 깔고 알린다), 같은 방을 빈 mapId 로 다시 보내면 그 맵에서 다시 짓는다", async () => {
+      const t = turn("모험가의 선술집 실내 맵을 만들어 줘.");
+      await t.todo("모험가의 선술집", "interior");
+      const odd = { type: "interior", name: "모험가의 선술집", mapId: "", layout: { ...TAVERN, objects: [...TAVERN.objects, { id: "golden unicorn", x: 6, y: 5 }] } };
+      const laid = await t.call("make_place", odd);
+      expect(laid.ok, laid.body.slice(0, 600)).toBe(true);
+      expect(laid.body).toContain("golden unicorn");
+      expect(laid.body).toContain("left out");
+      expect(t.forced).toEqual([]);
+      expect(t.ctx.project.maps[t.ctx.project.startMapId]!.name).toBe("모험가의 선술집");
+      // 같은 방을 빈 mapId 로 다시 보내면 그 맵에서 다시 짓는다 — 맵이 늘지 않는다.
+      const again = await t.call("make_place", { type: "interior", name: "모험가의 선술집", mapId: "", layout: TAVERN });
+      expect(again.ok, again.body.slice(0, 600)).toBe(true);
+      expect(Object.keys(t.ctx.project.maps)).toHaveLength(1);
+    }, SLOW);
+
+    it("빈 시작 맵에 온 edit_place 는 이름·맵 id 가 찬 make_place 를 이르고, 배치 전체가 오면 그대로 깐다", async () => {
+      const t = turn("여관 실내를 만들어 줘.");
+      await t.todo("여관", "interior");
+      const refused = await t.call("edit_place", { patch: { mapId: "", addAnchors: [{ what: "침대" }] } });
+      expect(refused.ok).toBe(false);
+      expect(refused.body).toContain('make_place({"type":"interior","name":"여관","mapId":"map_blank_start"})');
+      expect(refused.body).not.toContain('"mapId":""');
+      expect(t.forced).toEqual([]);
+      const laid = await t.call("edit_place", { patch: { mapId: "", set: { name: "여관", layout: TAVERN } } });
+      expect(laid.ok, laid.body.slice(0, 600)).toBe(true);
+      expect(t.ctx.project.maps.map_blank_start?.name).toBe("여관");
+    }, SLOW);
+
+    it("선 마을에 물건 하나를 더하려는 edit_place 는 그 물건을 놓는 호출을 맵 id·칸과 함께 이르고, draw_object 는 칩셋에 있는 물건의 place_object 를 이른다", async () => {
+      const t = turn("시장 마을을 만들어 줘.");
+      await t.call("todo", { op: "init", list: [{ phase: "p", items: [{ content: "마을 만들기", id: "v", check: { kind: "place", name: "시장 마을", placeKind: "village", fresh: true } }, { content: "광장에 노점 놓기", id: "stalls" }] }] });
+      const spec = { type: "village", name: "시장 마을", style: "fantasy", size: "medium", features: ["plaza", "market stalls"], floors: 1 };
+      // 버들항 마을은 첫 호출에 땅 그림을 돌려주고(실패 아님) 둘째 호출에 짓는다.
+      let made = await t.call("make_place", spec);
+      if (made.body.includes('"notFailure":true')) made = await t.call("make_place", spec);
+      expect(made.ok, made.body.slice(0, 600)).toBe(true);
+      const mapId = t.ctx.project.startMapId;
+      const same = { name: "", size: "medium", floors: 1, features: ["plaza", "market stalls"] };
+      // 물건 하나만 더하는 고침은 다시 깔지 않고 선 맵에 그 이름의 칩셋 물건을 놓는다(#4766 «거절은 게임이 깨질 때만»).
+      // 버들항 칩셋에 노점이 생긴 뒤로 «시장 노점» 은 거절이 아니라 그 자리 곁에 놓인다 — 놓인 칸을 결과에 적는다.
+      const added = await t.call("edit_place", { patch: { mapId, set: same, addAnchors: [{ zone: "광장", what: "시장 노점", near: { x: 21, y: 25 } }], variant: 0, dressing: 0 } });
+      expect(added.ok, added.body.slice(0, 600)).toBe(true);
+      // 놓았으면 놓은 칸을, 같은 판에 이름이 비슷한 칩셋 노점이 여럿이면 그 킷 id 들을 이른다(거부 아님) — 어느 쪽이든 거절 고리가 아니다.
+      expect(added.body).toMatch(/«시장 노점» → [^(]+ at \(\d+,\d+\)|bd-prop-stall_/u);
+      expect(added.body).not.toContain("[Next call]");
+      // draw_object 는 이름이 맞는 칩셋 물건이 있으면 그것을 놓는 place_object 를 실제 id·칸으로 이른다.
+      const drawn = await t.call("draw_object", { object: { what: "시장 노점", mapId, at: { x: 21, y: 25 } } });
+      // 칩셋에 이름이 맞는 물건이 있으면 그 킷을 이른다 — 예전에는 «Next call: place_object(...)» 한 줄, 지금은 «참고: 이름이 비슷한 기물…» 줄에
+      // 킷 id 와 stamp_object 를 적는다(거부 아님). 어느 쪽이든 이른 킷은 이 맵 칩셋에 실제로 있어야 한다.
+      const body = drawn.body.replace(/\\"/gu, '"');
+      const next = /Next call: place_object\((\{.*?\})\) —/u.exec(body)?.[1];
+      const objectId = next ? (JSON.parse(next) as { objectId: string }).objectId : /\b(bd-[a-z0-9_-]+)\(/u.exec(body)?.[1];
+      expect(objectId, drawn.body.slice(0, 600)).toBeTruthy();
+      if (next) { expect(next).toContain(`"mapId":"${mapId}"`); expect(next).toContain('"at":{"x":'); }
+      const map = t.ctx.project.maps[mapId]!;
+      expect((t.ctx.project.tilesets[map.tilesetId]?.structureKits ?? []).some((kit) => kit.id === objectId)).toBe(true);
+      // 바뀌는 것이 없는 고침은 그렇게 말하고 그 맵을 보는 호출을 이른다.
+      const nothing = await t.call("edit_place", { patch: { mapId, set: same, variant: 0, dressing: 0, addAnchors: [] } });
+      expect(nothing.ok).toBe(false);
+      expect(nothing.body).toContain("changes nothing");
+      expect(nothing.body).toContain(`inspect({"mapId":"${mapId}"})`);
+      expect(t.forced).toEqual([]);
+    }, SLOW);
+  });
+});
+
+// 끝맺음 자동 짓기는 장소 종류를 «아는 사실» 에서 읽는다(2026-11-16, openwiki/assistant-v2.md 「자동 짓기는 종류를 아는 사실에서 읽는다」):
+// 모델이 make_place 로 청한 명세(거절됐어도) · 청사진에 적은 종류 · 이름이 말하는 종류 차례다. 그래도 모르면 짓지 않고 모델에게 돌려준다.
+// 종전에는 이름 낱말이 맞지 않으면 모험 장르는 마을 한 장으로 떨어졌다 — r5a 재생에서 실내로 청했다 거절된 「방앗간 안」 이 42×45 강마을로 섰다.
+describe("aiV2PlaceTypeKnown", () => {
+  isolateTimers();
+  const SLOW = 180_000;
+  const TASK = "강가 마을에서 시작하는 짧은 JRPG 모험 게임을 만들어 줘. 방앗간과 동굴이 나와.";
+  /** 플레이에서 마을로 선 다섯 이름(r5a·r5b). */
+  const FIVE = ["방앗간 안", "바닷가 등대", "물때 어물전", "포구 회관", "말순네 농가"];
+  const NOTE = (names: string[]) => `NOT built, place type unknown: ${names.map((n) => `"${n}"`).join(", ")}. Build each with make_place and a type (interior, village, dungeon, cave).`;
+  describe("장소 종류 — 아는 사실이 추측보다 먼저다(placeSpecFor)", () => {
+    const project = createBlankProject();
+    const spec = (name: string, facts = {}, genre = "JRPG") => placeSpecFor(name, project, genre, TASK, facts);
+
+    it("다섯 이름은 아는 것이 없어도 마을이 되지 않는다", () => {
+      for (const name of FIVE) expect(spec(name)?.type, name).not.toBe("village");
+      // 「○○ 안」 은 이름이 스스로 실내라고 말한다. 나머지 넷은 모른다 = 짓지 않는다.
+      expect(spec("방앗간 안")?.type).toBe("interior");
+      for (const name of FIVE.slice(1)) expect(spec(name), name).toBeUndefined();
+    });
+
+    it("모델이 make_place 로 청한 명세가 가장 먼저다 — 종류·방 목록을 그대로, 맵 id·씨앗·거절된 칸 배치는 뺀다", () => {
+      const asked = { type: "interior", name: "바닷가 등대", zones: [{ kind: "study", purpose: "등대지기 방" }], mapId: "map_x", salt: 7, variety: "v", layout: { map: { w: 14, h: 12 } } } as unknown as PlaceSpec;
+      const got = spec("바닷가 등대", { asked, kind: "village" })!;
+      expect(got.type).toBe("interior");
+      expect(got.zones).toEqual(asked.zones);
+      expect(got).not.toHaveProperty("mapId");
+      expect(got).not.toHaveProperty("salt");
+      expect(got).not.toHaveProperty("variety");
+      expect(got).not.toHaveProperty("layout");
+    });
+
+    it("청사진·할 일에 적은 종류가 이름보다 먼저다", () => {
+      expect(spec("말순네 농가", { kind: "interior" })?.type).toBe("interior");
+      expect(spec("포구 회관", { kind: "Interior " })?.type).toBe("interior");
+      expect(spec("달빛 여관", { kind: "village" })?.type).toBe("village");
+      expect(spec("바람 언덕", { kind: "field" })).toMatchObject({ type: "dungeon", theme: "forest" });
+      // 짓는 종류의 이름이 아닌 낱말(세계의 종류 id 따위)은 사실로 읽지 않는다.
+      expect(spec("물때 어물전", { kind: "lake" })).toBeUndefined();
+    });
+
+    it("이름이 말하는 종류는 그대로 읽는다 — 마을은 끝 낱말이 마을 낱말일 때만", () => {
+      expect(placeTypeFromName("수정 동굴")).toBe("cave");
+      expect(placeTypeFromName("달빛 여관")).toBe("interior");
+      expect(placeTypeFromName("잊힌 유적")).toBe("dungeon");
+      expect(placeTypeFromName("물레강 마을")).toBe("village");
+      expect(placeTypeFromName("갈매기 포구")).toBe("village");
+      expect(placeTypeFromName("버들항구")).toBe("village");
+      expect(placeTypeFromName("포구 회관")).toBeUndefined();
+      expect(placeTypeFromName("마을 회관 내부")).toBe("interior");
+      expect(placeTypeFromName("동굴 안")).toBe("cave");
+    });
+
+    it("건물 안이 기본인 장르는 모르는 장소를 실내로 짓는다(종전 그대로)", () => {
+      expect(spec("물때 어물전", {}, "추리")?.type).toBe("interior");
+      expect(spec("포구 회관", {}, "방탈출")?.type).toBe("interior");
+    });
+  });
+  function turn() {
+    const project = createBlankProject();
+    const session = new V2Session();
+    const ctx: ToolContext = { project, currentMapId: project.startMapId, assistantRun: true };
+    const env: PiAssistantV2Env = {
+      ctx, request: { task: TASK, provider: "local-cli:claude", mapIds: [], project, projectKey: `["project","place-type-known"]` } as never,
+      emit: () => {}, record: () => {}, sideChat: async () => "{}", render: async () => "", checkpoint: async () => {},
+    };
+    const tools = createV2Tools(env, session);
+    const call = async (name: string, args: unknown): Promise<{ ok?: boolean; summary?: string }> => {
+      const res = await tools.find((t) => t.name === name)!.execute(`c-${name}`, args);
+      return JSON.parse((res.content as { type: string; text?: string }[]).find((c) => c.type === "text")!.text!) as { ok?: boolean; summary?: string };
+    };
+    const maps = () => Object.values(ctx.project.maps);
+    const mapNamed = (name: string) => maps().find((m) => m.name === name);
+    return { ctx, session, call, maps, mapNamed };
+  }
+  /** 세계 없는 모험 청사진 — 단계의 장소가 여섯(마을 하나와 다섯 이름). places 는 모델이 적은 종류다. */
+  function blueprint(places?: { name: string; kind: string; from?: string }[]) {
+    const rows = [["s1", "talk", "방앗간 안", "방앗간 주인 한씨"], ["s2", "talk", "물레강 마을", "어부 도윤"], ["s3", "find", "말순네 농가", "빈 솥"],
+      ["s4", "talk", "바닷가 등대", "등대지기"], ["s5", "find", "물때 어물전", "장부"], ["s6", "battle", "포구 회관", "밀수꾼 두목"]] as const;
+    const steps = rows.map(([id, kind, place, event], i) => ({ id, kind, place, event, ...(kind === "find" ? {} : { who: event }), action: `${event} 를 만난다`, feeling: "궁금함", gives: `flag${i + 1}`, needs: i ? `flag${i}` : "" }));
+    return { title: "물레강", genre: "JRPG", playerGoal: "강을 되살린다", steps,
+      ending: { name: "다시 도는 물레방아", how: "두목을 이긴다", feeling: "뿌듯함", closing: ["강이 다시 흐른다.", "물레방아가 돈다."] }, ...(places ? { places } : {}) };
+  }
+  async function writeBlueprint(t: ReturnType<typeof turn>, bp: unknown) {
+    let r = await t.call("write_blueprint", bp);
+    if (!r.ok) r = await t.call("write_blueprint", bp);
+    expect(r.ok, r.summary).toBe(true);
+  }
+  /** r5a 재생에서 거절된 「방앗간 안」 호출의 칸 배치(14×12) — 맵 밖 기물 하나를 더해 여기서도 거절되게 한다. */
+  const MILL: Record<string, unknown> = { type: "interior", name: "방앗간 안", layout: { map: { w: 14, h: 12 }, landmark: { id: "work 3x1", x: 5, y: 6, purpose: "밀을 빻는 방앗간 작업대" },
+    outer_wall: { material: "log", path: [[0, 0], [13, 0], [13, 11], [0, 11]] }, entrance: { x: 6, y: 11 },
+    rooms: [{ id: "mill", at: [6, 5], floor: "plank", purpose: "물레방아와 이어진 방앗간 작업장", role: "main" }],
+    wall_items: [{ id: "window", wall: "outer", x: 2, y: 1 }, { id: "window", wall: "outer", x: 11, y: 1 }],
+    objects: [{ id: "sack pile", x: 10, y: 3, purpose: "곡식 자루 더미" }, { id: "barrel stack", x: 1, y: 8 }, { id: "crate stack", x: 11, y: 8 }, { id: "crate", x: 9, y: 6 }, { id: "stool", x: 4, y: 8 }, { id: "stool", x: 30, y: 30 }] } };
+  describe("끝맺음 자동 짓기 — 종류를 모르는 장소는 마을로 세우지 않는다", () => {
+    it("아는 것이 없으면 짓지 않고, 종류를 적어 지으라는 글 한 줄을 맨 앞에 돌려준다", async () => {
+      const t = turn();
+      await writeBlueprint(t, blueprint());
+      const notes = await t.session.buildPlaces!();
+      // 청사진 단계 차례로 적는다.
+      expect(notes[0]).toBe(NOTE(["말순네 농가", "바닷가 등대", "물때 어물전", "포구 회관"]));
+      // 바깥 맵은 마을 하나뿐이다 — 종전에는 여섯 장소가 모두 마을 한 장씩이었다.
+      expect(t.maps().filter((m) => !isIndoorMap(m)).map((m) => m.name)).toEqual(["물레강 마을"]);
+      expect(isIndoorMap(t.mapNamed("방앗간 안")!)).toBe(true);
+      for (const name of ["말순네 농가", "바닷가 등대", "물때 어물전", "포구 회관"]) expect(t.mapNamed(name), name).toBeUndefined();
+    }, SLOW);
+
+    it("실내로 청했다 칸 배치가 거절된 장소는 실내로 선다 — 마을이 아니다", async () => {
+      const t = turn();
+      await writeBlueprint(t, blueprint());
+      // 이름이 종류를 말하지 않는 장소로 청한다 — 종류는 청한 명세에서만 온다.
+      // 닫히지 않은 바깥 벽 — 기물 하나의 문제는 이제 그 기물만 빼고 깔리므로(2026-11-16 «거절은 게임이 깨질 때만»), 거절되는 배치는 구조가 깨진 것이다.
+      const open = { ...(MILL.layout as Record<string, unknown>), outer_wall: { material: "log", path: [[0, 0], [13, 0], [13, 11]] } };
+      const asked = await t.call("make_place", { spec: { ...MILL, name: "말순네 농가", layout: open } });
+      expect(asked.ok, asked.summary).toBe(false);
+      expect(t.mapNamed("말순네 농가")).toBeUndefined();
+      expect(t.session.placeFacts.get("말순네농가")?.asked?.type).toBe("interior");
+      const notes = await t.session.buildPlaces!();
+      expect(notes[0]).toBe(NOTE(["바닷가 등대", "물때 어물전", "포구 회관"]));
+      expect(isIndoorMap(t.mapNamed("말순네 농가")!)).toBe(true);
+      expect(t.maps().filter((m) => !isIndoorMap(m)).map((m) => m.name)).toEqual(["물레강 마을"]);
+    }, SLOW);
+
+    it("청사진에 적은 종류와 칸 배치 없이 청한 종류로 실내를 짓는다 — 모르는 둘만 남는다", async () => {
+      const t = turn();
+      // 새 게임 첫 초안의 write_blueprint 는 장소를 바로 짓는다(#5070). 이 시험은 끝맺음 자동 짓기를 보므로 청사진만 건다.
+      const build = t.session.buildPlaces;
+      t.session.buildPlaces = undefined;
+      await writeBlueprint(t, blueprint([{ name: "물레강 마을", kind: "village" }, { name: "방앗간 안", kind: "interior", from: "물레강 마을" }, { name: "말순네 농가", kind: "interior", from: "물레강 마을" }]));
+      t.session.buildPlaces = build;
+      // 세계 없는 청사진은 장소 목록을 남기지 않는다 — 종류는 이 실행의 사실로만 남는다.
+      expect((t.ctx.project.gameBlueprint as { places?: unknown }).places).toBeUndefined();
+      expect(t.session.placeFacts.get("말순네농가")).toMatchObject({ kind: "interior", from: "물레강 마을" });
+      // 칸 배치 없이 온 실내는 돌려보내진다 — 종류는 남는다.
+      expect((await t.call("make_place", { spec: { type: "interior", name: "바닷가 등대" } })).ok).toBe(false);
+      const notes = await t.session.buildPlaces!();
+      expect(notes[0]).toBe(NOTE(["물때 어물전", "포구 회관"]));
+      for (const name of ["방앗간 안", "말순네 농가", "바닷가 등대"]) expect(isIndoorMap(t.mapNamed(name)!), name).toBe(true);
+      expect(t.maps().filter((m) => !isIndoorMap(m)).map((m) => m.name)).toEqual(["물레강 마을"]);
+      // 청사진이 마을에서 들어간다고 적은 농가는 마을 집 문에 달린다.
+      expect(notes.some((n) => n.includes("물레강 마을 집 문") && n.includes("말순네 농가"))).toBe(true);
+    }, SLOW);
+  });
+});

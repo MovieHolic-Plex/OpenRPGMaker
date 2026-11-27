@@ -41,7 +41,9 @@ function deviceBuilt(tool: string, after: Project): boolean | undefined {
 /** 끝맺음 관문 문제 — 게임 하나를 짓는 턴에서, 청사진이 생긴 뒤에만. key = 프로젝트 열쇠(카드 씨앗). */
 export function variationStructureProblems(before: Project, after: Project, task: string, key: string | undefined): Finding[] {
   const bp = after.gameBlueprint;
-  if (!bp?.steps.length || !key) return [];
+  // 팀 경로(첫 MVP 기본, #5218)는 청사진 걸음 없이 세계 그래프 순서(시작 → 목표)로 맵을 잇는다 — 그 순서의 맵 이름으로 층 순서를 센다.
+  const route = bp?.steps.length ? bp.steps.map((step) => step.place) : (after.worldGraph?.nodes ?? []).map((node) => after.maps[node.mapId]?.name).filter((name): name is string => !!name);
+  if (!route.length || !key) return [];
   const v = gameVariation(before, key, task).variation;
   if (!v) return [];
   const problems: Finding[] = [];
@@ -53,14 +55,14 @@ export function variationStructureProblems(before: Project, after: Project, task
     }
   }
   if (structure?.order === "descend") {
-    const floors = bp.steps.map((step) => floorOf(step.place));
+    const floors = route.map(floorOf);
     const named = floors.filter((f): f is number => f !== undefined);
     const up = floors.findIndex((f, i) => i > 0 && f !== undefined && floors.slice(0, i).some((g) => g !== undefined && g < f));
     if (named.length < 2 || up >= 0) {
-      problems.push(tagged("game", "변주 구조", `카드 구조 «${structure.ko}» 인데 청사진 걸음의 place 가 층을 내려가지 않는다(${bp.steps.map((s) => s.place).join(" → ")}). 장소 이름에 층을 붙이고(1층 → 지하 1층 → 지하 2층) 뒤 걸음일수록 낮은 층에 둔 뒤 write_blueprint 를 다시 부른다.`));
+      problems.push(tagged("game", "변주 구조", `카드 구조 «${structure.ko}» 인데 장소 순서가 층을 내려가지 않는다(${route.join(" → ")}). 카드에 적힌 장소 이름은 그대로 두고 앞에 층을 붙여(1층 미술관 → 지하 1층 감옥) 뒤 장소일수록 낮은 층에 둔다(청사진이 있으면 write_blueprint 를 다시 부른다).`));
     }
   }
-  if (v.event?.order === "days") {
+  if (v.event?.order === "days" && bp?.steps.length) {
     const days = bp.steps.map((step) => dayOf(`${step.place} ${step.action} ${step.needs ?? ""} ${json(step.text)}`));
     const distinct = new Set(days.filter((d): d is number => d !== undefined));
     const back = days.findIndex((d, i) => i > 0 && d !== undefined && days.slice(0, i).some((e) => e !== undefined && e > d));

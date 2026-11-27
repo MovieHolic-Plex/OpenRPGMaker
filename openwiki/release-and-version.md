@@ -177,23 +177,41 @@ DISPLAY=:78 xwininfo -root -tree | grep -i oprn   # 1272x766 창이 잡히면 �
   true single binary 가 아니라 NSIS 자동 해제 래퍼다. 2026-11-24 부터 기본 다운로드는 설치판이고 portable 은 보조다
   (위 «윈도우 기본 다운로드는 NSIS 설치판이다»). 폴더째 쓸 일이 있으면 로컬에서 `--win zip` 을 따로 준다.
 
-### 데스크톱 AI 워커는 네이티브 애드온을 옆에 둔다 (2026-09-27 실측)
+### 리눅스 AI 워커는 네이티브 애드온 없이, 윈도 워커는 애드온과 같이 굽는다 (2026-11-26, 옛 방식은 2026-09-27)
 
-앱의 채팅·Pi 실행은 `bun build --compile` 로 만든 `dist-electron/oh-my-pi-worker[.exe]` 가 한다(로그인은
-Node 쪽 `aiAuthRuntime.ts` 라 워커 없이 된다). 워커는 `@oh-my-pi/pi-natives` 의 Rust 애드온을 **런타임에 계산한
-경로로** require 하므로 `--compile` 이 따라가 싣지 못한다. v0.17.x 까지는 애드온이 빠져 워커가 시작하자마자
-`Failed to load pi_natives native addon` 으로 죽었고, 증상은 «로그인은 되는데 채팅만 안 된다» 였다.
+앱의 채팅·Pi 실행은 `scripts/build-ai-worker.ts` 가 `Bun.build` 의 compile 로 만든 `dist-electron/oh-my-pi-worker[.exe]` 가 한다
+(로그인은 Node 쪽 `aiAuthRuntime.ts` 라 워커 없이 된다). `build-electron.mjs` 와 ci-fast 가 같은 스크립트를 부른다.
 
-- `scripts/build-electron.mjs` 가 `pi_natives.<linux-x64|win32-x64>-baseline.node` 를 워커 옆에 둔다. 로더는
-  컴파일된 실행 파일의 폴더(execDir)를 후보로 보고, AVX2 가 있어도 modern 다음 후보로 baseline 을 집는다.
-- 윈도우 애드온은 리눅스 호스트의 `node_modules` 에 설치되지 않는다(os 필터). `package-lock.json` 의
-  `resolved`·`integrity` 로 tarball 을 받아 검증하고 `node_modules/.cache/oprn-pi-natives/` 에 캐시한다.
-- `scripts/electron-builder.config.mjs` 는 애드온을 `asarUnpack` 하고, `linux.files`/`win.files` 로 다른 OS 의
-  워커·애드온을 뺀다(각 150~200MB). **최상위 `files` 를 두지 않는다.** 최상위와 플랫폼
+- 리눅스: 우리 경로(Agent·전송·도구 호출)는 애드온 함수를 부르지 않는다(호출 기록기로 MVP 여러 판 0건, omp-to-pi 레인 2026-11-26). 그래서
+  빌드 플러그인이 `native/loader-state.js` 의 `loadNative()` 를 빈 바인딩 `{}` 로 바꾸고 애드온(136MB)을 싣지 않는다. omp 를 올려 로더 모양이
+  바뀌면 치환 수가 1이 아니어서 빌드가 멈춘다. 새 omp 기능이 애드온을 부르면 그 요청만 `… is not a function` 으로 실패한다.
+- 윈도: **애드온이 필요하다.** omp 가 시작하자마자 `pi-natives/path` 의 `expandWindowsLongPath`(8.3 짧은 경로 펼치기)를 부르고, 그 함수는
+  윈도에서만 애드온을 읽는다. 애드온 없이 구운 윈도 워커는 «does not export `expandWindowsLongPath`» 로 바로 죽었다(2026-11-26
+  windows-worker-smoke, #5257 직후). 그래서 윈도 워커는 로더를 그대로 두고 `pi_natives.win32-x64-baseline.node`(138MB)를 워커 옆에 둔다.
+  윈도 애드온은 리눅스 호스트의 `node_modules` 에 설치되지 않으므로(os 필터) `package-lock.json` 의 `resolved`·`integrity` 로 받아 검증하고
+  `node_modules/.cache/oprn-pi-natives/` 에 캐시한다. lock 의 pi-natives 가 두 버전이면 빌드를 멈춘다(2026-11-04 윈도 사고).
+  **리눅스 실측(호출 0건)을 윈도에 옮기지 않는다.** 워커·애드온을 바꾸면 윈도 워커를 실제 윈도에서 띄워 본다.
+- 큰 JSON(64KB 이상, 번들 타일셋·참고문서 등 152개·148MB)은 실행 파일에 박지 않고 `dist-electron/worker-data/<저장소 상대 경로>` 에
+  둔다. 빌드 플러그인이 그 import 를 `scripts/lib/workerData.ts` 의 `readWorkerJson()` 호출로 바꾸고, 워커는 **실행 파일 옆
+  `worker-data`**(`dirname(process.execPath)`)에서 읽는다. 그래서 설치 폴더·portable 임시 폴더·AppImage 마운트 어디서든 실행 파일과 같이
+  움직이고, 앱 자동 업데이트가 경로 환경 변수를 되돌려도(`APP_UPDATE_RUNTIME_PATH_ENV`) 따로 고칠 것이 없다. `OPRN_WORKER_DATA_DIR` 로
+  바꿀 수 있다. bun 은 asar 를 못 읽으므로 builder 가 `dist-electron/worker-data/**` 를 `asarUnpack` 한다.
+  파일이 없으면 워커가 한 줄(«조수 워커 자료를 읽지 못했습니다(파일이 없습니다): <경로>. 앱 설치가 깨졌을 수 있습니다 …»)을 남기고
+  코드 78 로 끝나며, 호스트가 그 줄을 조수 오류로 보인다. 실측(2026-11-26): 리눅스 워커 341.2MB → 160.3MB, 윈도 347.3MB → 166.4MB,
+  READY 6.9~7.5초 → 2.35~2.52초. 소스로 띄우는 워커(`bun scripts/oh-my-pi-worker.ts`)는 JSON 을 그대로 import 한다.
+- 메인 프로세스의 프로젝트 코어(`dist-electron/project-core.cjs`)도 같은 폴더·같은 경로 규칙으로 큰 JSON 을 읽는다(`build-electron.mjs` 의
+  `externalDataJson`, `join(__dirname, "worker-data", <경로>)`). Electron 의 fs 가 `app.asar/dist-electron/worker-data` 를 풀린 폴더로 이어 준다.
+  그래서 번들 타일셋 JSON 이 코어·워커에 한 벌만 있다(코어 123MB → 5.1MB). 폴더는 `build-electron.mjs` 가 처음에 비우고 코어·워커가 채운다.
+  렌더러(`dist/assets`)의 JSON 은 vite 가 따로 굽는 것이라 아직 따로 있다.
+- 옛 방식(2026-09-27~11-26): `--compile` 이 런타임에 계산한 경로의 애드온을 따라가지 못해 워커가 시작하자마자
+  `Failed to load pi_natives native addon` 으로 죽었고(«로그인은 되는데 채팅만 안 된다»), 애드온을 워커 옆에 두고 lock 의 tarball 로
+  윈도 애드온을 받았다. 두 버전이 섞이면 윈도 워커가 `~/.omp/natives/<판>/` 을 찾다 죽은 일도 있었다(2026-11-04).
+- `scripts/electron-builder.config.mjs` 는 워커와 애드온을 `asarUnpack` 하고, `linux.files`/`win.files` 로 다른 OS 의
+  워커·애드온을 뺀다(각 약 340MB). **최상위 `files` 를 두지 않는다.** 최상위와 플랫폼
   `files` 는 별개 매처라 합집합이 된다 — 플랫폼 쪽 제외가 최상위 `dist-electron/**` 를 못 이겨 두 OS 에 워커
   4개가 다 실렸다. 반대로 제외 패턴만 주면 빌더가 `**/*` 로 읽어 저장소 전체를 싣는다(app.asar 4.9GB).
   그래서 OS 마다 공용 목록 `APP_FILES` 를 펼친 뒤 제외를 붙인다. 확인: `--linux dir --win dir` 뒤
-  `*-unpacked/resources/app.asar.unpacked/dist-electron/` 에 자기 OS 워커와 애드온 둘만 있어야 한다.
+  `*-unpacked/resources/app.asar.unpacked/dist-electron/` 에 리눅스는 워커 하나, 윈도는 워커와 애드온 둘만 있어야 한다.
 - **두 번째 결함: 워커 스크립트 경로를 무조건 계산했다.** `scripts/lib/ohMyPiPiAi.mjs` 의 `startWorker()` 가
   `new URL("../oh-my-pi-worker.ts", import.meta.url)` 을 먼저 평가했는데, CJS 로 번들된 Electron 메인에서는
   `import.meta` 가 `{}` 라 던진다. 애드온을 고친 뒤에도 앱 채팅은 전부 500 `Invalid URL` 이었다. bun 으로 스크립트를

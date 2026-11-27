@@ -660,6 +660,7 @@ export function renderDatabasePanel(container: HTMLElement): void {
     dataset: { testid: "db-shared-workspace" },
   });
   // 버튼의 testid/라벨/.active 토글 계약(G006 + databaseCrossTabNav)을 유지한다.
+  appendPhoneTabSwitcher(header, container);
   appendTabSearch(header, body, container);
   appendRecentTabs(header, body, container);
   appendTabButton(header, body, container, tabFor("overview"));
@@ -1196,7 +1197,35 @@ function appendTabButton(
   );
 }
 
+// 휴대 폭(599px 이하) 탭 고르기 (db-390-trim, 오너 2026-11-26 「사용자는 많은 버튼을 원하지 않는다」).
+// 아이콘 레일 20칸(검색·탭·「+N」) 대신 지금 탭 이름 단추 하나만 둔다. 누르면 같은 레일이 이름과 함께 펼쳐지고,
+// 탭을 고르면 wireRailFold 가 닫는다(열림 상태는 넓은 창 레일 접기와 같은 data-rail-open). 넓은 창·도크에서는
+// CSS 가 숨긴다. `.db-tab` 이 아니므로 탭 버튼 계약(라벨·testid·포커스 순서)에 잡히지 않는다.
+function appendPhoneTabSwitcher(header: HTMLElement, container: HTMLElement): void {
+  header.append(el("button", {
+    class: "db-tab-switcher",
+    attrs: { type: "button", "aria-expanded": "false" },
+    dataset: { testid: "db-tab-switcher" },
+    on: { click: () => setRailOpen(container, container.dataset.railOpen !== "1") },
+  }));
+  syncPhoneTabSwitcher(header);
+}
+
+function syncPhoneTabSwitcher(header: HTMLElement): void {
+  const button = header.querySelector<HTMLElement>(".db-tab-switcher");
+  if (!button) return;
+  const tab = tabFor(primaryTab(activeTab));
+  button.setAttribute("title", `탭 바꾸기 — 지금: ${tab.label}`);
+  button.setAttribute("aria-label", `탭 바꾸기, 지금 ${tab.label}`);
+  button.replaceChildren(
+    makeDatabaseTabIcon(tab.id),
+    el("span", { class: "db-tab-switcher-label", text: tab.label }),
+    el("span", { class: "db-tab-switcher-chevron", text: "▾", attrs: { "aria-hidden": "true" } }),
+  );
+}
+
 function updateTabButtons(header: HTMLElement): void {
+  syncPhoneTabSwitcher(header);
   const search = header.querySelector<HTMLInputElement>(".db-tab-search");
   if (search?.value) {
     search.value = "";
@@ -1301,6 +1330,7 @@ function groupLandingTab(group: DatabaseTabGroup): DatabaseTab {
 function setRailOpen(container: HTMLElement, open: boolean): void {
   container.dataset.railOpen = open ? "1" : "0";
   const header = container.querySelector<HTMLElement>(":scope > .db-tabs");
+  header?.querySelector(".db-tab-switcher")?.setAttribute("aria-expanded", String(open));
   const strip = header ? groupStripOf(header) : null;
   if (header && strip && open) header.style.left = `${strip.offsetWidth}px`;
   for (const button of strip ? Array.from(strip.children) : []) {

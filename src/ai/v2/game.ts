@@ -11,6 +11,7 @@ import { englishToolMessage, parseFailure } from "./loop/failureText";
 import { withForestRouteBrief } from "./prompt/forestBrief";
 import { v2ToolPool } from "./request/toolGroups";
 import { classifyRequest } from "./request/intent";
+import { gameVariation } from "./request/world";
 
 /** 거절 본문(JSON·감싼 JSON·글)에서 첫 이유 한 줄 — 머리(«'도구' 실행 실패:»)를 걷는다. */
 const firstReason = (why: string): string => { const p = parseFailure(why); return (p.issues[0]?.message ?? p.summary).replace(/^'[^']+'\s*실행 실패:\s*/u, ""); };
@@ -19,7 +20,10 @@ const firstReason = (why: string): string => { const p = parseFailure(why); retu
 /** pool:true 면 이 요청의 도구에 v2ToolPool 전부를 더한다(필요할 때 싣는 도구도 같은 감싸개를 지나게). */
 export function createGameTools(env: PiAssistantV2Env, task = "", options: { readonly pool?: boolean } = {}): PiToolShape[] {
   // 도구 묶음은 요청 글과 프로젝트를 같이 본 기록에서 읽는다(게임 하나를 잇는 «계속» 은 글에 게임 낱말이 없어도 게임 도구를 받는다).
-  const names = [...new Set([...classifyRequest(task, env.ctx.project).tools.extra, ...(options.pool ? v2ToolPool() : [])])].filter((name) => getTool(name));
+  // 변주 카드 구조 축이 이름 댄 도구(decks.ts AxisOption.tools)도 묶음에 넣는다 — toolExposure 가 처음부터 싣게 고정해도 묶음에 없으면 세션에 없다
+  // (2026-11-26 variant-remeasure after5 r1: «정체를 알아 갈수록 장소의 뜻이 바뀐다» 카드인데 stage_map_reveal 이 v2 풀 밖이라 «이 세션에 없음» 으로 막혔다).
+  const structure = gameVariation(env.ctx.project, env.request.projectKey ? String(env.request.projectKey) : undefined, task).variation?.structure?.tools ?? [];
+  const names = [...new Set([...classifyRequest(task, env.ctx.project).tools.extra, ...structure, ...(options.pool ? v2ToolPool() : [])])].filter((name) => getTool(name));
   return withActorLookRetry(withItemUtilityCleanup(withTransferRelocation(withForestRouteBrief(withEncountersOnlyWhenAsked(withPictureSearchBudget(createPiToolset(env.ctx, { ...(env.toolsetOptions ?? {}), toolNames: names, onCall: env.record })), task), () => env.ctx.project, env.record))));
 }
 
