@@ -40778,5 +40778,688 @@
       "현대 도시",
       "city"
     ]
+  },
+  {
+    "id": "sig_glass_greenhouse",
+    "nameKo": "시그니처 유리 아치 온실",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_glass_greenhouse.png",
+    "widthPx": 96,
+    "heightPx": 96,
+    "widthTiles": 6,
+    "heightTiles": 6,
+    "footprint": [
+      " **** ",
+      "******",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "온실",
+      "약초원",
+      "식물원",
+      "유리",
+      "상점",
+      "greenhouse"
+    ]
+  },
+  {
+    "id": "sig_waterwheel_mill",
+    "nameKo": "시그니처 물레방아 방앗간",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_waterwheel_mill.png",
+    "widthPx": 112,
+    "heightPx": 96,
+    "widthTiles": 7,
+    "heightTiles": 6,
+    "footprint": [
+      "*****  ",
+      "****** ",
+      "*******",
+      "XXXXXXX",
+      "XXXXXXX",
+      "XXXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "물레방아",
+      "방앗간",
+      "수차",
+      "제분소",
+      "공방",
+      "waterwheel"
+    ]
+  },
+  {
+    "id": "sig_open_forge_smithy",
+    "nameKo": "시그니처 오픈 화덕 대장간",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_open_forge_smithy.png",
+    "widthPx": 96,
+    "heightPx": 96,
+    "widthTiles": 6,
+    "heightTiles": 6,
+    "footprint": [
+      "***** ",
+      "******",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "대장간",
+      "화덕",
+      "모루",
+      "공방",
+      "무기",
+      "smithy"
+    ]
+  },
+  {
+    "id": "sig_awning_bakery",
+    "nameKo": "시그니처 줄무늬 어닝 빵집",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_awning_bakery.png",
+    "widthPx": 96,
+    "heightPx": 96,
+    "widthTiles": 6,
+    "heightTiles": 6,
+    "footprint": [
+      " *****",
+      "******",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "빵집",
+      "베이커리",
+      "화덕",
+      "어닝",
+      "상점",
+      "bakery"
+    ]
+  },
+  {
+    "id": "sig_terrace_harbor_cafe",
+    "nameKo": "시그니처 테라스 광장 카페",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_terrace_harbor_cafe.png",
+    "widthPx": 112,
+    "heightPx": 96,
+    "widthTiles": 7,
+    "heightTiles": 6,
+    "footprint": [
+      "****   ",
+      "*******",
+      "*******",
+      "XXXXXXX",
+      "XXXXXXX",
+      "XXXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "카페",
+      "테라스",
+      "파라솔",
+      "상점",
+      "광장",
+      "cafe"
+    ]
+  },
+  {
+    "id": "sig_guild_bookshop",
+    "nameKo": "시그니처 길드 상회 서점",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_guild_bookshop.png",
+    "widthPx": 96,
+    "heightPx": 112,
+    "widthTiles": 6,
+    "heightTiles": 7,
+    "footprint": [
+      " **** ",
+      "******",
+      "******",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "서점",
+      "길드",
+      "상회",
+      "도서관",
+      "상점",
+      "bookshop"
+    ]
+  },
+  {
+    "id": "sig_alchemist_apothecary",
+    "nameKo": "시그니처 연금술 약제상점",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_alchemist_apothecary.png",
+    "widthPx": 96,
+    "heightPx": 96,
+    "widthTiles": 6,
+    "heightTiles": 6,
+    "footprint": [
+      " *****",
+      "******",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "연금술",
+      "약방",
+      "물약",
+      "마법",
+      "상점",
+      "apothecary"
+    ]
+  },
+  {
+    "id": "sig_tailor_silk_atelier",
+    "nameKo": "시그니처 비단 재단 염색공방",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_tailor_silk_atelier.png",
+    "widthPx": 96,
+    "heightPx": 96,
+    "widthTiles": 6,
+    "heightTiles": 6,
+    "footprint": [
+      " ***  ",
+      "***** ",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "재단사",
+      "비단",
+      "염색",
+      "의상실",
+      "공방",
+      "tailor"
+    ]
+  },
+  {
+    "id": "sig_coastal_blue_villa",
+    "nameKo": "시그니처 파란 지붕 해안집",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_coastal_blue_villa.png",
+    "widthPx": 96,
+    "heightPx": 112,
+    "widthTiles": 6,
+    "heightTiles": 7,
+    "footprint": [
+      " **** ",
+      "******",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "해안집",
+      "항구",
+      "발코니",
+      "흰 회벽",
+      "민가",
+      "villa"
+    ]
+  },
+  {
+    "id": "sig_stilt_boathouse",
+    "nameKo": "시그니처 수상 말뚝 보트하우스",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_stilt_boathouse.png",
+    "widthPx": 112,
+    "heightPx": 96,
+    "widthTiles": 7,
+    "heightTiles": 6,
+    "footprint": [
+      " ******",
+      " ******",
+      " ******",
+      "XXXXXXX",
+      "XXXXXXX",
+      "XXXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "보트하우스",
+      "조선소",
+      "항구",
+      "부두",
+      "선착장",
+      "boathouse"
+    ]
+  },
+  {
+    "id": "sig_fish_market_hall",
+    "nameKo": "시그니처 아치형 수산시장 홀",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_fish_market_hall.png",
+    "widthPx": 112,
+    "heightPx": 96,
+    "widthTiles": 7,
+    "heightTiles": 6,
+    "footprint": [
+      " ******",
+      "*******",
+      "*******",
+      "XXXXXXX",
+      "XXXXXXX",
+      "XXXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "수산시장",
+      "어시장",
+      "항구",
+      "아치",
+      "상점",
+      "fishmarket"
+    ]
+  },
+  {
+    "id": "sig_lighthouse_keeper_house",
+    "nameKo": "시그니처 등대지기 석조 관사",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_lighthouse_keeper_house.png",
+    "widthPx": 96,
+    "heightPx": 128,
+    "widthTiles": 6,
+    "heightTiles": 8,
+    "footprint": [
+      " **   ",
+      "***   ",
+      "*** **",
+      "******",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "등대",
+      "관사",
+      "항구",
+      "해안",
+      "랜드마크",
+      "lighthouse"
+    ]
+  },
+  {
+    "id": "sig_sailor_tavern",
+    "nameKo": "시그니처 항구 선원 선술집",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_sailor_tavern.png",
+    "widthPx": 112,
+    "heightPx": 96,
+    "widthTiles": 7,
+    "heightTiles": 6,
+    "footprint": [
+      " ******",
+      "*******",
+      "*******",
+      "XXXXXXX",
+      "XXXXXXX",
+      "XXXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "선술집",
+      "주점",
+      "항구",
+      "선원",
+      "여관",
+      "tavern"
+    ]
+  },
+  {
+    "id": "sig_harbor_customs_arcade",
+    "nameKo": "시그니처 항구 세관 아케이드",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_harbor_customs_arcade.png",
+    "widthPx": 112,
+    "heightPx": 112,
+    "widthTiles": 7,
+    "heightTiles": 7,
+    "footprint": [
+      "   **  ",
+      "*******",
+      "*******",
+      "*******",
+      "XXXXXXX",
+      "XXXXXXX",
+      "XXXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "세관",
+      "아케이드",
+      "항구",
+      "회랑",
+      "관청",
+      "customs"
+    ]
+  },
+  {
+    "id": "sig_coastal_terrace_house",
+    "nameKo": "시그니처 지중해 평지붕 테라스집",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_coastal_terrace_house.png",
+    "widthPx": 96,
+    "heightPx": 96,
+    "widthTiles": 6,
+    "heightTiles": 6,
+    "footprint": [
+      "****  ",
+      "****  ",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "테라스집",
+      "지중해",
+      "포도덩굴",
+      "항구",
+      "민가",
+      "terrace"
+    ]
+  },
+  {
+    "id": "sig_copper_observatory",
+    "nameKo": "시그니처 구리 돔 천문대",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_copper_observatory.png",
+    "widthPx": 80,
+    "heightPx": 112,
+    "widthTiles": 5,
+    "heightTiles": 7,
+    "footprint": [
+      " *** ",
+      "*****",
+      "*****",
+      "*****",
+      "XXXXX",
+      "XXXXX",
+      "XXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "천문대",
+      "마법탑",
+      "구리 돔",
+      "망원경",
+      "랜드마크",
+      "observatory"
+    ]
+  },
+  {
+    "id": "sig_clocktower_gatehouse",
+    "nameKo": "시그니처 아치 문루 시계탑",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_clocktower_gatehouse.png",
+    "widthPx": 96,
+    "heightPx": 128,
+    "widthTiles": 6,
+    "heightTiles": 8,
+    "footprint": [
+      "  **  ",
+      " **** ",
+      " **** ",
+      " **** ",
+      " **** ",
+      "******",
+      "XX**XX",
+      "XX..XX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "시계탑",
+      "문루",
+      "아치",
+      "광장",
+      "랜드마크",
+      "clocktower"
+    ]
+  },
+  {
+    "id": "sig_brick_steam_brewery",
+    "nameKo": "시그니처 붉은 벽돌 증기 양조장",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_brick_steam_brewery.png",
+    "widthPx": 112,
+    "heightPx": 112,
+    "widthTiles": 7,
+    "heightTiles": 7,
+    "footprint": [
+      "     **",
+      " ******",
+      " ******",
+      "*******",
+      "XXXXXXX",
+      "XXXXXXX",
+      "XXXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "양조장",
+      "벽돌",
+      "굴뚝",
+      "공장",
+      "공방",
+      "brewery"
+    ]
+  },
+  {
+    "id": "sig_marble_bathhouse",
+    "nameKo": "시그니처 원형 대리석 목욕탕",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_marble_bathhouse.png",
+    "widthPx": 112,
+    "heightPx": 96,
+    "widthTiles": 7,
+    "heightTiles": 6,
+    "footprint": [
+      "  ***  ",
+      "*******",
+      "*******",
+      "XXXXXXX",
+      "XXXXXXX",
+      "XXXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "목욕탕",
+      "대리석",
+      "온천",
+      "돔",
+      "랜드마크",
+      "bathhouse"
+    ]
+  },
+  {
+    "id": "sig_hex_music_pavilion",
+    "nameKo": "시그니처 육각 광장 음악당",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_hex_music_pavilion.png",
+    "widthPx": 96,
+    "heightPx": 96,
+    "widthTiles": 6,
+    "heightTiles": 6,
+    "footprint": [
+      "  **  ",
+      " **** ",
+      "******",
+      "******",
+      "XXXXXX",
+      "XX..XX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "정자",
+      "음악당",
+      "파빌리온",
+      "광장",
+      "랜드마크",
+      "pavilion"
+    ]
+  },
+  {
+    "id": "sig_thatch_cottage",
+    "nameKo": "시그니처 황금 초가지붕 오두막",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_thatch_cottage.png",
+    "widthPx": 96,
+    "heightPx": 96,
+    "widthTiles": 6,
+    "heightTiles": 6,
+    "footprint": [
+      " **** ",
+      "******",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "초가집",
+      "오두막",
+      "농가",
+      "전원",
+      "민가",
+      "cottage"
+    ]
+  },
+  {
+    "id": "sig_mossy_witch_hut",
+    "nameKo": "시그니처 이끼 덩굴 약초사집",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_mossy_witch_hut.png",
+    "widthPx": 96,
+    "heightPx": 112,
+    "widthTiles": 6,
+    "heightTiles": 7,
+    "footprint": [
+      " * *  ",
+      " ***  ",
+      " **** ",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "약초사",
+      "마녀집",
+      "이끼",
+      "버섯",
+      "판타지",
+      "witchhut"
+    ]
+  },
+  {
+    "id": "sig_hillside_hobbit_burrow",
+    "nameKo": "시그니처 언덕 잔디 반지하집",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_hillside_hobbit_burrow.png",
+    "widthPx": 96,
+    "heightPx": 80,
+    "widthTiles": 6,
+    "heightTiles": 5,
+    "footprint": [
+      "  *** ",
+      " **** ",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "반지하집",
+      "언덕집",
+      "원형 문",
+      "전원",
+      "판타지",
+      "burrow"
+    ]
+  },
+  {
+    "id": "sig_forest_treehouse_watch",
+    "nameKo": "시그니처 숲지기 나무 위 망루",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_forest_treehouse_watch.png",
+    "widthPx": 96,
+    "heightPx": 128,
+    "widthTiles": 6,
+    "heightTiles": 8,
+    "footprint": [
+      " *****",
+      "******",
+      "******",
+      "******",
+      "******",
+      "  XXXX",
+      " XXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "나무집",
+      "망루",
+      "숲지기",
+      "고목",
+      "판타지",
+      "treehouse"
+    ]
   }
 ]
