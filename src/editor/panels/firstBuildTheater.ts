@@ -139,6 +139,22 @@ export function deriveFirstBuildViewModel(input: {
   };
 }
 
+export function briefContentKey(brief: ReturnType<typeof store.getCurrent>["gameDesignBrief"]): string {
+  if (!brief) return "";
+  const { generationPending: _ignored, ...rest } = brief;
+  return JSON.stringify(rest);
+}
+
+export function shouldRearmFirstBuild(input: {
+  readonly pending: boolean;
+  readonly tracked: boolean;
+  readonly dismissed: boolean;
+  readonly briefKey: string;
+  readonly dismissedBriefKey: string | null;
+}): boolean {
+  return input.pending && !input.tracked && (!input.dismissed || input.briefKey !== input.dismissedBriefKey);
+}
+
 /**
  * 캔버스 하단에 첫 빌드 집중 뷰 바를 붙이고, 진행 중에는 편집기 좌측 도크를 접어 캔버스를 넓힌다.
  * 사용자가 「편집 도구 보기」를 누르면 즉시 좌측 도크를 되돌린다.
@@ -159,6 +175,7 @@ export function mountFirstBuildTheater(
   let tracked = store.getCurrent().gameDesignBrief?.generationPending === true;
   let completedFirstBuild = false;
   let dismissed = false;
+  let dismissedBriefKey: string | null = null;
   let focusSuppressed = false;
   let latestBoard: TeamBoardState | null = null;
   /** 프로젝트 전환 이전이나 첫 빌드 시작 전에 이미 떠 있던 보드는 무시한다. */
@@ -214,21 +231,26 @@ export function mountFirstBuildTheater(
     const project = store.getCurrent();
     const scope = JSON.stringify(store.getProjectIdentity());
     const pending = project.gameDesignBrief?.generationPending === true;
+    const briefKey = briefContentKey(project.gameDesignBrief);
     if (scope !== projectScope) {
       projectScope = scope;
       tracked = pending;
       completedFirstBuild = false;
       dismissed = false;
+      dismissedBriefKey = null;
       focusSuppressed = false;
       ignoredBoardRef = latestBoard;
       activeBoard = null;
       lastRenderKey = "";
-    } else if (pending && !tracked) {
+    } else if (shouldRearmFirstBuild({ pending, tracked, dismissed, briefKey, dismissedBriefKey })) {
       tracked = true;
       completedFirstBuild = false;
       dismissed = false;
+      dismissedBriefKey = null;
+      focusSuppressed = false;
       ignoredBoardRef = latestBoard;
       activeBoard = null;
+      lastRenderKey = "";
     }
 
     const vm = dismissed
@@ -283,7 +305,14 @@ export function mountFirstBuildTheater(
               attrs: { type: "button" },
               dataset: { testid: FIRST_BUILD_THEATER_TESTIDS.dismiss },
               text: "편집하기",
-              on: { click: () => { dismissed = true; tracked = false; render(); } },
+              on: {
+                click: () => {
+                  dismissed = true;
+                  dismissedBriefKey = briefContentKey(store.getCurrent().gameDesignBrief);
+                  tracked = false;
+                  render();
+                },
+              },
             }),
             el("button", {
               class: "fbt-btn is-primary",
@@ -309,7 +338,14 @@ export function mountFirstBuildTheater(
               attrs: { type: "button" },
               dataset: { testid: FIRST_BUILD_THEATER_TESTIDS.dismiss },
               text: "편집 도구 열기",
-              on: { click: () => { dismissed = true; tracked = false; render(); } },
+              on: {
+                click: () => {
+                  dismissed = true;
+                  dismissedBriefKey = briefContentKey(store.getCurrent().gameDesignBrief);
+                  tracked = false;
+                  render();
+                },
+              },
             }),
           ] }),
         ] }),
