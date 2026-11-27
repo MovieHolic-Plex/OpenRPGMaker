@@ -546,7 +546,7 @@
 
 .fdw-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
   gap: 7px;
 }
 
@@ -780,7 +780,254 @@
 .fdw-cell:focus-visible,
 .fdw-split-row:focus-visible,
 .fuw-row:focus-visible,
-.fuw-edit-btn:focus-visible {
+.fuw-edit-btn:focus-visible,
+.fdw-recent-slot:focus-visible,
+.fuw-q-btn:focus-visible,
+.fuw-q-swap-btn:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
+}
+
+/* ── Phase 5-1: 상단 중복 크롬 정리 (하단 독 · 우하단 플로팅 조수로 단일화) ── */
+.studio-bar .studio-layer-segment[data-testid="studio-layer-segment"],
+.studio-layer-segment[data-testid="studio-layer-segment"],
+.canvas-toolbar.canvas-tool-pill > .small-task,
+.canvas-toolbar.canvas-tool-pill > [data-testid="tool-paint"],
+.canvas-toolbar.canvas-tool-pill > [data-testid="tool-erase"] {
+  display: none;
+}
+
+/* 1초 빠른 편집 카드가 열렸을 때도 좌상단 미니맵과 겹치지 않도록 리스트 높이 자동 보정 */
+.floating-unit-window:has(.fuw-quick-card:not([hidden])) .fuw-body {
+  height: 248px;
+  max-height: calc(100vh - 510px);
+  min-height: 150px;
+}
+
+/* ── Phase 5-2B: RPG 특화 유닛 1초 인라인 빠른 편집 카드 ── */
+.fuw-quick-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 9px;
+  background: color-mix(in srgb, var(--bg-surface) 94%, var(--accent-muted));
+  border-top: 1px solid var(--border-default);
+}
+
+.fuw-quick-card[hidden] {
+  display: none;
+}
+
+.fuw-q-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fuw-q-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.fuw-q-saved {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--success);
+}
+
+.fuw-q-swap {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.fuw-q-swap-lbl {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-3);
+}
+
+.fuw-q-swap-btn {
+  width: 22px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  background: var(--bg-raised);
+  color: var(--text-2);
+  font-size: 9px;
+  cursor: pointer;
+}
+
+.fuw-q-swap-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.fuw-q-top {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.fuw-q-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-s);
+  border: 1px solid var(--border-subtle);
+  background: var(--bg-inset);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex: none;
+}
+
+.fuw-q-input {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  background: var(--bg-inset);
+  color: var(--text-1);
+  font: 500 11.5px/1 var(--font-ui);
+}
+
+.fuw-q-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.fuw-q-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.fuw-q-btn {
+  height: 26px;
+  padding: 0 9px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  font: 600 11px/1 var(--font-ui);
+  cursor: pointer;
+}
+
+.fuw-q-btn:hover {
+  background: var(--bg-hover);
+}
+
+.fuw-q-btn.is-primary {
+  flex: 1 1 auto;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.fuw-q-btn.is-primary:hover {
+  background: var(--accent-hover);
+}
+
+/* ── Phase 5-4: 두댓 창 최근 1~6 빠른 바 & 자유 리사이즈 핸들 ── */
+.fdw-recent-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 9px;
+  background: color-mix(in srgb, var(--bg-surface) 92%, var(--accent-muted));
+  border-top: 1px solid var(--border-subtle);
+  overflow-x: auto;
+}
+
+.fdw-recent-bar[hidden] {
+  display: none;
+}
+
+.fdw-recent-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent);
+  flex: none;
+  margin-right: 2px;
+}
+
+.fdw-recent-slot {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  max-width: 106px;
+  padding: 0 6px 0 4px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  font: 600 10.5px/1 var(--font-ui);
+  cursor: pointer;
+  flex: none;
+}
+
+.fdw-recent-slot:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-default);
+}
+
+.fdw-recent-slot.is-active {
+  border-color: var(--accent);
+  background: var(--accent-muted);
+}
+
+.fdw-recent-kbd {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 3px;
+  background: var(--bg-inset);
+  color: var(--text-3);
+  flex: none;
+}
+
+.fdw-recent-slot.is-active .fdw-recent-kbd {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.fdw-recent-thumb {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex: none;
+}
+
+.fdw-recent-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fdw-resize-grip {
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  color: var(--text-3);
+  font-size: 12px;
+  cursor: nwse-resize;
+  flex: none;
+  user-select: none;
+}
+
+.fdw-resize-grip:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
 }

@@ -1,9 +1,13 @@
 // editor/panels/floatingUnitWindow.ts
-// Phase 2 (SCMDraft 2 감성): 위로 길게 뜨는 드래그 가능한 플로팅 「유닛 팔레트」 창.
-// - 좌하단 독 「유닛」 또는 U 키로 토글
+// Phase 2 & 5 (SCMDraft 2 × RPG 특화):
+// 위로 길게 뜨는 드래그 가능한 플로팅 「유닛 팔레트 (U)」 + RPG 특화 「1초 인라인 편집 카드」.
 // - 현재 맵의 시작 위치 ★ + 배치된 NPC·적/보스·이동/문을 실제 캐릭터 스프라이트와 함께 세로 리스트로 표시
-// - 행 클릭 시 카메라 점프 + 선택, 「편집」으로 이벤트 편집기 즉시 열기, 「+ 새 유닛」으로 빠른 추가
+// - 유닛 클릭 시 하단에 인라인 퀵 카드가 열려 이름 · 첫 대사 · 외형(◀ ▶ 1클릭 스왑)을 모달 없이 즉시 수정
+// - 「✦ AI 확장」으로 플로팅 AI 카드에 @유닛명을 바로 넘겨 역할·대사 확장 가능
 
+import { openAiAssistantPanel } from "@/editor/aiAssistantBridge";
+import { projectCharsetAssets } from "@/assets/charsetCatalog";
+import { updateEvent } from "@/editor/eventActions";
 import { editorState } from "@/editor/editorState";
 import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
 import { triggerLabel } from "@/editor/eventMarkerUx";
@@ -15,7 +19,7 @@ import { selectSidebarLayer } from "@/editor/panels/leftLayerSwitcher";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { eventDisplayName } from "@/project/eventDisplayName";
 import { store } from "@/project/store";
-import type { Command, EventPageGraphic, GameEvent, GameMap, Project } from "@/project/types";
+import type { Command, EventPageGraphic, GameEvent, GameMap, MapId, Project } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 
 type UnitFilterId = "all" | "npc" | "enemy" | "portal";
@@ -66,6 +70,82 @@ function unitTriggerText(ev: GameEvent): string {
   return triggerLabel(trig);
 }
 
+function firstDialogueLine(ev: GameEvent): string {
+  const cmds = ev.pages?.[0]?.commands ?? ev.commands ?? [];
+  for (const cmd of cmds) {
+    if (cmd.kind === "text") return cmd.body;
+  }
+  return "";
+}
+
+function saveInlineDialogue(mapId: MapId, ev: GameEvent, nextText: string): void {
+  const trimmed = nextText.trim();
+  const prev = firstDialogueLine(ev).trim();
+  if (trimmed === prev) return;
+  const labelName = eventDisplayName(ev);
+  store.updateEvent(
+    mapId,
+    ev.id,
+    (target) => {
+      const cmds = target.pages?.[0]?.commands ?? target.commands;
+      const existing = cmds.find((c): c is Extract<Command, { kind: "text" }> => c.kind === "text");
+      if (existing) {
+        existing.body = trimmed;
+      } else if (trimmed) {
+        cmds.unshift({ kind: "text", body: trimmed, speaker: target.name || undefined });
+      }
+    },
+    { scope: "map", mapId, eventId: ev.id, label: `유닛 첫 대사 수정: ${labelName}` },
+  );
+}
+
+function cycleUnitSprite(project: Project, mapId: MapId, ev: GameEvent, step: -1 | 1): void {
+  const assets = projectCharsetAssets(project);
+  if (assets.length === 0) return;
+  const currentGraphic = unitGraphic(ev);
+  const currentKey = currentGraphic?.sprite?.id ?? ev.sprite?.id ?? "";
+  const curAssetIdx = Math.max(0, assets.findIndex((a) => a.textureKey === currentKey));
+  const nextAssetIdx = (curAssetIdx + step + assets.length) % assets.length;
+  const picked = assets[nextAssetIdx]!;
+  const nextRef = {
+    type: picked.group === "업로드" ? ("uploaded" as const) : ("bundled" as const),
+    id: picked.textureKey,
+  };
+  const labelName = eventDisplayName(ev);
+
+  store.updateEvent(
+    mapId,
+    ev.id,
+    (target) => {
+      target.sprite = nextRef;
+      if (target.pages?.length) {
+        const page = target.pages[0]!;
+        page.graphic = {
+          ...page.graphic,
+          sprite: nextRef,
+        };
+      }
+    },
+    { scope: "map", mapId, eventId: ev.id, label: `유닛 외형 변경: ${labelName}` },
+  );
+}
+
+function handoffUnitToAi(name: string): void {
+  openAiAssistantPanel();
+  requestAnimationFrame(() => {
+    const input = document.querySelector<HTMLTextAreaElement>(".ai-right-dock .ai-assistant-input");
+    if (!input) return;
+    const token = `@${name} `;
+    if (!input.value.startsWith(token)) {
+      input.value = input.value.trim().length === 0 ? token : `${token}${input.value}`;
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    }
+    input.focus();
+    const end = input.value.length;
+    input.setSelectionRange(end, end);
+  });
+}
+
 function freeEventCell(map: GameMap): { readonly x: number; readonly y: number } {
   const taken = new Set(map.events.map((ev) => `${ev.x},${ev.y}`));
   const cx = Math.floor(map.width / 2);
@@ -96,16 +176,18 @@ export function mountFloatingUnitWindow(
   let activeFilter: UnitFilterId = "all";
   let searchQuery = "";
   let customPos: { x: number; y: number } | null = null;
+  let quickCardSig = "";
 
   const newUnitBtn = el("button", {
     class: "fdw-head-btn is-primary",
-    attrs: { type: "button", title: "빈 칸에 새 유닛/이벤트 추가" },
+    attrs: { type: "button", title: "현재 맵에 새 유닛(NPC·적·문) 추가" },
     dataset: { testid: "floating-unit-new" },
     text: "+ 새 유닛",
     on: {
       click: () => {
         const { mapId, map } = currentContext();
         if (!mapId || !map) return;
+        selectSidebarLayer("event");
         const cell = freeEventCell(map);
         openNewEventEditorModal(mapId, cell.x, cell.y);
       },
@@ -162,6 +244,8 @@ export function mountFloatingUnitWindow(
   }
 
   const listBody = el("div", { class: "fuw-body", dataset: { testid: "floating-unit-list" } });
+  const quickCard = el("div", { class: "fuw-quick-card", dataset: { testid: "floating-unit-quick-card" } });
+  quickCard.hidden = true;
   const statusText = el("span", { class: "fdw-status-name", dataset: { testid: "floating-unit-status" }, text: "" });
   const foot = el("div", { class: "fdw-foot", children: [statusText] });
 
@@ -169,7 +253,7 @@ export function mountFloatingUnitWindow(
     class: "floating-doodad-window floating-unit-window",
     attrs: { role: "dialog", "aria-label": "유닛 팔레트" },
     dataset: { testid: "floating-unit-window" },
-    children: [titleBar, el("div", { class: "fdw-controls", children: [searchInput, filterBar] }), listBody, foot],
+    children: [titleBar, el("div", { class: "fdw-controls", children: [searchInput, filterBar] }), listBody, quickCard, foot],
   });
   win.hidden = true;
 
@@ -187,6 +271,136 @@ export function mountFloatingUnitWindow(
     }
   }
 
+  function renderQuickCard(project: Project, mapId: string | null, map: GameMap | undefined, selectedEventId: string | null): void {
+    const ev = mapId && map && selectedEventId
+      ? map.events.find((item) => item.id === selectedEventId) ?? null
+      : null;
+
+    if (!ev || !mapId) {
+      quickCard.hidden = true;
+      quickCardSig = "";
+      return;
+    }
+
+    const graphic = unitGraphic(ev);
+    const dlg = firstDialogueLine(ev);
+    const displayName = eventDisplayName(ev);
+    const sig = `${mapId}:${ev.id}:${ev.name ?? ""}:${graphic?.sprite?.id ?? ""}:${dlg}`;
+    quickCard.hidden = false;
+
+    // Avoid rebuilding while the user is actively typing inside the quick card
+    if (sig === quickCardSig || quickCard.contains(document.activeElement)) return;
+    quickCardSig = sig;
+    clearChildren(quickCard);
+
+    const preview = el("div", { class: "fuw-q-avatar" });
+    if (graphic?.sprite) {
+      preview.append(renderEventGraphicIcon(graphic, { scale: 1.25 }));
+    } else {
+      preview.textContent = "●";
+    }
+
+    const nameInput = el("input", {
+      class: "fuw-q-input",
+      attrs: { type: "text", placeholder: "유닛 이름", "aria-label": "유닛 이름 빠른 수정" },
+      dataset: { testid: "fuw-quick-name" },
+      value: ev.name ?? displayName,
+    }) as HTMLInputElement;
+
+    const dlgInput = el("input", {
+      class: "fuw-q-input",
+      attrs: { type: "text", placeholder: "첫 대사 한 줄 입력 (Enter 즉시 저장)…", "aria-label": "첫 대사 빠른 수정" },
+      dataset: { testid: "fuw-quick-dialogue" },
+      value: dlg,
+    }) as HTMLInputElement;
+
+    const saveHint = el("span", { class: "fuw-q-saved", text: "" });
+
+    const commitQuickEdits = (): void => {
+      const nextName = nameInput.value.trim();
+      if (nextName && nextName !== (ev.name ?? "")) {
+        updateEvent(mapId, ev.id, { name: nextName });
+      }
+      saveInlineDialogue(mapId, ev, dlgInput.value);
+      saveHint.textContent = "저장됨";
+      window.setTimeout(() => { if (saveHint.isConnected) saveHint.textContent = ""; }, 1400);
+    };
+
+    const onEnterSave = (event: KeyboardEvent): void => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        commitQuickEdits();
+        (event.target as HTMLElement).blur();
+      }
+    };
+    nameInput.addEventListener("keydown", onEnterSave);
+    dlgInput.addEventListener("keydown", onEnterSave);
+    nameInput.addEventListener("blur", commitQuickEdits);
+    dlgInput.addEventListener("blur", commitQuickEdits);
+
+    const prevSpriteBtn = el("button", {
+      class: "fuw-q-swap-btn",
+      attrs: { type: "button", title: "이전 캐릭터 외형", "aria-label": "이전 캐릭터 외형" },
+      dataset: { testid: "fuw-sprite-prev" },
+      text: "◀",
+      on: {
+        click: () => {
+          quickCardSig = "";
+          cycleUnitSprite(project, mapId, ev, -1);
+        },
+      },
+    });
+    const nextSpriteBtn = el("button", {
+      class: "fuw-q-swap-btn",
+      attrs: { type: "button", title: "다음 캐릭터 외형", "aria-label": "다음 캐릭터 외형" },
+      dataset: { testid: "fuw-sprite-next" },
+      text: "▶",
+      on: {
+        click: () => {
+          quickCardSig = "";
+          cycleUnitSprite(project, mapId, ev, 1);
+        },
+      },
+    });
+
+    quickCard.append(
+      el("div", {
+        class: "fuw-q-head",
+        children: [
+          el("span", { class: "fuw-q-label", text: "1초 빠른 편집" }),
+          saveHint,
+          el("div", {
+            class: "fuw-q-swap",
+            children: [prevSpriteBtn, el("span", { class: "fuw-q-swap-lbl", text: "외형" }), nextSpriteBtn],
+          }),
+        ],
+      }),
+      el("div", {
+        class: "fuw-q-top",
+        children: [preview, nameInput],
+      }),
+      dlgInput,
+      el("div", {
+        class: "fuw-q-actions",
+        children: [
+          el("button", {
+            class: "fuw-q-btn is-primary",
+            attrs: { type: "button", title: `${displayName}을(를) AI 조수에 멘션해 역할·대사 확장` },
+            dataset: { testid: "fuw-quick-ai" },
+            text: "✦ AI로 대사·역할 확장",
+            on: { click: () => handoffUnitToAi(nameInput.value.trim() || displayName) },
+          }),
+          el("button", {
+            class: "fuw-q-btn",
+            attrs: { type: "button", title: "전체 이벤트 편집기 열기" },
+            text: "상세",
+            on: { click: () => openEventEditorModal(mapId, ev.id) },
+          }),
+        ],
+      }),
+    );
+  }
+
   function renderList(): void {
     if (!open) return;
     const { project, mapId, map } = currentContext();
@@ -196,6 +410,7 @@ export function mountFloatingUnitWindow(
     if (!mapId || !map) {
       statusText.textContent = "선택된 맵 없음";
       listBody.append(el("div", { class: "fdw-empty", text: "맵을 먼저 선택하세요." }));
+      renderQuickCard(project, null, undefined, null);
       return;
     }
 
@@ -212,7 +427,6 @@ export function mountFloatingUnitWindow(
       if (btn) btn.textContent = counts[filter.id] > 0 ? `${filter.label} ${counts[filter.id]}` : filter.label;
     }
 
-    // Start position pinned card (when viewing start map and not filtered out)
     if (!q && activeFilter === "all" && project.startMapId === mapId && project.startPos) {
       const startRow = el("button", {
         class: "fuw-row is-start",
@@ -315,7 +529,8 @@ export function mountFloatingUnitWindow(
       listBody.append(el("div", { class: "fdw-empty", text: q ? "일치하는 유닛이 없습니다." : "배치된 유닛이 없습니다. 「+ 새 유닛」으로 추가하세요." }));
     }
 
-    statusText.textContent = `유닛 ${map.events.length}개 · 클릭 점프 · 더블클릭 편집`;
+    renderQuickCard(project, mapId, map, state.selectedEventId);
+    statusText.textContent = `유닛 ${map.events.length}개 · 클릭 빠른편집 · 더블클릭 상세`;
   }
 
   function applyPosition(): void {
@@ -336,7 +551,6 @@ export function mountFloatingUnitWindow(
     onOpenChange(open);
   }
 
-  // Smooth drag-to-move title bar
   let dragging = false;
   let offsetX = 0;
   let offsetY = 0;

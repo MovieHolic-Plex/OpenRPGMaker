@@ -301,6 +301,42 @@ export interface FloatingDoodadWindowMount {
   readonly dispose: () => void;
 }
 
+const DOODAD_SIZE_STORAGE_KEY = "oprn:floating-doodad-size";
+const DOODAD_RECENT_STORAGE_KEY = "oprn:floating-doodad-recent";
+const MAX_RECENT_DOODADS = 6;
+
+function loadSavedWindowSize(): { width: number; bodyHeight: number } | null {
+  try {
+    const raw = localStorage.getItem(DOODAD_SIZE_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { width?: unknown; bodyHeight?: unknown };
+    if (typeof parsed.width === "number" && typeof parsed.bodyHeight === "number") {
+      return {
+        width: Math.max(360, Math.min(860, Math.round(parsed.width))),
+        bodyHeight: Math.max(220, Math.min(620, Math.round(parsed.bodyHeight))),
+      };
+    }
+  } catch { /* ignore */ }
+  return null;
+}
+
+function saveWindowSize(size: { width: number; bodyHeight: number }): void {
+  try { localStorage.setItem(DOODAD_SIZE_STORAGE_KEY, JSON.stringify(size)); } catch { /* ignore */ }
+}
+
+function loadRecentKeys(): string[] {
+  try {
+    const raw = localStorage.getItem(DOODAD_RECENT_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((v): v is string => typeof v === "string").slice(0, MAX_RECENT_DOODADS) : [];
+  } catch { return []; }
+}
+
+function saveRecentKeys(keys: readonly string[]): void {
+  try { localStorage.setItem(DOODAD_RECENT_STORAGE_KEY, JSON.stringify(keys.slice(0, MAX_RECENT_DOODADS))); } catch { /* ignore */ }
+}
+
 export function mountFloatingDoodadWindow(
   canvasArea: HTMLElement,
   onOpenChange: (open: boolean) => void = () => {},
@@ -312,6 +348,8 @@ export function mountFloatingDoodadWindow(
   let visibleLimit = INITIAL_PAGE_SIZE;
   let selectedKey: string | null = null;
   let customPos: { x: number; y: number } | null = null;
+  let customSize = loadSavedWindowSize();
+  let recentKeys: string[] = loadRecentKeys();
 
   const viewToggleBtn = el("button", {
     class: "fdw-head-btn",
@@ -379,6 +417,8 @@ export function mountFloatingDoodadWindow(
   }
 
   const body = el("div", { class: "fdw-body", dataset: { testid: "floating-doodad-body" } });
+  const recentBar = el("div", { class: "fdw-recent-bar", dataset: { testid: "floating-doodad-recent" } });
+  recentBar.hidden = true;
   const statusName = el("span", { class: "fdw-status-name", dataset: { testid: "floating-doodad-status" }, text: "두댓을 골라 맵에 클릭하세요" });
   const clearPickBtn = el("button", {
     class: "fdw-clear-btn",
@@ -392,13 +432,19 @@ export function mountFloatingDoodadWindow(
       },
     },
   }) as HTMLButtonElement;
-  const foot = el("div", { class: "fdw-foot", children: [statusName, clearPickBtn] });
+  const resizeGrip = el("div", {
+    class: "fdw-resize-grip",
+    attrs: { title: "드래그해 두댓 창 크기 조절", "aria-label": "창 크기 조절" },
+    dataset: { testid: "floating-doodad-resize" },
+    text: "◿",
+  });
+  const foot = el("div", { class: "fdw-foot", children: [statusName, clearPickBtn, resizeGrip] });
 
   const win = el("section", {
     class: "floating-doodad-window",
     attrs: { role: "dialog", "aria-label": "두댓 팔레트" },
     dataset: { testid: "floating-doodad-window", view: viewMode },
-    children: [titleBar, el("div", { class: "fdw-controls", children: [searchInput, tabBar] }), body, foot],
+    children: [titleBar, el("div", { class: "fdw-controls", children: [searchInput, tabBar] }), body, recentBar, foot],
   });
   win.hidden = true;
 
@@ -428,8 +474,43 @@ export function mountFloatingDoodadWindow(
     return stamp.label === item.choice.stamp.label && stamp.width === item.choice.stamp.width && stamp.height === item.choice.stamp.height;
   }
 
+  function recordRecent(key: string): void {
+    recentKeys = [key, ...recentKeys.filter((k) => k !== key)].slice(0, MAX_RECENT_DOODADS);
+    saveRecentKeys(recentKeys);
+  }
+
+  function renderRecentBar(allItems: readonly UnifiedDoodad[], tileset: TilesetDef | undefined): void {
+    const byKey = new Map(allItems.map((it) => [it.key, it]));
+    const resolved = recentKeys.map((k) => byKey.get(k)).filter((it): it is UnifiedDoodad => Boolean(it));
+    clearChildren(recentBar);
+    if (resolved.length === 0) {
+      recentBar.hidden = true;
+      return;
+    }
+    recentBar.hidden = false;
+    recentBar.append(el("span", { class: "fdw-recent-label", text: "최근" }));
+    resolved.forEach((item, idx) => {
+      const slotNum = idx + 1;
+      const active = isItemSelected(item);
+      const thumb = renderDoodadPreview(item, tileset, 1);
+      thumb.className = "fdw-recent-thumb";
+      recentBar.append(el("button", {
+        class: "fdw-recent-slot" + (active ? " is-active" : ""),
+        attrs: { type: "button", title: `[${slotNum}] ${item.name} (${item.sizeLabel})` },
+        dataset: { testid: `floating-doodad-recent-${slotNum}` },
+        children: [
+          el("kbd", { class: "fdw-recent-kbd", text: String(slotNum) }),
+          thumb,
+          el("span", { class: "fdw-recent-name", text: item.name }),
+        ],
+        on: { click: () => activateItem(item) },
+      }));
+    });
+  }
+
   function activateItem(item: UnifiedDoodad): void {
     selectedKey = item.key;
+    recordRecent(item.key);
     if (item.source === "relief") {
       selectMapModeTool("relief");
       editorState.set({
@@ -464,6 +545,7 @@ export function mountFloatingDoodadWindow(
   function renderBody(): void {
     if (!open) return;
     const tileset = currentTileset();
+    renderRecentBar(unifiedDoodadsFor(tileset), tileset);
     const items = filteredItems(tileset);
     clearChildren(body);
 
@@ -550,6 +632,13 @@ export function mountFloatingDoodadWindow(
     }
   }
 
+  function applySize(): void {
+    if (!customSize) return;
+    win.style.width = `${customSize.width}px`;
+    body.style.height = `${customSize.bodyHeight}px`;
+    body.style.maxHeight = "calc(100vh - 240px)";
+  }
+
   function applyPosition(): void {
     if (!customPos) return;
     win.style.left = `${customPos.x}px`;
@@ -562,11 +651,48 @@ export function mountFloatingDoodadWindow(
     open = next;
     win.hidden = !open;
     if (open) {
+      applySize();
       applyPosition();
       renderBody();
     }
     onOpenChange(open);
   }
+
+  // Smooth corner resize handle (persisted to localStorage)
+  let resizing = false;
+  let resizeStartX = 0;
+  let resizeStartY = 0;
+  let startWidth = 512;
+  let startBodyH = 384;
+  resizeGrip.addEventListener("pointerdown", (event: PointerEvent) => {
+    if (event.button !== 0) return;
+    event.stopPropagation();
+    resizing = true;
+    resizeStartX = event.clientX;
+    resizeStartY = event.clientY;
+    startWidth = Math.round(win.getBoundingClientRect().width);
+    startBodyH = Math.round(body.getBoundingClientRect().height);
+    try { resizeGrip.setPointerCapture(event.pointerId); } catch { /* ignore */ }
+  });
+  resizeGrip.addEventListener("pointermove", (event: PointerEvent) => {
+    if (!resizing) return;
+    const hostRect = canvasArea.getBoundingClientRect();
+    const maxW = Math.min(860, Math.max(380, Math.round(hostRect.width - 36)));
+    const nextW = Math.max(360, Math.min(maxW, startWidth + Math.round(event.clientX - resizeStartX)));
+    const nextH = Math.max(220, Math.min(620, startBodyH + Math.round(event.clientY - resizeStartY)));
+    customSize = { width: nextW, bodyHeight: nextH };
+    applySize();
+  });
+  const endResize = (event: PointerEvent): void => {
+    if (!resizing) return;
+    resizing = false;
+    if (customSize) saveWindowSize(customSize);
+    try {
+      if (resizeGrip.hasPointerCapture?.(event.pointerId)) resizeGrip.releasePointerCapture(event.pointerId);
+    } catch { /* ignore */ }
+  };
+  resizeGrip.addEventListener("pointerup", endResize);
+  resizeGrip.addEventListener("pointercancel", endResize);
 
   // Smooth drag-to-move title bar inside canvasArea
   let dragging = false;
@@ -617,6 +743,17 @@ export function mountFloatingDoodadWindow(
     if (event.key.toLowerCase() === "d") {
       event.preventDefault();
       setOpen(!open);
+      return;
+    }
+    if (open && event.key >= "1" && event.key <= String(MAX_RECENT_DOODADS)) {
+      const idx = Number(event.key) - 1;
+      const targetKey = recentKeys[idx];
+      if (!targetKey) return;
+      const match = unifiedDoodadsFor(currentTileset()).find((it) => it.key === targetKey);
+      if (match) {
+        event.preventDefault();
+        activateItem(match);
+      }
     }
   };
   const onToggleEvent = (): void => setOpen(!open);
