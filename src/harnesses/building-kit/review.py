@@ -53,8 +53,9 @@ SCALE = 3
 REF_SCALE = 2
 DEFAULT_RUNS = 3
 DEFAULT_RETRIES = 2
-JUDGE_BACKEND = os.environ.get('BUILDING_KIT_JUDGE_BACKEND') or os.environ.get('BUILDING_KIT_BACKEND', 'neon')
-JUDGE_MODEL = os.environ.get('BUILDING_KIT_JUDGE_MODEL', 'gemini-4-neon')
+JUDGE_BACKEND = os.environ.get('BUILDING_KIT_JUDGE_BACKEND') or os.environ.get('BUILDING_KIT_BACKEND', 'codex')
+JUDGE_MODEL = os.environ.get('BUILDING_KIT_JUDGE_MODEL', 'gpt-6.2-sol')
+NEON_JUDGE_MODEL = os.environ.get('BUILDING_KIT_NEON_JUDGE_MODEL', 'gemini-4-neon')
 CLAUDE_JUDGE_MODEL = os.environ.get('BUILDING_KIT_CLAUDE_JUDGE_MODEL', 'opus')
 JUDGE_EFFORT = os.environ.get('BUILDING_KIT_JUDGE_EFFORT', 'high')
 JUDGE_TIMEOUT = int(os.environ.get('BUILDING_KIT_JUDGE_TIMEOUT', '3600'))
@@ -376,11 +377,24 @@ def claude_judge(prompt, images, workdir, model=None, effort=None, timeout=None)
     return _call(cmd, full, workdir, timeout)
 
 
+def codex_judge(prompt, images, workdir, model=None, effort=None, timeout=None):
+    listing = '\n'.join(f'- {p}' for p in images)
+    full = f'{prompt}\n\nAttached images in order:\n{listing}'
+    eff = effort or JUDGE_EFFORT
+    cmd = [shutil.which('codex') or os.path.expanduser('~/.local/bin/codex'), 'exec',
+           '-m', model or JUDGE_MODEL, '-c', f'model_reasoning_effort="{eff}"',
+           '--skip-git-repo-check', '-s', 'read-only', '-C', str(workdir)]
+    for img_p in images:
+        cmd += ['-i', str(img_p)]
+    cmd.append('-')
+    return _call(cmd, full, workdir, timeout)
+
+
 def agy_judge(prompt, images, workdir, model=None, effort=None, timeout=None):
     listing = '\n'.join(f'- {p}' for p in images)
     full = f'{prompt}\n\nOpen and look at each of these images with the Read tool, in this order, before answering:\n{listing}'
     cmd = [shutil.which('agy') or 'agy', '--output-format', 'text', '--dangerously-skip-permissions',
-           '--disable-slash-commands', '--add-dir', str(workdir), '--model', model or JUDGE_MODEL,
+           '--disable-slash-commands', '--add-dir', str(workdir), '--model', model or NEON_JUDGE_MODEL,
            '--effort', effort or JUDGE_EFFORT, '-p', full]
     return _call(cmd, None, workdir, timeout)
 
@@ -388,8 +402,10 @@ def agy_judge(prompt, images, workdir, model=None, effort=None, timeout=None):
 def default_judge(backend=None):
     import drawer
     b = drawer.normalize_backend(backend or JUDGE_BACKEND)
+    if b == 'codex':
+        return codex_judge, JUDGE_MODEL, f'codex/{JUDGE_MODEL}/{JUDGE_EFFORT}'
     if b == 'neon':
-        return agy_judge, JUDGE_MODEL, f'agy/{JUDGE_MODEL}/{JUDGE_EFFORT}'
+        return agy_judge, NEON_JUDGE_MODEL, f'agy/{NEON_JUDGE_MODEL}/{JUDGE_EFFORT}'
     return claude_judge, CLAUDE_JUDGE_MODEL, f'claude/{CLAUDE_JUDGE_MODEL}/{JUDGE_EFFORT}'
 
 

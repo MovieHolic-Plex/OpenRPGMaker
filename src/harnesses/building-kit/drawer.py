@@ -39,12 +39,14 @@ import projection  # noqa: E402
 REPO = dot.REPO
 SANDBOX = os.environ.get('BUILDING_KIT_DRAWER_DIR') or os.path.join(REPO, 'qa-runs', 'harnesses', 'building-kit', 'drawer')
 DEFAULT_TIMEOUT = int(os.environ.get('BUILDING_KIT_DRAWER_TIMEOUT', '3600'))
-# 기본 백엔드(사용자 결정 2026-11-27): neon(agy · gemini-4-neon high). --backend claude 로 Opus 5.5 high 폴백 가능.
-BACKEND = os.environ.get('BUILDING_KIT_BACKEND', 'neon')
+# 기본 백엔드(사용자 결정 2026-11-27): codex(gpt-6.2-sol high). --backend claude / neon 선택 가능.
+BACKEND = os.environ.get('BUILDING_KIT_BACKEND', 'codex')
 MODEL = os.environ.get('BUILDING_KIT_DRAWER_MODEL', 'claude-opus-5-5')
 EFFORT = os.environ.get('BUILDING_KIT_DRAWER_EFFORT', 'high')
+CODEX_MODEL = os.environ.get('BUILDING_KIT_CODEX_MODEL', 'gpt-6.2-sol')
+CODEX_EFFORT = os.environ.get('BUILDING_KIT_CODEX_EFFORT', 'high')
 NEON_MODEL = os.environ.get('BUILDING_KIT_NEON_MODEL', 'gemini-4-neon')
-NEON_EFFORT = os.environ.get('BUILDING_KIT_NEON_EFFORT', 'high')
+NEON_EFFORT = os.environ.get('BUILDING_KIT_NEON_EFFORT', 'medium')
 PROMPT_PLACEHOLDER = '{prompt}'
 MAX_ATTEMPTS = 3
 CANDIDATES_PER_LINE = 2
@@ -444,8 +446,16 @@ def claude_command(sandbox, model=None, effort=None, tools='Read,Write,Edit,Bash
             '--allowedTools', tools, '--add-dir', sandbox, '--model', model or MODEL, '--effort', effort or EFFORT]
 
 
+def codex_command(sandbox, model=None, effort=None, sandbox_mode='workspace-write'):
+    """Codex CLI 명령 — 기본 gpt-6.2-sol high(BUILDING_KIT_CODEX_MODEL/EFFORT 로 바꾼다). 프롬프트는 표준 입력('-')."""
+    eff = effort or CODEX_EFFORT
+    return [shutil.which('codex') or os.path.expanduser('~/.local/bin/codex'), 'exec',
+            '-m', model or CODEX_MODEL, '-c', f'model_reasoning_effort="{eff}"',
+            '--skip-git-repo-check', '-s', sandbox_mode, '--add-dir', sandbox, '-C', sandbox, '-']
+
+
 def agy_command(sandbox, model=None, effort=None):
-    """Antigravity(agy) CLI 명령 — 기본 gemini-4-neon high(BUILDING_KIT_NEON_MODEL/EFFORT 로 바꾼다).
+    """Antigravity(agy) CLI 명령 — 선택 백엔드(기본 gemini-4-neon medium).
     PROMPT_PLACEHOLDER 자리에 subprocess_runner 가 프롬프트 전문을 꽂아 비대화식(-p)으로 돌린다."""
     return [shutil.which('agy') or 'agy', '--output-format', 'text', '--dangerously-skip-permissions',
             '--disable-slash-commands', '--add-dir', sandbox, '--model', model or NEON_MODEL,
@@ -453,16 +463,20 @@ def agy_command(sandbox, model=None, effort=None):
 
 
 def normalize_backend(backend=None):
-    b = (backend or BACKEND or 'neon').strip().lower()
+    b = (backend or BACKEND or 'codex').strip().lower()
+    if b in ('codex', 'sol', 'openai'):
+        return 'codex'
     if b in ('neon', 'agy', 'antigravity'):
         return 'neon'
     if b == 'claude':
         return 'claude'
-    raise ValueError(f'알 수 없는 백엔드: {b} (claude 또는 neon)')
+    raise ValueError(f'알 수 없는 백엔드: {b} (codex, claude, neon 중 하나)')
 
 
 def agent_command(sandbox, backend=None, model=None, effort=None, tools='Read,Write,Edit,Bash(python3:*)'):
     b = normalize_backend(backend)
+    if b == 'codex':
+        return codex_command(sandbox, model=model, effort=effort)
     if b == 'neon':
         return agy_command(sandbox, model=model, effort=effort)
     return claude_command(sandbox, model=model, effort=effort, tools=tools)

@@ -186,14 +186,21 @@ class DrawerTest(unittest.TestCase):
         self.assertEqual(drawer.DEFAULT_TIMEOUT, int(os.environ.get('BUILDING_KIT_DRAWER_TIMEOUT', '3600')))
         self.assertEqual(drawer.DEFAULT_TIMEOUT, 3600)
 
-    def test_neon_backend_builds_agy_command_and_substitutes_prompt(self):
-        self.assertEqual(drawer.BACKEND, 'neon')
-        self.assertEqual(drawer.NEON_MODEL, 'gemini-4-neon')
-        self.assertEqual(drawer.NEON_EFFORT, 'high')
-        cmd = drawer.agent_command('/tmp/sandbox')
+    def test_codex_default_and_neon_backend_commands(self):
+        self.assertEqual(drawer.BACKEND, 'codex')
+        self.assertEqual(drawer.CODEX_MODEL, 'gpt-6.2-sol')
+        self.assertEqual(drawer.CODEX_EFFORT, 'high')
+        ccmd = drawer.agent_command('/tmp/sandbox')
+        self.assertTrue(ccmd[0].endswith('codex'))
+        self.assertEqual(ccmd[1], 'exec')
+        self.assertEqual(ccmd[ccmd.index('-m') + 1], 'gpt-6.2-sol')
+        self.assertIn('model_reasoning_effort="high"', ccmd)
+        self.assertEqual(ccmd[-1], '-')
+
+        cmd = drawer.agent_command('/tmp/sandbox', backend='neon')
         self.assertTrue(cmd[0].endswith('agy'))
-        self.assertEqual(cmd[cmd.index('--model') + 1], 'gemini-4-neon')
-        self.assertEqual(cmd[cmd.index('--effort') + 1], 'high')
+        self.assertEqual(cmd[cmd.index('--model') + 1], drawer.NEON_MODEL)
+        self.assertEqual(cmd[cmd.index('--effort') + 1], drawer.NEON_EFFORT)
         self.assertIn('/tmp/sandbox', cmd)
         self.assertEqual(cmd[cmd.index('-p') + 1], drawer.PROMPT_PLACEHOLDER)
         seen = {}

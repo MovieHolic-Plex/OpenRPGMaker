@@ -44,8 +44,8 @@ import dot  # noqa: E402
 
 KIT = os.path.join(HERE, 'finish_kit')
 DEFAULT_TIMEOUT = int(os.environ.get('BUILDING_KIT_FINISH_TIMEOUT', '5400'))
-# 기본 백엔드(사용자 결정 2026-11-27): neon(agy · gemini-4-neon high). --backend claude 로 Opus 5.5 high 폴백 가능.
-BACKEND = os.environ.get('BUILDING_KIT_FINISH_BACKEND') or os.environ.get('BUILDING_KIT_BACKEND', 'neon')
+# 기본 백엔드(사용자 결정 2026-11-27): codex(gpt-6.2-sol high). --backend claude / neon 선택 가능.
+BACKEND = os.environ.get('BUILDING_KIT_FINISH_BACKEND') or os.environ.get('BUILDING_KIT_BACKEND', 'codex')
 MODEL = os.environ.get('BUILDING_KIT_FINISH_MODEL', 'claude-opus-5-5')
 EFFORT = os.environ.get('BUILDING_KIT_FINISH_EFFORT', 'high')
 RERUN_TIMEOUT = 300
@@ -448,6 +448,8 @@ def claude_command(sandbox):
 def agent_command(sandbox, backend=None, model=None, effort=None):
     import drawer
     b = drawer.normalize_backend(backend or BACKEND)
+    if b == 'codex':
+        return drawer.codex_command(sandbox, model=model, effort=effort)
     if b == 'neon':
         return drawer.agy_command(sandbox, model=model, effort=effort)
     return drawer.claude_command(sandbox, model=model or MODEL, effort=effort or EFFORT, tools=TOOLS)
@@ -456,6 +458,8 @@ def agent_command(sandbox, backend=None, model=None, effort=None):
 def agent_label(backend=None, model=None, effort=None):
     import drawer
     b = drawer.normalize_backend(backend or BACKEND)
+    if b == 'codex':
+        return f'codex/{model or drawer.CODEX_MODEL}/{effort or drawer.CODEX_EFFORT}'
     if b == 'neon':
         return f'agy/{model or drawer.NEON_MODEL}/{effort or drawer.NEON_EFFORT}'
     return f'claude/{model or MODEL}/{effort or EFFORT}'
