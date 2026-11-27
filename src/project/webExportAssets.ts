@@ -320,7 +320,44 @@ function collectProjectStrings(project: Project): Set<string> {
       if (sprite) values.add(sprite.resourceId);
     }
   }
+  // 배치된 커스텀 상호작용 프롭(author_interactive_prop)은 propId / fx:prop:<id> 로만 참조되므로
+  // 해당하는 uploaded resourceId 를 명시적으로 수집해 내보내기 시 스트립 바이트가 누락되지 않게 한다.
+  for (const rid of collectReferencedCustomPropResourceIds(project)) values.add(rid);
   return values;
+}
+
+function collectReferencedCustomPropResourceIds(project: Project): readonly string[] {
+  const resourceIds = new Set<string>();
+  const addProp = (id: string | undefined) => {
+    const prop = interactivePropById(id, project);
+    if (prop?.resourceId) resourceIds.add(prop.resourceId);
+  };
+  const scanCommands = (commands: readonly unknown[] | undefined) => {
+    if (!Array.isArray(commands)) return;
+    for (const raw of commands) {
+      if (!raw || typeof raw !== "object") continue;
+      const cmd = raw as { kind?: unknown; animationId?: unknown; then?: unknown[]; else?: unknown[]; cases?: Array<{ commands?: unknown[] }> };
+      if (cmd.kind === "showAnimation" && typeof cmd.animationId === "string") {
+        const fx = parseFieldFxId(cmd.animationId, project);
+        if (fx?.kind === "prop") addProp(fx.propId);
+      }
+      if (Array.isArray(cmd.then)) scanCommands(cmd.then);
+      if (Array.isArray(cmd.else)) scanCommands(cmd.else);
+      if (Array.isArray(cmd.cases)) {
+        for (const c of cmd.cases) scanCommands(c?.commands);
+      }
+    }
+  };
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      for (const page of event.pages ?? []) {
+        const inter = page.interaction;
+        if (inter?.kind === "container" && inter.propId) addProp(inter.propId);
+        scanCommands(page.commands);
+      }
+    }
+  }
+  return [...resourceIds];
 }
 
 export function isAudioCatalogRow(row: unknown): boolean {
@@ -358,7 +395,7 @@ function interactivePropStripPaths(project: Project): readonly string[] {
   const paths = new Set<string>();
   const addProp = (id: string | undefined) => {
     const prop = interactivePropById(id, project);
-    // 커스텀 프롭(resourceId 있음)은 project.assets.uploaded 에서 이미 자동 내보내기 되므로 public/ 경로로 추가하지 않는다.
+    // 커스텀 프롭(resourceId 있음)은 collectUsedUploadedAssetIds 가 project.assets.uploaded 에 보존하므로 public/ 경로로 추가하지 않는다.
     if (prop && !prop.resourceId && !prop.stripPath.startsWith("data:")) paths.add(prop.stripPath);
   };
   const scanCommands = (commands: readonly unknown[] | undefined) => {

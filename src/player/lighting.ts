@@ -311,6 +311,13 @@ function castLightRayTiles(
   return maxDist;
 }
 
+function normalizeAngleToSpan(angle: number, startAngle: number): number {
+  const twoPi = Math.PI * 2;
+  let rel = (angle - startAngle) % twoPi;
+  if (rel < 0) rel += twoPi;
+  return startAngle + rel;
+}
+
 function buildVisibilityPoly(
   ox: number,
   oy: number,
@@ -324,14 +331,55 @@ function buildVisibilityPoly(
   if (!isOpaque || radiusTiles <= 0.5) return null;
   const startAngle = arc ? arc[0] : 0;
   const span = arc ? arc[1] - arc[0] : Math.PI * 2;
-  const rayCount = arc ? 44 : 64;
+  const baseCount = arc ? 40 : 56;
+  const angles: number[] = [];
+
+  for (let i = 0; i < baseCount; i += 1) {
+    const frac = arc ? i / Math.max(1, baseCount - 1) : i / baseCount;
+    angles.push(startAngle + span * frac);
+  }
+
+  // 모서리 브리징(벽 모퉁이 너머 빛 샘)을 막기 위해 반경 내 모든 불투명 벽 타일의 4꼭짓점 양옆(±eps)에 레이를 추가한다.
+  const radCeil = Math.ceil(radiusTiles);
+  const otx = Math.floor(ox);
+  const oty = Math.floor(oy);
+  const r2 = (radiusTiles + 1.5) * (radiusTiles + 1.5);
+  const cornerEps = 0.0015;
+  const seenCorner = new Set<number>();
+
+  for (let ty = oty - radCeil; ty <= oty + radCeil; ty += 1) {
+    for (let tx = otx - radCeil; tx <= otx + radCeil; tx += 1) {
+      if (tx === otx && ty === oty) continue;
+      if (!isOpaque(tx, ty)) continue;
+      const cx0 = tx + 0.5 - ox;
+      const cy0 = ty + 0.5 - oy;
+      if (cx0 * cx0 + cy0 * cy0 > r2) continue;
+      const corners: readonly (readonly [number, number])[] = [
+        [tx, ty], [tx + 1, ty], [tx, ty + 1], [tx + 1, ty + 1],
+      ];
+      for (const [kx, ky] of corners) {
+        const key = (kx + 2048) * 4096 + (ky + 2048);
+        if (seenCorner.has(key)) continue;
+        seenCorner.add(key);
+        const raw = Math.atan2(ky - oy, kx - ox);
+        for (const delta of [-cornerEps, cornerEps]) {
+          const a = normalizeAngleToSpan(raw + delta, startAngle);
+          if (a >= startAngle && a <= startAngle + span) angles.push(a);
+        }
+      }
+    }
+  }
+
+  angles.sort((a, b) => a - b);
+
   const poly: Array<readonly [number, number]> = [];
   let hash = 2166136261 >>> 0;
   let hitAnyWall = false;
+  let prevAngle = -1e9;
 
-  for (let i = 0; i < rayCount; i += 1) {
-    const frac = arc ? i / Math.max(1, rayCount - 1) : i / rayCount;
-    const angle = startAngle + span * frac;
+  for (const angle of angles) {
+    if (angle - prevAngle < 0.0004) continue;
+    prevAngle = angle;
     const dx = Math.cos(angle);
     const dy = Math.sin(angle);
     const hitDist = castLightRayTiles(ox, oy, dx, dy, radiusTiles, isOpaque);

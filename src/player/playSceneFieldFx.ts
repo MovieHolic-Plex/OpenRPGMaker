@@ -1223,7 +1223,7 @@ export function playLootPopup(scene: PlaySceneContext, cell: Cell, text: string,
 /** showAnimation 이 내장 연출 id 를 받으면 여기로 온다. wait 면 연출 길이만큼 기다린다. */
 export async function playFieldFx(scene: PlaySceneContext, fx: FieldFx, target: Cell | undefined, currentEventId: string | undefined): Promise<void> {
   const cell = target ?? eventCell(scene, currentEventId) ?? { x: scene.tileX, y: scene.tileY };
-  const done = sleep(scene, fieldFxDurationMs(fx));
+  const done = sleep(scene, fieldFxDurationMs(fx, store.getCurrent()));
   switch (fx.kind) {
     case "container":
       void playContainerFx(scene, fx.style, cell, currentEventId);

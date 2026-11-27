@@ -15,13 +15,13 @@ import {
   type ContainerStyle,
 } from "@/project/containerFx";
 import { interactivePropById } from "@/project/interactiveProps";
-import type { Command, Condition, GameEvent, GameMap } from "@/project/types";
+import type { Command, Condition, GameEvent, GameMap, Project } from "@/project/types";
 
 type Page = NonNullable<GameEvent["pages"]>[number];
 
 /** 수납을 여는 연출(소리·흔들림·파편·뚜껑, 또는 멀티프레임 PNG 스트립). 끝날 때까지 기다린다. */
-export function containerFxCommands(style: ContainerStyle, propId?: string): Command[] {
-  const animId = propId && interactivePropById(propId) ? propFxId(propId) : containerFxId(style);
+export function containerFxCommands(style: ContainerStyle, propId?: string, project?: Project): Command[] {
+  const animId = propId && interactivePropById(propId, project) ? propFxId(propId) : containerFxId(style);
   return [{ kind: "showAnimation", target: { eventId: "" }, animationId: animId, wait: true } as Command];
 }
 
@@ -103,6 +103,8 @@ export interface ContainerSearchOptions {
   readonly style: ContainerStyle;
   /** 멀티프레임 PNG 스트립 프롭 id(project/interactiveProps.ts). 지정하면 `fx:prop:<id>` + 실원본 스트립을 사용한다. */
   readonly propId?: string;
+  /** 프로젝트 내장 커스텀 프롭(author_interactive_prop)을 해석하기 위한 선택 프로젝트 컨텍스트. */
+  readonly project?: Project;
   /** 집주인 이벤트 id(없으면 누구도 지켜보지 않는 수납). */
   readonly ownerId?: string;
   /** 들을 수 있는 거리. 생략 = 종류의 noise(상자·통만 시끄럽다). 0 = 듣지 않는다. */
@@ -123,7 +125,7 @@ export function applyContainerSearchPattern(event: GameEvent, options: Container
   const pages = event.pages ?? [];
   if (pages.length === 0) return false;
   const search = pages.find((page) => (page.conditions ?? []).length === 0) ?? pages[0]!;
-  const prop = interactivePropById(options.propId);
+  const prop = interactivePropById(options.propId, options.project);
   let changed = false;
   for (const page of pages) {
     const searched = page !== search;
@@ -145,7 +147,7 @@ export function applyContainerSearchPattern(event: GameEvent, options: Container
   if (JSON.stringify(commands).includes(fxId)) return changed;
   let body = withLootPopups(commands);
   if (options.ownerId) body = body.map((command) => upgradeOwnerFork(command, options));
-  search.commands = [...containerFxCommands(options.style, prop?.id), ...body];
+  search.commands = [...containerFxCommands(options.style, prop?.id, options.project), ...body];
   return true;
 }
 

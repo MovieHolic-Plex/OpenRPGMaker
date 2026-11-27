@@ -170,7 +170,7 @@ const placeSearchContainers: ToolDefinition = {
         ? []
         : [say(undefined, `${withJosa(name, "은/는")} 이미 확인했다. 비어 있다.`)];
       const event = buildContainerSearchEvent({
-        id, name, x, y, style, loot,
+        id, name, x, y, style, loot, project: draft,
         ...(requestedProp ? { propId: requestedProp.id } : {}),
         ...(ownerId && ownerName !== undefined ? { ownerId, caught } : {}),
         searchedText: searchedMsg,
@@ -321,7 +321,22 @@ const placeInteractivePropsTool: ToolDefinition = {
         { kind: "showAnimation", target: { eventId: "" }, animationId: propFxId(prop.id, "open"), wait: true } as Command,
       ];
       const loot = buildLootCommands(draft, raw.loot, `props[${index}]`, warnings);
-      if (loot.length) openCmds.push(...withLootPopups(loot));
+      if (loot.length) {
+        if (toggleable) {
+          // 여닫기(selfSwitch A)와 보상 수령(selfSwitch B)을 분리해 반복 열기·닫기 시 보상 중복 지급을 막는다.
+          openCmds.push({
+            kind: "fork",
+            condition: { kind: "selfSwitch", key: "B", value: false },
+            then: [
+              ...withLootPopups(loot),
+              { kind: "setSelfSwitch", key: "B", value: true } as Command,
+            ],
+            else: [],
+          } as unknown as Command);
+        } else {
+          openCmds.push(...withLootPopups(loot));
+        }
+      }
       if (typeof raw.message === "string" && raw.message.trim()) openCmds.push(say(undefined, raw.message.trim()));
       if (switchId) openCmds.push({ kind: "setSwitch", switchId, value: true } as Command);
       openCmds.push({ kind: "setSelfSwitch", key: "A", value: true } as Command);

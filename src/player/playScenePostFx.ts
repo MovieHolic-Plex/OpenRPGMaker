@@ -153,12 +153,15 @@ void main() {
       col = 1.0 - (1.0 - col) * (1.0 - bloomAdd);
     }
 
-    // 4. 대각선 햇살 (God-rays)
+    // 4. 대각선 햇살 (God-rays) — GLSL ES 호환(음수 밑 pow 금지: 제곱 곱셈 사용)
     if (uParams.z > 0.005) {
       float diag = uv.x * 0.80 - uv.y * 0.56;
-      float b1 = exp(-pow((diag - 0.04) / 0.11, 2.0)) * 0.82;
-      float b2 = exp(-pow((diag - 0.34) / 0.09, 2.0)) * 0.68;
-      float b3 = exp(-pow((diag + 0.24) / 0.10, 2.0)) * 0.56;
+      float d1 = (diag - 0.04) / 0.11;
+      float d2 = (diag - 0.34) / 0.09;
+      float d3 = (diag + 0.24) / 0.10;
+      float b1 = exp(-(d1 * d1)) * 0.82;
+      float b2 = exp(-(d2 * d2)) * 0.68;
+      float b3 = exp(-(d3 * d3)) * 0.56;
       float topFade = clamp(1.0 - uv.y * 0.84, 0.0, 1.0);
       col = clamp(col + (b1 + b2 + b3) * topFade * uRayColor * uParams.z * uIntensity, 0.0, 1.0);
     }
@@ -205,7 +208,9 @@ void main() {
   float baseVig = uParams.w * uIntensity;
   float beatRate = mix(1.25, 2.65, panic);
   float phase = fract(uTime * beatRate);
-  float lubDub = exp(-pow((phase - 0.12) / 0.055, 2.0)) + exp(-pow((phase - 0.28) / 0.065, 2.0)) * 0.65;
+  float p1 = (phase - 0.12) / 0.055;
+  float p2 = (phase - 0.28) / 0.065;
+  float lubDub = exp(-(p1 * p1)) + exp(-(p2 * p2)) * 0.65;
   float panicVig = panic * (0.42 + 0.24 * lubDub);
   float totalVig = clamp(baseVig + panicVig, 0.0, 0.92);
   if (totalVig > 0.005) {

@@ -117,12 +117,19 @@ export type FieldFx =
   | { readonly kind: "popupGold"; readonly amount: number }
   | { readonly kind: "doorOpen" };
 
+const PROP_FX_ID_RE = /^[a-z0-9][a-z0-9_-]{0,80}$/i;
+
 /** showAnimation 의 animationId 가 내장 연출이면 그 뜻을, 아니면 null. */
-export function parseFieldFxId(id: string | undefined): FieldFx | null {
+export function parseFieldFxId(id: string | undefined, project?: import("@/project/types").Project): FieldFx | null {
   if (!id || !id.startsWith(FIELD_FX_PREFIX)) return null;
   const parts = id.slice(FIELD_FX_PREFIX.length).split(":");
   if (parts[0] === "container" && isContainerStyle(parts[1])) return { kind: "container", style: parts[1] };
-  if (parts[0] === "prop" && parts[1] && interactivePropById(parts[1])) {
+  if (
+    parts[0] === "prop"
+    && parts[1]
+    && (parts.length === 2 || (parts.length === 3 && parts[2] === "close"))
+    && (interactivePropById(parts[1], project) || PROP_FX_ID_RE.test(parts[1]))
+  ) {
     return { kind: "prop", propId: parts[1], ...(parts[2] === "close" ? { reverse: true } : {}) };
   }
   if (parts[0] === "popup" && parts[1] === "item" && parts[2]) return { kind: "popupItem", itemId: parts.slice(2).join(":") };
@@ -132,15 +139,15 @@ export function parseFieldFxId(id: string | undefined): FieldFx | null {
 }
 
 /** 검증기용: 전투 애니메이션 DB 에 없어도 되는 id 인가. */
-export function isBuiltinFieldFxId(id: string | undefined): boolean {
-  return parseFieldFxId(id) !== null;
+export function isBuiltinFieldFxId(id: string | undefined, project?: import("@/project/types").Project): boolean {
+  return parseFieldFxId(id, project) !== null;
 }
 
-export function fieldFxDurationMs(fx: FieldFx): number {
+export function fieldFxDurationMs(fx: FieldFx, project?: import("@/project/types").Project): number {
   switch (fx.kind) {
     case "container": return CONTAINER_FX[fx.style].durationMs;
     case "prop": {
-      const prop = interactivePropById(fx.propId);
+      const prop = interactivePropById(fx.propId, project);
       return prop ? interactivePropDurationMs(prop) : 360;
     }
     case "popupItem":
