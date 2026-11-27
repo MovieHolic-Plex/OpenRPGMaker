@@ -1708,8 +1708,12 @@ collector/classic/horror/chase/hearts 프리셋을 추가했다. 기존 미설�
 
 `StartScreenIntent`(sessionStorage, version 1)의 선택 필드 `startMode?: "example" | "ai" | "blank"`,
 `screenSize?: "classic" | "wide"`가 런처 선택을 같은 새 SQLite 폴더로 전달한다.
-화면 크기 기본값(2026-10-20, 사용자 결정 — 같은 날 #3057 의 640×360 을 대체): `wide` = 내부 해상도 **480×270 · 카메라 배율 1**
-(`START_SCREEN_RESOLUTIONS`, `src/start/projectStart.ts`). 16px 칸 30×17 이 보인다. 배율은 새 프로젝트 시드에서 건드리지 않아 `DEFAULT_CAMERA_ZOOM`(1)이 그대로 쓰인다.
+화면 크기 기본값(2026-10-20 480×270 기본, 2026-11-27 장르별 3단계 차등 — `GENRE_START_VIEW_PROFILES` / `resolveStartViewProfile`, `src/start/projectStart.ts`):
+- `farm-life` · `action-rpg`: **640×360**(FHD 3배, 40×22.5칸) + `smallMapFill: true`(작은 실내 방 자동 확대)
+- `adventure-jrpg` · `story-cutscene` · 빈 프로젝트: **480×270**(FHD 4배, 30×17칸)
+- `horror-chase`: **384×216**(FHD 5배, 24×13.5칸)
+- `monster-collect`: 에메랄드 전용 규격(480×320, `configureEmeraldMonsterStyle`)을 보존한다.
+배율은 새 프로젝트 시드에서 건드리지 않아 `DEFAULT_CAMERA_ZOOM`(1)이 그대로 쓰인다.
 화면은 정수 배율+여백이 기본이라 FHD 4배·4K 8배로 꽉 차고 QHD 는 5배(2400×1350)+얇은 여백이다 — 아래 `system.playSurfaceScale`.
 저장된 옛 프로젝트의 `playResolution`·`cameraZoom` 은 마이그레이션이 다시 쓰지 않는다(생략값 320×240·1 유지).
 DB 시스템 화면: 「보기 범위」(`db-field-system-view-preset`)가 해상도+배율을 한 번에 고른다 — 넓게 640×360·1(40×22칸) / **기본 480×270·1(30×17칸, 추천)** / 가깝게 640×360·2(20×11칸).

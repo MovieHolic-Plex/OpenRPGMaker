@@ -7,6 +7,7 @@ import {
   resolvePlaySurfaceScaleMode,
   resolvePortraitLayout,
 } from "@/project/playSurfaceScaleMode";
+import { resolveStartViewProfile } from "@/start/projectStart";
 
 const zeroSafe = { top: 0, right: 0, bottom: 0, left: 0 };
 
@@ -90,5 +91,36 @@ describe("adaptive viewport & portrait layout modes", () => {
     expect(layout.overlayControls).toBe(true);
     expect(layout.dock).not.toBeNull();
     expect(layout.dock!.scale).toBe(1);
+  });
+
+  it("assigns genre-tiered wide start resolutions and indoor smallMapFill defaults", () => {
+    expect(resolveStartViewProfile("farm-life", "wide")).toEqual({
+      resolution: { width: 640, height: 360 },
+      smallMapFill: true,
+    });
+    expect(resolveStartViewProfile("action-rpg", "wide")).toEqual({
+      resolution: { width: 640, height: 360 },
+      smallMapFill: true,
+    });
+    expect(resolveStartViewProfile("adventure-jrpg", "wide")).toEqual({
+      resolution: { width: 480, height: 270 },
+    });
+    expect(resolveStartViewProfile("story-cutscene", "wide")).toEqual({
+      resolution: { width: 480, height: 270 },
+    });
+    expect(resolveStartViewProfile("horror-chase", "wide")).toEqual({
+      resolution: { width: 384, height: 216 },
+    });
+    // 몬스터 수집은 에메랄드 전용 480×320 규격을 덮어쓰지 않는다.
+    expect(resolveStartViewProfile("monster-collect", "wide")).toBeUndefined();
+    expect(resolveStartViewProfile(null, "wide")).toEqual({
+      resolution: { width: 480, height: 270 },
+    });
+    expect(resolveStartViewProfile("farm-life", "classic")).toBeUndefined();
+
+    // 각 장르 기준 해상도에서 FHD(1920×1080)가 정확한 정수배(3x/4x/5x)로 떨어진다.
+    expect(calculateAdaptiveViewport(1920, 1080, 640, 360)).toMatchObject({ scale: 3, logicalWidth: 640, logicalHeight: 360 });
+    expect(calculateAdaptiveViewport(1920, 1080, 480, 270)).toMatchObject({ scale: 4, logicalWidth: 480, logicalHeight: 270 });
+    expect(calculateAdaptiveViewport(1920, 1080, 384, 216)).toMatchObject({ scale: 5, logicalWidth: 384, logicalHeight: 216 });
   });
 });

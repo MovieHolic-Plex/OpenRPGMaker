@@ -1,4 +1,5 @@
 import { NEW_PROJECT_CHOICES, type NewProjectChoiceId } from "@/editor/newProjectChoices";
+import type { GenrePackId } from "@/project/genrePackId";
 import type { PlayResolution } from "@/project/types";
 
 /** Shared by the lightweight launcher and the editor. Missing mode preserves old AI handoffs. */
@@ -10,15 +11,46 @@ export const DEFAULT_START_SCREEN_SIZE: ProjectStartScreenSize = "wide";
 
 /**
  * 시작 화면 크기 → 저장할 논리 뷰포트. classic 은 기본값(320×240)이라 필드를 비워 둔다.
- * wide 480×270 · 카메라 배율 1(기본값이라 저장하지 않음): 16px 맵 30×17칸. 1080p 4배·4K 8배로 꽉 차고 1440p 는 5배 + 얇은 여백
- * (정수 배율+여백이 기본, project/playSurfaceScaleMode.ts).
- * 이력(2026-10-20): #3057 이 640×360·배율 1(40×22칸)로 넓혔다가 같은 날 사용자 결정으로 480×270·배율 1 이 추천 기본이 됐다.
- * 640×360 은 DB 시스템 「보기 범위」의 넓게(배율 1)·가깝게(배율 2)로 남는다. 이미 저장된 프로젝트는 값을 그대로 읽는다.
+ * wide 기본은 480×270(30×17칸, FHD 4배·4K 8배)이며, 장르별 차등은 GENRE_START_VIEW_PROFILES 가 정한다.
  */
 export const START_SCREEN_RESOLUTIONS: Readonly<Record<ProjectStartScreenSize, Readonly<PlayResolution> | undefined>> = {
   classic: undefined,
   wide: { width: 480, height: 270 },
 };
+
+export type GenreStartViewProfile = {
+  readonly resolution: Readonly<PlayResolution>;
+  /** 640×360 처럼 넓은 야외 시야를 쓰는 장르는 작은 실내 방을 자동 확대(smallMapFill)해 휑함을 막는다. */
+  readonly smallMapFill?: boolean;
+};
+
+/**
+ * 장르별 와이드(wide) 데스크톱 기본 시야(2026-11-27).
+ * 16px 타일 기준 FHD·4K 정수 배율이 딱 떨어지는 3단계(384×216·5x / 480×270·4x / 640×360·3x)로 나눈다:
+ * - farm-life · action-rpg: 넓은 640×360(40×22.5칸) + 작은 방 자동 채움(smallMapFill: true)
+ * - adventure-jrpg · story-cutscene: 균형 480×270(30×17칸)
+ * - horror-chase: 밀착 384×216(24×13.5칸)
+ * - monster-collect: 에메랄드 전용 규격(480×320, configureEmeraldMonsterStyle)을 보존해 덮어쓰지 않는다.
+ */
+export const GENRE_START_VIEW_PROFILES: Readonly<Partial<Record<GenrePackId, GenreStartViewProfile>>> = {
+  "farm-life": { resolution: { width: 640, height: 360 }, smallMapFill: true },
+  "action-rpg": { resolution: { width: 640, height: 360 }, smallMapFill: true },
+  "adventure-jrpg": { resolution: { width: 480, height: 270 } },
+  "story-cutscene": { resolution: { width: 480, height: 270 } },
+  "horror-chase": { resolution: { width: 384, height: 216 } },
+};
+
+/** 새 프로젝트 시작 시 적용할 화면 프로필. classic 이거나 몬스터 수집(전용 480×320 보존)이면 undefined. */
+export function resolveStartViewProfile(
+  packId: GenrePackId | null | undefined,
+  size: ProjectStartScreenSize = DEFAULT_START_SCREEN_SIZE,
+): GenreStartViewProfile | undefined {
+  if (size !== "wide") return undefined;
+  if (packId === "monster-collect") return undefined;
+  if (packId && GENRE_START_VIEW_PROFILES[packId]) return GENRE_START_VIEW_PROFILES[packId];
+  const fallback = START_SCREEN_RESOLUTIONS[size];
+  return fallback ? { resolution: fallback } : undefined;
+}
 
 export const START_EXAMPLES = NEW_PROJECT_CHOICES.filter(choice => choice.featured);
 export const START_EXAMPLE_DETAILS: Partial<Record<NewProjectChoiceId, { title: string; description: string; includes: readonly string[] }>> = {
