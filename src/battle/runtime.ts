@@ -1507,10 +1507,13 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     const enemiesInBattle = visibleEnemies();
     const battlerAgilityMultiplier = (battler: MutableBattler): number =>
       gaugeFrozenByStates(options.project, battler) ? 0 : agilityMultiplierForStates(options.project, battler);
+    for (const id of [...heldForCombo]) {
+      const heldActor = activeActors().find((actor) => actor.recordId === id);
+      if (!heldActor || heldActor.hp <= 0) heldForCombo.delete(id);
+    }
     if (heldForCombo.size > 0 && !chargingActors().some((actor) => actor.hp > 0)) {
       // 기다릴 동료가 없다(쓰러짐 등) — 대기를 풀어 차례를 돌려준다.
-      for (const id of heldForCombo) resumedFromHold.add(id);
-      heldForCombo.clear();
+      releaseHeldActors();
     }
     const chargers = chargingActors();
     const ready = nextReadyBattler(chargers, enemiesInBattle, deltaMs, skinHasteMultiplier, battlerAgilityMultiplier);
@@ -1521,9 +1524,8 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     chargeBattlers(chargers, enemiesInBattle, ready.timeMs, skinHasteMultiplier, battlerAgilityMultiplier);
     ready.battler.gauge = 100;
     if (ready.kind === "actor") {
-      // 연계 대기가 풀린다 — 기다리던 배우는 게이지 100 그대로 이 배우 다음 차례를 받는다(그 사이 이 배우는 연계기를 고를 수 있다).
-      for (const id of heldForCombo) resumedFromHold.add(id);
-      heldForCombo.clear();
+      // 이 배우가 차례를 받을 때 기존 연계 대기(heldForCombo)는 유지한다 — 3·4인 연계기를 위해
+      // 이 배우도 이어서 「동료 기다리기」를 누를 수 있게. 연계가 아닌 일반 행동을 고르면 performActorCommand 가 대기를 푼다.
       const resumed = resumedFromHold.delete(ready.battler.recordId);
       // 턴 시작 상태 처리(지속 피해/자연 회복). 행동 불가(수면 등)면 명령 없이 턴을 넘긴다.
       if (!gen1 && !resumed) {
@@ -1584,6 +1586,11 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
    * FF6 식 팀 교대. 지금 명령을 고르는 배우의 차례를 써서 활성 팀을 바꾼다(gauge: 이 행동 슬롯을 소비, strict: 이 라운드 전체를 소비).
    * 물러나는 팀의 이번 라운드 명령은 버린다. ActorCommand 합집합과 분리된 별도 입구다(types.ts TeamSwapCommand).
    */
+  function releaseHeldActors(): void {
+    for (const id of heldForCombo) resumedFromHold.add(id);
+    heldForCombo.clear();
+  }
+
   function holdForCombo(): boolean {
     if (battleFlow !== "gauge" || cancelled || eventChoice || eventPause || result || phase !== "actorCommand" || !activeActorId) return false;
     if (forcedSwitchActor()) return false;
@@ -1599,7 +1606,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       return combo.every((id) => party.some((battler) => battler.recordId === id));
     });
     if (!hasCombo) return false;
-    if (!party.some((battler) => battler !== actor && !heldForCombo.has(battler.recordId))) return false;
+    if (!party.some((battler) => battler !== actor && !heldForCombo.has(battler.recordId) && battler.gauge < 100)) return false;
     heldForCombo.add(actor.recordId);
     resumedFromHold.delete(actor.recordId);
     activeActorId = undefined;
@@ -1626,6 +1633,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       return;
     }
     swapActiveTeam(command.targetTeamId, actor.recordId);
+    releaseHeldActors();
     actor.gauge = 0;
     gaugeCycleActed.add(actor.id);
     applyTroopEvents(() => finishGaugeActorCommand(actor), markGaugeActionCycle(actor));
@@ -1676,9 +1684,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
     for (const partner of comboPartners(actor, command)) {
       partner.gauge = 0;
       gaugeCycleActed.add(partner.id);
+      heldForCombo.delete(partner.recordId);
       // 연계 대기에서 풀려 「이어 받을 차례」로 남은 동료도 이 연계로 차례를 썼다 — 다음 차례는 새 차례라 차례 시작 처리(지속 피해 등)를 받는다.
       resumedFromHold.delete(partner.recordId);
     }
+    // 이번 행동에 쓰이지 않고 대기 중이던 다른 동료는 대기를 풀어 바로 다음 차례를 돌려준다.
+    releaseHeldActors();
     // 사이클 계수는 효과 적용 뒤에 — 이번 행동으로 쓰러진 배틀러는 대기 목록에서 빠진다.
     applyTroopEvents(() => finishGaugeActorCommand(actor), markGaugeActionCycle(actor));
   }
