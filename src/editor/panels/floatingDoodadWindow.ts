@@ -607,7 +607,7 @@ export function mountFloatingDoodadWindow(
     }
     const stamp = state.activePaletteStamp;
     if (!stamp) return false;
-    if (item.choice.stamp.kitId && stamp.kitId === item.choice.stamp.kitId) return true;
+    if (item.choice.stamp.kitId) return stamp.kitId === item.choice.stamp.kitId;
     return stamp.label === item.choice.stamp.label && stamp.width === item.choice.stamp.width && stamp.height === item.choice.stamp.height;
   }
 
@@ -664,6 +664,9 @@ export function mountFloatingDoodadWindow(
       });
     } else {
       selectInteractivePropBrush(null);
+      if (editorState.get().layer === "event") {
+        editorState.set({ layer: item.choice.stamp.cells[0]?.layer ?? "upper" });
+      }
       editorState.set({ reliefDoodad: null, reliefBridgeStart: null });
       selectPaletteStamp(item.choice.stamp);
     }

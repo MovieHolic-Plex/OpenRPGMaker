@@ -1,16 +1,9 @@
 /* ── Phase 3: AI 조수 플로팅 글래스 카드 리뉴얼 × 선택 컨텍스트 통합 ──
    - 캔버스를 밀어내지 않는 우하단 플로팅 글래스 카드(B × C 하이브리드)
-   - 기존 오른쪽 인스펙터 열은 완전히 숨기고, 조수 카드 상단 컨텍스트 스트립으로 통합
    - 레일/컴포저의 불필요한 잡음(쿼터·맥락 게이지·토큰·모델·팀·스탬프 칩)을 공격적으로 정리
    - 색은 tokens.css 변수만 사용(hex 0, !important 0). */
 
-/* 1. 오른쪽 인스펙터 열 완전 통합: 조수 컨텍스트 스트립 + 유닛 팔레트가 대체한다. */
-.editor-layout > .right-inspector,
-.editor-layout > .right-inspector[data-inspector-kind="event"] {
-  display: none;
-}
-
-/* 2. 조수 도크는 캔버스 폭을 밀어내지 않는 0px 오버레이 앵커로 유지한다. */
+/* 1. 조수 도크는 캔버스 폭을 밀어내지 않는 0px 오버레이 앵커로 유지한다. */
 .ai-right-dock,
 .ai-right-dock:not(.is-collapsed) {
   flex: 0 0 0;

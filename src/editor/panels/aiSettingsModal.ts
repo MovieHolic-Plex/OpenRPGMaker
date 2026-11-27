@@ -1098,21 +1098,25 @@ export function renderAiSettingsForm(options: {
   imageSource.value.textContent = imageEntry.providerLabel;
 
   syncModelDisplay = (): void => {
-    const exactPreset = qualities.find(({ effort }) => providerId === CODEX_PROVIDER_ID && !loadEngineChoice()
+    const localEngine = loadEngineChoice();
+    const current = qualities.find(({ effort }) => providerId === CODEX_PROVIDER_ID && !localEngine
       && mainRoles.every(control => control.provider.value === CODEX_PROVIDER_ID
         && control.field.input.value.trim() === ASSISTANT_CHATGPT_MODEL && control.effort.value === effort));
-    const effortPreset = exactPreset ?? qualities.find(({ effort }) => {
-      const currentEffort = mainRoles[0]?.effort.value;
-      return currentEffort === effort || (effort === "medium" && (currentEffort === "low" || currentEffort === "off"));
-    });
+    const localPreset = localEngine
+      ? qualities.find(({ effort }) => {
+          const currentEffort = mainRoles[0]?.effort.value;
+          return currentEffort === effort || (effort === "medium" && (currentEffort === "low" || currentEffort === "off"));
+        })
+      : undefined;
+    const highlighted = current ?? localPreset;
     qualityButtons.forEach((button, i) => {
-      const selected = qualities[i] === effortPreset;
+      const selected = qualities[i] === highlighted;
       button.setAttribute("aria-checked", String(selected));
-      button.tabIndex = selected || (!effortPreset && i === 0) ? 0 : -1;
+      button.tabIndex = selected || (!highlighted && i === 0) ? 0 : -1;
     });
-    qualityCaption.textContent = loadEngineChoice()
-      ? `이 PC에 설치한 AI 프로그램을 사용 중이에요.${effortPreset ? ` (${effortPreset.title})` : ""}`
-      : exactPreset?.caption ?? "세부 역할별 설정에서 직접 골랐어요.";
+    qualityCaption.textContent = localEngine
+      ? `이 PC에 설치한 AI 프로그램을 사용 중이에요.${localPreset ? ` (${localPreset.title})` : ""}`
+      : current?.caption ?? "고급에서 역할별로 직접 골랐어요.";
     const executionModel = liteModel.input.value.trim();
     const planningModel = brainModel.input.value.trim();
     // 「진행」 행은 계획·실행·시공 세 칸을 묶는다 — 한 칸만 바꿔도 요약이 따라오게 셋을 다 본다.
@@ -1284,6 +1288,7 @@ export function renderAiSettingsForm(options: {
       ] }),
     ],
   }) as HTMLDetailsElement;
+  if (getAiConnectionStatus().kind !== "ready") addAccount.setAttribute("open", "");
 
   const modelAdvanced = el("details", {
     class: "ai-settings-alternatives",

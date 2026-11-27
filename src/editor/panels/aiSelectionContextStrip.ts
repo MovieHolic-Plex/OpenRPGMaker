@@ -154,7 +154,7 @@ export function mountAiSelectionContextStrip(
     }
 
     const sig = event && map
-      ? `ev:${map.id}:${event.id}:${event.name ?? ""}:${event.x},${event.y}:${event.pages?.length ?? 0}:${event.pages?.[0]?.graphic.sprite ?? ""}`
+      ? `ev:${map.id}:${event.id}:${eventDisplayName(event)}:${classifyUnit(event)}:${triggerLabel(event.pages?.[0]?.trigger ?? event.trigger)}:${event.x},${event.y}:${unitGraphic(event)?.sprite?.id ?? ""}`
       : map
         ? `map:${map.id}:${map.name}:${map.width}x${map.height}:${map.events.length}:${modeLabel}`
         : "none";

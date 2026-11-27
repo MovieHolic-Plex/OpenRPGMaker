@@ -512,6 +512,7 @@ export function mountFloatingUnitWindow(
             openEventEditorModal(mapId, ev.id);
           },
           keydown: (event) => {
+            if (event.target !== event.currentTarget) return;
             if (!(event instanceof KeyboardEvent)) return;
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault();

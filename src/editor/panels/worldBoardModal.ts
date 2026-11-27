@@ -800,6 +800,7 @@ export function openWorldBoardModal(): void {
             close();
           },
           keydown: (ev) => {
+            if (ev.target !== ev.currentTarget) return;
             const ke = ev as KeyboardEvent;
             if (ke.key === "Enter" || ke.key === " ") {
               ke.preventDefault();
@@ -906,12 +907,14 @@ export function mountWorldBoardHotkeys(): () => void {
   const onKeyDown = (ev: KeyboardEvent): void => {
     if (ev.ctrlKey || ev.metaKey || ev.altKey || ev.repeat) return;
     if (ev.key !== "m" && ev.key !== "M") return;
-    if (shouldIgnoreEditorShortcut(ev)) return;
     if (activeClose) {
+      const target = ev.target;
+      if (target instanceof HTMLElement && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
       ev.preventDefault();
       activeClose();
       return;
     }
+    if (shouldIgnoreEditorShortcut(ev)) return;
     if (hasOpenModalLayer()) return;
     ev.preventDefault();
     openWorldBoardModal();
