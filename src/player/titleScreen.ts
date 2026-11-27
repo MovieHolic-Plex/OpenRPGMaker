@@ -23,6 +23,9 @@ import type {
 import { el } from "@/util/dom";
 import { isEmeraldMonsterStyle } from '@/project/emeraldMonsterStyle';
 import { fitTitleSubtitle, fitTitleText, type TitleFit } from "@/player/titleTextFit";
+import type { SupportedLocale } from "@/i18n/locale";
+import { runtimeUiLocale, runtimeUiText, runtimeUiTextForLocale, type RuntimeUiKey } from "@/player/runtimeUiStrings";
+import { auditProjectAssetLicenses } from "@/project/assetLicenseAudit";
 
 const TITLE_SCREEN_LOGICAL_WIDTH = 320;
 const TITLE_SCREEN_LOGICAL_HEIGHT = 240;
@@ -66,24 +69,50 @@ export type TitleMenuContext = {
   readonly reuseFx?: HTMLElement | null;
   /** 서명이 같으면 재사용할 기존 영역 효과 canvas(WebGL 컨텍스트·rAF 보존). */
   readonly reuseEffects?: HTMLElement | null;
+  /** 프로젝트 컨텍스트(런타임 UI 언어·법적 저작자 표기 의무 판정용). 생략 시 한국어 기본·표기 의무 있음(기존 동작 유지). */
+  readonly project?: Project;
+  /** 명시 로캘(테스트/오버라이드용). */
+  readonly locale?: SupportedLocale;
+  /** 법적 저작자 표기 의무 명시 오버라이드. 생략 시 project 감사 결과(project 없으면 true). */
+  readonly requiresAttribution?: boolean;
 };
 
+const DEFAULT_NEW_GAME_LABEL = "새 게임";
 const DEFAULT_RESUME_LABEL = "이어하기";
+const DEFAULT_CONTINUE_LABEL = "불러오기";
 export const DEFAULT_CREDITS_LABEL = "크레딧";
+const DEFAULT_QUIT_LABEL = "종료";
+
+function resolveTitleMenuLabel(
+  authored: string | undefined,
+  koreanFactoryDefault: string,
+  locale: SupportedLocale,
+  key: RuntimeUiKey,
+): string {
+  const trimmed = authored?.trim();
+  if (!trimmed) return runtimeUiTextForLocale(locale, key);
+  if (locale !== "ko" && trimmed === koreanFactoryDefault) {
+    return runtimeUiTextForLocale(locale, key);
+  }
+  return trimmed;
+}
 
 /**
  * Visible title options in fixed order New → New Game+ → Resume → Continue → Credits → Quit. newGame is always present.
- * 크레딧은 숨길 수 없다 — CC BY 계열 에셋의 저작자 표기를 여는 유일한 입구다(예전 하단 한 줄 표기를 대신한다).
+ * 크레딧은 법적 표기 의무(requiresAttribution)가 있는 에셋을 하나라도 쓰면 숨길 수 없다.
+ * 100% 자체 에셋 게임(requiresAttribution === false)에서 제작자가 menuVisibility.credits === false 로 설정한 경우에만 숨김을 허용한다.
  * "이어하기"(resume)는 오토세이브가 실제로 존재하고 menuVisibility.resume !== false 일 때만 노출된다.
  */
 export function listTitleMenuOptions(settings: TitleScreenSettings, context?: TitleMenuContext): TitleMenuOption[] {
   const visibility = settings.menuVisibility;
+  const locale = context?.locale ?? (context?.project ? runtimeUiLocale(context.project) : "ko");
+  const continueLabel = resolveTitleMenuLabel(settings.menuLabels.continueGame, DEFAULT_CONTINUE_LABEL, locale, "title.continueGame");
   const options: TitleMenuOption[] = [
     {
       id: "newGame",
       testId: "title-new-game",
       elementId: "title-option-new-game",
-      label: settings.menuLabels.newGame,
+      label: resolveTitleMenuLabel(settings.menuLabels.newGame, DEFAULT_NEW_GAME_LABEL, locale, "title.newGame"),
     },
   ];
   if (context?.newGamePlusLabel) {
@@ -95,12 +124,18 @@ export function listTitleMenuOptions(settings: TitleScreenSettings, context?: Ti
     });
   }
   if (context?.autosaveAvailable === true && visibility?.resume !== false) {
+    const resumeAuthored = settings.menuLabels.resume?.trim();
+    const resumeFallback = locale === "ko" && /이어/u.test(continueLabel)
+      ? runtimeUiTextForLocale(locale, "title.resumeRecent")
+      : runtimeUiTextForLocale(locale, "title.resume");
     options.push({
       id: "resume",
       testId: "title-resume-game",
       elementId: "title-option-resume-game",
       // 저자가 불러오기만 「…이어하기」로 바꾼 옛 프로젝트도 두 줄이 같은 말로 뜨지 않게(J34).
-      label: settings.menuLabels.resume?.trim() || (/이어/u.test(settings.menuLabels.continueGame ?? "") ? "방금 하던 곳부터" : DEFAULT_RESUME_LABEL),
+      label: resumeAuthored && (locale === "ko" || resumeAuthored !== DEFAULT_RESUME_LABEL)
+        ? resumeAuthored
+        : resumeFallback,
     });
   }
   if (visibility?.continueGame !== false) {
@@ -108,21 +143,25 @@ export function listTitleMenuOptions(settings: TitleScreenSettings, context?: Ti
       id: "continueGame",
       testId: "title-load-game",
       elementId: "title-option-load-game",
-      label: settings.menuLabels.continueGame,
+      label: continueLabel,
     });
   }
-  options.push({
-    id: "credits",
-    testId: "title-credits",
-    elementId: "title-option-credits",
-    label: settings.menuLabels.credits?.trim() || DEFAULT_CREDITS_LABEL,
-  });
+  const requiresAttribution = context?.requiresAttribution
+    ?? (context?.project ? auditProjectAssetLicenses(context.project).requiresAttribution : true);
+  if (requiresAttribution || visibility?.credits !== false) {
+    options.push({
+      id: "credits",
+      testId: "title-credits",
+      elementId: "title-option-credits",
+      label: resolveTitleMenuLabel(settings.menuLabels.credits, DEFAULT_CREDITS_LABEL, locale, "title.credits"),
+    });
+  }
   if (visibility?.quit !== false) {
     options.push({
       id: "quit",
       testId: "title-quit-game",
       elementId: "title-option-quit-game",
-      label: settings.menuLabels.quit,
+      label: resolveTitleMenuLabel(settings.menuLabels.quit, DEFAULT_QUIT_LABEL, locale, "title.quit"),
     });
   }
   return options;
@@ -167,7 +206,7 @@ export function renderTitleScreen(
 ): HTMLElement {
   const settings = project.system.titleScreen ?? defaultTitleScreenSettings();
   const backgroundResourceId = settings.backgroundResourceId ?? project.system.titleResourceId;
-  const options = listTitleMenuOptions(settings, context);
+  const options = listTitleMenuOptions(settings, { ...context, project });
   const clampedIndex = clampTitleMenuIndex(selectedIndex, options.length);
   const title = el("div", {
     class: "title-screen rm-title-screen rm-title-screen-editorial",
@@ -216,7 +255,7 @@ export function renderTitleScreen(
   const authoredSubtitle = (settings.logoSubtitle ?? "").trim().length > 0;
   const authoredTitle = settings.title.trim().length > 0 && settings.title !== defaultTitleScreenSettings().title;
   const logoBottom = settings.logoStyle || authoredSubtitle ? titleBlockBottom(settings, titleFit) : undefined;
-  const menu = renderMenu(settings, options, clampedIndex, false, logoBottom);
+  const menu = renderMenu(settings, options, clampedIndex, false, logoBottom, project);
   wireTitleOptionClicks(menu, options, actions);
   if (playIntro) applyTitleIntroToMenu(menu, settings.intro);
   title.append(menu);
@@ -225,7 +264,7 @@ export function renderTitleScreen(
   if (settings.logoStyle || authoredSubtitle) {
     if (authoredSubtitle) title.append(renderTitleLogoSubtitle(settings, titleFit));
   } else if (!authoredTitle) {
-    title.append(renderTitleEditorialCopy());
+    title.append(renderTitleEditorialCopy(project));
   }
   title.append(titleSelectionDebug(clampedIndex));
   const logoAtMs = playSequence ? resolveTitleOpeningSequence(settings.sequence ?? {}).logoAtMs : 0;
@@ -719,18 +758,18 @@ function renderTitleNodes(settings: TitleScreenSettings, project: Project): HTML
   return nodes;
 }
 
-function renderTitleEditorialCopy(): HTMLElement {
+function renderTitleEditorialCopy(project?: Project): HTMLElement {
   return el("div", {
     class: "rm-title-editorial-copy",
     children: [
       el("span", {
         class: "rm-title-kicker",
-        text: "A NEW ADVENTURE",
+        text: runtimeUiText(project, "title.editorialKicker"),
         dataset: { testid: "title-kicker" },
       }),
       el("span", {
         class: "rm-title-subtitle",
-        text: "이야기가 시작되는 곳",
+        text: runtimeUiText(project, "title.editorialSubtitle"),
         dataset: { testid: "title-subtitle" },
       }),
     ],
@@ -823,10 +862,11 @@ function renderMenu(
   selectedIndex: number,
   hintVisible: boolean,
   minTop?: number,
+  project?: Project,
 ): HTMLElement {
   const menu = el("div", {
     class: "rm-title-menu rm-title-menu-open",
-    attrs: { "aria-label": "게임 시작 메뉴", role: "listbox" },
+    attrs: { "aria-label": runtimeUiText(project, "title.menuAriaLabel"), role: "listbox" },
   });
   if (settings.menuStyle) menu.dataset.menuStyle = settings.menuStyle;
   if (settings.menuFontPx) menu.style.setProperty("--rm-title-menu-font", `${settings.menuFontPx}px`);

@@ -37,6 +37,20 @@ import type { ShopStep } from "@/player/playSceneShop";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import type { ResolvedTerms } from "@/project/terms";
 import { fitTextToLines, keepWholeRows } from "@/player/runtimeTextFit";
+import { runtimeUiText, type RuntimeUiKey } from "@/player/runtimeUiStrings";
+import type { Project } from "@/project/types";
+
+function shopProject(): Project | undefined {
+  try {
+    return store.getCurrent();
+  } catch {
+    return undefined;
+  }
+}
+
+function shopText(key: RuntimeUiKey, ...args: readonly (string | number)[]): string {
+  return runtimeUiText(shopProject(), key, ...args);
+}
 
 export type { ShopMode } from "@/player/playSceneShopParts";
 export type ShopView = "menu" | "items" | "haggle";
@@ -81,7 +95,7 @@ export function createShopOverlay(): HTMLElement {
   // 모달 대화창 시맨틱 — 보조기술이 "가게 창이 떴고 그 안에 갇혀 있다"를 알 수 있어야 한다.
   overlay.setAttribute("role", "dialog");
   overlay.setAttribute("aria-modal", "true");
-  overlay.setAttribute("aria-label", "상점");
+  overlay.setAttribute("aria-label", shopText("shop.ariaLabel"));
   // 오버레이는 스크림이다 — 윈도스킨 변수만 심고(border-image 없이) 표면은
   // 개별 창이 그린다. 이 노드에 fill 을 걸면 가게가 아니라 플레이 영역 전체를 덮는 한 장의 상자가 된다.
   applySystemWindowSkinVariable(overlay);
@@ -122,19 +136,26 @@ export function renderShopMenu(
     choices.append(shopMenuButton(action, terms, showItems, finish, step));
   }
   // 선택지는 가로 한 줄 — 힌트가 ↑↓ 라고 가르치면 레이아웃과 어긋난다(둘 다 먹지만 주축은 ←→).
-  menu.append(choices, keyHints([["←→", "선택"], [SHOP_CONFIRM_KEY_LABEL, "결정"], [CANCEL_KEY_LABEL, "나가기"]]));
+  menu.append(
+    choices,
+    keyHints([
+      ["←→", shopText("shop.key.select")],
+      [SHOP_CONFIRM_KEY_LABEL, shopText("shop.key.confirm")],
+      [CANCEL_KEY_LABEL, shopText("shop.key.leave")],
+    ])
+  );
   shell.append(shopWindow("runtime-shop-greeting-panel", [menu]));
   return shell;
 }
 
 /** 가게가 무엇을 하는 곳인지 한 줄. 서비스 종류마다 다르다. */
 function shopTagline(step: ShopStep): string {
-  if (step.shopServiceKind === "repair") return "장비를 손봐 드립니다.";
-  if (step.shopServiceKind === "appraisal") return "물건의 값을 봐 드립니다.";
-  if (step.shopServiceKind === "pawn") return "물건을 맡기고 돈을 받습니다.";
-  if (step.shopType === "buyOnly") return "물건을 팝니다.";
-  if (step.shopType === "sellOnly") return "물건을 사들입니다.";
-  return "물건을 사고팝니다.";
+  if (step.shopServiceKind === "repair") return shopText("shop.tagline.repair");
+  if (step.shopServiceKind === "appraisal") return shopText("shop.tagline.appraisal");
+  if (step.shopServiceKind === "pawn") return shopText("shop.tagline.pawn");
+  if (step.shopType === "buyOnly") return shopText("shop.tagline.buyOnly");
+  if (step.shopType === "sellOnly") return shopText("shop.tagline.sellOnly");
+  return shopText("shop.tagline.normal");
 }
 
 export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
@@ -151,18 +172,18 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
   topbar.append(shopBrandBlock(
     request.scene,
     shopTitle(request.step),
-    request.mode === "sell" ? "판매 · 내 소지품을 상인에게" : "구매 · 상인의 진열 상품"
+    request.mode === "sell" ? shopText("shop.modeSub.sell") : shopText("shop.modeSub.buy")
   ));
   if (request.onMode) {
     const modes = shopMenuActions(request.step).filter((action): action is ShopMode => action !== "cancel");
     if (modes.length > 1) topbar.append(shopModeTabs(modes, request.mode, request.terms, request.onMode));
   }
   if (preset === "tabs" && request.onCategory) {
-    topbar.append(el("nav", { class: "runtime-shop-preset-tabs-nav", attrs: { "aria-label": "상품 카테고리" }, children: [
-      el("button", { class: request.category === "all" ? "is-active" : "", text: "전체", attrs: { type: "button" }, on: { click: () => request.onCategory?.("all") } }),
-      el("button", { class: request.category === "equipment" ? "is-active" : "", text: "장비", attrs: { type: "button" }, on: { click: () => request.onCategory?.("equipment") } }),
-      el("button", { class: request.category === "material" ? "is-active" : "", text: "재료", attrs: { type: "button" }, on: { click: () => request.onCategory?.("material") } }),
-      el("button", { class: request.category === "consumable" ? "is-active" : "", text: "소모품", attrs: { type: "button" }, on: { click: () => request.onCategory?.("consumable") } }),
+    topbar.append(el("nav", { class: "runtime-shop-preset-tabs-nav", attrs: { "aria-label": shopText("shop.categoryAria") }, children: [
+      el("button", { class: request.category === "all" ? "is-active" : "", text: shopText("shop.category.all"), attrs: { type: "button" }, on: { click: () => request.onCategory?.("all") } }),
+      el("button", { class: request.category === "equipment" ? "is-active" : "", text: shopText("shop.category.equipment"), attrs: { type: "button" }, on: { click: () => request.onCategory?.("equipment") } }),
+      el("button", { class: request.category === "material" ? "is-active" : "", text: shopText("shop.category.material"), attrs: { type: "button" }, on: { click: () => request.onCategory?.("material") } }),
+      el("button", { class: request.category === "consumable" ? "is-active" : "", text: shopText("shop.category.consumable"), attrs: { type: "button" }, on: { click: () => request.onCategory?.("consumable") } }),
     ] }));
   }
   topbar.append(
@@ -172,13 +193,13 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
   );
   shell.append(topbar);
   if (preset === "story") shell.append(el("div", { class: "runtime-shop-story-dialogue", children: [
-    el("strong", { text: "상인" }), el("span", { text: "오늘은 특별 추천 상품이 들어왔습니다." }),
+    el("strong", { text: shopText("shop.story.merchant") }), el("span", { text: shopText("shop.story.recommend") }),
   ] }));
-  if (preset === "story") shell.append(el("nav", { class: "runtime-shop-story-actions", attrs: { "aria-label": "상인 행동" }, children: [
+  if (preset === "story") shell.append(el("nav", { class: "runtime-shop-story-actions", attrs: { "aria-label": shopText("shop.story.actionsAria") }, children: [
     ...(request.onMode ? shopMenuActions(request.step).filter((action): action is ShopMode => action !== "cancel").map(mode =>
-      el("button", { text: mode === "buy" ? "사기" : "팔기", attrs: { type: "button" }, on: { click: () => request.onMode?.(mode) } })) : []),
-    el("button", { text: "말 걸기", attrs: { type: "button" }, on: { click: () => request.setStatus("상인: 다음 마을에 가기 전에 필요한 걸 챙겨요.") } }),
-    el("button", { text: "나가기", attrs: { type: "button" }, on: { click: () => request.showMenu() } }),
+      el("button", { text: mode === "buy" ? shopText("shop.story.buy") : shopText("shop.story.sell"), attrs: { type: "button" }, on: { click: () => request.onMode?.(mode) } })) : []),
+    el("button", { text: shopText("shop.story.talk"), attrs: { type: "button" }, on: { click: () => request.setStatus(shopText("shop.story.talkLine")) } }),
+    el("button", { text: shopText("shop.story.leave"), attrs: { type: "button" }, on: { click: () => request.showMenu() } }),
   ] }));
 
   // ── 본문: 목록 + 상세 카드.
@@ -194,13 +215,13 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
   // 도트 비교 상점: 가게 이름은 목록 창 머리에 작게 — 목업의 「녹슨 망치 대장간」 자리.
   if (preset === "pixel") listPanel.prepend(el("div", { class: "runtime-shop-list-caption", text: shopTitle(request.step) }));
   if (preset === "grid") listPanel.prepend(el("header", { class: "runtime-shop-grid-heading", children: [
-    el("strong", { text: "오늘의 진열" }), el("span", { text: `${goods.length}개 상품` }),
+    el("strong", { text: shopText("shop.grid.heading") }), el("span", { text: shopText("shop.grid.count", goods.length) }),
   ] }));
   body.append(listPanel);
 
   const side = el("div", { class: "runtime-shop-side" });
   if (preset === "compare") side.append(el("header", { class: "runtime-shop-compare-heading", children: [
-    el("strong", { text: "장비 비교" }), el("span", { text: "현재 장비와 구매 후 변화" }),
+    el("strong", { text: shopText("shop.compare.heading") }), el("span", { text: shopText("shop.compare.sub") }),
   ] }));
   side.append(shopWindow("runtime-shop-detail-panel", [detailCard(request.scene, request.step, first)]));
   // 도트 비교 상점은 RM2003 처럼 파티 창을 비교 창 위에 둔다.
@@ -218,7 +239,7 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
         el("div", { class: "runtime-shop-desc-owned", dataset: { testid: "shop-desc-owned" }, text: ownedLine(request.scene, first) }),
       ]),
       shopWindow("runtime-shop-purse-panel", [
-        el("div", { class: "runtime-shop-purse-label", text: "소지금" }),
+        el("div", { class: "runtime-shop-purse-label", text: shopText("shop.purseLabel") }),
         el("div", { class: "runtime-shop-purse-value", dataset: { testid: "shop-purse-value" }, children: [
           el("span", { class: "runtime-shop-purse-amount", text: String(request.scene.session.gold) }),
           el("span", { class: "runtime-shop-purse-unit", text: ` ${request.terms.gold}` }),
@@ -234,8 +255,19 @@ export function renderShopItems(request: ShopItemsRenderRequest): HTMLElement {
       shopPrompt(request, first),
       keyHints(
         (request.step.quantityMode ?? "single") === "select"
-          ? [[SHOP_FOCUS_GROUP_KEY_LABEL, "영역"], ["↑↓", "선택"], ["←→", "수량"], [SHOP_CONFIRM_KEY_LABEL, "결정"], [CANCEL_KEY_LABEL, "뒤로"]]
-          : [[SHOP_FOCUS_GROUP_KEY_LABEL, "영역"], ["↑↓", "선택"], [SHOP_CONFIRM_KEY_LABEL, "결정"], [CANCEL_KEY_LABEL, "뒤로"]]
+          ? [
+              [SHOP_FOCUS_GROUP_KEY_LABEL, shopText("shop.key.section")],
+              ["↑↓", shopText("shop.key.select")],
+              ["←→", shopText("shop.key.qty")],
+              [SHOP_CONFIRM_KEY_LABEL, shopText("shop.key.confirm")],
+              [CANCEL_KEY_LABEL, shopText("shop.key.back")],
+            ]
+          : [
+              [SHOP_FOCUS_GROUP_KEY_LABEL, shopText("shop.key.section")],
+              ["↑↓", shopText("shop.key.select")],
+              [SHOP_CONFIRM_KEY_LABEL, shopText("shop.key.confirm")],
+              [CANCEL_KEY_LABEL, shopText("shop.key.back")],
+            ]
       ),
     ])
   );
@@ -251,13 +283,13 @@ export function renderShopNotice(message: string, _terms: ResolvedTerms, close: 
   // 안내를 읽고 닫는 동작이다 — 거래 취소가 아니므로 shopCancel(취소) 라벨을 빌리지 않는다.
   const button = el("button", {
     class: "runtime-shop-menu-choice",
-    text: "닫기",
+    text: shopText("shop.close"),
     dataset: { testid: "shop-notice-close" },
     attrs: { type: "button" },
     on: { click: close },
   });
   choices.append(button);
-  menu.append(choices, keyHints([[SHOP_CONFIRM_KEY_LABEL, "닫기"], [CANCEL_KEY_LABEL, "닫기"]]));
+  menu.append(choices, keyHints([[SHOP_CONFIRM_KEY_LABEL, shopText("shop.key.close")], [CANCEL_KEY_LABEL, shopText("shop.key.close")]]));
   shell.append(shopWindow("runtime-shop-greeting-panel", [menu]));
   return shell;
 }
@@ -298,7 +330,7 @@ export function updateShopPartyCards(
     card.setAttribute("aria-pressed", String(focused));
     card.classList.toggle("is-blocked", fit?.mark === "blocked");
     const lines = fit?.lines
-      ?? (heal ? [{ text: `${heal.kind === "hp" ? "HP" : heal.kind === "pp" ? "PP" : "MP"} ${heal.next > heal.current ? `+${heal.next - heal.current}` : heal.reason ?? "가득"}`,
+      ?? (heal ? [{ text: `${heal.kind === "hp" ? "HP" : heal.kind === "pp" ? "PP" : "MP"} ${heal.next > heal.current ? `+${heal.next - heal.current}` : heal.reason ?? shopText("shop.full")}`,
         tone: heal.next > heal.current ? "up" as const : "muted" as const }] : []);
     [first, second].forEach((slot, index) => {
       if (!slot) return;
@@ -449,7 +481,7 @@ export function updateShopConfirmLabel(overlay: HTMLElement, terms: ResolvedTerm
 
 function shopItemList(request: ShopItemsRenderRequest, goods: readonly ShopGoods[]): HTMLElement {
   // 행을 고르고 결정키로 활성하는 패턴 — role=listbox 가 정확하다(행은 role=option).
-  const wrap = el("div", { class: "runtime-shop-item-list", attrs: { role: "listbox", "aria-label": "상품 목록" } });
+  const wrap = el("div", { class: "runtime-shop-item-list", attrs: { role: "listbox", "aria-label": shopText("shop.listAria") } });
   // 창 테두리에 반쯤 걸린 마지막 행을 없앤다 — 남는 높이를 행 경계로 자른다(J21 「회복약 60G」 반토막).
   if (shopUiPresetOf(request.step) === "pixel") keepWholeRows(wrap, { marks: true });
   if (goods.length === 0) {
@@ -457,7 +489,7 @@ function shopItemList(request: ShopItemsRenderRequest, goods: readonly ShopGoods
       el("div", {
         class: "runtime-shop-empty",
         dataset: { testid: "shop-item-list-empty" },
-        text: request.mode === "sell" ? "팔 물건이 없습니다." : "파는 물건이 없습니다.",
+        text: request.mode === "sell" ? shopText("shop.empty.sell") : shopText("shop.empty.buy"),
       })
     );
     return wrap;
@@ -526,7 +558,12 @@ function fillDescText(node: HTMLElement, step: ShopStep, goods: ShopGoods | unde
 function statSummary(goods: ShopGoods | undefined): string {
   const bonuses = goods?.statBonuses;
   if (!bonuses) return "";
-  const labels = [["attack", "공격"], ["defense", "방어"], ["mind", "정신"], ["agility", "민첩"]] as const;
+  const labels = [
+    ["attack", shopText("shop.stat.attack")],
+    ["defense", shopText("shop.stat.defense")],
+    ["mind", shopText("shop.stat.mind")],
+    ["agility", shopText("shop.stat.agility")],
+  ] as const;
   return labels
     .filter(([key]) => (bonuses[key] ?? 0) !== 0)
     .map(([key, label]) => `${label} ${(bonuses[key] ?? 0) > 0 ? "+" : ""}${bonuses[key]}`)
@@ -542,12 +579,12 @@ function helpLineText(step: ShopStep, goods: ShopGoods | undefined): string {
 function ownedLine(scene: PlaySceneContext, goods: ShopGoods | undefined): string {
   if (!goods) return "";
   const owned = scene.session.inventory[goods.id] ?? 0;
-  if (goods.source !== "equipment") return `보유 ${owned}`;
+  if (goods.source !== "equipment") return shopText("shop.owned", owned);
   let equipped = 0;
   for (const actorId of scene.session.partyActorIds) {
     for (const value of Object.values(scene.session.actorEquipment?.[actorId] ?? {})) if (value === goods.id) equipped += 1;
   }
-  return `보유 ${owned} · 장착 중 ${equipped}`;
+  return shopText("shop.ownedEquipped", owned, equipped);
 }
 
 function shopPrompt(request: ShopItemsRenderRequest, first: ShopGoods | undefined): HTMLElement {
@@ -570,7 +607,7 @@ function shopPrompt(request: ShopItemsRenderRequest, first: ShopGoods | undefine
   } }));
   const actions = el("div", { class: "runtime-shop-prompt-actions" });
   if (request.onDetail) actions.append(el("button", {
-    class: "runtime-shop-detail-open", text: "상세 / 장비 비교", dataset: { testid: "shop-detail-open" },
+    class: "runtime-shop-detail-open", text: shopText("shop.detailCompare"), dataset: { testid: "shop-detail-open" },
     attrs: { type: "button", ...(first ? {} : { disabled: "" }) }, on: { click: request.onDetail },
   }));
   actions.append(
@@ -649,7 +686,7 @@ function shopMenuButton(
   const emptyPool = stepForPoolCheck ? isServicePoolEmpty(stepForPoolCheck) : false;
   if (emptyPool && action !== "cancel") {
     button.disabled = true;
-    button.setAttribute("aria-label", `${button.textContent ?? ""} · 대상 없음 — 서비스 불가`.trim());
+    button.setAttribute("aria-label", `${button.textContent ?? ""} · ${shopText("shop.serviceUnavailable")}`.trim());
     button.dataset.disabledReason = "empty-pool";
   }
   button.addEventListener("click", () => {
@@ -661,9 +698,9 @@ function shopMenuButton(
 }
 
 function menuActionHint(action: ShopMenuAction): string {
-  if (action === "buy") return "진열된 물건을 산다";
-  if (action === "sell") return "가진 물건을 넘긴다";
-  return "가게에서 나간다";
+  if (action === "buy") return shopText("shop.menuHint.buy");
+  if (action === "sell") return shopText("shop.menuHint.sell");
+  return shopText("shop.menuHint.cancel");
 }
 
 function isServicePoolEmpty(step: ShopStep): boolean {
@@ -709,13 +746,13 @@ function shopTitle(step: ShopStep): string {
   if (named) return named;
   switch (step.shopServiceKind) {
     case "repair":
-      return "수리점";
+      return shopText("shop.title.repair");
     case "appraisal":
-      return "감정소";
+      return shopText("shop.title.appraisal");
     case "pawn":
-      return "전당포";
+      return shopText("shop.title.pawn");
     default:
-      return "상점";
+      return shopText("shop.title.default");
   }
 }
 
@@ -746,7 +783,7 @@ export type ShopHaggleRenderRequest = {
 };
 
 function haggleProposeLabel(request: Pick<ShopHaggleRenderRequest, "offer" | "goldLabel" | "mode">): string {
-  const verb = request.mode === "sell" ? "요구" : "제시";
+  const verb = request.mode === "sell" ? shopText("shop.haggle.verbSell") : shopText("shop.haggle.verbBuy");
   return `${verb} ${request.offer}${request.goldLabel}`;
 }
 
@@ -758,14 +795,14 @@ export function renderShopHaggle(request: ShopHaggleRenderRequest): HTMLElement 
     shopMenuMessage(request.merchantLine),
     el("div", {
       class: "runtime-shop-haggle-item",
-      text: `${request.itemName} · 기준가 ${request.reference}${unit} ×${request.count} · 내 소지금 ${request.playerGold}${unit}`,
+      text: shopText("shop.haggle.itemLine", request.itemName, request.reference, unit, request.count, request.playerGold),
     }),
   );
   const offerRow = el("div", { class: "runtime-shop-haggle-offer-row" });
   offerRow.append(
     el("span", {
       class: "runtime-shop-haggle-offer-label",
-      text: request.mode === "sell" ? "내 요구가" : "내 제시가",
+      text: request.mode === "sell" ? shopText("shop.haggle.myAsk") : shopText("shop.haggle.myOffer"),
     }),
     el("strong", {
       class: "runtime-shop-haggle-offer",
@@ -775,7 +812,7 @@ export function renderShopHaggle(request: ShopHaggleRenderRequest): HTMLElement 
     el("span", {
       class: "runtime-shop-haggle-offer-total",
       dataset: { testid: "shop-haggle-total" },
-      text: `합계 ${request.offer * request.count}${unit}`,
+      text: shopText("shop.haggle.total", request.offer * request.count, unit),
     }),
   );
   panel.append(offerRow);
@@ -783,14 +820,14 @@ export function renderShopHaggle(request: ShopHaggleRenderRequest): HTMLElement 
   panel.append(el("div", {
     class: "runtime-shop-haggle-patience",
     dataset: { testid: "shop-haggle-patience-left" },
-    text: `상인이 ${request.patience}번 더 들어줍니다`,
+    text: shopText("shop.haggle.patience", request.patience),
   }));
   const actions = el("div", { class: "runtime-shop-prompt-actions runtime-shop-haggle-actions" });
   const stepButton = (delta: number, testid: string) => el("button", {
     class: "runtime-shop-menu-choice runtime-shop-haggle-step",
     text: `${delta > 0 ? "+" : "−"}${Math.abs(delta)}`,
     dataset: { testid },
-    attrs: { type: "button", "aria-label": `제시가 ${delta > 0 ? "+" : "−"}${Math.abs(delta)}${unit}` },
+    attrs: { type: "button", "aria-label": shopText("shop.haggle.stepAria", `${delta > 0 ? "+" : "−"}${Math.abs(delta)}`, unit) },
     on: { click: () => request.onAdjust(delta) },
   });
   actions.append(
@@ -805,7 +842,7 @@ export function renderShopHaggle(request: ShopHaggleRenderRequest): HTMLElement 
     }),
     el("button", {
       class: "runtime-shop-cancel",
-      text: "그만두기",
+      text: shopText("shop.haggle.cancel"),
       dataset: { testid: "shop-haggle-cancel" },
       attrs: { type: "button" },
       on: { click: request.onCancel },
@@ -813,7 +850,12 @@ export function renderShopHaggle(request: ShopHaggleRenderRequest): HTMLElement 
   );
   panel.append(actions);
   // ←→ 는 어디서든 제시가 ±1 — 버튼 사이를 오가는 이동은 ↑↓ 가 담당한다.
-  panel.append(keyHints([["←→", "금액 조절"], ["↑↓", "버튼 이동"], [SHOP_CONFIRM_KEY_LABEL, "결정"], [CANCEL_KEY_LABEL, "돌아가기"]]));
+  panel.append(keyHints([
+    ["←→", shopText("shop.haggle.keyAdjust")],
+    ["↑↓", shopText("shop.haggle.keyMove")],
+    [SHOP_CONFIRM_KEY_LABEL, shopText("shop.key.confirm")],
+    [CANCEL_KEY_LABEL, shopText("shop.haggle.keyBack")],
+  ]));
   shell.append(shopWindow("runtime-shop-greeting-panel", [panel]));
   return shell;
 }
@@ -829,7 +871,7 @@ export function updateShopHaggleOffer(
   const offerNode = overlay.querySelector<HTMLElement>("[data-testid='shop-haggle-offer']");
   if (offerNode) offerNode.textContent = `${offer}${goldLabel}`;
   const totalNode = overlay.querySelector<HTMLElement>("[data-testid='shop-haggle-total']");
-  if (totalNode) totalNode.textContent = `합계 ${offer * count}${goldLabel}`;
+  if (totalNode) totalNode.textContent = shopText("shop.haggle.total", offer * count, goldLabel);
   const propose = overlay.querySelector<HTMLElement>("[data-testid='shop-haggle-propose']");
   if (propose) propose.textContent = haggleProposeLabel({ offer, goldLabel, mode });
 }

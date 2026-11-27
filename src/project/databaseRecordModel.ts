@@ -740,8 +740,9 @@ function normalizeTitleScreenMenuVisibility(
     newGame: true,
     continueGame: visibility?.continueGame !== false,
     quit: visibility?.quit !== false,
-    // resume 생략은 true 로 읽힌다(!== false). 명시된 boolean 만 보존해 구 JSON 을 바꾸지 않는다.
+    // resume/credits 생략은 true 로 읽힌다(!== false). 명시된 boolean 만 보존해 구 JSON 을 바꾸지 않는다.
     ...(typeof visibility?.resume === "boolean" ? { resume: visibility.resume } : {}),
+    ...(typeof visibility?.credits === "boolean" ? { credits: visibility.credits } : {}),
   };
 }
 

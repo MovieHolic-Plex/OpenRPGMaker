@@ -82,6 +82,7 @@ import { emeraldNarrationActive, noEscapeNoticeLine } from "@/player/emeraldBatt
 import { revealedEffectiveness, WEAKNESS_REVEAL_LABEL } from "@/battle/weaknessDiscovery";
 import { BATTLE_STEADY_INTERLUDE_SCALE, BATTLE_STEADY_MOTION_TEMPO, effectivenessFeedbackHidden, resolveBattleStaging } from "@/project/battleStaging";
 import { keepResultPanelOffParty } from "@/player/battleResultPlacement";
+import { runtimeUiText } from "@/player/runtimeUiStrings";
 
 /** 포켓몬 스킨의 동작 템포(배율). 05-poses-motion.css·20-pokemon-skin.css 의 포켓몬 전환 길이도 이 배율로 줄여 두었다. */
 export const POKEMON_MOTION_TEMPO = 1.5;
@@ -432,7 +433,12 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
 
   function syncPlaybackStatus(): void {
-    const text = `${autoBattleAllowed ? `${AUTO_BATTLE_KEY_LABEL} 자동 ${autoBattle ? "켜짐" : "꺼짐"} · ` : ""}${SPEED_KEY_LABEL} ${speedMultiplier}×${skipping ? " · 넘기는 중" : ""}`;
+    const battleProject = options.project ?? store.getCurrent();
+    const autoPart = autoBattleAllowed
+      ? `${runtimeUiText(battleProject, autoBattle ? "battle.autoOn" : "battle.autoOff", AUTO_BATTLE_KEY_LABEL)} · `
+      : "";
+    const skipPart = skipping ? ` · ${runtimeUiText(battleProject, "battle.skipping")}` : "";
+    const text = `${autoPart}${SPEED_KEY_LABEL} ${speedMultiplier}×${skipPart}`;
     if (playbackStatus.textContent !== text) {
       const first = playbackStatus.textContent === "";
       playbackStatus.textContent = text;
@@ -1768,7 +1774,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     const text = document.createElement("span");
     text.className = "battle-finale-stamp-text";
     // 승리 띠 글자: 적 그룹의 victoryBanner → 자료집 용어(terms.battleVictory) → 기본 「승리!」.
-    text.textContent = result === "victory" ? resolveVictoryBannerText(store.getCurrent(), options.runtime.snapshot().troopId) : "전멸…";
+    const battleProject = options.project ?? store.getCurrent();
+    text.textContent = result === "victory"
+      ? resolveVictoryBannerText(battleProject, options.runtime.snapshot().troopId)
+      : runtimeUiText(battleProject, "battle.defeatBanner");
     stamp.append(text);
     field.append(stamp);
     root.dataset.battleFinale = result;
@@ -2093,7 +2102,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     overlay.setAttribute("aria-live", "assertive");
     const title = document.createElement("p");
     title.className = "battle-input-prompt-title";
-    title.textContent = `입력! (${(sequence.timeLimitMs / 1000).toFixed(1)}초)`;
+    title.textContent = runtimeUiText(options.project ?? store.getCurrent(), "battle.inputPrompt", (sequence.timeLimitMs / 1000).toFixed(1));
     const keys = document.createElement("div");
     keys.className = "battle-input-prompt-keys";
     const keyNodes = sequence.keys.map((key, index) => {
