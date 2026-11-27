@@ -19,7 +19,6 @@ import { hasInteriorCabinetOverride } from "@/project/defaults/interiorTranspare
 import { hasInteriorLongTableOverride } from "./interiorLongTableLegacy";
 import { roleCapabilities } from "@/project/tileRoles";
 import { chipsetLabelCorrection, seedChipsetLabelCorrections } from "@/project/defaults/chipsetLabelCorrections";
-import { pendingDefaultTilesetBuilder } from "@/project/defaults/lazyDefaultTilesets";
 
 const passable: PassFlag = { up: true, down: true, left: true, right: true };
 const solid: PassFlag = { up: false, down: false, left: false, right: false };
@@ -49,9 +48,7 @@ export function isStandard480Tileset(tileset: Pick<TilesetDef, "count">): boolea
 
 export function ensureTilesetHarnesses(project: Pick<Project, "tilesets">): boolean {
   let changed = false;
-  for (const id of Object.keys(project.tilesets)) {
-    if (pendingDefaultTilesetBuilder(project.tilesets, id)) continue;
-    const tileset = project.tilesets[id]!;
+  for (const tileset of Object.values(project.tilesets)) {
     if (isCombinedTownTileset(tileset)) {
       changed = applyCombinedTownHarness(tileset) || changed;
     } else {

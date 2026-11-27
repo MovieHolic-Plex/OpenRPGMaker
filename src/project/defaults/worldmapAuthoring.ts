@@ -1,6 +1,5 @@
 import sheet from '@/assets/worldmapAuthoringSheet.json' with { type: "json" };
 import type { AutotileGroup, TilesetDef } from '../types';
-import { pendingDefaultTilesetBuilder } from './lazyDefaultTilesets';
 import { WORLDMAP_SELECTED_TEXTURE, WORLDMAP_SELECTED_ICONS } from './worldmapSelected';
 export const WORLDMAP_AUTHORING_ID = 'worldmap_authoring';
 export const WORLDMAP_AUTHORING_TEXTURE = 'tex_worldmap_authoring';
@@ -135,11 +134,8 @@ export function ensureWorldmapAuthoringBrushes(project: {
     tilesets: Record<string, TilesetDef>;
 }): boolean {
     let changed = false;
-    for (const id of Object.keys(project.tilesets)) {
-        if (pendingDefaultTilesetBuilder(project.tilesets, id)) continue;
-        const t = project.tilesets[id]!;
+    for (const t of Object.values(project.tilesets))
         if (t.id === WORLDMAP_AUTHORING_ID || t.family === 'worldmap-kit' && t.tileGroups?.some(g => g.id.startsWith('worldmap-material-')))
             changed = attachWorldmapAuthoringBrushes(t) || changed;
-    }
     return changed;
 }

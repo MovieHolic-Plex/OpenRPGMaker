@@ -289,10 +289,12 @@ export function finishProjectMutation(draft: Project): ReadonlySet<string> | nul
     }
     const value = descriptor.value as TilesetDef;
     if (defaultBuild) {
-      const original = state.originals[id];
-      if (original !== undefined && state.clones.get(id) === value && jsonEqual(value, original)) {
-        settled[id] = original;
-        continue;
+      if (state.clones.get(id) === value) {
+        const original = state.originals[id];
+        if (original !== undefined && jsonEqual(value, original)) {
+          settled[id] = original;
+          continue;
+        }
       }
       settled[id] = value;
       changed.add(id);
