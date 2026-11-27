@@ -22,6 +22,7 @@ from build_wave3 import build_wave3
 from build_wave4 import build_wave4
 from build_wave5 import build_wave5
 from build_wave6 import build_wave6
+from build_wave7 import build_wave7
 
 
 def main() -> int:
@@ -32,6 +33,7 @@ def main() -> int:
         ("wave4-joseon-murim", build_wave4()),
         ("wave5-scifi-steampunk", build_wave5()),
         ("wave6-doors-env", build_wave6()),
+        ("wave7-push-doors", build_wave7()),
     ]
 
     seed_items = []
@@ -44,12 +46,12 @@ def main() -> int:
             rec = {k: v for k, v in it.items() if k != "frames_img"}
             seed_items.append(rec)
 
-    assert len(seed_items) == 120, f"Expected 120 items, got {len(seed_items)}"
+    assert len(seed_items) == 136, f"Expected 136 items, got {len(seed_items)}"
 
     seed = {
         "version": 2,
-        "targetCount": 120,
-        "notes": "100% real-source high-quality repository PNGs as Frame 0 across 7 eras and 6 waves (120 props).",
+        "targetCount": len(seed_items),
+        "notes": "100% real-source high-quality repository PNGs as Frame 0 across 7 eras and 7 waves (136 props).",
         "eras": ["fantasy", "dungeon", "modern", "joseon", "murim", "scifi", "steampunk"],
         "motions": [
             "hinge-lid",

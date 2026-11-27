@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "targetCount": 120,
-  "notes": "100% real-source high-quality repository PNGs as Frame 0 across 7 eras and 6 waves (120 props).",
+  "targetCount": 136,
+  "notes": "100% real-source high-quality repository PNGs as Frame 0 across 7 eras and 7 waves (136 props).",
   "eras": [
     "fantasy",
     "dungeon",
@@ -3272,6 +3272,449 @@
       "frames": 5,
       "frameWidth": 32,
       "frameHeight": 32
+    },
+    {
+      "id": "door-push-house-oak",
+      "name": "버들항 밀고 들어가는 참나무 문",
+      "era": "fantasy",
+      "motion": "swing-single",
+      "playback": "toggle",
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.95,
+      "frameMs": 95,
+      "se": "door_wood",
+      "tags": [
+        "밀기문",
+        "미는문",
+        "여닫이문",
+        "출입문",
+        "참나무문",
+        "문",
+        "판타지"
+      ],
+      "sourcePng": "public/assets/beodeul-door/door-0.png",
+      "wave": "wave7-push-doors",
+      "frames": 5,
+      "frameWidth": 16,
+      "frameHeight": 32
+    },
+    {
+      "id": "door-push-desert-arch",
+      "name": "사막 아치형 밀기 나무문",
+      "era": "fantasy",
+      "motion": "swing-single",
+      "playback": "toggle",
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.95,
+      "frameMs": 100,
+      "se": "door_wood",
+      "tags": [
+        "밀기문",
+        "미는문",
+        "아치문",
+        "출입문",
+        "나무문",
+        "문",
+        "판타지"
+      ],
+      "sourcePng": "tiledata/desert-east/variety/pieces/de-room-door.png",
+      "wave": "wave7-push-doors",
+      "frames": 5,
+      "frameWidth": 16,
+      "frameHeight": 32
+    },
+    {
+      "id": "door-push-dungeon-cell",
+      "name": "던전 철격자 밀기 감옥문",
+      "era": "dungeon",
+      "motion": "swing-single",
+      "playback": "toggle",
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.95,
+      "frameMs": 105,
+      "se": "metal_grate",
+      "tags": [
+        "밀기문",
+        "미는문",
+        "감옥문",
+        "철문",
+        "던전",
+        "문"
+      ],
+      "sourcePng": "tiledata/hand-interior/plus/oneshot/pieces/in-cell-door.png",
+      "wave": "wave7-push-doors",
+      "frames": 5,
+      "frameWidth": 16,
+      "frameHeight": 32
+    },
+    {
+      "id": "door-push-confessional",
+      "name": "성당 고해실 밀기 문·커튼",
+      "era": "fantasy",
+      "motion": "swing-single",
+      "playback": "toggle",
+      "footprint": [
+        2,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "frameMs": 105,
+      "se": "door_wood",
+      "tags": [
+        "밀기문",
+        "고해실",
+        "성당",
+        "커튼",
+        "문",
+        "판타지"
+      ],
+      "sourcePng": "tiledata/beodeul-interiors/pieces/confessional.png",
+      "wave": "wave7-push-doors",
+      "frames": 5,
+      "frameWidth": 32,
+      "frameHeight": 48
+    },
+    {
+      "id": "door-push-paddock-gate",
+      "name": "목장 나무 울타리 밀기문",
+      "era": "fantasy",
+      "motion": "swing-single",
+      "playback": "toggle",
+      "footprint": [
+        2,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "frameMs": 95,
+      "se": "door_wood",
+      "tags": [
+        "밀기문",
+        "미는문",
+        "목장문",
+        "울타리문",
+        "게이트",
+        "판타지"
+      ],
+      "sourcePng": "tiledata/beodeul-objects/pieces/bd-paddock-gate.png",
+      "wave": "wave7-push-doors",
+      "frames": 5,
+      "frameWidth": 32,
+      "frameHeight": 20
+    },
+    {
+      "id": "door-push-picket-gate",
+      "name": "마을 하얀 울타리 밀기문",
+      "era": "fantasy",
+      "motion": "swing-single",
+      "playback": "toggle",
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "frameMs": 95,
+      "se": "door_wood",
+      "tags": [
+        "밀기문",
+        "미는문",
+        "울타리문",
+        "정원문",
+        "마을",
+        "판타지"
+      ],
+      "sourcePng": "tiledata/beodeul-objects/pieces/bd-picket-gate.png",
+      "wave": "wave7-push-doors",
+      "frames": 5,
+      "frameWidth": 16,
+      "frameHeight": 19
+    },
+    {
+      "id": "door-push-iron-garden",
+      "name": "저택 철제 양문 밀기 대문",
+      "era": "fantasy",
+      "motion": "swing-double",
+      "playback": "toggle",
+      "footprint": [
+        2,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "frameMs": 105,
+      "se": "metal_grate",
+      "tags": [
+        "밀기문",
+        "양문",
+        "철제대문",
+        "정원문",
+        "저택",
+        "판타지"
+      ],
+      "sourcePng": "tiledata/beodeul-objects/pieces/bd-iron-gate.png",
+      "wave": "wave7-push-doors",
+      "frames": 5,
+      "frameWidth": 32,
+      "frameHeight": 19
+    },
+    {
+      "id": "door-push-hedge-rustic",
+      "name": "시골 나무 판자 밀기문",
+      "era": "fantasy",
+      "motion": "swing-single",
+      "playback": "toggle",
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "frameMs": 95,
+      "se": "door_wood",
+      "tags": [
+        "밀기문",
+        "미는문",
+        "판자문",
+        "울타리",
+        "시골",
+        "판타지"
+      ],
+      "sourcePng": "public/assets/beodeul-objects/city_hedge_wood_fence_gate.png",
+      "wave": "wave7-push-doors",
+      "frames": 5,
+      "frameWidth": 32,
+      "frameHeight": 32
+    },
+    {
+      "id": "door-push-lock-sluice",
+      "name": "수로 나무 수문 양문 밀기",
+      "era": "fantasy",
+      "motion": "swing-double",
+      "playback": "toggle",
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "frameMs": 110,
+      "se": "water_splash",
+      "tags": [
+        "밀기문",
+        "수문",
+        "양문",
+        "수로",
+        "판타지"
+      ],
+      "sourcePng": "tiledata/beodeul-objects/pieces/bd-lock-gate.png",
+      "wave": "wave7-push-doors",
+      "frames": 5,
+      "frameWidth": 32,
+      "frameHeight": 32
+    },
+    {
+      "id": "door-push-tent-canvas",
+      "name": "모험가 천막 들추기 입구",
+      "era": "fantasy",
+      "motion": "swing-double",
+      "playback": "toggle",
+      "footprint": [
+        3,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "frameMs": 100,
+      "se": "cloth_rustle",
+      "tags": [
+        "천막",
+        "텐트",
+        "입구",
+        "밀고들어가기",
+        "야영",
+        "판타지"
+      ],
+      "sourcePng": "public/assets/beodeul-objects/tent_canvas_small.png",
+      "wave": "wave7-push-doors",
+      "frames": 5,
+      "frameWidth": 48,
+      "frameHeight": 48
+    },
+    {
+      "id": "door-push-dome-tent",
+      "name": "캠핑 돔텐트 입구 열기",
+      "era": "modern",
+      "motion": "swing-double",
+      "playback": "toggle",
+      "footprint": [
+        3,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "frameMs": 95,
+      "se": "cloth_rustle",
+      "tags": [
+        "텐트",
+        "캠핑",
+        "입구",
+        "밀고들어가기",
+        "현대"
+      ],
+      "sourcePng": "public/assets/beodeul-objects/city_campout_dome_tent.png",
+      "wave": "wave7-push-doors",
+      "frames": 5,
+      "frameWidth": 48,
+      "frameHeight": 32
+    },
+    {
+      "id": "door-push-curtain-booth",
+      "name": "입구 커튼 헤치고 들어가기",
+      "era": "modern",
+      "motion": "swing-double",
+      "playback": "toggle",
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "frameMs": 90,
+      "se": "cloth_rustle",
+      "tags": [
+        "커튼",
+        "입구",
+        "밀고들어가기",
+        "헤치기",
+        "현대"
+      ],
+      "sourcePng": "public/assets/beodeul-objects/city_karao_door_curtain_frame.png",
+      "wave": "wave7-push-doors",
+      "frames": 5,
+      "frameWidth": 32,
+      "frameHeight": 32
+    },
+    {
+      "id": "door-push-izakaya-noren",
+      "name": "선술집 노렌 젖히고 들어가기",
+      "era": "modern",
+      "motion": "swing-single",
+      "playback": "toggle",
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "frameMs": 90,
+      "se": "cloth_rustle",
+      "tags": [
+        "노렌",
+        "선술집",
+        "커튼",
+        "밀고들어가기",
+        "현대"
+      ],
+      "sourcePng": "public/assets/beodeul-objects/city_izaka_noren_curtain_stand.png",
+      "wave": "wave7-push-doors",
+      "frames": 5,
+      "frameWidth": 16,
+      "frameHeight": 32
+    },
+    {
+      "id": "door-push-photo-curtain",
+      "name": "포토부스 커튼 젖히기",
+      "era": "modern",
+      "motion": "swing-single",
+      "playback": "toggle",
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "frameMs": 95,
+      "se": "cloth_rustle",
+      "tags": [
+        "포토부스",
+        "커튼",
+        "밀고들어가기",
+        "오락실",
+        "현대"
+      ],
+      "sourcePng": "public/assets/beodeul-objects/city_arcad_photo_booth_curtain.png",
+      "wave": "wave7-push-doors",
+      "frames": 5,
+      "frameWidth": 32,
+      "frameHeight": 32
+    },
+    {
+      "id": "door-push-subway-gate",
+      "name": "지하철 개찰구 통과 열기",
+      "era": "modern",
+      "motion": "swing-double",
+      "playback": "toggle",
+      "footprint": [
+        3,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "frameMs": 90,
+      "se": "sci_beep",
+      "tags": [
+        "개찰구",
+        "지하철",
+        "게이트",
+        "밀고들어가기",
+        "현대"
+      ],
+      "sourcePng": "public/assets/beodeul-objects/city_subw_fare_gates.png",
+      "wave": "wave7-push-doors",
+      "frames": 5,
+      "frameWidth": 48,
+      "frameHeight": 32
+    },
+    {
+      "id": "door-push-parking-barrier",
+      "name": "주차장 차단바 열기",
+      "era": "modern",
+      "motion": "hinge-lid",
+      "playback": "toggle",
+      "footprint": [
+        3,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "frameMs": 95,
+      "se": "metal_latch",
+      "tags": [
+        "차단바",
+        "차단기",
+        "주차장",
+        "게이트",
+        "현대"
+      ],
+      "sourcePng": "public/assets/beodeul-objects/city_park3_barrier_gate.png",
+      "wave": "wave7-push-doors",
+      "frames": 5,
+      "frameWidth": 48,
+      "frameHeight": 56
     }
   ]
 }

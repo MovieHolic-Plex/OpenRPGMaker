@@ -1764,3 +1764,285 @@ def animate_clock_or_pendulum_from_source(
                     fr.putpixel((fx + dx, fy + dy), (255, 242, 166, 225))
         frames.append(fr)
     return frames
+
+
+def project_real_door_inward(
+    dst: Image.Image,
+    door_img: Image.Image,
+    hinge_x: int,
+    door_y: int,
+    side: str,  # "left" or "right"
+    angle_deg: float,
+    tones: list[RGBA],
+    top_clip_y: int | None = None,
+    lift_scale: float = 0.24,
+) -> None:
+    """
+    Perspective-project an ACTUAL cut-out door pixel texture swinging INWARD
+    away from the viewer into a room/passage (0° closed -> 84° pushed open inward).
+    Matches the 3/4 depth language of public/assets/beodeul-door/door-0..7.png:
+    - Foreshortens horizontally by cos(θ)
+    - Free edge lifts UPWARD/INWARD by -sin(θ) into the receding room
+    - Progressively darkens into interior shadow along the receding leaf
+    - Adds a crisp 1px outer latch-edge thickness highlight so the door slab reads clearly
+    """
+    dw, dh = door_img.size
+    rad = math.radians(angle_deg)
+    cos_a = math.cos(rad)
+    sin_a = math.sin(rad)
+
+    horiz_span = max(2.0, dw * cos_a)
+    # Inward swing lifts the free edge UPWARD (negative dy) as it recedes into the room
+    y_lift_tip = sin_a * max(1.6, min(6.0, dw * lift_scale))
+
+    tip_x = int(round(hinge_x + horiz_span)) if side == "left" else int(round(hinge_x - horiz_span))
+    col_step = 1 if tip_x >= hinge_x else -1
+    col_xs = list(range(hinge_x, tip_x + col_step, col_step))
+    total_cols = max(1, len(col_xs) - 1)
+
+    rim_edge = scale_rgb(pick_tone(tones, 0.42), 0.78)
+    rim_top = scale_rgb(pick_tone(tones, 0.52), 0.85)
+
+    for s, px in enumerate(col_xs):
+        u = s / total_cols
+        if side == "left":
+            src_x = min(dw - 1, max(0, int(round(u * (dw - 1)))))
+        else:
+            src_x = min(dw - 1, max(0, int(round((1.0 - u) * (dw - 1)))))
+        if not (0 <= px < dst.width):
+            continue
+        # Bottom edge lifts inward into the room; top edge also shifts slightly up (clipped by lintel if set)
+        dy_top = -int(round(u * y_lift_tip * 0.65))
+        dy_bot = -int(round(u * y_lift_tip))
+        # Subtle progressive interior shadow as door recedes deeper into room
+        shade = 1.0 - sin_a * (0.14 + 0.24 * u)
+        is_free_edge = (s == len(col_xs) - 1) and angle_deg >= 20.0
+        for y in range(dh):
+            v = y / max(1, dh - 1)
+            yy = int(round(door_y + y + dy_top * (1.0 - v) + dy_bot * v))
+            if top_clip_y is not None and yy < top_clip_y:
+                continue
+            if not (0 <= yy < dst.height):
+                continue
+            orig_c = door_img.getpixel((src_x, y))
+            if orig_c[3] < 128:
+                continue
+            c = scale_rgb(orig_c, shade)
+            dst.putpixel((px, yy), c)
+        # Crisp 1px slab thickness on the free latch edge when pushed inward
+        if is_free_edge:
+            edge_x = px + (1 if side == "left" else -1)
+            if 0 <= edge_x < dst.width:
+                for y in range(dh):
+                    v = y / max(1, dh - 1)
+                    yy = int(round(door_y + y + dy_top * (1.0 - v) + dy_bot * v))
+                    if top_clip_y is not None and yy < top_clip_y:
+                        continue
+                    if 0 <= yy < dst.height:
+                        if door_img.getpixel((src_x, y))[3] >= 128:
+                            dst.putpixel((edge_x, yy), rim_top if y <= 1 else rim_edge)
+
+
+def _draw_doorway_interior(
+    im: Image.Image,
+    box: tuple[int, int, int, int],
+    mode: str = "dark_room",
+) -> None:
+    """Paint the doorway opening exposed when a push-in door swings inward."""
+    x0, y0, x1, y1 = box
+    if mode == "transparent":
+        for y in range(y0, y1 + 1):
+            for x in range(x0, x1 + 1):
+                im.putpixel((x, y), (0, 0, 0, 0))
+        return
+    h = max(1, y1 - y0 + 1)
+    for y in range(y0, y1 + 1):
+        v = (y - y0) / h
+        for x in range(x0, x1 + 1):
+            if mode == "warm_room":
+                # Subtle warm shadowed interior floor peeking near threshold
+                if v > 0.78:
+                    c = (68, 52, 40, 255) if (x + y) % 2 == 0 else (58, 44, 34, 255)
+                elif v > 0.55:
+                    c = (44, 34, 28, 255)
+                else:
+                    c = (24, 18, 18, 255)
+            elif mode == "water":
+                # Foamy canal water rushing through sluice
+                if v > 0.72:
+                    c = (206, 238, 250, 255) if (x + y) % 2 == 0 else (124, 188, 224, 255)
+                else:
+                    c = (42, 92, 134, 255) if (x + y) % 3 != 0 else (68, 128, 168, 255)
+            else:
+                # Deep shadowed interior room with crisp dark lintel shadow & faint floor step
+                if y <= y0 + 2 or x == x0 or x == x1:
+                    c = (16, 14, 20, 255)
+                elif v > 0.84:
+                    c = (46, 40, 44, 255) if x % 2 == 0 else (38, 34, 38, 255)
+                else:
+                    c = (24, 20, 28, 255)
+            im.putpixel((x, y), c)
+
+
+def animate_push_in_door_from_source(
+    src_path: str,
+    door_box: tuple[int, int, int, int],
+    side: str = "left",
+    interior: str = "dark_room",
+    pad_top: int = 0,
+    top_clip_to_door: bool = True,
+    angles: Sequence[float] = (0.0, 26.0, 52.0, 72.0, 82.0),
+) -> list[Image.Image]:
+    """
+    Animate a real single door/gate pushing INWARD away from the viewer.
+    Frame 0 = exact original PNG.
+    """
+    src = load_rgba(src_path)
+    sw, sh = src.size
+    fw, fh = sw, sh + pad_top
+    oy = pad_top
+    tones = sample_palette_tones(src, door_box)
+    door_img = src.crop((door_box[0], door_box[1], door_box[2] + 1, door_box[3] + 1))
+
+    frames: list[Image.Image] = []
+    for fi, ang in enumerate(angles):
+        fr = make_canvas(fw, fh)
+        paste_over(fr, src, 0, oy)
+        if fi == 0:
+            frames.append(fr)
+            continue
+        cav = (door_box[0], oy + door_box[1], door_box[2], oy + door_box[3])
+        _draw_doorway_interior(fr, cav, mode=interior)
+        hinge = door_box[0] if side == "left" else door_box[2]
+        clip_y = (oy + door_box[1]) if top_clip_to_door else None
+        project_real_door_inward(fr, door_img, hinge, oy + door_box[1], side, ang, tones, top_clip_y=clip_y)
+        frames.append(fr)
+    return frames
+
+
+def animate_push_in_double_door_from_source(
+    src_path: str,
+    left_box: tuple[int, int, int, int],
+    right_box: tuple[int, int, int, int],
+    cavity_box: tuple[int, int, int, int],
+    interior: str = "transparent",
+    pad_top: int = 3,
+    top_clip_to_door: bool = False,
+    angles: Sequence[float] = (0.0, 26.0, 52.0, 72.0, 82.0),
+) -> list[Image.Image]:
+    """
+    Animate a real double gate/door pushing INWARD (both leaves swing inward away from viewer).
+    Frame 0 = exact original PNG.
+    """
+    src = load_rgba(src_path)
+    sw, sh = src.size
+    fw, fh = sw, sh + pad_top
+    oy = pad_top
+    tones = sample_palette_tones(src, cavity_box)
+    door_l = src.crop((left_box[0], left_box[1], left_box[2] + 1, left_box[3] + 1))
+    door_r = src.crop((right_box[0], right_box[1], right_box[2] + 1, right_box[3] + 1))
+
+    frames: list[Image.Image] = []
+    for fi, ang in enumerate(angles):
+        fr = make_canvas(fw, fh)
+        paste_over(fr, src, 0, oy)
+        if fi == 0:
+            frames.append(fr)
+            continue
+        cav = (cavity_box[0], oy + cavity_box[1], cavity_box[2], oy + cavity_box[3])
+        _draw_doorway_interior(fr, cav, mode=interior)
+        clip_y = (oy + cavity_box[1]) if top_clip_to_door else None
+        project_real_door_inward(fr, door_l, left_box[0], oy + left_box[1], "left", ang, tones, top_clip_y=clip_y)
+        project_real_door_inward(fr, door_r, right_box[2], oy + right_box[1], "right", ang, tones, top_clip_y=clip_y)
+        frames.append(fr)
+    return frames
+
+
+def animate_curtain_push_from_source(
+    src_path: str,
+    curtain_box: tuple[int, int, int, int],
+    mode: str = "part",  # "part" (split left/right), "noren" (flip upward/inward), "slide_left"
+    interior: str = "transparent",
+) -> list[Image.Image]:
+    """
+    Animate push-through cloth curtains, noren, or tent flaps preserving exact Frame 0 pixels.
+    """
+    src = load_rgba(src_path)
+    w, h = src.size
+    x0, y0, x1, y1 = curtain_box
+    cw = x1 - x0 + 1
+    ch = y1 - y0 + 1
+    mid_x = (x0 + x1) // 2
+
+    frames: list[Image.Image] = [src.copy()]
+    if mode == "part":
+        left_cloth = src.crop((x0, y0, mid_x + 1, y1 + 1))
+        right_cloth = src.crop((mid_x + 1, y0, x1 + 1, y1 + 1))
+        lw, rw = left_cloth.width, right_cloth.width
+        scales = [0.76, 0.56, 0.40, 0.34]
+        for fi, sc in enumerate(scales, start=1):
+            fr = src.copy()
+            _draw_doorway_interior(fr, curtain_box, mode=interior)
+            nlw = max(2, int(round(lw * sc)))
+            nrw = max(2, int(round(rw * sc)))
+            l_res = left_cloth.resize((nlw, ch), Image.NEAREST)
+            r_res = right_cloth.resize((nrw, ch), Image.NEAREST)
+            # Subtle inward billow & gathered fold darkening at the parted inner edge
+            for yy in range(ch):
+                dy = -1 if (yy > ch // 2 and fi in (2, 3)) else 0
+                for xx in range(nlw):
+                    c = l_res.getpixel((xx, yy))
+                    if c[3] >= 128:
+                        fold = 0.84 if xx == nlw - 1 else (1.06 if xx % 2 == 0 else 0.94)
+                        ny = y0 + yy + dy
+                        if 0 <= ny < h:
+                            fr.putpixel((x0 + xx, ny), scale_rgb(c, fold))
+                for xx in range(nrw):
+                    c = r_res.getpixel((xx, yy))
+                    if c[3] >= 128:
+                        fold = 0.84 if xx == 0 else (1.06 if xx % 2 == 0 else 0.94)
+                        ny = y0 + yy + dy
+                        if 0 <= ny < h:
+                            fr.putpixel((x1 - nrw + 1 + xx, ny), scale_rgb(c, fold))
+            frames.append(fr)
+    elif mode == "noren":
+        cloth = src.crop((x0, y0, x1 + 1, y1 + 1))
+        # Push through noren: panels billow upward/inward (foreshorten vertically + subtle sway)
+        heights = [0.80, 0.54, 0.40, 0.48]
+        for fi, hsc in enumerate(heights, start=1):
+            fr = src.copy()
+            _draw_doorway_interior(fr, curtain_box, mode="transparent")
+            nh = max(3, int(round(ch * hsc)))
+            c_res = cloth.resize((cw, nh), Image.NEAREST)
+            for yy in range(nh):
+                v = yy / max(1, nh - 1)
+                # Bottom hem shades darker as it flips away/inward into the shop
+                shade = 1.0 - 0.28 * v * (1.0 - hsc)
+                sway = 1 if (fi == 2 and yy >= nh - 2) else 0
+                for xx in range(cw):
+                    c = c_res.getpixel((xx, yy))
+                    if c[3] >= 128:
+                        nx = clamp(x0 + xx + sway, 0, w - 1)
+                        fr.putpixel((nx, y0 + yy), scale_rgb(c, shade))
+            frames.append(fr)
+    elif mode == "slide_left":
+        cloth = src.crop((x0, y0, x1 + 1, y1 + 1))
+        scales = [0.78, 0.54, 0.36, 0.30]
+        for fi, sc in enumerate(scales, start=1):
+            fr = src.copy()
+            _draw_doorway_interior(fr, curtain_box, mode=interior)
+            nw = max(3, int(round(cw * sc)))
+            c_res = cloth.resize((nw, ch), Image.NEAREST)
+            for yy in range(ch):
+                for xx in range(nw):
+                    c = c_res.getpixel((xx, yy))
+                    if c[3] >= 128:
+                        fold = 0.85 if xx == nw - 1 else (1.05 if xx % 2 == 0 else 0.93)
+                        fr.putpixel((x0 + xx, y0 + yy), scale_rgb(c, fold))
+            frames.append(fr)
+    return frames
+
+
+def animate_frame_sequence(paths: Sequence[str | Path]) -> list[Image.Image]:
+    """Assemble an existing real multi-frame PNG sequence directly into a strip."""
+    return [load_rgba(p) for p in paths]
