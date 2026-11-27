@@ -5,7 +5,7 @@
 // localStorage["rpg-zzu:ai-config"] 에 **평문으로** 저장됐다 — 같은 다이얼로그의 인증 패널이
 // "브라우저에는 두지 않습니다" 라고 약속하는 중에. 두 연결 종류 모두 자격을 동반 서비스가
 // 보관하므로 이 칸들은 존재 이유가 없고, 남겨 두면 약속이 거짓이 된다.
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { findByTestId, installFakeDom, renderWithFakeDom, type FakeElement } from "./fakeDom";
 
 // 역할 배정 표는 모달을 열 때 연결된 경로를 비동기로 가져와 다시 그린다. 오프라인에서도 그 약속은 테스트가 끝난 뒤에
@@ -50,6 +50,10 @@ function installFakeLocalStorage(): void {
     },
   });
 }
+
+// aiSettingsModal 은 import 그래프가 무거워 첫 동적 import 가 15초 시험 상한을 넘길 수 있다(aiSettingsModalLayout 과 동일).
+// 모듈 로드를 hookTimeout 쪽으로 옮겨 시험 시간에서 뺀다.
+beforeAll(async () => { await import("@/editor/panels/aiSettingsModal"); });
 
 beforeEach(() => {
   vi.clearAllMocks();
