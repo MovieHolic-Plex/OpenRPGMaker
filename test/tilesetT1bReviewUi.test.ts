@@ -28,10 +28,7 @@ import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 let restoreDom: (() => void) | null = null;
 
 beforeEach(() => {
-  // 새 프로젝트 기본 타일셋은 버들항이라 합본 마을이 없다(빈 프로젝트 49개 중 없음, #5185) — 이 시험의 대상으로 직접 넣는다.
-  const project = createBlankProject();
-  project.tilesets[COMBINED_TOWN_TILESET_ID] = { ...combinedTownTileset(), tileMeta: [] };
-  store.replace(project);
+  store.replace(townProject());
   resetMapEditHistory();
   restoreDom = installFakeDom();
 });
@@ -187,7 +184,7 @@ describe("locked tile metadata guards", () => {
 
 describe("tileset reaudit pipeline", () => {
   it("keeps the existing 0.5 fallback for missing metadata", async () => {
-    const project = createBlankProject();
+    const project = townProject();
     const seen: number[][] = [];
     const client: TilesetVisionClient = {
       classifyTiles: (request) => {
@@ -207,7 +204,7 @@ describe("tileset reaudit pipeline", () => {
   });
 
   it("mock vision client 호출에서 locked 타일을 제외하고 보존 카운트를 반환한다", async () => {
-    const project = createBlankProject();
+    const project = townProject();
     const tileset = project.tilesets[COMBINED_TOWN_TILESET_ID];
     setMeta(tileset, 1, { confidence: 0.2, locked: true });
     setMeta(tileset, 2, { confidence: 0.3 });
@@ -306,7 +303,7 @@ describe("palette preset editor", () => {
   });
 
   it("프리셋 upsert diff 요약에는 잠긴 항목 보존 문구가 포함된다", () => {
-    const context: ToolContext = { project: createBlankProject() };
+    const context: ToolContext = { project: townProject() };
     context.project.tilesets[COMBINED_TOWN_TILESET_ID].palettePresets = [preset("pp_locked", { locked: true })];
     const result = runTool(context, "upsert_palette_preset", {
       preset: { name: "새 AI 프리셋", slots: [{ role: "ground", tileIds: [1] }] },
@@ -317,6 +314,17 @@ describe("palette preset editor", () => {
     expect(proposalSummaryLines([{ name: "upsert_palette_preset", args: {}, summary: result.summary, result, destructive: false }])).toContain("잠긴 항목 1개 보존됨");
   });
 });
+
+/**
+ * 새 프로젝트 기본 타일셋은 버들항이라 합본 마을이 없다(빈 프로젝트 49개 중 없음, #5185).
+ * 이 시험의 대상인 합본 마을을 넣고 맵마다 걸어, 맵 타일셋을 보는 도구(set_tile_metadata 등)도 같은 칩셋을 본다.
+ */
+function townProject(): Project {
+  const project = createBlankProject();
+  project.tilesets[COMBINED_TOWN_TILESET_ID] = { ...combinedTownTileset(), tileMeta: [] };
+  for (const map of Object.values(project.maps)) map.tilesetId = COMBINED_TOWN_TILESET_ID;
+  return project;
+}
 
 function testTileset(): TilesetDef {
   return store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
@@ -330,7 +338,7 @@ function setMeta(tileset: TilesetDef, tile: number, patch: Partial<TileAiMetadat
 }
 
 function projectWithLockedTile(tile: number): Project {
-  const project = createBlankProject();
+  const project = townProject();
   setMeta(project.tilesets[COMBINED_TOWN_TILESET_ID], tile, {
     confidence: 1,
     label: "잠금 라벨",
