@@ -442,7 +442,10 @@ export async function playBattle(
                   resolve(null);
                 } else resolve(result);
               }).catch(fail);
-              });
+              // 진화·기술 배우기를 기다리는 .then 안에서 전환을 만들다(또는 exit() 을 부르다) 동기로 던지면 이 약속이 거절된다.
+              // 바깥 try 는 이미 빠져나왔으니 여기서 fail 로 넘긴다 — 안 그러면 이벤트가 끝나지 않고 입력이 막힌다
+              // (battleResultTransitionFailure factory-throw·exit-throw, #5185).
+              }).catch(fail);
             } catch (error) {
               fail(error);
             }
