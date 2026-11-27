@@ -1,4 +1,5 @@
 import { resolveDialogueSystem } from "@/project/dialogueSystem";
+import { dialogueUiLocale } from "@/player/dialogueUiStrings";
 import { monsterBoxUnavailableReason } from "@/player/playerMonsterPartyModel";
 import { DEFAULT_INVENTORY_VIEW, type InventoryView } from '@/player/playerInventoryView';
 import { DEFAULT_BAG_POCKET, stepBagPocket } from "@/player/playerBagPockets";
@@ -262,12 +263,29 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onStartKeyCapture: (action) => {
           rememberDetailCursorFromTestId(`player-option-key-${action}`);
           capturingKeyAction = action;
-          options.emitMenuJuice("menu-confirm", renderMenu(`'${remappableActionLabel(action)}'에 지정할 새 키를 누르세요 (Esc 취소)`, "options"));
+          const loc = dialogueUiLocale(resolveDialogueSystem(project)?.language ?? project.meta.language);
+          const actionLabel = remappableActionLabel(action, loc);
+          const prompt = loc === "en"
+            ? `Press a new key for '${actionLabel}' (Esc to cancel)`
+            : loc === "ja"
+              ? `'${actionLabel}' に割り当てるキーを押してください (Esc キャンセル)`
+              : loc === "zh"
+                ? `请按下要分配给“${actionLabel}”的新按键 (Esc 取消)`
+                : `'${actionLabel}'에 지정할 새 키를 누르세요 (Esc 취소)`;
+          options.emitMenuJuice("menu-confirm", renderMenu(prompt, "options"));
         },
         onResetKeyBindings: () => {
           capturingKeyAction = undefined;
           resetKeyBindings();
-          options.emitMenuJuice("menu-confirm", renderMenu("조작 키를 기본값으로 복원했습니다.", "options"));
+          const loc = dialogueUiLocale(resolveDialogueSystem(project)?.language ?? project.meta.language);
+          const resetMsg = loc === "en"
+            ? "Key bindings reset to defaults."
+            : loc === "ja"
+              ? "キー設定を初期値に戻しました。"
+              : loc === "zh"
+                ? "已将按键恢复为默认设置。"
+                : "조작 키를 기본값으로 복원했습니다.";
+          options.emitMenuJuice("menu-confirm", renderMenu(resetMsg, "options"));
         },
         ...(canExecuteQuitGame() ? { onQuitGame: confirmQuitGame } : {}),
         onInventoryViewChange: (view) => {
@@ -1380,14 +1398,24 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   function handleCapturedKeyInput(key: string): boolean {
     const action = capturingKeyAction;
     if (!action) return false;
+    const project = store.getCurrent();
+    const loc = dialogueUiLocale(resolveDialogueSystem(project)?.language ?? project.meta.language);
     const normalized = normalizeKey(key);
     if (normalized === "escape") {
       capturingKeyAction = undefined;
-      options.emitMenuJuice("menu-back", renderMenu("키 변경을 취소했습니다.", "options"));
+      const cancelMsg = loc === "en" ? "Key rebinding cancelled." : loc === "ja" ? "キー変更をキャンセルしました。" : loc === "zh" ? "已取消修改按键。" : "키 변경을 취소했습니다.";
+      options.emitMenuJuice("menu-back", renderMenu(cancelMsg, "options"));
       return true;
     }
     if (!isRemappableKey(key)) {
-      return rejectInput("이 키는 지정할 수 없습니다. 다른 키를 누르세요 (Esc 취소)");
+      const invalidMsg = loc === "en"
+        ? "That key cannot be bound. Press another key (Esc to cancel)"
+        : loc === "ja"
+          ? "このキーは割り当てられません。別のキーを押してください (Esc キャンセル)"
+          : loc === "zh"
+            ? "无法绑定该按键，请按其他键 (Esc 取消)"
+            : "이 키는 지정할 수 없습니다. 다른 키를 누르세요 (Esc 취소)";
+      return rejectInput(invalidMsg);
     }
     const existing = getCustomKeyBindings();
     const arrowFallback = DIRECTION_FALLBACK_ARROWS[action];
@@ -1406,11 +1434,16 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const otherNames = conflicts
       .flatMap((conflict) => conflict.actions)
       .filter((other) => other !== action)
-      .map((other) => remappableActionLabel(other));
+      .map((other) => remappableActionLabel(other, loc));
     const keyText = formatKeyLabel(normalized);
+    const actionName = remappableActionLabel(action, loc);
     const message = otherNames.length > 0
-      ? `'${remappableActionLabel(action)}' 키를 ${keyText}(으)로 지정했습니다 (주의: ${[...new Set(otherNames)].join(", ")}와 겹침)`
-      : `'${remappableActionLabel(action)}' 키를 ${keyText}(으)로 변경했습니다.`;
+      ? (loc === "en"
+        ? `Bound '${actionName}' to ${keyText} (Note: conflicts with ${[...new Set(otherNames)].join(", ")})`
+        : `'${actionName}' 키를 ${keyText}(으)로 지정했습니다 (주의: ${[...new Set(otherNames)].join(", ")}와 겹침)`)
+      : (loc === "en"
+        ? `Bound '${actionName}' to ${keyText}.`
+        : `'${actionName}' 키를 ${keyText}(으)로 변경했습니다.`);
     options.emitMenuJuice("menu-confirm", renderMenu(message, "options"));
     return true;
   }

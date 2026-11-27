@@ -2,7 +2,7 @@ import { currentObjectiveText } from "@/player/zoneFeedback";
 import { fieldGuidesOn, objectiveSentence } from "@/player/objectiveTarget";
 import { dialogueUiLocale, dialogueUiText } from "@/player/dialogueUiStrings";
 import { formatStatusMenuControlsForDevice, type InputDeviceKind } from "@/player/inputGlyphs";
-import { resolveDialogueSystem, type AuthoredDialogueSystem } from "@/project/dialogueSystem";
+import { defaultDialogueSystem, resolveDialogueSystem, type AuthoredDialogueSystem } from "@/project/dialogueSystem";
 import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
 import {
   createPlayerStatusMenuSnapshot,
@@ -215,7 +215,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
         : selectedCommand === "items" ? "목록 끝에서 분류·정렬 변경 (본문에서 ↑ 두 번)" : undefined),
       skin.railColumns, skin.id === "field-list",
       options.message === undefined && mode === "function" && selectedEntryDescription(detail, options.selectedDetailActionIndex) !== undefined ? "description" : undefined,
-      resolveDialogueSystem(options.project),
+      resolveDialogueSystem(options.project) ?? (options.project.meta.language ? { ...defaultDialogueSystem(), language: options.project.meta.language } : undefined),
       mode === "function" && detail.entries.filter((entry) => entry.onActivate && !entry.disabled)[options.selectedDetailActionIndex ?? -1]?.onAdjust !== undefined,
     )
   );
@@ -734,21 +734,30 @@ function renderPartyOverview(project: PlayerStatusMenuOptions["project"], snapsh
               children: [
                 el("span", { class: "status-menu-actor-name", text: row.name }),
                 el("span", { class: "status-menu-actor-subline", text: `${row.className} · Lv ${row.level}` }),
-                ...(row.hpLevel === "crit" ? [el("span", { class: "status-menu-overview-chip crit", text: "위험" })] : []),
+                ...(row.hpLevel === "crit" ? [el("span", { class: "status-menu-overview-chip crit", text: (() => {
+                  const loc = dialogueUiLocale(resolveDialogueSystem(project)?.language ?? project.meta.language);
+                  return loc === "en" ? "Danger" : loc === "ja" ? "危険" : loc === "zh" ? "危险" : "위험";
+                })() })] : []),
               ],
             }),
             // 상태이상은 이름 바로 아래 — 해독초를 누구에게 쓸지 메뉴 첫 화면에서 판단한다.
             ...(stats
               ? [el("div", {
                   class: `status-menu-overview-states${row.stateNames.length ? " has-state" : ""}`,
-                  text: row.stateNames.length ? row.stateNames.join(" · ") : "정상",
+                  text: row.stateNames.length ? row.stateNames.join(" · ") : (() => {
+                    const loc = dialogueUiLocale(resolveDialogueSystem(project)?.language ?? project.meta.language);
+                    return loc === "en" ? "OK" : loc === "ja" ? "正常" : loc === "zh" ? "正常" : "정상";
+                  })(),
                   dataset: { testid: `status-menu-overview-states-${index}` },
                 })]
               : []),
             renderOverviewVital("HP", row.hpValueLabel, row.hpRatio, `hp ${row.hpLevel}`, `status-menu-overview-hp-${index}`),
             renderOverviewVital(row.resourceLabel ?? "MP", row.mpValueLabel, row.mpRatio, "mp", `status-menu-overview-mp-${index}`),
             ...(stats && row.nextLevel
-              ? [renderOverviewVital("EX", `다음 ${row.nextLevel.remaining}`, row.nextLevel.ratio, "xp", `status-menu-overview-exp-${index}`)]
+              ? [renderOverviewVital("EX", (() => {
+                  const loc = dialogueUiLocale(resolveDialogueSystem(project)?.language ?? project.meta.language);
+                  return loc === "en" ? `Next ${row.nextLevel.remaining}` : loc === "ja" ? `次 ${row.nextLevel.remaining}` : loc === "zh" ? `下一级 ${row.nextLevel.remaining}` : `다음 ${row.nextLevel.remaining}`;
+                })(), row.nextLevel.ratio, "xp", `status-menu-overview-exp-${index}`)]
               : []),
           ],
         }),

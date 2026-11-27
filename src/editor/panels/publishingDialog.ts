@@ -28,6 +28,7 @@ import {
 import { downloadBlob } from "../../util/downloadBlob";
 import { toast } from "../../util/toast";
 import { t } from "../../i18n";
+import { auditProjectAssetLicenses } from "../../project/assetLicenseAudit";
 import type { FetchBytes } from "../../project/playerDeploymentTypes";
 import type { Project } from "../../project/types";
 
@@ -110,6 +111,36 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
     estimatedMb = Math.max(1.2, prepared.summary.estimatedSizeBytes / 1048576).toFixed(1);
   } catch {
     // Fallback counts if prepareWebExport fails on synthetic test fixtures
+  }
+
+  let licenseAuditBanner: HTMLElement | undefined;
+  try {
+    const audit = auditProjectAssetLicenses(options.project);
+    const hasAi = audit.requiresSteamAiDisclosure;
+    const summaryParts: string[] = [];
+    if (hasAi) {
+      summaryParts.push(
+        `Steam AI 생성 콘텐츠 공시 필요 (${audit.steamAiDisclosureReasons.map((r) => r.ko).join(" · ")})`,
+      );
+    } else {
+      summaryParts.push("AI 생성 에셋 미감지 (Steam AI 공시 불필요)");
+    }
+    summaryParts.push(
+      audit.requiresAttribution
+        ? "저작자 표기 필수 에셋 사용 중 (타이틀 크레딧 자동 포함)"
+        : "외부 저작자 표기 의무 없음 (자체 에셋 게임)",
+    );
+    licenseAuditBanner = el("div", {
+      dataset: { testid: "publication-license-audit", aiDisclosure: String(hasAi) },
+      attrs: {
+        style: hasAi
+          ? "padding: 8px 12px; border-radius: 8px; background: #fffbeb; border: 1px solid #f59e0b; color: #92400e; font-size: 11.5px; line-height: 1.45; font-weight: 600;"
+          : "padding: 7px 12px; border-radius: 8px; background: #f0fdf4; border: 1px solid #86efac; color: #166534; font-size: 11.5px; line-height: 1.45; font-weight: 600;",
+      },
+      text: summaryParts.join(" | "),
+    });
+  } catch {
+    // Synthetic test fixtures without full asset structure
   }
 
   // ── Header ──────────────────────────────────────────────────────────
@@ -771,6 +802,7 @@ export async function openPublishingDialog(options: PublishingDialogOptions): Pr
   card.append(
     headerBar,
     status,
+    ...(licenseAuditBanner ? [licenseAuditBanner] : []),
     platformGrid,
     desktopConfigPanel,
     versionRow,

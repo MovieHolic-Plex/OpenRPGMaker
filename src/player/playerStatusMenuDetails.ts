@@ -63,7 +63,7 @@ import { resolvePlaySurfaceScaleMode } from "@/project/playSurfaceScaleMode";
 import { formatControlHints } from "@/player/inputGlyphs";
 import { minutesUntilRestTarget, resolveRestMenu, restRefusal, REST_REFUSAL_TEXT, REST_TARGET_HOURS, REST_TARGET_LABELS } from "@/project/restMenu";
 import { formatGameClock, resolveTimeSystem } from "@/project/gameTime";
-import { normalizeBacklog, resolveDialogueSystem } from "@/project/dialogueSystem";
+import { defaultDialogueSystem, normalizeBacklog, resolveDialogueSystem } from "@/project/dialogueSystem";
 import { resourceDisplayName } from "@/player/resourceDisplay";
 import { friendshipDisplayName, listFriendshipEntries } from "@/project/friendship";
 import { friendshipDisplayMax } from "@/project/socialLoop";
@@ -274,7 +274,8 @@ export function remappableActionLabel(action: RemappableAction, locale: "ko" | "
 }
 
 function optionsDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
-  const system = resolveDialogueSystem(options.project);
+  const authoredSystem = resolveDialogueSystem(options.project);
+  const system = authoredSystem ?? (options.project.meta.language ? { ...defaultDialogueSystem(), language: options.project.meta.language } : undefined);
   const locale = dialogueUiLocale(system?.language);
   if (options.optionsSubscreen === "key-bindings") {
     const entries: StatusMenuDetailEntry[] = REMAPPABLE_ACTIONS.map((action) => {
@@ -376,21 +377,30 @@ function groupDetail(options: StatusMenuDetailOptions, entryId: StatusMenuGroupE
     onActivate: options.onCommand ? () => options.onCommand?.(commandId) : undefined,
     destructive: commandId === "to-title",
   }));
+  const groupLocale = dialogueUiLocale(resolveDialogueSystem(options.project)?.language ?? options.project.meta.language);
   if (entryId === "system-menu" && canQuitToDesktop(options)) {
     const pending = options.confirmQuitGame === true;
     entries.push({
-      label: pending ? "진행을 버리고 게임 종료" : "게임 종료",
-      value: pending ? "확인" : "",
-      description: "데스크톱으로 게임을 종료합니다. 저장하지 않은 진행은 사라집니다.",
+      label: pending
+        ? (groupLocale === "en" ? "Discard Progress & Quit" : groupLocale === "ja" ? "進行を破棄して終了" : groupLocale === "zh" ? "放弃进度并退出" : "진행을 버리고 게임 종료")
+        : (groupLocale === "en" ? "Quit Game" : groupLocale === "ja" ? "ゲーム終了" : groupLocale === "zh" ? "退出游戏" : "게임 종료"),
+      value: pending ? (groupLocale === "en" ? "Confirm" : groupLocale === "ja" ? "確認" : groupLocale === "zh" ? "确认" : "확인") : "",
+      description: groupLocale === "en"
+        ? "Exit to desktop. Unsaved progress will be lost."
+        : groupLocale === "ja"
+          ? "デスクトップへ終了します。未保存の進行は失われます。"
+          : groupLocale === "zh"
+            ? "退出到桌面。未保存的进度将会丢失。"
+            : "데스크톱으로 게임을 종료합니다. 저장하지 않은 진행은 사라집니다.",
       testId: "status-menu-group-command-quit-game",
       onActivate: () => triggerQuitToDesktop(options),
       destructive: true,
     });
   }
   return {
-    title: statusMenuGroupEntryLabel(entryId).replace(" ▸", ""),
+    title: statusMenuGroupEntryLabel(entryId, options.project).replace(" ▸", ""),
     entries,
-    emptyLabel: "항목이 없습니다",
+    emptyLabel: groupLocale === "en" ? "No items" : groupLocale === "ja" ? "項目がありません" : groupLocale === "zh" ? "暂无项目" : "항목이 없습니다",
   };
 }
 
@@ -965,7 +975,9 @@ function vnSaveCards(project: Project): boolean {
 
 /** 저장·로드 화면 글자. 미연시 기능이 있는 프로젝트만 저작 언어로, 그 밖은 옛 한국어 그대로(비연애 프로젝트 불변). */
 function saveText(project: Project): (key: VnUiKey, ...args: readonly (string | number)[]) => string {
-  const language = resolveVnExtras(project) ? vnExtrasLanguage(project) : { language: "ko" as const };
+  const language = resolveVnExtras(project)
+    ? vnExtrasLanguage(project)
+    : { language: project.meta.language ?? ("ko" as const) };
   return (key, ...args) => vnUiText(language, key, ...args);
 }
 

@@ -72,5 +72,8 @@ export function projectUsesScripts(project: Project | undefined): boolean {
       for (const page of event.pages ?? []) if (commandsUseScripts(page.commands, 0)) return true;
     }
   }
+  for (const troop of project.database?.troops ?? []) {
+    for (const page of troop.battleEventPages ?? []) if (commandsUseScripts(page.commands, 0)) return true;
+  }
   return false;
 }

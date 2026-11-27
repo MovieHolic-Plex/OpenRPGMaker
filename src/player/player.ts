@@ -62,7 +62,8 @@ import { statusMenuAdjustControls, statusMenuControls } from "@/player/playerSta
 import { getPlayerPreferences } from "@/player/playerPreferences";
 import { installInputDeviceTracker, subscribeInputDevice } from "@/player/inputGlyphs";
 import { menuSkinFor } from "@/player/menuSkins/registry";
-import { resolveDialogueSystem } from "@/project/dialogueSystem";
+import { defaultDialogueSystem, resolveDialogueSystem } from "@/project/dialogueSystem";
+import { applyProjectCustomCss, getProjectCustomThemeCss, removeProjectCustomCss } from "@/project/customCss";
 import { focusPlayCanvas } from "@/player/focusGuard";
 import {
   moveTitleSelection,
@@ -281,6 +282,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
   const cleanupListTap = touchUi ? installTouchListTap(layout) : () => {};
   const cleanupTapConfirm = touchUi ? installTapConfirm(layout, { pointerMovement: () => store.getCurrent().system.pointerMovement === true || currentTouchControls().tapToMove, haptics: () => currentTouchControls().haptics }) : () => {};
   main.append(layout);
+  applyProjectCustomCss(layout, getProjectCustomThemeCss(store.getCurrent()));
 
   const stopGame = (): void => {
     clearTimeout(attractTimer); attractTimer = undefined; detachAttractInput?.(); detachAttractInput = undefined;
@@ -1364,8 +1366,9 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const controls = menu?.querySelector<HTMLElement>(".status-menu-controls");
     if (menu && controls) {
       const mode = menu.dataset.statusMenuScreen === "function" ? "function" : "main";
-      const skin = menuSkinFor(store.getCurrent());
-      const dialogueSystem = resolveDialogueSystem(store.getCurrent());
+      const currentProject = store.getCurrent();
+      const skin = menuSkinFor(currentProject);
+      const dialogueSystem = resolveDialogueSystem(currentProject) ?? (currentProject.meta.language ? { ...defaultDialogueSystem(), language: currentProject.meta.language } : undefined);
       const defaultText = statusMenuControls(mode, skin.railColumns, skin.id === "field-list", dialogueSystem, device);
       const adjustText = statusMenuAdjustControls(dialogueSystem, device);
       const wasAdjust = Boolean(controls.dataset.controlsAdjust && controls.textContent === controls.dataset.controlsAdjust);
@@ -1395,6 +1398,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     cleanupListTap();
     stopGame();
     audioEngine.setQaInstrumentation(false);
+    removeProjectCustomCss(layout);
     clearChildren(layout);
   };
   // 우선순위: 선택-이벤트 테스트(initialSession) → "여기서 테스트"(startOverride)
