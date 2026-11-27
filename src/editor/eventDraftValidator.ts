@@ -332,16 +332,26 @@ function autoPageExitsOrPromotes(
   pageIndex: number,
   pages: readonly EventPage[],
 ): boolean {
-  const visits = walkCommands(page.commands ?? []);
-  if (visits.some(({ command }) => command.kind === "transfer" || command.kind === "gameOver" || command.kind === "returnToTitle")) {
+  const topCommands = page.commands ?? [];
+  if (topCommands.some((command) => command.kind === "transfer" || command.kind === "gameOver" || command.kind === "returnToTitle")) {
     return true;
   }
-  const writtenSelfSwitches = new Set(
-    visits
-      .filter((v): v is { readonly command: Extract<Command, { kind: "setSelfSwitch" }>; readonly path: readonly number[] } =>
-        v.command.kind === "setSelfSwitch" && v.command.value === true)
-      .map((v) => v.command.key),
-  );
+  const finalSelfSwitch = new Map<string, boolean>();
+  for (const command of topCommands) {
+    if (command.kind === "setSelfSwitch") {
+      finalSelfSwitch.set(command.key, command.value);
+    } else {
+      for (const visit of walkCommands([command])) {
+        if (visit.command.kind === "setSelfSwitch" && visit.command.value === false) {
+          finalSelfSwitch.set(visit.command.key, false);
+        }
+      }
+    }
+  }
+  const writtenSelfSwitches = new Set<string>();
+  for (const [key, value] of finalSelfSwitch) {
+    if (value) writtenSelfSwitches.add(key);
+  }
   if (writtenSelfSwitches.size === 0) return false;
   for (let i = pageIndex + 1; i < pages.length; i += 1) {
     const laterConditions = pages[i]?.conditions ?? [];
