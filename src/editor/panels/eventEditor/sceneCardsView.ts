@@ -83,11 +83,21 @@ function issuesForCard(card: SceneCard, issues: readonly EventDraftIssue[] | und
 function renderCard(card: SceneCard, key: string, options: SceneCardsViewOptions): HTMLElement {
   const changed = isChanged(card, options.changedPaths);
   const cardIssues = issuesForCard(card, options.issues);
-  const cardSeverity = cardIssues.some((i) => i.severity === "error")
+  const cardErrorCount = cardIssues.filter((i) => i.severity === "error").length;
+  const cardWarningCount = cardIssues.filter((i) => i.severity === "warning").length;
+  const cardSeverity = cardErrorCount > 0
     ? "error"
-    : cardIssues.length > 0
+    : cardWarningCount > 0
       ? "warning"
       : null;
+  const cardBadgeText = [
+    cardErrorCount > 0 ? `오류 ${cardErrorCount}` : "",
+    cardWarningCount > 0 ? `경고 ${cardWarningCount}` : "",
+  ].filter(Boolean).join(" · ");
+  const cardBadgeAriaPrefix = [
+    cardErrorCount > 0 ? `오류 ${cardErrorCount}건` : "",
+    cardWarningCount > 0 ? `경고 ${cardWarningCount}건` : "",
+  ].filter(Boolean).join(" · ");
   const open = (): void => {
     const path = card.kind === "talk" ? card.lines[0]?.path ?? primaryPath(card) : primaryPath(card);
     if (path) options.onOpen?.(path);
@@ -100,10 +110,10 @@ function renderCard(card: SceneCard, key: string, options: SceneCardsViewOptions
       ...(cardSeverity
         ? [el("span", {
             class: `event-command-issue-badge ${cardSeverity} event-scene-card-issue`,
-            text: `${cardSeverity === "error" ? "오류" : "경고"} ${cardIssues.length}`,
+            text: cardBadgeText,
             attrs: {
               title: cardIssues.map((i) => i.message).join("\n"),
-              "aria-label": `${cardSeverity === "error" ? "오류" : "경고"} ${cardIssues.length}건: ${cardIssues.map((i) => i.message).join("; ")}`,
+              "aria-label": `${cardBadgeAriaPrefix}: ${cardIssues.map((i) => i.message).join("; ")}`,
             },
             dataset: { testid: `event-scene-card-issue-${key}`, severity: cardSeverity },
           })]

@@ -624,7 +624,12 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
             text: "조건 편집",
             attrs: { type: "button", title: "고급 보기에서 이 페이지의 출현 조건을 편집합니다" },
             dataset: { testid: "event-scene-condition-edit" },
-            on: { click: () => setEventEditorViewLevel("advanced") },
+            on: {
+              click: () => {
+                setEventEditorAdvancedOpen(true);
+                setEventEditorViewLevel("advanced");
+              },
+            },
           }),
         ],
       })
