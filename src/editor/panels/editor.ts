@@ -45,6 +45,7 @@ import { mountRightInspector, type RightInspectorMount } from "@/editor/panels/r
 import { closeSidebarSurface, teardownSidebarSurfaces } from '@/editor/panels/sidebarSurface';
 import { refreshAiConnectionStatus, resetAiConnectionStatusCache } from "@/editor/panels/aiConnectionStatus";
 import { installAutoProviderSwitching } from "@/editor/panels/aiAutoProvider";
+import { runStartupAiHealthCheck } from "@/editor/panels/aiStartupHealth";
 import { showConfirm } from "@/editor/ui/modal";
 import { renderCanvasToolbar } from "@/editor/panels/editorZoomToolbar";
 import { ensureReliefSidePanel, mountReliefToolbar } from "@/editor/panels/reliefToolbar";
@@ -451,6 +452,8 @@ export function renderEditor(main: HTMLElement): void {
   if (!autoProviderSwitchingInstalled) {
     autoProviderSwitchingInstalled = true;
     installAutoProviderSwitching(() => { resetAiConnectionStatusCache(); void refreshAiConnectionStatus(); });
+    // 에디터 시작 즉시 ChatGPT(Codex 로그인 포함)·Claude·Gemini 의 로그인 상태와 실제 응답(health)을 백그라운드에서 점검한다.
+    void runStartupAiHealthCheck({ liveHealth: true });
   }
   scheduleEditorAssetWarmup();
 }

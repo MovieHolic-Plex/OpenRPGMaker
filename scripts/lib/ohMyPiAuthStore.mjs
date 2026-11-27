@@ -179,6 +179,8 @@ export function createOhMyPiAuthStore(filePath = defaultOhMyPiAuthPath(), option
         provider,
         authKind: "oauth",
         planType: row.orgName,
+        ...(row.email ? { accountEmail: row.email } : {}),
+        ...(row.source ? { source: row.source } : {}),
         expired,
       };
     },

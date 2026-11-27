@@ -2017,3 +2017,250 @@
 [data-testid="ai-settings-local-programs"] .ai-config-help {
   padding: var(--space-1) 12px;
 }
+
+/* ── GPT · Claude · Gemini 3버튼 기본 AI 선택 (editor/panels/aiThreeProviders.ts) ── */
+.ai-three-wrap {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.ai-three-grid {
+  display: grid;
+  gap: var(--space-2);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.ai-three-card {
+  background: var(--bg-raised);
+  border: 1.5px solid var(--border-default);
+  border-radius: var(--ais-radius);
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  gap: 8px;
+  min-width: 0;
+  padding: 10px 10px 9px;
+  text-align: start;
+  transition: border-color 0.14s ease, background 0.14s ease;
+}
+
+.ai-three-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border-default));
+}
+
+.ai-three-card:focus-visible {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+.ai-three-card[aria-selected="true"] {
+  background: color-mix(in srgb, var(--accent) 8%, var(--bg-raised));
+  border-color: var(--accent);
+}
+
+.ai-three-card-top {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.ai-three-card-brand {
+  align-items: center;
+  display: flex;
+  gap: 7px;
+  min-width: 0;
+}
+
+.ai-three-logo {
+  align-items: center;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--ais-radius-control);
+  color: var(--text-1);
+  display: inline-flex;
+  flex: 0 0 26px;
+  height: 26px;
+  justify-content: center;
+  width: 26px;
+}
+
+.ai-three-card-titles {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.ai-three-card-titles > strong {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.ai-three-sub {
+  color: var(--shell-ai-settings-secondary);
+  font-size: 11px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ai-three-check {
+  align-items: center;
+  border: 1.5px solid var(--border-default);
+  border-radius: 50%;
+  color: transparent;
+  display: inline-flex;
+  flex: 0 0 16px;
+  height: 16px;
+  justify-content: center;
+  width: 16px;
+}
+
+.ai-three-card[data-active="true"] .ai-three-check {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.ai-three-card-foot {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.ai-three-meta {
+  color: var(--shell-ai-settings-secondary);
+  font-size: 10.5px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.ai-three-detail {
+  background: var(--bg-raised);
+  border-radius: var(--ais-radius);
+  display: grid;
+  gap: var(--space-3);
+  padding: 12px 14px;
+}
+
+.ai-three-detail-head {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: space-between;
+}
+
+.ai-three-detail-copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.ai-three-detail-title {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
+.ai-three-detail-title > strong {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.ai-three-detail-actions,
+.ai-three-connect-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.ai-three-quick {
+  border-top: 1px solid var(--shell-ai-settings-separator);
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  padding-top: var(--space-2);
+}
+
+.ai-three-field {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ai-three-field-label {
+  color: var(--shell-ai-settings-secondary);
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+.ai-three-effort {
+  background: var(--shell-ai-settings-segment-bg);
+  border-radius: var(--ais-radius-control);
+  display: grid;
+  gap: 2px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-height: var(--ais-control-h);
+  padding: 2px;
+}
+
+.ai-three-effort-btn {
+  background: transparent;
+  border: 0;
+  border-radius: calc(var(--ais-radius-control) - 2px);
+  color: inherit;
+  cursor: pointer;
+  font: 500 11.5px/1.2 var(--font-ui, system-ui, sans-serif);
+  padding: 4px 6px;
+}
+
+.ai-three-effort-btn[aria-pressed="true"] {
+  background: var(--shell-ai-settings-segment-selected);
+  box-shadow: var(--shadow-control);
+}
+
+.ai-three-note {
+  margin: 0;
+}
+
+.ai-three-apikey,
+.ai-three-cli-box {
+  display: grid;
+  gap: var(--space-1);
+}
+
+.ai-three-apikey-row,
+.ai-three-cli-cmd {
+  align-items: center;
+  display: flex;
+  gap: var(--space-2);
+}
+
+.ai-three-apikey-row > .ai-quick-connect-input {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ai-three-cli-cmd > code {
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--ais-radius-control);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 11.5px;
+  padding: 4px 8px;
+}
+
+@media (max-width: 575px) {
+  .ai-three-grid,
+  .ai-three-quick {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
