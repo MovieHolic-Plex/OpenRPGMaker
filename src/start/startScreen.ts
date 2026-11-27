@@ -27,7 +27,8 @@ import { TEAM_COLLAB_ENABLED } from "../../electron/shared/teamCollab";
 import { createConceptFeed, type ConceptFeed } from "./conceptFeed/conceptFeed";
 import { conceptProjectTitle, launcherBriefHandler, launcherMakeHandler } from "./conceptFeed/launcherMake";
 import { createPromptHome, type PromptHome } from "./firstRun/promptHome";
-import { firstRunBrief, firstRunTitle, pickFirstRunPreset } from "./firstRun/firstRunBrief";
+import { firstRunBladeBrief, firstRunBrief, firstRunTitle, pickFirstRunPreset } from "./firstRun/firstRunBrief";
+import type { FirstRunBladeSelection } from "./firstRun/firstRunBlades";
 import { conceptBrief } from "@/concepts/brief";
 import { NEW_PROJECT_CHOICES } from "@/editor/newProjectChoices";
 import type { GameDesignBrief } from "@/project/gameDesignBrief";
@@ -420,6 +421,15 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       ensureAiConnected: async () => connected, goEditor, storage: window.sessionStorage, allowWithoutAi: true, firstBuildText: text, referenceImages,
     })(brief, title);
   });
+  // 사선 블레이드 + 3키워드 조합: 런처에서 LLM 초안 응답을 기다리지 않고 즉시 폴더·기획을 저장해 편집기로 직행한다.
+  const submitFirstRunBlade = (selection: FirstRunBladeSelection): Promise<void> => run(async () => {
+    if (!bridge) throw new Error(DESKTOP_ONLY_CREATE);
+    const connected = await ensureAiConnected(selection.blade.title);
+    const { brief, title, sentence } = firstRunBladeBrief(selection);
+    await launcherBriefHandler(bridge, {
+      ensureAiConnected: async () => connected, goEditor, storage: window.sessionStorage, allowWithoutAi: true, firstBuildText: sentence,
+    })(brief, title);
+  });
   // 2026-11-04 Studio/런타임 분리(B안 · PR3): 홈은 처음 온 사람이든 다시 온 사람이든 프롬프트 한 장이다.
   // 게임이 있으면 입력창 아래에 「내 게임」 줄이 더해진다. 어두운 레일 런처는 「모두 보기」·⋯ 메뉴의 칸(내 게임·예제·새로 만들기)으로만 열린다.
   let promptHome: PromptHome | null = null;
@@ -440,6 +450,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   const showPromptHome = (): void => {
     promptHome ??= createPromptHome({
       submit: submitFirstRun,
+      submitBlade: submitFirstRunBlade,
       openLocale: () => openSettings("general"),
       builtin: () => go("builtin"),
       builtinEdit: (id) => actions.builtinEdit(id),

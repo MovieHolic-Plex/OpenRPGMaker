@@ -1,0 +1,173 @@
+@layer shell {
+  /* 첫 빌드 집중 뷰: 좌측 팔레트·리사이저·우측 인스펙터를 접어 캔버스 실시간 제작에 시선을 모은다.
+     left-column.css(map)·18-assistant-deck.css(database) 가 shell 보다 뒤 레이어라 first-run-guide.css 와 같이 !important 로 가린다. */
+  .editor-layout.is-first-build-focus > .ai-chat-sidebar,
+  .editor-layout.is-first-build-focus > .resizer-left,
+  .editor-layout.is-first-build-focus > .right-inspector {
+    display: none !important;
+  }
+
+  /* 첫 빌드 진행 바가 떠 있는 동안은 하단 중복 AI 상태 줄을 숨겨 겹침을 막는다. */
+  body:has(.first-build-theater[data-phase="building"]:not([hidden])) .ai-status-bar {
+    display: none !important;
+  }
+
+  .first-build-theater {
+    position: absolute;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    z-index: 26;
+    width: min(680px, calc(100% - 32px));
+    padding: 12px 16px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(11, 13, 20, 0.88);
+    backdrop-filter: blur(16px);
+    color: #f8fafc;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.42);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .first-build-theater[hidden] { display: none; }
+
+  .fbt-steps {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .fbt-step {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    min-width: 0;
+    color: rgba(203, 213, 225, 0.56);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .fbt-step.is-active { color: #ffffff; }
+  .fbt-step.is-done { color: rgba(167, 243, 208, 0.92); }
+
+  .fbt-dot {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .fbt-step.is-active .fbt-dot {
+    border-color: #60a5fa;
+    background: rgba(96, 165, 250, 0.22);
+    color: #ffffff;
+  }
+  .fbt-step.is-done .fbt-dot {
+    border-color: #34d399;
+    background: rgba(52, 211, 153, 0.2);
+    color: #6ee7b7;
+  }
+  .fbt-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .fbt-live-row,
+  .fbt-ready-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  .fbt-live-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex: none;
+    background: #60a5fa;
+    box-shadow: 0 0 10px rgba(96, 165, 250, 0.85);
+    animation: fbtPulse 1.5s ease-in-out infinite;
+  }
+  @keyframes fbtPulse {
+    0%, 100% { opacity: 0.45; transform: scale(0.92); }
+    50% { opacity: 1; transform: scale(1.1); }
+  }
+
+  .fbt-ready-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+  }
+  .fbt-ready-title {
+    font-size: 13.5px;
+    font-weight: 800;
+    color: #ffffff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fbt-status {
+    flex: 1 1 auto;
+    min-width: 0;
+    font-size: 12px;
+    color: rgba(226, 232, 240, 0.82);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fbt-status.is-error { color: #fda4af; }
+
+  .fbt-actions {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex: none;
+  }
+  .fbt-btn {
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(248, 250, 252, 0.92);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 650;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color 0.14s, transform 0.12s;
+  }
+  .fbt-btn:hover { background: rgba(255, 255, 255, 0.16); }
+  .fbt-btn.is-subtle {
+    border-color: transparent;
+    background: transparent;
+    color: rgba(203, 213, 225, 0.78);
+  }
+  .fbt-btn.is-subtle:hover { background: rgba(255, 255, 255, 0.1); color: #ffffff; }
+  .fbt-btn.is-stop {
+    border-color: rgba(248, 113, 113, 0.38);
+    background: rgba(248, 113, 113, 0.14);
+    color: #fecaca;
+  }
+  .fbt-btn.is-stop:hover { background: rgba(248, 113, 113, 0.26); color: #ffffff; }
+  .fbt-btn.is-primary {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: #ffffff;
+    color: #090a0f;
+    font-weight: 750;
+    padding: 7px 15px;
+  }
+  .fbt-btn.is-primary:hover { transform: translateY(-1px); background: #f8fafc; }
+
+  @media (max-width: 720px) {
+    .fbt-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .fbt-ready-row { flex-direction: column; align-items: stretch; }
+    .fbt-actions { justify-content: flex-end; }
+  }
+}

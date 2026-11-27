@@ -1,13 +1,24 @@
 // start/firstRun/promptHome.ts
-// 첫 사용자(보이는 게임 0개) 시작 화면 — 레일 없이 입력창 하나(설계 http://mdc-server:18301/oprn-first-run-proposal/ P1).
-// 화면만 그린다. 만들기·폴더 열기·언어 같은 동작은 startScreen.ts 가 넘긴다.
-// 문구는 한국어 원문으로 두고 DOM 번역 계층이 바꾼다. 칩을 눌러 입력창에 넣는 글자만 t() 로 화면 언어에 맞춘다.
+// 첫 사용자(보이는 게임 0개) 시작 화면 — 절제된 사선 블레이드 5종 + 3키워드(무대·주인공·사건) 자유 조합.
+// 재방문자(게임 1개 이상)나 「직접 적기」를 누른 사용자는 같은 한 장 안의 프롬프트·내 게임 뷰로 전환한다.
+// 문구는 한국어 원문으로 두고 DOM 번역 계층이 바꾼다.
 import "./promptHome.css";
 import { el } from "@/util/dom";
 import { getLocale, LOCALE_NATIVE_NAMES, t } from "@/i18n";
 import { startIcon } from "../icons";
 import { BRAND_MARK_SVG } from "../brandMark";
 import { FIRST_RUN_TEXT_LIMIT } from "./firstRunBrief";
+import {
+  BLADE_KEYWORD_POOLS,
+  BLADE_SLOT_ROLES,
+  FIRST_RUN_BLADES,
+  composeBladeSentence,
+  findPlaceTilesetHint,
+  pickRandomKeyword,
+  rollKeywordSlots,
+  type FirstRunBlade,
+  type FirstRunBladeSelection,
+} from "./firstRunBlades";
 import { BUILTIN_GAMES, type BuiltinGameId } from "../home/builtinGames";
 import type { AiStatusSummary } from "../settings/localAgents";
 import { MAX_USER_IMAGES } from "@/ai/piAgent/userImages";
@@ -32,6 +43,18 @@ export const PROMPT_HOME_TESTIDS = {
   gameFile: "first-run-open-game-file",
   aiStatus: "first-run-ai-status",
   error: "first-run-error",
+  blades: "first-run-blades",
+  blade: "first-run-blade",
+  sheet: "first-run-blade-sheet",
+  slot: "first-run-slot",
+  slotInput: "first-run-slot-input",
+  slotRoll: "first-run-slot-roll",
+  slotLock: "first-run-slot-lock",
+  rerollAll: "first-run-reroll-all",
+  bladeBack: "first-run-blade-back",
+  bladeSubmit: "first-run-blade-submit",
+  directToggle: "first-run-direct-toggle",
+  bladesToggle: "first-run-blades-toggle",
 } as const;
 
 /** 홈의 「내 게임」 줄에 놓는 카드 수(마지막 칸은 「빈 프로젝트」). 더 있으면 「모두 보기」. */
@@ -56,11 +79,13 @@ export const FIRST_RUN_EXAMPLES = [
 ] as const;
 
 export type PromptHomeActions = {
-  /** images: 참고 그림(축소한 data URL, 최대 2장). */
+  /** 자유 프롬프트 제출. images: 참고 그림(축소한 data URL, 최대 2장). */
   readonly submit: (text: string, images: readonly string[]) => Promise<void>;
+  /** 사선 블레이드 + 3키워드 조합 즉시 제출(런처 LLM 초안 대기 생략). 없으면 submit 으로 폴백. */
+  readonly submitBlade?: (selection: FirstRunBladeSelection) => Promise<void>;
   readonly openLocale: () => void;
   readonly builtin: () => void;
-  /** 예제 행 — 그 게임을 편집기에서 연다(플레이는 편집기 「테스트 실행」). */
+  /** 예제 행 — 그 게임을 편집기에서 연다(실행은 편집기 「테스트 실행」). */
   readonly builtinEdit: (id: BuiltinGameId) => void;
   readonly openFolder: () => void;
   readonly blank: () => void;
@@ -79,18 +104,28 @@ export type PromptHome = {
   readonly element: HTMLElement;
   focus(): void;
   syncLocale(): void;
-  /** 내 게임 줄을 다시 그린다. 빈 배열이면 줄을 감추고 처음 온 사람의 화면이 된다. */
+  /** 내 게임 줄을 다시 그린다. 빈 배열이면 첫 실행(사선 블레이드) 화면이 된다. */
   setGames(games: readonly PromptHomeGame[], total: number): void;
   setAiStatus(status: AiStatusSummary): void;
-  /** 만들기 실패 문구를 입력칸 바로 아래에 둔다. 빈 문자열이면 감춘다. */
+  /** 만들기 실패 문구를 입력칸·시트 바로 아래에 둔다. 빈 문자열이면 감춘다. */
   setError(message: string): void;
 };
 
 const SUBMIT_LABEL = "만들기 시작";
+const BLADE_SUBMIT_LABEL = "만들기 →";
 const BUSY_LABEL = "만드는 중…";
 
 export function createPromptHome(actions: PromptHomeActions): PromptHome {
   let busy = false;
+  let totalGames = 0;
+  /** 사용자가 명시적으로 뷰를 바꿨는지 — 게임 목록 비동기 로드가 사용자 클릭을 덮지 않게. */
+  let manualMode: "blades" | "direct" | null = null;
+  let bladesMode = true;
+  let activeBladeIdx = 0;
+  let sheetOpen = false;
+  let slotValues: [string, string, string] = ["", "", ""];
+  let slotLocks: [boolean, boolean, boolean] = [false, false, false];
+
   const input = el("textarea", {
     class: "fr-input",
     attrs: {
@@ -106,7 +141,6 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
     dataset: { testid: PROMPT_HOME_TESTIDS.submit },
     children: [submitLabel, startIcon("arrow", "fr-icon")],
   });
-  // 예시는 단추 하나 「예시 넣기」 — 누를 때마다 다음 예시를 입력창에 넣는다(버튼 줄이기 2회차, 예시 칩 넷을 하나로).
   let exampleIndex = 0;
   const chips = [el("button", {
     class: "fr-chip",
@@ -122,7 +156,7 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
     } },
   })];
   const syncSubmit = (): void => { submit.disabled = busy || input.value.trim() === ""; };
-  // 참고 그림 — 고르거나 붙여 넣은 그림을 긴 변 768px 로 줄여 들고 있다가 「만들기 시작」 때 함께 넘긴다.
+
   let images: string[] = [];
   const fileInput = el("input", {
     class: "fr-attach-input",
@@ -171,18 +205,54 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
     event.preventDefault();
     void addFiles(files);
   });
+
+  const errorLine = el("p", { class: "cf-error", attrs: { role: "alert", hidden: "" }, dataset: { testid: PROMPT_HOME_TESTIDS.error } });
+  const sheetErrorLine = el("p", { class: "fr-sheet-error", attrs: { role: "alert", hidden: "" } });
+  const setError = (message: string): void => {
+    errorLine.textContent = message;
+    errorLine.hidden = message === "";
+    sheetErrorLine.textContent = message;
+    sheetErrorLine.hidden = message === "";
+  };
+
+  const bladeSubmitBtn = el("button", {
+    class: "fr-pick-btn",
+    attrs: { type: "button" },
+    dataset: { testid: PROMPT_HOME_TESTIDS.bladeSubmit },
+    text: BLADE_SUBMIT_LABEL,
+  });
+  const rerollAllBtn = el("button", {
+    class: "fr-ghost-pill",
+    attrs: { type: "button" },
+    dataset: { testid: PROMPT_HOME_TESTIDS.rerollAll },
+    text: "↻ 다시 섞기",
+  });
+  const bladeBackBtn = el("button", {
+    class: "fr-ghost-pill",
+    attrs: { type: "button" },
+    dataset: { testid: PROMPT_HOME_TESTIDS.bladeBack },
+    text: "← 다른 장르",
+  });
+
   const setBusy = (next: boolean): void => {
     busy = next;
     input.readOnly = next;
     submitLabel.textContent = next ? BUSY_LABEL : SUBMIT_LABEL;
+    bladeSubmitBtn.textContent = next ? BUSY_LABEL : BLADE_SUBMIT_LABEL;
+    bladeSubmitBtn.disabled = next;
+    rerollAllBtn.disabled = next;
+    bladeBackBtn.disabled = next;
     for (const chip of chips) chip.disabled = next;
+    for (const slotInput of slotsHost.querySelectorAll<HTMLInputElement>(".fr-slot-input")) slotInput.readOnly = next;
     root.classList.toggle("is-busy", next);
     syncSubmit();
     renderImages();
   };
+
   const send = (): void => {
     const text = input.value.trim();
     if (busy || !text) return;
+    setError("");
     setBusy(true);
     void actions.submit(text, images).finally(() => setBusy(false));
   };
@@ -194,15 +264,55 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
   });
   submit.addEventListener("click", send);
   syncSubmit();
-  // 실패는 누른 버튼 곁에서 말한다 — 화면 맨 아래 작은 줄만 바뀌면 클릭이 무시된 것처럼 보였다(2026-11-26 QA vm-qa15 #34·#50).
-  const errorLine = el("p", { class: "cf-error", attrs: { role: "alert", hidden: "" }, dataset: { testid: PROMPT_HOME_TESTIDS.error } });
-  const setError = (message: string): void => { errorLine.textContent = message; errorLine.hidden = message === ""; };
+
+  const submitCurrentBlade = (): void => {
+    if (busy) return;
+    const blade: FirstRunBlade = FIRST_RUN_BLADES[activeBladeIdx] ?? FIRST_RUN_BLADES[0]!;
+    const cleaned: [string, string, string] = [
+      slotValues[0].trim(),
+      slotValues[1].trim(),
+      slotValues[2].trim(),
+    ];
+    const tilesetHint = findPlaceTilesetHint(cleaned[0]);
+    const selection: FirstRunBladeSelection = {
+      blade,
+      keywords: cleaned,
+      ...(tilesetHint ? { tilesetHint } : {}),
+    };
+    setError("");
+    setBusy(true);
+    const work = actions.submitBlade
+      ? actions.submitBlade(selection)
+      : actions.submit(composeBladeSentence(blade, cleaned), []);
+    void work.finally(() => setBusy(false));
+  };
+  bladeSubmitBtn.addEventListener("click", submitCurrentBlade);
 
   const link = (text: string, testid: string, run: () => void): HTMLButtonElement => el("button", {
     class: "fr-link", attrs: { type: "button" }, dataset: { testid }, text, on: { click: () => { if (!busy) run(); } },
   });
 
-  // 오른쪽 위: AI 상태 글자 · 언어 · 「⋯」(자주 쓰지 않는 것). 예전 런처의 레일 바닥 줄이 여기로 왔다.
+  // ── 상단 막대 ──────────────────────────────────────────────────────────
+  const directToggle = el("button", {
+    class: "fr-top-action",
+    attrs: { type: "button" },
+    dataset: { testid: PROMPT_HOME_TESTIDS.directToggle },
+    text: "직접 적기",
+    on: { click: () => { if (!busy) { manualMode = "direct"; applyMode(); input.focus(); } } },
+  });
+  const bladesToggle = el("button", {
+    class: "fr-top-action",
+    attrs: { type: "button" },
+    dataset: { testid: PROMPT_HOME_TESTIDS.bladesToggle },
+    text: "장르 고르기",
+    on: { click: () => { if (!busy) { manualMode = "blades"; closeSheet(); applyMode(); } } },
+  });
+  const topBlankBtn = el("button", {
+    class: "fr-top-action",
+    attrs: { type: "button" },
+    text: "빈 프로젝트",
+    on: { click: () => { if (!busy) actions.blank(); } },
+  });
   const aiStatus = el("button", {
     class: "fr-ai", attrs: { type: "button", hidden: "" }, dataset: { testid: PROMPT_HOME_TESTIDS.aiStatus },
     on: { click: () => { if (!busy) actions.openAi?.(); } },
@@ -212,7 +322,6 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
     class: "fr-more-item", attrs: { type: "button", role: "menuitem" }, dataset: { testid }, text: label,
     on: { click: () => { closeMore(); moreButton.focus(); if (!busy) run(); } },
   });
-  // 폴더 열기·빈 프로젝트·게임 파일 열기는 ⋯ 안에 둔다 — 첫 화면에는 입력창·예시·예제만 남긴다(버튼 줄이기 2회차).
   const fileItems = el("div", { class: "fr-more-group", attrs: { role: "none" } });
   const moreMenu = el("div", { class: "fr-more-menu", attrs: { role: "menu", hidden: "" }, children: [
     fileItems,
@@ -224,18 +333,221 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
     on: { click: () => { if (moreMenu.hidden) openMore(); else closeMore(); } },
   });
   const onOutside = (event: Event): void => { if (!moreWrap.contains(event.target as Node)) closeMore(); };
-  const onKey = (event: KeyboardEvent): void => { if (event.key === "Escape") { closeMore(); moreButton.focus(); } };
+  const onMoreKey = (event: KeyboardEvent): void => { if (event.key === "Escape") { closeMore(); moreButton.focus(); } };
   function openMore(): void {
     moreMenu.hidden = false; moreButton.setAttribute("aria-expanded", "true");
-    document.addEventListener("pointerdown", onOutside); document.addEventListener("keydown", onKey);
+    document.addEventListener("pointerdown", onOutside); document.addEventListener("keydown", onMoreKey);
   }
   function closeMore(): void {
     moreMenu.hidden = true; moreButton.setAttribute("aria-expanded", "false");
-    document.removeEventListener("pointerdown", onOutside); document.removeEventListener("keydown", onKey);
+    document.removeEventListener("pointerdown", onOutside); document.removeEventListener("keydown", onMoreKey);
   }
   const moreWrap = el("div", { class: "fr-more-wrap", children: [moreButton, moreMenu] });
 
-  // 「내 게임」 줄 — 다시 온 사람도 같은 한 장을 본다(2026-11-04, 어두운 레일 런처를 대신한다).
+  // ── 1단계 사선 블레이드 + 2단계 3키워드 조합 시트 ──────────────────────
+  const bladeTrack = el("div", { class: "fr-blades-track" });
+  const sheetTitle = el("h2", { class: "fr-sheet-title" });
+  const slotsHost = el("div", { class: "fr-slots" });
+  const sheet = el("section", {
+    class: "fr-sheet",
+    attrs: { "aria-label": "키워드 조합", "aria-hidden": "true" },
+    dataset: { testid: PROMPT_HOME_TESTIDS.sheet },
+    children: [
+      el("div", { class: "fr-sheet-top", children: [sheetTitle, bladeBackBtn] }),
+      slotsHost,
+      sheetErrorLine,
+      el("div", { class: "fr-sheet-foot", children: [rerollAllBtn, bladeSubmitBtn] }),
+    ],
+  });
+
+  const bladeNodes: HTMLElement[] = FIRST_RUN_BLADES.map((blade, idx) => {
+    const pickBtn = el("button", {
+      class: "fr-pick-btn",
+      attrs: { type: "button" },
+      text: "선택 →",
+      on: { click: (event) => {
+        event.stopPropagation();
+        if (!busy && !sheetOpen) openSheet(idx);
+      } },
+    });
+    const node = el("div", {
+      class: `fr-blade${idx === activeBladeIdx ? " is-active" : ""}`,
+      attrs: { role: "button", tabindex: "0", "aria-label": blade.title },
+      dataset: { testid: `${PROMPT_HOME_TESTIDS.blade}-${blade.id}`, bladeId: blade.id },
+      children: [
+        el("div", { class: "fr-blade-inner", children: [
+          el("div", { class: "fr-blade-art", attrs: { "aria-hidden": "true" } }),
+          el("div", { class: "fr-blade-vignette", attrs: { "aria-hidden": "true" } }),
+          el("div", { class: "fr-blade-line", attrs: { "aria-hidden": "true" } }),
+          el("div", { class: "fr-blade-spine", attrs: { "aria-hidden": "true" }, children: [el("span", { text: blade.spine })] }),
+          el("div", { class: "fr-blade-copy", children: [
+            el("div", { class: "fr-blade-copy-left", children: [
+              el("span", { class: "fr-blade-kicker", text: blade.kicker }),
+              el("h2", { class: "fr-blade-title", text: blade.title }),
+              el("p", { class: "fr-blade-desc", text: blade.desc }),
+            ] }),
+            pickBtn,
+          ] }),
+        ] }),
+      ],
+    });
+    node.style.setProperty("--fr-blade-tone", blade.tone);
+    const art = node.querySelector<HTMLElement>(".fr-blade-art");
+    if (art) art.style.backgroundImage = `url("${blade.image}")`;
+
+    node.addEventListener("mouseenter", () => {
+      if (busy || sheetOpen || activeBladeIdx === idx) return;
+      activeBladeIdx = idx;
+      syncBladeActive();
+    });
+    node.addEventListener("focus", () => {
+      if (busy || sheetOpen || activeBladeIdx === idx) return;
+      activeBladeIdx = idx;
+      syncBladeActive();
+    });
+    node.addEventListener("click", () => {
+      if (busy || sheetOpen) return;
+      if (activeBladeIdx !== idx) {
+        activeBladeIdx = idx;
+        syncBladeActive();
+        return;
+      }
+      openSheet(idx);
+    });
+    node.addEventListener("keydown", (event) => {
+      if (busy || sheetOpen) return;
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openSheet(idx);
+      } else if (event.key === "ArrowRight") {
+        event.preventDefault();
+        activeBladeIdx = (idx + 1) % FIRST_RUN_BLADES.length;
+        syncBladeActive();
+        bladeNodes[activeBladeIdx]?.focus();
+      } else if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        activeBladeIdx = (idx - 1 + FIRST_RUN_BLADES.length) % FIRST_RUN_BLADES.length;
+        syncBladeActive();
+        bladeNodes[activeBladeIdx]?.focus();
+      }
+    });
+    return node;
+  });
+  bladeTrack.append(...bladeNodes);
+
+  function syncBladeActive(): void {
+    bladeNodes.forEach((node, idx) => {
+      node.classList.toggle("is-active", idx === activeBladeIdx);
+    });
+  }
+
+  function renderSlots(rollingIndices: readonly number[] = []): void {
+    const blade = FIRST_RUN_BLADES[activeBladeIdx] ?? FIRST_RUN_BLADES[0]!;
+    sheetTitle.textContent = blade.title;
+    slotsHost.replaceChildren(...BLADE_SLOT_ROLES.map((role, idx) => {
+      const locked = slotLocks[idx] === true;
+      const slotInput = el("input", {
+        class: "fr-slot-input",
+        value: slotValues[idx] ?? "",
+        attrs: { type: "text", maxlength: "40", placeholder: t(role.label), "aria-label": role.label, spellcheck: "false" },
+        dataset: { testid: `${PROMPT_HOME_TESTIDS.slotInput}-${role.id}` },
+      });
+      slotInput.readOnly = busy;
+      const lockBtn = el("button", {
+        class: "fr-slot-btn is-lock",
+        attrs: { type: "button", "aria-label": locked ? "고정 해제" : "고정", "aria-pressed": String(locked) },
+        dataset: { testid: `${PROMPT_HOME_TESTIDS.slotLock}-${role.id}` },
+        text: locked ? "🔒" : "🔓",
+        on: { click: () => {
+          if (busy) return;
+          slotLocks[idx] = !slotLocks[idx];
+          renderSlots();
+        } },
+      });
+      const rollBtn = el("button", {
+        class: "fr-slot-btn is-roll",
+        attrs: { type: "button", "aria-label": `${role.label} 다시 뽑기` },
+        dataset: { testid: `${PROMPT_HOME_TESTIDS.slotRoll}-${role.id}` },
+        text: "↻",
+        on: { click: () => {
+          if (busy) return;
+          slotLocks[idx] = false;
+          slotValues[idx] = pickRandomKeyword(BLADE_KEYWORD_POOLS[idx]!, slotValues[idx]);
+          renderSlots([idx]);
+        } },
+      });
+      const box = el("div", {
+        class: `fr-slot${locked ? " is-locked" : ""}${rollingIndices.includes(idx) ? " is-rolling" : ""}`,
+        dataset: { testid: `${PROMPT_HOME_TESTIDS.slot}-${role.id}` },
+        children: [
+          el("div", { class: "fr-slot-head", children: [
+            el("span", { class: "fr-slot-role", text: role.label }),
+            el("div", { class: "fr-slot-btns", children: [rollBtn, lockBtn] }),
+          ] }),
+          slotInput,
+        ],
+      });
+      box.style.setProperty("--fr-blade-tone", blade.tone);
+      slotInput.addEventListener("input", () => {
+        slotValues[idx] = slotInput.value;
+        // 직접 타이핑한 슬롯은 자동 고정되어 전체 셔플에서 덮어쓰이지 않는다.
+        if (!slotLocks[idx] && slotInput.value.trim() !== "") {
+          slotLocks[idx] = true;
+          box.classList.add("is-locked");
+          lockBtn.textContent = "🔒";
+          lockBtn.setAttribute("aria-pressed", "true");
+        }
+      });
+      slotInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter" && !event.isComposing) {
+          event.preventDefault();
+          submitCurrentBlade();
+        }
+      });
+      return box;
+    }));
+  }
+
+  function openSheet(idx: number): void {
+    activeBladeIdx = idx;
+    sheetOpen = true;
+    slotLocks = [false, false, false];
+    slotValues = rollKeywordSlots(slotValues, slotLocks);
+    syncBladeActive();
+    bladeTrack.classList.add("is-locked");
+    sheet.classList.add("is-open");
+    sheet.setAttribute("aria-hidden", "false");
+    setError("");
+    renderSlots([0, 1, 2]);
+  }
+
+  function closeSheet(): void {
+    sheetOpen = false;
+    bladeTrack.classList.remove("is-locked");
+    sheet.classList.remove("is-open");
+    sheet.setAttribute("aria-hidden", "true");
+    setError("");
+  }
+
+  rerollAllBtn.addEventListener("click", () => {
+    if (busy) return;
+    const rolled: number[] = [];
+    for (let i = 0; i < 3; i += 1) if (!slotLocks[i]) rolled.push(i);
+    slotValues = rollKeywordSlots(slotValues, slotLocks);
+    renderSlots(rolled);
+  });
+  bladeBackBtn.addEventListener("click", () => {
+    if (!busy) closeSheet();
+  });
+
+  const bladesStage = el("section", {
+    class: "fr-blades-stage",
+    attrs: { "aria-label": "장르 선택" },
+    dataset: { testid: PROMPT_HOME_TESTIDS.blades },
+    children: [bladeTrack, sheet],
+  });
+
+  // ── 「내 게임」 줄 · 예제 줄 (기존 홈 뷰) ─────────────────────────────
   const gamesRow = el("div", { class: "fr-games-row" });
   const gamesMore = link("모두 보기", PROMPT_HOME_TESTIDS.gamesMore, () => actions.allGames?.());
   const gamesSection = el("section", { class: "fr-games", attrs: { "aria-labelledby": "fr-games-h", hidden: "" }, dataset: { testid: PROMPT_HOME_TESTIDS.games }, children: [
@@ -261,52 +573,75 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
   };
   syncLocale();
 
-  const root = el("div", { class: "fr-root", dataset: { testid: PROMPT_HOME_TESTIDS.root }, children: [
-    el("header", { class: "fr-top", children: [
-      el("span", { class: "fr-brand", attrs: { translate: "no" }, children: [el("span", { class: "fr-brand-mark", html: BRAND_MARK_SVG }), el("span", { text: "OPRN Studio" })] }),
-      el("div", { class: "fr-top-right", children: [aiStatus, moreWrap] }),
-    ] }),
-    el("main", { class: "fr-main", children: [
-      el("h1", { class: "fr-title", text: "어떤 게임을 만들까요?" }),
-      el("p", { class: "fr-sub", text: "한 줄로 적으면 AI가 맵·인물·이야기를 지금 바로 만들어요." }),
-      el("div", { class: "fr-composer", children: [input, el("div", { class: "fr-composer-foot", children: [attach, thumbs, fileInput, submit] })] }),
-      errorLine,
-      el("div", { class: "fr-chips", attrs: { role: "group", "aria-label": "예시" }, children: chips }),
-      gamesSection,
-      // 「예제 열어 보기」 작은 행 세 개(2026-11-04, Studio/런타임 분리 B안 http://mdc-server:18301/studio-runtime-split.html).
-      // 누르면 편집기에서 연다 — 첫 화면이 「할 게임 고르기」로 보이지 않게, 바로 플레이하는 그림 카드를 버렸다.
-      // 버튼 줄이기 2회차: 세 행은 접힌 한 줄 「예제 열어 보기 ▾」 안에 둔다(새 게임 창의 둘러보기와 같은 모양).
-      el("details", { class: "fr-builtin cf-browse", attrs: { "aria-labelledby": "fr-builtin-h" }, dataset: { testid: "first-run-builtin-toggle" }, children: [
-        el("summary", { class: "fr-builtin-head", children: [
-          el("h2", { class: "fr-builtin-title", attrs: { id: "fr-builtin-h" }, children: [
-            el("span", { text: "예제 열어 보기" }),
-            el("span", { class: "fr-builtin-tag", text: "고쳐 보며 배우기" }),
-          ] }),
-          link("모두 보기", PROMPT_HOME_TESTIDS.builtin, actions.builtin),
+  const mainView = el("main", { class: "fr-main", children: [
+    el("h1", { class: "fr-title", text: "어떤 게임을 만들까요?" }),
+    el("p", { class: "fr-sub", text: "한 줄로 적으면 AI가 맵·인물·이야기를 지금 바로 만들어요." }),
+    el("div", { class: "fr-composer", children: [input, el("div", { class: "fr-composer-foot", children: [attach, thumbs, fileInput, submit] })] }),
+    errorLine,
+    el("div", { class: "fr-chips", attrs: { role: "group", "aria-label": "예시" }, children: chips }),
+    gamesSection,
+    el("details", { class: "fr-builtin cf-browse", attrs: { "aria-labelledby": "fr-builtin-h" }, dataset: { testid: "first-run-builtin-toggle" }, children: [
+      el("summary", { class: "fr-builtin-head", children: [
+        el("h2", { class: "fr-builtin-title", attrs: { id: "fr-builtin-h" }, children: [
+          el("span", { text: "예제 열어 보기" }),
+          el("span", { class: "fr-builtin-tag", text: "고쳐 보며 배우기" }),
         ] }),
-        el("div", { class: "fr-builtin-row", children: BUILTIN_GAMES.map((game) => el("button", {
-          class: "fr-bcard", attrs: { type: "button", "aria-label": `${game.title} — 편집기에서 열기` },
-          dataset: { testid: `${PROMPT_HOME_TESTIDS.builtinCard}-${game.id}` },
-          on: { click: () => { if (!busy) actions.builtinEdit(game.id); } },
-          children: [
-            el("img", { class: "fr-bcard-img", attrs: { src: game.cover, alt: "", decoding: "async", loading: "lazy", draggable: "false" } }),
-            el("span", { class: "fr-bcard-text", children: [
-              el("span", { class: "fr-bcard-name", text: game.title.split(":")[0]!.trim() }),
-              el("span", { class: "fr-bcard-meta", text: game.genre }),
-            ] }),
-          ],
-        })) }),
+        link("모두 보기", PROMPT_HOME_TESTIDS.builtin, actions.builtin),
       ] }),
+      el("div", { class: "fr-builtin-row", children: BUILTIN_GAMES.map((game) => el("button", {
+        class: "fr-bcard", attrs: { type: "button", "aria-label": `${game.title} — 편집기에서 열기` },
+        dataset: { testid: `${PROMPT_HOME_TESTIDS.builtinCard}-${game.id}` },
+        on: { click: () => { if (!busy) actions.builtinEdit(game.id); } },
+        children: [
+          el("img", { class: "fr-bcard-img", attrs: { src: game.cover, alt: "", decoding: "async", loading: "lazy", draggable: "false" } }),
+          el("span", { class: "fr-bcard-text", children: [
+            el("span", { class: "fr-bcard-name", text: game.title.split(":")[0]!.trim() }),
+            el("span", { class: "fr-bcard-meta", text: game.genre }),
+          ] }),
+        ],
+      })) }),
     ] }),
   ] });
-  // 언어는 ⋯ 안의 한 줄(눌러 고르는 일은 드물다 — 시스템 언어를 따른다).
+
+  const root = el("div", { class: "fr-root is-blades", dataset: { testid: PROMPT_HOME_TESTIDS.root }, children: [
+    el("header", { class: "fr-top", children: [
+      el("span", { class: "fr-brand", attrs: { translate: "no" }, children: [el("span", { class: "fr-brand-mark", html: BRAND_MARK_SVG }), el("span", { text: "OPRN Studio" })] }),
+      el("div", { class: "fr-top-right", children: [directToggle, bladesToggle, topBlankBtn, aiStatus, moreWrap] }),
+    ] }),
+    bladesStage,
+    mainView,
+  ] });
+
   fileItems.before(el("button", {
     class: "fr-more-item fr-locale", attrs: { type: "button", role: "menuitem", "aria-label": "언어" }, dataset: { testid: PROMPT_HOME_TESTIDS.locale },
     on: { click: () => { closeMore(); moreButton.focus(); if (!busy) actions.openLocale(); } },
     children: [startIcon("globe", "fr-icon"), localeLabel],
   }));
 
+  function applyMode(): void {
+    bladesMode = manualMode !== null ? manualMode === "blades" : totalGames === 0;
+    root.classList.toggle("is-blades", bladesMode);
+    directToggle.hidden = !bladesMode;
+    topBlankBtn.hidden = !bladesMode;
+    bladesToggle.hidden = bladesMode;
+    directToggle.textContent = totalGames > 0 ? "내 게임" : "직접 적기";
+  }
+  applyMode();
+
+  root.addEventListener("keydown", (event) => {
+    if (event.key !== "Escape" || busy || event.defaultPrevented) return;
+    if (bladesMode && sheetOpen) {
+      event.preventDefault();
+      closeSheet();
+    } else if (!bladesMode && totalGames === 0 && manualMode === "direct") {
+      event.preventDefault();
+      manualMode = "blades";
+      applyMode();
+    }
+  });
+
   const setGames = (games: readonly PromptHomeGame[], total: number): void => {
+    totalGames = total;
     const has = games.length > 0;
     gamesSection.hidden = total === 0;
     root.classList.toggle("has-games", has);
@@ -321,7 +656,9 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
       }), el("span", { class: "fr-gcard-meta", text: game.meta })],
     })), ...(has ? [blankCard()] : []));
     renderLinks(has);
+    applyMode();
   };
+
   const setAiStatus = (status: AiStatusSummary): void => {
     aiStatus.hidden = false;
     aiStatus.dataset.tone = status.tone;
@@ -330,9 +667,14 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
       label.append(" · ", el("bdi", { attrs: { "data-i18n-skip": "" }, text: status.model }));
     }
     aiStatus.replaceChildren(el("span", { class: "fr-ai-dot", attrs: { "aria-hidden": "true" } }), label);
-    // 좁은 폭에서는 점만 남는다 — 이름이 내부 testid 로 읽히지 않게 상태 글자를 접근성 이름으로 둔다(2026-11-26 QA vm-qa15 #49).
-    aiStatus.setAttribute("aria-label", label.textContent ?? "");
   };
 
-  return { element: root, focus: () => input.focus(), syncLocale, setGames, setAiStatus, setError };
+  return {
+    element: root,
+    focus: () => { if (!bladesMode) input.focus(); },
+    syncLocale,
+    setGames,
+    setAiStatus,
+    setError,
+  };
 }
