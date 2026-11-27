@@ -38,6 +38,16 @@ async function resolveSession(apiKey: string | undefined, config: ReturnType<typ
   return { accessToken: session.accessToken, accountId: session.accountId, installationId: session.installationId };
 }
 
+/** 네트워크 호출 없이 현재 실행에서 Codex 이미지 생성 인증을 쓸 수 있는지 판별한다. */
+export async function hasCodexImageAuth(apiKey?: string): Promise<boolean> {
+  try {
+    await resolveSession(apiKey, resolveConfig());
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * 응답이 되돌려 준 그림 모델. Codex 는 요청을 그대로 에코하면서 `tools[{type:"image_generation", model}]` 에
  * 자기 목록에서 고른 값을 넣어 보내고, 그 값이 지금 이 라우트가 실제로 쓰는 모델이다.

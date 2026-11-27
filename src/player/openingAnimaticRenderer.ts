@@ -44,6 +44,34 @@ function charsetSource(id: string, image: HTMLImageElement): HTMLImageElement | 
   keyedCache.set(id, source);
   return source;
 }
+
+/**
+ * 2MB+ 고해상도 생성 CG(1536×1024 등)를 매 프레임 60fps 로 CPU 다운샘플링하면 오프닝에서 렉이 생긴다.
+ * 표시 크기(Ken Burns 줌 여유 1.25배 포함)보다 크게 큰 정지 배경은 처음 1회만 고품질 오프스크린 축소해 재사용한다.
+ */
+const prescaledCache = new WeakMap<HTMLImageElement, Map<string, HTMLCanvasElement>>();
+function prescaledBackdrop(image: HTMLImageElement, targetW: number, targetH: number): HTMLImageElement | HTMLCanvasElement {
+  const nw = image.naturalWidth, nh = image.naturalHeight;
+  const w = Math.max(1, Math.min(1920, Math.round(targetW)));
+  const h = Math.max(1, Math.min(1080, Math.round(targetH)));
+  if (!nw || !nh || (nw <= w * 1.35 && nh <= h * 1.35)) return image;
+  const key = `${w}x${h}`;
+  let bySize = prescaledCache.get(image);
+  const hit = bySize?.get(key);
+  if (hit) return hit;
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const pctx = canvas.getContext('2d');
+  if (!pctx) return image;
+  pctx.imageSmoothingEnabled = true;
+  pctx.imageSmoothingQuality = 'high';
+  pctx.drawImage(image, 0, 0, nw, nh, 0, 0, w, h);
+  if (!bySize) { bySize = new Map(); prescaledCache.set(image, bySize); }
+  if (bySize.size >= 4) bySize.clear();
+  bySize.set(key, canvas);
+  return canvas;
+}
 /**
  * 디코드가 끝난 오프닝 그림 캐시. 컷이 바뀔 때 새 캔버스는 그림이 다 읽힐 때까지 검게 비어 있어
  * 큰 배경이 늦게 읽히면 「미디어 불러오는 중」 글자만 뜬 빈 화면이 컷 사이에 끼었다(r12 「첫 20초」).
@@ -159,12 +187,13 @@ function tintedSource(id: string, image: CanvasImageSource, source: { x: number;
   ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
   return canvas;
 }
+const ANIMATIC_FONT_FAMILY = "'Pretendard', 'Noto Sans KR', system-ui, sans-serif";
 function drawText(ctx: CanvasRenderingContext2D, l: AnimaticLayer, t: number, snapping = 0): void {
   // With a pixelGrid every size is measured in GRID pixels, so a 12px line is 12 low-res pixels (crisp after the
   // integer upscale) instead of 12 stage pixels scaled down to the grid — which landed the glyphs on fractional
   // cells and smeared them. Without a grid the stage pixel is the grid pixel and this is unchanged.
   const style = l.typography, size = (style?.fontSize ?? 40) * (snapping > 0 ? 1 / snapping : 1), align = style?.align ?? 'left';
-  ctx.font = `${style?.weight ?? 600} ${size}px system-ui, sans-serif`; ctx.textAlign = align; ctx.textBaseline = 'top';
+  ctx.font = `${style?.weight ?? 600} ${size}px ${ANIMATIC_FONT_FAMILY}`; ctx.textAlign = align; ctx.textBaseline = 'top';
   const reveal = style?.typewriterMs ? Math.min(1, Math.max(0, (t - (l.startMs ?? 0)) / style.typewriterMs)) : 1;
   const text = Array.from(l.text ?? ''), shown = text.slice(0, Math.ceil(text.length * reveal)).join('');
   const lines: string[] = [];
@@ -181,8 +210,21 @@ function drawText(ctx: CanvasRenderingContext2D, l: AnimaticLayer, t: number, sn
   }
   const x = align === 'center' ? l.width / 2 : align === 'right' ? l.width : 0;
   ctx.save();
-  ctx.shadowColor = 'rgba(0,0,0,0.88)'; ctx.shadowBlur = 0; ctx.shadowOffsetX = 1; ctx.shadowOffsetY = 1;
-  for (const [i, line] of lines.entries()) { if (i > 0 && (i + 1) * size * 1.25 > l.height) break; ctx.fillText(line, x, i * size * 1.25); }
+  if (snapping > 0) {
+    ctx.shadowColor = 'rgba(0,0,0,0.88)'; ctx.shadowBlur = 0; ctx.shadowOffsetX = 1; ctx.shadowOffsetY = 1;
+    for (const [i, line] of lines.entries()) { if (i > 0 && (i + 1) * size * 1.25 > l.height) break; ctx.fillText(line, x, i * size * 1.25); }
+  } else {
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = 'rgba(0,0,0,0.78)';
+    ctx.lineWidth = Math.max(1.2, size * 0.1);
+    ctx.shadowColor = 'rgba(0,0,0,0.75)'; ctx.shadowBlur = 3; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 1.5;
+    for (const [i, line] of lines.entries()) {
+      if (i > 0 && (i + 1) * size * 1.25 > l.height) break;
+      const ly = i * size * 1.25;
+      ctx.strokeText(line, x, ly);
+      ctx.fillText(line, x, ly);
+    }
+  }
   ctx.restore();
 }
 /**
@@ -469,11 +511,11 @@ function drawCaption(ctx: CanvasRenderingContext2D, a: OpeningAnimatic, l: Anima
   const align = l.typography?.align ?? 'center';
   ctx.save();
   ctx.globalAlpha *= alpha;
-  ctx.font = `${l.typography?.weight ?? 600} ${baseSize}px system-ui, sans-serif`;
+  ctx.font = `${l.typography?.weight ?? 600} ${baseSize}px ${ANIMATIC_FONT_FAMILY}`;
   const maxW = Math.max(40, a.width - 12);
   const needsWrap = !cue.text.includes('\n') && ctx.measureText(cue.text).width > maxW;
   const size = needsWrap ? Math.max(9 * (snapping > 0 ? 1 / snapping : 1), Math.round(baseSize * 0.9)) : baseSize;
-  ctx.font = `${l.typography?.weight ?? 600} ${size}px system-ui, sans-serif`;
+  ctx.font = `${l.typography?.weight ?? 600} ${size}px ${ANIMATIC_FONT_FAMILY}`;
   ctx.textAlign = align; ctx.textBaseline = 'top';
   let cueColor = cue.color ?? l.color ?? '#ffffff';
   const parsedCue = parseCssColor(cueColor);
@@ -489,7 +531,18 @@ function drawCaption(ctx: CanvasRenderingContext2D, a: OpeningAnimatic, l: Anima
     }
   }
   ctx.fillStyle = cueColor;
-  ctx.shadowColor = 'rgba(0,0,0,0.92)'; ctx.shadowBlur = 0; ctx.shadowOffsetX = 1; ctx.shadowOffsetY = 1;
+  const paintLine = (line: string, lx: number, ly: number) => {
+    if (snapping === 0) ctx.strokeText(line, lx, ly, maxW);
+    ctx.fillText(line, lx, ly, maxW);
+  };
+  if (snapping > 0) {
+    ctx.shadowColor = 'rgba(0,0,0,0.92)'; ctx.shadowBlur = 0; ctx.shadowOffsetX = 1; ctx.shadowOffsetY = 1;
+  } else {
+    ctx.lineJoin = 'round';
+    ctx.strokeStyle = 'rgba(0,0,0,0.85)';
+    ctx.lineWidth = Math.max(1.2, size * 0.12);
+    ctx.shadowColor = 'rgba(0,0,0,0.82)'; ctx.shadowBlur = 2.5; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 1;
+  }
   const x = align === 'center' ? a.width / 2 : align === 'right' ? a.width - size : size;
   if (needsWrap) {
     const mid = Math.floor(cue.text.length / 2);
@@ -506,8 +559,8 @@ function drawCaption(ctx: CanvasRenderingContext2D, a: OpeningAnimatic, l: Anima
         : a.height * (1 - safeArea) - totalH;
       const line1 = shown.length <= splitAt ? shown : cue.text.slice(0, splitAt);
       const line2 = shown.length > splitAt ? shown.slice(splitAt + 1) : '';
-      ctx.fillText(line1, x, y0, maxW);
-      if (line2) ctx.fillText(line2, x, y0 + lineH, maxW);
+      paintLine(line1, x, y0);
+      if (line2) paintLine(line2, x, y0 + lineH);
       ctx.restore();
       return;
     }
@@ -515,7 +568,7 @@ function drawCaption(ctx: CanvasRenderingContext2D, a: OpeningAnimatic, l: Anima
   const baseline = bar > 0
     ? a.height * (1 - bar) + Math.max(0, (a.height * bar - size) / 2)
     : a.height * (1 - safeArea) - size;
-  ctx.fillText(shown, x, baseline, maxW);
+  paintLine(shown, x, baseline);
   ctx.restore();
 }
 
@@ -775,7 +828,9 @@ function drawStage(ctx: CanvasRenderingContext2D, sx: number, sy: number, snappi
     ctx.translate(-l.width * (lockGridBg ? 0 : (l.anchorX ?? 0)), -l.height * (lockGridBg ? 0 : (l.anchorY ?? 0)));
     ctx.globalAlpha *= sampleAnimaticTrack(l.keys?.opacity, t, l.opacity ?? 1); ctx.globalCompositeOperation = l.blend ?? 'source-over'; ctx.fillStyle = l.color ?? '#ffffff'; ctx.strokeStyle = l.color ?? '#ffffff';
     if (l.kind === 'image') {
-      ctx.imageSmoothingEnabled = snapping > 0 ? false : (l.sampling ? l.sampling === 'linear' : !l.sheet);
+      const smooth = snapping > 0 ? false : (l.sampling ? l.sampling === 'linear' : !l.sheet);
+      ctx.imageSmoothingEnabled = smooth;
+      if (smooth) ctx.imageSmoothingQuality = 'high';
       const image = images.get(l.resourceId!); if (!image) throw Error('그림 로딩 누락: ' + l.resourceId);
       let crop = l.crop;
       const drawSource = l.sheet ? charsetSource(l.resourceId!, image) : image;
@@ -790,7 +845,10 @@ function drawStage(ctx: CanvasRenderingContext2D, sx: number, sy: number, snappi
       const tinted = l.tint ? tintedSource(l.resourceId!, crop ? drawSource : image, source, l.tint) : null;
       if (tinted) ctx.drawImage(tinted, 0, 0, source.width, source.height, 0, 0, snapSize(l.width), snapSize(l.height));
       else if (crop) ctx.drawImage(drawSource, crop.x, crop.y, crop.width, crop.height, 0, 0, snapSize(l.width), snapSize(l.height));
-      else ctx.drawImage(image, 0, 0, snapSize(l.width), snapSize(l.height));
+      else {
+        const fastSource = smooth && !l.region ? prescaledBackdrop(image, l.width * sx * 1.25, l.height * sy * 1.25) : image;
+        ctx.drawImage(fastSource, 0, 0, snapSize(l.width), snapSize(l.height));
+      }
       if (l.region) drawRegionLoop(ctx, l, drawSource, l.region, crop ?? { x: 0, y: 0, width: image.naturalWidth, height: image.naturalHeight }, at, snapping);
     } else if (l.kind === 'text') drawText(ctx, l, t, snapping);
     else if (l.kind === 'caption') drawCaption(ctx, a, l, t, options.durationMs, snapping);
@@ -905,9 +963,25 @@ export function playOpeningAnimatic(options: { project: Project; canvas: HTMLCan
     try {
       const [images] = await Promise.all([loadAnimaticImages(options.project, a, signal), preloadCues()]); if (stopped || signal.aborted) return;
       const box = canvas.getBoundingClientRect(), dpr = view.devicePixelRatio || 1;
-      const k = a.upscale === 'nearest' && !a.pixelGrid && box.width > 0 && box.height > 0
-        ? Math.max(1, Math.min(8, Math.floor(Math.min(box.width * dpr / a.width, box.height * dpr / a.height)))) : 1;
-      canvas.width = a.width * k; canvas.height = a.height * k; if (k > 1) canvas.style.imageRendering = 'pixelated';
+      if (!a.pixelGrid && box.width > 0 && box.height > 0) {
+        const intK = Math.floor(Math.min(box.width * dpr / a.width, box.height * dpr / a.height));
+        if (a.upscale === 'nearest' && intK >= 2) {
+          const k = Math.min(8, intK);
+          canvas.width = a.width * k;
+          canvas.height = a.height * k;
+          canvas.style.imageRendering = 'pixelated';
+        } else {
+          // 비정수 표시 박스(예: 4:3 화면의 720×405)에서 480×270 1배로 갇혀 글자·CG가 탁해지는 것을 막고,
+          // 실제 표시 해상도×dpr(상한 1920×1080)로 캔버스를 열어 네이티브 선명도로 렌더한다.
+          const nativeScale = Math.max(1, Math.min(box.width * dpr / a.width, box.height * dpr / a.height, 1920 / a.width, 1080 / a.height));
+          canvas.width = Math.max(a.width, Math.round(a.width * nativeScale));
+          canvas.height = Math.max(a.height, Math.round(a.height * nativeScale));
+          canvas.style.imageRendering = '';
+        }
+      } else {
+        canvas.width = a.width;
+        canvas.height = a.height;
+      }
       drawAnimaticFrame(canvas, a, images, 0, draw);
       started = lastNow = view.performance.now(); options.onReady();
       const tick = (now: number) => {

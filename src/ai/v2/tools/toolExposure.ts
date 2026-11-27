@@ -17,6 +17,8 @@ import type { Project } from "@/project/types";
 import type { PiAssistantV2Env } from "../shared/env";
 import { V2_TOOL_EN, type ToolTextEn } from "./toolTextEn";
 import { classifyRequest, describeIntent } from "../request/intent";
+import { HIGH_ONLY_OPENING_TOOLS, resolveOpeningPolicy } from "../request/openingPolicy";
+import { getOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { PLACE_BUILD_VERBS } from "../prompt/placeSpecs";
 import { composedWorldFor, gameVariation } from "../request/world";
 import { leanPromptFor } from "../request/readers";
@@ -32,7 +34,7 @@ export const V2_UP_FRONT: ReadonlySet<string> = new Set([
   "move_event", "remove_event", "patch_event_page", "add_event_page", "upsert_event", "run_scene_test",
   "create_transfer_pair", "place_chest", "declare_story_flag", "set_start_position", "set_field_hud",
   "simulate_battle", "upsert_actor", "upsert_troop", "set_encounter_table", "place_field_enemy", "define_ending", "set_project_settings",
-  "set_opening", "edit_opening", "list_opening_media", "author_opening_stage", "create_opening_animatic_shot", "place_opening_background", "place_opening_charset_actor",
+  "compose_opening", "set_opening", "edit_opening", "list_opening_media", "author_opening_stage", "create_opening_animatic_shot", "place_opening_background", "place_opening_charset_actor",
   "inspect_opening_timeline", "set_opening_caption", "author_forest_route",
   // TypeScript 이벤트 스크립트(2026-10-31, 새 도구라 기록 없음) — 로직 낱말(SCRIPT_TIER)이 맞는 요청에서만 처음부터 싣는다.
   // 쓰기 둘만 싣는다(2026-10-31 A/B: get_script_api·check_script·dry_run_script 를 처음부터 실으니 쓰기 앞뒤로 매번 불러 왕복이 늘었다).
@@ -241,30 +243,51 @@ export function exposeV2Tools(env: PiAssistantV2Env, allTools: readonly PiToolSh
   const task = String(env.request.task ?? "");
   // 이 요청을 어떻게 갈랐는지 실행 기록에 한 줄 남긴다 — 지시문·도구·검사가 모두 이 분류를 읽는다.
   const intent = classifyRequest(task, env.ctx.project);
-  env.emit({ type: "execution_status", name: "v2.request.intent", ok: true, summary: `요청 분류: ${describeIntent(intent)}`, data: { scope: intent.scope, wholeGame: intent.wholeGame, why: intent.why } });
+  const openingPolicy = resolveOpeningPolicy({
+    model: env.modelId ?? (env.request.model?.trim() || (env.request.provider ? getOhMyPiProvider(env.request.provider)?.defaultModel : undefined)),
+    canGenerateImages: env.canGenerateImages ?? Boolean(env.generateImage),
+  });
+  env.emit({
+    type: "execution_status",
+    name: "v2.request.intent",
+    ok: true,
+    summary: `요청 분류: ${describeIntent(intent)} · 오프닝 ${openingPolicy.tier}${openingPolicy.canGenerateImages ? " (+CG)" : " (무생성)"}`,
+    data: { scope: intent.scope, wholeGame: intent.wholeGame, why: intent.why, openingTier: openingPolicy.tier, canGenerateImages: openingPolicy.canGenerateImages },
+  });
   const lazyOn = intent.tools.game && !intent.audio.musicOnly;
   // 장소를 짓지 않는 요청(readers.leanPromptFor)이면 장소 짓기 동사도 필요할 때 싣는다 — 지시문의 장소 카드와 함께 빠진다.
   // 구성기 세계의 게임(world.ts)도 같다 — 장소는 build_places 가 짓는다. 버들항 전용 숲길 도구는 그 세계에 싣지 않는다(다른 칩셋 맵이 섞인다).
   const composedWorld = composedWorldFor(env.ctx.project, env.request.projectKey ? String(env.request.projectKey) : undefined, task);
   if (composedWorld) tools = tools.filter((t) => !BEODEUL_ONLY_TOOLS.has(t.name));
+  // 오프닝 모델 등급·이미지 생성 유무에 맞춘 도구 걸러내기:
+  // - medium 등급: 다중 레이어 애니메틱 연출 도구는 기본 노출/추천에서 빼서 엔진 무대·단순 map-view·그림책 경로에 집중시킨다.
+  // - 이미지 생성 불가(오프닝 단독 요청): generate_art 를 노출에서 빼서 로그인 오류 헛시도를 차단한다.
+  const hideForOpeningPolicy = (name: string): boolean =>
+    (!openingPolicy.allowAnimaticDirecting && HIGH_ONLY_OPENING_TOOLS.has(name))
+    || (!openingPolicy.canGenerateImages && !intent.wholeGame && name === "generate_art");
   const lean = leanPromptFor(env.ctx.project, task);
   const placeLazy = lean || composedWorld;
   // 작은 일(고치기·질문·게임 하나를 잇지 않는 이어 하기): 그 일이 쓸 도구만 처음부터 싣는다(request/topics.ts smallJobTools). 청사진·장소 짓기·오프닝·엔딩 도구는 필요할 때.
   // 실측(2026-11-11): 「이 NPC를 두 칸 왼쪽으로 옮겨 줘」에 도구 43개·9.7만 자가 처음부터 실렸고 첫 도구가 write_blueprint 였다.
   const order = lean && !intent.wholeGame && intent.scope !== "audio" ? new Map(intent.smallTools.map((name, i) => [name, i] as const)) : undefined;
   if (order) tools = [...tools].sort((x, y) => (order.get(x.name) ?? order.size) - (order.get(y.name) ?? order.size));
-  const small = order && withinSmallBudget(tools.filter((t) => order.has(t.name)));
+  const small = order && withinSmallBudget(tools.filter((t) => order.has(t.name) && !hideForOpeningPolicy(t.name)));
   // 게임 하나: 청사진의 단계가 다 지어져 있으면 잇는 턴(고치는 도구만 처음부터), 아니면 짓는 턴(안 쓰는 것 · 드물게 쓰는 큰 것만 뒤로). 요청 글이 아니라 프로젝트 상태로 가른다.
   const repairTurn = intent.wholeGame && pathBuilt(env.ctx.project);
   const later = (name: string) => repairTurn ? !WHOLE_GAME_REPAIR.has(name) : intent.wholeGame && WHOLE_GAME_LATER.has(name);
   // 뒤로 돌린 v2 동사도 load_tools 설명의 앞쪽 목록(이름 — 한 줄 뜻)에 든다.
-  const offeredSet = new Set([...intent.tools.extra, ...(placeLazy ? PLACE_BUILD_VERBS : []), ...(intent.wholeGame ? tools.filter((t) => !getTool(t.name) && later(t.name)).map((t) => t.name) : [])]);
+  const offeredSet = new Set([
+    ...intent.tools.extra,
+    ...(openingPolicy.allowGeneratedOpeningCg && intent.topics.includes("opening") ? ["generate_art"] : []),
+    ...(placeLazy ? PLACE_BUILD_VERBS : []),
+    ...(intent.wholeGame ? tools.filter((t) => !getTool(t.name) && later(t.name)).map((t) => t.name) : []),
+  ].filter((name) => !hideForOpeningPolicy(name)));
   // 처음부터 = 이 요청 묶음에 들었고(offered) 기록에서 쓴 것(V2_UP_FRONT). 묶음 밖 도구(v2ToolPool 로만 들어온 것)는 늘 필요할 때.
   // 변주 카드의 구조 축이 이름 댄 도구(decks.ts AxisOption.tools)도 짓는 턴에 처음부터 싣는다 — 카드가 «이 도구로 지어라» 라고 하는데 목록에 없으면 모델이 찾지 않는다
   // (2026-11-26 variant-remeasure 호러: «낮과 밤 두 번» 판이 configure_time_system 을 한 번도 싣지 않았다).
   const structureTools = new Set(intent.wholeGame && !repairTurn ? gameVariation(env.ctx.project, env.request.projectKey ? String(env.request.projectKey) : undefined, task).variation?.structure?.tools ?? [] : []);
   const pinned = (name: string) => intent.wholeGame && (WHOLE_GAME_ALWAYS.has(name) || structureTools.has(name) || (repairTurn ? WHOLE_GAME_REPAIR.has(name) : WHOLE_GAME_FIRST_BUILD.has(name)));
-  const isLazy = (t: PiToolShape) => small ? !small.has(t.name) : pinned(t.name) ? false : later(t.name) || (placeLazy && PLACE_BUILD_VERBS.has(t.name))
+  const isLazy = (t: PiToolShape) => hideForOpeningPolicy(t.name) ? true : small ? !small.has(t.name) : pinned(t.name) ? false : later(t.name) || (placeLazy && PLACE_BUILD_VERBS.has(t.name))
     || (lazyOn && !!getTool(t.name) && (!V2_UP_FRONT.has(t.name) || !offeredSet.has(t.name)));
   const seen: ShapeIndex = new Map();
   const upFront = tools.filter((t) => !isLazy(t)).map((t) => collapseRepeats(englishToolCopy(t, true), seen));

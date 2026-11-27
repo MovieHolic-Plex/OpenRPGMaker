@@ -220,7 +220,9 @@ function forkBranches(value: unknown, path: string, changes: string[], depth = 0
   }
   let rec = value as Record<string, unknown>;
   // 대사 명령의 다른 이름(RPG Maker·다른 엔진 습관) — showText/message/say → text, 글은 body.
-  if (typeof rec.kind === "string" && TEXT_KINDS.has(rec.kind) && (typeof rec.text === "string" || typeof rec.message === "string" || typeof rec.body === "string")) {
+  // 단, 컷신 비트(beats[...])에서는 {kind:"say", text}가 정식 스키마(CutsceneBeat)이므로 건드리지 않는다.
+  const inCutsceneBeats = /(?:^|\.)beats\[\d+\]/u.test(path);
+  if (typeof rec.kind === "string" && TEXT_KINDS.has(rec.kind) && !(inCutsceneBeats && rec.kind === "say") && (typeof rec.text === "string" || typeof rec.message === "string" || typeof rec.body === "string")) {
     const body = typeof rec.body === "string" ? rec.body : typeof rec.text === "string" ? rec.text : rec.message;
     const { text: _t, message: _m, ...rest } = rec;
     changes.push(`${path || "(top level)"}: {kind:"${rec.kind}"} → {kind:"text", body} (a line of dialogue is kind "text" with "body")`);
