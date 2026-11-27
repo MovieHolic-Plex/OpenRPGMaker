@@ -1,6 +1,8 @@
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { targetScopeForCommand } from "@/battle/battleTargetResolver";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
+import { findBattlerNode } from "@/player/battleFieldDom";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
 import { store } from "@/project/store";
 import type { ItemRecord } from "@/project/types";
@@ -154,12 +156,20 @@ function hasRecovery(cost: { readonly flat?: number; readonly percentMax?: numbe
   return Boolean(cost && ((cost.flat ?? 0) > 0 || (cost.percentMax ?? 0) > 0));
 }
 
+function isEnemyScopedItem(item: Partial<ItemRecord>): boolean {
+  if (item.scope === "enemy") return true;
+  if (item.id) {
+    const resolved = targetScopeForCommand(store.getCurrent(), { kind: "item", itemId: item.id });
+    return resolved === "enemy" || resolved === "allEnemies";
+  }
+  return false;
+}
+
 export function classifyBattleItem(item: Partial<ItemRecord> | undefined): BattleItemVisualKind {
   if (!item) return "hp_potion";
   const name = `${item.name ?? ""} ${item.id ?? ""} ${item.iconResourceId ?? ""}`;
   if (item.onlyEffectiveOnDeadActors || /부활|불사조|소생|revive|phoenix/i.test(name)) return "revive";
-  const enemyScoped = item.scope === "enemy";
-  if (enemyScoped) {
+  if (isEnemyScopedItem(item)) {
     if (/독|마비|수면|혼란|침묵|연막|poison|vial|dart|smoke|sleep/i.test(name)) return "throw_status";
     return "throw_damage";
   }
@@ -321,15 +331,17 @@ export function animateBattleItemMotion(
     const fieldRect = field.getBoundingClientRect();
     const userRect = user.getBoundingClientRect();
     const target = entry.targetId
-      ? field.querySelector<HTMLElement>(`.battle-enemy[data-battler-id="${CSS.escape(entry.targetId)}"]`)
+      ? findBattlerNode(field, entry.targetId)
       : field.querySelector<HTMLElement>(".battle-enemy:not(.defeated)");
     const targetRect = target?.getBoundingClientRect();
     if (!fieldRect.width || !userRect.width || !targetRect?.width) return;
 
-    const sx = userRect.left - fieldRect.left + userRect.width * 0.25;
-    const sy = userRect.top - fieldRect.top + userRect.height * 0.44;
-    const ex = targetRect.left - fieldRect.left + targetRect.width * 0.5;
-    const ey = targetRect.top - fieldRect.top + targetRect.height * 0.46;
+    const scaleX = field.offsetWidth > 0 ? fieldRect.width / field.offsetWidth : 1;
+    const scaleY = field.offsetHeight > 0 ? fieldRect.height / field.offsetHeight : 1;
+    const sx = (userRect.left - fieldRect.left + userRect.width * 0.25) / scaleX;
+    const sy = (userRect.top - fieldRect.top + userRect.height * 0.44) / scaleY;
+    const ex = (targetRect.left - fieldRect.left + targetRect.width * 0.5) / scaleX;
+    const ey = (targetRect.top - fieldRect.top + targetRect.height * 0.46) / scaleY;
     const mx = (sx + ex) * 0.5;
     const my = Math.min(sy, ey) - 34;
 

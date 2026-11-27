@@ -296,6 +296,10 @@ def main():
         if cid != "actor1-0":
             load_orig_git(cid, "attack", base_rev=base_rev)
             load_orig_git(cid, "front", base_rev=base_rev)
+            if ROLE_META.get(cid, ("sword", "cyan"))[0] == "fan":
+                for ct, _ in CAST_TYPES:
+                    for step in (1, 2):
+                        load_orig_git(cid, f"cast_{ct}_{step}", base_rev=base_rev)
     total = 0
     for cid in targets:
         updated = retouch_cast_character(cid, dry_run=dry, base_rev=base_rev)
