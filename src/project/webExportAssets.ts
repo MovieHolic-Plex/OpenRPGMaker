@@ -336,13 +336,14 @@ function collectReferencedCustomPropResourceIds(project: Project): readonly stri
     if (!Array.isArray(commands)) return;
     for (const raw of commands) {
       if (!raw || typeof raw !== "object") continue;
-      const cmd = raw as { kind?: unknown; animationId?: unknown; then?: unknown[]; else?: unknown[]; cases?: Array<{ commands?: unknown[] }> };
+      const cmd = raw as { kind?: unknown; animationId?: unknown; then?: unknown[]; else?: unknown[]; body?: unknown[]; cases?: Array<{ commands?: unknown[] }> };
       if (cmd.kind === "showAnimation" && typeof cmd.animationId === "string") {
         const fx = parseFieldFxId(cmd.animationId, project);
         if (fx?.kind === "prop") addProp(fx.propId);
       }
       if (Array.isArray(cmd.then)) scanCommands(cmd.then);
       if (Array.isArray(cmd.else)) scanCommands(cmd.else);
+      if (Array.isArray(cmd.body)) scanCommands(cmd.body);
       if (Array.isArray(cmd.cases)) {
         for (const c of cmd.cases) scanCommands(c?.commands);
       }
@@ -355,8 +356,10 @@ function collectReferencedCustomPropResourceIds(project: Project): readonly stri
         if (inter?.kind === "container" && inter.propId) addProp(inter.propId);
         scanCommands(page.commands);
       }
+      scanCommands(event.commands);
     }
   }
+  for (const common of project.commonEvents ?? []) scanCommands(common.commands);
   return [...resourceIds];
 }
 
@@ -416,7 +419,7 @@ function interactivePropStripPaths(project: Project): readonly string[] {
     if (!Array.isArray(commands)) return;
     for (const raw of commands) {
       if (!raw || typeof raw !== "object") continue;
-      const cmd = raw as { kind?: unknown; animationId?: unknown; then?: unknown[]; else?: unknown[]; cases?: Array<{ commands?: unknown[] }> };
+      const cmd = raw as { kind?: unknown; animationId?: unknown; then?: unknown[]; else?: unknown[]; body?: unknown[]; cases?: Array<{ commands?: unknown[] }> };
       if (cmd.kind === "showAnimation" && typeof cmd.animationId === "string") {
         const fx = parseFieldFxId(cmd.animationId);
         if (fx?.kind === "prop") addProp(fx.propId);
@@ -430,6 +433,7 @@ function interactivePropStripPaths(project: Project): readonly string[] {
       }
       if (Array.isArray(cmd.then)) scanCommands(cmd.then, eventName, era, allEras);
       if (Array.isArray(cmd.else)) scanCommands(cmd.else, eventName, era, allEras);
+      if (Array.isArray(cmd.body)) scanCommands(cmd.body, eventName, era, allEras);
       if (Array.isArray(cmd.cases)) {
         for (const c of cmd.cases) scanCommands(c?.commands, eventName, era, allEras);
       }
