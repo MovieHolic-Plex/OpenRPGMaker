@@ -346,7 +346,8 @@ export class PlayScene extends PhaserRuntime.Scene implements PlaySceneContext {
     syncPartyFollowers(project, this.session);
     syncFollowerSprites(this);
     this.centerCamera();
-    void this.syncMinimap();
+    if (this.sys?.isActive()) void this.syncMinimap();
+    else this.events.once("create", () => void this.syncMinimap());
     this.worldAtlasController = createWorldAtlasController(this);
     const destroyAtlas = (): void => { this.worldAtlasController?.destroy(); this.worldAtlasController = null; };
     this.events.once('shutdown', destroyAtlas);

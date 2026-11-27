@@ -19,7 +19,7 @@ function nowMs(): number {
     : 0;
 }
 
-function upsertOverlay(host: HTMLElement, kind: TransferTransitionKind): HTMLElement {
+function upsertOverlay(host: HTMLElement, kind: TransferTransitionKind, ownerToken?: string): HTMLElement {
   const existing = host.querySelector(`[data-testid='${TRANSITION_TESTID}']`);
   const overlay = existing instanceof HTMLElement ? existing : document.createElement("div");
   if (!(existing instanceof HTMLElement)) {
@@ -28,11 +28,21 @@ function upsertOverlay(host: HTMLElement, kind: TransferTransitionKind): HTMLEle
   }
   overlay.className = `runtime-transition-overlay runtime-transition-${kind}`;
   overlay.dataset.kind = kind;
+  if (ownerToken !== undefined) overlay.dataset.ownerToken = ownerToken;
+  else delete overlay.dataset.ownerToken;
   return overlay;
 }
 
 function removeOverlay(host: HTMLElement): void {
   host.querySelector(`[data-testid='${TRANSITION_TESTID}']`)?.remove();
+}
+
+/** 취소된 전이가 자신이 만든 오버레이만 안전하게 제거한다(새 전이가 재사용 중이면 건드리지 않는다). */
+export function removeOwnedTransitionOverlay(host: HTMLElement, ownerToken: string): void {
+  const overlay = host.querySelector(`[data-testid='${TRANSITION_TESTID}']`);
+  if (overlay instanceof HTMLElement && overlay.dataset.ownerToken === ownerToken) {
+    overlay.remove();
+  }
 }
 
 // 한 단계(in/out)를 지정 시간 동안 애니메이션하고 완료 시 resolve.
@@ -41,9 +51,10 @@ export function runTransitionPhase(
   host: HTMLElement,
   kind: TransferTransitionKind,
   phase: "in" | "out",
-  durationMs: number
+  durationMs: number,
+  ownerToken?: string,
 ): Promise<void> {
-  const overlay = upsertOverlay(host, kind);
+  const overlay = upsertOverlay(host, kind, ownerToken);
   const render = (progress: number): void => {
     if (kind === "mosaic") {
       renderMosaic(overlay, progress, phase);

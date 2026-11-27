@@ -588,8 +588,15 @@ export class AudioEngine {
     }
     try {
       const context = new Ctor();
-      if (context.state === "suspended" && typeof context.resume === "function") void context.resume();
       this.audioContext = context;
+      if (context.state === "suspended") {
+        if (this.unlockRequested) this.installUnlockListeners();
+        if (typeof context.resume === "function") {
+          void context.resume()
+            .then(() => this.maybeRemoveUnlockListeners())
+            .catch(() => {});
+        }
+      }
       return context;
     } catch {
       this.webAudioUnavailable = true;

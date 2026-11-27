@@ -20,7 +20,7 @@ import { dialogueHost } from "@/player/playSceneDom";
 import { flashPeakMs, holdScreenFlash, screenCoverRemainingMs } from "@/player/playSceneScreenEffects";
 import { restoreTintAfterFlash } from "@/player/screen/flashTint";
 import { parseTransitionKind, usesOverlayTransition } from "@/player/transitions/transitionModel";
-import { runTransitionPhase } from "@/player/transitions/transitionOverlay";
+import { removeOwnedTransitionOverlay, runTransitionPhase } from "@/player/transitions/transitionOverlay";
 import type { PlaySceneContext, TransferRequest } from "@/player/playSceneTypes";
 import { removeFollowerFromSession, resetFollowerTrailNearPlayer, resolveCompanionRules } from "@/project/followers";
 import { syncFollowerSprites } from "@/player/playSceneFollowers";
@@ -74,10 +74,28 @@ type FadeColor = {
 export const TRANSFER_FADE_DURATION_MS = 500;
 
 const transferGenerations = new WeakMap<object, number>();
+const pendingCameraWaiters = new WeakMap<object, Set<() => void>>();
 
-/** 진행 중인 비동기 맵 전이를 무효화한다(세이브 로드·씬 종료 시 구 전이가 새 세션을 덮어쓰지 않게). */
+function registerCameraWaiter(scene: object, settle: () => void): () => void {
+  let set = pendingCameraWaiters.get(scene);
+  if (!set) {
+    set = new Set();
+    pendingCameraWaiters.set(scene, set);
+  }
+  set.add(settle);
+  return () => {
+    set?.delete(settle);
+  };
+}
+
+/** 진행 중인 비동기 맵 전이와 대기 중인 카메라 효과(페이드·흔들림)를 무효화/해제한다. */
 export function invalidateSceneTransfers(scene: object): void {
   transferGenerations.set(scene, (transferGenerations.get(scene) ?? 0) + 1);
+  const waiters = pendingCameraWaiters.get(scene);
+  if (waiters && waiters.size > 0) {
+    for (const settle of [...waiters]) settle();
+    waiters.clear();
+  }
 }
 
 export async function transferTo(scene: PlaySceneContext, request: TransferRequest): Promise<void> {
@@ -106,10 +124,11 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
   const overlayTransition = usesOverlayTransition(transition);
   const host = overlayTransition ? dialogueHost(scene) : undefined;
   const fadeColor = overlayTransition ? null : transferFadeColor(request.fade ?? "black");
+  const overlayOwner = String(generation);
   // 새 맵 파일 받기는 페이드아웃과 같이 시작한다 — 다 어두워진 뒤에야 받기 시작하면 그만큼 검은 화면이 길어진다.
   prefetchMapAssets(project, request.mapId);
   if (host) {
-    await runTransitionPhase(host, transition, "out", TRANSFER_FADE_DURATION_MS);
+    await runTransitionPhase(host, transition, "out", TRANSFER_FADE_DURATION_MS, overlayOwner);
   } else if (fadeColor) {
     // 이벤트가 「화면 효과 fadeOut」으로 이미 화면을 덮었으면(전투 패배 → 감방, 붙잡힘 연출) 그 아래 카메라 페이드는
     // 보이지 않는 채 시간만 쓴다 — 덮는 트윈이 끝나기만 기다린다.
@@ -117,10 +136,16 @@ export async function transferTo(scene: PlaySceneContext, request: TransferReque
     if (cover === null) await fadeCamera(scene, "out", fadeColor);
     else if (cover > 0) await new Promise<void>((done) => { setTimeout(done, cover); });
   }
-  if (!stillValid()) return;
+  if (!stillValid()) {
+    if (host) removeOwnedTransitionOverlay(host, overlayOwner);
+    return;
+  }
   // 웹 판본: 새 맵 그림·소리가 다 오기 전에는 화면을 밝히지 않는다(어두운 채로 기다린다, scenePreload.ts).
   await holdForMapAssets(dialogueHost(scene), project, request.mapId);
-  if (!stillValid()) return;
+  if (!stillValid()) {
+    if (host) removeOwnedTransitionOverlay(host, overlayOwner);
+    return;
+  }
   // Resolve once against destination runtime terrain and destination-scoped event positions.
   // Queue this final landing, not the requested tile or the source map's position overlay.
   const destinationMap = runtimeMap(targetMap, scene.session);
@@ -244,15 +269,18 @@ export function fadeCamera(scene: PlaySceneContext, phase: "in" | "out", color: 
   armDialogueConfirmRelease();
   return new Promise((resolve) => {
     let settled = false;
+    let unregisterWaiter: (() => void) | undefined;
     const eventName = phase === "out" ? "camerafadeoutcomplete" : "camerafadeincomplete";
     const finish = (): void => {
       if (settled) return;
       settled = true;
+      unregisterWaiter?.();
       scene.cameras?.main?.off?.(eventName, finish);
       scene.events?.off("shutdown", finish);
       scene.events?.off("destroy", finish);
       resolve();
     };
+    unregisterWaiter = registerCameraWaiter(scene, finish);
     scene.cameras.main.once(eventName, finish);
     scene.events?.once("shutdown", finish);
     scene.events?.once("destroy", finish);
@@ -337,14 +365,17 @@ const SHAKE_MAX_RATIO = 0.1;
 export function shakeCamera(scene: PlaySceneContext, step: ShakeScreenStep): Promise<void> {
   return new Promise((resolve) => {
     let settled = false;
+    let unregisterWaiter: (() => void) | undefined;
     const finish = (): void => {
       if (settled) return;
       settled = true;
+      unregisterWaiter?.();
       scene.cameras?.main?.off?.("camerashakecomplete", finish);
       scene.events?.off("shutdown", finish);
       scene.events?.off("destroy", finish);
       resolve();
     };
+    unregisterWaiter = registerCameraWaiter(scene, finish);
     scene.cameras.main.once("camerashakecomplete", finish);
     scene.events?.once("shutdown", finish);
     scene.events?.once("destroy", finish);

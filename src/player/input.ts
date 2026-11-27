@@ -233,6 +233,9 @@ export class RuntimeKeyHoldTracker {
     this.pendingActionEdge = false;
     this.pendingAttackEdge = false;
     this.pendingSkillEdge = false;
+  }
+
+  clearPendingCombatSwitchEdges(): void {
     this.pendingSkillCycleEdge = false;
     this.pendingLeaderSwitchEdge = false;
   }
@@ -353,6 +356,7 @@ export class Input {
   setEnabled(v: boolean): void {
     this.enabled = v;
     this.runtimeKeys.clearPendingActionEdge();
+    this.runtimeKeys.clearPendingCombatSwitchEdges();
     // 닫히는 순간과 열리는 순간 모두 비운다 — 이벤트·전투 중에 누른 방향이 끝난 뒤 한 걸음을
     // 만들면 안 된다. 계속 누르고 있는 키는 눌림(directions)으로 남아 열린 뒤 그대로 걷는다.
     this.runtimeKeys.clearTappedDirections();

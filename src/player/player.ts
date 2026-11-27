@@ -683,7 +683,11 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       firstScreen();
       bootDiag("ready", true, { detail: "boot complete" });
       signalReady();
-      clearStaleModuleReloadMark();
+      try {
+        clearStaleModuleReloadMark();
+      } catch (markError) {
+        console.error("[player] 모듈 재로드 표식 정리에 실패했습니다:", markError);
+      }
       try {
         options.onPlayBootSuccess?.();
       } catch (callbackError) {

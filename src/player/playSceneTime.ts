@@ -235,9 +235,15 @@ export function updateGameTime(scene: PlaySceneContext, deltaMs: number): void {
       scene.syncRuntimeState();
     };
     observeScheduledTimeTransition(scene, (onFailurePresented) => scene.sleepUntilMorning(onFailurePresented).then((ok) => {
+      // 세션이 교체되거나 씬이 비활성화되어 취소된 취침은 새 세션의 날짜 전환 오류로 보고하지 않는다.
+      if (scene.session !== activeSession || scene.sys?.isActive() === false) return true;
       if (!ok) rollback();
       return ok;
-    }, (error: unknown) => { rollback(); throw error; }), "forced-sleep");
+    }, (error: unknown) => {
+      if (scene.session !== activeSession || scene.sys?.isActive() === false) return true;
+      rollback();
+      throw error;
+    }), "forced-sleep");
     return;
   }
   // One frame is one transaction, including all crossed days and residual minutes.

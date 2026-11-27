@@ -34,7 +34,13 @@ import { STORAGE_PREFIX } from "@/util/appStorage";
 import { isEditorGameSuspended, resumeEditorGame, suspendEditorGame } from "@/editor/panels/editorGameSuspension";
 
 let modalRoot: HTMLElement | null = null;
+let openGeneration = 0;
 let returnFocusAfterEnemyTest: HTMLElement | null = null;
+
+function testPlaySaveNamespace(project: Project): string {
+  const identity = store.getProjectIdentity();
+  return `oprn-test-play:${identity.kind}:${identity.id}:${exportedProjectId(project)}`;
+}
 let removePlayWindowKeydown: (() => void) | null = null;
 let releaseEventTestSnapshot: (() => void) | null = null;
 // 테스트 실행 한 번 동안 최초 BGM 재생 실패를 한 번만 알리는 구독. 재생 실패는 콘솔 경고뿐이라 작성자는 「음악이 안 들린다」로만 겪었다.
@@ -142,12 +148,15 @@ export async function openTestPlayModal(
   const startProject = store.getCurrent();
   const startMapName = startProject.maps[startOverride?.mapId ?? startProject.startMapId]?.name;
   const body = openTestPlayShell(title, { runControls: true, mapName: startMapName });
+  const generation = openGeneration;
   const loading = mountPlayLoadingOverlay(body, "preparing");
   try {
     await store.whenBootNormalized();
+    if (generation !== openGeneration || !body.isConnected) return;
     if (store.hasUnsavedChanges()) {
       loading.setStage("saving");
       await store.flush();
+      if (generation !== openGeneration || !body.isConnected) return;
       loading.setStage("preparing");
     }
     const project = projectWithoutEventDrafts(store.getCurrent());
@@ -157,7 +166,12 @@ export async function openTestPlayModal(
     // 먼저 차지하고, dev 서버는 no-cache 라 같은 파일을 한 번 더 받는다.
     // Give the browser a paint before heavy player bootstrap.
     await yieldToRuntimeSurface();
-    setSaveSlotStorageNamespace(`oprn-test-play:${exportedProjectId(project)}`);
+    if (generation !== openGeneration || !body.isConnected) {
+      releaseEventTestSnapshot?.();
+      releaseEventTestSnapshot = null;
+      return;
+    }
+    setSaveSlotStorageNamespace(testPlaySaveNamespace(project));
     renderPlayer(body, {
       // Authoring surface, not the shipped export player — keep QA hooks/state mirrors.
       qaInstrumentation: true,
@@ -212,6 +226,7 @@ export async function openSelectedEventTestModal(mapId: MapId, eventId: string):
 
   const title = `이벤트 테스트 - ${eventDisplayName(preparation.event)}`;
   const body = openTestPlayShell(title);
+  const generation = openGeneration;
   const loading = mountPlayLoadingOverlay(body, "preparing");
   try {
     releaseEventTestSnapshot = store.beginReadOnlyProjectSnapshot(preparation.project);
@@ -220,7 +235,12 @@ export async function openSelectedEventTestModal(mapId: MapId, eventId: string):
     }
     if (preparation.spawn.diagnostic) toast(preparation.spawn.diagnostic, "info");
     await yieldToRuntimeSurface();
-    setSaveSlotStorageNamespace(`oprn-test-play:${exportedProjectId(preparation.project)}`);
+    if (generation !== openGeneration || !body.isConnected) {
+      releaseEventTestSnapshot?.();
+      releaseEventTestSnapshot = null;
+      return false;
+    }
+    setSaveSlotStorageNamespace(testPlaySaveNamespace(preparation.project));
     renderPlayer(body, {
       // Authoring surface, not the shipped export player — keep QA hooks/state mirrors.
       qaInstrumentation: true,
@@ -349,6 +369,7 @@ export async function openRandomTroopBattleTestModal(
 }
 
 export function closeTestPlayModal(): void {
+  openGeneration += 1;
   // 배틀 씬 컨트롤러를 먼저 정리한다. mountBattleScene 가 반환한 destroy() 만이
   // 200ms 틱 setInterval 과 window keydown 리스너를 해지한다. 이 단계를 빼면 전투
   // 테스트를 열 때마다 타이머/리스너가 영구 누수된다(renderPlayer 를 거치지 않으므로

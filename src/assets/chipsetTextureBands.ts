@@ -18,8 +18,8 @@ type BandTexture = {
 
 const chipsetTextureKeys = new Set<string>();
 const chipsetTileSizes = new Map<string, number>();
-/** 대형 시트(2048px 초과) 원본 비트맵 캐시 — 이미 띠 분할이 끝난 시트만 LRU 상한으로 정리한다. */
-const MAX_REMEMBERED_FULL_SHEETS = 24;
+/** 대형 시트(2048px 초과) 원본 비트맵 캐시 — 모든 번들 칩셋이 타일 이식에 쓰일 수 있도록 넉넉한 상한으로 유지하고 미분할 시트는 보호한다. */
+const MAX_REMEMBERED_FULL_SHEETS = 64;
 const fullSheets = new Map<string, SizedImage>();
 const firstBandCanvases = new Map<string, HTMLCanvasElement>();
 

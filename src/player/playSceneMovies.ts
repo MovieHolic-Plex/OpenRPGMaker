@@ -126,8 +126,9 @@ export function playMovieOverlay(
   // 브라우저 자동재생 정책상 play() 는 거부될 수 있다 — 그때는 error/타임아웃 경로가 정리한다.
   void video.play?.().catch(() => undefined);
 
-  // wait:false 는 즉시 다음 커맨드로 넘어가고, 영상은 오버레이째로 떨어져 계속 재생된다.
-  return step.wait ? done : Promise.resolve();
+  // wait:false 는 호출자(playSceneInterpreter)가 await 하지 않고 즉시 다음 커맨드로 넘어간다.
+  // done 프라미스를 그대로 돌려줘야 비대기 재생도 완료/세션 전환 시 리스너를 정확히 해제할 수 있다.
+  return done;
 }
 
 function movieHost(scene: PlaySceneContext): HTMLElement | undefined {
