@@ -1,9 +1,9 @@
 {
- "ranAt": "2026-11-27T10:08:59.353Z",
+ "ranAt": "2026-11-27T16:31:04.726Z",
  "canon": [
   {
    "path": "test/fixtures/eventEditorFormSurface.baseline.json",
-   "added": 536
+   "added": 537
   },
   {
    "path": "test/fixtures/eventEditorM2Surface.baseline.json",
@@ -23,7 +23,7 @@
   },
   {
    "path": "test/fixtures/eventEditorInteractionSurface.baseline.json",
-   "added": 20
+   "added": 18
   }
  ],
  "live": {
@@ -27652,55 +27652,6 @@
     "src/styles/event/command-forms/forms-6.css"
    ]
   },
-  "page3-anim-fallback-flash": {
-   "props": [
-    "animation",
-    "background",
-    "inset",
-    "opacity",
-    "position"
-   ],
-   "decls": [
-    "animation:none",
-    "animation:page3-anim-fallback-pulse 1.6s ease-in-out infinite",
-    "background:radial-gradient(circle at 50% 52%, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0) 62%)",
-    "inset:0",
-    "opacity:0.5",
-    "position:absolute"
-   ],
-   "sheets": [
-    "src/styles/event/command-forms/forms-6.css"
-   ]
-  },
-  "page3-anim-fallback-label": {
-   "props": [
-    "border",
-    "border-radius",
-    "bottom",
-    "color",
-    "font",
-    "left",
-    "padding",
-    "position",
-    "right",
-    "text-align"
-   ],
-   "decls": [
-    "border-radius:var(--radius-s)",
-    "border:1px dashed rgba(255, 255, 255, 0.42)",
-    "bottom:var(--space-2)",
-    "color:#f4f0e8",
-    "font:600 10px/1.3 var(--font-ui)",
-    "left:var(--space-2)",
-    "padding:3px 6px",
-    "position:absolute",
-    "right:var(--space-2)",
-    "text-align:center"
-   ],
-   "sheets": [
-    "src/styles/event/command-forms/forms-6.css"
-   ]
-  },
   "page3-anim-play-host": {
    "props": [
     "display",
@@ -30358,7 +30309,6 @@
     "border:6px solid transparent",
     "bottom:auto",
     "box-shadow:0 0 0 1px var(--accent, #6aa0ff) inset",
-    "box-shadow:0 0 0 1px var(--shop-accent), 0 0 14px var(--shop-accent-soft)",
     "box-shadow:0 0 0 2px var(--accent-subtle, #eef0fd)",
     "box-shadow:0 0 1.5cqw rgb(255 214 130 / 90%)",
     "box-shadow:0 0 5px rgb(255 214 130 / 90%)",
@@ -30372,6 +30322,7 @@
     "box-shadow:inset 0 0 0 var(--shop-line-width) var(--shop-accent)",
     "box-shadow:inset 0 0 0 var(--shop-line-width) var(--shop-line-strong)",
     "box-shadow:inset 2px 0 0 rgb(255, 230, 140)",
+    "box-shadow:inset 2px 0 0 var(--shop-accent)",
     "box-shadow:inset 2px 0 0 var(--status-edge-amber)",
     "box-shadow:inset 3px 0 #b95350",
     "box-shadow:inset 3px 0 0 var(--runtime-window-focus)",
@@ -33525,6 +33476,7 @@
   "gold",
   "inn-command-branch-summary",
   "inside-location",
+  "iprop-picker-host",
   "is-advanced",
   "is-level-advanced",
   "is-undetermined",
