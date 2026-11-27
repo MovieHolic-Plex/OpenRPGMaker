@@ -111,6 +111,8 @@
     "qa:standalone": "node scripts/qa-standalone-boot.mjs",
     "build:standalone:bundle": "vite build --config vite.standalone.config.ts --configLoader runner",
     "serve:project": "node scripts/oprn-serve.mjs",
+    "project:unpack": "node scripts/project-git-sync.mjs unpack",
+    "project:pack": "node scripts/project-git-sync.mjs pack",
     "harness": "vite-node --script scripts/harness.mts --",
     "worldmap-kit:sync": "node scripts/worldmap-kit-sync.mjs",
     "gen-kits:sync": "node scripts/gen-kits-sync.mjs",
