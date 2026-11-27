@@ -28,6 +28,7 @@ import { BESTIARY_DEFAULT_TITLE, bestiaryEntryKnown, bestiaryTitle, resolveBesti
 import { STORY_JOURNAL_DEFAULT_TITLE, storyJournal } from "@/project/storyJournal";
 import { resolveRestMenu } from "@/project/restMenu";
 import { formatGameClock } from "@/project/gameTime";
+import { runtimeUiLocale, runtimeUiText, type RuntimeUiKey } from "@/player/runtimeUiStrings";
 
 export const STATUS_MENU_COMMAND_IDS = FIELD_MENU_COMMANDS;
 
@@ -42,14 +43,14 @@ export type StatusMenuCommandGroupId = (typeof STATUS_MENU_COMMAND_GROUP_IDS)[nu
     이 순서가 곧 화면 순서이자 ↑↓ 순서가 된다. */
 const STATUS_MENU_COMMAND_GROUPS: readonly {
   readonly id: StatusMenuCommandGroupId;
-  readonly label: string;
+  readonly labelKey: RuntimeUiKey;
   readonly commandIds: readonly StatusMenuCommandId[];
 }[] = [
-  { id: "action", label: "행동", commandIds: ["items", "skills", "equipment"] },
-  { id: "party", label: "파티", commandIds: ["status", "row", "formation", "monsters"] },
-  { id: "record", label: "기록", commandIds: ["monster-dex", "region-map", "campaign-progress", "trainer-card", "battle-reports", "bestiary", "quests", "journal", "relationships", "gallery", "endings", "life-ledger", "backlog"] },
+  { id: "action", labelKey: "menu.group.action", commandIds: ["items", "skills", "equipment"] },
+  { id: "party", labelKey: "menu.group.party", commandIds: ["status", "row", "formation", "monsters"] },
+  { id: "record", labelKey: "menu.group.record", commandIds: ["monster-dex", "region-map", "campaign-progress", "trainer-card", "battle-reports", "bestiary", "quests", "journal", "relationships", "gallery", "endings", "life-ledger", "backlog"] },
   // to-title 은 진행 손실 위험이 있는 파괴적 액션이므로 항상 마지막.
-  { id: "system", label: "시스템", commandIds: ["save", "load", "rest", "wait", "options", "to-title"] },
+  { id: "system", labelKey: "menu.group.system", commandIds: ["save", "load", "rest", "wait", "options", "to-title"] },
 ];
 
 /** 되돌릴 수 없는(또는 진행을 잃는) 명령 — 레일에서 시각적으로 분리한다. */
@@ -70,21 +71,21 @@ export type StatusMenuRailId = StatusMenuCommandId | StatusMenuGroupEntryId;
 const COLLAPSED_GROUPS: readonly {
   readonly entryId: StatusMenuGroupEntryId;
   readonly groupId: StatusMenuCommandGroupId;
-  readonly label: string;
+  readonly labelKey: RuntimeUiKey;
 }[] = [
-  { entryId: "party-menu", groupId: "party", label: "파티 ▸" },
-  { entryId: "record-menu", groupId: "record", label: "기록 ▸" },
-  { entryId: "system-menu", groupId: "system", label: "시스템 ▸" },
+  { entryId: "party-menu", groupId: "party", labelKey: "menu.collapsed.party" },
+  { entryId: "record-menu", groupId: "record", labelKey: "menu.collapsed.record" },
+  { entryId: "system-menu", groupId: "system", labelKey: "menu.collapsed.system" },
 ];
 
 export function isStatusMenuGroupEntryId(value: StatusMenuRailId): value is StatusMenuGroupEntryId {
   return (STATUS_MENU_GROUP_ENTRY_IDS as readonly string[]).includes(value);
 }
 
-export function statusMenuGroupEntryLabel(entryId: StatusMenuGroupEntryId): string {
+export function statusMenuGroupEntryLabel(entryId: StatusMenuGroupEntryId, project?: Project): string {
   const group = COLLAPSED_GROUPS.find((candidate) => candidate.entryId === entryId);
   if (!group) throw new Error(`Unknown status menu group entry: ${entryId}`);
-  return group.label;
+  return runtimeUiText(project, group.labelKey);
 }
 
 /** 레일 구성은 스킨이 정한다 — collapsed(접힌 6항목) / flat(평탄 최대 10항목). */
@@ -160,14 +161,14 @@ export function listStatusMenuRailIds(project: Project, session: PlaySession): S
 
 export function statusMenuRailLabel(railId: StatusMenuRailId, waitModeEnabled: boolean, project?: Project): string {
   return isStatusMenuGroupEntryId(railId)
-    ? statusMenuGroupEntryLabel(railId)
+    ? statusMenuGroupEntryLabel(railId, project)
     : statusMenuCommandLabel(railId, waitModeEnabled, project);
 }
 
-export function statusMenuCommandGroupLabel(groupId: StatusMenuCommandGroupId): string {
+export function statusMenuCommandGroupLabel(groupId: StatusMenuCommandGroupId, project?: Project): string {
   const group = STATUS_MENU_COMMAND_GROUPS.find((candidate) => candidate.id === groupId);
   if (!group) throw new Error(`Unknown status menu command group: ${groupId}`);
-  return group.label;
+  return runtimeUiText(project, group.labelKey);
 }
 
 export type StatusMenuCommand = {
@@ -322,12 +323,14 @@ export function createPlayerStatusMenuSnapshot(
   const terms = resolveTerms(project);
   const hpTerm = terms.hp;
   const mpTerm = terms.mp;
+  const normalCondition = runtimeUiText(project, "menu.condition.normal");
+  const noClassLabel = runtimeUiText(project, "menu.class.none");
   const partyRows = usesMonsterParty(project) ? monsterPartyEntries(project, session).map((entry): PlayerStatusMenuPartyRow => {
     const hpRatio = vitalRatio(entry.hp, entry.maxHp);
     return {
       actorId: entry.instance.instanceId, monsterInstanceId: entry.instance.instanceId, resourceLabel: "PP",
       name: entry.name, levelLabel: `L${entry.instance.level}`, level: entry.instance.level, className: entry.typeLabel,
-      condition: entry.stateNames.join(" · ") || "정상", stateNames: entry.stateNames,
+      condition: entry.stateNames.join(" · ") || normalCondition, stateNames: entry.stateNames,
       faceResourceId: entry.species?.graphic.monsterResourceId,
       hpLabel: `HP ${entry.hp}/${entry.maxHp}`, hpValueLabel: `${entry.hp}/${entry.maxHp}`,
       mpLabel: `PP ${entry.pp.before}/${entry.pp.maximum}`, mpValueLabel: `${entry.pp.before}/${entry.pp.maximum}`,
@@ -346,9 +349,9 @@ export function createPlayerStatusMenuSnapshot(
       actorId,
       name: resolveActorName(session, actor),
       levelLabel: `L${level}`,
-      className: (classId ? classesById.get(classId)?.name : undefined) ?? "직업 없음",
+      className: (classId ? classesById.get(classId)?.name : undefined) ?? noClassLabel,
       level,
-      condition: stateNames.join(" · ") || "정상",
+      condition: stateNames.join(" · ") || normalCondition,
       faceResourceId: resolveActorFaceResourceId(session, actor, project) ?? defaultActorFaceResourceId(actor),
       hpLabel: vitals ? `${hpTerm} ${vitals.hp}/${vitals.maxHp}` : `${hpTerm} 0/0`,
       mpLabel: vitals ? `${mpTerm} ${vitals.mp}/${vitals.maxMp}` : `${mpTerm} 0/0`,
@@ -392,7 +395,9 @@ export function createPlayerStatusMenuSnapshot(
     // 예전에는 부팅 시각 기준 벽시계(performance.now - playStartedAt)로 셌으므로 불러온 판이 0:00 이었다.
     timeLabel: formatPlayClock(session.playTimeSeconds ?? 0),
     chapterLabel: currentChapterLabel(project, session),
-    emptyPartyLabel: partyRows.length === 0 ? usesMonsterParty(project) ? "아직 동료가 없습니다" : "파티원이 없습니다" : null,
+    emptyPartyLabel: partyRows.length === 0
+      ? runtimeUiText(project, usesMonsterParty(project) ? "menu.emptyMonsterParty" : "menu.emptyParty")
+      : null,
   };
 }
 
@@ -409,7 +414,9 @@ function relationshipOverview(project: Project, session: PlaySession, leadName: 
       return { key: entry.key, name: entry.displayName ?? entry.key, hearts: "♥".repeat(filled) + "♡".repeat(5 - filled), value: entry.value, ...(entry.label ? { tierLabel: entry.label } : {}), ...(note ? { note } : {}) };
     });
   const timeLine = socialLoopSummary(project, session);
-  const cleanLeadName = /^(?:주인공|모험가|배우\s*\d+|Hero|Actor\s*\d+)$/iu.test(leadName.trim()) ? "한결" : leadName;
+  const cleanLeadName = /^(?:주인공|모험가|배우\s*\d+|Hero|Actor\s*\d+)$/iu.test(leadName.trim())
+    ? (runtimeUiLocale(project) === "ko" ? "한결" : leadName)
+    : leadName;
   return { leadName: cleanLeadName, ...(timeLine ? { timeLine } : {}), rows };
 }
 
@@ -428,37 +435,63 @@ export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeE
     || (resolveVnExtras(project) !== undefined && ((commandId === "gallery" && authored.label === DEFAULT_GALLERY_LABEL) || (commandId === "endings" && authored.label === "엔딩")))
   );
   if (authored && !defaultName) return authored.label;
+  // Non-VN projects without an explicit project.meta.language keep legacy Korean menu labels
+  // even if oprnDialogueSystem.language is set (preserves vnRepair legacy contract).
+  const uiProject = project && !project.meta.language && !resolveVnExtras(project) ? undefined : project;
+  const locale = runtimeUiLocale(uiProject);
   switch (commandId) {
-    case 'trainer-card': return '원정 수첩';
-    case "items": return "아이템";
-    case "skills": return "스킬";
-    case "equipment": return "장비";
-    case "monsters": return "몬스터";
-    case "monster-dex": return "몬스터 도감";
-    case "region-map": return "지역 지도";
-    case "campaign-progress": return "배지·목표";
-    case "save": return "저장";
-    case "load": return "로드";
-    case "status": return "상태";
+    case "trainer-card": return runtimeUiText(uiProject, "menu.cmd.trainerCard");
+    case "items": return runtimeUiText(uiProject, "menu.cmd.items");
+    case "skills": return runtimeUiText(uiProject, "menu.cmd.skills");
+    case "equipment": return runtimeUiText(uiProject, "menu.cmd.equipment");
+    case "monsters": return runtimeUiText(uiProject, "menu.cmd.monsters");
+    case "monster-dex": return runtimeUiText(uiProject, "menu.cmd.monsterDex");
+    case "region-map": return runtimeUiText(uiProject, "menu.cmd.regionMap");
+    case "campaign-progress": return runtimeUiText(uiProject, "menu.cmd.campaignProgress");
+    case "save": return runtimeUiText(uiProject, "menu.cmd.save");
+    case "load": return runtimeUiText(uiProject, "menu.cmd.load");
+    case "status": return runtimeUiText(uiProject, "menu.cmd.status");
     // "열" 한 글자는 "열다"로 읽혀 무슨 기능인지 알 수 없다(전열/후열 교체).
-    case "row": return "열 바꾸기";
-    case "formation": return "진형";
-    case "battle-reports": return "전투 기록";
-    case "bestiary": return project ? bestiaryTitle(project) : BESTIARY_DEFAULT_TITLE;
-    case "quests": return "임무";
-    case "journal": return (project && storyJournal(project)?.title) || STORY_JOURNAL_DEFAULT_TITLE;
-    case "relationships": return "관계";
-    case "gallery": return project && resolveVnExtras(project)?.gallery.enabled ? vnGalleryLabel(project) : galleryMenuLabel(project);
-    case "endings": return vnUiText(vnExtrasLanguage(project), "menu.endings");
-    case "life-ledger": return "생활 장부";
-    case "backlog": return dialogueUiText(resolveDialogueSystem(project), "menu.backlog");
+    case "row": return runtimeUiText(uiProject, "menu.cmd.row");
+    case "formation": return runtimeUiText(uiProject, "menu.cmd.formation");
+    case "battle-reports": return runtimeUiText(uiProject, "menu.cmd.battleReports");
+    case "bestiary": {
+      const title = project ? bestiaryTitle(project) : BESTIARY_DEFAULT_TITLE;
+      return locale !== "ko" && title === BESTIARY_DEFAULT_TITLE
+        ? runtimeUiText(uiProject, "menu.cmd.bestiary")
+        : title;
+    }
+    case "quests": return runtimeUiText(uiProject, "menu.cmd.quests");
+    case "journal": {
+      const title = (project && storyJournal(project)?.title) || STORY_JOURNAL_DEFAULT_TITLE;
+      return locale !== "ko" && title === STORY_JOURNAL_DEFAULT_TITLE
+        ? runtimeUiText(uiProject, "menu.cmd.journal")
+        : title;
+    }
+    case "relationships": return runtimeUiText(uiProject, "menu.cmd.relationships");
+    case "gallery": {
+      if (project && resolveVnExtras(project)?.gallery.enabled) return vnGalleryLabel(project);
+      const label = galleryMenuLabel(project);
+      return locale !== "ko" && label === DEFAULT_GALLERY_LABEL
+        ? runtimeUiText(uiProject, "menu.cmd.gallery")
+        : label;
+    }
+    case "endings":
+      return project?.meta.oprnVnExtras || project?.meta.oprnDialogueSystem
+        ? vnUiText(vnExtrasLanguage(project), "menu.endings")
+        : runtimeUiText(uiProject, "menu.cmd.endings");
+    case "life-ledger": return runtimeUiText(uiProject, "menu.cmd.lifeLedger");
+    case "backlog":
+      return project?.meta.oprnDialogueSystem
+        ? dialogueUiText(resolveDialogueSystem(project), "menu.backlog")
+        : runtimeUiText(uiProject, "menu.cmd.backlog");
     // 레일 폭(60px)이 좁아 "전투 대기 ON" 은 말줄임으로 잘리고, 레일을 넓히면
     // 오른쪽 상세 패널이 좁아져 값이 잘린다. 라벨은 짧게 두고 무엇이 대기하는지는
     // 상세 패널 제목("전투 대기")과 설명이 알려준다.
-    case "options": return "설정";
-    case "rest": return "쉬기";
-    case "wait": return waitModeEnabled ? "대기 ON" : "대기 OFF";
-    case "to-title": return "타이틀";
+    case "options": return runtimeUiText(uiProject, "menu.cmd.options");
+    case "rest": return runtimeUiText(uiProject, "menu.cmd.rest");
+    case "wait": return runtimeUiText(uiProject, waitModeEnabled ? "menu.cmd.waitOn" : "menu.cmd.waitOff");
+    case "to-title": return runtimeUiText(uiProject, "menu.cmd.toTitle");
     default: return assertNever(commandId);
   }
 }
@@ -521,11 +554,11 @@ export function statusMenuCommandSummary(
 ): string {
   const monsterParty = usesMonsterParty(project);
   const party = monsterParty ? monsterPartyEntries(project, session).length : session.partyActorIds.length;
-  const countLabel = `${party}${monsterParty ? "마리" : "명"}`;
+  const countLabel = runtimeUiText(project, monsterParty ? "menu.summary.monsters" : "menu.summary.members", party);
   switch (id) {
-    case 'trainer-card': return project.meta.author || '원정 기록';
+    case "trainer-card": return project.meta.author || runtimeUiText(project, "menu.summary.trainerRecord");
     case "items":
-      return `${Object.values(session.inventory).filter((count) => (count ?? 0) > 0).length}종`;
+      return runtimeUiText(project, "menu.summary.itemKinds", Object.values(session.inventory).filter((count) => (count ?? 0) > 0).length);
     case "skills":
     case "equipment":
     case "status":
@@ -533,29 +566,29 @@ export function statusMenuCommandSummary(
     case "formation":
       return countLabel;
     case "monsters":
-      return `${session.monsterParty.length}마리`;
+      return runtimeUiText(project, "menu.summary.monsters", session.monsterParty.length);
     case "monster-dex": {
       const ids = monsterDexSpeciesIds(project);
-      return `${ids.filter((id) => monsterJournalEntry(session, id).caught).length}/${ids.length}종`;
+      return runtimeUiText(project, "menu.summary.dexProgress", ids.filter((id) => monsterJournalEntry(session, id).caught).length, ids.length);
     }
     case "region-map": return project.maps[session.currentMapId]?.name ?? "";
     case "campaign-progress": {
       const badges = monsterCampaign(project)?.badges ?? [];
-      return `${badges.filter((badge) => session.switches[badge.switchId] === true).length}/${badges.length}배지`;
+      return runtimeUiText(project, "menu.summary.badges", badges.filter((badge) => session.switches[badge.switchId] === true).length, badges.length);
     }
     case "battle-reports":
-      return `${session.battleReports?.length ?? 0}전투`;
+      return runtimeUiText(project, "menu.summary.battles", session.battleReports?.length ?? 0);
     case "quests":
-      return `${buildQuestLog(project, session).length}건`;
+      return runtimeUiText(project, "menu.summary.quests", buildQuestLog(project, session).length);
     case "journal":
-      return `${session.storyJournal?.length ?? 0}줄`;
+      return runtimeUiText(project, "menu.summary.journalLines", session.storyJournal?.length ?? 0);
     case "bestiary": {
       const entries = resolveBestiary(project)?.entries ?? [];
       return `${entries.filter((entry) => bestiaryEntryKnown(session, entry)).length}/${entries.length}`;
     }
     case "save":
     case "load":
-      return `${slots.filter((slot) => slot.kind === "present").length}/${Math.max(slots.length, 1)}칸`;
+      return runtimeUiText(project, "menu.summary.slots", slots.filter((slot) => slot.kind === "present").length, Math.max(slots.length, 1));
     case "rest":
       return session.gameTime ? formatGameClock(session.gameTime) : "";
     case "options":
@@ -567,7 +600,7 @@ export function statusMenuCommandSummary(
     case "gallery": {
       const unlocked = listGalleryUnlocks(session).length;
       // 연애 기본 구성/저작의 갤러리는 전체 칸 수를 알고 있어 「열림/전체」 로 보인다. 그 밖은 옛 표기.
-      if (!resolveVnExtras(project)?.gallery.enabled) return `${unlocked}장`;
+      if (!resolveVnExtras(project)?.gallery.enabled) return runtimeUiText(project, "menu.summary.galleryCount", unlocked);
       const total = galleryRows(listGallerySlots(project), session.galleryUnlocks ?? []).length;
       return vnUiText(vnExtrasLanguage(project), "gallery.progress", Math.min(unlocked, total), total);
     }
@@ -579,7 +612,9 @@ export function statusMenuCommandSummary(
       return dialogueUiText(resolveDialogueSystem(project), "backlog.count", normalizeBacklog(session.dialogueBacklog)?.length ?? 0);
     case "party-menu": {
       const crit = createPlayerStatusMenuSnapshot(project, session).partyRows.filter((row) => row.hpLevel === "crit").length;
-      return crit > 0 ? `위험 ${crit} · ${countLabel}` : `${countLabel} 양호`;
+      return crit > 0
+        ? runtimeUiText(project, "menu.summary.partyDanger", crit, countLabel)
+        : runtimeUiText(project, "menu.summary.partyGood", countLabel);
     }
     case "record-menu":
     case "system-menu":

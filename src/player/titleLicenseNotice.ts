@@ -1,24 +1,117 @@
 // player/titleLicenseNotice.ts
-// 타이틀 메뉴 「크레딧」 창. 플레이어에게는 짧은 한국어 크레딧(PLAYER_CREDITS)을 먼저 보여 주고,
-// 소재별 전체 출처 문서(public/assets/ATTRIBUTION.md — 개발 기록·파일 경로가 섞인 영문 원문)는 단추를 눌렀을 때만 연다.
-// 2026-11-14 폴른 스타 QA: 크레딧을 열면 548줄짜리 영문 개발 문서가 그대로 나왔다. CC BY 표기 의무(저작자·라이선스·출처·변경 사실)는
-// 짧은 글이 직접 지고, 전체 문서는 웹 내보내기 zip 이 항상 싣는다(src/project/webExportAssets.ts) — 단일 HTML 판본에서는 이 창이 유일한 입구다.
+// 타이틀 메뉴 「크레딧」 창.
+// 프로젝트가 실제로 사용하는 에셋만 감사(auditProjectAssetLicenses)하여 해당 언어(ko/en/ja/zh)로 크레딧을 생성한다.
+// 사용하지 않은 AI 음악(Google Lyria), EasyRPG RTP, Scarloxy, REFMAP 문구는 절대 노출하지 않는다.
+// 제작자가 직접 작성한 팀/게임 크레딧(project.meta.customCredits)이 있으면 맨 위에 우선 표시한다.
 import { withInlineAsset } from "@/assets/inlineAssetStore";
-import { storeCredits } from "@/assetStore/pack";
+import type { SupportedLocale } from "@/i18n/locale";
 import { isCancelKey, isConfirmKey } from "@/player/keyBindings";
+import { runtimeUiLocale, runtimeUiTextForLocale } from "@/player/runtimeUiStrings";
+import { auditProjectAssetLicenses, type StoreCreditAuditEntry } from "@/project/assetLicenseAudit";
 import { store } from "@/project/store";
+import type { Project } from "@/project/types";
 
 export const ATTRIBUTION_DOC_PATH = "/assets/ATTRIBUTION.md";
 
+const EASYRPG_CC_BY_AUTHORS =
+  "Garakuta, Juan Manuel Nigretti, Marina Navarro Travesset, MrBeast, Orochii Zouveleki, R.C.O., Stephen Challener (Redshrike), Tom Lemmens, VictorSena, andwhyisit, kou, lumiscosity, russidan (Alephman)";
+
+const REFMAP_REQUIRED_CREDIT = "REFMAP (http://refmap.wixsite.com/fsm-material), modified";
+
+const CC_BY_DEED_URL: Readonly<Record<SupportedLocale, string>> = {
+  ko: "https://creativecommons.org/licenses/by/4.0/deed.ko",
+  en: "https://creativecommons.org/licenses/by/4.0/",
+  ja: "https://creativecommons.org/licenses/by/4.0/deed.ja",
+  zh: "https://creativecommons.org/licenses/by/4.0/deed.zh-hans",
+};
+
+interface CreditCopy {
+  readonly builtWithOprn: string;
+  readonly enginePhaser: string;
+  readonly aiBgmLine: string;
+  readonly cc0MusicLine: string;
+  readonly cc0SfxLine: string;
+  readonly easyRpgSfxLine: string;
+  readonly easyRpgHeader: string;
+  readonly scarloxyHeader: string;
+  readonly cc0GraphicsLine: string;
+  readonly fontsLine: string;
+  readonly ccByPrefix: string;
+  readonly noEndorsement: string;
+  readonly fullDocNote: string;
+  readonly storeAiTag: string;
+}
+
+const CREDIT_COPY: Readonly<Record<SupportedLocale, CreditCopy>> = {
+  ko: {
+    builtWithOprn: "OPRN Studio 로 만든 게임입니다.",
+    enginePhaser: "게임 엔진: Phaser (MIT)",
+    aiBgmLine: "OPRN BGM (AI 로 만든 음악, Google Lyria)",
+    cc0MusicLine: "음악: cynicmusic, pauliuw, RandomMind, Brandon Morris (CC0)",
+    cc0SfxLine: "효과음: artisticdude, rubberduck (CC0)",
+    easyRpgSfxLine: "효과음: EasyRPG RTP (CC BY 4.0)",
+    easyRpgHeader: "EasyRPG RTP (CC BY 4.0), 일부를 고쳐 그렸습니다.",
+    scarloxyHeader: "Scarloxy (Ismael Garcia), Monster Taming Game Essentials (CC BY 4.0), 크기와 배치를 바꿨습니다.",
+    cc0GraphicsLine: "JasonPerry, Tom Lemmens, Blarumyrran, Verdant_Jack (CC0)",
+    fontsLine: "Pretendard (길형진), Galmuri (이민서), SIL OFL 1.1",
+    ccByPrefix: "CC BY 4.0",
+    noEndorsement: "원저작자는 이 게임을 보증하거나 후원하지 않습니다.",
+    fullDocNote: "소재별 상세 출처는 아래 「전체 출처 문서」에서 확인할 수 있습니다.",
+    storeAiTag: "AI 생성 포함",
+  },
+  en: {
+    builtWithOprn: "Made with OPRN Studio.",
+    enginePhaser: "Game Engine: Phaser (MIT)",
+    aiBgmLine: "OPRN BGM (AI-generated music, Google Lyria)",
+    cc0MusicLine: "Music: cynicmusic, pauliuw, RandomMind, Brandon Morris (CC0)",
+    cc0SfxLine: "Sound Effects: artisticdude, rubberduck (CC0)",
+    easyRpgSfxLine: "Sound Effects: EasyRPG RTP (CC BY 4.0)",
+    easyRpgHeader: "EasyRPG RTP (CC BY 4.0), modified.",
+    scarloxyHeader: "Scarloxy (Ismael Garcia), Monster Taming Game Essentials (CC BY 4.0), resized and repacked.",
+    cc0GraphicsLine: "JasonPerry, Tom Lemmens, Blarumyrran, Verdant_Jack (CC0)",
+    fontsLine: "Pretendard (Kil Hyung-jin), Galmuri (Minseo Lee), SIL OFL 1.1",
+    ccByPrefix: "CC BY 4.0",
+    noEndorsement: "The original authors do not endorse or sponsor this game.",
+    fullDocNote: "See the Full Attribution Document below for detailed per-asset sources.",
+    storeAiTag: "Includes AI-generated content",
+  },
+  ja: {
+    builtWithOprn: "OPRN Studio で制作されたゲームです。",
+    enginePhaser: "ゲームエンジン: Phaser (MIT)",
+    aiBgmLine: "OPRN BGM（AI生成音楽・Google Lyria）",
+    cc0MusicLine: "音楽: cynicmusic, pauliuw, RandomMind, Brandon Morris (CC0)",
+    cc0SfxLine: "効果音: artisticdude, rubberduck (CC0)",
+    easyRpgSfxLine: "効果音: EasyRPG RTP (CC BY 4.0)",
+    easyRpgHeader: "EasyRPG RTP (CC BY 4.0)、一部改変。",
+    scarloxyHeader: "Scarloxy (Ismael Garcia), Monster Taming Game Essentials (CC BY 4.0)、サイズ・配置を改変。",
+    cc0GraphicsLine: "JasonPerry, Tom Lemmens, Blarumyrran, Verdant_Jack (CC0)",
+    fontsLine: "Pretendard (Kil Hyung-jin), Galmuri (Minseo Lee), SIL OFL 1.1",
+    ccByPrefix: "CC BY 4.0",
+    noEndorsement: "原著作者は本ゲームを推奨または後援していません。",
+    fullDocNote: "素材ごとの詳細な出典は下の「詳細クレジット文書」をご確認ください。",
+    storeAiTag: "AI生成素材を含む",
+  },
+  zh: {
+    builtWithOprn: "使用 OPRN Studio 制作。",
+    enginePhaser: "游戏引擎：Phaser (MIT)",
+    aiBgmLine: "OPRN BGM（AI生成音乐，Google Lyria）",
+    cc0MusicLine: "音乐：cynicmusic, pauliuw, RandomMind, Brandon Morris (CC0)",
+    cc0SfxLine: "音效：artisticdude, rubberduck (CC0)",
+    easyRpgSfxLine: "音效：EasyRPG RTP (CC BY 4.0)",
+    easyRpgHeader: "EasyRPG RTP (CC BY 4.0)，已作修改。",
+    scarloxyHeader: "Scarloxy (Ismael Garcia), Monster Taming Game Essentials (CC BY 4.0)，已调整尺寸与排列。",
+    cc0GraphicsLine: "JasonPerry, Tom Lemmens, Blarumyrran, Verdant_Jack (CC0)",
+    fontsLine: "Pretendard (Kil Hyung-jin), Galmuri (Minseo Lee), SIL OFL 1.1",
+    ccByPrefix: "CC BY 4.0",
+    noEndorsement: "原作者不对此游戏提供背书或赞助。",
+    fullDocNote: "各素材详细署名请参阅下方“完整署名文档”。",
+    storeAiTag: "含AI生成内容",
+  },
+};
+
 /**
- * 플레이어가 읽는 크레딧. 제목은 「## 」, 나머지는 한 줄이 한 문단이다(renderLicenseText).
- * 지켜야 하는 줄:
- *  - CC BY 4.0(EasyRPG RTP·Scarloxy): 저작자 이름, 라이선스와 주소, 원본 주소, 고쳤다는 사실, 보증하지 않는다는 문장.
- *    저작자 이름은 public/assets/easyrpg/AUTHORS.md 의 [CC-BY] 표기에서 뽑았다 — 그 표가 바뀌면 여기도 맞춘다.
- *  - REFMAP: 표기 줄 원문 그대로(public/assets/ATTRIBUTION.md 「RefmapDoll」).
- *  - OPRN BGM: 사람이 지은 곡처럼 적지 않는다(public/assets/oprn-bgm/LICENSE.txt).
- *  - general-good-writing: 저작자가 크레딧 표기를 조건으로 사용을 허락했다(루트 ATTRIBUTION.md, openwiki/licensing.md).
- * CC0 소재는 표기 의무가 없지만 고마움으로 이름을 남긴다. 개발 기록·파일 경로는 여기 쓰지 않는다.
+ * 레거시 호환용 전체 기본 소재 크레딧 참고 상수.
+ * 실제 타이틀 크레딧 창은 이 고정 문자열 대신 `buildPlayerCredits(project, locale)` 를 사용한다.
  */
 export const PLAYER_CREDITS = [
   "## 만든 도구",
@@ -32,12 +125,12 @@ export const PLAYER_CREDITS = [
   "## 그림",
   "EasyRPG RTP (CC BY 4.0), 일부를 고쳐 그렸습니다.",
   "https://github.com/EasyRPG/RTP",
-  "Garakuta, Juan Manuel Nigretti, Marina Navarro Travesset, MrBeast, Orochii Zouveleki, R.C.O., Stephen Challener (Redshrike), Tom Lemmens, VictorSena, andwhyisit, kou, lumiscosity, russidan (Alephman)",
+  EASYRPG_CC_BY_AUTHORS,
   "",
   "Scarloxy (Ismael Garcia), Monster Taming Game Essentials (CC BY 4.0), 크기와 배치를 바꿨습니다.",
   "https://scarloxy.itch.io/mpwsp01",
   "",
-  "REFMAP (http://refmap.wixsite.com/fsm-material), modified",
+  REFMAP_REQUIRED_CREDIT,
   "",
   "JasonPerry, Tom Lemmens, Blarumyrran, Verdant_Jack (CC0)",
   "## 글꼴",
@@ -45,16 +138,137 @@ export const PLAYER_CREDITS = [
   "## 라이선스",
   "CC BY 4.0: https://creativecommons.org/licenses/by/4.0/deed.ko",
   "원저작자는 이 게임을 보증하거나 후원하지 않습니다.",
-  "OPRN Studio 기본 소재 전체의 표기라서, 이 게임에 쓰이지 않은 소재도 들어 있습니다.",
   "소재별 출처는 아래 「전체 출처 문서」에 있습니다.",
 ].join("\n");
 
-/** 전체 출처 문서를 못 읽었을 때 창에 대신 보이는 문장. 입구는 타이틀 메뉴 「크레딧」이다(숨길 수 없다). */
-export function licenseNoticeText(): string {
-  return "이 게임에는 CC BY 라이선스의 에셋이 포함되어 있습니다.";
+function formatStoreCreditLines(entries: readonly StoreCreditAuditEntry[], locale: SupportedLocale): string[] {
+  const copy = CREDIT_COPY[locale];
+  const lines: string[] = [];
+  for (const entry of entries) {
+    const parts = [`「${entry.title}」 — ${entry.author}`, entry.license];
+    if (entry.aiGenerated) parts.push(copy.storeAiTag);
+    lines.push(parts.join(" · "));
+    if (entry.credits.trim()) lines.push(entry.credits.trim());
+  }
+  return lines;
 }
 
-/** 편집기·출하 플레이어 공통. ATTRIBUTION.md 가 없으면 (사실상 없을) null 이다. */
+/**
+ * 프로젝트가 실제로 사용하는 에셋의 크레딧만 지정 언어(ko/en/ja/zh)로 생성한다.
+ * - 제작자 직접 작성 크레딧(`project.meta.customCredits`)이 있으면 맨 위에 우선 표시한다.
+ * - 사용하지 않은 AI 음악(Google Lyria), EasyRPG RTP, Scarloxy, REFMAP 문구는 포함하지 않는다.
+ */
+export function buildPlayerCredits(
+  project: Project | null | undefined,
+  locale?: SupportedLocale,
+): string {
+  const lang = locale ?? runtimeUiLocale(project);
+  const copy = CREDIT_COPY[lang];
+  const audit = project ? auditProjectAssetLicenses(project) : null;
+  const sections: string[] = [];
+
+  // 1. 제작자 커스텀 팀/게임 크레딧 (최우선)
+  const custom = project?.meta?.customCredits?.trim();
+  if (custom) {
+    const customHasHeading = /^#{1,6}\s+/m.test(custom);
+    sections.push(
+      customHasHeading
+        ? custom
+        : `## ${runtimeUiTextForLocale(lang, "credits.section.game")}\n${custom}`,
+    );
+  }
+
+  // 2. 만든 도구
+  sections.push([
+    `## ${runtimeUiTextForLocale(lang, "credits.section.engine")}`,
+    copy.builtWithOprn,
+    copy.enginePhaser,
+  ].join("\n"));
+
+  // 3. 음악과 효과음 (실제로 쓴 것만)
+  if (audit) {
+    const audioLines: string[] = [];
+    if (audit.usesAiBgm) {
+      audioLines.push(copy.aiBgmLine);
+    }
+    if (audit.usesCc0Audio) {
+      audioLines.push(copy.cc0MusicLine);
+      audioLines.push(copy.cc0SfxLine);
+    }
+    if (audit.usesEasyRpgRtpAudio) {
+      audioLines.push(copy.easyRpgSfxLine);
+    }
+    if (audioLines.length > 0) {
+      sections.push([`## ${runtimeUiTextForLocale(lang, "credits.section.audio")}`, ...audioLines].join("\n"));
+    }
+
+    // 4. 그림 (실제로 쓴 것만)
+    const graphicBlocks: string[] = [];
+    if (audit.usesEasyRpgRtp) {
+      graphicBlocks.push([
+        copy.easyRpgHeader,
+        "https://github.com/EasyRPG/RTP",
+        EASYRPG_CC_BY_AUTHORS,
+      ].join("\n"));
+    }
+    if (audit.usesScarloxy) {
+      graphicBlocks.push([
+        copy.scarloxyHeader,
+        "https://scarloxy.itch.io/mpwsp01",
+      ].join("\n"));
+    }
+    if (audit.usesRefmap) {
+      graphicBlocks.push(REFMAP_REQUIRED_CREDIT);
+    }
+    if (audit.usesCc0Graphics) {
+      graphicBlocks.push(copy.cc0GraphicsLine);
+    }
+    if (graphicBlocks.length > 0) {
+      sections.push([
+        `## ${runtimeUiTextForLocale(lang, "credits.section.graphics")}`,
+        graphicBlocks.join("\n\n"),
+      ].join("\n"));
+    }
+
+    // 5. 에셋 스토어 (설치된 상품이 있을 때만)
+    if (audit.storeCredits.length > 0) {
+      sections.push([
+        `## ${runtimeUiTextForLocale(lang, "credits.section.store")}`,
+        ...formatStoreCreditLines(audit.storeCredits, lang),
+      ].join("\n"));
+    }
+  }
+
+  // 6. 글꼴
+  sections.push([
+    `## ${runtimeUiTextForLocale(lang, "credits.section.fonts")}`,
+    copy.fontsLine,
+  ].join("\n"));
+
+  // 7. 라이선스 (법적 표기 의무가 있거나 전체 출처 안내가 필요한 경우)
+  const hasCcBy = audit ? (audit.usesEasyRpgRtp || audit.usesScarloxy || audit.storeCredits.some((s) => s.license === "CC-BY-4.0" || s.license === "CC-BY-SA-4.0")) : false;
+  if (!audit || audit.requiresAttribution || hasCcBy) {
+    const licenseLines: string[] = [];
+    if (hasCcBy) {
+      licenseLines.push(`${copy.ccByPrefix}: ${CC_BY_DEED_URL[lang]}`);
+    }
+    licenseLines.push(copy.noEndorsement);
+    licenseLines.push(copy.fullDocNote);
+    sections.push([
+      `## ${runtimeUiTextForLocale(lang, "credits.section.license")}`,
+      ...licenseLines,
+    ].join("\n"));
+  }
+
+  return sections.join("\n");
+}
+
+/** 전체 출처 문서를 못 읽었을 때 창에 대신 보이는 문장. */
+export function licenseNoticeText(locale: SupportedLocale = "ko"): string {
+  return runtimeUiTextForLocale(locale, "credits.fallbackNotice");
+}
+
+/** 편집기·출하 플레이어 공통. ATTRIBUTION.md 가 없으면 null 이다. */
 export async function fetchLicenseNotices(): Promise<string | null> {
   try {
     const response = await fetch(withInlineAsset(ATTRIBUTION_DOC_PATH));
@@ -66,7 +280,7 @@ export async function fetchLicenseNotices(): Promise<string | null> {
 }
 
 /**
- * 기본 표기 뒤에 이 게임이 쓰는 에셋 스토어 상품의 크레딧을 붙인다(에셋 출처 origin 에서 만든다, src/assetStore/pack.ts).
+ * 기본 표기 뒤에 이 게임이 쓰는 에셋 스토어 상품의 크레딧을 붙인다.
  * 스토어 에셋이 없으면 기본 표기 그대로다.
  */
 export function withStoreCredits(notices: string | null, credits: string): string | null {
@@ -101,41 +315,50 @@ function renderLicenseText(host: HTMLElement, text: string): void {
   }
 }
 
-/** 타이틀 메뉴 「크레딧」이 여는 창. 짧은 크레딧(+ 이 게임이 쓴 스토어 상품 크레딧)을 바로 띄운다. 닫히면 onClose 로 타이틀 포커스를 돌려받는다. */
-export function openLicenseDialog(onClose?: () => void): void {
-  let credits = "";
-  try { credits = storeCredits(store.getCurrent()); } catch { credits = ""; }
-  showLicenseDialog(withStoreCredits(PLAYER_CREDITS, credits), onClose);
+function safeCurrentProject(): Project | undefined {
+  try {
+    return store.getCurrent();
+  } catch {
+    return undefined;
+  }
 }
 
-function showLicenseDialog(body: string | null, onClose?: () => void): void {
+/** 타이틀 메뉴 「크레딧」이 여는 창. 실제 사용 에셋 기반·프로젝트 언어 크레딧을 바로 띄운다. 닫히면 onClose 로 타이틀 포커스를 돌려받는다. */
+export function openLicenseDialog(onClose?: () => void, projectOverride?: Project): void {
+  const project = projectOverride ?? safeCurrentProject();
+  const locale = runtimeUiLocale(project);
+  const body = buildPlayerCredits(project, locale);
+  showLicenseDialog(body, locale, onClose);
+}
+
+function showLicenseDialog(body: string | null, locale: SupportedLocale, onClose?: () => void): void {
   const view = globalThis.document?.defaultView ?? null;
   if (!view) return;
   const dialog = view.document.createElement("dialog");
   dialog.className = "rm-license-dialog";
-  dialog.setAttribute("aria-label", "크레딧 — 게임 에셋 저작자 표기");
+  dialog.setAttribute("aria-label", runtimeUiTextForLocale(locale, "credits.ariaLabel"));
   dialog.dataset.testid = "title-credits-dialog";
   const pre = view.document.createElement("div");
   pre.className = "rm-license-dialog-body";
   pre.tabIndex = 0;
-  pre.setAttribute("aria-label", "저작자 표기");
-  renderLicenseText(pre, body ?? licenseNoticeText());
+  pre.setAttribute("aria-label", runtimeUiTextForLocale(locale, "credits.bodyAriaLabel"));
+  renderLicenseText(pre, body ?? licenseNoticeText(locale));
   const heading = view.document.createElement("h2");
   heading.className = "rm-license-dialog-title";
-  heading.textContent = "크레딧";
+  heading.textContent = runtimeUiTextForLocale(locale, "credits.title");
   const hint = view.document.createElement("p");
   hint.className = "rm-license-dialog-hint";
   hint.id = "title-credits-hint";
-  hint.textContent = "↑↓ 로 읽고, Esc 로 닫습니다";
+  hint.textContent = runtimeUiTextForLocale(locale, "credits.hint");
   const close = view.document.createElement("button");
   close.type = "button";
-  close.textContent = "닫기";
+  close.textContent = runtimeUiTextForLocale(locale, "credits.close");
   close.className = "rm-license-dialog-close";
   close.addEventListener("click", () => dialog.close());
   // 소재별 전체 출처 문서(영문 원문)는 이 단추로만 연다. 연 뒤에는 단추를 치우고 본문 맨 위부터 보여 준다.
   const full = view.document.createElement("button");
   full.type = "button";
-  full.textContent = "전체 출처 문서 (영문)";
+  full.textContent = runtimeUiTextForLocale(locale, "credits.fullDoc");
   full.className = "rm-license-dialog-full";
   full.dataset.testid = "title-credits-full";
   const openFull = (): void => {
@@ -144,7 +367,7 @@ function showLicenseDialog(body: string | null, onClose?: () => void): void {
     void fetchLicenseNotices().then((notices) => {
       if (!dialog.isConnected) return;
       pre.replaceChildren();
-      renderLicenseText(pre, notices ?? licenseNoticeText());
+      renderLicenseText(pre, notices ?? licenseNoticeText(locale));
       pre.scrollTop = 0;
       pre.dataset.view = "full";
       full.remove();
@@ -156,9 +379,6 @@ function showLicenseDialog(body: string | null, onClose?: () => void): void {
   actions.className = "rm-license-dialog-actions";
   actions.append(full, close);
   dialog.setAttribute("aria-describedby", hint.id);
-  // Own keys before editor/document capture handlers (including their Escape stack).
-  // 포커스는 닫기 단추에 있다. 본문이 창보다 길어 스크롤이 필요한데, 단추에 포커스가
-  // 있으면 방향키의 기본 동작이 본문을 움직이지 않는다. 여기서 직접 민다.
   const onKeyDown = (event: KeyboardEvent): void => {
     if (!dialog.open || !dialog.isConnected) return;
     event.stopPropagation();
@@ -167,7 +387,6 @@ function showLicenseDialog(body: string | null, onClose?: () => void): void {
       event.preventDefault();
       return;
     }
-    // ←→: 두 단추 사이를 오간다(패드·키보드만 쓰는 플레이어가 전체 출처 문서를 열 수 있게).
     if ((event.key === "ArrowLeft" || event.key === "ArrowRight") && full.isConnected && !full.disabled) {
       event.preventDefault();
       (view.document.activeElement === full ? close : full).focus({ preventScroll: true });

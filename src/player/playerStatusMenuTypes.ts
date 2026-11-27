@@ -6,10 +6,15 @@ import type { AutosaveReadResult, SaveSlotIndex, SaveSlotReadResult } from "@/pl
 import type { StatusMenuCommandId, StatusMenuGroupEntryId, StatusMenuRailId } from "@/player/playerStatusMenuModel";
 import type { LifeLedgerTabId } from "@/player/lifeLedger";
 import type { MonsterCollectAction, MonsterCollectUi } from "@/player/playerMonsterCollectTypes";
+import type { RemappableAction } from "@/player/keyBindings";
 
 export type PlayerStatusMenuActions = {
   readonly onInventoryViewChange?: (view: InventoryView) => void;
   readonly onOptionsChanged?: (message?: string) => void;
+  readonly onOpenKeyBindings?: () => void;
+  readonly onStartKeyCapture?: (action: RemappableAction) => void;
+  readonly onResetKeyBindings?: () => void;
+  readonly onQuitGame?: () => void;
   readonly onCommand: (commandId: StatusMenuCommandId) => void;
   /** 접힌 그룹(기록/시스템)을 작업 영역에 펼친다. */
   readonly onOpenGroup: (entryId: StatusMenuGroupEntryId) => void;
@@ -87,6 +92,9 @@ export type PlayerStatusMenuOptions = {
   readonly getScene?: () => import("@/player/lifePlacementScene").LifePlacementSceneSource | undefined;
   readonly confirmSaveSlot?: SaveSlotIndex;
   readonly confirmToTitle?: boolean;
+  readonly confirmQuitGame?: boolean;
+  readonly optionsSubscreen?: "key-bindings";
+  readonly capturingKeyAction?: RemappableAction;
   readonly saveEnabled?: boolean;
   readonly waitModeEnabled?: boolean;
   readonly actions: PlayerStatusMenuActions;

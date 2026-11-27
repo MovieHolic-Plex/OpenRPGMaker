@@ -1,7 +1,7 @@
 import { getAudioEngine } from '@/player/audio';
 import { getEffectiveReadingPreferences, getPlayerPreferences, setAuthoredPreferenceDefaults, updatePlayerPreferences, type PlayerPreferences } from '@/player/playerPreferences';
 import { dialogueUiText } from '@/player/dialogueUiStrings';
-import { resolveDialogueSystem, type DialogueSpeed } from '@/project/dialogueSystem';
+import { defaultDialogueSystem, resolveDialogueSystem, type DialogueSpeed } from '@/project/dialogueSystem';
 import type { StatusMenuDetail, StatusMenuDetailEntry } from '@/player/playerStatusMenuDetailTypes';
 import type { Project } from '@/project/types';
 import { DIALOGUE_STYLES, isDialogueStyleId, resolveDialogueStyleId } from '@/project/dialogueStyles';
@@ -56,8 +56,9 @@ const OPACITY_STEPS = [1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4] as const;
  */
 export function createPlayerOptionsDetail(onChanged?: (message?: string) => void, project?: Project): StatusMenuDetail {
   const system = resolveDialogueSystem(project);
+  const uiSystem = system ?? (project?.meta.language ? { ...defaultDialogueSystem(), language: project.meta.language } : undefined);
   setAuthoredPreferenceDefaults(system?.defaults);
-  const text = (key: Parameters<typeof dialogueUiText>[1]) => dialogueUiText(system, key);
+  const text = (key: Parameters<typeof dialogueUiText>[1]) => dialogueUiText(uiSystem, key);
   const prefs = getPlayerPreferences();
   const effective = getEffectiveReadingPreferences(system?.defaults, prefs);
   const change = (patch: Partial<PlayerPreferences>) => {

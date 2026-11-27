@@ -1,4 +1,5 @@
-import { resolveDialogueSystem } from "@/project/dialogueSystem";
+import { defaultDialogueSystem, resolveDialogueSystem } from "@/project/dialogueSystem";
+import { runtimeUiLocale } from "@/player/runtimeUiStrings";
 import { monsterBoxUnavailableReason } from "@/player/playerMonsterPartyModel";
 import { DEFAULT_INVENTORY_VIEW, type InventoryView } from '@/player/playerInventoryView';
 import { DEFAULT_BAG_POCKET, stepBagPocket } from "@/player/playerBagPockets";
@@ -9,15 +10,15 @@ import { combineItems } from "@/project/craftRecipes";
 import { toggleSkillLoadout } from "@/project/skillLoadout";
 import { setAudioState } from "@/project/session";
 import { findFacedItemTarget } from "@/player/itemUseOnTarget";
-import { itemCombinationPartners } from "@/player/playerStatusMenuDetails";
+import { itemCombinationPartners, remappableActionLabel } from "@/player/playerStatusMenuDetails";
 import { runCommands, runItemUsePage } from "@/player/playSceneInterpreter";
 import { promoteActor } from "@/project/sessionClass";
 import { refreshGrowthVitals } from "@/project/growth/vitals";
 import type { GrowthMenuTab } from "@/player/playerGrowthMenu";
 import { store } from "@/project/store";
-import { getPlayerPreferences, updatePlayerPreferences } from "@/player/playerPreferences";
+import { getPlayerPreferences, resetKeyBindings, updatePlayerPreferences } from "@/player/playerPreferences";
 import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, readAutosave, safeLocalStorage, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
-import { renderPlayerStatusMenu, statusMenuControls } from "@/player/playerStatusMenu";
+import { renderPlayerStatusMenu, statusMenuAdjustControls, statusMenuControls } from "@/player/playerStatusMenu";
 import { activateHubElement, hubBoardFor, hubMenuEnabled, isHubTileCommand, nextHubFocus, renderHubMenu, HUB_TILE_COMMANDS } from "@/player/hubMenu";
 import { equipmentSlots } from "@/project/equipmentSlots";
 import type { PlayerStatusMenuOptions } from "@/player/playerStatusMenuTypes";
@@ -35,7 +36,17 @@ import {
 } from "@/player/playerStatusMenuModel";
 import { reduceStatusMenuKeyboard, type RuntimeMenuKey } from "@/player/runtimeKeyboardMenu";
 import { menuSkinFor } from "@/player/menuSkins/registry";
-import { directionForKey, isCancelKey, isConfirmKey } from "@/player/keyBindings";
+import {
+  directionForKey,
+  findKeyBindingConflicts,
+  formatKeyLabel,
+  getCustomKeyBindings,
+  isCancelKey,
+  isConfirmKey,
+  isRemappableKey,
+  normalizeKey,
+  type RemappableAction,
+} from "@/player/keyBindings";
 import type { RuntimeJuiceEvent } from "@/player/runtimeJuice";
 import type { ActorInitialEquipment, SkillId } from "@/project/types";
 import type { PlaySession } from "@/project/session";
@@ -120,6 +131,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   let hubCand = -1;
   let hubActorId: string | undefined;
   let hubReturnFocus: string | undefined;
+  let confirmQuitGamePending = false;
+  let optionsSubscreen: "key-bindings" | undefined;
+  let capturingKeyAction: RemappableAction | undefined;
   // 「대기」 ON = 명령 메뉴가 열린 동안 시간이 멈춘다(wait). 플레이어 장치 설정이 게임 저작 기본(system.atbMode)을 덮는다.
   const currentWaitMode = (): boolean => (getPlayerPreferences().atbMode ?? store.getCurrent().system.atbMode ?? "wait") !== "active";
   let waitModeEnabled = currentWaitMode();
@@ -164,6 +178,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     lifeLedgerTab = undefined;
     confirmSaveSlot = undefined;
     confirmToTitlePending = false;
+    confirmQuitGamePending = false;
+    optionsSubscreen = undefined;
+    capturingKeyAction = undefined;
   };
 
   const replaceMenu = (panel: HTMLElement): HTMLElement => {
@@ -230,11 +247,48 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       getScene: () => options.getActiveScene(),
       confirmSaveSlot,
       confirmToTitle: confirmToTitlePending,
+      confirmQuitGame: confirmQuitGamePending,
+      optionsSubscreen,
+      capturingKeyAction,
       saveEnabled: isSaveEnabled(session),
       waitModeEnabled,
       selectedDetailActionIndex,
       actions: {
         onOptionsChanged: (message) => { renderMenu(message, "options"); },
+        onOpenKeyBindings: () => {
+          rememberDetailCursorFromTestId("player-option-key-bindings");
+          optionsSubscreen = "key-bindings";
+          capturingKeyAction = undefined;
+          options.emitMenuJuice("menu-confirm", renderMenu(undefined, "options"));
+        },
+        onStartKeyCapture: (action) => {
+          rememberDetailCursorFromTestId(`player-option-key-${action}`);
+          capturingKeyAction = action;
+          const loc = runtimeUiLocale(project);
+          const actionLabel = remappableActionLabel(action, loc);
+          const prompt = loc === "en"
+            ? `Press a new key for '${actionLabel}' (Esc to cancel)`
+            : loc === "ja"
+              ? `'${actionLabel}' に割り当てるキーを押してください (Esc キャンセル)`
+              : loc === "zh"
+                ? `请按下要分配给“${actionLabel}”的新按键 (Esc 取消)`
+                : `'${actionLabel}'에 지정할 새 키를 누르세요 (Esc 취소)`;
+          options.emitMenuJuice("menu-confirm", renderMenu(prompt, "options"));
+        },
+        onResetKeyBindings: () => {
+          capturingKeyAction = undefined;
+          resetKeyBindings();
+          const loc = runtimeUiLocale(project);
+          const resetMsg = loc === "en"
+            ? "Key bindings reset to defaults."
+            : loc === "ja"
+              ? "キー設定を初期値に戻しました。"
+              : loc === "zh"
+                ? "已将按键恢复为默认设置。"
+                : "조작 키를 기본값으로 복원했습니다.";
+          options.emitMenuJuice("menu-confirm", renderMenu(resetMsg, "options"));
+        },
+        ...(canExecuteQuitGame() ? { onQuitGame: confirmQuitGame } : {}),
         onInventoryViewChange: (view) => {
           if (view.pocket !== inventoryView.pocket) {
             // 포켓을 바꾸면 새 목록의 첫 줄에서 시작한다(점·탭을 눌러 바꿔도 같다).
@@ -461,7 +515,20 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     if (mode === "main") detail?.setAttribute("inert", "");
     else detail?.removeAttribute("inert");
     const controls = menu.querySelector<HTMLElement>(".status-menu-controls");
-    if (controls) controls.textContent = statusMenuControls(mode, menuSkinFor(store.getCurrent()).railColumns, menuSkinFor(store.getCurrent()).id === "field-list", resolveDialogueSystem(store.getCurrent()));
+    if (controls) {
+      const currentProject = store.getCurrent();
+      const skin = menuSkinFor(currentProject);
+      const dialogueSystem = { ...(resolveDialogueSystem(currentProject) ?? defaultDialogueSystem()), language: runtimeUiLocale(currentProject) };
+      const defaultText = statusMenuControls(mode, skin.railColumns, skin.id === "field-list", dialogueSystem);
+      controls.textContent = defaultText;
+      if (mode === "function") {
+        controls.dataset.controlsDefault = defaultText;
+        controls.dataset.controlsAdjust = statusMenuAdjustControls(dialogueSystem);
+      } else {
+        delete controls.dataset.controlsDefault;
+        delete controls.dataset.controlsAdjust;
+      }
+    }
     const debug = menu.querySelector<HTMLElement>("[data-testid='status-menu-debug-json']");
     if (debug) debug.textContent = JSON.stringify({ selectedCommand, mode });
     focusActiveMenuContainer();
@@ -512,6 +579,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     justSaved = false;
     // 진화 장면이 도는 동안 메뉴는 입력을 받지 않는다(장면이 확인키로 문장을 넘긴다).
     if (evolutionPlaying) return true;
+    if (capturingKeyAction) {
+      return handleCapturedKeyInput(key);
+    }
     if (galleryViewerIsOpen()) {
       if (isCancelMenuKey(key) || isConfirmMenuKey(key)) {
         closeGalleryViewer();
@@ -566,6 +636,10 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         return true;
       }
       if (direction === "right") return true;
+      const normalizedKey = normalizeKey(key);
+      if (normalizedKey === "pageup" || normalizedKey === "pagedown" || normalizedKey === "home" || normalizedKey === "end") {
+        return jumpSelectedDetailAction(normalizedKey) ? emitAndHandle("menu-select") : rejectInput();
+      }
       if (isDetailNavKey(key)) return moveSelectedDetailAction(detailDelta(key)) ? emitAndHandle("menu-select") : rejectInput();
       if (isConfirmMenuKey(key)) return activateSelectedDetailAction() || rejectInput();
       if (isCancelMenuKey(key)) {
@@ -647,6 +721,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     }
     confirmSaveSlot = undefined;
     confirmToTitlePending = false;
+    confirmQuitGamePending = false;
     let snapshot;
     try {
       snapshot = createSaveSnapshot(store.getCurrent(), scene.getSession());
@@ -1158,6 +1233,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     }
     confirmSaveSlot = undefined;
     confirmToTitlePending = false;
+    confirmQuitGamePending = false;
     // 접힌 그룹을 통해 들어왔으면 레일이 아니라 그룹 목록으로 한 단 돌아간다.
     if (openGroupId && !isStatusMenuGroupEntryId(selectedCommand) && groupContains(openGroupId, selectedCommand)) {
       selectedCommand = openGroupId;
@@ -1237,8 +1313,17 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       case "bestiary":
         if (bestiaryEntryId !== undefined) { bestiaryEntryId = undefined; return true; }
         return false;
-      case "trainer-card":
       case "options":
+        if (capturingKeyAction) {
+          capturingKeyAction = undefined;
+          return true;
+        }
+        if (optionsSubscreen) {
+          optionsSubscreen = undefined;
+          return true;
+        }
+        return false;
+      case "trainer-card":
       case "load":
       case "quests":
       case "relationships":
@@ -1257,6 +1342,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
   }
 
   function confirmToTitle(): void {
+    confirmQuitGamePending = false;
     if (!confirmToTitlePending) {
       confirmToTitlePending = true;
       mode = "function";
@@ -1269,6 +1355,146 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     confirmToTitlePending = false;
     options.emitMenuJuice("menu-confirm", currentMenu());
     window.setTimeout(() => options.renderTitle(), options.menuCloseJuiceMs);
+  }
+
+  function desktopQuitFunction(): (() => Promise<void> | void) | undefined {
+    if (typeof window === "undefined") return undefined;
+    const host = (window as Window & { __oprnDesktopPlayer?: { quit?: () => Promise<void> | void } }).__oprnDesktopPlayer;
+    return typeof host?.quit === "function" ? host.quit : undefined;
+  }
+
+  function canExecuteQuitGame(): boolean {
+    return Boolean(options.onQuitGame || desktopQuitFunction());
+  }
+
+  function confirmQuitGame(): void {
+    confirmToTitlePending = false;
+    if (!confirmQuitGamePending) {
+      confirmQuitGamePending = true;
+      mode = "function";
+      options.emitMenuJuice(
+        "menu-confirm",
+        renderMenu("저장하지 않은 진행은 사라집니다. 한 번 더 선택하면 게임을 종료합니다.", selectedCommand),
+      );
+      return;
+    }
+    confirmQuitGamePending = false;
+    options.emitMenuJuice("menu-confirm", currentMenu());
+    const execute = (): void => {
+      const quitHost = desktopQuitFunction();
+      if (quitHost) {
+        try {
+          void quitHost();
+        } catch {
+          // ignore host quit error
+        }
+        return;
+      }
+      options.onQuitGame?.();
+    };
+    window.setTimeout(execute, options.menuCloseJuiceMs);
+  }
+
+  const DIRECTION_FALLBACK_ARROWS: Partial<Record<RemappableAction, string>> = {
+    up: "arrowup",
+    down: "arrowdown",
+    left: "arrowleft",
+    right: "arrowright",
+  };
+
+  function handleCapturedKeyInput(key: string): boolean {
+    const action = capturingKeyAction;
+    if (!action) return false;
+    const project = store.getCurrent();
+    const loc = runtimeUiLocale(project);
+    const normalized = normalizeKey(key);
+    if (normalized === "escape") {
+      capturingKeyAction = undefined;
+      const cancelMsg = loc === "en" ? "Key rebinding cancelled." : loc === "ja" ? "キー変更をキャンセルしました。" : loc === "zh" ? "已取消修改按键。" : "키 변경을 취소했습니다.";
+      options.emitMenuJuice("menu-back", renderMenu(cancelMsg, "options"));
+      return true;
+    }
+    if (!isRemappableKey(key)) {
+      const invalidMsg = loc === "en"
+        ? "That key cannot be bound. Press another key (Esc to cancel)"
+        : loc === "ja"
+          ? "このキーは割り当てられません。別のキーを押してください (Esc キャンセル)"
+          : loc === "zh"
+            ? "无法绑定该按键，请按其他键 (Esc 取消)"
+            : "이 키는 지정할 수 없습니다. 다른 키를 누르세요 (Esc 취소)";
+      return rejectInput(invalidMsg);
+    }
+    const existing = getCustomKeyBindings();
+    const arrowFallback = DIRECTION_FALLBACK_ARROWS[action];
+    const nextKeys = arrowFallback && normalized !== arrowFallback
+      ? [normalized, arrowFallback]
+      : [normalized];
+    const updated: Partial<Record<RemappableAction, string[]>> = {};
+    for (const [k, v] of Object.entries(existing)) {
+      if (v) updated[k as RemappableAction] = [...v];
+    }
+    updated[action] = nextKeys;
+    updatePlayerPreferences({ keyBindings: updated });
+    capturingKeyAction = undefined;
+
+    const conflicts = findKeyBindingConflicts().filter((conflict) => conflict.key === normalized && conflict.actions.includes(action));
+    const otherNames = conflicts
+      .flatMap((conflict) => conflict.actions)
+      .filter((other) => other !== action)
+      .map((other) => remappableActionLabel(other, loc));
+    const keyText = formatKeyLabel(normalized);
+    const actionName = remappableActionLabel(action, loc);
+    const conflictList = [...new Set(otherNames)].join(", ");
+    const message = otherNames.length > 0
+      ? (loc === "en"
+        ? `Bound '${actionName}' to ${keyText} (Note: conflicts with ${conflictList})`
+        : loc === "ja"
+          ? `'${actionName}' に ${keyText} を割り当てました (注意: ${conflictList} と重複)`
+          : loc === "zh"
+            ? `已将“${actionName}”绑定为 ${keyText}（注意：与 ${conflictList} 冲突）`
+            : `'${actionName}' 키를 ${keyText}(으)로 지정했습니다 (주의: ${conflictList}와 겹침)`)
+      : (loc === "en"
+        ? `Bound '${actionName}' to ${keyText}.`
+        : loc === "ja"
+          ? `'${actionName}' に ${keyText} を割り当てました。`
+          : loc === "zh"
+            ? `已将“${actionName}”绑定为 ${keyText}。`
+            : `'${actionName}' 키를 ${keyText}(으)로 변경했습니다.`);
+    options.emitMenuJuice("menu-confirm", renderMenu(message, "options"));
+    return true;
+  }
+
+  function jumpSelectedDetailAction(kind: "pageup" | "pagedown" | "home" | "end"): boolean {
+    const actions = detailActionButtons();
+    if (mode !== "function") return false;
+    if (actions.length === 0) {
+      const list = currentMenu()?.querySelector<HTMLElement>(".status-menu-detail-list");
+      if (!list || list.scrollHeight <= list.clientHeight + 1) return false;
+      if (kind === "home") list.scrollTop = 0;
+      else if (kind === "end") list.scrollTop = list.scrollHeight;
+      else list.scrollTop += (kind === "pageup" ? -1 : 1) * Math.max(48, list.clientHeight * 0.9);
+      return true;
+    }
+    const pageStep = 5;
+    const next = kind === "home"
+      ? 0
+      : kind === "end"
+        ? actions.length - 1
+        : kind === "pageup"
+          ? Math.max(0, selectedDetailActionIndex - pageStep)
+          : Math.min(actions.length - 1, selectedDetailActionIndex + pageStep);
+    if (next === selectedDetailActionIndex) return false;
+    setDetailCursor(next);
+    if (selectedCommand === "save" && confirmSaveSlot !== undefined) {
+      confirmSaveSlot = undefined;
+      renderMenu(undefined, "save");
+      return true;
+    }
+    syncRenderedDetailCursor();
+    const detail = currentMenu()?.querySelector<HTMLElement>(".status-menu-detail");
+    const message = currentMenu()?.querySelector<HTMLElement>(".status-menu-message");
+    if (detail && message) message.textContent = updateStatusMenuDetailSelection(detail, selectedDetailActionIndex) ?? "";
+    return true;
   }
 
   const currentMenu = (): HTMLElement | null => currentStatusMenu(options.layout);
@@ -1508,7 +1734,8 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const detailList = currentMenu()?.querySelector<HTMLElement>(".status-menu-detail-list");
     const activeAction = actions[selectedDetailActionIndex];
     if (detailList && activeAction?.id) detailList.setAttribute("aria-activedescendant", activeAction.id);
-    if (!skipScroll) actions[selectedDetailActionIndex]?.scrollIntoView({ block: "nearest" });
+    const shouldScroll = !skipScroll || (Boolean(activeAction) && activeAction !== detailList?.firstElementChild);
+    if (shouldScroll) activeAction?.scrollIntoView({ block: "nearest" });
     focusActiveMenuContainer();
   }
 
@@ -1544,9 +1771,10 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         return `battle-reports:${battleReportIndex ?? "list"}`;
       case "bestiary":
         return `bestiary:${bestiaryEntryId ?? "list"}`;
+      case "options":
+        return optionsSubscreen ? `options:${optionsSubscreen}` : "options";
       case "save":
       case "trainer-card":
-      case "options":
       case "load":
       case "quests":
       case "relationships":
@@ -1584,7 +1812,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     return session.m2Runtime?.access.save !== false;
   }
 
-  return { reset, renderMenu, openSaveMenu, openMonsterBox, openSkillScreen, openLifeRecoveryLedger, toggleMenu, handleKey, handleExtraKey };
+  const isCapturingKey = (): boolean => capturingKeyAction !== undefined;
+
+  return { reset, renderMenu, openSaveMenu, openMonsterBox, openSkillScreen, openLifeRecoveryLedger, toggleMenu, handleKey, handleExtraKey, isCapturingKey };
 }
 
 function isRailNavKey(key: RuntimeMenuKey): boolean {

@@ -32,6 +32,7 @@ export interface DesktopShellBootConfig {
   readonly steamAppId?: number;
   readonly displayMode?: DesktopDisplayMode;
   readonly saveDirectory?: string;
+  readonly saveNamespace?: string;
   readonly savePattern?: string;
   readonly pakArchive?: string;
   readonly steamAutoCloud?: boolean;
@@ -44,6 +45,13 @@ export interface DesktopPlayerHostApi {
   readonly listSaveFiles?: () => Promise<readonly string[]> | readonly string[];
   readonly toggleFullscreen?: () => Promise<boolean> | boolean;
   readonly captureScreenshot?: () => Promise<string | null> | string | null;
+  readonly quit?: () => Promise<void> | void;
+}
+
+export interface DesktopSaveHydrationResult {
+  readonly hydratedFiles: readonly string[];
+  readonly pushedFiles: readonly string[];
+  readonly skippedFiles: readonly string[];
 }
 
 export interface DesktopSaveMirrorEntry {
@@ -115,16 +123,20 @@ export function gamepadStickSector(axisX: number, axisY: number, previous: numbe
 }
 
 let activeCleanup: (() => void) | null = null;
+let suppressMirrorDepth = 0;
 
 /**
- * 로컬 저장소 키(`*:save-slot:v5:1` 등)를 Steam Auto-Cloud 대응 상대 파일 경로(`saves/slot-01.oprn-save.json`)로 변환한다.
+ * 로컬 저장소 키(`*:save-slot:v5:1` ~ `20+`, `auto`, `clear-record:v1`, `gallery-record:v1`)를
+ * Steam Auto-Cloud 대응 상대 파일 경로(`saves/slot-01.oprn-save.json` 등)로 변환한다.
  */
 export function saveStorageKeyToDesktopFilePath(key: string): string | null {
-  const slotMatch = /:save-slot:(?:v[456]:)?([123]|auto)$/u.exec(key);
+  const slotMatch = /:save-slot:(?:v[456]:)?([1-9]\d*|auto)$/u.exec(key);
   if (slotMatch) {
     const token = slotMatch[1];
     if (token === "auto") return "saves/autosave.oprn-save.json";
-    return `saves/slot-0${token}.oprn-save.json`;
+    const slotNum = Number.parseInt(token, 10);
+    if (!Number.isSafeInteger(slotNum) || slotNum < 1) return null;
+    return `saves/slot-${String(slotNum).padStart(2, "0")}.oprn-save.json`;
   }
   if (key.endsWith(":clear-record:v1")) {
     return "saves/clear-record.oprn-save.json";
@@ -133,6 +145,201 @@ export function saveStorageKeyToDesktopFilePath(key: string): string | null {
     return "saves/gallery-record.oprn-save.json";
   }
   return null;
+}
+
+/**
+ * 데스크톱 세이브 파일 경로(`saves/slot-01.oprn-save.json` 등)를 현재 게임 네임스페이스의
+ * localStorage 저장 키로 역매핑한다.
+ */
+export function desktopFilePathToSaveStorageKey(filePath: string, saveNamespace: string): string | null {
+  const normalized = filePath.replaceAll("\\", "/").trim();
+  const ns = saveNamespace.trim() || "oprn";
+  const slotMatch = /(?:^|\/)slot-0*([1-9]\d*)\.oprn-save\.json$/u.exec(normalized);
+  if (slotMatch) {
+    const slotNum = Number.parseInt(slotMatch[1] ?? "", 10);
+    if (!Number.isSafeInteger(slotNum) || slotNum < 1) return null;
+    return `${ns}:save-slot:v5:${slotNum}`;
+  }
+  if (/(?:^|\/)autosave\.oprn-save\.json$/u.test(normalized)) {
+    return `${ns}:save-slot:v5:auto`;
+  }
+  if (/(?:^|\/)clear-record\.oprn-save\.json$/u.test(normalized)) {
+    return `${ns}:clear-record:v1`;
+  }
+  if (/(?:^|\/)gallery-record\.oprn-save\.json$/u.test(normalized)) {
+    return `${ns}:gallery-record:v1`;
+  }
+  return null;
+}
+
+function parseSaveJsonSafe(raw: string): Record<string, unknown> | null {
+  try {
+    const parsed: unknown = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+    return parsed as Record<string, unknown>;
+  } catch {
+    return null;
+  }
+}
+
+function extractSaveTimestampMs(parsed: Record<string, unknown>): number | null {
+  for (const field of ["savedAt", "updatedAt", "lastClearedAt", "clearedAt", "timestamp"] as const) {
+    const value = parsed[field];
+    if (typeof value === "number" && Number.isFinite(value)) return value;
+    if (typeof value === "string" && value.trim().length > 0) {
+      const ms = Date.parse(value);
+      if (Number.isFinite(ms)) return ms;
+    }
+  }
+  return null;
+}
+
+/**
+ * 부팅 시 네이티브/로컬 데스크톱 호스트(`window.__oprnDesktopPlayer`)의 `saves/*.oprn-save.json`을
+ * 읽어 localStorage와 양방향 동기화한다:
+ * - localStorage에 없거나 디스크 파일이 더 최신이면 localStorage로 안전하게 복원(하이드레이션)한다.
+ * - localStorage가 더 최신이거나 디스크에 아직 없으면 디스크로 백업 기록한다.
+ * - 과거 더미 플레이스홀더(`status: "empty-slot-placeholder"`)나 손상 JSON은 무시한다.
+ */
+export async function hydrateSavesFromDesktopHost(
+  saveNamespace: string,
+  storageOverride?: Storage,
+): Promise<DesktopSaveHydrationResult> {
+  const hydratedFiles: string[] = [];
+  const pushedFiles: string[] = [];
+  const skippedFiles: string[] = [];
+
+  if (typeof window === "undefined") {
+    return { hydratedFiles, pushedFiles, skippedFiles };
+  }
+  const host = window.__oprnDesktopPlayer;
+  if (!host || typeof host.listSaveFiles !== "function" || typeof host.readSaveFile !== "function") {
+    return { hydratedFiles, pushedFiles, skippedFiles };
+  }
+  let storage: Storage | undefined = storageOverride;
+  if (!storage) {
+    try {
+      storage = window.localStorage;
+    } catch {
+      return { hydratedFiles, pushedFiles, skippedFiles };
+    }
+  }
+  if (!storage) return { hydratedFiles, pushedFiles, skippedFiles };
+
+  const state = ensureDesktopShellState();
+  const seenDiskFiles = new Set<string>();
+  const files = await host.listSaveFiles();
+
+  for (const rawFilePath of files) {
+    const filePath = rawFilePath.replaceAll("\\", "/");
+    const storageKey = desktopFilePathToSaveStorageKey(filePath, saveNamespace);
+    if (!storageKey) {
+      skippedFiles.push(filePath);
+      continue;
+    }
+    const diskJson = await host.readSaveFile(filePath);
+    if (!diskJson) {
+      skippedFiles.push(filePath);
+      continue;
+    }
+    const diskParsed = parseSaveJsonSafe(diskJson);
+    if (!diskParsed || diskParsed.status === "empty-slot-placeholder") {
+      skippedFiles.push(filePath);
+      continue;
+    }
+
+    seenDiskFiles.add(filePath);
+    const localJson = storage.getItem(storageKey);
+    const localParsed = localJson ? parseSaveJsonSafe(localJson) : null;
+    const diskTs = extractSaveTimestampMs(diskParsed);
+    const localTs = localParsed ? extractSaveTimestampMs(localParsed) : null;
+
+    const shouldRestoreFromDisk =
+      !localJson ||
+      !localParsed ||
+      (diskTs !== null && (localTs === null || diskTs > localTs));
+
+    if (shouldRestoreFromDisk) {
+      suppressMirrorDepth += 1;
+      try {
+        storage.setItem(storageKey, diskJson);
+      } finally {
+        suppressMirrorDepth -= 1;
+      }
+      state.syncedSaveFiles[filePath] = {
+        filePath,
+        storageKey,
+        updatedAt: new Date().toISOString(),
+        bytes: new TextEncoder().encode(diskJson).length,
+        json: diskJson,
+      };
+      hydratedFiles.push(filePath);
+    } else if (
+      localJson &&
+      localTs !== null &&
+      (diskTs === null || localTs > diskTs) &&
+      typeof host.writeSaveFile === "function"
+    ) {
+      await host.writeSaveFile(filePath, localJson);
+      state.syncedSaveFiles[filePath] = {
+        filePath,
+        storageKey,
+        updatedAt: new Date().toISOString(),
+        bytes: new TextEncoder().encode(localJson).length,
+        json: localJson,
+      };
+      pushedFiles.push(filePath);
+    } else {
+      state.syncedSaveFiles[filePath] = {
+        filePath,
+        storageKey,
+        updatedAt: new Date().toISOString(),
+        bytes: new TextEncoder().encode(localJson ?? diskJson).length,
+        json: localJson ?? diskJson,
+      };
+      skippedFiles.push(filePath);
+    }
+  }
+
+  // Push any localStorage saves belonging to this namespace that are not yet on disk.
+  if (typeof host.writeSaveFile === "function") {
+    const nsPrefix = `${saveNamespace.trim() || "oprn"}:`;
+    for (let i = 0; i < storage.length; i += 1) {
+      const key = storage.key(i);
+      if (!key || !key.startsWith(nsPrefix)) continue;
+      const filePath = saveStorageKeyToDesktopFilePath(key);
+      if (!filePath || seenDiskFiles.has(filePath)) continue;
+      const value = storage.getItem(key);
+      if (!value || !parseSaveJsonSafe(value)) continue;
+      await host.writeSaveFile(filePath, value);
+      state.syncedSaveFiles[filePath] = {
+        filePath,
+        storageKey: key,
+        updatedAt: new Date().toISOString(),
+        bytes: new TextEncoder().encode(value).length,
+        json: value,
+      };
+      pushedFiles.push(filePath);
+    }
+  }
+
+  return { hydratedFiles, pushedFiles, skippedFiles };
+}
+
+/**
+ * 데스크톱 호스트(`window.__oprnDesktopPlayer.quit`)를 통해 네이티브 게임 프로세스를 종료한다.
+ * 호스트가 없으면 `false`를 반환해 호출부가 웹 폴백 종료 화면을 표시하도록 한다.
+ */
+export async function quitDesktopPlayer(): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+  const hostQuit = window.__oprnDesktopPlayer?.quit;
+  if (typeof hostQuit !== "function") return false;
+  try {
+    await hostQuit();
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -316,7 +523,7 @@ function installStorageSaveMirrorHook(): () => void {
   const originalSetItem = Storage.prototype.setItem;
   const hookedSetItem = function (this: Storage, key: string, value: string): void {
     originalSetItem.call(this, key, value);
-    if (saveStorageKeyToDesktopFilePath(key)) {
+    if (suppressMirrorDepth === 0 && saveStorageKeyToDesktopFilePath(key)) {
       mirrorDesktopSaveFile(key, value);
     }
   };
