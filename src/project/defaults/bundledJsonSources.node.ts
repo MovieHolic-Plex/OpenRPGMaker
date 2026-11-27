@@ -28,6 +28,15 @@ const ASSET_FILES: Readonly<Record<BundledJsonKey, string>> = {
   prehistoricTileset: "../../assets/prehistoricTileset.json",
   skyIslandTileset: "../../assets/skyIslandTileset.json",
   beodeulWavePlacesTileset: "../../assets/beodeulWavePlacesTileset.json",
+  monsterKitClimate: "../../assets/monsterKit/monster-climate.json",
+  monsterKitCoast: "../../assets/monsterKit/monster-coast.json",
+  monsterKitDungeon: "../../assets/monsterKit/monster-dungeon.json",
+  monsterKitGyms: "../../assets/monsterKit/monster-gyms.json",
+  monsterKitOverworld: "../../assets/monsterKit/monster-overworld.json",
+  monsterKitRooms: "../../assets/monsterKit/monster-rooms.json",
+  monsterKitWild: "../../assets/monsterKit/monster-wild.json",
+  reliefRampArt: "../relief/rampArt.json",
+  reliefSheerArt: "../relief/sheerArt.json",
 };
 
 export type { BundledJsonData, BundledJsonKey, BundledJsonReader };

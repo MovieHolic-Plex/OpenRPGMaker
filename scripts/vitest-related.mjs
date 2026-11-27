@@ -33,6 +33,7 @@ import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { posix } from "node:path";
 import { pathToFileURL } from "node:url";
 import { distances, loadRepoGraph } from "./lib/testImportGraph.mjs";
+import { effectiveVitestWorkers } from "./lib/vitestBudget.mjs";
 
 // 2026-11-24 실측(PR #5003 의 수동 실행 7회). 시간 기록(.omo/test-timings.json)은 «케이스 실행 시간» 이라 파일마다 드는 고정 비용(모듈 import·jsdom 설정)이 빠져 있다.
 //   mdc2-heavy(박스 load 약 38/40코어): 같은 36파일(기록 합 377초)이 워커 4 로 11분에 20파일, 워커 2 로 11분에 14파일 — 워커 시간으로 파일당 70~90초, 첫 파일 완료까지 2~4분.
@@ -46,9 +47,9 @@ import { distances, loadRepoGraph } from "./lib/testImportGraph.mjs";
 //   chunks: 한 PR 의 관련 시험을 몇 개의 잡(조각)으로 나눌 수 있나. 조각마다 같은 상한이 걸린다.
 //   넓은 변경(wide): 그래프로 닿는 시험이 wideTests(1000 — 2026-11-26 최근 머지 60건 재현: 넓은 모드 18%·PR 당 러너 시험 0.58h, 800 이면 38%·1.88h, 400 이면 45%·2.24h)를 넘거나 바뀐 파일이 wideFiles 를 넘으면 상한 없이 닿는 시험 전부를 wideChunks 개 조각으로 돌린다.
 export const DEFAULTS = Object.freeze({
-  // 2026-11-27 perf/ci-speed-aggressive: 호스티드 4코어/16GB 에서 bundledJson Node 지연 로드 + defaultTilesets 지연 생성으로
-  // run-vitest.mjs 가 최대 3워커를 해금했다(기존 1워커). test-timings.json 도 최신 ci-full(1,053파일)로 갱신해 미측정 비율을 없앴다.
-  budgetSeconds: 480, workers: 3, factor: 1, perFileSeconds: 12, startupSeconds: 110, defaultSeconds: 60,
+  // 2026-11-27 perf/ci-speed-aggressive: run-vitest.mjs 와 같은 예산(scripts/lib/vitestBudget.mjs)으로 실효 워커 수를 유도한다.
+  // 호스티드 4코어/16GB 에서 bundledJson Node 지연 로드 + defaultTilesets 지연 생성·보존으로 2워커 × 6.5GB 힙을 사용한다.
+  budgetSeconds: 480, workers: effectiveVitestWorkers(4), factor: 1, perFileSeconds: 15, startupSeconds: 120, defaultSeconds: 60,
   chunks: 8, wideTests: 1000, wideFiles: 80, wideChunks: 12,
   // 늘 담는 세 단계(바뀐 시험·직접 import·문자열)만으로 상한을 넘을 때 쓸 수 있는 조각 수. 2026-11-27 #5283: 직접 import 104개가
   // 예상 7,970초(필요 조각 25)인데 wideChunks 12 에 막혀 조각 하나가 예상 819초 → 720초 상자에 끊겼다. ci-full 샤드 수(24)까지 늘린다.
@@ -277,14 +278,20 @@ export function selectRelated({ changed, testSources, exists, timings = {}, opti
 /** 파일을 비용(고정 + 기록 초) LPT 로 n 조각에 나눈다. 같은 입력이면 같은 분할이다. */
 export function planChunks(entries, count, options = {}) {
   const { workers, factor, perFileSeconds, startupSeconds } = { ...DEFAULTS, ...options };
-  const chunks = Array.from({ length: count }, (_, index) => ({ id: index + 1, files: [], cost: 0 }));
+  const chunks = Array.from({ length: count }, (_, index) => ({ id: index + 1, files: [], cost: 0, largest: 0 }));
   const ordered = [...entries].sort((a, b) => b.sec - a.sec || (a.file < b.file ? -1 : 1));
   for (const entry of ordered) {
     const target = chunks.reduce((best, chunk) => (chunk.cost < best.cost ? chunk : best));
+    const fileCost = perFileSeconds + factor * entry.sec;
     target.files.push(entry.file);
-    target.cost += perFileSeconds + factor * entry.sec;
+    target.cost += fileCost;
+    target.largest = Math.max(target.largest, fileCost);
   }
-  return chunks.filter((chunk) => chunk.files.length > 0).map((chunk) => ({ id: chunk.id, files: chunk.files.sort(), estWallSeconds: Math.round(startupSeconds + chunk.cost / workers) }));
+  return chunks.filter((chunk) => chunk.files.length > 0).map((chunk) => ({
+    id: chunk.id,
+    files: chunk.files.sort(),
+    estWallSeconds: Math.round(startupSeconds + Math.max(chunk.largest, chunk.cost / workers)),
+  }));
 }
 
 const seconds = (value) => `${Math.round(value)}초(${(value / 60).toFixed(1)}분)`;

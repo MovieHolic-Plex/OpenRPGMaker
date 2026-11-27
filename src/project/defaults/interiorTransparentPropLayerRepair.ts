@@ -1,5 +1,6 @@
 import type { GameMap, TilesetDef } from "../types";
 import { LEGACY_INTERIOR_CABINET } from "./interiorCabinetLegacy";
+import { pendingDefaultTilesetBuilder } from "./lazyDefaultTilesets";
 import { structuralJson } from "@/util/structuralJson";
 
 export function hasInteriorCabinetOverride(tileset: TilesetDef): boolean {
@@ -35,8 +36,9 @@ export function repairLegacyInteriorCabinetKit(tileset: TilesetDef): boolean {
  */
 export function repairInteriorTransparentPropLayers(project: { readonly maps: Record<string, GameMap>; readonly tilesets: Record<string, TilesetDef> }): boolean {
   let changed = false;
-  for (const tileset of Object.values(project.tilesets)) {
-    changed = repairLegacyInteriorCabinetKit(tileset) || changed;
+  for (const id of Object.keys(project.tilesets)) {
+    if (pendingDefaultTilesetBuilder(project.tilesets, id)) continue;
+    changed = repairLegacyInteriorCabinetKit(project.tilesets[id]!) || changed;
   }
   return changed;
 }

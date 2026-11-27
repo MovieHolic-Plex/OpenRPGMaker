@@ -122,9 +122,34 @@ function makeBundledTileset(id: string, name: string, textureKey: string): Tiles
   return tileset;
 }
 
+const bundledReferenceSourceCache = new Map<string, string | null>();
+function bundledReferenceSourceOwnerId(asset: (typeof BUNDLED_EASYRPG_CHIPSET_ASSETS)[number]): string | null {
+  const id = bundledTilesetIdForAsset(asset);
+  const cached = bundledReferenceSourceCache.get(id);
+  if (cached !== undefined) return cached;
+  // 대형 정의 JSON 을 읽는 18개 호스트 타일셋은 참고문서 소유자 자체이며 referenceSourceTilesetId 를 쓰지 않는다.
+  if (bundledJsonKeyForTexture(asset.textureKey) !== undefined) {
+    bundledReferenceSourceCache.set(id, null);
+    return null;
+  }
+  const owner = bundledEasyRpgTileset(asset).referenceSourceTilesetId ?? null;
+  bundledReferenceSourceCache.set(id, owner);
+  return owner;
+}
+
 export function defaultTilesets(onlyIds?: Iterable<string>): Record<string, TilesetDef> {
   if (onlyIds !== undefined) {
-    const wanted = new Set(onlyIds);
+    const wanted = new Set<string>();
+    const queue = [...onlyIds];
+    while (queue.length > 0) {
+      const id = queue.shift()!;
+      if (wanted.has(id)) continue;
+      wanted.add(id);
+      const asset = bundledAssetForTilesetId(id);
+      if (!asset) continue;
+      const ownerId = bundledReferenceSourceOwnerId(asset);
+      if (ownerId && !wanted.has(ownerId)) queue.push(ownerId);
+    }
     const tilesets: Record<string, TilesetDef> = {};
     for (const id of wanted) {
       const asset = bundledAssetForTilesetId(id);
@@ -241,12 +266,16 @@ export function preloadAllBundledTilesetDefinitions(): Promise<void> | null {
 // 옛 프로젝트에 남은 그 타일셋 정의는 그대로 읽힌다(번들 목록에 없으니 여기서 건드리지 않는다).
 export function ensureBundledTilesets(project: { tilesets: Record<string, TilesetDef>; maps?: Readonly<Record<string, { tilesetId?: string }>> }): boolean {
   let changed = false;
-  for (const tileset of Object.values(project.tilesets)) changed = upgradeBeodeulCrateStackGrafts(tileset) || changed;
+  for (const id of Object.keys(project.tilesets)) {
+    if (pendingDefaultTilesetBuilder(project.tilesets, id)) continue;
+    changed = upgradeBeodeulCrateStackGrafts(project.tilesets[id]!) || changed;
+  }
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
     // 존재 확인이 **먼저**다. 생성자를 먼저 부르면 타일셋이 이미 있는 흔한 경우에도
     // 3~5MB 짜리 JSON 사본을 만들어 그대로 버린다 — 실측 2026-09-22: 프로젝트 로드마다
     // 164ms 였고 그 대부분이 버려지는 사본이었다(수정 후 26ms).
     const id = bundledTilesetIdForAsset(asset);
+    if (pendingDefaultTilesetBuilder(project.tilesets, id)) continue;
     if (project.tilesets[id]) {
       if (asset.textureKey === ATLAS_CARTOGRAPHY_TEXTURE) changed = ensureAtlasCartographyReferences(project.tilesets[id]) || changed;
       // 공방에서 그려 넣은 칸(맵 기물)은 번들 끝 뒤에 붙어 있다. 아래 ensure 가 번들 칸을 늘리면 겹치므로
@@ -366,8 +395,12 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
   }
   changed = ensureTilesetHarnesses(project) || changed;
   // 옛 번들 「계단 입구」 참고문서(그림 삭제됨)를 저장된 사본에서 뗀다(legacyStairEntranceCleanup.ts).
-  for (const tileset of Object.values(project.tilesets)) changed = removeLegacyStairEntranceReferences(tileset) || changed;
-  for (const tileset of Object.values(project.tilesets)) if (tileset.mvPack) changed = refreshMvPackGuide(tileset) || changed;
+  for (const id of Object.keys(project.tilesets)) {
+    if (pendingDefaultTilesetBuilder(project.tilesets, id)) continue;
+    const tileset = project.tilesets[id]!;
+    changed = removeLegacyStairEntranceReferences(tileset) || changed;
+    if (tileset.mvPack) changed = refreshMvPackGuide(tileset) || changed;
+  }
   changed = ensureWorldmapAuthoringBrushes(project) || changed;
   return changed;
 }

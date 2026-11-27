@@ -105,3 +105,18 @@ export function copyTilesetDictionaryPreservingLazy<T>(source: Record<string, T>
   }
   return copy;
 }
+
+/**
+ * 타일셋 사전을 깊은 복제한다 — 이미 정착된 항목만 structuredClone 하고, 아직 안 깨어난
+ * 지연 자리는 깨우지 않고 같은 지연 생성기로 새 사전에 등록한다.
+ */
+export function cloneTilesetDictionaryPreservingLazy<T>(source: Record<string, T>): Record<string, T> {
+  if (!hasPendingDefaultTilesets(source)) return structuredClone(source);
+  const copy: Record<string, T> = {};
+  for (const id of Object.keys(source)) {
+    const build = pendingDefaultTilesetBuilder(source, id);
+    if (build) registerLazyDefaultTileset(copy, id, build as LazyDefaultTilesetBuilder<T>);
+    else copy[id] = structuredClone(source[id]!);
+  }
+  return copy;
+}

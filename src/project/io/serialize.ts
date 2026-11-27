@@ -7,7 +7,8 @@ import { migrateV1toV3, migrateV2toV3, migrateV3toV4 } from "./migration";
 import { validateProjectV1, validateProjectV2, validateProjectV4 } from "./shape";
 import { restoreOwnedReferenceDocuments, reuseTilesetsView, withoutOwnedReferenceDocuments } from "../referenceOwnership";
 import { BundledTilesetRefError, restoreBundledTilesetRefs } from "../bundledTilesetRefs";
-import { BundledTilesetDiffError, bundledTilesetDiffView, restoreBundledTilesetDiffs } from "../bundledTilesetDiff";
+import { BundledTilesetDiffError, bundledTilesetDiffView, bundledTilesetDiffViewForPendingDefault, restoreBundledTilesetDiffs } from "../bundledTilesetDiff";
+import { pendingDefaultTilesetBuilder } from "../defaults/lazyDefaultTilesets";
 
 function omitRetiredTerrainTemplates<T extends object>(owner: T): T | Record<string, unknown> {
   // 버려진 키가 없으면 같은 객체를 돌려준다 — 매번 새 객체를 만들면 저장 비교의 같은-객체 단축이 깨져
@@ -34,16 +35,28 @@ export function projectWireView(project: Project, options?: { readonly keepRefer
   const diff = strip && options?.inlineBundledTilesets !== true;
   let tilesets: Record<string, unknown> | null = null;
   let parts: Map<string, unknown> | null = null;
-  const entries = Object.entries(project.tilesets);
-  for (let index = 0; index < entries.length; index += 1) {
-    const [id, tileset] = entries[index];
+  const keys = Object.keys(project.tilesets);
+  for (let index = 0; index < keys.length; index += 1) {
+    const id = keys[index];
+    if (diff && pendingDefaultTilesetBuilder(project.tilesets, id)) {
+      const pendingView = bundledTilesetDiffViewForPendingDefault(id);
+      if (pendingView !== undefined) {
+        if (!parts) {
+          parts = new Map();
+          for (let earlier = 0; earlier < index; earlier += 1) parts.set(keys[earlier], project.tilesets[keys[earlier]]);
+        }
+        parts.set(id, pendingView);
+        continue;
+      }
+    }
+    const tileset = project.tilesets[id];
     const base = omitRetiredTerrainTemplates(tileset);
     const view = (diff ? bundledTilesetDiffView(id, tileset, base) : undefined)
       ?? (strip ? withoutOwnedReferenceDocuments(id, tileset, base) : base);
     if (view === tileset) { if (parts) parts.set(id, view); continue; }
     if (!parts) {
       parts = new Map();
-      for (let earlier = 0; earlier < index; earlier += 1) parts.set(entries[earlier][0], entries[earlier][1]);
+      for (let earlier = 0; earlier < index; earlier += 1) parts.set(keys[earlier], project.tilesets[keys[earlier]]);
     }
     parts.set(id, view);
   }
