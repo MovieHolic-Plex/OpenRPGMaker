@@ -20237,5 +20237,12 @@
 "＋ 채집물 추가":"＋ Add gatherable",
 "＋ 추가":"＋ Add",
 "＋ 행동 추가":"＋ Add action",
-"＝ 대입":"＝ Assign"
+"＝ 대입":"＝ Assign",
+"기타 연결 · 연결된 계정 상세":"Other connections · Connected account details",
+"API 키 · OpenRouter · 직접 서버 · 연결 한도 보기":"API key · OpenRouter · Direct server · View connection limits",
+"세부 역할별 모델 설정 (고급)":"Per-role model settings (Advanced)",
+"진행 · 검토 · 화면 이해 · 픽셀 아트 · 작문 모델을 따로 지정해요":"Set separate models for progress, review, screen understanding, pixel art, and writing",
+"고급 작업 옵션":"Advanced work options",
+"결과 적용 세분화 · Pi 팀 · 도안 장 수 · 최대 토큰 · 에이전트 모드":"Result apply detail · Pi team · Number of concepts · Max tokens · Agent mode",
+"세부 실행 옵션":"Detailed run options"
 }
