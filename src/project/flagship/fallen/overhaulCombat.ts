@@ -44,10 +44,11 @@ function bindPixelFx(project: Project, skillId: string, spec: PixelFxSpec, hit: 
   const timings = sound
     ? [{ frameIndex: hit, soundResourceId: sound }]
     : (old?.timings ?? []).filter((t) => t.soundResourceId || t.screenShake).map((t, i) => ({ ...t, frameIndex: hit + i }));
+  const inferredScope = skill.scope === "allEnemies" || skill.scope === "allAllies" ? "allTargets" : "singleTarget";
   const record: BattleAnimationRecord = normalizeBattleAnimationRecord({
     id,
     name: `${note} · pixelfx ${normalized.effectId}`,
-    scope: old?.scope === "screen" ? "allTargets" : old?.scope ?? "singleTarget",
+    scope: old?.scope === "screen" ? "allTargets" : old?.scope ?? inferredScope,
     position: "feet",
     pixelFx: normalized,
     timings,
