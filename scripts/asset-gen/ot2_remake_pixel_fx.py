@@ -755,27 +755,36 @@ def draw_mage_star_hit(im, f, n):
 # ── 10) REMAINING CORE FX: SLASH, KNIFE, WATER, WIND, EARTH, LEAF, POISON, SLEEP, WEAKEN, FOCUS ──
 def draw_slash_core(im, f, n):
     C_W, C_L, C_M, C_D, C_O = P_SLASH
-    # Crisp OT2 diagonal cleave + X-cross secondary flash!
-    if f <= 5:
-        t = min(1.0, (f + 1) / 3.0) if f <= 2 else (1.0 - (f - 2) * 0.25)
-        ln = 24 * t
-        thick = [2, 5, 6, 4, 2, 1][f]
-        layer = Image.new("RGBA", im.size, (0, 0, 0, 0))
-        x0, y0 = 32 - ln * 0.85, 32 - ln * 0.72
-        x1, y1 = 32 + ln * 0.85, 32 + ln * 0.72
-        line_px(layer, x0, y0, x1, y1, C_D, width=thick + 2)
-        line_px(layer, x0 + 2, y0 + 2, x1 - 2, y1 - 2, C_M, width=thick)
-        line_px(layer, x0 + 4, y0 + 3, x1 - 4, y1 - 3, C_W, width=max(1, thick - 2))
-        if f in (2, 3):
-            # Subtle counter-cleave highlight
-            line_px(layer, 32 + 12, 32 - 10, 32 - 12, 32 + 10, C_L, width=2)
-        im.alpha_composite(add_outline_rgba(layer, C_O))
+    # Cells 0-3: approach combo cuts; cell 4: coil flash; cell 5: biggest finishing impact cleave;
+    # cells 6-7: fading finishing cleave recovery (matches animateRetroSkillFx cell 5 impact contract!).
+    lens = [10.0, 17.5, 24.0, 19.0, 12.0, 26.5, 23.0, 18.0]
+    thicks = [2, 5, 6, 4, 2, 7, 5, 3]
+    ln = lens[f]
+    thick = thicks[f]
+    layer = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    # Alternate slash direction on finishing cleave (cells 5-7: opposite diagonal + X cross!)
+    sgn = 1 if f <= 4 else -1
+    x0, y0 = 32 - ln * 0.85, 32 - sgn * ln * 0.72
+    x1, y1 = 32 + ln * 0.85, 32 + sgn * ln * 0.72
+    line_px(layer, x0, y0, x1, y1, C_D, width=thick + 2)
+    line_px(layer, x0 + 2, y0 + sgn * 2, x1 - 2, y1 - sgn * 2, C_M, width=thick)
+    if f <= 6:
+        line_px(layer, x0 + 4, y0 + sgn * 3, x1 - 4, y1 - sgn * 3, C_W if f in (2, 3, 5) else C_L, width=max(1, thick - 2))
     if f in (2, 3):
-        starburst(im, 32, 32, 11 if f == 2 else 7, C_W, C_L, C_M)
+        line_px(layer, 32 + 12, 32 - 10, 32 - 12, 32 + 10, C_L, width=2)
+    elif f in (5, 6):
+        # Strong X-cleave counter-slash on final impact & recovery
+        cln = 18 if f == 5 else 14
+        line_px(layer, 32 - cln, 32 - cln * 0.75, 32 + cln, 32 + cln * 0.75, C_M, width=4 if f == 5 else 2)
+        line_px(layer, 32 - cln + 3, 32 - (cln - 3) * 0.75, 32 + cln - 3, 32 + (cln - 3) * 0.75, C_W if f == 5 else C_L, width=2 if f == 5 else 1)
+    im.alpha_composite(add_outline_rgba(layer, C_O))
+    if f in (2, 3, 5, 6):
+        arm = {2: 11, 3: 7, 5: 14, 6: 9}[f]
+        starburst(im, 32, 32, arm, C_W, C_L, C_M)
     if f >= 2:
         t = (f - 1) / 6.0
-        for i in range(12):
-            a = -0.6 + (i / 11.0) * math.pi * 2
+        for i in range(14 if f >= 5 else 12):
+            a = -0.6 + (i / 13.0) * math.pi * 2
             r = 6 + t * 22
             px(im, 32 + math.cos(a) * r, 32 + math.sin(a) * r * 0.8, C_W if i % 2 == 0 else C_L)
 
