@@ -470,6 +470,17 @@ export function installEventEditorCustomSelects(root: HTMLElement): EventEditorC
     };
     instances.set(select, instance);
     sync();
+    // 이름은 라벨 글자에서 만든다. 편집기 번역(i18n/domTranslator)은 그 글자를 나중에 바꾸므로, 라벨이 바뀌면 이름만 다시 짓는다 —
+    // 안 그러면 영어 화면에 한국어 aria-label 이 남는다(aiSettingsLocale, #5185). 바뀐 것이 없으면 쓰지 않아 되돌이지 않는다.
+    if (typeof MutationObserver === "function" && select.labels && select.labels.length > 0) {
+      const relabel = new MutationObserver(() => {
+        const selected = select.options[select.selectedIndex] ?? select.selectedOptions[0];
+        const text = selected?.label || selected?.textContent || select.getAttribute("placeholder") || "선택";
+        const next = `${accessibleSelectName(select)}: ${text}`;
+        if (trigger.getAttribute("aria-label") !== next) trigger.setAttribute("aria-label", next);
+      });
+      for (const label of Array.from(select.labels)) relabel.observe(label, { subtree: true, characterData: true, childList: true });
+    }
     // Reparenting a focused native select drops focus in Chromium. Transfer it only
     // when this control owned focus before enhancement, never on background refresh.
     if (hadFocus) trigger.focus({ preventScroll: true });
