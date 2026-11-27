@@ -33,9 +33,10 @@ import type { ActorInitialEquipment, ActorRecord, Project } from "@/project/type
 /** 허브가 그리는 쪽. hub 는 첫 화면, generic 은 옛 상세 목록을 같은 틀에 담은 쪽. */
 export type HubPage = "hub" | "items" | "skills" | "equipment" | "status" | "generic";
 
-/** 허브 메뉴를 쓸 게임인가. 배우 파티로 싸우는 게임만 — 몬스터 파티·연애·전투 없는 이야기 게임은 자기 메뉴(옛 틀)를 쓴다. */
+/** 허브 메뉴를 쓸 게임인가. 기본으로 켜진다(옛 프로젝트·내보낸 게임도) — 「옛 메뉴」(menuLayout legacy)를 고른 게임과
+ *  배우 파티로 싸우지 않는 게임(몬스터 파티·연애·전투 없는 이야기)은 자기 메뉴(옛 틀)를 쓴다. */
 export function hubMenuEnabled(project: Project, session: PlaySession | undefined): boolean {
-  if (project.system.menuLayout !== "hub") return false;
+  if (project.system.menuLayout === "legacy") return false;
   if (!session || session.partyActorIds.length === 0) return false;
   if (usesMonsterParty(project) || isEmeraldMonsterStyle(project) || usesRelationshipMenu(project) || !gameHasCombat(project)) return false;
   return true;
@@ -359,7 +360,8 @@ function drawHub(ctx: Ctx): void {
   const sysH = tall ? 44 : 54;
   let cx: number, cy: number, cw: number, ch: number, tx: number, ty: number, tw: number, th: number, sx: number, sy: number, sw: number, sh: number;
   if (!tall) {
-    const cardsW = Math.round((W - 2 * M) * (n >= 4 ? 0.56 : 0.48));
+    // 동료가 적으면 카드를 넓히지 않고(혼자면 판 절반이 빈다) 그 자리를 오른쪽 칸에 준다.
+    const cardsW = Math.min(Math.round((W - 2 * M) * (n >= 4 ? 0.56 : 0.48)), n * 150);
     cw = Math.floor((cardsW - (n - 1) * G) / n); ch = H - 2 * M; cx = M; cy = M;
     tx = M + n * cw + n * G; tw = Math.floor((W - M - tx - G) / 2);
     th = Math.floor((H - 2 * M - sysH - 2 * G) / 2); ty = M;
@@ -381,7 +383,7 @@ function drawHub(ctx: Ctx): void {
     const html = `${faceHtml(project, row, big ? 48 : 32)}`
       + `<div class="nm"><span class="ttl">${esc(row.name)}</span><span class="sm dim">Lv${row.level}</span></div>`
       + `<div class="sm dim nw">${esc(row.className)}</div>`
-      + (big || ch >= 118 ? `<div class="sm">${row.stateNames.length ? `<span class="chip bad">${esc(row.stateNames[0]!)}</span>` : `<span class="faint">상태 정상</span>`}</div>` : "")
+      + (big ? `<div class="sm">${row.stateNames.length ? `<span class="chip bad">${esc(row.stateNames[0]!)}</span>` : `<span class="faint">상태 정상</span>`}</div>` : "")
       + vitHtml("HP", "var(--hub-hp)", v.hp, v.maxHp) + vitHtml(mpTerm, "var(--hub-mp)", v.mp, v.maxMp)
       + (big && stats ? `<div class="mini sm">${STAT_ROWS.map(([k, l]) => `<span><span class="dim">${l[0]}</span>${stats[k]}</span>`).join("")}</div>`
         + `<div class="wp sm">${iconHtml(project, weapon?.iconResourceId ?? weapon?.imageResourceId, 16)}<span>${esc(weapon?.name ?? "맨손")}</span></div>`

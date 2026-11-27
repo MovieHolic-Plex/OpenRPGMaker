@@ -101,6 +101,8 @@ const beats = process.env.CRAFT_SHOP_MODE === "choices" ? choicesBeats : windowB
 /** @type {import("../../lib/runtimeQa.d.mts").RuntimeQaScenario} */
 export default {
   id: "craft-shop",
+  // 옛 ESC 메뉴(menuUiStyle 스킨) 화면을 검사한다 — 기본이 허브 메뉴가 된 뒤에도 같은 화면을 본다.
+  systemPatch: { menuLayout: "legacy" },
   checkpointSet: "craft-shop",
   // CRAFT_SHOP_VIEWPORT=390x844 처럼 창 크기를 바꿔 같은 흐름을 돌린다(기본은 체크포인트 집합의 960×540).
   ...(process.env.CRAFT_SHOP_VIEWPORT ? { viewport: Object.fromEntries(process.env.CRAFT_SHOP_VIEWPORT.split("x").map((n, i) => [i ? "height" : "width", Number(n)])) } : {}),

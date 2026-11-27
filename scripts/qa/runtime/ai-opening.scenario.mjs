@@ -13,7 +13,9 @@ const scene = id => `[data-testid="cinematic-sequence"][data-scene-id="${id}"]`;
 const keyTo = (key, selector, absent = false) => ({ kind: "cinematic", action: "key", key, selector, absent });
 
 export default {
-  id: "ai-opening", projectFixture: fixture,
+  id: "ai-opening",
+  // 옛 ESC 메뉴(menuUiStyle 스킨) 화면을 검사한다 — 기본이 허브 메뉴가 된 뒤에도 같은 화면을 본다.
+  systemPatch: { menuLayout: "legacy" }, projectFixture: fixture,
   beats: [
     { id: "ai-opening-text", note: "New Game plays the AI-authored text scene before map boot", ops: [
       keyTo("Enter", scene("ai-opening-text")),

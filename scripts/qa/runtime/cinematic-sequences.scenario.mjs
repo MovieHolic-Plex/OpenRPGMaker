@@ -11,7 +11,9 @@ const keyTo = (key, selector, absent = false) => ({ kind: "cinematic", action: "
 const scene = id => `[data-testid="cinematic-sequence"][data-scene-id="${id}"]`;
 const terminal = '[data-testid="checkpoint-retry"]';
 export default {
-  id: "cinematic-sequences", projectFixture: fixture,
+  id: "cinematic-sequences",
+  // 옛 ESC 메뉴(menuUiStyle 스킨) 화면을 검사한다 — 기본이 허브 메뉴가 된 뒤에도 같은 화면을 본다.
+  systemPatch: { menuLayout: "legacy" }, projectFixture: fixture,
   beats: [
     { id: "opening-text", note: "New Game waits before map boot; held keys and pointer cannot advance", ops: [
       { kind: "cinematic", action: "reject-autoplay" },

@@ -787,13 +787,13 @@ function menuSkinFieldset(project: Project): HTMLElement {
     gallery.append(card);
   }
   return rm2k3Fieldset("게임 메뉴 디자인", [
-    checkboxField("허브 메뉴(동료 카드 · 타이틀 배경)", "db-field-system-menu-layout-hub", project.system.menuLayout === "hub", (checked) => {
+    checkboxField("옛 메뉴 쓰기(아래 디자인 목록)", "db-field-system-menu-layout-legacy", project.system.menuLayout === "legacy", (checked) => {
       updateSystem((draft) => {
-        if (checked) draft.system.menuLayout = "hub";
+        if (checked) draft.system.menuLayout = "legacy";
         else delete draft.system.menuLayout;
       });
     }),
-    systemHelp("원하는 디자인을 눌러 선택하세요. ESC(X) 메뉴에 다음 테스트 플레이부터 적용됩니다."),
+    systemHelp("ESC 메뉴는 기본으로 허브 메뉴(동료 카드 · 타이틀 그림 배경)입니다. 옛 메뉴를 켜면 아래에서 고른 디자인을 씁니다."),
     status,
     gallery,
   ]);
