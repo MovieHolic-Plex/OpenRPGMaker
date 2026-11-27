@@ -34,6 +34,7 @@ const PRESS_EVENTS = new Set<string>(["mousedown", "pointerdown", "touchstart"])
 /** 휠로 읽는 목록. 누르기·호버는 그대로 막고, 스크롤만 브라우저에 맡긴다. */
 const WHEEL_SCROLL_SELECTOR = [
   ".status-menu-detail-list",
+  ".oprn-load-slots",
   ".dialogue-backlog-list",
   ".dialogue-log-list",
 ].join(", ");

@@ -1,6 +1,7 @@
 import { currentObjectiveText } from "@/player/zoneFeedback";
 import { fieldGuidesOn, objectiveSentence } from "@/player/objectiveTarget";
-import { dialogueUiText } from "@/player/dialogueUiStrings";
+import { dialogueUiLocale, dialogueUiText } from "@/player/dialogueUiStrings";
+import { formatStatusMenuControlsForDevice, type InputDeviceKind } from "@/player/inputGlyphs";
 import { resolveDialogueSystem, type AuthoredDialogueSystem } from "@/project/dialogueSystem";
 import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
 import {
@@ -261,6 +262,13 @@ export function statusMenuDetailOptions(options: PlayerStatusMenuOptions, select
     lifeLedgerTab: options.lifeLedgerTab,
     confirmSaveSlot: options.confirmSaveSlot,
     confirmToTitle: options.confirmToTitle,
+    confirmQuitGame: options.confirmQuitGame,
+    optionsSubscreen: options.optionsSubscreen,
+    capturingKeyAction: options.capturingKeyAction,
+    onOpenKeyBindings: options.actions.onOpenKeyBindings,
+    onStartKeyCapture: options.actions.onStartKeyCapture,
+    onResetKeyBindings: options.actions.onResetKeyBindings,
+    onQuitGame: options.actions.onQuitGame,
     saveEnabled: options.saveEnabled,
     onSaveSlot: options.actions.onSaveSlot,
     onLoadSlot: options.actions.onLoadSlot,
@@ -906,16 +914,40 @@ function renderFooter(
     attrs: { role: "status" },
     dataset: { testid: "status-menu-message", ...(messageKind ? { messageKind } : {}) },
   }));
+  const defaultControls = statusMenuControls(mode, railColumns, compact, system);
+  const adjustControls = statusMenuAdjustControls(system);
   footer.append(el("span", {
     class: "status-menu-controls",
-    text: mode === "function" && adjustable ? dialogueUiText(system, "controls.adjust") : statusMenuControls(mode, railColumns, compact, system),
+    text: mode === "function" && adjustable ? adjustControls : defaultControls,
     // 좌우로 값을 바꾸는 줄(설정의 음량)에 커서가 오면 「← 메뉴」 대신 「←→ 조절」을 보인다 — 커서만 옮길 때는 다시 그리지 않으므로 두 글을 실어 둔다.
-    dataset: { testid: "status-menu-controls", ...(mode === "function" ? { controlsDefault: statusMenuControls(mode, railColumns, compact, system), controlsAdjust: dialogueUiText(system, "controls.adjust") } : {}) },
+    dataset: { testid: "status-menu-controls", ...(mode === "function" ? { controlsDefault: defaultControls, controlsAdjust: adjustControls } : {}) },
   }));
   return footer;
 }
 
-export function statusMenuControls(mode: "main" | "function", railColumns = 1, compact = false, system?: AuthoredDialogueSystem): string {
+export function statusMenuAdjustControls(system?: AuthoredDialogueSystem, device?: InputDeviceKind): string {
+  const formatted = formatStatusMenuControlsForDevice("function", {
+    adjustable: true,
+    locale: dialogueUiLocale(system?.language),
+    device,
+  });
+  return formatted ?? dialogueUiText(system, "controls.adjust");
+}
+
+export function statusMenuControls(
+  mode: "main" | "function",
+  railColumns = 1,
+  compact = false,
+  system?: AuthoredDialogueSystem,
+  device?: InputDeviceKind,
+): string {
+  const formatted = formatStatusMenuControlsForDevice(mode, {
+    railColumns,
+    compact,
+    locale: dialogueUiLocale(system?.language),
+    device,
+  });
+  if (formatted !== null) return formatted;
   // 대사 시스템이 있는 게임(연애 기본 구성 포함)은 저작한 언어로, 없으면 예전 한국어 그대로다.
   const text = (key: "controls.compact" | "controls.function" | "controls.grid" | "controls.list"): string => dialogueUiText(system, key);
   if (compact && mode === "main") return text("controls.compact");

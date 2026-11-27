@@ -16,6 +16,7 @@ import { el } from "@/util/dom";
 import { appendPredecessorSaveImports } from "./predecessorSaveImports";
 import { appendSaveFileTransfers } from "./saveFileTransfers";
 import { appendCloudOtherSaves, cloudStatusLine } from "./cloudOtherSaves";
+import { formatControlHints, type InputDeviceKind } from "@/player/inputGlyphs";
 
 type PlayerLoadPanelOptions = {
   readonly fromTitle: boolean;
@@ -92,6 +93,11 @@ export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElem
 
   loadWindow.append(
     slots,
+    el("div", {
+      class: "oprn-load-message",
+      text: loadPanelControlsHint(options.fromTitle),
+      dataset: { testid: "player-load-controls", fromTitle: options.fromTitle ? "true" : "false" },
+    }),
     el("button", {
       class: "oprn-load-back system-shell-button",
       text: options.fromTitle ? "뒤로" : "닫기",
@@ -104,6 +110,18 @@ export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElem
   appendCloudOtherSaves(slots, { onLoadSlot: options.onLoadSlot, ...(options.onLoadAutosave ? { onLoadAutosave: options.onLoadAutosave } : {}) });
   appendSaveFileTransfers(slots, { project: store.getCurrent(), storage: window.localStorage, onLoadSlot: options.onLoadSlot });
   return panel;
+}
+
+export function loadPanelControlsHint(fromTitle: boolean, device?: InputDeviceKind): string {
+  return formatControlHints(
+    [
+      { action: "scroll", label: "이동" },
+      { action: "confirm", label: "불러오기" },
+      { action: "cancel", label: fromTitle ? "뒤로" : "닫기" },
+    ],
+    device,
+    " · ",
+  );
 }
 
 function renderSlotMessage(message: string): HTMLElement {

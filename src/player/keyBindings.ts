@@ -21,6 +21,23 @@
 
 export type Dir = "down" | "left" | "right" | "up";
 
+export const REMAPPABLE_ACTIONS = [
+  "confirm",
+  "cancel",
+  "up",
+  "down",
+  "left",
+  "right",
+  "dash",
+  "skill",
+  "skillCycle",
+  "guard",
+  "autoBattle",
+] as const;
+
+export type RemappableAction = (typeof REMAPPABLE_ACTIONS)[number];
+export type CustomKeyBindings = Partial<Record<RemappableAction, readonly string[]>>;
+
 // event.key 정규화. 브라우저/OS 편차(대소문자, "Spacebar", "Esc")를 한 곳에서 흡수한다.
 // 대문자 Z 만 안 먹던 결함(상태 메뉴 CapsLock 먹통)의 단일 수정 지점.
 export function normalizeKey(key: string): string {
@@ -34,17 +51,186 @@ export function normalizeKey(key: string): string {
 export const CONFIRM_KEYS: ReadonlySet<string> = new Set(["z", "enter", " ", "e"]);
 export const CANCEL_KEYS: ReadonlySet<string> = new Set(["x", "escape"]);
 
-export function isConfirmKey(key: string): boolean {
-  return CONFIRM_KEYS.has(normalizeKey(key));
+export const DEFAULT_KEY_BINDINGS: Readonly<Record<RemappableAction, readonly string[]>> = Object.freeze({
+  confirm: Object.freeze(["z", "enter", " ", "e"]),
+  cancel: Object.freeze(["x", "escape"]),
+  up: Object.freeze(["arrowup", "w"]),
+  down: Object.freeze(["arrowdown", "s"]),
+  left: Object.freeze(["arrowleft", "a"]),
+  right: Object.freeze(["arrowright", "d"]),
+  dash: Object.freeze(["shift"]),
+  skill: Object.freeze(["q"]),
+  skillCycle: Object.freeze(["r"]),
+  guard: Object.freeze(["c"]),
+  autoBattle: Object.freeze(["f"]),
+});
+
+const UNREMAPPABLE_KEYS: ReadonlySet<string> = new Set([
+  "",
+  "process",
+  "unidentified",
+  "dead",
+  "control",
+  "alt",
+  "altgraph",
+  "meta",
+  "capslock",
+  "numlock",
+  "scrolllock",
+  "f11",
+  "f12",
+]);
+
+let customKeyBindings: Partial<Record<RemappableAction, readonly string[]>> = {};
+
+export function isRemappableKey(key: string): boolean {
+  if (typeof key !== "string" || key.length === 0) return false;
+  return !UNREMAPPABLE_KEYS.has(normalizeKey(key));
 }
 
-/** Cinematic advance deliberately excludes the legacy field-interaction E alias. */
+export function normalizeKeyBindingList(keys: unknown): string[] | undefined {
+  if (!Array.isArray(keys)) return undefined;
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const raw of keys) {
+    if (typeof raw !== "string" || raw.length === 0) continue;
+    const normalized = normalizeKey(raw);
+    if (UNREMAPPABLE_KEYS.has(normalized) || seen.has(normalized)) continue;
+    seen.add(normalized);
+    out.push(normalized);
+  }
+  return out.length > 0 ? out : undefined;
+}
+
+export function normalizeCustomKeyBindings(value: unknown): Partial<Record<RemappableAction, string[]>> | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const record = value as Record<string, unknown>;
+  const result: Partial<Record<RemappableAction, string[]>> = {};
+  let hasAny = false;
+  for (const action of REMAPPABLE_ACTIONS) {
+    const normalized = normalizeKeyBindingList(record[action]);
+    if (!normalized) continue;
+    result[action] = normalized;
+    hasAny = true;
+  }
+  return hasAny ? result : undefined;
+}
+
+export function setCustomKeyBindings(bindings: CustomKeyBindings | undefined | null): void {
+  const normalized = normalizeCustomKeyBindings(bindings);
+  if (!normalized) {
+    customKeyBindings = {};
+    return;
+  }
+  const next: Partial<Record<RemappableAction, readonly string[]>> = {};
+  for (const action of REMAPPABLE_ACTIONS) {
+    if (normalized[action]) next[action] = Object.freeze([...normalized[action]!]);
+  }
+  customKeyBindings = next;
+}
+
+export function getCustomKeyBindings(): Partial<Record<RemappableAction, readonly string[]>> {
+  const copy: Partial<Record<RemappableAction, readonly string[]>> = {};
+  for (const action of REMAPPABLE_ACTIONS) {
+    const keys = customKeyBindings[action];
+    if (keys) copy[action] = [...keys];
+  }
+  return copy;
+}
+
+export function hasCustomKeyBindings(): boolean {
+  return Object.keys(customKeyBindings).length > 0;
+}
+
+export function getKeysForAction(action: RemappableAction): readonly string[] {
+  return customKeyBindings[action] ?? DEFAULT_KEY_BINDINGS[action];
+}
+
+export function getActiveKeyBindings(): Record<RemappableAction, readonly string[]> {
+  return {
+    confirm: getKeysForAction("confirm"),
+    cancel: getKeysForAction("cancel"),
+    up: getKeysForAction("up"),
+    down: getKeysForAction("down"),
+    left: getKeysForAction("left"),
+    right: getKeysForAction("right"),
+    dash: getKeysForAction("dash"),
+    skill: getKeysForAction("skill"),
+    skillCycle: getKeysForAction("skillCycle"),
+    guard: getKeysForAction("guard"),
+    autoBattle: getKeysForAction("autoBattle"),
+  };
+}
+
+export type KeyBindingConflict = {
+  readonly key: string;
+  readonly actions: readonly RemappableAction[];
+};
+
+export function findKeyBindingConflicts(bindings?: CustomKeyBindings): KeyBindingConflict[] {
+  const active: Record<RemappableAction, readonly string[]> = bindings
+    ? (() => {
+        const normalized = normalizeCustomKeyBindings(bindings) ?? {};
+        return {
+          confirm: normalized.confirm ?? DEFAULT_KEY_BINDINGS.confirm,
+          cancel: normalized.cancel ?? DEFAULT_KEY_BINDINGS.cancel,
+          up: normalized.up ?? DEFAULT_KEY_BINDINGS.up,
+          down: normalized.down ?? DEFAULT_KEY_BINDINGS.down,
+          left: normalized.left ?? DEFAULT_KEY_BINDINGS.left,
+          right: normalized.right ?? DEFAULT_KEY_BINDINGS.right,
+          dash: normalized.dash ?? DEFAULT_KEY_BINDINGS.dash,
+          skill: normalized.skill ?? DEFAULT_KEY_BINDINGS.skill,
+          skillCycle: normalized.skillCycle ?? DEFAULT_KEY_BINDINGS.skillCycle,
+          guard: normalized.guard ?? DEFAULT_KEY_BINDINGS.guard,
+          autoBattle: normalized.autoBattle ?? DEFAULT_KEY_BINDINGS.autoBattle,
+        };
+      })()
+    : getActiveKeyBindings();
+  const owners = new Map<string, RemappableAction[]>();
+  for (const action of REMAPPABLE_ACTIONS) {
+    for (const key of active[action]) {
+      const list = owners.get(key);
+      if (list) list.push(action);
+      else owners.set(key, [action]);
+    }
+  }
+  const conflicts: KeyBindingConflict[] = [];
+  for (const [key, actions] of owners.entries()) {
+    if (actions.length > 1) conflicts.push({ key, actions });
+  }
+  return conflicts;
+}
+
+function isKeyClaimedByOtherAction(normalizedKey: string, exclude: RemappableAction): boolean {
+  for (const action of REMAPPABLE_ACTIONS) {
+    if (action === exclude) continue;
+    if (getKeysForAction(action).includes(normalizedKey)) return true;
+  }
+  return false;
+}
+
+export function isConfirmKey(key: string): boolean {
+  const normalized = normalizeKey(key);
+  const custom = customKeyBindings.confirm;
+  if (!custom) return CONFIRM_KEYS.has(normalized);
+  if (custom.includes(normalized)) return true;
+  // 안전장치: Enter 가 다른 액션에 명시 할당되지 않았으면 메뉴 탐색 최소 폴백으로 유지한다.
+  return normalized === "enter" && !isKeyClaimedByOtherAction("enter", "confirm");
+}
+
+/** Cinematic advance deliberately excludes the legacy field-interaction E alias unless customized. */
 export function isCinematicAdvanceKey(key: string): boolean {
+  if (customKeyBindings.confirm) return isConfirmKey(key);
   return ["z", "enter", " "].includes(normalizeKey(key));
 }
 
 export function isCancelKey(key: string): boolean {
-  return CANCEL_KEYS.has(normalizeKey(key));
+  const normalized = normalizeKey(key);
+  const custom = customKeyBindings.cancel;
+  if (!custom) return CANCEL_KEYS.has(normalized);
+  if (custom.includes(normalized)) return true;
+  // 안전장치: Escape 가 다른 액션에 명시 할당되지 않았으면 메뉴 탈출 최소 폴백으로 유지한다.
+  return normalized === "escape" && !isKeyClaimedByOtherAction("escape", "cancel");
 }
 
 // 필드에서 메뉴를 여는 키. 취소와 동일하다(플레이어가 배우는 규칙을 하나로).
@@ -53,17 +239,17 @@ export function isMenuKey(key: string): boolean {
 }
 
 export function isDashKey(key: string): boolean {
-  return normalizeKey(key) === "shift";
+  return getKeysForAction("dash").includes(normalizeKey(key));
 }
 
 export function isSkillKey(key: string): boolean {
-  return normalizeKey(key) === "q";
+  return getKeysForAction("skill").includes(normalizeKey(key));
 }
 
 // 액션 스킬 슬롯 순환. Q(캐스트) 옆이면서 이동(WASD)·확인(Z/Enter/Space/E)·취소(X/Esc)
 // ·대시(Shift)·자동전투(F) 어디와도 겹치지 않는 키를 고른다.
 export function isSkillCycleKey(key: string): boolean {
-  return normalizeKey(key) === "r";
+  return getKeysForAction("skillCycle").includes(normalizeKey(key));
 }
 
 // 액션 전투 선두 교대(동료 켜진 맵). 이동·확인·취소·대시·스킬(Q/R)·가드(C)·자동(F)와 겹치지 않는다.
@@ -73,7 +259,7 @@ export function isLeaderSwitchKey(key: string): boolean {
 
 // 홀드 가드(방어). 누르고 있는 동안 피해가 줄고 스태미나가 탄다.
 export function isGuardKey(key: string): boolean {
-  return normalizeKey(key) === "c";
+  return getKeysForAction("guard").includes(normalizeKey(key));
 }
 
 // 액션 전투에서 스윙으로 라우팅되는 키. 확인 키 전체를 공격으로 받는다 —
@@ -86,7 +272,7 @@ export function isAttackKey(key: string): boolean {
 // 과거엔 A 였는데 WASD 로 걷던 플레이어가 전투에서 좌측 이동을 누르면
 // 자동전투가 켜지는 충돌이 있었다(적대 리뷰 11).
 export function isAutoBattleKey(key: string): boolean {
-  return normalizeKey(key) === "f";
+  return getKeysForAction("autoBattle").includes(normalizeKey(key));
 }
 
 export function isSpeedKey(key: string): boolean {
@@ -113,22 +299,30 @@ export function handSlotCycleDelta(key: string): number | undefined {
 }
 
 export function directionForKey(key: string): Dir | null {
-  switch (normalizeKey(key)) {
-    case "arrowdown":
-    case "s":
-      return "down";
-    case "arrowleft":
-    case "a":
-      return "left";
-    case "arrowright":
-    case "d":
-      return "right";
-    case "arrowup":
-    case "w":
-      return "up";
-    default:
-      return null;
+  const normalized = normalizeKey(key);
+  if (!customKeyBindings.up && !customKeyBindings.down && !customKeyBindings.left && !customKeyBindings.right) {
+    switch (normalized) {
+      case "arrowdown":
+      case "s":
+        return "down";
+      case "arrowleft":
+      case "a":
+        return "left";
+      case "arrowright":
+      case "d":
+        return "right";
+      case "arrowup":
+      case "w":
+        return "up";
+      default:
+        return null;
+    }
   }
+  if (getKeysForAction("up").includes(normalized)) return "up";
+  if (getKeysForAction("down").includes(normalized)) return "down";
+  if (getKeysForAction("left").includes(normalized)) return "left";
+  if (getKeysForAction("right").includes(normalized)) return "right";
+  return null;
 }
 
 /** Shop-only group traversal; do not capture Tab in unrelated runtime menus. */
@@ -312,8 +506,8 @@ export const ACTION_CONTROL_BINDINGS = [
   { id: "menu", keys: ACTION_GUIDE_KEYS.filter(isMenuKey), label: "메뉴·취소" },
 ] as const;
 
-function actionGuideKeyLabel(key: string): string {
-  switch (key) {
+export function formatKeyLabel(key: string): string {
+  switch (normalizeKey(key)) {
     case "arrowup": return "↑";
     case "arrowdown": return "↓";
     case "arrowleft": return "←";
@@ -322,10 +516,22 @@ function actionGuideKeyLabel(key: string): string {
     case "enter": return "Enter";
     case "escape": return "Esc";
     case "shift": return "Shift";
-    default: return key.toUpperCase();
+    case "tab": return "Tab";
+    case "backspace": return "Backspace";
+    case "delete": return "Del";
+    case "pageup": return "PgUp";
+    case "pagedown": return "PgDn";
+    default: {
+      const normalized = normalizeKey(key);
+      return normalized.length === 1 ? normalized.toUpperCase() : normalized;
+    }
   }
 }
 
+export function formatActionKeys(action: RemappableAction, separator = "/"): string {
+  return getKeysForAction(action).map(formatKeyLabel).join(separator);
+}
+
 export const ACTION_CONTROLS_GUIDE = ACTION_CONTROL_BINDINGS.map(
-  (binding) => `${binding.keys.map(actionGuideKeyLabel).join("/")} ${binding.label}`,
+  (binding) => `${binding.keys.map(formatKeyLabel).join("/")} ${binding.label}`,
 ).join("\n");

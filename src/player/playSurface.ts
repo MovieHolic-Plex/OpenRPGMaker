@@ -9,6 +9,7 @@ import {
 } from "@/player/playSurfaceScale";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
 import type { PortraitLayoutMode } from "@/project/playSurfaceScaleMode";
+import { getPlayerPreferences } from "@/player/playerPreferences";
 import type { PlayResolution } from "@/project/types";
 
 export type PlaySurface = {
@@ -40,10 +41,10 @@ export function createPlaySurface(
   const touchUi = options.touchUi === true;
   const portraitLayout: PortraitLayoutMode = options.portraitLayout === "fullbleed" ? "fullbleed" : "ds";
   let activeLogical: Readonly<PlayResolution> = { width: resolution.width, height: resolution.height };
-
+  const effectiveScaleMode = (): PlaySurfaceScaleMode => getPlayerPreferences().displayScaleMode ?? scaleMode;
   const viewport = el("div", {
     class: "play-viewport",
-    dataset: { testid: "play-viewport", scaleMode },
+    dataset: { testid: "play-viewport", scaleMode: effectiveScaleMode() },
   });
   if (scaleMode === "adaptive") {
     viewport.dataset.adaptive = "true";
@@ -79,24 +80,33 @@ export function createPlaySurface(
     options.onLogicalResize?.(activeLogical);
   };
 
-  const syncNow = (): void => {
-    syncPlaySurfaceMetrics(viewport, resolution, scaleMode, topAlignPortrait, touchUi, portraitLayout, updateLogical);
+  const syncCurrent = (): void => {
+    const mode = effectiveScaleMode();
+    viewport.dataset.scaleMode = mode;
+    syncPlaySurfaceMetrics(viewport, resolution, mode, topAlignPortrait, touchUi, portraitLayout, updateLogical);
   };
 
-  const resizeObserver = new ResizeObserver(syncNow);
+  const resizeObserver = new ResizeObserver(syncCurrent);
   resizeObserver.observe(viewport);
-  const animationFrameId = requestAnimationFrame(syncNow);
+  const animationFrameId = requestAnimationFrame(syncCurrent);
+  const onPreferencesChanged = (): void => syncCurrent();
+  if (typeof window !== "undefined") {
+    window.addEventListener("oprn:player-preferences", onPreferencesChanged);
+  }
 
   return {
     viewport,
     stage,
     phaserContainer,
     logicalResolution: () => activeLogical,
-    sync: syncNow,
+    sync: syncCurrent,
     cleanup: () => {
       cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
       filterObserver?.disconnect();
+      if (typeof window !== "undefined") {
+        window.removeEventListener("oprn:player-preferences", onPreferencesChanged);
+      }
     },
   };
 }

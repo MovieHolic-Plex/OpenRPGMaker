@@ -35,11 +35,17 @@ export function saveScopeBlocker(identity: SaveIdentity | undefined): string | n
   return identity?.isolationScope === activeIsolationScope ? null : "다른 게시물의 저장입니다. 저장 파일을 직접 선택해 복사해 주세요";
 }
 
+const PUBLICATION_SLOT_COUNT = 20;
+const PUBLICATION_SLOT_KEYS: readonly (number | "auto")[] = [
+  ...Array.from({ length: PUBLICATION_SLOT_COUNT }, (_, index) => index + 1),
+  "auto",
+];
+
 /** Check before reading bytes. Accepted lineage metadata authorizes only local discovery. */
 export function isLocalSaveSourceKey(key: string, publication: Publication, adoptLegacy: boolean): boolean {
   if (adoptLegacy && activeIsolationScope === undefined && !key.startsWith("oprn:community:")) return true;
   return [publication.saveCompatibilityId, ...publication.acceptedSaveCompatibilityIds].some(lineage =>
-    [1, 2, 3, "auto" as const].some(slot => key === publicationSaveKey(slot, { ...publication, saveCompatibilityId: lineage })));
+    PUBLICATION_SLOT_KEYS.some(slot => key === publicationSaveKey(slot, { ...publication, saveCompatibilityId: lineage })));
 }
 
 export function saveIdentityBlocker(publication: Publication | undefined, identity: SaveIdentity | undefined): string | null {

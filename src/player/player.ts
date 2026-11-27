@@ -54,10 +54,15 @@ import { createTouchPad, isTouchDevice, type TouchPadHandle } from "@/player/tou
 import { installTapConfirm } from "@/player/touchTap";
 import { installTouchListTap } from "@/player/touchListTap";
 import { currentTouchControls } from "@/player/touchControlSettings";
-import { renderPlayerLoadPanel } from "@/player/playerLoadPanel";
+import { renderPlayerLoadPanel, loadPanelControlsHint } from "@/player/playerLoadPanel";
 import { createPlayerStatusMenuController } from "@/player/playerStatusMenuController";
 import { currentStatusMenu } from "@/player/playerStatusMenuControllerDom";
 import { closeStatusMenu } from "@/player/playerStatusMenuMotion";
+import { statusMenuAdjustControls, statusMenuControls } from "@/player/playerStatusMenu";
+import { getPlayerPreferences } from "@/player/playerPreferences";
+import { installInputDeviceTracker, subscribeInputDevice } from "@/player/inputGlyphs";
+import { menuSkinFor } from "@/player/menuSkins/registry";
+import { resolveDialogueSystem } from "@/project/dialogueSystem";
 import { focusPlayCanvas } from "@/player/focusGuard";
 import {
   moveTitleSelection,
@@ -107,7 +112,7 @@ import {
   recordPlayBootDiagnostic,
   type PlayBootDiagnosticSink,
 } from "@/player/playBootDiagnostics";
-import { mountHostFullscreenToggle, type HostBridge } from "@/player/hostBridge";
+import { hostExitReturnUrl, mountHostFullscreenToggle, type HostBridge } from "@/player/hostBridge";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { diagnosticToken } from "@/util/diagnosticObserver";
 import { eventMenuLocked } from "@/player/eventMenuLock";
@@ -194,6 +199,8 @@ const TITLE_CONFIRM_JUICE_MS = 180;
 
 export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {}): void {
   installConfirmPressTracker();
+  // 저장된 사용자 키 바인딩·환경설정을 부팅 즉시 keyBindings 정본에 동기화한다.
+  getPlayerPreferences();
   teardownShell?.();
   setSavePublication(store.getCurrent().meta.publication, options.saveIsolationScope);
   clearChildren(main);
@@ -884,6 +891,15 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       project: store.getCurrent(), session: activeScene()?.session, ...(cue ? { cue } : {}) });
   };
 
+  const canQuitToDesktop = (): boolean => {
+    if (typeof window !== "undefined") {
+      const desktopApi = (window as Window & { __oprnDesktopPlayer?: { quit?: unknown }; __oprnDesktopShellState?: { active?: boolean } });
+      if (typeof desktopApi.__oprnDesktopPlayer?.quit === "function") return true;
+      if (desktopApi.__oprnDesktopShellState?.active && options.onExit) return true;
+    }
+    return Boolean(options.onExit && hostExitReturnUrl(options.hostBridge));
+  };
+
   const statusMenu = createPlayerStatusMenuController({
     layout,
     getActiveScene: activeScene,
@@ -895,6 +911,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     menuCloseJuiceMs: MENU_CLOSE_JUICE_MS,
     loadSlot,
     loadAutosave,
+    ...(canQuitToDesktop() ? { onQuitGame: () => exitPlayer() } : {}),
   });
 
   const handleTitleKey = (key: RuntimeMenuKey): boolean => {
@@ -954,10 +971,22 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     if (!rawKey) return;
     const key = rawKey.length === 1 ? rawKey.toLowerCase() : rawKey;
     const menu = currentStatusMenu(layout);
+    if (menu && statusMenu.isCapturingKey()) {
+      event.preventDefault();
+      event.stopPropagation();
+      statusMenu.handleKey(key as RuntimeMenuKey);
+      return;
+    }
     if (menu && key === "Tab") {
       event.preventDefault();
       event.stopPropagation();
       emitMenuJuice("menu-invalid", menu);
+      return;
+    }
+    if (menu && (key === "PageUp" || key === "PageDown" || key === "Home" || key === "End")) {
+      event.preventDefault();
+      event.stopPropagation();
+      statusMenu.handleKey(key as RuntimeMenuKey);
       return;
     }
     const overlayActive = isDialogueSurfaceActive() || isModalOverlayActive();
@@ -1329,12 +1358,37 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     renderTitle({ emitEnterJuice: true });
   };
 
+  const cleanupInputDeviceTracker = installInputDeviceTracker();
+  const unsubscribeInputDevice = subscribeInputDevice((device) => {
+    const menu = currentStatusMenu(layout);
+    const controls = menu?.querySelector<HTMLElement>(".status-menu-controls");
+    if (menu && controls) {
+      const mode = menu.dataset.statusMenuScreen === "function" ? "function" : "main";
+      const skin = menuSkinFor(store.getCurrent());
+      const dialogueSystem = resolveDialogueSystem(store.getCurrent());
+      const defaultText = statusMenuControls(mode, skin.railColumns, skin.id === "field-list", dialogueSystem, device);
+      const adjustText = statusMenuAdjustControls(dialogueSystem, device);
+      const wasAdjust = Boolean(controls.dataset.controlsAdjust && controls.textContent === controls.dataset.controlsAdjust);
+      controls.textContent = mode === "function" && wasAdjust ? adjustText : defaultText;
+      if (mode === "function") {
+        controls.dataset.controlsDefault = defaultText;
+        controls.dataset.controlsAdjust = adjustText;
+      }
+    }
+    const loadControls = layout.querySelector<HTMLElement>("[data-testid='player-load-controls']");
+    if (loadControls) {
+      loadControls.textContent = loadPanelControlsHint(loadControls.dataset.fromTitle === "true", device);
+    }
+  });
+
   document.addEventListener("keydown", onKeyDown);
   teardownShell = () => {
     shellActive = false;
     cinematicAssets.dispose();
     audioWarmup.dispose();
     document.removeEventListener("keydown", onKeyDown);
+    unsubscribeInputDevice();
+    cleanupInputDeviceTracker();
     cleanupPointerBlocker();
     cleanupRightClickCancel();
     cleanupTapConfirm();

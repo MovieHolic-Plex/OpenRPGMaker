@@ -56,7 +56,11 @@ import { vnGalleryLabel, vnUiText, type VnUiKey } from "@/player/vnExtrasStrings
 import { endingChecklist, formatSaveDate, endingRecallLines, galleryRows, listEndingRows, listGallerySlots, resolveVnExtras, vnExtrasLanguage } from "@/project/vnExtras";
 import { openGalleryViewer } from "@/player/galleryViewer";
 import { openBacklogView } from "@/player/dialogueBacklogView";
-import { dialogueUiText } from "@/player/dialogueUiStrings";
+import { dialogueUiLocale, dialogueUiText } from "@/player/dialogueUiStrings";
+import { formatActionKeys, hasCustomKeyBindings, REMAPPABLE_ACTIONS, type RemappableAction } from "@/player/keyBindings";
+import { getPlayerPreferences, updatePlayerPreferences } from "@/player/playerPreferences";
+import { resolvePlaySurfaceScaleMode } from "@/project/playSurfaceScaleMode";
+import { formatControlHints } from "@/player/inputGlyphs";
 import { minutesUntilRestTarget, resolveRestMenu, restRefusal, REST_REFUSAL_TEXT, REST_TARGET_HOURS, REST_TARGET_LABELS } from "@/project/restMenu";
 import { formatGameClock, resolveTimeSystem } from "@/project/gameTime";
 import { normalizeBacklog, resolveDialogueSystem } from "@/project/dialogueSystem";
@@ -89,7 +93,7 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
   if (isStatusMenuGroupEntryId(options.selectedCommand)) return groupDetail(options, options.selectedCommand);
   switch (options.selectedCommand) {
     case "items": return itemDetail(options);
-    case "options": return createPlayerOptionsDetail(options.onOptionsChanged, options.project);
+    case "options": return optionsDetail(options);
     case 'trainer-card': {
       const { project, session } = options;
       const campaign = monsterCampaign(project), ids = monsterDexSpeciesIds(project);
@@ -141,9 +145,230 @@ export function createStatusMenuDetail(options: StatusMenuDetailOptions): Status
   }
 }
 
+function desktopQuitHandler(): (() => Promise<void> | void) | undefined {
+  if (typeof window === "undefined") return undefined;
+  const host = (window as Window & { __oprnDesktopPlayer?: { quit?: () => Promise<void> | void } }).__oprnDesktopPlayer;
+  return typeof host?.quit === "function" ? host.quit : undefined;
+}
+
+function canQuitToDesktop(options: Pick<StatusMenuDetailOptions, "onQuitGame">): boolean {
+  return Boolean(options.onQuitGame || desktopQuitHandler());
+}
+
+function triggerQuitToDesktop(options: Pick<StatusMenuDetailOptions, "onQuitGame">): void {
+  if (options.onQuitGame) {
+    options.onQuitGame();
+    return;
+  }
+  try {
+    void desktopQuitHandler()?.();
+  } catch {
+    // ignore host quit errors
+  }
+}
+
+function isFullscreenActive(): boolean {
+  if (typeof window !== "undefined") {
+    const shell = (window as Window & { __oprnDesktopShellState?: { fullscreen?: boolean } }).__oprnDesktopShellState;
+    if (typeof shell?.fullscreen === "boolean" && shell.fullscreen) return true;
+  }
+  return typeof document !== "undefined" && Boolean(document.fullscreenElement);
+}
+
+function toggleFullscreenOption(onChanged?: (message?: string) => void): void {
+  const hostToggle = typeof window !== "undefined"
+    ? (window as Window & { __oprnDesktopPlayer?: { toggleFullscreen?: () => Promise<boolean> | boolean } }).__oprnDesktopPlayer?.toggleFullscreen
+    : undefined;
+  if (typeof hostToggle === "function") {
+    void Promise.resolve(hostToggle())
+      .then((next) => {
+        if (typeof window !== "undefined") {
+          const shell = (window as Window & { __oprnDesktopShellState?: { fullscreen?: boolean } }).__oprnDesktopShellState;
+          if (shell) shell.fullscreen = Boolean(next);
+        }
+        onChanged?.(next ? "전체화면으로 전환했습니다." : "창 모드로 전환했습니다.");
+      })
+      .catch(() => {
+        onChanged?.("전체화면을 전환하지 못했습니다.");
+      });
+    return;
+  }
+  if (typeof document === "undefined") {
+    onChanged?.("이 환경에서는 전체화면을 전환할 수 없습니다.");
+    return;
+  }
+  const active = Boolean(document.fullscreenElement);
+  const action = active
+    ? (typeof document.exitFullscreen === "function" ? document.exitFullscreen() : undefined)
+    : (typeof document.documentElement?.requestFullscreen === "function" ? document.documentElement.requestFullscreen() : undefined);
+  if (!action) {
+    onChanged?.("이 환경에서는 전체화면을 전환할 수 없습니다.");
+    return;
+  }
+  void Promise.resolve(action)
+    .then(() => {
+      onChanged?.(active ? "창 모드로 전환했습니다." : "전체화면으로 전환했습니다.");
+    })
+    .catch(() => {
+      onChanged?.("이 환경에서는 전체화면을 전환할 수 없습니다.");
+    });
+}
+
+const ACTION_LABELS_BY_LOCALE = {
+  ko: {
+    confirm: "확인",
+    cancel: "취소 / 메뉴",
+    up: "위 이동",
+    down: "아래 이동",
+    left: "왼쪽 이동",
+    right: "오른쪽 이동",
+    dash: "대시 / 배속",
+    skill: "스킬 사용",
+    skillCycle: "스킬 전환",
+    guard: "가드",
+    autoBattle: "자동 전투",
+  },
+  en: {
+    confirm: "Confirm",
+    cancel: "Cancel / Menu",
+    up: "Move Up",
+    down: "Move Down",
+    left: "Move Left",
+    right: "Move Right",
+    dash: "Dash / Speed",
+    skill: "Use Skill",
+    skillCycle: "Cycle Skill",
+    guard: "Guard",
+    autoBattle: "Auto Battle",
+  },
+  ja: {
+    confirm: "決定",
+    cancel: "キャンセル / メニュー",
+    up: "上移動",
+    down: "下移動",
+    left: "左移動",
+    right: "右移動",
+    dash: "ダッシュ / 倍速",
+    skill: "スキル使用",
+    skillCycle: "スキル切替",
+    guard: "ガード",
+    autoBattle: "オート戦闘",
+  },
+  zh: {
+    confirm: "确认",
+    cancel: "取消 / 菜单",
+    up: "向上移动",
+    down: "向下移动",
+    left: "向左移动",
+    right: "向右移动",
+    dash: "奔跑 / 加速",
+    skill: "使用技能",
+    skillCycle: "切换技能",
+    guard: "防御",
+    autoBattle: "自动战斗",
+  },
+} as const satisfies Record<"ko" | "en" | "ja" | "zh", Record<RemappableAction, string>>;
+
+export function remappableActionLabel(action: RemappableAction, locale: "ko" | "en" | "ja" | "zh" = "ko"): string {
+  return ACTION_LABELS_BY_LOCALE[locale][action];
+}
+
+function optionsDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
+  const system = resolveDialogueSystem(options.project);
+  const locale = dialogueUiLocale(system?.language);
+  if (options.optionsSubscreen === "key-bindings") {
+    const entries: StatusMenuDetailEntry[] = REMAPPABLE_ACTIONS.map((action) => {
+      const capturing = options.capturingKeyAction === action;
+      return {
+        label: remappableActionLabel(action, locale),
+        value: capturing ? (locale === "en" ? "Press a key… (Esc cancel)" : "새 키 입력… (Esc 취소)") : formatActionKeys(action, " / "),
+        description: capturing
+          ? (locale === "en" ? "Press any key to assign. Press Esc to cancel." : "새로 지정할 키를 누르세요. Esc로 취소합니다.")
+          : (locale === "en" ? "Select and press a new key to rebind." : "선택한 뒤 원하는 키를 눌러 바꿉니다."),
+        testId: `player-option-key-${action}`,
+        ...(capturing ? { attributes: { capturingKey: "true" } } : {}),
+        onActivate: options.onStartKeyCapture ? () => options.onStartKeyCapture?.(action) : undefined,
+      };
+    });
+    entries.push({
+      label: locale === "en" ? "Reset to Defaults" : locale === "ja" ? "初期設定に戻す" : locale === "zh" ? "恢复默认按键" : "기본값 복원",
+      value: locale === "en" ? "Reset" : locale === "ja" ? "初期化" : locale === "zh" ? "重置" : "초기화",
+      description: locale === "en" ? "Restore all keyboard controls to default bindings." : "모든 키보드 조작 설정을 기본값으로 되돌립니다.",
+      testId: "player-option-key-bindings-reset",
+      destructive: true,
+      onActivate: options.onResetKeyBindings,
+    });
+    return {
+      title: locale === "en" ? "Key Bindings" : locale === "ja" ? "キー設定" : locale === "zh" ? "按键设置" : "조작 키 설정",
+      entries,
+      hint: formatControlHints(
+        [
+          { action: "confirm", label: locale === "en" ? "Rebind" : "변경" },
+          { action: "cancel", label: locale === "en" ? "Back" : "돌아가기" },
+        ],
+        undefined,
+        " · ",
+      ),
+    };
+  }
+
+  const base = createPlayerOptionsDetail(options.onOptionsChanged, options.project);
+  const prefs = getPlayerPreferences();
+  const scaleMode = prefs.displayScaleMode ?? resolvePlaySurfaceScaleMode(options.project);
+  const scaleLabel = scaleMode === "integer"
+    ? (locale === "en" ? "Integer Pixel" : locale === "ja" ? "整数ピクセル" : locale === "zh" ? "整数像素" : "정수 픽셀")
+    : (locale === "en" ? "Fit Screen" : locale === "ja" ? "画面フィット" : locale === "zh" ? "适应屏幕" : "화면 맞춤");
+  const toggleScale = () => {
+    const next = scaleMode === "integer" ? "fit" : "integer";
+    const saved = updatePlayerPreferences({ displayScaleMode: next });
+    options.onOptionsChanged?.(
+      saved
+        ? dialogueUiText(system, "option.saved")
+        : dialogueUiText(system, "option.savedSession"),
+    );
+  };
+  const fullscreen = isFullscreenActive();
+  const pcEntries: StatusMenuDetailEntry[] = [
+    {
+      label: locale === "en" ? "Fullscreen" : locale === "ja" ? "フルスクリーン" : locale === "zh" ? "全屏模式" : "전체화면",
+      value: fullscreen ? dialogueUiText(system, "value.on") : dialogueUiText(system, "value.off"),
+      description: locale === "en"
+        ? "Toggle fullscreen / windowed display (F11 or Alt+Enter)."
+        : "전체화면과 창 모드를 전환합니다. (F11 / Alt+Enter)",
+      testId: "player-option-fullscreen",
+      onActivate: () => toggleFullscreenOption(options.onOptionsChanged),
+    },
+    {
+      label: locale === "en" ? "Display Scale" : locale === "ja" ? "画面スケール" : locale === "zh" ? "画面缩放" : "화면 스케일",
+      value: scaleLabel,
+      description: locale === "en"
+        ? "Switch between sharp integer pixel scaling and fit-to-window scaling."
+        : "정수 픽셀은 도트 선명도를 유지하고, 화면 맞춤은 창에 꽉 채웁니다.",
+      testId: "player-option-display-scale",
+      onActivate: toggleScale,
+      onAdjust: () => toggleScale(),
+    },
+    {
+      label: locale === "en" ? "Key Bindings" : locale === "ja" ? "キー設定" : locale === "zh" ? "按键设置" : "조작 키 설정",
+      value: hasCustomKeyBindings()
+        ? (locale === "en" ? "Custom" : locale === "ja" ? "カスタム" : locale === "zh" ? "自定义" : "사용자 지정")
+        : (locale === "en" ? "Default" : locale === "ja" ? "標準" : locale === "zh" ? "默认" : "기본값"),
+      description: locale === "en"
+        ? "Customize keyboard bindings for movement, confirm, cancel, and battle."
+        : "키보드 이동·확인·취소·전투 키를 원하는 키로 바꿉니다.",
+      testId: "player-option-key-bindings",
+      onActivate: options.onOpenKeyBindings,
+    },
+  ];
+  return {
+    ...base,
+    entries: [...base.entries, ...pcEntries],
+  };
+}
+
 function groupDetail(options: StatusMenuDetailOptions, entryId: StatusMenuGroupEntryId): StatusMenuDetail {
   const commandIds = listStatusMenuGroupCommandIds(entryId, options.project, options.session);
-  const entries = commandIds.map((commandId) => ({
+  const entries: StatusMenuDetailEntry[] = commandIds.map((commandId) => ({
     label: statusMenuCommandLabel(commandId, options.waitModeEnabled, options.project),
     value: "",
     description: commandId === "to-title" ? "미저장 진행 삭제" : GROUP_COMMAND_DESCRIPTIONS[commandId],
@@ -151,6 +376,17 @@ function groupDetail(options: StatusMenuDetailOptions, entryId: StatusMenuGroupE
     onActivate: options.onCommand ? () => options.onCommand?.(commandId) : undefined,
     destructive: commandId === "to-title",
   }));
+  if (entryId === "system-menu" && canQuitToDesktop(options)) {
+    const pending = options.confirmQuitGame === true;
+    entries.push({
+      label: pending ? "진행을 버리고 게임 종료" : "게임 종료",
+      value: pending ? "확인" : "",
+      description: "데스크톱으로 게임을 종료합니다. 저장하지 않은 진행은 사라집니다.",
+      testId: "status-menu-group-command-quit-game",
+      onActivate: () => triggerQuitToDesktop(options),
+      destructive: true,
+    });
+  }
   return {
     title: statusMenuGroupEntryLabel(entryId).replace(" ▸", ""),
     entries,
@@ -183,16 +419,28 @@ function toTitleDetail(options: StatusMenuDetailOptions): StatusMenuDetail {
   // 「타이틀 복귀 확인을 준비하지 못했습니다」+「한 번 더 선택해야…」가 함께 보이고, 그 상태의 결정은
   // 「선택할 수 없습니다」로 거부됐다(장부 hud #114 막음). 항목은 늘 있고, 첫 선택은 확인을 묻고 둘째가 돌아간다.
   const pending = options.confirmToTitle === true;
+  const entries: StatusMenuDetailEntry[] = [{
+    label: pending ? "진행을 버리고 타이틀로" : "타이틀로 돌아가기",
+    value: pending ? "확인" : "선택",
+    description: "저장하지 않은 진행은 사라집니다.",
+    testId: pending ? "status-menu-confirm-to-title" : "status-menu-to-title-entry",
+    onActivate: options.onCommand ? () => options.onCommand?.("to-title") : undefined,
+    destructive: pending,
+  }];
+  if (canQuitToDesktop(options)) {
+    const quitPending = options.confirmQuitGame === true;
+    entries.push({
+      label: quitPending ? "진행을 버리고 게임 종료" : "게임 종료",
+      value: quitPending ? "확인" : "선택",
+      description: "데스크톱으로 게임을 종료합니다. 저장하지 않은 진행은 사라집니다.",
+      testId: quitPending ? "status-menu-confirm-quit-game" : "status-menu-quit-game-entry",
+      onActivate: () => triggerQuitToDesktop(options),
+      destructive: true,
+    });
+  }
   return {
     title: "타이틀로 돌아가기",
-    entries: [{
-      label: pending ? "진행을 버리고 타이틀로" : "타이틀로 돌아가기",
-      value: pending ? "확인" : "선택",
-      description: "저장하지 않은 진행은 사라집니다.",
-      testId: pending ? "status-menu-confirm-to-title" : "status-menu-to-title-entry",
-      onActivate: options.onCommand ? () => options.onCommand?.("to-title") : undefined,
-      destructive: pending,
-    }],
+    entries,
     hint: pending ? "한 번 더 결정하면 타이틀 화면으로 돌아갑니다." : "결정하면 한 번 더 확인합니다.",
   };
 }
