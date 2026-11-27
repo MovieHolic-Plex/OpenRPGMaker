@@ -302,21 +302,29 @@ function findInertCallMapEventCallers(project: Project, mapId: MapId, target: Ga
   return callers;
 }
 
-function pageSelfSwitchesConditionedOn(conditions: readonly Condition[]): Set<string> {
-  const keys = new Set<string>();
-  const collect = (cond: Condition, negated = false): void => {
-    if (cond.kind === "selfSwitch") {
-      if (negated ? !cond.value : cond.value) keys.add(cond.key);
-      return;
-    }
-    if (cond.kind === "all" || cond.kind === "any") {
-      cond.conditions.forEach((child) => collect(child, negated));
-      return;
-    }
-    if (cond.kind === "not") collect(cond.condition, !negated);
-  };
-  conditions.forEach((cond) => collect(cond, false));
-  return keys;
+function conditionGuaranteedBySelfSwitches(
+  cond: Condition,
+  writtenTrue: ReadonlySet<string>,
+  negated = false,
+): boolean {
+  if (cond.kind === "selfSwitch") {
+    const needsTrue = negated ? !cond.value : cond.value;
+    return needsTrue && writtenTrue.has(cond.key);
+  }
+  if (cond.kind === "all") {
+    return negated
+      ? cond.conditions.some((child) => conditionGuaranteedBySelfSwitches(child, writtenTrue, true))
+      : cond.conditions.length > 0 && cond.conditions.every((child) => conditionGuaranteedBySelfSwitches(child, writtenTrue, false));
+  }
+  if (cond.kind === "any") {
+    return negated
+      ? cond.conditions.length > 0 && cond.conditions.every((child) => conditionGuaranteedBySelfSwitches(child, writtenTrue, true))
+      : cond.conditions.some((child) => conditionGuaranteedBySelfSwitches(child, writtenTrue, false));
+  }
+  if (cond.kind === "not") {
+    return conditionGuaranteedBySelfSwitches(cond.condition, writtenTrue, !negated);
+  }
+  return false;
 }
 
 function autoPageExitsOrPromotes(
@@ -336,9 +344,12 @@ function autoPageExitsOrPromotes(
   );
   if (writtenSelfSwitches.size === 0) return false;
   for (let i = pageIndex + 1; i < pages.length; i += 1) {
-    const laterKeys = pageSelfSwitchesConditionedOn(pages[i]?.conditions ?? []);
-    for (const key of writtenSelfSwitches) {
-      if (laterKeys.has(key)) return true;
+    const laterConditions = pages[i]?.conditions ?? [];
+    if (
+      laterConditions.length > 0
+      && laterConditions.every((cond) => conditionGuaranteedBySelfSwitches(cond, writtenSelfSwitches))
+    ) {
+      return true;
     }
   }
   return false;
