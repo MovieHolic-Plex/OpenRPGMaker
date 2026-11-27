@@ -534,11 +534,6 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     onEventChoice(request) {
       if (!options.showEventChoices) {
         console.warn("[battle] event choice requires an input host", request.id);
-        const before = options.runtime.snapshot();
-        if (options.runtime.resumeEventChoice(request.id, 0)) {
-          presentation = createPresentationLedger(before);
-          sequencer.runAfterEventChoice(before, options.runtime.snapshot());
-        }
         return;
       }
       eventSurfaceOpen = true;
