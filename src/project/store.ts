@@ -11,11 +11,12 @@ import { diffProjectDocumentsSliced, type ProjectDocumentPatch } from "./persist
 import { clearCopiedEventPage } from "@/editor/eventPageClipboard";
 import { diagnosticObserved, diagnosticToken, publishDiagnostic } from "@/util/diagnosticObserver";
 import { rewriteLegacyAdvancedDialogueInProject } from "@/project/io/rewriteLegacyDialogue";
-import { createBlankProject, createStarterBlankProject } from "./defaults";
+import { createBlankProject } from "./defaults";
+import { createFreshStarterBlankProject } from "./defaults/freshStarter";
 // defaultProject 가 아니라 blankProject 에서 가져온다 — defaultProject 는 데모·쇼케이스 빌더 때문에
 // 에디터 인테리어 파이프라인을 끌고, store 를 import 하는 테스트 669개가 그 비용을 물게 된다.
 import { ensureSwitchVariableSlots } from "./defaults/blankProject";
-import { ensureBundledResourceProfiles, ensureBundledTilesets, preloadAllBundledTilesetDefinitions, removeLegacyRmTileset, removeLegacySpriteReferences } from "./defaults/defaultAssets";
+import { ensureBundledResourceProfiles, ensureBundledTilesets, preloadAllBundledTilesetDefinitions, preloadBundledTilesetDefinitionsForNormalization, removeLegacyRmTileset, removeLegacySpriteReferences } from "./defaults/defaultAssets";
 import { ensureCurrentMonsterArt, preloadCurrentMonsterArt } from "@/assets/currentMonsterArt";
 import { reshapeJpCityMapBorders } from "./defaults/jpCityEdgeMigration";
 import { hasPendingFacesetSheetRepair, repairUploadedFacesetSheets } from "@/assets/facesetSheetRepair";
@@ -391,9 +392,8 @@ class ProjectStore {
             // 열어줬는데 "작업을 찾지 못함" 오류로 떨어지면 온라인 선택지가 없는 패키징
             // 앱이 DB 연결 화면에 갇힌다(2026-09-17 패키징 실측: db-required-panel).
             // 빈 문서를 채택하고 dirty 로 둬 첫 flush 가 폴더에 심는다.
-            const definitions = preloadAllBundledTilesetDefinitions();
-            if (definitions) await definitions;
-            this.adoptProject(createStarterBlankProject(), { restoreVault: false });
+            // 번들 타일셋은 구운 «정규화한 새 타일셋»에서 지연으로 만든다 — 정의 약 47MB 를 읽고 74MiB 를 짓지 않는다(freshStarter.ts).
+            this.adoptProject(await createFreshStarterBlankProject(), { restoreVault: false });
             this.loadedRemoteProjectId = target.projectId;
             this.writeAuthority = { mode: "legacy", target };
             this.remotePersistenceEnabled = true;
@@ -2007,7 +2007,7 @@ class ProjectStore {
     const skipNormalizers = bootNormalizationMatches(this.current, bootMarker);
     // 정규화기(ensureBundledTilesets)는 번들 타일셋 정의를 동기로 읽는다. 편집기는 정의를 지연으로 싣으므로(bundledJson.ts)
     // 돌리기 전에 한꺼번에 읽어 둔다 — 건너뛰는 웜 부팅은 읽지 않는다. 기다리는 동안 문서가 바뀌면 아래는 새 문서를 정규화한다.
-    const definitions = skipNormalizers ? null : preloadAllBundledTilesetDefinitions();
+    const definitions = skipNormalizers ? null : preloadBundledTilesetDefinitionsForNormalization(this.current);
     if (definitions) await definitions;
     // 현행 몬스터 그림(5×4 20칸 시트) 데이터도 늦게 읽는다 — 아래 정규화기 currentMonsterArt 가 동기로 설치한다.
     if (!skipNormalizers) await preloadCurrentMonsterArt();

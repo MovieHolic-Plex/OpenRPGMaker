@@ -54,6 +54,7 @@ import { isSolidChipsetTile, isUpperChipsetTile, terrainTagForChipsetTile } from
 import { EXTRA_LAYER_KEYS } from "@/project/mapLayers";
 import { attachWorkshopTiles, detachWorkshopTiles } from "../workshopTiles";
 import { pendingDefaultTilesetBuilder, registerLazyDefaultTileset } from "./lazyDefaultTilesets";
+import { isFreshBundledTileset } from "../bundledTilesetLazy";
 
 const DUNGEON_TILESET_ID = "easyrpg_chipset_dungeon";
 const INTERIOR_TILESET_ID = "easyrpg_chipset_interior";
@@ -258,6 +259,15 @@ export function bundledReferenceDocumentsById(id: string): TilesetDef["reference
  * 번들 타일셋 전부를 만들거나 맞추는 데 필요한 정의 JSON 을 읽어 둔다(편집기에서 새 프로젝트·첫 부팅 정규화 전에 await).
  * 이미 다 있으면(정적 출처 = 테스트·헤드리스·Electron 메인, 또는 읽기 끝) null 이다 — 그때는 await 하지 않아 로드 경로의 순서가 예전 그대로다.
  */
+/**
+ * 부팅 정규화(ensureBundledTilesets)가 읽을 번들 정의만 읽어 둔다. 구운 «새 항목»은 건너뛰므로 그 정의는 읽지 않는다(freshStarter.ts) —
+ * 빈 새 프로젝트는 정의 약 47MB 를 읽지 않고 정규화한다. 읽을 것이 없으면 null.
+ */
+export function preloadBundledTilesetDefinitionsForNormalization(project: { readonly tilesets: Readonly<Record<string, unknown>> }): Promise<void> | null {
+  const ids = BUNDLED_EASYRPG_CHIPSET_ASSETS.map(bundledTilesetIdForAsset).filter((id) => !isFreshBundledTileset(project.tilesets[id]));
+  return preloadBundledTilesetDefinitions(ids);
+}
+
 export function preloadAllBundledTilesetDefinitions(): Promise<void> | null {
   const needsCore = !BUNDLED_JSON_KEYS.every(bundledJsonLoaded);
   const needsLook = !BUNDLED_LOOK_JSON_KEYS.every(bundledLookJsonLoaded);
@@ -278,6 +288,8 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
     // 3~5MB 짜리 JSON 사본을 만들어 그대로 버린다 — 실측 2026-09-22: 프로젝트 로드마다
     // 164ms 였고 그 대부분이 버려지는 사본이었다(수정 후 26ms).
     const id = bundledTilesetIdForAsset(asset);
+    // 구운 «정규화한 새 타일셋»에서 만든 항목은 이미 이 정규화를 거쳤다(freshStarter.ts) — 지연 항목을 되돌리지 않게 건너뛴다.
+    if (isFreshBundledTileset(project.tilesets[id])) continue;
     if (project.tilesets[id]) {
       if (asset.textureKey === ATLAS_CARTOGRAPHY_TEXTURE) changed = ensureAtlasCartographyReferences(project.tilesets[id]) || changed;
       // 공방에서 그려 넣은 칸(맵 기물)은 번들 끝 뒤에 붙어 있다. 아래 ensure 가 번들 칸을 늘리면 겹치므로
@@ -395,11 +407,14 @@ export function ensureBundledTilesets(project: { tilesets: Record<string, Tilese
     project.tilesets[id] = bundledEasyRpgTileset(asset);
     changed = true;
   }
-  changed = ensureTilesetHarnesses(project) || changed;
+  const tilesets = Object.values(project.tilesets).some(isFreshBundledTileset)
+    ? Object.fromEntries(Object.entries(project.tilesets).filter(([, tileset]) => !isFreshBundledTileset(tileset)))
+    : project.tilesets;
+  changed = ensureTilesetHarnesses({ tilesets }) || changed;
   // 옛 번들 「계단 입구」 참고문서(그림 삭제됨)를 저장된 사본에서 뗀다(legacyStairEntranceCleanup.ts).
-  for (const tileset of Object.values(project.tilesets)) changed = removeLegacyStairEntranceReferences(tileset) || changed;
-  for (const tileset of Object.values(project.tilesets)) if (tileset.mvPack) changed = refreshMvPackGuide(tileset) || changed;
-  changed = ensureWorldmapAuthoringBrushes(project) || changed;
+  for (const tileset of Object.values(tilesets)) changed = removeLegacyStairEntranceReferences(tileset) || changed;
+  for (const tileset of Object.values(tilesets)) if (tileset.mvPack) changed = refreshMvPackGuide(tileset) || changed;
+  changed = ensureWorldmapAuthoringBrushes({ tilesets }) || changed;
   return changed;
 }
 
@@ -442,7 +457,8 @@ export function removeLegacySpriteReferences(project: unknown): boolean {
         visit(item);
         continue;
       }
-      if (cleanSharedEntries.has(item)) continue;
+      // 구운 «정규화한 새 타일셋» 항목은 이미 이 청소를 거쳤다 — 훑으면 지연 항목을 되돌린다(freshStarter.ts).
+      if (cleanSharedEntries.has(item) || isFreshBundledTileset(item)) continue;
       const changedBefore = changed;
       changed = false;
       visit(item);
