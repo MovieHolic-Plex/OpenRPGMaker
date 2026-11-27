@@ -2833,6 +2833,44 @@
     }
    ],
    "joins": []
+  },
+  {
+   "id": "extra.gable_dormer.green",
+   "wave": "extra",
+   "kind": "set",
+   "title": "초록 기와 큰 삼각 도머(지붕 부착 2×2)",
+   "size": [
+    2,
+    2
+   ],
+   "layer": "upper",
+   "walk": "★",
+   "brief": "초록 기와 지붕(roof.hip.green) 위에 자연스럽게 어울리는 2×2 초록 기와 삼각 박공 도머. 위 삼각 지붕 윗면(top [0,1]) + 아래 반목조 박공벽·다락 창.",
+   "accept": [
+    "초록 기와 지붕과 색·질감이 통일된다",
+    "지붕 사면 위에 자연스럽게 앉는다"
+   ],
+   "pieces": [
+    {
+     "id": "c",
+     "role": "c",
+     "title": "초록 큰 도머",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      2
+     ],
+     "kind": "extra",
+     "top": [
+      0,
+      1
+     ]
+    }
+   ],
+   "joins": []
   }
  ],
  "buildings": [
@@ -4243,7 +4281,7 @@
      ],
      "extras": [
       {
-       "part": "extra.gable_dormer",
+       "part": "extra.gable_dormer.green",
        "at": [
         1,
         0
@@ -4251,7 +4289,7 @@
        "on": "roof"
       },
       {
-       "part": "extra.gable_dormer",
+       "part": "extra.gable_dormer.green",
        "at": [
         5,
         0
@@ -4584,7 +4622,7 @@
        "part": "extra.sign",
        "on": "wall",
        "storey": -1,
-       "col": 5,
+       "col": 4,
        "dy": 0
       }
      ]
@@ -4652,7 +4690,14 @@
        "part": "extra.porch_roof",
        "on": "wall",
        "storey": -1,
-       "col": 4,
+       "col": 3,
+       "dy": -1
+      },
+      {
+       "part": "extra.porch_roof",
+       "on": "wall",
+       "storey": -1,
+       "col": 5,
        "dy": -1
       },
       {
@@ -5001,6 +5046,7 @@
     "extra.chimney",
     "extra.dormer",
     "extra.gable_dormer",
+    "extra.gable_dormer.green",
     "extra.porch_roof",
     "extra.sign",
     "extra.terrace",

@@ -184,15 +184,23 @@ def _make_wall_arcade(line):
                 return pier_h if lx <= 7 else pier_m
             return pier_l if lx < 6 else pier_m
         if piece_idx in (0, 4):
+            # 모서리 교각: 체크무늬 잡티 제거 → 단정한 마름돌(quoin) 쌓기 + 좁은 채광 슬릿
             if (piece_idx == 0 and lx == 0) or (piece_idx == 4 and lx == 15):
                 return pier_d
-            if y in (10, 18, 26):
-                return pier_d if lx % 3 == 0 else pier_m
-            if piece_idx == 0 and lx in (4, 5, 6) and 11 <= y <= 19:
-                return void_d if lx == 4 else void_m
-            if piece_idx == 4 and lx in (9, 10, 11) and 11 <= y <= 19:
-                return void_d if lx == 11 else void_m
-            return pier_h if (lx < 8 and (y // 4 + lx // 4) % 2 == 0) else pier_m
+            if y in (8, 15, 22, 29):
+                return pier_d
+            row_i = y // 7
+            # 왼/오 모서리 엇갈린 마름돌 세로 줄눈
+            seam_x = (6 if row_i % 2 == 0 else 9) if piece_idx == 0 else (9 if row_i % 2 == 0 else 6)
+            if lx == seam_x:
+                return pier_d
+            if piece_idx == 0 and lx in (10, 11) and 10 <= y <= 18:
+                return void_d if lx == 10 else void_m
+            if piece_idx == 4 and lx in (4, 5) and 10 <= y <= 18:
+                return void_d if lx == 5 else void_m
+            if y in (9, 16, 23):
+                return pier_h if lx < 10 else pier_l
+            return pier_l if (piece_idx == 0 and lx < 8) else pier_m
         if arch_cut(lx, y):
             if y >= 27:
                 return void_m if y == 27 else pier_d
@@ -248,13 +256,21 @@ def _make_wall_shop(line):
         if pidx == 4 and lx == 0:
             return wm if y % 4 != 0 else wd
         if pidx in (0, 4):
+            # 상점 모서리: 반 접힌 명암선 제거 → 반목조 기둥·대각 가새·하단 나무 패널
             if (pidx == 0 and lx in (0, 1)) or (pidx == 4 and lx in (14, 15)):
                 return wd if y % 4 == 0 else wm
-            if y in (6, 22):
+            if y in (4, 13, 22):
                 return wd
             if y > 22:
-                return wm if lx % 3 != 0 else wd
-            return bg_l if lx < 8 else bg_m
+                return wd if (lx % 4 == 0 or y == 28) else (wl if lx % 4 == 1 else wm)
+            # 대각선 목조 가새
+            if 5 <= y <= 12:
+                diag = (y - 5) + 3 if pidx == 0 else 12 - (y - 5)
+                if lx in (diag, diag + 1):
+                    return wm
+            if y in (5, 14):
+                return bg_m
+            return bg_l if (y + lx // 2) % 7 != 0 else bg_m
         if pidx == 3:
             if lx in (0, 15):
                 return wm if y % 4 != 0 else wd
@@ -295,15 +311,18 @@ def _make_wall_shop(line):
                     return wd
                 return wl if lx < 7 else wm
             return bg_l if y < 4 else bg_m
+        # m: 상점 중간 벽 — 반목조 가로 보 + 따뜻한 회벽 점묘 + 하단 패널(반 접힘선 제거)
         if lx in (0, 15):
             return wm if y % 4 != 0 else wd
-        if y in (5, 22):
+        if y in (4, 13, 22):
             return wd
         if y > 22:
-            return wm if lx % 4 != 0 else wd
-        if 9 <= y <= 17 and 4 <= lx <= 11:
-            return wl if y == 9 else (wm if y == 17 else bg_m)
-        return bg_l if lx < 8 else bg_m
+            return wd if (lx % 4 == 0 or y == 28) else (wl if lx % 4 == 1 else wm)
+        if y in (5, 14):
+            return bg_m
+        if 7 <= y <= 11 and lx in (7, 8):
+            return wm
+        return bg_l if (lx * 3 + y * 5) % 9 != 0 else bg_m
 
     rows = [[cell_px(pidx, lx, y) for pidx in range(5) for lx in range(16)] for y in range(32)]
     return _grid_tokens(rows, TOK), {'note': f'Lv.2 상점 쇼윈도 벽 ({line})'}
@@ -322,60 +341,78 @@ def _make_roof_thatch(line):
         hi, lit, mid, sh, dk, edge = 'w6', 'w5', 'w4', 'w2', 'w1', 'w0'
 
     def thatch_fill(gx, y, shade_side=False):
-        # x=0 과 x=15 가 같은 위상이 되도록 16px 대칭/주기 정렬(S 가로 이음 0)
+        # 16px 대칭 빗질 짚단 결(신호등 네모 이끼·평평한 갈색 띠 제거 → 자연스러운 3단 초가 겹침)
         b2 = ((gx + 1) // 2) % 4   # x=0 -> 0, x=15 -> 0
         b4 = ((gx + 2) // 4) % 2   # x=0 -> 0, x=15 -> 0
+        # 세로 짚 결 위상(x=0/15 동일)
+        comb = ((gx + 1) // 2) % 2
         if line == 'A':
-            # 3단 겹친 황금 짚단 + 용마루 굵은 묶음
+            # 황금 짚단: 용마루 굵은 묶음 + 4단 물결 초가 층 + 자연스러운 처마 끝 짚단 그림자
             if y <= 3:
-                return hi if b2 != 2 else lit
-            if y <= 7:
-                return mid if b2 == 2 else lit
-            if y >= 43:
-                return edge if y >= 46 else dk
+                return hi if (b2 != 2 and y <= 2) else lit
+            if y <= 6:
+                return mid if b2 == 2 else (hi if y == 4 else lit)
+            if y >= 45:
+                return edge if y == 47 else dk
             if y >= 32:
-                yy = (y - 32) % 6
-                if yy == 5:
+                # 아랫단 2층 짚단(y=32..38, 39..44): 톱니 물결 처마
+                sub = (y - 32) % 7
+                if sub == 6 or (sub == 5 and comb == 1):
                     return dk
-                return sh if shade_side else (mid if b2 != 2 else sh)
-            yy = (y - 8) % 8
-            if yy == 7:
+                if shade_side:
+                    return dk if comb == 1 else sh
+                return mid if (sub <= 2 and comb == 0) else sh
+            # 상단 3층 짚단(y=7..31)
+            tier = (y - 7) // 8
+            sub = (y - 7) % 8
+            if sub == 7 or (sub == 6 and comb == 1):
                 return sh if shade_side else mid
-            if yy in (0, 1):
-                return mid if shade_side else (hi if b2 == 1 else lit)
-            return sh if shade_side else (lit if b2 != 2 else mid)
+            if sub == 0 and comb == 0:
+                return mid if shade_side else hi
+            if shade_side:
+                return sh if comb == 1 else mid
+            return lit if (comb == 0 or (tier % 2 == 0 and sub <= 3)) else mid
         if line == 'B':
             # 갈대 초가: 상단 교차 목조 뼈대 + 촘촘한 세로 빗질 결
             if y <= 5:
                 if b2 == 2:
                     return dk
                 return hi if y <= 2 else lit
-            if y >= 42:
-                return edge if y >= 45 else dk
+            if y >= 44:
+                return edge if y >= 46 else dk
             if y >= 32:
-                return dk if (y in (36, 41) or (shade_side and b2 in (1, 3))) else sh
-            if y in (15, 24, 31):
+                sub = (y - 32) % 6
+                if sub == 5:
+                    return dk
+                return dk if (shade_side and comb == 1) else sh
+            sub = (y - 6) % 9
+            if sub == 8 or (sub == 7 and comb == 0):
                 return sh if shade_side else mid
             if shade_side:
-                return sh if b2 in (0, 2) else mid
-            return lit if b2 in (0, 2) else (hi if y < 15 else mid)
-        # C: 이끼 낀 거친 통나무 용마루 + 두툼한 계단식 초가
+                return sh if comb == 0 else mid
+            return hi if (sub == 0 and b2 == 0) else (lit if comb == 0 else mid)
+        # C: 소박한 시골 초가 — 둥근 나무 용마루 + 5단 빗질 짚단(네모 이끼 제거!)
         if y <= 2:
-            return mid
-        if y <= 6:
-            return hi if y <= 4 else lit
-        if y >= 44:
-            return edge if y >= 46 else dk
+            return mid if y == 0 else lit
+        if y <= 5:
+            return hi if (y <= 4 and b4 == 0) else lit
+        if y >= 45:
+            return edge if y == 47 else dk
         if y >= 32:
-            if 34 <= y <= 37 and (gx % 16) in (4, 5, 6, 7):
-                return 'v1' if shade_side else 'v2'
-            return dk if y >= 39 else sh
-        yy = (y - 7) % 5
-        if yy == 4:
+            sub = (y - 32) % 6
+            if sub == 5 or (sub == 4 and b2 == 2):
+                return dk
+            if shade_side:
+                return dk if comb == 1 else sh
+            return mid if (sub <= 1 and comb == 0) else sh
+        sub = (y - 6) % 6
+        if sub == 5 or (sub == 4 and b2 == 2):
             return dk if shade_side else sh
-        if yy == 0 and b4 == 1:
+        if sub == 0 and b4 == 0:
             return mid if shade_side else hi
-        return sh if shade_side else (lit if b4 == 0 else mid)
+        if shade_side:
+            return sh if comb == 1 else mid
+        return lit if (comb == 0 or sub <= 2) else mid
 
     rows = []
     for y in range(48):
