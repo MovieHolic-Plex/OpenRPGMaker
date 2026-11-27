@@ -159,7 +159,7 @@ function registerGameProtocol(resourcesDir: string, pakReader: OpakArchiveReader
 
     // 1. Primary path: serve directly from OPAK binary archive (resources/game.pak)
     if (pakReader) {
-      const meta = pakReader.getEntryMeta(cleanPath);
+      const meta = pakReader.getEntryMeta(url.pathname);
       if (!meta) {
         return new Response("Not Found", { status: 404 });
       }

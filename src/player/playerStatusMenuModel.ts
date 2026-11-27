@@ -435,60 +435,63 @@ export function statusMenuCommandLabel(commandId: StatusMenuCommandId, waitModeE
     || (resolveVnExtras(project) !== undefined && ((commandId === "gallery" && authored.label === DEFAULT_GALLERY_LABEL) || (commandId === "endings" && authored.label === "엔딩")))
   );
   if (authored && !defaultName) return authored.label;
-  const locale = runtimeUiLocale(project);
+  // Non-VN projects without an explicit project.meta.language keep legacy Korean menu labels
+  // even if oprnDialogueSystem.language is set (preserves vnRepair legacy contract).
+  const uiProject = project && !project.meta.language && !resolveVnExtras(project) ? undefined : project;
+  const locale = runtimeUiLocale(uiProject);
   switch (commandId) {
-    case "trainer-card": return runtimeUiText(project, "menu.cmd.trainerCard");
-    case "items": return runtimeUiText(project, "menu.cmd.items");
-    case "skills": return runtimeUiText(project, "menu.cmd.skills");
-    case "equipment": return runtimeUiText(project, "menu.cmd.equipment");
-    case "monsters": return runtimeUiText(project, "menu.cmd.monsters");
-    case "monster-dex": return runtimeUiText(project, "menu.cmd.monsterDex");
-    case "region-map": return runtimeUiText(project, "menu.cmd.regionMap");
-    case "campaign-progress": return runtimeUiText(project, "menu.cmd.campaignProgress");
-    case "save": return runtimeUiText(project, "menu.cmd.save");
-    case "load": return runtimeUiText(project, "menu.cmd.load");
-    case "status": return runtimeUiText(project, "menu.cmd.status");
+    case "trainer-card": return runtimeUiText(uiProject, "menu.cmd.trainerCard");
+    case "items": return runtimeUiText(uiProject, "menu.cmd.items");
+    case "skills": return runtimeUiText(uiProject, "menu.cmd.skills");
+    case "equipment": return runtimeUiText(uiProject, "menu.cmd.equipment");
+    case "monsters": return runtimeUiText(uiProject, "menu.cmd.monsters");
+    case "monster-dex": return runtimeUiText(uiProject, "menu.cmd.monsterDex");
+    case "region-map": return runtimeUiText(uiProject, "menu.cmd.regionMap");
+    case "campaign-progress": return runtimeUiText(uiProject, "menu.cmd.campaignProgress");
+    case "save": return runtimeUiText(uiProject, "menu.cmd.save");
+    case "load": return runtimeUiText(uiProject, "menu.cmd.load");
+    case "status": return runtimeUiText(uiProject, "menu.cmd.status");
     // "열" 한 글자는 "열다"로 읽혀 무슨 기능인지 알 수 없다(전열/후열 교체).
-    case "row": return runtimeUiText(project, "menu.cmd.row");
-    case "formation": return runtimeUiText(project, "menu.cmd.formation");
-    case "battle-reports": return runtimeUiText(project, "menu.cmd.battleReports");
+    case "row": return runtimeUiText(uiProject, "menu.cmd.row");
+    case "formation": return runtimeUiText(uiProject, "menu.cmd.formation");
+    case "battle-reports": return runtimeUiText(uiProject, "menu.cmd.battleReports");
     case "bestiary": {
       const title = project ? bestiaryTitle(project) : BESTIARY_DEFAULT_TITLE;
       return locale !== "ko" && title === BESTIARY_DEFAULT_TITLE
-        ? runtimeUiText(project, "menu.cmd.bestiary")
+        ? runtimeUiText(uiProject, "menu.cmd.bestiary")
         : title;
     }
-    case "quests": return runtimeUiText(project, "menu.cmd.quests");
+    case "quests": return runtimeUiText(uiProject, "menu.cmd.quests");
     case "journal": {
       const title = (project && storyJournal(project)?.title) || STORY_JOURNAL_DEFAULT_TITLE;
       return locale !== "ko" && title === STORY_JOURNAL_DEFAULT_TITLE
-        ? runtimeUiText(project, "menu.cmd.journal")
+        ? runtimeUiText(uiProject, "menu.cmd.journal")
         : title;
     }
-    case "relationships": return runtimeUiText(project, "menu.cmd.relationships");
+    case "relationships": return runtimeUiText(uiProject, "menu.cmd.relationships");
     case "gallery": {
       if (project && resolveVnExtras(project)?.gallery.enabled) return vnGalleryLabel(project);
       const label = galleryMenuLabel(project);
       return locale !== "ko" && label === DEFAULT_GALLERY_LABEL
-        ? runtimeUiText(project, "menu.cmd.gallery")
+        ? runtimeUiText(uiProject, "menu.cmd.gallery")
         : label;
     }
     case "endings":
       return project?.meta.oprnVnExtras || project?.meta.oprnDialogueSystem
         ? vnUiText(vnExtrasLanguage(project), "menu.endings")
-        : runtimeUiText(project, "menu.cmd.endings");
-    case "life-ledger": return runtimeUiText(project, "menu.cmd.lifeLedger");
+        : runtimeUiText(uiProject, "menu.cmd.endings");
+    case "life-ledger": return runtimeUiText(uiProject, "menu.cmd.lifeLedger");
     case "backlog":
       return project?.meta.oprnDialogueSystem
         ? dialogueUiText(resolveDialogueSystem(project), "menu.backlog")
-        : runtimeUiText(project, "menu.cmd.backlog");
+        : runtimeUiText(uiProject, "menu.cmd.backlog");
     // 레일 폭(60px)이 좁아 "전투 대기 ON" 은 말줄임으로 잘리고, 레일을 넓히면
     // 오른쪽 상세 패널이 좁아져 값이 잘린다. 라벨은 짧게 두고 무엇이 대기하는지는
     // 상세 패널 제목("전투 대기")과 설명이 알려준다.
-    case "options": return runtimeUiText(project, "menu.cmd.options");
-    case "rest": return runtimeUiText(project, "menu.cmd.rest");
-    case "wait": return runtimeUiText(project, waitModeEnabled ? "menu.cmd.waitOn" : "menu.cmd.waitOff");
-    case "to-title": return runtimeUiText(project, "menu.cmd.toTitle");
+    case "options": return runtimeUiText(uiProject, "menu.cmd.options");
+    case "rest": return runtimeUiText(uiProject, "menu.cmd.rest");
+    case "wait": return runtimeUiText(uiProject, waitModeEnabled ? "menu.cmd.waitOn" : "menu.cmd.waitOff");
+    case "to-title": return runtimeUiText(uiProject, "menu.cmd.toTitle");
     default: return assertNever(commandId);
   }
 }

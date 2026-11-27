@@ -18,7 +18,7 @@ import {
   formatBattleCommandPrompt,
   resolveTerms,
 } from "@/project/terms";
-import { defaultTerms } from "@/project/defaults/defaultDatabase";
+import { defaultTerms, defaultTitleScreenSettings } from "@/project/defaults/defaultDatabase";
 import {
   applyLocalizationBundle,
   exportLocalizationCsv,

@@ -924,7 +924,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     if (titleConfirming) return true;
     const project = store.getCurrent();
     const settings = currentTitleSettings(project);
-    const options = listTitleMenuOptions(settings, { autosaveAvailable: isAutosaveAvailable(), newGamePlusLabel: newGamePlusTitleLabel() });
+    const options = listTitleMenuOptions(settings, { autosaveAvailable: isAutosaveAvailable(), newGamePlusLabel: newGamePlusTitleLabel(), project });
     const visibleCount = options.length;
     titleMenuIndex = clampTitleMenuIndex(titleMenuIndex, visibleCount);
     const titleDir = directionForKey(key);
@@ -976,6 +976,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     if (menu && statusMenu.isCapturingKey()) {
       event.preventDefault();
       event.stopPropagation();
+      if (event.repeat) return;
       statusMenu.handleKey(key as RuntimeMenuKey);
       return;
     }
@@ -1076,6 +1077,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
     const titleContext = {
       autosaveAvailable: isAutosaveAvailable(),
       newGamePlusLabel: newGamePlusTitleLabel(),
+      project,
       // intro 등장 연출은 최초 진입에만 — 방향키 이동(emitEnterJuice:false)에는 재생하지 않는다.
       playIntro: firstEnter,
       reuseFx: previousFx,

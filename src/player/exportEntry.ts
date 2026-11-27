@@ -18,8 +18,10 @@ import { preloadBundledTilesetDefinitions } from "@/project/defaults/defaultAsse
 import { setBundledJsonReader, type BundledJsonProgress } from "@/project/defaults/bundledJson";
 import { OPRN_EXTENSION } from "@/project/package";
 import { isFlagshipDemoId, type FlagshipDemoId } from "@/project/flagship/types";
+import { translateProjectContent } from "@/project/localization";
 import type { Project } from "@/project/types";
 import { renderPlayer } from "@/player/player";
+import { runtimeUiLocale } from "@/player/runtimeUiStrings";
 import { renderOprnGameFilePicker } from "@/player/oprnGameFilePicker";
 import { readStandalonePayload } from "@/player/standalonePayload";
 import { adoptLegacyExportSaves, setSaveSlotStorageNamespace } from "@/player/saveSlots";
@@ -405,10 +407,15 @@ async function startPlayer(
   // renderPlayer 는 root 를 비운다 — 불러오는 화면은 문서 맨 위로 옮겨 그 위를 덮는다.
   if (loader) { document.body.append(loader.root); loader.root.style.zIndex = "2147483000"; }
   try {
-    installExportUploadedAssets(project);
+    const activeLocale = runtimeUiLocale(project);
+    const localizedProject = project.meta.localizations && Object.keys(project.meta.localizations).length > 0
+      ? translateProjectContent(project, activeLocale)
+      : project;
+    installExportUploadedAssets(localizedProject);
     // 옛 저장본에서 내보낸 게임도 에디터와 같은 얼굴을 보여 준다(faceMatchRepair.ts — 걷기 그림의 짝으로 교정).
-    repairFaceMatches(project);
-    setExportedProject(project);
+    repairFaceMatches(localizedProject);
+    setExportedProject(localizedProject);
+    project = localizedProject;
     // 에디터 boot 를 거치지 않는 웹·단일 HTML 플레이어도 저장된 공통 글꼴을 쓴다.
     syncProjectFontTheme(project);
     const storeGame = parseStoreGameBoot(boot.storeGame);
@@ -486,20 +493,25 @@ function renderBootError(root: HTMLElement, message: string): void {
   root.append(panel);
 }
 
-// 타이틀 "게임 종료": 데스크톱 네이티브 호스트면 앱 종료, 웹 호스트 returnUrl 이면 복귀, 아니면 기존 안내 유지.
+// 타이틀 "게임 종료": 데스크톱 네이티브 호스트면 앱 종료(실패 시 폴백), 웹 호스트 returnUrl 이면 복귀, 아니면 기존 안내 유지.
 function exitToHost(root: HTMLElement, host: HostBridge): void {
+  const runFallback = (): void => {
+    const returnUrl = hostExitReturnUrl(host);
+    if (returnUrl) {
+      stopAllAudio();
+      window.location.assign(returnUrl);
+      return;
+    }
+    renderTitleExit(root);
+  };
   if (typeof window.__oprnDesktopPlayer?.quit === "function") {
     stopAllAudio();
-    void quitDesktopPlayer();
+    void quitDesktopPlayer().then((closed) => {
+      if (!closed) runFallback();
+    });
     return;
   }
-  const returnUrl = hostExitReturnUrl(host);
-  if (returnUrl) {
-    stopAllAudio();
-    window.location.assign(returnUrl);
-    return;
-  }
-  renderTitleExit(root);
+  runFallback();
 }
 
 function renderTitleExit(root: HTMLElement): void {

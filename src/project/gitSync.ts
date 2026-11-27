@@ -649,6 +649,13 @@ export function validateUnpackedProjectFiles(input: TextFileInput): GitSyncValid
   }
 
   // Check mapTree references
+  if (packed.mapTree !== undefined && !isPlainRecord(packed.mapTree)) {
+    errors.push({
+      severity: "error",
+      path: GIT_SYNC_ROOT_FILE,
+      message: "mapTree root must be a plain object.",
+    });
+  }
   const treeMapIds: string[] = [];
   collectMapTreeIds(packed.mapTree, treeMapIds);
   for (const treeMapId of treeMapIds) {

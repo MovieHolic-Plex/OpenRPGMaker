@@ -452,7 +452,14 @@ function sanitizeNodeList(
   warnings: string[],
   counter: { blocked: number },
   scopeRules: boolean,
+  depth = 0,
 ): string {
+  const MAX_CSS_NESTING_DEPTH = 16;
+  if (depth > MAX_CSS_NESTING_DEPTH) {
+    counter.blocked += 1;
+    warnings.push(`Dropped CSS block exceeding maximum nesting depth (${MAX_CSS_NESTING_DEPTH})`);
+    return "";
+  }
   const out: string[] = [];
   for (const node of parseTopLevelCssNodes(cssBody)) {
     if (node.kind === "at-rule") {
@@ -464,7 +471,7 @@ function sanitizeNodeList(
         continue;
       }
       if (NESTED_SCOPING_AT_RULES.has(atName) && node.body !== undefined) {
-        const inner = sanitizeNodeList(node.body, scopeSelector, allowExternalUrls, warnings, counter, scopeRules);
+        const inner = sanitizeNodeList(node.body, scopeSelector, allowExternalUrls, warnings, counter, scopeRules, depth + 1);
         if (inner) {
           out.push(`${node.prelude} {\n${inner}\n}`);
         }
@@ -472,7 +479,7 @@ function sanitizeNodeList(
       }
       if (KEYFRAME_AT_RULES.has(atName) && node.body !== undefined) {
         // Keyframe stop selectors (`from`, `to`, `50%`) must not be prefixed with `.player-layout`.
-        const inner = sanitizeNodeList(node.body, scopeSelector, allowExternalUrls, warnings, counter, false);
+        const inner = sanitizeNodeList(node.body, scopeSelector, allowExternalUrls, warnings, counter, false, depth + 1);
         if (inner) {
           out.push(`${node.prelude} {\n${inner}\n}`);
         }

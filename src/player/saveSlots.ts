@@ -1291,6 +1291,7 @@ export function importSaveCopy(options: {
   readonly adoptLegacy?: boolean;
 }): void {
   const { project, storage, sourceKey, slot } = options;
+  if (!isSaveSlotIndex(slot)) throw new PublicationError("save-incompatible");
   const publication = project.meta.publication;
   if (!publication) throw new PublicationError("save-incompatible");
   if (!isLocalSaveSourceKey(sourceKey, publication, options.adoptLegacy === true)) throw new PublicationError("save-incompatible");
@@ -1317,6 +1318,7 @@ export function importSelectedSaveFileCopy(options: {
   readonly slot: SaveSlotIndex;
 }): void {
   const { project, storage, text, slot } = options;
+  if (!isSaveSlotIndex(slot)) throw new PublicationError("save-incompatible");
   const publication = project.meta.publication;
   if (!publication) throw new PublicationError("save-incompatible");
   const target = publicationSaveKey(slot, publication);

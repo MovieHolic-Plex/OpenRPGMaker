@@ -44,7 +44,8 @@ export function requestScriptEngine(): void {
 }
 
 function commandsUseScripts(commands: unknown, depth: number): boolean {
-  if (!Array.isArray(commands) || depth > 40) return false;
+  if (!Array.isArray(commands)) return false;
+  if (depth > 40) return true;
   for (const command of commands as Command[]) {
     if (!command || typeof command !== "object") continue;
     if (command.kind === "script") return true;
