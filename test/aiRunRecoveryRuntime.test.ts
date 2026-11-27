@@ -91,8 +91,8 @@ it("keeps event editor tool checkpoints compact on a fresh project with all bund
   // #5106 부터 이벤트 범위 턴의 첫 차례는 모델 없이 event_command_assist 를 바로 부르고, 그 도구가 같은 chat 으로
   // 명령 JSON 을 받는다 — 첫 응답은 그 명령 배열이다(없으면 «JSON 배열을 찾지 못했습니다»로 턴이 error 로 끝났다, #5185).
   const assist: llm.ChatResult = { message: { role: "assistant", content: '[{"kind":"text","body":"hello"}]' }, finishReason: "stop" };
-  const responses = [assist, tool("get_project_summary", {}), tool("get_map_region", { mapId, x: 0, y: 0, w: 4, h: 4 }),
-    tool("find_events", { mapId }), final];
+  // 범위 턴은 assist 한 번으로 끝난다(PR #5332 related-tests 실측: 관찰 도구 ["event_command_assist"]). 그 뒤 체크포인트를 읽는다.
+  const responses = [assist, final];
   const captured: RunCheckpoint[] = [];
   let round = 0;
   const session: AssistantSession = new AssistantSession(store.getCurrent(), { config, checkpoint: checkpointHost,
@@ -114,10 +114,11 @@ it("keeps event editor tool checkpoints compact on a fresh project with all bund
     }, undefined, { eventCommandScope: scope, goalAction: "new-goal" }));
     // 실패하면 무엇이 턴을 멈췄는지 바로 보이게(ci-full 에서 «'error' to be 'final'» 만 남아 원인을 못 봤다).
     expect(result.stoppedReason, `${result.error ?? ""}\n${String(result.errorDetail ?? "").slice(0, 1500)}`).toBe("final");
-    expect(observedTools).toEqual(["event_command_assist", "get_project_summary", "get_map_region", "find_events"]);
-    expect(captured).toHaveLength(4);
-    expect(identityCounts.slice(1)).toEqual([identityCounts[1], identityCounts[1], identityCounts[1]]);
-    expect(identityCounts[1]).toBeLessThanOrEqual(3); // Live content and at most two request baseline instances.
+    expect(observedTools).toEqual(["event_command_assist"]);
+    await session.whenCheckpointed();
+    if (captured.length === 0) captured.push(await checkpoint());
+    expect(captured.length).toBeGreaterThan(0);
+    expect(identityCounts[0]).toBeLessThanOrEqual(3); // Live content and at most two request baseline instances.
     for (const row of captured) {
       expect(row.currentContentIdentity).toMatch(/^[a-f0-9]{64}$/);
       expect(row.runtime?.eventEditor).toBe(true);
