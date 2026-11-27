@@ -18,14 +18,14 @@ describe("그룹 구획과 빈 탭 접기", () => {
   it("맵 그룹의 탭 구성", () => {
     const world = TAB_GROUPS.find((group) => group.slug === "world");
     expect(world, "맵 그룹이 사라졌다").toBeTruthy();
-    expect(world?.label).toBe("맵");
+    expect(world?.label).toBe("공간"); // 2026-11 레일 묶음 이름 «맵»→«공간»(#5185)
     expect(world!.tabs).toEqual(["spatialTiles", "spatialObjects", "spatialPlaces", "spatialRegions", "spatialWorlds"]);
   });
 
   it("이야기 그룹이 레일 맨 앞에 있다", () => {
     expect(TAB_GROUPS[0]?.slug).toBe("lore");
     expect(TAB_GROUPS[0]?.label).toBe("이야기");
-    expect(TAB_GROUPS[0]?.tabs).toEqual(["worldCanon", "worldCodex", "characters", "commonEvents", "schedules", "dialogue", "switches", "variables"]);
+    expect(TAB_GROUPS[0]?.tabs).toEqual(["worldCanon", "worldCodex", "characters", "bestiary", "commonEvents", "schedules", "dialogue", "switches", "variables"]);
   });
 
   it("모든 탭이 정확히 한 그룹에 속한다 — 어느 그룹에도 없는 탭은 닿을 수 없다", () => {
@@ -39,7 +39,9 @@ describe("그룹 구획과 빈 탭 접기", () => {
 
   it("빈 탭 줄이 스타일을 갖는다 — 클래스만 붙고 안 보이면 없는 것과 같다", () => {
     expect(CSS).toMatch(/\.db-tab-fold\s*\{/);
-    expect(CSS).toMatch(/\.db-tab-fold-names\s*\{/);
+    // 접힌 탭 이름 한 줄(.db-tab-fold-names)은 «숨긴 탭 N개» + 탭마다 단추(#C-80)로 바뀌었다.
+    expect(CSS).toMatch(/\.db-tab-fold-count\s*\{/);
+    expect(CSS).toMatch(/\.db-tab-fold-tab\s*\{/);
     expect(CSS).toMatch(/\.db-tab-group-label\s*\{/);
   });
 
