@@ -1,0 +1,183 @@
+{
+ "set": "esc-hub-mvp-desktop",
+ "note": "조수 MVP(team-mvp-revive-r3 t9 JRPG) 사본에 menuLayout=hub — --whole-game ~/.cache/esc-menu-impl/mvp-hub 로 출하 플레이어 실행.",
+ "viewport": {
+  "width": 1440,
+  "height": 900
+ },
+ "checkpoints": [
+  {
+   "id": "menu-tour",
+   "label": "조수 MVP 시작 맵 — 허브 메뉴",
+   "mapId": "map_blank_start",
+   "x": 10,
+   "y": 8,
+   "facing": "down",
+   "items": {
+    "item_potion": 3,
+    "item_ether": 2,
+    "item_antidote": 1,
+    "item_old_key": 1,
+    "equip_iron_sword": 1,
+    "equip_steel_armor": 1
+   },
+   "beats": [
+    {
+     "id": "field",
+     "ops": [
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 1500
+      }
+     ],
+     "shot": false
+    },
+    {
+     "id": "hub",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Escape",
+       "times": 1
+      },
+      {
+       "kind": "waitFor",
+       "testid": "hub-tile-items"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "items",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter",
+       "times": 1
+      },
+      {
+       "kind": "waitFor",
+       "testid": "hub-item-description"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "items-target",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Enter",
+       "times": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "equip",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Escape",
+       "times": 1
+      },
+      {
+       "kind": "key",
+       "key": "Escape",
+       "times": 1
+      },
+      {
+       "kind": "key",
+       "key": "3",
+       "times": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "key",
+       "key": "Enter",
+       "times": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "status",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Escape",
+       "times": 1
+      },
+      {
+       "kind": "key",
+       "key": "Escape",
+       "times": 1
+      },
+      {
+       "kind": "key",
+       "key": "4",
+       "times": 1
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "closed",
+     "ops": [
+      {
+       "kind": "key",
+       "key": "Escape",
+       "times": 1
+      },
+      {
+       "kind": "key",
+       "key": "Escape",
+       "times": 1
+      },
+      {
+       "kind": "waitFor",
+       "testid": "main-menu",
+       "state": "absent"
+      }
+     ],
+     "expect": {
+      "testidAbsent": [
+       "main-menu"
+      ]
+     },
+     "shot": false
+    }
+   ]
+  }
+ ]
+}

@@ -22,6 +22,8 @@
   --hub-pw-edge: inset 0 0 0 1px rgba(255, 255, 255, 0.28);
   position: absolute;
   inset: 0;
+  max-width: none;
+  min-width: 0;
   z-index: 35;
   overflow: hidden;
   background: #02040f;
@@ -99,6 +101,7 @@
 .hub-menu .chip.bad { background: rgba(255, 90, 90, 0.22); box-shadow: inset 0 0 0 1px var(--hub-loss); color: var(--hub-loss); }
 .hub-menu .kb { font: 400 10px/10px var(--font-pixel-small); color: var(--hub-faint); box-shadow: inset 0 0 0 1px var(--hub-faint); padding: 1px 2px; }
 .hub-menu .hub-walker-slot { display: inline-block; zoom: var(--walk-scale, 1); }
+.hub-menu .hub-walker { display: block; image-rendering: pixelated; animation: runtime-shop-walk 720ms steps(1, end) infinite; }
 .hub-menu .hub-empty { padding: 6px; }
 
 /* 첫 화면 */
@@ -188,6 +191,9 @@
 /* 그 밖의 명령 — 옛 상세 목록을 허브 틀 색으로 */
 .hub-menu .hub-generic { display: flex; flex-direction: column; padding: 4px; }
 .hub-menu .hub-generic .status-menu-detail { flex: 1; min-height: 0; display: flex; flex-direction: column; background: none; border: 0; box-shadow: none; padding: 0; overflow: hidden; color: var(--hub-ink); font: 400 12px/16px var(--font-pixel-text); }
+.hub-menu.main-menu .hub-generic :is(.status-menu-detail, .status-menu-detail-list, .status-menu-detail-row) { border: 0; border-radius: 0; outline: 0; }
+.hub-menu.main-menu .hub-generic :is(.status-menu-detail, .status-menu-detail-list)::before,
+.hub-menu.main-menu .hub-generic :is(.status-menu-detail, .status-menu-detail-list)::after { content: none; }
 .hub-menu .hub-generic .status-menu-detail-title { font-family: var(--font-pixel-title); letter-spacing: 1px; padding: 0 4px 4px; display: none; }
 .hub-menu .hub-generic .status-menu-detail-list { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 3px; scrollbar-width: none; }
 .hub-menu .hub-generic .status-menu-detail-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 6px; padding: 3px 6px; background: var(--hub-cell); box-shadow: inset 0 0 0 1px var(--hub-line); min-height: 20px; color: inherit; text-align: left; }

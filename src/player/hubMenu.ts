@@ -212,6 +212,8 @@ type Ctx = {
 };
 
 function markFocus(panel: HTMLElement, page: HubPage, focus: string | undefined): void {
+  // 옛 목록 쪽은 커서가 목록 줄(.selected)에 있다 — 머리줄 단추에 두 번째 선택 표시를 두지 않는다.
+  if (page === "generic") return;
   const all = [...panel.querySelectorAll<HTMLElement>("[data-hub-k]")];
   const el = (focus ? all.find((e) => e.dataset.hubK === focus) : undefined)
     ?? all.find((e) => e.dataset.hubDefault === "true")
@@ -337,6 +339,7 @@ function drawWho(ctx: Ctx, x: number, y: number, w: number, h: number, current: 
     button.dataset.hubK = `a${index}`;
     button.dataset.testid = extra.testId ?? `hub-actor-${row.actorId}`;
     if (extra.reason) button.dataset.unavailableReason = extra.reason;
+    if (ctx.page === "status" && row.actorId === current) button.dataset.hubDefault = "true";
     button.innerHTML = extra.html ?? `${horizontal ? "" : faceHtml(project, row, 24)}<div class="v sm"><div class="nmr"><span>${esc(row.name)}</span><span class="${row.stateNames.length ? "st" : "dim"}">${esc(row.stateNames[0] ?? "")}</span></div>${vitHtml("HP", "var(--hub-hp)", v.hp, v.maxHp)}${vitHtml(resolveTerms(project).mp || "MP", "var(--hub-mp)", v.mp, v.maxMp)}</div>`;
     bind(button, extra.run);
     node.append(button);

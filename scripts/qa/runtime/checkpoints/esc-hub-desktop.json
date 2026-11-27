@@ -291,7 +291,7 @@
     },
     {
      "id": "system",
-     "note": "저장 단추 → 같은 틀의 저장 목록",
+     "note": "대열(열 바꾸기) 단추 → 같은 틀의 옛 목록",
      "ops": [
       {
        "kind": "key",
@@ -300,7 +300,7 @@
       },
       {
        "kind": "click",
-       "testid": "hub-sys-save"
+       "testid": "hub-sys-row"
       },
       {
        "kind": "hold",
