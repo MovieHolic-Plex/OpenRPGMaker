@@ -44,8 +44,8 @@ import dot  # noqa: E402
 
 KIT = os.path.join(HERE, 'finish_kit')
 DEFAULT_TIMEOUT = int(os.environ.get('BUILDING_KIT_FINISH_TIMEOUT', '5400'))
-# 기본 백엔드: claude(Opus 5.5 high) · --backend neon(또는 BUILDING_KIT_BACKEND=neon) 시 agy(gemini-4-neon medium).
-BACKEND = os.environ.get('BUILDING_KIT_FINISH_BACKEND') or os.environ.get('BUILDING_KIT_BACKEND', 'claude')
+# 기본 백엔드(사용자 결정 2026-11-27): neon(agy · gemini-4-neon high). --backend claude 로 Opus 5.5 high 폴백 가능.
+BACKEND = os.environ.get('BUILDING_KIT_FINISH_BACKEND') or os.environ.get('BUILDING_KIT_BACKEND', 'neon')
 MODEL = os.environ.get('BUILDING_KIT_FINISH_MODEL', 'claude-opus-5-5')
 EFFORT = os.environ.get('BUILDING_KIT_FINISH_EFFORT', 'high')
 RERUN_TIMEOUT = 300

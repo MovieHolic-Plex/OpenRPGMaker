@@ -859,9 +859,9 @@ def cmd_sheet(theme, rid, show_failed=False, finished=False):
     return sheet.write(theme, rid, show_failed, finished=finished)
 
 
-def cmd_review(theme, rid, runs=3, judge_cmd=None, finished=False):
+def cmd_review(theme, rid, runs=3, judge_cmd=None, finished=False, backend=None):
     import review
-    return review.run(theme, rid, runs, judge_cmd, finished=finished)
+    return review.run(theme, rid, runs, judge_cmd, finished=finished, backend=backend)
 
 
 def cmd_village(theme, rid, line='A', seed=0, size=None, all_=False, quiet=False, finished=False):
@@ -1009,6 +1009,7 @@ def main(argv=None):
     p.add_argument('theme')
     p.add_argument('round')
     p.add_argument('--runs', type=int, default=3)
+    p.add_argument('--backend', choices=['neon', 'agy', 'claude'])
     p.add_argument('--judge-cmd')
     p.add_argument('--finished', action='store_true')
     p = sub.add_parser('sheet')
@@ -1073,7 +1074,7 @@ def main(argv=None):
         return cmd_finish(a.theme, a.round, a.line, a.building, a.jobs, a.agent_cmd,
                           backend=a.backend, model=a.model, effort=a.effort)
     if a.cmd == 'review':
-        return cmd_review(a.theme, a.round, a.runs, a.judge_cmd, a.finished)
+        return cmd_review(a.theme, a.round, a.runs, a.judge_cmd, a.finished, backend=a.backend)
     if a.cmd == 'sheet':
         return cmd_sheet(a.theme, a.round, a.show_failed, a.finished)
     if a.cmd == 'pick':

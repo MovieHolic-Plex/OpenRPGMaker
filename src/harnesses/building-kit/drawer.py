@@ -39,12 +39,12 @@ import projection  # noqa: E402
 REPO = dot.REPO
 SANDBOX = os.environ.get('BUILDING_KIT_DRAWER_DIR') or os.path.join(REPO, 'qa-runs', 'harnesses', 'building-kit', 'drawer')
 DEFAULT_TIMEOUT = int(os.environ.get('BUILDING_KIT_DRAWER_TIMEOUT', '3600'))
-# 기본 백엔드: claude(Opus 5.5 high) · --backend neon(또는 BUILDING_KIT_BACKEND=neon) 시 agy(gemini-4-neon medium).
-BACKEND = os.environ.get('BUILDING_KIT_BACKEND', 'claude')
+# 기본 백엔드(사용자 결정 2026-11-27): neon(agy · gemini-4-neon high). --backend claude 로 Opus 5.5 high 폴백 가능.
+BACKEND = os.environ.get('BUILDING_KIT_BACKEND', 'neon')
 MODEL = os.environ.get('BUILDING_KIT_DRAWER_MODEL', 'claude-opus-5-5')
 EFFORT = os.environ.get('BUILDING_KIT_DRAWER_EFFORT', 'high')
 NEON_MODEL = os.environ.get('BUILDING_KIT_NEON_MODEL', 'gemini-4-neon')
-NEON_EFFORT = os.environ.get('BUILDING_KIT_NEON_EFFORT', 'medium')
+NEON_EFFORT = os.environ.get('BUILDING_KIT_NEON_EFFORT', 'high')
 PROMPT_PLACEHOLDER = '{prompt}'
 MAX_ATTEMPTS = 3
 CANDIDATES_PER_LINE = 2
@@ -445,7 +445,7 @@ def claude_command(sandbox, model=None, effort=None, tools='Read,Write,Edit,Bash
 
 
 def agy_command(sandbox, model=None, effort=None):
-    """Antigravity(agy) CLI 명령 — 기본 gemini-4-neon medium(BUILDING_KIT_NEON_MODEL/EFFORT 로 바꾼다).
+    """Antigravity(agy) CLI 명령 — 기본 gemini-4-neon high(BUILDING_KIT_NEON_MODEL/EFFORT 로 바꾼다).
     PROMPT_PLACEHOLDER 자리에 subprocess_runner 가 프롬프트 전문을 꽂아 비대화식(-p)으로 돌린다."""
     return [shutil.which('agy') or 'agy', '--output-format', 'text', '--dangerously-skip-permissions',
             '--disable-slash-commands', '--add-dir', sandbox, '--model', model or NEON_MODEL,
@@ -453,7 +453,7 @@ def agy_command(sandbox, model=None, effort=None):
 
 
 def normalize_backend(backend=None):
-    b = (backend or BACKEND or 'claude').strip().lower()
+    b = (backend or BACKEND or 'neon').strip().lower()
     if b in ('neon', 'agy', 'antigravity'):
         return 'neon'
     if b == 'claude':

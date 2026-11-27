@@ -187,10 +187,13 @@ class DrawerTest(unittest.TestCase):
         self.assertEqual(drawer.DEFAULT_TIMEOUT, 3600)
 
     def test_neon_backend_builds_agy_command_and_substitutes_prompt(self):
-        cmd = drawer.agent_command('/tmp/sandbox', backend='neon')
+        self.assertEqual(drawer.BACKEND, 'neon')
+        self.assertEqual(drawer.NEON_MODEL, 'gemini-4-neon')
+        self.assertEqual(drawer.NEON_EFFORT, 'high')
+        cmd = drawer.agent_command('/tmp/sandbox')
         self.assertTrue(cmd[0].endswith('agy'))
-        self.assertEqual(cmd[cmd.index('--model') + 1], drawer.NEON_MODEL)
-        self.assertEqual(cmd[cmd.index('--effort') + 1], drawer.NEON_EFFORT)
+        self.assertEqual(cmd[cmd.index('--model') + 1], 'gemini-4-neon')
+        self.assertEqual(cmd[cmd.index('--effort') + 1], 'high')
         self.assertIn('/tmp/sandbox', cmd)
         self.assertEqual(cmd[cmd.index('-p') + 1], drawer.PROMPT_PLACEHOLDER)
         seen = {}
