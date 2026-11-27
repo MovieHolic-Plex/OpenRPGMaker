@@ -158,7 +158,7 @@ export class TilePaintEngine {
     // 왼쪽 기물 패널 「상호작용」 탭에서 고른 120종 프롭을 클릭 한 번으로 이벤트 배치한다.
     if (tool === "paint" && activeInteractivePropId) {
       if (!firstStrokeTile) return;
-      const prop = interactivePropById(activeInteractivePropId);
+      const prop = interactivePropById(activeInteractivePropId, store.getCurrent());
       const placeTool = SEARCH_CONTAINER_TOOLS.find((t) => t.name === "place_interactive_props");
       if (!prop || !placeTool) return;
       let placedId: string | undefined;

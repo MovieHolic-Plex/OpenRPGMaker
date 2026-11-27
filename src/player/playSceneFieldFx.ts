@@ -930,7 +930,7 @@ function propFrameName(index: number): string {
 async function ensurePropStripFrames(scene: PlaySceneContext, prop: InteractivePropEntry): Promise<string | null> {
   if (!scene.textures || typeof scene.load?.image !== "function") return null;
   const key = propStripTextureKey(prop);
-  const loaded = await ensureSceneImageTexture(scene, key, interactivePropStripUrl(prop));
+  const loaded = await ensureSceneImageTexture(scene, key, interactivePropStripUrl(prop, store.getCurrent()));
   if (!loaded || !scene.textures.exists(key)) return null;
   const texture = scene.textures.get(key);
   if (!texture.has(propFrameName(0))) {
@@ -1064,8 +1064,9 @@ function fallbackInteractivePropForContainer(
 }
 
 export async function playContainerFx(scene: PlaySceneContext, style: ContainerStyle, cell: Cell, eventId?: string): Promise<void> {
-  const view = eventId ? runtimeEventViewById(store.getCurrent(), scene.map, scene.session, scene.eventPositions, eventId) : undefined;
-  const explicitProp = interactivePropById(view?.page?.interaction?.propId);
+  const project = store.getCurrent();
+  const view = eventId ? runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId) : undefined;
+  const explicitProp = interactivePropById(view?.page?.interaction?.propId, project);
   if (explicitProp && (await playInteractivePropFx(scene, explicitProp, cell))) return;
   // 옷장은 기존 코드 화소 자르기(openStatePixels)가 null 을 돌려 단색 사각형 대체로 떨어졌으므로 실원본 양문 스트립으로 업그레이드한다.
   if (style === "wardrobe") {
@@ -1131,7 +1132,7 @@ export async function playFieldFx(scene: PlaySceneContext, fx: FieldFx, target: 
       void playContainerFx(scene, fx.style, cell, currentEventId);
       break;
     case "prop": {
-      const prop = interactivePropById(fx.propId);
+      const prop = interactivePropById(fx.propId, store.getCurrent());
       if (prop) void playInteractivePropFx(scene, prop, cell, { reverse: fx.reverse });
       break;
     }
@@ -1225,10 +1226,11 @@ export function syncContainerSearchedMarks(scene: PlaySceneContext): void {
   const size = mapTileSize(scene.map);
   const s = size / 16;
   const keep = new Set<string>();
-  for (const view of runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)) {
+  const project = store.getCurrent();
+  for (const view of runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)) {
     const interaction = view.page?.interaction;
     if (interaction?.kind !== "container") continue;
-    const explicitProp = interactivePropById(interaction.propId);
+    const explicitProp = interactivePropById(interaction.propId, project);
     // 열리기 전(searched !== true)이라도 propId 가 명시돼 있고 타일/스프라이트가 비어 있으면 0번 원본 프레임을 그대로 그려 둔다.
     const searched = interaction.searched === true;
     const spriteShown = !view.transparent && !!view.sprite?.id;

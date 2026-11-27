@@ -21,6 +21,13 @@ export type MonsterInstanceId = string;
 
 export type Dir = "down" | "left" | "right" | "up";
 
+/** 프로젝트 기본 런타임 언어 설정. 생략 시 한국어(구 프로젝트 호환), "auto" 는 플레이어 기기 언어. */
+export type ProjectLanguage = "ko" | "en" | "ja" | "zh" | "auto";
+/** 단일 로캘의 콘텐츠 번역 테이블(결정론적 문자열 키 → 번역문). */
+export type ProjectLocalizationTable = Record<string, string>;
+/** 로캘 코드("en", "ja", "zh" 등) → 번역 테이블. */
+export type ProjectLocalizations = Record<string, ProjectLocalizationTable>;
+
 export interface AssetRef {
   type: "bundled" | "uploaded";
   id: string;
@@ -762,6 +769,8 @@ export interface UploadedAsset {
     width?: number;
     height?: number;
     transparentColor?: string;
+    /** AI 조수가 author_interactive_prop 으로 생성한 5프레임 상호작용 오브젝트 메타데이터. */
+    interactiveProp?: Record<string, unknown>;
     /**
      * 얼굴 시트 지연 절단 표식. 시트를 낱장 id 로 등록한 시점에는 아직 픽셀이 시트
      * 그대로라, 로드 직후 `repairUploadedFacesetSheets` 가 이 두 값을 보고 canvas 로

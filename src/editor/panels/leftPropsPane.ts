@@ -12,7 +12,7 @@ import {
   INTERACTIVE_PROP_ERA_LABELS,
   INTERACTIVE_PROP_GENRES,
   INTERACTIVE_PROP_GENRE_LABELS,
-  INTERACTIVE_PROPS,
+  allInteractiveProps,
   interactivePropById,
   searchInteractiveProps,
   type InteractivePropCategory,
@@ -115,7 +115,7 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
       for (const button of results.querySelectorAll<HTMLButtonElement>("[data-interactive-prop-id]")) {
         button.setAttribute("aria-pressed", String(button.dataset.interactivePropId === activeId));
       }
-      const activeProp = interactivePropById(activeId || undefined);
+      const activeProp = interactivePropById(activeId || undefined, store.getCurrent());
       status.replaceChildren(
         ...(activeProp ? [el("strong", { attrs: { translate: "no" }, text: activeProp.name })] : []),
         el("span", { text: activeProp ? "맵을 클릭해 상호작용 오브젝트를 놓으세요." : "상호작용 오브젝트를 고른 뒤 맵을 클릭해 놓으세요." }),
@@ -264,7 +264,7 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
           class: "btn small",
           attrs: { type: "button", "aria-pressed": String(paneTab === "interactive") },
           dataset: { testid: "left-props-tab-interactive" },
-          text: `상호작용 (${INTERACTIVE_PROPS.length})`,
+          text: `상호작용 (${allInteractiveProps(store.getCurrent()).length})`,
           on: { click: () => { if (paneTab !== "interactive") { paneTab = "interactive"; editorState.set({ activePaletteStamp: null }); render(); } } },
         }),
       ],
@@ -278,7 +278,7 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
         attrs: { "aria-label": "시대" },
         dataset: { testid: "left-interactive-era" },
         children: [
-          el("option", { value: "all", text: `전체 시대 (${INTERACTIVE_PROPS.length})` }),
+          el("option", { value: "all", text: `전체 시대 (${allInteractiveProps(store.getCurrent()).length})` }),
           ...INTERACTIVE_PROP_ERAS.map((era) => el("option", { value: era, text: INTERACTIVE_PROP_ERA_LABELS[era] })),
         ],
         on: { change: () => { interactiveEra = eraSelect.value as typeof interactiveEra; fillInteractiveGrid(); } },
@@ -326,7 +326,7 @@ export function createLeftPropsPane(): { root: HTMLElement; show(): void; dispos
           era: interactiveEra === "all" ? undefined : interactiveEra,
           genre: interactiveGenre === "all" ? undefined : interactiveGenre,
           category: interactiveCategory === "all" ? undefined : interactiveCategory,
-        });
+        }, store.getCurrent());
         if (resultCount) resultCount.textContent = `(${list.length})`;
         if (noResults) noResults.hidden = list.length !== 0;
         const activeId = editorState.get().activeInteractivePropId;

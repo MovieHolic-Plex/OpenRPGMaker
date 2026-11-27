@@ -6,6 +6,8 @@
 // oneshot / toggle / break / loopAfterOpen 4가지 모드로 재생한다.
 import rawCatalog from "@/assets/interactivePropsCatalog.json";
 import type { ContainerStyle } from "@/project/containerFx";
+import { extractCustomInteractivePropsFromUploaded } from "@/project/interactivePropAuthoring";
+import type { Project } from "@/project/types";
 
 export type InteractivePropEra =
   | "fantasy"
@@ -168,6 +170,8 @@ export interface InteractivePropEntry {
   readonly containerStyle?: ContainerStyle;
   readonly loopFromFrame?: number;
   readonly stripPath: string;
+  /** 프로젝트 내장 커스텀 프롭일 때 `project.assets.uploaded[resourceId]` 의 키. */
+  readonly resourceId?: string;
   readonly sourcePng?: string;
   readonly frameWidth: number;
   readonly frameHeight: number;
@@ -269,15 +273,32 @@ export function inferInteractivePropEra(tilesetId?: string, tilesetName?: string
   return "fantasy";
 }
 
-export function interactivePropById(id: string | undefined): InteractivePropEntry | undefined {
-  return id ? BY_ID.get(id) : undefined;
+export function projectCustomInteractiveProps(project?: Project): readonly InteractivePropEntry[] {
+  if (!project?.assets?.uploaded) return [];
+  return extractCustomInteractivePropsFromUploaded(
+    project.assets.uploaded as Readonly<Record<string, { readonly id: string; readonly dataUrl?: string; readonly meta?: Record<string, unknown> }>>,
+  );
 }
 
-export function interactivePropsByEra(era: InteractivePropEra): readonly InteractivePropEntry[] {
-  return INTERACTIVE_PROPS.filter((prop) => prop.era === era);
+/** 번들 156종 + 현재 프로젝트에 AI 조수가 직접 저작한 커스텀 프롭을 함께 반환한다. */
+export function allInteractiveProps(project?: Project): readonly InteractivePropEntry[] {
+  const custom = projectCustomInteractiveProps(project);
+  return custom.length > 0 ? [...INTERACTIVE_PROPS, ...custom] : INTERACTIVE_PROPS;
 }
 
-/** 에디터·조수 공통 5축 검색: 시대/세계·장르·카테고리·공간·역할·자유 키워드로 필터링한다. */
+export function interactivePropById(id: string | undefined, project?: Project): InteractivePropEntry | undefined {
+  if (!id) return undefined;
+  const builtin = BY_ID.get(id);
+  if (builtin) return builtin;
+  if (!project) return undefined;
+  return projectCustomInteractiveProps(project).find((p) => p.id === id);
+}
+
+export function interactivePropsByEra(era: InteractivePropEra, project?: Project): readonly InteractivePropEntry[] {
+  return allInteractiveProps(project).filter((prop) => prop.era === era);
+}
+
+/** 에디터·조수 공통 5축 검색: 시대/세계·장르·카테고리·공간·역할·자유 키워드로 필터링한다(프로젝트 커스텀 프롭 포함). */
 export function searchInteractiveProps(options: {
   readonly query?: string;
   readonly era?: InteractivePropEra;
@@ -289,10 +310,10 @@ export function searchInteractiveProps(options: {
   readonly role?: InteractivePropRole;
   readonly motion?: InteractivePropMotion;
   readonly playback?: InteractivePropPlayback;
-} = {}): readonly InteractivePropEntry[] {
+} = {}, project?: Project): readonly InteractivePropEntry[] {
   const q = (options.query ?? "").trim().toLowerCase();
   const tokens = q ? q.split(/\s+/).filter(Boolean) : [];
-  return INTERACTIVE_PROPS.filter((prop) => {
+  return allInteractiveProps(project).filter((prop) => {
     if (options.era && prop.era !== options.era) return false;
     if (options.world && (prop.world ?? prop.era) !== options.world) return false;
     if (options.genre && !(prop.genres ?? []).includes(options.genre)) return false;
@@ -311,8 +332,13 @@ export function searchInteractiveProps(options: {
   });
 }
 
-/** 스트립 PNG 의 브라우저 URL (`public/` 아래 상대 경로). */
-export function interactivePropStripUrl(prop: InteractivePropEntry): string {
+/** 스트립 PNG 의 브라우저 URL (`public/` 상대 경로 또는 커스텀 uploaded dataUrl). */
+export function interactivePropStripUrl(prop: InteractivePropEntry, project?: Project): string {
+  if (prop.resourceId && project?.assets?.uploaded) {
+    const asset = project.assets.uploaded[prop.resourceId];
+    if (asset?.dataUrl) return asset.dataUrl;
+  }
+  if (prop.stripPath.startsWith("data:")) return prop.stripPath;
   return `/${prop.stripPath.replace(/^\/+/, "")}`;
 }
 

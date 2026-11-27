@@ -8,7 +8,7 @@ import {
   INTERACTIVE_PROP_ERA_LABELS,
   INTERACTIVE_PROP_GENRES,
   INTERACTIVE_PROP_GENRE_LABELS,
-  INTERACTIVE_PROPS,
+  allInteractiveProps,
   interactivePropStripUrl,
   searchInteractiveProps,
   type InteractivePropCategory,
@@ -16,6 +16,7 @@ import {
   type InteractivePropEra,
   type InteractivePropGenre,
 } from "@/project/interactiveProps";
+import { store } from "@/project/store";
 import { el } from "@/util/dom";
 
 /** 가로 PNG 스트립의 특정 프레임을 깔끔한 pixel-art 크기로 잘라 보여주는 DOM 박스. */
@@ -33,7 +34,7 @@ export function createInteractivePropStripPreview(
   });
   box.style.width = `${w}px`;
   box.style.height = `${h}px`;
-  box.style.backgroundImage = `url("${interactivePropStripUrl(prop)}")`;
+  box.style.backgroundImage = `url("${interactivePropStripUrl(prop, store.getCurrent())}")`;
   box.style.backgroundRepeat = "no-repeat";
   box.style.backgroundSize = `${prop.frameWidth * prop.frames * scale}px ${h}px`;
   box.style.imageRendering = "pixelated";
@@ -172,13 +173,15 @@ export function interactivePropPickButton(options: {
     countEl.style.opacity = "0.75";
 
     const renderGrid = () => {
+      const proj = store.getCurrent();
+      const allProps = allInteractiveProps(proj);
       const list = searchInteractiveProps({
         query,
         era: activeEra === "all" ? undefined : activeEra,
         genre: activeGenre === "all" ? undefined : activeGenre,
         category: activeCategory === "all" ? undefined : activeCategory,
-      });
-      countEl.textContent = `${list.length} / ${INTERACTIVE_PROPS.length}종`;
+      }, proj);
+      countEl.textContent = `${list.length} / ${allProps.length}종`;
       grid.replaceChildren(
         ...list.map((prop) => {
           const fxId = propFxId(prop.id, mode);
@@ -263,7 +266,7 @@ export function interactivePropPickButton(options: {
 
     const header = el("div", {
       children: [
-        el("strong", { text: `상호작용 오브젝트 연출 (${INTERACTIVE_PROPS.length}종 실원본)` }),
+        el("strong", { text: `상호작용 오브젝트 연출 (${allInteractiveProps(store.getCurrent()).length}종)` }),
         countEl,
         el("button", {
           class: "btn small",
@@ -295,7 +298,7 @@ export function interactivePropPickButton(options: {
   const trigger = el("button", {
     class: "btn small",
     attrs: { type: "button", title: "100종 상호작용 오브젝트(항아리 파괴·옷장·자판기·화로 등) 연출 고르기" },
-    text: `오브젝트 연출 (${INTERACTIVE_PROPS.length}종)`,
+    text: `오브젝트 연출 (${allInteractiveProps(store.getCurrent()).length}종)`,
     dataset: { testid: options.testid },
     on: { click: openModal },
   });

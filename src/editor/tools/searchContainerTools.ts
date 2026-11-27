@@ -15,12 +15,21 @@ import {
   interactivePropById,
   searchInteractiveProps,
   type InteractivePropCategory,
+  type InteractivePropEntry,
   type InteractivePropEra,
   type InteractivePropGenre,
+  type InteractivePropMotion,
+  type InteractivePropMount,
   type InteractivePropPlayback,
   type InteractivePropRole,
   type InteractivePropZone,
 } from "@/project/interactiveProps";
+import {
+  AUTHOR_MOTION_RECIPES,
+  buildAuthoredPropStrip,
+  type AuthorMotionRecipe,
+  type PixelRect,
+} from "@/project/interactivePropAuthoring";
 import type { Command, GameEvent, Project } from "@/project/types";
 import { withJosa } from "@/util/josa";
 import { ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
@@ -127,7 +136,7 @@ const placeSearchContainers: ToolDefinition = {
       const x = Number(raw.x), y = Number(raw.y);
       if (!inMapBounds(map, x, y)) { warnings.push(`containers[${index}] 맵 밖 (${x},${y}) — 건너뜀`); return; }
       if (taken.has(`${x},${y}`)) { warnings.push(`containers[${index}] (${x},${y}) 에 이미 이벤트 — 건너뜀`); return; }
-      const requestedProp = typeof raw.propId === "string" && raw.propId.trim() ? interactivePropById(raw.propId.trim()) : undefined;
+      const requestedProp = typeof raw.propId === "string" && raw.propId.trim() ? interactivePropById(raw.propId.trim(), draft) : undefined;
       if (typeof raw.propId === "string" && raw.propId.trim() && !requestedProp) {
         warnings.push(`containers[${index}] propId '${raw.propId}' 없음 — 기본 수납 연출로 대체`);
       }
@@ -223,7 +232,7 @@ const listInteractivePropsTool: ToolDefinition = {
       zone,
       role,
       playback,
-    });
+    }, draft);
     const limit = Math.max(1, Math.min(100, Number(args.limit ?? 30) || 30));
     const sliced = matches.slice(0, limit);
     const lines = sliced.map((p) => `${p.id} | ${p.name} | ${INTERACTIVE_PROP_ERA_LABELS[p.era]} | ${p.category ?? "-"}/${p.zone ?? "-"} | [${(p.genres ?? []).join(",")}]`);
@@ -299,7 +308,7 @@ const placeInteractivePropsTool: ToolDefinition = {
       const x = Number(raw.x), y = Number(raw.y);
       if (!inMapBounds(map, x, y)) { warnings.push(`props[${index}] 맵 밖 (${x},${y}) — 건너뜀`); return; }
       if (taken.has(`${x},${y}`)) { warnings.push(`props[${index}] (${x},${y}) 에 이미 이벤트 — 건너뜀`); return; }
-      const prop = interactivePropById(typeof raw.propId === "string" ? raw.propId.trim() : undefined);
+      const prop = interactivePropById(typeof raw.propId === "string" ? raw.propId.trim() : undefined, draft);
       if (!prop) { warnings.push(`props[${index}] 알 수 없는 propId '${String(raw.propId)}' — 건너뜀`); return; }
 
       const name = typeof raw.name === "string" && raw.name.trim() ? raw.name.trim() : prop.name;
@@ -380,8 +389,272 @@ function stripLootInSeen(command: Command, ownerId: string): Command {
   return { ...fork, then: then.length ? then : ownerNoticeCommands(ownerId) } as Command;
 }
 
+const RECIPE_TO_MOTION: Readonly<Record<AuthorMotionRecipe, { readonly motion: InteractivePropMotion; readonly playback: InteractivePropPlayback; readonly se: string; readonly loopFromFrame?: number }>> = {
+  "push-in-door": { motion: "swing-single", playback: "toggle", se: "door_wood" },
+  "swing-door": { motion: "swing-single", playback: "toggle", se: "door_wood" },
+  "curtain-part": { motion: "swing-double", playback: "toggle", se: "cloth_rustle" },
+  "hinge-lid": { motion: "hinge-lid", playback: "toggle", se: "chest_open" },
+  "slide-door": { motion: "slide-door", playback: "toggle", se: "stone_scrape" },
+  "smash-break": { motion: "smash-break", playback: "break", se: "ceramic_break" },
+  "horror-flicker": { motion: "activate-loop", playback: "loopAfterOpen", se: "steam_click", loopFromFrame: 1 },
+  "glow-activate": { motion: "activate-loop", playback: "loopAfterOpen", se: "magic_chime", loopFromFrame: 2 },
+  "rattle-scare": { motion: "toggle-switch", playback: "oneshot", se: "wood_creak" },
+};
+
+function slugPropId(name: string, rawId?: string): string {
+  const base = (rawId?.trim() || name.toLowerCase().replace(/[^a-z0-9]+/g, "-")).replace(/^-+|-+$/g, "");
+  if (base && /^[a-z0-9][a-z0-9-]{2,48}$/.test(base)) return base;
+  let h = 2166136261;
+  for (let i = 0; i < name.length; i += 1) {
+    h ^= name.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return `custom-prop-${(h >>> 0).toString(36)}`;
+}
+
+const authorInteractivePropTool: ToolDefinition = {
+  name: "author_interactive_prop",
+  description:
+    "카탈로그(156종)에 없는 새 상호작용 오브젝트(5프레임 가로 PNG 스트립)를 AI 조수가 직접 저작해 프로젝트에 등록한다. "
+    + "모드 A: framesGrid(4~6프레임 문자 격자 배열) + palette 로 직접 프레임별 도트를 찍는다. "
+    + "모드 B(권장): baseGrid(0번 정지 프레임 문자 격자 1장) + palette + motionRecipe(push-in-door·swing-door·curtain-part·hinge-lid·slide-door·smash-break·horror-flicker·glow-activate·rattle-scare)를 넘기면 "
+    + "실제 픽셀을 물리 변환해 5프레임 스트립을 자동 합성·검증한다. "
+    + "저장된 프롭은 project.assets.uploaded 에 PNG 로 내장되어 place_interactive_props·에디터 패널·게임 실행·내보내기에서 즉시 작동한다. "
+    + "place({mapId,x,y,…}) 를 함께 주면 제작과 동시에 맵에 배치한다.",
+  mode: "write",
+  parameters: {
+    type: "object",
+    properties: {
+      id: { type: "string", description: "선택: 영소문자·숫자·하이픈 프롭 id(예: custom-cuckoo-clock). 생략 시 자동 생성" },
+      name: { type: "string", description: "프롭 한국어 이름(예: 저주받은 뻐꾸기시계)" },
+      era: { type: "string", enum: [...INTERACTIVE_PROP_ERAS], description: "시대(기본 fantasy)" },
+      category: { type: "string", enum: [...INTERACTIVE_PROP_CATEGORIES], description: "기능 카테고리(기본 gimmick)" },
+      genres: { type: "array", items: { type: "string", enum: [...INTERACTIVE_PROP_GENRES] }, description: "장르 태그 배열" },
+      zone: { type: "string", enum: ["indoor", "outdoor", "both"], description: "배치 공간(기본 both)" },
+      mount: { type: "string", enum: ["floor", "wall", "doorway", "counter"], description: "부착면(기본 floor)" },
+      roles: { type: "array", items: { type: "string", enum: [...INTERACTIVE_PROP_ROLES] }, description: "게임플레이 역할 배열" },
+      palette: {
+        type: "object",
+        additionalProperties: true,
+        description: "문자 1글자 -> #rrggbb (또는 투명 null). '.' 과 공백은 자동 투명.",
+      },
+      baseGrid: {
+        type: "array",
+        items: { type: "string" },
+        description: "모드 B: 0번 정지 프레임 픽셀 문자 격자(가로·세로 8~64px, 권장 16x16~32x32).",
+      },
+      motionRecipe: {
+        type: "string",
+        enum: [...AUTHOR_MOTION_RECIPES],
+        description: "모드 B 자동 물리 모션 레시피(push-in-door·swing-door·curtain-part·hinge-lid·slide-door·smash-break·horror-flicker·glow-activate·rattle-scare)",
+      },
+      framesGrid: {
+        type: "array",
+        items: { type: "array", items: { type: "string" } },
+        description: "모드 A: 3~8프레임 픽셀 문자 격자를 직접 지정.",
+      },
+      region: {
+        type: "object",
+        properties: { x0: { type: "integer" }, y0: { type: "integer" }, x1: { type: "integer" }, y1: { type: "integer" } },
+        description: "선택: 문짝·광원·뚜껑 등 모션이 적용될 픽셀 영역(생략 시 자동 추론)",
+      },
+      hingeSide: { type: "string", enum: ["left", "right"], description: "문 경첩 방향(기본 left)" },
+      accentColor: { type: "string", description: "강조·광원·안광 hex 색(예: #ff3b4a, #7ee8ff)" },
+      eyePoints: {
+        type: "array",
+        items: { type: "array", items: { type: "integer" } },
+        description: "rattle-scare 에서 안광이 켜질 [x, y] 픽셀 좌표 목록",
+      },
+      playback: { type: "string", enum: ["oneshot", "toggle", "break", "loopAfterOpen"], description: "재생 방식(생략 시 레시피 기본값)" },
+      frameMs: { type: "integer", description: "프레임당 밀리초(기본 110)" },
+      se: { type: "string", description: "효과음 키(door_wood·ceramic_break·wood_creak·magic_chime·fire_ignite 등)" },
+      tags: { type: "array", items: { type: "string" } },
+      place: {
+        type: "object",
+        properties: {
+          mapId: { type: "string" },
+          x: { type: "integer" },
+          y: { type: "integer" },
+          message: { type: "string" },
+          afterMessage: { type: "string" },
+          toggleable: { type: "boolean" },
+          switchId: { type: "string" },
+          loot: { type: "object", properties: { itemId: { type: "string" }, count: { type: "integer" }, gold: { type: "integer" } } },
+        },
+        required: ["mapId", "x", "y"],
+        description: "선택: 제작 직후 이 맵 좌표에 즉시 배치한다.",
+      },
+    },
+    required: ["name", "palette"],
+  },
+  invalidArgsExample: {
+    name: "저주받은 뻐꾸기시계",
+    era: "fantasy",
+    category: "gimmick",
+    genres: ["horror", "puzzle-escape"],
+    zone: "indoor",
+    mount: "wall",
+    roles: ["puzzle-clue", "hazard-trap"],
+    palette: { ".": null, "d": "#2b1d18", "w": "#6d4833", "l": "#9c6d4c", "f": "#e6dcc8", "g": "#d9a441" },
+    baseGrid: [
+      "......dddd......",
+      "....ddwwwwdd....",
+      "...dwwllllwwd...",
+      "..dwwlfffflwwd..",
+      "..dwlffddfflwd..",
+      "..dwlffdffflwd..",
+      "..dwwlfffflwwd..",
+      "..dwwwwggwwwwd..",
+      "..dwwwddddwwwd..",
+      "..dwwwd..dwwwd..",
+      "..dwwwwwwwwwwd..",
+      "...dddddddddd...",
+      ".....d....d.....",
+      ".....g....g.....",
+      "................",
+      "................",
+    ],
+    motionRecipe: "rattle-scare",
+    accentColor: "#ff3844",
+    eyePoints: [[6, 4], [9, 4]],
+  },
+  run(draft, args): ToolExecResult {
+    const name = typeof args.name === "string" ? args.name.trim() : "";
+    if (!name) throw new ToolError("name 이 비었습니다.", { code: "invalid-args" });
+    if (!isRec(args.palette)) throw new ToolError("palette 객체가 필요합니다.", { code: "invalid-args" });
+
+    const recipe: AuthorMotionRecipe = typeof args.motionRecipe === "string"
+      && (AUTHOR_MOTION_RECIPES as readonly string[]).includes(args.motionRecipe)
+      ? (args.motionRecipe as AuthorMotionRecipe)
+      : "glow-activate";
+
+    let region: PixelRect | undefined;
+    if (isRec(args.region)) {
+      region = {
+        x0: Number(args.region.x0) || 0,
+        y0: Number(args.region.y0) || 0,
+        x1: Number(args.region.x1) || 0,
+        y1: Number(args.region.y1) || 0,
+      };
+    }
+    const eyePoints = Array.isArray(args.eyePoints)
+      ? args.eyePoints
+          .filter((pt): pt is [number, number] => Array.isArray(pt) && pt.length >= 2)
+          .map((pt) => [Number(pt[0]) || 0, Number(pt[1]) || 0] as const)
+      : undefined;
+
+    let built;
+    try {
+      built = buildAuthoredPropStrip({
+        palette: args.palette as Record<string, string | null>,
+        framesGrid: Array.isArray(args.framesGrid) ? (args.framesGrid as string[][]) : undefined,
+        baseGrid: Array.isArray(args.baseGrid) ? (args.baseGrid as string[]) : undefined,
+        motionRecipe: recipe,
+        region,
+        hingeSide: args.hingeSide === "right" ? "right" : "left",
+        accentColor: typeof args.accentColor === "string" ? args.accentColor : undefined,
+        eyePoints,
+      });
+    } catch (err) {
+      throw new ToolError(err instanceof Error ? err.message : String(err), { code: "invalid-args" });
+    }
+
+    const id = slugPropId(name, typeof args.id === "string" ? args.id : undefined);
+    const resourceId = `iprop-${id}`;
+    const recipeDef = RECIPE_TO_MOTION[recipe];
+    const era: InteractivePropEra = typeof args.era === "string" && (INTERACTIVE_PROP_ERAS as readonly string[]).includes(args.era)
+      ? (args.era as InteractivePropEra) : "fantasy";
+    const category: InteractivePropCategory = typeof args.category === "string" && (INTERACTIVE_PROP_CATEGORIES as readonly string[]).includes(args.category)
+      ? (args.category as InteractivePropCategory) : "gimmick";
+    const genres: InteractivePropGenre[] = Array.isArray(args.genres)
+      ? args.genres.filter((g): g is InteractivePropGenre => typeof g === "string" && (INTERACTIVE_PROP_GENRES as readonly string[]).includes(g))
+      : ["adventure"];
+    const roles: InteractivePropRole[] = Array.isArray(args.roles)
+      ? args.roles.filter((r): r is InteractivePropRole => typeof r === "string" && (INTERACTIVE_PROP_ROLES as readonly string[]).includes(r))
+      : ["ambient-light"];
+    const zone: InteractivePropZone = typeof args.zone === "string" && ["indoor", "outdoor", "both"].includes(args.zone)
+      ? (args.zone as InteractivePropZone) : "both";
+    const mount: InteractivePropMount = typeof args.mount === "string" && ["floor", "wall", "doorway", "counter"].includes(args.mount)
+      ? (args.mount as InteractivePropMount) : "floor";
+    const playback: InteractivePropPlayback = typeof args.playback === "string" && ["oneshot", "toggle", "break", "loopAfterOpen"].includes(args.playback)
+      ? (args.playback as InteractivePropPlayback) : recipeDef.playback;
+
+    const entry: InteractivePropEntry = {
+      id,
+      name,
+      wave: "custom-ai",
+      era,
+      world: era,
+      genres: genres.length ? genres : ["adventure"],
+      category,
+      zone,
+      mount,
+      roles: roles.length ? roles : ["ambient-light"],
+      motion: recipeDef.motion,
+      playback,
+      ...(recipeDef.loopFromFrame !== undefined && playback === "loopAfterOpen" ? { loopFromFrame: recipeDef.loopFromFrame } : {}),
+      stripPath: built.dataUrl,
+      resourceId,
+      frameWidth: built.frameWidth,
+      frameHeight: built.frameHeight,
+      frames: built.frames,
+      frameMs: Math.max(70, Math.min(350, Number(args.frameMs ?? 110) || 110)),
+      footprint: [Math.max(1, Math.round(built.frameWidth / 16)), Math.max(1, Math.round(built.frameHeight / 16))] as const,
+      anchorX: 0.5,
+      anchorY: 0.92,
+      se: typeof args.se === "string" && args.se.trim() ? args.se.trim() : recipeDef.se,
+      tags: Array.isArray(args.tags) ? args.tags.map(String) : [name, category, ...genres],
+      sha256: "custom-ai",
+    };
+
+    draft.assets.uploaded[resourceId] = {
+      id: resourceId,
+      name: `${name} 상호작용 스트립`,
+      kind: "picture",
+      dataUrl: built.dataUrl,
+      meta: {
+        width: built.frameWidth * built.frames,
+        height: built.frameHeight,
+        frameWidth: built.frameWidth,
+        frameHeight: built.frameHeight,
+        frames: built.frames,
+        interactiveProp: entry as unknown as Record<string, unknown>,
+      },
+      generatedBy: "interactive-prop-studio:ai",
+    };
+
+    let placeSummary = "";
+    const warnings: string[] = [];
+    if (isRec(args.place) && typeof args.place.mapId === "string") {
+      const placed = placeInteractivePropsTool.run(draft, {
+        mapId: args.place.mapId,
+        props: [{ ...args.place, propId: id, name }],
+      });
+      placeSummary = ` · ${placed.summary}`;
+      if (placed.warnings) warnings.push(...placed.warnings);
+    }
+
+    return {
+      summary: `커스텀 상호작용 오브젝트 '${name}' (${id}, ${built.frames}×${built.frameWidth}×${built.frameHeight}, ${playback}) 생성·등록 완료${placeSummary}`,
+      data: {
+        id,
+        resourceId,
+        name,
+        frameWidth: built.frameWidth,
+        frameHeight: built.frameHeight,
+        frames: built.frames,
+        playback,
+        changedSteps: built.changedSteps,
+        next: placeSummary ? "show_map_region 으로 배치 결과를 확인하라." : `place_interactive_props({mapId, props:[{x, y, propId:"${id}"}]}) 로 맵에 배치하라.`,
+      },
+      ...(warnings.length ? { warnings } : {}),
+    };
+  },
+};
+
 export const SEARCH_CONTAINER_TOOLS: readonly ToolDefinition[] = [
   placeSearchContainers,
   listInteractivePropsTool,
   placeInteractivePropsTool,
+  authorInteractivePropTool,
 ];

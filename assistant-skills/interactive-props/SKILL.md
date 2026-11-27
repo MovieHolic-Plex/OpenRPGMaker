@@ -54,3 +54,15 @@ OPRN Studio에는 저장소의 고퀄리티 원본 PNG를 0번 프레임으로 �
   - 판타지 집(`door-push-house-oak`), 사막(`door-push-desert-arch`), 감옥(`door-push-dungeon-cell`), 선술집(`door-push-izakaya-noren`), 커튼(`door-push-curtain-booth`), 지하철(`door-push-subway-gate`) 등 장소에 맞는 실제 문/커튼을 고른다.
 - **탐색·파괴 RPG (`category: "breakable"` / `"container"`)**:
   - 마을·던전·조선·객잔 구석에 항아리/나무상자(`water-jug-smash`, `clay-pots-smash`, `joseon-hangari-smash`, `murim-suldok-smash`)를 `loot`와 함께 배치해 «부수며 탐색하는 손맛»을 만든다.
+
+## 5. 카탈로그에 없는 새 오브젝트 직접 제작 (`author_interactive_prop`)
+
+`list_interactive_props`로 찾아도 요청에 딱 맞는 사물(예: 저주받은 뻐꾸기시계, 마법 수정구, 특수 문·레버 등)이 없으면 **`author_interactive_prop`** 로 AI 조수가 직접 5프레임 가로 PNG 스트립을 만들어 프로젝트(`project.assets.uploaded`)에 등록·배치한다.
+
+- **모드 B (권장 — 0번 원본 격자 + 자동 물리 모션 합성)**:
+  - `baseGrid`(16×16 ~ 32×32 문자 격자 1장) + `palette` + `motionRecipe` 9종 중 하나(`push-in-door`, `swing-door`, `curtain-part`, `hinge-lid`, `slide-door`, `smash-break`, `horror-flicker`, `glow-activate`, `rattle-scare`)를 넘기면 엔진이 실제 픽셀을 변환해 5프레임 스트립을 자동 합성하고 품질 게이트(크기·불투명·프레임 변화량)를 자동 통과시킨다.
+- **모드 A (프레임별 직접 도트)**:
+  - `framesGrid`(3~8프레임 격자 배열) + `palette` 로 각 프레임을 정밀하게 직접 찍는다.
+- **원스텝 배치**: `place: { mapId, x, y, message?, toggleable?, switchId?, loot? }` 를 함께 넘기면 제작·등록·맵 배치를 한 번에 끝낸다.
+- **품질 원칙**: 단색 네모 금지 — 최소 4~6색 명암·어두운 윤곽선(순수 `#000000` 대신 색조 있는 어두운 외곽선)과 3/4 탑뷰 입체감을 갖춘 도트 격자로 그린다.
+

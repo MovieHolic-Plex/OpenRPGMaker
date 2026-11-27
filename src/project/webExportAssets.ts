@@ -357,8 +357,9 @@ function collectStrings(value: unknown, out: Set<string>): void {
 function interactivePropStripPaths(project: Project): readonly string[] {
   const paths = new Set<string>();
   const addProp = (id: string | undefined) => {
-    const prop = interactivePropById(id);
-    if (prop) paths.add(prop.stripPath);
+    const prop = interactivePropById(id, project);
+    // 커스텀 프롭(resourceId 있음)은 project.assets.uploaded 에서 이미 자동 내보내기 되므로 public/ 경로로 추가하지 않는다.
+    if (prop && !prop.resourceId && !prop.stripPath.startsWith("data:")) paths.add(prop.stripPath);
   };
   const scanCommands = (commands: readonly unknown[] | undefined) => {
     if (!Array.isArray(commands)) return;
