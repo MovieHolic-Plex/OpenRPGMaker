@@ -139,6 +139,8 @@ def body_roles(m):
 def roof_kind(item):
     if item.get('spire') or item.get('cone'):
         return 'spire'
+    if item.get('flat'):
+        return 'flat'
     return 'pitched' if int(item.get('end', ROOF_END)) == 2 else 'flat'
 
 def _r(code, level, ok, msg):

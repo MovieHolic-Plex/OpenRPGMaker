@@ -3611,6 +3611,456 @@
           "x"
         ]
       ]
+    },
+    {
+      "id": "roof.saddle.teal",
+      "wave": "roof",
+      "kind": "set",
+      "title": "쌍어깨 평정·안장 만사드 지붕(3행 · RM2000식)",
+      "size": [
+        5,
+        3
+      ],
+      "layer": "upper",
+      "walk": "★",
+      "brief": "사용자 첨부 RM2000 레퍼런스 직계 — 좌·우 평평한 쌍어깨와 낮게 꺼진 평평한 중앙 안장 지붕, 중앙 단차 처마와 세로 목재 로지아, 좌·우 하단 목조 트러스 박공.",
+      "accept": [
+        "좌우 쌍어깨 + 중앙 평평한 안장 실루엣이 1배에서 선명하다",
+        "중앙 목재 로지아와 좌우 목조 트러스가 아래 2층 베란다와 이어진다"
+      ],
+      "end": 2,
+      "flat": true,
+      "pieces": [
+        {
+          "id": "l",
+          "role": "l",
+          "title": "왼 평정 어깨 2칸",
+          "at": [
+            0,
+            0
+          ],
+          "size": [
+            2,
+            3
+          ],
+          "kind": "roof",
+          "qMin": 0.72,
+          "qTopRow": false
+        },
+        {
+          "id": "m",
+          "role": "m",
+          "title": "중앙 안장(반복)",
+          "at": [
+            2,
+            0
+          ],
+          "size": [
+            1,
+            3
+          ],
+          "kind": "roof",
+          "tileable": "x",
+          "qMin": 0.72,
+          "qTopRow": false
+        },
+        {
+          "id": "r",
+          "role": "r",
+          "title": "오른 평정 어깨 2칸",
+          "at": [
+            3,
+            0
+          ],
+          "size": [
+            2,
+            3
+          ],
+          "kind": "roof",
+          "qMin": 0.72,
+          "qTopRow": false
+        }
+      ],
+      "joins": [
+        [
+          "l",
+          "m",
+          "x"
+        ],
+        [
+          "m",
+          "m",
+          "x"
+        ],
+        [
+          "m",
+          "r",
+          "x"
+        ]
+      ]
+    },
+    {
+      "id": "roof.flat.stone",
+      "wave": "roof",
+      "kind": "set",
+      "title": "건축용 평평한 석조·목조 평지붕(2행)",
+      "size": [
+        3,
+        2
+      ],
+      "layer": "upper",
+      "walk": "★",
+      "brief": "박공·모임 없이 평평한 옥상 슬래브 + 사방 파라펫 난간 + 앞면 장식 코니스로 이루어진 건축용 평지붕.",
+      "accept": [
+        "넓은 평평한 옥상 윗면과 앞 파라펫 입면의 대비가 뚜렷하다",
+        "가운데 반복 이음이 없다"
+      ],
+      "end": 1,
+      "flat": true,
+      "pieces": [
+        {
+          "id": "l",
+          "role": "l",
+          "title": "왼끝 1칸",
+          "at": [
+            0,
+            0
+          ],
+          "size": [
+            1,
+            2
+          ],
+          "kind": "roof"
+        },
+        {
+          "id": "m",
+          "role": "m",
+          "title": "가운데(반복)",
+          "at": [
+            1,
+            0
+          ],
+          "size": [
+            1,
+            2
+          ],
+          "kind": "roof",
+          "tileable": "x"
+        },
+        {
+          "id": "r",
+          "role": "r",
+          "title": "오른끝 1칸",
+          "at": [
+            2,
+            0
+          ],
+          "size": [
+            1,
+            2
+          ],
+          "kind": "roof"
+        }
+      ],
+      "joins": [
+        [
+          "l",
+          "m",
+          "x"
+        ],
+        [
+          "m",
+          "m",
+          "x"
+        ],
+        [
+          "m",
+          "r",
+          "x"
+        ]
+      ]
+    },
+    {
+      "id": "band.balcony_deck",
+      "wave": "band",
+      "kind": "set",
+      "title": "1칸 깊이 2층 통발코니 덱 띠(1행)",
+      "size": [
+        3,
+        1
+      ],
+      "layer": "lower",
+      "walk": "×",
+      "brief": "일반 32px 2층 벽(wall.timber/stone) 바로 아래에 끼우는 1칸 깊이 워크어블 발코니 덱 + 개방 난간 + 하부 까치발 띠.",
+      "accept": [
+        "밝은 발코니 덱 바닥과 개방 난간살이 1배에서 선명히 구분된다",
+        "가운데 반복 이음이 없다"
+      ],
+      "pieces": [
+        {
+          "id": "l",
+          "role": "l",
+          "title": "왼끝 1칸",
+          "at": [
+            0,
+            0
+          ],
+          "size": [
+            1,
+            1
+          ],
+          "kind": "band"
+        },
+        {
+          "id": "m",
+          "role": "m",
+          "title": "가운데(반복)",
+          "at": [
+            1,
+            0
+          ],
+          "size": [
+            1,
+            1
+          ],
+          "kind": "band",
+          "tileable": "x"
+        },
+        {
+          "id": "r",
+          "role": "r",
+          "title": "오른끝 1칸",
+          "at": [
+            2,
+            0
+          ],
+          "size": [
+            1,
+            1
+          ],
+          "kind": "band"
+        }
+      ],
+      "joins": [
+        [
+          "l",
+          "m",
+          "x"
+        ],
+        [
+          "m",
+          "m",
+          "x"
+        ],
+        [
+          "m",
+          "r",
+          "x"
+        ]
+      ]
+    },
+    {
+      "id": "roof.balcony_deck",
+      "wave": "roof",
+      "kind": "set",
+      "title": "2칸 깊이 대형 돌출 2층 발코니 테라스(2행)",
+      "size": [
+        3,
+        2
+      ],
+      "layer": "upper",
+      "walk": "★",
+      "brief": "2층 본채(depth=1) 앞 1층 질량(depth=0) 위에 얹어 온전한 1칸+ 깊이의 넓은 2층 야외 테라스 발코니 바닥 + 측면 난간 + 코너 화분 + 전면 개방 난간을 만드는 대형 발코니 덱.",
+      "accept": [
+        "캐릭터가 서고 걸을 수 있는 넓은 16px 야외 발코니 바닥이 뚜렷하다",
+        "좌우 측면 난간과 전면 개방 난간, 하부 들보가 입체로 이어진다"
+      ],
+      "end": 1,
+      "flat": true,
+      "pieces": [
+        {
+          "id": "l",
+          "role": "l",
+          "title": "왼끝 1칸(측면 난간+화분)",
+          "at": [
+            0,
+            0
+          ],
+          "size": [
+            1,
+            2
+          ],
+          "kind": "roof"
+        },
+        {
+          "id": "m",
+          "role": "m",
+          "title": "가운데(반복)",
+          "at": [
+            1,
+            0
+          ],
+          "size": [
+            1,
+            2
+          ],
+          "kind": "roof",
+          "tileable": "x"
+        },
+        {
+          "id": "r",
+          "role": "r",
+          "title": "오른끝 1칸(측면 난간+화분)",
+          "at": [
+            2,
+            0
+          ],
+          "size": [
+            1,
+            2
+          ],
+          "kind": "roof"
+        }
+      ],
+      "joins": [
+        [
+          "l",
+          "m",
+          "x"
+        ],
+        [
+          "m",
+          "m",
+          "x"
+        ],
+        [
+          "m",
+          "r",
+          "x"
+        ]
+      ]
+    },
+    {
+      "id": "wall.balcony_upper",
+      "wave": "wall",
+      "kind": "set",
+      "title": "발코니 출입 프렌치 도어 2층 벽(2행)",
+      "size": [
+        5,
+        2
+      ],
+      "layer": "lower",
+      "walk": "×",
+      "brief": "넓은 2층 발코니(roof.balcony_deck / band.balcony_deck) 바로 뒤에 놓는 2층 벽 — m 조각에 덱 바닥까지 닿는 유리 격자 프렌치 발코니 출입문과 문턱을 넣어 발코니 출입 동선을 완성한다.",
+      "accept": [
+        "m 프렌치 도어가 벽 맨 아래(y=31)까지 내려와 앞 발코니 덱과 자연스럽게 이어진다",
+        "창문·회벽·목조 프레임이 깔끔하게 읽힌다"
+      ],
+      "pieces": [
+        {
+          "id": "l",
+          "role": "l",
+          "title": "왼 모서리",
+          "at": [
+            0,
+            0
+          ],
+          "size": [
+            1,
+            2
+          ],
+          "kind": "wall"
+        },
+        {
+          "id": "m",
+          "role": "m",
+          "title": "프렌치 발코니 도어(반복)",
+          "at": [
+            1,
+            0
+          ],
+          "size": [
+            1,
+            2
+          ],
+          "kind": "wall",
+          "tileable": "x"
+        },
+        {
+          "id": "w",
+          "role": "w",
+          "title": "2층 창",
+          "at": [
+            2,
+            0
+          ],
+          "size": [
+            1,
+            2
+          ],
+          "kind": "wall"
+        },
+        {
+          "id": "d",
+          "role": "d",
+          "title": "큰 문",
+          "at": [
+            3,
+            0
+          ],
+          "size": [
+            1,
+            2
+          ],
+          "kind": "wall"
+        },
+        {
+          "id": "r",
+          "role": "r",
+          "title": "오른 모서리",
+          "at": [
+            4,
+            0
+          ],
+          "size": [
+            1,
+            2
+          ],
+          "kind": "wall"
+        }
+      ],
+      "joins": [
+        [
+          "l",
+          "m",
+          "x"
+        ],
+        [
+          "m",
+          "m",
+          "x"
+        ],
+        [
+          "m",
+          "w",
+          "x"
+        ],
+        [
+          "w",
+          "m",
+          "x"
+        ],
+        [
+          "m",
+          "r",
+          "x"
+        ],
+        [
+          "w",
+          "r",
+          "x"
+        ]
+      ]
     }
   ],
   "buildings": [
@@ -6170,6 +6620,282 @@
         }
       ],
       "note": "RM2000 베란다 주택 + 옥상 화단 테라스 날개 결합"
+    },
+    {
+      "id": "rm2k_saddle_veranda_inn.r11",
+      "title": "RM2000 쌍어깨 안장 지붕 + 2층 황금 베란다 대여관",
+      "use": "inn",
+      "masses": [
+        {
+          "id": "main",
+          "kind": "ridge_side",
+          "cols": 6,
+          "storeys": 2,
+          "x": 0,
+          "depth": 1,
+          "roof": "roof.saddle.teal",
+          "band": "band.roof_skirt.green",
+          "walls": [
+            {
+              "item": "wall.veranda",
+              "letters": "L W M M W R"
+            },
+            {
+              "item": "wall.stone",
+              "letters": "L W M M W R"
+            }
+          ]
+        },
+        {
+          "id": "porch",
+          "kind": "ridge_side",
+          "cols": 4,
+          "storeys": 1,
+          "x": 1,
+          "depth": 0,
+          "roof": "roof.hip.low.green",
+          "walls": [
+            {
+              "item": "wall.stone",
+              "letters": "L W D R"
+            }
+          ]
+        },
+        {
+          "id": "annex",
+          "kind": "ridge_side",
+          "cols": 4,
+          "storeys": 1,
+          "x": 5,
+          "depth": 0,
+          "roof": "roof.hip.low.green",
+          "walls": [
+            {
+              "item": "wall.timber",
+              "letters": "L W M R"
+            }
+          ],
+          "extras": [
+            {
+              "part": "extra.sign",
+              "on": "wall",
+              "storey": -1,
+              "col": 3,
+              "dy": 0
+            }
+          ]
+        }
+      ],
+      "note": "사용자 첨부 6칸 쌍어깨 평정·안장 만사드 지붕 + 개선된 5px 황금 덱 2층 베란다 + 낮은 현관 + 1층 평지붕 별채"
+    },
+    {
+      "id": "rm2k_flat_stone_guild.r11",
+      "title": "평지붕 석조 길드·상가(3단 평지붕 + 2층 베란다)",
+      "use": "guild",
+      "masses": [
+        {
+          "id": "loft",
+          "kind": "ridge_side",
+          "cols": 4,
+          "storeys": 2,
+          "x": 0,
+          "depth": 1,
+          "roof": "roof.flat.stone",
+          "walls": [
+            {
+              "item": "wall.stone",
+              "letters": "L W W R"
+            },
+            {
+              "item": "wall.stone",
+              "letters": "L W W R"
+            }
+          ],
+          "extras": [
+            {
+              "part": "extra.terrace",
+              "at": [
+                0,
+                0
+              ],
+              "on": "roof"
+            }
+          ]
+        },
+        {
+          "id": "front",
+          "kind": "ridge_side",
+          "cols": 5,
+          "storeys": 2,
+          "x": 3,
+          "depth": 0,
+          "roof": "roof.flat.stone",
+          "walls": [
+            {
+              "item": "wall.veranda",
+              "letters": "L W M W R"
+            },
+            {
+              "item": "wall.arcade",
+              "letters": "L W D W R"
+            }
+          ]
+        },
+        {
+          "id": "wing",
+          "kind": "ridge_side",
+          "cols": 4,
+          "storeys": 1,
+          "x": 7,
+          "depth": 0,
+          "roof": "roof.flat.stone",
+          "walls": [
+            {
+              "item": "wall.shop",
+              "letters": "L W W R"
+            }
+          ],
+          "extras": [
+            {
+              "part": "extra.sign",
+              "on": "wall",
+              "storey": -1,
+              "col": 3,
+              "dy": 0
+            }
+          ]
+        }
+      ],
+      "note": "진짜 평평한 석조 평지붕(roof.flat.stone) 3단 계단 구성 + 2층 황금 베란다 + 옥상 화단"
+    },
+    {
+      "id": "rm2k_wide_balcony_manor.r11",
+      "title": "대형 2칸 돌출 2층 발코니 테라스 저택(쌍어깨 지붕 + 프렌치 도어 + 1층 아치 회랑)",
+      "use": "inn",
+      "masses": [
+        {
+          "id": "main",
+          "kind": "ridge_side",
+          "cols": 6,
+          "storeys": 2,
+          "x": 0,
+          "depth": 1,
+          "roof": "roof.saddle.teal",
+          "band": "band.trim",
+          "walls": [
+            {
+              "item": "wall.balcony_upper",
+              "letters": "L W M M W R"
+            },
+            {
+              "item": "wall.stone",
+              "letters": "L W M M W R"
+            }
+          ]
+        },
+        {
+          "id": "terrace",
+          "kind": "ridge_side",
+          "cols": 6,
+          "storeys": 1,
+          "x": 0,
+          "depth": 0,
+          "roof": "roof.balcony_deck",
+          "walls": [
+            {
+              "item": "wall.arcade",
+              "letters": "L W M D W R"
+            }
+          ]
+        },
+        {
+          "id": "wing",
+          "kind": "ridge_side",
+          "cols": 4,
+          "storeys": 1,
+          "x": 6,
+          "depth": 0,
+          "roof": "roof.hip.low.green",
+          "walls": [
+            {
+              "item": "wall.timber",
+              "letters": "L W M R"
+            }
+          ],
+          "extras": [
+            {
+              "part": "extra.sign",
+              "on": "wall",
+              "storey": -1,
+              "col": 3,
+              "dy": 0
+            }
+          ]
+        }
+      ],
+      "note": "사용자 요청: 좌우 코너 리턴·화분이 전부 노출된 2칸 깊이 대형 돌출 발코니 테라스(roof.balcony_deck) + 덱 직결 2층 프렌치 도어(wall.balcony_upper)"
+    },
+    {
+      "id": "rm2k_gallery_balcony_inn.r11",
+      "title": "1칸 통발코니 띠·프렌치 도어 여관(전폭 갤러리 발코니 + 1층 상점 별채)",
+      "use": "inn",
+      "masses": [
+        {
+          "id": "main",
+          "kind": "ridge_side",
+          "cols": 6,
+          "storeys": 2,
+          "x": 0,
+          "depth": 1,
+          "roof": "roof.hip.green",
+          "band": "band.balcony_deck",
+          "walls": [
+            {
+              "item": "wall.balcony_upper",
+              "letters": "L W M M W R"
+            },
+            {
+              "item": "wall.stone",
+              "letters": "L W M M W R"
+            }
+          ],
+          "extras": [
+            {
+              "part": "extra.chimney",
+              "at": [
+                1,
+                0
+              ],
+              "on": "roof"
+            }
+          ]
+        },
+        {
+          "id": "wing",
+          "kind": "ridge_side",
+          "cols": 4,
+          "storeys": 1,
+          "x": 6,
+          "depth": 0,
+          "roof": "roof.flat.stone",
+          "walls": [
+            {
+              "item": "wall.shop",
+              "letters": "L W D R"
+            }
+          ],
+          "extras": [
+            {
+              "part": "extra.sign",
+              "on": "wall",
+              "storey": -1,
+              "col": 3,
+              "dy": 0
+            }
+          ]
+        }
+      ],
+      "note": "끊김 없이 전폭을 잇는 1칸 통발코니 띠(band.balcony_deck) + 덱 직결 2층 프렌치 도어 + 우측 평지붕 1층 상점 별채"
     }
   ],
   "rounds": {
@@ -6479,7 +7205,12 @@
         "roof.gf.back3",
         "extra.gable_peak",
         "extra.gable_peak.green",
-        "roof.hip.low.green"
+        "roof.hip.low.green",
+        "roof.saddle.teal",
+        "roof.flat.stone",
+        "band.balcony_deck",
+        "roof.balcony_deck",
+        "wall.balcony_upper"
       ],
       "buildings": [
         "rm2k_veranda_inn.r11",
@@ -6489,7 +7220,11 @@
         "rm2k_narrow_stacked.r11",
         "rm2k_twin_tower_manor.r11",
         "rm2k_corner_turret_shop.r11",
-        "rm2k_veranda_terrace_villa.r11"
+        "rm2k_veranda_terrace_villa.r11",
+        "rm2k_saddle_veranda_inn.r11",
+        "rm2k_flat_stone_guild.r11",
+        "rm2k_wide_balcony_manor.r11",
+        "rm2k_gallery_balcony_inn.r11"
       ],
       "lead": "RM2000 도시 격자 제거 연구 기반 4대 구조 확장 — 층간 1행 기와 차양(band.roof_skirt), 2층 전폭 베란다(wall.veranda), 3칸 벽맞댐 돌출 현관·3단 앞뒤 중첩, 2칸 원형 돌 포탑(wall.tower + roof.turret), 이색 목재 지붕(roof.hip.wood), 3칸 M자 쌍박공(extra.gable_peak)."
     }
