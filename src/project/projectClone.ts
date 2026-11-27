@@ -6,6 +6,7 @@ import { isPendingLazyTileset } from "@/project/bundledTilesetLazy";
 import { registerLazyTilesets, unregisterLazyTilesets } from "@/project/lazyTilesetRead";
 import {
   copyTilesetDictionaryPreservingLazy,
+  freshDefaultTilesetBuilder,
   hasPendingDefaultTilesets,
   pendingDefaultTilesetBuilder,
   registerLazyDefaultTileset,
@@ -49,7 +50,8 @@ export function cloneProjectSharingReferenceDocuments(project: Project): Project
     tilesets[id] = { ...tileset, referenceDocuments: [] };
   }
   const cloned = structuredClone({ ...project, tilesets });
-  for (const [id, build] of pendingDefaults) registerLazyDefaultTileset(cloned.tilesets, id, build);
+  // 편집용 깊은 복제다 — 원본과 객체를 나누지 않는 새 생성기로 등록한다.
+  for (const [id, build] of pendingDefaults) registerLazyDefaultTileset(cloned.tilesets, id, freshDefaultTilesetBuilder(build));
   for (const [id, tileset] of lazy) cloned.tilesets[id] = tileset;
   for (const [id, documents] of shared) {
     const tileset = cloned.tilesets[id];
@@ -258,7 +260,7 @@ export function cloneProjectSharingStoreOwnedEntries(project: Project): Project 
     ...(uploaded && assets ? { assets: { ...assets, uploaded } } : {}),
   }) as unknown as Project;
   const targets = sharedDictionariesOf(next);
-  for (const [index, key, build] of pendingDefaults) registerLazyDefaultTileset(targets[index]!, key, build);
+  for (const [index, key, build] of pendingDefaults) registerLazyDefaultTileset(targets[index]!, key, freshDefaultTilesetBuilder(build));
   for (const [index, key, entry] of kept) targets[index]![key] = entry;
   // 복제된 가지(맵·DB 등)의 요약 기억을 넘긴다 — 기억은 값 대조로만 채택된다(contentDigest.shareContentDigests).
   shareContentDigests(project, next);
@@ -283,7 +285,7 @@ export function finishProjectMutation(draft: Project): ReadonlySet<string> | nul
     const descriptor = Object.getOwnPropertyDescriptor(dictionary, id)!;
     const defaultBuild = pendingDefaultTilesetBuilder(state.originals, id);
     if (descriptor.get) {
-      if (defaultBuild) registerLazyDefaultTileset(settled, id, defaultBuild as LazyDefaultTilesetBuilder<TilesetDef>);
+      if (defaultBuild) registerLazyDefaultTileset(settled, id, freshDefaultTilesetBuilder(defaultBuild) as LazyDefaultTilesetBuilder<TilesetDef>);
       else settled[id] = state.originals[id]!;
       continue;
     }

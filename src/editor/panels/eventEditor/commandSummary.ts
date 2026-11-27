@@ -14,6 +14,7 @@ import { formatWeightedBranchSummary } from "./weightedBranchTable";
 import { findBgmTrack } from "@/assets/bgmCatalog";
 import { SE_CATALOG } from "@/assets/seCatalog";
 import { parseFieldFxId, type ContainerStyle } from "@/project/containerFx";
+import { interactivePropById } from "@/project/interactiveProps";
 import { pixelFxEntry } from "@/pixelfx/catalog";
 import { authoredVolumePercent } from "@/player/audio/fade";
 import { m2CommandById, type M2CommandFieldSpec } from "@/project/eventCommands/m2Catalog";
@@ -1629,6 +1630,11 @@ export function animationName(id: string | undefined): string {
   const fieldFx = parseFieldFxId(trimmed);
   switch (fieldFx?.kind) {
     case "container": return CONTAINER_FX_LABELS[fieldFx.style];
+    case "prop": {
+      const prop = interactivePropById(fieldFx.propId);
+      const label = prop?.name ?? fieldFx.propId;
+      return fieldFx.reverse ? `오브젝트 닫기: ${label}` : `오브젝트 연출: ${label}`;
+    }
     case "popupItem": {
       const item = database.items.find((entry) => entry.id === fieldFx.itemId);
       return `아이템 팝업: ${item?.name.trim() || fieldFx.itemId}`;

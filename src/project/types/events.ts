@@ -954,6 +954,8 @@ export interface EventObjectInteraction {
   heldSe?: string;
   /** container 전용: 수납 종류(ContainerStyle — chest·crate·barrel·sack·straw·drawer·jar·wardrobe). 생략 = 이름표로 추정. */
   style?: string;
+  /** container 전용: 멀티프레임 PNG 스트립 카탈로그 id(project/interactiveProps.ts). 지정하면 코드 화소 자르기 대신 해당 스트립을 재생·유지한다. */
+  propId?: string;
   /** container 전용: 이미 뒤진 페이지. 켜져 있는 동안 칸에 뒤진 흔적을 그린다. */
   searched?: boolean;
 }

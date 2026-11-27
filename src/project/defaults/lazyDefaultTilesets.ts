@@ -21,6 +21,13 @@ export type LazyDefaultTilesetBuilder<T = unknown> = () => T;
 const pendingByDict = new WeakMap<object, Map<string, LazyDefaultTilesetBuilder>>();
 
 /** 사전에 지연 번들 타일셋 자리를 등록한다. 처음 읽힐 때만 `build()` 를 불러 데이터 속성으로 정착시킨다. */
+type ReadThroughBuilder<T = unknown> = LazyDefaultTilesetBuilder<T> & { readonly fresh: LazyDefaultTilesetBuilder<T> };
+
+/** 깊은 복제·편집 사본용: 원본과 객체를 나누지 않는 새 사본을 만드는 원래 생성기(얕은 사본의 «원본 거쳐 읽기» 를 벗긴다). */
+export function freshDefaultTilesetBuilder<T>(build: LazyDefaultTilesetBuilder<T>): LazyDefaultTilesetBuilder<T> {
+  return "fresh" in build ? (build as ReadThroughBuilder<T>).fresh : build;
+}
+
 export function registerLazyDefaultTileset<T>(
   dict: Record<string, T>,
   id: string,
@@ -100,8 +107,15 @@ export function copyTilesetDictionaryPreservingLazy<T>(source: Record<string, T>
   const copy: Record<string, T> = {};
   for (const id of Object.keys(source)) {
     const build = pendingDefaultTilesetBuilder(source, id);
-    if (build) registerLazyDefaultTileset(copy, id, build as LazyDefaultTilesetBuilder<T>);
-    else copy[id] = source[id]!;
+    // 얕은 사본은 원본을 거쳐 읽는다 — 어느 쪽이 먼저 깨워도 같은 객체다(보통 사전의 얕은 복사가 항목 참조를 나누던 계약).
+    // 2026-11-27 run 46020355127: 사본이 같은 생성기로 따로 새 객체를 만들어 «세션이 스토어 항목을 공유» 가 깨졌다.
+    // 깊은 복제·편집 사본은 freshDefaultTilesetBuilder 로 원래 생성기를 쓴다(원본이 편집되지 않게).
+    if (build) {
+      const fresh = freshDefaultTilesetBuilder(build) as LazyDefaultTilesetBuilder<T>;
+      const readThrough = (() => source[id]!) as ReadThroughBuilder<T>;
+      Object.defineProperty(readThrough, "fresh", { value: fresh });
+      registerLazyDefaultTileset(copy, id, readThrough);
+    } else copy[id] = source[id]!;
   }
   return copy;
 }
@@ -115,7 +129,7 @@ export function cloneTilesetDictionaryPreservingLazy<T>(source: Record<string, T
   const copy: Record<string, T> = {};
   for (const id of Object.keys(source)) {
     const build = pendingDefaultTilesetBuilder(source, id);
-    if (build) registerLazyDefaultTileset(copy, id, build as LazyDefaultTilesetBuilder<T>);
+    if (build) registerLazyDefaultTileset(copy, id, freshDefaultTilesetBuilder(build) as LazyDefaultTilesetBuilder<T>);
     else copy[id] = structuredClone(source[id]!);
   }
   return copy;

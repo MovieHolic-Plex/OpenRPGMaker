@@ -21615,7 +21615,7 @@
  },
  "showAnimation": {
   "reactions": {
-   "show-animation-animationId-select": "testid 소실 3종 [show-animation-frame-cell, show-animation-frame-layer, show-animation-play] | testid 신규 1종 [show-animation-preview-fallback] | 태그 개수 [button 7→6, span 9→6] | 컨트롤 소실 1개 [show-animation-play] | 검증텍스트 신규 1개 [show-animation-preview-fallback] | 검증텍스트 변경 2개 [show-animation-preview: \"재생타격 · 플…(절단: 총 730자)",
+   "show-animation-animationId-select": "태그 개수 [span 9→7] | 클래스 소실 2개 [record-picker-card-copy, record-picker-card-subtitle] | 클래스 신규 1개 [empty]",
    "show-animation-event-id-input": "no-change",
    "show-animation-target-kind-select": "컨트롤 값 변경 1개 [show-animation-event-id-input: input[text]{hidden}→input[text]{}] | 검증텍스트 변경 1개 [show-animation-preview: \"재생타격 · 플레이어재생이 끝날 때까지 대기\"→\"재생타격 · 이벤트 (현재/미선택)재생이 끝날 때까지 대기\"]",
    "show-animation-wait-select": "검증텍스트 변경 1개 [show-animation-preview: \"재생타격 · 플레이어재생이 끝날 때까지 대기\"→\"재생타격 · 플레이어대기 없이 다음 명령 진행\"]",
@@ -21637,6 +21637,7 @@
     "show-animation-position-field",
     "show-animation-preview",
     "show-animation-preview-stage",
+    "show-animation-prop-fx",
     "show-animation-surface",
     "show-animation-surface-title",
     "show-animation-target-kind-select",
@@ -21666,6 +21667,7 @@
     "cream-command-form-head",
     "db-animation-stage-cell-sprite",
     "db-animation-stage-cells",
+    "iprop-picker-host",
     "page3-anim-cell",
     "page3-anim-cells",
     "page3-anim-play",
@@ -21703,6 +21705,7 @@
     "show-animation-event-id-input": "input[text]{hidden}",
     "show-animation-pixel-fx": "button{}",
     "show-animation-play": "button{}",
+    "show-animation-prop-fx": "button{}",
     "show-animation-target-kind-select": "select{hidden}",
     "show-animation-target-kind-select-segment-event": "button{}",
     "show-animation-target-kind-select-segment-player": "button{}",
@@ -21734,14 +21737,15 @@
     "■ 정지",
     "아니오",
     "예",
+    "오브젝트 연출 (156종)",
     "이벤트",
     "좌표",
     "주인공",
     "픽셀 효과…"
    ],
    "tags": {
-    "button": 7,
-    "div": 22,
+    "button": 8,
+    "div": 23,
     "h4": 1,
     "input": 3,
     "option": 9,
@@ -21764,6 +21768,7 @@
     "show-animation-position-field": "div",
     "show-animation-preview": "div",
     "show-animation-preview-stage": "div",
+    "show-animation-prop-fx": "button",
     "show-animation-surface": "section",
     "show-animation-surface-title": "h4",
     "show-animation-target-kind-select": "select",
@@ -21781,8 +21786,8 @@
     "show-animation-preview": "재생타격 · 플레이어재생이 끝날 때까지 대기",
     "show-animation-preview-stage": "재생"
    },
-   "testidCount": 24,
-   "controlCount": 13
+   "testidCount": 25,
+   "controlCount": 14
   },
   "classes": [
    "actor-m2-command-body",
@@ -21802,10 +21807,9 @@
    "db-animation-stage-cell-sprite",
    "db-animation-stage-cells",
    "empty",
+   "iprop-picker-host",
    "page3-anim-cell",
    "page3-anim-cells",
-   "page3-anim-fallback-flash",
-   "page3-anim-fallback-label",
    "page3-anim-play",
    "page3-anim-play-host",
    "page3-anim-preview",

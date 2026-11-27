@@ -1,5 +1,6 @@
 import manifest from "../assets/bundledReferenceImageManifest.json" with { type: "json" };
 import { isBundledReferenceImage, isSharedReferenceImage, parseSharedReferenceImage, referenceImageDigest } from "./bundledReferenceImagePath";
+import { isFreshBundledTileset } from "./bundledTilesetLazy";
 import { pendingDefaultTilesetBuilder } from "./defaults/lazyDefaultTilesets";
 import type { Project } from "./types";
 
@@ -13,6 +14,8 @@ export function externalizeBundledReferenceImages(project: Project): boolean {
   for (const id of Object.keys(project.tilesets)) {
     if (pendingDefaultTilesetBuilder(project.tilesets, id)) continue;
     const tileset = project.tilesets[id]!;
+    // 구운 «정규화한 새 타일셋» 항목은 이미 바꿨다 — 읽으면 지연 항목을 되돌린다(freshStarter.ts).
+    if (isFreshBundledTileset(tileset)) continue;
     const categories = tileset.referenceDocuments;
     if (!categories?.length) continue;
     let tilesetChanged = false;

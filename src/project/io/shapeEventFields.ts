@@ -604,6 +604,7 @@ function validatePageShape(label: string, value: unknown): void {
     const interaction = requireRecord(`${label}.interaction`, page.interaction);
     assert(interaction.kind === "pushable" || interaction.kind === "hiding" || interaction.kind === "container", `${label}: 물체 상호작용 오류`);
     if (interaction.style !== undefined) requireString(`${label}.interaction.style`, interaction.style);
+    if (interaction.propId !== undefined) requireString(`${label}.interaction.propId`, interaction.propId);
     if (interaction.searched !== undefined) requireBoolean(`${label}.interaction.searched`, interaction.searched);
     if (interaction.directions !== undefined) {
       for (const dir of requireArray(`${label}.interaction.directions`, interaction.directions)) validateDir(label, dir);

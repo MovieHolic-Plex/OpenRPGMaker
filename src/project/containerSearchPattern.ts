@@ -11,15 +11,18 @@ import {
   containerFxId,
   goldPopupFxId,
   itemPopupFxId,
+  propFxId,
   type ContainerStyle,
 } from "@/project/containerFx";
-import type { Command, Condition, GameEvent, GameMap } from "@/project/types";
+import { interactivePropById } from "@/project/interactiveProps";
+import type { Command, Condition, GameEvent, GameMap, Project } from "@/project/types";
 
 type Page = NonNullable<GameEvent["pages"]>[number];
 
-/** 수납을 여는 연출(소리·흔들림·파편·뚜껑). 끝날 때까지 기다린다. */
-export function containerFxCommands(style: ContainerStyle): Command[] {
-  return [{ kind: "showAnimation", target: { eventId: "" }, animationId: containerFxId(style), wait: true } as Command];
+/** 수납을 여는 연출(소리·흔들림·파편·뚜껑, 또는 멀티프레임 PNG 스트립). 끝날 때까지 기다린다. */
+export function containerFxCommands(style: ContainerStyle, propId?: string, project?: Project): Command[] {
+  const animId = propId && interactivePropById(propId, project) ? propFxId(propId) : containerFxId(style);
+  return [{ kind: "showAnimation", target: { eventId: "" }, animationId: animId, wait: true } as Command];
 }
 
 /** 전리품 명령(changeItem/changeGold +=) 하나에 맞는 떠오르기 연출. 해당 없으면 null. */
@@ -98,6 +101,10 @@ export function ownerHearsCondition(ownerId: string, hearRange: number): Conditi
 
 export interface ContainerSearchOptions {
   readonly style: ContainerStyle;
+  /** 멀티프레임 PNG 스트립 프롭 id(project/interactiveProps.ts). 지정하면 `fx:prop:<id>` + 실원본 스트립을 사용한다. */
+  readonly propId?: string;
+  /** 프로젝트 내장 커스텀 프롭(author_interactive_prop)을 해석하기 위한 선택 프로젝트 컨텍스트. */
+  readonly project?: Project;
   /** 집주인 이벤트 id(없으면 누구도 지켜보지 않는 수납). */
   readonly ownerId?: string;
   /** 들을 수 있는 거리. 생략 = 종류의 noise(상자·통만 시끄럽다). 0 = 듣지 않는다. */
@@ -111,25 +118,36 @@ export interface ContainerSearchOptions {
  *  - 뒤지기 페이지(조건 없는 첫 페이지): interaction container, 맨 앞에 여는 연출, 전리품마다 떠오르기.
  *    집주인 「봄」 분기(eventSeesPlayer range>0)의 「!」 를 돌아보기+「!」+멈춤으로 바꾼다.
  *    시끄러운 종류면 「못 봄」 쪽에 「들음」 분기(돌아보기+「?」)를 끼운다.
- *  - 이미 뒤짐 페이지(셀프 스위치 조건): interaction container searched → 흔적.
+ *  - 이미 뒤짐 페이지(셀프 스위치 조건): interaction container searched → 흔적(break 프롭은 통과 가능).
  * 반환: 바꾼 것이 있으면 true.
  */
 export function applyContainerSearchPattern(event: GameEvent, options: ContainerSearchOptions): boolean {
   const pages = event.pages ?? [];
   if (pages.length === 0) return false;
   const search = pages.find((page) => (page.conditions ?? []).length === 0) ?? pages[0]!;
+  const prop = interactivePropById(options.propId, options.project);
   let changed = false;
   for (const page of pages) {
     const searched = page !== search;
-    const wanted = { kind: "container" as const, style: options.style, ...(searched ? { searched: true } : {}) };
+    const wanted = {
+      kind: "container" as const,
+      style: options.style,
+      ...(prop ? { propId: prop.id } : {}),
+      ...(searched ? { searched: true } : {}),
+    };
     if (JSON.stringify(page.interaction ?? null) !== JSON.stringify(wanted)) { (page as Page).interaction = wanted; changed = true; }
+    if (searched && prop?.playback === "break" && (page as { priority?: string }).priority !== "below") {
+      (page as { priority?: string; through?: boolean }).priority = "below";
+      (page as { priority?: string; through?: boolean }).through = true;
+      changed = true;
+    }
   }
-  const fxId = containerFxId(options.style);
+  const fxId = prop ? propFxId(prop.id) : containerFxId(options.style);
   const commands = search.commands ?? [];
   if (JSON.stringify(commands).includes(fxId)) return changed;
   let body = withLootPopups(commands);
   if (options.ownerId) body = body.map((command) => upgradeOwnerFork(command, options));
-  search.commands = [...containerFxCommands(options.style), ...body];
+  search.commands = [...containerFxCommands(options.style, prop?.id, options.project), ...body];
   return true;
 }
 

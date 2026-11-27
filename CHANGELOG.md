@@ -6,6 +6,44 @@
 
 <!-- releases -->
 
+## 0.422.0 — 2026-11-27
+
+### 주요 변경
+
+- **ai** — AI 설정 GPT·Claude·Gemini 3버튼화, Codex 직연결 보강 및 부팅 시 health 점검 (#5290) (`c7f4043`)
+- **commercial** — real Electron OPAK runtime, 20 saves/keybinds/glyphs, 4-locale i18n/AI audit & Git sync pipeline (#5299) (`ed5c3be`)
+- **music** — 맵 생성 시 스토어 BGM 자동 배정·청취 상충 가드 및 블라인드 감사 러너 (#5302) (`b37b668`)
+- **start** — 장르별 데스크톱 기준 시야 3단계 차등(384/480/640) 및 실내 자동 채움 연동 (#5305) (`14335a7`)
+- **desktop** — 앱 시작 시 강제 전체화면 제거 (#5309) (`3548d4f`)
+
+### 기능
+
+- **ai** — AI 설정 GPT·Claude·Gemini 3버튼화, Codex 직연결 보강 및 부팅 시 health 점검 (#5290) (`c7f4043`)
+- **commercial** — real Electron OPAK runtime, 20 saves/keybinds/glyphs, 4-locale i18n/AI audit & Git sync pipeline (#5299) (`ed5c3be`)
+- **music** — 맵 생성 시 스토어 BGM 자동 배정·청취 상충 가드 및 블라인드 감사 러너 (#5302) (`b37b668`)
+- **start** — 장르별 데스크톱 기준 시야 3단계 차등(384/480/640) 및 실내 자동 채움 연동 (#5305) (`14335a7`)
+
+### 수정
+
+- **desktop** — 앱 시작 시 강제 전체화면 제거 (#5309) (`3548d4f`)
+- **agent-mode** — 에이전트 작업폴더 격리·자동승인 가드·설치기/환경변수/PATH 보강 (#5304) (`44300b0`)
+- **player** — unify openCraftShop visual skin and desktop stage bounds with pixel shop (#5303) (`5df5fb8`)
+
+### 성능
+
+- **release** — 데모별 캐시·esbuild 병렬 굽기·3타깃 동시 패키징·병렬 업로드·조건부 app-update-e2e 로 릴리스 단축 (#5311) (`96b1c67`)
+- **player** — 2단계 번들 다이어트 — base64 인라인 제거·캐릭터 검증 분리·대형 카탈로그 지연 로딩 (-3.9MB) (#5307) (`cf355b2`)
+- **ci** — tsc .d.json.ts 스텁 · 지연 번들 타일셋/JSON · jsonEqual 단축 · 워크플로 병렬화 및 2워커 해금 (#5300) (`7a6eee2`)
+
+<details>
+<summary>개발</summary>
+
+### CI
+
+- **related** — 늘 담는 시험이 조각 24개로도 넘치면 넓은 모드로 올리고 넓은 모드 조각 수를 예상 비용으로 정한다 (#5293 24조각 끊김) (#5308) (`03b42c6`)
+
+</details>
+
 ## 0.421.0 — 2026-11-27
 
 ### 주요 변경

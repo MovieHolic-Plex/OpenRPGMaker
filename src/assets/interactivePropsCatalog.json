@@ -1,0 +1,6267 @@
+{
+  "version": 1,
+  "targetCount": 156,
+  "builtCount": 156,
+  "props": [
+    {
+      "id": "treasure-chest",
+      "name": "오크 보물상자",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "container",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "hinge-lid",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/treasure-chest.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "chest_open",
+      "tags": [
+        "상자",
+        "보물상자",
+        "chest",
+        "판타지"
+      ],
+      "sha256": "3db368755ad22964",
+      "containerStyle": "chest",
+      "sourcePng": "public/assets/beodeul-objects/treasure_chest_closed.png"
+    },
+    {
+      "id": "beodeul-wardrobe",
+      "name": "참나무 양문 옷장",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "hide"
+      ],
+      "motion": "swing-double",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/beodeul-wardrobe.png",
+      "frameWidth": 50,
+      "frameHeight": 53,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        2,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "door_wood",
+      "tags": [
+        "옷장",
+        "장롱",
+        "wardrobe",
+        "양문",
+        "판타지"
+      ],
+      "sha256": "1992d59cf77575f0",
+      "containerStyle": "wardrobe",
+      "sourcePng": "public/assets/beodeul-objects/wardrobe.png"
+    },
+    {
+      "id": "beodeul-drawers",
+      "name": "원목 3단 서랍장",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "slide-drawer",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/beodeul-drawers.png",
+      "frameWidth": 32,
+      "frameHeight": 36,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "drawer_slide",
+      "tags": [
+        "서랍장",
+        "서랍",
+        "dresser",
+        "판타지"
+      ],
+      "sha256": "965ef76f44c3eeed",
+      "containerStyle": "dresser",
+      "sourcePng": "public/assets/beodeul-objects/chest_of_drawers.png"
+    },
+    {
+      "id": "beodeul-bookshelf",
+      "name": "비밀 통로 책장",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "passage",
+        "puzzle-clue"
+      ],
+      "motion": "slide-door",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/beodeul-bookshelf.png",
+      "frameWidth": 48,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 110,
+      "footprint": [
+        2,
+        3
+      ],
+      "anchorX": 0.35,
+      "anchorY": 0.94,
+      "se": "stone_scrape",
+      "tags": [
+        "책장",
+        "비밀문",
+        "bookshelf",
+        "기믹"
+      ],
+      "sha256": "6d0abf11182a4efb",
+      "sourcePng": "public/assets/beodeul-objects/bookshelf_tall.png"
+    },
+    {
+      "id": "interior-strongbox",
+      "name": "철제 금고 상자",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "container",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "puzzle-clue"
+      ],
+      "motion": "hinge-lid",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/interior-strongbox.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "metal_latch",
+      "tags": [
+        "금고",
+        "철상자",
+        "strongbox",
+        "상자"
+      ],
+      "sha256": "ea26d1696f094c5e",
+      "containerStyle": "chest",
+      "sourcePng": "tiledata/beodeul-interiors/pieces/strongbox.png"
+    },
+    {
+      "id": "interior-chest",
+      "name": "실내 나무 궤짝",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "container",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "hinge-lid",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/interior-chest.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "chest_open",
+      "tags": [
+        "상자",
+        "궤짝",
+        "chest",
+        "실내"
+      ],
+      "sha256": "f4092f444247357c",
+      "containerStyle": "chest",
+      "sourcePng": "tiledata/beodeul-interiors/pieces/chest.png"
+    },
+    {
+      "id": "interior-wardrobe",
+      "name": "실내 고목 옷장",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "hide"
+      ],
+      "motion": "swing-double",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/interior-wardrobe.png",
+      "frameWidth": 50,
+      "frameHeight": 53,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        2,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "door_wood",
+      "tags": [
+        "옷장",
+        "wardrobe",
+        "실내",
+        "양문"
+      ],
+      "sha256": "1b82986bedb3b2ba",
+      "containerStyle": "wardrobe",
+      "sourcePng": "tiledata/beodeul-interiors/pieces/wardrobe.png"
+    },
+    {
+      "id": "interior-dresser",
+      "name": "주방 식기 찬장",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "swing-double",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/interior-dresser.png",
+      "frameWidth": 48,
+      "frameHeight": 52,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        2,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "door_wood",
+      "tags": [
+        "찬장",
+        "식기장",
+        "cupboard",
+        "주방"
+      ],
+      "sha256": "47fa492f62604922",
+      "containerStyle": "cabinet",
+      "sourcePng": "tiledata/beodeul-interiors/pieces/dresser.png"
+    },
+    {
+      "id": "interior-china-cabinet",
+      "name": "도자기 진열 장식장",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "hide"
+      ],
+      "motion": "swing-double",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/interior-china-cabinet.png",
+      "frameWidth": 48,
+      "frameHeight": 52,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        2,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "door_wood",
+      "tags": [
+        "장식장",
+        "찬장",
+        "cabinet",
+        "실내"
+      ],
+      "sha256": "e0e60662dc6d0625",
+      "containerStyle": "cabinet",
+      "sourcePng": "tiledata/beodeul-interiors/pieces/china-cabinet.png"
+    },
+    {
+      "id": "interior-nightstand",
+      "name": "침실 촛불 협탁",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "slide-drawer",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/interior-nightstand.png",
+      "frameWidth": 16,
+      "frameHeight": 35,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "drawer_slide",
+      "tags": [
+        "협탁",
+        "서랍",
+        "nightstand",
+        "침실"
+      ],
+      "sha256": "e61cfabf2b364979",
+      "containerStyle": "dresser",
+      "sourcePng": "tiledata/beodeul-interiors/pieces/nightstand.png"
+    },
+    {
+      "id": "interior-vanity",
+      "name": "거울 화장대",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "slide-drawer",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/interior-vanity.png",
+      "frameWidth": 32,
+      "frameHeight": 51,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        2,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "drawer_slide",
+      "tags": [
+        "화장대",
+        "서랍",
+        "vanity",
+        "거울"
+      ],
+      "sha256": "2a2bb83800d1f2a9",
+      "containerStyle": "dresser",
+      "sourcePng": "tiledata/beodeul-interiors/pieces/vanity.png"
+    },
+    {
+      "id": "interior-writing-desk",
+      "name": "서재 집필 책상",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "slide-drawer",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/interior-writing-desk.png",
+      "frameWidth": 32,
+      "frameHeight": 35,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "drawer_slide",
+      "tags": [
+        "책상",
+        "서랍",
+        "desk",
+        "서재"
+      ],
+      "sha256": "5e956bf86a0fdbac",
+      "containerStyle": "dresser",
+      "sourcePng": "tiledata/beodeul-interiors/pieces/writing-desk.png"
+    },
+    {
+      "id": "interior-cashbox",
+      "name": "상점 금화 돈통",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "container",
+      "zone": "both",
+      "mount": "counter",
+      "roles": [
+        "loot"
+      ],
+      "motion": "hinge-lid",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/interior-cashbox.png",
+      "frameWidth": 16,
+      "frameHeight": 20,
+      "frames": 5,
+      "frameMs": 90,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "coin_clink",
+      "tags": [
+        "돈통",
+        "금고",
+        "cashbox",
+        "상점"
+      ],
+      "sha256": "6a5684abf6877ca8",
+      "containerStyle": "chest",
+      "sourcePng": "tiledata/beodeul-interiors/pieces/goods-cashbox.png"
+    },
+    {
+      "id": "interior-cellar-hatch",
+      "name": "지하실 바닥 해치",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "passage",
+        "puzzle-clue"
+      ],
+      "motion": "hinge-lid",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/interior-cellar-hatch.png",
+      "frameWidth": 16,
+      "frameHeight": 22,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "wood_creak",
+      "tags": [
+        "다락문",
+        "해치",
+        "trapdoor",
+        "지하실"
+      ],
+      "sha256": "1cec5f24e60aa284",
+      "sourcePng": "tiledata/beodeul-interiors/pieces/cellar-hatch.png"
+    },
+    {
+      "id": "interior-vault-door",
+      "name": "은행 강철 금고문",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage",
+        "puzzle-clue"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/interior-vault-door.png",
+      "frameWidth": 32,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 120,
+      "footprint": [
+        2,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "metal_heavy",
+      "tags": [
+        "금고문",
+        "은행",
+        "vault",
+        "기믹"
+      ],
+      "sha256": "0a00040721c2442c",
+      "sourcePng": "tiledata/beodeul-interiors/pieces/vault-door.png"
+    },
+    {
+      "id": "interior-cell-door",
+      "name": "감옥 철창문",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage",
+        "puzzle-clue"
+      ],
+      "motion": "slide-door",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/interior-cell-door.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "metal_grate",
+      "tags": [
+        "감옥",
+        "철창",
+        "cell",
+        "문"
+      ],
+      "sha256": "fb11eea5d6272a2f",
+      "sourcePng": "tiledata/beodeul-interiors/pieces/cell-door.png"
+    },
+    {
+      "id": "fireplace-stone",
+      "name": "돌 벽난로 점화",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "light-fire",
+      "zone": "indoor",
+      "mount": "wall",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/fireplace-stone.png",
+      "frameWidth": 48,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 110,
+      "footprint": [
+        3,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "fire_ignite",
+      "tags": [
+        "벽난로",
+        "불",
+        "fireplace",
+        "실내"
+      ],
+      "sha256": "d9ec204f17b8c13b",
+      "loopFromFrame": 3,
+      "sourcePng": "public/assets/beodeul-objects/fireplace_stone.png"
+    },
+    {
+      "id": "brick-fireplace",
+      "name": "붉은 벽돌 벽난로",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "light-fire",
+      "zone": "indoor",
+      "mount": "wall",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/brick-fireplace.png",
+      "frameWidth": 48,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 110,
+      "footprint": [
+        3,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "fire_ignite",
+      "tags": [
+        "벽난로",
+        "화덕",
+        "brick",
+        "실내"
+      ],
+      "sha256": "1d46bb24a9ac7cc9",
+      "loopFromFrame": 3,
+      "sourcePng": "tiledata/beodeul-interiors/pieces/brick-fireplace.png"
+    },
+    {
+      "id": "bread-oven",
+      "name": "빵집 돌화덕 가열",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure",
+        "life-survival"
+      ],
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/bread-oven.png",
+      "frameWidth": 48,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 115,
+      "footprint": [
+        3,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "fire_ignite",
+      "tags": [
+        "화덕",
+        "빵가마",
+        "oven",
+        "주방"
+      ],
+      "sha256": "331c680169e0542d",
+      "loopFromFrame": 3,
+      "sourcePng": "tiledata/beodeul-interiors/pieces/bread-oven.png"
+    },
+    {
+      "id": "well-bucket-crank",
+      "name": "도르래 돌우물",
+      "wave": "wave1-fantasy",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure",
+        "life-survival"
+      ],
+      "category": "water-env",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "toggle-switch",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/well-bucket-crank.png",
+      "frameWidth": 48,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        3,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "water_splash",
+      "tags": [
+        "우물",
+        "두레박",
+        "well",
+        "마을"
+      ],
+      "sha256": "7513b54b3f8e9352",
+      "sourcePng": "public/assets/beodeul-objects/well_bucket_crank.png"
+    },
+    {
+      "id": "water-jug-smash",
+      "name": "토기 물항아리 깨기",
+      "wave": "wave2-smash-dungeon",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "smash-break",
+      "playback": "break",
+      "stripPath": "assets/harnesses/interactive-props/water-jug-smash.png",
+      "frameWidth": 28,
+      "frameHeight": 24,
+      "frames": 5,
+      "frameMs": 85,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "ceramic_break",
+      "tags": [
+        "항아리",
+        "물항아리",
+        "토기",
+        "파괴",
+        "jar"
+      ],
+      "sha256": "8cbabced5d884b95",
+      "containerStyle": "jar",
+      "sourcePng": "public/assets/beodeul-objects/water_jug_large.png"
+    },
+    {
+      "id": "clay-pots-smash",
+      "name": "토기 항아리 묶음 깨기",
+      "wave": "wave2-smash-dungeon",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure",
+        "life-survival"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "smash-break",
+      "playback": "break",
+      "stripPath": "assets/harnesses/interactive-props/clay-pots-smash.png",
+      "frameWidth": 40,
+      "frameHeight": 24,
+      "frames": 5,
+      "frameMs": 85,
+      "footprint": [
+        2,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "ceramic_break",
+      "tags": [
+        "항아리",
+        "토기",
+        "파괴",
+        "pot",
+        "jar"
+      ],
+      "sha256": "62340dffb74cfb40",
+      "containerStyle": "jar",
+      "sourcePng": "public/assets/beodeul-objects/clay_pots_group.png"
+    },
+    {
+      "id": "storage-jars-smash",
+      "name": "채색 저장 항아리 깨기",
+      "wave": "wave2-smash-dungeon",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "smash-break",
+      "playback": "break",
+      "stripPath": "assets/harnesses/interactive-props/storage-jars-smash.png",
+      "frameWidth": 56,
+      "frameHeight": 36,
+      "frames": 5,
+      "frameMs": 90,
+      "footprint": [
+        3,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "ceramic_break",
+      "tags": [
+        "항아리",
+        "저장단지",
+        "파괴",
+        "jar"
+      ],
+      "sha256": "4d897a204ae203ed",
+      "containerStyle": "jar",
+      "sourcePng": "public/assets/beodeul-objects/storage_jars_row.png"
+    },
+    {
+      "id": "terracotta-pot-smash",
+      "name": "테라코타 화분 더미 깨기",
+      "wave": "wave2-smash-dungeon",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure",
+        "life-survival"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "smash-break",
+      "playback": "break",
+      "stripPath": "assets/harnesses/interactive-props/terracotta-pot-smash.png",
+      "frameWidth": 28,
+      "frameHeight": 34,
+      "frames": 5,
+      "frameMs": 85,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "ceramic_break",
+      "tags": [
+        "화분",
+        "항아리",
+        "테라코타",
+        "파괴"
+      ],
+      "sha256": "451d5e5650729e63",
+      "containerStyle": "jar",
+      "sourcePng": "public/assets/beodeul-objects/city_flori_terracotta_pot_stack.png"
+    },
+    {
+      "id": "sweet-jar-smash",
+      "name": "유리 사탕병 깨기",
+      "wave": "wave2-smash-dungeon",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "counter",
+      "roles": [
+        "loot"
+      ],
+      "motion": "smash-break",
+      "playback": "break",
+      "stripPath": "assets/harnesses/interactive-props/sweet-jar-smash.png",
+      "frameWidth": 26,
+      "frameHeight": 22,
+      "frames": 5,
+      "frameMs": 80,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "glass_break",
+      "tags": [
+        "유리병",
+        "항아리",
+        "사탕병",
+        "파괴"
+      ],
+      "sha256": "da793fc38a2510be",
+      "containerStyle": "jar",
+      "sourcePng": "tiledata/beodeul-interiors/pieces/goods-sweet-jar.png"
+    },
+    {
+      "id": "dungeon-amphora-smash",
+      "name": "고대 암포라 항아리 깨기",
+      "wave": "wave2-smash-dungeon",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "adventure"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "smash-break",
+      "playback": "break",
+      "stripPath": "assets/harnesses/interactive-props/dungeon-amphora-smash.png",
+      "frameWidth": 28,
+      "frameHeight": 24,
+      "frames": 5,
+      "frameMs": 85,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "ceramic_break",
+      "tags": [
+        "암포라",
+        "항아리",
+        "던전",
+        "파괴",
+        "jar"
+      ],
+      "sha256": "08e79bf2fe1be90d",
+      "containerStyle": "jar",
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/su-amphora.png"
+    },
+    {
+      "id": "pyramid-jars-smash",
+      "name": "피라미드 카노푸스 단지 깨기",
+      "wave": "wave2-smash-dungeon",
+      "era": "dungeon",
+      "world": "desert",
+      "genres": [
+        "adventure"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "smash-break",
+      "playback": "break",
+      "stripPath": "assets/harnesses/interactive-props/pyramid-jars-smash.png",
+      "frameWidth": 42,
+      "frameHeight": 34,
+      "frames": 5,
+      "frameMs": 85,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "ceramic_break",
+      "tags": [
+        "단지",
+        "항아리",
+        "피라미드",
+        "유적",
+        "파괴"
+      ],
+      "sha256": "223bf9aeb5d9028a",
+      "containerStyle": "jar",
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/py-jars.png"
+    },
+    {
+      "id": "dungeon-crate-smash",
+      "name": "던전 나무상자 파괴",
+      "wave": "wave2-smash-dungeon",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "adventure",
+        "life-survival"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "smash-break",
+      "playback": "break",
+      "stripPath": "assets/harnesses/interactive-props/dungeon-crate-smash.png",
+      "frameWidth": 28,
+      "frameHeight": 24,
+      "frames": 5,
+      "frameMs": 85,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "wood_break",
+      "tags": [
+        "나무상자",
+        "상자",
+        "crate",
+        "던전",
+        "파괴"
+      ],
+      "sha256": "1343784ae850c3b0",
+      "containerStyle": "crate",
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/sh-crate.png"
+    },
+    {
+      "id": "dungeon-barrel-smash",
+      "name": "던전 오크통 파괴",
+      "wave": "wave2-smash-dungeon",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "adventure",
+        "life-survival"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "smash-break",
+      "playback": "break",
+      "stripPath": "assets/harnesses/interactive-props/dungeon-barrel-smash.png",
+      "frameWidth": 28,
+      "frameHeight": 24,
+      "frames": 5,
+      "frameMs": 85,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "wood_break",
+      "tags": [
+        "오크통",
+        "나무통",
+        "barrel",
+        "던전",
+        "파괴"
+      ],
+      "sha256": "e855b09b60c65e48",
+      "containerStyle": "barrel",
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/sh-barrel.png"
+    },
+    {
+      "id": "crate-stack-smash",
+      "name": "시장 나무상자 더미 파괴",
+      "wave": "wave2-smash-dungeon",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "adventure",
+        "life-survival"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "smash-break",
+      "playback": "break",
+      "stripPath": "assets/harnesses/interactive-props/crate-stack-smash.png",
+      "frameWidth": 56,
+      "frameHeight": 36,
+      "frames": 5,
+      "frameMs": 90,
+      "footprint": [
+        3,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "wood_break",
+      "tags": [
+        "상자더미",
+        "창고",
+        "crate",
+        "파괴"
+      ],
+      "sha256": "c5476d5f7045726e",
+      "containerStyle": "crate",
+      "sourcePng": "public/assets/beodeul-objects/crate_stack.png"
+    },
+    {
+      "id": "sack-pile-search",
+      "name": "곡식 자루 더미 뒤지기",
+      "wave": "wave2-smash-dungeon",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "adventure",
+        "life-survival"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "untie-open",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/sack-pile-search.png",
+      "frameWidth": 32,
+      "frameHeight": 35,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "cloth_rustle",
+      "tags": [
+        "자루",
+        "포대",
+        "sack",
+        "탐색"
+      ],
+      "sha256": "0a1b1b6a24e3c9d2",
+      "containerStyle": "sack",
+      "sourcePng": "public/assets/beodeul-objects/sack_pile.png"
+    },
+    {
+      "id": "hay-stack-search",
+      "name": "건초 더미 파헤치기",
+      "wave": "wave2-smash-dungeon",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "adventure",
+        "life-survival"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "untie-open",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/hay-stack-search.png",
+      "frameWidth": 32,
+      "frameHeight": 35,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "cloth_rustle",
+      "tags": [
+        "건초",
+        "짚더미",
+        "hay",
+        "탐색"
+      ],
+      "sha256": "36bc74bd9f73dd8a",
+      "containerStyle": "basket",
+      "sourcePng": "public/assets/beodeul-objects/hay_stack_cone.png"
+    },
+    {
+      "id": "dungeon-sarcophagus",
+      "name": "지하묘지 석관 개방",
+      "wave": "wave2-smash-dungeon",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "horror",
+        "adventure"
+      ],
+      "category": "gimmick",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "lid-aside",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/dungeon-sarcophagus.png",
+      "frameWidth": 24,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 120,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.42,
+      "anchorY": 0.94,
+      "se": "stone_scrape",
+      "tags": [
+        "석관",
+        "묘지",
+        "sarcophagus",
+        "던전"
+      ],
+      "sha256": "21c6e9acbd7bbaf6",
+      "containerStyle": "chest",
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/cr-sarcophagus-ns.png"
+    },
+    {
+      "id": "dungeon-brazier",
+      "name": "던전 화로 점화",
+      "wave": "wave2-smash-dungeon",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "adventure"
+      ],
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/dungeon-brazier.png",
+      "frameWidth": 16,
+      "frameHeight": 28,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "fire_ignite",
+      "tags": [
+        "화로",
+        "불",
+        "brazier",
+        "던전"
+      ],
+      "sha256": "5880d2e1f5068c25",
+      "loopFromFrame": 3,
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/ru-brazier.png"
+    },
+    {
+      "id": "dungeon-wall-torch",
+      "name": "던전 벽 횃불 점화",
+      "wave": "wave2-smash-dungeon",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "adventure"
+      ],
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "wall",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/dungeon-wall-torch.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "fire_ignite",
+      "tags": [
+        "횃불",
+        "불",
+        "torch",
+        "던전"
+      ],
+      "sha256": "cae5251162b1fbd6",
+      "loopFromFrame": 3,
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/cv-torch.png"
+    },
+    {
+      "id": "dungeon-crystal-smash",
+      "name": "동굴 마력 수정 채굴",
+      "wave": "wave2-smash-dungeon",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "adventure"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "smash-break",
+      "playback": "break",
+      "stripPath": "assets/harnesses/interactive-props/dungeon-crystal-smash.png",
+      "frameWidth": 42,
+      "frameHeight": 34,
+      "frames": 5,
+      "frameMs": 85,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "crystal_shatter",
+      "tags": [
+        "수정",
+        "크리스탈",
+        "광석",
+        "파괴",
+        "던전"
+      ],
+      "sha256": "99f3adb9b2bd8663",
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/cv-crystal.png"
+    },
+    {
+      "id": "dungeon-ice-crystal-smash",
+      "name": "빙결 수정 파괴",
+      "wave": "wave2-smash-dungeon",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "adventure"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "smash-break",
+      "playback": "break",
+      "stripPath": "assets/harnesses/interactive-props/dungeon-ice-crystal-smash.png",
+      "frameWidth": 28,
+      "frameHeight": 34,
+      "frames": 5,
+      "frameMs": 85,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "crystal_shatter",
+      "tags": [
+        "얼음",
+        "수정",
+        "빙결",
+        "파괴",
+        "던전"
+      ],
+      "sha256": "ab8497cdf8a3eb0d",
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/ic-crystal.png"
+    },
+    {
+      "id": "dungeon-skulls-scatter",
+      "name": "해골 더미 흩어지기",
+      "wave": "wave2-smash-dungeon",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "puzzle-clue"
+      ],
+      "motion": "smash-break",
+      "playback": "break",
+      "stripPath": "assets/harnesses/interactive-props/dungeon-skulls-scatter.png",
+      "frameWidth": 28,
+      "frameHeight": 24,
+      "frames": 5,
+      "frameMs": 85,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "bone_rattle",
+      "tags": [
+        "해골",
+        "뼈",
+        "skulls",
+        "던전",
+        "파괴"
+      ],
+      "sha256": "c7cf66db8f222650",
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/sh-skulls.png"
+    },
+    {
+      "id": "dungeon-sewer-valve",
+      "name": "하수구 수문 밸브",
+      "wave": "wave2-smash-dungeon",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "gimmick",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue",
+        "hazard-trap"
+      ],
+      "motion": "toggle-switch",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/dungeon-sewer-valve.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "valve_turn",
+      "tags": [
+        "밸브",
+        "하수구",
+        "기믹",
+        "던전"
+      ],
+      "sha256": "ea889062b4a60f24",
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/sw-valve.png"
+    },
+    {
+      "id": "dungeon-sewer-bars",
+      "name": "하수구 철창 수문",
+      "wave": "wave2-smash-dungeon",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "gimmick",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "passage"
+      ],
+      "motion": "roll-shutter",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/dungeon-sewer-bars.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 110,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "metal_grate",
+      "tags": [
+        "철창",
+        "수문",
+        "하수구",
+        "기믹",
+        "던전"
+      ],
+      "sha256": "25f29c2fd4daf570",
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/sw-bars.png"
+    },
+    {
+      "id": "modern-vending",
+      "name": "건강음료 자판기",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "horror",
+        "romance-daily",
+        "monster-collect"
+      ],
+      "category": "machine",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "drop-flap",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/modern-vending.png",
+      "frameWidth": 32,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        2,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "vending_drop",
+      "tags": [
+        "자판기",
+        "음료",
+        "vending",
+        "현대"
+      ],
+      "sha256": "641d210d6275ad9b",
+      "sourcePng": "public/assets/beodeul-objects/city_clinic_health_drink_vending.png"
+    },
+    {
+      "id": "modern-lockers",
+      "name": "학교 학생 사물함",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "puzzle-escape",
+        "romance-daily",
+        "monster-collect"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "hide"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/modern-lockers.png",
+      "frameWidth": 40,
+      "frameHeight": 34,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "metal_locker",
+      "tags": [
+        "사물함",
+        "학교",
+        "locker",
+        "현대"
+      ],
+      "sha256": "beadd0457464cb11",
+      "containerStyle": "cabinet",
+      "sourcePng": "public/assets/beodeul-objects/city_camp_student_lockers.png"
+    },
+    {
+      "id": "modern-toolbox",
+      "name": "현장 빨간 공구함",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily"
+      ],
+      "category": "container",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "hinge-lid",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/modern-toolbox.png",
+      "frameWidth": 16,
+      "frameHeight": 21,
+      "frames": 5,
+      "frameMs": 90,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "metal_latch",
+      "tags": [
+        "공구함",
+        "공구",
+        "toolbox",
+        "현대"
+      ],
+      "sha256": "d7ff70861a8b297d",
+      "containerStyle": "chest",
+      "sourcePng": "public/assets/beodeul-objects/city_cons_toolbox.png"
+    },
+    {
+      "id": "modern-arcade",
+      "name": "오락실 리듬 게임기",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily",
+        "monster-collect"
+      ],
+      "category": "machine",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "hide"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/modern-arcade.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "arcade_blip",
+      "tags": [
+        "오락기",
+        "게임기",
+        "arcade",
+        "현대"
+      ],
+      "sha256": "b17e60e9f2ef8c96",
+      "loopFromFrame": 2,
+      "sourcePng": "public/assets/beodeul-objects/city_arcad_rhythm_game_cabinet.png"
+    },
+    {
+      "id": "modern-claw-machine",
+      "name": "오락실 인형 뽑기 기계",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily",
+        "monster-collect"
+      ],
+      "category": "machine",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "toggle-switch",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/modern-claw-machine.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 115,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "arcade_blip",
+      "tags": [
+        "인형뽑기",
+        "오락실",
+        "claw",
+        "현대"
+      ],
+      "sha256": "5e5114e32f460b0d",
+      "sourcePng": "public/assets/beodeul-objects/city_arcad_claw_machine.png"
+    },
+    {
+      "id": "modern-cooler-box",
+      "name": "해변 아이스박스",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily"
+      ],
+      "category": "container",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "hinge-lid",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/modern-cooler-box.png",
+      "frameWidth": 16,
+      "frameHeight": 20,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "plastic_lid",
+      "tags": [
+        "아이스박스",
+        "쿨러",
+        "cooler",
+        "현대"
+      ],
+      "sha256": "528a34778edfe43c",
+      "containerStyle": "chest",
+      "sourcePng": "public/assets/beodeul-objects/city_beach_cooler_box_ice.png"
+    },
+    {
+      "id": "modern-waste-bin",
+      "name": "아파트 음식물 수거함",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily"
+      ],
+      "category": "container",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "hinge-lid",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/modern-waste-bin.png",
+      "frameWidth": 16,
+      "frameHeight": 20,
+      "frames": 5,
+      "frameMs": 90,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "plastic_lid",
+      "tags": [
+        "쓰레기통",
+        "수거함",
+        "bin",
+        "현대"
+      ],
+      "sha256": "d26f69babbcc7e19",
+      "containerStyle": "crate",
+      "sourcePng": "public/assets/beodeul-objects/city_apt_food_waste_bin.png"
+    },
+    {
+      "id": "modern-recycle-bins",
+      "name": "캔·병 분리수거함",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily"
+      ],
+      "category": "container",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "hinge-lid",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/modern-recycle-bins.png",
+      "frameWidth": 32,
+      "frameHeight": 20,
+      "frames": 5,
+      "frameMs": 90,
+      "footprint": [
+        2,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "plastic_lid",
+      "tags": [
+        "분리수거함",
+        "쓰레기통",
+        "recycle",
+        "현대"
+      ],
+      "sha256": "7771c8f86f73f7e7",
+      "containerStyle": "crate",
+      "sourcePng": "public/assets/beodeul-objects/city_benbn_can_bottle_bin_pair.png"
+    },
+    {
+      "id": "modern-parcel-locker",
+      "name": "무인 택배 보관함",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "puzzle-escape",
+        "romance-daily",
+        "monster-collect"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "hide"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/modern-parcel-locker.png",
+      "frameWidth": 40,
+      "frameHeight": 34,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "metal_locker",
+      "tags": [
+        "택배함",
+        "보관함",
+        "locker",
+        "현대"
+      ],
+      "sha256": "c103146b0f8b2220",
+      "containerStyle": "cabinet",
+      "sourcePng": "public/assets/beodeul-objects/city_terr_parcel_locker.png"
+    },
+    {
+      "id": "modern-parcel-boxes",
+      "name": "택배 상자 더미 개봉",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily",
+        "monster-collect"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "untie-open",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/modern-parcel-boxes.png",
+      "frameWidth": 32,
+      "frameHeight": 35,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "cardboard_open",
+      "tags": [
+        "택배",
+        "택배상자",
+        "parcel",
+        "현대"
+      ],
+      "sha256": "58e09871166d084d",
+      "containerStyle": "crate",
+      "sourcePng": "public/assets/beodeul-objects/city_logi_parcel_boxes.png"
+    },
+    {
+      "id": "modern-fire-hose-box",
+      "name": "옥상 소화전함",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily"
+      ],
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "wall",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/modern-fire-hose-box.png",
+      "frameWidth": 28,
+      "frameHeight": 34,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "metal_latch",
+      "tags": [
+        "소화전",
+        "소화전함",
+        "firehose",
+        "현대"
+      ],
+      "sha256": "84214d140744cfec",
+      "containerStyle": "cabinet",
+      "sourcePng": "public/assets/beodeul-objects/city_roof_fire_hose_box.png"
+    },
+    {
+      "id": "modern-signal-box",
+      "name": "거리 신호등 제어함",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "puzzle-escape",
+        "romance-daily"
+      ],
+      "category": "machine",
+      "zone": "outdoor",
+      "mount": "wall",
+      "roles": [
+        "puzzle-clue",
+        "ambient-light"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/modern-signal-box.png",
+      "frameWidth": 28,
+      "frameHeight": 34,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "metal_latch",
+      "tags": [
+        "제어함",
+        "분전반",
+        "신호등",
+        "현대"
+      ],
+      "sha256": "d8c88cc8a0f3dbc8",
+      "sourcePng": "public/assets/beodeul-objects/city_lamps_signal_control_box.png"
+    },
+    {
+      "id": "modern-battery-swap",
+      "name": "전기 배터리 교환함",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily"
+      ],
+      "category": "machine",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "hide"
+      ],
+      "motion": "drop-flap",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/modern-battery-swap.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "sci_beep",
+      "tags": [
+        "배터리",
+        "충전함",
+        "battery",
+        "현대"
+      ],
+      "sha256": "b9c9c4335ae48903",
+      "sourcePng": "public/assets/beodeul-objects/city_evchg_battery_swap_cabinet.png"
+    },
+    {
+      "id": "modern-charging-kiosk",
+      "name": "휴대폰 충전 키오스크",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily",
+        "monster-collect"
+      ],
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/modern-charging-kiosk.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "sci_beep",
+      "tags": [
+        "키오스크",
+        "충전기",
+        "kiosk",
+        "현대"
+      ],
+      "sha256": "d20cd8a1782916f6",
+      "loopFromFrame": 2,
+      "sourcePng": "public/assets/beodeul-objects/city_phone_charging_station_kiosk.png"
+    },
+    {
+      "id": "modern-phone-booth",
+      "name": "빈티지 공중전화 부스",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily",
+        "monster-collect"
+      ],
+      "category": "machine",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "hide"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/modern-phone-booth.png",
+      "frameWidth": 28,
+      "frameHeight": 35,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "door_glass",
+      "tags": [
+        "공중전화",
+        "전화부스",
+        "booth",
+        "현대"
+      ],
+      "sha256": "ced19577c73a85c1",
+      "sourcePng": "public/assets/beodeul-objects/city_phone_phone_booth_vintage.png"
+    },
+    {
+      "id": "modern-mask-vending",
+      "name": "약국 마스크 자판기",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily",
+        "monster-collect"
+      ],
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "drop-flap",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/modern-mask-vending.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "vending_drop",
+      "tags": [
+        "자판기",
+        "마스크",
+        "약국",
+        "현대"
+      ],
+      "sha256": "7571b5f52f20c9df",
+      "sourcePng": "public/assets/beodeul-objects/city_pharm_mask_vending_box.png"
+    },
+    {
+      "id": "modern-ticket-machine",
+      "name": "식당 식권 자판기",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily",
+        "life-survival",
+        "eastern"
+      ],
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "drop-flap",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/modern-ticket-machine.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "vending_drop",
+      "tags": [
+        "식권",
+        "자판기",
+        "키오스크",
+        "현대"
+      ],
+      "sha256": "513104666dad5c3c",
+      "sourcePng": "public/assets/beodeul-objects/city_ramen_menu_ticket_machine_icon.png"
+    },
+    {
+      "id": "modern-coin-changer",
+      "name": "빨래방 동전 교환기",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily"
+      ],
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "drop-flap",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/modern-coin-changer.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "coin_clink",
+      "tags": [
+        "동전교환기",
+        "빨래방",
+        "자판기",
+        "현대"
+      ],
+      "sha256": "a19aef7fe1379eee",
+      "sourcePng": "public/assets/beodeul-objects/city_laund_coin_change_machine.png"
+    },
+    {
+      "id": "modern-bottle-return",
+      "name": "빈병 무인 회수기",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily"
+      ],
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "drop-flap",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/modern-bottle-return.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "sci_beep",
+      "tags": [
+        "회수기",
+        "재활용",
+        "자판기",
+        "현대"
+      ],
+      "sha256": "263f6e94e3dbb627",
+      "sourcePng": "public/assets/beodeul-objects/city_btl_bottle_return_machine.png"
+    },
+    {
+      "id": "modern-storage-cabinet",
+      "name": "사무실 철제 캐비닛",
+      "wave": "wave3-modern",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "hide"
+      ],
+      "motion": "swing-double",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/modern-storage-cabinet.png",
+      "frameWidth": 28,
+      "frameHeight": 35,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "metal_locker",
+      "tags": [
+        "캐비닛",
+        "사무실",
+        "철제장",
+        "cabinet",
+        "현대"
+      ],
+      "sha256": "7ac16ef5079e7d3f",
+      "containerStyle": "cabinet",
+      "sourcePng": "tiledata/modern-city/objects/pieces/mc-storage-cabinet.png"
+    },
+    {
+      "id": "joseon-pal-jangnong",
+      "name": "궁중 자개 장롱",
+      "wave": "wave4-joseon-murim",
+      "era": "joseon",
+      "world": "joseon",
+      "genres": [
+        "eastern"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "hide"
+      ],
+      "motion": "swing-double",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/joseon-pal-jangnong.png",
+      "frameWidth": 50,
+      "frameHeight": 52,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        2,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "door_wood",
+      "tags": [
+        "장롱",
+        "자개장",
+        "궁중",
+        "조선",
+        "wardrobe"
+      ],
+      "sha256": "7e35f3ae1f9b14d5",
+      "containerStyle": "wardrobe",
+      "sourcePng": "harness-data/interactive-props/sources/joseon/pal_jangnong.png"
+    },
+    {
+      "id": "joseon-bandaji",
+      "name": "조선 안방 반닫이",
+      "wave": "wave4-joseon-murim",
+      "era": "joseon",
+      "world": "joseon",
+      "genres": [
+        "eastern"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "hinge-lid",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/joseon-bandaji.png",
+      "frameWidth": 32,
+      "frameHeight": 21,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        2,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "wood_creak",
+      "tags": [
+        "반닫이",
+        "궤짝",
+        "상자",
+        "조선"
+      ],
+      "sha256": "0eb4545a726f5ec7",
+      "containerStyle": "chest",
+      "sourcePng": "harness-data/interactive-props/sources/joseon/in_bandaji.png"
+    },
+    {
+      "id": "joseon-dwiju",
+      "name": "조선 쌀뒤주",
+      "wave": "wave4-joseon-murim",
+      "era": "joseon",
+      "world": "joseon",
+      "genres": [
+        "eastern"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "hinge-lid",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/joseon-dwiju.png",
+      "frameWidth": 16,
+      "frameHeight": 36,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "wood_creak",
+      "tags": [
+        "뒤주",
+        "쌀통",
+        "부엌",
+        "조선"
+      ],
+      "sha256": "7b5725309e4343e9",
+      "containerStyle": "chest",
+      "sourcePng": "harness-data/interactive-props/sources/joseon/in_dwiju.png"
+    },
+    {
+      "id": "joseon-yakjang",
+      "name": "한약방 약장 서랍",
+      "wave": "wave4-joseon-murim",
+      "era": "joseon",
+      "world": "joseon",
+      "genres": [
+        "eastern"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "slide-drawer",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/joseon-yakjang.png",
+      "frameWidth": 32,
+      "frameHeight": 35,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "drawer_slide",
+      "tags": [
+        "약장",
+        "서랍",
+        "한약방",
+        "조선"
+      ],
+      "sha256": "c7175f439e2f2800",
+      "containerStyle": "dresser",
+      "sourcePng": "harness-data/interactive-props/sources/joseon/in_yakjang.png"
+    },
+    {
+      "id": "joseon-nong",
+      "name": "조선 안방 나무농",
+      "wave": "wave4-joseon-murim",
+      "era": "joseon",
+      "world": "joseon",
+      "genres": [
+        "eastern"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "hide"
+      ],
+      "motion": "swing-double",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/joseon-nong.png",
+      "frameWidth": 50,
+      "frameHeight": 36,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "door_wood",
+      "tags": [
+        "농",
+        "장롱",
+        "옷장",
+        "조선"
+      ],
+      "sha256": "08646fcdb13e1bf1",
+      "containerStyle": "wardrobe",
+      "sourcePng": "harness-data/interactive-props/sources/joseon/in_nong.png"
+    },
+    {
+      "id": "joseon-mungap",
+      "name": "사랑방 문갑 미닫이",
+      "wave": "wave4-joseon-murim",
+      "era": "joseon",
+      "world": "joseon",
+      "genres": [
+        "eastern"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "slide-door",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/joseon-mungap.png",
+      "frameWidth": 32,
+      "frameHeight": 16,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        2,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "drawer_slide",
+      "tags": [
+        "문갑",
+        "사랑방",
+        "미닫이",
+        "조선"
+      ],
+      "sha256": "3d91147cbf7cf95b",
+      "containerStyle": "cabinet",
+      "sourcePng": "harness-data/interactive-props/sources/joseon/in_mungap.png"
+    },
+    {
+      "id": "joseon-hwajangdae",
+      "name": "궁중 거울 경대",
+      "wave": "wave4-joseon-murim",
+      "era": "joseon",
+      "world": "joseon",
+      "genres": [
+        "eastern"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "slide-drawer",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/joseon-hwajangdae.png",
+      "frameWidth": 32,
+      "frameHeight": 35,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "drawer_slide",
+      "tags": [
+        "경대",
+        "화장대",
+        "서랍",
+        "조선"
+      ],
+      "sha256": "fcca2ceb8b25f7bd",
+      "containerStyle": "dresser",
+      "sourcePng": "harness-data/interactive-props/sources/joseon/pal_hwajangdae.png"
+    },
+    {
+      "id": "joseon-stove-pot",
+      "name": "부뚜막 가마솥 끓이기",
+      "wave": "wave4-joseon-murim",
+      "era": "joseon",
+      "world": "joseon",
+      "genres": [
+        "life-survival",
+        "eastern"
+      ],
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/joseon-stove-pot.png",
+      "frameWidth": 32,
+      "frameHeight": 38,
+      "frames": 5,
+      "frameMs": 115,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "pot_boil",
+      "tags": [
+        "가마솥",
+        "부뚜막",
+        "요리",
+        "조선"
+      ],
+      "sha256": "5aa932b5e4fe12d3",
+      "loopFromFrame": 2,
+      "sourcePng": "harness-data/interactive-props/sources/joseon/stove_pot.png"
+    },
+    {
+      "id": "joseon-hwaro",
+      "name": "안방 숯불 화로",
+      "wave": "wave4-joseon-murim",
+      "era": "joseon",
+      "world": "joseon",
+      "genres": [
+        "eastern"
+      ],
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/joseon-hwaro.png",
+      "frameWidth": 16,
+      "frameHeight": 22,
+      "frames": 5,
+      "frameMs": 110,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "fire_ignite",
+      "tags": [
+        "화로",
+        "숯불",
+        "난방",
+        "조선"
+      ],
+      "sha256": "b1e0094d4ae40709",
+      "loopFromFrame": 2,
+      "sourcePng": "harness-data/interactive-props/sources/joseon/in_hwaro.png"
+    },
+    {
+      "id": "joseon-hwadeok",
+      "name": "조선 부엌 화덕 점화",
+      "wave": "wave4-joseon-murim",
+      "era": "joseon",
+      "world": "joseon",
+      "genres": [
+        "eastern"
+      ],
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/joseon-hwadeok.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 110,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "fire_ignite",
+      "tags": [
+        "화덕",
+        "부엌",
+        "불",
+        "조선"
+      ],
+      "sha256": "86ead2d705127d6b",
+      "loopFromFrame": 3,
+      "sourcePng": "harness-data/interactive-props/sources/joseon/in_hwadeok.png"
+    },
+    {
+      "id": "joseon-hangari-smash",
+      "name": "조선 항아리 깨기",
+      "wave": "wave4-joseon-murim",
+      "era": "joseon",
+      "world": "joseon",
+      "genres": [
+        "eastern"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "smash-break",
+      "playback": "break",
+      "stripPath": "assets/harnesses/interactive-props/joseon-hangari-smash.png",
+      "frameWidth": 28,
+      "frameHeight": 24,
+      "frames": 5,
+      "frameMs": 85,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "ceramic_break",
+      "tags": [
+        "항아리",
+        "장독",
+        "파괴",
+        "조선",
+        "jar"
+      ],
+      "sha256": "8335230294af2d2c",
+      "containerStyle": "jar",
+      "sourcePng": "harness-data/interactive-props/sources/joseon/in_hangari_a.png"
+    },
+    {
+      "id": "joseon-jangdok-smash",
+      "name": "김장 물독 깨기",
+      "wave": "wave4-joseon-murim",
+      "era": "joseon",
+      "world": "joseon",
+      "genres": [
+        "eastern"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "smash-break",
+      "playback": "break",
+      "stripPath": "assets/harnesses/interactive-props/joseon-jangdok-smash.png",
+      "frameWidth": 28,
+      "frameHeight": 34,
+      "frames": 5,
+      "frameMs": 85,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "ceramic_break",
+      "tags": [
+        "물독",
+        "장독",
+        "항아리",
+        "파괴",
+        "조선"
+      ],
+      "sha256": "6ad540d2d4f7da25",
+      "containerStyle": "jar",
+      "sourcePng": "public/assets/beodeul-objects/city_kim_water_jar.png"
+    },
+    {
+      "id": "joseon-onggi-smash",
+      "name": "장독대 옹기 무더기 깨기",
+      "wave": "wave4-joseon-murim",
+      "era": "joseon",
+      "world": "joseon",
+      "genres": [
+        "eastern"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "smash-break",
+      "playback": "break",
+      "stripPath": "assets/harnesses/interactive-props/joseon-onggi-smash.png",
+      "frameWidth": 42,
+      "frameHeight": 34,
+      "frames": 5,
+      "frameMs": 85,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "ceramic_break",
+      "tags": [
+        "옹기",
+        "장독대",
+        "항아리",
+        "파괴",
+        "조선"
+      ],
+      "sha256": "13953c6a7d941175",
+      "containerStyle": "jar",
+      "sourcePng": "public/assets/beodeul-objects/city_alley_onggi_jars.png"
+    },
+    {
+      "id": "murim-suldok-smash",
+      "name": "객잔 술독 깨기",
+      "wave": "wave4-joseon-murim",
+      "era": "murim",
+      "world": "murim",
+      "genres": [
+        "eastern"
+      ],
+      "category": "breakable",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "smash-break",
+      "playback": "break",
+      "stripPath": "assets/harnesses/interactive-props/murim-suldok-smash.png",
+      "frameWidth": 28,
+      "frameHeight": 24,
+      "frames": 5,
+      "frameMs": 85,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "ceramic_break",
+      "tags": [
+        "술독",
+        "항아리",
+        "객잔",
+        "무림",
+        "파괴"
+      ],
+      "sha256": "7e486dcd7770ab82",
+      "containerStyle": "jar",
+      "sourcePng": "harness-data/interactive-props/sources/joseon/in_suldok.png"
+    },
+    {
+      "id": "murim-hyangro",
+      "name": "문파 청동 향로 피우기",
+      "wave": "wave4-joseon-murim",
+      "era": "murim",
+      "world": "murim",
+      "genres": [
+        "eastern"
+      ],
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "counter",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/murim-hyangro.png",
+      "frameWidth": 16,
+      "frameHeight": 36,
+      "frames": 5,
+      "frameMs": 115,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "incense_chime",
+      "tags": [
+        "향로",
+        "도장",
+        "문파",
+        "무림"
+      ],
+      "sha256": "9a4a66ebe96a9e7c",
+      "loopFromFrame": 2,
+      "sourcePng": "harness-data/interactive-props/sources/joseon/pal_hyangro.png"
+    },
+    {
+      "id": "murim-munseo-ham",
+      "name": "무공 비급 문서함",
+      "wave": "wave4-joseon-murim",
+      "era": "murim",
+      "world": "murim",
+      "genres": [
+        "eastern"
+      ],
+      "category": "container",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "hinge-lid",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/murim-munseo-ham.png",
+      "frameWidth": 16,
+      "frameHeight": 20,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "wood_creak",
+      "tags": [
+        "비급",
+        "문서함",
+        "상자",
+        "무림"
+      ],
+      "sha256": "a8353c064cc4cbd9",
+      "containerStyle": "chest",
+      "sourcePng": "harness-data/interactive-props/sources/joseon/pal_munseo_ham.png"
+    },
+    {
+      "id": "murim-seoga-secret",
+      "name": "비밀 무공 서가",
+      "wave": "wave4-joseon-murim",
+      "era": "murim",
+      "world": "murim",
+      "genres": [
+        "puzzle-escape",
+        "eastern"
+      ],
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "passage",
+        "puzzle-clue"
+      ],
+      "motion": "slide-door",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/murim-seoga-secret.png",
+      "frameWidth": 48,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 110,
+      "footprint": [
+        2,
+        3
+      ],
+      "anchorX": 0.35,
+      "anchorY": 0.94,
+      "se": "stone_scrape",
+      "tags": [
+        "서가",
+        "책장",
+        "비밀문",
+        "무림"
+      ],
+      "sha256": "ca415586093b4643",
+      "sourcePng": "harness-data/interactive-props/sources/joseon/pal_seoga_tall.png"
+    },
+    {
+      "id": "murim-temple-bell",
+      "name": "사찰 청동 대종 울림",
+      "wave": "wave4-joseon-murim",
+      "era": "murim",
+      "world": "murim",
+      "genres": [
+        "eastern"
+      ],
+      "category": "water-env",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "toggle-switch",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/murim-temple-bell.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 110,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "bell_gong",
+      "tags": [
+        "대종",
+        "종",
+        "사찰",
+        "무림"
+      ],
+      "sha256": "03efa84e8cfbe5f9",
+      "sourcePng": "harness-data/interactive-props/sources/joseon/pal_jong.png"
+    },
+    {
+      "id": "murim-war-drum",
+      "name": "문파 전고 대북 타격",
+      "wave": "wave4-joseon-murim",
+      "era": "murim",
+      "world": "murim",
+      "genres": [
+        "eastern"
+      ],
+      "category": "water-env",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "toggle-switch",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/murim-war-drum.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "drum_boom",
+      "tags": [
+        "대북",
+        "북",
+        "전고",
+        "무림"
+      ],
+      "sha256": "e821c4a069d6eb76",
+      "sourcePng": "harness-data/interactive-props/sources/joseon/pal_buk_big.png"
+    },
+    {
+      "id": "murim-palace-lantern",
+      "name": "궁중 홍등롱 점등",
+      "wave": "wave4-joseon-murim",
+      "era": "murim",
+      "world": "murim",
+      "genres": [
+        "eastern"
+      ],
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/murim-palace-lantern.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 110,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "fire_ignite",
+      "tags": [
+        "등롱",
+        "초롱",
+        "조명",
+        "무림"
+      ],
+      "sha256": "eda184023ab223d3",
+      "loopFromFrame": 3,
+      "sourcePng": "harness-data/interactive-props/sources/joseon/pal_deungrong.png"
+    },
+    {
+      "id": "scifi-cryo-pod",
+      "name": "SF 냉동 수면 캡슐",
+      "wave": "wave5-scifi-steampunk",
+      "era": "scifi",
+      "world": "scifi",
+      "genres": [
+        "cyber-scifi"
+      ],
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "hide"
+      ],
+      "motion": "roll-shutter",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/scifi-cryo-pod.png",
+      "frameWidth": 22,
+      "frameHeight": 34,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "sci_hiss",
+      "tags": [
+        "냉동캡슐",
+        "크라이오",
+        "pod",
+        "SF"
+      ],
+      "sha256": "b9ddcb4467cf5108",
+      "sourcePng": "tiledata/sf-station/redraw/pieces/cryo-pod.png"
+    },
+    {
+      "id": "scifi-cargo-crate",
+      "name": "우주기지 화물 상자",
+      "wave": "wave5-scifi-steampunk",
+      "era": "scifi",
+      "world": "scifi",
+      "genres": [
+        "life-survival",
+        "cyber-scifi"
+      ],
+      "category": "outdoor-ride",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "hinge-lid",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/scifi-cargo-crate.png",
+      "frameWidth": 16,
+      "frameHeight": 21,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "sci_latch",
+      "tags": [
+        "화물상자",
+        "컨테이너",
+        "crate",
+        "SF"
+      ],
+      "sha256": "efeac13b979220b1",
+      "containerStyle": "crate",
+      "sourcePng": "tiledata/sf-station/redraw/pieces/cargo-crate.png"
+    },
+    {
+      "id": "scifi-terminal",
+      "name": "SF 제어 단말기",
+      "wave": "wave5-scifi-steampunk",
+      "era": "scifi",
+      "world": "scifi",
+      "genres": [
+        "puzzle-escape",
+        "cyber-scifi"
+      ],
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/scifi-terminal.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "sci_beep",
+      "tags": [
+        "단말기",
+        "터미널",
+        "컴퓨터",
+        "SF"
+      ],
+      "sha256": "ce2c9cf8b648259c",
+      "loopFromFrame": 2,
+      "sourcePng": "tiledata/sf-station/redraw/pieces/terminal.png"
+    },
+    {
+      "id": "scifi-server-rack",
+      "name": "SF 데이터 서버 랙",
+      "wave": "wave5-scifi-steampunk",
+      "era": "scifi",
+      "world": "scifi",
+      "genres": [
+        "cyber-scifi"
+      ],
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/scifi-server-rack.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "sci_beep",
+      "tags": [
+        "서버",
+        "데이터",
+        "server",
+        "SF"
+      ],
+      "sha256": "a3464210a21eeb63",
+      "loopFromFrame": 2,
+      "sourcePng": "tiledata/sf-station/redraw/pieces/server-rack.png"
+    },
+    {
+      "id": "scifi-locker",
+      "name": "우주선 대원 로커",
+      "wave": "wave5-scifi-steampunk",
+      "era": "scifi",
+      "world": "scifi",
+      "genres": [
+        "puzzle-escape",
+        "cyber-scifi"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot",
+        "hide"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/scifi-locker.png",
+      "frameWidth": 28,
+      "frameHeight": 35,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "metal_locker",
+      "tags": [
+        "로커",
+        "사물함",
+        "locker",
+        "SF"
+      ],
+      "sha256": "3045055320812235",
+      "containerStyle": "cabinet",
+      "sourcePng": "tiledata/sf-station/redraw/pieces/locker.png"
+    },
+    {
+      "id": "scifi-fridge",
+      "name": "우주선 주방 냉장고",
+      "wave": "wave5-scifi-steampunk",
+      "era": "scifi",
+      "world": "scifi",
+      "genres": [
+        "cyber-scifi"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/scifi-fridge.png",
+      "frameWidth": 28,
+      "frameHeight": 34,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "sci_hiss",
+      "tags": [
+        "냉장고",
+        "주방",
+        "fridge",
+        "SF"
+      ],
+      "sha256": "386ba81fb23bb97f",
+      "containerStyle": "cabinet",
+      "sourcePng": "tiledata/sf-station/redraw/pieces/galley-fridge.png"
+    },
+    {
+      "id": "scifi-supply-capsule",
+      "name": "궤도 보급 캡슐",
+      "wave": "wave5-scifi-steampunk",
+      "era": "scifi",
+      "world": "scifi",
+      "genres": [
+        "cyber-scifi"
+      ],
+      "category": "container",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "loot"
+      ],
+      "motion": "hinge-lid",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/scifi-supply-capsule.png",
+      "frameWidth": 32,
+      "frameHeight": 38,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "sci_hiss",
+      "tags": [
+        "보급캡슐",
+        "캡슐",
+        "상자",
+        "SF"
+      ],
+      "sha256": "4238c8bbdfe03327",
+      "containerStyle": "chest",
+      "sourcePng": "tiledata/sf-station/redraw/pieces/supply-capsule.png"
+    },
+    {
+      "id": "scifi-airlock",
+      "name": "우주기지 대형 에어록",
+      "wave": "wave5-scifi-steampunk",
+      "era": "scifi",
+      "world": "scifi",
+      "genres": [
+        "puzzle-escape",
+        "cyber-scifi"
+      ],
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "slide-door",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/scifi-airlock.png",
+      "frameWidth": 48,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 110,
+      "footprint": [
+        3,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.95,
+      "se": "sci_door",
+      "tags": [
+        "에어록",
+        "격벽문",
+        "airlock",
+        "SF"
+      ],
+      "sha256": "00273b9b4077eb34",
+      "sourcePng": "tiledata/sf-station/redraw/pieces/airlock.png"
+    },
+    {
+      "id": "scifi-elevator-door",
+      "name": "SF 엘리베이터 문",
+      "wave": "wave5-scifi-steampunk",
+      "era": "scifi",
+      "world": "scifi",
+      "genres": [
+        "cyber-scifi"
+      ],
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "slide-door",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/scifi-elevator-door.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "sci_door",
+      "tags": [
+        "엘리베이터",
+        "자동문",
+        "elevator",
+        "SF"
+      ],
+      "sha256": "0be8b4586b3ec315",
+      "sourcePng": "tiledata/sf-station/redraw/pieces/elevator-door.png"
+    },
+    {
+      "id": "scifi-floor-hatch",
+      "name": "갑판 바닥 해치",
+      "wave": "wave5-scifi-steampunk",
+      "era": "scifi",
+      "world": "scifi",
+      "genres": [
+        "cyber-scifi"
+      ],
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "passage"
+      ],
+      "motion": "slide-door",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/scifi-floor-hatch.png",
+      "frameWidth": 16,
+      "frameHeight": 16,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "sci_latch",
+      "tags": [
+        "해치",
+        "바닥문",
+        "hatch",
+        "SF"
+      ],
+      "sha256": "47bc26b556f3bb69",
+      "sourcePng": "tiledata/sf-station/redraw/pieces/hatch-floor.png"
+    },
+    {
+      "id": "scifi-holo-table",
+      "name": "홀로그램 작전 테이블",
+      "wave": "wave5-scifi-steampunk",
+      "era": "scifi",
+      "world": "scifi",
+      "genres": [
+        "cyber-scifi"
+      ],
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/scifi-holo-table.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 110,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "sci_hum",
+      "tags": [
+        "홀로그램",
+        "테이블",
+        "작전실",
+        "SF"
+      ],
+      "sha256": "3f208142b26fed67",
+      "loopFromFrame": 2,
+      "sourcePng": "tiledata/sf-station/redraw/pieces/holo-table.png"
+    },
+    {
+      "id": "scifi-reactor",
+      "name": "동력 원자로 가동",
+      "wave": "wave5-scifi-steampunk",
+      "era": "scifi",
+      "world": "scifi",
+      "genres": [
+        "cyber-scifi"
+      ],
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "hazard-trap"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/scifi-reactor.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "sci_hum",
+      "tags": [
+        "원자로",
+        "발전기",
+        "reactor",
+        "SF"
+      ],
+      "sha256": "a72b559fede6bb34",
+      "loopFromFrame": 2,
+      "sourcePng": "tiledata/sf-station/redraw/pieces/reactor.png"
+    },
+    {
+      "id": "steampunk-regulator",
+      "name": "증기 압력 조절 밸브",
+      "wave": "wave5-scifi-steampunk",
+      "era": "steampunk",
+      "world": "steampunk",
+      "genres": [
+        "puzzle-escape",
+        "cyber-scifi"
+      ],
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue"
+      ],
+      "motion": "toggle-switch",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/steampunk-regulator.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "steam_hiss",
+      "tags": [
+        "밸브",
+        "증기",
+        "조절기",
+        "스팀펑크"
+      ],
+      "sha256": "ad833277fe62e8a9",
+      "sourcePng": "tiledata/steampunk-city/fable-redraw/held/sp-regulator.png"
+    },
+    {
+      "id": "steampunk-alarm",
+      "name": "황동 증기 경보벨",
+      "wave": "wave5-scifi-steampunk",
+      "era": "steampunk",
+      "world": "steampunk",
+      "genres": [
+        "cyber-scifi"
+      ],
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "hazard-trap"
+      ],
+      "motion": "toggle-switch",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/steampunk-alarm.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "bell_alarm",
+      "tags": [
+        "경보벨",
+        "종",
+        "알람",
+        "스팀펑크"
+      ],
+      "sha256": "716df90c7a60b331",
+      "sourcePng": "tiledata/steampunk-city/fable-redraw/held/sp-alarm.png"
+    },
+    {
+      "id": "steampunk-terminal",
+      "name": "스팀 진공관 제어반",
+      "wave": "wave5-scifi-steampunk",
+      "era": "steampunk",
+      "world": "steampunk",
+      "genres": [
+        "puzzle-escape",
+        "cyber-scifi"
+      ],
+      "category": "machine",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/steampunk-terminal.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "steam_click",
+      "tags": [
+        "제어반",
+        "계기판",
+        "터미널",
+        "스팀펑크"
+      ],
+      "sha256": "c1b029c85edd7b04",
+      "loopFromFrame": 2,
+      "sourcePng": "tiledata/steampunk-city/fable-redraw/held/sp-terminal.png"
+    },
+    {
+      "id": "steampunk-gas-lamp",
+      "name": "스팀 가스 가로등 점화",
+      "wave": "wave5-scifi-steampunk",
+      "era": "steampunk",
+      "world": "steampunk",
+      "genres": [
+        "cyber-scifi"
+      ],
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/steampunk-gas-lamp.png",
+      "frameWidth": 16,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 110,
+      "footprint": [
+        1,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.96,
+      "se": "fire_ignite",
+      "tags": [
+        "가스등",
+        "가로등",
+        "조명",
+        "스팀펑크"
+      ],
+      "sha256": "d6cb1406599597c5",
+      "loopFromFrame": 3,
+      "sourcePng": "tiledata/steampunk-city/fable-redraw/pieces/props/sp-gas-lamp.png"
+    },
+    {
+      "id": "steampunk-plaza-lamp",
+      "name": "광장 황동 증기등 점화",
+      "wave": "wave5-scifi-steampunk",
+      "era": "steampunk",
+      "world": "steampunk",
+      "genres": [
+        "cyber-scifi"
+      ],
+      "category": "light-fire",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/steampunk-plaza-lamp.png",
+      "frameWidth": 16,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 110,
+      "footprint": [
+        1,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.96,
+      "se": "fire_ignite",
+      "tags": [
+        "증기등",
+        "광장등",
+        "조명",
+        "스팀펑크"
+      ],
+      "sha256": "1ca4363565414d59",
+      "loopFromFrame": 3,
+      "sourcePng": "tiledata/steampunk-city/fable-redraw/pieces/props/sp-plaza-lamp.png"
+    },
+    {
+      "id": "desert-seal-altar",
+      "name": "사막 고대 봉인 제단",
+      "wave": "wave5-scifi-steampunk",
+      "era": "dungeon",
+      "world": "desert",
+      "genres": [
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "gimmick",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/desert-seal-altar.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 115,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "magic_chime",
+      "tags": [
+        "제단",
+        "봉인",
+        "사막",
+        "유적",
+        "던전"
+      ],
+      "sha256": "8bc24ff3199c1f64",
+      "loopFromFrame": 2,
+      "sourcePng": "tiledata/desert-east/objects/pieces/de-seal-altar.png"
+    },
+    {
+      "id": "sky-seal-altar",
+      "name": "하늘섬 수정 봉인 제단",
+      "wave": "wave5-scifi-steampunk",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "gimmick",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/sky-seal-altar.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 115,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "magic_chime",
+      "tags": [
+        "제단",
+        "봉인",
+        "하늘섬",
+        "마법",
+        "던전"
+      ],
+      "sha256": "e9792e2ba2e781c1",
+      "loopFromFrame": 2,
+      "sourcePng": "tiledata/sky-island/objects/pieces/si-seal-altar.png"
+    },
+    {
+      "id": "dungeon-magic-pedestal",
+      "name": "마법탑 보주 받침대",
+      "wave": "wave5-scifi-steampunk",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "gimmick",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/dungeon-magic-pedestal.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 110,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "magic_chime",
+      "tags": [
+        "받침대",
+        "보주",
+        "마법",
+        "던전"
+      ],
+      "sha256": "be6e6c230ac45857",
+      "loopFromFrame": 2,
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/tw-pedestal.png"
+    },
+    {
+      "id": "door-wooden-gate",
+      "name": "마을 나무 대문",
+      "wave": "wave6-doors-env",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "swing-double",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-wooden-gate.png",
+      "frameWidth": 60,
+      "frameHeight": 37,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        3,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "door_wood",
+      "tags": [
+        "대문",
+        "나무문",
+        "문",
+        "게이트",
+        "판타지"
+      ],
+      "sha256": "94362b5b9132acd6",
+      "sourcePng": "public/assets/beodeul-objects/wooden_gate.png"
+    },
+    {
+      "id": "door-fence-gate",
+      "name": "울타리 양문 게이트",
+      "wave": "wave6-doors-env",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "swing-double",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-fence-gate.png",
+      "frameWidth": 42,
+      "frameHeight": 20,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        2,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "door_wood",
+      "tags": [
+        "울타리문",
+        "문",
+        "게이트",
+        "마을",
+        "판타지"
+      ],
+      "sha256": "995782ec12e78314",
+      "sourcePng": "public/assets/beodeul-objects/wooden_fence_gate_h.png"
+    },
+    {
+      "id": "door-stone-gate",
+      "name": "돌담 나무 출입문",
+      "wave": "wave6-doors-env",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "swing-double",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-stone-gate.png",
+      "frameWidth": 42,
+      "frameHeight": 20,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        2,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "door_wood",
+      "tags": [
+        "돌담문",
+        "문",
+        "게이트",
+        "마을",
+        "판타지"
+      ],
+      "sha256": "9d6b92a445f8fd1a",
+      "sourcePng": "public/assets/beodeul-objects/stone_wall_gate_h.png"
+    },
+    {
+      "id": "door-hedge-gate",
+      "name": "정원 생울타리 문",
+      "wave": "wave6-doors-env",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure",
+        "life-survival"
+      ],
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "swing-double",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-hedge-gate.png",
+      "frameWidth": 42,
+      "frameHeight": 20,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        2,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.88,
+      "se": "door_wood",
+      "tags": [
+        "정원문",
+        "울타리",
+        "문",
+        "판타지"
+      ],
+      "sha256": "04374ed48dc5c84a",
+      "sourcePng": "public/assets/beodeul-objects/hedge_gate_h.png"
+    },
+    {
+      "id": "door-ruin-sealed",
+      "name": "고대 유적 봉인 석문",
+      "wave": "wave6-doors-env",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage",
+        "puzzle-clue"
+      ],
+      "motion": "slide-door",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-ruin-sealed.png",
+      "frameWidth": 32,
+      "frameHeight": 56,
+      "frames": 5,
+      "frameMs": 120,
+      "footprint": [
+        2,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.95,
+      "se": "stone_scrape",
+      "tags": [
+        "석문",
+        "유적",
+        "봉인문",
+        "문",
+        "던전"
+      ],
+      "sha256": "5072815ca6aa14a2",
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/ru-door.png"
+    },
+    {
+      "id": "door-joseon-hanji",
+      "name": "한옥 창호지 미닫이문",
+      "wave": "wave6-doors-env",
+      "era": "joseon",
+      "world": "joseon",
+      "genres": [
+        "eastern"
+      ],
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "slide-door",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-joseon-hanji.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "drawer_slide",
+      "tags": [
+        "미닫이문",
+        "창호지문",
+        "한옥",
+        "문",
+        "조선"
+      ],
+      "sha256": "2b47e47dc36031e6",
+      "sourcePng": "harness-data/interactive-props/sources/joseon/in_wall_chang_door.png"
+    },
+    {
+      "id": "door-joseon-palace",
+      "name": "조선 궁궐 붉은 대문",
+      "wave": "wave6-doors-env",
+      "era": "joseon",
+      "world": "joseon",
+      "genres": [
+        "eastern"
+      ],
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-joseon-palace.png",
+      "frameWidth": 28,
+      "frameHeight": 35,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "door_wood",
+      "tags": [
+        "궁궐문",
+        "대문",
+        "문",
+        "조선"
+      ],
+      "sha256": "58f9d622c092ac7b",
+      "sourcePng": "harness-data/interactive-props/sources/joseon/pal_wall_hoe_doorl.png"
+    },
+    {
+      "id": "door-modern-gate",
+      "name": "현대 실내 출입 게이트",
+      "wave": "wave6-doors-env",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily"
+      ],
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-modern-gate.png",
+      "frameWidth": 28,
+      "frameHeight": 35,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "door_glass",
+      "tags": [
+        "출입문",
+        "게이트",
+        "문",
+        "현대"
+      ],
+      "sha256": "eec55525e49eb1bd",
+      "sourcePng": "public/assets/beodeul-objects/city_ice_low_gate_door.png"
+    },
+    {
+      "id": "env-wall-clock",
+      "name": "벽걸이 괘종시계",
+      "wave": "wave6-doors-env",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "water-env",
+      "zone": "indoor",
+      "mount": "wall",
+      "roles": [
+        "puzzle-clue",
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/env-wall-clock.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 140,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "bell_gong",
+      "tags": [
+        "시계",
+        "괘종시계",
+        "실내",
+        "환경"
+      ],
+      "sha256": "01f7a4d6859f9baf",
+      "loopFromFrame": 1,
+      "sourcePng": "tiledata/beodeul-interiors/pieces/wall-clock.png"
+    },
+    {
+      "id": "env-anvil-forge",
+      "name": "대장간 화덕과 모루",
+      "wave": "wave6-doors-env",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/env-anvil-forge.png",
+      "frameWidth": 48,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 110,
+      "footprint": [
+        3,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "fire_ignite",
+      "tags": [
+        "대장간",
+        "화덕",
+        "모루",
+        "불꽃",
+        "환경"
+      ],
+      "sha256": "4fa7870f46617708",
+      "loopFromFrame": 3,
+      "sourcePng": "public/assets/beodeul-objects/anvil_and_forge_small.png"
+    },
+    {
+      "id": "env-campfire",
+      "name": "야외 모닥불 점화",
+      "wave": "wave6-doors-env",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure",
+        "life-survival"
+      ],
+      "category": "light-fire",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/env-campfire.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "fire_ignite",
+      "tags": [
+        "모닥불",
+        "캠프파이어",
+        "불",
+        "야외",
+        "환경"
+      ],
+      "sha256": "159d23b6d78240a2",
+      "loopFromFrame": 3,
+      "sourcePng": "public/assets/beodeul-objects/campfire.png"
+    },
+    {
+      "id": "env-candle-stand",
+      "name": "실내 스탠드 촛대",
+      "wave": "wave6-doors-env",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "horror",
+        "adventure"
+      ],
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/env-candle-stand.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 110,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "fire_ignite",
+      "tags": [
+        "촛대",
+        "촛불",
+        "조명",
+        "실내"
+      ],
+      "sha256": "41e61a12230326d3",
+      "loopFromFrame": 3,
+      "sourcePng": "public/assets/beodeul-objects/candle_stand.png"
+    },
+    {
+      "id": "env-cooking-pot",
+      "name": "모닥불 걸이 솥 끓이기",
+      "wave": "wave6-doors-env",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure",
+        "life-survival"
+      ],
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/env-cooking-pot.png",
+      "frameWidth": 32,
+      "frameHeight": 52,
+      "frames": 5,
+      "frameMs": 115,
+      "footprint": [
+        2,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "pot_boil",
+      "tags": [
+        "솥",
+        "요리",
+        "냄비",
+        "김",
+        "환경"
+      ],
+      "sha256": "9af458e6ea3cb4d2",
+      "loopFromFrame": 2,
+      "sourcePng": "public/assets/beodeul-objects/cooking_pot_on_hook.png"
+    },
+    {
+      "id": "env-wall-fountain",
+      "name": "마을 돌벽 분수대",
+      "wave": "wave6-doors-env",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure",
+        "life-survival"
+      ],
+      "category": "water-env",
+      "zone": "both",
+      "mount": "wall",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/env-wall-fountain.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 115,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "water_splash",
+      "tags": [
+        "분수대",
+        "물",
+        "마을",
+        "환경"
+      ],
+      "sha256": "c49a602173e211cc",
+      "loopFromFrame": 1,
+      "sourcePng": "public/assets/beodeul-objects/wall_fountain_stone.png"
+    },
+    {
+      "id": "env-weather-vane",
+      "name": "지붕 풍향계 회전",
+      "wave": "wave6-doors-env",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure",
+        "life-survival"
+      ],
+      "category": "water-env",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "toggle-switch",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/env-weather-vane.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "metal_latch",
+      "tags": [
+        "풍향계",
+        "바람",
+        "마을",
+        "환경"
+      ],
+      "sha256": "c9416f4f27b08e74",
+      "sourcePng": "public/assets/beodeul-objects/weather_vane_post.png"
+    },
+    {
+      "id": "env-yeonja-mill",
+      "name": "조선 연자방아 돌리기",
+      "wave": "wave6-doors-env",
+      "era": "joseon",
+      "world": "joseon",
+      "genres": [
+        "life-survival",
+        "eastern"
+      ],
+      "category": "water-env",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/env-yeonja-mill.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 130,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "stone_scrape",
+      "tags": [
+        "연자방아",
+        "방아",
+        "마을",
+        "조선",
+        "환경"
+      ],
+      "sha256": "ba8ef289d911d188",
+      "loopFromFrame": 1,
+      "sourcePng": "harness-data/interactive-props/sources/joseon/yeonja_mill.png"
+    },
+    {
+      "id": "env-fishcake-cart",
+      "name": "어묵 국물 포장마차 김",
+      "wave": "wave6-doors-env",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily",
+        "life-survival"
+      ],
+      "category": "light-fire",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/env-fishcake-cart.png",
+      "frameWidth": 32,
+      "frameHeight": 38,
+      "frames": 5,
+      "frameMs": 115,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "pot_boil",
+      "tags": [
+        "포장마차",
+        "어묵",
+        "김",
+        "야시장",
+        "현대",
+        "환경"
+      ],
+      "sha256": "3f8404c592292321",
+      "loopFromFrame": 2,
+      "sourcePng": "public/assets/beodeul-objects/city_fest_fishcake_broth_cart.png"
+    },
+    {
+      "id": "env-ramen-pot",
+      "name": "라멘 육수 솥 김",
+      "wave": "wave6-doors-env",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily",
+        "life-survival",
+        "eastern"
+      ],
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/env-ramen-pot.png",
+      "frameWidth": 16,
+      "frameHeight": 37,
+      "frames": 5,
+      "frameMs": 115,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "pot_boil",
+      "tags": [
+        "라멘",
+        "육수",
+        "냄비",
+        "김",
+        "현대",
+        "환경"
+      ],
+      "sha256": "a93370502630abef",
+      "loopFromFrame": 2,
+      "sourcePng": "public/assets/beodeul-objects/city_ramen_broth_pot_tall.png"
+    },
+    {
+      "id": "env-grill-cart",
+      "name": "숯불 꼬치 구이 수레",
+      "wave": "wave6-doors-env",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily",
+        "life-survival"
+      ],
+      "category": "light-fire",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/env-grill-cart.png",
+      "frameWidth": 32,
+      "frameHeight": 38,
+      "frames": 5,
+      "frameMs": 115,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "fire_ignite",
+      "tags": [
+        "숯불",
+        "구이",
+        "포장마차",
+        "연기",
+        "현대",
+        "환경"
+      ],
+      "sha256": "1731f526f0563715",
+      "loopFromFrame": 2,
+      "sourcePng": "public/assets/beodeul-objects/city_izaka_charcoal_grill_cart.png"
+    },
+    {
+      "id": "env-wind-turbine",
+      "name": "옥상 소형 풍력 발전기",
+      "wave": "wave6-doors-env",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily",
+        "life-survival"
+      ],
+      "category": "water-env",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/env-wind-turbine.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "sci_hum",
+      "tags": [
+        "풍력",
+        "발전기",
+        "옥상",
+        "회전",
+        "현대",
+        "환경"
+      ],
+      "sha256": "8e1fd0adf117f508",
+      "loopFromFrame": 1,
+      "sourcePng": "public/assets/beodeul-objects/city_repl_rooftop_wind_turbine_demo.png"
+    },
+    {
+      "id": "door-push-house-oak",
+      "name": "버들항 밀고 들어가는 참나무 문",
+      "wave": "wave7-push-doors",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-push-house-oak.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.95,
+      "se": "door_wood",
+      "tags": [
+        "밀기문",
+        "미는문",
+        "여닫이문",
+        "출입문",
+        "참나무문",
+        "문",
+        "판타지"
+      ],
+      "sha256": "75214965cf49a3d2",
+      "sourcePng": "public/assets/beodeul-door/door-0.png"
+    },
+    {
+      "id": "door-push-desert-arch",
+      "name": "사막 아치형 밀기 나무문",
+      "wave": "wave7-push-doors",
+      "era": "fantasy",
+      "world": "desert",
+      "genres": [
+        "adventure"
+      ],
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-push-desert-arch.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.95,
+      "se": "door_wood",
+      "tags": [
+        "밀기문",
+        "미는문",
+        "아치문",
+        "출입문",
+        "나무문",
+        "문",
+        "판타지"
+      ],
+      "sha256": "5843a2aacd613f6e",
+      "sourcePng": "tiledata/desert-east/variety/pieces/de-room-door.png"
+    },
+    {
+      "id": "door-push-dungeon-cell",
+      "name": "던전 철격자 밀기 감옥문",
+      "wave": "wave7-push-doors",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage",
+        "puzzle-clue"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-push-dungeon-cell.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.95,
+      "se": "metal_grate",
+      "tags": [
+        "밀기문",
+        "미는문",
+        "감옥문",
+        "철문",
+        "던전",
+        "문"
+      ],
+      "sha256": "672b177bcaeeff58",
+      "sourcePng": "tiledata/hand-interior/plus/oneshot/pieces/in-cell-door.png"
+    },
+    {
+      "id": "door-push-confessional",
+      "name": "성당 고해실 밀기 문·커튼",
+      "wave": "wave7-push-doors",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "horror",
+        "adventure"
+      ],
+      "category": "door-pass",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "passage",
+        "hide"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-push-confessional.png",
+      "frameWidth": 32,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        2,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "door_wood",
+      "tags": [
+        "밀기문",
+        "고해실",
+        "성당",
+        "커튼",
+        "문",
+        "판타지"
+      ],
+      "sha256": "366aae4e8fb6f39b",
+      "sourcePng": "tiledata/beodeul-interiors/pieces/confessional.png"
+    },
+    {
+      "id": "door-push-paddock-gate",
+      "name": "목장 나무 울타리 밀기문",
+      "wave": "wave7-push-doors",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure",
+        "life-survival"
+      ],
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-push-paddock-gate.png",
+      "frameWidth": 32,
+      "frameHeight": 20,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        2,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "door_wood",
+      "tags": [
+        "밀기문",
+        "미는문",
+        "목장문",
+        "울타리문",
+        "게이트",
+        "판타지"
+      ],
+      "sha256": "4d0333ac624b8d11",
+      "sourcePng": "tiledata/beodeul-objects/pieces/bd-paddock-gate.png"
+    },
+    {
+      "id": "door-push-picket-gate",
+      "name": "마을 하얀 울타리 밀기문",
+      "wave": "wave7-push-doors",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure",
+        "life-survival"
+      ],
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-push-picket-gate.png",
+      "frameWidth": 16,
+      "frameHeight": 19,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "door_wood",
+      "tags": [
+        "밀기문",
+        "미는문",
+        "울타리문",
+        "정원문",
+        "마을",
+        "판타지"
+      ],
+      "sha256": "845ce26d6f120fef",
+      "sourcePng": "tiledata/beodeul-objects/pieces/bd-picket-gate.png"
+    },
+    {
+      "id": "door-push-iron-garden",
+      "name": "저택 철제 양문 밀기 대문",
+      "wave": "wave7-push-doors",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure"
+      ],
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "swing-double",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-push-iron-garden.png",
+      "frameWidth": 32,
+      "frameHeight": 19,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        2,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "metal_grate",
+      "tags": [
+        "밀기문",
+        "양문",
+        "철제대문",
+        "정원문",
+        "저택",
+        "판타지"
+      ],
+      "sha256": "8e911d056be8b81e",
+      "sourcePng": "tiledata/beodeul-objects/pieces/bd-iron-gate.png"
+    },
+    {
+      "id": "door-push-hedge-rustic",
+      "name": "시골 나무 판자 밀기문",
+      "wave": "wave7-push-doors",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure",
+        "life-survival"
+      ],
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-push-hedge-rustic.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "door_wood",
+      "tags": [
+        "밀기문",
+        "미는문",
+        "판자문",
+        "울타리",
+        "시골",
+        "판타지"
+      ],
+      "sha256": "cc4fbd2be25d3b9f",
+      "sourcePng": "public/assets/beodeul-objects/city_hedge_wood_fence_gate.png"
+    },
+    {
+      "id": "door-push-lock-sluice",
+      "name": "수로 나무 수문 양문 밀기",
+      "wave": "wave7-push-doors",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "swing-double",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-push-lock-sluice.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 110,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "water_splash",
+      "tags": [
+        "밀기문",
+        "수문",
+        "양문",
+        "수로",
+        "판타지"
+      ],
+      "sha256": "d65542e66084c744",
+      "sourcePng": "tiledata/beodeul-objects/pieces/bd-lock-gate.png"
+    },
+    {
+      "id": "door-push-tent-canvas",
+      "name": "모험가 천막 들추기 입구",
+      "wave": "wave7-push-doors",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "adventure",
+        "life-survival"
+      ],
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "passage",
+        "hide"
+      ],
+      "motion": "swing-double",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-push-tent-canvas.png",
+      "frameWidth": 48,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 100,
+      "footprint": [
+        3,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "cloth_rustle",
+      "tags": [
+        "천막",
+        "텐트",
+        "입구",
+        "밀고들어가기",
+        "야영",
+        "판타지"
+      ],
+      "sha256": "cc7e5f4855c68ab3",
+      "sourcePng": "public/assets/beodeul-objects/tent_canvas_small.png"
+    },
+    {
+      "id": "door-push-dome-tent",
+      "name": "캠핑 돔텐트 입구 열기",
+      "wave": "wave7-push-doors",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily",
+        "life-survival"
+      ],
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "passage",
+        "hide"
+      ],
+      "motion": "swing-double",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-push-dome-tent.png",
+      "frameWidth": 48,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        3,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "cloth_rustle",
+      "tags": [
+        "텐트",
+        "캠핑",
+        "입구",
+        "밀고들어가기",
+        "현대"
+      ],
+      "sha256": "5ece4560da615223",
+      "sourcePng": "public/assets/beodeul-objects/city_campout_dome_tent.png"
+    },
+    {
+      "id": "door-push-curtain-booth",
+      "name": "입구 커튼 헤치고 들어가기",
+      "wave": "wave7-push-doors",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily"
+      ],
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "swing-double",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-push-curtain-booth.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 90,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "cloth_rustle",
+      "tags": [
+        "커튼",
+        "입구",
+        "밀고들어가기",
+        "헤치기",
+        "현대"
+      ],
+      "sha256": "979d438c5a4808df",
+      "sourcePng": "public/assets/beodeul-objects/city_karao_door_curtain_frame.png"
+    },
+    {
+      "id": "door-push-izakaya-noren",
+      "name": "선술집 노렌 젖히고 들어가기",
+      "wave": "wave7-push-doors",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily",
+        "eastern"
+      ],
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-push-izakaya-noren.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 90,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "cloth_rustle",
+      "tags": [
+        "노렌",
+        "선술집",
+        "커튼",
+        "밀고들어가기",
+        "현대"
+      ],
+      "sha256": "04df7dd9302d5e1c",
+      "sourcePng": "public/assets/beodeul-objects/city_izaka_noren_curtain_stand.png"
+    },
+    {
+      "id": "door-push-photo-curtain",
+      "name": "포토부스 커튼 젖히기",
+      "wave": "wave7-push-doors",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily"
+      ],
+      "category": "door-pass",
+      "zone": "indoor",
+      "mount": "doorway",
+      "roles": [
+        "passage",
+        "hide"
+      ],
+      "motion": "swing-single",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-push-photo-curtain.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "cloth_rustle",
+      "tags": [
+        "포토부스",
+        "커튼",
+        "밀고들어가기",
+        "오락실",
+        "현대"
+      ],
+      "sha256": "08b3b6d7edf9d421",
+      "sourcePng": "public/assets/beodeul-objects/city_arcad_photo_booth_curtain.png"
+    },
+    {
+      "id": "door-push-subway-gate",
+      "name": "지하철 개찰구 통과 열기",
+      "wave": "wave7-push-doors",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily",
+        "monster-collect"
+      ],
+      "category": "door-pass",
+      "zone": "both",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "swing-double",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-push-subway-gate.png",
+      "frameWidth": 48,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 90,
+      "footprint": [
+        3,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "sci_beep",
+      "tags": [
+        "개찰구",
+        "지하철",
+        "게이트",
+        "밀고들어가기",
+        "현대"
+      ],
+      "sha256": "d93283ca221ee846",
+      "sourcePng": "public/assets/beodeul-objects/city_subw_fare_gates.png"
+    },
+    {
+      "id": "door-push-parking-barrier",
+      "name": "주차장 차단바 열기",
+      "wave": "wave7-push-doors",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "romance-daily"
+      ],
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage"
+      ],
+      "motion": "hinge-lid",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/door-push-parking-barrier.png",
+      "frameWidth": 48,
+      "frameHeight": 56,
+      "frames": 5,
+      "frameMs": 95,
+      "footprint": [
+        3,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "metal_latch",
+      "tags": [
+        "차단바",
+        "차단기",
+        "주차장",
+        "게이트",
+        "현대"
+      ],
+      "sha256": "8c7551996c44f243",
+      "sourcePng": "public/assets/beodeul-objects/city_park3_barrier_gate.png"
+    },
+    {
+      "id": "horror-mansion-portrait",
+      "name": "저택의 저주받은 초상화",
+      "wave": "wave8-horror",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "wall",
+      "roles": [
+        "puzzle-clue",
+        "hazard-trap"
+      ],
+      "motion": "toggle-switch",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/horror-mansion-portrait.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 120,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.9,
+      "se": "wood_creak",
+      "tags": [
+        "공포",
+        "초상화",
+        "액자",
+        "저택",
+        "귀신",
+        "눈동자"
+      ],
+      "sha256": "7729ea1c22335d1a",
+      "sourcePng": "tiledata/beodeul-interiors/pieces/portrait.png"
+    },
+    {
+      "id": "horror-pipe-organ",
+      "name": "유령이 연주하는 파이프 오르간",
+      "wave": "wave8-horror",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue",
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/horror-pipe-organ.png",
+      "frameWidth": 48,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 130,
+      "footprint": [
+        3,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "bell_gong",
+      "tags": [
+        "공포",
+        "오르간",
+        "성당",
+        "저택",
+        "유령",
+        "연주"
+      ],
+      "sha256": "35c733e70011af3b",
+      "loopFromFrame": 1,
+      "sourcePng": "tiledata/beodeul-interiors/pieces/organ.png"
+    },
+    {
+      "id": "horror-gothic-chandelier",
+      "name": "깜빡이는 고딕 샹들리에",
+      "wave": "wave8-horror",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "horror",
+        "adventure"
+      ],
+      "category": "light-fire",
+      "zone": "indoor",
+      "mount": "wall",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/horror-gothic-chandelier.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 115,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.85,
+      "se": "fire_ignite",
+      "tags": [
+        "공포",
+        "샹들리에",
+        "촛불",
+        "깜빡임",
+        "저택"
+      ],
+      "sha256": "b071d91fdd6ef811",
+      "loopFromFrame": 1,
+      "sourcePng": "tiledata/beodeul-interiors/pieces/chandelier.png"
+    },
+    {
+      "id": "horror-knight-statue",
+      "name": "움직이는 갑옷 기사 석상",
+      "wave": "wave8-horror",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue",
+        "hazard-trap"
+      ],
+      "motion": "toggle-switch",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/horror-knight-statue.png",
+      "frameWidth": 16,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 120,
+      "footprint": [
+        1,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.95,
+      "se": "stone_scrape",
+      "tags": [
+        "공포",
+        "석상",
+        "기사",
+        "저택",
+        "안광",
+        "기믹"
+      ],
+      "sha256": "4b5fd81679fb5ed8",
+      "sourcePng": "tiledata/beodeul-interiors/pieces/knight-statue.png"
+    },
+    {
+      "id": "horror-standing-mirror",
+      "name": "귀신 스치는 전신 거울",
+      "wave": "wave8-horror",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "horror",
+        "puzzle-escape"
+      ],
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue",
+        "hazard-trap"
+      ],
+      "motion": "toggle-switch",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/horror-standing-mirror.png",
+      "frameWidth": 32,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 135,
+      "footprint": [
+        2,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "glass_break",
+      "tags": [
+        "공포",
+        "거울",
+        "전신거울",
+        "귀신",
+        "유령",
+        "균열"
+      ],
+      "sha256": "51cb462bc4dfe229",
+      "sourcePng": "public/assets/beodeul-objects/mirror_standing.png"
+    },
+    {
+      "id": "horror-weeping-angel",
+      "name": "피눈물 흘리는 천사 석상",
+      "wave": "wave8-horror",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "gimmick",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue",
+        "hazard-trap"
+      ],
+      "motion": "toggle-switch",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/horror-weeping-angel.png",
+      "frameWidth": 32,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 125,
+      "footprint": [
+        2,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "stone_scrape",
+      "tags": [
+        "공포",
+        "천사석상",
+        "납골당",
+        "피눈물",
+        "던전",
+        "기믹"
+      ],
+      "sha256": "1b6c1d672cde19da",
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/cr-angel.png"
+    },
+    {
+      "id": "horror-crypt-candelabra",
+      "name": "납골당 푸른 도깨비불 촛대",
+      "wave": "wave8-horror",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "horror",
+        "adventure"
+      ],
+      "category": "light-fire",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/horror-crypt-candelabra.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 115,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "magic_chime",
+      "tags": [
+        "공포",
+        "촛대",
+        "도깨비불",
+        "유령불",
+        "납골당"
+      ],
+      "sha256": "f61a7dd5d080dbfc",
+      "loopFromFrame": 2,
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/cr-candelabra.png"
+    },
+    {
+      "id": "horror-crypt-altar",
+      "name": "지하 납골당 저주 제단",
+      "wave": "wave8-horror",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "puzzle-clue",
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/horror-crypt-altar.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 120,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "magic_chime",
+      "tags": [
+        "공포",
+        "제단",
+        "해골",
+        "납골당",
+        "저주",
+        "던전"
+      ],
+      "sha256": "13b2c47ddd2d0a5d",
+      "loopFromFrame": 2,
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/cr-altar.png"
+    },
+    {
+      "id": "horror-skull-niche",
+      "name": "벽면 해골 감실 안광",
+      "wave": "wave8-horror",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "horror",
+        "puzzle-escape"
+      ],
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "wall",
+      "roles": [
+        "puzzle-clue",
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/horror-skull-niche.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 125,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "bone_rattle",
+      "tags": [
+        "공포",
+        "해골",
+        "벽감실",
+        "안광",
+        "납골당",
+        "던전"
+      ],
+      "sha256": "d27cde895ec8989e",
+      "loopFromFrame": 1,
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/cr-niche-skull.png"
+    },
+    {
+      "id": "horror-tomb-slab",
+      "name": "밀려 열리는 지하 묘비 석판",
+      "wave": "wave8-horror",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "horror",
+        "puzzle-escape",
+        "adventure"
+      ],
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "passage",
+        "puzzle-clue"
+      ],
+      "motion": "slide-door",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/horror-tomb-slab.png",
+      "frameWidth": 46,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 125,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "stone_scrape",
+      "tags": [
+        "공포",
+        "묘비",
+        "석판",
+        "비밀통로",
+        "납골당",
+        "탈출"
+      ],
+      "sha256": "2c87e96df68c2a23",
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/cr-tomb-slab.png"
+    },
+    {
+      "id": "horror-ossuary-wall",
+      "name": "덜컹거리는 납골당 해골 벽",
+      "wave": "wave8-horror",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "horror",
+        "puzzle-escape"
+      ],
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "wall",
+      "roles": [
+        "puzzle-clue",
+        "hazard-trap"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/horror-ossuary-wall.png",
+      "frameWidth": 48,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 120,
+      "footprint": [
+        3,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "bone_rattle",
+      "tags": [
+        "공포",
+        "납골당",
+        "해골벽",
+        "안광",
+        "덜컹",
+        "던전"
+      ],
+      "sha256": "65857f575f15bb18",
+      "loopFromFrame": 1,
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/cr-ossuary.png"
+    },
+    {
+      "id": "horror-torture-cage",
+      "name": "흔들리는 지하 철창 우리",
+      "wave": "wave8-horror",
+      "era": "dungeon",
+      "world": "dungeon",
+      "genres": [
+        "horror",
+        "puzzle-escape"
+      ],
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "hide",
+        "hazard-trap"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/horror-torture-cage.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 115,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "metal_grate",
+      "tags": [
+        "공포",
+        "철창",
+        "감옥",
+        "우리",
+        "던전",
+        "눈빛"
+      ],
+      "sha256": "27dd3e9577fac117",
+      "loopFromFrame": 1,
+      "sourcePng": "tiledata/beodeul-dungeon/fable/pieces/hd-cage.png"
+    },
+    {
+      "id": "horror-cemetery-arch",
+      "name": "공동묘지 안개 유령 아치문",
+      "wave": "wave8-horror",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "horror",
+        "adventure"
+      ],
+      "category": "door-pass",
+      "zone": "outdoor",
+      "mount": "doorway",
+      "roles": [
+        "passage",
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/horror-cemetery-arch.png",
+      "frameWidth": 48,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 130,
+      "footprint": [
+        3,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "magic_chime",
+      "tags": [
+        "공포",
+        "공동묘지",
+        "묘지문",
+        "안개",
+        "도깨비불",
+        "아치"
+      ],
+      "sha256": "2de377b52f498c3e",
+      "loopFromFrame": 1,
+      "sourcePng": "tiledata/beodeul-objects/pieces/bd-cemetery-gate.png"
+    },
+    {
+      "id": "horror-scarecrow-twitch",
+      "name": "움찔하는 저주 허수아비",
+      "wave": "wave8-horror",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "horror",
+        "life-survival"
+      ],
+      "category": "gimmick",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "hazard-trap"
+      ],
+      "motion": "toggle-switch",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/horror-scarecrow-twitch.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 115,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "wood_creak",
+      "tags": [
+        "공포",
+        "허수아비",
+        "밭",
+        "깜짝",
+        "안광"
+      ],
+      "sha256": "cbc9769c8bb2d89d",
+      "sourcePng": "public/assets/beodeul-objects/scarecrow.png"
+    },
+    {
+      "id": "horror-gothic-lamp",
+      "name": "깜빡이는 고딕 철제 가로등",
+      "wave": "wave8-horror",
+      "era": "fantasy",
+      "world": "fantasy",
+      "genres": [
+        "horror",
+        "adventure"
+      ],
+      "category": "light-fire",
+      "zone": "outdoor",
+      "mount": "floor",
+      "roles": [
+        "ambient-light"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/horror-gothic-lamp.png",
+      "frameWidth": 16,
+      "frameHeight": 48,
+      "frames": 5,
+      "frameMs": 115,
+      "footprint": [
+        1,
+        3
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.95,
+      "se": "steam_click",
+      "tags": [
+        "공포",
+        "가로등",
+        "깜빡임",
+        "밤거리",
+        "고딕"
+      ],
+      "sha256": "fa5f153780cc8b48",
+      "loopFromFrame": 1,
+      "sourcePng": "public/assets/beodeul-objects/street_lamp_iron.png"
+    },
+    {
+      "id": "horror-clinic-wheelchair",
+      "name": "저절로 굴러가는 폐병원 휠체어",
+      "wave": "wave8-horror",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "horror",
+        "puzzle-escape"
+      ],
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "hazard-trap"
+      ],
+      "motion": "toggle-switch",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/horror-clinic-wheelchair.png",
+      "frameWidth": 32,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 120,
+      "footprint": [
+        2,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "metal_latch",
+      "tags": [
+        "공포",
+        "폐병원",
+        "병원",
+        "휠체어",
+        "현대",
+        "귀신"
+      ],
+      "sha256": "98a57ba0a2f5f905",
+      "sourcePng": "public/assets/beodeul-objects/city_clinic_wheelchairs.png"
+    },
+    {
+      "id": "horror-clinic-stretcher",
+      "name": "덜컹거리는 폐병원 이동 들것",
+      "wave": "wave8-horror",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "horror",
+        "puzzle-escape"
+      ],
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "hazard-trap"
+      ],
+      "motion": "toggle-switch",
+      "playback": "oneshot",
+      "stripPath": "assets/harnesses/interactive-props/horror-clinic-stretcher.png",
+      "frameWidth": 48,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 110,
+      "footprint": [
+        3,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "metal_grate",
+      "tags": [
+        "공포",
+        "폐병원",
+        "병원",
+        "들것",
+        "현대"
+      ],
+      "sha256": "70e936423f7451a4",
+      "sourcePng": "public/assets/beodeul-objects/city_clinic_folded_stretcher.png"
+    },
+    {
+      "id": "horror-clinic-medbin",
+      "name": "폐병원 의료 폐기물함 열기",
+      "wave": "wave8-horror",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "horror",
+        "puzzle-escape"
+      ],
+      "category": "container",
+      "zone": "indoor",
+      "mount": "counter",
+      "roles": [
+        "loot",
+        "puzzle-clue"
+      ],
+      "motion": "hinge-lid",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/horror-clinic-medbin.png",
+      "frameWidth": 16,
+      "frameHeight": 16,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        1,
+        1
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.92,
+      "se": "plastic_lid",
+      "tags": [
+        "공포",
+        "폐병원",
+        "병원",
+        "폐기물함",
+        "단서",
+        "현대"
+      ],
+      "sha256": "866410354442b0d2",
+      "sourcePng": "public/assets/beodeul-objects/city_clinic_medical_waste_bin.png"
+    },
+    {
+      "id": "horror-tailor-mannequin",
+      "name": "고개 돌리는 폐건물 마네킹",
+      "wave": "wave8-horror",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "horror",
+        "puzzle-escape"
+      ],
+      "category": "gimmick",
+      "zone": "indoor",
+      "mount": "floor",
+      "roles": [
+        "hazard-trap",
+        "puzzle-clue"
+      ],
+      "motion": "toggle-switch",
+      "playback": "toggle",
+      "stripPath": "assets/harnesses/interactive-props/horror-tailor-mannequin.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 130,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "wood_creak",
+      "tags": [
+        "공포",
+        "마네킹",
+        "폐건물",
+        "폐교",
+        "깜짝",
+        "현대"
+      ],
+      "sha256": "3fd0522ba0b7ab37",
+      "sourcePng": "public/assets/beodeul-objects/city_tailo_mannequin_torso_stand.png"
+    },
+    {
+      "id": "horror-worklamp-flicker",
+      "name": "폐가 작업등 치직 점멸",
+      "wave": "wave8-horror",
+      "era": "modern",
+      "world": "modern",
+      "genres": [
+        "horror",
+        "puzzle-escape"
+      ],
+      "category": "light-fire",
+      "zone": "both",
+      "mount": "floor",
+      "roles": [
+        "ambient-light",
+        "hazard-trap"
+      ],
+      "motion": "activate-loop",
+      "playback": "loopAfterOpen",
+      "stripPath": "assets/harnesses/interactive-props/horror-worklamp-flicker.png",
+      "frameWidth": 16,
+      "frameHeight": 32,
+      "frames": 5,
+      "frameMs": 105,
+      "footprint": [
+        1,
+        2
+      ],
+      "anchorX": 0.5,
+      "anchorY": 0.94,
+      "se": "sci_beep",
+      "tags": [
+        "공포",
+        "폐가",
+        "작업등",
+        "깜빡임",
+        "정전",
+        "현대"
+      ],
+      "sha256": "bbdd641504cb0dcd",
+      "loopFromFrame": 1,
+      "sourcePng": "public/assets/beodeul-objects/city_auto_portable_worklamp.png"
+    }
+  ]
+}

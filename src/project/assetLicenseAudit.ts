@@ -214,7 +214,8 @@ function collectAuthoredAssetReferences(project: Project): Set<string> {
   if (project.system?.battleUiStyle === "pokemon") {
     refs.add("battle-skin-pokemon-backdrop");
   }
-  if (isEmeraldMonsterStyle(project)) {
+  // 이 함수의 다른 읽기처럼 meta 가 없는 프로젝트 조각(크레딧 미리보기·시험)에서도 멈추지 않는다.
+  if (project.meta && isEmeraldMonsterStyle(project)) {
     refs.add("assets/emerald-monster/battle");
   }
 

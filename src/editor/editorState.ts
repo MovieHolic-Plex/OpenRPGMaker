@@ -89,6 +89,8 @@ export interface EditorState {
   worldmapAutoBackground: boolean;
   clusterAssistMode: ClusterAssistMode;
   activePaletteStamp: ActivePaletteStamp;
+  /** 왼쪽 기물 패널 「상호작용」 탭에서 고른 멀티프레임 프롭 id. 고른 동안 맵 클릭이 해당 오브젝트 이벤트를 즉시 배치한다. */
+  activeInteractivePropId: string | null;
   brushSize: EditorBrushSize;
   /** 「높이」 붓 방식 — 올리기/내리기/단 지정/평탄. map.relief 를 고친다. */
   reliefMode: ReliefBrushMode;
@@ -189,6 +191,7 @@ class EditorStateStore {
     // 보조 배치가 기본 — 평범한 사용자에게는 짝이 자동으로 맞는 쪽이 안전하다.
     clusterAssistMode: true,
     activePaletteStamp: null,
+    activeInteractivePropId: null,
     brushSize: 1,
     reliefMode: "raise",
     reliefLevel: 4,
@@ -334,6 +337,7 @@ const PALETTE_REFRESH_KEYS = [
   "worldmapAutoBackground",
   "clusterAssistMode",
   "activePaletteStamp",
+  "activeInteractivePropId",
   "brushSize",
   "reliefTopGrass",
   "selectedEventId",

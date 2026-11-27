@@ -1,5 +1,7 @@
 import { deserialize, deserializeParsed } from "../../io";
 import { collectProjectItemReferenceIds } from "../../io/references";
+import { withLazyBundledTilesets } from "../../bundledTilesetDiff";
+import { untouchedFreshBundledTilesetIds } from "../../defaults/freshBundledViewsHost";
 import { defaultResourceProfiles, removeLegacySpriteReferences } from "../../defaults/defaultAssets";
 import { ensureBundledBattleAnimations } from "../../defaults/defaultDatabase";
 import { defaultEquipmentRecords } from "../../defaults/defaultDatabaseEquipmentRecords";
@@ -10,6 +12,16 @@ import { beginLoadRepairReport, finishLoadRepairReport, noteLoadRepair, withoutL
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+/**
+ * 호스트 저장 검사용: 구운 «정규화한 새 타일셋» 보기와 글자까지 같은 번들 타일셋은 되돌려 검사하지 않고 지연으로 둔다
+ * (freshBundledViewsHost.ts). 나머지는 deserializeStoredProjectJson 과 같다.
+ */
+export function deserializeSubmittedProjectJson(value: unknown, sourceText: string): Project {
+  const untouched = untouchedFreshBundledTilesetIds(value);
+  const tilesets = isRecord(value) && isRecord(value.tilesets) ? Object.keys(value.tilesets) : [];
+  return withLazyBundledTilesets(new Set(tilesets.filter((id) => !untouched.has(id))), () => deserializeStoredProjectJson(value, sourceText));
 }
 
 export function deserializeStoredProjectJson(value: unknown, sourceText?: string | (() => string)): Project {

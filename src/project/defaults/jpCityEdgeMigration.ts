@@ -1,4 +1,5 @@
 import type { AutotileGroup, GameMap, TilesetDef } from "../types";
+import { isPendingLazyTileset } from "../bundledTilesetLazy";
 import { autotileGroupLayerView, autotileNeighborMask, autotileVariantForMask } from "./autotileEngine";
 
 /**
@@ -14,6 +15,8 @@ import { autotileGroupLayerView, autotileNeighborMask, autotileVariantForMask } 
  */
 export function reshapeJpCityMapBorders(project: { maps: Record<string, GameMap>; tilesets: Record<string, TilesetDef> }): boolean {
   const tileset = project.tilesets.jp_city;
+  // 아직 되돌리지 않은 지연 타일셋은 어느 맵도 쓰지 않는다(맵이 쓰는 타일셋은 곧바로 되돌린다) — 고칠 둘레가 없다.
+  if (isPendingLazyTileset(tileset)) return false;
   const groups = (tileset?.autotileGroups ?? []).filter((group) => group.edgeConnects === true && group.id.startsWith("jp-"));
   if (groups.length === 0) return false;
   const reverse = new Map<string, Map<number, number[]>>();

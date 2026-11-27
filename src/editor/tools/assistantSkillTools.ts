@@ -53,7 +53,7 @@ const listAssistantSkills: ToolDefinition = {
   name: "list_assistant_skills",
   description:
     "조수 스킬 목록(id·언제 쓰는가)을 돌려준다. 스킬은 데모 게임을 사람이 손으로 고친 교훈을 정리한 작업 지침이다 — " +
-    "이야기·이벤트·컷신·NPC 등장/퇴장·문/이동/계단·대화창·BGM 은 game-scene-polish, 대사·자막·선택지·아이템 설명을 쓰거나 윤문할 때는 dialogue-polish(공식 윤문 스킬, general-good-writing), 손 도트 실내는 interior-room-authoring, 일본 상가 거리는 jp-city-building-authoring. " +
+    "이야기·이벤트·컷신·NPC 등장/퇴장·문/이동/계단·대화창·BGM 은 game-scene-polish, 대사·자막·선택지·아이템 설명을 쓰거나 윤문할 때는 dialogue-polish(공식 윤문 스킬, general-good-writing), 밀기문·커튼·항아리 파괴·공포 기믹(거울·초상화·폐병원)·자판기·환경 모션 등 156종 실원본 상호작용 오브젝트 배치는 interactive-props, 손 도트 실내는 interior-room-authoring, 일본 상가 거리는 jp-city-building-authoring, 24×32 RM2000·EasyRPG 캐릭터칩 도트·눈매·12프레임 보행 역학은 easyrpg-charset-batch. " +
     "본문은 read_assistant_skill 로 읽는다.",
   mode: "read",
   parameters: { type: "object", properties: {}, additionalProperties: false },

@@ -52,6 +52,7 @@ function verdicts(game: string): { matched: string[]; falsePositives: string[] }
 }
 
 describe("퀘스트 후보 — 저장된 게임 14개 정답표", () => {
+  // 저장된 게임 14개를 불러 판정한다. ci-full 46034884144(시험 샤드 15, 4코어 2워커)에서 38.7초로 기본 30초를 넘었다 — 판정은 그대로, 한도만 다른 무거운 시험처럼 둔다.
   it("게임마다 맞힌 퀘스트와 오탐이 기록과 같다", () => {
     const table = Object.fromEntries(games.map((game) => [game, verdicts(game)]));
     expect(table).toEqual({
@@ -70,7 +71,7 @@ describe("퀘스트 후보 — 저장된 게임 14개 정답표", () => {
       "batch2__B-medium__fun-village-1": { matched: ["star_lights"], falsePositives: [] },
       "ref_shitamachi-fourth-season": { matched: ["wish_lanterns"], falsePositives: ["ev_sm_jiho"] },
     });
-  });
+  }, 120_000);
 
   it("한 번 등록하면 퀘스트 로그가 차고, 그 흐름은 더 제안되지 않는다", () => {
     const game = project("batch1__B-medium__fun-cat-1");

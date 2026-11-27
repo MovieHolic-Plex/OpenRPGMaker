@@ -56,6 +56,7 @@ npm run harness -- <id> <단계> [옵션]    # src/harnesses/<id>/node/cli.ts �
 - [pokemon-character-casting](pokemon-character-casting.md) — native NPC 후보의 사용자 Allow/Deny·SQLite 판정·현재 승인에 묶인 출력과 공용 등록.
 - [cast-portrait](cast-portrait.md) — 대사 흉상을 기존 캐스트와 같은 경로·규격으로: 프로젝트별 캐스트 규격·축소 금지·기계 검사·캐스트 줄과 실제 대사창·눈가림 「같은 작가?」 판정·사람 선택(해시)
 - [battle-backdrop](battle-backdrop.md) — 전투가 벌어지는 맵 캡처를 참고로 생성형 측면 전투 배경 → 맵 팔레트 320×180 도트화 → 기계 검사·판정 → 사람 선택(해시) → 트룹·맵에 설치. 조수 도구 generate_battle_backdrop
+- [interactive-props](interactive-props.md) — 시대별 상호작용 오브젝트 100종 멀티프레임 PNG 스트립 시드·기계 관문·GIF 검수 시트·해시 승인·런타임 카탈로그 굽기 (`fx:prop:<id>`)
 
 
 ## 다른 실행기와 공유하는 하네스 목록

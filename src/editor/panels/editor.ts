@@ -41,6 +41,11 @@ import { createImageGenerationNotice } from "@/editor/panels/imageGenerationGate
 import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { mountAgentModeDock } from "@/editor/agentMode/agentModeDock";
 import { createAiSidebarWorkspace } from "@/editor/panels/aiSidebarWorkspace";
+import { mountFloatingMinimapHud } from "@/editor/panels/floatingMinimapHud";
+import { mountCanvasBottomDock } from "@/editor/panels/canvasBottomDock";
+import { mountAiSelectionContextStrip } from "@/editor/panels/aiSelectionContextStrip";
+import { mountWorldBoardHotkeys } from "@/editor/panels/worldBoardModal";
+import { mountCanvasPortalBadges } from "@/editor/panels/canvasPortalBadges";
 import { mountRightInspector, type RightInspectorMount } from "@/editor/panels/rightInspector";
 import { closeSidebarSurface, teardownSidebarSurfaces } from '@/editor/panels/sidebarSurface';
 import { refreshAiConnectionStatus, resetAiConnectionStatusCache } from "@/editor/panels/aiConnectionStatus";
@@ -139,6 +144,11 @@ let mapTreeResizer: HTMLElement | null = null;
 let phaserHost: HTMLElement | null = null;
 let canvasToolbarRoot: HTMLElement | null = null;
 let disposeReliefToolbar: (() => void) | null = null;
+let disposeFloatingMinimapHud: (() => void) | null = null;
+let disposeCanvasBottomDock: (() => void) | null = null;
+let disposeAiSelectionContextStrip: (() => void) | null = null;
+let disposeWorldBoardHotkeys: (() => void) | null = null;
+let disposeCanvasPortalBadges: (() => void) | null = null;
 let chatFloatRoot: HTMLElement | null = null;
 let aiChatPanelRoot: HTMLElement | null = null;
 let aiSidebarWorkspace: ReturnType<typeof createAiSidebarWorkspace> | null = null;
@@ -311,8 +321,16 @@ export function renderEditor(main: HTMLElement): void {
   // 「지형」 막대·지형지물 팝업 — 지형 도구일 때만 보인다(reliefToolbar.ts).
   disposeReliefToolbar?.();
   disposeReliefToolbar = mountReliefToolbar(canvasArea);
+  disposeFloatingMinimapHud?.();
+  disposeFloatingMinimapHud = mountFloatingMinimapHud(canvasArea);
+  disposeCanvasBottomDock?.();
+  disposeCanvasBottomDock = mountCanvasBottomDock(canvasArea);
+  disposeWorldBoardHotkeys?.();
+  disposeWorldBoardHotkeys = mountWorldBoardHotkeys();
+  disposeCanvasPortalBadges?.();
+  disposeCanvasPortalBadges = mountCanvasPortalBadges(canvasArea, phaserContainer);
   aiSidebarWorkspace?.dispose();
-  aiSidebarWorkspace = createAiSidebarWorkspace(left, null, () => { applyLayout(); scheduleFitCanvas(); });
+  aiSidebarWorkspace = createAiSidebarWorkspace(left, null, () => { applyLayout(); scheduleFitCanvas(); }, { defaultCollapsed: true });
   // Right conversation dock: folding releases width without unmounting the session.
   const aiDock = el("aside", {
     class: "ai-right-dock",
@@ -326,6 +344,8 @@ export function renderEditor(main: HTMLElement): void {
   rightInspector = mountRightInspector(cursorDiagnostics);
   layout.append(aiSidebarWorkspace.root, leftResizer, canvasArea, rightInspector.root, aiDock);
   const aiPanel = renderAiChatPanel();
+  disposeAiSelectionContextStrip?.();
+  disposeAiSelectionContextStrip = mountAiSelectionContextStrip(aiPanel, canvasArea);
   const syncAiDockCollapsed = (): void => {
     aiDock.classList.toggle("is-collapsed", aiPanel.classList.contains("is-collapsed"));
     layout.classList.toggle("is-assistant-open", !aiPanel.classList.contains("is-collapsed"));
@@ -625,6 +645,16 @@ export function teardownEditor(): void {
   window.removeEventListener(OPEN_AUTHORING_JOURNEY_EVENT, onOpenAuthoringJourney);
   disposeReliefToolbar?.();
   disposeReliefToolbar = null;
+  disposeFloatingMinimapHud?.();
+  disposeFloatingMinimapHud = null;
+  disposeCanvasBottomDock?.();
+  disposeCanvasBottomDock = null;
+  disposeAiSelectionContextStrip?.();
+  disposeAiSelectionContextStrip = null;
+  disposeWorldBoardHotkeys?.();
+  disposeWorldBoardHotkeys = null;
+  disposeCanvasPortalBadges?.();
+  disposeCanvasPortalBadges = null;
   disposeAgentModeDock?.();
   disposeAgentModeDock = null;
   chatFloatRoot = null;

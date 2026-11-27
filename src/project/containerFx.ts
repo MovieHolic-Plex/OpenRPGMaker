@@ -3,12 +3,14 @@
 //
 // 저작 계약(엔진 명령 추가 없이 기존 명령으로 쓴다):
 //  - 연출: `showAnimation` 의 animationId 에 내장 연출 id 를 쓴다 — `fx:container:<종류>`(뚜껑·파편·소리),
+//    `fx:prop:<id>` / `fx:prop:<id>:close`(멀티프레임 PNG 스트립 재생 — project/interactiveProps.ts),
 //    `fx:popup:item:<itemId>` · `fx:popup:gold:<금액>`(찾은 것이 머리 위로 떠오른다), `fx:door-open`(문 여는 연출).
-//    런타임은 이 접두사를 전투 애니메이션 DB 대신 절차 연출로 그린다(player/playSceneFieldFx.ts).
-//  - 뒤진 뒤 모습: 「이미 뒤짐」 페이지에 `interaction: { kind: "container", style, searched: true }` —
-//    그 페이지가 켜져 있는 동안 런타임이 칸 위에 뒤진 흔적(열린 뚜껑·비집은 틈·흘린 짚·빠진 서랍)을 그린다.
+//    런타임은 이 접두사를 전투 애니메이션 DB 대신 절차/스트립 연출로 그린다(player/playSceneFieldFx.ts).
+//  - 뒤진 뒤 모습: 「이미 뒤짐」 페이지에 `interaction: { kind: "container", style, searched: true, propId? }` —
+//    그 페이지가 켜져 있는 동안 런타임이 칸 위에 뒤진 흔적(열린 뚜껑·비집은 틈·흘린 짚·빠진 서랍 또는 멀티프레임 마지막 프레임)을 그린다.
 //  - 한 번에 짓는 도우미: project/eventPatterns/containerSearch.ts.
 // 종류는 저작자가 고르거나, 타일 이름표에서 containerStyleForLabel 로 추정한다.
+import { interactivePropById, interactivePropDurationMs } from "@/project/interactiveProps";
 
 export const CONTAINER_STYLES = ["chest", "crate", "barrel", "sack", "straw", "drawer", "jar", "wardrobe"] as const;
 export type ContainerStyle = (typeof CONTAINER_STYLES)[number];
@@ -102,21 +104,34 @@ export function isContainerStyle(value: unknown): value is ContainerStyle {
 export const FIELD_FX_PREFIX = "fx:";
 
 export const containerFxId = (style: ContainerStyle): string => `fx:container:${style}`;
+export const propFxId = (propId: string, mode: "open" | "close" = "open"): string =>
+  mode === "close" ? `fx:prop:${propId}:close` : `fx:prop:${propId}`;
 export const itemPopupFxId = (itemId: string): string => `fx:popup:item:${itemId}`;
 export const goldPopupFxId = (amount: number): string => `fx:popup:gold:${Math.round(amount)}`;
 export const DOOR_OPEN_FX_ID = "fx:door-open";
 
 export type FieldFx =
   | { readonly kind: "container"; readonly style: ContainerStyle }
+  | { readonly kind: "prop"; readonly propId: string; readonly reverse?: boolean }
   | { readonly kind: "popupItem"; readonly itemId: string }
   | { readonly kind: "popupGold"; readonly amount: number }
   | { readonly kind: "doorOpen" };
 
+const PROP_FX_ID_RE = /^[a-z0-9][a-z0-9_-]{0,80}$/i;
+
 /** showAnimation 의 animationId 가 내장 연출이면 그 뜻을, 아니면 null. */
-export function parseFieldFxId(id: string | undefined): FieldFx | null {
+export function parseFieldFxId(id: string | undefined, project?: import("@/project/types").Project): FieldFx | null {
   if (!id || !id.startsWith(FIELD_FX_PREFIX)) return null;
   const parts = id.slice(FIELD_FX_PREFIX.length).split(":");
   if (parts[0] === "container" && isContainerStyle(parts[1])) return { kind: "container", style: parts[1] };
+  if (
+    parts[0] === "prop"
+    && parts[1]
+    && (parts.length === 2 || (parts.length === 3 && parts[2] === "close"))
+    && (interactivePropById(parts[1], project) || PROP_FX_ID_RE.test(parts[1]))
+  ) {
+    return { kind: "prop", propId: parts[1], ...(parts[2] === "close" ? { reverse: true } : {}) };
+  }
   if (parts[0] === "popup" && parts[1] === "item" && parts[2]) return { kind: "popupItem", itemId: parts.slice(2).join(":") };
   if (parts[0] === "popup" && parts[1] === "gold" && Number.isFinite(Number(parts[2]))) return { kind: "popupGold", amount: Number(parts[2]) };
   if (parts[0] === "door-open") return { kind: "doorOpen" };
@@ -124,13 +139,17 @@ export function parseFieldFxId(id: string | undefined): FieldFx | null {
 }
 
 /** 검증기용: 전투 애니메이션 DB 에 없어도 되는 id 인가. */
-export function isBuiltinFieldFxId(id: string | undefined): boolean {
-  return parseFieldFxId(id) !== null;
+export function isBuiltinFieldFxId(id: string | undefined, project?: import("@/project/types").Project): boolean {
+  return parseFieldFxId(id, project) !== null;
 }
 
-export function fieldFxDurationMs(fx: FieldFx): number {
+export function fieldFxDurationMs(fx: FieldFx, project?: import("@/project/types").Project): number {
   switch (fx.kind) {
     case "container": return CONTAINER_FX[fx.style].durationMs;
+    case "prop": {
+      const prop = interactivePropById(fx.propId, project);
+      return prop ? interactivePropDurationMs(prop) : 360;
+    }
     case "popupItem":
     case "popupGold": return 700;
     case "doorOpen": return 300;

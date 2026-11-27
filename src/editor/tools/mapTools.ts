@@ -3,6 +3,7 @@ import { normalizeCameraZoom, pixelSnappedCameraZoom, pixelZoomWarning } from "@
 import { mapCharacterSizeFactor } from "@/project/characterScale";
 import { CHASER_SPAWN_MIN_STEPS, chaserThreatLine, chaserThreatsAt } from "@/project/chaserSpawnSafety";
 import { patchSunlight, type MapSunlight } from "@/project/sunlight";
+import { POST_FX_PRESET_IDS, POST_FX_PRESETS, patchPostFx, type MapPostFx } from "@/project/postFx";
 import { isRetiredInteriorTileset, retiredInteriorMessage } from "@/project/retiredInteriorTilesets";
 import { isRetiredEasyRpgTileset, retiredEasyRpgMessage } from "@/project/retiredEasyRpgTilesets";
 import { isMapLoop, mapLoopLabel, mapLoopsX, mapLoopsY, MAP_LOOP_VALUES } from "@/project/mapLoop";
@@ -2104,6 +2105,29 @@ const sunlightSchema: JsonSchema = {
   }, additionalProperties: false,
 };
 
+const postFxSchema: JsonSchema = {
+  type: "object",
+  description: "HD-2D 화면 전체 필름 후처리(Emissive 발광색 보존). preset: none|hd2d-warm(황혼)|ghibli-day(맑은 낮)|dawn-mist(새벽 여명)|gothic-horror(고딕 공포)|dungeon-torch(던전 횃불)|cyber-neon(사이버 네온)|eastern-ink(동양 한지)|arctic-blizzard(설원 빙청)|cataclysm-fire(화염 보스전). intensity/bloom/dof/godRays/vignette는 0~1.",
+  properties: {
+    preset: { type: "string", enum: [...POST_FX_PRESET_IDS] },
+    intensity: { type: "number", minimum: 0, maximum: 1 },
+    bloom: { type: "number", minimum: 0, maximum: 1 },
+    dof: { type: "number", minimum: 0, maximum: 1 },
+    godRays: { type: "number", minimum: 0, maximum: 1 },
+    vignette: { type: "number", minimum: 0, maximum: 1 },
+    grain: { type: "number", minimum: 0, maximum: 1 },
+    chromaticAberration: { type: "number", minimum: 0, maximum: 1 },
+    bayerDither: { type: "number", minimum: 0, maximum: 1 },
+    preserveEmissive: { type: "boolean" },
+    adaptWeather: { type: "boolean" },
+    horrorReactive: { type: "boolean" },
+    spriteRimLight: { type: "boolean" },
+    wallOcclusion: { type: "boolean" },
+    waterReflections: { type: "boolean" },
+  },
+  additionalProperties: false,
+};
+
 /**
  * `background` 인자 → 저작값. `preset`(옛 이름 `layerSet`, 스키마에서는 뺐다)이 있으면 세트를 펴고, 같이 준
  * 개별 값(scrollX·fit·showInEmptyCells 등)은 첫 장에 덮어쓴다. 없으면 예전처럼 그대로 정규화한다.
@@ -2243,6 +2267,8 @@ const setMapProperties: ToolDefinition = {
       clearCloudShadows: { type: "boolean" },
       sunlight: sunlightSchema,
       clearSunlight: { type: "boolean" },
+      postFx: postFxSchema,
+      clearPostFx: { type: "boolean" },
       climate: mapClimateSchema,
       clearClimate: { type: "boolean" },
       characterScale: { type: "number", description: "이 맵에서 걷는 캐릭터(주인공·동료·탈것·캐릭터 이벤트) 크기 배율 0.25~1. 월드맵처럼 땅을 멀리서 보는 지도에서 0.5~0.75 로 줄인다. 1 이면 기본 크기로 되돌린다. 사용자가 원할 때만 — 기본은 줄이지 않는다." },
@@ -2497,6 +2523,18 @@ const setMapProperties: ToolDefinition = {
     } else if (args.sunlight && typeof args.sunlight === "object" && !Array.isArray(args.sunlight)) {
       map.sunlight = patchSunlight(map.sunlight, args.sunlight as Partial<MapSunlight>);
       changed.push(`태양 그림자 ${map.sunlight.enabled ? "켬" : "끔"} · 방향 ${map.sunlight.azimuth}° · 고도 ${map.sunlight.altitude}°`);
+    }
+    if (args.clearPostFx === true) {
+      delete map.postFx; changed.push("HD-2D 후처리 지움");
+    } else if (args.postFx && typeof args.postFx === "object" && !Array.isArray(args.postFx)) {
+      const next = patchPostFx(map.postFx, args.postFx as Partial<MapPostFx>);
+      if (next.preset === "none") {
+        delete map.postFx;
+        changed.push("HD-2D 후처리=끔");
+      } else {
+        map.postFx = next;
+        changed.push(`HD-2D 후처리=${POST_FX_PRESETS[next.preset].label}`);
+      }
     }
     if (args.clearCloudShadows === true) {
       delete map.cloudShadows;
