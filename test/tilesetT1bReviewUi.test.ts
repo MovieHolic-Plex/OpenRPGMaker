@@ -19,7 +19,7 @@ import { reauditTileset, type TilesetVisionClient } from "@/editor/tilesetReaudi
 import { resetMapEditHistory } from "@/editor/mapEditHistory";
 import { runTool } from "@/editor/tools/toolRunner";
 import type { ToolContext } from "@/editor/tools/types";
-import { createBlankProject } from "@/project/defaults";
+import { combinedTownTileset, createBlankProject } from "@/project/defaults";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
 import type { PalettePreset, Project, TileAiMetadata, TilesetDef } from "@/project/types";
@@ -28,8 +28,10 @@ import { findByTestId, installFakeDom, renderWithFakeDom } from "./fakeDom";
 let restoreDom: (() => void) | null = null;
 
 beforeEach(() => {
-  store.replace(createBlankProject());
-  store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID].tileMeta = [];
+  // 새 프로젝트 기본 타일셋은 버들항이라 합본 마을이 없다(빈 프로젝트 49개 중 없음, #5185) — 이 시험의 대상으로 직접 넣는다.
+  const project = createBlankProject();
+  project.tilesets[COMBINED_TOWN_TILESET_ID] = { ...combinedTownTileset(), tileMeta: [] };
+  store.replace(project);
   resetMapEditHistory();
   restoreDom = installFakeDom();
 });
