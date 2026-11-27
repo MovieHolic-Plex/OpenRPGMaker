@@ -1,6 +1,8 @@
 # 공용 몬스터 옛 그림 폐기와 RM2003 효과 비교 (2026-10-02)
 
-> **현재 그림 (2026-10-03 후속):** 긍정 평가를 받은 히드라·갓파·회색 늑대·동굴 박쥐·해골 전사5종을 유지하고,
+> **현재 그림 (2026-11-26 번들 승격·구형 3×3 삭제):** 아래 2026-10-03 3×3 redraw 140종 중 현행 5×4(20칸) 시트가 없는 **구형 106종 PNG(212파일)를 모두 삭제**하고, 『폴른 스타』 + `battle-gen gif20` 통과분 **44종 5×4 시트·초상**(괴물 38 + 폴른 스타 인간형 적 6)을 `public/assets/generated/pixel-enemies/`·`pixel-enemy-portraits/` 정식 번들(`PIXEL_ENEMY_SHEETS`)로 승격했다. 중복 base64 모듈(`monsterSheets16.ts`·`currentMonsterSheets20.ts`·`currentMonsterArt20.ts`)도 제거했으며, 기존 저장본의 구형 ID 는 `RETIRED_PIXEL_ENEMY_ALIASES` 로 가장 가까운 현행 5×4 번들에 호환 해석된다(피커·카탈로그 비노출). `battleContactBounds.json` 도 44종 5×4 기준으로 재측정했다.
+
+> **이전 기록 (2026-10-03 후속):** 긍정 평가를 받은 히드라·갓파·회색 늑대·동굴 박쥐·해골 전사5종을 유지하고,
 > 나머지135종을 `scripts/asset-gen/pixel-enemy/redraw/`의 새 원본으로 교체한다. 현재는 native64 126종·native96 14종이다.
 > 공용 ID·경로·이동 유형·9포즈 계약은 그대로다. 새135종의 사용자 그림 검토는 별도이며,
 > 재현과 확인 범위는 `tiledata/monster-redraw-all/README.md`, `verify-shots/monster-redraw-all/SUMMARY.md`를 본다.

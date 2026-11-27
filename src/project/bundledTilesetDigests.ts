@@ -10,6 +10,7 @@
 //    심지 않고 예전처럼 계산한다. 심은 기억은 믿음(withTrustedSharedEntries) 안에서만 쓰인다(seedTrustedEntryDigest).
 import BAKED from "@/assets/bundledTilesetDigests.json" with { type: "json" };
 import { bundledTilesetById, bundledTilesetDefinitionReady } from "@/project/defaults/defaultAssets";
+import { hasPendingDefaultTilesets, pendingDefaultTilesetBuilder } from "@/project/defaults/lazyDefaultTilesets";
 import { seedTrustedEntryDigest } from "@/project/persistence/core/contentDigest";
 import { jsonEqual } from "@/util/structuralJson";
 import type { Project } from "@/project/types";
@@ -22,7 +23,10 @@ const checked = new WeakSet<object>();
 export function seedBundledTilesetDigests(project: Pick<Project, "tilesets">): void {
   const tilesets = project.tilesets as Readonly<Record<string, unknown>> | undefined;
   if (!tilesets) return;
-  for (const [id, entry] of Object.entries(tilesets)) {
+  const hasPending = hasPendingDefaultTilesets(tilesets);
+  for (const id of Object.keys(tilesets)) {
+    if (hasPending && pendingDefaultTilesetBuilder(tilesets, id)) continue;
+    const entry = tilesets[id];
     const bake = baked[id];
     if (!bake || entry === null || typeof entry !== "object" || checked.has(entry)) continue;
     checked.add(entry);

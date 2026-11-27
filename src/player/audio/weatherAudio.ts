@@ -12,6 +12,8 @@ const sharedNoiseBuffers = new Map<string, AudioBuffer>();
  */
 export class WeatherAudio {
   private context: AudioContext | null = null;
+  private ownsContext = false;
+  private readonly sharedContextProvider?: () => AudioContext | null;
   private bus: GainNode | null = null;
   private rain: GainNode | null = null;
   private sources = new Set<AudioBufferSourceNode>();
@@ -25,6 +27,10 @@ export class WeatherAudio {
    * 소리의 모양을 정하므로 매번 같은 잡음이어도 귀로 구분되지 않는다. 컨텍스트를 닫으면 버린다.
    */
   private thunderBuffer: AudioBuffer | null = null;
+
+  constructor(sharedContextProvider?: () => AudioContext | null) {
+    this.sharedContextProvider = sharedContextProvider;
+  }
 
   unlock(): void {
     if (!this.context && (this.params.kind === "rain" || this.params.kind === "storm")) this.start();
@@ -59,8 +65,9 @@ export class WeatherAudio {
     for (const source of this.sources) { source.stop(); source.disconnect(); }
     this.sources.clear();
     this.bus?.disconnect();
-    if (this.context) void this.context.close().catch(() => {});
+    if (this.context && this.ownsContext) void this.context.close().catch(() => {});
     this.context = null;
+    this.ownsContext = false;
     this.bus = null;
     this.rain = null;
     this.thunderBuffer = null;
@@ -70,10 +77,13 @@ export class WeatherAudio {
   }
 
   private start(): void {
-    if (typeof AudioContext === "undefined") return;
+    if (typeof AudioContext === "undefined" && !this.sharedContextProvider) return;
     try {
-      const context = new AudioContext();
+      const shared = this.sharedContextProvider?.() ?? null;
+      const context = shared ?? (typeof AudioContext !== "undefined" ? new AudioContext() : null);
+      if (!context) return;
       this.context = context;
+      this.ownsContext = shared === null;
       this.bus = context.createGain();
       this.bus.gain.value = this.volume;
       this.bus.connect(context.destination);

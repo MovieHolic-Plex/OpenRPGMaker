@@ -13,7 +13,23 @@ type GraftSource = HTMLImageElement | HTMLCanvasElement;
 
 // 유효한 graft 만 남기고 targetTile 중복은 마지막 항목이 이긴다(덮어쓰기 의미론).
 // 타일셋이 겉모습(look)을 골랐으면 그 그림도 여기서 겹친다 — 저장된 이식 목록은 그대로이고, 그리는 쪽(아틀라스 굽기·미리 싣기)만 본다(tilesetLooks.ts).
+//
+// 기억해 둔다(tileGraftsTextureSuffix 와 같은 전제: 배열 정체성·길이가 같으면 같은 답). 이식 소스가 아직 안 실린 채 맵을 그리면
+// ensureTilesetTexture 가 칸마다 이 목록을 두 번 만든다 — 버들항(이식 2,515개) 빈 맵 첫 그리기가 이것만으로 약 0.5s 였다(2026-11-27 패키지 프로파일).
+// 돌려주는 배열은 부르는 쪽 소유 사본이다.
+const activeGraftCache = new WeakMap<readonly TileGraft[], { readonly length: number; readonly look: string; readonly grafts: readonly TileGraft[] }>();
 export function activeTileGrafts(tileset: Pick<TilesetDef, "tileGrafts"> & Partial<Pick<TilesetDef, "look" | "image">>): TileGraft[] {
+  const source = tileset.tileGrafts;
+  if (!source || source.length === 0) return computeActiveTileGrafts(tileset);
+  const look = tilesetLookSignature(tileset);
+  const cached = activeGraftCache.get(source);
+  if (cached && cached.length === source.length && cached.look === look) return cached.grafts.slice();
+  const grafts = computeActiveTileGrafts(tileset);
+  activeGraftCache.set(source, { length: source.length, look, grafts });
+  return grafts.slice();
+}
+
+function computeActiveTileGrafts(tileset: Pick<TilesetDef, "tileGrafts"> & Partial<Pick<TilesetDef, "look" | "image">>): TileGraft[] {
   const byTarget = new Map<number, TileGraft>();
   for (const graft of tileset.tileGrafts ?? []) {
     if (!isValidTileGraft(graft)) continue;
@@ -99,28 +115,49 @@ export function createGraftedTilesetCanvas(
   if (!context) return null;
   context.imageSmoothingEnabled = false;
   context.drawImage(base, 0, 0);
-  for (const graft of grafts) {
+  // 같은 소스에서 같은 줄의 이웃 칸을 이웃 칸으로 옮기는 이식은 한 번에 그린다(같은 화소). 버들항은 이식 7,737개가 3,286개 띠다.
+  // 못 찾은 소스는 소스마다 한 번만 알린다(맵이 안 쓰는 이식 소스는 일부러 싣지 않는다 — 버들항 1,778장).
+  const missing = new Map<string, number>();
+  let index = 0;
+  while (index < grafts.length) {
+    const graft = grafts[index]!;
     const source = resolveSourceImage(graft.sourceChipset);
     if (!source) {
-      console.warn(`[tileGrafts] 소스 타일 그림판 이미지를 찾지 못해 이식을 건너뜁니다: ${graft.sourceChipset}#${graft.sourceTile}`);
+      missing.set(graft.sourceChipset, (missing.get(graft.sourceChipset) ?? 0) + 1);
+      index += 1;
       continue;
     }
     const geometry = graftSourceGeometry(graft);
     const sourceTileSize = geometry.tileSize;
+    let run = 1;
+    while (index + run < grafts.length) {
+      const next = grafts[index + run]!;
+      if (next.sourceChipset !== graft.sourceChipset || next.targetTile !== graft.targetTile + run || next.sourceTile !== graft.sourceTile + run) break;
+      if (next.targetTile % Math.max(1, tileset.tilesPerRow) === 0 || next.sourceTile % Math.max(1, geometry.tilesPerRow) === 0) break;
+      const nextGeometry = graftSourceGeometry(next);
+      if (nextGeometry.tileSize !== sourceTileSize || nextGeometry.tilesPerRow !== geometry.tilesPerRow) break;
+      run += 1;
+    }
     const src = tileXY(graft.sourceTile, geometry.tilesPerRow, sourceTileSize);
     const dst = tileXY(graft.targetTile, tileset.tilesPerRow, tileSize);
-    context.clearRect(dst.x, dst.y, tileSize, tileSize);
+    context.clearRect(dst.x, dst.y, tileSize * run, tileSize);
     context.drawImage(
       source,
       src.x,
       src.y,
-      sourceTileSize,
+      sourceTileSize * run,
       sourceTileSize,
       dst.x,
       dst.y,
-      tileSize,
+      tileSize * run,
       tileSize
     );
+    index += run;
+  }
+  if (missing.size > 0) {
+    const skipped = [...missing.values()].reduce((sum, count) => sum + count, 0);
+    const sample = [...missing.keys()].slice(0, 5).join(", ");
+    console.warn(`[tileGrafts] 소스 타일 그림판 ${missing.size}장을 찾지 못해 이식 ${skipped}칸을 건너뜁니다: ${sample}${missing.size > 5 ? " …" : ""}`);
   }
   return canvas;
 }

@@ -45,7 +45,7 @@ const EXTRA_FIELDS: Readonly<Record<string, readonly string[]>> = {
   promoteActor: ["successBranch", "failureBranch"],
   evolveMonster: ["successBranch", "failureBranch"],
   shop: ["itemIds", "shopUiPreset", "transactionBranch", "failedTransactionBranch", "branchOnTransaction", "branchOnFailedTransaction"],
-  inn: ["notEnoughBranch", "branchOnNotEnoughGold"],
+  inn: ["stayedBranch", "branchOnStay", "cancelledBranch", "branchOnCancel", "notEnoughBranch", "branchOnNotEnoughGold"],
   moveEvent: ["route"],
   changeFace: ["appearanceId", "presentation"],
   addFollower: ["graphic"],

@@ -1,0 +1,11 @@
+{
+  "tex_oprn_atlas_vehicles": { "count": 2100, "tilesPerRow": 30 },
+  "tex_worldmap_authoring": { "count": 3823, "tilesPerRow": 12 },
+  "tex_beodeul_reviewed": { "count": 816, "tilesPerRow": 16 },
+  "tex_beodeul_massing": { "count": 1184, "tilesPerRow": 16 },
+  "tex_beodeul_nature": { "count": 3568, "tilesPerRow": 16 },
+  "tex_beodeul_stands": { "count": 18944, "tilesPerRow": 128, "grainMixes": ["tufted", "flowery", "drift", "stony"] },
+  "tex_beodeul_water": { "count": 37120, "tilesPerRow": 128 },
+  "tex_beodeul_houses": { "count": 16640, "tilesPerRow": 128 },
+  "tex_beodeul_looks": { "count": 27392, "tilesPerRow": 128 }
+}

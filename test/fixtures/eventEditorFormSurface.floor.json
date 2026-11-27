@@ -520,12 +520,12 @@
   "textCount": 5
  },
  "inn": {
-  "testidCount": 24,
-  "controlCount": 15,
-  "selectOptionCount": 79,
-  "classCount": 32,
-  "labelCount": 14,
-  "textCount": 4
+  "testidCount": 29,
+  "controlCount": 20,
+  "selectOptionCount": 23,
+  "classCount": 29,
+  "labelCount": 20,
+  "textCount": 5
  },
  "checkpointSave": {
   "testidCount": 3,

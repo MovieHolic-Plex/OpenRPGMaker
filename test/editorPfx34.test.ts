@@ -413,17 +413,22 @@ describe("editorPanelsSuite3", () => {
     // 자료집·전투에 옛 3×3 그림이 보였고, 편집기 칸 표는 시트 격자와 상관없이 9칸만 그렸다.
 
     describe("기본 적의 현행 몬스터 그림", () => {
-      it("로드 정규화가 현행 id 적 전부에 5×4 그림을 넣고, 같은 id 의 사용자 업로드는 건드리지 않는다", async () => {
+      it("현행 id 적은 정식 번들 5×4 시트를 직접 쓰고, 정규화는 중복 battle-gen 업로드만 정리하며 사용자 업로드는 건드리지 않는다", async () => {
         await preloadCurrentMonsterArt();
         const project = createBlankProject() as Project;
         const currentIds = [...new Set(project.database.enemies.map((e) => e.monsterResourceId).filter(isCurrentMonsterArt))] as string[];
         expect(currentIds.length).toBeGreaterThan(0);
         const keep = currentIds[0]!;
+        const legacy = currentIds[1]!;
         const userAsset = { id: keep, name: "내 그림", kind: "monster" as const, dataUrl: "data:image/png;base64,AAAA", meta: { width: 1, height: 1 } };
         project.assets.uploaded[keep] = userAsset;
+        project.assets.uploaded[legacy] = { id: legacy, name: "옛 복사", kind: "monster", dataUrl: "data:image/png;base64,BBBB", meta: { width: 96, height: 96 }, generatedBy: "battle-gen:fallen-star" };
+        project.assets.uploaded[`${legacy}-sheet16`] = { id: `${legacy}-sheet16`, name: "옛 시트", kind: "picture", dataUrl: "data:image/png;base64,CCCC", meta: { width: 480, height: 384 }, generatedBy: "battle-gen:fallen-star" };
 
         expect(ensureCurrentMonsterArt(project)).toBe(true);
         expect(project.assets.uploaded[keep]).toBe(userAsset);
+        expect(project.assets.uploaded[legacy]).toBeUndefined();
+        expect(project.assets.uploaded[`${legacy}-sheet16`]).toBeUndefined();
         setPixelEnemySheetProjectSource(() => project);
         try {
           for (const id of currentIds.slice(1)) {

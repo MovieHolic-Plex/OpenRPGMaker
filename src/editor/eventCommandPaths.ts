@@ -9,6 +9,8 @@ export const LOOP_BODY_BRANCH_INDEX = -5;
 export const PROMOTE_SUCCESS_BRANCH_INDEX = -6;
 export const PROMOTE_FAILURE_BRANCH_INDEX = -7;
 export const INN_NOT_ENOUGH_BRANCH_INDEX = -8;
+export const INN_STAYED_BRANCH_INDEX = -14;
+export const INN_CANCELLED_BRANCH_INDEX = -15;
 export const BATTLE_VICTORY_BRANCH_INDEX = -9;
 export const BATTLE_DEFEAT_BRANCH_INDEX = -10;
 export const BATTLE_ESCAPE_BRANCH_INDEX = -11;
@@ -239,9 +241,19 @@ function resolveInnBranch(
   branchIndex: number,
   mode: MissingBranchMode
 ): Command[] | null {
-  if (branchIndex !== INN_NOT_ENOUGH_BRANCH_INDEX) return null;
-  if (!command.notEnoughBranch && mode === "create") command.notEnoughBranch = [];
-  return command.notEnoughBranch ?? null;
+  if (branchIndex === INN_STAYED_BRANCH_INDEX) {
+    if (!command.stayedBranch && mode === "create") command.stayedBranch = [];
+    return command.stayedBranch ?? null;
+  }
+  if (branchIndex === INN_CANCELLED_BRANCH_INDEX) {
+    if (!command.cancelledBranch && mode === "create") command.cancelledBranch = [];
+    return command.cancelledBranch ?? null;
+  }
+  if (branchIndex === INN_NOT_ENOUGH_BRANCH_INDEX) {
+    if (!command.notEnoughBranch && mode === "create") command.notEnoughBranch = [];
+    return command.notEnoughBranch ?? null;
+  }
+  return null;
 }
 
 function resolveBattleProcessingBranch(

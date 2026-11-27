@@ -389,7 +389,9 @@ const setPlaySettings: ToolDefinition = {
   name: "set_play_settings",
   description:
     "Set play-screen options that set_project_settings does not cover: menuUiStyle (ESC menu design), pointerMovement (click/tap a tile to walk there), "
-    + "playSurfaceScale (integer = whole-number zoom with borders, fit = fill the window), gallery (menu entry for unlocked pictures: enabled, label). Only the fields you send change.",
+    + "playSurfaceScale (adaptive = responsive integer pixel viewport with zero letterbox, integer = fixed whole-number zoom with borders, fit = fill the window), "
+    + "portraitLayout (ds = top 55% portrait camera + bottom 45% UI/pad deck, fullbleed = 100% portrait world + translucent floating UI), "
+    + "gallery (menu entry for unlocked pictures: enabled, label). Only the fields you send change.",
   mode: "write",
   domains: ["system"],
   parameters: {
@@ -397,7 +399,8 @@ const setPlaySettings: ToolDefinition = {
     properties: {
       menuUiStyle: { type: "string", enum: Object.keys(MENU_SKINS) },
       pointerMovement: { type: "boolean" },
-      playSurfaceScale: { type: "string", enum: ["integer", "fit"] },
+      playSurfaceScale: { type: "string", enum: ["adaptive", "integer", "fit"] },
+      portraitLayout: { type: "string", enum: ["ds", "fullbleed"] },
       gallery: { type: "object", properties: { enabled: { type: "boolean" }, label: { type: "string" } }, required: ["enabled"], additionalProperties: false },
     },
     additionalProperties: false,
@@ -407,13 +410,18 @@ const setPlaySettings: ToolDefinition = {
     const sys = draft.system;
     if (typeof args.menuUiStyle === "string") { sys.menuUiStyle = args.menuUiStyle as typeof sys.menuUiStyle; changed.push(`menuUiStyle=${args.menuUiStyle}`); }
     if (typeof args.pointerMovement === "boolean") { if (args.pointerMovement) sys.pointerMovement = true; else delete sys.pointerMovement; changed.push(`pointerMovement=${args.pointerMovement}`); }
-    if (args.playSurfaceScale === "integer" || args.playSurfaceScale === "fit") { sys.playSurfaceScale = args.playSurfaceScale; changed.push(`playSurfaceScale=${args.playSurfaceScale}`); }
+    if (args.playSurfaceScale === "adaptive" || args.playSurfaceScale === "integer" || args.playSurfaceScale === "fit") { sys.playSurfaceScale = args.playSurfaceScale; changed.push(`playSurfaceScale=${args.playSurfaceScale}`); }
+    if (args.portraitLayout === "ds" || args.portraitLayout === "fullbleed") {
+      if (args.portraitLayout === "ds") delete sys.portraitLayout;
+      else sys.portraitLayout = args.portraitLayout;
+      changed.push(`portraitLayout=${args.portraitLayout}`);
+    }
     if (isObj(args.gallery)) {
       const label = typeof args.gallery.label === "string" ? args.gallery.label.trim() : "";
       sys.gallery = { enabled: args.gallery.enabled === true, ...(label ? { label } : {}) };
       changed.push(`gallery=${sys.gallery.enabled ? "on" : "off"}${label ? ` «${label}»` : ""}`);
     }
-    if (!changed.length) throw new ToolError("Send at least one of menuUiStyle, pointerMovement, playSurfaceScale, gallery.", { code: "invalid-args" });
+    if (!changed.length) throw new ToolError("Send at least one of menuUiStyle, pointerMovement, playSurfaceScale, portraitLayout, gallery.", { code: "invalid-args" });
     return { summary: `Play settings: ${changed.join(", ")}.`, data: { changed } };
   },
 };

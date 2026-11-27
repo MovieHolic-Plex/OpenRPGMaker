@@ -142,6 +142,7 @@ describe("aiChatPanel", () => {
       installFakeLocalStorage();
     });
     afterEach(() => {
+      teardownAiChatPanel();
       restoreDom?.();
       restoreDom = null;
       Reflect.deleteProperty(globalThis, "localStorage");
@@ -460,6 +461,7 @@ describe("aiChatPanel", () => {
       installFakeLocalStorage();
     });
     afterEach(() => {
+      teardownAiChatPanel();
       restoreDom?.();
       restoreDom = null;
       Reflect.deleteProperty(globalThis, "localStorage");
@@ -587,6 +589,7 @@ describe("aiChatPanel", () => {
       });
     });
     afterEach(() => {
+      teardownAiChatPanel();
       restoreDom?.();
       restoreDom = null;
       Reflect.deleteProperty(globalThis, "localStorage");

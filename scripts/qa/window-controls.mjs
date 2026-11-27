@@ -114,11 +114,15 @@ async function runSequence(mode) {
   await wait(2500);
   note(`## ${mode}: url=${page.url()}`);
   note(`initial native ${JSON.stringify(await nativeState(app))} dom ${JSON.stringify(await domState(page))}`);
-  await shot(page, `${mode}-1-fullscreen`);
+  await shot(page, `${mode}-1-windowed`);
 
   await realClick(app, page, T("window-toggle-fullscreen")); await wait(1200);
-  note(`[전체화면 단추] native ${JSON.stringify(await nativeState(app))} dom ${JSON.stringify(await domState(page))}`);
-  await shot(page, `${mode}-2-windowed`);
+  note(`[전체화면 단추(진입)] native ${JSON.stringify(await nativeState(app))} dom ${JSON.stringify(await domState(page))}`);
+  await shot(page, `${mode}-2-fullscreen`);
+
+  await realClick(app, page, T("window-toggle-fullscreen")); await wait(1200);
+  note(`[전체화면 단추(해제)] native ${JSON.stringify(await nativeState(app))} dom ${JSON.stringify(await domState(page))}`);
+  await shot(page, `${mode}-2b-windowed`);
 
   for (const id of ["window-toggle-fullscreen", "window-minimize", "window-toggle-maximize", "window-close"]) {
     await realHover(app, page, T(id)); await screenshotClip(page, `${mode}-3-hover-${id}`);
@@ -189,7 +193,6 @@ async function runPlatforms() {
     const { app, page } = await launch(surface === "editor" ? { OPRN_OPEN_PROJECT_DIR: PROJECT } : {});
     await page.waitForSelector(surface === "editor" ? T("oprn-menu-bar") : T("studio-window-controls"), { timeout: 90_000 });
     await wait(2500);
-    await realClick(app, page, T("window-toggle-fullscreen")); await wait(1500);
     for (const platform of ["linux", "win32", "darwin"]) {
       await page.evaluate((pf) => {
         const b = document.body; const nav = document.querySelector(".studio-window-controls");
@@ -211,7 +214,6 @@ async function runPlatforms() {
 async function runI18n() {
   const { app, page } = await launch({});
   await page.waitForSelector(T("studio-window-controls"), { timeout: 90_000 }); await wait(2000);
-  await realClick(app, page, T("window-toggle-fullscreen")); await wait(1500);
   for (const lang of ["ko", "en", "ja", "zh"]) {
     await page.evaluate((l) => localStorage.setItem("oprn:locale", l), lang);
     await page.reload({ waitUntil: "domcontentloaded" });

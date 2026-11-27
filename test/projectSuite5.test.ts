@@ -6,7 +6,7 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createBlankProject } from "@/project/defaults";
-import { buildOprnPakArchive, createDesktopSteamExportPackage, desktopSteamExportFileName, readOprnPakArchive } from "@/project/desktopGameExport";
+import { buildOprnPakArchive, createDesktopSteamExportPackage, desktopSteamExportFileName, readOprnPakArchive, resolveDesktopSaveNamespace } from "@/project/desktopGameExport";
 import { createRuntimeManifest, jsonBytes } from "@/project/gameRelease";
 import { readStoredZipEntry, readStoredZipEntryNames, readStoredZipUnixMode } from "@/project/packageZip";
 import { preparePublication } from "@/project/publication";
@@ -50,75 +50,6 @@ describe("desktopGameExport", () => {
       expect([...heroPng]).toEqual([0x89, 0x50, 0x4e, 0x47, 1, 2, 3, 4]);
     });
 
-    it("generates a complete Windows x64 Steam Depot ZIP with .exe launcher, resources/game.pak, saves/ Auto-Cloud, and SteamPipe VDFs", async () => {
-      const project = createBlankProject();
-      project.meta.title = "ChronoBell";
-      const runtime = await createRuntimeManifest(
-        [
-          { name: "web/player.html", bytes: encoder.encode("<!doctype html><html><head></head><body><div id='app'></div></body></html>") },
-          { name: "web/player.js", bytes: encoder.encode("console.log('player');") },
-          { name: "web/dependency-collector.js", bytes: encoder.encode("var OPRN_RELEASE_COLLECTOR={collectReleaseDependencies:()=>[]};") },
-        ],
-        [],
-      );
-      project.meta.publication = preparePublication(runtime.runtimeTarget);
-
-      const fileMap = new Map<string, Uint8Array>([
-        ["/runtime-archive/default.json", jsonBytes({ runtimeTarget: runtime.runtimeTarget })],
-        [`/runtime-archive/${runtime.runtimeTarget}/runtime.json`, jsonBytes(runtime)],
-        [`/runtime-archive/${runtime.runtimeTarget}/web/player.html`, encoder.encode("<!doctype html><html><head></head><body><div id='app'></div></body></html>")],
-        [`/runtime-archive/${runtime.runtimeTarget}/web/player.js`, encoder.encode("console.log('player');")],
-        [`/runtime-archive/${runtime.runtimeTarget}/web/dependency-collector.js`, encoder.encode("var OPRN_RELEASE_COLLECTOR={collectReleaseDependencies:()=>[]};")],
-      ]);
-
-      const result = await createDesktopSteamExportPackage(project, {
-        platform: "win64-steam",
-        steamAppId: 480,
-        steamDepotId: 481,
-        displayMode: "fullscreen",
-        versionLabel: "1.2.0",
-        fetchBytes: async (path) => {
-          const hit = fileMap.get(path);
-          if (!hit) throw new Error(`Missing fixture path: ${path}`);
-          return hit;
-        },
-      });
-
-      expect(result.fileName).toBe(
-        desktopSteamExportFileName(project, { platform: "win64-steam", versionLabel: "1.2.0" }),
-      );
-      expect(result.summary.executablePath).toBe("ChronoBell.exe");
-      expect(result.summary.pakArchivePath).toBe("resources/game.pak");
-
-      const zipBytes = new Uint8Array(await result.blob.arrayBuffer());
-      const entryNames = readStoredZipEntryNames(zipBytes);
-
-      expect(entryNames).toContain("ChronoBell.exe");
-      expect(entryNames).toContain("Launch-ChronoBell.bat");
-      expect(entryNames).toContain("steam_appid.txt");
-      expect(entryNames).toContain("resources/game.pak");
-      expect(entryNames).toContain("resources/desktop-runtime.json");
-      expect(entryNames).toContain("resources/app/index.html");
-      expect(entryNames).toContain("saves/config.json");
-      expect(entryNames).toContain("saves/slot-01.oprn-save.json");
-      expect(entryNames).toContain("saves/README-STEAM-CLOUD.txt");
-      expect(entryNames).toContain("steamworks/app_build_480.vdf");
-      expect(entryNames).toContain("steamworks/depot_build_481.vdf");
-      expect(entryNames).toContain("steamworks/steam_input_manifest.vdf");
-      expect(entryNames).toContain("steamworks/STEAM_LAUNCH_CHECKLIST.md");
-
-      // Verify PE64 MZ + PE header stub on ChronoBell.exe
-      const exeBytes = readStoredZipEntry(zipBytes, "ChronoBell.exe")!;
-      expect(exeBytes[0]).toBe(0x4d); // 'M'
-      expect(exeBytes[1]).toBe(0x5a); // 'Z'
-      expect(exeBytes[0x40]).toBe(0x50); // 'P'
-      expect(exeBytes[0x41]).toBe(0x45); // 'E'
-
-      // Verify steam_appid.txt
-      const appIdText = decoder.decode(readStoredZipEntry(zipBytes, "steam_appid.txt")!);
-      expect(appIdText.trim()).toBe("480");
-    });
-
     async function runtimeFixtureFetch(project: ReturnType<typeof createBlankProject>) {
       const runtime = await createRuntimeManifest(
         [
@@ -139,31 +70,109 @@ describe("desktopGameExport", () => {
         [`/runtime-archive/${runtime.runtimeTarget}/web/player.js`, player],
         [`/runtime-archive/${runtime.runtimeTarget}/web/dependency-collector.js`, collector],
       ]);
-      const fetchBytes = async (path: string) => {
+      return async (path: string) => {
         const hit = fileMap.get(path);
         if (!hit) throw new Error(`Missing fixture path: ${path}`);
         return hit;
       };
-
-      return fetchBytes;
     }
 
-    it("starts the Linux and macOS desktop launchers instead of flatpak-spawn", async () => {
+    it("generates an honest Windows x64 Steam packaging kit with no fake PE stub, no duplicate resources/app, no dummy save, and saves/* VDF exclusion", async () => {
+      const project = createBlankProject();
+      project.meta.title = "ChronoBell";
+      const fetchBytes = await runtimeFixtureFetch(project);
+
+      const result = await createDesktopSteamExportPackage(project, {
+        platform: "win64-steam",
+        steamAppId: 480,
+        steamDepotId: 481,
+        displayMode: "fullscreen",
+        versionLabel: "1.2.0",
+        sharedSaveGroup: "chronobell-series",
+        fetchBytes,
+      });
+
+      expect(result.fileName).toBe(
+        desktopSteamExportFileName(project, { platform: "win64-steam", versionLabel: "1.2.0" }),
+      );
+      expect(result.summary.executablePath).toBe("Launch-ChronoBell.bat");
+      expect(result.summary.nativeExecutablePath).toBe("ChronoBell.exe");
+      expect(result.summary.saveNamespace).toBe("shared-save-chronobell-series");
+      expect(result.summary.pakArchivePath).toBe("resources/game.pak");
+
+      const zipBytes = new Uint8Array(await result.blob.arrayBuffer());
+      const entryNames = readStoredZipEntryNames(zipBytes);
+
+      expect(entryNames).not.toContain("ChronoBell.exe");
+      expect(entryNames.some((name) => name.startsWith("resources/app/"))).toBe(false);
+      expect(entryNames).not.toContain("saves/slot-01.oprn-save.json");
+
+      expect(entryNames).toContain("Launch-ChronoBell.bat");
+      expect(entryNames).toContain("play-local.mjs");
+      expect(entryNames).toContain("steam_appid.txt");
+      expect(entryNames).toContain("resources/game.pak");
+      expect(entryNames).toContain("resources/desktop-runtime.json");
+      expect(entryNames).toContain("saves/config.json");
+      expect(entryNames).toContain("saves/README-STEAM-CLOUD.txt");
+      expect(entryNames).toContain("steamworks/app_build_480.vdf");
+      expect(entryNames).toContain("steamworks/depot_build_481.vdf");
+      expect(entryNames).toContain("steamworks/steam_input_manifest.vdf");
+      expect(entryNames).toContain("steamworks/STEAM_LAUNCH_CHECKLIST.md");
+
+      const pakBytes = readStoredZipEntry(zipBytes, "resources/game.pak")!;
+      const unpacked = readOprnPakArchive(pakBytes);
+      const indexHtml = decoder.decode(unpacked.readEntry("index.html")!);
+      expect(indexHtml).toContain("window.__OPENRPG_BOOT__");
+      expect(indexHtml).toContain("shared-save-chronobell-series");
+
+      const depotVdf = decoder.decode(readStoredZipEntry(zipBytes, "steamworks/depot_build_481.vdf")!);
+      expect(depotVdf).toContain('"FileExclusion" "saves/*"');
+      expect(depotVdf).toContain('"FileExclusion" "steamworks/*"');
+
+      const appIdText = decoder.decode(readStoredZipEntry(zipBytes, "steam_appid.txt")!);
+      expect(appIdText.trim()).toBe("480");
+
+      const checklist = decoder.decode(readStoredZipEntry(zipBytes, "steamworks/STEAM_LAUNCH_CHECKLIST.md")!);
+      expect(checklist).toContain("npm run build:desktop-game");
+      expect(checklist).toContain("notarytool");
+    });
+
+    it("writes unpacked resources/app/ without resources/game.pak when packAssetsArchive is false", async () => {
+      const project = createBlankProject();
+      project.meta.title = "ChronoBell";
+      const fetchBytes = await runtimeFixtureFetch(project);
+
+      const result = await createDesktopSteamExportPackage(project, {
+        platform: "win64-steam",
+        packAssetsArchive: false,
+        fetchBytes,
+      });
+      const zipBytes = new Uint8Array(await result.blob.arrayBuffer());
+      const entryNames = readStoredZipEntryNames(zipBytes);
+      expect(entryNames).not.toContain("resources/game.pak");
+      expect(entryNames).toContain("resources/app/index.html");
+      expect(result.summary.pakArchiveBytes).toBe(0);
+    });
+
+    it("builds valid Linux and macOS local HTTP launchers with Unix execute bits and no fake ELF stub", async () => {
       const project = createBlankProject();
       project.meta.title = "ChronoBell";
       const fetchBytes = await runtimeFixtureFetch(project);
 
       const linux = await createDesktopSteamExportPackage(project, { platform: "linux64-steamos", fetchBytes });
       const linuxZip = new Uint8Array(await linux.blob.arrayBuffer());
+      const linuxEntries = readStoredZipEntryNames(linuxZip);
+      expect(linuxEntries).not.toContain("ChronoBell.x86_64");
+      expect(linuxEntries).toContain("play-local.mjs");
+
       const script = decoder.decode(readStoredZipEntry(linuxZip, "Launch-ChronoBell.sh")!);
       expect(script).not.toContain("flatpak-spawn");
-      expect(script).toContain('APP_URL="file://${APP_PATH// /%20}"');
-      expect(script).toContain('exec xdg-open "${APP_PATH}"');
-      expect(script).toContain('exec "$BROWSER" --app="${APP_URL}" --start-fullscreen --window-size=1280,720');
-      expect(script).toContain("exit 1");
+      expect(script).not.toContain("file://");
+      expect(script).toContain('exec node "${SCRIPT_DIR}/play-local.mjs" "$@"');
       expect(readStoredZipUnixMode(linuxZip, "Launch-ChronoBell.sh")).toBe(0o100755);
-      expect(readStoredZipUnixMode(linuxZip, "ChronoBell.x86_64")).toBe(0o100755);
+      expect(readStoredZipUnixMode(linuxZip, "play-local.mjs")).toBe(0o100755);
       expect(readStoredZipUnixMode(linuxZip, "steam_appid.txt")).toBeUndefined();
+
       const syntaxDir = mkdtempSync(join(tmpdir(), "oprn-launch-"));
       try {
         const scriptPath = join(syntaxDir, "Launch-ChronoBell.sh");
@@ -175,11 +184,10 @@ describe("desktopGameExport", () => {
 
       const mac = await createDesktopSteamExportPackage(project, { platform: "macos-universal", fetchBytes });
       const macZip = new Uint8Array(await mac.blob.arrayBuffer());
-      const macScript = decoder.decode(readStoredZipEntry(macZip, "ChronoBell.app/Contents/MacOS/ChronoBell")!);
-      expect(macScript).toContain('APP_URL="file://${APP_PATH// /%20}"');
-      expect(macScript).toContain('open -a "Google Chrome" --args --app="${APP_URL}" --start-fullscreen --window-size=1280,720 || open "${APP_PATH}"');
-      expect(readStoredZipUnixMode(macZip, "ChronoBell.app/Contents/MacOS/ChronoBell")).toBe(0o100755);
-      expect(readStoredZipUnixMode(macZip, "ChronoBell.app/Contents/Info.plist")).toBeUndefined();
+      const macScript = decoder.decode(readStoredZipEntry(macZip, "Launch-ChronoBell.command")!);
+      expect(macScript).not.toContain("file://");
+      expect(macScript).toContain('exec node "${SCRIPT_DIR}/play-local.mjs" "$@"');
+      expect(readStoredZipUnixMode(macZip, "Launch-ChronoBell.command")).toBe(0o100755);
     });
 
     it("escapes cmd and Steam VDF metacharacters in the game title", async () => {
@@ -195,7 +203,6 @@ describe("desktopGameExport", () => {
       const zipBytes = new Uint8Array(await result.blob.arrayBuffer());
       const bat = decoder.decode(readStoredZipEntry(zipBytes, "Launch-ChronoBell.bat")!);
       const titleLine = bat.split(/\r?\n/).find((line) => line.startsWith("title "));
-      // `%` is doubled so cmd does not expand PATH, and `&` is caret-escaped so it is not a new command.
       expect(titleLine).toBe('title Dungeons ^& Dragons %%PATH%% (v1.0 "beta")');
       const vdf = decoder.decode(readStoredZipEntry(zipBytes, "steamworks/app_build_480.vdf")!);
       expect(vdf).toContain(String.raw`"Desc" "Dungeons & Dragons %PATH% (win64-steam) v1.0 \"beta\""`);
@@ -204,8 +211,14 @@ describe("desktopGameExport", () => {
       expect(vdf.split("\n").filter((line) => line.includes('"Desc"'))).toHaveLength(1);
     });
 
-    it("bridges localStorage save slots into saves/*.oprn-save.json for Steam Auto-Cloud", () => {
+    it("resolves saveNamespace overrides and bridges localStorage save slots (1~20+) into saves/*.oprn-save.json", () => {
+      expect(resolveDesktopSaveNamespace({ steamAppId: 480, slug: "demo" })).toBe("steam-app-480-demo");
+      expect(resolveDesktopSaveNamespace({ steamAppId: 480, slug: "demo", sharedSaveGroup: "My Series!" })).toBe("shared-save-My-Series");
+      expect(resolveDesktopSaveNamespace({ steamAppId: 480, slug: "demo", saveNamespace: "custom-ns", sharedSaveGroup: "ignored" })).toBe("custom-ns");
+
       expect(saveStorageKeyToDesktopFilePath("oprn:save-slot:v5:1")).toBe("saves/slot-01.oprn-save.json");
+      expect(saveStorageKeyToDesktopFilePath("oprn:save-slot:v5:12")).toBe("saves/slot-12.oprn-save.json");
+      expect(saveStorageKeyToDesktopFilePath("oprn:save-slot:v5:20")).toBe("saves/slot-20.oprn-save.json");
       expect(saveStorageKeyToDesktopFilePath("oprn:save-slot:v5:auto")).toBe("saves/autosave.oprn-save.json");
       expect(saveStorageKeyToDesktopFilePath("oprn:clear-record:v1")).toBe("saves/clear-record.oprn-save.json");
 
@@ -218,9 +231,9 @@ describe("desktopGameExport", () => {
         displayMode: "fullscreen",
       });
 
-      const mirrored = mirrorDesktopSaveFile("oprn:save-slot:v5:1", '{"schemaVersion":5,"gold":777}');
-      expect(mirrored?.filePath).toBe("saves/slot-01.oprn-save.json");
-      expect(window.__oprnDesktopShellState?.syncedSaveFiles["saves/slot-01.oprn-save.json"]?.json).toContain('"gold":777');
+      const mirrored = mirrorDesktopSaveFile("oprn:save-slot:v5:15", '{"schemaVersion":5,"gold":777}');
+      expect(mirrored?.filePath).toBe("saves/slot-15.oprn-save.json");
+      expect(window.__oprnDesktopShellState?.syncedSaveFiles["saves/slot-15.oprn-save.json"]?.json).toContain('"gold":777');
       cleanup();
     });
   });

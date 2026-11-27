@@ -147,10 +147,15 @@ function pattern(skillId: string, priority: number, condition: EnemyActionPatter
   };
 }
 
-/** 도트 시트 slug(pixel-enemies/<slug>.png) ← 적 monsterResourceId. */
-const SLUG_BY_RESOURCE: ReadonlyMap<string, string> = new Map(
-  PIXEL_ENEMY_SHEETS.map((sheet) => [sheet.resourceId, sheet.path.replace(/^.*\//, "").replace(/\.png$/, "")]),
-);
+/** 도트 시트 slug(RETRO_MONSTER_SKILLSETS 키) ← 적 monsterResourceId. 구형 3×3 id 도 원래 스킬 묶음을 그대로 받는다. */
+const SLUG_BY_RESOURCE: ReadonlyMap<string, string> = new Map([
+  ...Object.keys(RETRO_MONSTER_SKILLSETS).map((slug): readonly [string, string] => [`generated-enemy-${slug}`, slug]),
+  ["generated-enemy-slime-01", "slime"],
+  ["generated-enemy-bat-01", "bat"],
+  ["generated-enemy-golem-01", "golem"],
+  ["generated-enemy-dragon-01", "dragon"],
+  ...PIXEL_ENEMY_SHEETS.map((sheet): readonly [string, string] => [sheet.resourceId, sheet.path.replace(/^.*\//, "").replace(/\.png$/, "")]),
+]);
 
 export function retroMonsterSlugFor(monsterResourceId: string | undefined): string | undefined {
   return monsterResourceId ? SLUG_BY_RESOURCE.get(monsterResourceId) : undefined;

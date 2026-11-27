@@ -26,7 +26,8 @@ const ROW = "button, [role='menuitem'], [role='option'], [role='button'], li, .r
 // 전투 메뉴의 「뒤로」 줄은 무리가 아니라 줄 하나다 — 되돌리기 자체라 한 번 탭이다(2026-11-10 fs-combo-cancel: 첨 탭이 커서만 옮겨 취소가 안 됐다 6/6).
 const ONE_TAP_GROUPS = [".status-menu-command-rail", ".choice-list", ".battle-command[data-command-icon='back']"];
 const ONE_TAP = ONE_TAP_GROUPS.join(", ");
-const EXCLUDE = ["[role='tab']", ".touch-pad", ".name-entry-overlay", "[data-testid='dialogue-log']", "[data-testid='dialogue-backlog']", "input", "textarea", "select", ".play-fullscreen-toggle", ...ONE_TAP_GROUPS].join(", ");
+// 허브 ESC 메뉴(player/hubMenu)는 자기 터치 규칙을 갖는다 — 격자 칸·후보는 첫 탭 고르기, 단추·칸·동료 카드는 한 번 탭.
+const EXCLUDE = [".hub-menu:not([data-hub-page='generic']) .hub-board", "[role='tab']", ".touch-pad", ".name-entry-overlay", "[data-testid='dialogue-log']", "[data-testid='dialogue-backlog']", "input", "textarea", "select", ".play-fullscreen-toggle", ...ONE_TAP_GROUPS].join(", ");
 /** 눌림 영역을 넓히지 않는 곳 — EXCLUDE 에서 한 번 탭 줄(ONE_TAP)만 뺀 것. */
 const NO_SNAP = EXCLUDE.split(", ").filter((selector) => !ONE_TAP_GROUPS.includes(selector)).join(", ");
 /** 줄 밖 탭을 줄로 받아 주는 거리(화면 px). 줄 둘레 22px — 혼자 선 줄이면 어느 방향이든 44px 이상이다. */

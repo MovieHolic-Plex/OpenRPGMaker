@@ -42,11 +42,11 @@ describe("desktopWindowControls", () => {
       for (const bad of ["destroy", "quit", "maximize", "", undefined, null, 1, {}, ["close"]]) expect(isWindowControlAction(bad)).toBe(false);
     });
 
-    it("아직 보이지 않은 창은 맥에서 보인 뒤에, 그 밖에서는 보이기 전에 전체화면이 된다", () => {
-      // Break: 리눅스에서 숨은 창에 전체화면을 나중에 걸면 창 모드로 먼저 뜨고, 맥에서 숨은 채 걸면 무시된다.
-      expect(firstShowSteps("darwin")).toEqual(["show", "fullscreen"]);
-      expect(firstShowSteps("win32")).toEqual(["fullscreen", "show"]);
-      expect(firstShowSteps("linux")).toEqual(["fullscreen", "show"]);
+    it("아직 보이지 않은 창을 처음 보일 때 전체화면을 강제하지 않고 창 모드로 보인다", () => {
+      // Break: 앱 실행 시 전체화면을 강제하면 사용자가 원하지 않아도 전체화면으로 열린다.
+      expect(firstShowSteps("darwin")).toEqual(["show"]);
+      expect(firstShowSteps("win32")).toEqual(["show"]);
+      expect(firstShowSteps("linux")).toEqual(["show"]);
     });
 
     it("Windows·Linux 는 단추를 직접 그리고 macOS 는 OS 신호등을 쓴다", () => {

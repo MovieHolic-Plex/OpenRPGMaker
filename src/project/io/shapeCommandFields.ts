@@ -542,6 +542,10 @@ function validateCommandShape(label: string, value: unknown): void {
         const wakeMs = requireNumber(`${label}.wakeDurationMs`, command.wakeDurationMs);
         if (wakeMs < 0 || wakeMs > 10000) throw new ProjectFormatError(`${label}.wakeDurationMs가 0~10000이어야 합니다.`);
       }
+      if (command.branchOnStay !== undefined) requireBoolean(`${label}.branchOnStay`, command.branchOnStay);
+      if (command.stayedBranch !== undefined) validateCommandArray(`${label}.stayedBranch`, command.stayedBranch);
+      if (command.branchOnCancel !== undefined) requireBoolean(`${label}.branchOnCancel`, command.branchOnCancel);
+      if (command.cancelledBranch !== undefined) validateCommandArray(`${label}.cancelledBranch`, command.cancelledBranch);
       if (command.branchOnNotEnoughGold !== undefined) requireBoolean(`${label}.branchOnNotEnoughGold`, command.branchOnNotEnoughGold);
       if (command.notEnoughBranch !== undefined) validateCommandArray(`${label}.notEnoughBranch`, command.notEnoughBranch);
       return;

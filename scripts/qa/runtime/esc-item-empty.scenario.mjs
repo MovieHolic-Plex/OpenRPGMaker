@@ -3,6 +3,8 @@ const key = (key, times = 1) => ({ kind: 'key', key, times });
 const present = (testid) => ({ kind: 'waitFor', testid, state: 'present' });
 export default {
   id: 'esc-item-empty',
+  // 옛 ESC 메뉴(menuUiStyle 스킨) 화면을 검사한다 — 기본이 허브 메뉴가 된 뒤에도 같은 화면을 본다.
+  systemPatch: { menuLayout: "legacy" },
   projectFixture: await writeEscItemEmptyFixture(),
   query: { e2eVitals: '1' },
   beats: [

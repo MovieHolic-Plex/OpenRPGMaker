@@ -20,6 +20,13 @@ import type { EquipmentRecord, ItemRecord, Project, SkillRecord } from "@/projec
 export const FS_SARAH_ACTOR = "actor_fs2_sarah";
 export const FS_SARAH_CLASS = "class_fs2_lancer";
 export const FS_SHOP_SPEARS = ["equip_gen_spear_iron", "equip_gen_halberd_guard", "equip_fs_spear_pike", "equip_fs_spear_star", "equip_fs2_rohan_spear"] as const;
+export const FS_SARAH_GEAR = [
+  ...FS_SHOP_SPEARS,
+  "equip_gen_armor_leather", "equip_gen_armor_chain", "equip_gen_armor_plate",
+  "equip_gen_shield_wood", "equip_gen_shield_iron",
+  "equip_gen_helm_leather", "equip_gen_helm_iron", "equip_gen_hat_traveler",
+  "equip_fs2_well_gill", "equip_fs_dawnwell_necklace",
+] as const;
 
 const STAR_MARK_1 = "state_fs_star_mark_1";
 
@@ -44,8 +51,8 @@ export const FS_EQUIPMENT_TRAITS: readonly EquipmentTrait[] = [
   },
   {
     id: "equip_fs_sword_gale", traitLine: "평타: 한 번에 두 번 벤다.",
-    numbersLine: "공격 0, 민첩 +6, 급소 확률 +24%.",
-    patch: (r) => { r.statBonuses = { ...r.statBonuses, attack: 0 }; r.effectFlags = { ...r.effectFlags, doubleAttack: true }; r.iconResourceId = r.imageResourceId = "cc0-jetrel-gen-rapier-noble"; },
+    numbersLine: "공격 10, 민첩 +6, 급소 확률 +24%.",
+    patch: (r) => { r.statBonuses = { ...r.statBonuses, attack: 10 }; r.effectFlags = { ...r.effectFlags, doubleAttack: true }; r.iconResourceId = r.imageResourceId = "cc0-jetrel-gen-rapier-noble"; },
   },
   {
     id: "equip_gen_sword_flame", traitLine: "평타: 맞히면 가끔 불이 붙는다.",
@@ -71,27 +78,37 @@ export const FS_EQUIPMENT_TRAITS: readonly EquipmentTrait[] = [
   },
   {
     id: "equip_gen_staff_crystal", traitLine: "착용: 기술 MP가 절반만 든다.",
-    patch: (r) => { r.statBonuses = { ...r.statBonuses, mind: 4 }; r.effectFlags = { ...r.effectFlags, halfMpCost: true }; },
+    numbersLine: "마력 14.",
+    patch: (r) => { r.statBonuses = { ...r.statBonuses, mind: 14 }; r.effectFlags = { ...r.effectFlags, halfMpCost: true }; },
   },
   {
     id: "equip_gen_wand_spark", traitLine: "착용: 주는 피해 +15%, 받는 피해도 +15%.",
     patch: (r) => { r.damageDealtPercent = 15; r.damageTakenPercent = 15; },
   },
   {
-    id: "equip_gen_gun_flint", traitLine: "평타: 맞히면 가끔 불이 붙는다.",
-    patch: (r) => { r.stateInflictIds = ["fs_state_burn"]; r.stateInflictionChance = 25; },
+    id: "equip_gen_crossbow_hand", traitLine: "평타: 사출봉·쇠뇌 계열 보정(+40%).",
+    numbersLine: "공격 20, 민첩 +3, 급소 확률 +10%.",
+    patch: (r) => { r.statBonuses = { ...r.statBonuses, attack: 20, agility: 3 }; r.criticalRate = 10; },
   },
   {
-    id: "equip_gen_armor_chain", traitLine: "착용: 베기 피해를 반만 받는다.",
-    patch: (r) => { r.elementalDefenseIds = ["sword"]; },
+    id: "equip_gen_gun_flint", traitLine: "평타: 맞히면 가끔 불이 붙는다(사출봉 기술 +40% 호환).",
+    patch: (r) => {
+      r.stateInflictIds = ["fs_state_burn"]; r.stateInflictionChance = 25;
+      if (!r.attackElementIds.includes("bow")) r.attackElementIds = [...r.attackElementIds, "bow"];
+    },
   },
   {
-    id: "equip_gen_shield_iron", traitLine: "착용: 빛 피해를 반만 받는다.",
-    patch: (r) => { r.elementalDefenseIds = ["holy"]; },
+    // mobBalance.ts 가 지역 통째 반감을 막기 위해 뗀 속성 반감(elementalDefenseIds)은 다시 넣지 않는다.
+    id: "equip_gen_armor_chain", traitLine: "착용: 받는 피해가 5% 준다.",
+    patch: (r) => { r.damageTakenPercent = -5; },
   },
   {
-    id: "equip_gen_robe_mage", traitLine: "착용: 불 피해를 반만 받는다.",
-    patch: (r) => { r.elementalDefenseIds = ["fire"]; },
+    id: "equip_gen_shield_iron", traitLine: "착용: 방어 하락과 기절에 조금 더 버틴다.",
+    patch: (r) => { r.stateDefenseIds = [...new Set([...(r.stateDefenseIds ?? []), "state_defense_down"])]; },
+  },
+  {
+    id: "equip_gen_robe_mage", traitLine: "착용: 침묵에 걸리지 않는다.",
+    patch: (r) => { r.stateDefenseIds = [...new Set([...(r.stateDefenseIds ?? []), "state_silence"])]; },
   },
 ];
 
@@ -106,6 +123,11 @@ export const FS_ITEM_ICONS: Readonly<Record<string, string>> = {
   fs_bread_hearty: "oprn-item-food-bread-3",
   fs_bread_ember: "oprn-item-food-bread-2",
   fs_bread_wish: "oprn-item-food-bread-1",
+  item_puzzle_solar_ember: "cc0-jetrel-gem-ruby",
+  item_fs_silver_spoon: "cc0-jetrel-medal",
+  item_fs_free_night: "cc0-jetrel-scroll",
+  item_puzzle_helios_prism: "cc0-jetrel-crystal",
+  item_fs_tobi_kite: "cc0-jetrel-wind-feather",
 };
 
 interface ThrownTrait { readonly itemId: string; readonly stateId: string; readonly chance: number; readonly line: string }
@@ -139,12 +161,26 @@ export function applyFallenItemIdentity(project: Project): ItemIdentityReport {
     replaceFamilyLine(record, trait.traitLine, trait.numbersLine);
     report.applied.push(`${record.name}: ${trait.traitLine}`);
   }
-  for (const id of FS_SHOP_SPEARS) {
+  for (const id of FS_SARAH_GEAR) {
     const record = equipment(id);
-    if (!record) { report.skipped.push(`새라 창 ${id} — 장비 없음`); continue; }
+    if (!record) { report.skipped.push(`새라 장비 ${id} — 장비 없음`); continue; }
     if (!record.equippableActorIds.includes(FS_SARAH_ACTOR)) record.equippableActorIds = [...record.equippableActorIds, FS_SARAH_ACTOR];
     if (!record.equippableClassIds.includes(FS_SARAH_CLASS)) record.equippableClassIds = [...record.equippableClassIds, FS_SARAH_CLASS];
     report.applied.push(`새라 장착: ${record.name}`);
+  }
+  const starRod = equipment("equip_fs_star_rod");
+  if (starRod) {
+    starRod.equippableClassIds = ["class_gunner"];
+    starRod.equippableActorIds = ["actor_fs_iris"];
+  }
+  const priceNorm: Record<string, number> = {
+    fs_bread_starlight: 110,
+    item_gen2_frost_vial: 95,
+    item_thunder_stone: 95,
+  };
+  for (const [id, price] of Object.entries(priceNorm)) {
+    const rec = item(id);
+    if (rec) rec.price = price;
   }
   for (const [id, icon] of Object.entries(FS_EQUIPMENT_ICONS)) {
     const record = equipment(id);

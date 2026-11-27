@@ -19,6 +19,7 @@
 //  - 내보내기(webExport·.oprn)는 자기완결이어야 하므로 통째로 싣는다(serialize 의 inlineBundledTilesets).
 //  - 되돌리기(롤백): WRITE_BUNDLED_TILESET_DIFFS 를 끄면 다음 저장부터 통째로 싣는다. 읽기는 항상 켜 둔다.
 import { bundledTilesetById, bundledTilesetDefinitionReady, preloadBundledTilesetDefinitions } from "./defaults/defaultAssets";
+import { pendingDefaultTilesetBuilder } from "./defaults/lazyDefaultTilesets";
 import { BEODEUL_CITY_ID, createBeodeulCityTileset } from "./defaults/beodeulCity";
 import { BUNDLED_TILESET_REF } from "./bundledTilesetRefs";
 import { jsonEqual } from "@/util/structuralJson";
@@ -222,6 +223,31 @@ export function bundledTilesetDiffView(id: string, tileset: TilesetDef, wire: ob
 }
 
 /**
+ * 아직 깨어나지 않은 순정 번들 기본 타일셋(lazyDefaultTilesets.ts)의 저장 차이 보기.
+ * 한 프로세스에서 id 당 한 번만 번들 기본값을 만들어 작은 머리+키 목록(수백 바이트)만 기억하고
+ * 본체(수 MB)는 곧바로 버린다 — 이후 serialize() 는 49개 타일셋을 깨우지 않고 O(1) 로 통과한다.
+ */
+const pendingDefaultDiffViews = new Map<string, Record<string, unknown> | null>();
+export function bundledTilesetDiffViewForPendingDefault(id: string): Record<string, unknown> | undefined {
+  if (!writeDiffs) return undefined;
+  const cached = pendingDefaultDiffViews.get(id);
+  if (cached !== undefined) return cached ?? undefined;
+  const ready = bundledTilesetDefinitionReady(id);
+  if (ready !== true) return undefined;
+  const base = bundledTilesetById(id) as unknown as Record<string, unknown> | undefined;
+  let view: Record<string, unknown> | null = null;
+  if (base) {
+    const wire = Object.prototype.hasOwnProperty.call(base, "terrainTemplates")
+      ? Object.fromEntries(Object.entries(base).filter(([key]) => key !== "terrainTemplates"))
+      : base;
+    const diff = diffAgainst(wire, base);
+    if (diff) view = viewOf(wire, diff);
+  }
+  pendingDefaultDiffViews.set(id, view);
+  return view ?? undefined;
+}
+
+/**
  * 저장 보기의 차이를 타일셋 하나씩 양보하며 미리 만든다. 로드 뒤 첫 저장 보기가 번들 정의 수십 개를 한 번에 비교해
  * 메인 스레드를 약 1s 멈추지 않게 한다(store.baselineFrom 의 한가한 예열). 결과는 저장 보기와 같은 기억에 들어간다.
  */
@@ -231,8 +257,10 @@ export async function primeBundledTilesetDiffViews(
   stale: () => boolean,
 ): Promise<void> {
   if (!writeDiffs) return;
-  for (const [id, tileset] of Object.entries(project.tilesets)) {
+  for (const id of Object.keys(project.tilesets)) {
     if (stale()) return;
+    if (pendingDefaultTilesetBuilder(project.tilesets, id)) continue;
+    const tileset = project.tilesets[id];
     if (!tileset || Object.hasOwn(tileset, "terrainTemplates") || isPendingLazyTileset(tileset)) continue;
     const cached = views.get(tileset);
     if (cached && sameFingerprint(tileset as unknown as Record<string, unknown>, cached.fingerprint)) continue;
@@ -246,7 +274,11 @@ export async function primeBundledTilesetDiffViews(
  * 일 뒤에 부른다 — 기억 대조(필드·원소 정체)는 원소 객체 안의 속성 변경을 못 본다.
  */
 export function forgetBundledTilesetDiffViews(project: { readonly tilesets: Readonly<Record<string, TilesetDef>> }): void {
-  for (const tileset of Object.values(project.tilesets)) if (tileset && !Object.isFrozen(tileset)) views.delete(tileset);
+  for (const id of Object.keys(project.tilesets)) {
+    if (pendingDefaultTilesetBuilder(project.tilesets, id)) continue;
+    const tileset = project.tilesets[id];
+    if (tileset && !Object.isFrozen(tileset)) views.delete(tileset);
+  }
 }
 
 // ── 되돌리기 ──────────────────────────────────────────────────────────────
@@ -605,7 +637,13 @@ export function restoreBundledTilesetDiffs(data: { tilesets?: unknown }): Bundle
     if (!tileset) {
       const base = restoreBase(id, value);
       if (!base) throw new BundledTilesetDiffError(`번들 타일셋 ${id} 의 정의가 이 앱에 없습니다 — 이 프로젝트를 저장한 앱(같은 판 이상)으로 열어 주세요.`);
-      tileset = restoreOne(id, value, base, counters);
+      const own = { rebased: 0, missing: 0 };
+      tileset = restoreOne(id, value, base, own);
+      counters.rebased += own.rebased;
+      counters.missing += own.missing;
+      // 같은 판의 번들에 얹었으면 되돌린 값의 차이가 곧 받은 보기다(바이트 동일 계약) — 첫 저장 보기·한가한 예열이 정의와 다시
+      // 비교하지 않게 기억한다(버들항 약 0.5s 멈춤, 2026-11-27 다시 열기 프로파일). 정규화가 제자리에서 고치면 forgetBundledTilesetDiffViews 가 버린다.
+      if (!frozen && own.rebased === 0 && own.missing === 0) views.set(tileset, { fingerprint: fingerprintOf(tileset), view: value });
       if (frozen) {
         // 번들 정의 생성자가 정의 JSON 기억과 원소를 공유할 수 있다 — 그 기억까지 얼리지 않게 떼어 낸 사본을 얼린다.
         tileset = deepFreeze(structuredClone(tileset));

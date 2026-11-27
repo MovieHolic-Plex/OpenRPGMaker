@@ -61,6 +61,7 @@ import { localCliOfProvider } from "@/ai/localCliEngine";
 import { ASSISTANT_ENGINE_CHANGED_EVENT, loadEngineChoice, localAgentsEnabled, saveEngineChoice } from "@/start/settings/localAgents";
 import { renderAiLocalProgramSettings } from "./aiLocalProgramSettings";
 import { renderAiSettingsOverview } from "./aiSettingsOverview";
+import { renderAiThreeProviders } from "./aiThreeProviders";
 import { deckIcon } from "./aiDeckIcons";
 import { aiProviderIcon } from "./aiProviderIcons";
 import { ASSISTANT_CHATGPT_MODEL, isLegacyTerraModel } from "@/ai/chatgptDefault";
@@ -1248,6 +1249,22 @@ export function renderAiSettingsForm(options: {
 
   const usageContent = el("div");
   const overview = renderAiSettingsOverview();
+  const threeProviders = renderAiThreeProviders({
+    onStartOAuth: (targetId) => authSettings.startProviderLogin(targetId),
+    onDisconnectOAuth: (targetId) => authSettings.disconnectProvider(targetId),
+    onSelectOAuthProvider: (targetId, selectedModel, effort) => {
+      providerId = parseOhMyPiProvider(targetId);
+      authSettings.selectProvider(providerId, { focus: false, notify: false });
+      for (const control of mainRoles) {
+        setRoleModel(control, providerId, selectedModel, effort);
+        modelSelectionOverrides[control.role] = true;
+      }
+      persist(false);
+    },
+    onConnectedCompat: (endpoint, selectedModel) => {
+      applyDirectConnection(endpoint.id, selectedModel);
+    },
+  });
   // 계정 추가 — 연결이 없으면 펼쳐 둔다(할 일이 그것뿐). 연결된 사용자에게는 접힌 한 줄이다(다른 길 안내가 시끄럽게 뜨지 않게).
   const addAccount = el("details", {
     class: "ai-settings-alternatives",
@@ -1256,7 +1273,7 @@ export function renderAiSettingsForm(options: {
       el("summary", { class: "ai-settings-row", dataset: { testid: "ai-settings-add-account-toggle" },
         children: [rowCopy("계정 추가", "API 키 · ChatGPT · Claude · Google · 내 PC 프로그램"), chevron()] }),
       el("div", { class: "ai-settings-alternative-body", children: [
-        quickConnectSection, hero, accountRow, accountChecking, accountCheckError, primaryFeedback, disconnectError,
+        quickConnectSection, hero, accountRow, accountChecking, accountCheckError, disconnectError,
         directAdvanced,
         alternatives,
       ] }),
@@ -1267,7 +1284,7 @@ export function renderAiSettingsForm(options: {
   // 왼쪽 메뉴 다섯(2026-11-23 오너: 「왼쪽 사이드바에 메뉴를 여러 개 넣는 기존 안이 더 깔끔하다. 다 분배해라.」).
   // 예전 고급 시트(겹쳐 뜨는 두 번째 창)는 없앴다 — 모든 설정이 메뉴 하나씩에 놓인다.
   const panes = {
-    account: settingsPane("account", [overview.accounts, addAccount]),
+    account: settingsPane("account", [threeProviders.element, primaryFeedback, overview.accounts, addAccount]),
     model: settingsPane("model", [
       overview.current,
       qualitySection,
@@ -1334,8 +1351,8 @@ export function renderAiSettingsForm(options: {
     dataset: { testid: "ai-config" },
     children: [rail, content],
   });
-  // 연결돼 있으면 지금 쓰는 모델부터, 아니면 계정 연결부터 보인다.
-  activatePane(getAiConnectionStatus().kind === "ready" ? "model" : "account");
+  // 기본 화면은 GPT · Claude · Gemini 3버튼이 있는 계정 메뉴로 연다.
+  activatePane("account");
 
   syncModelDisplay();
   syncChatGptAccount();
@@ -1350,6 +1367,7 @@ export function renderAiSettingsForm(options: {
     element: form,
     dispose: () => {
       disposed = true;
+      threeProviders.dispose();
       overview.dispose();
       localPrograms?.dispose();
       win?.removeEventListener?.(ASSISTANT_ENGINE_CHANGED_EVENT, onEngineChanged);

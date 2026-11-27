@@ -1,4 +1,4 @@
-import { importSaveCopy, listSaveSlots, type SaveSlotIndex } from "./saveSlots";
+import { importSaveCopy, listSaveSlots, SAVE_SLOT_INDICES, type SaveSlotIndex } from "./saveSlots";
 import { publicationSaveKey } from "./savePublication";
 import { el } from "../util/dom";
 import type { Project } from "../project/types";
@@ -15,7 +15,7 @@ export function appendPredecessorSaveImports(host: HTMLElement, options: {
   if (!destination) return;
   const status = el("div", { class: "oprn-load-message", attrs: { role: "status" } });
   for (const lineage of publication.acceptedSaveCompatibilityIds) {
-    for (const slot of [1, 2, 3, "auto"] as const) {
+    for (const slot of [...SAVE_SLOT_INDICES, "auto"] as const) {
       const sourceKey = publicationSaveKey(slot, { ...publication, saveCompatibilityId: lineage });
       if (!sourceKey || options.storage.getItem(sourceKey) === null) continue;
       host.append(el("button", {

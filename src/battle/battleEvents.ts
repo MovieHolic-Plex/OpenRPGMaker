@@ -1,3 +1,4 @@
+import type { QuickJSContext, QuickJSHandle, QuickJSRuntime, QuickJSWASMModule } from "quickjs-emscripten-core";
 import { calendarOptionsOf, evalActorQueryCondition, type ActorQuerySession } from "@/project/conditionActorQueries";
 import { authoredChoiceIndex, choiceView, choicesHaveConditions, type ChoiceView } from "@/project/choiceView";
 import { withJosa } from "@/util/josa";
@@ -17,6 +18,10 @@ import { transitionActorEquipment } from "@/project/equipmentRules";
 import { evalRoguelikeRunCondition, type RoguelikeRunState } from "@/project/roguelikeRun";
 import { effectiveActorClassId, promoteActor as promoteActorClass, type ClassOverrideSession } from "@/project/sessionClass";
 import { badgeContext } from "@/project/badgeProgress";
+import { requestScriptEngine, scriptEngineLoadFailure, scriptEngineModule } from "@/player/script/engine";
+import { SCRIPT_API } from "@/project/script/apiSpec";
+import { findScriptModule, libraryIdFromSpecifier } from "@/project/script/library";
+import { scriptCompiledIsFresh } from "@/project/script/types";
 import type { ActorId, ActorInitialEquipment, Command, Condition, FaceGraphic, MessageWindowSettings, Project, ShowAnimationTarget, VariableOperand } from "@/project/types";
 import type { BattleEventCondition, BattleEventPageRecord, TroopBattleGuest, TroopRecord } from "@/project/types/database";
 import { normalizeTroopBattleGuests } from "@/project/databaseEnemyTroopRecordModel";
@@ -70,7 +75,7 @@ export type BattleEventRuntimeState = {
   readonly playerFacing?: import("@/project/types").Dir;
   readonly eventLocations?: Record<string, { readonly mapId: string; readonly x: number; readonly y: number; readonly direction?: import("@/project/types").Dir }>;
   readonly horror?: import("@/project/horrorState").HorrorState;
-  readonly stringVariables?: Record<string, string>;
+  stringVariables?: Record<string, string>;
   readonly clearHistory?: { readonly count: number; readonly endingIds: readonly string[] };
   readonly npcActivities?: Record<string, string>;
   readonly friendship?: Record<string, number>;
@@ -180,6 +185,8 @@ export type BattleEventRuntimeOptions = {
    * 세운 배틀러의 이름을 돌려준다. 세울 수 없으면(배우 없음·이미 있음·몬스터 파티 전투) undefined.
    */
   readonly joinBattleGuest?: (guest: TroopBattleGuest) => string | undefined;
+  /** Optional preloaded QuickJS module override (defaults to `scriptEngineModule()`). */
+  readonly scriptModule?: QuickJSWASMModule;
 };
 
 export type BattleEventRuntimeResult =
@@ -1037,9 +1044,10 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
       case "removeMonster":
       case "tradeMonster":
       case "fuseMonsters":
-      // 스크립트(샌드박스 TS)는 맵·공통 이벤트 해석기에서만 돈다(openwiki/script-sandbox.md).
-      case "script":
         logUnsupported(page, context, command.kind);
+        return false;
+      case "script":
+        executeBattleScript(page, command, context);
         return false;
       default:
         // 컴파일 타임 전수 분류: 새 Command kind 는 여기서 배틀 분류(실행/미지원)를 강제받는다.
@@ -1267,6 +1275,62 @@ export function createBattleEventRuntime(options: BattleEventRuntimeOptions): Ba
     return Math.max(0, Math.min(max, Math.trunc(value)));
   }
 
+  function executeBattleScript(
+    page: BattleEventPageRecord,
+    command: Extract<Command, { kind: "script" }>,
+    context: BattleEventContext,
+  ): void {
+    const label = command.name?.trim();
+    const prefix = label ? `script (${label})` : "script";
+    if (!command.compiled.trim()) {
+      if (command.source.trim()) {
+        logUnsupported(page, context, `${prefix} error: script is not compiled`);
+      } else {
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `${prefix} (empty)` });
+      }
+      return;
+    }
+
+    const module = options.scriptModule ?? scriptEngineModule();
+    if (!module) {
+      const loadError = scriptEngineLoadFailure();
+      if (!loadError) requestScriptEngine();
+      logUnsupported(
+        page,
+        context,
+        loadError
+          ? `${prefix} error: script engine failed to load (${loadError})`
+          : `${prefix} error: script engine is not loaded (preloadScriptEngine required)`,
+      );
+      return;
+    }
+
+    const runResult = runBattleQuickJsScript(module, command.compiled, {
+      project: options.project,
+      troopRecord: options.troopRecord,
+      ownerEventId: options.ownerEventId,
+      actors: options.actors,
+      enemies: options.enemies,
+      state: options.state,
+      context,
+      changeActorVital,
+      resolveActorTargets,
+      resolveEnemy,
+      clampVital,
+      applyVitalOperation,
+      refreshActorDerivedStats: options.refreshActorDerivedStats,
+      onLog: (text) => {
+        logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `${prefix}: ${text}` });
+      },
+    });
+
+    if (runResult.ok) {
+      logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "message", detail: `${prefix} ok` });
+    } else {
+      logUnsupported(page, context, `${prefix} error: ${runResult.message}`);
+    }
+  }
+
   function logUnsupported(page: BattleEventPageRecord, context: BattleEventContext, detail: string): void {
     logs.push({ pageId: page.id, round: context.turn, triggerId: page.id, kind: "unsupported", detail });
   }
@@ -1310,4 +1374,547 @@ function findProjectEvent(project: Project, eventId: string | undefined): Social
 function assertNever(value: never): never {
   void value;
   throw new Error("Unhandled battle event command kind");
+}
+
+// ── Battle QuickJS script sandbox ────────────────────────────────────────────────────────────────
+
+const BATTLE_SCRIPT_MEMORY_LIMIT_BYTES = 16 * 1024 * 1024;
+const BATTLE_SCRIPT_STACK_LIMIT_BYTES = 512 * 1024;
+const BATTLE_SCRIPT_CPU_LIMIT_MS = 500;
+const BATTLE_SCRIPT_WRAPPER_LINES = 1;
+const BATTLE_SELF_SWITCH_KEYS = new Set(["A", "B", "C", "D"]);
+
+const BATTLE_SCRIPT_AWAIT_NAMES: readonly string[] = SCRIPT_API.filter((entry) => entry.awaits).map((entry) => entry.name);
+const BATTLE_SCRIPT_EXTRA_SYNC_NAMES = [
+  "turn",
+  "actors",
+  "enemies",
+  "getEnemy",
+  "setEnemyHp",
+  "setEnemyMp",
+  "battleContext",
+] as const;
+const BATTLE_SCRIPT_SYNC_NAMES: readonly string[] = [
+  ...SCRIPT_API.filter((entry) => !entry.awaits).map((entry) => entry.name),
+  ...BATTLE_SCRIPT_EXTRA_SYNC_NAMES,
+];
+
+const BATTLE_SCRIPT_PRELUDE = `(() => {
+  "use strict";
+  const host = globalThis.__battleHost;
+  delete globalThis.__battleHost;
+  const call = host.call;
+  const parse = JSON.parse, stringify = JSON.stringify;
+  const unwrap = (text) => parse(text).v;
+  const encode = (args) => stringify(args, (_key, value) => value === undefined ? null : value);
+  const game = {};
+  for (const name of ${JSON.stringify(BATTLE_SCRIPT_SYNC_NAMES)}) {
+    game[name] = (...args) => unwrap(call(name, encode(args)));
+  }
+  for (const name of ${JSON.stringify(BATTLE_SCRIPT_AWAIT_NAMES)}) {
+    game[name] = () => {
+      throw new Error("game." + name + "() is an async/awaitable command and is not supported inside battle event scripts");
+    };
+  }
+  Object.freeze(game);
+  Object.defineProperty(globalThis, "game", { value: game, writable: false, configurable: false, enumerable: true });
+  Math.random = () => unwrap(call("__random", "[]"));
+  const show = (value) => { if (typeof value === "string") return value; try { return stringify(value) ?? String(value); } catch { return String(value); } };
+  const log = (...values) => { call("log", stringify([values.map(show).join(" ")])); };
+  globalThis.console = Object.freeze({ log, info: log, warn: log, error: log, debug: log });
+  const modules = new Map();
+  const require = (specifier) => {
+    if (typeof specifier !== "string" || !specifier.startsWith("@lib/")) {
+      throw new Error("Only project library modules can be imported: import { … } from \\"@lib/<id>\\" (got " + String(specifier) + ")");
+    }
+    const cached = modules.get(specifier);
+    if (cached) return cached.exports;
+    const source = unwrap(call("__lib", stringify([specifier])));
+    const mod = { exports: {} };
+    modules.set(specifier, mod);
+    const factory = new Function("require", "exports", "module", source);
+    factory(require, mod.exports, mod);
+    return mod.exports;
+  };
+  return (fn) => { const mod = { exports: {} }; return fn(require, mod.exports, mod); };
+})()`;
+
+interface BattleScriptHostDeps {
+  readonly project: Project;
+  readonly troopRecord: TroopRecord;
+  readonly ownerEventId?: string;
+  readonly actors: readonly MutableBattler[];
+  readonly enemies: readonly MutableBattler[];
+  readonly state: BattleEventRuntimeState;
+  readonly context: BattleEventContext;
+  readonly changeActorVital: (actorId: string, kind: "hp" | "mp", op: "=" | "+=" | "-=", amount: number, amountMode?: "flat" | "percent") => void;
+  readonly resolveActorTargets: (actorId: string | undefined) => readonly MutableBattler[];
+  readonly resolveEnemy: (enemyId: string) => MutableBattler | undefined;
+  readonly clampVital: (value: number, max: number) => number;
+  readonly applyVitalOperation: (current: number, op: "=" | "+=" | "-=", amount: number) => number;
+  readonly refreshActorDerivedStats?: (battler: MutableBattler, options?: { readonly refreshSkills?: boolean }) => void;
+  readonly onLog: (message: string) => void;
+}
+
+function resolveScriptDefId(list: readonly { id: string; name: string }[] | undefined, value: string): string {
+  if (!list || list.some((entry) => entry.id === value)) return value;
+  return list.find((entry) => entry.name === value)?.id ?? value;
+}
+
+function requireScriptStr(api: string, args: readonly unknown[], index: number, name: string): string {
+  const value = args[index];
+  if (typeof value !== "string" || value.length === 0) {
+    throw new TypeError(`game.${api}: ${name} must be a non-empty string`);
+  }
+  return value;
+}
+
+function optScriptStr(api: string, args: readonly unknown[], index: number, name: string): string | undefined {
+  const value = args[index];
+  if (value === undefined || value === null) return undefined;
+  if (typeof value !== "string") {
+    throw new TypeError(`game.${api}: ${name} must be a string`);
+  }
+  return value;
+}
+
+function requireScriptInt(api: string, args: readonly unknown[], index: number, name: string): number {
+  const value = args[index];
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    throw new TypeError(`game.${api}: ${name} must be a finite number`);
+  }
+  return Math.trunc(value);
+}
+
+function optScriptInt(api: string, args: readonly unknown[], index: number, name: string, fallback: number): number {
+  const value = args[index];
+  if (value === undefined || value === null) return fallback;
+  return requireScriptInt(api, args, index, name);
+}
+
+function requireScriptBool(api: string, args: readonly unknown[], index: number, name: string): boolean {
+  const value = args[index];
+  if (typeof value !== "boolean") {
+    throw new TypeError(`game.${api}: ${name} must be true or false`);
+  }
+  return value;
+}
+
+function formatBattleVmError(vm: QuickJSContext, handle: QuickJSHandle, timedOut: boolean): string {
+  if (timedOut) {
+    return `Battle script exceeded CPU budget (${BATTLE_SCRIPT_CPU_LIMIT_MS} ms). It was stopped.`;
+  }
+  let dumped: unknown;
+  try {
+    dumped = vm.dump(handle);
+  } catch {
+    dumped = "unknown error";
+  }
+  if (dumped && typeof dumped === "object") {
+    const error = dumped as { name?: unknown; message?: unknown; stack?: unknown };
+    const head = `${typeof error.name === "string" ? error.name : "Error"}: ${typeof error.message === "string" ? error.message : String(dumped)}`;
+    const line = typeof error.stack === "string" ? /battle-script\.js:(\d+)/u.exec(error.stack)?.[1] : undefined;
+    const text = line ? `${head} (compiled line ${Math.max(1, Number(line) - BATTLE_SCRIPT_WRAPPER_LINES)})` : head;
+    return /out of memory/iu.test(text) ? `${text} — battle scripts may use at most 16 MB.` : text;
+  }
+  return String(dumped);
+}
+
+function battleActorSnapshot(deps: BattleScriptHostDeps, battler: MutableBattler) {
+  return {
+    id: battler.recordId,
+    battlerId: battler.id,
+    name: battler.name,
+    level: battler.level ?? deps.state.actorLevels?.[battler.recordId] ?? 1,
+    exp: deps.state.actorExperience?.[battler.recordId] ?? 0,
+    hp: battler.hp,
+    mp: battler.mp,
+    maxHp: battler.maxHp,
+    maxMp: battler.maxMp,
+    defeated: battler.hp <= 0,
+    stateIds: [...battler.stateIds],
+    inParty: (deps.state.partyActorIds ?? deps.actors.map((entry) => entry.recordId)).includes(battler.recordId),
+  };
+}
+
+function battleEnemySnapshot(battler: MutableBattler) {
+  return {
+    id: battler.id,
+    recordId: battler.recordId,
+    name: battler.name,
+    hp: battler.hp,
+    mp: battler.mp,
+    maxHp: battler.maxHp,
+    maxMp: battler.maxMp,
+    defeated: battler.hp <= 0,
+    hidden: Boolean(battler.hidden),
+    stateIds: [...battler.stateIds],
+  };
+}
+
+function runBattleQuickJsScript(
+  module: QuickJSWASMModule,
+  compiled: string,
+  deps: BattleScriptHostDeps,
+): { readonly ok: true } | { readonly ok: false; readonly message: string } {
+  let rt: QuickJSRuntime | undefined;
+  let vm: QuickJSContext | undefined;
+  let promiseHandle: QuickJSHandle | undefined;
+  let timedOut = false;
+
+  // Local deterministic PRNG seeded from turn and troop id
+  let rngSeed = (deps.context.turn + 1) * 2654435761;
+  for (let i = 0; i < deps.troopRecord.id.length; i += 1) {
+    rngSeed = Math.imul(rngSeed ^ deps.troopRecord.id.charCodeAt(i), 0x01000193);
+  }
+  const nextRand = (): number => {
+    rngSeed ^= rngSeed << 13;
+    rngSeed ^= rngSeed >>> 17;
+    rngSeed ^= rngSeed << 5;
+    return (rngSeed >>> 0) / 0x100000000;
+  };
+
+  const dispatchBattleHostCall = (name: string, args: readonly unknown[]): unknown => {
+    switch (name) {
+      case "__random":
+        return nextRand();
+      case "__lib": {
+        const specifier = args[0];
+        const id = typeof specifier === "string" ? libraryIdFromSpecifier(specifier) : undefined;
+        if (!id) throw new Error(`Bad library import ${JSON.stringify(specifier)}; use "@lib/<id>"`);
+        const libMod = findScriptModule(deps.project.scriptLibrary, id);
+        if (!libMod) throw new Error(`Library module @lib/${id} does not exist in this project`);
+        if (!libMod.compiled.trim() && libMod.source.trim()) {
+          throw new Error(`Library module @lib/${id} is not compiled; open and save it in the editor`);
+        }
+        if (!scriptCompiledIsFresh(libMod)) {
+          console.warn(`[battle-script] @lib/${id} was edited after its last compile; running the last compiled version`);
+        }
+        return libMod.compiled;
+      }
+      // Switches & variables
+      case "getSwitch": {
+        const id = resolveScriptDefId(deps.project.switches, requireScriptStr("getSwitch", args, 0, "id"));
+        return deps.state.switches[id] ?? false;
+      }
+      case "setSwitch": {
+        const id = resolveScriptDefId(deps.project.switches, requireScriptStr("setSwitch", args, 0, "id"));
+        deps.state.switches[id] = requireScriptBool("setSwitch", args, 1, "value");
+        return undefined;
+      }
+      case "getVar": {
+        const id = resolveScriptDefId(deps.project.variables, requireScriptStr("getVar", args, 0, "id"));
+        return deps.state.variables[id] ?? 0;
+      }
+      case "setVar": {
+        const id = resolveScriptDefId(deps.project.variables, requireScriptStr("setVar", args, 0, "id"));
+        deps.state.variables[id] = requireScriptInt("setVar", args, 1, "value");
+        return undefined;
+      }
+      case "addVar": {
+        const id = resolveScriptDefId(deps.project.variables, requireScriptStr("addVar", args, 0, "id"));
+        const next = (deps.state.variables[id] ?? 0) + requireScriptInt("addVar", args, 1, "delta");
+        deps.state.variables[id] = next;
+        return next;
+      }
+      // String variables (글변수)
+      case "getText": {
+        const id = requireScriptStr("getText", args, 0, "id");
+        return deps.state.stringVariables?.[id] ?? "";
+      }
+      case "setText": {
+        const id = requireScriptStr("setText", args, 0, "id");
+        const value = args[1];
+        if (typeof value !== "string") throw new TypeError("game.setText: value must be a string");
+        if (value.length > 10_000) throw new RangeError("game.setText: value is longer than 10,000 characters");
+        deps.state.stringVariables ??= {};
+        deps.state.stringVariables[id] = value;
+        return undefined;
+      }
+      // Self switches
+      case "getSelfSwitch": {
+        const key = requireScriptStr("getSelfSwitch", args, 0, "key");
+        if (!BATTLE_SELF_SWITCH_KEYS.has(key)) throw new TypeError('game.getSelfSwitch: key must be "A", "B", "C" or "D"');
+        const eventId = optScriptStr("getSelfSwitch", args, 1, "eventId") ?? deps.ownerEventId;
+        return eventId ? deps.state.selfSwitches?.[eventId]?.[key] ?? false : false;
+      }
+      case "setSelfSwitch": {
+        const key = requireScriptStr("setSelfSwitch", args, 0, "key");
+        if (!BATTLE_SELF_SWITCH_KEYS.has(key)) throw new TypeError('game.setSelfSwitch: key must be "A", "B", "C" or "D"');
+        const value = requireScriptBool("setSelfSwitch", args, 1, "value");
+        const eventId = optScriptStr("setSelfSwitch", args, 2, "eventId") ?? deps.ownerEventId;
+        if (!eventId || !deps.state.selfSwitches) {
+          throw new Error("game.setSelfSwitch: no owner event or selfSwitches state in this battle");
+        }
+        deps.state.selfSwitches[eventId] ??= {};
+        deps.state.selfSwitches[eventId][key] = value;
+        return undefined;
+      }
+      // Gold & items
+      case "gold":
+        return deps.state.gold ?? 0;
+      case "addGold": {
+        const delta = requireScriptInt("addGold", args, 0, "amount");
+        deps.state.gold = Math.max(0, (deps.state.gold ?? 0) + delta);
+        return deps.state.gold;
+      }
+      case "itemCount":
+        return deps.state.inventory[requireScriptStr("itemCount", args, 0, "id")] ?? 0;
+      case "hasItem": {
+        const id = requireScriptStr("hasItem", args, 0, "id");
+        const count = Math.max(1, optScriptInt("hasItem", args, 1, "count", 1));
+        return (deps.state.inventory[id] ?? 0) >= count;
+      }
+      case "addItem": {
+        const id = requireScriptStr("addItem", args, 0, "id");
+        const count = optScriptInt("addItem", args, 1, "count", 1);
+        if (count < 0) throw new RangeError("game.addItem: count must be >= 0");
+        Object.assign(
+          deps.state,
+          transitionItemState(deps.state, deps.project.database.items, { kind: "grant", itemId: id, amount: count }),
+        );
+        return undefined;
+      }
+      case "removeItem": {
+        const id = requireScriptStr("removeItem", args, 0, "id");
+        const count = optScriptInt("removeItem", args, 1, "count", 1);
+        if (count < 0) throw new RangeError("game.removeItem: count must be >= 0");
+        if ((deps.state.inventory[id] ?? 0) < count) return false;
+        Object.assign(
+          deps.state,
+          transitionItemState(deps.state, deps.project.database.items, { kind: "remove", itemId: id, amount: count }),
+        );
+        return true;
+      }
+      // Party & battle actors
+      case "party":
+        return [...(deps.state.partyActorIds ?? deps.actors.map((entry) => entry.recordId))];
+      case "actor": {
+        const id = requireScriptStr("actor", args, 0, "id");
+        const found = deps.actors.find((entry) => entry.recordId === id || entry.id === id);
+        return found ? battleActorSnapshot(deps, found) : undefined;
+      }
+      case "addToParty": {
+        const id = requireScriptStr("addToParty", args, 0, "id").trim();
+        deps.state.partyActorIds ??= [];
+        if (id && !deps.state.partyActorIds.includes(id)) deps.state.partyActorIds.push(id);
+        return undefined;
+      }
+      case "removeFromParty": {
+        const id = requireScriptStr("removeFromParty", args, 0, "id");
+        deps.state.partyActorIds = (deps.state.partyActorIds ?? []).filter((entry) => entry !== id);
+        return undefined;
+      }
+      case "gainExp": {
+        const actorId = requireScriptStr("gainExp", args, 0, "id");
+        const amount = requireScriptInt("gainExp", args, 1, "amount");
+        deps.state.actorExperience ??= {};
+        for (const actor of deps.resolveActorTargets(actorId)) {
+          const current = deps.state.actorExperience[actor.recordId] ?? 0;
+          deps.state.actorExperience[actor.recordId] = Math.max(0, current + amount);
+        }
+        return undefined;
+      }
+      case "setLevel": {
+        const actorId = requireScriptStr("setLevel", args, 0, "id");
+        const level = Math.max(1, Math.min(99, requireScriptInt("setLevel", args, 1, "level")));
+        deps.state.actorLevels ??= {};
+        for (const actor of deps.resolveActorTargets(actorId)) {
+          deps.state.actorLevels[actor.recordId] = level;
+          actor.level = level;
+          floorActorExperience(deps.project, deps.state, actor.recordId);
+          deps.refreshActorDerivedStats?.(actor, { refreshSkills: true });
+        }
+        return undefined;
+      }
+      case "setHp": {
+        const actorId = requireScriptStr("setHp", args, 0, "id");
+        const hp = requireScriptInt("setHp", args, 1, "hp");
+        deps.changeActorVital(actorId, "hp", "=", hp);
+        return undefined;
+      }
+      case "setMp": {
+        const actorId = requireScriptStr("setMp", args, 0, "id");
+        const mp = requireScriptInt("setMp", args, 1, "mp");
+        deps.changeActorVital(actorId, "mp", "=", mp);
+        return undefined;
+      }
+      case "recoverAll": {
+        const actorId = optScriptStr("recoverAll", args, 0, "id");
+        for (const actor of deps.resolveActorTargets(actorId)) {
+          actor.hp = actor.maxHp;
+          actor.mp = actor.maxMp;
+        }
+        return undefined;
+      }
+      case "learnSkill": {
+        const actorId = requireScriptStr("learnSkill", args, 0, "id");
+        const skillId = requireScriptStr("learnSkill", args, 1, "skillId");
+        deps.state.actorSkillIds ??= {};
+        for (const actor of deps.resolveActorTargets(actorId)) {
+          const known = new Set(permanentActorSkillIds(deps.project, deps.state, actor.recordId));
+          known.add(skillId);
+          deps.state.actorSkillIds[actor.recordId] = [...known];
+          if (!actor.skillIds.includes(skillId)) actor.skillIds = [...actor.skillIds, skillId];
+        }
+        return undefined;
+      }
+      // Battle-specific context helpers
+      case "turn":
+        return deps.context.turn;
+      case "actors":
+        return deps.actors.map((entry) => battleActorSnapshot(deps, entry));
+      case "enemies":
+        return deps.enemies.map((entry) => battleEnemySnapshot(entry));
+      case "getEnemy": {
+        const enemy = deps.resolveEnemy(requireScriptStr("getEnemy", args, 0, "id"));
+        return enemy ? battleEnemySnapshot(enemy) : undefined;
+      }
+      case "setEnemyHp": {
+        const enemy = deps.resolveEnemy(requireScriptStr("setEnemyHp", args, 0, "id"));
+        const hp = requireScriptInt("setEnemyHp", args, 1, "hp");
+        if (enemy) enemy.hp = deps.clampVital(hp, enemy.maxHp);
+        return enemy ? enemy.hp : undefined;
+      }
+      case "setEnemyMp": {
+        const enemy = deps.resolveEnemy(requireScriptStr("setEnemyMp", args, 0, "id"));
+        const mp = requireScriptInt("setEnemyMp", args, 1, "mp");
+        if (enemy) enemy.mp = deps.clampVital(mp, enemy.maxMp);
+        return enemy ? enemy.mp : undefined;
+      }
+      case "battleContext":
+        return {
+          turn: deps.context.turn,
+          troopId: deps.troopRecord.id,
+          activeActorId: deps.context.activeActorId ?? null,
+          currentActorCommandKind: deps.context.currentActorCommandKind ?? null,
+          currentActorSkillId: deps.context.currentActorSkillId ?? null,
+          actors: deps.actors.map((entry) => battleActorSnapshot(deps, entry)),
+          enemies: deps.enemies.map((entry) => battleEnemySnapshot(entry)),
+        };
+      // Utility & queries
+      case "random": {
+        const max = requireScriptInt("random", args, 0, "maxExclusive");
+        if (max < 1 || max > 2 ** 31) throw new RangeError("game.random: maxExclusive must be between 1 and 2^31");
+        return Math.floor(nextRand() * max);
+      }
+      case "log": {
+        const text = args.map((value) => (typeof value === "string" ? value : JSON.stringify(value) ?? String(value))).join(" ");
+        deps.onLog(text);
+        return undefined;
+      }
+      case "mapId":
+        return deps.state.currentMapId ?? "";
+      case "eventId":
+        return deps.ownerEventId;
+      case "player":
+        return {
+          mapId: deps.state.currentMapId ?? "",
+          x: deps.state.x ?? 0,
+          y: deps.state.y ?? 0,
+          direction: deps.state.playerFacing ?? "down",
+        };
+      case "time": {
+        const time = deps.state.gameTime;
+        if (!time) return { enabled: false, hour: 12, minute: 0, day: 1, season: "spring", year: 1, phase: "day" };
+        return { enabled: true, hour: time.hour, minute: time.minute, day: time.day, season: time.season, year: time.year, phase: "day" };
+      }
+      case "playTime":
+        return 0;
+      case "events":
+      case "event":
+      case "eventAt":
+      case "tileAt":
+      case "passable":
+        throw new Error(`game.${name}() is a map-only query and is not available inside battle event scripts`);
+      default:
+        throw new Error(`game.${name} is not available inside battle event scripts`);
+    }
+  };
+
+  try {
+    rt = module.newRuntime();
+    rt.setMemoryLimit(BATTLE_SCRIPT_MEMORY_LIMIT_BYTES);
+    rt.setMaxStackSize(BATTLE_SCRIPT_STACK_LIMIT_BYTES);
+    const deadline = performance.now() + BATTLE_SCRIPT_CPU_LIMIT_MS;
+    rt.setInterruptHandler(() => {
+      if (performance.now() <= deadline) return false;
+      timedOut = true;
+      return true;
+    });
+    vm = rt.newContext();
+
+    const hostObj = vm.newObject();
+    const callFn = vm.newFunction("call", (nameHandle, argsHandle) => {
+      const name = vm!.getString(nameHandle);
+      const rawArgs = JSON.parse(vm!.getString(argsHandle)) as unknown;
+      const parsedArgs = Array.isArray(rawArgs) ? rawArgs : [];
+      return vm!.newString(JSON.stringify({ v: dispatchBattleHostCall(name, parsedArgs) }));
+    });
+    vm.setProp(hostObj, "call", callFn);
+    vm.setProp(vm.global, "__battleHost", hostObj);
+    callFn.dispose();
+    hostObj.dispose();
+
+    const preludeRes = vm.evalCode(BATTLE_SCRIPT_PRELUDE, "battle-prelude.js");
+    if (preludeRes.error) {
+      const message = formatBattleVmError(vm, preludeRes.error, timedOut);
+      preludeRes.error.dispose();
+      return { ok: false, message };
+    }
+
+    const wrapped = `(async function (require, exports, module) {\n${compiled}\n})`;
+    const fnRes = vm.evalCode(wrapped, "battle-script.js");
+    if (fnRes.error) {
+      preludeRes.value.dispose();
+      const message = formatBattleVmError(vm, fnRes.error, timedOut);
+      fnRes.error.dispose();
+      return { ok: false, message };
+    }
+
+    const started = vm.callFunction(preludeRes.value, vm.undefined, fnRes.value);
+    preludeRes.value.dispose();
+    fnRes.value.dispose();
+    if (started.error) {
+      const message = formatBattleVmError(vm, started.error, timedOut);
+      started.error.dispose();
+      return { ok: false, message };
+    }
+    promiseHandle = started.value;
+
+    const jobs = rt.executePendingJobs();
+    if (jobs.error) {
+      const message = formatBattleVmError(vm, jobs.error, timedOut);
+      jobs.error.dispose();
+      return { ok: false, message };
+    }
+
+    const promiseState = vm.getPromiseState(promiseHandle);
+    if (promiseState.type === "fulfilled") {
+      if (promiseState.value.alive) promiseState.value.dispose();
+      return { ok: true };
+    }
+    if (promiseState.type === "rejected") {
+      const message = formatBattleVmError(vm, promiseState.error, timedOut);
+      promiseState.error.dispose();
+      return { ok: false, message };
+    }
+    return {
+      ok: false,
+      message: "Async/await operations that suspend execution are not supported inside battle event scripts.",
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      message: error instanceof Error ? error.message : String(error),
+    };
+  } finally {
+    try {
+      if (promiseHandle?.alive) promiseHandle.dispose();
+      vm?.dispose();
+      rt?.dispose();
+    } catch (disposeError) {
+      console.error("[battle-script] sandbox dispose failed", disposeError);
+    }
+  }
 }

@@ -108,9 +108,10 @@ function applySkillFx(project: Project, report: { applied: string[]; skipped: st
       }))
       .filter((t) => t.soundResourceId || t.screenShake);
     const id = `anim_pfx_fs_${entry.skill.replace(/^skill_/, "")}`;
+    const inferredScope = skill.scope === "allEnemies" || skill.scope === "allAllies" ? "allTargets" : "singleTarget";
     const record = normalizeBattleAnimationRecord({
       id, name: `${entry.note} · pixelfx ${spec.effectId}`,
-      scope: old?.scope === "screen" ? "allTargets" : old?.scope ?? "singleTarget",
+      scope: inferredScope,
       position: entry.position ?? "feet",
       pixelFx: spec,
       timings,

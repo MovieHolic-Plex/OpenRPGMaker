@@ -84,7 +84,7 @@ export function executeModernCommand(
       recordWeightedBranch(session, runtime, fields);
       return true;
     case "Cutscene Control":
-      recordCutsceneControl(session, runtime, fields);
+      recordCutsceneControl(session, runtime, fields, context);
       return true;
     case "Checkpoint Save":
       recordCheckpoint(session, runtime, fields);
@@ -154,14 +154,19 @@ export function recordSoundLayer(
   return audio;
 }
 
-function recordCutsceneControl(session: PlaySessionLike, runtime: M2RuntimeState, fields: M2CommandFields): void {
+function recordCutsceneControl(
+  session: PlaySessionLike,
+  runtime: M2RuntimeState,
+  fields: M2CommandFields,
+  context: M2ModernRuntimeContext = {},
+): void {
   const action = fieldString(fields, "action", "lockPlayer");
   const enabled = fieldBoolean(fields, "enabled", true);
   runtime.cutscene[action] = enabled;
   session.flags[`cutscene:${action}`] = enabled;
   if (action === "lockPlayer") {
-    if (enabled) beginCutsceneControl(session, undefined, fieldBoolean(fields, "skippable", false));
-    else endCutsceneControl(session);
+    if (enabled) beginCutsceneControl(session, context.currentEventId, fieldBoolean(fields, "skippable", false));
+    else endCutsceneControl(session, context.currentEventId);
   }
 }
 

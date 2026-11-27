@@ -15,6 +15,7 @@
 // 파일을 «새 실패» 로 센다. 기준 판에서 아예 안 돈 파일의 실패는 «기준 판에 없음» 으로 따로 세고,
 // 이것도 막는다(확인할 수 없는 빨강을 조용히 면제하지 않는다 — gatesRegression.mjs 와 같은 원칙).
 import { parseCommitSubject } from "./releaseNotes.mjs";
+import { UPDATE_FEED_SINCE } from "./releaseAssets.mjs";
 
 export const AUTO_RELEASE_RULES = Object.freeze({
   minUserCommits: 5,
@@ -22,7 +23,115 @@ export const AUTO_RELEASE_RULES = Object.freeze({
   maxReleasesPer24h: 2,
   holdLabel: "hold-release",
   autoLabel: "auto-release",
+  appUpdateE2eMaxAgeDays: 14,
 });
+
+/** 자동 업데이트·Electron 패키징 경로. 이 중 하나라도 직전 릴리스 태그 이후 바뀌면 app-update-e2e 를 반드시 돌린다. */
+export const APP_UPDATE_E2E_WATCH_PATTERNS = Object.freeze([
+  /^electron\//u,
+  /^scripts\/nsis-wine-shim\//u,
+  /^scripts\/electron-builder\.config\.mjs$/u,
+  /^scripts\/build-electron\.mjs$/u,
+  /^scripts\/qa\/app-update-e2e\.mjs$/u,
+  /^src\/app\/appUpdateChip\.ts$/u,
+  /^\.github\/workflows\/app-update-e2e\.yml$/u,
+]);
+
+function compareSemverTag(left, right) {
+  const parse = (raw) => {
+    const match = /^v?(\d+)\.(\d+)\.(\d+)$/u.exec(String(raw ?? "").trim());
+    return match ? [Number(match[1]), Number(match[2]), Number(match[3])] : null;
+  };
+  const a = parse(left);
+  const b = parse(right);
+  if (!a || !b) return null;
+  for (let i = 0; i < 3; i += 1) {
+    if (a[i] !== b[i]) return a[i] - b[i];
+  }
+  return 0;
+}
+
+/**
+ * package.json 또는 package-lock.json 의 전후 텍스트가 오직 루트 프로젝트 `version`
+ * (`version` 및 lockfile 의 `packages[""].version`)만 달라졌는지 판정한다.
+ * 파싱할 수 없으면 보수적으로 false(의존성·설정 변경으로 간주)를 돌려준다.
+ */
+export function isManifestDiffOnlyRootVersion(beforeText, afterText) {
+  if (typeof beforeText !== "string" || typeof afterText !== "string") return false;
+  const normalize = (text) => {
+    const parsed = JSON.parse(text);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+    const copy = { ...parsed };
+    delete copy.version;
+    if (copy.packages && typeof copy.packages === "object" && copy.packages[""] && typeof copy.packages[""] === "object") {
+      const rootPkg = { ...copy.packages[""] };
+      delete rootPkg.version;
+      copy.packages = { ...copy.packages, "": rootPkg };
+    }
+    return JSON.stringify(copy);
+  };
+  try {
+    const a = normalize(beforeText);
+    const b = normalize(afterText);
+    return a !== null && b !== null && a === b;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * release/next 자동 릴리스에서 app-update-e2e 를 다시 돌려야 하는지 순수 판정한다.
+ * 아래가 **모두** 성립할 때만 중복 실행을 건너뛴다(하나라도 불확실하면 실행):
+ *   1. 직전 발행 태그(sinceTag)가 자동 업데이트 도입 판(UPDATE_FEED_SINCE) 이상이다.
+ *   2. 최근 `appUpdateE2eMaxAgeDays`(14일) 안에 성공한 app-update-e2e 실행 기록이 있다(러너 OS·FUSE 회귀 안전망).
+ *   3. `sinceTag..origin/main` 의 변경 파일 목록을 읽었고, 업데이트·Electron·패키징 경로가 0건이다.
+ *   4. package.json / package-lock.json 이 바뀌었더라도 루트 version 외에는 바뀐 것이 없다.
+ */
+export function evaluateAppUpdateE2eNeed({
+  sinceTag = null,
+  changedFiles = null,
+  packageManifestDiffOnlyVersion = true,
+  lockfileDiffOnlyVersion = true,
+  lastPassingRun = null,
+  now = new Date(),
+} = {}) {
+  const cmp = compareSemverTag(sinceTag, UPDATE_FEED_SINCE);
+  if (cmp === null || cmp < 0) {
+    return { required: true, reason: `직전 태그(${sinceTag ?? "없음"})가 ${UPDATE_FEED_SINCE} 이전`, matchedFiles: [] };
+  }
+  if (!lastPassingRun?.completedAt && !lastPassingRun?.createdAt) {
+    return { required: true, reason: "최근 성공한 app-update-e2e 기록 없음", matchedFiles: [] };
+  }
+  const passedAt = new Date(lastPassingRun.completedAt ?? lastPassingRun.createdAt).getTime();
+  const nowMs = new Date(now).getTime();
+  const maxAgeMs = AUTO_RELEASE_RULES.appUpdateE2eMaxAgeDays * 24 * 3_600_000;
+  if (!Number.isFinite(passedAt) || !Number.isFinite(nowMs) || nowMs - passedAt > maxAgeMs) {
+    return { required: true, reason: `최근 성공한 app-update-e2e 가 ${AUTO_RELEASE_RULES.appUpdateE2eMaxAgeDays}일보다 오래됨`, matchedFiles: [] };
+  }
+  if (!Array.isArray(changedFiles)) {
+    return { required: true, reason: `${sinceTag} 이후 변경 파일 목록을 읽지 못함`, matchedFiles: [] };
+  }
+  const matched = [];
+  for (const rawFile of changedFiles) {
+    const file = String(rawFile ?? "").trim();
+    if (!file) continue;
+    if (APP_UPDATE_E2E_WATCH_PATTERNS.some((pattern) => pattern.test(file))) {
+      matched.push(file);
+    } else if (file === "package.json" && !packageManifestDiffOnlyVersion) {
+      matched.push(file);
+    } else if (file === "package-lock.json" && !lockfileDiffOnlyVersion) {
+      matched.push(file);
+    }
+  }
+  if (matched.length > 0) {
+    return { required: true, reason: `업데이트 관련 변경 ${matched.length}건 (${matched.slice(0, 4).join(", ")})`, matchedFiles: matched };
+  }
+  return {
+    required: false,
+    reason: `${sinceTag} 이후 업데이트·Electron·의존성 변경 없음 (최근 통과 run ${lastPassingRun.id ?? "?"})`,
+    matchedFiles: [],
+  };
+}
 
 /** 사용자가 체감하지 않는 범위. `fix(test): …`·`feat(ci): …` 는 앱을 바꾸지 않는다. */
 const NON_USER_SCOPES = new Set(["test", "tests", "ci", "ci-fast", "ci-full", "gates", "release", "deps-dev", "openwiki", "docs"]);

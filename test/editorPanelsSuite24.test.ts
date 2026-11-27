@@ -461,17 +461,17 @@ describe("resourceManager", () => {
         ).toEqual({ ok: true, format: "gif", normalizeToPng: true });
       });
 
-      it("rejects oversize files with actual size and the 4MB limit", () => {
+      it("rejects oversize files with actual size and the 16MB limit", () => {
         const decision = decideImageImport({
           fileName: "big.png",
           mimeType: "image/png",
-          sizeBytes: 6 * 1024 * 1024,
+          sizeBytes: 18 * 1024 * 1024,
         });
         expect(decision.ok).toBe(false);
         if (!decision.ok) {
           expect(decision.reason).toBe("size");
-          expect(decision.message).toContain("6.0MB");
-          expect(decision.message).toContain("4MB");
+          expect(decision.message).toContain("18.0MB");
+          expect(decision.message).toContain("16MB");
         }
       });
 
@@ -566,7 +566,7 @@ describe("resourceManager", () => {
       it("shows actual megabytes in size errors", () => {
         const message = formatImageImportSizeError(2.5 * 1024 * 1024);
         expect(message).toContain("2.5MB");
-        expect(message).toContain("4MB");
+        expect(message).toContain("16MB");
       });
 
       it("appends actual dimensions when the validator message lacks them", () => {

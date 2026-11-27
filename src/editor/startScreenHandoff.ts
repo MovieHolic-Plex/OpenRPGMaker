@@ -2,7 +2,7 @@
 // 2026-10-07: 런처 「만들기」는 컨셉 피드에서 확정 기획(gameDesignBrief)을 실어 보낸다. 빈 프로젝트는 기획 없이 온다.
 // 기획 없는 AI 인계(옛 한 문장)는 조수에게 그 문장만 넘긴다.
 
-import { createProjectStartSeed } from "./projectStartSeed";
+import { applyBlankProjectStart, createProjectStartSeed } from "./projectStartSeed";
 import { projectStartMode } from "@/start/projectStart";
 import { focusProjectStartMap } from "@/editor/mapSelection";
 import { startScreenPrompt } from "@/editor/startScreenPrompt";
@@ -50,9 +50,14 @@ export async function applyStartScreenHandoff(): Promise<StartScreenHandoff | nu
   const brief = intent.gameDesignBrief === undefined ? undefined : normalizeGameDesignBrief(intent.gameDesignBrief);
   if (brief && (mode !== "ai" || brief.presetId !== intent.choiceId)) throw new Error("게임 기획과 시작 장르가 다릅니다.");
   try {
-    const seed = await createProjectStartSeed(intent.choiceId, intent.title, mode, intent.screenSize);
-    if (brief) seed.gameDesignBrief = { ...brief, generationPending: true };
-    store.replaceProject(seed, { label: "새 게임 시작", origin: "system" });
+    if (mode === "blank" && !brief && store.isFreshSeededProject()) {
+      // 편집기 로드가 이 빈 폴더에 이미 빈 시작 프로젝트를 지었다 — 같은 씨앗을 다시 짓지 않고 제목·시작 설정만 얹는다.
+      store.update((draft) => applyBlankProjectStart(draft, intent.title, intent.screenSize), { scope: "project", label: "새 게임 시작", origin: "system", projectSwitch: true });
+    } else {
+      const seed = await createProjectStartSeed(intent.choiceId, intent.title, mode, intent.screenSize);
+      if (brief) seed.gameDesignBrief = { ...brief, generationPending: true };
+      store.replaceProject(seed, { label: "새 게임 시작", origin: "system" });
+    }
     const saved = await store.flush();
     if (saved.kind !== "saved") throw new Error("새 게임을 폴더에 저장하지 못했습니다.");
   } catch (error) {

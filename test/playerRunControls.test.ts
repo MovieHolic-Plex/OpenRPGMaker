@@ -253,10 +253,20 @@ describe("renderPlayer run controls", () => {
     expect(main.querySelector<HTMLElement>("[data-testid='play-viewport']")?.dataset.scaleMode).toBe("fit");
   });
 
-  // #3077·#3155: 배율 기본값은 해상도를 저장한 프로젝트면 정수(integer), 해상도 없는 옛·빈 프로젝트는 창 맞춤(fit)이다
-  // (resolvePlaySurfaceScaleMode). 빈 프로젝트는 해상도를 저장하지 않으므로 둘을 따로 본다.
-  it("keeps the integer surface scale mode by default for a project with a stored resolution", () => {
+  // 2026-11-26 개편: 해상도를 저장한 프로젝트는 반응형 정수 도트(adaptive)가 기본이고,
+  // 해상도 없는 옛·빈 프로젝트는 창 맞춤(fit)을 유지한다(resolvePlaySurfaceScaleMode).
+  it("uses the adaptive surface scale mode by default for a project with a stored resolution", () => {
     store.update((project) => { project.system.playResolution = { width: 480, height: 270 }; });
+    render({ autoStartRun: false });
+
+    expect(main.querySelector<HTMLElement>("[data-testid='play-viewport']")?.dataset.scaleMode).toBe("adaptive");
+  });
+
+  it("honors explicit integer scale mode when authored on the project", () => {
+    store.update((project) => {
+      project.system.playResolution = { width: 480, height: 270 };
+      project.system.playSurfaceScale = "integer";
+    });
     render({ autoStartRun: false });
 
     expect(main.querySelector<HTMLElement>("[data-testid='play-viewport']")?.dataset.scaleMode).toBe("integer");

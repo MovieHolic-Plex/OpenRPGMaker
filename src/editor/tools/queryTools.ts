@@ -12,7 +12,7 @@ import { oprnPanoramaSetOfImage } from "@/assets/oprnPanoramas";
 import { mapBackgroundVisibility } from "@/project/mapBackgroundVisibility";
 import { lintScenePolish } from "@/project/lint/scenePolishLint";
 import { lintExamineEvents } from "@/ai/v2/judge/examineLint";
-import { lintAudioVariety } from "@/ai/v2/judge/audioVarietyLint";
+import { lintAudioVariety, lintBattleSeSlots } from "@/ai/v2/judge/audioVarietyLint";
 import { lintOriginalIpNames } from "@/project/lint/originalIpLint";
 import { SHARED_PORTRAIT_ASSETS, findSharedPortrait, sharedExpressionSetIdOf, sharedPortraitExpressionsOfSet, sharedPortraitReferenceNote } from "@/assets/sharedPortraitAssets";
 import { activeGenreLockVisualCatalog } from "@/project/genreLockVisuals";
@@ -875,6 +875,7 @@ export function runProjectLint(project: Project, args: Record<string, unknown>):
     ...lintScenePolish(project),
     ...lintExamineEvents(project),
     ...lintAudioVariety(project),
+    ...lintBattleSeSlots(project),
     ...lintOriginalIpNames(project),
   ];
   const errors = issues.filter((issue) => issue.severity === "error").length;

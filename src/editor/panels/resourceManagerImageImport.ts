@@ -3,7 +3,7 @@
 // 저장 계약은 그대로 dataUrl 이다. WebP/GIF 는 캔버스로 PNG 가 된 뒤에만 올린다.
 // 판정은 DOM 없이 테스트하고, 캔버스 변환만 브라우저에 맡긴다.
 
-export const IMAGE_IMPORT_MAX_BYTES = 4 * 1024 * 1024;
+export const IMAGE_IMPORT_MAX_BYTES = 16 * 1024 * 1024;
 export const IMAGE_IMPORT_FORMAT_HINT = "PNG·JPEG·WebP·GIF (WebP·GIF는 PNG 첫 프레임으로 변환)";
 export const IMAGE_IMPORT_ACCEPT = "image/png,image/jpeg,image/webp,image/gif,.png,.jpg,.jpeg,.webp,.gif";
 export const IMAGE_IMPORT_CANVAS_ERROR = "이미지를 PNG로 변환하지 못했습니다. PNG로 저장한 뒤 다시 가져와 주세요.";
@@ -48,7 +48,8 @@ export function formatImageImportFormatError(actual: string): string {
 
 export function formatImageImportSizeError(sizeBytes: number): string {
   const actualMb = (sizeBytes / 1024 / 1024).toFixed(1);
-  return `파일이 너무 큽니다 (현재 ${actualMb}MB). 4MB 이하 ${IMAGE_IMPORT_FORMAT_HINT} 만 가져올 수 있습니다.`;
+  const maxMb = Math.round(IMAGE_IMPORT_MAX_BYTES / 1024 / 1024);
+  return `파일이 너무 큽니다 (현재 ${actualMb}MB). ${maxMb}MB 이하 ${IMAGE_IMPORT_FORMAT_HINT} 만 가져올 수 있습니다.`;
 }
 
 export function formatImageImportDimensionError(validatorMessage: string, width: number, height: number): string {

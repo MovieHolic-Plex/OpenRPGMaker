@@ -349,12 +349,10 @@ export function shouldRerenderCommandForm(prev: Command, next: Command): boolean
   if (prev.kind === "m2Command" && next.kind === "m2Command" && prev.commandId === "m2-027-change-system-bgm") {
     return (prev.fields.cue === undefined) !== (next.fields.cue === undefined);
   }
-  // The shop owns its mounted list, inspector, and conditional settings. Rebuilding here
-  // would discard the selected tab and detach the active input during a goods edit.
+  // The shop and inn forms manage their own mounted controls and live preview without rebuilding
+  // the form on checkbox/mode toggles, preserving input focus and IME composition.
   if (prev.kind === "shop" && next.kind === "shop") return false;
-  if (prev.kind === "inn" && next.kind === "inn") {
-    return Boolean(prev.branchOnNotEnoughGold) !== Boolean(next.branchOnNotEnoughGold);
-  }
+  if (prev.kind === "inn" && next.kind === "inn") return false;
   if (prev.kind === "battleProcessing" && next.kind === "battleProcessing") {
     return (
       Boolean(prev.branchOnResult) !== Boolean(next.branchOnResult)

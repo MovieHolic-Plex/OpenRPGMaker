@@ -179,7 +179,10 @@ function branchEnabled(command: Command, branch: EventCommandBranch): boolean {
     case "choices": return branch.kind !== "choiceCancel" || command.cancelBehavior === "branch";
     case "shop": return branch.kind === "shopTransaction"
       ? command.branchOnTransaction === true : command.branchOnFailedTransaction === true;
-    case "inn": return command.branchOnNotEnoughGold === true;
+    case "inn":
+      if (branch.kind === "innStayed") return command.branchOnStay === true;
+      if (branch.kind === "innCancelled") return command.branchOnCancel === true;
+      return command.branchOnNotEnoughGold === true;
     case "battleProcessing": return command.branchOnResult === true;
     default: return true;
   }

@@ -24,17 +24,17 @@ const writers = [
 ];
 
 describe.each(writers)("$tool reliable graphics", ({ tool, args, read }) => {
-  it("never repeats the leaf-fox -> skeleton hash assignment", () => {
+  it("never falls back to unrelated hash art for dedicated species names", () => {
     const ctx: ToolContext = { project: createBlankProject() };
-    const result = runTool(ctx, tool, args("enemy_leaf_fox", "풀잎여우"));
+    const result = runTool(ctx, tool, args("enemy_sparkit_test", "스파킷"));
     expect(result.ok, result.summary).toBe(true);
-    expect(read(ctx, "enemy_leaf_fox")?.monsterResourceId).toBe("generated-enemy-leaf-fox");
+    expect(read(ctx, "enemy_sparkit_test")?.monsterResourceId).toBe("generated-enemy-sparkit-fire");
   });
 
   it.each([
-    ["풀잎 여우", "generated-enemy-leaf-fox"],
-    ["leaf fox", "generated-enemy-leaf-fox"],
-    ["불꽃강아지", "generated-enemy-fire-pup"],
+    ["고블린 정찰병", "generated-enemy-goblin-scout"],
+    ["goblin scout", "generated-enemy-goblin-scout"],
+    ["스파킷", "generated-enemy-sparkit-fire"],
   ])("matches dedicated identity %s without changing species", (name, resourceId) => {
     const ctx: ToolContext = { project: createBlankProject() };
     const result = runTool(ctx, tool, args("enemy_dedicated", name));
@@ -42,7 +42,7 @@ describe.each(writers)("$tool reliable graphics", ({ tool, args, read }) => {
     expect(read(ctx, "enemy_dedicated")?.monsterResourceId).toBe(resourceId);
   });
 
-  it.each(["정체불명", "leaf fox quux", "슬라임 quux", "*", "monster"])(
+  it.each(["정체불명", "spider cave quux", "슬라임 quux", "*", "monster"])(
     "rejects unreliable name %s atomically", (name) => {
       const ctx: ToolContext = { project: createBlankProject() };
       const before = ctx.project;
@@ -54,30 +54,30 @@ describe.each(writers)("$tool reliable graphics", ({ tool, args, read }) => {
     },
   );
 
-  it.each(["leaf fox quux", "슬라임 quux", "*", "generated-enemy-unregistered-quux"])(
+  it.each(["spider cave quux", "슬라임 quux", "*", "generated-enemy-unregistered-quux"])(
     "rejects unreliable explicit query %s even with a known name", (monsterResourceId) => {
       const ctx: ToolContext = { project: createBlankProject() };
       const before = ctx.project;
-      const result = runTool(ctx, tool, args("enemy_bad_query", "해골 궁수", { monsterResourceId }));
+      const result = runTool(ctx, tool, args("enemy_bad_query", "동굴 거미", { monsterResourceId }));
       expect(result.ok).toBe(false);
       expect(result.issues?.[0]?.code).toBe("invalid-args");
       expect(ctx.project).toBe(before);
     },
   );
 
-  it.each(["해골 궁수", "skeleton archer", " Skeleton   Archer ", "skeleton_archer"])("matches all terms in %s", (name) => {
+  it.each(["동굴 거미", "spider cave", " Spider   Cave ", "spider_cave"])("matches all terms in %s", (name) => {
     const ctx: ToolContext = { project: createBlankProject() };
-    const result = runTool(ctx, tool, args("enemy_archer", name));
+    const result = runTool(ctx, tool, args("enemy_spider", name));
     expect(result.ok, result.summary).toBe(true);
-    expect(read(ctx, "enemy_archer")?.monsterResourceId).toBe("generated-enemy-skeleton-archer");
+    expect(read(ctx, "enemy_spider")?.monsterResourceId).toBe("generated-enemy-spider-cave");
   });
 
   it("accepts reliable explicit queries and preserves explicit art on partial edits", () => {
     const ctx: ToolContext = { project: createBlankProject() };
     const id = "enemy_explicit_art";
-    const resolved = runTool(ctx, tool, args(id, "정체불명", { monsterResourceId: "해골 궁수" }));
+    const resolved = runTool(ctx, tool, args(id, "정체불명", { monsterResourceId: "동굴 거미" }));
     expect(resolved.ok, resolved.summary).toBe(true);
-    expect(read(ctx, id)?.monsterResourceId).toBe("generated-enemy-skeleton-archer");
+    expect(read(ctx, id)?.monsterResourceId).toBe("generated-enemy-spider-cave");
     const explicit = runTool(ctx, tool, args(id, "정체불명", { monsterResourceId: "generated-enemy-dragon-red" }));
     expect(explicit.ok, explicit.summary).toBe(true);
     const updated = runTool(ctx, tool, args(id, undefined));
@@ -108,7 +108,7 @@ describe.each(writers)("$tool reliable graphics", ({ tool, args, read }) => {
 });
 
 it("partial and wildcard matches remain available for browsing only", () => {
-  expect(searchResources("monster", "leaf fox quux").length).toBeGreaterThan(0);
+  expect(searchResources("monster", "spider cave quux").length).toBeGreaterThan(0);
   expect(searchResources("monster", "*").length).toBeGreaterThan(0);
 });
 
@@ -125,8 +125,7 @@ it("make_action_enemy rejects an existing visible enemy without reliable art", (
 });
 
 it("leaf-fox Korean identity never tags leafling or mantis assets", () => {
-  const hits = searchResources("monster", "풀잎여우");
-  expect(hits.map((hit) => hit.id)).toEqual(["generated-enemy-leaf-fox"]);
+  expect(searchResources("monster", "풀잎여우").some((hit) => /leafling|mantis|cleaf/.test(hit.id))).toBe(false);
   expect(searchResources("monster", "풀잎").some((hit) => /leafling|mantis|cleaf/.test(hit.id))).toBe(false);
 });
 

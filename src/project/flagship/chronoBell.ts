@@ -62,7 +62,7 @@ import { applyFallenPixelFx } from "./fallen/pixelfx";
 import { applyFallenHeroSkillIdentity } from "./fallen/heroSkillIdentity";
 import { applyFallenItemIdentity } from "./fallen/itemIdentity";
 import { applyFallenMobBalance } from "./fallen/mobBalance";
-import { applyFallenMonsterArt16, installFallenMonsterArtWithoutBundle } from "./fallen/monsterArt16";
+import { applyFallenMonsterArt16 } from "./fallen/monsterArt16";
 import { finishFallenWellBeastArt } from "./fallen/wellBeast";
 import { applyFallenAreaBackdrops } from "./fallen/areaBackdrops";
 import { applyFallenBattleMusic } from "./fallen/battleMusic";
@@ -571,24 +571,42 @@ function applySpeakerFaces(project: Project, faces: Readonly<Record<string, stri
     const speaker = (cmd as { speaker?: string }).speaker?.trim();
     return speaker ? faces[speaker] ?? "" : "";
   };
-  for (const map of Object.values(project.maps)) {
-    for (const event of map.events) {
-      for (const list of eventCommandLists(event)) {
-        for (let i = 0; i < list.length; i += 1) {
-          const cmd = list[i]!;
-          if (cmd.kind !== "text") continue;
-          tagLineContext(cmd);
-          const want = faceOf(cmd);
-          const prev = list[i - 1] as (Command & { resourceId?: string }) | undefined;
-          if (prev?.kind === "changeFace") {
-            if ((prev.resourceId ?? "") === want) continue;
-            if (!(prev as { appearanceId?: string }).appearanceId) { list[i - 1] = { ...prev, resourceId: want } as Command; continue; }
-          }
-          list.splice(i, 0, { kind: "changeFace", resourceId: want, position: "left", flipHorizontally: false } as Command);
-          i += 1;
+  const applyList = (list: Command[]): void => {
+    for (let i = 0; i < list.length; i += 1) {
+      const cmd = list[i]!;
+      if (cmd.kind !== "text") continue;
+      tagLineContext(cmd);
+      const want = faceOf(cmd);
+      const prev = list[i - 1] as (Command & { resourceId?: string }) | undefined;
+      if (prev?.kind === "changeFace") {
+        if ((prev.resourceId ?? "") === want) continue;
+        if (!(prev as { appearanceId?: string }).appearanceId) { list[i - 1] = { ...prev, resourceId: want } as Command; continue; }
+      }
+      list.splice(i, 0, { kind: "changeFace", resourceId: want, position: "left", flipHorizontally: false } as Command);
+      i += 1;
+    }
+  };
+  const walkLists = (root: Command[]): void => {
+    applyList(root);
+    for (const cmd of root) {
+      const rec = cmd as unknown as Record<string, unknown>;
+      for (const key of ["then", "else", "cancelBranch", "commands", "victoryBranch", "defeatBranch", "escapeBranch"]) {
+        if (Array.isArray(rec[key])) walkLists(rec[key] as Command[]);
+      }
+      if (Array.isArray(rec.options)) {
+        for (const opt of rec.options as { branch?: Command[] }[]) {
+          if (Array.isArray(opt.branch)) walkLists(opt.branch);
         }
       }
     }
+  };
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      for (const list of eventCommandLists(event)) applyList(list);
+    }
+  }
+  for (const ce of project.commonEvents ?? []) {
+    if (Array.isArray(ce.commands)) walkLists(ce.commands as Command[]);
   }
 }
 
@@ -1583,7 +1601,6 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   setupCast(project);
   const troops = setupFoes(project);
   applyFallenBattleItems(project); // 속성 상성·검/창·회복약·기믹 잡화·드롭 (fallen/battleItems.ts)
-  installFallenMonsterArtWithoutBundle(project); // 번들 시트가 없는 그림(등불해파리·서리예티)은 적보다 먼저 (fallen/monsterArt16.ts)
   applyFallenBattleRoles(project); // 기술 역할·새 적·발렌 재설계·시그니처 무기·MP 회복 (fallen/battleRoles.ts)
   applyFallenBattleDepth(project, execTool); // 깔기→거두기·도발·정화·화상·연계기 셋 (fallen/battleDepth.ts)
   applyFallenGrowthCurves(project); // 역할별 성장 곡선 — 매 레벨 모든 능력치가 오른다 (fallen/battleDepth.ts)
@@ -2526,6 +2543,7 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     "천문대장 하넬": "easyrpg-faceset-people2-04",
     // 발렌 — 칩(푸른 장발·금테·검은 갑옷·남색 망토)에 맞춰 같은 화풍으로 새로 그린 흉상(cast-portrait 하네스, 2026-10-25).
     "심문관 발렌": "shared-fs-inquisitor-valen-expressions-bust-base",
+    발렌: "shared-fs-inquisitor-valen-expressions-bust-base",
     // 두건 쓴 광신도 — 복면 흉상.
     "교단 광신도": "shared-actor2-masked-expressions-bust-base",
     "광신도 설교자": "shared-actor2-masked-expressions-bust-base",
@@ -2534,12 +2552,25 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
     "광장의 할머니": "easyrpg-faceset-people1-07",
     "꼬마 토비": "easyrpg-faceset-people1-00",
     "빵집 아주머니": "easyrpg-faceset-people1-03",
+    "늙은 별지기 오스본": "easyrpg-faceset-people1-06",
+    오스본: "easyrpg-faceset-people1-06",
+    "나루지기 하르마": "easyrpg-faceset-people1-07",
+    하르마: "easyrpg-faceset-people1-07",
+    "공방 장인 니나": "easyrpg-faceset-people1-05",
+    니나: "easyrpg-faceset-people1-05",
+    "여관 주인 오사": "easyrpg-faceset-people1-03",
+    오사: "easyrpg-faceset-people1-03",
+    "떠돌이 행상 베른": "easyrpg-faceset-people1-02",
+    베른: "easyrpg-faceset-people1-02",
+    "하르마네 손주 나래": "easyrpg-faceset-people1-01",
+    나래: "easyrpg-faceset-people1-01",
     // 지하 심문회 — 칩 짝 얼굴이 엉뚱한 사람이라 흉상을 직접 준다(fallen/vaultCombat.ts).
     ...FS_INQ_BUSTS,
   };
   for (const [alias, of] of Object.entries(FS_QUEST_FACE_ALIASES)) if (speakerFaces[of]) speakerFaces[alias] = speakerFaces[of]!;
   // 말하는 사람마다 흉상 — 칩의 짝 얼굴 → 공용 표정 세트 흉상(fallenSpeakerBusts). 대사 표정이 같은 세트 안에서 바꾼다.
-  applySpeakerFaces(project, fallenSpeakerBusts(project, speakerFaces));
+  const resolvedSpeakerBusts = fallenSpeakerBusts(project, speakerFaces);
+  applySpeakerFaces(project, resolvedSpeakerBusts);
   applyFaceCellEmotions(project);
   // 숲은 마을 북쪽 — 「동쪽 숲」「동문」을 북쪽으로(오프닝 연출·화로 퍼즐 방향은 제외, fallen/townCast.ts).
   applyNorthForest(project);
@@ -2549,7 +2580,7 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenFieldRules(project, execTool);
   // 잡몹 무리 승률 60~90%·구역마다 우두머리(HP 1000 안팎) 하나 — 능력치는 여기 한곳에서 마지막에 덮는다(fallen/mobBalance.ts).
   applyFallenMobBalance(project, execTool);
-  // 몬스터 새 그림 24종(16칸 4×4)과 그 체급 배율 — 배율은 우두머리 표 다음에 덮는다(fallen/monsterArt16.ts).
+  // 인간형 적 6종 번들 5×4 시트 교체와 보스·정예 체급 배율 — 배율은 우두머리 표 다음에 덮는다(fallen/monsterArt16.ts).
   applyFallenMonsterArt16(project);
   // 새라의 관통상 — 2막 보통 적이 1막 복제로 물려받은 관통상 E 를 푼다(보스·결투·우두머리는 그대로). 무리 나누기·우두머리 복제 뒤.
   if (letAct2PierceWoundLand(project).length === 0) throw new Error("[fallen-star] 2막 보통 적 관통상 면역 해제가 아무 적도 바꾸지 않았다 — 복제·이름 규칙이 바뀌었는지 확인");
@@ -2575,6 +2606,9 @@ function buildChronoBellFlagshipDemo(): FlagshipDemoBuildResult {
   applyFallenSystemsOverhaul(project, execTool);
   // 공격적 개편 · 번역체 말투 전면 청산 및 인물별 구어체 재집필(fallen/overhaulDialogue.ts).
   applyFallenDialogueOverhaul(project);
+  // 시스템 개편에서 사당 유대 대화·공통 이벤트(ce_party_bond_talk)에 넣은 대사에도 흉상과 표정을 마저 입힌다.
+  applySpeakerFaces(project, resolvedSpeakerBusts);
+  applyFaceCellEmotions(project);
   // 표시 이름 정비(파이어볼→불덩이 등, id 는 그대로) — 기술·물건을 다시 쓰는 단계가 모두 끝난 뒤(fallen/displayNames.ts).
   applyFallenDisplayNames(project);
   // 전투곡 — 일반은 프로젝트·지역 맵 곡, 보스·우두머리만 보스곡(fallen/battleMusic.ts). 전투가 다 놓인 뒤.

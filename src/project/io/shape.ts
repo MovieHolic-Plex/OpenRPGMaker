@@ -1,4 +1,5 @@
 import { isPendingLazyTileset } from "../bundledTilesetLazy";
+import { pendingDefaultTilesetBuilder } from "../defaults/lazyDefaultTilesets";
 import { QUEST_PRESET_IDS } from '@/project/quest/questPresetIds';
 import { troopAfterBattleLists } from "@/project/troopAfterBattle";
 import { canonicalizeCommandFieldAliases } from "@/project/eventCommands/commandFieldAliases";
@@ -15,7 +16,7 @@ import { validateSpatialProject } from "../spatial/overviewPairs";
 import { validateSpatialAuthoring } from "../spatial/guards";
 import { validateAudioDescriptions } from "../audioDescriptions";
 import { validateMonsterMetadata } from "../monsterMetadata";
-import { validateCharacterGraphicsProject } from "../characterGraphics";
+import { validateCharacterGraphicsProject } from "../characterGraphicsValidation";
 import { villageDesignIssue } from "../villageDesign";
 import { EVENT_ANIMATION_TYPES } from "../types";
 import type { Project, ProjectV1, ProjectV2 } from "../types";
@@ -74,9 +75,17 @@ export function validateProjectV2(data: JsonRecord): ProjectV2 {
   validateMeta(data.meta);
   validateAssets(data.assets);
   const tilesets = requireRecord("tilesets", data.tilesets);
-  // 지연 번들 타일셋(bundledTilesetDiff.ts)은 번들 정의 + 저장된 차이라 검사를 되돌릴 때까지 미룬다 — 여기서 읽으면 정의를 모두 읽는다.
-  for (const [id, tileset] of Object.entries(tilesets)) if (!isPendingLazyTileset(tileset)) validateTileset(id, tileset);
-  for (const tileset of Object.values(tilesets)) if (!isPendingLazyTileset(tileset)) referenceOwner({ tilesets } as unknown as Project, tileset as Project["tilesets"][string]);
+  // 지연 번들 타일셋(bundledTilesetDiff.ts · lazyDefaultTilesets.ts)은 번들 정의 + 저장된 차이라 검사를 되돌릴 때까지 미룬다 — 여기서 읽으면 정의를 모두 읽는다.
+  for (const id of Object.keys(tilesets)) {
+    if (pendingDefaultTilesetBuilder(tilesets, id)) continue;
+    const tileset = tilesets[id];
+    if (!isPendingLazyTileset(tileset)) validateTileset(id, tileset);
+  }
+  for (const id of Object.keys(tilesets)) {
+    if (pendingDefaultTilesetBuilder(tilesets, id)) continue;
+    const tileset = tilesets[id];
+    if (!isPendingLazyTileset(tileset)) referenceOwner({ tilesets } as unknown as Project, tileset as Project["tilesets"][string]);
+  }
   validateSwitches(data.switches);
   validateVariables(data.variables);
   validateStoryFlags(data.storyFlags, idSet(data.switches), idSet(data.variables));
@@ -132,8 +141,16 @@ function normalizeProjectV4(data: JsonRecord, adoptParsed = false): Project {
   validateResourceProfiles(data.resourceProfiles);
   const tilesets = requireRecord("tilesets", data.tilesets);
   // 지연 번들 타일셋은 되돌릴 때까지 검사를 미룬다(validateProjectV2 와 같은 이유).
-  for (const [id, tileset] of Object.entries(tilesets)) if (!isPendingLazyTileset(tileset)) validateTileset(id, tileset);
-  for (const tileset of Object.values(tilesets)) if (!isPendingLazyTileset(tileset)) referenceOwner({ tilesets } as unknown as Project, tileset as Project["tilesets"][string]);
+  for (const id of Object.keys(tilesets)) {
+    if (pendingDefaultTilesetBuilder(tilesets, id)) continue;
+    const tileset = tilesets[id];
+    if (!isPendingLazyTileset(tileset)) validateTileset(id, tileset);
+  }
+  for (const id of Object.keys(tilesets)) {
+    if (pendingDefaultTilesetBuilder(tilesets, id)) continue;
+    const tileset = tilesets[id];
+    if (!isPendingLazyTileset(tileset)) referenceOwner({ tilesets } as unknown as Project, tileset as Project["tilesets"][string]);
+  }
   validateSwitches(data.switches);
   validateVariables(data.variables);
   validateCommonEvents(data.commonEvents);
@@ -439,13 +456,16 @@ function normalizeEndings(project: Project): void {
 }
 
 function dropLegacyTerrainTemplates(project: Project): void {
-  for (const tileset of Object.values(project.tilesets)) {
-    delete (tileset as { terrainTemplates?: unknown }).terrainTemplates;
+  for (const id of Object.keys(project.tilesets)) {
+    if (pendingDefaultTilesetBuilder(project.tilesets, id)) continue;
+    delete (project.tilesets[id] as { terrainTemplates?: unknown }).terrainTemplates;
   }
 }
 
 function normalizeTilesetPalettePresets(project: Project): void {
-  for (const tileset of Object.values(project.tilesets)) {
+  for (const id of Object.keys(project.tilesets)) {
+    if (pendingDefaultTilesetBuilder(project.tilesets, id)) continue;
+    const tileset = project.tilesets[id]!;
     if (tileset.palettePresets === undefined) continue;
     const usedIds = new Set<string>();
     for (const preset of tileset.palettePresets) {

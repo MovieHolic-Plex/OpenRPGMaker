@@ -2,14 +2,12 @@ import { describe, expect, it } from "vitest";
 import { freshBlankProject as createBlankProject } from "./support/blankProject";
 import { normalizeGameBlueprint } from "@/project/gameBlueprint";
 import { CURRENT_MONSTER_ART_IDS, hasCurrentMonsterArt, installCurrentMonsterArt, isCurrentMonsterArt, preloadCurrentMonsterArt } from "@/assets/currentMonsterArt";
-import { CURRENT_MONSTER_SHEETS_20 } from "@/assets/currentMonsterSheets20";
-import { FS_MONSTER_SHEETS_16 } from "@/project/flagship/fallen/monsterSheets16";
+import { PIXEL_ENEMY_SHEETS, pixelEnemySheet, setPixelEnemySheetProjectSource } from "@/assets/pixelEnemySheets";
 import { currentFoe, hasCurrentArt, leadEnemyId, settleCurrentArtIn } from "@/ai/v2/story/currentFoes";
 import { foeSkillNames } from "@/ai/v2/judge/enemyChecks";
 import { themeBossTroop, themeFieldTroops } from "@/ai/v2/place/placeTheme";
 import { redrawStepFoesIn } from "@/ai/v2/story/stepFoes";
 import { resolveEventSpriteTexture } from "@/player/eventSpriteResources";
-import { pixelEnemySheet, setPixelEnemySheetProjectSource } from "@/assets/pixelEnemySheets";
 import { parseArtGap } from "@/project/artGap";
 import { standInOriginalArt } from "@/project/defaults/currentMonsterStandIns";
 import { WORLDS } from "@/ai/v2/place/world";
@@ -35,76 +33,61 @@ const leadArt = (project: Project, troopId: string | undefined): string | undefi
 };
 
 describe("현행 몬스터 그림", () => {
-  // 손으로 맞추는 개수 대조가 아니라 그림 표(두 시트 파일)와 기본 DB 를 따른다 — 『폴른 스타』가 제 이야기 적(사람 적 시트 등)을 표에 더해도 빨개지지 않고,
-  // v2 가 세울 수 있는 적(기본 DB 에 적 기록이 있는 그림)의 시트를 더하고 id 목록을 빠뜨리면 빨개진다(2026-11-13: 사람 적 여섯 장이 표에 들어오며 개수 대조가 깨졌다).
-  it("id 목록의 그림은 모두 표에 있어 설치되고, 표의 그림 가운데 기본 DB 의 적이 쓰는 것·더 그린 종은 모두 목록에 있다", async () => {
-    const sheets = new Set([...FS_MONSTER_SHEETS_16, ...CURRENT_MONSTER_SHEETS_20].map((art) => art.resourceId));
+  // 2026-11-26 번들 승격: 현행 5×4(20칸) 시트 44종(괴물 38 + 폴른 스타 인간형 적 6)이 정식 번들(PIXEL_ENEMY_SHEETS)이다.
+  it("id 목록의 그림은 모두 정식 번들 5×4 시트에 있고, 기본 DB 의 적이 쓰는 현행 시트는 모두 목록에 있다", async () => {
+    const sheets = new Set(PIXEL_ENEMY_SHEETS.map((art) => art.resourceId));
     const current = new Set(CURRENT_MONSTER_ART_IDS);
     expect(current.size).toBe(CURRENT_MONSTER_ART_IDS.length);
-    for (const id of CURRENT_MONSTER_ART_IDS) expect(sheets.has(id), `${id} 의 시트가 표에 없다`).toBe(true);
-    // 목록의 id 는 실제로 설치된다(초상 업로드 kind monster).
+    for (const id of CURRENT_MONSTER_ART_IDS) {
+      expect(sheets.has(id), `${id} 의 시트가 정식 번들 표에 없다`).toBe(true);
+      expect(pixelEnemySheet(id)?.grid, id).toBe("5x4");
+    }
     await preloadCurrentMonsterArt();
     const project = createBlankProject() as Project;
     expect([...installCurrentMonsterArt(project, CURRENT_MONSTER_ART_IDS)].sort()).toEqual([...CURRENT_MONSTER_ART_IDS].sort());
     for (const id of CURRENT_MONSTER_ART_IDS) expect(hasCurrentMonsterArt(project, id), id).toBe(true);
-    // 표의 그림 가운데 v2 가 세울 수 있는 것(기본 DB 의 적이 쓰는 그림)과 v2 용으로 더 그린 종은 목록에 있어야 한다.
+    // 기본 DB 의 적이 쓰는 현행 시트는 모두 목록에 있어야 한다.
     const defaultFoeArt = new Set((createBlankProject() as Project).database.enemies.map((enemy) => enemy.monsterResourceId));
     for (const id of sheets) if (defaultFoeArt.has(id)) expect(current.has(id), `${id} 는 기본 DB 의 적이 쓰는 현행 시트인데 CURRENT_MONSTER_ART_IDS 에 없다`).toBe(true);
-    for (const art of CURRENT_MONSTER_SHEETS_20) expect(current.has(art.resourceId), art.resourceId).toBe(true);
-    // 몇 개는 이름으로 못 박는다.
     for (const id of ["generated-enemy-wolf-grey", "generated-enemy-hound-hell", "generated-enemy-golem-iron", "generated-enemy-dragon-whelp"]) expect(current.has(id), id).toBe(true);
-    // 두 파일에 다 있는 id 는 표시가 있고(설치는 폴른 스타 것), 그 밖의 id 는 한 파일에만 있다.
-    const fallen = new Set(FS_MONSTER_SHEETS_16.map((art) => art.resourceId));
-    for (const art of CURRENT_MONSTER_SHEETS_20) expect(fallen.has(art.resourceId), art.resourceId).toBe(art.alsoInFlagship === true);
   });
 
-  it("더 그린 종(battle-gen gif20)도 같은 길로 들어간다 — 20칸 시트 · 맵 위 그림 · 대역 없이 그 적", async () => {
+  it("더 그린 종(battle-gen gif20)도 정식 번들 5×4 시트와 맵 위 그림으로 바로 잡힌다", async () => {
     await preloadCurrentMonsterArt();
     const project = createBlankProject() as Project;
-    const ids = CURRENT_MONSTER_SHEETS_20.map((art) => art.resourceId);
+    const ids = [
+      "generated-enemy-leafling-01",
+      "generated-enemy-triceratops",
+      "generated-enemy-dragon-whelp",
+      "generated-enemy-centipede-fire",
+      "generated-enemy-bear-brown",
+    ];
     expect([...installCurrentMonsterArt(project, ids)].sort()).toEqual([...ids].sort());
     setPixelEnemySheetProjectSource(() => project);
     try {
-      for (const art of CURRENT_MONSTER_SHEETS_20) {
-        const sheet = pixelEnemySheet(art.resourceId)!;
-        expect(sheet.projectAuthored, art.resourceId).toBe(true);
-        expect(sheet.grid, art.resourceId).toBe("5x4");
-        expect(sheet.cell, art.resourceId).toBe(art.cell);
-        // 폴른 스타에도 있는 id(잎새 정령)는 그쪽 시트가 들어간다 — 한 id 에 그림 하나.
-        expect(project.assets.uploaded[art.resourceId]?.generatedBy, art.resourceId).toBe(art.alsoInFlagship ? "battle-gen:fallen-star" : "battle-gen:gif20");
-        expect(resolveEventSpriteTexture(project, art.resourceId, 0)).toMatchObject({ texture: art.resourceId, monster: true });
+      for (const id of ids) {
+        const sheet = pixelEnemySheet(id)!;
+        expect(sheet.grid, id).toBe("5x4");
+        expect(resolveEventSpriteTexture(project, id, 0)).toMatchObject({ texture: id, monster: true });
       }
     } finally { setPixelEnemySheetProjectSource(undefined); }
-    const before = JSON.stringify(project.assets.uploaded);
-    installCurrentMonsterArt(project, ids);
-    expect(JSON.stringify(project.assets.uploaded)).toBe(before);
     for (const id of ["enemy_bear_brown", "enemy_dragon_whelp", "enemy_centipede_fire"]) expect(currentFoe(project, id)).toEqual({ enemyId: id });
     // 아직 못 그린 종은 그대로 대역 + 그릴 목록.
     expect(currentFoe(project, "enemy_tiger_saber")).toEqual({ enemyId: "enemy_wolf_dire", wanted: "tiger-saber" });
   });
 
-  it("넣으면 전투 시트와 맵 위 그림이 둘 다 그 그림이 된다 — 넣지 않은 프로젝트는 번들 그림 그대로", async () => {
+  it("정식 번들 5×4 시트는 프로젝트 업로드에 중복 복사하지 않고도 전투 시트와 맵 위 그림이 둘 다 잡힌다", async () => {
     const project = createBlankProject() as Project;
     const id = "generated-enemy-boar-tusk";
     expect(installCurrentMonsterArt(project, ["generated-enemy-lizardman-spear"]).size).toBe(0);
     await preloadCurrentMonsterArt();
-    expect(hasCurrentMonsterArt(project, id)).toBe(false);
-    expect([...installCurrentMonsterArt(project, [id, "generated-enemy-lizardman-spear"])]).toEqual([id]);
     expect(hasCurrentMonsterArt(project, id)).toBe(true);
-    const art = FS_MONSTER_SHEETS_16.find((a) => a.resourceId === id)!;
-    setPixelEnemySheetProjectSource(() => project);
-    try {
-      const sheet = pixelEnemySheet(id)!;
-      expect(sheet.projectAuthored).toBe(true);
-      expect(sheet.grid).toBe(art.grid);
-      expect(sheet.cell).toBe(art.cell);
-    } finally { setPixelEnemySheetProjectSource(undefined); }
-    // 맵 위: 업로드 monster 가 번들보다 먼저 잡힌다(런타임이 그 그림에서 걷기 칩을 뽑는다).
+    expect([...installCurrentMonsterArt(project, [id, "generated-enemy-lizardman-spear"])]).toEqual([id]);
+    expect(project.assets.uploaded[id]).toBeUndefined();
+    const sheet = pixelEnemySheet(id)!;
+    expect(sheet.grid).toBe("5x4");
+    expect(sheet.cell).toBe(96);
     expect(resolveEventSpriteTexture(project, id, 0)).toMatchObject({ texture: id, monster: true });
-    // 되풀이 안전.
-    const before = JSON.stringify(project.assets.uploaded);
-    installCurrentMonsterArt(project, [id]);
-    expect(JSON.stringify(project.assets.uploaded)).toBe(before);
   });
 });
 

@@ -1,15 +1,17 @@
-import sheet from '@/assets/worldmapAuthoringSheet.json' with { type: "json" };
+import { bundledJson } from './bundledJson';
 import type { AutotileGroup, TilesetDef } from '../types';
 import { WORLDMAP_SELECTED_TEXTURE, WORLDMAP_SELECTED_ICONS } from './worldmapSelected';
 export const WORLDMAP_AUTHORING_ID = 'worldmap_authoring';
 export const WORLDMAP_AUTHORING_TEXTURE = 'tex_worldmap_authoring';
-export const WORLDMAP_BRUSHES = sheet.brushes;
+const getSheet = () => bundledJson('worldmapAuthoringSheet');
+export function worldmapBrushes() { return getSheet().brushes; }
 const BACKGROUND_NAMES: Record<string, string> = { grass: '초원', sand: '사막', snow: '설원' };
 function materialName(name: string, background: string): string {
     return BACKGROUND_NAMES[background] ? `${name} · ${BACKGROUND_NAMES[background]}` : name;
 }
 /** Refresh only bundle-owned liquid flags, including prototypes saved before deployment. */
 function ensureWaterFlags(t: TilesetDef): boolean {
+    const sheet = getSheet();
     const own = t.image.type === 'bundled' && t.image.id === WORLDMAP_AUTHORING_TEXTURE;
     const grafts = t.tileGrafts ?? [];
     const authored = grafts.filter(g => g.sourceChipset === WORLDMAP_AUTHORING_TEXTURE);
@@ -37,6 +39,7 @@ function ensureWaterFlags(t: TilesetDef): boolean {
     return changed;
 }
 function groups(remap: (tile: number) => number): AutotileGroup[] {
+    const sheet = getSheet();
     return sheet.brushes.filter(b => b.variantMap).map<AutotileGroup>(b => {
         const forests = ['forest', 'conifer', 'jungleforest', 'deadforest', 'snowforest'];
         const mountains = ['mountain', 'snowmountain', 'volcano', 'mesa'];
@@ -54,6 +57,7 @@ function groups(remap: (tile: number) => number): AutotileGroup[] {
 }
 /** Append-only: original raster materials and every authored cell keep their IDs. */
 export function attachWorldmapAuthoringBrushes(t: TilesetDef): boolean {
+    const sheet = getSheet();
     let changed = false;
     const own = t.image.type === 'bundled' && t.image.id === WORLDMAP_AUTHORING_TEXTURE;
     const mapping = new Map<number, number>();
@@ -110,6 +114,7 @@ export function attachWorldmapAuthoringBrushes(t: TilesetDef): boolean {
     return ensureWaterFlags(t) || changed;
 }
 export function createWorldmapAuthoringTileset(): TilesetDef {
+    const sheet = getSheet();
     const t: TilesetDef = { id: WORLDMAP_AUTHORING_ID, name: '월드맵 · 연결 지형 붓', family: 'worldmap-kit', kind: 'custom',
         image: { type: 'bundled', id: WORLDMAP_AUTHORING_TEXTURE }, tileSize: 16, tilesPerRow: sheet.tilesPerRow, count: sheet.count,
         priority: [], passability: [], terrain: [], referenceSourceTilesetId: 'worldmap_selected' };

@@ -118,7 +118,16 @@ import {
 } from "@/project/playResolution";
 import { setDatabaseSubLocation } from "@/editor/panels/databaseWayfinding";
 import { CAMERA_ZOOM_LIMITS, resolveCameraZoom, storeCameraZoom } from "@/project/cameraZoom";
-import { PLAY_SURFACE_SCALE_MODES, normalizePlaySurfaceScale, resolvePlaySurfaceScaleMode, type PlaySurfaceScaleMode } from "@/project/playSurfaceScaleMode";
+import {
+  PLAY_SURFACE_SCALE_MODES,
+  PORTRAIT_LAYOUT_MODES,
+  normalizePlaySurfaceScale,
+  normalizePortraitLayout,
+  resolvePlaySurfaceScaleMode,
+  resolvePortraitLayout,
+  type PlaySurfaceScaleMode,
+  type PortraitLayoutMode,
+} from "@/project/playSurfaceScaleMode";
 import { SMALL_MAP_FILL_DEFAULT, resolveSmallMapFill } from "@/project/smallMapFill";
 import { DISPLAY_FILTER_LABELS, DISPLAY_FILTERS, normalizeDisplayFilter } from "@/project/displayFilter";
 import type { PlayResolution, RewardPolicy, SystemRecords } from "@/project/types";
@@ -141,7 +150,7 @@ const TITLE_PRESENTATION_MODES = ["text", "graphic", "both"] as const satisfies 
 const TITLE_PARTICLE_PRESET_OPTIONS = ["none", "snow", "rain", "fireflies", "stars"] as const satisfies readonly ("none" | TitleParticlePreset)[];
 const TITLE_INTRO_LOGO_OPTIONS = ["none", "fadeIn", "riseIn"] as const satisfies readonly TitleIntroLogoAnimation[];
 const TITLE_INTRO_MENU_OPTIONS = ["none", "fadeIn", "slideUp"] as const satisfies readonly TitleIntroMenuAnimation[];
-const PLAY_RESOLUTION_PRESETS = ["320x240", "480x270", "426x240", "640x360", "640x480", "custom"] as const;
+const PLAY_RESOLUTION_PRESETS = ["320x240", "384x216", "480x270", "426x240", "640x360", "640x480", "custom"] as const;
 type PlayResolutionPreset = (typeof PLAY_RESOLUTION_PRESETS)[number];
 
 /** 시스템 탭 좌측 섹션 내비 슬러그 — SYSTEM_SECTION_ORDER 순서가 곧 내비 순서. */
@@ -778,7 +787,13 @@ function menuSkinFieldset(project: Project): HTMLElement {
     gallery.append(card);
   }
   return rm2k3Fieldset("게임 메뉴 디자인", [
-    systemHelp("원하는 디자인을 눌러 선택하세요. ESC(X) 메뉴에 다음 테스트 플레이부터 적용됩니다."),
+    checkboxField("옛 메뉴 쓰기(아래 디자인 목록)", "db-field-system-menu-layout-legacy", project.system.menuLayout === "legacy", (checked) => {
+      updateSystem((draft) => {
+        if (checked) draft.system.menuLayout = "legacy";
+        else delete draft.system.menuLayout;
+      });
+    }),
+    systemHelp("ESC 메뉴는 기본으로 허브 메뉴(동료 카드 · 타이틀 그림 배경)입니다. 옛 메뉴를 켜면 아래에서 고른 디자인을 씁니다."),
     status,
     gallery,
   ]);
@@ -791,9 +806,10 @@ function playResolutionFieldset(project: Project, rerender: SystemRefresh): HTML
   const presetSelect = el("select", { dataset: { testid: "db-field-system-resolution-preset" } }) as HTMLSelectElement;
   const labels: Record<PlayResolutionPreset, string> = {
     "320x240": "320 × 240 · 클래식 4:3",
-    "480x270": "480 × 270 · 와이드 16:9 (새 프로젝트 기본, 추천)",
+    "384x216": "384 × 216 · 밀착 와이드 16:9 (공포·클로즈업, FHD 5배)",
+    "480x270": "480 × 270 · 표준 와이드 16:9 (JRPG·스토리 기본, FHD 4배)",
     "426x240": "426 × 240 · 와이드 (정수 배율 안 맞음)",
-    "640x360": "640 × 360 · 와이드 16:9 넓게",
+    "640x360": "640 × 360 · 넓은 와이드 16:9 (농장·액션 기본, FHD 3배)",
     "640x480": "640 × 480 · 확장 4:3",
     custom: "직접 입력",
   };
@@ -853,8 +869,9 @@ function playResolutionFieldset(project: Project, rerender: SystemRefresh): HTML
  * 2026-10-20 사용자 결정: 기본 480×270·배율 1(30×17칸)을 추천, 넓게·가깝게는 640×360 의 배율 1·2.
  */
 const VIEW_PRESETS = [
-  { id: "wide", label: "넓게 · 640 × 360 · 배율 1 (16px 칸 40 × 22)", width: 640, height: 360, zoom: 1 },
-  { id: "default", label: "기본 · 480 × 270 · 배율 1 (16px 칸 30 × 17, 추천)", width: 480, height: 270, zoom: 1 },
+  { id: "wide", label: "넓게 · 640 × 360 · 배율 1 (16px 칸 40 × 22.5, 농장·액션)", width: 640, height: 360, zoom: 1 },
+  { id: "default", label: "표준 · 480 × 270 · 배율 1 (16px 칸 30 × 17, JRPG·스토리 추천)", width: 480, height: 270, zoom: 1 },
+  { id: "closeup", label: "밀착 · 384 × 216 · 배율 1 (16px 칸 24 × 13.5, 공포·클로즈업)", width: 384, height: 216, zoom: 1 },
   { id: "close", label: "가깝게 · 640 × 360 · 배율 2 (16px 칸 20 × 11)", width: 640, height: 360, zoom: 2 },
 ] as const;
 
@@ -920,21 +937,41 @@ function companionDisplayField(project: Project): HTMLElement {
   });
 }
 
-/** 화면 맞춤 — 정수 배율(도트 굵기 고름, 남는 창은 여백) 또는 창에 꽉 맞춤. 생략 = 프로젝트 규칙(resolvePlaySurfaceScaleMode). */
+/** 화면 맞춤 — 반응형 정수 도트(여백 없음, 추천) · 고정 정수 배율 · 창에 꽉 맞춤 + 모바일 세로 배치(DS식 / 풀블리드). */
 function surfaceScaleField(project: Project): HTMLElement {
   const select = el("select", { dataset: { testid: "db-field-system-surface-scale" } }) as HTMLSelectElement;
   const labels: Record<PlaySurfaceScaleMode, string> = {
-    integer: "정수 배율 · 도트가 고르게, 남는 창은 검은 여백 (추천)",
+    adaptive: "반응형 정수 도트 · 창·기기 비율에 맞춰 여백 없이 채움 (추천)",
+    integer: "고정 정수 배율 · 도트가 고르게, 남는 창은 검은 여백",
     fit: "창에 꽉 맞춤 · 여백 없음, 도트 굵기가 조금 섞임",
   };
   for (const mode of PLAY_SURFACE_SCALE_MODES) select.append(el("option", { text: labels[mode], attrs: { value: mode } }));
-  select.value = resolvePlaySurfaceScaleMode(project);
+  const currentScale = resolvePlaySurfaceScaleMode(project);
+  select.value = currentScale;
+
+  const portraitSelect = el("select", { dataset: { testid: "db-field-system-portrait-layout" } }) as HTMLSelectElement;
+  const portraitLabels: Record<PortraitLayoutMode, string> = {
+    ds: "DS식 상하 분할 · 상단 55% 게임(2배) + 하단 대사·전투·패드 (추천)",
+    fullbleed: "전체화면 풀블리드 · 화면 100% 게임(2배) + 반투명 플로팅 UI",
+  };
+  for (const mode of PORTRAIT_LAYOUT_MODES) portraitSelect.append(el("option", { text: portraitLabels[mode], attrs: { value: mode } }));
+  portraitSelect.value = resolvePortraitLayout(project);
+  portraitSelect.disabled = currentScale !== "adaptive";
+
   select.addEventListener("change", () => {
+    const next = normalizePlaySurfaceScale(select.value);
+    portraitSelect.disabled = next !== "adaptive";
     updateSystem((draft) => {
-      const next = normalizePlaySurfaceScale(select.value);
       if (next) draft.system.playSurfaceScale = next;
       else delete draft.system.playSurfaceScale;
     }, "system:surface-scale");
+  });
+  portraitSelect.addEventListener("change", () => {
+    const next = normalizePortraitLayout(portraitSelect.value);
+    updateSystem((draft) => {
+      if (next && next !== "ds") draft.system.portraitLayout = next;
+      else delete draft.system.portraitLayout;
+    }, "system:portrait-layout");
   });
   const fill = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "db-field-system-small-map-fill" } }) as HTMLInputElement;
   fill.checked = resolveSmallMapFill(project);
@@ -945,8 +982,12 @@ function surfaceScaleField(project: Project): HTMLElement {
     }, "system:small-map-fill");
   });
   return rm2k3Fieldset("화면 맞춤", [
-    el("p", { class: "db-system-resolution-help", text: "게임 화면을 창 크기에 맞춰 키우는 방식입니다. 480 × 270 은 FHD 에서 4배, 4K 에서 8배로 꽉 차고 QHD 에서만 얇은 여백이 남습니다. 다음 플레이부터 적용됩니다." }),
+    el("p", {
+      class: "db-system-resolution-help",
+      text: "게임 화면을 창·기기 크기에 맞춰 키우는 방식입니다. 「반응형 정수 도트」는 PC/노트북에서 검은 여백 없이 정수 배율로 채우고, 모바일 세로에서는 2배 확대 세로 카메라(DS식 또는 풀블리드)로 보여 줍니다.",
+    }),
     field("맞춤", select),
+    field("모바일 세로 배치", portraitSelect),
     field("작은 방 화면 채우기", fill),
   ]);
 }
@@ -3943,7 +3984,13 @@ function refreshSystemDerived(form: HTMLElement, kind: "values" | "effects"): vo
   const view = form.querySelector<HTMLSelectElement>('[data-testid="db-field-system-view-preset"]');
   if (view) view.value = viewPresetIdFor(project.system);
   const scale = form.querySelector<HTMLSelectElement>('[data-testid="db-field-system-surface-scale"]');
-  if (scale) scale.value = resolvePlaySurfaceScaleMode(project);
+  const scaleMode = resolvePlaySurfaceScaleMode(project);
+  if (scale) scale.value = scaleMode;
+  const portraitLayout = form.querySelector<HTMLSelectElement>('[data-testid="db-field-system-portrait-layout"]');
+  if (portraitLayout) {
+    portraitLayout.value = resolvePortraitLayout(project);
+    portraitLayout.disabled = scaleMode !== "adaptive";
+  }
   const veil = form.querySelector<HTMLElement>('[data-testid="db-system-resolution-veil-note"]');
   if (veil) veil.hidden = project.system.dialogueStyle !== "dual-fullbody-veil";
   refreshTimeSummary(form);

@@ -18,6 +18,15 @@ export const MOVIE_VIDEO_TESTID = "runtime-movie-video";
 
 /** 로드가 끝내 시작되지 않아도 이벤트가 영원히 멈추지 않도록 두는 상한. */
 const MOVIE_LOAD_TIMEOUT_MS = 10_000;
+const activeSceneMovies = new WeakMap<object, Set<() => void>>();
+
+/** 세션 교체(applySession) 시 wait:false 비대기 동영상 오버레이까지 포함해 현재 씬의 모든 재생을 중단한다. */
+export function cancelSceneMovieOverlays(scene: object): void {
+  const active = activeSceneMovies.get(scene);
+  if (!active || active.size === 0) return;
+  for (const finish of [...active]) finish();
+  active.clear();
+}
 
 /** 확장자가 이미 붙은 리소스 id 는 그대로 파일명으로 쓴다(webm 샘플 등). */
 const MOVIE_FILE_EXTENSION = /\.(mp4|webm|ogv|ogg|m4v|mov)$/i;
@@ -39,7 +48,12 @@ export function resolveMovieResourceUrl(
   return withInlineAsset(`/assets/movies/${encodeURIComponent(fileName)}`);
 }
 
-export function playMovieOverlay(scene: PlaySceneContext, step: PlayMovieStep): Promise<void> {
+export function playMovieOverlay(
+  scene: PlaySceneContext,
+  step: PlayMovieStep,
+  options?: { readonly signal?: AbortSignal },
+): Promise<void> {
+  if (options?.signal?.aborted) return Promise.resolve();
   const host = movieHost(scene);
   const url = resolveMovieResourceUrl(step.resourceId);
   if (!host || !url) {
@@ -69,9 +83,14 @@ export function playMovieOverlay(scene: PlaySceneContext, step: PlayMovieStep): 
     const finish = (): void => {
       if (settled) return;
       settled = true;
-      if (loadTimer !== undefined) clearTimeout(loadTimer);
+      if (loadTimer !== undefined) {
+        clearTimeout(loadTimer);
+        loadTimer = undefined;
+      }
       for (const off of finishers) off();
       video.pause?.();
+      video.removeAttribute("src");
+      if (typeof video.load === "function") video.load();
       overlay.remove();
       resolve();
     };
@@ -94,12 +113,25 @@ export function playMovieOverlay(scene: PlaySceneContext, step: PlayMovieStep): 
     video.addEventListener("loadeddata", onLoaded);
     video.addEventListener("playing", onLoaded);
     document.addEventListener("keydown", onKeyDown);
+    scene.events?.once("shutdown", finish);
+    scene.events?.once("destroy", finish);
+    options?.signal?.addEventListener("abort", finish, { once: true });
+    let sceneSet = activeSceneMovies.get(scene);
+    if (!sceneSet) {
+      sceneSet = new Set();
+      activeSceneMovies.set(scene, sceneSet);
+    }
+    sceneSet.add(finish);
     finishers.push(() => {
+      sceneSet?.delete(finish);
       video.removeEventListener("ended", onEnded);
       video.removeEventListener("error", onError);
       video.removeEventListener("loadeddata", onLoaded);
       video.removeEventListener("playing", onLoaded);
       document.removeEventListener("keydown", onKeyDown);
+      scene.events?.off("shutdown", finish);
+      scene.events?.off("destroy", finish);
+      options?.signal?.removeEventListener("abort", finish);
     });
     loadTimer = setTimeout(() => {
       console.warn(`[player] playMovie 로드 시간 초과: ${step.resourceId}`);
@@ -110,8 +142,9 @@ export function playMovieOverlay(scene: PlaySceneContext, step: PlayMovieStep): 
   // 브라우저 자동재생 정책상 play() 는 거부될 수 있다 — 그때는 error/타임아웃 경로가 정리한다.
   void video.play?.().catch(() => undefined);
 
-  // wait:false 는 즉시 다음 커맨드로 넘어가고, 영상은 오버레이째로 떨어져 계속 재생된다.
-  return step.wait ? done : Promise.resolve();
+  // wait:false 는 호출자(playSceneInterpreter)가 await 하지 않고 즉시 다음 커맨드로 넘어간다.
+  // done 프라미스를 그대로 돌려줘야 비대기 재생도 완료/세션 전환 시 리스너를 정확히 해제할 수 있다.
+  return done;
 }
 
 function movieHost(scene: PlaySceneContext): HTMLElement | undefined {

@@ -1,7 +1,9 @@
 import { currentObjectiveText } from "@/player/zoneFeedback";
 import { fieldGuidesOn, objectiveSentence } from "@/player/objectiveTarget";
-import { dialogueUiText } from "@/player/dialogueUiStrings";
-import { resolveDialogueSystem, type AuthoredDialogueSystem } from "@/project/dialogueSystem";
+import { dialogueUiLocale, dialogueUiText } from "@/player/dialogueUiStrings";
+import { runtimeUiLocale } from "@/player/runtimeUiStrings";
+import { formatStatusMenuControlsForDevice, type InputDeviceKind } from "@/player/inputGlyphs";
+import { defaultDialogueSystem, resolveDialogueSystem, type AuthoredDialogueSystem } from "@/project/dialogueSystem";
 import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
 import {
   createPlayerStatusMenuSnapshot,
@@ -17,7 +19,7 @@ import {
   type StatusMenuCommand,
 } from "@/player/playerStatusMenuModel";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
-import { createStatusMenuDetail, type StatusMenuDetail } from "@/player/playerStatusMenuDetails";
+import { createStatusMenuDetail, type StatusMenuDetail, type StatusMenuDetailOptions } from "@/player/playerStatusMenuDetails";
 import { renderStatusMenuDetailPanel } from "@/player/playerStatusMenuDetailRenderer";
 import { applySystemGraphic, markClassicWindowSkin } from "@/player/systemGraphics";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
@@ -105,80 +107,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
   markClassicWindowSkin(panel, options.project);
 
   if (mode === "function") panel.classList.add("status-menu-detail-focus");
-  const detail = createStatusMenuDetail({
-    project: options.project,
-    session: options.session,
-    selectedCommand,
-    slots: options.slots,
-    autosave: options.autosave,
-    onLoadAutosave: options.actions.onLoadAutosave,
-    waitModeEnabled,
-    inventoryView: options.inventoryView,
-    onInventoryViewChange: options.actions.onInventoryViewChange,
-    onOptionsChanged: options.actions.onOptionsChanged,
-    onToggleWait: options.actions.onToggleWait,
-    onRest: options.actions.onRest,
-    targetItemId: options.targetItemId,
-    skillActorId: options.skillActorId,
-    selectedSkillId: options.selectedSkillId,
-    growthTab: options.growthTab,
-    onSelectGrowthTab: options.actions.onSelectGrowthTab,
-    onGrowthMutation: options.actions.onGrowthMutation,
-    equipmentActorId: options.equipmentActorId,
-    equipmentSlotId: options.equipmentSlotId,
-    formationActorId: options.formationActorId,
-    battleReportIndex: options.battleReportIndex,
-    onSelectBattleReport: options.actions.onSelectBattleReport,
-    bestiaryEntryId: options.bestiaryEntryId,
-    onSelectBestiaryEntry: options.actions.onSelectBestiaryEntry,
-    campaignSpeciesId: options.campaignSpeciesId,
-    onSelectCampaignSpecies: options.actions.onSelectCampaignSpecies,
-    dexPage: options.dexPage,
-    onDexPage: options.actions.onDexPage,
-    monsterView: options.monsterView,
-    monsterInstanceId: options.monsterInstanceId,
-    monsterCollect: options.monsterCollect,
-    onSelectMonster: options.actions.onSelectMonster,
-    lifeLedgerTab: options.lifeLedgerTab,
-    confirmSaveSlot: options.confirmSaveSlot,
-    confirmToTitle: options.confirmToTitle,
-    saveEnabled: options.saveEnabled,
-    onSaveSlot: options.actions.onSaveSlot,
-    onLoadSlot: options.actions.onLoadSlot,
-    onSelectItemTarget: options.actions.onSelectItemTarget,
-    onUseItem: options.actions.onUseItem,
-    itemActionId: options.itemActionId,
-    canUseItemOnFacedTarget: options.canUseItemOnFacedTarget,
-    onOpenItemActions: options.actions.onOpenItemActions,
-    onCombineItems: options.actions.onCombineItems,
-    onUseItemOnFacedTarget: options.actions.onUseItemOnFacedTarget,
-    onToggleSkillLoadout: options.actions.onToggleSkillLoadout,
-    onSelectSkillActor: options.actions.onSelectSkillActor,
-    onSelectSkill: options.actions.onSelectSkill,
-    onSelectEquipmentActor: options.actions.onSelectEquipmentActor,
-    onSelectEquipmentSlot: options.actions.onSelectEquipmentSlot,
-    onEquipItem: options.actions.onEquipItem,
-    onUnequipItem: options.actions.onUnequipItem,
-    onOptimizeEquipment: options.actions.onOptimizeEquipment,
-    onSelectStatusActor: options.actions.onSelectStatusActor,
-    onToggleRow: options.actions.onToggleRow,
-    onSelectFormationActor: options.actions.onSelectFormationActor,
-    onMoveFormationActor: options.actions.onMoveFormationActor,
-    onToggleMonsterView: options.actions.onToggleMonsterView,
-    onMonsterCollect: options.actions.onMonsterCollect,
-    onMoveMonster: options.actions.onMoveMonster,
-    onTakeHeldItem: options.actions.onTakeHeldItem,
-    onUseMonsterFieldSkill: options.actions.onUseMonsterFieldSkill,
-    onReplacePendingMonsterSkill: options.actions.onReplacePendingMonsterSkill,
-    onRejectPendingMonsterSkill: options.actions.onRejectPendingMonsterSkill,
-    onSelectLifeLedgerTab: options.actions.onSelectLifeLedgerTab,
-    onLifeLedgerMutation: options.actions.onLifeLedgerMutation,
-    readLive: options.readLive,
-    placementDirection: options.placementDirection,
-    getPlacementDirection: options.getPlacementDirection,
-    getScene: options.getScene,
-    onCommand: options.actions.onCommand,
-  });
+  const detail = createStatusMenuDetail(statusMenuDetailOptions(options, selectedCommand));
   const presentation = selectedCommand === "to-title"
     ? "confirmation-card"
     : isStatusMenuGroupEntryId(selectedCommand)
@@ -287,12 +216,97 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
         : selectedCommand === "items" ? "목록 끝에서 분류·정렬 변경 (본문에서 ↑ 두 번)" : undefined),
       skin.railColumns, skin.id === "field-list",
       options.message === undefined && mode === "function" && selectedEntryDescription(detail, options.selectedDetailActionIndex) !== undefined ? "description" : undefined,
-      resolveDialogueSystem(options.project),
+      { ...(resolveDialogueSystem(options.project) ?? defaultDialogueSystem()), language: runtimeUiLocale(options.project) },
       mode === "function" && detail.entries.filter((entry) => entry.onActivate && !entry.disabled)[options.selectedDetailActionIndex ?? -1]?.onAdjust !== undefined,
     )
   );
   panel.append(statusMenuDebug(selectedCommand, mode));
   return panel;
+}
+
+/** 메뉴 옵션 → 상세 목록 옵션(옛 메뉴와 허브 메뉴가 같은 항목·같은 동작을 쓴다). */
+export function statusMenuDetailOptions(options: PlayerStatusMenuOptions, selectedCommand: StatusMenuRailId): StatusMenuDetailOptions {
+  return {
+    project: options.project,
+    session: options.session,
+    selectedCommand,
+    slots: options.slots,
+    autosave: options.autosave,
+    onLoadAutosave: options.actions.onLoadAutosave,
+    waitModeEnabled: options.waitModeEnabled ?? true,
+    inventoryView: options.inventoryView,
+    onInventoryViewChange: options.actions.onInventoryViewChange,
+    onOptionsChanged: options.actions.onOptionsChanged,
+    onToggleWait: options.actions.onToggleWait,
+    onRest: options.actions.onRest,
+    targetItemId: options.targetItemId,
+    skillActorId: options.skillActorId,
+    selectedSkillId: options.selectedSkillId,
+    growthTab: options.growthTab,
+    onSelectGrowthTab: options.actions.onSelectGrowthTab,
+    onGrowthMutation: options.actions.onGrowthMutation,
+    equipmentActorId: options.equipmentActorId,
+    equipmentSlotId: options.equipmentSlotId,
+    formationActorId: options.formationActorId,
+    battleReportIndex: options.battleReportIndex,
+    onSelectBattleReport: options.actions.onSelectBattleReport,
+    bestiaryEntryId: options.bestiaryEntryId,
+    onSelectBestiaryEntry: options.actions.onSelectBestiaryEntry,
+    campaignSpeciesId: options.campaignSpeciesId,
+    onSelectCampaignSpecies: options.actions.onSelectCampaignSpecies,
+    dexPage: options.dexPage,
+    onDexPage: options.actions.onDexPage,
+    monsterView: options.monsterView,
+    monsterInstanceId: options.monsterInstanceId,
+    monsterCollect: options.monsterCollect,
+    onSelectMonster: options.actions.onSelectMonster,
+    lifeLedgerTab: options.lifeLedgerTab,
+    confirmSaveSlot: options.confirmSaveSlot,
+    confirmToTitle: options.confirmToTitle,
+    confirmQuitGame: options.confirmQuitGame,
+    optionsSubscreen: options.optionsSubscreen,
+    capturingKeyAction: options.capturingKeyAction,
+    onOpenKeyBindings: options.actions.onOpenKeyBindings,
+    onStartKeyCapture: options.actions.onStartKeyCapture,
+    onResetKeyBindings: options.actions.onResetKeyBindings,
+    onQuitGame: options.actions.onQuitGame,
+    saveEnabled: options.saveEnabled,
+    onSaveSlot: options.actions.onSaveSlot,
+    onLoadSlot: options.actions.onLoadSlot,
+    onSelectItemTarget: options.actions.onSelectItemTarget,
+    onUseItem: options.actions.onUseItem,
+    itemActionId: options.itemActionId,
+    canUseItemOnFacedTarget: options.canUseItemOnFacedTarget,
+    onOpenItemActions: options.actions.onOpenItemActions,
+    onCombineItems: options.actions.onCombineItems,
+    onUseItemOnFacedTarget: options.actions.onUseItemOnFacedTarget,
+    onToggleSkillLoadout: options.actions.onToggleSkillLoadout,
+    onSelectSkillActor: options.actions.onSelectSkillActor,
+    onSelectSkill: options.actions.onSelectSkill,
+    onSelectEquipmentActor: options.actions.onSelectEquipmentActor,
+    onSelectEquipmentSlot: options.actions.onSelectEquipmentSlot,
+    onEquipItem: options.actions.onEquipItem,
+    onUnequipItem: options.actions.onUnequipItem,
+    onOptimizeEquipment: options.actions.onOptimizeEquipment,
+    onSelectStatusActor: options.actions.onSelectStatusActor,
+    onToggleRow: options.actions.onToggleRow,
+    onSelectFormationActor: options.actions.onSelectFormationActor,
+    onMoveFormationActor: options.actions.onMoveFormationActor,
+    onToggleMonsterView: options.actions.onToggleMonsterView,
+    onMonsterCollect: options.actions.onMonsterCollect,
+    onMoveMonster: options.actions.onMoveMonster,
+    onTakeHeldItem: options.actions.onTakeHeldItem,
+    onUseMonsterFieldSkill: options.actions.onUseMonsterFieldSkill,
+    onReplacePendingMonsterSkill: options.actions.onReplacePendingMonsterSkill,
+    onRejectPendingMonsterSkill: options.actions.onRejectPendingMonsterSkill,
+    onSelectLifeLedgerTab: options.actions.onSelectLifeLedgerTab,
+    onLifeLedgerMutation: options.actions.onLifeLedgerMutation,
+    readLive: options.readLive,
+    placementDirection: options.placementDirection,
+    getPlacementDirection: options.getPlacementDirection,
+    getScene: options.getScene,
+    onCommand: options.actions.onCommand,
+  };
 }
 
 type CommandRailRenderOptions = {
@@ -721,21 +735,30 @@ function renderPartyOverview(project: PlayerStatusMenuOptions["project"], snapsh
               children: [
                 el("span", { class: "status-menu-actor-name", text: row.name }),
                 el("span", { class: "status-menu-actor-subline", text: `${row.className} · Lv ${row.level}` }),
-                ...(row.hpLevel === "crit" ? [el("span", { class: "status-menu-overview-chip crit", text: "위험" })] : []),
+                ...(row.hpLevel === "crit" ? [el("span", { class: "status-menu-overview-chip crit", text: (() => {
+                  const loc = dialogueUiLocale(resolveDialogueSystem(project)?.language ?? project.meta.language);
+                  return loc === "en" ? "Danger" : loc === "ja" ? "危険" : loc === "zh" ? "危险" : "위험";
+                })() })] : []),
               ],
             }),
             // 상태이상은 이름 바로 아래 — 해독초를 누구에게 쓸지 메뉴 첫 화면에서 판단한다.
             ...(stats
               ? [el("div", {
                   class: `status-menu-overview-states${row.stateNames.length ? " has-state" : ""}`,
-                  text: row.stateNames.length ? row.stateNames.join(" · ") : "정상",
+                  text: row.stateNames.length ? row.stateNames.join(" · ") : (() => {
+                    const loc = dialogueUiLocale(resolveDialogueSystem(project)?.language ?? project.meta.language);
+                    return loc === "en" ? "OK" : loc === "ja" ? "正常" : loc === "zh" ? "正常" : "정상";
+                  })(),
                   dataset: { testid: `status-menu-overview-states-${index}` },
                 })]
               : []),
             renderOverviewVital("HP", row.hpValueLabel, row.hpRatio, `hp ${row.hpLevel}`, `status-menu-overview-hp-${index}`),
             renderOverviewVital(row.resourceLabel ?? "MP", row.mpValueLabel, row.mpRatio, "mp", `status-menu-overview-mp-${index}`),
             ...(stats && row.nextLevel
-              ? [renderOverviewVital("EX", `다음 ${row.nextLevel.remaining}`, row.nextLevel.ratio, "xp", `status-menu-overview-exp-${index}`)]
+              ? [renderOverviewVital("EX", (() => {
+                  const loc = dialogueUiLocale(resolveDialogueSystem(project)?.language ?? project.meta.language);
+                  return loc === "en" ? `Next ${row.nextLevel.remaining}` : loc === "ja" ? `次 ${row.nextLevel.remaining}` : loc === "zh" ? `下一级 ${row.nextLevel.remaining}` : `다음 ${row.nextLevel.remaining}`;
+                })(), row.nextLevel.ratio, "xp", `status-menu-overview-exp-${index}`)]
               : []),
           ],
         }),
@@ -901,16 +924,40 @@ function renderFooter(
     attrs: { role: "status" },
     dataset: { testid: "status-menu-message", ...(messageKind ? { messageKind } : {}) },
   }));
+  const defaultControls = statusMenuControls(mode, railColumns, compact, system);
+  const adjustControls = statusMenuAdjustControls(system);
   footer.append(el("span", {
     class: "status-menu-controls",
-    text: mode === "function" && adjustable ? dialogueUiText(system, "controls.adjust") : statusMenuControls(mode, railColumns, compact, system),
+    text: mode === "function" && adjustable ? adjustControls : defaultControls,
     // 좌우로 값을 바꾸는 줄(설정의 음량)에 커서가 오면 「← 메뉴」 대신 「←→ 조절」을 보인다 — 커서만 옮길 때는 다시 그리지 않으므로 두 글을 실어 둔다.
-    dataset: { testid: "status-menu-controls", ...(mode === "function" ? { controlsDefault: statusMenuControls(mode, railColumns, compact, system), controlsAdjust: dialogueUiText(system, "controls.adjust") } : {}) },
+    dataset: { testid: "status-menu-controls", ...(mode === "function" ? { controlsDefault: defaultControls, controlsAdjust: adjustControls } : {}) },
   }));
   return footer;
 }
 
-export function statusMenuControls(mode: "main" | "function", railColumns = 1, compact = false, system?: AuthoredDialogueSystem): string {
+export function statusMenuAdjustControls(system?: AuthoredDialogueSystem, device?: InputDeviceKind): string {
+  const formatted = formatStatusMenuControlsForDevice("function", {
+    adjustable: true,
+    locale: dialogueUiLocale(system?.language),
+    device,
+  });
+  return formatted ?? dialogueUiText(system, "controls.adjust");
+}
+
+export function statusMenuControls(
+  mode: "main" | "function",
+  railColumns = 1,
+  compact = false,
+  system?: AuthoredDialogueSystem,
+  device?: InputDeviceKind,
+): string {
+  const formatted = formatStatusMenuControlsForDevice(mode, {
+    railColumns,
+    compact,
+    locale: dialogueUiLocale(system?.language),
+    device,
+  });
+  if (formatted !== null) return formatted;
   // 대사 시스템이 있는 게임(연애 기본 구성 포함)은 저작한 언어로, 없으면 예전 한국어 그대로다.
   const text = (key: "controls.compact" | "controls.function" | "controls.grid" | "controls.list"): string => dialogueUiText(system, key);
   if (compact && mode === "main") return text("controls.compact");

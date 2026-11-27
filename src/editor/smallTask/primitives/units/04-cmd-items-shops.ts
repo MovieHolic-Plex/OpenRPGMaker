@@ -1,7 +1,11 @@
 import { eventCommandBranches } from "@/editor/eventCommandBranches";
 import { newCommand } from "@/editor/eventCommandFactory";
 import {
-  INN_NOT_ENOUGH_BRANCH_INDEX, resolveCommandAtPath, resolveCommandListAtPath,
+  INN_CANCELLED_BRANCH_INDEX,
+  INN_NOT_ENOUGH_BRANCH_INDEX,
+  INN_STAYED_BRANCH_INDEX,
+  resolveCommandAtPath,
+  resolveCommandListAtPath,
   SHOP_FAILED_TRANSACTION_BRANCH_INDEX, SHOP_TRANSACTION_BRANCH_INDEX,
 } from "@/editor/eventCommandPaths";
 import { commandSummary, commandSummaryParts } from "@/editor/panels/eventEditor/commandSummary";
@@ -229,11 +233,15 @@ function validateReferences(project: Project, command: EconomyCommand, args: Arg
     troopIds: none, speciesIds: none, resourceIds: none,
   };
   const row = command.kind === "shop" ? { ...command, transactionBranch: [], failedTransactionBranch: [] }
-    : command.kind === "inn" ? { ...command, notEnoughBranch: [] } : command;
+    : command.kind === "inn" ? { ...command, stayedBranch: [], cancelledBranch: [], notEnoughBranch: [] } : command;
   try {
     validateCommands([row], context);
   } catch {
     if (command.kind === "changeGold") throw new PrimitiveError("수량을 읽을 변수를 찾을 수 없습니다.");
+    // #5256 부터 validateCommands 가 여관 변수 요금도 검사해 여기서 먼저 걸린다 — 무엇이 없는지 그대로 말한다.
+    if (command.kind === "inn" && typeof command.price !== "number" && !variableIds.has(command.price.id)) {
+      throw new PrimitiveError("숙박 요금을 읽을 변수를 찾을 수 없습니다.");
+    }
     if (command.kind === "craftRecipe" || command.kind === "applyItemUpgrade") {
       throw new PrimitiveError("결과를 기록할 변수를 찾을 수 없습니다.");
     }
@@ -348,6 +356,8 @@ function assertActiveShopInnBranches(page: EventPage, branchPath: readonly numbe
     if (
       (parent?.kind === "shop" && branch === SHOP_TRANSACTION_BRANCH_INDEX && parent.branchOnTransaction !== true)
       || (parent?.kind === "shop" && branch === SHOP_FAILED_TRANSACTION_BRANCH_INDEX && parent.branchOnFailedTransaction !== true)
+      || (parent?.kind === "inn" && branch === INN_STAYED_BRANCH_INDEX && parent.branchOnStay !== true)
+      || (parent?.kind === "inn" && branch === INN_CANCELLED_BRANCH_INDEX && parent.branchOnCancel !== true)
       || (parent?.kind === "inn" && branch === INN_NOT_ENOUGH_BRANCH_INDEX && parent.branchOnNotEnoughGold !== true)
     ) {
       throw new PrimitiveError("꺼져 있는 상점·여관 분기의 명령은 추가하거나 수정할 수 없습니다.");

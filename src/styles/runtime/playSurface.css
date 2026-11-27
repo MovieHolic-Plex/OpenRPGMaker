@@ -1,3 +1,40 @@
+/* Keyboard-only runtime content never participates in hit testing. This also prevents
+   descendant :hover/:active selectors from matching; keyboard focus/click synthesis
+   remains available. Explicit pointer owners opt only their own subtree back in.
+   Shared between exported player (player.css) and editor test-play (preloadRuntimeStyles). */
+.player-layout.system-shell[data-play-input-owner="keyboard-only"] > * {
+  pointer-events: none !important;
+}
+.player-layout.system-shell[data-play-input-owner="keyboard-only"] *,
+.player-layout.system-shell[data-play-input-owner="keyboard-only"] *::before,
+.player-layout.system-shell[data-play-input-owner="keyboard-only"] *::after {
+  cursor: default !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-user-drag: none;
+}
+/* 마우스 입력을 연 게임(몬스터 수집, D15): 누를 수 있는 것에만 손가락 커서. 글자 선택은 계속 막는다. */
+.player-layout.system-shell[data-pointer-input="true"] :is(button, [role="button"], [role="menuitem"], [data-testid="dialogue-box"]) {
+  cursor: pointer;
+}
+.player-layout.system-shell[data-pointer-input="true"] .rm-title-menu-button:not(:disabled) {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.player-layout.system-shell [data-play-input-owner="license-notice"],
+.player-layout.system-shell [data-play-input-owner="touch-controls"],
+.player-layout.system-shell [data-play-input-owner="touch-controls"] *,
+.player-layout.system-shell [data-play-input-owner="host-fullscreen"],
+.player-layout.system-shell [data-play-input-owner="host-fullscreen"] * {
+  pointer-events: auto !important;
+}
+.player-layout.system-shell [data-play-input-owner="license-notice"],
+.player-layout.system-shell [data-play-input-owner="touch-controls"] *,
+.player-layout.system-shell [data-play-input-owner="host-fullscreen"],
+.player-layout.system-shell [data-play-input-owner="host-fullscreen"] * {
+  cursor: pointer !important;
+}
+
 .play-viewport {
   --play-logical-width: 320px;
   --play-logical-height: 240px;
@@ -597,4 +634,22 @@
 [data-hires-ui] .cinematic-skip-hint,
 [data-hires-ui] .play-stage > .runtime-overlay[data-testid="cutscene-skip-hint"] {
   zoom: var(--hires-ui-zoom, 1);
+}
+
+/* ── 반응형 정수 도트 뷰포트(data-adaptive="true", 2026-11-26) ──
+   1. 데스크톱 전체화면 토글: 무대가 뷰포트를 꽉 채우므로 우상단 안전 위치에 고정한다.
+   2. QHD·울트라와이드처럼 가로 논리 폭이 480px 을 넘을 때도 대사창 줄 길이가 너무 길어지지 않게
+      가운데 480 게임 px 안쪽에 정돈한다.
+   3. 타이틀 일러스트는 cover 로 채워 세로·16:10 비율에서도 검은 띠 없이 꽉 차게 보이게 한다. */
+[data-play-input-owner="keyboard-only"] .play-viewport[data-adaptive="true"] > [data-play-input-owner="host-fullscreen"].play-fullscreen-toggle {
+  right: 8px;
+  top: 8px;
+}
+.player-layout .play-viewport[data-adaptive="true"]:not([data-touch-layout="portrait"]) > .play-stage > .dialogue-overlay:is(.position-bottom, .position-top):not(.balloon-active):not([data-vn-layout="bar"]) {
+  max-width: 480px;
+  margin-inline: auto;
+}
+.play-viewport[data-adaptive="true"] .rm-title-screen {
+  background-position: center;
+  background-size: cover;
 }

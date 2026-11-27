@@ -7,6 +7,7 @@ import { bindThemeToolLookup } from "./themeScenes";
 import { bindSpaceBlueprintToolLookup } from "@/editor/spacePresetCatalog";
 import { MAP_EMPTINESS_TOOLS } from "./mapEmptiness";
 import { OPENING_ANIMATIC_TOOLS } from "./openingAnimaticTools";
+import { OPENING_DIRECTOR_TOOLS } from "./openingDirectorTools";
 import { OPENING_STAGE_TOOLS } from "./openingStageTools";
 import { MUSIC_AUTHORING_TOOLS } from './musicAuthoringTools';
 import { NPC_PATROL_TOOLS } from './npcPatrolTools';
@@ -478,6 +479,7 @@ export const TOOL_REGISTRY: readonly ToolDefinition[] = withoutClosedLifeTools(t
   ...GENRE_LOCK_TOOLS,
   ...withDomain(CINEMATIC_TOOLS, "system"),
   ...withDomain(OPENING_ANIMATIC_TOOLS, "system"),
+  ...withDomain(OPENING_DIRECTOR_TOOLS, "system"),
   ...withDomain(OPENING_STAGE_TOOLS, "system"),
   ...withDomain(MUSIC_AUTHORING_TOOLS, 'system'),
   ...withDomain(GAME_SYSTEM_AUTHORING_TOOLS, 'system'),

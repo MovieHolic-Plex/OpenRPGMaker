@@ -132,12 +132,12 @@ function gradientTouchesViewport(param: LightGradientParam, width: number, heigh
 }
 
 export function lightingMaskSignature(params: LightingMaskParams): string {
-  // 매 프레임 불린다. 중간 객체·JSON 없이 같은 정보를 이어 붙인다(값·정밀도는 예전과 같다).
+  // 매 프레임 불린다. 화면 좌표·반지름은 0.5px, 깜빡임은 0.02 단위로 양자화해 카메라 러프 미세 떨림에 의한 매 프레임 풀-캔버스 재그리기·GPU 업로드를 막는다.
   let signature = `${round(params.ambient)}|${params.color}|${params.blend}|${round(params.vignette)}|${params.width}x${params.height}`;
   if (params.clip) signature += `|c${params.clip.x},${params.clip.y},${params.clip.width},${params.clip.height}`;
   if (params.darkMargin) signature += "|m";
   for (const entry of params.gradients) {
-    signature += `|${entry.id}:${round(entry.centerX)},${round(entry.centerY)},${round(entry.radiusPx)},${round(entry.intensity)},${entry.color ?? ""},${round(entry.flicker)}${entry.arc ? `,${round(entry.arc[0])}~${round(entry.arc[1])}` : ""}${entry.edge ? ",h" : ""}${entry.polyHash !== undefined ? `,p${entry.polyHash}` : ""}`;
+    signature += `|${entry.id}:${roundHalf(entry.centerX)},${roundHalf(entry.centerY)},${roundHalf(entry.radiusPx)},${round(entry.intensity)},${entry.color ?? ""},${roundFlicker(entry.flicker)}${entry.arc ? `,${round(entry.arc[0])}~${round(entry.arc[1])}` : ""}${entry.edge ? ",h" : ""}${entry.polyHash !== undefined ? `,p${entry.polyHash}` : ""}`;
   }
   return signature;
 }
@@ -445,4 +445,12 @@ function clamp(min: number, max: number, value: number): number {
 
 function round(value: number): number {
   return Math.round(value * 1000) / 1000;
+}
+
+function roundHalf(value: number): number {
+  return Math.round(value * 2) / 2;
+}
+
+function roundFlicker(value: number): number {
+  return Math.round(value * 50) / 50;
 }

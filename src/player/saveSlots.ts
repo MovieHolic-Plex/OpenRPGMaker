@@ -1,3 +1,4 @@
+import { stripTransientCutsceneFlags } from "@/player/cutsceneControl";
 import { monsterSaveSummary, readMonsterSaveSummary, type MonsterSaveSummary } from "@/project/monsterSaveSummary";
 import { floorActorExperience } from "@/project/actorModel";
 import { parseEncounterGuard } from "@/project/encounterGuard";
@@ -128,11 +129,21 @@ export {
 } from "@/player/systemShellState";
 
 export const SAVE_SCHEMA_VERSION = 5;
-export const SAVE_SLOT_COUNT = 3;
+export const SAVE_SLOT_COUNT = 20;
 const SAVE_SLOT_PREFIX = "oprn:save-slot:v5:";
 let saveSlotStorageNamespace: string | null = null;
 
-export type SaveSlotIndex = 1 | 2 | 3;
+/** 수동 세이브 슬롯 번호(1..SAVE_SLOT_COUNT). 검증은 `isSaveSlotIndex` 를 쓴다. */
+export type SaveSlotIndex = number;
+
+export const SAVE_SLOT_INDICES: readonly SaveSlotIndex[] = Array.from(
+  { length: SAVE_SLOT_COUNT },
+  (_, index) => index + 1,
+);
+
+export function isSaveSlotIndex(value: unknown): value is SaveSlotIndex {
+  return typeof value === "number" && Number.isInteger(value) && value >= 1 && value <= SAVE_SLOT_COUNT;
+}
 
 /** 스냅샷 출처. 생략(구 세이브)은 수동 저장과 동일하게 취급한다. */
 export type SaveOrigin = "manual" | "auto";
@@ -371,7 +382,7 @@ export function saveSlotKey(slot: SaveSlotIndex): string {
   return `${SAVE_SLOT_PREFIX}${slot}`;
 }
 
-/** 전용 오토세이브 키 — 수동 3슬롯(SaveSlotIndex)과 완전히 분리된 별도 칸. */
+/** 전용 오토세이브 키 — 수동 슬롯(SaveSlotIndex 1..20)과 완전히 분리된 별도 칸. */
 export function autosaveKey(): string {
   const pinned = publicationSaveKey("auto");
   if (pinned) return pinned;
@@ -401,6 +412,15 @@ export function clearRecordKey(): string {
  */
 function saveJson(snapshot: SaveSnapshot): string {
   return JSON.stringify(snapshot, (_key, value: unknown) => (typeof value === "number" && !Number.isFinite(value) ? 0 : value));
+}
+
+/** 샌드박스 iframe·사생활 보호 모드에서 `window.localStorage` 접근 자체가 SecurityError 를 던질 때 안전하게 null 을 돌려준다. */
+export function safeLocalStorage(): Storage | null {
+  try {
+    return typeof window !== "undefined" ? window.localStorage : null;
+  } catch {
+    return null;
+  }
 }
 
 /** 적은 저장을 곧바로 다시 읽어 본다. 못 읽으면 이전 값으로 되돌리고 이유를 돌려준다(성공이면 null). */
@@ -441,9 +461,9 @@ export function setSaveSlotStorageNamespace(namespace: string | null): void {
   saveSlotStorageNamespace = namespace?.trim() || null;
 }
 
-/** 한 네임스페이스 아래에 있을 수 있는 세이브 키 접미사 전부 — 수동 3슬롯·오토세이브의 v5 키와 그 이전(v4) 키. */
+/** 한 네임스페이스 아래에 있을 수 있는 세이브 키 접미사 전부 — 수동 1..20슬롯·오토세이브의 v5 키와 그 이전(v4) 키. */
 const NAMESPACED_SAVE_KEY_SUFFIXES: readonly string[] = [
-  ...([1, 2, 3] as const).flatMap((slot) => [`:save-slot:v5:${slot}`, `:save-slot:${slot}`]),
+  ...SAVE_SLOT_INDICES.flatMap((slot) => [`:save-slot:v5:${slot}`, `:save-slot:${slot}`]),
   ":save-slot:v5:auto",
   ":save-slot:auto",
 ];
@@ -601,7 +621,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       playerFootprint: session.playerFootprint ? structuredClone(session.playerFootprint) : undefined,
       playerPassRows: session.playerPassRows,
       mapOverrides: structuredClone(session.mapOverrides ?? {}),
-      flags: structuredClone(session.flags),
+      flags: stripTransientCutsceneFlags(structuredClone(session.flags)),
       battleResult: session.battleResult,
       audio: structuredClone(session.audio),
       systemAudioOverrides: structuredClone(session.systemAudioOverrides),
@@ -747,6 +767,7 @@ function applyMapBackground(session: PlaySession, background: SaveMapBackground 
 // 저장 실패(quota 초과·프라이빗 모드)를 던지면 호출부의 클릭 핸들러가 그대로 끊겨
 // 성공도 실패도 표시되지 않았다. 오토세이브(performAutosave)와 같은 계약으로 결과를 돌려준다.
 export function saveToSlot(storage: Storage, slot: SaveSlotIndex, snapshot: SaveSnapshot): SaveWriteResult {
+  if (!isSaveSlotIndex(slot)) return { ok: false, message: "올바르지 않은 저장 칸입니다" };
   const blocker = saveScopeBlocker(snapshot.identity);
   if (blocker) return { ok: false, message: blocker };
   try {
@@ -783,6 +804,7 @@ export function snapshotLoadBlocker(project: Project, snapshot: SaveSnapshot): s
 }
 
 export function readSaveSlot(storage: Storage, slot: SaveSlotIndex): SaveSlotReadResult {
+  if (!isSaveSlotIndex(slot)) return { kind: "corrupt", slot, message: "올바르지 않은 저장 칸입니다" };
   const text = storage.getItem(saveSlotKey(slot)) ?? (publicationSaveKey(slot) ? null : storage.getItem(legacySaveKey(slot)));
   if (text === null) return { kind: "empty", slot };
   let value: unknown;
@@ -831,7 +853,7 @@ export function latestResumableSave(project: Project, storage: Storage): LatestS
 }
 
 export function listSaveSlots(storage: Storage): readonly SaveSlotReadResult[] {
-  return [readSaveSlot(storage, 1), readSaveSlot(storage, 2), readSaveSlot(storage, 3)];
+  return SAVE_SLOT_INDICES.map((slot) => readSaveSlot(storage, slot));
 }
 
 export function getSaveSlotStatus(
@@ -995,7 +1017,11 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
     : undefined;
   session.playerPassRows = snapshot.session.playerPassRows;
   session.mapOverrides = structuredClone(snapshot.session.mapOverrides);
-  session.flags = structuredClone(snapshot.session.flags);
+  session.flags = stripTransientCutsceneFlags(structuredClone(snapshot.session.flags));
+  if (session.m2Runtime?.cutscene) {
+    session.m2Runtime.cutscene.lockPlayer = false;
+    session.m2Runtime.cutscene.skippable = false;
+  }
   session.battleResult = snapshot.session.battleResult;
   session.audio = structuredClone(snapshot.session.audio);
   session.systemAudioOverrides = structuredClone(snapshot.session.systemAudioOverrides);
@@ -1279,6 +1305,7 @@ export function importSaveCopy(options: {
   readonly adoptLegacy?: boolean;
 }): void {
   const { project, storage, sourceKey, slot } = options;
+  if (!isSaveSlotIndex(slot)) throw new PublicationError("save-incompatible");
   const publication = project.meta.publication;
   if (!publication) throw new PublicationError("save-incompatible");
   if (!isLocalSaveSourceKey(sourceKey, publication, options.adoptLegacy === true)) throw new PublicationError("save-incompatible");
@@ -1294,7 +1321,7 @@ export function importSaveCopy(options: {
   if (snapshotLoadBlocker(project, adopted)) throw new PublicationError("save-incompatible");
   const restored = applySaveSnapshot(project, adopted);
   const copy = createSaveSnapshot(project, restored);
-  storage.setItem(target, JSON.stringify(copy));
+  storage.setItem(target, saveJson(copy));
 }
 
 /** Only call with bytes from a file the PLAYER selected, never uploader metadata or discovered storage. */
@@ -1305,6 +1332,7 @@ export function importSelectedSaveFileCopy(options: {
   readonly slot: SaveSlotIndex;
 }): void {
   const { project, storage, text, slot } = options;
+  if (!isSaveSlotIndex(slot)) throw new PublicationError("save-incompatible");
   const publication = project.meta.publication;
   if (!publication) throw new PublicationError("save-incompatible");
   const target = publicationSaveKey(slot, publication);
@@ -1315,7 +1343,7 @@ export function importSelectedSaveFileCopy(options: {
   const adopted = { ...parsed.snapshot, identity: saveIdentity(publication) };
   if (snapshotLoadBlocker(project, adopted)) throw new PublicationError("save-incompatible");
   const copy = createSaveSnapshot(project, applySaveSnapshot(project, adopted));
-  storage.setItem(target, JSON.stringify(copy));
+  storage.setItem(target, saveJson(copy));
 }
 
 

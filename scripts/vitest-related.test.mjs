@@ -172,11 +172,35 @@ test("selectRelated reaches deeper importers through the runtime graph, nearest 
   assert.deepEqual(wide.skipped, []);
 });
 
+test("selectRelated opens enough chunks for the must-run tiers (up to mustChunks) so no chunk is planned past the budget", () => {
+  // #5283: 직접 import 104개가 wideChunks 12 에 막혀 조각 하나가 예상 819초이었다.
+  const n = 24;
+  const sources = new Map([["src/hub.ts", "export const x = 1;"], ...Array.from({ length: n }, (_, i) => [`test/t${i}.test.ts`, 'import "../src/hub";'])]);
+  const testSources = new Map([...sources].filter(([path]) => path.startsWith("test/")));
+  const options = { budgetSeconds: 100, startupSeconds: 0, perFileSeconds: 0, factor: 1, workers: 1, chunks: 2, wideChunks: 3, mustChunks: 12, defaultSeconds: 50 };
+  const result = selectRelated({ changed: ["src/hub.ts"], testSources, exists: () => true, options });
+  assert.equal(result.mode, "narrow");
+  assert.equal(result.selected.length, n);
+  // 24 × 50초 = 1,200초 / 상한 100초 = 12 조각, 조각마다 2파일·100초.
+  assert.equal(result.chunks.length, 12);
+  assert.ok(result.chunks.every((chunk) => chunk.estWallSeconds <= options.budgetSeconds));
+  // mustChunks 개로도 넘치면(#5293: 직접 import 505개) 좀은 상자로는 어떻게 나눠도 끊긴다 — 넓은 모드(긴 상자)로 올린다.
+  const overflow = selectRelated({ changed: ["src/hub.ts"], testSources, exists: () => true, options: { ...options, mustChunks: 5, wideBudgetSeconds: 300 } });
+  assert.equal(overflow.mode, "wide");
+  assert.match(overflow.wideReasons.join(" "), /늘 담는 시험 예상 1200초 > 조각 5개 여유 500초/u);
+  // 넓은 모드 조각 수 = max(wideChunks 3, 비용 1200 / 상한 300) = 4, 조각마다 300초.
+  assert.equal(overflow.chunks.length, 4);
+  assert.ok(overflow.chunks.every((chunk) => chunk.estWallSeconds <= 300));
+});
+
 test("planChunks spreads files by cost (LPT) deterministically", () => {
   const entries = [["a", 100], ["b", 60], ["c", 50], ["d", 10]].map(([name, sec]) => ({ file: `test/${name}.test.ts`, sec }));
   const chunks = planChunks(entries, 2, { perFileSeconds: 0, factor: 1, workers: 1, startupSeconds: 0 });
   assert.deepEqual(chunks.map((chunk) => chunk.files), [["test/a.test.ts", "test/d.test.ts"], ["test/b.test.ts", "test/c.test.ts"]]);
   assert.deepEqual(chunks.map((chunk) => chunk.estWallSeconds), [110, 110]);
+  // 한 파일은 여러 워커로 쪼개지지 않으므로 조각 예상 시간은 가장 큰 파일 비용 아래로 내려가지 않는다.
+  const multi = planChunks([{ file: "test/huge.test.ts", sec: 300 }], 1, { perFileSeconds: 10, factor: 1, workers: 3, startupSeconds: 20 });
+  assert.equal(multi[0].estWallSeconds, 330);
 });
 
 test("CLI diffs base...head in a real git repo and writes the list and the nightly-deferred summary", () => {

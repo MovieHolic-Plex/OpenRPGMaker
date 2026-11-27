@@ -32,7 +32,6 @@ const RAILWAY_GROUPS = new Set(["jp:rail-track", "jp:prop:train"]);
 const sealed = new WeakSet<object>();
 function sealRailway(d: RailwayData): void {
   if (sealed.has(d)) return;
-  sealed.add(d);
   const block = (tile: number | undefined) => { if (tile !== undefined && tile >= 0 && tile < d.passability.length) d.passability[tile] = { up: false, down: false, left: false, right: false }; };
   for (const group of d.tileGroups) if (RAILWAY_GROUPS.has(group.id)) for (const tile of group.tileIds ?? []) block(tile);
   for (const kit of d.structureKits) {
@@ -41,11 +40,13 @@ function sealRailway(d: RailwayData): void {
     for (const tile of [...(foot?.tiles ?? []), ...(foot?.upperTiles ?? [])]) block(tile);
   }
   // 새 건물(탑 3/4 시점)의 지붕은 건물이 선 자리다 — 지붕 칸은 «뒤로 지나가는 칸»(★)이 아니라 막힌 칸이다. 옛 정면 그림 건물과 지나가는 조각(도리이·산몬·대문)은 그대로 둔다.
+  const streetCatalog = bundledJson("jpCityStreetCatalog");
   const buildings = new Set((streetCatalog as unknown as { buildings: { id: string }[] }).buildings.map((b) => b.id).filter((id) => id.startsWith(NEW_BUILDING_PREFIX)));
   for (const kit of d.structureKits) {
     if (!buildings.has(kit.id)) continue;
     for (const row of kit.rows) for (const tile of [...(row.tiles ?? []), ...(row.upperTiles ?? [])]) if (tile >= 0 && d.priority[tile] === "upper") block(tile);
   }
+  sealed.add(d);
 }
 const marked = new WeakSet<object>();
 function markSupersededBuildings(kits: StructureKitDef[]): void {
@@ -55,7 +56,6 @@ function markSupersededBuildings(kits: StructureKitDef[]): void {
   for (const kit of kits) if (kit.id.startsWith("jp-bldg-") && !kit.id.startsWith(NEW_BUILDING_PREFIX) && !HAND_ONLY_BUILDINGS.has(kit.id) && kit.ai) kit.ai.supersededBy = NEW_BUILDING_PREFIX;
 }
 import references from "@/assets/jpCityReferences.json" with { type: "json" };
-import streetCatalog from "@/assets/jpCityStreetCatalog.json" with { type: "json" };
 import forestReferences from "@/assets/jpForestReferences.json" with { type: "json" };
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TileGroupMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";

@@ -9,6 +9,8 @@ import type {
   FlagName,
   MapId,
   MonsterInstanceId,
+  ProjectLanguage,
+  ProjectLocalizations,
   ResourceProfile,
   SCHEMA_VERSION,
   CharsetLabelOverride,
@@ -915,6 +917,12 @@ export interface Project {
     title: string;
     author: string;
     terms: Terms;
+    /** 프로젝트 기본 런타임 언어. 생략 시 한국어(구 프로젝트 호환), "auto" 는 플레이어 기기 언어. */
+    language?: ProjectLanguage;
+    /** 제작자가 직접 작성한 게임/팀 크레딧(마크다운 줄). 있으면 타이틀 크레딧 창 맨 위에 우선 표시한다. */
+    customCredits?: string;
+    /** 언어 코드("en", "ja", "zh" 등) → { 문자열 키: 번역문 } 게임 콘텐츠 로컬라이징 번들. */
+    localizations?: ProjectLocalizations;
     publication?: import("../publication").Publication;
     /** 부팅 정규화를 마친 «빌드·공용 판본» 짝. 짝이 맞으면 다음 로드가 정규화기를 건너뛴다(bootNormalization.ts). */
     /** Full timelines preserved through older host schema validators. */

@@ -1,3 +1,9 @@
+import {
+  bakedDigestForPendingDefaultTileset,
+  hasPendingDefaultTilesets,
+  pendingDefaultTilesetBuilder,
+} from "../project/defaults/lazyDefaultTilesets";
+
 /** Structural JSON only: sort object keys, keep every field and array position. No normalization. */
 export function structuralJson(value: unknown): string {
   return JSON.stringify(value, (_key, item: unknown) => {
@@ -19,7 +25,14 @@ export function normalizationFingerprint(value: unknown): string {
     if (TILE_PAYLOAD_KEYS.has(key) && Array.isArray(item)) return digestTilePayload(item);
     if (typeof item === "string" && item.length > LONG_STRING) return digestString(item);
     if (!item || typeof item !== "object" || Array.isArray(item)) return item;
-    return Object.fromEntries(Object.keys(item).sort().map(objectKey => [objectKey, Reflect.get(item, objectKey)]));
+    const lazy = hasPendingDefaultTilesets(item);
+    return Object.fromEntries(Object.keys(item).sort().map(objectKey => {
+      if (lazy && pendingDefaultTilesetBuilder(item, objectKey)) {
+        const baked = bakedDigestForPendingDefaultTileset(objectKey);
+        if (baked) return [objectKey, `#lazy:${baked}`];
+      }
+      return [objectKey, Reflect.get(item, objectKey)];
+    }));
   });
 }
 
@@ -75,8 +88,14 @@ export function jsonEqual(a: unknown, b: unknown): boolean {
   }
   const left = a as Record<string, unknown>;
   const right = b as Record<string, unknown>;
+  const leftLazy = hasPendingDefaultTilesets(left);
+  const rightLazy = hasPendingDefaultTilesets(right);
   let leftCount = 0;
   for (const key of Object.keys(left)) {
+    if (leftLazy && rightLazy && pendingDefaultTilesetBuilder(left, key) && pendingDefaultTilesetBuilder(right, key)) {
+      leftCount += 1;
+      continue;
+    }
     const value = left[key];
     if (value === undefined || typeof value === "function") continue;
     leftCount += 1;
@@ -84,6 +103,10 @@ export function jsonEqual(a: unknown, b: unknown): boolean {
   }
   let rightCount = 0;
   for (const key of Object.keys(right)) {
+    if (rightLazy && pendingDefaultTilesetBuilder(right, key)) {
+      rightCount += 1;
+      continue;
+    }
     const value = right[key];
     if (value !== undefined && typeof value !== "function") rightCount += 1;
   }

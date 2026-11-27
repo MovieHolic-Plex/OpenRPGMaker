@@ -12,12 +12,12 @@
  * dist/export-player/ 에는 쓰지 않는다 — 그 폴더는 SDK 매니페스트가 묶는 정확한 산출물 집합이고 웹 내보내기 zip 의 원본이다.
  * createFlagshipDemoProject 는 그대로 남는다(편집기 메뉴·이 굽기·dev 서버 폴백).
  */
-import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { createHash } from "node:crypto";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { gzipSync } from "node:zlib";
-import { join } from "node:path";
-import { FLAGSHIP_DEMO_IDS } from "@/project/flagship/types";
+import { join, resolve } from "node:path";
+import { FLAGSHIP_DEMO_IDS, type FlagshipDemoBuildResult, type FlagshipDemoId } from "@/project/flagship/types";
 import type { Project } from "@/project/types";
+import { syncDemoBgm } from "./bake-demos-lib.mjs";
 
 function argOf(name: string): string | undefined {
   const index = process.argv.indexOf(`--${name}`);
@@ -31,11 +31,56 @@ if (process.env.OPRN_ASSUME_ALL_BGM_INSTALLED !== "1") {
 }
 
 const out = argOf("out") ?? "dist";
-const only = argOf("only")?.split(",");
+const only = argOf("only")?.split(",").filter(Boolean);
 const dir = join(out, "demos");
+
+/**
+ * 데모 하나만 동적으로 불러온다. `src/project/flagship/index.ts` 배럴을 거치지 않아
+ * 데모별 캐시 그래프와 워커 프로세스가 다른 데모 코드를 읽지 않는다.
+ * `createFlagshipDemoProject` 의 `lockDemoOpening` 계약(skippable: false)을 그대로 적용한다.
+ */
+async function buildSingleDemo(id: FlagshipDemoId): Promise<FlagshipDemoBuildResult> {
+  let result: FlagshipDemoBuildResult;
+  switch (id) {
+    case "chrono-bell": {
+      const { createChronoBellFlagshipDemo } = await import("@/project/flagship/chronoBell");
+      result = createChronoBellFlagshipDemo();
+      break;
+    }
+    case "emerald-crown": {
+      const { createEmeraldCrownFlagshipDemo } = await import("@/project/flagship/emeraldCrown");
+      result = createEmeraldCrownFlagshipDemo();
+      break;
+    }
+    case "shitamachi-fourth-season": {
+      const { createShitamachiFourthSeasonFlagshipDemo } = await import("@/project/flagship/shitamachiFourthSeason");
+      result = createShitamachiFourthSeasonFlagshipDemo();
+      break;
+    }
+    case "first-love": {
+      const { createFirstLoveFlagshipDemo } = await import("@/project/flagship/firstLove");
+      result = createFirstLoveFlagshipDemo();
+      break;
+    }
+    case "maou-konbini": {
+      const { createMaouKonbiniFlagshipDemo } = await import("@/project/flagship/maouKonbini");
+      result = createMaouKonbiniFlagshipDemo();
+      break;
+    }
+    default: {
+      const { createFlagshipDemoProject } = await import("@/project/flagship");
+      return createFlagshipDemoProject(id);
+    }
+  }
+  const opening = result.project.system.opening;
+  if (opening && opening.skippable !== false) {
+    result.project.system.opening = { ...opening, skippable: false };
+  }
+  return result;
+}
+
 // 캐시에서 JSON 을 복원한 경우 BGM 만 채운다. 데모 생성 모듈도 그때는 읽지 않는다.
 async function bakeDemos(): Promise<void> {
-  const { createFlagshipDemoProject } = await import("@/project/flagship");
   const { serialize } = await import("@/project/io");
   const { validateShippedPlayJson } = await import("@/project/flagship/ipCleanliness");
   const { demoLoreCounts, demoLoreProblems } = await import("@/project/flagship/loreKit");
@@ -59,7 +104,7 @@ async function bakeDemos(): Promise<void> {
   for (const id of FLAGSHIP_DEMO_IDS) {
     if (only && !only.includes(id)) continue;
     const started = performance.now();
-    const { project } = createFlagshipDemoProject(id);
+    const { project } = await buildSingleDemo(id);
     const built = performance.now();
     const player = prepareWebExport(project).projectJson;
     const editor = serialize(project);
@@ -88,34 +133,13 @@ async function bakeDemos(): Promise<void> {
 
 if (!process.argv.includes("--bgm-only")) await bakeDemos();
 
-// `--no-bgm`: 입구(bake-flagship-demos.mjs)가 데모를 두 프로세스로 나눠 구울 때 각 프로세스는 BGM 을 건너뛰고, 끝에 `--bgm-only` 한 번으로 받는다.
+// `--no-bgm`: 입구(bake-flagship-demos.mjs)가 데모를 병렬로 구울 때 각 프로세스는 BGM 을 건너뛰고, 끝에 한 번으로 받는다.
 if (!process.argv.includes("--no-bgm")) {
-// 데모가 쓰는 카탈로그 BGM 을 산출물에 함께 싣는다. 데스크톱 앱은 BGM 팩 없이 나가서 폴른 스타가 27곡 중 3곡만 울렸다(2026-10-27).
-// 이미 있으면(웹 빌드가 public 의 팩을 복사) 그대로, 체크아웃에 받아 둔 곡이면 복사, 없으면 공개 CDN 에서 받아 SHA-256 을 확인한다.
-// 데모 밖의 곡은 데스크톱이 처음 재생할 때 받는다(electron/main/bgmOnDemand.ts).
-const manifest = JSON.parse(readFileSync("assets/bgm-release-v1.json", "utf8")) as { tracks: { id: string; fileName: string; bytes: number; sha256: string }[] };
-const BGM_CDN = "https://cheapcdn.sgp1.cdn.digitaloceanspaces.com/rpg-zzu/bgm/v1/";
-const used = new Map<string, (typeof manifest.tracks)[number]>();
-for (const id of FLAGSHIP_DEMO_IDS) {
-  if (only && !only.includes(id)) continue;
-  const text = readFileSync(join(dir, `${id}.project.json`), "utf8");
-  for (const track of manifest.tracks) if (text.includes(`"${track.id}"`)) used.set(track.fileName, track);
-}
-const bgmDir = join(out, "assets/cc0/audio/catalog");
-mkdirSync(bgmDir, { recursive: true });
-const sha = (bytes: Uint8Array) => createHash("sha256").update(bytes).digest("hex");
-let copied = 0, downloaded = 0;
-for (const track of used.values()) {
-  const target = join(bgmDir, track.fileName);
-  if (existsSync(target) && sha(readFileSync(target)) === track.sha256) continue;
-  const local = join("public/assets/cc0/audio/catalog", track.fileName);
-  if (existsSync(local) && sha(readFileSync(local)) === track.sha256) { copyFileSync(local, target); copied += 1; continue; }
-  const response = await fetch(BGM_CDN + encodeURIComponent(track.fileName));
-  if (!response.ok) throw new Error(`데모 BGM 을 받지 못했습니다: ${track.fileName} (${response.status})`);
-  const bytes = new Uint8Array(await response.arrayBuffer());
-  if (bytes.byteLength !== track.bytes || sha(bytes) !== track.sha256) throw new Error(`데모 BGM 해시가 다릅니다: ${track.fileName}`);
-  writeFileSync(target, bytes);
-  downloaded += 1;
-}
-console.log(`demo bgm: ${used.size} tracks (copied ${copied}, downloaded ${downloaded}, already present ${used.size - copied - downloaded})`);
+  const demoIds = only ? FLAGSHIP_DEMO_IDS.filter((id) => only.includes(id)) : [...FLAGSHIP_DEMO_IDS];
+  await syncDemoBgm({
+    root: process.cwd(),
+    outDir: resolve(process.cwd(), out),
+    demoIds,
+    cacheDir: process.env.OPRN_BAKE_DEMOS_CACHE_DIR || null,
+  });
 }

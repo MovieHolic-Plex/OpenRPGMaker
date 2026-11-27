@@ -34,6 +34,7 @@ import { objectVerbs } from "./verbs/objects";
 import { makeGameVerbs } from "./verbs/makeGame";
 import { readVerbs } from "./verbs/read";
 import { settleFoughtCopy } from "../story/foughtCopy";
+import { assignStoreBgmToNewMaps } from "../place/autoStoreBgm";
 
 export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiToolShape[] {
   const c = makeVerbContext(env, session);
@@ -88,12 +89,33 @@ export function createV2Tools(env: PiAssistantV2Env, session: V2Session): PiTool
     if (settled.project !== env.ctx.project) { env.ctx.project = settled.project; await env.checkpoint("fought_copy"); }
     return { ...result, content: [...result.content, { type: "text", text: settled.note }] };
   };
-  const afterWrite = (tool: PiToolShape): PiToolShape => ({ ...tool, async execute(id, params, signal) { return settleSeedStart(await settleFought(tool.name, params, await tool.execute(id, params, signal))); } });
+  const settleNewMapStoreBgm = async (beforeMaps: ReadonlySet<string>, params: unknown, result: PiToolExecResult): Promise<PiToolExecResult> => {
+    if (/^\{"ok":false/u.test(String((result.content[0] as { text?: string } | undefined)?.text ?? ""))) return result;
+    const obj = params && typeof params === "object" ? (params as Record<string, unknown>) : undefined;
+    if (obj && (obj.bgm !== undefined || (typeof obj.bgmResourceId === "string" && obj.bgmResourceId.trim()))) return result;
+    const created = Object.keys(env.ctx.project.maps).filter((id) => !beforeMaps.has(id));
+    if (!created.length) return result;
+    const bgms = await assignStoreBgmToNewMaps(env, created, { task: String(task ?? "") });
+    if (!bgms.length) return result;
+    await env.checkpoint("auto_store_bgm");
+    return { ...result, content: [...result.content, { type: "text", text: `[Store BGM] ${bgms.map((b) => `«${b.mapName}» ← 「${b.title}」(${b.resourceId})`).join(" · ")}.` }] };
+  };
+  const afterWrite = (tool: PiToolShape): PiToolShape => ({
+    ...tool,
+    async execute(id, params, signal) {
+      const beforeMaps = new Set(Object.keys(env.ctx.project.maps));
+      const raw = await tool.execute(id, params, signal);
+      const withBgm = await settleNewMapStoreBgm(beforeMaps, params, raw);
+      return settleSeedStart(await settleFought(tool.name, params, withBgm));
+    },
+  });
   // 변주 카드 구조 축이 이름 댄 동사는 요청에 그 낱말이 없어도 싣는다 — 카드가 «author_puzzle_chain 으로 지어라» 하는데 동사가 없으면 따를 수 없다
   // (2026-11-26 ci-full 45844823105 variationDecks «every tool a structure names exists»: 퍼즐 동사는 «퍼즐» 낱말이 있을 때만 실렸다).
   const cardTools = new Set(gameVariation(env.ctx.project, env.request.projectKey ? String(env.request.projectKey) : undefined, String(task ?? "")).variation?.structure?.tools ?? []);
   const cardNames = (name: string): boolean => cardTools.has(name);
-  const verbs = [writeBlueprint, ...(lean ? [readSpecs] : []), ...(requestWorld() ? [buildWorld] : []), buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, reviewLayout, findPiecesVerb, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) || cardNames("author_puzzle_chain") ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, ...(buildsWholeGame(env.ctx.project, String(task ?? "")) || readRequest(String(task ?? "")).art ? [generateArtVerb] : []), placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values(), session.nonce), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
+  const canGenerateArt = env.canGenerateImages ?? Boolean(env.generateImage);
+  const openingArtAllowed = canGenerateArt && classifyRequest(String(task ?? ""), env.ctx.project).topics.includes("opening");
+  const verbs = [writeBlueprint, ...(lean ? [readSpecs] : []), ...(requestWorld() ? [buildWorld] : []), buildBlueprintPathVerb, makePlace, ...(makeGameOn() && wantsMakeGame(String(task ?? "")) ? [makeGame] : []), editPlace, reviewLayout, findPiecesVerb, moveObject, dressRoomVerb, addPeople, addEvent, addScene, ...(wantsBossEncounter(String(task ?? "")) ? [addBossEncounter] : []), ...(wantsEndingScene(String(task ?? "")) ? [addEndingScene] : []), ...(wantsPuzzle(String(task ?? "")) || cardNames("author_puzzle_chain") ? [authorPuzzleChain] : []), sealLockedRoomVerb, setObjectiveVerb, drawObjectVerb, ...(buildsWholeGame(env.ctx.project, String(task ?? "")) || readRequest(String(task ?? "")).art || openingArtAllowed ? [generateArtVerb] : []), placeObject, inspect, roomPartsVerb, createDungeonPartsVerb(env, () => session.places.values(), session.nonce), restoreEvent, ...(helpersOn() ? [askHelpers] : []), askUser]
     // 음악만 바라는 요청은 맵·이벤트를 쓰는 동사를 싣지 않는다 — 보기·묻기만(2026-10-30 r12: 추격 음악 요청에 상자를 찍었다).
     .filter((tool) => !audioOnly(String(task ?? "")) || MUSIC_ONLY_VERBS.has(tool.name))
     .map((tool) => guard(flattenWrapperTool(tool)));

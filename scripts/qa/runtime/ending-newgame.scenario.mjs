@@ -19,6 +19,8 @@ const common = `
 /** @type {import("../../lib/runtimeQa.d.mts").RuntimeQaScenario} */
 export const endingNewGameScenario = {
   id: "ending-newgame",
+  // 옛 ESC 메뉴(menuUiStyle 스킨) 화면을 검사한다 — 기본이 허브 메뉴가 된 뒤에도 같은 화면을 본다.
+  systemPatch: { menuLayout: "legacy" },
   beats: [
     { id: "start", note: "새 게임 → 시작 대사 넘김 → 진행 심기", ops: [
       { kind: "pressUntilJs", key: "Enter", fn: "() => !document.querySelector(\"[data-testid='title-screen']\")", maxPresses: 4, settleMs: 2500 },

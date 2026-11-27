@@ -4,6 +4,7 @@ import type { AutosaveReadResult, SaveSlotIndex, SaveSlotReadResult } from "@/pl
 import type { PlaySession } from "@/project/session";
 import type { ActorInitialEquipment, BattleAnimationSheet, ItemScope, Project } from "@/project/types";
 import type { StatusMenuCommandId, StatusMenuRailId } from "@/player/playerStatusMenuModel";
+import type { RemappableAction } from "@/player/keyBindings";
 
 export type StatusMenuDetailEntry = {
   readonly label: string;
@@ -151,6 +152,13 @@ export type StatusMenuDetailOptions = {
   readonly onDexPage?: (page: import("@/player/playerMonsterDexTypes").MonsterDexPage) => void;
   readonly confirmSaveSlot?: SaveSlotIndex;
   readonly confirmToTitle?: boolean;
+  readonly confirmQuitGame?: boolean;
+  readonly optionsSubscreen?: "key-bindings";
+  readonly capturingKeyAction?: RemappableAction;
+  readonly onOpenKeyBindings?: () => void;
+  readonly onStartKeyCapture?: (action: RemappableAction) => void;
+  readonly onResetKeyBindings?: () => void;
+  readonly onQuitGame?: () => void;
   readonly saveEnabled?: boolean;
   readonly onSaveSlot?: (slot: SaveSlotIndex) => void;
   readonly onLoadSlot?: (slot: SaveSlotIndex) => void;

@@ -24,7 +24,7 @@ type Exec = (tool: string, args: Record<string, unknown>) => unknown;
 export const FS_AREA_BACKDROPS: readonly { readonly art: Emitted; readonly maps: readonly string[] }[] = [
   { art: forest, maps: ["fs_forest", "fs_forest_edge", "fs_forest_stream", "fs_forest_thicket", "fs_forest_glade", "fs_forest_shrine"] },
   { art: northForest, maps: ["map_field_north_1"] },
-  { art: vault, maps: ["fs_vault", "fs_vault_gate", "fs_vault_b3", "fs_vault_b4"] },
+  { art: vault, maps: ["fs_vault", "fs_vault_gate", "fs_vault_b3", "fs_vault_b4", "fs2_well_shaft"] },
   { art: townNight, maps: ["fs2_hub_night"] },
   { art: prison, maps: ["fs2_barracks", "fs2_cell"] },
   { art: dawnwell, maps: ["fs2_dawnwell"] },
@@ -63,9 +63,9 @@ export function applyFallenAreaBackdrops(project: Project, exec: Exec): void {
   }
   for (const [troopId, maps] of troopMaps(project)) {
     const troop = project.database.troops.find((t) => t.id === troopId);
-    if (!troop?.previewBackgroundResourceId || !BIOME.test(troop.previewBackgroundResourceId)) continue;
+    if (!troop) continue;
+    if (troop.previewBackgroundResourceId && !BIOME.test(troop.previewBackgroundResourceId)) continue;
     const ids = new Set([...maps].map((m) => areaOf.get(m)).filter((id): id is string => !!id));
     if (ids.size === 1) troop.previewBackgroundResourceId = [...ids][0]!;
-    else if (ids.size > 1) delete troop.previewBackgroundResourceId;
   }
 }

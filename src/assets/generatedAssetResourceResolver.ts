@@ -41,7 +41,7 @@ import type { GeneratedAssetManifest } from "./generatedAssetManifest";
 import { FIELD_BATTLE_BACKGROUND_ID } from "@/project/databaseEnemyTroopRecordModel";
 import type { Project } from "@/project/types";
 
-const FALLBACK_SKIN_ENEMY_URL = PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-slime-01"]!;
+const FALLBACK_SKIN_ENEMY_URL = PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-slime-green"]!;
 const BATTLE_SCENERY_PREVIEW = Object.fromEntries(BATTLE_SCENERY_CATALOG.map((entry) => [entry.biome, entry.preview])) as Record<"plains" | "forest", string>;
 
 // 타이틀 리소스 id 개명(2026-08-21) — 새 id 를 정본으로 쓰고, 구 id 는 **별칭으로
@@ -185,7 +185,9 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "generated-item-ether-blue-image": null,
   "generated-item-potion-red-icon": null,
   "generated-item-potion-red-image": null,
-  "generated-troop-preview-slime": PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-slime-01"],
+  "generated-troop-preview-slime": PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-slime-green"],
+  // 현행 5×4 도트 몬스터 정식 번들 44종이 카탈로그 맨 앞에 서도록 sparkit-fire 앞에 둔다.
+  ...PIXEL_ENEMY_PORTRAIT_URLS,
   // The existing human selection from monster-collect-species/ledger.json.
   "generated-enemy-sparkit-fire": "/assets/harnesses/monster-collect-species/sparkit/front.png",
   // 옛 전투 배경(은퇴 스킨 13장·숲 레퍼런스)은 2026-10-03 deprecated/ 로 옮겼다. id 는 저장본·공용 장소가
@@ -198,10 +200,10 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   // 스킨 공용 정면 적 그림은 2026-10-02 지웠다 — 옛 id 는 남겨 두고(참조 검증) 도트 슬라임 초상으로 돌린다.
   "bskin-enemy-pokemon": "/assets/scarloxy/scarloxy-monster-larvea.png",
   // 옛 AI 고치·씨앗 그림(2026-10-03 deprecated/)은 도트 그림으로 돌린다 — 고르기 목록에서는 뺐다.
-  "generated-enemy-reference-cocoon": PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-sylph-hornet"] ?? FALLBACK_SKIN_ENEMY_URL,
+  "generated-enemy-reference-cocoon": PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-bee-giant"] ?? FALLBACK_SKIN_ENEMY_URL,
   "generated-enemy-reference-seed-back": "/assets/scarloxy/scarloxy-monster-mossling.png",
   // EasyRPG Hornet(2026-10-03 deprecated/)도 같은 말벌의 도트 초상으로 돌린다.
-  "easyrpg-monster-hornet": PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-sylph-hornet"] ?? FALLBACK_SKIN_ENEMY_URL,
+  "easyrpg-monster-hornet": PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-bee-giant"] ?? FALLBACK_SKIN_ENEMY_URL,
   "bskin-enemy-rm2003": FALLBACK_SKIN_ENEMY_URL,
   "bskin-enemy-rm2000": FALLBACK_SKIN_ENEMY_URL,
   "bskin-enemy-octopath": FALLBACK_SKIN_ENEMY_URL,
@@ -237,7 +239,6 @@ const BUILTIN_GENERATED_RESOURCE_URLS: Record<string, string | null> = {
   "starter-preview-card": "/assets/ui/starter-preview-card.png",
   // 생성 얼굴 낱장 32장(hero-01-face / hero-02-face × 16). 분할 산출물 목록에서 펼쳐 넣는다 —
   // 그래야 builtinGeneratedResourceIds() 에도 실려 collectResourceIds 가 알아본다.
-  ...PIXEL_ENEMY_PORTRAIT_URLS,
   ...generatedFacesetFaceUrls(),
   ...Object.fromEntries([1, 2].flatMap((hero) =>
     Array.from({ length: 16 }, (_, cell) => [
@@ -358,9 +359,9 @@ export function generatedAssetPromotedPathToUrl(promotedPath: string | null): st
   const oldStarter = runtimePath.match(/^assets\/generated\/starter\/monster-([^/]+)\.png$/);
   const oldCorrected = runtimePath.match(/^assets\/generated\/monsters\/corrected\/([^/]+)\.png$/);
   const retiredSlug = oldStarter?.[1] ?? oldCorrected?.[1];
-  if (retiredSlug) return BUILTIN_GENERATED_RESOURCE_URLS[`generated-enemy-${retiredSlug}`] ?? null;
-  if (runtimePath === "assets/generated/starter/sylph-hornet-transparent.png") return PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-sylph-hornet"] ?? null;
-  if (runtimePath === "assets/generated/starter/troop-preview-slime.png") return PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-slime-01"];
+  if (retiredSlug) return resolveGeneratedAssetResourceUrl(`generated-enemy-${retiredSlug}`);
+  if (runtimePath === "assets/generated/starter/sylph-hornet-transparent.png") return PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-bee-giant"] ?? null;
+  if (runtimePath === "assets/generated/starter/troop-preview-slime.png") return PIXEL_ENEMY_PORTRAIT_URLS["generated-enemy-slime-green"] ?? null;
   if (runtimePath.startsWith("assets/generated/monsters/") || /^assets\/generated\/starter\/idle\/monster-/.test(runtimePath)) return null;
   if (!isAllowedGeneratedRuntimePath(runtimePath)) return null;
   return `/${runtimePath}`;

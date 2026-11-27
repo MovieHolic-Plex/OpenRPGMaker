@@ -16,6 +16,8 @@ export type PlayerStatusMenuControllerOptions = {
   readonly menuCloseJuiceMs: number;
   readonly loadSlot: (slot: SaveSlotIndex, fromTitle: boolean) => void;
   readonly loadAutosave?: (fromTitle: boolean) => void;
+  /** 데스크톱 셸이나 종료 지원 호스트에서 「게임 종료」 실행 시 호출. */
+  readonly onQuitGame?: () => void;
 };
 
 export type PlayerStatusMenuController = {
@@ -30,4 +32,7 @@ export type PlayerStatusMenuController = {
   readonly openLifeRecoveryLedger: () => void;
   readonly toggleMenu: () => void;
   readonly handleKey: (key: RuntimeMenuKey) => boolean;
+  /** 허브 메뉴 전용 키(첫 화면 1~4, 동료 넘기기 Q·E·PageUp·PageDown). 런타임 메뉴 키가 아니라 따로 받는다. */
+  readonly handleExtraKey: (key: string) => boolean;
+  readonly isCapturingKey: () => boolean;
 };

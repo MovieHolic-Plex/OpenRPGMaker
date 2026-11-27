@@ -3,6 +3,7 @@ import { monsterSaveSummaryLine } from "@/project/monsterSaveSummary";
 import {
   listSaveSlots,
   readAutosave,
+  safeLocalStorage,
   snapshotLoadBlocker,
   type AutosaveTrigger,
   type SaveSlotIndex,
@@ -16,6 +17,9 @@ import { el } from "@/util/dom";
 import { appendPredecessorSaveImports } from "./predecessorSaveImports";
 import { appendSaveFileTransfers } from "./saveFileTransfers";
 import { appendCloudOtherSaves, cloudStatusLine } from "./cloudOtherSaves";
+import { formatControlHints, type InputDeviceKind } from "@/player/inputGlyphs";
+import { runtimeUiLocale, runtimeUiText } from "@/player/runtimeUiStrings";
+import type { Project } from "@/project/types";
 
 type PlayerLoadPanelOptions = {
   readonly fromTitle: boolean;
@@ -29,6 +33,7 @@ type PlayerLoadPanelOptions = {
 type SlotButtonOptions = {
   readonly slot: SaveSlotReadResult;
   readonly testId: string;
+  readonly project?: Project;
   readonly onClick: () => void;
 };
 
@@ -57,12 +62,14 @@ export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElem
   applyLoadPanelBackground(panel);
   if (isEmeraldMonsterStyle(store.getCurrent())) panel.dataset.monsterStyle = "emerald";
 
+  const project = store.getCurrent();
+  const loadTitle = runtimeUiText(project, "load.title");
   const loadWindow = el("section", {
     class: "oprn-load-window",
-    attrs: { "aria-label": "불러오기" },
+    attrs: { "aria-label": loadTitle },
     dataset: { testid: "player-load-window", playInputOwner: "title-controls" },
   });
-  loadWindow.append(el("h2", { class: "oprn-load-title", text: "불러오기" }));
+  loadWindow.append(el("h2", { class: "oprn-load-title", text: loadTitle }));
   if (options.message) loadWindow.append(renderSlotMessage(options.message));
   const cloudLine = cloudStatusLine();
   if (cloudLine) loadWindow.append(cloudLine);
@@ -72,38 +79,66 @@ export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElem
     dataset: { testid: "player-load-slots" },
   });
   // 오토세이브 카드: 최상단, 불러오기 전용(수동 저장 메뉴의 덮어쓰기 대상이 아니다).
-  const autosave = readAutosave(window.localStorage);
+  const storage = safeLocalStorage();
+  const autosave = storage ? readAutosave(storage) : { kind: "empty" as const };
   if (autosave.kind === "present" && options.onLoadAutosave
-    && snapshotLoadBlocker(store.getCurrent(), autosave.snapshot) === null) {
-    slots.append(renderAutosaveButton(autosave.snapshot, options.onLoadAutosave));
+    && snapshotLoadBlocker(project, autosave.snapshot) === null) {
+    slots.append(renderAutosaveButton(autosave.snapshot, options.onLoadAutosave, project));
   }
-  for (const slot of listSaveSlots(window.localStorage)) {
+  const slotList: readonly SaveSlotReadResult[] = storage
+    ? listSaveSlots(storage)
+    : ([1, 2, 3] as const).map((slot) => ({ kind: "empty", slot }));
+  for (const slot of slotList) {
     if (slot.kind === "corrupt") slots.append(renderCorruptSlot(slot));
     // 이어질 수 없는 슬롯은 골라지기 전에 이유가 보여야 한다 — 누를 수 있지만
     // player.loadSlot 이 같은 사유로 다시 막는다.
-    const blocker = slot.kind === "present" ? snapshotLoadBlocker(store.getCurrent(), slot.snapshot) : null;
+    const blocker = slot.kind === "present" ? snapshotLoadBlocker(project, slot.snapshot) : null;
     if (blocker) slots.append(renderIncompatibleSlot(slot.slot, blocker));
     slots.append(renderSlotButton({
       slot,
       testId: `save-slot-${slot.slot}`,
+      project,
       onClick: () => options.onLoadSlot(slot.slot),
     }));
   }
 
   loadWindow.append(
     slots,
+    el("div", {
+      class: "oprn-load-message",
+      text: loadPanelControlsHint(options.fromTitle, undefined, project),
+      dataset: { testid: "player-load-controls", fromTitle: options.fromTitle ? "true" : "false" },
+    }),
     el("button", {
       class: "oprn-load-back system-shell-button",
-      text: options.fromTitle ? "뒤로" : "닫기",
+      text: options.fromTitle ? runtimeUiText(project, "load.cancel") : runtimeUiText(project, "credits.close"),
       dataset: { testid: "player-load-back" },
       on: { click: options.onBack },
     }),
   );
   panel.append(loadWindow);
-  appendPredecessorSaveImports(slots, { project: store.getCurrent(), storage: window.localStorage, onLoadSlot: options.onLoadSlot });
+  if (storage) appendPredecessorSaveImports(slots, { project: store.getCurrent(), storage, onLoadSlot: options.onLoadSlot });
   appendCloudOtherSaves(slots, { onLoadSlot: options.onLoadSlot, ...(options.onLoadAutosave ? { onLoadAutosave: options.onLoadAutosave } : {}) });
-  appendSaveFileTransfers(slots, { project: store.getCurrent(), storage: window.localStorage, onLoadSlot: options.onLoadSlot });
+  if (storage) appendSaveFileTransfers(slots, { project: store.getCurrent(), storage, onLoadSlot: options.onLoadSlot });
   return panel;
+}
+
+export function loadPanelControlsHint(fromTitle: boolean, device?: InputDeviceKind, project?: Project): string {
+  const loc = runtimeUiLocale(project ?? store.getCurrent());
+  const moveLabel = loc === "en" ? "Move" : loc === "ja" ? "移動" : loc === "zh" ? "移动" : "이동";
+  const loadLabel = loc === "en" ? "Load" : loc === "ja" ? "ロード" : loc === "zh" ? "读取" : "불러오기";
+  const backLabel = fromTitle
+    ? (loc === "en" ? "Back" : loc === "ja" ? "戻る" : loc === "zh" ? "返回" : "뒤로")
+    : (loc === "en" ? "Close" : loc === "ja" ? "閉じる" : loc === "zh" ? "关闭" : "닫기");
+  return formatControlHints(
+    [
+      { action: "scroll", label: moveLabel },
+      { action: "confirm", label: loadLabel },
+      { action: "cancel", label: backLabel },
+    ],
+    device,
+    " · ",
+  );
 }
 
 function renderSlotMessage(message: string): HTMLElement {
@@ -134,7 +169,7 @@ function renderCorruptSlot(slot: Extract<SaveSlotReadResult, { readonly kind: "c
 // 1행: 슬롯 제목 + 맵 이름, 2행: Lv · 플레이타임 · 저장시각. 빈/손상 슬롯은 1행만.
 function renderSlotButton(options: SlotButtonOptions): HTMLButtonElement {
   return renderCardButton(
-    saveSlotCardModel(options.slot),
+    saveSlotCardModel(options.slot, options.project),
     `oprn-load-slot system-shell-button ${slotStateClass(options.slot)}`,
     options.testId,
     options.onClick,
@@ -142,9 +177,9 @@ function renderSlotButton(options: SlotButtonOptions): HTMLButtonElement {
 }
 
 // 오토세이브 카드 — 수동 슬롯과 같은 카드 구조 + is-autosave 상태 클래스 + 트리거 표기.
-function renderAutosaveButton(snapshot: SaveSnapshot, onClick: () => void): HTMLButtonElement {
+function renderAutosaveButton(snapshot: SaveSnapshot, onClick: () => void, project?: Project): HTMLButtonElement {
   return renderCardButton(
-    autosaveCardModel(snapshot),
+    autosaveCardModel(snapshot, project),
     "oprn-load-slot system-shell-button is-present is-autosave",
     "save-slot-auto",
     onClick,
@@ -188,9 +223,10 @@ function renderCardButton(
 }
 
 // 오토세이브 스냅샷 → 카드 뷰모델(순수 함수). 제목은 "자동 저장", 트리거를 함께 표기한다.
-export function autosaveCardModel(snapshot: SaveSnapshot): SaveSlotCardModel {
+export function autosaveCardModel(snapshot: SaveSnapshot, project?: Project): SaveSlotCardModel {
+  const nonKo = project ? runtimeUiLocale(project) !== "ko" : false;
   return {
-    title: "자동 저장",
+    title: nonKo ? runtimeUiText(project, "load.autosave") : "자동 저장",
     mapName: snapshot.mapName || snapshot.projectTitle || undefined,
     ...(snapshot.chapterLabel ? { chapter: snapshot.chapterLabel } : {}),
     level: typeof snapshot.partyLevel === "number" ? `Lv ${snapshot.partyLevel}` : undefined,
@@ -198,25 +234,27 @@ export function autosaveCardModel(snapshot: SaveSnapshot): SaveSlotCardModel {
     savedAt: formatSavedAt(snapshot.savedAt) || undefined,
     ...monsterCardPart(snapshot),
     ...(snapshot.sceneLine ? { scene: snapshot.sceneLine } : {}),
-    trigger: autosaveTriggerLabel(snapshot.autosaveTrigger),
+    trigger: autosaveTriggerLabel(snapshot.autosaveTrigger, project),
   };
 }
 
-// 트리거 한글 표기. 구 스냅샷(트리거 없음)은 표기 자체를 생략한다.
-export function autosaveTriggerLabel(trigger: AutosaveTrigger | undefined): string | undefined {
+// 트리거 표기. 구 스냅샷(트리거 없음)은 표기 자체를 생략한다.
+export function autosaveTriggerLabel(trigger: AutosaveTrigger | undefined, project?: Project): string | undefined {
+  const loc = project ? runtimeUiLocale(project) : "ko";
   switch (trigger) {
     case "transfer":
-      return "맵 이동";
+      return loc === "en" ? "Map Transfer" : loc === "ja" ? "マップ移動" : loc === "zh" ? "地图切换" : "맵 이동";
     case "battleVictory":
-      return "전투 승리";
+      return loc === "en" ? "Battle Victory" : loc === "ja" ? "戦闘勝利" : loc === "zh" ? "战斗胜利" : "전투 승리";
     default:
       return undefined;
   }
 }
 
 // 슬롯 읽기 결과 → 카드 뷰모델. DOM/스토리지/현재 시각에 의존하지 않는 순수 함수.
-export function saveSlotCardModel(slot: SaveSlotReadResult): SaveSlotCardModel {
-  const title = `${slot.slot}번 저장`;
+export function saveSlotCardModel(slot: SaveSlotReadResult, project?: Project): SaveSlotCardModel {
+  const nonKo = project ? runtimeUiLocale(project) !== "ko" : false;
+  const title = nonKo ? runtimeUiText(project, "load.slotLabel", slot.slot) : `${slot.slot}번 저장`;
   switch (slot.kind) {
     case "present": {
       const snapshot = slot.snapshot;
@@ -233,9 +271,9 @@ export function saveSlotCardModel(slot: SaveSlotReadResult): SaveSlotCardModel {
       };
     }
     case "corrupt":
-      return { title: `${title}: 이상함` };
+      return { title: `${title}: ${nonKo ? runtimeUiText(project, "load.corrupt") : "이상함"}` };
     case "empty":
-      return { title: `${title}: 비어 있음` };
+      return { title: `${title}: ${nonKo ? runtimeUiText(project, "load.empty") : "비어 있음"}` };
     default:
       return assertNever(slot);
   }

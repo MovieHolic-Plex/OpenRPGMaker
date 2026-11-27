@@ -24,6 +24,19 @@ import desertEastTileset from "@/assets/desertEastTileset.json" with { type: "js
 import prehistoricTileset from "@/assets/prehistoricTileset.json" with { type: "json" };
 import skyIslandTileset from "@/assets/skyIslandTileset.json" with { type: "json" };
 import beodeulWavePlacesTileset from "@/assets/beodeulWavePlacesTileset.json" with { type: "json" };
+import monsterKitClimate from "@/assets/monsterKit/monster-climate.json" with { type: "json" };
+import monsterKitCoast from "@/assets/monsterKit/monster-coast.json" with { type: "json" };
+import monsterKitDungeon from "@/assets/monsterKit/monster-dungeon.json" with { type: "json" };
+import monsterKitGyms from "@/assets/monsterKit/monster-gyms.json" with { type: "json" };
+import monsterKitOverworld from "@/assets/monsterKit/monster-overworld.json" with { type: "json" };
+import monsterKitRooms from "@/assets/monsterKit/monster-rooms.json" with { type: "json" };
+import monsterKitWild from "@/assets/monsterKit/monster-wild.json" with { type: "json" };
+import atlasVehiclesTileset from "@/assets/atlasVehiclesTileset.json" with { type: "json" };
+import worldmapAuthoringSheet from "@/assets/worldmapAuthoringSheet.json" with { type: "json" };
+import beodeulReviewedCatalog from "@/assets/beodeulReviewedCatalog.json" with { type: "json" };
+import beodeulMassingCatalog from "@/assets/beodeulMassingCatalog.json" with { type: "json" };
+import beodeulNatureCatalog from "@/assets/beodeulNatureCatalog.json" with { type: "json" };
+import jpCityStreetCatalog from "@/assets/jpCityStreetCatalog.json" with { type: "json" };
 
 const ALL = {
   jpCityTileset,
@@ -44,6 +57,19 @@ const ALL = {
   prehistoricTileset,
   skyIslandTileset,
   beodeulWavePlacesTileset,
+  monsterKitClimate,
+  monsterKitCoast,
+  monsterKitDungeon,
+  monsterKitGyms,
+  monsterKitOverworld,
+  monsterKitRooms,
+  monsterKitWild,
+  atlasVehiclesTileset,
+  worldmapAuthoringSheet,
+  beodeulReviewedCatalog,
+  beodeulMassingCatalog,
+  beodeulNatureCatalog,
+  jpCityStreetCatalog,
 };
 
 export type BundledJsonData = typeof ALL;

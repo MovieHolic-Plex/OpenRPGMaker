@@ -3,6 +3,8 @@ const key = (key, times = 1) => ({ kind: 'key', key, times });
 const present = testid => ({ kind: 'waitForVisible', testid });
 export default {
   id: 'feature16-battle-ui',
+  // 옛 ESC 메뉴(menuUiStyle 스킨) 화면을 검사한다 — 기본이 허브 메뉴가 된 뒤에도 같은 화면을 본다.
+  systemPatch: { menuLayout: "legacy" },
   projectFixture: await writeFeature16Fixture(),
   beats: [
     { id: 'title', expect: { testidPresent: ['title-screen'] } },

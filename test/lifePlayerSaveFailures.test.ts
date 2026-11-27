@@ -14,6 +14,13 @@ vi.mock("@/player/audio", () => ({
   AUDIO_HANDOFF_REGISTRY_KEY: "audioHandoffOwned",
 }));
 vi.mock("@/player/runtimeDebugPanel", () => ({ renderRuntimeDebugPanel: () => document.createElement("div") }));
+// 플레이어 예열(createPlayGame)이 phaser.min.js 를 <script> 로 부르면 happy-dom 이 localhost:3000 에 붙다 거절되고,
+// 그 거절이 다음 시험 파일 도중에 처리 안 된 오류(ECONNREFUSED)로 떠 같은 조각을 빨강으로 만든다(#5283 related-tests 1).
+// 이 파일은 저장·불러오기 거절만 본다 — 엔진은 뜨지 않은 채로 둔다(다른 플레이어 시험과 같은 mock).
+vi.mock("@/app/phaserRuntime", () => ({
+  ensurePhaser: () => new Promise(() => undefined),
+  getLoadedPhaser: () => ({ Scene: class {} }),
+}));
 
 import { setExportedProject, store } from "@/player/exportProjectStoreShim";
 import { renderPlayer, teardownPlayer } from "@/player/player";

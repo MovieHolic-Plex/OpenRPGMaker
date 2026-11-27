@@ -7,7 +7,8 @@
 //   · 번들 표가 자라면 이미 고른 게임도 새 칸까지 같은 겉모습으로 그려진다.
 // 표·그림판은 scripts/content/beodeul-looks/bake.py 가 굽는다(버들항 시트가 풀밭·길·광장 재질을 «같은 자리 같은 화소» 로 되풀이해 그린 덕에
 // 재질 화소만 바꾼 칸을 코드로 만들 수 있다). 고르기는 project/tilesetLook.ts.
-import beodeulLooks from "./beodeulLooks.json" with { type: "json" };
+import bundledSheetCounts from "./bundledSheetCounts.json" with { type: "json" };
+import { bundledLookJson } from "./bundledLookJson";
 import { tilesetStandTableFor } from "./tilesetStands";
 import { dungeonSkinLooks } from "./dungeonSkins";
 import { reliefStyleForGround } from "@/project/relief/styles";
@@ -42,16 +43,18 @@ export type TilesetLookTable = {
   readonly parts: Readonly<Record<Exclude<TilesetLookPart, "stand" | "meadow" | "water" | "grain" | "dungeon">, { readonly options: Readonly<Record<string, LookOption>> }>>;
 };
 
-const TABLES: readonly TilesetLookTable[] = [beodeulLooks as unknown as TilesetLookTable];
+const LOOK_TILESET_ID = "beodeul_city";
+const LOOK_TEXTURE_KEY = "tex_beodeul_looks";
+const LOOK_IMAGE_ID = "tex_beodeul_city";
 
 /** 겉모습 그림판 textureKey → 칸 수(bundledChipsetFrameCount 가 쓴다). */
 export function tilesetLookSheetCount(textureKey: string): number | undefined {
-  return TABLES.find((table) => table.texture === textureKey)?.count;
+  return textureKey === LOOK_TEXTURE_KEY ? bundledSheetCounts.tex_beodeul_looks.count : undefined;
 }
 
 /** 이 타일셋 id 가 고를 수 있는 겉모습 표(없으면 undefined). */
 export function tilesetLookTableFor(tilesetId: string): TilesetLookTable | undefined {
-  return TABLES.find((table) => table.tilesetId === tilesetId);
+  return tilesetId === LOOK_TILESET_ID ? (bundledLookJson("beodeulLooks") as unknown as TilesetLookTable) : undefined;
 }
 
 type LookTileset = Pick<TilesetDef, "tileGrafts"> & Partial<Pick<TilesetDef, "look" | "image">>;
@@ -60,7 +63,8 @@ type LookTileset = Pick<TilesetDef, "tileGrafts"> & Partial<Pick<TilesetDef, "lo
 function activeTable(tileset: LookTileset): TilesetLookTable | undefined {
   const look = tileset.look;
   if (!look || tileset.image?.type !== "bundled") return undefined;
-  return TABLES.find((table) => table.texture === look.textureKey && table.image === tileset.image?.id);
+  if (look.textureKey !== LOOK_TEXTURE_KEY || tileset.image.id !== LOOK_IMAGE_ID) return undefined;
+  return bundledLookJson("beodeulLooks") as unknown as TilesetLookTable;
 }
 
 /** 그림 캐시 열쇠에 붙일 겉모습 서명(겉모습이 없으면 빈 문자열). */

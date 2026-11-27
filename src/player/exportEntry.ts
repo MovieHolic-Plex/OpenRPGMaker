@@ -15,11 +15,20 @@ setBundledJsonReader(async (url, onBytes) => {
 import { PRODUCT_BRAND } from "@/brand";
 import { deserialize, deserializeParsed } from "@/project/io";
 import { preloadBundledTilesetDefinitions } from "@/project/defaults/defaultAssets";
-import { setBundledJsonReader, type BundledJsonProgress } from "@/project/defaults/bundledJson";
+import {
+  bundledJsonKeysForProject,
+  preloadBundledJson,
+  preloadBundledJsonForProject,
+  preloadBundledLookJson,
+  setBundledJsonReader,
+  type BundledJsonProgress,
+} from "@/project/defaults/bundledJson";
 import { OPRN_EXTENSION } from "@/project/package";
 import { isFlagshipDemoId, type FlagshipDemoId } from "@/project/flagship/types";
+import { translateProjectContent } from "@/project/localization";
 import type { Project } from "@/project/types";
 import { renderPlayer } from "@/player/player";
+import { runtimeUiLocale } from "@/player/runtimeUiStrings";
 import { renderOprnGameFilePicker } from "@/player/oprnGameFilePicker";
 import { readStandalonePayload } from "@/player/standalonePayload";
 import { adoptLegacyExportSaves, setSaveSlotStorageNamespace } from "@/player/saveSlots";
@@ -30,7 +39,12 @@ import {
   type ExportProjectSource,
 } from "@/player/exportSaveNamespace";
 import { hostExitReturnUrl, parseHostBridge, type HostBridge } from "@/player/hostBridge";
-import { installDesktopShellBridge, type DesktopShellBootConfig } from "@/player/desktopShellBridge";
+import {
+  hydrateSavesFromDesktopHost,
+  installDesktopShellBridge,
+  quitDesktopPlayer,
+  type DesktopShellBootConfig,
+} from "@/player/desktopShellBridge";
 import { getAudioEngine, stopAllAudio } from "@/player/audio";
 import { fetchTextWithProgress, mountBootLoader, readLoadingInfo, type BootLoader } from "@/player/bootLoader";
 import { backgroundUrls, enableScenePreload, fetchBlobWithRetry, firstPlayableUrls, preloadUrls } from "@/player/scenePreload";
@@ -116,6 +130,8 @@ function installTouchUpgrade(): void {
 }
 
 async function bootExportedPlayer(root: HTMLElement): Promise<void> {
+  // Phaser·PlayScene 청크는 project.json 에 의존하지 않으므로 부팅 첫 시점에 병렬로 미리 받는다.
+  void warmPlayGameRuntime().catch(() => undefined);
   const boot = await withDevCheckpointParam(readBootConfig());
   const storeGame = parseStoreGameBoot(boot.storeGame);
   if (storeGame && !storeGameEmbedderAllowed(storeGame)) {
@@ -210,11 +226,12 @@ async function prepareFirstScreen(loader: BootLoader, project: Project, autoStar
   // 불러오는 화면은 여기서 걷지 않는다 — 플레이어가 첫 화면을 그리면(onFirstScreen) 걷는다. 그 사이 엔진 기동의
   // 검은 «• • •»·두 번째 로딩 카드가 비쳤다(2026-10-26 첫사랑 op5: 시작 전 4초 검은 화면).
   // 시작한 뒤: 가까운 맵부터 나머지를 낮은 우선순위로 받는다(맵 이동 때 기다림을 줄인다).
-  const background = backgroundUrls(project, project.startMapId);
+  // backgroundUrls 계산도 클릭 직후 메인 스레드를 막지 않도록 지연 타이머 안에서 수행한다.
   setTimeout(() => {
     // QA 가 «뒤에서 받은 것» 과 «화면이 늦게 부른 것» 을 가르는 기준 시각(측정용, 비밀 아님).
     document.documentElement.dataset.preloadBackgroundAt = String(Math.round(performance.now()));
     void (async () => {
+      const background = backgroundUrls(project, project.startMapId);
       // 판본의 파일 목록(preload-files.json)이 있으면 프로젝트 글자로 안 보이는 것(코드 조각·스킬 효과 시트·코드가 고르는
       // 전투 그림)까지 전부 받는다. 순서: 가까운 맵 → 코드 조각·효과 시트(assets/ 바로 아래) → 나머지.
       // 작은 그림은 묶음으로(요청 수천 → 수십, preloadPacks.ts) — 서비스 워커가 이 문서를 맡았을 때만.
@@ -274,7 +291,16 @@ async function deserializeWithBundledTilesets(text: string, onDefinitions?: Bund
     return deserialize(text); // 같은 형식 오류 문구를 낸다.
   }
   const tilesets = parsed && typeof parsed === "object" ? (parsed as { tilesets?: unknown }).tilesets : undefined;
-  if (tilesets && typeof tilesets === "object") await preloadBundledTilesetDefinitions(Object.keys(tilesets), onDefinitions);
+  const maps = parsed && typeof parsed === "object" ? (parsed as { maps?: unknown }).maps : undefined;
+  const { keys: extraKeys, lookKeys } = bundledJsonKeysForProject({
+    maps: maps && typeof maps === "object" ? (maps as Record<string, { tilesetId?: string; relief?: unknown }>) : undefined,
+    tilesets: tilesets && typeof tilesets === "object" ? (tilesets as Record<string, { image?: { type?: unknown; id?: unknown }; look?: unknown; tileGrafts?: readonly { sourceChipset?: unknown }[] }>) : undefined,
+  });
+  await Promise.all([
+    tilesets && typeof tilesets === "object" ? preloadBundledTilesetDefinitions(Object.keys(tilesets), onDefinitions) : null,
+    extraKeys.length > 0 ? preloadBundledJson(extraKeys) : null,
+    lookKeys.length > 0 ? preloadBundledLookJson(lookKeys) : null,
+  ]);
   return deserializeParsed(parsed);
 }
 
@@ -400,14 +426,24 @@ async function startPlayer(
   // renderPlayer 는 root 를 비운다 — 불러오는 화면은 문서 맨 위로 옮겨 그 위를 덮는다.
   if (loader) { document.body.append(loader.root); loader.root.style.zIndex = "2147483000"; }
   try {
-    installExportUploadedAssets(project);
+    if (source === "opened-file") {
+      await preloadBundledJsonForProject(project);
+    }
+    // Derive save namespace from the authored (pre-translation) project so switching locales keeps saves intact.
+    const authoredProject = project;
+    const activeLocale = runtimeUiLocale(project);
+    const localizedProject = project.meta.localizations && Object.keys(project.meta.localizations).length > 0
+      ? translateProjectContent(project, activeLocale)
+      : project;
+    installExportUploadedAssets(localizedProject);
     // 옛 저장본에서 내보낸 게임도 에디터와 같은 얼굴을 보여 준다(faceMatchRepair.ts — 걷기 그림의 짝으로 교정).
-    repairFaceMatches(project);
-    setExportedProject(project);
+    repairFaceMatches(localizedProject);
+    setExportedProject(localizedProject);
+    project = localizedProject;
     // 에디터 boot 를 거치지 않는 웹·단일 HTML 플레이어도 저장된 공통 글꼴을 쓴다.
     syncProjectFontTheme(project);
     const storeGame = parseStoreGameBoot(boot.storeGame);
-    const saveNamespace = storeGame && source === "bundled" ? storeGameSaveNamespace(storeGame) : resolveExportSaveNamespace(project, {
+    const saveNamespace = storeGame && source === "bundled" ? storeGameSaveNamespace(storeGame) : resolveExportSaveNamespace(authoredProject, {
       source,
       hostSaveNamespace: boot.saveNamespace,
       pathname: window.location.pathname,
@@ -418,6 +454,12 @@ async function startPlayer(
       adoptLegacyExportSaves(window.localStorage, saveNamespace);
     } catch (error) {
       console.warn("[oprn] 옛 세이브 입양을 건너뜁니다:", error);
+    }
+    // 데스크톱 호스트(Electron / 로컬 런처)의 saves/*.oprn-save.json 을 localStorage 로 복원·동기화한다.
+    try {
+      await hydrateSavesFromDesktopHost(saveNamespace, window.localStorage);
+    } catch (error) {
+      console.warn("[oprn] 데스크톱 세이브 파일 동기화를 건너뜁니다:", error);
     }
     // 스토어 웹 게임: 계정 클라우드 세이브와 맞춘다(storeCloudSync.ts). 다리가 없으면(새 창·내보낸 게임) 아무것도 하지 않는다.
     if (storeGame && source === "bundled") {
@@ -475,15 +517,25 @@ function renderBootError(root: HTMLElement, message: string): void {
   root.append(panel);
 }
 
-// 타이틀 "게임 종료": exit 기능 + 유효한 returnUrl 이면 호스트 페이지로 복귀, 아니면 기존 안내 유지.
+// 타이틀 "게임 종료": 데스크톱 네이티브 호스트면 앱 종료(실패 시 폴백), 웹 호스트 returnUrl 이면 복귀, 아니면 기존 안내 유지.
 function exitToHost(root: HTMLElement, host: HostBridge): void {
-  const returnUrl = hostExitReturnUrl(host);
-  if (returnUrl) {
+  const runFallback = (): void => {
+    const returnUrl = hostExitReturnUrl(host);
+    if (returnUrl) {
+      stopAllAudio();
+      window.location.assign(returnUrl);
+      return;
+    }
+    renderTitleExit(root);
+  };
+  if (typeof window.__oprnDesktopPlayer?.quit === "function") {
     stopAllAudio();
-    window.location.assign(returnUrl);
+    void quitDesktopPlayer().then((closed) => {
+      if (!closed) runFallback();
+    });
     return;
   }
-  renderTitleExit(root);
+  runFallback();
 }
 
 function renderTitleExit(root: HTMLElement): void {

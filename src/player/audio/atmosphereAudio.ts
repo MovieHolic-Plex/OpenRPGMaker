@@ -4,6 +4,8 @@ type Voice = { source: AudioBufferSourceNode; gain: GainNode; level: number };
 /** A separate SE-controlled ambience bus; authored BGM/BGS/ambient remain untouched. */
 export class AtmosphereAudio {
   private context: AudioContext | null = null;
+  private ownsContext = false;
+  private readonly sharedContextProvider?: () => AudioContext | null;
   private bus: GainNode | null = null;
   private voices = new Map<AtmosphereSound, Voice>();
   private buffers = new Map<AtmosphereSound, AudioBuffer>();
@@ -12,8 +14,12 @@ export class AtmosphereAudio {
   private pending: readonly AtmosphereEffect[] = [];
   private mixer = 0.8;
 
+  constructor(sharedContextProvider?: () => AudioContext | null) {
+    this.sharedContextProvider = sharedContextProvider;
+  }
+
   unlock(): void {
-    this.update(this.pending, true);
+    if (this.pending.length > 0) this.update(this.pending, true);
     if (this.context?.state === "suspended") void this.context.resume().catch(() => {});
   }
 
@@ -31,10 +37,14 @@ export class AtmosphereAudio {
       if (sound !== "none" && level > 0) levels.set(sound, Math.max(levels.get(sound) ?? 0, level));
     }
     if (!levels.size) { this.stop(); return; }
-    if (!unlocked || typeof AudioContext === "undefined") return;
+    if (!unlocked || (typeof AudioContext === "undefined" && !this.sharedContextProvider)) return;
     if (!this.context) {
       try {
-        this.context = new AudioContext();
+        const shared = this.sharedContextProvider?.() ?? null;
+        const context = shared ?? (typeof AudioContext !== "undefined" ? new AudioContext() : null);
+        if (!context) return;
+        this.context = context;
+        this.ownsContext = shared === null;
         this.bus = this.context.createGain();
         this.bus.gain.value = this.mixer;
         this.bus.connect(this.context.destination);
@@ -90,8 +100,9 @@ export class AtmosphereAudio {
     for (const voice of this.voices.values()) { voice.source.stop(); voice.source.disconnect(); voice.gain.disconnect(); }
     this.voices.clear(); this.buffers.clear(); this.baking.clear(); this.pending = [];
     this.bus?.disconnect(); this.bus = null;
-    if (this.context) void this.context.close().catch(() => {});
+    if (this.context && this.ownsContext) void this.context.close().catch(() => {});
     this.context = null;
+    this.ownsContext = false;
   }
 }
 

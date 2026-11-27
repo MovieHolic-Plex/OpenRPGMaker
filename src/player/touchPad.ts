@@ -249,7 +249,12 @@ export function createTouchPad(host: HTMLElement, options?: TouchPadOptions): To
   let runHeld = false;
   let runZone: HTMLElement | null = null;
   const syncRun = (): void => {
-    const runs = padRuns(runHeld, playerAlwaysRun());
+    // 전투 중에는 달리기 개념이 없다 — A 버튼 홀드의 Shift 합성 입력이 전투 배속 토글(battleDom)로 오인되지 않게 막는다.
+    const inBattle = Boolean(
+      host.closest?.(".play-viewport, .play-stage")?.querySelector?.('[data-testid="battle-scene"]')
+      ?? (typeof document !== "undefined" ? document.querySelector('[data-testid="battle-scene"]') : null),
+    );
+    const runs = !inBattle && padRuns(runHeld, playerAlwaysRun());
     if (runs !== heldKeys.has(RUN_KEY)) {
       if (runs) haptic(6);
       setKeyHeld(RUN_KEY, runs);

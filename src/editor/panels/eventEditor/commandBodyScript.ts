@@ -192,7 +192,12 @@ export function scriptCommandBody(context: CommandEditContext, cmd: ScriptComman
   let typingTimer: ReturnType<typeof setTimeout> | undefined;
   source.addEventListener("input", () => {
     if (typingTimer) clearTimeout(typingTimer);
-    typingTimer = setTimeout(() => showDiagnostics(check()), 600);
+    // 편집기가 닫힌 뒤(또는 시험이 문서를 걷은 뒤) 600ms 가 지나면 칠할 곳이 없다 — 걷힌 문서에 그리다
+    // «document is not defined» 미처리 오류가 났다(#5295 related-tests, eventEditorCommitProbe).
+    typingTimer = setTimeout(() => {
+      if (typeof document === "undefined" || !source.isConnected) return;
+      showDiagnostics(check());
+    }, 600);
   });
   source.addEventListener("keydown", (event) => {
     if (event.key !== "Tab" || event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) return;

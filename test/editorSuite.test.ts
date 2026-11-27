@@ -83,7 +83,7 @@ describe("editorSuite", () => {
           .toBe("generated-enemy-wolf-grey");
         // Nothing in the id or the name matches: fall back to the slime.
         expect(parseGeneratedRecord("enemy", '{"name":"정체불명","monsterResourceId":"mystery-thing"}').monsterResourceId)
-          .toBe("generated-enemy-slime-01");
+          .toBe("generated-enemy-slime-green");
       });
 
       it("name 이 없으면 거부한다", () => {
@@ -160,7 +160,7 @@ describe("editorSuite", () => {
         const system = String(buildRecordPrompt("enemy", "늑대", [])[0]!.content);
         expect(system).toContain("monsterResourceId");
         expect(system).toContain("generated-enemy-wolf-grey");
-        expect(system).toContain("generated-enemy-slime-01");
+        expect(system).toContain("generated-enemy-slime-green");
         expect(String(buildRecordPrompt("item", "회복약", [])[0]!.content)).not.toContain("generated-enemy-");
       });
     });

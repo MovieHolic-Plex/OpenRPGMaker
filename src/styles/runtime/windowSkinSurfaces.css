@@ -39,7 +39,7 @@
 }
 .runtime-shop-overlay[data-window-skin="classic"] :is(.runtime-shop-greeting-panel, .runtime-shop-list-panel, .runtime-shop-detail-panel,
   .runtime-shop-party-panel, .runtime-shop-desc-panel, .runtime-shop-purse-panel, .runtime-shop-comparison, .runtime-shop-haggle-shell,
-  .runtime-shop-gold-panel, .runtime-shop-prompt-panel) {
+  .runtime-shop-gold-panel, .runtime-shop-prompt-panel, .runtime-craft-shell .runtime-shop-topbar) {
   background: transparent;
   border-color: transparent;
   border-image: var(--runtime-window-skin) 24 fill / 8px / 0 stretch;

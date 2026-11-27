@@ -48,7 +48,7 @@ function bindPixelFx(project: Project, skillId: string, spec: PixelFxSpec, hit: 
   const record: BattleAnimationRecord = normalizeBattleAnimationRecord({
     id,
     name: `${note} · pixelfx ${normalized.effectId}`,
-    scope: old?.scope === "screen" ? "allTargets" : old?.scope ?? inferredScope,
+    scope: inferredScope,
     position: "feet",
     pixelFx: normalized,
     timings,
@@ -98,6 +98,7 @@ function applyFourHeroLoops(project: Project, exec: Exec): void {
 
   const snipe = findSkill(project, "skill_gunner_snipe");
   if (snipe) {
+    snipe.weaponAffinity = { elementIds: ["bow"], bonusPercent: 40 };
     snipe.exploitStates = {
       stateIds: [FS_STATE_IRIS_LOCK],
       bonusPercent: 45,
@@ -155,6 +156,15 @@ function applyFourHeroLoops(project: Project, exec: Exec): void {
     hold.description = "앞을 막아서 적 공격을 받아내고 방어와 창세(공격·민첩↑)를 세운다.";
   }
 
+  const headsUp = findSkill(project, "skill_fs2_heads_up");
+  if (headsUp) {
+    headsUp.stateEffects = [
+      ...(headsUp.stateEffects ?? []).filter((r) => r.stateId !== FS_STATE_SARAH_MOMENTUM),
+      { stateId: FS_STATE_SARAH_MOMENTUM, chance: 100, operation: "add" },
+    ];
+    headsUp.description = "동료 하나의 기세를 북돋아 공격과 창세(공격·민첩↑)를 건다.";
+  }
+
   for (const id of ["skill_dragoon_high_jump", "skill_dragoon_sweeping_lance"] as const) {
     const sk = findSkill(project, id);
     if (!sk) continue;
@@ -182,7 +192,7 @@ function applyFourHeroLoops(project: Project, exec: Exec): void {
       scope: "allAllies",
       kind: "healing",
       statistic: "mind",
-      power: 56,
+      power: 180,
       combinedStats: true,
       stateEffects: [
         { stateId: "state_regen", chance: 100, operation: "add" },
@@ -193,8 +203,9 @@ function applyFourHeroLoops(project: Project, exec: Exec): void {
     });
   }
 
-  // ── 5. 신규 커스텀 pixelfx 4종 연결 ─────────────────────────────────────
+  // ── 5. 신규 커스텀 pixelfx 연결 ─────────────────────────────────────
   bindPixelFx(project, "combo_fs2_fourth_answer", { effectId: "fallenstar/fourth-answer" }, 5, "네 번째 대답", "easyrpg-sound-holy7");
+  bindPixelFx(project, FS_COMBO_STARLIGHT_PROMISE, { effectId: "holy/feather-burst" }, 3, "별빛 약속", "easyrpg-sound-recovery7");
   bindPixelFx(project, "skill_dragoon_high_jump", { effectId: "fallenstar/lance-dive" }, 3, "큰 도약", "easyrpg-sound-blow4");
   bindPixelFx(project, "combo_fs2_twin_lance", { effectId: "fallenstar/lance-dive" }, 3, "쌍창 돌파", "easyrpg-sound-blow4");
   bindPixelFx(project, "skill_gunner_snipe", { effectId: "fallenstar/iris-beam" }, 3, "충전 광선포", "easyrpg-sound-flash3");
@@ -235,13 +246,13 @@ const BESTIARY_SPECS: readonly BestiarySpec[] = [
     defeated: "꺼진 자리에 남는 푸른 불씨는 공방 조합과 로한의 단조에 꼭 들어간다.",
   },
   {
-    id: "fs_b_stream", name: "수로 뱀장어 · 바위게 · 물의 정령", enemies: ["enemy_fs_eel", "enemy_fs_crab", "enemy_fs_undine"],
+    id: "fs_b_stream", name: "수로 뱀장어 · 바위게 · 물의 정령 · 등불해파리", enemies: ["enemy_fs_eel", "enemy_fs_crab", "enemy_fs_undine", "enemy_fs_jelly"],
     seen: "옛 수로 물가에 자리 잡은 짐승들. 물기를 머금고 있어 전기나 껍질에 주의해야 한다.",
     weakness: "물가 생물의 약점을 전투 중에 확인해 적어 두었다.",
     defeated: "옛 별지기들이 별을 비추려고 끌었던 물길에 어느새 야생이 들어찼다.",
   },
   {
-    id: "fs_b_forest_misc", name: "숲 멧돼지 · 말벌 · 사마귀 · 잎새 정령", enemies: ["enemy_fs_boar", "enemy_fs_hornet", "enemy_fs_mantis", "enemy_fs_moss", "enemy_fs_moth", "enemy_fs_bandit"],
+    id: "fs_b_forest_misc", name: "숲 멧돼지 · 말벌 · 사마귀 · 잎새 정령 · 고블린", enemies: ["enemy_fs_boar", "enemy_fs_hornet", "enemy_fs_mantis", "enemy_fs_moss", "enemy_fs_moth", "enemy_fs_bandit", "enemy_fs_goblin", "enemy_fs_elite_thornback"],
     seen: "속삭이는 숲 깊은 곳을 지키는 야생 짐승과 산적들. 무리마다 공격 박자가 제각각이다.",
     weakness: "직접 맞혀 본 속성과 상태이상 반응이 수첩에 정리됐다.",
     defeated: "숲지기 브람 말대로 길 밖으로 샐수록 더 거친 놈들이 나온다.",
@@ -253,7 +264,7 @@ const BESTIARY_SPECS: readonly BestiarySpec[] = [
     defeated: "하늘에서 온 것을 죄라 부르면서도, 정작 옛 별지기의 방을 제일 먼저 뒤지고 있었다.",
   },
   {
-    id: "fs_b_inq_troops", name: "심문회 병사 · 방패병 · 쇠뇌병", enemies: ["enemy_fs_inq_shield", "enemy_fs_inq_crossbow", "enemy_fs_inq_handler", "enemy_fs_inq_hound", "enemy_fs_inq_penitent", "enemy_fs_inq_spy"],
+    id: "fs_b_inq_troops", name: "심문회 병사 · 방패병 · 쇠뇌병 · 대참회자", enemies: ["enemy_fs_inq_shield", "enemy_fs_inq_crossbow", "enemy_fs_inq_handler", "enemy_fs_inq_hound", "enemy_fs_inq_penitent", "enemy_fs_elite_penitent", "enemy_fs_inq_spy", "enemy_fs_valen_soldier", "enemy_fs_valen_spearman", "enemy_fs_valen_golem"],
     seen: "발렌 휘하의 정예 지하반. 방패병이 앞을 막고 쇠뇌병이 뒤에서 노리는 진형을 쓴다.",
     weakness: "방패 벽과 원거리 조준을 깨뜨리는 상성을 전투에서 확인했다.",
     defeated: "교단의 병사들도 누군가의 아들이고 이웃이다. 다만 명령이 무서울 뿐.",
@@ -277,13 +288,13 @@ const BESTIARY_SPECS: readonly BestiarySpec[] = [
     defeated: "서늘한 어둠 속에서 오래 살아남은 주인. 아가미 조각에서 아직도 맑은 울림이 난다.",
   },
   {
-    id: "fs_b_ash", name: "재의 들판 마물 (까마귀 · 뱀 · 도깨비 · 들개)", enemies: ["enemy_fs2_ash_crow", "enemy_fs2_ash_snake", "enemy_fs2_ash_wisp", "enemy_fs2_starved_dog"],
+    id: "fs_b_ash", name: "재의 들판 마물 (까마귀 · 뱀 · 도깨비 · 들개 · 숯덩이 골렘)", enemies: ["enemy_fs2_ash_crow", "enemy_fs2_ash_snake", "enemy_fs2_ash_wisp", "enemy_fs2_starved_dog", "enemy_fs2_cinder_golem"],
     seen: "서른 해 전 타 버린 새벽샘 남쪽을 떠도는 짐승들. 깃털과 비늘마다 아직 식지 않은 재가 묻어 있다.",
     weakness: "재와 불기운에 익숙한 놈들이다. 통하는 속성을 확인해 적어 두었다.",
     defeated: "잿불 핵을 남기고 스러진다. 공방에서 화염·회복 비약의 재료로 쓸 수 있다.",
   },
   {
-    id: "fs_b_fort", name: "북방 관문 수비대", enemies: ["enemy_fs2_watchman", "enemy_fs2_fort_knight", "enemy_fs2_fort_crossbow", "enemy_fs2_fort_dog"],
+    id: "fs_b_fort", name: "북방 관문 수비대 · 요새 수문장", enemies: ["enemy_fs2_watchman", "enemy_fs2_fort_knight", "enemy_fs2_fort_crossbow", "enemy_fs2_fort_dog", "enemy_fs2_elite_warden"],
     seen: "통금 왕도와 북방 관문을 지키는 심문회 정규군. 시야가 넓고 들키면 바로 달려든다.",
     weakness: "갑옷과 창병 진형을 뚫는 상성을 전투에서 파악했다.",
     defeated: "새라의 부하들이었다. 명령 때문에 막아섰을 뿐, 눈빛엔 피로가 깊다.",
@@ -295,7 +306,7 @@ const BESTIARY_SPECS: readonly BestiarySpec[] = [
     defeated: "칼이 아니라 진심으로 부딪힌 뒤, 이제는 등을 맡길 수 있는 든든한 동료가 됐다.",
   },
   {
-    id: "fs_b_frost", name: "설원 짐승 (서리늑대 · 서리박쥐 · 서리예티)", enemies: ["enemy_fs2_frost_wolf", "enemy_fs2_frost_bat", "enemy_fs2_frost_yeti"],
+    id: "fs_b_frost", name: "설원 짐승 (서리늑대 · 서리박쥐 · 서리예티 · 서리갈기)", enemies: ["enemy_fs2_frost_wolf", "enemy_fs2_frost_bat", "enemy_fs2_frost_yeti", "enemy_fs2_elite_frostmane"],
     seen: "서리 가도와 얼음 호수의 눈보라 속에서 사냥하는 북방 야수들. 추위에 단련되어 있다.",
     weakness: "눈보라 속 짐승들에게 통하는 속성과 약점을 기록했다.",
     defeated: "서리 결정을 떨군다. 추위를 이기는 비약과 냉기 병의 핵심 재료다.",

@@ -1,6 +1,7 @@
 // 조수 v2 가 runPiAgent(scripts/lib/piAgentRuntime.ts)에 끼우는 두 갈고리와 그 환경. 순수 타입.
 import type { PiAgentEvent, PiAgentRequest } from "@/ai/piAgent/protocol";
 import type { PiToolCallRecord, PiToolShape, ResolvePiToolOptions } from "@/ai/piAgent/toolAdapter";
+import type { ImageReference } from "@/ai/imageReferences";
 import type { ToolContext } from "@/editor/tools/types";
 
 /** 조수 v2 가 runPiAgent 에 끼우는 두 갈고리. 환경은 이 실행의 사본·기록·보조 호출·1배 렌더를 그대로 넘긴다. */
@@ -33,7 +34,11 @@ export interface PiAssistantV2Env {
    * 그림 한 장을 이미지 모델로 만든다(워커의 createWorkerImageGenerator — 같은 키·제공자·모델 해석). generate_art 동사가 쓴다.
    * 이미지 제공자 키가 없거나 읽기 전용 실행이면 없다(그 경우 generate_art 는 «생성 불가» 를 기록으로 남기고 map-view 를 허용한다).
    */
-  readonly generateImage?: (request: { readonly prompt: string; readonly signal?: AbortSignal }) => Promise<{ readonly dataUrl: string; readonly mimeType: string; readonly model: string; readonly provider: string }>;
+  readonly generateImage?: (request: { readonly prompt: string; readonly referenceImages?: readonly ImageReference[]; readonly signal?: AbortSignal }) => Promise<{ readonly dataUrl: string; readonly mimeType: string; readonly model: string; readonly provider: string }>;
+  /** 이 실행에서 생성형 이미지 제공자 인증이 준비되어 있는지(사전 판별). 없으면 오프닝은 0-생성 경로로 완결한다. */
+  readonly canGenerateImages?: boolean;
+  /** runPiAgent 가 해석한 실효 모델 ID (request.model 생략 시 provider 기본값·options.model 반영). */
+  readonly modelId?: string;
   /** 역할 모델 하나로 따로 부르기(그림 포함 가능). 그 계정 키가 없으면 던진다. */
   readonly roleChat?: (role: { readonly provider: string; readonly model: string; readonly effort?: "low" | "medium" | "high" }, messages: readonly unknown[], signal?: AbortSignal) => Promise<string>;
   /** 이 실행에 키가 실린 계정 id(로컬 CLI 포함). 검수자 고르기에 쓴다. */
@@ -111,6 +116,13 @@ export interface PiAssistantV2Hooks {
    * 왜(2026-11-01 cheap r7 flash): 재주입에 한 번 강제하면 한 번 부르고 바로 글로 멈춰, 재주입 한 번이 도구 하나에 그쳤고 «진척 없음» 으로 고리가 멈췄다.
    */
   readonly keepToolsOn?: (env: PiAssistantV2Env) => boolean;
+  /**
+   * 체크포인트를 편집기로 보내기 직전(프로젝트가 바뀐 때만) — 그 체크포인트를 낳은 호출(있으면)을 이어 하기 기록에 더하고
+   * 할 일·기억을 env.ctx.project 에 싣는다. 같은 체크포인트에 실려 저장본과 원자적으로 맞는다(src/ai/piAgent/runResume.ts).
+   */
+  readonly beforeCheckpoint?: (env: PiAssistantV2Env, call: { readonly name: string; readonly args: unknown } | undefined) => void;
+  /** 이어 하기 실행에서 앞 실행이 이미 적용한 호출이면 모델에 돌려줄 글(실행하지 않는다). 아니면 undefined. */
+  readonly skipAppliedCall?: (env: PiAssistantV2Env, name: string, args: unknown) => string | undefined;
   /** afterMain 이 몇 차례까지 돌 수 있나(기본 2). v2 할 일 고리는 자체 상한(묶음당 8·진척 없음 2)으로 멈추므로 넉넉히 준다. */
   readonly maxRounds?: number;
 }

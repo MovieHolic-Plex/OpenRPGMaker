@@ -25,11 +25,17 @@ export type MonsterResource = MonsterMetadata & {
  * 고르는 목록·조수 목록에서 뺀 옛 적 그림(2026-10-03 deprecated/). id 는 리졸버가 도트 그림으로 돌린다.
  * 슬라임 미리보기는 도트 슬라임과 같은 그림의 중복이다.
  */
-const RETIRED_MONSTER_IDS: ReadonlySet<string> = new Set([
+export const RETIRED_MONSTER_IDS: ReadonlySet<string> = new Set([
   "generated-enemy-reference-cocoon",
   "generated-enemy-reference-seed-back",
   "generated-troop-preview-slime",
   "easyrpg-monster-hornet",
+  // 2026-11-26 구형 3×3 번들 폐기(현행 5×4 44종으로 승격). 저장본 호환 별칭만 남기고 고르기 목록에서 뺀다.
+  "generated-enemy-slime-01",
+  "generated-enemy-bat-01",
+  "generated-enemy-golem-01",
+  "generated-enemy-dragon-01",
+  "generated-enemy-sylph-hornet",
 ]);
 
 /** One raw-ID authority for editor/AI selection; metadata never registers resources. */

@@ -153,7 +153,6 @@ function createParallelProcess(
 }
 
 function createCommonParallelProcess(scene: PlaySceneContext, event: CommonEvent): ParallelProcess {
-  scene.session.commonEvents = store.getCurrent().commonEvents;
   const project = store.getCurrent();
   const process: ParallelProcess = {
     pageId: event.id,

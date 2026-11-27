@@ -78,7 +78,7 @@ function pixelMonsterChoices(): string {
     .join("\n");
 }
 
-const FALLBACK_PIXEL_MONSTER_ID = "generated-enemy-slime-01";
+const FALLBACK_PIXEL_MONSTER_ID = "generated-enemy-slime-green";
 
 /** 목록 밖 id 는 id·이름 조각이 겹치는 도트 몬스터로, 못 찾으면 슬라임으로 맞춘다. */
 function pickPixelMonsterId(raw: string, name: string): string {
