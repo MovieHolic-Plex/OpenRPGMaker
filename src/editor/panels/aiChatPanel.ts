@@ -511,11 +511,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   let liveStatus: AiRunStream | null = null;
   let creationFeed: CreationFeed | null = null;
   let creationFeedRelease: (() => void) | null = null;
-  // 조수 첫 전송이 타일셋·자산 전체를 직렬화·해시하느라 메인 스레드를 수 초 멈추지 않게, 패널이 뜬 뒤 한가할 때 미리 만든다.
+  // 조수 첫 전송이 타일셋·자산 전체를 직렬화·해시하느라 메인 스레드를 수 초 멈추지 않게, 미리 만든다.
   // 예약은 하나만 둔다 — 스토어 통지가 몰려도 한가한 틈에 한 번 돈다.
+  // 부팅 때는 하지 않는다 — 사용자가 입력창을 처음 누르거나 칠 때 시작한다(heavyWireWarmupArmed). 2026-11-26 실측(데스크톱, 빈 새 프로젝트):
+  // 패널이 뜨자마자 걸던 예약(requestIdleCallback timeout 5s)이 부팅 한가운데 메인 스레드를 6.7s 멈춰 «입력 가능»이 그만큼 늦었다.
   let heavyWireWarmupScheduled = false;
+  let heavyWireWarmupArmed = false;
   const scheduleHeavyWireWarmup = (): void => {
-    if (heavyWireWarmupScheduled) return;
+    if (!heavyWireWarmupArmed || heavyWireWarmupScheduled) return;
     heavyWireWarmupScheduled = true;
     const idle = (globalThis as { requestIdleCallback?: (cb: () => void, options?: { timeout: number }) => number }).requestIdleCallback;
     const schedule = (run: () => void): void => {
@@ -535,7 +538,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       });
     });
   };
-  scheduleHeavyWireWarmup();
   const initialProjectIdentity = store.getProjectIdentity();
   const currentProjectContextKey = conversationScopeKey(initialProjectIdentity, store.getCurrent());
   // 이 패널(대화 세션) 전체를 하나의 기록으로 저장할 id — 매 턴 끝에 누적 감사 로그를 저장한다.
@@ -731,6 +733,16 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       .then(({ warmDialogueMeasurerForTools }) => warmDialogueMeasurerForTools(store.getCurrent()))
       .catch(() => undefined);
   }, { once: true });
+  // 조수를 쓰려는 첫 손짓(누르기·키)에서 무거운 키 해시를 미리 만들기 시작한다 — 부팅 중 자동 포커스로는 시작하지 않는다.
+  const armHeavyWireWarmup = (): void => {
+    input.removeEventListener("pointerdown", armHeavyWireWarmup);
+    input.removeEventListener("keydown", armHeavyWireWarmup);
+    if (heavyWireWarmupArmed) return;
+    heavyWireWarmupArmed = true;
+    scheduleHeavyWireWarmup();
+  };
+  input.addEventListener("pointerdown", armHeavyWireWarmup);
+  input.addEventListener("keydown", armHeavyWireWarmup);
 
   const sendButton = el("button", {
     class: "ai-assistant-action ai-chat-send",

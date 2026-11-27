@@ -732,6 +732,21 @@ export function listedComboSkillIds(actor: BattleBattlerSnapshot | undefined, sn
   return [...ownedCombos, ...comboSkillIdsFor(project, actor.recordId, partyIds, owned, comboParticipantsFromSnapshot(snapshot))];
 }
 
+function canHoldForCombo(
+  snapshot: BattleSnapshot,
+  options: BattleCommandPanelOptions,
+  actor: BattleBattlerSnapshot | undefined,
+  combos: readonly SkillId[],
+): boolean {
+  if (!actor || snapshot.battleFlow !== "gauge" || !options.holdForCombo) return false;
+  const held = new Set(snapshot.heldActorIds ?? []);
+  const hasUnreadyAlly = snapshot.actors.some(
+    (entry) => entry.recordId !== actor.recordId && entry.hp > 0 && !held.has(entry.recordId) && entry.gauge < 100,
+  );
+  if (!hasUnreadyAlly) return false;
+  return combos.some((skillId) => actorSkillFailure(snapshot, actor, skillId) === "comboPartnerNotReady");
+}
+
 /** 루트 메뉴의 「연계」 명령. 연계기가 하나도 없으면 null(명령을 아예 안 보인다). */
 function comboCommandButton(
   snapshot: BattleSnapshot,
@@ -750,8 +765,7 @@ function comboCommandButton(
     ? battleSkillUseFailureLabel(firstFailure, project.database.skills.find((record) => record.id === combos[0]), actor, project)
     : undefined;
   // 동료가 아직 준비 전이면(게이지 흐름) 「연계」가 곧 「동료 기다리기」다 — 차례를 미루고 게이지를 채운 채 기다린다.
-  const canHold = ready.length === 0 && snapshot.battleFlow === "gauge" && Boolean(options.holdForCombo)
-    && combos.some((skillId) => actorSkillFailure(snapshot, actor, skillId) === "comboPartnerNotReady");
+  const canHold = ready.length === 0 && canHoldForCombo(snapshot, options, actor, combos);
   const detail = ready.length > 0 ? `${ready.length}개` : canHold ? "동료 기다리기" : "준비 중";
   const button = commandButton("연계", "actor-command-combo", "combo", detail, () => {
     if (targetMode) return;
@@ -776,7 +790,8 @@ function comboSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
   const nodes: HTMLElement[] = [header];
   const actor = activeActor(snapshot);
   const project = listingProject();
-  for (const skillId of listedComboSkillIds(actor, snapshot)) {
+  const combos = listedComboSkillIds(actor, snapshot);
+  for (const skillId of combos) {
     const skill = project.database.skills.find((record) => record.id === skillId);
     const reason = skillChoiceDisabledReason(snapshot, actor, skillId, skill);
     const partners = skill && actor ? comboPartnerNames(snapshot, skill, actor.recordId) : "";
@@ -789,6 +804,14 @@ function comboSubmenu(snapshot: BattleSnapshot, options: BattleCommandPanelOptio
     button.dataset.combo = "true";
     appendSkillTypeBadge(button, project, skill?.elementId);
     nodes.push(button);
+  }
+  // 2인 연계가 이미 열려 있어도 3·4인 연계기(또는 다른 동료)를 기다릴 수 있게 하위 메뉴에서도 대기 버튼 제공.
+  if (canHoldForCombo(snapshot, options, actor, combos)) {
+    const holdBtn = commandButton("동료 기다리기", "actor-combo-hold", "combo", "대기", () => {
+      options.holdForCombo?.();
+    }, false, undefined, "차례를 미루고 다른 동료가 준비될 때까지 기다린다.");
+    holdBtn.dataset.comboHold = "true";
+    nodes.push(holdBtn);
   }
   return nodes;
 }

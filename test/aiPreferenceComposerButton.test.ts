@@ -9,7 +9,7 @@
 // 따라야 하고, 성향 목록이 흐름 안에 들어오면 열 때마다 바가 튀어 rising overlay 하단과
 // 맵 여백까지 같이 흔들린다(assistant-composer.css 주석의 실측 근거).
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
 import { renderAiSettingsForm } from "@/editor/panels/aiSettingsModal";
 import { editorState } from "@/editor/editorState";
 import { savePreferenceFacts, type PreferenceFact } from "@/ai/preferenceMemory";
@@ -68,6 +68,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  teardownAiChatPanel();
   restoreDom?.();
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
@@ -200,17 +201,16 @@ describe("팝오버 3종은 서로 배타적", () => {
 describe("AI 설정 모달에는 더 이상 없다", () => {
   it("설정 폼이 성향 섹션을 렌더하지 않는다 — 진입점이 둘이면 어느 쪽이 정본인지 알 수 없다", () => {
     savePreferenceFacts([fact("p1", "마을은 집 4채 이하로 작게 유지한다")]);
-    // 폼을 닫아(dispose) 둔다 — 안 닫으면 연결 상태 조회가 가짜 DOM 을 걷은 뒤에 돌아와 역할 표를 다시 그리다 던졌다(document is not defined, CI related-tests).
-    // 대입이 콜백 안에서만 일어나 선언형으로는 null 로 좁혀진다 — as 로 두면 좁히지 않는다.
-    let settings = null as ReturnType<typeof renderAiSettingsForm> | null;
-    const form = renderWithFakeDom(() => (settings = renderAiSettingsForm({})).element);
+    // 폼을 닫아(dispose) 뒤늦게 온 경로 조회 응답이 걷힌 문서에 그리지 않게 한다(run 45943948659 미처리 거절).
+    let rendered: ReturnType<typeof renderAiSettingsForm> | undefined;
+    const form = renderWithFakeDom(() => (rendered = renderAiSettingsForm({})).element);
     try {
       expect(findByTestId(form, "ai-preference-settings")).toBeNull();
       expect(findByTestId(form, "ai-preference-list")).toBeNull();
       // 로그인 설정은 그대로 있어야 한다 — 성향만 빼는 것이지 폼을 부순 게 아니다.
       expect(findByTestId(form, "ai-config")).not.toBeNull();
     } finally {
-      settings?.dispose();
+      rendered?.dispose();
     }
   });
 });

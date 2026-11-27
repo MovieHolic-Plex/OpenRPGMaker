@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-23T10:12:28.264Z",
+  "generatedAt": "2026-11-27T04:52:17.914Z",
   "counts": {
     "tokens": {
       "important": 0,
@@ -32,7 +32,7 @@
       "hubs": 0
     },
     "database": {
-      "important": 229,
+      "important": 242,
       "unlayered": 0,
       "hubs": 0
     },
@@ -501,14 +501,6 @@
     "R2|database/enemies.part-1.css|.db-enemy-menu-icon.paste|paste",
     "R2|database/enemies.part-2.css|.database-modal-body .oprn-record-enemies .oprn-detail-form|oprn-detail-form",
     "R2|database/enemies.part-2.css|.database-modal-body .oprn-record-enemies .oprn-maximum-button|oprn-maximum-button",
-    "R2|database/from-editor-ai-settings-modal.css|.ai-auth-actions .ai-oauth-login.is-primary:hover:not(:disabled)|ai-auth-actions",
-    "R2|database/from-editor-ai-settings-modal.css|.ai-auth-actions .ai-oauth-login.is-primary:hover:not(:disabled)|ai-oauth-login",
-    "R2|database/from-editor-ai-settings-modal.css|.ai-auth-actions .ai-oauth-login.is-primary|ai-auth-actions",
-    "R2|database/from-editor-ai-settings-modal.css|.ai-auth-actions .ai-oauth-login.is-primary|ai-oauth-login",
-    "R2|database/from-editor-ai-settings-modal.css|.ai-settings-window .ai-config-actions .ai-assistant-action.is-primary:not(:disabled)|ai-config-actions",
-    "R2|database/from-editor-ai-settings-modal.css|.ai-settings-window .ai-config-actions .ai-assistant-action.is-primary:not(:disabled)|ai-settings-window",
-    "R2|database/from-editor-ai-settings-modal.css|.ai-settings-window .ai-config-actions .ai-assistant-action:disabled|ai-config-actions",
-    "R2|database/from-editor-ai-settings-modal.css|.ai-settings-window .ai-config-actions .ai-assistant-action:disabled|ai-settings-window",
     "R2|database/from-editor-audio-test-dialog.css|.db-resource-picker-control-body:has(> .audio-resource-preview)|audio-resource-preview",
     "R2|database/from-editor-event-editor-legacy-part-2.css|.tileset-db-editor.simplified .tileset-db-properties .db-field|simplified",
     "R2|database/from-editor-event-editor-legacy-part-2.css|.tileset-db-editor.simplified .tileset-db-properties|simplified",
@@ -2771,13 +2763,6 @@
     "R2|shell/dialogs/ai-settings-modal.css|.ai-card-details-body|ai-card-details-body",
     "R2|shell/dialogs/ai-settings-modal.css|.ai-card-details|ai-card-details",
     "R2|shell/dialogs/ai-settings-modal.css|.ai-card-status[data-availability=\"unsupported\"]|ai-card-status",
-    "R2|shell/dialogs/ai-settings-modal.css|.ai-model-control .ai-config-input|ai-model-control",
-    "R2|shell/dialogs/ai-settings-modal.css|.ai-model-control|ai-model-control",
-    "R2|shell/dialogs/ai-settings-modal.css|.ai-model-preset-card:focus-visible|ai-model-preset-card",
-    "R2|shell/dialogs/ai-settings-modal.css|.ai-model-preset-card[aria-checked=\"true\"]|ai-model-preset-card",
-    "R2|shell/dialogs/ai-settings-modal.css|.ai-model-preset-card|ai-model-preset-card",
-    "R2|shell/dialogs/ai-settings-modal.css|.ai-model-presets|ai-model-presets",
-    "R2|shell/dialogs/ai-settings-modal.css|.ai-model-warning|ai-model-warning",
     "R2|shell/dialogs/ai-settings-modal.css|.ai-oauth-device-code-row|ai-oauth-device-code-row",
     "R2|shell/dialogs/ai-settings-modal.css|.ai-oauth-device-foot|ai-oauth-device-foot",
     "R2|shell/dialogs/ai-settings-modal.css|.ai-oauth-device-link-row|ai-oauth-device-link-row",

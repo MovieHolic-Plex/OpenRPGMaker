@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeAll } from "vitest";
+import { describe, expect, it } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { defaultAiConfig, type ChatResult } from "@/ai/llmClient";
 import { ToolReadEvidence } from "@/ai/toolReadEvidence";
@@ -7,14 +7,12 @@ import { createSharedTilesetBlankProject as createBlankProject, createSharedTile
 import { fixedDeclarer } from "./intentFixture";
 import { isolateTimers } from "./mergedTeardown";
 
-describe("assistantReadContract", () => {
+describe("assistantReadContract", { timeout: 120000 }, () => {
   isolateTimers();
-  beforeAll(() => {
-    // Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
-    // panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
-    // single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
-    vi.setConfig({ testTimeout: 120_000 });
-  });
+  // 시험 시간 한도는 수집 때 읽혀 beforeAll 안 vi.setConfig 는 듣지 않는다 — describe 옵션 timeout 으로 둔다.
+  // Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+  // panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+  // single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
   type Call = { name: string; args: Record<string, unknown> };
   const readItem: Call = { name: "get_database_records", args: { collection: "items", ids: ["item_potion"], include: "full" } };
   const writeItem: Call = { name: "upsert_item", args: { item: { id: "item_potion", price: 321 } } };

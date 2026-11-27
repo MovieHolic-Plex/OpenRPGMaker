@@ -77,7 +77,11 @@ export function createAiLockScrim(options: {
    * `ready` 일 때만 걷는다. `checking` 은 아직 모르는 상태이므로 막지 않는다 —
    * 조회가 끝나기 전에 가두면 멀쩡한 사용자가 갇힌다.
    */
+  // 패널이 걷힌 뒤 도착한 연결 조회 응답(revalidate)은 아무것도 칠하지 않는다 — 걷힌 패널의 자식을 만지면
+  // 시험 뒤 문서가 없는 환경에서 «HTMLElement is not defined» 미처리 거절이 났다(run 45943948659, 37건).
+  let disposed = false;
   const sync = (): boolean => {
+    if (disposed) return !element.hidden;
     const config = loadAiConfig();
     const locked = !isAiConfigReady(config, getAiConnectionStatus(config));
     element.hidden = !locked;
@@ -125,6 +129,7 @@ export function createAiLockScrim(options: {
     element,
     sync,
     dispose: () => {
+      disposed = true;
       win?.removeEventListener(AI_SETTINGS_CLOSED_EVENT, onSettingsClosed);
       win?.removeEventListener(AI_CONNECTION_STATUS_CHANGED_EVENT, onStatusChanged);
       element.removeEventListener("click", reevaluate);

@@ -242,6 +242,7 @@ The desktop app ships without the pack. Before this, Fallen Star played 3 of its
   ```
 
 - **AI 곡 고르기 (`recommend_bgm`, 2026-09-17):** 분위기/장면 질의 → 후보 10개(기본, 최대 20) + 전체 설명 1호출 읽기 툴. 제목만 보고 1등을 집는 버릇을 끊기 위해 `list_resources`(240자 잘림)+`get_audio_resource` N번을 하나로 합쳤다. 검색 0건은 빈 목록(엉뚱한 1등 금지). 시스템 프롬프트 RESOURCE_HINT가 BGM은 이 툴로 고르게 안내. 회귀: `test/recommendBgm.test.ts`.
+- **전투곡 장면 (`scene:battle|boss`, 2026-11-26):** OPRN BGM 8곡은 이름에 「전투·보스」가 없어 이름 바늘로 못 찾았다(후보 2곡). `oprnBgmAssets.ts` 의 곡마다 `scenes`(battle|boss)와 `brief`(분위기·어울리는 지역)를 들고, `recommend_bgm` 의 장면 판정과 곡 목록 설명이 그것을 읽는다. 「전투 전 마지막 확인」 같은 이름 오탐(승리·종료·전투 전·준비)은 뺀다. 전투 장면은 다른 맵의 `battleBgmResourceId` 로 이미 쓰는 곡을 뒤로 민다. 회귀: `test/recommendBgmBattleScene.test.ts`.
 - **`searchResources("bgm", query)`** exposes the same catalog to AI tools (`list_resources`).
 - **Default project**: map and battle BGM point at starter catalog tracks. A **new project**
   (`defaultSystem(true)` → `newProjectTitleScreenSettings()`, reached by `createBlankProject` and

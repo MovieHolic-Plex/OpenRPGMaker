@@ -57,6 +57,12 @@
 .battle-scene[data-battle-motion="retro"].battle-hit-stop-critical .battle-motion-knockback :is(.battle-enemy-image, .battle-actor-image, .battle-actor-sprite, .battle-skin-actor-image) {
   filter: brightness(2.4) saturate(0.4) drop-shadow(0 0 6px rgba(255, 214, 120, 0.9)) !important;
 }
+/* OT2식 급소·막타 히트스톱 순간: 무대 미세 줌 펀치 + 주변 암전 비네트로 평타와 위력 격차를 확연하게. */
+.battle-scene[data-battle-motion="retro"].battle-hit-stop-critical .battle-field {
+  scale: 1.032;
+  transition: scale 55ms cubic-bezier(.1, .9, .2, 1);
+  box-shadow: inset 0 0 48px rgba(4, 6, 18, 0.58);
+}
 .battle-scene[data-battle-motion="retro"] .battle-hit-blink-off :is(.battle-enemy-image, .battle-actor-image, .battle-actor-sprite, .battle-skin-actor-image) {
   opacity: 1 !important;
   filter: brightness(1.7) !important;
