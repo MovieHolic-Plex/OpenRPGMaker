@@ -87,6 +87,22 @@ class Lv2WallExtrasAndStyleR9Test(unittest.TestCase):
                     self.assertIsNotNone(out['img'], out['checks'])
                     self.assertEqual(AS.run_checks(out), [], f'{ln}.{bid}: {AS.run_checks(out)}')
 
+    def test_style_r11_rm2k_multi_tier_massing_gate_and_assemble_cleanly(self):
+        _, rend11 = H.render_round(THEME, 'style-r11')
+        res = H.run_gate(THEME, 'style-r11', rend11)
+        fails, warns = H.gate_summary(res)
+        self.assertEqual(fails, [], f'style-r11 gate FAIL: {fails}')
+        self.assertEqual(warns, [], f'style-r11 gate WARN: {warns}')
+        recipes11 = {b['id']: b for b in AS.round_buildings(THEME, 'style-r11')}
+        self.assertGreaterEqual(len(recipes11), 8)
+        for ln in ('A', 'B', 'C'):
+            parts11 = H.parts_for(THEME, 'style-r11', ln, rend11)
+            for bid, rec in recipes11.items():
+                with self.subTest(line=ln, building=bid):
+                    out = AS.assemble(rec, parts11, PAL, THEME)
+                    self.assertIsNotNone(out['img'], out['checks'])
+                    self.assertEqual(AS.run_checks(out), [], f'{ln}.{bid}: {AS.run_checks(out)}')
+
 
 if __name__ == '__main__':
     unittest.main()

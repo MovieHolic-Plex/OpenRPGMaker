@@ -620,8 +620,9 @@ def _r4_grammar(s, items, rid):
                 want = 2 if int(m['storeys']) == 1 else 3
                 if rows != want:
                     errs.append(f'판 {rid} {bid}/{m["id"]}: {m["storeys"]}층 지붕 {rows}행 — {want}행이어야 한다')
-            if int(it.get('end', AS.ROOF_END)) == AS.ROOF_END and int(m['cols']) < 5:
-                errs.append(f'판 {rid} {bid}/{m["id"]}: 모임지붕 몸통 {m["cols"]}칸 — 용마루가 남으려면 5칸 이상')
+            min_hip = 4 if AS.is_rm2k_grammar(s['rounds'][rid].get('grammar')) else 5
+            if int(it.get('end', AS.ROOF_END)) == AS.ROOF_END and int(m['cols']) < min_hip:
+                errs.append(f'판 {rid} {bid}/{m["id"]}: 모임지붕 몸통 {m["cols"]}칸 — 용마루가 남으려면 {min_hip}칸 이상')
         spires = [m for m in ms if (items.get(m['roof']) or {}).get('spire')]
         plain = [m for m in ms if not (items.get(m['roof']) or {}).get('spire')]
         try:
@@ -659,9 +660,10 @@ def _depth_round(s, items, rid):
             continue
         errs += [f'{tag}: {why}' for why in AS.mass_problems(ms, rows)]
         rpgmaker = AS.is_rpgmaker_grammar(s['rounds'][rid].get('grammar'))
+        rm2k = AS.is_rm2k_grammar(s['rounds'][rid].get('grammar'))
         for m in ms:
             if m['kind'] in AS.RECEDING:
-                (c0, c1), (d0, d1) = AS.receding_limits(m['kind'], True, rpgmaker)
+                (c0, c1), (d0, d1) = AS.receding_limits(m['kind'], True, rpgmaker, rm2k)
                 if not c0 <= m['cols'] <= c1:
                     errs.append(f'{tag}/{m["id"]}: {m["kind"]} 폭 {m["cols"]}칸 — 깊이 땅 문법은 {c0}~{c1}칸')
                 if not d0 <= int(m.get('depth_rows') or 0) <= d1:
@@ -674,7 +676,7 @@ def _depth_round(s, items, rid):
         for m in ms:
             if m['kind'] == AS.LEAN_TO and int(m['storeys']) >= tallest:
                 errs.append(f'{tag}/{m["id"]}: 외쪽 {m["storeys"]}층 — 붙는 본 질량({tallest}층)보다 낮아야 한다(처마 아래)')
-        for w, mains in AS.wing_mains(ms):
+        for w, mains in AS.wing_mains(ms, rm2k_massing=rm2k):
             errs += [f'{tag}/{why}' for why in AS.wing_problems(w, mains)]
             top = w['depth'] + rows[w['id']]
             for b in mains:
