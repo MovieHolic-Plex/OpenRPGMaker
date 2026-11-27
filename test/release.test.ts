@@ -3,8 +3,23 @@ import { checkDesktopAssets, highestReleaseTag, requiredDesktopAssets, requiredU
 import { appVersionLabel, parseDescribe } from "../scripts/lib/appVersion.mjs";
 import { DEV_GROUP_TITLE, HIGHLIGHTS_TITLE, SECTION_TITLES, buildReleaseSections, bumpVersion, collectReleaseItems, decideReleaseKind, enrichReleaseItems, extractPrNumber, extractReleaseNotesFromPrBody, parseCommitSubject, pickHighlights, renderReleaseNotes } from "../scripts/lib/releaseNotes.mjs";
 import { changelogEntryFor, ghReleaseCreateArgs, gitAnnotateTagArgs, writeReleaseNotesFile } from "../scripts/lib/releaseFiles.mjs";
-import { decideAutoRelease, diffFailedFiles, layerBaselines, runCompleteness, selectUserFacingCommits, summarizeShardReports } from "../scripts/lib/releaseGate.mjs";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import {
+  decideAutoRelease,
+  diffFailedFiles,
+  evaluateAppUpdateE2eNeed,
+  isManifestDiffOnlyRootVersion,
+  layerBaselines,
+  runCompleteness,
+  selectUserFacingCommits,
+  summarizeShardReports,
+} from "../scripts/lib/releaseGate.mjs";
+import {
+  computeDemoConcurrency,
+  normalizePackageLockForHash,
+  prunePerDemoCache,
+  sortDemosByWeight,
+} from "../scripts/content/bake-demos-lib.mjs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { isolateTimers } from "./mergedTeardown";
@@ -576,6 +591,116 @@ describe("releaseTooling", () => {
         expect(decision.release).toBe(false);
         expect(decision.checks.filter((check) => !check.ok).map((check) => check.id)).toEqual([id]);
         expect(decision.reasons).toHaveLength(1);
+      }
+    });
+  });
+
+  describe("app-update-e2e 중복 실행 판정 (releaseGate)", () => {
+    it("isManifestDiffOnlyRootVersion 은 루트 version 만 바뀐 package.json·package-lock.json 을 동일로 본다", () => {
+      const pkgA = JSON.stringify({ name: "oprn", version: "0.420.0", dependencies: { zod: "^4.0.0" } });
+      const pkgB = JSON.stringify({ name: "oprn", version: "0.421.0", dependencies: { zod: "^4.0.0" } });
+      const pkgDep = JSON.stringify({ name: "oprn", version: "0.421.0", dependencies: { zod: "^4.1.0" } });
+      expect(isManifestDiffOnlyRootVersion(pkgA, pkgB)).toBe(true);
+      expect(isManifestDiffOnlyRootVersion(pkgA, pkgDep)).toBe(false);
+
+      const lockA = JSON.stringify({
+        name: "oprn",
+        version: "0.420.0",
+        lockfileVersion: 3,
+        packages: { "": { name: "oprn", version: "0.420.0" }, "node_modules/electron": { version: "45.3.3" } },
+      });
+      const lockB = JSON.stringify({
+        name: "oprn",
+        version: "0.421.0",
+        lockfileVersion: 3,
+        packages: { "": { name: "oprn", version: "0.421.0" }, "node_modules/electron": { version: "45.3.3" } },
+      });
+      const lockElectron = JSON.stringify({
+        name: "oprn",
+        version: "0.421.0",
+        lockfileVersion: 3,
+        packages: { "": { name: "oprn", version: "0.421.0" }, "node_modules/electron": { version: "45.4.0" } },
+      });
+      expect(isManifestDiffOnlyRootVersion(lockA, lockB)).toBe(true);
+      expect(isManifestDiffOnlyRootVersion(lockA, lockElectron)).toBe(false);
+      expect(isManifestDiffOnlyRootVersion("{broken", lockB)).toBe(false);
+    });
+
+    it("업데이트·Electron·의존성 변경이 없고 최근 14일 내 통과 기록이 있으면 건너뛴다", () => {
+      const base = {
+        sinceTag: "v0.421.0",
+        changedFiles: ["src/player/scene.ts", "CHANGELOG.md", "package.json", "package-lock.json"],
+        packageManifestDiffOnlyVersion: true,
+        lockfileDiffOnlyVersion: true,
+        lastPassingRun: { id: 123, completedAt: "2026-11-26T00:00:00Z" },
+        now: "2026-11-27T12:00:00Z",
+      };
+      expect(evaluateAppUpdateE2eNeed(base).required).toBe(false);
+
+      // electron 또는 업데이트 관련 파일 변경 → 반드시 실행
+      expect(evaluateAppUpdateE2eNeed({ ...base, changedFiles: ["electron/main/appUpdate.ts"] })).toMatchObject({
+        required: true,
+        matchedFiles: ["electron/main/appUpdate.ts"],
+      });
+      expect(evaluateAppUpdateE2eNeed({ ...base, changedFiles: ["src/app/appUpdateChip.ts"] }).required).toBe(true);
+      expect(evaluateAppUpdateE2eNeed({ ...base, changedFiles: ["scripts/electron-builder.config.mjs"] }).required).toBe(true);
+      // 의존성 변경 → 반드시 실행
+      expect(evaluateAppUpdateE2eNeed({ ...base, lockfileDiffOnlyVersion: false }).required).toBe(true);
+      expect(evaluateAppUpdateE2eNeed({ ...base, packageManifestDiffOnlyVersion: false }).required).toBe(true);
+      // 14일 초과 → 반드시 실행
+      expect(evaluateAppUpdateE2eNeed({ ...base, lastPassingRun: { id: 99, completedAt: "2026-11-01T00:00:00Z" } }).required).toBe(true);
+      // 기록 없음·diff 실패·0.420 이전 → 보수적으로 실행
+      expect(evaluateAppUpdateE2eNeed({ ...base, lastPassingRun: null }).required).toBe(true);
+      expect(evaluateAppUpdateE2eNeed({ ...base, changedFiles: null }).required).toBe(true);
+      expect(evaluateAppUpdateE2eNeed({ ...base, sinceTag: "v0.419.0" }).required).toBe(true);
+    });
+  });
+
+  describe("데모 굽기 캐시·병렬 도우미 (bake-demos-lib)", () => {
+    it("normalizePackageLockForHash 는 루트 버전 범프를 무시하고 의존성 변경만 반영한다", () => {
+      const v1 = JSON.stringify({ name: "oprn", version: "0.420.0", packages: { "": { version: "0.420.0" }, "node_modules/zod": { version: "4.6.7" } } });
+      const v2 = JSON.stringify({ name: "oprn", version: "0.421.0", packages: { "": { version: "0.421.0" }, "node_modules/zod": { version: "4.6.7" } } });
+      const dep = JSON.stringify({ name: "oprn", version: "0.421.0", packages: { "": { version: "0.421.0" }, "node_modules/zod": { version: "4.6.8" } } });
+      expect(normalizePackageLockForHash(v1)).toBe(normalizePackageLockForHash(v2));
+      expect(normalizePackageLockForHash(v1)).not.toBe(normalizePackageLockForHash(dep));
+    });
+
+    it("computeDemoConcurrency 는 CPU·메모리 상한과 환경변수 덮어쓰기를 따른다", () => {
+      const GiB = 1024 ** 3;
+      expect(computeDemoConcurrency({ missCount: 5, cpuCount: 40, totalMemBytes: 251 * GiB, envConcurrency: undefined })).toBe(5);
+      expect(computeDemoConcurrency({ missCount: 5, cpuCount: 8, totalMemBytes: 16 * GiB, envConcurrency: undefined })).toBe(1);
+      expect(computeDemoConcurrency({ missCount: 2, cpuCount: 40, totalMemBytes: 251 * GiB, envConcurrency: undefined })).toBe(2);
+      expect(computeDemoConcurrency({ missCount: 5, cpuCount: 40, totalMemBytes: 251 * GiB, envConcurrency: "3" })).toBe(3);
+    });
+
+    it("sortDemosByWeight 는 가장 무거운 chrono-bell 을 맨 앞에 둔다", () => {
+      expect(sortDemosByWeight(["maou-konbini", "chrono-bell", "first-love"])).toEqual(["chrono-bell", "first-love", "maou-konbini"]);
+    });
+
+    it("prunePerDemoCache 는 데모마다 최신 N개만 남기고 다른 데모의 항목은 지우지 않는다", () => {
+      const dir = mkdtempSync(join(tmpdir(), "oprn-bake-prune-"));
+      try {
+        const v2 = join(dir, "v2");
+        mkdirSync(v2, { recursive: true });
+        const mk = (name: string, sec: number) => {
+          const p = join(v2, name);
+          mkdirSync(p, { recursive: true });
+          writeFileSync(join(p, "marker"), "ok");
+          const t = new Date(1_700_000_000_000 + sec * 1000);
+          utimesSync(p, t, t);
+          return p;
+        };
+        const oldFl = mk(`first-love-${"1".repeat(64)}`, 1);
+        const midFl = mk(`first-love-${"2".repeat(64)}`, 2);
+        const newFl = mk(`first-love-${"3".repeat(64)}`, 3);
+        const cb = mk(`chrono-bell-${"a".repeat(64)}`, 0);
+        prunePerDemoCache(dir, 2);
+        expect(existsSync(oldFl)).toBe(false);
+        expect(existsSync(midFl)).toBe(true);
+        expect(existsSync(newFl)).toBe(true);
+        expect(existsSync(cb)).toBe(true);
+      } finally {
+        rmSync(dir, { recursive: true, force: true });
       }
     });
   });
