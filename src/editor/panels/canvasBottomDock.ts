@@ -55,7 +55,7 @@ export function mountCanvasBottomDock(canvasArea: HTMLElement): () => void {
     sync();
   });
 
-  const doodadBtn = makeDockButton("doodad", "두댓", "D", "SCMDraft 2 두댓 팔레트 열기/닫기 (D)", () => {
+  const doodadBtn = makeDockButton("doodad", "오브젝트", "O", "플로팅 오브젝트 팔레트 열기/닫기 (O / D)", () => {
     openCard = null;
     unitWin?.setOpen(false);
     doodadWin?.toggle();

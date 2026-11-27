@@ -90,7 +90,7 @@ function resolveContext(
 function layerModeLabel(state: EditorState): string {
   if (state.tool === "relief") return "지형";
   if (state.layer === "event") return "유닛";
-  if (state.layer === "upper") return "두댓";
+  if (state.layer === "upper") return "오브젝트";
   return "타일";
 }
 

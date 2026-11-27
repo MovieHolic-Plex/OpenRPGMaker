@@ -21,7 +21,7 @@ import { propsForTileset, type PropCategoryId, type PropChoice } from "@/editor/
 import { reliefTopGrassTile } from "@/editor/reliefActions";
 import { reliefDoodadCatalog, type ReliefDoodad } from "@/editor/reliefDoodads";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
-import { allInteractiveProps, type InteractivePropEntry } from "@/project/interactiveProps";
+import { allInteractiveProps, type InteractivePropEntry, type InteractivePropEra } from "@/project/interactiveProps";
 import { store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
@@ -407,6 +407,50 @@ export interface FloatingDoodadWindowMount {
   readonly dispose: () => void;
 }
 
+interface ArtStyleProfile {
+  readonly id: string;
+  readonly label: string;
+  /** true 면 현재 칩셋 전용 오브젝트만 허용(이질적인 공용 32px 프롭 차단). */
+  readonly nativeOnly: boolean;
+  readonly allowedEras: readonly InteractivePropEra[];
+}
+
+function detectArtStyleProfile(tileset: TilesetDef | undefined): ArtStyleProfile {
+  const raw = `${tileset?.id ?? ""} ${tileset?.name ?? ""}`.toLowerCase();
+  if (/scarloxy|pokemon|emerald/i.test(raw)) {
+    return { id: "scarloxy", label: "Scarloxy 16px", nativeOnly: true, allowedEras: [] };
+  }
+  if (/easyrpg|rtp|rm2k/i.test(raw)) {
+    return { id: "rtp", label: "레트로 RTP", nativeOnly: true, allowedEras: [] };
+  }
+  if (/joseon|baram/i.test(raw)) {
+    return { id: "joseon", label: "조선", nativeOnly: false, allowedEras: ["joseon"] };
+  }
+  if (/murim|wuxia/i.test(raw)) {
+    return { id: "murim", label: "무림", nativeOnly: false, allowedEras: ["murim"] };
+  }
+  if (/modern|jp_city|jpcity|konbini|urban|city_modern/i.test(raw)) {
+    return { id: "modern", label: "현대", nativeOnly: false, allowedEras: ["modern"] };
+  }
+  if (/scifi|sci_fi|cyber|space/i.test(raw)) {
+    return { id: "scifi", label: "SF", nativeOnly: false, allowedEras: ["scifi"] };
+  }
+  if (/steampunk/i.test(raw)) {
+    return { id: "steampunk", label: "스팀펑크", nativeOnly: false, allowedEras: ["steampunk"] };
+  }
+  if (/dungeon|cave|crypt|sewer/i.test(raw)) {
+    return { id: "dungeon", label: "던전", nativeOnly: false, allowedEras: ["dungeon", "fantasy"] };
+  }
+  return { id: "fantasy", label: "판타지", nativeOnly: false, allowedEras: ["fantasy"] };
+}
+
+function matchesArtStyle(prop: InteractivePropEntry, profile: ArtStyleProfile): boolean {
+  // 프로젝트에 사용자가 직접 업로드한 커스텀 프롭은 항상 허용
+  if (prop.resourceId) return true;
+  if (profile.nativeOnly) return false;
+  return profile.allowedEras.includes(prop.era);
+}
+
 export function mountFloatingDoodadWindow(
   canvasArea: HTMLElement,
   onOpenChange: (open: boolean) => void = () => {},
@@ -420,10 +464,29 @@ export function mountFloatingDoodadWindow(
   let customPos: { x: number; y: number } | null = null;
   let customSize = loadSavedWindowSize();
   let recentKeys: string[] = loadRecentKeys();
+  let styleLocked = true;
+
+  const styleLockBtn = el("button", {
+    class: "fdw-style-lock is-locked",
+    attrs: {
+      type: "button",
+      title: "현재 맵 화풍에 맞는 오브젝트만 표시 (클릭 시 전체 화풍 잠금 해제)",
+      "aria-pressed": "true",
+    },
+    dataset: { testid: "floating-object-style-lock" },
+    text: "🔒 화풍 고정",
+    on: {
+      click: () => {
+        styleLocked = !styleLocked;
+        visibleLimit = INITIAL_PAGE_SIZE;
+        renderBody();
+      },
+    },
+  }) as HTMLButtonElement;
 
   const viewToggleBtn = el("button", {
     class: "fdw-head-btn",
-    attrs: { type: "button", title: "SCMDraft 그리드 ↔ StarEdit 분할 프리뷰 전환" },
+    attrs: { type: "button", title: "그리드 ↔ 분할 프리뷰 전환" },
     dataset: { testid: "floating-doodad-view-toggle" },
     text: "분할",
     on: {
@@ -438,7 +501,7 @@ export function mountFloatingDoodadWindow(
 
   const closeBtn = el("button", {
     class: "fdw-head-btn",
-    attrs: { type: "button", title: "두댓 팔레트 닫기 (Esc)", "aria-label": "두댓 팔레트 닫기" },
+    attrs: { type: "button", title: "오브젝트 팔레트 닫기 (Esc)", "aria-label": "오브젝트 팔레트 닫기" },
     dataset: { testid: "floating-doodad-close" },
     text: "✕",
     on: { click: () => setOpen(false) },
@@ -451,21 +514,21 @@ export function mountFloatingDoodadWindow(
       el("div", {
         class: "fdw-title",
         children: [
-          el("span", { text: "두댓 팔레트" }),
-          el("kbd", { class: "fdw-kbd", text: "D" }),
+          el("span", { text: "오브젝트 팔레트" }),
+          el("kbd", { class: "fdw-kbd", text: "O" }),
         ],
       }),
-      el("div", { class: "fdw-title-actions", children: [viewToggleBtn, closeBtn] }),
+      el("div", { class: "fdw-title-actions", children: [styleLockBtn, viewToggleBtn, closeBtn] }),
     ],
   });
 
   const searchInput = el("input", {
     class: "fdw-search",
-    attrs: { type: "search", placeholder: "집·나무·치료소·상자·계단 찾기…", "aria-label": "두댓 찾기", autocomplete: "off", spellcheck: "false" },
+    attrs: { type: "search", placeholder: "집·나무·치료소·상자·계단 찾기…", "aria-label": "오브젝트 찾기", autocomplete: "off", spellcheck: "false" },
     dataset: { testid: "floating-doodad-search" },
   }) as HTMLInputElement;
 
-  const tabBar = el("div", { class: "fdw-tabs", attrs: { role: "tablist", "aria-label": "두댓 분류" } });
+  const tabBar = el("div", { class: "fdw-tabs", attrs: { role: "tablist", "aria-label": "오브젝트 분류" } });
   const tabButtons = new Map<DoodadTabId, HTMLButtonElement>();
   for (const tab of TABS) {
     const btn = el("button", {
@@ -505,7 +568,7 @@ export function mountFloatingDoodadWindow(
   }) as HTMLButtonElement;
   const resizeGrip = el("div", {
     class: "fdw-resize-grip",
-    attrs: { title: "드래그해 두댓 창 크기 조절", "aria-label": "창 크기 조절" },
+    attrs: { title: "드래그해 오브젝트 창 크기 조절", "aria-label": "창 크기 조절" },
     dataset: { testid: "floating-doodad-resize" },
     text: "◿",
   });
@@ -513,7 +576,7 @@ export function mountFloatingDoodadWindow(
 
   const win = el("section", {
     class: "floating-doodad-window",
-    attrs: { role: "dialog", "aria-label": "두댓 팔레트" },
+    attrs: { role: "dialog", "aria-label": "오브젝트 팔레트" },
     dataset: { testid: "floating-doodad-window", view: viewMode },
     children: [titleBar, el("div", { class: "fdw-controls", children: [searchInput, tabBar] }), body, recentBar, foot],
   });
@@ -607,11 +670,12 @@ export function mountFloatingDoodadWindow(
     renderBody();
   }
 
-  function filteredItems(tileset: TilesetDef | undefined): readonly UnifiedDoodad[] {
+  function filteredItems(tileset: TilesetDef | undefined, profile: ArtStyleProfile): readonly UnifiedDoodad[] {
     const all = unifiedDoodadsFor(tileset);
     const q = searchQuery.trim().toLowerCase();
     return all.filter((item) => {
-      // In "전체" tab without search, keep the map's own objects + relief first so 156 interactive props don't flood the top
+      if (item.source === "interactive" && styleLocked && !matchesArtStyle(item.prop, profile)) return false;
+      // In "전체" tab without search, keep the map's own objects + relief first so external interactive props don't flood the top
       if (activeTab === "all" && !q && item.source === "interactive") return false;
       if (activeTab !== "all" && item.tab !== activeTab) return false;
       if (!q) return true;
@@ -630,8 +694,13 @@ export function mountFloatingDoodadWindow(
   function renderBody(): void {
     if (!open) return;
     const tileset = currentTileset();
+    const profile = detectArtStyleProfile(tileset);
+    styleLockBtn.classList.toggle("is-locked", styleLocked);
+    styleLockBtn.setAttribute("aria-pressed", String(styleLocked));
+    styleLockBtn.textContent = styleLocked ? `🔒 ${profile.label} 고정` : "🔓 전체 화풍";
+
     renderRecentBar(unifiedDoodadsFor(tileset), tileset);
-    const items = filteredItems(tileset);
+    const items = filteredItems(tileset, profile);
     clearChildren(body);
 
     const activeItem = items.find(isItemSelected) ?? (selectedKey ? items.find((it) => it.key === selectedKey) : undefined);
@@ -641,7 +710,28 @@ export function mountFloatingDoodadWindow(
     clearPickBtn.hidden = !activeItem;
 
     if (items.length === 0) {
-      body.append(el("div", { class: "fdw-empty", text: "이 분류에 해당하는 오브젝트가 없습니다." }));
+      if (activeTab === "interactive" && styleLocked) {
+        body.append(el("div", {
+          class: "fdw-lock-empty",
+          children: [
+            el("div", { text: `🔒 현재 맵 화풍(${profile.label})에 맞는 상호작용 오브젝트가 아직 없습니다.` }),
+            el("small", { text: "이질적인 다른 화풍의 프롭이 섞이지 않도록 자동으로 숨겼습니다." }),
+            el("button", {
+              class: "fdw-head-btn",
+              attrs: { type: "button" },
+              text: "🔓 다른 화풍 오브젝트도 보기",
+              on: {
+                click: () => {
+                  styleLocked = false;
+                  renderBody();
+                },
+              },
+            }),
+          ],
+        }));
+      } else {
+        body.append(el("div", { class: "fdw-empty", text: "이 분류에 해당하는 오브젝트가 없습니다." }));
+      }
       return;
     }
 
@@ -824,7 +914,8 @@ export function mountFloatingDoodadWindow(
     }
     if (event.metaKey || event.ctrlKey || event.altKey) return;
     if (hasOpenModalLayer() || shouldIgnoreEditorShortcut(event)) return;
-    if (event.key.toLowerCase() === "d") {
+    const lower = event.key.toLowerCase();
+    if (lower === "o" || lower === "d") {
       event.preventDefault();
       setOpen(!open);
       return;

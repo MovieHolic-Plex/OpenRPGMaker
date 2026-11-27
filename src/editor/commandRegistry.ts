@@ -277,7 +277,7 @@ export function listEditorCommands(): readonly EditorCommand[] {
     { id: "left-column-toggle", label: "화면: 왼쪽 열 접기/펴기", category: "화면", keywords: ["sidebar", "left", "collapse", "사이드바", "왼쪽", "접기", "펴기"], run: () => toggleLeftColumn() },
     { id: "floating-minimap-toggle", label: "화면: 플로팅 미니맵 접기/펴기", category: "화면", keywords: ["minimap", "floating", "hud", "미니맵", "플로팅", "접기", "펴기"], run: () => window.dispatchEvent(new Event(FLOATING_MINIMAP_TOGGLE_EVENT)) },
     { id: "floating-map-switcher-open", label: "맵: 빠른 맵 전환 열기", category: "화면", keywords: ["map", "switch", "jump", "맵", "전환", "이동"], run: () => window.dispatchEvent(new Event(FLOATING_MAP_SWITCHER_OPEN_EVENT)) },
-    { id: "floating-doodad-palette-toggle", label: "두댓: SCMDraft 두댓 팔레트 열기/닫기", category: "화면", keywords: ["doodad", "prop", "stamp", "scmdraft", "두댓", "기물", "팔레트"], run: () => window.dispatchEvent(new Event(FLOATING_DOODAD_PALETTE_TOGGLE_EVENT)) },
+    { id: "floating-doodad-palette-toggle", label: "오브젝트: 플로팅 오브젝트 팔레트 열기/닫기 (O)", category: "화면", keywords: ["object", "doodad", "prop", "stamp", "오브젝트", "두댓", "기물", "팔레트"], hotkey: "O", run: () => window.dispatchEvent(new Event(FLOATING_DOODAD_PALETTE_TOGGLE_EVENT)) },
     { id: "world-board-toggle", label: "월드: 월드 보드 열기/닫기 (M)", category: "화면", keywords: ["world", "board", "graph", "map", "월드", "보드", "맵 연결"], hotkey: "M", run: () => window.dispatchEvent(new Event("oprn:world-board-toggle")) },
     // 공간 오브젝트 편집기(칸 그리기·앵커·삭제)는 기본으로 접힌다(qa1124-space PR8) — 여기서 켜고 끈다.
     { id: "spatial-advanced-edit-toggle", label: "공간: 오브젝트 고급 편집 켜기/끄기", category: "화면", keywords: ["spatial", "object", "advanced", "edit", "공간", "오브젝트", "고급", "편집", "칸 그리기"], run: () => {

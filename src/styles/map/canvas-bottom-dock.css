@@ -364,6 +364,52 @@
   background: var(--accent-hover);
 }
 
+.fdw-style-lock {
+  height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  background: var(--bg-inset);
+  color: var(--text-2);
+  font: 600 10.5px/1 var(--font-ui);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.fdw-style-lock.is-locked {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.fdw-style-lock:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.fdw-style-lock.is-locked:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.fdw-lock-empty {
+  padding: 28px 16px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+.fdw-lock-empty small {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
 .fdw-controls {
   display: flex;
   flex-direction: column;
