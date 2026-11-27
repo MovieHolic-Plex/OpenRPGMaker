@@ -1,3 +1,4 @@
+import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
 import type { BattleTimelineEntrySnapshot } from "@/battle/types";
 import type { BattleActionBeat } from "@/player/battleActionBeats";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
@@ -217,7 +218,31 @@ export function drawBattleItemSprite(ctx: CanvasRenderingContext2D, kind: Battle
   }
 }
 
-function makeItemCanvas(kind: BattleItemVisualKind): HTMLCanvasElement {
+function resolveBattleItemIconUrl(item: ItemRecord | undefined): string | null {
+  const resourceId = item?.iconResourceId ?? item?.imageResourceId;
+  if (!resourceId) return null;
+  return resolveAssetResourceUrl(resourceId, { project: store.getCurrent() });
+}
+
+function makeItemPropElement(kind: BattleItemVisualKind, item: ItemRecord | undefined): HTMLElement {
+  const iconUrl = resolveBattleItemIconUrl(item);
+  if (iconUrl) {
+    const img = document.createElement("img");
+    img.src = iconUrl;
+    img.alt = "";
+    img.width = 24;
+    img.height = 24;
+    img.setAttribute("aria-hidden", "true");
+    img.style.position = "absolute";
+    img.style.width = "24px";
+    img.style.height = "24px";
+    img.style.objectFit = "contain";
+    img.style.pointerEvents = "none";
+    img.style.imageRendering = "pixelated";
+    img.style.filter = "drop-shadow(1px 0 0 #181822) drop-shadow(-1px 0 0 #181822) drop-shadow(0 1px 0 #181822) drop-shadow(0 -1px 0 #181822)";
+    img.style.zIndex = "35";
+    return img;
+  }
   const canvas = document.createElement("canvas");
   canvas.width = 24;
   canvas.height = 24;
@@ -308,7 +333,7 @@ export function animateBattleItemMotion(
     const mx = (sx + ex) * 0.5;
     const my = Math.min(sy, ey) - 34;
 
-    const proj = makeItemCanvas(kind);
+    const proj = makeItemPropElement(kind, item);
     proj.style.left = "0px";
     proj.style.top = "0px";
     proj.style.width = "24px";
@@ -336,7 +361,7 @@ export function animateBattleItemMotion(
   // Non-thrown items (HP red potion, MP blue ether, gold elixir, emerald herb, revive feather, talisman):
   // Overlay the exact pixel item cleanly right over the character's raised hand + rising aura sparkles.
   const host = user.querySelector<HTMLElement>(".battle-actor-sprite") ?? user;
-  const prop = makeItemCanvas(kind);
+  const prop = makeItemPropElement(kind, item);
   prop.style.left = "14%";
   prop.style.top = "38%";
   prop.style.width = "24px";
