@@ -119,8 +119,8 @@ export function recommendMapBgm(
     pickId(idsOf(loopMatches, excluded), seed) ??
     pickId(idsOf(matches, excluded), seed) ??
     starterFallback(theme, excluded) ??
-    pickId(loopCatalogIds(excluded), seed) ??
-    pickId(allCatalogIds(excluded), seed);
+    pickId(loopCatalogIds(excluded, theme), seed) ??
+    pickId(allCatalogIds(excluded, theme), seed);
   // RTP music ships with the core player even when no optional MP3 pack exists.
   return picked ?? (isCatalogBgmAvailable(STARTER_DEFAULT_BGM_ID) ? STARTER_DEFAULT_BGM_ID : 'easyrpg-music-field-1');
 }
@@ -243,14 +243,22 @@ function idsOf(entries: readonly IndexedTrack[], excluded: ReadonlySet<string>):
   return entries.map((entry) => entry.track.id).filter((id) => !excluded.has(id) && isCatalogBgmAvailable(id));
 }
 
-function loopCatalogIds(excluded: ReadonlySet<string>): string[] {
-  return BGM_CATALOG.filter((track) => findBgmRuntimeEntry(track.id)?.loop === true)
+/** 일반 맵 폴백에서 전투·타이틀·승리 팡파르 곡이 유입되지 않게 거른다(스타터 3곡만 있을 때 btl-001·ttl-001 오배정 방지). */
+const NON_MAP_FALLBACK_CATEGORY_RE = /전투|보스|타이틀|메뉴|승리|팡파[르레]/u;
+
+function isMapSafeFallbackTrack(track: BgmCatalogTrack, theme: MapBgmTheme): boolean {
+  return theme === "battle" || !NON_MAP_FALLBACK_CATEGORY_RE.test(track.category);
+}
+
+function loopCatalogIds(excluded: ReadonlySet<string>, theme: MapBgmTheme): string[] {
+  return BGM_CATALOG.filter((track) => isMapSafeFallbackTrack(track, theme) && findBgmRuntimeEntry(track.id)?.loop === true)
     .map((track) => track.id)
     .filter((id) => !excluded.has(id) && isCatalogBgmAvailable(id));
 }
 
-function allCatalogIds(excluded: ReadonlySet<string>): string[] {
-  return bgmCatalogResourceIds().filter((id) => !excluded.has(id) && isCatalogBgmAvailable(id));
+function allCatalogIds(excluded: ReadonlySet<string>, theme: MapBgmTheme): string[] {
+  const safeIds = new Set(BGM_CATALOG.filter((track) => isMapSafeFallbackTrack(track, theme)).map((track) => track.id));
+  return bgmCatalogResourceIds().filter((id) => safeIds.has(id) && !excluded.has(id) && isCatalogBgmAvailable(id));
 }
 
 function starterFallback(theme: MapBgmTheme, excluded: ReadonlySet<string>): string | undefined {
