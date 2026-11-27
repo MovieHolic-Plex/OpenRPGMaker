@@ -23,7 +23,7 @@ import { pendingDefaultTilesetBuilder } from "./defaults/lazyDefaultTilesets";
 import { BEODEUL_CITY_ID, createBeodeulCityTileset } from "./defaults/beodeulCity";
 import { BUNDLED_TILESET_REF } from "./bundledTilesetRefs";
 import { jsonEqual } from "@/util/structuralJson";
-import { isPendingLazyTileset, markLazyTilesetMaterialized, markPendingLazyTileset } from "./bundledTilesetLazy";
+import { isFreshBundledTileset, isPendingLazyTileset, markFreshBundledTileset, markLazyTilesetMaterialized, markPendingLazyTileset } from "./bundledTilesetLazy";
 import type { TilesetDef } from "./types";
 
 import { BUNDLED_TILESET_DIFF } from "./bundledTilesetDiffKey";
@@ -274,10 +274,11 @@ export async function primeBundledTilesetDiffViews(
  * 일 뒤에 부른다 — 기억 대조(필드·원소 정체)는 원소 객체 안의 속성 변경을 못 본다.
  */
 export function forgetBundledTilesetDiffViews(project: { readonly tilesets: Readonly<Record<string, TilesetDef>> }): void {
+  // «새 항목»(isFreshBundledTileset)은 정규화기가 건너뛰므로 제자리에서 바뀌지 않는다 — 받은 보기를 그대로 둔다.
   for (const id of Object.keys(project.tilesets)) {
     if (pendingDefaultTilesetBuilder(project.tilesets, id)) continue;
     const tileset = project.tilesets[id];
-    if (tileset && !Object.isFrozen(tileset)) views.delete(tileset);
+    if (tileset && !Object.isFrozen(tileset) && !isFreshBundledTileset(tileset)) views.delete(tileset);
   }
 }
 
@@ -576,6 +577,9 @@ function lazyTileset(id: string, view: Record<string, unknown>): Record<string, 
       if (ours) Object.defineProperty(out, key, { value: full[key], writable: true, enumerable: true, configurable: true });
     }
     markLazyTilesetMaterialized(out, id);
+    // 받은 차이가 곧 되돌린 값의 저장 보기다(같은 보기를 다시 얹으면 같은 값) — 첫 저장·맵 패치가 정의와 다시 비교하지 않게 기억한다.
+    // 되돌린 뒤 필드를 바꾸면 지문이 달라져 다시 비교한다(setter 로 되돌렸으면 곧 값이 바뀐다).
+    views.set(out, { fingerprint: fingerprintOf(out), view });
   };
   for (const key of diff.keys) {
     const header = HEADER.has(key) && present(view[key]);
@@ -656,6 +660,24 @@ export function restoreBundledTilesetDiffs(data: { tilesets?: unknown }): Bundle
     restored += 1;
   }
   return { restored, ...counters };
+}
+
+/**
+ * 새 프로젝트의 번들 타일셋을 구운 «정규화한 새 타일셋» 차이 보기에서 만든다(freshStarter.ts). `eager` 에 있는 id(맵이 쓰는 것)만 곧바로 되돌리고
+ * 나머지는 지연 객체로 둔다 — 저장본을 열 때와 같은 경로다. 만든 항목은 «새 항목» 표지를 달고, 곧바로 되돌린 항목은 받은 보기를
+ * 저장 보기로 기억한다(되돌린 값의 차이가 곧 그 보기다). `freshViews` 는 호출자 소유 사본이어야 한다(지연 객체가 머리 값을 공유한다).
+ */
+export function restoreFreshBundledTilesets(freshViews: Record<string, unknown>, eager: ReadonlySet<string>): Record<string, TilesetDef> {
+  const data = { tilesets: freshViews };
+  const received = { ...freshViews };
+  withLazyBundledTilesets(eager, () => restoreBundledTilesetDiffs(data));
+  for (const [id, tileset] of Object.entries(data.tilesets)) {
+    if (!isRecord(tileset)) continue;
+    markFreshBundledTileset(tileset);
+    const view = received[id];
+    if (!isPendingLazyTileset(tileset) && isRecord(view) && view !== tileset) views.set(tileset, { fingerprint: fingerprintOf(tileset), view });
+  }
+  return data.tilesets as unknown as Record<string, TilesetDef>;
 }
 
 /** 차이 보기의 번들 id 들(로드 전에 정의 JSON 을 미리 읽을 때 쓴다). */
