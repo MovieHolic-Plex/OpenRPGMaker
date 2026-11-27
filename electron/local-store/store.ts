@@ -3,9 +3,7 @@ import { existsSync, lstatSync, mkdirSync, readFileSync, rmSync, unlinkSync } fr
 import { join } from "node:path";
 import { decodeDataUrlBytes, dataUrlExtension, dataUrlMime } from "../../src/project/persistence/core/dataUrl";
 import { canonicalJsonString } from "../../src/project/persistence/core/canonicalJson";
-import { deserializeStoredProjectJson } from "../../src/project/persistence/core/loadRepair";
-import { withLazyBundledTilesets } from "../../src/project/bundledTilesetDiff";
-import { untouchedFreshBundledTilesetIds } from "../../src/project/defaults/freshBundledViewsHost";
+import { deserializeStoredProjectJson, deserializeSubmittedProjectJson } from "../../src/project/persistence/core/loadRepair";
 import { mergeTeamProject, validateMergedTeamProject } from "../../src/project/persistence/core/teamMerge";
 import type { MapSaveConflict } from "../../src/project/persistence/core/mapMerge";
 import { projectWireView } from "../../src/project/io/serialize";
@@ -638,9 +636,7 @@ function createStore(driver: Driver, options: OpenLocalProjectStoreOptions, proj
       const wire: HostWire = foldSubmittedText(serialized);
       const json = JSON.parse(serialized);
       // 구운 새 타일셋 보기와 같은 항목은 되돌려 검사하지 않는다(지연으로 둔다) — 아래는 제목·맵 거울만 읽는다(freshBundledViewsHost.ts).
-      const untouched = untouchedFreshBundledTilesetIds(json);
-      const eager = new Set(Object.keys((json as { tilesets?: Record<string, unknown> }).tilesets ?? {}).filter((id) => !untouched.has(id)));
-      const parsed = withLazyBundledTilesets(eager, () => deserializeStoredProjectJson(json, serialized));
+      const parsed = deserializeSubmittedProjectJson(json, serialized);
       const result = driver.transaction((): LocalStoreSaveResult => {
         if (expectedSha !== undefined && (readProjectMeta(driver)?.sha256 ?? null) !== expectedSha) {
           return { kind: "conflict", conflicts: [{ mapId: "project", name: "프로젝트가 다른 사용자에 의해 변경되었습니다" }] };
