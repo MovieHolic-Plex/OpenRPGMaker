@@ -13,14 +13,13 @@ import { cloneProjectSharingReferenceDocuments } from "@/project/projectClone";
 import { untouchedFreshBundledTilesetIds } from "@/project/defaults/freshBundledViewsHost";
 
 describe("구운 새 번들 타일셋으로 짓는 빈 프로젝트", () => {
-  it("맵이 쓰는 타일셋만 되돌리고, 정규화기는 나머지를 되돌리지 않으며, 저장본에는 차이만 싣는다", async () => {
+  it("모든 번들 타일셋이 지연으로 태어나고, 정규화기·복제·저장은 되돌리지 않으며, 저장본에는 차이만 싣는다", async () => {
     const project = await createFreshStarterBlankProject();
-    const mapTilesets = new Set(Object.values(project.maps).map((map) => map.tilesetId));
     const ids = Object.keys(project.tilesets);
     expect(ids).toEqual(Object.keys(createStarterBlankProject().tilesets));
     for (const id of ids) {
       expect(isFreshBundledTileset(project.tilesets[id])).toBe(true);
-      expect(isPendingLazyTileset(project.tilesets[id])).toBe(!mapTilesets.has(id));
+      expect(isPendingLazyTileset(project.tilesets[id])).toBe(true);
     }
     // store.normalizeCurrentProject 가 타일셋을 읽는 정규화기들.
     ensureBundledTilesets(project);
@@ -32,7 +31,7 @@ describe("구운 새 번들 타일셋으로 짓는 빈 프로젝트", () => {
     ensureBundledResourceProfiles(project);
     cloneProjectSharingReferenceDocuments(project);
     const wire = serialize(project);
-    for (const id of ids) if (!mapTilesets.has(id)) expect(isPendingLazyTileset(project.tilesets[id])).toBe(true);
+    for (const id of ids) expect(isPendingLazyTileset(project.tilesets[id])).toBe(true);
     expect(wire.length).toBeLessThan(5_000_000);
     const tilesets = (JSON.parse(wire) as { tilesets: Record<string, object> }).tilesets;
     for (const id of ids) expect(Object.hasOwn(tilesets[id]!, "bundledTilesetDiff")).toBe(true);

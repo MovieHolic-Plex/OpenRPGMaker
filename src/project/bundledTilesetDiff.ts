@@ -577,6 +577,9 @@ function lazyTileset(id: string, view: Record<string, unknown>): Record<string, 
       if (ours) Object.defineProperty(out, key, { value: full[key], writable: true, enumerable: true, configurable: true });
     }
     markLazyTilesetMaterialized(out, id);
+    // 받은 차이가 곧 되돌린 값의 저장 보기다(같은 보기를 다시 얹으면 같은 값) — 첫 저장·맵 패치가 정의와 다시 비교하지 않게 기억한다.
+    // 되돌린 뒤 필드를 바꾸면 지문이 달라져 다시 비교한다(setter 로 되돌렸으면 곧 값이 바뀐다).
+    views.set(out, { fingerprint: fingerprintOf(out), view });
   };
   for (const key of diff.keys) {
     const header = HEADER.has(key) && present(view[key]);
