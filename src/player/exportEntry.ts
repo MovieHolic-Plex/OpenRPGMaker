@@ -407,6 +407,8 @@ async function startPlayer(
   // renderPlayer 는 root 를 비운다 — 불러오는 화면은 문서 맨 위로 옮겨 그 위를 덮는다.
   if (loader) { document.body.append(loader.root); loader.root.style.zIndex = "2147483000"; }
   try {
+    // Derive save namespace from the authored (pre-translation) project so switching locales keeps saves intact.
+    const authoredProject = project;
     const activeLocale = runtimeUiLocale(project);
     const localizedProject = project.meta.localizations && Object.keys(project.meta.localizations).length > 0
       ? translateProjectContent(project, activeLocale)
@@ -419,7 +421,7 @@ async function startPlayer(
     // 에디터 boot 를 거치지 않는 웹·단일 HTML 플레이어도 저장된 공통 글꼴을 쓴다.
     syncProjectFontTheme(project);
     const storeGame = parseStoreGameBoot(boot.storeGame);
-    const saveNamespace = storeGame && source === "bundled" ? storeGameSaveNamespace(storeGame) : resolveExportSaveNamespace(project, {
+    const saveNamespace = storeGame && source === "bundled" ? storeGameSaveNamespace(storeGame) : resolveExportSaveNamespace(authoredProject, {
       source,
       hostSaveNamespace: boot.saveNamespace,
       pathname: window.location.pathname,
