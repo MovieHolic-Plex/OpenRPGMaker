@@ -461,8 +461,10 @@ def cmd_validate(theme):
             for ex in m.get('extras') or []:
                 if ex.get('part') not in ids:
                     errs.append(f'{tag}: extra {ex.get("part")} 가 items 에 없다')
-                if ex.get('on') not in (None, 'roof'):
-                    errs.append(f'{tag}: extra on {ex.get("on")!r} — "roof" 만 안다')
+                if ex.get('on') not in (None, *AS.EXTRA_SURFACES):
+                    errs.append(f'{tag}: extra on {ex.get("on")!r} — {"·".join(AS.EXTRA_SURFACES)} 만 안다')
+                if ex.get('at') is None and ex.get('storey') is None:
+                    errs.append(f'{tag}: extra {ex.get("part")} 에 at 또는 storey 앵커가 없다')
         doors = sum(r['letters'].replace(' ', '').count('D') for m in ms for r in m['walls'])
         if doors != 1 and not b.get('doorTwice'):
             errs.append(f'건물 {bid}: 문 {doors}개 — 건물 하나(질량 전부)에 문은 정확히 하나')
@@ -739,8 +741,8 @@ def _gable_front_round(s, items, rid):
             errs.append(f'판 {rid} {bid}: 판 items 에 없는 부품 {miss}')
         for m in ms:
             for ex in m.get('extras') or []:
-                if ex.get('on') != 'roof':
-                    errs.append(f'판 {rid} {bid}/{m["id"]}: extra {ex.get("part")} 는 on: "roof" 를 적는다(A14)')
+                if ex.get('on') not in AS.EXTRA_SURFACES:
+                    errs.append(f'판 {rid} {bid}/{m["id"]}: extra {ex.get("part")} 는 on: "roof" 또는 "wall" 을 적는다(A14)')
     ridge = [i for i in have if (items.get(i) or {}).get('wave') == 'roof' and not items[i].get('form')
              and not items[i].get('spire') and int(items[i].get('end', AS.ROOF_END)) == AS.ROOF_END]
     if not ridge:

@@ -97,6 +97,9 @@ SHADOW_RGB, SHADOW_ALPHA = (12, 14, 20), 88
 RIDGE_STEP = 6.0
 SLOPE_STEP = 8.0
 ROOF_KINDS = ('roof',)
+EXTRA_SURFACES = ('roof', 'wall')
+WALL_EXTRA_MIN_OVERLAP = 0.60
+WALL_EXTRA_DOOR_MAX_LOWER = 0.25
 
 
 def gf_body_roles(cols):
@@ -243,6 +246,25 @@ def needs_drawing(recipe, have):
                 out += [f'{item} {r}' for r in roles[item]] if roles.get(item) else [item]
     return list(dict.fromkeys(out))
 
+def _extra_rel_at(plan, ex):
+    """extra 의 (ax, ay) — 질량 왼쪽 위(plan['x'], top) 기준 칸 좌표.
+    on: 'wall' 은 storey(0=맨 위층, -1=1층) + col(+ 선택 dy) 앵커도 지원한다."""
+    if ex.get('storey') is not None:
+        n = len(plan['walls'])
+        si = int(ex['storey'])
+        if si < 0:
+            si += n
+        si = max(0, min(n - 1, si))
+        y_off = plan['rh']
+        for k in range(si):
+            y_off += plan['walls'][k]['h'] + (plan['band_h'] if plan['band_item'] else 0)
+        ax = int(ex.get('col', (ex.get('at') or [0, 0])[0]))
+        ay = y_off + int(ex.get('dy', 0))
+        return ax, ay
+    ax, ay = ex['at']
+    return int(ax), int(ay)
+
+
 def _mass_height(plan):
     return plan['rh'] + sum(w['h'] for w in plan['walls']) + plan['bands'] * plan['band_h'] + plan['base_h']
 
@@ -328,7 +350,7 @@ def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=N
                          'roof_kind': roof_kind(roof_item)})
         plan['bands'] = max(0, len(walls) - 1) if band_item else 0
         plan['h'] = _mass_height(plan)
-        plan['rise'] = max([0] + [-int(ex['at'][1]) for ex in plan['extras']])
+        plan['rise'] = max([0] + [-_extra_rel_at(plan, ex)[1] for ex in plan['extras']])
         plan['idx'] = len(plans)
         plans.append(plan)
 
@@ -410,7 +432,7 @@ def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=N
                 put(plan, plan['base'], items[plan['base']]['img'], pc, bx, y, 'base')
                 bx += pc['size'][0]
         for ex in plan['extras']:
-            ax, ay = ex['at']
+            ax, ay = _extra_rel_at(plan, ex)
             for pc in items[ex['part']]['item']['pieces']:
                 r = put(plan, ex['part'], items[ex['part']]['img'], pc,
                         plan['x'] + ax + pc['at'][0], top + ay + pc['at'][1], 'extra')
@@ -621,8 +643,8 @@ def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=N
         checks.append(_a12(gf))
     if any(p['kind'] in RECEDING for p in plans):
         checks.append(_a13(plans, op, owner_plan, owner_kind))
-    if any(r.get('on') == 'roof' for p in plans for r in p.get('extra_recs') or []):
-        checks.append(_a14(plans, roof_px, wall_px))
+    if any(r.get('on') in EXTRA_SURFACES for p in plans for r in p.get('extra_recs') or []):
+        checks.append(_a14(plans, roof_px, wall_px, doors))
     if require_gable_front:
         checks.append(_r('A15', 'FAIL', bool(gf),
                          f'박공 정면 질량 {len(gf)}개' if gf else
@@ -1210,33 +1232,75 @@ def _a13(plans, op, owner_plan, owner_kind):
     return _r('A13', 'FAIL', not bad, '; '.join(msgs) if not bad else '; '.join(bad))
 
 
-def _a14(plans, roof_px, wall_px):
-    bad, n = [], 0
+def _a14(plans, roof_px, wall_px, doors=()):
+    bad, n_roof, n_wall = [], 0, 0
+    door_boxes = {}
+    for d in doors:
+        rec = d['rec']
+        dx0, dy0 = rec['at'][0] * dot.T, rec['at'][1] * dot.T
+        dw, dh = rec['size'][0] * dot.T, rec['size'][1] * dot.T
+        # 문짝 아랫부분(상단 상인방 40% 아래)은 어닝·간판이 가리면 안 된다
+        door_boxes.setdefault(d['mass'], []).append((dx0, dy0 + int(dh * 0.4), dx0 + dw, dy0 + dh))
     for plan in plans:
+        rp, wp = roof_px[plan['idx']], wall_px[plan['idx']]
         for r in plan.get('extra_recs') or []:
-            if r.get('on') != 'roof':
+            surf = r.get('on')
+            if surf not in EXTRA_SURFACES:
                 continue
-            n += 1
             a = np.array(r['crop'].convert('RGBA'))
             eop = a[:, :, 3] == 255
             gx0, gy0 = r['at'][0] * dot.T, r['at'][1] * dot.T
-            rp, wp = roof_px[plan['idx']], wall_px[plan['idx']]
-            off, on_wall = 0, 0
-            ys = np.nonzero(eop.any(axis=1))[0]
-            base = int(ys.max()) if len(ys) else None
-            for x in (np.nonzero(eop[base])[0] if base is not None else []):
-                gy, gx = gy0 + base, gx0 + int(x)
-                if not (0 <= gy < rp.shape[0] and 0 <= gx < rp.shape[1]) or not rp[gy, gx]:
-                    off += 1
-            for y, x in zip(*np.nonzero(eop)):
-                gy, gx = gy0 + int(y), gx0 + int(x)
-                if 0 <= gy < wp.shape[0] and 0 <= gx < wp.shape[1] and wp[gy, gx]:
-                    on_wall += 1
-            if off:
-                bad.append(f'{plan["m"]["id"]} {r["item"]} 밑동(맨 아래 행) {off}px 이 그 질량 지붕 면 위가 아니다(떠 있다)')
-            if on_wall:
-                bad.append(f'{plan["m"]["id"]} {r["item"]} 화소 {on_wall}개가 벽에 걸친다')
-    return _r('A14', 'FAIL', not bad, f'지붕 위 부속 {n}개가 지붕 면에 얹힌다' if not bad else '; '.join(bad))
+            if surf == 'roof':
+                n_roof += 1
+                off, on_wall = 0, 0
+                ys = np.nonzero(eop.any(axis=1))[0]
+                base = int(ys.max()) if len(ys) else None
+                for x in (np.nonzero(eop[base])[0] if base is not None else []):
+                    gy, gx = gy0 + base, gx0 + int(x)
+                    if not (0 <= gy < rp.shape[0] and 0 <= gx < rp.shape[1]) or not rp[gy, gx]:
+                        off += 1
+                for y, x in zip(*np.nonzero(eop)):
+                    gy, gx = gy0 + int(y), gx0 + int(x)
+                    if 0 <= gy < wp.shape[0] and 0 <= gx < wp.shape[1] and wp[gy, gx]:
+                        on_wall += 1
+                if off:
+                    bad.append(f'{plan["m"]["id"]} {r["item"]} 밑동(맨 아래 행) {off}px 이 그 질량 지붕 면 위가 아니다(떠 있다)')
+                if on_wall:
+                    bad.append(f'{plan["m"]["id"]} {r["item"]} 화소 {on_wall}개가 벽에 걸친다')
+            else:
+                n_wall += 1
+                tot = int(eop.sum())
+                if tot == 0:
+                    bad.append(f'{plan["m"]["id"]} {r["item"]} 불투명 화소가 없다')
+                    continue
+                on_w, out_bounds = 0, 0
+                door_hit = 0
+                dboxes = door_boxes.get(plan['m']['id'], ())
+                for y, x in zip(*np.nonzero(eop)):
+                    gy, gx = gy0 + int(y), gx0 + int(x)
+                    if not (0 <= gy < wp.shape[0] and 0 <= gx < wp.shape[1]):
+                        out_bounds += 1
+                        continue
+                    if wp[gy, gx]:
+                        on_w += 1
+                    for bx0, by0, bx1, by1 in dboxes:
+                        if bx0 <= gx < bx1 and by0 <= gy < by1:
+                            door_hit += 1
+                if out_bounds:
+                    bad.append(f'{plan["m"]["id"]} {r["item"]} 화소 {out_bounds}개가 그림 밖으로 나간다')
+                frac = on_w / tot
+                if frac < WALL_EXTRA_MIN_OVERLAP:
+                    bad.append(f'{plan["m"]["id"]} {r["item"]} 벽 겹침 {frac:.0%} < {WALL_EXTRA_MIN_OVERLAP:.0%}(벽에서 떴다)')
+                if door_hit:
+                    d_area = sum((bx1 - bx0) * (by1 - by0) for bx0, by0, bx1, by1 in dboxes)
+                    if door_hit / max(d_area, 1) > WALL_EXTRA_DOOR_MAX_LOWER:
+                        bad.append(f'{plan["m"]["id"]} {r["item"]} 이 문짝 하단을 가린다({door_hit}px)')
+    parts_msg = []
+    if n_roof:
+        parts_msg.append(f'지붕 위 부속 {n_roof}개')
+    if n_wall:
+        parts_msg.append(f'벽 부속 {n_wall}개')
+    return _r('A14', 'FAIL', not bad, f'{" · ".join(parts_msg)} 부착 통과' if not bad else '; '.join(bad))
 
 
 def _a7(plans, multi, depth_ground=False):
@@ -1253,10 +1317,12 @@ def _a5(placed):
     bad = []
     pairs = 0
     for p in placed:
+        if p.get('kind') == 'extra':
+            continue
         x0, y0 = p['at']
         x1, y1 = x0 + p['size'][0], y0 + p['size'][1]
         for q in placed:
-            if q is p:
+            if q is p or q.get('kind') == 'extra':
                 continue
             qx, qy = q['at']
             if qy != y1:
@@ -1289,9 +1355,14 @@ def _kit(recipe, plans, placed, width, height, doors, depth_ground=False):
                 X, Y = x0 + i, y0 + j
                 if not (0 <= X < width and 0 <= Y < height):
                     continue
-                if p['kind'] == 'roof':
+                if p['kind'] == 'roof' or (p['kind'] == 'extra' and p.get('on') == 'roof'):
                     upper[Y][X] = '★'
-                    walk[Y][X] = '★'
+                    if walk[Y][X] != 'X':
+                        walk[Y][X] = '★'
+                elif p['kind'] == 'extra':
+                    if walk[Y][X] == '.':
+                        lower[Y][X] = 'X'
+                        walk[Y][X] = 'X'
                 else:
                     lower[Y][X] = 'X'
                     walk[Y][X] = 'X'

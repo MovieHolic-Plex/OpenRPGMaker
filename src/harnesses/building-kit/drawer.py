@@ -276,10 +276,13 @@ def targets(theme, rid):
         for m in ms:
             h, desc = _mass_size(items, m)
             width = max(width, m['x'] + m['cols'])
-            height = max(height, h + max([0] + [-int(ex['at'][1]) for ex in m.get('extras') or []]))
+            height = max(height, h + max([0] + [-int(ex['at'][1]) for ex in m.get('extras') or [] if ex.get('at') is not None]))
             rows.append(f'      질량 {m["id"]} [{m["kind"]}]: {m["cols"]}칸 폭 {m["storeys"]}층 x={m["x"]} depth={m["depth"]} → 세로 {h}칸 ({desc})'
-                        + ''.join(f' · extra {ex["part"]} at {ex["at"]}' + (' on roof' if ex.get('on') == 'roof' else '')
-                                  for ex in m.get('extras') or []))
+                        + ''.join(
+                            f' · extra {ex["part"]} '
+                            + (f'at {ex["at"]}' if ex.get('at') is not None else f'storey={ex.get("storey")} col={ex.get("col", 0)}')
+                            + (f' on {ex["on"]}' if ex.get('on') else '')
+                            for ex in m.get('extras') or []))
         head = (f'  - {b["id"]} "{b.get("title", "")}" ({b.get("use", "")}): 질량 {len(ms)}개 → 가로 {width}칸 × 세로 {height}칸, '
                 + ('기단 행 있음' if any(m.get('base') for m in ms) else '기단 행 없음(벽이 땅에 닿는다)'))
         out.append(head + '\n' + '\n'.join(rows))

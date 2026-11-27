@@ -1912,6 +1912,642 @@
      "x"
     ]
    ]
+  },
+  {
+   "id": "wall.arcade",
+   "wave": "wall",
+   "kind": "set",
+   "title": "1층 아치 회랑 벽 세트",
+   "size": [
+    5,
+    2
+   ],
+   "layer": "lower",
+   "walk": "X 막힘 · 문 칸만 o",
+   "brief": "1층 개방 아치 회랑(아케이드) 벽 2행. 석조·목조 기둥 사이에 깊은 아치 개구부와 어두운 내부 그늘, 쐐기돌, 묵직한 모서리 교각. 시장홀·주점·회관 1층에 쓴다.",
+   "accept": [
+    "아치 개구부와 기둥이 경계를 넘어 자연스럽게 이어진다",
+    "어두운 회랑 내부와 빛 받는 아치 테두리 대비가 분명하다",
+    "왼끝·오른끝 inset 2 처마 자리"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall"
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall",
+     "tileable": "x"
+    },
+    {
+     "id": "w",
+     "role": "w",
+     "title": "창/진열 칸",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall"
+    },
+    {
+     "id": "d",
+     "role": "d",
+     "title": "문 칸",
+     "at": [
+      3,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝",
+     "at": [
+      4,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall"
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "w",
+     "x"
+    ],
+    [
+     "w",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "d",
+     "x"
+    ],
+    [
+     "d",
+     "m",
+     "x"
+    ],
+    [
+     "w",
+     "d",
+     "x"
+    ],
+    [
+     "d",
+     "w",
+     "x"
+    ],
+    [
+     "l",
+     "w",
+     "x"
+    ],
+    [
+     "w",
+     "r",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "d",
+     "x"
+    ],
+    [
+     "d",
+     "r",
+     "x"
+    ]
+   ]
+  },
+  {
+   "id": "wall.shop",
+   "wave": "wall",
+   "kind": "set",
+   "title": "상점 쇼윈도 벽 세트",
+   "size": [
+    5,
+    2
+   ],
+   "layer": "lower",
+   "walk": "X 막힘 · 문 칸만 o",
+   "brief": "1층 상점 정면(쇼윈도·진열창) 벽 2행. 넓은 격자 유리 진열창, 나무 진열 선반, 하단 패널 목재·석재 받침, 상단 채광창이 달린 상점 문. 빵집·잡화점·서점 1층에 쓴다.",
+   "accept": [
+    "일반 살림집 창보다 넓은 상점 쇼윈도로 읽힌다",
+    "가운데·진열창·문 이음이 매끄럽다",
+    "왼끝·오른끝 inset 2 처마 자리"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall"
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      1,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall",
+     "tileable": "x"
+    },
+    {
+     "id": "w",
+     "role": "w",
+     "title": "창/진열 칸",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall"
+    },
+    {
+     "id": "d",
+     "role": "d",
+     "title": "문 칸",
+     "at": [
+      3,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝",
+     "at": [
+      4,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "wall"
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "w",
+     "x"
+    ],
+    [
+     "w",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "d",
+     "x"
+    ],
+    [
+     "d",
+     "m",
+     "x"
+    ],
+    [
+     "w",
+     "d",
+     "x"
+    ],
+    [
+     "d",
+     "w",
+     "x"
+    ],
+    [
+     "l",
+     "w",
+     "x"
+    ],
+    [
+     "w",
+     "r",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "d",
+     "x"
+    ],
+    [
+     "d",
+     "r",
+     "x"
+    ]
+   ]
+  },
+  {
+   "id": "roof.thatch",
+   "wave": "roof",
+   "kind": "set",
+   "title": "초가 모임지붕 세트(2층 3행)",
+   "size": [
+    5,
+    3
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감",
+   "brief": "황금빛 짚단 결이 층층이 겹친 3행 초가 모임지붕(shingle·wood·roof 밝은 단). 두툼한 용마루 묶음, 왼/오 모임 사선, 두껍고 어두운 처마 끝. 시골 여관·농가·빵집에 쓴다.",
+   "accept": [
+    "기와와 구분되는 두툼한 짚단 결이 보인다",
+    "용마루가 처마 폭의 0.35 이상이고 윗면이 앞 모서리보다 밝다",
+    "가운데 반복 이음이 자연스럽다"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝(모임 사선)",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      3
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      3
+     ],
+     "kind": "roof",
+     "tileable": "x"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝(모임 사선)",
+     "at": [
+      3,
+      0
+     ],
+     "size": [
+      2,
+      3
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "r",
+     "x"
+    ]
+   ],
+   "end": 2
+  },
+  {
+   "id": "roof.glass",
+   "wave": "roof",
+   "kind": "set",
+   "title": "유리 온실 모임지붕 세트(2층 3행)",
+   "size": [
+    5,
+    3
+   ],
+   "layer": "upper",
+   "walk": "★ 사람 뒤로 지나감",
+   "brief": "쇠 프레임(iron)과 밝은 유리판(slate·plaster 하이라이트)으로 짜인 3행 온실/아트리움 모임지붕. 대각선 모임 뼈대와 사선 반사광, 어두운 쇠 처마. 식물원·연금술관·길드 아트리움에 쓴다.",
+   "accept": [
+    "철제 멀리언과 유리 반사광으로 온실 지붕처럼 읽힌다",
+    "모임 사선과 밝은 용마루가 분명하다",
+    "가운데 반복 이음이 자연스럽다"
+   ],
+   "pieces": [
+    {
+     "id": "l",
+     "role": "l",
+     "title": "왼끝(모임 사선)",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      3
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    },
+    {
+     "id": "m",
+     "role": "m",
+     "title": "가운데(반복)",
+     "at": [
+      2,
+      0
+     ],
+     "size": [
+      1,
+      3
+     ],
+     "kind": "roof",
+     "tileable": "x"
+    },
+    {
+     "id": "r",
+     "role": "r",
+     "title": "오른끝(모임 사선)",
+     "at": [
+      3,
+      0
+     ],
+     "size": [
+      2,
+      3
+     ],
+     "kind": "roof",
+     "qMin": 0.6,
+     "qTopRow": false
+    }
+   ],
+   "joins": [
+    [
+     "l",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "m",
+     "x"
+    ],
+    [
+     "m",
+     "r",
+     "x"
+    ],
+    [
+     "l",
+     "r",
+     "x"
+    ]
+   ],
+   "end": 2
+  },
+  {
+   "id": "extra.awning",
+   "wave": "extra",
+   "kind": "set",
+   "title": "줄무늬 차양/어닝(벽 부착 2×1)",
+   "size": [
+    2,
+    1
+   ],
+   "layer": "upper",
+   "walk": "★",
+   "brief": "상점·빵집·주점 1층 벽(on: wall)에 다는 2칸 폭 줄무늬 천 차양(어닝). 윗면 경사 줄무늬, 물결 끝단(scallop), 양옆 쇠 지지대와 아래 그늘.",
+   "accept": [
+    "줄무늬 경사 천막과 물결 끝단으로 읽힌다",
+    "위 귀퉁이 투명, 벽에 자연스럽게 붙는다"
+   ],
+   "pieces": [
+    {
+     "id": "c",
+     "role": "c",
+     "title": "차양",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      1
+     ],
+     "kind": "extra"
+    }
+   ],
+   "joins": []
+  },
+  {
+   "id": "extra.balcony",
+   "wave": "extra",
+   "kind": "set",
+   "title": "2층 발코니 난간(벽 부착 2×1)",
+   "size": [
+    2,
+    1
+   ],
+   "layer": "upper",
+   "walk": "★",
+   "brief": "2층 벽 창 앞(on: wall)에 붙이는 2칸 폭 목조/철제 발코니. 난간 살대, 바닥 판, 아래 까치발 받침과 화분 포인트.",
+   "accept": [
+    "난간과 바닥 판, 아래 까치발이 분명하다",
+    "2층 창 아래에 얹어 입체감을 준다"
+   ],
+   "pieces": [
+    {
+     "id": "c",
+     "role": "c",
+     "title": "발코니",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      2,
+      1
+     ],
+     "kind": "extra"
+    }
+   ],
+   "joins": []
+  },
+  {
+   "id": "extra.dormer",
+   "wave": "extra",
+   "kind": "set",
+   "title": "지붕창 도머(지붕 부착 1×2)",
+   "size": [
+    1,
+    2
+   ],
+   "layer": "upper",
+   "walk": "★",
+   "brief": "넓은 지붕 사면(on: roof)에 얹는 1칸 폭 2행 작은 박공 지붕창(도머). 미니 박공 지붕 윗면(top [0,1]) + 작은 다락 창 + 옆면 그늘.",
+   "accept": [
+    "미니 박공 지붕 윗면과 작은 다락 창이 읽힌다",
+    "지붕 면 위에 자연스럽게 앉는다"
+   ],
+   "pieces": [
+    {
+     "id": "c",
+     "role": "c",
+     "title": "지붕창",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      2
+     ],
+     "kind": "extra",
+     "top": [
+      0,
+      1
+     ]
+    }
+   ],
+   "joins": []
+  },
+  {
+   "id": "extra.sign",
+   "wave": "extra",
+   "kind": "set",
+   "title": "걸린 쇠 간판(벽 부착 1×1)",
+   "size": [
+    1,
+    1
+   ],
+   "layer": "upper",
+   "walk": "★",
+   "brief": "상점·여관·주점 벽(on: wall)에 거는 1칸 폭 쇠 브래킷 + 나무/방패 간판(글자 금지, 도트 문양만).",
+   "accept": [
+    "쇠 걸이대와 매달린 판으로 읽힌다",
+    "글자 없이 아이콘·테두리만 쓴다"
+   ],
+   "pieces": [
+    {
+     "id": "c",
+     "role": "c",
+     "title": "간판",
+     "at": [
+      0,
+      0
+     ],
+     "size": [
+      1,
+      1
+     ],
+     "kind": "extra"
+    }
+   ],
+   "joins": []
   }
  ],
  "buildings": [
@@ -2410,6 +3046,824 @@
     }
    ],
    "note": "5칸 계단 박공 회관 — 사면 3행(짧은 지붕), 박공 정면 위층 창 셋(L W W W R). 외쪽 헛간은 왼쪽(빛 쪽)에 1층으로 붙어 회관 처마보다 낮다(roof.lean.left — 새로 그린다). 박공 다락 창은 r7 에서 gable.step 을 다시 그릴 때 g5 에 넣는다(reuseParts 로 옛 g5 를 쓰면 다락 창은 없다)"
+  },
+  {
+   "id": "twingable.r9",
+   "title": "쌍박공 상가 연립",
+   "use": "home",
+   "masses": [
+    {
+     "id": "main",
+     "kind": "ridge_side",
+     "cols": 10,
+     "storeys": 2,
+     "x": 0,
+     "depth": 1,
+     "roof": "roof.hip",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W M W M M W M W R"
+      },
+      {
+       "item": "wall.stone",
+       "letters": "L W M M M M M M W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        4,
+        -1
+       ],
+       "on": "roof"
+      }
+     ]
+    },
+    {
+     "id": "wing_l",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 0,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.valley",
+     "back_end": "valley",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W D R"
+      }
+     ]
+    },
+    {
+     "id": "wing_r",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 6,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.valley",
+     "back_end": "valley",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W W R"
+      }
+     ]
+    }
+   ],
+   "note": "Lv.1 레시피 확장 — 10칸 본채 앞에 좌우 쌍박공 날개 둘 + 중앙 굴뚝"
+  },
+  {
+   "id": "courtyard.r9",
+   "title": "ㄷ자 안마당 여관",
+   "use": "inn",
+   "masses": [
+    {
+     "id": "main",
+     "kind": "ridge_side",
+     "cols": 12,
+     "storeys": 2,
+     "x": 0,
+     "depth": 1,
+     "roof": "roof.hip",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W M W W M M W W M W R"
+      },
+      {
+       "item": "wall.stone",
+       "letters": "L W M M W M M W M M W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        3,
+        -1
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.chimney",
+       "at": [
+        8,
+        -1
+       ],
+       "on": "roof"
+      }
+     ]
+    },
+    {
+     "id": "west",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 0,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.valley",
+     "back_end": "valley",
+     "walls": [
+      {
+       "item": "wall.stone",
+       "letters": "L W D R"
+      }
+     ]
+    },
+    {
+     "id": "east",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 8,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.valley",
+     "back_end": "valley",
+     "walls": [
+      {
+       "item": "wall.stone",
+       "letters": "L W W R"
+      }
+     ]
+    }
+   ],
+   "note": "Lv.1 레시피 확장 — 12칸 본채 + 좌우 돌출 날개가 가운데 4칸 앞마당을 감싸는 ㄷ자 여관"
+  },
+  {
+   "id": "canalhouse.r9",
+   "title": "박공 2층 운하 협소주택",
+   "use": "home",
+   "masses": [
+    {
+     "id": "house",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 3,
+     "storeys": 2,
+     "x": 0,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.back",
+     "back_end": "gable",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W W R"
+      },
+      {
+       "item": "wall.stone",
+       "letters": "L W D R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        2,
+        1
+       ],
+       "on": "roof"
+      }
+     ],
+     "band": "band.trim"
+    }
+   ],
+   "note": "Lv.1 레시피 확장 — 좁고 높은 4칸 2층 계단박공 운하 연립주택(band 없음, A6 0.600)"
+  },
+  {
+   "id": "dualforge.r9",
+   "title": "양옆 외쪽 대장간",
+   "use": "smithy",
+   "masses": [
+    {
+     "id": "left_shed",
+     "kind": "lean_to",
+     "cols": 2,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 0,
+     "depth": 0,
+     "low": "left",
+     "roof": "roof.lean.left",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L M"
+      }
+     ]
+    },
+    {
+     "id": "smithy",
+     "kind": "gable_front",
+     "cols": 5,
+     "depth_rows": 3,
+     "storeys": 2,
+     "x": 2,
+     "depth": 0,
+     "gable": "gable.step",
+     "roof": "roof.gf.slope",
+     "back": "gable.step",
+     "back_end": "gable",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.stone",
+       "letters": "L W M W R"
+      },
+      {
+       "item": "wall.stone",
+       "letters": "L W D W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        3,
+        1
+       ],
+       "on": "roof"
+      }
+     ]
+    },
+    {
+     "id": "right_shed",
+     "kind": "lean_to",
+     "cols": 2,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 7,
+     "depth": 0,
+     "low": "right",
+     "roof": "roof.lean.side",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "M R"
+      }
+     ]
+    }
+   ],
+   "note": "Lv.1 레시피 확장 — 중앙 2층 석조 계단박공 대장간 양옆에 좌·우 외쪽 공방 헛간 결합"
+  },
+  {
+   "id": "lmanor.r9",
+   "title": "ㄱ자 비대칭 저택",
+   "use": "guild",
+   "masses": [
+    {
+     "id": "main",
+     "kind": "ridge_side",
+     "cols": 8,
+     "storeys": 2,
+     "x": 0,
+     "depth": 1,
+     "roof": "roof.hip",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W M W M W W R"
+      },
+      {
+       "item": "wall.stone",
+       "letters": "L W M M M W W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        6,
+        -1
+       ],
+       "on": "roof"
+      }
+     ]
+    },
+    {
+     "id": "wing",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 0,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.valley",
+     "back_end": "valley",
+     "walls": [
+      {
+       "item": "wall.stone",
+       "letters": "L W D R"
+      }
+     ]
+    }
+   ],
+   "note": "Lv.1 레시피 확장 — 왼쪽으로 치우친 5칸 넓은 박공 날개 + 8칸 2층 본채 ㄱ자 저택"
+  },
+  {
+   "id": "bakery.r9",
+   "title": "어닝 빵집 상점",
+   "use": "home",
+   "masses": [
+    {
+     "id": "main",
+     "kind": "ridge_side",
+     "cols": 8,
+     "storeys": 2,
+     "x": 0,
+     "depth": 1,
+     "roof": "roof.hip",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W M W M W W R"
+      },
+      {
+       "item": "wall.shop",
+       "letters": "L W M M M W W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        1,
+        -1
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.dormer",
+       "at": [
+        5,
+        0
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.awning",
+       "on": "wall",
+       "storey": -1,
+       "col": 5,
+       "dy": 0
+      }
+     ]
+    },
+    {
+     "id": "shop",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 1,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.valley",
+     "back_end": "valley",
+     "walls": [
+      {
+       "item": "wall.shop",
+       "letters": "L W D R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.awning",
+       "on": "wall",
+       "storey": 0,
+       "col": 1,
+       "dy": 0
+      },
+      {
+       "part": "extra.sign",
+       "on": "wall",
+       "storey": 0,
+       "col": 3,
+       "dy": 0
+      }
+     ]
+    }
+   ],
+   "note": "Lv.2 — 쇼윈도 1층(wall.shop) + 줄무늬 어닝(on:wall) + 걸린 간판 + 지붕창 도머"
+  },
+  {
+   "id": "arcademarket.r9",
+   "title": "아치 회랑 시장관",
+   "use": "hall",
+   "masses": [
+    {
+     "id": "main",
+     "kind": "ridge_side",
+     "cols": 10,
+     "storeys": 2,
+     "x": 0,
+     "depth": 1,
+     "roof": "roof.hip",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W W M W W M W W R"
+      },
+      {
+       "item": "wall.arcade",
+       "letters": "L W W M M M M W W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.dormer",
+       "at": [
+        2,
+        0
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.dormer",
+       "at": [
+        7,
+        0
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.balcony",
+       "on": "wall",
+       "storey": 0,
+       "col": 1,
+       "dy": 1
+      },
+      {
+       "part": "extra.balcony",
+       "on": "wall",
+       "storey": 0,
+       "col": 7,
+       "dy": 1
+      },
+      {
+       "part": "extra.chimney",
+       "at": [
+        5,
+        -1
+       ],
+       "on": "roof"
+      }
+     ]
+    },
+    {
+     "id": "entry",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 3,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.valley",
+     "back_end": "valley",
+     "walls": [
+      {
+       "item": "wall.arcade",
+       "letters": "L W D R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.sign",
+       "on": "wall",
+       "storey": 0,
+       "col": 3,
+       "dy": 0
+      }
+     ]
+    }
+   ],
+   "note": "Lv.2 — 1층 아치 회랑(wall.arcade) + 2층 발코니 쌍 + 지붕창 도머 쌍"
+  },
+  {
+   "id": "thatchinn.r9",
+   "title": "초가 지붕 시골 여관",
+   "use": "inn",
+   "masses": [
+    {
+     "id": "main",
+     "kind": "ridge_side",
+     "cols": 8,
+     "storeys": 2,
+     "x": 0,
+     "depth": 1,
+     "roof": "roof.thatch",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W W M W M W R"
+      },
+      {
+       "item": "wall.stone",
+       "letters": "L W M M M M W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        6,
+        -1
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.balcony",
+       "on": "wall",
+       "storey": 0,
+       "col": 1,
+       "dy": 1
+      }
+     ]
+    },
+    {
+     "id": "porch",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 2,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.valley",
+     "back_end": "valley",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W D R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.sign",
+       "on": "wall",
+       "storey": 0,
+       "col": 3,
+       "dy": 0
+      }
+     ]
+    }
+   ],
+   "note": "Lv.2 — 초가 모임지붕(roof.thatch) 본채 + 박공 현관 + 발코니 + 여관 간판"
+  },
+  {
+   "id": "conservatory.r9",
+   "title": "유리 온실 아트리움",
+   "use": "guild",
+   "masses": [
+    {
+     "id": "atrium",
+     "kind": "ridge_side",
+     "cols": 8,
+     "storeys": 2,
+     "x": 0,
+     "depth": 1,
+     "roof": "roof.glass",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.shop",
+       "letters": "L W W M M W W R"
+      },
+      {
+       "item": "wall.arcade",
+       "letters": "L W M M M M W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.balcony",
+       "on": "wall",
+       "storey": 0,
+       "col": 5,
+       "dy": 1
+      },
+      {
+       "part": "extra.chimney",
+       "at": [
+        6,
+        -1
+       ],
+       "on": "roof"
+      }
+     ]
+    },
+    {
+     "id": "vestibule",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 2,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.valley",
+     "back_end": "valley",
+     "walls": [
+      {
+       "item": "wall.stone",
+       "letters": "L W D R"
+      }
+     ]
+    }
+   ],
+   "note": "Lv.2 — 유리 온실 지붕(roof.glass) + 2층 대형 유리벽(wall.shop) + 1층 아치 회랑"
+  },
+  {
+   "id": "guildbalcony.r9",
+   "title": "발코니 계단박공 길드관",
+   "use": "guild",
+   "masses": [
+    {
+     "id": "hall",
+     "kind": "gable_front",
+     "cols": 5,
+     "depth_rows": 3,
+     "storeys": 2,
+     "x": 0,
+     "depth": 0,
+     "gable": "gable.step",
+     "roof": "roof.gf.slope",
+     "back": "gable.step",
+     "back_end": "gable",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.stone",
+       "letters": "L W W W R"
+      },
+      {
+       "item": "wall.shop",
+       "letters": "L W D W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.balcony",
+       "on": "wall",
+       "storey": 0,
+       "col": 1,
+       "dy": 1
+      },
+      {
+       "part": "extra.sign",
+       "on": "wall",
+       "storey": -1,
+       "col": 3,
+       "dy": 0
+      }
+     ]
+    },
+    {
+     "id": "annex",
+     "kind": "lean_to",
+     "cols": 2,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 5,
+     "depth": 0,
+     "low": "right",
+     "roof": "roof.lean.side",
+     "walls": [
+      {
+       "item": "wall.shop",
+       "letters": "W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.awning",
+       "on": "wall",
+       "storey": 0,
+       "col": 0,
+       "dy": 0
+      }
+     ]
+    }
+   ],
+   "note": "Lv.2 — 2층 계단박공 길드관 발코니 + 옆 외쪽 상점 어닝 + 간판"
+  },
+  {
+   "id": "tavern.r9",
+   "title": "항구 주점 풀세트",
+   "use": "inn",
+   "masses": [
+    {
+     "id": "main",
+     "kind": "ridge_side",
+     "cols": 9,
+     "storeys": 2,
+     "x": 0,
+     "depth": 1,
+     "roof": "roof.hip",
+     "band": "band.trim",
+     "walls": [
+      {
+       "item": "wall.timber",
+       "letters": "L W W M W M W W R"
+      },
+      {
+       "item": "wall.arcade",
+       "letters": "L W M M M M M W R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.chimney",
+       "at": [
+        1,
+        -1
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.dormer",
+       "at": [
+        6,
+        0
+       ],
+       "on": "roof"
+      },
+      {
+       "part": "extra.balcony",
+       "on": "wall",
+       "storey": 0,
+       "col": 6,
+       "dy": 1
+      }
+     ]
+    },
+    {
+     "id": "wing",
+     "kind": "gable_front",
+     "cols": 4,
+     "depth_rows": 2,
+     "storeys": 1,
+     "x": 1,
+     "depth": 0,
+     "gable": "gable.front",
+     "roof": "roof.gf.slope",
+     "back": "roof.gf.valley",
+     "back_end": "valley",
+     "walls": [
+      {
+       "item": "wall.shop",
+       "letters": "L W D R"
+      }
+     ],
+     "extras": [
+      {
+       "part": "extra.awning",
+       "on": "wall",
+       "storey": 0,
+       "col": 1,
+       "dy": 0
+      },
+      {
+       "part": "extra.sign",
+       "on": "wall",
+       "storey": 0,
+       "col": 3,
+       "dy": 0
+      }
+     ]
+    }
+   ],
+   "note": "Lv.2 풀세트 — 아치 회랑 + 쇼윈도 + 어닝 + 발코니 + 지붕창 + 간판 + 굴뚝"
   }
  ],
  "rounds": {
@@ -2564,6 +4018,58 @@
     "roof.gf.valley": "새 항목 — 날개 골 v4·v5·v6(2행). 날개 지붕이 본채 지붕 속으로 올라가 V자 골에서 만나는 뒤 끝. 이 판에서 처음 그린다 — 다른 항목은 style-r7 그림(reuseParts 연쇄)을 화소 그대로 쓴다"
    },
    "lead": "style-r7 의 ㅜ자 집 이 「needs drawing: roof.gf.valley v4」로 막혀 있다. 이 판은 골 조각만 그리고(drawer 가 reuseParts 로 가져오는 항목은 그리지 않는다), 같은 레시피를 조립·검수(detached_wing 함정 포함)·시트로 낸다."
+  },
+  "style-r9": {
+   "wave": "style",
+   "title": "판 9 (Lv.1+Lv.2) — 조합 레시피 14종 + 외장 부품(아치·쇼윈도·초가·유리·어닝·발코니·지붕창·간판)",
+   "module": "src/harnesses/building-kit/rounds/fantasy-kingdom/style_r9.py",
+   "keys": "letter",
+   "items": [
+    "gable.front",
+    "gable.step",
+    "roof.gf.slope",
+    "roof.gf.back",
+    "roof.gf.valley",
+    "roof.lean.side",
+    "roof.lean.left",
+    "roof.hip",
+    "roof.thatch",
+    "roof.glass",
+    "wall.timber",
+    "wall.stone",
+    "wall.arcade",
+    "wall.shop",
+    "band.trim",
+    "extra.chimney",
+    "extra.awning",
+    "extra.balcony",
+    "extra.dormer",
+    "extra.sign"
+   ],
+   "buildings": [
+    "cottage.r7",
+    "thouse.r7",
+    "hall.r7",
+    "twingable.r9",
+    "courtyard.r9",
+    "canalhouse.r9",
+    "dualforge.r9",
+    "lmanor.r9",
+    "bakery.r9",
+    "arcademarket.r9",
+    "thatchinn.r9",
+    "conservatory.r9",
+    "guildbalcony.r9",
+    "tavern.r9"
+   ],
+   "grammar": "r7",
+   "requireGableFront": true,
+   "reuseParts": "style-r8",
+   "projection": "박공 정면(gable-front) 투영 — 사용자 판정 2026-10-22: 「집이 이 각도로 보여야 한다 — 지금은 전혀 아니다」. style-r1~r4 의 '정면과 나란한 용마루 지붕 + 평평한 정면 입면'은 반려됐다. ① 박공 끝(삼각 벽, 계단 박공이면 크로스텝)이 남쪽(보는 쪽)을 본다 — 앞 박공 삼각형은 질량 아래 벽 띠 바로 위에 선다. ② 용마루는 북쪽으로 물러난다 — 화면에서는 앞 박공 꼭대기에서 위로 뒤 꼭대기까지 곧은 세로선(질량 가운데 2px)이다. ③ 용마루 왼쪽·오른쪽에 두 사면이 세로로 긴 면으로 보인다(사면 길이 = depth_rows = 지붕이 물러나는 깊이). ④ 뒤 끝은 맨 위의 ^ 모양 — 가운데 용마루 끝이 가장 높고 양 처마 쪽으로 내려간다. 다른 지붕에 박히면 그 ^ 선이 골(valley)이다. ⑤ 높은 3/4 카메라: 지붕이 실루엣의 대부분(질량 높이의 50~85%)이고 벽은 질량 아래 띠다. 옆벽은 처마에 가려 거의 안 보인다. ⑥ 조합: L·T 평면 — 정면과 나란한 용마루의 본채 앞에 박공 정면 날개, 지붕이 만나는 골, 작은 박공 현관, 지붕에서 솟는 굴뚝, 옆의 외쪽(한쪽 경사) 지붕.",
+   "depth": "깊이 땅 문법(사용자 반려 2026-10-22 「ㅜ자 집 — 공간감이 전혀 없다」): depth d 인 질량의 벽 바닥은 앞 땅 행보다 정확히 d 칸 위에 선다. 앞으로 튀어나온 날개 = depth 0, 본채 = depth 1. 날개 이음(사용자 판정 2026-10-22 「ㅜ자 집이 한 채로 안 보인다 — 날개와 본채 사이에 풀이 보이고 날개 뒤 박공이 본채 벽 앞에서 끝난다」, 승인안 http://mdc-server:18301/bk-thouse-joined.html): 날개 뒤 끝이 본채 앞벽이다 — 본채 depth = 날개 depth + 1, 날개 지붕은 본채 처마보다 올라가 본채 지붕 속 V자 골(roof.gf.valley v<폭>, back_end valley)에서 만난다. 위에서 보면 한 윤곽, 날개와 본채 사이에 땅이 없다(A16). 날개 옆 본채 벽 밑 한 줄만 투명(지도 바닥). 조립이 앞 질량 오른쪽·처마 아래 그림자(12,14,20,α88)를 뒤 질량 벽에만 얹는다. 문은 가장 앞 질량, 문 앞 칸은 땅.",
+   "light": "빛은 왼쪽 위 — 왼쪽 사면이 밝은 단, 오른쪽 사면이 어두운 단(조립 A12 가 사면 띠의 평균 밝기를 재서 왼쪽이 8 이상 밝아야 통과). 용마루는 가운데 2px 의 곧은 세로선으로, 모든 행에서 양옆 사면과 밝기가 6 이상 다르다(보통 가장 밝은 단 한 줄 + 그늘 쪽 어두운 단).",
+   "compare": "끝내기 전에 preview/compare.png 를 refs/ 의 버들항 기준 건물과, refs/projection-gable-front-4x.png · refs/projection-wing-depth-4x.png 투영 안내도(회색 도형 — 깊이 계단·마당 띠·그림자 구조 안내, 화풍 기준 아님)와 나란히 견준다.",
+   "lead": "Lv.1(레시피 다양화: 쌍박공·ㄷ자 안마당·2층 운하주택·양옆 외쪽 대장간·ㄱ자 저택) + Lv.2(벽 부착 extras on:wall + 아치 회랑·쇼윈도·초가/유리 지붕·어닝·발코니·지붕창·간판) 확장판."
   }
  },
  "plan": {
