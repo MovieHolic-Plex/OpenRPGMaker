@@ -19,7 +19,14 @@
 //   --now <ISO>  판정 시각 고정(재현용)
 import { execFileSync } from "node:child_process";
 import { appendFileSync, writeFileSync } from "node:fs";
-import { AUTO_RELEASE_RULES, decideAutoRelease, renderGateSummary, selectUserFacingCommits } from "./lib/releaseGate.mjs";
+import {
+  AUTO_RELEASE_RULES,
+  decideAutoRelease,
+  evaluateAppUpdateE2eNeed,
+  isManifestDiffOnlyRootVersion,
+  renderGateSummary,
+  selectUserFacingCommits,
+} from "./lib/releaseGate.mjs";
 import { computeCiFullDiff, repoSlug } from "./ci-full-diff.mjs";
 
 const ISSUE_TITLE = "자동 릴리스 기록";
@@ -124,15 +131,57 @@ function waitDispatchedRun(workflow, headSha, timeoutMin) {
   while (!id && Date.now() < deadline) {
     const runs = ghJson(["run", "list", "--workflow", workflow, "--branch", "release/next", "--event", "workflow_dispatch", "--limit", "10", "--json", "databaseId,headSha"]) ?? [];
     id = runs.find((entry) => entry.headSha === headSha)?.databaseId ?? null;
-    if (!id) run("sleep", ["10"]);
+    if (!id) run("sleep", ["5"]);
   }
   if (!id) throw new Error(`${workflow} 판이 ${headSha.slice(0, 10)} 에 생기지 않았다`);
   // gh run watch 는 실패하면 0 이 아닌 코드로 끝난다 → run() 이 던진다.
-  run("timeout", [`${Math.max(1, Math.round((deadline - Date.now()) / 1000))}`, "gh", "run", "watch", String(id), "--exit-status", "--interval", "30"]);
+  run("timeout", [`${Math.max(1, Math.round((deadline - Date.now()) / 1000))}`, "gh", "run", "watch", String(id), "--exit-status", "--interval", "10"]);
   return `run ${id} 초록`;
 }
 
-function execute(repo, decision) {
+function checkAppUpdateE2eNeed(repo, sinceTag, now) {
+  let changedFiles = null;
+  let packageManifestDiffOnlyVersion = true;
+  let lockfileDiffOnlyVersion = true;
+  if (sinceTag) {
+    const rawDiff = git(["diff", "--name-only", `${sinceTag}..origin/main`], { allowFailure: true });
+    if (rawDiff !== null) {
+      changedFiles = rawDiff.split("\n").map((line) => line.trim()).filter(Boolean);
+      if (changedFiles.includes("package.json")) {
+        const beforePkg = git(["show", `${sinceTag}:package.json`], { allowFailure: true });
+        const afterPkg = git(["show", "origin/main:package.json"], { allowFailure: true });
+        packageManifestDiffOnlyVersion = isManifestDiffOnlyRootVersion(beforePkg, afterPkg);
+      }
+      if (changedFiles.includes("package-lock.json")) {
+        const beforeLock = git(["show", `${sinceTag}:package-lock.json`], { allowFailure: true });
+        const afterLock = git(["show", "origin/main:package-lock.json"], { allowFailure: true });
+        lockfileDiffOnlyVersion = isManifestDiffOnlyRootVersion(beforeLock, afterLock);
+      }
+    }
+  }
+  let lastPassingRun = null;
+  try {
+    const runs = ghJson([
+      "api",
+      `repos/${repo}/actions/workflows/app-update-e2e.yml/runs?status=completed&per_page=20`,
+      "--jq",
+      '[.workflow_runs[] | select(.conclusion == "success") | {id, headSha: .head_sha, createdAt: .created_at, completedAt: .updated_at}] | first // null',
+    ]);
+    if (runs && runs.id) lastPassingRun = runs;
+  } catch {
+    lastPassingRun = null;
+  }
+  return evaluateAppUpdateE2eNeed({
+    sinceTag,
+    changedFiles,
+    packageManifestDiffOnlyVersion,
+    lockfileDiffOnlyVersion,
+    lastPassingRun,
+    now,
+  });
+}
+
+function execute(repo, decision, inputs, now) {
   const steps = [];
   const step = (name, fn) => {
     const result = fn();
@@ -151,9 +200,14 @@ function execute(repo, decision) {
   // 그래서 PR 에 걸린 나머지 두 검사도 같은 머리에 직접 디스패치한다.
   const base = git(["rev-parse", "origin/main"]);
   step("ci-related-tests", () => gh(["workflow", "run", "ci-related-tests.yml", "--ref", "release/next", "-f", `base=${base}`]) || "디스패치");
-  step("app-update-e2e", () => gh(["workflow", "run", "app-update-e2e.yml", "--ref", "release/next"]) || "디스패치");
-  // ci-related-tests 는 정보용(필수 아님, 릴리스는 ci-full 대조가 막는다)이라 기다리지 않는다. 업데이트 e2e 는 기다린다.
-  step("app-update-e2e-wait", () => waitDispatchedRun("app-update-e2e.yml", pr.headRefOid, 50));
+  const e2eNeed = checkAppUpdateE2eNeed(repo, inputs.sinceTag, now);
+  if (e2eNeed.required) {
+    step("app-update-e2e", () => gh(["workflow", "run", "app-update-e2e.yml", "--ref", "release/next"]) || `디스패치 (${e2eNeed.reason})`);
+    // ci-related-tests 는 정보용(필수 아님, 릴리스는 ci-full 대조가 막는다)이라 기다리지 않는다. 업데이트 e2e 는 기다린다.
+    step("app-update-e2e-wait", () => waitDispatchedRun("app-update-e2e.yml", pr.headRefOid, 50));
+  } else {
+    step("app-update-e2e", () => `건너뜀 (${e2eNeed.reason})`);
+  }
   // merge-pr 가 CI 를 기다리는 동안 누가 hold-release 를 붙일 수 있다. merge-pr 가 머지 직전에, 여기서 태그 직전에 다시 본다.
   assertNoHold("merge");
   step("merge", () => run("node", ["scripts/merge-pr.mjs", String(pr.number), "--timeout-min=60", `--refuse-if-label=${AUTO_RELEASE_RULES.holdLabel}`]));
@@ -190,7 +244,7 @@ if (args.summary) appendFileSync(args.summary, summary);
 let exitCode = 0;
 if (decision.release && !args.dryRun) {
   try {
-    record.result = execute(repo, decision);
+    record.result = execute(repo, decision, inputs, now);
     record.notifiedIssue = notify(repo, `${record.result.tag} 자동 릴리스: PR #${record.result.pr} 머지, 태그·초안 생성, desktop-release 가 산출물 검증 뒤 발행한다. 사용자 체감 변경 ${inputs.userCommits.length}개, ci-full 새 실패 0 (판 ${ciDiff.candidate?.id} 대 ${ciDiff.baseline?.id}).`);
   } catch (error) {
     record.error = error.message;

@@ -119,7 +119,12 @@ gh release upload v0.3.0 dist-packages/OPRN\ Studio-0.3.0.*
   만들어 버전 파일과 함께 `OPRN.Studio-linux.AppImage`, `OPRN.Studio-windows.exe` 를
   같은 릴리스에 올린다(자산 4개, `scripts/lib/releaseAssets.mjs`). 주소는 `https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/latest/download/`
   뒤에 그 이름이다. 버전 파일까지 자산 네 개가 있으면 빌드를 생략한다. 초안이면 검증 후 발행한다.
-  Electron 다운로드와 예제 JSON 은 러너별 `_tool/oprn-desktop` 아래에 캐시한다.
+  Electron 다운로드와 예제 JSON 은 러너 공용 캐시(`~/.cache/oprn-desktop`, 홈 디스크가 부족하면 러너별 `_tool/oprn-desktop`)에 둔다.
+  예제 굽기(`npm run bake:demos`, `scripts/content/bake-flagship-demos.mjs`)는 데모별 입력 해시 캐시(`v2/<id>-<sha256>`)를 쓰고
+  `package-lock.json` 의 루트 버전 범프는 해시에서 제외해 릴리스 버전만 올린 판에서는 변하지 않은 데모를 다시 굽지 않는다(2026-11-27).
+  캐시 미스 데모는 esbuild 코드 분할 번들(큰 JSON 은 디스크 직접 읽기)로 CPU·메모리 예산 안에서 병렬 굽기하고, BGM 도 캐시·병렬 받기를 쓴다.
+  `desktop-release.yml` 은 Electron·렌더러 빌드, 세 패키지 타깃(AppImage·NSIS·Portable, 각 독립 출력·TMPDIR), 9개 자산 업로드(최대 4병렬 + 자산별 3회 재시도)를 병렬화하되
+  초안 생성 → 업로드 → 9개 자산 이름·크기 검증 → 발행(최고 태그만 latest) 순서 계약은 그대로 유지한다.
   수동 복구에는 저장소 브랜치·태그 이름이나 기본 브랜치 이력의 SHA 를 `source_ref` 로 쓸 수 있다.
   **윈도우 zip 은 2026-11-23 에 버렸다**(app-size). zip 과 portable exe 가 둘 다 무설치 실행이라 같은 앱을
   1GB 씩 두 번 올렸다. 그 뒤 릴리스에서는 `releases/latest/download/OPRN.Studio-windows.zip` 이 404 다 — README 배지를 빼고,
@@ -379,10 +384,11 @@ npm run release:auto -- --dry-run    # 계획만 (아무것도 쓰지 않음)
 | 꼬임 방지 | 산출물 대기 중인 초안 없음, 열린 `release/next` PR 없음 |
 
 안 맞으면 아무것도 쓰지 않고 그 실행의 요약과 아티팩트 `auto-release-decision`(JSON)에 이유만 남긴다.
-맞으면 새 발행기를 만들지 않고 기존 경로를 탄다: `release-auto --skip-publish`(PR·사용자 말 CHANGELOG) →
-ci-fast·ci-related-tests·app-update-e2e 를 release/next 에 디스패치(GITHUB_TOKEN 푸시는 워크플로를 깨우지 않고,
+맞으면 새 발행기를 만들지 않고 기존 경로를 탄다: `release-auto --skip-publish`(PR·사용자 말 CHANGELOG, PR 본문 GraphQL 일괄 조회) →
+ci-fast·ci-related-tests 를 release/next 에 디스패치(GITHUB_TOKEN 푸시는 워크플로를 깨우지 않고,
 봇이 연 PR 의 pull_request 런은 잡 0개로 머물다 머지 때 «workflow file issue» 실패로 닫힌다 — v0.420 PR #5159) →
-app-update-e2e 초록을 기다림(ci-related-tests 는 정보용이라 안 기다린다) → `merge-pr.mjs` →
+직전 태그(`>= v0.420.0`) 이후 `electron/`·패키징·업데이트·의존성 변경이 있거나 최근 14일 내 통과 기록이 없을 때만
+app-update-e2e 를 디스패치해 초록을 기다림(변경 없으면 건너뜀; ci-related-tests 는 정보용이라 안 기다린다) → `merge-pr.mjs` →
 `release-auto --skip-propose`(태그·초안) → `desktop-release` 디스패치(검증 뒤 발행). 발행하거나 도중에 멈추면
 이슈 «자동 릴리스 기록» 에 한 줄 남긴다(리드가 보는 한 곳).
 

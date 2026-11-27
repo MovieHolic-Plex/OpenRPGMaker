@@ -236,8 +236,21 @@ jobs:
         run: |
           set -euo pipefail
           npm ci
-          node scripts/build-electron.mjs
-          OPRN_ASSUME_ALL_BGM_INSTALLED=1 npx --no-install vite build --configLoader runner
+          # Electron 메인·워커(dist-electron/)와 렌더러(dist/)는 서로 산출물을 공유하지 않으므로 병렬로 빌드한다.
+          node scripts/build-electron.mjs > "$RUNNER_TEMP/build-electron.log" 2>&1 &
+          electron_pid=$!
+          OPRN_ASSUME_ALL_BGM_INSTALLED=1 npx --no-install vite build --configLoader runner > "$RUNNER_TEMP/build-vite.log" 2>&1 &
+          vite_pid=$!
+          status=0
+          wait "$electron_pid" || status=$?
+          wait "$vite_pid" || status=$?
+          echo "::group::build-electron 로그"
+          cat "$RUNNER_TEMP/build-electron.log"
+          echo "::endgroup::"
+          echo "::group::vite build 로그"
+          cat "$RUNNER_TEMP/build-vite.log"
+          echo "::endgroup::"
+          exit "$status"
 
       - name: 예제 프로젝트 굽기
         if: steps.preflight.outputs.needed == 'true'
@@ -295,10 +308,87 @@ jobs:
           # NSIS 설치판의 언인스톨러 꺼내기는 wine 을 부른다. 러너에 wine 이 없어 순수 JS 대체를 "wine" 으로 잡힌다
           # (scripts/nsis-wine-shim/extract-uninstaller.cjs).
           export PATH="$PWD/scripts/nsis-wine-shim:$PATH" USE_SYSTEM_WINE=true
-          ELECTRON_BUILDER_7ZIP_PATH="$wrapper" npx --no-install electron-builder \
-            --config scripts/electron-builder.config.mjs --publish never \
-            --linux AppImage --win nsis portable --x64 \
-            '-c.nsis.artifactName=OPRN.Studio-Setup-${version}.${ext}'
+          # 윈도 nsis·portable 이 같은 ELECTRON_CACHE / ELECTRON_BUILDER_CACHE(NSIS·rcedit·Electron zip)를 동시에
+          # 내려받아 깨지는 경쟁을 막기 위해 공유 도구 캐시를 병렬 실행 전에 한 번 미리 채운다(캐시가 있으면 1초 미만).
+          node -e '
+            (async () => {
+              try {
+                const win = require("app-builder-lib/out/toolsets/windows");
+                await Promise.all([
+                  win.getMakeNsisPath?.(),
+                  win.getNsisPluginsPath?.(),
+                  win.getNsisElevatePath?.(),
+                  win.getRceditBundle?.(),
+                ]);
+              } catch (err) {
+                console.warn("nsis toolset warm skipped:", err?.message || err);
+              }
+              try {
+                const { downloadArtifact } = require("@electron/get");
+                const electronVersion = require("electron/package.json").version;
+                await downloadArtifact({ version: electronVersion, artifactName: "electron", platform: "win32", arch: "x64" });
+              } catch (err) {
+                console.warn("win32 electron cache warm skipped:", err?.message || err);
+              }
+            })();
+          '
+          # AppImage · Windows NSIS · Windows Portable 세 타깃을 mdc2-heavy(40코어)에서 격리된 출력·TMPDIR 로 동시에 굽는다.
+          # 각 타깃이 전체 electron-builder 수명주기(doPack → afterPack → app-update.yml → blockmap → latest*.yml)를 그대로 탄다.
+          rm -rf dist-packages dist-packages-linux dist-packages-win-nsis dist-packages-win-portable
+          mkdir -p "$RUNNER_TEMP/eb-linux" "$RUNNER_TEMP/eb-win-nsis" "$RUNNER_TEMP/eb-win-portable"
+
+          (
+            export TMPDIR="$RUNNER_TEMP/eb-linux"
+            ELECTRON_BUILDER_7ZIP_PATH="$wrapper" npx --no-install electron-builder \
+              --config scripts/electron-builder.config.mjs --publish never \
+              --linux AppImage --x64 \
+              -c.directories.output=dist-packages-linux
+          ) > "$RUNNER_TEMP/eb-linux.log" 2>&1 &
+          pid_linux=$!
+
+          (
+            export TMPDIR="$RUNNER_TEMP/eb-win-nsis"
+            ELECTRON_BUILDER_7ZIP_PATH="$wrapper" npx --no-install electron-builder \
+              --config scripts/electron-builder.config.mjs --publish never \
+              --win nsis --x64 \
+              -c.directories.output=dist-packages-win-nsis \
+              '-c.nsis.artifactName=OPRN.Studio-Setup-${version}.${ext}'
+          ) > "$RUNNER_TEMP/eb-win-nsis.log" 2>&1 &
+          pid_nsis=$!
+
+          (
+            export TMPDIR="$RUNNER_TEMP/eb-win-portable"
+            ELECTRON_BUILDER_7ZIP_PATH="$wrapper" npx --no-install electron-builder \
+              --config scripts/electron-builder.config.mjs --publish never \
+              --win portable --x64 \
+              -c.directories.output=dist-packages-win-portable
+          ) > "$RUNNER_TEMP/eb-win-portable.log" 2>&1 &
+          pid_portable=$!
+
+          status=0
+          wait "$pid_linux" || { echo "::error::Linux AppImage 패키징 실패"; status=1; }
+          wait "$pid_nsis" || { echo "::error::Windows NSIS 패키징 실패"; status=1; }
+          wait "$pid_portable" || { echo "::error::Windows Portable 패키징 실패"; status=1; }
+
+          for target in linux win-nsis win-portable; do
+            echo "::group::electron-builder ($target)"
+            cat "$RUNNER_TEMP/eb-$target.log"
+            echo "::endgroup::"
+          done
+          if (( status != 0 )); then exit "$status"; fi
+
+          mkdir -p dist-packages
+          shopt -s nullglob
+          for f in dist-packages-linux/*.AppImage dist-packages-linux/latest-linux.yml; do
+            mv -- "$f" dist-packages/
+          done
+          for f in dist-packages-win-nsis/OPRN.Studio-Setup-*.exe dist-packages-win-nsis/OPRN.Studio-Setup-*.exe.blockmap dist-packages-win-nsis/latest.yml; do
+            mv -- "$f" dist-packages/
+          done
+          for f in dist-packages-win-portable/*.exe; do
+            mv -- "$f" dist-packages/
+          done
+          rm -rf dist-packages-linux dist-packages-win-nsis dist-packages-win-portable
 
       # 시험 빌드는 여기서 끝난다: 형식(설치판은 NSIS 설치기, portable 은 스플래시를 품은 자기 해제 exe)과 크기를 남긴다.
       - name: 시험 빌드 산출물 보고
@@ -359,8 +449,41 @@ jobs:
           for f in "$out"/latest.yml "$out"/latest-linux.yml "$out"/OPRN.Studio-Setup-*.exe.blockmap; do
             if [[ -s "$f" ]]; then feed+=("$f"); fi
           done
-          gh release upload "$TAG" "${files[@]}" "${stable[@]}" "${feed[@]}" --clobber
-          echo "업로드 완료: $TAG (업데이트 파일 ${#feed[@]}개)"
+          # 자산 9개(약 4.2GB)를 직렬로 올리면 2분 넘게 걸린다. 서로 다른 파일명이므로 최대 4개씩 병렬 업로드하고,
+          # 일시 오류는 자산별 3회까지 재시도한다. 하나라도 실패하면 스텝이 실패해 초안으로 남는다.
+          assets=("${files[@]}" "${stable[@]}" "${feed[@]}")
+          upload_one() {
+            local file="$1"
+            local attempt
+            for attempt in 1 2 3; do
+              if gh release upload "$TAG" "$file" --clobber; then
+                echo "  uploaded: $(basename "$file")"
+                return 0
+              fi
+              if (( attempt < 3 )); then
+                echo "  retrying ($(basename "$file"), attempt $attempt/3)..." >&2
+                sleep "$((attempt * 5))"
+              fi
+            done
+            echo "::error::업로드 실패: $file" >&2
+            return 1
+          }
+          max_parallel=4
+          pids=()
+          upload_status=0
+          for asset in "${assets[@]}"; do
+            upload_one "$asset" &
+            pids+=("$!")
+            if (( ${#pids[@]} >= max_parallel )); then
+              wait "${pids[0]}" || upload_status=1
+              pids=("${pids[@]:1}")
+            fi
+          done
+          for pid in "${pids[@]}"; do
+            wait "$pid" || upload_status=1
+          done
+          if (( upload_status != 0 )); then exit "$upload_status"; fi
+          echo "업로드 완료: $TAG (총 ${#assets[@]}개, 업데이트 파일 ${#feed[@]}개)"
 
       # ── ③ 검증 → 발행 ──────────────────────────────────────────────────────────
       # 이름·크기를 한 번 더 읽어 확인한다. 발행은 그 뒤에만. 검증에 실패하면 스텝이 실패해

@@ -72,6 +72,39 @@ function fetchPrBody(number) {
   }
 }
 
+/**
+ * PR 본문을 GraphQL 한 번(청크당 40개)으로 묶어 읽는다.
+ * 커밋 100건마다 `gh pr view` 를 직렬로 부르면 auto-release 제안 단계만 ~90초 걸린다.
+ * GraphQL 실패 시 개별 `fetchPrBody` 로 폴백한다.
+ */
+function fetchPrBodiesBatch(numbers) {
+  const bodies = new Map();
+  const unique = [...new Set(numbers.filter((n) => Number.isInteger(n) && n > 0))];
+  if (unique.length === 0) return bodies;
+  const slug = process.env.GITHUB_REPOSITORY || gh(["repo", "view", "--json", "nameWithOwner", "-q", ".nameWithOwner"], { allowFailure: true });
+  const [owner, name] = String(slug ?? "").split("/");
+  if (!owner || !name) return bodies;
+  const CHUNK = 40;
+  for (let i = 0; i < unique.length; i += CHUNK) {
+    const slice = unique.slice(i, i + CHUNK);
+    const fields = slice.map((num) => `pr_${num}: pullRequest(number: ${num}) { body }`).join(" ");
+    const query = `query($owner: String!, $name: String!) { repository(owner: $owner, name: $name) { ${fields} } }`;
+    const raw = gh(["api", "graphql", "-f", `query=${query}`, "-f", `owner=${owner}`, "-f", `name=${name}`], { allowFailure: true });
+    if (!raw) continue;
+    try {
+      const repoData = JSON.parse(raw)?.data?.repository ?? {};
+      for (const num of slice) {
+        const entry = repoData[`pr_${num}`];
+        if (entry && typeof entry.body === "string") bodies.set(num, entry.body);
+        else if (entry !== undefined) bodies.set(num, null);
+      }
+    } catch {
+      /* 개별 폴백 */
+    }
+  }
+  return bodies;
+}
+
 function commitsSince(base, tag) {
   const range = tag ? [base, `^${tag}`] : [base];
   const output = git(["log", "--no-merges", "--pretty=format:%H%x09%s", ...range], { allowFailure: true }) ?? "";
@@ -181,7 +214,12 @@ function propose(args) {
   const nextTag = `v${next}`;
   if (hasTag(nextTag)) return { step: "propose", result: `${nextTag} 이미 있음` };
 
-  const items = args.useGh ? enrichReleaseItems(collectReleaseItems(commits), fetchPrBody) : collectReleaseItems(commits);
+  const collected = collectReleaseItems(commits);
+  let items = collected;
+  if (args.useGh) {
+    const prBodies = fetchPrBodiesBatch(collected.map((item) => item.prNumber).filter(Boolean));
+    items = enrichReleaseItems(collected, (number) => (prBodies.has(number) ? prBodies.get(number) : fetchPrBody(number)));
+  }
   const sections = buildReleaseSections(items);
   const notes = renderReleaseNotes({ version: next, date: localDate(), sections });
   if (args.dryRun) {

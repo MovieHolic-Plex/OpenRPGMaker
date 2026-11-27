@@ -46,11 +46,46 @@ export function latestPublishedTag(repo) {
 }
 
 /**
+ * 로컬 git 이력에 tag 와 sha 가 모두 있으면 네트워크 왕복 없이 관계를 계산한다.
+ * 없는 커밋이면 null 을 돌려 호출자가 GitHub compare API 로 폴백한다.
+ */
+function localRelationToTag(tag, sha) {
+  const gitOk = (args) => {
+    try {
+      execFileSync("git", args, { stdio: ["ignore", "pipe", "pipe"] });
+      return true;
+    } catch {
+      return false;
+    }
+  };
+  if (!gitOk(["cat-file", "-e", `${tag}^{commit}`]) || !gitOk(["cat-file", "-e", `${sha}^{commit}`])) {
+    return null;
+  }
+  if (gitOk(["merge-base", "--is-ancestor", sha, tag])) return "included";
+  if (gitOk(["merge-base", "--is-ancestor", tag, sha])) return "after";
+  try {
+    const ahead = Number(execFileSync("git", ["rev-list", "--count", `${tag}..${sha}`], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim());
+    if (ahead === 1) {
+      const subject = execFileSync("git", ["log", "-1", "--format=%s", sha], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }).trim();
+      if (/^chore\(release\)/u.test(subject)) return "included";
+    }
+    return "other";
+  } catch {
+    return null;
+  }
+}
+
+/**
  * 커밋이 태그에 «포함» 되는지, 태그 «이후» 인지, 관계없는지.
  * 포함: 태그와 같거나 태그의 조상. 또는 태그 조상 위에 `chore(release)` 범프 커밋 하나만 얹힌 release/next 머리.
  */
 function relationToTag(repo, tag, sha, cache) {
   if (cache.has(sha)) return cache.get(sha);
+  const local = localRelationToTag(tag, sha);
+  if (local !== null) {
+    cache.set(sha, local);
+    return local;
+  }
   let relation = "other";
   try {
     const cmp = ghJson(["api", `repos/${repo}/compare/${tag}...${sha}`, "--jq", "{status: .status, ahead: .ahead_by, msgs: [.commits[].commit.message]}"]);
