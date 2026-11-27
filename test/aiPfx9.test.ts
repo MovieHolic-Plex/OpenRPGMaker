@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeAll } from "vitest";
+import { describe, expect, it } from "vitest";
 import { AssistantSession } from "@/ai/assistantSession";
 import { NON_TILE_SPATIAL_TOOLS, SPATIAL_BUILD_TOOLS } from "@/ai/buildSpec";
 import { runTool } from "@/editor/tools";
@@ -17,14 +17,12 @@ import type { PlacePatch, PlaceSpec } from "@/ai/v2/shared/types";
 import { isIndoorMap, placeSpecFor, placeTypeFromName } from "@/ai/v2/place/placeGuess";
 import { isolateTimers } from "./mergedTeardown";
 
-describe("aiSpecGateFreshMap", () => {
+describe("aiSpecGateFreshMap", { timeout: 120000 }, () => {
   isolateTimers();
-  beforeAll(() => {
-    // Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
-    // panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
-    // single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
-    vi.setConfig({ testTimeout: 120_000 });
-  });
+  // 시험 시간 한도는 수집 때 읽혀 beforeAll 안 vi.setConfig 는 듣지 않는다 — describe 옵션 timeout 으로 둔다.
+  // Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+  // panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+  // single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
   type ChatResult = import("@/ai/llmClient").ChatResult;
   const CONFIG = { authMode: "apiKey" as const, baseUrl: "x", model: "stub-model", apiKey: "sk", maxToolCalls: 12, maxTokens: 8192 };
   function scriptedChat(steps: readonly ChatResult[]) {

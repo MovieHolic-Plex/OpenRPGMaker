@@ -203,6 +203,8 @@ export function analyzeFile(path, text) {
   if (topLevelAwait(sf)) reasons.push("top-level-await");
   // vi.resetModules() 는 시험마다 모듈 그래프를 새로 올린다 — 합친 파일에서는 힙이 한 프로세스에 쌓여 워커가 OOM 으로 죽는다(run 45388407639).
   if (/\bvi\.resetModules\(/.test(text)) reasons.push("reset-modules");
+  // 시험 한도 말고 다른 설정(hookTimeout 등)은 describe 옵션으로 옮길 수 없다 — beforeAll 로 옮기면 조용히 사라진다.
+  if (stmts.some((x) => x.role === "effect" && setConfigTestTimeout(x.node) === null)) reasons.push("set-config");
   // 되돌리지 않는 가짜 타이머·전역/환경 스텁은 같은 파일의 뒤 describe 로 샌다(파일이 따로일 때는 프로세스와 함께 사라졌다).
   if (/\bvi\.useFakeTimers\b/.test(text) && !/\bvi\.useRealTimers\b/.test(text)) reasons.push("fake-timers-leak");
   if (/\bvi\.stubGlobal\b/.test(text) && !/\bvi\.unstubAllGlobals\b/.test(text)) reasons.push("global-stub-leak");
@@ -224,7 +226,8 @@ export function analyzeFile(path, text) {
     }
   }
   const counts = countCalls(text, path);
-  return { path, env, imports, mocks, stmts, sf, text, reasons, counts, hasEffect: firstEffect >= 0 };
+  const hasEffect = stmts.some((x) => x.role === "effect" && setConfigTestTimeout(x.node) === undefined);
+  return { path, env, imports, mocks, stmts, sf, text, reasons, counts, hasEffect };
 }
 
 /** describe 콜백 몸통의 직접 선언이 수집 때 곧바로 부르는 호출을 가졌는가(중첩 describe 포함) */
@@ -289,9 +292,32 @@ function literalRanges(sf) {
   return r;
 }
 
-/** 한 파일의 import 뒤 몸통을 describe 한 덩어리로 만든다. 부수효과 문은 beforeAll 로 옮긴다. */
+/**
+ * 최상위 `vi.setConfig({ testTimeout: N })` 의 N. vitest 는 시험 시간 한도를 **수집 때**(it 을 부를 때) 읽으므로
+ * 이 문을 beforeAll 로 옮기면 한도가 조용히 기본값(ci 30초)으로 돌아간다(ci-full 45920025667 aiPfx7·이 파일들 30초 초과).
+ * 합친 파일에서는 describe 옵션 `{ timeout: N }` 으로 옮긴다 — 그 describe 의 시험에만 걸린다(파일이 따로일 때와 같은 범위).
+ * 다른 키(hookTimeout 등)가 있으면 null 을 돌려 합치지 않게 한다.
+ */
+export function setConfigTestTimeout(node) {
+  if (!ts.isExpressionStatement(node) || !ts.isCallExpression(node.expression)) return undefined;
+  const callee = node.expression.expression;
+  if (!ts.isPropertyAccessExpression(callee) || callee.name.text !== "setConfig" || !ts.isIdentifier(callee.expression) || callee.expression.text !== "vi") return undefined;
+  const [arg] = node.expression.arguments;
+  if (!arg || !ts.isObjectLiteralExpression(arg) || arg.properties.length !== 1) return null;
+  const prop = arg.properties[0];
+  if (!ts.isPropertyAssignment(prop) || prop.name.getText() !== "testTimeout" || !ts.isNumericLiteral(prop.initializer)) return null;
+  return Number(prop.initializer.text.replace(/_/g, ""));
+}
+
+/** 한 파일의 import 뒤 몸통을 describe 한 덩어리로 만든다. 부수효과 문은 beforeAll 로, `vi.setConfig({ testTimeout })` 는 describe 옵션으로 옮긴다. */
 function wrapBody(info) {
-  const { sf, text, stmts, path } = info;
+  const { sf, text, path } = info;
+  let timeout;
+  const stmts = info.stmts.filter((x) => {
+    const t = x.role === "effect" ? setConfigTestTimeout(x.node) : undefined;
+    if (typeof t === "number") timeout = t;
+    return typeof t !== "number";
+  });
   const rest = stmts.filter((x) => x.role === "keep" || x.role === "effect");
   const ranges = literalRanges(sf);
   const pieces = [];
@@ -329,7 +355,7 @@ function wrapBody(info) {
     }
   }
   const name = path.replace(/^.*\//, "").replace(/\.test\.ts$/, "");
-  return { name, body: pieces.join("").replace(/^\n+/, "").replace(/\s+$/, "") };
+  return { name, timeout, body: pieces.join("").replace(/^\n+/, "").replace(/\s+$/, "") };
 }
 
 /**
@@ -447,11 +473,11 @@ export function mergeGroup(files, { header = "", resolver = null, teardownImport
   if (base.mocks.length) lines.push("", ...base.mocks);
   const blocks = [];
   for (const info of kept) {
-    const { name, body } = wrapBody(info);
+    const { name, body, timeout } = wrapBody(info);
     const first = info.sf.statements[0];
     const lead = first ? info.text.slice(0, first.getStart()).split("\n").filter((l) => !/@vitest-environment/.test(l)).join("\n").trim() : "";
     const note = lead && /^\/\/|^\/\*/.test(lead) ? `${lead}\n` : "";
-    blocks.push(`${note}describe(${JSON.stringify(name)}, () => {\n${teardownImport ? "  isolateTimers();\n" : ""}${body}\n});`);
+    blocks.push(`${note}describe(${JSON.stringify(name)}, ${timeout ? `{ timeout: ${timeout} }, ` : ""}() => {\n${teardownImport ? "  isolateTimers();\n" : ""}${body}\n});`);
   }
   const textOut = `${header}${lines.join("\n")}\n\n${blocks.join("\n\n")}\n`;
   const before = { it: 0, describe: 0, expect: 0 };
