@@ -30,6 +30,8 @@ const closeMenu = [{ kind: "pressUntil", key: "Escape", testid: "main-menu", sta
 
 export default {
   id: "bestiary",
+  // 옛 ESC 메뉴(menuUiStyle 스킨) 화면을 검사한다 — 기본이 허브 메뉴가 된 뒤에도 같은 화면을 본다.
+  systemPatch: { menuLayout: "legacy" },
   projectFixture: process.env.BESTIARY_FIXTURE ?? "/tmp/hs/bestiary.json",
   viewport: { width: 960, height: 540 },
   beats: [

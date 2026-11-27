@@ -18,10 +18,10 @@ function combatProject(): Project {
 const noop = new Proxy({}, { get: () => () => undefined }) as PlayerStatusMenuActions;
 
 describe("ESC 허브 메뉴", () => {
-  it("system.menuLayout 이 hub 일 때만 켜진다", () => {
+  it("기본으로 켜지고 옛 메뉴(legacy)를 고르면 꺼진다", () => {
     const project = combatProject();
     const session = startSession(project, 1);
-    expect(hubMenuEnabled(project, session)).toBe(false);
+    expect(hubMenuEnabled(project, session)).toBe(true);
     project.system.menuLayout = "hub";
     expect(hubMenuEnabled(project, session)).toBe(true);
     project.system.menuLayout = "legacy";

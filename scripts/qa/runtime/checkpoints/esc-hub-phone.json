@@ -137,7 +137,7 @@
     },
     {
      "id": "items-target",
-     "note": "탭 한 번 더 = 사용 → 누구에게",
+     "note": "첫 탭 고르기, 두 번째 탭 사용 → 누구에게",
      "ops": [
       {
        "kind": "tap",
@@ -157,16 +157,14 @@
     },
     {
      "id": "equip",
+     "note": "장비: 무기 칸 두 번 탭 → 후보, 후보 탭 → 수치 비교",
      "ops": [
       {
-       "kind": "key",
+       "kind": "pressUntil",
        "key": "Escape",
-       "times": 1
-      },
-      {
-       "kind": "key",
-       "key": "Escape",
-       "times": 1
+       "testid": "hub-tile-equipment",
+       "state": "present",
+       "maxPresses": 4
       },
       {
        "kind": "tap",
@@ -178,14 +176,17 @@
        "ms": 600
       },
       {
-       "kind": "key",
-       "key": "Enter",
-       "times": 1
+       "kind": "tap",
+       "testid": "hub-slot-weapon"
       },
       {
-       "kind": "key",
-       "key": "ArrowRight",
-       "times": 1
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "tap",
+       "testid": "hub-cand-status-menu-equipment-item-equip_fs_sword_gale"
       },
       {
        "kind": "hold",
@@ -199,14 +200,11 @@
      "id": "skills",
      "ops": [
       {
-       "kind": "key",
+       "kind": "pressUntil",
        "key": "Escape",
-       "times": 1
-      },
-      {
-       "kind": "key",
-       "key": "Escape",
-       "times": 1
+       "testid": "hub-tile-skills",
+       "state": "present",
+       "maxPresses": 4
       },
       {
        "kind": "tap",
@@ -224,9 +222,11 @@
      "id": "status",
      "ops": [
       {
-       "kind": "key",
+       "kind": "pressUntil",
        "key": "Escape",
-       "times": 1
+       "testid": "hub-tile-status",
+       "state": "present",
+       "maxPresses": 4
       },
       {
        "kind": "tap",
