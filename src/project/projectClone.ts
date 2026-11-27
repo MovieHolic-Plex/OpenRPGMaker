@@ -4,6 +4,13 @@ import { jsonEqual } from "@/util/structuralJson";
 import { shareContentDigests } from "@/project/persistence/core/contentDigest";
 import { isPendingLazyTileset } from "@/project/bundledTilesetLazy";
 import { registerLazyTilesets, unregisterLazyTilesets } from "@/project/lazyTilesetRead";
+import {
+  copyTilesetDictionaryPreservingLazy,
+  hasPendingDefaultTilesets,
+  pendingDefaultTilesetBuilder,
+  registerLazyDefaultTileset,
+  type LazyDefaultTilesetBuilder,
+} from "@/project/defaults/lazyDefaultTilesets";
 
 /**
  * 편집용 프로젝트 복제. 타일셋 참고문서(타일셋당 수 MB, 합계 약 20MB)는
@@ -17,7 +24,15 @@ export function cloneProjectSharingReferenceDocuments(project: Project): Project
   // 아직 되돌리지 않은 지연 번들 타일셋(bundledTilesetDiff.ts)은 복제하지 않고 같은 객체를 가리킨다 — 복제는 모든 필드를 읽어
   // 번들 정의를 읽고 되돌린다. 스토어는 타일셋 항목을 제자리에서 고치지 않는다(위 계약). 되돌리기는 값이 같은 제자리 채움이다.
   const lazy: Array<[string, TilesetDef]> = [];
-  for (const [id, tileset] of Object.entries(project.tilesets)) {
+  const pendingDefaults: Array<[string, LazyDefaultTilesetBuilder<TilesetDef>]> = [];
+  for (const id of Object.keys(project.tilesets)) {
+    const defaultBuild = pendingDefaultTilesetBuilder(project.tilesets, id);
+    if (defaultBuild) {
+      pendingDefaults.push([id, defaultBuild as LazyDefaultTilesetBuilder<TilesetDef>]);
+      tilesets[id] = null as unknown as TilesetDef;
+      continue;
+    }
+    const tileset = project.tilesets[id]!;
     if (isPendingLazyTileset(tileset)) {
       lazy.push([id, tileset]);
       tilesets[id] = null as unknown as TilesetDef;
@@ -34,6 +49,7 @@ export function cloneProjectSharingReferenceDocuments(project: Project): Project
     tilesets[id] = { ...tileset, referenceDocuments: [] };
   }
   const cloned = structuredClone({ ...project, tilesets });
+  for (const [id, build] of pendingDefaults) registerLazyDefaultTileset(cloned.tilesets, id, build);
   for (const [id, tileset] of lazy) cloned.tilesets[id] = tileset;
   for (const [id, documents] of shared) {
     const tileset = cloned.tilesets[id];
@@ -75,7 +91,10 @@ function lazyTilesetDictionary(originals: Project["tilesets"]): Project["tileset
       enumerable: true,
       configurable: true,
       get(): TilesetDef {
-        const copy = cloneTilesetSharingReferenceDocuments(originals[id]!);
+        const defaultBuild = pendingDefaultTilesetBuilder(originals, id);
+        const copy = defaultBuild
+          ? (defaultBuild as LazyDefaultTilesetBuilder<TilesetDef>)()
+          : cloneTilesetSharingReferenceDocuments(originals[id]!);
         clones.set(id, copy);
         settle(id, copy);
         return copy;
@@ -140,7 +159,7 @@ export function shareUploadedAssets(source: Project, copy: Project): void {
  */
 export function cloneProjectSharingSharedDictionaries(project: Project): Project {
   const next = structuredClone(withoutSharedDictionaries(project)) as Project;
-  next.tilesets = { ...project.tilesets };
+  next.tilesets = copyTilesetDictionaryPreservingLazy(project.tilesets);
   shareUploadedAssets(project, next);
   shareContentDigests(project, next);
   return next;
@@ -175,6 +194,8 @@ export function trustStoreOwnedEntries(project: Project, live: Project = project
     if (!dictionary || !owned) return;
     // 값을 읽기만 한다 — 지연 번들 타일셋(bundledTilesetDiff.ts)은 사전 자리의 보통 값이라 되돌리지 않는다.
     for (const key of Object.keys(dictionary)) {
+      if (pendingDefaultTilesetBuilder(dictionary, key)) continue;
+      if (dictionary !== owned && pendingDefaultTilesetBuilder(owned, key)) continue;
       const entry = dictionary[key];
       if (isObjectLike(entry) && (dictionary === owned || owned[key] === entry)) storeOwnedEntries.add(entry);
     }
@@ -199,20 +220,36 @@ export function isStoreOwnedEntry(value: unknown): boolean {
  */
 export function cloneProjectSharingStoreOwnedEntries(project: Project): Project {
   const kept: Array<[dictionary: number, key: string, entry: unknown]> = [];
+  const pendingDefaults: Array<[dictionary: number, key: string, build: LazyDefaultTilesetBuilder]> = [];
   const shells = sharedDictionariesOf(project).map((dictionary, index) => {
     if (!dictionary) return undefined;
     let shell: Record<string, unknown> | undefined;
+    const ensureShell = (): Record<string, unknown> => {
+      if (!shell) {
+        shell = {};
+        for (const k of Object.keys(dictionary)) {
+          shell[k] = pendingDefaultTilesetBuilder(dictionary, k) ? null : dictionary[k];
+        }
+      }
+      return shell;
+    };
+    const hasPending = hasPendingDefaultTilesets(dictionary);
     for (const key of Object.keys(dictionary)) {
+      const build = hasPending ? pendingDefaultTilesetBuilder(dictionary, key) : undefined;
+      if (build) {
+        ensureShell()[key] = null;
+        pendingDefaults.push([index, key, build]);
+        continue;
+      }
       const entry = dictionary[key];
       if (!isObjectLike(entry) || !storeOwnedEntries.has(entry)) continue;
       // 자리를 비우지 않고 null 로 지킨다 — 빼고 다시 붙이면 키 순서가 바뀌어 직렬화 바이트가 달라진다.
-      shell ??= { ...dictionary };
-      shell[key] = null;
+      ensureShell()[key] = null;
       kept.push([index, key, entry]);
     }
     return shell;
   });
-  if (kept.length === 0) return structuredClone(project);
+  if (kept.length === 0 && pendingDefaults.length === 0) return structuredClone(project);
   const [tilesets, uploaded] = shells;
   const assets = project.assets as Project["assets"] | undefined;
   const next = structuredClone({
@@ -221,6 +258,7 @@ export function cloneProjectSharingStoreOwnedEntries(project: Project): Project 
     ...(uploaded && assets ? { assets: { ...assets, uploaded } } : {}),
   }) as unknown as Project;
   const targets = sharedDictionariesOf(next);
+  for (const [index, key, build] of pendingDefaults) registerLazyDefaultTileset(targets[index]!, key, build);
   for (const [index, key, entry] of kept) targets[index]![key] = entry;
   // 복제된 가지(맵·DB 등)의 요약 기억을 넘긴다 — 기억은 값 대조로만 채택된다(contentDigest.shareContentDigests).
   shareContentDigests(project, next);
@@ -243,12 +281,24 @@ export function finishProjectMutation(draft: Project): ReadonlySet<string> | nul
   const changed = new Set<string>();
   for (const id of Object.keys(dictionary)) {
     const descriptor = Object.getOwnPropertyDescriptor(dictionary, id)!;
-    const original = Object.prototype.hasOwnProperty.call(state.originals, id) ? state.originals[id] : undefined;
+    const defaultBuild = pendingDefaultTilesetBuilder(state.originals, id);
     if (descriptor.get) {
-      settled[id] = original!;
+      if (defaultBuild) registerLazyDefaultTileset(settled, id, defaultBuild as LazyDefaultTilesetBuilder<TilesetDef>);
+      else settled[id] = state.originals[id]!;
       continue;
     }
     const value = descriptor.value as TilesetDef;
+    if (defaultBuild) {
+      const original = state.originals[id];
+      if (original !== undefined && state.clones.get(id) === value && jsonEqual(value, original)) {
+        settled[id] = original;
+        continue;
+      }
+      settled[id] = value;
+      changed.add(id);
+      continue;
+    }
+    const original = Object.prototype.hasOwnProperty.call(state.originals, id) ? state.originals[id] : undefined;
     if (value === original) {
       settled[id] = original;
       continue;

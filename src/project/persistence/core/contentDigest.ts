@@ -1,4 +1,9 @@
 import { sha256HexTextSync } from "../../../util/sha256";
+import {
+  bakedDigestForPendingDefaultTileset,
+  hasPendingDefaultTilesets,
+  pendingDefaultTilesetBuilder,
+} from "../../defaults/lazyDefaultTilesets";
 
 /**
  * `canonicalJsonOf` 와 **같은 동일성**(키 순서 무시, 배열 순서·값·JSON 투영 유지)을 SHA-256 요약으로 낸다.
@@ -115,7 +120,11 @@ export function trustSharedProjectEntries(project: unknown): void {
   const record = project as { tilesets?: unknown; assets?: { uploaded?: unknown } };
   for (const dictionary of [record.tilesets, record.assets?.uploaded]) {
     if (!isObject(dictionary)) continue;
-    for (const entry of Object.values(dictionary as Record<string, unknown>)) {
+    const dict = dictionary as Record<string, unknown>;
+    const hasPending = hasPendingDefaultTilesets(dict);
+    for (const key of Object.keys(dict)) {
+      if (hasPending && pendingDefaultTilesetBuilder(dict, key)) continue;
+      const entry = dict[key];
       if (isObject(entry) && memos.has(entry)) trustedShared.add(entry);
     }
   }
@@ -214,7 +223,21 @@ function nodeToken(node: Record<string, unknown>): string {
   const tokens = new Array<string | undefined>(length);
   const pieces = new Array<string | undefined>(length);
   let objects = 0;
+  const hasPendingDefaults = keys !== null && hasPendingDefaultTilesets(node);
   for (let index = 0; index < length; index++) {
+    if (hasPendingDefaults) {
+      const k = keys![index]!;
+      if (pendingDefaultTilesetBuilder(node, k)) {
+        const baked = bakedDigestForPendingDefaultTileset(k);
+        if (baked !== undefined) {
+          const token = `#${baked}`;
+          pieces[index] = token;
+          tokens[index] = token;
+          objects += 1;
+          continue;
+        }
+      }
+    }
     // 배열 자리의 키(String(index))는 객체 자식이 toJSON 을 가질 때만 쓰인다(tokenOf) — 그때만 만든다.
     const value = keys ? node[keys[index]!] : items![index];
     const token = tokenOf(value, keys ? keys[index]! : isObject(value) ? String(index) : "");
@@ -257,8 +280,19 @@ const INLINE_TEXT = 256;
 
 function isFresh(node: Record<string, unknown>, keys: readonly string[] | null, items: readonly unknown[] | null, length: number, memo: NodeMemo): boolean {
   if ((keys === null) !== (memo.keys === null)) return false;
+  const hasPendingDefaults = keys !== null && hasPendingDefaultTilesets(node);
   for (let index = 0; index < length; index++) {
     if (keys && memo.keys![index] !== keys[index]) return false;
+    if (hasPendingDefaults) {
+      const k = keys![index]!;
+      if (pendingDefaultTilesetBuilder(node, k)) {
+        const baked = bakedDigestForPendingDefaultTileset(k);
+        if (baked !== undefined) {
+          if (`#${baked}` !== memo.tokens[index]) return false;
+          continue;
+        }
+      }
+    }
     const value = keys ? node[keys[index]!] : items![index];
     const token = memo.tokens[index];
     if (isObject(value)) {
@@ -280,11 +314,14 @@ export function shareContentDigests(source: unknown, copy: unknown): void {
   const from = source as Record<string, unknown>;
   const to = copy as Record<string, unknown>;
   const memo = memos.get(source);
+  const hasPendingFrom = hasPendingDefaultTilesets(from);
+  const hasPendingTo = hasPendingDefaultTilesets(to);
   if (memo) {
     if (!memos.has(copy)) memos.set(copy, memo);
     for (let index = 0; index < memo.tokens.length; index++) {
       if (memo.tokens[index] === undefined) continue;
       const key = memo.keys ? memo.keys[index]! : index;
+      if (typeof key === "string" && ((hasPendingFrom && pendingDefaultTilesetBuilder(from, key)) || (hasPendingTo && pendingDefaultTilesetBuilder(to, key)))) continue;
       shareContentDigests(from[key], to[key]);
     }
     return;
@@ -293,7 +330,10 @@ export function shareContentDigests(source: unknown, copy: unknown): void {
   if (Array.isArray(source)) {
     for (let index = 0; index < source.length; index++) if (isObject(source[index])) shareContentDigests(source[index], to[index]);
   } else {
-    for (const key of Object.keys(from)) if (isObject(from[key])) shareContentDigests(from[key], to[key]);
+    for (const key of Object.keys(from)) {
+      if ((hasPendingFrom && pendingDefaultTilesetBuilder(from, key)) || (hasPendingTo && pendingDefaultTilesetBuilder(to, key))) continue;
+      if (isObject(from[key])) shareContentDigests(from[key], to[key]);
+    }
   }
 }
 

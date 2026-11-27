@@ -64,10 +64,22 @@ jobs:
       matrix: ${{ steps.select.outputs.matrix }}
     steps:
       # pull_request 체크아웃은 「PR 머리 + 지금 main」 병합 커밋이라 HEAD^1 = main 이다(ci-fast.yml 과 같다) — 이력은 둘이면 된다.
+      # 선택기는 git diff 이름과 코드·시험의 import 그래프만 읽는다 — public/·tiledata/·바이너리(1.5GB+)는 받지 않는다.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 0 }}
           persist-credentials: false
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /*
+            !public/**
+            !tiledata/**
+            !*.png
+            !*.gif
+            !*.mp3
+            !*.ogg
+            !*.wav
 
       # 선택기는 node 내장 모듈과 git 만 쓴다 — 고른 파일이 0개면 조각 잡이 아예 뜨지 않는다.
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4

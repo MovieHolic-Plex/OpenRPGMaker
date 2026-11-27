@@ -182,18 +182,22 @@ jobs:
           node-version: 24
           cache: npm
 
-      # 일부 테스트(spatialPlaceCli·npcGoldReward·assistantAcceptanceProvider)가 bun 으로 CLI 를 띄운다.
-      # 러너에 bun 이 없어 「spawnSync bun ENOENT」로 실패했다(ci-full 40165485978).
-      #    저장소 정책이 GitHub 소유 액션만 허용하므로(oven-sh/setup-bun 은 startup_failure) npm 패키지로 깐다.
-      - name: bun 설치
-        run: npm install -g bun@1.4.2 && bun --version
-
-      # 하네스 테스트(joseonBaram)가 python3 관문 스크립트(mapgate.py·gate.py)를 부르고, 그 스크립트가 numpy·Pillow 를 쓴다.
-      # 러너의 시스템 python 은 PEP 668 로 막혀 있어 --break-system-packages 로 버전을 고정해 깐다.
-      - name: python 의존성 (numpy·Pillow)
-        run: python3 -m pip install --user --break-system-packages numpy==2.4.4 pillow==12.1.1 && python3 -c "import numpy, PIL; print(numpy.__version__, PIL.__version__)"
-
-      - run: npm ci
+      # bun · python(numpy·Pillow) · npm ci 는 서로 독립적이므로 병렬로 설치한다.
+      # 일부 테스트(spatialPlaceCli·npcGoldReward·assistantAcceptanceProvider)가 bun 을, joseonBaram 테스트가 numpy·Pillow 를 쓴다.
+      - name: 의존성 설치 (npm ci · bun · numpy/Pillow 병렬)
+        run: |
+          set -euo pipefail
+          (npm install -g bun@1.4.2 && bun --version) > "$RUNNER_TEMP/bun.log" 2>&1 &
+          bun_pid=$!
+          (python3 -m pip install -q --user --break-system-packages numpy==2.4.4 pillow==12.1.1 && python3 -c "import numpy, PIL; print('python:', numpy.__version__, PIL.__version__)") > "$RUNNER_TEMP/py.log" 2>&1 &
+          py_pid=$!
+          status=0
+          npm ci || status=$?
+          wait "$bun_pid" || status=$?
+          cat "$RUNNER_TEMP/bun.log"
+          wait "$py_pid" || status=$?
+          cat "$RUNNER_TEMP/py.log"
+          exit "$status"
 
       - name: 자원 스냅샷 (시작)
         run: node scripts/ci-resource-report.mjs start

@@ -53,6 +53,7 @@ import { bundledAssetRef, COMBINED_TOWN_TILESET_ID, COMBINED_TOWN_TILESET_NAME, 
 import { isSolidChipsetTile, isUpperChipsetTile, terrainTagForChipsetTile } from "./chipsetMapping";
 import { EXTRA_LAYER_KEYS } from "@/project/mapLayers";
 import { attachWorkshopTiles, detachWorkshopTiles } from "../workshopTiles";
+import { pendingDefaultTilesetBuilder, registerLazyDefaultTileset } from "./lazyDefaultTilesets";
 
 const DUNGEON_TILESET_ID = "easyrpg_chipset_dungeon";
 const INTERIOR_TILESET_ID = "easyrpg_chipset_interior";
@@ -121,15 +122,26 @@ function makeBundledTileset(id: string, name: string, textureKey: string): Tiles
   return tileset;
 }
 
-export function defaultTilesets(): Record<string, TilesetDef> {
+export function defaultTilesets(onlyIds?: Iterable<string>): Record<string, TilesetDef> {
+  if (onlyIds !== undefined) {
+    const wanted = new Set(onlyIds);
+    const tilesets: Record<string, TilesetDef> = {};
+    for (const id of wanted) {
+      const asset = bundledAssetForTilesetId(id);
+      if (asset) registerLazyDefaultTileset(tilesets, id, () => bundledEasyRpgTileset(asset));
+    }
+    if (Object.keys(tilesets).length > 0) return tilesets;
+  }
   // 기본(버들항)이 맨 앞이고 합본 마을은 번들 목록에서 이어서 들어간다 — 기존 프로젝트가 계속 쓰는 타일셋이다.
-  const tilesets: Record<string, TilesetDef> = {
-    [DEFAULT_TILESET_ID]: defaultTileset(),
-  };
+  // 각 자리는 처음 읽힐 때만 사본을 만든다(lazyDefaultTilesets.ts) — 키 순서·값·대입·삭제는 즉시 생성과 같다.
+  const tilesets: Record<string, TilesetDef> = {};
+  registerLazyDefaultTileset(tilesets, DEFAULT_TILESET_ID, () => defaultTileset());
+  const seen = new Set<string>([DEFAULT_TILESET_ID]);
   for (const asset of BUNDLED_EASYRPG_CHIPSET_ASSETS) {
-    const tileset = bundledEasyRpgTileset(asset);
-    if (tileset.id === DEFAULT_TILESET_ID) continue;
-    tilesets[tileset.id] = tileset;
+    const id = bundledTilesetIdForAsset(asset);
+    if (seen.has(id)) continue;
+    seen.add(id);
+    registerLazyDefaultTileset(tilesets, id, () => bundledEasyRpgTileset(asset));
   }
   return tilesets;
 }
@@ -393,6 +405,7 @@ export function removeLegacySpriteReferences(project: unknown): boolean {
         changed = true;
         continue;
       }
+      if (pendingDefaultTilesetBuilder(dictionary, key)) continue;
       const item = dictionary[key];
       if (!isRecord(item)) {
         visit(item);
@@ -586,7 +599,12 @@ export function defaultAssetSet(): AssetSet {
   };
 }
 
+let cachedDefaultResourceProfiles: readonly ResourceProfile[] | null = null;
+
 export function defaultResourceProfiles(): ResourceProfile[] {
+  if (cachedDefaultResourceProfiles) {
+    return cachedDefaultResourceProfiles.map((profile) => ({ ...profile }));
+  }
   const profiles: ResourceProfile[] = [
     {
       kind: "chipset",
@@ -622,8 +640,10 @@ export function defaultResourceProfiles(): ResourceProfile[] {
   // 기본 타일셋(버들항)의 자료 프로필이 칩셋 목록 맨 앞에 오게 한다.
   const defaultProfileIndex = profiles.findIndex((profile) => profile.assetId === DEFAULT_TILESET_TEXTURE_KEY);
   if (defaultProfileIndex > 0) profiles.unshift(...profiles.splice(defaultProfileIndex, 1));
+  const seenAssetIds = new Set<string>(profiles.map((profile) => profile.assetId).filter((id): id is string => id !== undefined));
   for (const asset of CC0_ICON_ASSETS) {
-    if (profiles.some((profile) => profile.assetId === asset.id)) continue;
+    if (seenAssetIds.has(asset.id)) continue;
+    seenAssetIds.add(asset.id);
     profiles.push({
       kind: "picture",
       name: asset.name,
@@ -633,7 +653,8 @@ export function defaultResourceProfiles(): ResourceProfile[] {
     });
   }
   for (const asset of CC0_AUDIO_ASSETS) {
-    if (profiles.some((profile) => profile.assetId === asset.id)) continue;
+    if (seenAssetIds.has(asset.id)) continue;
+    seenAssetIds.add(asset.id);
     profiles.push({
       kind: asset.kind,
       name: asset.name,
@@ -641,14 +662,16 @@ export function defaultResourceProfiles(): ResourceProfile[] {
     });
   }
   for (const asset of OPRN_BGM_ASSETS) {
-    if (profiles.some((profile) => profile.assetId === asset.id)) continue;
+    if (seenAssetIds.has(asset.id)) continue;
+    seenAssetIds.add(asset.id);
     profiles.push({ kind: asset.kind, name: asset.name, assetId: asset.id });
   }
   // 얼굴은 낱장 파일이 리소스다. 4x4 시트(EASYRPG_RTP_ASSETS 의 faceset 행)는 v3 로드 해석용으로만
   // 남아 있는 레거시라 저자에게 보이는 리소스 목록에는 등록하지 않는다. 생성 시리즈(hero-XX-face)
   // 낱장도 같은 이유로 뺀다 — 저장본 호환용 등록만 FACESET_FACE_ASSETS 에 남긴다.
   for (const face of AUTHORABLE_FACESET_FACE_ASSETS) {
-    if (profiles.some((profile) => profile.assetId === face.id)) continue;
+    if (seenAssetIds.has(face.id)) continue;
+    seenAssetIds.add(face.id);
     profiles.push({
       kind: "faceset",
       name: face.name,
@@ -660,7 +683,8 @@ export function defaultResourceProfiles(): ResourceProfile[] {
   for (const asset of EASYRPG_RTP_ASSETS) {
     const kind = resourceKindForEasyRpgCategory(asset.category);
     if (kind === "faceset") continue;
-    if (profiles.some((profile) => profile.assetId === asset.id)) continue;
+    if (seenAssetIds.has(asset.id)) continue;
+    seenAssetIds.add(asset.id);
     profiles.push({
       kind,
       name: asset.name,
@@ -671,7 +695,8 @@ export function defaultResourceProfiles(): ResourceProfile[] {
       assetId: asset.id,
     });
   }
-  return profiles;
+  cachedDefaultResourceProfiles = profiles;
+  return profiles.map((profile) => ({ ...profile }));
 }
 
 export function ensureBundledResourceProfiles(project: { resourceProfiles: ResourceProfile[]; assets?: { uploaded?: Record<string, unknown> } }): boolean {

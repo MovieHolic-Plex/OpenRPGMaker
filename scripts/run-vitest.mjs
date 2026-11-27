@@ -222,11 +222,21 @@ function cgroupBudget(args) {
   // `Ineffective mark-compacts near heap limit` 으로 죽고 결과를 못 내놓는다.
   if (usableMb != null) {
     const memoryMaxMb = memoryMax / 1024 / 1024;
-    // 16GB 이하에서는 워커를 하나 둔다. 8GB 힙도 `invalid table size` 로 죽었다
-    // (run 37190574621). 슬라이스 상한은 16GB 이고, 워커 힙은 그 75% 인 12GB 다.
-    if (memoryMaxMb <= 16 * 1024) {
+    const workerOverride = Number.parseInt(process.env.OPRN_VITEST_WORKERS ?? "", 10);
+    if (Number.isFinite(workerOverride) && workerOverride > 0) {
+      workers = Math.min(workers, workerOverride);
+      heapMb = Math.min(12288, Math.max(MIN_WORKER_HEAP_MB, Math.floor((usableMb * OVERCOMMIT_FACTOR) / workers)));
+    } else if (memoryMaxMb < 14 * 1024) {
+      // 12GB 이하 cgroup 슬라이스에서는 안전하게 워커 1개 × 75% 힙.
       workers = 1;
       heapMb = Math.min(12288, Math.floor(memoryMaxMb * 0.75));
+    } else if (memoryMaxMb <= 16 * 1024) {
+      // GitHub 호스티드 4코어/16GB VM (2026-11-27 perf/ci-speed-aggressive):
+      // 예전에는 번들 JSON(60MB+) 정적 import + defaultTilesets(49개, 74MB) 즉시 생성으로 워커 1개가 14.7GiB 를 찍어
+      // 4코어 중 3코어를 놀리며 workers=1 로 묶었다. 이제 Node 지연 JSON(bundledJsonNodePlugin) + defaultTilesets 지연 생성
+      // + O(1) 번들 요약으로 상주 힙이 대폭 줄었으므로 최대 3워커 × 5GB 힙으로 CPU 를 활용한다.
+      workers = Math.min(workers, 3);
+      heapMb = Math.min(5120, Math.max(MIN_WORKER_HEAP_MB, Math.floor((usableMb * OVERCOMMIT_FACTOR) / workers)));
     } else {
       heapMb = heapForWorkers(usableMb, workers);
       const inherited = inheritedHeapMb();

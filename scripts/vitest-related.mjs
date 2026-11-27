@@ -46,12 +46,9 @@ import { distances, loadRepoGraph } from "./lib/testImportGraph.mjs";
 //   chunks: 한 PR 의 관련 시험을 몇 개의 잡(조각)으로 나눌 수 있나. 조각마다 같은 상한이 걸린다.
 //   넓은 변경(wide): 그래프로 닿는 시험이 wideTests(1000 — 2026-11-26 최근 머지 60건 재현: 넓은 모드 18%·PR 당 러너 시험 0.58h, 800 이면 38%·1.88h, 400 이면 45%·2.24h)를 넘거나 바뀐 파일이 wideFiles 를 넘으면 상한 없이 닿는 시험 전부를 wideChunks 개 조각으로 돌린다.
 export const DEFAULTS = Object.freeze({
-  // 2026-11-26 재보정(최근 related-tests 조각 153개, 끝난 41개): 호스티드 4코어/11GiB 에서 run-vitest.mjs 가 메모리로 워커를 1개로 낮추고,
-  // 시간 기록(.omo/test-timings.json, ci-full 샤드 기록)에 없는 파일이 조각 파일의 30% 였다 — 대부분 시험 정리(test-diet)가 합친 큰 묶음이라 6.4초로 세면
-  // 크게 모자랐다. 기록 없는 파일은 90초로 센다. 이 모델(시작 150 + Σ(20 + 기록 초 | 90))로 끝난 조각 41개의 실제/예상 p95 1.00·최대 1.15,
-  // 끊긴 조각 104개는 모두 예상 480초를 넘는다(= 이제 나뉜다). 예상 480초 조각은 실제 최대 약 550초, 시간 상자 720초 안이다.
-  // 옛 모델(워커 3·시작 90·기록 없음 6.4)은 실제를 2~3배 낮게 봐 조각 104/153 이 450초 상자에 끊겼다. LPT 분할이라 큰 파일은 먼저 혼자 조각을 잡는다.
-  budgetSeconds: 480, workers: 1, factor: 1, perFileSeconds: 20, startupSeconds: 150, defaultSeconds: 90,
+  // 2026-11-27 perf/ci-speed-aggressive: 호스티드 4코어/16GB 에서 bundledJson Node 지연 로드 + defaultTilesets 지연 생성으로
+  // run-vitest.mjs 가 최대 3워커를 해금했다(기존 1워커). test-timings.json 도 최신 ci-full(1,053파일)로 갱신해 미측정 비율을 없앴다.
+  budgetSeconds: 480, workers: 3, factor: 1, perFileSeconds: 12, startupSeconds: 110, defaultSeconds: 60,
   chunks: 8, wideTests: 1000, wideFiles: 80, wideChunks: 12,
   // 늘 담는 세 단계(바뀐 시험·직접 import·문자열)만으로 상한을 넘을 때 쓸 수 있는 조각 수. 2026-11-27 #5283: 직접 import 104개가
   // 예상 7,970초(필요 조각 25)인데 wideChunks 12 에 막혀 조각 하나가 예상 819초 → 720초 상자에 끊겼다. ci-full 샤드 수(24)까지 늘린다.

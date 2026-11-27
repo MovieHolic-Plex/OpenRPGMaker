@@ -4,13 +4,15 @@
 //   커밋된 표가 지금 정의와 다르면 exit 1 — ci-fast 의 fast-static 이 돈다(낡은 굽기는 조수 적용을 «기준 프로젝트가 변경되었습니다»로 막았다,
 //   ci-full 45844823105). 관련 시험 선택(import 그래프 상한)에 기대지 않는다.
 import { readFileSync, writeFileSync } from "node:fs";
-import { createBlankProject } from "@/project/defaults";
-import { bundledTilesetById } from "@/project/defaults/defaultAssets";
+import { BUNDLED_EASYRPG_CHIPSET_ASSETS } from "@/assets/bundled";
+import { DEFAULT_TILESET_ID } from "@/project/defaults/constants";
+import { bundledTilesetById, bundledTilesetIdForAssetForTest } from "@/project/defaults/defaultAssets";
 import { jsonContentDigest } from "@/project/persistence/core/contentDigest";
 
 const FILE = "src/assets/bundledTilesetDigests.json";
+const ids = [...new Set([DEFAULT_TILESET_ID, ...BUNDLED_EASYRPG_CHIPSET_ASSETS.map(bundledTilesetIdForAssetForTest)])].sort();
 const out: Record<string, { digest: string; count: number }> = {};
-for (const id of Object.keys(createBlankProject().tilesets).sort()) {
+for (const id of ids) {
   const definition = bundledTilesetById(id);
   if (!definition) continue;
   out[id] = { digest: jsonContentDigest(definition)!, count: definition.count };
