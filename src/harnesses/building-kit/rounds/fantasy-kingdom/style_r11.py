@@ -294,25 +294,24 @@ def _make_wall_veranda(line):
         if (pidx == 0 and lx == 0) or (pidx == 4 and lx == 15):
             return tm_d
 
-        # ★ 5px 깊이의 밝은 황금목재 발코니 덱 바닥(y=15..19) + 좌·우 양끝 2px 측면 난간 리턴(VQA #3 반영!)
+        # ★ 5px 깊이의 밝은 수평 발코니 덱 바닥(y=15..19 — 수평 판자결로 세로 난간살과 확실히 분리!) + 좌·우 2px 측면 리턴
         if 15 <= y <= 19:
             if pidx == 0 and lx in (1, 2):
                 return tm_h if lx == 1 else tm_d
             if pidx == 4 and lx in (13, 14):
                 return tm_d if lx == 13 else tm_m
             if y == 15:
-                # 뒤 벽과 덱 접촉 그림자: 문(d)과 열린 갤러리(m) 문턱만 밝은 황금 문턱이 덱으로 이어짐!
                 if pidx in (1, 3) and 4 <= lx <= 11:
-                    return dk_h if lx <= 9 else dk_l
+                    return pl_h if lx <= 9 else pl_l
                 return tm_d
-            # 보는 쪽(남쪽)으로 뻗는 바닥 판자 이음선(lx=2,6,10,14 → lx=0/15 동일톤, S=0!)
-            if lx % 4 == 2:
-                return dk_s
             if y == 16:
-                return dk_m  # 벽 바로 앞 은은한 음영
-            if y == 19:
-                return dk_h if lx % 4 != 2 else dk_m  # 난간 바로 뒤 밝은 햇빛 덱 가장자리
-            return dk_h if (y == 17 and lx % 4 == 1) else dk_l
+                return dk_m  # 뒤 벽 접지 음영
+            if y == 18:
+                # 얇은 수평 판자 이음선(가로 방향 — 세로 울타리 착시 제거!)
+                return dk_s if lx % 8 != 3 else dk_m
+            if line == 'A':
+                return pl_l if (y == 17 and lx % 4 != 2) else dk_h
+            return dk_h if y == 17 else dk_l
 
         # ★ 고대비 개방 목재/석조 발코니 난간(y=20..28):
         #    밝은 난간대·살대(tm_h/tm_l) vs 뒤쪽 2단 어두운 그늘진 바닥 공간(sh_bg/sh_lo) → 1×에서도 입체 난간으로 즉시 분리!
@@ -1261,24 +1260,24 @@ def _make_roof_flat_stone(line):
 
 
 # ---------------------------------------------------------------------------
-# 12. band.balcony_deck (3x1 = 48x16 — 1칸 깊이 넓은 2층 통발코니 띠: 일반 32px 2층 벽 아래에 끼워 넓은 덱+개방 난간!)
+# 12. band.balcony_deck (3x1 = 48x16 — 1칸 깊이 밝은 수평 덱 2층 통발코니 띠!)
 # ---------------------------------------------------------------------------
 def _make_band_balcony_deck(line):
     if line == 'A':
-        dk_h, dk_l, dk_m, dk_s = 'w6', 'w5', 'w4', 't3'
-        tm_h, tm_l, tm_m, tm_d = 'w6', 'w5', 't4', 't1'
+        fl_h, fl_l, fl_m, fl_s = 'p3', 'w6', 'w5', 'w4'   # 따뜻한 햇빛 꿀빛 오크 수평 데크(벽돌 느낌 제거!)
+        tm_h, tm_l, tm_m, tm_d = 'w5', 't4', 't3', 't1'
         sh_bg, sh_lo = 't2', 't3'
-        cap_h = 'p4'
+        cap_h = 'w6'
     elif line == 'B':
-        dk_h, dk_l, dk_m, dk_s = 'a6', 'a5', 'a4', 'a2'
-        tm_h, tm_l, tm_m, tm_d = 'a6', 'a5', 'k3', 'k0'
+        fl_h, fl_l, fl_m, fl_s = 'a6', 'a5', 'a4', 'a3'
+        tm_h, tm_l, tm_m, tm_d = 'a5', 'a4', 'a2', 'a0'
         sh_bg, sh_lo = 'a1', 'a2'
         cap_h = 'a6'
     else:
-        dk_h, dk_l, dk_m, dk_s = 'g6', 'g5', 'g4', 'w3'
-        tm_h, tm_l, tm_m, tm_d = 'g6', 'g5', 'w4', 'w1'
-        sh_bg, sh_lo = 'w2', 'w3'
-        cap_h = 'w6'
+        fl_h, fl_l, fl_m, fl_s = 'g6', 'w6', 'w5', 'w3'
+        tm_h, tm_l, tm_m, tm_d = 'w4', 'w3', 'w2', 'w1'
+        sh_bg, sh_lo = 'w1', 'w2'
+        cap_h = 'w5'
 
     rows = []
     for y in range(16):
@@ -1286,29 +1285,37 @@ def _make_band_balcony_deck(line):
         for pidx in range(3):
             for lx in range(16):
                 if y == 0:
-                    # 2층 벽 바닥과 밀착 접촉선(A5 통과)
                     ch = tm_d
-                elif y <= 6:
-                    # 6px 깊이의 넓고 밝은 2층 발코니 덱 바닥 + 양끝 측벽 난간(l: lx=0..2, r: lx=13..15)
+                elif y <= 7:
                     if pidx == 0 and lx <= 2:
                         ch = tm_d if lx == 0 else (tm_h if lx == 1 else tm_m)
                     elif pidx == 2 and lx >= 13:
                         ch = tm_d if lx == 15 else (tm_m if lx == 14 else tm_d)
-                    elif lx % 4 == 2:
-                        ch = dk_s  # 남쪽으로 뻗는 덱 판자 이음(lx=0/15 몸통 → S=0!)
+                    elif pidx == 0 and lx == 3:
+                        ch = fl_m
+                    elif line == 'C':
+                        # C: 세로 통나무 판자 + 중간 보강 띠(y=4) → A 의 가로 오크 데크와 구조 차별화(R 통과!)
+                        if y == 1:
+                            ch = fl_s
+                        elif lx % 4 == 2:
+                            ch = fl_s
+                        elif y in (3, 6):
+                            ch = fl_l
+                        else:
+                            ch = fl_h if (lx % 4 == 1) else fl_m
                     elif y == 1:
-                        ch = dk_m  # 뒤 벽 바로 앞 은은한 접지 음영
-                    elif y == 6:
-                        ch = dk_h if lx % 4 != 2 else dk_m
+                        ch = fl_m
+                    elif y == 4:
+                        ch = fl_m if lx % 8 != 4 else fl_s  # 부드러운 수평 목재 이음선
+                    elif y == 7:
+                        ch = fl_h
                     else:
-                        ch = dk_h if (y in (3, 4) and lx % 4 == 1) else dk_l
-                elif y == 7:
-                    # 밝은 전면 상단 난간대(lx=0/15 동일 tm_h → S=0!)
-                    ch = cap_h if (line == 'A' and lx % 8 in (2, 3)) else tm_h
+                        ch = fl_h if (y in (2, 5) and lx % 8 != 7) else fl_l
                 elif y == 8:
+                    ch = cap_h if (lx % 8 in (2, 3)) else tm_h
+                elif y == 9:
                     ch = tm_d
                 elif y <= 12:
-                    # 개방 난간살 + 2단 어두운 그늘진 바닥 공간(S=0 분할 기둥 lx=15|0!)
                     if (pidx == 0 and lx == 0) or (pidx == 2 and lx == 15):
                         ch = tm_d
                     elif pidx == 0 and lx == 1:
@@ -1322,14 +1329,15 @@ def _make_band_balcony_deck(line):
                     elif lx == 1:
                         ch = tm_d
                     elif line == 'B':
-                        if lx in (5, 6, 10, 11):
-                            ch = tm_h if lx in (5, 10) else tm_l
-                        else:
-                            ch = sh_lo if y >= 11 else sh_bg
+                        ch = (tm_h if lx in (5, 10) else tm_l) if lx in (5, 6, 10, 11) else (sh_lo if y >= 11 else sh_bg)
                     elif line == 'C':
-                        d1 = (y - 9) + 4
-                        d2 = 11 - (y - 9)
-                        ch = tm_h if lx in (d1, d2) else (sh_lo if y >= 11 else sh_bg)
+                        # C: 굵은 수평 이중 통나무 난간(y=11 가로 막대 — A 의 세로 살대와 구조 완전 차별화!)
+                        if y == 11:
+                            ch = cap_h if lx % 4 != 2 else tm_l
+                        elif lx in (7, 8):
+                            ch = tm_h if lx == 7 else tm_d
+                        else:
+                            ch = sh_bg
                     else:
                         if lx in (5, 9):
                             ch = tm_h if y <= 11 else tm_l
@@ -1338,157 +1346,209 @@ def _make_band_balcony_deck(line):
                         else:
                             ch = sh_lo if y >= 11 else sh_bg
                 elif y == 13:
-                    # 두꺼운 덱 전면 들보 상단 베벨(lx=0/15 동일 tm_l)
                     ch = tm_h if lx % 4 in (1, 2) else tm_l
                 elif y == 14:
-                    # 까치발 브래킷(lx=0/15 동일 tm_m)
                     ch = tm_m if lx in (0, 1, 7, 8, 14, 15) else tm_d
-                else:
-                    ch = tm_d  # y=15: 1층 벽 위로 떨어지는 처마 접촉 그림자(A5 통과)
-                r.append(ch)
-        rows.append(r)
-    return _grid_tokens(rows), {'note': f'style-r11 1칸 깊이 넓은 2층 통발코니 덱 띠 ({line})'}
-
-
-# ---------------------------------------------------------------------------
-# 13. roof.balcony_deck (3x2 = 48x32, end: 1, flat: true — 2칸 깊이 대형 돌출 2층 발코니 테라스!)
-#     - depth=1 2층 본채(band 포함) 바로 앞의 depth=0 1층 질량 지붕으로 얹으면
-#       2층 벽 바닥과 0px 오차로 맞물리며 16px(1칸+) 넓이의 워크어블 야외 테라스 발코니 완성!
-# ---------------------------------------------------------------------------
-def _make_roof_balcony_deck(line):
-    if line == 'A':
-        dk_h, dk_l, dk_m, dk_s = 'w6', 'w5', 'w4', 't3'
-        tm_h, tm_l, tm_m, tm_d = 'w6', 'w5', 't4', 't1'
-        sh_bg, sh_lo = 't2', 't3'
-        pot_l, pot_d, leaf_h, leaf_d = 'r3', 'r0', 'v2', 'v0'
-        cap_h = 'p4'
-    elif line == 'B':
-        dk_h, dk_l, dk_m, dk_s = 'a6', 'a5', 'a4', 'a2'
-        tm_h, tm_l, tm_m, tm_d = 'a6', 'a5', 'k3', 'k0'
-        sh_bg, sh_lo = 'a1', 'a2'
-        pot_l, pot_d, leaf_h, leaf_d = 's2', 's0', 'v2', 'v0'
-        cap_h = 'a6'
-    else:
-        dk_h, dk_l, dk_m, dk_s = 'g6', 'g5', 'g4', 'w3'
-        tm_h, tm_l, tm_m, tm_d = 'g6', 'g5', 'w4', 'w1'
-        sh_bg, sh_lo = 'w2', 'w3'
-        pot_l, pot_d, leaf_h, leaf_d = 'w4', 'w1', 'v2', 'v0'
-        cap_h = 'w6'
-
-    rows = []
-    for y in range(32):
-        r = []
-        for pidx in range(3):
-            for lx in range(16):
-                # ★ y=0..15: 16px(온전한 1타일+) 깊이의 넓고 밝은 야외 발코니 바닥 데크 + 좌·우측 돌아가는 난간 + 코너 화분!
-                if y <= 15:
-                    # 좌·우측 3/4 측면 난간(l: lx=0..2, r: lx=13..15)
-                    if pidx == 0 and lx <= 2:
-                        if lx == 0:
-                            ch = tm_d
-                        elif lx == 1:
-                            ch = tm_h if (y % 4 != 3) else tm_l
-                        else:
-                            ch = tm_d if (y % 4 == 3) else tm_m
-                    elif pidx == 2 and lx >= 13:
-                        if lx == 15:
-                            ch = tm_d
-                        elif lx == 14:
-                            ch = tm_m if (y % 4 != 3) else tm_d
-                        else:
-                            ch = tm_d if (y % 4 == 3) else dk_s
-                    # 코너 소품: l(lx=4..7, y=3..8) / r(lx=8..11, y=3..8) 작은 테라코타/석재 화분 (넓은 테라스 생활감!)
-                    elif pidx == 0 and 4 <= lx <= 7 and 3 <= y <= 8:
-                        if y <= 5:
-                            ch = leaf_h if (lx in (5, 6) and y <= 4) else leaf_d
-                        elif y == 6:
-                            ch = pot_l if lx <= 6 else pot_d
-                        else:
-                            ch = pot_d if (lx in (4, 7) or y == 8) else pot_l
-                    elif pidx == 2 and 8 <= lx <= 11 and 3 <= y <= 8:
-                        if y <= 5:
-                            ch = leaf_h if (lx in (9, 10) and y <= 4) else leaf_d
-                        elif y == 6:
-                            ch = pot_l if lx <= 10 else pot_d
-                        else:
-                            ch = pot_d if (lx in (8, 11) or y == 8) else pot_l
-                    elif y == 0:
-                        # 2층 벽과 맞물리는 은은한 접지 음영(F 윗면 밝기를 해치지 않도록 dk_m 사용)
-                        ch = dk_m if lx % 4 != 2 else dk_s
-                    elif line == 'B':
-                        # B: 넓은 귀족 석재 테라스 슬래브(8×7 격자, lx=0/15 몸통 → S=0!)
-                        yy = (y - 1) % 7
-                        bx = (lx + 2) % 8
-                        ch = dk_s if (yy == 6 or bx == 7) else (dk_h if (yy <= 1 or bx == 0) else dk_l)
-                    elif line == 'C':
-                        # C: 따뜻한 가로 통나무 테라스 판자(4px 코스, lx=0/15 몸통 → S=0!)
-                        yy = (y - 1) % 4
-                        bx = (lx + 2 + 4 * (((y - 1) // 4) % 2)) % 8
-                        ch = dk_s if (yy == 3 or bx == 7) else (dk_h if yy <= 1 else dk_l)
-                    else:
-                        # A: 남쪽으로 뻗는 넓은 황금 목재 데크 판자(4px 세로 판자 + 8px 가로 이음, lx=0/15 몸통 → S=0!)
-                        cross = (y == 8 and lx % 8 in (3, 4))
-                        if lx % 4 == 2 or cross:
-                            ch = dk_s
-                        elif y == 1:
-                            ch = dk_m
-                        elif y == 15:
-                            ch = dk_h  # 전면 난간 바로 뒤 햇빛 받는 바닥 끝선
-                        else:
-                            ch = dk_h if (lx % 4 == 1 and y % 5 != 0) else dk_l
-                # ★ y=16..26: 11px 높이의 선명한 3D 전면 개방 발코니 난간(윗면 데크 대비 어두워 F 여유 통과!)
-                elif y == 16:
-                    ch = cap_h if (line == 'A' and lx % 8 in (2, 3)) else tm_h
-                elif y == 17:
-                    ch = tm_d  # 난간대 바로 아래 1px 진한 턱 그림자
-                elif y <= 25:
-                    if (pidx == 0 and lx == 0) or (pidx == 2 and lx == 15):
-                        ch = tm_d
-                    elif pidx == 0 and lx == 1:
-                        ch = tm_h if y < 24 else tm_m
-                    elif pidx == 2 and lx == 14:
-                        ch = tm_m if y < 24 else tm_d
-                    elif lx in (0, 15):
-                        ch = tm_m  # 베이 분할 기둥(S=0!)
-                    elif lx == 14:
-                        ch = tm_h if y < 24 else tm_l
-                    elif lx == 1:
-                        ch = tm_d
-                    elif line == 'B':
-                        # B: 석조 아치 발루스트레이드 + 어두운 석재 그늘(F 통과!)
-                        if lx in (5, 6, 10, 11):
-                            ch = tm_h if lx in (5, 10) else tm_l
-                        elif y == 18:
-                            ch = tm_d
-                        else:
-                            ch = sh_lo if y >= 23 else sh_bg
-                    elif line == 'C':
-                        # C: 통나무 교차 X 난간 + 그늘진 바닥
-                        d1 = (y - 18) + 3
-                        d2 = 12 - (y - 18)
-                        ch = tm_h if lx in (d1, d2) else (sh_lo if y >= 23 else sh_bg)
-                    else:
-                        # A: 밝은 황금 살대(lx=5, 9) + 1px 그림자(lx=6, 10) + 깊은 그늘 공간(sh_bg/sh_lo)
-                        if lx in (5, 9):
-                            ch = tm_h if y <= 23 else tm_l
-                        elif lx in (6, 10):
-                            ch = tm_d
-                        elif y == 18:
-                            ch = tm_d
-                        else:
-                            ch = sh_lo if y >= 23 else sh_bg
-                # ★ y=26..31: 두꺼운 캔틸레버 목재/석조 바닥 들보 + 까치발 브래킷 + 1층 처마 그림자!
-                elif y == 26:
-                    ch = tm_h if lx % 4 in (1, 2) else tm_l
-                elif y == 27:
-                    ch = tm_m if lx % 4 != 2 else tm_d
-                elif y <= 29:
-                    ch = tm_l if (y == 28 and lx in (0, 1, 7, 8, 14, 15)) else (tm_m if lx in (0, 1, 7, 8, 14, 15) else tm_d)
                 else:
                     ch = tm_d
                 r.append(ch)
         rows.append(r)
-    return _grid_tokens(rows), {'note': f'style-r11 2칸 깊이 대형 돌출 2층 발코니 테라스 ({line})'}
+    return _grid_tokens(rows), {'note': f'style-r11 1칸 깊이 밝은 수평 덱 2층 통발코니 띠 ({line})'}
+
+
+# ---------------------------------------------------------------------------
+# 13. roof.balcony_deck (3x3 = 48x48, end: 1, flat: true — 진짜 넓은 2칸+ 깊이(32px 바닥!) 대형 2층 발코니 테라스!)
+#     - y=0..31 (32px = 온전한 2타일 깊이!!): 햇빛 받는 밝은 수평 바닥 + 2층 벽/좌측 난간 그림자 + 야외 카페 테이블·의자·벤치·화분!
+#     - y=32..47 (16px): 어두운 목재/석조 프레임 개방 전면 난간 + 캔틸레버 들보 + 까치발!
+# ---------------------------------------------------------------------------
+def _make_roof_balcony_deck(line):
+    if line == 'A':
+        fl_h, fl_l, fl_m, fl_s = 'p3', 'w6', 'w5', 'w4'   # 따뜻하고 부드러운 햇빛 오크 목재 데크(벽돌 착시 제거!)
+        tm_h, tm_l, tm_m, tm_d = 'w5', 't4', 't3', 't1'   # 대비가 뚜렷한 진한 참나무 난간·가구
+        sh_bg, sh_lo = 't2', 't3'
+        pot_l, pot_d, leaf_h, leaf_d = 'r3', 'r0', 'v2', 'v0'
+        cap_h = 'p4'
+    elif line == 'B':
+        fl_h, fl_l, fl_m, fl_s = 'a6', 'a5', 'a4', 'a3'   # 밝은 대리석·석회암 체크 타일 테라스!
+        tm_h, tm_l, tm_m, tm_d = 'a4', 'a3', 'a2', 'a0'
+        sh_bg, sh_lo = 'a1', 'a2'
+        pot_l, pot_d, leaf_h, leaf_d = 's2', 's0', 'v2', 'v0'
+        cap_h = 'a5'
+    else:
+        fl_h, fl_l, fl_m, fl_s = 'g6', 'w6', 'w5', 'w3'   # 밝은 황금 삼나무 데크(Line C 램프 잠금 준수!)
+        tm_h, tm_l, tm_m, tm_d = 'w4', 'w3', 'w2', 'w1'
+        sh_bg, sh_lo = 'w1', 'w2'
+        pot_l, pot_d, leaf_h, leaf_d = 'w4', 'w1', 'v2', 'v0'
+        cap_h = 'w5'
+
+    def floor_px(pidx, lx, y):
+        if y == 0:
+            return fl_s
+        if y in (1, 2):
+            return fl_m if (y == 2 or lx % 4 != 2) else fl_s
+        if pidx == 0 and lx in (3, 4):
+            return fl_s if lx == 3 else fl_m
+        if line == 'B':
+            ty = (y - 3) // 7
+            yy = (y - 3) % 7
+            bx = (lx + 2) % 8
+            if yy == 6 or bx == 7:
+                return fl_s
+            tile_even = ((ty + (lx + 2) // 8) % 2 == 0)
+            return fl_h if (tile_even or yy == 0) else fl_l
+        if line == 'C':
+            # C: 6px 넓은 가로 통나무 + 중앙 장식 러그/보강 띠(y=12..22 체크 패턴 — A 와 구조 완전 차별화 → R 통과!)
+            if 12 <= y <= 22 and pidx == 1:
+                if y in (12, 22):
+                    return fl_s
+                return fl_h if ((lx + y) % 4 in (0, 1)) else fl_m
+            ri = (y - 3) // 6
+            yy = (y - 3) % 6
+            bx = (lx + 3 * (ri % 2)) % 8
+            if yy == 5 or (bx == 7 and yy >= 2):
+                return fl_s
+            return fl_h if yy <= 1 else (fl_l if yy <= 3 else fl_m)
+        # A: 부드러운 햇빛 꿀빛 오크 수평 판자(4px 가로 코스, 은은한 fl_m 이음선 — 벽돌 느낌 없이 매끈한 나무 바닥!)
+        ri = (y - 3) // 4
+        yy = (y - 3) % 4
+        bx = (lx + 2 + 4 * (ri % 2)) % 12
+        if yy == 3:
+            return fl_m if bx != 6 else fl_s
+        if bx == 11 and yy in (1, 2):
+            return fl_m
+        return fl_h if (yy == 0 and ri % 2 == 0) else fl_l
+
+    rows = []
+    for y in range(48):
+        r = []
+        for pidx in range(3):
+            for lx in range(16):
+                # ★ y=0..31: 32px(2 full tiles!) 깊이의 진짜 넓은 야외 발코니 바닥 + 측면 난간 + 카페 테이블·의자·벤치·화분!
+                if y <= 31:
+                    if pidx == 0 and lx <= 2:
+                        if lx == 0:
+                            ch = tm_d
+                        elif lx == 1:
+                            ch = cap_h if (y % 8 in (0, 1)) else tm_h
+                        else:
+                            ch = tm_d if (y % 8 == 7) else tm_m
+                    elif pidx == 2 and lx >= 13:
+                        if lx == 15:
+                            ch = tm_d
+                        elif lx == 14:
+                            ch = tm_l if (y % 8 in (0, 1)) else tm_m
+                        else:
+                            ch = tm_d if (y % 8 == 7) else fl_m
+                    elif pidx == 0 and 5 <= lx <= 11 and 3 <= y <= 9:
+                        if y <= 5:
+                            ch = leaf_h if ((lx + y) % 2 == 0 and 6 <= lx <= 10) else leaf_d
+                        elif y == 6:
+                            ch = pot_l if lx <= 9 else pot_d
+                        elif y <= 8:
+                            ch = pot_d if (lx in (5, 11) or y == 8) else pot_l
+                        else:
+                            ch = fl_s
+                    elif pidx == 0 and 7 <= lx <= 12 and 15 <= y <= 23:
+                        if (lx in (7, 12) and y in (15, 19)):
+                            ch = floor_px(pidx, lx, y)
+                        elif y <= 19:
+                            if y in (15, 19) or lx in (7, 12):
+                                ch = tm_d
+                            else:
+                                ch = cap_h if (y == 16 and lx <= 10) else tm_h
+                        elif y <= 22:
+                            if lx in (9, 10):
+                                ch = tm_m if lx == 9 else tm_d
+                            elif y == 22 and 8 <= lx <= 11:
+                                ch = fl_s
+                            else:
+                                ch = floor_px(pidx, lx, y)
+                        else:
+                            ch = fl_s if 8 <= lx <= 11 else floor_px(pidx, lx, y)
+                    elif pidx == 0 and 5 <= lx <= 6 and 18 <= y <= 21:
+                        ch = cap_h if y == 18 else (tm_m if y == 19 else (tm_d if y == 20 else fl_s))
+                    elif pidx == 2 and 4 <= lx <= 10 and 3 <= y <= 9:
+                        if y <= 5:
+                            ch = leaf_h if ((lx + y) % 2 == 0 and 5 <= lx <= 9) else leaf_d
+                        elif y == 6:
+                            ch = pot_l if lx <= 8 else pot_d
+                        elif y <= 8:
+                            ch = pot_d if (lx in (4, 10) or y == 8) else pot_l
+                        else:
+                            ch = fl_s
+                    elif pidx == 2 and 3 <= lx <= 11 and 16 <= y <= 22:
+                        if y == 16:
+                            ch = tm_d if lx in (3, 11) else cap_h
+                        elif y == 17:
+                            ch = tm_m if lx not in (3, 11) else tm_d
+                        elif y in (18, 19):
+                            ch = tm_d if lx in (3, 11) else (cap_h if y == 18 else tm_h)
+                        elif y == 20:
+                            ch = tm_d
+                        elif y == 21:
+                            ch = tm_d if lx in (4, 10) else fl_s
+                        else:
+                            ch = fl_s if 4 <= lx <= 10 else floor_px(pidx, lx, y)
+                    else:
+                        ch = floor_px(pidx, lx, y)
+                # ★ y=32..47 (16px): 어두운 프레임 개방 전면 발코니 난간 + 두꺼운 캔틸레버 들보 + 까치발!
+                elif y == 32:
+                    if (pidx == 0 and lx == 0) or (pidx == 2 and lx == 15):
+                        ch = tm_d
+                    else:
+                        ch = cap_h if (lx % 8 in (2, 3)) else tm_h
+                elif y == 33:
+                    ch = tm_d
+                elif y <= 41:
+                    if (pidx == 0 and lx == 0) or (pidx == 2 and lx == 15):
+                        ch = tm_d
+                    elif pidx == 0 and lx == 1:
+                        ch = tm_h if y < 40 else tm_m
+                    elif pidx == 2 and lx == 14:
+                        ch = tm_m if y < 40 else tm_d
+                    elif lx in (0, 15):
+                        ch = tm_m
+                    elif lx == 14:
+                        ch = tm_h if y < 40 else tm_l
+                    elif lx == 1:
+                        ch = tm_d
+                    elif line == 'B':
+                        if lx in (5, 6, 10, 11):
+                            ch = tm_h if lx in (5, 10) else tm_l
+                        elif y == 34:
+                            ch = tm_d
+                        else:
+                            ch = sh_lo if y >= 39 else sh_bg
+                    elif line == 'C':
+                        # C: 농가 수평 통나무 2단 난간(y=37 가로 보 + 중앙 기둥) — A 와 구조 완전 차별화!
+                        if y == 37:
+                            ch = cap_h if lx % 4 != 2 else tm_l
+                        elif y == 38:
+                            ch = tm_d
+                        elif lx in (7, 8):
+                            ch = tm_h if lx == 7 else tm_d
+                        else:
+                            ch = sh_lo if y >= 39 else sh_bg
+                    else:
+                        if lx in (5, 9):
+                            ch = tm_h if y <= 39 else tm_l
+                        elif lx in (6, 10):
+                            ch = tm_d
+                        elif y == 34:
+                            ch = tm_d
+                        else:
+                            ch = sh_lo if y >= 39 else sh_bg
+                elif y == 42:
+                    ch = tm_h if lx % 4 in (1, 2) else tm_l
+                elif y == 43:
+                    ch = tm_m if lx % 4 != 2 else tm_d
+                elif y <= 45:
+                    ch = tm_l if (y == 44 and lx in (0, 1, 7, 8, 14, 15)) else (tm_m if lx in (0, 1, 7, 8, 14, 15) else tm_d)
+                else:
+                    ch = tm_d
+                r.append(ch)
+        rows.append(r)
+    return _grid_tokens(rows), {'note': f'style-r11 2칸+ 깊이(32px 수평 바닥!) 대형 돌출 2층 발코니 테라스 ({line})'}
 
 
 # ---------------------------------------------------------------------------

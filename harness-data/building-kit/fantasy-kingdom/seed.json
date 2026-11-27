@@ -3863,17 +3863,17 @@
       "id": "roof.balcony_deck",
       "wave": "roof",
       "kind": "set",
-      "title": "2칸 깊이 대형 돌출 2층 발코니 테라스(2행)",
+      "title": "2칸+ 깊이(32px 바닥) 대형 돌출 2층 발코니 테라스(3행)",
       "size": [
         3,
-        2
+        3
       ],
       "layer": "upper",
       "walk": "★",
-      "brief": "2층 본채(depth=1) 앞 1층 질량(depth=0) 위에 얹어 온전한 1칸+ 깊이의 넓은 2층 야외 테라스 발코니 바닥 + 측면 난간 + 코너 화분 + 전면 개방 난간을 만드는 대형 발코니 덱.",
+      "brief": "2층 본채(depth=2) 앞 1층 질량(depth=0) 위에 얹어 온전한 2타일(32px) 깊이의 넓고 밝은 수평 야외 발코니 바닥 + 측면 난간 + 야외 카페 테이블·의자·벤치·화분 + 어두운 전면 개방 난간을 만드는 진짜 넓은 2층 발코니 테라스.",
       "accept": [
-        "캐릭터가 서고 걸을 수 있는 넓은 16px 야외 발코니 바닥이 뚜렷하다",
-        "좌우 측면 난간과 전면 개방 난간, 하부 들보가 입체로 이어진다"
+        "캐릭터가 자유롭게 걷고 테이블·벤치를 둘 수 있는 32px(2타일) 깊이의 밝은 수평 바닥이 1배에서 즉각 읽힌다",
+        "좌우 측면 난간과 전면 개방 난간, 하부 들보가 어두운 대비로 바닥을 둘러싼다"
       ],
       "end": 1,
       "flat": true,
@@ -3881,28 +3881,28 @@
         {
           "id": "l",
           "role": "l",
-          "title": "왼끝 1칸(측면 난간+화분)",
+          "title": "왼끝 1칸(측면 난간+화분+카페 테이블)",
           "at": [
             0,
             0
           ],
           "size": [
             1,
-            2
+            3
           ],
           "kind": "roof"
         },
         {
           "id": "m",
           "role": "m",
-          "title": "가운데(반복)",
+          "title": "가운데 넓은 바닥(반복)",
           "at": [
             1,
             0
           ],
           "size": [
             1,
-            2
+            3
           ],
           "kind": "roof",
           "tileable": "x"
@@ -3910,14 +3910,14 @@
         {
           "id": "r",
           "role": "r",
-          "title": "오른끝 1칸(측면 난간+화분)",
+          "title": "오른끝 1칸(측면 난간+화분+벤치)",
           "at": [
             2,
             0
           ],
           "size": [
             1,
-            2
+            3
           ],
           "kind": "roof"
         }
@@ -6600,26 +6600,16 @@
           "storeys": 1,
           "x": 6,
           "depth": 0,
-          "roof": "roof.flat",
+          "roof": "roof.balcony_deck",
           "walls": [
             {
               "item": "wall.stone",
               "letters": "L W W R"
             }
-          ],
-          "extras": [
-            {
-              "part": "extra.terrace",
-              "at": [
-                0,
-                0
-              ],
-              "on": "roof"
-            }
           ]
         }
       ],
-      "note": "RM2000 베란다 주택 + 옥상 화단 테라스 날개 결합"
+      "note": "RM2000 베란다 주택 + 우측 4×2칸(32px 바닥!) 넓은 야외 카페·벤치 옥상 테라스 날개"
     },
     {
       "id": "rm2k_saddle_veranda_inn.r11",
@@ -6770,7 +6760,7 @@
     },
     {
       "id": "rm2k_wide_balcony_manor.r11",
-      "title": "대형 2칸 돌출 2층 발코니 테라스 저택(쌍어깨 지붕 + 프렌치 도어 + 1층 아치 회랑)",
+      "title": "대형 2타일 깊이(32px 바닥) 2층 야외 카페 테라스 저택(쌍어깨 지붕 + 프렌치 도어)",
       "use": "inn",
       "masses": [
         {
@@ -6779,7 +6769,7 @@
           "cols": 6,
           "storeys": 2,
           "x": 0,
-          "depth": 1,
+          "depth": 2,
           "roof": "roof.saddle.teal",
           "band": "band.trim",
           "walls": [
@@ -6833,11 +6823,11 @@
           ]
         }
       ],
-      "note": "사용자 요청: 좌우 코너 리턴·화분이 전부 노출된 2칸 깊이 대형 돌출 발코니 테라스(roof.balcony_deck) + 덱 직결 2층 프렌치 도어(wall.balcony_upper)"
+      "note": "진짜 넓은 2타일(32px) 수평 야외 발코니 바닥(테이블·벤치·화분) + 덱 직결 프렌치 도어(wall.balcony_upper) + 쌍어깨 지붕"
     },
     {
       "id": "rm2k_gallery_balcony_inn.r11",
-      "title": "1칸 통발코니 띠·프렌치 도어 여관(전폭 갤러리 발코니 + 1층 상점 별채)",
+      "title": "넓은 2층 야외 테라스·통발코니 여관(1칸 띠 + 우측 2타일 깊이 옥상 테라스)",
       "use": "inn",
       "masses": [
         {
@@ -6877,7 +6867,7 @@
           "storeys": 1,
           "x": 6,
           "depth": 0,
-          "roof": "roof.flat.stone",
+          "roof": "roof.balcony_deck",
           "walls": [
             {
               "item": "wall.shop",
@@ -6895,7 +6885,7 @@
           ]
         }
       ],
-      "note": "끊김 없이 전폭을 잇는 1칸 통발코니 띠(band.balcony_deck) + 덱 직결 2층 프렌치 도어 + 우측 평지붕 1층 상점 별채"
+      "note": "밝은 수평 1칸 통발코니 띠(band.balcony_deck) + 우측 1층 상점 위 2타일(32px) 깊이 대형 옥상 테라스(roof.balcony_deck)"
     }
   ],
   "rounds": {
