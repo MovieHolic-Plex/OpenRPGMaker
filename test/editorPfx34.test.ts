@@ -129,6 +129,22 @@ describe("editorPanelsSuite29", () => {
         expect(root.dataset.railOpen).toBe("0");
       });
 
+      it("휴대 폭 탭 고르기 단추는 레일을 열고, 탭을 고르면 닫히며 새 탭 이름을 단다", () => {
+        const root = host();
+        const switcher = root.querySelector<HTMLElement>('[data-testid="db-tab-switcher"]')!;
+        expect(switcher.classList.contains("db-tab")).toBe(false);
+        expect(switcher.textContent).toContain("직업");
+        expect(switcher.getAttribute("aria-expanded")).toBe("false");
+        switcher.click();
+        expect(root.dataset.railOpen).toBe("1");
+        expect(switcher.getAttribute("aria-expanded")).toBe("true");
+        root.querySelector<HTMLElement>('[data-testid="db-tab-states"]')!.click();
+        expect(root.dataset.railOpen).toBe("0");
+        expect(switcher.getAttribute("aria-expanded")).toBe("false");
+        expect(switcher.textContent).toContain("상태");
+        expect(switcher.getAttribute("aria-label")).toBe("탭 바꾸기, 지금 상태");
+      });
+
       it("다른 구획의 탭을 고르면 그 탭 그룹이 계속 보인다", () => {
         const root = host();
         root.querySelector<HTMLElement>('[data-testid="db-group-strip-battle"]')!.click();

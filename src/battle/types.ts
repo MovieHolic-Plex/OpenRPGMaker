@@ -431,6 +431,8 @@ export interface BattleTimelineEntrySnapshot {
   readonly skillName?: string;
   /** Stable executed identity; skillName is presentation and legacy fallback only. */
   readonly skillId?: SkillId;
+  /** Stable executed item identity when commandKind === "item" (drives per-item battle visuals). */
+  readonly itemId?: ItemId;
   /** 연계기 엔트리면 참가 배우 전원(시전자 포함) — 표시 계층이 「연계!」 띠와 참가자 모션을 띄운다. */
   readonly comboActorIds?: readonly string[];
   /** 속성·타입 상성 배율(감정 배율 제외). 1 이면 생략 — 표시 계층이 「효과가 굉장했다」·상성별 타격음을 고른다. */

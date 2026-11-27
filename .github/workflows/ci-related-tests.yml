@@ -4,7 +4,7 @@ name: ci-related-tests
 #
 # 2026-11-25 ci-speed: 깊이 1 → 런타임 import 그래프(가까운 것부터) + 조각(matrix) + 넓은 변경.
 #   깊이 1 만 보던 판은 v0.420 을 막은 ci-full 새 실패를 PR 단계에서 거의 못 잡았다(재현 표: http://mdc2:18301/ci-speed.html).
-#   select 잡이 scripts/vitest-related.mjs 로 고르고 조각 수(1~4)를 정한다. 조각마다 같은 시간 상한(380초 예상·450초 시간 상자)이 걸린다.
+#   select 잡이 scripts/vitest-related.mjs 로 고르고 조각 수(1~8)를 정한다. 조각마다 같은 시간 상한(480초 예상·720초 시간 상자)이 걸린다. 예상은 워커 1개·시작 150초·기록 없는 파일 90초로 센다 — 호스티드 4코어/11GiB 에서 run-vitest.mjs 가 메모리로 워커를 1개로 낮춘다(2026-11-26 실측).
 #   «넓은 변경»(그래프로 닿는 시험 > 1200 또는 바뀐 파일 > 80 — 공용 허브 모듈을 건드린 PR)은 상한 없이 닿는 시험 전부를 12조각으로 돈다(ci-full 의 그 PR 판).
 #   조각 잡 이름은 `related-tests (n)` 이다. 정보용인 것은 그대로다(merge-pr 필수 체크 아님).
 #   아래 «깊이 1» 설명은 옛 판의 근거로 남긴다.
@@ -17,7 +17,7 @@ name: ci-related-tests
 #   고르는 규칙·시간 상한·안전망은 scripts/vitest-related.mjs 머리말에 있다. 시간 상한(예상 벽시계 380초 — 파일당 고정 비용·시작 비용 포함, mdc2 실측)을 넘는 만큼은 «nightly 로 미룸 n개» 로
 #   요약에 찍고 돌리지 않는다 — 미룬 파일은 ci-full(밤 1회·릴리스 전)이 본다. 안전망 파일(package.json·vitest 설정·ci-*.yml …)이 바뀌어도 전체로 넓히지 않는다.
 #
-# vitest 는 시간 상자(450초)에 걸려 있다 — 넘으면 끊고 «끝까지 본 만큼» 을 `RESULT: INCOMPLETE` 로 보고하고 **빨강**으로 끝난다(돌리지 못한 파일 목록을 남긴다, 2026-11-26).
+# vitest 는 시간 상자(720초)에 걸려 있다 — 넘으면 끊고 «끝까지 본 만큼» 을 `RESULT: INCOMPLETE` 로 보고하고 **빨강**으로 끝난다(돌리지 못한 파일 목록을 남긴다, 2026-11-26).
 #
 # 이 체크는 **정보용**이다 (필수 체크 아님 — scripts/merge-pr.mjs 는 `fast`·`fast-static`·`fast-parity` 만 기다린다). 판정은 ci-vitest-files 와 같은 기준선 대조다:
 #   vitest 가 실패해도 떨어진 파일이 모두 .omo/gates-baseline.json 의 tests.failedFiles(main 에서 이미 빨간 파일)이면 초록이다.
@@ -111,7 +111,7 @@ jobs:
     if: needs.select.outputs.count != '0'
     runs-on: ubuntu-latest
     # 넓은 변경은 시간 상자 없이 닿는 시험 전부를 돈다(조각 12개 — 한 조각 예상 40분 안팎).
-    timeout-minutes: ${{ needs.select.outputs.mode == 'wide' && 120 || 15 }}
+    timeout-minutes: ${{ needs.select.outputs.mode == 'wide' && 120 || 20 }}
     strategy:
       fail-fast: false
       # 넓은 변경은 조각 12개를 한 번에 돈다(보통은 상한 8). 2026-11-26 Pro 한도 40(05:39Z 동시 41 실측), ci-full 이 25자리를 써도 15가 남는다.
@@ -120,8 +120,8 @@ jobs:
       matrix: ${{ fromJSON(needs.select.outputs.matrix) }}
     env:
       VITEST_WORKERS: "4"
-      # vitest 시간 상자(초). 넘으면 vitest 를 끊고 «끝까지 본 만큼» 만 보고한다 — 좁은 변경의 조각이 10분을 넘지 않게 하는 마지막 보루다.
-      VITEST_TIMEBOX_SECONDS: ${{ needs.select.outputs.mode == 'wide' && '6600' || '450' }}
+      # vitest 시간 상자(초). 넘으면 vitest 를 끊고 빨강이다. 720 = 예상 480초 조각의 실제 최대(×1.15) 위(2026-11-26 153 조각 재보정, PR 본문).
+      VITEST_TIMEBOX_SECONDS: ${{ needs.select.outputs.mode == 'wide' && '6600' || '720' }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:

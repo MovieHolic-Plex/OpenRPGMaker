@@ -13,6 +13,7 @@ import {
   ensureBundledProjectTextures,
   ensureUploadedCharsetTextures,
   loadBundledAssets,
+  mapNeedsUnloadedGraftSources,
   registerBundledFrames,
   TILE_SIZE,
 } from "@/assets/bundled";
@@ -1215,6 +1216,26 @@ export class EditScene extends PhaserRuntime.Scene {
     // 재시작 후 도착한 완료는 현재 씬에서 새 프레임을 요청할 수 있어야 한다.
   }
 
+  // 부팅은 맵이 쓰지 않는 이식 소스 칩셋을 싣지 않는다(bundled.ts unusedGraftSourceTextureKeys). 칠하기·맵 편집이 이식 칸을 처음 두면
+  // 프레임당 한 번만 확인해 그때 싣는다. 싣는 동안 그 칸은 가져오기 길과 같이 바탕 시트로 그려지고, 끝나면 다시 굽는다.
+  private graftSourceCheckQueued = false;
+  private readonly graftSourcesRequested = new WeakSet<object>();
+  private queueGraftSourceCheck(): void {
+    if (this.graftSourceCheckQueued) return;
+    this.graftSourceCheckQueued = true;
+    requestAnimationFrame(() => {
+      this.graftSourceCheckQueued = false;
+      const project = store.getCurrent();
+      const mapId = this.mapId();
+      const map = mapId ? project.maps[mapId] : undefined;
+      const tileset = map ? project.tilesets[map.tilesetId] : undefined;
+      if (!map || !tileset || this.graftSourcesRequested.has(tileset)) return;
+      if (!mapNeedsUnloadedGraftSources(map, tileset, (key) => this.textures.exists(key))) return;
+      this.graftSourcesRequested.add(tileset);
+      ensureBundledProjectTextures(this, project, this.requestTextureRedraw);
+    });
+  }
+
   private redrawForStoreChange(change: ProjectChangeDescriptor): void {
     if (change.scope === "map" && change.eventDraftStarted) return;
     // 자료 보관함에서 방금 가져온 캐릭셋은 preload 가 끝난 뒤에 생긴다 — 텍스처를 뒤늦게
@@ -1228,6 +1249,8 @@ export class EditScene extends PhaserRuntime.Scene {
       ensureUploadedEventSpriteTextures(this, store.getCurrent(), this.requestTextureRedraw);
       ensureUploadedTilesetTextures(this, store.getCurrent(), this.requestTextureRedraw, { onlyMapTilesets: true });
       ensureBundledProjectTextures(this, store.getCurrent(), this.requestTextureRedraw);
+    } else {
+      this.queueGraftSourceCheck();
     }
     const mapId = this.mapId();
     const nextFeedback = retainEventLayerClickFeedback({

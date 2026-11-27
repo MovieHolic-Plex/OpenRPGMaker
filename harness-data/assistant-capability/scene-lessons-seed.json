@@ -1388,6 +1388,19 @@
     "Existing task triggers, task completion, and map layout still work after a save and reload"
    ],
    "lint0": []
+  },
+  {
+   "id": "fallen-star-overhaul-systems-and-dialogue",
+   "label": "관찰 수첩·멀티 엔딩·구어체 대사 개편",
+   "port": 19582,
+   "lessons": ["bestiary-weakness-discovery", "multi-ending-branch-wiring", "natural-korean-dialogue"],
+   "prompt": "JRPG 프로젝트에 관찰 수첩(도감)을 켜서 적과 만났을 때·약점을 맞혔을 때·쓰러뜨렸을 때 항목이 차례로 열리게 하고, 마지막 렌즈실 이벤트에서 선택지와 진행 스위치에 따라 진 엔딩·보통 엔딩·분기 엔딩 세 갈래로 이어지게 해 줘. 대사는 '~군', '~구먼', '~일 뿐' 같은 번역체 대신 인물마다 자연스러운 한국어 구어체로 써 줘.",
+   "requirements": [
+    "system.bestiary is enabled with seen, weakness, and defeated sections linked to reachable enemy ids",
+    "all three endings are defined and reachable via triggerEnding branches without dead-end placeholder notices",
+    "newGamePlus is enabled with carry fields and dialogue contains no translationese endings such as ~군 or ~구먼"
+   ],
+   "lint0": []
   }
  ]
 }

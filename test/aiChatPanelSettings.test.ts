@@ -2,8 +2,8 @@
 // 사용자 불만 회귀 테스트: (1) 패널을 접을 수 없었다, (2) API 키/설정이 저장되지 않는 것처럼
 // 보였다(세션이 생성 시점 설정을 캐시), (3) 감독/실행 모델 기본값이 DEFAULT_MODEL 과 일치한다.
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { renderAiChatPanel } from "@/editor/panels/aiChatPanel";
-import { openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
+import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { closeAiSettingsModal, openAiSettingsModal } from "@/editor/panels/aiSettingsModal";
 import { AssistantSession } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY, DEFAULT_LITE_MODEL, DEFAULT_MODEL, defaultAiConfig, loadAiConfig } from "@/ai/llmClient";
 import { isModelValidForAuthMode } from "@/ai/modelCatalog";
@@ -47,6 +47,10 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  // 문서를 걷기 전에 패널·설정 모달을 닫는다 — 열린 채로 두면 뒤늦게 온 연결·경로 조회 응답이 걷힌 문서에 그리려다
+  // «document/HTMLElement is not defined» 미처리 거절을 낸다(run 45943948659: aiLockScrim·aiRoleMatrixSettings 37건).
+  teardownAiChatPanel();
+  closeAiSettingsModal();
   restoreDom?.();
   restoreDom = null;
   Reflect.deleteProperty(globalThis, "localStorage");
