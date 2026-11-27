@@ -37,6 +37,11 @@ export type LightingMaskContext = {
    * 빛·맵 사각은 같은 세계 좌표로 계산해 한쪽으로 bleed 만큼 옮긴다 — 막은 세계에 붙어 같이 흔들린다.
    */
   readonly bleed?: number;
+  /**
+   * 2D 타일 벽면 레이캐스트 차폐 콜백(Darkwood식 손전등·방 조명 벽 차단).
+   * true 를 돌려주는 칸(벽·기둥·집)에서 빛이 멈추고 뒤쪽은 그림자로 남는다. 생략하면 기존 원형/부채꼴과 같다.
+   */
+  readonly isOpaqueTile?: (tileX: number, tileY: number) => boolean;
 };
 
 export type LightGradientParam = {
@@ -51,6 +56,10 @@ export type LightGradientParam = {
   readonly arc?: readonly [number, number];
   /** 가장자리가 또렷한 빛(시야 등불) — LightSource.edge. */
   readonly edge?: "hard";
+  /** 벽면 레이캐스트로 잘린 가시 다각형(화면 캔버스 px 좌표). 있으면 fillLight 가 이 다각형으로 빛을 자른다. */
+  readonly poly?: readonly (readonly [number, number])[];
+  /** 다각형 서명 해시 — 플레이어나 빛이 벽 모서리를 지나갈 때 마스크를 다시 그리도록 감지. */
+  readonly polyHash?: number;
 };
 
 export type LightingMaskParams = {
@@ -128,7 +137,7 @@ export function lightingMaskSignature(params: LightingMaskParams): string {
   if (params.clip) signature += `|c${params.clip.x},${params.clip.y},${params.clip.width},${params.clip.height}`;
   if (params.darkMargin) signature += "|m";
   for (const entry of params.gradients) {
-    signature += `|${entry.id}:${roundHalf(entry.centerX)},${roundHalf(entry.centerY)},${roundHalf(entry.radiusPx)},${round(entry.intensity)},${entry.color ?? ""},${roundFlicker(entry.flicker)}${entry.arc ? `,${round(entry.arc[0])}~${round(entry.arc[1])}` : ""}${entry.edge ? ",h" : ""}`;
+    signature += `|${entry.id}:${roundHalf(entry.centerX)},${roundHalf(entry.centerY)},${roundHalf(entry.radiusPx)},${round(entry.intensity)},${entry.color ?? ""},${roundFlicker(entry.flicker)}${entry.arc ? `,${round(entry.arc[0])}~${round(entry.arc[1])}` : ""}${entry.edge ? ",h" : ""}${entry.polyHash !== undefined ? `,p${entry.polyHash}` : ""}`;
   }
   return signature;
 }
@@ -236,8 +245,21 @@ function drawVignette(context: CanvasRenderingContext2D, params: LightingMaskPar
 /** 비네트 곡선 [가운데에서의 거리 비율, 세기] — 화면 가운데 절반은 비워 둔다. */
 const VIGNETTE_CURVE: readonly (readonly [number, number])[] = [[0, 0], [0.42, 0], [0.7, 0.45], [0.9, 0.85], [1, 1]];
 
-/** 둥근 빛은 사각을, 부채꼴 빛(경비 등불 시야)은 그 부채꼴만 칠한다 — 바닥에 시야가 그대로 보인다. */
+/** 둥근 빛은 사각을, 부채꼴 빛(경비 등불 시야)은 부채꼴을, 벽 차폐 다각형이 있으면 그 가시 다각형만 칠한다. */
 function fillLight(context: CanvasRenderingContext2D, light: LightGradientParam): void {
+  if (light.poly && light.poly.length >= 3) {
+    context.beginPath();
+    if (light.arc) {
+      context.moveTo(light.centerX, light.centerY);
+      for (const [px, py] of light.poly) context.lineTo(px, py);
+    } else {
+      context.moveTo(light.poly[0]![0], light.poly[0]![1]);
+      for (let i = 1; i < light.poly.length; i += 1) context.lineTo(light.poly[i]![0], light.poly[i]![1]);
+    }
+    context.closePath();
+    context.fill();
+    return;
+  }
   if (!light.arc) {
     context.fillRect(light.centerX - light.radiusPx, light.centerY - light.radiusPx, light.radiusPx * 2, light.radiusPx * 2);
     return;
@@ -247,6 +269,131 @@ function fillLight(context: CanvasRenderingContext2D, light: LightGradientParam)
   context.arc(light.centerX, light.centerY, light.radiusPx, light.arc[0], light.arc[1]);
   context.closePath();
   context.fill();
+}
+
+/** 2D 타일 격자 DDA 레이캐스트 — 빛이 불투명 벽 타일에서 정확히 멈추고 모서리 뒤는 그림자로 남긴다. */
+function castLightRayTiles(
+  ox: number,
+  oy: number,
+  dx: number,
+  dy: number,
+  maxDist: number,
+  isOpaque: (tx: number, ty: number) => boolean,
+): number {
+  const startTx = Math.floor(ox);
+  const startTy = Math.floor(oy);
+  let tx = startTx;
+  let ty = startTy;
+  const stepX = dx > 0 ? 1 : dx < 0 ? -1 : 0;
+  const stepY = dy > 0 ? 1 : dy < 0 ? -1 : 0;
+  const tDeltaX = stepX !== 0 ? Math.abs(1 / dx) : 1e9;
+  const tDeltaY = stepY !== 0 ? Math.abs(1 / dy) : 1e9;
+  let tMaxX = stepX > 0 ? (tx + 1 - ox) * tDeltaX : stepX < 0 ? (ox - tx) * tDeltaX : 1e9;
+  let tMaxY = stepY > 0 ? (ty + 1 - oy) * tDeltaY : stepY < 0 ? (oy - ty) * tDeltaY : 1e9;
+  let dist = 0;
+  // 양 축에서 교차 가능한 격자 경계 수만큼 순회해 radius 60 및 대각선 광선도 끝까지 추적한다.
+  const maxSteps = Math.max(8, Math.ceil(maxDist * (Math.abs(dx) + Math.abs(dy))) + 4);
+
+  for (let iter = 0; iter < maxSteps; iter += 1) {
+    if (tMaxX < tMaxY) {
+      dist = tMaxX;
+      tMaxX += tDeltaX;
+      tx += stepX;
+    } else {
+      dist = tMaxY;
+      tMaxY += tDeltaY;
+      ty += stepY;
+    }
+    if (dist >= maxDist) return maxDist;
+    if (isOpaque(tx, ty)) {
+      // 벽 앞면을 살짝(0.22칸) 비춰 줘서 벽 자체가 새까맣게 잘리지 않고 자연스럽게 닿아 보인다.
+      return Math.min(maxDist, dist + 0.22);
+    }
+  }
+  return maxDist;
+}
+
+function normalizeAngleToSpan(angle: number, startAngle: number): number {
+  const twoPi = Math.PI * 2;
+  let rel = (angle - startAngle) % twoPi;
+  if (rel < 0) rel += twoPi;
+  return startAngle + rel;
+}
+
+function buildVisibilityPoly(
+  ox: number,
+  oy: number,
+  radiusTiles: number,
+  arc: readonly [number, number] | undefined,
+  context: LightingMaskContext,
+  zoom: number,
+  bleed: number,
+): { readonly poly: readonly (readonly [number, number])[]; readonly hash: number } | null {
+  const isOpaque = context.isOpaqueTile;
+  if (!isOpaque || radiusTiles <= 0.5) return null;
+  const startAngle = arc ? arc[0] : 0;
+  const span = arc ? arc[1] - arc[0] : Math.PI * 2;
+  const baseCount = arc ? 40 : 56;
+  const angles: number[] = [];
+
+  for (let i = 0; i < baseCount; i += 1) {
+    const frac = arc ? i / Math.max(1, baseCount - 1) : i / baseCount;
+    angles.push(startAngle + span * frac);
+  }
+
+  // 모서리 브리징(벽 모퉁이 너머 빛 샘)을 막기 위해 반경 내 모든 불투명 벽 타일의 4꼭짓점 양옆(±eps)에 레이를 추가한다.
+  const radCeil = Math.ceil(radiusTiles);
+  const otx = Math.floor(ox);
+  const oty = Math.floor(oy);
+  const r2 = (radiusTiles + 1.5) * (radiusTiles + 1.5);
+  const cornerEps = 0.0015;
+  const seenCorner = new Set<number>();
+
+  for (let ty = oty - radCeil; ty <= oty + radCeil; ty += 1) {
+    for (let tx = otx - radCeil; tx <= otx + radCeil; tx += 1) {
+      if (tx === otx && ty === oty) continue;
+      if (!isOpaque(tx, ty)) continue;
+      const cx0 = tx + 0.5 - ox;
+      const cy0 = ty + 0.5 - oy;
+      if (cx0 * cx0 + cy0 * cy0 > r2) continue;
+      const corners: readonly (readonly [number, number])[] = [
+        [tx, ty], [tx + 1, ty], [tx, ty + 1], [tx + 1, ty + 1],
+      ];
+      for (const [kx, ky] of corners) {
+        const key = (kx + 2048) * 4096 + (ky + 2048);
+        if (seenCorner.has(key)) continue;
+        seenCorner.add(key);
+        const raw = Math.atan2(ky - oy, kx - ox);
+        for (const delta of [-cornerEps, cornerEps]) {
+          const a = normalizeAngleToSpan(raw + delta, startAngle);
+          if (a >= startAngle && a <= startAngle + span) angles.push(a);
+        }
+      }
+    }
+  }
+
+  angles.sort((a, b) => a - b);
+
+  const poly: Array<readonly [number, number]> = [];
+  let hash = 2166136261 >>> 0;
+  let hitAnyWall = false;
+  let prevAngle = -1e9;
+
+  for (const angle of angles) {
+    if (angle - prevAngle < 0.0004) continue;
+    prevAngle = angle;
+    const dx = Math.cos(angle);
+    const dy = Math.sin(angle);
+    const hitDist = castLightRayTiles(ox, oy, dx, dy, radiusTiles, isOpaque);
+    if (hitDist < radiusTiles - 0.01) hitAnyWall = true;
+    const wx = (ox + dx * hitDist) * context.tileSize;
+    const wy = (oy + dy * hitDist) * context.tileSize;
+    const sx = (wx - context.cameraX) * zoom + bleed;
+    const sy = (wy - context.cameraY) * zoom + bleed;
+    poly.push([sx, sy]);
+    hash = Math.imul(hash ^ Math.round(hitDist * 20), 16777619) >>> 0;
+  }
+  return hitAnyWall ? { poly, hash } : null;
 }
 
 function hexRgb(color: string): string | null {
@@ -260,8 +407,15 @@ function lightGradientParam(source: LightSource, context: LightingMaskContext, b
   const position = context.resolveAnchor(source.at, source);
   if (!position) return null;
   const zoom = Number.isFinite(context.zoom) && context.zoom > 0 ? context.zoom : 1;
-  const centerX = ((position.x + 0.5) * context.tileSize - context.cameraX) * zoom + bleed;
-  const centerY = ((position.y + 0.5) * context.tileSize - context.cameraY) * zoom + bleed;
+  const ox = position.x + 0.5;
+  const oy = position.y + 0.5;
+  const centerX = (ox * context.tileSize - context.cameraX) * zoom + bleed;
+  const centerY = (oy * context.tileSize - context.cameraY) * zoom + bleed;
+  const arc = source.cone ? coneArc(source.cone.degrees, position.facing ?? source.cone.facing) : undefined;
+  const shouldOcclude = Boolean(context.isOpaqueTile)
+    && source.id !== PLAYER_PRESENCE_LIGHT.id
+    && (Boolean(arc) || source.radius >= 2.2);
+  const vis = shouldOcclude ? buildVisibilityPoly(ox, oy, source.radius, arc, context, zoom, bleed) : null;
   return {
     id: source.id,
     centerX,
@@ -271,8 +425,9 @@ function lightGradientParam(source: LightSource, context: LightingMaskContext, b
     intensity: lightSourceIntensity(source, context.timeMs) * clamp01(position.fade ?? 1),
     color: source.color,
     flicker: source.flicker ? deterministicFlickerFactor(source.id, context.timeMs) : 1,
-    ...(source.cone ? { arc: coneArc(source.cone.degrees, position.facing ?? source.cone.facing) } : {}),
+    ...(arc ? { arc } : {}),
     ...(source.edge === "hard" ? { edge: "hard" as const } : {}),
+    ...(vis ? { poly: vis.poly, polyHash: vis.hash } : {}),
   };
 }
 

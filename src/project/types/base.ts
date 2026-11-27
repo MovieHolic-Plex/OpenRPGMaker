@@ -769,6 +769,8 @@ export interface UploadedAsset {
     width?: number;
     height?: number;
     transparentColor?: string;
+    /** AI 조수가 author_interactive_prop 으로 생성한 5프레임 상호작용 오브젝트 메타데이터. */
+    interactiveProp?: Record<string, unknown>;
     /**
      * 얼굴 시트 지연 절단 표식. 시트를 낱장 id 로 등록한 시점에는 아직 픽셀이 시트
      * 그대로라, 로드 직후 `repairUploadedFacesetSheets` 가 이 두 값을 보고 canvas 로

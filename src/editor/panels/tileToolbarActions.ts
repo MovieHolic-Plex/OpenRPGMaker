@@ -25,6 +25,7 @@ export function selectTileTool(tool: TileToolId): void {
   const next = TOOL_PATCHES[tool];
   editorState.set({
     activePaletteStamp: null,
+    activeInteractivePropId: null,
     layer: current.layer === "event" ? "lower" : current.layer,
     paintShape: next.paintShape,
     selection: tool === "select" ? current.selection : null,
@@ -37,6 +38,7 @@ export function selectMapModeTool(tool: MapModeToolId): void {
   const current = editorState.get();
   editorState.set({
     activePaletteStamp: null,
+    activeInteractivePropId: null,
     layer: tool === "event" ? "event" : current.layer === "event" ? "lower" : current.layer,
     paintShape: "pen",
     selection: null,
@@ -54,7 +56,23 @@ export function selectEyedropperTool(): void {
  */
 export function selectPaletteStamp(stamp: PaletteStamp): void {
   dismissLocationDrawModeForTool("paint");
-  editorState.set({ activePaletteStamp: stamp, tool: "paint", paintShape: "pen", selection: null });
+  editorState.set({ activePaletteStamp: stamp, activeInteractivePropId: null, tool: "paint", paintShape: "pen", selection: null });
+}
+
+/** 왼쪽 기물 패널 「상호작용」 탭에서 고른 멀티프레임 프롭을 1클릭 배치 붓에 담는다. */
+export function selectInteractivePropBrush(propId: string | null): void {
+  if (!propId) {
+    editorState.set({ activeInteractivePropId: null });
+    return;
+  }
+  dismissLocationDrawModeForTool("paint");
+  editorState.set({
+    activePaletteStamp: null,
+    activeInteractivePropId: propId,
+    tool: "paint",
+    paintShape: "pen",
+    selection: null,
+  });
 }
 
 /**

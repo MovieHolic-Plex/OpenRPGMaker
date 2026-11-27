@@ -2,6 +2,16 @@ import { genId } from "@/util/id";
 import { isPassable } from "@/project/collision";
 import { normalizeLightingState, normalizeLightSource } from "@/project/lightingRules";
 import { patchSunlight, type MapSunlight } from "@/project/sunlight";
+import { normalizeAtmosphereEffects } from "@/project/atmosphere";
+import {
+  CINEMATIC_COMBO_IDS,
+  CINEMATIC_COMBO_PRESETS,
+  POST_FX_PRESET_IDS,
+  POST_FX_PRESETS,
+  isCinematicComboId,
+  patchPostFx,
+  type MapPostFx,
+} from "@/project/postFx";
 import type { Command, EventPage, GameEvent, LightingBlend, LightingState, LightSource, LightSourceAnchor, Rect, WeatherKind } from "@/project/types";
 import { requireMap } from "./mapHelpers";
 import { ToolError, type JsonSchema, type ToolDefinition, type ToolExecResult } from "./types";
@@ -148,6 +158,33 @@ const setSceneMood: ToolDefinition = {
         },
         additionalProperties: false,
       },
+      postFx: {
+        type: "object",
+        description: "applyMode map 만. HD-2D 화면 전체 필름 후처리(Emissive 발광색 보존). preset: none|hd2d-warm|ghibli-day|dawn-mist|gothic-horror|dungeon-torch|cyber-neon|eastern-ink|arctic-blizzard|cataclysm-fire, intensity/bloom/dof/godRays/vignette(0~1), preserveEmissive/adaptWeather(기본 true).",
+        properties: {
+          preset: { type: "string", enum: [...POST_FX_PRESET_IDS] },
+          intensity: { type: "number", minimum: 0, maximum: 1 },
+          bloom: { type: "number", minimum: 0, maximum: 1 },
+          dof: { type: "number", minimum: 0, maximum: 1 },
+          godRays: { type: "number", minimum: 0, maximum: 1 },
+          vignette: { type: "number", minimum: 0, maximum: 1 },
+          grain: { type: "number", minimum: 0, maximum: 1 },
+          chromaticAberration: { type: "number", minimum: 0, maximum: 1 },
+          bayerDither: { type: "number", minimum: 0, maximum: 1 },
+          preserveEmissive: { type: "boolean" },
+          adaptWeather: { type: "boolean" },
+          horrorReactive: { type: "boolean" },
+          spriteRimLight: { type: "boolean" },
+          wallOcclusion: { type: "boolean" },
+          waterReflections: { type: "boolean" },
+        },
+        additionalProperties: false,
+      },
+      combo: {
+        type: "string",
+        enum: [...CINEMATIC_COMBO_IDS],
+        description: "applyMode map 만. 원클릭 시네마틱 콤보(후처리+조명+태양+환경효과+날씨 일괄). classic-clean=아무것도 안 넣기(원본 초기화), octopath-dusk=황혼 HD-2D, flashlight-horror=칠흑 손전등 호러, rainy-noir=비 오는 사이버 네오누아르, blossom-dawn=벚꽃 여명, arctic-camp=눈보라 설원 야영, cataclysm-boss=불타는 마을 보스전.",
+      },
     },
     required: ["mapId"],
   },
@@ -162,19 +199,55 @@ const setSceneMood: ToolDefinition = {
     const weather = weatherCommandArg(args.weather);
     const lighting = lightingStateArg(args.lighting);
     const sun = args.sunlight && typeof args.sunlight === "object" && !Array.isArray(args.sunlight) ? args.sunlight as Partial<MapSunlight> : undefined;
-    if (!weather && !lighting && !sun) {
-      throw new ToolError("weather·lighting·sunlight 중 하나는 필요합니다.", { code: "scene-mood-empty", mapId: map.id });
+    const postFxArg = args.postFx && typeof args.postFx === "object" && !Array.isArray(args.postFx) ? args.postFx as Partial<MapPostFx> : undefined;
+    const comboId = isCinematicComboId(args.combo) ? args.combo : undefined;
+    if (!weather && !lighting && !sun && !postFxArg && !comboId) {
+      throw new ToolError("weather·lighting·sunlight·postFx·combo 중 하나는 필요합니다.", { code: "scene-mood-empty", mapId: map.id });
     }
     const applyMode = args.applyMode === "event" ? "event" : "map";
-    if (sun && applyMode !== "map") throw new ToolError("sunlight 는 applyMode 'map' 에서만 씁니다(맵 전체의 해).", { code: "invalid-args", mapId: map.id });
+    if ((sun || postFxArg || comboId) && applyMode !== "map") throw new ToolError("sunlight/postFx/combo 는 applyMode 'map' 에서만 씁니다.", { code: "invalid-args", mapId: map.id });
     if (applyMode === "map") {
+      let effectiveWeather = weather;
+      if (comboId) {
+        const combo = CINEMATIC_COMBO_PRESETS[comboId];
+        if (combo.postFx === null) delete map.postFx;
+        else map.postFx = patchPostFx(undefined, combo.postFx);
+        if (combo.sunlight === null) delete map.sunlight;
+        else if (combo.sunlight) map.sunlight = patchSunlight(map.sunlight, combo.sunlight);
+        const atmo = normalizeAtmosphereEffects(combo.atmosphereEffects);
+        if (atmo.length === 0) delete map.atmosphereEffects;
+        else map.atmosphereEffects = atmo;
+        if (combo.lighting === null) delete map.defaultLighting;
+        else if (combo.lighting) {
+          map.defaultLighting = normalizeLightingState({
+            ambient: combo.lighting.ambient,
+            color: combo.lighting.color,
+            sources: combo.lighting.playerFlashlightRadius
+              ? [{ id: "combo-flashlight", at: "player", radius: combo.lighting.playerFlashlightRadius, intensity: 1 }]
+              : [],
+          });
+        }
+        if (!effectiveWeather && combo.weather) {
+          effectiveWeather = {
+            kind: "setWeather",
+            weather: combo.weather.kind,
+            intensity: combo.weather.intensity,
+            transitionMs: 300,
+          };
+        }
+      }
       if (lighting) map.defaultLighting = lighting;
       if (sun) map.sunlight = patchSunlight(map.sunlight, { enabled: true, ...sun });
+      if (postFxArg) {
+        const nextFx = patchPostFx(map.postFx, postFxArg);
+        if (nextFx.preset === "none") delete map.postFx;
+        else map.postFx = nextFx;
+      }
       const casters = (map.structurePlacements?.length ?? 0) + (map.doodadGroups?.length ?? 0);
-      const moodEventId = weather ? upsertSceneMoodAutoEvent(map, [weather]) : undefined;
+      const moodEventId = effectiveWeather ? upsertSceneMoodAutoEvent(map, [effectiveWeather]) : undefined;
       return {
-        summary: `${map.name} 분위기 설정 — ${weather ? `날씨 ${weather.weather}` : "날씨 유지"}, ${lighting ? `ambient ${lighting.ambient.toFixed(2)}` : "조명 유지"}${map.sunlight && sun ? `, 태양 그림자 방향 ${map.sunlight.azimuth}°·고도 ${map.sunlight.altitude}°${casters ? "" : " (이 맵엔 그림자를 던질 집·나무 기록이 없다 — 마을·숲 도구로 지은 맵에서 보인다)"}` : ""}`,
-        data: { mapId: map.id, applyMode, weatherKind: weather?.weather, lightCount: lighting?.sources.length ?? 0, eventIds: moodEventId ? [moodEventId] : [] },
+        summary: `${map.name} 분위기 설정${comboId ? ` [콤보: ${CINEMATIC_COMBO_PRESETS[comboId].label}]` : ""} — ${effectiveWeather ? `날씨 ${effectiveWeather.weather}` : "날씨 유지"}, ${lighting || map.defaultLighting ? `ambient ${(lighting ?? map.defaultLighting)!.ambient.toFixed(2)}` : "조명 유지"}${map.sunlight && (sun || comboId) ? `, 태양 그림자 방향 ${map.sunlight.azimuth}°·고도 ${map.sunlight.altitude}°${casters ? "" : " (이 맵엔 그림자를 던질 집·나무 기록이 없다 — 마을·숲 도구로 지은 맵에서 보인다)"}` : ""}${postFxArg || comboId ? `, 후처리 ${map.postFx ? POST_FX_PRESETS[map.postFx.preset].label : "없음(원본)"}` : ""}`,
+        data: { mapId: map.id, applyMode, combo: comboId, weatherKind: effectiveWeather?.weather, lightCount: (lighting ?? map.defaultLighting)?.sources.length ?? 0, postFxPreset: map.postFx?.preset ?? "none", eventIds: moodEventId ? [moodEventId] : [] },
       };
     }
 

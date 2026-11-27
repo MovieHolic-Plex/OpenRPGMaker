@@ -1,0 +1,49 @@
+{
+  "version": 1,
+  "notes": "5-Axis Production Quota Ledger for interactive-props (Milestone 1: 300, Full Pack: 500). Aligned with OPRN Studio world.ts, genre.ts, and placementRules.ts.",
+  "milestones": {
+    "m1": 300,
+    "full": 500
+  },
+  "byCategory": {
+    "door-pass":    { "label": "출입문·밀기문·커튼", "m1": 50, "full": 75 },
+    "container":    { "label": "수납·가구·상자",     "m1": 55, "full": 90 },
+    "breakable":    { "label": "파괴·채집·뒤지기",   "m1": 45, "full": 80 },
+    "machine":      { "label": "기계·가전·키오스크", "m1": 40, "full": 65 },
+    "light-fire":   { "label": "불·조명·요리·간판",  "m1": 40, "full": 70 },
+    "water-env":    { "label": "물·바람·생활환경",   "m1": 30, "full": 55 },
+    "gimmick":      { "label": "기믹·함정·제단",     "m1": 25, "full": 40 },
+    "outdoor-ride": { "label": "탈것·야외시설",      "m1": 15, "full": 25 }
+  },
+  "byWorld": {
+    "fantasy":   { "label": "판타지",   "m1": 75, "full": 120 },
+    "modern":    { "label": "현대·도시", "m1": 80, "full": 135 },
+    "dungeon":   { "label": "던전·유적", "m1": 35, "full": 55 },
+    "joseon":    { "label": "조선",     "m1": 30, "full": 50 },
+    "desert":    { "label": "사막·동방", "m1": 20, "full": 35 },
+    "scifi":     { "label": "SF·우주",  "m1": 20, "full": 35 },
+    "murim":     { "label": "무림",     "m1": 15, "full": 25 },
+    "steampunk": { "label": "스팀펑크", "m1": 10, "full": 20 },
+    "wasteland": { "label": "폐허·종말", "m1": 5,  "full": 10 },
+    "snow":      { "label": "설원",     "m1": 5,  "full": 8  },
+    "pirate":    { "label": "해적·항구", "m1": 5,  "full": 7  }
+  },
+  "byGenre": {
+    "horror":          { "label": "공포·미스터리·폐가", "m1": 35, "full": 60 },
+    "puzzle-escape":   { "label": "퍼즐·탈출·단서",     "m1": 45, "full": 75 },
+    "adventure":       { "label": "정통 JRPG·모험",     "m1": 90, "full": 150 },
+    "romance-daily":   { "label": "일상·학원·연애",     "m1": 70, "full": 120 },
+    "monster-collect": { "label": "몬스터 수집·도시",   "m1": 25, "full": 45 },
+    "life-survival":   { "label": "농장·채집·생존",     "m1": 45, "full": 80 },
+    "eastern":         { "label": "동양·조선·무림·신사", "m1": 50, "full": 85 },
+    "cyber-scifi":     { "label": "사이버·SF·스팀펑크", "m1": 35, "full": 60 }
+  },
+  "byRole": {
+    "loot":          { "label": "탐색·획득", "m1": 95, "full": 160 },
+    "passage":       { "label": "통로·개방", "m1": 55, "full": 85  },
+    "hide":          { "label": "숨기(공포)", "m1": 18, "full": 30  },
+    "puzzle-clue":   { "label": "단서·잠금", "m1": 50, "full": 85  },
+    "ambient-light": { "label": "광원·환경", "m1": 80, "full": 135 },
+    "hazard-trap":   { "label": "함정·위험", "m1": 20, "full": 35  }
+  }
+}

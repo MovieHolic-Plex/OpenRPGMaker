@@ -32,6 +32,8 @@ import type { Project } from "@/project/types";
 import type { WebExportAsset } from "@/project/webExportTypes";
 import { webUploadedAssetPath } from './webUploadedAssetPath';
 import { transitVehicle } from "@/project/mapTransit";
+import { parseFieldFxId } from "@/project/containerFx";
+import { inferInteractivePropEra, interactivePropById, interactivePropForContainer } from "@/project/interactiveProps";
 import battleTrainerSpriteFiles from "@/assets/battleTrainerSpriteFiles.json" with { type: "json" };
 export { safeFileName } from './webUploadedAssetPath';
 
@@ -147,6 +149,8 @@ export function collectWebExportAssets(project: Project): readonly WebExportAsse
   // /assets/battle-trainers/<role>/<file>.png). 프로젝트에는 역할 id 만 있어 출하 판본에 폴더가 통째로 빠졌고,
   // 아스트라 1.19 트레이너 전투 그림 10종이 404 였다(QA-AH119-001).
   for (const path of trainerSpriteImagePaths(project)) assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
+  // 상호작용 오브젝트 100종 멀티프레임 PNG 스트립(interaction.propId / fx:prop:<id> / wardrobe 자동 업그레이드)을 출하 판본에 싣는다.
+  for (const path of interactivePropStripPaths(project)) assets.set(path, { kind: "public", sourcePath: path, zipPath: path });
   if (ids.has('tex_worldmap_selected')) {
     const path = 'assets/worldmap-icons/ATTRIBUTION.md';
     assets.set(path, { kind: 'public', sourcePath: path, zipPath: path });
@@ -316,7 +320,47 @@ function collectProjectStrings(project: Project): Set<string> {
       if (sprite) values.add(sprite.resourceId);
     }
   }
+  // 배치된 커스텀 상호작용 프롭(author_interactive_prop)은 propId / fx:prop:<id> 로만 참조되므로
+  // 해당하는 uploaded resourceId 를 명시적으로 수집해 내보내기 시 스트립 바이트가 누락되지 않게 한다.
+  for (const rid of collectReferencedCustomPropResourceIds(project)) values.add(rid);
   return values;
+}
+
+function collectReferencedCustomPropResourceIds(project: Project): readonly string[] {
+  const resourceIds = new Set<string>();
+  const addProp = (id: string | undefined) => {
+    const prop = interactivePropById(id, project);
+    if (prop?.resourceId) resourceIds.add(prop.resourceId);
+  };
+  const scanCommands = (commands: readonly unknown[] | undefined) => {
+    if (!Array.isArray(commands)) return;
+    for (const raw of commands) {
+      if (!raw || typeof raw !== "object") continue;
+      const cmd = raw as { kind?: unknown; animationId?: unknown; then?: unknown[]; else?: unknown[]; body?: unknown[]; cases?: Array<{ commands?: unknown[] }> };
+      if (cmd.kind === "showAnimation" && typeof cmd.animationId === "string") {
+        const fx = parseFieldFxId(cmd.animationId, project);
+        if (fx?.kind === "prop") addProp(fx.propId);
+      }
+      if (Array.isArray(cmd.then)) scanCommands(cmd.then);
+      if (Array.isArray(cmd.else)) scanCommands(cmd.else);
+      if (Array.isArray(cmd.body)) scanCommands(cmd.body);
+      if (Array.isArray(cmd.cases)) {
+        for (const c of cmd.cases) scanCommands(c?.commands);
+      }
+    }
+  };
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events) {
+      for (const page of event.pages ?? []) {
+        const inter = page.interaction;
+        if (inter?.kind === "container" && inter.propId) addProp(inter.propId);
+        scanCommands(page.commands);
+      }
+      scanCommands(event.commands);
+    }
+  }
+  for (const common of project.commonEvents ?? []) scanCommands(common.commands);
+  return [...resourceIds];
 }
 
 export function isAudioCatalogRow(row: unknown): boolean {
@@ -348,6 +392,70 @@ function collectStrings(value: unknown, out: Set<string>): void {
     }
     collectStrings(child, out);
   }
+}
+
+function interactivePropStripPaths(project: Project): readonly string[] {
+  const paths = new Set<string>();
+  const addProp = (id: string | undefined) => {
+    const prop = interactivePropById(id, project);
+    // 커스텀 프롭(resourceId 있음)은 collectUsedUploadedAssetIds 가 project.assets.uploaded 에 보존하므로 public/ 경로로 추가하지 않는다.
+    if (prop && !prop.resourceId && !prop.stripPath.startsWith("data:")) paths.add(prop.stripPath);
+  };
+  const mapEras = new Set<ReturnType<typeof inferInteractivePropEra>>();
+  for (const map of Object.values(project.maps)) {
+    const tileset = project.tilesets[map.tilesetId];
+    mapEras.add(inferInteractivePropEra(map.tilesetId, tileset?.name));
+  }
+  const addContainerFallback = (style: string, eventName?: string, era?: ReturnType<typeof inferInteractivePropEra>) => {
+    const auto = interactivePropForContainer(style as Parameters<typeof interactivePropForContainer>[0], eventName, era);
+    if (auto) addProp(auto.id);
+  };
+  const scanCommands = (
+    commands: readonly unknown[] | undefined,
+    eventName?: string,
+    era?: ReturnType<typeof inferInteractivePropEra>,
+    allEras?: boolean,
+  ) => {
+    if (!Array.isArray(commands)) return;
+    for (const raw of commands) {
+      if (!raw || typeof raw !== "object") continue;
+      const cmd = raw as { kind?: unknown; animationId?: unknown; then?: unknown[]; else?: unknown[]; body?: unknown[]; cases?: Array<{ commands?: unknown[] }> };
+      if (cmd.kind === "showAnimation" && typeof cmd.animationId === "string") {
+        const fx = parseFieldFxId(cmd.animationId);
+        if (fx?.kind === "prop") addProp(fx.propId);
+        else if (fx?.kind === "container") {
+          if (allEras && mapEras.size > 0) {
+            for (const mapEra of mapEras) addContainerFallback(fx.style, eventName, mapEra);
+          } else {
+            addContainerFallback(fx.style, eventName, era);
+          }
+        }
+      }
+      if (Array.isArray(cmd.then)) scanCommands(cmd.then, eventName, era, allEras);
+      if (Array.isArray(cmd.else)) scanCommands(cmd.else, eventName, era, allEras);
+      if (Array.isArray(cmd.body)) scanCommands(cmd.body, eventName, era, allEras);
+      if (Array.isArray(cmd.cases)) {
+        for (const c of cmd.cases) scanCommands(c?.commands, eventName, era, allEras);
+      }
+    }
+  };
+  for (const map of Object.values(project.maps)) {
+    const tileset = project.tilesets[map.tilesetId];
+    const era = inferInteractivePropEra(map.tilesetId, tileset?.name);
+    for (const event of map.events) {
+      for (const page of event.pages ?? []) {
+        const inter = page.interaction;
+        if (inter?.kind === "container") {
+          if (inter.propId) addProp(inter.propId);
+          else if (inter.style) addContainerFallback(inter.style, event.name, era);
+        }
+        scanCommands(page.commands, event.name, era);
+      }
+      scanCommands(event.commands, event.name, era);
+    }
+  }
+  for (const common of project.commonEvents ?? []) scanCommands(common.commands, undefined, undefined, true);
+  return [...paths];
 }
 
 function localPublicPath(url: string | null): string | null {

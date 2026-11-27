@@ -20,6 +20,7 @@ import { characterDepth, characterSpriteY, mapUpperTileDepth } from "@/player/ch
 import { applyDoorCue, DOOR_OPEN_SE, doorSe } from "@/player/playSceneDoorway";
 import { projectSeCue } from "@/project/seCues";
 import { mapDoorForCells, openMapDoorNow } from "@/player/playSceneDoors";
+import { ensureSceneImageTexture } from "@/player/playSceneImageTexture";
 import { applyMapOverrides } from "@/player/playSceneMapRuntime";
 import type { PlaySceneContext } from "@/player/playSceneTypes";
 import {
@@ -33,6 +34,15 @@ import {
   type ContainerStyle,
   type FieldFx,
 } from "@/project/containerFx";
+import {
+  inferInteractivePropEra,
+  interactivePropById,
+  interactivePropForContainer,
+  interactivePropGlowColor,
+  interactivePropStripUrl,
+  resolveInteractivePropSe,
+  type InteractivePropEntry,
+} from "@/project/interactiveProps";
 import { findKitDoor, type KitDoorMatch } from "@/project/kitDoors";
 import { runtimeEventViewById, runtimeEventViewsForMap } from "@/project/runtimeEventState";
 import { getMapTile, setMapTileOverride } from "@/project/session";
@@ -867,13 +877,310 @@ async function playOpenState(scene: PlaySceneContext, style: ContainerStyle, cel
   return true;
 }
 
-export async function playContainerFx(scene: PlaySceneContext, style: ContainerStyle, cell: Cell): Promise<void> {
+// ───────────── 멀티프레임 PNG 스트립 재생기 (project/interactiveProps.ts) ─────────────
+//
+// 코드 화소 자르기(openStatePixels) 대신 4~5프레임 가로 PNG 스트립을 프레임 단위로 재생·유지한다.
+// oneshot / toggle / break 는 마지막 프레임을 칸에 유지하고, loopAfterOpen(화로·향로·홀로그램 등)은
+// loopFromFrame .. frames-1 사이를 타이머로 반복한다. 맵이 바뀌거나 다시 트리거되면 타이머·이미지를 정리한다.
+
+const propLoopTimers = new WeakMap<PlaySceneContext, Map<string, Phaser.Time.TimerEvent>>();
+const propGlowLayers = new WeakMap<PlaySceneContext, Map<string, Phaser.GameObjects.GameObject[]>>();
+const propShadowLayers = new WeakMap<PlaySceneContext, Map<string, Phaser.GameObjects.GameObject>>();
+
+function stopPropGlow(scene: PlaySceneContext, key: string): void {
+  const glows = propGlowLayers.get(scene);
+  const existing = glows?.get(key);
+  if (existing) {
+    for (const obj of existing) obj.destroy();
+    glows!.delete(key);
+  }
+}
+
+function stopPropShadow(scene: PlaySceneContext, key: string): void {
+  const shadows = propShadowLayers.get(scene);
+  const existing = shadows?.get(key);
+  if (existing) {
+    existing.destroy();
+    shadows!.delete(key);
+  }
+}
+
+function stopPropLoop(scene: PlaySceneContext, key: string): void {
+  const timers = propLoopTimers.get(scene);
+  const existing = timers?.get(key);
+  if (existing) {
+    existing.remove(false);
+    timers!.delete(key);
+  }
+  stopPropGlow(scene, key);
+}
+
+function clearPropLoops(scene: PlaySceneContext): void {
+  const timers = propLoopTimers.get(scene);
+  if (timers) {
+    for (const timer of timers.values()) timer.remove(false);
+    timers.clear();
+  }
+  const glows = propGlowLayers.get(scene);
+  if (glows) {
+    for (const list of glows.values()) for (const glow of list) glow.destroy();
+    glows.clear();
+  }
+  const shadows = propShadowLayers.get(scene);
+  if (shadows) {
+    for (const shadow of shadows.values()) shadow.destroy();
+    shadows.clear();
+  }
+}
+
+function propStripTextureKey(prop: InteractivePropEntry): string {
+  return `__iprop_${prop.id}`;
+}
+
+function propFrameName(index: number): string {
+  return `f${index}`;
+}
+
+/** 가로 PNG 스트립을 씬에 한 번만 싣고 프레임 0..N-1 을 텍스처에 잘라 등록한다. */
+async function ensurePropStripFrames(scene: PlaySceneContext, prop: InteractivePropEntry): Promise<string | null> {
+  if (!scene.textures || typeof scene.load?.image !== "function") return null;
+  const key = propStripTextureKey(prop);
+  const loaded = await ensureSceneImageTexture(scene, key, interactivePropStripUrl(prop, store.getCurrent()));
+  if (!loaded || !scene.textures.exists(key)) return null;
+  const texture = scene.textures.get(key);
+  if (!texture.has(propFrameName(0))) {
+    for (let i = 0; i < prop.frames; i++) {
+      texture.add(propFrameName(i), 0, i * prop.frameWidth, 0, prop.frameWidth, prop.frameHeight);
+    }
+  }
+  return key;
+}
+
+/** 정규화 앵커(0..1)를 타일 칸 중심·바닥선에 맞춰 픽셀 격자에 정렬한다. */
+function propWorldOrigin(cell: Cell, prop: InteractivePropEntry, size: number): { readonly x: number; readonly y: number; readonly scale: number } {
+  const scale = size / 16;
+  const cx = cell.x * size + size / 2;
+  const footY = (cell.y + 1) * size;
+  return {
+    x: Math.round(cx - prop.anchorX * prop.frameWidth * scale),
+    y: Math.round(footY - prop.anchorY * prop.frameHeight * scale),
+    scale,
+  };
+}
+
+/** HD-2D 접지 그림자(Contact AO) + 방향성 투영 그림자를 프롭 바로 아래에 깔아 바닥에 무게감 있게 붙인다. */
+function attachPropGroundShadow(
+  scene: PlaySceneContext,
+  key: string,
+  cell: Cell,
+  prop: InteractivePropEntry,
+  size: number,
+  depth: number,
+  flatDebris = false,
+): void {
+  stopPropShadow(scene, key);
+  if (typeof scene.add?.graphics !== "function") return;
+  const scale = size / 16;
+  const cx = cell.x * size + size / 2;
+  const footY = (cell.y + 1) * size - 1.5 * scale;
+  const g = scene.add.graphics().setDepth(depth - 0.08);
+
+  if (prop.mount === "wall") {
+    // 벽 부착 프롭(초상화·시계·샹들리에 등): 프레임 바로 아래 은은한 벽면 낙하 그림자
+    const w = Math.max(10, Math.min(44, prop.frameWidth * 0.72)) * scale;
+    const h = 3.5 * scale;
+    g.fillStyle(0x090814, 0.24).fillRoundedRect(Math.round(cx - w / 2), Math.round(footY - h * 0.6), Math.round(w), Math.round(h), Math.max(1, scale));
+  } else if (flatDebris) {
+    // 부서진 파편 잔해: 얇고 부드러운 바닥 접지 음영만
+    const w = Math.max(12, Math.min(40, prop.frameWidth * 0.78)) * scale;
+    g.fillStyle(0x0b0a14, 0.16).fillEllipse(cx, footY, w, 4.5 * scale);
+  } else {
+    // 입체 서 있는 프롭: ① 방향성 투영 그림자(맵 태양 각도 반영) + ② 진한 접지 AO 이중 타원
+    const sun = scene.map.sunlight;
+    const azDeg = sun?.enabled && typeof sun.azimuth === "number" ? sun.azimuth : 315;
+    const castRad = ((azDeg + 180) * Math.PI) / 180;
+    const castDx = Math.sin(castRad) * Math.min(6, Math.max(2.5, prop.frameHeight * 0.12)) * scale;
+    const castDy = Math.cos(castRad) * 1.8 * scale + 1.4 * scale;
+    const baseW = Math.max(12, Math.min(44, prop.frameWidth * 0.72)) * scale;
+    const baseH = Math.max(4.5, Math.min(9.5, prop.frameWidth * 0.22)) * scale;
+    g.fillStyle(0x080712, 0.14).fillEllipse(cx + castDx, footY + castDy, baseW * 1.12, baseH * 1.18);
+    g.fillStyle(0x0c0a16, 0.18).fillEllipse(cx, footY, baseW * 1.04, baseH * 1.02);
+    g.fillStyle(0x080610, 0.30).fillEllipse(cx, footY, baseW * 0.74, baseH * 0.68);
+  }
+
+  const shadows = propShadowLayers.get(scene) ?? new Map<string, Phaser.GameObjects.GameObject>();
+  propShadowLayers.set(scene, shadows);
+  shadows.set(key, g);
+}
+
+function attachPropGlow(scene: PlaySceneContext, key: string, cell: Cell, prop: InteractivePropEntry, size: number, depth: number): void {
+  stopPropGlow(scene, key);
+  const color = interactivePropGlowColor(prop);
+  if (color === null || typeof scene.add?.graphics !== "function") return;
+  const scale = size / 16;
+  const cx = cell.x * size + size / 2;
+  const footY = (cell.y + 1) * size - 2 * scale;
+  const cy = footY - Math.max(6, prop.frameHeight * 0.48) * scale;
+  const radius = Math.max(size * 0.95, Math.max(prop.frameWidth, prop.frameHeight) * scale * 0.68);
+  const objects: Phaser.GameObjects.GameObject[] = [];
+
+  // ① 바닥 바운스 라이트 (빛이 발밑 바닥을 자기 색으로 물들임)
+  const bounce = scene.add.graphics().setDepth(depth - 0.06);
+  bounce.fillStyle(color, 0.11).fillEllipse(cx, footY, radius * 1.85, radius * 0.72);
+  bounce.fillStyle(color, 0.20).fillEllipse(cx, footY, radius * 1.05, radius * 0.42);
+  objects.push(bounce);
+
+  // ② 볼류메트릭 방사 광원 헤일로
+  const g = scene.add.graphics().setDepth(depth - 0.04);
+  g.fillStyle(color, 0.09).fillCircle(cx, cy, radius * 1.15);
+  g.fillStyle(color, 0.16).fillCircle(cx, cy, radius * 0.64);
+  g.fillStyle(color, 0.24).fillCircle(cx, cy, radius * 0.30);
+  objects.push(g);
+
+  const isFlicker = prop.id.includes("horror-") || prop.id.includes("fire") || prop.id.includes("torch") || prop.id.includes("candle");
+  if (typeof scene.tweens?.add === "function") {
+    scene.tweens.add({
+      targets: [g, bounce],
+      alpha: { from: isFlicker ? 0.62 : 0.76, to: 1.0 },
+      duration: isFlicker ? 390 : 660,
+      yoyo: true,
+      repeat: -1,
+      ease: "Sine.easeInOut",
+    });
+
+    // ③ 은은하게 떠오르는 공기 먼지 / 불티 2개
+    for (let m = 0; m < 2; m += 1) {
+      const mx = cx + (m === 0 ? -4 : 4.5) * scale;
+      const my = cy + (m === 0 ? 2 : -1) * scale;
+      const mote = scene.add.graphics().setDepth(depth + 0.06);
+      mote.fillStyle(color, 0.85).fillCircle(0, 0, Math.max(1, 1.15 * scale));
+      mote.setPosition(mx, my);
+      objects.push(mote);
+      scene.tweens.add({
+        targets: mote,
+        y: my - (10 + m * 4) * scale,
+        x: mx + (m === 0 ? 3 : -2.5) * scale,
+        alpha: { from: 0.9, to: 0.05 },
+        duration: 1350 + m * 420,
+        delay: m * 520,
+        repeat: -1,
+        ease: "Sine.easeOut",
+      });
+    }
+  }
+
+  const glows = propGlowLayers.get(scene) ?? new Map<string, Phaser.GameObjects.GameObject[]>();
+  propGlowLayers.set(scene, glows);
+  glows.set(key, objects);
+}
+
+function attachPropLoop(scene: PlaySceneContext, key: string, image: Phaser.GameObjects.Image, prop: InteractivePropEntry, cell: Cell, size: number, depth: number): void {
+  stopPropLoop(scene, key);
+  attachPropGlow(scene, key, cell, prop, size, depth);
+  const start = Math.max(0, Math.min(prop.frames - 1, prop.loopFromFrame ?? prop.frames - 2));
+  if (start >= prop.frames - 1 || typeof scene.time?.addEvent !== "function") return;
+  let current = start;
+  const timer = scene.time.addEvent({
+    delay: Math.max(80, prop.frameMs),
+    loop: true,
+    callback: () => {
+      if (!image.active) {
+        stopPropLoop(scene, key);
+        return;
+      }
+      current = current + 1 >= prop.frames ? start : current + 1;
+      image.setFrame(propFrameName(current));
+    },
+  });
+  const timers = propLoopTimers.get(scene) ?? new Map<string, Phaser.Time.TimerEvent>();
+  propLoopTimers.set(scene, timers);
+  timers.set(key, timer);
+}
+
+/**
+ * 등록된 멀티프레임 PNG 스트립을 칸 위에서 재생한다 (`fx:prop:<id>` / `fx:prop:<id>:close` 또는 `interaction.propId`).
+ * 반환: 스트립을 성공적으로 재생했는가(false 면 호출자가 기존 절차 연출로 대체할 수 있다).
+ */
+export async function playInteractivePropFx(
+  scene: PlaySceneContext,
+  prop: InteractivePropEntry,
+  cell: Cell,
+  options: { readonly reverse?: boolean; readonly silent?: boolean } = {},
+): Promise<boolean> {
+  const key = await ensurePropStripFrames(scene, prop);
+  if (!key) return false;
+  if (!options.silent) playSe(resolveInteractivePropSe(prop));
+  const size = mapTileSize(scene.map);
+  const origin = propWorldOrigin(cell, prop, size);
+  const depth = rowDepth(cell.y, size) + FX_DEPTH_BUMP;
+  const cellKey = `${scene.map.id}|${cell.x},${cell.y}`;
+  stopPropLoop(scene, cellKey);
+
+  const reverse = options.reverse === true;
+  const order: number[] = [];
+  if (reverse) {
+    for (let i = prop.frames - 1; i >= 0; i--) order.push(i);
+  } else {
+    for (let i = 0; i < prop.frames; i++) order.push(i);
+  }
+
+  const image = scene.add
+    .image(origin.x, origin.y, key, propFrameName(order[0]!))
+    .setOrigin(0, 0)
+    .setScale(origin.scale)
+    .setDepth(depth);
+  attachPropGroundShadow(scene, cellKey, cell, prop, size, depth, false);
+
+  for (let i = 1; i < order.length; i++) {
+    await sleep(scene, prop.frameMs);
+    if (!image.active) return true;
+    image.setFrame(propFrameName(order[i]!));
+  }
+
+  if (reverse) {
+    await sleep(scene, prop.frameMs);
+    if (image.active) image.destroy();
+    return true;
+  }
+
+  holdUntilMark(scene, cell, image);
+  if (prop.playback === "break") attachPropGroundShadow(scene, cellKey, cell, prop, size, depth, true);
+  if (prop.playback === "loopAfterOpen") attachPropLoop(scene, cellKey, image, prop, cell, size, depth);
+  return true;
+}
+
+function fallbackInteractivePropForContainer(
+  scene: PlaySceneContext,
+  style: ContainerStyle,
+  eventName?: string,
+): InteractivePropEntry | undefined {
+  const project = store.getCurrent();
+  const tileset = project.tilesets[scene.map.tilesetId];
+  const era = inferInteractivePropEra(scene.map.tilesetId, tileset?.name);
+  return interactivePropForContainer(style, eventName, era);
+}
+
+export async function playContainerFx(scene: PlaySceneContext, style: ContainerStyle, cell: Cell, eventId?: string): Promise<void> {
+  const project = store.getCurrent();
+  const view = eventId ? runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId) : undefined;
+  const explicitProp = interactivePropById(view?.page?.interaction?.propId, project);
+  if (explicitProp && (await playInteractivePropFx(scene, explicitProp, cell))) return;
+  // 옷장은 기존 코드 화소 자르기(openStatePixels)가 null 을 돌려 단색 사각형 대체로 떨어졌으므로 실원본 양문 스트립으로 업그레이드한다.
+  if (style === "wardrobe") {
+    const wardrobeProp = fallbackInteractivePropForContainer(scene, "wardrobe", view?.event.name);
+    if (wardrobeProp && (await playInteractivePropFx(scene, wardrobeProp, cell))) return;
+  }
   const spec = CONTAINER_FX[style];
   // 궤짝은 저작한 「상자」 자리(chest)가 있으면 그 소리.
   playSe(style === "chest" ? projectSeCue(store.getCurrent(), "chest") ?? spec.se : spec.se);
   // 타일 이미지는 움직이지 않는다 — 물건 칩셋 화소를 오려 낸 그림의 단계(뚜껑 들림·판자 비집기·서랍 빠짐·주둥이 벌어짐)만
   // 칸 위에서 바뀐다. 예전 흔들기(상자·짚)·기울이기(통)·주저앉기(자루)는 칸의 바닥·벽 타일까지 움직여 뜬다.
-  if (!(await playOpenState(scene, style, cell))) await playMotion(scene, style, cell);
+  if (!(await playOpenState(scene, style, cell))) {
+    const autoProp = fallbackInteractivePropForContainer(scene, style, view?.event.name);
+    if (!autoProp || !(await playInteractivePropFx(scene, autoProp, cell, { silent: true }))) {
+      await playMotion(scene, style, cell);
+    }
+  }
   burstParticles(scene, cell, style);
 }
 
@@ -916,11 +1223,16 @@ export function playLootPopup(scene: PlaySceneContext, cell: Cell, text: string,
 /** showAnimation 이 내장 연출 id 를 받으면 여기로 온다. wait 면 연출 길이만큼 기다린다. */
 export async function playFieldFx(scene: PlaySceneContext, fx: FieldFx, target: Cell | undefined, currentEventId: string | undefined): Promise<void> {
   const cell = target ?? eventCell(scene, currentEventId) ?? { x: scene.tileX, y: scene.tileY };
-  const done = sleep(scene, fieldFxDurationMs(fx));
+  const done = sleep(scene, fieldFxDurationMs(fx, store.getCurrent()));
   switch (fx.kind) {
     case "container":
-      void playContainerFx(scene, fx.style, cell);
+      await playContainerFx(scene, fx.style, cell, currentEventId);
       break;
+    case "prop": {
+      const prop = interactivePropById(fx.propId, store.getCurrent());
+      if (prop) await playInteractivePropFx(scene, prop, cell, { reverse: fx.reverse });
+      break;
+    }
     case "popupItem": {
       const name = store.getCurrent().database.items?.find((item) => item.id === fx.itemId)?.name ?? fx.itemId;
       playLootPopup(scene, cell, `+ ${name}`, "#fff3c4", projectSeCue(store.getCurrent(), "itemGet") ?? POPUP_ITEM_SE);
@@ -1004,25 +1316,58 @@ export function syncContainerSearchedMarks(scene: PlaySceneContext): void {
     for (const g of layer?.marks.values() ?? []) g.destroy();
     for (const g of pendingLids.get(scene)?.values() ?? []) g.destroy();
     pendingLids.get(scene)?.clear();
+    clearPropLoops(scene);
     layer = { mapId: scene.map.id, marks: new Map() };
     markLayers.set(scene, layer);
   }
   const size = mapTileSize(scene.map);
   const s = size / 16;
   const keep = new Set<string>();
-  for (const view of runtimeEventViewsForMap(store.getCurrent(), scene.map, scene.session, scene.eventPositions)) {
+  const project = store.getCurrent();
+  for (const view of runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)) {
     const interaction = view.page?.interaction;
-    if (interaction?.kind !== "container" || interaction.searched !== true) continue;
+    if (interaction?.kind !== "container") continue;
+    const explicitProp = interactivePropById(interaction.propId, project);
+    // 열리기 전(searched !== true)이라도 propId 가 명시돼 있고 타일/스프라이트가 비어 있으면 0번 원본 프레임을 그대로 그려 둔다.
+    const searched = interaction.searched === true;
+    const spriteShown = !view.transparent && !!view.sprite?.id;
+    const upperTile = scene.map.upperTiles[view.y * scene.map.width + view.x] ?? -1;
+    if (!searched && (!explicitProp || spriteShown || upperTile > 0)) continue;
     const style = isContainerStyle(interaction.style) ? interaction.style : containerStyleForLabel(view.event.name);
-    const key = `${view.event.id}|${view.x},${view.y}|${style}`;
+    const prop = explicitProp
+      ?? (searched && style === "wardrobe" ? fallbackInteractivePropForContainer(scene, "wardrobe", view.event.name) : undefined);
+    const frameIndex = searched ? (prop ? prop.frames - 1 : 0) : 0;
+    const key = `${view.event.id}|${view.x},${view.y}|${prop ? `prop:${prop.id}:f${frameIndex}` : style}`;
     keep.add(key);
     const lidKey = `${scene.map.id}|${view.x},${view.y}`;
     const lid = pendingLids.get(scene)?.get(lidKey);
     if (lid) { lid.destroy(); pendingLids.get(scene)!.delete(lidKey); }
     if (layer.marks.get(key)?.active) continue;
+    if (prop) {
+      const markLayer = layer;
+      const cell = { x: view.x, y: view.y };
+      const mapId = scene.map.id;
+      void ensurePropStripFrames(scene, prop).then((texKey) => {
+        if (!texKey || scene.map.id !== mapId || markLayer.marks.get(key)?.active) return;
+        const origin = propWorldOrigin(cell, prop, size);
+        // 부서진 잔해(break + searched)는 캐릭터 발밑으로 깔려 밟고 지나갈 수 있게 한다.
+        const depth = searched && prop.playback === "break"
+          ? rowDepth(cell.y, size) - size * 0.4
+          : rowDepth(cell.y, size) + 0.2;
+        const image = scene.add
+          .image(origin.x, origin.y, texKey, propFrameName(frameIndex))
+          .setOrigin(0, 0)
+          .setScale(origin.scale)
+          .setDepth(depth);
+        markLayer.marks.set(key, image);
+        const cellKey = `${mapId}|${cell.x},${cell.y}`;
+        attachPropGroundShadow(scene, cellKey, cell, prop, size, depth, searched && prop.playback === "break");
+        if (searched && prop.playback === "loopAfterOpen") attachPropLoop(scene, cellKey, image, prop, cell, size, depth);
+      });
+      continue;
+    }
     // 물건 자체의 열린 그림(칩셋 화소)이 되면 그것을 남기고, 안 되면(타일 화소를 못 읽음) 예전 흔적 그림.
     // 그림이 보이는 이벤트(상자 캐릭터 시트)는 칸 타일이 물건이 아니다 — 예전 흔적만.
-    const spriteShown = !view.transparent && !!view.sprite?.id;
     const open = spriteShown ? null : openStateTexture(scene, style, { x: view.x, y: view.y }, 1);
     if (open) {
       const depth = openStateDepth(scene, { x: view.x, y: view.y }, open.layer, open.tile, rowDepth(view.y, size) + 0.2);
