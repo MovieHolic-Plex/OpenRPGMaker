@@ -24,6 +24,7 @@ import {
 import {
   exchangeCodexAuthorizationCode,
   pollCodexDeviceAuthorization,
+  readCodexTokenProfile,
   refreshCodexToken,
   startCodexDeviceAuthorization,
 } from "../../src/ai/oauth/codexDeviceOAuth.ts";
@@ -242,20 +243,52 @@ function adoptOmpCliCredentials(provider: string): boolean {
 }
 
 /**
- * Codex CLI 로그인(`~/.codex/auth.json`)을 우리 저장소로 한 번 옮긴다.
+ * Codex CLI 로그인(`~/.codex/auth.json`)을 우리 저장소로 가져온다.
  *
  * 이 단계가 없으면 이미 `codex login` 이 끝난 PC 에서도 디바이스 코드를 다시 승인해야 한다.
+ * 기존 저장본이 만료됐거나 `~/.codex/auth.json` 이 더 신선하면(예: codex CLI 가 토큰을 갱신했거나
+ * 사용자가 다시 로그인했을 때) 최신 토큰과 프로필(email·planType·accountId)로 갱신한다.
  * 사용자가 연결을 끊었다면(declined) 되살리지 않는다 — 그러면 해제가 눈속임이 된다.
  */
-function adoptCodexCliCredentials(provider: string): boolean {
-  if (provider !== CODEX_PROVIDER_ID || store.adoptionDeclined(CODEX_PROVIDER_ID)) return false;
+function adoptCodexCliCredentials(provider: string, options: { force?: boolean } = {}): boolean {
+  if (provider !== CODEX_PROVIDER_ID) return false;
+  if (!options.force && store.adoptionDeclined(CODEX_PROVIDER_ID)) return false;
   const path = join(process.env.CODEX_HOME || join(homedir(), ".codex"), "auth.json");
   try {
-    const tokens = JSON.parse(readFileSync(path, "utf8"))?.tokens;
-    const access = typeof tokens?.access_token === "string" ? tokens.access_token : "";
-    const refresh = typeof tokens?.refresh_token === "string" ? tokens.refresh_token : "";
+    const parsed = JSON.parse(readFileSync(path, "utf8")) as {
+      tokens?: {
+        access_token?: unknown;
+        refresh_token?: unknown;
+        id_token?: unknown;
+        account_id?: unknown;
+      };
+    };
+    const tokens = parsed?.tokens;
+    const access = typeof tokens?.access_token === "string" ? tokens.access_token.trim() : "";
+    const refresh = typeof tokens?.refresh_token === "string" ? tokens.refresh_token.trim() : "";
     if (!refresh) return false;
-    store.setOAuth(CODEX_PROVIDER_ID, { access, refresh, expires: jwtExpiryMs(access) });
+    const idToken = typeof tokens?.id_token === "string" ? tokens.id_token.trim() : undefined;
+    const rawAccountId = typeof tokens?.account_id === "string" && tokens.account_id.trim() ? tokens.account_id.trim() : undefined;
+    const profile = access ? readCodexTokenProfile(access, idToken) : {};
+    const accountId = profile.accountId ?? rawAccountId;
+    const external: PortedOAuthCredentials = {
+      access,
+      refresh,
+      expires: jwtExpiryMs(access),
+      ...(accountId ? { accountId, orgId: accountId } : {}),
+      ...(profile.email ? { email: profile.email } : {}),
+      ...(profile.planType ? { orgName: profile.planType } : {}),
+    };
+    const current = credentialsOf(CODEX_PROVIDER_ID);
+    const missingMeta = Boolean(current && external.expires >= current.expires && (
+      (!current.email && external.email)
+      || (!current.orgName && external.orgName)
+      || (!current.accountId && external.accountId)
+    ));
+    if (!options.force && current && !missingMeta && !shouldReplaceImportedCredentials(CODEX_PROVIDER_ID, current, external)) {
+      return false;
+    }
+    store.setOAuth(CODEX_PROVIDER_ID, external, { source: "codex-cli" });
     return true;
   } catch {
     return false;
@@ -293,7 +326,7 @@ export function publicProviderStatus(provider: string) {
   const envVars = envScan === "allow" ? (getOhMyPiProvider(provider)?.envVars ?? []) : [];
   const envHit = envVars.some((name) => Boolean(process.env[name]?.trim()));
   adoptOmpCliCredentials(provider);
-  if (!store.has(provider)) adoptCodexCliCredentials(provider);
+  adoptCodexCliCredentials(provider);
   const disk = store.publicStatus(provider);
   const row = store.get(provider);
   const hasRequiredMetadata = !PROJECT_SCOPED_PROVIDERS.has(provider)
@@ -581,6 +614,11 @@ export async function providerStatus(provider: string) {
     if (outcome === "pending") return { ...publicProviderStatus(id), refreshing: true };
     return publicProviderStatus(id);
   } catch (error) {
+    // codex CLI 가 refresh_token 을 먼저 회전시켜 우리 저장본 갱신이 실패할 수 있다 — 최신 ~/.codex/auth.json 을 다시 입양해 되살린다.
+    if (adoptCodexCliCredentials(id, { force: false }) && isUsableCredentials(id, credentialsOf(id))) {
+      refreshFailures.delete(id);
+      return publicProviderStatus(id);
+    }
     return { ...publicProviderStatus(id), refreshError: error instanceof Error ? error.message : String(error) };
   } finally {
     if (timer !== undefined) clearTimeout(timer);

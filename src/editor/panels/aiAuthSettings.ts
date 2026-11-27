@@ -79,7 +79,9 @@ export interface AiAuthSettingsView {
   /** 사용자 지정(OpenAI 호환) 연결 카드가 「기본 연결로 사용」 을 누를 때 — 카드 선택과 같은 경로로 제공자를 바꾼다. */
   readonly selectProvider: (id: string, options?: { focus?: boolean; notify?: boolean }) => void;
   readonly startPrimaryLogin: () => void;
+  readonly startProviderLogin: (targetId: string) => void;
   readonly disconnectChatGpt: () => void;
+  readonly disconnectProvider: (targetId: string) => void;
   /** 폴링 타이머·진행 중 요청을 정리한다. 모달을 닫을 때 반드시 부른다. */
   readonly dispose: () => void;
 }
@@ -1171,34 +1173,36 @@ export function renderAiAuthSettings(
     }
   }
 
-  const disconnectChatGpt = (): void => {
+  const disconnectProvider = (targetId: string): void => {
+    const resolved = parseOhMyPiProvider(targetId);
     if (disconnectingChatGpt) return;
     if (primary) primary.disconnectError.hidden = true;
-    if (providerId === CODEX_PROVIDER_ID) {
+    if (providerId === resolved) {
       placeFeedback(true);
       disconnectSelected();
       return;
     }
-    // ChatGPT can be signed in while another account is the active work connection.
     disconnectingChatGpt = true;
-    void disconnectCompanionAuth(CODEX_PROVIDER_ID)
+    void disconnectCompanionAuth(resolved)
       .then((auth) => {
         if (disposed) return;
-        cardAuth.set(CODEX_PROVIDER_ID, auth);
-        renderCardPill(CODEX_PROVIDER_ID);
+        cardAuth.set(resolved, auth);
+        renderCardPill(resolved);
         resetAiConnectionStatusCache();
         void refreshAiConnectionStatus();
-        if (providerId === CODEX_PROVIDER_ID) void refreshStatus();
+        if (providerId === resolved) void refreshStatus();
       })
       .catch((error: unknown) => {
         if (disposed || !primary) return;
         primary.disconnectError.hidden = false;
+        const name = accountName(resolved);
         primary.disconnectError.textContent = error instanceof Error
-          ? `ChatGPT에서 로그아웃하지 못했어요. 다시 시도해 주세요. 오류 내용: ${error.message}`
-          : "ChatGPT에서 로그아웃하지 못했어요. 다시 시도해 주세요.";
+          ? `${name}에서 로그아웃하지 못했어요. 다시 시도해 주세요. 오류 내용: ${error.message}`
+          : `${name}에서 로그아웃하지 못했어요. 다시 시도해 주세요.`;
       })
       .finally(() => { disconnectingChatGpt = false; });
   };
+  const disconnectChatGpt = (): void => disconnectProvider(CODEX_PROVIDER_ID);
 
   function checkCard(id: string): void {
     const previous = cardAuth.get(id);
@@ -1275,7 +1279,15 @@ export function renderAiAuthSettings(
       placeFeedback(true);
       loginButton.click();
     },
+    startProviderLogin: (targetId: string) => {
+      const resolved = parseOhMyPiProvider(targetId);
+      if (providerId === resolved && loginButton.disabled && !loginButton.title) return;
+      selectQuickProvider(resolved, { focus: false });
+      placeFeedback(true);
+      loginButton.click();
+    },
     disconnectChatGpt,
+    disconnectProvider,
     focus: () => {
       // 폼의 첫 컨트롤로 보낸다 — 로그인 버튼에 포커스를 주면 Enter 한 번에 로그인이 발사된다.
       // API 키 입력은 두 제공자 모두에게 존재하지 않는다.

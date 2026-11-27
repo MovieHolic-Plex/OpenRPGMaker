@@ -316,10 +316,13 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     void (async () => {
       if (checkConnection) {
         // 연결된 길·한도로 조수 연결을 먼저 고른다(고정했으면 그대로) — 그래야 아래 요약이 고른 길을 말한다.
-        const [{ runAutoProviderPick }, { resetAiConnectionStatusCache }] = await Promise.all([
-          import("@/editor/panels/aiAutoProvider"), import("@/editor/panels/aiConnectionStatus"),
+        const [{ runAutoProviderPick }, { resetAiConnectionStatusCache }, { runStartupAiHealthCheck }] = await Promise.all([
+          import("@/editor/panels/aiAutoProvider"),
+          import("@/editor/panels/aiConnectionStatus"),
+          import("@/editor/panels/aiStartupHealth"),
         ]);
         await runAutoProviderPick({ onChanged: resetAiConnectionStatusCache });
+        void runStartupAiHealthCheck({ liveHealth: true });
       }
       const choice = loadEngineChoice();
       if (!choice) {
