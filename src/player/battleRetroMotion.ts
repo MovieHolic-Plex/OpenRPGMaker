@@ -4,6 +4,7 @@ import type { CharacterMotionProfile } from "@/battle/characterMotion";
 const characterProfiles=new WeakMap<HTMLElement,CharacterMotionProfile>();
 import { sampleBasicMotion } from "@/battle/battleMotionProgram";
 import { beginEnemyCollapse } from "@/player/battleEnemyCollapse";
+import { animateBattleItemMotion, battleItemRecordForEntry, classifyBattleItem, isThrownItemKind } from "@/player/battleItemMotion";
 import { animateRetroSkillFx, battleEntrySkillRecord, clearRetroSkillFx, driveRetroClassSkill, isRetroClassSkillActor, preloadRetroClassSkillFx, preloadRetroSkillFx, retroSkillForEntry, setRetroSkillEntry, type RetroSkillRecipe } from "@/player/retroSkillChoreography";
 import { CAST_TYPES, EXTENDED_POSE_FRAME, castTypeForSkill, type CastType, type ExtendedBattlerPose } from "@/battle/battlePose";
 import { isExtendedPixelGrid } from "@/assets/pixelEnemyGrid";
@@ -113,6 +114,7 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
       delete node.dataset.retroBeat;
       delete node.dataset.retroAction;
       delete node.dataset.retroSkill;
+      delete node.dataset.retroItemThrow;
       actorRecipes.delete(node);
       delete node.dataset.retroReach;
       delete node.dataset.retroStyle;
@@ -164,6 +166,10 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
           : recipe ? (recipe.approach === "still" ? "cast" : "attack")
           : entry && entry.commandKind === "skill" && isMeleeEntry(entry) ? "attack"
             : entry?.commandKind === "skill" || entry?.commandKind === "item" ? "cast" : "attack";
+    const itemRecord = entry?.commandKind === "item" ? battleItemRecordForEntry(entry) : undefined;
+    const itemVisual = entry?.commandKind === "item" ? classifyBattleItem(itemRecord) : undefined;
+    if (itemVisual && isThrownItemKind(itemVisual)) user.dataset.retroItemThrow = "true";
+    else delete user.dataset.retroItemThrow;
     // 마법 종류별 시전 칸(cast 시트). 걷기 칩 시트가 아니면 기존 시전 칸으로 떨어진다.
     const castType = recipe?.cast ?? (user.dataset.retroAction === "cast" && skill ? castTypeForSkill(skill) : undefined);
     if (castType) user.dataset.retroCast = castType;
@@ -214,6 +220,7 @@ export function retroActionMotion(field: HTMLElement, beat: BattleActionBeat | u
     }
   }
   animateRetroSkillFx(field, user, beat);
+  animateBattleItemMotion(field, user, currentEntries.get(field), beat);
   user.dataset.retroBeat = beat.kind;
   user.style.setProperty("--retro-beat-ms", `${Math.max(1, beat.durationMs)}ms`);
   if (user.classList.contains("battle-enemy")) driveEnemyStillBeat(user, beat);
@@ -372,7 +379,15 @@ function animateExtendedBeat(node: HTMLElement, beat: BattleActionBeat): void {
         : [[0, recipe.release], [recipe.approach === "still" ? 0.72 : 0.2, "idle"]];
   }
   else if (action === "defend") frames = [[0, "defend"]];
-  else if (action === "item") frames = [[0, "item"]];
+  else if (action === "item") {
+    if (node.dataset.retroItemThrow === "true") {
+      frames = beat.kind === "approach" ? [[0, "attack_windup"], [0.65, "attack_strike"]]
+        : beat.kind === "impact" ? [[0, "attack"]]
+          : [[0, "attack_follow"], [0.55, "idle"]];
+    } else {
+      frames = [[0, "item"]];
+    }
+  }
   else if (action === "cast") {
     frames = beat.kind === "approach" ? [[0, "cast_charge"], [0.55, "cast_raise"]]
       : beat.kind === "impact" ? [[0, finisher ? "skill" : "cast_release"]]

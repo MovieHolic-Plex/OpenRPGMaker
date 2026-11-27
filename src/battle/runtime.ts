@@ -3222,6 +3222,7 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
 
     const skillId = item.activateSkillId ?? item.skillId;
     const usesNativeMedicineEffects = itemUsesNativeBattleEffects(item);
+    const startIndex = timeline.length;
     const attachItemAnimation = (target: MutableBattler): void => {
       if (!item.animationId) return;
       lastAnimation = createBattleAnimationSnapshot(options.project.database.battleAnimations, item.animationId, target.id);
@@ -3251,6 +3252,9 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
         }, "action", "item");
         attachItemAnimation(unchanged[0]);
       }
+    }
+    for (let i = startIndex; i < timeline.length; i += 1) {
+      (timeline[i] as { itemId?: ItemId }).itemId = itemId;
     }
   }
 

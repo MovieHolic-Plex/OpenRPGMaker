@@ -100,16 +100,30 @@ STAMPABLE_WEAPONS = (
 )
 NO_STAMP_KINDS = ("bow", "gun", "fist", "fan", "lute")
 
-def load_orig_git(cid, pose, base_rev=DEFAULT_BASE_REV):
-    """Read from the fixed pre-retouch git revision so regeneration is always idempotent."""
+def verify_base_rev(base_rev):
+    """Fail fast if the requested pre-retouch git revision does not exist in this checkout."""
     try:
-        b = subprocess.check_output(
-            ["git", "show", f"{base_rev}:tiledata/charset-battlers/{cid}/{pose}.png"],
+        subprocess.check_output(
+            ["git", "rev-parse", "--verify", f"{base_rev}^{{commit}}"],
             cwd=str(ROOT), stderr=subprocess.DEVNULL
         )
-        return Image.open(io.BytesIO(b)).convert("RGBA")
-    except Exception:
-        return Image.open(SRC / cid / f"{pose}.png").convert("RGBA")
+    except subprocess.CalledProcessError as exc:
+        raise RuntimeError(
+            f"Baseline revision {base_rev!r} is unavailable in git history; "
+            "fetch full history or pass a valid --base-rev."
+        ) from exc
+
+def load_orig_git(cid, pose, base_rev=DEFAULT_BASE_REV):
+    """Read strictly from the fixed pre-retouch git revision (never fall back to writable outputs)."""
+    rel = f"tiledata/charset-battlers/{cid}/{pose}.png"
+    try:
+        b = subprocess.check_output(
+            ["git", "show", f"{base_rev}:{rel}"],
+            cwd=str(ROOT), stderr=subprocess.DEVNULL
+        )
+    except subprocess.CalledProcessError as exc:
+        raise RuntimeError(f"Missing baseline sprite {base_rev}:{rel}") from exc
+    return Image.open(io.BytesIO(b)).convert("RGBA")
 
 def px_set(im, x, y, rgba):
     if 0 <= x < 48 and 0 <= y < 48:
@@ -674,18 +688,29 @@ def main():
     args = []
     i = 0
     while i < len(raw):
-        if raw[i] == "--dry-run":
+        tok = raw[i]
+        if tok == "--dry-run":
             dry = True
-        elif raw[i] == "--base-rev" and i + 1 < len(raw):
+        elif tok == "--base-rev":
+            if i + 1 >= len(raw) or raw[i + 1].startswith("-"):
+                sys.stderr.write("Error: --base-rev requires a non-option revision value.\n")
+                sys.exit(2)
             base_rev = raw[i + 1]
             i += 1
-        elif not raw[i].startswith("--"):
-            args.append(raw[i])
+        elif tok.startswith("-"):
+            sys.stderr.write(f"Error: unknown option {tok!r}\n")
+            sys.exit(2)
+        else:
+            args.append(tok)
         i += 1
-    targets = args or sorted(d.name for d in SRC.iterdir() if d.is_dir() and d.name not in SKIP_ALL)
+    verify_base_rev(base_rev)
+    targets = [cid for cid in (args or sorted(d.name for d in SRC.iterdir() if d.is_dir() and d.name not in SKIP_ALL)) if cid not in SKIP_ALL]
+    # Validate all baseline poses exist before writing any character output.
+    for cid in targets:
+        for pose_name, *_ in POSES:
+            load_orig_git(cid, pose_name, base_rev=base_rev)
     total_poses = 0
     for cid in targets:
-        if cid in SKIP_ALL: continue
         updated = retouch_character(cid, dry_run=dry, base_rev=base_rev)
         total_poses += len(updated)
         print(f"{cid:18s}: {len(updated):2d} poses ({', '.join(updated)})")
