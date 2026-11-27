@@ -13,6 +13,7 @@ import { recordAudioFailure } from "./audioFailureLog";
 export {
   listAudioFailures,
   recordAudioFailure,
+  resetAudioFailuresForTest,
   subscribeAudioFailures,
   type AudioFailure,
 } from "./audioFailureLog";
