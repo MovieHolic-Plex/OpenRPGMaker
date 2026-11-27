@@ -343,10 +343,10 @@ const appWindows = new Set<BrowserWindow>();
 let lastAppWindow: BrowserWindow | null = null;
 /** 명령줄·macOS open-file 로 이 창에 연 프로젝트. QA 의 OPRN_OPEN_PROJECT_DIR 와 따로 둔다(그 변수는 잠금을 끈다). */
 const explicitProjectDir = new WeakMap<BrowserWindow, string>();
-/** 한 번이라도 처음 보이기(전체화면)를 탄 창. 사용자가 전체화면에서 나온 뒤 다시 앞으로 가져올 때 전체화면을 켜지 않는다. */
+/** 한 번이라도 처음 보이기를 탄 창. */
 const presentedWindows = new WeakSet<BrowserWindow>();
 
-/** 숨겨 둔 창을 처음 보인다. 순서는 windowShow.ts — 맥은 보인 뒤 전체화면, 그 밖은 전체화면 뒤 보이기. */
+/** 숨겨 둔 창을 처음 보인다. 순서는 windowShow.ts — 강제 전체화면 없이 기본 창 모드로 보인다. */
 function presentAppWindow(window: BrowserWindow): void {
   if (window.isDestroyed() || presentedWindows.has(window)) return;
   presentedWindows.add(window);
@@ -394,7 +394,7 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
     // 편집기는 tokens.css --bg-base. 어두운 OS 에서는 편집기 다크 토큰(--bg-base = #1C1C1E)과 같은 색으로 시작한다 —
     // 흰 바탕이 먼저 번쩍이면 앱을 열자마자 흰 화면이 보인다(2026-11-01 실측).
     backgroundColor: opensStartScreen(options.projectDir) ? "#111214" : nativeTheme.shouldUseDarkColors ? "#1C1C1E" : "#FFFFFF",
-    // 전체화면은 보일 때 켠다 — 리눅스는 생성자에서 fullscreen 을 주면 show:false 여도 창을 바로 띄워(빈 화면이 스플래시를 덮었다).
+    // 앱은 기본 창 모드(1280×800)로 시작하며, 전체화면은 사용자가 직접 전환할 때만 켠다.
     fullscreen: false,
     autoHideMenuBar: true,
     ...chromeOptions,
@@ -423,7 +423,7 @@ function createWindow(options: { readonly splash?: () => Splash | undefined; rea
     if (shown || failed || window.isDestroyed()) return;
     shown = true;
     revealOnStartReady.delete(id);
-    // 두 번째 실행·open-file 이 이미 이 창을 앞으로 가져왔으면 전체화면을 다시 켜지 않는다.
+    // 두 번째 실행·open-file 이 이미 이 창을 앞으로 가져왔으면 처음 보이기를 중복 실행하지 않는다.
     if (!presentedWindows.has(window)) {
       presentAppWindow(window);
       mainMark("windowShown");
@@ -679,7 +679,7 @@ function dismissSplash(): void {
 function focusAppWindow(window: BrowserWindow): void {
   if (window.isDestroyed()) return;
   if (window.isMinimized()) window.restore();
-  // 스플래시 뒤에 숨은 창은 아직 전체화면이 아니다. 그냥 show 하면 창 모드로 뜨고, 6초 뒤 폴백이 전체화면으로 튀긴다.
+  // 스플래시 뒤에 숨은 창은 아직 처음 보이기를 타지 않았다. 처음 보이기 경로로 표시 상태를 통일한다.
   if (!presentedWindows.has(window)) {
     presentAppWindow(window);
     mainMark("windowShown");
