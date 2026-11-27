@@ -34,7 +34,7 @@ export function createWorldAtlasController(scene: AtlasScene) {
   }
   async function open(){
     const project=store.getCurrent(),atlas=worldAtlasForMap(project,scene.getMapId());
-    if(!atlas||!host||scene.running||host.querySelector('[data-testid="main-menu"],[data-testid="battle-scene"],[data-testid="dialogue-box"],[data-testid="title-screen"]'))return;
+    if(!atlas||!host||scene.running||host.querySelector('[data-testid="main-menu"],[data-testid="battle-scene"],[data-testid="dialogue-box"],[data-testid="title-screen"],[data-testid="ending-screen"],[data-testid="game-over-screen"]'))return;
     if(dialog){close();return;}
     lastFocus=document.activeElement instanceof HTMLElement?document.activeElement:button;
     dialog=document.createElement('div');dialog.className='world-atlas-overlay';dialog.dataset.testid='world-atlas';dialog.dataset.playInputOwner='play-ui';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label',atlas.name);

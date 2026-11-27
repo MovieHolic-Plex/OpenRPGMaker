@@ -20,6 +20,8 @@ export interface ReliefLiftField {
   readonly slopes: readonly ReliefSlope[];
   readonly slopeOwners: Int32Array;
   readonly maxLift: number;
+  /** 북쪽(y=0 위)으로 가장 많이 돌출한 높이(단). reliefTopOverhangPx O(1) 조회용. */
+  readonly topOverhang: number;
 }
 
 const fields = new WeakMap<ReliefData, { signature: number; field: ReliefLiftField }>();
@@ -51,9 +53,18 @@ export function reliefLiftField(relief: ReliefData): ReliefLiftField {
       slopeOwners[y * width + x] = id;
     }
   }
-  for (const h of elevation) maxLift = Math.max(maxLift, h);
+  let topOverhang = 0;
+  for (let y = 0; y < height; y++) {
+    const rowOffset = y * width;
+    for (let x = 0; x < width; x++) {
+      const h = elevation[rowOffset + x] ?? 0;
+      if (h > maxLift) maxLift = h;
+      const over = h - y;
+      if (over > topOverhang) topOverhang = over;
+    }
+  }
   for (const s of slopes) maxLift = Math.max(maxLift, s.hi);
-  const field = { width, height, elevation, slopes, slopeOwners, maxLift };
+  const field = { width, height, elevation, slopes, slopeOwners, maxLift, topOverhang };
   fields.set(relief, { signature, field });
   return field;
 }

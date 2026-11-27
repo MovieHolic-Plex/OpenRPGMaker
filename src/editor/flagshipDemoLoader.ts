@@ -32,10 +32,16 @@ async function loadBakedFlagshipDemo(id: FlagshipDemoId): Promise<Project | null
     // 비어 올 수 있어 «HTML 이 아닐 때» JSON 파싱을 시도한다.
     if (!response.ok || (response.headers.get("content-type") ?? "").includes("html")) return null;
     const { preloadBundledTilesetDefinitions } = await import("@/project/defaults/defaultAssets");
+    const { preloadBundledJson } = await import("@/project/defaults/bundledJson");
     const { deserializeParsed } = await import("@/project/io");
     const data: unknown = await response.json();
     const tilesets = (data as { tilesets?: unknown } | null)?.tilesets;
-    if (tilesets && typeof tilesets === "object") await preloadBundledTilesetDefinitions(Object.keys(tilesets));
+    const maps = (data as { maps?: unknown } | null)?.maps;
+    const hasRelief = maps && typeof maps === "object" && Object.values(maps as Record<string, { relief?: unknown }>).some((map) => Boolean(map?.relief));
+    await Promise.all([
+      tilesets && typeof tilesets === "object" ? preloadBundledTilesetDefinitions(Object.keys(tilesets)) : null,
+      hasRelief ? preloadBundledJson(["reliefRampArt", "reliefSheerArt"]) : null,
+    ]);
     return deserializeParsed(data);
   } catch (error) {
     log.warn("구운 데모를 읽지 못해 직접 짓습니다.", error);

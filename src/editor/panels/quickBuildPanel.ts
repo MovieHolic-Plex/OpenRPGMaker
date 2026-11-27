@@ -40,6 +40,9 @@ export function mountQuickBuildPanel(host: HTMLElement): () => void {
   function sync(): void {
     const s = editorState.get(), p = store.getCurrent(), map = s.currentMapId ? p.maps[s.currentMapId] : undefined, tileset = map ? p.tilesets[map.tilesetId] : undefined;
     house.hidden = s.terrainBrush !== "house"; road.hidden = s.terrainBrush !== "road"; drag.checked = s.terrainRoadDrag;
+    // 집 붓이 아니면 아래 집 목록(버들항 킷 3,969개 걸러내기)을 만들지 않는다 — 편집기 마운트·상태 변경·저장마다 약 0.4s 였다(2026-11-27 프로파일).
+    // 집 붓으로 바꾸면 그 상태 변경이 다시 sync 를 부른다.
+    if (house.hidden) return;
     width.value = String(s.terrainHouseWidth); stories.value = String(s.terrainHouseStories);
     resize.value = s.terrainHouseResize; roofWidth.value = String(Math.max(s.terrainHouseWidth, s.terrainHouseRoofWidth));
     roofForm.value = s.terrainHouseRoofForm;
@@ -69,7 +72,6 @@ export function mountQuickBuildPanel(host: HTMLElement): () => void {
     if (!effectiveKit && tileset?.id === "beodeul_city" && styles.length) instructions.textContent = "버들항 집 · 끌어서 너비·높이를 정하고 놓으세요. 높이는 창·문을 보존하며 층 단위로 맞춥니다. 초록은 가능 · 빨강은 불가 · Esc는 취소.";
     if (roofMode) instructions.textContent = "지붕에서 좌우로 끌어 너비를 정합니다. 반목조 집은 지붕 형태도 고를 수 있습니다. 기존 조립식 집의 벽·창·문 위치는 그대로 유지합니다. Esc는 취소.";
     if (!styles.length && !catalog.length) instructions.textContent = "이 지도 타일셋에 집 부품이 없습니다. 타일의 구조물에 입구가 있는 집을 등록해 주세요.";
-    if (house.hidden) return;
     const key = `${tileset?.id}:${tileset?.count}:${group}:${page}:${s.terrainHouseWidth}:${s.terrainHouseStories}:${s.terrainHouseResize}:${s.terrainHouseRoofWidth}:${s.terrainHouseRoofForm}:${catalog.map(k => k.id).join(",")}`;
     if (key !== rendered) {
       rendered = key; cards.replaceChildren(); saved.replaceChildren();

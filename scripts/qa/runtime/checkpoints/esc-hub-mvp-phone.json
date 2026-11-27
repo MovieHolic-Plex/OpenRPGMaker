@@ -59,11 +59,11 @@
     },
     {
      "id": "items",
+     "note": "터치: 아이템 칸 탭",
      "ops": [
       {
-       "kind": "key",
-       "key": "Enter",
-       "times": 1
+       "kind": "tap",
+       "testid": "hub-tile-items"
       },
       {
        "kind": "waitFor",
@@ -79,11 +79,15 @@
     },
     {
      "id": "items-target",
+     "note": "첫 탭 고르기, 두 번째 탭 사용 → 누구에게",
      "ops": [
       {
-       "kind": "key",
-       "key": "Enter",
-       "times": 1
+       "kind": "tap",
+       "testid": "hub-item-item_potion"
+      },
+      {
+       "kind": "tap",
+       "testid": "hub-item-item_potion"
       },
       {
        "kind": "hold",
@@ -95,21 +99,18 @@
     },
     {
      "id": "equip",
+     "note": "장비: 무기 칸 두 번 탭 → 후보, 후보 탭 → 수치 비교",
      "ops": [
       {
-       "kind": "key",
+       "kind": "pressUntil",
        "key": "Escape",
-       "times": 1
+       "testid": "hub-tile-equipment",
+       "state": "present",
+       "maxPresses": 4
       },
       {
-       "kind": "key",
-       "key": "Escape",
-       "times": 1
-      },
-      {
-       "kind": "key",
-       "key": "3",
-       "times": 1
+       "kind": "tap",
+       "testid": "hub-tile-equipment"
       },
       {
        "kind": "hold",
@@ -117,9 +118,39 @@
        "ms": 600
       },
       {
-       "kind": "key",
-       "key": "Enter",
-       "times": 1
+       "kind": "tap",
+       "testid": "hub-slot-weapon"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      },
+      {
+       "kind": "tap",
+       "testid": "hub-cand-status-menu-equipment-item-equip_iron_sword"
+      },
+      {
+       "kind": "hold",
+       "dir": null,
+       "ms": 600
+      }
+     ],
+     "shot": true
+    },
+    {
+     "id": "skills",
+     "ops": [
+      {
+       "kind": "pressUntil",
+       "key": "Escape",
+       "testid": "hub-tile-skills",
+       "state": "present",
+       "maxPresses": 4
+      },
+      {
+       "kind": "tap",
+       "testid": "hub-tile-skills"
       },
       {
        "kind": "hold",
@@ -133,19 +164,15 @@
      "id": "status",
      "ops": [
       {
-       "kind": "key",
+       "kind": "pressUntil",
        "key": "Escape",
-       "times": 1
+       "testid": "hub-tile-status",
+       "state": "present",
+       "maxPresses": 4
       },
       {
-       "kind": "key",
-       "key": "Escape",
-       "times": 1
-      },
-      {
-       "kind": "key",
-       "key": "4",
-       "times": 1
+       "kind": "tap",
+       "testid": "hub-tile-status"
       },
       {
        "kind": "hold",

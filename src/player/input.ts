@@ -235,6 +235,11 @@ export class RuntimeKeyHoldTracker {
     this.pendingSkillEdge = false;
   }
 
+  clearPendingCombatSwitchEdges(): void {
+    this.pendingSkillCycleEdge = false;
+    this.pendingLeaderSwitchEdge = false;
+  }
+
   heldDirections(): readonly Dir[] {
     return [...this.directions];
   }
@@ -256,6 +261,7 @@ export class RuntimeKeyHoldTracker {
 }
 
 export class Input {
+  private keyboard: Phaser.Input.Keyboard.KeyboardPlugin | null = null;
   private keys: Partial<Record<string, Phaser.Input.Keyboard.Key>> = {};
   private cursors: Phaser.Types.Input.Keyboard.CursorKeys | null = null;
   private priority: Dir[] = []; // 눌린 순서
@@ -293,6 +299,7 @@ export class Input {
   constructor(scene: Phaser.Scene) {
     const kb = scene.input.keyboard;
     if (!kb) return;
+    this.keyboard = kb;
     this.cursors = kb.createCursorKeys();
     this.keys = kb.addKeys("W,A,S,D,SPACE,ENTER,E") as Record<
       string,
@@ -338,8 +345,9 @@ export class Input {
     this.runtimeKeys.keyUp(key);
   }
 
-  // 포커스 이탈 시 눌림 상태 해제. 주입 방향과 priority 까지 함께 비운다.
+  // 포커스 이탈 시 눌림 상태 해제. Phaser Key.isDown 과 주입 방향·priority 까지 함께 비운다.
   releaseAllKeys(): void {
+    this.keyboard?.resetKeys?.();
     this.runtimeKeys.releaseAll();
     this.priority = [];
     this.injectedDir = null;
@@ -348,6 +356,7 @@ export class Input {
   setEnabled(v: boolean): void {
     this.enabled = v;
     this.runtimeKeys.clearPendingActionEdge();
+    this.runtimeKeys.clearPendingCombatSwitchEdges();
     // 닫히는 순간과 열리는 순간 모두 비운다 — 이벤트·전투 중에 누른 방향이 끝난 뒤 한 걸음을
     // 만들면 안 된다. 계속 누르고 있는 키는 눌림(directions)으로 남아 열린 뒤 그대로 걷는다.
     this.runtimeKeys.clearTappedDirections();

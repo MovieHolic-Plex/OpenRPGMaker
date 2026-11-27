@@ -38,41 +38,8 @@ body {
   user-select: none;
   -webkit-user-select: none;
 }
-/* Keyboard-only runtime content never participates in hit testing. This also prevents
-   descendant :hover/:active selectors from matching; keyboard focus/click synthesis
-   remains available. Explicit pointer owners opt only their own subtree back in. */
-.player-layout.system-shell[data-play-input-owner="keyboard-only"] > * {
-  pointer-events: none !important;
-}
-.player-layout.system-shell[data-play-input-owner="keyboard-only"] *,
-.player-layout.system-shell[data-play-input-owner="keyboard-only"] *::before,
-.player-layout.system-shell[data-play-input-owner="keyboard-only"] *::after {
-  cursor: default !important;
-  user-select: none !important;
-  -webkit-user-select: none !important;
-  -webkit-user-drag: none;
-}
-/* 마우스 입력을 연 게임(몬스터 수집, D15): 누를 수 있는 것에만 손가락 커서. 글자 선택은 계속 막는다. */
-.player-layout.system-shell[data-pointer-input="true"] :is(button, [role="button"], [role="menuitem"], [data-testid="dialogue-box"]) {
-  cursor: pointer;
-}
-.player-layout.system-shell[data-pointer-input="true"] .rm-title-menu-button:not(:disabled) {
-  pointer-events: auto;
-  cursor: pointer;
-}
-.player-layout.system-shell [data-play-input-owner="license-notice"],
-.player-layout.system-shell [data-play-input-owner="touch-controls"],
-.player-layout.system-shell [data-play-input-owner="touch-controls"] *,
-.player-layout.system-shell [data-play-input-owner="host-fullscreen"],
-.player-layout.system-shell [data-play-input-owner="host-fullscreen"] * {
-  pointer-events: auto !important;
-}
-.player-layout.system-shell [data-play-input-owner="license-notice"],
-.player-layout.system-shell [data-play-input-owner="touch-controls"] *,
-.player-layout.system-shell [data-play-input-owner="host-fullscreen"],
-.player-layout.system-shell [data-play-input-owner="host-fullscreen"] * {
-  cursor: pointer !important;
-}
+/* Input-owner and pointer-input hit-testing rules live in styles/runtime/playSurface.css
+   so exported player and editor test-play share the exact same contract. */
 .player-layout canvas {
   image-rendering: pixelated;
   image-rendering: crisp-edges;

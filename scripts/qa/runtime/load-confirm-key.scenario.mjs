@@ -38,6 +38,8 @@ const openCommand = (id) => `async () => {
 /** @type {import("../../lib/runtimeQa.d.mts").RuntimeQaScenario} */
 export const loadConfirmKeyScenario = {
   id: "load-confirm-key",
+  // 옛 ESC 메뉴(menuUiStyle 스킨) 화면을 검사한다 — 기본이 허브 메뉴가 된 뒤에도 같은 화면을 본다.
+  systemPatch: { menuLayout: "legacy" },
   beats: [
     { id: "start", note: "새 게임 → 시작 컷신·시작 목표", ops: [
       { kind: "pressUntilJs", key: "Enter", fn: "() => !document.querySelector(\"[data-testid='title-screen']\")", maxPresses: 4, settleMs: 2500 },

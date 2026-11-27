@@ -407,11 +407,16 @@ export function installDesktopShellBridge(
   state.active = true;
 
   // 1. Hydrate existing localStorage saves into the desktop save mirror (and vice versa)
-  syncExistingSavesWithDesktopBridge(state);
+  // 일반 웹 플레이어(config 없음 + 데스크톱 호스트 없음)에서는 전역 Storage.prototype.setItem 패치와
+  // 전체 localStorage 스캔을 건너뛴다.
+  const hasDesktopHost = config !== undefined || (typeof window !== "undefined" && Boolean(window.__oprnDesktopPlayer));
+  if (hasDesktopHost) {
+    syncExistingSavesWithDesktopBridge(state);
+  }
 
   // Intercept Storage.prototype.setItem so any saveToSlot / writeAutosave / recordEndingClear
   // automatically mirrors to `saves/*.oprn-save.json`.
-  const restoreStorageHook = installStorageSaveMirrorHook();
+  const restoreStorageHook = hasDesktopHost ? installStorageSaveMirrorHook() : () => {};
 
   // 2. Keyboard shortcuts: F11 and Alt+Enter for Fullscreen
   const onKeyDown = (event: KeyboardEvent): void => {

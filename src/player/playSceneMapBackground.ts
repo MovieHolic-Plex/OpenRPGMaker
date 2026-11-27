@@ -647,8 +647,11 @@ function applyMapBackgroundSpecs(
     sprite.setVisible(true);
     sprites.push(sprite);
   }
-  // 남는 스프라이트는 감춘다(파괴하지 않는다 — 맵을 오갈 때 재사용한다).
-  for (const leftover of previous.slice(specs.length)) leftover.setVisible(false);
+  // 남는 스프라이트는 감추고 배열 뒤에 보존해 다음 맵 전환에서 실제로 재사용한다(참조 유실·누수 방지).
+  for (const leftover of previous.slice(specs.length)) {
+    leftover.setVisible(false);
+    sprites.push(leftover);
+  }
   scene.mapBackgroundSprites = sprites;
   scene.mapBackgroundAppliedSignature = signature;
   ensureCameraFollowListener(scene);

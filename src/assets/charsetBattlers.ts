@@ -1,6 +1,19 @@
-import { findCharsetSemantic } from "@/assets/charsetSemantics";
 import { READY_PEOPLE_BATTLERS } from "@/assets/charsetBattlerReady";
 import { refmapDollBattler, refmapDollBattlerFor } from "@/assets/refmapDollCharsets";
+
+// charsetSemantics.ts 를 직접 끌어오면 에디터 전용 1MB refmapDollCharsets.json 까지 플레이어 번들에 실린다.
+// 걷기 칩 전투 시트(actor1~4 · people1~5)의 표시 이름만 가볍게 보관한다.
+const EASYRPG_BATTLER_LABELS: Readonly<Record<string, readonly string[]>> = {
+  actor1: ["청년 용사", "빨간 로브 마법사", "붉은 갑옷 기사", "붉은 갑옷 여전사", "젊은 남성 마법사", "젊은 여성 마법사", "파란 로브 마법사", "파란 옷 젊은 여성 마법사"],
+  actor2: ["검은 머리 도적", "하늘색 재킷 젊은 여성", "녹색 망토 레인저", "녹색 후드 궁수", "갈색 머리 중년 전사", "젊은 여성 도적", "젊은 여성 엘프", "젊은 남성 엘프"],
+  actor3: ["사무라이", "동양풍 떠돌이 검객", "닌자", "여자 닌자", "빨간 모자 녹색 코트 여인", "무도가", "남성 음유시인", "여성 음유시인"],
+  actor4: ["파란 머리 청년", "금발 머리 청년", "금발 청년2", "파란 머리 여성 마법사", "분홍 머리 여성 마법사", "금발 남성 갑옷 전사", "보라 머리 여성 마법사", "고깔모자 여성 마법사"],
+  people1: ["남자아이", "여자아이", "청년 남성", "젊은 여성", "중년 남성 주민(흑인)", "중년 여성 주민(흑인)", "대머리 남성 주민", "노파"],
+  people2: ["중절모 신사", "수녀", "승려", "이국적인 여성", "닌자 소녀", "토끼 귀 여성", "화려한 여왕", "요정 소녀"],
+  people3: ["왕", "여왕", "왕자", "공주", "집사", "여자 메이드", "귀족 남성", "파란 갑옷 기사"],
+  people4: ["빵모자 아이", "삐쭉머리 남자아이", "이국적인 모자 청년", "머리 장식 이국 여성", "대머리 이국 주민", "노란 전통옷 남성", "터번 노인", "터번 노파"],
+  people5: ["청년 병사", "어린 소녀", "청년 전사", "전통 의상 여성", "난쟁이 병사", "하녀", "여관 주인", "노학자"],
+};
 
 /** 걷기 칩과 전투 시트의 공용 대응표. 48px 셀 3열×8행, 확대는 표시 계층에서 한 번만 한다. */
 const WALK_CHIP_BATTLERS = Array.from({ length: 32 }, (_, index) => {
@@ -13,7 +26,7 @@ const WALK_CHIP_BATTLERS = Array.from({ length: 32 }, (_, index) => {
     castPath: `assets/generated/charset-battlers/cast/${actor}-${characterIndex}.png`,
     characterResourceId: `easyrpg-charset-${actor}`,
     characterIndex,
-    label: `걷기 칩 전투 · ${findCharsetSemantic(`tex_easyrpg_charset_${actor}`, characterIndex)?.label ?? `${actor} ${characterIndex + 1}`}`,
+    label: `걷기 칩 전투 · ${EASYRPG_BATTLER_LABELS[actor]?.[characterIndex] ?? `${actor} ${characterIndex + 1}`}`,
   };
 });
 
@@ -77,7 +90,7 @@ const PEOPLE_CHIP_BATTLERS = Array.from({ length: 40 }, (_, index) => {
     castPath: `assets/generated/charset-battlers/cast/${people}-${characterIndex}.png`,
     characterResourceId: `easyrpg-charset-${people}`,
     characterIndex,
-    label: `걷기 칩 전투 · ${findCharsetSemantic(`tex_easyrpg_charset_${people}`, characterIndex)?.label ?? `${people} ${characterIndex + 1}`}`,
+    label: `걷기 칩 전투 · ${EASYRPG_BATTLER_LABELS[people]?.[characterIndex] ?? `${people} ${characterIndex + 1}`}`,
   };
 }).filter((entry) => READY_PEOPLE_BATTLERS.has(entry.resourceId));
 

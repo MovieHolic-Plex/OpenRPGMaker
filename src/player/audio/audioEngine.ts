@@ -22,6 +22,7 @@ import { isLoopingChannel, volumeGroupForChannel, type AudioVolumeGroup } from "
 import { WeatherAudio } from "./weatherAudio";
 import { canUseGaplessLoop, GaplessLoopAudio } from "./gaplessLoop";
 import { preloadedAudioUrl } from "@/player/preloadedAudio";
+import { setBattleSfxContextProvider, setBattleSfxVolume, unlockBattleSfx } from "@/player/battleSfx";
 import { listAudioFailures, mediaErrorReason, recordAudioFailure, type AudioFailure } from "./audioFailureLog";
 
 const DEFAULT_FADE_MS = 600;
@@ -90,8 +91,8 @@ function nowMs(): number {
 }
 
 export class AudioEngine {
-  readonly weather = new WeatherAudio();
-  readonly atmosphere = new AtmosphereAudio();
+  readonly weather = new WeatherAudio(() => this.sharedAudioContext());
+  readonly atmosphere = new AtmosphereAudio(() => this.sharedAudioContext());
   private queue: AudioQueueState = createAudioQueueState();
   private readonly loopTracks: Map<AudioChannel, ManagedTrack> = new Map();
   private readonly oneShots: Set<ManagedTrack> = new Set();
@@ -109,6 +110,7 @@ export class AudioEngine {
   private pan = 0;
   private fadeInMs = DEFAULT_FADE_MS;
   private unlockInstalled = false;
+  private unlockRequested = false;
   private readonly blockedTracks = new Set<ManagedTrack>();
   private readonly mediaCleanup = new WeakMap<TrackAudio, () => void>();
   private readonly warnedMissing: Set<string> = new Set();
@@ -118,11 +120,18 @@ export class AudioEngine {
   private audioContext: AudioContext | null = null;
   private webAudioUnavailable = false;
   private readonly panners: WeakMap<HTMLAudioElement, StereoPannerNode> = new WeakMap();
+  private readonly pannerNodes: WeakMap<HTMLAudioElement, { readonly source: MediaElementAudioSourceNode; readonly panner: StereoPannerNode }> = new WeakMap();
 
   private qaObservation: { readonly readState: () => AudioStateSnapshot; readonly resources: string[] } | null = null;
 
   constructor(options: { readonly qaInstrumentation?: boolean } = {}) {
     this.setQaInstrumentation(options.qaInstrumentation === true);
+    setBattleSfxContextProvider(() => this.sharedAudioContext());
+    setBattleSfxVolume(this.volumes.se);
+  }
+
+  sharedAudioContext(): AudioContext | null {
+    return this.ensureAudioContext();
   }
 
   // The player shell owns this capability, including title audio and shell teardown.
@@ -147,12 +156,28 @@ export class AudioEngine {
 
   // 사용자 입력 언락 리스너 설치(1회). 브라우저 자동재생 정책 대응.
   installUnlockListeners(): void {
+    this.unlockRequested = true;
     if (this.unlockInstalled) return;
     if (typeof window === "undefined") return;
     this.unlockInstalled = true;
     for (const type of UNLOCK_EVENTS) {
       window.addEventListener(type, this.onUnlockGesture, { capture: true, passive: true });
     }
+  }
+
+  private removeUnlockListeners(): void {
+    if (!this.unlockInstalled || typeof window === "undefined") return;
+    this.unlockInstalled = false;
+    for (const type of UNLOCK_EVENTS) {
+      window.removeEventListener(type, this.onUnlockGesture, { capture: true });
+    }
+  }
+
+  private maybeRemoveUnlockListeners(): void {
+    if (!this.unlockInstalled) return;
+    if (!this.queue.unlocked || this.blockedTracks.size > 0) return;
+    if (this.audioContext && this.audioContext.state === "suspended") return;
+    this.removeUnlockListeners();
   }
 
   private readonly onUnlockGesture = (): void => {
@@ -163,19 +188,24 @@ export class AudioEngine {
   unlock(): void {
     this.weather.unlock();
     this.atmosphere.unlock();
+    unlockBattleSfx();
     if (this.audioContext?.state === "suspended") {
-      void this.audioContext.resume().catch((error: unknown) => console.warn("[audio] AudioContext resume failed", error));
+      void this.audioContext.resume()
+        .then(() => this.maybeRemoveUnlockListeners())
+        .catch((error: unknown) => console.warn("[audio] AudioContext resume failed", error));
     }
     for (const track of this.blockedTracks) {
       this.blockedTracks.delete(track);
       this.startPlayback(track);
     }
-    if (this.queue.unlocked) return;
-    const { state, flushed } = unlockQueue(this.queue);
-    this.queue = state;
-    for (const request of flushed) {
-      this.playNow(request);
+    if (!this.queue.unlocked) {
+      const { state, flushed } = unlockQueue(this.queue);
+      this.queue = state;
+      for (const request of flushed) {
+        this.playNow(request);
+      }
     }
+    this.maybeRemoveUnlockListeners();
   }
 
   isUnlocked(): boolean {
@@ -187,6 +217,7 @@ export class AudioEngine {
     if (group === "se") {
       this.weather.setVolume(this.volumes.se);
       this.atmosphere.setVolume(this.volumes.se);
+      setBattleSfxVolume(this.volumes.se);
     }
     // 재생 중인 트랙에 즉시 반영 — 정지 후 재생을 요구하지 않는다.
     for (const track of [...this.loopTracks.values(), ...this.oneShots, ...this.fadingTracks, ...(this.heldLoop ? [this.heldLoop] : [])]) {
@@ -447,9 +478,14 @@ export class AudioEngine {
   }
 
   private playOneShot(request: AudioRequest): void {
-    const fadeInMs = this.resolveFadeInMs(request);
-    const playbackRate = this.resolvePlaybackRate(request);
-    const pan = this.resolvePan(request);
+    // 원샷(SE/ME)의 요청별 옵션은 이 요청에만 적용하고 엔진의 전역 루프 기본값(fadeInMs/playbackRate/pan)을 덮지 않는다.
+    const fadeInMs = request.fadeInMs === undefined ? 0 : Math.max(0, request.fadeInMs);
+    const playbackRate = request.playbackRate === undefined
+      ? this.playbackRate
+      : clampNumber(request.playbackRate, MIN_PLAYBACK_RATE, MAX_PLAYBACK_RATE, 1);
+    const pan = request.pan === undefined
+      ? this.pan
+      : clampNumber(request.pan, -1, 1, 0);
     const audio = this.createElement(request.url, false, playbackRate, pan);
     const track: ManagedTrack = {
       channel: request.channel,
@@ -462,7 +498,7 @@ export class AudioEngine {
     this.oneShots.add(track);
 
     // Native one-shots remain immediate unless this request explicitly authors a fade.
-    this.fadeTo(track, 0, 1, request.fadeInMs === undefined ? 0 : fadeInMs);
+    this.fadeTo(track, 0, 1, fadeInMs);
     this.startPlayback(track);
   }
 
@@ -532,10 +568,10 @@ export class AudioEngine {
       source.connect(panner);
       panner.connect(context.destination);
       this.panners.set(audio, panner);
+      this.pannerNodes.set(audio, { source, panner });
       return panner;
     } catch {
-      // WebAudio 가 없거나 요소 라우팅이 거부된 환경 — 값만 보관하고 조용히 건너뛴다.
-      this.webAudioUnavailable = true;
+      // 단일 요소 라우팅 거부(CORS·mock 등)는 이 요소의 팬만 건너뛰고 전역 WebAudio(BGS 등)는 살려 둔다.
       return null;
     }
   }
@@ -552,8 +588,15 @@ export class AudioEngine {
     }
     try {
       const context = new Ctor();
-      if (context.state === "suspended" && typeof context.resume === "function") void context.resume();
       this.audioContext = context;
+      if (context.state === "suspended") {
+        if (this.unlockRequested) this.installUnlockListeners();
+        if (typeof context.resume === "function") {
+          void context.resume()
+            .then(() => this.maybeRemoveUnlockListeners())
+            .catch(() => {});
+        }
+      }
       return context;
     } catch {
       this.webAudioUnavailable = true;
@@ -589,6 +632,7 @@ export class AudioEngine {
         if (!active()) return; // A deliberate stop/replacement can reject pending play().
         if (error instanceof DOMException && error.name === "NotAllowedError") {
           this.blockedTracks.add(track);
+          if (this.unlockRequested) this.installUnlockListeners();
           return;
         }
         failed(error instanceof DOMException && error.name === "NotSupportedError" ? "source" : `play:${error instanceof Error ? error.name : "unknown"}`);
@@ -653,6 +697,15 @@ export class AudioEngine {
     this.mediaCleanup.delete(track.audio);
     this.fadingTracks.delete(track);
     this.clearFade(track);
+    if (!(track.audio instanceof GaplessLoopAudio)) {
+      const nodes = this.pannerNodes.get(track.audio);
+      if (nodes) {
+        try { nodes.source.disconnect?.(); } catch { /* ignore */ }
+        try { nodes.panner.disconnect?.(); } catch { /* ignore */ }
+        this.pannerNodes.delete(track.audio);
+        this.panners.delete(track.audio);
+      }
+    }
     this.hardStop(track.audio);
   }
 

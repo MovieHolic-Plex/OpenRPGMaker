@@ -39,7 +39,7 @@ const scenario = {
   id: "dream-explore",
   projectFixture: join(runDir, "project.json"),
   // 이 시나리오는 workbench 스킨(ESC 직후 아이템 작업 패널)의 계약이다 — 기본 스킨이 pixel 로 바뀐 뒤에도 같은 화면을 본다.
-  systemPatch: { menuUiStyle: "workbench" },
+  systemPatch: { menuLayout: "legacy", menuUiStyle: "workbench" },
   seed: 1,
   beats: [
     {

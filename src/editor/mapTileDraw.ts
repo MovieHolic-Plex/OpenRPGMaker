@@ -21,7 +21,11 @@ function loadDecodedImage(url: string): Promise<HTMLImageElement> {
   if (existing) return existing;
   const promise = new Promise<HTMLImageElement>((resolve, reject) => {
     const image = new Image();
-    image.onload = () => resolve(image);
+    // 큰 칩셋 시트(버들항 2048×7664)는 첫 drawImage 가 메인 스레드에서 동기 디코드한다 — 그리기 전에 비동기로 풀어 둔다.
+    image.onload = () => {
+      if (typeof image.decode !== "function") { resolve(image); return; }
+      image.decode().then(() => resolve(image), () => resolve(image));
+    };
     image.onerror = () => reject(new MapTileDrawError("타일셋 이미지를 읽지 못했습니다."));
     image.src = url;
   });

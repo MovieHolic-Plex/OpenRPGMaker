@@ -29,6 +29,8 @@ interface ImportMetaEnv {
   readonly VITE_STILL_CDN_BASE?: string;
   // 플레이어 익스포트 빌드(vite.player.config.ts, envPrefix "OPENRPG_PLAYER_")용 오버라이드.
   readonly OPENRPG_PLAYER_TOUCH_CONTROLS?: string;
+  readonly OPENRPG_PLAYER_BGM_CDN_BASE?: string;
+  readonly OPENRPG_PLAYER_STILL_CDN_BASE?: string;
 }
 
 interface ImportMeta {
