@@ -1837,7 +1837,7 @@ function renderEventPageSafetyWarning(page: EventPage): HTMLElement {
   const hasGateCondition = hasRecursivePageCondition(page.conditions);
   return el("div", {
     class: "event-page-safety-warning" + (riskyTrigger && !hasGateCondition ? "" : " hidden"),
-    text: "조건 없는 자동/병렬 이벤트는 반복 실행될 수 있습니다.",
+    text: "조건 없이 자동 시작하면 멈추지 않고 계속 반복돼요. 끝나고 스위치를 켜거나 다음 페이지로 넘겨 주세요.",
     dataset: { testid: "event-page-safety-warning" },
   });
 }

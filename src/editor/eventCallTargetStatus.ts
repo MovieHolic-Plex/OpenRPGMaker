@@ -72,7 +72,7 @@ export function callMapEventTargetStatus(
       callable: false,
       problem: {
         kind: "page-command-empty",
-        message: "호출 대상 이벤트의 실행할 명령이 없습니다. 이 호출은 게임에서 아무 효과가 없습니다.",
+        message: "불러오는 대상 이벤트가 비어 있어서 게임에서 아무 일도 일어나지 않아요.",
       },
     };
   }
@@ -81,7 +81,7 @@ export function callMapEventTargetStatus(
       callable: false,
       problem: {
         kind: "page-no-op",
-        message: "호출 대상 이벤트의 명령은 실행 결과를 만들지 않습니다. 이 호출은 게임에서 아무 효과가 없습니다.",
+        message: "불러오는 대상 이벤트에 실제로 일어나는 일이 없어요.",
       },
     };
   }
@@ -92,7 +92,7 @@ export function callMapEventTargetStatus(
       transferMapId,
       problem: {
         kind: "transfer-target-missing",
-        message: "호출 대상 이벤트가 사라진 맵(" + transferMapId + ")으로 이동하려 합니다.",
+        message: "불러오는 대상 이벤트가 삭제된 맵('" + transferMapId + "')으로 이동하려 해요.",
       },
     };
   }

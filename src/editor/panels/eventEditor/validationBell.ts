@@ -74,7 +74,7 @@ export function renderEventValidationBell(): HTMLDetailsElement {
           el("div", {
             class: "event-draft-validation-head",
             children: [
-              el("span", { class: "event-draft-validation-title", text: "고쳐야 할 점" }),
+              el("span", { class: "event-draft-validation-title", text: "먼저 고쳐 주세요" }),
               statusChip,
             ],
           }),
@@ -115,19 +115,19 @@ export function refreshEventValidationBell(root: ParentNode, validation: EventDr
   const tallyText = tallyLabel(validation);
   tally.textContent = tallyText;
   if (titleEl) {
-    titleEl.textContent = validation.errorCount > 0 ? "고쳐야 할 점" : "확인할 항목";
+    titleEl.textContent = validation.errorCount > 0 ? "먼저 고쳐 주세요" : "한 번 확인해 보세요";
   }
   if (statusChip) {
     statusChip.textContent = validation.errorCount > 0
-      ? `저장 전 오류 ${validation.errorCount}건`
+      ? `저장 전 필수 ${validation.errorCount}건`
       : validation.warningCount > 0
-        ? "저장은 가능"
-        : "참고 안내";
+        ? "그대로 저장해도 돼요"
+        : "참고만 하세요";
     statusChip.dataset.severity = bellSeverity(validation);
   }
-  const label = `검토 필요 ${total}건 · ${tallyText}`;
+  const label = `확인할 점 ${total}건 · ${tallyText}`;
   summary.setAttribute("aria-label", label);
-  summary.title = `${label}\n종을 눌러 목록을 열고, 항목을 누르면 그 자리로 이동합니다.`;
+  summary.title = `${label}\n누르면 쉬운 설명을 보고 그 자리로 바로 이동해요.`;
   clearChildren(issues);
   validation.issues.forEach((issue, index) => {
     issues.append(renderIssueRow(issue, index, details));
@@ -206,7 +206,7 @@ function renderIssueRow(issue: EventDraftIssue, index: number, details: HTMLDeta
   const opensCommandEditor = Boolean(
     issue.commandPath && issue.field && issue.field.testId !== "event-inspector-body",
   );
-  const actionLabel = opensCommandEditor ? "고치기 →" : "이동 →";
+  const actionLabel = opensCommandEditor ? "바로 고치기 →" : "보러 가기 →";
   return el("button", {
     class: "event-draft-validation-issue",
     attrs: { type: "button" },

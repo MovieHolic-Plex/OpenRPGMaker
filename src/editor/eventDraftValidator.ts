@@ -111,11 +111,11 @@ function checkCallDepth(project: Project, pages: readonly EventPage[], issues: E
         const commonEvent = commonEvents.get(id);
         if (!commonEvent) return;
         if (visiting.has(id)) {
-          warn("callCommonEvent.cycle", `다른 이벤트 ${id}가 순환 호출됩니다.`);
+          warn("callCommonEvent.cycle", `공통 이벤트 '${id}'${josa(id, "이/가")} 서로를 계속 불러서 끝나지 않아요.`);
           return;
         }
         if (depth > maxDepth) {
-          warn("callCommonEvent.recursionDepth", `호출 깊이가 ${maxDepth}를 넘었습니다.`);
+          warn("callCommonEvent.recursionDepth", `공통 이벤트가 ${maxDepth}단계 넘게 연달아 불려서 멈출 수 있어요.`);
           return;
         }
         const key = `${depth}:${id}`;
@@ -140,7 +140,7 @@ export function validateEventDraft(
     return validationFromIssues([{
       severity: "error",
       code: "event.missing",
-      message: "검사할 이벤트를 찾을 수 없습니다.",
+      message: "이 이벤트를 찾을 수 없어요.",
       pageId: "",
     }]);
   }
@@ -161,7 +161,7 @@ export function validateEventDraftBody(
     issues.push({
       severity: "error",
       code: "page.missing",
-      message: "이벤트에는 최소 한 개의 페이지가 필요합니다.",
+      message: "페이지가 하나도 없어요. 먼저 페이지를 만들어 주세요.",
       pageId: "",
       field: { testId: "evt-page-add" },
     });
@@ -174,7 +174,7 @@ export function validateEventDraftBody(
     issues.push({
       severity: "error",
       code: "event.position.out-of-bounds",
-      message: `이벤트 위치 (${event.x}, ${event.y})가 맵 범위를 벗어났습니다.`,
+      message: `이벤트가 맵 바깥(${event.x}, ${event.y})에 놓여 있어요.`,
       pageId: firstPageId,
       // 이동 문제는 헤더의 살아있는 좌표 표시로 데려간다 — 숨어 있던 identity 카드의 좌표 입력물은 삭제됐다.
       field: { testId: "event-editor-coords" },
@@ -198,12 +198,12 @@ function validatePageReachability(
 ): void {
   for (const shadow of findShadowedPages(pages)) {
     const reason = shadow.byUnconditional
-      ? `뒤의 페이지 ${shadow.byIndex + 1}에 조건이 없어 항상 먼저 선택됩니다`
-      : `뒤의 페이지 ${shadow.byIndex + 1} 조건이 이 페이지 조건에 포함됩니다`;
+      ? `${shadow.byIndex + 1}번 페이지에 조건이 없어 항상 먼저 켜져요`
+      : `${shadow.byIndex + 1}번 페이지 조건이 먼저 맞아서 가려져요`;
     issues.push({
       severity: "warning",
       code: "page.shadowed",
-      message: `페이지 ${shadow.index + 1}은 실행되지 않습니다 — ${reason}.`,
+      message: `${shadow.index + 1}번 페이지는 열리지 않아요 (${reason}).`,
       pageId: shadow.pageId,
       field: { testId: `evt-page-segment-${shadow.index + 1}` },
     });
@@ -212,7 +212,7 @@ function validatePageReachability(
     issues.push({
       severity: "warning",
       code: "page.self-switch-unwritten",
-      message: `페이지 ${gate.index + 1}의 셀프 스위치 ${gate.keys.join(", ")}를 켜는 명령이 이 이벤트에 없습니다.`,
+      message: `${gate.index + 1}번 페이지를 켜는 스위치(${gate.keys.join(", ")})를 아직 어디에서도 켜지 않았어요.`,
       pageId: gate.pageId,
       field: { testId: `evt-page-segment-${gate.index + 1}` },
     });
@@ -400,7 +400,7 @@ function validatePage(
       issues.push({
         severity: "error",
         code: "page.trigger.location-empty",
-        message: "시작 방식이 「구역에 드나들면」 인데 구역을 선택하지 않았습니다.",
+        message: "「구역에 드나들면」으로 시작하도록 했는데, 아직 구역을 고르지 않았어요.",
         pageId: page.id,
         field: { testId: "event-page-trigger-location" },
       });
@@ -408,7 +408,7 @@ function validatePage(
       issues.push({
         severity: "error",
         code: "page.trigger.location-missing",
-        message: `로케이션 '${trigger.locationId}'${josa(trigger.locationId, "이/가")} 삭제됐습니다. 다른 구역을 고르거나 시작 방식을 바꿔 주세요.`,
+        message: `구역 '${trigger.locationId}'${josa(trigger.locationId, "이/가")} 삭제됐어요. 다른 구역을 고르거나 시작 방식을 바꿔 주세요.`,
         pageId: page.id,
         field: { testId: "event-page-trigger-location" },
       });
@@ -421,7 +421,7 @@ function validatePage(
     issues.push({
       severity: "warning",
       code: "page.auto-parallel-ungated",
-      message: "자동/병렬 페이지에 종료·게이트 조건이 없어 계속 반복될 수 있습니다.",
+      message: "이 이벤트가 멈추지 않고 계속 반복돼요.",
       pageId: page.id,
       field: { testId: "event-page-safety-warning" },
     });
@@ -436,7 +436,7 @@ function validatePage(
     issues.push({
       severity: "warning",
       code: "page.invisible-collision",
-      message: "보이지 않는 페이지가 캐릭터와 같은 높이에서 이동을 막습니다. 의도한 충돌인지 확인하세요.",
+      message: "투명한 이벤트가 투명 벽처럼 길을 막고 있어요.",
       pageId: page.id,
       field: { testId: "event-page-overlap-forbidden" },
     });
@@ -452,10 +452,10 @@ function validatePage(
       severity,
       code: callers.length > 0 ? "callMapEvent.target-page-empty" : "page.empty",
       message: callers.length > 0
-        ? "실행 명령이 없는 페이지입니다. 이 이벤트를 맵 위 이벤트 부르기로 부르는 " + callers.length + "개 이벤트가 있습니다 — 게임에서는 아무 것도 없는 것처럼 지나갑니다."
-        : "실행 명령이 없습니다. 상태 표시용 빈 페이지라면 그대로 둘 수 있습니다.",
+        ? `다른 이벤트 ${callers.length}곳에서 이 이벤트를 부르는데, 안에 할 일이 비어 있어요.`
+        : "이 페이지는 아직 비어 있어요. 모습만 바꾸는 용도라면 그대로 두셔도 돼요.",
       pageId: page.id,
-      ...(callers.length > 0 ? { hint: "이 이벤트에 실행 명령을 추가하거나, 부르는 쪽의 명령을 제거하세요." } : {}),
+      ...(callers.length > 0 ? { hint: "여기에 할 일을 넣거나, 부르는 쪽의 명령을 지워 주세요." } : {}),
     });
     return;
   }
@@ -464,7 +464,7 @@ function validatePage(
     issues.push({
       severity: "info",
       code: "page.no-op",
-      message: "이 페이지의 명령은 실행 결과를 만들지 않습니다.",
+      message: "이 페이지는 실행돼도 아무 일이 일어나지 않아요.",
       pageId: page.id,
     });
   }
@@ -620,7 +620,9 @@ function validateCondition(
         issues.push({
           severity: "warning",
           code: `condition.${condition.kind}.empty`,
-          message: condition.kind === "all" ? "모두(AND)에 하위 조건이 없습니다. 빈 AND는 항상 참입니다." : "하나(OR)에 하위 조건이 없습니다. 빈 OR는 항상 거짓입니다.",
+          message: condition.kind === "all"
+            ? "「모두 맞을 때」 안이 비어 있어 항상 조건이 맞아요."
+            : "「하나라도 맞을 때」 안이 비어 있어 조건이 절대 맞지 않아요.",
           pageId,
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: { testId: `event-condition-${condition.kind}-empty` },
@@ -640,8 +642,8 @@ function validateCondition(
           severity: "warning",
           code: "condition.gold.impossible",
           message: trap === "always-false"
-            ? "소지금이 가질 수 있는 값으로는 이 비교가 항상 거짓입니다."
-            : "소지금이 가질 수 있는 값으로는 이 비교가 항상 참입니다.",
+            ? "가진 돈으로는 이 조건이 절대 맞지 않아요."
+            : "가진 돈이 얼마든 이 조건은 항상 맞아요.",
           pageId,
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: { testId: "event-condition-gold-amount" },
@@ -657,7 +659,7 @@ function validateCondition(
           code: "condition.timer.always-true",
           message: commandPath
             ? detail
-            : `${detail} 이 페이지가 타이머를 켜기 전에 보일 수 있습니다.`,
+            : `${detail} 이 페이지가 타이머를 켜기 전에 보일 수 있어요.`,
           pageId,
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: {
@@ -674,7 +676,7 @@ function validateCondition(
         issues.push({
           severity: "warning",
           code: "condition.timePhase.no-time-system",
-          message: "시간 시스템이 꺼져 있어 시간대 조건은 항상 거짓입니다.",
+          message: "시간 기능이 꺼져 있어서 이 시간대 조건은 동작하지 않아요.",
           pageId,
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: {
@@ -688,7 +690,7 @@ function validateCondition(
         issues.push({
           severity: "warning",
           code: "condition.season.no-time-system",
-          message: "시간 시스템이 꺼져 있어 계절 조건은 항상 거짓입니다.",
+          message: "시간 기능이 꺼져 있어서 이 계절 조건은 동작하지 않아요.",
           pageId,
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: {
@@ -703,7 +705,7 @@ function validateCondition(
         issues.push({
           severity: "warning",
           code: "condition.npcActivity.empty",
-          message: "활동 이름이 비어 있어 이 조건은 항상 거짓입니다.",
+          message: "활동 이름이 비어 있어 이 조건이 동작하지 않아요.",
           pageId,
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: {
@@ -718,7 +720,7 @@ function validateCondition(
         issues.push({
           severity: "warning",
           code: "condition.npcActivity.unknown",
-          message: `이 프로젝트의 NPC 일정에 없는 활동입니다(${activity}). 「NPC와 일정」에서 같은 이름을 쓰거나 이름을 맞춰 주세요.`,
+          message: `NPC 일정에 없는 활동이에요('${activity}'). 「NPC와 일정」에서 같은 이름으로 맞춰 주세요.`,
           pageId,
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: {
@@ -739,7 +741,7 @@ function validateCondition(
         issues.push({
           severity: "warning",
           code: "condition.friendship.no-character-id",
-          message: "호감도 조건에 쓸 NPC 관계가 없어 이 조건은 항상 거짓입니다. 「NPC와 일정」에서 인물을 연결하거나 NPC 키를 적으세요.",
+          message: "누구와의 호감도인지 정해지지 않았어요. 「NPC와 일정」에서 인물을 연결하거나 대상을 골라 주세요.",
           pageId,
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: { testId: "event-page-friendship-condition-npc-key" },
@@ -751,7 +753,7 @@ function validateCondition(
         issues.push({
           severity: "warning",
           code: "condition.relationship.no-character-id",
-          message: "관계 조건에 쓸 NPC 관계가 없어 이 조건은 항상 거짓입니다. 「NPC와 일정」에서 인물을 연결하거나 NPC 키를 적으세요.",
+          message: "누구와의 관계인지 정해지지 않았어요. 「NPC와 일정」에서 인물을 연결하거나 대상을 골라 주세요.",
           pageId,
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: { testId: "event-page-relationship-condition-npc-key" },
@@ -777,7 +779,7 @@ function validateCondition(
         issues.push({
           severity: "warning",
           code: `condition.${condition.kind}.reference`,
-          message: `${message} — 이 조건은 항상 거짓입니다.`,
+          message: `${message} 그래서 이 조건이 동작하지 않아요.`,
           pageId,
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: { testId: `event-condition-${condition.kind}` },
@@ -788,7 +790,7 @@ function validateCondition(
         if (map && sightWatcherIds(map.events, condition.watchers!, map.locations).length === 0) issues.push({
           severity: "warning",
           code: "condition.eventSeesPlayer.watchers-empty",
-          message: "시선 조건의 고르기(인물 키·이름·장소)에 맞는 이벤트가 이 맵에 없습니다 — 이 조건은 항상 «못 봄»입니다.",
+          message: "이 맵에 시선을 확인할 NPC가 없어서 항상 «못 봄»으로 처리돼요.",
           pageId,
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: { testId: "event-condition-sees-watch-name" },
@@ -800,7 +802,7 @@ function validateCondition(
         issues.push({
           severity: "error",
           code: "condition.run.flag-empty",
-          message: "기억 이름이 비어 있습니다.",
+          message: "기억 이름이 비어 있어요.",
           pageId,
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: { testId: "event-condition-run-flag" },
@@ -812,7 +814,7 @@ function validateCondition(
         issues.push({
           severity: "error",
           code: "condition.insideLocation.empty",
-          message: "로케이션을 선택하지 않았습니다.",
+          message: "아직 구역을 고르지 않았어요.",
           pageId,
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: { testId: "event-condition-inside-location" },
@@ -828,8 +830,8 @@ function validateCondition(
           severity: elsewhere ? "warning" : "error",
           code: elsewhere ? "condition.insideLocation.other-map" : "condition.insideLocation.missing",
           message: elsewhere
-            ? `로케이션 '${condition.locationId}' 은(는) 다른 맵에 있습니다. 런타임은 현재 맵만 보므로 이 조건은 항상 거짓입니다.`
-            : `로케이션 '${condition.locationId}' 이 삭제됐습니다. 로케이션 레이어에서 다시 지정하거나 조건을 지워 주세요.`,
+            ? `구역 '${condition.locationId}'${josa(condition.locationId, "은/는")} 다른 맵에 있어서 여기서는 조건이 맞지 않아요.`
+            : `구역 '${condition.locationId}'${josa(condition.locationId, "이/가")} 삭제됐어요. 다시 고르거나 조건을 지워 주세요.`,
           pageId,
           ...(commandPath ? { commandPath: [...commandPath] } : {}),
           field: { testId: "event-condition-inside-location" },
@@ -928,7 +930,7 @@ function validateLabels(
     const path = [...containerPath, index];
     const name = command.name.trim();
     if (!name) {
-      issues.push({ severity: "error", code: "label.empty", message: "라벨 이름이 비어 있습니다.", pageId, commandPath: path });
+      issues.push({ severity: "error", code: "label.empty", message: "라벨 이름이 비어 있어요.", pageId, commandPath: path });
       return;
     }
     const rows = labels.get(name) ?? [];
@@ -942,7 +944,7 @@ function validateLabels(
       issues.push({
         severity: "error",
         code: "label.duplicate",
-        message: `라벨 '${name}'${josa(name, "이/가")} 같은 실행 범위에 ${rows.length}번 있습니다.`,
+        message: `같은 이름의 라벨 '${name}'${josa(name, "이/가")} ${rows.length}번 겹쳐 있어요.`,
         pageId,
         commandPath: row.path,
       });
@@ -959,7 +961,7 @@ function validateLabels(
         issues.push({
           severity: "error",
           code: "label.target-missing",
-          message: name ? `현재 실행 범위에서 이동할 라벨 '${name}'${josa(name, "을/를")} 찾을 수 없습니다.` : "이동할 라벨 이름이 비어 있습니다.",
+          message: name ? `이동할 라벨 '${name}'${josa(name, "을/를")} 찾을 수 없어요.` : "이동할 라벨 이름이 비어 있어요.",
           pageId,
           commandPath: path,
         });
@@ -1000,7 +1002,7 @@ function validateBreakLoopPlacement(commands: readonly Command[], pageId: string
       issues.push({
         severity: "error",
         code: "loop.break-outside-loop",
-        message: "반복 탈출은 반복 안에서만 쓸 수 있습니다. 반복 밖에서는 무시됩니다.",
+        message: "'반복 끝내기'가 반복 바깥에 놓여 있어요. 반복 안쪽에서만 동작해요.",
         pageId,
         commandPath: [...visit.path],
         field: { testId: "break-loop-editor" },
@@ -1036,7 +1038,7 @@ function validateLoopBodies(commands: readonly Command[], pageId: string, issues
       issues.push({
         severity: "warning",
         code: "loop.empty-body",
-        message: "반복 내용이 비어 있습니다. 아무 일도 일어나지 않습니다.",
+        message: "반복 안이 비어 있어요. 아무 일도 일어나지 않아요.",
         pageId,
         commandPath: [...visit.path],
       });
@@ -1046,7 +1048,7 @@ function validateLoopBodies(commands: readonly Command[], pageId: string, issues
       issues.push({
         severity: "warning",
         code: "loop.no-break",
-        message: "반복 탈출이 없습니다. 무한 반복이 될 수 있으니 종료 조건을 확인하세요.",
+        message: "반복이 끝나는 곳이 없어 게임이 멈출 수 있어요.",
         pageId,
         commandPath: [...visit.path],
       });
@@ -1063,7 +1065,7 @@ function validateVariableDivideByZero(commands: readonly Command[], pageId: stri
       issues.push({
         severity: "warning",
         code: "variable.divide-by-zero",
-        message: "0으로 나누기는 무시됩니다. 값을 확인하세요.",
+        message: "0으로 나누면 계산이 되지 않고 그대로 넘어가요.",
         pageId,
         commandPath: [...visit.path],
         field: { testId: "event-command-variable-operand" },
@@ -1098,7 +1100,7 @@ function screenEffectRuntimeIssue(
   return {
     severity: "warning",
     code: "runtime.screenEffect.unsupported",
-    message: `화면 효과 '${effect}' 는 런타임에 렌더러가 없어 실행되지 않습니다 — 페이드/플래시/색조/날씨 중에서 고르세요.`,
+    message: `'${effect}' 화면 효과는 게임에서 아직 지원하지 않아요. 페이드·플래시·색조·날씨 중에서 골라 주세요.`,
     pageId,
     commandPath: path,
   };
@@ -1122,12 +1124,12 @@ function validateCommand(
       // 화면 효과는 고른 어떤 것을 실행하는가로 갈린다 — 행당 "일부 효과만" 가 아니다(D9).
       if (screenEffect) issues.push(screenEffect);
     } else if (support === "editor-only") {
-      issues.push({ severity: "warning", code: "runtime.editor-only", message: "이 명령은 에디터 전용이며 실제 게임에서는 효과 없이 건너뜁니다.", pageId, commandPath: path });
+      issues.push({ severity: "warning", code: "runtime.editor-only", message: "메모·편집기용 명령이라 실제 게임에서는 지나가요.", pageId, commandPath: path });
     } else if (support === "runtime-partial") {
-      issues.push({ severity: "warning", code: "runtime.partial", message: "이 명령은 실제 게임에서 일부 효과만 실행됩니다.", pageId, commandPath: path });
+      issues.push({ severity: "warning", code: "runtime.partial", message: "이 명령은 일부 옵션만 게임에 반영돼요.", pageId, commandPath: path });
     }
   } catch {
-    issues.push({ severity: "error", code: "runtime.unclassified", message: "이 명령은 아직 게임에서 어떻게 실행될지 모릅니다.", pageId, commandPath: path });
+    issues.push({ severity: "error", code: "runtime.unclassified", message: "이 명령은 아직 게임에서 실행할 수 없어요.", pageId, commandPath: path });
   }
 
   const require = (code: string, label: string, id: string | undefined, known: ReadonlySet<string>, allowEmpty = false) => {
@@ -1222,7 +1224,7 @@ function validateCommand(
       require("reference.actor.missing", "배우", command.actorId, refs.actors);
       if (command.action !== "add" && command.action !== "remove" && command.action !== "lead") issues.push({
         severity: "error", code: "changeParty.action.invalid",
-        message: `파티 편성의 동작이 합류(add)·이탈(remove)·선두(lead) 중 하나가 아닙니다: ${JSON.stringify(command.action)}`,
+        message: `파티 동작 설정이 잘못됐어요(${JSON.stringify(command.action)}). 합류·이탈·선두 중에서 골라 주세요.`,
         pageId, commandPath: path, field: { testId: "change-party-action-select" },
       });
       return;
@@ -1250,8 +1252,8 @@ function validateCommand(
       if (command.recipeIds === undefined ? refs.recipes.size === 0 : command.recipeIds.length === 0) issues.push({
         severity: "error", code: "openCraftShop.empty",
         message: command.recipeIds === undefined
-          ? "제작 공방에 보여 줄 제작법이 없습니다 — 시스템에 제작법을 먼저 만드세요(이대로면 창 없이 지나갑니다)."
-          : "제작 공방의 제작법 목록이 비었습니다 — 하나 이상 고르거나 «모든 제작법»을 켜세요(이대로면 창 없이 지나갑니다).",
+          ? "제작 공방에 보여 줄 제작법이 없어요. 시스템에서 제작법을 먼저 만들어 주세요."
+          : "제작 공방 목록이 비어 있어요. 제작법을 하나 이상 고르거나 «모든 제작법»을 켜 주세요.",
         pageId, commandPath: path, field: { testId: "craft-shop-all-recipes" },
       });
       command.recipeIds?.forEach((id) => require("reference.recipe.missing", "제작 공방 제작법", id, refs.recipes));
@@ -1354,7 +1356,7 @@ function validateCommand(
         issues.push({
           severity: "error",
           code: "shop.items.empty",
-          message: "상점에 판매할 아이템이 없습니다.",
+          message: "상점에 팔 아이템이 하나도 없어요.",
           pageId,
           commandPath: path,
         });
@@ -1369,7 +1371,7 @@ function validateCommand(
             issues.push({
               severity: "warning",
               code: "shop.stock.orphan",
-              message: `상점 재고 ${entry.itemId}가 판매 목록에 없습니다.`,
+              message: `재고에 넣은 '${entry.itemId}'${josa(entry.itemId, "이/가")} 상점 판매 목록에는 없어요.`,
               pageId,
               commandPath: path,
             });
@@ -1494,7 +1496,7 @@ function validateM2CommandReferences(
     issues.push({
       severity: "warning",
       code: "m2.required.empty",
-      message: `${entry.label}에서 바꿀 주인공을 선택하지 않았습니다.`,
+      message: `${entry.label}에서 바꿀 주인공을 아직 고르지 않았어요.`,
       pageId,
       commandPath: [...commandPath],
       field: m2ReferenceField(entry.title, "target"),
@@ -1504,7 +1506,7 @@ function validateM2CommandReferences(
     issues.push({
       severity: "warning",
       code: "m2.required.empty",
-      message: `${entry.label}에서 바꿀 직업을 선택하지 않았습니다.`,
+      message: `${entry.label}에서 바꿀 직업을 아직 고르지 않았어요.`,
       pageId,
       commandPath: [...commandPath],
       field: m2ReferenceField(entry.title, "value"),
@@ -1686,7 +1688,7 @@ function validateCoordinateSourceAxes(
         issues.push({
           severity: "error",
           code: "m2.coordinate.variable.unselected",
-          message: `${entry.label} 의 ${axis.toUpperCase()} 좌표를 「변수」로 골랐지만 어떤 변수인지 정하지 않았습니다.`,
+          message: `${entry.label}의 ${axis.toUpperCase()} 위치를 변수로 쓰려면 어떤 변수인지 골라 주세요.`,
           pageId,
           commandPath: [...commandPath],
           field: m2ReferenceField(entry.title, `${axis}VariableId`),
@@ -1700,7 +1702,7 @@ function validateCoordinateSourceAxes(
     issues.push({
       severity: "error",
       code: "m2.coordinate.fixed.invalid",
-      message: `${entry.label} 의 ${axis.toUpperCase()} 좌표가 올바른 칸 번호가 아닙니다 — ${COORDINATE_FAILURE_LABELS[resolved.reason]}.`,
+      message: `${entry.label}의 ${axis.toUpperCase()} 위치가 올바른 칸 번호가 아니에요(${COORDINATE_FAILURE_LABELS[resolved.reason]}).`,
       pageId,
       commandPath: [...commandPath],
       field: m2ReferenceField(entry.title, axis),
@@ -1739,7 +1741,7 @@ function validateMapPosition(
   issues.push({
     severity: "error",
     code: "map.position.out-of-bounds",
-    message: `${label} (${x}, ${y})가 '${map.name}' 맵 범위를 벗어났습니다.`,
+    message: `${label} (${x}, ${y})가 '${map.name}' 맵 바깥이에요.`,
     pageId,
     ...(commandPath ? { commandPath: [...commandPath] } : {}),
     ...(positionField ? { field: positionField } : {}),
@@ -1774,7 +1776,7 @@ function validateMapRect(
   issues.push({
     severity: "error",
     code: "map.area.out-of-bounds",
-    message: `${label} (${rect.x}, ${rect.y}, ${rect.w}, ${rect.h})가 '${map.name}' 맵 범위를 벗어났습니다.`,
+    message: `${label} (${rect.x}, ${rect.y}, ${rect.w}, ${rect.h})가 '${map.name}' 맵 바깥으로 삐져나왔어요.`,
     pageId,
     field: { testId: `event-command-spawn-area-${invalidField}` },
     ...(commandPath ? { commandPath: [...commandPath] } : {}),
@@ -1814,7 +1816,36 @@ function validateMoveRoute(
   }
 }
 
-const REFERENCE_LABEL_DISPLAY: Readonly<Record<string, string>> = { "배우": "주인공", "동료 배우": "동료" };
+const REFERENCE_LABEL_DISPLAY: Readonly<Record<string, string>> = {
+  "배우": "주인공",
+  "동료 배우": "동료",
+  "그림 배우": "주인공",
+  "그래픽 리소스": "캐릭터 그림",
+  "얼굴 리소스": "얼굴 그림",
+  "그림 리소스": "그림",
+  "오디오 리소스": "소리",
+  "동영상 리소스": "동영상",
+  "변수 피연산자": "계산에 쓰는 변수",
+  "M2 배우": "주인공",
+  "M2 애니메이션": "애니메이션",
+  "M2 이벤트 A": "이벤트 A",
+  "M2 이벤트 B": "이벤트 B",
+  "M2 이벤트": "이벤트",
+  "M2 아이템": "아이템",
+  "M2 맵": "맵",
+  "M2 맵 변수": "맵 변수",
+  "M2 생성 원본 이벤트": "원본 이벤트",
+  "M2 결과 스위치": "결과 스위치",
+  "M2 결과 변수": "결과 변수",
+  "M2 리소스": "그림·소리",
+  "M2 스킬": "스킬",
+  "M2 스위치": "스위치",
+  "M2 적 그룹": "적 그룹",
+  "M2 값 변수": "값 변수",
+  "M2 변수": "변수",
+  "M2 X 변수": "X 위치 변수",
+  "M2 Y 변수": "Y 위치 변수",
+};
 
 function requireReference(
   issues: EventDraftIssue[],
@@ -1833,8 +1864,8 @@ function requireReference(
     severity: "error",
     code,
     message: id.trim()
-      ? `${shown} '${id}'${josa(id, "을/를")} 찾을 수 없습니다.`
-      : `${withJosa(shown, "이/가")} 선택되지 않았습니다.`,
+      ? `고른 ${shown}('${id}')${josa(id, "을/를")} 찾을 수 없어요.`
+      : `${withJosa(shown, "이/가")} 아직 선택되지 않았어요.`,
     pageId,
     ...(commandPath ? { commandPath: [...commandPath] } : {}),
     ...(field ? { field } : {}),

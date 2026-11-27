@@ -68,7 +68,7 @@ export function renderEventValidationActions(close: () => void): HTMLElement {
       void navigator.clipboard.writeText(text).then(() => toast("진단을 복사했습니다. 외부로 전송하지 않았습니다.", "ok"),
         () => toast("진단을 복사하지 못했습니다. 클립보드 권한을 확인하세요.", "error"));
     } } });
-  const ask = el("button", { class: "btn small primary event-validation-ask-btn", attrs: { type: "button", title: "명령 오류는 에디터 안에서 바로 고치고, 페이지·설정 오류는 이벤트 컨텍스트와 함께 조수에게 넘깁니다." },
+  const ask = el("button", { class: "btn small primary event-validation-ask-btn", attrs: { type: "button", title: "조수에게 이 문제들을 대신 고쳐 달라고 부탁해요." },
     text: "조수에게 고쳐달라 하기", dataset: { testid: "event-validation-ask-assistant" }, on: { click: () => {
       const current = currentContext();
       if (!current) return;
