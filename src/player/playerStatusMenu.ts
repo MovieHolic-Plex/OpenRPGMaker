@@ -1,6 +1,7 @@
 import { currentObjectiveText } from "@/player/zoneFeedback";
 import { fieldGuidesOn, objectiveSentence } from "@/player/objectiveTarget";
 import { dialogueUiLocale, dialogueUiText } from "@/player/dialogueUiStrings";
+import { runtimeUiLocale } from "@/player/runtimeUiStrings";
 import { formatStatusMenuControlsForDevice, type InputDeviceKind } from "@/player/inputGlyphs";
 import { defaultDialogueSystem, resolveDialogueSystem, type AuthoredDialogueSystem } from "@/project/dialogueSystem";
 import { usesMonsterParty } from "@/player/playerMonsterPartyModel";
@@ -215,7 +216,7 @@ export function renderPlayerStatusMenu(options: PlayerStatusMenuOptions): HTMLEl
         : selectedCommand === "items" ? "목록 끝에서 분류·정렬 변경 (본문에서 ↑ 두 번)" : undefined),
       skin.railColumns, skin.id === "field-list",
       options.message === undefined && mode === "function" && selectedEntryDescription(detail, options.selectedDetailActionIndex) !== undefined ? "description" : undefined,
-      resolveDialogueSystem(options.project) ?? (options.project.meta.language ? { ...defaultDialogueSystem(), language: options.project.meta.language } : undefined),
+      { ...(resolveDialogueSystem(options.project) ?? defaultDialogueSystem()), language: runtimeUiLocale(options.project) },
       mode === "function" && detail.entries.filter((entry) => entry.onActivate && !entry.disabled)[options.selectedDetailActionIndex ?? -1]?.onAdjust !== undefined,
     )
   );

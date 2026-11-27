@@ -1,5 +1,5 @@
-import { resolveDialogueSystem } from "@/project/dialogueSystem";
-import { dialogueUiLocale } from "@/player/dialogueUiStrings";
+import { defaultDialogueSystem, resolveDialogueSystem } from "@/project/dialogueSystem";
+import { runtimeUiLocale } from "@/player/runtimeUiStrings";
 import { monsterBoxUnavailableReason } from "@/player/playerMonsterPartyModel";
 import { DEFAULT_INVENTORY_VIEW, type InventoryView } from '@/player/playerInventoryView';
 import { DEFAULT_BAG_POCKET, stepBagPocket } from "@/player/playerBagPockets";
@@ -264,7 +264,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onStartKeyCapture: (action) => {
           rememberDetailCursorFromTestId(`player-option-key-${action}`);
           capturingKeyAction = action;
-          const loc = dialogueUiLocale(resolveDialogueSystem(project)?.language ?? project.meta.language);
+          const loc = runtimeUiLocale(project);
           const actionLabel = remappableActionLabel(action, loc);
           const prompt = loc === "en"
             ? `Press a new key for '${actionLabel}' (Esc to cancel)`
@@ -278,7 +278,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
         onResetKeyBindings: () => {
           capturingKeyAction = undefined;
           resetKeyBindings();
-          const loc = dialogueUiLocale(resolveDialogueSystem(project)?.language ?? project.meta.language);
+          const loc = runtimeUiLocale(project);
           const resetMsg = loc === "en"
             ? "Key bindings reset to defaults."
             : loc === "ja"
@@ -516,8 +516,9 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     else detail?.removeAttribute("inert");
     const controls = menu.querySelector<HTMLElement>(".status-menu-controls");
     if (controls) {
-      const skin = menuSkinFor(store.getCurrent());
-      const dialogueSystem = resolveDialogueSystem(store.getCurrent());
+      const currentProject = store.getCurrent();
+      const skin = menuSkinFor(currentProject);
+      const dialogueSystem = { ...(resolveDialogueSystem(currentProject) ?? defaultDialogueSystem()), language: runtimeUiLocale(currentProject) };
       const defaultText = statusMenuControls(mode, skin.railColumns, skin.id === "field-list", dialogueSystem);
       controls.textContent = defaultText;
       if (mode === "function") {
@@ -1405,7 +1406,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
     const action = capturingKeyAction;
     if (!action) return false;
     const project = store.getCurrent();
-    const loc = dialogueUiLocale(resolveDialogueSystem(project)?.language ?? project.meta.language);
+    const loc = runtimeUiLocale(project);
     const normalized = normalizeKey(key);
     if (normalized === "escape") {
       capturingKeyAction = undefined;
@@ -1443,13 +1444,22 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       .map((other) => remappableActionLabel(other, loc));
     const keyText = formatKeyLabel(normalized);
     const actionName = remappableActionLabel(action, loc);
+    const conflictList = [...new Set(otherNames)].join(", ");
     const message = otherNames.length > 0
       ? (loc === "en"
-        ? `Bound '${actionName}' to ${keyText} (Note: conflicts with ${[...new Set(otherNames)].join(", ")})`
-        : `'${actionName}' 키를 ${keyText}(으)로 지정했습니다 (주의: ${[...new Set(otherNames)].join(", ")}와 겹침)`)
+        ? `Bound '${actionName}' to ${keyText} (Note: conflicts with ${conflictList})`
+        : loc === "ja"
+          ? `'${actionName}' に ${keyText} を割り当てました (注意: ${conflictList} と重複)`
+          : loc === "zh"
+            ? `已将“${actionName}”绑定为 ${keyText}（注意：与 ${conflictList} 冲突）`
+            : `'${actionName}' 키를 ${keyText}(으)로 지정했습니다 (주의: ${conflictList}와 겹침)`)
       : (loc === "en"
         ? `Bound '${actionName}' to ${keyText}.`
-        : `'${actionName}' 키를 ${keyText}(으)로 변경했습니다.`);
+        : loc === "ja"
+          ? `'${actionName}' に ${keyText} を割り当てました。`
+          : loc === "zh"
+            ? `已将“${actionName}”绑定为 ${keyText}。`
+            : `'${actionName}' 키를 ${keyText}(으)로 변경했습니다.`);
     options.emitMenuJuice("menu-confirm", renderMenu(message, "options"));
     return true;
   }

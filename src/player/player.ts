@@ -65,6 +65,7 @@ import { getPlayerPreferences } from "@/player/playerPreferences";
 import { installInputDeviceTracker, subscribeInputDevice } from "@/player/inputGlyphs";
 import { menuSkinFor } from "@/player/menuSkins/registry";
 import { defaultDialogueSystem, resolveDialogueSystem } from "@/project/dialogueSystem";
+import { runtimeUiLocale } from "@/player/runtimeUiStrings";
 import { applyProjectCustomCss, getProjectCustomThemeCss, removeProjectCustomCss } from "@/project/customCss";
 import { focusPlayCanvas } from "@/player/focusGuard";
 import {
@@ -1001,13 +1002,14 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       emitMenuJuice("menu-invalid", menu);
       return;
     }
-    if (menu && (key === "PageUp" || key === "PageDown" || key === "Home" || key === "End")) {
+    const overlayActive = isDialogueSurfaceActive() || isModalOverlayActive();
+    if (menu && !overlayActive && (key === "PageUp" || key === "PageDown" || key === "Home" || key === "End")) {
       event.preventDefault();
       event.stopPropagation();
+      if (!event.repeat && statusMenu.handleExtraKey(key)) return;
       statusMenu.handleKey(key as RuntimeMenuKey);
       return;
     }
-    const overlayActive = isDialogueSurfaceActive() || isModalOverlayActive();
     const scene = activeScene();
     // `PlayScene.session` is a `declare` field: type-only, with no runtime initialization, and
     // it is first assigned partway through create(). This DOM keydown handler is bound to the
@@ -1389,7 +1391,7 @@ export function renderPlayer(main: HTMLElement, options: RenderPlayerOptions = {
       const mode = menu.dataset.statusMenuScreen === "function" ? "function" : "main";
       const currentProject = store.getCurrent();
       const skin = menuSkinFor(currentProject);
-      const dialogueSystem = resolveDialogueSystem(currentProject) ?? (currentProject.meta.language ? { ...defaultDialogueSystem(), language: currentProject.meta.language } : undefined);
+      const dialogueSystem = { ...(resolveDialogueSystem(currentProject) ?? defaultDialogueSystem()), language: runtimeUiLocale(currentProject) };
       const defaultText = statusMenuControls(mode, skin.railColumns, skin.id === "field-list", dialogueSystem, device);
       const adjustText = statusMenuAdjustControls(dialogueSystem, device);
       const wasAdjust = Boolean(controls.dataset.controlsAdjust && controls.textContent === controls.dataset.controlsAdjust);
