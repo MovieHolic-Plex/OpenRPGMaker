@@ -151,8 +151,8 @@ export function applyFallenInteractiveProps(project: Project): FallenInteractPro
     result.trimmed += trimContainers(map);
     for (const event of map.events) {
       if (!isContainer(event)) continue;
-      // 칸 그림이 괤짝이면(못 박힌 상자를 괤짝으로 바꾼 칸 포함) 괤짝처럼 연다 — 그림과 소리가 어긋나지 않게.
-      const effect = fallenOpenEffectFor(lidOnBox(map, event) ? "괤짝" : String(event.name ?? ""));
+      // 칸 그림이 궤짝이면(못 박힌 상자를 궤짝으로 바꾼 칸 포함) 궤짝처럼 연다 — 그림과 소리가 어긋나지 않게.
+      const effect = fallenOpenEffectFor(lidOnBox(map, event) ? "궤짝" : String(event.name ?? ""));
       const style: ContainerStyle = effect.style;
       retargetFx(event, effect);
       const ownerId = ownerOf(event);

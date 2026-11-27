@@ -328,6 +328,18 @@ function toma(project: Project): void {
     { name: "이리스 합류 뒤", conditions: [sw(SW_IRIS)], commands: [
       say(TOMA, "어, 반죽이 부풀었어요!\n오늘은 빵이 다 있어요, 카엘."),
       say(TOMA, "기계 아가씨도 빵을 먹나요?\n…먹는 흉내라도 내면 하나 싸 줄게요."),
+      fork(all(sw(Q1_ON, false), sw(Q1_DONE, false)), [
+        say(TOMA, "아, 아까 식은 납작빵도 남았는데 아침 거르신 분들께 좀 전해 줄래요?\n북문 문지기, 오스본 어르신, 심문회 기사님, 브람 아저씨께요."),
+        choices([
+          ["맡을게요", [
+            narrate("납작빵 4개를 받았다.\n의뢰 「토마의 납작빵」을 맡았다."),
+            item(FS_BREAD_FLAT, 4),
+            setVar(Q1_COUNT, 0),
+            setSw(Q1_ON),
+          ]],
+          ["다음에요", []],
+        ]),
+      ]),
       shop(full, BAKERY),
     ] },
     { name: "의뢰 중(Q1)", conditions: [sw(Q1_ON), sw(Q1_DONE, false)], commands: [
@@ -394,7 +406,12 @@ function marta(project: Project): void {
   ];
   const irisLines: Command[] = [
     say(MARTA, "그 애가 이리스죠? 방은 넉넉해요.\n교단 눈에 안 띄게 안쪽 방을 써요."),
-    fork(sw(Q2_DONE), [], [say(MARTA, "값은 안 받을게요.\n은수저 얘기는 나중에 하고 지금은 푹 쉬어요.")]),
+    fork(sw(Q2_DONE), [], [
+      fork(sw(Q2_ON), [say(MARTA, "값은 안 받을게요.\n은수저 얘기는 나중에 하고 지금은 푹 쉬어요.")], [
+        say(MARTA, "값은 안 받을게요. 아, 혹시 시간 나면…"),
+        ...offer,
+      ]),
+    ]),
   ];
   rewritePages(event, [
     { name: "기본", conditions: [], commands: [greet, ...offer, price, ...innStay(30)] },
@@ -490,7 +507,7 @@ function rohan(project: Project): void {
     { name: "이리스 합류 뒤", conditions: [sw(SW_IRIS)], commands: [
       say(ROHAN, "…그 애, 사람이 아니라지.\n쇳소리가 나는군. 고장 난 소리는 아니고."),
       say(ROHAN, "내가 창을 들던 시절이면\n저 아이를 겨눴겠지. 지금은 안 겨눈다."),
-      fork(all(sw(Q3_MET), sw(Q3_ON, false)), [choices([["창 얘기를 꺼낸다", ask], ["가게만 볼게요", []]])]),
+      fork(all(sw(Q3_ON, false), sw(Q3_DONE, false)), [choices([["창 얘기를 꺼낸다", ask], ["가게만 볼게요", []]])]),
       stock(),
     ] },
     { name: "의뢰 중(Q3)", conditions: [sw(Q3_ON), sw(Q3_DONE, false)], commands: [...progress, stock()] },

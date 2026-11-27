@@ -23,7 +23,7 @@ const TOWER = "oprn-bgm-dfk-boss-v0-0";
 
 export const FS_AREA_BATTLE_BGM: Readonly<Record<string, string>> = {
   fs_forest: FOREST, fs_forest_edge: FOREST, fs_forest_stream: FOREST, fs_forest_thicket: FOREST, fs_forest_glade: FOREST, fs_forest_shrine: FOREST,
-  fs_vault: VAULT, fs_vault_b3: VAULT, fs_vault_b4: VAULT,
+  fs_vault: VAULT, fs_vault_b3: VAULT, fs_vault_b4: VAULT, fs2_well_shaft: VAULT,
   fs2_hub_night: NIGHT,
   map_field_north_1: NORTH, map_field_north_2: NORTH, fs2_dawnwell: NORTH,
   fs2_fort_court: FORT, fs2_fortress: FORT, fs2_fortress_f2: FORT,
@@ -42,6 +42,7 @@ export const FS_BOSS_TROOPS: readonly string[] = [
   "troop_fs2_elite_frost",
   "troop_fs2_tower_sentinel",
   "troop_fs2_sarah",
+  "troop_fs2_well_beast",
 ];
 
 const BATTLE_CUE = "m2-027-change-system-bgm";

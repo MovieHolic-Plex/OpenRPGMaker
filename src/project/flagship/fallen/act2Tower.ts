@@ -228,6 +228,7 @@ function towerData(project: Project, exec: Exec): void {
     id: SKILL_CIRCUIT_BITE, name: "회로 물기", scope: "enemy", type: "normal", power: 30, variance: 15, hitRate: 95,
     description: "이빨 끝 전선으로 물어 마력을 갉아 낸다.",
     mpCost: { flat: 0, percentMax: 0 }, effect: { kind: "damage", statistic: "attack", affects: "mp" }, stateEffects: [],
+    animationId: "anim_gen_thunder_strike",
   } });
   const base = project.database.enemies.find((e) => e.id === "enemy_fs_wolf");
   if (!base) throw new Error("[fallen-star tower] enemy_fs_wolf 가 없다");
@@ -256,10 +257,10 @@ function towerData(project: Project, exec: Exec): void {
   }
   // 이리스 기술 — 손끝 빛(필드 기술, place_field_obstacle 이 공통 이벤트를 붙인다)과 「잘 지내」(일지 쪽 셋을 다 읽으면).
   exec(project, "upsert_skill", { skill: {
-    id: FS2_SKILL_BE_WELL, name: "잘 지내", scope: "allAllies", type: "normal", power: 60, variance: 10, hitRate: 100,
-    description: "아군 전체를 치료하고 나쁜 상태를 걷어 낸다.\n카엘이 처음 하늘에 보낸 대답.",
-    mpCost: { flat: 18, percentMax: 0 }, effect: { kind: "healing", statistic: "mind", affects: "hp" }, animationId: "anim_heal",
-    stateEffects: ["state_poison", "state_blind", "state_silence", "state_paralysis", "state_sleep", "state_attack_down", "state_defense_down", "state_agility_down"]
+    id: FS2_SKILL_BE_WELL, name: "잘 지내", scope: "allAllies", type: "normal", power: 180, variance: 10, hitRate: 100,
+    description: "아군 전체 HP를 크게 회복하고 화상·정지·상태이상을 모두 걷어 낸다.\n카엘이 처음 하늘에 보낸 대답.",
+    mpCost: { flat: 12, percentMax: 0 }, effect: { kind: "healing", statistic: "mind", affects: "hp" }, animationId: "anim_heal",
+    stateEffects: ["state_poison", "state_deep_poison", "state_blind", "state_silence", "state_paralysis", "state_sleep", "state_stop", "fs_state_burn", "state_attack_down", "state_defense_down", "state_agility_down"]
       .map((stateId) => ({ stateId, chance: 100, operation: "remove" })),
   } });
 }
@@ -899,16 +900,15 @@ function floorFour(project: Project, exec: Exec): void {
     camTo("ev_fs2_t4_page_star", 1200, T4_ZOOM),
     say(IRIS, "저기, 종이가 떨어져 있어요.\n…제 일지 쪽이에요."),
     camBack(900, T4_ZOOM),
+    sys("이리스가 다시 일행이 되었다."),
+    cutLabel(), cutEnd(),
+    // 넘겨도 같은 끝 — 레터박스 해제·이리스 합류·레벨·기술·조명을 멱등으로 확실히 보장.
+    clearLetterbox(),
     { kind: "changeParty", actorId: IRIS_ID, action: "add" } as unknown as Command,
-    // 1막 끝(Lv13)에 멈춰 있던 이리스를 탑까지 올라온 일행 레벨에 맞춘다(FS_ACT2_JOIN_LEVEL.iris, mobBalance — 1막에서 이어 한 도착 레벨).
     { kind: "changeLevel", actorId: IRIS_ID, op: "=", amount: FS_ACT2_JOIN_LEVEL.iris } as unknown as Command,
     learn(IRIS_ID, FS2_SKILL_FINGERLIGHT),
+    learn(IRIS_ID, "skill_gunner_shot"),
     { kind: "recoverAll", actorId: IRIS_ID } as unknown as Command,
-    setSw(SW_IRIS_BACK),
-    sys("이리스가 다시 일행이 되었다."),
-    clearLetterbox(),
-    cutLabel(), cutEnd(),
-    // 넘겨도 같은 끝 — 합류·조명은 다시 확실히.
     setSw(SW_IRIS_WAKE), setSw(SW_IRIS_BACK), ...lidOpen,
     { kind: "setLighting", ambient: 0, transitionMs: 300 } as unknown as Command,
   ];

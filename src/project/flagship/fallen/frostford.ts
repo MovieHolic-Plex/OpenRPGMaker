@@ -679,6 +679,9 @@ function lanternNight(project: Project, exec: Exec): void {
       setSw(SW_VALEN_MET),
       cutLabel(),
       cutEnd(),
+      // 컷신을 넘겨도 탑 진입 스위치와 화면 색조 복원이 빠지지 않게 보장한다.
+      setSw(SW_VALEN_MET),
+      m2("m2-202-screen-effect", { effect: "tint", value: "neutral", durationMs: 200 }),
       say(ELENA, "카엘, 발밑!"),
       // 길은 불러 주지 않는다 — 굽이마다 밝은 얼음(routeLights)이 보여 준다(첫 플레이 검수 2026-10-31: 탈출로를 통째로 말했다).
       say(SARAH, "금 간 데는 못 버틴다!\n계단까지 달려!"),
@@ -784,12 +787,21 @@ function lanternNightEvents(project: Project): void {
         { kind: "openSaveMenu" } as unknown as Command,
       ], { graphic: look })
       : page("ev_fs2_frost_innkeeper_night", "밤을 기다림", [sw(SW_HARMA)], [
-        say(OSA, "밤에 얼음 위로 나가시게요?\n하르마 할머니가 등 얘기를 했나 보네.\n그럼 불 앞에서 몸부터 녹이고 가요."),
-        { kind: "callCommonEvent", commonEventId: "ce_party_bond_talk" } as unknown as Command,
-        fadeOut(1000),
-        setSw(SW_NIGHT),
-        narrate("해가 진다. 섬 사당 앞에 등 하나가 뜬다."),
-        transfer(FS2_FROST_NIGHT_ID, front, "down"),
+        say(OSA, "밤에 얼음 위로 나가시게요?\n하르마 할머니가 등 얘기를 했나 보네.\n준비됐으면 불 앞에서 몸 녹이고 해 질 때까지 기다려요."),
+        { kind: "choices", prompt: "서리나루의 밤을 기다릴까? (밤이 되면 마을 가게와 의뢰는 이용할 수 없다)", cancelBehavior: "choice2", options: [
+          { text: "몸을 녹이고 밤을 기다린다", branch: [
+            { kind: "recoverAll" } as unknown as Command,
+            { kind: "callCommonEvent", commonEventId: "ce_party_bond_talk" } as unknown as Command,
+            fadeOut(1000),
+            setSw(SW_NIGHT),
+            narrate("해가 진다. 섬 사당 앞에 등 하나가 뜬다."),
+            transfer(FS2_FROST_NIGHT_ID, front, "down"),
+          ] },
+          { text: "조금 더 마을을 둘러본다", branch: [
+            say(OSA, "그래요, 볼일 마저 보고 오세요. 필요하면 쉬어 가셔도 되고요."),
+            { kind: "inn", price: 20 } as unknown as Command,
+          ] },
+        ] } as unknown as Command,
       ], { graphic: look }),
     page("ev_fs2_frost_innkeeper_after", "탑 뒤", [sw(SW_VALEN_MET)], [
       say(OSA, "탑에서 빛기둥 솟던 밤엔\n다들 한숨도 못 잤어요. 하룻밤에 20골드예요."), { kind: "inn", price: 20 } as unknown as Command,
