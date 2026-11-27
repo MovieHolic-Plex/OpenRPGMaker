@@ -1594,7 +1594,12 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
    * 물러나는 팀의 이번 라운드 명령은 버린다. ActorCommand 합집합과 분리된 별도 입구다(types.ts TeamSwapCommand).
    */
   function releaseHeldActors(): void {
-    for (const id of heldForCombo) resumedFromHold.add(id);
+    const active = activeActors();
+    for (const id of heldForCombo) {
+      const held = active.find((entry) => entry.recordId === id);
+      if (held && held.hp > 0 && held.gauge >= 100) resumedFromHold.add(id);
+      else resumedFromHold.delete(id);
+    }
     heldForCombo.clear();
   }
 
@@ -1640,6 +1645,10 @@ export function createBattleRuntime(options: BattleRuntimeOptions): BattleRuntim
       return;
     }
     swapActiveTeam(command.targetTeamId, actor.recordId);
+    for (const id of [...resumedFromHold]) {
+      const member = activeActors().find((entry) => entry.recordId === id);
+      if (!member || member.gauge < 100) resumedFromHold.delete(id);
+    }
     releaseHeldActors();
     actor.gauge = 0;
     gaugeCycleActed.add(actor.id);
