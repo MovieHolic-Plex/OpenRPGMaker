@@ -246,6 +246,8 @@ export interface PiRunOptions {
    * 그 턴의 모든 요청에 같이 싣는다 — 워커는 지시문·도구·모델이 같은 실행만 전 대화를 잇는다(sessionResume.ts).
    */
   readonly sessionKey?: string;
+  /** 앱 재시작 뒤 이어 하기 열쇠(src/ai/piAgent/runResume.ts). 실행 단계가 워커 하나일 때만 싣는다 — 여럿이면 기록이 서로 덮는다. */
+  readonly resume?: import("@/ai/piAgent/runResume").PiRunResumeRequest;
 }
 
 /** 적용 뒤 영수증(지금 → 적용 후) 재료. 렌더는 패널이 한다 — 되돌리기와 스튜디오 「변경」 탭이 거기 있다. */
@@ -822,7 +824,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         ...(options.thinkingLevel ? { callerThinkingLevel: options.thinkingLevel } : {}),
         ...(options.polish ? { polish: options.polish } : {}),
         sessionKey,
-      }), ...userImagesPart, ...sessionPart, ...(config.dialoguePolishAfterBuild === false ? { dialoguePolish: false } : {}), ...(options.assistantVersion ? { assistantVersion: options.assistantVersion } : {}), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) },
+      }), ...userImagesPart, ...sessionPart, ...(options.resume && groups.length === 1 ? { resume: options.resume } : {}), ...(config.dialoguePolishAfterBuild === false ? { dialoguePolish: false } : {}), ...(options.assistantVersion ? { assistantVersion: options.assistantVersion } : {}), ...(options.timeoutMs ? { timeoutMs: options.timeoutMs } : {}) },
       { signal: surface.signal, returnIncompleteResult: command.goalMode === true, onEvent: wrap(mapIds, index),
         onCheckpoint: readOnly || applyMode === "review" ? undefined : async checkpoint => stage("checkpoint", async () => {
           // 이 체크포인트를 낳은 도구의 실제 시공 단계 — 적용 직후 맵 위에서 그 순서대로 다시 튼다(agentConstructionReveal).

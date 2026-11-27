@@ -248,7 +248,7 @@ describe("innCommandBody", () => {
       restoreDom?.();
     });
 
-    it("shows price presets and a stay/no dialog mock, not just a bare number field", () => {
+    it("shows price mode, presets, options, timing units, and result branches without duplicating preview", () => {
       const body = renderWithFakeDom(() =>
         renderCommandBody(
           {
@@ -267,22 +267,25 @@ describe("innCommandBody", () => {
       );
 
       expect(findByTestId(body, "inn-command-body")).not.toBeNull();
+      expect(findByTestId(body, "inn-price-source")).not.toBeNull();
       expect(findByTestId(body, "inn-price-input")).not.toBeNull();
       expect(findByTestId(body, "inn-price-presets")).not.toBeNull();
       expect(findByTestId(body, "inn-price-preset-20")).not.toBeNull();
-      expect(findByTestId(body, "inn-dialog-mock")).not.toBeNull();
-      expect(findByTestId(body, "inn-dialog-question")?.textContent).toContain("20");
+      expect(findByTestId(body, "inn-dialog-mock")).toBeNull();
       expect(findByTestId(body, "inn-note-input")).not.toBeNull();
       expect(findByTestId(body, "inn-question-input")).not.toBeNull();
       expect(findByTestId(body, "inn-recover-mp")).not.toBeNull();
       expect(findByTestId(body, "inn-advance-morning")).not.toBeNull();
+      expect(findByTestId(body, "inn-branch-on-stay")).not.toBeNull();
+      expect(findByTestId(body, "inn-branch-on-cancel")).not.toBeNull();
       expect(findByTestId(body, "inn-branch-not-enough")).not.toBeNull();
-      expect(body.textContent ?? "").toContain("숙박");
-      expect(body.textContent ?? "").toContain("거절");
-      expect(body.textContent ?? "").toContain("전원 회복");
+      expect(body.textContent ?? "").toContain("숙박했을 때 분기");
+      expect(body.textContent ?? "").toContain("거절했을 때 분기");
+      expect(body.textContent ?? "").toContain("암전 연출 (ms)");
+      expect(body.textContent ?? "").toContain("기상 표시 (ms)");
     });
 
-    it("commits custom note/question, recoverMp, morning, timing, and not-enough branch flag", () => {
+    it("preserves spaces while typing note/question and commits stay/cancel/not-enough branch flags", () => {
       const replaceCommand = vi.fn();
       const body = renderWithFakeDom(() =>
         renderCommandBody(
@@ -302,6 +305,10 @@ describe("innCommandBody", () => {
       );
 
       const note = findByTestId(body, "inn-note-input") as HTMLInputElement;
+      note.value = "환영합니다, ";
+      note.dispatchEvent(new Event("input"));
+      // 입력 도중 끝 공백을 강제로 잘라내지 않아야 띄어쓰기·IME 조합이 깨지지 않는다.
+      expect(note.value).toBe("환영합니다, ");
       note.value = "환영합니다, 여행자여.";
       note.dispatchEvent(new Event("change"));
 
@@ -321,6 +328,14 @@ describe("innCommandBody", () => {
       rest.value = "250";
       rest.dispatchEvent(new Event("change"));
 
+      const stayBranch = findByTestId(body, "inn-branch-on-stay") as HTMLInputElement;
+      stayBranch.checked = true;
+      stayBranch.dispatchEvent(new Event("change"));
+
+      const cancelBranch = findByTestId(body, "inn-branch-on-cancel") as HTMLInputElement;
+      cancelBranch.checked = true;
+      cancelBranch.dispatchEvent(new Event("change"));
+
       const branch = findByTestId(body, "inn-branch-not-enough") as HTMLInputElement;
       branch.checked = true;
       branch.dispatchEvent(new Event("change"));
@@ -334,14 +349,18 @@ describe("innCommandBody", () => {
         recoverMp: false,
         advanceToMorning: true,
         restDurationMs: 250,
+        branchOnStay: true,
+        branchOnCancel: true,
         branchOnNotEnoughGold: true,
       });
-      expect(findByTestId(body, "inn-not-enough-branch-controls")?.className).not.toContain("is-hidden");
-      expect(findByTestId(body, "inn-dialog-note")?.textContent).toContain("환영합니다");
-      expect(findByTestId(body, "inn-dialog-question")?.textContent).toContain("오늘 밤");
+      const summary = findByTestId(body, "inn-branch-summary");
+      expect(summary?.hidden).toBe(false);
+      expect(summary?.textContent).toContain("숙박했을 때");
+      expect(summary?.textContent).toContain("거절했을 때");
+      expect(summary?.textContent).toContain("골드 부족할 때");
     });
 
-    it("previews custom copy and flags", () => {
+    it("previews custom copy, variable price, and result branches accurately", () => {
       const preview = renderWithFakeDom(() =>
         renderCommandPreview({
           kind: "inn",
@@ -350,6 +369,8 @@ describe("innCommandBody", () => {
           question: "50G에 묵을까요?",
           recoverMp: false,
           advanceToMorning: true,
+          branchOnStay: true,
+          branchOnCancel: true,
           branchOnNotEnoughGold: true,
         })
       );
@@ -358,7 +379,18 @@ describe("innCommandBody", () => {
       expect(preview.textContent ?? "").toContain("50G에 묵을까요?");
       expect(preview.textContent ?? "").toContain("HP만 회복");
       expect(preview.textContent ?? "").toContain("아침 이동");
+      expect(preview.textContent ?? "").toContain("숙박 분기");
+      expect(preview.textContent ?? "").toContain("거절 분기");
       expect(preview.textContent ?? "").toContain("부족 분기");
+
+      const varPreview = renderWithFakeDom(() =>
+        renderCommandPreview({
+          kind: "inn",
+          price: { kind: "var", id: "var_fee" },
+        })
+      );
+      expect(varPreview.textContent ?? "").not.toContain("(무료)");
+      expect(varPreview.textContent ?? "").toContain("var_fee");
     });
 
     it("summarizes free inns and optional flags", () => {
@@ -370,12 +402,16 @@ describe("innCommandBody", () => {
         price: 20,
         recoverMp: false,
         advanceToMorning: true,
+        branchOnStay: true,
+        branchOnCancel: true,
         branchOnNotEnoughGold: true,
       })
         .map((part) => part.text)
         .join("");
       expect(rich).toContain("HP만");
       expect(rich).toContain("아침");
+      expect(rich).toContain("숙박분기");
+      expect(rich).toContain("거절분기");
       expect(rich).toContain("부족분기");
     });
   });

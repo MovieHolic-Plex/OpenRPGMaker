@@ -1,34 +1,54 @@
 import { el } from "@/util/dom";
 import { DISPLAY_FILTER_TESTID, syncDisplayFilter } from "@/player/displayFilterDom";
 import {
+  calculateAdaptiveViewport,
   calculatePlaySurfaceCropMetrics,
   calculatePlaySurfacePlacement,
   calculatePlaySurfaceScale,
   type PlaySurfaceScaleMode,
 } from "@/player/playSurfaceScale";
 import { PLAY_RESOLUTION } from "@/player/playResolution";
+import type { PortraitLayoutMode } from "@/project/playSurfaceScaleMode";
 import type { PlayResolution } from "@/project/types";
 
 export type PlaySurface = {
   readonly viewport: HTMLElement;
   readonly stage: HTMLElement;
   readonly phaserContainer: HTMLElement;
+  /** 현재 활성 논리 해상도(고정 모드는 프로젝트 해상도 그대로, adaptive 모드는 뷰포트에 맞춘 동적 크기). */
+  readonly logicalResolution: () => Readonly<PlayResolution>;
   readonly sync: () => void;
   readonly cleanup: () => void;
+};
+
+export type CreatePlaySurfaceOptions = {
+  readonly topAlignPortrait?: boolean;
+  readonly touchUi?: boolean;
+  /** 모바일 세로 배치 방식(adaptive 모드). 생략 = `ds`(상단 55% + 하단 전용 덱). */
+  readonly portraitLayout?: PortraitLayoutMode;
+  /** adaptive 모드에서 논리 카메라 크기가 바뀔 때 호출된다(Phaser 실시간 리사이즈 연동). */
+  readonly onLogicalResize?: (resolution: Readonly<PlayResolution>) => void;
 };
 
 export function createPlaySurface(
   resolution: Readonly<PlayResolution> = PLAY_RESOLUTION,
   scaleMode: PlaySurfaceScaleMode = "integer",
   displayFilter?: unknown,
-  options: { readonly topAlignPortrait?: boolean; readonly touchUi?: boolean } = {},
+  options: CreatePlaySurfaceOptions = {},
 ): PlaySurface {
   const topAlignPortrait = options.topAlignPortrait === true;
   const touchUi = options.touchUi === true;
+  const portraitLayout: PortraitLayoutMode = options.portraitLayout === "fullbleed" ? "fullbleed" : "ds";
+  let activeLogical: Readonly<PlayResolution> = { width: resolution.width, height: resolution.height };
+
   const viewport = el("div", {
     class: "play-viewport",
     dataset: { testid: "play-viewport", scaleMode },
   });
+  if (scaleMode === "adaptive") {
+    viewport.dataset.adaptive = "true";
+    viewport.dataset.portraitLayout = portraitLayout;
+  }
   const stage = el("div", {
     class: "play-stage",
     dataset: { testid: "play-stage" },
@@ -37,7 +57,7 @@ export function createPlaySurface(
     class: "phaser-container",
     dataset: { testid: "play-canvas" },
   });
-  applyPlaySurfaceResolution(viewport, stage, phaserContainer, resolution);
+  applyPlaySurfaceResolution(viewport, stage, phaserContainer, activeLogical);
   if (topAlignPortrait || touchUi) viewport.dataset.rotateHint = rotateHintText();
   if (touchUi) viewport.dataset.touchUi = "true";
   stage.append(phaserContainer);
@@ -52,15 +72,27 @@ export function createPlaySurface(
     : null;
   filterObserver?.observe(stage, { childList: true });
 
-  const resizeObserver = new ResizeObserver(() => syncPlaySurfaceMetrics(viewport, resolution, scaleMode, topAlignPortrait, touchUi));
+  const updateLogical = (next: Readonly<PlayResolution>): void => {
+    if (next.width === activeLogical.width && next.height === activeLogical.height) return;
+    activeLogical = { width: next.width, height: next.height };
+    applyPlaySurfaceResolution(viewport, stage, phaserContainer, activeLogical);
+    options.onLogicalResize?.(activeLogical);
+  };
+
+  const syncNow = (): void => {
+    syncPlaySurfaceMetrics(viewport, resolution, scaleMode, topAlignPortrait, touchUi, portraitLayout, updateLogical);
+  };
+
+  const resizeObserver = new ResizeObserver(syncNow);
   resizeObserver.observe(viewport);
-  const animationFrameId = requestAnimationFrame(() => syncPlaySurfaceMetrics(viewport, resolution, scaleMode, topAlignPortrait, touchUi));
+  const animationFrameId = requestAnimationFrame(syncNow);
 
   return {
     viewport,
     stage,
     phaserContainer,
-    sync: () => syncPlaySurfaceMetrics(viewport, resolution, scaleMode, topAlignPortrait, touchUi),
+    logicalResolution: () => activeLogical,
+    sync: syncNow,
     cleanup: () => {
       cancelAnimationFrame(animationFrameId);
       resizeObserver.disconnect();
@@ -77,9 +109,9 @@ function shopFitFor(resolution: Readonly<PlayResolution>): "tiny" | "compact" | 
   return resolution.width <= 360 ? "tiny" : resolution.width <= 640 || resolution.height <= 360 ? "compact" : "full";
 }
 
-/** 320×240 기준 UI 를 이 무대에서 몇 배로 키울지. 높이/240 이 1.5 미만이면 1(그대로). */
+/** 320×240 기준 UI 를 이 무대에서 몇 배로 키울지. 가로·세로 모두 1.5배 이상(1024×768 등)일 때만 키운다 — 세로 풀블리드(195×422)는 좁은 모바일이라 제외. */
 export function hiresUiZoom(resolution: Readonly<PlayResolution>): number {
-  const ratio = resolution.height / 240;
+  const ratio = Math.min(resolution.width / 320, resolution.height / 240);
   return ratio >= 1.5 ? Math.round(ratio * 1000) / 1000 : 1;
 }
 
@@ -120,13 +152,46 @@ function syncPlaySurfaceMetrics(
   scaleMode: PlaySurfaceScaleMode,
   topAlignPortrait: boolean,
   touchUi = false,
+  portraitLayout: PortraitLayoutMode = "ds",
+  onLogicalUpdate?: (next: Readonly<PlayResolution>) => void,
 ): void {
   const bounds = viewport.getBoundingClientRect();
   if (touchUi) {
-    syncTouchLayout(viewport, bounds.width, bounds.height, resolution, scaleMode);
+    syncTouchLayout(viewport, bounds.width, bounds.height, resolution, scaleMode, portraitLayout, onLogicalUpdate);
     return;
   }
   const dpr = typeof window === "undefined" ? 1 : window.devicePixelRatio || 1;
+  if (scaleMode === "adaptive" && bounds.width > 0 && bounds.height > 0) {
+    const portrait = bounds.height > bounds.width;
+    const adaptive = calculateAdaptiveViewport(bounds.width, bounds.height, resolution.width, resolution.height, {
+      portrait,
+      fullbleed: portrait && portraitLayout === "fullbleed",
+      devicePixelRatio: dpr,
+    });
+    const nextLogical: Readonly<PlayResolution> = { width: adaptive.logicalWidth, height: adaptive.logicalHeight };
+    onLogicalUpdate?.(nextLogical);
+    const scale = adaptive.scale;
+    const crop = calculatePlaySurfaceCropMetrics(bounds.width, bounds.height, scale, nextLogical.width, nextLogical.height);
+    const left = Math.floor((bounds.width - adaptive.stageWidth) / 2);
+    const top = Math.floor((bounds.height - adaptive.stageHeight) / 2);
+    viewport.dataset.layout = portrait ? "portrait" : "landscape";
+    viewport.style.setProperty("--play-scale", String(scale));
+    viewport.style.setProperty("--play-scale-x", String(scale));
+    viewport.style.setProperty("--play-scale-y", String(scale));
+    viewport.style.setProperty("--play-crop-top", cssPx(crop.top));
+    viewport.style.setProperty("--play-crop-right", cssPx(crop.right));
+    viewport.style.setProperty("--play-crop-bottom", cssPx(crop.bottom));
+    viewport.style.setProperty("--play-crop-left", cssPx(crop.left));
+    viewport.style.setProperty("--play-visible-width", cssPx(crop.visibleWidth));
+    viewport.style.setProperty("--play-visible-height", cssPx(crop.visibleHeight));
+    viewport.style.setProperty("--play-stage-left", cssPx(left));
+    viewport.style.setProperty("--play-stage-top", cssPx(top));
+    viewport.style.setProperty("--play-stage-width", cssPx(adaptive.stageWidth));
+    viewport.style.setProperty("--play-stage-height", cssPx(adaptive.stageHeight));
+    viewport.dataset.scale = scale.toFixed(3);
+    syncMobileUiMetrics(viewport, bounds.width, bounds.height, scale);
+    return;
+  }
   const scale = calculatePlaySurfaceScale(bounds.width, bounds.height, resolution.width, resolution.height, scaleMode, dpr);
   const crop = calculatePlaySurfaceCropMetrics(bounds.width, bounds.height, scale, resolution.width, resolution.height);
   const placement = calculatePlaySurfacePlacement(bounds.width, bounds.height, scale, resolution.width, resolution.height, dpr);
@@ -148,6 +213,8 @@ function syncPlaySurfaceMetrics(
   viewport.style.setProperty("--play-visible-height", cssPx(crop.visibleHeight));
   viewport.style.setProperty("--play-stage-left", cssPx(placement.left));
   viewport.style.setProperty("--play-stage-top", cssPx(stageTop));
+  viewport.style.setProperty("--play-stage-width", cssPx(resolution.width * scale));
+  viewport.style.setProperty("--play-stage-height", cssPx(resolution.height * scale));
   viewport.dataset.scale = scale.toFixed(3);
   syncMobileUiMetrics(viewport, bounds.width, bounds.height, scale);
 }
@@ -172,7 +239,7 @@ function syncMobileUiMetrics(viewport: HTMLElement, width: number, height: numbe
   const portrait = touchUi ? viewport.dataset.touchLayout === "portrait" : width < height;
   viewport.dataset.mobileUi = portrait ? "portrait" : "landscape";
   // 노치·다이내믹 아일랜드: 세로에서는 무대를 위쪽 안전 영역 아래로 내린다(무대 위 12px 여백만으로는 노치에 가린다).
-  if (!touchUi && portrait && viewport.dataset.layout === "portrait") {
+  if (!touchUi && portrait && viewport.dataset.layout === "portrait" && viewport.dataset.adaptive !== "true") {
     const stageTop = Number.parseFloat(viewport.style.getPropertyValue("--play-stage-top")) || PORTRAIT_TOP_MARGIN;
     viewport.style.setProperty("--play-stage-top", `max(${stageTop}px, env(safe-area-inset-top, 0px))`);
   }
@@ -212,6 +279,9 @@ export type TouchLayout = {
   readonly scale: number;
   readonly stageLeft: number;
   readonly stageTop: number;
+  /** adaptive 모드에서 동적으로 계산된 논리 가로·세로(고정 모드는 호출자가 넘긴 값 그대로). */
+  readonly logicalWidth: number;
+  readonly logicalHeight: number;
   /** 조작이 앉는 띠(세로: 무대 아래, 가로: 화면 전체 높이). 뷰포트 위에서 잰 px. */
   readonly bandTop: number;
   readonly bandBottom: number;
@@ -220,24 +290,24 @@ export type TouchLayout = {
   /** 가로: 좌우 조작 칸 폭(안전 영역 포함). 세로는 0. */
   readonly gutter: number;
   readonly stick: number;
+  /** 세로 풀블리드처럼 조작이 무대 위에 반투명으로 얹히는 배치인가. */
+  readonly overlayControls?: boolean;
   /**
-   * 세로 대사 독: 무대가 1배보다 작게 그려질 때 대사·선택지 창을 무대 아래 빈 띠에 1배(게임 px = 화면 px)로 그린다.
+   * 세로 대사 독: 무대 아래 빈 띠(또는 풀블리드 하단)에 대사·선택지 창을 배치한다.
    * 뷰포트 위에서 잰 px. 독이 없으면 null.
    */
-  readonly dock: { readonly top: number; readonly left: number; readonly width: number; readonly height: number; /** 독 안 창의 화면 배율(1배 미만 무대면 1, 아니면 무대 배율). */ readonly scale: number } | null;
+  readonly dock: { readonly top: number; readonly left: number; readonly width: number; readonly height: number; /** 독 안 창의 화면 배율. */ readonly scale: number } | null;
   /**
-   * 세로 창 칸(2026-10-24): 무대가 1배보다 작을 때 ESC 메뉴·상점 창을 무대 대신 이 칸에 그린다.
-   * 칸은 어느 폰이든 같은 논리 크기(WINDOW_PANEL_WIDTH×HEIGHT 게임 px)이고, 들어가면 1배(글자 12px)다.
-   * top/left 는 뷰포트 위 화면 px, scale 은 칸 배율. 없으면 null.
+   * 세로 창 칸(2026-10-24): 무대가 1배 미만이거나 adaptive 세로처럼 논리 폭이 좁을 때 ESC 메뉴·상점·전투 HUD 를
+   * 고정 논리 크기 칸(WINDOW_PANEL_WIDTH×HEIGHT)에 1배로 그린다.
    */
   readonly panel: {
     readonly top: number; readonly left: number; readonly scale: number; readonly height: number;
-    /** 칸이 들어갈 수 있는 세로 방 전체(화면 px) — 노치 아래~메뉴 단추 줄 위, 안전 영역 폭. 제작 창처럼 320 칸에 안 맞는 창이 이 방을 통째로 쓴다. */
+    /** 칸이 들어갈 수 있는 세로 방 전체(화면 px) — 노치 아래~메뉴 단추 줄 위, 안전 영역 폭. */
     readonly room: { readonly top: number; readonly left: number; readonly width: number; readonly height: number };
   } | null;
   /**
-   * 터치 메뉴 한 줄의 최소 높이(게임 px) — 화면에서 44px 가 되게(2026-10-25). 메뉴가 그려지는 배율(창 칸이면 칸 배율,
-   * 아니면 무대 배율)로 나눈다. CSS(mobileUi.css)가 ESC 메뉴 명령 줄에 쓴다.
+   * 터치 메뉴 한 줄의 최소 높이(게임 px) — 화면에서 44px 가 되게(2026-10-25).
    */
   readonly menuRow: number;
 };
@@ -259,8 +329,12 @@ export const WINDOW_PANEL_HEIGHT = 300;
 export const DIALOGUE_DOCK_MIN_HEIGHT = 96;
 
 export type TouchLayoutOptions = {
-  /** 프로젝트의 배율 정책(system.playSurfaceScale). 데스크톱과 같다 — 정수 배율 + 여백, 1배 미만만 비정수. */
+  /** 프로젝트의 배율 정책(system.playSurfaceScale). */
   readonly scaleMode?: PlaySurfaceScaleMode;
+  /** 모바일 세로 배치(adaptive 모드): `ds`(상단 55% + 하단 덱) 또는 `fullbleed`(100% 월드 + 플로팅 UI). */
+  readonly portraitLayout?: PortraitLayoutMode;
+  /** 기기 화소 비율(소수 DPR 보정). */
+  readonly devicePixelRatio?: number;
   /** 세로 대사 독을 쓸지(기본 켬). */
   readonly dialogueDock?: boolean;
   /** 세로 창 칸(메뉴·상점)을 쓸지(기본 켬). */
@@ -268,12 +342,10 @@ export type TouchLayoutOptions = {
 };
 
 /**
- * 터치 기기의 무대·조작 배치(2026-10-24). 조작이 게임을 가리지 않게 자리를 먼저 떼고 그 나머지에 무대를 맞춘다.
- * 게임 UI(대사·선택지·메뉴·상점·전투 창)는 모두 무대 안 게임 px 이라, 기기·방향이 바뀌어도 같은 모양이 통째로 커지거나 작아질 뿐이다.
- * - 세로: 무대는 위(노치 아래), 조작은 그 아래 띠. 띠가 크게 남으면 조작을 남는 높이의 40% 지점에 둬 엄지가 닿는 곳·빈 칸이 작게.
- *   무대가 1배보다 작으면(폰 세로) 대사 창은 무대 아래 독에 1배로 내린다(dock).
- * - 가로: 좌우에 조작 칸을 떼고 가운데에 무대.
- * 배율은 데스크톱과 같은 calculatePlaySurfaceScale(정책 그대로) — 무대 왼쪽 위는 정수 화면 px 에 둔다.
+ * 터치 기기의 무대·조작 배치.
+ * - `adaptive` 세로 `ds`(2026-11-26 추천 기본): 상단 ~55% 를 정수 2x 세로 카메라로 채우고, 하단 ~45% 에 1x 대사/전투/패드 덱을 둔다.
+ * - `adaptive` 세로 `fullbleed`: 화면 100% 를 정수 2x 세로 월드로 채우고, 반투명 패드와 1x 대사창을 하단에 띄운다.
+ * - `integer`/`fit`: 기존 고정 해상도 무대 배치 유지.
  */
 export function calculateTouchLayout(
   width: number,
@@ -284,9 +356,167 @@ export function calculateTouchLayout(
   options: TouchLayoutOptions = {},
 ): TouchLayout {
   const scaleMode = options.scaleMode ?? "fit";
+  const portraitLayout: PortraitLayoutMode = options.portraitLayout === "fullbleed" ? "fullbleed" : "ds";
+  const dpr = options.devicePixelRatio ?? 1;
   const stick = touchStickSize(width, height);
   // 정사각에 가까운 화면(폴드 펼침 가로 1040×930)은 좌우 칸을 떼면 무대가 작아지고 위아래가 빈다 — 아래 띠 배치가 낫다.
   const portrait = height >= width * 0.75;
+
+  if (scaleMode === "adaptive") {
+    if (portrait) {
+      const controlsBlock = stick + 88;
+      const topPad = Math.max(8, safe.top + 4);
+      const availW = Math.max(40, width - safe.left - safe.right);
+      const bandBottom = height - safe.bottom;
+
+      if (portraitLayout === "fullbleed") {
+        // 100% 전체화면 풀블리드 세로: 맵이 화면 끝까지 꽉 차고, 하단에 반투명 패드 + 1x 플로팅 대사창.
+        const adaptive = calculateAdaptiveViewport(width, height, logicalW, logicalH, {
+          portrait: true,
+          fullbleed: true,
+          devicePixelRatio: dpr,
+        });
+        const scale = adaptive.scale;
+        const stageLeft = Math.floor((width - adaptive.stageWidth) / 2);
+        const stageTop = Math.floor((height - adaptive.stageHeight) / 2);
+        const controlsY = bandBottom - stick / 2 - 22;
+        const menuRowTop = controlsY - stick / 2 - 52;
+        const dockH = Math.min(132, Math.max(DIALOGUE_DOCK_MIN_HEIGHT, Math.round(height * 0.16)));
+        const dock: TouchLayout["dock"] = options.dialogueDock !== false
+          ? {
+              top: Math.max(topPad + 8, Math.round(menuRowTop - dockH - 8)),
+              left: Math.round(safe.left + 8),
+              width: Math.max(160, Math.floor(availW - 16)),
+              height: dockH,
+              scale: 1,
+            }
+          : null;
+        let panel: TouchLayout["panel"] = null;
+        if (options.windowPanel !== false) {
+          const roomTop = topPad;
+          const roomH = Math.max(200, menuRowTop - 4 - roomTop);
+          const roomW = Math.max(160, availW - 8);
+          const panelScale = Math.min(1, roomW / WINDOW_PANEL_WIDTH, roomH / WINDOW_PANEL_HEIGHT);
+          const panelLogicalH = Math.max(WINDOW_PANEL_HEIGHT, Math.min(WINDOW_PANEL_MAX_HEIGHT, Math.floor(roomH / panelScale)));
+          const h = panelLogicalH * panelScale;
+          panel = {
+            top: Math.round(Math.max(roomTop, menuRowTop - 4 - h)),
+            left: Math.round(safe.left + (availW - WINDOW_PANEL_WIDTH * panelScale) / 2),
+            scale: panelScale,
+            height: panelLogicalH,
+            room: { top: Math.round(roomTop), left: Math.round(safe.left + 4), width: Math.floor(roomW), height: Math.floor(roomH) },
+          };
+        }
+        return {
+          mode: "portrait",
+          scale,
+          stageLeft,
+          stageTop,
+          logicalWidth: adaptive.logicalWidth,
+          logicalHeight: adaptive.logicalHeight,
+          bandTop: Math.round(menuRowTop),
+          bandBottom,
+          controlsY,
+          gutter: 0,
+          stick,
+          overlayControls: true,
+          dock,
+          panel,
+          menuRow: Math.ceil(TOUCH_TARGET_MIN / (panel ? panel.scale : 1)),
+        };
+      }
+
+      // DS식 세로(기본 추천): 상단 ~55%(태블릿은 ~66%) 세로 카메라 + 하단 전용 대사/전투/패드 덱.
+      const usableH = Math.max(200, bandBottom - topPad);
+      const minDeckH = controlsBlock + DIALOGUE_DOCK_MIN_HEIGHT + 16;
+      const stageRatio = availW >= 600 ? 0.66 : 0.55;
+      const stageAvailH = Math.max(180, Math.min(Math.round(usableH * stageRatio), Math.max(180, usableH - minDeckH)));
+      const adaptive = calculateAdaptiveViewport(availW, stageAvailH, logicalW, logicalH, {
+        portrait: true,
+        devicePixelRatio: dpr,
+      });
+      const scale = adaptive.scale;
+      const stageW = adaptive.stageWidth;
+      const stageH = adaptive.stageHeight;
+      const stageTop = Math.round(topPad);
+      const stageLeft = Math.floor(safe.left + (availW - stageW) / 2);
+      const bandTop = stageTop + stageH;
+      let free = Math.max(0, bandBottom - bandTop - controlsBlock);
+      let dock: TouchLayout["dock"] = null;
+      // DS식 하단 덱의 대사창은 항상 화면 1x(글자 선명·크기 일정)로 놓는다. 화자 이름표가 상단 무대 경계를 넘지 않게 14px 여백을 둔다.
+      if (options.dialogueDock !== false && free >= DIALOGUE_DOCK_MIN_HEIGHT + 16) {
+        const dockH = Math.floor(Math.min(free - 16, Math.max(DIALOGUE_DOCK_MIN_HEIGHT, 128)));
+        dock = { top: Math.round(bandTop + 14), left: Math.round(safe.left + 6), width: Math.max(160, Math.floor(availW - 12)), height: dockH, scale: 1 };
+        free = Math.max(0, free - dockH - 18);
+      }
+      const controlsTop = dock ? dock.top + dock.height + 4 : bandTop;
+      const controlsY = controlsTop + free * 0.45 + 52 + stick / 2;
+      let panel: TouchLayout["panel"] = null;
+      if (options.windowPanel !== false) {
+        const menuRowTop = controlsY - stick / 2 - 52;
+        const roomW = Math.max(160, availW - 8);
+        const roomH = Math.max(200, menuRowTop - 4 - stageTop);
+        const panelScale = Math.min(1, roomW / WINDOW_PANEL_WIDTH, roomH / WINDOW_PANEL_HEIGHT);
+        const panelLogicalH = Math.max(WINDOW_PANEL_HEIGHT, Math.min(WINDOW_PANEL_MAX_HEIGHT, Math.floor(roomH / panelScale)));
+        const h = panelLogicalH * panelScale;
+        panel = {
+          top: Math.round(Math.max(stageTop, menuRowTop - 4 - h)),
+          left: Math.round(safe.left + (availW - WINDOW_PANEL_WIDTH * panelScale) / 2),
+          scale: panelScale,
+          height: panelLogicalH,
+          room: { top: Math.round(stageTop), left: Math.round(safe.left + 4), width: Math.floor(roomW), height: Math.floor(roomH) },
+        };
+      }
+      return {
+        mode: "portrait",
+        scale,
+        stageLeft,
+        stageTop,
+        logicalWidth: adaptive.logicalWidth,
+        logicalHeight: adaptive.logicalHeight,
+        bandTop,
+        bandBottom,
+        controlsY,
+        gutter: 0,
+        stick,
+        dock,
+        panel,
+        menuRow: Math.ceil(TOUCH_TARGET_MIN / (panel ? panel.scale : 1)),
+      };
+    }
+
+    // adaptive 가로: 좌우 조작 칸 사이에 정수 배율 카메라를 여백 없이 채운다.
+    const stickL = LANDSCAPE_STICK;
+    const availH = Math.max(40, height - safe.top - safe.bottom);
+    const gutterL = Math.round(LANDSCAPE_GUTTER + safe.left * 0.6);
+    const gutterR = Math.round(LANDSCAPE_GUTTER + safe.right * 0.6);
+    const availW = Math.max(40, width - gutterL - gutterR);
+    const adaptive = calculateAdaptiveViewport(availW, availH, logicalW, logicalH, {
+      portrait: false,
+      devicePixelRatio: dpr,
+    });
+    const scale = adaptive.scale;
+    const stageLeft = Math.floor(gutterL + (availW - adaptive.stageWidth) / 2);
+    const stageTop = Math.floor(safe.top + (availH - adaptive.stageHeight) / 2);
+    const controlsY = safe.top + availH * 0.62;
+    return {
+      mode: "landscape",
+      scale,
+      stageLeft,
+      stageTop,
+      logicalWidth: adaptive.logicalWidth,
+      logicalHeight: adaptive.logicalHeight,
+      bandTop: safe.top,
+      bandBottom: height - safe.bottom,
+      controlsY,
+      gutter: Math.max(gutterL, gutterR),
+      stick: stickL,
+      dock: null,
+      panel: null,
+      menuRow: Math.ceil(TOUCH_TARGET_MIN / scale),
+    };
+  }
+
   if (portrait) {
     const controlsBlock = stick + 88; // 메뉴 줄(44 단추 + 8 틈) + 조이스틱 + 아래 숨 쉴 틈
     const reserve = controlsBlock + safe.bottom + 16;
@@ -322,26 +552,21 @@ export function calculateTouchLayout(
       const panelScale = Math.min(1, room.w / WINDOW_PANEL_WIDTH, room.h / WINDOW_PANEL_HEIGHT);
       if (panelScale > scale) {
         // 높이가 남으면 칸을 아래로 늘린다(최대 400) — 메뉴 명령 줄을 44px 로 벌리고 돈·시간 창까지 들어가게.
-        const logicalH = Math.max(WINDOW_PANEL_HEIGHT, Math.min(WINDOW_PANEL_MAX_HEIGHT, Math.floor(room.h / panelScale)));
-        const h = logicalH * panelScale;
+        const panelLogicalH = Math.max(WINDOW_PANEL_HEIGHT, Math.min(WINDOW_PANEL_MAX_HEIGHT, Math.floor(room.h / panelScale)));
+        const h = panelLogicalH * panelScale;
         panel = {
           top: Math.round(Math.max(stageTop, menuRowTop - 4 - h)),
           left: Math.round(safe.left + (availW - WINDOW_PANEL_WIDTH * panelScale) / 2),
           scale: panelScale,
-          height: logicalH,
+          height: panelLogicalH,
           room: { top: Math.round(stageTop), left: Math.round(safe.left + 4), width: Math.floor(room.w), height: Math.floor(room.h) },
         };
       }
     }
     const menuRow = Math.ceil(TOUCH_TARGET_MIN / (panel ? panel.scale : scale));
-    return { mode: "portrait", scale, stageLeft, stageTop, bandTop, bandBottom, controlsY, gutter: 0, stick, dock, panel, menuRow };
+    return { mode: "portrait", scale, stageLeft, stageTop, logicalWidth: logicalW, logicalHeight: logicalH, bandTop, bandBottom, controlsY, gutter: 0, stick, dock, panel, menuRow };
   }
   // 가로(2026-10-25 2판, 사용자 「가로에서 버튼도 잘 안 눌리고 경험도 구림 — 데스크톱과 같은 경험」):
-  // 1판은 무대가 화면 높이를 채우고 조작을 무대 위에 반투명하게 겹쳤다 — 조이스틱·B 가 타이틀 메뉴·전투 적·창을 덮었고,
-  // 대사·전투·메뉴마다 조작을 옮기거나 옅게 하거나 끄는 규칙이 붙었다. 이제 좌우 칸은 조작 전용이고 무대는 그 사이에 맞춘다.
-  // 게임 화면은 데스크톱과 같은 모양 그대로 비율만 맞춰 커지고, 조작은 게임을 한 칸도 덮지 않는다.
-  // 칸 폭 = 조작 묶음 폭(A 64 + 틈 4 + B 52 = 120, 조이스틱 104) + 여백. 노치·둥근 모서리(안전 영역)는 칸에 일부만 더한다 —
-  // 조작은 안전 영역 안쪽 끝에 붙어도 엄지에 닿는다.
   const stickL = LANDSCAPE_STICK;
   const availH = Math.max(40, height - safe.top - safe.bottom);
   const gutterL = Math.round(LANDSCAPE_GUTTER + safe.left * 0.6);
@@ -353,7 +578,7 @@ export function calculateTouchLayout(
   const stageLeft = Math.round(gutterL + (availW - stageW) / 2);
   const stageTop = Math.round(safe.top + (availH - stageH) / 2);
   const controlsY = safe.top + availH * 0.62;
-  return { mode: "landscape", scale, stageLeft, stageTop, bandTop: safe.top, bandBottom: height - safe.bottom, controlsY, gutter: Math.max(gutterL, gutterR), stick: stickL, dock: null, panel: null, menuRow: Math.ceil(TOUCH_TARGET_MIN / scale) };
+  return { mode: "landscape", scale, stageLeft, stageTop, logicalWidth: logicalW, logicalHeight: logicalH, bandTop: safe.top, bandBottom: height - safe.bottom, controlsY, gutter: Math.max(gutterL, gutterR), stick: stickL, dock: null, panel: null, menuRow: Math.ceil(TOUCH_TARGET_MIN / scale) };
 }
 
 /**
@@ -379,9 +604,26 @@ function windowPanelEnabled(): boolean {
   try { return window.localStorage.getItem("oprn-window-panel") !== "0"; } catch { return true; }
 }
 
-function syncTouchLayout(viewport: HTMLElement, width: number, height: number, resolution: Readonly<PlayResolution>, scaleMode: PlaySurfaceScaleMode): void {
+function syncTouchLayout(
+  viewport: HTMLElement,
+  width: number,
+  height: number,
+  resolution: Readonly<PlayResolution>,
+  scaleMode: PlaySurfaceScaleMode,
+  portraitLayout: PortraitLayoutMode = "ds",
+  onLogicalUpdate?: (next: Readonly<PlayResolution>) => void,
+): void {
   const safe = readSafeAreaInsets(viewport);
-  const layout = calculateTouchLayout(width, height, resolution.width, resolution.height, safe, { scaleMode, dialogueDock: dialogueDockEnabled(), windowPanel: windowPanelEnabled() });
+  const dpr = typeof window === "undefined" ? 1 : window.devicePixelRatio || 1;
+  const layout = calculateTouchLayout(width, height, resolution.width, resolution.height, safe, {
+    scaleMode,
+    portraitLayout,
+    devicePixelRatio: dpr,
+    dialogueDock: dialogueDockEnabled(),
+    windowPanel: windowPanelEnabled(),
+  });
+  const activeLogical: Readonly<PlayResolution> = { width: layout.logicalWidth, height: layout.logicalHeight };
+  onLogicalUpdate?.(activeLogical);
   const scale = layout.scale;
   viewport.dataset.layout = layout.mode;
   viewport.dataset.touchLayout = layout.mode;
@@ -389,12 +631,12 @@ function syncTouchLayout(viewport: HTMLElement, width: number, height: number, r
   viewport.style.setProperty("--play-scale-x", String(scale));
   viewport.style.setProperty("--play-scale-y", String(scale));
   for (const side of ["top", "right", "bottom", "left"]) viewport.style.setProperty(`--play-crop-${side}`, "0px");
-  viewport.style.setProperty("--play-visible-width", cssPx(resolution.width));
-  viewport.style.setProperty("--play-visible-height", cssPx(resolution.height));
+  viewport.style.setProperty("--play-visible-width", cssPx(activeLogical.width));
+  viewport.style.setProperty("--play-visible-height", cssPx(activeLogical.height));
   viewport.style.setProperty("--play-stage-left", cssPx(layout.stageLeft));
   viewport.style.setProperty("--play-stage-top", cssPx(layout.stageTop));
-  viewport.style.setProperty("--play-stage-width", cssPx(resolution.width * scale));
-  viewport.style.setProperty("--play-stage-height", cssPx(resolution.height * scale));
+  viewport.style.setProperty("--play-stage-width", cssPx(activeLogical.width * scale));
+  viewport.style.setProperty("--play-stage-height", cssPx(activeLogical.height * scale));
   viewport.style.setProperty("--touch-band-top", cssPx(layout.bandTop));
   viewport.style.setProperty("--touch-band-bottom", cssPx(height - layout.bandBottom));
   viewport.style.setProperty("--touch-controls-y", cssPx(layout.controlsY));
@@ -404,15 +646,14 @@ function syncTouchLayout(viewport: HTMLElement, width: number, height: number, r
   viewport.style.setProperty("--touch-safe-left", cssPx(safe.left));
   viewport.style.setProperty("--touch-safe-right", cssPx(safe.right));
   if (layout.dock) {
-    // 독은 무대의 자식(대사 창)을 무대 좌표로 옮기고 배율을 되돌려(1/scale) 1배로 그린다 — 값은 무대 좌표(게임 px).
+    // 독은 무대의 자식(대사 창)을 무대 좌표로 옮기고 배율을 되돌려(dock.scale/scale) 원하는 화면 배율로 그린다.
     viewport.dataset.dialogueDock = "true";
-    // 폭·높이는 창 자신의 좌표(독 배율로 나눈 게임 px) — 1배 독이면 화면 px 그대로다.
     viewport.style.setProperty("--dock-top", cssPx((layout.dock.top - layout.stageTop) / scale));
     viewport.style.setProperty("--dock-left", cssPx((layout.dock.left - layout.stageLeft) / scale));
     viewport.style.setProperty("--dock-width", cssPx(layout.dock.width / layout.dock.scale));
     viewport.style.setProperty("--dock-height", cssPx(layout.dock.height / layout.dock.scale));
     viewport.style.setProperty("--dock-unscale", String(layout.dock.scale / scale));
-    viewport.style.setProperty("--touch-controls-top", cssPx(layout.dock.top + layout.dock.height + 4));
+    viewport.style.setProperty("--touch-controls-top", cssPx(layout.overlayControls ? layout.bandTop : layout.dock.top + layout.dock.height + 4));
   } else {
     delete viewport.dataset.dialogueDock;
     for (const name of ["--dock-top", "--dock-left", "--dock-width", "--dock-height", "--dock-unscale"]) viewport.style.removeProperty(name);
@@ -439,9 +680,10 @@ function syncTouchLayout(viewport: HTMLElement, width: number, height: number, r
     for (const name of ["--panel-w", "--panel-h", "--panel-top", "--panel-left", "--panel-unscale", "--panel-scale", "--panel-cx", "--panel-cy", "--panel-room-top", "--panel-room-left", "--panel-room-w", "--panel-room-h"]) viewport.style.removeProperty(name);
   }
   // 상점 배치: 창 칸 안이면 칸 크기(320×300 = 작은 배치), 아니면 논리 해상도로 고른다.
-  viewport.dataset.shopFit = layout.panel ? "tiny" : shopFitFor(resolution);
-  // 가로에서 무대가 조작 칸까지 넓어지면 조작은 무대 위에 반투명하게 겹친다(mobileUi.css).
-  const overlay = layout.mode === "landscape" && (layout.stageLeft < layout.gutter - 1 || layout.stageLeft + resolution.width * scale > width - layout.gutter + 1);
+  viewport.dataset.shopFit = layout.panel ? "tiny" : shopFitFor(activeLogical);
+  // 세로 풀블리드 또는 가로에서 무대가 조작 칸까지 넓어지면 조작은 무대 위에 반투명하게 얹힌다(mobileUi.css).
+  const overlay = layout.overlayControls === true
+    || (layout.mode === "landscape" && (layout.stageLeft < layout.gutter - 1 || layout.stageLeft + activeLogical.width * scale > width - layout.gutter + 1));
   if (overlay) viewport.dataset.touchOverlay = "true";
   else delete viewport.dataset.touchOverlay;
   viewport.dataset.scale = scale.toFixed(3);

@@ -1,5 +1,6 @@
 // 출하 기본값 — 겉모습·소리: 필드 HUD, 전투 곡·전투 배경, 파티 칩·이름, 창 모양. 차례는 shipDefaults.ts 의 applyShipDefaults.
 import { listAudioResources } from "@/assets/audioResourceCatalog";
+import { OPRN_BGM_ASSETS } from "@/assets/oprnBgmAssets";
 import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { findNpcGraphicMatches, queryNpcGraphics } from "@/assets/charsetQuery";
@@ -15,6 +16,7 @@ import { applyThemeBackdrop } from "../place/placeTheme";
 import { asPresetHud, HUD_SOURCES, normalizeFieldHud, projectCanLoseHp, projectFieldHpChanges, projectHudUse, resolvedHudWidgets, unusedHudGauges } from "@/project/fieldHud";
 import { hudIsStoryTemplate } from "../judge/hudTitleChecks";
 import { battleSites } from "../judge/combatChecks";
+import { fillRegionBattleBgm, stableHash } from "./shipBattleMusic";
 import { applyUiLook, pickUiLook, uiLookEra } from "@/project/uiLook";
 
 export type Obj = Record<string, unknown>;
@@ -78,6 +80,9 @@ const BATTLE_MUSIC = /전투|battle|보스|boss|결전/iu;
 
 const NOT_BATTLE_LOOP = /승리|종료|end of battle|jend|victory|fanfare|팡파레|전투 전|준비/iu;
 
+const BOSS_TRACK = /보스|boss/iu;
+const OPRN_BOSS_ONLY: ReadonlySet<string> = new Set(OPRN_BGM_ASSETS.filter((a) => !a.scenes.includes("battle")).map((a) => a.id));
+
 const DARK_PREMISE = /마왕|공포|호러|암흑|어둠|저주|괴물|결전|horror|demon/iu;
 
 const DARK_MUSIC = /어둡|묵직|긴장|위협|시네마틱|오케스트라|보스|결전/u;
@@ -95,17 +100,23 @@ export function fillBattleBgm(project: Project, story: string): string[] {
   const dark = DARK_PREMISE.test(premise);
   const candidates = listAudioResources("music", project)
     .filter((r) => r.id !== fallback && BATTLE_MUSIC.test(`${r.id} ${r.name} ${r.tags.join(" ")}`) && !NOT_BATTLE_LOOP.test(`${r.id} ${r.name} ${r.tags.join(" ")}`))
-    .map((r, order) => {
+    .map((r) => {
       const text = `${r.name} ${r.tags.join(" ")} ${r.description}`;
       // EasyRPG 곡은 마지막(오리지널 CC0 곡이 먼저), 이야기 분위기와 곡 분위기가 맞으면 앞.
-      const score = (r.id.startsWith("easyrpg-") ? 0 : 4) + (DARK_MUSIC.test(text) === dark ? 2 : 0) - order / 1000;
+      const score = (r.id.startsWith("easyrpg-") ? 0 : 4) + (DARK_MUSIC.test(text) === dark ? 2 : 0);
       return { r, score };
     })
     .sort((a, b) => b.score - a.score);
-  const pick = candidates[0]?.r;
+  // 프로젝트 기본 전투곡은 일반 전투곡이다 — 보스전 곡은 보스 부대에(shipBattleMusic.ts). 같은 점수의 곡은 이야기 글로 갈라 어느 게임이든 같은 곡이 되지 않게 한다.
+  const regular = candidates.filter(({ r }) => !BOSS_TRACK.test(r.name) && !OPRN_BOSS_ONLY.has(r.id));
+  const ranked = regular.length ? regular : candidates;
+  // 이야기에 맞는 점수가 같은 곡이 셋보다 적으면 다음 곡으로 채워 갈라 쓴다.
+  const best = ranked.filter((entry) => entry.score === ranked[0]?.score);
+  const top = best.length >= 3 ? best : ranked.slice(0, 3);
+  const pick = top[stableHash(premise) % Math.max(1, top.length)]?.r;
   if (!pick) return [];
   project.system.battleBgmResourceId = pick.id;
-  return [`전투 곡 ${fallback} → ${pick.id}(${pick.name})`];
+  return [`전투 곡 ${fallback} → ${pick.id}(${pick.name})`, ...fillRegionBattleBgm(project)];
 }
 
 // ── 전투 배경 ───────────────────────────────────────────────────────────

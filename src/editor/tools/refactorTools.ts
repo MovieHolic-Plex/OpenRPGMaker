@@ -48,6 +48,8 @@ function walkCommands(commands: readonly Command[], visit: (command: Command) =>
       walkCommands(command.successBranch ?? [], visit);
       walkCommands(command.failureBranch ?? [], visit);
     } else if (command.kind === "inn") {
+      walkCommands(command.stayedBranch ?? [], visit);
+      walkCommands(command.cancelledBranch ?? [], visit);
       walkCommands(command.notEnoughBranch ?? [], visit);
     }
   }
@@ -146,6 +148,9 @@ function addCommandRefs(command: Command, refs: ReferenceSets): void {
     case "shop":
       for (const itemId of command.itemIds) refs.items.add(itemId);
       for (const entry of command.stock ?? []) refs.items.add(entry.itemId);
+      break;
+    case "inn":
+      if (typeof command.price === "object" && command.price.kind === "var") refs.variables.add(command.price.id);
       break;
     default:
       break;

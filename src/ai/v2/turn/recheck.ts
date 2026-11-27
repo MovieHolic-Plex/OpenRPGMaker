@@ -37,17 +37,20 @@ export function turnRecheck(turn: TurnContext) {
   // 할 일 상태를 프로젝트에 싣는다(새 뿌리 객체 — 요청 사본과 뿌리를 나눠 쓸 수 있어 제자리 수정하지 않는다). 다음 체크포인트·끝 저장에 같이 간다.
   // 막힌 항목의 대상 지문과 화면 검수 장부를 같이 싣는다 — 다음 턴이 같은 것을 처음부터 다시 다투지 않게(턴 사이 기억).
   const stamp = (env: PiAssistantV2Env) => {
-    if (!store.items.length && !session.places.size && !session.pastPlaces.size) return;
+    // 이어 하기 기록은 이 턴 것으로 갈아 끼운다(앞 실행의 기록은 state.resume 이 이어 받았거나 버렸다).
+    if (state.resume) store.memory.resume = state.resume; else delete store.memory.resume;
+    if (!store.items.length && !session.places.size && !session.pastPlaces.size && !state.resume) return;
     let index; try { index = indexProject(env.ctx.project); } catch { index = undefined; /* 지문이 없으면 다음 턴에 «바뀌었다»로 열리지 않을 뿐이다 */ }
     const places = index ? savePlaces(session, env.ctx.project, index) : undefined;
     if (places) store.memory.places = places; else delete store.memory.places;
     if (!store.items.length) {
       // 할 일을 적지 않은 턴: 앞 턴의 목록은 그대로 두고 장소 설계 기억만 갈아 끼운다(그대로면 프로젝트를 건드리지 않는다).
       const prior = (env.ctx.project as { assistantTodo?: ReturnType<typeof store.serialize> }).assistantTodo;
-      if (JSON.stringify((prior?.memory as { places?: unknown } | undefined)?.places ?? null) === JSON.stringify(places ?? null)) return;
+      const priorMem = prior?.memory as { places?: unknown; resume?: unknown } | undefined;
+      if (JSON.stringify(priorMem?.places ?? null) === JSON.stringify(places ?? null) && JSON.stringify(priorMem?.resume ?? null) === JSON.stringify(state.resume ?? null)) return;
       const { memory: priorMemory, ...list } = prior ?? store.serialize(env.request.task);
-      const { places: _old, ...kept } = { ...(priorMemory ?? {}) } as Record<string, unknown>;
-      const memory = { ...kept, ...(places ? { places } : {}) };
+      const { places: _old, resume: _oldResume, ...kept } = { ...(priorMemory ?? {}) } as Record<string, unknown>;
+      const memory = { ...kept, ...(places ? { places } : {}), ...(state.resume ? { resume: state.resume } : {}) };
       env.ctx.project = { ...env.ctx.project, assistantTodo: { ...list, ...(Object.keys(memory).length ? { memory } : {}) } };
       return;
     }

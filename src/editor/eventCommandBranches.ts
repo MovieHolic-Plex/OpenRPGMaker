@@ -22,7 +22,9 @@ import {
   CHOICE_CANCEL_BRANCH_INDEX,
   FORK_ELSE_BRANCH_INDEX,
   FORK_THEN_BRANCH_INDEX,
+  INN_CANCELLED_BRANCH_INDEX,
   INN_NOT_ENOUGH_BRANCH_INDEX,
+  INN_STAYED_BRANCH_INDEX,
   LOOP_BODY_BRANCH_INDEX,
   PRESENT_OTHERWISE_BRANCH_INDEX,
   PROMOTE_FAILURE_BRANCH_INDEX,
@@ -33,7 +35,7 @@ import {
 
 export type EventBranchKind =
   | "choiceOption" | "choiceCancel" | "presentOption" | "presentOtherwise" | "presentCancel" | "forkThen" | "forkElse" | "loopBody"
-  | "shopTransaction" | "shopFailure" | "innNotEnough"
+  | "shopTransaction" | "shopFailure" | "innStayed" | "innCancelled" | "innNotEnough"
   | "promotionSuccess" | "promotionFailure" | "evolutionSuccess" | "evolutionFailure"
   | "battleVictory" | "battleDefeat" | "battleEscape";
 
@@ -162,14 +164,35 @@ export function eventCommandBranches(command: Command): readonly EventCommandBra
       return branches;
     }
     case "inn": {
-      if (!include(command.branchOnNotEnoughGold, command.notEnoughBranch)) return [];
-      return [{
-        kind: "innNotEnough",
-        label: "골드가 부족할 때",
-        commands: command.notEnoughBranch ?? [],
-        branchIndex: INN_NOT_ENOUGH_BRANCH_INDEX,
-        tone: "shop",
-      }];
+      const branches: EventCommandBranch[] = [];
+      if (include(command.branchOnStay, command.stayedBranch)) {
+        branches.push({
+          kind: "innStayed",
+          label: "숙박했을 때",
+          commands: command.stayedBranch ?? [],
+          branchIndex: INN_STAYED_BRANCH_INDEX,
+          tone: "shop",
+        });
+      }
+      if (include(command.branchOnCancel, command.cancelledBranch)) {
+        branches.push({
+          kind: "innCancelled",
+          label: "거절했을 때",
+          commands: command.cancelledBranch ?? [],
+          branchIndex: INN_CANCELLED_BRANCH_INDEX,
+          tone: "shop",
+        });
+      }
+      if (include(command.branchOnNotEnoughGold, command.notEnoughBranch)) {
+        branches.push({
+          kind: "innNotEnough",
+          label: "골드가 부족할 때",
+          commands: command.notEnoughBranch ?? [],
+          branchIndex: INN_NOT_ENOUGH_BRANCH_INDEX,
+          tone: "shop",
+        });
+      }
+      return branches;
     }
     case "promoteActor":
       return successFailureBranches(command.successBranch, command.failureBranch, "promotion");

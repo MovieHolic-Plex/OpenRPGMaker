@@ -54,6 +54,9 @@ import { setCutsceneAssetFetcher } from '../../src/editor/cutsceneArt/charsetFra
 import { appendFileSync, readFileSync as readBundledAsset } from 'node:fs';
 import { join as joinBundledAsset } from 'node:path';
 import { createPiPresentationTool, createWorkerDotTextChat, createWorkerImageGenerator, PI_PRESENTATION_GENERATORS } from './piPresentationTools';
+import { hasCodexImageAuth } from './codexImageRuntime.ts';
+import { getOhMyPiProvider } from '../../src/ai/ohMyPiProviders.ts';
+import { DEFAULT_IMAGE_PROVIDER_ID } from '../../src/ai/imageModelCatalog.ts';
 import { setDotTextChat } from '../../src/ai/dotTextArt';
 import { presentationArtIds, presentationArtImages } from '../../src/editor/tools/presentationTools';
 // Bun 전용 Pi 에이전트 런타임. `@oh-my-pi/pi-agent-core` 루프에 레지스트리 툴을 붙여 프로젝트
@@ -778,6 +781,8 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   };
   // 방금 쓰기 도구가 남긴 시공 단계 — 바로 다음 체크포인트에 실어 보낸다(편집기가 그 순서대로 다시 튼다).
   let pendingConstructionLogs: PiToolCallRecord["constructionLogs"];
+  /** 지금 도는 호출의 인자(도구 이름별) — v2 이어 하기 기록이 체크포인트를 낳은 호출의 멱등 키를 만든다. */
+  const callArgs = new Map<string, unknown>();
   // 완성 뒤 대사 윤문 고리(dialoguePolishHook.ts)의 관문 상태 — 스킬을 읽었나는 실행 전체에서, 장면 문맥은 윤문 차례 안에서 센다.
   const dialoguePolishState = { skillRead: false, contextRead: false };
   const recordCall = (record: PiToolCallRecord): void => {
@@ -833,6 +838,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     pendingConstructionLogs = undefined;
     const ckT0 = Date.now(); const ckSlow = (what: string): void => { const ms = Date.now() - ckT0; if (ms >= 2000) console.error(`[v2-checkpoint] ${label}: ${what} at ${Math.round(ms / 1000)}s`); };
     if (!incremental || changedProjectKeys(accepted, ctx.project).length === 0) return;
+    if (options.v2?.beforeCheckpoint && v2Env) {
+      try { options.v2.beforeCheckpoint(v2Env, callArgs.has(toolName) ? { name: toolName, args: callArgs.get(toolName) } : undefined); }
+      catch (error) { emit({ type: "execution_status", name: "v2.resume.record_failed", ok: false, summary: `이어 하기 기록을 싣지 못함 — ${error instanceof Error ? error.message : String(error)}`.slice(0, 300) }); }
+    }
     ckSlow("changedProjectKeys");
     const scoped = request.scopeStrict !== false && request.mapIds.length > 0;
     const project = scoped ? mergeMapBundles(accepted, [{ mapIds: request.mapIds, project: ctx.project, ...(request.independentMapIds?.length ? { independentMapIds: request.independentMapIds } : {}) }]).project : ctx.project;
@@ -994,7 +1003,15 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     return fixedNotes.length ? { ...ran, content: [{ type: "text" as const, text: `[Fixed call: ${fixedNotes.slice(0, 6).join("; ")}${fixedNotes.length > 6 ? `; +${fixedNotes.length - 6} more` : ""}]` }, ...ran.content] } : ran;
   } });
   const wrapTool = (tool: PiToolShape): PiToolShape => {
-    const wrapped = wrapCoreTool(withHandInteriorEdits(tool));
+    const core = wrapCoreTool(withHandInteriorEdits(tool));
+    // 이어 하기(src/ai/piAgent/runResume.ts): 앞 실행이 적용한 호출은 다시 하지 않고, 이번 호출의 인자는 체크포인트가 멱등 키를 만들 때 읽는다.
+    const wrapped: PiToolShape = options.v2 ? { ...core, async execute(id, params, signal) {
+      const skipped = v2Env ? options.v2?.skipAppliedCall?.(v2Env, tool.name, params) : undefined;
+      if (skipped) return { content: [{ type: "text", text: skipped }], details: { ok: true, summary: skipped } };
+      callArgs.set(tool.name, params);
+      try { return await core.execute(id, params, signal); }
+      finally { callArgs.delete(tool.name); }
+    } } : core;
     const live = options.liveProject;
     return withArgRepair(live ? { ...wrapped, async execute(id, params, signal) {
       if (liveDepth++ === 0) ownProject = ctx.project;
@@ -1387,8 +1404,13 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
     const lazy = options.v2?.lazyTool?.(name);
     if (lazy) declare(wrapTool(lazy));
   };
+  const canGenerateImages = !request.readOnly && !options.readOnlyTools && await hasCodexImageAuth(workerKeyFor(DEFAULT_IMAGE_PROVIDER_ID));
+  const resolvedModelId = String((model as { id?: unknown }).id ?? "").trim()
+    || getOhMyPiProvider(request.provider)?.defaultModel?.trim()
+    || undefined;
   const v2Env: PiAssistantV2Env | undefined = options.v2 ? {
     ctx, request, emit, record: recordCall,
+    ...(resolvedModelId ? { modelId: resolvedModelId } : {}),
     requireToolNextTurn: (toolName?: string) => { if (toolName) ensureV2Tool(toolName); forceToolTurn = toolName ?? true; },
     preferToolNextTurn: (toolName: string, reminder: string) => { ensureV2Tool(toolName); softPref = { id: `v2-next-${++softSeq}`, toolName, reminder, served: 0 }; },
     declareTool: (tool: PiToolShape) => { if (!exposed.has(tool.name)) declare(wrapTool(tool)); },
@@ -1402,8 +1424,9 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
       const reply = await eventAssistChat(null, { messages, ...(signal ?? options.signal ? { signal: signal ?? options.signal } : {}) });
       return typeof reply.message.content === "string" ? reply.message.content : "";
     },
-    // 그림 생성(generate_art): 읽기 전용이 아니면 워커의 이미지 생성기를 그대로 준다 — 키가 없으면 호출이 던지고 동사가 그 오류를 기록한다.
-    ...(!request.readOnly && !options.readOnlyTools ? { generateImage: createWorkerImageGenerator(request, workerKeyFor) } : {}),
+    // 그림 생성(generate_art): Codex 이미지 인증이 준비돼 있을 때만 생성기를 준다 — 인증이 없으면 사전 판별로 무생성 경로를 탄다.
+    canGenerateImages,
+    ...(canGenerateImages ? { generateImage: createWorkerImageGenerator(request, workerKeyFor) } : {}),
     ...(advisorChat ? { advisorChat, advisorModel: `${advisorRole!.provider}/${advisorRole!.model}` } : {}),
     ...(leadChat ? { leadChat, leadModel: `${split!.lead.provider}/${split!.lead.model}${split!.lead.effort ? `@${split!.lead.effort}` : ""}` } : {}),
     ...(renderToEditor ? { renderArt: async (art: { resourceId: string } | { shotId: string; atMs: readonly number[] }) => {

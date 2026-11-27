@@ -1004,34 +1004,53 @@ function storagePreviewPane(title: string, rows: readonly string[]): HTMLElement
 
 
 function innStage(cmd: Extract<Command, { kind: "inn" }>): HTMLElement {
+  const project = store.getCurrent();
+  const terms = resolveTerms(project);
+  const goldUnit = terms.gold.trim() || "G";
+  const isVar = typeof cmd.price !== "number";
   const price = typeof cmd.price === "number" ? Math.max(0, Math.trunc(cmd.price) || 0) : 0;
-  const priceDisplay = typeof cmd.price === "number" ? price : `변수 ${(cmd.price as { id: string }).id}`;
+  const varName = isVar ? innVariableDisplayName(project, (cmd.price as { id: string }).id) : "";
   const recoverMp = cmd.recoverMp !== false;
   const stage = el("div", { class: "ecp-stage ecp-inn-stage", dataset: { testid: "ecp-inn-stage" } });
   const win = el("div", { class: "ecp-inn-window", dataset: { testid: "ecp-inn-window" } });
   const note = cmd.note?.trim() || "어서 오세요. 편히 쉬어가시겠어요?";
   const question =
     cmd.question?.trim() ||
-    (price <= 0
-      ? "하룻밤 묵으시겠습니까? (무료)"
-      : `하룻밤 묵는 데 ${price.toLocaleString("ko-KR")} G 입니다. 묵으시겠습니까?`);
+    (isVar
+      ? `하룻밤 묵는 데 ${varName ? `[변수: ${varName}]` : "[변수 미선택]"} ${goldUnit} 입니다. 묵으시겠습니까?`
+      : price <= 0
+        ? "하룻밤 묵으시겠습니까? (무료)"
+        : `하룻밤 묵는 데 ${price.toLocaleString("ko-KR")} ${goldUnit} 입니다. 묵으시겠습니까?`);
+  const wakeMessage = recoverMp
+    ? "좋은 아침입니다! 파티가 모두 회복했습니다."
+    : "좋은 아침입니다! 파티 HP가 회복했습니다.";
   const recoverLabel = recoverMp ? "전원 회복" : "HP만 회복";
   const chips: string[] = [
-    typeof cmd.price !== "number" ? `${priceDisplay} G · ${recoverLabel} · 변수` : price <= 0 ? `무료 숙박 · ${recoverLabel}` : `${priceDisplay} G · ${recoverLabel}`,
+    isVar
+      ? `${varName ? `변수 ${varName}` : "변수 미선택"} ${goldUnit} · ${recoverLabel}`
+      : price <= 0
+        ? `무료 숙박 · ${recoverLabel}`
+        : `${price.toLocaleString("ko-KR")} ${goldUnit} · ${recoverLabel}`,
   ];
   if (cmd.advanceToMorning) chips.push("아침 이동");
+  if (cmd.branchOnStay) chips.push("숙박 분기");
+  if (cmd.branchOnCancel) chips.push("거절 분기");
   if (cmd.branchOnNotEnoughGold) chips.push("부족 분기");
+  if (cmd.restDurationMs !== undefined || cmd.wakeDurationMs !== undefined) {
+    chips.push(`암전 ${cmd.restDurationMs ?? 1500}ms · 기상 ${cmd.wakeDurationMs ?? 1100}ms`);
+  }
   win.append(
-    el("div", { class: "ecp-inn-title", text: "여관" }),
+    el("div", { class: "ecp-inn-title", text: terms.innTitle }),
     el("div", { class: "ecp-inn-note", text: note }),
     el("div", { class: "ecp-inn-question", text: question }),
     el("div", {
       class: "ecp-inn-actions",
       children: [
-        el("span", { class: "ecp-inn-choice selected", text: "예" }),
-        el("span", { class: "ecp-inn-choice", text: "아니오" }),
+        el("span", { class: "ecp-inn-choice selected", text: terms.yes }),
+        el("span", { class: "ecp-inn-choice", text: terms.no }),
       ],
     }),
+    el("div", { class: "ecp-inn-note", text: `기상 시: ${wakeMessage}` }),
     el("div", {
       class: "ecp-inn-price-chip",
       text: chips.join(" · "),
@@ -1039,6 +1058,13 @@ function innStage(cmd: Extract<Command, { kind: "inn" }>): HTMLElement {
   );
   stage.append(win);
   return stage;
+}
+
+function innVariableDisplayName(project: ReturnType<typeof store.getCurrent>, variableId: string): string {
+  const trimmed = variableId.trim();
+  if (!trimmed) return "";
+  const entry = project.variables.find((item) => item.id === trimmed);
+  return entry?.name?.trim() || trimmed;
 }
 
 function shopStage(cmd: Extract<Command, { kind: "shop" }>): HTMLElement {

@@ -311,6 +311,11 @@ function scanCommand(
       if (command.defeatBranch) scanCommands(command.defeatBranch, add, owner, `${commandPath}.defeatBranch`);
       break;
     case "inn":
+      if (typeof command.price !== "number" && command.price.id) {
+        add("read", "variable", command.price.id, { ...owner, commandPath: `${commandPath}.price`, detail: "inn price" });
+      }
+      if (command.stayedBranch) scanCommands(command.stayedBranch, add, owner, `${commandPath}.stayedBranch`);
+      if (command.cancelledBranch) scanCommands(command.cancelledBranch, add, owner, `${commandPath}.cancelledBranch`);
       if (command.notEnoughBranch) scanCommands(command.notEnoughBranch, add, owner, `${commandPath}.notEnoughBranch`);
       break;
     case "promoteActor":

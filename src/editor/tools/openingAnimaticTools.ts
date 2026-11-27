@@ -461,8 +461,8 @@ export const OPENING_ANIMATIC_TOOLS: readonly ToolDefinition[] = [
     const camera = cameraFromTo(args.camera, s.durationMs) as OpeningAnimatic['camera'];
     s.composition.camera = { ...s.composition.camera, ...structuredClone(camera), keys: { ...s.composition.camera?.keys, ...camera?.keys } };
     const result = commit(p, s, '카메라 타임라인을 저장했습니다.');
-    // 값은 그대로 저장하고(렌더러도 안 바꾼다) 소수 줌만 알린다 — 도트 무대에서 1.18·1.25 로 멈추면 도트 굵기가 들쭉날쭉하다.
-    const zoomWarning = openingCameraZoomWarning(s.composition.camera);
+    // 소수 줌 경고는 정수 pixelGrid 모드에서만 낸다 — 일반 480×270 / 키 CG / 파노라마의 부드러운 Ken Burns 줌(1.04→1.14)을 2배로 망치지 않게.
+    const zoomWarning = s.composition.pixelGrid ? openingCameraZoomWarning(s.composition.camera) : undefined;
     return zoomWarning ? { ...result, summary: `${result.summary} (경고: ${zoomWarning})`, warnings: [...(result.warnings ?? []), zoomWarning] } : result;
   }),
   definition('set_opening_transition', '샷 입장 cut/fade/wipe/iris/flash와 레터박스.', 'write', schema({ shotId: str, transition: obj, letterbox: { type: 'number' } }, ['shotId', 'transition']), (p, args) => {

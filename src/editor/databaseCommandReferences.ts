@@ -235,7 +235,9 @@ function commandReferences(command: Command, collection: CommandReferenceCollect
       ) || commandListReferences(command.transactionBranch ?? [], collection, id)
         || commandListReferences(command.failedTransactionBranch ?? [], collection, id);
     case "inn":
-      return commandListReferences(command.notEnoughBranch ?? [], collection, id);
+      return commandListReferences(command.stayedBranch ?? [], collection, id)
+        || commandListReferences(command.cancelledBranch ?? [], collection, id)
+        || commandListReferences(command.notEnoughBranch ?? [], collection, id);
     case "promoteActor":
       return (collection === "actors" && command.actorId === id) ||
         (collection === "classes" && command.toClassId === id) ||
@@ -387,7 +389,10 @@ function commandReferencesSwitchVariable(command: Command, kind: "switch" | "var
         || commandListReferencesSwitchVariable(command.defeatBranch ?? [], kind, id)
         || commandListReferencesSwitchVariable(command.escapeBranch ?? [], kind, id);
     case "inn":
-      return commandListReferencesSwitchVariable(command.notEnoughBranch ?? [], kind, id);
+      return (kind === "variable" && typeof command.price !== "number" && command.price.id === id)
+        || commandListReferencesSwitchVariable(command.stayedBranch ?? [], kind, id)
+        || commandListReferencesSwitchVariable(command.cancelledBranch ?? [], kind, id)
+        || commandListReferencesSwitchVariable(command.notEnoughBranch ?? [], kind, id);
     case "getFriendship":
       return kind === "variable" && command.variableId === id;
     case "craftRecipe":

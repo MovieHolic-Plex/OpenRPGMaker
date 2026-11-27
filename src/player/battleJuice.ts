@@ -14,6 +14,7 @@ import { playBattleSfx as playSynthVoice, type BattleSfxKind } from "@/player/ba
 import { fadeOutBattleSample, playBattleSample, preloadBattleSamples } from "@/player/battleSeSamples";
 import { HIT_INTENSITY_STYLE, hitIntensityStageVariables, type BattleHitIntensity } from "@/player/battleHitIntensity";
 import { scheduleBattleTimer } from "@/player/battleTimerScope";
+import type { AttackFamily } from "@/player/battleSeSlots";
 import { monsterBattleCue, preloadMonsterSfx, playMonsterSfx } from "@/player/monsterSfx";
 
 export type BattleJuiceEvent =
@@ -108,6 +109,8 @@ export interface BattleCueShape {
   readonly rate?: number;
   /** 상성 단계. 몬스터 효과음 세트는 단계마다 따로 만든 소리를 쓰므로 volume·rate 보정 대신 이 값으로 고른다. */
   readonly tier?: "weak" | "normal" | "super";
+  /** 공격 소리 계열(무기·몸의 모션 계열). 휘두름 소리가 자리 attack-<계열>(비면 attack)에서 난다. */
+  readonly attackFamily?: AttackFamily;
 }
 
 export function emitBattleJuice(event: BattleJuiceEvent, target?: HTMLElement | null, context?: BattleAudioContext, shape?: BattleCueShape): void {
@@ -161,8 +164,11 @@ export function authoredBattleCue(
   event: Exclude<BattleJuiceEvent, "victory">,
   project: Pick<Project, "system"> | undefined,
   session: Pick<PlaySession, "systemAudioOverrides" | "m2Runtime"> | undefined,
+  attackFamily?: AttackFamily,
 ): { readonly resourceId: string; readonly volume?: number } | null | undefined {
-  for (const cue of SE_CUES[event]) {
+  // 공격 계열이 있으면 attack-<계열> 이 먼저 — 비어 있으면 projectSeCue 가 가족 물러섬으로 attack 을 본다.
+  const cues = attackFamily && event === "attack-swing" ? [`attack-${attackFamily}`, ...SE_CUES[event]] : SE_CUES[event];
+  for (const cue of cues) {
     const override = isSystemSeCue(cue) ? session?.systemAudioOverrides?.se?.[cue] : undefined;
     if (override) return override.resourceId ? override : null;
     if (cue === "defeat" || cue === "escape") {
@@ -182,7 +188,7 @@ export function playBattleCue(event: BattleJuiceEvent, context?: BattleAudioCont
   if (result) beginBattleResultAudio();
   const override = event === "victory"
     ? context?.session.systemAudioOverrides?.bgm?.victory
-    : authoredBattleCue(event, project, context?.session);
+    : authoredBattleCue(event, project, context?.session, shape?.attackFamily);
   if (override === null) return;
   if (override) {
     if (override.resourceId) playAudioCommand({ resourceId: override.resourceId, ...(override.volume === undefined ? {} : { volume: override.volume }), loop: false, channel: event === "victory" ? "me" : "se" }, project);
@@ -310,6 +316,18 @@ export function skillSeCue(
   if (magicCue) return magicCue;
   const mindful = (skill.effect.kind === "damage" || skill.effect.kind === "healing") && skill.effect.statistic === "mind";
   return mindful || element?.kind === "magical" ? "cast" : undefined;
+}
+
+/**
+ * 상태·흡수·부활처럼 전투가 기본 소리를 내지 않던 사건의 자리 소리(seCues 의 buff·debuff·poison·sleep·paralyze·reflect·absorb·revive).
+ * 프로젝트 자리 표에 소리가 있을 때만 울리고 true — 없으면 아무것도 하지 않는다(예전 소리 그대로).
+ */
+export function playAuthoredSeCue(project: Project, cue: string): boolean {
+  if (isBattleAudioMuted()) return false;
+  const resourceId = projectSeCue(project, cue);
+  if (!resourceId) return false;
+  playAudioCommand({ resourceId, loop: false, channel: "se" }, project);
+  return true;
 }
 
 export function playSkillCastCue(project: Project, skill: Pick<SkillRecord, "elementId" | "effect"> | undefined): boolean {

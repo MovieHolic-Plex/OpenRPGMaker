@@ -75,10 +75,13 @@ function branchSlots(command: Command): readonly BranchSlot[] {
       }
       return slots;
     }
-    case "inn":
-      return command.notEnoughBranch
-        ? [{ key: "innNotEnough", label: "골드가 부족할 때", commands: command.notEnoughBranch }]
-        : [];
+    case "inn": {
+      const slots: BranchSlot[] = [];
+      if (command.stayedBranch) slots.push({ key: "innStayed", label: "숙박했을 때", commands: command.stayedBranch });
+      if (command.cancelledBranch) slots.push({ key: "innCancelled", label: "거절했을 때", commands: command.cancelledBranch });
+      if (command.notEnoughBranch) slots.push({ key: "innNotEnough", label: "골드가 부족할 때", commands: command.notEnoughBranch });
+      return slots;
+    }
     case "promoteActor": {
       const slots: BranchSlot[] = [];
       if (command.successBranch) slots.push({ key: "promotionSuccess", label: "승급 성공", commands: command.successBranch });
@@ -137,7 +140,12 @@ function withBranchSlots(command: Command, byKey: ReadonlyMap<string, Command[]>
         ...(byKey.has("shopFailure") ? { failedTransactionBranch: byKey.get("shopFailure") } : {}),
       };
     case "inn":
-      return { ...command, ...(byKey.has("innNotEnough") ? { notEnoughBranch: byKey.get("innNotEnough") } : {}) };
+      return {
+        ...command,
+        ...(byKey.has("innStayed") ? { stayedBranch: byKey.get("innStayed") } : {}),
+        ...(byKey.has("innCancelled") ? { cancelledBranch: byKey.get("innCancelled") } : {}),
+        ...(byKey.has("innNotEnough") ? { notEnoughBranch: byKey.get("innNotEnough") } : {}),
+      };
     case "promoteActor":
     case "evolveMonster": {
       const successKey = command.kind === "promoteActor" ? "promotionSuccess" : "evolutionSuccess";
@@ -179,7 +187,7 @@ const BRANCH_FIELDS_BY_KIND: Readonly<Record<string, readonly string[]>> = {
   fork: ["then", "else"],
   loop: ["body"],
   shop: ["transactionBranch", "failedTransactionBranch"],
-  inn: ["notEnoughBranch"],
+  inn: ["stayedBranch", "cancelledBranch", "notEnoughBranch"],
   promoteActor: ["successBranch", "failureBranch"],
   evolveMonster: ["successBranch", "failureBranch"],
   battleProcessing: ["victoryBranch", "defeatBranch", "escapeBranch"],

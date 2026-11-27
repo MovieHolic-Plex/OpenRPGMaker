@@ -64,10 +64,10 @@ export class V2Session {
   /** 실내 목록 카드를 도구 결과로 준 칩셋 → 그때의 대화 번호. 지시문의 카드가 다른 칩셋의 것일 때(빈 프로젝트에서 버들항 마을을 지은 턴) 그 마을의 카드를 한 번 준다(tools/context.ts). */
   readonly interiorCards = new Map<string, number>();
   /**
-   * generate_art 가 그림 생성을 시도한 기록(오너 2026-11-09 「인게임 스크린샷은 AI 가 그림을 그릴 수 없을 때로만」): 타이틀·엔딩 → 시도 결과.
+   * generate_art 가 그림 생성을 시도한 기록(오너 2026-11-09 「인게임 스크린샷은 AI 가 그림을 그릴 수 없을 때로만」): 타이틀·엔딩·오프닝 → 시도 결과.
    * ok = 만들어 건다 · failed = 생성이 실패(오류 글) · unavailable = 이미지 생성 경로가 이 실행에 없다. 끝맺음 관문은 map-view 그림을 이 기록이 있을 때만 허용한다.
    */
-  readonly artAttempts = new Map<"title" | "ending", { readonly status: "ok" | "failed" | "unavailable"; readonly error?: string; readonly failures?: number }>();
+  readonly artAttempts = new Map<"title" | "ending" | "opening", { readonly status: "ok" | "failed" | "unavailable"; readonly error?: string; readonly failures?: number }>();
   /** 같은 청사진을 다시 쓴 횟수(내용이 같으면 바꾸지 않고 다음 동사로 보낸다). */
   blueprintRewrites = 0;
   /** 청사진 장소가 이 게임 세계(world.ts)와 안 맞아 돌려보낸 횟수 — 상한 뒤에는 함수가 메워서 건다(막다른 길 방지). */

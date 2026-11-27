@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-27T09:02:01.202Z",
+  "generatedAt": "2026-11-27T09:24:55.955Z",
   "counts": {
     "tokens": {
       "important": 0,
@@ -3277,6 +3277,12 @@
     "R5|database/world-gen.css|.wg-preview-row|.wg-preview-row",
     "R5|database/world-gen.css|.wg-preview-side|.wg-preview-side",
     "R5|database/world-gen.css|.wg-preview|.wg-preview",
+    "R5|event/previews/command-preview-3.css|.inn-command-dialog-actions|.inn-command-dialog-actions",
+    "R5|event/previews/command-preview-3.css|.inn-command-dialog-choice|.inn-command-dialog-choice",
+    "R5|event/previews/command-preview-3.css|.inn-command-dialog-mock|.inn-command-dialog-mock",
+    "R5|event/previews/command-preview-3.css|.inn-command-dialog-note|.inn-command-dialog-note",
+    "R5|event/previews/command-preview-3.css|.inn-command-dialog-question|.inn-command-dialog-question",
+    "R5|event/previews/command-preview-3.css|.inn-command-dialog-title|.inn-command-dialog-title",
     "R5|map/core.part-1.css|.brush-size-btn|.brush-size-btn",
     "R5|map/from-shell-figma-editor-02-menus-toolbar-tools.css|.brush-size-btn[aria-pressed=\"true\"]|.brush-size-btn[aria-pressed=\"true\"]",
     "R5|map/from-shell-figma-editor-02-menus-toolbar-tools.css|.brush-size-btn|.brush-size-btn",

@@ -21,6 +21,7 @@ import { isComposedWorld, worldCard } from "../place/world";
 import { gameVariation, worldForRequest } from "../request/world";
 import { variationCard } from "@/ai/variation/card";
 import { MUSIC_TIER, SOUND_TIER, fallenCard, storeCard } from "../request/toolGroups";
+import { resolveOpeningPolicy, type OpeningAuthoringPolicy } from "../request/openingPolicy";
 import { leanPromptFor } from "../request/readers";
 import { classifyRequest, type RequestIntent } from "../request/intent";
 import { INTERIOR_WORDS } from "../request/place";
@@ -29,9 +30,15 @@ import { V2_CORE_PROMPT } from "./core";
 import { v2Cards, PlaceSpecKind, PLACE_SPEC_INDEX, interiorCatalogCard } from "./placeSpecs";
 import { projectBrief } from "./projectBrief";
 import { lifeSimClosedCard } from "@/editor/tools/lifeSimClosure";
+export interface V2PromptOptions {
+  readonly model?: string | null;
+  readonly canGenerateImages?: boolean;
+}
+
 /** 요청·프로젝트가 맞을 때만 싣는 카드. lean 이면(장소를 짓지 않는 요청·구성기 세계) 실내 칩셋 목록은 싣지 않는다 — read_specs 가 준다. */
-export function conditionalCards(project: Project, currentMapId?: string, task = "", lean = false, key = ""): string[] {
+export function conditionalCards(project: Project, currentMapId?: string, task = "", lean = false, key = "", options?: V2PromptOptions): string[] {
   const intent = classifyRequest(task, project);
+  const openingPolicy = options ? resolveOpeningPolicy(options) : undefined;
   const { topic, audio, tools } = intent;
   const tileset = project.tilesets[project.maps[currentMapId ?? project.startMapId]?.tilesetId ?? ""];
   const monster = MONSTER_WORDS.test(topic) || /^oprn-monster/u.test(tileset?.family ?? "");
@@ -43,7 +50,7 @@ export function conditionalCards(project: Project, currentMapId?: string, task =
   const soundCard = audio.sound ? [`[Sound-effect request — use these tools]\n${SOUND_TIER.card}`] : [];
   const byRequest = audio.only
     ? [`[${audio.musicOnly ? "Music" : "Sound-effect"}-only request — only find, install and assign sounds. Do not change maps, events or objects (mention existing problems in the report as notes only)]`, ...(audio.music ? [MUSIC_TIER.card] : []), ...(audio.sound ? [SOUND_TIER.card] : [])]
-    : tools.game ? [gameCardFor(intent), ...[fallenCard(tools)].filter(Boolean), ...soundCard]
+    : tools.game ? [gameCardFor(intent, openingPolicy), ...[fallenCard(tools, openingPolicy)].filter(Boolean), ...soundCard]
       : [...(audio.music ? [`[Music request — use these tools]\n${MUSIC_TIER.card}`] : []), ...soundCard];
   return [
     ...(interior ? [interiorCatalogCard(project, currentMapId, task, key)] : []), ...(monster ? [MONSTER_TOWN_CARD] : []), ...(joseon ? [JOSEON_CARD] : []), ...(wizarding ? [WIZARDING_CARD] : []),
@@ -55,8 +62,8 @@ export function conditionalCards(project: Project, currentMapId?: string, task =
   ];
 }
 /** 게임 카드 — 게임 하나를 짓는 요청은 전부, 그 밖의 요청은 늘 싣는 줄과 요청이 말한 주제의 줄만. */
-function gameCardFor(intent: RequestIntent): string {
-  return intent.wholeGame ? gameCard() : gameCard(intent.topics);
+function gameCardFor(intent: RequestIntent, openingPolicy?: OpeningAuthoringPolicy): string {
+  return intent.wholeGame ? gameCard(undefined, openingPolicy) : gameCard(intent.topics, openingPolicy);
 }
 /**
  * 작은 일(장소를 짓지 않는 요청)의 카드 — 그 일이 쓰는 것만. 사람을 세우면 사람 카드, 사건·대사를 짜면 이벤트 카드, 옮기기·지우기·소리·질문이면 없음.
@@ -75,7 +82,7 @@ function smallJobCards(intent: RequestIntent): string[] {
 
 const WORLD_CARDS: readonly string[] = [PEOPLE_CARD, EVENT_CARD, DRAW_OBJECT_CARD];
 
-export function buildV2SystemPrompt(project: Project, currentMapId?: string, task?: string, todo?: TodoStore, projectKey?: string): string[] {
+export function buildV2SystemPrompt(project: Project, currentMapId?: string, task?: string, todo?: TodoStore, projectKey?: string, options?: V2PromptOptions): string[] {
   const intent = classifyRequest(task, project);
   // «계속» 요청이 앞 실행의 할 일을 이어 받았으면 그 목록을 싣는다 — init 하지 말고 이어서 진행한다.
   const carried = todo?.initialized && todo.items.length ? [`[Todo carried over from the previous run — do not todo init; continue from the open items]\n${todo.view(40, true)}`] : [];
@@ -89,5 +96,5 @@ export function buildV2SystemPrompt(project: Project, currentMapId?: string, tas
   // 이 게임의 변주 — 첫 게임 하나를 짓는 턴에만(청사진이 있으면 장소는 이미 정해졌다). 세계 카드 바로 뒤.
   const picked = intent.wholeGame ? gameVariation(project, projectKey, task).variation : undefined;
   const variation = picked ? variationCard(picked, { lang: "en" }) : undefined;
-  return [V2_CORE_PROMPT, ...carried, ...blueprintPin(project), "[Knowledge cards]", ...(blueprintCard ? [BLUEPRINT_CARD] : []), ...(world ? [worldCard(world)] : []), ...(variation ? [variation] : []), ...cards, ...conditionalCards(project, currentMapId, task, lean || composed, projectKey ?? ""), projectBrief(project, currentMapId)];
+  return [V2_CORE_PROMPT, ...carried, ...blueprintPin(project), "[Knowledge cards]", ...(blueprintCard ? [BLUEPRINT_CARD] : []), ...(world ? [worldCard(world)] : []), ...(variation ? [variation] : []), ...cards, ...conditionalCards(project, currentMapId, task, lean || composed, projectKey ?? "", options), projectBrief(project, currentMapId)];
 }

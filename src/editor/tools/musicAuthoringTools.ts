@@ -68,7 +68,7 @@ const isSystemBattleBgm=(c:Cmd|undefined,op:string)=>!!c&&c.kind==='m2Command'&&
  * 보스전만 곡 바꾸기: 그 부대와 싸우는 전투 명령 바로 앞에 「전투 곡 바꾸기」, 바로 뒤에 「되돌리기」를 넣는다(이기든 지든 다음 전투는 기본 곡).
  * 이미 있으면 곡만 바꾼다. 기본 전투 곡(battle-default)은 건드리지 않는다.
  */
-function setBossBattleMusic(p:Project,id:string,troopIds:readonly string[]){
+export function setBossBattleMusic(p:Project,id:string,troopIds:readonly string[]){
   const want=new Set(troopIds),touched:{mapId:string;eventId:string;troopId:string}[]=[];
   const lists:{list:Cmd[];mapId:string;eventId:string}[]=[];
   for(const [mapId,map] of Object.entries(p.maps))for(const event of map.events??[])eachCommandList(event,list=>lists.push({list,mapId,eventId:event.id}));
