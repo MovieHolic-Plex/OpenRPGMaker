@@ -1090,6 +1090,647 @@ def _make_hip_roof(line, rows_h):
     return _grid_tokens(rows), {'note': f'style-r10 버들항급 모임지붕 {rows_h}행 ({line})'}
 
 
+# ---------------------------------------------------------------------------
+# 10. wall.shop (5x2 = 80x32 — 깊은 포털 상점 문 + 진열 쇼윈도 + 회벽 점묘·목재 허리벽)
+# ---------------------------------------------------------------------------
+def _make_wall_shop(line):
+    if line == 'A':
+        pl_l, pl_m, pl_s = 'p3', 'p2', 'p1'
+        tm_h, tm_l, tm_m, tm_d = 't6', 't4', 't3', 't1'
+        gl_d, gl_m, gl_h = 's0', 's2', 'p4'
+        good_a, good_b, good_c = 'r4', 'r3', 'g5'
+        st_l, st_d = 'k3', 'k0'
+    elif line == 'B':
+        pl_l, pl_m, pl_s = 'a5', 'a4', 'a2'
+        tm_h, tm_l, tm_m, tm_d = 'k5', 'k4', 'k2', 'k0'
+        gl_d, gl_m, gl_h = 's0', 's2', 's3'
+        good_a, good_b, good_c = 's3', 'k5', 'i3'
+        st_l, st_d = 'a4', 'a0'
+    else:
+        pl_l, pl_m, pl_s = 'w5', 'w4', 'w2'
+        tm_h, tm_l, tm_m, tm_d = 'w6', 'w4', 'w2', 'w1'
+        gl_d, gl_m, gl_h = 's0', 's2', 'p3'
+        good_a, good_b, good_c = 'g6', 'r4', 'v5'
+        st_l, st_d = 'k3', 'k0'
+
+    def bg_px(lx, y):
+        if y == 0:
+            return tm_d
+        if y == 1:
+            return tm_m if line == 'C' else pl_s
+        if y == 2:
+            return pl_s
+        if y == 3:
+            return pl_m
+        if line == 'C':
+            yy = (y - 3) % 4
+            if yy == 3:
+                return tm_d
+            return pl_l if yy in (0, 1) else pl_m
+        if line == 'B':
+            row_i = y // 5
+            bx = (lx + 3 * (row_i % 2)) % 8
+            if y % 5 == 4 or bx == 7:
+                return st_d
+            return pl_l if (y % 5 == 0 or bx == 0) else pl_m
+        # A: 2px 유기적 회벽 점묘(wall.timber 와 동일 질감)
+        patch = ((lx // 2) * 7 + (y // 2) * 11) % 13
+        if patch == 0 and y > 5:
+            return pl_m
+        if patch == 1 and y > 16:
+            return pl_s
+        return pl_l
+
+    def cell_px(pidx, lx, y):
+        if y == 0:
+            return tm_d
+        if y >= 30:
+            if pidx == 3 and 2 <= lx <= 13:
+                return st_l if y == 30 else st_d
+            return st_d if y == 31 else (st_l if lx % 4 != 0 else st_d)
+        # 조각 가로 경계 통일(J 이음 안전)
+        if lx in (0, 15):
+            if pidx == 0 and lx == 0:
+                return tm_d
+            if pidx == 4 and lx == 15:
+                return tm_d
+            return tm_m if y % 5 != 0 else tm_d
+
+        # l(0), r(4): 굵은 코너 기둥 + 대각 가새 + 하단 목재 허리벽(wainscotting)
+        if pidx in (0, 4):
+            if (pidx == 0 and lx == 1) or (pidx == 4 and lx == 14):
+                return tm_l if (pidx == 0 and y % 4 != 0) else tm_m
+            if y in (4, 15, 22):
+                return tm_l if y == 22 else tm_d
+            if y > 22:
+                if y == 23:
+                    return tm_d
+                if y == 29:
+                    return tm_d
+                if lx % 4 == 0:
+                    return tm_d
+                return tm_l if lx % 4 == 1 else tm_m
+            if 5 <= y <= 14:
+                if line == 'B':
+                    if lx in (5, 10) or y == 9:
+                        return tm_m
+                else:
+                    d = (y - 5) + 3 if pidx == 0 else 12 - (y - 5)
+                    if lx in (d, d + 1):
+                        return tm_l if lx == d else tm_d
+            return bg_px(lx, y)
+
+        # d(3): 깊은 포털 상점 문 — 상단 격자 채광 트랜섬 + 목조 문설주 + 패널 문짝 + 쇠 경첩·황동 손잡이 + 돌 문턱!
+        if pidx == 3:
+            if y == 29:
+                return st_l if 2 <= lx <= 13 else tm_d
+            if y in (3, 4):
+                return tm_h if (y == 3 and lx < 12) else tm_d
+            if lx in (1, 2, 13, 14):
+                return tm_l if lx in (1, 13) else tm_d
+            # 상단 채광 트랜섬(y=5..8, lx=3..12)
+            if 5 <= y <= 8 and 3 <= lx <= 12:
+                if lx in (3, 12) or y == 5:
+                    return tm_d
+                if lx in (6, 9):
+                    return tm_m
+                if (lx, y) in ((4, 6), (5, 6), (7, 6), (10, 6)):
+                    return gl_h
+                return gl_m if y >= 7 else gl_d
+            # 트랜섬 밑 굵은 문 상인방(y=9..10)
+            if y in (9, 10) and 2 <= lx <= 13:
+                return tm_h if (y == 9 and lx < 11) else tm_d
+            # 문짝(y=11..28, lx=3..12)
+            if 11 <= y <= 28 and 3 <= lx <= 12:
+                if y == 11 or lx == 3:
+                    return tm_d  # 깊은 안쪽 그림자
+                if lx == 12:
+                    return 'i0'
+                # 문 상부 4분할 작은 유리창(y=13..18, lx=5..10)
+                if 13 <= y <= 18 and 5 <= lx <= 10:
+                    if lx in (5, 10) or y in (13, 18):
+                        return tm_d
+                    if lx == 7 or y == 15:
+                        return tm_m
+                    if (lx, y) in ((6, 14), (8, 14)):
+                        return gl_h
+                    return gl_m if y >= 16 else gl_d
+                # 하부 목재 패널 + 쇠 띠 경첩 + 황동 손잡이
+                if y in (20, 26):
+                    return 'i2' if lx in (5, 8, 10) else 'i0'
+                if (lx, y) in ((10, 22), (10, 23)):
+                    return good_a
+                if lx in (6, 9):
+                    return tm_d
+                return tm_h if (lx in (4, 7, 10) and y % 4 == 0) else (tm_l if lx <= 7 else tm_m)
+            return bg_px(lx, y)
+
+        # w(2), m(1): 넓은 쇼윈도 진열창 + 따뜻한 실내 진열 상품 + 목재 선반 + 하단 나무 허리벽
+        if pidx in (1, 2):
+            if y in (3, 4):
+                return tm_h if (y == 3 and lx < 12) else tm_d
+            if y in (21, 22):
+                return tm_h if y == 21 else tm_d
+            if y > 22:
+                if y == 29:
+                    return tm_d
+                if lx in (1, 14):
+                    return tm_d
+                if y == 23:
+                    return tm_m
+                if lx % 4 == 0:
+                    return tm_d
+                return tm_l if lx % 4 == 1 else tm_m
+            if 5 <= y <= 20 and 1 <= lx <= 14:
+                if lx in (1, 14) or y in (5, 20):
+                    return tm_d
+                if line == 'B':
+                    # B: 석조 아치 진열창(상단 귀퉁이 돌 아치)
+                    if y == 6 and lx in (2, 13):
+                        return tm_l if lx == 2 else tm_d
+                    if lx in (7, 8) or y == 13:
+                        return tm_m
+                else:
+                    if lx in (6, 9) or y == 12:
+                        return tm_m
+                # 실내 진열 선반(y=19) + 상품 실루엣(y=16..18)
+                if y == 19:
+                    return tm_l if lx <= 8 else tm_m
+                if pidx == 2 and 16 <= y <= 18 and lx in (3, 4, 7, 8, 11, 12):
+                    if y == 16 and lx in (3, 7, 11):
+                        return good_a
+                    return good_b if lx in (3, 4, 11, 12) else good_c
+                if pidx == 1 and 16 <= y <= 18 and lx in (4, 5, 10, 11):
+                    return good_a if y == 16 else good_c
+                # 유리 반사광
+                if (lx, y) in ((3, 7), (4, 7), (3, 8), (10, 7), (4, 14), (11, 14)):
+                    return gl_h
+                return gl_m if y >= 13 else gl_d
+            return bg_px(lx, y)
+
+        return bg_px(lx, y)
+
+    rows = [[cell_px(pidx, lx, y) for pidx in range(5) for lx in range(16)] for y in range(32)]
+    return _grid_tokens(rows), {'note': f'style-r10 깊은 포털 상점 문 + 쇼윈도 벽 ({line})'}
+
+
+# ---------------------------------------------------------------------------
+# 11. 박공·외쪽 지붕 공통 버들항급 세로 사면 기와 셰이더(tileable y/xy 무이음 + A12 좌명/우암 보장)
+# ---------------------------------------------------------------------------
+def _gf_pal(line):
+    if line == 'A':
+        return ('r4', 'r3', 'r2', 'r1', 'r0', 'r0')
+    if line == 'B':
+        return ('s3', 's2', 's1', 's0', 'i0', 'i0')
+    return ('g6', 'g5', 'g4', 'g2', 'g1', 'g0')
+
+
+def _gf_tile_px(line, x, y, shade=False):
+    hi, lit, mid, sh, dk, edge = _gf_pal(line)
+    # 가로(x)·세로(y) 모두 x=15|0(xx=1|2) 및 y=15|0 경계가 안쪽 타일 줄눈과 같은 부드러운 1단계 전이 → S 이음 0!
+    col = (x + 2) // 4
+    xx = (x + 2) % 4
+    yy = (y + 2 * (col % 2)) % 4
+    if line == 'A':
+        is_gap = (yy == 3) or (xx == 3)
+        is_hi = (yy == 1 and xx == 0 and (col % 2 == 0))
+        if shade:
+            return dk if is_gap else (mid if (yy == 1 and xx == 0 and col % 2 == 0) else sh)
+        if is_gap:
+            return mid
+        if is_hi:
+            return hi
+        return lit if (yy <= 2 and xx <= 2) else mid
+    if line == 'B':
+        # 청석 8px 엇갈린 슬레이트 판(가로 x=0/15, 세로 y=0/15 모두 몸통 → S 이음 0!)
+        row_i = (y + 1) // 4
+        yy4 = (y + 1) % 4
+        xx8 = (x + 2 + 4 * (row_i % 2)) % 8
+        is_gap = (yy4 == 3) or (xx8 == 7)
+        is_hi = (yy4 == 1 and xx8 in (1, 2))
+        if shade:
+            return dk if is_gap else sh
+        if is_gap:
+            return mid
+        return hi if is_hi else lit
+    # C: 너와 나무 판자(가로 x=15(xx=1)|x=0(xx=2) 모두 몸통, 좌 밝은 g5/g4, 우 어두운 g2/g1)
+    is_gap = (yy == 3) or (xx == 3)
+    if shade:
+        return dk if is_gap else (mid if (yy == 1 and xx == 0) else sh)
+    if is_gap:
+        return sh
+    return hi if (yy == 1 and xx == 0) else (lit if xx <= 2 else mid)
+
+
+def _gf_ridge_body(line, x, y, c):
+    hi, lit, mid, sh, dk, edge = _gf_pal(line)
+    if x < c:
+        return _gf_tile_px(line, x, y, shade=False)
+    if x == c:
+        return hi if ((y + 1) % 4 != 3) else lit
+    if x == c + 1:
+        return lit if ((y + 1) % 4 != 3) else mid
+    if x == c + 2:
+        return dk
+    return _gf_tile_px(line, x, y, shade=True)
+
+
+# ---------------------------------------------------------------------------
+# 12. roof.gf.slope (7x1 = 112x16: l, ml, k, k2, mr, r)
+# ---------------------------------------------------------------------------
+def _make_roof_gf_slope(line):
+    hi, lit, mid, sh, dk, edge = _gf_pal(line)
+
+    def px(x, y):
+        if x < 16:
+            return dk if x == 0 else (sh if x == 1 else _gf_tile_px(line, x, y, False))
+        if x < 32:
+            return _gf_tile_px(line, x, y, False)
+        if x < 48:
+            return _gf_ridge_body(line, x, y, 39)
+        if x < 80:
+            return _gf_ridge_body(line, x, y, 63)
+        if x < 96:
+            return _gf_tile_px(line, x, y, True)
+        return dk if x >= 110 else _gf_tile_px(line, x, y, True)
+
+    rows = [[px(x, y) for x in range(112)] for y in range(16)]
+    return _grid_tokens(rows), {'note': f'style-r10 버들항급 박공 사면 띠 ({line})'}
+
+
+# ---------------------------------------------------------------------------
+# 13. roof.gf.back (7x2 = 112x32: b4[0:64,0:32], v3[64:112,0:16])
+# ---------------------------------------------------------------------------
+def _make_roof_gf_back(line):
+    hi, lit, mid, sh, dk, edge = _gf_pal(line)
+    edge_v3 = [23, 21, 20, 18, 17, 15, 14, 12, 11, 9, 8, 6, 5, 3, 2, 0]
+
+    def b4(x, y):
+        lo, hi_x = 31 - y, 32 + y
+        if x < lo or x > hi_x:
+            return '.'
+        if x == lo or x == hi_x:
+            return dk
+        if x == lo + 1:
+            return hi if y < 28 else lit
+        if x == hi_x - 1:
+            return sh if x > 33 else _gf_ridge_body(line, x, y, 31)
+        return _gf_ridge_body(line, x, y, 31)
+
+    def v3(x, y):
+        if y >= 16:
+            return '.'
+        lo, hi_x = edge_v3[y], 47 - edge_v3[y]
+        if x < lo or x > hi_x:
+            return '.'
+        plo = edge_v3[y - 1] - 1 if y else lo
+        if x <= max(lo, plo) or x >= min(hi_x, 47 - edge_v3[y - 1] + 1 if y else hi_x):
+            return dk
+        if x == 0 or x >= 46:
+            return dk
+        if x == 1:
+            return sh
+        return _gf_ridge_body(line, x, y, 23)
+
+    rows = [[b4(x, y) if x < 64 else v3(x - 64, y) for x in range(112)] for y in range(32)]
+    return _grid_tokens(rows), {'note': f'style-r10 버들항급 박공 뒤끝·골 ({line})'}
+
+
+# ---------------------------------------------------------------------------
+# 14. roof.lean.side (7x1 = 112x16: lb2, hi, m, lo, lf2)
+# ---------------------------------------------------------------------------
+def _make_roof_lean_side(line):
+    hi, lit, mid, sh, dk, edge = _gf_pal(line)
+    if line == 'A':
+        pl_l, pl_m, tm_l, tm_d = 'p3', 'p1', 't4', 't1'
+    elif line == 'B':
+        pl_l, pl_m, tm_l, tm_d = 'a5', 'a3', 'a2', 'a0'
+    else:
+        pl_l, pl_m, tm_l, tm_d = 'w5', 'w3', 'w4', 'w1'
+
+    def lb2(x, y):
+        t = x // 3
+        if y < t:
+            return '.'
+        if y == t or x in (0, 31):
+            return dk
+        if y == t + 1:
+            return lit
+        return _gf_tile_px(line, x, y, shade=True)
+
+    def lf2(x, y):
+        e = 2 + x // 3
+        if y < e:
+            return dk if x in (0, 31) else _gf_tile_px(line, x, y, shade=True)
+        if y == e:
+            return dk
+        if y == e + 1 or y == 15:
+            return tm_d
+        if x >= 30:
+            return tm_d
+        if x in (0, 15, 16, 28, 29):
+            return tm_l if x in (0, 15, 28) else tm_d
+        if line == 'C':
+            return tm_d if y % 3 == 0 else (pl_l if y % 3 == 1 else pl_m)
+        if line == 'B':
+            return tm_d if (y % 4 == 0 or (x + 2 * (y // 4)) % 6 == 0) else pl_l
+        patch = ((x // 2) * 5 + (y // 2) * 7) % 9
+        return pl_m if (y == e + 2 or y == 14 or patch == 0) else pl_l
+
+    def px(x, y):
+        if x < 32:
+            return lb2(x, y)
+        if x < 48:
+            return dk if x == 32 else _gf_tile_px(line, x, y, shade=True)
+        if x < 64:
+            return _gf_tile_px(line, x, y, shade=True)
+        if x < 80:
+            return dk if x == 79 else (sh if x == 78 else _gf_tile_px(line, x, y, shade=True))
+        return lf2(x - 80, y)
+
+    rows = [[px(x, y) for x in range(112)] for y in range(16)]
+    return _grid_tokens(rows), {'note': f'style-r10 버들항급 옆 외쪽 헛간 지붕 ({line})'}
+
+
+# ---------------------------------------------------------------------------
+# 15. gable.front (7x2 = 112x32: g3[0:48,0:16], g4[48:112,0:32])
+# ---------------------------------------------------------------------------
+def _make_gable_front(line):
+    hi, lit, mid, sh, dk, edge = _gf_pal(line)
+    if line == 'A':
+        pl_l, pl_m, pl_s = 'p3', 'p2', 'p1'
+        tm_h, tm_l, tm_m, tm_d = 't6', 't4', 't3', 't1'
+        gl_d, gl_m, gl_h = 's0', 's2', 'p4'
+        fl_g, fl_a = 'v3', 'r4'
+    elif line == 'B':
+        pl_l, pl_m, pl_s = 'a5', 'a4', 'a2'
+        tm_h, tm_l, tm_m, tm_d = 'k5', 'k4', 'k2', 'k0'
+        gl_d, gl_m, gl_h = 's0', 's2', 's3'
+        fl_g, fl_a = 'a3', 's3'
+    else:
+        pl_l, pl_m, pl_s = 'w5', 'w4', 'w2'
+        tm_h, tm_l, tm_m, tm_d = 'w6', 'w4', 'w2', 'w1'
+        gl_d, gl_m, gl_h = 's0', 's2', 'p3'
+        fl_g, fl_a = 'v5', 'r4'
+
+    g3_el = [25, 24, 22, 21, 19, 18, 16, 15, 13, 12, 10, 9, 7, 6, 4, 2]
+
+    def gable_px(x, y, w, el, beam_y, is_g4):
+        er = w - 1 - el
+        # 빗변 바깥: 왼쪽 밝은 사면 · 오른쪽 어두운 사면
+        if x < el - 2:
+            return dk if x == 0 else (sh if x == 1 else _gf_tile_px(line, x, y, False))
+        if x > er + 2:
+            return dk if x >= w - 2 else _gf_tile_px(line, x, y, True)
+        # 2px 바지보드(왼쪽 빛받는 하이라이트 + 어두운 테두리)
+        if x == el - 2:
+            return hi if line == 'A' else lit
+        if x == er + 2:
+            return dk
+        if x in (el - 1, er + 1):
+            return tm_d
+
+        # 하단 벽 들보 이음(맨 아래 2행)
+        if y == beam_y:
+            return tm_h if (x % 6 != 0) else tm_l
+        if y > beam_y:
+            return tm_d
+
+        c = w // 2
+        # 박공 벽면 내부 질감
+        if line == 'A':
+            # A: 반목조 튜더 박공 — 마룻대공 + 깃보 + 대각 버팀대 + 회벽 점묘 + g4 격자 다락창·꽃상자
+            if is_g4 and 9 <= y <= 20 and 27 <= x <= 36:
+                if y == 9 and 28 <= x <= 35:
+                    return tm_l if x < 33 else tm_d
+                if 10 <= y <= 18 and 28 <= x <= 35:
+                    if x in (28, 35) or y in (10, 18):
+                        return tm_d
+                    if x in (31, 32) or y == 14:
+                        return tm_m
+                    if (x, y) in ((29, 11), (30, 11), (33, 11), (29, 15)):
+                        return gl_h
+                    return gl_m if y >= 15 else gl_d
+                if y == 19 and 27 <= x <= 36:
+                    return fl_a if x in (29, 34) else fl_g
+                if y == 20 and 27 <= x <= 36:
+                    return tm_m if x <= 32 else tm_d
+            # 깃보(collar) + 마룻대공(king post) + V 버팀대
+            collar_y = 21 if is_g4 else 9
+            if y == collar_y:
+                return tm_l
+            if y == collar_y + 1:
+                return tm_d
+            if x in (c - 1, c) and ((not is_g4 and y >= 5) or (is_g4 and y >= 21)):
+                return tm_l if x == c - 1 else tm_d
+            if is_g4 and 22 <= y <= 29:
+                off = y - 22
+                if x in (c - 4 - off, c - 3 - off, c + 2 + off, c + 3 + off):
+                    return tm_m
+            if x in (el, el + 1):
+                return pl_s
+            if x == er:
+                return pl_m
+            patch = ((x // 2) * 7 + (y // 2) * 11) % 13
+            return pl_m if (patch == 0 or y == beam_y - 1) else pl_l
+        if line == 'B':
+            # B: 마름돌 석조 박공 + 뾰족 고딕 다락창
+            if is_g4 and 9 <= y <= 22 and 28 <= x <= 35:
+                half = {9: 0, 10: 1, 11: 2}.get(y, 3)
+                if abs(x - 31.5) <= half + 1:
+                    if y == 22 or y == 9 or abs(x - 31.5) >= half:
+                        return tm_h if x <= 31 else tm_d
+                    if (x, y) in ((30, 13), (31, 13), (30, 17)):
+                        return gl_h
+                    return gl_m if y >= 16 else gl_d
+            if x in (el, er):
+                return tm_h if x == el else tm_d
+            row_i = y // 5
+            bx = (x + 3 * (row_i % 2)) % 8
+            if y % 5 == 4 or bx == 7:
+                return tm_d
+            return pl_l if (y % 5 == 0 or bx == 0) else pl_m
+        # C: 세로 나무 판자(board-and-batten) 박공 + 둥근 다락창
+        if is_g4 and 10 <= y <= 19 and 28 <= x <= 35:
+            if x in (28, 35) or y in (10, 19):
+                return tm_d
+            if x in (31, 32) or y == 14:
+                return tm_m
+            if (x, y) in ((29, 11), (30, 11), (29, 16)):
+                return gl_h
+            return gl_m if y >= 15 else gl_d
+        if x % 4 == 0:
+            return tm_d
+        return pl_l if x % 4 == 1 else pl_m
+
+    def px(x, y):
+        if x < 48:
+            if y >= 16:
+                return '.'
+            return gable_px(x, y, 48, g3_el[y], 14, False)
+        return gable_px(x - 48, y, 64, 33 - y, 30, True)
+
+    rows = [[px(x, y) for x in range(112)] for y in range(32)]
+    return _grid_tokens(rows), {'note': f'style-r10 버들항·FSM급 반목조/석조/통나무 앞 박공 ({line})'}
+
+
+# ---------------------------------------------------------------------------
+# 16. gable.step (10x2 = 160x32: g5[0:80,0:32], b5[80:160,0:32])
+# ---------------------------------------------------------------------------
+def _make_gable_step(line):
+    hi, lit, mid, sh, dk, edge = _gf_pal(line)
+    if line == 'A':
+        st_h, st_l, st_m, st_d = 'k5', 'k4', 'k2', 'k0'
+        wa_l, wa_m = 'p2', 'k3'
+        gl_d, gl_m, gl_h = 's0', 's2', 'p4'
+    elif line == 'B':
+        st_h, st_l, st_m, st_d = 'a6', 'a5', 'a3', 'a0'
+        wa_l, wa_m = 'k4', 'a4'
+        gl_d, gl_m, gl_h = 's0', 's2', 's3'
+    else:
+        st_h, st_l, st_m, st_d = 'k4', 'k3', 'k1', 'k0'
+        wa_l, wa_m = 'w4', 'k2'
+        gl_d, gl_m, gl_h = 's0', 's2', 'p3'
+
+    top = [0, 6, 12, 18, 24]
+    el = [34, 26, 18, 9, 0]
+
+    def level(x):
+        for k in range(5):
+            if el[k] <= x <= 79 - el[k]:
+                return k
+        return 4
+
+    def slope_bg(x, y):
+        if x == 0:
+            return dk
+        if x == 1:
+            return sh
+        if x >= 78:
+            return dk
+        return _gf_ridge_body(line, x, y, 39)
+
+    # 불규칙 막돌 코스(wall.stone 과 어울리는 자연 석재)
+    stone_rows = [
+        (0, 5, [0, 6, 13, 19, 25, 32, 39, 45, 52, 59, 65, 72, 80]),
+        (5, 6, [0, 4, 11, 17, 24, 30, 36, 43, 50, 56, 63, 70, 80]),
+        (11, 5, [0, 7, 14, 20, 27, 34, 41, 47, 54, 61, 68, 74, 80]),
+        (16, 6, [0, 5, 11, 18, 25, 31, 38, 44, 51, 58, 64, 71, 80]),
+        (22, 5, [0, 6, 13, 21, 27, 33, 40, 47, 53, 60, 67, 73, 80]),
+        (27, 5, [0, 5, 12, 18, 24, 31, 38, 45, 52, 59, 66, 73, 80]),
+    ]
+
+    def fieldstone(x, y):
+        for ci, (y0, h, cuts) in enumerate(stone_rows):
+            if y0 <= y < y0 + h:
+                rr = y - y0
+                if rr == h - 1:
+                    return st_d
+                for idx in range(len(cuts) - 1):
+                    if cuts[idx] <= x < cuts[idx + 1]:
+                        if x == cuts[idx]:
+                            return st_d
+                        v = (idx * 5 + ci * 3) % 4
+                        if rr == 0:
+                            return st_h if v != 3 else st_l
+                        if v == 0:
+                            return wa_l
+                        if v == 1:
+                            return st_l
+                        return wa_m if v == 2 else st_m
+        return st_m
+
+    def g5(x, y):
+        k = level(x)
+        t = top[k]
+        if y < t:
+            return slope_bg(x, y)
+        if line == 'C':
+            # C: 통나무·세로 널 계단 박공(A 의 막돌과 완전히 다른 목조 구조 — R 통과)
+            if y in (t, t + 1):
+                return 'w6' if y == t else 'w4'
+            if y == t + 2:
+                return 'w1'
+            if y == 30:
+                return 'w5'
+            if y == 31:
+                return 'w1'
+            # 중앙 사각 덧문 다락창(y=10..21, x=34..45)
+            if 10 <= y <= 21 and 34 <= x <= 45:
+                if y == 10 or y == 21 or x in (34, 45):
+                    return 'w1'
+                if x in (35, 36, 43, 44):
+                    return 'g5' if y % 3 != 0 else 'g1'
+                if x in (37, 42):
+                    return 'w1'
+                if x in (39, 40) or y == 15:
+                    return 'w3'
+                if (x, y) in ((38, 12), (41, 12)):
+                    return gl_h
+                return gl_m if y >= 16 else gl_d
+            # 가로 목조 보(y=23, 24) + 세로 널빤지
+            if y in (23, 24):
+                return 'w5' if y == 23 else 'w1'
+            if x in (el[k], 79 - el[k]):
+                return 'w5' if x == el[k] else 'w1'
+            if x % 4 == 0:
+                return 'w1'
+            return 'w5' if x % 4 == 1 else 'w4'
+        if y == t:
+            return st_h  # 갓돌 밝은 윗면
+        if y == t + 1:
+            return st_l if x < 44 else st_m
+        if y == t + 2:
+            return st_d
+        if y == 30:
+            return st_l if x % 6 != 0 else st_m
+        if y == 31:
+            return st_d
+        # 중앙 아치 다락창 + 키스톤 + 창턱(y=9..22, x=35..44)
+        if 9 <= y <= 22 and 35 <= x <= 44:
+            if y == 22:
+                return st_h if x <= 40 else st_m
+            half = {9: 1, 10: 2, 11: 3}.get(y, 3)
+            lo, hi_x = 39 - half, 40 + half
+            if lo - 1 <= x <= hi_x + 1:
+                if x in (lo - 1, hi_x + 1) or y == 9:
+                    return st_h if (x == lo - 1 or (y == 9 and x in (39, 40))) else st_d
+                if x in (lo, hi_x):
+                    return st_d
+                if x in (39, 40) and y >= 12:
+                    return st_m if y == 16 else (gl_h if (x == 39 and y in (13, 14)) else gl_m)
+                if (x, y) in ((37, 13), (38, 13), (38, 14), (41, 13)):
+                    return gl_h
+                return gl_m if y >= 16 else gl_d
+        if x == el[k]:
+            return st_h
+        if x == 79 - el[k]:
+            return st_d
+        return fieldstone(x, y)
+
+    def b5(x, y):
+        k = level(x)
+        t = top[k]
+        if y < t:
+            return '.'
+        if y == t:
+            return st_h
+        if y == t + 1:
+            return st_l if x < 44 else st_m
+        if y in (t + 2, t + 3):
+            if x == el[k]:
+                return st_h
+            if x == 79 - el[k]:
+                return st_d
+            return st_m if y == t + 2 else st_d
+        if y == t + 4:
+            return dk
+        return slope_bg(x, y)
+
+    rows = [[g5(x, y) if x < 80 else b5(x - 80, y) for x in range(160)] for y in range(32)]
+    return _grid_tokens(rows), {'note': f'style-r10 불규칙 석조 계단 박공 + 버들항 지붕 ({line})'}
+
+
 def _bind(fn, *args):
     def _f():
         return fn(*args)
@@ -1098,13 +1739,19 @@ def _bind(fn, *args):
 
 
 CANDIDATES = {
-    # 옛 style-r5 핵심 4대 부품 + 지붕 높이 변형까지 style-r10 에서 전면 리메이크(override)!
+    # 옛 style-r5/r9 핵심 베이스 + 상점·박공·외쪽 지붕까지 style-r10 에서 전면 리메이크(override)!
     'wall.stone': {ln: _bind(_make_wall_stone, ln) for ln in ('A', 'B', 'C')},
     'wall.timber': {ln: _bind(_make_wall_timber, ln) for ln in ('A', 'B', 'C')},
+    'wall.shop': {ln: _bind(_make_wall_shop, ln) for ln in ('A', 'B', 'C')},
     'band.trim': {ln: _bind(_make_band_trim, ln) for ln in ('A', 'B', 'C')},
     'roof.hip': {ln: _bind(_make_hip_roof, ln, 3) for ln in ('A', 'B', 'C')},
     'roof.hip.low': {ln: _bind(_make_hip_roof, ln, 2) for ln in ('A', 'B', 'C')},
     'roof.hip.tall': {ln: _bind(_make_hip_roof, ln, 4) for ln in ('A', 'B', 'C')},
+    'roof.gf.slope': {ln: _bind(_make_roof_gf_slope, ln) for ln in ('A', 'B', 'C')},
+    'roof.gf.back': {ln: _bind(_make_roof_gf_back, ln) for ln in ('A', 'B', 'C')},
+    'roof.lean.side': {ln: _bind(_make_roof_lean_side, ln) for ln in ('A', 'B', 'C')},
+    'gable.front': {ln: _bind(_make_gable_front, ln) for ln in ('A', 'B', 'C')},
+    'gable.step': {ln: _bind(_make_gable_step, ln) for ln in ('A', 'B', 'C')},
     # style-r10 신규 쯔꾸르 지붕·처마 부품 6종
     'roof.flat': {ln: _bind(_make_roof_flat, ln) for ln in ('A', 'B', 'C')},
     'roof.hip.green': {ln: _bind(_make_roof_hip_green, ln) for ln in ('A', 'B', 'C')},
