@@ -1,4 +1,4 @@
-import { describe, expect, it, afterEach, vi, beforeAll } from "vitest";
+import { describe, expect, it, afterEach, vi } from "vitest";
 import { fixedDeclarer } from "./intentFixture";
 import { AssistantSession, type SessionEvent } from "@/ai/assistantSession";
 import type { ChatRequest, ChatResult } from "@/ai/llmClient";
@@ -222,14 +222,12 @@ describe("aiComposerModeSession", () => {
 // 2026-09-17 독립 검수(LLM 재심사) 해체: 검수 봉투(changes·toolResults·requiredProblems)에 대한 단언은
 // 삭제했다. 승인은 결정적 검사(변경 맵 lint error 0)로 나고, 검수 모델은 호출되지 않는다(reviews 0).
 // "적용은 검수 승인 뒤" 라는 순서 계약은 result_review 이벤트 시점의 store 로 그대로 고정한다.
-describe("aiMilestoneTurnAccounting", () => {
+describe("aiMilestoneTurnAccounting", { timeout: 120000 }, () => {
   isolateTimers();
-  beforeAll(() => {
-    // Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
-    // panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
-    // single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
-    vi.setConfig({ testTimeout: 120_000 });
-  });
+  // 시험 시간 한도는 수집 때 읽혀 beforeAll 안 vi.setConfig 는 듣지 않는다 — describe 옵션 timeout 으로 둔다.
+  // Tests here build the ~63MB blank project (createBlankProject) and drive assistant sessions or editor
+  // panels over it, fingerprinting/copying it per session. Under ci-full load (8 workers on 4-core runners)
+  // single tests measured 10-50s, past vitest's 15s default, so the budget is raised for this file only.
   function installHermeticEnv(project: Project): void {
     vi.stubEnv("VITE_LEGACY_DB_ANON_KEY", "test-anon-key");
     vi.stubEnv("VITE_LEGACY_DB_PROJECT_ID", "rpg-zzu-test-project");
