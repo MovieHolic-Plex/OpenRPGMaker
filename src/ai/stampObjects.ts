@@ -111,6 +111,9 @@ export function extractCoreObjectName(name: string): string {
 function isObjectKit(kit: SectionStructureKitDef): boolean {
   const name = (kit.name ?? "").trim();
   if (!name) return false;
+  if (beodeulPlaceableObjectForKit(kit.id)) {
+    return kit.width >= 1 && kit.height >= 1 && Boolean(kit.rows?.length);
+  }
   if (kit.width < 1 || kit.height < 1 || kit.width > MAX_OBJECT_SIDE || kit.height > MAX_OBJECT_SIDE) return false;
   if (kit.width * kit.height > MAX_OBJECT_CELLS) return false;
   if (!kit.rows?.length) return false;
