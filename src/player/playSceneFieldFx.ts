@@ -884,14 +884,24 @@ async function playOpenState(scene: PlaySceneContext, style: ContainerStyle, cel
 // loopFromFrame .. frames-1 사이를 타이머로 반복한다. 맵이 바뀌거나 다시 트리거되면 타이머·이미지를 정리한다.
 
 const propLoopTimers = new WeakMap<PlaySceneContext, Map<string, Phaser.Time.TimerEvent>>();
-const propGlowLayers = new WeakMap<PlaySceneContext, Map<string, Phaser.GameObjects.GameObject>>();
+const propGlowLayers = new WeakMap<PlaySceneContext, Map<string, Phaser.GameObjects.GameObject[]>>();
+const propShadowLayers = new WeakMap<PlaySceneContext, Map<string, Phaser.GameObjects.GameObject>>();
 
 function stopPropGlow(scene: PlaySceneContext, key: string): void {
   const glows = propGlowLayers.get(scene);
   const existing = glows?.get(key);
   if (existing) {
-    existing.destroy();
+    for (const obj of existing) obj.destroy();
     glows!.delete(key);
+  }
+}
+
+function stopPropShadow(scene: PlaySceneContext, key: string): void {
+  const shadows = propShadowLayers.get(scene);
+  const existing = shadows?.get(key);
+  if (existing) {
+    existing.destroy();
+    shadows!.delete(key);
   }
 }
 
@@ -913,8 +923,13 @@ function clearPropLoops(scene: PlaySceneContext): void {
   }
   const glows = propGlowLayers.get(scene);
   if (glows) {
-    for (const glow of glows.values()) glow.destroy();
+    for (const list of glows.values()) for (const glow of list) glow.destroy();
     glows.clear();
+  }
+  const shadows = propShadowLayers.get(scene);
+  if (shadows) {
+    for (const shadow of shadows.values()) shadow.destroy();
+    shadows.clear();
   }
 }
 
@@ -953,30 +968,110 @@ function propWorldOrigin(cell: Cell, prop: InteractivePropEntry, size: number): 
   };
 }
 
+/** HD-2D 접지 그림자(Contact AO) + 방향성 투영 그림자를 프롭 바로 아래에 깔아 바닥에 무게감 있게 붙인다. */
+function attachPropGroundShadow(
+  scene: PlaySceneContext,
+  key: string,
+  cell: Cell,
+  prop: InteractivePropEntry,
+  size: number,
+  depth: number,
+  flatDebris = false,
+): void {
+  stopPropShadow(scene, key);
+  if (typeof scene.add?.graphics !== "function") return;
+  const scale = size / 16;
+  const cx = cell.x * size + size / 2;
+  const footY = (cell.y + 1) * size - 1.5 * scale;
+  const g = scene.add.graphics().setDepth(depth - 0.08);
+
+  if (prop.mount === "wall") {
+    // 벽 부착 프롭(초상화·시계·샹들리에 등): 프레임 바로 아래 은은한 벽면 낙하 그림자
+    const w = Math.max(10, Math.min(44, prop.frameWidth * 0.72)) * scale;
+    const h = 3.5 * scale;
+    g.fillStyle(0x090814, 0.24).fillRoundedRect(Math.round(cx - w / 2), Math.round(footY - h * 0.6), Math.round(w), Math.round(h), Math.max(1, scale));
+  } else if (flatDebris) {
+    // 부서진 파편 잔해: 얇고 부드러운 바닥 접지 음영만
+    const w = Math.max(12, Math.min(40, prop.frameWidth * 0.78)) * scale;
+    g.fillStyle(0x0b0a14, 0.16).fillEllipse(cx, footY, w, 4.5 * scale);
+  } else {
+    // 입체 서 있는 프롭: ① 방향성 투영 그림자(맵 태양 각도 반영) + ② 진한 접지 AO 이중 타원
+    const sun = scene.map.sunlight;
+    const azDeg = sun?.enabled && typeof sun.azimuth === "number" ? sun.azimuth : 315;
+    const castRad = ((azDeg + 180) * Math.PI) / 180;
+    const castDx = Math.sin(castRad) * Math.min(6, Math.max(2.5, prop.frameHeight * 0.12)) * scale;
+    const castDy = Math.cos(castRad) * 1.8 * scale + 1.4 * scale;
+    const baseW = Math.max(12, Math.min(44, prop.frameWidth * 0.72)) * scale;
+    const baseH = Math.max(4.5, Math.min(9.5, prop.frameWidth * 0.22)) * scale;
+    g.fillStyle(0x080712, 0.14).fillEllipse(cx + castDx, footY + castDy, baseW * 1.12, baseH * 1.18);
+    g.fillStyle(0x0c0a16, 0.18).fillEllipse(cx, footY, baseW * 1.04, baseH * 1.02);
+    g.fillStyle(0x080610, 0.30).fillEllipse(cx, footY, baseW * 0.74, baseH * 0.68);
+  }
+
+  const shadows = propShadowLayers.get(scene) ?? new Map<string, Phaser.GameObjects.GameObject>();
+  propShadowLayers.set(scene, shadows);
+  shadows.set(key, g);
+}
+
 function attachPropGlow(scene: PlaySceneContext, key: string, cell: Cell, prop: InteractivePropEntry, size: number, depth: number): void {
   stopPropGlow(scene, key);
   const color = interactivePropGlowColor(prop);
   if (color === null || typeof scene.add?.graphics !== "function") return;
-  const g = scene.add.graphics().setDepth(depth - 0.05);
+  const scale = size / 16;
   const cx = cell.x * size + size / 2;
-  const cy = cell.y * size + size * 0.35;
-  const radius = Math.max(size * 0.9, (Math.max(prop.frameWidth, prop.frameHeight) * (size / 16)) * 0.65);
-  g.fillStyle(color, 0.10).fillCircle(cx, cy, radius);
-  g.fillStyle(color, 0.18).fillCircle(cx, cy, radius * 0.58);
+  const footY = (cell.y + 1) * size - 2 * scale;
+  const cy = footY - Math.max(6, prop.frameHeight * 0.48) * scale;
+  const radius = Math.max(size * 0.95, Math.max(prop.frameWidth, prop.frameHeight) * scale * 0.68);
+  const objects: Phaser.GameObjects.GameObject[] = [];
+
+  // ① 바닥 바운스 라이트 (빛이 발밑 바닥을 자기 색으로 물들임)
+  const bounce = scene.add.graphics().setDepth(depth - 0.06);
+  bounce.fillStyle(color, 0.11).fillEllipse(cx, footY, radius * 1.85, radius * 0.72);
+  bounce.fillStyle(color, 0.20).fillEllipse(cx, footY, radius * 1.05, radius * 0.42);
+  objects.push(bounce);
+
+  // ② 볼류메트릭 방사 광원 헤일로
+  const g = scene.add.graphics().setDepth(depth - 0.04);
+  g.fillStyle(color, 0.09).fillCircle(cx, cy, radius * 1.15);
+  g.fillStyle(color, 0.16).fillCircle(cx, cy, radius * 0.64);
   g.fillStyle(color, 0.24).fillCircle(cx, cy, radius * 0.30);
+  objects.push(g);
+
+  const isFlicker = prop.id.includes("horror-") || prop.id.includes("fire") || prop.id.includes("torch") || prop.id.includes("candle");
   if (typeof scene.tweens?.add === "function") {
     scene.tweens.add({
-      targets: g,
-      alpha: { from: 0.72, to: 1.0 },
-      duration: 620,
+      targets: [g, bounce],
+      alpha: { from: isFlicker ? 0.62 : 0.76, to: 1.0 },
+      duration: isFlicker ? 390 : 660,
       yoyo: true,
       repeat: -1,
       ease: "Sine.easeInOut",
     });
+
+    // ③ 은은하게 떠오르는 공기 먼지 / 불티 2개
+    for (let m = 0; m < 2; m += 1) {
+      const mx = cx + (m === 0 ? -4 : 4.5) * scale;
+      const my = cy + (m === 0 ? 2 : -1) * scale;
+      const mote = scene.add.graphics().setDepth(depth + 0.06);
+      mote.fillStyle(color, 0.85).fillCircle(0, 0, Math.max(1, 1.15 * scale));
+      mote.setPosition(mx, my);
+      objects.push(mote);
+      scene.tweens.add({
+        targets: mote,
+        y: my - (10 + m * 4) * scale,
+        x: mx + (m === 0 ? 3 : -2.5) * scale,
+        alpha: { from: 0.9, to: 0.05 },
+        duration: 1350 + m * 420,
+        delay: m * 520,
+        repeat: -1,
+        ease: "Sine.easeOut",
+      });
+    }
   }
-  const glows = propGlowLayers.get(scene) ?? new Map<string, Phaser.GameObjects.GameObject>();
+
+  const glows = propGlowLayers.get(scene) ?? new Map<string, Phaser.GameObjects.GameObject[]>();
   propGlowLayers.set(scene, glows);
-  glows.set(key, g);
+  glows.set(key, objects);
 }
 
 function attachPropLoop(scene: PlaySceneContext, key: string, image: Phaser.GameObjects.Image, prop: InteractivePropEntry, cell: Cell, size: number, depth: number): void {
@@ -1034,6 +1129,7 @@ export async function playInteractivePropFx(
     .setOrigin(0, 0)
     .setScale(origin.scale)
     .setDepth(depth);
+  attachPropGroundShadow(scene, cellKey, cell, prop, size, depth, false);
 
   for (let i = 1; i < order.length; i++) {
     await sleep(scene, prop.frameMs);
@@ -1048,6 +1144,7 @@ export async function playInteractivePropFx(
   }
 
   holdUntilMark(scene, cell, image);
+  if (prop.playback === "break") attachPropGroundShadow(scene, cellKey, cell, prop, size, depth, true);
   if (prop.playback === "loopAfterOpen") attachPropLoop(scene, cellKey, image, prop, cell, size, depth);
   return true;
 }
@@ -1263,7 +1360,9 @@ export function syncContainerSearchedMarks(scene: PlaySceneContext): void {
           .setScale(origin.scale)
           .setDepth(depth);
         markLayer.marks.set(key, image);
-        if (searched && prop.playback === "loopAfterOpen") attachPropLoop(scene, `${mapId}|${cell.x},${cell.y}`, image, prop, cell, size, depth);
+        const cellKey = `${mapId}|${cell.x},${cell.y}`;
+        attachPropGroundShadow(scene, cellKey, cell, prop, size, depth, searched && prop.playback === "break");
+        if (searched && prop.playback === "loopAfterOpen") attachPropLoop(scene, cellKey, image, prop, cell, size, depth);
       });
       continue;
     }

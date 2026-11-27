@@ -245,17 +245,56 @@ export function resolveInteractivePropSe(prop: InteractivePropEntry): string {
   return PROP_SE_TO_RESOURCE_ID[prop.se] ?? "cc0-se-osx-wooded-box-open";
 }
 
-/** `loopAfterOpen` 계열(화로·벽난로·등롱·원자로·제단 등)에 붙일 주변 광원 색(hex int). 없으면 null. */
+/** `loopAfterOpen` 계열(화로·벽난로·등롱·모닥불·공포 유령불·원자로·제단 등)에 붙일 HD-2D 광원 색(hex int). 없으면 null. */
 export function interactivePropGlowColor(prop: InteractivePropEntry): number | null {
   if (prop.playback !== "loopAfterOpen") return null;
-  if (prop.era === "scifi" || prop.id.includes("sky-seal") || prop.id.includes("magic-pedestal") || prop.id.includes("arcade") || prop.id.includes("kiosk")) {
-    return 0x66e6ff;
+  const id = prop.id;
+  if (
+    id.includes("crypt-altar")
+    || id.includes("worklamp-flicker")
+    || id.includes("knight-statue")
+    || id.includes("weeping-angel")
+    || id.includes("ossuary")
+    || id.includes("torture-cage")
+  ) {
+    return 0xff5260;
   }
-  if (prop.id.includes("desert-seal") || prop.id.includes("terminal") || prop.id.includes("lamp")) {
+  if (
+    prop.era === "scifi"
+    || id.includes("sky-seal")
+    || id.includes("magic-pedestal")
+    || id.includes("arcade")
+    || id.includes("kiosk")
+    || id.includes("crypt-candelabra")
+    || id.includes("pipe-organ")
+    || id.includes("cemetery-arch")
+    || id.includes("gothic-chandelier")
+    || id.includes("skull-niche")
+    || id.includes("gothic-lamp")
+  ) {
+    return 0x66e2ff;
+  }
+  if (id.includes("desert-seal") || id.includes("terminal") || id.includes("lamp")) {
     return 0xffdc78;
   }
-  if (prop.id.includes("fireplace") || prop.id.includes("brazier") || prop.id.includes("torch") || prop.id.includes("oven") || prop.id.includes("hwadeok") || prop.id.includes("hwaro") || prop.id.includes("lantern")) {
+  if (
+    id.includes("fireplace")
+    || id.includes("brazier")
+    || id.includes("torch")
+    || id.includes("oven")
+    || id.includes("hwadeok")
+    || id.includes("hwaro")
+    || id.includes("lantern")
+    || id.includes("campfire")
+    || id.includes("forge")
+    || id.includes("candle")
+    || id.includes("grill")
+    || prop.category === "light-fire"
+  ) {
     return 0xffa64d;
+  }
+  if (prop.roles?.includes("ambient-light")) {
+    return 0x8ad8ff;
   }
   return null;
 }

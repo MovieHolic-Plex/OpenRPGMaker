@@ -60,9 +60,13 @@ OPRN Studio에는 저장소의 고퀄리티 원본 PNG를 0번 프레임으로 �
 `list_interactive_props`로 찾아도 요청에 딱 맞는 사물(예: 저주받은 뻐꾸기시계, 마법 수정구, 특수 문·레버 등)이 없으면 **`author_interactive_prop`** 로 AI 조수가 직접 5프레임 가로 PNG 스트립을 만들어 프로젝트(`project.assets.uploaded`)에 등록·배치한다.
 
 - **모드 B (권장 — 0번 원본 격자 + 자동 물리 모션 합성)**:
-  - `baseGrid`(16×16 ~ 32×32 문자 격자 1장) + `palette` + `motionRecipe` 9종 중 하나(`push-in-door`, `swing-door`, `curtain-part`, `hinge-lid`, `slide-door`, `smash-break`, `horror-flicker`, `glow-activate`, `rattle-scare`)를 넘기면 엔진이 실제 픽셀을 변환해 5프레임 스트립을 자동 합성하고 품질 게이트(크기·불투명·프레임 변화량)를 자동 통과시킨다.
+  - `baseGrid`(권장 **32×32** 또는 32×48, 소형 소품만 16×16) + `palette`(10~14색 색조 음영·어두운 윤곽선) + `motionRecipe` 9종 중 하나(`push-in-door`, `swing-door`, `curtain-part`, `hinge-lid`, `slide-door`, `smash-break`, `horror-flicker`, `glow-activate`, `rattle-scare`)를 넘기면 엔진이 실제 픽셀을 변환해 5프레임 스트립을 자동 합성하고 품질 게이트(크기·불투명·프레임 변화량)를 자동 통과시킨다.
 - **모드 A (프레임별 직접 도트)**:
   - `framesGrid`(3~8프레임 격자 배열) + `palette` 로 각 프레임을 정밀하게 직접 찍는다.
 - **원스텝 배치**: `place: { mapId, x, y, message?, toggleable?, switchId?, loot? }` 를 함께 넘기면 제작·등록·맵 배치를 한 번에 끝낸다.
-- **품질 원칙**: 단색 네모 금지 — 최소 4~6색 명암·어두운 윤곽선(순수 `#000000` 대신 색조 있는 어두운 외곽선)과 3/4 탑뷰 입체감을 갖춘 도트 격자로 그린다.
+- **HD-2D 품질 원칙 (필수)**:
+  - **저채도 유화 팔레트**: 원색(형광·장난감 색)을 피하고 채도를 25~35% 눌러 차분한 중세/필름 톤을 쓴다(어둠은 차가운 남색·자주, 하이라이트는 따뜻한 상아·호박색으로 색조 이동).
+  - **Sel-out 윤곽선**: 사물 둘레 전체를 똑같은 어두운 1px 선으로 두르지 말고, 빛 받는 윗면·좌상단 윤곽선은 밝은 중간톤으로 녹이고 순수 `#000000`은 쓰지 않는다.
+  - **해상도**: 핵심 가구·기믹·항아리·시계는 **32×32** 이상(10~14색 명암 클러스터 + 3/4 탑뷰 입체감)으로 그리고, 16×16은 작은 탁상 소품에만 쓴다.
+
 

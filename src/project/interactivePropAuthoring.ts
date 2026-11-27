@@ -412,16 +412,47 @@ function synthesizeMotion(
     const groundY = bbox.y1;
     const renderBurst = (t: number, settle: boolean): CanvasBuf => {
       const fr = makeBuf(base.w, base.h);
+      if (settle) {
+        // Soft ground shadow ellipse under settled shard clumps
+        const radX = Math.max(5, (bbox.x1 - bbox.x0) * 0.55);
+        for (let gy = Math.max(0, groundY - 3); gy <= Math.min(base.h - 1, groundY + 1); gy += 1) {
+          for (let gx = Math.max(0, Math.round(cx - radX)); gx <= Math.min(base.w - 1, Math.round(cx + radX)); gx += 1) {
+            const d = ((gx - cx) / radX) ** 2 + ((gy - (groundY - 1)) / 2.6) ** 2;
+            if (d <= 1) blendPx(fr, gx, gy, [20, 16, 26, 72]);
+          }
+        }
+      }
       for (let k = 0; k < numShards; k += 1) {
-        const vx = (centers[k]!.x - cx) * 0.75;
-        const vy = -Math.max(1.8, Math.abs(centers[k]!.y - cy) * 0.65);
-        for (const p of shards[k]!) {
+        const list = shards[k]!;
+        if (!list.length) continue;
+        const vx = (centers[k]!.x - cx) * 0.72;
+        const vy = -Math.max(1.8, Math.abs(centers[k]!.y - cy) * 0.62);
+        if (settle) {
+          // Drop each shard as a recognizable 3-5px tall intact pottery/wood chunk on the floor!
+          let sMinX = base.w, sMaxX = 0, sMinY = base.h, sMaxY = 0;
+          for (const p of list) {
+            if (p.x < sMinX) sMinX = p.x;
+            if (p.x > sMaxX) sMaxX = p.x;
+            if (p.y < sMinY) sMinY = p.y;
+            if (p.y > sMaxY) sMaxY = p.y;
+          }
+          const sH = Math.max(1, sMaxY - sMinY + 1);
+          const targetH = Math.min(5, Math.max(2, Math.round(sH * 0.45)));
+          const baseOffX = Math.round(vx * 0.85);
+          const restY = clamp(groundY - (k % 3), 2, base.h - 1);
+          for (const p of list) {
+            const relY = Math.round(((p.y - sMinY) / sH) * (targetH - 1));
+            const nx = clamp(p.x + baseOffX, 0, base.w - 1);
+            const ny = clamp(restY - (targetH - 1) + relY, 0, base.h - 1);
+            setPx(fr, nx, ny, scaleRgb(p.c, 0.86));
+          }
+          continue;
+        }
+        for (const p of list) {
           const nx = Math.round(p.x + vx * t);
-          let ny = Math.round(p.y + vy * t + 3.4 * t * t);
-          if (settle) ny = clamp(groundY - ((k + p.x) % 3), 0, base.h - 1);
-          else ny = Math.min(groundY, ny);
+          const ny = Math.min(groundY, Math.round(p.y + vy * t + 3.4 * t * t));
           if (nx >= 0 && nx < base.w && ny >= 0 && ny < base.h) {
-            setPx(fr, nx, ny, settle ? scaleRgb(p.c, 0.86) : p.c);
+            setPx(fr, nx, ny, p.c);
           }
         }
       }
