@@ -175,12 +175,19 @@ export function mountAiStatusBar(): () => void {
 
   const stepText = (presence: Presence): string => presence.steps > 0 && presence.state === "working" ? ` · ${presence.steps}단계` : "";
 
+  const teamWingCovers = (): boolean => {
+    const wing = document.querySelector<HTMLElement>('[data-testid="ai-team-wing"][data-active="true"]');
+    if (!wing) return false;
+    return presences.length > 0 && presences.every((p) => p.source === "chat");
+  };
+
   function renderNow(box: { left: number; width: number; rect: DOMRect } | null): void {
     const stamp = peekStampOrderQueue()?.summary() ?? { waiting: 0, running: 0, total: 0 };
     const live = summarizeJobs(presences);
     // 바로 깔기 주문·이벤트 AI 작업은 aiPresence 밖의 줄기다 — 작업 목록이 함께 센다(jobs.total).
     const others = Math.max(0, jobs.total - live.total);
-    const visible = ((presences.length > 0 && !hiddenBySettle) || others > 0) && !(conversationCardCovers(presences) && others === 0);
+    const coveredByRightDock = (conversationCardCovers(presences) || teamWingCovers()) && others === 0;
+    const visible = ((presences.length > 0 && !hiddenBySettle) || others > 0) && !coveredByRightDock;
     if (root.hidden === visible) root.hidden = !visible;
     if (!visible) { closePop(); return; }
     // 급한 순: 내 확인 필요(앰버) > 실패(빨강). 둘 다 있으면 앰버 — 사람이 먼저 눌러야 일이 이어지는 쪽이다.
@@ -287,6 +294,7 @@ export function mountAiStatusBar(): () => void {
   if (canvas) observer?.observe(canvas);
   window.addEventListener("oprn:ai-panel-collapse", onResize);
   window.addEventListener("oprn:ai-panel-collapse", onVisibilityContext);
+  window.addEventListener("oprn:ai-team-wing-state", onVisibilityContext);
   window.addEventListener(AI_STUDIO_CHANGE_EVENT, onVisibilityContext);
 
   return () => {
@@ -299,6 +307,7 @@ export function mountAiStatusBar(): () => void {
     window.removeEventListener("resize", onResize);
     window.removeEventListener("oprn:ai-panel-collapse", onResize);
     window.removeEventListener("oprn:ai-panel-collapse", onVisibilityContext);
+    window.removeEventListener("oprn:ai-team-wing-state", onVisibilityContext);
     window.removeEventListener(AI_STUDIO_CHANGE_EVENT, onVisibilityContext);
     document.removeEventListener("pointerdown", onDocPointer, true);
     document.removeEventListener("keydown", onKey);

@@ -59,5 +59,6 @@
 @import "./tabs-b-assistant-panel/37-ai-creation-cards.css";
 @import "./tabs-b-assistant-panel/38-draft-overview.css";
 @import "./tabs-b-assistant-panel/39-ai-floating-overhaul.css";
+@import "./tabs-b-assistant-panel/40-ai-team-wing.css";
 /* 휴대 폭 터치 크기 — 레이어 맨 끝에 둔다(vm-qa15 묶음 3). */
 @import "./touch-targets-narrow.css";

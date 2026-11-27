@@ -9,6 +9,7 @@ import { openAiAssistantPanel } from "@/editor/aiAssistantBridge";
 import { editorState, type EditorState } from "@/editor/editorState";
 import { triggerLabel } from "@/editor/eventMarkerUx";
 import { resolveCurrentMapId } from "@/editor/mapSelection";
+import { AI_TEAM_WING_STATE_EVENT, type AiTeamWingPillState } from "@/editor/panels/aiTeamWing";
 import { renderEventGraphicIcon } from "@/editor/panels/eventEditor/eventGraphicPreview";
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { openMapPropertiesDialog } from "@/editor/panels/mapPropertiesDialog";
@@ -132,6 +133,24 @@ export function mountAiSelectionContextStrip(
   canvasArea.append(pill);
 
   let lastSignature = "";
+  let teamPillState: AiTeamWingPillState = { active: false, label: "", tone: "idle" };
+
+  const syncPillBadge = (selectedEventName: string | null): void => {
+    pillBadge.classList.remove("is-team-running", "is-team-done", "is-team-review", "is-team-failed");
+    if (teamPillState.active && teamPillState.label) {
+      pillBadge.textContent = teamPillState.label;
+      pillBadge.hidden = false;
+      if (teamPillState.tone !== "idle") pillBadge.classList.add(`is-team-${teamPillState.tone}`);
+      return;
+    }
+    if (selectedEventName) {
+      pillBadge.textContent = selectedEventName;
+      pillBadge.hidden = false;
+    } else {
+      pillBadge.textContent = "";
+      pillBadge.hidden = true;
+    }
+  };
 
   const syncPillVisibility = (): void => {
     const collapsed = aiPanel.classList.contains("is-collapsed");
@@ -144,14 +163,7 @@ export function mountAiSelectionContextStrip(
     const { map, event } = resolveContext(project, state);
     const modeLabel = layerModeLabel(state);
 
-    if (event) {
-      const evName = eventDisplayName(event);
-      pillBadge.textContent = evName;
-      pillBadge.hidden = false;
-    } else {
-      pillBadge.textContent = "";
-      pillBadge.hidden = true;
-    }
+    syncPillBadge(event ? eventDisplayName(event) : null);
 
     const sig = event && map
       ? `ev:${map.id}:${event.id}:${eventDisplayName(event)}:${classifyUnit(event)}:${triggerLabel(event.pages?.[0]?.trigger ?? event.trigger)}:${event.x},${event.y}:${unitGraphic(event)?.sprite?.id ?? ""}`
@@ -258,7 +270,16 @@ export function mountAiSelectionContextStrip(
     );
   };
 
+  const onTeamWingState = (e: Event): void => {
+    const detail = (e as CustomEvent<AiTeamWingPillState>).detail;
+    if (!detail) return;
+    teamPillState = detail;
+    const { event } = resolveContext(store.getCurrent(), editorState.get());
+    syncPillBadge(event ? eventDisplayName(event) : null);
+  };
+
   aiPanel.addEventListener("oprn:ai-panel-collapse", syncPillVisibility);
+  window.addEventListener(AI_TEAM_WING_STATE_EVENT, onTeamWingState);
   const classObserver = typeof MutationObserver === "function"
     ? new MutationObserver(() => syncPillVisibility())
     : null;
@@ -272,6 +293,7 @@ export function mountAiSelectionContextStrip(
 
   return () => {
     aiPanel.removeEventListener("oprn:ai-panel-collapse", syncPillVisibility);
+    window.removeEventListener(AI_TEAM_WING_STATE_EVENT, onTeamWingState);
     classObserver?.disconnect();
     unsubEditor();
     unsubStore();
