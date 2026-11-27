@@ -3,6 +3,7 @@ import { monsterSaveSummaryLine } from "@/project/monsterSaveSummary";
 import {
   listSaveSlots,
   readAutosave,
+  safeLocalStorage,
   snapshotLoadBlocker,
   type AutosaveTrigger,
   type SaveSlotIndex,
@@ -72,12 +73,16 @@ export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElem
     dataset: { testid: "player-load-slots" },
   });
   // 오토세이브 카드: 최상단, 불러오기 전용(수동 저장 메뉴의 덮어쓰기 대상이 아니다).
-  const autosave = readAutosave(window.localStorage);
+  const storage = safeLocalStorage();
+  const autosave = storage ? readAutosave(storage) : { kind: "empty" as const };
   if (autosave.kind === "present" && options.onLoadAutosave
     && snapshotLoadBlocker(store.getCurrent(), autosave.snapshot) === null) {
     slots.append(renderAutosaveButton(autosave.snapshot, options.onLoadAutosave));
   }
-  for (const slot of listSaveSlots(window.localStorage)) {
+  const slotList: readonly SaveSlotReadResult[] = storage
+    ? listSaveSlots(storage)
+    : ([1, 2, 3] as const).map((slot) => ({ kind: "empty", slot }));
+  for (const slot of slotList) {
     if (slot.kind === "corrupt") slots.append(renderCorruptSlot(slot));
     // 이어질 수 없는 슬롯은 골라지기 전에 이유가 보여야 한다 — 누를 수 있지만
     // player.loadSlot 이 같은 사유로 다시 막는다.
@@ -100,9 +105,9 @@ export function renderPlayerLoadPanel(options: PlayerLoadPanelOptions): HTMLElem
     }),
   );
   panel.append(loadWindow);
-  appendPredecessorSaveImports(slots, { project: store.getCurrent(), storage: window.localStorage, onLoadSlot: options.onLoadSlot });
+  if (storage) appendPredecessorSaveImports(slots, { project: store.getCurrent(), storage, onLoadSlot: options.onLoadSlot });
   appendCloudOtherSaves(slots, { onLoadSlot: options.onLoadSlot, ...(options.onLoadAutosave ? { onLoadAutosave: options.onLoadAutosave } : {}) });
-  appendSaveFileTransfers(slots, { project: store.getCurrent(), storage: window.localStorage, onLoadSlot: options.onLoadSlot });
+  if (storage) appendSaveFileTransfers(slots, { project: store.getCurrent(), storage, onLoadSlot: options.onLoadSlot });
   return panel;
 }
 

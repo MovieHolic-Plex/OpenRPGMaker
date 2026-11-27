@@ -216,11 +216,12 @@ export function updateGameTime(scene: PlaySceneContext, deltaMs: number): void {
   scene.timeMinuteAccumulator -= wholeMinutes;
   const untilEnd = minutesUntilDayEnd(scene.session.gameTime, system);
   if (system.forceSleep && untilEnd <= wholeMinutes) {
-    const before = structuredClone(scene.session);
+    const activeSession = scene.session;
+    const before = structuredClone(activeSession);
     // Preserve the last completed fixed step seen by onDayEnd, not the start of a large frame.
     const priorSteps = Math.max(0, Math.ceil((untilEnd - minuteCarry) / system.minutesPerRealSecond) - 1);
     const priorMinutes = Math.floor(minuteCarry + priorSteps * system.minutesPerRealSecond);
-    const advanced = advanceTimeAcrossDayBoundaries(project, scene.session, priorMinutes);
+    const advanced = advanceTimeAcrossDayBoundaries(project, activeSession, priorMinutes);
     if (!advanced.ok) {
       scene.timeFixedAccumulatorMs = 0;
       scene.timeMinuteAccumulator = 0;
@@ -228,14 +229,21 @@ export function updateGameTime(scene: PlaySceneContext, deltaMs: number): void {
       return;
     }
     const rollback = (): void => {
+      if (scene.session !== activeSession || scene.sys?.isActive() === false) return;
       restoreSession(scene.session, before);
       scene.refreshRuntimeSurfaces();
       scene.syncRuntimeState();
     };
     observeScheduledTimeTransition(scene, (onFailurePresented) => scene.sleepUntilMorning(onFailurePresented).then((ok) => {
+      // 세션이 교체되거나 씬이 비활성화되어 취소된 취침은 새 세션의 날짜 전환 오류로 보고하지 않는다.
+      if (scene.session !== activeSession || scene.sys?.isActive() === false) return true;
       if (!ok) rollback();
       return ok;
-    }, (error: unknown) => { rollback(); throw error; }), "forced-sleep");
+    }, (error: unknown) => {
+      if (scene.session !== activeSession || scene.sys?.isActive() === false) return true;
+      rollback();
+      throw error;
+    }), "forced-sleep");
     return;
   }
   // One frame is one transaction, including all crossed days and residual minutes.
@@ -307,31 +315,37 @@ export async function sleepUntilMorningScene(
   const project = store.getCurrent();
   const system = resolveTimeSystem(project);
   if (!system) return false;
-  scene.session.gameTime ??= initialGameTime(system);
-  if (!scene.session.gameTime || scene.timeSleepInProgress) return false;
+  const activeSession = scene.session;
+  const isCurrentSession = (): boolean => scene.session === activeSession && scene.sys?.isActive() !== false;
+  activeSession.gameTime ??= initialGameTime(system);
+  if (!activeSession.gameTime || scene.timeSleepInProgress) return false;
   scene.timeSleepInProgress = true;
   try {
-    const sourceDayKey = calendarDayKey(scene.session.gameTime);
-    const preflight = transitionToNextDay(project, structuredClone(scene.session), sourceDayKey);
+    const sourceDayKey = calendarDayKey(activeSession.gameTime);
+    const preflight = transitionToNextDay(project, structuredClone(activeSession), sourceDayKey);
     if (!preflight.ok) {
       showDayTransitionFailure(scene, dayTransitionFailureFromResult(preflight), onFailurePresented);
       return false;
     }
     await fadeCamera(scene, "out", { red: 0, green: 0, blue: 0 }, TRANSFER_FADE_DURATION_MS);
-    const beforeHook = structuredClone(scene.session);
+    if (!isCurrentSession()) return false;
+    const beforeHook = structuredClone(activeSession);
     const hook = system.onDayEnd ? project.commonEvents.find((event) => event.id === system.onDayEnd) : undefined;
     try {
       if (hook?.commands.length) await runDayEndCommands(hook.commands);
-      const transition = transitionToNextDay(project, scene.session, sourceDayKey);
+      if (!isCurrentSession()) return false;
+      const transition = transitionToNextDay(project, activeSession, sourceDayKey);
       if (!transition.ok) {
-        await recoverFailedSleep(scene, beforeHook, dayTransitionFailureFromResult(transition), onFailurePresented);
+        await recoverFailedSleep(scene, activeSession, beforeHook, dayTransitionFailureFromResult(transition), onFailurePresented);
         return false;
       }
     } catch (cause) {
+      if (!isCurrentSession()) return false;
       const detail = cause instanceof Error && cause.message ? `:${cause.message}` : "";
-      await recoverFailedSleep(scene, beforeHook, `day-end-hook${detail}`, onFailurePresented);
+      await recoverFailedSleep(scene, activeSession, beforeHook, `day-end-hook${detail}`, onFailurePresented);
       return false;
     }
+    if (!isCurrentSession()) return false;
     scene.clearRuntimeOverlay("day-transition-error");
     // 커서 산술이 하루치 틱을 만들어 준다. 여기서 advanceFarmPlotsForDay 를 또 부르면 이중 계산이다.
     scene.timeFixedAccumulatorMs = 0;
@@ -339,9 +353,9 @@ export async function sleepUntilMorningScene(
     scene.refreshRuntimeSurfaces();
     scene.syncRuntimeState();
     await fadeCamera(scene, "in", { red: 0, green: 0, blue: 0 }, TRANSFER_FADE_DURATION_MS);
-    return true;
+    return isCurrentSession();
   } finally {
-    scene.timeSleepInProgress = false;
+    if (scene.session === activeSession) scene.timeSleepInProgress = false;
   }
 }
 
@@ -353,22 +367,28 @@ export async function applyAdvanceTimeStep(
   const project = store.getCurrent();
   const system = resolveTimeSystem(project);
   if (!system) return;
-  scene.session.gameTime ??= initialGameTime(system);
-  if (!scene.session.gameTime) return;
+  const activeSession = scene.session;
+  const isCurrentSession = (): boolean => scene.session === activeSession && scene.sys?.isActive() !== false;
+  activeSession.gameTime ??= initialGameTime(system);
+  if (!activeSession.gameTime) return;
   if (![step.days ?? 0, step.minutes ?? 0].every(Number.isFinite)) throw new Error("Invalid time advance");
-  const before = structuredClone(scene.session);
+  const before = structuredClone(activeSession);
   try {
     const days = Math.max(0, Math.trunc(step.days ?? 0));
     for (let index = 0; index < days; index += 1) {
-      if (!await scene.sleepUntilMorning(onFailurePresented)) throw new Error("Day transition failed during authored day advance");
+      const ok = await scene.sleepUntilMorning(onFailurePresented);
+      if (!isCurrentSession()) return;
+      if (!ok) throw new Error("Day transition failed during authored day advance");
     }
     const minutes = Math.max(0, Math.trunc(step.minutes ?? 0));
     if (minutes <= 0) return;
-    if (system.forceSleep && minutesUntilDayEnd(scene.session.gameTime, system) <= minutes) {
-      if (!await scene.sleepUntilMorning(onFailurePresented)) throw new Error("Day transition failed during forced sleep");
+    if (system.forceSleep && minutesUntilDayEnd(activeSession.gameTime, system) <= minutes) {
+      const ok = await scene.sleepUntilMorning(onFailurePresented);
+      if (!isCurrentSession()) return;
+      if (!ok) throw new Error("Day transition failed during forced sleep");
       return;
     }
-    const advanced = advanceTimeAcrossDayBoundaries(project, scene.session, minutes);
+    const advanced = advanceTimeAcrossDayBoundaries(project, activeSession, minutes);
     if (!advanced.ok) {
       showDayTransitionFailure(scene, dayTransitionFailureFromResult(advanced), onFailurePresented);
       throw new Error(`Day transition failed: ${advanced.reason}`);
@@ -376,9 +396,11 @@ export async function applyAdvanceTimeStep(
     scene.clearRuntimeOverlay("day-transition-error");
     scene.syncRuntimeState();
   } catch (error) {
-    restoreSession(scene.session, before);
-    scene.refreshRuntimeSurfaces();
-    scene.syncRuntimeState();
+    if (isCurrentSession()) {
+      restoreSession(scene.session, before);
+      scene.refreshRuntimeSurfaces();
+      scene.syncRuntimeState();
+    }
     throw error;
   }
 }
@@ -523,10 +545,12 @@ function showDayTransitionFailure(
 
 async function recoverFailedSleep(
   scene: PlaySceneContext,
+  activeSession: PlaySceneContext["session"],
   beforeHook: PlaySceneContext["session"],
   failure: string | DayTransitionFailureView,
   onFailurePresented?: () => void,
 ): Promise<void> {
+  if (scene.session !== activeSession || scene.sys?.isActive() === false) return;
   restoreSession(scene.session, beforeHook);
   showDayTransitionFailure(scene, failure, onFailurePresented);
   scene.refreshRuntimeSurfaces();

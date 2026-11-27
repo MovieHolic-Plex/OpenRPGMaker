@@ -2,13 +2,24 @@
 // src/assets/monsterKit/<테마>.json + index.json + monsterKitSheets.generated.ts 를 쓴다. 그림은 public/assets/monster-kit/<테마>.png.
 // 정의(참고문서 용도 `mk-<테마>` 포함)는 번들이 소유한다: 새 프로젝트는 처음부터 갖고, 기존 프로젝트는 ensureBundledTilesets 가 심는다.
 // openwiki/harnesses/tileset-authoring.md.
-import { MONSTER_KIT_SHEET_DATA } from "./monsterKitSheets.generated";
+import { bundledJson, type BundledJsonKey } from "./bundledJson";
+import monsterKitReferences from "@/assets/monsterKitReferences.json" with { type: "json" };
 import { monsterKitSheet } from "@/assets/monsterKitAssets";
 import type { AutotileGroup, PassFlag, StructureKitDef, TileAiMetadata, TilesetDef } from "../types";
 import type { TilesetReferenceCategory } from "../tilesetReferences";
 
 /** 몬스터 수집 시트는 자기 계열이다 — 버들항 등 다른 생성 칩셋과도, 에메랄드풍 재채색과도 섞이지 않게(2026-10-06 연속성 결정). */
 export const MONSTER_KIT_FAMILY = "oprn-monster";
+
+const MONSTER_KIT_JSON_KEYS: Readonly<Record<string, BundledJsonKey>> = {
+  tex_monster_climate: "monsterKitClimate",
+  tex_monster_coast: "monsterKitCoast",
+  tex_monster_dungeon: "monsterKitDungeon",
+  tex_monster_gyms: "monsterKitGyms",
+  tex_monster_overworld: "monsterKitOverworld",
+  tex_monster_rooms: "monsterKitRooms",
+  tex_monster_wild: "monsterKitWild",
+};
 
 type SheetData = {
   id: string; name: string; tileSize: number; tilesPerRow: number; count: number;
@@ -18,19 +29,24 @@ type SheetData = {
   referenceDocuments?: TilesetReferenceCategory[];
 };
 
-export function isMonsterKitTexture(textureKey: string): boolean {
-  return textureKey in MONSTER_KIT_SHEET_DATA;
+function monsterKitSheetData(textureKey: string): SheetData | undefined {
+  const key = MONSTER_KIT_JSON_KEYS[textureKey];
+  return key ? (bundledJson(key) as unknown as SheetData) : undefined;
 }
 
-/** 새 사본의 참고문서만(`createMonsterKitTileset(textureKey).referenceDocuments` 와 같은 값) — 칸 표를 복제하지 않는다. */
+export function isMonsterKitTexture(textureKey: string): boolean {
+  return textureKey in MONSTER_KIT_JSON_KEYS;
+}
+
+/** 새 사본의 참고문서만(`createMonsterKitTileset(textureKey).referenceDocuments` 와 같은 값) — 지연 정의 JSON 을 읽지 않는다. */
 export function monsterKitBundledReferenceDocuments(textureKey: string): TilesetReferenceCategory[] | undefined {
-  const data = MONSTER_KIT_SHEET_DATA[textureKey] as SheetData | undefined;
-  return data?.referenceDocuments?.length ? structuredClone(data.referenceDocuments) : undefined;
+  const docs = (monsterKitReferences as Record<string, TilesetReferenceCategory[] | undefined>)[textureKey];
+  return docs?.length ? structuredClone(docs) : undefined;
 }
 
 /** 번들 정의의 독립 사본. */
 export function createMonsterKitTileset(textureKey: string): TilesetDef {
-  const data = MONSTER_KIT_SHEET_DATA[textureKey] as SheetData | undefined;
+  const data = monsterKitSheetData(textureKey);
   const sheet = monsterKitSheet(textureKey);
   if (!data || !sheet) throw new Error(`몬스터 수집 시트 ${textureKey} 가 번들에 없습니다.`);
   return {

@@ -25,7 +25,7 @@ import type { BattleAnimationPlayback } from "@/player/battleAnimationDom";
 import { battleAnimationImpactMs, battleAnimationLeadPlan, preloadAllBattleAnimationSounds, preloadBattleAnimationSounds, syncBattleAnimationLayer } from "@/player/battleAnimationDom";
 import { createPresentationLedger, type BattlePresentationLedger } from "@/player/battlePresentation";
 import { comboImpact, endComboAction, playComboCutIn, preloadComboBusts } from "@/player/battleComboCutIn";
-import { comboPartnersStrike, finishComboPartners, startComboPartners } from "@/player/battleComboPartners";
+import { comboPartnersStrike, finishComboPartners, startComboPartners, stopComboPartners } from "@/player/battleComboPartners";
 import { commandPanel, enemyListPanel, syncEnemyListPanel, syncBattleSkillHelp, type BattleCommandSubmenu } from "@/player/battleCommandDom";
 import {
   advanceBattleResultLevelUps,
@@ -539,6 +539,7 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       eventSurfaceOpen = true;
       syncView();
       const showChoices = options.showEventChoices;
+      choiceController?.abort();
       const input = new AbortController();
       choiceController = input;
       void Promise.resolve().then(() => {
@@ -869,16 +870,22 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       if (panel) syncBattleResultPanel(panel, options.runtime.snapshot(), resultRevealStage);
     },
     onSequenceBusy(busy) {
+      if (destroyed) return;
       sequenceBusy = busy;
       if (!busy) readyAt = performance.now();
       if (!busy) endSkip();
       root.dataset.battleSequenceBusy = busy ? "true" : "false";
       // 시퀀스가 끝나면 원장을 버리고 실제 스냅샷으로 복귀한다.
       if (!busy) presentation = undefined;
+      // 인트로·액션 시퀀스가 끝나 명령 국면이 열릴 때 커서 버튼에 즉시 포커스를 준다(200ms 폴링 없이).
+      if (!busy && directorState.step === "command" && !commandHost.contains(document.activeElement)) {
+        const cursor = commandHost.querySelector<HTMLButtonElement>("button.battle-command[data-battle-command-cursor='true']:not(:disabled)");
+        cursor?.focus({ preventScroll: true });
+      }
       // battle-feel r2: 도트 측면 전투는 연출이 끝나면 다음 게이지 틱(최대 200ms 뒤)을 기다리지 않고 바로 한 틱 돈다.
-      if (!busy && root.dataset.battleMotion === "retro") window.setTimeout(() => { if (root.isConnected) battleTick(); }, 0);
-      if (!busy && autoBattle) queueMicrotask(() => {
-        if (root.isConnected) syncView();
+      if (!busy && root.dataset.battleMotion === "retro") scheduleBattleTimer(() => { if (!destroyed && root.isConnected) battleTick(); }, 0);
+      if (!busy) queueMicrotask(() => {
+        if (!destroyed && root.isConnected) syncView();
       });
     },
   });
@@ -1066,7 +1073,11 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   function onWindowKeyup(event: KeyboardEvent): void {
     // keydown 과 같이, IME 가 key 를 Process 로 바꿔도 Shift 를 놓친 것으로 본다.
     const key = keyboardEventKey(event);
-    if (key !== "Shift") return;
+    if (key !== "Shift") {
+      // Enter 등 다른 키를 누른 채 Shift 가 들어왔다 나가는 조합(가상 패드 A 등)은 단독 Shift 로 치지 않는다.
+      if (shiftHeld) shiftCombined = true;
+      return;
+    }
     if (options.runtime.snapshot().eventChoice || options.runtime.snapshot().eventPause) { shiftHeld = false; shiftCombined = false; return; }
     // 텍스트 입력 중에는 토글하지 않는다. 연출 중에는 허용한다 — 배속은 재생을
     // 보면서 조절하는 컨트롤이다(코덱스 리뷰 C6).
@@ -1474,9 +1485,9 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
   }
 
   function syncView(): void {
-    setBattleMotionContext(field, options.runtime.snapshot());
     if (destroyed) return;
     const runtimeSnapshot = options.runtime.snapshot();
+    setBattleMotionContext(field, runtimeSnapshot);
     options.onSnapshot?.(runtimeSnapshot);
     const snapshot = withoutUnannouncedEnemies(runtimeSnapshot);
     syncComboHeld(runtimeSnapshot.heldActorIds);
@@ -2266,7 +2277,14 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
     // Active ATB: 명령·대상 메뉴가 열려 있어도 시간이 흐른다. 런타임이 적만 행동시키고 메뉴를 되돌려 준다.
     const menuTime = activeAtb && (before.phase === "actorCommand" || before.phase === "targetSelect") && !eventSurfaceOpen;
     if (before.phase !== "charging" && !menuTime) {
-      if (before.phase === "actorCommand") syncView();
+      // 명령 대기 중 수동 조작(autoBattle=false)이고 화면·포커스가 이미 현재 액터의 명령 상태라면 200ms마다 전체 DOM/스냅샷을 다시 그리지 않는다.
+      const needsCommandSync = before.phase === "actorCommand" && (
+        autoBattle
+        || directorState.step !== "command"
+        || directorState.activeActorRecordId !== before.activeActorId
+        || !commandHost.contains(document.activeElement)
+      );
+      if (needsCommandSync) syncView();
       return;
     }
     options.runtime.tick(BATTLE_TICK_MS);
@@ -2307,7 +2325,10 @@ export function mountBattleScene(options: BattleDomOptions): BattleDomController
       // 멱등 — 여러 경로(onResult, teardown, 재마운트)에서 중복 호출돼도 안전해야 한다.
       if (destroyed) return;
       destroyed = true;
+      window.clearTimeout(playbackStatusTimer);
+      playbackStatusTimer = 0;
       animationBlendObserver.disconnect();
+      stopComboPartners(root, true);
       stopRetroClassSkill(field);
       clearEnemyMotion(field);
       impactContact.destroy();

@@ -1,3 +1,4 @@
+import { stripTransientCutsceneFlags } from "@/player/cutsceneControl";
 import { monsterSaveSummary, readMonsterSaveSummary, type MonsterSaveSummary } from "@/project/monsterSaveSummary";
 import { floorActorExperience } from "@/project/actorModel";
 import { parseEncounterGuard } from "@/project/encounterGuard";
@@ -403,6 +404,15 @@ function saveJson(snapshot: SaveSnapshot): string {
   return JSON.stringify(snapshot, (_key, value: unknown) => (typeof value === "number" && !Number.isFinite(value) ? 0 : value));
 }
 
+/** 샌드박스 iframe·사생활 보호 모드에서 `window.localStorage` 접근 자체가 SecurityError 를 던질 때 안전하게 null 을 돌려준다. */
+export function safeLocalStorage(): Storage | null {
+  try {
+    return typeof window !== "undefined" ? window.localStorage : null;
+  } catch {
+    return null;
+  }
+}
+
 /** 적은 저장을 곧바로 다시 읽어 본다. 못 읽으면 이전 값으로 되돌리고 이유를 돌려준다(성공이면 null). */
 function writeVerified(storage: Storage, key: string, text: string, reread: () => { readonly kind: string; readonly message?: string }): string | null {
   const previous = storage.getItem(key);
@@ -601,7 +611,7 @@ export function createSaveSnapshot(project: Project, input: PlaySession): SaveSn
       playerFootprint: session.playerFootprint ? structuredClone(session.playerFootprint) : undefined,
       playerPassRows: session.playerPassRows,
       mapOverrides: structuredClone(session.mapOverrides ?? {}),
-      flags: structuredClone(session.flags),
+      flags: stripTransientCutsceneFlags(structuredClone(session.flags)),
       battleResult: session.battleResult,
       audio: structuredClone(session.audio),
       systemAudioOverrides: structuredClone(session.systemAudioOverrides),
@@ -995,7 +1005,11 @@ export function applySaveSnapshot(project: Project, input: SaveSnapshot): PlaySe
     : undefined;
   session.playerPassRows = snapshot.session.playerPassRows;
   session.mapOverrides = structuredClone(snapshot.session.mapOverrides);
-  session.flags = structuredClone(snapshot.session.flags);
+  session.flags = stripTransientCutsceneFlags(structuredClone(snapshot.session.flags));
+  if (session.m2Runtime?.cutscene) {
+    session.m2Runtime.cutscene.lockPlayer = false;
+    session.m2Runtime.cutscene.skippable = false;
+  }
   session.battleResult = snapshot.session.battleResult;
   session.audio = structuredClone(snapshot.session.audio);
   session.systemAudioOverrides = structuredClone(snapshot.session.systemAudioOverrides);
@@ -1294,7 +1308,7 @@ export function importSaveCopy(options: {
   if (snapshotLoadBlocker(project, adopted)) throw new PublicationError("save-incompatible");
   const restored = applySaveSnapshot(project, adopted);
   const copy = createSaveSnapshot(project, restored);
-  storage.setItem(target, JSON.stringify(copy));
+  storage.setItem(target, saveJson(copy));
 }
 
 /** Only call with bytes from a file the PLAYER selected, never uploader metadata or discovered storage. */
@@ -1315,7 +1329,7 @@ export function importSelectedSaveFileCopy(options: {
   const adopted = { ...parsed.snapshot, identity: saveIdentity(publication) };
   if (snapshotLoadBlocker(project, adopted)) throw new PublicationError("save-incompatible");
   const copy = createSaveSnapshot(project, applySaveSnapshot(project, adopted));
-  storage.setItem(target, JSON.stringify(copy));
+  storage.setItem(target, saveJson(copy));
 }
 
 

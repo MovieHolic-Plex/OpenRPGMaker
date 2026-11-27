@@ -3,6 +3,7 @@ import type { PlaySessionLike } from "@/project/sessionRuntimeTypes"
 
 export const CUTSCENE_END_LABEL = "cutscene_end";
 export const CUTSCENE_LOCK_FLAG = "cutscene:inputLocked";
+export const CUTSCENE_LOCK_PLAYER_FLAG = "cutscene:lockPlayer";
 export const CUTSCENE_SKIPPABLE_FLAG = "cutscene:skippable";
 export const CUTSCENE_HIDE_HUD_FLAG = "cutscene:hideHud";
 /** `.play-stage` 에 붙는 클래스. HUD 억제 규칙은 styles/runtime/playSurface.css 가 소유한다. */
@@ -57,6 +58,7 @@ export function endCutsceneControl(session: PlaySessionLike, ownerId?: string): 
 
 function clearCutsceneControl(session: PlaySessionLike): void {
   delete session.flags[CUTSCENE_LOCK_FLAG];
+  delete session.flags[CUTSCENE_LOCK_PLAYER_FLAG];
   delete session.flags[CUTSCENE_SKIPPABLE_FLAG];
   for (const key of Object.keys(session.flags)) {
     if (key.startsWith(OWNER_PREFIX) || key.startsWith(OWNER_SKIPPABLE_PREFIX)) delete session.flags[key];
@@ -66,12 +68,29 @@ function clearCutsceneControl(session: PlaySessionLike): void {
   runtime.cutscene.skippable = false;
 }
 
+export function isTransientCutsceneFlag(key: string): boolean {
+  return key === CUTSCENE_LOCK_FLAG
+    || key === CUTSCENE_LOCK_PLAYER_FLAG
+    || key === CUTSCENE_SKIPPABLE_FLAG
+    || key.startsWith(OWNER_PREFIX)
+    || key.startsWith(OWNER_SKIPPABLE_PREFIX);
+}
+
+/** 세이브 직렬화·로드 시 실행 중 인터프리터가 없는 일시 컷신 잠금 플래그를 제거한다. */
+export function stripTransientCutsceneFlags(flags: Record<string, boolean>): Record<string, boolean> {
+  const cleaned: Record<string, boolean> = {};
+  for (const [key, value] of Object.entries(flags)) {
+    if (!isTransientCutsceneFlag(key)) cleaned[key] = value;
+  }
+  return cleaned;
+}
+
 export function releaseCutsceneControlForOwner(session: PlaySessionLike, ownerId: string | undefined): void {
   if (session.flags[ownerFlag(ownerId)] === true) endCutsceneControl(session, ownerId);
 }
 
 export function isCutsceneInputLocked(session: Pick<PlaySessionLike, "flags">): boolean {
-  return session.flags[CUTSCENE_LOCK_FLAG] === true || session.flags["cutscene:lockPlayer"] === true;
+  return session.flags[CUTSCENE_LOCK_FLAG] === true || session.flags[CUTSCENE_LOCK_PLAYER_FLAG] === true;
 }
 
 export function isCutsceneSkippable(session: Pick<PlaySessionLike, "flags">): boolean {

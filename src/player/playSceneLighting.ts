@@ -24,6 +24,12 @@ import { normalizeVisualTopOverhangPx } from "@/project/mapVisualBounds";
 
 const LIGHTING_MASK_TEXTURE_KEY = "__oprn_lighting_mask";
 
+export function resetLightingTransition(scene: PlaySceneContext): void {
+  scene.lightingTransition = null;
+  scene.lightingMaskSignature = "";
+  resolveLightingWaiters(scene);
+}
+
 export function installLightingLayer(scene: PlaySceneContext): void {
   if (scene.lightingOverlayImage && scene.lightingMaskTexture) return;
   const camera = scene.cameras.main;
@@ -47,6 +53,14 @@ export function installLightingLayer(scene: PlaySceneContext): void {
   scene.lightingFixedAccumulatorMs = 0;
   scene.lightingTransition = null;
   scene.lightingTransitionWaiters = [];
+  const cleanup = (): void => {
+    resetLightingTransition(scene);
+    scene.lightingOverlayImage = undefined;
+    scene.lightingMaskTexture = undefined;
+    scene.lightingOverlayBlend = undefined;
+  };
+  scene.events?.once("shutdown", cleanup);
+  scene.events?.once("destroy", cleanup);
 }
 
 export function updateLighting(scene: PlaySceneContext, deltaMs: number): void {

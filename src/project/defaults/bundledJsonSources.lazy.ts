@@ -22,6 +22,15 @@ import desertEastTilesetUrl from "@/assets/desertEastTileset.json?url";
 import prehistoricTilesetUrl from "@/assets/prehistoricTileset.json?url";
 import skyIslandTilesetUrl from "@/assets/skyIslandTileset.json?url";
 import beodeulWavePlacesTilesetUrl from "@/assets/beodeulWavePlacesTileset.json?url";
+import monsterKitClimateUrl from "@/assets/monsterKit/monster-climate.json?url";
+import monsterKitCoastUrl from "@/assets/monsterKit/monster-coast.json?url";
+import monsterKitDungeonUrl from "@/assets/monsterKit/monster-dungeon.json?url";
+import monsterKitGymsUrl from "@/assets/monsterKit/monster-gyms.json?url";
+import monsterKitOverworldUrl from "@/assets/monsterKit/monster-overworld.json?url";
+import monsterKitRoomsUrl from "@/assets/monsterKit/monster-rooms.json?url";
+import monsterKitWildUrl from "@/assets/monsterKit/monster-wild.json?url";
+import reliefRampArtUrl from "@/project/relief/rampArt.json?url";
+import reliefSheerArtUrl from "@/project/relief/sheerArt.json?url";
 
 const URLS: Record<BundledJsonKey, string> = {
   jpCityTileset: jpCityTilesetUrl,
@@ -42,6 +51,15 @@ const URLS: Record<BundledJsonKey, string> = {
   prehistoricTileset: prehistoricTilesetUrl,
   skyIslandTileset: skyIslandTilesetUrl,
   beodeulWavePlacesTileset: beodeulWavePlacesTilesetUrl,
+  monsterKitClimate: monsterKitClimateUrl,
+  monsterKitCoast: monsterKitCoastUrl,
+  monsterKitDungeon: monsterKitDungeonUrl,
+  monsterKitGyms: monsterKitGymsUrl,
+  monsterKitOverworld: monsterKitOverworldUrl,
+  monsterKitRooms: monsterKitRoomsUrl,
+  monsterKitWild: monsterKitWildUrl,
+  reliefRampArt: reliefRampArtUrl,
+  reliefSheerArt: reliefSheerArtUrl,
 };
 
 export type { BundledJsonData, BundledJsonKey, BundledJsonReader };

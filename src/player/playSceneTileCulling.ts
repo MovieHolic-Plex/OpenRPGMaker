@@ -60,6 +60,7 @@ const CULL_MARGIN_TILES = 2;
 
 const cullableTiles = new WeakMap<object, CullableTiles>();
 const appliedWindows = new WeakMap<object, TileWindow>();
+const hookedDestroyImages = new WeakSet<CullableImage>();
 
 /**
  * renderTiles 가 타일을 다시 만들기 전에, 그리고 씬이 내려갈 때 호출한다.
@@ -104,7 +105,11 @@ export function trackCullableTile(host: object, image: CullableImage, x: number,
   const index = tiles.images.length;
   tiles.indices.set(image, index);
   // Destruction is independent of camera buckets and same-window early returns.
-  image.once?.("destroy", () => untrackCullableTile(host, image));
+  // WeakSet 으로 타일 객체당 destroy 리스너를 최대 1회만 연결한다(중복 누적 누수 방지).
+  if (!hookedDestroyImages.has(image)) {
+    hookedDestroyImages.add(image);
+    image.once?.("destroy", () => untrackCullableTile(host, image));
+  }
   tiles.images.push(image);
   tiles.xs.push(x);
   tiles.ys.push(y);

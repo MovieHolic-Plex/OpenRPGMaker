@@ -16,7 +16,7 @@ import { refreshGrowthVitals } from "@/project/growth/vitals";
 import type { GrowthMenuTab } from "@/player/playerGrowthMenu";
 import { store } from "@/project/store";
 import { getPlayerPreferences, updatePlayerPreferences } from "@/player/playerPreferences";
-import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, readAutosave, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
+import { createSaveSnapshot, getSaveSlotStatus, listSaveSlots, readAutosave, safeLocalStorage, saveToSlot, type SaveSlotIndex } from "@/player/saveSlots";
 import { renderPlayerStatusMenu, statusMenuControls } from "@/player/playerStatusMenu";
 import { activateHubElement, hubBoardFor, hubMenuEnabled, isHubTileCommand, nextHubFocus, renderHubMenu, HUB_TILE_COMMANDS } from "@/player/hubMenu";
 import { equipmentSlots } from "@/project/equipmentSlots";
@@ -195,11 +195,12 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       ? nextCommand : available[0] ?? "items";
     initialMenuSelection = false;
     selectedDetailActionIndex = detailCursors.get(detailStateKey()) ?? defaultDetailCursor();
+    const storage = safeLocalStorage();
     const menuOptions: PlayerStatusMenuOptions = {
       project,
       session,
-      slots: listSaveSlots(window.localStorage),
-      autosave: readAutosave(window.localStorage),
+      slots: storage ? listSaveSlots(storage) : [],
+      autosave: storage ? readAutosave(storage) : { kind: "empty" },
       message,
       selectedCommand,
       mode,
@@ -632,7 +633,12 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       rejectInput("지금은 저장할 수 없습니다");
       return;
     }
-    const slots = listSaveSlots(window.localStorage);
+    const storage = safeLocalStorage();
+    if (!storage) {
+      rejectInput("저장소에 접근할 수 없습니다");
+      return;
+    }
+    const slots = listSaveSlots(storage);
     const slotState = getSaveSlotStatus(slots, slot);
     if (slotState.kind === "present" && confirmSaveSlot !== slot) {
       confirmSaveSlot = slot;
@@ -649,7 +655,7 @@ export function createPlayerStatusMenuController(options: PlayerStatusMenuContro
       rejectInput(`${slot}번 저장 칸에 저장하지 못했습니다`);
       return;
     }
-    const written = saveToSlot(window.localStorage, slot, snapshot);
+    const written = saveToSlot(storage, slot, snapshot);
     if (!written.ok) {
       rejectInput(`${slot}번 저장 칸에 저장하지 못했습니다 — ${written.message}`);
       return;
