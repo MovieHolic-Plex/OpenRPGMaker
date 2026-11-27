@@ -176,7 +176,7 @@ export const FS_ACT2_ENTRY_TUNE: Readonly<Record<string, number>> = {
 /** 우두머리(적 id → 배수). HP 는 1000 안팎에 묶고(√배수를 0.9~1.2 로) 나머지를 공격·마력으로. */
 export const FS_ACT2_ENTRY_ELITES: Readonly<Record<string, number>> = {
   enemy_fs2_cinder_golem: 1.9,
-  enemy_fs2_elite_warden: 4.97,
+  enemy_fs2_elite_warden: 2.35,
   enemy_fs2_elite_frostmane: 1.8,
   enemy_fs2_tower_sentinel: 1.78,
 };
@@ -649,9 +649,8 @@ export const FS_TRAIT_PILOT: Readonly<Record<string, { readonly rates: Readonly<
   // 서리 박쥐 — 무기 무효, 불 약점. 눈 북쪽 1 85/85/42 → 4.5/62.5/0, 얼음 호수 90.5/90.5/41.5 → 9/64.5/0.
   enemy_fs2_frost_bat_t_fs2_frost_bats: { rates: { ...WEAPON_IMMUNE, fire: "A" }, hp: 1.6 },
   enemy_fs2_frost_bat_t_fs2_frost_bats_lake: { rates: { ...WEAPON_IMMUNE, fire: "A" }, hp: 1.6 },
-  // 달아오른 숯덩이 골렘(혼자 나오는 무리) — 무기·주먹 무효, 물 약점(원래 B). 100/100/99.5 → 34/62.5/0(11-08, ×2.7).
-  // 11-12 재측정 70/87.5/0 → HP ×1.5 더(×4.05) 48.5/64/0.
-  enemy_fs2_cinder_golem: { rates: { ...WEAPON_IMMUNE, hit: "E", water: "A" }, hp: 4.05 },
+  // 달아오른 숯덩이 골렘(혼자 나오는 무리) — 무기·주먹 무효, 물 약점. 2인 초입 기준 5022 HP 과다 소모전을 ~2480 HP 로 완화.
+  enemy_fs2_cinder_golem: { rates: { ...WEAPON_IMMUNE, hit: "E", water: "A" }, hp: 2.0 },
   // 탑 파수 기계(혼자 나오는 무리) — 무기·주먹 무효, 번개 약점(원래 A). 100/100/99 → 18/65/0.
   enemy_fs2_tower_sentinel: { rates: { ...WEAPON_IMMUNE, hit: "E", thunder: "A" }, hp: 2.1 },
   // 재까마귀 ×3: 재로 된 몸이라 무기·주먹 무효, 물 약점(원래 D → A). 100/100/64 → 1.5/66/0.

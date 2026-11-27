@@ -23,7 +23,7 @@ const TOWER = "oprn-bgm-dfk-boss-v0-0";
 
 export const FS_AREA_BATTLE_BGM: Readonly<Record<string, string>> = {
   fs_forest: FOREST, fs_forest_edge: FOREST, fs_forest_stream: FOREST, fs_forest_thicket: FOREST, fs_forest_glade: FOREST, fs_forest_shrine: FOREST,
-  fs_vault: VAULT, fs_vault_b3: VAULT, fs_vault_b4: VAULT,
+  fs_vault: VAULT, fs_vault_b3: VAULT, fs_vault_b4: VAULT, fs2_well_shaft: VAULT,
   fs2_hub_night: NIGHT,
   map_field_north_1: NORTH, map_field_north_2: NORTH, fs2_dawnwell: NORTH,
   fs2_fort_court: FORT, fs2_fortress: FORT, fs2_fortress_f2: FORT,
@@ -42,6 +42,7 @@ export const FS_BOSS_TROOPS: readonly string[] = [
   "troop_fs2_elite_frost",
   "troop_fs2_tower_sentinel",
   "troop_fs2_sarah",
+  "troop_fs2_well_beast",
 ];
 
 const BATTLE_CUE = "m2-027-change-system-bgm";
@@ -82,13 +83,16 @@ export function applyFallenBattleMusic(project: Project): void {
     map.battleBgmResourceId = resourceId;
   }
   const bossCue = new Map<string, string>([...FS_BOSS_TROOPS.map((id) => [id, FS_BATTLE_BOSS] as const), ...FS_ACT_FINAL_TROOPS.map((id) => [id, FS_BATTLE_ACT_FINAL] as const)]);
+  const lists = allLists(project);
+  if (lists.some((l) => l.some(isBattleCue))) throw new Error("[fallen-star] 전투곡 덮어쓰기는 battleMusic.ts 한곳에서만 건다 — 다른 곳에 남은 m2-027 cue battle 을 지워라");
   let wrapped = 0;
-  for (const list of allLists(project)) {
-    if (list.some(isBattleCue)) throw new Error("[fallen-star] 전투곡 덮어쓰기는 battleMusic.ts 한곳에서만 건다 — 다른 곳에 남은 m2-027 cue battle 을 지워라");
+  for (const list of lists) {
     for (let i = list.length - 1; i >= 0; i -= 1) {
-      const c = list[i] as unknown as { kind: string; troopId?: string };
+      const c = list[i] as unknown as { kind: string; troopId?: string; defeatBranch?: CommandList; escapeBranch?: CommandList };
       const resourceId = c.troopId ? bossCue.get(c.troopId) : undefined;
       if (c.kind !== "battleProcessing" || !resourceId) continue;
+      if (Array.isArray(c.defeatBranch) && c.defeatBranch.length > 0) c.defeatBranch.unshift(cue({ operation: "reset" }));
+      if (Array.isArray(c.escapeBranch) && c.escapeBranch.length > 0) c.escapeBranch.unshift(cue({ operation: "reset" }));
       list.splice(i + 1, 0, cue({ operation: "reset" }));
       list.splice(i, 0, cue({ operation: "set", resourceId, volume: "100" }));
       wrapped += 1;

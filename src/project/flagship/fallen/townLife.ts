@@ -161,7 +161,10 @@ const HOUSE_FINDS: Readonly<Record<string, readonly { label: RegExp; loot: Loot 
   ],
   // 통은 흔들어 뒤지는 수납이라 보상을 식당 찬장(여닫는 것)으로 옮긴다.
   fs_bakery_home: [{ label: /찬장/, loot: { kind: "item", itemId: "fs_bread_warm" } }],
-  fs_stargazer_home: [{ label: /여행 가방/, loot: { kind: "gold", amount: 80 } }],
+  fs_stargazer_home: [
+    { label: /^상자$/, loot: { kind: "gold", amount: 80 } },
+    { label: /^옷장$/, loot: { kind: "item", itemId: "item_potion", amount: 1 } },
+  ],
   fs_lisa_home: [
     { label: /화장대/, loot: { kind: "item", itemId: "item_potion", amount: 2 } },
     // 안방에는 화장대 하나 — 60G 는 옷방 상자에 둔다(방마다 수납 하나).

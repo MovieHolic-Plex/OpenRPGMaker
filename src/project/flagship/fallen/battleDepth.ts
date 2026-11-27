@@ -130,6 +130,7 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
   // 숲늑대는 한 번 더 날래게. 조수와 같은 칸(upsert_enemy lungeSpeedPercent).
   for (const enemy of db.enemies) if (enemy.id === "enemy_fs_wolf" || enemy.id === "enemy_wolf_grey") enemy.lungeSpeedPercent = 130;
 
+  tune("skill_heal", { power: 100, description: "아군 한 명의 HP를 크게 회복한다." });
   // ── 연계기(크로노 트리거식) — 조수와 같은 도구로 저작한다 ─────────────────────────────
   exec(project, "upsert_combo_tech", {
     id: FS_COMBO_FLAME_CROSS,
@@ -138,7 +139,7 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
     actorIds: [KAEL, ELENA],
     requires: [{ actorId: KAEL, skillId: "skill_hero_cross_slash" }, { actorId: ELENA, skillId: "skill_mage_fireball" }],
     mpCosts: [{ actorId: KAEL, mp: 3 }, { actorId: ELENA, mp: 5 }],
-    scope: "enemy", kind: "damage", statistic: "attack", power: 62, elementId: "fire", hits: 2,
+    scope: "enemy", kind: "damage", statistic: "attack", power: 76, elementId: "fire", hits: 2, combinedStats: true,
     stateEffects: [{ stateId: FS_BURN_STATE, chance: 60, operation: "add" }],
     choreographyId: "skill_hero_cross_slash",
   });
@@ -149,14 +150,14 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
     actorIds: [ELENA, IRIS],
     requires: [{ actorId: ELENA, skillId: "skill_mage_blizzard" }, { actorId: IRIS, skillId: "skill_gunner_snipe" }],
     mpCosts: [{ actorId: ELENA, mp: 8 }, { actorId: IRIS, mp: 5 }],
-    scope: "allEnemies", kind: "damage", statistic: "mind", power: 70, elementId: "ice",
+    scope: "allEnemies", kind: "damage", statistic: "mind", power: 120, elementId: "ice", combinedStats: true,
     stateEffects: [{ stateId: "state_agility_down", chance: 100, operation: "add" }],
     choreographyId: "skill_ranger_storm_arrow",
   });
   exec(project, "upsert_combo_tech", {
     id: FS_COMBO_STARFALL,
     name: "폴른 스타",
-    description: "적 전체에 빛 피해를 준다.\n위력은 셋의 공격력과 마력을 더한 값이다.\n셋이 힘을 모아 별 하나를 떨어뜨린다.",
+    description: "적 전체에 큰 빛 피해를 준다.\n위력은 셋의 공격력과 마력을 더한 값이다.\n셋이 힘을 모아 별 하나를 떨어뜨린다.",
     actorIds: [KAEL, ELENA, IRIS],
     requires: [
       { actorId: KAEL, skillId: "skill_hero_flame_sword" },
@@ -164,9 +165,11 @@ export function applyFallenBattleDepth(project: Project, exec: ToolExec): void {
       { actorId: IRIS, skillId: "skill_gunner_butt_strike" },
     ],
     mpCosts: [{ actorId: KAEL, mp: 8 }, { actorId: ELENA, mp: 10 }, { actorId: IRIS, mp: 8 }],
-    scope: "allEnemies", kind: "damage", statistic: "attack", power: 40, elementId: "holy", combinedStats: true,
+    scope: "allEnemies", kind: "damage", statistic: "attack", power: 100, elementId: "holy", combinedStats: true,
     choreographyId: "skill_mage_starfall",
   });
+  const starfall = project.database.skills.find((s) => s.id === FS_COMBO_STARFALL);
+  if (starfall) starfall.damageFormula = "power + (a.atk + a.mind) * 0.5 - b.def / 2";
 }
 
 /**

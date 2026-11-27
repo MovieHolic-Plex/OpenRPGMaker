@@ -299,12 +299,12 @@ function runGap(draft: Project, map: GameMap, args: Record<string, unknown>, ctx
   const hint = typeof args.hint === 'string' && args.hint.trim() ? args.hint.trim() : `${withJosa(who.join('·'), '이/가')} 있으니 이 틈을 뛰어넘을 수 있겠다.`;
   const blockedLine = typeof args.blockedText === 'string' && args.blockedText.trim() ? args.blockedText.trim() : `${base.blocked} ${withJosa(who.join('·'), '이/가')} 있다면…`;
   const gateConditions = gateSwitches.map((gate) => ({ kind: 'switch', switchId: gate.switchId, value: true }) as const);
-  const sidePages = (eventId: string, jump: Dir): EventPage[] => {
+  const sidePages = (eventId: string, at: { x: number; y: number }, jump: Dir): EventPage[] => {
     const [jx, jy] = DIRS[jump];
     // 도약 — 기본 점프(0.3초·낮은 호)는 틈 너머로 순간이동한 것처럼 보였다(2026-10-29 폴른 스타 B7 검수).
-    // 한 박자 숨 고르고(제자리 웅크림 대신 짧은 기다림) → 휙 소리 → 높고 느린 호로 넘어 → 착지 먼지.
+    // 인접·대각선 칸에서 확인 키를 눌러도 막힌 틈/벽 안으로 뛰지 않게 먼저 도약 기준 칸(at)에 정확히 세운 뒤 뛴다.
     const leap: Command[] = [
-      { kind: 'moveEvent', eventId: '@player', route: { moves: [{ kind: 'turn', dir: jump }], repeat: false, wait: true, skippable: false } },
+      { kind: 'moveEvent', eventId: '@player', route: { moves: [{ kind: 'placeAt', x: at.x, y: at.y }, { kind: 'turn', dir: jump }], repeat: false, wait: true, skippable: false } },
       { kind: 'wait', ms: 250 },
       { kind: 'playAudio', resourceId: 'cc0-se-orp-battle-swing', loop: false, channel: 'se' } as Command,
       { kind: 'moveEvent', eventId: '@player', route: { moves: [{ kind: 'jump', dx: jx * (width + 1), dy: jy * (width + 1), heightPx: 26 + 8 * width, durationMs: 560 + 140 * width }, { kind: 'turn', dir: jump }], repeat: false, wait: true, skippable: false } },
@@ -321,7 +321,7 @@ function runGap(draft: Project, map: GameMap, args: Record<string, unknown>, ctx
   };
   const eventIds = [id, farId];
   for (const [eventId, at, jump, label] of [[id, { x, y }, dir, eventName], [farId, far, OPPOSITE[dir], `${eventName} (건너편)`]] as const) {
-    const event: GameEvent = { id: eventId, name: label, x: at.x, y: at.y, trigger: { kind: 'action' }, commands: [], pages: sidePages(eventId, jump) };
+    const event: GameEvent = { id: eventId, name: label, x: at.x, y: at.y, trigger: { kind: 'action' }, commands: [], pages: sidePages(eventId, at, jump) };
     assertEventShape(event, warnings, event, draft);
     upsertEventIntoMap(map, event);
   }

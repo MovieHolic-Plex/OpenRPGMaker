@@ -42,7 +42,14 @@ const EXACT_REWRITES: Readonly<Record<string, string>> = {
   "심문관보다 먼저 가 다오.\n자세한 얘기는 돌아오면 하마.": "심문관보다 먼저 가 줘.\n자세한 얘기는 돌아오면 다 해 줄게.",
   "발렌은 반드시 다시 온다.\n그 전에 떠나거라.": "발렌은 꼭 다시 와.\n그 전에 어서 떠나.",
   "북문으로 나가거라. 숲길 끝이 공터다.\n브람한테 먼저 들르고.": "북문으로 나가 봐. 숲길 끝에 공터가 있어.\n브람한테 먼저 들르고.",
+  "북문을 나서면 바로 숲이다. 조심하거라.": "북문 나서면 바로 숲이야. 조심해서 다녀와.",
   "동문을 나서면 바로 숲이다. 조심하거라.": "북문 나서면 바로 숲이야. 조심해서 다녀와.",
+  "채비해서 오너라. 너무 늦지는 말고.": "채비해서 와. 너무 늦지는 말고.",
+  "우선 아래부터 살피고 오너라.": "우선 아래부터 살피고 와.",
+  "렌즈가 뭘 비추는지 보고 오너라.": "렌즈가 뭘 비추는지 보고 와.",
+  "위로 올라오너라. 망원경 곁이다.": "위로 올라와. 망원경 곁에 있어.",
+  "가져오면 이유는 들어 주마.": "구해 오면 이유는 들어 줄게.",
+  "달의 방에 들어온 죄부터 씻어 주마.": "달의 방에 발 들인 죄부터 치르게 해 주지.",
   "늦지는 말거라. 심문관이 먼저 닿을지도 모르니.": "서둘러. 심문관이 먼저 찾아낼지도 모르니까.",
   "북문 밖이 바로 숲이다.\n숲에 들거든 브람부터 찾거라.": "북문 밖이 바로 숲이야.\n들어가면 브람부터 찾아.",
   "브람이 말한 북쪽 끝 공터로 가 보거라.": "브람이 알려 준 북쪽 끝 공터로 가 봐.",
@@ -154,8 +161,13 @@ const EXACT_REWRITES: Readonly<Record<string, string>> = {
  * 2차: 누락된 번역체·문어체 어미를 부드럽게 다듬는 보조 규칙.
  * 단말(terminal)·석판(sign)·옛 규약 인용문은 건드리지 않는다.
  */
-const SOFT_PATTERNS: readonly (readonly [RegExp, string])[] = [
-  [/([가-힣]+)로군([.!?])/g, "$1이네$2"],
+function hasBatchim(word: string): boolean {
+  const code = word.charCodeAt(word.length - 1);
+  return code >= 0xac00 && code <= 0xd7a3 && (code - 0xac00) % 28 !== 0;
+}
+
+const SOFT_PATTERNS: readonly (readonly [RegExp, string | ((m: string, stem: string, punc: string) => string)])[] = [
+  [/([가-힣]+)로군([.!?])/g, (_, stem, punc) => `${stem}${hasBatchim(stem) ? "이네" : "네"}${punc}`],
   [/([가-힣]+)였군([.!?])/g, "$1였네$2"],
   [/([가-힣]+)었군([.!?])/g, "$1었네$2"],
   [/([가-힣]+)았군([.!?])/g, "$1았네$2"],
@@ -164,7 +176,7 @@ const SOFT_PATTERNS: readonly (readonly [RegExp, string])[] = [
   [/([가-힣]+)더군([.!?])/g, "$1더라$2"],
   [/([가-힣]+)이구먼([.!?])/g, "$1이네$2"],
   [/([가-힣]+)구먼([.!?])/g, "$1네$2"],
-  [/([가-힣]+)일세([.!?])/g, "$1야$2"],
+  [/([가-힣]+)일세([.!?])/g, (_, stem, punc) => `${stem}${hasBatchim(stem) ? "이야" : "야"}${punc}`],
   [/무언가가 그것을/g, "누군가 그걸"],
   [/집에 돌아가고 싶을 뿐이에요/g, "그냥 집에 돌아가고 싶어요"],
   [/등은 맡겨라/g, "뒤는 맡겨"],
@@ -181,7 +193,9 @@ function polishBody(body: string, style?: string, speaker?: string): string {
     if (next.includes(from)) next = next.split(from).join(to);
   }
   if (next === body) {
-    for (const [re, rep] of SOFT_PATTERNS) next = next.replace(re, rep);
+    for (const [re, rep] of SOFT_PATTERNS) {
+      next = typeof rep === "string" ? next.replace(re, rep) : next.replace(re, rep);
+    }
   }
   return next;
 }

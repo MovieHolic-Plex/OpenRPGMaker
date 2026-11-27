@@ -188,11 +188,13 @@ function applyCrossActJournal(project: Project): void {
     [journalWrite("fs2_first", "kael", "별 떨어진 밤", "북쪽 숲에서 은빛 알이 열렸다. 「잘 지내」라는 말에 안에 있던 아이가 대답했다.")],
     "fs2_first",
   );
-  // 1막 토마 빵집 — 납작빵 의뢰 완료
+  // 1막 토마 빵집 — 납작빵 의뢰 완료 (이리스가 합류한 뒤에만 이리스 일지를 적는다)
   injectAfterSetSwitch(
     project.maps.fs_bakery_home,
     "sw_fs_q_bread_done",
-    [journalWrite("fs2_bread", "kael", "이튿날", "이리스가 처음으로 빵을 먹었다. 따뜻해서 좋다고 했다.", { learnActorId: "actor_fs_iris", learnSkillId: "skill_gunner_shot" })],
+    [fork(sw("sw_fs_iris_joined"), [
+      journalWrite("fs2_bread", "kael", "이튿날", "이리스가 처음으로 빵을 먹었다. 따뜻해서 좋다고 했다.", { learnActorId: "actor_fs_iris", learnSkillId: "skill_gunner_shot" }),
+    ])],
     "fs2_bread",
   );
   // 1막 지하 4층 — 단말 대답
@@ -284,13 +286,33 @@ function applyCrossActBonds(project: Project): void {
     restPage.commands = [...restPage.commands, bondBlock];
   }
 
-  // 하늘탑 4층에서 이리스가 일지를 되찾을 때 유대 +2
+  // 하늘탑 4층에서 이리스가 일지를 되찾을 때 유대 +2 + 유대 판정 호출
   injectAfterSetSwitch(
     project.maps.fs2_sky_tower_f4,
     "sw_fs2_iris_be_well",
-    [addVar(VAR_FS_BOND_IRIS, 2)],
+    [
+      addVar(VAR_FS_BOND_IRIS, 2),
+      { kind: "callCommonEvent", commonEventId: "ce_party_bond_check" } as unknown as Command,
+    ],
     "__bond_iris_tower__",
   );
+
+  // ce_party_bond_check 에 이리스 유대 >= 2 달성 보상을 연결한다(var_fs_bond_iris 실제 소비).
+  const SW_IRIS_BOND_DONE = "sw_fs_bond_iris_unlocked";
+  ensureSwitch(project, SW_IRIS_BOND_DONE, "유대 해금: 이리스(별빛 약속 강화)");
+  const bondCheck = (project.commonEvents ?? []).find((ce) => ce.id === "ce_party_bond_check");
+  if (bondCheck && Array.isArray(bondCheck.commands)) {
+    bondCheck.commands.push(
+      fork(
+        { kind: "all", conditions: [{ kind: "variable", variableId: VAR_FS_BOND_IRIS, op: ">=", value: 2 }, sw(SW_IRIS_BOND_DONE, false)] },
+        [
+          setSw(SW_IRIS_BOND_DONE),
+          { kind: "learnSkill", actorId: "actor_fs_iris", skillId: "skill_gunner_snipe" } as unknown as Command,
+          narrate("이리스와의 유대가 깊어졌다!\n이리스가 「충전 광선포」의 감각을 되찾고 「별빛 약속」이 더 선명해졌다.", { context: "system" }),
+        ],
+      ),
+    );
+  }
 }
 
 function applyAct2CraftingAndUpgrades(project: Project, exec: Exec): void {
@@ -344,23 +366,44 @@ function applyAct2CraftingAndUpgrades(project: Project, exec: Exec): void {
     ...act2Recipes,
   ];
 
-  // 장비 강화 규칙 3종 (엔진 itemUpgrades)
+  // 장비 강화 규칙 4종 (엔진 itemUpgrades — 새라의 「별쇠 조각」 포함)
+  const VAR_UPG_OK = "var_fs2_upgrade_result";
+  ensureVariable(project, VAR_UPG_OK, "장비 강화 결과");
   const equipIds = new Set(db.equipment.map((e) => e.id));
-  const upgrades: { id: string; fromItemId: string; toItemId: string; goldCost: number; ingredients: { itemId: string; count: number }[] }[] = [
-    { id: "fs2_upg_star_sword", fromItemId: "equip_gen_sword_steel", toItemId: "equip_fs_sword_star", goldCost: 240, ingredients: [{ itemId: FS2_MAT_ASH, count: 2 }] },
-    { id: "fs2_upg_star_spear", fromItemId: "equip_gen_spear_iron", toItemId: "equip_fs_spear_star", goldCost: 260, ingredients: [{ itemId: FS2_MAT_FROST, count: 2 }] },
-    { id: "fs2_upg_crystal_staff", fromItemId: "equip_gen_wand_spark", toItemId: "equip_gen_staff_crystal", goldCost: 220, ingredients: [{ itemId: FS2_MAT_CIRCUIT, count: 2 }] },
+  const upgrades: { id: string; label: string; fromItemId: string; toItemId: string; goldCost: number; ingredients: { itemId: string; count: number }[] }[] = [
+    { id: "fs2_upg_star_sword", label: "별쇠 장검 (강철 검 + 잿불 핵×2 · 240G)", fromItemId: "equip_gen_sword_steel", toItemId: "equip_fs_sword_star", goldCost: 240, ingredients: [{ itemId: FS2_MAT_ASH, count: 2 }] },
+    { id: "fs2_upg_star_spear", label: "별빛 창 (철 창 + 서리 결정×2 · 260G)", fromItemId: "equip_gen_spear_iron", toItemId: "equip_fs_spear_star", goldCost: 260, ingredients: [{ itemId: FS2_MAT_FROST, count: 2 }] },
+    { id: "fs2_upg_star_spear_iron", label: "별빛 창 · 별쇠 단조 (철 창 + 별쇠 조각×1 · 100G)", fromItemId: "equip_gen_spear_iron", toItemId: "equip_fs_spear_star", goldCost: 100, ingredients: [{ itemId: "item_fs2_star_iron", count: 1 }] },
+    { id: "fs2_upg_crystal_staff", label: "수정 지팡이 (불꽃 마법봉 + 고대 회로×2 · 120G)", fromItemId: "equip_gen_wand_spark", toItemId: "equip_gen_staff_crystal", goldCost: 120, ingredients: [{ itemId: FS2_MAT_CIRCUIT, count: 2 }] },
   ];
-  for (const u of upgrades) {
-    if (equipIds.has(u.fromItemId) && equipIds.has(u.toItemId)) {
-      exec(project, "upsert_item_upgrade", { upgrade: { ...u, target: "equipment" } });
-    }
+  const activeUpgrades = upgrades.filter((u) => equipIds.has(u.fromItemId) && equipIds.has(u.toItemId));
+  for (const u of activeUpgrades) {
+    exec(project, "upsert_item_upgrade", { upgrade: { id: u.id, fromItemId: u.fromItemId, toItemId: u.toItemId, goldCost: u.goldCost, ingredients: u.ingredients, target: "equipment" } });
   }
 
-  // 서리 가도 행상 베른(ev_fs2_snow_merchant)에 상점 + 조합 공방 선택지 연결
+  // 서리 가도 행상 베른(ev_fs2_snow_merchant)에 상점 + 조합 공방 + 장비 강화 선택지 연결
   const snowMap = project.maps.map_snow_north_1;
   const bern = snowMap?.events.find((e) => e.id === "ev_fs2_snow_merchant");
   const allRecipeIds = (project.system.craftRecipes ?? []).map((r) => r.id);
+  const upgradeMenu: Command = {
+    kind: "choices",
+    prompt: "어떤 장비를 벼려 볼까? (강화할 장비는 가방에 있어야 한다)",
+    cancelBehavior: `choice${activeUpgrades.length + 1}`,
+    options: [
+      ...activeUpgrades.map((u) => ({
+        text: u.label,
+        branch: [
+          { kind: "applyItemUpgrade", upgradeId: u.id, resultVariableId: VAR_UPG_OK } as unknown as Command,
+          fork(
+            { kind: "variable", variableId: VAR_UPG_OK, op: ">=", value: 1 },
+            [say("떠돌이 행상 베른", "불길이 딱 좋았어! 손에 착 감길 걸세.")],
+            [say("떠돌이 행상 베른", "재료나 골드, 혹은 가방 속 기본 장비가 모자라네. 벗어 두고 다시 오게.")],
+          ),
+        ],
+      })),
+      { text: "그만둔다", branch: [] },
+    ],
+  } as unknown as Command;
   if (bern?.pages) {
     for (const p of bern.pages) {
       const shopIdx = p.commands.findIndex((c) => c.kind === "shop");
@@ -371,9 +414,10 @@ function applyAct2CraftingAndUpgrades(project: Project, exec: Exec): void {
         options: [
           { text: "물건을 산다", branch: [shopCmd] },
           { text: "재료를 조합한다", branch: [{ kind: "openCraftShop", recipeIds: allRecipeIds, title: "베른의 노천 공방", speaker: "떠돌이 행상 베른" } as Command] },
+          { text: "장비를 강화한다", branch: [upgradeMenu] },
           { text: "다음에 들를게요", branch: [] },
         ],
-        cancelBehavior: "choice3",
+        cancelBehavior: "choice4",
       } as unknown as Command;
       p.commands.splice(shopIdx, 1, menuChoice);
     }

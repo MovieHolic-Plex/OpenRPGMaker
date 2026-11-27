@@ -149,7 +149,7 @@ export function wellData(project: Project, exec: Exec): void {
   // ⑤ 흙탕물 뿜기 — 한 사람 암흑 + 젖음(젖으면 번개를 맞는 쪽이 된다 — 엘레나에게 쏘면 번개 운용이 꼬인다).
   skill({ id: SKILL_MUD, name: "흙탕물 뿜기", scope: "enemy", type: "normal", power: 40, description: "썩은 흙탕물을 얼굴에 뿜는다. 눈이 흐려지고 몸이 젖는다.",
     effect: { kind: "damage", statistic: "mind", affects: "hp" }, elementId: "water",
-    stateEffects: [{ stateId: "state_blind", chance: 80, operation: "add" }, { stateId: "state_silence", chance: 50, operation: "add" }], animationId: "anim_gen_power_aura" });
+    stateEffects: [{ stateId: "state_blind", chance: 80, operation: "add" }, { stateId: "state_wet", chance: 80, operation: "add" }], animationId: "anim_gen_power_aura" });
   // ⑥ 물 속 탈피 — 예고(물에 몸을 담근다) 뒤 재생. 크게 때리면 끊긴다.
   skill({ id: SKILL_MOLT, name: "물 속 탈피", scope: "self", type: "normal", power: 0, variance: 0, hitRate: 100,
     description: "물에 몸을 담그고 허물을 벗는다. 새 살이 돋는 동안 상처가 아문다.\n담그는 동안 크게 다치면 물 밖으로 뛰쳐나온다.",

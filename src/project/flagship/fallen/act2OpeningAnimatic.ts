@@ -254,7 +254,7 @@ function carriageShot(): OpeningAnimatic {
       { atMs: 2650, text: "창 너머로, 작은 손이 세 번 두드렸다." },
     ], 4900),
   ], { keys: cam }, { kind: "fade", durationMs: 500 }, [
-    { id: "road-smolder", resourceId: SE.smolder, atMs: 0, durationMs: 5250, volume: 0.7, fadeInMs: 400, fadeOutMs: 600 },
+    { id: "road-air", resourceId: SE.air, atMs: 0, durationMs: 5250, volume: 0.72, fadeInMs: 400, fadeOutMs: 600 },
     { id: "knock-1", resourceId: SE.knock, atMs: 2700, durationMs: 420, volume: 0.85 },
     { id: "knock-2", resourceId: SE.knock, atMs: 3200, durationMs: 420, volume: 0.85 },
     { id: "knock-3", resourceId: SE.knock, atMs: 3700, durationMs: 480, volume: 0.9 },
