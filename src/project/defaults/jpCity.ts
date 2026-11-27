@@ -32,7 +32,6 @@ const RAILWAY_GROUPS = new Set(["jp:rail-track", "jp:prop:train"]);
 const sealed = new WeakSet<object>();
 function sealRailway(d: RailwayData): void {
   if (sealed.has(d)) return;
-  sealed.add(d);
   const block = (tile: number | undefined) => { if (tile !== undefined && tile >= 0 && tile < d.passability.length) d.passability[tile] = { up: false, down: false, left: false, right: false }; };
   for (const group of d.tileGroups) if (RAILWAY_GROUPS.has(group.id)) for (const tile of group.tileIds ?? []) block(tile);
   for (const kit of d.structureKits) {
@@ -47,6 +46,7 @@ function sealRailway(d: RailwayData): void {
     if (!buildings.has(kit.id)) continue;
     for (const row of kit.rows) for (const tile of [...(row.tiles ?? []), ...(row.upperTiles ?? [])]) if (tile >= 0 && d.priority[tile] === "upper") block(tile);
   }
+  sealed.add(d);
 }
 const marked = new WeakSet<object>();
 function markSupersededBuildings(kits: StructureKitDef[]): void {
