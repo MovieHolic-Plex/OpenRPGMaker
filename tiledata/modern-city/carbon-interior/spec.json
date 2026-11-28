@@ -148,6 +148,6622 @@
    ],
    "rule": "병원·클리닉 대기실에 북향으로 배치. 아랫줄 3칸 막힘.",
    "pixelSha256": "36e28df1701f6017db42a49570495fc455602caa9f4c53fcb4cc85123f6b1f78"
+  },
+  {
+   "id": "mc-c-bed-double",
+   "replaces": "mc-in-mci-bed-double",
+   "type": "prop",
+   "name": "더블 침대",
+   "en": "double bed with wooden headboard and quilted duvet",
+   "kind": "box",
+   "w": 2,
+   "h": 3,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "집",
+    "침실",
+    "호텔"
+   ],
+   "words": [
+    "더블 침대",
+    "double bed with wooden headboard and quilted duvet"
+   ],
+   "rule": "머리를 북쪽 벽에",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "f6f86ce938f53152d19f4ea44b62ff04f5f1467081b2d543f6be87bc0e102a4f"
+  },
+  {
+   "id": "mc-c-bed-single",
+   "replaces": "mc-in-mci-bed-single",
+   "type": "prop",
+   "name": "싱글 침대",
+   "en": "single bed with oak headboard and mint quilt",
+   "kind": "box",
+   "w": 1,
+   "h": 3,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     2
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "집",
+    "침실"
+   ],
+   "words": [
+    "싱글 침대",
+    "single bed with oak headboard and mint quilt"
+   ],
+   "rule": "머리를 북쪽 벽에",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "b28fa74460a5791aa5f8c0125f59e1e0e2c332808a6a3e973330208be71dbbdd"
+  },
+  {
+   "id": "mc-c-bedside",
+   "replaces": "mc-in-mci-bedside",
+   "type": "prop",
+   "name": "침대 협탁(스탠드)",
+   "en": "bedside nightstand with table lamp and clock",
+   "kind": "box",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "집"
+   ],
+   "words": [
+    "침대 협탁(스탠드)",
+    "bedside nightstand with table lamp and clock"
+   ],
+   "rule": "침대 옆",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "49244029a3939a09a750ff854e6ca59b4deac2e338ecaabce672f02cb394d023"
+  },
+  {
+   "id": "mc-c-armchair",
+   "replaces": "mc-in-mci-armchair",
+   "type": "prop",
+   "name": "1인 가죽 암체어",
+   "en": "compact leather armchair",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "집",
+    "거실",
+    "카페"
+   ],
+   "words": [
+    "1인 가죽 암체어",
+    "compact leather armchair"
+   ],
+   "rule": "소파 옆",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "2725df1455287aa5f272656b0fc73d3d21ccf1f6b67ae375f8c61522d4c370c3"
+  },
+  {
+   "id": "mc-c-sofa",
+   "replaces": "mc-in-mci-sofa",
+   "type": "prop",
+   "name": "3인 패브릭 소파",
+   "en": "three-seater navy fabric sofa with throw pillows",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "집",
+    "거실",
+    "로비",
+    "대기실"
+   ],
+   "words": [
+    "3인 패브릭 소파",
+    "three-seater navy fabric sofa with throw pillows"
+   ],
+   "rule": "거실·로비, 앞에 탁자",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "c1a0fb8dbe7ead48c5e1b4a36e49468b92ff8898a39caae181ef8152750660a3"
+  },
+  {
+   "id": "mc-c-coffee-table",
+   "replaces": "mc-in-mci-coffee-table",
+   "type": "prop",
+   "name": "거실 커피 테이블",
+   "en": "wooden living room coffee table with mug and magazine",
+   "kind": "box",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "집",
+    "거실",
+    "로비"
+   ],
+   "words": [
+    "거실 커피 테이블",
+    "wooden living room coffee table with mug and magazine"
+   ],
+   "rule": "소파 남쪽 1칸 앞",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "d4eff8e494eacff8a2130abb72ead516629d838012e050e8993098f62652abf2"
+  },
+  {
+   "id": "mc-c-kitchen",
+   "replaces": "mc-in-mci-kitchen",
+   "type": "prop",
+   "name": "시스템 주방 카운터",
+   "en": "modern system kitchen counter with sink stove and kettle",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "집",
+    "부엌",
+    "카페"
+   ],
+   "words": [
+    "시스템 주방 카운터",
+    "modern system kitchen counter with sink stove and kettle"
+   ],
+   "rule": "북쪽 벽 앞",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "53d639b3833bd0819ac1fc7c7825185e6210b2bdbe227155b4fcdb9b02f59460"
+  },
+  {
+   "id": "mc-c-fridge",
+   "replaces": "mc-in-mci-fridge",
+   "type": "prop",
+   "name": "가정용 냉장고",
+   "en": "home refrigerator with magnets and memos",
+   "kind": "box",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "집",
+    "부엌"
+   ],
+   "words": [
+    "가정용 냉장고",
+    "home refrigerator with magnets and memos"
+   ],
+   "rule": "북쪽 벽 앞, 조리대 옆",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "b9dc49bccb17e2996a95ac6c555f6870cf1124d8e8adde831736ecea66570ebe"
+  },
+  {
+   "id": "mc-c-ac-wall",
+   "replaces": "mc-in-mci-ac-wall",
+   "type": "prop",
+   "name": "벽걸이 에어컨",
+   "en": "wall-mounted split air conditioner unit",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "에어컨",
+    "집",
+    "사무실"
+   ],
+   "words": [
+    "벽걸이 에어컨",
+    "wall-mounted split air conditioner unit"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "5cfbabe00dc109465aa2e5b09613f606addeeb2664420795f9c0fd5c0cae02e9"
+  },
+  {
+   "id": "mc-c-art-frame",
+   "replaces": "mc-in-mci-art-frame",
+   "type": "prop",
+   "name": "벽걸이 액자 그림",
+   "en": "framed coastal sunset painting on wall",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "그림",
+    "로비",
+    "집"
+   ],
+   "words": [
+    "벽걸이 액자 그림",
+    "framed coastal sunset painting on wall"
+   ],
+   "rule": "벽면 윗줄, 두 칸",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "699b99c91999fb2cac9601e1e1d33b566cb19059845dbeb5ede5a247e8af71d9"
+  },
+  {
+   "id": "mc-c-counter-register",
+   "replaces": "mc-in-mci-counter-register",
+   "type": "prop",
+   "name": "편의점 포스 계산대",
+   "en": "convenience store checkout counter with POS and hot snack case",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "편의점",
+    "계산"
+   ],
+   "words": [
+    "편의점 포스 계산대",
+    "convenience store checkout counter with POS and hot snack case"
+   ],
+   "rule": "입구 옆, 뒤에 점원 자리 1줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "397c06bbd796353f66e34830e8d46de4abac079c8b786194d027afe415caffe5"
+  },
+  {
+   "id": "mc-c-coffee-station",
+   "replaces": "mc-in-mci-coffee-station",
+   "type": "prop",
+   "name": "편의점 셀프 커피바",
+   "en": "self-serve espresso coffee machine and microwave counter",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "사무실",
+    "탕비실"
+   ],
+   "words": [
+    "편의점 셀프 커피바",
+    "self-serve espresso coffee machine and microwave counter"
+   ],
+   "rule": "북쪽 벽 앞",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "e9b63e7f7deeb3524847e8ec74f2de636274d2699afe2b0779f5168fecca5ea8"
+  },
+  {
+   "id": "mc-c-freezer",
+   "replaces": "mc-in-mci-freezer",
+   "type": "prop",
+   "name": "편의점 아이스크림 냉동고",
+   "en": "glass-top convenience store ice cream freezer",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "편의점",
+    "냉동"
+   ],
+   "words": [
+    "편의점 아이스크림 냉동고",
+    "glass-top convenience store ice cream freezer"
+   ],
+   "rule": "계산대 앞·벽가",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "7132e0cbb49ab7e07b7435184bcee93bce63dee6188b740ce6451d5d5aee3469"
+  },
+  {
+   "id": "mc-c-gondola",
+   "replaces": "mc-in-mci-gondola",
+   "type": "prop",
+   "name": "편의점 상품 진열대",
+   "en": "three-tier convenience store snack gondola shelf",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "편의점",
+    "매장",
+    "진열"
+   ],
+   "words": [
+    "편의점 상품 진열대",
+    "three-tier convenience store snack gondola shelf"
+   ],
+   "rule": "매장 가운데 줄, 앞뒤 통로 1칸",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "23c0171e051984129f60e4f94650f6dcc0f450dcceebfbeddfa61464ba682cab"
+  },
+  {
+   "id": "mc-c-magazine",
+   "replaces": "mc-in-mci-magazine",
+   "type": "prop",
+   "name": "편의점 잡지 스탠드",
+   "en": "tiered convenience store magazine rack",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "편의점",
+    "잡지"
+   ],
+   "words": [
+    "편의점 잡지 스탠드",
+    "tiered convenience store magazine rack"
+   ],
+   "rule": "창가·벽 앞",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "c959c9db36c42829898b68b4c47d7b13af0a04aa80dfefc86ce202e76ea3cfad"
+  },
+  {
+   "id": "mc-c-pastry-case",
+   "replaces": "mc-in-mci-pastry-case",
+   "type": "prop",
+   "name": "베이커리 빵 쇼케이스",
+   "en": "wooden bakery glass pastry showcase with croissants and tarts",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "카페",
+    "빵집"
+   ],
+   "words": [
+    "베이커리 빵 쇼케이스",
+    "wooden bakery glass pastry showcase with croissants and tarts"
+   ],
+   "rule": "카운터 옆",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "bacd823bf7f76c529aec1079a0a6416d6c1e42f330f17b0e402ce86ffd81ac9f"
+  },
+  {
+   "id": "mc-c-parfait-case",
+   "replaces": "mc-in-opus-cafe-parfait-case",
+   "type": "prop",
+   "name": "카페 디저트 쇼케이스",
+   "en": "retro kissaten dessert and parfait showcase",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "카페·식당",
+    "메이드 카페",
+    "디저트"
+   ],
+   "words": [
+    "카페 디저트 쇼케이스",
+    "retro kissaten dessert and parfait showcase"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "a0ecb7587c2b3786c1a28f9c5c2458f202fdddcd98ff23b8f39f23d2556ee179"
+  },
+  {
+   "id": "mc-c-menu-board",
+   "replaces": "mc-in-mci-menu-board",
+   "type": "prop",
+   "name": "카페 칠판 메뉴보드",
+   "en": "wall-mounted chalkboard cafe menu board",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "카페"
+   ],
+   "words": [
+    "카페 칠판 메뉴보드",
+    "wall-mounted chalkboard cafe menu board"
+   ],
+   "rule": "카운터 뒤 벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "2d03c9ccbe08b469a4e77f88f4bfa2dbcef7430e1c055e383d0da129de156e21"
+  },
+  {
+   "id": "mc-c-izakaya-counter",
+   "replaces": "mc-in-opus-izakaya-counter",
+   "type": "prop",
+   "name": "이자카야 목재 카운터",
+   "en": "cedar izakaya bar counter with sashimi showcase and sake",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "카페·식당",
+    "라멘",
+    "이자카야",
+    "카운터"
+   ],
+   "words": [
+    "이자카야 목재 카운터",
+    "cedar izakaya bar counter with sashimi showcase and sake"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "d3033c34622a98703799b708de8a150ee07a257f42856759bbbd6ad6cdcec40b"
+  },
+  {
+   "id": "mc-c-izakaya-noren",
+   "replaces": "mc-in-opus-izakaya-noren",
+   "type": "prop",
+   "name": "이자카야 노렌 커튼",
+   "en": "traditional three-panel izakaya noren doorway curtain",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "카페·식당",
+    "이자카야",
+    "노렌"
+   ],
+   "words": [
+    "이자카야 노렌 커튼",
+    "traditional three-panel izakaya noren doorway curtain"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "bed2721615a120fb5e5db774395466336249447617bd46260114cd58ed8d9018"
+  },
+  {
+   "id": "mc-c-desk-pc",
+   "replaces": "mc-in-mci-desk-pc",
+   "type": "prop",
+   "name": "사무용 PC 책상",
+   "en": "office desk with monitor keyboard and drawer pedestal",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "사무실",
+    "책상"
+   ],
+   "words": [
+    "사무용 PC 책상",
+    "office desk with monitor keyboard and drawer pedestal"
+   ],
+   "rule": "벽 쪽 1인 책상(앉는 사람은 남쪽, 의자 없이 둔다) — 사무 줄은 mci-desk-pc-back + 북쪽 mci-chair-office-s",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "f96202b62fed0dc2e1363c66174733493d0e361cd8a1bbed95524f9325decce9"
+  },
+  {
+   "id": "mc-c-desk-pc-back",
+   "replaces": "mc-in-mci-desk-pc-back",
+   "type": "prop",
+   "name": "사무용 PC 책상(후면)",
+   "en": "back-facing office computer desk",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "사무실",
+    "책상"
+   ],
+   "words": [
+    "사무용 PC 책상(후면)",
+    "back-facing office computer desk"
+   ],
+   "rule": "북쪽에 의자 mci-chair-office-s",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "6871fcbfd8b89d42d98e7998076404905e5f5b24a8ed627eb77e3a554a4a2a3d"
+  },
+  {
+   "id": "mc-c-filing",
+   "replaces": "mc-in-mci-filing",
+   "type": "prop",
+   "name": "사무용 파일 캐비닛",
+   "en": "two-column steel office filing cabinet with potted plant",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "사무실",
+    "은행"
+   ],
+   "words": [
+    "사무용 파일 캐비닛",
+    "two-column steel office filing cabinet with potted plant"
+   ],
+   "rule": "북쪽 벽 앞",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "c6426c33f061da0a2ee613346ee4b7c2b2a4a5fe2fa39ccf6403433bb846f336"
+  },
+  {
+   "id": "mc-c-reception",
+   "replaces": "mc-in-mci-reception",
+   "type": "prop",
+   "name": "로비 안내 데스크",
+   "en": "curved oak and marble lobby reception desk",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "로비",
+    "병원",
+    "사무실",
+    "접수"
+   ],
+   "words": [
+    "로비 안내 데스크",
+    "curved oak and marble lobby reception desk"
+   ],
+   "rule": "입구를 마주 보게, 뒤에 직원 자리 1줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "4e465065e4a9fdada72ec336a8335cde5fee482c83245c704d02488e38cf9b72"
+  },
+  {
+   "id": "mc-c-teller",
+   "replaces": "mc-in-mci-teller",
+   "type": "prop",
+   "name": "은행 1·2번 창구",
+   "en": "twin glass-partitioned bank teller counter",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "은행",
+    "창구"
+   ],
+   "words": [
+    "은행 1·2번 창구",
+    "twin glass-partitioned bank teller counter"
+   ],
+   "rule": "객장을 마주 보게, 뒤에 직원 자리",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "80ce7e633d43ba1d8384914cf82810094bad0afb5ebe0e3dd2fcb72b16f2fc2e"
+  },
+  {
+   "id": "mc-c-ticket-gate",
+   "replaces": "mc-in-mci-ticket-gate",
+   "type": "prop",
+   "name": "전철역 자동 개찰구",
+   "en": "twin Japanese IC-card automatic train ticket gates",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역",
+    "지하철"
+   ],
+   "words": [
+    "전철역 자동 개찰구",
+    "twin Japanese IC-card automatic train ticket gates"
+   ],
+   "rule": "대합실 가로줄, 여러 개 이어",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "cfeee732f2a0209d14a8307a0c08fdcb870e443c0dcdedc6eecb57c0e3d9d7f1"
+  },
+  {
+   "id": "mc-c-security-gate",
+   "replaces": "mc-in-mci-security-gate",
+   "type": "prop",
+   "name": "보안 검색 게이트",
+   "en": "walk-through metal detector security gate arch",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "로비",
+    "사무실"
+   ],
+   "words": [
+    "보안 검색 게이트",
+    "walk-through metal detector security gate arch"
+   ],
+   "rule": "로비 입구 안쪽",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "a2e5203a37efcc44b27dd3c8f9b473ddc128b999aeeb2dd6a1caeda58dca559e"
+  },
+  {
+   "id": "mc-c-route-map",
+   "replaces": "mc-in-mci-route-map",
+   "type": "prop",
+   "name": "지하철 노선도 라이트박스",
+   "en": "backlit urban rail network route map signboard",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역",
+    "지하철"
+   ],
+   "words": [
+    "지하철 노선도 라이트박스",
+    "backlit urban rail network route map signboard"
+   ],
+   "rule": "대합실 벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "d713a2f1742343569eb1623af24c1c4fdd31e126b36af585f9445c8a9275f76e"
+  },
+  {
+   "id": "mc-c-mailboxes",
+   "replaces": "mc-in-mci-mailboxes",
+   "type": "prop",
+   "name": "로비 우편함 뱅크",
+   "en": "brushed stainless apartment lobby mailbox bank",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "아파트",
+    "로비"
+   ],
+   "words": [
+    "로비 우편함 뱅크",
+    "brushed stainless apartment lobby mailbox bank"
+   ],
+   "rule": "북쪽 벽 앞",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "2532e47f429bd03ab02092976e743efed9c8e2c73f8b3dae985a40d33b3fb118"
+  },
+  {
+   "id": "mc-c-planter",
+   "replaces": "mc-in-mci-planter",
+   "type": "prop",
+   "name": "로비 석재 대형 화분",
+   "en": "honed granite lobby planter trough with tropical foliage",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "로비",
+    "화분"
+   ],
+   "words": [
+    "로비 석재 대형 화분",
+    "honed granite lobby planter trough with tropical foliage"
+   ],
+   "rule": "벽가·입구 옆",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "ae7b77eea8af6cce7d972ca10a7096889e94fd2a3d28a350e04cf40f097c13b4"
+  },
+  {
+   "id": "mc-c-dept-bag-stand",
+   "replaces": "mc-in-opus-dept-bag-stand",
+   "type": "prop",
+   "name": "부티크 가방 진열대",
+   "en": "brass boutique handbag display stand on marble plinth",
+   "kind": "column",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "상업·공공",
+    "백화점",
+    "쇼핑백"
+   ],
+   "words": [
+    "부티크 가방 진열대",
+    "brass boutique handbag display stand on marble plinth"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "22289c8ba7f9cbd9e961d988234211841d2498f0b203e49bdca3bd64a1de24db"
+  },
+  {
+   "id": "mc-c-dept-directory",
+   "replaces": "mc-in-opus-dept-directory-kiosk",
+   "type": "prop",
+   "name": "백화점 층별 안내기",
+   "en": "illuminated navy and gold department store directory kiosk",
+   "kind": "column",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "백화점",
+    "안내",
+    "역"
+   ],
+   "words": [
+    "백화점 층별 안내기",
+    "illuminated navy and gold department store directory kiosk"
+   ],
+   "rule": "에스컬레이터·입구 옆",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "fab4c5bed46c0fa0f44a9a15b095f8afee8b685e8ddfa3e955f32e1c2b49b103"
+  },
+  {
+   "id": "mc-c-dept-showcase",
+   "replaces": "mc-in-opus-dept-glass-showcase",
+   "type": "prop",
+   "name": "백화점 부티크 쇼케이스",
+   "en": "cream and brass glass boutique merchandise showcase",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "백화점",
+    "화장품",
+    "보석"
+   ],
+   "words": [
+    "백화점 부티크 쇼케이스",
+    "cream and brass glass boutique merchandise showcase"
+   ],
+   "rule": "화장품·주얼리 매장, 벽 앞이나 섬 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "54852bbe7d8f257f987521d135dc6c815eb9aeb6565344cd5af382619f97d9b2"
+  },
+  {
+   "id": "mc-c-dept-jewelry",
+   "replaces": "mc-in-opus-dept-jewelry-case",
+   "type": "prop",
+   "name": "주얼리 유리 진열장",
+   "en": "glass pedestal jewelry display case with necklace bust",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "상업·공공",
+    "백화점",
+    "보석",
+    "쇼케이스"
+   ],
+   "words": [
+    "주얼리 유리 진열장",
+    "glass pedestal jewelry display case with necklace bust"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "bea791aafaf7a4d1cd231f9dc5cac970d19f2c00f62f9c385fa709e84f60bb5d"
+  },
+  {
+   "id": "mc-c-dept-island",
+   "replaces": "mc-in-opus-dept-luxury-island",
+   "type": "prop",
+   "name": "백화점 아일랜드 매대",
+   "en": "multi-tier cream boutique island display table",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "상업·공공",
+    "명품 대리석 아일랜드 쇼케이스"
+   ],
+   "words": [
+    "백화점 아일랜드 매대",
+    "multi-tier cream boutique island display table"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "776d5d473e47b7ecc01bd4b33c0cb97da4bd856b02959908e5a2f1cb28dacffe"
+  },
+  {
+   "id": "mc-c-hosp-monitor",
+   "replaces": "mc-in-opus-hospital-bedside-monitor",
+   "type": "prop",
+   "name": "환자 생체감시 모니터",
+   "en": "rolling ICU vital signs ECG monitor stand",
+   "kind": "column",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "상업·공공",
+    "병원",
+    "모니터",
+    "병상"
+   ],
+   "words": [
+    "환자 생체감시 모니터",
+    "rolling ICU vital signs ECG monitor stand"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "43248c150d8b162910c6def7bcdba65d720014967e7f97dc13946f108cfd5206"
+  },
+  {
+   "id": "mc-c-hosp-curtain",
+   "replaces": "mc-in-opus-hospital-curtain-screen",
+   "type": "prop",
+   "name": "병실 이동식 커튼 파티션",
+   "en": "wheeled mint-green hospital privacy screen partition",
+   "kind": "other",
+   "w": 1,
+   "h": 3,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     2
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "병동",
+    "커튼"
+   ],
+   "words": [
+    "병실 이동식 커튼 파티션",
+    "wheeled mint-green hospital privacy screen partition"
+   ],
+   "rule": "입원 병상 사이",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "b94d36fd59bad3619ee1eeeda02b621f6d1d6d5de7358b1b65a6ee2d16ffe0a5"
+  },
+  {
+   "id": "mc-c-hosp-doctor-desk",
+   "replaces": "mc-in-opus-hospital-doctor-desk",
+   "type": "prop",
+   "name": "진료실 의사 책상",
+   "en": "medical clinic doctor desk with dual X-ray monitors",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "진료실",
+    "의사"
+   ],
+   "words": [
+    "진료실 의사 책상",
+    "medical clinic doctor desk with dual X-ray monitors"
+   ],
+   "rule": "진료실 안쪽",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "29fe8f1ca16acee664bc6c12c62bbc57cc47b3d1860493c8ca05e10c21c62395"
+  },
+  {
+   "id": "mc-c-hosp-nurse-station",
+   "replaces": "mc-in-opus-hospital-nurse-station",
+   "type": "prop",
+   "name": "병원 간호 스테이션",
+   "en": "hospital ward nurse station counter with red cross emblem",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "상업·공공",
+    "병원",
+    "간호사실",
+    "접수"
+   ],
+   "words": [
+    "병원 간호 스테이션",
+    "hospital ward nurse station counter with red cross emblem"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "37c3d934f6be7555af6b5261ea71272c4515a75b33d223c05a848813f3293eb1"
+  },
+  {
+   "id": "mc-c-hosp-wheelchair",
+   "replaces": "mc-in-opus-hospital-wheelchair",
+   "type": "prop",
+   "name": "병원 휠체어",
+   "en": "folding blue hospital wheelchair",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "상업·공공",
+    "병원",
+    "휠체어"
+   ],
+   "words": [
+    "병원 휠체어",
+    "folding blue hospital wheelchair"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "ab621e0cae976fdd7f714cbc3de73c3cd36cf107b22fa7ddbed5097b9593afd5"
+  },
+  {
+   "id": "mc-c-hotel-bell-desk",
+   "replaces": "mc-in-opus-hotel-bell-desk",
+   "type": "prop",
+   "name": "호텔 컨시어지 데스크",
+   "en": "mahogany and brass hotel concierge bell desk",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "호텔",
+    "프런트"
+   ],
+   "words": [
+    "호텔 컨시어지 데스크",
+    "mahogany and brass hotel concierge bell desk"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "04d2ddcb09e83d95494a3cd96e5477ba979b89d2dfa34aaa906a9792f4621d84"
+  },
+  {
+   "id": "mc-c-hotel-king-bed",
+   "replaces": "mc-in-opus-hotel-king-bed",
+   "type": "prop",
+   "name": "호텔 스위트 킹 베드",
+   "en": "luxury hotel king bed with crimson embroidered runner",
+   "kind": "box",
+   "w": 3,
+   "h": 3,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "호텔",
+    "침대"
+   ],
+   "words": [
+    "호텔 스위트 킹 베드",
+    "luxury hotel king bed with crimson embroidered runner"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "1849d23f7069f643e4c703291f83583cfb494220dcfc61c7e1a8a67b58e32e65"
+  },
+  {
+   "id": "mc-c-hotel-luggage-cart",
+   "replaces": "mc-in-opus-hotel-luggage-cart",
+   "type": "prop",
+   "name": "호텔 황동 러기지 카트",
+   "en": "brass birdcage hotel bellhop luggage cart with suitcases",
+   "kind": "column",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "호텔",
+    "카트"
+   ],
+   "words": [
+    "호텔 황동 러기지 카트",
+    "brass birdcage hotel bellhop luggage cart with suitcases"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "2c4089851f0abb8315682e16aa556ad1c52de049ea492ef207237d14d1835c5f"
+  },
+  {
+   "id": "mc-c-book-table",
+   "replaces": "mc-in-opus-book-table",
+   "type": "prop",
+   "name": "서점 신간 평대",
+   "en": "bookstore flat wooden book display table",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "매장·마트",
+    "서점",
+    "평대"
+   ],
+   "words": [
+    "서점 신간 평대",
+    "bookstore flat wooden book display table"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "0e98398ff9ba30dde93f5864b65fbd14ea3ae0fdaa7a7a21d1816763ff85e433"
+  },
+  {
+   "id": "mc-c-arcade-changer",
+   "replaces": "mc-in-opus-arcade-medal-changer",
+   "type": "prop",
+   "name": "오락실 동전 교환기",
+   "en": "arcade game center coin changer machine",
+   "kind": "box",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "오락실",
+    "게임센터",
+    "교환기"
+   ],
+   "words": [
+    "오락실 동전 교환기",
+    "arcade game center coin changer machine"
+   ],
+   "rule": "북쪽 벽면 앞 첫 바닥 줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "30acada51014665a2339b711fe1c32d7c84ac82fe450a71955a9d6f67f736f2a"
+  },
+  {
+   "id": "mc-c-gym-hoop",
+   "replaces": "mc-in-opus-gym-hoop",
+   "type": "prop",
+   "name": "체육관 농구 골대",
+   "en": "indoor gymnasium basketball hoop and backboard",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "학교·대학",
+    "체육관",
+    "농구"
+   ],
+   "words": [
+    "체육관 농구 골대",
+    "indoor gymnasium basketball hoop and backboard"
+   ],
+   "rule": "북쪽 벽면 앞 첫 바닥 줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "afd6e6439a9c693be09730c2799e174fc12ada46cd694aa46711993838329ac5"
+  },
+  {
+   "id": "mc-c-gym-vault",
+   "replaces": "mc-in-opus-gym-vault",
+   "type": "prop",
+   "name": "체육관 뜀틀(토비바코)",
+   "en": "wooden school gymnasium vaulting box",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "학교·대학",
+    "체육관",
+    "뜀틀"
+   ],
+   "words": [
+    "체육관 뜀틀(토비바코)",
+    "wooden school gymnasium vaulting box"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "71f39044d10b2c5b6912957c27e1404c94cda130ecbee303918bf2c3e7277c31"
+  },
+  {
+   "id": "mc-c-gym-scoreboard",
+   "replaces": "mc-in-opus-gym-scoreboard",
+   "type": "prop",
+   "name": "체육관 LED 전광판",
+   "en": "digital LED gymnasium basketball scoreboard",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "학교·대학",
+    "체육관",
+    "점수판"
+   ],
+   "words": [
+    "체육관 LED 전광판",
+    "digital LED gymnasium basketball scoreboard"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "729ccb8ced237e87fce18c13b0e891fa9f123fff3b7c7ca26df1eeff7cebfc84"
+  },
+  {
+   "id": "mc-c-cinema-seats",
+   "replaces": "mc-in-opus-cinema-seat-row",
+   "type": "prop",
+   "name": "영화관 3연석 좌석",
+   "en": "three plush crimson cinema theater seats",
+   "kind": "other",
+   "w": 3,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "상업·공공",
+    "영화관 3연석"
+   ],
+   "words": [
+    "영화관 3연석 좌석",
+    "three plush crimson cinema theater seats"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "b802330429a4bfdc65ecb8738810f1c986e5bb583e88aeda12e1ab955eac72c9"
+  },
+  {
+   "id": "mc-c-warehouse-rack",
+   "replaces": "mc-in-mci-rack",
+   "type": "prop",
+   "name": "물류 창고 철제 랙",
+   "en": "heavy steel warehouse storage rack with boxes and crates",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "창고"
+   ],
+   "words": [
+    "물류 창고 철제 랙",
+    "heavy steel warehouse storage rack with boxes and crates"
+   ],
+   "rule": "북쪽 벽 앞",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "f8944b15738441d0251a079b9344db86ff5a47609dec302ea29b6cc3fedb9da9"
+  },
+  {
+   "id": "mc-c-bench-metal",
+   "replaces": "mc-in-mci-bench-metal",
+   "type": "prop",
+   "name": "금속 대기 벤치",
+   "en": "brushed steel slatted indoor waiting bench",
+   "kind": "other",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역",
+    "대합실",
+    "병원"
+   ],
+   "words": [
+    "금속 대기 벤치",
+    "brushed steel slatted indoor waiting bench"
+   ],
+   "rule": "벽가·기둥 옆",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "f060f5a59992d91220626267e96422ee24b7871c0fbba6c41dcdde24374fcc0c"
+  },
+  {
+   "id": "mc-c-cafe-chair",
+   "replaces": "mc-in-mci-cafe-chair-e",
+   "type": "prop",
+   "name": "카페 원목 의자",
+   "en": "bentwood cafe dining chair",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "카페",
+    "의자"
+   ],
+   "words": [
+    "카페 원목 의자",
+    "bentwood cafe dining chair"
+   ],
+   "rule": "원탁 서쪽",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "ca54001e065b6701245eaec46e49d634a109f2b21c083fcb46be9fa83636485e"
+  },
+  {
+   "id": "mc-c-chair-office",
+   "replaces": "mc-in-mci-chair-office-s",
+   "type": "prop",
+   "name": "사무용 회전 의자",
+   "en": "ergonomic rolling mesh office swivel chair",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "의자",
+    "사무실"
+   ],
+   "words": [
+    "사무용 회전 의자",
+    "ergonomic rolling mesh office swivel chair"
+   ],
+   "rule": "책상 북쪽",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "13f943e092b1b8eb98d824fa0e510d67eb2f49323ebf248f635f8e73b82c6e3e"
+  },
+  {
+   "id": "mc-c-chair-wood",
+   "replaces": "mc-in-mci-chair-wood-s",
+   "type": "prop",
+   "name": "원목 식탁 의자",
+   "en": "wooden slatted dining chair",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "의자",
+    "식탁",
+    "카페"
+   ],
+   "words": [
+    "원목 식탁 의자",
+    "wooden slatted dining chair"
+   ],
+   "rule": "식탁 북쪽",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "04c0eb8ddad7cded2e375fe579a12e3c5ffc6cb0a7da5ee39a3005ed6672189d"
+  },
+  {
+   "id": "mc-c-wardrobe",
+   "replaces": "mc-in-mci-wardrobe",
+   "type": "prop",
+   "name": "원목 2문 옷장",
+   "en": "two-door walnut wooden apartment wardrobe closet",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "집",
+    "침실"
+   ],
+   "words": [
+    "원목 2문 옷장",
+    "two-door walnut wooden apartment wardrobe closet"
+   ],
+   "rule": "북쪽 벽 앞",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "0c23f95a38334e0a2b41f50781a35933afd8d3c9901cf28131ea30b05b3d138a"
+  },
+  {
+   "id": "mc-c-washbasin",
+   "replaces": "mc-in-mci-washbasin",
+   "type": "prop",
+   "name": "욕실 세면대 캐비닛",
+   "en": "ceramic vanity washbasin cabinet with wall mirror",
+   "kind": "box",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "화장실",
+    "욕실"
+   ],
+   "words": [
+    "욕실 세면대 캐비닛",
+    "ceramic vanity washbasin cabinet with wall mirror"
+   ],
+   "rule": "북쪽 벽 앞",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "8ec1790a3cf19eecbb304c0d160291b18cbd673ff112d90f2504312534da229d"
+  },
+  {
+   "id": "mc-c-rug",
+   "replaces": "mc-in-mci-rug",
+   "type": "prop",
+   "name": "거실 직조 러그",
+   "en": "woven geometric living room area rug",
+   "kind": "other",
+   "w": 3,
+   "h": 2,
+   "place": "decal",
+   "block": [],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "집",
+    "거실"
+   ],
+   "words": [
+    "거실 직조 러그",
+    "woven geometric living room area rug"
+   ],
+   "rule": "소파 앞 바닥",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "c18a01862764bf3af2e554c7f5deb2992da2b4263abce7648c4db1a07e78f787"
+  },
+  {
+   "id": "mc-c-notice-board",
+   "replaces": "mc-in-mci-notice-board",
+   "type": "prop",
+   "name": "코르크 공지 게시판",
+   "en": "cork bulletin notice board pinned with flyers",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "게시판"
+   ],
+   "words": [
+    "코르크 공지 게시판",
+    "cork bulletin notice board pinned with flyers"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "a59d166bd182a6774ea60f03ec9492cc5c7cea054cb767a3d97c9e714f360472"
+  },
+  {
+   "id": "mc-c-tv-wall",
+   "replaces": "mc-in-mci-tv-wall",
+   "type": "prop",
+   "name": "벽걸이 평면 TV",
+   "en": "wall-mounted slim LCD television displaying broadcast",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "TV",
+    "병원",
+    "대기실"
+   ],
+   "words": [
+    "벽걸이 평면 TV",
+    "wall-mounted slim LCD television displaying broadcast"
+   ],
+   "rule": "벽면 윗줄, 두 칸",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "0ec80de0b88aaf2d4abb8f9d145e7fc3229acad70b694590f8ce478f3c04bff7"
+  },
+  {
+   "id": "mc-c-wall-clock",
+   "replaces": "mc-in-mci-wall-clock",
+   "type": "prop",
+   "name": "원형 벽시계",
+   "en": "classic round office and school wall clock",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "시계"
+   ],
+   "words": [
+    "원형 벽시계",
+    "classic round office and school wall clock"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "efe4082616fca5bea4d2a8b3f5876af1fa258e7b88bca7a3fa1e63c7b617117f"
+  },
+  {
+   "id": "mc-c-whiteboard",
+   "replaces": "mc-in-mci-whiteboard",
+   "type": "prop",
+   "name": "사무실 화이트보드",
+   "en": "wall-mounted office whiteboard with charts and markers",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "사무실",
+    "회의실"
+   ],
+   "words": [
+    "사무실 화이트보드",
+    "wall-mounted office whiteboard with charts and markers"
+   ],
+   "rule": "회의실·사무실 벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "3dbf1d6ab5cbd09583c4e25f59145d553c2a99a3b40976cda371e7d7321b7337"
+  },
+  {
+   "id": "mc-c-window-blind",
+   "replaces": "mc-in-mci-window-blind",
+   "type": "prop",
+   "name": "블라인드 실내 창문",
+   "en": "interior office window with Venetian blinds",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "창",
+    "사무실",
+    "병원"
+   ],
+   "words": [
+    "블라인드 실내 창문",
+    "interior office window with Venetian blinds"
+   ],
+   "rule": "북쪽 벽면 윗줄, 두 칸",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "0169717e97f6048bca749cf4e63dfcd8c09737c4199b66bf21035d69789d09cc"
+  },
+  {
+   "id": "mc-c-stairs-up",
+   "replaces": "mc-in-mci-stairs-up",
+   "type": "prop",
+   "name": "실내 상행 계단",
+   "en": "indoor modern staircase ascending upward with handrail",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "decal",
+   "block": [],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "계단"
+   ],
+   "words": [
+    "실내 상행 계단",
+    "indoor modern staircase ascending upward with handrail"
+   ],
+   "rule": "북쪽 벽 앞 첫 바닥 줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "8e630a5f86f45e49c333c1112a426a9275480149b7465f0521e602a976fc8a9a"
+  },
+  {
+   "id": "mc-c-stairs-down",
+   "replaces": "mc-in-mci-stairs-down",
+   "type": "prop",
+   "name": "실내 하행 계단",
+   "en": "indoor modern staircase descending downward with railing",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "decal",
+   "block": [],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "계단",
+    "지하철"
+   ],
+   "words": [
+    "실내 하행 계단",
+    "indoor modern staircase descending downward with railing"
+   ],
+   "rule": "바닥 가운데·구석(2×2)",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "d624dfea2e37162f0e7c190a17171d74926e063419779378a5fb7634d869785a"
+  },
+  {
+   "id": "mc-c-wait-bench",
+   "replaces": "mc-in-mci-wait-bench",
+   "type": "prop",
+   "name": "로비 3인 대기 벤치",
+   "en": "three-seat cushioned lobby waiting bench on steel beam",
+   "kind": "other",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "은행",
+    "대합실"
+   ],
+   "words": [
+    "로비 3인 대기 벤치",
+    "three-seat cushioned lobby waiting bench on steel beam"
+   ],
+   "rule": "접수 앞",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "b3bb5809da225e15e3decc75e3d2a06e8199de1b18b575a5fddfb4745a56b858"
+  },
+  {
+   "id": "mc-c-aud-seat-row",
+   "replaces": "mc-in-opus-aud-seat-row",
+   "type": "prop",
+   "name": "강당 벨벳 3연석",
+   "en": "three-seat crimson velvet auditorium folding seats",
+   "kind": "other",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "학교·대학",
+    "강당",
+    "객석"
+   ],
+   "words": [
+    "강당 벨벳 3연석",
+    "three-seat crimson velvet auditorium folding seats"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "bc7b03fbc62453a25d5d86421581ac2597c4a89feb8842fcb6a2802525e46f34"
+  },
+  {
+   "id": "mc-c-council-table-u",
+   "replaces": "mc-in-opus-council-table-u",
+   "type": "prop",
+   "name": "U자형 임원 회의 탁자",
+   "en": "U-shaped walnut executive council conference table",
+   "kind": "box",
+   "w": 4,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "학교·대학",
+    "학생회실",
+    "회의"
+   ],
+   "words": [
+    "U자형 임원 회의 탁자",
+    "U-shaped walnut executive council conference table"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "73d2e457efc0c8ec28fc9515977a463b2b76221e5b45a04a599407104b11be6d"
+  },
+  {
+   "id": "mc-c-court-counsel-table",
+   "replaces": "mc-in-opus-court-counsel-table",
+   "type": "prop",
+   "name": "법정 변호인·검사석",
+   "en": "mahogany courtroom counsel table with binders and mic",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "법정",
+    "변호인석"
+   ],
+   "words": [
+    "법정 변호인·검사석",
+    "mahogany courtroom counsel table with binders and mic"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "8c1549864ecb0d643ed75b46ceaec39eea440fdc49480f911ea7619740476e2e"
+  },
+  {
+   "id": "mc-c-court-gallery-pew",
+   "replaces": "mc-in-opus-court-gallery-pew",
+   "type": "prop",
+   "name": "법정 방청석 벤치",
+   "en": "oak courtroom spectator gallery pew bench",
+   "kind": "other",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "법정",
+    "방청석"
+   ],
+   "words": [
+    "법정 방청석 벤치",
+    "oak courtroom spectator gallery pew bench"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "72b83083cd8c325fc6c56deddc4f5a0c7f566613c0f2775a1900f7cc3a05039c"
+  },
+  {
+   "id": "mc-c-lounge-sofa-cream",
+   "replaces": "mc-in-opus-lounge-sofa-cream",
+   "type": "prop",
+   "name": "크림 라운지 소파",
+   "en": "plush cream leather VIP lounge loveseat sofa",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "로비·라운지",
+    "소파",
+    "라운지",
+    "백화점"
+   ],
+   "words": [
+    "크림 라운지 소파",
+    "plush cream leather VIP lounge loveseat sofa"
+   ],
+   "rule": "백화점·영화관·라운지 대기석",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "34234e98fbeeb091e9ea5ca297e0f29cd4150b748ace2c78a2864bcf9a7303e9"
+  },
+  {
+   "id": "mc-c-aud-stage",
+   "replaces": "mc-in-opus-aud-stage",
+   "type": "prop",
+   "name": "강당 무대(커튼·연단)",
+   "en": "school auditorium raised wooden stage with crimson curtains and podium",
+   "kind": "structure",
+   "w": 6,
+   "h": 3,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     4,
+     2
+    ],
+    [
+     5,
+     2
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "학교·대학",
+    "강당",
+    "무대",
+    "막"
+   ],
+   "words": [
+    "강당 무대(커튼·연단)",
+    "school auditorium raised wooden stage with crimson curtains and podium"
+   ],
+   "rule": "북쪽 벽면 앞 첫 바닥 줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "0b4e35a7025c0e6e7e48ba03b9b14bff18ce1b8a3724c469b2bf950bc89c93e2"
+  },
+  {
+   "id": "mc-c-cinema-wide-screen",
+   "replaces": "mc-in-opus-cinema-wide-screen",
+   "type": "prop",
+   "name": "영화관 대형 스크린",
+   "en": "wide theater cinema projection screen with velvet curtains",
+   "kind": "other",
+   "w": 6,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     1
+    ],
+    [
+     4,
+     1
+    ],
+    [
+     5,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "상업·공공",
+    "영화관 와이드 스크린"
+   ],
+   "words": [
+    "영화관 대형 스크린",
+    "wide theater cinema projection screen with velvet curtains"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "6ae09532c30396abc8ad7818fce97c6ccb6341c0a8f9db31bbe3df3e5cd82a00"
+  },
+  {
+   "id": "mc-c-court-judge-bench",
+   "replaces": "mc-in-opus-court-judge-bench",
+   "type": "prop",
+   "name": "법정 판사석(법대)",
+   "en": "elevated mahogany courtroom judge bench with scales seal and gavel",
+   "kind": "structure",
+   "w": 5,
+   "h": 3,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     2
+    ],
+    [
+     4,
+     2
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "법정",
+    "판사석"
+   ],
+   "words": [
+    "법정 판사석(법대)",
+    "elevated mahogany courtroom judge bench with scales seal and gavel"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "fab23c2d38feda4945d13b23228ee94e0a32bd55d03a8657996130d5240f92d8"
+  },
+  {
+   "id": "mc-c-gym-bleacher",
+   "replaces": "mc-in-opus-gym-bleacher",
+   "type": "prop",
+   "name": "체육관 4단 관람석",
+   "en": "four-tier retractable wooden gymnasium spectator bleachers",
+   "kind": "box",
+   "w": 4,
+   "h": 3,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     2
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "학교·대학",
+    "체육관",
+    "관람석"
+   ],
+   "words": [
+    "체육관 4단 관람석",
+    "four-tier retractable wooden gymnasium spectator bleachers"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "5728b43dc55fceaff05438ea586c4b89bca0d1f668b7508c760a72f45628fa47"
+  },
+  {
+   "id": "mc-c-lecture-desk-row",
+   "replaces": "mc-in-opus-lecture-desk-row",
+   "type": "prop",
+   "name": "강의실 4인 책상 열",
+   "en": "university lecture hall fixed four-station wooden desk row",
+   "kind": "box",
+   "w": 4,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "학교·대학",
+    "대학교",
+    "강의실"
+   ],
+   "words": [
+    "강의실 4인 책상 열",
+    "university lecture hall fixed four-station wooden desk row"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "63f08969f2fade85db9fe319e8dec9fe075ad85b2c61e1081e372ee4e44b5517"
+  },
+  {
+   "id": "mc-c-gym-mat",
+   "replaces": "mc-in-opus-gym-mat",
+   "type": "prop",
+   "name": "체육관 체조 매트",
+   "en": "thick padded school gymnastics landing mat",
+   "kind": "other",
+   "w": 2,
+   "h": 1,
+   "place": "decal",
+   "block": [],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "학교·대학",
+    "체육관",
+    "매트"
+   ],
+   "words": [
+    "체육관 체조 매트",
+    "thick padded school gymnastics landing mat"
+   ],
+   "rule": "바닥에 깔기",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "f0e27dcd763f196e17a89233de9eea1af414a941216bf3aff2020e8a443b9d29"
+  },
+  {
+   "id": "mc-c-infirmary-eye-chart",
+   "replaces": "mc-in-opus-infirmary-eye-chart",
+   "type": "prop",
+   "name": "양호실 시력 검사표",
+   "en": "illuminated Landolt-C vision test eye chart",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "보건실",
+    "시력"
+   ],
+   "words": [
+    "양호실 시력 검사표",
+    "illuminated Landolt-C vision test eye chart"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "9560d6491e3f0f93b0793a45b3ca58849a7d95067239243dd0606904a53d7595"
+  },
+  {
+   "id": "mc-c-infirmary-scale",
+   "replaces": "mc-in-opus-infirmary-scale",
+   "type": "prop",
+   "name": "양호실 신장·체중계",
+   "en": "standing mechanical height and weight stadiometer scale",
+   "kind": "column",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "보건실",
+    "체중계"
+   ],
+   "words": [
+    "양호실 신장·체중계",
+    "standing mechanical height and weight stadiometer scale"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "ba61e7f19ae39cfb3eeeb4e674fb044443113340f1dc760ee158ef4efcf79d62"
+  },
+  {
+   "id": "mc-c-museum-audio-desk",
+   "replaces": "mc-in-opus-museum-audio-desk",
+   "type": "prop",
+   "name": "박물관 오디오가이드 데스크",
+   "en": "modern museum audio-guide rental counter",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "상업·공공",
+    "미술관",
+    "오디오 가이드"
+   ],
+   "words": [
+    "박물관 오디오가이드 데스크",
+    "modern museum audio-guide rental counter"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "790f048fae1091e665e62cb3f69e17b5370e49742a636dda1655f81a91738354"
+  },
+  {
+   "id": "mc-c-museum-gallery-bench",
+   "replaces": "mc-in-opus-museum-gallery-bench",
+   "type": "prop",
+   "name": "박물관 전시실 벤치",
+   "en": "tufted charcoal leather museum viewing bench",
+   "kind": "other",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "상업·공공",
+    "미술관",
+    "벤치"
+   ],
+   "words": [
+    "박물관 전시실 벤치",
+    "tufted charcoal leather museum viewing bench"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "c3981cd12496ec366c49afc6e3d270cd7ed46d9e02cae07977d78d4e80d2ef9c"
+  },
+  {
+   "id": "mc-c-museum-partition-wall",
+   "replaces": "mc-in-opus-museum-partition-wall",
+   "type": "prop",
+   "name": "박물관 작품 전시 가벽",
+   "en": "white museum exhibition partition wall with framed art and spotlights",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "상업·공공",
+    "미술관",
+    "가벽",
+    "특별전"
+   ],
+   "words": [
+    "박물관 작품 전시 가벽",
+    "white museum exhibition partition wall with framed art and spotlights"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "ebc5cbf6cf380dc246c5addd20f37d6fec9db95446630e1024fb7c3d463aba6a"
+  },
+  {
+   "id": "mc-c-music-acoustic-panel",
+   "replaces": "mc-in-opus-music-acoustic-panel",
+   "type": "prop",
+   "name": "음악실 흡음 방음 패널",
+   "en": "slatted wood and foam studio acoustic diffuser panel",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "학교·대학",
+    "음악실",
+    "방음"
+   ],
+   "words": [
+    "음악실 흡음 방음 패널",
+    "slatted wood and foam studio acoustic diffuser panel"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "330fcb8b1eca7a61c87d125bbaa26c02b8f2f3dd64629a975f55191e5bd513c8"
+  },
+  {
+   "id": "mc-c-izakaya-zashiki",
+   "replaces": "mc-in-opus-izakaya-zashiki",
+   "type": "prop",
+   "name": "이자카야 좌식 테이블",
+   "en": "low cedar Japanese zashiki dining table with zabuton cushions",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "카페·식당",
+    "이자카야",
+    "다다미"
+   ],
+   "words": [
+    "이자카야 좌식 테이블",
+    "low cedar Japanese zashiki dining table with zabuton cushions"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "bbd46f578c7b6297434271c1f8fce4511bc0f738ac54b378b25a790b11c62238"
+  },
+  {
+   "id": "mc-c-karaoke-monitor",
+   "replaces": "mc-in-opus-karaoke-monitor",
+   "type": "prop",
+   "name": "노래방 모니터·스피커 랙",
+   "en": "karaoke booth TV monitor and twin speaker entertainment rack",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "오락실",
+    "노래방",
+    "모니터"
+   ],
+   "words": [
+    "노래방 모니터·스피커 랙",
+    "karaoke booth TV monitor and twin speaker entertainment rack"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "63ae7de49e3778eb68b9dcaff65a350157001b0d9ff219d723e3da725c66fe01"
+  },
+  {
+   "id": "mc-c-karaoke-sofa",
+   "replaces": "mc-in-opus-karaoke-sofa",
+   "type": "prop",
+   "name": "노래방 L자형 소파",
+   "en": "L-shaped burgundy faux-leather karaoke booth sofa",
+   "kind": "box",
+   "w": 3,
+   "h": 3,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "오락실",
+    "노래방",
+    "소파"
+   ],
+   "words": [
+    "노래방 L자형 소파",
+    "L-shaped burgundy faux-leather karaoke booth sofa"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "ed2e5b54a0a21e6c8be8037a5b4c7ea250a469ca02fe106b40fba2bc7c544c98"
+  },
+  {
+   "id": "mc-c-karaoke-table",
+   "replaces": "mc-in-opus-karaoke-table",
+   "type": "prop",
+   "name": "노래방 유리 테이블",
+   "en": "low karaoke room table with songbook tablet and microphones",
+   "kind": "box",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "오락실",
+    "노래방",
+    "탁자"
+   ],
+   "words": [
+    "노래방 유리 테이블",
+    "low karaoke room table with songbook tablet and microphones"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "c2b2379ec493415391459a9812def37737377b43be94ce0f9dfffce44818c7a4"
+  },
+  {
+   "id": "mc-c-koban-desk",
+   "replaces": "mc-in-opus-koban-desk",
+   "type": "prop",
+   "name": "파출소 접수 데스크",
+   "en": "Japanese koban police box reception desk with map radio and cap",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "파출소",
+    "데스크"
+   ],
+   "words": [
+    "파출소 접수 데스크",
+    "Japanese koban police box reception desk with map radio and cap"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "00a1a78311d3facb17bc8ef568f1ceaa15b242b9c82aaaa8e5d97cadfec1491c"
+  },
+  {
+   "id": "mc-c-library-loan-desk",
+   "replaces": "mc-in-opus-library-loan-desk",
+   "type": "prop",
+   "name": "도서관 대출·반납 데스크",
+   "en": "wooden public library circulation loan desk with stacked books",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "도서관",
+    "대출"
+   ],
+   "words": [
+    "도서관 대출·반납 데스크",
+    "wooden public library circulation loan desk with stacked books"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "6a5f6d8d675becdebb3d4c7f05dca67d716db58b33adfae35d39680b5aaabda5"
+  },
+  {
+   "id": "mc-c-restaurant-host-podium",
+   "replaces": "mc-in-opus-restaurant-host-podium",
+   "type": "prop",
+   "name": "레스토랑 안내 포디엄",
+   "en": "walnut fine-dining host stand podium with reservation ledger",
+   "kind": "column",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "카페·식당",
+    "레스토랑",
+    "안내",
+    "포디움"
+   ],
+   "words": [
+    "레스토랑 안내 포디엄",
+    "walnut fine-dining host stand podium with reservation ledger"
+   ],
+   "rule": "레스토랑 출입구 옆",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "de1a532b7f61d871b42e14105ac477e5f9c4e4f3d72f3eb7352916b18e92c713"
+  },
+  {
+   "id": "mc-c-sento-bath",
+   "replaces": "mc-in-opus-sento-bath",
+   "type": "prop",
+   "name": "목욕탕 대욕조(센토)",
+   "en": "steaming tiled Japanese sento public bathhouse hot pool",
+   "kind": "box",
+   "w": 4,
+   "h": 3,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     2
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "목욕탕·온천",
+    "센토",
+    "탕"
+   ],
+   "words": [
+    "목욕탕 대욕조(센토)",
+    "steaming tiled Japanese sento public bathhouse hot pool"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "196e9be0a7e89ee0d2aeceade8dea50843f0e497337cf72f94bd6dee8d9203ff"
+  },
+  {
+   "id": "mc-c-sento-noren-men",
+   "replaces": "mc-in-opus-sento-noren-men",
+   "type": "prop",
+   "name": "목욕탕 남탕 노렌",
+   "en": "indigo three-panel men bathhouse noren curtain",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "목욕탕·온천",
+    "센토",
+    "노렌"
+   ],
+   "words": [
+    "목욕탕 남탕 노렌",
+    "indigo three-panel men bathhouse noren curtain"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "7784b7de83bb204bf6a1b83fb8b0ca926573c8e23b5f8c107a48d09221df80a6"
+  },
+  {
+   "id": "mc-c-sento-noren-women",
+   "replaces": "mc-in-opus-sento-noren-women",
+   "type": "prop",
+   "name": "목욕탕 여탕 노렌",
+   "en": "crimson three-panel women bathhouse noren curtain",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "목욕탕·온천",
+    "센토",
+    "노렌"
+   ],
+   "words": [
+    "목욕탕 여탕 노렌",
+    "crimson three-panel women bathhouse noren curtain"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "1e2abe78decd4d63aedcbc737056381c34a10247362f9f484b654052914db88a"
+  },
+  {
+   "id": "mc-c-sento-wash-station",
+   "replaces": "mc-in-opus-sento-wash-station",
+   "type": "prop",
+   "name": "목욕탕 샤워 세신대",
+   "en": "tiled sento seated washing station with mirror and yellow bucket",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "목욕탕·온천",
+    "센토",
+    "씻는 자리"
+   ],
+   "words": [
+    "목욕탕 샤워 세신대",
+    "tiled sento seated washing station with mirror and yellow bucket"
+   ],
+   "rule": "북쪽 벽면 앞 첫 바닥 줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "b397f18f2dbf71198650a787ac6ab646f65fb14602c012c90142f52ba23ac14e"
+  },
+  {
+   "id": "mc-c-shrine-altar",
+   "replaces": "mc-in-opus-shrine-altar",
+   "type": "prop",
+   "name": "신사 본전 제단",
+   "en": "cypress Shinto inner sanctuary altar with mirror and shide",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "신사",
+    "제단"
+   ],
+   "words": [
+    "신사 본전 제단",
+    "cypress Shinto inner sanctuary altar with mirror and shide"
+   ],
+   "rule": "북쪽 벽면 앞 첫 바닥 줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "b1de08770ac5d449fcfb63da7558ab3d5f86f154ea96f437c0f01a774e3e2dc3"
+  },
+  {
+   "id": "mc-c-shrine-saisen-box",
+   "replaces": "mc-in-opus-shrine-saisen-box",
+   "type": "prop",
+   "name": "신사 새전함",
+   "en": "slatted cedar Shinto saisen offering box with braided bell rope",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "신사",
+    "새전함"
+   ],
+   "words": [
+    "신사 새전함",
+    "slatted cedar Shinto saisen offering box with braided bell rope"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "0bf6832d33c3bb108a26c6248364967fae40780410f936db4148f1e743bdb3da"
+  },
+  {
+   "id": "mc-c-rest-coat-stand",
+   "replaces": "mc-in-opus-rest-coat-stand",
+   "type": "prop",
+   "name": "레스토랑 스탠딩 옷걸이",
+   "en": "mahogany and brass standing coat and hat rack",
+   "kind": "column",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "상업·공공",
+    "레스토랑",
+    "코트걸이",
+    "우산"
+   ],
+   "words": [
+    "레스토랑 스탠딩 옷걸이",
+    "mahogany and brass standing coat and hat rack"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "0b92b64bee03ec3d263f1d7f0010def64ae2cef7d709f4ce9993596de0235c24"
+  },
+  {
+   "id": "mc-c-studio-camera-crane",
+   "replaces": "mc-in-opus-studio-camera-crane",
+   "type": "prop",
+   "name": "방송국 스튜디오 카메라",
+   "en": "TV broadcast studio rolling pedestal camera with tally light",
+   "kind": "column",
+   "w": 2,
+   "h": 3,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "방송국",
+    "크레인"
+   ],
+   "words": [
+    "방송국 스튜디오 카메라",
+    "TV broadcast studio rolling pedestal camera with tally light"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "37266800f16f49c32e7ff54288323305b69fe487659bcd686dc04dfa9f76a0f2"
+  },
+  {
+   "id": "mc-c-studio-chroma-wall",
+   "replaces": "mc-in-opus-studio-chroma-wall",
+   "type": "prop",
+   "name": "방송국 크로마키 그린스크린",
+   "en": "TV studio green-screen chromakey backdrop wall with rig lights",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "방송국",
+    "크로마키"
+   ],
+   "words": [
+    "방송국 크로마키 그린스크린",
+    "TV studio green-screen chromakey backdrop wall with rig lights"
+   ],
+   "rule": "북쪽 벽면 앞 첫 바닥 줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "e0492d64a766f9b01dc185cc5653fe2a2814aefc8e1fa1b3e8799d702c13638c"
+  },
+  {
+   "id": "mc-c-studio-news-desk",
+   "replaces": "mc-in-opus-studio-news-desk",
+   "type": "prop",
+   "name": "방송국 뉴스 앵커 데스크",
+   "en": "curved glass and blue-lit TV news anchor desk",
+   "kind": "box",
+   "w": 4,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "방송국",
+    "뉴스"
+   ],
+   "words": [
+    "방송국 뉴스 앵커 데스크",
+    "curved glass and blue-lit TV news anchor desk"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "93f9fba446379e930a0da5bde07f633d9f32d12f12084e7f0170610a4d3506c5"
+  },
+  {
+   "id": "mc-c-projector-screen",
+   "replaces": "mc-in-opus-projector-screen",
+   "type": "prop",
+   "name": "회의실 프로젝터 스크린",
+   "en": "pull-down presentation projection screen with bar chart slide",
+   "kind": "other",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "학교·대학",
+    "대학교",
+    "스크린"
+   ],
+   "words": [
+    "회의실 프로젝터 스크린",
+    "pull-down presentation projection screen with bar chart slide"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "22c5e0730ea257ae7af67b4d704d4fea097a9b08d6b380b7862830392584a377"
+  },
+  {
+   "id": "mc-c-dept-fitting-curtain",
+   "replaces": "mc-in-r10-dept-fitting-curtain",
+   "type": "prop",
+   "name": "부티크 피팅룸 커튼",
+   "en": "department store fitting room entrance with velvet curtain",
+   "kind": "other",
+   "w": 2,
+   "h": 3,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "백화점",
+    "패션",
+    "탈의실"
+   ],
+   "words": [
+    "부티크 피팅룸 커튼",
+    "department store fitting room entrance with velvet curtain"
+   ],
+   "rule": "북쪽 벽면 앞 첫 바닥 줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "691d95014de67b65dd5543120ed72cec0ec8f990aeef08b6a9dfe821b5e4a8ba"
+  },
+  {
+   "id": "mc-c-dept-info-desk",
+   "replaces": "mc-in-r10-dept-info-desk",
+   "type": "prop",
+   "name": "백화점 안내 데스크",
+   "en": "curved marble and gold department store information desk",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "백화점",
+    "안내"
+   ],
+   "words": [
+    "백화점 안내 데스크",
+    "curved marble and gold department store information desk"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "316e498b457f31efc021b3115da4c8a39c9e476d79d6409f63e660f443f01ba2"
+  },
+  {
+   "id": "mc-c-dept-shoe-bench",
+   "replaces": "mc-in-r10-dept-shoe-bench",
+   "type": "prop",
+   "name": "신발 매장 피팅 벤치·거울",
+   "en": "tufted boutique shoe-fitting bench with angled floor mirror",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "백화점",
+    "구두"
+   ],
+   "words": [
+    "신발 매장 피팅 벤치·거울",
+    "tufted boutique shoe-fitting bench with angled floor mirror"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "da992ac303314843d539d683c0608787c36a5990b849d9d8fb1bf335ed4a75fe"
+  },
+  {
+   "id": "mc-c-dept-skincare-counter",
+   "replaces": "mc-in-r10-dept-skincare-counter",
+   "type": "prop",
+   "name": "백화점 화장품 카운터",
+   "en": "illuminated department store skincare and perfume counter",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "백화점",
+    "화장품"
+   ],
+   "words": [
+    "백화점 화장품 카운터",
+    "illuminated department store skincare and perfume counter"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "78a22b46284f901570b3370b341ba8d174c040d08b25b4b333153fc89bda7ba1"
+  },
+  {
+   "id": "mc-c-home-bath-stool",
+   "replaces": "mc-in-r10-home-bath-stool",
+   "type": "prop",
+   "name": "욕실 의자·대야 세트",
+   "en": "compact Japanese bathroom stool and washbowl",
+   "kind": "other",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "목욕탕·온천",
+    "집",
+    "욕실",
+    "목욕탕"
+   ],
+   "words": [
+    "욕실 의자·대야 세트",
+    "compact Japanese bathroom stool and washbowl"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "40e1cd3daf127c4a13ed48f0a6a019669a3c2d334b4be7a39b45b1f4364d6e5e"
+  },
+  {
+   "id": "mc-c-home-genkan-shoes",
+   "replaces": "mc-in-r10-home-genkan-shoes",
+   "type": "prop",
+   "name": "현관 신발·슬리퍼",
+   "en": "neatly arranged entryway sneakers loafers and slippers",
+   "kind": "other",
+   "w": 2,
+   "h": 1,
+   "place": "decal",
+   "block": [],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "집·아파트",
+    "집",
+    "현관",
+    "신발"
+   ],
+   "words": [
+    "현관 신발·슬리퍼",
+    "neatly arranged entryway sneakers loafers and slippers"
+   ],
+   "rule": "바닥에 깔기",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "0f04e46f47f07e0c0821f8da3b581945e03d436b53faa94f85c0d0d66db21f82"
+  },
+  {
+   "id": "mc-c-home-zabuton",
+   "replaces": "mc-in-r10-home-zabuton",
+   "type": "prop",
+   "name": "방석 2개 세트",
+   "en": "pair of quilted Japanese indigo and crimson zabuton floor cushions",
+   "kind": "other",
+   "w": 2,
+   "h": 1,
+   "place": "decal",
+   "block": [],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "집·아파트",
+    "집",
+    "다다미",
+    "방석"
+   ],
+   "words": [
+    "방석 2개 세트",
+    "pair of quilted Japanese indigo and crimson zabuton floor cushions"
+   ],
+   "rule": "바닥에 깔기",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "35acc0290d7a978c6ee5f421bc2e5c572da22f96bb258c17e90b7b643a5b655c"
+  },
+  {
+   "id": "mc-c-konbini-copier",
+   "replaces": "mc-in-r10-konbini-copier",
+   "type": "prop",
+   "name": "편의점 복합 복사기",
+   "en": "convenience store multifunction copy and ticket kiosk",
+   "kind": "box",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "매장·마트",
+    "편의점",
+    "복사기"
+   ],
+   "words": [
+    "편의점 복합 복사기",
+    "convenience store multifunction copy and ticket kiosk"
+   ],
+   "rule": "북쪽 벽면 앞 첫 바닥 줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "5dfb279b82b653131cb59dc2bbdb101643dc516579297119517a10795ba57b16"
+  },
+  {
+   "id": "mc-c-mart-candy-bins",
+   "replaces": "mc-in-r10-mart-candy-bins",
+   "type": "prop",
+   "name": "마트 벌크 캔디 진열대",
+   "en": "transparent acrylic bulk candy and snack bin rack",
+   "kind": "box",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "매장·마트",
+    "마트",
+    "과자"
+   ],
+   "words": [
+    "마트 벌크 캔디 진열대",
+    "transparent acrylic bulk candy and snack bin rack"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "f27b8ee516bc31e2ee79da76300fad3baeb6f9612e1cd34b02cca97f8b268088"
+  },
+  {
+   "id": "mc-c-mart-freezer-dumpling",
+   "replaces": "mc-in-r10-mart-freezer-dumpling",
+   "type": "prop",
+   "name": "마트 냉동만두 냉동고",
+   "en": "supermarket sliding glass freezer packed with frozen dumplings",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "매장·마트",
+    "마트",
+    "냉동"
+   ],
+   "words": [
+    "마트 냉동만두 냉동고",
+    "supermarket sliding glass freezer packed with frozen dumplings"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "b13af3043199b985bda02704cdc60cace7ef4f6b2e5b2a3dd9c37bc823d04a9a"
+  },
+  {
+   "id": "mc-c-mart-freezer-icecream",
+   "replaces": "mc-in-r10-mart-freezer-icecream",
+   "type": "prop",
+   "name": "마트 아이스크림 냉동고",
+   "en": "supermarket glass-top chest freezer filled with ice cream tubs",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "매장·마트",
+    "마트",
+    "냉동",
+    "아이스크림"
+   ],
+   "words": [
+    "마트 아이스크림 냉동고",
+    "supermarket glass-top chest freezer filled with ice cream tubs"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "42a81e2099c81d8962979d0d3a776f64528ff69527b59169c8284548c83c8421"
+  },
+  {
+   "id": "mc-c-mart-sale-banner",
+   "replaces": "mc-in-r10-mart-sale-banner",
+   "type": "prop",
+   "name": "마트 세일 현수막 배너",
+   "en": "festive red and yellow supermarket overhead SALE banner",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "매장·마트",
+    "마트",
+    "특가"
+   ],
+   "words": [
+    "마트 세일 현수막 배너",
+    "festive red and yellow supermarket overhead SALE banner"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "24e59e7cb3c6351bc9d86ccaf93545d179171fb4eb0345d2b0ad40071e907f48"
+  },
+  {
+   "id": "mc-c-mart-sale-endcap",
+   "replaces": "mc-in-r10-mart-sale-endcap",
+   "type": "prop",
+   "name": "마트 특가 엔드캡 진열대",
+   "en": "supermarket aisle endcap promotional bargain stack",
+   "kind": "box",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "매장·마트",
+    "마트",
+    "특가",
+    "진열"
+   ],
+   "words": [
+    "마트 특가 엔드캡 진열대",
+    "supermarket aisle endcap promotional bargain stack"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "165d120bd84d66cda0f6017bf030fd3e4442dd42e259e785b712c3253fabe25b"
+  },
+  {
+   "id": "mc-c-office-copier",
+   "replaces": "mc-in-r10-office-copier",
+   "type": "prop",
+   "name": "사무실 대형 복합기",
+   "en": "large office multifunction laser printer and copier",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "사무실",
+    "복사기"
+   ],
+   "words": [
+    "사무실 대형 복합기",
+    "large office multifunction laser printer and copier"
+   ],
+   "rule": "북쪽 벽면 앞 첫 바닥 줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "ac054a4a84f13dc131efdc1c4b4a9bdc4aec0d10b7b9ee32bb8fdfd8bb95539d"
+  },
+  {
+   "id": "mc-c-office-whiteboard-stand",
+   "replaces": "mc-in-r10-office-whiteboard-stand",
+   "type": "prop",
+   "name": "이동식 스탠딩 화이트보드",
+   "en": "wheeled conference room standing whiteboard with charts",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "사무실",
+    "회의",
+    "학교"
+   ],
+   "words": [
+    "이동식 스탠딩 화이트보드",
+    "wheeled conference room standing whiteboard with charts"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "7b7e19152dc73f0e951c9d4bc67e3c6980a4fef1b827c9dab56954f14a30296f"
+  },
+  {
+   "id": "mc-c-school-teacher-podium",
+   "replaces": "mc-in-r10-school-teacher-podium",
+   "type": "prop",
+   "name": "교실 원목 교탁",
+   "en": "wooden classroom teacher lectern desk with textbook",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "학교·대학",
+    "학교",
+    "교실"
+   ],
+   "words": [
+    "교실 원목 교탁",
+    "wooden classroom teacher lectern desk with textbook"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "ce661a2431e85747ccb0e7bd836511dbd95cc7035b434ce28b146162fd1c1fb2"
+  },
+  {
+   "id": "mc-c-hospital-pharmacy-window",
+   "replaces": "mc-in-opus-hospital-pharmacy-window",
+   "type": "prop",
+   "name": "병원 원내 약국 창구",
+   "en": "hospital dispensing pharmacy pickup window with green cross",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "상업·공공",
+    "병원",
+    "약국",
+    "투약구"
+   ],
+   "words": [
+    "병원 원내 약국 창구",
+    "hospital dispensing pharmacy pickup window with green cross"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "ad62e7382db1bb5edbea5b8f2be5bfc88e67e26c54e7156c9694967fadb4ab8b"
+  },
+  {
+   "id": "mc-c-station-name-sign",
+   "replaces": "mc-in-r10-station-name-sign",
+   "type": "prop",
+   "name": "전철역 승강장 역명판",
+   "en": "illuminated hanging Japanese train station name sign",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "역",
+    "지하철",
+    "표지"
+   ],
+   "words": [
+    "전철역 승강장 역명판",
+    "illuminated hanging Japanese train station name sign"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "354172bae0b2ecc9efe380bd061fdb0bd1e8d581ecb8bc23399d3d6fee7aacf5"
+  },
+  {
+   "id": "mc-c-station-timetable",
+   "replaces": "mc-in-r10-station-timetable",
+   "type": "prop",
+   "name": "전철역 열차 시간표",
+   "en": "framed vertical station departure timetable board",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "역",
+    "지하철",
+    "시각표"
+   ],
+   "words": [
+    "전철역 열차 시간표",
+    "framed vertical station departure timetable board"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "4fb91ff2c2c4d41598bd8de12a62c25761ccc2a875651d13ca393fe6e5fc0a5e"
+  },
+  {
+   "id": "mc-c-train-ceiling-ac",
+   "replaces": "mc-in-r10-train-ceiling-ac",
+   "type": "prop",
+   "name": "전철 천장 에어컨 송풍구",
+   "en": "commuter train ceiling AC diffuser with grab straps",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "지하철",
+    "전동차",
+    "천장"
+   ],
+   "words": [
+    "전철 천장 에어컨 송풍구",
+    "commuter train ceiling AC diffuser with grab straps"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "29d53187a23aa7e3aa5decd221c6a419aba02a4be4d883c9cecf650fa58af712"
+  },
+  {
+   "id": "mc-c-train-door-s",
+   "replaces": "mc-in-opus-train-door-s",
+   "type": "prop",
+   "name": "전철 출입문 바닥 문턱",
+   "en": "commuter train sliding door floor threshold with yellow tactile strip",
+   "kind": "other",
+   "w": 2,
+   "h": 1,
+   "place": "decal",
+   "block": [],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "지하철",
+    "전동차",
+    "문"
+   ],
+   "words": [
+    "전철 출입문 바닥 문턱",
+    "commuter train sliding door floor threshold with yellow tactile strip"
+   ],
+   "rule": "바닥에 깔기",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "192ea4ea4c726fd08d384757127cb7bc8549ddf492a64915061be569d1615010"
+  },
+  {
+   "id": "mc-c-train-door-steel",
+   "replaces": "mc-in-r10-train-door-steel",
+   "type": "prop",
+   "name": "전철 스테인리스 양개문",
+   "en": "brushed stainless commuter train double sliding passenger doors",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "지하철",
+    "전동차",
+    "문"
+   ],
+   "words": [
+    "전철 스테인리스 양개문",
+    "brushed stainless commuter train double sliding passenger doors"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "ef748952b965fbbe349890b2431f13f08313a59500636fd59296f7587b47fef3"
+  },
+  {
+   "id": "mc-c-train-emergency-cock",
+   "replaces": "mc-in-r10-train-emergency-cock",
+   "type": "prop",
+   "name": "전철 비상 출입문 개폐콕",
+   "en": "red emergency train door release cock box",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "지하철",
+    "전동차",
+    "안전"
+   ],
+   "words": [
+    "전철 비상 출입문 개폐콕",
+    "red emergency train door release cock box"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "767e3152539644366724795cca844601a9a476705bc585693392853af3d92b09"
+  },
+  {
+   "id": "mc-c-train-extinguisher",
+   "replaces": "mc-in-r10-train-extinguisher",
+   "type": "prop",
+   "name": "전철 객차 소화기함",
+   "en": "recessed stainless train car fire extinguisher cabinet",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "지하철",
+    "전동차",
+    "안전"
+   ],
+   "words": [
+    "전철 객차 소화기함",
+    "recessed stainless train car fire extinguisher cabinet"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "8668e758c40a6cd6f8337e8f2ed091117204dba162c662ed0967d5c8cb72b721"
+  },
+  {
+   "id": "mc-c-train-hanging-ad",
+   "replaces": "mc-in-r10-train-hanging-ad",
+   "type": "prop",
+   "name": "전철 천장 걸이 광고·손잡이",
+   "en": "commuter train overhead hanging poster ad and grab straps",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "지하철",
+    "전동차",
+    "광고"
+   ],
+   "words": [
+    "전철 천장 걸이 광고·손잡이",
+    "commuter train overhead hanging poster ad and grab straps"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "2881a5ee370b5466c2ce10dd6f82d4e4b4bc75214f89b9336b5d784fab61557c"
+  },
+  {
+   "id": "mc-c-train-lcd-dual",
+   "replaces": "mc-in-r10-train-lcd-dual",
+   "type": "prop",
+   "name": "전철 문 위 듀얼 LCD",
+   "en": "twin overhead commuter train LCD route and info screens",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "지하철",
+    "전동차",
+    "모니터"
+   ],
+   "words": [
+    "전철 문 위 듀얼 LCD",
+    "twin overhead commuter train LCD route and info screens"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "a1d6f38d46884ec271ce01ee5e5c15e44f28c4669687c2d6296da5430e77962e"
+  },
+  {
+   "id": "mc-c-train-led",
+   "replaces": "mc-in-opus-train-led",
+   "type": "prop",
+   "name": "전철 LED 행선 안내판",
+   "en": "commuter train interior dot-matrix LED scroll display",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "지하철",
+    "전동차",
+    "노선도"
+   ],
+   "words": [
+    "전철 LED 행선 안내판",
+    "commuter train interior dot-matrix LED scroll display"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "bde6836a98beb673d38a42bed0a2e20bf2480e9b72172fc7d61dee0b1f1c59d9"
+  },
+  {
+   "id": "mc-c-train-route-strip",
+   "replaces": "mc-in-r10-train-route-strip",
+   "type": "prop",
+   "name": "전철 객차 노선도 스트립",
+   "en": "horizontal illuminated train line route map strip",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "지하철",
+    "전동차",
+    "노선도"
+   ],
+   "words": [
+    "전철 객차 노선도 스트립",
+    "horizontal illuminated train line route map strip"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "645b34be6b0ad916621173914cf3d280d6d38064a0df289683f337fef1f7e60e"
+  },
+  {
+   "id": "mc-c-train-sos-intercom",
+   "replaces": "mc-in-r10-train-sos-intercom",
+   "type": "prop",
+   "name": "전철 비상 통화 인터콤",
+   "en": "train interior red SOS emergency passenger intercom",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "지하철",
+    "전동차",
+    "안전"
+   ],
+   "words": [
+    "전철 비상 통화 인터콤",
+    "train interior red SOS emergency passenger intercom"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "f7468a911b1f528596f0e960e335852c80396a115b735241a508a38552d0c273"
+  },
+  {
+   "id": "mc-c-train-stanchion",
+   "replaces": "mc-in-r10-train-stanchion",
+   "type": "prop",
+   "name": "전철 스테인리스 손잡이 기둥",
+   "en": "brushed stainless vertical train stanchion handrail pole",
+   "kind": "column",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "지하철",
+    "전동차",
+    "손잡이"
+   ],
+   "words": [
+    "전철 스테인리스 손잡이 기둥",
+    "brushed stainless vertical train stanchion handrail pole"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "3b851a7f6a56010c35d1fd28fe3d630055af31de7193fe5cdc1bb17bad965ed8"
+  },
+  {
+   "id": "mc-c-train-wheelchair-space",
+   "replaces": "mc-in-r10-train-wheelchair-space",
+   "type": "prop",
+   "name": "전철 휠체어 전용석 구역",
+   "en": "commuter train wheelchair priority bay with blue emblem",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "지하철",
+    "전동차",
+    "휠체어"
+   ],
+   "words": [
+    "전철 휠체어 전용석 구역",
+    "commuter train wheelchair priority bay with blue emblem"
+   ],
+   "rule": "북쪽 벽면 앞 첫 바닥 줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "c984e3539775f430bb321554f068a072a8429d3addb3d9115c85daefc638a44e"
+  },
+  {
+   "id": "mc-c-train-window-blind",
+   "replaces": "mc-in-r10-train-window-blind",
+   "type": "prop",
+   "name": "전철 블라인드 객차 창문",
+   "en": "commuter train passenger window with half-drawn roller blind",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "지하철",
+    "전동차",
+    "창"
+   ],
+   "words": [
+    "전철 블라인드 객차 창문",
+    "commuter train passenger window with half-drawn roller blind"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "508dcaaaede353646b414cff73474ce597b1e35349328a37f97151a70c516e66"
+  },
+  {
+   "id": "mc-c-train-window-tunnel",
+   "replaces": "mc-in-r10-train-window-tunnel",
+   "type": "prop",
+   "name": "지하철 터널 주행 창문",
+   "en": "subway passenger window showing streaking tunnel lights",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "지하철",
+    "전동차",
+    "창"
+   ],
+   "words": [
+    "지하철 터널 주행 창문",
+    "subway passenger window showing streaking tunnel lights"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "ee709ef42bc0cc4a3de24e5253aa0d4ecb71f99836846a1a4a7d4c2966b14842"
+  },
+  {
+   "id": "mc-c-train-longseat",
+   "replaces": "mc-in-opus-train-longseat",
+   "type": "prop",
+   "name": "전철 모켓 롱시트 좌석",
+   "en": "Japanese commuter train crimson moquette bench seat",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "지하철",
+    "전동차",
+    "좌석"
+   ],
+   "words": [
+    "전철 모켓 롱시트 좌석",
+    "Japanese commuter train crimson moquette bench seat"
+   ],
+   "rule": "북쪽 벽면 앞 첫 바닥 줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "2d3f0930059d901a37b8312289476ad84313d35c5001cb94dca5a3a4d0285147"
+  },
+  {
+   "id": "mc-c-train-priority-seat",
+   "replaces": "mc-in-r10-train-priority-pink-s",
+   "type": "prop",
+   "name": "전철 교통약자 배려석",
+   "en": "pink moquette commuter train priority seating bench",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "지하철",
+    "전동차",
+    "좌석"
+   ],
+   "words": [
+    "전철 교통약자 배려석",
+    "pink moquette commuter train priority seating bench"
+   ],
+   "rule": "북쪽 벽면 앞 첫 바닥 줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "54e608e74155e0ee554fece4066886b2b1a2b5bac14d0386934260be1c9157b4"
+  },
+  {
+   "id": "mc-c-train-seat7-blue",
+   "replaces": "mc-in-r10-train-seat7-blue-s",
+   "type": "prop",
+   "name": "전철 7인 블루 롱시트",
+   "en": "seven-passenger royal blue moquette commuter train bench",
+   "kind": "box",
+   "w": 4,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "지하철",
+    "전동차",
+    "좌석"
+   ],
+   "words": [
+    "전철 7인 블루 롱시트",
+    "seven-passenger royal blue moquette commuter train bench"
+   ],
+   "rule": "북쪽 벽면 앞 첫 바닥 줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "9c02378d0978d7425cb6eb969e5509a0013045cfad588259264e64a1b33c47b2"
+  },
+  {
+   "id": "mc-c-train-seat7-green",
+   "replaces": "mc-in-r10-train-seat7-green-s",
+   "type": "prop",
+   "name": "전철 7인 그린 롱시트",
+   "en": "seven-passenger emerald green moquette commuter train bench",
+   "kind": "box",
+   "w": 4,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "역 대합실",
+    "지하철",
+    "전동차",
+    "좌석"
+   ],
+   "words": [
+    "전철 7인 그린 롱시트",
+    "seven-passenger emerald green moquette commuter train bench"
+   ],
+   "rule": "북쪽 벽면 앞 첫 바닥 줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "767ba162ca8e377583ac1599aa9d99adf92e82375ce8d4a6709406a3590f3397"
+  },
+  {
+   "id": "mc-c-elev-button-panel",
+   "replaces": "mc-in-r10b-elev-button-panel",
+   "type": "prop",
+   "name": "엘리베이터 층 버튼 패널",
+   "en": "brushed stainless elevator cabin floor button panel",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "로비·엘리베이터",
+    "엘리베이터"
+   ],
+   "words": [
+    "엘리베이터 층 버튼 패널",
+    "brushed stainless elevator cabin floor button panel"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "fd137fe418a6fdaba4945ca92eb215153cfae9cabd43d2b93e516483dfae6b9f"
+  },
+  {
+   "id": "mc-c-elev-car-door",
+   "replaces": "mc-in-r10b-elev-car-door",
+   "type": "prop",
+   "name": "엘리베이터 스틸 도어",
+   "en": "tall brushed stainless elevator sliding car door",
+   "kind": "other",
+   "w": 1,
+   "h": 3,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     2
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "로비·엘리베이터",
+    "엘리베이터",
+    "문"
+   ],
+   "words": [
+    "엘리베이터 스틸 도어",
+    "tall brushed stainless elevator sliding car door"
+   ],
+   "rule": "가로 칸막이의 1칸 틈",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "1e2b2e0b2e9df679ad29124e405a42d6350fcc129a9339415312989c25b58777"
+  },
+  {
+   "id": "mc-c-elev-floor-led",
+   "replaces": "mc-in-r10b-elev-floor-led",
+   "type": "prop",
+   "name": "엘리베이터 층수 LED 표시기",
+   "en": "elevator lobby digital floor indicator LED panel",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "로비·엘리베이터",
+    "엘리베이터"
+   ],
+   "words": [
+    "엘리베이터 층수 LED 표시기",
+    "elevator lobby digital floor indicator LED panel"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "f28347fc50499832683b172e1653d67ec5b4cede13a27c6c8b20156511b0d9f9"
+  },
+  {
+   "id": "mc-c-elev-hall-lantern",
+   "replaces": "mc-in-r10b-elev-hall-lantern",
+   "type": "prop",
+   "name": "엘리베이터 홀 도착등",
+   "en": "elevator lobby arrival hall lantern with up/down triangles",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "로비·엘리베이터",
+    "엘리베이터",
+    "로비"
+   ],
+   "words": [
+    "엘리베이터 홀 도착등",
+    "elevator lobby arrival hall lantern with up/down triangles"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "e6abd882c348152f4eb7cf0fc4e47edd073854b64659aae5869676ca4ede51b6"
+  },
+  {
+   "id": "mc-c-elev-mirror-wall",
+   "replaces": "mc-in-r10b-elev-mirror-wall",
+   "type": "prop",
+   "name": "엘리베이터 거울·핸드레일 벽",
+   "en": "elevator cabin rear beveled mirror wall with stainless handrail",
+   "kind": "other",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "로비·엘리베이터",
+    "엘리베이터"
+   ],
+   "words": [
+    "엘리베이터 거울·핸드레일 벽",
+    "elevator cabin rear beveled mirror wall with stainless handrail"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "8ee95832e09eb6ffc99cafe2c19a80bdafb2fe9a069075726795f53dcd636360"
+  },
+  {
+   "id": "mc-c-elev-wood-panel",
+   "replaces": "mc-in-r10b-elev-wood-panel",
+   "type": "prop",
+   "name": "엘리베이터 원목 내장 패널",
+   "en": "walnut wood veneer elevator cabin wall panel with handrail",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "로비·엘리베이터",
+    "엘리베이터"
+   ],
+   "words": [
+    "엘리베이터 원목 내장 패널",
+    "walnut wood veneer elevator cabin wall panel with handrail"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "34715d15e9fe15c7d929f4792d9cf8013eb6d3872806d58203e7a492b5a98b49"
+  },
+  {
+   "id": "mc-c-hosp-curtain-track",
+   "replaces": "mc-in-r10b-hosp-curtain-track",
+   "type": "prop",
+   "name": "병실 천장 커튼 레일",
+   "en": "overhead hospital bed privacy curtain rail with gathered drapes",
+   "kind": "other",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "병실",
+    "커튼"
+   ],
+   "words": [
+    "병실 천장 커튼 레일",
+    "overhead hospital bed privacy curtain rail with gathered drapes"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "84e32b6a9027c878758eb2f7efce1e0b6ca370bf62ac370647ba0c7e257d267e"
+  },
+  {
+   "id": "mc-c-hosp-film-viewer",
+   "replaces": "mc-in-r10b-hosp-film-viewer",
+   "type": "prop",
+   "name": "병원 X선 필름 판독기",
+   "en": "wall-mounted medical X-ray radiograph lightbox viewer",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "영상의학",
+    "진료실"
+   ],
+   "words": [
+    "병원 X선 필름 판독기",
+    "wall-mounted medical X-ray radiograph lightbox viewer"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "63639402890c84d94c4844f122b9434580d795880cdbb8ae445956c07c11bc77"
+  },
+  {
+   "id": "mc-c-hosp-floor-directory",
+   "replaces": "mc-in-r10b-hosp-floor-directory",
+   "type": "prop",
+   "name": "병원 층별 진료과 안내판",
+   "en": "hospital lobby color-coded ward directory board",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "로비·엘리베이터",
+    "병원",
+    "로비",
+    "엘리베이터"
+   ],
+   "words": [
+    "병원 층별 진료과 안내판",
+    "hospital lobby color-coded ward directory board"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "0d1d5f1ee8d6eca5fbccbbbc88bf0365c519af7b109b9148d8102a1173038c37"
+  },
+  {
+   "id": "mc-c-hosp-mayo-stand",
+   "replaces": "mc-in-r10b-hosp-mayo-stand",
+   "type": "prop",
+   "name": "수술실 메이요 기구 트레이",
+   "en": "rolling stainless surgical Mayo instrument tray stand",
+   "kind": "column",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "수술실"
+   ],
+   "words": [
+    "수술실 메이요 기구 트레이",
+    "rolling stainless surgical Mayo instrument tray stand"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "338561d9137e64bead16d50ca9d9be3a88d834d6bddfeae792408cc7e8cb73fb"
+  },
+  {
+   "id": "mc-c-hosp-number-display",
+   "replaces": "mc-in-r10b-hosp-number-display",
+   "type": "prop",
+   "name": "병원 대기번호 호출 전광판",
+   "en": "hospital waiting room overhead LED patient call-number board",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "로비",
+    "접수"
+   ],
+   "words": [
+    "병원 대기번호 호출 전광판",
+    "hospital waiting room overhead LED patient call-number board"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "d32002dec156c304d1d7716d83e8e45d0d5257e6a9ebb119d5c09b17cab07f65"
+  },
+  {
+   "id": "mc-c-hosp-scrub-sink",
+   "replaces": "mc-in-r10b-hosp-scrub-sink",
+   "type": "prop",
+   "name": "수술실 스크럽 세면대",
+   "en": "wide stainless surgical scrub sink with dual faucets",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "수술실"
+   ],
+   "words": [
+    "수술실 스크럽 세면대",
+    "wide stainless surgical scrub sink with dual faucets"
+   ],
+   "rule": "북쪽 벽면 앞 첫 바닥 줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "086eb9022514676b1126fa8e53fe53eee3ecef586e4e7aa7aca5f3bfbbe539b7"
+  },
+  {
+   "id": "mc-c-hosp-stretcher",
+   "replaces": "mc-in-r10b-hosp-stretcher",
+   "type": "prop",
+   "name": "응급실 이동식 침대(스트레처)",
+   "en": "rolling hospital emergency gurney stretcher with IV pole",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "응급"
+   ],
+   "words": [
+    "응급실 이동식 침대(스트레처)",
+    "rolling hospital emergency gurney stretcher with IV pole"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "669da02e6c91d427379e0b4c0520de4bf3e973f884b2b2f20bda2b997230ca4a"
+  },
+  {
+   "id": "mc-c-hosp-triage-desk",
+   "replaces": "mc-in-r10b-hosp-triage-desk",
+   "type": "prop",
+   "name": "응급실 분류 접수 데스크",
+   "en": "compact ER hospital triage desk with monitor and clipboard",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "로비",
+    "문진"
+   ],
+   "words": [
+    "응급실 분류 접수 데스크",
+    "compact ER hospital triage desk with monitor and clipboard"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "714d90c1efaac6ff8a773c426b1c5d5726386e93b246f74649e07a7727170157"
+  },
+  {
+   "id": "mc-c-hosp-wait-row-s",
+   "replaces": "mc-in-r10b-hosp-wait-row-s",
+   "type": "prop",
+   "name": "병원 대기실 3인 좌석(남향)",
+   "en": "south-facing three-seat blue hospital waiting bench",
+   "kind": "other",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "로비",
+    "대기실"
+   ],
+   "words": [
+    "병원 대기실 3인 좌석(남향)",
+    "south-facing three-seat blue hospital waiting bench"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "24fead9eeb96333f58497a7b8b5a6a5fb2f2186dfad5ab566262bd2d3b38da98"
+  },
+  {
+   "id": "mc-c-hosp-wheelchair-bay",
+   "replaces": "mc-in-r10b-hosp-wheelchair-bay",
+   "type": "prop",
+   "name": "병원 휠체어 보관소",
+   "en": "hospital lobby parked wheelchair alcove with blue sign",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "로비",
+    "휠체어"
+   ],
+   "words": [
+    "병원 휠체어 보관소",
+    "hospital lobby parked wheelchair alcove with blue sign"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "533ef8a8030a8eb8aae96dc5ff5f21b3e7ca206a9d568318d6d017414b1ba347"
+  },
+  {
+   "id": "mc-c-hosp-xray-console",
+   "replaces": "mc-in-r10b-hosp-xray-console",
+   "type": "prop",
+   "name": "영상의학과 X선 조작 콘솔",
+   "en": "radiology technician control console behind lead-glass shield",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "영상의학"
+   ],
+   "words": [
+    "영상의학과 X선 조작 콘솔",
+    "radiology technician control console behind lead-glass shield"
+   ],
+   "rule": "북쪽 벽면 앞 첫 바닥 줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "74b68ce48bb0305d104db427ce8631a1e7ab75c7d90d119bb249c4ae6b91b9af"
+  },
+  {
+   "id": "mc-c-hosp-xray-table",
+   "replaces": "mc-in-r10b-hosp-xray-table",
+   "type": "prop",
+   "name": "병원 X선 촬영 테이블",
+   "en": "diagnostic hospital X-ray examination table with emitter arm",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "영상의학",
+    "X선"
+   ],
+   "words": [
+    "병원 X선 촬영 테이블",
+    "diagnostic hospital X-ray examination table with emitter arm"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "f6e23be6f1e0a118e440b2cc9fb9aa84387c6464eaafa76c3e894574c97b40de"
+  },
+  {
+   "id": "mc-c-clinic-acupuncture-bed",
+   "replaces": "mc-in-r11-clinic-acupuncture-bed",
+   "type": "prop",
+   "name": "한의원·치료실 원목 베드",
+   "en": "wooden acupuncture and bodywork clinic therapy bed",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "한의원",
+    "침대"
+   ],
+   "words": [
+    "한의원·치료실 원목 베드",
+    "wooden acupuncture and bodywork clinic therapy bed"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "a95e50aa0ddfd84a9b34e80a230f231fc6835814d7befef7e680475eb9384c83"
+  },
+  {
+   "id": "mc-c-clinic-dental-chair",
+   "replaces": "mc-in-r11-clinic-dental-chair",
+   "type": "prop",
+   "name": "치과 진료용 체어",
+   "en": "reclining teal dental examination chair with overhead lamp",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "치과",
+    "의자"
+   ],
+   "words": [
+    "치과 진료용 체어",
+    "reclining teal dental examination chair with overhead lamp"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "304cf94101acfaf414d9cb2c8b45dee06b703ee371f02e3d3da315dfe8a35073"
+  },
+  {
+   "id": "mc-c-clinic-psych-couch",
+   "replaces": "mc-in-r11-clinic-psych-couch",
+   "type": "prop",
+   "name": "상담실 가죽 카우치",
+   "en": "tufted cognac leather psychotherapy chaise lounge couch",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "정신과",
+    "상담"
+   ],
+   "words": [
+    "상담실 가죽 카우치",
+    "tufted cognac leather psychotherapy chaise lounge couch"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "05d07b5d9e91f65b151ac6453c7fb6726cc5051323902d668533519f27a4a263"
+  },
+  {
+   "id": "mc-c-clinic-vet-table",
+   "replaces": "mc-in-r11-clinic-vet-table",
+   "type": "prop",
+   "name": "동물병원 스테인리스 진료대",
+   "en": "brushed stainless veterinary examination table with traction mat",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "병원",
+    "동물병원",
+    "진료"
+   ],
+   "words": [
+    "동물병원 스테인리스 진료대",
+    "brushed stainless veterinary examination table with traction mat"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "526eeeec089a018cb7386ca9b3fab769a3a770796c8ede72d4b7492f7bb0edc2"
+  },
+  {
+   "id": "mc-c-dorm-bunk-bed",
+   "replaces": "mc-in-r11-dorm-bunk-bed",
+   "type": "prop",
+   "name": "기숙사 2층 침대",
+   "en": "compact wooden student dormitory two-tier bunk bed with ladder",
+   "kind": "box",
+   "w": 1,
+   "h": 3,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     2
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "학교·대학",
+    "기숙사",
+    "침대"
+   ],
+   "words": [
+    "기숙사 2층 침대",
+    "compact wooden student dormitory two-tier bunk bed with ladder"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "8c224cfe2626cabb541121a05cc9f84b2d2be5d092f0433deacc45a7caf17661"
+  },
+  {
+   "id": "mc-c-home-futon",
+   "replaces": "mc-in-r11-home-futon",
+   "type": "prop",
+   "name": "일본식 바닥 이불(후톤)",
+   "en": "traditional Japanese floor futon mattress with patterned duvet",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "decal",
+   "block": [],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "집·아파트",
+    "집",
+    "다다미",
+    "이불"
+   ],
+   "words": [
+    "일본식 바닥 이불(후톤)",
+    "traditional Japanese floor futon mattress with patterned duvet"
+   ],
+   "rule": "바닥에 깔기",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "17cc25a5e3c3a387d553cf7109de765271bfd28186eef74a5bd427531e9013c5"
+  },
+  {
+   "id": "mc-c-hotel-key-rack",
+   "replaces": "mc-in-r11-hotel-key-rack",
+   "type": "prop",
+   "name": "호텔 프론트 열쇠함",
+   "en": "mahogany hotel front-desk wall key and mail pigeonhole rack",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "숙박시설",
+    "호텔",
+    "접수"
+   ],
+   "words": [
+    "호텔 프론트 열쇠함",
+    "mahogany hotel front-desk wall key and mail pigeonhole rack"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "1745d670a6b8c113ffaa2624a4712158be11f02789a9e0647e30fd6dd8f7e22d"
+  },
+  {
+   "id": "mc-c-food-bento-counter",
+   "replaces": "mc-in-r11-food-bento-counter",
+   "type": "prop",
+   "name": "도시락 전문점 쇼케이스",
+   "en": "Japanese bento deli showcase counter with boxed meals",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "카페·식당",
+    "도시락",
+    "카운터"
+   ],
+   "words": [
+    "도시락 전문점 쇼케이스",
+    "Japanese bento deli showcase counter with boxed meals"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "c75f9346b5feb683e7b2796909a828f852d60aacac8da0d4c2635018ffedc225"
+  },
+  {
+   "id": "mc-c-food-drink-bar",
+   "replaces": "mc-in-r11-food-drink-bar",
+   "type": "prop",
+   "name": "패밀리레스토랑 드링크바",
+   "en": "self-serve restaurant soda and coffee drink bar tower",
+   "kind": "box",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "카페·식당",
+    "패밀리 레스토랑",
+    "음료"
+   ],
+   "words": [
+    "패밀리레스토랑 드링크바",
+    "self-serve restaurant soda and coffee drink bar tower"
+   ],
+   "rule": "북쪽 벽면 앞 첫 바닥 줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "ddf24ad77ed617a42519eb956c44830a7f098996491b3cfb3461db27cac01f34"
+  },
+  {
+   "id": "mc-c-food-fastfood-counter",
+   "replaces": "mc-in-r11-food-fastfood-counter",
+   "type": "prop",
+   "name": "패스트푸드 주문 카운터",
+   "en": "modern fast-food order counter with registers and menu boards",
+   "kind": "box",
+   "w": 3,
+   "h": 3,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "카페·식당",
+    "패스트푸드",
+    "카운터"
+   ],
+   "words": [
+    "패스트푸드 주문 카운터",
+    "modern fast-food order counter with registers and menu boards"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "bfb33153f0ebb9e1afdd15f813cf4245cdd8cba83d3c297167f9f935ce0c05d4"
+  },
+  {
+   "id": "mc-c-food-sushi-case",
+   "replaces": "mc-in-r11-food-sushi-case",
+   "type": "prop",
+   "name": "스시바 히노키 쇼케이스",
+   "en": "cypress sushi counter with chilled glass neta sashimi case",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "카페·식당",
+    "스시",
+    "카운터"
+   ],
+   "words": [
+    "스시바 히노키 쇼케이스",
+    "cypress sushi counter with chilled glass neta sashimi case"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "085a645691834bc22e685c7bd65599317b8e81668156b85ef43e6cd4cb929354"
+  },
+  {
+   "id": "mc-c-amuse-bowling-lane",
+   "replaces": "mc-in-r11-amuse-bowling-lane",
+   "type": "prop",
+   "name": "볼링장 레인·핀 구역",
+   "en": "polished maple bowling alley lane with gutters and ten pins",
+   "kind": "other",
+   "w": 6,
+   "h": 2,
+   "place": "decal",
+   "block": [],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "오락시설",
+    "볼링",
+    "레인"
+   ],
+   "words": [
+    "볼링장 레인·핀 구역",
+    "polished maple bowling alley lane with gutters and ten pins"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "45a6bdf620f6dfcb325ef309f38f235ef5d7ae0a88ceb8eca2d293ce78ae2712"
+  },
+  {
+   "id": "mc-c-amuse-bowling-return",
+   "replaces": "mc-in-r11-amuse-bowling-return",
+   "type": "prop",
+   "name": "볼링공 리턴 머신",
+   "en": "bowling alley ball-return unit loaded with colorful balls",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "오락시설",
+    "볼링",
+    "리턴"
+   ],
+   "words": [
+    "볼링공 리턴 머신",
+    "bowling alley ball-return unit loaded with colorful balls"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "7ffb72412d2dd39059c7a1cec2657ef008dfb9276f1c49dfcca0b731ecd7bc8f"
+  },
+  {
+   "id": "mc-c-art-installation",
+   "replaces": "mc-in-r11-art-installation",
+   "type": "prop",
+   "name": "현대미술 조각 설치물",
+   "en": "museum plinth displaying golden-brass abstract kinetic sculpture",
+   "kind": "column",
+   "w": 2,
+   "h": 3,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "미술관",
+    "설치"
+   ],
+   "words": [
+    "현대미술 조각 설치물",
+    "museum plinth displaying golden-brass abstract kinetic sculpture"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "43a670a6a2c5c33d74b98f107b3e70de0af8ec60d4ceb3cc80a0fb9e2c8e927c"
+  },
+  {
+   "id": "mc-c-ind-forklift",
+   "replaces": "mc-in-r11-ind-forklift",
+   "type": "prop",
+   "name": "창고 전동 지게차",
+   "en": "yellow warehouse electric forklift with mast and forks",
+   "kind": "box",
+   "w": 2,
+   "h": 3,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "공장·창고",
+    "창고",
+    "지게차"
+   ],
+   "words": [
+    "창고 전동 지게차",
+    "yellow warehouse electric forklift with mast and forks"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "f1ec4803c9f8e200039171198510e1e7ed38c08ac4f3f06fad22c369285c0929"
+  },
+  {
+   "id": "mc-c-jp-incense-burner",
+   "replaces": "mc-in-r11-jp-incense-burner",
+   "type": "prop",
+   "name": "사찰 청동 향로(조코로)",
+   "en": "traditional bronze temple standing incense cauldron with smoke",
+   "kind": "column",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "일본 전통",
+    "사찰",
+    "향"
+   ],
+   "words": [
+    "사찰 청동 향로(조코로)",
+    "traditional bronze temple standing incense cauldron with smoke"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "f651f66c7b036bbb4ad0dead7038d3f0424906438f295fdbdbe14a6d5d4a967c"
+  },
+  {
+   "id": "mc-c-pub-mail-sort",
+   "replaces": "mc-in-r11-pub-mail-sort",
+   "type": "prop",
+   "name": "우체국 우편 분류대",
+   "en": "post office mail sorting cubbies counter and parcel scale",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "공공시설",
+    "우체국",
+    "분류"
+   ],
+   "words": [
+    "우체국 우편 분류대",
+    "post office mail sorting cubbies counter and parcel scale"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "9fb5bed84c68263a6416e0b1fb4d11b1e2cdda66eabf68bc5bc23c06b0137931"
+  },
+  {
+   "id": "mc-c-shop-laptop-table",
+   "replaces": "mc-in-r11-shop-laptop-table",
+   "type": "prop",
+   "name": "전자매장 노트북 체험대",
+   "en": "electronics shop oak demo table displaying open laptops",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "매장·마트",
+    "전자제품",
+    "노트북"
+   ],
+   "words": [
+    "전자매장 노트북 체험대",
+    "electronics shop oak demo table displaying open laptops"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "64e582d275d4d99a40f5c3c4920bd644c613cc2726613c293e3244a9462ece03"
+  },
+  {
+   "id": "mc-c-svc-barber-chair",
+   "replaces": "mc-in-r11-svc-barber-chair",
+   "type": "prop",
+   "name": "이발소 클래식 바버 체어",
+   "en": "crimson leather and chrome vintage-modern barber chair",
+   "kind": "column",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "미용·세탁·부동산",
+    "미용실",
+    "이발소",
+    "의자"
+   ],
+   "words": [
+    "이발소 클래식 바버 체어",
+    "crimson leather and chrome vintage-modern barber chair"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "23b52b78a3737f407d13b283a33c85d58e382b95139dce1bdf548d7db977f7f5"
+  },
+  {
+   "id": "mc-c-svc-listing-board",
+   "replaces": "mc-in-r11-svc-listing-board",
+   "type": "prop",
+   "name": "부동산 매물 안내 보드",
+   "en": "Japanese real-estate shop window apartment listing board",
+   "kind": "other",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "미용·세탁·부동산",
+    "부동산",
+    "매물"
+   ],
+   "words": [
+    "부동산 매물 안내 보드",
+    "Japanese real-estate shop window apartment listing board"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "153b6f4abc0bebce6de4c3ae0fe896132b6b22bcc6f8bc27171c2fffb1c20aff"
+  },
+  {
+   "id": "mc-c-arrow-board",
+   "replaces": "mc-anim-arrow-board-l",
+   "type": "prop",
+   "name": "공사현장 LED 화살표 표지판",
+   "en": "roadwork amber LED directional arrow barricade sign",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "prop-street",
+    "움직임",
+    "공사 점멸 화살표판 (왼쪽 합류 · 움직임)"
+   ],
+   "words": [
+    "공사현장 LED 화살표 표지판",
+    "roadwork amber LED directional arrow barricade sign"
+   ],
+   "rule": "공사 구간 차로 끝, 라바콘(mc-prop-cone-*) 줄 앞. 맨 아랫줄(바퀴)이 차로에.",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "9ca614a766cb08f0593528d6d24f4a46910f470fc91a8ca9afc1222319fffdd1"
+  },
+  {
+   "id": "mc-c-tr-checkin-counter",
+   "replaces": "mc-in-r11-tr-checkin-counter",
+   "type": "prop",
+   "name": "공항 체크인 카운터",
+   "en": "airport departure check-in counter with luggage belt and monitors",
+   "kind": "box",
+   "w": 4,
+   "h": 3,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     2
+    ],
+    [
+     1,
+     2
+    ],
+    [
+     2,
+     2
+    ],
+    [
+     3,
+     2
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "교통시설",
+    "공항",
+    "체크인"
+   ],
+   "words": [
+    "공항 체크인 카운터",
+    "airport departure check-in counter with luggage belt and monitors"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "aca0e33b399a7856fc44dbcfe28f082608b1c01037f57849ea717c736ac78d8a"
+  },
+  {
+   "id": "mc-c-tr-flight-board",
+   "replaces": "mc-in-r11-tr-flight-board",
+   "type": "prop",
+   "name": "공항 출도착 운항 전광판",
+   "en": "airport terminal digital departures and arrivals flight board",
+   "kind": "other",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "교통시설",
+    "공항",
+    "안내"
+   ],
+   "words": [
+    "공항 출도착 운항 전광판",
+    "airport terminal digital departures and arrivals flight board"
+   ],
+   "rule": "벽면 윗줄",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "cae8fb0e6f8ba7fd203057679e85b91d905748384cbe2c20bd52f0ecc9014da4"
+  },
+  {
+   "id": "mc-c-tr-xray-lane",
+   "replaces": "mc-in-r11-tr-xray-lane",
+   "type": "prop",
+   "name": "공항 보안 X선 수하물 검색대",
+   "en": "airport security baggage X-ray scanner conveyor lane",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "교통시설",
+    "공항",
+    "검색"
+   ],
+   "words": [
+    "공항 보안 X선 수하물 검색대",
+    "airport security baggage X-ray scanner conveyor lane"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "3ba20023e6e93a658aca32443c1eb0c1bdbb6e2063b036956a1b3bb70c60c825"
+  },
+  {
+   "id": "mc-c-pub-fire-truck",
+   "replaces": "mc-in-r11-pub-fire-truck",
+   "type": "prop",
+   "name": "소방서 빨간 소방차",
+   "en": "Japanese crimson red fire engine truck with roof ladder and lightbar",
+   "kind": "structure",
+   "w": 4,
+   "h": 4,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     3
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     3
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "공공시설",
+    "소방서",
+    "차량"
+   ],
+   "words": [
+    "소방서 빨간 소방차",
+    "Japanese crimson red fire engine truck with roof ladder and lightbar"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "c8e22f54cfd8516375395aaddf56bd0a0010fe16c78f4a957a823ef9988b1d02"
+  },
+  {
+   "id": "mc-c-jumbo-gym-apparatus",
+   "replaces": "mc-in-r13-jumbo-gym-apparatus",
+   "type": "prop",
+   "name": "헬스장 대형 케이블 파워랙",
+   "en": "commercial multi-station fitness cable crossover and power rack",
+   "kind": "box",
+   "w": 4,
+   "h": 4,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     3
+    ],
+    [
+     1,
+     3
+    ],
+    [
+     2,
+     3
+    ],
+    [
+     3,
+     3
+    ]
+   ],
+   "tags": [
+    "실내",
+    "현대 도시",
+    "modern-city",
+    "학교·대학",
+    "체육관",
+    "체조",
+    "대형"
+   ],
+   "words": [
+    "헬스장 대형 케이블 파워랙",
+    "commercial multi-station fitness cable crossover and power rack"
+   ],
+   "rule": "실내 배치",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "f6b2dc4da2432457f6d37c816333d90c6a5173a71fc6419cf30d02cbc3396f57"
+  },
+  {
+   "id": "mc-c-gas-station",
+   "replaces": "mc-bld-gas-v2-A",
+   "type": "building",
+   "name": "도심 주유소 캐노피 건물",
+   "en": "modern urban gas station canopy building with twin fuel pump islands",
+   "kind": "structure",
+   "w": 10,
+   "h": 6,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     5
+    ],
+    [
+     1,
+     5
+    ],
+    [
+     2,
+     5
+    ],
+    [
+     3,
+     5
+    ],
+    [
+     4,
+     5
+    ],
+    [
+     5,
+     5
+    ],
+    [
+     6,
+     5
+    ],
+    [
+     7,
+     5
+    ],
+    [
+     8,
+     5
+    ],
+    [
+     9,
+     5
+    ]
+   ],
+   "tags": [
+    "외부",
+    "현대 도시",
+    "modern-city",
+    "building",
+    "주유소(대형 캐노피)"
+   ],
+   "words": [
+    "도심 주유소 캐노피 건물",
+    "modern urban gas station canopy building with twin fuel pump islands"
+   ],
+   "rule": "땅(보도) 위 위층. 키트 아래 한 줄이 문 앞 접근 칸(보도)이어야 한다. 앞줄 건물은 뒷줄보다 나중에 찍어 겹침 순서를 정한다.",
+   "waiver": "carbon-remake-w7-9-modern-182-2026-11-28",
+   "pixelSha256": "6cf44584011448ee8ce917ba566d7bbf3347b7483060124989f52cecf1c2eaea",
+   "doors": [
+    5
+   ],
+   "pass": []
   }
  ],
  "waiver": "carbon-remake-w1-3-2026-11-28"
