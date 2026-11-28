@@ -1227,7 +1227,12 @@ function compileUncompiledScriptsInList(project: Project, mapId: string, value: 
           { code: "script-compile-error" },
         );
       }
-      const fields = scriptCommandFields(record.source, result, typeof record.name === "string" ? record.name : undefined);
+      const fields = scriptCommandFields(
+        record.source,
+        result,
+        typeof record.name === "string" ? record.name : undefined,
+        record.explanation as import("@/project/script/types").ScriptExplanation | undefined,
+      );
       value[i] = { ...(typeof record.id === "string" ? { id: record.id } : {}), ...fields };
       continue;
     }
@@ -1248,8 +1253,14 @@ function compileUncompiledScriptsInList(project: Project, mapId: string, value: 
 
 function compileUncompiledScriptsInEvent(project: Project, mapId: string, event: GameEvent): void {
   if (!scriptCompilerReady()) return;
+  if (event.commands && !Array.isArray(event.commands) && typeof event.commands === "object") {
+    event.commands = [event.commands as unknown as Command];
+  }
   if (event.commands) compileUncompiledScriptsInList(project, mapId, event.commands, `${event.id}.commands`);
   for (const page of event.pages ?? []) {
+    if (page.commands && !Array.isArray(page.commands) && typeof page.commands === "object") {
+      page.commands = [page.commands as unknown as Command];
+    }
     if (page.commands) compileUncompiledScriptsInList(project, mapId, page.commands, `${event.id}.${page.id}.commands`);
   }
 }

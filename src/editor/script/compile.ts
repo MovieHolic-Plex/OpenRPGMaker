@@ -77,27 +77,49 @@ function diagnosticFrom(ts: TypeScriptApi, diagnostic: TS.Diagnostic, source: "s
  * 이벤트 스크립트는 런타임에서 `(async function (require, exports, module) { ... })` 으로 감싸 실행한다(scriptRun.ts).
  * 따라서 최상위 `return;` 도 합법이다. import 줄은 파일 맨 위에 남기고 나머지만 async 함수 본문으로 감싸 타입 검사한다.
  */
-function wrapEventScriptForTypeCheck(source: string): { readonly text: string; readonly lineOffsetAfterImport: number; readonly importLines: number } {
-  const lines = source.split("\n");
-  let split = 0;
-  while (split < lines.length) {
-    const trimmed = lines[split]!.trim();
-    if (!trimmed || trimmed.startsWith("//") || /^import\b/u.test(trimmed)) {
-      split += 1;
+function wrapEventScriptForTypeCheck(ts: TypeScriptApi, source: string): { readonly text: string; readonly lineOffsetAfterImport: number; readonly importLines: number } {
+  const sf = ts.createSourceFile("/script.ts", source, ts.ScriptTarget.ES2020, true, ts.ScriptKind.TS);
+  let lastImportEnd = 0;
+  for (const stmt of sf.statements) {
+    if (ts.isImportDeclaration(stmt)) {
+      lastImportEnd = stmt.getEnd();
       continue;
     }
     break;
   }
-  const head = lines.slice(0, split).join("\n");
-  const body = lines.slice(split).join("\n");
-  const prefix = head ? `${head}\nasync function __oprn_event_script__(): Promise<void> {\n` : `async function __oprn_event_script__(): Promise<void> {\n`;
-  return { text: `${prefix}${body}\n}\nexport {};\n`, lineOffsetAfterImport: 1, importLines: split };
+  let head = "";
+  let body = source;
+  let importLines = 0;
+  let sameLineTail = false;
+  if (lastImportEnd > 0) {
+    const nextNl = source.indexOf("\n", lastImportEnd);
+    const tailOnSameLine = nextNl >= 0 ? source.slice(lastImportEnd, nextNl) : source.slice(lastImportEnd);
+    if (/^\s*(?:\/\/.*)?$/u.test(tailOnSameLine)) {
+      if (nextNl >= 0) {
+        head = source.slice(0, nextNl);
+        body = source.slice(nextNl + 1);
+      } else {
+        head = source;
+        body = "";
+      }
+    } else {
+      head = source.slice(0, lastImportEnd);
+      body = source.slice(lastImportEnd);
+      sameLineTail = true;
+    }
+    importLines = head.split("\n").length;
+  }
+  const opener = sameLineTail
+    ? "async function __oprn_event_script__(): Promise<void> {"
+    : "async function __oprn_event_script__(): Promise<void> {\n";
+  const prefix = head ? `${head}\n${opener}` : opener;
+  return { text: `${prefix}${body}\n}\nexport {};\n`, lineOffsetAfterImport: 1, importLines };
 }
 
 function typeCheck(ts: TypeScriptApi, source: string, options: ScriptCompileOptions): ScriptDiagnostic[] {
   const dts = buildGameApiDts(scriptDtsIds(options.project, options.mapId));
   const isEventScript = !options.libraryId;
-  const wrapped = isEventScript ? wrapEventScriptForTypeCheck(source) : null;
+  const wrapped = isEventScript ? wrapEventScriptForTypeCheck(ts, source) : null;
   const scriptText = wrapped ? wrapped.text : `${source}\nexport {};\n`;
   const files = new Map<string, string>([["/script.ts", scriptText]]);
   for (const module of options.project?.scriptLibrary ?? []) {

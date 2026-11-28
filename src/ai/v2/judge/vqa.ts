@@ -370,7 +370,8 @@ export function vqaReviewerCandidates(input: VqaReviewerInput): VqaReviewerPick[
   const mainFamily = input.familyOf(input.main.provider);
   const differs = (provider: string) => { const f = input.familyOf(provider); return Boolean(f && f !== mainFamily); };
   const seesImages = (provider: string) => !/deepseek/iu.test(provider) && input.familyOf(provider) !== "deepseek";
-  const usable = (provider: string) => input.keyed.has(provider) || provider.startsWith("local-cli:");
+  const usable = (provider: string) =>
+    input.keyed.has(provider) || provider === "local-cli:codex" || (provider.startsWith("local-cli:") && !differs(provider));
   const out: VqaReviewerPick[] = [];
   const add = (slot: { provider: string; model: string; effort?: "medium" | "high" } | undefined, sameAsMain: boolean) => {
     if (!slot) return;

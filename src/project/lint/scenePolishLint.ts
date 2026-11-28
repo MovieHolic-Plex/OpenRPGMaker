@@ -505,9 +505,14 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
             }
           }
           if (command.kind === "battleProcessing") {
-            const nextSt: Stage = { ...st, battle: true, battleHostId: host.id, talkedSinceBattle: false };
-            for (const branch of nestedCommandLists(command)) visitList(branch, nextSt);
-            st.battle = true; st.battleHostId = host.id; st.talkedSinceBattle = false;
+            const victorySt: Stage = { ...st, battle: true, battleHostId: host.id, talkedSinceBattle: false };
+            const nonVictorySt: Stage = { ...st, battle: true, battleHostId: null, talkedSinceBattle: false };
+            if (Array.isArray(command.victoryBranch)) visitList(command.victoryBranch, victorySt);
+            if (Array.isArray(command.defeatBranch)) visitList(command.defeatBranch, nonVictorySt);
+            if (Array.isArray(command.escapeBranch)) visitList(command.escapeBranch, nonVictorySt);
+            st.battle = true;
+            st.battleHostId = command.canLose || command.canEscape ? null : host.id;
+            st.talkedSinceBattle = false;
             continue;
           }
           for (const branch of nestedCommandLists(command)) visitList(branch, st);

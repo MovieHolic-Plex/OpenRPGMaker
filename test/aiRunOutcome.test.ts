@@ -1092,18 +1092,18 @@ describe("aiProviderSelection", () => {
   const google = "google-antigravity";
   afterEach(() => vi.unstubAllGlobals());
   describe("account selection and persisted work models", () => {
-    it("a first ChatGPT selection routes work to gpt-6.2-sol medium for every work role", () => {
+    it("a first ChatGPT selection routes work to gpt-6.2-sol high for every work role", () => {
       const next = configForProviderSelection(defaultAiConfig(), codex);
-      // 직접 고른 역할이 없으면 계획·시공·작문·실행·시각 모두 ChatGPT 로 간다.
+      // 직접 고른 역할이 없으면 계획·시공·작문·실행·시각 모두 ChatGPT(GPT-6.2 Sol high)로 간다.
       expect(workProviderIds(next)).toEqual([codex]);
       for (const role of ["vision", "deep", "build", "writer"] as const) {
         expect(configForRole(next, role).providerId).toBe(codex);
         expect(configForRole(next, role).model).toBe("gpt-6.2-sol");
-        expect(configForRole(next, role).reasoningEffort).toBe("medium");
+        expect(configForRole(next, role).reasoningEffort).toBe("high");
       }
       expect(next.ultrabrainProviderId).toBe(codex);
       expect(next.ultrabrainModel).toBe("gpt-6.2-sol");
-      expect(next.ultrabrainReasoningEffort).toBe("medium");
+      expect(next.ultrabrainReasoningEffort).toBe("high");
       expect(next.imageProviderId).toBe(codex);
     });
 
