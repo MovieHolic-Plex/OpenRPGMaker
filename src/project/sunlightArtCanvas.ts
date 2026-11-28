@@ -2,7 +2,8 @@ import { rasterSunlightArt, type SunlightArtSource } from "./sunlightArt";
 
 const sources = new WeakMap<object, Map<string, SunlightArtSource>>();
 /** Read a small tile canvas lazily. Large atlases are not duplicated in memory. */
-export function canvasSunlightArt(image: CanvasImageSource, tileSize: number, tilesPerRow: number): SunlightArtSource | undefined {
+export function canvasSunlightArt(image: CanvasImageSource | null | undefined, tileSize: number, tilesPerRow: number): SunlightArtSource | undefined {
+  if (!image || typeof image !== "object") return undefined;
   const key = `${tileSize}:${tilesPerRow}`, cached = sources.get(image)?.get(key);
   if (cached) return cached;
   const canvas = document.createElement("canvas"); canvas.width = canvas.height = tileSize;

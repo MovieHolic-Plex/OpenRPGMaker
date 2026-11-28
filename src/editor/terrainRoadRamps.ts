@@ -34,8 +34,6 @@ export function connectTerrainRoad(map: GameMap, road: TerrainPoint[], width: nu
         const y: number = Y - d * dy;
         const i = y * map.width + x;
         if(x<0||y<0||x>=map.width||y>=map.height||r.levels[i]!==lo||!terrainEditable(map,i)||!touched.has(i)) break;
-        const centerIndex = road.findIndex(p=>p.x===x&&p.y===y);
-        if(centerIndex>0 && centerIndex<road.length-1) { const prev=road[centerIndex-1]!,next=road[centerIndex+1]!; if(prev.x!==next.x && prev.y!==next.y) break; }
         flight.push(i);
       }
       const footX = X - maxLength * dx, footY = Y - maxLength * dy;

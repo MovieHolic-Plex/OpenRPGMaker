@@ -18,8 +18,10 @@ import { createInteractivePropStripPreview } from "@/editor/panels/eventEditor/i
 import { paletteCatalogFor } from "@/editor/panels/tilePaletteCatalog";
 import { selectInteractivePropBrush, selectMapModeTool, selectPaletteStamp } from "@/editor/panels/tileToolbarActions";
 import { propsForTileset, type PropCategoryId, type PropChoice } from "@/editor/propRecommendations";
+import { quickHouseCatalog, quickHouseStyles, quickHouseStyleName } from "@/editor/quickHouse";
 import { reliefTopGrassTile } from "@/editor/reliefActions";
 import { reliefDoodadCatalog, type ReliefDoodad } from "@/editor/reliefDoodads";
+import { selectTerrainDesignTool } from "@/editor/terrainDesignActions";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { allInteractiveProps, type InteractivePropEntry, type InteractivePropEra } from "@/project/interactiveProps";
 import { store } from "@/project/store";
@@ -28,7 +30,7 @@ import { clearChildren, el } from "@/util/dom";
 
 export const FLOATING_DOODAD_PALETTE_TOGGLE_EVENT = "oprn:floating-doodad-palette-toggle";
 
-type DoodadTabId = "all" | "nature" | "structure" | "prop" | "interactive" | "relief";
+type DoodadTabId = "all" | "structure" | "nature" | "prop" | "interactive";
 type DoodadViewMode = "grid" | "split";
 
 type UnifiedDoodad =
@@ -51,7 +53,7 @@ type UnifiedDoodad =
   | {
       readonly key: string;
       readonly source: "relief";
-      readonly tab: "relief";
+      readonly tab: "nature";
       readonly name: string;
       readonly sizeLabel: string;
       readonly doodad: ReliefDoodad;
@@ -59,11 +61,10 @@ type UnifiedDoodad =
 
 const TABS: readonly { readonly id: DoodadTabId; readonly label: string }[] = [
   { id: "all", label: "전체" },
+  { id: "structure", label: "건물·집" },
   { id: "nature", label: "자연" },
-  { id: "structure", label: "건물" },
   { id: "prop", label: "소품" },
   { id: "interactive", label: "상호작용" },
-  { id: "relief", label: "경사로·다리" },
 ];
 
 const INITIAL_PAGE_SIZE = 36;
@@ -258,7 +259,7 @@ function tilesetDoodadsFor(tileset: TilesetDef): readonly UnifiedDoodad[] {
     out.push({
       key: `relief:${doodad.id}`,
       source: "relief",
-      tab: "relief",
+      tab: "nature",
       name: doodad.label,
       sizeLabel,
       doodad,
@@ -574,6 +575,10 @@ export function mountFloatingDoodadWindow(
       click: () => {
         selectedKey = null;
         selectInteractivePropBrush(null);
+        const st = editorState.get();
+        if (st.tool === "relief" && st.terrainBrush === "house") {
+          editorState.set({ tool: "paint", terrainBrush: "crayon", terrainHouseDrag: null });
+        }
         editorState.set({ activePaletteStamp: null, reliefDoodad: null, reliefBridgeStart: null });
         renderBody();
       },
@@ -735,11 +740,100 @@ export function mountFloatingDoodadWindow(
     const items = filteredItems(tileset, profile);
     clearChildren(body);
 
+    const state = editorState.get();
+    const houseModeActive = state.tool === "relief" && state.terrainBrush === "house";
+    const houseStyles = tileset ? quickHouseStyles(tileset) : [];
+    const houseCatalog = tileset ? quickHouseCatalog(tileset) : [];
+
+    if (activeTab === "structure" && (houseStyles.length > 0 || houseCatalog.length > 0)) {
+      const styleOptions: { readonly id: string; readonly label: string; readonly apply: () => void }[] = [
+        ...houseStyles.map((stId) => ({
+          id: `style:${stId}`,
+          label: quickHouseStyleName(stId),
+          apply: () => editorState.set({ terrainHouseStyle: stId, terrainHouseKitId: null, terrainHouseResize: "house" }),
+        })),
+        ...houseCatalog.slice(0, 8).map((kit) => ({
+          id: `kit:${kit.id}`,
+          label: kit.name ?? kit.id,
+          apply: () => editorState.set({ terrainHouseKitId: kit.id, terrainHouseResize: "house" }),
+        })),
+      ];
+      const currentStyleId = state.terrainHouseKitId
+        ? `kit:${state.terrainHouseKitId}`
+        : `style:${state.terrainHouseStyle}`;
+      const matchedIdx = Math.max(0, styleOptions.findIndex((o) => o.id === currentStyleId));
+      const activeStyleObj = styleOptions[matchedIdx] ?? styleOptions[0]!;
+      const activeLabel = state.terrainHouseKitId
+        ? (houseCatalog.find((k) => k.id === state.terrainHouseKitId)?.name ?? activeStyleObj.label)
+        : activeStyleObj.label;
+
+      const styleCycleBtn = el("button", {
+        class: "fdw-house-select",
+        attrs: { type: "button", title: "클릭할 때마다 맞춤 집 양식을 전환합니다" },
+        dataset: { testid: "fdw-house-style" },
+        text: `양식: ${activeLabel} ▾`,
+        on: {
+          click: () => {
+            const nextOpt = styleOptions[(matchedIdx + 1) % styleOptions.length]!;
+            nextOpt.apply();
+            if (!houseModeActive) selectTerrainDesignTool("house");
+          },
+        },
+      });
+
+      const storiesBtn = el("button", {
+        class: "fdw-house-chip",
+        attrs: { type: "button", title: "집 층수 전환 (1층 ↔ 2층)" },
+        dataset: { testid: "fdw-house-stories" },
+        text: `${state.terrainHouseStories}층`,
+        on: {
+          click: () => {
+            editorState.set({ terrainHouseStories: state.terrainHouseStories === 1 ? 2 : 1, terrainHouseKitId: null });
+            if (!houseModeActive) selectTerrainDesignTool("house");
+          },
+        },
+      });
+
+      const houseToggleBtn = el("button", {
+        class: "fdw-house-toggle" + (houseModeActive ? " is-active" : ""),
+        attrs: { type: "button", "aria-pressed": String(houseModeActive), title: "맵의 빈 땅에서 원하는 너비만큼 드래그해 맞춤 집을 바로 세웁니다" },
+        dataset: { testid: "fdw-house-drag-toggle" },
+        text: houseModeActive ? "🏠 드래그 집 짓는 중" : "🏠 드래그 집 짓기",
+        on: {
+          click: () => {
+            if (houseModeActive) {
+              editorState.set({ tool: "paint", terrainBrush: "crayon", terrainHouseDrag: null });
+            } else {
+              selectedKey = null;
+              selectInteractivePropBrush(null);
+              editorState.set({ activePaletteStamp: null, reliefDoodad: null, terrainDesignOpen: false });
+              if (houseStyles.length > 0) {
+                editorState.set({ terrainHouseStyle: houseStyles[0]!, terrainHouseKitId: null, terrainHouseResize: "house" });
+              }
+              selectTerrainDesignTool("house");
+            }
+          },
+        },
+      });
+
+      body.append(el("div", {
+        class: "fdw-house-bar" + (houseModeActive ? " is-active" : ""),
+        dataset: { testid: "fdw-house-builder" },
+        children: [
+          houseToggleBtn,
+          styleCycleBtn,
+          ...(houseStyles.length > 0 && !state.terrainHouseKitId ? [storiesBtn] : []),
+        ],
+      }));
+    }
+
     const activeItem = items.find(isItemSelected) ?? (selectedKey ? items.find((it) => it.key === selectedKey) : undefined);
-    statusName.textContent = activeItem
-      ? `${activeItem.name} (${activeItem.sizeLabel}) · 맵 클릭으로 배치`
-      : `오브젝트 ${items.length}개 · 클릭 후 맵에 배치`;
-    clearPickBtn.hidden = !activeItem;
+    statusName.textContent = houseModeActive
+      ? "🏠 드래그 집 짓기 활성 · 빈 땅을 끌어 원하는 크기로 집을 세우세요"
+      : activeItem
+        ? `${activeItem.name} (${activeItem.sizeLabel}) · 맵 클릭으로 배치`
+        : `오브젝트 ${items.length}개 · 클릭 후 맵에 배치`;
+    clearPickBtn.hidden = !activeItem && !houseModeActive;
 
     if (items.length === 0) {
       if (activeTab === "interactive" && styleLocked) {
