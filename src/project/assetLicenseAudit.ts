@@ -379,8 +379,10 @@ export function auditProjectAssetLicenses(project: Project): ProjectAssetLicense
       || lowerId.startsWith("shared-portrait-")
       || lowerId.startsWith("generated-faceset-missing-people")
       || lowerId.startsWith("generated-faceset-missing-monster")
+      || lowerId.startsWith("generated-faceset-missing-party-")
       || lowerPath.includes("generated/faceset/missing-people")
       || lowerPath.includes("generated/faceset/missing-monster")
+      || lowerPath.includes("generated/faceset/missing-party-")
     ) {
       usesEasyRpgRtpGraphics = true;
     }

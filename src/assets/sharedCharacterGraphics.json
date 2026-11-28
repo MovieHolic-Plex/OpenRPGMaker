@@ -425,10 +425,10 @@
         "gender": "남성",
         "hair": "금발"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "걷기의 남성 전사 설정과 기존 얼굴의 여성 설정·녹색 스카프가 다르다. 2026-10-05 원본 픽셀 대조."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-people-00",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(EasyRPG Actor 작화). 짝 걷기 그림: tex_easyrpg_charset_actor4#5."
     },
     {
       "textureKey": "tex_easyrpg_charset_actor4",
@@ -765,10 +765,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "걷기는 말린 뼈 용이고 기존 얼굴은 황동 기계 병사다. 2026-10-05 원본 픽셀 대조."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster1-00",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster3#1."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster3",
@@ -801,10 +801,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "걷기는 원뿔에서 변신하는 괴물이고 기존 얼굴은 나무 상자다. 2026-10-05 원본 픽셀 대조."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster1-01",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster3#4."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster3",
@@ -825,10 +825,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "마법진→불꽃→마법사 변신 칩에 정적인 불꽃 얼굴을 자동 연결할 수 없다. 2026-10-05 원본 픽셀 대조."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster1-02",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster3#6."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster3",
@@ -838,9 +838,9 @@
         "kind": "몬스터"
       },
       "status": "mapped",
-      "faceResourceId": "easyrpg-faceset-monster-15",
-      "quality": "approximate",
-      "note": "2026-09-18 원본 실물 대조. 보라색 얼굴의 갑옷 마족에 보라 마족 얼굴. 갑옷·뿔 형태 세부가 달라 근사 연결."
+      "faceResourceId": "generated-faceset-missing-party-monster1-03",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(중복 monster-15 해소). 짝 걷기 그림: tex_easyrpg_charset_monster3#7."
     },
     {
       "textureKey": "tex_easyrpg_charset_object1",
@@ -1163,10 +1163,10 @@
         "gender": "남성",
         "hair": "갈색 머리"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "2026-10-31 걷기 칩·얼굴·흉상 원본 대조: 중절모를 쓴 신사다. People2 #06 은 모자 없는 People3 #6 귀족 남성의 짝 얼굴이다. 다른 시트의 다른 인물 얼굴을 빌려 쓰던 근사 짝을 끊었다 — 틀린 얼굴보다 얼굴 없음이 낫다. 얼굴이 필요하면 generate_character_appearance 로 이 인물의 얼굴을 만든다."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-people-01",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(EasyRPG People 작화). 짝 걷기 그림: tex_easyrpg_charset_people2#0."
     },
     {
       "textureKey": "tex_easyrpg_charset_people2",
@@ -1392,10 +1392,10 @@
         "age": "어린이",
         "hair": "보라 머리"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "2026-10-31 걷기 칩·얼굴·흉상 원본 대조: 회색 빵모자를 쓴 어두운 피부 아이다. People1 #00 은 모자 없는 밝은 피부 갈색 단발 소년(People1 #0 의 짝)이다. 다른 시트의 다른 인물 얼굴을 빌려 쓰던 근사 짝을 끊었다 — 틀린 얼굴보다 얼굴 없음이 낫다. 얼굴이 필요하면 generate_character_appearance 로 이 인물의 얼굴을 만든다."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-people-02",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(EasyRPG People 작화). 짝 걷기 그림: tex_easyrpg_charset_people4#0."
     },
     {
       "textureKey": "tex_easyrpg_charset_people4",
@@ -1478,10 +1478,10 @@
         "age": "노년",
         "hair": "백발"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "2026-10-31 걷기 칩·얼굴·흉상 원본 대조: 주황 터번·붉은 옷의 어두운 피부 노인이다. People1 #06 은 터번 없는 흰 수염 대머리 노인(People1 #6 의 짝)이다. 다른 시트의 다른 인물 얼굴을 빌려 쓰던 근사 짝을 끊었다 — 틀린 얼굴보다 얼굴 없음이 낫다. 얼굴이 필요하면 generate_character_appearance 로 이 인물의 얼굴을 만든다."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-people-03",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(EasyRPG People 작화). 짝 걷기 그림: tex_easyrpg_charset_people4#6."
     },
     {
       "textureKey": "tex_easyrpg_charset_people4",
@@ -1492,10 +1492,10 @@
         "gender": "여성",
         "age": "노년"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "2026-10-31 걷기 칩·얼굴·흉상 원본 대조: 붉은 두건·붉은 옷의 노파다. People1 #07 은 두건 없는 백발 노파(People1 #7 의 짝)이고 흉상은 주황 두건이다. 다른 시트의 다른 인물 얼굴을 빌려 쓰던 근사 짝을 끊었다 — 틀린 얼굴보다 얼굴 없음이 낫다. 얼굴이 필요하면 generate_character_appearance 로 이 인물의 얼굴을 만든다."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-people-04",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(EasyRPG People 작화). 짝 걷기 그림: tex_easyrpg_charset_people4#7."
     },
     {
       "textureKey": "tex_easyrpg_charset_people5",
@@ -1522,10 +1522,10 @@
         "age": "어린이",
         "hair": "주황 머리"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "2026-10-31 걷기 칩·얼굴·흉상 원본 대조: 주황 양갈래 머리 소녀다. People1 #01 은 금발 소녀(People1 #1 의 짝)다. 다른 시트의 다른 인물 얼굴을 빌려 쓰던 근사 짝을 끊었다 — 틀린 얼굴보다 얼굴 없음이 낫다. 얼굴이 필요하면 generate_character_appearance 로 이 인물의 얼굴을 만든다."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-people-05",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(EasyRPG People 작화). 짝 걷기 그림: tex_easyrpg_charset_people5#1."
     },
     {
       "textureKey": "tex_easyrpg_charset_people5",
@@ -1579,10 +1579,10 @@
         "gender": "여성",
         "hair": "붉은 머리"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "2026-10-31 걷기 칩·얼굴·흉상 원본 대조: 붉은 머리 하녀(흰 앞치마)다. People1 #14 는 People2 #6 여왕의 짝이고 흉상에 날개·광륜이 있다. 다른 시트의 다른 인물 얼굴을 빌려 쓰던 근사 짝을 끊었다 — 틀린 얼굴보다 얼굴 없음이 낫다. 얼굴이 필요하면 generate_character_appearance 로 이 인물의 얼굴을 만든다."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-people-06",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(EasyRPG People 작화). 짝 걷기 그림: tex_easyrpg_charset_people5#5."
     },
     {
       "textureKey": "tex_easyrpg_charset_people5",
@@ -1594,10 +1594,10 @@
         "age": "중년",
         "hair": "대머리"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "2026-10-31 걷기 칩·얼굴·흉상 원본 대조: 갈색 옷 여관 주인이다. People1 #06 은 People1 #6 대머리 주민의 짝 얼굴이다. 다른 시트의 다른 인물 얼굴을 빌려 쓰던 근사 짝을 끊었다 — 틀린 얼굴보다 얼굴 없음이 낫다. 얼굴이 필요하면 generate_character_appearance 로 이 인물의 얼굴을 만든다."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-people-07",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(EasyRPG People 작화). 짝 걷기 그림: tex_easyrpg_charset_people5#6."
     },
     {
       "textureKey": "tex_easyrpg_charset_people5",
@@ -1609,10 +1609,10 @@
         "age": "노년",
         "hair": "백발"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "2026-10-31 걷기 칩·얼굴·흉상 원본 대조: 초록 옷 백발 노학자다. People2 #04 는 People3 #4 집사의 짝 얼굴이다. 다른 시트의 다른 인물 얼굴을 빌려 쓰던 근사 짝을 끊었다 — 틀린 얼굴보다 얼굴 없음이 낫다. 얼굴이 필요하면 generate_character_appearance 로 이 인물의 얼굴을 만든다."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-people-08",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(EasyRPG People 작화). 짝 걷기 그림: tex_easyrpg_charset_people5#7."
     },
     {
       "textureKey": "tex_easyrpg_charset_template",
@@ -1717,10 +1717,10 @@
       "attributes": {
         "kind": "사물"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "2026-09-18 원본 실물 대조. 문·소품·탈것이므로 인물 얼굴을 지정하지 않음."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-vehicles-00",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 아이콘 초상화. 짝 걷기 그림: tex_easyrpg_charset_vehicles#0."
     },
     {
       "textureKey": "tex_easyrpg_charset_vehicles",
@@ -1729,10 +1729,10 @@
       "attributes": {
         "kind": "사물"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "2026-09-18 원본 실물 대조. 문·소품·탈것이므로 인물 얼굴을 지정하지 않음."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-vehicles-01",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 아이콘 초상화. 짝 걷기 그림: tex_easyrpg_charset_vehicles#1."
     },
     {
       "textureKey": "tex_easyrpg_charset_vehicles",
@@ -1741,10 +1741,10 @@
       "attributes": {
         "kind": "사물"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "2026-09-18 원본 실물 대조. 문·소품·탈것이므로 인물 얼굴을 지정하지 않음."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-vehicles-02",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 아이콘 초상화. 짝 걷기 그림: tex_easyrpg_charset_vehicles#2."
     },
     {
       "textureKey": "tex_easyrpg_charset_vehicles",
@@ -1753,10 +1753,10 @@
       "attributes": {
         "kind": "사물"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "2026-09-18 원본 실물 대조. 문·소품·탈것이므로 인물 얼굴을 지정하지 않음."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-vehicles-03",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 아이콘 초상화. 짝 걷기 그림: tex_easyrpg_charset_vehicles#3."
     },
     {
       "textureKey": "tex_easyrpg_charset_vehicles",
@@ -1765,10 +1765,10 @@
       "attributes": {
         "kind": "사물"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "2026-09-18 원본 실물 대조. 문·소품·탈것이므로 인물 얼굴을 지정하지 않음."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-vehicles-04",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 아이콘 초상화. 짝 걷기 그림: tex_easyrpg_charset_vehicles#4."
     },
     {
       "textureKey": "tex_easyrpg_charset_vehicles",
@@ -1777,10 +1777,10 @@
       "attributes": {
         "kind": "사물"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "2026-09-18 원본 실물 대조. 문·소품·탈것이므로 인물 얼굴을 지정하지 않음."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-vehicles-05",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 아이콘 초상화. 짝 걷기 그림: tex_easyrpg_charset_vehicles#5."
     },
     {
       "textureKey": "tex_easyrpg_charset_vehicles",
@@ -1789,10 +1789,10 @@
       "attributes": {
         "kind": "사물"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "2026-09-18 원본 실물 대조. 문·소품·탈것이므로 인물 얼굴을 지정하지 않음."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-vehicles-06",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 아이콘 초상화. 짝 걷기 그림: tex_easyrpg_charset_vehicles#6."
     },
     {
       "textureKey": "tex_easyrpg_charset_vehicles",
@@ -1801,10 +1801,10 @@
       "attributes": {
         "kind": "사물"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "2026-09-18 원본 실물 대조. 문·소품·탈것이므로 인물 얼굴을 지정하지 않음."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-vehicles-07",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 아이콘 초상화. 짝 걷기 그림: tex_easyrpg_charset_vehicles#7."
     },
     {
       "textureKey": "tex_scarloxy_charset_people1",
@@ -2549,10 +2549,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster1-04",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster4#0."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster4",
@@ -2561,10 +2561,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster1-05",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster4#1."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster4",
@@ -2573,10 +2573,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster1-06",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster4#2."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster4",
@@ -2585,10 +2585,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster1-07",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster4#3."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster4",
@@ -2597,10 +2597,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster1-08",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster4#4."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster4",
@@ -2609,10 +2609,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster1-09",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster4#5."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster4",
@@ -2621,10 +2621,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster1-10",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster4#6."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster4",
@@ -2633,10 +2633,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster1-11",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster4#7."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster5",
@@ -2657,10 +2657,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster1-12",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster5#1."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster5",
@@ -2669,10 +2669,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster1-13",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster5#2."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster5",
@@ -2681,10 +2681,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster1-14",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster5#3."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster5",
@@ -2693,10 +2693,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster1-15",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster5#4."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster5",
@@ -2705,10 +2705,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster2-00",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster5#5."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster5",
@@ -2729,10 +2729,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster2-01",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster5#7."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster6",
@@ -2741,10 +2741,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster2-02",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster6#0."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster6",
@@ -2753,10 +2753,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster2-03",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster6#1."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster6",
@@ -2765,10 +2765,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster2-04",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster6#2."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster6",
@@ -2777,10 +2777,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster2-05",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster6#3."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster6",
@@ -2789,10 +2789,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster2-06",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster6#4."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster6",
@@ -2801,10 +2801,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster2-07",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster6#5."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster6",
@@ -2813,10 +2813,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster2-08",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster6#6."
     },
     {
       "textureKey": "tex_easyrpg_charset_monster6",
@@ -2825,10 +2825,10 @@
       "attributes": {
         "kind": "몬스터"
       },
-      "status": "no-face",
-      "faceResourceId": null,
-      "quality": "unspecified",
-      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-party-monster2-09",
+      "quality": "exact",
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster6#7."
     }
   ],
   "faces": [
@@ -4091,6 +4091,350 @@
         "age": "청년"
       },
       "note": "첫사랑 r7(2026-11-04) — 편의점 계산대 점원용. 칩(Modern3 4번 카페 앞치마)과 같은 검은 올림머리·남색 윗몸이지만 남색 조끼·명찰·반소매 차림이라 편의점 직원으로 읽힌다. 칩 대응표는 카페 흉상 그대로다. 짝 전신·표정은 같은 세트 id 의 -full-/-happy 등."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-people-00",
+      "label": "금발 갑옷 전사",
+      "attributes": {
+        "kind": "인간"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(EasyRPG Actor 작화). 짝 걷기 그림: tex_easyrpg_charset_actor4#5."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-people-01",
+      "label": "중절모 신사",
+      "attributes": {
+        "kind": "인간"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(EasyRPG People 작화). 짝 걷기 그림: tex_easyrpg_charset_people2#0."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-people-02",
+      "label": "빵모자 소년",
+      "attributes": {
+        "kind": "인간"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(EasyRPG People 작화). 짝 걷기 그림: tex_easyrpg_charset_people4#0."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-people-03",
+      "label": "주황 터번 노인",
+      "attributes": {
+        "kind": "인간"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(EasyRPG People 작화). 짝 걷기 그림: tex_easyrpg_charset_people4#6."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-people-04",
+      "label": "보라 두건 노파",
+      "attributes": {
+        "kind": "인간"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(EasyRPG People 작화). 짝 걷기 그림: tex_easyrpg_charset_people4#7."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-people-05",
+      "label": "양갈래 소녀",
+      "attributes": {
+        "kind": "인간"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(EasyRPG People 작화). 짝 걷기 그림: tex_easyrpg_charset_people5#1."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-people-06",
+      "label": "붉은 머리 하녀",
+      "attributes": {
+        "kind": "인간"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(EasyRPG People 작화). 짝 걷기 그림: tex_easyrpg_charset_people5#5."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-people-07",
+      "label": "대머리 수염 은자",
+      "attributes": {
+        "kind": "인간"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(EasyRPG People 작화). 짝 걷기 그림: tex_easyrpg_charset_people5#6."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-people-08",
+      "label": "초록 옷 노학자",
+      "attributes": {
+        "kind": "인간"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(EasyRPG People 작화). 짝 걷기 그림: tex_easyrpg_charset_people5#7."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster1-00",
+      "label": "황금 비룡",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster3#1."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster1-01",
+      "label": "개미귀신",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster3#4."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster1-02",
+      "label": "업화 정령",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster3#6."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster1-03",
+      "label": "마장군",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴(중복 monster-15 해소). 짝 걷기 그림: tex_easyrpg_charset_monster3#7."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster1-04",
+      "label": "트렌트",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster4#0."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster1-05",
+      "label": "버섯 요정",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster4#1."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster1-06",
+      "label": "갓파",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster4#2."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster1-07",
+      "label": "구미호",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster4#3."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster1-08",
+      "label": "너구리 둔갑사",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster4#4."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster1-09",
+      "label": "이끼 골렘",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster4#5."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster1-10",
+      "label": "얼음 요정",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster4#6."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster1-11",
+      "label": "만드라고라",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster4#7."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster1-12",
+      "label": "살아있는 갑옷",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster5#1."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster1-13",
+      "label": "초롱 귀신",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster5#2."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster1-14",
+      "label": "저주 인형",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster5#3."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster1-15",
+      "label": "마도서",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster5#4."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster2-00",
+      "label": "허수아비",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster5#5."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster2-01",
+      "label": "촛불 임프",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster5#7."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster2-02",
+      "label": "예티",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster6#0."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster2-03",
+      "label": "인어 전사",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster6#1."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster2-04",
+      "label": "사이클롭스",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster6#2."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster2-05",
+      "label": "나방 인간",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster6#3."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster2-06",
+      "label": "바실리스크",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster6#4."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster2-07",
+      "label": "지니",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster6#5."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster2-08",
+      "label": "키메라",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster6#6."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-monster2-09",
+      "label": "타락 천사",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 얼굴. 짝 걷기 그림: tex_easyrpg_charset_monster6#7."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-vehicles-00",
+      "label": "쪽배",
+      "attributes": {
+        "kind": "탈것"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 아이콘 초상화. 짝 걷기 그림: tex_easyrpg_charset_vehicles#0."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-vehicles-01",
+      "label": "범선",
+      "attributes": {
+        "kind": "탈것"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 아이콘 초상화. 짝 걷기 그림: tex_easyrpg_charset_vehicles#1."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-vehicles-02",
+      "label": "철갑선",
+      "attributes": {
+        "kind": "탈것"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 아이콘 초상화. 짝 걷기 그림: tex_easyrpg_charset_vehicles#2."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-vehicles-03",
+      "label": "열기구",
+      "attributes": {
+        "kind": "탈것"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 아이콘 초상화. 짝 걷기 그림: tex_easyrpg_charset_vehicles#3."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-vehicles-04",
+      "label": "굴착기",
+      "attributes": {
+        "kind": "탈것"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 아이콘 초상화. 짝 걷기 그림: tex_easyrpg_charset_vehicles#4."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-vehicles-05",
+      "label": "전차",
+      "attributes": {
+        "kind": "탈것"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 아이콘 초상화. 짝 걷기 그림: tex_easyrpg_charset_vehicles#5."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-vehicles-06",
+      "label": "비공정",
+      "attributes": {
+        "kind": "탈것"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 아이콘 초상화. 짝 걷기 그림: tex_easyrpg_charset_vehicles#6."
+    },
+    {
+      "resourceId": "generated-faceset-missing-party-vehicles-07",
+      "label": "미확인 비행체",
+      "attributes": {
+        "kind": "탈것"
+      },
+      "note": "2026-11-28 파티 로스터 보완 생성 짝 아이콘 초상화. 짝 걷기 그림: tex_easyrpg_charset_vehicles#7."
     }
   ]
 }

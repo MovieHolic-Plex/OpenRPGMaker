@@ -141,6 +141,7 @@ export function setSelectedRecordId(collection: DatabaseCollection, id: string |
       // '무기'/'약' 칩이 켜진 아이템 탭에서 [+ 추가]가 만든 레코드가 그대로 사라졌다.
       setSearchQueryForCollection(collection, "");
       setCategoryFilterForCollection(collection, "all");
+      if (collection === "actors") actorListFilter = "all";
       state.revealIds[collection] = id;
     }
     return;

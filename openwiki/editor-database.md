@@ -6,7 +6,7 @@
 - **4열 격자 초상화 피커**: `databaseResourcePickerDialog.ts`의 `faceset` 모드를 다열 썸네일 격자(`.db-resource-picker-list-faces`)로 전환하고 `resourceOptions.ts`에서 시트 묶음(`Actor`·`People`·`Monster`·`생성 짝`·`표정·초상`·`내 이미지`) 칩을 붙였다. 피커 항목 더블클릭 시 즉시 선택 확정·닫기.
 - **미지정 폴백 수리**: 초상화가 비어 있을 때 `actorRecordView.ts`가 `characterResourceId`를 `"faceset"`으로 넘겨 288×256 8인 시트를 통째 찌그러뜨리던 버그를 없애고, 좌측(`databaseRecordThumbnails.ts`)·우측(`actorFacePreview`) 모두 `resolveActorAppearance` 기반 걷기 1칸 크롭 + 「미지정」 배지로 통일했다.
 - **주인공 목록·인스펙터 UX**: `databaseActorStudio.ts`에 빠른 필터 칩(`전체`·`시작 파티`·`초상화 없음`·`인간형`·`몬스터·탈것`)과 격자 전환 버튼을 추가하고, `18-party-simplify.css`에 `data-column-count="1"` 열 규칙을 보강했다. 인스펙터 내부 탭(`actorSectionTabForSession`)은 다른 주인공으로 이동해도 유지되며, 히어로에 직업 바로 열기(`db-actor-hero-open-class`) 칩을 붙였다.
-- **Monster4~6 매핑 정본 보강**: `sharedCharacterGraphics.json`에 `monster4/5/6` 24행을 등록하고, 기존 생성 초상화가 있던 `monster5#0`(미믹 → `missing-monster-00`)·`monster5#6`(태엽 병정 → `missing-people-13`)을 연결했다(`sharedCharacterGraphicsSchema.ts` `BUNDLED_FORWARD_FILL` 확장).
+- **Monster4~6 및 잔여 누락 43명 초상화 보완**: `sharedCharacterGraphics.json`에 `monster4/5/6` 24행을 등록하고(`sharedCharacterGraphicsSchema.ts` `BUNDLED_FORWARD_FILL` 확장), 신규 48×48 시트 4장(`missing-party-people` 9명·`missing-party-monster1` 16종·`missing-party-monster2` 10종·`missing-party-vehicles` 8종, `scripts/slice-faceset-sheets.mjs`로 낱장 분할)과 `faceLooks.ts`·`visualFamily.ts`·`assetLicenseAudit.ts`를 등록해 기본 파티 136명 전체가 중복·누락 없이 전용 초상화를 갖도록 했다. `retroRoster.ts`의 스프라이트와 불일치하던 이름 12건도 외형에 맞게 교정했다(`classId` 유지).
 
 ## 이야기 › 대사 탭 「대본」 보기 — 이야기 순서 시나리오 (2026-10-25)
 

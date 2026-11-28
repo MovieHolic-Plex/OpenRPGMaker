@@ -82,7 +82,7 @@ function actorThumbnail(record: ActorRecord, project: Project, size: number): HT
   // 초상화가 비어 있으면 깨진 이미지 아이콘 대신 해당 캐릭터의 걷기 1칸 크롭을 보여 준다.
   const charsetUrl = resolveAssetResourceUrl(effective.characterResourceId, { project });
   if (charsetUrl) {
-    const slot = baseSlot("db-list-thumb-charset-fallback", `${record.name} 걷기 (초상화 미지정)`, size);
+    const slot = baseSlot("empty db-list-thumb-charset-fallback", `${record.name} 걷기 (초상화 미지정)`, size);
     const frame = el("span", { class: "db-list-thumb-charset-frame", attrs: { "aria-hidden": "true" } });
     const scale = Math.max(1, size / 36);
     applyCharsetFrameCrop(frame, charsetUrl, {

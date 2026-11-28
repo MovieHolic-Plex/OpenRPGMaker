@@ -20,9 +20,17 @@ afterEach(() => {
 });
 
 describe("Party portrait selection and actor studio UX", () => {
-  it("maps Monster5 mimic and clockwork soldier to existing generated faces", () => {
+  it("maps every default party actor to a reviewed portrait including the 43 new missing-party faces", () => {
+    const project = createBlankProject();
+    expect(project.database.actors.every((actor) => Boolean(actor.faceResourceId))).toBe(true);
     expect(reviewedFaceIdForCharset("easyrpg-charset-monster5", 0)).toBe("generated-faceset-missing-monster-00");
     expect(reviewedFaceIdForCharset("easyrpg-charset-monster5", 6)).toBe("generated-faceset-missing-people-13");
+    expect(reviewedFaceIdForCharset("easyrpg-charset-actor4", 5)).toBe("generated-faceset-missing-party-people-00");
+    expect(reviewedFaceIdForCharset("easyrpg-charset-people2", 0)).toBe("generated-faceset-missing-party-people-01");
+    expect(reviewedFaceIdForCharset("easyrpg-charset-monster3", 1)).toBe("generated-faceset-missing-party-monster1-00");
+    expect(reviewedFaceIdForCharset("easyrpg-charset-monster3", 7)).toBe("generated-faceset-missing-party-monster1-03");
+    expect(reviewedFaceIdForCharset("easyrpg-charset-monster6", 7)).toBe("generated-faceset-missing-party-monster2-09");
+    expect(reviewedFaceIdForCharset("easyrpg-charset-vehicles", 6)).toBe("generated-faceset-missing-party-vehicles-06");
   });
 
   it("opens the face picker when double-clicking either the left list thumbnail or the right hero face", () => {

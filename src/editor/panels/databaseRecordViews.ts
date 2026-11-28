@@ -14,7 +14,7 @@ import {
 } from "@/editor/databaseActions";
 import { renderActorRecordForm } from "@/editor/panels/actorRecordView";
 import { openActorResourceDialog } from "@/editor/panels/databaseActorResourceDialog";
-import { actorMatchesListFilter, renderActorStudioList } from "@/editor/panels/databaseActorStudio";
+import { actorMatchesListFilter, renderActorFilterChips, renderActorStudioList } from "@/editor/panels/databaseActorStudio";
 import { getCharacterAppearance } from "@/project/characterAppearances";
 import { databaseReferenceMessage } from "@/editor/databaseReferences";
 import { skillFields } from "@/editor/panels/databaseBasicRecordFields";
@@ -660,7 +660,7 @@ function recordList(
   // 필터 결과가 0 이면 가상 목록 대신 빈 상태를 그린다. 빈 `.db-list` 만 남기면
   // 목록 창이 통째로 붕괴해(적 그룹에서 4px 로 실측) 검색을 지울 방법도 안 보인다.
   if (visible.length === 0) {
-    const filtered = searchQuery.length > 0 || categoryFilter !== "all";
+    const filtered = searchQuery.length > 0 || categoryFilter !== "all" || (collection === "actors" && actorListFilterForSession() !== "all");
     // 「몬스터」 칩인데 skill_mon_* 레코드가 아직 없다 — 계약(retroMonsterSkills.ts)만으로 미리 보게 한다.
     if (collection === "skills" && categoryFilter === RETRO_MONSTER_FILTER_ID && searchQuery.length === 0) {
       return el("div", { class: "db-list db-ws-list db-skill-mon-browser-list", dataset: { testid: "db-list-empty" }, children: [renderMonsterSkillContractBrowser()] });
@@ -690,6 +690,7 @@ function recordList(
               onClick: () => {
                 setSearchQueryForCollection(collection, "");
                 setCategoryFilterForCollection(collection, "all");
+                if (collection === "actors") setActorListFilterForSession("all");
                 if (collection === "skills") setSkillClassFilter("all");
                 rerender();
               },
@@ -876,6 +877,17 @@ export const ITEM_CHIP_CLUSTERS: readonly { readonly caption: string; readonly t
 // 개수는 **필터 적용 전 전체 컬렉션**에서 센다 — 필터된 배열로 세면 한 번 좁힌 뒤
 // 다른 칩이 모두 0 으로 보인다.
 function categoryFilterChips(collection: DatabaseCollection, rerender: () => void): HTMLElement | null {
+  if (collection === "actors") {
+    const project = store.getCurrent();
+    const actors = project.database.actors;
+    const active = actorListFilterForSession();
+    if (actors.length <= 1 && active === "all") return null;
+    return renderActorFilterChips(actors, project, active, (next) => {
+      if (actorListFilterForSession() === next) return;
+      setActorListFilterForSession(next);
+      rerender();
+    });
+  }
   if (collection === "skills") return skillClassFilterChips(rerender);
   if (collection !== "items" && collection !== "equipment") return null;
   const current = effectiveCategoryFilter(collection);

@@ -38,6 +38,30 @@ const ACTOR_FILTER_SPECS: readonly { readonly id: ActorListFilter; readonly labe
   { id: "creature", label: "몬스터·탈것" },
 ];
 
+export function renderActorFilterChips(
+  actors: readonly ActorRecord[],
+  project: Project,
+  activeFilter: ActorListFilter,
+  onFilterChange: (filter: ActorListFilter) => void
+): HTMLElement {
+  return el("div", {
+    class: "db-actor-filter-chips",
+    attrs: { role: "group", "aria-label": "주인공 빠른 필터" },
+    dataset: { testid: "db-actor-filter-chips" },
+    children: ACTOR_FILTER_SPECS.map((spec) => {
+      const count = actors.filter((actor) => actorMatchesListFilter(actor, spec.id, project)).length;
+      const active = activeFilter === spec.id;
+      return el("button", {
+        class: `db-actor-filter-chip${active ? " active" : ""}`,
+        text: `${spec.label} ${count}`,
+        attrs: { type: "button", "aria-pressed": String(active) },
+        dataset: { testid: `db-actor-filter-${spec.id}` },
+        on: { click: () => onFilterChange(spec.id) },
+      });
+    }),
+  });
+}
+
 export type ActorStudioList = {
   readonly pane: HTMLElement;
   readonly rows: ReadonlyMap<string, HTMLElement>;
@@ -135,23 +159,8 @@ export function renderActorStudioList(options: ActorStudioListOptions): ActorStu
   }
 
   const activeFilter = options.filter ?? "all";
-  const filterRow = options.onFilterChange && options.actors.length > 1
-    ? el("div", {
-        class: "db-actor-filter-chips",
-        attrs: { role: "group", "aria-label": "주인공 빠른 필터" },
-        dataset: { testid: "db-actor-filter-chips" },
-        children: ACTOR_FILTER_SPECS.map((spec) => {
-          const count = options.actors.filter((actor) => actorMatchesListFilter(actor, spec.id, options.project)).length;
-          const active = activeFilter === spec.id;
-          return el("button", {
-            class: `db-actor-filter-chip${active ? " active" : ""}`,
-            text: `${spec.label} ${count}`,
-            attrs: { type: "button", "aria-pressed": String(active) },
-            dataset: { testid: `db-actor-filter-${spec.id}` },
-            on: { click: () => options.onFilterChange!(spec.id) },
-          });
-        }),
-      })
+  const filterRow = options.onFilterChange && (options.actors.length > 1 || activeFilter !== "all")
+    ? renderActorFilterChips(options.actors, options.project, activeFilter, options.onFilterChange)
     : null;
 
   const galleryToggle = options.onSwitchToGallery
