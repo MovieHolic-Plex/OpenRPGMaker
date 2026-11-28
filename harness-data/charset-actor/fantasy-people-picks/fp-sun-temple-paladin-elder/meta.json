@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-sun-temple-paladin-elder",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "49c270ef5b5365912d01432fba93011f58aa9834913089b59d773e422141e6f2"
 }

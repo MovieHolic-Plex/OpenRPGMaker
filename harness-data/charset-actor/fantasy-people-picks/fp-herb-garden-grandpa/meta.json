@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-herb-garden-grandpa",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "94ba34efb72a4eab1c995ed8077f4f1f419b51f7fd681c8333b770194b6df2c9"
 }

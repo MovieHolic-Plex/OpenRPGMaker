@@ -36,6 +36,8 @@ def sha(data: bytes) -> str:
 
 def render(key: str):
     grid = PICKS / key / "chip.chr.txt"
+    grid_bytes = grid.read_bytes()
+    grid_sha = sha(grid_bytes)
     pal, _, frames = C.load(grid)
     errors = C.structural_errors(pal, frames)
     if errors:
@@ -52,7 +54,13 @@ def render(key: str):
     meta = json.loads((PICKS / key / "meta.json").read_text(encoding="utf-8"))
     if not meta.get("ok"):
         raise SystemExit(f"{key}: meta.ok 가 아니다")
-    return image, grid.read_bytes(), meta
+    if meta.get("qaVerdict") != "PASS":
+        raise SystemExit(f"{key}: meta.qaVerdict 가 PASS 가 아니다 ({meta.get('qaVerdict')})")
+    if meta.get("approvedGridSha256") != grid_sha:
+        raise SystemExit(
+            f"{key}: chip.chr.txt 해시({grid_sha[:12]}...)가 QA 승인 해시({ str(meta.get('approvedGridSha256'))[:12] }...)와 다릅니다!"
+        )
+    return image, grid_bytes, meta
 
 
 def main():

@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-starlight-oracle-seer",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "cb1cea5800a1c31ee3651330c818c46fcdac0a92ea991555200c7d21a1c4e3cf"
 }

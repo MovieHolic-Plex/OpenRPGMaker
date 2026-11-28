@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-harlequin-court-jester",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "cf99d28c3639c96146734e7b33673c5ead6c1264ef08d7dde9e6d8b4253eec84"
 }

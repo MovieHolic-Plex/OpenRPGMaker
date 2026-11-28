@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-dark-knight-rival",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "e02c3bb41bfd0da38e3eb66a75f62fd6e3b77c06c1d681e36142fec8633b09e3"
 }

@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-prison-iron-jailer",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "64ad069f5d1d923a7efd6900b4cfb8fd0b4e0e5ca1f16093ae78c7ff1ee0fd71"
 }

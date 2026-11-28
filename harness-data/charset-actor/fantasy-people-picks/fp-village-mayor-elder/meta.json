@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-village-mayor-elder",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "61255e34ac21c8e690270e1f56eb617fbdaf92b653e609dce55650f16b4a0696"
 }

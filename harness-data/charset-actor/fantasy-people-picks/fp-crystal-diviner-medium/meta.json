@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-crystal-diviner-medium",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "7e450cc25a51702137e8bf2147a42bda2076c2eb255f3c9469d2dc9587591c44"
 }

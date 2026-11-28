@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-highland-falconer",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "95aafbacf2d1c790d7102cbfb081097e9f76754f1d24647f0cd9487fc718a20d"
 }

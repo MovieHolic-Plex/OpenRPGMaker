@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-sun-paladin-knight",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "69e71157b61d2ac954354b61b9f69dfc8af1f8ebf98381c7816eeffd2606c8c9"
 }

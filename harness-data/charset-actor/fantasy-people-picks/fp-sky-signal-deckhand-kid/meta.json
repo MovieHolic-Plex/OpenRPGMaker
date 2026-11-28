@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-sky-signal-deckhand-kid",
   "base": "Template:2",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "57e01d06bba80126a970c1790a4227d2c8120e861aeb3a565ca84e0e937e2f20"
 }

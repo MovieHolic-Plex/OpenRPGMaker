@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-dragonkin-crimson-lancer",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "877c1af600d88b44e6af5c65f3395c448793a9b38ff33139c7e42bc6bbb1ad00"
 }

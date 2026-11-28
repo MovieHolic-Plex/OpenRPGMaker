@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-desert-nomad-geomancer",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "59583cd434a514c66c60380462611e86771951355c7256367d3b727a5f66600a"
 }

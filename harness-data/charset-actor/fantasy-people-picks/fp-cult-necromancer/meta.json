@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-cult-necromancer",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "2c66d9075b0ab2fb63b4a641b1305e2f1c85e931eb9eed25a304424e3dd19c29"
 }

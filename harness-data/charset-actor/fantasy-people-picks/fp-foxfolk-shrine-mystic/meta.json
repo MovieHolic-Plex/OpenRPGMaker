@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-foxfolk-shrine-mystic",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "2d3d883bba708f52116c0d911ea4c19f9e3a827d3cdb8b245c1b2b8914c80129"
 }

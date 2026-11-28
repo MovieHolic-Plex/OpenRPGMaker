@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-ancient-grove-archdruid",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "2e606881d23c04760f90927f78a7140910e121ba7b38b0376a5193d65a2a33ab"
 }

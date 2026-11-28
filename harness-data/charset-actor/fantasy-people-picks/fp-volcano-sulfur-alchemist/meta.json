@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-volcano-sulfur-alchemist",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "2c7964b3800b9e075cac8230861ae7a8896528dffdcd37ce285c02a4a7c5245c"
 }

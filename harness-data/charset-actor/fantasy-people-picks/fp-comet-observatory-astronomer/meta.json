@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-comet-observatory-astronomer",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "2d34d8cea77b38ca9fccf5aeadf83f33a8b8b51f643acdbb196c9209cfd8fc04"
 }

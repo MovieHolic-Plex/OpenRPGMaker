@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-abbey-novice-nun",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "0ee25bde571f3f94ea48b4216d768880e85bfae14bd286927b39e2e598c2a0b1"
 }

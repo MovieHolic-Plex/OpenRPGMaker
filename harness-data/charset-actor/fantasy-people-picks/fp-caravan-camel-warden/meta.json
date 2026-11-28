@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-caravan-camel-warden",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "6c2fe1225edb68a47295403cbc4a55aa9491a747146577add54a04530474f171"
 }

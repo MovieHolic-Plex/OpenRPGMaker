@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-northern-fjord-skald",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "868dee099d186e4bedd53f82a2fb9688a40794b643c2f58682424cfea4485ef5"
 }

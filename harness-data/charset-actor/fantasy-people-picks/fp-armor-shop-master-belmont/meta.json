@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-armor-shop-master-belmont",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "d0300a32816d86e62d701f15e509bc906b8ca55476b49c3d7a7935cbc4f67eb9"
 }

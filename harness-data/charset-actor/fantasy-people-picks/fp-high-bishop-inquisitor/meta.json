@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-high-bishop-inquisitor",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "cfdcf6fe522c7de2a5380892b0973327b707e7e28eb52de1984aa91a7908c43a"
 }

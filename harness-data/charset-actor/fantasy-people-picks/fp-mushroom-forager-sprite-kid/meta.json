@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-mushroom-forager-sprite-kid",
   "base": "Template:2",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "cf05031a651dbfa1a0ac6dc132e0b086ebd9af1cf030db4be03bb5844b09ac97"
 }

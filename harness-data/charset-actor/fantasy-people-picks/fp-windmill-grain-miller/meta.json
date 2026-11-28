@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-windmill-grain-miller",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "02ca570d4e65d864cabec38199d903690a8798ad477df4296499da85dbac4b8d"
 }

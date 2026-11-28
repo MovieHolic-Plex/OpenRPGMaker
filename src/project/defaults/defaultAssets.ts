@@ -752,10 +752,15 @@ export function ensureBundledResourceProfiles(project: { resourceProfiles: Resou
   // 리소스 관리자에 192x192 시트가 계속 보인다(실측: 얼굴 그래픽 목록이 낱장 112장 대신 시트 5장이었다).
   // 생성 시리즈 낱장 프로필(generated-actor-hero-XX-face-NN)도 같은 규칙으로 걷어낸다 —
   // 저작 목록에서 내렸으므로, 저장본의 남은 프로필은 로드 한 번에 수렴시킨다.
+  const defaultProfiles = defaultResourceProfiles();
+  const defaultAssetIds = new Set(
+    defaultProfiles.map((profile) => profile.assetId).filter((assetId): assetId is string => assetId !== undefined),
+  );
   const staleFaceSheetIds = new Set<string>(LEGACY_FACESET_SHEET_IDS);
   const nextResourceProfiles = project.resourceProfiles.filter(
     (profile) => profile.assetId !== LEGACY_RM_TILESET_TEXTURE_KEY
       && !(profile.assetId !== undefined
+        && !defaultAssetIds.has(profile.assetId)
         && !project.assets?.uploaded?.[profile.assetId]
         && isRetiredResourceId(profile.assetId))
       && !(profile.kind === "faceset" && profile.assetId !== undefined
@@ -781,7 +786,7 @@ export function ensureBundledResourceProfiles(project: { resourceProfiles: Resou
   }
   project.resourceProfiles = nextResourceProfiles;
   const existingAssetIds = new Set(project.resourceProfiles.map((profile) => profile.assetId).filter((assetId) => assetId !== undefined));
-  for (const profile of defaultResourceProfiles()) {
+  for (const profile of defaultProfiles) {
     if (profile.assetId === undefined) continue;
     if (existingAssetIds.has(profile.assetId)) continue;
     project.resourceProfiles.push({ ...profile });

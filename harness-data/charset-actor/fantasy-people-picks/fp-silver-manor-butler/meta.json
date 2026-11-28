@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-silver-manor-butler",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "ec72fc3fe1d73454b7de9906f14f989bb95be9c123d94629f1343af2754aadc2"
 }

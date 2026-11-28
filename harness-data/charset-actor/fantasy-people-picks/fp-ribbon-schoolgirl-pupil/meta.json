@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-ribbon-schoolgirl-pupil",
   "base": "Template:2",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "664fb3b2b44e8f81053df9f98acee4b7e6f287608ad6154ab33ff2593d4efdc6"
 }

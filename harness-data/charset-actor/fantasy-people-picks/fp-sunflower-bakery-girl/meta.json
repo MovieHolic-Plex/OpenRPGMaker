@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-sunflower-bakery-girl",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "9581f8af0aba3f483d6cb376dd66d55d968a5e979fe6d5cd5f7bd053325bffa2"
 }

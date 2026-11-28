@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-atelier-violin-virtuoso",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "7fd2ea5a422c28e074f4ab8ed36aa1da9c307faf7c0fbc174f4087c3f90578fa"
 }

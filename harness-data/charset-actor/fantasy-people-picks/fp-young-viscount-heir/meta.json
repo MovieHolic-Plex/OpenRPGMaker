@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-young-viscount-heir",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "0839811bbde30e31684c305106759fcbf33418ad4d6e6c4df6e217b23e47e3d7"
 }

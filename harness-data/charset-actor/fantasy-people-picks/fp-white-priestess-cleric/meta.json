@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-white-priestess-cleric",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "913f04d360134646d9caaccefa48c3cb031d3e0aab2c8d8ae26a1658fdc8cbfb"
 }

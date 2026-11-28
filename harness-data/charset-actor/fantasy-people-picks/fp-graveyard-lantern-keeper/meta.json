@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-graveyard-lantern-keeper",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "4ad53f7b1d51a087cfa28741cc77fe6d070c5f98ddfc91992d7ea10225687a30"
 }

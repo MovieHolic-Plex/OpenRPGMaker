@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-azure-pegasus-skyknight",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "39cb9f2431ac36d98b625eea301500fd9fe005fdce06fdf0db716e36caba38c4"
 }

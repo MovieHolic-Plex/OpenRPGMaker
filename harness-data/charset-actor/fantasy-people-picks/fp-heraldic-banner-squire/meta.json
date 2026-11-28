@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-heraldic-banner-squire",
   "base": "Template:2",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "682100e972b67c870c85655fb7dcdb3a34ae312f02bfb5470b00077dfc7540ff"
 }

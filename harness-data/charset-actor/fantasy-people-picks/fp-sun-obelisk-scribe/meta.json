@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-sun-obelisk-scribe",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "2d76476e1dea288a6c8f8a3946e3678fe9346a0f082d81e82448579015b93915"
 }

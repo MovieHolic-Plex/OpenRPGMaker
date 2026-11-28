@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-clocktower-watchmaker-elder",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "3d5538f429a669b406d88609db457a69847a43722341b6232b67253c44c734ba"
 }

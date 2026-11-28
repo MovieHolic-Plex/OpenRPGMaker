@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-castle-scullery-maid",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "dc4cf232079988ac2993fce532847e9b39d936e4f2556c8235871092fddf9509"
 }

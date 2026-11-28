@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-veteran-shieldmaiden",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "d2e8cbb74cead05a3189149282aa4e399165fc42a2eb17f1477e1eaeb8298682"
 }

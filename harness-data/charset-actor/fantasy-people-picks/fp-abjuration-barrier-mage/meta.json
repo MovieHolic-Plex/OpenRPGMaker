@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-abjuration-barrier-mage",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "6e78b24c80b089e32819bf49a79c3f5b3ab5feee5c0558c9ca0621e21c851f26"
 }

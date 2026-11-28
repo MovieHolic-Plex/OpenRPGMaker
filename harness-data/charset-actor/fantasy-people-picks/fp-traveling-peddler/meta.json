@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-traveling-peddler",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "ad2b0df0ace1ab13887d5b1373fca0e949c5c35947dc234446dd3df0b2945802"
 }

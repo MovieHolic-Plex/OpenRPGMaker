@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-star-nomad-astrologer",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "06c1c61c180107e4204192f99e891317bee10881cf43c778b92ad88d45b0f312"
 }

@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-crimson-velvet-vampire-lord",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "19ad09b10f477a049c55b83807e93a0401c72a47c5771b3673f4b7fa64ab8cc1"
 }

@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-dwarven-gemcutter-smith",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "f595ed435653eb8db1e1df95f257438237fc79dd4f8a553e5d2034f92ed09068"
 }

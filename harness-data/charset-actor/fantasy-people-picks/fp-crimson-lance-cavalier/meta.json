@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-crimson-lance-cavalier",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "93778da5284b1961e730e9bb3c209a794326f02fea08db8964e2e7e785077658"
 }

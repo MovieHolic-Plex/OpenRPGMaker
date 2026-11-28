@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-celestial-alchemist",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "d9ad6c56158d60c13f422b2f4784a4f4e5169c945b99aea9ed244c2938f0b3bf"
 }

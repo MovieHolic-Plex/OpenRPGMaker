@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-phantom-opera-soprano",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "d7bc9ebc5045d11a9f533a423c38b6cb0921af026906fc33e9a31cd3d2d915ac"
 }

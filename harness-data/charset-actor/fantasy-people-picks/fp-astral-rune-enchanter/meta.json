@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-astral-rune-enchanter",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "38776bfa75b43723f88ac43769444a0ca6e3db2bcdb9e50fcacd454877b23475"
 }

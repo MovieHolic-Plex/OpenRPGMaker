@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-golden-lion-king",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "32ec9dd17fb64391d925375faf0fdc31087543d5b8a15a9bf53ab92cde1fa74d"
 }

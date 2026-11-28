@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-shadow-assassin-blade",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "1dfe52fe47207cdc00e2f3ae80e8a571efd4770bd7cce89995389f3b0830c809"
 }

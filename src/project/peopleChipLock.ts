@@ -13,7 +13,7 @@ import { activeGenreLock } from "./genreLock";
 import type { Project } from "./types";
 
 /** 잠글 수 있는 사람 칩 계열(그림체가 서로 다른 번들 사람 칩). */
-export const PEOPLE_CHIP_FAMILIES = ["rtp-people", "heroes", "modern", "scarloxy-people", "wizarding"] as const satisfies readonly CharsetFamilyId[];
+export const PEOPLE_CHIP_FAMILIES = ["rtp-people", "fantasy-people", "heroes", "modern", "scarloxy-people"] as const satisfies readonly CharsetFamilyId[];
 export type PeopleChipFamilyId = (typeof PEOPLE_CHIP_FAMILIES)[number];
 
 /** `system.peopleChipLock` — 저장 형태. 없으면 아직 안 정해졌다(조수가 처음 놓는 사람 칩이 정한다). */

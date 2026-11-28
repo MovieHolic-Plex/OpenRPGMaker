@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-retired-blade-grandmaster",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "eb4d36836a55e2f878419f8cde96c11c44b51f26f1942658fbefe98fc3b74a92"
 }

@@ -1374,7 +1374,13 @@ def check_walk_kinematics_12frame(pal: dict, frames: dict, base_nk: str, meta: d
 def run_doll_check_slot(slot_dir: Path) -> bool:
     meta = json.loads((slot_dir / "slot_meta.json").read_text(encoding="utf-8"))
     base_nk, b_pal, b_frames = load_any_base(meta["base"])
-    pal, _, frames = C.load(slot_dir / "out.chr.txt")
+    out_chr_p = slot_dir / "out.chr.txt"
+    checked_bytes = out_chr_p.read_bytes()
+    checked_sha = hashlib.sha256(checked_bytes).hexdigest()
+    pal, _, frames = C.load(out_chr_p)
+    if out_chr_p.read_bytes() != checked_bytes:
+        print(json.dumps({"ok": False, "fails": ["out.chr.txt modified concurrently during load"], "warns": []}))
+        return False
 
     # 1) Structural + Nude-Doll deep-core hole protection + RTP humanoid strong gate + 12-frame motion gate + Side/Front/Proportion/Walk12 Gates
     se = C.structural_errors(pal, frames)
@@ -1406,10 +1412,13 @@ def run_doll_check_slot(slot_dir: Path) -> bool:
     make_kinematics_check_8x(rgba, base_nk, slot_dir / "kinematics_check_8x.png", label=lbl)
     make_walk_4dir_gif(rgba, slot_dir / "walk_4dir.gif")
 
+    if out_chr_p.read_bytes() != checked_bytes:
+        print(json.dumps({"ok": False, "fails": ["out.chr.txt modified concurrently before writing gate.json"], "warns": []}))
+        return False
     report = {
         "ok": len(fails) == 0,
         "strict_ok": len(fails) == 0 and len(warns) == 0,
-        "chr_sha256": chr_sha256_of(slot_dir),
+        "chr_sha256": checked_sha,
         "base": base_nk,
         "fails": fails,
         "warns": warns,
@@ -1462,7 +1471,8 @@ def cmd_seed(args):
             pal, frames = H.base_of(base_nk)
             txt = C.dump(pal, {}, frames, base_nk)
             (slot_dir / "base.chr.txt").write_text(txt, encoding="utf-8")
-            shutil.copy(slot_dir / "base.chr.txt", slot_dir / "out.chr.txt")
+            if args.clean or not (slot_dir / "out.chr.txt").exists():
+                shutil.copy(slot_dir / "base.chr.txt", slot_dir / "out.chr.txt")
             ensure_style_png(slot_dir / "rtp_style_4x.png")
             plain = Image.new("RGBA", (72, 128), (44, 49, 62, 255))
             plain.alpha_composite(C.sheet_rgba(pal, frames))
@@ -1534,21 +1544,42 @@ def cmd_verify(args):
         mode = m["mode"]
         cid = m["id"]
         if mode == "partedit":
-            r = subprocess.run([sys.executable, str(HARNESS_DIR / "partedit.py"), "apply", str(sdir)],
-                               capture_output=True, text=True)
-            ok = r.returncode == 0
-            # Ensure chip.png exists if chip.chr.txt or edit.json succeeded
+            src_p = sdir / "edit.json"
+            snap_before = src_p.read_bytes() if src_p.exists() else b""
+            checked_sha = hashlib.sha256(snap_before).hexdigest() if snap_before else ""
+            res, errs, warns, metrics = (
+                P.run_apply(sdir, key=m["base"], write=True)
+                if snap_before
+                else (None, ["missing edit.json"], [], {})
+            )
+            unchanged = bool(snap_before) and src_p.read_bytes() == snap_before
             chip_png = sdir / "chip.png"
-            if ok and not chip_png.exists() and (sdir / "edit.json").exists():
-                ed = json.loads((sdir / "edit.json").read_text(encoding="utf-8"))
-                pal2, frames2, errs = P.apply_edit(m["base"], ed)
-                if not errs:
-                    C.sheet_rgba(pal2, frames2).save(chip_png)
-            if chip_png.exists() and not (sdir / "walk_4dir.gif").exists():
-                make_walk_4dir_gif(unkey_rgba(Image.open(chip_png)), sdir / "walk_4dir.gif")
-            status = "PASS" if (ok and chip_png.exists()) else "FAIL"
-            print(f"[{status}] {m['index']:02d}_{cid} (partedit) {r.stdout.strip()[:120]}")
-            if status != "PASS":
+            if res is not None and unchanged:
+                npal = dict(res["pal"])
+                npal["."] = None
+                rgba = C.sheet_rgba(npal, res["frames"])
+                rgba.save(chip_png)
+                make_walk_4dir_gif(rgba, sdir / "walk_4dir.gif")
+            real_warns = [w for w in warns if "팔레트에 있지만 안 쓴 색" not in w]
+            ok = (res is not None) and len(errs) == 0 and unchanged and chip_png.exists()
+            strict_ok = ok and len(real_warns) == 0
+            vdir = sdir / "views"
+            vdir.mkdir(parents=True, exist_ok=True)
+            (vdir / "gate.json").write_text(
+                json.dumps({
+                    "ok": ok,
+                    "strict_ok": strict_ok,
+                    "chr_sha256": checked_sha,
+                    "base": m["base"],
+                    "fails": errs if not ok else [],
+                    "warns": real_warns,
+                    "metrics": metrics,
+                }, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            status = "PASS" if strict_ok else "FAIL"
+            print(f"[{status}] {m['index']:02d}_{cid} (partedit) errs={len(errs)} warns={len(warns)}")
+            if not strict_ok:
                 all_ok = False
         elif mode == "doll12":
             ok = run_doll_check_slot(sdir)
@@ -1558,6 +1589,8 @@ def cmd_verify(args):
                 all_ok = False
         else:
             out_chr = sdir / "out.chr.txt"
+            snap_before = out_chr.read_bytes() if out_chr.exists() else b""
+            checked_sha = hashlib.sha256(snap_before).hexdigest() if snap_before else ""
             r1 = subprocess.run([sys.executable, str(HARNESS_DIR / "harness.py"), "check", str(out_chr),
                                  "--base", m["base"], "--strength", "strong"], capture_output=True, text=True)
             r2 = subprocess.run([sys.executable, str(HARNESS_DIR / "harness.py"), "motion-check", str(out_chr),
@@ -1573,10 +1606,31 @@ def cmd_verify(args):
                 make_walk_4dir_gif(rgba, sdir / "walk_4dir.gif")
                 make_face_check_12x(rgba, sdir / "face_check_12x.png", label=m.get("label", cid))
                 make_kinematics_check_8x(rgba, m["base"], sdir / "kinematics_check_8x.png", label=m.get("label", cid))
-            ok = r1.returncode == 0 and r2.returncode == 0 and chip_png.exists()
-            status = "PASS" if ok else "FAIL"
+            r1_json = {}
+            try:
+                r1_json = json.loads(r1.stdout.strip()) if r1.stdout.strip() else {}
+            except Exception:
+                r1_json = {}
+            warns_list = list(r1_json.get("warns", []))
+            unchanged = bool(snap_before) and out_chr.read_bytes() == snap_before
+            ok = r1.returncode == 0 and r2.returncode == 0 and chip_png.exists() and unchanged
+            strict_ok = ok and len(warns_list) == 0
+            vdir = sdir / "views"
+            vdir.mkdir(parents=True, exist_ok=True)
+            (vdir / "gate.json").write_text(
+                json.dumps({
+                    "ok": ok,
+                    "strict_ok": strict_ok,
+                    "chr_sha256": checked_sha,
+                    "base": m["base"],
+                    "fails": [] if ok else [r1.stdout.strip() or r2.stdout.strip() or "full12 gate failed"],
+                    "warns": warns_list,
+                }, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8",
+            )
+            status = "PASS" if strict_ok else "FAIL"
             print(f"[{status}] {m['index']:02d}_{cid} (full12) check={r1.returncode} motion={r2.returncode}")
-            if not ok:
+            if not strict_ok:
                 all_ok = False
     sys.exit(0 if all_ok else 1)
 
@@ -1585,6 +1639,14 @@ def load_rtp_ref(fn: str, idx: int) -> Image.Image:
     im = Image.open(CHARSET_DIR / fn)
     sx, sy = (idx % 4) * 72, (idx // 4) * 128
     return unkey_rgba(im.crop((sx, sy, sx + 72, sy + 128)))
+
+
+def chr_sha256_of(sdir: Path) -> str:
+    for name in ("out.chr.txt", "edit.json"):
+        p = sdir / name
+        if p.exists():
+            return hashlib.sha256(p.read_bytes()).hexdigest()
+    return ""
 
 
 def check_slot_qa_lock(sdir: Path) -> tuple[bool, str]:
@@ -1596,7 +1658,7 @@ def check_slot_qa_lock(sdir: Path) -> tuple[bool, str]:
     if not gate.get("strict_ok"):
         return False, f"mechanical gate not strict_ok (fails={gate.get('fails')}, warns={gate.get('warns')})"
     if gate.get("chr_sha256") != cur_sha:
-        return False, "stale views/gate.json (out.chr.txt changed after last doll-check!)"
+        return False, "stale views/gate.json (source changed after last verify/doll-check!)"
     qa_p = sdir / "views" / "qa_verdict.json"
     if not qa_p.exists():
         return False, "missing views/qa_verdict.json (run `qa-prep` -> Independent QA Critic -> `qa-verdict` first!)"
@@ -1604,10 +1666,36 @@ def check_slot_qa_lock(sdir: Path) -> tuple[bool, str]:
     if qa.get("verdict") != "PASS":
         return False, f"final Visual QA verdict={qa.get('verdict')} ({qa.get('notes', '')})"
     if qa.get("chr_sha256") != cur_sha:
-        return False, "stale views/qa_verdict.json (out.chr.txt modified after QA verdict!)"
+        return False, "stale views/qa_verdict.json (source modified after QA verdict!)"
     if not str(qa.get("by", "")).strip():
         return False, "views/qa_verdict.json missing critic identifier `by`"
     return True, "OK"
+
+
+def render_slot_rgba_from_source(sdir: Path, m: dict) -> tuple[Image.Image, str]:
+    """Render RGBA sheet directly from the canonical source file (`out.chr.txt` or `edit.json`) and return `(rgba, sha256)`."""
+    out_chr = sdir / "out.chr.txt"
+    if out_chr.exists():
+        raw = out_chr.read_bytes()
+        sha = hashlib.sha256(raw).hexdigest()
+        pal, _, frames = C.load(out_chr)
+        if out_chr.read_bytes() != raw:
+            raise RuntimeError(f"{m['id']}: out.chr.txt modified concurrently during render")
+        return C.sheet_rgba(pal, frames), sha
+    ed_p = sdir / "edit.json"
+    if ed_p.exists():
+        raw = ed_p.read_bytes()
+        sha = hashlib.sha256(raw).hexdigest()
+        ed = json.loads(raw.decode("utf-8"))
+        pal2, frames2, _, _, _, _, _, _, rep = P.apply_edits(m["base"], ed)
+        if ed_p.read_bytes() != raw:
+            raise RuntimeError(f"{m['id']}: edit.json modified concurrently during render")
+        if rep.get("errors"):
+            raise RuntimeError(f"{m['id']}: partedit errors {rep['errors']}")
+        npal = dict(pal2)
+        npal["."] = None
+        return C.sheet_rgba(npal, frames2), sha
+    raise FileNotFoundError(f"{m['id']}: missing out.chr.txt / edit.json in {sdir}")
 
 
 def cmd_qa_prep(args):
@@ -1617,18 +1705,27 @@ def cmd_qa_prep(args):
     qa_dir = out_dir / "qa_sheets"
     qa_dir.mkdir(parents=True, exist_ok=True)
 
-    # Ensure every slot passed Stage-1 mechanical gate with current hash first
+    # Ensure every slot passed Stage-1 mechanical gate with current hash first, and snapshot rendered RGBA + board hash
     mech_errors = []
+    board_hashes: dict[str, str] = {}
+    rendered_sheets: dict[str, Image.Image] = {}
     for m in manifest:
         sdir = Path(m["dir"])
-        cur_sha = chr_sha256_of(sdir)
         gp = sdir / "views" / "gate.json"
         if not gp.exists():
             mech_errors.append(f"{m['index']:02d}_{m['id']}: missing views/gate.json")
             continue
         g = json.loads(gp.read_text(encoding="utf-8"))
+        try:
+            sh_rgba, cur_sha = render_slot_rgba_from_source(sdir, m)
+        except Exception as exc:
+            mech_errors.append(f"{m['index']:02d}_{m['id']}: {exc}")
+            continue
         if not g.get("strict_ok") or g.get("chr_sha256") != cur_sha:
             mech_errors.append(f"{m['index']:02d}_{m['id']}: mechanical gate not current/strict_ok")
+            continue
+        board_hashes[m["id"]] = cur_sha
+        rendered_sheets[m["id"]] = sh_rgba
     if mech_errors:
         print("ABORT qa-prep — fix Stage-1 mechanical gates first:\n  " + "\n  ".join(mech_errors))
         sys.exit(1)
@@ -1680,8 +1777,7 @@ def cmd_qa_prep(args):
 
         for ci, m in enumerate(chunk):
             oy = 34 + (ci + 1) * (ch + 22)
-            sdir = Path(m["dir"])
-            sh = unkey_rgba(Image.open(sdir / "chip.png"))
+            sh = rendered_sheets[m["id"]]
             dr.text((14, oy - 14), f"#{m['index']:02d} {m['id']} ({m.get('label', '')}, base={m['base']})",
                     fill=(255, 226, 130, 255))
             for pi, (plbl, col_c, row_r) in enumerate(poses):
@@ -1729,8 +1825,25 @@ Compare every candidate row against the **Official EasyRPG RTP Master (`Actor1:0
 
 Return a JSON array of objects `[ {{"index": 1, "id": "...", "verdict": "PASS"|"FAIL", "notes": "concise reason"}} ]` covering all {len(manifest)} slots. When in doubt, `FAIL`!
 """
+    (qa_dir / "board_hashes.json").write_text(json.dumps(board_hashes, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     (qa_dir / "critic_prompt.md").write_text(critic_md, encoding="utf-8")
     print("Saved Independent QA Critic prompt:", qa_dir / "critic_prompt.md")
+
+
+def _verify_board_hash_match(sdir: Path, slot_id: str, cur_sha: str, out_dir: Path | None = None) -> str:
+    bh_path = ((out_dir or sdir.parent) / "qa_sheets" / "board_hashes.json")
+    if not bh_path.exists():
+        raise SystemExit(f"ABORT qa-verdict: missing {bh_path} — run `qa-prep` before recording QA verdicts!")
+    board_hashes = json.loads(bh_path.read_text(encoding="utf-8"))
+    board_sha = board_hashes.get(slot_id)
+    if not board_sha:
+        raise SystemExit(f"ABORT qa-verdict: slot '{slot_id}' not found in {bh_path} — rerun `qa-prep`!")
+    if cur_sha != board_sha:
+        raise SystemExit(
+            f"ABORT qa-verdict: slot '{slot_id}' source changed after `qa-prep` "
+            f"(board={board_sha[:12]}... vs current={cur_sha[:12]}...) — rerun `verify` and `qa-prep` first!"
+        )
+    return board_sha
 
 
 def cmd_qa_verdict(args):
@@ -1740,12 +1853,14 @@ def cmd_qa_verdict(args):
         items = json.loads(Path(args.json).read_text(encoding="utf-8"))
         for it in items:
             sdir = manifest[it["id"]]
+            cur_sha = chr_sha256_of(sdir)
+            board_sha = _verify_board_hash_match(sdir, it["id"], cur_sha, out_dir=out_dir)
             rec = {
                 "id": it["id"],
                 "verdict": it["verdict"],
                 "by": args.by,
                 "notes": it.get("notes", ""),
-                "chr_sha256": chr_sha256_of(sdir),
+                "chr_sha256": board_sha,
             }
             (sdir / "views" / "qa_verdict.json").write_text(json.dumps(rec, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
             print(f"[QA {rec['verdict']}] {it['id']} (sha256={rec['chr_sha256'][:12]}...)")
@@ -1753,12 +1868,14 @@ def cmd_qa_verdict(args):
 
     sdir = Path(args.dir).resolve()
     meta = json.loads((sdir / "slot_meta.json").read_text(encoding="utf-8"))
+    cur_sha = chr_sha256_of(sdir)
+    board_sha = _verify_board_hash_match(sdir, meta["id"], cur_sha, out_dir=Path(args.out).resolve() if args.out else None)
     rec = {
         "id": meta["id"],
         "verdict": args.verdict,
         "by": args.by,
         "notes": args.notes,
-        "chr_sha256": chr_sha256_of(sdir),
+        "chr_sha256": board_sha,
     }
     (sdir / "views" / "qa_verdict.json").write_text(json.dumps(rec, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"[QA {rec['verdict']}] {meta['id']} -> {sdir / 'views' / 'qa_verdict.json'}")
@@ -1767,6 +1884,10 @@ def cmd_qa_verdict(args):
 def cmd_pack(args):
     check_and_warn_llm(getattr(args, "model", ""), "pack")
     out_dir = Path(args.out).resolve()
+    is_scratch = bool(getattr(args, "skip_qa_gate", False))
+    target_dir = (out_dir / "scratch_preview") if is_scratch else out_dir
+    target_dir.mkdir(parents=True, exist_ok=True)
+    prefix = "scratch_" if is_scratch else ""
     manifest = json.loads((out_dir / "manifest.json").read_text(encoding="utf-8"))
     filter_ids = [x.strip() for x in args.ids.split(",") if x.strip()] if args.ids else None
     selected = []
@@ -1775,16 +1896,23 @@ def cmd_pack(args):
         if filter_ids and m["id"] not in filter_ids:
             continue
         sdir = Path(m["dir"])
-        if not getattr(args, "skip_qa_gate", False):
+        if not is_scratch:
             ok_lock, reason = check_slot_qa_lock(sdir)
             if not ok_lock:
                 gate_failures.append(f"  - #{m['index']:02d} {m['id']}: {reason}")
                 continue
-        chip_p = sdir / "chip.png"
-        if not chip_p.exists() and (sdir / "views" / "sheet.png").exists():
-            unkey_rgba(Image.open(sdir / "views" / "sheet.png")).save(chip_p)
-        if chip_p.exists():
-            selected.append((m["label"], unkey_rgba(Image.open(chip_p))))
+        try:
+            rendered_rgba, rendered_sha = render_slot_rgba_from_source(sdir, m)
+        except Exception as exc:
+            gate_failures.append(f"  - #{m['index']:02d} {m['id']}: {exc}")
+            continue
+        if not is_scratch:
+            gate = json.loads((sdir / "views" / "gate.json").read_text(encoding="utf-8"))
+            qa = json.loads((sdir / "views" / "qa_verdict.json").read_text(encoding="utf-8"))
+            if rendered_sha != gate.get("chr_sha256") or rendered_sha != qa.get("chr_sha256"):
+                gate_failures.append(f"  - #{m['index']:02d} {m['id']}: rendered source digest mismatch vs gate/qa receipts")
+                continue
+        selected.append((m["label"], rendered_rgba))
 
     if gate_failures:
         raise SystemExit(
@@ -1801,7 +1929,7 @@ def cmd_pack(args):
         pack = Image.new("RGBA", (288, 256), (0, 0, 0, 0))
         for i, (_, sh) in enumerate(chunk):
             pack.paste(sh, ((i % 4) * 72, (i // 4) * 128))
-        pack_p = out_dir / f"rm2k_pack_{(p_idx // 8) + 1:02d}_288x256.png"
+        pack_p = target_dir / f"{prefix}rm2k_pack_{(p_idx // 8) + 1:02d}_288x256.png"
         pack.save(pack_p)
         print("Saved RM2000 8-slot pack:", pack_p)
 
@@ -1825,7 +1953,7 @@ def cmd_pack(args):
         s_im = sh.resize((72 * sc, 128 * sc), Image.NEAREST)
         board.paste(s_im, (ox, oy), s_im)
         dr.text((ox + 8, oy - 16), lbl, fill=(255, 232, 148, 255))
-    board_p = out_dir / "showcase_3x.png"
+    board_p = target_dir / f"{prefix}showcase_3x.png"
     board.save(board_p)
     print("Saved 3x showcase board:", board_p)
 
@@ -1876,7 +2004,7 @@ def cmd_pack(args):
                     d.text((ox + max(0, (cw - len(lbl) * 6) // 2), oy + ch + 7), lbl, fill=col)
             gif_frames.append(f.convert("P", palette=Image.ADAPTIVE, colors=256))
 
-    gif_p = out_dir / "grand_parade_walk.gif"
+    gif_p = target_dir / f"{prefix}grand_parade_walk.gif"
     gif_frames[0].save(gif_p, save_all=True, append_images=gif_frames[1:], duration=165, loop=0, disposal=2)
     print("Saved grand grass parade GIF:", gif_p)
 

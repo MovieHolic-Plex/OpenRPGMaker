@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-imperial-navy-admiral",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "7d2e26f1c5ba16499b137e16979ade67648d4274d23d2eea4ffaf17e5f27c280"
 }

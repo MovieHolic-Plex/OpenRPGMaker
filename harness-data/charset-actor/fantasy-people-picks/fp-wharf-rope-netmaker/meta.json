@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-wharf-rope-netmaker",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "c00952c43657d37dfa3e2e2ec25c96610adf56452ebb35968f167428c6c0eb24"
 }

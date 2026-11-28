@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-iron-cannoneer-bombardier",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "63a88c67e150ce29bdbf45e7a4504265e98f298536d9147c188441886baaec78"
 }

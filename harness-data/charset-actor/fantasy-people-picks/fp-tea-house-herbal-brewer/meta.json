@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-tea-house-herbal-brewer",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "a87946b18f8f51aafa22ab51347767ab4a53d7b69979dc332f8a9bdfad86eed7"
 }

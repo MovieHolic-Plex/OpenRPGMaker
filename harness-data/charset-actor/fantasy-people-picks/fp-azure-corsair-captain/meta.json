@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-azure-corsair-captain",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "f03509ee393b8c38b15932f9f1758c0445f8e5c06ac69c1f9ad8a1c6492c0062"
 }

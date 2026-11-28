@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-horned-tiefling-warlock",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "34f04e82e550744bd34fa66c2f337b605c0143e593c740b7e0c61cf5c2101589"
 }

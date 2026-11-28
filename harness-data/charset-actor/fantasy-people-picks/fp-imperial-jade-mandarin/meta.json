@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-imperial-jade-mandarin",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "da976d6c308261e18042bd38d76256bcb6a920ce7c145888a06737da348febc7"
 }

@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-archsage-elder",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "feff50bb364221b9a1971c4cc6369f830f0c5ff0c801f8d2ecbeff34798565ae"
 }

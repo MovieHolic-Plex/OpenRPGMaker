@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-field-chirurgeon-medic",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "e831f09c61857398234ce8138957b33f00f716ee189d1cf3bd6600c12a4572da"
 }

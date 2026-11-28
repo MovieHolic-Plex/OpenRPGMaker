@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-silver-shield-hospitaller",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "8310300e5aa5cf1a3b256759edfb86e777baa4c742b24f517151b0712893fb83"
 }

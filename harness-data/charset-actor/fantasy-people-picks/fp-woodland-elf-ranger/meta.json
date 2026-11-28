@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-woodland-elf-ranger",
   "base": "Actor2:7",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "1ea3cf3f6c20a82032dc8da8befc766c461e32c1a930f9147726fffa8c6b6cd5"
 }

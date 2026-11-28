@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-lantern-tunnel-miner",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "4ebed0d9b0a4a1e1f47d3e59b54cbd842de37eeca438a611af5d65103759d23f"
 }

@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-flamebeard-runesmith",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "1c77b6d8cb7617a0dab9b85e171dc5e9c710b291776e479c363ca68b9c2a628e"
 }

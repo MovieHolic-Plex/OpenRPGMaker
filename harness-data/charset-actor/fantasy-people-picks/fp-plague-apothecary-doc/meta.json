@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-plague-apothecary-doc",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "89a728d4171f84bbb39e06e4afe52ac28da93ecb8a6cc5f2e22ba1063e88aec1"
 }

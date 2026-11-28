@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-guild-receptionist",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "83d55ee9f24d6438e938590b552c1d3ac1c408edc6bb7abb5aa81eeaf53b1809"
 }

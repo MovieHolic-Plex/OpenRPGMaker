@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-pottery-kiln-craftsman",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "65af41a341f8858420067174e5f2c2b26adf536383f6775de500eb24cf754415"
 }

@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-royal-court-chamberlain",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "f3c16a63dd7061c264927ea467d3cd54390e24c808c801b2a656820969b260a3"
 }

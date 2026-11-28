@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-dairy-cheese-maid",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "7529b7addff87dfb27cec36074279c4b2f50b0ba3a7e71a4c13dcaae1eafd16c"
 }

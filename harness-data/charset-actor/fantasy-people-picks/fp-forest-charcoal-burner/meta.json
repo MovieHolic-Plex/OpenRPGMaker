@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-forest-charcoal-burner",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "64c42b4b14bfeb4564f1db6e91147a417cf499b2fb3f12cce973dc6b05f9ed14"
 }

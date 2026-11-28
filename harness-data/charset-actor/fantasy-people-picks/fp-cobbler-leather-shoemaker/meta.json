@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-cobbler-leather-shoemaker",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "b5429d7e7133508204ed08294fdc1edc6e35c2faee0ed679835b8fe125807c6f"
 }

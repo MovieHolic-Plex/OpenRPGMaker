@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-jade-lotus-martial-artist",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "a5a11d95f64cd7f8bbd10a78e56e282b87d9a22dc7e6aea7da2800f1b6e45160"
 }

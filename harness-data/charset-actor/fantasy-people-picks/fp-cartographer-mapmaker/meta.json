@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-cartographer-mapmaker",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "58f7e2dfc72ba193f14fbebc5158f9f91f3d91dda7d82650d7310f59295e7ec0"
 }

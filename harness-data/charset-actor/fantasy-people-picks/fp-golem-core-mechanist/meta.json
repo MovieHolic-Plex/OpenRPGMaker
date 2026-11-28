@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-golem-core-mechanist",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "82eb8a37cda09dc2c7fb1405f15b9511a496da53e24592f87493adaa2193c9f4"
 }

@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-flower-basket-florist-girl",
   "base": "Template:2",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "8349040966f28948c6b06ba677cd903d45e57948a7ce68fecadf0af297935e2a"
 }

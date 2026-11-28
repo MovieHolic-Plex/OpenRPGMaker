@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-wandering-zen-pilgrim",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "1dbdd773dc094f818edb4ba76aec84827252d97364c9d02839a68c738373e2ad"
 }

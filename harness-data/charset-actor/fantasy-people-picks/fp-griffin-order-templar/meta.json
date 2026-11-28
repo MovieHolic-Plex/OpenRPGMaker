@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-griffin-order-templar",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "0439856c9ae8e75de778171b90d7f884b877c6d9930dfa42a999781f3b593e0c"
 }

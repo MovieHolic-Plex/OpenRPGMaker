@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-tailor-boutique-seamstress",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "83b3c165676f6df33508b3924fdcde5e51b8d0b535401a73f1fa415f69153ed2"
 }

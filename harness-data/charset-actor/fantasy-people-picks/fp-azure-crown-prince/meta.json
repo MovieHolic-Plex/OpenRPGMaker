@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-azure-crown-prince",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "5ed69697c7f6506f95b282a03aea77876d351583d22f2e96e4105996aeadffa0"
 }

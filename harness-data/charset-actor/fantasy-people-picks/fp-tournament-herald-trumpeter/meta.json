@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-tournament-herald-trumpeter",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "600ca1d20e0a475014d0b714d78ff80f7a91ec0e485a1a10b25f8e2bc598f483"
 }

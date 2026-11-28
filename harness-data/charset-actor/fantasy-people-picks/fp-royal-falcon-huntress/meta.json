@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-royal-falcon-huntress",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "77543d3fab740bc263ec359cd4be4b1360c541af369b045e1ca8136534532bf5"
 }

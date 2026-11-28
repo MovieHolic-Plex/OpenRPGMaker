@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-golden-bazaar-jeweler",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "9959a0cfae6fd32c71aec0de71edef0797ae1c66d709f4533621b54262347965"
 }

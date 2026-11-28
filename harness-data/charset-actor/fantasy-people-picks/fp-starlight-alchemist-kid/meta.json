@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-starlight-alchemist-kid",
   "base": "Template:2",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "b374338d7e8b649fca6d9e7a545489faf37de166f623715d7e8c651003456c89"
 }

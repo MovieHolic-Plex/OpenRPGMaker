@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-mountain-tea-porter",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "998c472294130268cb668ca2edaa9fb6d7018659ad2edf659138385c8699b899"
 }

@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-high-elf-moon-enchanter",
   "base": "Template:0",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "b92b5aa1e913e84dc18a668865be6ea225ca22a2db9b85b98bffdcb90ce31c6f"
 }

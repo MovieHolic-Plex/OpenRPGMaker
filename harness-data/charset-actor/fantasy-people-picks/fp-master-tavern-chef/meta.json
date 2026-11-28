@@ -2,5 +2,7 @@
   "ok": true,
   "key": "fp-master-tavern-chef",
   "base": "Template:broad",
-  "model": "gemini-4-carbon-medium"
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "8c6c333bc0e0b4c5613c35b048f0da87946bb8b159a7d0d842ea7479105d682f"
 }
