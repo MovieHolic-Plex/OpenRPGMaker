@@ -1300,12 +1300,25 @@ const upsertEvent: ToolDefinition = {
     // replacePages 는 인자 표시이지 이벤트 필드가 아니다 — 모델이 event 안에 넣어 보내면(2026-10-07 gemini reward-once)
     // additionalProperties 로 그대로 저장돼 저장본에 남았다. 저장 전에 떼어 낸다.
     const rawPatch = args.event as (Partial<GameEvent> & { replacePages?: unknown }) | undefined;
-    const patch: Partial<GameEvent> | undefined = rawPatch && typeof rawPatch === "object" && ("replacePages" in rawPatch || "dropWrites" in rawPatch)
+    let patch: Partial<GameEvent> | undefined = rawPatch && typeof rawPatch === "object" && ("replacePages" in rawPatch || "dropWrites" in rawPatch)
       ? (({ replacePages: _replacePages, dropWrites: _dropWrites, ...rest }) => rest)(rawPatch as Partial<GameEvent> & { replacePages?: unknown; dropWrites?: unknown })
       : rawPatch;
     const dropWrites = args.dropWrites === true || (rawPatch as { dropWrites?: unknown } | undefined)?.dropWrites === true;
     const warnings: string[] = [];
     if (!patch || typeof patch.id !== "string" || !patch.id.trim()) throw new ToolError("event.id(문자열)가 필요합니다.");
+    if (patch.commands && !Array.isArray(patch.commands) && typeof patch.commands === "object") {
+      patch = { ...patch, commands: [patch.commands as unknown as Command] };
+    }
+    if (Array.isArray(patch.pages) && patch.pages.some((p) => p && typeof p === "object" && p.commands && !Array.isArray(p.commands) && typeof p.commands === "object")) {
+      patch = {
+        ...patch,
+        pages: patch.pages.map((p) =>
+          p && typeof p === "object" && p.commands && !Array.isArray(p.commands) && typeof p.commands === "object"
+            ? { ...p, commands: [p.commands as unknown as Command] }
+            : p,
+        ),
+      };
+    }
     // transfer 는 m2Command 가 아니다 — direction·fade 는 명령 바로 아래에 둔다. `fields` 에 넣으면 조용히 무시돼 변경이 사라진다
     // (실측 2026-10-13: 「출입구 방향을 맞춰줘」가 fields:{direction} 로 저장돼 방향이 그대로였다).
     const misplaced = (node: unknown): boolean => Array.isArray(node)

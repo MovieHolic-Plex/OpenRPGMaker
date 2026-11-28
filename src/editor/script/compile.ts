@@ -60,9 +60,9 @@ function compilerOptions(ts: TypeScriptApi): TS.CompilerOptions {
   };
 }
 
-function diagnosticFrom(ts: TypeScriptApi, diagnostic: TS.Diagnostic, source: "syntax" | "type", lineLimit: number, lineOffset = 0): ScriptDiagnostic {
+function diagnosticFrom(ts: TypeScriptApi, diagnostic: TS.Diagnostic, source: "syntax" | "type", lineLimit: number, mapLine?: (wrappedLine: number) => number): ScriptDiagnostic {
   const position = diagnostic.file && diagnostic.start !== undefined ? diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start) : { line: 0, character: 0 };
-  const rawLine = position.line + 1 - lineOffset;
+  const rawLine = mapLine ? mapLine(position.line + 1) : position.line + 1;
   return {
     line: Math.max(1, Math.min(lineLimit, rawLine)),
     column: position.character + 1,
@@ -75,45 +75,49 @@ function diagnosticFrom(ts: TypeScriptApi, diagnostic: TS.Diagnostic, source: "s
 
 /**
  * 이벤트 스크립트는 런타임에서 `(async function (require, exports, module) { ... })` 으로 감싸 실행한다(scriptRun.ts).
- * 따라서 최상위 `return;` 도 합법이다. import 줄은 파일 맨 위에 남기고 나머지만 async 함수 본문으로 감싸 타입 검사한다.
+ * 따라서 최상위 `return;` 도 합법이다. 모든 최상위 import 선언은 파일 맨 위로 끌어올려 두고 나머지만 async 함수 본문으로 감싸 타입 검사한다.
+ * 본문에서 import 를 빼낸 자리에는 같은 줄 수만큼 빈 줄을 남겨 원래 줄 번호 매핑을 정확히 유지한다.
  */
-function wrapEventScriptForTypeCheck(ts: TypeScriptApi, source: string): { readonly text: string; readonly lineOffsetAfterImport: number; readonly importLines: number } {
+function wrapEventScriptForTypeCheck(ts: TypeScriptApi, source: string): { readonly text: string; readonly mapLine: (wrappedLine: number) => number } {
   const sf = ts.createSourceFile("/script.ts", source, ts.ScriptTarget.ES2020, true, ts.ScriptKind.TS);
-  let lastImportEnd = 0;
-  for (const stmt of sf.statements) {
-    if (ts.isImportDeclaration(stmt)) {
-      lastImportEnd = stmt.getEnd();
-      continue;
-    }
-    break;
+  const imports = sf.statements.filter(ts.isImportDeclaration);
+  if (imports.length === 0) {
+    return {
+      text: `async function __oprn_event_script__(): Promise<void> {\n${source}\n}\nexport {};\n`,
+      mapLine: (wrappedLine) => wrappedLine - 1,
+    };
   }
-  let head = "";
-  let body = source;
-  let importLines = 0;
-  let sameLineTail = false;
-  if (lastImportEnd > 0) {
-    const nextNl = source.indexOf("\n", lastImportEnd);
-    const tailOnSameLine = nextNl >= 0 ? source.slice(lastImportEnd, nextNl) : source.slice(lastImportEnd);
-    if (/^\s*(?:\/\/.*)?$/u.test(tailOnSameLine)) {
-      if (nextNl >= 0) {
-        head = source.slice(0, nextNl);
-        body = source.slice(nextNl + 1);
-      } else {
-        head = source;
-        body = "";
+  const hoistedChunks: string[] = [];
+  const spans: Array<{ hoistedStart: number; hoistedEnd: number; origStart: number }> = [];
+  const bodyParts: string[] = [];
+  let cursor = 0;
+  let hoistedCursor = 1;
+  for (const stmt of imports) {
+    const start = stmt.getStart(sf);
+    const end = stmt.getEnd();
+    const chunk = source.slice(start, end);
+    const lineCount = chunk.split("\n").length;
+    const origStart = sf.getLineAndCharacterOfPosition(start).line + 1;
+    bodyParts.push(source.slice(cursor, start), "\n".repeat(lineCount - 1));
+    cursor = end;
+    hoistedChunks.push(chunk);
+    spans.push({ hoistedStart: hoistedCursor, hoistedEnd: hoistedCursor + lineCount - 1, origStart });
+    hoistedCursor += lineCount;
+  }
+  bodyParts.push(source.slice(cursor));
+  const hoistedHeader = hoistedChunks.join("\n");
+  const headerLines = hoistedCursor - 1;
+  const body = bodyParts.join("");
+  return {
+    text: `${hoistedHeader}\nasync function __oprn_event_script__(): Promise<void> {\n${body}\n}\nexport {};\n`,
+    mapLine: (wrappedLine) => {
+      if (wrappedLine <= headerLines) {
+        const hit = spans.find((span) => wrappedLine >= span.hoistedStart && wrappedLine <= span.hoistedEnd);
+        return hit ? hit.origStart + (wrappedLine - hit.hoistedStart) : wrappedLine;
       }
-    } else {
-      head = source.slice(0, lastImportEnd);
-      body = source.slice(lastImportEnd);
-      sameLineTail = true;
-    }
-    importLines = head.split("\n").length;
-  }
-  const opener = sameLineTail
-    ? "async function __oprn_event_script__(): Promise<void> {"
-    : "async function __oprn_event_script__(): Promise<void> {\n";
-  const prefix = head ? `${head}\n${opener}` : opener;
-  return { text: `${prefix}${body}\n}\nexport {};\n`, lineOffsetAfterImport: 1, importLines };
+      return wrappedLine - (headerLines + 1);
+    },
+  };
 }
 
 function typeCheck(ts: TypeScriptApi, source: string, options: ScriptCompileOptions): ScriptDiagnostic[] {
@@ -159,9 +163,7 @@ function typeCheck(ts: TypeScriptApi, source: string, options: ScriptCompileOpti
   const lineLimit = Math.max(1, source.split("\n").length);
   const out: ScriptDiagnostic[] = [];
   for (const diagnostic of [...program.getSyntacticDiagnostics(script), ...program.getSemanticDiagnostics(script)]) {
-    const pos = diagnostic.file && diagnostic.start !== undefined ? diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start) : { line: 0, character: 0 };
-    const offset = wrapped && pos.line + 1 > wrapped.importLines ? wrapped.lineOffsetAfterImport : 0;
-    out.push(diagnosticFrom(ts, diagnostic, "type", lineLimit, offset));
+    out.push(diagnosticFrom(ts, diagnostic, "type", lineLimit, wrapped?.mapLine));
   }
   // Problems inside imported library modules surface once, at the import, so the author knows where to look.
   for (const file of program.getSourceFiles()) {
