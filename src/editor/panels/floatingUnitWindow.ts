@@ -180,9 +180,9 @@ export function mountFloatingUnitWindow(
 
   const newUnitBtn = el("button", {
     class: "fdw-head-btn is-primary",
-    attrs: { type: "button", title: "현재 맵에 새 유닛(NPC·적·문) 추가" },
+    attrs: { type: "button", title: "현재 맵에 새 이벤트(NPC·적·문) 추가" },
     dataset: { testid: "floating-unit-new" },
-    text: "+ 새 유닛",
+    text: "+ 새 이벤트",
     on: {
       click: () => {
         const { mapId, map } = currentContext();
@@ -196,7 +196,7 @@ export function mountFloatingUnitWindow(
 
   const closeBtn = el("button", {
     class: "fdw-head-btn",
-    attrs: { type: "button", title: "유닛 팔레트 닫기 (Esc)", "aria-label": "유닛 팔레트 닫기" },
+    attrs: { type: "button", title: "NPC·이벤트 창 닫기 (Esc)", "aria-label": "NPC·이벤트 창 닫기" },
     dataset: { testid: "floating-unit-close" },
     text: "✕",
     on: { click: () => setOpen(false) },
@@ -209,7 +209,7 @@ export function mountFloatingUnitWindow(
       el("div", {
         class: "fdw-title",
         children: [
-          el("span", { text: "유닛 팔레트" }),
+          el("span", { text: "NPC·이벤트" }),
           el("kbd", { class: "fdw-kbd", text: "U" }),
         ],
       }),
@@ -219,11 +219,11 @@ export function mountFloatingUnitWindow(
 
   const searchInput = el("input", {
     class: "fdw-search",
-    attrs: { type: "search", placeholder: "NPC · 적 · 이동 문 찾기…", "aria-label": "유닛 찾기", autocomplete: "off", spellcheck: "false" },
+    attrs: { type: "search", placeholder: "NPC · 적 · 이동 문 찾기…", "aria-label": "NPC·이벤트 찾기", autocomplete: "off", spellcheck: "false" },
     dataset: { testid: "floating-unit-search" },
   }) as HTMLInputElement;
 
-  const filterBar = el("div", { class: "fdw-tabs", attrs: { role: "tablist", "aria-label": "유닛 분류" } });
+  const filterBar = el("div", { class: "fdw-tabs", attrs: { role: "tablist", "aria-label": "이벤트 분류" } });
   const filterButtons = new Map<UnitFilterId, HTMLButtonElement>();
   for (const filter of FILTERS) {
     const btn = el("button", {
@@ -251,7 +251,7 @@ export function mountFloatingUnitWindow(
 
   const win = el("section", {
     class: "floating-doodad-window floating-unit-window",
-    attrs: { role: "dialog", "aria-label": "유닛 팔레트" },
+    attrs: { role: "dialog", "aria-label": "NPC·이벤트" },
     dataset: { testid: "floating-unit-window" },
     children: [titleBar, el("div", { class: "fdw-controls", children: [searchInput, filterBar] }), listBody, quickCard, foot],
   });
@@ -302,7 +302,7 @@ export function mountFloatingUnitWindow(
 
     const nameInput = el("input", {
       class: "fuw-q-input",
-      attrs: { type: "text", placeholder: "유닛 이름", "aria-label": "유닛 이름 빠른 수정" },
+      attrs: { type: "text", placeholder: "이벤트 이름", "aria-label": "이벤트 이름 빠른 수정" },
       dataset: { testid: "fuw-quick-name" },
       value: ev.name ?? displayName,
     }) as HTMLInputElement;
@@ -528,11 +528,11 @@ export function mountFloatingUnitWindow(
     }
 
     if (filtered.length === 0) {
-      listBody.append(el("div", { class: "fdw-empty", text: q ? "일치하는 유닛이 없습니다." : "배치된 유닛이 없습니다. 「+ 새 유닛」으로 추가하세요." }));
+      listBody.append(el("div", { class: "fdw-empty", text: q ? "일치하는 이벤트가 없습니다." : "배치된 이벤트가 없습니다. 「+ 새 이벤트」로 추가하세요." }));
     }
 
     renderQuickCard(project, mapId, map, state.selectedEventId);
-    statusText.textContent = `유닛 ${map.events.length}개 · 클릭 빠른편집 · 더블클릭 상세`;
+    statusText.textContent = `이벤트 ${map.events.length}개 · 클릭 빠른편집 · 더블클릭 상세`;
   }
 
   function applyPosition(): void {
