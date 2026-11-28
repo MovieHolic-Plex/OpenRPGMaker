@@ -3,7 +3,7 @@ import { store } from '@/project/store';
 import { completeDetectionEncounter } from '@/project/npcBehavior';
 import { passageBounds } from '@/project/footprint';
 import { resolvePlayerBody } from '@/project/playerFootprint';
-import { eventMayHaveDetectionEncounter, runtimeEventViewById, runtimeEventViewsForMap, type RuntimeEventView } from '@/project/runtimeEventState';
+import { eventMayHaveDetectionEncounter, forEachRuntimeEventView, runtimeEventViewById, type RuntimeEventView } from '@/project/runtimeEventState';
 import type { FootprintRect } from '@/project/types';
 import type { PlaySceneContext } from './playSceneTypes';
 import { claimForeground, foregroundOwner, type ForegroundLease } from './foregroundControl';
@@ -101,27 +101,29 @@ export function updateDetectionEncounters(scene: PlaySceneContext, deltaMs: numb
   const world = { project, map: scene.map, session: scene.session, positions: scene.eventPositions };
   if (isPlayerHiding(world)) { controller.suppressed.clear(); return; }
   // 발견 조우 페이지가 없는 이벤트는 뷰(페이지 조건·발자국)를 만들지 않는다. 플레이어가 서 있는 동안 매 프레임 돈다.
-  for (const view of runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions, eventMayHaveDetectionEncounter)) {
+  // 첫 활성 조우가 전경을 잡으면 거기서 멈춘다 — 뒤의 조우 이벤트 페이지를 해석하지 않는다(#3598 의 «맞을 수 없는 페이지는 해석하지 않는다»,
+  // 전에는 배열을 먼저 다 만들어 모든 조우 이벤트를 매 프레임 해석했다, #5185).
+  forEachRuntimeEventView(project, scene.map, scene.session, scene.eventPositions, (view) => {
     const config = view.page?.detectionEncounter;
-    if (!config || !view.pageId || scene.session.horror?.pursuits[view.event.id]?.doors.length) continue;
-    if (scene.commandMoveRouteEventIds.has(view.event.id)) continue;
+    if (!config || !view.pageId || scene.session.horror?.pursuits[view.event.id]?.doors.length) return false;
+    if (scene.commandMoveRouteEventIds.has(view.event.id)) return false;
     const key = `${view.event.id}:${view.pageId}`;
     const visible = npcSeesPoint(world, view, scene.session, config.sight, scene.autonomousNPCs.get(view.event.id)?.facing ?? view.direction);
-    if (!visible) { controller.suppressed.delete(key); continue; }
+    if (!visible) { controller.suppressed.delete(key); return false; }
     const receipts = scene.session.detectionEncounterCompletions;
     const completed = receipts && Object.hasOwn(receipts, view.event.id)
       && Object.hasOwn(receipts[view.event.id], view.pageId) && receipts[view.event.id][view.pageId] === true;
-    if (controller.refused.has(key) && !hasMonsterParty(scene)) continue;
+    if (controller.refused.has(key) && !hasMonsterParty(scene)) return false;
     controller.refused.delete(key);
-    if (controller.suppressed.has(key) || completed) continue;
+    if (controller.suppressed.has(key) || completed) return false;
     const lease = claimForeground(scene);
-    if (!lease) return;
+    if (!lease) return true;
     const admitted: DetectionRun = { eventId: view.event.id, pageId: view.pageId, lease, session: scene.session, phase: 'emote', remainingMs: config.emoteMs };
     controller.run = admitted; controller.suppressed.add(key);
     if (config.emote) showSceneEmote(scene, view.event.id, config.emote, config.emoteMs);
     if (admitted.remainingMs === 0) startApproach(scene, controller, admitted);
-    return; // Stable first active view owns this foreground.
-  }
+    return true; // Stable first active view owns this foreground.
+  }, undefined, eventMayHaveDetectionEncounter);
 }
 
 function hasMonsterParty(scene: PlaySceneContext): boolean {

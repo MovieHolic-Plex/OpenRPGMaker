@@ -231,7 +231,7 @@ export function runtimePageContext(
  * 했다. 그 배열은 다른 모든 맵의 이벤트까지 훑고 Set 3종을 새로 만든다. NPC 마다 프레임당
  * 1~3회 불려 O(N²) 가 됐다(실측 0.04~0.16ms/호출).
  */
-function forEachRuntimeEventView(
+export function forEachRuntimeEventView(
   project: RuntimeEventProject,
   map: GameMap,
   session: PlaySessionLike,
