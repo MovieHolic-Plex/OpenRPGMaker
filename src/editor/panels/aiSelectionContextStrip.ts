@@ -152,9 +152,13 @@ export function mountAiSelectionContextStrip(
     }
   };
 
+  // 오른쪽 아래 「✦ 조수」 는 늘 보인다(오너 2026-11-28 「오른쪽 하단엔 강제로 보이게」). 전에는 조수가 「열림」이면 숨었는데,
+  // 상단 「조수」·알약 「조수에게 맡기기」 도 열림이면 숨으므로(#5226) 열림으로 기억됐지만 화면에 없는 상태에서 입구가 하나도
+  // 남지 않았다(Windows 앱 보고). 열림/접힘은 숨김이 아니라 data-assistant-open 으로만 알린다.
   const syncPillVisibility = (): void => {
     const collapsed = aiPanel.classList.contains("is-collapsed");
-    pill.hidden = !collapsed;
+    pill.hidden = false;
+    pill.dataset.assistantOpen = String(!collapsed);
   };
 
   const paint = (): void => {
