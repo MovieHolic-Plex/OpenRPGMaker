@@ -543,7 +543,13 @@ export function renderAiThreeProviders(options: AiThreeProvidersOptions): AiThre
         activateFamily(family, state);
       });
 
-      const effortButtons = meta.efforts.map((entry) => el("button", {
+      const visibleEfforts = state.via === "local-cli"
+        ? meta.efforts.filter((entry) => entry.id !== "xhigh")
+        : meta.efforts;
+      if (state.via === "local-cli" && chosenEffort[family] === "xhigh") {
+        chosenEffort[family] = "high";
+      }
+      const effortButtons = visibleEfforts.map((entry) => el("button", {
         class: "ai-three-effort-btn",
         attrs: { type: "button", "aria-pressed": String(chosenEffort[family] === entry.id) },
         text: entry.label,

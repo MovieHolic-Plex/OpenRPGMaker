@@ -14,12 +14,12 @@ import {
 import type { LocalCliEvent } from "../scripts/lib/localCliAgent/types";
 
 describe("Antigravity ACP (agy) adapter", () => {
-  it("builds official agy acp stdio args without user customizations", () => {
+  it("builds official agy acp stdio args with --process-per-session and without auto-approving built-in tools", () => {
     expect(buildAgyAcpArgs()).toEqual([
       "acp",
       "--stdio",
       "--include-default-customizations=false",
-      "--dangerously-skip-permissions",
+      "--process-per-session",
     ]);
   });
 
@@ -45,17 +45,19 @@ describe("Antigravity ACP (agy) adapter", () => {
     expect(loggedOut.models).toEqual([]);
   });
 
-  it("resolves model IDs with effort suffixes against available models", () => {
+  it("resolves model IDs with effort suffixes and prefers advertised variants", () => {
     const available = ["gemini-4-argon-low", "gemini-4-argon-medium", "gemini-4-argon-high", "gemini-4-neon-xhigh"];
     expect(resolveAgyModelId("gemini-4-argon", "high", available)).toBe("gemini-4-argon-high");
     expect(resolveAgyModelId("gemini-4-argon", "xhigh", available)).toBe("gemini-4-argon-medium");
+    expect(resolveAgyModelId("gemini-4-neon", "high", available)).toBe("gemini-4-neon-xhigh");
     expect(resolveAgyModelId("gemini-4-neon-xhigh", "low", available)).toBe("gemini-4-neon-xhigh");
     expect(resolveAgyModelId("auto", "medium", available)).toBeUndefined();
   });
 
-  it("detects quota warning banners for failover", () => {
+  it("detects standalone quota warning banners without false-positiving on normal answers", () => {
     expect(parseAgyQuotaWarning("\n⚠ Individual quota reached. Resets in 12h30m.\n")).toContain("429 quota exceeded");
     expect(parseAgyQuotaWarning("Normal assistant reply.")).toBeUndefined();
+    expect(parseAgyQuotaWarning("In this game, the error message says quota exceeded when the player runs out of mana.")).toBeUndefined();
   });
 
   it("approves only oprn MCP permissions and blocks built-in shell/file tools", () => {
@@ -82,7 +84,10 @@ describe("Antigravity ACP (agy) adapter", () => {
     expect(handler.snapshot()).toEqual({ calls: 2, toolCalls: 1, text: "Done!" });
   });
 
-  it.skipIf(process.platform === "win32")("completes a full JSON-RPC handshake, model set, permission check, and prompt over fake agy binary", async () => {
+  it.skipIf(process.platform === "win32")("verifies model selection, permission allow/deny outcomes, stopReason handling, and not-installed detection", async () => {
+    const missing = await agyAdapter.detect("/nonexistent-oprn-agy-bin");
+    expect(missing.state).toBe("not-installed");
+
     const dir = mkdtempSync(join(tmpdir(), "oprn-fake-agy-"));
     const fakeBin = join(dir, "agy");
     writeFileSync(fakeBin, `#!/usr/bin/env node
@@ -90,22 +95,68 @@ const args = process.argv.slice(2);
 if (args[0] === "--version") { console.log("1.5.18-test"); process.exit(0); }
 if (args[0] === "models") { console.log("gemini-4-argon-high\\tGemini 4 Argon (High)"); process.exit(0); }
 let buf = "";
+let selectedModel = null;
+let promptReqId = null;
+let permStep = 0;
+let allowOk = false;
+let denyOk = false;
+let promptText = "";
+process.stdin.setEncoding("utf8");
 process.stdin.on("data", (chunk) => {
-  buf += String(chunk);
+  buf += chunk;
   const lines = buf.split("\\n");
   buf = lines.pop();
   for (const line of lines) {
     if (!line.trim()) continue;
     const msg = JSON.parse(line);
     if (msg.method === "initialize") {
-      process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id: msg.id, result: { protocolVersion: 1 } }) + "\\n");
+      process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id: msg.id, result: { protocolVersion: 1, agentCapabilities: { sessionCapabilities: { resume: {} } } } }) + "\\n");
     } else if (msg.method === "session/new") {
       process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id: msg.id, result: { sessionId: "fake-sess-1", models: { currentModelId: "gemini-4-neon-high", availableModels: [{ modelId: "gemini-4-argon-high" }] } } }) + "\\n");
     } else if (msg.method === "session/set_model") {
+      selectedModel = msg.params?.modelId ?? null;
       process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id: msg.id, result: {} }) + "\\n");
     } else if (msg.method === "session/prompt") {
-      process.stdout.write(JSON.stringify({ jsonrpc: "2.0", method: "session/update", params: { sessionId: "fake-sess-1", update: { sessionUpdate: "agent_message_chunk", content: { type: "text", text: "OK" } } } }) + "\\n");
-      process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id: msg.id, result: { stopReason: "end_turn", usage: { inputTokens: 120, outputTokens: 10, cachedReadTokens: 20 } } }) + "\\n");
+      promptReqId = msg.id;
+      promptText = msg.params?.prompt?.[0]?.text ?? "";
+      if (selectedModel !== "gemini-4-argon-high") {
+        process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id: msg.id, error: { code: -32000, message: "model not set: " + String(selectedModel) } }) + "\\n");
+        continue;
+      }
+      if (promptText.includes("REFUSE")) {
+        process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id: msg.id, result: { stopReason: "refusal" } }) + "\\n");
+        continue;
+      }
+      permStep = 1;
+      process.stdout.write(JSON.stringify({
+        jsonrpc: "2.0",
+        id: "perm-1",
+        method: "session/request_permission",
+        params: {
+          toolCall: { title: "mcp__oprn__paint_tiles", kind: "mcp" },
+          options: [{ optionId: "allow_once", kind: "allow_once" }, { optionId: "reject_once", kind: "reject_once" }],
+        },
+      }) + "\\n");
+    } else if (msg.id === "perm-1" && permStep === 1) {
+      allowOk = msg.result?.outcome?.outcome === "selected" && msg.result?.outcome?.optionId === "allow_once";
+      permStep = 2;
+      process.stdout.write(JSON.stringify({
+        jsonrpc: "2.0",
+        id: "perm-2",
+        method: "session/request_permission",
+        params: {
+          toolCall: { title: "run_shell_command", kind: "execute" },
+          options: [{ optionId: "allow_once", kind: "allow_once" }, { optionId: "reject_once", kind: "reject_once" }],
+        },
+      }) + "\\n");
+    } else if (msg.id === "perm-2" && permStep === 2) {
+      denyOk = msg.result?.outcome?.outcome === "cancelled" || msg.result?.outcome?.optionId === "reject_once";
+      if (!allowOk || !denyOk) {
+        process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id: promptReqId, error: { code: -32001, message: "perm failed: " + JSON.stringify({ allowOk, denyOk }) } }) + "\\n");
+      } else {
+        process.stdout.write(JSON.stringify({ jsonrpc: "2.0", method: "session/update", params: { sessionId: "fake-sess-1", update: { sessionUpdate: "agent_message_chunk", content: { type: "text", text: "OK" } } } }) + "\\n");
+        process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id: promptReqId, result: { stopReason: "end_turn", usage: { inputTokens: 120, outputTokens: 10, cachedReadTokens: 20 } } }) + "\\n");
+      }
     }
   }
 });
@@ -113,7 +164,12 @@ process.stdin.on("data", (chunk) => {
     chmodSync(fakeBin, 0o755);
     try {
       const detected = await agyAdapter.detect(fakeBin);
-      expect(detected).toMatchObject({ state: "ready", version: "1.5.18-test", billing: "subscription", authMethod: "Google ACP" });
+      expect(detected).toMatchObject({
+        state: "ready",
+        version: "1.5.18-test",
+        authMethod: "Google ACP",
+        defaults: { routine: "gemini-4-argon", deep: "gemini-4-argon" },
+      });
 
       let seenUsage: unknown;
       const reply = await agyAdapter.complete("Reply with OK", {
@@ -124,6 +180,12 @@ process.stdin.on("data", (chunk) => {
       });
       expect(reply).toBe("OK");
       expect(seenUsage).toEqual({ input: 100, output: 10, cacheRead: 20, cacheWrite: 0, calls: 1 });
+
+      await expect(agyAdapter.complete("REFUSE", {
+        binary: fakeBin,
+        model: "gemini-4-argon",
+        effort: "high",
+      })).rejects.toThrow(/거절/);
     } finally {
       rmSync(dir, { recursive: true, force: true });
     }

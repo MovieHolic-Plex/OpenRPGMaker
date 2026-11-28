@@ -34,7 +34,7 @@ export async function detectLocalClis(options: { fresh?: boolean } = {}): Promis
 /** 자동 기본값을 고르는 순서 — ChatGPT(Codex CLI)가 먼저다(오너 결정 2026-11-28: 조수 출하 기본은 GPT-6.2 Sol · high. 2026-11-23 에는 Claude 가 먼저였다). 화면 순서(LOCAL_CLI_IDS)와는 따로다. */
 export const LOCAL_CLI_DEFAULT_ORDER: readonly LocalCliId[] = ["codex", "claude", "agy", "gemini"];
 
-/** 자동 기본값: 연결된 CLI 중 LOCAL_CLI_DEFAULT_ORDER 로 첫째(codex → claude → gemini). 없으면 undefined — 안내 카드를 띄운다. */
+/** 자동 기본값: 연결된 CLI 중 LOCAL_CLI_DEFAULT_ORDER 로 첫째(codex → claude → agy → gemini). 없으면 undefined — 안내 카드를 띄운다. */
 export function pickDefaultLocalCli(rows: readonly LocalCliStatus[]): { provider: string; routineModel: string; deepModel: string } | undefined {
   const ready = LOCAL_CLI_DEFAULT_ORDER.map((id) => rows.find((row) => row.id === id && row.state === "ready")).find((row) => row !== undefined);
   return ready ? { provider: localCliProviderId(ready.id), routineModel: ready.defaults.routine, deepModel: ready.defaults.deep } : undefined;

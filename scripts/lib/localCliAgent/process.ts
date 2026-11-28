@@ -75,15 +75,88 @@ export function spawnJsonLines(options: SpawnLinesOptions): SpawnedLines {
   };
 }
 
-/** `--version` 같은 짧은 명령. 찾지 못하면 ok:false. */
-export function runShort(binary: string, args: readonly string[], timeoutMs = 20_000, env?: NodeJS.ProcessEnv): { ok: boolean; stdout: string; stderr: string } {
+export interface ShortCommandResult {
+  readonly ok: boolean;
+  readonly stdout: string;
+  readonly stderr: string;
+  readonly enoent?: boolean;
+  readonly timedOut?: boolean;
+  readonly errorCode?: string;
+  readonly errorMessage?: string;
+}
+
+/** `--version` 같은 짧은 명령(동기). 찾지 못하면 ok:false. */
+export function runShort(binary: string, args: readonly string[], timeoutMs = 20_000, env?: NodeJS.ProcessEnv): ShortCommandResult {
   let plan: ReturnType<typeof planSpawn>;
   try { plan = planSpawn(binary, args, env ? { env } : {}); } catch (error) { return { ok: false, stdout: "", stderr: error instanceof Error ? error.message : String(error) }; }
   const out = spawnSync(plan.command, [...plan.args], {
     encoding: "utf8", timeout: timeoutMs, windowsHide: true,
     ...(plan.windowsVerbatimArguments ? { windowsVerbatimArguments: true } : {}), ...(env ? { env } : {}),
   });
-  return { ok: !out.error && out.status === 0, stdout: out.stdout ?? "", stderr: out.stderr ?? "" };
+  const err = out.error as NodeJS.ErrnoException | undefined;
+  return {
+    ok: !err && out.status === 0,
+    stdout: out.stdout ?? "",
+    stderr: out.stderr ?? "",
+    ...(err?.code === "ENOENT" ? { enoent: true } : {}),
+    ...(err?.code === "ETIMEDOUT" ? { timedOut: true } : {}),
+    ...(err?.code ? { errorCode: err.code } : {}),
+    ...(err?.message ? { errorMessage: err.message } : {}),
+  };
+}
+
+/** 이벤트 루프를 막지 않는 비동기 짧은 명령 실행기(감지 프로브용). */
+export function runShortAsync(binary: string, args: readonly string[], timeoutMs = 20_000, env?: NodeJS.ProcessEnv): Promise<ShortCommandResult> {
+  let plan: ReturnType<typeof planSpawn>;
+  try { plan = planSpawn(binary, args, env ? { env } : {}); } catch (error) {
+    return Promise.resolve({ ok: false, stdout: "", stderr: error instanceof Error ? error.message : String(error), errorMessage: error instanceof Error ? error.message : String(error) });
+  }
+  return new Promise((resolve) => {
+    const child = spawn(plan.command, [...plan.args], {
+      stdio: ["ignore", "pipe", "pipe"],
+      windowsHide: true,
+      ...(plan.windowsVerbatimArguments ? { windowsVerbatimArguments: true } : {}),
+      ...(env ? { env } : {}),
+    });
+    let stdout = "";
+    let stderr = "";
+    let settled = false;
+    let timedOut = false;
+    child.stdout?.setEncoding("utf8");
+    child.stderr?.setEncoding("utf8");
+    child.stdout?.on("data", (chunk: string) => { stdout += chunk; });
+    child.stderr?.on("data", (chunk: string) => { stderr += chunk; });
+    const done = (result: ShortCommandResult) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve(result);
+    };
+    const timer = setTimeout(() => {
+      timedOut = true;
+      try { child.kill("SIGTERM"); } catch { /* 무시 */ }
+      done({ ok: false, stdout, stderr, timedOut: true, errorCode: "ETIMEDOUT", errorMessage: `timed out after ${timeoutMs}ms` });
+    }, timeoutMs);
+    timer.unref?.();
+    child.on("error", (err: NodeJS.ErrnoException) => {
+      done({
+        ok: false,
+        stdout,
+        stderr,
+        ...(err.code === "ENOENT" ? { enoent: true } : {}),
+        ...(err.code ? { errorCode: err.code } : {}),
+        errorMessage: err.message,
+      });
+    });
+    child.on("close", (code) => {
+      done({
+        ok: !timedOut && code === 0,
+        stdout,
+        stderr,
+        ...(timedOut ? { timedOut: true, errorCode: "ETIMEDOUT" } : {}),
+      });
+    });
+  });
 }
 
 /**
