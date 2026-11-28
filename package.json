@@ -130,7 +130,7 @@
     "@jitl/quickjs-singlefile-browser-release-sync": "0.32.0",
     "electron-updater": "^6.8.11",
     "god-tibo-imagen": "^0.4.1",
-    "jimp": "^1.6.1",
+    "jimp": "^2.1.0",
     "node-unrar-js": "2.0.2",
     "phaser": "^4.2.1",
     "quickjs-emscripten-core": "0.32.0",
