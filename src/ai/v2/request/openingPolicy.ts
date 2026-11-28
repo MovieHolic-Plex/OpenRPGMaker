@@ -1,14 +1,15 @@
 // 오프닝 모델 등급(2단계) + 생성형 이미지 유무 정책 — 조수 v2 프롬프트·도구 노출·검수의 유일 정본.
-// 오너 결정(2026-11-26):
-//   - 고성능(high)은 Sonnet · Opus · Fable · Astra · Neon · Carbon · Argon 7종만 한정한다.
+// 오너 결정(2026-11-26, 2026-11-28 GPT-6.2 Sol 출하 기본 편입):
+//   - 고성능(high)은 Sol · Sonnet · Opus · Fable · Astra · Neon · Carbon · Argon 8종으로 한정한다.
 //   - 그 이외의 모든 모델은 중간(medium)으로 분류한다.
 //   - 생성형 이미지는 필수가 아니라 보너스 업그레이드다: 이미지 제공자가 없어도 엔진 무대(author_opening_stage) +
 //     map-view + 번들 파노라마/내장 FX + 타이포/그림책으로 100% 완결하고, 생성 가능할 때만 핵심 CG 1~2장을 선택 추가한다.
 
 export type OpeningModelTier = "high" | "medium";
 
-/** 오프닝 고성능 등급으로 인정하는 유일한 7개 모델 계열. */
+/** 오프닝 고성능 등급으로 인정하는 8개 모델 계열. */
 export const HIGH_OPENING_MODEL_FAMILIES = [
+  "sol",
   "sonnet",
   "opus",
   "fable",

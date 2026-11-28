@@ -176,8 +176,8 @@ export interface BeodeulVillageOptions {
   houseLimit?: number;
   /** 마을 둘레 성벽(버들항 성벽 꼬리 28,544~). 평지로 짓고, 길이 성벽을 지나는 곳은 성문루(가로 성벽)·쪽문 터널(세로 성벽)이 된다. 눈·사막 마을은 눈 덮인 성벽·사암 성벽. */
   walls?: boolean;
-  /** 성문 쪽(walls 일 때): S 남문 하나(기본) · N 북문 하나 · NS 남북 하나씩. 그 밖에서 성벽을 지나는 길은 성벽 안에서 끊는다. */
-  wallGate?: "S" | "N" | "NS";
+  /** 성문 쪽(walls 일 때): S 남문(기본) · N 북문 · NS 남북 · NE/NW 북벽 동/서 · SE/SW 남벽 동/서. 그 밖에서 성벽을 지나는 길은 성벽 안에서 끊는다. */
+  wallGate?: "S" | "N" | "NS" | "NE" | "NW" | "SE" | "SW";
   /** true 면 서·동 성벽을 지나는 길에 쪽문 터널을 낸다(기본 false — 「성문 하나」 요청에 옆 구멍이 생기지 않게). */
   wallSideGaps?: boolean;
   /**
@@ -4442,9 +4442,11 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
     // 2026-10-22 조수 시험(「남쪽에 성문 하나」): 길이 성벽을 지나는 곳마다 문을 내니 동서에 틈 셋, 남문은 남동 모서리 곁에 섰다.
     // 이제 성문 쪽(wallGate)마다 가운데에 가장 가까운 길 하나만 성문루가 되고, 나머지 성벽을 지나는 길은 성벽 안에서 끊는다(풀밭으로 되돌림).
     // 서·동 틈은 wallSideGaps 일 때만. 성문 쪽에 지나는 길이 없으면 큰길에서 맵 끝까지 두 칸 길을 낸다(걷어 낼 수 있는 덤불·소품만 치움).
-    const gateSides: ("N" | "S")[] = options.wallGate === "N" ? ["N"] : options.wallGate === "NS" ? ["S", "N"] : ["S"];
+    const wg = options.wallGate ?? "S";
+    const gateSides: ("N" | "S")[] = wg === "N" || wg === "NE" || wg === "NW" ? ["N"] : wg === "NS" ? ["S", "N"] : ["S"];
     const bandRows = (side: "N" | "S") => [0, 1, 2, 3, 4, 5].map((i) => (side === "N" ? L.y0 : L.y1) + i); // 윗면 두 줄 + 앞면 네 줄
     const gxMin = L.x0 + 4, gxMax = L.x1 - 4;
+    const gateTargetX = wg === "NE" || wg === "SE" ? Math.max(gxMin, gxMax - 2) : wg === "NW" || wg === "SW" ? Math.min(gxMax, gxMin + 2) : W / 2;
     const owner = new Map<number, Stamp>();
     for (const [st, u] of undo) if (st.v === PROP) for (let j = 0; j < u.h; j += 1) for (let i = 0; i < u.w; i += 1) if (inMap(st.x + i, st.y + j)) owner.set(idx(st.x + i, st.y + j), st);
     const open = (c: number) => occ[c] === FREE || occ[c] === CLEAR || occ[c] === WALLB || occ[c] === ROAD || occ[c] === PLAZAC || (occ[c] === PROP && owner.has(c));
@@ -4481,11 +4483,11 @@ export function buildBeodeulVillage(draft: Project, mapId: string, theme: Beodeu
       const cand = runs(W, (x) => rows.some((y) => roadAt(x, y)), L.x0 + 1, L.x1 - 1)
         .map(([a, b]) => ({ gx: Math.max(gxMin, Math.min(gxMax, b - a + 1 >= 2 ? a + Math.floor((b - a - 1) / 2) : a)), a, b }))
         .filter((r) => r.gx <= r.b && r.gx + 1 >= r.a) // 성문 통로가 그 길에 걸쳐야 한다(모서리에 붙은 길은 성문이 못 된다)
-        .sort((p, q) => Math.abs(p.gx + 1 - W / 2) - Math.abs(q.gx + 1 - W / 2));
-      // 가운데에서 폭의 12% 안에 지나는 길이 있으면 그 길이 성문. 아니면 가운데 쪽으로 새 길을 먼저 내 보고(실측: 남동 모서리 곁 성문), 못 내면 그 길을 쓴다.
-      if (cand[0] && Math.abs(cand[0].gx + 1 - W / 2) <= W * 0.12) { gates.push({ side, x: cand[0].gx }); continue; }
-      // 가운데에서 가까운 두 열 중 안쪽 길에서 맵 끝까지 빈 곳에 길을 낸다
-      const cols = [...Array(W).keys()].filter((x) => x >= gxMin && x <= gxMax && (!cand[0] || Math.abs(x + 1 - W / 2) <= W * 0.12)).sort((p, q) => Math.abs(p + 1 - W / 2) - Math.abs(q + 1 - W / 2));
+        .sort((p, q) => Math.abs(p.gx + 1 - gateTargetX) - Math.abs(q.gx + 1 - gateTargetX));
+      // 목표 위치(가운데 또는 동/서 편향)에서 폭의 12% 안에 지나는 길이 있으면 그 길이 성문. 아니면 목표 쪽으로 새 길을 먼저 내 보고, 못 내면 그 길을 쓴다.
+      if (cand[0] && Math.abs(cand[0].gx + 1 - gateTargetX) <= W * 0.12) { gates.push({ side, x: cand[0].gx }); continue; }
+      // 목표 위치에서 가까운 두 열 중 안쪽 길에서 맵 끝까지 빈 곳에 길을 낸다
+      const cols = [...Array(W).keys()].filter((x) => x >= gxMin && x <= gxMax && (!cand[0] || Math.abs(x + 1 - gateTargetX) <= W * 0.18)).sort((p, q) => Math.abs(p + 1 - gateTargetX) - Math.abs(q + 1 - gateTargetX));
       let made = false;
       for (const cx of cols) {
         let top = -1;

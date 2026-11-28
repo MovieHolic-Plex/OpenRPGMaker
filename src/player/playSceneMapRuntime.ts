@@ -8,7 +8,12 @@ import { projectReferenceTileSize } from "@/project/mapViewScale";
 import { syncPlayerCharacterScale } from "@/player/playerCharacterScale";
 import { resetDetectionForMap } from "./npcDetectionEncounter";
 import { dialogueUi } from "./playSceneDom";
-import { prepareDoorFx, syncContainerSearchedMarks } from "@/player/playSceneFieldFx";
+import {
+  activeInteractivePropFrameForEvent,
+  isInteractivePropLoopActive,
+  prepareDoorFx,
+  syncContainerSearchedMarks,
+} from "@/player/playSceneFieldFx";
 import { evalCondition } from "@/project/session";
 import { takeBestiaryNotices } from "@/project/bestiary";
 import { ensureM2Runtime } from "@/player/interpreter/m2RuntimeState";
@@ -966,12 +971,20 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     const spriteTexture = withDerivedFieldFoe(scene, resolveEventSpriteTexture(store.getCurrent(), sprite.id, pattern), view.page?.graphic);
     if (!spriteTexture) scene.missingResources.add(sprite.id);
     // Static art has one frame. Charset overrides already encode direction/walk.
+    const activePropFrame = activeInteractivePropFrameForEvent(
+      scene as unknown as PlaySceneContext,
+      event.id,
+      spriteTexture?.texture,
+      view.page?.interaction,
+    );
     const frame =
-      spriteTexture?.fitSize
-        ? spriteTexture.frame
-        : overrideFrame !== undefined
-          ? overrideFrame
-          : eventSpriteFrameForDirection(spriteTexture, view.runtimeDirection) ?? spriteTexture?.frame ?? 0;
+      activePropFrame !== undefined
+        ? activePropFrame
+        : spriteTexture?.fitSize || spriteTexture?.propTileScale
+          ? spriteTexture.frame
+          : overrideFrame !== undefined
+            ? overrideFrame
+            : eventSpriteFrameForDirection(spriteTexture, view.runtimeDirection) ?? spriteTexture?.frame ?? 0;
     // 걷는 중인 NPC 는 논리 위치가 이미 목적지다(playSceneAutonomous §moveAutonomousRuntimePosition).
     // 목적지에 새 스프라이트를 놓으면 이벤트가 열려 이동이 멎은 순간 NPC 가 한 칸 앞으로 튄다 —
     // 진행 중인 걸음의 보간 위치에 놓는다.
@@ -995,7 +1008,12 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     const y = characterSpriteY(position.y, size);
     if (marker) {
       marker.setPosition(x, y);
-      marker.setFrame(frame);
+      const keepLoopFrame = activePropFrame === undefined
+        && spriteTexture?.propTileScale === true
+        && view.page?.interaction?.kind === "container"
+        && view.page.interaction.searched === true
+        && isInteractivePropLoopActive(scene as unknown as PlaySceneContext, scene.map.id, view.x, view.y);
+      if (!keepLoopFrame) marker.setFrame(frame);
     } else {
       marker = scene.add.sprite(x, y, texture, frame);
       if (blendMode !== 0) marker.setBlendMode?.(blendMode);

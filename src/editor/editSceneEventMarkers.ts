@@ -1,4 +1,5 @@
 import { t } from "@/i18n";
+import { footprintSpriteX } from "@/player/characterDepth";
 import { reliefCellLiftPx } from "@/player/reliefStrips";
 import { terrainPreviewSees } from "@/player/terrainVision";
 import { mapTileSize } from "@/project/tileGeometry";
@@ -21,6 +22,7 @@ import { store } from "@/project/store";
 import { projectReferenceTileSize } from "@/project/mapViewScale";
 import { resolveEventPage } from "@/project/io/pageResolution";
 import { projectFontStack } from "@/project/fontRegistry";
+import { interactivePropById, interactivePropSpriteId } from "@/project/interactiveProps";
 import type {
   CharacterFootprint,
   EventPage,
@@ -146,25 +148,49 @@ export function renderEventMarkers(context: EventMarkerRenderContext, map: GameM
   const events = editorWorkingEvents(map.events);
   const overlapping = activeLayer === "event" ? overlappingEventIds(events) : new Set<string>();
   const tileSize = context.tileSize ?? mapTileSize(map);
-  for (const event of events) {
-    if (state.tool === "relief" && state.terrainVisionPreview && map.terrainDesign?.gameplay?.visionBlocking && !terrainPreviewSees(context.scene, map, event)) continue;
+  const visibleEvents = events.filter(
+    (event) => !(state.tool === "relief" && state.terrainVisionPreview && map.terrainDesign?.gameplay?.visionBlocking && !terrainPreviewSees(context.scene, map, event)),
+  );
+  // 타일 레이어(바닥·상위·높이)에서도 상호작용 오브젝트(`iprop:*`)는 실제 맵 기물처럼 보이도록
+  // 배지 아래에 y순으로 먼저 그린다. 일반 캐릭터/NPC 이벤트는 기존 결정대로 E 배지만 유지한다.
+  if (activeLayer !== "event") {
+    const propDraws: Array<{ readonly event: GameEvent; readonly body: CharacterFootprint; readonly graphic: EventPageGraphic | undefined; readonly spriteTexture: EventSpriteTexture }> = [];
+    for (const event of visibleEvents) {
+      const page = eventPageForEditorMarker(event, selectedId, state.selectedEventPageId, project, map);
+      const graphic = eventMarkerGraphicForPage(event, page, map, project);
+      const spriteTexture = editorEventMarkerTexture(project, graphic);
+      if (!spriteTexture?.propTileScale || !hasLoadedSpriteTexture(context.scene, spriteTexture)) continue;
+      propDraws.push({ event, body: normalizeCharacterFootprint(page?.footprint), graphic, spriteTexture });
+    }
+    propDraws.sort((a, b) => a.event.y - b.event.y || a.event.x - b.event.x);
+    for (const draw of propDraws) {
+      const sprite = createEditableEventSprite(context.scene, draw.event, draw.body, draw.graphic, draw.spriteTexture, tileSize);
+      sprite.y -= reliefCellLiftPx(map.relief, draw.event.x, draw.event.y, tileSize);
+      context.overlayLayer.add(sprite);
+    }
+  }
+  const orderedEvents = activeLayer === "event"
+    ? [...visibleEvents].sort((a, b) => a.y - b.y || a.x - b.x)
+    : visibleEvents;
+  for (const event of orderedEvents) {
     const cx = event.x * tileSize + tileSize / 2;
     const cy = event.y * tileSize + tileSize / 2;
     const position = { x: cx, y: cy };
     if (activeLayer === "event") {
       const page = eventPageForEditorMarker(event, selectedId, state.selectedEventPageId, project, map);
-      const graphic = page?.graphic ?? (event.sprite ? { sprite: event.sprite } : undefined);
+      const graphic = eventMarkerGraphicForPage(event, page, map, project);
       const body = normalizeCharacterFootprint(page?.footprint);
       const passRows = normalizePassRows(page?.passRows, body.height);
       const spriteTexture = editorEventMarkerTexture(project, graphic);
+      const readySprite = spriteTexture && hasLoadedSpriteTexture(context.scene, spriteTexture) ? spriteTexture : null;
       // 몸 사각이 1x1 을 넘으면 사각 오버레이가 크기를 말해 주므로 한 칸 마커는 접는다.
       if (isUnitBody(body)) {
-        context.overlayLayer.add(createEditableEventMarker(context.scene, position, spriteTexture !== null, tileSize));
+        context.overlayLayer.add(createEditableEventMarker(context.scene, position, readySprite !== null, tileSize));
       } else {
         addFootprintOverlay(context, event, body, passRows, overlapping.has(event.id), tileSize);
       }
-      if (spriteTexture) {
-        const sprite = createEditableEventSprite(context.scene, event, body, graphic, spriteTexture, tileSize);
+      if (readySprite) {
+        const sprite = createEditableEventSprite(context.scene, event, body, graphic, readySprite, tileSize);
         // 높이 지형: 게임처럼 선 칸의 윗면에 세운다. 클릭 칸·마커는 들지 않는다(편집 좌표는 맵 칸 그대로).
         sprite.y -= reliefCellLiftPx(map.relief, event.x, event.y, tileSize);
         context.overlayLayer.add(sprite);
@@ -176,6 +202,39 @@ export function renderEventMarkers(context: EventMarkerRenderContext, map: GameM
     }
     if (event.id === selectedId) addSelectedEventRing(context, position, tileSize);
   }
+}
+
+function eventMarkerGraphicForPage(
+  event: GameEvent,
+  page: EventPage | undefined,
+  map: GameMap,
+  project: Project,
+): EventPageGraphic | undefined {
+  const graphic = page?.graphic ?? (event.sprite ? { sprite: event.sprite } : undefined);
+  if (graphic && graphic.transparent !== true && graphic.sprite?.id) return graphic;
+  // 구버전(transparent + interaction.propId) 저장본 하위 호환: PlayScene 과 같은 조건(upperTile 비어 있음 또는 searched)일 때만
+  // 에디터에서도 0/마지막 프레임이 보이게 해석한다.
+  const inter = page?.interaction;
+  if (inter?.kind === "container" && inter.propId) {
+    const upperTile = map.upperTiles[event.y * map.width + event.x] ?? -1;
+    if (!inter.searched && upperTile > 0) return graphic;
+    const prop = interactivePropById(inter.propId, project);
+    if (prop) {
+      return {
+        sprite: { type: "bundled", id: interactivePropSpriteId(prop.id) },
+        pattern: inter.searched ? Math.max(0, prop.frames - 1) : 0,
+      };
+    }
+  }
+  return graphic;
+}
+
+function hasLoadedSpriteTexture(scene: Phaser.Scene, spriteTexture: EventSpriteTexture): boolean {
+  if (!spriteTexture.propTileScale) return true;
+  if (!scene.textures || typeof scene.textures.exists !== "function") return true;
+  if (!scene.textures.exists(spriteTexture.texture)) return false;
+  const tex = scene.textures.get(spriteTexture.texture);
+  return typeof tex?.has === "function" ? tex.has(String(spriteTexture.frame)) : true;
 }
 
 function isUnitBody(body: CharacterFootprint): boolean {
@@ -324,7 +383,7 @@ function createEditableEventSprite(
   spriteTexture: EventSpriteTexture,
   tileSize: number
 ): Phaser.GameObjects.Image {
-  if (!isCharsetSpriteTexture(spriteTexture) && !usesAuthoredSize(body, graphic)) {
+  if (!isCharsetSpriteTexture(spriteTexture) && !spriteTexture.propTileScale && !usesAuthoredSize(body, graphic)) {
     const legacy = scene.add.image(
       event.x * tileSize + tileSize / 2,
       event.y * tileSize + tileSize / 2,
@@ -337,13 +396,13 @@ function createEditableEventSprite(
   }
   const rect = footprintBounds(event.x, event.y, body);
   const sprite = scene.add.image(
-    event.x * tileSize + tileSize / 2,
+    spriteTexture.propTileScale ? footprintSpriteX(event.x, body, tileSize) : event.x * tileSize + tileSize / 2,
     (rect.bottom + 1) * tileSize,
     spriteTexture.texture,
     spriteTexture.frame
   );
   sprite.setOrigin(spriteTexture.origin?.x ?? 0.5, spriteTexture.origin?.y ?? 1);
-  sprite.setScale(isCharsetSpriteTexture(spriteTexture)
+  sprite.setScale(isCharsetSpriteTexture(spriteTexture) || spriteTexture.propTileScale
     ? eventSpriteScale(spriteTexture, sprite, graphic?.scale, tileSize, graphic?.scaleMode, projectReferenceTileSize(store.getCurrent()))
     : editorSpriteScale(graphic, sprite.width, sprite.height, tileSize));
   return sprite;

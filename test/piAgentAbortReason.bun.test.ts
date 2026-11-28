@@ -6,7 +6,7 @@
 // 균형 레벨 16턴을 넘길 때마다). 여기서는 네트워크 없이 진짜 Agent 루프를 돌려 각 사유가 이벤트에
 // 실리는지 확인한다.
 import { describe, expect, test } from "bun:test";
-import { createAssistantMessageEventStream } from "@oh-my-pi/pi-ai";
+import { createAssistantMessageEventStream } from "@earendil-works/pi-ai";
 import { runPiAgent } from "../scripts/lib/piAgentRuntime.ts";
 import { createBlankProject } from "../src/project/defaults.ts";
 import type { PiAgentEvent, PiAgentRequest } from "../src/ai/piAgent/protocol.ts";
@@ -16,7 +16,7 @@ function assistantMessage(content: unknown[], stopReason: string) {
     role: "assistant",
     content,
     api: "gemini",
-    provider: "google-antigravity",
+    provider: "openai-codex",
     model: "scripted",
     usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0 },
     stopReason,
@@ -44,7 +44,7 @@ function endlessToolStream(delayMs = 0) {
 
 function request(overrides: Partial<PiAgentRequest> = {}): PiAgentRequest {
   return {
-    provider: "google-antigravity",
+    provider: "openai-codex",
     task: "테스트 실행",
     mapIds: [],
     project: createBlankProject(),

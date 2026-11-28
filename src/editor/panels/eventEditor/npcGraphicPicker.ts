@@ -10,6 +10,7 @@ import {
 import { updateEventPage } from "@/editor/eventPages";
 import { el } from "@/util/dom";
 import { store } from "@/project/store";
+import { interactivePropFrameIndex, interactivePropFromSpriteId } from "@/project/interactiveProps";
 import { sharedCharacterIndices, HARNESS_CHARACTER_PREFIX } from '@/project/sharedCharacters';
 import type { EventPage, EventPageGraphic, MapId } from "@/project/types";
 import {
@@ -249,6 +250,16 @@ function graphicForConfirmedSelection(
 ): { status: "matched"; graphic: EventPageGraphic } | { status: "no-match" } {
   const id = spriteId.trim();
   if (!id) return { status: "matched", graphic: graphicWithoutSprite(graphic) };
+  const interactiveProp = interactivePropFromSpriteId(id, store.getCurrent());
+  if (interactiveProp) {
+    const nextGraphic: EventPageGraphic = {
+      ...graphic,
+      sprite: { type: "bundled", id },
+      pattern: interactivePropFrameIndex(interactiveProp, graphic.pattern),
+    };
+    delete nextGraphic.appearanceId;
+    return { status: "matched", graphic: nextGraphic };
+  }
   const assets = currentCharsetAssets();
   if (!assets.some((a) => a.textureKey === id)) return { status: "no-match" };
   return { status: "matched", graphic: {

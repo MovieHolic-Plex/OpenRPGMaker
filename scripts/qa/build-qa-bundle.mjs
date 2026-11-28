@@ -81,7 +81,7 @@ async function collect(withDemos, withWorker, changedPublic) {
   const excluded = (file) =>
     file.endsWith(".d.mts") ||
     (!withDemos && file === "dist/demos") ||
-    (!withWorker && /^dist-electron\/(?:oh-my-pi-worker[^/]*|pi_natives[^/]*\.node|agent-npm|worker-data)$/.test(file));
+    (!withWorker && /^dist-electron\/(?:ai-worker\.mjs|oh-my-pi-worker[^/]*|pi_natives[^/]*\.node|agent-npm|worker-data)$/.test(file));
 
   async function walk(dir) {
     for (const entry of await readdir(join(root, dir), { withFileTypes: true })) {
@@ -160,7 +160,7 @@ async function main() {
     for (const id of FLAGSHIP_DEMO_IDS) required.push(`dist/demos/${id}.play.json`, `dist/demos/${id}.project.json`);
   }
   if (withWorker) required.push(
-    "dist-electron/oh-my-pi-worker",
+    "dist-electron/ai-worker.mjs",
     "dist-electron/worker-data/src/assets/beodeulCityTileset.json",
     "dist-electron/agent-npm/bin/npm-cli.js",
   );

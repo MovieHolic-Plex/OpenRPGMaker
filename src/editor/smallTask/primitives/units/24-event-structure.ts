@@ -2,6 +2,7 @@ import { CHARSET_FRAME_COUNT } from "@/assets/easyrpgRtp";
 import { displayText } from "@/editor/smallTask/target";
 import type { JsonSchema } from "@/editor/tools/types";
 import { isCharsetSpriteTexture, resolveEventSpriteTexture } from "@/player/eventSpriteResources";
+import { interactivePropFromSpriteId } from "@/project/interactiveProps";
 import { resolveEventAppearanceGraphic } from "@/project/characterAppearances";
 import { eventDisplayName } from "@/project/eventDisplayName";
 import { eventWithoutDraft } from "@/project/eventDrafts";
@@ -229,6 +230,8 @@ function eventGraphicFrames(project: Project, id: string): number | undefined {
   if ((id in sprites && !Object.hasOwn(sprites, id)) || (id in uploaded && !Object.hasOwn(uploaded, id))) return undefined;
   const texture = resolveEventSpriteTexture(project, id, 0);
   if (!texture) return undefined;
+  const interactiveProp = interactivePropFromSpriteId(id, project);
+  if (interactiveProp) return interactiveProp.frames;
   const def = sprites[id];
   const upload = uploaded[def?.image.id ?? texture.texture];
   if (upload?.kind === "sprite") return uploadedSpriteGeometry(upload)?.frames;

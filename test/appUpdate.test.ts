@@ -7,10 +7,12 @@ import {
   APP_UPDATE_INTERVAL_MS,
   appUpdateButtonView,
   appUpdateChipText,
+  appUpdateIndicatorView,
   appUpdateModeFor,
   compareSemver,
   isSafeReleaseDownloadUrl,
   portableDownloadUrl,
+  releasePageUrl,
   releasesLatestPageUrl,
   restoreLaunchEnv,
   snapshotLaunchEnv,
@@ -56,6 +58,11 @@ describe("summarizeReleaseNotes", () => {
 
   it("릴리스 본문 항목 끝의 PR 번호와 커밋 해시를 함께 뗈다", () => {
     expect(summarizeReleaseNotes("## 주요 변경\n- ai — 영역 지시에 다리를 더한다 (#5084) (e875d17)")).toEqual(["ai — 영역 지시에 다리를 더한다"]);
+  });
+
+  it("긴 한국어 릴리스 노트 문장도 70자에서 잘리지 않고 최대 140자까지 보존한다", () => {
+    const longLine = "새 버전이 있으면 편집기와 시작 화면 오른쪽 상단에 녹색 업데이트 아이콘이 뜨고, 클릭하면 중앙 대화상자로 이번 변경 내역을 쾌적하게 확인할 수 있습니다";
+    expect(summarizeReleaseNotes(`## 주요 변경\n- ${longLine}`)).toEqual([longLine]);
   });
 
   it("항목이 없거나 본문이 아니면 빈 배열", () => {
@@ -125,5 +132,46 @@ describe("appUpdateButtonView", () => {
   it("자동 업데이트 확인 주기는 시작 15초 후·이후 15분 간격이다", () => {
     expect(APP_UPDATE_FIRST_CHECK_MS).toBe(15_000);
     expect(APP_UPDATE_INTERVAL_MS).toBe(15 * 60 * 1000);
+  });
+});
+
+describe("appUpdateIndicatorView", () => {
+  it("새 버전 감지·다운로드·준비 상태에서만 오른쪽 상단 녹색 아이콘과 변경 사항 정보를 돌려준다", () => {
+    expect(appUpdateIndicatorView({ kind: "idle" })).toBeNull();
+    expect(appUpdateIndicatorView({ kind: "checking" })).toBeNull();
+    expect(appUpdateIndicatorView({ kind: "up-to-date", checkedAt: 1 })).toBeNull();
+    expect(appUpdateIndicatorView({ kind: "error", message: "네트워크 오류" })).toBeNull();
+    expect(appUpdateIndicatorView({ kind: "downloading", version: "0.421.0", percent: 42.4, releaseNotes: ["자동 저장 개선"] })).toMatchObject({
+      kind: "downloading",
+      version: "0.421",
+      percent: 42,
+      label: "새 버전 v0.421 내려받는 중 (42%)",
+      notes: ["자동 저장 개선"],
+      releaseUrl: releasePageUrl("0.421.0"),
+      action: "info",
+    });
+    expect(appUpdateIndicatorView({ kind: "downloading", version: "0.421.0" })).toMatchObject({
+      kind: "downloading",
+      version: "0.421",
+      percent: null,
+      label: "새 버전 v0.421 내려받는 중…",
+      notes: [],
+      action: "info",
+    });
+    expect(appUpdateIndicatorView({ kind: "ready", version: "0.421.0", releaseNotes: ["새 UI", "버그 수정"] })).toMatchObject({
+      kind: "ready",
+      version: "0.421",
+      label: "새 버전 v0.421 준비됨 · 변경 사항 보기",
+      notes: ["새 UI", "버그 수정"],
+      releaseUrl: "https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/tag/v0.421.0",
+      action: "install",
+    });
+    expect(appUpdateIndicatorView({ kind: "available", version: "0.421.0", downloadUrl: portableDownloadUrl("0.421.0") })).toMatchObject({
+      kind: "available",
+      version: "0.421",
+      label: "새 버전 v0.421 있음 · 변경 사항 보기",
+      notes: [],
+      action: "download",
+    });
   });
 });

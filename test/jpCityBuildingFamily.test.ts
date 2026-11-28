@@ -30,14 +30,18 @@ function setup() {
   return { project, assistantRun: true, lookKey: "game-a" };
 }
 
+/** 새 건물 가족(Fable jp-bldg-f-* · Carbon Medium jp-bldg-c-*) */
+const isNewFamilyBuilding = (id: string) => id.startsWith("jp-bldg-f-") || id.startsWith("jp-bldg-c-");
+
 describe("jp_city building family", () => {
   it("keeps the old hand-drawn buildings in the definition but marks the ones the new family replaces", () => {
     const kits = createJpCityTileset().structureKits ?? [];
-    const old = kits.filter((k) => k.id.startsWith("jp-bldg-") && !k.id.startsWith("jp-bldg-f-"));
+    const old = kits.filter((k) => k.id.startsWith("jp-bldg-") && !isNewFamilyBuilding(k.id));
     expect(old.length).toBe(77);
     expect(kits.filter((k) => k.id.startsWith("jp-bldg-f-")).length).toBeGreaterThanOrEqual(67);
+    expect(kits.filter((k) => k.id.startsWith("jp-bldg-c-")).length).toBeGreaterThanOrEqual(7);
     expect(old.filter((k) => !k.ai?.supersededBy).map((k) => k.id).sort()).toEqual([...HAND_ONLY].sort());
-    expect(kits.filter((k) => k.id.startsWith("jp-bldg-f-")).every((k) => !k.ai?.supersededBy)).toBe(true);
+    expect(kits.filter((k) => isNewFamilyBuilding(k.id)).every((k) => !k.ai?.supersededBy)).toBe(true);
   });
 
   it("offers the assistant only the new family in the kit lists", () => {
@@ -45,7 +49,7 @@ describe("jp_city building family", () => {
     for (const [tool, args] of [["list_structure_kits", { mapId: "hub" }], ["list_spatial_designs", { kind: "object", query: "jp-bldg" }], ["list_spatial_designs", { kind: "object", query: "라멘" }]] as const) {
       const res = runTool(ctx, tool, args, { dryRun: true });
       const ids = [...new Set(JSON.stringify((res as { data?: unknown }).data ?? null).match(/(?:kit:jp_city\/|"kitId":")(jp-bldg-[a-z0-9-]+)/g) ?? [])].map((s) => s.replace(/^.*(jp-bldg-)/, "$1"));
-      for (const id of ids.filter((s) => !s.startsWith("jp-bldg-f-"))) expect(HAND_ONLY, `${tool} lists ${id}`).toContain(id);
+      for (const id of ids.filter((s) => !isNewFamilyBuilding(s))) expect(HAND_ONLY, `${tool} lists ${id}`).toContain(id);
     }
     const all = JSON.stringify((runTool(ctx, "list_structure_kits", { mapId: "hub" }, { dryRun: true }) as { data?: unknown }).data);
     expect(all).toContain("jp-bldg-f-ramen");

@@ -60,10 +60,11 @@ function compilerOptions(ts: TypeScriptApi): TS.CompilerOptions {
   };
 }
 
-function diagnosticFrom(ts: TypeScriptApi, diagnostic: TS.Diagnostic, source: "syntax" | "type", lineLimit: number): ScriptDiagnostic {
+function diagnosticFrom(ts: TypeScriptApi, diagnostic: TS.Diagnostic, source: "syntax" | "type", lineLimit: number, mapLine?: (wrappedLine: number) => number): ScriptDiagnostic {
   const position = diagnostic.file && diagnostic.start !== undefined ? diagnostic.file.getLineAndCharacterOfPosition(diagnostic.start) : { line: 0, character: 0 };
+  const rawLine = mapLine ? mapLine(position.line + 1) : position.line + 1;
   return {
-    line: Math.min(lineLimit, position.line + 1),
+    line: Math.max(1, Math.min(lineLimit, rawLine)),
     column: position.character + 1,
     message: ts.flattenDiagnosticMessageText(diagnostic.messageText, "\n"),
     severity: diagnostic.category === ts.DiagnosticCategory.Error ? "error" : diagnostic.category === ts.DiagnosticCategory.Warning ? "warning" : "info",
@@ -72,9 +73,59 @@ function diagnosticFrom(ts: TypeScriptApi, diagnostic: TS.Diagnostic, source: "s
   };
 }
 
+/**
+ * 이벤트 스크립트는 런타임에서 `(async function (require, exports, module) { ... })` 으로 감싸 실행한다(scriptRun.ts).
+ * 따라서 최상위 `return;` 도 합법이다. 모든 최상위 import 선언은 파일 맨 위로 끌어올려 두고 나머지만 async 함수 본문으로 감싸 타입 검사한다.
+ * 본문에서 import 를 빼낸 자리에는 같은 줄 수만큼 빈 줄을 남겨 원래 줄 번호 매핑을 정확히 유지한다.
+ */
+function wrapEventScriptForTypeCheck(ts: TypeScriptApi, source: string): { readonly text: string; readonly mapLine: (wrappedLine: number) => number } {
+  const sf = ts.createSourceFile("/script.ts", source, ts.ScriptTarget.ES2020, true, ts.ScriptKind.TS);
+  const imports = sf.statements.filter(ts.isImportDeclaration);
+  if (imports.length === 0) {
+    return {
+      text: `async function __oprn_event_script__(): Promise<void> {\n${source}\n}\nexport {};\n`,
+      mapLine: (wrappedLine) => wrappedLine - 1,
+    };
+  }
+  const hoistedChunks: string[] = [];
+  const spans: Array<{ hoistedStart: number; hoistedEnd: number; origStart: number }> = [];
+  const bodyParts: string[] = [];
+  let cursor = 0;
+  let hoistedCursor = 1;
+  for (const stmt of imports) {
+    const start = stmt.getStart(sf);
+    const end = stmt.getEnd();
+    const chunk = source.slice(start, end);
+    const lineCount = chunk.split("\n").length;
+    const origStart = sf.getLineAndCharacterOfPosition(start).line + 1;
+    bodyParts.push(source.slice(cursor, start), `;${"\n".repeat(lineCount - 1)}`);
+    cursor = end;
+    hoistedChunks.push(chunk);
+    spans.push({ hoistedStart: hoistedCursor, hoistedEnd: hoistedCursor + lineCount - 1, origStart });
+    hoistedCursor += lineCount;
+  }
+  bodyParts.push(source.slice(cursor));
+  const hoistedHeader = hoistedChunks.join("\n");
+  const headerLines = hoistedCursor - 1;
+  const body = bodyParts.join("");
+  return {
+    text: `${hoistedHeader}\nasync function __oprn_event_script__(): Promise<void> {\n${body}\n}\nexport {};\n`,
+    mapLine: (wrappedLine) => {
+      if (wrappedLine <= headerLines) {
+        const hit = spans.find((span) => wrappedLine >= span.hoistedStart && wrappedLine <= span.hoistedEnd);
+        return hit ? hit.origStart + (wrappedLine - hit.hoistedStart) : wrappedLine;
+      }
+      return wrappedLine - (headerLines + 1);
+    },
+  };
+}
+
 function typeCheck(ts: TypeScriptApi, source: string, options: ScriptCompileOptions): ScriptDiagnostic[] {
   const dts = buildGameApiDts(scriptDtsIds(options.project, options.mapId));
-  const files = new Map<string, string>([["/script.ts", `${source}\nexport {};\n`]]);
+  const isEventScript = !options.libraryId;
+  const wrapped = isEventScript ? wrapEventScriptForTypeCheck(ts, source) : null;
+  const scriptText = wrapped ? wrapped.text : `${source}\nexport {};\n`;
+  const files = new Map<string, string>([["/script.ts", scriptText]]);
   for (const module of options.project?.scriptLibrary ?? []) {
     if (module.id !== options.libraryId) files.set(`/lib/${module.id}.ts`, module.source);
   }
@@ -112,7 +163,7 @@ function typeCheck(ts: TypeScriptApi, source: string, options: ScriptCompileOpti
   const lineLimit = Math.max(1, source.split("\n").length);
   const out: ScriptDiagnostic[] = [];
   for (const diagnostic of [...program.getSyntacticDiagnostics(script), ...program.getSemanticDiagnostics(script)]) {
-    out.push(diagnosticFrom(ts, diagnostic, "type", lineLimit));
+    out.push(diagnosticFrom(ts, diagnostic, "type", lineLimit, wrapped?.mapLine));
   }
   // Problems inside imported library modules surface once, at the import, so the author knows where to look.
   for (const file of program.getSourceFiles()) {
@@ -139,7 +190,8 @@ export function compileScript(source: string, options: ScriptCompileOptions = {}
     compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, removeComments: false, sourceMap: false, inlineSourceMap: false },
   });
   const lineLimit = Math.max(1, source.split("\n").length);
-  const syntax = (transpiled.diagnostics ?? []).map((diagnostic) => diagnosticFrom(ts, diagnostic, "syntax", lineLimit));
+  const rawSyntax = (transpiled.diagnostics ?? []).filter((diagnostic) => !(!options.libraryId && diagnostic.code === 1108));
+  const syntax = rawSyntax.map((diagnostic) => diagnosticFrom(ts, diagnostic, "syntax", lineLimit));
   diagnostics.push(...syntax);
   const analysis = analyzeScript(ts, source, { project: options.project, mapId: options.mapId });
   diagnostics.push(...analysis.diagnostics);

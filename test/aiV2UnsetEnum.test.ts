@@ -472,17 +472,17 @@ describe("aiV2VqaReviewerOrder", () => {
   // 오너 결정 2026-11-23 「조수는 sonnet 5.5 high 만」 — Claude 검수자는 Sonnet 5.5 · high 이다. Sonnet 으로 지으면 지은 모델과 검수 모델이 같다(«같은 계열 검수», 약한 증거).
   const picks = (main: { provider: string; model: string }) =>
     vqaReviewerCandidates({ main, keyed: new Set([main.provider]), familyOf: (id) => familyOfProviderId(id, [main.model]) });
-  describe("화면 검수자 차례 — 자기 자신은 맨 마지막", () => {
-    it("Haiku 가 지으면: 다른 계열(Codex · Gemini) → 같은 계열의 Sonnet 5.5 → Haiku 자신", () => {
+  describe("화면 검수자 차례 — 자기 자신은 맨 마지막 · 미사용 Claude CLI 몰래 호출 금지", () => {
+    it("Haiku 가 지으면: 다른 계열(Codex Sol 6.2 high) → 같은 계열의 Sonnet 5.5 → Haiku 자신", () => {
       expect(order({ provider: "local-cli:claude", model: "claude-haiku-5-5" })).toEqual([
-        "local-cli:codex/gpt-6.2-sol", "local-cli:gemini/gemini-4-argon",
+        "local-cli:codex/gpt-6.2-sol",
         "local-cli:claude/claude-sonnet-5-5 (같은 계열)", "local-cli:claude/claude-haiku-5-5 (같은 계열)",
       ]);
     });
 
-    it("Sonnet 5.5 가 지으면(Claude 기본): 다른 계열 → Sonnet 5.5 · high 한 번 — Opus 로 가지 않고, 같은 모델을 두 번 넣지 않는다", () => {
+    it("Sonnet 5.5 가 지으면(Claude 기본): 다른 계열(Codex) → Sonnet 5.5 · high 한 번 — Opus 로 가지 않고, 같은 모델을 두 번 넣지 않는다", () => {
       expect(order({ provider: "local-cli:claude", model: "claude-sonnet-5-5" })).toEqual([
-        "local-cli:codex/gpt-6.2-sol", "local-cli:gemini/gemini-4-argon", "local-cli:claude/claude-sonnet-5-5 (같은 계열)",
+        "local-cli:codex/gpt-6.2-sol", "local-cli:claude/claude-sonnet-5-5 (같은 계열)",
       ]);
       const claude = picks({ provider: "local-cli:claude", model: "claude-sonnet-5-5" }).filter((p) => p.provider === "local-cli:claude");
       expect(claude).toEqual([{ provider: "local-cli:claude", model: "claude-sonnet-5-5", effort: "high", sameAsMain: true }]);
@@ -493,11 +493,12 @@ describe("aiV2VqaReviewerOrder", () => {
       expect(got.filter((p) => p.startsWith("local-cli:claude/"))).toEqual(["local-cli:claude/claude-sonnet-5-5 (같은 계열)", "local-cli:claude/claude-opus-5-5 (같은 계열)"]);
     });
 
-    it("GPT 가 지으면(Terra): 다른 계열(Claude Sonnet 5.5 · Gemini)이 먼저, 같은 계열의 검수용 모델이 자기 자신 앞", () => {
+    it("GPT-6.2 Sol 이 지으면(2026-11-28 기본): Claude/Gemini CLI 가 연결되지 않았으면 몰래 호출하지 않고 Sol 6.2 high 만 쓴다", () => {
       const got = order({ provider: "openai-codex", model: "gpt-6.2-sol" });
-      expect(got.slice(0, 2)).toEqual(["local-cli:claude/claude-sonnet-5-5", "local-cli:gemini/gemini-4-argon"]);
-      expect(got.slice(-2)).toEqual(["local-cli:codex/gpt-6.2-sol (같은 계열)", "openai-codex/gpt-6.2-sol (같은 계열)"]);
-      expect(picks({ provider: "openai-codex", model: "gpt-6.2-sol" })[0]).toMatchObject({ model: "claude-sonnet-5-5", effort: "high", sameAsMain: false });
+      expect(got).toEqual(["local-cli:codex/gpt-6.2-sol (같은 계열)", "openai-codex/gpt-6.2-sol (같은 계열)"]);
+      expect(picks({ provider: "openai-codex", model: "gpt-6.2-sol" })[0]).toMatchObject({ model: "gpt-6.2-sol", effort: "high", sameAsMain: true });
+      const withClaude = order({ provider: "openai-codex", model: "gpt-6.2-sol" }, ["openai-codex", "local-cli:claude"]);
+      expect(withClaude[0]).toBe("local-cli:claude/claude-sonnet-5-5");
     });
 
     it("다른 계열 후보에는 «같은 계열» 표시가 붙지 않고, 같은 계열 후보에는 늘 붙는다", () => {

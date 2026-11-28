@@ -4,7 +4,7 @@ import { describe, expect, test } from "bun:test";
 // 계약: 초기 노출이 도메인으로 좁혀져도 find_tools 수확(선언 승격)과 resolveFallbackTool
 // (미노출 호출 구제)이 실행 중에 툴을 얹는다. 단, readOnly·toolNames 경계는 에스컬레이션이
 // 넘지 못한다 — 읽기 전용 실행에 쓰기 툴이 스는 순간 「편집하지 마」보장이 무너진다.
-import { createAssistantMessageEventStream } from "@oh-my-pi/pi-ai";
+import { createAssistantMessageEventStream } from "@earendil-works/pi-ai";
 import { selectPiToolDefinitions } from "../src/ai/piAgent/toolAdapter.ts";
 import { runPiAgent } from "../scripts/lib/piAgentRuntime.ts";
 import { createBlankProject } from "../src/project/defaults.ts";
@@ -19,7 +19,7 @@ function assistantMessage(content: unknown[], stopReason: string) {
     role: "assistant",
     content,
     api: "gemini",
-    provider: "google-antigravity",
+    provider: "openai-codex",
     model: "scripted",
     usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, totalTokens: 0 },
     stopReason,
@@ -54,7 +54,7 @@ function scriptedStream(calls: ScriptedCall[], toolCallsPerTurn: readonly { name
 
 function request(overrides: Partial<PiAgentRequest> = {}): PiAgentRequest {
   return {
-    provider: "google-antigravity",
+    provider: "openai-codex",
     task: "테스트 실행",
     mapIds: [],
     project: createBlankProject(),

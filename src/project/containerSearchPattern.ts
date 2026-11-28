@@ -14,7 +14,14 @@ import {
   propFxId,
   type ContainerStyle,
 } from "@/project/containerFx";
-import { interactivePropById } from "@/project/interactiveProps";
+import {
+  interactivePropById,
+  interactivePropFootprint,
+  interactivePropOpensPassage,
+  interactivePropPassRows,
+  interactivePropSpriteId,
+  parseInteractivePropSpriteId,
+} from "@/project/interactiveProps";
 import type { Command, Condition, GameEvent, GameMap, Project } from "@/project/types";
 
 type Page = NonNullable<GameEvent["pages"]>[number];
@@ -136,10 +143,55 @@ export function applyContainerSearchPattern(event: GameEvent, options: Container
       ...(searched ? { searched: true } : {}),
     };
     if (JSON.stringify(page.interaction ?? null) !== JSON.stringify(wanted)) { (page as Page).interaction = wanted; changed = true; }
-    if (searched && prop?.playback === "break" && (page as { priority?: string }).priority !== "below") {
-      (page as { priority?: string; through?: boolean }).priority = "below";
-      (page as { priority?: string; through?: boolean }).through = true;
-      changed = true;
+    if (prop) {
+      const existingSpriteId = page.graphic?.sprite?.id;
+      const isGeneratedPropGraphic = Boolean(parseInteractivePropSpriteId(existingSpriteId));
+      const hasAuthoredCustomSprite = page.graphic?.transparent !== true && Boolean(existingSpriteId) && !isGeneratedPropGraphic;
+      const wantedSpriteId = interactivePropSpriteId(prop.id);
+      const wantedPattern = searched ? Math.max(0, prop.frames - 1) : 0;
+      if (!hasAuthoredCustomSprite) {
+        const nextGraphic = {
+          ...(page.graphic ?? {}),
+          sprite: { type: "bundled" as const, id: wantedSpriteId },
+          pattern: wantedPattern,
+        };
+        delete nextGraphic.transparent;
+        delete nextGraphic.appearanceId;
+        if (JSON.stringify(page.graphic ?? null) !== JSON.stringify(nextGraphic)) {
+          (page as Page).graphic = nextGraphic;
+          changed = true;
+        }
+      }
+      const fp = interactivePropFootprint(prop);
+      const multiTile = fp.width > 1 || fp.height > 1;
+      if (!page.footprint || isGeneratedPropGraphic) {
+        if (multiTile) {
+          const wantedPassRows = interactivePropPassRows(prop);
+          if (JSON.stringify(page.footprint ?? null) !== JSON.stringify(fp) || page.passRows !== wantedPassRows) {
+            (page as Page).footprint = fp;
+            (page as Page).passRows = wantedPassRows;
+            changed = true;
+          }
+        } else if (isGeneratedPropGraphic && (page.footprint !== undefined || page.passRows !== undefined)) {
+          delete (page as Page).footprint;
+          delete (page as Page).passRows;
+          changed = true;
+        }
+      }
+      if (searched) {
+        const mutablePage = page as { priority?: string; through?: boolean };
+        if (interactivePropOpensPassage(prop)) {
+          if (mutablePage.priority !== "below" || mutablePage.through !== true) {
+            mutablePage.priority = "below";
+            mutablePage.through = true;
+            changed = true;
+          }
+        } else if (isGeneratedPropGraphic && (mutablePage.priority === "below" || mutablePage.through === true)) {
+          mutablePage.priority = "same";
+          delete mutablePage.through;
+          changed = true;
+        }
+      }
     }
   }
   const fxId = prop ? propFxId(prop.id) : containerFxId(options.style);

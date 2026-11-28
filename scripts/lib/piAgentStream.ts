@@ -9,13 +9,19 @@ export interface PiAgentStreamOptions {
   readonly heartbeatMs?: number;
   /** 시험용 — 줄 인코더를 바꿔 «인코딩 실패» 를 만든다. 기본은 encodePiAgentEvent. */
   readonly encodeEvent?: (event: PiAgentEvent) => string;
+  /** 소비자가 느릴 때 스트림 큐에 쌓을 최대 바이트 수. 넘으면 onBackpressureOverflow 호출 후 닫는다. */
+  readonly maxBufferedBytes?: number;
+  readonly onBackpressureOverflow?: () => void;
 }
+
+const DEFAULT_MAX_BUFFERED_BYTES = 64 * 1024 * 1024;
 
 export function createPiAgentNdjsonStream(
   run: (onEvent: (event: PiAgentEvent) => void) => Promise<unknown>,
   options: PiAgentStreamOptions = {},
 ): ReadableStream<Uint8Array> {
   const heartbeatMs = options.heartbeatMs ?? PI_AGENT_HEARTBEAT_MS;
+  const maxBufferedBytes = options.maxBufferedBytes ?? DEFAULT_MAX_BUFFERED_BYTES;
   const encoder = new TextEncoder();
   let beat: ReturnType<typeof setInterval> | null = null;
   let open = true;
@@ -27,6 +33,13 @@ export function createPiAgentNdjsonStream(
     start(controller) {
       const write = (event: PiAgentEvent) => {
         if (!open) return;
+        // 소비자가 읽지 못해 미읽음 버퍼가 상한(기본 64MiB)을 넘으면 메모리 폭주를 막고 실행을 중단한다.
+        if (controller.desiredSize !== null && controller.desiredSize <= 0) {
+          stop();
+          try { options.onBackpressureOverflow?.(); } catch { /* 무시 */ }
+          try { controller.error(new Error("stream consumer backpressure limit exceeded")); } catch { /* 이미 닫힘 */ }
+          return;
+        }
         // 인코딩 실패(JSON.stringify 가 던짐 — 순환·BigInt·너무 큰 값)와 스트림 닫힘(enqueue 가 던짐)은 다르다. 앞의 것까지 stop() 하면 heartbeat 도 영구히
         // 멎어 호스트가 본문 무음 300초(undici bodyTimeout)로 «terminated» 를 낸다(2026-11-09 monster 진단: 약 226초 뒤 이벤트·heartbeat 가 함께 0, 대형 프로젝트).
         let line: Uint8Array;
@@ -59,5 +72,5 @@ export function createPiAgentNdjsonStream(
     cancel() {
       stop();
     },
-  });
+  }, new ByteLengthQueuingStrategy({ highWaterMark: maxBufferedBytes }));
 }

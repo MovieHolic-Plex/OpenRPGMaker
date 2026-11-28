@@ -97,7 +97,7 @@ export const AUTHOR_BEODEUL_TOWN_TOOL: ToolDefinition = {
       theme: { type: "string", enum: [...BEODEUL_VILLAGE_THEMES, "city"], description: "마을 문법(기본 river): river 강가 · coast 포구(바다) · desert 사막 오아시스 · snow 설원 · swamp 늪 · city 로마풍 블록 도시(도시를 말할 때만)" },
       forestType: { type: "string", enum: [...BEODEUL_FOREST_TYPES], description: "숲 종류(theme river·coast 마을만). 숲 덩이는 늘 이어진 수관 오토타일(활엽 사이 전나무)이고, 이 값은 낱 나무·숲 둘레 나무를 고른다: broadleaf 활엽(기본) · conifer 전나무·측백(숲 둘레에도 선다) · mixed 혼효" },
       walls: { type: "boolean", description: "true 이면 마을 둘레에 성벽을 두른다(성벽·성곽·성문·요새 마을). theme river·desert·snow 마을만 — 평지로, 강가 마을은 강 없이 짓는다. 성문루·망루·계단도 함께. 결과 data.walls." },
-      wallGate: { type: "string", enum: ["S", "N", "NS"], description: "walls 일 때 성문 쪽. S 남문 하나(기본) · N 북문 하나 · NS 남북에 하나씩. 사용자가 말한 쪽을 그대로." },
+      wallGate: { type: "string", enum: ["S", "N", "NS", "NE", "NW", "SE", "SW"], description: "walls 일 때 성문 쪽. S 남문(기본) · N 북문 · NS 남북 양쪽 · NE/NW 북벽 동/서쪽 · SE/SW 남벽 동/서쪽. 사용자가 말한 쪽을 그대로." },
       wallSideGaps: { type: "boolean", description: "walls 일 때 서·동 성벽 밑으로 길이 지나는 쪽문(작은 문루)을 낼지(기본 false — 성문 말고는 성벽이 닫힌다). 사용자가 옆 출입구를 말할 때만 true." },
       terrainGen: { type: "string", enum: ["code", "bands"], description: "땅 짓기(theme 마을, 성벽 없음): code(기본) 코드가 높이맵·침식·강으로 자연 지형을 만들고 그 위에 layout 자리대로 짓는다 · bands 예전 등고선 띠 지형(지형 먼저)." },
       terrainSeed: { type: "integer", description: "코드 지형 씨앗(지형 미리보기에서 받은 값 — 같은 값 = 같은 땅). 생략하면 seed." },
@@ -728,7 +728,7 @@ function buildVillage(draft: Project, args: Record<string, unknown>, theme: Beod
   const build = () => buildBeodeulVillage(draft, mapId, theme, seed, wallForm, wallTerrain, forestType, { ...codeOpts(), ...(sceneYardsOn ? {} : { sceneYards: false }), ...(noFront.size ? { noFront: [...noFront] } : {}), roofs, water: wallWater, woods, houseLimit: houseCount, walls, ...(args.fishing === true ? { fishing: true } : {}), ...(typeof args.kind === "string" && args.kind.trim() ? { kind: args.kind.trim() } : {}), ...(args.harbour === true ? { harbour: true } : {}),
     ...(askedBuildings.length ? { buildings: askedBuildings } : {}), ...(buildingNeeds.length ? { buildingNeeds } : {}), ...(Object.keys(layoutKits).length ? { layoutKits } : {}),
     ...(args._startCell && typeof args._startCell === "object" ? { startCell: args._startCell as { x: number; y: number } } : {}), ...(typeof args.landform === "string" && args.landform ? { landform: args.landform } : {}), ...(typeof args.settle === "string" && args.settle ? { settle: args.settle } : {}), ...(args.tiers !== undefined ? { tiers: Number(args.tiers) } : {}), ...(typeof args.high === "string" && args.high ? { high: args.high } : {}), ...(typeof args.quarter === "string" && beodeulYardReserve(args.quarter) ? { yard: beodeulYardReserve(args.quarter) } : {}),
-    ...(args.wallGate === "N" || args.wallGate === "NS" || args.wallGate === "S" ? { wallGate: args.wallGate } : {}), ...(args.wallSideGaps === true ? { wallSideGaps: true } : {}) });
+    ...(typeof args.wallGate === "string" && /^(S|N|NS|NE|NW|SE|SW)$/u.test(args.wallGate) ? { wallGate: args.wallGate as "S" | "N" | "NS" | "NE" | "NW" | "SE" | "SW" } : {}), ...(args.wallSideGaps === true ? { wallSideGaps: true } : {}) });
   let r = build();
   // 성벽 띠가 가장자리를 먹어 요청한 집 수가 다 앉지 않는다(2026-10-22 조수 시험 r3: 5채 요청 → 44×32 에서 2채, 조수가 52×38 로 다시 지어 3채).
   // 이번 호출이 새로 만든 성벽 마을이면 맵을 넓혀 두 번까지 다시 짓고, 집이 가장 많이 앉은 크기를 남긴다(같은 seed 라 같은 크기는 같은 마을).

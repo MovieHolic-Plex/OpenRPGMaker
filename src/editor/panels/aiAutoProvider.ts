@@ -12,20 +12,21 @@ import { hasActiveProviderLimit, noteProviderLimited, providerLimitedUntil } fro
 import { localCliOfProvider, localCliProviderId, loadAssistantEngine, saveAssistantEngine } from "@/ai/localCliEngine";
 import { ANTHROPIC_PROVIDER_ID, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { listKnownOpenAiCompatEndpoints } from "@/ai/openAiCompat";
-import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
+import { CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 import { pickAutoProvider, type AutoPick, type ProviderRouteState } from "@/ai/autoProviderPick";
 import type { ProviderUsageSnapshot } from "@/ai/providerQuota";
 import { loadProviderPin } from "@/ai/providerPin";
+import { ASSISTANT_CHATGPT_EFFORT } from "@/ai/chatgptDefault";
 import { ASSISTANT_CLAUDE_EFFORT } from "@/ai/claudeDefault";
 import { createLocalAgentsApi, localAgentsEnabled, ASSISTANT_ENGINE_CHANGED_EVENT } from "@/start/settings/localAgents";
 
 export const AI_AUTO_PICK_EVENT = "oprn:ai-auto-pick";
 
 /**
- * 계정(/auth/status)으로 확인하는 길. 남은 한도는 연결된 길마다 /auth/usage 로 묻는다 — 지금 동반 서비스는 ChatGPT·Google 만 숫자를 주고
- * (scripts/lib/providerUsageRuntime.ts) 나머지는 readable:false(모름)다. 서버가 늘면 여기는 그대로 따라간다.
+ * 계정(/auth/status)으로 확인하는 길. 남은 한도는 연결된 길마다 /auth/usage 로 묻는다.
+ * Google Antigravity / Gemini CLI OAuth 는 계정 정지 위험으로 자동 선택 대상에서 제외한다.
  */
-const ACCOUNT_ROUTES = [ANTHROPIC_PROVIDER_ID, CODEX_PROVIDER_ID, ANTIGRAVITY_PROVIDER_ID, "xai-oauth", "openrouter", "google-gemini-cli"] as const;
+const ACCOUNT_ROUTES = [CODEX_PROVIDER_ID, ANTHROPIC_PROVIDER_ID, "github-copilot", "xai-oauth", "openrouter"] as const;
 
 const usageCache = new Map<string, { readonly at: number; readonly value: Promise<ProviderUsageSnapshot | null> }>();
 
@@ -93,8 +94,9 @@ export function applyAutoPick(providerId: string): boolean {
   if (currentProviderId() === providerId) return false;
   const cli = localCliOfProvider(providerId);
   if (cli) {
-    // 엔진 선택의 강도 기본은 medium 이다 — Claude 는 조수 기본(Sonnet 5.5 · high)과 같게 맞춘다.
-    saveAssistantEngine({ kind: "local-cli", cli, ...(cli === "claude" ? { effort: ASSISTANT_CLAUDE_EFFORT } : {}) });
+    // 엔진 선택의 강도 기본 — Codex(GPT-6.2 Sol · high)와 Claude(Sonnet 5.5 · high)는 각 조수 기본 강도에 맞춘다.
+    const effort = cli === "codex" ? ASSISTANT_CHATGPT_EFFORT : cli === "claude" ? ASSISTANT_CLAUDE_EFFORT : undefined;
+    saveAssistantEngine({ kind: "local-cli", cli, ...(effort ? { effort } : {}) });
   } else {
     if (loadAssistantEngine()) saveAssistantEngine(undefined);
     const config = loadAiConfig();

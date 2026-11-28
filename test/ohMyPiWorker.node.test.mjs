@@ -34,15 +34,21 @@ describe("인증은 Node, 완성만 Bun 워커", () => {
     }
   });
 
-  it("두 제공자 모두 로그인 URL 을 돌려주고, API 키 저장은 거절한다", async () => {
+  it("Codex 로그인 URL 을 돌려주고, Google Antigravity 직접 로그인은 계정 보호로 400 거절하며, API 키 저장은 거절한다", async () => {
     const adapters = await createOhMyPiAdapters();
-    for (const provider of [ANTIGRAVITY, CODEX]) {
-      const login = await adapters.login(provider, {});
-      assert.equal(login.provider, provider);
-      assert.ok(String(login.verificationUrl).length > 0, `${provider} verificationUrl`);
+    const login = await adapters.login(CODEX, {});
+    assert.equal(login.provider, CODEX);
+    assert.ok(String(login.verificationUrl).length > 0, `${CODEX} verificationUrl`);
 
-      // 구독 로그인 전용이므로 키를 받는 경로가 있으면 안 된다 — 붙여넣은 키로 연결된 척하다
-      // 매 턴 401 이 되는 구멍이 거기서 생겼다.
+    await assert.rejects(() => adapters.login(ANTIGRAVITY, {}), (error) => {
+      assert.equal(error.status, 400);
+      assert.match(String(error.message), /비활성화/);
+      return true;
+    });
+
+    // 구독 로그인 전용이므로 키를 받는 경로가 있으면 안 된다 — 붙여넣은 키로 연결된 척하다
+    // 매 턴 401 이 되는 구멍이 거기서 생겼다.
+    for (const provider of [ANTIGRAVITY, CODEX]) {
       await assert.rejects(() => adapters.saveKey(provider, "sk-nope"), /API 키/);
     }
   });
@@ -85,31 +91,29 @@ describe("인증은 Node, 완성만 Bun 워커", () => {
 
   it("완성 요청은 고른 제공자 그대로 워커를 탄다", async () => {
     const adapters = await createOhMyPiAdapters();
-    const completion = await adapters.complete(ANTIGRAVITY, {
-      model: "gemini-3.7-flash",
+    const completion = await adapters.complete(CODEX, {
+      model: "gpt-6.2-sol",
       messages: [{ role: "user", content: "hi" }],
     });
 
-    assert.equal(completion.completion.provider, ANTIGRAVITY);
-    assert.equal(completion.completion.choices[0].message.content, `stub:${ANTIGRAVITY}`);
+    assert.equal(completion.completion.provider, CODEX);
+    assert.equal(completion.completion.choices[0].message.content, `stub:${CODEX}`);
   });
 
   it("이미지 요청은 /image 워커와 generateImage 어댑터를 탄다", async () => {
     const adapters = await createOhMyPiAdapters();
-    await adapters.seedOAuth(ANTIGRAVITY, {
+    await adapters.seedOAuth(CODEX, {
       access: "image-access",
       refresh: "image-refresh",
       expires: Date.now() + 60_000,
-      projectId: "image-project",
     });
 
-    const image = await adapters.generateImage(ANTIGRAVITY, {
-      model: "gemini-3.1-flash-image",
+    const image = await adapters.generateImage(CODEX, {
+      model: "codex-image-default",
       prompt: "슬라임",
     });
 
-    assert.equal(image.provider, ANTIGRAVITY);
-    assert.equal(image.model, "gemini-3.1-flash-image");
+    assert.equal(image.provider, CODEX);
     assert.equal(image.mimeType, "image/png");
     assert.match(image.base64, /^[A-Za-z0-9+/]+=*$/u);
   });

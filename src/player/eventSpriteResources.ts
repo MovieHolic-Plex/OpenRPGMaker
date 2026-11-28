@@ -12,6 +12,11 @@ import { CHARSET_FRAME_WIDTH } from "@/assets/easyrpgRtp";
 import { DERIVED_FIELD_FOE_BASE_FRAME, ensureDerivedFieldFoe } from "@/player/fieldFoeSprite";
 import { characterRenderScale } from "@/project/characterScale";
 import { normalizeCharacterScale } from "@/project/footprint";
+import {
+  interactivePropFrameIndex,
+  interactivePropFrameName,
+  interactivePropFromSpriteId,
+} from "@/project/interactiveProps";
 import type { EventPageGraphic } from "@/project/types";
 
 export type EventSpriteTexture = {
@@ -27,6 +32,8 @@ export type EventSpriteTexture = {
   readonly derived?: boolean;
   /** Derived sheet cut at this many times more detail than the usual chip — the authored scale is divided by it so the on-map size stays the same. */
   readonly gain?: number;
+  /** 16px 격자 기반 멀티프레임 상호작용 오브젝트 스트립(`iprop:<id>`). `tileSize / 16` 배율로 그린다. */
+  readonly propTileScale?: boolean;
 };
 
 /** Spatial overlay graphics may use catalog picture/charset ids. Event sprites stay on resolveEventSpriteTexture. */
@@ -63,6 +70,18 @@ export function resolveEventSpriteTexture(
   // Existing item pictures can depict a real investigation object. They are
   // static images, so a charset frame number must never crop them.
   if (resolveCc0IconAssetUrl(spriteId)) return { texture: spriteId, frame: '__BASE', fitSize: 16 };
+
+  // 멀티프레임 상호작용 오브젝트 정식 이벤트 그래픽(`iprop:<id>`).
+  const interactiveProp = interactivePropFromSpriteId(spriteId, project);
+  if (interactiveProp) {
+    const frameIndex = interactivePropFrameIndex(interactiveProp, pattern);
+    return {
+      texture: spriteId,
+      frame: interactivePropFrameName(frameIndex),
+      origin: { x: interactiveProp.anchorX, y: interactiveProp.anchorY },
+      propTileScale: true,
+    };
+  }
 
   const uploadedKind = project.assets.uploaded[spriteId]?.kind;
   if (uploadedKind === "monster") return { texture: spriteId, frame: "__BASE", fitSize: 32, monster: true };
@@ -119,6 +138,7 @@ export function eventSpriteScale(
     return characterRenderScale(texture?.derived ? CHARSET_FRAME_WIDTH : sprite.width, tileSize, { scale: authoredScale, scaleMode }, referenceTileSize) * mapCharacterFactor / (texture?.gain ?? 1);
   }
   const scale = normalizeCharacterScale(authoredScale);
+  if (texture?.propTileScale) return scale * (tileSize / 16);
   if (!texture?.fitSize) return scale;
   const size = Math.max(sprite.width ?? 0, sprite.height ?? 0);
   return Number.isFinite(size) && size > 0 ? scale * texture.fitSize / size : scale;

@@ -57,7 +57,7 @@ import { clearChildren, el } from "@/util/dom";
 import { createLogger } from "@/util/logger";
 import { toast } from "@/util/toast";
 import { appUpdateMenuLabel, renderAppUpdateChip, triggerAppUpdateCheck } from "@/app/appUpdateChip";
-import { prepareEditorForAppUpdateRestart } from "@/editor/appUpdateRestart";
+import { editorAppUpdateAssistantWork, prepareEditorForAppUpdateRestart } from "@/editor/appUpdateRestart";
 import { beginGameExport, endGameExport } from "./gameExportNotice";
 import { projectRepository } from "@/project/persistence/repository";
 import { sameProjectTarget } from "@/project/persistence/target";
@@ -261,8 +261,12 @@ function rebuildTopbar(topbar: HTMLElement): void {
     renderSaveButton(),
   );
   if (mode === "edit") trailing.append(renderTestPlayButton());
-  // 앱 업데이트 칩 — 받아 둔 새 판이 있을 때만 보인다(데스크톱 앱만, src/app/appUpdateChip.ts).
-  const updateChip = renderAppUpdateChip({ className: "studio-tool-button", beforeRestart: prepareEditorForAppUpdateRestart });
+  // 앱 업데이트 녹색 아이콘 — 새 버전이 있을 때만 오른쪽 상단에 보인다(데스크톱 앱만, src/app/appUpdateChip.ts).
+  const updateChip = renderAppUpdateChip({
+    className: "studio-icon-button",
+    beforeRestart: prepareEditorForAppUpdateRestart,
+    assistantWork: editorAppUpdateAssistantWork,
+  });
   if (updateChip) {
     disposeAppUpdateChip = updateChip.dispose;
     trailing.append(updateChip.element);

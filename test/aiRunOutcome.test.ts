@@ -675,10 +675,10 @@ describe("aiDefaultClaudeSonnetHigh", () => {
     return loadAiConfig();
   }
   describe("들어가는 길마다 — Claude 로 도는 길은 모든 역할이 Sonnet 5.5 · high 한 모델", () => {
-    it("새 설치(저장 없음): 공장 기본은 Claude 의 Sonnet 5.5 · high 다(2026-11-23) — ChatGPT 로 시작하지 않는다", () => {
-      expect(resolved(loadAiConfig())).toEqual(every(`anthropic/${SONNET}@high`));
-      expect(resolved(defaultAiConfig())).toEqual(every(`anthropic/${SONNET}@high`));
-      expect(defaultAiConfig()).toMatchObject({ providerId: "anthropic", model: SONNET, liteModel: SONNET, reasoningEffort: "high" });
+    it("새 설치(저장 없음): 공장 기본은 ChatGPT 의 GPT-6.2 Sol · high 다(2026-11-28) — Claude 로 시작하지 않는다", () => {
+      expect(resolved(loadAiConfig())).toEqual(every("openai-codex/gpt-6.2-sol@high"));
+      expect(resolved(defaultAiConfig())).toEqual(every("openai-codex/gpt-6.2-sol@high"));
+      expect(defaultAiConfig()).toMatchObject({ providerId: "openai-codex", model: "gpt-6.2-sol", liteModel: "gpt-6.2-sol", reasoningEffort: "high" });
     });
 
     it("새 설치 + Claude CLI 구독: 같은 CLI 로 Sonnet 5.5 · high 하나 — 팀장도 Haiku 워커도 없다", async () => {
@@ -694,9 +694,9 @@ describe("aiDefaultClaudeSonnetHigh", () => {
       expect(resolved(config)).toEqual(every(`local-cli:claude/${SONNET}@high`));
     });
 
-    it("새 설치 + Claude CLI 와 ChatGPT 가 같이 있으면 Claude(Sonnet 5.5 · high) 하나로 시작한다(2026-11-23 오너 결정 — 2026-11-19 에는 ChatGPT 가 먼저였다)", async () => {
+    it("새 설치 + Claude CLI 와 ChatGPT 가 같이 있으면 ChatGPT(GPT-6.2 Sol · high) 하나로 시작한다(2026-11-28 오너 결정)", async () => {
       const config = await firstRun({ clis: [cli("claude"), cli("codex")], accounts: [oauth("google-antigravity")] });
-      expect(resolved(config)).toEqual(every(`local-cli:claude/${SONNET}@high`));
+      expect(resolved(config)).toEqual(every("local-cli:codex/gpt-6.2-sol@high"));
     });
 
     it("Anthropic 키: 입양한 엔드포인트의 모든 역할이 Sonnet 5.5 · high 이다", async () => {
@@ -714,13 +714,13 @@ describe("aiDefaultClaudeSonnetHigh", () => {
       expect(config.liteModel).toBe(SONNET);
     });
   });
-  describe("들어가는 길마다 — Claude 를 쓸 수 없는 길은 그 계정의 기본", () => {
-    it("ChatGPT 구독(Codex CLI)만: Sol 하나", async () => {
-      expect(resolved(await firstRun({ clis: [cli("codex")] }))).toEqual(every("local-cli:codex/gpt-6.2-sol@medium"));
+  describe("들어가는 길마다 — ChatGPT 를 쓸 수 있는 길은 GPT-6.2 Sol · high, Google 만이면 Argon", () => {
+    it("ChatGPT 구독(Codex CLI)만: Sol · high 하나", async () => {
+      expect(resolved(await firstRun({ clis: [cli("codex")] }))).toEqual(every("local-cli:codex/gpt-6.2-sol@high"));
     });
 
-    it("편집기 안 ChatGPT 로그인만: Sol · medium 하나(계획·감독도 medium)", async () => {
-      expect(resolved(await firstRun({ accounts: [oauth("openai-codex")] }))).toEqual(every("openai-codex/gpt-6.2-sol@medium"));
+    it("편집기 안 ChatGPT 로그인만: Sol · high 하나(계획·감독도 high)", async () => {
+      expect(resolved(await firstRun({ accounts: [oauth("openai-codex")] }))).toEqual(every("openai-codex/gpt-6.2-sol@high"));
     });
 
     it("Google 로그인만: Gemini 4 Argon medium, 계획·감독은 high", async () => {
@@ -873,16 +873,18 @@ describe("aiDefaultClaudeSonnetHigh", () => {
       expect(route.roles.smol).toBeUndefined();
     });
 
-    it("화면 검수(VQA) — 다른 계열이 답하지 못해 Claude 로 넘어가면 Sonnet 5.5 · high 이다(Opus 아님)", async () => {
+    it("화면 검수(VQA) — Claude 로 넘어가면 Sonnet 5.5 · high 이고, GPT 단독에서는 Claude CLI 를 몰래 호출하지 않는다", async () => {
       const { vqaReviewerCandidates } = await import("@/ai/v2/judge/vqa");
       const { familyOfProviderId } = await import("@/ai/assistantRoles");
-      const claudeOf = (main: { provider: string; model: string }) => vqaReviewerCandidates({ main, keyed: new Set([main.provider]), familyOf: (id) => familyOfProviderId(id, [main.model]) })
+      const claudeOf = (main: { provider: string; model: string }, extraKeyed: string[] = []) => vqaReviewerCandidates({ main, keyed: new Set([main.provider, ...extraKeyed]), familyOf: (id) => familyOfProviderId(id, [main.model]) })
         .filter((p) => p.provider === "local-cli:claude");
       // 조수가 Claude(Sonnet)로 돌 때: Claude 검수자는 Sonnet · high 하나(주 모델과 합쳐짐 — 지은 모델과 검수 모델이 같다).
       expect(claudeOf({ provider: "local-cli:claude", model: SONNET })).toEqual([{ provider: "local-cli:claude", model: SONNET, effort: "high", sameAsMain: true }]);
-      // 조수가 다른 계열로 돌 때: 다른 계열 검수자로 서는 Claude 도 Sonnet · high.
-      expect(claudeOf({ provider: "openai-codex", model: "gpt-6.1-terra" })).toEqual([{ provider: "local-cli:claude", model: SONNET, effort: "high", sameAsMain: false }]);
-      expect(claudeOf({ provider: "google-antigravity", model: "gemini-4-argon" })[0]).toMatchObject({ model: SONNET, effort: "high" });
+      // GPT 단독에서는 미연결 Claude CLI 를 몰래 부르지 않는다.
+      expect(claudeOf({ provider: "openai-codex", model: "gpt-6.2-sol" })).toEqual([]);
+      // Claude CLI 가 명시적으로 keyed 됐을 때만 다른 계열 검수자로 선다.
+      expect(claudeOf({ provider: "openai-codex", model: "gpt-6.1-terra" }, ["local-cli:claude"])).toEqual([{ provider: "local-cli:claude", model: SONNET, effort: "high", sameAsMain: false }]);
+      expect(claudeOf({ provider: "google-antigravity", model: "gemini-4-argon" }, ["local-cli:claude"])[0]).toMatchObject({ model: SONNET, effort: "high" });
     });
 
     it("검토자(advisor) 자동 배정 — Claude 만 연결되면 Sonnet 5.5 · high", async () => {
@@ -913,18 +915,18 @@ describe("aiDefaultModelForced", () => {
   isolateTimers();
   /** Google 계정(옛 저장값의 기본 제공자)의 기본 모델. */
   const FORCED_DEFAULT = "gemini-4-argon";
-  /** 새 설정의 공장 기본(오너 결정 2026-11-23) — 저장된 설정이 없으면 이 제공자·모델·강도다. */
-  const FACTORY_PROVIDER = "anthropic";
-  const FACTORY_MODEL = "claude-sonnet-5-5";
+  /** 새 설정의 공장 기본(오너 결정 2026-11-28) — 저장된 설정이 없으면 이 제공자·모델·강도다. */
+  const FACTORY_PROVIDER = "openai-codex";
+  const FACTORY_MODEL = "gpt-6.2-sol";
   const FACTORY_EFFORT = "high";
-  /** ChatGPT 길의 기본(2026-11-19 에는 공장 기본이었다) — ChatGPT 를 고르면 이 모델이다. */
-  const CHATGPT_MODEL = "gpt-6.2-sol";
-  describe("공장 기본 = Claude Sonnet 5.5 · high", () => {
-    it("권장 제공자와 조수 기본 모델 상수가 Claude · Sonnet 5.5 다(ChatGPT 길의 기본 상수는 GPT-6.2 Sol)", () => {
+  /** Claude 길의 기본(2026-11-23~11-27 에는 공장 기본이었다) — Claude 를 고르면 이 모델이다. */
+  const CLAUDE_MODEL = "claude-sonnet-5-5";
+  describe("공장 기본 = ChatGPT GPT-6.2 Sol · high", () => {
+    it("권장 제공자와 조수 기본 모델 상수가 ChatGPT · GPT-6.2 Sol · high 다(Claude 길의 기본 상수는 Sonnet 5.5)", () => {
       expect(RECOMMENDED_OH_MY_PI_PROVIDER).toBe(FACTORY_PROVIDER);
-      expect(CLAUDE_DEFAULT_MODEL).toBe(FACTORY_MODEL);
-      expect(CLAUDE_DEFAULT_EFFORT).toBe(FACTORY_EFFORT);
-      expect(CHATGPT_DEFAULT_MODEL).toBe(CHATGPT_MODEL);
+      expect(CHATGPT_DEFAULT_MODEL).toBe(FACTORY_MODEL);
+      expect(CLAUDE_DEFAULT_MODEL).toBe(CLAUDE_MODEL);
+      expect(CLAUDE_DEFAULT_EFFORT).toBe("high");
     });
 
     it("defaultAiConfig 의 제공자와 두 모델 슬롯이 공장 기본이다", () => {
@@ -965,23 +967,27 @@ describe("aiDefaultModelForced", () => {
     });
   });
   describe("Claude 계정의 기본 = Sonnet 5.5 · high", () => {
-    it("Claude 계정의 카탈로그 첫 항목·제공자 레코드·두 티어가 모두 공장 기본 모델이다(프리셋이 Haiku 로 내리지 않는다)", () => {
+    it("Claude 계정의 카탈로그 첫 항목·제공자 레코드·두 티어가 모두 Sonnet 5.5 다(프리셋이 Haiku 로 내리지 않는다)", () => {
+      expect(defaultModelForAuthMode("chatgpt", "anthropic")).toBe(CLAUDE_MODEL);
+      expect(getOhMyPiProvider("anthropic")?.defaultModel).toBe(CLAUDE_MODEL);
+      expect(tierModelFor("anthropic", "fast")).toBe(CLAUDE_MODEL);
+      expect(tierModelFor("anthropic", "strong")).toBe(CLAUDE_MODEL);
+    });
+
+    it("모델이 빈 Claude 설정의 modelForRole 폴백도 Sonnet 5.5 다", () => {
+      expect(modelForRole({ providerId: "anthropic" } as AiConfig, "deep").model).toBe(CLAUDE_MODEL);
+    });
+  });
+  describe("ChatGPT 길의 기본 = GPT-6.2 Sol · high (공장 기본)", () => {
+    it("ChatGPT 카탈로그 첫 항목과 제공자 레코드가 GPT-6.2 Sol 이고 두 티어가 같다", () => {
       expect(defaultModelForAuthMode("chatgpt", FACTORY_PROVIDER)).toBe(FACTORY_MODEL);
       expect(getOhMyPiProvider(FACTORY_PROVIDER)?.defaultModel).toBe(FACTORY_MODEL);
       expect(tierModelFor(FACTORY_PROVIDER, "fast")).toBe(FACTORY_MODEL);
       expect(tierModelFor(FACTORY_PROVIDER, "strong")).toBe(FACTORY_MODEL);
     });
 
-    it("모델이 빈 Claude 설정의 modelForRole 폴백도 공장 기본 모델이다", () => {
+    it("모델이 빈 ChatGPT 설정의 modelForRole 폴백도 공장 기본 모델이다", () => {
       expect(modelForRole({ providerId: FACTORY_PROVIDER } as AiConfig, "deep").model).toBe(FACTORY_MODEL);
-    });
-  });
-  describe("ChatGPT 길의 기본 = GPT-6.2 Sol (공장 기본이 아니다)", () => {
-    it("ChatGPT 카탈로그 첫 항목과 제공자 레코드가 GPT-6.2 Sol 이고 두 티어가 같다", () => {
-      expect(defaultModelForAuthMode("chatgpt", "openai-codex")).toBe(CHATGPT_MODEL);
-      expect(getOhMyPiProvider("openai-codex")?.defaultModel).toBe(CHATGPT_MODEL);
-      expect(tierModelFor("openai-codex", "fast")).toBe(CHATGPT_MODEL);
-      expect(tierModelFor("openai-codex", "strong")).toBe(CHATGPT_MODEL);
     });
   });
   describe("Google 계정의 강제 기본 모델", () => {
@@ -1090,18 +1096,18 @@ describe("aiProviderSelection", () => {
   const google = "google-antigravity";
   afterEach(() => vi.unstubAllGlobals());
   describe("account selection and persisted work models", () => {
-    it("a first ChatGPT selection routes work to gpt-6.2-sol medium for every work role", () => {
+    it("a first ChatGPT selection routes work to gpt-6.2-sol high for every work role", () => {
       const next = configForProviderSelection(defaultAiConfig(), codex);
-      // 직접 고른 역할이 없으면 계획·시공·작문·실행·시각 모두 ChatGPT 로 간다.
+      // 직접 고른 역할이 없으면 계획·시공·작문·실행·시각 모두 ChatGPT(GPT-6.2 Sol high)로 간다.
       expect(workProviderIds(next)).toEqual([codex]);
       for (const role of ["vision", "deep", "build", "writer"] as const) {
         expect(configForRole(next, role).providerId).toBe(codex);
         expect(configForRole(next, role).model).toBe("gpt-6.2-sol");
-        expect(configForRole(next, role).reasoningEffort).toBe("medium");
+        expect(configForRole(next, role).reasoningEffort).toBe("high");
       }
       expect(next.ultrabrainProviderId).toBe(codex);
       expect(next.ultrabrainModel).toBe("gpt-6.2-sol");
-      expect(next.ultrabrainReasoningEffort).toBe("medium");
+      expect(next.ultrabrainReasoningEffort).toBe("high");
       expect(next.imageProviderId).toBe(codex);
     });
 

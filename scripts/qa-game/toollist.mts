@@ -4,7 +4,7 @@
 // 경로: classifyPlainPiTurn(평문 턴 분류, 선언자는 모델 대신 「후보 목록에서 몬스터 낱말 도구를 고르는」 결정적 모사) → composePiTask → runPiAgent(진짜 Agent 루프·레지스트리·어댑터, 모델 스트림만 대본).
 // 주의: 의도 선언 모사는 실제 Argon 이 D1 에서 센터·트레이너·도감 도구를 고른 행동을 흉내 낸 것이다 — 후보 목록에 있는 것만 고를 수 있다는 점이 핵심이다.
 import { writeFileSync } from "node:fs";
-import { createAssistantMessageEventStream } from "@oh-my-pi/pi-ai";
+import { createAssistantMessageEventStream } from "@earendil-works/pi-ai";
 import { classifyPlainPiTurn } from "../../src/ai/piAgent/plainTurn.ts";
 import { composePiTask } from "../../src/ai/piAgent/executionRoute.ts";
 import { resolveAutonomy } from "../../src/ai/autonomyLevels.ts";

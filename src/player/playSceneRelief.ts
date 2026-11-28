@@ -10,7 +10,7 @@
 import { characterDepth } from "@/player/characterDepth";
 import { PLAYER_SHADOW_KEY } from "@/player/characterHopRuntime";
 import { asReliefTextures, buildReliefStripTextures, reliefFieldOf, removeReliefTextures, type ReliefTextureManager } from "@/player/reliefStrips";
-import { cellLift, footLift } from "@/project/relief/screen";
+import { cellLift, footLift, IDENTITY_RELIEF_STEP_MOTION, reliefStepMotion, type ReliefStepMotion } from "@/project/relief/screen";
 import { mapTileSize } from "@/project/tileGeometry";
 import type { GameMap } from "@/project/types";
 import type { ReliefGroundSurface } from "@/project/relief/render";
@@ -140,6 +140,19 @@ export function spriteReliefLiftPx(map: GameMap | undefined, sprite: { readonly 
   if (!field) return 0;
   const size = mapTileSize(map);
   return footLift(field, sprite.x / size, sprite.y / size) * size;
+}
+
+/** 경사로 걸음의 화면 속도 보정(지속 시간 배수·균속 진행률). 평지·relief 없음이면 항등(1, u => u). */
+export function spriteReliefStepMotion(
+  map: Pick<GameMap, "relief"> | undefined,
+  fromX: number,
+  fromY: number,
+  toX: number,
+  toY: number,
+  footOffsetX = 0.5,
+): ReliefStepMotion {
+  const field = map ? reliefFieldOf(map.relief) : null;
+  return field ? reliefStepMotion(field, fromX, fromY, toX, toY, footOffsetX) : IDENTITY_RELIEF_STEP_MOTION;
 }
 
 /** 그리는 동안만 캐릭터를 들림만큼 올린다. 씬 create 에서 한 번 부른다. */

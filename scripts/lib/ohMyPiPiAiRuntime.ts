@@ -1,21 +1,20 @@
-// 완성(completion) 전송 전용 pi-ai 어댑터.
+// 완성(completion) 전송 전용 pi-ai 어댑터 (@earendil-works/pi-ai 순수 Node 런타임).
 //
-// 분리 경계: 자감·로그인·갱신은 scripts/lib/aiAuthRuntime.ts 가 순수 Node 에서 다 처리하고,
-// 이 파일은 이미 부혼 자겁문자열(apiKey)를 받아 모델 호출만 한다. pi-ai 는 bun:sqlite 를
-// 싣고 오므로 Bun 에서만 로드되며, 그 Bun 의존이 인증 경로로 새지 않는 것이 이 경계의 목적이다.
+// 분리 경계: 자격·로그인·갱신은 scripts/lib/aiAuthRuntime.ts 가 처리하고,
+// 이 파일은 이미 푼 apiKey 를 받아 모델 호출만 한다.
 
 import { localCliIdOf } from "./localCliAgent/types.ts";
 import { LOCAL_CLI_ADAPTERS, localCliBinary } from "./localCliAgent/registry.ts";
-import { completeSimple } from "@oh-my-pi/pi-ai";
+import { completeSimple } from "@earendil-works/pi-ai/compat";
 import { resolveOhMyPiModel } from "./ohMyPiModel.ts";
 import { getOhMyPiProvider } from "../../src/ai/ohMyPiProviders.ts";
 import type { ImageDelivery } from "../../src/ai/imageDelivery.ts";
 import { convertUserContent, hasImagePart, ImageTransportError } from "./ohMyPiUserContent.ts";
 import { antigravityToolEnumPayload } from "./ohMyPiToolEnums.ts";
 import { applyLegacyEnvAliases } from "./oprnEnv.mjs";
-import { codexVersionFetch } from "./codexClientVersion.ts";
+import { codexVersionFetch, OPRN_CODEX_CLIENT_VERSION } from "./codexClientVersion.ts";
 import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
-import { explainOpenAiCompatRunError, guardedOpenAiCompatFetch, shapeOpenAiCompatCall } from "./openAiCompatModel.ts";
+import { assertSafeOpenAiCompatUrl, explainOpenAiCompatRunError, guardedOpenAiCompatFetch, shapeOpenAiCompatCall } from "./openAiCompatModel.ts";
 
 applyLegacyEnvAliases();
 
@@ -139,7 +138,7 @@ function openaiToContextWithDelivery(provider: string, body: Record<string, unkn
         };
       })
     : undefined;
-  return { context: { systemPrompt, messages: converted as never[], tools }, imageDelivery };
+  return { context: { ...(systemPrompt.length ? { systemPrompt: systemPrompt.join("\n\n") } : {}), messages: converted as never[], tools }, imageDelivery };
 }
 
 
@@ -264,8 +263,12 @@ export async function completeProvider(
     };
   }
   const apiKey = options?.apiKey;
+  if (isOpenAiCompatProviderId(provider) && typeof (shaped.model as { baseUrl?: unknown }).baseUrl === "string") {
+    await assertSafeOpenAiCompatUrl((shaped.model as { baseUrl: string }).baseUrl);
+  }
   const message = await completeSimple(shaped.model as never, context as never, {
     ...(apiKey ? { apiKey } : {}),
+    ...(provider === "openai-codex" ? { transport: "sse" as const, headers: { version: OPRN_CODEX_CLIENT_VERSION } } : {}),
     fetch: provider === "openai-codex" ? codexVersionFetch(options?.fetch ?? fetch)
       : isOpenAiCompatProviderId(provider) ? guardedOpenAiCompatFetch(options?.fetch ?? fetch) : options?.fetch,
     signal: options?.signal,

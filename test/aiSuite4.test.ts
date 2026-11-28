@@ -53,11 +53,11 @@ describe("runRecap", () => {
           .toMatchObject({ providerId: "openai-codex", model: "future-vision", reasoningEffort: "high", apiKey: "" });
         const config = { ...defaultAiConfig(), roleModels: { ...roleModels, deep: { provider: "openai-codex", model: "deep-selected", thinkingLevel: "high" as const } } };
         expect(resolveSurfaceAiConfig("tileset-analysis", config)).toMatchObject({ model: "future-vision", providerId: "openai-codex", reasoningEffort: "high" });
-        // 고르지 않은 칸은 공장 기본(Claude Sonnet 5.5 · high, 2026-11-23) 그대로다 — 고른 칸(vision·deep)의 모델을 따라가지 않는다.
-        expect(resolveSurfaceAiConfig("structure-kit", config)).toMatchObject({ model: "claude-sonnet-5-5", providerId: "anthropic" });
+        // 고르지 않은 칸은 공장 기본(ChatGPT GPT-6.2 Sol · high, 2026-11-28) 그대로다 — 고른 칸(vision·deep)의 모델을 따라가지 않는다.
+        expect(resolveSurfaceAiConfig("structure-kit", config)).toMatchObject({ model: "gpt-6.2-sol", providerId: "openai-codex" });
         expect(resolveSurfaceAiConfig("region", config)).toMatchObject({ model: "deep-selected", reasoningEffort: "high" });
         expect(configForLiteModel(config)).toMatchObject({ providerId: "openai-codex", model: "deep-selected", reasoningEffort: "high" });
-        expect(configForLegacySupervisor(config)).toMatchObject({ providerId: "anthropic", model: "claude-sonnet-5-5", reasoningEffort: "high", maxTokens: config.maxTokens });
+        expect(configForLegacySupervisor(config)).toMatchObject({ providerId: "openai-codex", model: "gpt-6.2-sol", reasoningEffort: "high", maxTokens: config.maxTokens });
         expect(parseRoleModels({ deep: { model: "", provider: 4 }, writer: null })).toEqual({});
       });
     });
@@ -327,19 +327,19 @@ describe("runRecap", () => {
     const cli = (id: "claude" | "codex" | "gemini", state: string, billing: string) => ({ id, state, billing });
     const oauth = (providerId: string, extra: Record<string, unknown> = {}) => ({ providerId, connected: true, authKind: "oauth", ...extra });
     describe("first-run plan defaults", () => {
-      it("orders Claude (the default, owner decision 2026-11-23), then ChatGPT, then the rest, one card per plan", () => {
+      it("orders ChatGPT (the default, owner decision 2026-11-28), then Claude, skipping deprecated Gemini CLI & disabled Google OAuth", () => {
         const plans = planCandidates(
           [cli("gemini", "ready", "subscription"), cli("codex", "ready", "subscription"), cli("claude", "ready", "subscription")],
           [oauth("openai-codex"), oauth("google-antigravity")],
         );
-        expect(plans.map((plan) => plan.key)).toEqual(["claude-cli", "codex-cli", "gemini-cli"]);
-        // Claude 구독이 없으면 ChatGPT 가 앞선다(Claude 로그인 카드는 없다 — 계정 후보는 ChatGPT·Google 뿐).
-        expect(planCandidates([cli("gemini", "ready", "subscription"), cli("codex", "ready", "subscription")], []).map((plan) => plan.key)).toEqual(["codex-cli", "gemini-cli"]);
+        expect(plans.map((plan) => plan.key)).toEqual(["codex-cli", "claude-cli"]);
+        expect(planCandidates([cli("gemini", "ready", "subscription"), cli("claude", "ready", "subscription")], []).map((plan) => plan.key)).toEqual(["claude-cli"]);
       });
 
-      it("gives a Claude subscription Sonnet 5.5 high alone (no lead, no Haiku worker), and ChatGPT Sol alone", () => {
-        const [claude, codex] = planCandidates([cli("claude", "ready", "subscription"), cli("codex", "ready", "subscription")], []);
-        // 오너 결정 2026-11-23: Claude 기본은 Sonnet 5.5 · high 한 모델 — Haiku 워커·팀장 나누기는 기본이 아니다.
+      it("gives a ChatGPT subscription Sol high alone and a Claude subscription Sonnet 5.5 high alone", () => {
+        const [codex, claude] = planCandidates([cli("claude", "ready", "subscription"), cli("codex", "ready", "subscription")], []);
+        expect(codex?.kind === "local-cli" && codex.engine).toMatchObject({ cli: "codex", routineModel: "gpt-6.2-sol", deepModel: "gpt-6.2-sol", effort: "high" });
+        expect(codex?.kind === "local-cli" && assistantEngineLead(codex.engine)).toBeUndefined();
         expect(claude?.kind === "local-cli" && claude.engine).toEqual({ kind: "local-cli", cli: "claude", routineModel: "claude-sonnet-5-5", deepModel: "claude-sonnet-5-5", effort: "high" });
         expect(claude?.kind === "local-cli" && assistantEngineLead(claude.engine)).toBeUndefined();
         expect(claude?.setup).toBe("Sonnet 5.5 하나가 계획부터 만들기까지 해요.");
@@ -349,8 +349,6 @@ describe("runRecap", () => {
           roleModels: Object.fromEntries(["deep", "build", "writer", "vision"].map((role) => [role, { provider: "local-cli:claude", model: "claude-sonnet-5-5", thinkingLevel: "high" }])),
           pixelModel: { provider: "local-cli:claude", model: "claude-sonnet-5-5", thinkingLevel: "high" },
         });
-        expect(codex?.kind === "local-cli" && codex.engine).toMatchObject({ cli: "codex", routineModel: "gpt-6.2-sol", deepModel: "gpt-6.2-sol", effort: "medium" });
-        expect(codex?.kind === "local-cli" && assistantEngineLead(codex.engine)).toBeUndefined();
       });
 
       it("skips API-key logins, env keys, expired and missing logins", () => {
@@ -365,7 +363,7 @@ describe("runRecap", () => {
         const next = configForPlanAccount<Parameters<typeof configForPlanAccount>[0]>({ providerId: "openai-codex", model: "gpt-6.1-sol", roleModels: { writer: { provider: "google-antigravity", model: "gemini-4-argon", thinkingLevel: "medium" } }, modelSelectionOverrides: { vision: true } }, "openai-codex");
         expect(next.model).toBe("gpt-6.2-sol");
         expect(next.ultrabrainModel).toBe("gpt-6.2-sol");
-        expect(next.ultrabrainReasoningEffort).toBe("medium");
+        expect(next.ultrabrainReasoningEffort).toBe("high");
         expect(next.roleModels?.writer?.model).toBe("gpt-6.2-sol");
         expect(next.roleModels?.vision).toBeUndefined();
       });

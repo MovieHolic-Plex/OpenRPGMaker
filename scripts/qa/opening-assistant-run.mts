@@ -11,7 +11,7 @@ import path from 'node:path';
 import {spawn} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {isDeepStrictEqual} from 'node:util';
-import {buildModel} from '@oh-my-pi/pi-catalog/build';
+const buildModel = <T>(m: T): T => m;
 import {runPiAgent} from '../lib/piAgentRuntime';
 import {requestPiOpeningGeneration,requestPiRender,resolvePiRender} from '../lib/piRenderBroker';
 import {restoreCheckpointProject,type PiAgentEvent} from '../../src/ai/piAgent/protocol';

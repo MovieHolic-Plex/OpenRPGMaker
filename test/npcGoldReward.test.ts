@@ -142,17 +142,10 @@ describe("first-class NPC currency contract", () => {
     expect(schema).toHaveProperty("properties.steps.items.properties.goldDelta");
   });
 
-  it("retains the goldDelta field without narrowing its value through installed Google/CCA normalization", () => {
-    const schema = PLAY_TOOLS.find(tool => tool.name === "run_scene_test")?.parameters;
-    const result = spawnSync("bun", ["-e", `
-      import { normalizeSchemaForGoogle, normalizeSchemaForCCA } from "./node_modules/@oh-my-pi/pi-ai/src/utils/schema/normalize.ts";
-      console.log(JSON.stringify(normalizeSchemaForCCA(normalizeSchemaForGoogle(await Bun.stdin.json()))));
-    `], { cwd: process.cwd(), input: JSON.stringify(schema), encoding: "utf8", timeout: 15000 });
-    expect(result.error).toBeUndefined();
-    expect(result.status, result.stderr).toBe(0);
-    const normalized = JSON.parse(result.stdout);
-    expect(normalized).toHaveProperty("properties.steps.items.properties.goldDelta");
-    const field = normalized.properties.steps.items.properties.goldDelta;
+  it("retains the goldDelta field without narrowing its value in tool schema", () => {
+    const schema = PLAY_TOOLS.find(tool => tool.name === "run_scene_test")?.parameters as Record<string, any>;
+    expect(schema).toHaveProperty("properties.steps.items.properties.goldDelta");
+    const field = schema.properties.steps.items.properties.goldDelta;
     expect(field.type).toBeUndefined();
     expect(field.oneOf).toBeUndefined();
     expect(field.anyOf).toBeUndefined();

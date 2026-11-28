@@ -345,14 +345,12 @@ describe("task recipe contracts", () => {
 
 
 describe("installed model window contract", () => {
-  it("matches every listed bundled provider model without importing the 9 MB catalog into the app", () => {
-    const catalog = JSON.parse(readFileSync("node_modules/@oh-my-pi/pi-catalog/src/models.json", "utf8")) as Record<string, Record<string, { contextWindow: number }>>;
-    // 번들 밖 로컬 확장(scripts/lib/ohMyPiModel.ts)과 앱 표가 일부만 싣는 제공자(anthropic)가 있어
-    // 표의 모든 항목이 아니라 번들에 있는 항목의 창만 대조한다.
+  it("matches every listed bundled provider model without importing the full catalog into the app", async () => {
+    const { getModels } = await import("@earendil-works/pi-ai/compat");
     for (const [provider, windows] of Object.entries(ORIGINAL_MODEL_WINDOWS)) {
-      const bundled = catalog[provider] ?? {};
-      const listed = Object.entries(windows).filter(([id]) => bundled[id]);
-      expect(Object.fromEntries(listed), provider).toEqual(Object.fromEntries(listed.map(([id]) => [id, bundled[id]!.contextWindow])));
+      const bundled = Object.fromEntries((getModels(provider as never) ?? []).map((m: { id: string; contextWindow: number }) => [m.id, m.contextWindow]));
+      const listed = Object.entries(windows).filter(([id]) => bundled[id] !== undefined);
+      expect(Object.fromEntries(listed), provider).toEqual(Object.fromEntries(listed.map(([id]) => [id, bundled[id]])));
     }
     expect(originalContextWindow({ model: "gpt-6-astra", providerId: "openai-codex" })).toBe(272000);
     expect(originalContextWindow({ model: "gpt-6.1-sol", providerId: "openai-codex" })).toBe(500000);

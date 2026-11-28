@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
-import type { StreamFn } from "@oh-my-pi/pi-agent-core";
-import { createAssistantMessageEventStream, type AssistantMessage } from "@oh-my-pi/pi-ai";
+import type { StreamFn } from "@earendil-works/pi-agent-core";
+import { createAssistantMessageEventStream, type AssistantMessage } from "@earendil-works/pi-ai";
 import { runPiAgent } from "../scripts/lib/piAgentRuntime.ts";
 import type { PiAgentRequest } from "../src/ai/piAgent/protocol.ts";
 import { MAP_REMOVAL_DRAFT_REFUSAL } from "../src/editor/smallTask/primitives/errors.ts";
@@ -63,7 +63,7 @@ function fixture() {
   map.events = [event, { ...event, id: "event_other" }];
   const target = mapTarget(project, mapId, event.id, page.id)!;
   const request = {
-    provider: "google-antigravity", mode: "single", task: "안내인의 대사를 정리해 줘", project, mapIds: [mapId],
+    provider: "openai-codex", mode: "single", task: "안내인의 대사를 정리해 줘", project, mapIds: [mapId],
     smallTask: { target, maxToolCalls: 4 },
   } satisfies PiAgentRequest;
   return { request, project, mapId, event, commands };

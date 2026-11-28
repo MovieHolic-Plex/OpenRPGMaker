@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
-import { buildModel } from "@oh-my-pi/pi-catalog/build";
+const buildModel = <T>(m: T): T => m;
 import { runPiAgent } from "../lib/piAgentRuntime.ts";
 import { openLocalProjectStore } from "../../electron/local-store/store.ts";
 import { buildSessionRegistryTools } from "../../src/ai/sessionToolExposure.ts";

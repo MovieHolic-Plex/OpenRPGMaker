@@ -6,7 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { pngShrinkBase64 } from '../lib/jpegShrink.ts';
 import { spawn } from 'node:child_process';
-import { buildModel } from '@oh-my-pi/pi-catalog/build';
+const buildModel = <T>(m: T): T => m;
 import { runPiAgent } from '../lib/piAgentRuntime';
 import { resolveOhMyPiModel } from '../lib/ohMyPiModel.ts';
 import { resolveRequestApiKey } from '../lib/aiAuthRuntime';

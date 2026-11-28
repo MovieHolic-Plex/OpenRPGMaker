@@ -8,6 +8,7 @@ import { sharedFaceFromEventGraphic, sharedFaceForCharset } from "@/project/shar
 import { EASYRPG_RTP_ASSETS, charsetFrameIndex, decodeCharsetFrameIndex } from "@/assets/easyrpgRtp";
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { resolveCc0IconAssetUrl } from "@/assets/cc0IconAssets";
+import { interactivePropFrameIndex, interactivePropFromSpriteId } from "@/project/interactiveProps";
 import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
 import { npcGraphicCatalogIsFiltered, npcGraphicExampleLabels, npcGraphicMissNote, pickNpcGraphic, queryNpcGraphics, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
 import { HARNESS_CHARACTER_PREFIX } from '@/project/sharedCharacters';
@@ -15,7 +16,7 @@ import { searchResources } from "@/assets/resourceSearch";
 import { COMMAND_KINDS, CONDITION_KINDS } from "@/project/commandKindRegistry";
 import { validateConditionShape } from "@/project/io/shapeCommandFields";
 import { stripSpeakerEcho } from "@/project/dialogueSpeakerEcho";
-import type { Command, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic } from "@/project/types";
+import type { Command, EventPage, EventPageCondition, EventPageGraphic, FaceGraphic, Project } from "@/project/types";
 import { ToolError } from "./types";
 import type { SimplePage, SimplePageChoice } from "./types";
 
@@ -197,7 +198,23 @@ export function crystalGraphic(): EventPageGraphic {
 }
 
 // query 문자열을 별칭/자유 질의 매처로 해석해 charset 그래픽을 만든다.
-export type GraphicQueryResolveOptions = NpcGraphicPickOptions;
+export type GraphicQueryResolveOptions = NpcGraphicPickOptions & {
+  /** 프로젝트 커스텀 상호작용 프롭(`iprop:<id>`) 조회용 컨텍스트. 생략 시 runTool 스코프 프로젝트로 폴백. */
+  readonly project?: Project;
+};
+
+let scopedGraphicResolveProject: Project | undefined;
+
+/** 동기 도구 실행 구간 동안 resolveGraphic 이 프로젝트 커스텀 프롭을 조회할 대상 프로젝트를 묶는다(store 싱글톤 비의존). */
+export function withGraphicResolveProject<T>(project: Project | undefined, run: () => T): T {
+  const previous = scopedGraphicResolveProject;
+  scopedGraphicResolveProject = project;
+  try {
+    return run();
+  } finally {
+    scopedGraphicResolveProject = previous;
+  }
+}
 
 export function resolveGraphicQuery(query: string, pick?: GraphicQueryResolveOptions): EventPageGraphic {
   // 못 찾으면 거절한다. 2026-09-18 부터 주민 그림으로 대체하고 경고만 남겼는데, 조수는 경고를 읽지 않아
@@ -266,6 +283,17 @@ export function resolveGraphic(spec0: GraphicSpec | undefined, pick?: GraphicQue
   const textureKey = [loose.textureKey, loose.resourceId, loose.spriteId, loose.id, sprite?.id].find((value): value is string => typeof value === "string" && value.trim().length > 0);
   // 번들 CC0 아이콘(수정·보석 등)은 한 장 그림이다 — 칩 시트로 해석하지 않고 그대로 쓴다.
   if (textureKey !== undefined && resolveCc0IconAssetUrl(textureKey.trim())) return { sprite: { type: "bundled", id: textureKey.trim() } };
+  // 멀티프레임 상호작용 오브젝트 정식 이벤트 그래픽(`iprop:<id>`).
+  if (textureKey !== undefined) {
+    const trimmedKey = textureKey.trim();
+    const interactiveProp = interactivePropFromSpriteId(trimmedKey, pick?.project ?? scopedGraphicResolveProject);
+    if (interactiveProp) {
+      return {
+        sprite: { type: "bundled", id: trimmedKey },
+        pattern: interactivePropFrameIndex(interactiveProp, typeof loose.pattern === "number" || typeof loose.pattern === "string" ? loose.pattern : undefined),
+      };
+    }
+  }
   if (textureKey === undefined) {
     throw new ToolError(
       `graphic 은 {query:"…"} 또는 {textureKey:"<시트>", characterIndex:0~7} 이어야 합니다 — 받은 모양: ${JSON.stringify(spec).slice(0, 120)}. 칩 id 는 textureKey 칸에 문자열로 적고, 그림을 고르려면 list_npc_graphics 로 허용 칩을 보세요.`,
