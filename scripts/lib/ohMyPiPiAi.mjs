@@ -138,15 +138,22 @@ function startWorker() {
       if (existsSync(builtBundle)) {
         return spawn(process.execPath, [builtBundle], { stdio: ["ignore", "pipe", "pipe"], env: nodeEnv });
       }
-      return spawn(process.execPath, [scriptPath], { stdio: ["ignore", "pipe", "pipe"], env: nodeEnv });
+      throw new Error("AI 워커 번들(dist-electron/ai-worker.mjs)이 없고 bun 도 설치되어 있지 않습니다. `npm run build:electron` 으로 번들을 먼저 만들거나 bun 을 설치해 주세요.");
     };
-    const child = command
-      ? spawn(command, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env }, shell: true })
-      : packedBin && existsSync(packedBin)
-        ? (/\.(?:cjs|mjs|js)$/u.test(packedBin)
-          ? spawn(process.execPath, [packedBin], { stdio: ["ignore", "pipe", "pipe"], env: nodeEnv })
-          : spawn(packedBin, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env } }))
-        : spawnSourceWorker();
+    let child;
+    try {
+      child = command
+        ? spawn(command, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env }, shell: true })
+        : packedBin && existsSync(packedBin)
+          ? (/\.(?:cjs|mjs|js)$/u.test(packedBin)
+            ? spawn(process.execPath, [packedBin], { stdio: ["ignore", "pipe", "pipe"], env: nodeEnv })
+            : spawn(packedBin, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env } }))
+          : spawnSourceWorker();
+    } catch (error) {
+      if (workerPortPromise === promise) workerPortPromise = null;
+      reject(error);
+      return;
+    }
     workerChild = child;
     let settled = false;
     const fail = (error) => {

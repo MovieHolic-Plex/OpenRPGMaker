@@ -48,7 +48,6 @@ export function resolveOpenAiCompatModel(provider: string, requested?: string) {
   if (!verdict.allowed) {
     throw Object.assign(new Error(`${endpoint.name}: 모델 「${id}」 호출을 거절했어요. ${verdict.reason ?? ""} 다른 모델로 바꿔 보내지 않아요.`), { status: 403 });
   }
-  const timeoutMs = endpoint.firstTokenTimeoutSec * 1000;
   return {
     id,
     name: id,
@@ -70,10 +69,16 @@ export function resolveOpenAiCompatModel(provider: string, requested?: string) {
       supportsStore: false,
       supportsDeveloperRole: false,
       maxTokensField: "max_tokens",
-      streamFirstEventTimeoutMs: timeoutMs,
-      streamIdleTimeoutMs: Math.max(timeoutMs, 120_000),
     },
   } as unknown as Model<"openai-completions">;
+}
+
+/** 사용자 지정 엔드포인트의 첫 응답·유휴 타임아웃(ms). piAgentRuntime 의 스트림 무응답 감시가 직접 집행한다. */
+export function openAiCompatStreamDeadlines(provider: string): { firstEventMs?: number; idleMs?: number } {
+  const endpoint = registry.get(provider);
+  if (!endpoint) return {};
+  const firstEventMs = endpoint.firstTokenTimeoutSec * 1000;
+  return { firstEventMs, idleMs: Math.max(firstEventMs, 120_000) };
 }
 
 /** 사용자 지정 엔드포인트 요청 직전 SSRF/메타데이터 호스트 검증. */

@@ -961,6 +961,7 @@
 "Google Antigravity 구독 경로로 생성합니다 — 직접 고른 경우에만 쓰입니다.":"手动选择后，通过 Google Antigravity 订阅生成图像。",
 "Google 계정":"Google 账号",
 "Google 계정 로그인이나 Gemini API 키로 바로 연결할 수 있어요.":"可通过 Google 账号登录或 Gemini API 密钥快速连接。",
+"Google 계정 직접 로그인은 계정 정지 위험으로 비활성화되어 있어요. Gemini API 키로 연결해 주세요.":"由于账号封禁风险，已禁用 Google 账号直接登录。请使用 Gemini API 密钥连接。",
 "Google 계정 직접 로그인은 계정 정지 위험으로 비활성화되어 있어요. Gemini API 키를 사용해 주세요.":"由于账号封禁风险，已禁用 Google 账号直接登录。请使用 Gemini API 密钥。",
 "Google 계정 직접 로그인은 계정 정지 위험으로 현재 비활성화되어 있습니다. Gemini API 키를 사용해 주세요.":"由于账号封禁风险，当前已禁用 Google 账号直接登录。请使用 Gemini API 密钥。",
 "Google 계정으로 로그인":"使用 Google 账号登录",

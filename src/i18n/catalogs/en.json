@@ -1108,6 +1108,7 @@
 "Google Antigravity 구독 경로로 생성합니다 — 직접 고른 경우에만 쓰입니다.":"Generates through Google Antigravity when you select it explicitly.",
 "Google 계정":"Google account",
 "Google 계정 로그인이나 Gemini API 키로 바로 연결할 수 있어요.":"Connect with your Google account or a Gemini API key.",
+"Google 계정 직접 로그인은 계정 정지 위험으로 비활성화되어 있어요. Gemini API 키로 연결해 주세요.":"Direct Google account login is disabled due to account ban risk. Connect with a Gemini API key.",
 "Google 계정 직접 로그인은 계정 정지 위험으로 비활성화되어 있어요. Gemini API 키를 사용해 주세요.":"Direct Google account login is disabled due to account ban risk. Please use a Gemini API key.",
 "Google 계정 직접 로그인은 계정 정지 위험으로 현재 비활성화되어 있습니다. Gemini API 키를 사용해 주세요.":"Direct Google account login is currently disabled due to account ban risk. Please use a Gemini API key.",
 "Google 계정으로 로그인":"Sign in with Google",

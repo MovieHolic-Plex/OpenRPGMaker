@@ -186,7 +186,9 @@ function resolveFamilyState(family: CoreProviderFamily): ResolvedFamilyState {
 
   let routeProviderId: string | undefined;
   let via: ResolvedFamilyState["via"];
-  if (health.state === "ok" && health.routeProviderId) {
+  const healthRouteDisabled = family === "gemini"
+    && (health.routeProviderId === meta.oauthId || health.routeProviderId === "google-gemini-cli" || health.routeProviderId === localCliProviderId(meta.cliId));
+  if (health.state === "ok" && health.routeProviderId && !healthRouteDisabled) {
     routeProviderId = health.routeProviderId;
     via = health.via;
   } else if (oauthRoute || liveReady) {

@@ -226,9 +226,11 @@ const server = createServer(async (req, res) => {
       const provider = typeof body.provider === "string" ? body.provider : CODEX_PROVIDER_ID;
       const payload = body.body && typeof body.body === "object" ? body.body as Record<string, unknown> : body;
       const apiKey = typeof body.apiKey === "string" ? body.apiKey : undefined;
-      sendJson(res, await (provider === CODEX_PROVIDER_ID
-        ? generateCodexImage(payload, { apiKey })
-        : generateProviderImage(provider, payload, { apiKey })));
+      sendJson(res, await (process.env.OPRN_OH_MY_PI_TEST_STUB === "1"
+        ? generateProviderImage(provider, payload, { apiKey })
+        : provider === CODEX_PROVIDER_ID
+          ? generateCodexImage(payload, { apiKey })
+          : generateProviderImage(provider, payload, { apiKey })));
       return;
     }
     sendJson(res, { error: "Not found" }, 404);

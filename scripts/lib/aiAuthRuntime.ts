@@ -564,11 +564,14 @@ function refreshSingleFlight(id: PortedOAuthProviderId) {
 export async function refreshProvider(provider: string) {
   // API 키·사용자 지정 엔드포인트에는 갱신할 토큰이 없다 — 조용히 현재 상태를 돌려준다.
   if (isOpenAiCompatProviderId(provider)) return openAiCompatStatus(provider);
-  return refreshSingleFlight(requireKnown(provider));
+  const id = requireKnown(provider);
+  if (id === ANTIGRAVITY_PROVIDER_ID && !testStub()) return publicProviderStatus(id);
+  return refreshSingleFlight(id);
 }
 
 /** 만료됐지만 갱신 토큰이 있어 사용자 조작 없이 되살릴 수 있는 저장본인가. */
 function canAutoRefresh(id: PortedOAuthProviderId): boolean {
+  if (id === ANTIGRAVITY_PROVIDER_ID && !testStub()) return false;
   if (pendingLogins.has(id)) return false;
   const credentials = credentialsOf(id);
   return Boolean(
@@ -588,7 +591,7 @@ export async function providerStatus(provider: string) {
   if (isOpenAiCompatProviderId(provider)) return openAiCompatStatus(provider);
   const id = requireKnown(provider);
   const status = publicProviderStatus(id);
-  if (status.connected || !canAutoRefresh(id)) return status;
+  if (status.connected || ("disabled" in status && status.disabled) || !canAutoRefresh(id)) return status;
   const failure = refreshFailures.get(id);
   if (failure && Date.now() < failure.retryAt) {
     return { ...status, refreshError: failure.error, refreshRetryAt: failure.retryAt };
