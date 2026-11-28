@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "key": "fp-golem-core-mechanist",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium"
+}

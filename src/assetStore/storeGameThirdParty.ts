@@ -1,5 +1,4 @@
 import type { Project, ResourceProfile } from "@/project/types";
-import { REFMAP_DOLL_CHARSET_RESOURCE_IDS } from "@/assets/refmapDollCharsets";
 import { storeThirdPartyName } from "./format";
 
 /**
@@ -9,14 +8,13 @@ import { storeThirdPartyName } from "./format";
 const OPEN_CATALOG_PREFIXES = ["cc0-", "easyrpg-"] as const;
 
 /**
- * 고친 REFMAP 그림 — RefmapDoll 칩(두 REFMAP 인물의 머리와 몸을 합치고 목을 다시 그린 것, src/assets/refmapDollCharsets.ts).
- * 사용자 결정(2026-10-31): 「REFMAP 은 수정된 것들은 전부 허용」. REFMAP-MODIFIED 약관으로 보고 「refmap」 낱말만 풀어 준다
- * (다른 제3자 이름은 그대로 막는다). 이 칩을 쓰는 게임은 크레딧에 REFMAP_CREDIT 을 단다(publish-game.mts).
+ * 은퇴한 구 RefmapDoll 칩 ID(`oprn-charset-refmap-doll<n>` / `tex_oprn_charset_refmap_doll<n>`).
+ * 번들에서는 2026-11-28 전량 제거되었으나, 과거 저장본의 resourceProfiles 에 남아 있을 때 불필요한 스토어 거절을 막고 정리하기 위해 패턴만 유지한다.
  */
-const MODIFIED_REFMAP_IDS: ReadonlySet<string> = new Set(REFMAP_DOLL_CHARSET_RESOURCE_IDS);
+const RETIRED_REFMAP_DOLL_ID = /^(?:oprn-charset-refmap-doll|tex_oprn_charset_refmap_doll)\d+$/u;
 
 export function isModifiedRefmapProfile(profile: ResourceProfile): boolean {
-  return MODIFIED_REFMAP_IDS.has(profile.assetId ?? "");
+  return RETIRED_REFMAP_DOLL_ID.test(profile.assetId ?? "");
 }
 
 /** 자원 목록 항목 하나가 스토어가 막는 제3자 팩 이름(REFMAP·Rasak·PAW·RPG Maker MV/MZ 계열)을 달고 있으면 그 낱말, 아니면 null. */

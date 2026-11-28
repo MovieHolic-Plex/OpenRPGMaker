@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "key": "fp-harbor-lighthouse-keeper",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium"
+}

@@ -370,8 +370,11 @@ export function auditProjectAssetLicenses(project: Project): ProjectAssetLicense
       || EASYRPG_RTP_DERIVED_SHEET_KEYS.has(id)
       || EASYRPG_RTP_DERIVED_PATHS.includes(lowerPath)
       || lowerId === "tex_heroes1"
+      || lowerId.startsWith("oprn-charset-fantasy-people")
+      || lowerId.startsWith("tex_oprn_charset_fantasy_people")
       || /^tex_modern[123]$/u.test(lowerId)
       || lowerPath.includes("generated/charsets/heroes1")
+      || lowerPath.includes("generated/charsets/fantasypeople")
       || /generated\/charsets\/modern[123]/u.test(lowerPath)
       || lowerPath.startsWith("assets/shared/faceset/")
       || lowerPath.startsWith("assets/shared/portraits/")

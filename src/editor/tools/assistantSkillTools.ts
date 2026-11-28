@@ -53,7 +53,7 @@ const listAssistantSkills: ToolDefinition = {
   name: "list_assistant_skills",
   description:
     "조수 스킬 목록(id·언제 쓰는가)을 돌려준다. 스킬은 데모 게임을 사람이 손으로 고친 교훈을 정리한 작업 지침이다 — " +
-    "이야기·이벤트·컷신·NPC 등장/퇴장·문/이동/계단·대화창·BGM 은 game-scene-polish, 대사·자막·선택지·아이템 설명을 쓰거나 윤문할 때는 dialogue-polish(공식 윤문 스킬, general-good-writing), 밀기문·커튼·항아리 파괴·공포 기믹(거울·초상화·폐병원)·자판기·환경 모션 등 156종 실원본 상호작용 오브젝트 배치는 interactive-props, 손 도트 실내는 interior-room-authoring, 일본 상가 거리는 jp-city-building-authoring, 24×32 RM2000·EasyRPG 캐릭터칩 도트·눈매·12프레임 보행 역학은 easyrpg-charset-batch. " +
+    "이야기·이벤트·컷신·NPC 등장/퇴장·문/이동/계단·대화창·BGM 은 game-scene-polish, 대사·자막·선택지·아이템 설명을 쓰거나 윤문할 때는 dialogue-polish(공식 윤문 스킬, general-good-writing), 밀기문·커튼·항아리 파괴·공포 기믹(거울·초상화·폐병원)·자판기·환경 모션 등 156종 실원본 상호작용 오브젝트 배치는 interactive-props, 손 도트 실내는 interior-room-authoring, 일본 상가 거리는 jp-city-building-authoring, 24×32 RM2000·EasyRPG 캐릭터칩 도트·눈매·12프레임 보행 역학은 easyrpg-charset-batch(권장 LLM: Carbon·Fable 전용 — 이외 모델은 잘 작동하지 않음 경고). " +
     "본문은 read_assistant_skill 로 읽는다.",
   mode: "read",
   parameters: { type: "object", properties: {}, additionalProperties: false },
@@ -69,7 +69,7 @@ const readAssistantSkill: ToolDefinition = {
   description:
     "조수 스킬 본문을 읽는다(6000자씩, nextOffset 이 있으면 이어 읽는다). 이야기 장면·이벤트·컷신·NPC 등장과 퇴장·문과 이동·계단·대화창·맵 BGM·탈것·전투 균형을 " +
     "만들거나 고치기 전에 id:\"game-scene-polish\" 를 한 번 끝까지 읽는다 — 세 데모에서 사람이 손으로 고친 실수와 확인법이다. " +
-    "대사·자막·선택지·설명 글을 쓰거나 고치기 전에는 id:\"dialogue-polish\" 를 읽는다. 스킬의 부분 문서(원본 규칙 등)는 part 로 하나씩 읽는다(결과 parts 가 목록). 고정 텍스트라 같은 턴에 반복 호출하지 않는다.",
+    "대사·자막·선택지·설명 글을 쓰거나 고치기 전에는 id:\"dialogue-polish\" 를 읽는다. 24×32 RM2000·EasyRPG 캐릭터칩 도트를 저작·검수할 때는 id:\"easyrpg-charset-batch\" 를 읽고 권장 LLM(Carbon·Fable 전용, 이외 LLM은 잘 작동하지 않음 경고)을 먼저 확인한다. 스킬의 부분 문서(원본 규칙 등)는 part 로 하나씩 읽는다(결과 parts 가 목록). 고정 텍스트라 같은 턴에 반복 호출하지 않는다.",
   mode: "read",
   parameters: {
     type: "object",

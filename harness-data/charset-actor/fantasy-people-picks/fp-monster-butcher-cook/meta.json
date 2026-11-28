@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "key": "fp-monster-butcher-cook",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium"
+}

@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "key": "fp-azure-corsair-captain",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium"
+}

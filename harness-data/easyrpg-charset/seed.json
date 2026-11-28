@@ -1,0 +1,33 @@
+{
+  "harness": "easyrpg-charset",
+  "skill": "easyrpg-charset-batch",
+  "recommendedLlms": [
+    "carbon",
+    "fable"
+  ],
+  "recommendedModelExamples": [
+    "gemini-4-carbon",
+    "fable-5-2"
+  ],
+  "nonRecommendedWarning": "권장 LLM은 Carbon(gemini-4-carbon 계열)과 Fable(fable 계열)뿐입니다. 이외의 LLM에서는 24x32 12프레임 보행 역학·옆모습 C구역·목 수축(ey+3)·중심축 대칭이 무너져 잘 작동하지 않습니다.",
+  "defaultEditorSet": {
+    "series": "FantasyPeople",
+    "sheets": 25,
+    "characters": 200,
+    "installManifest": "harness-data/charset-actor/fantasy-people-install.json",
+    "picksDir": "harness-data/charset-actor/fantasy-people-picks",
+    "catalogJson": "src/assets/fantasyPeopleCharsets.json",
+    "sheetGlob": "public/assets/generated/charsets/FantasyPeople{1..25}.png"
+  },
+  "gates": {
+    "stage1Mechanical": [
+      "chr.py strong palette/transparency/color-key",
+      "motion.py 12-frame walk bob",
+      "check_side_profile_anatomy (C-zone ear+cheek, 1px nose, 8-10px torso, 7px shoe)",
+      "check_front_face_and_head_lock (x=9..14 eye symmetry, 4-dir eye-y sync, rigid +1px crown bob)",
+      "check_proportion_and_symmetry_qa (forehead <=2 rows, x=11.5 symmetry, ey+3 neck pinch, dark chin separator)",
+      "check_walk_kinematics_12frame (y=30 ground contact, steady hand/sleeve brightness, bidirectional side arm swing)"
+    ],
+    "stage2AdversarialVisualQa": "Independent read-only critic subagent on 5x 12-frame + 1x/2x QA boards, SHA-256 bound in views/qa_verdict.json"
+  }
+}

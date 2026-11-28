@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "key": "fp-clockwork-sleuth",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium"
+}

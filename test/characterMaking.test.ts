@@ -19,7 +19,7 @@ describe("characterMaking", () => {
   isolateTimers();
   const PNG_1PX = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
   const VILLAGER_WOMAN = "charset:tex_easyrpg_charset_people1:5";
-  const DWARF_SMITH = "charset:tex_oprn_charset_refmap_doll190:4";
+  const DWARF_SMITH = "charset:tex_oprn_charset_fantasy_people1:0";
   function villager(ctx: ToolContext, id: string, name: string, selectionId: string, face?: Record<string, unknown>) {
     const result = runTool(ctx, "make_villager", { mapId: ctx.project.startMapId, id, name, home: { x: 2 + ctx.project.maps[ctx.project.startMapId]!.events.length * 2, y: 3 }, graphic: { selectionId }, dialogue: [{ text: "어서 오세요." }], ...(face ? { face } : {}) }, { dryRun: false });
     expect(result.ok, result.summary).toBe(true);
@@ -137,21 +137,21 @@ describe("characterMaking", () => {
     it("칩은 맞는데 짝 얼굴이 없는 사람은 걷기 칩 없이 얼굴만 그린다", async () => {
       const base = createBlankProject();
       const ctx: ToolContext = { project: structuredClone(base) };
-      villager(ctx, "ev_bard", "떠돌이 음유시인", "charset:tex_oprn_charset_refmap_doll199:4");
+      villager(ctx, "ev_bard", "떠돌이 음유시인", "charset:tex_oprn_charset_fantasy_people1:3");
       const targets = facelessFitCharacters(ctx.project, base);
       expect(targets.map((t) => t.eventId)).toEqual(["ev_bard"]);
       const started: string[] = [];
       const [made] = await makeCharacters(targets, { ctx, runTool: (c, n, a) => runTool(c, n, a, { dryRun: false }), chipsLeft: 5, faceOnly: true, startChip: async (id) => { started.push(id); }, drawFace: async () => drew("appearance-face_t6") });
       expect(started).toEqual([]);
       expect(made!.faceResourceId).toBe("appearance-face_t6");
-      expect(ctx.project.database.characterAppearances!.find((app) => app.id === made!.appearanceId)!.charset?.resourceId).toBe("tex_oprn_charset_refmap_doll199");
+      expect(ctx.project.database.characterAppearances!.find((app) => app.id === made!.appearanceId)!.charset?.resourceId).toBe("tex_oprn_charset_fantasy_people1");
     });
 
     it("같은 칩을 입은 사람 여럿은 한 외형·한 얼굴을 나눠 쓴다", async () => {
       const base = createBlankProject();
       const ctx: ToolContext = { project: structuredClone(base) };
-      villager(ctx, "ev_bard1", "떠돌이 음유시인 A", "charset:tex_oprn_charset_refmap_doll199:4");
-      villager(ctx, "ev_bard2", "떠돌이 음유시인 B", "charset:tex_oprn_charset_refmap_doll199:4");
+      villager(ctx, "ev_bard1", "떠돌이 음유시인 A", "charset:tex_oprn_charset_fantasy_people1:3");
+      villager(ctx, "ev_bard2", "떠돌이 음유시인 B", "charset:tex_oprn_charset_fantasy_people1:3");
       const targets = facelessFitCharacters(ctx.project, base);
       expect(targets).toHaveLength(1);
       let draws = 0;

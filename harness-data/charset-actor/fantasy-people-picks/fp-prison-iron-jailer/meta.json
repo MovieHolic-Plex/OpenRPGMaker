@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "key": "fp-prison-iron-jailer",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium"
+}

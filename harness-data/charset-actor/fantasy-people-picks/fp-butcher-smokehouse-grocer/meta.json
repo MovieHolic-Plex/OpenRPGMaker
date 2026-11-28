@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "key": "fp-butcher-smokehouse-grocer",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium"
+}

@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "key": "fp-dockyard-shipwright",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium"
+}

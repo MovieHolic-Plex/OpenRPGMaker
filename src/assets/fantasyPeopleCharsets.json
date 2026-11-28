@@ -1,0 +1,6036 @@
+{
+ "version": 1,
+ "sheets": 25,
+ "sheetName": "FantasyPeople · 판타지 직업·마을 인물 · OPRN",
+ "selection": {
+  "by": "human",
+  "date": "2026-11-28",
+  "note": "사용자가 RefmapDoll 전량 삭제 및 easyrpg-charset-batch 2단계 관문(기계 관문 + 독립 12프레임 블라인드 시각 QA) 기반 판타지 인물 200종(1차 101종 + 2차 99종, FantasyPeople1~25 만석) 제작·설치를 지시함(2026-11-28). 칸 번호는 덧붙이기 전용이다."
+ },
+ "characters": [
+  {
+   "id": "fantasy-village-blacksmith",
+   "name": "마을 대장장이 장인",
+   "desc": "적갈색 짧은 머리와 정돈된 턱수염, 이마 위에 밀어 올린 황동 작업 고글. 회흑색 작업복 위에 황동 버클이 달린 갈색 가죽 앞치마, 오른쪽 허리에 대장장이 망치.",
+   "genre": "판타지",
+   "role": "대장장이·무기점 주인",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "대장장이",
+    "장인",
+    "무기점",
+    "방어구점",
+    "상인",
+    "고글",
+    "앞치마",
+    "망치",
+    "수염",
+    "기술자",
+    "공방",
+    "blacksmith",
+    "smith",
+    "artisan",
+    "weaponsmith",
+    "craftsman"
+   ],
+   "sheet": 1,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-village-blacksmith",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "People4:4",
+    "gridSha256": "e6ade53eec1ef326de531860cacb73c96d7e80b4da146a3622f5bd95e1de8214",
+    "slotRgbaSha256": "cf10aa63e46260673391d21275f06a7cebc23a0c14fa770f709f48d4cb3b60c9"
+   }
+  },
+  {
+   "id": "fantasy-academy-mage",
+   "name": "마법학회 우등생",
+   "desc": "진홍 리본으로 묶은 연보라빛 회갈색 양갈래 땋은 머리와 선명한 초록 눈. 금테를 두른 남색 마법학회 망토 로브와 흰 셔츠 깃·진홍 리본 타이, 오른쪽 허리에 마도서 가죽 가방.",
+   "genre": "판타지",
+   "role": "마법사·학회 학생",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "마법사",
+    "마법학회",
+    "우등생",
+    "여학생",
+    "학자",
+    "마도사",
+    "양갈래",
+    "땋은 머리",
+    "로브",
+    "망토",
+    "마도서",
+    "소녀",
+    "동료",
+    "mage",
+    "wizard",
+    "academy",
+    "scholar",
+    "apprentice",
+    "student"
+   ],
+   "sheet": 1,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-academy-mage",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "People1:3",
+    "gridSha256": "0e4a3d95eb817fc5087a92841c611d41b9f0881e790b8dd1a2620cf32250b67f",
+    "slotRgbaSha256": "f487e4763e3d53035fdc849f9826ace54083cbb575233a751cf0d205481a0fe6"
+   }
+  },
+  {
+   "id": "fantasy-woodland-elf-ranger",
+   "name": "숲 엘프 궁수",
+   "desc": "황금 잎사귀 서클릿을 쓴 꿀빛 금발 장발과 양옆 뾰족한 엘프 귀, 푸른 눈. 숲녹색 망토 튜닉과 갈색 가죽 조끼·붉은 목 매듭, 등 뒤에 붉은 깃 화살통.",
+   "genre": "판타지",
+   "role": "엘프 궁수·순찰자",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "엘프",
+    "궁수",
+    "레인저",
+    "사냥꾼",
+    "순찰자",
+    "숲",
+    "금발",
+    "서클릿",
+    "화살통",
+    "망토",
+    "동료",
+    "elf",
+    "ranger",
+    "archer",
+    "hunter",
+    "woodland",
+    "scout"
+   ],
+   "sheet": 1,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-woodland-elf-ranger",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Actor2:7",
+    "gridSha256": "1ea3cf3f6c20a82032dc8da8befc766c461e32c1a930f9147726fffa8c6b6cd5",
+    "slotRgbaSha256": "02ede7ba16b53f7f64a5ce322a092e4e6f8cb14b1af2b441c1a1a65c30b3fe85"
+   }
+  },
+  {
+   "id": "fantasy-crimson-beret-bard",
+   "name": "진홍 베레모 음유시인",
+   "desc": "하얀 깃털과 금장 핀이 달린 진홍 벨벳 베레모, 따뜻한 갈색 단발과 푸른 눈. 크림색 퍼프 소매 셔츠 위에 숲녹색 튜닉과 갈색 코르셋 조끼, 사선 가죽 가방끈.",
+   "genre": "판타지",
+   "role": "음유시인·모험가",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "음유시인",
+    "바드",
+    "시인",
+    "악사",
+    "베레모",
+    "깃털",
+    "모험가",
+    "여행자",
+    "소녀",
+    "동료",
+    "bard",
+    "minstrel",
+    "troubadour",
+    "traveler",
+    "beret"
+   ],
+   "sheet": 1,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-crimson-beret-bard",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "People1:1",
+    "gridSha256": "7f79a10d03c0568f8adde7d91b6a3278a8bc6a5bbab3ef738f7fa93aef8a39d2",
+    "slotRgbaSha256": "9bd13375356f89de2675f06903838199adcc9e1b7910433396e4ca5dd25238d4"
+   }
+  },
+  {
+   "id": "fantasy-sun-paladin-knight",
+   "name": "태양성전 여기사",
+   "desc": "풍성한 앞머리·옆머리 다발이 살아 있는 황금빛 하이 포니테일과 얇은 금빛 서클릿, 금발 어두운 톤의 부드러운 눈썹, 백은·로열블루 판금 흉갑과 금빛 태양 문장 흰 타바드, 한쪽 어깨에 걸친 진홍 반망토, 왼쪽 허리에 찬 은장 검집.",
+   "genre": "판타지",
+   "role": "성기사·여기사",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "성기사",
+    "여기사",
+    "기사",
+    "금발",
+    "포니테일",
+    "갑옷",
+    "망토",
+    "동료",
+    "paladin",
+    "knight",
+    "heroine"
+   ],
+   "sheet": 1,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-sun-paladin-knight",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "69e71157b61d2ac954354b61b9f69dfc8af1f8ebf98381c7816eeffd2606c8c9",
+    "slotRgbaSha256": "29e269e743c9187436c4e627da5650c3cfca9641c23e77a6b4d2acd32cd826fb"
+   }
+  },
+  {
+   "id": "fantasy-ironfist-monk-master",
+   "name": "철권 무도가 사부",
+   "desc": "은회색 짧은 상투 머리와 정돈된 짧은 턱수염, 이마에 묶은 진홍 머리띠(뒤로 나부끼는 매듭 끝), 오른쪽 어깨와 탄탄한 가슴 근육 한쪽을 비대칭으로 드러낸 짙은 감청색 무도복 상의와 황금 오비 허리띠, 양손에 감은 붉은 격투 권갑과 흰 붕대 토시.",
+   "genre": "판타지",
+   "role": "무도가·격투 사부",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "무도가",
+    "격투가",
+    "사부",
+    "권법가",
+    "상투",
+    "수염",
+    "동료",
+    "monk",
+    "martial artist",
+    "brawler",
+    "master"
+   ],
+   "sheet": 1,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-ironfist-monk-master",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:1",
+    "gridSha256": "f097558003edd9a855eec5b2309db9427d5e33d1321e33deacf0bcea0e76133c",
+    "slotRgbaSha256": "e12a1d4ac70827d56dd4af3b8135611a8302e86dad66bf425078b805a3220dae"
+   }
+  },
+  {
+   "id": "fantasy-starlight-alchemist-kid",
+   "name": "별빛 연금술사 소녀",
+   "desc": "어두운 세로 가르마 골이 4~5개 다발로 나뉜 폭신한 밤갈색 RTP 보브 단발과 금빛 별 머리핀, 크림색 퍼프 셔츠 위 에메랄드·가죽 연금술 조끼와 작은 갈색 배낭, 사선 벨트 빨강·파랑 포션 병.",
+   "genre": "판타지",
+   "role": "견습 연금술사",
+   "gender": "female",
+   "age": "child",
+   "tags": [
+    "연금술사",
+    "소녀",
+    "아이",
+    "단발",
+    "포션",
+    "견습생",
+    "동료",
+    "alchemist",
+    "girl",
+    "child",
+    "apprentice"
+   ],
+   "sheet": 1,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-starlight-alchemist-kid",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:2",
+    "gridSha256": "b374338d7e8b649fca6d9e7a545489faf37de166f623715d7e8c651003456c89",
+    "slotRgbaSha256": "1c2ff5742330847aed9683c96e423a15e455e742ed1a9cbd1bd7ee23569099fd"
+   }
+  },
+  {
+   "id": "fantasy-flamebeard-runesmith",
+   "name": "화염수염 룬 전사",
+   "desc": "타오르는 구릿빛 적주황 사자갈기 머리카락 다발, 턱 아래 가슴까지 땋아 내린 주황 수염, 청동·황금 룬 흉갑과 왼어깨 백회색 늑대모피 견갑, 가죽 건틀릿.",
+   "genre": "판타지",
+   "role": "룬 대장장이·전사",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "대장장이",
+    "룬전사",
+    "전사",
+    "드워프",
+    "수염",
+    "모피",
+    "갑옷",
+    "runesmith",
+    "warrior",
+    "dwarf",
+    "bearded"
+   ],
+   "sheet": 1,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-flamebeard-runesmith",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "1c77b6d8cb7617a0dab9b85e171dc5e9c710b291776e479c363ca68b9c2a628e",
+    "slotRgbaSha256": "daa85f988483c54b844652f2659ea2d551449a1f65b94632ffa298650fd81c5d"
+   }
+  },
+  {
+   "id": "fantasy-moonlight-shrine-maiden",
+   "name": "달빛 신사 무녀",
+   "desc": "윤기 나는 칠흑·청남빛 흑발 히메컷(가지런한 앞머리, 볼 옆머리, 등까지 흐르는 장발 다발과 뒷머리 진홍 리본 장식), 붉은 속깃 테두리가 선명한 순백 코소데 상의, 진홍 하카마 치마바지와 금방울 허리띠.",
+   "genre": "판타지",
+   "role": "신사 무녀·영매",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "무녀",
+    "신관",
+    "사제",
+    "검은 머리",
+    "흑발",
+    "장발",
+    "하카마",
+    "동방",
+    "miko",
+    "shrine maiden",
+    "priestess"
+   ],
+   "sheet": 2,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-moonlight-shrine-maiden",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "af1909ea13c11b7a02949acfcc3092e4ee932397fcf73c5a074e981fb9717ccc",
+    "slotRgbaSha256": "d5942c54dda94bbe9de2f3eb591fafc59ed9d5717f3bf1df6dfb0f75f515d645"
+   }
+  },
+  {
+   "id": "fantasy-clockwork-sleuth",
+   "name": "태엽 거리 명탐정",
+   "desc": "갈색 체크 헌팅캡 아래로 드러난 밀색 금발 옆머리·앞머리 결, 목 둘레에 건 황동 스팀 고글 스트랩, 카멜 브라운 케이프 코트와 남색 조끼·붉은 타이, 왼허리 황동 회중시계 체인.",
+   "genre": "판타지",
+   "role": "탐정·조사관",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "탐정",
+    "조사관",
+    "헌팅캡",
+    "케이프",
+    "고글",
+    "스팀펑크",
+    "주민",
+    "detective",
+    "sleuth",
+    "investigator"
+   ],
+   "sheet": 2,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-clockwork-sleuth",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "7828dc8e512a3be5e6c40e126facea8e5558cdf75a9f1235135adfc0d9e82b05",
+    "slotRgbaSha256": "ca0eb01457611e98a484b7a581b1d1493380ab68d309bfbd20ba97ae073ba810"
+   }
+  },
+  {
+   "id": "fantasy-forest-herbalist-kid",
+   "name": "숲속 약초사 소년",
+   "desc": "상큼한 민트·숲녹색 보브 더벅머리 다발과 정수리 작은 연두 새싹(2~3px), 노란 목도리, 밤갈색 가죽 멜빵바지와 크림색 반소매 셔츠, 등 뒤 약초 대나무 바구니.",
+   "genre": "판타지",
+   "role": "약초 채집 소년",
+   "gender": "male",
+   "age": "child",
+   "tags": [
+    "약초사",
+    "약초꾼",
+    "소년",
+    "아이",
+    "바구니",
+    "숲",
+    "주민",
+    "herbalist",
+    "boy",
+    "child",
+    "gatherer"
+   ],
+   "sheet": 2,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-forest-herbalist-kid",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:2",
+    "gridSha256": "04e1315297e3d8a3a20fae04cc3f85e88bc7474af8e4f73cb95ef6e559f030c6",
+    "slotRgbaSha256": "42388e25877f8c34afc0e2f4d707e63a1ee6df7978968b0cff4bde0df82f14b6"
+   }
+  },
+  {
+   "id": "fantasy-azure-corsair-captain",
+   "name": "창해 해적 선장",
+   "desc": "금테 흑남색 삼각 해적모 아래로 삐져나온 은회색 앞·옆·뒷머리 다발, 오른쪽 눈 검은 가죽 안대, 짙은 코발트 네이비 금장 롱코트와 진홍 조끼·백색 크라바트.",
+   "genre": "판타지",
+   "role": "해적 선장·항해사",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "해적",
+    "선장",
+    "뱃사람",
+    "안대",
+    "삼각모",
+    "코트",
+    "pirate",
+    "captain",
+    "corsair",
+    "sailor"
+   ],
+   "sheet": 2,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-azure-corsair-captain",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "f03509ee393b8c38b15932f9f1758c0445f8e5c06ac69c1f9ad8a1c6492c0062",
+    "slotRgbaSha256": "6a8aea9a1182b46920caa1ba61acbdf120d0b4a7657adceab9fdfaa3ec9622df"
+   }
+  },
+  {
+   "id": "fantasy-rose-duelist-fencer",
+   "name": "장미 결투 펜서",
+   "desc": "머리띠 없이 자연스러운 가르마로 내려오는 장미빛 코랄핑크 웨이브 장발(Actor4:6 4방향 풍성한 앞·옆·뒷머리 다발), 왼어깨 진홍 반망토(하프 케이프), 백은·심야남색 펜싱 튜닉과 금장 벨트, 왼허리 은장 레이피어 칼집 손잡이.",
+   "genre": "판타지",
+   "role": "결투사·검사",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "검사",
+    "펜서",
+    "결투사",
+    "레이피어",
+    "장발",
+    "반망토",
+    "동료",
+    "duelist",
+    "fencer",
+    "swordswoman"
+   ],
+   "sheet": 2,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-rose-duelist-fencer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "38154ff64d0cfc1f51098db806e8ab88fe545f2fd62534dfd55f5e54ad2b311c",
+    "slotRgbaSha256": "c38d2846ce45cfacc328c14515e3943b8d8e37d1b1ed26fa0abfb05c87f4335c"
+   }
+  },
+  {
+   "id": "fantasy-star-nomad-astrologer",
+   "name": "별지기 점성술사",
+   "desc": "은은한 연보라(라벤더) 앞·옆머리 다발과 뒤통수 매듭에서 등 쪽으로 차분히 흘러내리는 땋은 묶음머리, 왼쪽 옆머리 작은 황금 초승달 머리핀, 심야 감청·황금 별자리 자수 로브(진홍 속깃·붉은 허리띠 태슬로 3면 분할).",
+   "genre": "판타지",
+   "role": "점성술사·예언가",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "점성술사",
+    "마법사",
+    "예언가",
+    "연보라 머리",
+    "로브",
+    "별자리",
+    "astrologer",
+    "mystic",
+    "mage"
+   ],
+   "sheet": 2,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-star-nomad-astrologer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "06c1c61c180107e4204192f99e891317bee10881cf43c778b92ad88d45b0f312",
+    "slotRgbaSha256": "319bffb0a2ef6e0a78645952af3b52348bc1bf25e13911d871b2707307914b91"
+   }
+  },
+  {
+   "id": "fantasy-white-priestess-cleric",
+   "name": "백은 성녀 클레릭",
+   "desc": "금테 순백 성녀 베일 후드 아래로 부드럽게 내려오는 꿀금발 앞·옆머리 다발, 푸른 성배 보석 브로치와 심야 남색 이너 드레스·황금 스톨로 분할된 성녀 예복(백색 뭉침 원천 차단!).",
+   "genre": "판타지",
+   "role": "성녀·치유 사제",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "성녀",
+    "사제",
+    "프리스트",
+    "클레릭",
+    "치유사",
+    "베일",
+    "금발",
+    "동료",
+    "priestess",
+    "cleric",
+    "healer"
+   ],
+   "sheet": 2,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-white-priestess-cleric",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "913f04d360134646d9caaccefa48c3cb031d3e0aab2c8d8ae26a1658fdc8cbfb",
+    "slotRgbaSha256": "473b09a92683840496ddcb18ebda2e5302164dd788da021fd7064f7dfaf9c612"
+   }
+  },
+  {
+   "id": "fantasy-high-bishop-inquisitor",
+   "name": "교황청 대주교",
+   "desc": "아담한 자색·황금 십자 주교관 아래로 보이는 백은회색 옆·뒷머리 다발, 자색·순백·황금 스톨 대주교 예복, 왼손에 든 진홍 성서.",
+   "genre": "판타지",
+   "role": "대주교·고위 성직자",
+   "gender": "male",
+   "age": "elder",
+   "tags": [
+    "대주교",
+    "주교",
+    "성직자",
+    "사제",
+    "노인",
+    "성서",
+    "교황청",
+    "bishop",
+    "priest",
+    "cleric",
+    "elder"
+   ],
+   "sheet": 2,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-high-bishop-inquisitor",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "cfdcf6fe522c7de2a5380892b0973327b707e7e28eb52de1984aa91a7908c43a",
+    "slotRgbaSha256": "b92db00a8f011b2e6f530356f91799664584d849979fcdddd70d5abcf4df153c"
+   }
+  },
+  {
+   "id": "fantasy-plague-apothecary-doc",
+   "name": "역병 의사 약제사",
+   "desc": "흑갈색 챙모자, 상아색 새부리 가죽 가면과 붉은 유리 고글 렌즈, 짙은 흑록·가죽 롱코트와 초록·붉은 약병 크로스벨트.",
+   "genre": "판타지",
+   "role": "역병 의사·약제사",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "의사",
+    "약제사",
+    "역병의사",
+    "가면",
+    "약병",
+    "코트",
+    "plague doctor",
+    "apothecary",
+    "doctor"
+   ],
+   "sheet": 3,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-plague-apothecary-doc",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "89a728d4171f84bbb39e06e4afe52ac28da93ecb8a6cc5f2e22ba1063e88aec1",
+    "slotRgbaSha256": "afb09c3b214794ff883ea13e3f618b2047f0eff1ef2b4c85df43d56354091aac"
+   }
+  },
+  {
+   "id": "fantasy-traveling-peddler",
+   "name": "등짐 보부상 행상인",
+   "desc": "청록·황금 반다나 두건과 밤갈색 앞·옆머리 다발, 황토 가죽 조끼·크림 셔츠·붉은 전대 허리띠, 등 뒤에 큼직하게 멘 보따리 배낭과 두루마리.",
+   "genre": "판타지",
+   "role": "행상인·보부상",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "행상인",
+    "상인",
+    "보부상",
+    "배낭",
+    "두건",
+    "주민",
+    "마을 사람",
+    "peddler",
+    "merchant",
+    "trader",
+    "vendor"
+   ],
+   "sheet": 3,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-traveling-peddler",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "ad2b0df0ace1ab13887d5b1373fca0e949c5c35947dc234446dd3df0b2945802",
+    "slotRgbaSha256": "da00ff54fc934b987e165a262cd241b15409cd0570c97b4ee806efac0583a74e"
+   }
+  },
+  {
+   "id": "fantasy-guild-receptionist",
+   "name": "모험가 길드 접수원",
+   "desc": "단정한 꿀갈색 올림머리(번 헤어, 진홍 리본, 4방향 매듭 높이 일치), 네이비·금장 길드 제복 베스트와 하얀 블라우스·진홍 리본 타이, 왼손 갈색 의뢰 서류판.",
+   "genre": "판타지",
+   "role": "길드 접수원·안내원",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "접수원",
+    "길드",
+    "사무원",
+    "점원",
+    "올림머리",
+    "제복",
+    "주민",
+    "마을 사람",
+    "receptionist",
+    "clerk",
+    "guild"
+   ],
+   "sheet": 3,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-guild-receptionist",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "83d55ee9f24d6438e938590b552c1d3ac1c408edc6bb7abb5aa81eeaf53b1809",
+    "slotRgbaSha256": "4e3d609dff991dc4b8a12b8ae61af39348ac87afe60d7db97eb8c1f11ac49e70"
+   }
+  },
+  {
+   "id": "fantasy-tavern-barmaid",
+   "name": "주점 간판 웨이트리스",
+   "desc": "상큼한 살구빛 주황 보브 단발 다발(Actor2:1 구조), 크림색 블라우스·숲녹색 코르셋 조끼·하얀 앞치마와 와인빛 치마.",
+   "genre": "판타지",
+   "role": "주점 종업원·여관 점원",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "웨이트리스",
+    "주점",
+    "술집",
+    "여관 주인",
+    "점원",
+    "앞치마",
+    "단발",
+    "주민",
+    "마을 사람",
+    "barmaid",
+    "waitress",
+    "innkeeper",
+    "tavern"
+   ],
+   "sheet": 3,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-tavern-barmaid",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "80449b1691066321dc247686ab4dabea2a9f43547b48ac6ed6b8115ca94ef6ac",
+    "slotRgbaSha256": "33cee46767b1175bcddf7b35c133d92b8c745364b22f97d6ea6f56d1ac573100"
+   }
+  },
+  {
+   "id": "fantasy-master-tavern-chef",
+   "name": "왕실 주방장 셰프",
+   "desc": "아담한 순백 요리사 토크 모자(폭 14~15px) 아래로 보이는 진갈색 앞·옆·뒷머리 다발, 목에 두른 선명한 진홍 셰프 스카프, 금단추 더블브레스트 조리복과 남색 허리 앞치마.",
+   "genre": "판타지",
+   "role": "요리사·주방장",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "요리사",
+    "주방장",
+    "셰프",
+    "식당",
+    "요리모",
+    "앞치마",
+    "주민",
+    "마을 사람",
+    "chef",
+    "cook",
+    "baker"
+   ],
+   "sheet": 3,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-master-tavern-chef",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "8c6c333bc0e0b4c5613c35b048f0da87946bb8b159a7d0d842ea7479105d682f",
+    "slotRgbaSha256": "9ee24258ebc7f12ad5292a43e7d02c05d18b7ac049cd5932a3e2107e34dca590"
+   }
+  },
+  {
+   "id": "fantasy-archsage-elder",
+   "name": "백수염 대현자",
+   "desc": "풍성하게 흘러내리는 은백색 장발(Actor4:6 4방향 장발 다발)과 턱 아래 가슴까지 드리운 순백의 긴 수염, 짙은 심야 감청·황금 별자리 대현자 로브와 진홍 스톨.",
+   "genre": "판타지",
+   "role": "대현자·원로 마법사",
+   "gender": "male",
+   "age": "elder",
+   "tags": [
+    "대현자",
+    "현자",
+    "노학자",
+    "마법사",
+    "할아버지",
+    "노인",
+    "백수염",
+    "장로",
+    "archsage",
+    "sage",
+    "elder",
+    "wizard"
+   ],
+   "sheet": 3,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-archsage-elder",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "feff50bb364221b9a1971c4cc6369f830f0c5ff0c801f8d2ecbeff34798565ae",
+    "slotRgbaSha256": "11b753f9bdd3c9f2ac08ec1c240dbd0a2e35ed6e68c9e27d33bc72787f69cc65"
+   }
+  },
+  {
+   "id": "fantasy-silver-wolf-samurai",
+   "name": "은랑 수인 무사",
+   "desc": "은청회색 거친 더벅머리 다발과 정수리 양옆 쫑긋한 삼각 늑대 귀 한 쌍, 남색·황토 무사 도포와 붉은 오비 허리띠, 엉덩이 뒤 복슬복슬한 은백색 늑대 꼬리.",
+   "genre": "판타지",
+   "role": "늑대 수인 검사",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "수인",
+    "늑대인간",
+    "무사",
+    "사무라이",
+    "검사",
+    "도포",
+    "동료",
+    "wolfkin",
+    "samurai",
+    "beastman",
+    "swordsman"
+   ],
+   "sheet": 3,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-silver-wolf-samurai",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "c2474d3a394d053aee873ee9681d866cd64d2fe5b9034e41310d4f5dda9049c2",
+    "slotRgbaSha256": "49ae2816fa66b604ec87f3a474a550f749eec94f3b201ec7e7c843cde2e2fd8a"
+   }
+  },
+  {
+   "id": "fantasy-catfolk-rogue-thief",
+   "name": "고양이 수인 의적",
+   "desc": "카라멜 갈색 보브 단발 다발과 귀여운 쫑긋 고양이 귀 한 쌍, 청록 스카프·가죽 크로스벨트 조끼, 살랑이는 갈색 고양이 꼬리.",
+   "genre": "판타지",
+   "role": "고양이 수인 도적",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "수인",
+    "고양이",
+    "도적",
+    "시프",
+    "의적",
+    "스카프",
+    "동료",
+    "catfolk",
+    "rogue",
+    "thief"
+   ],
+   "sheet": 3,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-catfolk-rogue-thief",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:2",
+    "gridSha256": "f25fa2df1147d5244c84e541a38943472cdf999e4787c8bdeee658a234ce75c8",
+    "slotRgbaSha256": "532d99e10003f7f1d76cf2dab45729f154c4ee41932323aa4662cc5246aaa126"
+   }
+  },
+  {
+   "id": "fantasy-dragonkin-crimson-lancer",
+   "name": "용인족 진홍 창기사",
+   "desc": "칠흑·진홍 삐죽머리 다발과 이마 양옆 위로 작게 솟은 상아빛 용 뿔 한 쌍, 진홍 용비늘 흉갑과 흑철 견갑·황금 벨트.",
+   "genre": "판타지",
+   "role": "용인족 창병·용기사",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "용인족",
+    "드래곤본",
+    "창기사",
+    "용기사",
+    "뿔",
+    "갑옷",
+    "동료",
+    "dragonkin",
+    "lancer",
+    "dragoon"
+   ],
+   "sheet": 4,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-dragonkin-crimson-lancer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "877c1af600d88b44e6af5c65f3395c448793a9b38ff33139c7e42bc6bbb1ad00",
+    "slotRgbaSha256": "cf69d70ef64bf9ef7acc672e865e5123226beb0122fa32f8aa07f13f54e06382"
+   }
+  },
+  {
+   "id": "fantasy-dark-knight-rival",
+   "name": "칠흑 가면 마검사",
+   "desc": "은백색 옆·뒷머리가 흘러나오는 칠흑·은테 날개 바이저 반가면, 칠흑·자수정 판금 흉갑과 진홍 대망토.",
+   "genre": "판타지",
+   "role": "흑기사·라이벌 검사",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "흑기사",
+    "마검사",
+    "라이벌",
+    "가면",
+    "갑옷",
+    "망토",
+    "은발",
+    "dark knight",
+    "spellblade",
+    "rival"
+   ],
+   "sheet": 4,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-dark-knight-rival",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "e02c3bb41bfd0da38e3eb66a75f62fd6e3b77c06c1d681e36142fec8633b09e3",
+    "slotRgbaSha256": "fba63d0ff37b12456ac04629caf7ee157458ade80dfce8f17231b5f95bb389eb"
+   }
+  },
+  {
+   "id": "fantasy-cult-necromancer",
+   "name": "암흑 교단 사령술사",
+   "desc": "심연 보라·금테 암흑 후드(폭 15~16px) 아래 자색 앞머리 그늘과 에메랄드 청록 영혼빛 안구, 상아 해골 브로치와 보라·흑녹 룬 사령 로브.",
+   "genre": "판타지",
+   "role": "사령술사·흑마법사",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "사령술사",
+    "네크로맨서",
+    "흑마법사",
+    "교단",
+    "후드",
+    "로브",
+    "necromancer",
+    "warlock",
+    "cultist"
+   ],
+   "sheet": 4,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-cult-necromancer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "2c66d9075b0ab2fb63b4a641b1305e2f1c85e931eb9eed25a304424e3dd19c29",
+    "slotRgbaSha256": "aa29693a407261a1e896aea20a77b9b4239407a423fe69f1af353b65290c0edb"
+   }
+  },
+  {
+   "id": "fantasy-lantern-tunnel-miner",
+   "name": "탄광 곡괭이 광부",
+   "desc": "정면 황동 랜턴이 일체형으로 달린 구리빛 노란 안전모 아래 밤갈색 옆·뒷머리 다발, 푸른 데님 멜빵 작업복·붉은 체크 셔츠·가죽 장갑, 등 뒤 강철 곡괭이.",
+   "genre": "판타지",
+   "role": "광부·채굴꾼",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "광부",
+    "탄광",
+    "곡괭이",
+    "안전모",
+    "아저씨",
+    "주민",
+    "마을 사람",
+    "miner",
+    "worker",
+    "villager"
+   ],
+   "sheet": 4,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-lantern-tunnel-miner",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "4ebed0d9b0a4a1e1f47d3e59b54cbd842de37eeca438a611af5d65103759d23f",
+    "slotRgbaSha256": "e04e609764c3924227d1064bed72fc16bf49aeba9a44a771bdb0cd1a8842cbd4"
+   }
+  },
+  {
+   "id": "fantasy-harbor-old-fisherman",
+   "name": "항구 노선원 어부",
+   "desc": "짙은 남색 니트 비니 모자(폭 14px) 아래 백회색 옆·뒷머리와 짧은 백회색 바다사나이 턱수염, 노란 방수 조끼·파란 마린 줄무늬 셔츠·갈색 고무장화.",
+   "genre": "판타지",
+   "role": "노어부·뱃사람",
+   "gender": "male",
+   "age": "elder",
+   "tags": [
+    "어부",
+    "뱃사람",
+    "선원",
+    "할아버지",
+    "노인",
+    "항구",
+    "수염",
+    "주민",
+    "마을 사람",
+    "fisherman",
+    "sailor",
+    "old man"
+   ],
+   "sheet": 4,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-harbor-old-fisherman",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "a9e3b9c706210d69fbb159893d52cda53ef8e6f585c59ebe76f7bf5e415c9d82",
+    "slotRgbaSha256": "8987a624801c51fbbe641a5e3285efa851316e2dd705587142a3fcdaf0d29bd4"
+   }
+  },
+  {
+   "id": "fantasy-golden-lion-king",
+   "name": "황금 사자 국왕",
+   "desc": "루비 박힌 단정한 황금 왕관(폭 14px), 중후한 금갈색 옆·뒷머리 다발과 정돈된 풍성한 턱수염, 진홍 벨벳 왕실 망토(얇은 흰 담비 털 깃 포인트)와 남색·황금 문장 튜닉, 가죽 부츠.",
+   "genre": "판타지",
+   "role": "국왕·군주",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "왕",
+    "국왕",
+    "군주",
+    "왕관",
+    "수염",
+    "망토",
+    "왕족",
+    "king",
+    "monarch",
+    "ruler"
+   ],
+   "sheet": 4,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-golden-lion-king",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "32ec9dd17fb64391d925375faf0fdc31087543d5b8a15a9bf53ab92cde1fa74d",
+    "slotRgbaSha256": "71c548bbd02f26b44062c8e784fa34b1ee4b0b45833d1ebdeab22de2ac4cb541"
+   }
+  },
+  {
+   "id": "fantasy-sapphire-high-queen",
+   "name": "사파이어 왕비",
+   "desc": "사파이어 황금 티아라, 꿀빛 금발 우아한 올림머리(번)와 뺨을 감싸는 옆머리 다발, 로열 블루·자주색 2단 궁정 드레스와 황금 브로치.",
+   "genre": "판타지",
+   "role": "왕비·여왕",
+   "gender": "female",
+   "age": "middle",
+   "tags": [
+    "왕비",
+    "여왕",
+    "왕족",
+    "귀족",
+    "티아라",
+    "드레스",
+    "금발",
+    "queen",
+    "royalty",
+    "noblewoman"
+   ],
+   "sheet": 4,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-sapphire-high-queen",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "0f94c6aae88fd57100407b7ae5e53bc8195812227005dea7ae385a64eeb13b1a",
+    "slotRgbaSha256": "b0ff3caa792671e0e1ae0524aa4f756fe15ea32196eaf0c579ebc12014312c46"
+   }
+  },
+  {
+   "id": "fantasy-azure-crown-prince",
+   "name": "푸른 왕세자",
+   "desc": "얇은 금장 서클릿 위로 갈라진 백금발 앞·옆머리 다발, 짙은 로열 블루 왕실 제복 코트·황금 견장·진홍 대각선 새시, 왼허리 의장 레이피어 검집.",
+   "genre": "판타지",
+   "role": "왕자·왕세자",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "왕자",
+    "왕세자",
+    "귀족",
+    "청년",
+    "백금발",
+    "제복",
+    "레이피어",
+    "prince",
+    "noble",
+    "royalty"
+   ],
+   "sheet": 4,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-azure-crown-prince",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "5ed69697c7f6506f95b282a03aea77876d351583d22f2e96e4105996aeadffa0",
+    "slotRgbaSha256": "083406a82fd615ae218b4db84455ac03c76977e893341d0475ececf77d72d729"
+   }
+  },
+  {
+   "id": "fantasy-rose-emerald-princess",
+   "name": "장미 에메랄드 왕녀",
+   "desc": "작은 진주 금관 티아라, 따뜻한 밤갈색 긴 웨이브 머리 다발, 코랄 로즈·크림 레이스 궁정 드레스와 에메랄드 가슴 브로치.",
+   "genre": "판타지",
+   "role": "공주·왕녀",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "공주",
+    "왕녀",
+    "귀족",
+    "티아라",
+    "드레스",
+    "장발",
+    "소녀",
+    "princess",
+    "royalty",
+    "lady"
+   ],
+   "sheet": 5,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-rose-emerald-princess",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "ff417c48a1ccf3363f54416db7073528504231c123bc577c4b0d14a8fd840512",
+    "slotRgbaSha256": "bb08c8c4776b93bbe05dee4d2f24b1ca7f5fa5bd5a89b07d74419a99fbf50548"
+   }
+  },
+  {
+   "id": "fantasy-royal-guard-captain",
+   "name": "왕국 근위대장",
+   "desc": "금장 테두리 오픈 철제 서클릿/투구테, 흑청색 짧은 더벅머리 다발, 청은색 판금 흉갑·황금 사자 문장·진홍 어깨 망토.",
+   "genre": "판타지",
+   "role": "근위대장·기사단장",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "근위대장",
+    "기사단장",
+    "기사",
+    "대장",
+    "병사",
+    "갑옷",
+    "망토",
+    "guard captain",
+    "knight",
+    "commander"
+   ],
+   "sheet": 5,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-royal-guard-captain",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "0c99a5d291b1afd8f99448134986c114fb79179a70acfaca66b8046018985c26",
+    "slotRgbaSha256": "72d54c12bfc16a694604510a9783f677d4fc957f1c92e0c918ebca2ef0c91a60"
+   }
+  },
+  {
+   "id": "fantasy-grand-chancellor-vizier",
+   "name": "왕국 재상",
+   "desc": "깔끔하게 뒤로 넘긴 은회색 섞인 흑갈색 올백 머리와 정돈된 짧은 염소수염, 짙은 청록·자주색 벨벳 재상 관복 로브와 황금 사슬 칼라, 왼손/허리 황금 인장 두루마리.",
+   "genre": "판타지",
+   "role": "재상·대신",
+   "gender": "male",
+   "age": "elder",
+   "tags": [
+    "재상",
+    "대신",
+    "관원",
+    "귀족",
+    "노학자",
+    "노인",
+    "관복",
+    "chancellor",
+    "vizier",
+    "minister"
+   ],
+   "sheet": 5,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-grand-chancellor-vizier",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "39789206d500030b4202d728219f61e03cde71ff86184324ee521e0061447e6a",
+    "slotRgbaSha256": "bb11e5dfd832aa9a855fa4f5964fb8a7d481ec6077a01a2f88655f84a3775d6c"
+   }
+  },
+  {
+   "id": "fantasy-town-halberd-sentry",
+   "name": "성문 경비병",
+   "desc": "아담한 철제 케틀헬름 투구, 파란 왕국 문장 서코트(튜닉)·사슬 갑옷 소매·갈색 가죽 벨트와 철제 부츠.",
+   "genre": "판타지",
+   "role": "경비병·문지기",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "경비병",
+    "문지기",
+    "수문장",
+    "위병",
+    "보초",
+    "병사",
+    "군인",
+    "투구",
+    "guard",
+    "sentry",
+    "gatekeeper",
+    "soldier"
+   ],
+   "sheet": 5,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-town-halberd-sentry",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "38f1e2e95142bf387e8e8b9d51454b31b6b5b588d5d53daecb10f17af9ecbf6e",
+    "slotRgbaSha256": "3bd12c9d0672d2e0d0223b04a4769bcf4cacec17f871596c8848c4589cfeb71e"
+   }
+  },
+  {
+   "id": "fantasy-silver-manor-butler",
+   "name": "은발 저택 노집사",
+   "desc": "단정한 은백색 가르마 머리와 정갈한 회색 눈썹, 차콜 블랙 연미복(테일코트)·버건디 조끼·하얀 셔츠 깃과 붉은 보타이·흰 장갑 낀 손.",
+   "genre": "판타지",
+   "role": "집사·시종장",
+   "gender": "male",
+   "age": "elder",
+   "tags": [
+    "집사",
+    "노집사",
+    "시종",
+    "할아버지",
+    "노인",
+    "연미복",
+    "은발",
+    "주민",
+    "butler",
+    "steward",
+    "elder"
+   ],
+   "sheet": 5,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-silver-manor-butler",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "ec72fc3fe1d73454b7de9906f14f989bb95be9c123d94629f1343af2754aadc2",
+    "slotRgbaSha256": "790d6ea32b0103b5b6a38fa3fd231061d8a4dd1b92640ade6fc045189d5875de"
+   }
+  },
+  {
+   "id": "fantasy-crimson-pyromancer",
+   "name": "홍련 화염 마도사",
+   "desc": "황금 불꽃 서클릿, 타오르는 적주황 삐죽 앞·옆·UP 뒷머리 다발, 흑갈·진홍 오픈 배틀코트와 황금 룬 조끼.",
+   "genre": "판타지",
+   "role": "화염 마법사",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "마법사",
+    "화염마도사",
+    "마도사",
+    "붉은 머리",
+    "서클릿",
+    "배틀코트",
+    "동료",
+    "pyromancer",
+    "fire mage",
+    "wizard"
+   ],
+   "sheet": 5,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-crimson-pyromancer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "91de21e9cce65607c78971d106ee098429f4366d00310bdd3f824923b720e058",
+    "slotRgbaSha256": "5dddbd26d296c6a768187101424931c93ca8e834c386f51fc86570d09816f541"
+   }
+  },
+  {
+   "id": "fantasy-frost-crystal-sorceress",
+   "name": "빙결 수정 마녀",
+   "desc": "왼쪽 얼음 결정 머리핀, 아이스 블루·은청색 긴 생머리 다발, 짙은 미드나잇 네이비·청록 마도사 망토 드레스.",
+   "genre": "판타지",
+   "role": "빙결 마도사·마녀",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "마녀",
+    "마법사",
+    "빙결마도사",
+    "은청색 머리",
+    "장발",
+    "드레스",
+    "동료",
+    "sorceress",
+    "ice witch",
+    "mage"
+   ],
+   "sheet": 5,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-frost-crystal-sorceress",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "5a0f5ba219ecc58a42acd4f146f34a384e8cbe7e21a3a6f6b265231ed5348e01",
+    "slotRgbaSha256": "65a6db6db3a1a196b6d6b230c56b50b65a6174841f2ace88de5bcc5f5ddf4eba"
+   }
+  },
+  {
+   "id": "fantasy-storm-thunder-caller",
+   "name": "뇌전 마도 술사",
+   "desc": "짙은 남보라색 삐죽 머리에 노란 번개 브릿지 한 가닥, 청회색·황금 테두리 하이칼라 마도 재킷과 버건디 이너 벨트.",
+   "genre": "판타지",
+   "role": "뇌전 술사·마검사",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "술사",
+    "마법사",
+    "뇌전술사",
+    "청년",
+    "재킷",
+    "동료",
+    "storm caller",
+    "thunder mage"
+   ],
+   "sheet": 5,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-storm-thunder-caller",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "7256e0f372469fdd236a4ecbbd116798f345c09825a653c9fc249d820e580112",
+    "slotRgbaSha256": "73d75fa6f1baf16f737c06d0b8990168af2eaa18446936d43774ce880cf5afa3"
+   }
+  },
+  {
+   "id": "fantasy-emerald-horn-summoner",
+   "name": "전통 뿔 소환사 소녀",
+   "desc": "금테 서클릿 중앙에 돋은 아담한 상아색 소환사의 뿔, 에메랄드 그린 반묶음 포니테일 다발, 주황·크림·황금 문양 소환사 튜닉 로브.",
+   "genre": "판타지",
+   "role": "소환사 소녀",
+   "gender": "female",
+   "age": "child",
+   "tags": [
+    "소환사",
+    "마법사",
+    "소녀",
+    "아이",
+    "녹색 머리",
+    "포니테일",
+    "동료",
+    "summoner",
+    "girl",
+    "child"
+   ],
+   "sheet": 6,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-emerald-horn-summoner",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:2",
+    "gridSha256": "f1b66904cd598db9e3c30edad04e05998cd2442d317d599d9c1e241acd92ff98",
+    "slotRgbaSha256": "e752775e1485dc2c8842e37eb4943f872e3cde74c5b27cd3c376c4080d29a132"
+   }
+  },
+  {
+   "id": "fantasy-arcane-librarian-scholar",
+   "name": "마법 도서관 사서",
+   "desc": "얇은 적갈색 안경테, 플럼 보라색 땋은 올림머리 다발, 올리브 그린·크림 아카데미 베스트와 허리 마도서 가방.",
+   "genre": "판타지",
+   "role": "사서·학자",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "사서",
+    "학자",
+    "연구원",
+    "도서관",
+    "안경",
+    "올림머리",
+    "주민",
+    "마을 사람",
+    "librarian",
+    "scholar",
+    "researcher"
+   ],
+   "sheet": 6,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-arcane-librarian-scholar",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "def35bbdb798831ed4a12b2860522ae7ae7057bb6c4208f41a61038712c0c576",
+    "slotRgbaSha256": "7d609219df1c1fe8200c105f9c477ec89d64b1b8aca261380c9a0ad013323843"
+   }
+  },
+  {
+   "id": "fantasy-celestial-alchemist",
+   "name": "성좌 연금술사",
+   "desc": "황동 별머리핀을 꽂은 따뜻한 호박갈색(앰버 체스트넛) 층진 앞·옆·뒷머리 다발, 선명한 복숭앗빛 턱과 잘록한 10px 짙은 남청색 하이칼라 목선, 인디고·황동 테두리 연금술 조끼 코트와 사선 포션 벨트, 가죽 부츠.",
+   "genre": "판타지",
+   "role": "연금술사·학자",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "연금술사",
+    "학자",
+    "연구원",
+    "청년",
+    "포션",
+    "코트",
+    "주민",
+    "alchemist",
+    "scholar",
+    "apothecary"
+   ],
+   "sheet": 6,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-celestial-alchemist",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "d9ad6c56158d60c13f422b2f4784a4f4e5169c945b99aea9ed244c2938f0b3bf",
+    "slotRgbaSha256": "edd57645c61eae0cf7d98e755eef1148a8816d98b6203373f203857fe36a9291"
+   }
+  },
+  {
+   "id": "fantasy-shadow-assassin-blade",
+   "name": "그림자 암살 자객",
+   "desc": "은청회색 날카로운 비대칭 앞·옆·뒷머리 다발, 턱만 감싼 남흑색 스카프 칼라, 흑청·진홍 경장갑 암살복과 등 뒤 단검집.",
+   "genre": "판타지",
+   "role": "자객·닌자",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "자객",
+    "암살자",
+    "닌자",
+    "도적",
+    "은발",
+    "스카프",
+    "단검",
+    "assassin",
+    "ninja",
+    "rogue"
+   ],
+   "sheet": 6,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-shadow-assassin-blade",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "1dfe52fe47207cdc00e2f3ae80e8a571efd4770bd7cce89995389f3b0830c809",
+    "slotRgbaSha256": "f155f0f3361ec20f9215dcd01de6d6161037be5553877233a2054c37fdebec4b"
+   }
+  },
+  {
+   "id": "fantasy-scarlet-dice-gambler",
+   "name": "방랑 카드 도박사",
+   "desc": "비대칭 가르마로 멋스럽게 넘긴 적갈색 웨이브 머리 다발, 짙은 보라·진홍 오픈 롱코트와 황금 조끼·화이트 크라바트, 왼허리 카드 케이스.",
+   "genre": "판타지",
+   "role": "도박사·방랑객",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "도박사",
+    "방랑자",
+    "청년",
+    "롱코트",
+    "모험가",
+    "gambler",
+    "wanderer",
+    "rogue"
+   ],
+   "sheet": 6,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-scarlet-dice-gambler",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "89a8158b790b3741f0f57df94b796ff3778db328d7d999f27cf1e46b5bf6ae18",
+    "slotRgbaSha256": "6088eff7c05ab1a33a84107c0bee79cd5f1caa13f58ab4d2779f7ce54274fcd7"
+   }
+  },
+  {
+   "id": "fantasy-desert-bounty-hunter",
+   "name": "황야 현상금 사냥꾼",
+   "desc": "챙이 단정한 짙은 가죽 레인저 햇, 갈색 더벅 옆머리와 짧은 턱수염, 황토색 가죽 더스터 코트·붉은 목 스카프·사선 탄띠.",
+   "genre": "판타지",
+   "role": "현상금 사냥꾼·총잡이",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "사냥꾼",
+    "현상금사냥꾼",
+    "용병",
+    "모자",
+    "코트",
+    "스카프",
+    "bounty hunter",
+    "ranger",
+    "mercenary"
+   ],
+   "sheet": 6,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-desert-bounty-hunter",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "ef7e137c6efed21dc5a0998731fae8788bb92253d8ee80fe6971c12f7acefe50",
+    "slotRgbaSha256": "0a7f4feac0b8c708cb7b712884324a10ad1ea3607b0d6012e5267b6d243bb601"
+   }
+  },
+  {
+   "id": "fantasy-harlequin-court-jester",
+   "name": "할리퀸 궁정 광대",
+   "desc": "금방울 달린 아담한 투톤(자주·청록) 두 갈래 광대 모자, 금발 옆머리 다발, 자주·청록 좌우 반전 다이아몬드 조끼와 크림 러프 칼라.",
+   "genre": "판타지",
+   "role": "궁정 광대·곡예사",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "광대",
+    "곡예사",
+    "예능인",
+    "광대모자",
+    "jester",
+    "clown",
+    "harlequin"
+   ],
+   "sheet": 6,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-harlequin-court-jester",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "cf99d28c3639c96146734e7b33673c5ead6c1264ef08d7dde9e6d8b4253eec84",
+    "slotRgbaSha256": "e2a3d46ce25f3cf4cb2e2f102070c83488146ffc0b14a2307ec3c30fcbe09847"
+   }
+  },
+  {
+   "id": "fantasy-village-mayor-elder",
+   "name": "인자한 마을 촌장",
+   "desc": "아담한 진녹색 벨벳 베레모 아래 풍성한 백회색 옆·뒷머리 다발과 둥근 백수염, 브라운 트위드 코트·숲녹색 조끼·황금 촌장 메달.",
+   "genre": "판타지",
+   "role": "촌장·마을 장로",
+   "gender": "male",
+   "age": "elder",
+   "tags": [
+    "촌장",
+    "이장",
+    "장로",
+    "원로",
+    "할아버지",
+    "노인",
+    "백수염",
+    "주민",
+    "마을 사람",
+    "mayor",
+    "village chief",
+    "elder",
+    "old man"
+   ],
+   "sheet": 6,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-village-mayor-elder",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "61255e34ac21c8e690270e1f56eb617fbdaf92b653e609dce55650f16b4a0696",
+    "slotRgbaSha256": "a474aaf647b7520df4d0d2ed8eb38d62293d8f90b22553e4ac60f58f8596f37f"
+   }
+  },
+  {
+   "id": "fantasy-sunflower-bakery-girl",
+   "name": "해바라기 빵집 소녀",
+   "desc": "빨간 리본 머리수건 아래 풍성히 내려온 꿀갈색 앞머리와 땋은 옆·뒷머리 다발, 노란 퍼프 블라우스·갈색 코르셋·하얀 앞치마와 허리 빵 바구니.",
+   "genre": "판타지",
+   "role": "빵집 처녀·제빵사",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "빵집",
+    "제빵사",
+    "점원",
+    "상인",
+    "앞치마",
+    "두건",
+    "여성",
+    "주민",
+    "마을 사람",
+    "baker",
+    "bakery girl",
+    "shopkeeper",
+    "villager"
+   ],
+   "sheet": 7,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-sunflower-bakery-girl",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "9581f8af0aba3f483d6cb376dd66d55d968a5e979fe6d5cd5f7bd053325bffa2",
+    "slotRgbaSha256": "da85a0a98e6f03a9e29f5490a6d1de28d4705458bbad6515d9f22561911b3ef0"
+   }
+  },
+  {
+   "id": "fantasy-griffin-order-templar",
+   "name": "그리핀 기사단 성전사",
+   "desc": "얇은 백은 서클릿, 짙은 적갈색 층진 앞·옆·뒷머리 다발, 선명한 복숭앗빛 턱과 어두운 사슬 목선 수축, 짙은 청록·황금 십자 문장 서코트와 강철 어깨갑주·갈색 가죽 벨트.",
+   "genre": "판타지",
+   "role": "성전사·기사",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "성전사",
+    "기사",
+    "병사",
+    "서코트",
+    "갑옷",
+    "서클릿",
+    "동료",
+    "templar",
+    "knight",
+    "crusader"
+   ],
+   "sheet": 7,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-griffin-order-templar",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "0439856c9ae8e75de778171b90d7f884b877c6d9930dfa42a999781f3b593e0c",
+    "slotRgbaSha256": "6c993aeaac668d72c7fa66b60b67106302dc6f01e29e5182387c29b2600ffd0f"
+   }
+  },
+  {
+   "id": "fantasy-abbey-novice-nun",
+   "name": "수도원 수련 수녀",
+   "desc": "단정한 미드나잇 네이비 수녀 베일, 선명한 복숭앗빛 턱과 10px 차콜 칼라 목 수축, 차콜 네이비 수녀복·은빛 십자가 로자리오·자주색 허리띠.",
+   "genre": "판타지",
+   "role": "수녀·성직자",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "수녀",
+    "성직자",
+    "사제",
+    "수도원",
+    "베일",
+    "로자리오",
+    "nun",
+    "sister",
+    "cleric"
+   ],
+   "sheet": 7,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-abbey-novice-nun",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "0ee25bde571f3f94ea48b4216d768880e85bfae14bd286927b39e2e598c2a0b1",
+    "slotRgbaSha256": "e09b16eedd9b1f8e3eb0fa7035c3fd8b5d5456d915d489b9bf59e7b151fbb95c"
+   }
+  },
+  {
+   "id": "fantasy-wandering-zen-pilgrim",
+   "name": "순례 수도승",
+   "desc": "단정한 흑갈색 상투 매듭과 자연스러운 앞·옆머리 다발, 복숭앗빛 턱과 붉은 목 염주가 감긴 잘록한 어두운 목선, 황토·감색 2단 순례 승복 가사와 사선 행낭 끈, 각반 부츠.",
+   "genre": "판타지",
+   "role": "수도승·승려",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "수도승",
+    "승려",
+    "순례자",
+    "사제",
+    "가사",
+    "염주",
+    "상투",
+    "pilgrim",
+    "monk",
+    "ascetic"
+   ],
+   "sheet": 7,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-wandering-zen-pilgrim",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "1dbdd773dc094f818edb4ba76aec84827252d97364c9d02839a68c738373e2ad",
+    "slotRgbaSha256": "0168f0620eeb875ef091dd83fd227053702eb79a5cb5e31d9bcc6b80c498368f"
+   }
+  },
+  {
+   "id": "fantasy-cathedral-bell-acolyte",
+   "name": "대성당 종지기 소년",
+   "desc": "밝은 꿀갈색 보브 단발 다발, 아동 복숭앗빛 턱과 잘록한 10px 어두운 칼라 목선, 버건디·미드나잇 네이비 성가대 케이프와 황금 종 브로치, 갈색 구두.",
+   "genre": "판타지",
+   "role": "복사·성가대 소년",
+   "gender": "male",
+   "age": "child",
+   "tags": [
+    "소년",
+    "아이",
+    "종지기",
+    "성가대",
+    "복사",
+    "단발",
+    "주민",
+    "마을 사람",
+    "acolyte",
+    "choirboy",
+    "boy",
+    "child"
+   ],
+   "sheet": 7,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-cathedral-bell-acolyte",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:2",
+    "gridSha256": "8326011e164ba46538e0f53f446059f0551fc7c78689a701a354cd6592cc1298",
+    "slotRgbaSha256": "7f381c0bd73815a9d080a32f45e0ee8dcf207e0e8218cff69d9277f23388521b"
+   }
+  },
+  {
+   "id": "fantasy-imperial-navy-admiral",
+   "name": "제국 해군 제독",
+   "desc": "남색·황금 닻 문장 제독 정모, 은회색 단정한 옆·뒷머리 다발, 선명한 복숭앗빛 턱과 10px 짙은 네이비 하이칼라 목 수축, 로열 네이비·황금 견장 제독 코트와 진홍 훈장 새시.",
+   "genre": "판타지",
+   "role": "제독·함대 사령관",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "제독",
+    "장군",
+    "장교",
+    "사령관",
+    "정모",
+    "제복",
+    "해군",
+    "admiral",
+    "commander",
+    "officer"
+   ],
+   "sheet": 7,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-imperial-navy-admiral",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "7d2e26f1c5ba16499b137e16979ade67648d4274d23d2eea4ffaf17e5f27c280",
+    "slotRgbaSha256": "eab91e87c6e04ca9bb63d706bf0c827db7527893d16ae7ff225b055e33e9a147"
+   }
+  },
+  {
+   "id": "fantasy-coral-pearl-diver",
+   "name": "산호 진주 잠수사",
+   "desc": "코랄 레드 산호 머리끈으로 묶은 흑청색 하이 포니테일과 앞·옆머리 다발, 복숭앗빛 턱과 조개 목걸이 10px 목 수축, 바다청록·코랄 오렌지 경쾌한 잠수 튜닉 조끼와 허리 진주 주머니.",
+   "genre": "판타지",
+   "role": "잠수사·해녀",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "잠수사",
+    "해녀",
+    "항구",
+    "포니테일",
+    "여성",
+    "주민",
+    "마을 사람",
+    "diver",
+    "swimmer",
+    "villager"
+   ],
+   "sheet": 7,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-coral-pearl-diver",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "4a5ccd129707abfc5403cd960b3bd17d0bf593b0f3f39b0f668b342b9ccc4478",
+    "slotRgbaSha256": "862c8d1c0c5814116f5cb15bfa4fd0e38105db3ed074b35c539cd3a9ebf8609b"
+   }
+  },
+  {
+   "id": "fantasy-dockyard-shipwright",
+   "name": "조선소 선박 목수",
+   "desc": "이마에 묶은 진홍 작업 반다나 머리띠, 황갈색 더벅 앞·옆·뒷머리 다발, 복숭앗빛 턱과 10px 어두운 목선 수축, 청남색 롤업 셔츠·진갈색 가죽 공구 앞치마·허리 벨트.",
+   "genre": "판타지",
+   "role": "목수·조선공",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "목수",
+    "조선공",
+    "장인",
+    "기술자",
+    "앞치마",
+    "반다나",
+    "아저씨",
+    "주민",
+    "마을 사람",
+    "shipwright",
+    "carpenter",
+    "craftsman",
+    "villager"
+   ],
+   "sheet": 7,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-dockyard-shipwright",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "97246bfcfb7f6efbfffd4ea8025698e3c1a8460ed2fffa37066bd10cae48b03a",
+    "slotRgbaSha256": "73cb50a0ee14c324d051fa0262212c9dee6ab46f280ae87ad7bdc5db95eb9cf5"
+   }
+  },
+  {
+   "id": "fantasy-silk-road-merchant",
+   "name": "비단길 대상인",
+   "desc": "에메랄드 보석 장식 자주색 비단 터번 캡, 복숭앗빛 턱과 10px 어두운 칼라 목 수축, 청록·황금 자수 비단 조끼 코트와 진홍 허리띠·금화 주머니.",
+   "genre": "판타지",
+   "role": "대상인·무역상",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "상인",
+    "대상인",
+    "무역상",
+    "점원",
+    "터번",
+    "비단",
+    "주민",
+    "마을 사람",
+    "merchant",
+    "trader",
+    "shopkeeper"
+   ],
+   "sheet": 8,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-silk-road-merchant",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "8741c1f5b853263350fa68da4d2ebc14a4f749ec31bac4f9e0a7228f7349ee7b",
+    "slotRgbaSha256": "b77ab2e4365fdae73bc8f66e6cd8d086c33060db68d1f01ae284a13c80026344"
+   }
+  },
+  {
+   "id": "fantasy-tundra-bear-chieftain",
+   "name": "설원 부족 족장",
+   "desc": "청동 이마 서클릿, 짙은 회갈색 야성적인 앞·옆·뒷머리 다발, 복숭앗빛 턱과 어두운 가죽 목선 수축, 청회색 가죽 갑주와 붉은 부족 벨트.",
+   "genre": "판타지",
+   "role": "부족 족장·전사",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "족장",
+    "우두머리",
+    "전사",
+    "북방",
+    "모피",
+    "서클릿",
+    "chieftain",
+    "chief",
+    "barbarian"
+   ],
+   "sheet": 8,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-tundra-bear-chieftain",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "17be5d9066659efb0aae0d091666b3866b10bbdbbf94fec1b8c4e5a0a8b7246a",
+    "slotRgbaSha256": "90df6bd950aa52a0f2c270bb5a4ae4d149503178ece5db1e56b9f31777d75254"
+   }
+  },
+  {
+   "id": "fantasy-aurora-veil-dancer",
+   "name": "오로라 무희",
+   "desc": "황금 별 이마 체인, 자수정 보라색 풍성한 웨이브 긴머리 다발, 복숭앗빛 턱과 어두운 보석 초커 목 수축, 청록·로열퍼플 오로라 비단 무희 의상과 금장 벨트.",
+   "genre": "판타지",
+   "role": "무희·무용가",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "무희",
+    "무용수",
+    "댄서",
+    "보라 머리",
+    "장발",
+    "dancer",
+    "performer"
+   ],
+   "sheet": 8,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-aurora-veil-dancer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "52786b0021e4fc5f6bf14f4fd951e9be9c244f10774e9917f075bee308618bf4",
+    "slotRgbaSha256": "68680c7977502cc74bdc2faa12e07b147079975eb097ee2d76ef00e4f2efa355"
+   }
+  },
+  {
+   "id": "fantasy-highland-falconer",
+   "name": "고원 매사냥꾼",
+   "desc": "짙은 밤녹색 층진 앞·옆·뒷머리 다발, 복숭앗빛 턱과 진홍 스카프 매듭 목 수축, 숲녹색·황토 가죽 매사냥 조끼 코트와 양손 밝은 황갈색 사슴가죽 장갑.",
+   "genre": "판타지",
+   "role": "사냥꾼·매사냥꾼",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "사냥꾼",
+    "매사냥꾼",
+    "레인저",
+    "스카프",
+    "조끼",
+    "주민",
+    "마을 사람",
+    "falconer",
+    "hunter",
+    "woodsman"
+   ],
+   "sheet": 8,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-highland-falconer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "95aafbacf2d1c790d7102cbfb081097e9f76754f1d24647f0cd9487fc718a20d",
+    "slotRgbaSha256": "2ed096f70b392b5895d3bd395757dfaed71ffc1e07b63ddce46c4e4407cfaae7"
+   }
+  },
+  {
+   "id": "fantasy-reindeer-herder-girl",
+   "name": "설원 순록지기 소녀",
+   "desc": "진홍 머리끈 양갈래 땋은 따뜻한 밤갈색 머리 다발, 아동 복숭앗빛 턱과 10px 어두운 칼라 목 수축, 다홍·남색 북방 민속 자수 튜닉과 갈색 털부츠.",
+   "genre": "판타지",
+   "role": "목동 소녀",
+   "gender": "female",
+   "age": "child",
+   "tags": [
+    "소녀",
+    "여자아이",
+    "아이",
+    "양갈래",
+    "목동",
+    "주민",
+    "마을 사람",
+    "girl",
+    "child",
+    "herder",
+    "villager"
+   ],
+   "sheet": 8,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-reindeer-herder-girl",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:2",
+    "gridSha256": "41fb62f6bbda308f372d30c8d52b145c2f168f0a7c59ffe9e65d99b5a6473162",
+    "slotRgbaSha256": "c2c326c8ab27730f96d00dca2012a9eb92bdeb972652343ace88afdad22043a5"
+   }
+  },
+  {
+   "id": "fantasy-atelier-violin-virtuoso",
+   "name": "궁정 바이올린 연주가",
+   "desc": "우아하게 옆가르마 탄 백금발 단발 다발, 복숭앗빛 턱과 10px 차콜 리본 타이 목 수축, 짙은 버건디 벨벳 연주복 재킷과 차콜 베스트·금장 단추.",
+   "genre": "판타지",
+   "role": "음악가·연주가",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "음악가",
+    "연주가",
+    "악사",
+    "청년",
+    "귀족",
+    "백금발",
+    "정장",
+    "주민",
+    "violinist",
+    "musician",
+    "noble"
+   ],
+   "sheet": 8,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-atelier-violin-virtuoso",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "7fd2ea5a422c28e074f4ab8ed36aa1da9c307faf7c0fbc174f4087c3f90578fa",
+    "slotRgbaSha256": "3390d315520ece2e807115fc6b91328c567f7d634a90ae105e7dccb81c3b522b"
+   }
+  },
+  {
+   "id": "fantasy-stained-glass-artisan",
+   "name": "스테인드글라스 유리공예가",
+   "desc": "자주색 벨벳 베레모 아래 풍성히 내려온 주황갈색 보브 단발 다발, 복숭앗빛 턱과 10px 어두운 칼라 목 수축, 남청색 작업 셔츠·갈색 가죽 공방 앞치마·오색 색유리 펜던트.",
+   "genre": "판타지",
+   "role": "유리공예 장인",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "공예가",
+    "장인",
+    "예술가",
+    "베레모",
+    "앞치마",
+    "단발",
+    "여성",
+    "주민",
+    "마을 사람",
+    "artisan",
+    "craftswoman",
+    "villager"
+   ],
+   "sheet": 8,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-stained-glass-artisan",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "6849ce8786e55bf50e395a5e99f4a9fc4fa5cd5202fadfece21e9ea04d4bd4f3",
+    "slotRgbaSha256": "4ee852ac1b0b00b08d7ae0aabed5fbe1eb949b30eb9cd9150717a51bb35e47d1"
+   }
+  },
+  {
+   "id": "fantasy-emerald-lute-bard",
+   "name": "청록 모자 유랑 음유시인",
+   "desc": "진홍 깃털 포인트가 달린 아담한 청록 베레 캡, 꿀금발 앞·옆·뒷머리 다발, 복숭앗빛 턱과 10px 어두운 스카프 목 수축, 숲녹색·버건디 투톤 시인 튜닉과 금장 벨트.",
+   "genre": "판타지",
+   "role": "음유시인·악사",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "음유시인",
+    "바드",
+    "악사",
+    "시인",
+    "베레모",
+    "금발",
+    "청년",
+    "bard",
+    "minstrel",
+    "musician"
+   ],
+   "sheet": 8,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-emerald-lute-bard",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "2c45545d3152b0d8933635ef4801d9b2395d3741e97776228c5d7617d7b086f6",
+    "slotRgbaSha256": "1d88b1220eb474670f6b2874d4814810e571079f7839f6458c90bb462a3131d3"
+   }
+  },
+  {
+   "id": "fantasy-royal-perfumer-lady",
+   "name": "왕실 조향사 숙녀",
+   "desc": "왼쪽 코랄 장미 머리핀과 흑자주색 웨이브 긴머리 다발, 복숭앗빛 턱과 10px 어두운 벨벳 초커 목 수축, 플럼 퍼플·딥 라벤더 2단 조향사 드레스와 허리 향수병 장식.",
+   "genre": "판타지",
+   "role": "조향사·귀부인",
+   "gender": "female",
+   "age": "middle",
+   "tags": [
+    "조향사",
+    "귀부인",
+    "부인",
+    "숙녀",
+    "귀족",
+    "드레스",
+    "여성",
+    "주민",
+    "마을 사람",
+    "perfumer",
+    "noblewoman",
+    "lady",
+    "woman"
+   ],
+   "sheet": 9,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-royal-perfumer-lady",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "5998765720a8824774b214e47dd210345f9665be2bd093e166132492b77a90e6",
+    "slotRgbaSha256": "b1de913e8c2e215d98fcccd20633c82351a542a8b196e817f8757d55b6072313"
+   }
+  },
+  {
+   "id": "fantasy-ruin-explorer-archaeologist",
+   "name": "고대 유적 고고학자",
+   "desc": "올리브 브라운 탐험 모자 아래 밝은 밤갈색 앞·옆·뒷머리 다발, 복숭앗빛 턱과 진홍 스카프 매듭 10px 목 수축, 카키 브라운 탐험 재킷·사선 가죽 유물 가방·부츠.",
+   "genre": "판타지",
+   "role": "고고학자·탐험가",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "고고학자",
+    "탐험가",
+    "학자",
+    "연구원",
+    "탐험모",
+    "가방",
+    "청년",
+    "archaeologist",
+    "explorer",
+    "scholar"
+   ],
+   "sheet": 9,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-ruin-explorer-archaeologist",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "347d9e78e1043ca2f1fa12d6c644eada06f9b6df1d1900d72f9d8498086e4bc3",
+    "slotRgbaSha256": "60ed74b6dbca64a8c58992e2e81d8707c4e83dc83df8c97fb8d05c66c5a867e2"
+   }
+  },
+  {
+   "id": "fantasy-crimson-whip-tamer",
+   "name": "진홍 마수 조련사",
+   "desc": "황금 링으로 묶은 다크 와인색 하이 포니테일과 날렵한 앞·옆머리 다발, 복숭앗빛 턱과 10px 차콜 초커·금빛 호루라기 목 수축, 진홍·차콜 블랙 가죽 코르셋 재킷과 롱부츠.",
+   "genre": "판타지",
+   "role": "마수 조련사",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "조련사",
+    "비스트테이머",
+    "모험가",
+    "포니테일",
+    "가죽재킷",
+    "롱부츠",
+    "beast tamer",
+    "tamer"
+   ],
+   "sheet": 9,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-crimson-whip-tamer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "7260a8b1ddad34bec12399aad17105afc079c0ca5a98dd4c247591473d1fc52d",
+    "slotRgbaSha256": "04f81175d87953dde2f5c4f0c8bb6ff3d0c7d00f72086423e608df824b817bcb"
+   }
+  },
+  {
+   "id": "fantasy-jade-lotus-martial-artist",
+   "name": "비취 연꽃 권법가",
+   "desc": "진홍·황금 비단 머리끈 양쪽 작은 만두머리 번과 흑갈색 앞·옆머리 다발, 복숭앗빛 턱과 10px 남색 깃 목 수축, 비취색(제이드 그린)·남색 동방 무도가 도복과 금빛 허리띠.",
+   "genre": "판타지",
+   "role": "동방 권법가·무투가",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "권법가",
+    "무도가",
+    "격투가",
+    "만두머리",
+    "도복",
+    "동방",
+    "동료",
+    "martial artist",
+    "fighter",
+    "monk"
+   ],
+   "sheet": 9,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-jade-lotus-martial-artist",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "a5a11d95f64cd7f8bbd10a78e56e282b87d9a22dc7e6aea7da2800f1b6e45160",
+    "slotRgbaSha256": "499e7fba8172293a8670d54a08e9f1784a87cb98ceaee9a847087476222c5fb0"
+   }
+  },
+  {
+   "id": "fantasy-tea-house-herbal-brewer",
+   "name": "약초 다관 여주인",
+   "desc": "연옥색 비녀를 꽂은 단정한 차갈색 올림 단발 다발, 복숭앗빛 턱과 10px 짙은 갈색 깃 목 수축, 말차녹색·밤갈색 전통 다관 저고리/앞치마 의상과 허리 약초 주머니.",
+   "genre": "판타지",
+   "role": "찻집 주인·약차사",
+   "gender": "female",
+   "age": "middle",
+   "tags": [
+    "찻집 주인",
+    "여관 주인",
+    "주모",
+    "아줌마",
+    "아주머니",
+    "앞치마",
+    "약초",
+    "여성",
+    "주민",
+    "마을 사람",
+    "tea master",
+    "innkeeper",
+    "shopkeeper",
+    "woman",
+    "villager"
+   ],
+   "sheet": 9,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-tea-house-herbal-brewer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "a87946b18f8f51aafa22ab51347767ab4a53d7b69979dc332f8a9bdfad86eed7",
+    "slotRgbaSha256": "8a32f24653096cb8e0e7688a2365b2ed7f969c2e21bb4a1ba5c3c41cdf7a316b"
+   }
+  },
+  {
+   "id": "fantasy-sky-airship-captain",
+   "name": "천공 비공정 함장",
+   "desc": "황동 날개 배지 코발트 블루 함장 캡, 밤갈색 옆·뒷머리 다발, 복숭앗빛 턱과 10px 짙은 남색 스카프 목 수축, 브라운 가죽 파일럿 재킷·코발트 조끼·금장 벨트.",
+   "genre": "판타지",
+   "role": "비공정 함장·조종사",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "함장",
+    "선장",
+    "비공정",
+    "파일럿",
+    "모자",
+    "가죽재킷",
+    "아저씨",
+    "airship captain",
+    "captain",
+    "pilot"
+   ],
+   "sheet": 9,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-sky-airship-captain",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "3617a26b0b539c575ef1bf055f6596be16b34154242d60ea51ff721d2532b106",
+    "slotRgbaSha256": "3fabe20d216265545f9503559e1feac4448397c4ca3d0a6dbaf29a25f15982ea"
+   }
+  },
+  {
+   "id": "fantasy-aether-wing-navigator",
+   "name": "비공정 항법사",
+   "desc": "아담한 청록 베레 캡(폭 14px) 아래 내려온 꿀금발 단발 다발, 복숭앗빛 턱과 10px 네이비 리본 타이 목 수축, 미드나잇 네이비·황금 세일러풍 항법사 제복 코트와 벨트.",
+   "genre": "판타지",
+   "role": "항법사·측량사",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "항법사",
+    "항해사",
+    "장교",
+    "베레모",
+    "금발",
+    "단발",
+    "제복",
+    "navigator",
+    "officer"
+   ],
+   "sheet": 9,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-aether-wing-navigator",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "4e67adc54a0a22b05b903ddf1edc60d874a01bbb9392b7ff1fe0ddeb92530ca1",
+    "slotRgbaSha256": "8d8215174e3a620baa21322144a6b18531526ea9d6393ac1b963318e0a6da05a"
+   }
+  },
+  {
+   "id": "fantasy-steam-boiler-machinist",
+   "name": "증기 기관 정비공",
+   "desc": "황동 배지 차콜 작업 캡(폭 14px) 아래 적갈색 앞·옆·뒷머리 다발, 복숭앗빛 턱과 10px 진홍 반다나 목 수축, 올리브 그린 롤업 셔츠·진갈색 가죽 멜빵 작업복·양손 대칭 밝은 복숭앗빛 맨손.",
+   "genre": "판타지",
+   "role": "정비공·기계 기술자",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "정비공",
+    "기술자",
+    "기계공",
+    "장인",
+    "멜빵",
+    "모자",
+    "아저씨",
+    "주민",
+    "마을 사람",
+    "machinist",
+    "mechanic",
+    "engineer",
+    "villager"
+   ],
+   "sheet": 9,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-steam-boiler-machinist",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "b10f01f1cce518e852e7699e1638237e9db3635662d78cae9e52f96ad1af1487",
+    "slotRgbaSha256": "2a0dbf950d0f467d644211f2ff140d4dcb0de4cb3ee2060d09928adfb8a9bd5a"
+   }
+  },
+  {
+   "id": "fantasy-sky-signal-deckhand-kid",
+   "name": "비공정 신호수 소년",
+   "desc": "활기찬 밤갈색 삐죽 앞·옆·뒷머리 다발, 아동 복숭앗빛 턱과 10px 진홍 스카프 목 수축, 코발트 네이비·황금 줄무늬 갑판원 조끼 튜닉과 갈색 부츠.",
+   "genre": "판타지",
+   "role": "갑판원 소년",
+   "gender": "male",
+   "age": "child",
+   "tags": [
+    "소년",
+    "남자아이",
+    "아이",
+    "갑판원",
+    "선원",
+    "스카프",
+    "주민",
+    "마을 사람",
+    "deckhand",
+    "boy",
+    "child",
+    "villager"
+   ],
+   "sheet": 10,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-sky-signal-deckhand-kid",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:2",
+    "gridSha256": "57e01d06bba80126a970c1790a4227d2c8120e861aeb3a565ca84e0e937e2f20",
+    "slotRgbaSha256": "9cd9cb6f486cf73a8f9885e681526d2bea7a298da1475b03e997e8c3323406af"
+   }
+  },
+  {
+   "id": "fantasy-ancient-grove-archdruid",
+   "name": "고대수 대드루이드",
+   "desc": "황금 참나무 서클릿, 세이지 그린 층진 단발 다발, 복숭앗빛 턱과 10px 짙은 수피 갈색 칼라 목 수축, 숲녹색·밤갈색 드루이드 로브 조끼와 에메랄드 벨트.",
+   "genre": "판타지",
+   "role": "드루이드·숲의 현자",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "드루이드",
+    "현자",
+    "마법사",
+    "숲",
+    "서클릿",
+    "로브",
+    "druid",
+    "archdruid",
+    "sage"
+   ],
+   "sheet": 10,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-ancient-grove-archdruid",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "2e606881d23c04760f90927f78a7140910e121ba7b38b0376a5193d65a2a33ab",
+    "slotRgbaSha256": "30b32ce8d48fe39e34939eca31b08ef7fee943eddf51c11d4bd144405b58aa6c"
+   }
+  },
+  {
+   "id": "fantasy-moon-blossom-dryad-maiden",
+   "name": "꽃숲 수호 처녀",
+   "desc": "코랄 꽃 화관, 민트그린 단정한 웨이브 단발 다발, 복숭앗빛 턱과 10px 진녹색 초커 목 수축, 코랄 로즈·골드 상의와 에메랄드 2단 꽃잎 치마, 진갈색 구두.",
+   "genre": "판타지",
+   "role": "숲지기 처녀·정령사",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "화관",
+    "숲",
+    "처녀",
+    "소녀",
+    "드레스",
+    "민트 머리",
+    "주민",
+    "마을 사람",
+    "maiden",
+    "florist",
+    "villager"
+   ],
+   "sheet": 10,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-moon-blossom-dryad-maiden",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "9b10e4a8b5272455805ab1fad2c7a911b3b0ee4b36b3666a2096e4d4cf65d013",
+    "slotRgbaSha256": "da66a758c264186b23a5fb9267a378923cfd1121ff905cb02e113fb4eef61186"
+   }
+  },
+  {
+   "id": "fantasy-amber-apiary-beekeeper",
+   "name": "황금벌꿀 양봉가",
+   "desc": "따뜻한 밀짚 챙모자 아래 밤갈색 앞·옆·뒷머리 다발, 복숭앗빛 턱과 10px 진갈색 스카프 목 수축, 황금 앰버·청남색 양봉 작업 조끼와 정중앙 허리 벨트.",
+   "genre": "판타지",
+   "role": "양봉가·농부",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "양봉가",
+    "농부",
+    "일꾼",
+    "밀짚모자",
+    "조끼",
+    "아저씨",
+    "주민",
+    "마을 사람",
+    "beekeeper",
+    "farmer",
+    "villager"
+   ],
+   "sheet": 10,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-amber-apiary-beekeeper",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "448f9c4bc19be0b789a1cd63d959a8834bf6792aea3ba7f6badf515c0a2b53fc",
+    "slotRgbaSha256": "9b629da713d57696d695c76d6d9759a8d178f43956c402da96d832b270126cf9"
+   }
+  },
+  {
+   "id": "fantasy-mushroom-forager-sprite-kid",
+   "name": "버섯 채집꾼 소녀",
+   "desc": "아담한 다홍색 버섯 베레모 아래 밤갈색 보브 단발 다발, 아동 복숭앗빛 턱과 10px 짙은 녹색 칼라 목 수축, 숲녹색·러셋 브라운 채집 튜닉과 갈색 부츠.",
+   "genre": "판타지",
+   "role": "채집꾼 소녀",
+   "gender": "female",
+   "age": "child",
+   "tags": [
+    "소녀",
+    "여자아이",
+    "아이",
+    "베레모",
+    "채집꾼",
+    "단발",
+    "주민",
+    "마을 사람",
+    "forager",
+    "girl",
+    "child",
+    "villager"
+   ],
+   "sheet": 10,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-mushroom-forager-sprite-kid",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:2",
+    "gridSha256": "cf05031a651dbfa1a0ac6dc132e0b086ebd9af1cf030db4be03bb5844b09ac97",
+    "slotRgbaSha256": "2c8ac864962f8e920953a8eb9a9cccf72eba6e0b666c503ecedf534d1b281cea"
+   }
+  },
+  {
+   "id": "fantasy-mirage-scimitar-dervish",
+   "name": "사막 신기루 검무사",
+   "desc": "청금석 황금 머리띠, 흑갈색 날렵한 앞·옆·뒷머리 다발, 복숭앗빛 턱과 10px 짙은 남청색 칼라 목 수축, 코발트 블루·황금 사막 조끼와 진홍 허리 새시·짙은 남색 사막 바지.",
+   "genre": "판타지",
+   "role": "사막 검사·용병",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "검무사",
+    "검사",
+    "사막",
+    "머리띠",
+    "전사",
+    "동료",
+    "dervish",
+    "swordsman",
+    "desert"
+   ],
+   "sheet": 10,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-mirage-scimitar-dervish",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "dd7fe62e75feaa3e307eb82703bc67591e3ac69b7cdfbbda2eb26896ceaa2e31",
+    "slotRgbaSha256": "4565b70b17c72452baee99011e4f25e26931d56647f6396e823d3c26a9b5173d"
+   }
+  },
+  {
+   "id": "fantasy-oasis-water-priestess",
+   "name": "오아시스 물의 무녀",
+   "desc": "청록 보석 금장 서클릿, 흑청색 단정한 올림머리 번 다발, 복숭앗빛 턱과 10px 어두운 청금석 목걸이 칼라 수축, 아쿠아 터콰이즈·로열 골드·네이비 2단 제관 드레스와 진갈색 샌들 구두.",
+   "genre": "판타지",
+   "role": "오아시스 신관·무녀",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "무녀",
+    "신관",
+    "사제",
+    "오아시스",
+    "올림머리",
+    "서클릿",
+    "priestess",
+    "oracle",
+    "cleric"
+   ],
+   "sheet": 10,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-oasis-water-priestess",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "855fad30a8dce27b7a21d94f409e0cfed70dc97c164c304d27a9b64617167518",
+    "slotRgbaSha256": "35b6d535e77654f3491fb682a10ad630d187cdf0c364f120b57ec781a47f488c"
+   }
+  },
+  {
+   "id": "fantasy-caravan-camel-warden",
+   "name": "대상단 호위무사",
+   "desc": "자주·황금 테두리 사막 두건 캡, 복숭앗빛 턱과 10px 차콜 사슬 목 수축, 황동 비늘 흉갑과 진홍 서코트·가죽 부츠.",
+   "genre": "판타지",
+   "role": "호위무사·경비병",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "호위무사",
+    "경비병",
+    "병사",
+    "용병",
+    "사막",
+    "갑옷",
+    "두건",
+    "guard",
+    "warden",
+    "caravan",
+    "soldier"
+   ],
+   "sheet": 10,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-caravan-camel-warden",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "6c2fe1225edb68a47295403cbc4a55aa9491a747146577add54a04530474f171",
+    "slotRgbaSha256": "6f79c1705c1a11cc3f568f3a1670dee7c052aa3d3d36ef23ab588b9cb54d71ad"
+   }
+  },
+  {
+   "id": "fantasy-sun-obelisk-scribe",
+   "name": "태양신전 서기관",
+   "desc": "황금 머리장식을 꽂은 정갈한 흑단색 보브 칼단발 다발, 복숭앗빛 턱과 10px 어두운 청록·금장 칼라 목 수축, 진홍·터콰이즈·골드 신관 튜닉과 짙은 갈색 샌들 부츠.",
+   "genre": "판타지",
+   "role": "서기관·기록관",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "서기관",
+    "기록관",
+    "학자",
+    "검은 머리",
+    "흑발",
+    "단발",
+    "신관",
+    "주민",
+    "scribe",
+    "scholar",
+    "clerk"
+   ],
+   "sheet": 11,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-sun-obelisk-scribe",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "2d76476e1dea288a6c8f8a3946e3678fe9346a0f082d81e82448579015b93915",
+    "slotRgbaSha256": "cc48ee45b2cdcb0969c2f541fa4a8e47486ad1445320be7fe16f2122e2c15bcd"
+   }
+  },
+  {
+   "id": "fantasy-silver-crossbow-witchhunter",
+   "name": "은화살 마녀사냥꾼",
+   "desc": "단정한 차콜 가죽 삼각모 아래 회갈색 앞·옆·뒷머리 다발, 복숭앗빛 턱과 10px 진홍 하이칼라 스카프 목 수축, 차콜·버건디 가죽 롱코트와 은빛 버클 벨트.",
+   "genre": "판타지",
+   "role": "마녀사냥꾼·추적자",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "마녀사냥꾼",
+    "사냥꾼",
+    "추적자",
+    "삼각모",
+    "롱코트",
+    "스카프",
+    "witch hunter",
+    "inquisitor",
+    "hunter"
+   ],
+   "sheet": 11,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-silver-crossbow-witchhunter",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "1dc2e4d4829b502b24f808cc8d9bcea4c5dd27091d482cb3170269a7efd15715",
+    "slotRgbaSha256": "57c776f0d7d5567b16712323a416876beb8debe49b7998920e2c7c0f8afb5435"
+   }
+  },
+  {
+   "id": "fantasy-crimson-velvet-vampire-lord",
+   "name": "진홍 밤의 귀족",
+   "desc": "우아하게 가르마 탄 은청회색 단발 다발, 복숭앗빛 턱과 10px 흑적색 벨벳 리본 칼라 목 수축, 미드나잇 블랙·크림슨 벨벳 귀족 코트와 금장 베스트.",
+   "genre": "판타지",
+   "role": "고딕 귀족·성주",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "귀족",
+    "영주",
+    "성주",
+    "뱀파이어",
+    "은발",
+    "벨벳코트",
+    "진홍 눈",
+    "vampire",
+    "noble",
+    "lord"
+   ],
+   "sheet": 11,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-crimson-velvet-vampire-lord",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "19ad09b10f477a049c55b83807e93a0401c72a47c5771b3673f4b7fa64ab8cc1",
+    "slotRgbaSha256": "158c25d17fada2b9c90cafd7a8fc092b308fbc348b56a0d2f9035c50faf05244"
+   }
+  },
+  {
+   "id": "fantasy-graveyard-lantern-keeper",
+   "name": "묘지 등불지기",
+   "desc": "남회색 울 작업 캡(폭 14px) 아래 회갈색 옆·뒷머리 다발, 복숭앗빛 턱과 10px 어두운 버건디 머플러 목 수축, 이끼녹색·밤갈색 트위드 코트와 황동 벨트·가죽 부츠.",
+   "genre": "판타지",
+   "role": "묘지기·등대지기",
+   "gender": "male",
+   "age": "elder",
+   "tags": [
+    "묘지기",
+    "등대지기",
+    "관리인",
+    "할아버지",
+    "노인",
+    "모자",
+    "코트",
+    "주민",
+    "마을 사람",
+    "gravekeeper",
+    "watchman",
+    "old man",
+    "villager"
+   ],
+   "sheet": 11,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-graveyard-lantern-keeper",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "4ad53f7b1d51a087cfa28741cc77fe6d070c5f98ddfc91992d7ea10225687a30",
+    "slotRgbaSha256": "1ce1870f73b615f80d243a4a40cc65b5841308f43a16ec65951885b3e0ab2096"
+   }
+  },
+  {
+   "id": "fantasy-phantom-opera-soprano",
+   "name": "오페라 프리마돈나",
+   "desc": "루비 머리장식과 따뜻한 골든블론드 올림머리 번 다발, 복숭앗빛 턱과 10px 블랙 벨벳 초커 목 수축, 로열 크림슨·차콜 블랙 2단 오페라 드레스와 금장 허리띠, 블랙 구두.",
+   "genre": "판타지",
+   "role": "성악가·가희",
+   "gender": "female",
+   "age": "middle",
+   "tags": [
+    "성악가",
+    "가수",
+    "프리마돈나",
+    "귀부인",
+    "부인",
+    "금발",
+    "올림머리",
+    "드레스",
+    "주민",
+    "soprano",
+    "diva",
+    "singer",
+    "lady"
+   ],
+   "sheet": 11,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-phantom-opera-soprano",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "d7bc9ebc5045d11a9f533a423c38b6cb0921af026906fc33e9a31cd3d2d915ac",
+    "slotRgbaSha256": "b6e5ce7cd5864abd44fc18e33e1aaccb863b498e2f47300a6d117e87aaf9a33c"
+   }
+  },
+  {
+   "id": "fantasy-royal-academy-dean",
+   "name": "왕립 학술원 학장",
+   "desc": "금장 테두리 남색 학장 베레모 아래 은갈색 단정한 앞·옆·뒷머리 다발, 복숭앗빛 턱과 10px 짙은 자주 스톨 칼라 목 수축, 인디고·황금 학장 예복 코트와 진홍 벨트.",
+   "genre": "판타지",
+   "role": "교장·학장·노교수",
+   "gender": "male",
+   "age": "elder",
+   "tags": [
+    "학장",
+    "교장",
+    "교수",
+    "박사",
+    "노학자",
+    "선생",
+    "노인",
+    "베레모",
+    "예복",
+    "주민",
+    "dean",
+    "headmaster",
+    "professor",
+    "scholar"
+   ],
+   "sheet": 11,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-royal-academy-dean",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "ba821121896d9d6446a2963118a446781d200578b9bbe4499bf00db4f54bbba0",
+    "slotRgbaSha256": "e23d4f231eb018a2a095d77ed7e4dfe404ca76c248edd9ca8589fde639bec60d"
+   }
+  },
+  {
+   "id": "fantasy-field-chirurgeon-medic",
+   "name": "왕립 구호 의무관",
+   "desc": "붉은 십자 배지가 달린 아담한 네이비 구호 캡, 밤갈색 단발 다발, 복숭앗빛 턱과 10px 네이비 칼라 목 수축, 네이비·산호빛 구호 제복 재킷과 갈색 구급 벨트.",
+   "genre": "판타지",
+   "role": "의무관·간호사·의사",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "의사",
+    "간호사",
+    "의무관",
+    "치료사",
+    "모자",
+    "제복",
+    "여성",
+    "주민",
+    "마을 사람",
+    "medic",
+    "doctor",
+    "nurse",
+    "healer"
+   ],
+   "sheet": 11,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-field-chirurgeon-medic",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "e831f09c61857398234ce8138957b33f00f716ee189d1cf3bd6600c12a4572da",
+    "slotRgbaSha256": "0ec3381fb77b6b169a43904391c2e2de257ff2c9f090401f9b3677efe0032982"
+   }
+  },
+  {
+   "id": "fantasy-comet-observatory-astronomer",
+   "name": "혜성 관측소 천문학자",
+   "desc": "황금 초승달 머리핀과 미드나잇 블루 층진 보브 단발 다발, 복숭앗빛 턱과 10px 어두운 자주 스카프 목 수축, 로열 퍼플·터콰이즈·골드 천문학자 조끼 코트와 부츠.",
+   "genre": "판타지",
+   "role": "천문학자·연구원",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "천문학자",
+    "학자",
+    "연구원",
+    "박사",
+    "단발",
+    "머리핀",
+    "코트",
+    "주민",
+    "astronomer",
+    "scholar",
+    "researcher"
+   ],
+   "sheet": 11,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-comet-observatory-astronomer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "2d34d8cea77b38ca9fccf5aeadf83f33a8b8b51f643acdbb196c9209cfd8fc04",
+    "slotRgbaSha256": "7786563c5c4e488eebb324120bca52936b347c64218debc6037c962cd1de0f9b"
+   }
+  },
+  {
+   "id": "fantasy-clockwork-automaton-steward",
+   "name": "태엽 자동인형 집사",
+   "desc": "작은 황동 태엽 서클릿과 청회색 정돈된 보브 단발 다발, 복숭앗빛 턱과 10px 차콜 황동 칼라 목 수축, 에메랄드·황동·차콜 태엽 집사 연미복.",
+   "genre": "판타지",
+   "role": "자동인형·시종",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "자동인형",
+    "오토마톤",
+    "집사",
+    "시종",
+    "은발",
+    "연미복",
+    "태엽",
+    "automaton",
+    "steward",
+    "butler"
+   ],
+   "sheet": 12,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-clockwork-automaton-steward",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "49b5189d84b7470273016b8c05595f654ea116a18531e4deda33b74d11831535",
+    "slotRgbaSha256": "9551a7bd162e088f887ba4cd1acf27c783f278389ea469204020716c18a4c6f5"
+   }
+  },
+  {
+   "id": "fantasy-windmill-grain-miller",
+   "name": "풍차 방앗간 주인",
+   "desc": "황토색 두건 캡(폭 14px, 진갈색 외곽선) 아래 밝은 밤갈색 앞·옆·뒷머리 다발, 복숭앗빛 턱과 10px 진홍 손수건 목 수축, 올리브 그린 셔츠·정중앙 대칭 러셋 앞치마·4방향 동일 색 남갈색 바지와 가죽 부츠.",
+   "genre": "판타지",
+   "role": "방앗간 주인·농부",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "방앗간",
+    "농부",
+    "상인",
+    "아저씨",
+    "남성",
+    "앞치마",
+    "두건",
+    "주민",
+    "마을 사람",
+    "miller",
+    "farmer",
+    "villager",
+    "man"
+   ],
+   "sheet": 12,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-windmill-grain-miller",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "02ca570d4e65d864cabec38199d903690a8798ad477df4296499da85dbac4b8d",
+    "slotRgbaSha256": "2dc9139386ab7aa3bb4b94a095c2126d2a2e9ed754d8b58b42f9f188fa06fbc1"
+   }
+  },
+  {
+   "id": "fantasy-vineyard-sommelier-vintner",
+   "name": "포도원 소믈리에",
+   "desc": "단정히 가르마 탄 흑갈색 웨이브 단발 다발, 복숭앗빛 턱과 10px 버건디 보타이·차콜 칼라 목 수축, 와인 버건디 소믈리에 베스트·차콜 재킷·정중앙 대칭 짧은 소믈리에 앞치마와 차콜 정장 바지·구두.",
+   "genre": "판타지",
+   "role": "소믈리에·주점 지배인",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "소믈리에",
+    "바텐더",
+    "주점 주인",
+    "상인",
+    "청년",
+    "남성",
+    "정장",
+    "앞치마",
+    "주민",
+    "마을 사람",
+    "sommelier",
+    "bartender",
+    "vintner",
+    "villager"
+   ],
+   "sheet": 12,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-vineyard-sommelier-vintner",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "fc506b2dba10df56eb01e5772c6b3e9fd85d0d51a48999eed88532d5dedd3e58",
+    "slotRgbaSha256": "5e10a6199ca320a44dec3f3cecba27faa7be79e799852fed189d358be5efc1da"
+   }
+  },
+  {
+   "id": "fantasy-orchard-shepherdess",
+   "name": "목장 양치기 처녀",
+   "desc": "청색 리본 머리띠와 꿀갈색 단정한 단발 다발, 복숭앗빛 턱과 10px 네이비 칼라 목 수축, 코발트 블루 코르셋 조끼와 코랄·크림 2단 목장 치마, 갈색 구두.",
+   "genre": "판타지",
+   "role": "양치기·목장 처녀",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "양치기",
+    "목동",
+    "농부",
+    "처녀",
+    "여성",
+    "단발",
+    "치마",
+    "주민",
+    "마을 사람",
+    "shepherdess",
+    "country girl",
+    "villager",
+    "woman"
+   ],
+   "sheet": 12,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-orchard-shepherdess",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "beb2beb20bd5c30c70015d82a3dc82e47639678ddff504a2ae469db369fbac75",
+    "slotRgbaSha256": "fa08b9b67770b46344a22967f19314a639856394dd7b5cd8fcbd305ac4baf157"
+   }
+  },
+  {
+   "id": "fantasy-town-courier-postboy",
+   "name": "마을 우편배달 소년",
+   "desc": "금빛 배지 네이비 우편 캡(폭 14px) 아래 주황갈색 삐죽 앞·옆·뒷머리 다발, 아동 복숭앗빛 턱과 10px 진홍 스카프 목 수축, 로열 블루 우편 제복 재킷과 갈색 가죽 벨트·부츠.",
+   "genre": "판타지",
+   "role": "우편배달부 소년",
+   "gender": "male",
+   "age": "child",
+   "tags": [
+    "우편배달부",
+    "배달원",
+    "소년",
+    "남자아이",
+    "아이",
+    "모자",
+    "제복",
+    "주민",
+    "마을 사람",
+    "courier",
+    "postboy",
+    "boy",
+    "child",
+    "villager"
+   ],
+   "sheet": 12,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-town-courier-postboy",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:2",
+    "gridSha256": "4ea45771b27f2117cb3203760bf24f44fffa75920c254310f3f53db4cad67f7c",
+    "slotRgbaSha256": "031148d0b4b941108bbce9bec461bc70688e778059135b549f623e8792629594"
+   }
+  },
+  {
+   "id": "fantasy-colosseum-lion-gladiator",
+   "name": "대투기장 검투사 챔피언",
+   "desc": "붉은 보석 청동 서클릿, 흑갈색 거친 앞·옆·뒷머리 다발, 복숭앗빛 턱과 10px 어두운 가죽 목 보호대 수축, 청동·진홍 검투사 흉갑과 황금 챔피언 벨트·가죽 그리브 부츠.",
+   "genre": "판타지",
+   "role": "검투사·투사",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "검투사",
+    "투사",
+    "전사",
+    "챔피언",
+    "서클릿",
+    "흉갑",
+    "gladiator",
+    "champion",
+    "warrior"
+   ],
+   "sheet": 12,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-colosseum-lion-gladiator",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "62ee1ab1b00c2bcec45a1e738c1584443b76222501f226ed657fe8d3ce0adfd0",
+    "slotRgbaSha256": "def43a027127c6dc35b743146af002452424c6e2c2e95aa2ada1efef1ec4c1d5"
+   }
+  },
+  {
+   "id": "fantasy-azure-pegasus-skyknight",
+   "name": "창공 페가수스 여기사",
+   "desc": "청은색 날개 머리띠와 코발트 블루 하이 포니테일 다발, 복숭앗빛 턱과 10px 남흑색 칼라 목 수축, 청은색·로열블루 경장 흉갑과 진홍 플리츠 스커트·롱부츠.",
+   "genre": "판타지",
+   "role": "천공 여기사",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "여기사",
+    "기사",
+    "천마기사",
+    "파란 머리",
+    "포니테일",
+    "흉갑",
+    "동료",
+    "pegasus knight",
+    "sky knight",
+    "knight"
+   ],
+   "sheet": 12,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-azure-pegasus-skyknight",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "39cb9f2431ac36d98b625eea301500fd9fe005fdce06fdf0db716e36caba38c4",
+    "slotRgbaSha256": "7ecc8357930e56d38701afbcda87f4bd086fcc10c4845f8c4ac9772472e2b0cf"
+   }
+  },
+  {
+   "id": "fantasy-iron-cannoneer-bombardier",
+   "name": "강철 포병대 사수",
+   "desc": "황동 배지 차콜 베레모(폭 14px) 아래 밤갈색 단발 옆·뒷머리 다발, 복숭앗빛 턱과 10px 진홍 스카프 목 수축, 진홍·강철 포병 제복 조끼와 황동 탄약 벨트·철제 부츠.",
+   "genre": "판타지",
+   "role": "포병·병사",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "포병",
+    "사수",
+    "병사",
+    "군인",
+    "베레모",
+    "제복",
+    "cannoneer",
+    "bombardier",
+    "soldier"
+   ],
+   "sheet": 12,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-iron-cannoneer-bombardier",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "63a88c67e150ce29bdbf45e7a4504265e98f298536d9147c188441886baaec78",
+    "slotRgbaSha256": "18826d41cd46ab082d14e250bc3f0e02a77013381ef6a54f7962c767fa0a7689"
+   }
+  },
+  {
+   "id": "fantasy-tournament-herald-trumpeter",
+   "name": "마상시합 전령관",
+   "desc": "자주색 아담한 전령 베레 캡(폭 14px) 아래 금갈색 앞·옆·뒷머리 다발, 복숭앗빛 턱과 10px 어두운 자주 칼라 목 수축, 로열 퍼플·황금 문장 탭바드와 남색 소매·가죽 부츠.",
+   "genre": "판타지",
+   "role": "전령관·나팔수",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "전령",
+    "전령관",
+    "관원",
+    "베레모",
+    "탭바드",
+    "청년",
+    "주민",
+    "herald",
+    "messenger",
+    "official"
+   ],
+   "sheet": 13,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-tournament-herald-trumpeter",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "600ca1d20e0a475014d0b714d78ff80f7a91ec0e485a1a10b25f8e2bc598f483",
+    "slotRgbaSha256": "ea60ef8bb4b8bf0c3aad766be482b73852beabe4f9bcbac7fcfaf522e6b02137"
+   }
+  },
+  {
+   "id": "fantasy-crimson-oni-samurai-ronin",
+   "name": "주홍 단풍 낭인 검객",
+   "desc": "흑청색 머리끈으로 묶은 은청회색 하이 포니테일과 날카로운 앞·옆머리 다발, 복숭앗빛 턱과 10px 흑남색 내의 깃 목 수축, 단풍 진홍·차콜 하오리 도복과 황금 오비 띠·각반 신발.",
+   "genre": "판타지",
+   "role": "낭인·무사",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "낭인",
+    "무사",
+    "사무라이",
+    "검객",
+    "은발",
+    "포니테일",
+    "도복",
+    "동료",
+    "ronin",
+    "samurai",
+    "swordsman"
+   ],
+   "sheet": 13,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-crimson-oni-samurai-ronin",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "7863008ae7217ce616db670bcfe4bfc2e1e5b01b04e65764b6899540b532b774",
+    "slotRgbaSha256": "5650e4b0aa73930318531b869d391c44071f6f8d5b777ec7614a7cd8f54a479f"
+   }
+  },
+  {
+   "id": "fantasy-celadon-fan-courtesan-dancer",
+   "name": "청자 부채 가희",
+   "desc": "금빛 매화 머리장식과 흑단색 정갈한 올림머리 번 다발, 복숭앗빛 턱과 10px 자주색 깃 목 수축, 비취 청자색 상의·산호 다홍색 2단 비단 치마와 금박 허리띠, 진갈색 꽃신.",
+   "genre": "판타지",
+   "role": "동방 가희·예인",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "가희",
+    "무희",
+    "예인",
+    "검은 머리",
+    "흑발",
+    "올림머리",
+    "비녀",
+    "한복",
+    "동방",
+    "주민",
+    "dancer",
+    "courtesan",
+    "performer"
+   ],
+   "sheet": 13,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-celadon-fan-courtesan-dancer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "bcf8e60d0ec2394c27f2dfd98965238e0a872b0e50dbf2805ec51f3e63587312",
+    "slotRgbaSha256": "30f709926e417ceb5322c328a314c3348bf97e1f2b413266a4a50bfdf0e1f8e2"
+   }
+  },
+  {
+   "id": "fantasy-obsidian-forge-weaponsmith",
+   "name": "화산 흑요석 대장장이",
+   "desc": "용암 주황 머리띠, 잿빛 흑갈색 삐죽 앞·옆·뒷머리 다발, 복숭앗빛 턱과 10px 차콜 가죽 목 수축, 차콜·용암 주황 문양 대장장이 가죽 에이프런 조끼와 4방향 동일한 어두운 철회색 바지·강철 부츠.",
+   "genre": "판타지",
+   "role": "무기 대장장이·장인",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "대장장이",
+    "무기점",
+    "장인",
+    "앞치마",
+    "머리띠",
+    "아저씨",
+    "주민",
+    "마을 사람",
+    "weaponsmith",
+    "blacksmith",
+    "smith"
+   ],
+   "sheet": 13,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-obsidian-forge-weaponsmith",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "e6f451d5be951a79d3c8b1ae8ed7051c060996d707f0a018b112e3081c4a53b6",
+    "slotRgbaSha256": "ad1a3d3eaec311cb75729baac84249eeb06eed6f9368171137f591e20ab02a51"
+   }
+  },
+  {
+   "id": "fantasy-starlight-oracle-seer",
+   "name": "성운 신탁 예언자",
+   "desc": "황금 성좌 서클릿, 인디고 블루 웨이브 보브 단발 다발, 복숭앗빛 턱과 10px 어두운 버건디·골드 초커 목 수축, 로열 크림슨·골드·터콰이즈 2단 신탁 사제 예복과 진갈색 부츠.",
+   "genre": "판타지",
+   "role": "신탁 사제·예언자",
+   "gender": "female",
+   "age": "elder",
+   "tags": [
+    "예언자",
+    "무당",
+    "할머니",
+    "노파",
+    "노인",
+    "사제",
+    "서클릿",
+    "예복",
+    "주민",
+    "마을 사람",
+    "oracle",
+    "seer",
+    "elder",
+    "old woman"
+   ],
+   "sheet": 13,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-starlight-oracle-seer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "cb1cea5800a1c31ee3651330c818c46fcdac0a92ea991555200c7d21a1c4e3cf",
+    "slotRgbaSha256": "2cf1ed2a649749f296a3f0dbc98c4af0b10ca9ea98d8f8b865ac88e60f86791f"
+   }
+  },
+  {
+   "id": "fantasy-young-harbor-fisherman",
+   "name": "포구 청년 어부",
+   "desc": "포구 청년 어부 — 남색 머리수건 반다나 아래 밤갈색 삐죽 앞·옆머리 + 복숭앗빛 턱과 밧줄 스카프 + 청백 줄무늬 셔츠 위 황갈색 가죽 조끼·진청 바지·방수 장화",
+   "genre": "판타지",
+   "role": "어부·뱃사람",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "포구 청년 어부",
+    "어부",
+    "뱃사람",
+    "젊은 어부",
+    "선원",
+    "청년",
+    "주민",
+    "바다",
+    "조끼"
+   ],
+   "sheet": 13,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-young-harbor-fisherman",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "887c1bf6f04e3162cd197353755952753787a128e514d47f0c1101614420ed9b",
+    "slotRgbaSha256": "3072fc05b5f0aa0bb7a54a031c56b6200eca34aeadb9302db869a8645652e7d9"
+   }
+  },
+  {
+   "id": "fantasy-flower-basket-florist-girl",
+   "name": "꽃바구니 꽃집 소녀",
+   "desc": "꽃바구니 꽃집 소녀 — 밤갈색 단발 보브 다발과 왼쪽 분홍 꽃 머리핀 + 복숭앗빛 턱과 잘록한 크림 깃 + 연노랑 블라우스 위 올리브그린 앞치마 원피스·갈색 구두",
+   "genre": "판타지",
+   "role": "꽃집 소녀·화원 점원",
+   "gender": "female",
+   "age": "child",
+   "tags": [
+    "꽃바구니 꽃집 소녀",
+    "꽃집 소녀",
+    "화원 점원",
+    "꽃집",
+    "소녀",
+    "화원",
+    "아이",
+    "주민",
+    "앞치마",
+    "분홍 꽃핀",
+    "플로리스트",
+    "꽃장수"
+   ],
+   "sheet": 13,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-flower-basket-florist-girl",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:2",
+    "gridSha256": "8349040966f28948c6b06ba677cd903d45e57948a7ce68fecadf0af297935e2a",
+    "slotRgbaSha256": "2e4101a83aff98546b1c4d516fb82748ab99130d12f7a3ff7b1f20b3babfd71a"
+   }
+  },
+  {
+   "id": "fantasy-hearth-knitting-grandma",
+   "name": "벽난로 뜨개질 할머니",
+   "desc": "벽난로 뜨개질 할머니 — 단정히 쪽진 은회색 번 헤어 + 복숭앗빛 턱과 자주색 니트 숄 + 자주색 어깨 숄·진갈색 치마·앞치마",
+   "genre": "판타지",
+   "role": "할머니·마을 어른",
+   "gender": "female",
+   "age": "elder",
+   "tags": [
+    "벽난로 뜨개질 할머니",
+    "할머니",
+    "마을 어른",
+    "노파",
+    "노인",
+    "어르신",
+    "여성",
+    "주민",
+    "숄",
+    "은발"
+   ],
+   "sheet": 13,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-hearth-knitting-grandma",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "45929352022c3792124160456fa21d8dbec3f997bbf8a37157baa57ec20ea343",
+    "slotRgbaSha256": "98f90fdb36d7cdd0539a94cc0174633690b1e0adee276c25944a127834b4aa27"
+   }
+  },
+  {
+   "id": "fantasy-ivory-lace-dress-lady",
+   "name": "순백 레이스 드레스 숙녀",
+   "desc": "순백 레이스 드레스 숙녀 — 짙은 흑갈색 물결 롱헤어 다발 + 복숭앗빛 턱과 진홍 초커 리본 + 진홍 허리 리본과 남색 코르셋 선이 들어간 흰 레이스 드레스",
+   "genre": "판타지",
+   "role": "귀부인·숙녀",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "순백 레이스 드레스 숙녀",
+    "귀부인",
+    "숙녀",
+    "아가씨",
+    "하얀 드레스",
+    "흰 드레스",
+    "드레스",
+    "여성",
+    "주민",
+    "흑갈발",
+    "검은 머리"
+   ],
+   "sheet": 14,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-ivory-lace-dress-lady",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "56a0a2295979e95d5bc3bc4b6efbd44be2ac44a397542acf5dc7d4fff24fe452",
+    "slotRgbaSha256": "51c21d66d2e89422dfb468411cba14e8ac353a6d9a69314d4bcf5a9b4de08619"
+   }
+  },
+  {
+   "id": "fantasy-fishmarket-matron-monger",
+   "name": "어물전 여주인 상인",
+   "desc": "어물전 여주인 상인 — 적갈색 묶음 머리 다발과 청색 머리끈 + 복숭앗빛 턱과 황토 스카프 + 황토색 걷은 소매 블라우스·코발트 블루 방수 앞치마·진회색 치마",
+   "genre": "판타지",
+   "role": "어물전 주인·상인",
+   "gender": "female",
+   "age": "middle",
+   "tags": [
+    "어물전 여주인 상인",
+    "어물전 주인",
+    "상인",
+    "어물전",
+    "아줌마",
+    "아주머니",
+    "중년",
+    "여성",
+    "주민",
+    "앞치마"
+   ],
+   "sheet": 14,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-fishmarket-matron-monger",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "c474a3265174415106427f0f790bcc891fd01518ba7d7caaf1bcdfd8444f74f1",
+    "slotRgbaSha256": "b115a55d7344b60aaa1e118b9ae11bccb18c7b132ef797ac8909444bfe1a13d7"
+   }
+  },
+  {
+   "id": "fantasy-armor-shop-master-belmont",
+   "name": "방어구점 주인 장인",
+   "desc": "방어구점 주인 장인 — 철회색 올백 단발과 짙은 갈색 구레나룻 + 복숭앗빛 턱과 적갈색 셔츠 깃 + 진홍 속셔츠 위 징 박힌 흑철 가죽 브리간딘 조끼·가죽 벨트",
+   "genre": "판타지",
+   "role": "방어구점 주인·갑주 장인",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "방어구점 주인 장인",
+    "방어구점 주인",
+    "갑주 장인",
+    "방어구점",
+    "상인",
+    "장인",
+    "대장장이",
+    "아저씨",
+    "중년",
+    "남성",
+    "주민",
+    "갑옷",
+    "검은 머리"
+   ],
+   "sheet": 14,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-armor-shop-master-belmont",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "d0300a32816d86e62d701f15e509bc906b8ca55476b49c3d7a7935cbc4f67eb9",
+    "slotRgbaSha256": "c7e250c8a5390acac7b7286641fcec16460254cf3c6bccc224311b1e09307153"
+   }
+  },
+  {
+   "id": "fantasy-general-store-shopkeeper",
+   "name": "만물상 잡화점 주인",
+   "desc": "만물상 잡화점 주인 — 밀금발 가르마 단발 + 복숭앗빛 턱과 자주 보타이 + 아이보리 셔츠 위 에메랄드 그린 상인 조끼·황동 장부 벨트·진갈색 바지",
+   "genre": "판타지",
+   "role": "잡화점 주인·상인",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "만물상 잡화점 주인",
+    "잡화점 주인",
+    "상인",
+    "잡화점",
+    "도구점",
+    "가게 주인",
+    "중년",
+    "남성",
+    "주민",
+    "조끼"
+   ],
+   "sheet": 14,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-general-store-shopkeeper",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "03faf425b5d7aefbdd6272ae5a9636495f33d001b20d19bc6edc3d54cdd378af",
+    "slotRgbaSha256": "85f23d827af17aebed7523c923aeb5f4f59e442a2a74bcae30b8686d85854e43"
+   }
+  },
+  {
+   "id": "fantasy-tailor-boutique-seamstress",
+   "name": "의상실 재단사 아가씨",
+   "desc": "의상실 재단사 아가씨 — 와인빛 버건디 보브 단발 + 복숭앗빛 턱과 노란 줄자 스카프 + 미드나잇 네이비 조끼·크림 블라우스·자주빛 플레어 스커트",
+   "genre": "판타지",
+   "role": "재단사·포목점 주인",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "의상실 재단사 아가씨",
+    "재단사",
+    "포목점 주인",
+    "의상실",
+    "포목점",
+    "상인",
+    "여성",
+    "청년",
+    "주민",
+    "보브컷"
+   ],
+   "sheet": 14,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-tailor-boutique-seamstress",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "83b3c165676f6df33508b3924fdcde5e51b8d0b535401a73f1fa415f69153ed2",
+    "slotRgbaSha256": "a26320248099007cf4c115c0eb594301cee3f3ce21e60060b2d7e6393da9cf84"
+   }
+  },
+  {
+   "id": "fantasy-butcher-smokehouse-grocer",
+   "name": "훈제 정육점 주인",
+   "desc": "훈제 정육점 주인 — 짙은 밤갈색 짧은 상투형 단발 + 복숭앗빛 턱과 흑갈색 칼라 + 자주색 걷은 소매 셔츠 위 황갈색 가죽 앞치마·허리 가죽 벨트",
+   "genre": "판타지",
+   "role": "정육점 주인·요리사",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "훈제 정육점 주인",
+    "정육점 주인",
+    "요리사",
+    "정육점",
+    "식료품점",
+    "상인",
+    "아저씨",
+    "중년",
+    "남성",
+    "주민",
+    "앞치마",
+    "검은 머리"
+   ],
+   "sheet": 14,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-butcher-smokehouse-grocer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "651be93086885cde251c8e2882faf24f9c43295f264185b34f959f578073e5da",
+    "slotRgbaSha256": "6dea37c950e7b1f721dd96ea0608f2e031aa737e68c8140ca8ac3ad53ca77794"
+   }
+  },
+  {
+   "id": "fantasy-pottery-kiln-craftsman",
+   "name": "도자기 가마 도공",
+   "desc": "도자기 가마 도공 — 쪽빛 머리띠와 흑갈색 앞·뒷머리 다발 + 복숭앗빛 턱과 삼베 깃 + 황토색 작업복 상의·남색 허리끈·진갈색 바지",
+   "genre": "판타지",
+   "role": "도공·공예 장인",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "도자기 가마 도공",
+    "도공",
+    "공예 장인",
+    "장인",
+    "공방",
+    "중년",
+    "남성",
+    "주민",
+    "머리띠",
+    "검은 머리"
+   ],
+   "sheet": 14,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-pottery-kiln-craftsman",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "65af41a341f8858420067174e5f2c2b26adf536383f6775de500eb24cf754415",
+    "slotRgbaSha256": "64aea6f2a1edf795b9303d953a5bef87aea12d84dbced8c20b8babd1bdce2f80"
+   }
+  },
+  {
+   "id": "fantasy-cobbler-leather-shoemaker",
+   "name": "가죽 구두 노수선공",
+   "desc": "가죽 구두 노수선공 — 백은빛 섞인 회갈색 올백 단발 + 복숭앗빛 턱과 진녹색 타이 + 올리브 조끼·체스트넛 가죽 작업 앞치마·갈색 바지",
+   "genre": "판타지",
+   "role": "구두장이·수선공",
+   "gender": "male",
+   "age": "elder",
+   "tags": [
+    "가죽 구두 노수선공",
+    "구두장이",
+    "수선공",
+    "장인",
+    "할아버지",
+    "노인",
+    "남성",
+    "주민",
+    "가죽 앞치마"
+   ],
+   "sheet": 14,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-cobbler-leather-shoemaker",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "b5429d7e7133508204ed08294fdc1edc6e35c2faee0ed679835b8fe125807c6f",
+    "slotRgbaSha256": "4ce81f603974d668adfa25e841c4a14c7b271f55008c337b25d433921777a68c"
+   }
+  },
+  {
+   "id": "fantasy-clocktower-watchmaker-elder",
+   "name": "시계탑 노시계공",
+   "desc": "시계탑 노시계공 — 단정한 은백색 옆가르마 단발 + 복숭앗빛 턱과 남색 크라바트 + 버건디 벨벳 코트·황동 시계줄 조끼·차콜 바지",
+   "genre": "판타지",
+   "role": "시계공·기계 장인",
+   "gender": "male",
+   "age": "elder",
+   "tags": [
+    "시계탑 노시계공",
+    "시계공",
+    "기계 장인",
+    "장인",
+    "할아버지",
+    "노인",
+    "학자",
+    "남성",
+    "주민"
+   ],
+   "sheet": 15,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-clocktower-watchmaker-elder",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "3d5538f429a669b406d88609db457a69847a43722341b6232b67253c44c734ba",
+    "slotRgbaSha256": "c5955bd019993df661b1d7b47a46136c7071b98fb9112927bde576638f2b945a"
+   }
+  },
+  {
+   "id": "fantasy-inn-warm-hostess-matron",
+   "name": "여관 안주인 아주머니",
+   "desc": "여관 안주인 아주머니 — 따뜻한 밤갈색 묶음 머리와 주황 머리끈 + 복숭앗빛 턱과 크림 스카프 + 짙은 숲녹색 보디스 상의·크림색 앞치마·적갈색 롱스커트",
+   "genre": "판타지",
+   "role": "여관 주인·안주인",
+   "gender": "female",
+   "age": "middle",
+   "tags": [
+    "여관 안주인 아주머니",
+    "여관 주인",
+    "안주인",
+    "여관주인",
+    "주모",
+    "아줌마",
+    "아주머니",
+    "상인",
+    "여성",
+    "중년",
+    "주민",
+    "앞치마"
+   ],
+   "sheet": 15,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-inn-warm-hostess-matron",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "c986a7a155bc2c8bf9c943f3eef9643c82f010160f50567da9ef90aee4c91211",
+    "slotRgbaSha256": "383a3f92e77df614390d86b7d8c01b8c4541cbe9275b7e6908a0ef6f2e14c4f3"
+   }
+  },
+  {
+   "id": "fantasy-town-well-washerwoman",
+   "name": "우물가 빨래터 아낙",
+   "desc": "우물가 빨래터 아낙 — 산뜻한 주홍 머리수건 아래 삐져나온 흑갈색 앞·옆머리 + 복숭앗빛 턱과 남색 깃 + 하늘색 소매 튜닉·적갈색 치마·앞치마",
+   "genre": "판타지",
+   "role": "마을 아낙·주민",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "우물가 빨래터 아낙",
+    "마을 아낙",
+    "주민",
+    "마을 사람",
+    "여성",
+    "청년",
+    "아낙",
+    "두건",
+    "검은 머리"
+   ],
+   "sheet": 15,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-town-well-washerwoman",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "e4a7e898fea6a83e4e77d5501e0cd53af51808c4ed6d66beb252705d3dde101e",
+    "slotRgbaSha256": "bc195ccdf7a1247879f485aaca520e733775ed38db29a4c864b0da883b145caa"
+   }
+  },
+  {
+   "id": "fantasy-orchard-apple-farmer",
+   "name": "사과밭 과수원 농부",
+   "desc": "사과밭 과수원 농부 — 아담한 황금 밀짚 캡 아래 밤갈색 옆·뒷머리 + 복숭앗빛 턱과 붉은 손수건 + 황토 체크풍 셔츠·청남색 멜빵 바지·갈색 장화",
+   "genre": "판타지",
+   "role": "농부·과수원 주인",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "사과밭 과수원 농부",
+    "농부",
+    "과수원 주인",
+    "아저씨",
+    "중년",
+    "남성",
+    "주민",
+    "밀짚모자",
+    "멜빵"
+   ],
+   "sheet": 15,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-orchard-apple-farmer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "e1ce0ce3432b02531cf359559147e663ba19b6d400a4dec666670d5a73f1bdf9",
+    "slotRgbaSha256": "84e45112c540206b012b6af49b20552001d3b9e621677fc2e33f4574621b25d2"
+   }
+  },
+  {
+   "id": "fantasy-dairy-cheese-maid",
+   "name": "목장 치즈 아가씨",
+   "desc": "목장 치즈 아가씨 — 꿀금발 양갈래 반묶음 다발 + 복숭앗빛 턱과 네이비 초커 + 수레국화 파란 코르셋 조끼·진홍 소매 단·갈색 치마와 작은 앞치마",
+   "genre": "판타지",
+   "role": "목장 처녀·치즈 장인",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "목장 치즈 아가씨",
+    "목장 처녀",
+    "치즈 장인",
+    "목장",
+    "농부",
+    "처녀",
+    "여성",
+    "청년",
+    "주민",
+    "금발",
+    "앞치마"
+   ],
+   "sheet": 15,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-dairy-cheese-maid",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "7529b7addff87dfb27cec36074279c4b2f50b0ba3a7e71a4c13dcaae1eafd16c",
+    "slotRgbaSha256": "9354af76517f22dd0878f00a014add77ecee95d7d8d34bcbde372bc0bb4ff465"
+   }
+  },
+  {
+   "id": "fantasy-village-midwife-grandma",
+   "name": "약초방 산파 할머니",
+   "desc": "약초방 산파 할머니 — 포근한 은회색 단발 보브 + 복숭앗빛 턱과 짙은 쑥색 숄 + 쑥색 약초 자수 조끼·자두색 롱드레스·약초 주머니 벨트",
+   "genre": "판타지",
+   "role": "산파·약초 할머니",
+   "gender": "female",
+   "age": "elder",
+   "tags": [
+    "약초방 산파 할머니",
+    "산파",
+    "약초 할머니",
+    "할머니",
+    "노파",
+    "노인",
+    "약초사",
+    "여성",
+    "주민",
+    "은발"
+   ],
+   "sheet": 15,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-village-midwife-grandma",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "afde7f19c1bbfbfe8774268a25fcb3e9814f531b5c35f8541bead5c9a7f6be2a",
+    "slotRgbaSha256": "5a7876815f09601e63c20bccd79bceefbae04504105f94a73aa8dfa3ce04c98c"
+   }
+  },
+  {
+   "id": "fantasy-street-apple-urchin-boy",
+   "name": "장터 심부름꾼 소년",
+   "desc": "장터 심부름꾼 소년 — 주황빛 적갈색 더벅머리 다발 + 복숭앗빛 턱과 잘록한 황토 머플러 + 올리브 조끼·크림 반소매 셔츠·갈색 반바지·워커화",
+   "genre": "판타지",
+   "role": "심부름꾼·마을 소년",
+   "gender": "male",
+   "age": "child",
+   "tags": [
+    "장터 심부름꾼 소년",
+    "심부름꾼",
+    "마을 소년",
+    "소년",
+    "아이",
+    "어린이",
+    "남성",
+    "주민",
+    "조끼"
+   ],
+   "sheet": 15,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-street-apple-urchin-boy",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:2",
+    "gridSha256": "110426af93a4861aa3b25c47571ff8ff158a997a5d9a7a019cb8c2a2191c4346",
+    "slotRgbaSha256": "26de19b8f201e867b02abd4cd56c02fb72c63c257b56474b7e40d9e2a57b83c3"
+   }
+  },
+  {
+   "id": "fantasy-ribbon-schoolgirl-pupil",
+   "name": "글방 책가방 소녀",
+   "desc": "글방 책가방 소녀 — 흑단색 반묶음 단발과 빨간 리본 + 복숭앗빛 턱과 잘록한 세일러 깃 + 남색 세일러 튜닉·빨간 리본 타이·적갈색 주름치마",
+   "genre": "판타지",
+   "role": "학생 소녀·마을 아이",
+   "gender": "female",
+   "age": "child",
+   "tags": [
+    "글방 책가방 소녀",
+    "학생 소녀",
+    "마을 아이",
+    "소녀",
+    "아이",
+    "어린이",
+    "학생",
+    "여성",
+    "주민",
+    "리본",
+    "검은 머리"
+   ],
+   "sheet": 15,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-ribbon-schoolgirl-pupil",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:2",
+    "gridSha256": "664fb3b2b44e8f81053df9f98acee4b7e6f287608ad6154ab33ff2593d4efdc6",
+    "slotRgbaSha256": "4f1ca23d0dcd5d6a67280b37cbd60ad2a5f45c90fc5b408ca8efab10e08967d2"
+   }
+  },
+  {
+   "id": "fantasy-lantern-night-watchman",
+   "name": "야경꾼 순찰 경비",
+   "desc": "야경꾼 순찰 경비 — 낮은 강철 케틀 투구 캡 아래 갈색 단발 + 복숭앗빛 턱과 황토 머플러 + 미드나잇 네이비 경비 외투·황동 버클 벨트·철제 부츠",
+   "genre": "판타지",
+   "role": "야경꾼·경비병",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "야경꾼 순찰 경비",
+    "야경꾼",
+    "경비병",
+    "병사",
+    "문지기",
+    "순찰자",
+    "중년",
+    "남성",
+    "주민"
+   ],
+   "sheet": 16,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-lantern-night-watchman",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "db7d8c031589facd48c050bf8f1ab0e937ced6f65c9a5d5d94ef72975c6a763c",
+    "slotRgbaSha256": "6539511c86ca0e649e911866e49b2e1a617374e1d23a7e2cdcbbf3bc58ba5579"
+   }
+  },
+  {
+   "id": "fantasy-pawnbroker-antique-appraiser",
+   "name": "골동품 감정사 상인",
+   "desc": "골동품 감정사 상인 — 매끈하게 넘긴 흑발 올백 다발 + 복숭앗빛 턱과 금장 크라바트 + 진보라 벨벳 조끼·차콜 코트·황금 회중시계 체인",
+   "genre": "판타지",
+   "role": "감정사·전당포 상인",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "골동품 감정사 상인",
+    "감정사",
+    "전당포 상인",
+    "상인",
+    "전당포",
+    "중년",
+    "남성",
+    "주민",
+    "검은 머리"
+   ],
+   "sheet": 16,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-pawnbroker-antique-appraiser",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "fe4f4d19c838702dcdfe7c631623a46ef7687b119717b5fb9e1dc76268d95ec3",
+    "slotRgbaSha256": "fc68e2c80e599338c056a9f9a5689f9f2f549f71f853965dd3d2d4e39ae999f9"
+   }
+  },
+  {
+   "id": "fantasy-honey-candle-chandler",
+   "name": "밀랍 양초 공방녀",
+   "desc": "밀랍 양초 공방녀 — 따뜻한 호박빛 갈색 물결 머리 + 복숭앗빛 턱과 자주 리본 + 자두색 코르셋 조끼·꿀색 스커트",
+   "genre": "판타지",
+   "role": "양초 장인·공방 주인",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "밀랍 양초 공방녀",
+    "양초 장인",
+    "공방 주인",
+    "장인",
+    "공방",
+    "상인",
+    "여성",
+    "청년",
+    "주민",
+    "금갈발"
+   ],
+   "sheet": 16,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-honey-candle-chandler",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "b90d9d083214e2029a75e6c7b59ca4f8c5c9935506395e86dddba0e50c7766d5",
+    "slotRgbaSha256": "b4b4ff1ffcab026d538869e7ac2656bf635d00c2a4770fc521e7196613d47450"
+   }
+  },
+  {
+   "id": "fantasy-stone-bridge-mason",
+   "name": "석조 다리 석공",
+   "desc": "석조 다리 석공 — 적갈색 짧은 스포츠형 다발 + 복숭앗빛 턱과 가죽 목받이 수축 + 청회색 작업 튜닉 위 한쪽 갈색 가죽 어깨보호대·공구 벨트·장화",
+   "genre": "판타지",
+   "role": "석공·건축 장인",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "석조 다리 석공",
+    "석공",
+    "건축 장인",
+    "장인",
+    "인부",
+    "아저씨",
+    "중년",
+    "남성",
+    "주민"
+   ],
+   "sheet": 16,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-stone-bridge-mason",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "52d2c8b9391e816873e34f00d84462e3af6aafa2a66ee5309659e26499ff3238",
+    "slotRgbaSha256": "49b6c6c039c99a6d2bf74dc7480e6253ace249fa28c4dc3941e9e746f6eac9b5"
+   }
+  },
+  {
+   "id": "fantasy-herb-garden-grandpa",
+   "name": "약초원 원예 할아버지",
+   "desc": "약초원 원예 할아버지 — 인자한 은백색 단정한 단발 + 복숭앗빛 턱과 갈색 스카프 + 이끼색 그린 가디건 조끼·황토 셔츠·진갈색 바지",
+   "genre": "판타지",
+   "role": "원예가·할아버지",
+   "gender": "male",
+   "age": "elder",
+   "tags": [
+    "약초원 원예 할아버지",
+    "원예가",
+    "할아버지",
+    "노인",
+    "농부",
+    "약초사",
+    "남성",
+    "주민",
+    "은발"
+   ],
+   "sheet": 16,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-herb-garden-grandpa",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "94ba34efb72a4eab1c995ed8077f4f1f419b51f7fd681c8333b770194b6df2c9",
+    "slotRgbaSha256": "c7ca9cd3a274fd180d068019598a3c0355a40e9cc81f935e79480ab1b8a4032b"
+   }
+  },
+  {
+   "id": "fantasy-crimson-lance-cavalier",
+   "name": "적창 기병대 기사",
+   "desc": "적창 기병대 기사 — 금테 서클릿과 붉은 갈기 금발 머리 + 복숭앗빛 턱과 흑철 목가리개 수축 + 진홍 서코트와 백은 흉갑·금장 벨트·강철 그리브",
+   "genre": "판타지",
+   "role": "기병 기사·장교",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "적창 기병대 기사",
+    "기병 기사",
+    "장교",
+    "기사",
+    "병사",
+    "기병",
+    "남성",
+    "청년",
+    "갑옷",
+    "검은 머리"
+   ],
+   "sheet": 16,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-crimson-lance-cavalier",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "93778da5284b1961e730e9bb3c209a794326f02fea08db8964e2e7e785077658",
+    "slotRgbaSha256": "004e6e3e16b8908f67393749b49ea5964570c9cb666bc2fc57575d0886640b07"
+   }
+  },
+  {
+   "id": "fantasy-silver-shield-hospitaller",
+   "name": "은방패 구호기사",
+   "desc": "은방패 구호기사 — 단정한 흑갈색 단발 + 복숭앗빛 턱과 청남색 목깃 수축 + 청남색 십자 탭바드와 강철 어깨갑주·은빛 벨트",
+   "genre": "판타지",
+   "role": "구호기사·성기사",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "은방패 구호기사",
+    "구호기사",
+    "성기사",
+    "기사",
+    "수호기사",
+    "남성",
+    "중년",
+    "갑옷",
+    "검은 머리"
+   ],
+   "sheet": 16,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-silver-shield-hospitaller",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "8310300e5aa5cf1a3b256759edfb86e777baa4c742b24f517151b0712893fb83",
+    "slotRgbaSha256": "4dfdfa2290c8351991afde58693cb30dc3d9ee367a636f01117c8d2892be7eaa"
+   }
+  },
+  {
+   "id": "fantasy-emerald-feather-musketeer",
+   "name": "청록 깃털 총사",
+   "desc": "청록 깃털 총사 — 아담한 청록 삼각모 아래 금갈색 옆머리 + 복숭앗빛 턱과 크림 레이스 깃 + 에메랄드 총사 튜닉·가죽 대각선 탄띠·부츠",
+   "genre": "판타지",
+   "role": "왕실 총사·검사",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "청록 깃털 총사",
+    "왕실 총사",
+    "검사",
+    "총사",
+    "기사",
+    "모험가",
+    "남성",
+    "청년",
+    "모자"
+   ],
+   "sheet": 16,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-emerald-feather-musketeer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "5436e4b0e69b8d7f1d1b16d44fdfa994aa5213c9ef659ad714746f66e30e1293",
+    "slotRgbaSha256": "b8bc1ff4620c9a7437983004731d801d97c36c0aa8f8f4c11b757ab14164fefe"
+   }
+  },
+  {
+   "id": "fantasy-royal-court-chamberlain",
+   "name": "왕실 의전 시종관",
+   "desc": "왕실 의전 시종관 — 은줄 섞인 흑청색 올백 머리 + 복숭앗빛 턱과 진홍 보석 타이 + 미드나잇 네이비 금수 의전 예복 코트·백은 장식띠",
+   "genre": "판타지",
+   "role": "시종관·관료",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "왕실 의전 시종관",
+    "시종관",
+    "관료",
+    "귀족",
+    "관원",
+    "대신",
+    "남성",
+    "중년",
+    "검은 머리"
+   ],
+   "sheet": 17,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-royal-court-chamberlain",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "f3c16a63dd7061c264927ea467d3cd54390e24c808c801b2a656820969b260a3",
+    "slotRgbaSha256": "d5bbd3faf2cd9a8e8cc90593783645674778c5c5313a41a4ed00079b178a6614"
+   }
+  },
+  {
+   "id": "fantasy-velvet-duchess-noblewoman",
+   "name": "자수정 공작부인",
+   "desc": "자수정 공작부인 — 우아하게 틀어올린 백금발 업스타일과 자수정 티아라 핀 + 복숭앗빛 턱과 흑자주 벨벳 초커 + 짙은 자수정 벨벳 드레스와 금사 자수 코르셋",
+   "genre": "판타지",
+   "role": "공작부인·귀족 여인",
+   "gender": "female",
+   "age": "middle",
+   "tags": [
+    "자수정 공작부인",
+    "공작부인",
+    "귀족 여인",
+    "귀족",
+    "부인",
+    "여성",
+    "중년",
+    "드레스",
+    "금발",
+    "검은 머리"
+   ],
+   "sheet": 17,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-velvet-duchess-noblewoman",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "32cb6e91e63368bc3ecc243d20d6c4220f04725bceeb81e86ec8cdde24083d27",
+    "slotRgbaSha256": "a5ecca79d0d1880ae7f016aebe6b4aebec7cf57a8c49200de8e6ea238e37dbf2"
+   }
+  },
+  {
+   "id": "fantasy-young-viscount-heir",
+   "name": "젊은 자작 도련님",
+   "desc": "젊은 자작 도련님 — 부드러운 금발 옆가르마 단발 + 복숭앗빛 턱과 남색 실크 크라바트 + 로열 블루 귀족 프록코트·황금 단추 조끼·차콜 승마 바지",
+   "genre": "판타지",
+   "role": "귀족 청년·자작",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "젊은 자작 도련님",
+    "귀족 청년",
+    "자작",
+    "귀족",
+    "도련님",
+    "청년",
+    "남성",
+    "금발"
+   ],
+   "sheet": 17,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-young-viscount-heir",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "0839811bbde30e31684c305106759fcbf33418ad4d6e6c4df6e217b23e47e3d7",
+    "slotRgbaSha256": "6e7c4f1db4296d94e7fa6088930586e8fc940830773a10e1895c7395f2b05ccf"
+   }
+  },
+  {
+   "id": "fantasy-noble-governess-tutor",
+   "name": "귀족 저택 가정교사",
+   "desc": "귀족 저택 가정교사 — 단정한 흑갈색 올림머리와 자주 머리핀 + 복숭앗빛 턱과 자주 브로치 칼라 + 짙은 청회색 테일러드 재킷·자주 스커트",
+   "genre": "판타지",
+   "role": "가정교사·선생",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "귀족 저택 가정교사",
+    "가정교사",
+    "선생",
+    "교사",
+    "귀족",
+    "여성",
+    "청년",
+    "검은 머리"
+   ],
+   "sheet": 17,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-noble-governess-tutor",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "37e43a162a872880b33229015675580134c713b35a4f46289d89055b93f75922",
+    "slotRgbaSha256": "f2502db578f3a9cb4303b09e491b70883461ee98772c3b17ed91335ead69f137"
+   }
+  },
+  {
+   "id": "fantasy-castle-scullery-maid",
+   "name": "성채 저택 메이드",
+   "desc": "성채 저택 메이드 — 아담한 흰 메이드 프릴 머리띠와 흑발 보브 단발 + 복숭앗빛 턱과 검은 리본 칼라 + 칠흑 메이드 원피스와 깔끔한 흰 에이프런 대비",
+   "genre": "판타지",
+   "role": "메이드·하녀",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "성채 저택 메이드",
+    "메이드",
+    "하녀",
+    "사용인",
+    "여성",
+    "청년",
+    "앞치마",
+    "검은 머리"
+   ],
+   "sheet": 17,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-castle-scullery-maid",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "dc4cf232079988ac2993fce532847e9b39d936e4f2556c8235871092fddf9509",
+    "slotRgbaSha256": "17dbde6db4552e450ac1800ffe3795a2bbf81194faca94b1d86f52250d8e2453"
+   }
+  },
+  {
+   "id": "fantasy-head-housekeeper-matron",
+   "name": "저택 총괄 메이드장",
+   "desc": "저택 총괄 메이드장 — 단정히 묶은 회갈색 번 헤어 + 복숭앗빛 턱과 은브로치 검은 칼라 + 짙은 남흑색 메이드장 롱코트 드레스·열쇠꾸러미 벨트",
+   "genre": "판타지",
+   "role": "메이드장·집사",
+   "gender": "female",
+   "age": "middle",
+   "tags": [
+    "저택 총괄 메이드장",
+    "메이드장",
+    "집사",
+    "메이드",
+    "아줌마",
+    "여성",
+    "중년",
+    "검은 머리"
+   ],
+   "sheet": 17,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-head-housekeeper-matron",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "831a3934e96bf18034f9fc00939da7de57b2070168eefddca26c7d6947968279",
+    "slotRgbaSha256": "a091057403784ba452b075308f2d6d4bee8ce722691a08fffaa483a142a4121c"
+   }
+  },
+  {
+   "id": "fantasy-royal-treasurer-magistrate",
+   "name": "왕립 재무관 판관",
+   "desc": "왕립 재무관 판관 — 은회색 옆가르마 단발과 짧은 은수염 라인 + 진홍 법복 칼라 + 흑청·금장 판관 로브 코트",
+   "genre": "판타지",
+   "role": "판관·재무관·관원",
+   "gender": "male",
+   "age": "elder",
+   "tags": [
+    "왕립 재무관 판관",
+    "판관",
+    "재무관",
+    "관원",
+    "대신",
+    "재상",
+    "노학자",
+    "노인",
+    "남성",
+    "검은 머리"
+   ],
+   "sheet": 17,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-royal-treasurer-magistrate",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "78286774a837bf9f1bb6e8b9076524cc0168312f25bf04357466466e2921a6c8",
+    "slotRgbaSha256": "9fb3a7744f5aa8260a0ba1c3efa66bf7a2d06d802342da65dc965548cfb56a8f"
+   }
+  },
+  {
+   "id": "fantasy-guild-master-veteran",
+   "name": "모험가 길드 총단장",
+   "desc": "모험가 길드 총단장 — 사자갈기 같은 적금발 삐죽 단발 + 복숭앗빛 턱과 흑갈 모피 깃 + 진홍·흑철 길드장 코트 갑주와 금빛 문장 벨트",
+   "genre": "판타지",
+   "role": "길드장·단장",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "모험가 길드 총단장",
+    "길드장",
+    "단장",
+    "대장",
+    "우두머리",
+    "모험가",
+    "전사",
+    "남성",
+    "중년",
+    "검은 머리"
+   ],
+   "sheet": 17,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-guild-master-veteran",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "0b0af092495d35adf9949b579a65675195fc193635e86a8b03c891cd7513891e",
+    "slotRgbaSha256": "7a26cb904f67a407835f6abfa0444a31a792b338ca320ddb57e6f3c316adc7a3"
+   }
+  },
+  {
+   "id": "fantasy-cartographer-mapmaker",
+   "name": "왕립 지도제작사",
+   "desc": "왕립 지도제작사 — 밤갈색 단발과 이마 위쪽 황동 컴퍼스 배지 베레 + 복숭앗빛 턱과 청록 스카프 + 황갈색 탐험 재킷·지도통 크로스벨트·네이비 바지",
+   "genre": "판타지",
+   "role": "지도제작사·탐험가·학자",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "왕립 지도제작사",
+    "지도제작사",
+    "탐험가",
+    "학자",
+    "연구원",
+    "지도사",
+    "남성",
+    "청년"
+   ],
+   "sheet": 18,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-cartographer-mapmaker",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "58f7e2dfc72ba193f14fbebc5158f9f91f3d91dda7d82650d7310f59295e7ec0",
+    "slotRgbaSha256": "659ff33e2ac7907b110646468d44fc072f06f3f03b570e72a00d09b89f199a77"
+   }
+  },
+  {
+   "id": "fantasy-carrier-pigeon-keeper",
+   "name": "전서구 통신병 소녀",
+   "desc": "전서구 통신병 소녀 — 연갈색 포니테일과 하늘색 리본 + 복숭앗빛 턱과 잘록한 붉은 스카프 + 코발트 전령 케이프 재킷·가죽 편지가방 벨트",
+   "genre": "판타지",
+   "role": "전령 소녀·통신원",
+   "gender": "female",
+   "age": "child",
+   "tags": [
+    "전서구 통신병 소녀",
+    "전령 소녀",
+    "통신원",
+    "소녀",
+    "전령",
+    "아이",
+    "어린이",
+    "여성",
+    "주민"
+   ],
+   "sheet": 18,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-carrier-pigeon-keeper",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:2",
+    "gridSha256": "6095e074698996ce3c866c002267e62db3ba1c085bdea1d89db6b7b0f712fcc4",
+    "slotRgbaSha256": "d91ccf22c25ca633548a5f07d812786756e2944ebe2f5ca82e176a0e394c785e"
+   }
+  },
+  {
+   "id": "fantasy-royal-falcon-huntress",
+   "name": "왕실 숲 여사냥꾼",
+   "desc": "왕실 숲 여사냥꾼 — 선명한 구리빛 적갈색 포니테일 다발 + 복숭앗빛 턱과 짙은 가죽 칼라 + 포레스트 그린 사냥 튜닉·가죽 코르셋 조끼·부츠",
+   "genre": "판타지",
+   "role": "사냥꾼·궁수",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "왕실 숲 여사냥꾼",
+    "사냥꾼",
+    "궁수",
+    "레인저",
+    "여성",
+    "청년",
+    "적발"
+   ],
+   "sheet": 18,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-royal-falcon-huntress",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "77543d3fab740bc263ec359cd4be4b1360c541af369b045e1ca8136534532bf5",
+    "slotRgbaSha256": "c13279b4fc11e1b34524c72bbeff57e6d327387bf2a345121d4d4ad52bf9dee7"
+   }
+  },
+  {
+   "id": "fantasy-prison-iron-jailer",
+   "name": "지하감옥 철쇠 간수장",
+   "desc": "지하감옥 철쇠 간수장 — 검은 두건 캡과 흑갈색 구레나룻 + 복숭앗빛 턱과 철제 목받이 수축 + 흑철 징 박힌 가죽 조끼·진회색 튜닉·열쇠고리 벨트",
+   "genre": "판타지",
+   "role": "간수장·문지기·병사",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "지하감옥 철쇠 간수장",
+    "간수장",
+    "문지기",
+    "병사",
+    "경비병",
+    "간수",
+    "남성",
+    "중년",
+    "검은 머리"
+   ],
+   "sheet": 18,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-prison-iron-jailer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "64ad069f5d1d923a7efd6900b4cfb8fd0b4e0e5ca1f16093ae78c7ff1ee0fd71",
+    "slotRgbaSha256": "07b3ba5a4755abd4e5b2e0e983bbd17f4a8d00c429fb0cab1979df4eb23fe642"
+   }
+  },
+  {
+   "id": "fantasy-tax-collector-bailiff",
+   "name": "영지 징세관 집달관",
+   "desc": "영지 징세관 집달관 — 낮은 자주색 벨벳 샤프롱 모자와 갈색 단발 + 복숭앗빛 턱과 금실 칼라 + 올리브·자주 투톤 관복 코트와 금주머니 벨트",
+   "genre": "판타지",
+   "role": "징세관·관원",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "영지 징세관 집달관",
+    "징세관",
+    "관원",
+    "귀족",
+    "상인",
+    "중년",
+    "남성"
+   ],
+   "sheet": 18,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-tax-collector-bailiff",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "8d36793b2d7ba8dd6b619254989fd6ed86e24b9d72a20476a135895c095416a4",
+    "slotRgbaSha256": "74ad68d2f0409c4116a8f0c5758140535ee298a4d930e77c2f4b6ba59557dd93"
+   }
+  },
+  {
+   "id": "fantasy-court-portrait-painter",
+   "name": "궁정 초상화 화가",
+   "desc": "궁정 초상화 화가 — 자주색 예술가 베레모 아래 내려온 연보라빛 갈색 단발 + 복숭앗빛 턱과 노란 리본 타이 + 코발트 작업 스목 재킷·크림 조끼·갈색 바지",
+   "genre": "판타지",
+   "role": "화가·예술가",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "궁정 초상화 화가",
+    "화가",
+    "예술가",
+    "장인",
+    "여성",
+    "청년",
+    "베레모"
+   ],
+   "sheet": 18,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-court-portrait-painter",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "a5f2105f1770a88a14af88565e1221cc1a9ddb5b0fbd380c1e0fa0b621e930d4",
+    "slotRgbaSha256": "77bc0ccd4eb8fef2a8d9798851c5f01ea40dfba10a85c30f45cdfc8272d3e0b0"
+   }
+  },
+  {
+   "id": "fantasy-heraldic-banner-squire",
+   "name": "기사단 견습 종자 소년",
+   "desc": "기사단 견습 종자 소년 — 밝은 금발 삐죽 단발 + 복숭앗빛 턱과 잘록한 붉은 스카프 + 청색·백은 문장 탭바드 튜닉·가죽 벨트·갈색 부츠",
+   "genre": "판타지",
+   "role": "견습 기사·종자 소년",
+   "gender": "male",
+   "age": "child",
+   "tags": [
+    "기사단 견습 종자 소년",
+    "견습 기사",
+    "종자 소년",
+    "소년",
+    "기사",
+    "병사",
+    "아이",
+    "어린이",
+    "남성",
+    "금발"
+   ],
+   "sheet": 18,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-heraldic-banner-squire",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:2",
+    "gridSha256": "682100e972b67c870c85655fb7dcdb3a34ae312f02bfb5470b00077dfc7540ff",
+    "slotRgbaSha256": "5413d013f74e5da2146124b676669a7a81205258bcfee863c1062c576d56fe21"
+   }
+  },
+  {
+   "id": "fantasy-emerald-diplomat-envoy",
+   "name": "에메랄드 외교 특사",
+   "desc": "에메랄드 외교 특사 — 윤기 나는 흑청색 긴 단발 + 복숭앗빛 턱과 금장 하이칼라 + 에메랄드 그린 외교관 롱코트·백금 어깨 견장·검은 부츠",
+   "genre": "판타지",
+   "role": "외교관·특사·귀족",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "에메랄드 외교 특사",
+    "외교관",
+    "특사",
+    "귀족",
+    "여성",
+    "청년",
+    "검은 머리"
+   ],
+   "sheet": 18,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-emerald-diplomat-envoy",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "4bab33177ab84c981ebfd1101c43760b74de9eab8987aacc0d9be95ea72eba5c",
+    "slotRgbaSha256": "b3a0d9447417b57813790c6949c6866e0aaf81f1e547f71f18e5df02d89b4970"
+   }
+  },
+  {
+   "id": "fantasy-ivory-tower-chronicler",
+   "name": "상아탑 연대기 사관",
+   "desc": "상아탑 연대기 사관 — 은회색 보브형 단발 + 복숭앗빛 턱과 남색 스톨 + 감청색 학자 로브 조끼와 적갈색 소매·금장 허리띠",
+   "genre": "판타지",
+   "role": "사관·사서·학자",
+   "gender": "male",
+   "age": "elder",
+   "tags": [
+    "상아탑 연대기 사관",
+    "사관",
+    "사서",
+    "학자",
+    "노학자",
+    "교수",
+    "노인",
+    "남성",
+    "은발"
+   ],
+   "sheet": 19,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-ivory-tower-chronicler",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "c3bf73875c150e59cd06172064a0f5b0ba69779974a9cf6eaf3ece2103322797",
+    "slotRgbaSha256": "2b9e50bbc34ece9f5d685297a56c25f7c8afd48111991b7a3455456f4d927052"
+   }
+  },
+  {
+   "id": "fantasy-bounty-board-clerk",
+   "name": "현상수배소 기록 서기",
+   "desc": "현상수배소 기록 서기 — 갈색 단정히 묶은 반묶음 머리 + 복숭앗빛 턱과 녹색 보타이 + 크림 소매 셔츠 위 진갈색 가죽 베스트·깃펜 주머니 벨트",
+   "genre": "판타지",
+   "role": "서기·길드 직원",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "현상수배소 기록 서기",
+    "서기",
+    "길드 직원",
+    "점원",
+    "직원",
+    "학자",
+    "남성",
+    "청년",
+    "주민"
+   ],
+   "sheet": 19,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-bounty-board-clerk",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "1624d6225582e8c9399789845c39a4753f3a1ad49954fa0e92ec8805d9f52645",
+    "slotRgbaSha256": "dc967c80f8f54bbbf0231337e2fc1e3c7123109c6e9d8edf13d31a2e3d568d1d"
+   }
+  },
+  {
+   "id": "fantasy-veteran-shieldmaiden",
+   "name": "백전노장 방패 여전사",
+   "desc": "백전노장 방패 여전사 — 백금발 땋은 옆·뒷머리 + 복숭앗빛 턱과 청록 머플러 + 강철 흉갑과 청록 전사 튜닉·가죽 벨트",
+   "genre": "판타지",
+   "role": "여전사·용병·기사",
+   "gender": "female",
+   "age": "middle",
+   "tags": [
+    "백전노장 방패 여전사",
+    "여전사",
+    "용병",
+    "기사",
+    "전사",
+    "여성",
+    "중년",
+    "금발"
+   ],
+   "sheet": 19,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-veteran-shieldmaiden",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "d2e8cbb74cead05a3189149282aa4e399165fc42a2eb17f1477e1eaeb8298682",
+    "slotRgbaSha256": "aa9ef0f4660ae97ed3e9668d183abf225fd5840689e7c0ac42d822e479544cbf"
+   }
+  },
+  {
+   "id": "fantasy-royal-gardener-topiarist",
+   "name": "왕실 온실 정원사",
+   "desc": "왕실 온실 정원사 — 짙은 올리브그린 단발 다발과 노란 리본 + 복숭앗빛 턱과 갈색 스카프 + 황토 작업 조끼·흰 소매·진녹색 앞치마 스커트",
+   "genre": "판타지",
+   "role": "정원사·화원지기",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "왕실 온실 정원사",
+    "정원사",
+    "화원지기",
+    "농부",
+    "꽃집",
+    "여성",
+    "청년",
+    "주민",
+    "녹발"
+   ],
+   "sheet": 19,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-royal-gardener-topiarist",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "021a867a88b0dc8b010423da180fb30be22b3ccd0ef9695c1a7e40f18b652af9",
+    "slotRgbaSha256": "19e49209e8f070a7a5af4397c759cdb2e7bdb1c8af90dfb1e6f3eccc4bb55c72"
+   }
+  },
+  {
+   "id": "fantasy-retired-blade-grandmaster",
+   "name": "은퇴한 검성 노사부",
+   "desc": "은퇴한 검성 노사부 — 뒤로 묶은 은백색 무사 머리 + 복숭앗빛 턱과 짙은 먹색 깃 + 감청색 무사 도포 코트·검은 한쪽 어깨갑·금장 오비",
+   "genre": "판타지",
+   "role": "검성·은퇴한 기사·노사부",
+   "gender": "male",
+   "age": "elder",
+   "tags": [
+    "은퇴한 검성 노사부",
+    "검성",
+    "은퇴한 기사",
+    "노사부",
+    "기사",
+    "전사",
+    "스승",
+    "할아버지",
+    "노인",
+    "남성",
+    "은발"
+   ],
+   "sheet": 19,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-retired-blade-grandmaster",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "eb4d36836a55e2f878419f8cde96c11c44b51f26f1942658fbefe98fc3b74a92",
+    "slotRgbaSha256": "6fba8017e83710bec056eeef9b3610c44c837305a983d5cf1e45504f88b000d5"
+   }
+  },
+  {
+   "id": "fantasy-dwarven-brewmaster-innkeep",
+   "name": "드워프 맥주 양조장인",
+   "desc": "드워프 맥주 양조장인 — 구리빛 주황 앞·옆머리와 턱 끝만 감싸는 짧은 수염 라인 + 녹색 스카프 + 녹색 튜닉 위 오크통 가죽 앞치마·금장 버클",
+   "genre": "판타지",
+   "role": "양조장인·주점 주인",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "드워프 맥주 양조장인",
+    "양조장인",
+    "주점 주인",
+    "드워프",
+    "여관 주인",
+    "상인",
+    "장인",
+    "남성",
+    "중년",
+    "주민"
+   ],
+   "sheet": 19,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-dwarven-brewmaster-innkeep",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "e864e32bd8357296f41d1871ce3943b8f50a1a2e1864455b4d3d1ce08fd11a8d",
+    "slotRgbaSha256": "750d8bc3018fca5d3224a259b309c0a02cebfb8829c15e1e8a79f77025c54ccc"
+   }
+  },
+  {
+   "id": "fantasy-dwarven-gemcutter-smith",
+   "name": "드워프 보석세공 여장인",
+   "desc": "드워프 보석세공 여장인 — 황동 루페 머리띠와 적갈색 땋은 묶음 머리 + 복숭앗빛 턱과 자주 깃 + 자주·황동 세공사 가죽 베스트와 작업 치마",
+   "genre": "판타지",
+   "role": "보석세공사·대장장이",
+   "gender": "female",
+   "age": "middle",
+   "tags": [
+    "드워프 보석세공 여장인",
+    "보석세공사",
+    "대장장이",
+    "드워프",
+    "보석상",
+    "장인",
+    "여성",
+    "중년",
+    "주민"
+   ],
+   "sheet": 19,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-dwarven-gemcutter-smith",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "f595ed435653eb8db1e1df95f257438237fc79dd4f8a553e5d2034f92ed09068",
+    "slotRgbaSha256": "584cb616d2afd7ce8cad8eac33e18f4613c81d830851d43af16593fbd9b1ef51"
+   }
+  },
+  {
+   "id": "fantasy-high-elf-moon-enchanter",
+   "name": "하이엘프 달빛 부여술사",
+   "desc": "하이엘프 달빛 부여술사 — 은청색 서클릿과 달빛 은발 롱헤어 + 복숭앗빛 턱과 심연 남색 하이칼라 + 심연 남색·청록 금수 마도 로브",
+   "genre": "판타지",
+   "role": "마법사·엘프 부여술사",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "하이엘프 달빛 부여술사",
+    "마법사",
+    "엘프 부여술사",
+    "엘프",
+    "귀족",
+    "남성",
+    "청년",
+    "은발"
+   ],
+   "sheet": 19,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-high-elf-moon-enchanter",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "b92b5aa1e913e84dc18a668865be6ea225ca22a2db9b85b98bffdcb90ce31c6f",
+    "slotRgbaSha256": "1ce99c52ed8444e9aeba53cd74e55571d79c9c645f09a34eb4c33da0a7c01a66"
+   }
+  },
+  {
+   "id": "fantasy-wood-elf-herbal-warden",
+   "name": "우드엘프 약초 파수꾼",
+   "desc": "우드엘프 약초 파수꾼 — 숲녹색 포니테일 다발과 잎사귀 머리핀 + 복숭앗빛 턱과 갈색 가죽 칼라 + 나뭇잎 케이프 조끼와 적갈색 가죽 튜닉·그린 부츠",
+   "genre": "판타지",
+   "role": "엘프 약초사·레인저",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "우드엘프 약초 파수꾼",
+    "엘프 약초사",
+    "레인저",
+    "엘프",
+    "약초사",
+    "사냥꾼",
+    "여성",
+    "청년",
+    "녹발"
+   ],
+   "sheet": 20,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-wood-elf-herbal-warden",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "8f9d14b44f3f5bbe8db69291fbd2f020e6fa19b988704d81307e88a0654cc5ec",
+    "slotRgbaSha256": "c4a02bfab86994c65ef2e4686ed28cf9bd23bb6102dad56ef1765bc223133d62"
+   }
+  },
+  {
+   "id": "fantasy-halfling-pie-baker",
+   "name": "하플링 파이 제빵사",
+   "desc": "하플링 파이 제빵사 — 곱슬한 밤갈색 보브 단발 + 복숭앗빛 턱과 잘록한 빨간 스카프 + 버건디 조끼·흰 앞치마·갈색 바지",
+   "genre": "판타지",
+   "role": "제빵사·요리사",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "하플링 파이 제빵사",
+    "제빵사",
+    "요리사",
+    "상인",
+    "하플링",
+    "남성",
+    "청년",
+    "주민",
+    "앞치마"
+   ],
+   "sheet": 20,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-halfling-pie-baker",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:2",
+    "gridSha256": "f019e6824c291da77e77c9d85c9a193e503bd1575083392b3325b3263d40f0c1",
+    "slotRgbaSha256": "7dd8d4c81dd6c4b1a242a95ca4923b5c9a210f9bb2820145e8b25c32432dc8ba"
+   }
+  },
+  {
+   "id": "fantasy-wolfkin-tribal-tracker",
+   "name": "청랑 수인 정찰병",
+   "desc": "청랑 수인 정찰병 — 청회색 늑대 귀 일체형 삐죽 단발 + 복숭앗빛 턱과 흑갈 가죽 목걸이 수축 + 청남색 부족 조끼·모피 어깨띠·가죽 각반",
+   "genre": "판타지",
+   "role": "수인 정찰병·추적자",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "청랑 수인 정찰병",
+    "수인 정찰병",
+    "추적자",
+    "수인",
+    "늑대",
+    "정찰병",
+    "전사",
+    "남성",
+    "청년",
+    "검은 머리"
+   ],
+   "sheet": 20,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-wolfkin-tribal-tracker",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "d27b7066639e304a33ccd9e6d0017a0f6f32c6e0efe1202c68e06c27ab24e415",
+    "slotRgbaSha256": "02cb45306ce81ba977bd49442277f99bdbf2363a7f7e643504185a78eacab650"
+   }
+  },
+  {
+   "id": "fantasy-foxfolk-shrine-mystic",
+   "name": "여우 수인 영술사",
+   "desc": "여우 수인 영술사 — 주홍빛 여우 귀 일체형 단발 보브 + 복숭앗빛 턱과 진홍 방울 목깃 수축 + 진홍·남색 무녀풍 영술사 하오리 조끼와 주름 하카마",
+   "genre": "판타지",
+   "role": "수인 무녀·영술사",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "여우 수인 영술사",
+    "수인 무녀",
+    "영술사",
+    "수인",
+    "무녀",
+    "마법사",
+    "여성",
+    "청년",
+    "주황 머리"
+   ],
+   "sheet": 20,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-foxfolk-shrine-mystic",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "2d3d883bba708f52116c0d911ea4c19f9e3a827d3cdb8b245c1b2b8914c80129",
+    "slotRgbaSha256": "05e8cfc11ecd98765a395067c62682a18c7183b55d4ebe777550fed90afe1746"
+   }
+  },
+  {
+   "id": "fantasy-lionheart-beast-brawler",
+   "name": "황금갈기 수인 투사",
+   "desc": "황금갈기 수인 투사 — 황금 갈기 단발과 붉은 머리띠 + 복숭앗빛 턱과 흑철 목테 수축 + 적갈색 가죽 흉갑 하네스·황금 요대·청색 무투 바지",
+   "genre": "판타지",
+   "role": "수인 격투가·전사",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "황금갈기 수인 투사",
+    "수인 격투가",
+    "전사",
+    "수인",
+    "무도가",
+    "남성",
+    "중년",
+    "금발",
+    "검은 머리"
+   ],
+   "sheet": 20,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-lionheart-beast-brawler",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "a469f9d6258a596596581d93c39d38e4f610ae382951dad96e27c00931382efe",
+    "slotRgbaSha256": "3e7095c3c1a1078a8a945fad2d56cd7d901ca8d8c09d32e493763486bf76f498"
+   }
+  },
+  {
+   "id": "fantasy-horned-tiefling-warlock",
+   "name": "흑각 마족 계약술사",
+   "desc": "흑각 마족 계약술사 — 작은 흑석 뿔과 보라빛 흑발 다발 + 복숭앗빛 턱과 암적색 하이칼라 + 칠흑·진홍 금장 계약술사 롱베스트 코트",
+   "genre": "판타지",
+   "role": "흑마법사·마족 술사",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "흑각 마족 계약술사",
+    "흑마법사",
+    "마족 술사",
+    "마법사",
+    "마족",
+    "남성",
+    "청년",
+    "보라 머리",
+    "검은 머리"
+   ],
+   "sheet": 20,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-horned-tiefling-warlock",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "34f04e82e550744bd34fa66c2f337b605c0143e593c740b7e0c61cf5c2101589",
+    "slotRgbaSha256": "7d5be095881e34a58a41c04b4a50c14e0e4020f1de7a8ea4258c41334daa7c61"
+   }
+  },
+  {
+   "id": "fantasy-astral-rune-enchanter",
+   "name": "별빛 룬 각인사",
+   "desc": "별빛 룬 각인사 — 코발트 블루 단발 다발과 금빛 머리핀 + 복숭앗빛 턱과 황금 룬 스톨 + 남보라 각인사 튜닉·청록 룬 허리띠·부츠",
+   "genre": "판타지",
+   "role": "마법사·룬 장인",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "별빛 룬 각인사",
+    "마법사",
+    "룬 장인",
+    "장인",
+    "학자",
+    "여성",
+    "청년",
+    "청발"
+   ],
+   "sheet": 20,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-astral-rune-enchanter",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "38776bfa75b43723f88ac43769444a0ca6e3db2bcdb9e50fcacd454877b23475",
+    "slotRgbaSha256": "d75910d1d034499bcb52f492cb3a3893ac3dc963cbe20af73dbda0cd1c638886"
+   }
+  },
+  {
+   "id": "fantasy-alchemical-homunculus-girl",
+   "name": "연금 호문쿨루스 소녀",
+   "desc": "연금 호문쿨루스 소녀 — 연보라빛 은발 보브 단발과 검은 베레 리본 + 복숭앗빛 턱과 잘록한 칠흑 고딕 칼라 + 칠흑·에메랄드 연금 케이프 원피스",
+   "genre": "판타지",
+   "role": "호문쿨루스·연금 조수",
+   "gender": "female",
+   "age": "child",
+   "tags": [
+    "연금 호문쿨루스 소녀",
+    "호문쿨루스",
+    "연금 조수",
+    "소녀",
+    "마법사",
+    "연금술사",
+    "아이",
+    "여성",
+    "은발",
+    "검은 머리"
+   ],
+   "sheet": 20,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-alchemical-homunculus-girl",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:2",
+    "gridSha256": "105e34fd3ed5e1546168e9a71c1daa1806088818f472b034c36b30a170a35470",
+    "slotRgbaSha256": "14940302b07cf483eb8c87df53df15d4f2ec775e814fe35bc6f4231405e19fd0"
+   }
+  },
+  {
+   "id": "fantasy-abjuration-barrier-mage",
+   "name": "결계 방호 마도사",
+   "desc": "결계 방호 마도사 — 흑발 정갈한 가르마 단발 + 복숭앗빛 턱과 청록 보석 칼라 + 백은 테두리가 들어간 청남색 결계 마도 코트와 육각 문장 벨트",
+   "genre": "판타지",
+   "role": "마법사·결계술사",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "결계 방호 마도사",
+    "마법사",
+    "결계술사",
+    "학자",
+    "교수",
+    "남성",
+    "중년",
+    "검은 머리"
+   ],
+   "sheet": 21,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-abjuration-barrier-mage",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "6e78b24c80b089e32819bf49a79c3f5b3ab5feee5c0558c9ca0621e21c851f26",
+    "slotRgbaSha256": "ba7b6d3ff8cb400c9437c1112acba657d1a4aaf78b6079fc6d7b884266db1354"
+   }
+  },
+  {
+   "id": "fantasy-verdant-botanist-witch",
+   "name": "초록 온실 식물마녀",
+   "desc": "초록 온실 식물마녀 — 작은 잎사귀 녹색 마녀 베레모와 밤갈색 묶음 머리 + 복숭앗빛 턱과 자주 리본 + 숲녹색 마녀 조끼·자주 소매·약병 벨트 스커트",
+   "genre": "판타지",
+   "role": "마녀·약초 마법사",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "초록 온실 식물마녀",
+    "마녀",
+    "약초 마법사",
+    "마법사",
+    "약초사",
+    "여성",
+    "청년",
+    "갈발"
+   ],
+   "sheet": 21,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-verdant-botanist-witch",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "67366083a795e3c86415c5d80cbfb3d5f9778c7e183f13d05d1bb696960d6585",
+    "slotRgbaSha256": "45af2db8031eab93164b0d13f4109ed0810630bddd55258b1989368bda2f4259"
+   }
+  },
+  {
+   "id": "fantasy-sun-temple-paladin-elder",
+   "name": "태양신전 원로 성기사",
+   "desc": "태양신전 원로 성기사 — 은백색 짧은 올백 단발 + 복숭앗빛 턱과 진홍 성전 목깃 수축 + 황금 태양 문장이 새겨진 남청·백은 중갑 탭바드",
+   "genre": "판타지",
+   "role": "원로 성기사·사제",
+   "gender": "male",
+   "age": "elder",
+   "tags": [
+    "태양신전 원로 성기사",
+    "원로 성기사",
+    "사제",
+    "성기사",
+    "기사",
+    "할아버지",
+    "노인",
+    "남성",
+    "은발"
+   ],
+   "sheet": 21,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-sun-temple-paladin-elder",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "49c270ef5b5365912d01432fba93011f58aa9834913089b59d773e422141e6f2",
+    "slotRgbaSha256": "491b2335b02da73554347c05a76919d2592e05206884b6d1a5599f9ab3f46fd8"
+   }
+  },
+  {
+   "id": "fantasy-cathedral-choir-sister",
+   "name": "대성당 성가대 수녀",
+   "desc": "대성당 성가대 수녀 — 아담한 남흑색 수녀 베일 캡과 갈색 앞머리 + 복숭앗빛 턱과 감청 칼라 + 감청색 성가대 수녀복과 금십자 로자리오",
+   "genre": "판타지",
+   "role": "수녀·성가대원",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "대성당 성가대 수녀",
+    "수녀",
+    "성가대원",
+    "사제",
+    "성직자",
+    "여성",
+    "청년",
+    "검은 머리"
+   ],
+   "sheet": 21,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-cathedral-choir-sister",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "ca7e44ac3227316788f98d17fa5206aa97f2fafeee8236d756d0195f68165c8a",
+    "slotRgbaSha256": "79b2a29856a478b5f83b14ba35bb90ee89d421fae2820bbae650a36b5cd3c901"
+   }
+  },
+  {
+   "id": "fantasy-belltower-blind-monk",
+   "name": "산사 종루 노승려",
+   "desc": "산사 종루 노승려 — 회백색 짧은 승려 두상과 염주 머리띠 + 복숭앗빛 턱과 먹색 승복 깃 + 먹색 장삼 위에 걸친 주홍 가사 대각선 띠",
+   "genre": "판타지",
+   "role": "노승·승려·성직자",
+   "gender": "male",
+   "age": "elder",
+   "tags": [
+    "산사 종루 노승려",
+    "노승",
+    "승려",
+    "성직자",
+    "사제",
+    "할아버지",
+    "노인",
+    "남성"
+   ],
+   "sheet": 21,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-belltower-blind-monk",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "7890c6b7b46cf74e52ce41d8df89f85d6e116f57521a5e49164a19f57382c564",
+    "slotRgbaSha256": "a48d7e5f28dd4279164a37a2e158f9c75dcf554e5732ec51dd21ca47b25b03a6"
+   }
+  },
+  {
+   "id": "fantasy-crystal-diviner-medium",
+   "name": "수정구 점술사 여인",
+   "desc": "수정구 점술사 여인 — 황금 동전 머리띠와 자색 물결 머리 + 복숭앗빛 턱과 청록 비단 스카프 + 심홍·자수정 집시풍 점술사 숄 조끼와 금장 스커트",
+   "genre": "판타지",
+   "role": "점술사·예언가",
+   "gender": "female",
+   "age": "middle",
+   "tags": [
+    "수정구 점술사 여인",
+    "점술사",
+    "예언가",
+    "마법사",
+    "중년",
+    "여성",
+    "보라 머리"
+   ],
+   "sheet": 21,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-crystal-diviner-medium",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "7e450cc25a51702137e8bf2147a42bda2076c2eb255f3c9469d2dc9587591c44",
+    "slotRgbaSha256": "2029e5b61fd78b060db423c93ed89514a326e37396beb842a403704a4c8c0834"
+   }
+  },
+  {
+   "id": "fantasy-scroll-ink-calligrapher",
+   "name": "마법 두루마리 필사가",
+   "desc": "마법 두루마리 필사가 — 비취 비녀로 묶은 흑발 올림머리 + 복숭앗빛 턱과 주홍 깃 + 청록·남색 동방 서기관 배자 조끼와 먹색 치마",
+   "genre": "판타지",
+   "role": "필사가·사서·서기관",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "마법 두루마리 필사가",
+    "필사가",
+    "사서",
+    "서기관",
+    "학자",
+    "서기",
+    "여성",
+    "청년",
+    "검은 머리"
+   ],
+   "sheet": 21,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-scroll-ink-calligrapher",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "a38f8d85d77922003219a03a87b351841df3b405f22f97522171c048fc806038",
+    "slotRgbaSha256": "b2ac6b7ff290ee215a27d6284af9943bbdf34ffa97381b95da7a5b38d8440c20"
+   }
+  },
+  {
+   "id": "fantasy-wand-crafter-artificer",
+   "name": "마법지팡이 세공 장인",
+   "desc": "마법지팡이 세공 장인 — 은회색 옆가르마 단발 + 복숭앗빛 턱과 버건디 타이 + 버건디 세공사 가죽 베스트·짙은 녹색 코트 소매·공구 벨트",
+   "genre": "판타지",
+   "role": "지팡이 장인·마도공학자",
+   "gender": "male",
+   "age": "elder",
+   "tags": [
+    "마법지팡이 세공 장인",
+    "지팡이 장인",
+    "마도공학자",
+    "장인",
+    "마법사",
+    "노학자",
+    "할아버지",
+    "노인",
+    "남성",
+    "은발"
+   ],
+   "sheet": 21,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-wand-crafter-artificer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "45bad9ad11e3cd4634f0be0cf7ebbb990b93492bb48ec18d4317deb2b9877941",
+    "slotRgbaSha256": "a53138a3a1fca3bce6b9451006928e3ac640ca5c30f301b0377abab27f9581c5"
+   }
+  },
+  {
+   "id": "fantasy-golem-core-mechanist",
+   "name": "마도 골렘 기공사",
+   "desc": "마도 골렘 기공사 — 청록빛 남색 삐죽 단발 + 복숭앗빛 턱과 황동 칼라 + 갈색 가죽 작업 재킷·청동 코어 흉갑 조끼·강철 토캡 부츠",
+   "genre": "판타지",
+   "role": "기공사·마도 기술자",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "마도 골렘 기공사",
+    "기공사",
+    "마도 기술자",
+    "정비공",
+    "장인",
+    "연구원",
+    "남성",
+    "청년",
+    "청발"
+   ],
+   "sheet": 22,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-golem-core-mechanist",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "82eb8a37cda09dc2c7fb1405f15b9511a496da53e24592f87493adaa2193c9f4",
+    "slotRgbaSha256": "5b085ab2d19b368f43c0806a9d589ffc98f52a3725d9f5cb408add7f5e865051"
+   }
+  },
+  {
+   "id": "fantasy-harbor-lighthouse-keeper",
+   "name": "해안 절벽 등대지기",
+   "desc": "해안 절벽 등대지기 — 감청색 선원 비니 캡과 갈색 구레나룻 + 복숭앗빛 턱과 노란 방수 목깃 수축 + 황토 방수 피코트 조끼·네이비 스웨터·장화",
+   "genre": "판타지",
+   "role": "등대지기·뱃사람",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "해안 절벽 등대지기",
+    "등대지기",
+    "뱃사람",
+    "선원",
+    "아저씨",
+    "중년",
+    "남성",
+    "주민"
+   ],
+   "sheet": 22,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-harbor-lighthouse-keeper",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "15f59a2b919bed2dd3e9c95f881968995b3fec732a9e71ba595c5145834edf43",
+    "slotRgbaSha256": "9ea0f1714369f58fac0e21b3c11a5e7778af27089769da7e1a260206179f1670"
+   }
+  },
+  {
+   "id": "fantasy-ship-quartermaster-mate",
+   "name": "범선 일등 항해사",
+   "desc": "범선 일등 항해사 — 진홍 두건 반다나와 구리빛 적발 포니테일 + 복숭앗빛 턱과 검은 초커 + 네이비 금단추 항해 코트·붉은 허리 새시·부츠",
+   "genre": "판타지",
+   "role": "항해사·선원·해적",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "범선 일등 항해사",
+    "항해사",
+    "선원",
+    "해적",
+    "여성",
+    "청년",
+    "적발"
+   ],
+   "sheet": 22,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-ship-quartermaster-mate",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "8f313d3a8fc0513c166c1bf333e242797f83f29d72155cd6b42b8ab29bcefa5f",
+    "slotRgbaSha256": "699a10d332fac29af66e634112ca6f1ea13016877b78083bcd721bc03274903e"
+   }
+  },
+  {
+   "id": "fantasy-tropical-spice-trader",
+   "name": "남해 향신료 무역상",
+   "desc": "남해 향신료 무역상 — 작고 단정한 청록·황금 터번 캡과 흑갈색 옆머리 + 복숭앗빛 턱과 자주 비단 깃 + 자주·금수 상인 카프탄 조끼와 남색 바지",
+   "genre": "판타지",
+   "role": "무역상·대상인·상인",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "남해 향신료 무역상",
+    "무역상",
+    "대상인",
+    "상인",
+    "이국",
+    "터번",
+    "중년",
+    "남성",
+    "주민",
+    "검은 머리"
+   ],
+   "sheet": 22,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-tropical-spice-trader",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "524098fb4af70d3586e25e3c7cd7efa8f2dd77dec0e16b67eff73f4de8f5dabf",
+    "slotRgbaSha256": "03f2e927f9c129bc2b974a1c2da73e416da9aa1daa5b8f3fa66123080d2f018c"
+   }
+  },
+  {
+   "id": "fantasy-wharf-rope-netmaker",
+   "name": "부두 그물 직조 아낙",
+   "desc": "부두 그물 직조 아낙 — 바닷바람에 묶은 적갈색 단발과 청색 머리띠 + 복숭앗빛 턱과 삼베 머플러 + 쪽빛 소매 작업 상의·황토색 치마바지·노끈 벨트",
+   "genre": "판타지",
+   "role": "부두 일꾼·어촌 주민",
+   "gender": "female",
+   "age": "middle",
+   "tags": [
+    "부두 그물 직조 아낙",
+    "부두 일꾼",
+    "어촌 주민",
+    "어부",
+    "주민",
+    "아줌마",
+    "중년",
+    "여성",
+    "바다"
+   ],
+   "sheet": 22,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-wharf-rope-netmaker",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "c00952c43657d37dfa3e2e2ec25c96610adf56452ebb35968f167428c6c0eb24",
+    "slotRgbaSha256": "56c3709b6782a31fc8c3a401a36448095346da53b45da973f6a0bcaa8d606e02"
+   }
+  },
+  {
+   "id": "fantasy-desert-nomad-geomancer",
+   "name": "사막 유목 풍수사",
+   "desc": "사막 유목 풍수사 — 사막 청금석 서클릿과 모래빛 은발 단발 + 복숭앗빛 턱과 코발트 스카프 + 코발트·황토 사막 풍수사 조끼 로브와 붉은 허리띠",
+   "genre": "판타지",
+   "role": "풍수사·사막 마법사",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "사막 유목 풍수사",
+    "풍수사",
+    "사막 마법사",
+    "마법사",
+    "사막",
+    "유목민",
+    "남성",
+    "청년",
+    "은발"
+   ],
+   "sheet": 22,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-desert-nomad-geomancer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "59583cd434a514c66c60380462611e86771951355c7256367d3b727a5f66600a",
+    "slotRgbaSha256": "bae0b391de4e759d17bec53b0acf9ec023bc658ae3351cb93100f6d8b9bc5a82"
+   }
+  },
+  {
+   "id": "fantasy-sand-glass-merchant-lady",
+   "name": "오아시스 유리병 여상인",
+   "desc": "오아시스 유리병 여상인 — 황금 머리장식과 칠흑 묶음 머리 + 복숭앗빛 턱과 청록 목걸이 수축 + 터콰이즈·자주 비단 조끼와 황금 벨트 하렘 치마바지",
+   "genre": "판타지",
+   "role": "유리 상인·사막 상인",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "오아시스 유리병 여상인",
+    "유리 상인",
+    "사막 상인",
+    "상인",
+    "사막",
+    "이국",
+    "여성",
+    "청년",
+    "주민",
+    "검은 머리"
+   ],
+   "sheet": 22,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-sand-glass-merchant-lady",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "4525e9a7d5e4e90a78cdf0b020b35290a17e01e7f35204f03ebbc4f311163895",
+    "slotRgbaSha256": "e6fef86c86b0cec29ba58fcddd66853638494c6d2854efb23086600f6812da3c"
+   }
+  },
+  {
+   "id": "fantasy-golden-bazaar-jeweler",
+   "name": "황금 바자르 보석상",
+   "desc": "황금 바자르 보석상 — 낮은 진홍 페즈 모자와 흑발 옆머리 + 복숭앗빛 턱과 금실 칼라 + 에메랄드·금사 부호 조끼 코트와 자주 허리띠",
+   "genre": "판타지",
+   "role": "보석상·부호 상인",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "황금 바자르 보석상",
+    "보석상",
+    "부호 상인",
+    "상인",
+    "부자",
+    "중년",
+    "남성",
+    "주민",
+    "검은 머리"
+   ],
+   "sheet": 22,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-golden-bazaar-jeweler",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "9959a0cfae6fd32c71aec0de71edef0797ae1c66d709f4533621b54262347965",
+    "slotRgbaSha256": "05668351782a671417785dcf8fbce99a2465e989e7cb04df95d8fdb41ab9a392"
+   }
+  },
+  {
+   "id": "fantasy-steppe-horse-archer",
+   "name": "대초원 기마 궁수",
+   "desc": "대초원 기마 궁수 — 가죽 테 모피 캡과 흑발 땋은 옆머리 + 복숭앗빛 턱과 붉은 목깃 수축 + 황갈 가죽 델·청색 허리띠·전통 부츠",
+   "genre": "판타지",
+   "role": "기마 궁수·유목 전사",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "대초원 기마 궁수",
+    "기마 궁수",
+    "유목 전사",
+    "궁수",
+    "전사",
+    "사냥꾼",
+    "유목민",
+    "남성",
+    "청년",
+    "검은 머리"
+   ],
+   "sheet": 23,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-steppe-horse-archer",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "3f2aa9288ae4f857ea4e14990d40818552be01433fc37259d7ef693a94d18c6c",
+    "slotRgbaSha256": "02646e4fc6eca18118e27e9bb0693d7dd4f980a56849e71bb483982b0f30ce63"
+   }
+  },
+  {
+   "id": "fantasy-steppe-eagle-shaman-elder",
+   "name": "초원 독수리 노샤먼",
+   "desc": "초원 독수리 노샤먼 — 붉은 깃털 머리띠와 은회색 묶음 머리 + 복숭앗빛 턱과 청록 구슬 목걸이 수축 + 적갈색 가죽 주술 조끼와 남색 치마",
+   "genre": "판타지",
+   "role": "샤먼·부족 장로",
+   "gender": "female",
+   "age": "elder",
+   "tags": [
+    "초원 독수리 노샤먼",
+    "샤먼",
+    "부족 장로",
+    "무녀",
+    "주술사",
+    "장로",
+    "할머니",
+    "노인",
+    "여성",
+    "은발"
+   ],
+   "sheet": 23,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-steppe-eagle-shaman-elder",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "daa0b1c796764d9f01dab16c01d280c7f86accbfdcc3019208d50052241e6670",
+    "slotRgbaSha256": "0e289e06e2b7aebecc9df43b9e4ada8920b38de433a42911de6cd8ce16286fd0"
+   }
+  },
+  {
+   "id": "fantasy-northern-fjord-skald",
+   "name": "북방 피오르드 음유전사",
+   "desc": "북방 피오르드 음유전사 — 황금 금발 옆·뒷머리 다발과 청동 서클릿 + 복숭앗빛 턱과 흑갈 모피 칼라 + 감청 룬 자수 튜닉·가죽 흉갑 벨트·모피 부츠",
+   "genre": "판타지",
+   "role": "음유전사·북방 전사",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "북방 피오르드 음유전사",
+    "음유전사",
+    "북방 전사",
+    "전사",
+    "음유시인",
+    "북방",
+    "남성",
+    "청년",
+    "금발",
+    "검은 머리"
+   ],
+   "sheet": 23,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-northern-fjord-skald",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "868dee099d186e4bedd53f82a2fb9688a40794b643c2f58682424cfea4485ef5",
+    "slotRgbaSha256": "93717ac8a8b08b310d83e566f795169f62c2c674c025fbef38a045d01b235cdb"
+   }
+  },
+  {
+   "id": "fantasy-frost-fur-trapper",
+   "name": "설원 모피 사냥꾼",
+   "desc": "설원 모피 사냥꾼 — 갈색 모피 트래퍼 캡과 흑갈색 눈썹 + 복숭앗빛 턱과 진홍 머플러 + 청회색 설원 파카 조끼·가죽 벨트·방한 부츠",
+   "genre": "판타지",
+   "role": "사냥꾼·설원 탐색가",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "설원 모피 사냥꾼",
+    "사냥꾼",
+    "설원 탐색가",
+    "탐험가",
+    "북방",
+    "중년",
+    "남성",
+    "주민",
+    "검은 머리"
+   ],
+   "sheet": 23,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-frost-fur-trapper",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "0a3aff414138891dbbaf6c04c006e27b2c5094525127f55df2c7aa778d7ef543",
+    "slotRgbaSha256": "d6c315d72581eb80ea55700a63bc2049f5c6ecbf8e6e7e7cd7d545eb269d3eb5"
+   }
+  },
+  {
+   "id": "fantasy-hotspring-ryokan-landlady",
+   "name": "온천 여관 여장",
+   "desc": "온천 여관 여장 — 산호 비녀를 꽂은 단정한 흑발 올림머리 + 복숭앗빛 턱과 자주 반깃 + 남보라 기모노 상의와 황금빛 오비 허리띠·단정한 치마폭",
+   "genre": "판타지",
+   "role": "여관 주인·여장",
+   "gender": "female",
+   "age": "middle",
+   "tags": [
+    "온천 여관 여장",
+    "여관 주인",
+    "여장",
+    "여관주인",
+    "주모",
+    "여성",
+    "중년",
+    "동방",
+    "주민",
+    "검은 머리"
+   ],
+   "sheet": 23,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-hotspring-ryokan-landlady",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "71a6794bb6ec2f556a3e6b7b0da107fec3432f19e7ea71affbe0ea321b3e6354",
+    "slotRgbaSha256": "ce5c86ad0ad14ac6178aa7c43957de3371d6b1b1dda52da7209cd47270f64307"
+   }
+  },
+  {
+   "id": "fantasy-bamboo-flute-minstrel",
+   "name": "청죽 피리 유랑 악사",
+   "desc": "청죽 피리 유랑 악사 — 비취 머리끈으로 반묶음한 흑청색 긴 머리 + 복숭앗빛 턱과 먹색 깃 + 청자색 쾌자 배자 조끼·남색 소매·먹색 하의",
+   "genre": "판타지",
+   "role": "악사·음유시인·선비",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "청죽 피리 유랑 악사",
+    "악사",
+    "음유시인",
+    "선비",
+    "동방",
+    "남성",
+    "청년",
+    "검은 머리"
+   ],
+   "sheet": 23,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-bamboo-flute-minstrel",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "2b7f8c6664776de818fca30674e687659a8382de5e7797c4e0c726ab7141660c",
+    "slotRgbaSha256": "fc9bf82fe5279e6cd4eae11e4cc8cb3f86d62d0b57ca825c92361833e2f294e9"
+   }
+  },
+  {
+   "id": "fantasy-imperial-jade-mandarin",
+   "name": "동방 비취 어사 관료",
+   "desc": "동방 비취 어사 관료 — 아담한 흑색 관모 사모와 흑발 + 복숭앗빛 턱과 흰 동정·관복 깃 + 비취 흉배가 달린 남청색 단령 관복과 금각대",
+   "genre": "판타지",
+   "role": "어사·관원·종사관",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "동방 비취 어사 관료",
+    "어사",
+    "관원",
+    "종사관",
+    "사또",
+    "양반",
+    "선비",
+    "동방",
+    "남성",
+    "중년",
+    "검은 머리"
+   ],
+   "sheet": 23,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-imperial-jade-mandarin",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "da976d6c308261e18042bd38d76256bcb6a920ce7c145888a06737da348febc7",
+    "slotRgbaSha256": "8229bdede345c3fa2baa14f5b0a4b8d7b6cc8205e57d1acbbf2e38f46de40b8e"
+   }
+  },
+  {
+   "id": "fantasy-crimson-spear-ashigaru",
+   "name": "동방 성문 파수 포졸",
+   "desc": "동방 성문 파수 포졸 — 붉은 술이 달린 낮은 흑칠 전립 캡과 흑발 + 복숭앗빛 턱과 남색 목깃 수축 + 주홍 전복 조끼·남색 소매 군복·행전 각반",
+   "genre": "판타지",
+   "role": "포졸·문지기·병사",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "동방 성문 파수 포졸",
+    "포졸",
+    "문지기",
+    "병사",
+    "경비병",
+    "동방",
+    "남성",
+    "청년",
+    "검은 머리"
+   ],
+   "sheet": 23,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-crimson-spear-ashigaru",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "ceb73e147233486257b8c0c5c8f22d1c905352ff86eb016b37212a9d298f1ed4",
+    "slotRgbaSha256": "9175fbc653addcb0d0e9cf8cd74bcb3405f289af584ac822249679d1df997d75"
+   }
+  },
+  {
+   "id": "fantasy-silk-embroidery-weaver",
+   "name": "비단 자수 직녀",
+   "desc": "비단 자수 직녀 — 붉은 댕기 리본과 흑갈색 단발 다발 + 복숭앗빛 턱과 연옥색 저고리 깃 + 연옥색 배자 저고리와 다홍빛 치마 대비",
+   "genre": "판타지",
+   "role": "직조 장인·의상 장인",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "비단 자수 직녀",
+    "직조 장인",
+    "의상 장인",
+    "장인",
+    "동방",
+    "처녀",
+    "여성",
+    "청년",
+    "주민",
+    "검은 머리"
+   ],
+   "sheet": 24,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-silk-embroidery-weaver",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "1a56d4d53a7266870d52ddbc2967218e986a6fcf79b505ce54395a0b3c26fd2c",
+    "slotRgbaSha256": "9347f30bd842c0bcf0167d26c19a8130891384d5e1049597b794a99d34dfc8a8"
+   }
+  },
+  {
+   "id": "fantasy-mountain-tea-porter",
+   "name": "고산 차밭 청년 일꾼",
+   "desc": "고산 차밭 청년 일꾼 — 청색 수건 머리띠와 흑갈색 삐죽 머리 + 복숭앗빛 턱과 황토 삼베 깃 + 짙은 차녹색 단속곳 작업 조끼·가죽 어깨끈·갈색 바지",
+   "genre": "판타지",
+   "role": "차밭 일꾼·농부",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "고산 차밭 청년 일꾼",
+    "차밭 일꾼",
+    "농부",
+    "청년",
+    "일꾼",
+    "동방",
+    "남성",
+    "주민",
+    "검은 머리"
+   ],
+   "sheet": 24,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-mountain-tea-porter",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "998c472294130268cb668ca2edaa9fb6d7018659ad2edf659138385c8699b899",
+    "slotRgbaSha256": "26b4927edc6adfd5adbc867a5b74e7b499113acd7897a8cfa1ae68e1216b48bb"
+   }
+  },
+  {
+   "id": "fantasy-celestial-talismans-taoist",
+   "name": "방울 부적 도사",
+   "desc": "방울 부적 도사 — 금테 태극 도관 캡과 흑발 + 복숭앗빛 턱과 먹색 도포 깃 + 황금·감청 팔괘 도사 배자와 주홍 부적 허리띠",
+   "genre": "판타지",
+   "role": "도사·퇴마사·술사",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "방울 부적 도사",
+    "도사",
+    "퇴마사",
+    "술사",
+    "마법사",
+    "사제",
+    "동방",
+    "남성",
+    "청년",
+    "검은 머리"
+   ],
+   "sheet": 24,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-celestial-talismans-taoist",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "ce130ba71d107a8329c58b56abf8c5f61b1e2d8f5305ace71c00402a4940d5dd",
+    "slotRgbaSha256": "d3426c084bce8dcae08fc72b3ef0a81f1732f27e58bdc933738497e0babfa966"
+   }
+  },
+  {
+   "id": "fantasy-glacier-sled-youth",
+   "name": "빙하 썰매꾼 청년",
+   "desc": "빙하 썰매꾼 청년 — 청록 귀덮개 니트 캡과 밤갈색 앞머리 + 복숭앗빛 턱과 주황 목도리 수축 + 네이비·주황 북방 방한 조끼와 갈색 방한 부츠",
+   "genre": "판타지",
+   "role": "썰매꾼·배달부·북방 청년",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "빙하 썰매꾼 청년",
+    "썰매꾼",
+    "배달부",
+    "북방 청년",
+    "청년",
+    "탐험가",
+    "북방",
+    "남성",
+    "주민"
+   ],
+   "sheet": 24,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-glacier-sled-youth",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "9f8cad503ca022e11247c390c0fec4eae7c349a96294c05d9eae0e022d18b0fd",
+    "slotRgbaSha256": "44f7b80b20efc9635401d5f782523607327b4890059abeeee8772000ae92eeaa"
+   }
+  },
+  {
+   "id": "fantasy-volcano-sulfur-alchemist",
+   "name": "화산 유황 연금사",
+   "desc": "화산 유황 연금사 — 불꽃빛 적홍색 보브 단발 + 복숭앗빛 턱과 흑철 방열 칼라 + 차콜 내열 가죽 조끼·황금 시약병 벨트·버건디 바지",
+   "genre": "판타지",
+   "role": "연금술사·광산 연구원",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "화산 유황 연금사",
+    "연금술사",
+    "광산 연구원",
+    "연구원",
+    "학자",
+    "여성",
+    "청년",
+    "적발",
+    "검은 머리"
+   ],
+   "sheet": 24,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-volcano-sulfur-alchemist",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "2c7964b3800b9e075cac8230861ae7a8896528dffdcd37ce285c02a4a7c5245c",
+    "slotRgbaSha256": "b790f76dc7ccbbf70e09ba7b04cb85499ab08cfc55c785f71ca45604f287d056"
+   }
+  },
+  {
+   "id": "fantasy-treasure-chest-locksmith",
+   "name": "보물상자 자물쇠 장인",
+   "desc": "보물상자 자물쇠 장인 — 비대칭 은회갈색 삐죽 단발 + 복숭앗빛 턱과 자주 스카프 + 흑록색 가죽 조끼·열쇠픽 대각선 벨트·차콜 바지",
+   "genre": "판타지",
+   "role": "자물쇠 장인·도적 길드원",
+   "gender": "male",
+   "age": "youth",
+   "tags": [
+    "보물상자 자물쇠 장인",
+    "자물쇠 장인",
+    "도적 길드원",
+    "장인",
+    "도적",
+    "모험가",
+    "상인",
+    "남성",
+    "청년",
+    "주민",
+    "검은 머리"
+   ],
+   "sheet": 24,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-treasure-chest-locksmith",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "7472618d69ecfa9db5e4a30d682f59c5902115299fdfd3911a89f29e064bee25",
+    "slotRgbaSha256": "b6e3b93f0644eea8f3696122690db6e37a5dcb4e663bd9ffe503f4bcf1675bec"
+   }
+  },
+  {
+   "id": "fantasy-dungeon-torch-guide",
+   "name": "미궁 등불 길잡이",
+   "desc": "미궁 등불 길잡이 — 낮은 가죽 탐험 캡과 적갈색 단발 + 복숭앗빛 턱과 주황 머플러 + 청회색 미궁 방수 망토 조끼·밧줄 벨트·가죽 부츠",
+   "genre": "판타지",
+   "role": "길잡이·모험가·탐험가",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "미궁 등불 길잡이",
+    "길잡이",
+    "모험가",
+    "탐험가",
+    "안내원",
+    "중년",
+    "남성",
+    "주민"
+   ],
+   "sheet": 24,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-dungeon-torch-guide",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "4affeb6af2ab4c0a109e3c8886679d678714682678b5e5c62c0a9f7adcae2e26",
+    "slotRgbaSha256": "adcf7ef1320fdf595a9b19bfccbdd2771e274407aeffb47acfb0359b790e58bf"
+   }
+  },
+  {
+   "id": "fantasy-monster-butcher-cook",
+   "name": "미궁 야영지 요리사",
+   "desc": "미궁 야영지 요리사 — 청색 두건 반다나와 갈색 짧은 머리 + 복숭앗빛 턱과 붉은 목수건 수축 + 올리브 야전 셔츠 위 진갈색 조리 가죽 에이프런·국자 벨트",
+   "genre": "판타지",
+   "role": "요리사·모험가 주방장",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "미궁 야영지 요리사",
+    "요리사",
+    "모험가 주방장",
+    "모험가",
+    "아저씨",
+    "중년",
+    "남성",
+    "주민",
+    "앞치마"
+   ],
+   "sheet": 24,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-monster-butcher-cook",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "0ccb02c443a1143541a02d5da1c5c51c1b1b917e0d5610a1b63f4ebf42755ebb",
+    "slotRgbaSha256": "ec3e7eaeae6c507fe171ee451b638bf0ffc63df2fb90589c5b7fe2bfee12871f"
+   }
+  },
+  {
+   "id": "fantasy-relic-appraiser-girl",
+   "name": "고대유물 감정사 소녀",
+   "desc": "고대유물 감정사 소녀 — 꿀금발 반묶음 포니테일과 파란 베레 리본 + 복숭앗빛 턱과 버건디 리본 타이 + 버건디 볼레로 재킷·네이비 조끼 스커트·돋보기 주머니",
+   "genre": "판타지",
+   "role": "감정사·학자·상인",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "고대유물 감정사 소녀",
+    "감정사",
+    "학자",
+    "상인",
+    "소녀",
+    "여성",
+    "청년",
+    "금발"
+   ],
+   "sheet": 25,
+   "index": 0,
+   "source": {
+    "harnessKey": "fp-relic-appraiser-girl",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "c3226570275e004012ab0f82492bb3cacdd8b1ddba35d34530131f1f58f0e7a1",
+    "slotRgbaSha256": "5d6e2a41f8765f36908566a0b3162a8e933cfab36aa204269ee3f20f0518a921"
+   }
+  },
+  {
+   "id": "fantasy-twin-dagger-acrobat",
+   "name": "유랑단 곡예 무용수",
+   "desc": "유랑단 곡예 무용수 — 체리핑크 비대칭 보브 단발과 금별 핀 + 복숭앗빛 턱과 남보라 초커 + 남보라·황금 다이아 배색 곡예사 코르셋 튜닉과 부츠",
+   "genre": "판타지",
+   "role": "곡예사·무희·광대",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "유랑단 곡예 무용수",
+    "곡예사",
+    "무희",
+    "광대",
+    "모험가",
+    "여성",
+    "청년",
+    "분홍 머리"
+   ],
+   "sheet": 25,
+   "index": 1,
+   "source": {
+    "harnessKey": "fp-twin-dagger-acrobat",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "2ffdafbfed80c8f30343cc7826bbbb62628a78d08ca5f2e307b70f8096d842a5",
+    "slotRgbaSha256": "37562db1b2d68eea4afd741f4d604eeeeb89d996320593f906137d933013c503"
+   }
+  },
+  {
+   "id": "fantasy-plague-herb-censer-nun",
+   "name": "향로 정화 수녀",
+   "desc": "향로 정화 수녀 — 짙은 자주색 수녀 두건 아래 은빛 앞머리 + 복숭앗빛 턱과 흑금 칼라 + 자주·흑색 정화 수녀복과 금향로 체인 벨트",
+   "genre": "판타지",
+   "role": "정화 수녀·치유 사제",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "향로 정화 수녀",
+    "정화 수녀",
+    "치유 사제",
+    "수녀",
+    "사제",
+    "성직자",
+    "의사",
+    "여성",
+    "청년",
+    "은발",
+    "검은 머리"
+   ],
+   "sheet": 25,
+   "index": 2,
+   "source": {
+    "harnessKey": "fp-plague-herb-censer-nun",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "a124bfb74b7e74ff4915b224c089f41380145c6051e4e6128132f1239a9fb261",
+    "slotRgbaSha256": "4cea96641ed11b40d5ab850078e4067b1dcdf2fcee1087ab1e174b5f5f413b62"
+   }
+  },
+  {
+   "id": "fantasy-wandering-puppet-master",
+   "name": "유랑 인형극 단장",
+   "desc": "유랑 인형극 단장 — 낮은 와인색 실크햇 캡과 흑갈색 옆머리 + 복숭앗빛 턱과 청록 리본 보타이 + 와인·황금 줄무늬 조끼와 미드나잇 연미복 재킷",
+   "genre": "판타지",
+   "role": "인형극사·유랑 예술가",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "유랑 인형극 단장",
+    "인형극사",
+    "유랑 예술가",
+    "광대",
+    "예술가",
+    "음유시인",
+    "상인",
+    "남성",
+    "중년",
+    "검은 머리"
+   ],
+   "sheet": 25,
+   "index": 3,
+   "source": {
+    "harnessKey": "fp-wandering-puppet-master",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "154e7f23206f36f04b85384e69e9d23efab7090f6f842139280c39546272f51a",
+    "slotRgbaSha256": "eda02c067a9959b534c975a9954760c12cf995dc2e8627cf252ae0a2c510089b"
+   }
+  },
+  {
+   "id": "fantasy-forest-charcoal-burner",
+   "name": "참나무 숲 나무꾼",
+   "desc": "참나무 숲 나무꾼 — 짙은 밤갈색 덥수룩 단발 + 복숭앗빛 턱과 붉은 격자 머플러 + 숲녹색 플란넬풍 상의·가죽 멜빵·진갈색 벌목 부츠",
+   "genre": "판타지",
+   "role": "나무꾼·숯가마 일꾼",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "참나무 숲 나무꾼",
+    "나무꾼",
+    "숯가마 일꾼",
+    "농부",
+    "사냥꾼",
+    "아저씨",
+    "중년",
+    "남성",
+    "주민"
+   ],
+   "sheet": 25,
+   "index": 4,
+   "source": {
+    "harnessKey": "fp-forest-charcoal-burner",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:broad",
+    "gridSha256": "64c42b4b14bfeb4564f1db6e91147a417cf499b2fb3f12cce973dc6b05f9ed14",
+    "slotRgbaSha256": "065d7efcafe15148f9fd8a1bef3d04dd360d8999e6e819ee21136030d4d6241e"
+   }
+  },
+  {
+   "id": "fantasy-river-ferryman-boatman",
+   "name": "나루터 강 뱃사공",
+   "desc": "나루터 강 뱃사공 — 아담한 황토 삿갓풍 벙거지 캡과 흑갈색 머리 + 복숭앗빛 턱과 쪽빛 수건 + 쪽빛 민소매 조끼·삼베 소매·갈색 바지",
+   "genre": "판타지",
+   "role": "뱃사공·선원",
+   "gender": "male",
+   "age": "middle",
+   "tags": [
+    "나루터 강 뱃사공",
+    "뱃사공",
+    "선원",
+    "뱃사람",
+    "어부",
+    "중년",
+    "남성",
+    "주민",
+    "검은 머리"
+   ],
+   "sheet": 25,
+   "index": 5,
+   "source": {
+    "harnessKey": "fp-river-ferryman-boatman",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "62fff389dbb2199f310997d6545a173db145dff9637438294bfa9c0ff0c34ffc",
+    "slotRgbaSha256": "0b5f0bbc2cdb09d585402351706d59e6cd8a09a3a901548fb681d43b243b2090"
+   }
+  },
+  {
+   "id": "fantasy-bridal-bouquet-maiden",
+   "name": "봄축제 화관 신부",
+   "desc": "봄축제 화관 신부 — 분홍·청록 꽃화관과 따뜻한 밤갈색 물결 롱헤어 + 복숭앗빛 턱과 산호빛 리본 + 산호·청록 자수 허리띠가 들어간 흰 웨딩 드레스",
+   "genre": "판타지",
+   "role": "신부·축제 처녀",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "봄축제 화관 신부",
+    "신부",
+    "축제 처녀",
+    "처녀",
+    "하얀 드레스",
+    "흰 드레스",
+    "드레스",
+    "여성",
+    "청년",
+    "주민",
+    "갈발"
+   ],
+   "sheet": 25,
+   "index": 6,
+   "source": {
+    "harnessKey": "fp-bridal-bouquet-maiden",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "7f57a1ca409ba434d8d332a111cbd8f814857fd95e46c0ccdc4af9ccac2a12f7",
+    "slotRgbaSha256": "98872ec234652a4b51af12f8bc9e965636d226a63f28ef094601d32bddc67576"
+   }
+  },
+  {
+   "id": "fantasy-midnight-crow-courier",
+   "name": "밤까마귀 비밀 전령",
+   "desc": "밤까마귀 비밀 전령 — 칠흑 비대칭 쇼트컷 다발과 은색 날개 핀 + 복숭앗빛 턱과 진홍 머플러 + 흑청색 케이프 재킷·은버클 크로스벨트·부츠",
+   "genre": "판타지",
+   "role": "비밀 전령·정찰원",
+   "gender": "female",
+   "age": "youth",
+   "tags": [
+    "밤까마귀 비밀 전령",
+    "비밀 전령",
+    "정찰원",
+    "전령",
+    "정찰병",
+    "도적",
+    "모험가",
+    "여성",
+    "청년",
+    "검은 머리"
+   ],
+   "sheet": 25,
+   "index": 7,
+   "source": {
+    "harnessKey": "fp-midnight-crow-courier",
+    "model": "gemini-4-carbon-medium",
+    "baseChip": "Template:0",
+    "gridSha256": "6d95ca0972e96cb5904312a9a9be567423b0e79fd7b59d0633e6e7be8a2c2eeb",
+    "slotRgbaSha256": "35c7c1f7fda658eddcba52b0c068d2ccb5aa0809ac8e8a769c68c796eff72394"
+   }
+  }
+ ]
+}

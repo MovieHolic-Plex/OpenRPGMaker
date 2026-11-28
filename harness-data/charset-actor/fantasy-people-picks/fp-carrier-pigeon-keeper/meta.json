@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "key": "fp-carrier-pigeon-keeper",
+  "base": "Template:2",
+  "model": "gemini-4-carbon-medium"
+}

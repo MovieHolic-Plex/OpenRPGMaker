@@ -13,7 +13,7 @@ import { activeGenreLock } from "./genreLock";
 import type { Project } from "./types";
 
 /** 잠글 수 있는 사람 칩 계열(그림체가 서로 다른 번들 사람 칩). */
-export const PEOPLE_CHIP_FAMILIES = ["rtp-people", "refmap-doll", "heroes", "modern", "scarloxy-people"] as const satisfies readonly CharsetFamilyId[];
+export const PEOPLE_CHIP_FAMILIES = ["rtp-people", "heroes", "modern", "scarloxy-people", "wizarding"] as const satisfies readonly CharsetFamilyId[];
 export type PeopleChipFamilyId = (typeof PEOPLE_CHIP_FAMILIES)[number];
 
 /** `system.peopleChipLock` — 저장 형태. 없으면 아직 안 정해졌다(조수가 처음 놓는 사람 칩이 정한다). */
@@ -157,8 +157,8 @@ export function peopleChipPromptNote(project: Pick<Project, "system">): string |
     return `[사람 칩 잠금 — ${peopleChipFamilyLabel(family)}] 사용자가 이 게임의 사람 캐릭터 칩(주인공·NPC·동료)을 ${peopleChipFamilyLabel(family)}로 정했다. list_npc_graphics 는 이 계열 사람 칩만 보여 주고, 다른 계열 사람 칩은 거부된다. 몬스터·동물·기물 칩은 상관없다.`;
   }
   if (family) return `[사람 칩 기본 계열 — ${peopleChipFamilyLabel(family)}] 이 게임의 사람 칩은 ${peopleChipFamilyLabel(family)}가 기본이다 — 검색어로 고르면 이 계열에서 나온다. 다른 계열 칩도 이름으로 골라 쓸 수 있다. 몬스터·동물·기물 칩은 상관없다.`;
-  return "[사람 칩 기본 계열] 처음 새로 놓는 사람 칩(주인공 포함)의 계열(RTP 사람 칩·REFMAP 변형 인물 칩·CT·FF6풍 영웅 칩·현대 인물 칩)이 이 게임의 기본이 된다 — 검색어로 고르면 그 계열에서 나오고, 다른 계열 칩도 이름으로 골라 쓸 수 있다. "
-    + "마을 사람이 여럿 나오는 판타지 게임은 칩이 많은 REFMAP 변형 인물 칩(약 2,500명)이나 RTP 사람 칩에서 고른다 — 칩이 적은 영웅 칩으로 시작하면 NPC 가 모자란다.";
+  return "[사람 칩 기본 계열] 처음 새로 놓는 사람 칩(주인공 포함)의 계열(RTP 사람 칩·CT·FF6풍 영웅 칩·현대 인물 칩)이 이 게임의 기본이 된다 — 검색어로 고르면 그 계열에서 나오고, 다른 계열 칩도 이름으로 골라 쓸 수 있다. "
+    + "마을 사람이 여럿 나오는 판타지 게임은 직접 제작·검증된 FantasyPeople 200종을 포함한 RTP 사람 칩(Actor·People·FantasyPeople)에서 먼저 고른다 — 칩이 적은 영웅 칩으로 시작하면 NPC 가 모자란다.";
 }
 
 export interface PeopleChipLockStatus {

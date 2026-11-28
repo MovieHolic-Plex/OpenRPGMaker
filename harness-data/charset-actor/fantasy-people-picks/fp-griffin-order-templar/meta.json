@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "key": "fp-griffin-order-templar",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium"
+}

@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "key": "fp-lantern-night-watchman",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium"
+}

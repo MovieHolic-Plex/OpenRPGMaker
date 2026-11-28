@@ -153,7 +153,7 @@ function plainPeople<T extends { readonly entry: { readonly textureKey: string; 
 export function familyFits(map: GameMap, textureKey: string, hostile = false): boolean {
   const modern = /jp_|modern|city_modern|campus|school|office/i.test(map.tilesetId);
   const family = charsetFamilyOf(undefined, textureKey);
-  const fantasyChip = /^tex_easyrpg_charset_(people|actor)|^tex_(oprn_charset_)?scarloxy_(charset_)?people/i.test(textureKey);
+  const fantasyChip = /^tex_easyrpg_charset_(people|actor)|^tex_oprn_charset_fantasy_people|^tex_(oprn_charset_)?scarloxy_(charset_)?people/i.test(textureKey);
   if (!modern) return fantasyChip || (hostile && (family === "rtp-creature" || family === "oprn-creature"));
   if (family === "wizarding") return /wizard/i.test(map.tilesetId);
   // 공유 배우 칩(shared-actor)은 화풍이 섞인 묶음이다 — 현대 맵의 기본 계열로 치지 않는다(글이 이름으로 부르면 named 로 선다).

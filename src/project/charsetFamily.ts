@@ -46,7 +46,7 @@ export interface CharsetFamilyContext {
 export function charsetFamilyOf(project: CharsetFamilyContext | undefined, idOrTextureKey: string): CharsetFamilyId {
   const s = shape(idOrTextureKey);
   if (s.startsWith("shared-charset-actor-")) return "shared-actor";
-  if (/^easyrpg-charset-(actor|people)\d+$/u.test(s)) return "rtp-people";
+  if (/^(?:easyrpg-charset-(?:actor|people)|oprn-charset-fantasy-people)\d+$/u.test(s)) return "rtp-people";
   // 원본 People1~2 와, 그 뼈대에서 변형해 늘린 칩 ScarloxyPeople<n>(2026-10-16) 모두 같은 계열이다 — 몬스터 수집 잠금이 둘 다 허용한다.
   if (/^(?:scarloxy-charset-people|oprn-charset-scarloxy-people)\d+$/u.test(s)) return "scarloxy-people";
   if (/^easyrpg-charset-monster[456]$/u.test(s) || /^oprn-charset-harness-monster\d+$/u.test(s) || s === "oprn-charset-dawning-skybirds") return "oprn-creature";

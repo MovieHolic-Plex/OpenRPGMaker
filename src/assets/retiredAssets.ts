@@ -22,6 +22,10 @@ const RETIRED_RESOURCE_ID_PREFIXES: readonly string[] = [
   "easyrpg-system2-",
   "easyrpg-game-over-",
   "easyrpg-picture-",
+  // 2026-11-28: Retired composite RefmapDoll walking & battler sheets (replaced by 200-character FantasyPeople).
+  "tex_oprn_charset_refmap_doll",
+  "oprn-charset-refmap-doll",
+  "charset-battler-refmap-doll",
 ];
 
 export function isRetiredResourceId(id: string): boolean {

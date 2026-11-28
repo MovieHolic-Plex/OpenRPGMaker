@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "key": "fp-orchard-apple-farmer",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium"
+}

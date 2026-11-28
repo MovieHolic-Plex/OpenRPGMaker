@@ -23,7 +23,7 @@ describe("charsetReferenceRoutes", () => {
       const king = searchResources('charset', 'king').map(row => row.id);
       expect(king).toContain('charset:tex_easyrpg_charset_people3:0');
       expect(king.filter(id => id.startsWith('charset:tex_easyrpg_charset_'))).toEqual(['charset:tex_easyrpg_charset_people3:0']);
-      expect(king.filter(id => !id.startsWith('charset:tex_easyrpg_charset_')).every(id => id.startsWith('charset:tex_oprn_charset_refmap_doll'))).toBe(true);
+      expect(king.filter(id => !id.startsWith('charset:tex_easyrpg_charset_')).every(id => id.startsWith('charset:tex_oprn_charset_fantasy_people'))).toBe(true);
       expect(searchResources('charset', 'golem').map(row => row.id).sort()).toEqual([
         'charset:tex_easyrpg_charset_monster2:4', 'charset:tex_easyrpg_charset_monster4:5',
       ]);

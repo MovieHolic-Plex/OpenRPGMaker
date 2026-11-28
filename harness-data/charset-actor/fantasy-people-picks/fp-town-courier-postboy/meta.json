@@ -1,0 +1,6 @@
+{
+  "ok": true,
+  "key": "fp-town-courier-postboy",
+  "base": "Template:2",
+  "model": "gemini-4-carbon-medium"
+}

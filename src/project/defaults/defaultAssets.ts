@@ -44,6 +44,7 @@ import { OPRN_BGM_ASSETS } from "@/assets/oprnBgmAssets";
 import { BUNDLED_EASYRPG_CHARSET_ASSETS, BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledChipsetSheetHeight, bundledChipsetTilesPerRow, bundledChipsetTileSize, bundledEasyRpgTilesetId } from "@/assets/bundled";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { AUTHORABLE_FACESET_FACE_ASSETS, GENERATED_FACESET_FACE_IDS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
+import { isRetiredResourceId } from "@/assets/retiredAssets";
 import previousFaceNames from "@/assets/previousFaceReferenceNames.json" with { type: "json" };
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
@@ -754,6 +755,9 @@ export function ensureBundledResourceProfiles(project: { resourceProfiles: Resou
   const staleFaceSheetIds = new Set<string>(LEGACY_FACESET_SHEET_IDS);
   const nextResourceProfiles = project.resourceProfiles.filter(
     (profile) => profile.assetId !== LEGACY_RM_TILESET_TEXTURE_KEY
+      && !(profile.assetId !== undefined
+        && !project.assets?.uploaded?.[profile.assetId]
+        && isRetiredResourceId(profile.assetId))
       && !(profile.kind === "faceset" && profile.assetId !== undefined
         && !project.assets?.uploaded?.[profile.assetId]
         && (staleFaceSheetIds.has(profile.assetId) || GENERATED_FACESET_FACE_IDS.has(profile.assetId)))
