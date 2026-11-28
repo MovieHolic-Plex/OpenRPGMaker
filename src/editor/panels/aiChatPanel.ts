@@ -61,7 +61,8 @@ import type { DatabaseCollection } from "@/editor/databaseActions";
 import { computeAssistantToolMode } from "@/editor/assistantToolMode";
 import { editorState, editorStateChangedOnlyCanvasOverlay, editorStateChangedOnlyPaintPick } from "@/editor/editorState";
 import { AI_SELECTION_CONTEXT_EVENT, aiSelectionContextDetail } from "@/editor/aiSelectionContext";
-import { AI_REGION_HANDOFF_EVENT, aiRegionHandoffDetail, requestAiRegionHandoff } from "@/editor/aiRegionHandoff";
+import { AI_REGION_HANDOFF_EVENT, aiRegionHandoffDetail, dismissSelectionActionChips, requestAiRegionHandoff } from "@/editor/aiRegionHandoff";
+import { clearSelection } from "@/editor/mapClipboard";
 import { AI_PREWARM_EVENT } from "@/editor/aiPrewarm";
 import { regionFixInstruction, regionTurnTouched, regionWarningsFromEvent, showRegionResultCard, showRegionResultCardOnRegionMap, type RegionWarning } from "@/editor/regionResultCard";
 import { formatSelectionTerrain } from "@/editor/selectionTerrainSummary";
@@ -1724,6 +1725,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
   };
 
   let selectionTaskActive = false;
+  let dismissedSelectionKey: string | null = null;
   const currentSelectionForRegionTask = ():
     | { readonly mapId: string; readonly region: { readonly x: number; readonly y: number; readonly width: number; readonly height: number } }
     | null => {
@@ -2095,6 +2097,35 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       mapId: selection.mapId,
       region: { x: selection.x, y: selection.y, width: selection.width, height: selection.height },
     };
+  };
+  const activeTurnSelection = (): PanelMapContext["selection"] => {
+    const scope = resolveTurnScope();
+    return scope ? { mapId: scope.mapId, ...scope.region } : null;
+  };
+  // 드래그 선택을 소비해 조수에게 보낸 직후 부른다 — 이미 전송된 선택이 빈 입력창이나 캔버스에
+  // 계속 남아 다음 일반 지시까지 옛 영역에 가두지 않게 한다. (의도 해석 실패·되묻기 때는 되살린다.)
+  const consumeSubmittedSelection = (consumed: NonNullable<PanelMapContext["selection"]>): void => {
+    selectionTaskActive = false;
+    const cur = editorState.get().selection;
+    if (
+      cur &&
+      cur.mapId === consumed.mapId &&
+      cur.x === consumed.x &&
+      cur.y === consumed.y &&
+      cur.width === consumed.width &&
+      cur.height === consumed.height
+    ) {
+      clearSelection();
+    } else {
+      refreshContextChips();
+    }
+  };
+  const restoreSubmittedSelectionIfUntouched = (consumed: NonNullable<PanelMapContext["selection"]>): void => {
+    const state = editorState.get();
+    if (state.selection !== null || (state.currentMapId ?? store.getCurrent().startMapId) !== consumed.mapId) return;
+    dismissedSelectionKey = null;
+    selectionTaskActive = true;
+    editorState.set({ selection: consumed });
   };
 
   // 재료 라벨 예시를 뽑을 타일셋. 스코프가 없으면 현재 열린 맵 것을 쓴다 — 라벨 힌트가 빠지면
@@ -2701,7 +2732,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       // 앞선 요청을 메모로 싣는다 — 실행마다 새 세션이라 「처음에 부탁한 대로」가 가리킬 곳이 없었다(J70).
       const priorNote = priorRequestsNote(turnOptions?.priorEntries ?? [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])], text);
       // 영역에 시킨 턴이면 그 사각형을 알린다 — v2 는 의도 선언(범위 노트)을 건너뛰어 「여기 상점」의 「여기」가 모델에 닿지 않았다.
-      const selection = turnOptions?.selection !== undefined ? turnOptions.selection : mapContext().selection;
+      const selection = turnOptions?.selection !== undefined ? turnOptions.selection : activeTurnSelection();
       const regionNote = selection ? formatV2RegionNote({ mapId: selection.mapId, region: selection }, text) : null;
       const intentNote = [priorNote, regionNote].filter((note): note is string => !!note).join("\n") || null;
       return { command: plainPiCommand(text, "single", turnMapId), plan: { ...resolvePiRunPlan(currentAutonomy()), routingAudit: "assistant-v2" }, questionPromoted: false, intentNote, timing };
@@ -2715,7 +2746,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         text,
         projectKey: aiProjectRunKey(),
         currentMapId: turnMapId,
-        selection: (turnOptions?.selection !== undefined ? turnOptions.selection : mapContext().selection) ?? null,
+        selection: (turnOptions?.selection !== undefined ? turnOptions.selection : activeTurnSelection()) ?? null,
         selectedEvent: selectedEventFact(store.getCurrent(), turnMapId, editorState.get().selectedEventId, editorState.get().selectedEventPageId),
         hasActivePlan: workPlanSurfaceState?.active === true,
         autonomy: currentAutonomy(),
@@ -2936,8 +2967,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const runMapId = editorState.get().currentMapId ?? store.getCurrent().startMapId ?? null;
     const mapKey = runMapId ?? "__project__";
     // 영역에 시킨 턴이면 그 결과를 맵 위 영역 아래에도 보인다(showPiChangeReceipt → regionResultCard).
-    const regionScope = resolveTurnScope();
-    regionTurn = regionScope?.region ? { mapId: regionScope.mapId, region: regionScope.region, instruction: shown } : null;
+    const turnSelection = activeTurnSelection();
+    regionTurn = turnSelection ? { mapId: turnSelection.mapId, region: { x: turnSelection.x, y: turnSelection.y, width: turnSelection.width, height: turnSelection.height }, instruction: shown } : null;
     regionWarnings = [];
     const explicit = parsePiCommand(text, store.getCurrent(), runMapId);
     const exclusive = handoff?.team === true || explicit?.mode === "team"
@@ -2974,8 +3005,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       composerHandoff = null;
       syncInputHeight();
       refreshSendEnabled();
-      const selection = mapContext().selection;
-      enqueueMapRun({ text: runText, shown, team: handoff?.team === true, mapId: runMapId, selection: selection && selection.mapId === runMapId ? selection : null, ...(handoff?.images?.length ? { images: handoff.images } : {}) }, mapKey, exclusive);
+      if (turnSelection) {
+        markDragOrigin({ text, mapId: turnSelection.mapId, region: turnSelection });
+        consumeSubmittedSelection(turnSelection);
+      }
+      enqueueMapRun({ text: runText, shown, team: handoff?.team === true, mapId: runMapId, selection: turnSelection && turnSelection.mapId === runMapId ? turnSelection : null, ...(handoff?.images?.length ? { images: handoff.images } : {}) }, mapKey, exclusive);
       return;
     }
     const releaseMapRun = claimForegroundMapRun(mapKey, shown, exclusive);
@@ -2984,6 +3018,10 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     composerHandoff = null;
     syncInputHeight();
     refreshSendEnabled();
+    if (turnSelection) {
+      markDragOrigin({ text, mapId: turnSelection.mapId, region: turnSelection });
+      consumeSubmittedSelection(turnSelection);
+    }
     const progress = startAiCanvasProgress(shown);
     canvasProgress = progress;
     runSurface.turnBusy = true;
@@ -3012,12 +3050,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       syncGlassIdle();
       let classified: PlainPiTurn;
       try {
-        classified = await plainPiTurn(text, handoff?.team || handoff?.images?.length ? { ...(handoff.team ? { team: true } : {}), ...(handoff.images?.length ? { hasUserImages: true } : {}) } : undefined);
+        classified = await plainPiTurn(text, { selection: turnSelection, ...(handoff?.team ? { team: true } : {}), ...(handoff?.images?.length ? { hasUserImages: true } : {}) });
       } catch (error) {
         // 슬롯을 반드시 돌려놓고, 실패를 unhandled rejection 으로 흘리지 않는다 — 이 호출자는
         // 클릭 리스너(`void send()`)라 받아 줄 사람이 없다(2026-09-16 실측: 분류가 던지면 vitest 가
         // unhandled error 로 잡았고 사용자에게는 아무 표시도 남지 않았다).
         runSurface.turnBusy = false;
+        if (turnSelection) restoreSubmittedSelectionIfUntouched(turnSelection);
         const reason = error instanceof Error ? error.message : String(error);
         finishWorkCard({ ok: false, message: aiFailureTitle(describeAiFailure(reason).kind) });
         refreshSendEnabled();
@@ -3028,6 +3067,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       if (classified.clarify) {
         // 선언이 도구가 갈릴 만큼 모호하다고 봤다 — 실행하지 않고 묻는다. 답은 다음 전송에서 원래 요청과 묶인다(clarifyFollowUpText).
+        if (turnSelection) restoreSubmittedSelectionIfUntouched(turnSelection);
         pendingClarify = { text, question: classified.clarify };
         appendBubble("assistant", clarifyForChat(classified.clarify));
         renderQuickReplies(classified.clarify);
@@ -3125,6 +3165,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     syncCommandBarClearance();
   };
   input.addEventListener("input", () => {
+    if (selectionTaskActive && input.value.trim().length > 0) {
+      dismissSelectionActionChips();
+    }
     syncInputHeight();
     refreshComposerPlaceholder();
     refreshSendEnabled();
@@ -3145,11 +3188,13 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       toast("맵을 연 뒤 바로 깔 수 있습니다", "info");
       return;
     }
-    const order = stampOrderQueue().enqueue({ text, mapId, selection: state.selection });
+    const turnSelection = activeTurnSelection();
+    const order = stampOrderQueue().enqueue({ text, mapId, selection: turnSelection });
     if (!order) {
       toast("맵을 연 뒤 바로 깔 수 있습니다", "info");
       return;
     }
+    if (turnSelection) consumeSubmittedSelection(turnSelection);
     appendBubble("user", `#${order.id} ${text.trim() || "(알아서 깔기)"}`);
     abortNoticeShown = false;
   };
@@ -3283,7 +3328,6 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       ],
     });
   // 선택 영역 칩 자동 부착(스펙 §4 3-C): 새 선택은 자동 활성, ×로 끈 선택은 키가 같는 동안 재부착 금지.
-  let dismissedSelectionKey: string | null = null;
   const selectionKeyOf = (sel: { mapId: string; x: number; y: number; width: number; height: number } | null): string | null =>
     sel ? `${sel.mapId}:${sel.x}:${sel.y}:${sel.width}:${sel.height}` : null;
   const refreshContextChips = (): void => {

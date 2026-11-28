@@ -10,6 +10,7 @@ import { buildNpcArchetypePrompt, recommendedNpcArchetypes } from "@/editor/sele
 import { buildDirectArchetypePrompt, recommendedDirectArchetypes } from "@/editor/selectionDirectArchetypes";
 import { buildEncounterArchetypePrompt, recommendedEncounterArchetypes } from "@/editor/selectionEncounterArchetypes";
 import { renderSelectionActionChips } from "@/editor/selectionActionChips";
+import { AI_CONFIG_STORAGE_KEY, defaultAiConfig } from "@/ai/llmClient";
 
 describe("analyzeSelectionIntent — 드래그 영역 0ms 맥락 판별 및 우선순위", () => {
   it("저장된 구역 태그(map.locations)를 최우선으로 읽고 마을 광장 소형 영역은 NPC 추가를 1순위로 둔다", () => {
@@ -157,6 +158,40 @@ describe("renderSelectionActionChips — 컨텍스트 우선순위 HUD & 구역 
     expect(zoneBtn.classList.contains("is-saved")).toBe(true);
     expect(zoneBtn.dataset.zoneSource).toBe("location");
     expect(drawer.hidden).toBe(true);
+  });
+
+  it("조수에게 넘기기가 성공했을 때만 onHandedOff 를 불러 바를 내리게 한다 — 빈 입력은 바를 남긴다", () => {
+    localStorage.setItem(AI_CONFIG_STORAGE_KEY, JSON.stringify({
+      ...defaultAiConfig(), authMode: "apiKey", baseUrl: "http://127.0.0.1:1/v1", apiKey: "sk-test", model: "test-model",
+    }));
+    try {
+      const mapId = store.getCurrent().startMapId;
+      const handoff = vi.fn();
+      const handedOff = vi.fn();
+      const bar = renderSelectionActionChips({ mapId, x: 2, y: 2, width: 4, height: 3 }, handoff, () => undefined, handedOff);
+      document.body.append(bar);
+      bar.querySelector<HTMLButtonElement>("[data-testid='selection-chip-ai-toggle']")!.click();
+      const prompt = bar.querySelector<HTMLTextAreaElement>("[data-testid='selection-chip-prompt']")!;
+      const enter = () => prompt.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true, cancelable: true }));
+
+      enter();
+      expect(handoff).not.toHaveBeenCalled();
+      expect(handedOff).not.toHaveBeenCalled();
+
+      prompt.value = "여기에 우물 하나 놓아 줘";
+      enter();
+      expect(handoff).toHaveBeenCalledTimes(1);
+      expect(handedOff).toHaveBeenCalledTimes(1);
+      expect(handoff.mock.invocationCallOrder[0]).toBeLessThan(handedOff.mock.invocationCallOrder[0]!);
+
+      // 아키타입 서랍(1순위 빠른 동작)에서 보내도 같다.
+      bar.querySelector<HTMLButtonElement>("[data-testid^='selection-chip-quick-']")!.click();
+      bar.querySelector<HTMLButtonElement>("[data-testid='selection-chip-ai']")!.click();
+      expect(handoff).toHaveBeenCalledTimes(2);
+      expect(handedOff).toHaveBeenCalledTimes(2);
+    } finally {
+      localStorage.removeItem(AI_CONFIG_STORAGE_KEY);
+    }
   });
 
   it("buildNpcArchetypePrompt 는 세계관 캐논·금지어·구역 좌표·사용자 메모를 상세 프롬프트로 조립한다", () => {

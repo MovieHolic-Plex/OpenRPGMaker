@@ -142,7 +142,12 @@ import {
   retargetRegionTaskModal,
 } from "@/editor/panels/regionTaskModal";
 import { REGION_TASK_STATUS_EVENT, regionTaskStatusDetail } from "@/editor/regionTask/regionTaskStatus";
-import { requestAiRegionHandoff } from "@/editor/aiRegionHandoff";
+import {
+  AI_REGION_HANDOFF_EVENT,
+  AI_SELECTION_CHIPS_DISMISS_EVENT,
+  aiRegionHandoffDetail,
+  requestAiRegionHandoff,
+} from "@/editor/aiRegionHandoff";
 import type { RegionRect } from "@/editor/regionTask/clipToRegion";
 import { BUILD_PALETTE_VISIBILITY_EVENT, isBuildPaletteEnabled, renderBuildPalettePopup } from "@/editor/panels/buildPalette";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
@@ -456,6 +461,11 @@ export class EditScene extends PhaserRuntime.Scene {
   /** 마지막 우클릭 드래그가 끝난 화면 좌표 — 칩 바를 놓은 자리에 띄우기 위한 anchor. */
   private lastRightDragScreen: { readonly x: number; readonly y: number } | null = null;
   private focusSelectionPromptOnRender = false;
+  /**
+   * 바에서 조수에게 넘긴 선택의 키. 넘긴 뒤에는 그 선택이 채팅 턴의 범위로 남지만 바는 할 일을 마쳤으므로
+   * 다시 그리지 않는다. 새로 드래그하거나(같은 영역이어도) 선택이 바뀌면 지운다.
+   */
+  private selectionChipsHandedOffKey: string | null = null;
   /** 붙여넣기 고스트를 마지막으로 조립한 클립보드·원점. 같은 클립보드면 칸만 옮긴다. */
   private pasteGhostClipboard: TileClipboard | null = null;
   private pasteGhostAt: { x: number; y: number } | null = null;
@@ -515,6 +525,16 @@ export class EditScene extends PhaserRuntime.Scene {
   /** 영역 작업 창 열림/닫힘 → 선택 칩 오버레이를 숨기거나 되살린다. */
   private readonly handleRegionTaskModalToggle = (): void => {
     this.renderBuildPaletteOverlay();
+  };
+  /** 우측 조수 입력 시작·외부 영역 핸드오프 시 맵 위 플로팅 액션 바를 내린다. */
+  private readonly handleSelectionChipsDismiss = (event?: Event): void => {
+    const handoff = event ? aiRegionHandoffDetail(event) : null;
+    const target = handoff
+      ? { mapId: handoff.mapId, ...handoff.region }
+      : editorState.get().selection;
+    if (!target) return;
+    this.selectionChipsHandedOffKey = `${target.mapId}:${target.x}:${target.y}:${target.width}:${target.height}`;
+    this.flushDomOverlayLayout();
   };
   /**
    * 브라우저 기본 컨텍스트 메뉴만 차단.
@@ -689,6 +709,8 @@ export class EditScene extends PhaserRuntime.Scene {
     window.addEventListener(EVENT_EDITOR_OPENED_WINDOW_EVENT, this.handleEventEditorOpened);
     // 영역 작업 창이 닫히면 선택 칩 오버레이를 되살린다(열릴 때는 숨긴다).
     window.addEventListener(REGION_TASK_MODAL_EVENT, this.handleRegionTaskModalToggle);
+    window.addEventListener(AI_REGION_HANDOFF_EVENT, this.handleSelectionChipsDismiss);
+    window.addEventListener(AI_SELECTION_CHIPS_DISMISS_EVENT, this.handleSelectionChipsDismiss);
     this.unsubInlineApproval = subscribeInlineProposalActions(() => this.refreshAgentGhostDomMarkers());
     if (typeof window !== "undefined") {
       // e2e/진단 스펙용 후킹 — 카메라 수학을 스펙에 복제하지 않도록 엔진의 실제 값을 노출한다.
@@ -833,6 +855,8 @@ export class EditScene extends PhaserRuntime.Scene {
     window.removeEventListener(EVENT_EDITOR_CLOSED_WINDOW_EVENT, this.handleEventEditorClosed);
     window.removeEventListener(EVENT_EDITOR_OPENED_WINDOW_EVENT, this.handleEventEditorOpened);
     window.removeEventListener(REGION_TASK_MODAL_EVENT, this.handleRegionTaskModalToggle);
+    window.removeEventListener(AI_REGION_HANDOFF_EVENT, this.handleSelectionChipsDismiss);
+    window.removeEventListener(AI_SELECTION_CHIPS_DISMISS_EVENT, this.handleSelectionChipsDismiss);
     this.unsubInlineApproval?.();
     this.unsubInlineApproval = null;
     if (typeof window !== "undefined") {
@@ -3682,6 +3706,12 @@ export class EditScene extends PhaserRuntime.Scene {
     // 입력창 포커스는 우클릭 제스처가 요청한 이번 한 번만 — 다른 경로의 redraw 가 채팅 입력 등을 뺏지 않게.
     const wantPromptFocus = this.focusSelectionPromptOnRender;
     this.focusSelectionPromptOnRender = false;
+    const selectionKey = selection
+      ? `${selection.mapId}:${selection.x}:${selection.y}:${selection.width}:${selection.height}`
+      : null;
+    if (this.selectionChipsHandedOffKey && (wantPromptFocus || selectionKey !== this.selectionChipsHandedOffKey)) {
+      this.selectionChipsHandedOffKey = null;
+    }
     // 크기 배지는 칩 바와 수명이 다르다 — 영역 작업 창이 열려 있는 동안에도 대상 영역을
     // 가리키고 있어야 한다. 그래서 아래 가드들보다 먼저, 항상 갱신한다.
     // (이 함수는 redraw·pan·창 토글 모두에서 불리므로 배지 추적점으로 충분하다.)
@@ -3716,12 +3746,20 @@ export class EditScene extends PhaserRuntime.Scene {
     }
 
     const kind = isBuildPaletteEnabled() ? "build" : "chips";
+    if (kind === "chips" && selectionKey === this.selectionChipsHandedOffKey) {
+      this.clearBuildPaletteOverlay();
+      this.renderRegionTaskBadge();
+      return;
+    }
     const popupKey = `${kind}:${selection.mapId}:${selection.x}:${selection.y}:${selection.width}:${selection.height}`;
     if (!this.buildPalettePopup || this.buildPalettePopupKey !== popupKey || !this.buildPalettePopup.isConnected) {
       this.clearBuildPaletteOverlay();
       const popup = kind === "build"
         ? renderBuildPalettePopup()
-        : renderSelectionActionChips(selection, requestAiRegionHandoff, () => this.replayDeferredCameraFocus());
+        : renderSelectionActionChips(selection, requestAiRegionHandoff, () => this.replayDeferredCameraFocus(), () => {
+            this.selectionChipsHandedOffKey = selectionKey;
+            this.flushDomOverlayLayout();
+          });
       if (!popup) {
         this.renderRegionTaskBadge();
         return;

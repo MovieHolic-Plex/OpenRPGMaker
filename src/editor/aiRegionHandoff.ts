@@ -6,6 +6,17 @@
 import type { MapId } from "@/project/types";
 
 export const AI_REGION_HANDOFF_EVENT = "oprn:ai-region-handoff";
+export const AI_SELECTION_CHIPS_DISMISS_EVENT = "oprn:ai-selection-chips-dismiss";
+
+/**
+ * 맵 위 선택 액션 바(칩 HUD)만 조용히 내린다.
+ * 우측 조수 입력창에서 지시문을 입력하기 시작할 때 선택 사각형·컨텍스트 칩은 유지한 채
+ * 캔버스를 가리는 플로팅 툴바만 먼저 걷어낸다.
+ */
+export function dismissSelectionActionChips(): void {
+  if (typeof window === "undefined" || typeof window.dispatchEvent !== "function") return;
+  window.dispatchEvent(new Event(AI_SELECTION_CHIPS_DISMISS_EVENT));
+}
 
 export interface AiRegionHandoff {
   readonly mapId: MapId;
