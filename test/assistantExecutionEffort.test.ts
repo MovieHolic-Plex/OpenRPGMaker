@@ -29,10 +29,10 @@ describe("explicit autonomous execution effort", () => {
     expect(session["phaseConfig"]("execute").reasoningEffort).toBe("medium");
   });
 
-  it("uses the pinned execution role when the config has one (default Claude Sonnet 5.5 high, 2026-11-23)", () => {
+  it("uses the pinned execution role when the config has one (default GPT-6.2 Sol high, 2026-11-28)", () => {
     const session = new AssistantSession(createSharedTilesetBlankProject(), { config: defaultAiConfig() });
     const execution = session["phaseConfig"]("execute");
-    expect(execution.model).toBe("claude-sonnet-5-5");
+    expect(execution.model).toBe("gpt-6.2-sol");
     expect(execution.reasoningEffort).toBe("high");
   });
 

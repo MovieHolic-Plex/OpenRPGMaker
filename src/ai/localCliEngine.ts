@@ -9,7 +9,7 @@
 
 import type { RoleModel, SpecialistModels, ThinkingEffort } from "./modelRoles";
 import { ASSISTANT_CLAUDE_EFFORT, ASSISTANT_CLAUDE_MODEL } from "./claudeDefault.ts";
-import { ASSISTANT_CHATGPT_MODEL, atLeastMediumEffort, isLegacyTerraModel } from "./chatgptDefault.ts";
+import { ASSISTANT_CHATGPT_EFFORT, ASSISTANT_CHATGPT_MODEL, atLeastMediumEffort, isLegacyTerraModel } from "./chatgptDefault.ts";
 
 export type LocalCliEngineId = "claude" | "codex" | "gemini";
 export const LOCAL_CLI_ENGINE_IDS: readonly LocalCliEngineId[] = ["claude", "codex", "gemini"];
@@ -149,7 +149,7 @@ export function applyAssistantEngine<T extends { providerId?: string; model: str
   const defaults = LOCAL_CLI_DEFAULT_MODELS[choice.cli];
   const routine = choice.routineModel ?? (choice.cli === "codex" ? defaults.deep : defaults.routine);
   const deep = choice.deepModel ?? (choice.cli === "codex" ? defaults.deep : choice.routineModel ?? defaults.deep);
-  const effort = choice.effort ?? "medium";
+  const effort = choice.effort ?? (choice.cli === "codex" ? ASSISTANT_CHATGPT_EFFORT : choice.cli === "claude" ? ASSISTANT_CLAUDE_EFFORT : "medium");
   const row = (model: string): RoleModel => ({ provider, model, thinkingLevel: effort });
   return {
     ...config,

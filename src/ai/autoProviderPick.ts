@@ -50,16 +50,17 @@ export interface AutoPick {
 export const LOW_QUOTA_FRACTION = 0.1;
 
 /**
- * 자동 선택 우선순위. Claude 길이 먼저다(조수 출하 기본 = Claude). 편집기 안 Claude 계정·키, 그다음 이 PC 의 Claude Code 구독.
- * 그다음 ChatGPT · Google, 그 밖의 키 길(xAI · OpenRouter · Gemini CLI …)은 레지스트리 순서, 사용자 지정 엔드포인트(DeepSeek 등 OpenAI 호환)는 맨 뒤.
+ * 자동 선택 우선순위. ChatGPT 길이 먼저다(조수 출하 기본 = ChatGPT GPT-6.2 Sol · high, 오너 결정 2026-11-28).
+ * 편집기 안 ChatGPT 계정·이 PC 의 Codex CLI 구독, 그다음 Claude · Google, 그 밖의 키 길(xAI · OpenRouter · Gemini CLI …)은 레지스트리 순서,
+ * 사용자 지정 엔드포인트(DeepSeek 등 OpenAI 호환)는 맨 뒤.
  */
 export const AUTO_PROVIDER_PRIORITY: readonly string[] = [
-  ANTHROPIC_PROVIDER_ID,
-  localCliProviderId("claude"),
   CODEX_PROVIDER_ID,
   localCliProviderId("codex"),
+  ANTHROPIC_PROVIDER_ID,
+  localCliProviderId("claude"),
   ANTIGRAVITY_PROVIDER_ID,
-  ...OH_MY_PI_PROVIDERS.map((provider) => provider.id).filter((id) => id !== ANTHROPIC_PROVIDER_ID && id !== CODEX_PROVIDER_ID && id !== ANTIGRAVITY_PROVIDER_ID),
+  ...OH_MY_PI_PROVIDERS.map((provider) => provider.id).filter((id) => id !== CODEX_PROVIDER_ID && id !== ANTHROPIC_PROVIDER_ID && id !== ANTIGRAVITY_PROVIDER_ID),
   localCliProviderId("gemini"),
 ];
 

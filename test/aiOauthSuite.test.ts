@@ -963,14 +963,14 @@ describe("credentials", () => {
   describe("ohMyPiProviders", () => {
     isolateTimers();
     describe("oh-my-pi provider catalog", () => {
-      it("앞의 셋은 고정이고 권장 제공자(Claude)가 맨 앞이다", () => {
+      it("앞의 셋은 고정이고 권장 제공자(ChatGPT)가 맨 앞이다", () => {
         expect(OH_MY_PI_PROVIDERS.map((provider) => provider.id).slice(0, 3)).toEqual([
-          "anthropic",
           CODEX_PROVIDER_ID,
+          "anthropic",
           ANTIGRAVITY_PROVIDER_ID,
         ]);
         expect(OH_MY_PI_PROVIDERS.length).toBeGreaterThan(3);
-        expect(RECOMMENDED_OH_MY_PI_PROVIDER).toBe("anthropic");
+        expect(RECOMMENDED_OH_MY_PI_PROVIDER).toBe(CODEX_PROVIDER_ID);
         expect(OH_MY_PI_PROVIDERS[0]?.id).toBe(RECOMMENDED_OH_MY_PI_PROVIDER);
       });
 
