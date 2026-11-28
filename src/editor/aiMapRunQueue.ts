@@ -15,7 +15,7 @@
 // 실행 본문(start)은 호출자가 넘긴다. 이 파일은 순서·동시성·중단만 안다.
 
 /** 동시에 도는 실행 상한. */
-export const MAP_RUN_CONCURRENCY = 3;
+export const MAP_RUN_CONCURRENCY = 10;
 /** 끝난 표를 들고 있는 수. */
 const FINISHED_KEEP = 20;
 
@@ -23,11 +23,24 @@ export type MapRunStatus = "waiting" | "running" | "done" | "failed" | "cancelle
 /** 기다리는 이유. */
 export type MapRunWait = "same-map" | "exclusive" | "capacity";
 
+export interface MapRunRegion {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
+
+export function mapRunRegionsOverlap(a: MapRunRegion, b: MapRunRegion): boolean {
+  return a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+}
+
 export interface MapRunTicket {
   readonly id: number;
   /** 잡는 맵. exclusive 면 모든 맵. */
   readonly mapKey: string;
   readonly exclusive: boolean;
+  /** 드래그로 지정한 단일 맵 영역. 같은 맵이라도 서로 겹치지 않는 영역끼리는 동시에 실행한다. */
+  readonly region?: MapRunRegion;
   /** 패널 앞 턴(force)으로 올린 표 — 앞 턴 자신의 활동 버스가 따로 있어 존재감에서 중복으로 세지 않는다. */
   readonly foreground: boolean;
   /** 사람이 읽는 짧은 이름(보낸 문장). */
@@ -48,6 +61,8 @@ export interface MapRunEnqueueInput {
   readonly mapKey: string;
   readonly label: string;
   readonly exclusive?: boolean;
+  /** 드래그로 지정한 단일 맵 영역. 같은 맵의 겹치지 않는 영역끼리 동시 실행을 허용한다. */
+  readonly region?: MapRunRegion;
   /**
    * 호출자가 이미 그 맵이 비어 있음을 확인하고 지금 돌리는 실행(채팅 패널의 앞 턴). 동시 실행 상한을 기다리지 않는다 —
    * 표에 올려 같은 맵의 다음 요청이 그 뒤에 줄 서게 하는 게 목적이다.
@@ -64,8 +79,8 @@ export interface MapRunQueue {
   /** 기다리는 실행은 빼고, 도는 실행은 signal 을 끊는다. */
   cancel(id: number): void;
   tickets(): readonly MapRunTicket[];
-  /** 이 맵을 지금 잡고 있거나 기다리는 실행. */
-  forMap(mapKey: string): readonly MapRunTicket[];
+  /** 이 맵(또는 지정 영역과 겹치는 범위)을 지금 잡고 있거나 기다리는 실행. */
+  forMap(mapKey: string, region?: MapRunRegion): readonly MapRunTicket[];
   running(): readonly MapRunTicket[];
   subscribe(listener: () => void): () => void;
 }
@@ -91,7 +106,12 @@ export function createMapRunQueue(options: { readonly concurrency?: number; read
   };
 
   const active = (): Entry[] => entries.filter((e) => e.ticket.status === "running");
-  const blocks = (a: MapRunTicket, b: MapRunTicket): boolean => a.exclusive || b.exclusive || a.mapKey === b.mapKey;
+  const blocks = (a: MapRunTicket, b: MapRunTicket): boolean => {
+    if (a.exclusive || b.exclusive) return true;
+    if (a.mapKey !== b.mapKey) return false;
+    if (a.region && b.region && !mapRunRegionsOverlap(a.region, b.region)) return false;
+    return true;
+  };
 
   const pump = (): void => {
     let changed = false;
@@ -143,8 +163,12 @@ export function createMapRunQueue(options: { readonly concurrency?: number; read
 
   return {
     enqueue(input) {
+      const region = !input.exclusive && input.region && input.region.width >= 1 && input.region.height >= 1
+        ? { x: input.region.x, y: input.region.y, width: input.region.width, height: input.region.height }
+        : undefined;
       const ticket: MapRunTicket = {
         id: nextId++, mapKey: input.mapKey, exclusive: input.exclusive === true, foreground: input.force === true, label: input.label,
+        ...(region ? { region } : {}),
         ...(input.threadId !== undefined ? { threadId: input.threadId } : {}),
         status: "waiting", wait: null, ahead: 0, enqueuedAt: clock(), startedAt: null, endedAt: null, error: null,
       };
@@ -164,8 +188,13 @@ export function createMapRunQueue(options: { readonly concurrency?: number; read
       if (entry.ticket.status === "running") entry.controller.abort();
     },
     tickets: () => entries.map((e) => e.ticket),
-    forMap: (mapKey) => entries.filter((e) => (e.ticket.status === "running" || e.ticket.status === "waiting")
-      && (e.ticket.exclusive || e.ticket.mapKey === mapKey)).map((e) => e.ticket),
+    forMap: (mapKey, region) => entries.filter((e) => {
+      if (e.ticket.status !== "running" && e.ticket.status !== "waiting") return false;
+      if (e.ticket.exclusive) return true;
+      if (e.ticket.mapKey !== mapKey) return false;
+      if (region && e.ticket.region && !mapRunRegionsOverlap(e.ticket.region, region)) return false;
+      return true;
+    }).map((e) => e.ticket),
     running: () => active().map((e) => e.ticket),
     subscribe(listener) {
       listeners.add(listener);

@@ -75,6 +75,10 @@ export interface PiAgentRequest {
   /** 에이전트가 소유하는 맵. 비우면 프로젝트 전체가 작업 범위다. */
   readonly mapIds: readonly string[];
   /**
+   * 사용자가 드래그해 지정한 단일 맵 영역. 겹치지 않는 드래그 영역끼리는 같은 맵에서도 동시에 실행할 수 있다(mapRunLocks).
+   */
+  readonly region?: { readonly mapId: string; readonly x: number; readonly y: number; readonly width: number; readonly height: number };
+  /**
    * `mapIds` 가 **계약**인가(사용자가 `/pi 맵id …` 로 직접 적었다), 아니면 단순 기본 대상인가.
    * 기본 true — 옛 호출자(CLI·테스트)의 뜻은 「이 맵들만」이었다. 평문 채팅 턴만 false 로 보낸다.
    * 계약일 때만 시스템 프롬프트가 「범위 밖은 건드리지 마라」를 말하고 병합이 실제로 버린다.

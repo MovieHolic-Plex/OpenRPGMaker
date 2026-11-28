@@ -65,6 +65,22 @@ try {
   const afterStartupFailure = await startRelayedRun(body("probe-start-again", "a"), start);
   assert.equal(afterStartupFailure.status, 200); streams[4]!.close(); await tick();
   record("Worker startup failure releases the reservation");
+
+  // Non-overlapping drag regions on the same map run concurrently; overlapping or whole-map requests wait/reject.
+  const regionBody = (id: string, mapId: string, x: number, y: number, width: number, height: number) => ({
+    ...body(id, mapId),
+    region: { mapId, x, y, width, height },
+  });
+  const r1 = await startRelayedRun(regionBody("probe-reg-001", "a", 0, 0, 4, 4), start);
+  const r2 = await startRelayedRun(regionBody("probe-reg-002", "a", 4, 0, 4, 4), start);
+  const rOverlap = await startRelayedRun(regionBody("probe-reg-003", "a", 3, 0, 4, 4), start);
+  const rWhole = await startRelayedRun(body("probe-reg-004", "a"), start);
+  assert.equal(r1.status, 200);
+  assert.equal(r2.status, 200);
+  assert.equal(rOverlap.body.code, "map-busy");
+  assert.equal(rWhole.body.code, "map-busy");
+  streams[5]!.close(); streams[6]!.close(); await tick();
+  record("Relay allows non-overlapping regions on the same map and blocks overlapping or whole-map runs");
 } finally { resetRelayForTests(); }
 
 // Team reviewers and builders use one reservation table, including bundled children.
@@ -108,7 +124,7 @@ await runPiTeam({ mode: "team", provider: "controlled", task: "ownership", mapId
   },
 });
 
-// Rapid stamp orders on separated regions of one map still run sequentially.
+// Separated stamp regions on one map run concurrently; overlapping regions serialize in FIFO order.
 const pending: (() => void)[] = [];
 const stamps: string[] = [];
 const queue = createStampOrderQueue({ projectKey: () => "stamp-probe", mapSize: () => ({ width: 20, height: 20 }), run: input => {
@@ -116,14 +132,15 @@ const queue = createStampOrderQueue({ projectKey: () => "stamp-probe", mapSize: 
   return new Promise(resolve => pending.push(() => resolve({ ok: true, applied: 0, lines: [], usedModel: false })));
 } });
 try {
-  queue.enqueue({ mapId: "a", text: "first", selection: { mapId: "a", x: 0, y: 0, width: 2, height: 2 } });
-  queue.enqueue({ mapId: "a", text: "second", selection: { mapId: "a", x: 10, y: 10, width: 2, height: 2 } });
+  queue.enqueue({ mapId: "a", text: "first", selection: { mapId: "a", x: 0, y: 0, width: 4, height: 4 } });
+  queue.enqueue({ mapId: "a", text: "second", selection: { mapId: "a", x: 10, y: 10, width: 4, height: 4 } });
+  queue.enqueue({ mapId: "a", text: "overlap", selection: { mapId: "a", x: 2, y: 2, width: 4, height: 4 } });
   queue.enqueue({ mapId: "b", text: "other", selection: null });
-  assert.deepEqual(stamps, ["first", "other"]);
+  assert.deepEqual(stamps, ["first", "second", "other"]);
   pending[0]!(); await tick();
-  assert.deepEqual(stamps, ["first", "other", "second"]);
-  pending[1]!(); pending[2]!(); await tick();
-  record("Separated stamp regions on one map are serialized; another map runs concurrently");
+  assert.deepEqual(stamps, ["first", "second", "other", "overlap"]);
+  pending[1]!(); pending[2]!(); pending[3]!(); await tick();
+  record("Separated stamp regions on one map run concurrently; overlapping region waits for FIFO turn");
 } finally { queue.dispose(); }
 
 mkdirSync("verify-shots/ai-map-ownership", { recursive: true });
