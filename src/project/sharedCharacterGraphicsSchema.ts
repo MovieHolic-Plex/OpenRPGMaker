@@ -52,7 +52,7 @@ export function parseSharedCharacterGraphicsDocument(value: unknown): CharacterG
   const addedFaces = (reviewedCatalog.faces as typeof faces).filter(row => addedMappings.some(m => m.faceResourceId === row.resourceId) && !haveFaces.has(row.resourceId));
   return schema.parse({ ...document, mappings: [...mappings, ...addedMappings], faces: [...faces, ...addedFaces] });
 }
-const BUNDLED_FORWARD_FILL = /^tex_oprn_charset_modern\d+$/u;
+const BUNDLED_FORWARD_FILL = /^(?:tex_oprn_charset_modern\d+|tex_easyrpg_charset_monster[456])$/u;
 
 export function emptySharedCharacterGraphics(): CharacterGraphicsDocument {
   return { schema: "oprn-npc-face-mapping", version: 2, mappings: [], faces: [] };

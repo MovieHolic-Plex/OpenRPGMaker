@@ -1,3 +1,4 @@
+import { applyCharsetFrameCrop } from "@/assets/charsetFrameCrop";
 import { ACTOR_RATE_GRADES } from "@/project/actorModel";
 import {
   CHARSET_FRAME_HEIGHT,
@@ -43,6 +44,68 @@ export function graphicPreview(
   return el("div", {
     class: "actor-graphic-preview",
     children: [el("span", { text: label }), visual],
+  });
+}
+
+/**
+ * 초상화 미리보기(히어로·외형 공용).
+ * 얼굴이 비어 있을 때 288×256 8인 걷기 시트 전체를 faceset 으로 찌그러뜨리지 않고,
+ * 해당 characterIndex 의 걷기 1칸 크롭 + 「미지정」 배지로 보여 준다.
+ */
+export function actorFacePreview(
+  faceResourceId: string | undefined,
+  fallbackCharacterResourceId: string | undefined,
+  fallbackCharacterIndex = 0,
+  previewScale = 1
+): HTMLElement {
+  if (faceResourceId) {
+    return graphicPreview("얼굴", faceResourceId, "faceset", 0, previewScale);
+  }
+  const charsetUrl = resolveAssetResourceUrl(fallbackCharacterResourceId, { project: store.getCurrent() });
+  if (charsetUrl) {
+    const frame = el("span", {
+      class: "actor-face-fallback-frame",
+      attrs: { role: "img", "aria-label": "초상화 미지정 (걷기 그림 대체)" },
+    });
+    applyCharsetFrameCrop(
+      frame,
+      charsetUrl,
+      { characterIndex: Math.min(7, Math.max(0, Math.trunc(fallbackCharacterIndex) || 0)), direction: "down", pattern: 1 },
+      previewScale > 1 ? 1.5 : 1.25
+    );
+    const visual = el("div", {
+      class: "actor-face-fallback-slot",
+      children: [frame, el("span", { class: "actor-face-missing-tag", text: "미지정" })],
+    });
+    return el("div", {
+      class: "actor-graphic-preview actor-graphic-preview-missing",
+      children: [el("span", { text: "얼굴" }), visual],
+    });
+  }
+  return graphicPreview("얼굴", "(없음)", "faceset", 0, previewScale);
+}
+
+/** 히어로 헤더용 걷기 1칸 미니 미리보기(.actor-sheet-crop 과 구분해 히어로 얼굴 계약 유지). */
+export function heroWalkPreview(characterResourceId: string | undefined, characterIndex = 0): HTMLElement {
+  const url = resolveAssetResourceUrl(characterResourceId, { project: store.getCurrent() });
+  const inner = url
+    ? (() => {
+        const frame = el("span", {
+          class: "db-hero-walk-frame",
+          attrs: { role: "img", "aria-label": "걷기 캐릭터 미리보기" },
+        });
+        applyCharsetFrameCrop(
+          frame,
+          url,
+          { characterIndex: Math.min(7, Math.max(0, Math.trunc(characterIndex) || 0)), direction: "down", pattern: 1 },
+          1.35
+        );
+        return frame;
+      })()
+    : el("span", { class: "db-hero-walk-empty", text: "없음" });
+  return el("div", {
+    class: "db-record-hero-walk",
+    children: [inner],
   });
 }
 

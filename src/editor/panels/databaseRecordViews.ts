@@ -13,7 +13,9 @@ import {
   updateDatabaseRecord,
 } from "@/editor/databaseActions";
 import { renderActorRecordForm } from "@/editor/panels/actorRecordView";
-import { renderActorStudioList } from "@/editor/panels/databaseActorStudio";
+import { openActorResourceDialog } from "@/editor/panels/databaseActorResourceDialog";
+import { actorMatchesListFilter, renderActorFilterChips, renderActorStudioList } from "@/editor/panels/databaseActorStudio";
+import { getCharacterAppearance } from "@/project/characterAppearances";
 import { databaseReferenceMessage } from "@/editor/databaseReferences";
 import { skillFields } from "@/editor/panels/databaseBasicRecordFields";
 import { stopSkillAnimationStagesIn } from "@/editor/panels/databaseSkillAnimationStage";
@@ -41,12 +43,14 @@ import { ITEM_TYPES } from "@/editor/panels/databaseItemRecordView";
 import { renderEnemyRecordForm } from "@/editor/panels/databaseEnemyRecordView";
 import { openMonsterResourceEditor } from "@/editor/panels/databaseMonsterResourceEditor";
 import {
+  actorListFilterForSession,
   categoryFilterForCollection,
   listScrollTopForCollection,
   resetRecordViewSessionState,
   searchQueryForCollection,
   selectedRecordForSession,
   selectedRecordIdForSession,
+  setActorListFilterForSession,
   setCategoryFilterForCollection,
   setListScrollTopForCollection,
   setSearchQueryForCollection,
@@ -159,6 +163,18 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
     },
   });
 
+  const pickActorFace = (actorId: string): void => {
+    onSelect(actorId);
+    const project = store.getCurrent();
+    const actor = project.database.actors.find((entry) => entry.id === actorId);
+    if (!actor) return;
+    if (getCharacterAppearance(project, actor.appearanceId)?.face) {
+      toast("공유 외형에서 초상화를 관리 중입니다. 외형 탭에서 연결을 해제하거나 공유 외형을 수정하세요.", "info");
+      return;
+    }
+    openActorResourceDialog(actor, "faceResourceId", rerender);
+  };
+
   let listEl: HTMLElement;
   let listPane: HTMLElement;
   // 필터 통과 행은 **한 번만** 계산하고 목록·푸터가 같은 배열을 쓴다. 예전에는 목록이
@@ -176,6 +192,17 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
       footer: recordListFooter(visible.length, records.length, scope, collection, rerender),
       toolbar: toolbar(collection, rerender),
       onSelect,
+      onPickFace: pickActorFace,
+      filter: actorListFilterForSession(),
+      onFilterChange: (next) => {
+        if (actorListFilterForSession() === next) return;
+        setActorListFilterForSession(next);
+        rerender();
+      },
+      onSwitchToGallery: () => {
+        setViewModeForCollection("actors", "gallery");
+        rerender();
+      },
     });
     listEl = studio.scrollRegion;
     listPane = studio.pane;
@@ -187,7 +214,7 @@ export function renderRecordTab(host: HTMLElement, collection: DatabaseCollectio
     listEl.addEventListener("scroll", () => setListScrollTopForCollection(collection, listEl.scrollTop));
     detailPane.classList.add("db-studio-inspector-pane");
   } else {
-    listEl = recordList(collection, records, visible, onSelect, rerender);
+    listEl = recordList(collection, records, visible, onSelect, rerender, collection === "actors" ? pickActorFace : undefined);
     listPane = el("div", { class: "db-list-pane oprn-record-list-pane" });
     const chips = categoryFilterChips(collection, rerender);
     // 제목과 개수를 한 줄(.db-ws-list-head)로 묶는다 — databaseWorkspace.listPane() 과 같은
@@ -602,12 +629,15 @@ function visibleRecordRows(
   // localStorage 값에서도 크래시 없이 전체 목록을 보여준다).
   const categoryFilter = effectiveCategoryFilter(collection);
   const { gameOnly } = recordScope(collection, records);
+  const actorFilter = collection === "actors" ? actorListFilterForSession() : "all";
+  const liveProject = store.getCurrent();
   const visible: VisibleRow[] = [];
   let visibleIndex = 0;
   for (const [originalIndex, record] of records.entries()) {
     if (gameOnly && isPresetDatabaseRecord(collection, record)) continue;
     // 카테고리 필터와 검색어는 AND 결합한다.
     if (categoryFilter !== "all" && !matchesCategoryFilter(collection, record, categoryFilter)) continue;
+    if (collection === "actors" && actorFilter !== "all" && !actorMatchesListFilter(record as ActorRecord, actorFilter, liveProject)) continue;
     if (searchQuery && !matchesNameOrId(record.name, record.id, searchQuery)) continue;
     visibleIndex += 1;
     visible.push({ record, originalIndex, visibleIndex });
@@ -621,7 +651,8 @@ function recordList(
   /** 호출부가 계산해 넘긴다 — 푸터 카운트와 같은 배열이어야 한다. */
   visible: readonly VisibleRow[],
   onSelect: (id: string) => void,
-  rerender: () => void
+  rerender: () => void,
+  onPickActorFace?: (id: string) => void
 ): HTMLElement {
   const searchQuery = searchQueryForCollection(collection);
   const categoryFilter = effectiveCategoryFilter(collection);
@@ -629,7 +660,7 @@ function recordList(
   // 필터 결과가 0 이면 가상 목록 대신 빈 상태를 그린다. 빈 `.db-list` 만 남기면
   // 목록 창이 통째로 붕괴해(적 그룹에서 4px 로 실측) 검색을 지울 방법도 안 보인다.
   if (visible.length === 0) {
-    const filtered = searchQuery.length > 0 || categoryFilter !== "all";
+    const filtered = searchQuery.length > 0 || categoryFilter !== "all" || (collection === "actors" && actorListFilterForSession() !== "all");
     // 「몬스터」 칩인데 skill_mon_* 레코드가 아직 없다 — 계약(retroMonsterSkills.ts)만으로 미리 보게 한다.
     if (collection === "skills" && categoryFilter === RETRO_MONSTER_FILTER_ID && searchQuery.length === 0) {
       return el("div", { class: "db-list db-ws-list db-skill-mon-browser-list", dataset: { testid: "db-list-empty" }, children: [renderMonsterSkillContractBrowser()] });
@@ -659,6 +690,7 @@ function recordList(
               onClick: () => {
                 setSearchQueryForCollection(collection, "");
                 setCategoryFilterForCollection(collection, "all");
+                if (collection === "actors") setActorListFilterForSession("all");
                 if (collection === "skills") setSkillClassFilter("all");
                 rerender();
               },
@@ -694,7 +726,7 @@ function recordList(
     columns: isGallery ? (container) => galleryColumnsFor(container) : undefined,
     onScroll: (scrollTop) => setListScrollTopForCollection(collection, scrollTop),
     renderRow: (entry) =>
-      isGallery ? recordGalleryCard(collection, entry, onSelect) : recordListRow(collection, entry, records.length, onSelect),
+      isGallery ? recordGalleryCard(collection, entry, onSelect, onPickActorFace) : recordListRow(collection, entry, records.length, onSelect),
   });
 
   // Related-record jumps override stale scroll once. Ordinary tab returns
@@ -756,7 +788,8 @@ function scheduleFrame(run: () => void): void {
 function recordGalleryCard(
   collection: DatabaseCollection,
   entry: VisibleRow,
-  onSelect: (id: string) => void
+  onSelect: (id: string) => void,
+  onPickActorFace?: (id: string) => void
 ): HTMLElement {
   const { record, visibleIndex } = entry;
   const isSelected = selectedRecordIdForSession(collection) === record.id;
@@ -767,7 +800,11 @@ function recordGalleryCard(
   if (badge && thumb) thumb.classList.add("db-list-thumb-has-retro");
   return el("button", {
     class: `db-gallery-card${isSelected ? " active" : ""}`,
-    attrs: { "aria-pressed": String(isSelected), title: `${record.name} (${record.id})`, type: "button" },
+    attrs: {
+      "aria-pressed": String(isSelected),
+      title: onPickActorFace ? `${record.name} (${record.id}) · 더블클릭하여 초상화 변경` : `${record.name} (${record.id})`,
+      type: "button",
+    },
     dataset: {
       recordId: record.id,
       recordIndex: String(visibleIndex),
@@ -782,7 +819,10 @@ function recordGalleryCard(
       el("span", { class: "db-gallery-name", text: record.name || "(이름 없음)" }),
       ...(tag ? [tag] : []),
     ],
-    on: { click: () => onSelect(record.id) },
+    on: {
+      click: () => onSelect(record.id),
+      ...(onPickActorFace ? { dblclick: (event: Event) => { event.preventDefault(); event.stopPropagation(); onPickActorFace(record.id); } } : {}),
+    },
   });
 }
 
@@ -837,6 +877,17 @@ export const ITEM_CHIP_CLUSTERS: readonly { readonly caption: string; readonly t
 // 개수는 **필터 적용 전 전체 컬렉션**에서 센다 — 필터된 배열로 세면 한 번 좁힌 뒤
 // 다른 칩이 모두 0 으로 보인다.
 function categoryFilterChips(collection: DatabaseCollection, rerender: () => void): HTMLElement | null {
+  if (collection === "actors") {
+    const project = store.getCurrent();
+    const actors = project.database.actors;
+    const active = actorListFilterForSession();
+    if (actors.length <= 1 && active === "all") return null;
+    return renderActorFilterChips(actors, project, active, (next) => {
+      if (actorListFilterForSession() === next) return;
+      setActorListFilterForSession(next);
+      rerender();
+    });
+  }
   if (collection === "skills") return skillClassFilterChips(rerender);
   if (collection !== "items" && collection !== "equipment") return null;
   const current = effectiveCategoryFilter(collection);

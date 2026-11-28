@@ -104,7 +104,7 @@ describe("fullCharacterReferenceAudit", () => {
       original.faces = corrections.faces.map(change => structuredClone(change.before));
       const migrated = parseSharedCharacterGraphicsDocument(original);
       // #2759: parse forward-fills the bundled modern-romance chip pairs (tex_oprn_charset_modern*) missing from old documents.
-      const forwardFilled = (key: string) => /^tex_oprn_charset_modern\d+$/u.test(key);
+      const forwardFilled = (key: string) => /^(?:tex_oprn_charset_modern\d+|tex_easyrpg_charset_monster[456])$/u.test(key);
       const shipped = defaultSharedCharacterGraphics();
       const addedMappings = shipped.mappings.filter(row => forwardFilled(row.textureKey));
       const addedFaceIds = new Set(addedMappings.map(row => row.faceResourceId));
@@ -119,13 +119,13 @@ describe("fullCharacterReferenceAudit", () => {
       const stored = defaultSharedCharacterGraphics();
       stored.mappings = corrections.revisions.map(change => structuredClone(change.before)) as typeof stored.mappings;
       stored.faces = [];
-      const migrated = parseSharedCharacterGraphicsDocument(stored).mappings.filter(row => !/^tex_oprn_charset_modern\d+$/u.test(row.textureKey));
+      const migrated = parseSharedCharacterGraphicsDocument(stored).mappings.filter(row => !/^(?:tex_oprn_charset_modern\d+|tex_easyrpg_charset_monster[456])$/u.test(row.textureKey));
       expect(migrated).toEqual(corrections.revisions.map(change => change.after));
       expect(migrated.every(row => row.status === "no-face" && row.faceResourceId === null)).toBe(true);
     });
 
-    it("removes 19 blank cells from picker, prompt and search despite stored profiles", async () => {
-      expect(GENERATED_FACESET_FACE_IDS.size).toBe(19);
+    it("removes 40 blank cells from picker, prompt and search despite stored profiles", async () => {
+      expect(GENERATED_FACESET_FACE_IDS.size).toBe(40);
       const p = project();
       for (const id of GENERATED_FACESET_FACE_IDS) p.resourceProfiles.push({kind:"faceset",assetId:id,name:"빈 칸"});
       const picker = new Set(listDatabaseResourceOptions("faceset",p).map(row=>row.id));
@@ -174,8 +174,8 @@ describe("fullCharacterReferenceAudit", () => {
       expect(reconcileSharedFaceWithCharset("easyrpg-faceset-people1-00",row.textureKey,0).faceResourceId).toBe(row.faceResourceId);
     });
 
-    // 2026-10-31: 다른 시트의 다른 인물 얼굴을 빌리던 근사 짝(폴른 스타: 참회자 → 소년, 사제 → 할머니)은 얼굴 없음이다.
-    it.each([["monster3",1]])("withholds incompatible %s #%s automatic face", (sheet,index) => {
+    // 2026-10-31: 얼굴이 없는 사물(object1#6)은 자동 얼굴을 붙이지 않는다.
+    it.each([["object1",6]])("withholds incompatible %s #%s automatic face", (sheet,index) => {
       expect(sharedFaceForCharset(`tex_easyrpg_charset_${sheet}`,Number(index))).toBeNull();
     });
 

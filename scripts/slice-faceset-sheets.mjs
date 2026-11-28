@@ -14,7 +14,9 @@ import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import Jimp from "jimp";
+import * as JimpModule from "jimp";
+
+const Jimp = JimpModule.Jimp ?? JimpModule.default ?? JimpModule;
 
 const SCRIPT_NAME = "scripts/slice-faceset-sheets.mjs";
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
@@ -54,6 +56,30 @@ const MISSING_FACE_NAMES = {
     "보물상자 미믹", "붉은 드래곤", "붉은 불꽃", "빈 칸", "빈 칸", "빈 칸", "빈 칸", "빈 칸",
     "빈 칸", "빈 칸", "빈 칸", "빈 칸", "빈 칸", "빈 칸", "빈 칸", "빈 칸",
   ],
+  "missing-party-people": [
+    "금발 갑옷 전사", "중절모 신사", "빵모자 소년", "주황 터번 노인",
+    "보라 두건 노파", "양갈래 소녀", "붉은 머리 하녀", "대머리 수염 은자",
+    "초록 옷 노학자", "빈 칸", "빈 칸", "빈 칸",
+    "빈 칸", "빈 칸", "빈 칸", "빈 칸",
+  ],
+  "missing-party-monster1": [
+    "황금 비룡", "개미귀신", "업화 정령", "마장군",
+    "트렌트", "버섯 요정", "갓파", "구미호",
+    "너구리 둔갑사", "이끼 골렘", "얼음 요정", "만드라고라",
+    "살아있는 갑옷", "초롱 귀신", "저주 인형", "마도서",
+  ],
+  "missing-party-monster2": [
+    "허수아비", "촛불 임프", "예티", "인어 전사",
+    "사이클롭스", "나방 인간", "바실리스크", "지니",
+    "키메라", "타락 천사", "빈 칸", "빈 칸",
+    "빈 칸", "빈 칸", "빈 칸", "빈 칸",
+  ],
+  "missing-party-vehicles": [
+    "쪽배", "범선", "철갑선", "열기구",
+    "굴착기", "전차", "비공정", "미확인 비행체",
+    "빈 칸", "빈 칸", "빈 칸", "빈 칸",
+    "빈 칸", "빈 칸", "빈 칸", "빈 칸",
+  ],
 };
 
 const SHEETS = [
@@ -68,6 +94,11 @@ const SHEETS = [
   sheet("assets/generated/faceset/missing-people.png", "generated-faceset-missing-people", "missing"),
   sheet("assets/generated/faceset/missing-scarloxy.png", "generated-faceset-missing-scarloxy", "missing"),
   sheet("assets/generated/faceset/missing-monster.png", "generated-faceset-missing-monster", "missing"),
+  // 2026-11-28: 기본 파티 로스터 잔여 누락 43명(인간 9·몬스터 26·탈것 8)의 48px 4x4 짝 얼굴.
+  sheet("assets/generated/faceset/missing-party-people.png", "generated-faceset-missing-party-people", "missing"),
+  sheet("assets/generated/faceset/missing-party-monster1.png", "generated-faceset-missing-party-monster1", "missing"),
+  sheet("assets/generated/faceset/missing-party-monster2.png", "generated-faceset-missing-party-monster2", "missing"),
+  sheet("assets/generated/faceset/missing-party-vehicles.png", "generated-faceset-missing-party-vehicles", "missing"),
 ];
 
 function sheet(sheetPath, sheetResourceId, origin) {
@@ -121,7 +152,9 @@ async function readSheet(sheetSpec) {
 
 function cropFace(sheetImage, index) {
   const { x, y } = faceRect(index);
-  return sheetImage.clone().crop(x, y, FACE_SIZE, FACE_SIZE);
+  return typeof sheetImage.writeAsync === "function"
+    ? sheetImage.clone().crop(x, y, FACE_SIZE, FACE_SIZE)
+    : sheetImage.clone().crop({ x, y, w: FACE_SIZE, h: FACE_SIZE });
 }
 
 async function sliceSheet(sheetSpec) {
@@ -138,7 +171,8 @@ async function sliceSheet(sheetSpec) {
       unchanged += 1;
       continue;
     }
-    await face.writeAsync(absolute);
+    if (typeof face.writeAsync === "function") await face.writeAsync(absolute);
+    else await face.write(absolute);
     written += 1;
   }
   console.log(`[slice] ${sheetSpec.stem}: ${written} written, ${unchanged} unchanged -> public/${sheetSpec.dirPath}/`);

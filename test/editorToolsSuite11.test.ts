@@ -119,11 +119,12 @@ describe("genreLock", () => {
         expect(defaultActorFaceResourceId({ id: "x", characterResourceId: "easyrpg-charset-actor2" })).toBe("easyrpg-faceset-actor1-08");
         expect(defaultActorFaceResourceId({ id: "x", characterResourceId: "easyrpg-charset-actor4", characterIndex: 3 })).toBe("easyrpg-faceset-actor2-11");
         expect(defaultActorFaceResourceId({ id: "x", characterResourceId: "easyrpg-charset-people4", characterIndex: 5 })).toBe("generated-faceset-missing-people-05");
-        expect(defaultActorFaceResourceId({ id: "x", characterResourceId: "easyrpg-charset-vehicles", characterIndex: 1 })).toBeUndefined();
+        expect(defaultActorFaceResourceId({ id: "x", characterResourceId: "easyrpg-charset-vehicles", characterIndex: 1 })).toBe("generated-faceset-missing-party-vehicles-01");
+        expect(defaultActorFaceResourceId({ id: "x", characterResourceId: "easyrpg-charset-object1", characterIndex: 6 })).toBeUndefined();
       });
     });
     describe("원본에 얼굴이 없던 인물은 생성 짝 얼굴을 쓴다", () => {
-      // 억지 근사 7칸 + 원래 얼굴 없음이던 사람·몬스터·Scarloxy 18칸. 생성 얼굴은 파일이 있어야 한다.
+      // 억지 근사 7칸 + 원래 얼굴 없음이던 사람·몬스터·Scarloxy·파티 잔여 43칸. 생성 얼굴은 파일이 있어야 한다.
       it.each([
         ["tex_easyrpg_charset_people4", 1, "generated-faceset-missing-people-01"],
         ["tex_easyrpg_charset_people4", 5, "generated-faceset-missing-people-05"],
@@ -134,17 +135,23 @@ describe("genreLock", () => {
         ["tex_scarloxy_charset_people2", 1, "generated-faceset-missing-scarloxy-09"],
         ["tex_easyrpg_charset_animal", 1, "generated-faceset-missing-people-11"],
         ["tex_easyrpg_charset_monster3", 5, "generated-faceset-missing-monster-01"],
+        ["tex_easyrpg_charset_actor4", 5, "generated-faceset-missing-party-people-00"],
+        ["tex_easyrpg_charset_monster3", 7, "generated-faceset-missing-party-monster1-03"],
+        ["tex_easyrpg_charset_monster6", 7, "generated-faceset-missing-party-monster2-09"],
+        ["tex_easyrpg_charset_vehicles", 1, "generated-faceset-missing-party-vehicles-01"],
       ] as const)("%s #%i → %s", (textureKey, index, faceId) => {
         expect(reviewedCharsetFaceRow(textureKey, index)).toMatchObject({ status: "mapped", faceResourceId: faceId });
-        expect(resolveAssetResourceUrl(faceId)).toMatch(/^\/assets\/generated\/faceset\/missing-(people|scarloxy|monster)\/\d{2}\.png$/);
+        expect(resolveAssetResourceUrl(faceId)).toMatch(/^\/assets\/generated\/faceset\/missing-(people|scarloxy|monster|party-(?:people|monster[12]|vehicles))\/\d{2}\.png$/);
       });
-      it("사물·탈것·빈 칸은 계속 얼굴이 없고, 빈 생성 칸은 얼굴 목록에 없다", () => {
-        for (const [textureKey, index] of [["tex_easyrpg_charset_object1", 6], ["tex_easyrpg_charset_vehicles", 1], ["tex_scarloxy_charset_people2", 2]] as const) {
+      it("사물·빈 칸은 계속 얼굴이 없고, 빈 생성 칸은 얼굴 목록에 없다", () => {
+        for (const [textureKey, index] of [["tex_easyrpg_charset_object1", 6], ["tex_scarloxy_charset_people2", 2]] as const) {
           expect(reviewedCharsetFaceRow(textureKey, index)?.status).toBe("no-face");
         }
         const authorable = new Set(AUTHORABLE_FACESET_FACE_ASSETS.map((face) => face.id));
         expect(authorable.has("generated-faceset-missing-people-00")).toBe(true);
         expect(authorable.has("generated-faceset-missing-people-11")).toBe(true);
+        expect(authorable.has("generated-faceset-missing-party-people-08")).toBe(true);
+        expect(authorable.has("generated-faceset-missing-party-people-09")).toBe(false);
         expect(authorable.has("generated-faceset-missing-scarloxy-10")).toBe(false);
         expect(authorable.has("generated-faceset-missing-monster-03")).toBe(false);
       });

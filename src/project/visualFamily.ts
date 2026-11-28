@@ -41,6 +41,10 @@ export function faceFamilyOf(project: VisualFamilyContext | undefined, resourceI
     if (match[1] === "monster") return "oprn-creature-face";
     return GENERATED_PEOPLE_CREATURE_CELLS.has(String(Number(match[2]))) ? "fantasy-creature-face" : "fantasy-people-face";
   }
+  const partyMatch = /^generated-faceset-missing-party-(people|monster1|monster2|vehicles)-(\d+)$/u.exec(id);
+  if (partyMatch) {
+    return partyMatch[1] === "people" ? "fantasy-people-face" : "fantasy-creature-face";
+  }
   match = /^easyrpg-faceset-(actor1|actor2|people1|people2|monster)-(\d+)$/u.exec(id);
   if (match) {
     if (match[1] === "monster") return "fantasy-creature-face";

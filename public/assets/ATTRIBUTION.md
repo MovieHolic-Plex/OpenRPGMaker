@@ -211,6 +211,13 @@ source expands mechanically to a complete grid, with no shape generation or twee
 - Pairing: `src/assets/sharedCharacterGraphics.json` (`generated-faceset-missing-*`). Blank cells are registered but hidden from authoring lists.
 - Style follows EasyRPG portraits; the EasyRPG and Scarloxy attributions above still apply to the referenced sprites. Generation does not establish a new license.
 
+### Party Roster Completion Facesets (2026-11-28)
+
+- AI-generated via Antigravity `image-generator` at the user's request so every remaining default party actor (9 humanoids, 26 monsters including dedicated `monster3#7`, and 8 vehicles) has a matching 48×48 dialogue portrait.
+- Inputs: front-facing crops of bundled walking sprites (`Actor4`, `People2/4/5`, `Monster3/4/5/6`, `Vehicles`) as identity references and EasyRPG `Actor1`/`People1`/`Monster` + `missing-people`/`missing-monster` as style references.
+- Reduced masters: `generated/faceset/source/missing-party-people-master.png`, `missing-party-monster1-master.png`, `missing-party-monster2-master.png`, `missing-party-monster3-master.png`, `missing-party-vehicles-master.png`.
+- Runtime sheets: `generated/faceset/missing-party-people.png`, `missing-party-monster1.png`, `missing-party-monster2.png`, `missing-party-vehicles.png`; standalone faces sliced via `node scripts/slice-faceset-sheets.mjs`.
+
 
 ## Generated bust and full-body portraits for the common expression library (2026-10-01)
 

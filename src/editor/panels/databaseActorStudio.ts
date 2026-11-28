@@ -1,7 +1,9 @@
 import { parameterValueAtLevel } from "@/project/actorModel";
+import { resolveActorAppearance } from "@/project/characterAppearances";
 import type { ActorRecord, Project } from "@/project/types";
 import { el } from "@/util/dom";
 import { recordListThumbnail } from "@/editor/panels/databaseRecordThumbnails";
+import type { ActorListFilter } from "@/editor/panels/databaseRecordViewSession";
 
 type ActorStudioListOptions = {
   readonly actors: readonly ActorRecord[];
@@ -12,7 +14,53 @@ type ActorStudioListOptions = {
   readonly footer: HTMLElement;
   readonly toolbar: HTMLElement;
   readonly onSelect: (actorId: string) => void;
+  readonly onPickFace?: (actorId: string) => void;
+  readonly filter?: ActorListFilter;
+  readonly onFilterChange?: (filter: ActorListFilter) => void;
+  readonly onSwitchToGallery?: () => void;
 };
+
+export function actorMatchesListFilter(actor: ActorRecord, filter: ActorListFilter, project: Project): boolean {
+  if (filter === "all") return true;
+  if (filter === "party") return project.system.startActorIds.includes(actor.id);
+  if (filter === "no-face") return !resolveActorAppearance(project, actor).faceResourceId;
+  const charset = resolveActorAppearance(project, actor).characterResourceId ?? "";
+  const isCreature = /-(?:monster\d*|animal|vehicles)(?:$|-)/u.test(charset);
+  if (filter === "creature") return isCreature;
+  return !isCreature;
+}
+
+const ACTOR_FILTER_SPECS: readonly { readonly id: ActorListFilter; readonly label: string }[] = [
+  { id: "all", label: "전체" },
+  { id: "party", label: "시작 파티" },
+  { id: "no-face", label: "초상화 없음" },
+  { id: "humanoid", label: "인간형" },
+  { id: "creature", label: "몬스터·탈것" },
+];
+
+export function renderActorFilterChips(
+  actors: readonly ActorRecord[],
+  project: Project,
+  activeFilter: ActorListFilter,
+  onFilterChange: (filter: ActorListFilter) => void
+): HTMLElement {
+  return el("div", {
+    class: "db-actor-filter-chips",
+    attrs: { role: "group", "aria-label": "주인공 빠른 필터" },
+    dataset: { testid: "db-actor-filter-chips" },
+    children: ACTOR_FILTER_SPECS.map((spec) => {
+      const count = actors.filter((actor) => actorMatchesListFilter(actor, spec.id, project)).length;
+      const active = activeFilter === spec.id;
+      return el("button", {
+        class: `db-actor-filter-chip${active ? " active" : ""}`,
+        text: `${spec.label} ${count}`,
+        attrs: { type: "button", "aria-pressed": String(active) },
+        dataset: { testid: `db-actor-filter-${spec.id}` },
+        on: { click: () => onFilterChange(spec.id) },
+      });
+    }),
+  });
+}
 
 export type ActorStudioList = {
   readonly pane: HTMLElement;
@@ -66,7 +114,15 @@ export function renderActorStudioList(options: ActorStudioListOptions): ActorStu
   });
 
   for (const actor of options.filteredActors) {
-    const row = actorRow(actor, classNames.get(actor.classId) ?? "미지정", actor.id === options.selectedId, options.project, columns, startParty.has(actor.id));
+    const row = actorRow(
+      actor,
+      classNames.get(actor.classId) ?? "미지정",
+      actor.id === options.selectedId,
+      options.project,
+      columns,
+      startParty.has(actor.id),
+      options.onPickFace ? () => options.onPickFace!(actor.id) : undefined
+    );
     row.addEventListener("click", () => {
       if (actor.id === options.selectedId && row.classList.contains("active")) return;
       for (const candidate of rows.values()) candidate.classList.remove("active");
@@ -102,6 +158,21 @@ export function renderActorStudioList(options: ActorStudioListOptions): ActorStu
     table.append(el("p", { class: "db-actor-table-empty", text: "검색 조건에 맞는 주인공이 없습니다." }));
   }
 
+  const activeFilter = options.filter ?? "all";
+  const filterRow = options.onFilterChange && (options.actors.length > 1 || activeFilter !== "all")
+    ? renderActorFilterChips(options.actors, options.project, activeFilter, options.onFilterChange)
+    : null;
+
+  const galleryToggle = options.onSwitchToGallery
+    ? el("button", {
+        class: "db-actor-gallery-toggle",
+        text: "격자",
+        attrs: { type: "button", title: "초상화 격자 보기로 전환" },
+        dataset: { testid: "db-actor-view-gallery" },
+        on: { click: options.onSwitchToGallery },
+      })
+    : null;
+
   return {
     pane: el("section", {
       class: "oprn-record-list-pane db-studio-table-pane",
@@ -111,7 +182,17 @@ export function renderActorStudioList(options: ActorStudioListOptions): ActorStu
       children: [
         el("div", {
           class: "db-actor-studio-tools",
-          children: [options.search, el("span", { class: "db-actor-studio-count", text: `${options.actors.length}명` })],
+          children: [
+            el("div", {
+              class: "db-actor-studio-tools-row",
+              children: [
+                options.search,
+                ...(galleryToggle ? [galleryToggle] : []),
+                el("span", { class: "db-actor-studio-count", text: `${options.actors.length}명` }),
+              ],
+            }),
+            ...(filterRow ? [filterRow] : []),
+          ],
         }),
         table,
         options.footer,
@@ -130,9 +211,21 @@ function actorRow(
   project: Project,
   columns: ReadonlySet<OptionalActorColumn>,
   inStartParty: boolean,
+  onPickFace?: () => void
 ): HTMLElement {
   const initialHp = parameterValueAtLevel(actor.parameterCurves.maxHp, actor.initialLevel);
-  const thumbnail = recordListThumbnail("actors", actor, project, 36);
+  const thumbnail = recordListThumbnail("actors", actor, project, 36)
+    ?? el("span", { class: "db-actor-avatar-fallback", text: actor.name.slice(0, 1) || "?" });
+  if (onPickFace) {
+    thumbnail.classList.add("db-actor-thumb-pickable");
+    thumbnail.title = `${actor.name} · 더블클릭하여 초상화 변경`;
+    thumbnail.dataset.testid = `db-actor-row-face-${actor.id}`;
+    thumbnail.addEventListener("dblclick", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      onPickFace();
+    });
+  }
   return el("button", {
     class: `db-list-row db-actor-table-row${selected ? " active" : ""}`,
     // 선택 상태를 CSS 클래스로만 알리면 보조기술이 못 읽는다. 다른 레코드 목록은
@@ -145,7 +238,7 @@ function actorRow(
         class: "db-actor-identity-cell",
         attrs: { role: "gridcell" },
         children: [
-          thumbnail ?? el("span", { class: "db-actor-avatar-fallback", text: actor.name.slice(0, 1) || "?" }),
+          thumbnail,
           el("span", {
             class: "db-actor-name-stack",
             children: [

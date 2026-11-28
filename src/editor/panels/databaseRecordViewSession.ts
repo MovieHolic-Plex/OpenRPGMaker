@@ -50,6 +50,25 @@ const FILTERABLE_COLLECTIONS: readonly DatabaseCollection[] = ["items", "equipme
 let state = createRecordViewSessionState();
 const detailSections = new Map<string, string>();
 const previewPauseStates = new Map<string, boolean>();
+let actorSectionTab = "identity";
+export type ActorListFilter = "all" | "party" | "no-face" | "humanoid" | "creature";
+let actorListFilter: ActorListFilter = "all";
+
+export function actorSectionTabForSession(): string {
+  return actorSectionTab;
+}
+
+export function setActorSectionTabForSession(section: string): void {
+  actorSectionTab = section;
+}
+
+export function actorListFilterForSession(): ActorListFilter {
+  return actorListFilter;
+}
+
+export function setActorListFilterForSession(filter: ActorListFilter): void {
+  actorListFilter = filter;
+}
 
 export function recordPreviewPaused(recordId: string): boolean | undefined {
   return previewPauseStates.get(recordId);
@@ -94,6 +113,8 @@ export function resetRecordViewSessionState(): void {
   state = createRecordViewSessionState();
   detailSections.clear();
   previewPauseStates.clear();
+  actorSectionTab = "identity";
+  actorListFilter = "all";
 }
 
 export function selectedRecordForSession(
@@ -120,6 +141,7 @@ export function setSelectedRecordId(collection: DatabaseCollection, id: string |
       // '무기'/'약' 칩이 켜진 아이템 탭에서 [+ 추가]가 만든 레코드가 그대로 사라졌다.
       setSearchQueryForCollection(collection, "");
       setCategoryFilterForCollection(collection, "all");
+      if (collection === "actors") actorListFilter = "all";
       state.revealIds[collection] = id;
     }
     return;

@@ -85,6 +85,16 @@ const RETIRED_PICKER_IDS: ReadonlySet<string> = new Set([
   "easyrpg-monster-hornet",
 ]);
 
+function facesetGroupForId(id: string, project: Project): string {
+  if (id.startsWith("easyrpg-faceset-actor")) return "Actor";
+  if (id.startsWith("easyrpg-faceset-people")) return "People";
+  if (id.startsWith("easyrpg-faceset-monster")) return "Monster";
+  if (id.startsWith("generated-faceset-missing-")) return "생성 짝";
+  if (id.startsWith("shared-") || Boolean(findSharedPortrait(id))) return "표정·초상";
+  if (project.assets.uploaded?.[id]) return "내 이미지";
+  return "기타";
+}
+
 /**
  * 데이터베이스 피커와 이벤트 명령 폼, 그리고 AI 오프닝 툴이 함께 쓰는 리소스 목록의 단일 정본이다.
  * 표시 순서와 장면어 검색 태그가 저작 표면마다 어긋나지 않게 한다.
@@ -96,13 +106,15 @@ export function listDatabaseResourceOptions(
   const options = new Map<string, DatabaseResourceOption>();
   const add = (id: string, name: string, searchTerms?: readonly string[]): void => {
     if (!id || options.has(id)) return;
+    let group: string | undefined;
     if (kind === "faceset") {
       if (!isAuthorableFaceReference(id, project)) return;
       const metadata = faceReferenceMetadata(id, name, project);
       name = metadata.name;
       searchTerms = [...metadata.searchTerms, metadata.description];
+      group = facesetGroupForId(id, project);
     }
-    options.set(id, { id, name, searchTerms });
+    options.set(id, group ? { id, name, searchTerms, group } : { id, name, searchTerms });
   };
 
   switch (kind) {
