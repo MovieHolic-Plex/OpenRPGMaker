@@ -42,7 +42,11 @@ const isMacPlatform = (): boolean => typeof navigator !== "undefined" && /Mac|iP
  * 접으면 12px 손잡이만 남는다. 서랍은 열릴 때만 그린다(show).
  */
 export type AiSidebarWorkspaceOptions = {
-  /** Phase 1 풀-블리드 캔버스: 저장된 사용자 선호가 없을 때 왼쪽 열을 접힌 상태로 시작한다. */
+  /**
+   * Phase 1 풀-블리드 캔버스: 왼쪽 열을 기본 접힘으로 시작한다.
+   * 이전 버전이 남긴 `oprn:left-column-collapsed="0"` 이나 일회성 원본 시트 열기가
+   * 다음 실행에서 왼쪽 타일셋 열을 다시 기본 노출하지 않도록 저장 복원/기록을 끈다.
+   */
   readonly defaultCollapsed?: boolean;
 };
 
@@ -52,13 +56,16 @@ export function createAiSidebarWorkspace(
   onResize: () => void = () => {},
   options: AiSidebarWorkspaceOptions = {},
 ): { root: HTMLElement; isCollapsed(): boolean; dispose(): void } {
+  const persistCollapse = !options.defaultCollapsed;
   let collapsed = options.defaultCollapsed ?? false;
   let drawer: LeftDrawerId | null = null;
-  try {
-    const saved = localStorage.getItem(COLLAPSED_KEY);
-    if (saved === "1") collapsed = true;
-    else if (saved === "0") collapsed = false;
-  } catch { /* restricted storage */ }
+  if (persistCollapse) {
+    try {
+      const saved = localStorage.getItem(COLLAPSED_KEY);
+      if (saved === "1") collapsed = true;
+      else if (saved === "0") collapsed = false;
+    } catch { /* restricted storage */ }
+  }
   // 폰 폭(390)에서 왼쪽 열 최소 220px 가 캔버스를 약 160px 로 눌러 맵을 그릴 수 없었다(2026-11-08 autopilot-usability E1).
   // 좁은 창으로 시작하면 접힌 채로 연다 — 저장된 선호는 덮지 않으므로(persist 안 함) 넓은 창에서는 그대로다.
   if (typeof window !== "undefined" && window.innerWidth > 0 && window.innerWidth < NARROW_START_WIDTH) collapsed = true;
@@ -239,6 +246,7 @@ export function createAiSidebarWorkspace(
     else maps.show();
   }
   function persist(): void {
+    if (!persistCollapse) return;
     try { localStorage.setItem(COLLAPSED_KEY, collapsed ? "1" : "0"); } catch { /* restricted storage */ }
   }
   function setCollapsed(next: boolean): void {
@@ -271,7 +279,12 @@ export function createAiSidebarWorkspace(
     reveal();
     if (wasCollapsed) onResize();
   }
-  const showMain = (): void => closeDrawer();
+  // 레이어 전환(바닥/상위/이벤트/지형)·맵 보기 신호는 이미 펼쳐진 왼쪽 열의 서랍만 닫고
+  // 메인으로 돌린다. 접힌 왼쪽 열을 자동으로 펼치지 않는다.
+  const showMain = (): void => {
+    if (collapsed) return;
+    closeDrawer();
+  };
   const onDrawerRequest = (event: Event): void => {
     const id = event instanceof CustomEvent ? event.detail : null;
     if (isLeftDrawerId(id)) openDrawer(id);

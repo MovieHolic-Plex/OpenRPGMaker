@@ -119,6 +119,34 @@ describe("left column", () => {
     expect(workspace.isCollapsed()).toBe(false);
   });
 
+  it("keeps the column collapsed by default even with stale localStorage and ignores passive layer/map signals while collapsed", () => {
+    localStorage.setItem("oprn:left-column-collapsed", "0");
+    workspace = createAiSidebarWorkspace(tools, null, () => { resizes += 1; }, { defaultCollapsed: true });
+    document.body.append(workspace.root);
+
+    expect(workspace.isCollapsed()).toBe(true);
+    expect(tools.hidden).toBe(true);
+    expect(find("left-column-restore")?.hidden).toBe(false);
+
+    // Topbar layer switches / map reveal signals must not force-open a collapsed left sidebar.
+    window.dispatchEvent(new Event("oprn:ai-sidebar-tools"));
+    window.dispatchEvent(new Event("oprn:ai-sidebar-maps"));
+    expect(workspace.isCollapsed()).toBe(true);
+    expect(tools.hidden).toBe(true);
+
+    // Explicit toggle still opens the column for the current session without persisting open across mounts.
+    command("left-column-toggle")?.run();
+    expect(workspace.isCollapsed()).toBe(false);
+    expect(tools.hidden).toBe(false);
+
+    workspace.dispose();
+    workspace.root.remove();
+    workspace = createAiSidebarWorkspace(tools, null, () => { resizes += 1; }, { defaultCollapsed: true });
+    document.body.append(workspace.root);
+    expect(workspace.isCollapsed()).toBe(true);
+    expect(tools.hidden).toBe(true);
+  });
+
   it("selects a complete prop without painting and clears its stamp on a foreign chipset", () => {
     const project = createBlankProject();
     const map = project.maps[project.startMapId]!;
