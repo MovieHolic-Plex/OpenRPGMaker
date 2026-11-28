@@ -2,15 +2,15 @@
 // 조건 기반 자동 릴리스의 **순수 판정**. git·gh 호출은 scripts/release-scheduled.mjs 와
 // scripts/ci-full-diff.mjs 가 하고, 여기는 모은 값을 받아 판정만 한다.
 //
-// 규칙 (오너 2026-11-24 조건 기반 도입 → 2026-11-28 초고속 30분 자동 배포 확정):
-//   30분마다 확인해서 아래를 모두 만족하면 발행한다.
+// 규칙 (오너 2026-11-24 조건 기반 도입 → 2026-11-28 실질 30분 주기 자동 배포 확정):
+//   15분마다 확인해서 아래를 모두 만족하면 발행한다 (빌드 ~12분 + 쿨다운 15분 = 실질 ~30분 주기).
 //   (1) 지난 태그 이후 사용자가 체감할 변경(feat/fix 커밋) 1개 이상
-//   (2) 마지막 발행에서 30분(0.5시간) 이상
+//   (2) 마지막 발행에서 15분(0.25시간) 이상
 //   (3) 열린 PR 에 `hold-release` 라벨 없음
 //   (4) 하루(최근 24시간) 최대 48판 (< 48)
 //   (5) 산출물 대기 중인 초안 없음, 열린 release/next PR 없음
 //   ci-full 은 밤 1회 회귀 감시로 분리하고(requireCiFull: false), 릴리스 시점 검증은
-//   release/next 에서 직전 태그 대비 ci-related-tests + ci-fast (+ 필요 시 app-update-e2e) 가 맡는다.
+//   release/next 에서 ci-fast (+ 필요 시 app-update-e2e) 가 맡는다.
 //
 // (2) 는 v0.418·v0.419 레인이 손으로 한 대조를 그대로 옮긴 것이다: 두 판의 샤드 리포트
 // (`gates-report.json`)에서 실패 파일을 모아, 기준 판에서 돌았고 통과했는데 이번 판에서 실패한
@@ -21,7 +21,7 @@ import { UPDATE_FEED_SINCE } from "./releaseAssets.mjs";
 
 export const AUTO_RELEASE_RULES = Object.freeze({
   minUserCommits: 1,
-  minHoursSincePublish: 0.5,
+  minHoursSincePublish: 0.25,
   maxReleasesPer24h: 48,
   requireCiFull: false,
   holdLabel: "hold-release",

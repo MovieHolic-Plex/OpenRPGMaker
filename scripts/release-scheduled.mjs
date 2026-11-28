@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // scripts/release-scheduled.mjs
-// 조건 기반 자동 릴리스 — .github/workflows/auto-release.yml 이 30분마다 부른다.
+// 조건 기반 자동 릴리스 — .github/workflows/auto-release.yml 이 15분마다 부른다(빌드 ~12분 + 쿨다운 15분 = 실질 ~30분 주기).
 // 규칙과 판정은 scripts/lib/releaseGate.mjs, ci-full 대조(requireCiFull 시)는 scripts/ci-full-diff.mjs.
 //
 // 조건이 다 맞으면 기존 릴리스 경로를 그대로 탄다(새 발행기를 만들지 않는다):
