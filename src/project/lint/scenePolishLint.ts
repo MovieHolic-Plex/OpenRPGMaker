@@ -553,10 +553,10 @@ function checkDialogue(project: Project, issues: LintIssue[]): void {
       message: `특수 대화창 모양을 여러 가지 섞어 쓴다: ${list(contexts)} — 한 장면만 다른 테두리·띠가 된다. 창 모양은 하나로, 내레이션은 이름·얼굴 없는 같은 창(또는 narration 하나)으로, 특수 모양은 sign·system·letter 에만.`,
     });
   }
-  if (containers.size > 0) {
+  if (containers.size > 0 && project.system.dialogueContainer !== "balloon") {
     issues.push({
       severity: "warning", code: "scene-dialogue-context-mixed",
-      message: `말풍선 그릇을 쓴다: ${list(containers)} — 장르가 말풍선을 원하지 않으면 대사는 아래 대화창(container 생략)으로. 감정은 흉상 표정과 대사로.`,
+      message: `말풍선 그릇을 쓴다: ${list(containers)} — 말풍선 게임이면 set_project_settings{dialogue:{container:"balloon"}} 으로 전체를 통일하고, 아니면 대사는 아래 대화창(container 생략)으로.`,
     });
   }
 }

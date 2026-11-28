@@ -116,6 +116,7 @@
   --dlg-name-radius: 0;
   --dlg-name-shadow: none;
   --dlg-select-bg: rgba(243, 210, 140, 0.18);
+  --dlg-tail: rgba(12, 10, 20, 0.88);
   --dlg-weight: 600;
 }
 
@@ -202,6 +203,7 @@
   --dlg-name-text: rgb(242, 207, 142);
   --dlg-name-radius: 0;
   --dlg-select-bg: rgba(242, 207, 142, 0.14);
+  --dlg-tail: rgba(17, 28, 35, 0.92);
   --dlg-weight: 400;
 }
 
@@ -278,6 +280,7 @@
   --dlg-text-shadow: 1px 1px 0 rgb(8, 10, 40);
   --dlg-accent: rgb(255, 255, 255);
   --dlg-select-bg: rgba(255, 255, 255, 0.16);
+  --dlg-tail: rgb(16, 26, 108);
 }
 
 /* ── 휴대기 흰 창 · 굵은 틀 ── */
@@ -294,6 +297,7 @@
   --dlg-text-shadow: 1px 1px 0 rgb(208, 208, 200);
   --dlg-accent: rgb(224, 64, 56);
   --dlg-select-bg: rgba(64, 72, 88, 0.12);
+  --dlg-tail: rgb(64, 72, 88);
   --dlg-weight: 400;
 }
 
@@ -357,6 +361,7 @@
   --dlg-name-border: 0 solid transparent;
   --dlg-name-radius: 999px;
   --dlg-select-bg: rgba(236, 84, 124, 0.14);
+  --dlg-tail: rgba(255, 255, 255, 0.96);
 }
 
 /* ── 나무틀 양피지 ── */
@@ -375,6 +380,7 @@
   --dlg-name-border: 2px solid rgb(72, 42, 20);
   --dlg-name-radius: 4px;
   --dlg-select-bg: rgba(122, 74, 38, 0.16);
+  --dlg-tail: rgb(122, 74, 38);
 }
 
 /* ── 한지 · 먹빛 나무틀 ── 작은 도트 화면에서 읽히는 각진 틀. */
@@ -397,6 +403,7 @@
   --dlg-name-radius: 0;
   --dlg-name-shadow: 0 1px 0 rgb(32, 26, 22);
   --dlg-select-bg: rgba(153, 48, 33, 0.12);
+  --dlg-tail: rgb(62, 44, 32);
   --dlg-weight: 400;
 }
 
@@ -423,6 +430,7 @@
   --dlg-name-border: 2px solid rgb(255, 248, 226);
   --dlg-name-radius: 999px;
   --dlg-select-bg: rgba(255, 176, 96, 0.22);
+  --dlg-tail: rgb(255, 248, 226);
 }
 
 /* ── 금장 흑판 ── */
@@ -442,6 +450,7 @@
   --dlg-name-text: rgb(232, 200, 120);
   --dlg-name-border: 1px solid rgb(196, 160, 86);
   --dlg-select-bg: rgba(196, 160, 86, 0.18);
+  --dlg-tail: rgb(196, 160, 86);
   --dlg-weight: 400;
 }
 
@@ -461,6 +470,7 @@
   --dlg-name-border: 0 solid transparent;
   --dlg-name-shadow: 3px 3px 0 rgb(220, 20, 40);
   --dlg-select-bg: rgb(220, 20, 40);
+  --dlg-tail: rgb(12, 12, 12);
 }
 
 /* 선택지 칸만 사다리꼴로 자른다. 대사 상자는 이름표 유무와 관계없이 같은 기울임 — 화자 줄만 기울고 내레이션은
@@ -484,23 +494,65 @@
   transform: skewX(4deg);
 }
 
-/* ── 떠 있는 글 · 명조 ── 창 없이 아래쪽만 어둡게 번진다. */
+/* ── 떠 있는 글 · 명조 ── 창 없이 어둠 위에 명조 글씨만 띄우고 위아래 가는 장식선을 둔다.
+   1px transparent 테두리 + linear-gradient 조합은 background-origin: padding-box 때문에 하단 검은색이 상단 1px 테두리로 되감겨
+   이름표 중간을 가르는 검은 선이 생겼으므로 테두리를 0으로 두고 이름표는 상단 안쪽에 안정적으로 배치한다. */
 .dialogue-overlay[data-dialogue-style="float"],
 .dialogue-ambient-layer [data-dialogue-style="float"] {
+  --runtime-dialogue-speaker-inset: 16px;
   --runtime-dialogue-font: var(--font-serif);
   --runtime-dialogue-font-size: 10px;
-  --dlg-bg: linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.72) 45%);
-  --dlg-border: 1px solid transparent;
+  --dlg-bg: linear-gradient(180deg, rgba(6, 5, 12, 0.14) 0%, rgba(6, 5, 12, 0.62) 28%, rgba(6, 5, 12, 0.84) 100%);
+  --dlg-border: 0 solid transparent;
   --dlg-radius: 0;
   --dlg-shadow: none;
-  --dlg-text: rgb(232, 228, 240);
-  --dlg-text-shadow: 0 0 6px rgba(0, 0, 0, 0.95);
-  --dlg-accent: rgb(200, 196, 220);
+  --dlg-hairline: transparent;
+  --dlg-text: rgb(240, 236, 246);
+  --dlg-text-shadow: 0 1px 3px rgba(0, 0, 0, 0.96), 0 0 8px rgba(0, 0, 0, 0.9);
+  --dlg-accent: rgb(206, 200, 228);
   --dlg-name-bg: transparent;
-  --dlg-name-text: rgb(180, 176, 204);
-  --dlg-name-border: 1px solid transparent;
+  --dlg-name-text: rgb(212, 206, 236);
+  --dlg-name-border: 0 solid transparent;
   --dlg-select-bg: rgba(255, 255, 255, 0.08);
+  --dlg-tail: rgba(12, 10, 22, 0.92);
   --dlg-weight: 400;
+}
+
+.dialogue-overlay[data-dialogue-style="float"] .dialogue-box:not(.transparent):not(.dialogue-balloon) {
+  background-clip: border-box;
+  background-repeat: no-repeat;
+}
+
+.dialogue-overlay[data-dialogue-style="float"] .dialogue-box:not(.transparent):not(.dialogue-balloon)::before {
+  border: 0;
+  background:
+    linear-gradient(90deg, transparent, rgba(210, 204, 234, 0.38) 12%, rgba(210, 204, 234, 0.38) 88%, transparent) top / 100% 1px no-repeat,
+    linear-gradient(90deg, transparent, rgba(210, 204, 234, 0.28) 12%, rgba(210, 204, 234, 0.28) 88%, transparent) bottom / 100% 1px no-repeat;
+}
+
+.dialogue-overlay[data-dialogue-style="float"] .dialogue-box:not(.dialogue-balloon) .speaker.speaker-nameplate {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  font-size: 9px;
+  left: 8px;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
+  padding: 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.98), 0 0 6px rgba(0, 0, 0, 0.92);
+  top: 4px;
+}
+
+.dialogue-overlay[data-dialogue-style="float"].balloon-active .dialogue-box.dialogue-balloon {
+  background: rgba(12, 10, 22, 0.92);
+  border: 1px solid rgba(206, 200, 228, 0.38);
+  border-radius: 4px;
+}
+
+.dialogue-overlay[data-dialogue-style="float"].balloon-active .dialogue-box.dialogue-balloon .speaker.speaker-nameplate {
+  background: rgba(12, 10, 22, 0.96);
+  border: 1px solid rgba(206, 200, 228, 0.38);
+  border-radius: 3px;
 }
 
 /* ── 단말기 · 녹색 주사선 ── */
@@ -748,18 +800,55 @@
 .dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon {
   max-width: calc(150px + 22px);
   min-height: 0;
-  padding: 4px 14px 5px 8px;
+  padding: 4px 13px 5px 8px;
   position: absolute;
+  transform-origin: var(--balloon-tail-x, 50%) bottom;
   width: max-content;
 }
 
+.dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon.tail-up {
+  transform-origin: var(--balloon-tail-x, 50%) top;
+}
+
+/* 말풍선은 꼬리가 화자를 직접 가리키므로 이름표를 미니 배지로 슬림화한다(Paper Mario · FFIX 감각). */
 .dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon.has-speaker {
-  padding-top: var(--runtime-dialogue-speaker-inset);
+  padding-top: 9px;
+}
+
+.dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon .speaker.speaker-nameplate {
+  font-size: 7.5px;
+  left: 6px;
+  line-height: 1.1;
+  padding: 1px 5px;
+  top: -6px;
 }
 
 .dialogue-box.dialogue-balloon .dialogue-page-cursor {
   bottom: 3px;
   right: 3px;
+}
+
+/* 말풍선 진입 탄성 팝인 (reduced-motion / motion=off 면 생략). */
+.dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon[data-dialogue-phase="enter"]:not([data-dialogue-motion="off"]) {
+  animation: dialogue-balloon-pop 180ms cubic-bezier(0.22, 1.35, 0.36, 1) 1;
+}
+
+@keyframes dialogue-balloon-pop {
+  0% { opacity: 0; transform: scale(0.72) translateY(4px); }
+  65% { opacity: 1; transform: scale(1.04) translateY(-1px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* 호러·속마음·속삭임 말풍선의 미세한 손그림 일렁임(NITW · Omori). */
+.dialogue-overlay.balloon-active[data-dialogue-style="float"] .dialogue-box.dialogue-balloon[data-dialogue-phase="shown"]:not([data-dialogue-motion="off"]),
+.dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon[data-dialogue-context="thought"][data-dialogue-phase="shown"]:not([data-dialogue-motion="off"]),
+.dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon[data-dialogue-context="whisper"][data-dialogue-phase="shown"]:not([data-dialogue-motion="off"]) {
+  animation: dialogue-balloon-wobble 2.4s ease-in-out infinite;
+}
+
+@keyframes dialogue-balloon-wobble {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-0.6px) rotate(-0.35deg); }
 }
 
 .dialogue-balloon::after,
@@ -800,8 +889,75 @@
 /* 위로 뒤집힌 꼬리는 이름표와 같은 변에 붙는다 — 이름표 위에 그려 가리지 않게 한다. */
 .dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon.tail-up::after {
   inset-block-end: auto;
-  inset-block-start: -15px;
+  inset-block-start: -12px;
   z-index: 5;
+}
+
+/* ── 픽셀 계단형 꼬리 (도트 RPG · MMO 스타일) ── */
+.dialogue-overlay.balloon-active:is(
+  [data-dialogue-style="retro-black"],
+  [data-dialogue-style="retro-blue"],
+  [data-dialogue-style="handheld"],
+  [data-dialogue-style="double-line"],
+  [data-dialogue-style="mono-heavy"],
+  [data-dialogue-style="joseon"],
+  [data-dialogue-style="terminal"],
+  [data-dialogue-style="pixel-cinematic"]
+) .dialogue-box.dialogue-balloon:not([data-dialogue-context="thought"])::after {
+  background: var(--dlg-tail, var(--dlg-name-bg, rgb(32, 42, 72)));
+  border: 0;
+  clip-path: polygon(0 0, 100% 0, 100% 2px, 80% 2px, 80% 4px, 60% 4px, 60% 7px, 40% 7px, 40% 4px, 20% 4px, 20% 2px, 0 2px);
+  height: 7px;
+  inset-inline-start: calc(var(--balloon-tail-x, 50%) - 5px);
+  width: 10px;
+}
+
+.dialogue-overlay.balloon-active:is(
+  [data-dialogue-style="retro-black"],
+  [data-dialogue-style="retro-blue"],
+  [data-dialogue-style="handheld"],
+  [data-dialogue-style="double-line"],
+  [data-dialogue-style="mono-heavy"],
+  [data-dialogue-style="joseon"],
+  [data-dialogue-style="terminal"],
+  [data-dialogue-style="pixel-cinematic"]
+) .dialogue-box.dialogue-balloon.tail-up:not([data-dialogue-context="thought"])::after {
+  clip-path: polygon(40% 0, 60% 0, 60% 3px, 80% 3px, 80% 5px, 100% 5px, 100% 7px, 0 7px, 0 5px, 20% 5px, 20% 3px, 40% 3px);
+}
+
+/* ── 만화 감정별 말풍선 모양: 속마음(구름+물방울 꼬리) · 외침(폭발 강조) · 속삭임(점선) ── */
+.dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon[data-dialogue-context="thought"] {
+  border-radius: 16px;
+  border-style: dashed;
+}
+
+.dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon[data-dialogue-context="thought"]::after {
+  background: var(--dlg-tail, var(--dlg-bg, rgba(240, 244, 255, 0.94)));
+  border: 1px solid var(--dlg-text, currentColor);
+  border-radius: 999px;
+  box-shadow: -3px 6px 0 -1.5px var(--dlg-tail, var(--dlg-bg, rgba(240, 244, 255, 0.94)));
+  height: 5px;
+  inset-block-end: -7px;
+  inset-inline-start: calc(var(--balloon-tail-x, 50%) - 3px);
+  width: 5px;
+}
+
+.dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon[data-dialogue-context="thought"].tail-up::after {
+  box-shadow: 3px -6px 0 -1.5px var(--dlg-tail, var(--dlg-bg, rgba(240, 244, 255, 0.94)));
+  inset-block-end: auto;
+  inset-block-start: -11px;
+}
+
+.dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon[data-dialogue-context="shout"] {
+  border: 2px solid rgb(255, 76, 58);
+  border-radius: 2px;
+  box-shadow: 0 0 0 2px rgba(255, 224, 96, 0.92), 2px 3px 0 rgba(0, 0, 0, 0.55);
+  --dlg-tail: rgb(255, 76, 58);
+}
+
+.dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon[data-dialogue-context="whisper"] {
+  border-style: dotted;
+  opacity: 0.9;
 }
 
 /* === 흘림 대사 · 코너 대사 — 게임을 멈추지 않는 그릇 === */
@@ -1014,6 +1170,7 @@
   .dialogue-box .body .dialogue-char.dialogue-fx-shake,
   .dialogue-box .body .dialogue-char.dialogue-fx-wave,
   .dialogue-box.dialogue-beat-shake,
+  .dialogue-box.dialogue-balloon,
   .dialogue-bark,
   .dialogue-corner-item {
     animation: none;

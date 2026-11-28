@@ -122,10 +122,10 @@ export function editorDefaultsLeft(project: Project): ShipBlocker[] {
   // 3) HUD: 아무도 정하지 않았다(편집기 기본 체력 HUD)
   if (s.fieldHud === undefined) add("hud", "필드 HUD 가 편집기 기본(체력 하트·숫자)이다 — set_field_hud{theme:<장르>} 로 장르에 맞는 HUD 를 고르거나 {off:true} 로 끈다.", "system.fieldHud=undefined");
 
-  // 4) 대화창·메뉴 모양: 창 스킨·대사창 룩·메뉴 스타일 어느 것도 고르지 않았다
+  // 4) 대화창·메뉴 모양: 대사창 스타일·UI 모습·창 스킨·대사창 룩·메뉴 스타일 어느 것도 고르지 않았다
   const meta = project.meta as unknown as Obj;
   const hud = (s.fieldHud ?? {}) as Obj;
-  if (s.systemResourceId === fs.systemResourceId && !meta.oprnVnLook && !s.menuUiStyle && !hud.menuStyle) add("window-look", `대화창·메뉴가 편집기 기본 모양(${String(s.systemResourceId)})이다 — set_vn_look{preset}(대사창 룩)이나 set_project_settings{resources:{systemResourceId}} 로 이 게임에 맞는 창을 고른다.`, `system.systemResourceId=${String(s.systemResourceId)}`);
+  if (!s.dialogueStyle && !s.uiLook && s.systemResourceId === fs.systemResourceId && !meta.oprnVnLook && !s.menuUiStyle && !hud.menuStyle) add("window-look", `대화창·메뉴가 편집기 기본 모양(${String(s.systemResourceId)})이다 — write_blueprint{look}(UI 모습 한 벌)이나 set_project_settings{dialogue:{style}} 로 이 게임에 맞는 창을 고른다(set_vn_look 은 연애·비주얼노벨 전용).`, `system.systemResourceId=${String(s.systemResourceId)}`);
 
   // 5) 음악: 자기 음악이 없는 맵이 편집기 기본 필드 곡을 튼다
   const silentMaps = Object.values(project.maps).filter((m) => (m.events ?? []).length > 0 && !(m as unknown as Obj).bgm && !(m as unknown as Obj).worldmapSource);

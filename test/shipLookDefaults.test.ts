@@ -179,12 +179,59 @@ describe("aiV2HudTitleChecks", () => {
       expect(gameLines(before, p, WHOLE).some((m) => m.startsWith("[게임 검사 HUD 선택]"))).toBe(false);
     });
 
-    it("matches what applyStorySetupDefaults really writes (the constant is the fingerprint)", () => {
+    it("matches what applyStorySetupDefaults really writes (even after uiLook stamps font/panel shell)", () => {
       const p = createBlankProject() as Project;
       p.system.fieldHud = undefined as never;
       applyStorySetupDefaults(p, "이야기 게임 만들어줘", true);
       expect(p.system.fieldHud).toBeDefined();
       expect(hudIsStoryTemplate(p)).toBe(true);
+      p.system.fieldHud = { ...p.system.fieldHud!, font: "round", panel: "dark" };
+      expect(hudIsStoryTemplate(p)).toBe(true);
+    });
+
+    it("honors blueprint.hud and picks context-appropriate HUDs (action -> adventure, monster/multi-map -> collector, timeSystem -> clock)", () => {
+      const actionGame = createBlankProject() as Project;
+      actionGame.system.actionCombat = { ...(actionGame.system.actionCombat ?? {}), enabled: true } as never;
+      actionGame.system.fieldHud = undefined;
+      reconcileFieldHud(actionGame);
+      expect(actionGame.system.fieldHud?.theme).toBe("adventure");
+
+      const multiMap = createBlankProject() as Project;
+      multiMap.maps.map_town = { ...structuredClone(multiMap.maps[multiMap.startMapId]!), id: "map_town", name: "항구 마을" };
+      multiMap.gameBlueprint = normalizeGameBlueprint({
+        title: "항구 모험", genre: "판타지 RPG", playerGoal: "수호 종을 찾자.",
+        steps: [
+          { id: "s1", place: "항구 마을", event: "촌장", action: "대화", gives: "단서", feeling: "기대" },
+          { id: "s2", place: "항구 마을", event: "신전", action: "조사", gives: "엔딩", feeling: "성취" },
+        ],
+        ending: { name: "귀환", how: "종을 울린다", feeling: "안도" },
+      });
+      multiMap.system.fieldHud = undefined;
+      reconcileFieldHud(multiMap);
+      expect(multiMap.system.fieldHud?.theme).toBe("collector");
+      expect(multiMap.system.fieldHud?.objective).toBe(true);
+
+      const bpChoice = createBlankProject() as Project;
+      bpChoice.gameBlueprint = normalizeGameBlueprint({
+        title: "수집 여행", genre: "모험", hud: "collector", playerGoal: "여행하자.",
+        steps: [
+          { id: "s1", place: "마을", event: "npc", action: "대화", gives: "a", feeling: "f" },
+          { id: "s2", place: "마을", event: "npc2", action: "대화", gives: "b", feeling: "f" },
+        ],
+        ending: { name: "끝", how: "끝", feeling: "안도" },
+      });
+      bpChoice.system.fieldHud = undefined;
+      reconcileFieldHud(bpChoice);
+      expect(bpChoice.system.fieldHud?.theme).toBe("collector");
+    });
+
+    it("set_field_hud keeps objective on by default and supports font/panel shell options", () => {
+      const ctx = { project: createBlankProject() as Project };
+      const res = runTool(ctx, "set_field_hud", { theme: "collector", font: "pixel", panel: "paper" });
+      expect(res.ok, res.summary).toBe(true);
+      expect(ctx.project.system.fieldHud?.objective).toBe(true);
+      expect(ctx.project.system.fieldHud?.font).toBe("pixel");
+      expect(ctx.project.system.fieldHud?.panel).toBe("paper");
     });
 
     it("the finish step picks for a game still on the template: no health loss → nothing but the objective line", () => {

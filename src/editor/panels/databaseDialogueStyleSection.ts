@@ -93,8 +93,23 @@ function dialogueTextSettings(
     });
     refresh({ dialogueFont: isFontFamilyId(value) ? value : undefined });
   });
+  const container = el("select", { dataset: { testid: "db-system-dialogue-container" } }) as HTMLSelectElement;
+  container.append(
+    el("option", { text: "하단 대사 상자 (기본)", attrs: { value: "" } }),
+    el("option", { text: "캐릭터 머리 위 말풍선 (게임 전체 통일)", attrs: { value: "balloon" } }),
+  );
+  container.value = system.dialogueContainer === "balloon" ? "balloon" : "";
+  container.addEventListener("change", () => {
+    const next = container.value === "balloon" ? "balloon" : undefined;
+    deps.updateSystem((draft) => {
+      if (next) draft.system.dialogueContainer = next;
+      else delete draft.system.dialogueContainer;
+    });
+    refresh({ dialogueContainer: next });
+  });
   return deps.fieldset("대사 글자", [
-    deps.help("대사창 글꼴은 편집기 글꼴과 따로입니다. 빠르기는 모든 대사에 곱해지고, 인물마다 「말 빠르기」가 한 번 더 곱해집니다."),
+    deps.help("대사창 글꼴은 편집기 글꼴과 따로입니다. 말풍선 방식을 고르면 캐릭터 대사 전체가 머리 위 말풍선으로 통일되며(긴 문장은 말풍선 안에서 쪽 넘김), 내레이션·표지판·시스템 안내만 하단 상자를 씁니다."),
+    field("기본 대화 방식", container),
     field("대화창 글꼴", font),
     numberField(
       "기본 말 빠르기 (배)",

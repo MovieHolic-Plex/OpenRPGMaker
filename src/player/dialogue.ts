@@ -1216,8 +1216,8 @@ export function createDialogueUI(
       };
 
       mount(useBalloon);
-      if (useBalloon && pages.length > 1) {
-        // 말풍선에 다 안 들어가면 상자로 되돌린다 — 말풍선이 여러 장 넘어가면 읽기 어렵다.
+      if (useBalloon && pages.length > 1 && !look.projectBalloon) {
+        // 단발성 줄 말풍선은 다 안 들어가면 상자로 되돌린다. 반면 프로젝트 전체가 말풍선 방식(projectBalloon)이면 일관성을 위해 말풍선 안에서 쪽을 넘긴다.
         box.remove();
         overlay.classList.remove("balloon-active");
         useBalloon = false;

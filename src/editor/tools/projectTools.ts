@@ -35,7 +35,7 @@ import {
 } from "@/project/battleLook";
 import { MAX_BATTLE_TEAMS, isTeamSwapCost, normalizeBattleTeams } from "@/project/battleTeamModel";
 import { DEFAULT_TEAM_SWAP_COST } from "@/battle/battleTeams";
-import { DEFAULT_DIALOGUE_STYLE_ID, DIALOGUE_FULL_PORTRAIT_DEFAULTS, DIALOGUE_FULL_PORTRAIT_LIMITS, DIALOGUE_PROJECT_SPEED_LIMITS, DIALOGUE_STYLE_IDS, DIALOGUE_STYLES, dialogueStyleGuideLines, isDialogueStyleId, normalizeDialogueFullPortraitSettings, recommendedDialogueStyleForPreset } from "@/project/dialogueStyles";
+import { DEFAULT_DIALOGUE_STYLE_ID, DIALOGUE_FULL_PORTRAIT_DEFAULTS, DIALOGUE_FULL_PORTRAIT_LIMITS, DIALOGUE_PROJECT_SPEED_LIMITS, DIALOGUE_STYLE_IDS, DIALOGUE_STYLES, PROJECT_DIALOGUE_CONTAINER_IDS, dialogueStyleGuideLines, isDialogueStyleId, isProjectDialogueContainerId, normalizeDialogueFullPortraitSettings, recommendedDialogueStyleForPreset } from "@/project/dialogueStyles";
 import { FONT_REGISTRY, FONT_ROLES, fontOptionsForRole, isFontFamilyId, normalizeSystemFontConfig } from "@/project/fontRegistry";
 import {
   CHAPTER_LABEL_MAX,
@@ -373,6 +373,11 @@ const setProjectSettings: ToolDefinition = {
             type: "string",
             enum: [...DIALOGUE_STYLE_IDS],
             description: `사용자가 창 테두리·창 모양(「한지풍 창」 등)을 말하면 먼저 list_resources{kind:'windowskin'} 로 프로젝트의 창 그림(스토어로 넣은 윈도스킨 포함)을 찾는다 — 맞는 것이 있으면 resources.systemResourceId 에 그 id, 이 칸은 'classic'. 아래 프리셋은 맞는 창 그림이 없을 때 게임 톤에 맞춰 하나 고른다:\n${dialogueStyleGuideLines().join("\n")}`,
+          },
+          container: {
+            type: "string",
+            enum: [...PROJECT_DIALOGUE_CONTAINER_IDS],
+            description: "게임 전체 기본 대화 방식. box(기본) = 하단 대화창 · balloon = 게임 전체 캐릭터 대사를 머리 위 말풍선으로 통일(긴 문장은 말풍선 안에서 쪽 넘김, 내레이션·표지판·시스템 안내만 상자).",
           },
           font: { type: "string", enum: FONT_REGISTRY.map((font) => font.id), description: "대사창 글꼴(편집기 글꼴과 별개). 보통 생략 — 스타일이 어울리는 글꼴을 이미 고른다." },
           speed: { type: "number", minimum: DIALOGUE_PROJECT_SPEED_LIMITS.min, maximum: DIALOGUE_PROJECT_SPEED_LIMITS.max, description: "모든 대사의 기본 말 빠르기 배율(1=기본). 느긋한 이야기 0.8, 경쾌한 액션 1.2." },
@@ -731,7 +736,13 @@ const setProjectSettings: ToolDefinition = {
         }
         changed.push(`대화창=${DIALOGUE_STYLES[style].label}`);
       }
-      const { font, speed, punctuationPause, keepActorsVisible, fullPortraitHeight, fullPortraitDrop } = args.dialogue as Record<string, unknown>;
+      const { container, font, speed, punctuationPause, keepActorsVisible, fullPortraitHeight, fullPortraitDrop } = args.dialogue as Record<string, unknown>;
+      if (container !== undefined) {
+        if (!isProjectDialogueContainerId(container)) throw new ToolError(`알 수 없는 대화 방식입니다: ${String(container)}. 가능: ${PROJECT_DIALOGUE_CONTAINER_IDS.join(", ")}`, { code: "invalid-args" });
+        if (container === "box") delete draft.system.dialogueContainer;
+        else draft.system.dialogueContainer = "balloon";
+        changed.push(`대화 방식=${container === "balloon" ? "말풍선" : "대사 상자"}`);
+      }
       if (typeof keepActorsVisible === "boolean") {
         // false 도 남긴다 — 연애 기본값(applyRomanceDefaults)이 저작자가 끈 값을 다시 켜지 않게.
         draft.system.dialogueKeepActorsVisible = keepActorsVisible;

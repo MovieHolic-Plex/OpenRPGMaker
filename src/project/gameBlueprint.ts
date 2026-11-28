@@ -7,9 +7,20 @@
 //  - 출하 검사가 이 경로를 데이터로 걸어 본다(src/ai/v2/story/blueprint.ts).
 // 판정자(새 플레이어)는 이 문서의 playerGoal 한 줄만 받는다.
 // 프로젝트에 함께 저장된다(SQLite current_json·내보내기). 옛 프로젝트는 없음 = 옛 동작.
+import { isProjectDialogueContainerId, type ProjectDialogueContainerId } from "./dialogueStyles";
 import { uiLookById } from "./uiLook";
 import { assert, requireArray, requireRecord, requireString } from "./io/guards";
 import { WORLD_CANON_TONES } from "./world/canon";
+
+/** 청사진에서 모델이 고를 수 있는 필드 HUD 선택지(off = 목표 줄만, 나머지 = FIELD_HUD_THEMES 중 legacy 제외). */
+export const BLUEPRINT_HUD_CHOICES = ["off", "collector", "classic", "horror", "hearts", "farm", "survival", "adventure", "party", "minimal"] as const;
+export type GameBlueprintHudChoice = (typeof BLUEPRINT_HUD_CHOICES)[number];
+export function normalizeBlueprintHud(value: unknown): GameBlueprintHudChoice | undefined {
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim().toLowerCase();
+  if (trimmed === "chase" || trimmed === "none") return "off";
+  return (BLUEPRINT_HUD_CHOICES as readonly string[]).includes(trimmed) ? (trimmed as GameBlueprintHudChoice) : undefined;
+}
 
 /** 단계에서 플레이어가 하는 일의 종류 — 경로 빌더가 종류마다 다른 이벤트를 짓는다(src/ai/v2/story/blueprintPath.ts). 없으면 낱말로 추정(옛 청사진). */
 export const STEP_KINDS = ["talk", "find", "battle", "puzzle", "choice"] as const;
@@ -162,6 +173,10 @@ export interface GameBlueprint {
   items?: string[];
   /** 이 게임의 UI 모습 한 벌(project/uiLook.ts 의 id) — 대사창·메뉴·전투 창·타이틀·HUD 껍질을 함께 정한다. 없으면 끝맺음이 게임의 사실로 고른다. */
   look?: string;
+  /** 이 게임의 기본 대화 방식(box = 하단 상자, balloon = 머리 위 말풍선). 생략 = box. */
+  dialogueContainer?: ProjectDialogueContainerId;
+  /** 이 게임의 필드 HUD 선택(off = 목표 줄만, 나머지 = FIELD_HUD_THEMES). 없으면 끝맺음이 게임의 사실로 고른다. */
+  hud?: GameBlueprintHudChoice;
   /** 다시 쓴 청사진에서 빠진 단계가 지어 둔 것 — 다음 경로 짓기가 걷어 낸다(그 이벤트, 그 스위치를 기다리는 조건). */
   retired?: GameBlueprintStepBuilt[];
   /** 청사진을 쓴 요청 원문(앞부분). */
@@ -271,6 +286,8 @@ export function normalizeGameBlueprint(value: unknown): GameBlueprint {
     ...(typeof data.setting === "string" && data.setting.trim() ? { setting: data.setting.trim().slice(0, 40) } : {}),
     ...(places.length ? { places } : {}),
     ...(uiLookById(data.look) ? { look: uiLookById(data.look)!.id } : {}),
+    ...(isProjectDialogueContainerId(data.dialogueContainer) && data.dialogueContainer === "balloon" ? { dialogueContainer: "balloon" as const } : {}),
+    ...(() => { const hud = normalizeBlueprintHud(data.hud); return hud ? { hud } : {}; })(),
     ...(data.scale === "small" || data.scale === "mvp" || data.scale === "full" ? { scale: data.scale } : {}),
     ...(data.battles === false ? { battles: false as const } : {}),
     ...(() => { const cast = normalizeCast(data.cast); return cast ? { cast } : {}; })(),

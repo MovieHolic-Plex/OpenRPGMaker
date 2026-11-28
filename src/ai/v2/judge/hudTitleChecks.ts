@@ -12,12 +12,14 @@ import { tagged, type Finding } from "./finding";
 type Obj = Record<string, unknown>;
 const isObj = (v: unknown): v is Obj => !!v && typeof v === "object" && !Array.isArray(v);
 
-/** 필드 HUD 가 이야기 기본 템플릿(체력 끔·시계 켬 minimal)과 같은가 — objective 칸은 다른 도구가 켜므로 비교에서 뺀다. */
+const HUD_SHELL_KEYS = new Set(["objective", "font", "panel", "menuStyle"]);
+
+/** 필드 HUD 가 이야기 기본 템플릿(체력 끔·시계 켬 minimal)과 같은가 — 목표 줄·UI 껍질(font/panel/menuStyle)은 다른 단계가 채우므로 비교에서 뺀다. */
 export function hudIsStoryTemplate(project: Project): boolean {
   const hud = project.system.fieldHud as unknown;
   if (!isObj(hud)) return false;
   const { objective: _o, ...rest } = STORY_SETUP_HUD as Obj;
-  const keys = new Set([...Object.keys(rest), ...Object.keys(hud).filter((k) => k !== "objective" && hud[k] !== undefined)]);
+  const keys = new Set([...Object.keys(rest), ...Object.keys(hud).filter((k) => !HUD_SHELL_KEYS.has(k) && hud[k] !== undefined)]);
   return [...keys].every((k) => k === "widgets" ? !Array.isArray(hud[k]) || (hud[k] as unknown[]).length === 0 : JSON.stringify(hud[k]) === JSON.stringify(rest[k]));
 }
 

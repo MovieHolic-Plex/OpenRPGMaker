@@ -4,7 +4,8 @@ import { BLUEPRINT_CARD, parseBlueprintArgs, WRITE_BLUEPRINT_SCHEMA } from "@/ai
 import { BATTLE_LOOK_PRESET_IDS, BATTLE_LOOK_PRESETS, battleLookFillsBand, resolveBattleLook } from "@/project/battleLook";
 import { DEFAULT_RUNTIME_WINDOW_SKIN_ID, normalizeSystemRecords } from "@/project/databaseRecordModel";
 import { createBlankProject } from "@/project/defaults";
-import { DIALOGUE_STYLE_IDS } from "@/project/dialogueStyles";
+import { DIALOGUE_STYLE_IDS, resolveDialogueLook } from "@/project/dialogueStyles";
+import { lintScenePolish } from "@/project/lint/scenePolishLint";
 import { normalizeFieldHud, resolvedHudWidgets } from "@/project/fieldHud";
 import { listMenuSkinIds } from "@/player/menuSkins/registry";
 import { listStatusMenuCommandIds, listStatusMenuGroupCommandIds, listStatusMenuRailIds } from "@/player/playerStatusMenuModel";
@@ -34,13 +35,14 @@ describe("UI 모습 목록 — 있는 스타일만으로 짠 한 벌", () => {
     expect(uiLookById(FALLBACK_UI_LOOK_ID)).toBeDefined();
   });
 
-  it("모델에게 가는 글은 300자 안 — 카드에는 없고, 스키마 한 칸 + 도구 답의 후보 한 줄(그 세계의 세트 셋까지)", () => {
+  it("모델에게 가는 글은 짧게 유지 — 카드에는 없고, 스키마 한 칸(enum 포함) + 도구 답의 후보 한 줄(그 세계의 세트 셋까지)", () => {
     // 카드는 UI 모습 칸(look)을 말하지 않는다. 인물 칸의 «looks»(생김새, #5047 cast)는 다른 낱말이라 낱말 경계로 가른다.
     expect(BLUEPRINT_CARD).not.toMatch(/\blook\b/iu);
     const { look, ...rest } = WRITE_BLUEPRINT_SCHEMA.properties;
     const schemaDelta = JSON.stringify(WRITE_BLUEPRINT_SCHEMA).length - JSON.stringify({ ...WRITE_BLUEPRINT_SCHEMA, properties: rest }).length;
     expect(look.description.length).toBeLessThanOrEqual(60);
-    // 어느 세계·전투 방식에서도 스키마 증분 + 답 한 줄이 300자 안이다.
+    expect(look.enum).toEqual([...UI_LOOK_IDS]);
+    // 어느 세계·전투 방식에서도 스키마 증분(enum 포함) + 답 한 줄이 450자 안이다.
     const eras = [...new Set(Object.values(UI_LOOK_ERA_BY_FAMILY))];
     let longest = 0;
     // 빈 프로젝트는 짓는 데 오래 걸린다 — 싸우는 판/안 싸우는 판 둘만 짓고 칩셋 계열만 바꿔 가며 읽는다.
@@ -58,7 +60,18 @@ describe("UI 모습 목록 — 있는 스타일만으로 짠 한 벌", () => {
       for (const id of hint.match(/(?<=[:·] )[a-z0-9-]+(?= = )/gu) ?? []) expect(uiLookById(id), id).toBeDefined();
     }
     expect(eras.length).toBeGreaterThan(0);
-    expect(schemaDelta + longest, `schema ${schemaDelta} + hint ${longest}`).toBeLessThanOrEqual(300);
+    expect(schemaDelta + longest, `schema ${schemaDelta} + hint ${longest}`).toBeLessThanOrEqual(450);
+  });
+
+  it("판타지 전투 후보에 handheld/cozy 가 섞이지 않고, 황무지와 구조화된 세계관 톤이 맞게 좁혀진다", () => {
+    const fantasyTurn = uiLookCandidates({ era: "fantasy", combat: "turn", talky: false }).map((l) => l.id);
+    expect(fantasyTurn).not.toContain("handheld");
+    expect(fantasyTurn).not.toContain("cozy");
+    expect(uiLookCandidates({ era: "fantasy", combat: "turn", talky: false, tones: ["grim"] }).map((l) => l.id)).toEqual(["gilded", "rm2003"]);
+    expect(uiLookCandidates({ era: "fantasy", combat: "turn", talky: false, tones: ["fairytale"] }).map((l) => l.id)).toEqual(["kingdom", "storybook"]);
+    const wasteland = calm();
+    wasteland.maps[wasteland.startMapId!]!.tilesetId = "wasteland_ruins";
+    expect(uiLookFacts(wasteland).era).toBe("industrial");
   });
 
   it("시대·전투 방식마다 고를 것이 있다 — 맞는 세트가 없는 자리(그림 공백)는 무난한 기본", () => {
@@ -274,5 +287,37 @@ describe("입히기", () => {
     const q = calm();
     applyUiLook(q, "kingdom");
     expect(q.system.systemResourceId).toBe("windowskin-default");
+  });
+
+  it("프로젝트 기본 말풍선(dialogueContainer: balloon)은 일반 대사에 적용되고 내레이션·안내는 상자로 유지되며 저장·린트를 통과한다", () => {
+    const p = calm();
+    p.system.dialogueContainer = "balloon";
+    expect(normalizeSystemRecords(p.system).dialogueContainer).toBe("balloon");
+    expect(resolveDialogueLook(p, { speaker: "아린" })).toMatchObject({ container: "balloon", projectBalloon: true });
+    expect(resolveDialogueLook(p, { context: "narration" }).container).toBe("box");
+    expect(resolveDialogueLook(p, { context: "sign" }).container).toBe("box");
+    expect(resolveDialogueLook(p, { speaker: "아린", container: "box" }).container).toBe("box");
+    const parsed = parseBlueprintArgs({
+      title: "말풍선 마을", genre: "일상", playerGoal: "주민과 대화한다", dialogueContainer: "balloon",
+      steps: [
+        { id: "s1", kind: "talk", who: "아린", place: "광장", event: "아린", action: "인사", gives: "인사함", feeling: "따뜻함" },
+        { id: "s2", kind: "talk", who: "민수", place: "광장", event: "민수", action: "답례", needs: "인사함", gives: "끝", feeling: "반가움" },
+      ],
+      ending: { name: "하루 끝", how: "완료", feeling: "평온" },
+    }, "말풍선 방식 일상 게임");
+    expect("blueprint" in parsed && parsed.blueprint.dialogueContainer).toBe("balloon");
+    p.maps[p.startMapId!]!.events.push({
+      id: "ev_talk", name: "아린", x: 3, y: 3,
+      pages: [{ conditions: [], trigger: "action", commands: [{ kind: "text", speaker: "아린", body: "안녕!", container: "balloon" }] }],
+    } as never);
+    expect(lintScenePolish(p).some((i) => i.code === "scene-dialogue-context-mixed")).toBe(false);
+    delete p.system.dialogueContainer;
+    expect(normalizeSystemRecords(p.system).dialogueContainer).toBeUndefined();
+    expect(lintScenePolish(p).some((i) => i.code === "scene-dialogue-context-mixed")).toBe(true);
+    // 청사진에 dialogueContainer:"balloon" 이 적혀 있으면 끝맺음(applyLookDefaults)이 프로젝트 기본을 balloon 으로 통일한다.
+    const balloonGame = calm();
+    balloonGame.gameBlueprint = (parsed as { blueprint: Project["gameBlueprint"] }).blueprint;
+    applyLookDefaults(balloonGame, "", "balloon-bp");
+    expect(balloonGame.system.dialogueContainer).toBe("balloon");
   });
 });

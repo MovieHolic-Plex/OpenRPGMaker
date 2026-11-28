@@ -137,6 +137,7 @@ const getProjectSummary: ToolDefinition = {
       appearance: {
         fonts: resolveFontSelection(project.system.fonts),
         dialogueStyle: project.system.dialogueStyle ?? DEFAULT_DIALOGUE_STYLE_ID,
+        dialogueContainer: project.system.dialogueContainer ?? "box",
         dialogueFont: project.system.dialogueFont ?? null,
         battleLook: project.system.battleLook ?? null,
       },
