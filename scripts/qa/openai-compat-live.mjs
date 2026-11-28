@@ -16,7 +16,7 @@
 // 비밀: 키는 환경변수 OPRN_LIVE_KEY 로만 받는다. 인자·표준 출력·오류 어디에도 찍지 않고(출력은 전부 마스킹을 거친다) 파일에 쓰지 않는다.
 // 전송은 에디터와 같은 코드(buildModel → pi-ai openai-completions, guardedOpenAiCompatFetch)를 지난다.
 
-import { completeSimple } from "@oh-my-pi/pi-ai";
+import { completeSimple } from "@earendil-works/pi-ai/compat";
 import {
   openAiCompatAllowedModels,
   openAiCompatModelVerdict,

@@ -128,10 +128,11 @@ const FAMILY_META: Readonly<Record<CoreProviderFamily, FamilyMeta>> = {
       { id: "medium", label: "보통" },
       { id: "high", label: "높음" },
     ],
-    oauthLoginLabel: "Google 계정으로 로그인",
+    // Google 계정 직접 OAuth(Antigravity)는 제3자 하네스 사용 시 계정 정지 위험이 있어 비활성화한다.
+    // 추후 공식 Antigravity CLI(agy acp) 경로로 붙인다.
     apiKeyFamily: "google",
     apiKeyPlaceholder: "AIza…",
-    note: "Google 계정 로그인이나 Gemini API 키로 바로 연결할 수 있어요.",
+    note: "Google 계정 직접 로그인은 계정 정지 위험으로 비활성화되어 있어요. Gemini API 키로 연결해 주세요.",
   },
 };
 
@@ -175,11 +176,13 @@ function resolveFamilyState(family: CoreProviderFamily): ResolvedFamilyState {
   const routes = lastAutoRoutes();
   const current = currentProviderId();
   const active = familyOfProvider(current) === family;
-  const oauthRoute = routes.find((r) => r.providerId === meta.oauthId && r.connected);
-  const cliRoute = routes.find((r) => r.providerId === localCliProviderId(meta.cliId) && r.connected);
+  // Google Antigravity 직접 OAuth 는 계정 정지 위험으로 비활성화한다(Gemini API 키만 연결로 본다).
+  const oauthAllowed = family !== "gemini";
+  const oauthRoute = oauthAllowed ? routes.find((r) => r.providerId === meta.oauthId && r.connected) : undefined;
+  const cliRoute = family !== "gemini" ? routes.find((r) => r.providerId === localCliProviderId(meta.cliId) && r.connected) : undefined;
   const compat = findCompatFor(family);
   const connStatus = getAiConnectionStatus();
-  const liveReady = connStatus.kind === "ready" && connStatus.providerId === meta.oauthId;
+  const liveReady = oauthAllowed && connStatus.kind === "ready" && connStatus.providerId === meta.oauthId;
 
   let routeProviderId: string | undefined;
   let via: ResolvedFamilyState["via"];

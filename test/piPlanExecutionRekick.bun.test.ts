@@ -2,7 +2,7 @@
 // 읽기만 한 뒤 계획을 다시 써서 끝냈다(쓰기 0건). 계획을 받은 실행 턴이 바뀐 것 없이 끝나면 런타임이 한 번만 되민다.
 import { test } from "bun:test";
 import assert from "node:assert/strict";
-import { createAssistantMessageEventStream } from "@oh-my-pi/pi-ai";
+import { createAssistantMessageEventStream } from "@earendil-works/pi-ai";
 import { createBlankProject } from "../src/project/defaults";
 import { runPiAgent } from "../scripts/lib/piAgentRuntime";
 import { withUltrabrainPlan } from "../src/ai/piAgent/plainTurn";
@@ -13,7 +13,7 @@ async function run(task: string, writeOnFirst = false): Promise<{ userTexts: str
   const project = createBlankProject();
   const userTexts: string[] = [];
   let call = 0;
-  const done = await runPiAgent({ provider: "google-antigravity", task, project, mapIds: [project.startMapId], maxTurns: 8, initialToolNames: ["set_project_settings"] }, {
+  const done = await runPiAgent({ provider: "openai-codex", task, project, mapIds: [project.startMapId], maxTurns: 8, initialToolNames: ["set_project_settings"] }, {
     streamFn: ((_model: unknown, ctx: { messages: any[] }) => {
       const stream = createAssistantMessageEventStream();
       const last = ctx.messages.at(-1);

@@ -2,7 +2,7 @@
 // author_village 는 내용 있는 맵의 전체 재시공을 village-requires-scope 로 거부했다. 계약이 인자 변경도 다른 쓰기도
 // 막아서 모델은 같은 인자로 5번 헛돌았다. 이제 첫 거부에서 계약이 풀리고, 모델은 새 맵을 만들 수 있다.
 import { expect, test } from "bun:test";
-import { createAssistantMessageEventStream } from "@oh-my-pi/pi-ai";
+import { createAssistantMessageEventStream } from "@earendil-works/pi-ai";
 import { runPiAgent } from "../scripts/lib/piAgentRuntime.ts";
 import { createEmptyToolProject } from "../src/editor/tools/emptyProject.ts";
 import { runTool } from "../src/editor/tools/toolRunner.ts";
@@ -56,7 +56,7 @@ test("a frozen whole-map contract on a lived map is released on the first struct
   });
   const events: PiAgentEvent[] = [];
   const done = await runPiAgent({
-    provider: "google-antigravity", task: "위로 올라가면 마을", project: ctx.project, mapIds: ["start"], maxTurns: 8,
+    provider: "openai-codex", task: "위로 올라가면 마을", project: ctx.project, mapIds: ["start"], maxTurns: 8,
     villageContract: { mapId: "start", houseCount: 2, npcCount: 0, args: frozen },
     initialToolNames: ["author_village", "get_map_region"],
   }, { streamFn: streamFn as never, onEvent: event => events.push(event) });
@@ -87,7 +87,7 @@ test("a failure the model can still fix does not release the contract", async ()
     : undefined);
   const events: PiAgentEvent[] = [];
   const done = await runPiAgent({
-    provider: "google-antigravity", task: "마을을 지어라", project: ctx.project, mapIds: ["village"], maxTurns: 4,
+    provider: "openai-codex", task: "마을을 지어라", project: ctx.project, mapIds: ["village"], maxTurns: 4,
     villageContract: { mapId: "village", houseCount: 2, npcCount: 0, args: frozen },
     initialToolNames: ["author_village"],
   }, { streamFn: streamFn as never, onEvent: event => events.push(event) });

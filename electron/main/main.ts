@@ -1121,19 +1121,18 @@ export async function startApp(boot: BootContext): Promise<void> {
   if (openedAtBoot) dismissSplash();
   mainMark("windowCreated");
   boot.setRetry(() => { if (!firstWindow.isDestroyed()) loadWindowContent(firstWindow); });
-  const workerBinName = process.platform === "win32" ? "oh-my-pi-worker.exe" : "oh-my-pi-worker";
-  const workerBin = [
+  const workerBundle = [
     process.env.OPRN_OH_MY_PI_WORKER_BIN,
-    join(process.resourcesPath ?? "", "app.asar.unpacked", "dist-electron", workerBinName),
-    join(app.getAppPath(), "dist-electron", workerBinName),
+    join(process.resourcesPath ?? "", "app.asar.unpacked", "dist-electron", "ai-worker.mjs"),
+    join(app.getAppPath(), "dist-electron", "ai-worker.mjs"),
   ].find((candidate) => candidate && existsSync(candidate));
-  if (workerBin) process.env.OPRN_OH_MY_PI_WORKER_BIN = workerBin;
+  if (workerBundle) process.env.OPRN_OH_MY_PI_WORKER_BIN = workerBundle;
   const workerScript = [
     process.env.OPRN_OH_MY_PI_WORKER_SCRIPT,
     join(process.resourcesPath ?? "", "app.asar.unpacked", "scripts", "oh-my-pi-worker.ts"),
     join(app.getAppPath(), "scripts", "oh-my-pi-worker.ts"),
   ].find((candidate) => candidate && existsSync(candidate));
-  if (!workerBin && workerScript) process.env.OPRN_OH_MY_PI_WORKER_SCRIPT = workerScript;
+  if (!workerBundle && workerScript) process.env.OPRN_OH_MY_PI_WORKER_SCRIPT = workerScript;
   // 조수 워커(컴파일된 실행 파일)는 자기 위치로 public/ 을 찾지 못한다 — 번들 참고 그림을 읽을 렌더러 폴더를 물려준다.
   process.env.OPRN_RENDERER_DIR ??= rendererDir;
   companionServer = await startCompanionServer();

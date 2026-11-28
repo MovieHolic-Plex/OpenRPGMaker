@@ -1,13 +1,12 @@
-// 사용자 지정(OpenAI 호환) 엔드포인트 — Bun 워커 쪽 모델 구성과 전송 보호.
+// 사용자 지정(OpenAI 호환) 엔드포인트 — AI 워커 쪽 모델 구성과 전송 보호.
 //
-// 새 전송을 만들지 않는다. oh-my-pi 는 이미 `openai-completions` 전송(Chat Completions + SSE + 도구 호출 + 이미지 content part +
-// reasoning_effort)을 갖고 있고, `buildModel`(@oh-my-pi/pi-catalog)이 임의의 baseUrl·헤더·호환 플래그로 모델을 만든다 —
-// oh-my-pi 자신의 models.yml 사용자 지정 제공자가 쓰는 같은 경로다. 여기서는 에디터 저장소가 고른 값으로 그 모델을 만들 뿐이다.
+// 새 전송을 만들지 않는다. @earendil-works/pi-ai 의 `openai-completions` 전송(Chat Completions + SSE + 도구 호출 + 이미지 +
+// reasoning_effort)을 그대로 쓰고, 에디터 저장소가 고른 값으로 Model 객체를 만든다.
 //
 // 워커에는 인증·저장소가 없다(oh-my-pi-worker.ts 머리말). 호스트가 요청마다 `compatEndpoints` 를 실어 보내고,
 // 키는 기존 providerApiKeys 로 따로 온다. 브라우저가 보낸 값은 여기에 닿지 않는다 — 주소는 항상 호스트 저장소의 것이다.
 
-import { buildModel } from "@oh-my-pi/pi-catalog/build";
+import type { Model } from "@earendil-works/pi-ai";
 import { lookup } from "node:dns/promises";
 import {
   checkOpenAiCompatBaseUrl,
@@ -50,7 +49,7 @@ export function resolveOpenAiCompatModel(provider: string, requested?: string) {
     throw Object.assign(new Error(`${endpoint.name}: 모델 「${id}」 호출을 거절했어요. ${verdict.reason ?? ""} 다른 모델로 바꿔 보내지 않아요.`), { status: 403 });
   }
   const timeoutMs = endpoint.firstTokenTimeoutSec * 1000;
-  return buildModel({
+  return {
     id,
     name: id,
     api: "openai-completions",
@@ -71,12 +70,28 @@ export function resolveOpenAiCompatModel(provider: string, requested?: string) {
       supportsStore: false,
       supportsDeveloperRole: false,
       maxTokensField: "max_tokens",
-      // 도구 스키마는 strict 없이 보낸다 — strict 를 모르는 서버(LM Studio·일부 vLLM)가 400 으로 거절한다.
-      toolStrictMode: "none",
       streamFirstEventTimeoutMs: timeoutMs,
       streamIdleTimeoutMs: Math.max(timeoutMs, 120_000),
     },
-  } as never);
+  } as unknown as Model<"openai-completions">;
+}
+
+/** 사용자 지정 엔드포인트 요청 직전 SSRF/메타데이터 호스트 검증. */
+export async function assertSafeOpenAiCompatUrl(raw: string): Promise<void> {
+  const check = checkOpenAiCompatBaseUrl(raw);
+  if (!check.ok) throw Object.assign(new Error(check.error ?? "허용되지 않는 주소입니다."), { status: 400 });
+  const host = new URL(raw).hostname;
+  if (isBlockedOpenAiCompatHost(host)) throw Object.assign(new Error("이 주소(클라우드 메타데이터·링크로컬)에는 연결하지 않아요."), { status: 400 });
+  if (!/^[\d.]+$/u.test(host) && !host.includes(":")) {
+    try {
+      const addresses = await lookup(host, { all: true });
+      if (addresses.some((entry) => isBlockedOpenAiCompatHost(entry.address))) {
+        throw Object.assign(new Error(`${host} 이(가) 클라우드 메타데이터·링크로컬 주소로 연결돼 있어 막았어요.`), { status: 400 });
+      }
+    } catch (error) {
+      if (error && typeof error === "object" && "status" in error) throw error;
+    }
+  }
 }
 
 /**

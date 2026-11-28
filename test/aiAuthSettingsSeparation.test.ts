@@ -133,14 +133,14 @@ describe("환경 변수 키", () => {
 });
 
 describe("기기 로그인", () => {
-  // 이 묶음은 Google 계정의 로그인 흐름을 본다 — 공장 기본이 Claude(2026-11-16 · 2026-11-23)·ChatGPT(2026-11-19)가 된 뒤로는 Google 로 저장된 설정으로 연다.
-  const GOOGLE = "google-antigravity";
+  // 이 묶음은 ChatGPT(Codex) 계정의 로그인 흐름을 본다 — Google 직접 OAuth 는 계정 보호를 위해 비활성화됐다(2026-11-28).
+  const CODEX = "openai-codex";
   it("코드와 주소를 링크로 보여 주고 취소를 제공한다", async () => {
     startChatGptLogin.mockResolvedValue({
       verificationUrl: "https://example.invalid/device",
       userCode: "ABCD-EFGH",
     });
-    const { root, dispose } = await render(GOOGLE);
+    const { root, dispose } = await render(CODEX);
     await Promise.resolve();
 
     findByTestId(root, "ai-oauth-login")?.click();
@@ -167,7 +167,7 @@ describe("기기 로그인", () => {
     findByTestId(root, "ai-oauth-device-cancel")?.click();
     await Promise.resolve();
     await Promise.resolve();
-    expect(cancelCompanionLogin).toHaveBeenCalledWith("google-antigravity");
+    expect(cancelCompanionLogin).toHaveBeenCalledWith(CODEX);
     expect(findByTestId(root, "ai-auth-actions")?.hidden).toBe(false);
     expect(block?.hidden).toBe(true);
     dispose();
@@ -183,7 +183,7 @@ describe("기기 로그인", () => {
     fetchChatGptAuthStatus
       .mockResolvedValueOnce({ connected: false })
       .mockResolvedValue({ connected: true, env: false });
-    const { root, dispose } = await render(GOOGLE);
+    const { root, dispose } = await render(CODEX);
     await Promise.resolve();
 
     findByTestId(root, "ai-oauth-login")?.click();
@@ -209,7 +209,7 @@ describe("기기 로그인", () => {
 
   it("원격 로그인은 주소창을 붙여 넣으면 버튼 없이 연결한다", async () => {
     startChatGptLogin.mockResolvedValue({
-      verificationUrl: "https://accounts.google.com/o/oauth2/v2/auth?x=1",
+      verificationUrl: "https://auth.openai.com/oauth/authorize?x=1",
       userCode: "",
       pasteCallback: true,
     });
@@ -217,7 +217,7 @@ describe("기기 로그인", () => {
     fetchChatGptAuthStatus
       .mockResolvedValueOnce({ connected: false })
       .mockResolvedValue({ connected: true, env: false });
-    const { root, dispose } = await render(GOOGLE);
+    const { root, dispose } = await render(CODEX);
     await Promise.resolve();
     findByTestId(root, "ai-oauth-login")?.click();
     await Promise.resolve();
@@ -239,7 +239,7 @@ describe("기기 로그인", () => {
 
   it("이 화면으로 돌아오면 클립보드의 localhost 주소로 연결한다", async () => {
     startChatGptLogin.mockResolvedValue({
-      verificationUrl: "https://accounts.google.com/o/oauth2/v2/auth?x=1",
+      verificationUrl: "https://auth.openai.com/oauth/authorize?x=1",
       userCode: "",
       pasteCallback: true,
     });
@@ -249,7 +249,7 @@ describe("기기 로그인", () => {
       .mockResolvedValue({ connected: true, env: false });
     const readText = vi.fn(async () => "http://127.0.0.1:34099/oauth-callback?code=clip");
     vi.stubGlobal("navigator", { clipboard: { readText } });
-    const { root, dispose } = await render(GOOGLE);
+    const { root, dispose } = await render(CODEX);
     await Promise.resolve();
     findByTestId(root, "ai-oauth-login")?.click();
     await Promise.resolve();
@@ -267,7 +267,7 @@ describe("기기 로그인", () => {
     try {
       startChatGptLogin.mockResolvedValue({ verificationUrl: "https://example.invalid/d", userCode: "" });
       fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
-      const { root, dispose } = await render(GOOGLE);
+      const { root, dispose } = await render(CODEX);
       await vi.advanceTimersByTimeAsync(0);
       findByTestId(root, "ai-oauth-login")?.click();
       await vi.advanceTimersByTimeAsync(0);
@@ -299,7 +299,7 @@ describe("기기 로그인", () => {
 
   it("취소하면 폴링을 멈추고 그렇게 말한다", async () => {
     startChatGptLogin.mockResolvedValue({ verificationUrl: "https://example.invalid/d", userCode: "X" });
-    const { root, dispose } = await render(GOOGLE);
+    const { root, dispose } = await render(CODEX);
     await Promise.resolve();
     findByTestId(root, "ai-oauth-login")?.click();
     await Promise.resolve();
@@ -308,7 +308,7 @@ describe("기기 로그인", () => {
     findByTestId(root, "ai-oauth-device-cancel")?.click();
     await Promise.resolve();
     await Promise.resolve();
-    expect(cancelCompanionLogin).toHaveBeenCalledWith("google-antigravity");
+    expect(cancelCompanionLogin).toHaveBeenCalledWith(CODEX);
 
     expect(findByTestId(root, "ai-oauth-device-code")?.hidden).toBe(true);
     expect(findByTestId(root, "ai-oauth-status")?.textContent ?? "").toContain("취소");
@@ -320,14 +320,14 @@ describe("기기 로그인", () => {
       verificationUrl: "https://example.invalid/existing", userCode: "RESUME",
       expiresAt: Date.now() + 600000,
     } });
-    const { root, dispose } = await render(GOOGLE);
+    const { root, dispose } = await render(CODEX);
     await Promise.resolve();
     await Promise.resolve();
     expect(findByTestId(root, "ai-oauth-device-usercode")?.textContent).toBe("RESUME");
     expect(startChatGptLogin).not.toHaveBeenCalled();
     findByTestId(root, "ai-oauth-device-cancel")?.click();
     await Promise.resolve();
-    expect(cancelCompanionLogin).toHaveBeenCalledWith("google-antigravity");
+    expect(cancelCompanionLogin).toHaveBeenCalledWith(CODEX);
     expect(findByTestId(root, "ai-oauth-device-code")?.hidden).toBe(true);
     dispose();
   });
@@ -335,7 +335,7 @@ describe("기기 로그인", () => {
   it("승인 거부를 다음 폴링에서 즉시 알리고 대기를 끝낸다", async () => {
     vi.useFakeTimers();
     try {
-      const { root, dispose } = await render(GOOGLE);
+      const { root, dispose } = await render(CODEX);
       await Promise.resolve();
       startChatGptLogin.mockResolvedValue({ verificationUrl: "https://example.invalid/login", userCode: "CODE" });
       findByTestId(root, "ai-oauth-login")?.click();
@@ -359,7 +359,7 @@ describe("기기 로그인", () => {
       .mockResolvedValueOnce({ verificationUrl: "https://example.invalid/first", userCode: "FIRST" })
       .mockImplementationOnce(() => new Promise((resolve) => { resolveSecond = resolve; }));
     fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
-    const { root, dispose } = await render(GOOGLE);
+    const { root, dispose } = await render(CODEX);
     await Promise.resolve();
 
     // ① 첫 로그인 → 기기 블록이 보인다.
@@ -571,11 +571,8 @@ describe("OAuth 빠른 선택", () => {
     dispose();
   });
 
-  it("Gemini 퀵 카드는 3.7 Flash를 제공하는 Antigravity 로그인으로 라우팅한다", async () => {
-    // Break caught: routing this convenience card to google-gemini-cli makes the
-    // advertised fast default unavailable even though Antigravity supports it.
-    startChatGptLogin.mockResolvedValue({ verificationUrl: "https://example.invalid/x", userCode: "AB" });
-    fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
+  it("Google Antigravity 카드는 계정 보호를 위해 로그인 버튼을 비활성화하고 로그인을 시작하지 않는다", async () => {
+    fetchChatGptAuthStatus.mockResolvedValue({ connected: false, disabled: true });
     const { root, dispose } = await render();
     await Promise.resolve();
 
@@ -583,28 +580,14 @@ describe("OAuth 빠른 선택", () => {
     expect(gemini).not.toBeNull();
     gemini?.click();
     await Promise.resolve();
-    findByTestId(root, "ai-oauth-login")?.click();
-    await Promise.resolve();
-    await Promise.resolve();
-
-    expect(startChatGptLogin).toHaveBeenCalledWith("google-antigravity");
-    dispose();
-  });
-
-  it("Gemini 를 고르면 로그인이 startChatGptLogin('google-antigravity') 로 라우팅되고 기기 블록을 띄운다", async () => {
-    startChatGptLogin.mockResolvedValue({ verificationUrl: "https://example.invalid/x", userCode: "AB" });
-    fetchChatGptAuthStatus.mockResolvedValue({ connected: false });
-    const { root, dispose } = await render();
+    const loginBtn = findByTestId(root, "ai-oauth-login");
+    expect(loginBtn?.disabled).toBe(true);
+    expect(loginBtn?.textContent ?? "").toContain("비활성화");
+    loginBtn?.click();
     await Promise.resolve();
 
-    findByTestId(root, "ai-auth-quick-google-antigravity")?.click();
-    await Promise.resolve();
-    findByTestId(root, "ai-oauth-login")?.click();
-    await Promise.resolve();
-    await Promise.resolve();
-
-    expect(startChatGptLogin).toHaveBeenCalledWith("google-antigravity");
-    expect(findByTestId(root, "ai-oauth-device-code")?.hidden).toBe(false);
+    expect(startChatGptLogin).not.toHaveBeenCalled();
+    expect(findByTestId(root, "ai-oauth-device-code")?.hidden).toBe(true);
     dispose();
   });
 
@@ -632,8 +615,8 @@ describe("OAuth 빠른 선택", () => {
     const loginBtn = findByTestId(root, "ai-oauth-login");
     expect(loginBtn?.disabled).toBe(true);
 
-    // 새 제공자로 선택 변경 — 로그인 버튼이 되살아나야 한다.
-    findByTestId(root, "ai-auth-quick-google-antigravity")?.click();
+    // 새 활성 제공자(anthropic)로 선택 변경 — 로그인 버튼이 되살아나야 한다.
+    findByTestId(root, "ai-auth-quick-anthropic")?.click();
     await Promise.resolve();
     expect(loginBtn?.disabled).toBe(false);
 

@@ -1,58 +1,74 @@
 import { describe, expect, test } from "bun:test";
-import { complete } from "@oh-my-pi/pi-ai";
-import { getBundledModel } from "@oh-my-pi/pi-catalog";
-import { buildRequest } from "@oh-my-pi/pi-ai/providers/google-gemini-cli";
 import { antigravityToolEnumPayload, stripEmptyEnumMembers, ToolSchemaTransportError } from "../scripts/lib/ohMyPiToolEnums.ts";
-import { completeProvider } from "../scripts/lib/ohMyPiPiAiRuntime.ts";
 import { allTools } from "../src/editor/tools/toolRegistry.ts";
-import { offlineFetch } from "./helpers/offlineFetch.ts";
 
-const apiKey = JSON.stringify({ token: "offline-enum", projectId: "offline-project" });
-const png = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=";
 const original = allTools().find(tool => tool.name === "upsert_autotile_group")!;
 const tools = [{ name: original.name, description: original.description, parameters: { ...original.parameters } }];
-function bundled(id: string) {
-  return getBundledModel("google-antigravity", id)! as Parameters<typeof buildRequest>[0];
-}
-function context() {
-  return { messages: [{ role: "user" as const, content: "READY", timestamp: 0 }], tools };
-}
-// Mutable JSON payload at the untyped SDK hook boundary, not a replacement serializer.
-type Node = { type?: unknown; enum?: unknown; properties?: Record<string, Node>; items?: Node };
+
+type Node = { type?: unknown; enum?: unknown; nullable?: unknown; properties?: Record<string, Node>; items?: Node };
 type Payload = { request: { tools: { functionDeclarations: { name?: string; parameters?: Node; parametersJsonSchema?: Node }[] }[] } };
+
+/** Minimal CCA-shaped wire payload fixture (replaces removed @oh-my-pi google-gemini-cli buildRequest). */
+function ccaWire(toolList: readonly { name: string; parameters: unknown }[]): Payload {
+  return {
+    request: {
+      tools: [{
+        functionDeclarations: toolList.map((tool) => ({
+          name: tool.name,
+          parameters: normalizeForWire(structuredClone(tool.parameters)) as Node,
+        })),
+      }],
+    },
+  };
+}
+
+function normalizeForWire(node: unknown): unknown {
+  if (!node || typeof node !== "object") return node;
+  if (Array.isArray(node)) return node.map(normalizeForWire);
+  const rec = node as Record<string, unknown>;
+  const out: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(rec)) out[k] = normalizeForWire(v);
+  if (Array.isArray(out.type) && out.type.includes("integer") && out.type.includes("null")) {
+    out.type = "integer";
+    out.nullable = true;
+    if (Array.isArray(out.enum)) out.enum = out.enum.filter((v) => v !== null);
+  }
+  return out;
+}
+
 function group(payload: unknown): Node {
   return (payload as Payload).request.tools[0].functionDeclarations[0].parameters!.properties!.group;
 }
 
 describe("post-normalization CCA enum preservation", () => {
-  test.each(['claude-opus-4-6', 'gemini-3.7-flash'])('preserves optional integer membership plus null across real SDK normalization on %s', (id: string) => {
-    const nullableTools = [{ name: 'terrain', description: 'terrain', parameters: { type: 'object', properties: { level: { type: ['integer', 'null'], enum: [1, 2, null] } } } }];
+  test("preserves optional integer membership plus null", () => {
+    const nullableTools = [{ name: "terrain", description: "terrain", parameters: { type: "object", properties: { level: { type: ["integer", "null"], enum: [1, 2, null] } } } }];
     const before = JSON.stringify(nullableTools);
-    const wire = buildRequest(bundled(id), { ...context(), tools: nullableTools }, 'offline-project', {}, true);
-    const encode = antigravityToolEnumPayload(id, nullableTools);
+    const wire = ccaWire(nullableTools);
+    const encode = antigravityToolEnumPayload("gemini-3.7-flash", nullableTools);
     const encoded = encode(wire) as Payload;
-    expect(encoded.request.tools[0].functionDeclarations[0].parameters!.properties!.level).toMatchObject({ type: 'integer', enum: ['1', '2'], nullable: true });
+    expect(encoded.request.tools[0].functionDeclarations[0].parameters!.properties!.level).toMatchObject({ type: "integer", enum: ["1", "2"], nullable: true });
     expect(encode(encoded)).toEqual(encoded);
     expect(JSON.stringify(nullableTools)).toBe(before);
   });
-  test.each(["claude-opus-4-6", "gemini-3.7-flash"])("changes only numeric enum arrays and is idempotent on %s", (id: string) => {
-    const model = bundled(id);
+
+  test("changes only numeric enum arrays and is idempotent", () => {
     const sourceBefore = JSON.stringify(tools);
-    const wire = buildRequest(model, context(), "offline-project", {}, true);
+    const wire = ccaWire(tools);
     const before = JSON.stringify(wire);
-    const encode = antigravityToolEnumPayload(id, tools);
+    const encode = antigravityToolEnumPayload("claude-opus-4-6", tools);
     const encoded = encode(wire);
     expect(group(encoded).properties!.neighborhood).toMatchObject({ type: "integer", enum: ["4", "8"] });
     const expected = structuredClone(wire);
     group(expected).properties!.neighborhood.enum = ["4", "8"];
-    expect(encoded).toEqual(expected); // Only this machine-consumed field may differ.
+    expect(encoded).toEqual(expected);
     expect(encode(encoded)).toEqual(encoded);
     expect(JSON.stringify(wire)).toBe(before);
     expect(JSON.stringify(tools)).toBe(sourceBefore);
   });
 
   test("does not protobuf-encode parametersJsonSchema or instance data", () => {
-    const wire = buildRequest(bundled("claude-opus-4-6"), context(), "offline-project", {}, true) as Payload;
+    const wire = ccaWire(tools);
     const declaration = wire.request.tools[0].functionDeclarations[0];
     declaration.parametersJsonSchema = declaration.parameters;
     delete declaration.parameters;
@@ -71,32 +87,11 @@ describe("post-normalization CCA enum preservation", () => {
     { type: "integer", enum: [1, 1] }, { type: "number", enum: [1, 2] },
     { type: "string", enum: [1, 2] }, { type: ["integer", "null"], enum: [1, 2] },
     { type: "integer", enum: "1,2" },
-  ])("rejects unsupported source numeric enum %j before fetch, without image acknowledgement", async (leaf) => {
-    let fetches = 0;
-    const body = { model: "claude-opus-4-6", messages: [{ role: "user", content: [
-      { type: "image_url", image_url: { url: `data:image/png;base64,${png}` } },
-    ] }], tools: [{ type: "function", function: { name: "unsupported", parameters: {
-      type: "object", properties: { stories: leaf },
-    } } }] };
-    await expect(completeProvider("google-antigravity", body, { apiKey, fetch: offlineFetch(async () => {
-      fetches++; throw new Error("unexpected outbound fetch");
-    }) })).rejects.toMatchObject({ status: 400, code: "tool-schema-transport", message: expect.stringContaining(
-      "google-antigravity/claude-opus-4-6 tool=unsupported parameters.properties.stories",
-    ) });
-    expect(fetches).toBe(0);
-  });
-
-  test("a source path erased by real SDK combiner normalization fails before fetch", async () => {
-    let fetches = 0;
-    await expect(completeProvider("google-antigravity", {
-      model: "claude-opus-4-6", messages: [{ role: "user", content: "READY" }],
-      tools: [{ type: "function", function: { name: "collapsed", parameters: {
-        type: "object", properties: { value: { anyOf: [{ type: "integer", enum: [4, 8] }] } },
-      } } }],
-    }, { apiKey, fetch: offlineFetch(async () => { fetches++; throw new Error("unexpected fetch"); }) })).rejects.toMatchObject({
-      status: 400, message: expect.stringContaining("tool-schema-transport: google-antigravity/claude-opus-4-6 tool=collapsed"),
-    });
-    expect(fetches).toBe(0);
+  ])("rejects unsupported source numeric enum %j", (leaf) => {
+    expect(() => antigravityToolEnumPayload("claude-opus-4-6", [{
+      name: "unsupported",
+      parameters: { type: "object", properties: { stories: leaf } },
+    }])).toThrow(ToolSchemaTransportError);
   });
 
   const corruptions: [string, (payload: unknown) => void][] = [
@@ -113,40 +108,23 @@ describe("post-normalization CCA enum preservation", () => {
       declarations.push(structuredClone(declarations[0]));
     }],
   ];
-  test.each(corruptions)("%s: real SDK onPayload errors retain HTTP400 and never fetch", async (_label, corrupt) => {
-    let fetches = 0;
-    const model = bundled("claude-opus-4-6");
-    const encode = antigravityToolEnumPayload(model.id, tools);
-    const result = await complete(model, context(), { apiKey,
-      onPayload(payload) {
-        // Corrupt a genuinely normalized SDK payload to simulate an incompatible SDK translation.
-        corrupt(payload);
-        const before = JSON.stringify(payload);
-        try { return encode(payload); }
-        catch (error) {
-          expect(error).toBeInstanceOf(ToolSchemaTransportError);
-          expect(JSON.stringify(payload)).toBe(before);
-          throw error;
-        }
-      },
-      fetch: offlineFetch(async () => { fetches++; throw new Error("unexpected outbound fetch"); }),
-    });
-    expect(result).toMatchObject({ stopReason: "error", errorStatus: 400, errorMessage: expect.stringContaining(
-      "google-antigravity/claude-opus-4-6 tool=upsert_autotile_group parameters.properties.group.properties.neighborhood",
-    ) });
-    expect(result.content).toEqual([]);
-    expect(fetches).toBe(0);
+  test.each(corruptions)("%s: throws ToolSchemaTransportError without mutating input", (_label, corrupt) => {
+    const payload = ccaWire(tools);
+    corrupt(payload);
+    const before = JSON.stringify(payload);
+    const encode = antigravityToolEnumPayload("claude-opus-4-6", tools);
+    expect(() => encode(payload)).toThrow(ToolSchemaTransportError);
+    expect(JSON.stringify(payload)).toBe(before);
   });
 });
 
-// 2026-10-05: set_project_settings.fonts 의 enum[0]="" 하나로 CCA 가 요청 전체를 400 으로 거부했다.
 describe("CCA empty enum member guard", () => {
-  test("drops only empty string members on the real SDK wire and keeps identity when clean", () => {
+  test("drops only empty string members and keeps identity when clean", () => {
     const fontTools = [{ name: "fonts", description: "fonts", parameters: { type: "object", properties: {
       ui: { type: "string", enum: ["", "neodgm", "galmuri9"] }, none: { type: "string", enum: [""] },
       list: { type: "array", items: { type: "string", enum: ["", "a"] } },
     } } }];
-    const wire = buildRequest(bundled("gemini-3.7-flash"), { ...context(), tools: fontTools }, "offline-project", {}, true);
+    const wire = ccaWire(fontTools);
     const before = JSON.stringify(wire);
     const fixed = antigravityToolEnumPayload("gemini-3.7-flash", fontTools)(wire) as Payload;
     const props = fixed.request.tools[0].functionDeclarations[0].parameters!.properties!;

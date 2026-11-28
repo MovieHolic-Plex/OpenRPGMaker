@@ -327,14 +327,14 @@ describe("runRecap", () => {
     const cli = (id: "claude" | "codex" | "gemini", state: string, billing: string) => ({ id, state, billing });
     const oauth = (providerId: string, extra: Record<string, unknown> = {}) => ({ providerId, connected: true, authKind: "oauth", ...extra });
     describe("first-run plan defaults", () => {
-      it("orders Claude (the default, owner decision 2026-11-23), then ChatGPT, then the rest, one card per plan", () => {
+      it("orders Claude (the default, owner decision 2026-11-23), then ChatGPT, skipping deprecated Gemini CLI & disabled Google OAuth", () => {
         const plans = planCandidates(
           [cli("gemini", "ready", "subscription"), cli("codex", "ready", "subscription"), cli("claude", "ready", "subscription")],
           [oauth("openai-codex"), oauth("google-antigravity")],
         );
-        expect(plans.map((plan) => plan.key)).toEqual(["claude-cli", "codex-cli", "gemini-cli"]);
-        // Claude 구독이 없으면 ChatGPT 가 앞선다(Claude 로그인 카드는 없다 — 계정 후보는 ChatGPT·Google 뿐).
-        expect(planCandidates([cli("gemini", "ready", "subscription"), cli("codex", "ready", "subscription")], []).map((plan) => plan.key)).toEqual(["codex-cli", "gemini-cli"]);
+        expect(plans.map((plan) => plan.key)).toEqual(["claude-cli", "codex-cli"]);
+        // Claude 구독이 없으면 ChatGPT 가 앞선다(Gemini CLI·Google OAuth 는 비활성화).
+        expect(planCandidates([cli("gemini", "ready", "subscription"), cli("codex", "ready", "subscription")], []).map((plan) => plan.key)).toEqual(["codex-cli"]);
       });
 
       it("gives a Claude subscription Sonnet 5.5 high alone (no lead, no Haiku worker), and ChatGPT Sol alone", () => {

@@ -122,11 +122,13 @@ function assertNoTopLevelImportMeta(file) {
 }
 
 // 남의 앱 OAuth 클라이언트 값(src/ai/oauth/clientConfig.ts)은 저장소에 없다. 패키징된 앱에는 node_modules 가 없으므로
-// 빌드 때 설치된 참조 구현에서 읽어 주입한다. 환경변수가 있으면 그것이 이긴다. 못 읽으면 로그인만 실패한다.
+// 빌드 때 설치된 @earendil-works/pi-ai 에서 읽어 주입한다. 환경변수가 있으면 그것이 이긴다.
+// Google Antigravity OAuth 는 계정 정지 위험으로 비활성화되어 필수 검사에서 뺀다(2026-11-28).
 const OAUTH_ENV = { antigravityClientId: "OPRN_ANTIGRAVITY_CLIENT_ID", antigravityClientSecret: "OPRN_ANTIGRAVITY_CLIENT_SECRET", codexClientId: "OPRN_CODEX_CLIENT_ID" };
+const REQUIRED_OAUTH_KEYS = ["codexClientId"];
 const oauthClients = readOAuthClientsFromPiAi();
 for (const [key, name] of Object.entries(OAUTH_ENV)) if (process.env[name]?.trim()) oauthClients[key] = process.env[name].trim();
-const missingOAuth = Object.keys(OAUTH_ENV).filter((key) => !oauthClients[key]);
+const missingOAuth = REQUIRED_OAUTH_KEYS.filter((key) => !oauthClients[key]);
 if (missingOAuth.length) process.stderr.write(`warning: OAuth 클라이언트 값 없음 — ${missingOAuth.join(", ")} (해당 로그인은 패키지 앱에서 실패한다)\n`);
 
 /**
@@ -249,11 +251,13 @@ async function stageWorkerPayloads() {
     process.stdout.write(`staged dist-electron/agent-npm (npm ${AGENT_NPM.version})\n`);
   }
 
-  // 데스크톱 앱은 사용자 PC에 bun 이 없다. 리눅스·윈도우 워커를 실행 파일로 넣어 채팅이 그 파일을 띄운다.
-  // 리눅스 워커는 pi_natives 애드온 없이, 윈도 워커는 애드온을 옆에 두고 굽는다(scripts/build-ai-worker.ts 머리말). 옛 빌드가 남긴 애드온 파일은 먼저 지운다.
-  for (const name of readdirSync(OUT_DIR)) if (/^pi_natives\..*\.node$/.test(name)) rmSync(resolve(OUT_DIR, name), { force: true });
-  const worker = spawnSync("bun", [resolve(REPO_ROOT, "scripts/build-ai-worker.ts"), OUT_DIR, "linux", "windows"], { cwd: REPO_ROOT, stdio: "inherit" });
-  if (worker.status !== 0) throw new Error("AI 워커 컴파일 실패");
+  // 순수 Node AI 워커(dist-electron/ai-worker.mjs)를 esbuild 로 묶는다 — Bun 단일 실행파일·pi_natives 애드온 불필요.
+  // 옛 빌드가 남긴 Bun 워커·애드온·CJS 워커 파일은 먼저 지운다.
+  for (const name of readdirSync(OUT_DIR)) {
+    if (/^(?:pi_natives\..*\.node|oh-my-pi-worker(?:\.exe)?|ai-worker\.cjs)$/.test(name)) rmSync(resolve(OUT_DIR, name), { force: true });
+  }
+  const worker = spawnSync(process.execPath, [resolve(REPO_ROOT, "scripts/build-ai-worker.ts"), OUT_DIR], { cwd: REPO_ROOT, stdio: "inherit" });
+  if (worker.status !== 0) throw new Error("AI 워커 빌드 실패");
 }
 
 if (process.env.OPRN_QA_FAST === "1") {

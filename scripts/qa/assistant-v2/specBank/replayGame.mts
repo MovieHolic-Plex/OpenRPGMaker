@@ -6,7 +6,7 @@
 // 결과: <결과 폴더>/project.json · replay.json(호출별 그때/지금, 턴별 판정, 신뢰 수치) · maps/*.png. 문서: openwiki/assistant-v2.md 「명세 은행」.
 import fs from "node:fs";
 import path from "node:path";
-import { createAssistantMessageEventStream } from "@oh-my-pi/pi-ai";
+import { createAssistantMessageEventStream } from "@earendil-works/pi-ai";
 import { PNG } from "pngjs";
 import { compareReference, eventClass, eventIdsIn, eventTokens, itemKey, mapIdsIn, nameKey, NEEDS_OUTSIDE, realModelSign, referenceOf, replayEngine, sha, type Spec, type Trust } from "./spec.mts";
 

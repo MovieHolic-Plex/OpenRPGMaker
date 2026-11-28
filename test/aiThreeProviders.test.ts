@@ -115,8 +115,10 @@ describe("AI 3대장 설정(GPT · Claude · Gemini) 및 시작 시 health 점�
 
     geminiBtn.click();
     expect(geminiBtn.getAttribute("aria-selected")).toBe("true");
-    findByTestId(root, "ai-provider-login-gemini")?.click();
-    expect(onStartOAuth).toHaveBeenCalledWith("google-antigravity");
+    // Google 계정 직접 OAuth 로그인은 계정 정지 위험으로 비활성화됨 — API 키 연결만 제공한다.
+    expect(findByTestId(root, "ai-provider-login-gemini")).toBeNull();
+    expect(findByTestId(root, "ai-provider-apikey-toggle-gemini")).not.toBeNull();
+    expect(onStartOAuth).not.toHaveBeenCalled();
 
     view.dispose();
   });
