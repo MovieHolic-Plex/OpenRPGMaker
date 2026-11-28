@@ -9,7 +9,6 @@ import { EASYRPG_RTP_ASSETS, charsetFrameIndex, decodeCharsetFrameIndex } from "
 import { CHARSET_ASSETS } from "@/assets/charsetCatalog";
 import { resolveCc0IconAssetUrl } from "@/assets/cc0IconAssets";
 import { interactivePropFrameIndex, interactivePropFromSpriteId } from "@/project/interactiveProps";
-import { store } from "@/project/store";
 import { reconcileSharedFaceWithCharset as reconcileFaceWithCharset } from "@/project/sharedCharacterFaceResolver";
 import { npcGraphicCatalogIsFiltered, npcGraphicExampleLabels, npcGraphicMissNote, pickNpcGraphic, queryNpcGraphics, type NpcGraphicPickOptions } from "@/assets/charsetQuery";
 import { HARNESS_CHARACTER_PREFIX } from '@/project/sharedCharacters';
@@ -200,9 +199,22 @@ export function crystalGraphic(): EventPageGraphic {
 
 // query 문자열을 별칭/자유 질의 매처로 해석해 charset 그래픽을 만든다.
 export type GraphicQueryResolveOptions = NpcGraphicPickOptions & {
-  /** 프로젝트 커스텀 상호작용 프롭(`iprop:<id>`) 조회용 컨텍스트. 생략 시 현재 스토어 프로젝트로 폴백. */
+  /** 프로젝트 커스텀 상호작용 프롭(`iprop:<id>`) 조회용 컨텍스트. 생략 시 runTool 스코프 프로젝트로 폴백. */
   readonly project?: Project;
 };
+
+let scopedGraphicResolveProject: Project | undefined;
+
+/** 동기 도구 실행 구간 동안 resolveGraphic 이 프로젝트 커스텀 프롭을 조회할 대상 프로젝트를 묶는다(store 싱글톤 비의존). */
+export function withGraphicResolveProject<T>(project: Project | undefined, run: () => T): T {
+  const previous = scopedGraphicResolveProject;
+  scopedGraphicResolveProject = project;
+  try {
+    return run();
+  } finally {
+    scopedGraphicResolveProject = previous;
+  }
+}
 
 export function resolveGraphicQuery(query: string, pick?: GraphicQueryResolveOptions): EventPageGraphic {
   // 못 찾으면 거절한다. 2026-09-18 부터 주민 그림으로 대체하고 경고만 남겼는데, 조수는 경고를 읽지 않아
@@ -274,7 +286,7 @@ export function resolveGraphic(spec0: GraphicSpec | undefined, pick?: GraphicQue
   // 멀티프레임 상호작용 오브젝트 정식 이벤트 그래픽(`iprop:<id>`).
   if (textureKey !== undefined) {
     const trimmedKey = textureKey.trim();
-    const interactiveProp = interactivePropFromSpriteId(trimmedKey, pick?.project ?? store.getCurrent());
+    const interactiveProp = interactivePropFromSpriteId(trimmedKey, pick?.project ?? scopedGraphicResolveProject);
     if (interactiveProp) {
       return {
         sprite: { type: "bundled", id: trimmedKey },
