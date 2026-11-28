@@ -560,17 +560,17 @@ describe("releaseTooling", () => {
 
     const passing = () => ({
       userCommits: [{ sha: "0", subject: "feat: x" }],
-      sinceTag: "v0.424.0",
+      sinceTag: "v0.429.0",
       ciDiff: null,
       lastPublishedAt: "2026-11-28T00:00:00Z",
-      recentReleaseTags: ["v0.424.0"],
+      recentReleaseTags: ["v0.429.0"],
       holdPrs: [],
       draftTags: [],
       openReleasePr: null,
-      now: "2026-11-28T00:30:00Z",
+      now: "2026-11-28T00:15:00Z",
     });
 
-    it("조건과 하루 상한이 다 맞으면 ci-full 없이도 발행한다(30분 경계 포함)", () => {
+    it("조건과 하루 상한이 다 맞으면 ci-full 없이도 발행한다(15분 경계 포함)", () => {
       const decision = decideAutoRelease(passing());
       expect(decision.release).toBe(true);
       expect(decision.reasons).toEqual([]);
@@ -579,10 +579,10 @@ describe("releaseTooling", () => {
     it("하나라도 안 맞으면 넘어가고 안 맞는 것마다 이유를 남긴다", () => {
       const cases = [
         [{ userCommits: [] }, "user-commits"],
-        [{ now: "2026-11-28T00:29:00Z" }, "since-publish"],
+        [{ now: "2026-11-28T00:14:00Z" }, "since-publish"],
         [{ holdPrs: [{ number: 5040 }] }, "hold-label"],
         [{ recentReleaseTags: Array.from({ length: 48 }, (_, index) => `v0.4${10 + index}.0`) }, "daily-cap"],
-        [{ draftTags: ["v0.425.0"] }, "no-draft"],
+        [{ draftTags: ["v0.430.0"] }, "no-draft"],
         [{ openReleasePr: { number: 5041, auto: true } }, "no-open-release-pr"],
       ];
       for (const [override, id] of cases) {

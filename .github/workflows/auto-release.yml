@@ -1,25 +1,25 @@
 name: auto-release
 
-# 조건 기반 자동 릴리스 (오너 2026-11-24 도입 → 2026-11-28 초고속 30분 자동 배포 확정).
-# 30분마다 판정하고, 아래를 모두 만족할 때만 기존 릴리스 경로(release/next PR → ci-fast·ci-related-tests·
+# 조건 기반 자동 릴리스 (오너 2026-11-24 도입 → 2026-11-28 실질 30분 주기 자동 배포 확정).
+# 15분마다 판정하고, 아래를 모두 만족할 때만 기존 릴리스 경로(release/next PR → ci-fast·
 # 필요 시 app-update-e2e → merge-pr → 태그·초안 → desktop-release 검증 뒤 발행)를 탄다.
 # 판정·이유는 매 회차 이 실행의 요약과 아티팩트 JSON 에 남는다.
 #   (1) 지난 발행 태그 이후 사용자 체감 변경(feat/fix) 1개 이상
-#   (2) 마지막 발행에서 30분(0.5시간) 이상
+#   (2) 마지막 발행에서 15분(0.25시간) 이상 (빌드 ~12분 + 쿨다운 15분 = 실질 ~30분 간격)
 #   (3) 열린 PR 에 hold-release 라벨 없음
 #   + 최근 24시간 48판 미만, 산출물 대기 중인 초안 없음, 열린 release/next PR 없음
-#   + ci-full 은 밤 1회 회귀 감시로 분리(requireCiFull: false), 릴리스 전에는 직전 태그 대비 ci-related-tests + ci-fast 로 검증
+#   + ci-full 은 밤 1회 회귀 감시로 분리(requireCiFull: false), 릴리스 전에는 ci-fast + 필요 시 app-update-e2e 로 검증
 # 규칙 숫자는 scripts/lib/releaseGate.mjs 의 AUTO_RELEASE_RULES 한 곳에 있다. 문서: openwiki/release-and-version.md 「조건 기반 자동 릴리스」.
 #
 # 토큰: 저장소 Actions 설정이 GITHUB_TOKEN 의 PR 생성을 막으면 ① 단계에서 멈추고 이슈에 남긴다.
 #   RELEASE_BOT_TOKEN 시크릿이 있으면 그것을 쓴다(없으면 github.token).
-#   GITHUB_TOKEN 의 푸시는 다른 워크플로를 깨우지 않아서, release/next 의 ci-fast·ci-related-tests 는 스크립트가 직접 디스패치한다.
+#   GITHUB_TOKEN 의 푸시는 다른 워크플로를 깨우지 않아서, release/next 의 ci-fast 는 스크립트가 직접 디스패치한다.
 #
 # 수동 실행의 기본은 건조 실행(dry_run=true)이다 — 판정만 하고 아무것도 쓰지 않는다.
 
 on:
   schedule:
-    - cron: "17,47 * * * *"
+    - cron: "7,22,37,52 * * * *"
   workflow_dispatch:
     inputs:
       dry_run:

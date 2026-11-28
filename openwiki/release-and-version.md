@@ -352,13 +352,13 @@ npm run release:auto -- --dry-run    # 계획만 (아무것도 쓰지 않음)
 ## 조건 기반 자동 릴리스 (2026-11-24 도입 · 2026-11-28 초고속 30분 자동 배포)
 
 오너: «자동 주기 릴리즈 조건을 기반으로 해라 니추천대로»(2026-11-24) → «급하니까 30분 주기로 바꾸자»(2026-11-28).
-`.github/workflows/auto-release.yml` 이 **30분마다**(매시 17분·47분) 호스티드 러너에서 `scripts/release-scheduled.mjs` 를 돌린다. 아래가 **모두** 맞을 때만 발행한다.
+`.github/workflows/auto-release.yml` 이 **15분마다**(매시 7·22·37·52분) 호스티드 러너에서 `scripts/release-scheduled.mjs` 를 돌린다(빌드 ~12분 + 쿨다운 15분 = 실질 ~30분 주기). 아래가 **모두** 맞을 때만 발행한다.
 숫자는 `scripts/lib/releaseGate.mjs` 의 `AUTO_RELEASE_RULES` 한 곳에 있다.
 
 | 조건 | 기준 |
 |---|---|
 | 사용자 체감 변경 | 마지막 발행 태그 이후 feat·fix 커밋 **1개 이상** (범위가 test·ci·docs 뿐인 것은 안 센다) |
-| 간격 | 마지막 발행(`published_at`)에서 **30분(0.5시간) 이상** |
+| 간격 | 마지막 발행(`published_at`)에서 **15분(0.25시간) 이상** |
 | 보류 | 열린 PR 에 `hold-release` 라벨 없음 |
 | 하루 상한 | 최근 24시간에 만든 릴리스 **48판 미만** |
 | 꼬임 방지 | 산출물 대기 중인 초안 없음, 열린 `release/next` PR 없음 |
