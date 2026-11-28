@@ -166,8 +166,8 @@ const server = createServer(async (req, res) => {
   res.on("close", () => {
     if (!res.writableEnded) abortController.abort(new Error("client disconnected"));
   });
-  const url = new URL(req.url ?? "/", "http://127.0.0.1");
   try {
+    const url = new URL(req.url ?? "/", "http://127.0.0.1");
     if (req.method === "POST" && url.pathname === "/complete") {
       const body = await readJsonBody(req);
       const provider = typeof body.provider === "string" ? body.provider : "openai-codex";
@@ -183,13 +183,19 @@ const server = createServer(async (req, res) => {
       return;
     }
     if (req.method === "POST" && url.pathname === "/local-agents") {
-      const body = await readJsonBody(req).catch(() => ({})) as { fresh?: boolean };
+      const body = await readJsonBody(req).catch((error) => {
+        if (error && typeof error === "object" && "status" in error) throw error;
+        return {};
+      }) as { fresh?: boolean };
       const clis = await detectLocalClis({ fresh: body.fresh === true });
       sendJson(res, { clis, recommended: pickDefaultLocalCli(clis) ?? null });
       return;
     }
     if (req.method === "POST" && url.pathname === "/local-agents/health") {
-      const body = await readJsonBody(req).catch(() => ({})) as { cli?: string; id?: string; model?: string };
+      const body = await readJsonBody(req).catch((error) => {
+        if (error && typeof error === "object" && "status" in error) throw error;
+        return {};
+      }) as { cli?: string; id?: string; model?: string };
       const id = localCliIdOf(`local-cli:${body.cli ?? body.id ?? ""}`);
       if (!id) {
         sendJson(res, { error: `알 수 없는 AI 프로그램입니다: ${String(body.cli ?? body.id ?? "(없음)")}. claude·codex·gemini 중 하나여야 합니다.` }, 400);
