@@ -109,6 +109,18 @@ export function markDragOrigin(origin: { readonly text: string; readonly mapId: 
   if (!text) return;
   const now = Date.now();
   while (dragOrigins.length > 0 && now - dragOrigins[0]!.at > DRAG_ORIGIN_TTL_MS) dragOrigins.shift();
+  const prev = dragOrigins[dragOrigins.length - 1];
+  if (
+    prev &&
+    prev.text === text &&
+    prev.mapId === origin.mapId &&
+    prev.region.x === origin.region.x &&
+    prev.region.y === origin.region.y &&
+    prev.region.width === origin.region.width &&
+    prev.region.height === origin.region.height
+  ) {
+    return;
+  }
   dragOrigins.push({ text, mapId: origin.mapId, region: { x: origin.region.x, y: origin.region.y, width: origin.region.width, height: origin.region.height }, at: now });
   if (dragOrigins.length > 20) dragOrigins.shift();
 }

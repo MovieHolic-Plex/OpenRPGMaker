@@ -8,6 +8,9 @@ import { offlineChatResponse } from "./fixtures/offlineChatResponse";
 import { approvedReviewResponse } from "./independentReviewFixture";
 import { fixedDeclarer } from "./intentFixture";
 import { renderAiChatPanel, renderEmptyProposalNotice, EMPTY_PROPOSAL_NOTICE_DISMISS_MS } from "@/editor/panels/aiChatPanel";
+import { AI_SELECTION_CHIPS_DISMISS_EVENT } from "@/editor/aiRegionHandoff";
+import { setStampPlaceOn } from "@/editor/stampPlaceMode";
+import { stampOrderQueue } from "@/editor/stampOrderQueue";
 import { editorState } from "@/editor/editorState";
 import { store } from "@/project/store";
 import { findByTestId, installFakeDom, FakeElement, renderWithFakeDom } from "./fakeDom";
@@ -563,6 +566,36 @@ describe("aiPanelGlassResize", () => {
         // 새 선택 → 재부착
         editorState.set({ selection: { mapId, x: 2, y: 2, width: 4, height: 4 } });
         expect(chip()).toBeTruthy();
+      });
+
+      it("우측 조수 입력창에 타이핑하면 플로팅 바 해제 신호를 보내고, 지시 전송 시 선택과 칩을 즉시 내린다", () => {
+        const mapId = store.getCurrent().startMapId;
+        editorState.set({ selection: { mapId, x: 2, y: 2, width: 4, height: 3 } });
+        expect(chip()).toBeTruthy();
+
+        const onDismissChips = vi.fn();
+        window.addEventListener(AI_SELECTION_CHIPS_DISMISS_EVENT, onDismissChips);
+        try {
+          const input = findByTestId(document.body as unknown as FakeElement, "ai-input") as unknown as HTMLTextAreaElement;
+          const sendBtn = findByTestId(document.body as unknown as FakeElement, "ai-send") as unknown as HTMLButtonElement;
+
+          // 입력 중에는 캔버스 플로팅 바만 내리고 선택 영역·선택 칩은 유지한다.
+          input.value = "여기에 우물 하나";
+          input.dispatchEvent(new Event("input"));
+          expect(onDismissChips).toHaveBeenCalledTimes(1);
+          expect(chip()).toBeTruthy();
+          expect(editorState.get().selection).toEqual({ mapId, x: 2, y: 2, width: 4, height: 3 });
+
+          // 바로 깔기 전송이 수락되면 소비된 선택과 선택 칩이 즉시 해제된다.
+          setStampPlaceOn(true);
+          sendBtn.click();
+          expect(chip()).toBeFalsy();
+          expect(editorState.get().selection).toBeNull();
+        } finally {
+          window.removeEventListener(AI_SELECTION_CHIPS_DISMISS_EVENT, onDismissChips);
+          setStampPlaceOn(false);
+          stampOrderQueue().cancelAll();
+        }
       });
     });
   });

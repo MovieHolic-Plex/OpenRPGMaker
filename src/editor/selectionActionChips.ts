@@ -125,6 +125,7 @@ export function buildVillageInSelection(selection: TileSelection): boolean {
   if (plan.apply) {
     const cells = plan.cells.flatMap((i) => [{ x: i % map.width, y: Math.floor(i / map.width), layer: "lower" as const }, { x: i % map.width, y: Math.floor(i / map.width), layer: "upper" as const }]);
     recordMapEditIfChanged(selection.mapId, () => store.updateMapTiles(selection.mapId, plan.apply!, { label: `마을 · ${plan.reason}`, cells }), { label: "마을" });
+    if (editorState.get().selection?.mapId === selection.mapId) clearSelection();
     toast(`마을을 지었습니다 — ${plan.reason} · 땅 모양은 그대로`, "ok");
     return true;
   }
@@ -257,6 +258,8 @@ export function renderSelectionActionChips(
   selection: TileSelection,
   handoff: typeof requestAiRegionHandoff = requestAiRegionHandoff,
   onPastePreviewCancel: () => void = () => undefined,
+  /** 조수에게 넘기기가 성공한 직후 부른다. 호출자(EditScene)가 이 선택의 바를 내린다 — 선택은 턴 범위라 남긴다. */
+  onHandedOff: () => void = () => undefined,
 ): HTMLElement {
   const hasClipboard = editorState.get().clipboard !== null;
   const bar = el("div", {
@@ -378,6 +381,7 @@ export function renderSelectionActionChips(
       return false;
     }
     handoff(selectionHandoff(selection, instruction, stamp));
+    onHandedOff();
     return true;
   };
 
@@ -979,6 +983,7 @@ export function renderSelectionActionChips(
               toast("선택 영역 안에 비어 있는 통행 가능 칸이 없습니다. 다른 영역을 선택해 주세요.", "info");
               return;
             }
+            setDrawerMode(null);
             openNewEventEditorModal(selection.mapId, suggestedNpcCell.x, suggestedNpcCell.y);
           },
         },
