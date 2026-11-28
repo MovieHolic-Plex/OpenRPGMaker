@@ -101,6 +101,29 @@ export const LEGACY_MODEL_IDS: Readonly<Record<string, ReadonlySet<string>>> = O
 );
 
 /**
+ * 제공자가 «지금 실제로 내주는» 목록에서 새로 알게 된 모델 id(src/ai/liveModelCatalog.ts 가 GPT·Claude 에 한해 채운다).
+ * 코드에 박힌 PROVIDER_MODELS 는 «권장 프리셋» 일 뿐이고, 새 모델이 나와도 목록에서 고를 수 있게 하는 자리가 여기다.
+ * 프리셋·LEGACY_MODEL_IDS·기본 모델 계산에는 섞이지 않는다 — 기본값과 첫 실행 선택은 그대로 사람이 정한 프리셋이다.
+ */
+const LIVE_MODEL_IDS = new Map<string, readonly string[]>();
+
+export function registerLiveModelIds(providerId: string, ids: readonly string[]): void {
+  const clean = [...new Set(ids.map((id) => id.trim()).filter(Boolean))];
+  if (clean.length) LIVE_MODEL_IDS.set(providerId, clean);
+  else LIVE_MODEL_IDS.delete(providerId);
+}
+
+export function resetLiveModelIdsForTests(): void {
+  LIVE_MODEL_IDS.clear();
+}
+
+/** 프리셋에 없고 서버 목록에만 있는 모델(대소문자 무시, 서버 순서). */
+function liveOnlyModels(providerId: string): readonly string[] {
+  const known = new Set((PROVIDER_MODELS[providerId] ?? []).map((id) => id.toLowerCase()));
+  return (LIVE_MODEL_IDS.get(providerId) ?? []).filter((id) => !known.has(id.toLowerCase()));
+}
+
+/**
  * 그 제공자에서 고를 수 있는 모델 그룹.
  *
  * authMode(전송 축)는 목록을 가르지 않는다 — 주입 게이트웨이 설정(노드 스크립트·벤치마크)도
@@ -121,7 +144,11 @@ export function modelCatalogForAuthMode(
     return [{ label: `${provider?.label ?? id} · 연결 시험에서 받은 목록`, models: listed }];
   }
   const models = PROVIDER_MODELS[id] ?? (provider ? [provider.defaultModel] : []);
-  return [{ label: `${provider?.label ?? id} · oh-my-pi`, models }];
+  const groups: AiModelCatalogGroup[] = [{ label: `${provider?.label ?? id} · oh-my-pi`, models }];
+  // 첫 그룹은 항상 프리셋이다(defaultModelForAuthMode·latestModelsFor 의 기준). 서버 목록의 새 모델은 뒤 그룹으로 덧붙인다.
+  const extra = liveOnlyModels(id);
+  if (extra.length) groups.push({ label: `${provider?.label ?? id} · 서버에서 받은 새 모델`, models: extra });
+  return groups;
 }
 
 /**
@@ -144,7 +171,8 @@ export function defaultModelForAuthMode(authMode: "chatgpt" | "apiKey", provider
 export function latestModelsFor(providerId?: string): readonly string[] {
   const id = parseOhMyPiProvider(providerId);
   const legacy = LEGACY_MODEL_IDS[id];
-  const models = modelCatalogForAuthMode("chatgpt", id).flatMap((group) => group.models);
+  // 첫 그룹(프리셋)만 쓴다 — 서버 목록에서 새로 알게 된 모델이 «첫 실행 기본 선택 목록» 에 말없이 끼어들지 않게 한다.
+  const models = modelCatalogForAuthMode("chatgpt", id)[0]?.models ?? [];
   return legacy ? models.filter((model) => !legacy.has(model)) : models;
 }
 
@@ -174,6 +202,7 @@ export function isModelValidForAuthMode(
   const wanted = model.trim().toLowerCase();
   const allowed = PROVIDER_MODELS[provider] ?? [];
   if (allowed.some((id) => id.toLowerCase() === wanted)) return true;
+  if (liveOnlyModels(provider).some((id) => id.toLowerCase() === wanted)) return true;
   if (provider !== ANTIGRAVITY_PROVIDER_ID) return false;
   if (/-(?:high|medium|low)$/u.test(wanted)) return false;
   return wanted.startsWith("gemini");

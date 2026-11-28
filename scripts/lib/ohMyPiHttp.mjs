@@ -48,6 +48,7 @@ export function isCompanionPath(url = "") {
     || path === "/auth/oauth-paste"
     || path === "/oauth/launch"
     || path === "/v1/chat/completions"
+    || path === "/v1/models"
     || path === "/v1/images/generations"
     || path === "/v1/agent/run"
     || path === "/v1/agent/cancel"
@@ -289,6 +290,15 @@ export async function handleCompanionRequest(req, adapters) {
       }));
     }
     return json(405, { error: "Method not allowed" });
+  }
+
+  // GPT·Claude 가 지금 실제로 내주는 모델 목록. 목록을 못 받아도 200 + ok:false 다 — 설정 화면은 코드의 프리셋으로 물러난다.
+  if (method === "GET" && path === "/v1/models") {
+    if (typeof adapters.listModels !== "function") return json(501, { error: "이 동반 서비스는 모델 목록 조회를 지원하지 않습니다." });
+    const query = new URL(req.url ?? "", "http://companion.local").searchParams;
+    const family = query.get("family");
+    if (family !== "gpt" && family !== "claude") return json(400, { error: "family 는 gpt 또는 claude 여야 합니다." });
+    return json(200, await adapters.listModels(family, { fresh: query.get("fresh") === "1" }));
   }
 
   if (method === "POST" && path === "/v1/images/generations") {

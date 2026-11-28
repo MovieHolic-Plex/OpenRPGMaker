@@ -21,9 +21,33 @@ describe("oh-my-pi companion HTTP", () => {
     assert.equal(isCompanionPath("/auth/env-scan"), true);
     assert.equal(isCompanionPath("/v1/chat/completions"), true);
     assert.equal(isCompanionPath("/v1/images/generations"), true);
+    assert.equal(isCompanionPath("/v1/models?family=gpt"), true);
     assert.equal(isCompanionPath("/oauth/launch"), true);
     assert.equal(isCompanionPath("/auth/oauth-paste"), true);
     assert.equal(isCompanionPath("/other"), false);
+  });
+
+  it("GET /v1/models 는 gpt·claude 만 받고 어댑터의 목록을 그대로 돌려준다(못 받아도 200)", async () => {
+    const calls = [];
+    const adapters = {
+      listModels: async (family, options) => {
+        calls.push([family, options]);
+        return family === "gpt"
+          ? { ok: true, family, source: "codex-backend", fetchedAt: 1, models: [{ id: "gpt-6.2-sol", label: "GPT-6.2 Sol" }] }
+          : { ok: false, family, reason: "no-credential", message: "키 없음", fetchedAt: 1 };
+      },
+    };
+    const gpt = await handleCompanionRequest({ method: "GET", url: "/v1/models?family=gpt&fresh=1" }, adapters);
+    assert.equal(gpt.status, 200);
+    assert.equal(gpt.body.models[0].id, "gpt-6.2-sol");
+    const claude = await handleCompanionRequest({ method: "GET", url: "/v1/models?family=claude" }, adapters);
+    assert.equal(claude.status, 200);
+    assert.equal(claude.body.ok, false);
+    assert.deepEqual(calls, [["gpt", { fresh: true }], ["claude", { fresh: false }]]);
+    // Google 등 다른 계열은 이 경로에 없다.
+    assert.equal((await handleCompanionRequest({ method: "GET", url: "/v1/models?family=gemini" }, adapters)).status, 400);
+    assert.equal((await handleCompanionRequest({ method: "GET", url: "/v1/models" }, adapters)).status, 400);
+    assert.equal((await handleCompanionRequest({ method: "GET", url: "/v1/models?family=gpt" }, {})).status, 501);
   });
 
   it("공개 origin 은 env 가 최우선이고, 없으면 Origin/Host 를 쓴다", () => {
