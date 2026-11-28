@@ -252,7 +252,7 @@ DISPLAY=:78 xwininfo -root -tree | grep -i oprn   # 1272x766 창이 잡히면 �
 - 공급자: `scripts/electron-builder.config.mjs` 의 `publish`(github). 앱은 `releases/latest`(Latest 표시 릴리스)의
   `latest.yml`(윈도 NSIS)·`latest-linux.yml`(AppImage)을 읽는다. 초안은 보이지 않으므로 「검증 뒤 발행」 순서와 맞다.
   electron-builder 는 늘 `--publish never` 로 부르고, 올리기는 릴리스 워크플로가 한다.
-- 흐름: 켠 뒤 15초·6시간마다 조용히 확인 → 뒤에서 받기 → 상단 칩 「v0.x 준비됨 · 다시 시작」 하나.
+- 흐름: 켠 뒤 15초·15분마다 조용히 확인 → 뒤에서 받기 → 상단 칩 「v0.x 준비됨 · 다시 시작」 하나.
   누르면 조수가 끝나길 기다리고 창 닫기와 같은 저장(`src/main.ts` flushForClose)을 한 뒤 재시작한다.
   안 누르면 앱을 끌 때 설치한다. 설정 「일반·언어」 의 「자동 업데이트」 하나로 끈다. 재시작 뒤 바뀐 점을 토스트로 한 번.
 - 수동 확인: 설정 「일반·언어」·「정보」 탭, 시작 화면 `⋯` 메뉴, 에디터 「프로젝트 → 도움말 → 업데이트 확인」, 에디터 가이드 버전 줄, ⌘K 「도움말: 업데이트 확인」 에서 언제든 `oprn:update.check` 로 즉시 확인할 수 있다. 자동 업데이트가 꺼져 있거나 `mode === "off"`(개발·맥 등)일 때도 GitHub 최신 릴리스와 비교해 결과를 알리고 다운로드·재시작으로 이어진다.

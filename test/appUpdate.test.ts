@@ -3,6 +3,8 @@
 // 지우려 하거나(설치판 경로), 설치판이 칩만 띄우고 끝난다. 실제 교체·재시작은 CI e2e(app-update-e2e.yml)가 본다.
 import { describe, expect, it } from "vitest";
 import {
+  APP_UPDATE_FIRST_CHECK_MS,
+  APP_UPDATE_INTERVAL_MS,
   appUpdateButtonView,
   appUpdateChipText,
   appUpdateModeFor,
@@ -118,5 +120,10 @@ describe("appUpdateButtonView", () => {
     expect(appUpdateButtonView({ ...base, state: { kind: "error", message: "네트워크 오류" } })).toMatchObject({
       label: "다시 확인", detail: "네트워크 오류", action: "check", disabled: false,
     });
+  });
+
+  it("자동 업데이트 확인 주기는 시작 15초 후·이후 15분 간격이다", () => {
+    expect(APP_UPDATE_FIRST_CHECK_MS).toBe(15_000);
+    expect(APP_UPDATE_INTERVAL_MS).toBe(15 * 60 * 1000);
   });
 });
