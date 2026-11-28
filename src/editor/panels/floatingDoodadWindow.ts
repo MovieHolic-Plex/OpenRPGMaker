@@ -245,12 +245,17 @@ function tilesetDoodadsFor(tileset: TilesetDef): readonly UnifiedDoodad[] {
     out.push(entry);
   }
 
-  // 4) Wall/ivy/natural doodads (구 지형지물 중 수동 경사로·다리는 길 크레용으로 흡수되어 제외)
+  // 4) Relief doodads (ramps, stairs, bridges, walls)
+  // Trees/rocks (kind === "prop") are already included above as single-object stamps in "nature".
+  // Routing them through source:"relief" duplicated them under "경사로·다리"/"전체" and triggered
+  // terrain cluster scattering (reliefClusterEnabled defaults to true), placing multiple trees per click.
   for (const doodad of reliefDoodadCatalog(tileset)) {
-    if (doodad.kind === "ramp" || doodad.kind === "bridge") continue;
-    if (seenKitIds.has(doodad.kit.id)) continue;
-    seenKitIds.add(doodad.kit.id);
-    const sizeLabel = `${doodad.kit.width}×${doodad.kit.height}`;
+    if (doodad.kind === "prop") continue;
+    const sizeLabel = doodad.kind === "ramp"
+      ? (doodad.stairs ? "2×N" : "4×N")
+      : doodad.kind === "bridge"
+        ? "2×N"
+        : `${doodad.kit.width}×${doodad.kit.height}`;
     out.push({
       key: `relief:${doodad.id}`,
       source: "relief",
@@ -679,6 +684,13 @@ export function mountFloatingDoodadWindow(
       editorState.set({
         layer: "lower",
         activePaletteStamp: null,
+        terrainBrush: "height",
+        terrainPreset: null,
+        terrainMoveGroup: false,
+        terrainPoints: null,
+        terrainHouseDrag: null,
+        terrainVisionPreview: false,
+        reliefClusterEnabled: false,
         reliefDoodad: item.doodad.id,
         reliefDoodadOpen: false,
         reliefBridgeStart: null,

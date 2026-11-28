@@ -86,6 +86,14 @@ describe("pi-ai complete (real @earendil-works/pi-ai + mock fetch)", () => {
     await expect(generateProviderImage("google-antigravity", { model: "gemini-3.1-flash-image", prompt: "슬라임" })).rejects.toMatchObject({ status: 400 });
   });
 
+  test("서버 목록에서 온 새 gpt-*·claude-* 모델은 같은 계열 기준 모델에 ID 만 덮어 쓰고, 다른 계열은 그대로 거절한다", async () => {
+    const { resolveOhMyPiModel } = await import("../scripts/lib/ohMyPiModel.ts");
+    expect(resolveOhMyPiModel("openai-codex", "gpt-9.9-future-sol")).toMatchObject({ id: "gpt-9.9-future-sol" });
+    expect(resolveOhMyPiModel("anthropic", "claude-fable-9-9")).toMatchObject({ id: "claude-fable-9-9" });
+    expect(() => resolveOhMyPiModel("openai-codex", "claude-opus-5-5")).toThrow("대체하지 않았습니다");
+    expect(() => resolveOhMyPiModel("anthropic", "gpt-6.2-sol")).toThrow("대체하지 않았습니다");
+  });
+
   test("지원 목록에 없는 모델은 다른 모델로 대체하지 않고 400 으로 거절한다", async () => {
     await expect(completeProvider("openai-codex", { model: "unknown-selected-model", messages: [{ role: "user", content: "hi" }] })).rejects.toThrow("대체하지 않았습니다");
   });
