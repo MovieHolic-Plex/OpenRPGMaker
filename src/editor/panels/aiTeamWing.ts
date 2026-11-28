@@ -14,7 +14,7 @@ import { editorState } from "@/editor/editorState";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { currentTeamReviewActions, subscribeTeamActivity, type TeamReviewActions } from "@/ai/piAgent/teamActivity";
 import { teamBoardTotals, type TeamBoardAgent, type TeamBoardState } from "@/ai/piAgent/teamBoardState";
-import { store } from "@/project/store";
+import { isTileCellChange, store } from "@/project/store";
 import { clearChildren, el } from "@/util/dom";
 import { plainAction, stopAllPresences } from "./aiPresence";
 import { formatClock } from "./aiRunStream";
@@ -702,16 +702,20 @@ export function mountAiTeamWing(
     }
 
     const effectiveCollapsed = aiPanel.classList.contains("is-collapsed");
-    wing.dataset.active = state.active ? "true" : "false";
-    wing.dataset.phase = state.phase;
-    wing.dataset.mode = folded ? "rail" : "expanded";
+    const nextActive = state.active ? "true" : "false";
+    const nextMode = folded ? "rail" : "expanded";
+    if (wing.dataset.active !== nextActive) wing.dataset.active = nextActive;
+    if (wing.dataset.phase !== state.phase) wing.dataset.phase = state.phase;
+    if (wing.dataset.mode !== nextMode) wing.dataset.mode = nextMode;
     syncFocusClass(state.isFirstBuild && state.phase === "building");
 
     if (!state.active) {
-      wing.hidden = true;
-      inlineStrip.hidden = true;
-      emitPillState({ active: false, label: "", tone: "idle" });
-      lastRenderSig = "";
+      if (!wing.hidden) wing.hidden = true;
+      if (!inlineStrip.hidden) inlineStrip.hidden = true;
+      if (lastRenderSig !== "inactive") {
+        emitPillState({ active: false, label: "", tone: "idle" });
+        lastRenderSig = "inactive";
+      }
       return;
     }
 
@@ -964,8 +968,15 @@ export function mountAiTeamWing(
   };
 
   let initialized = false;
-  const unsubStore = store.subscribe(() => render());
-  const unsubEditor = editorState.subscribe(() => render());
+  const unsubStore = store.subscribe((_project, change) => {
+    if (!isTileCellChange(change)) render();
+  });
+  let lastWingMapId = editorState.get().currentMapId;
+  const unsubEditor = editorState.subscribe((state) => {
+    if (state.currentMapId === lastWingMapId) return;
+    lastWingMapId = state.currentMapId;
+    render();
+  });
   const unsubTeam = subscribeTeamActivity((next) => {
     latestBoard = next;
     const owned = isBoardOwnedByCurrentProject(next);

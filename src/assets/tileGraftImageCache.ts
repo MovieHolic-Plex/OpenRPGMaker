@@ -14,7 +14,8 @@ import {
   createTransparentColorKeyCanvas,
   isColorKeyedChipsetTextureKey,
 } from "@/assets/chipsetTransparency";
-import { activeTileGrafts, createGraftedTilesetCanvas } from "@/assets/tileGrafts";
+import { activeTileGrafts, createGraftedTilesetCanvas, hasActiveTileGrafts } from "@/assets/tileGrafts";
+import { tilesetLookSignature } from "@/assets/tilesetLooks";
 import type { TilesetDef } from "@/project/types";
 import { decodeDataUrlBytes } from "@/project/persistence/core/dataUrl";
 import { canvasPng, type CanvasPng } from "@/util/canvasPngDataUrl";
@@ -43,7 +44,7 @@ export function clearTileGraftImageCache(): void {
 
 // DOM preview URL, or null while baking. Evidence APIs below retain PNG data URLs.
 export function graftedTilesetImageUrl(tileset: TilesetDef, baseUrl: string): string | null {
-  if (activeTileGrafts(tileset).length === 0) return null;
+  if (!hasActiveTileGrafts(tileset)) return null;
   const cacheKey = graftImageCacheKey(tileset, baseUrl);
   const cached = previewUrlCache.get(cacheKey);
   if (cached) return cached;
@@ -53,7 +54,7 @@ export function graftedTilesetImageUrl(tileset: TilesetDef, baseUrl: string): st
 
 /** Cached bake for the exact render inputs, or null when grafts are absent. */
 export function peekGraftedTilesetImageUrl(tileset: TilesetDef, baseUrl: string): string | null {
-  if (activeTileGrafts(tileset).length === 0) return null;
+  if (!hasActiveTileGrafts(tileset)) return null;
   return bakedUrlCache.get(graftImageCacheKey(tileset, baseUrl)) ?? null;
 }
 
@@ -67,7 +68,7 @@ export function awaitGraftedTilesetImageUrl(
   baseUrl: string,
   signal?: AbortSignal,
 ): Promise<string | null> {
-  if (activeTileGrafts(tileset).length === 0) return Promise.resolve(null);
+  if (!hasActiveTileGrafts(tileset)) return Promise.resolve(null);
   if (signal?.aborted) return Promise.resolve(null);
   const cacheKey = graftImageCacheKey(tileset, baseUrl);
   const cached = bakedUrlCache.get(cacheKey);
@@ -105,17 +106,61 @@ function canonicalGraftTuples(tileset: Pick<TilesetDef, "tileGrafts">): Array<{
   }));
 }
 
-function graftImageCacheKey(tileset: GraftBakeSnapshot, baseUrl: string): string {
+type GraftCacheKeyMemo = {
+  readonly length: number;
+  readonly look: string;
+  readonly baseUrl: string;
+  readonly count: number;
+  readonly tileSize: number;
+  readonly tilesPerRow: number;
+  readonly key: string;
+};
+const graftCacheKeyMemo = new WeakMap<NonNullable<TilesetDef["tileGrafts"]>, GraftCacheKeyMemo>();
+
+function graftImageCacheKey(
+  tileset: GraftBakeSnapshot & Partial<Pick<TilesetDef, "look" | "image">>,
+  baseUrl: string,
+): string {
   // Exact identity for ready/in-flight evidence bakes: full active graft tuples
   // (every rendering field) plus atlas geometry and base URL. A short texture
   // suffix hash is not equality — distinct compositions must not share a bucket.
-  return JSON.stringify({
+  // Memoize by tileGrafts array identity + length + geometry + look so repeated
+  // tilesetImageUrl() calls do not re-stringify 2,500–7,700 grafts per hover/click.
+  const source = tileset.tileGrafts;
+  const look = tilesetLookSignature(tileset);
+  if (source && source.length > 0) {
+    const cached = graftCacheKeyMemo.get(source);
+    if (
+      cached
+      && cached.length === source.length
+      && cached.look === look
+      && cached.baseUrl === baseUrl
+      && cached.count === tileset.count
+      && cached.tileSize === tileset.tileSize
+      && cached.tilesPerRow === tileset.tilesPerRow
+    ) {
+      return cached.key;
+    }
+  }
+  const key = JSON.stringify({
     baseUrl,
     count: tileset.count,
     tileSize: tileset.tileSize,
     tilesPerRow: tileset.tilesPerRow,
     grafts: canonicalGraftTuples(tileset),
   });
+  if (source && source.length > 0) {
+    graftCacheKeyMemo.set(source, {
+      length: source.length,
+      look,
+      baseUrl,
+      count: tileset.count,
+      tileSize: tileset.tileSize,
+      tilesPerRow: tileset.tilesPerRow,
+      key,
+    });
+  }
+  return key;
 }
 
 function snapshotGraftBake(tileset: TilesetDef): GraftBakeSnapshot {

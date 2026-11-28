@@ -21,7 +21,7 @@ import { openMapPropertiesDialog, type MapPropertiesFocus } from "@/editor/panel
 import { listDatabaseResourceOptions } from "@/editor/resourceOptions";
 import { isPassable } from "@/project/collision";
 import { eventDisplayName } from "@/project/eventDisplayName";
-import { store } from "@/project/store";
+import { isTileCellChange, store } from "@/project/store";
 import type { GameMap, Project } from "@/project/types";
 import { el } from "@/util/dom";
 
@@ -254,12 +254,17 @@ export function mountRightInspector(cursorHost: HTMLElement): RightInspectorMoun
   let lastCell: { x: number; y: number } | null = null;
   let fingerprint = "";
   let advancedOpen = false;
+  // Avoid reading root.offsetParent on hot cursor/store ticks (which forces a synchronous reflow).
+  // In real browsers ResizeObserver reports visibility; in headless unit tests without ResizeObserver stay active.
+  let visibleInLayout = typeof ResizeObserver !== "function";
+  const isHiddenInLayout = (): boolean => !visibleInLayout;
   const paint = (): void => {
+    if (isHiddenInLayout()) return;
     const view = buildInspectorView(store.getCurrent(), editorState.get(), lastCell);
-    root.dataset.inspectorKind = view.kind;
     const next = JSON.stringify(view);
     if (next === fingerprint) return;
     fingerprint = next;
+    if (root.dataset.inspectorKind !== view.kind) root.dataset.inspectorKind = view.kind;
     const previousAdvanced = root.querySelector?.<HTMLDetailsElement>(".right-inspector-advanced");
     if (previousAdvanced) advancedOpen = previousAdvanced.open;
     root.replaceChildren(...renderView(view));
@@ -268,18 +273,22 @@ export function mountRightInspector(cursorHost: HTMLElement): RightInspectorMoun
   };
   let frame = 0;
   const schedule = (): void => {
-    if (frame) return;
+    if (frame || isHiddenInLayout()) return;
     if (typeof requestAnimationFrame !== "function") { paint(); return; }
     frame = requestAnimationFrame(() => { frame = 0; paint(); });
   };
   const onCursor = (): void => {
+    if (isHiddenInLayout()) return;
     const cell = readCursorCell(cursorHost);
     // 맵 밖으로 나가면 마지막 칸을 그대로 둔다 — 열로 마우스를 옮기는 동안 값이 지워지지 않게.
     if (!cell || (lastCell && cell.x === lastCell.x && cell.y === lastCell.y)) return;
     lastCell = cell;
     schedule();
   };
-  const unsubStore = store.subscribe(() => schedule());
+  const unsubStore = store.subscribe((_project, change) => {
+    if (isHiddenInLayout() || (isTileCellChange(change) && !lastCell)) return;
+    schedule();
+  });
   let previous = editorState.get();
   const unsubEditor = editorState.subscribe((state) => {
     const before = previous;
@@ -290,6 +299,15 @@ export function mountRightInspector(cursorHost: HTMLElement): RightInspectorMoun
   });
   const observer = typeof MutationObserver === "function" ? new MutationObserver(onCursor) : null;
   observer?.observe(cursorHost, { subtree: true, characterData: true, childList: true });
+  const resizeObserver = typeof ResizeObserver === "function"
+    ? new ResizeObserver((entries) => {
+      const nextVisible = entries.some((entry) => entry.contentRect.width > 0);
+      if (nextVisible === visibleInLayout) return;
+      visibleInLayout = nextVisible;
+      if (visibleInLayout) schedule();
+    })
+    : null;
+  resizeObserver?.observe(root);
   paint();
   return {
     root,
@@ -297,6 +315,7 @@ export function mountRightInspector(cursorHost: HTMLElement): RightInspectorMoun
       unsubStore();
       unsubEditor();
       observer?.disconnect();
+      resizeObserver?.disconnect();
       if (frame && typeof cancelAnimationFrame === "function") cancelAnimationFrame(frame);
       frame = 0;
       root.remove();

@@ -174,7 +174,7 @@ export class TilePaintEngine {
         if (mapAfter && mapAfter.events.length > beforeCount) {
           placedId = mapAfter.events[mapAfter.events.length - 1]?.id;
         }
-      }, { scope: "project" });
+      }, { scope: "map", mapId: mid, label: "상호작용 오브젝트 배치" });
       if (placedId) {
         editorState.set({ selectedEventId: placedId });
         toast(`「${prop.name}」 배치 (${x}, ${y})`, "info");

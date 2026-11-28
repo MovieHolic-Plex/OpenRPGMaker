@@ -21,13 +21,31 @@ export function uploadedTilesetAnimationName(tileset: TilesetDef, tile: number):
   return tilesetStripAnimationName(tileset, tile);
 }
 
+const stripAnimNameByTileset = new WeakMap<readonly TilesetAnimationStrip[], { readonly length: number; readonly byTile: Map<number, string> }>();
+
+function stripAnimationLookup(strips: readonly TilesetAnimationStrip[]): Map<number, string> {
+  const cached = stripAnimNameByTileset.get(strips);
+  if (cached && cached.length === strips.length) return cached.byTile;
+  const byTile = new Map<number, string>();
+  for (const strip of strips) {
+    const name = animationName(strip);
+    for (let offset = 0; offset < strip.frames; offset += 1) {
+      const tileId = strip.baseTile + offset;
+      if (!byTile.has(tileId)) byTile.set(tileId, name);
+    }
+  }
+  stripAnimNameByTileset.set(strips, { length: strips.length, byTile });
+  return byTile;
+}
+
 /**
  * 타일셋이 직접 적은 애니메이션 스트립(업로드·번들 공통). 번들 시트에 손으로 그려 붙인 분수·횃불 같은
  * 프레임 묶음도 이 목록으로 움직인다 — 기본 칩셋의 내장 물 스트립(CHIPSET_ANIMATION_STRIPS)과는 별개다.
  */
 export function tilesetStripAnimationName(tileset: TilesetDef, tile: number): string | null {
-  const strip = tileset.animationStrips?.find(s => tile >= s.baseTile && tile < s.baseTile + s.frames);
-  return strip ? animationName(strip) : null;
+  const strips = tileset.animationStrips;
+  if (!strips || strips.length === 0) return null;
+  return stripAnimationLookup(strips).get(tile) ?? null;
 }
 
 /** 스트립마다 `${textureKey}:${이름}` 애니메이션을 한 번만 만든다. 프레임(tile_N)은 이미 등록돼 있어야 한다. */

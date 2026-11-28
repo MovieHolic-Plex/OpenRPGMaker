@@ -153,7 +153,14 @@ export function commitKitStampCapture(capture: KitStampCapture): StructurePlacem
     rect: capture.rect,
     before: capture.before,
   });
-  store.updateMap(capture.mapId, (map) => pushStructurePlacement(map, placement));
+  // Recording placement metadata right after a tile stamp does not touch events or map
+  // dimensions; keep it on the tile-cell fast path so stamping never triggers a full map
+  // structuredClone, full EditScene.redraw(), or full left-dock DOM rebuild.
+  store.updateMapTiles(
+    capture.mapId,
+    (map) => pushStructurePlacement(map, placement),
+    { cells: [{ x: capture.rect.x, y: capture.rect.y, layer: "upper" }] },
+  );
   return placement;
 }
 

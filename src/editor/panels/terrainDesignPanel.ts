@@ -2,7 +2,7 @@ import { mountQuickBuildPanel } from "./quickBuildPanel";
 import { mountTerrainEvolutionPanel } from "./terrainEvolutionPanel";
 import { el } from "@/util/dom";
 import { editorState, type EditorState, type TerrainDesignTool } from "../editorState";
-import { store } from "@/project/store";
+import { isTileCellChange, store } from "@/project/store";
 import { TERRAIN_DESIGN_TOOLS, commitTerrainDesign, isTerrainDesignTool, selectTerrainDesignTool } from "../terrainDesignActions";
 import { shouldIgnoreEditorShortcut } from "../hotkeys";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
@@ -57,8 +57,9 @@ export function mountTerrainDesignPanel(host: HTMLElement): () => void {
   let selectedMap = "";
   const sync = () => {
     const s = editorState.get(), p = store.getCurrent(), map = s.currentMapId ? p.maps[s.currentMapId] : undefined;
-    panel.hidden = !s.terrainDesignOpen || s.tool !== "relief" || s.layer === "event";
-    if (panel.hidden) return;
+    const nextHidden = !s.terrainDesignOpen || s.tool !== "relief" || s.layer === "event";
+    if (panel.hidden !== nextHidden) panel.hidden = nextHidden;
+    if (nextHidden) return;
     const tool = s.terrainBrush;
     for (const [key, field] of fields) field.hidden = !["tool", "symmetry"].includes(key);
     const show = (...keys: string[]) => { for (const key of keys) fields.get(key)!.hidden = false; };
@@ -98,7 +99,7 @@ export function mountTerrainDesignPanel(host: HTMLElement): () => void {
       ? `${count}개 점 · 두 모서리를 찍고 적용하세요. Esc: 취소`
       : `${count}개 점 · 외곽 또는 경유점을 찍고 적용하세요. Esc: 취소`;
   };
-  const offState = editorState.subscribe(sync), offStore = store.subscribe(sync); sync();
+  const offState = editorState.subscribe(sync), offStore = store.subscribe((_project, change) => { if (!isTileCellChange(change)) sync(); }); sync();
   const keydown = (event: KeyboardEvent) => { if (panel.hidden || event.defaultPrevented || hasOpenModalLayer() || shouldIgnoreEditorShortcut(event)) return; if (event.key === "Enter" && !apply.disabled) { event.preventDefault(); event.stopPropagation(); commitTerrainDesign(); } else if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); if (editorState.get().terrainHouseDrag) editorState.set({ terrainHouseDrag: null }); else if (editorState.get().terrainPoints) editorState.set({ terrainPoints: null, terrainFeatureId: null }); else editorState.set({ terrainDesignOpen: false }); } };
   document.addEventListener("keydown", keydown, true);
   let drag: { x: number; y: number; left: number; top: number } | null = null;

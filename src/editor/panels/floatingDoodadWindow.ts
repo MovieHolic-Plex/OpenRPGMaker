@@ -22,7 +22,7 @@ import { reliefTopGrassTile } from "@/editor/reliefActions";
 import { reliefDoodadCatalog, type ReliefDoodad } from "@/editor/reliefDoodads";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { allInteractiveProps, type InteractivePropEntry, type InteractivePropEra } from "@/project/interactiveProps";
-import { store } from "@/project/store";
+import { isTileCellChange, store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 
@@ -663,32 +663,74 @@ export function mountFloatingDoodadWindow(
     });
   }
 
+  function syncSelectionInPlace(): void {
+    if (!open) return;
+    const tileset = currentTileset();
+    const profile = detectArtStyleProfile(tileset);
+    const allItems = unifiedDoodadsFor(tileset);
+    const items = filteredItems(tileset, profile);
+    const activeItem = items.find(isItemSelected) ?? (selectedKey ? items.find((it) => it.key === selectedKey) : undefined);
+    const nextStatus = activeItem
+      ? `${activeItem.name} (${activeItem.sizeLabel}) · 맵 클릭으로 배치`
+      : `오브젝트 ${items.length}개 · 클릭 후 맵에 배치`;
+    if (statusName.textContent !== nextStatus) statusName.textContent = nextStatus;
+    const nextClearHidden = !activeItem;
+    if (clearPickBtn.hidden !== nextClearHidden) clearPickBtn.hidden = nextClearHidden;
+
+    const itemByKey = new Map(allItems.map((it) => [it.key, it]));
+    for (const btn of body.querySelectorAll<HTMLButtonElement>('[data-testid^="floating-doodad-item-"]')) {
+      const key = btn.dataset.testid?.slice("floating-doodad-item-".length) ?? "";
+      const item = itemByKey.get(key);
+      const active = item ? isItemSelected(item) : false;
+      btn.classList.toggle("is-active", active);
+      const pressed = String(active);
+      if (btn.getAttribute("aria-pressed") !== pressed) btn.setAttribute("aria-pressed", pressed);
+    }
+    const resolvedRecent = resolveRecentItems(allItems);
+    resolvedRecent.forEach((item, idx) => {
+      const slot = recentBar.querySelector<HTMLButtonElement>(`[data-testid="floating-doodad-recent-${idx + 1}"]`);
+      if (slot) slot.classList.toggle("is-active", isItemSelected(item));
+    });
+  }
+
+  let suppressEditorSync = false;
   function activateItem(item: UnifiedDoodad): void {
     selectedKey = item.key;
     recordRecent(item.key);
-    if (item.source === "interactive") {
-      editorState.set({ reliefDoodad: null, reliefBridgeStart: null });
-      selectInteractivePropBrush(item.prop.id);
-    } else if (item.source === "relief") {
-      selectInteractivePropBrush(null);
-      selectMapModeTool("relief");
-      editorState.set({
-        layer: "lower",
-        activePaletteStamp: null,
-        reliefDoodad: item.doodad.id,
-        reliefDoodadOpen: false,
-        reliefBridgeStart: null,
-        terrainDesignOpen: false,
-      });
-    } else {
-      selectInteractivePropBrush(null);
-      if (editorState.get().layer === "event") {
-        editorState.set({ layer: item.choice.stamp.cells[0]?.layer ?? "upper" });
+    suppressEditorSync = true;
+    try {
+      if (item.source === "interactive") {
+        editorState.set({ reliefDoodad: null, reliefBridgeStart: null });
+        selectInteractivePropBrush(item.prop.id);
+      } else if (item.source === "relief") {
+        selectInteractivePropBrush(null);
+        selectMapModeTool("relief");
+        editorState.set({
+          layer: "lower",
+          activePaletteStamp: null,
+          reliefDoodad: item.doodad.id,
+          reliefDoodadOpen: false,
+          reliefBridgeStart: null,
+          terrainDesignOpen: false,
+        });
+      } else {
+        selectInteractivePropBrush(null);
+        if (editorState.get().layer === "event") {
+          editorState.set({ layer: item.choice.stamp.cells[0]?.layer ?? "upper" });
+        }
+        editorState.set({ reliefDoodad: null, reliefBridgeStart: null });
+        selectPaletteStamp(item.choice.stamp);
       }
-      editorState.set({ reliefDoodad: null, reliefBridgeStart: null });
-      selectPaletteStamp(item.choice.stamp);
+    } finally {
+      suppressEditorSync = false;
     }
-    renderBody();
+    if (viewMode === "split") {
+      renderBody();
+    } else {
+      const tileset = currentTileset();
+      renderRecentBar(unifiedDoodadsFor(tileset), tileset);
+      syncSelectionInPlace();
+    }
   }
 
   function filteredItems(tileset: TilesetDef | undefined, profile: ArtStyleProfile): readonly UnifiedDoodad[] {
@@ -715,6 +757,7 @@ export function mountFloatingDoodadWindow(
   function renderBody(): void {
     if (!open) return;
     const tileset = currentTileset();
+    lastRenderedTileset = tileset;
     const profile = detectArtStyleProfile(tileset);
     styleLockBtn.classList.toggle("is-locked", styleLocked);
     styleLockBtn.setAttribute("aria-pressed", String(styleLocked));
@@ -977,11 +1020,38 @@ export function mountFloatingDoodadWindow(
   window.addEventListener("keydown", onKeyDown);
   window.addEventListener(FLOATING_DOODAD_PALETTE_TOGGLE_EVENT, onToggleEvent);
 
-  const unsubEditor = editorState.subscribe(() => {
-    if (open) renderBody();
+  let lastRenderedTileset: TilesetDef | undefined;
+  let lastEditorSnapshot = editorState.get();
+  const unsubEditor = editorState.subscribe((state) => {
+    const prev = lastEditorSnapshot;
+    lastEditorSnapshot = state;
+    if (!open || suppressEditorSync) return;
+    if (state.currentMapId !== prev.currentMapId) {
+      renderBody();
+      return;
+    }
+    if (
+      state.activePaletteStamp !== prev.activePaletteStamp
+      || state.activeInteractivePropId !== prev.activeInteractivePropId
+      || state.reliefDoodad !== prev.reliefDoodad
+      || state.tool !== prev.tool
+    ) {
+      if (viewMode === "split") renderBody();
+      else syncSelectionInPlace();
+    }
   });
-  const unsubStore = store.subscribe(() => {
-    if (open) renderBody();
+  const unsubStore = store.subscribe((_project, change) => {
+    if (!open) return;
+    if (change.scope === "map") {
+      if (isTileCellChange(change)) return;
+      const nextTileset = currentTileset();
+      if (nextTileset === lastRenderedTileset) return;
+      lastRenderedTileset = nextTileset;
+      renderBody();
+      return;
+    }
+    lastRenderedTileset = currentTileset();
+    renderBody();
   });
 
   canvasArea.append(win);

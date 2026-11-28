@@ -630,7 +630,19 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
   window.addEventListener(FLOATING_MAP_SWITCHER_OPEN_EVENT, onSwitcherEvent);
 
   const unsubViewport = subscribeEditorCameraViewport(() => drawOverlay());
-  const unsubEditor = editorState.subscribe(() => {
+  let lastMinimapEditor = editorState.get();
+  const unsubEditor = editorState.subscribe((state) => {
+    const prev = lastMinimapEditor;
+    lastMinimapEditor = state;
+    if (
+      state.currentMapId === prev.currentMapId
+      && state.layer === prev.layer
+      && state.tool === prev.tool
+      && state.zoom === prev.zoom
+      && state.selectedEventId === prev.selectedEventId
+    ) {
+      return;
+    }
     syncChrome();
     if (!collapsed) {
       syncThumbnail();
@@ -639,7 +651,6 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
     if (switcherOpen) renderSwitcherList();
   });
   const unsubStore = store.subscribe((_project, change) => {
-    syncChrome();
     if (isTileCellChange(change)) {
       if (settleTimer !== null) clearTimeout(settleTimer);
       settleTimer = setTimeout(() => {
@@ -651,6 +662,7 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
       }, THUMB_SETTLE_MS);
       return;
     }
+    syncChrome();
     if (!collapsed) {
       syncThumbnail(true);
       drawOverlay();
