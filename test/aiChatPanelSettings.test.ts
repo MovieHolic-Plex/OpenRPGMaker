@@ -134,7 +134,7 @@ describe("설정 자동 저장", () => {
     // 고르는 것은 제공자다. 종류 카드는 사라졌고, 제공자 카드를 골라도 전송은 바뀌지 않는다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
-    expect(loadAiConfig()).toMatchObject({ authMode: "chatgpt", providerId: "anthropic" });
+    expect(loadAiConfig()).toMatchObject({ authMode: "chatgpt", providerId: "openai-codex" });
 
     const googleCard = findByTestId(modal, "ai-auth-quick-google-antigravity");
     if (!googleCard) throw new Error("Google provider card missing");
