@@ -2,13 +2,15 @@
 // 조건 기반 자동 릴리스의 **순수 판정**. git·gh 호출은 scripts/release-scheduled.mjs 와
 // scripts/ci-full-diff.mjs 가 하고, 여기는 모은 값을 받아 판정만 한다.
 //
-// 규칙 (오너 2026-11-24 「자동 주기 릴리즈 조건을 기반으로 해라 니추천대로」, 리드 추천 확정):
-//   3시간마다 확인해서 아래를 모두 만족하면 발행한다.
-//   (1) 지난 태그 이후 사용자가 체감할 변경(feat/fix 커밋) 5개 이상
-//   (2) main 의 마지막 ci-full 이 직전 기준 판보다 새 실패 0 (실패 파일 단위 대조)
-//   (3) 마지막 발행에서 12시간 이상
-//   (4) 열린 PR 에 `hold-release` 라벨 없음
-//   하루(최근 24시간) 최대 2판. 안 맞으면 조용히 넘어가고 이유를 기록한다.
+// 규칙 (오너 2026-11-24 조건 기반 도입 → 2026-11-28 초고속 자동 배포 안 B 확정):
+//   1시간마다 확인해서 아래를 모두 만족하면 발행한다.
+//   (1) 지난 태그 이후 사용자가 체감할 변경(feat/fix 커밋) 2개 이상
+//   (2) 마지막 발행에서 2시간 이상
+//   (3) 열린 PR 에 `hold-release` 라벨 없음
+//   (4) 하루(최근 24시간) 최대 12판 (< 12)
+//   (5) 산출물 대기 중인 초안 없음, 열린 release/next PR 없음
+//   ci-full 은 밤 1회 회귀 감시로 분리하고(requireCiFull: false), 릴리스 시점 검증은
+//   release/next 에서 직전 태그 대비 ci-related-tests + ci-fast (+ 필요 시 app-update-e2e) 가 맡는다.
 //
 // (2) 는 v0.418·v0.419 레인이 손으로 한 대조를 그대로 옮긴 것이다: 두 판의 샤드 리포트
 // (`gates-report.json`)에서 실패 파일을 모아, 기준 판에서 돌았고 통과했는데 이번 판에서 실패한
@@ -18,9 +20,10 @@ import { parseCommitSubject } from "./releaseNotes.mjs";
 import { UPDATE_FEED_SINCE } from "./releaseAssets.mjs";
 
 export const AUTO_RELEASE_RULES = Object.freeze({
-  minUserCommits: 5,
-  minHoursSincePublish: 12,
-  maxReleasesPer24h: 2,
+  minUserCommits: 2,
+  minHoursSincePublish: 2,
+  maxReleasesPer24h: 12,
+  requireCiFull: false,
   holdLabel: "hold-release",
   autoLabel: "auto-release",
   appUpdateE2eMaxAgeDays: 14,
@@ -254,16 +257,21 @@ export function decideAutoRelease(input) {
   const userCount = (input.userCommits ?? []).length;
   add("user-commits", `${input.sinceTag ?? "태그"} 이후 사용자 체감 변경(feat/fix)`, userCount >= rules.minUserCommits, `${userCount}개`, `${rules.minUserCommits}개 이상`);
 
-  const diff = input.ciDiff;
-  let ciValue;
-  if (!diff) ciValue = "대조 안 함";
-  else if (diff.error) ciValue = `판정 불가: ${diff.error}`;
-  else {
-    const n = (diff.newFailures ?? []).length;
-    const u = (diff.notInBaseline ?? []).length;
-    ciValue = `새 실패 ${n} · 기준 판에 없던 파일 실패 ${u}`;
+  const requireCiFull = input.requireCiFull ?? rules.requireCiFull;
+  if (requireCiFull) {
+    const diff = input.ciDiff;
+    let ciValue;
+    if (!diff) ciValue = "대조 안 함";
+    else if (diff.error) ciValue = `판정 불가: ${diff.error}`;
+    else {
+      const n = (diff.newFailures ?? []).length;
+      const u = (diff.notInBaseline ?? []).length;
+      ciValue = `새 실패 ${n} · 기준 판에 없던 파일 실패 ${u}`;
+    }
+    add("ci-full", "main 마지막 ci-full 대 기준 판", Boolean(diff && !diff.error && diff.ok), ciValue, "새 실패 0");
+  } else {
+    add("ci-full", "ci-full 게이트", true, "게이트 분리 (밤 1회 감시 · 릴리스는 ci-fast + ci-related-tests)", "분리됨");
   }
-  add("ci-full", "main 마지막 ci-full 대 기준 판", Boolean(diff && !diff.error && diff.ok), ciValue, "새 실패 0");
 
   let hours = null;
   if (input.lastPublishedAt) hours = (now - new Date(input.lastPublishedAt).getTime()) / HOUR_MS;
