@@ -6,6 +6,36 @@
 
 <!-- releases -->
 
+## 0.430.0 — 2026-11-28
+
+### 주요 변경
+
+- **tilesets** — bake Wave 4 Carbon Medium remakes (modern_campus +4) and save monster_rooms showcase (#5380) (`344f475`)
+- **ai** — 2단계 멀티 모델 구독 지원 — 공식 agy ACP 브리지(local-cli:agy)·다중 구독 자동 전환 UI·역할별 라우팅 (#5372) (`61d1b9b`)
+- **editor** — 오른쪽 아래 「✦ 조수」 알약을 조수 열림 여부와 관계없이 늘 보이게 (#5379) (`f881752`)
+
+### 기능
+
+- **tilesets** — bake Wave 4 Carbon Medium remakes (modern_campus +4) and save monster_rooms showcase (#5380) (`344f475`)
+- **ai** — 2단계 멀티 모델 구독 지원 — 공식 agy ACP 브리지(local-cli:agy)·다중 구독 자동 전환 UI·역할별 라우팅 (#5372) (`61d1b9b`)
+
+### 수정
+
+- **editor** — 오른쪽 아래 「✦ 조수」 알약을 조수 열림 여부와 관계없이 늘 보이게 (#5379) (`f881752`)
+
+<details>
+<summary>개발</summary>
+
+### CI
+
+- **release** — 쿨다운 15분·판정 15분 주기로 조정해 실질 30분 발행 위상 정렬 (#5381) (`fb97097`)
+
+### 기타
+
+- fix(event-editor) & perf(editor): 이벤트 더블클릭 전체 크기 플래시 제거 및 배치·칠하기 렉 최적화 (#5366) (`1d5b915`)
+
+</details>
+
 ## 0.429.0 — 2026-11-28
 
 ### 주요 변경
