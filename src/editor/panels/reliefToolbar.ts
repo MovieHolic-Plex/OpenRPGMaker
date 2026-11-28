@@ -33,6 +33,7 @@ import { terrainToolbarIcon } from "./terrainToolbarIcons";
 import { isTerrainDesignTool, selectTerrainDesignTool, TERRAIN_DESIGN_TOOLS, commitTerrainDesign } from "../terrainDesignActions";
 import { TERRAIN_PRESETS, type TerrainPreset } from "../terrainPresets";
 import { brushSizePatch, TERRAIN_BRUSH_SIZES, TERRAIN_LAND_SIZES, TERRAIN_LANDS, terrainLandLabel, type TerrainLand, type TerrainLandSize } from "../terrainLandBrush";
+import { crayonsForContext, detectTerrainContext, resolveActiveCrayon, TERRAIN_CONTEXT_META } from "../terrainCrayons";
 
 const MODES: readonly (readonly [ReliefBrushMode, string, string, string])[] = [
   ["raise", "올리기", "누르고 있으면 계속 쌓인다", '<path d="M4 18h16M7 14l5-8 5 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>'],
@@ -649,34 +650,27 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     ],
   });
   installDelayedTooltips(sidePanel);
-  const syncSide = (state: EditorState): void => {
-    const visible = state.tool === "relief" && state.layer !== "event";
-    let root = sidePanel.parentElement;
-    if (!root && typeof document !== "undefined") {
-      const paletteRoot = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
-      if (paletteRoot) {
-        paletteRoot.querySelector<HTMLElement>('[data-testid="relief-side-panel"]')?.remove();
-        paletteRoot.append(sidePanel);
-        root = paletteRoot;
-      }
-    }
-    sidePanel.hidden = !visible;
+  const syncSide = (_state: EditorState): void => {
+    // 구 좌측 「지형」 거대 사이드 패널은 하단 5-크레용 「지형 개략도」로 일원화되어 항상 숨긴다.
+    sidePanel.hidden = true;
+    const root = sidePanel.parentElement ?? (typeof document !== "undefined" ? document.querySelector<HTMLElement>('[data-testid="left-palette-root"]') : null);
     const tileSurface = root?.querySelector<HTMLElement>(":scope > .palette-work-shell");
-    if (tileSurface) tileSurface.hidden = visible;
+    if (tileSurface && tileSurface.hidden) tileSurface.hidden = false;
   };
   activeReliefSide = { panel: sidePanel, sync: syncSide };
   const dock = el("div", { class: "relief-bar-dock", children: [hint] });
   const host = el("div", { class: "relief-toolbar-host", dataset: { testid: "relief-toolbar" }, children: [pop, dock] });
+  host.hidden = true;
   canvasArea.append(host);
   const offDesign = mountTerrainDesignPanel(host);
   installDelayedTooltips(host);
 
   let hover: ReliefDoodadHoverDetail = null;
   const sync = (state: EditorState): void => {
-    const visible = state.tool === "relief" && state.layer !== "event";
     activeReliefSide?.sync(state);
-    host.hidden = !visible;
-    if (!visible) return;
+    // 모든 지형 개략도 조작은 하단 5-크레용 팔레트(canvasBottomDock)에서 수행하므로 구 툴바는 표시하지 않는다.
+    host.hidden = true;
+    if (host.hidden) return;
     designButton.classList.toggle("is-active", state.terrainDesignOpen);
     designButton.setAttribute("aria-pressed", String(state.terrainDesignOpen));
     designButton.setAttribute("aria-expanded", String(state.terrainDesignOpen));
@@ -751,7 +745,13 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
           : `${picked.label} · 캔버스에서 배치 위치를 고르세요`
       : `지형 · ${MODE_LABEL[state.reliefMode]} · ${MODES.find(([mode]) => mode === state.reliefMode)?.[2] ?? "캔버스에서 드래그"} · 우클릭: ${rightButtonLabel(state.reliefMode)} · Shift: 정밀 붓`;
     if(state.reliefBridgeStart?.mapId===state.currentMapId)hint.textContent="첫 둑 선택됨 — 같은 줄의 반대편 둑을 누른다 · Esc: 시작점 취소";
-    if (presetOn) {
+    if (state.terrainBrush === "crayon" && !state.reliefDoodad) {
+      const map = state.currentMapId ? store.getCurrent().maps[state.currentMapId] : undefined;
+      const ctx = state.terrainContextOverride ?? detectTerrainContext(map, tileset);
+      const active = resolveActiveCrayon(ctx, tileset, state.terrainCrayonId);
+      const sizeText = state.terrainLandSize === "rect" ? "사각형" : state.terrainLandSize <= 1 ? "작게" : state.terrainLandSize <= 3 ? "보통" : "크게";
+      hint.textContent = `${active.hint} · 크기 ${sizeText} · 우클릭: ${TERRAIN_CONTEXT_META[ctx].eraserLabel}`;
+    } else if (presetOn) {
       const preset = TERRAIN_PRESETS.find((entry) => entry.id === presetOn)!;
       hint.textContent = `한 번에 · ${preset.label} · ${preset.help} · 맵을 한 번 누르세요 · Esc: 그만`;
     } else if (landMode && state.terrainLandStep) {
@@ -792,12 +792,32 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     if (!host.hidden) sync(editorState.get());
   };
   const onKey = (event: KeyboardEvent): void => {
-    if (host.hidden || event.defaultPrevented || hasOpenModalLayer() || shouldIgnoreEditorShortcut(event)) return;
     const state = editorState.get();
+    const activeReliefTool = state.tool === "relief" && state.layer !== "event";
+    if (!activeReliefTool || event.defaultPrevented || hasOpenModalLayer() || shouldIgnoreEditorShortcut(event)) return;
     if (event.key === "Enter" && isTerrainDesignTool(state.terrainBrush) && state.terrainPoints) {
       event.preventDefault(); event.stopPropagation(); commitTerrainDesign(); return;
     }
     if (!event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey) {
+      if (state.terrainBrush === "crayon" && !state.reliefDoodad) {
+        const map = state.currentMapId ? store.getCurrent().maps[state.currentMapId] : undefined;
+        const tileset = map ? store.getCurrent().tilesets[map.tilesetId] : undefined;
+        const ctx = state.terrainContextOverride ?? detectTerrainContext(map, tileset);
+        const crayon = crayonsForContext(ctx, tileset).find((entry) => event.code === `Digit${entry.hotkey}`);
+        if (crayon) {
+          event.preventDefault();
+          editorState.set({
+            terrainBrush: "crayon",
+            terrainCrayonId: crayon.id,
+            reliefDoodad: null,
+            reliefDoodadOpen: false,
+            terrainDesignOpen: false,
+            terrainPoints: null,
+            terrainLandRect: null,
+          });
+          return;
+        }
+      }
       const land = TERRAIN_LANDS.find((entry) => event.code === `Digit${entry.key}`);
       if (land) { event.preventDefault(); pickLand(land.land); return; }
       if (event.code === "BracketLeft" || event.code === "BracketRight") {

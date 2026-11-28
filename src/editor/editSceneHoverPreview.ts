@@ -13,6 +13,7 @@ import { planEditorTerrainDoodad, planEditorGroupMove } from "./terrainDoodadPla
 import { groupAt } from "./terrainClusters";
 import { terrainBrushPoints } from "./terrainBrush";
 import { landBrushCells, landStepTarget, TERRAIN_LANDS } from "./terrainLandBrush";
+import { detectTerrainContext, resolveActiveCrayon } from "./terrainCrayons";
 import { presetCells } from "./terrainPresets";
 import { RELIEF_ROUGH_RADII } from "@/project/relief/roughBrush";
 import { cellLift, reliefLiftField, reliefPickCell, reliefReadSignature as reliefSignature } from "@/project/relief/screen";
@@ -75,6 +76,22 @@ function renderReliefHover(spec: HoverPreviewSpec, map: GameMap, tileSize: numbe
     const lift=map.relief?reliefLiftField(map.relief):null;
     const rects=plan?.rects??(group??selected)?.cells.map(c=>{const x=c.index%map.width,y=Math.floor(c.index/map.width);return{x,y:y-(lift?cellLift(lift,x,y):0),w:1,h:1};})??[];
     for (const rect of rects) spec.layer.add(spec.scene.add.rectangle(rect.x*tileSize,rect.y*tileSize,tileSize,tileSize,plan?.ok===false?0xe03131:0x329af0,.25).setOrigin(0,0).setStrokeStyle(1,0x329af0));
+    return;
+  }
+  if (state.terrainBrush === "crayon" && !doodad) {
+    if (state.terrainLandRect || state.terrainLandSize === "rect") return;
+    const flatCenter = { x: spec.centerX, y: spec.groundY ?? spec.centerY };
+    if (flatCenter.x < 0 || flatCenter.y < 0 || flatCenter.x >= map.width || flatCenter.y >= map.height) return;
+    const context = state.terrainContextOverride ?? detectTerrainContext(map, tileset);
+    const active = resolveActiveCrayon(context, tileset, state.terrainCrayonId);
+    const color = Number.parseInt(active.color.slice(1), 16);
+    const size = state.terrainLandSize;
+    for (const center of symmetricPoints(flatCenter, state.terrainSymmetry, map.width, map.height)) {
+      for (const i of landBrushCells(map, center, size)) {
+        const x = i % map.width, y = Math.floor(i / map.width);
+        spec.layer.add(spec.scene.add.rectangle(x * tileSize, y * tileSize, tileSize, tileSize, color, 0.34).setOrigin(0, 0).setStrokeStyle(1, 0xffffff, 0.88));
+      }
+    }
     return;
   }
   if (state.terrainBrush === "land" && !doodad && state.terrainPreset) {
@@ -169,7 +186,7 @@ function hoverPreviewKey(spec: HoverPreviewSpec): string {
     state.terrainAreaShape, state.terrainDelta, state.terrainSeed, JSON.stringify(state.terrainMixWeights), JSON.stringify(state.terrainPoints),
     reliefSignature(store.getCurrent().maps[spec.mapId]?.relief),
     ...(state.tool === "relief"
-      ? [state.reliefDoodad ?? "", state.reliefRoughSize, state.terrainBrush, state.terrainLand, state.terrainLandStep ?? "", state.terrainPreset ?? "", state.terrainLandSize, JSON.stringify(state.terrainLandRect), state.terrainMaterial, state.terrainWidth, state.reliefRampWidth, state.reliefClusterDensity, state.reliefClusterEnabled, JSON.stringify(state.reliefBridgeStart), JSON.stringify(state.terrainSelectedGroup), state.terrainMoveGroup, `${store.getVersionToken().lineage}:${store.getVersionToken().generation}`]
+      ? [state.reliefDoodad ?? "", state.reliefRoughSize, state.terrainBrush, state.terrainContextOverride ?? "", state.terrainCrayonId ?? "", state.terrainLand, state.terrainLandStep ?? "", state.terrainPreset ?? "", state.terrainLandSize, JSON.stringify(state.terrainLandRect), state.terrainMaterial, state.terrainWidth, state.reliefRampWidth, state.reliefClusterDensity, state.reliefClusterEnabled, JSON.stringify(state.reliefBridgeStart), JSON.stringify(state.terrainSelectedGroup), state.terrainMoveGroup, `${store.getVersionToken().lineage}:${store.getVersionToken().generation}`]
       : []),
   ].join("|");
 }

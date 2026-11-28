@@ -12,6 +12,7 @@ import { lineCells, polygonCells, symmetryVariants, transformPoint } from "./ter
 import { planQuickHouseDrag, quickHouseOptions } from "./quickHouse";
 import { drawQuickHousePreview } from "./quickHousePreview";
 import { landRectCells } from "./terrainLandBrush";
+import { detectTerrainContext, resolveActiveCrayon } from "./terrainCrayons";
 
 const cache = new WeakMap<GameMap, { project: Project; tileset: TilesetDef; key: string; result: TerrainRouteResult }>();
 export function terrainRouteResult(project: Project, map: GameMap, route: NonNullable<EditorState["terrainRoute"]>, width: number, state?: EditorState): TerrainRouteResult {
@@ -35,7 +36,14 @@ export function renderTerrainDesignOverlay(scene: Phaser.Scene, layer: Phaser.Ga
     cell(origin.x,origin.y,0x64e3a2,.8,true);
   }
   if (state.terrainLandRect?.mapId === map.id) {
-    const { start, end } = state.terrainLandRect, color = state.terrainLand === "water" ? 0x3f86c9 : 0xffffff;
+    const { start, end } = state.terrainLandRect;
+    let color = state.terrainLand === "water" ? 0x3f86c9 : 0xffffff;
+    if (state.terrainBrush === "crayon") {
+      const ts = project.tilesets[map.tilesetId];
+      const ctx = state.terrainContextOverride ?? detectTerrainContext(map, ts);
+      const active = resolveActiveCrayon(ctx, ts, state.terrainCrayonId);
+      color = Number.parseInt(active.color.slice(1), 16);
+    }
     for (const variant of symmetryVariants(state.terrainSymmetry, map.width, map.height)) for (const i of landRectCells(map, transformPoint(start, map.width, map.height, variant), transformPoint(end, map.width, map.height, variant))) cell(i % map.width, Math.floor(i / map.width), color, .28, true);
   }
   for (const i of map.terrainDesign?.lockedCells ?? []) { const x = i % map.width, y = Math.floor(i / map.width); cell(x, y, 0x9a78cf, .19, true); }

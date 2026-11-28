@@ -115,7 +115,10 @@ function selectSwitcherKey(key: LayerSwitcherKey): void {
   // 맞춤으로 끌고 가 배율·위치가 튀었다 — 사용자가 보던 자리를 잃는 것이 전환 신호보다 비싸다.
   if (key === "relief") {
     selectMapModeTool("relief");
-    editorState.set({ layer: "lower" });
+    editorState.set({ layer: "lower", terrainBrush: "crayon", reliefDoodad: null, reliefDoodadOpen: false });
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new Event("oprn:floating-terrain-palette-open"));
+    }
     return;
   }
   selectSidebarLayer(key);

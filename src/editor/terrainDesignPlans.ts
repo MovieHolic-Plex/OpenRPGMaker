@@ -8,6 +8,7 @@ import { autotileEditTriggersGroup, shapeAutotileGroupAround } from "@/project/d
 import { terrainIsReserved, terrainMaterialTile, terrainRoadTile } from "./terrainMaterials";
 import { reliefDoodadCatalog } from "./reliefDoodads";
 import { connectTerrainRoad } from "./terrainRoadRamps";
+import { RELIEF_BRIDGE } from "@/project/relief/walk";
 import { lineCells, polygonCells, symmetryVariants, terrainHash, transformPoint, type TerrainPoint } from "./terrainDesignGeometry";
 import { genId } from "@/util/id";
 
@@ -137,7 +138,49 @@ export function planTerrainDesign(map: GameMap, tileset: TilesetDef, tool: "cont
   const dirt = terrainRoadTile(tileset), edits: { index: number; tile: number }[] = [];
   if (tool === "road" && dirt === undefined || tool === "mix" && !available.length) return { ok: false, reason: "선택한 재질이 이 칩셋에 없습니다", indices: [] };
   const sum = available.reduce((s, m) => s + m.weight, 0);
+  const waterTile = terrainMaterialTile(tileset, "water");
+  const waterGroups = autotileGroupsForTileset(tileset).filter(g => /water|river|lake|물|강물|호수/i.test(`${g.id} ${g.name}`));
+  const isWaterCell = (idx: number): boolean => {
+    if ((map.terrainDesign?.waterDepth?.[idx] ?? 0) > 0) return true;
+    const t = layerTileAt(map, 1, idx);
+    return (waterTile !== undefined && t === waterTile) || waterGroups.some(g => g.memberTileIds.includes(t));
+  };
+  const bridgeDoodad = tool === "road" ? reliefDoodadCatalog(tileset).find(d => d.kind === "bridge") : undefined;
+  const resolveBridgeDeckTile = (): number => {
+    if (bridgeDoodad?.kind === "bridge") {
+      const t = bridgeDoodad.kit.rows[0]?.tiles.find(v => v >= 0);
+      if (t !== undefined) return t;
+    }
+    const bridgeKit = tileset.structureKits?.find(k =>
+      k.kind === "section" && /plank-footbridge|ground-deck|널다리|부두 널/i.test(`${k.id} ${k.name ?? ""}`),
+    );
+    if (bridgeKit && bridgeKit.kind === "section") {
+      const midRow = bridgeKit.rows[Math.floor(bridgeKit.rows.length / 2)];
+      const t = midRow?.tiles[Math.floor((midRow.tiles.length ?? 0) / 2)] ?? midRow?.tiles.find(v => v >= 0);
+      if (t !== undefined && t >= 0) return t;
+    }
+    const metaIdx = tileset.tileMeta?.findIndex(m =>
+      m && m.defaultLayer !== "upper" && m.passage !== "solid"
+      && /잔교 널판|목교|나무 다리|plank.*deck|wood.*bridge/i.test(`${m.label ?? ""} ${m.description ?? ""}`)
+      && !/움직임/.test(m.description ?? ""),
+    ) ?? -1;
+    if (metaIdx >= 0) return metaIdx;
+    return dirt!;
+  };
+  const bridgeDeckTile = tool === "road" ? resolveBridgeDeckTile() : dirt!;
+  let bridgeCells = 0;
   for (const i of cells) {
+    if (tool === "road" && isWaterCell(i)) {
+      // 물을 가로지르는 길은 자동으로 다리를 놓는다(RELIEF_BRIDGE = 9).
+      next.relief ??= emptyRelief(map.width, map.height);
+      next.relief.ramps ??= new Array<number>(map.width * map.height).fill(0);
+      next.relief.ramps[i] = RELIEF_BRIDGE;
+      setLayerTileAt(next, 1, i, bridgeDeckTile);
+      setLayerTileAt(next, 2, i, -1);
+      touched.add(i);
+      bridgeCells += 1;
+      continue;
+    }
     if (tool === "road" && terrainIsReserved(map, tileset, i)) continue;
     let tile = dirt!;
     if (tool === "mix") { let choice = terrainHash(i % map.width, Math.floor(i / map.width), o.seed) * sum; tile = available.at(-1)!.tile!; for (const m of available) { choice -= m.weight; if (choice < 0) { tile = m.tile!; break; } } }
@@ -147,7 +190,13 @@ export function planTerrainDesign(map: GameMap, tileset: TilesetDef, tool: "cont
   }
   shapeMaterials(next, tileset, edits);
   const connections = tool === "road" && !o.flattenRoad ? connectTerrainRoad(next, centers, o.width, touched) : { ramps: 0, blocked: 0 };
-  return finish(map, next, touched, tool === "road" ? `길 ${edits.length}칸 · 경사 접합 ${connections.ramps}곳${connections.blocked ? ` · 연결 불가 ${connections.blocked}곳 (경로 검사로 확인)` : ""}` : `재질 혼합 ${edits.length}칸 · 시드 ${o.seed}`, tileset);
+  const roadSummary = [
+    `길 ${edits.length + bridgeCells}칸`,
+    connections.ramps ? `경사로 ${connections.ramps}곳` : "",
+    bridgeCells ? `다리 ${bridgeCells}칸` : "",
+    connections.blocked ? `연결 불가 ${connections.blocked}곳` : "",
+  ].filter(Boolean).join(" · ");
+  return finish(map, next, touched, tool === "road" ? roadSummary : `재질 혼합 ${edits.length}칸 · 시드 ${o.seed}`, tileset);
 }
 
 export function planMixedCluster(map: GameMap, tileset: TilesetDef, center: TerrainPoint, o: TerrainDesignOptions): TerrainDesignPlan {

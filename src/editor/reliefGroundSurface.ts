@@ -72,10 +72,12 @@ export function reliefGroundAvailable(map: GameMap, image: unknown): boolean {
   prepareReliefRead(map);
   return (isImage(image) || bandedSheet(image) !== null) && hasRelief(map.relief);
 }
-export function reliefTilesetImage(textures: { get?(key: string): unknown } | undefined, key: string): unknown {
-  const texture = textures?.get?.(key) as { source?: unknown[]; getSourceImage?(): unknown } | undefined;
-  if ((texture?.source?.length ?? 0) > 1) return texture;
-  return texture?.getSourceImage?.();
+export function reliefTilesetImage(textures: { exists?(key: string): boolean; get?(key: string): unknown } | undefined, key: string): unknown {
+  if (textures?.exists && !textures.exists(key)) return undefined;
+  const texture = textures?.get?.(key) as { key?: string; source?: unknown[]; getSourceImage?(): unknown } | undefined;
+  if (!texture || texture.key === "__MISSING") return undefined;
+  if ((texture.source?.length ?? 0) > 1) return texture;
+  return texture.getSourceImage?.();
 }
 const mix = (h: number, v: number) => Math.imul(h ^ v, 0x01000193);
 const fingerprint = (map: GameMap, i: number) => {

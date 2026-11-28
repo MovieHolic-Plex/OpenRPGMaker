@@ -182,7 +182,7 @@ import { cellLift, reliefCellLiftPx, reliefLiftField, reliefPickCell, reliefRead
 import type { ReliefData } from "@/project/relief/types";
 import { ReliefLiveStrips } from "@/editor/reliefLiveStrips";
 import { SunlightLayer } from "@/player/sunlightLayer";
-import { tilesetTextureKey } from "@/editor/tilesetImage";
+import { ensureTilesetTexture } from "@/editor/tilesetImage";
 
 const PhaserRuntime = getLoadedPhaser();
 
@@ -2834,7 +2834,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (map) prepareReliefRead(map);
     const tileSize = this.activeTileSize();
     const tileset = map ? store.getCurrent().tilesets[map.tilesetId] : undefined;
-    const textureKey = tileset ? tilesetTextureKey(tileset) : null;
+    const textureKey = tileset ? ensureTilesetTexture(this, tileset) : null;
     const ground = map && tileset && relief && textureKey ? reliefGroundFromImage(map, tileset, reliefTilesetImage(this.textures, textureKey)) : undefined;
     const active = editorState.get().layer;
     strips.setGroundAppearance(ground ? active === "upper" ? .58 : active === "event" ? .62 : 1 : 1, ground && active === "upper" ? 0xc8d9bf : null);
@@ -3084,7 +3084,7 @@ export class EditScene extends PhaserRuntime.Scene {
       state.showGrid ? "grid" : "nogrid",
       state.terrainReachability ? "reach" : "noreach",
       ...(state.terrainVisionPreview ? [Math.floor(this.cameras.main.scrollX / 16), Math.floor(this.cameras.main.scrollY / 16), this.cameras.main.zoom, this.cameras.main.width, this.cameras.main.height] : []),
-      JSON.stringify(state.terrainHouseDrag), JSON.stringify(state.terrainLandRect), state.terrainLand, state.terrainHouseStyle, state.terrainHouseKitId, state.terrainHouseWidth, state.terrainHouseStories, state.terrainHouseResize, state.terrainHouseRoofWidth, JSON.stringify(state.terrainPoints), JSON.stringify(state.terrainRoute), state.terrainRouteWidth, JSON.stringify(state.terrainRouteBody), state.terrainRouteEvents, state.terrainRouteDoorId, state.terrainRouteDoors, JSON.stringify(state.terrainRouteSwitches), state.terrainVisionPreview, JSON.stringify(state.terrainVisionOrigin), state.terrainSymmetry, state.terrainBrush,
+      JSON.stringify(state.terrainHouseDrag), JSON.stringify(state.terrainLandRect), state.terrainLand, state.terrainContextOverride ?? "", state.terrainCrayonId ?? "", state.terrainHouseStyle, state.terrainHouseKitId, state.terrainHouseWidth, state.terrainHouseStories, state.terrainHouseResize, state.terrainHouseRoofWidth, JSON.stringify(state.terrainPoints), JSON.stringify(state.terrainRoute), state.terrainRouteWidth, JSON.stringify(state.terrainRouteBody), state.terrainRouteEvents, state.terrainRouteDoorId, state.terrainRouteDoors, JSON.stringify(state.terrainRouteSwitches), state.terrainVisionPreview, JSON.stringify(state.terrainVisionOrigin), state.terrainSymmetry, state.terrainBrush,
     ].join("|");
   }
 

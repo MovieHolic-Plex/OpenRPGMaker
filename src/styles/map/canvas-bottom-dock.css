@@ -90,6 +90,10 @@
   overflow: hidden;
 }
 
+.cbd-card.is-terrain-wide {
+  width: 492px;
+}
+
 .cbd-card[hidden] {
   display: none;
 }
@@ -98,9 +102,208 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   padding: 7px 10px;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--border-subtle);
+}
+
+.cbd-card-head-left {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.cbd-ctx-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 23px;
+  padding: 0 9px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-pill, 999px);
+  background: var(--bg-inset);
+  color: var(--text-1);
+  font: 600 11px/1 var(--font-ui);
+  cursor: pointer;
+}
+
+.cbd-ctx-pill:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+}
+
+.cbd-ctx-pill.is-active {
+  background: color-mix(in srgb, var(--accent) 16%, var(--bg-inset));
+  border-color: var(--accent);
+  color: var(--text-1);
+}
+
+.cbd-ctx-caret {
+  font-size: 9px;
+  color: var(--text-3);
+}
+
+.cbd-ctx-menu {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+  padding: 6px;
+  border-radius: var(--radius-s);
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+}
+
+.cbd-ctx-option {
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  background: var(--bg-surface);
+  color: var(--text-2);
+  font: 600 11px/1 var(--font-ui);
+  text-align: left;
+  cursor: pointer;
+}
+
+.cbd-ctx-option:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.cbd-ctx-option.is-active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, var(--bg-surface));
+  color: var(--text-1);
+}
+
+.cbd-crayon-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.cbd-crayon-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 7px 4px 6px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-inset);
+  color: var(--text-1);
+  font: 600 11px/1.15 var(--font-ui);
+  cursor: pointer;
+  min-width: 0;
+}
+
+.cbd-crayon-card:hover {
+  background: var(--bg-hover);
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border-default));
+}
+
+.cbd-crayon-card.is-active {
+  background: color-mix(in srgb, var(--accent) 18%, var(--bg-inset));
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.cbd-crayon-card:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.cbd-crayon-key {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--bg-overlay) 82%, transparent);
+  color: var(--text-2);
+}
+
+.cbd-crayon-card.is-active .cbd-crayon-key {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.cbd-crayon-thumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 5px;
+  border: 1px solid var(--border-default);
+  flex: none;
+  overflow: hidden;
+  image-rendering: pixelated;
+  display: block;
+}
+
+.cbd-crayon-thumb.is-svg {
+  width: 44px;
+  height: 36px;
+}
+
+.cbd-crayon-name {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-1);
+  white-space: nowrap;
+}
+
+.cbd-crayon-badge {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: var(--text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.cbd-crayon-card.is-active .cbd-crayon-badge {
+  color: var(--accent);
+}
+
+.cbd-size-pill {
+  height: 26px;
+  padding: 0 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-inset);
+  color: var(--text-2);
+  font: 600 11px/1 var(--font-ui);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.cbd-size-pill:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.cbd-size-pill.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.cbd-foot-main {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.cbd-foot-sub {
+  flex: none;
+  font-weight: 600;
+  color: var(--text-2);
+  white-space: nowrap;
 }
 
 .cbd-card-title {
@@ -230,10 +433,15 @@
 }
 
 .cbd-card-foot {
-  padding: 6px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 10px;
   background: var(--bg-surface);
   border-top: 1px solid var(--border-subtle);
   font-size: 10.5px;
+  line-height: 1.35;
   color: var(--text-3);
 }
 
@@ -1074,6 +1282,86 @@
 }
 
 .fdw-resize-grip:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.fdw-house-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 8px;
+  margin-bottom: 8px;
+  border-radius: var(--radius-s);
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+}
+
+.fdw-house-bar.is-active {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, var(--bg-inset));
+}
+
+.fdw-house-toggle {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-s);
+  background: var(--bg-surface);
+  color: var(--text-1);
+  font: 700 11.5px/1 var(--font-ui);
+  cursor: pointer;
+  white-space: nowrap;
+  flex: none;
+}
+
+.fdw-house-toggle:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+}
+
+.fdw-house-toggle.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.fdw-house-select {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-surface);
+  color: var(--text-1);
+  font: 600 11px/1 var(--font-ui);
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.fdw-house-select:hover {
+  background: var(--bg-hover);
+  border-color: var(--accent);
+}
+
+.fdw-house-chip {
+  height: 28px;
+  padding: 0 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-surface);
+  color: var(--text-2);
+  font: 700 11px/1 var(--font-ui);
+  cursor: pointer;
+  white-space: nowrap;
+  flex: none;
+}
+
+.fdw-house-chip:hover {
   background: var(--bg-hover);
   color: var(--text-1);
 }

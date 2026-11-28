@@ -1,13 +1,13 @@
-/* ── 플로팅 미니맵 + 맵 스위처 HUD (Phase 1 · SCMDraft 2 감성) ─────────────────
-   캔버스 좌상단에 떠서 고정 왼쪽 열 없이도 카메라 이동·모드 확인·맵 전환을 1클릭으로 처리한다.
-   색은 tokens.css 변수만 사용(hex 0, !important 0). */
+/* ── 플로팅 미니맵 + 맵 스위처 + 분위기/광원 HUD (Phase 1 · SCMDraft 2 감성 + 안 2) ──
+   캔버스 좌상단에 떠서 고정 왼쪽 열 없이도 카메라 이동·모드 확인·맵 전환·분위기 연출을 1클릭으로 처리한다.
+   색은 tokens.css 변수만 사용한다. */
 
 .floating-minimap-hud {
   position: absolute;
   left: 12px;
   top: calc(var(--persistence-banner-height, 0px) + var(--image-generation-notice-height, 0px) + 12px);
   z-index: 34;
-  width: 196px;
+  width: 212px;
   display: flex;
   flex-direction: column;
   border-radius: var(--radius-m);
@@ -23,7 +23,7 @@
 
 .floating-minimap-hud.is-collapsed {
   width: auto;
-  max-width: 210px;
+  max-width: 228px;
 }
 
 .floating-minimap-hud.is-collapsed .fmh-stage,
@@ -69,7 +69,14 @@
 .fmh-icon-btn:focus-visible,
 .fmh-mode-btn:focus-visible,
 .fmh-switcher-row:focus-visible,
-.fmh-switcher-action:focus-visible {
+.fmh-switcher-action:focus-visible,
+.fmh-mood-tab:focus-visible,
+.fmh-mood-card:focus-visible,
+.fmh-mood-toggle:focus-visible,
+.fmh-mood-chip:focus-visible,
+.fmh-genre-pill:focus-visible,
+.fmh-scene-row:focus-visible,
+.fmh-particle-chip:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
@@ -95,6 +102,7 @@
 }
 
 .fmh-icon-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -114,10 +122,20 @@
   color: var(--text-1);
 }
 
+.fmh-mood-btn.has-mood {
+  color: var(--warning);
+  background: var(--warning-muted);
+}
+
+.fmh-mood-btn.is-active {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
 /* ── Minimap Stage ── */
 .fmh-stage {
   position: relative;
-  width: 180px;
+  width: 196px;
   height: 112px;
   margin: 6px auto 0;
   border-radius: var(--radius-s);
@@ -215,7 +233,8 @@
   z-index: 42;
 }
 
-.fmh-switcher-popover[hidden] {
+.fmh-switcher-popover[hidden],
+.fmh-mood-popover[hidden] {
   display: none;
 }
 
@@ -310,7 +329,7 @@
 .fmh-switcher-badge {
   flex: none;
   padding: 1.5px 5px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 9.5px;
   font-weight: 600;
 }
@@ -364,11 +383,346 @@
   background: var(--bg-hover);
 }
 
+/* ── Floating Mood & Lighting Popover (☀ 분위기 · 광원) ── */
+.fmh-mood-popover {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 6px);
+  width: 344px;
+  max-height: 468px;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-m);
+  background: color-mix(in srgb, var(--bg-overlay) 95%, transparent);
+  backdrop-filter: blur(18px) saturate(1.08);
+  border: 1px solid var(--border-default);
+  box-shadow: var(--shadow-pop);
+  overflow: hidden;
+  z-index: 44;
+}
+
+.fmh-mood-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 7px 9px 6px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.fmh-mood-title {
+  font: 700 12px/1 var(--font-ui);
+  color: var(--text-1);
+}
+
+.fmh-mood-head-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.fmh-mood-chip {
+  height: 22px;
+  padding: 0 7px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--bg-inset);
+  color: var(--text-2);
+  font: 600 10.5px/1 var(--font-ui);
+  cursor: pointer;
+}
+
+.fmh-mood-chip:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.fmh-mood-chip.is-active {
+  background: var(--accent-muted);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.fmh-mood-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 3px;
+  padding: 5px 8px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.fmh-mood-tab {
+  height: 25px;
+  padding: 0 4px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  background: transparent;
+  color: var(--text-2);
+  font: 600 11px/1 var(--font-ui);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.fmh-mood-tab:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.fmh-mood-tab.is-active {
+  background: var(--bg-raised);
+  border-color: var(--border-default);
+  color: var(--text-1);
+  box-shadow: var(--shadow-control);
+}
+
+.fmh-mood-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.fmh-mood-section-label {
+  font: 600 10.5px/1.2 var(--font-ui);
+  color: var(--text-3);
+  padding: 0 2px;
+}
+
+.fmh-mood-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.fmh-mood-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  padding: 6px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  cursor: pointer;
+  text-align: left;
+}
+
+.fmh-mood-card:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-default);
+}
+
+.fmh-mood-card.is-active {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+}
+
+.fmh-mood-card-top {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: 100%;
+  min-width: 0;
+}
+
+.fmh-mood-card-icon {
+  flex: none;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.fmh-mood-card-title {
+  font: 600 11px/1.2 var(--font-ui);
+  color: var(--text-1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fmh-mood-card-sub {
+  font: 400 10px/1.2 var(--font-ui);
+  color: var(--text-3);
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fmh-mood-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 5px;
+}
+
+.fmh-mood-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+  height: 27px;
+  padding: 0 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-inset);
+  color: var(--text-2);
+  font: 600 11px/1 var(--font-ui);
+  cursor: pointer;
+}
+
+.fmh-mood-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.fmh-mood-toggle.is-active {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Genre & 30 Scene Presets + 19 Particle Chips ── */
+.fmh-genre-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.fmh-genre-pill {
+  height: 22px;
+  padding: 0 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--bg-inset);
+  color: var(--text-2);
+  font: 600 10.5px/1 var(--font-ui);
+  cursor: pointer;
+}
+
+.fmh-genre-pill:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.fmh-genre-pill.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+.fmh-scene-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fmh-scene-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
+  background: var(--bg-raised);
+  color: var(--text-1);
+  cursor: pointer;
+  text-align: left;
+}
+
+.fmh-scene-row:hover {
+  background: var(--bg-hover);
+  border-color: var(--border-default);
+}
+
+.fmh-scene-row.is-active {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+}
+
+.fmh-scene-name {
+  flex: none;
+  font: 600 11.5px/1.2 var(--font-ui);
+  color: var(--text-1);
+}
+
+.fmh-scene-desc {
+  flex: 1 1 auto;
+  min-width: 0;
+  font: 400 10.5px/1.2 var(--font-ui);
+  color: var(--text-3);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fmh-particle-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.fmh-particle-chip {
+  height: 22px;
+  padding: 0 7px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--bg-inset);
+  color: var(--text-2);
+  font: 500 10.5px/1 var(--font-ui);
+  cursor: pointer;
+}
+
+.fmh-particle-chip:hover {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.fmh-particle-chip.is-active {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.fmh-mood-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 6px 8px;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--bg-surface);
+}
+
+.fmh-mood-summary {
+  flex: 1 1 auto;
+  min-width: 0;
+  font: 500 10.5px/1.2 var(--font-ui);
+  color: var(--text-2);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fmh-mood-foot-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+
 /* 좁은 모바일 화면에서는 캔버스 확보를 위해 미니맵 본문을 숨기고 한 줄 알약만 남긴다. */
 @media (max-width: 560px) {
   .floating-minimap-hud {
     width: auto;
-    max-width: 184px;
+    max-width: 204px;
   }
   .floating-minimap-hud .fmh-stage,
   .floating-minimap-hud .fmh-foot {
@@ -376,5 +730,8 @@
   }
   .floating-minimap-hud .fmh-head {
     border-bottom: 0;
+  }
+  .fmh-mood-popover {
+    width: min(320px, calc(100vw - 24px));
   }
 }

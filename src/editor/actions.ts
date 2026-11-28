@@ -4,6 +4,7 @@ import { CINEMATIC_COMBO_PRESETS, patchPostFx, type CinematicComboId } from "@/p
 import { normalizeAtmosphereEffects } from "@/project/atmosphere";
 import { normalizeLightingState } from "@/project/lightingRules";
 import { normalizeMapClimate, type MapClimate } from "@/project/mapClimate";
+import { DEFAULT_TERRAIN_GAMEPLAY, normalizeTerrainDesign } from "@/project/terrainDesign";
 // editor/actions.ts
 // 에디터에서 Project를 갱신하는 모든 액션. store.update(mutator) 경유.
 // v2: 3레이어(lower/upper/event) + tileset.passability 기반.
@@ -650,7 +651,38 @@ export function applyCinematicCombo(mapId: MapId, comboId: CinematicComboId): vo
           : [],
       });
     }
+
+    if (comboId === "classic-clean") {
+      delete map.climate;
+      delete map.cloudShadows;
+    } else if (combo.weather && combo.weather.kind !== "none") {
+      map.climate = normalizeMapClimate({
+        mode: "fixed",
+        weather: combo.weather.kind,
+        intensity: combo.weather.intensity,
+      });
+    } else if (map.climate?.mode === "fixed") {
+      delete map.climate;
+    }
   }, { scope: "map", mapId, label: `시네마틱 콤보: ${combo.label}` });
+}
+
+export function setMapVisionBlocking(mapId: MapId, visionBlocking: boolean): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    const prevGameplay = map.terrainDesign?.gameplay ?? DEFAULT_TERRAIN_GAMEPLAY;
+    const next = normalizeTerrainDesign(
+      {
+        ...(map.terrainDesign ?? {}),
+        gameplay: { ...prevGameplay, visionBlocking },
+      },
+      map.width * map.height,
+    );
+    if (next) map.terrainDesign = next;
+    else delete map.terrainDesign;
+  }, { scope: "map", mapId, label: "시야 차단(전장의 안개)" });
 }
 
 function allowMapMutation(mapId: MapId): boolean {
