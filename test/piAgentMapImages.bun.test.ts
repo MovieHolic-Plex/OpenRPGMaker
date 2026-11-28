@@ -1,6 +1,6 @@
 import { test } from "bun:test";
 import assert from "node:assert/strict";
-import { createAssistantMessageEventStream } from "@oh-my-pi/pi-ai";
+import { createAssistantMessageEventStream } from "@earendil-works/pi-ai";
 import { createBlankProject } from "../src/project/defaults";
 import { runPiAgent } from "../scripts/lib/piAgentRuntime";
 import { requestPiRender, resolvePiRender } from "../scripts/lib/piRenderBroker";
@@ -12,7 +12,7 @@ test("map image reaches the next model call in read-only mode", async () => {
   const mapId = Object.keys(project.maps)[0]!;
   let turn = 0, consumed = false;
   const done = await runPiAgent({
-    provider: "google-antigravity", task: "Inspect map", project, mapIds: [mapId],
+    provider: "openai-codex", task: "Inspect map", project, mapIds: [mapId],
     readOnly: true, maxTurns: 3, initialToolNames: ["show_map_region"],
   }, {
     renderToolImage: async (draft, name, data) => {

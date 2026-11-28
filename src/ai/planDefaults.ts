@@ -66,11 +66,7 @@ export function planCandidates(rows: readonly DetectedCli[], accounts: readonly 
   if (ready(rows, "claude")) {
     out.push({ key: "claude-cli", kind: "local-cli", name: "Claude 구독", setup: "Sonnet 5.5 하나가 계획부터 만들기까지 해요.", engine: CLAUDE_SUBSCRIPTION_ENGINE });
   }
-  if (ready(rows, "gemini")) {
-    out.push({ key: "gemini-cli", kind: "local-cli", name: "Gemini CLI 구글 로그인", setup: "Gemini CLI 기본 모델로 해요.", engine: { kind: "local-cli", cli: "gemini", effort: "medium" } });
-  } else if (signedIn(accounts, GOOGLE_ACCOUNT_PROVIDER_ID)) {
-    out.push({ key: "google-account", kind: "account", name: "Google 로그인", setup: "Google 계정의 기본 모델(Gemini 4 Argon)로 해요.", providerId: GOOGLE_ACCOUNT_PROVIDER_ID });
-  }
+  // Google Antigravity 직접 OAuth와 종료된 Gemini CLI 는 추천 후보에서 제외한다(계정 정지 방지).
   return out;
 }
 

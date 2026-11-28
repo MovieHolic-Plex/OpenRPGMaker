@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, spyOn, test } from "bun:test";
 import { mkdirSync, writeFileSync } from "node:fs";
-import { createAssistantMessageEventStream } from "@oh-my-pi/pi-ai";
+import { createAssistantMessageEventStream } from "@earendil-works/pi-ai";
 import { runPiAgent } from "../scripts/lib/piAgentRuntime.ts";
 import { CODEX_WEB_SEARCH_ENDPOINT } from "../scripts/lib/codexWebSearchRuntime.ts";
 import { createBlankProject } from "../src/project/defaults.ts";
@@ -44,7 +44,7 @@ function model(batches: Call[][], contexts: any[] = []) {
 
 function request(overrides: Partial<PiAgentRequest> = {}): PiAgentRequest {
   return {
-    provider: "google-antigravity", mode: "single", task: "독립 조회 후 제목 변경", mapIds: [],
+    provider: "openai-codex", mode: "single", task: "독립 조회 후 제목 변경", mapIds: [],
     project: createBlankProject(), initialToolNames: ["get_project_summary", "set_project_settings"],
     maxTurns: 5, applyMode: "default", ...overrides,
   };

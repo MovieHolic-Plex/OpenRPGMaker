@@ -49,19 +49,25 @@ export interface AutoPick {
 /** 남은 비율이 이보다 적으면 low. 고르기에는 영향이 없고(그래도 쓴다) 칩 색에만 쓴다. */
 export const LOW_QUOTA_FRACTION = 0.1;
 
+/** 계정 정지 위험 또는 지원 중단으로 자동 선택에서 제외하는 제공자. */
+const DISABLED_AUTO_PROVIDERS = new Set<string>([
+  ANTIGRAVITY_PROVIDER_ID,
+  "google-gemini-cli",
+  localCliProviderId("gemini"),
+]);
+
 /**
  * 자동 선택 우선순위. ChatGPT 길이 먼저다(조수 출하 기본 = ChatGPT GPT-6.2 Sol · high, 오너 결정 2026-11-28).
- * 편집기 안 ChatGPT 계정·이 PC 의 Codex CLI 구독, 그다음 Claude · Google, 그 밖의 키 길(xAI · OpenRouter · Gemini CLI …)은 레지스트리 순서,
+ * 편집기 안 ChatGPT 계정·이 PC 의 Codex CLI 구독, 그다음 Claude, 그 밖의 키 길(xAI · OpenRouter …)은 레지스트리 순서,
  * 사용자 지정 엔드포인트(DeepSeek 등 OpenAI 호환)는 맨 뒤.
+ * Google Antigravity / Gemini CLI OAuth 는 계정 보호를 위해 제외한다.
  */
 export const AUTO_PROVIDER_PRIORITY: readonly string[] = [
   CODEX_PROVIDER_ID,
   localCliProviderId("codex"),
   ANTHROPIC_PROVIDER_ID,
   localCliProviderId("claude"),
-  ANTIGRAVITY_PROVIDER_ID,
-  ...OH_MY_PI_PROVIDERS.map((provider) => provider.id).filter((id) => id !== CODEX_PROVIDER_ID && id !== ANTHROPIC_PROVIDER_ID && id !== ANTIGRAVITY_PROVIDER_ID),
-  localCliProviderId("gemini"),
+  ...OH_MY_PI_PROVIDERS.map((provider) => provider.id).filter((id) => id !== CODEX_PROVIDER_ID && id !== ANTHROPIC_PROVIDER_ID && !DISABLED_AUTO_PROVIDERS.has(id)),
 ];
 
 /** 우선순위 순위. 모르는 id 는 뒤로, 사용자 지정 엔드포인트는 그보다도 뒤(같은 무리 안에서는 들어온 순서). */
@@ -111,9 +117,8 @@ export function pickAutoProvider(input: {
     };
   }
   const skipped: { providerId: string; why: SkipWhy }[] = [];
-  const connected = ordered.filter((route) => route.connected);
-  for (const route of ordered) {
-    if (!route.connected) continue;
+  const connected = ordered.filter((route) => route.connected && !DISABLED_AUTO_PROVIDERS.has(route.providerId));
+  for (const route of connected) {
     if (route.toolCalls === false) { skipped.push({ providerId: route.providerId, why: "no-tools" }); continue; }
     const quota = providerQuotaState(route, now);
     if (quota === "exhausted") { skipped.push({ providerId: route.providerId, why: "limited" }); continue; }

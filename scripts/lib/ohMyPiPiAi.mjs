@@ -5,7 +5,7 @@
 import http from "node:http";
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { delimiter, join } from "node:path";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import {
@@ -97,6 +97,7 @@ export function markOhMyPiWorkerStale() {
 function startWorker() {
   if (workerStale) stopOhMyPiWorker();
   if (workerPortPromise) return workerPortPromise;
+  let syncFailed = false;
   let promise;
   promise = new Promise((resolve, reject) => {
     // 스크립트 경로는 bun 으로 스크립트를 띄울 때만 계산한다. CJS 번들(Electron 메인)에서는 import.meta.url 이
@@ -104,19 +105,56 @@ function startWorker() {
     // 여기서 무조건 평가하면 패키지 워커(OPRN_OH_MY_PI_WORKER_BIN)를 띄우기 전에 모든 채팅이
     // 500 "Invalid URL" 로 죽는다(2026-09-27 실측: 패키징된 linux 앱).
     const workerScript = () => process.env.OPRN_OH_MY_PI_WORKER_SCRIPT || fileURLToPath(new URL("../oh-my-pi-worker.ts", import.meta.url));
-    const localBun = join(homedir(), ".bun", "bin", "bun");
-    const bun = process.env.OPRN_BUN_PATH || (existsSync(localBun) ? localBun : "bun");
+    const nodeEnv = process.versions.electron ? { ...process.env, ELECTRON_RUN_AS_NODE: "1" } : { ...process.env };
     // Tests point this at a script that crashes on startup to pin the failure contract.
     const command = process.env.OPRN_OH_MY_PI_WORKER_COMMAND;
     const packedBin = process.env.OPRN_OH_MY_PI_WORKER_BIN;
-    const child = command
-      ? spawn(command, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env }, shell: true })
-      : packedBin && existsSync(packedBin)
-        ? spawn(packedBin, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env } })
-        : spawn(bun, [workerScript()], {
-          stdio: ["ignore", "pipe", "pipe"],
-          env: { ...process.env },
-        });
+    const findBunInPath = () => {
+      const localBun = join(homedir(), ".bun", "bin", process.platform === "win32" ? "bun.exe" : "bun");
+      if (process.env.OPRN_BUN_PATH) return process.env.OPRN_BUN_PATH;
+      if (existsSync(localBun)) return localBun;
+      const names = process.platform === "win32" ? ["bun.exe", "bun.cmd"] : ["bun"];
+      for (const dir of (process.env.PATH || "").split(delimiter)) {
+        if (!dir) continue;
+        for (const name of names) {
+          const candidate = join(dir, name);
+          if (existsSync(candidate)) return candidate;
+        }
+      }
+      return null;
+    };
+    const spawnSourceWorker = () => {
+      const scriptPath = workerScript();
+      if (/\.(?:cjs|mjs|js)$/u.test(scriptPath)) {
+        return spawn(process.execPath, [scriptPath], { stdio: ["ignore", "pipe", "pipe"], env: nodeEnv });
+      }
+      // 개발 모드(.ts 소스 직접 실행): src/ 내부에 확장자 생략 .ts import 가 있어 bun(있으면 우선)으로 띄우고,
+      // bun 이 없으면 미리 빌드된 순수 Node 번들(dist-electron/ai-worker.mjs)로 폴백한다.
+      // (vite-node 는 저장소 전체에 chokidar 감시를 걸어 EMFILE 을 일으키므로 쓰지 않는다.)
+      const bunBin = findBunInPath();
+      if (bunBin) {
+        return spawn(bunBin, [scriptPath], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env } });
+      }
+      const builtBundle = join(process.cwd(), "dist-electron", "ai-worker.mjs");
+      if (existsSync(builtBundle)) {
+        return spawn(process.execPath, [builtBundle], { stdio: ["ignore", "pipe", "pipe"], env: nodeEnv });
+      }
+      throw new Error("AI 워커 번들(dist-electron/ai-worker.mjs)이 없고 bun 도 설치되어 있지 않습니다. `npm run build:electron` 으로 번들을 먼저 만들거나 bun 을 설치해 주세요.");
+    };
+    let child;
+    try {
+      child = command
+        ? spawn(command, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env }, shell: true })
+        : packedBin && existsSync(packedBin)
+          ? (/\.(?:cjs|mjs|js)$/u.test(packedBin)
+            ? spawn(process.execPath, [packedBin], { stdio: ["ignore", "pipe", "pipe"], env: nodeEnv })
+            : spawn(packedBin, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env } }))
+          : spawnSourceWorker();
+    } catch (error) {
+      syncFailed = true;
+      reject(error);
+      return;
+    }
     workerChild = child;
     let settled = false;
     const fail = (error) => {
@@ -150,7 +188,7 @@ function startWorker() {
     child.on("error", (error) => {
       fail(new Error(
         error.code === "ENOENT"
-          ? "bun 이 필요합니다. oh-my-pi 제공자 로그인/전송은 Bun 에서만 로드됩니다."
+          ? "AI 워커 실행 파일을 찾을 수 없습니다. dist-electron/ai-worker.mjs 를 빌드하거나 개발 모드에서 bun 을 설치해 주세요."
           : error.message,
       ));
     });
@@ -173,7 +211,12 @@ function startWorker() {
     const startTimeout = setTimeout(() => fail(new Error("oh-my-pi worker start timed out")), startMs);
     startTimeout.unref?.();
   });
-  workerPortPromise = promise;
+  if (!syncFailed) {
+    workerPortPromise = promise;
+    promise.catch(() => {
+      if (workerPortPromise === promise) workerPortPromise = null;
+    });
+  }
   return promise;
 }
 

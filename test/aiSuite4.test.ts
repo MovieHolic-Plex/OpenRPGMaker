@@ -327,13 +327,13 @@ describe("runRecap", () => {
     const cli = (id: "claude" | "codex" | "gemini", state: string, billing: string) => ({ id, state, billing });
     const oauth = (providerId: string, extra: Record<string, unknown> = {}) => ({ providerId, connected: true, authKind: "oauth", ...extra });
     describe("first-run plan defaults", () => {
-      it("orders ChatGPT (the default, owner decision 2026-11-28), then Claude, then the rest, one card per plan", () => {
+      it("orders ChatGPT (the default, owner decision 2026-11-28), then Claude, skipping deprecated Gemini CLI & disabled Google OAuth", () => {
         const plans = planCandidates(
           [cli("gemini", "ready", "subscription"), cli("codex", "ready", "subscription"), cli("claude", "ready", "subscription")],
           [oauth("openai-codex"), oauth("google-antigravity")],
         );
-        expect(plans.map((plan) => plan.key)).toEqual(["codex-cli", "claude-cli", "gemini-cli"]);
-        expect(planCandidates([cli("gemini", "ready", "subscription"), cli("claude", "ready", "subscription")], []).map((plan) => plan.key)).toEqual(["claude-cli", "gemini-cli"]);
+        expect(plans.map((plan) => plan.key)).toEqual(["codex-cli", "claude-cli"]);
+        expect(planCandidates([cli("gemini", "ready", "subscription"), cli("claude", "ready", "subscription")], []).map((plan) => plan.key)).toEqual(["claude-cli"]);
       });
 
       it("gives a ChatGPT subscription Sol high alone and a Claude subscription Sonnet 5.5 high alone", () => {

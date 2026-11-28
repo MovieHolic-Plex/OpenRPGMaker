@@ -12,7 +12,7 @@ import { hasActiveProviderLimit, noteProviderLimited, providerLimitedUntil } fro
 import { localCliOfProvider, localCliProviderId, loadAssistantEngine, saveAssistantEngine } from "@/ai/localCliEngine";
 import { ANTHROPIC_PROVIDER_ID, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { listKnownOpenAiCompatEndpoints } from "@/ai/openAiCompat";
-import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
+import { CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 import { pickAutoProvider, type AutoPick, type ProviderRouteState } from "@/ai/autoProviderPick";
 import type { ProviderUsageSnapshot } from "@/ai/providerQuota";
 import { loadProviderPin } from "@/ai/providerPin";
@@ -23,10 +23,10 @@ import { createLocalAgentsApi, localAgentsEnabled, ASSISTANT_ENGINE_CHANGED_EVEN
 export const AI_AUTO_PICK_EVENT = "oprn:ai-auto-pick";
 
 /**
- * 계정(/auth/status)으로 확인하는 길. 남은 한도는 연결된 길마다 /auth/usage 로 묻는다 — 지금 동반 서비스는 ChatGPT·Google 만 숫자를 주고
- * (scripts/lib/providerUsageRuntime.ts) 나머지는 readable:false(모름)다. 서버가 늘면 여기는 그대로 따라간다.
+ * 계정(/auth/status)으로 확인하는 길. 남은 한도는 연결된 길마다 /auth/usage 로 묻는다.
+ * Google Antigravity / Gemini CLI OAuth 는 계정 정지 위험으로 자동 선택 대상에서 제외한다.
  */
-const ACCOUNT_ROUTES = [CODEX_PROVIDER_ID, ANTHROPIC_PROVIDER_ID, ANTIGRAVITY_PROVIDER_ID, "xai-oauth", "openrouter", "google-gemini-cli"] as const;
+const ACCOUNT_ROUTES = [CODEX_PROVIDER_ID, ANTHROPIC_PROVIDER_ID, "github-copilot", "xai-oauth", "openrouter"] as const;
 
 const usageCache = new Map<string, { readonly at: number; readonly value: Promise<ProviderUsageSnapshot | null> }>();
 
