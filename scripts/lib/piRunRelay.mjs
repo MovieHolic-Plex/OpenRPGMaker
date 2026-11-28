@@ -10,7 +10,7 @@
 
 import { createHash, randomUUID } from "node:crypto";
 import { piTimer } from "./piRunTiming.mjs";
-import { createMapRunLocks, mapRunScope } from "../../src/ai/piAgent/mapRunLocks.mjs";
+import { createMapRunLocks, mapRunRegion, mapRunScope } from "../../src/ai/piAgent/mapRunLocks.mjs";
 
 /** 무거운 키 — 요청 프로젝트에서 해시로 바꿔 보낼 수 있는 최상위 키. */
 export const PI_HEAVY_PROJECT_KEYS = ["tilesets", "database", "assets"];
@@ -268,9 +268,12 @@ export async function startRelayedRun(body, startAgent, options = {}) {
   if (runs.has(runId)) return { status: 409, body: { error: "run-exists", runId } };
   const projectKey = typeof resolved.body.projectKey === "string" && resolved.body.projectKey.trim() ? resolved.body.projectKey : null;
   mapRuns.refreshBundles(projectKey, resolved.body.project);
-  const claim = mapRuns.acquire(projectKey, mapRunScope(resolved.body), runId);
+  const region = mapRunRegion(resolved.body);
+  const claim = mapRuns.acquire(projectKey, mapRunScope(resolved.body), runId, [], region);
   if (!claim.ok) return { status: 409, body: {
-    error: `맵 ${claim.mapIds?.map(id => `'${id}'`).join(", ") || "전체"} 작업이 이미 실행 중입니다. 같은 맵은 한 번에 한 조수만 실행합니다. 앞선 작업 완료 후 다시 요청하세요.`,
+    error: region
+      ? `맵 '${region.mapId}'의 겹치는 영역 작업이 이미 실행 중입니다. 앞선 작업 완료 후 다시 요청하세요.`
+      : `맵 ${claim.mapIds?.map(id => `'${id}'`).join(", ") || "전체"} 작업이 이미 실행 중입니다. 같은 맵은 한 번에 한 조수만 실행합니다. 앞선 작업 완료 후 다시 요청하세요.`,
     code: "map-busy", mapIds: claim.mapIds,
   } };
   const controller = new AbortController();

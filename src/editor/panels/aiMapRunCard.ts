@@ -59,6 +59,7 @@ export function createMapRunCard(input: { readonly mapName: string; readonly lab
       if (ticket.status === "waiting") {
         status.textContent = ticket.wait === "capacity" ? "대기 · 동시 실행 자리"
           : ticket.wait === "exclusive" ? "대기 · 전체 작업 끝나면"
+          : ticket.region ? `대기 · 겹치는 영역 앞에 ${ticket.ahead}개`
           : `대기 · 이 맵 앞에 ${ticket.ahead}개`;
       } else if (ticket.status === "running" && status.textContent?.startsWith("대기")) status.textContent = "시작";
       stop.hidden = ticket.status !== "waiting" && ticket.status !== "running";

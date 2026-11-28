@@ -23,6 +23,8 @@ export interface OpenAssistantDecision {
   readonly title: string;
   /** 카드 주인 실행이 잡은 맵 키(aiMapRunQueue mapKey). "*" = 프로젝트 전체를 잡은 실행. 없으면 앞 턴(패널) 카드다. */
   readonly runKey?: string;
+  /** 카드 주인 실행이 잡은 드래그 영역. 안 겹치는 영역 요청은 이 카드를 닫지 않는다. */
+  readonly region?: { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
   /** 카드를 연 대화(스레드) id. 없으면 옛 호출자 — 어느 스레드의 보내기든 붙잡는다. */
   readonly threadId?: string;
   readonly openedAt: number;
@@ -53,9 +55,22 @@ export function openAssistantDecisions(): readonly OpenAssistantDecision[] {
  * 새 요청(맵 키 mapKey, 프로젝트 전체면 exclusive)을 붙잡아 둘 카드 — 같은 맵·프로젝트 전체 실행·앞 턴 카드.
  * threadId 를 주면 그 스레드의 카드와 스레드 id 가 없는(옛) 카드만 본다 — 다른 스레드의 카드는 그 스레드가 답한다.
  */
-export function blockingAssistantDecisions(mapKey: string, exclusive: boolean, threadId?: string): readonly OpenAssistantDecision[] {
-  return openAssistantDecisions().filter(d => (threadId === undefined || d.threadId === undefined || d.threadId === threadId)
-    && (exclusive || d.runKey === undefined || d.runKey === "*" || d.runKey === mapKey));
+export function blockingAssistantDecisions(
+  mapKey: string,
+  exclusive: boolean,
+  threadId?: string,
+  region?: { readonly x: number; readonly y: number; readonly width: number; readonly height: number },
+): readonly OpenAssistantDecision[] {
+  return openAssistantDecisions().filter(d => {
+    if (threadId !== undefined && d.threadId !== undefined && d.threadId !== threadId) return false;
+    if (exclusive || d.runKey === undefined || d.runKey === "*") return true;
+    if (d.runKey !== mapKey) return false;
+    if (region && d.region) {
+      return region.x < d.region.x + d.region.width && d.region.x < region.x + region.width
+        && region.y < d.region.y + d.region.height && d.region.y < region.y + region.height;
+    }
+    return true;
+  });
 }
 
 const YES = ["예", "네", "넵", "넹", "응", "웅", "어", "그래", "그래요", "좋아", "좋아요", "확인", "진행", "진행해", "진행해줘",
@@ -89,6 +104,8 @@ interface DecisionSurface {
   readonly signal?: AbortSignal;
   /** 카드 주인 실행이 잡은 맵 키 — 보내기가 이 카드가 새 요청을 붙잡는지 판단한다. */
   readonly runKey?: string;
+  /** 카드 주인 실행이 잡은 드래그 영역. */
+  readonly region?: { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
   /** 카드를 연 대화(스레드) id. */
   readonly threadId?: string;
 }
@@ -135,6 +152,7 @@ export function requestAssistantDecisionDetailed(surface: DecisionSurface, optio
     unregister = registerAssistantDecision({
       title: options.title ?? "확인",
       ...(surface.runKey !== undefined ? { runKey: surface.runKey } : {}),
+      ...(surface.region !== undefined ? { region: surface.region } : {}),
       ...(surface.threadId !== undefined ? { threadId: surface.threadId } : {}),
       openedAt: Date.now(),
       answer: (accepted, via) => finish(accepted, via),

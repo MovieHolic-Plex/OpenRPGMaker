@@ -1673,27 +1673,31 @@ describe("editorSuite", () => {
       });
     });
     describe("createStampOrderQueue", () => {
-      it("serializes separated regions of the same map in FIFO order", async () => {
+      it("runs separated regions of the same map concurrently and serializes overlapping regions in FIFO order", async () => {
         const h = harness();
         live = h.queue;
         const a = h.queue.enqueue({ text: "숲", mapId: "m1", selection: sel(0, 0) })!;
         const b = h.queue.enqueue({ text: "연못", mapId: "m1", selection: sel(10, 10) })!;
         const c = h.queue.enqueue({ text: "길", mapId: "m1", selection: sel(2, 2) })!;
-        expect(h.started.map((p) => p.input.text)).toEqual(["숲"]);
+        expect(h.started.map((p) => p.input.text)).toEqual(["숲", "연못"]);
+        expect(a.status).toBe("planning");
+        expect(b.status).toBe("planning");
         expect(c.status).toBe("waiting");
         expect(c.wait).toBe("overlap");
         expect(c.blockedBy).toBe(a.id);
-        expect(h.queue.summary()).toEqual({ waiting: 2, running: 1, total: 3 });
+        expect(h.queue.summary()).toEqual({ waiting: 1, running: 2, total: 3 });
 
         await h.started[0]!.finish();
         await flush();
         expect(a.status).toBe("done");
         expect(b.status).toBe("planning");
-        expect(c.status).toBe("waiting");
-        await h.started[1]!.finish();
-        await flush();
         expect(c.status).toBe("planning");
         expect(h.started.map((p) => p.input.text)).toEqual(["숲", "연못", "길"]);
+        await h.started[1]!.finish();
+        await h.started[2]!.finish();
+        await flush();
+        expect(b.status).toBe("done");
+        expect(c.status).toBe("done");
       });
 
       it("does not treat the same rect on another map as an overlap", () => {

@@ -434,6 +434,7 @@ export function buildUltrabrainPlanRequest(input: {
   readonly brain: UltrabrainModel;
   readonly modelTask: string;
   readonly mapIds: readonly string[];
+  readonly region?: PiAgentRequest["region"];
   readonly currentMapId?: string;
   readonly approvedTilesetFamilies?: readonly string[];
   readonly editHistory?: PiAgentRequest["editHistory"];
@@ -447,6 +448,7 @@ export function buildUltrabrainPlanRequest(input: {
     mode: "single", provider: input.brain.providerId!, model: input.brain.model, projectKey: input.projectKey,
     ...(input.sessionKey ? { sessionKey: input.sessionKey } : {}),
     task: `${PLAN_ONLY_PREFIX}${input.modelTask}`, mapIds: input.mapIds,
+    ...(input.region ? { region: input.region } : {}),
     ...(input.currentMapId ? { currentMapId: input.currentMapId } : {}), project: input.project,
     ...(input.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: input.approvedTilesetFamilies } : {}),
     ...(input.editHistory?.length ? { editHistory: input.editHistory } : {}),
@@ -488,6 +490,7 @@ export function buildPiRunRequest(input: {
   readonly modelTask: string;
   readonly executionTask: string;
   readonly mapIds: readonly string[];
+  readonly region?: PiAgentRequest["region"];
   readonly currentMapId?: string;
   readonly approvedTilesetFamilies?: readonly string[];
   readonly editHistory?: PiAgentRequest["editHistory"];
@@ -528,6 +531,7 @@ export function buildPiRunRequest(input: {
     ...(!input.planOnly ? { roleModels: { deep: input.deep, writer: input.writer } } : {}),
     task: input.planOnly ? `${PLAN_ONLY_PREFIX}${input.modelTask}` : input.executionTask,
     mapIds: input.mapIds,
+    ...(input.region ? { region: input.region } : {}),
     ...(input.currentMapId ? { currentMapId: input.currentMapId } : {}),
     ...(input.approvedTilesetFamilies?.length ? { approvedTilesetFamilies: input.approvedTilesetFamilies } : {}),
     ...(input.editHistory?.length ? { editHistory: input.editHistory } : {}),

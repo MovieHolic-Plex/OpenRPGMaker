@@ -56,6 +56,7 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
     // 단계 확인도 사람 답을 기다리는 자리다 — 열린 카드 대장에 올려 새 메시지가 붙잡히지 않게 한다(aiDecisionPrompt).
     unregister = registerAssistantDecision({
       title, ...(surface.runKey !== undefined ? { runKey: surface.runKey } : {}),
+      ...(surface.region !== undefined ? { region: surface.region } : {}),
       ...(surface.threadId !== undefined ? { threadId: surface.threadId } : {}), openedAt: Date.now(),
       answer: (accepted, via) => finish(accepted, via === "new-message"),
     });

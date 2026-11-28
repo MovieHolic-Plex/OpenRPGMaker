@@ -527,6 +527,28 @@ describe("piAgent mapBundle", () => {
     expect(legacy.acquire("p", mapRunBundleIds(base, ["map_east"]), "east").ok).toBe(false);
   });
 
+  it("같은 맵이라도 겹치지 않는 드래그 영역끼리는 동시에 잠그고, 겹치거나 맵 전체 요청과는 충돌한다", () => {
+    const base = seed();
+    const root = base.mapTree.mapId;
+    const locks = createMapRunLocks();
+    const left = locks.acquire("p", [root], "left", [], { mapId: root, x: 0, y: 0, width: 4, height: 4 });
+    expect(left.ok).toBe(true);
+    // 경계가 맞닿은 인접 영역은 겹치지 않으므로 동시 허용.
+    const right = locks.acquire("p", [root], "right", [], { mapId: root, x: 4, y: 0, width: 4, height: 4 });
+    expect(right.ok).toBe(true);
+    // refreshBundles 가 영역 락을 하위 맵까지 확장하지 않는다.
+    locks.refreshBundles("p", base);
+    const child = locks.acquire("p", ["map_east"], "east");
+    expect(child.ok).toBe(true);
+    // 겹치는 영역과 맵 전체 요청은 거절된다.
+    expect(locks.acquire("p", [root], "overlap", [], { mapId: root, x: 3, y: 2, width: 3, height: 3 }).ok).toBe(false);
+    expect(locks.acquire("p", [root], "whole").ok).toBe(false);
+    if (left.ok) left.release();
+    if (right.ok) right.release();
+    if (child.ok) child.release();
+    expect(locks.acquire("p", [root], "whole-after").ok).toBe(true);
+  });
+
   it("시작 맵 담당이 따로 맡은 세계 노드를 바꾼 것은 옮기지 않고, 그 맵 담당의 결과를 남긴다", () => {
     const base = seed();
     base.worldGraph = { nodes: [{ mapId: base.startMapId, role: "town" }, { mapId: "map_east", role: "dungeon" }], edges: [] } as unknown as Project["worldGraph"];

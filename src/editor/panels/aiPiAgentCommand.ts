@@ -108,6 +108,8 @@ export const TEAM_COMMAND_PREFIX = "/team";
 export interface ParsedPiCommand {
   readonly mode: PiAgentMode;
   readonly mapIds: readonly string[];
+  /** 사용자가 드래그해 지정한 단일 맵 영역. 겹치지 않는 드래그 영역끼리는 같은 맵에서도 동시 실행한다. */
+  readonly region?: { readonly mapId: string; readonly x: number; readonly y: number; readonly width: number; readonly height: number };
   /** 사용자가 보고 있는 맵. 팀장이 「여기」를 해석하는 기준 — 후보(mapIds)와 별개다. 비우면 실행 시 패널의 현재 맵으로 채운다. */
   readonly currentMapId?: string | null;
   /**
@@ -282,6 +284,8 @@ export interface PiCommandSurface {
    * 같은 맵으로 새 요청이 오면 보내기가 카드를 먼저 닫는다(aiDecisionPrompt 「열린 카드 대장」). 없으면 앞 턴 카드로 본다.
    */
   readonly runKey?: string;
+  /** 이 실행이 잡은 드래그 영역 — 확인 카드가 겹치지 않는 영역 요청을 붙잡지 않게 한다. */
+  readonly region?: { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
   /** 이 실행을 낸 대화(스레드) id — 확인 카드가 이 id 로 열린 카드 대장에 올라, 다른 스레드의 보내기를 붙잡지 않는다. */
   readonly threadId?: string;
   /** 사용자가 이 대화에서 승인한 칩셋 계열(질문 카드 「이 타일로 바꿔도 좋아요」). 요청의 approvedTilesetFamilies 로 간다. */
@@ -362,12 +366,16 @@ export async function runPiCommand(
   // v2 스위치(기본 켜짐, 2026-11-24) — 단독 평문 턴만 v2 로 간다. 목표·팀·다듬기는 v1 그대로.
   if (!command.goalMode && command.mode !== "team" && !options.polish && isAssistantV2Enabled()) options = { ...options, assistantVersion: "v2", skipPlanTurn: true };
   const projectKey = aiProjectRunKey();
+  const lockRegion = command.mode !== "team" && command.region ? command.region : null;
   editorAiMapRuns.refreshBundles(projectKey, store.getCurrent());
   const claim = editorAiMapRuns.acquire(projectKey, mapRunScope({
     mode: command.mode, mapIds: command.mapIds, project: store.getCurrent(), scopeStrict: command.scopedByUser === true,
-  }), "Pi");
+    ...(lockRegion ? { region: lockRegion } : {}),
+  }), "Pi", [], lockRegion);
   if (!claim.ok) {
-    surface.appendBubble("system", "같은 맵의 조수 작업이 이미 진행 중이에요. 앞선 작업이 끝난 뒤 다시 요청해 주세요.");
+    surface.appendBubble("system", lockRegion
+      ? "겹치는 영역의 조수 작업이 이미 진행 중이에요. 앞선 작업이 끝난 뒤 다시 요청해 주세요."
+      : "같은 맵의 조수 작업이 이미 진행 중이에요. 앞선 작업이 끝난 뒤 다시 요청해 주세요.");
     return false;
   }
   try { return await runOwnedPiCommand(command, surface, options, projectKey); }
@@ -629,7 +637,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   // 결과 프로젝트가 맨 끝 `done` 에만 실려서 턴 내내 캔버스가 조용하다(2026-09-17 회귀).
   // 단일·병렬·팀이 다리 하나를 공유하며 검토 진입 시 실제 병합 결과로 보정한다.
   let pendingClientUndo = null as number | null;
-  const ghost = createPiGhostBridge({ baseProject: base });
+  const ghost = createPiGhostBridge({ baseProject: base, isolated: surface.background === true });
   const navigateView = createAssistantViewNavigation(() => options.viewNavigation === true, {
     background: surface.background, signal: surface.signal,
   });
@@ -752,6 +760,8 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     const line = formatLocalCliCost({ ...(billing ? { billing } : {}), ...(costUsd !== undefined ? { costUsd } : {}), usage: { input: tokens, output: 0, cacheRead: 0, cacheWrite: 0 } });
     if (line) surface.appendProcess?.(`이번 차례 · ${line}`);
   };
+  const lockRegion = command.mode !== "team" && command.region ? command.region : null;
+  const regionPart = lockRegion ? { region: lockRegion } : {};
   const userImagesPart = options.userImages?.length ? { userImages: options.userImages } : {};
   // 이 턴의 모든 워커 실행(계획·실행·목표·수리)이 같은 값을 싣는다 — 워커가 지시문·도구가 같은 실행끼리만 대화를 잇는다.
   const sessionKey = options.sessionKey ?? `turn-${newSessionKeyId()}`;
@@ -769,7 +779,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
       const planErrorMark = streamErrors.length;
       push({ type: "agent_spawn", agentId: "ultrabrain-plan", role: "orchestrator", mapId: null, mapName: null, task: command.task, label: "계획" });
       const planned = await stage("plan", () => runPiAgentViaCompanion({ ...buildUltrabrainPlanRequest({
-        brain, modelTask, mapIds: command.mapIds, ...here, project: base, projectKey,
+        brain, modelTask, mapIds: command.mapIds, ...regionPart, ...here, project: base, projectKey,
         scopedByUser: command.scopedByUser === true,
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
         ...(options.initialToolNames ? { initialToolNames: options.initialToolNames } : {}),
@@ -816,7 +826,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
       { ...buildPiRunRequest({
         team, planOnly: options.planOnly, readOnly, applyMode,
         brain, deep, writer: modelForRole(config, "writer"),
-        modelTask, executionTask, mapIds, ...here, project: base, projectKey,
+        modelTask, executionTask, mapIds, ...regionPart, ...here, project: base, projectKey,
         scopedByUser: command.scopedByUser === true, mapBundleMerge: mergedFromBundles,
         ...(options.maxTurns === undefined ? {} : { maxTurns: options.maxTurns }),
         ...(options.toolDomains ? { toolDomains: options.toolDomains } : {}),
@@ -1108,7 +1118,7 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
         surface.setStatus(HARMONY_REPAIR_ROUNDS > 1 ? `AI가 검수 문제를 수정하고 있어요 (${attempt + 1}/${HARMONY_REPAIR_ROUNDS}).` : "AI가 검수 문제를 수정하고 있어요.");
         const repaired = await stage("review", () => runPiAgentViaCompanion({
           mode: "single", provider: deep.provider, model: deep.model, project: repairBase, projectKey,
-          mapIds: command.mapIds, ...here, scopeStrict: command.scopedByUser === true,
+          mapIds: command.mapIds, ...regionPart, ...here, scopeStrict: command.scopedByUser === true,
           task: `사용자 요청: ${command.task}\n기존 요청 범위를 유지하며 다음 검수 문제만 수정하세요.\n${reviews.filter(r => !r.harmonious).map(r => `${r.mapId}: ${r.summary} ${r.findings.join("; ")}`).join("\n")}`,
           applyMode: "auto", maxTurns: options.maxTurns, thinkingLevel: execThinkingLevel,
           // 수리 실행도 같은 의도 선별 목록에서 시작한다 — 없으면 새 Agent 가 전체 카탈로그(≈113k 토큰)를 매 호출 받는다.

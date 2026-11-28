@@ -19,8 +19,8 @@
 import type { FastPathRejectCode, StampRunInput, StampRunResult, StampRunSelection } from "@/editor/stampPlaceRunner";
 import { editorAiMapRuns } from "@/ai/piAgent/editorMapRunLocks";
 
-/** 동시에 도는 주문 상한. 공급자 동시 호출 한도를 넘지 않게 작게 둔다. */
-export const STAMP_ORDER_CONCURRENCY = 3;
+/** 동시에 도는 주문 상한. */
+export const STAMP_ORDER_CONCURRENCY = 10;
 /** 끝나고 보고까지 된 주문을 들고 있는 수. 넘으면 오래된 것부터 버린다. */
 const FINISHED_KEEP = 20;
 
@@ -84,8 +84,8 @@ export interface StampOrderQueue {
   cancel(id: number): void;
   /** 도는 주문과 기다리는 주문을 모두 끊는다. 끊은 수를 돌려준다. */
   cancelAll(): number;
-  /** 채팅 턴 진행 여부를 알려 주는 함수. 패널이 붙을 때 건다. */
-  setChatBusyProbe(probe: (() => boolean) | null): void;
+  /** 채팅 턴 진행 여부를 알려 주는 함수. 패널이 붙을 때 건다. 주문을 받으면 그 주문의 영역과 겹치는 앞 턴만 막을 수 있다. */
+  setChatBusyProbe(probe: ((order: StampOrder) => boolean) | null): void;
   /** 채팅 턴이 끝났다 — 적용을 기다리던 주문을 깨운다. */
   pokeGate(): void;
   /** 끝났지만 아직 채팅에 보고하지 않은 주문을 꺼내고 보고한 것으로 표시한다. */
@@ -169,8 +169,8 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
   const claims = new Map<number, () => void>();
   const unsubscribeOwnership = editorAiMapRuns.subscribe(() => pump());
   const listeners = new Set<() => void>();
-  let gateWaiters: (() => void)[] = [];
-  let chatBusy: (() => boolean) | null = null;
+  let gateWaiters: { readonly order: StampOrder; readonly wake: () => void }[] = [];
+  let chatBusy: ((order: StampOrder) => boolean) | null = null;
   let nextId = 1;
   let disposed = false;
 
@@ -199,17 +199,21 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
 
   const inFlight = (): number => list.filter((order) => order.status === "planning" || order.status === "applying").length;
 
-  const gateOpen = (): boolean => !(chatBusy?.() ?? false);
+  const gateOpen = (order: StampOrder): boolean => !(chatBusy?.(order) ?? false);
 
   const releaseGate = (): void => {
-    if (!gateOpen()) return;
-    const waiters = gateWaiters;
-    gateWaiters = [];
-    for (const resolve of waiters) resolve();
+    const remaining: typeof gateWaiters = [];
+    const ready: (() => void)[] = [];
+    for (const waiter of gateWaiters) {
+      if (gateOpen(waiter.order)) ready.push(waiter.wake);
+      else remaining.push(waiter);
+    }
+    gateWaiters = remaining;
+    for (const wake of ready) wake();
   };
 
   const waitForApply = (order: StampOrder, signal: AbortSignal) => async (): Promise<void> => {
-    if (!gateOpen()) {
+    if (!gateOpen(order)) {
       order.status = "applying";
       order.wait = "chat";
       emit();
@@ -218,7 +222,7 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
           signal.removeEventListener("abort", done);
           resolve();
         };
-        gateWaiters.push(done);
+        gateWaiters.push({ order, wake: done });
         signal.addEventListener("abort", done, { once: true });
       });
     }
@@ -253,7 +257,10 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
   };
 
   const start = (order: StampOrder): void => {
-    const claim = editorAiMapRuns.acquire(order.projectKey, [order.mapId], `바로 깔기 #${order.id}`);
+    const lockRegion = order.selection && order.selection.mapId === order.mapId
+      ? { mapId: order.mapId, x: order.rect.x, y: order.rect.y, width: order.rect.w, height: order.rect.h }
+      : null;
+    const claim = editorAiMapRuns.acquire(order.projectKey, [order.mapId], `바로 깔기 #${order.id}`, [], lockRegion);
     if (!claim.ok) { order.wait = "chat"; return; }
     claims.set(order.id, claim.release);
     const controller = new AbortController();
@@ -307,12 +314,13 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
     let changed = false;
     for (const order of list) {
       if (order.status !== "waiting") continue;
-      if (!gateOpen()) {
+      if (!gateOpen(order)) {
         if (order.wait !== "chat") { order.wait = "chat"; order.blockedBy = null; changed = true; }
         continue;
       }
       const blocker = list.find((other) => other.id < order.id && isStampOrderActive(other)
-        && other.projectKey === order.projectKey && other.mapId === order.mapId);
+        && other.projectKey === order.projectKey && other.mapId === order.mapId
+        && stampRectsOverlap(other.rect, order.rect));
       if (blocker) {
         if (order.wait !== "overlap" || order.blockedBy !== blocker.id) {
           order.wait = "overlap";
@@ -430,7 +438,7 @@ export function createStampOrderQueue(deps: StampOrderQueueDeps): StampOrderQueu
       controllers.clear();
       const waiters = gateWaiters;
       gateWaiters = [];
-      for (const resolve of waiters) resolve();
+      for (const waiter of waiters) waiter.wake();
       listeners.clear();
       list.length = 0;
     },

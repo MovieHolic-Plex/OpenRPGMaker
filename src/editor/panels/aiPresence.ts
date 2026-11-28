@@ -304,16 +304,29 @@ function backgroundPresences(): Presence[] {
 
 function presencesForTicket(ticket: MapRunTicket, board: TeamBoardState | undefined): Presence[] {
   const where = mapNameOf(ticket.mapKey);
+  const ticketRegion = ticket.region ? { region: ticket.region, drag: true as const } : {};
   const base = { source: "background" as const, ticketId: ticket.id, readsOnly: false, mapId: where.mapId, mapName: where.mapName };
   if (board && board.agents.length > 0) {
-    return derivePresences(board).map((p, i) => ({ ...p, ...base, id: `bg${ticket.id}:${p.id}`, mapId: p.mapId ?? where.mapId, mapName: p.mapName ?? where.mapName, readsOnly: p.readsOnly, task: p.task || ticket.label, no: 0, tone: i }));
+    return derivePresences(board).map((p, i) => ({
+      ...p,
+      ...base,
+      id: `bg${ticket.id}:${p.id}`,
+      mapId: p.mapId ?? where.mapId,
+      mapName: p.mapName ?? where.mapName,
+      ...(!p.readsOnly && ticket.region ? ticketRegion : {}),
+      readsOnly: p.readsOnly,
+      task: p.task || ticket.label,
+      no: 0,
+      tone: i,
+    }));
   }
   const waiting = ticket.status === "waiting";
   const action = !waiting ? "생각 중"
     : ticket.wait === "capacity" ? "동시에 도는 작업이 많아 기다리는 중"
     : ticket.wait === "exclusive" ? "팀 작업이 끝나길 기다리는 중"
+    : ticket.region ? `겹치는 영역 ${ticket.ahead + 1}번째로 기다리는 중`
     : `같은 맵 ${ticket.ahead + 1}번째로 기다리는 중`;
-  return [{ ...base, id: `bg${ticket.id}`, name: "조수", no: 0, tone: 0, state: waiting ? "waiting" : "working", task: ticket.label,
+  return [{ ...base, ...ticketRegion, id: `bg${ticket.id}`, name: "조수", no: 0, tone: 0, state: waiting ? "waiting" : "working", task: ticket.label,
     action, steps: 0, startedAt: ticket.startedAt ?? undefined, recent: [] }];
 }
 

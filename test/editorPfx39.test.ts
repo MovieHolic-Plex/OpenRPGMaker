@@ -2260,6 +2260,40 @@ describe("editorPanelsSuite23", () => {
         q.enqueue({ mapKey: "map_b", label: "y", start: async () => {} });
         expect(q.tickets()[1]).not.toHaveProperty("threadId");
       });
+
+      it("runs non-overlapping drag regions on the same map concurrently and queues overlapping or whole-map runs", async () => {
+        const q = createMapRunQueue({ concurrency: 3 });
+        const resolvers: (() => void)[] = [];
+        const started: string[] = [];
+        const hold = (name: string) => () => new Promise<void>((resolve) => { started.push(name); resolvers.push(resolve); });
+        const a = q.enqueue({ mapKey: "map_a", label: "left", region: { x: 0, y: 0, width: 4, height: 4 }, start: hold("left") });
+        const b = q.enqueue({ mapKey: "map_a", label: "right", region: { x: 4, y: 0, width: 4, height: 4 }, start: hold("right") });
+        const c = q.enqueue({ mapKey: "map_a", label: "overlap", region: { x: 3, y: 1, width: 3, height: 3 }, start: hold("overlap") });
+        const d = q.enqueue({ mapKey: "map_a", label: "whole", start: hold("whole") });
+        expect(a.status).toBe("running");
+        expect(b.status).toBe("running");
+        expect(c.status).toBe("waiting");
+        expect(c.wait).toBe("same-map");
+        expect(d.status).toBe("waiting");
+        expect(q.forMap("map_a", { x: 10, y: 10, width: 2, height: 2 }).map((t) => t.label)).toEqual(["whole"]);
+        expect(q.forMap("map_a", { x: 0, y: 0, width: 2, height: 2 }).map((t) => t.label)).toEqual(["left", "whole"]);
+        await Promise.resolve();
+        expect(started).toEqual(["left", "right"]);
+        resolvers[0]!();
+        await Promise.resolve();
+        await Promise.resolve();
+        expect(c.status).toBe("waiting");
+        resolvers[1]!();
+        await Promise.resolve();
+        await Promise.resolve();
+        expect(c.status).toBe("running");
+        expect(d.status).toBe("waiting");
+        resolvers[2]!();
+        await Promise.resolve();
+        await Promise.resolve();
+        expect(d.status).toBe("running");
+        resolvers[3]!();
+      });
     });
     describe("aiThreadList", () => {
       function summary(id: string, savedAt: number, homeMapId: string | null, targetMapIds: string[] = []): ConversationArchiveSummary {
