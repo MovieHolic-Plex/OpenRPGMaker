@@ -13,7 +13,8 @@ import { CONFIGURE_OBJECT_BEHAVIOR, PURSUIT_SCHEMA, parsePursuit } from "./horro
 //              / duplicate_event / remove_event / move_event.
 
 import { findShadowedPages, shadowedPageWarnings } from "@/project/eventPageShadow";
-import { genreLockLimitsCharsets } from "@/project/genreLockCharsets";
+import { genreLockCharsetCatalogFilter, genreLockLimitsCharsets } from "@/project/genreLockCharsets";
+import { npcGraphicCatalogIsFiltered, withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
 import { EVENT_ANIMATION_TYPES } from "@/project/types";
 import { projectSetterShadowedPages } from "@/project/eventPageSetterShadow";
 import { nestedCommandLists } from "@/project/authoredCommandIndex";
@@ -74,6 +75,13 @@ import {
   type GraphicSpec,
 } from "./eventCompile";
 import { normalizeLowLevelCommandArray, validateLowLevelCommandArray } from "./commandArgs";
+import {
+  compileScript,
+  formatScriptDiagnostics,
+  prepareScriptCompiler,
+  scriptCommandFields,
+  scriptCompilerReady,
+} from "@/editor/script/compile";
 import { assertEventPartyActorReferences } from "./partyActorReferences";
 import { declareReferencedFlags, declaredFlagsWarning, ensureNamedSwitch, ensureNamedVariable } from "./flagHelpers";
 import { buildFieldMonsterEvent } from "@/project/fieldMonsterTemplate";
@@ -1189,10 +1197,68 @@ function routeRootCommandsIntoPage(
   warnings.push(`최상위 ${moved} → pages[0] 로 옮김 (페이지가 있는 이벤트는 페이지 명령만 실행된다)`);
 }
 
+function hasUncompiledScript(value: unknown, depth = 0): boolean {
+  if (depth > 24 || !value || typeof value !== "object") return false;
+  if (Array.isArray(value)) return value.some((item) => hasUncompiledScript(item, depth + 1));
+  const record = value as Record<string, unknown>;
+  if (record.kind === "script" && typeof record.source === "string" && record.source.trim() && (typeof record.compiled !== "string" || !record.compiled.trim())) {
+    return true;
+  }
+  return Object.values(record).some((child) => hasUncompiledScript(child, depth + 1));
+}
+
+function prepareScriptCompilerIfNeeded(args: Record<string, unknown>): Promise<void> {
+  return hasUncompiledScript(args) ? prepareScriptCompiler() : Promise.resolve();
+}
+
+function compileUncompiledScriptsInList(project: Project, mapId: string, value: unknown, label: string, depth = 0): void {
+  if (depth > 24 || !Array.isArray(value)) return;
+  for (let i = 0; i < value.length; i += 1) {
+    const raw = value[i];
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) continue;
+    const record = raw as Record<string, unknown>;
+    const here = `${label}[${i}]`;
+    if (record.kind === "script" && typeof record.source === "string" && record.source.trim() && (typeof record.compiled !== "string" || !record.compiled.trim())) {
+      const result = compileScript(record.source, { project, mapId });
+      if (!result.ok || !result.compiled) {
+        const errors = result.diagnostics.filter((diagnostic) => diagnostic.severity === "error");
+        throw new ToolError(
+          `${here}: script did not compile:\n${formatScriptDiagnostics(errors.length ? errors : result.diagnostics)}`,
+          { code: "script-compile-error" },
+        );
+      }
+      const fields = scriptCommandFields(record.source, result, typeof record.name === "string" ? record.name : undefined);
+      value[i] = { ...(typeof record.id === "string" ? { id: record.id } : {}), ...fields };
+      continue;
+    }
+    for (const [key, child] of Object.entries(record)) {
+      if (!Array.isArray(child) || child.length === 0) continue;
+      if (key === "options") {
+        child.forEach((option, optionIndex) => {
+          if (option && typeof option === "object" && !Array.isArray(option)) {
+            compileUncompiledScriptsInList(project, mapId, (option as Record<string, unknown>).branch, `${here}.options[${optionIndex}].branch`, depth + 1);
+          }
+        });
+      } else if (child[0] && typeof child[0] === "object" && typeof (child[0] as Record<string, unknown>).kind === "string") {
+        compileUncompiledScriptsInList(project, mapId, child, `${here}.${key}`, depth + 1);
+      }
+    }
+  }
+}
+
+function compileUncompiledScriptsInEvent(project: Project, mapId: string, event: GameEvent): void {
+  if (!scriptCompilerReady()) return;
+  if (event.commands) compileUncompiledScriptsInList(project, mapId, event.commands, `${event.id}.commands`);
+  for (const page of event.pages ?? []) {
+    if (page.commands) compileUncompiledScriptsInList(project, mapId, page.commands, `${event.id}.${page.id}.commands`);
+  }
+}
+
 const upsertEvent: ToolDefinition = {
   name: "upsert_event",
   description: `${LOW_LEVEL_TOOL_DESCRIPTION_PREFIX} GameEvent를 추가하거나 기존 이벤트를 부분 수정한다. 기존 id이면 입력에 포함한 최상위 필드만 바꾸고, 생략한 pages/commands/graphic/characterId/좌표 등은 보존한다. 기존 이벤트의 페이지 하나에서 그림·대사·조건 같은 칸만 바꿀 때는 patch_event_page 를 쓴다 — pages 는 배열 전체 교체라, 기존 이벤트에 pages 를 보내려면 replacePages:true(페이지 추가·삭제·순서 변경)를 함께 보내야 한다. 빈 배열처럼 명시한 값은 그대로 반영한다. NPC/주민/대화 이벤트 배치는 place_npc, 스케줄만 바꿀 때는 set_npc_schedule을 우선 사용하라. 증거 제시·아이템 보여주기·선물 건네기는 choices+아이템 조건이 아니라 presentItem 명령({kind:'presentItem',prompt,options:[{itemId,branch}],otherwiseBranch,cancelBranch,consume})으로 만든다. 보스전 결과 분기(이기면 스위치 켜기 등)는 선택지 모양 options 가 아니라 battleProcessing{troopId,branchOnResult:true,victoryBranch:[…],defeatBranch,escapeBranch}로 쓴다.`,
   mode: "write",
+  prepare: prepareScriptCompilerIfNeeded,
   parameters: {
     type: "object",
     properties: {
@@ -1352,6 +1418,7 @@ const upsertEvent: ToolDefinition = {
     if (tileHotspot) TILE_HOTSPOT_EVENTS.add(event);
     const previousLook = existing && "pages" in patch ? eventLook(existing) : undefined;
     if (previousLook) PREVIOUS_EVENT_LOOK.set(event, previousLook);
+    compileUncompiledScriptsInEvent(draft, map.id, event);
     assertEventShape(event, warnings, existing ? patch : event, draft);
     // place_npc 와 같은 규칙: 새로 쓴 페이지가 켜거나 기다리는 스위치·변수를 등록한다. 없으면 도구는 ok 를
     // 돌려준 뒤 커밋 참조 검증이 `switchId가 존재하지 않습니다` 로 쓰기 전체를 반려했다(2026-09-24 오프닝 컷신).
@@ -1546,11 +1613,16 @@ const placeNpc: ToolDefinition = {
     if (recurring) normalizationWarnings.push(`같은 인물 '${name}' 이 ${recurring.mapId} 에 이미 있어 그 외형을 그대로 썼습니다(graphic.query "${specQuery}" 대신). 다른 모습이 의도라면 graphic 을 sprite 로 명시하세요.`);
     // 허용 칩이 적은 장르 잠금 아래에서는 다른 맵에 선 다른 인물의 칩도 피한다(같은 사람은 recurring 이 같은 모습을 준다).
     const avoidKeys = genreLockLimitsCharsets(draft) ? usedCharsetGraphicKeysOnProject(draft, name) : usedCharsetGraphicKeysOnMap(map);
-    const graphic = recurring?.graphic ?? resolveGraphic(graphicSpec, {
+    // toolRunner(조수 경로) 밖에서 직접 place_npc 를 불러도 project.system.peopleChipLock / genreLock 이 걸려 있으면 허용 화풍 안에서 고른다.
+    const directStyleFilter = npcGraphicCatalogIsFiltered() ? undefined : genreLockCharsetCatalogFilter(draft);
+    const resolveDirectGraphic = () => resolveGraphic(graphicSpec, {
       avoidKeys,
       seed: `${map.id}:${name}:${x},${y}`,
       overrides: draft.charsetLabels,
     });
+    const graphic = recurring?.graphic ?? (directStyleFilter
+      ? withNpcGraphicCatalogFilter(directStyleFilter, resolveDirectGraphic)
+      : resolveDirectGraphic());
     // 같은 칩이 한 맵에 3번째로 나오면 알린다(poke-adv-lock-1 #8: 허용 칩이 적은 잠금 아래에서 NPC 가 한 칩으로 몰렸다). 막지 않고, 다른 인물 칩을 고르게 한다.
     if (!graphic.transparent && graphic.sprite?.id) {
       const sameChip = usedCharsetGraphicKeysOnMapCount(map, graphic);
@@ -5095,6 +5167,7 @@ const patchEventPage: ToolDefinition = {
   name: "patch_event_page",
   description: "기존 이벤트의 페이지 하나에서 set 에 넣은 페이지 필드만 바꾼다(graphic·commands·conditions·trigger·movement·animationType·priority·name 등). 그 페이지의 나머지 칸, 다른 페이지, 이벤트 좌표는 그대로 둔다. commands 를 바꾸면 그 페이지의 명령 배열 전체가 바뀌므로 유지할 명령도 포함한다. 요청하지 않은 필드(대사의 speaker·얼굴, 명령의 다른 인자)는 원래 값 그대로 다시 적는다. 페이지를 추가·삭제·순서 변경할 때는 upsert_event 에 replacePages:true.",
   mode: "write",
+  prepare: prepareScriptCompilerIfNeeded,
   parameters: {
     type: "object",
     properties: {
@@ -5163,6 +5236,7 @@ const addEventPage: ToolDefinition = {
   description: "기존 이벤트에 페이지 하나를 덧붙인다 — 다른 페이지는 그대로 둔다. 새 페이지는 copyFrom 페이지(기본 첫 페이지)의 graphic·trigger·priority·movement 를 물려받고 page 에 준 칸(name·conditions·commands·graphic·trigger 등)만 바꾼다. " +
     "런타임은 조건이 맞는 페이지 중 뒤쪽 것을 쓰므로, 퀘스트가 진행된 뒤의 반응(예: 스위치 sw_lamp 가 켜지면 「등이 걸린 문」)은 뒤에 붙인다(position 기본 end). 이벤트를 새로 만들 때는 upsert_event.",
   mode: "write",
+  prepare: prepareScriptCompilerIfNeeded,
   parameters: {
     type: "object",
     properties: {

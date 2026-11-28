@@ -438,10 +438,12 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
       }
     }
     // 2) 지우기(Erase Event)와 «떠남» 스위치를 켜는 자리를 이야기 순서대로 훑는다.
-    //    제자리 사라짐으로 치지 않는 때: 화면이 검다 · 동료로 합류했다 · 전투 직후 대사 없이(쓰러진 필드 적).
+    //    제자리 사라짐으로 치지 않는 때: 화면이 검다 · 동료로 합류했다 · 전투 직후 대사 없이(쓰러진 필드 적) ·
+    //    전투(battleProcessing)를 직접 치른 적/보스 이벤트 자신이 패배 후(패배 대사가 있더라도) 사라질 때.
     const goneSwitch = switchesThatHide(map, true);
-    type Stage = { black: boolean; joined: boolean; battle: boolean; talkedSinceBattle: boolean; lastRouteTo: string | null; lastRouteWaits: boolean };
-    const excused = (st: Stage): boolean => st.black || st.joined || (st.battle && !st.talkedSinceBattle);
+    type Stage = { black: boolean; joined: boolean; battle: boolean; battleHostId: string | null; talkedSinceBattle: boolean; lastRouteTo: string | null; lastRouteWaits: boolean };
+    const excused = (st: Stage, targetId?: string): boolean =>
+      st.black || st.joined || (st.battle && (!st.talkedSinceBattle || (targetId !== undefined && st.battleHostId === targetId)));
     for (const { host, page, commands } of lists) {
       const visitList = (list: readonly Command[], inherited: Stage): void => {
         const st: Stage = { ...inherited };
@@ -463,8 +465,8 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
             const hides = pagesOf(host).some((p) => !visibleGraphic(p) && (p.conditions ?? []).some((c) => c.kind === "selfSwitch" && (c as { key?: string }).key === key && (c as { value?: boolean }).value !== false));
             if (hides && visibleGraphic(pagesOf(host)[0])) {
               if (leavesWithoutWaiting(host.id)) report(host, "출구로 가는 moveEvent 가 route.wait:true 없이 끝나, 걷기 시작하자마자 셀프 스위치가 켜져 투명 페이지로 사라진다 — route 안에 wait:true 를 넣는다");
-              else if (!(st.lastRouteTo === host.id && routedToExit.has(host.id)) && !excused(st)) report(host, "셀프 스위치로 투명 페이지가 켜져 제자리에서 사라진다");
-              else if (st.lastRouteTo === host.id && !excused(st)) reportShort(host);
+              else if (!(st.lastRouteTo === host.id && routedToExit.has(host.id)) && !excused(st, host.id)) report(host, "셀프 스위치로 투명 페이지가 켜져 제자리에서 사라진다");
+              else if (st.lastRouteTo === host.id && !excused(st, host.id)) reportShort(host);
             }
           }
           if (m2Title(command) === "Erase Event") {
@@ -472,17 +474,17 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
             const npc = byId.get(id);
             if (npc && visibleGraphic(pagesOf(npc)[0]) && leavesWithoutWaiting(id)) {
               report(npc, "출구로 가는 moveEvent 가 route.wait:true 없이 끝나, 걷기 시작하자마자 Erase Event 로 지워진다 — route 안에 wait:true 를 넣는다");
-            } else if (npc && visibleGraphic(pagesOf(npc)[0]) && !excused(st) && !(st.lastRouteTo === id && routedToExit.has(id))) {
+            } else if (npc && visibleGraphic(pagesOf(npc)[0]) && !excused(st, id) && !(st.lastRouteTo === id && routedToExit.has(id))) {
               report(npc, "Erase Event 로 제자리에서 지워진다");
-            } else if (npc && visibleGraphic(pagesOf(npc)[0]) && !excused(st) && st.lastRouteTo === id) reportShort(npc);
+            } else if (npc && visibleGraphic(pagesOf(npc)[0]) && !excused(st, id) && st.lastRouteTo === id) reportShort(npc);
           }
           // 주인공 대역(앉은 주인공을 위 층으로 그린 이벤트)이 꺼지는 바로 그 자리에서 감춰 둔 주인공이 나타나면 사라짐이 아니라 바통 넘기기다
           // (첫사랑 수요일: 앉은 서하 대역 → 일어선 주인공). 스위치 바로 뒤 두 명령 안에 주인공 «Sprite Look» 되돌리기가 있어야 한다.
           const handsToPlayer = list.slice(index + 1, index + 3).some((c) => m2Title(c) === "Sprite Look" && fieldStr(c, "target") === "player" && (c as { fields?: { reset?: unknown } }).fields?.reset === true);
           if (command.kind === "setSwitch" && command.value === true && !handsToPlayer) {
             for (const npc of goneSwitch.get(command.switchId) ?? []) {
-              if (!routedToExit.has(npc.id) && !excused(st)) report(npc, "스위치로 보이는 페이지가 꺼져 방 안에서 사라진다");
-              else if (!excused(st)) reportShort(npc);
+              if (!routedToExit.has(npc.id) && !excused(st, npc.id)) report(npc, "스위치로 보이는 페이지가 꺼져 방 안에서 사라진다");
+              else if (!excused(st, npc.id)) reportShort(npc);
             }
           }
           // 3) 장면 진행 변수(stage 등)를 바꾸는 순간, 그 값에 맞는 페이지가 빈(투명·그림 없음) 페이지라서 같은 맵의 인물이 눈앞에서 꺼진다.
@@ -503,14 +505,15 @@ function checkNpcVanish(project: Project, issues: LintIssue[], gates: readonly G
             }
           }
           if (command.kind === "battleProcessing") {
-            for (const branch of nestedCommandLists(command)) visitList(branch, { ...st, battle: true, talkedSinceBattle: false });
-            st.battle = true; st.talkedSinceBattle = false;
+            const nextSt: Stage = { ...st, battle: true, battleHostId: host.id, talkedSinceBattle: false };
+            for (const branch of nestedCommandLists(command)) visitList(branch, nextSt);
+            st.battle = true; st.battleHostId = host.id; st.talkedSinceBattle = false;
             continue;
           }
           for (const branch of nestedCommandLists(command)) visitList(branch, st);
         }
       };
-      visitList(commands, { black: false, joined: false, battle: false, talkedSinceBattle: false, lastRouteTo: null, lastRouteWaits: false });
+      visitList(commands, { black: false, joined: false, battle: false, battleHostId: null, talkedSinceBattle: false, lastRouteTo: null, lastRouteWaits: false });
     }
   }
 }
@@ -810,10 +813,10 @@ function ceilingTiles(tileset: TilesetDef | undefined): Set<number> {
     : meta && typeof meta === "object" ? Object.entries(meta as Record<string, TileMetaLike>).map(([k, m]) => [Number(k), m]) : [];
   for (const [tile, m] of entries) {
     if (!m || typeof m !== "object") continue;
-    // 천장 띠에 거는 그림(천문대 둥근 지붕·처마 띠 — 이름표 「천장 띠」「천장 줄」)은 위 층 걸이라 통행이 «passable» 이어도
-    // 천장 그 자체다(Fallen fs_observatory 둥근 지붕 30×8 이 천장 구역의 「천장 아닌 칸」으로 잡혔다).
+    // 천장 띠에 거는 그림(천문대 둥근 지붕·처마 띠 — 이름표 「천장 띠」「천장 줄」)과 던전 벽 윗변 입술(「벽 윗변 입술」)은
+    // 위 층 걸이/덧그림이라 통행이 «passable»/«star» 이어도 천장 경계 그 자체다.
     const label = `${m.label ?? ""} ${(m.tags ?? []).join(" ")}`;
-    if (/천장 ?띠|천장 ?줄/u.test(m.label ?? "")) { out.add(tile); continue; }
+    if (/천장 ?띠|천장 ?줄|벽 ?윗변 ?입술|탑 ?\d+칸 ?계단 ?링/u.test(m.label ?? "")) { out.add(tile); continue; }
     if (m.passage && m.passage !== "solid") continue;
     if (CEILING_WORDS.test(label)) out.add(tile);
   }
@@ -1769,6 +1772,65 @@ function checkEndingCardsDistinct(project: Project, issues: LintIssue[]): void {
   }
 }
 
+/** 큰 보스(footprint 가로 3칸 이상 또는 면적 6칸 이상)인데 필드 스프라이트 배율이 작아 발밑 막힌 칸을 채우지 못하는 경우. */
+function checkBossFootprintScale(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    for (const event of map.events ?? []) {
+      for (const page of pagesOf(event)) {
+        if (!visibleGraphic(page)) continue;
+        const fp = page.footprint;
+        if (!fp) continue;
+        const w = fp.width ?? 1, h = fp.height ?? 1;
+        if (w < 3 && w * h < 6) continue;
+        const scale = page.graphic?.scale ?? 1;
+        if (scale < 2.1) {
+          issues.push({
+            severity: "warning",
+            code: "scene-boss-sprite-small",
+            mapId: map.id,
+            eventId: event.id,
+            x: event.x,
+            y: event.y,
+            message: `이벤트 ${event.name || event.id}(${map.name || map.id} ${event.x},${event.y}) 의 막힌 발밑 footprint 가 ${w}×${h}칸인데 그림 배율(graphic.scale)이 ${scale} 로 작다 — 발밑 칸에 비해 콩알처럼 보인다. graphic.scale 을 2.3~2.8 수준으로 키운다.`,
+          });
+          break;
+        }
+      }
+    }
+  }
+}
+
+const DIRECTIONAL_PUZZLE_WORDS = /거울|반사|mirror|reflector|prism/iu;
+
+/** 빛 반사 거울 같은 다방향·점등 퍼즐 기물이 3개 이상인데 전부 1페이지만 있어 방향·점등 상태가 그림으로 구분되지 않는 경우. */
+function checkPuzzleSingleState(project: Project, issues: LintIssue[]): void {
+  for (const map of Object.values(project.maps)) {
+    const props = (map.events ?? []).filter((event) => {
+      if (!DIRECTIONAL_PUZZLE_WORDS.test(`${event.id} ${event.name ?? ""}`)) return false;
+      const pages = pagesOf(event);
+      if (pages.length === 0) return false;
+      // 초기화/컨트롤러(autorun·parallel 전용)는 제외하고 실제 조사·접촉 퍼즐 기물만 본다.
+      return pages.some((pg) => {
+        const k = pg.trigger?.kind ?? event.trigger?.kind ?? "action";
+        return k === "action" || k === "playerTouch" || k === "eventTouch";
+      });
+    });
+    if (props.length < 3) continue;
+    const singlePage = props.filter((event) => pagesOf(event).length <= 1);
+    if (singlePage.length < 3) continue;
+    const first = singlePage[0]!;
+    issues.push({
+      severity: "warning",
+      code: "scene-puzzle-single-state",
+      mapId: map.id,
+      eventId: first.id,
+      x: first.x,
+      y: first.y,
+      message: `맵 ${map.name || map.id} 의 방향·반사 퍼즐 기물 ${singlePage.length}개(${singlePage.slice(0, 3).map((e) => e.name || e.id).join(", ")}…)가 모두 1페이지 단일 그림이다 — 향한 방향과 빛 닿은 상태가 화면에 보이지 않는다. 방향·점등 조건별 fixedGraphic 페이지를 나눠 그림으로 구분한다.`,
+    });
+  }
+}
+
 export function lintScenePolish(project: Project): LintIssue[] {
   const issues: LintIssue[] = [];
   let gates: Gate[] = [];
@@ -1803,6 +1865,8 @@ export function lintScenePolish(project: Project): LintIssue[] {
   guard(checkCommandsAfterTransfer);
   guard(checkEndingUnderFade);
   guard(checkEndingCardsDistinct);
+  guard(checkBossFootprintScale);
+  guard(checkPuzzleSingleState);
   guard((p, out) => checkSceneStaging(p, out)); // 인물 연출: 화자 부재·먼 대화·서로 안 봄(sceneStagingLint.ts)
   guard((p, out) => checkSeatedPose(p, out)); // 앉은 자세: 의자 칸에 선 그림·맨바닥에 앉은 그림(seatedPoseLint.ts)
   guard((p, out) => checkStairEntrances(p, out)); // 계단 입구: 앞 칸 막힘·방향 어긋남·이동 칸 어긋남(stairEntranceLint.ts)
