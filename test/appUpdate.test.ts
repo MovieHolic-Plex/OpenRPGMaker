@@ -60,6 +60,11 @@ describe("summarizeReleaseNotes", () => {
     expect(summarizeReleaseNotes("## 주요 변경\n- ai — 영역 지시에 다리를 더한다 (#5084) (e875d17)")).toEqual(["ai — 영역 지시에 다리를 더한다"]);
   });
 
+  it("긴 한국어 릴리스 노트 문장도 70자에서 잘리지 않고 최대 140자까지 보존한다", () => {
+    const longLine = "새 버전이 있으면 편집기와 시작 화면 오른쪽 상단에 녹색 업데이트 아이콘이 뜨고, 클릭하면 중앙 대화상자로 이번 변경 내역을 쾌적하게 확인할 수 있습니다";
+    expect(summarizeReleaseNotes(`## 주요 변경\n- ${longLine}`)).toEqual([longLine]);
+  });
+
   it("항목이 없거나 본문이 아니면 빈 배열", () => {
     expect(summarizeReleaseNotes("그냥 문장")).toEqual([]);
     expect(summarizeReleaseNotes(null)).toEqual([]);
