@@ -42,6 +42,8 @@ const ALIASES: readonly [RegExp, readonly string[], RegExp?][] = [
   [/회의|meeting/iu, ["회의", "meeting"]],
   [/창고|storage|warehouse/iu, ["창고", "상자", "선반"]],
   [/카페|cafe/iu, ["카페", "cafe"]],
+  [/흡연|smoking/iu, ["흡연", "흡연부스", "재떨이"], /화분|plant|침대|bed|거실 탁자|식탁|책상|신발장|소파/iu],
+  [/pc\s*방|피시방|pc[\s_-]?bang|게임방|게이밍/iu, ["pc방", "피시방", "대기 소파", "사이드 테이블", "퇴식구", "선불결제기"], /화분|plant|침대|bed|거실 탁자|식탁|신발장/iu],
 ];
 
 /** 이 방 쓰임에 맞는 놓을 수 있는 가구(서는 것·바닥 것, 4×3 이하) — 무게(견본 개수) 순. */

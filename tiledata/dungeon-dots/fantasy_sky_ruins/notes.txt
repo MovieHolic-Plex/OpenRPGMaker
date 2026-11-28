@@ -1,0 +1,21 @@
+gemini-4-neon high
+ruin_shrine_gate.png | Ancient Ruin Shrine Gate (고대 유적 신전 문) | 42x45px in 48x48 | standing | 48x48 structure; 3/4 cobalt-slate roof cap + 24px tall dark arch + cyan keystone + hanging moss. | self-score 9/10
+crystal_rune_altar.png | Crystal Rune Altar (수정 룬 제단) | 26x29px in 32x32 | standing | 32x32 standing; stepped stone base + lit top slab + faceted glowing cyan crystal + side shards. | self-score 9/10
+stone_guardian_statue.png | Stone Guardian Statue (석조 수호자 석상) | 16x27px in 16x32 | standing | 16x32 standing; helmeted stone knight holding shield on stepped plinth with shoulder moss. | self-score 9/10
+stone_pillar_intact.png | Intact Fluted Stone Pillar (온전한 석조 기둥) | 12x29px in 16x32 | standing | 16x32 standing; lit square capital top band + vertical fluted limestone shaft + stepped plinth. | self-score 9/10
+stone_pillar_broken.png | Broken Stone Pillar (부러진 석조 기둥) | 13x21px in 16x32 | standing | 16x32 standing; diagonal fractured column exposing bright stone top + moss + base rubble block. | self-score 9/10
+carved_rune_stele.png | Carved Rune Stele (고대 룬 비석) | 26x29px in 32x32 | standing | 32x32 standing; arched limestone tablet with lit top rim, cyan crest, glyph rows, and moss plinth. | self-score 9/10
+sanctuary_fountain_round.png | Round Sanctuary Fountain (성소 원형 분수) | 28x25px in 32x32 | topdown | 32x32 topdown; >=80% flat basin top, deep teal water + bright cyan foam rings + central spout. | self-score 9/10
+mossy_stone_well.png | Mossy Stone Well (이끼 낀 돌우물) | 26x27px in 32x32 | standing | 32x32 standing; curved stone well + dark teal water + oak crossbeam + crank + 2px rope & bucket. | self-score 9/10
+iron_brazier_lit.png | Lit Iron Fire Brazier (불타는 철제 화로) | 12x28px in 16x32 | standing | 16x32 standing; dark iron tripod bowl with glowing coals and crisp yellow-orange-crimson flame. | self-score 9/10
+stone_garden_lantern.png | Stone Garden Lantern (석조 정원 석등) | 10x29px in 16x32 | slender | 16x32 slender; 4px stone shaft + stepped base + warm amber firebox + pagoda cap finial. | self-score 9/10
+temple_banner_pole.png | Temple Banner Pole (신전 깃발 기둥) | 12x29px in 16x32 | slender | 16x32 slender; 4px pole in stone socket + crossbar + crimson swallowtail banner with gold crest. | self-score 9/10
+beodeul_oak_tree.png | Weathered Beodeul Oak Tree (버들항 참나무) | 28x42px in 32x48 | standing | 32x48 standing; multi-lobed lush Beodeul oak canopy + gnarled brown trunk with flared roots. | self-score 9/10
+flowering_bush_moss.png | Flowering Mossy Bush (꽃 핀 이끼 덤불) | 14x12px in 16x16 | standing | 16x16 standing; plump 3-lobe mossy bush with 3 small rose-pink blossom clusters. | self-score 9/10
+explorer_camp_tent.png | Explorer Camp Tent (탐험가 야영 천막) | 28x26px in 32x32 | standing | 32x32 standing; front-facing A-frame canvas tent with ridge pole, open flap, and corner stakes. | self-score 9/10
+treasure_chest_ancient.png | Ancient Treasure Chest (고대 보물상자) | 14x13px in 16x16 | standing | 16x16 standing; chunky oak chest with lit lid top band, twin iron straps, and brass keyhole clasp. | self-score 9/10
+wooden_crates_supply.png | Wooden Supply Crates Stack (나무 보급 상자 더미) | 28x27px in 32x32 | standing | 32x32 standing; 2+1 pyramid stack of oak crates with lit top bands, diagonal braces, and iron nails. | self-score 9/10
+wooden_bench_garden.png | Wooden Garden Bench (나무 정원 벤치) | 30x13px in 32x16 | topdown | 32x16 topdown; 75%+ flat 3-plank oak top with end bolts, 2px front lip, and short stub legs. | self-score 9/10
+stone_offering_table.png | Stone Offering Table (석조 봉헌 탁자) | 30x13px in 32x16 | topdown | 32x16 topdown; 75%+ flat empty carved limestone top with rune inlay, 2px rim, and stub pedestals. | self-score 9/10
+mossy_boulder.png | Mossy Stone Boulder (이끼 바위) | 15x11px in 16x16 | standing | 16x16 standing; faceted grey limestone boulder with lush moss cap draped over top-left shoulder. | self-score 9/10
+wooden_notice_board.png | Wooden Shrine Notice Board (나무 성소 게시판) | 26x28px in 32x32 | standing | 32x32 standing; timber roof cap + oak frame holding 3 parchment notices with red pins + sturdy posts. | self-score 9/10

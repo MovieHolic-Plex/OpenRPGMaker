@@ -1,0 +1,237 @@
+{
+  "map_dimensions_tiles": [
+    38,
+    28
+  ],
+  "map_dimensions_px_1x": [
+    608,
+    448
+  ],
+  "map_dimensions_px_2x": [
+    1216,
+    896
+  ],
+  "buildings_total": 10,
+  "building_sprite_overlaps": 0,
+  "blocked_doors": 0,
+  "all_doors_and_landmarks_reachable": true,
+  "reachable_walkable_tiles": 309,
+  "total_walkable_tiles": 309,
+  "trapped_unreachable_tiles_count": 0,
+  "trapped_unreachable_sample": [],
+  "building_doors": {
+    "ft-chapel": {
+      "doorstep_tile": [
+        10,
+        8
+      ],
+      "zone": "North Sanctuary Terrace",
+      "reachable": true,
+      "bfs_steps_from_entrance": 25,
+      "front_clearance_ok": true,
+      "reason_if_blocked": null
+    },
+    "ft-clocktower": {
+      "doorstep_tile": [
+        15,
+        8
+      ],
+      "zone": "North Sanctuary Terrace",
+      "reachable": true,
+      "bfs_steps_from_entrance": 24,
+      "front_clearance_ok": true,
+      "reason_if_blocked": null
+    },
+    "ft-magic": {
+      "doorstep_tile": [
+        26,
+        8
+      ],
+      "zone": "North-East Arcane Corner",
+      "reachable": true,
+      "bfs_steps_from_entrance": 35,
+      "front_clearance_ok": true,
+      "reason_if_blocked": null
+    },
+    "ft-apothecary": {
+      "doorstep_tile": [
+        30,
+        9
+      ],
+      "zone": "North-East Arcane Corner",
+      "reachable": true,
+      "bfs_steps_from_entrance": 38,
+      "front_clearance_ok": true,
+      "reason_if_blocked": null
+    },
+    "ft-guild": {
+      "doorstep_tile": [
+        3,
+        14
+      ],
+      "zone": "West Civic & Forge Row",
+      "reachable": true,
+      "bfs_steps_from_entrance": 26,
+      "front_clearance_ok": true,
+      "reason_if_blocked": null
+    },
+    "ft-smithy": {
+      "doorstep_tile": [
+        4,
+        24
+      ],
+      "zone": "West Civic & Forge Row",
+      "reachable": true,
+      "bfs_steps_from_entrance": 11,
+      "front_clearance_ok": true,
+      "reason_if_blocked": null
+    },
+    "ft-armory": {
+      "doorstep_tile": [
+        9,
+        25
+      ],
+      "zone": "West Civic & Forge Row",
+      "reachable": true,
+      "bfs_steps_from_entrance": 5,
+      "front_clearance_ok": true,
+      "reason_if_blocked": null
+    },
+    "ft-inn": {
+      "doorstep_tile": [
+        15,
+        26
+      ],
+      "zone": "Central-South Traveler's Corner",
+      "reachable": true,
+      "bfs_steps_from_entrance": 4,
+      "front_clearance_ok": true,
+      "reason_if_blocked": null
+    },
+    "ft-tavern": {
+      "doorstep_tile": [
+        23,
+        19
+      ],
+      "zone": "South-East Harbor Promenade",
+      "reachable": true,
+      "bfs_steps_from_entrance": 23,
+      "front_clearance_ok": true,
+      "reason_if_blocked": null
+    },
+    "ft-warehouse": {
+      "doorstep_tile": [
+        27,
+        18
+      ],
+      "zone": "South-East Harbor Promenade",
+      "reachable": true,
+      "bfs_steps_from_entrance": 28,
+      "front_clearance_ok": true,
+      "reason_if_blocked": null
+    }
+  },
+  "landmarks": {
+    "south_town_road_entrance": {
+      "tile": [
+        12,
+        27
+      ],
+      "reachable": true,
+      "bfs_steps_from_entrance": 0,
+      "reason_if_blocked": null
+    },
+    "west_gate_road_entrance": {
+      "tile": [
+        0,
+        15
+      ],
+      "reachable": true,
+      "bfs_steps_from_entrance": 30,
+      "reason_if_blocked": null
+    },
+    "central_fountain_plaza_south": {
+      "tile": [
+        16,
+        17
+      ],
+      "reachable": true,
+      "bfs_steps_from_entrance": 16,
+      "reason_if_blocked": null
+    },
+    "central_fountain_plaza_north": {
+      "tile": [
+        16,
+        12
+      ],
+      "reachable": true,
+      "bfs_steps_from_entrance": 21,
+      "reason_if_blocked": null
+    },
+    "grand_sanctuary_stairs": {
+      "tile": [
+        12,
+        10
+      ],
+      "reachable": true,
+      "bfs_steps_from_entrance": 21,
+      "reason_if_blocked": null
+    },
+    "north_sanctuary_terrace": {
+      "tile": [
+        12,
+        8
+      ],
+      "reachable": true,
+      "bfs_steps_from_entrance": 23,
+      "reason_if_blocked": null
+    },
+    "northeast_arcane_corner": {
+      "tile": [
+        27,
+        9
+      ],
+      "reachable": true,
+      "bfs_steps_from_entrance": 35,
+      "reason_if_blocked": null
+    },
+    "west_guild_forecourt": {
+      "tile": [
+        3,
+        15
+      ],
+      "reachable": true,
+      "bfs_steps_from_entrance": 25,
+      "reason_if_blocked": null
+    },
+    "southwest_artisan_forge_row": {
+      "tile": [
+        6,
+        25
+      ],
+      "reachable": true,
+      "bfs_steps_from_entrance": 8,
+      "reason_if_blocked": null
+    },
+    "waterfront_harbor_promenade": {
+      "tile": [
+        25,
+        20
+      ],
+      "reachable": true,
+      "bfs_steps_from_entrance": 26,
+      "reason_if_blocked": null
+    },
+    "harbor_timber_pier_tip": {
+      "tile": [
+        27,
+        25
+      ],
+      "reachable": true,
+      "bfs_steps_from_entrance": 33,
+      "reason_if_blocked": null
+    }
+  },
+  "pure_black_pixels": 0,
+  "unique_rgb_colors": 3137
+}

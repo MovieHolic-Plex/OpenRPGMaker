@@ -16,8 +16,8 @@ const OBJ = (spec as unknown as SpecShape).objects;
 export const id = (s: string): string => (s.startsWith("m:") ? `mci-${s.slice(2)}` : s);
 const sizeOf = (s: string): { w: number; h: number; up: number } => { const q = OBJ[id(s)]; return { w: q?.w ?? 1, h: Math.max(1, q?.h ?? 1), up: q?.up ?? 0 }; };
 
-export const F = { oak: "mci-wood-oak", dark: "mci-wood-dark", carpet: "mci-carpet-office", stone: "mci-stone-lobby", vinyl: "mci-vinyl-store", hosp: "mci-vinyl-hospital", tile: "mci-tile-concourse", conc: "mci-concrete", small: "mci-tile-small" } as const;
-export const W = { office: "mci-wall-office", lobby: "mci-wall-lobby", store: "mci-wall-store", home: "mci-wall-home", hosp: "mci-wall-hospital", brick: "mci-wall-brick", tile: "mci-wall-tile", metal: "mci-wall-metal" } as const;
+export const F = { oak: "mci-wood-oak", dark: "mci-wood-dark", carpet: "mci-carpet-office", stone: "mci-stone-lobby", vinyl: "mci-vinyl-store", hosp: "mci-vinyl-hospital", tile: "mci-tile-concourse", conc: "mci-concrete", small: "mci-tile-small", pcbDark: "pcb-floor-dark", pcbSmoke: "pcb-floor-smoke" } as const;
+export const W = { office: "mci-wall-office", lobby: "mci-wall-lobby", store: "mci-wall-store", home: "mci-wall-home", hosp: "mci-wall-hospital", brick: "mci-wall-brick", tile: "mci-wall-tile", metal: "mci-wall-metal", pcbDark: "pcb-wall-dark", pcbGlass: "pcb-wall-glass" } as const;
 
 export type RowAlign = "spread" | "center" | "west" | "east";
 
@@ -346,6 +346,8 @@ export interface FacilitySpec {
   readonly open?: readonly (readonly [string, string])[];
   readonly ragged?: boolean;
   readonly trim?: Readonly<Record<string, number>>;
+  readonly keepMaterials?: readonly string[];
+  readonly plainDoorways?: boolean;
   /** 줄 사이 복도 꾸밈 묶음 - 생략하면 program 별 기본(HALL_BY_PROGRAM), false 면 복도 없이. */
   readonly hall?: HallDress | false;
 }
@@ -531,6 +533,8 @@ export function facility(s: FacilitySpec): FacilityVenue {
     fixed: [...adjustedRooms.map((r) => r.kind), ...(hallable ? [HALL_KIND] : [])],
     ...(s.above ? { above: s.above } : {}),
     ...(s.left ? { left: s.left } : {}),
+    ...(s.keepMaterials ? { keepMaterials: s.keepMaterials } : {}),
+    ...(s.plainDoorways ? { plainDoorways: true } : {}),
     ...(hallable && hallDress ? { hall: hallDress } : {}),
     palettes,
   };

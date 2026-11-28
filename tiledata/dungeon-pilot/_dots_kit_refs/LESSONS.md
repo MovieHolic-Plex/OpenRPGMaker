@@ -1,0 +1,23 @@
+# Lessons from 107 Opus reviews (2026-11-26). Read before drawing. Max 20 lines.
+- Make the object instantly readable at 1x: one confident, solid silhouette that fills about 12 to 14 px of the 16 px tile, never a tiny blob.
+- Draw the defining features the object is known by (lighthouse red bands, taxi checker stripe and roof light, ATM screen and keypad, anvil horn) so the reviewer names it in one second.
+- Shade every material with a 3 to 4 tone ramp (highlight, mid, shadow, deep shadow) and keep wood, iron, brass and stone ramps visibly separate.
+- Wrap the whole sprite in a dark 1 px outline, using a darker hue of the local color, and keep pixel clusters clean with no stray noise.
+- Use the RPG Maker 2003 3/4 top-down camera: show the top face (roof bands, rims, counter tops, lids) as a lit strip above the front face.
+- Push contrast between adjacent materials: dark wood frame vs bright contents, grey metal vs lit display, dark posts vs pale net.
+- Add 2 or 3 small story details that fit the setting (iron corner caps, brass locks, nails, mugs, buoys, coiled rope), but never random clutter like fruit or leaves.
+- Bind wood with dark iron straps or hoops that each carry a 1 px highlight, and give plank or stave seams dark gap lines.
+- Shape curved objects with curved shading (barrels, kettles, cones, boat hulls with upturned bow and stern) so they cannot read as flat boxes.
+- Give the silhouette a distinctive structure: braced legs, crossbars, arches with keystones, stepped tops, pyramids of crates or sacks.
+- Make each variant differ in form or palette (added base plate, swapped colors, different stacking) while keeping the core identity.
+- Light from the top left: brighten top and left edges, shadow bottom and right edges, including on recessed panels and bevels.
+- Avoid the top failure, ambiguous form: a cask must lie on its side on a cradle with its round head shown, a trap must have a domed slatted top, so neither reads as a chest or crate.
+- Avoid undersized key faces: make a bar or counter front about 40 to 50 percent of the height with 3 to 4 recessed panels, not a 3 to 4 px strip.
+- Draw rope as a thick 2 px tan strand with lighter twist dots and show where it goes (over a wheel, coiled in a spiral), so it never reads as a sack.
+- Show mechanical parts explicitly: a pulley needs a round sheave with a dark axle pin, a steel frame, a top ring and a separate hooked iron hook.
+- Use glowing elements (lantern glass, fire, screens, embers) as the brightest pixels with a yellow to red or light to dark ramp.
+- Render water as dark with a few bright highlight or foam pixels inside a clearly outlined stone or wood rim.
+- Keep surfaces purposeful: polished long-grain highlights on a counter, not a plank floor or crate pattern pasted on.
+- Check the sprite at 1x before finishing, and if the object name is not obvious, enlarge its defining feature and simplify everything else.
+- Give stepped structures (stairs, gangplanks, docks) unmistakable silhouette cues like sturdy post railings, flared bottom steps, and crisp bright step edges vs dark riser shadows.
+- For bars, counters, and tables, match the silhouette to the named object (e.g. dark panelled front + brass rail for bars; clean top + stub legs for tables) so it never reads as a generic crate.

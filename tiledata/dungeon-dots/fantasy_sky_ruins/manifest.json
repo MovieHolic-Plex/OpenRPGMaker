@@ -1,0 +1,421 @@
+[
+  {
+    "file": "ruin_shrine_gate.png",
+    "id": "ruins-bd-shrine-gate",
+    "name_en": "Ancient Ruin Shrine Gate",
+    "name_ko": "고대 유적 신전 문",
+    "canvas": "48x48",
+    "opaque_size": "42x45",
+    "camera": "standing",
+    "tiles": "3x3",
+    "facing": "down",
+    "description": "Mossy Beodeul limestone sanctuary entrance with sloped cobalt-slate shingle roof terrace, flanking stone pilasters, glowing cyan rune keystone, and a 24px-tall dark arched doorway.",
+    "tags": [
+      "ruins",
+      "shrine",
+      "gate",
+      "archway",
+      "cobalt-roof",
+      "moss",
+      "beodeul",
+      "sanctuary"
+    ]
+  },
+  {
+    "file": "crystal_rune_altar.png",
+    "id": "ruins-bd-crystal-altar",
+    "name_en": "Crystal Rune Altar",
+    "name_ko": "수정 룬 제단",
+    "canvas": "32x32",
+    "opaque_size": "26x29",
+    "camera": "standing",
+    "tiles": "2x2",
+    "facing": "down",
+    "description": "Stepped cool limestone sanctuary altar with carved glowing front glyph and a large faceted bright cyan rune crystal perched atop a dark slate cradle.",
+    "tags": [
+      "altar",
+      "crystal",
+      "rune",
+      "cyan",
+      "stone",
+      "sanctuary",
+      "beodeul"
+    ]
+  },
+  {
+    "file": "stone_guardian_statue.png",
+    "id": "ruins-bd-guardian-statue",
+    "name_en": "Stone Guardian Statue",
+    "name_ko": "석조 수호자 석상",
+    "canvas": "16x32",
+    "opaque_size": "16x27",
+    "camera": "standing",
+    "tiles": "1x2",
+    "facing": "down",
+    "description": "Weathered limestone sentinel knight statue standing on a stepped plinth holding a carved shield with a small cyan crest and moss on its shoulder.",
+    "tags": [
+      "statue",
+      "guardian",
+      "knight",
+      "stone",
+      "ruins",
+      "plinth",
+      "beodeul"
+    ]
+  },
+  {
+    "file": "stone_pillar_intact.png",
+    "id": "ruins-bd-pillar-intact",
+    "name_en": "Intact Fluted Stone Pillar",
+    "name_ko": "온전한 석조 기둥",
+    "canvas": "16x32",
+    "opaque_size": "12x29",
+    "camera": "standing",
+    "tiles": "1x2",
+    "facing": "down",
+    "description": "Tall intact fluted ancient limestone column with a sunlit square capital top band, horizontal drum joints, small moss accent, and stepped plinth base.",
+    "tags": [
+      "pillar",
+      "column",
+      "stone",
+      "fluted",
+      "ruins",
+      "architecture",
+      "beodeul"
+    ]
+  },
+  {
+    "file": "stone_pillar_broken.png",
+    "id": "ruins-bd-pillar-broken",
+    "name_en": "Broken Stone Pillar",
+    "name_ko": "부러진 석조 기둥",
+    "canvas": "16x32",
+    "opaque_size": "13x21",
+    "camera": "standing",
+    "tiles": "1x2",
+    "facing": "down",
+    "description": "Fractured fluted limestone ruin column snapped diagonally at mid-height with bright exposed stone break, creeping moss, and a fallen stone chunk beside its plinth.",
+    "tags": [
+      "pillar",
+      "broken",
+      "ruins",
+      "stone",
+      "moss",
+      "rubble",
+      "beodeul"
+    ]
+  },
+  {
+    "file": "carved_rune_stele.png",
+    "id": "ruins-bd-rune-stele",
+    "name_en": "Carved Rune Stele",
+    "name_ko": "고대 룬 비석",
+    "canvas": "32x32",
+    "opaque_size": "26x29",
+    "camera": "standing",
+    "tiles": "2x2",
+    "facing": "down",
+    "description": "Monumental rounded-arch weathered stone tablet on a stepped plinth displaying a lit top bevel, cyan rune crest, inscribed glyph rows, and mossy base.",
+    "tags": [
+      "stele",
+      "tablet",
+      "monument",
+      "rune",
+      "stone",
+      "ruins",
+      "beodeul"
+    ]
+  },
+  {
+    "file": "sanctuary_fountain_round.png",
+    "id": "ruins-bd-fountain-round",
+    "name_en": "Round Sanctuary Fountain",
+    "name_ko": "성소 원형 분수",
+    "canvas": "32x32",
+    "opaque_size": "28x25",
+    "camera": "topdown",
+    "tiles": "2x2",
+    "facing": "down",
+    "description": "Top-down circular carved limestone fountain basin filled with deep sea-teal water, concentric bright cyan-white foam ripples, and a central stone spout.",
+    "tags": [
+      "fountain",
+      "water",
+      "basin",
+      "topdown",
+      "stone",
+      "sanctuary",
+      "beodeul"
+    ]
+  },
+  {
+    "file": "mossy_stone_well.png",
+    "id": "ruins-bd-mossy-well",
+    "name_en": "Mossy Stone Well",
+    "name_ko": "이끼 낀 돌우물",
+    "canvas": "32x32",
+    "opaque_size": "26x27",
+    "camera": "standing",
+    "tiles": "2x2",
+    "facing": "down",
+    "description": "Beodeul circular ashlar stone well holding dark teal water with foam glints, flanked by oak windlass posts, iron crank, thick tan rope, hanging bucket, and base moss.",
+    "tags": [
+      "well",
+      "stone",
+      "water",
+      "bucket",
+      "wood",
+      "moss",
+      "beodeul"
+    ]
+  },
+  {
+    "file": "iron_brazier_lit.png",
+    "id": "ruins-bd-iron-brazier",
+    "name_en": "Lit Iron Fire Brazier",
+    "name_ko": "불타는 철제 화로",
+    "canvas": "16x32",
+    "opaque_size": "12x28",
+    "camera": "standing",
+    "tiles": "1x2",
+    "facing": "down",
+    "description": "Wrought-iron temple tripod brazier with a sunlit metal bowl rim holding glowing coals and a bright yellow-to-crimson stylized flame.",
+    "tags": [
+      "brazier",
+      "fire",
+      "iron",
+      "light",
+      "temple",
+      "ruins",
+      "beodeul"
+    ]
+  },
+  {
+    "file": "stone_garden_lantern.png",
+    "id": "ruins-bd-garden-lantern",
+    "name_en": "Stone Garden Lantern",
+    "name_ko": "석조 정원 석등",
+    "canvas": "16x32",
+    "opaque_size": "10x29",
+    "camera": "slender",
+    "tiles": "1x2",
+    "facing": "down",
+    "description": "Slender carved Beodeul stone sanctuary lantern with stepped base, narrow 4px pillar shaft, warm amber glowing firebox window, and pagoda cap.",
+    "tags": [
+      "lantern",
+      "stone",
+      "slender",
+      "light",
+      "garden",
+      "sanctuary",
+      "beodeul"
+    ]
+  },
+  {
+    "file": "temple_banner_pole.png",
+    "id": "ruins-bd-banner-pole",
+    "name_en": "Temple Banner Pole",
+    "name_ko": "신전 깃발 기둥",
+    "canvas": "16x32",
+    "opaque_size": "12x29",
+    "camera": "slender",
+    "tiles": "1x2",
+    "facing": "down",
+    "description": "Tall slender dark oak sanctuary standard pole anchored in a stone socket, flying a swallowtail faded crimson banner trimmed with an antique gold crest.",
+    "tags": [
+      "banner",
+      "pole",
+      "slender",
+      "crimson",
+      "gold",
+      "temple",
+      "beodeul"
+    ]
+  },
+  {
+    "file": "beodeul_oak_tree.png",
+    "id": "ruins-bd-oak-tree",
+    "name_en": "Weathered Beodeul Oak Tree",
+    "name_ko": "버들항 참나무",
+    "canvas": "32x48",
+    "opaque_size": "28x42",
+    "camera": "standing",
+    "tiles": "2x3",
+    "facing": "down",
+    "description": "Lush Beodeul oak tree with five distinct rounded olive-and-leaf-green canopy clusters, dark forest outline, and a gnarled oak trunk with flared roots.",
+    "tags": [
+      "tree",
+      "oak",
+      "foliage",
+      "nature",
+      "canopy",
+      "beodeul"
+    ]
+  },
+  {
+    "file": "flowering_bush_moss.png",
+    "id": "ruins-bd-flowering-bush",
+    "name_en": "Flowering Mossy Bush",
+    "name_ko": "꽃 핀 이끼 덤불",
+    "canvas": "16x16",
+    "opaque_size": "14x12",
+    "camera": "standing",
+    "tiles": "1x1",
+    "facing": "down",
+    "description": "Plump rounded mossy shrub filling the tile with layered top-left lit green leaf lobes and three small pale rose-pink blossoms.",
+    "tags": [
+      "bush",
+      "shrub",
+      "flowers",
+      "moss",
+      "foliage",
+      "nature",
+      "beodeul"
+    ]
+  },
+  {
+    "file": "explorer_camp_tent.png",
+    "id": "ruins-bd-camp-tent",
+    "name_en": "Explorer Camp Tent",
+    "name_ko": "탐험가 야영 천막",
+    "canvas": "32x32",
+    "opaque_size": "28x26",
+    "camera": "standing",
+    "tiles": "2x2",
+    "facing": "down",
+    "description": "Weathered faded-canvas A-frame expedition tent facing forward with a wooden ridge beam, sunlit left slope, shaded right slope, corner pegs, and open dark flap doorway.",
+    "tags": [
+      "tent",
+      "camp",
+      "canvas",
+      "explorer",
+      "shelter",
+      "beodeul"
+    ]
+  },
+  {
+    "file": "treasure_chest_ancient.png",
+    "id": "ruins-bd-treasure-chest",
+    "name_en": "Ancient Treasure Chest",
+    "name_ko": "고대 보물상자",
+    "canvas": "16x16",
+    "opaque_size": "14x13",
+    "camera": "standing",
+    "tiles": "1x1",
+    "facing": "down",
+    "description": "Chunky ancient oak dungeon treasure chest with a sunlit curved top lid band, heavy dark iron straps with bright highlights, and an antique brass center lock.",
+    "tags": [
+      "chest",
+      "treasure",
+      "loot",
+      "oak",
+      "iron",
+      "dungeon",
+      "beodeul"
+    ]
+  },
+  {
+    "file": "wooden_crates_supply.png",
+    "id": "ruins-bd-wooden-crates",
+    "name_en": "Wooden Supply Crates Stack",
+    "name_ko": "나무 보급 상자 더미",
+    "canvas": "32x32",
+    "opaque_size": "28x27",
+    "camera": "standing",
+    "tiles": "2x2",
+    "facing": "down",
+    "description": "Pyramid stack of three Beodeul expedition oak crates showing lit top plank lids, front diagonal cross-braces, dark plank seams, and iron corner studs.",
+    "tags": [
+      "crates",
+      "wood",
+      "supply",
+      "stack",
+      "camp",
+      "harbour",
+      "beodeul"
+    ]
+  },
+  {
+    "file": "wooden_bench_garden.png",
+    "id": "ruins-bd-garden-bench",
+    "name_en": "Wooden Garden Bench",
+    "name_ko": "나무 정원 벤치",
+    "canvas": "32x16",
+    "opaque_size": "30x13",
+    "camera": "topdown",
+    "tiles": "2x1",
+    "facing": "down",
+    "description": "Top-down long weathered oak sanctuary bench displaying three sunlit horizontal seat planks with iron end bolts, a 2px front rim, and short stub legs.",
+    "tags": [
+      "bench",
+      "seat",
+      "wood",
+      "topdown",
+      "garden",
+      "courtyard",
+      "beodeul"
+    ]
+  },
+  {
+    "file": "stone_offering_table.png",
+    "id": "ruins-bd-offering-table",
+    "name_en": "Stone Offering Table",
+    "name_ko": "석조 봉헌 탁자",
+    "canvas": "32x16",
+    "opaque_size": "30x13",
+    "camera": "topdown",
+    "tiles": "2x1",
+    "facing": "down",
+    "description": "Top-down empty rectangular carved limestone offering slab with sunlit bevel rim, recessed border groove, subtle inlaid cyan rune seal, and short stone pedestal legs.",
+    "tags": [
+      "table",
+      "offering",
+      "stone",
+      "topdown",
+      "rune",
+      "sanctuary",
+      "beodeul"
+    ]
+  },
+  {
+    "file": "mossy_boulder.png",
+    "id": "ruins-bd-mossy-boulder",
+    "name_en": "Mossy Stone Boulder",
+    "name_ko": "이끼 바위",
+    "canvas": "16x16",
+    "opaque_size": "15x11",
+    "camera": "standing",
+    "tiles": "1x1",
+    "facing": "down",
+    "description": "Chunky faceted weathered limestone boulder lit from top-left with cool stone underside shading and a lush green moss cap draped over its left shoulder.",
+    "tags": [
+      "boulder",
+      "rock",
+      "stone",
+      "moss",
+      "nature",
+      "ruins",
+      "beodeul"
+    ]
+  },
+  {
+    "file": "wooden_notice_board.png",
+    "id": "ruins-bd-notice-board",
+    "name_en": "Wooden Shrine Notice Board",
+    "name_ko": "나무 성소 게시판",
+    "canvas": "32x32",
+    "opaque_size": "26x28",
+    "camera": "standing",
+    "tiles": "2x2",
+    "facing": "down",
+    "description": "Beodeul timber sanctuary notice board with a sloped wooden shingle roof cap, sturdy oak posts with foot blocks, and three pale parchment notices pinned with red wax tacks.",
+    "tags": [
+      "notice-board",
+      "sign",
+      "wood",
+      "parchment",
+      "shrine",
+      "camp",
+      "beodeul"
+    ]
+  }
+]

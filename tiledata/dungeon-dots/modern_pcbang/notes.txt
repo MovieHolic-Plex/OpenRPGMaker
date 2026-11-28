@@ -1,0 +1,21 @@
+gemini-4-neon high
+pc_station_blue | opaque=30x29 | camera=standing | Glowing cyan widescreen + RGB keyboard + dual-fan glass PC tower on wide desk | self_score=9.0/10
+pc_station_red | opaque=30x29 | camera=standing | Side-by-side twin glowing red/amber monitors + red LED desk trim & under-desk tower | self_score=9.0/10
+gaming_chair_red | opaque=14x14 | camera=chair | High crimson-bolstered racing headrest at top + dark seat cushion & armrests | self_score=8.5/10
+gaming_chair_blue | opaque=14x14 | camera=chair | Cobalt racing backrest with cyan neck pillow at top + dark seat cushion | self_score=8.5/10
+arcade_cabinet_blue | opaque=14x29 | camera=standing | Glowing yellow marquee + bright CRT screen + red joystick deck + twin orange coin slots | self_score=9.0/10
+arcade_cabinet_red | opaque=14x29 | camera=standing | Cyan marquee + fighting-game health-bar CRT + white twin-joystick deck on red body | self_score=9.0/10
+claw_crane_machine | opaque=28x30 | camera=standing | Pink marquee + large glass showcase with hanging metal claw over 3 bright plushies + chute | self_score=9.5/10
+coin_changer | opaque=14x28 | camera=standing | Bold gold coin header + silver face with green bill slot & dark coin dispenser cup | self_score=8.5/10
+vending_machine_drinks | opaque=28x30 | camera=standing | Lit white display window with 3 rows of bright cans + side keypad + dark lower pickup chute | self_score=9.0/10
+drink_fridge_glass | opaque=14x30 | camera=standing | Cyan lightbox header + tall glass door packed with 4 colorful drink shelves + bottom vents | self_score=9.0/10
+ramen_cooker_counter | opaque=30x29 | camera=standing | Red header water spouts + golden pot with red broth & steam on stainless top + paneled oak front | self_score=9.5/10
+snack_shelf_rack | opaque=30x29 | camera=standing | 4 crisp silver shelves lined with colorful cup-ramen and chip packs in dark steel rack | self_score=9.0/10
+pos_counter_desk | opaque=46x29 | camera=standing | 45%-height 4-panel front + cyan LED strip + glowing POS register & menu sign on lit top | self_score=9.5/10
+cafe_table_oak | opaque=30x15 | camera=topdown | Clean top-down beveled warm oak tabletop with narrow apron & twin dark stub legs | self_score=9.0/10
+cafe_stool | opaque=14x14 | camera=chair | Oak top backrest + contrasting cobalt seat cushion framed in oak + twin steel stubs | self_score=8.5/10
+vip_sofa_navy | opaque=30x15 | camera=topdown | Two plush cobalt-blue cushions flanked by armrests & top backrest crest | self_score=9.0/10
+storage_locker | opaque=14x29 | camera=standing | Two stacked steel locker doors with horizontal louvers & digital keypad locks | self_score=8.5/10
+server_rack | opaque=14x29 | camera=standing | Dark rack frame with 5 distinct horizontal server blades & bright cyan/green status LEDs | self_score=9.0/10
+standing_floor_lamp | opaque=12x29 | camera=slender | Glowing warm amber-cream drum shade atop thin 4px steel post & circular floor base | self_score=9.0/10
+trash_recycle_bin | opaque=14x13 | camera=standing | Compact steel twin-slot bin with bold blue & green recycling color bands | self_score=8.5/10

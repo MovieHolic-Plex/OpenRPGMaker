@@ -1,0 +1,541 @@
+[
+  {
+    "file": "objects/pc_station_blue.png",
+    "id": "pc_station_blue",
+    "name_en": "Blue Gaming PC Station",
+    "name_ko": "블루 게이밍 PC 좌석",
+    "camera": "standing",
+    "tiles": [
+      2,
+      2
+    ],
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_size": [
+      30,
+      29
+    ],
+    "facing": "down",
+    "description": "Wide gaming desk with glowing cyan-blue widescreen monitor, RGB keyboard, mouse, and glass-panel PC tower.",
+    "tags": [
+      "pc",
+      "desk",
+      "monitor",
+      "gaming",
+      "arena"
+    ]
+  },
+  {
+    "file": "objects/pc_station_red.png",
+    "id": "pc_station_red",
+    "name_en": "Red Dual-Monitor PC Rig",
+    "name_ko": "레드 듀얼모니터 PC 좌석",
+    "camera": "standing",
+    "tiles": [
+      2,
+      2
+    ],
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_size": [
+      30,
+      29
+    ],
+    "facing": "down",
+    "description": "Dual-monitor red esports gaming station with crimson backlit keyboard and under-desk glowing tower.",
+    "tags": [
+      "pc",
+      "desk",
+      "dual-monitor",
+      "gaming",
+      "arena"
+    ]
+  },
+  {
+    "file": "objects/gaming_chair_red.png",
+    "id": "gaming_chair_red",
+    "name_en": "Red Gaming Chair",
+    "name_ko": "레드 게이밍 의자",
+    "camera": "chair",
+    "tiles": [
+      1,
+      1
+    ],
+    "canvas": [
+      16,
+      16
+    ],
+    "opaque_size": [
+      14,
+      14
+    ],
+    "facing": "down",
+    "description": "Near top-down crimson and slate racing gaming chair facing down with bolster backrest along top edge.",
+    "tags": [
+      "chair",
+      "gaming",
+      "red",
+      "arena"
+    ]
+  },
+  {
+    "file": "objects/gaming_chair_blue.png",
+    "id": "gaming_chair_blue",
+    "name_en": "Blue Gaming Chair",
+    "name_ko": "블루 게이밍 의자",
+    "camera": "chair",
+    "tiles": [
+      1,
+      1
+    ],
+    "canvas": [
+      16,
+      16
+    ],
+    "opaque_size": [
+      14,
+      14
+    ],
+    "facing": "down",
+    "description": "Near top-down cobalt and cyan racing gaming chair facing down with bolster backrest along top edge.",
+    "tags": [
+      "chair",
+      "gaming",
+      "blue",
+      "arena"
+    ]
+  },
+  {
+    "file": "objects/arcade_cabinet_blue.png",
+    "id": "arcade_cabinet_blue",
+    "name_en": "Blue Retro Arcade Cabinet",
+    "name_ko": "블루 레트로 오락기",
+    "camera": "standing",
+    "tiles": [
+      1,
+      2
+    ],
+    "canvas": [
+      16,
+      32
+    ],
+    "opaque_size": [
+      14,
+      29
+    ],
+    "facing": "down",
+    "description": "Classic cobalt upright arcade cabinet with glowing yellow marquee, blue CRT screen, red joystick deck, and coin door.",
+    "tags": [
+      "arcade",
+      "retro",
+      "cabinet",
+      "blue"
+    ]
+  },
+  {
+    "file": "objects/arcade_cabinet_red.png",
+    "id": "arcade_cabinet_red",
+    "name_en": "Red Fighting Arcade Cabinet",
+    "name_ko": "레드 대전 오락기",
+    "camera": "standing",
+    "tiles": [
+      1,
+      2
+    ],
+    "canvas": [
+      16,
+      32
+    ],
+    "opaque_size": [
+      14,
+      29
+    ],
+    "facing": "down",
+    "description": "Crimson retro fighting arcade cabinet with cyan marquee, health-bar CRT screen, and silver twin-stick control deck.",
+    "tags": [
+      "arcade",
+      "retro",
+      "cabinet",
+      "red"
+    ]
+  },
+  {
+    "file": "objects/claw_crane_machine.png",
+    "id": "claw_crane_machine",
+    "name_en": "Claw Crane Machine",
+    "name_ko": "인형뽑기 기계",
+    "camera": "standing",
+    "tiles": [
+      2,
+      2
+    ],
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_size": [
+      28,
+      30
+    ],
+    "facing": "down",
+    "description": "Wide pink-and-glass Korean UFO catcher claw crane with hanging silver claw, three colorful plushies, and prize chute.",
+    "tags": [
+      "arcade",
+      "claw",
+      "crane",
+      "plushie"
+    ]
+  },
+  {
+    "file": "objects/coin_changer.png",
+    "id": "coin_changer",
+    "name_en": "Arcade Coin Changer",
+    "name_ko": "동전교환기",
+    "camera": "standing",
+    "tiles": [
+      1,
+      2
+    ],
+    "canvas": [
+      16,
+      32
+    ],
+    "opaque_size": [
+      14,
+      28
+    ],
+    "facing": "down",
+    "description": "Tall arcade bill-to-coin changer kiosk with amber-gold banner, brushed steel face, green bill slot, and coin tray.",
+    "tags": [
+      "arcade",
+      "coin",
+      "kiosk"
+    ]
+  },
+  {
+    "file": "objects/vending_machine_drinks.png",
+    "id": "vending_machine_drinks",
+    "name_en": "Drink Vending Machine",
+    "name_ko": "음료 자판기",
+    "camera": "standing",
+    "tiles": [
+      2,
+      2
+    ],
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_size": [
+      28,
+      30
+    ],
+    "facing": "down",
+    "description": "Wide cobalt Korean beverage vending machine with illuminated 3-shelf can display, right control panel, and lower pickup chute.",
+    "tags": [
+      "vending",
+      "drinks",
+      "cafe",
+      "lobby"
+    ]
+  },
+  {
+    "file": "objects/drink_fridge_glass.png",
+    "id": "drink_fridge_glass",
+    "name_en": "Glass Drink Fridge",
+    "name_ko": "유리문 음료 냉장고",
+    "camera": "standing",
+    "tiles": [
+      1,
+      2
+    ],
+    "canvas": [
+      16,
+      32
+    ],
+    "opaque_size": [
+      14,
+      30
+    ],
+    "facing": "down",
+    "description": "Tall glass-door convenience beverage refrigerator with cyan top lightbox, 4 stocked shelves, chrome handle, and bottom grille.",
+    "tags": [
+      "fridge",
+      "drinks",
+      "cafe",
+      "convenience"
+    ]
+  },
+  {
+    "file": "objects/ramen_cooker_counter.png",
+    "id": "ramen_cooker_counter",
+    "name_en": "Self-Serve Ramen Cooker Counter",
+    "name_ko": "즉석 라면 조리기 카운터",
+    "camera": "standing",
+    "tiles": [
+      2,
+      2
+    ],
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_size": [
+      30,
+      29
+    ],
+    "facing": "down",
+    "description": "Korean self-serve induction ramen station with rear hot-water spouts, steaming golden pot on burner, and 3-panel oak front.",
+    "tags": [
+      "ramen",
+      "cooker",
+      "cafe",
+      "korean"
+    ]
+  },
+  {
+    "file": "objects/snack_shelf_rack.png",
+    "id": "snack_shelf_rack",
+    "name_en": "Snack & Cup-Ramen Shelf Rack",
+    "name_ko": "과자·컵라면 진열대",
+    "camera": "standing",
+    "tiles": [
+      2,
+      2
+    ],
+    "canvas": [
+      32,
+      32
+    ],
+    "opaque_size": [
+      30,
+      29
+    ],
+    "facing": "down",
+    "description": "Wide steel convenience snack display gondola with red header and 4 shelves stocked with cup ramen tubs and bright snack bags.",
+    "tags": [
+      "snacks",
+      "ramen",
+      "shelf",
+      "cafe"
+    ]
+  },
+  {
+    "file": "objects/pos_counter_desk.png",
+    "id": "pos_counter_desk",
+    "name_en": "POS Reception Counter Desk",
+    "name_ko": "카운터 · 포스 데스크",
+    "camera": "standing",
+    "tiles": [
+      3,
+      2
+    ],
+    "canvas": [
+      48,
+      32
+    ],
+    "opaque_size": [
+      46,
+      29
+    ],
+    "facing": "down",
+    "description": "Three-tile PC Bang reception counter with 4 recessed navy front panels, cyan under-lip LED strip, POS touchscreen, and menu board.",
+    "tags": [
+      "counter",
+      "pos",
+      "lobby",
+      "reception"
+    ]
+  },
+  {
+    "file": "objects/cafe_table_oak.png",
+    "id": "cafe_table_oak",
+    "name_en": "Oak Ramen Cafe Table",
+    "name_ko": "오크 라면카페 테이블",
+    "camera": "topdown",
+    "tiles": [
+      2,
+      1
+    ],
+    "canvas": [
+      32,
+      16
+    ],
+    "opaque_size": [
+      30,
+      15
+    ],
+    "facing": "down",
+    "description": "Top-down warm oak dining table with clean empty flat top (>=75% height), narrow front apron, and 2px stub legs.",
+    "tags": [
+      "table",
+      "cafe",
+      "oak",
+      "topdown"
+    ]
+  },
+  {
+    "file": "objects/cafe_stool.png",
+    "id": "cafe_stool",
+    "name_en": "Cafe Dining Stool",
+    "name_ko": "카페 의자 스툴",
+    "camera": "chair",
+    "tiles": [
+      1,
+      1
+    ],
+    "canvas": [
+      16,
+      16
+    ],
+    "opaque_size": [
+      14,
+      14
+    ],
+    "facing": "down",
+    "description": "Near top-down low-back oak cafe chair facing down with contrasting navy padded seat cushion and dark steel legs.",
+    "tags": [
+      "chair",
+      "stool",
+      "cafe"
+    ]
+  },
+  {
+    "file": "objects/vip_sofa_navy.png",
+    "id": "vip_sofa_navy",
+    "name_en": "VIP Navy Lounge Sofa",
+    "name_ko": "VIP 네이비 소파",
+    "camera": "topdown",
+    "tiles": [
+      2,
+      1
+    ],
+    "canvas": [
+      32,
+      16
+    ],
+    "opaque_size": [
+      30,
+      15
+    ],
+    "facing": "down",
+    "description": "Near top-down two-seat plush cobalt-navy VIP lounge sofa with lit backrest crest, twin empty seat cushions, and padded arms.",
+    "tags": [
+      "sofa",
+      "vip",
+      "lounge",
+      "topdown"
+    ]
+  },
+  {
+    "file": "objects/storage_locker.png",
+    "id": "storage_locker",
+    "name_en": "Steel Storage Locker",
+    "name_ko": "철제 사물함",
+    "camera": "standing",
+    "tiles": [
+      1,
+      2
+    ],
+    "canvas": [
+      16,
+      32
+    ],
+    "opaque_size": [
+      14,
+      29
+    ],
+    "facing": "down",
+    "description": "Tall cool-steel two-tier PC Bang bag locker with ventilation louvers and glowing cyan digital keypad locks.",
+    "tags": [
+      "locker",
+      "storage",
+      "lobby"
+    ]
+  },
+  {
+    "file": "objects/server_rack.png",
+    "id": "server_rack",
+    "name_en": "No-HDD Game Server Rack",
+    "name_ko": "게임 서버 랙",
+    "camera": "standing",
+    "tiles": [
+      1,
+      2
+    ],
+    "canvas": [
+      16,
+      32
+    ],
+    "opaque_size": [
+      14,
+      29
+    ],
+    "facing": "down",
+    "description": "Dark steel PC Bang network server cabinet housing five horizontal server blades with glowing cyan, green, and amber LEDs.",
+    "tags": [
+      "server",
+      "rack",
+      "tech",
+      "arena"
+    ]
+  },
+  {
+    "file": "objects/standing_floor_lamp.png",
+    "id": "standing_floor_lamp",
+    "name_en": "Standing Floor Lamp",
+    "name_ko": "스탠딩 플로어 램프",
+    "camera": "slender",
+    "tiles": [
+      1,
+      2
+    ],
+    "canvas": [
+      16,
+      32
+    ],
+    "opaque_size": [
+      12,
+      29
+    ],
+    "facing": "down",
+    "description": "Slender brushed-steel floor lamp with warm glowing cream-amber drum shade, thin upright shaft, and stepped circular base.",
+    "tags": [
+      "lamp",
+      "light",
+      "slender",
+      "decor"
+    ]
+  },
+  {
+    "file": "objects/trash_recycle_bin.png",
+    "id": "trash_recycle_bin",
+    "name_en": "Dual Trash & Recycle Bin",
+    "name_ko": "분리수거 쓰레기통",
+    "camera": "standing",
+    "tiles": [
+      1,
+      1
+    ],
+    "canvas": [
+      16,
+      16
+    ],
+    "opaque_size": [
+      14,
+      13
+    ],
+    "facing": "down",
+    "description": "Compact brushed-steel dual recycling and waste bin with blue/green color-coded top slots and front compartment labels.",
+    "tags": [
+      "trash",
+      "recycle",
+      "bin",
+      "utility"
+    ]
+  }
+]
