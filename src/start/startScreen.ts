@@ -180,13 +180,8 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     aiReady: loadEngineChoice() !== null,
   };
   host.dataset.testid = START_SCREEN_TESTIDS.root;
-  // 앱 업데이트 칩 — 받아 둔 새 판이 있을 때만 위 가운데, 머리줄 바로 아래에 뜬다. 오른쪽 위는 창 단추 자리다.
-  // 머리줄 안(top 10px)에 두면 영어·넓은 AI 상태 글자(«ChatGPT connected · …»)를 가렸다(2026-11-26 실측).
-  const updateChip = renderAppUpdateChip({ className: "ln-btn ln-btn-primary" });
-  if (updateChip) {
-    Object.assign(updateChip.element.style, { position: "fixed", top: "56px", left: "50%", transform: "translateX(-50%)", zIndex: "20", color: "" });
-    document.body.append(updateChip.element);
-  }
+  // 앱 업데이트 녹색 아이콘 — 새 버전이 있을 때만 현재 보이는 화면(홈 또는 둘러보기)의 오른쪽 상단에 뜬다.
+  const updateChip = renderAppUpdateChip({ className: "" });
   const errorBox = el("p", { class: "ln-error", attrs: { role: "alert" }, dataset: { testid: START_SCREEN_TESTIDS.error } });
   // 프롬프트 홈이 만들어지면 그 입력칸 아래 줄로도 보낸다(아래 showPromptHome).
   let promptErrorSink: ((message: string) => void) | null = null;
@@ -477,6 +472,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
       ],
     });
     promptErrorSink = promptHome.setError;
+    promptHome.setTrailing(updateChip?.element ?? null);
     if (lastAiStatus) promptHome.setAiStatus(lastAiStatus);
     renderPromptGames();
     if (promptShown()) return;
@@ -513,11 +509,15 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
   // ── 틀 ────────────────────────────────────────────────────────────────
   const shell = createLauncherShell({ onNav: (nav) => { go(nav); } });
   shell.setCount("builtin", BUILTIN_GAMES.length);
-  const topActions = [
+  const baseTopActions = [
     topButton("폴더 열기", START_SCREEN_TESTIDS.openFolder, "folder", openFolder),
     topButton("게임 파일 열기", HOME_TESTIDS.openGameFile, "file", openGameFile),
     // @deprecated multi-user team collaboration is not supported yet (2026-10-21). 스위치를 켜면 돌아온다.
     ...(TEAM_COLLAB_ENABLED ? [topButton("팀에 참여", START_SCREEN_TESTIDS.joinTeam, "team", () => go("join"))] : []),
+  ];
+  const topActions = (): readonly HTMLElement[] => [
+    ...baseTopActions,
+    ...(updateChip ? [updateChip.element] : []),
   ];
 
   /** 칸마다 스크롤 상자 하나. 칸을 바꾸면 맨 위에서 시작한다. 같은 칸 안의 다시 그리기는 스크롤을 지킨다. */
@@ -557,14 +557,14 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
     shell.setActive(section === "join" ? null : section);
     if (section === "create") {
       renderCreateLead();
-      shell.show({ actions: topActions }, feed.element);
+      shell.show({ actions: topActions() }, feed.element);
       return;
     }
     if (section === "games") renderGamesSection();
     else if (section === "builtin") renderBuiltinSection();
     else renderJoinView();
     const target = section === "games" ? gamesPage : section === "builtin" ? builtinPage : joinPage;
-    shell.show({ actions: topActions }, target.scroll);
+    shell.show({ actions: topActions() }, target.scroll);
     target.scroll.scrollTop = 0;
   };
   /** 떠나는 칸의 잠깐 상태를 비운다 — 다음에 돌아오면 처음 화면이다. */

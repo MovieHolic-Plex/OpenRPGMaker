@@ -38,12 +38,8 @@ const EXPECTED_TABS = [
   "db-tab-retro-choreographies",
   "db-tab-battle-screen",
   "db-tab-battle-commands",
-  // 맵
-  "db-tab-spatial-tiles",
-  "db-tab-spatial-objects",
-  "db-tab-spatial-places",
-  "db-tab-spatial-regions",
-  "db-tab-spatial-worlds",
+  // 공간 (테마 팩 1단 브라우징 — 기존 5탭은 하위 보기)
+  "db-tab-spatial-themes",
   // 생활
   "db-tab-crops",
   "db-tab-life-crafting",
@@ -59,7 +55,7 @@ const EXPECTED_TABS = [
   "db-tab-terms",
 ];
 
-const EXPECTED_GROUPS = ["이야기", "파티", "전투", "맵", "생활", "시스템"];
+const EXPECTED_GROUPS = ["이야기", "파티", "전투", "공간", "생활", "시스템"];
 const ACTIVE_TAB_KEY = "oprn:database.activeTab";
 
 let restoreDom: (() => void) | undefined;
@@ -128,10 +124,10 @@ describe("database sidebar navigation", () => {
     const panelRoot = renderPanelHost();
     const buttons = panelRoot.querySelectorAll(".db-tab");
     expect(buttons.length).toBe(EXPECTED_TABS.length);
-    expect(EXPECTED_TABS.length).toBe(37);
+    expect(EXPECTED_TABS.length).toBe(33);
     expect(buttons.map((button) => button.dataset.testid)).toEqual(EXPECTED_TABS);
     // 중복 없음 — 등장 순서 자체가 기대 순서와 일치하면 중복이 섞일 수 없다(배열 비교).
-    expect(new Set(EXPECTED_TABS).size).toBe(37);
+    expect(new Set(EXPECTED_TABS).size).toBe(33);
     for (const button of buttons) {
       expect(button.tagName).toBe("BUTTON");
       const label = (button.textContent ?? "").trim();
@@ -169,10 +165,10 @@ describe("database sidebar navigation", () => {
     search.value = "worldGen";
     search.dispatchEvent(new Event("input"));
     const visible = panelRoot.querySelectorAll(".db-tab").filter((node) => !node.hidden);
-    expect(visible.map((node) => node.dataset.tab)).toEqual(["spatialRegions"]);
+    expect(visible.map((node) => node.dataset.tab)).toEqual(["spatialThemes"]);
     expect(findByTestId(panelRoot, "db-tab-world-gen")).toBeNull();
-    // 지역 탭 배지는 카탈로그 기본 설계 수 — 키워드 규칙 행은 세지 않는다.
-    expect(findTab(panelRoot, "db-tab-spatial-regions").dataset.count).toBe("9");
+    // 테마 팩 탭 배지는 테마 팩 수(키워드 규칙 행은 세지 않는다).
+    expect(Number(findTab(panelRoot, "db-tab-spatial-themes").dataset.count)).toBeGreaterThan(0);
   });
 
   // Break caught: the new navigation entry has no aggregate count or routed view.

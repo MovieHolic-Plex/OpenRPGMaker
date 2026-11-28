@@ -231,8 +231,8 @@ DISPLAY=:78 xwininfo -root -tree | grep -i oprn   # 1272x766 창이 잡히면 �
 - 공급자: `scripts/electron-builder.config.mjs` 의 `publish`(github). 앱은 `releases/latest`(Latest 표시 릴리스)의
   `latest.yml`(윈도 NSIS)·`latest-linux.yml`(AppImage)을 읽는다. 초안은 보이지 않으므로 「검증 뒤 발행」 순서와 맞다.
   electron-builder 는 늘 `--publish never` 로 부르고, 올리기는 릴리스 워크플로가 한다.
-- 흐름: 켠 뒤 15초·6시간마다 조용히 확인 → 뒤에서 받기 → 상단 칩 「v0.x 준비됨 · 다시 시작」 하나.
-  누르면 조수가 끝나길 기다리고 창 닫기와 같은 저장(`src/main.ts` flushForClose)을 한 뒤 재시작한다.
+- 흐름: 켠 뒤 15초·15분마다 조용히 확인 → 새 버전이 감지(다운로드 중)·준비·내려받기 가능 상태가 되면 편집기·시작 화면의 오른쪽 상단에 녹색 업데이트 아이콘(`app-update-chip`)이 뜬다.
+  아이콘을 누르면 팝오버로 이번 버전의 주요 변경 사항(릴리스 노트 요약·전체 링크)과 진행 상태를 먼저 보여 주고, 「저장 후 다시 시작」을 누르면 조수가 끝나길 기다리고 창 닫기와 같은 저장(`src/main.ts` flushForClose)을 한 뒤 재시작한다.
   안 누르면 앱을 끌 때 설치한다. 설정 「일반·언어」 의 「자동 업데이트」 하나로 끈다. 재시작 뒤 바뀐 점을 토스트로 한 번.
 - 수동 확인: 설정 「일반·언어」·「정보」 탭, 시작 화면 `⋯` 메뉴, 에디터 「프로젝트 → 도움말 → 업데이트 확인」, 에디터 가이드 버전 줄, ⌘K 「도움말: 업데이트 확인」 에서 언제든 `oprn:update.check` 로 즉시 확인할 수 있다. 자동 업데이트가 꺼져 있거나 `mode === "off"`(개발·맥 등)일 때도 GitHub 최신 릴리스와 비교해 결과를 알리고 다운로드·재시작으로 이어진다.
 - 설치 형태: 윈도 NSIS 설치판·리눅스 AppImage 는 자동, portable exe 는 「새 버전 있음 · 내려받기」 링크만, 개발 실행·맥은 끔.
@@ -348,28 +348,27 @@ npm run release:auto -- --dry-run    # 계획만 (아무것도 쓰지 않음)
 
 `desktop-release` 가 빨간 동안에는 새 버전을 발행하지 않는다. 초안이 쌓여도 `latest` 는 안전하다.
 
-## 조건 기반 자동 릴리스 (2026-11-24 도입 · 2026-11-28 초고속 배포 안 B)
+## 조건 기반 자동 릴리스 (2026-11-24 도입 · 2026-11-28 초고속 30분 자동 배포)
 
-오너: «자동 주기 릴리즈 조건을 기반으로 해라 니추천대로»(2026-11-24) → «좀 더 자주 업데이트하게 바꾸자 — 안 B»(2026-11-28).
-`.github/workflows/auto-release.yml` 이 **1시간마다**(매 17분) 호스티드 러너에서 `scripts/release-scheduled.mjs` 를 돌린다. 아래가 **모두** 맞을 때만 발행한다.
+오너: «자동 주기 릴리즈 조건을 기반으로 해라 니추천대로»(2026-11-24) → «급하니까 30분 주기로 바꾸자»(2026-11-28).
+`.github/workflows/auto-release.yml` 이 **30분마다**(매시 17분·47분) 호스티드 러너에서 `scripts/release-scheduled.mjs` 를 돌린다. 아래가 **모두** 맞을 때만 발행한다.
 숫자는 `scripts/lib/releaseGate.mjs` 의 `AUTO_RELEASE_RULES` 한 곳에 있다.
 
 | 조건 | 기준 |
 |---|---|
-| 사용자 체감 변경 | 마지막 발행 태그 이후 feat·fix 커밋 **2개 이상** (범위가 test·ci·docs 뿐인 것은 안 센다) |
-| 간격 | 마지막 발행(`published_at`)에서 **2시간 이상** |
+| 사용자 체감 변경 | 마지막 발행 태그 이후 feat·fix 커밋 **1개 이상** (범위가 test·ci·docs 뿐인 것은 안 센다) |
+| 간격 | 마지막 발행(`published_at`)에서 **30분(0.5시간) 이상** |
 | 보류 | 열린 PR 에 `hold-release` 라벨 없음 |
-| 하루 상한 | 최근 24시간에 만든 릴리스 **12판 미만** |
+| 하루 상한 | 최근 24시간에 만든 릴리스 **48판 미만** |
 | 꼬임 방지 | 산출물 대기 중인 초안 없음, 열린 `release/next` PR 없음 |
-| ci-full | 게이트 분리(`requireCiFull: false`) — 밤 1회 회귀 감시로 두고 릴리스 전에는 `ci-fast` + 직전 태그 대비 `ci-related-tests` 로 검증 |
+| ci-full | 게이트 분리(`requireCiFull: false`) — 밤 1회 회귀 감시로 두고 릴리스 전에는 `ci-fast` + 필요 시 `app-update-e2e` 로 검증 |
 
 안 맞으면 아무것도 쓰지 않고 그 실행의 요약과 아티팩트 `auto-release-decision`(JSON)에 이유만 남긴다.
 맞으면 새 발행기를 만들지 않고 기존 경로를 탄다: `release-auto --skip-publish`(PR·사용자 말 CHANGELOG, PR 본문 GraphQL 일괄 조회) →
-`ci-fast`·직전 발행 태그 대비 `ci-related-tests` 를 `release/next` 에 디스패치(GITHUB_TOKEN 푸시는 워크플로를 깨우지 않고,
-봇이 연 PR 의 pull_request 런은 잡 0개로 머물다 머지 때 «workflow file issue» 실패로 닫힌다 — v0.420 PR #5159) →
-`ci-related-tests` 초록 대기 + 직전 태그(`>= v0.420.0`) 이후 `electron/`·패키징·업데이트·의존성 변경이 있거나 최근 14일 내 통과 기록이 없을 때만
+`ci-fast` 를 `release/next` 에 디스패치(GITHUB_TOKEN 푸시는 워크플로를 깨우지 않는다; `ci-related-tests` 는 각 기능 PR 머지 전에 이미 통과했으므로 버전 범프 전용 `release/next` 에서 중복 실행하지 않는다) →
+직전 태그(`>= v0.420.0`) 이후 `electron/`·패키징·업데이트·의존성 변경이 있거나 최근 14일 내 통과 기록이 없을 때만
 `app-update-e2e` 를 디스패치해 초록을 기다림 → `merge-pr.mjs`(`ci-fast` 확인 뒤 머지) →
-`release-auto --skip-propose`(태그·초안) → `desktop-release` 디스패치(검증 뒤 발행). 발행하거나 도중에 멈추면
+`release-auto --skip-propose`(태그·초안) → `desktop-release` 디스패치(`OPRN_BAKE_DEMOS_CACHE_SCOPE=flagship` + 압축 레벨 1·12스레드, 검증 뒤 발행). 발행하거나 도중에 멈추면
 이슈 «자동 릴리스 기록» 에 한 줄 남긴다(리드가 보는 한 곳).
 
 판정만 보려면: `node scripts/release-scheduled.mjs --dry-run` (로컬, gh 인증) 또는

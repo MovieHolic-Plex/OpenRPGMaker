@@ -10,7 +10,7 @@ import { isEscapeBlueprint } from "../../request/scope";
 import { repairWorldPlaces, worldById, worldPlaceProblems } from "../../place/world";
 import { BUILD_BLUEPRINT_PATH_SCHEMA } from "../../story/blueprintPath";
 import { keepStepText, pathTextProblems } from "../../story/blueprintPathText";
-import { fillPartyLooks } from "../../story/shipLookDefaults";
+import { applyBlueprintHud, fillPartyLooks } from "../../story/shipLookDefaults";
 import { blueprintMapFor, type PathStepText } from "../../story/blueprintPathNames";
 import { WORLD_BOUNCES, text } from "../support";
 import { recordStageWrites } from "../../shared/stageWrites";
@@ -48,8 +48,10 @@ export function blueprintVerbs(c: VerbContext) {
       if (prior?.ending.closing?.length && !parsed.blueprint.ending.closing?.length) parsed.blueprint = { ...parsed.blueprint, ending: { ...parsed.blueprint.ending, closing: prior.ending.closing } };
       // 앞 청사진의 오프닝 글도 물려받는다 — 이름 맞추기 다시 쓰기가 오프닝의 글을 지우지 않게.
       if (prior?.opening?.length && !parsed.blueprint.opening?.length) parsed.blueprint = { ...parsed.blueprint, opening: prior.opening };
-      // 앞 청사진이 고른 UI 모습도 물려받는다 — 이름 맞추기 다시 쓰기가 look 을 빼도 게임의 얼굴이 바뀌지 않게. 목록에 없는 id 는 읽을 때 버려진다.
+      // 앞 청사진이 고른 UI 모습·HUD 도 물려받는다 — 이름 맞추기 다시 쓰기가 look/hud 를 빼도 게임의 얼굴이 바뀌지 않게. 목록에 없는 id 는 읽을 때 버려진다.
       if (prior?.look && !parsed.blueprint.look) parsed.blueprint = { ...parsed.blueprint, look: prior.look };
+      if (prior?.dialogueContainer && raw.dialogueContainer === undefined) parsed.blueprint = { ...parsed.blueprint, dialogueContainer: prior.dialogueContainer };
+      if (prior?.hud && !parsed.blueprint.hud) parsed.blueprint = { ...parsed.blueprint, hud: prior.hud };
       // 앞 청사진에 적은 크기·싸움 없음도 물려받는다 — 이름 맞추기 다시 쓰기가 그 칸을 빼도 관문 하한이 도로 커지지 않게. 다시 적으면 적은 값이 이긴다.
       if (prior?.scale && raw.scale === undefined) parsed.blueprint = { ...parsed.blueprint, scale: prior.scale };
       // 처음 쓰는 청사진이 크기를 안 적으면 첫 판 MVP 다(2026-11-23 오너 «처음엔 맵 3~5개 MVP 만, 키우는 것은 요청 시»). 큰 게임은 모델이 scale:"full" 로 적는다.
@@ -102,16 +104,27 @@ export function blueprintVerbs(c: VerbContext) {
       }
       const adviceNote = advice.length ? ` Notice — saved as written, nothing is rejected. Change these only if the request asks for it: ${advice.join(" ")}` : "";
       // 같은 내용을 다시 쓰면 바꾸지 않는다 — 청사진을 되풀이해 쓰는 대신 경로를 짓게 한다.
-      const core = (b: typeof parsed.blueprint | undefined) => b ? JSON.stringify({ t: b.title, g: b.genre, p: b.playerGoal, o: b.opening, s: b.steps, e: b.ending, w: b.setting, pl: b.places, l: b.look, sc: b.scale, ba: b.battles, c: b.cast, wo: b.world, it: b.items }) : "";
-      if (prior && core(prior) === core(parsed.blueprint)) {
+      const core = (b: typeof parsed.blueprint | undefined) => b ? JSON.stringify({ t: b.title, g: b.genre, p: b.playerGoal, o: b.opening, s: b.steps, e: b.ending, w: b.setting, pl: b.places, l: b.look, dc: b.dialogueContainer, h: b.hud, sc: b.scale, ba: b.battles, c: b.cast, wo: b.world, it: b.items }) : "";
+      const clearingBalloon = raw.dialogueContainer === "box" && env.ctx.project.system.dialogueContainer === "balloon";
+      if (prior && core(prior) === core(parsed.blueprint) && !clearingBalloon) {
         session.blueprintRewrites += 1;
         const walked = walkBlueprint(env.ctx.project);
         return text({ ok: true, summary: `청사진이 이미 같은 내용이다 — 다시 쓰지 않았다(${session.blueprintRewrites}번째). write_blueprint 를 또 부르지 않는다. ${walked.blockers.length ? "다음: build_blueprint_path 를 불러 청사진 단계대로 이벤트·조건·엔딩 호출을 짓는다." : "경로가 이어져 있다 — 남은 일(장소 꾸미기·대사)을 한다."}`, path: walked.lines, open: walked.blockers.slice(0, 6).map((b) => b.message) });
       }
       env.ctx.project.gameBlueprint = parsed.blueprint;
       const assembled = applyBlueprintAssembly(env.ctx.project);
-      // 모델이 고른 모습은 바로 입힌다(끝맺음을 기다리지 않는다 — 짓는 동안의 화면 검수도 그 모습으로 본다). 안 골랐으면 끝맺음이 게임의 사실로 고른다.
-      const lookNotes = parsed.blueprint.look ? applyUiLook(env.ctx.project, parsed.blueprint.look, { skipHud: true }) : [];
+      // 모델이 고른 HUD·UI 모습은 바로 입힌다(끝맺음을 기다리지 않는다 — 짓는 동안의 화면 검수도 그 모습으로 본다). 안 골랐으면 끝맺음이 게임의 사실로 고른다.
+      // 앞 청사진에서 물려받은 hud 만으로는 이미 저작된 fieldHud(font·panel 등)를 덮어쓰지 않는다.
+      if (parsed.blueprint.hud && (raw.hud !== undefined || !env.ctx.project.system.fieldHud)) {
+        assembled.push(...applyBlueprintHud(env.ctx.project, parsed.blueprint.hud));
+      }
+      if (parsed.blueprint.dialogueContainer === "balloon") {
+        env.ctx.project.system.dialogueContainer = "balloon";
+        assembled.push("대화 방식 balloon");
+      } else if (raw.dialogueContainer === "box") {
+        delete env.ctx.project.system.dialogueContainer;
+      }
+      const lookNotes = parsed.blueprint.look ? applyUiLook(env.ctx.project, parsed.blueprint.look, { skipHud: !env.ctx.project.system.fieldHud }) : [];
       if (lookNotes.length) assembled.push(`UI look ${parsed.blueprint.look}`);
       // 주인공의 모습은 사람을 세우기 전에 정한다 — 뒤에 서는 사람들이 주인공과 같은 칩·같은 모습을 피한다(끝맺음에서 정하면 먼저 선 사람을 다시 입혀야 했다).
       // 그 쪽지는 진행 줄에만 적는다 — 도구 결과(모델이 읽는 글)에는 싣지 않는다. 쓴 칸은 단계의 쓰기로 기록한다(출하 관문이 «요청에 없는 배우 변경» 으로 짚지 않게).

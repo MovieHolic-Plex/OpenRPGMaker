@@ -8,7 +8,7 @@ vi.mock("../electron/shared/lifeSim", () => ({ LIFE_SIM_ENABLED: true, LIFE_SIM_
 import { renderDatabasePanel, setDatabaseActiveTab, TAB_GROUPS, type DatabaseTab } from "@/editor/panels/database";
 import { createBlankProject } from "@/project/defaults";
 import { store } from "@/project/store";
-import { DATABASE_PRIMARY_SENTINELS } from "./databasePrimarySentinels";
+import { DATABASE_PRIMARY_SENTINELS, SPATIAL_SUBVIEW_SENTINELS } from "./databasePrimarySentinels";
 import { installFakeDom } from "./fakeDom";
 
 let restoreDom: (() => void) | undefined;
@@ -39,7 +39,7 @@ describe("database all-tabs render walk", () => {
     // When: the real database panel renders that primary.
     renderDatabasePanel(root);
     // Then: its specific destination contains the gallery and canvas, not an empty shell.
-    const destination = root.querySelector(tab === "spatialSpaces" ? '[data-testid="spatial-shell-spaces"]' : DATABASE_PRIMARY_SENTINELS[tab]);
+    const destination = root.querySelector(tab === "spatialSpaces" ? '[data-testid="spatial-shell-spaces"]' : SPATIAL_SUBVIEW_SENTINELS[tab]!);
     expect(destination).not.toBeNull();
     if (tab === "spatialObjects") {
       expect(destination?.querySelector("[data-testid='spatial-browser-results']")).not.toBeNull();
@@ -57,7 +57,7 @@ describe("database all-tabs render walk", () => {
 
   it("every registered tab renders a non-empty body without throwing", () => {
     const all: DatabaseTab[] = ["overview", ...TAB_GROUPS.flatMap((g) => g.tabs)];
-    expect(all.length).toBeGreaterThanOrEqual(34);
+    expect(all.length).toBeGreaterThanOrEqual(30);
     expect(new Set(all).size).toBe(all.length);
     expect(new Set(all)).toEqual(new Set(Object.keys(DATABASE_PRIMARY_SENTINELS)));
     const failures: string[] = [];

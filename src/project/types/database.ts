@@ -2322,6 +2322,8 @@ export interface SystemRecords {
   uiLook?: string;
   /** 대화창 스타일(project/dialogueStyles.ts). 생략 = glass(지금까지의 유리 창). */
   dialogueStyle?: import("@/project/dialogueStyles").DialogueStyleId;
+  /** 게임 전체 기본 대화 방식(box = 하단 상자, balloon = 캐릭터 머리 위 말풍선). 생략 = box. 내레이션·표지판 등은 자동으로 box. */
+  dialogueContainer?: import("@/project/dialogueStyles").ProjectDialogueContainerId;
   /** 대화창 글꼴 — 에디터 UI 글꼴과 따로 간다. 생략 = 스타일이 정한 글꼴. */
   dialogueFont?: import("@/project/fontRegistry").FontFamilyId;
   /** 프로젝트 기본 말 빠르기 배율(0.5~2). 생략 = 1. 화자 빠르기와 곱한다. */

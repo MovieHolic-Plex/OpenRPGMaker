@@ -23,11 +23,7 @@ export const DATABASE_PRIMARY_SENTINELS: Readonly<Record<string, string>> = {
   farmAnimals: '[data-testid="db-farm-animals-seed-defaults"], [data-testid="db-farm-animals-workspace"] .db-ws-list-title',
   farmSpatial: '[data-testid="db-spatial-search"]',
   lifeCollections: '[data-testid="db-life-collections-search"]',
-  spatialTiles: '[data-testid="tileset-db-search"]',
-  spatialObjects: '[data-testid="spatial-shell-objects"]',
-  spatialPlaces: '[data-testid="spatial-shell-places"]',
-  spatialRegions: '[data-testid="spatial-shell-regions"]',
-  spatialWorlds: '[data-testid="spatial-shell-worlds"]',
+  spatialThemes: '[data-testid="spatial-themes-workspace"]',
   bestiary: '[data-testid="db-bestiary-view"] [data-testid="db-bestiary-enabled"]',
   commonEvents: '[data-testid="db-common-event-search"]',
   schedules: '[data-testid="db-schedules-workspace"] [data-testid="db-schedule-search"]',
@@ -40,4 +36,12 @@ export const DATABASE_PRIMARY_SENTINELS: Readonly<Record<string, string>> = {
   terms: '[data-testid="db-terms-search"]',
   switches: '[data-testid="db-switch-search"]',
   variables: '[data-testid="db-variable-search"]',
+};
+
+export const SPATIAL_SUBVIEW_SENTINELS: Readonly<Record<string, string>> = {
+  spatialTiles: '[data-testid="tileset-db-search"]',
+  spatialObjects: '[data-testid="spatial-shell-objects"]',
+  spatialPlaces: '[data-testid="spatial-shell-places"]',
+  spatialRegions: '[data-testid="spatial-shell-regions"]',
+  spatialWorlds: '[data-testid="spatial-shell-worlds"]',
 };

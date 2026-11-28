@@ -20,8 +20,8 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `assistant-capability` · 시드 `harness-data/assistant-capability/seed.json`
   → `npm run harness -- assistant-capability <단계>` · 문서 `openwiki/harnesses/assistant-capability.md`
   → 실제 입력창의 Pi 경로를 쓴다. 필수 검수 누락은 미검증이며, 조수의 완료 선언이나 캡처만으로 합격시키지 않는다.
-  → **조수 v2 의 도구·분류·완료 판정을 고칠 때는 작은 일 30가지로 전/후를 잰다:** `small-jobs-selfcheck`(판정 자기검사, 모델 없음) → `small-jobs --model local-claude-sonnet-5-5-high --v2 --out <새 폴더>` → `small-jobs-report`. 일마다 기계 판정·호출·시간·토큰이 남는다(문서 「작은 일 30가지」).
-    모델은 조수 출하 기본(Claude Sonnet 5.5 · high, 로컬 Claude CLI 한 모델 — 오너 결정 2026-11-23, 문서 `openwiki/editor-ai-panel.md` 「조수 출하 기본」)으로 잰다. `--model` 을 비우면 옛 기준 `terra-high` 로 돈다 — 모델이 다른 판의 숫자를 한 표에 섞지 않는다.
+  → **조수 v2 의 도구·분류·완료 판정을 고칠 때는 작은 일 30가지로 전/후를 잰다:** `small-jobs-selfcheck`(판정 자기검사, 모델 없음) → `small-jobs --model local-codex-sol-6-2-high --v2 --out <새 폴더>` → `small-jobs-report`. 일마다 기계 판정·호출·시간·토큰이 남는다(문서 「작은 일 30가지」).
+    모델은 조수 출하 기본(GPT-6.2 Sol · high, 로컬 Codex CLI 한 모델 — 오너 결정 2026-11-28, 문서 `openwiki/editor-ai-panel.md` 「조수 출하 기본」)으로 잰다. `--model` 을 비우면 옛 기준 `terra-high` 로 돈다 — 모델이 다른 판의 숫자를 한 표에 섞지 않는다.
   → **데모 게임을 손으로 고칠 때마다(hard rule, 2026-10-22):** 같은 변경에서 (a) `harness-data/assistant-capability/scene-lessons-seed.json` 에 조수 과제 한 줄을 더하고,
     (b) 조수가 혼자 못 하는 결함이면 도구·스키마·스킬(`game-scene-polish`)·`scene-*` 경고를 고친다. 데모만 고치고 끝내지 않는다 — 절차는 문서 「장면 교훈 묶음」.
 

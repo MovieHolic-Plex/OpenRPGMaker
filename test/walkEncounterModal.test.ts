@@ -62,6 +62,7 @@ it("keeps editor shortcuts and project undo out of the active form", () => {
 it("opens the same draft flow from the visible selection action and context action", () => {
   const selection = { mapId: store.getCurrent().startMapId, x: 2, y: 2, width: 3, height: 3 };
   document.body.append(renderSelectionActionChips(selection));
+  node("selection-chip-quick-encounter").click();
   node("selection-chip-walk-encounter").click();
   expect(node("walk-encounter-modal")).toBeTruthy();
   node("walk-encounter-cancel").click();

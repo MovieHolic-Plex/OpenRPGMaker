@@ -377,6 +377,8 @@ export function normalizeSystemRecords(system: Partial<SystemRecords> & Pick<Sys
   if (menuTheme) records.menuTheme = menuTheme;
   // 대화창 스타일도 같은 계약 — 기본(glass)과 미등록 값은 저장하지 않는다.
   if (isDialogueStyleId(system.dialogueStyle) && system.dialogueStyle !== DEFAULT_DIALOGUE_STYLE_ID) records.dialogueStyle = system.dialogueStyle;
+  // 프로젝트 기본 대화 방식 — 기본(box)은 저장하지 않고 말풍선(balloon) 선택만 남긴다.
+  if (system.dialogueContainer === "balloon") records.dialogueContainer = "balloon";
   // 조수가 입힌 UI 모습 한 벌의 id(project/uiLook.ts) — 목록에 없는 값은 버린다.
   if (uiLookById(system.uiLook)) records.uiLook = uiLookById(system.uiLook)!.id;
   if (isFontFamilyId(system.dialogueFont)) records.dialogueFont = system.dialogueFont;

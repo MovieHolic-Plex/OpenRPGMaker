@@ -5,7 +5,9 @@
 // (장소 → 이벤트 → 조건 → 다음 장소)를 데이터로 걸어 본다: 맵이 있나, 시작에서 걸어 닿나, 이벤트가 있나, 조건을 켜는 곳이
 // 그 단계 전에 있나, 마지막이 엔딩을 부르나. 순수 함수(프로젝트만 읽는다) — shipBlockers 가 부른다.
 import type { GameEvent, GameMap, Project } from "@/project/types";
-import { STEP_KINDS, gameBlueprintText, normalizeGameBlueprint, type GameBlueprint, type GameBlueprintStepKind } from "@/project/gameBlueprint";
+import { BLUEPRINT_HUD_CHOICES, STEP_KINDS, gameBlueprintText, normalizeGameBlueprint, type GameBlueprint, type GameBlueprintStepKind } from "@/project/gameBlueprint";
+import { PROJECT_DIALOGUE_CONTAINER_IDS } from "@/project/dialogueStyles";
+import { UI_LOOK_IDS } from "@/project/uiLook";
 import { walkGame } from "./makeGame";
 import { unreachableEvents } from "../judge/eventReach";
 import { isEscapeBlueprint } from "../request/scope";
@@ -38,7 +40,9 @@ export const WRITE_BLUEPRINT_SCHEMA = {
       kind: { type: "string", description: "a place kind id from the [World of this game] card" },
       from: { type: "string", description: "name of the place this one is entered from (default: the place listed before it)" },
     }, required: ["name", "kind"] } },
-    look: { type: "string", description: "UI look id offered in the result" },
+    look: { type: "string", enum: [...UI_LOOK_IDS], description: "UI look set (dialogue+menu+battle+HUD shell)" },
+    dialogueContainer: { type: "string", enum: [...PROJECT_DIALOGUE_CONTAINER_IDS], description: "box (bottom dialogue window) or balloon (consistent overhead speech bubbles)" },
+    hud: { type: "string", enum: [...BLUEPRINT_HUD_CHOICES], description: "Field HUD theme (off = objective line only)" },
     scale: { type: "string", enum: ["mvp", "small", "full"], description: "mvp (default for a new game) = first playable version: 3 to 5 places, one core loop, 3 to 6 steps, 5-10 minutes from start to the last step. An mvp has NO ending: the last step is the stopping point and the assistant tells the user the first version is done (the ending field is only the planned goal of the full game, not built). The user grows it later («다음 지역 만들어 줘»). small = the request asks for a short or tiny game (a new game's first blueprint counts small as mvp: no ending). full = only when the user explicitly asks for a big, long or complete full-size game (many regions, 40 minutes+). The gates count this blueprint's own places and steps for mvp and small." },
     battles: { type: "boolean", description: "false only if the request says fights are not needed" },
     cast: { type: "object", description: "the hero, 2–3 companions and the boss of this game — code makes their actors, class, signature skill and profile", properties: {

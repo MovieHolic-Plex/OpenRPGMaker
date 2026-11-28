@@ -1,0 +1,10 @@
+{
+  "assistantVersion": "v2",
+  "assistantEngine": {
+    "kind": "local-cli",
+    "cli": "codex",
+    "routineModel": "gpt-6.2-sol",
+    "deepModel": "gpt-6.2-sol",
+    "effort": "high"
+  }
+}

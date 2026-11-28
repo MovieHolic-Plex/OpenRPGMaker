@@ -319,16 +319,22 @@ function paintSnowMap(project: Project, plan: SnowPlan, gapWidth: number, iceAmo
   }
 
   // 빙판: 빈터·길섶의 잡음 덩이 + 틈 자리 둘레(얼어붙은 개울을 건너는 자리로 읽히게). 걷는 칸만.
+  // 저주파 잡음(0.45)으로 넉넉한 유기적 빙판 덩이를 만들고, 틈 자리가 아닌 2×2 네모 도장(<=4칸)은 제거한다.
   const iceSet = new Set<number>();
+  const gapIceCells = new Set<number>();
   if (iceAmount > 0) for (let y = 1; y < H - 1; y += 1) for (let x = 1; x < W - 1; x += 1) {
     const c = idx(x, y);
     if (!open.has(c)) continue;
-    const v = noise2(x * 0.7, y * 0.7, seed + 19);
-    if (v > 1.25 - 0.35 * iceAmount && !plan.exits.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 4)) iceSet.add(c);
+    const v = noise2(x * 0.45, y * 0.45, seed + 19);
+    if (v > 1.06 - 0.30 * iceAmount && !plan.exits.some((e) => Math.abs(e.x - x) + Math.abs(e.y - y) <= 4)) iceSet.add(c);
   }
   for (const g of gaps) for (const c of g.cells) {
     const x = c % W, y = (c - x) / W;
-    for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) if (inMap(x + dx, y + dy) && open.has(idx(x + dx, y + dy))) iceSet.add(idx(x + dx, y + dy));
+    for (let dy = -1; dy <= 1; dy += 1) for (let dx = -1; dx <= 1; dx += 1) if (inMap(x + dx, y + dy) && open.has(idx(x + dx, y + dy))) {
+      const k = idx(x + dx, y + dy);
+      iceSet.add(k);
+      gapIceCells.add(k);
+    }
   }
   // 외톨이·한 줄 빙판은 뺀다(가장자리 그림이 칸마다 끊긴다).
   for (const c of [...iceSet]) {
@@ -338,6 +344,26 @@ function paintSnowMap(project: Project, plan: SnowPlan, gapWidth: number, iceAmo
       if ([[0, 0], [1, 0], [0, 1], [1, 1]].every(([i, j]) => iceSet.has(idx(x + ox + i!, y + oy + j!)))) { blockOk = true; break; }
     }
     if (!blockOk) iceSet.delete(c);
+  }
+  // 틈 자리와 무관한 2×2 네모 조각(4칸 이하)은 뺀다 — 눈밭 위에 각진 얼음 도장처럼 떠 보인다.
+  {
+    const seenIce = new Set<number>();
+    for (const c0 of [...iceSet]) {
+      if (seenIce.has(c0)) continue;
+      const comp = [c0]; seenIce.add(c0);
+      let hasGap = gapIceCells.has(c0);
+      for (let k = 0; k < comp.length; k += 1) {
+        const c = comp[k]!, x = c % W;
+        for (const n of [c - W, c + W, x > 0 ? c - 1 : -1, x < W - 1 ? c + 1 : -1]) {
+          if (n >= 0 && iceSet.has(n) && !seenIce.has(n)) {
+            seenIce.add(n);
+            comp.push(n);
+            if (gapIceCells.has(n)) hasGap = true;
+          }
+        }
+      }
+      if (!hasGap && comp.length <= 4) for (const c of comp) iceSet.delete(c);
+    }
   }
   const iceGroup = (tileset.autotileGroups ?? []).find((g) => g.id === "beodeul_dungeon_ice");
   const bits: [number, number, number][] = [[0, -1, 1], [1, 0, 2], [0, 1, 4], [-1, 0, 8], [1, -1, 16], [1, 1, 32], [-1, 1, 64], [-1, -1, 128]];

@@ -111,7 +111,7 @@ describe("spatial Database authoring integration", () => {
     expect(host.querySelector("[data-testid='composition-board']")).not.toBeNull();
     expect(host.querySelector("[data-testid='spatial-places-board']")).toBeNull();
     expect(host.querySelector("[data-testid='db-tab-spatial-spaces']")).toBeNull();
-    expect(host.querySelector("[data-testid='db-tab-spatial-places']")?.classList.contains("active")).toBe(true);
+    expect(host.querySelector("[data-testid='db-tab-spatial-themes']")?.classList.contains("active")).toBe(true);
 
     host.querySelector<HTMLButtonElement>("[data-testid='spatial-back']")?.click();
     expect(getDatabaseActiveTab()).toBe("spatialPlaces");

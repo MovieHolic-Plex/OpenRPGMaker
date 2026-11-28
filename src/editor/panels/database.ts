@@ -58,6 +58,7 @@ import { getSelectedTilesetId, renderTilesetsTab } from "@/editor/panels/tileset
 import { renderScratchConceptTab } from "@/editor/panels/scratchConceptTab";
 import { interiorRoomKindCount, renderTilesetSpacesTab } from "@/editor/panels/tilesetSpacesTab";
 import { renderSpatialAuthoringShell } from "@/editor/panels/spatialShell";
+import { renderSpatialThemesTab, spatialThemePackCount } from "@/editor/panels/spatialThemesView";
 import {
   onSpatialTabReveal,
   rememberLegacySpatialRoute,
@@ -123,6 +124,7 @@ export type DatabaseTab =
   | "worldCanon"
   | "worldCodex"
   | "bestiary"
+  | "spatialThemes"
   | "spatialTiles"
   | "spatialObjects"
   | "spatialSpaces"
@@ -169,6 +171,7 @@ const tabs: readonly { readonly id: DatabaseTab; readonly label: string; readonl
   { id: "structureKits", label: "부품 보관함", testid: "db-tab-structure-kits" },
   { id: "tilesetSpaces", label: "기존 방 규칙", testid: "db-tab-tileset-spaces" },
   { id: "scratchConcepts", label: "개념 꾸러미", testid: "db-tab-scratch-concepts" },
+  { id: "spatialThemes", label: "테마 팩", testid: "db-tab-spatial-themes" },
   { id: "spatialTiles", label: "타일", testid: "db-tab-spatial-tiles" },
   { id: "spatialObjects", label: "오브젝트", testid: "db-tab-spatial-objects" },
   { id: "spatialSpaces", label: "장소 편집", testid: "db-tab-spatial-spaces" },
@@ -245,11 +248,13 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   },
   // 편집기 왼쪽 막대의 「맵」(맵 목록)과 같은 이름이면 그쪽을 누르려다 자료집이 닫혔다(V-database-08).
   // 이 그룹은 맵을 짓는 재료(타일·오브젝트·장소·지역·세계)라 「공간」이다.
+  // 안 C(테마 팩 1단 브라우징): 1.2만 개 오브젝트·5단계 계층 대신 세계관 테마 팩이 1차 진입 화면이고,
+  // 기존 5탭(타일·오브젝트·장소·지역·세계)은 MAP_PARENT_TAB 하위 보기 + 고급 관리 메뉴로 유지한다.
   {
     label: "공간",
     slug: "world",
     description: "어디서 벌어지나요?",
-    tabs: ["spatialTiles", "spatialObjects", "spatialPlaces", "spatialRegions", "spatialWorlds"],
+    tabs: ["spatialThemes"],
   },
   {
     label: "생활",
@@ -265,8 +270,13 @@ export const TAB_GROUPS: readonly DatabaseTabGroup[] = [
   },
 ];
 
-/** Facet editors hang off the tiles destination. Legacy map routes redirect below. */
+/** Facet editors hang off the theme pack hub & tiles destination. Legacy map routes redirect below. */
 const MAP_PARENT_TAB: Partial<Record<DatabaseTab, DatabaseTab>> = {
+  spatialTiles: "spatialThemes",
+  spatialObjects: "spatialThemes",
+  spatialPlaces: "spatialThemes",
+  spatialRegions: "spatialThemes",
+  spatialWorlds: "spatialThemes",
   spatialSpaces: "spatialPlaces",
   terrain: "spatialTiles",
   tilesetAutotile: "spatialTiles",
@@ -828,6 +838,8 @@ function databaseTabCount(tab: DatabaseTab): number | null {
       return 2 + new Set((project.factions?.defs ?? [])
         .map((def) => def.id)
         .filter((id) => id !== PLAYER_FACTION_ID && id !== DEFAULT_ENEMY_FACTION_ID)).size;
+    case "spatialThemes":
+      return spatialThemePackCount(project);
     case "tilesets":
     case "spatialTiles":
       return Object.keys(project.tilesets).length;
@@ -903,6 +915,7 @@ const LEGACY_TAB_SEARCH: Partial<Record<DatabaseTab, string>> = {
   itemCrafting: "제작 제작법 레시피 조합 공방 강화 업그레이드 강화 판매가 판매 가격 매입가 되팔기 craft recipe upgrade workshop sell price",
   bestiary: "도감 몬스터 괴물 약점 사냥 bestiary",
   retroChoreographies: "스킬 이펙트 연출 번개 도트 skillChoreographies 전투 애니메이션 animations",
+  spatialThemes: "테마 팩 화풍 공간 버들항 일본 현대 조선 마법 설원 사막 스팀펑크 SF 타일셋 오브젝트 장소 지역 세계 worldGen",
   spatialTiles: "타일셋 AI 참고문서 MD 이미지 통행 지형 tilesets references",
   spatialObjects: "구조물 부품 보관함 오브젝트 structureKits",
   spatialSpaces: "공간 종류 기존 방 규칙 tilesetSpaces",
@@ -914,7 +927,7 @@ const LEGACY_TAB_SEARCH: Partial<Record<DatabaseTab, string>> = {
 function tabMatchesQuery(tab: typeof tabs[number], query: string): boolean {
   if (lifeTabClosed(tab.id)) return false;
   const exact = tabs.find((entry) => entry.id.toLowerCase() === query);
-  if (exact) return tab.id === exact.id || tab.id === resolveCanonicalDatabaseTab(exact.id);
+  if (exact) return tab.id === exact.id || tab.id === resolveCanonicalDatabaseTab(exact.id) || tab.id === primaryTab(exact.id);
   if (tab.id.toLowerCase().startsWith(query)) return true;
   if (tab.label.toLowerCase().includes(query)) return true;
   // 레일 그룹 이름(「파티」「세계관」「전투 규칙」)으로 찾으면 그 그룹의 탭이 모두 걸린다.
@@ -1720,6 +1733,9 @@ function renderActiveTabUnguarded(
     case "tilesetUnlabeled":
       renderTilesetsTab(content, rerender);
       break;
+    case "spatialThemes":
+      renderSpatialThemesTab(content, (next) => switchDatabaseActiveTab(next, container), rerender);
+      break;
     case "spatialTiles":
     case "spatialObjects":
     case "spatialSpaces":
@@ -1920,6 +1936,8 @@ function renderMapContextNav(tab: DatabaseTab, container: HTMLElement): HTMLElem
   };
   const parent = MAP_PARENT_TAB[tab];
   if (parent) addLink(parent, true);
+  // 테마 팩 허브는 자체 「고급 관리 ▾」 메뉴를 가지므로 하위 5탭 링크 바를 중복으로 붙이지 않는다.
+  if (tab === "spatialThemes") return null;
   // Legacy mode routes are facets of the same tileset workspace, not extra rails.
   const context = tab === "tilesetAutotile" || tab === "tilesetUnlabeled" ? "spatialTiles" : tab;
   for (const [child, owner] of Object.entries(MAP_PARENT_TAB)) {

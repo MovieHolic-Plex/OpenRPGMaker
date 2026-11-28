@@ -1,22 +1,226 @@
 {
- "note": "Opus 5.5 품질 판정 C(삭제 후보). 기물 검색·DB 앨범·조수 물건 사전·kit 목록·공간 갤러리에서 빠진다. 정의와 아틀라스 칸은 남아 옛 저장본·견본·id 로 부른 찍기는 그대로 된다. 갤러리 http://mdc2:18301/object-quality-purge.html (gallery = 그 페이지의 # 번호). 2026-11-24 object-quality-purge, 오너 승인 전 draft.",
+ "note": "Opus 5.5 품질 판정 C(70개, 2026-11-24) + 오너 캘리브레이션 핀셋 제거 v2(modern_city 201개 · jp_city 142개, 2026-11-28) + 전수 시각 검수 CUT 37 tilesets(403개, 2026-11-28). 기물 검색·DB 앨범·조수 물건 사전·kit 목록·공간 갤러리·테마 팩에서 빠진다. 정의와 아틀라스 칸은 남아 옛 저장본·견본·id 로 부른 찍기는 그대로 된다. 검수 시트: http://mdc2:18301/object-quality-purge-full.html",
  "objects": {
   "atlas_biome_interior": {
    "hand-interior:altar": {
     "gallery": 11052,
     "reason": "Grey box with purple band, like anchor"
+   },
+   "hand-interior:control console": {
+    "gallery": 11124,
+    "reason": "명암·질감 없는 밋밋한 회색 단색 직사각형 박스(fillRect)에 막대만 세운 조악한 제어판"
+   },
+   "hand-interior:gauge panel": {
+    "gallery": 11123,
+    "reason": "평면 회색 직사각형 박스에 단순 흰 원·점만 찍어 계기판이 아닌 조악한 도형처럼 보임"
+   }
+  },
+  "atlas_cartography": {
+   "atlas-icon-4": {
+    "gallery": 12115,
+    "reason": "핫핑크(마젠타) 배경이 투명 처리되지 않고 사각 틀째 남아 있으며 동굴 형태도 조악함"
+   },
+   "atlas-icon-6": {
+    "gallery": 12117,
+    "reason": "핫핑크(마젠타) 배경이 투명 처리되지 않고 사각 틀째 그대로 노출됨"
+   },
+   "atlas-icon-7": {
+    "gallery": 12118,
+    "reason": "핫핑크(마젠타) 배경이 투명 처리되지 않고 남아 있으며 도형도 단순·평면적임"
    }
   },
   "beodeul_city": {
+   "bd-block-port-14x8": {
+    "gallery": 281,
+    "reason": "BAD 앵커(bd-house-ware0)와 동일한 평면 사각 창고 2채로 채워진 항구 블록"
+   },
+   "bd-block-port-20x8": {
+    "gallery": 282,
+    "reason": "BAD 앵커(bd-house-ware0)와 동일한 평면 사각 창고 2채가 중심인 항구 블록"
+   },
+   "bd-facility-granary": {
+    "gallery": 1766,
+    "reason": "BAD 앵커(bd-house-ware0) 평면 직사각형 창고를 본체로 그대로 사용한 조합 스탬프"
+   },
+   "bd-facility-warehouse": {
+    "gallery": 1765,
+    "reason": "BAD 앵커(bd-house-ware0) 평면 직사각형 창고를 본체로 그대로 사용한 조합 스탬프"
+   },
+   "bd-ground-lawn-1": {
+    "gallery": 239,
+    "reason": "명암·질감·테두리 없이 단색 초록 블록을 계단형으로 채운 평면 덩어리"
+   },
+   "bd-object:bush_small_round": {
+    "gallery": 2675,
+    "reason": "둥근 덤불의 오른쪽 절반이 수직으로 잘려 나간 결손 스프라이트"
+   },
+   "bd-object:city_car2_compact_car": {
+    "gallery": 2944,
+    "reason": "형태가 심하게 뭉개져 소형차로 읽히지 않는 정체불명 흰색 덩어리"
+   },
+   "bd-object:city_recyc_bottle_return_machine": {
+    "gallery": 3730,
+    "reason": "굵은 직선 외곽선과 평면 단색 직사각형 구조로 입체감이 없는 정면 박스형 기계"
+   },
+   "bd-object:city_recyc_can_crusher_machine": {
+    "gallery": 3731,
+    "reason": "형태가 깨져 정체를 알아보기 어려운 투박한 직사각형 기계"
+   },
+   "bd-object:city_recyc_clothes_donation_box": {
+    "gallery": 3733,
+    "reason": "윗면 없이 굵은 직선 외곽선으로 둘러싼 평면 단색 직사각형 기부함"
+   },
+   "bd-object:city_recyc_pallet_stack_low": {
+    "gallery": 3736,
+    "reason": "질감·입체감 없는 평면 단색 가로 막대 두 개를 쌓은 조악한 직사각형 덩어리"
+   },
+   "bd-object:city_recyc_plastic_crate_tower": {
+    "gallery": 3738,
+    "reason": "윗면 입체감 없이 굵은 직선 테두리 안에 평면 회색 상자만 쌓은 형태"
+   },
+   "bd-object:city_recyc_weigh_scale_platform": {
+    "gallery": 3742,
+    "reason": "굵은 직선 외곽선의 평면 기하학 직사각형으로만 이뤄진 투박한 저울"
+   },
+   "bd-pick-aqueduct-sewer-altar-cult": {
+    "gallery": 497,
+    "reason": "단색 회색·빨간 직사각형(fillRect)과 막대기 촛대로 만든 질감 없는 평면 제단"
+   },
+   "bd-pick-aqueduct-sewer-banner-cult": {
+    "gallery": 501,
+    "reason": "주름·명암 없이 단색 빨간 직사각형(fillRect)으로 그린 평면 배너"
+   },
+   "bd-pick-aqueduct-sewer-chains": {
+    "gallery": 511,
+    "reason": "사슬로 읽히지 않는 단순 수직 막대와 역T자 형태의 조악한 도형"
+   },
+   "bd-pick-aqueduct-sewer-coffin": {
+    "gallery": 512,
+    "reason": "돌 질감과 입체감 없이 단색 회색 직사각형(fillRect)을 쌓은 평면 관"
+   },
+   "bd-pick-aqueduct-sewer-crate": {
+    "gallery": 515,
+    "reason": "나무 질감·음영 없이 굵은 테두리와 단색 갈색 직사각형(fillRect)으로 그린 상자"
+   },
+   "bd-pick-aqueduct-sewer-crate-stack": {
+    "gallery": 516,
+    "reason": "질감·명암 없는 단색 평면 박스(fillRect) 2개를 쌓아 올린 조악한 상자 더미"
+   },
+   "bd-pick-aqueduct-sewer-lantern-post": {
+    "gallery": 529,
+    "reason": "굵은 검정 테두리의 평면 노란 사각형과 직선 막대로 구성된 조악한 가로등"
+   },
+   "bd-pick-aqueduct-sewer-stairs-up-face": {
+    "gallery": 537,
+    "reason": "질감 없이 단색 회색·검정 가로 띠만 쌓아 올린 평면 직사각형 계단"
+   },
+   "bd-pick-aqueduct-sewer-straw-bed": {
+    "gallery": 538,
+    "reason": "단색 갈색·노란 가로 띠로 뭉개져 짚 침대로 잘 읽히지 않는 평면 사각형"
+   },
+   "bd-pick-castle-catacombs-altar-stone": {
+    "gallery": 542,
+    "reason": "돌 질감·음영 없이 밋밋한 단색 직사각형(fillRect)과 단순 반복 무늬로 그린 평면 제단"
+   },
+   "bd-pick-coast-cliff-road-driftwood": {
+    "gallery": 661,
+    "reason": "유목으로 전혀 읽히지 않는 뭉개진 단색 갈색 사각 덩어리"
+   },
    "bd-pick-desert-oasis-bones": {
     "gallery": 328,
     "reason": "Thin grey line, unreadable as bones"
+   },
+   "bd-pick-desert-oasis-grave": {
+    "gallery": 333,
+    "reason": "무덤으로 읽히지 않고 굵은 검정 테두리의 평면 L자 양말·신발처럼 깨진 형태"
+   },
+   "bd-pick-sea-cave-fish-net": {
+    "gallery": 563,
+    "reason": "명암·질감·처짐 없이 단순 갈색 격자(체크무늬)만 찍힌 평면 사각형"
+   },
+   "bd-pick-shipwreck-reef-rib-small": {
+    "gallery": 611,
+    "reason": "무엇인지 읽히지 않는 투박하고 계단진 역V자 갈색 막대 덩어리"
+   },
+   "bd-pick-shipwreck-reef-wreck-rig-pole": {
+    "gallery": 618,
+    "reason": "형태가 깨져 작은 천 조각과 외딴 갈색 점만 둥둥 떠 있는 미완성 스프라이트"
+   },
+   "bd-pick-snowfield-fishcrates": {
+    "gallery": 432,
+    "reason": "질감·음영 없는 평면 갈색 직사각형 박스(fillRect) 2개와 단색 파란 윗면"
+   },
+   "bd-pick-snowfield-stool": {
+    "gallery": 458,
+    "reason": "의자(스툴)로 전혀 읽히지 않고 갈색 덩어리에 대각선 막대가 꽂힌 깨진 형태"
+   },
+   "bd-pick-temple-ruins-stairs-down": {
+    "gallery": 595,
+    "reason": "질감 없이 단색 회색 가로 띠만 나열된 기계적 fillRect 계단 도형"
+   },
+   "bd-pick-wheat-roman-road-wheat-b": {
+    "gallery": 720,
+    "reason": "탁한 단색 갈색 사각형에 세로선 몇 줄뿐이라 밀밭으로 전혀 읽히지 않음"
+   },
+   "bd-pick-wheat-roman-road-wheat-c": {
+    "gallery": 721,
+    "reason": "#00720과 거의 같은 평면 갈색 네모 덩어리로 형태와 질감이 뭉개짐"
+   },
+   "bd-pick-wizard-tower-low-wall": {
+    "gallery": 654,
+    "reason": "명암·질감 없는 균일한 회색 벽돌 격자(fillRect 느낌)로 구성된 평면 담장"
    }
   },
   "desert_east": {
    "de-cushion-seat": {
     "gallery": 10184,
     "reason": "Flat red box, placeholder cushion"
+   }
+  },
+  "emerald_monster_climate": {
+   "mk-monster-climate-sign": {
+    "gallery": 11951,
+    "reason": "Exact-pixel sibling of mk-monster-overworld-sign: 질감·음영 없는 단색 갈색 직사각형과 막대기로 만든 표지판"
+   }
+  },
+  "emerald_monster_coast": {
+   "mk-monster-coast-sign": {
+    "gallery": 11896,
+    "reason": "Exact-pixel sibling of mk-monster-overworld-sign: 질감·음영 없는 단색 갈색 직사각형과 막대기로 만든 표지판"
+   },
+   "mk-monster-coast-towel_blue": {
+    "gallery": 11901,
+    "reason": "Exact-pixel sibling of mk-monster-coast-towel_blue: 명암·질감 없이 단색 파란·흰 가로 띠만 채운 단순 직사각형(fillRect)"
+   },
+   "mk-monster-coast-towel_red": {
+    "gallery": 11902,
+    "reason": "Exact-pixel sibling of mk-monster-coast-towel_red: 명암·질감 없이 단색 빨간·흰 가로 띠만 채운 단순 직사각형(fillRect)"
+   }
+  },
+  "emerald_monster_dungeon": {
+   "mk-monster-dungeon-gh_stairs": {
+    "gallery": 12063,
+    "reason": "Exact-pixel sibling of mk-monster-dungeon-gh_stairs: 굵은 사각 틀 안에 단색 가로 띠만 채운 평면 fillRect 계단 도형"
+   },
+   "mk-monster-dungeon-pw_coil": {
+    "gallery": 12067,
+    "reason": "평면 회색 박스 위 단색 가로 띠로 형태가 조악해 발전 코일로 읽히지 않음"
+   },
+   "mk-monster-dungeon-pw_console": {
+    "gallery": 12068,
+    "reason": "명암 없는 평면 회색 fillRect 박스에 단색 사각형과 원색 점만 나열한 조악한 콘솔"
+   },
+   "mk-monster-dungeon-pw_gen": {
+    "gallery": 12069,
+    "reason": "입체 명암과 질감 없이 평면 회색 원통에 단색 주황 가로 띠만 두른 도형"
+   },
+   "mk-monster-dungeon-ru_altar": {
+    "gallery": 12070,
+    "reason": "Exact-pixel sibling of mk-monster-dungeon-ru_altar: 석재 질감이나 음영 없이 단색 직사각형을 쌓아 올린 평면 fillRect 제단"
+   },
+   "mk-monster-dungeon-ru_braille": {
+    "gallery": 12071,
+    "reason": "Exact-pixel sibling of mk-monster-dungeon-ru_braille: 질감 없는 평면 갈색 돔과 점 찍힌 사각형으로 형태가 어색하고 무엇인지 읽기 어려움"
    }
   },
   "emerald_monster_gyms": {
@@ -44,6 +248,10 @@
     "gallery": 12087,
     "reason": "Is the C anchor itself"
    },
+   "mk-monster-gyms-gyd_dais_grass": {
+    "gallery": 12088,
+    "reason": "명암 없는 단색 가로줄 직사각형 연단(fillRect 느낌)"
+   },
    "mk-monster-gyms-gyd_dais_ice": {
     "gallery": 12089,
     "reason": "Flat blue oval placeholder dais"
@@ -58,9 +266,25 @@
    }
   },
   "emerald_monster_overworld": {
+   "mk-monster-overworld-c_counter": {
+    "gallery": 11666,
+    "reason": "입체감·질감 없는 납작한 단색 분홍 띠 카운터"
+   },
+   "mk-monster-overworld-c_escalator": {
+    "gallery": 11668,
+    "reason": "회색 단색 가로 띠만 반복된 단순 직사각형 에스컬레이터"
+   },
    "mk-monster-overworld-c_escalator_dn": {
     "gallery": 11669,
     "reason": "empty render (cells outside texture)"
+   },
+   "mk-monster-overworld-c_healer": {
+    "gallery": 11670,
+    "reason": "음영 없는 평면 흰색·하늘색 블록과 조악한 빨간 직사각형 회복기"
+   },
+   "mk-monster-overworld-c_screen": {
+    "gallery": 11672,
+    "reason": "Exact-pixel sibling of mk-monster-rooms-c_screen: 명암 없는 회색 테두리·단색 파란 면의 조악한 직사각형 화면(#11410 중복)"
    },
    "mk-monster-overworld-c_sofa_b": {
     "gallery": 11673,
@@ -82,6 +306,14 @@
     "gallery": 11695,
     "reason": "Is the C anchor itself"
    },
+   "mk-monster-overworld-h_bed": {
+    "gallery": 11705,
+    "reason": "주름·음영 없이 갈색·흰색·파란색 단색 직사각형 3개만 쌓은 침대"
+   },
+   "mk-monster-overworld-h_bin": {
+    "gallery": 11706,
+    "reason": "Exact-pixel sibling of mk-monster-rooms-h_bin: 단순 회색 사각형에 선 하나만 그어 정체가 안 읽히는 쓰레기통(#11444 중복)"
+   },
    "mk-monster-overworld-h_console": {
     "gallery": 11710,
     "reason": "empty render (cells outside texture)"
@@ -89,6 +321,10 @@
    "mk-monster-overworld-h_desk": {
     "gallery": 11712,
     "reason": "empty render (cells outside texture)"
+   },
+   "mk-monster-overworld-h_kitchen": {
+    "gallery": 11714,
+    "reason": "명암 없는 평면 갈색·회색 직사각형과 점으로만 그린 조악한 주방대"
    },
    "mk-monster-overworld-h_lamp": {
     "gallery": 11715,
@@ -110,6 +346,10 @@
     "gallery": 11720,
     "reason": "empty render (cells outside texture)"
    },
+   "mk-monster-overworld-h_stairs": {
+    "gallery": 11721,
+    "reason": "갈색 단색 가로 띠만 나열된 단순 직사각형 계단"
+   },
    "mk-monster-overworld-h_stairs_dn": {
     "gallery": 11722,
     "reason": "empty render (cells outside texture)"
@@ -117,9 +357,49 @@
    "mk-monster-overworld-h_wardrobe": {
     "gallery": 11725,
     "reason": "empty render (cells outside texture)"
+   },
+   "mk-monster-overworld-m_counter": {
+    "gallery": 11738,
+    "reason": "단색 가로 띠 직사각형 위에 뭉개진 덩어리만 올린 조악한 카운터"
+   },
+   "mk-monster-overworld-m_fridge": {
+    "gallery": 11740,
+    "reason": "두꺼운 회색 박스 안에 단색 네모와 사선만 채운 평면 냉장고"
+   },
+   "mk-monster-overworld-m_gondola": {
+    "gallery": 11741,
+    "reason": "Exact-pixel sibling of mk-monster-rooms-m_gondola: 회색 직사각형 선반에 원색 네모 블록만 나열한 조악한 진열대(#11479 중복)"
+   },
+   "mk-monster-overworld-m_poster": {
+    "gallery": 11742,
+    "reason": "Exact-pixel sibling of mk-monster-rooms-m_poster: 단순 보라·노랑 블록만 있어 내용이 안 읽히는 조악한 포스터(#11480 중복)"
+   },
+   "mk-monster-overworld-rock_stairs2": {
+    "gallery": 11746,
+    "reason": "Exact-pixel sibling of mk-monster-overworld-rock_stairs2: 질감·원근 없이 회색·흰색 단색 가로 띠만 반복한 조악한 계단(fillRect)"
+   },
+   "mk-monster-overworld-sign": {
+    "gallery": 11750,
+    "reason": "질감·음영 없는 단색 갈색 직사각형과 막대기로 만든 표지판"
    }
   },
   "emerald_monster_rooms": {
+   "mk-monster-rooms-c_counter": {
+    "gallery": 11957,
+    "reason": "Exact-pixel sibling of mk-monster-overworld-c_counter: 입체감·질감 없는 납작한 단색 분홍 띠 카운터"
+   },
+   "mk-monster-rooms-c_escalator": {
+    "gallery": 11959,
+    "reason": "Exact-pixel sibling of mk-monster-overworld-c_escalator: 회색 단색 가로 띠만 반복된 단순 직사각형 에스컬레이터"
+   },
+   "mk-monster-rooms-c_healer": {
+    "gallery": 11960,
+    "reason": "Exact-pixel sibling of mk-monster-overworld-c_healer: 음영 없는 평면 흰색·하늘색 블록과 조악한 빨간 직사각형 회복기"
+   },
+   "mk-monster-rooms-c_screen": {
+    "gallery": 11962,
+    "reason": "Exact-pixel sibling of mk-monster-rooms-c_screen: 명암 없는 회색 테두리·단색 파란 면의 조악한 직사각형 화면(#11410 중복)"
+   },
    "mk-monster-rooms-c_sofa_b": {
     "gallery": 11963,
     "reason": "Duplicate flat square sofa"
@@ -128,9 +408,53 @@
     "gallery": 11964,
     "reason": "Duplicate flat square sofa"
    },
+   "mk-monster-rooms-dp_counter": {
+    "gallery": 11967,
+    "reason": "입체감 없이 납작한 ㄷ자 단색 띠로 그린 백화점 카운터"
+   },
+   "mk-monster-rooms-dp_directory": {
+    "gallery": 11968,
+    "reason": "단색 파란 박스에 납작한 색 막대만 넣은 단순 안내판"
+   },
+   "mk-monster-rooms-dp_elevator": {
+    "gallery": 11969,
+    "reason": "질감·명암 없는 단색 빨간 직사각형과 회색 테두리 엘리베이터"
+   },
    "mk-monster-rooms-dp_elevfoot": {
     "gallery": 11970,
     "reason": "Duplicate flat grey bar placeholder"
+   },
+   "mk-monster-rooms-dp_escalator": {
+    "gallery": 11971,
+    "reason": "단색 회색 가로 띠와 초록 세로 막대로만 구성한 에스컬레이터"
+   },
+   "mk-monster-rooms-dp_escfoot": {
+    "gallery": 11972,
+    "reason": "단색 회색 세로 줄무늬만 채운 단순 직사각형 발판"
+   },
+   "mk-monster-rooms-dp_rack": {
+    "gallery": 11973,
+    "reason": "조악한 회색 틀에 단색 원색 세로 막대 4개만 건 옷걸이"
+   },
+   "mk-monster-rooms-dp_shelf": {
+    "gallery": 11974,
+    "reason": "회색 격자 박스 안에 동일한 원색 직사각형만 나열한 진열대"
+   },
+   "mk-monster-rooms-dp_showcase": {
+    "gallery": 11975,
+    "reason": "단색 파란 박스 안에 1px 점만 일렬로 찍은 평면 쇼케이스"
+   },
+   "mk-monster-rooms-h_bed": {
+    "gallery": 11978,
+    "reason": "Exact-pixel sibling of mk-monster-overworld-h_bed: 주름·음영 없이 갈색·흰색·파란색 단색 직사각형 3개만 쌓은 침대"
+   },
+   "mk-monster-rooms-h_bin": {
+    "gallery": 11979,
+    "reason": "Exact-pixel sibling of mk-monster-rooms-h_bin: 단순 회색 사각형에 선 하나만 그어 정체가 안 읽히는 쓰레기통(#11444 중복)"
+   },
+   "mk-monster-rooms-h_kitchen": {
+    "gallery": 11985,
+    "reason": "Exact-pixel sibling of mk-monster-overworld-h_kitchen: 명암 없는 평면 갈색·회색 직사각형과 점으로만 그린 조악한 주방대"
    },
    "mk-monster-rooms-h_mat": {
     "gallery": 11986,
@@ -140,6 +464,74 @@
     "gallery": 11987,
     "reason": "Flat green rectangle rug placeholder"
    },
+   "mk-monster-rooms-h_stairs": {
+    "gallery": 11989,
+    "reason": "Exact-pixel sibling of mk-monster-overworld-h_stairs: 갈색 단색 가로 띠만 나열된 단순 직사각형 계단"
+   },
+   "mk-monster-rooms-lab_chair": {
+    "gallery": 11995,
+    "reason": "굵은 테두리 단색 초록 네모와 회색 막대로 그린 투박한 의자"
+   },
+   "mk-monster-rooms-lab_machine": {
+    "gallery": 11998,
+    "reason": "질감 없는 단색 회색 박스 안에 파란 네모와 점만 넣은 조악한 기계"
+   },
+   "mk-monster-rooms-lab_server": {
+    "gallery": 11999,
+    "reason": "회색 단색 직사각형에 가로 띠만 채운 평면 서버 랙"
+   },
+   "mk-monster-rooms-lab_shelf": {
+    "gallery": 12000,
+    "reason": "회색 박스 안에 음영 없는 원색 세로 막대만 나열한 책장"
+   },
+   "mk-monster-rooms-lab_shelf_free": {
+    "gallery": 12001,
+    "reason": "상단이 텅 빈 회색 박스 안에 원색 세로 막대만 채운 책장"
+   },
+   "mk-monster-rooms-lg_door": {
+    "gallery": 12002,
+    "reason": "질감·음영 없는 단색 회색·파란 평면 도형 문"
+   },
+   "mk-monster-rooms-m_counter": {
+    "gallery": 12017,
+    "reason": "Exact-pixel sibling of mk-monster-overworld-m_counter: 단색 가로 띠 직사각형 위에 뭉개진 덩어리만 올린 조악한 카운터"
+   },
+   "mk-monster-rooms-m_fridge": {
+    "gallery": 12019,
+    "reason": "Exact-pixel sibling of mk-monster-overworld-m_fridge: 두꺼운 회색 박스 안에 단색 네모와 사선만 채운 평면 냉장고"
+   },
+   "mk-monster-rooms-m_gondola": {
+    "gallery": 12020,
+    "reason": "Exact-pixel sibling of mk-monster-rooms-m_gondola: 회색 직사각형 선반에 원색 네모 블록만 나열한 조악한 진열대(#11479 중복)"
+   },
+   "mk-monster-rooms-m_poster": {
+    "gallery": 12021,
+    "reason": "Exact-pixel sibling of mk-monster-rooms-m_poster: 단순 보라·노랑 블록만 있어 내용이 안 읽히는 조악한 포스터(#11480 중복)"
+   },
+   "mk-monster-rooms-mu_fossil": {
+    "gallery": 12024,
+    "reason": "텅 빈 단색 크림색 큰 박스에 뭉개진 화석 덩어리만 넣은 진열대"
+   },
+   "mk-monster-rooms-mu_plaque": {
+    "gallery": 12025,
+    "reason": "Exact-pixel sibling of mk-monster-rooms-mu_plaque: 어두운 테두리의 흰 직사각형 안에 회색 선 두 줄만 있는 무특징 명판(fillRect)"
+   },
+   "mk-monster-rooms-mu_sign": {
+    "gallery": 12030,
+    "reason": "단색 파란 직사각형에 회색 선 2개만 그은 단순 안내판"
+   },
+   "mk-monster-rooms-mu_tank": {
+    "gallery": 12032,
+    "reason": "굵은 회색 박스 안에 단색 파란 면과 뭉개진 물고기 점만 넣은 수조"
+   },
+   "mk-monster-rooms-mu_udesk": {
+    "gallery": 12033,
+    "reason": "굵은 외곽선의 완전 단색 크림색 ㄷ자 평면 도형 데스크"
+   },
+   "mk-monster-rooms-mu_vitrine": {
+    "gallery": 12034,
+    "reason": "단색 파란 가로 띠 박스에 정체 불명 베이지 덩어리만 넣은 진열장"
+   },
    "mk-monster-rooms-rmw_bow": {
     "gallery": 12036,
     "reason": "Clipped plank fragment, mostly empty cell"
@@ -147,54 +539,2470 @@
    "mk-monster-rooms-rmw_ch": {
     "gallery": 12037,
     "reason": "Map-structure outline, not a placeable object"
+   },
+   "mk-monster-rooms-sc_board": {
+    "gallery": 12038,
+    "reason": "단색 초록 직사각형에 흰 선 몇 개만 그은 평면 칠판"
+   },
+   "mk-monster-rooms-sc_bulletin": {
+    "gallery": 12039,
+    "reason": "단색 갈색 박스 안에 단색 크림 네모 4개만 붙인 게시판"
+   },
+   "mk-monster-rooms-sc_dais": {
+    "gallery": 12041,
+    "reason": "명암 없는 단색 주황 가로 막대 하나뿐인 교단"
+   },
+   "mk-monster-rooms-sc_desk": {
+    "gallery": 12042,
+    "reason": "굵은 어두운 테두리에 단색 노란 네모 2개만 그린 조악한 책걸상"
+   },
+   "mk-monster-rooms-sc_lectern": {
+    "gallery": 12043,
+    "reason": "음영 없는 단색 노란 직사각형과 막대 다리 교탁"
+   },
+   "mk-monster-rooms-sh_bed": {
+    "gallery": 12046,
+    "reason": "초록·흰색·초록 단색 가로 띠 3개만 채운 평면 침대"
+   },
+   "mk-monster-rooms-sh_bench": {
+    "gallery": 12047,
+    "reason": "명암 없이 단색 파란 가로 막대와 다리만 그린 벤치"
+   },
+   "mk-monster-rooms-sh_door": {
+    "gallery": 12052,
+    "reason": "질감 없는 단색 갈색 직사각형에 뭉개진 창문 덩어리만 넣은 문"
+   },
+   "mk-monster-rooms-sh_stairs": {
+    "gallery": 12058,
+    "reason": "회색·흰색 단색 가로 띠만 반복된 단순 직사각형 계단"
+   },
+   "mk-monster-rooms-sh_table": {
+    "gallery": 12059,
+    "reason": "굵은 회색 테두리 안에 명암 없는 단색 초록 면만 채운 테이블"
+   }
+  },
+  "emerald_monster_wild": {
+   "mk-monster-wild-cstairs": {
+    "gallery": 11766,
+    "reason": "Exact-pixel sibling of mk-monster-overworld-rock_stairs2: 질감·원근 없이 회색·흰색 단색 가로 띠만 반복한 조악한 계단(fillRect)"
+   },
+   "mk-monster-wild-cstairs1": {
+    "gallery": 11767,
+    "reason": "Exact-pixel sibling of mk-monster-wild-cstairs1: 입체감 없이 회색 가로 막대 세 개만 포개 놓은 평면 fillRect 줄무늬 계단"
+   },
+   "mk-monster-wild-gstairs": {
+    "gallery": 11785,
+    "reason": "Exact-pixel sibling of mk-monster-overworld-rock_stairs2: 질감·원근 없이 회색·흰색 단색 가로 띠만 반복한 조악한 계단(fillRect)"
+   },
+   "mk-monster-wild-sign": {
+    "gallery": 11788,
+    "reason": "Exact-pixel sibling of mk-monster-overworld-sign: 질감·음영 없는 단색 갈색 직사각형과 막대기로 만든 표지판"
+   }
+  },
+  "gothic_manor": {
+   "gm-altar": {
+    "gallery": 9941,
+    "reason": "질감·음영 없는 단색 직사각형(fillRect) 조합으로 제단 입체감이 전혀 없음"
+   },
+   "gm-dining-table": {
+    "gallery": 9934,
+    "reason": "음영과 식탁보 주름 없는 평면 흰색 직사각형 위에 점만 흩뿌린 조악한 식탁"
+   },
+   "gm-grave-open": {
+    "gallery": 9898,
+    "reason": "판 무덤 구멍이 직선 갈색 사각 박스(fillRect)로 깨져 있고 옆 흙더미도 뭉개짐"
    }
   },
   "joseon_baram": {
+   "jb-chimney": {
+    "gallery": 4183,
+    "reason": "굴뚝 중간 몸통이 투명하게 뚫려 가로줄 몇 개만 공중에 떠 있는 깨진 형태"
+   },
    "jb-gn_sarip_stone": {
     "gallery": 4400,
     "reason": "broken split fragments, mismatched cells"
    }
   },
   "jp_city": {
+   "jp-ac-unit": {
+    "gallery": 5919,
+    "reason": "굵은 검정 박스 안에 단색 회색 네모와 점만 넣은 조악한 실외기"
+   },
+   "jp-bank-lip": {
+    "gallery": 5932,
+    "reason": "굵은 어두운 선과 단색 회색 가로 블록만 채운 평면 제방 조각"
+   },
+   "jp-bank-mid": {
+    "gallery": 5948,
+    "reason": "음영 없이 단색 회색 벽돌 격자선만 그은 단순 직사각형 제방"
+   },
+   "jp-bank-slope": {
+    "gallery": 5949,
+    "reason": "단색 회색 블록 띠와 단색 초록 가로 띠만 붙인 경사면"
+   },
+   "jp-bike-shelter": {
+    "gallery": 6152,
+    "reason": "단색 초록 지붕 띠 아래 세로 선과 점으로만 그린 조악한 자전거 보관소"
+   },
+   "jp-biotope": {
+    "gallery": 6136,
+    "reason": "평면 베이지 네모에 점 노이즈와 단색 회색 타원만 그린 비오톱"
+   },
+   "jp-bldg-apart-steel2": {
+    "gallery": 5828,
+    "reason": "질감·음영 없는 단색 회색 평면 입면도 철골 아파트(BAD #05866 동계열)"
+   },
+   "jp-bldg-apart-wood2": {
+    "gallery": 5803,
+    "reason": "단색 갈색 가로줄과 반복 사각형만 나열한 평면 입면도 목조 아파트"
+   },
+   "jp-bldg-clinic": {
+    "gallery": 5844,
+    "reason": "텅 빈 단색 회색 벽면과 단색 초록 간판 띠의 평면 박스 병원"
+   },
+   "jp-bldg-coin-laundry": {
+    "gallery": 5860,
+    "reason": "텅 빈 단색 회색 상부와 단색 파란 띠·원 4개만 그린 평면 빨래방"
+   },
+   "jp-bldg-conbini": {
+    "gallery": 5839,
+    "reason": "BAD #05866과 동일한 텅 빈 회색 상부·단색 가로 띠 평면 편의점"
+   },
+   "jp-bldg-danchi5": {
+    "gallery": 5829,
+    "reason": "회색 단색 가로 띠와 네모 창만 반복된 완전 평면 단지 아파트"
+   },
+   "jp-bldg-factory": {
+    "gallery": 5848,
+    "reason": "음영 없는 단색 회색 다각형과 가로줄 셔터만 그린 평면 공장"
+   },
+   "jp-bldg-gas-office": {
+    "gallery": 5866,
+    "reason": "[purge-v2] BAD 앵커 동일: 넓은 단색 회색 벽면과 밋밋한 수평 띠의 투박한 박스 건물"
+   },
+   "jp-bldg-house-flat3": {
+    "gallery": 5802,
+    "reason": "단색 회색 직사각형 박스와 가로줄 셔터의 평면 입면도 주택"
+   },
+   "jp-bldg-house-gable-garage": {
+    "gallery": 5799,
+    "reason": "텅 빈 회색 벽면·단색 가로줄 지붕·가로줄 차고문의 평면 박스 주택"
+   },
+   "jp-bldg-house-hip2-wide": {
+    "gallery": 5818,
+    "reason": "음영 없는 단색 가로줄 벽면과 단순 사각형 창의 평면 입면도 주택"
+   },
+   "jp-bldg-house-hiraya": {
+    "gallery": 5800,
+    "reason": "단색 갈색 지붕 띠와 밋밋한 직사각형 창호만 그린 평면 단층 주택"
+   },
+   "jp-bldg-house-machiya": {
+    "gallery": 5819,
+    "reason": "가로·세로 줄무늬 직사각형만 쌓아 올린 입체감 없는 평면 마치야"
+   },
+   "jp-bldg-house-nagaya": {
+    "gallery": 5820,
+    "reason": "음영 없이 가로 띠와 작은 네모만 반복한 납작한 나가야 주택"
+   },
+   "jp-bldg-house-shed-modern": {
+    "gallery": 5801,
+    "reason": "단색 짙은 회색 박스에 흰색 가로줄 셔터만 넣은 평면 모던 주택"
+   },
+   "jp-bldg-house-terrace": {
+    "gallery": 5824,
+    "reason": "단색 베이지·회색 가로 직사각형 2단만 쌓은 평면 테라스 하우스"
+   },
+   "jp-bldg-house-tile3": {
+    "gallery": 5823,
+    "reason": "단색 청회색 직사각형에 가로선과 네모 창만 배치한 평면 3층 주택"
+   },
+   "jp-bldg-house-western": {
+    "gallery": 5821,
+    "reason": "텅 빈 단색 노란 벽면과 어두운 회색 삼각 지붕의 평면 양옥"
+   },
+   "jp-bldg-kindergarten": {
+    "gallery": 5846,
+    "reason": "음영 없는 단색 크림 박스와 초록 간판 띠만 그린 평면 유치원"
+   },
+   "jp-bldg-koban": {
+    "gallery": 5843,
+    "reason": "텅 빈 단색 회색 벽면에 파란 간판 띠만 붙인 평면 파출소"
+   },
+   "jp-bldg-machikoba-home": {
+    "gallery": 5861,
+    "reason": "단색 회색 박스에 거대한 가로줄 셔터만 채운 평면 공방 주택"
+   },
+   "jp-bldg-mansion4": {
+    "gallery": 5826,
+    "reason": "회색·청회색 단색 가로 띠만 반복된 완전 평면 4층 맨션"
+   },
+   "jp-bldg-mansion6-slim": {
+    "gallery": 5827,
+    "reason": "단색 회색 가로 띠만 높이 쌓은 극단적 평면 6층 맨션"
+   },
+   "jp-bldg-market-hall": {
+    "gallery": 5847,
+    "reason": "단색 회색 지붕과 흰색 박스·빨간 띠의 평면 시장 건물(BAD #05866 동계열)"
+   },
+   "jp-bldg-office6": {
+    "gallery": 5841,
+    "reason": "단색 청록 가로줄 직사각형만 반복된 완전 평면 6층 오피스"
+   },
+   "jp-bldg-post-office": {
+    "gallery": 5842,
+    "reason": "텅 빈 단색 회색 박스에 빨간 간판 띠만 넣은 평면 우체국"
+   },
+   "jp-bldg-row-ekimae": {
+    "gallery": 5872,
+    "reason": "좌측이 텅 비고 단색 간판 띠·박스만 나열한 평면 상가 열"
+   },
+   "jp-bldg-row-shutter-a": {
+    "gallery": 5873,
+    "reason": "단색 회색 가로줄 셔터 박스만 일렬로 붙인 평면 폐업 상가 열"
+   },
+   "jp-bldg-row-shutter-b": {
+    "gallery": 5874,
+    "reason": "단색 회색 가로줄 셔터 박스만 나열한 평면 폐업 상가 열"
+   },
+   "jp-bldg-school": {
+    "gallery": 5863,
+    "reason": "거대한 단색 회색 직사각형에 파란 네모 창만 격자 배치한 평면 학교"
+   },
+   "jp-bldg-school-gym": {
+    "gallery": 5864,
+    "reason": "[purge-v2] 단색 회색 넓은 면에 창·문만 드문드문 놓인 평면 박스 건물"
+   },
+   "jp-bldg-shop-bakery": {
+    "gallery": 5807,
+    "reason": "텅 빈 단색 베이지 상부 벽과 갈색 간판 띠의 평면 빵집"
+   },
+   "jp-bldg-shop-barber": {
+    "gallery": 5816,
+    "reason": "텅 빈 단색 회색 상부 벽과 파란 간판 띠의 평면 이발소"
+   },
+   "jp-bldg-shop-bicycle": {
+    "gallery": 5835,
+    "reason": "텅 빈 단색 회색 상부 벽과 파란 간판 띠의 평면 자전거점"
+   },
+   "jp-bldg-shop-bicycle-shut": {
+    "gallery": 5855,
+    "reason": "텅 빈 회색 벽과 파란 띠·가로줄 셔터만 그린 평면 상가"
+   },
+   "jp-bldg-shop-books": {
+    "gallery": 5809,
+    "reason": "단색 회색 상부·파란 띠·점 진열대의 평면 서점(BAD #05866 동계열)"
+   },
+   "jp-bldg-shop-books-shut": {
+    "gallery": 5853,
+    "reason": "단색 회색 박스에 파란 띠와 가로줄 셔터만 채운 평면 상가"
+   },
+   "jp-bldg-shop-butcher": {
+    "gallery": 5806,
+    "reason": "텅 빈 단색 크림 벽과 빨간 간판 띠의 평면 정육점"
+   },
+   "jp-bldg-shop-butcher-shut": {
+    "gallery": 5852,
+    "reason": "텅 빈 크림 벽과 빨간 띠·가로줄 셔터만 그린 평면 상가"
+   },
+   "jp-bldg-shop-cleaning": {
+    "gallery": 5811,
+    "reason": "텅 빈 단색 회색 상부 벽과 파란 간판 띠의 평면 세탁소"
+   },
+   "jp-bldg-shop-cleaning-shut": {
+    "gallery": 5854,
+    "reason": "텅 빈 회색 벽과 파란 띠·가로줄 셔터만 그린 평면 상가"
+   },
+   "jp-bldg-shop-fish": {
+    "gallery": 5805,
+    "reason": "텅 빈 단색 회색 상부 벽과 파란 간판 띠의 평면 생선가게"
+   },
+   "jp-bldg-shop-fish-shut": {
+    "gallery": 5851,
+    "reason": "텅 빈 회색 벽과 파란 띠·가로줄 셔터만 그린 평면 상가"
+   },
+   "jp-bldg-shop-flower": {
+    "gallery": 5808,
+    "reason": "텅 빈 단색 회색 상부 벽과 초록 간판 띠의 평면 꽃집"
+   },
+   "jp-bldg-shop-flower-shut": {
+    "gallery": 5857,
+    "reason": "텅 빈 회색 벽과 초록 띠·가로줄 셔터만 그린 평면 상가"
+   },
+   "jp-bldg-shop-greengrocer": {
+    "gallery": 5804,
+    "reason": "텅 빈 회색 벽·초록 띠·단색 가로 점 진열대의 평면 채소가게"
+   },
+   "jp-bldg-shop-pharmacy": {
+    "gallery": 5810,
+    "reason": "단색 회색 박스·보라 띠·점 진열대의 평면 약국(BAD #05866 동계열)"
+   },
+   "jp-bldg-shop-realestate": {
+    "gallery": 5836,
+    "reason": "단색 회색 박스·초록 띠·흰 네모 격자만 채운 평면 부동산"
+   },
+   "jp-bldg-shop-realestate-shut": {
+    "gallery": 5858,
+    "reason": "단색 회색 박스에 초록 띠와 가로줄 셔터만 그린 평면 상가"
+   },
+   "jp-bldg-shop-sake-shut": {
+    "gallery": 5856,
+    "reason": "텅 빈 크림 벽과 초록 띠·가로줄 셔터만 그린 평면 상가"
+   },
+   "jp-bldg-shop-salon": {
+    "gallery": 5837,
+    "reason": "텅 빈 회색 세로줄 벽면과 분홍 간판 띠의 평면 미용실"
+   },
+   "jp-bldg-shop-tabako": {
+    "gallery": 5817,
+    "reason": "단색 가로줄 크림 벽과 빨간 간판 띠의 평면 담배가게"
+   },
+   "jp-bldg-shop-teishoku": {
+    "gallery": 5831,
+    "reason": "텅 빈 단색 회색 상부 벽과 주황 간판 띠의 평면 식당"
+   },
+   "jp-bldg-shop-vacant": {
+    "gallery": 5859,
+    "reason": "단색 회색 박스에 파란 간판과 거대한 가로줄 셔터만 채운 빈 점포"
+   },
+   "jp-bldg-station-small": {
+    "gallery": 5862,
+    "reason": "단색 갈색 지붕 띠와 밋밋한 흰색 박스·파란 띠의 평면 간이역"
+   },
+   "jp-bldg-warehouse": {
+    "gallery": 5849,
+    "reason": "거대한 단색 회색 박스에 가로줄 셔터와 단색 문만 넣은 평면 창고"
+   },
+   "jp-bldg-zakkyo5": {
+    "gallery": 5840,
+    "reason": "좁은 단색 청회색 직사각형에 박스 창과 빨간 세로 막대만 넣은 빌딩"
+   },
+   "jp-bridge-abut": {
+    "gallery": 5939,
+    "reason": "굵은 어두운 테두리와 단색 회색 가로 막대만 그린 조악한 교대"
+   },
+   "jp-bridge-lip": {
+    "gallery": 5943,
+    "reason": "질감 없이 단색 갈색 가로 띠 4개만 쌓은 다리 가장자리"
+   },
+   "jp-bridge-pier": {
+    "gallery": 5940,
+    "reason": "단색 베이지·갈색 가로 띠와 체커보드 줄만 붙인 교각"
+   },
+   "jp-bridge-post": {
+    "gallery": 5930,
+    "reason": "굵은 검정 거친 외곽선에 단색 크림 원만 그린 조악한 교량 기둥"
+   },
+   "jp-bridge-rail-v": {
+    "gallery": 5931,
+    "reason": "갈색·회색·갈색 단색 세로 직사각형 3개만 붙인 단순 난간"
+   },
+   "jp-bus-stop": {
+    "gallery": 5898,
+    "reason": "굵은 검정 테두리 원통 안에 단색 파란·흰 띠만 넣은 조악한 정류장 표지"
+   },
+   "jp-carport": {
+    "gallery": 5917,
+    "reason": "굵은 검정 선의 납작한 파란 지붕 띠와 막대기 2개뿐인 평면 차양"
+   },
+   "jp-chorei-dai": {
+    "gallery": 6139,
+    "reason": "단색 청회색 직사각형과 막대 다리 4개만 그린 평면 조회대"
+   },
+   "jp-flagpoles": {
+    "gallery": 6140,
+    "reason": "넓은 여백 위 검은 테두리 막대 3개와 극소 단색 네모뿐인 국기 게양대"
+   },
+   "jp-footbridge-stairs": {
+    "gallery": 5784,
+    "reason": "단색 회색 가로 띠만 반복된 입체감 없는 육교 계단"
+   },
+   "jp-gakkyuen": {
+    "gallery": 6156,
+    "reason": "단색 갈색 가로줄 박스에 흰색 네모 팻말 2개만 꽂은 평면 화단"
+   },
+   "jp-gas-canopy": {
+    "gallery": 5926,
+    "reason": "텅 빈 여백 위 납작한 흰·빨간 띠 지붕과 작은 박스 2개뿐인 주유소 캐노피"
+   },
+   "jp-gate": {
+    "gallery": 5916,
+    "reason": "굵은 테두리의 단색 갈색 세로줄 블록 2개에 덩어리만 올린 조악한 문주"
+   },
+   "jp-gatepost": {
+    "gallery": 5915,
+    "reason": "음영 없는 단색 회색 박스에 흰색 뚜껑과 작은 네모만 넣은 문주"
+   },
+   "jp-glory": {
+    "gallery": 6111,
+    "reason": "잎·줄기 형태가 전혀 안 읽히고 초록·흰색 픽셀만 흩뿌린 노이즈 덩굴"
+   },
+   "jp-gomi-box": {
+    "gallery": 5923,
+    "reason": "굵은 검정 테두리와 명암 없는 단색 녹색 직사각형 격자(fillRect) 상자"
+   },
+   "jp-hyakuyoubako": {
+    "gallery": 6148,
+    "reason": "굵은 검정 직선 테두리와 단색 흰 상자·검정 막대 다리로 된 조악한 fillRect 백엽상"
+   },
+   "jp-ichirinsha": {
+    "gallery": 6134,
+    "reason": "굵은 검정 직선 틀 안에 명암 없는 단색 타원을 기계적으로 반복 배치한 조악한 거치대"
+   },
+   "jp-in-ac-unit": {
+    "gallery": 6227,
+    "reason": "[purge-v2] 명암·입체감 없는 단색 회색 가로 직사각형(fillRect 에어컨)"
+   },
+   "jp-in-agarikamachi": {
+    "gallery": 6211,
+    "reason": "[purge-v2] 질감·입체감 없는 갈색 단색 가로 띠 3줄"
+   },
+   "jp-in-am-arcade-back": {
+    "gallery": 6823,
+    "reason": "[purge-v2] 굵은 검정 테두리 안에 평면 회색 사각형만 채운 박스형 뒷면"
+   },
+   "jp-in-am-ball-box": {
+    "gallery": 6836,
+    "reason": "[purge-v2] 굵은 검정 테두리의 평면 빨간 직사각형 3개를 쌓아 형태가 조악함"
+   },
+   "jp-in-am-ball-counter": {
+    "gallery": 6840,
+    "reason": "[purge-v2] 굵은 검정 박스 안에 단색 회색·빨간 가로 띠만 채운 평면 기계"
+   },
+   "jp-in-am-counter": {
+    "gallery": 6837,
+    "reason": "[purge-v2] 단색 가로 띠와 단순 색점으로만 구성된 평면 카운터"
+   },
+   "jp-in-am-pachinko-back": {
+    "gallery": 6833,
+    "reason": "[purge-v2] 굵은 검정 테두리와 밋밋한 회색 면뿐인 직사각형 뒷면"
+   },
+   "jp-in-am-pachinko-island-end": {
+    "gallery": 6835,
+    "reason": "[purge-v2] 좁은 직사각형 안에 단색 선만 있어 무엇인지 읽기 어려운 오브젝트"
+   },
+   "jp-in-am-smoke-eater": {
+    "gallery": 6841,
+    "reason": "[purge-v2] 굵은 검정 사각형 안에 회색 가로줄 4개만 그린 전형적 fillRect"
+   },
+   "jp-in-bath-mat": {
+    "gallery": 6279,
+    "reason": "[purge-v2] 입체감·질감 없이 파란 테두리에 흰 네모와 점선만 있는 평면 매트"
+   },
+   "jp-in-bath-mirror": {
+    "gallery": 6275,
+    "reason": "[purge-v2] 굵은 검정 직사각형에 단색 하늘색과 사선 두 줄만 그린 fillRect 거울"
+   },
+   "jp-in-bunk-bed": {
+    "gallery": 6290,
+    "reason": "[purge-v2] 극도로 좁은 세로 막대에 굵은 검정 줄이 겹쳐 2층 침대로 읽기 어려움"
+   },
+   "jp-in-calendar": {
+    "gallery": 6229,
+    "reason": "[purge-v2] BAD 앵커(#04699)와 유사하게 단색 빨강·흰색 네모와 점만 있는 평면 달력"
+   },
+   "jp-in-chair-dining-e": {
+    "gallery": 6259,
+    "reason": "[purge-v2] 질감·명암 없는 단색 연두 막대 조합의 조악한 의자(동)"
+   },
+   "jp-in-chair-dining-n": {
+    "gallery": 6258,
+    "reason": "[purge-v2] 단색 초록 직사각형에 막대 다리 두 개만 붙인 평면 의자(북)"
+   },
+   "jp-in-chair-dining-s": {
+    "gallery": 6257,
+    "reason": "[purge-v2] 등받이와 좌판이 끊어져 떠 있는 조악한 단색 초록 의자(남)"
+   },
+   "jp-in-chair-dining-w": {
+    "gallery": 6260,
+    "reason": "[purge-v2] 질감·명암 없는 단색 연두 막대 조합의 조악한 의자(서)"
+   },
+   "jp-in-closet-doors": {
+    "gallery": 6297,
+    "reason": "[purge-v2] 굵은 검정 직선 틀 안에 넓은 단색 베이지 면만 채운 fillRect 벽장문"
+   },
+   "jp-in-cs-cement-bags": {
+    "gallery": 6725,
+    "reason": "굵은 검정 직사각형 틀 안에 명암 없는 베이지 단색 네모와 가로 띠만 채운 fillRect 포대"
+   },
+   "jp-in-cs-column-bare": {
+    "gallery": 6739,
+    "reason": "[purge-v2] 명암·입체감 없는 밋밋한 세로 회색 직사각형 기둥"
+   },
+   "jp-in-cs-exit-light": {
+    "gallery": 6758,
+    "reason": "[purge-v2] 음영 없는 평면 연두 사각형과 흰 화살표만의 단조로운 표지"
+   },
+   "jp-in-cs-light-off": {
+    "gallery": 6757,
+    "reason": "[purge-v2] 평면 회색 막대와 대각선 한 줄뿐이라 조명으로 읽기 어려운 조악한 도형"
+   },
+   "jp-in-cs-rebar": {
+    "gallery": 6724,
+    "reason": "굵은 검정 직사각형 외곽선과 단색 회색 가로 띠·갈색 네모 받침의 조악한 철근 더미"
+   },
+   "jp-in-cs-site-gate": {
+    "gallery": 6740,
+    "reason": "[purge-v2] 빈 공간에 얇은 가로 막대 두 개만 떠 있어 현장 게이트로 읽히지 않음"
+   },
+   "jp-in-cs-site-office": {
+    "gallery": 6735,
+    "reason": "명암 없는 단색 회색 줄무늬 박스 건물로 조악한 입면 직사각형(fillRect) 느낌"
+   },
+   "jp-in-cs-wheel-stop": {
+    "gallery": 6751,
+    "reason": "[purge-v2] 단색 회색·노랑 띠의 극도로 단순한 평면 직사각형(주차 스토퍼)"
+   },
+   "jp-in-cupboard": {
+    "gallery": 6255,
+    "reason": "굵은 검정 외곽선과 질감·명암이 전혀 없는 단색 녹색 직사각형 찬장(fillRect)"
+   },
+   "jp-in-curtain-window": {
+    "gallery": 6226,
+    "reason": "굵은 검정 세로줄과 단색 형광 녹색 띠로만 칠해진 평면적 fillRect 커튼 창문"
+   },
+   "jp-in-cv-autodoor": {
+    "gallery": 6324,
+    "reason": "[purge-v2] 평면 회색 막대와 보라 직사각형이 분리돼 자동문으로 읽기 어려움"
+   },
+   "jp-in-cv-basket-stack": {
+    "gallery": 6326,
+    "reason": "[purge-v2] 회색 틀 안 단색 초록·주황 가로 띠뿐이라 바구니 더미로 읽히지 않음"
+   },
+   "jp-in-cv-cart": {
+    "gallery": 6330,
+    "reason": "명암·입체감 없는 회색 격자 네모와 막대 다리로 카트 형태가 조악하고 밋밋함"
+   },
+   "jp-in-cv-cart-rack": {
+    "gallery": 6325,
+    "reason": "[purge-v2] BAD 앵커 동일: 형태가 뭉개지고 회색 세로줄·붉은 상단이 조악한 카트 랙"
+   },
+   "jp-in-cv-copier": {
+    "gallery": 6322,
+    "reason": "[purge-v2] 음영 없이 흰색·회색 직사각형만 겹친 평면 fillRect 복사기"
+   },
+   "jp-in-cv-counter": {
+    "gallery": 6316,
+    "reason": "[purge-v2] 디테일·질감 전혀 없는 빈 흰색·회색 직사각형 카운터"
+   },
+   "jp-in-cv-freezer": {
+    "gallery": 6315,
+    "reason": "[purge-v2] 외곽·입체감 없이 흰색·파랑 가로 띠만 채운 평면 냉동고"
+   },
+   "jp-in-cv-hotcase": {
+    "gallery": 6318,
+    "reason": "[purge-v2] 평면 흰 블록 위에 형태가 뭉개진 주황·초록 네모만 올린 조악한 온장고"
+   },
+   "jp-in-cv-magazine": {
+    "gallery": 6314,
+    "reason": "명암 없이 단색 세로 막대들과 단색 가로 띠만 나열한 기계적 fillRect 잡지대"
+   },
+   "jp-in-cv-produce": {
+    "gallery": 6329,
+    "reason": "[purge-v2] 과일·채소 형태 없이 원색 초록·노랑·주황 가로 띠만 그은 평면 진열대"
+   },
+   "jp-in-desk-chair-e": {
+    "gallery": 6294,
+    "reason": "[purge-v2] 굵은 검정 선과 명암 없는 베이지 fillRect 의자(동)"
+   },
+   "jp-in-desk-chair-n": {
+    "gallery": 6293,
+    "reason": "[purge-v2] 굵은 검정 선과 평면 베이지·갈색 사각형 의자(북)"
+   },
+   "jp-in-desk-chair-s": {
+    "gallery": 6292,
+    "reason": "[purge-v2] 굵은 검정 선과 평면 베이지 사각형 의자(남)"
+   },
+   "jp-in-desk-chair-w": {
+    "gallery": 6295,
+    "reason": "[purge-v2] 굵은 검정 선과 명암 없는 베이지 fillRect 의자(서)"
+   },
+   "jp-in-door-side-sliding": {
+    "gallery": 6307,
+    "reason": "[purge-v2] 극도로 얇고 형태가 뭉개져 미닫이문 측면으로 읽히지 않음"
+   },
+   "jp-in-door-side-western": {
+    "gallery": 6306,
+    "reason": "[purge-v2] 극도로 얇고 하단이 뭉개져 문 측면으로 읽히지 않음"
+   },
+   "jp-in-fd-chair-e": {
+    "gallery": 6334,
+    "reason": "[purge-v2] 얇은 갈색 막대 위 단색 빨강 네모만 붙인 평면 의자(동)"
+   },
+   "jp-in-fd-chair-n": {
+    "gallery": 6333,
+    "reason": "[purge-v2] 명암 없는 단색 갈색 직사각형에 막대 다리만 붙인 평면 의자(북)"
+   },
+   "jp-in-fd-chair-s": {
+    "gallery": 6332,
+    "reason": "[purge-v2] 단색 빨강·갈색 네모 블록과 막대 다리의 조악한 의자(남)"
+   },
+   "jp-in-fd-chair-w": {
+    "gallery": 6335,
+    "reason": "[purge-v2] 얇은 갈색 막대 위 단색 빨강 네모만 붙인 평면 의자(서)"
+   },
+   "jp-in-fd-cutting-block": {
+    "gallery": 6359,
+    "reason": "[purge-v2] 평면 흰 블록 위 분홍 사각형이 무엇인지 읽기 어려운 조악한 도마대"
+   },
+   "jp-in-fd-fryer": {
+    "gallery": 6340,
+    "reason": "[purge-v2] 평면 흰색·회색 네모에 조악한 T자 손잡이만 얹은 튀김기"
+   },
+   "jp-in-fd-grill-range": {
+    "gallery": 6358,
+    "reason": "[purge-v2] 명암 없는 흰 블록과 뭉개진 상단 실루엣의 투박한 그릴 레인지"
+   },
+   "jp-in-fd-kutsunugi": {
+    "gallery": 6349,
+    "reason": "[purge-v2] 굵은 검정 박스 안 평면 회색 면에 조악한 신발 덩어리만 놓임"
+   },
+   "jp-in-fd-prep": {
+    "gallery": 6336,
+    "reason": "[purge-v2] 평면 흰색·회색 블록 상단이 뭉개져 조리대로 읽히지 않음"
+   },
+   "jp-in-fd-rice-tub": {
+    "gallery": 6357,
+    "reason": "[purge-v2] 평면 흰 카운터 위 갈색 덩어리가 뭉개져 밥통으로 읽히지 않음"
+   },
+   "jp-in-fd-sink": {
+    "gallery": 6337,
+    "reason": "[purge-v2] 평면 흰·파랑 네모 위로 수도꼭지 픽셀이 동떨어져 떠 있는 조악한 싱크대"
+   },
+   "jp-in-fr-booth-n": {
+    "gallery": 6867,
+    "reason": "[purge-v2] 굵은 검정 테두리와 명암 없는 검붉은 가로 띠뿐인 평면 부스 뒷면"
+   },
+   "jp-in-fr-booth-s": {
+    "gallery": 6866,
+    "reason": "[purge-v2] 굵은 검정 직선 틀 안에 단색 빨간 사각형 3개를 채운 fillRect 부스 소파"
+   },
+   "jp-in-fr-rice-jar": {
+    "gallery": 6878,
+    "reason": "[purge-v2] 굵은 검정 선과 단색 회색 사각형만 쌓여 밥솥으로 읽기 어려움"
+   },
+   "jp-in-fr-waiting-bench": {
+    "gallery": 6873,
+    "reason": "[purge-v2] 굵은 검정 테두리의 단색 빨간 가로 띠와 평면 회색 다리뿐인 벤치"
+   },
+   "jp-in-futon-folded": {
+    "gallery": 6246,
+    "reason": "[purge-v2] 굵은 검정 네모 안에 파랑·흰색 가로 띠만 채운 평면 접은 이불"
+   },
+   "jp-in-gy-bench": {
+    "gallery": 6515,
+    "reason": "[purge-v2] 굵은 검정 테두리와 단색 베이지 가로 막대뿐인 평면 체육관 벤치"
+   },
    "jp-in-gy-blocks-mat": {
     "gallery": 6537,
     "reason": "Four flat colored squares, placeholder mat"
    },
+   "jp-in-gy-clock-cage": {
+    "gallery": 6528,
+    "reason": "[purge-v2] 회색 네모에 흰 점 격자만 있어 시계 보호망으로 읽히지 않음"
+   },
+   "jp-in-gy-kid-chair-e": {
+    "gallery": 6532,
+    "reason": "[purge-v2] 굵은 검정 선과 명암 없는 노랑 fillRect 어린이 의자(동)"
+   },
+   "jp-in-gy-kid-chair-n": {
+    "gallery": 6531,
+    "reason": "[purge-v2] 굵은 검정 선과 단색 노랑 박스 어린이 의자(북)"
+   },
+   "jp-in-gy-kid-chair-s": {
+    "gallery": 6530,
+    "reason": "[purge-v2] 굵은 검정 선과 단색 노랑 박스 어린이 의자(남)"
+   },
+   "jp-in-gy-kid-chair-w": {
+    "gallery": 6533,
+    "reason": "[purge-v2] 굵은 검정 선과 명암 없는 노랑 fillRect 어린이 의자(서)"
+   },
+   "jp-in-gy-kids-sink": {
+    "gallery": 6539,
+    "reason": "[purge-v2] 굵은 검정 테두리에 넓은 평면 흰 면과 파란 띠만 있는 투박한 세면대"
+   },
+   "jp-in-gy-mat": {
+    "gallery": 6521,
+    "reason": "[purge-v2] 굵은 검정 테두리에 명암 없는 단색 파랑 3분할 직사각형 매트"
+   },
+   "jp-in-gy-mat-stack": {
+    "gallery": 6522,
+    "reason": "[purge-v2] 굵은 검정 테두리와 단색 파랑 가로 띠만 쌓은 평면 매트 더미"
+   },
+   "jp-in-gy-nap-futon": {
+    "gallery": 6538,
+    "reason": "[purge-v2] 질감·명암 없는 단색 분홍·흰색 가로 띠만의 평면 낮잠 이불"
+   },
+   "jp-in-gy-picture-books": {
+    "gallery": 6535,
+    "reason": "굵은 검정 박스 틀 안에 명암 없는 원색 정사각형과 기호만 나열한 조악한 fillRect 책장"
+   },
+   "jp-in-gy-pipe-chair": {
+    "gallery": 6527,
+    "reason": "[purge-v2] 굵은 검정 직사각형 안 갈색 가로줄만 있어 접이식 의자로 읽히지 않음"
+   },
+   "jp-in-gy-stage-steps": {
+    "gallery": 6518,
+    "reason": "[purge-v2] 굵은 검정 테두리와 단색 갈색·베이지 가로 띠뿐인 평면 계단"
+   },
+   "jp-in-gy-toy-box": {
+    "gallery": 6536,
+    "reason": "[purge-v2] 굵은 검정 박스 안 단색 분홍 면과 조악한 상단 색점의 장난감 상자"
+   },
+   "jp-in-h2-bed-side": {
+    "gallery": 6449,
+    "reason": "[purge-v2] 굵은 검정 테두리에 단색 갈색 사각형 두 개만 그린 fillRect 서랍"
+   },
+   "jp-in-h2-cardboard": {
+    "gallery": 6452,
+    "reason": "[purge-v2] 굵은 검정 선과 명암 없는 단색 갈색 직사각형 2개의 종이상자"
+   },
+   "jp-in-h2-futon-dry": {
+    "gallery": 6454,
+    "reason": "[purge-v2] 굵은 검정 테두리에 넓은 단색 크림 면과 점만 찍은 평면 이불 널기"
+   },
+   "jp-in-h2-hanger-rail": {
+    "gallery": 6453,
+    "reason": "[purge-v2] 굵은 검정 틀 안 흰색·빨강 세로 띠뿐이라 행거로 읽히지 않음"
+   },
+   "jp-in-h2-old-fridge": {
+    "gallery": 6451,
+    "reason": "[purge-v2] 굵은 검정 선과 넓은 단색 크림 면만 채운 전형적 fillRect 냉장고"
+   },
+   "jp-in-h2-railing": {
+    "gallery": 6440,
+    "reason": "[purge-v2] 평면 파란 회색 사각형에 흰 사선 두 줄과 회색 띠만 그린 난간"
+   },
+   "jp-in-h2-sash-door": {
+    "gallery": 6446,
+    "reason": "[purge-v2] 굵은 검정 테두리 안 평면 회색·파랑 가로 띠뿐인 새시 문"
+   },
+   "jp-in-h2-shoe-closet": {
+    "gallery": 6448,
+    "reason": "굵은 검정 직사각형 틀에 단색 베이지·회색 세로 띠만 채운 평면적 fillRect 신발장"
+   },
+   "jp-in-ht-lobby-sofa-e": {
+    "gallery": 6880,
+    "reason": "[purge-v2] 극도로 얇은 갈색 세로 띠로 소파 측면으로 읽히지 않음"
+   },
+   "jp-in-ht-lobby-sofa-w": {
+    "gallery": 6881,
+    "reason": "[purge-v2] 극도로 얇은 갈색 세로 띠로 소파 측면으로 읽히지 않음"
+   },
+   "jp-in-ht-ryokan-front": {
+    "gallery": 6891,
+    "reason": "[purge-v2] 굵은 검정 테두리 안에 베이지·갈색 단색 가로 띠만 채운 평면 카운터"
+   },
+   "jp-in-ht-unit-bath-door": {
+    "gallery": 6886,
+    "reason": "[purge-v2] 굵은 검정 테두리 안에 평면 연회색 사각형과 점 하나뿐인 fillRect 욕실문"
+   },
+   "jp-in-intercom": {
+    "gallery": 6230,
+    "reason": "[purge-v2] 굵은 검정 네모 안에 평면 흰 면과 색점 2개만 찍은 fillRect 인터폰"
+   },
+   "jp-in-kotatsu": {
+    "gallery": 6240,
+    "reason": "[purge-v2] 굵은 검정 직선 테두리와 단색 가로 띠로만 구성된 평면 코타츠"
+   },
+   "jp-in-kr-drink-bar": {
+    "gallery": 6844,
+    "reason": "[purge-v2] 매우 굵은 검정 박스 틀 안에 단색 사각형만 나열한 조악한 드링크바"
+   },
+   "jp-in-kr-front": {
+    "gallery": 6842,
+    "reason": "[purge-v2] 형태·질감 없이 단색 가로 띠만 쌓아 놓은 평면 카운터"
+   },
+   "jp-in-kr-ice-cream": {
+    "gallery": 6845,
+    "reason": "[purge-v2] 굵은 검정 박스 안에 형태가 뭉개져 아이스크림 기계로 읽히지 않음"
+   },
+   "jp-in-kr-sofa-e": {
+    "gallery": 6849,
+    "reason": "[purge-v2] 굵은 검정 테두리의 평면 빨간 직사각형으로 소파 입체감 전무"
+   },
+   "jp-in-kr-sofa-n": {
+    "gallery": 6848,
+    "reason": "[purge-v2] 단색 가로 띠와 굵은 검정 박스 형태의 평면 소파"
+   },
+   "jp-in-kr-sofa-se": {
+    "gallery": 6852,
+    "reason": "[purge-v2] 굵은 검정 직선과 단색 면으로만 된 평면 코너 소파"
+   },
+   "jp-in-kr-sofa-sw": {
+    "gallery": 6851,
+    "reason": "[purge-v2] 굵은 검정 직선과 단색 면으로만 된 평면 코너 소파"
+   },
+   "jp-in-kr-sofa-w": {
+    "gallery": 6850,
+    "reason": "[purge-v2] 굵은 검정 테두리의 평면 빨간 직사각형으로 소파 입체감 전무"
+   },
+   "jp-in-low-table": {
+    "gallery": 6265,
+    "reason": "[purge-v2] 명암·질감 없는 단색 초록 직사각형 막대형 좌식 테이블"
+   },
+   "jp-in-mc-railing": {
+    "gallery": 6627,
+    "reason": "[purge-v2] 입체감 없이 회색·파랑 단색 가로 띠만 쌓은 평면 난간"
+   },
+   "jp-in-mc-unit-door": {
+    "gallery": 6628,
+    "reason": "[purge-v2] 굵은 검정 테두리 안을 짙은 단색 회색으로 채운 평면 현관문"
+   },
+   "jp-in-mirror-stand": {
+    "gallery": 6299,
+    "reason": "굵은 검정 직사각형 테두리와 단색 갈색 틀·회색 면으로만 된 조악한 fillRect 거울"
+   },
+   "jp-in-ml-concession-counter": {
+    "gallery": 6920,
+    "reason": "[purge-v2] 형태가 불명확하고 단색 사각형만 얹은 조악한 카운터"
+   },
+   "jp-in-ml-gadget-table": {
+    "gallery": 6916,
+    "reason": "[purge-v2] 단색 가로 띠 테이블 위에 굵은 검정 박스만 올린 평면 진열대"
+   },
+   "jp-in-ml-mall-passage": {
+    "gallery": 6930,
+    "reason": "[purge-v2] 텅 빈 단색 사각형 면과 조악한 초록 띠로 된 엉성한 몰 통로"
+   },
+   "jp-in-ml-seat-row": {
+    "gallery": 6925,
+    "reason": "[purge-v2] 좌석 열로 전혀 읽히지 않는 뭉개진 회색·빨강 덩어리"
+   },
+   "jp-in-ml-ticket-counter": {
+    "gallery": 6918,
+    "reason": "[purge-v2] 굵은 검정 테두리와 단색 가로 띠·박스로만 만든 조악한 매표소"
+   },
+   "jp-in-ml-ticket-gate": {
+    "gallery": 6928,
+    "reason": "[purge-v2] 굵은 검정 직선과 단순 기하 도형으로만 만든 투박한 개찰구"
+   },
+   "jp-in-of-desk": {
+    "gallery": 6584,
+    "reason": "[purge-v2] 흰색·회색 단색 직사각형 두 개와 검정 테두리뿐인 밋밋한 책상"
+   },
+   "jp-in-of-elevator": {
+    "gallery": 6571,
+    "reason": "굵은 검정 테두리 안에 명암 없는 단색 회색 사각형과 세로선만 있는 극도로 조악한 엘리베이터"
+   },
+   "jp-in-of-fridge-small": {
+    "gallery": 6600,
+    "reason": "[purge-v2] 명암 없이 흰색 직사각형에 가로선 두 개만 그은 평면 냉장고"
+   },
+   "jp-in-of-lobby-sofa-n": {
+    "gallery": 6574,
+    "reason": "[purge-v2] BAD 앵커 소파와 동일한 굵은 검정 직선 박스·단색 면 구조의 소파"
+   },
+   "jp-in-of-lobby-sofa-s": {
+    "gallery": 6573,
+    "reason": "[purge-v2] BAD 앵커 소파와 동일한 굵은 검정 직선 박스·단색 면 구조의 소파"
+   },
+   "jp-in-of-pantry-sink": {
+    "gallery": 6599,
+    "reason": "[purge-v2] 텅 빈 흰색 단색 면 위에 단순 도형만 얹은 평면적 탕비실 싱크대"
+   },
+   "jp-in-of-reception": {
+    "gallery": 6569,
+    "reason": "[purge-v2] 디테일 전혀 없이 단색 가로 띠만 겹친 평면 접수대"
+   },
+   "jp-in-of-security-gate": {
+    "gallery": 6570,
+    "reason": "[purge-v2] 굵은 검정 테두리와 단순 회색·파랑 사각형으로 형태가 조악한 보안 게이트"
+   },
+   "jp-in-pb-bench": {
+    "gallery": 6420,
+    "reason": "[purge-v2] 굵은 검정 직선과 단색 주황 사각형 두 개로 된 평면적 벤치"
+   },
+   "jp-in-pb-fold-table": {
+    "gallery": 6419,
+    "reason": "[purge-v2] 굵은 검정 테두리의 명암 없는 단색 갈색 직사각형 테이블"
+   },
+   "jp-in-pb-police-desk": {
+    "gallery": 6423,
+    "reason": "[purge-v2] 회색·흰색·초록 단색 사각형만 겹친 평면 도형으로 책상으로 안 읽힘"
+   },
+   "jp-in-pb-reception": {
+    "gallery": 6430,
+    "reason": "[purge-v2] 명암·디테일 없이 흰색·초록 단색 사각형만 쌓은 평면 접수대"
+   },
+   "jp-in-pb-waiting-sofa-n": {
+    "gallery": 6432,
+    "reason": "[purge-v2] BAD 앵커 대기의자와 같은 굵은 검정 선·단색 파랑 평면 소파"
+   },
+   "jp-in-pb-waiting-sofa-s": {
+    "gallery": 6431,
+    "reason": "[purge-v2] BAD 앵커와 같은 굵은 검정 직선 박스·단색 파랑 평면 소파"
+   },
+   "jp-in-po-bench-n": {
+    "gallery": 6611,
+    "reason": "[purge-v2] 굵은 검정 테두리의 단색 남색 직사각형 평면 벤치"
+   },
+   "jp-in-po-bench-s": {
+    "gallery": 6612,
+    "reason": "[purge-v2] 굵은 검정 직선 박스와 단색 면으로만 된 평면 벤치"
+   },
+   "jp-in-po-counter-end": {
+    "gallery": 6607,
+    "reason": "[purge-v2] 무엇인지 읽히지 않는 엉성한 얇은 직선 조각"
+   },
    "jp-in-sc-curtain": {
     "gallery": 6480,
     "reason": "Flat green rectangle, no curtain folds"
+   },
+   "jp-in-sc-lib-counter": {
+    "gallery": 6491,
+    "reason": "[purge-v2] 굵은 검정 테두리 안에 단색 가로 띠 3개만 채운 평면 카운터"
+   },
+   "jp-in-sc-teacher-desk": {
+    "gallery": 6464,
+    "reason": "[purge-v2] 굵은 검정 테두리와 명암 없는 단색 갈색 사각형 3개로 된 평면 교탁"
+   },
+   "jp-in-sh-counter": {
+    "gallery": 6360,
+    "reason": "[purge-v2] 명암·디테일 없이 흰색·초록 단색 사각형만 쌓은 평면 카운터"
+   },
+   "jp-in-sh-towel-rack": {
+    "gallery": 6401,
+    "reason": "굵은 검정 직선 틀에 단색 녹색 막대와 흰·파랑 가로 띠만 넣은 전형적 fillRect 수건걸이"
+   },
+   "jp-in-sh-wall-shelf": {
+    "gallery": 6364,
+    "reason": "[purge-v2] 내용물·명암 없이 굵은 검정 선과 단색 초록 가로 칸만 그린 텅 빈 선반"
+   },
+   "jp-in-sofa-e": {
+    "gallery": 6263,
+    "reason": "[purge-v2] 지나치게 얇고 평면적인 세로 막대로 소파 형태가 무너짐"
+   },
+   "jp-in-sofa-n": {
+    "gallery": 6262,
+    "reason": "[purge-v2] BAD 앵커 소파와 동일한 굵은 검정 직선 박스·단색 파랑 평면 소파"
+   },
+   "jp-in-sofa-s": {
+    "gallery": 6261,
+    "reason": "[purge-v2] BAD 앵커 소파와 동일한 굵은 검정 직선 박스·단색 평면 소파"
+   },
+   "jp-in-sofa-w": {
+    "gallery": 6264,
+    "reason": "[purge-v2] 지나치게 얇고 평면적인 세로 막대로 소파 형태가 무너짐"
+   },
+   "jp-in-st-bench": {
+    "gallery": 6550,
+    "reason": "[purge-v2] 굵은 검정 직선과 단색 가로 띠로만 이루어진 평면 역 벤치"
+   },
+   "jp-in-st-door-line": {
+    "gallery": 6565,
+    "reason": "[purge-v2] 텅 빈 공간에 단색 노랑 가로 띠 하나만 떠 있는 조악한 조각"
+   },
+   "jp-in-st-fence": {
+    "gallery": 6546,
+    "reason": "[purge-v2] 입체감 없이 회색 단색 사각형에 검정 가로선만 그은 평면 울타리"
+   },
+   "jp-in-st-platform-bench": {
+    "gallery": 6557,
+    "reason": "[purge-v2] BAD 앵커 #05018과 판박이인 굵은 검정 선·단색 초록 3인 벤치"
+   },
+   "jp-in-toilet-slippers": {
+    "gallery": 6287,
+    "reason": "[purge-v2] 굵은 검정 박스 안에 납작한 빨강·흰색 직사각형 2개만 붙인 조악한 슬리퍼"
+   },
+   "jp-in-ug-point-machine": {
+    "gallery": 6641,
+    "reason": "[purge-v2] 굵은 검정 테두리 단색 초록 사각형, 형태 불명확"
+   },
+   "jp-in-ug-walkway-rail": {
+    "gallery": 6632,
+    "reason": "[purge-v2] 굵은 검정 막대 조합으로 난간 형태가 안 읽힘"
+   },
+   "jp-in-wh-cart-abandoned": {
+    "gallery": 6777,
+    "reason": "[purge-v2] 굵은 검정 사각형+단색 파랑·갈색 면, 무엇인지 형태 불명확"
+   },
+   "jp-in-wh-item-firstaid": {
+    "gallery": 6819,
+    "reason": "[purge-v2] 굵은 검정 정사각형+단색 회색+십자가 fillRect"
+   },
+   "jp-in-wh-item-locker": {
+    "gallery": 6817,
+    "reason": "[purge-v2] 굵은 검정 직사각형+질감 없는 단색 짙은 회색 락커"
+   },
+   "jp-in-wh-item-toolbox": {
+    "gallery": 6818,
+    "reason": "[purge-v2] 굵은 검정 직사각형+명암 없는 단색 빨강 공구함"
+   },
+   "jp-in-wh-light-off": {
+    "gallery": 6782,
+    "reason": "[purge-v2] 굵은 검정 직선·사각형만의 극단적 단순 도형"
+   },
+   "jp-in-wh-pump": {
+    "gallery": 6803,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 초록·회색 fillRect 조악한 펌프"
+   },
+   "jp-in-wh-toppled-shelf": {
+    "gallery": 6812,
+    "reason": "[purge-v2] 굵은 검정 테두리+평면 회색 막대, 넘어진 선반으로 안 읽힘"
+   },
+   "jp-in-zabuton": {
+    "gallery": 6235,
+    "reason": "[purge-v2] 굵은 검정 사각형+단색 남색 면+점 하나, 명암·질감 없음"
+   },
+   "jp-in-zaisu-e": {
+    "gallery": 6238,
+    "reason": "[purge-v2] 굵은 검정 L자 박스+단색 보라·갈색 fillRect 좌식의자"
+   },
+   "jp-in-zaisu-n": {
+    "gallery": 6237,
+    "reason": "[purge-v2] 굵은 검정 사각형+단색 보라·갈색 가로 띠 좌식의자"
+   },
+   "jp-in-zaisu-s": {
+    "gallery": 6236,
+    "reason": "[purge-v2] 굵은 검정 사각형+단색 갈색·보라 가로 띠 좌식의자"
+   },
+   "jp-in-zaisu-w": {
+    "gallery": 6239,
+    "reason": "[purge-v2] 굵은 검정 L자 박스+단색 보라·갈색 fillRect 좌식의자"
+   },
+   "jp-jizo": {
+    "gallery": 5924,
+    "reason": "굵은 검정 상자 틀 안에 주황·흰 단색 네모 덩어리만 쌓여 지장보살로 읽히지 않는 조악한 도형"
+   },
+   "jp-jungle-gym": {
+    "gallery": 6141,
+    "reason": "입체감 없이 굵은 검정 직선 격자와 원색 가로 막대만 겹친 평면적 fillRect 정글짐"
+   },
+   "jp-keijiban": {
+    "gallery": 5922,
+    "reason": "굵은 검정 박스 테두리와 단색 베이지 판·흰 네모 종이·막대 다리의 전형적 fillRect 게시판"
+   },
+   "jp-lot-cabin": {
+    "gallery": 6120,
+    "reason": "굵은 검정 외곽선의 단색 흰 직사각형에 회색 네모 문·창만 붙인 극도로 조악한 박스 건물"
+   },
+   "jp-lot-clock": {
+    "gallery": 6122,
+    "reason": "굵은 검정 테두리와 명암 없는 단색 회색 네모·직선 막대로 된 조악한 fillRect 시계탑"
+   },
+   "jp-lot-planter": {
+    "gallery": 6121,
+    "reason": "굵은 검정 직사각형 테두리와 단색 회색·갈색 면 위 투박한 덩어리가 얹힌 조악한 fillRect 화단"
+   },
+   "jp-monohoshi": {
+    "gallery": 5921,
+    "reason": "굵은 검정 외곽선의 평면적 흰 지붕과 단색 네모 빨래·직선 막대 기둥으로 된 조악한 빨래 건조대"
+   },
+   "jp-ninomiya": {
+    "gallery": 6153,
+    "reason": "굵은 검정 테두리의 단색 흰 사각 받침 위에 형태가 뭉개진 갈색 블록이 얹혀 동상으로 안 읽힘"
+   },
+   "jp-noboribou": {
+    "gallery": 6133,
+    "reason": "굵은 검정 외곽선과 명암 없는 노란 가로 띠·세로 줄무늬만 나열한 전형적 fillRect 등봉대"
+   },
+   "jp-prop-coin-p": {
+    "gallery": 8252,
+    "reason": "Exact-pixel sibling of jp-road-sign-coin: 윤곽선·명암 없는 단순 직사각형 파란 P 표지판과 밋밋한 단색 막대기 기둥"
+   },
+   "jp-propane": {
+    "gallery": 5918,
+    "reason": "굵은 검정 직선 윤곽선과 명암 없는 단색 흰색 직사각형 프로판통"
+   },
+   "jp-rail-verge": {
+    "gallery": 6100,
+    "reason": "단색 초록·갈색 직사각형 위 정체불명의 흰색·검정 덩어리가 얹힌 조악한 오브젝트"
+   },
+   "jp-rail-xing": {
+    "gallery": 5951,
+    "reason": "명암·질감 없는 단색 회색 세로 직사각형에 점 몇 개만 찍힌 조악한 건널목 조각"
+   },
+   "jp-recipe-danchi-flats": {
+    "gallery": 8219,
+    "reason": "명암 없는 단색 회색 직사각형 벽면에 동일 가로 막대만 반복된 조악한 건물"
+   },
+   "jp-recipe-garage-flats": {
+    "gallery": 8206,
+    "reason": "텅 빈 단색 흰색 직사각형에 단순 발코니만 세로로 반복된 평면 건물"
+   },
+   "jp-recipe-garage-tall": {
+    "gallery": 8212,
+    "reason": "텅 빈 회색 직사각형 면과 단색 노란 지붕의 조악한 기하학 건물"
+   },
+   "jp-recipe-narrow-shutter": {
+    "gallery": 8209,
+    "reason": "명암 없는 좁고 텅 빈 흰색 직사각형 벽면에 최소 요소만 있는 조악한 건물"
+   },
+   "jp-recipe-slim-tower": {
+    "gallery": 8225,
+    "reason": "극도로 좁은 단색 회색 직사각형 기둥에 점 몇 개만 찍힌 조악한 건물"
+   },
+   "jp-road-sign-coin": {
+    "gallery": 5788,
+    "reason": "윤곽선·명암 없는 단순 직사각형 파란 P 표지판과 밋밋한 단색 막대기 기둥"
+   },
+   "jp-sat-dish": {
+    "gallery": 6112,
+    "reason": "굵은 검정 윤곽선과 뭉개진 형태로 위성안테나로 읽히지 않는 조악한 덩어리"
+   },
+   "jp-school-gate": {
+    "gallery": 5927,
+    "reason": "[purge-v2] BAD 앵커 동일: 텅 빈 공간 위 엉성한 소형 기둥 2개"
+   },
+   "jp-school-gate-l": {
+    "gallery": 6154,
+    "reason": "BAD 앵커(#05927)와 동일한 텅 빈 면 위 조악하고 엉성한 박스형 학교 교문"
+   },
+   "jp-sf-office-8-L": {
+    "gallery": 6039,
+    "reason": "명암 없는 단색 가로 띠와 기계적 직사각형 창문의 fillRect 사무실 파사드"
+   },
+   "jp-sf-office-8-R": {
+    "gallery": 6040,
+    "reason": "명암 없는 단색 가로 띠와 기계적 직사각형 창문의 fillRect 사무실 파사드"
+   },
+   "jp-sf-office-9-L": {
+    "gallery": 6041,
+    "reason": "명암 없는 단색 가로 띠와 기계적 직사각형 창문의 fillRect 사무실 파사드"
+   },
+   "jp-sf-office-9-R": {
+    "gallery": 6042,
+    "reason": "명암 없는 단색 가로 띠와 기계적 직사각형 창문의 fillRect 사무실 파사드"
+   },
+   "jp-sf-ramen-3-L": {
+    "gallery": 5978,
+    "reason": "질감 없는 단색 갈색·주황 fillRect 박스와 거친 직선 외곽선의 라멘집 파사드"
+   },
+   "jp-sf-ramen-3-R": {
+    "gallery": 5979,
+    "reason": "질감 없는 단색 갈색·주황 fillRect 박스와 거친 직선 외곽선의 라멘집 파사드"
+   },
+   "jp-sf-ramen-4-L": {
+    "gallery": 5980,
+    "reason": "질감 없는 단색 갈색·주황 fillRect 박스와 거친 직선 외곽선의 라멘집 파사드"
+   },
+   "jp-sf-ramen-5-L": {
+    "gallery": 5981,
+    "reason": "평면 단색 가로 띠와 단순 직사각형 반복의 fillRect 라멘집 파사드"
+   },
+   "jp-sf-ramen-5-R": {
+    "gallery": 5982,
+    "reason": "평면 단색 가로 띠와 단순 직사각형 반복의 fillRect 라멘집 파사드"
+   },
+   "jp-sf-ramen-6-L": {
+    "gallery": 5983,
+    "reason": "평면 단색 가로 띠와 단순 직사각형 반복의 fillRect 라멘집 파사드"
+   },
+   "jp-sf-ramen-6-R": {
+    "gallery": 5984,
+    "reason": "평면 단색 가로 띠와 단순 직사각형 반복의 fillRect 라멘집 파사드"
+   },
+   "jp-sf-ramen-7-L": {
+    "gallery": 5985,
+    "reason": "평면 단색 가로 띠와 단순 직사각형 반복의 fillRect 라멘집 파사드"
+   },
+   "jp-sf-ramen-7-R": {
+    "gallery": 5986,
+    "reason": "평면 단색 가로 띠와 단순 직사각형 반복의 fillRect 라멘집 파사드"
+   },
+   "jp-sf-ramen-8-L": {
+    "gallery": 5987,
+    "reason": "평면 fillRect 라멘집 띠 위에 조악한 흰 글자가 얹힌 저품질 파사드"
+   },
+   "jp-sf-ramen-8-R": {
+    "gallery": 5988,
+    "reason": "평면 fillRect 라멘집 띠 위에 조악한 흰 글자가 얹힌 저품질 파사드"
+   },
+   "jp-sf-ramen-9-L": {
+    "gallery": 5989,
+    "reason": "평면 fillRect 라멘집 띠 위에 조악한 흰 글자가 얹힌 저품질 파사드"
+   },
+   "jp-sf-ramen-9-R": {
+    "gallery": 5990,
+    "reason": "평면 fillRect 라멘집 띠 위에 조악한 흰 글자가 얹힌 저품질 파사드"
+   },
+   "jp-sf-sento-3-L": {
+    "gallery": 6082,
+    "reason": "직선 검정 테두리와 명암 없는 평면 직사각형 블록으로 짠 목욕탕 파사드"
+   },
+   "jp-sf-sento-3-R": {
+    "gallery": 6083,
+    "reason": "직선 검정 테두리와 명암 없는 평면 직사각형 블록으로 짠 목욕탕 파사드"
+   },
+   "jp-sf-sento-4-L": {
+    "gallery": 6084,
+    "reason": "직선 검정 테두리와 명암 없는 평면 직사각형 블록으로 짠 목욕탕 파사드"
+   },
+   "jp-sf-sento-5-L": {
+    "gallery": 6085,
+    "reason": "단색 회색 가로 띠와 기계적 직사각형 반복의 fillRect 목욕탕 파사드"
+   },
+   "jp-sf-sento-5-R": {
+    "gallery": 6086,
+    "reason": "단색 회색 가로 띠와 기계적 직사각형 반복의 fillRect 목욕탕 파사드"
+   },
+   "jp-sf-sento-6-L": {
+    "gallery": 6087,
+    "reason": "단색 회색 가로 띠와 기계적 직사각형 반복의 fillRect 목욕탕 파사드"
+   },
+   "jp-sf-sento-6-R": {
+    "gallery": 6088,
+    "reason": "단색 회색 가로 띠와 기계적 직사각형 반복의 fillRect 목욕탕 파사드"
+   },
+   "jp-sf-sento-7-L": {
+    "gallery": 6089,
+    "reason": "단색 회색 가로 띠와 기계적 직사각형 반복의 fillRect 목욕탕 파사드"
+   },
+   "jp-sf-sento-7-R": {
+    "gallery": 6090,
+    "reason": "단색 회색 가로 띠와 기계적 직사각형 반복의 fillRect 목욕탕 파사드"
+   },
+   "jp-sf-sento-8-L": {
+    "gallery": 6091,
+    "reason": "단색 회색 가로 띠와 기계적 직사각형 반복의 fillRect 목욕탕 파사드"
+   },
+   "jp-sf-sento-8-R": {
+    "gallery": 6092,
+    "reason": "단색 회색 가로 띠와 기계적 직사각형 반복의 fillRect 목욕탕 파사드"
+   },
+   "jp-sf-sento-9-L": {
+    "gallery": 6093,
+    "reason": "단색 회색 가로 띠와 기계적 직사각형 반복의 fillRect 목욕탕 파사드"
+   },
+   "jp-sf-sento-9-R": {
+    "gallery": 6094,
+    "reason": "단색 회색 가로 띠와 기계적 직사각형 반복의 fillRect 목욕탕 파사드"
+   },
+   "jp-sf-shop-3-L": {
+    "gallery": 6004,
+    "reason": "굵은 직선 테두리와 질감 없는 단색 fillRect 갈색·회색 상점 파사드"
+   },
+   "jp-sf-shop-3-R": {
+    "gallery": 6005,
+    "reason": "굵은 직선 테두리와 질감 없는 단색 fillRect 갈색·회색 상점 파사드"
+   },
+   "jp-sf-shop-4-L": {
+    "gallery": 6006,
+    "reason": "굵은 직선 테두리와 질감 없는 단색 fillRect 갈색·회색 상점 파사드"
+   },
+   "jp-sf-shop-5-L": {
+    "gallery": 6007,
+    "reason": "단색 가로 띠와 평면 사각형으로 구성된 fillRect 상점 파사드"
+   },
+   "jp-sf-shop-5-R": {
+    "gallery": 6008,
+    "reason": "단색 가로 띠와 평면 사각형으로 구성된 fillRect 상점 파사드"
+   },
+   "jp-sf-shop-6-L": {
+    "gallery": 6009,
+    "reason": "평면 fillRect 상점 띠 위에 밋밋한 글자가 얹힌 저품질 파사드"
+   },
+   "jp-sf-shop-6-R": {
+    "gallery": 6010,
+    "reason": "평면 fillRect 상점 띠 위에 밋밋한 글자가 얹힌 저품질 파사드"
+   },
+   "jp-sf-shop-7-L": {
+    "gallery": 6011,
+    "reason": "평면 fillRect 상점 띠 위에 밋밋한 글자가 얹힌 저품질 파사드"
+   },
+   "jp-sf-shop-7-R": {
+    "gallery": 6012,
+    "reason": "평면 fillRect 상점 띠 위에 밋밋한 글자가 얹힌 저품질 파사드"
+   },
+   "jp-sf-shop-8-L": {
+    "gallery": 6013,
+    "reason": "평면 fillRect 상점 띠 위에 밋밋한 글자가 얹힌 저품질 파사드"
+   },
+   "jp-sf-shop-8-R": {
+    "gallery": 6014,
+    "reason": "평면 fillRect 상점 띠 위에 밋밋한 글자가 얹힌 저품질 파사드"
+   },
+   "jp-sf-shop-9-L": {
+    "gallery": 6015,
+    "reason": "평면 fillRect 상점 띠 위에 밋밋한 글자가 얹힌 저품질 파사드"
+   },
+   "jp-sf-shop-9-R": {
+    "gallery": 6016,
+    "reason": "평면 fillRect 상점 띠 위에 밋밋한 글자가 얹힌 저품질 파사드"
+   },
+   "jp-shiiku-goya": {
+    "gallery": 6149,
+    "reason": "검정 직선 테두리 박스·단색 지붕·기계적 격자망으로 된 평면 사육장"
+   },
+   "jp-souko": {
+    "gallery": 6147,
+    "reason": "굵은 검정 직선 외곽선과 명암 없는 단색 fillRect 벽·셔터 창고"
+   },
+   "jp-subway-bench": {
+    "gallery": 6205,
+    "reason": "굵은 검정 테두리의 단색 파랑 직사각형 벤치(fillRect 느낌)"
+   },
+   "jp-subway-ceiling": {
+    "gallery": 6192,
+    "reason": "명암 없는 단색 회색 직사각형에 흰 줄 하나만 그은 천장 박스"
+   },
+   "jp-subway-extinguisher": {
+    "gallery": 6209,
+    "reason": "굵은 검정 박스 안에 단색 적갈색 사각형만 겹친 조악한 소화전"
+   },
+   "jp-subway-fence": {
+    "gallery": 6194,
+    "reason": "명암 없이 회색·검정 가로 띠만 쌓은 단조로운 펜스"
+   },
+   "jp-subway-led": {
+    "gallery": 6206,
+    "reason": "검정 테두리 단색 상자에 단순 눈금선만 찍은 평면 LED 전광판"
+   },
+   "jp-subway-office": {
+    "gallery": 6204,
+    "reason": "단색 면과 직선 격자만으로 그린 평면적·박스형 역무실"
+   },
+   "jp-subway-pillar": {
+    "gallery": 6190,
+    "reason": "명암 없는 단색 흰 직사각형에 숫자 상자만 붙인 기둥"
+   },
+   "jp-subway-pillar-plain": {
+    "gallery": 6191,
+    "reason": "질감·명암 전무한 단색 회색 직사각형 기둥(순수 fillRect)"
+   },
+   "jp-subway-platform": {
+    "gallery": 6176,
+    "reason": "명암 없이 1px 선으로만 나눈 완전 평면 회색 직사각형 플랫폼"
+   },
+   "jp-subway-recycle": {
+    "gallery": 6208,
+    "reason": "굵은 검정 박스 안에 단색 직사각형 3개를 채운 조악한 분리수거함"
+   },
+   "jp-subway-vending": {
+    "gallery": 6210,
+    "reason": "명암 없는 단색 주황·회색 직사각형과 점으로 만든 조악한 자판기"
+   },
+   "jp-teaarai": {
+    "gallery": 6155,
+    "reason": "굵은 검정 테두리에 단색 회색 가로 막대만 겹친 평면 개수대"
+   },
+   "jp-tetsubo": {
+    "gallery": 6132,
+    "reason": "텅 빈 면 위에 1px 선과 단색 막대만 그은 조악한 철봉"
+   },
+   "jp-tires": {
+    "gallery": 6143,
+    "reason": "검정 테두리 단색 직사각형들을 나열한 조악한 타이어 놀이기구"
+   },
+   "jp-train-car-a": {
+    "gallery": 6104,
+    "reason": "명암 없는 단색 가로 띠와 평면 직사각형 창문으로 그린 기차"
+   },
+   "jp-train-car-b": {
+    "gallery": 6105,
+    "reason": "명암 없는 단색 가로 띠와 평면 직사각형 창문으로 그린 기차"
+   },
+   "jp-tram-ped-signal": {
+    "gallery": 6171,
+    "reason": "굵은 검정 직사각형 상자와 회색 막대뿐인 조악한 보행신호등"
+   },
+   "jp-tram-pole-c": {
+    "gallery": 6170,
+    "reason": "텅 빈 면 위 검정 테두리 단색 회색 막대뿐인 엉성한 전차 기둥"
+   },
+   "jp-tram-rail-end": {
+    "gallery": 6163,
+    "reason": "굵은 검정 테두리 빗금 박스와 단색 막대로 만든 투박한 선로 종단"
+   },
+   "jp-unte": {
+    "gallery": 6142,
+    "reason": "텅 빈 면 위 얇은 검정 선과 단색 막대뿐인 조악한 구름사다리"
+   },
+   "jp-water-tank": {
+    "gallery": 6113,
+    "reason": "굵은 검정 외곽선과 단색 회색 가로 띠로 그린 투박한 물탱크"
    }
   },
   "modern_campus": {
+   "mc-basket-hoop": {
+    "gallery": 9537,
+    "reason": "얇은 검정 선과 단색 흰 사각형으로만 그린 조악한 농구대"
+   },
+   "mc-bench": {
+    "gallery": 9512,
+    "reason": "굵은 검정 외곽선 안에 단색 갈색 가로 띠만 쌓은 평면 벤치"
+   },
+   "mc-bench-stone": {
+    "gallery": 9513,
+    "reason": "굵은 검정 테두리의 밋밋한 단색 회색 직사각형 돌벤치"
+   },
+   "mc-bike-rack": {
+    "gallery": 9545,
+    "reason": "굵은 검정 박스 바닥에 단색 회색 선 고리만 세운 자전거 거치대"
+   },
+   "mc-bleachers": {
+    "gallery": 9538,
+    "reason": "검정 테두리 안에 원색 가로 띠만 반복한 평면 스탠드 관중석"
+   },
+   "mc-bollard": {
+    "gallery": 9517,
+    "reason": "굵은 검정 테두리에 회색·빨강 단색 띠만 칠한 밋밋한 볼라드"
+   },
+   "mc-bus-shelter": {
+    "gallery": 9544,
+    "reason": "명암 없는 단색 가로 띠와 직선 상자로 그린 평면 버스정류장"
+   },
+   "mc-bust": {
+    "gallery": 9524,
+    "reason": "굵은 검정 테두리 회색 박스 위에 형태가 뭉개진 흉상 덩어리"
+   },
+   "mc-campus-map": {
+    "gallery": 9522,
+    "reason": "굵은 검정 박스 안에 단색 색종이 사각형만 붙인 캠퍼스 안내판"
+   },
+   "mc-car": {
+    "gallery": 9546,
+    "reason": "굵은 검정 외곽선과 단색 흰·파랑 직사각형으로 그린 투박한 자동차"
+   },
+   "mc-drinking-fountain": {
+    "gallery": 9520,
+    "reason": "굵은 검정 직사각형 상자에 얼룩 두 개만 찍은 정체불명 음수대"
+   },
+   "mc-gate-pillar": {
+    "gallery": 9541,
+    "reason": "굵은 검정 테두리에 단색 베이지·갈색 사각형만 쌓은 교문 기둥"
+   },
+   "mc-guard-booth": {
+    "gallery": 9542,
+    "reason": "명암 없는 회색 단색 직사각형과 단순 창문으로 그린 경비실"
+   },
+   "mc-in-mc-aid-counter": {
+    "gallery": 9594,
+    "reason": "굵은 검정 테두리 흰 박스에 단색 점과 회색 서랍만 그린 카운터"
+   },
+   "mc-in-mc-bin-wide": {
+    "gallery": 9597,
+    "reason": "굵은 검정 외곽선과 단색 짙은 녹색 덩어리로 뭉개진 쓰레기통"
+   },
+   "mc-in-mc-board-green": {
+    "gallery": 9550,
+    "reason": "검정 테두리 단색 녹색 직사각형에 점 몇 개만 찍은 평면 칠판"
+   },
+   "mc-in-mc-bulletin-stand": {
+    "gallery": 9569,
+    "reason": "매우 굵은 검정 외곽선과 단색 주황·노랑 사각형으로 그린 게시판"
+   },
+   "mc-in-mc-cafe-stool": {
+    "gallery": 9576,
+    "reason": "굵은 검정 테두리 단색 주황 타원과 회색 막대뿐인 조악한 스툴"
+   },
+   "mc-in-mc-cafe-table": {
+    "gallery": 9573,
+    "reason": "검정 테두리 단색 흰 직사각형에 작은 사각형 4개만 넣은 테이블"
+   },
+   "mc-in-mc-cafe-table-2": {
+    "gallery": 9574,
+    "reason": "굵은 검정 박스 안에 단색 흰·회색·주황 사각형만 배치한 테이블"
+   },
+   "mc-in-mc-carrel": {
+    "gallery": 9577,
+    "reason": "굵은 검정 외곽선과 단색 갈색·노랑 직사각형으로 그린 독서대"
+   },
+   "mc-in-mc-catalog-drawers": {
+    "gallery": 9579,
+    "reason": "굵은 검정 외곽선 안에 단색 격자 사각형만 반복한 서랍장"
+   },
+   "mc-in-mc-chair-stack": {
+    "gallery": 9561,
+    "reason": "굵은 검정 박스 안에 단색 파랑 가로 띠만 쌓은 의자 더미"
+   },
+   "mc-in-mc-clean-cart": {
+    "gallery": 9572,
+    "reason": "굵은 검정 외곽선과 단색 원색 직사각형으로 만든 조악한 청소카트"
+   },
    "mc-in-mc-cleaning-wagon": {
     "gallery": 9592,
     "reason": "Flat colored boxes, placeholder cart"
+   },
+   "mc-in-mc-club-table": {
+    "gallery": 9588,
+    "reason": "얇은 검정 선의 단색 흰 직사각형에 점 몇 개만 찍은 테이블"
+   },
+   "mc-in-mc-desk-pair": {
+    "gallery": 9556,
+    "reason": "굵은 검정 테두리 단색 베이지·파랑 직사각형으로 그린 책상 세트"
+   },
+   "mc-in-mc-dorm-bed": {
+    "gallery": 9581,
+    "reason": "굵은 검정 테두리 안에 단색 보라·흰 사각형만 채운 평면 침대"
+   },
+   "mc-in-mc-dorm-wardrobe": {
+    "gallery": 9583,
+    "reason": "굵은 검정 테두리에 단색 갈색 세로 사각형 2개만 그린 옷장"
+   },
+   "mc-in-mc-eye-chart": {
+    "gallery": 9554,
+    "reason": "검정 테두리 단색 흰 직사각형에 점만 찍은 조악한 시력검사표"
+   },
+   "mc-in-mc-fire-cabinet": {
+    "gallery": 9568,
+    "reason": "굵은 검정 테두리 단색 빨강 직사각형의 조악한 소화전 함"
+   },
+   "mc-in-mc-fridge-counter": {
+    "gallery": 9595,
+    "reason": "굵은 검정 테두리와 단색 회색 직사각형들만 조합한 평면 카운터"
+   },
+   "mc-in-mc-lectern": {
+    "gallery": 9558,
+    "reason": "굵은 검정 테두리 단색 갈색 사각형 덩어리로 만든 강연대"
+   },
+   "mc-in-mc-lecture-bench": {
+    "gallery": 9557,
+    "reason": "검정 테두리 단색 갈색 가로 막대에 점 몇 개만 찍은 강의 책상"
+   },
+   "mc-in-mc-lecture-stool": {
+    "gallery": 9598,
+    "reason": "굵은 검정 테두리 단색 갈색 타원과 회색 막대뿐인 의자 쌍"
+   },
+   "mc-in-mc-locker-bench": {
+    "gallery": 9565,
+    "reason": "굵은 검정 외곽선과 단색 갈색 가로 판자만 그린 평면 벤치"
+   },
+   "mc-in-mc-lounge-sofa": {
+    "gallery": 9585,
+    "reason": "굵은 검정 직선 박스와 단색 파랑·노랑 사각형으로 그린 소파(BAD 앵커 수준)"
+   },
+   "mc-in-mc-low-table": {
+    "gallery": 9586,
+    "reason": "굵은 검정 테두리 단색 갈색 판자에 원색 사각형만 올린 낮은 탁자"
+   },
+   "mc-in-mc-mini-fridge": {
+    "gallery": 9584,
+    "reason": "굵은 검정 테두리의 단색 회색 2단 직사각형 미니 냉장고"
+   },
+   "mc-in-mc-nurse-desk": {
+    "gallery": 9580,
+    "reason": "굵은 검정 테두리 단색 흰 직사각형에 점과 선만 그린 보건실 책상"
+   },
+   "mc-in-mc-pc-cart": {
+    "gallery": 9560,
+    "reason": "굵은 검정 테두리 단색 파랑·회색 상자로 뭉개진 PC 카트"
+   },
+   "mc-in-mc-screen-proj": {
+    "gallery": 9552,
+    "reason": "명암·질감 전무한 검정 테두리 순백 직사각형 스크린(순수 fillRect)"
+   },
+   "mc-in-mc-serving-counter": {
+    "gallery": 9575,
+    "reason": "굵은 검정 테두리 단색 회색 직사각형에 색칸 3개만 넣은 배식대"
+   },
+   "mc-in-mc-shoe-rack-low": {
+    "gallery": 9566,
+    "reason": "굵은 검정 박스 안에 단색 가로 띠와 색 막대만 채운 신발장"
+   },
+   "mc-in-mc-sink-vanity": {
+    "gallery": 9571,
+    "reason": "굵은 검정 테두리 단색 흰·녹색 직사각형에 조악한 수도꼭지 모양"
    },
    "mc-in-mc-toilet-stall": {
     "gallery": 9570,
     "reason": "Flat green box with dot, placeholder"
    },
+   "mc-in-mc-trash-bin": {
+    "gallery": 9562,
+    "reason": "굵은 검정 외곽선과 단색 어두운 녹색 덩어리로 뭉개진 쓰레기통"
+   },
+   "mc-in-mc-trophy-shelf": {
+    "gallery": 9596,
+    "reason": "굵은 검정 테두리 단색 갈색 박스에 노랑 블록만 올린 트로피 선반"
+   },
+   "mc-in-mc-vending-low": {
+    "gallery": 9599,
+    "reason": "굵은 검정 테두리 단색 회색·파랑 박스에 점만 찍은 저품질 자판기"
+   },
+   "mc-in-mc-wall-clock": {
+    "gallery": 9551,
+    "reason": "검정 테두리 단색 흰 원에 점 몇 개만 찍은 극단적 저품질 벽시계"
+   },
+   "mc-in-mc-water-fountain": {
+    "gallery": 9567,
+    "reason": "굵은 검정 테두리 단색 회색 직사각형에 원 하나만 그린 음수대"
+   },
    "mc-in-sc-curtain": {
     "gallery": 9620,
     "reason": "Flat green rectangle, no curtain folds"
+   },
+   "mc-lamp-post": {
+    "gallery": 9516,
+    "reason": "굵은 검정 외곽선과 단색 회색 막대·갓으로 그린 조악한 가로등"
+   },
+   "mc-notice-board": {
+    "gallery": 9521,
+    "reason": "굵은 검정 테두리 단색 녹색·베이지·노랑 직사각형 게시판"
+   },
+   "mc-picnic-table": {
+    "gallery": 9514,
+    "reason": "굵은 검정 외곽선에 단색 갈색 가로 막대만 쌓은 피크닉 테이블"
+   },
+   "mc-recycle-bins": {
+    "gallery": 9519,
+    "reason": "굵은 검정 직선 박스 안에 단색 녹·청·황 직사각형 3개만 채운 쓰레기통"
+   },
+   "mc-school-bus": {
+    "gallery": 9547,
+    "reason": "굵은 검정 테두리와 단색 노랑 직사각형으로 그린 조악한 스쿨버스"
+   },
+   "mc-school-stone": {
+    "gallery": 9523,
+    "reason": "굵은 검정 테두리에 명암 없는 단색 회색 직사각형만 쌓은 교훈비"
+   },
+   "mc-scoreboard": {
+    "gallery": 9539,
+    "reason": "굵은 검정 테두리 단색 암회색 박스에 노랑 점만 찍은 전광판"
+   },
+   "mc-trash-bin": {
+    "gallery": 9518,
+    "reason": "굵은 검정 외곽선에 단색 회색·녹색 가로 띠만 칠한 쓰레기통"
    }
   },
   "modern_city": {
+   "mc-anim-arrow-board-l": {
+    "gallery": 5743,
+    "reason": "명암 없는 짙은 단색 직사각형(fillRect) 판에 희미한 화살표와 투박한 다리만 얹은 조악한 표지판"
+   },
+   "mc-anim-arrow-board-r": {
+    "gallery": 5742,
+    "reason": "명암 없는 짙은 단색 직사각형(fillRect) 판에 희미한 화살표와 투박한 다리만 얹은 조악한 표지판"
+   },
+   "mc-bld-gas-v2-A": {
+    "gallery": 5203,
+    "reason": "텅 빈 여백 위에 명암 없는 평면 직사각형 캐노피와 가는 기둥·조악한 주유기만 놓인 엉성한 건물"
+   },
+   "mc-bld-gas-v2-B": {
+    "gallery": 5204,
+    "reason": "텅 빈 여백 위에 명암 없는 평면 직사각형 캐노피와 가는 기둥·조악한 주유기만 놓인 엉성한 건물"
+   },
+   "mc-crosswalk-on-ew-road": {
+    "gallery": 5130,
+    "reason": "도로 배경이나 질감 없이 단색 가로 막대(fillRect)만 세로로 나열한 조악한 횡단보도 줄"
+   },
+   "mc-crosswalk-on-ns-road": {
+    "gallery": 5131,
+    "reason": "도로 배경이나 질감 없이 단색 세로 막대(fillRect)만 가로로 나열한 조악한 횡단보도 줄"
+   },
+   "mc-in-mci-ac-wall": {
+    "gallery": 4682,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 흰·회색 가로 띠 에어컨"
+   },
+   "mc-in-mci-armchair": {
+    "gallery": 4703,
+    "reason": "[purge-v2] 굵은 검정 박스 외곽선+질감 없는 단색 갈색 사각형 소파"
+   },
+   "mc-in-mci-art-frame": {
+    "gallery": 4680,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 기하학 도형 액자"
+   },
+   "mc-in-mci-basket-stack": {
+    "gallery": 4699,
+    "reason": "[purge-v2] BAD 앵커 동일: 굵은 검정 박스+단색 붉은 띠·격자 점"
+   },
+   "mc-in-mci-bed-double": {
+    "gallery": 4700,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 가로 띠+단조로운 체크 침대"
+   },
+   "mc-in-mci-bed-single": {
+    "gallery": 4701,
+    "reason": "[purge-v2] 굵은 검정 세로 직사각형+단색 가로 띠 싱글 침대"
+   },
+   "mc-in-mci-bedside": {
+    "gallery": 4720,
+    "reason": "[purge-v2] 굵은 검정 사각형+단색 흰·회색 서랍 fillRect"
+   },
+   "mc-in-mci-bench-metal": {
+    "gallery": 4729,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단순 점 패턴의 평면 벤치"
+   },
+   "mc-in-mci-cafe-chair-e": {
+    "gallery": 4714,
+    "reason": "[purge-v2] 굵은 검정 L자 테두리+단색 갈색 직사각형 의자"
+   },
+   "mc-in-mci-cafe-chair-w": {
+    "gallery": 4715,
+    "reason": "[purge-v2] 굵은 검정 L자 테두리+단색 갈색 직사각형 의자"
+   },
+   "mc-in-mci-chair-office-s": {
+    "gallery": 4688,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 파랑 도형 사무의자"
+   },
+   "mc-in-mci-chair-wood-s": {
+    "gallery": 4709,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 베이지·갈색 가로 띠 의자"
+   },
+   "mc-in-mci-coffee-station": {
+    "gallery": 4690,
+    "reason": "[purge-v2] 굵은 검정 테두리 단색 카운터+조악한 박스 기계"
+   },
+   "mc-in-mci-coffee-table": {
+    "gallery": 4704,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 가로 띠 테이블"
+   },
+   "mc-in-mci-counter-register": {
+    "gallery": 4697,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 흰·빨강 가로 띠 카운터"
+   },
+   "mc-in-mci-desk-pc": {
+    "gallery": 4686,
+    "reason": "[purge-v2] 굵은 검정 박스+단색 회색 책상·네모 모니터 fillRect"
+   },
+   "mc-in-mci-desk-pc-back": {
+    "gallery": 4687,
+    "reason": "[purge-v2] 굵은 검정 박스+단색 회색 책상·모니터 뒷면 fillRect"
+   },
+   "mc-in-mci-filing": {
+    "gallery": 4689,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 회색 서랍장 fillRect"
+   },
+   "mc-in-mci-freezer": {
+    "gallery": 4696,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 가로 띠+뭉개진 내부 픽셀 노이즈"
+   },
+   "mc-in-mci-fridge": {
+    "gallery": 4707,
+    "reason": "[purge-v2] 굵은 검정 세로 직사각형+질감 없는 단색 회색 냉장고"
+   },
+   "mc-in-mci-gondola": {
+    "gallery": 4694,
+    "reason": "[purge-v2] 굵은 검정 박스·상단 빈 네모 나열의 조악한 진열대"
+   },
+   "mc-in-mci-kitchen": {
+    "gallery": 4706,
+    "reason": "[purge-v2] 명암 없는 평면 직사각형·직선 위주의 도식적 싱크대"
+   },
+   "mc-in-mci-magazine": {
+    "gallery": 4698,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 회색 계단·뭉개진 색 덩어리"
+   },
+   "mc-in-mci-mailboxes": {
+    "gallery": 4727,
+    "reason": "[purge-v2] 굵은 검정 박스+동일한 회색 사각형 격자 fillRect"
+   },
+   "mc-in-mci-menu-board": {
+    "gallery": 4683,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 직선 줄무늬 메뉴판"
+   },
+   "mc-in-mci-notice-board": {
+    "gallery": 4684,
+    "reason": "[purge-v2] 굵은 검정 사각형+단색 배경·사각형 종이 3장 fillRect"
+   },
+   "mc-in-mci-pastry-case": {
+    "gallery": 4717,
+    "reason": "[purge-v2] 굵은 검정 직사각형 카운터+단색 네모 3개 fillRect"
+   },
+   "mc-in-mci-planter": {
+    "gallery": 4726,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 회색 면+단조로운 초록 덩어리 3개"
+   },
+   "mc-in-mci-rack": {
+    "gallery": 4733,
+    "reason": "[purge-v2] 굵은 검정 직선 격자+단색 갈색 직사각형 선반"
+   },
+   "mc-in-mci-reception": {
+    "gallery": 4691,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 가로 띠 안내데스크"
+   },
+   "mc-in-mci-route-map": {
+    "gallery": 4685,
+    "reason": "[purge-v2] 굵은 검정 직사각형+흰 배경 직선 노선도, 질감 없음"
+   },
+   "mc-in-mci-rug": {
+    "gallery": 4710,
+    "reason": "[purge-v2] 명암 없는 평면 베이지 격자 직사각형 러그"
+   },
+   "mc-in-mci-security-gate": {
+    "gallery": 4725,
+    "reason": "[purge-v2] 굵은 검정 박스+단색 회색 사각형 보안게이트 fillRect"
+   },
+   "mc-in-mci-sofa": {
+    "gallery": 4702,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 파랑 사각형 소파"
+   },
+   "mc-in-mci-stairs-down": {
+    "gallery": 4732,
+    "reason": "[purge-v2] 굵은 검정 박스+단색 회색 가로 띠 계단"
+   },
+   "mc-in-mci-stairs-up": {
+    "gallery": 4731,
+    "reason": "[purge-v2] 굵은 검정 박스+단색 회색 가로 띠 계단"
+   },
+   "mc-in-mci-teller": {
+    "gallery": 4723,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 가로 띠·네모 창구"
+   },
+   "mc-in-mci-ticket-gate": {
+    "gallery": 4728,
+    "reason": "[purge-v2] 굵은 검정 사각형+단색 회색 면·화살표 개찰구 fillRect"
+   },
+   "mc-in-mci-tv-wall": {
+    "gallery": 4679,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 짙은 회색 면 벽걸이 TV"
+   },
+   "mc-in-mci-wait-bench": {
+    "gallery": 4721,
+    "reason": "[purge-v2] BAD #05018 동일 계열: 굵은 검정 테두리 단색 3연 의자"
+   },
+   "mc-in-mci-wall-clock": {
+    "gallery": 4678,
+    "reason": "[purge-v2] 굵은 검정 톱니 원+단색 흰 면 조악한 벽시계"
+   },
+   "mc-in-mci-wardrobe": {
+    "gallery": 4708,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 갈색 가로 띠 옷장"
+   },
+   "mc-in-mci-washbasin": {
+    "gallery": 4712,
+    "reason": "[purge-v2] 굵은 검정 직사각형 박스 조합+단색 면 세면대"
+   },
+   "mc-in-mci-whiteboard": {
+    "gallery": 4681,
+    "reason": "[purge-v2] 굵은 검정 직사각형+흰 배경 도식 그래프 화이트보드"
+   },
+   "mc-in-mci-window-blind": {
+    "gallery": 4676,
+    "reason": "[purge-v2] 굵은 검정 사각형+단색 흰·파랑 가로 줄무늬 블라인드"
+   },
+   "mc-in-opus-arcade-medal-changer": {
+    "gallery": 4809,
+    "reason": "[purge-v2] 굵은 검정 세로 박스+단색 노랑·빨강 가로 띠 기계"
+   },
+   "mc-in-opus-aud-seat-row": {
+    "gallery": 4798,
+    "reason": "[purge-v2] 굵은 검정 테두리 단색 빨강 3연 좌석"
+   },
+   "mc-in-opus-aud-stage": {
+    "gallery": 4796,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 가로 띠 강당 무대"
+   },
+   "mc-in-opus-book-table": {
+    "gallery": 4815,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 갈색 띠·네모 나열 테이블"
+   },
+   "mc-in-opus-cafe-parfait-case": {
+    "gallery": 4834,
+    "reason": "[purge-v2] 굵은 검정 박스+단색 분홍·흰 면+조악한 내부 도형"
+   },
+   "mc-in-opus-cinema-seat-row": {
+    "gallery": 4739,
+    "reason": "[purge-v2] 굵은 검정 테두리 단색 빨강 3연 영화관 좌석"
+   },
+   "mc-in-opus-cinema-wide-screen": {
+    "gallery": 5713,
+    "reason": "[purge-v2] 굵은 검정 가로 직사각형+단색 흰 면 스크린"
+   },
+   "mc-in-opus-council-table-u": {
+    "gallery": 4832,
+    "reason": "[purge-v2] 굵은 검정 직선 ㄷ자+단색 갈색 띠 테이블"
+   },
+   "mc-in-opus-court-counsel-table": {
+    "gallery": 4846,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 갈색 면·네모 3개 테이블"
+   },
+   "mc-in-opus-court-gallery-pew": {
+    "gallery": 4847,
+    "reason": "[purge-v2] 굵은 검정 테두리 단색 갈색 3연 의자"
+   },
+   "mc-in-opus-court-judge-bench": {
+    "gallery": 4844,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 갈색 법대"
+   },
+   "mc-in-opus-dept-bag-stand": {
+    "gallery": 4763,
+    "reason": "[purge-v2] 굵은 검정 직사각형+내부 형태가 뭉개져 무엇인지 안 읽힘"
+   },
+   "mc-in-opus-dept-directory-kiosk": {
+    "gallery": 4747,
+    "reason": "[purge-v2] 굵은 검정 박스+단색 회색 면·가로 색 띠 키오스크"
+   },
+   "mc-in-opus-dept-glass-showcase": {
+    "gallery": 4743,
+    "reason": "[purge-v2] 굵은 검정 박스+뭉개진 내부 픽셀로 진열품 식별 불가"
+   },
+   "mc-in-opus-dept-jewelry-case": {
+    "gallery": 4762,
+    "reason": "[purge-v2] 굵은 검정 직선+단색 가로 띠+조악한 상단 도형, 식별 난해"
+   },
+   "mc-in-opus-dept-luxury-island": {
+    "gallery": 4735,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 가로 띠 진열대"
+   },
+   "mc-in-opus-gym-bleacher": {
+    "gallery": 4794,
+    "reason": "[purge-v2] 굵은 검정 직사각형+명암 없는 단색 갈색 가로 띠 나열"
+   },
+   "mc-in-opus-gym-hoop": {
+    "gallery": 4791,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 흰·빨강 네모 백보드, 조악함"
+   },
+   "mc-in-opus-gym-hoop-e": {
+    "gallery": 4866,
+    "reason": "[purge-v2] 굵은 검정 직선 기하학 파이프+단색 도형 농구대"
+   },
+   "mc-in-opus-gym-hoop-w": {
+    "gallery": 4867,
+    "reason": "[purge-v2] 굵은 검정 직선 기하학 파이프+단색 도형 농구대"
+   },
    "mc-in-opus-gym-mat": {
     "gallery": 4793,
     "reason": "Flat blue box, placeholder like anchor mat"
+   },
+   "mc-in-opus-gym-scoreboard": {
+    "gallery": 5723,
+    "reason": "[purge-v2] 단색 검정 직사각형+단색 빨강·파랑 사각형 전광판 fillRect"
+   },
+   "mc-in-opus-gym-vault": {
+    "gallery": 4792,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 갈색 가로 띠 뜀틀 fillRect"
+   },
+   "mc-in-opus-hospital-bedside-monitor": {
+    "gallery": 4773,
+    "reason": "[purge-v2] 굵은 검정 막대 위 단색 사각형 모니터, 극단적 단순 도형"
+   },
+   "mc-in-opus-hospital-curtain-screen": {
+    "gallery": 4749,
+    "reason": "[purge-v2] 굵은 검정 좁은 직사각형+단색 청록 세로 띠 파티션"
+   },
+   "mc-in-opus-hospital-doctor-desk": {
+    "gallery": 4748,
+    "reason": "[purge-v2] 굵은 검정 사각형 조합+명암 없는 단색 흰·파랑 책상"
+   },
+   "mc-in-opus-hospital-nurse-station": {
+    "gallery": 4771,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 가로 띠 간호 스테이션"
+   },
+   "mc-in-opus-hospital-pharmacy-window": {
+    "gallery": 4775,
+    "reason": "[purge-v2] 명암 없는 평면 직사각형+단순 가로선·점 도식 창구"
+   },
+   "mc-in-opus-hospital-wheelchair": {
+    "gallery": 4774,
+    "reason": "[purge-v2] 굵은 검정 덩어리로 형태가 뭉개져 휠체어로 안 읽힘"
+   },
+   "mc-in-opus-hotel-bell-desk": {
+    "gallery": 4837,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 갈색 가로 띠 데스크"
+   },
+   "mc-in-opus-hotel-king-bed": {
+    "gallery": 4839,
+    "reason": "[purge-v2] 굵은 검정 사각형+단색 흰 면·빨강 가로 띠 침대 fillRect"
+   },
+   "mc-in-opus-hotel-luggage-cart": {
+    "gallery": 4838,
+    "reason": "[purge-v2] 굵은 검정 아치+단색 보라·빨강 사각형 조악한 카트"
+   },
+   "mc-in-opus-infirmary-eye-chart": {
+    "gallery": 5733,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 흰 면·뭉개진 글자 시력표"
+   },
+   "mc-in-opus-infirmary-scale": {
+    "gallery": 4833,
+    "reason": "[purge-v2] 굵은 검정 외곽선+단색 흰 막대 도형 체중계"
+   },
+   "mc-in-opus-izakaya-counter": {
+    "gallery": 4802,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 갈색 면·반복 아이콘 카운터"
+   },
+   "mc-in-opus-izakaya-noren": {
+    "gallery": 5724,
+    "reason": "[purge-v2] 굵은 검정 직사각형 3개+질감·주름 없는 단색 빨강 노렌"
+   },
+   "mc-in-opus-izakaya-zashiki": {
+    "gallery": 4804,
+    "reason": "[purge-v2] 굵은 검정 테두리 직사각형+단색 올리브/갈색 가로 띠"
+   },
+   "mc-in-opus-karaoke-monitor": {
+    "gallery": 5729,
+    "reason": "[purge-v2] 굵은 검정 박스 안 단색 보라 직사각형+뭉개진 도형"
    },
    "mc-in-opus-karaoke-sofa": {
     "gallery": 4811,
     "reason": "Flat purple L-shape, no shading"
    },
+   "mc-in-opus-karaoke-table": {
+    "gallery": 4812,
+    "reason": "[purge-v2] 명암 없는 단색 검정 직사각형+점 몇 개(fillRect)"
+   },
+   "mc-in-opus-koban-desk": {
+    "gallery": 4823,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 남색/흰색 가로 띠(#04799 수준)"
+   },
+   "mc-in-opus-konbini-counter": {
+    "gallery": 4799,
+    "reason": "[purge-v2] BAD 앵커 기준: 굵은 검정 직사각형+단색 가로 띠+투박한 블록"
+   },
+   "mc-in-opus-lecture-desk-row": {
+    "gallery": 4789,
+    "reason": "[purge-v2] 질감 없는 단색 가로 띠 나열+굵은 검정 직선(fillRect)"
+   },
+   "mc-in-opus-library-loan-desk": {
+    "gallery": 4853,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 갈색 면+조악한 직사각형 점"
+   },
+   "mc-in-opus-lounge-sofa-cream": {
+    "gallery": 4754,
+    "reason": "[purge-v2] 굵은 검정 직선 박스+단색 크림 fillRect(#04942 BAD 앵커 수준)"
+   },
+   "mc-in-opus-mci-armchair-e": {
+    "gallery": 4861,
+    "reason": "[purge-v2] 굵은 검정 직선 박스+명암 없는 단색 갈색 면(#04942 수준)"
+   },
+   "mc-in-opus-mci-armchair-n": {
+    "gallery": 4860,
+    "reason": "[purge-v2] 굵은 검정 직선 박스+명암 없는 단색 갈색 면"
+   },
+   "mc-in-opus-mci-armchair-w": {
+    "gallery": 4862,
+    "reason": "[purge-v2] 굵은 검정 직선 박스+명암 없는 단색 갈색 면"
+   },
+   "mc-in-opus-mci-chair-office-e": {
+    "gallery": 4855,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 파랑 직사각형 의자(#05018 BAD 앵커 수준)"
+   },
+   "mc-in-opus-mci-chair-office-n": {
+    "gallery": 4854,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 파랑 직사각형 의자(#05018 수준)"
+   },
+   "mc-in-opus-mci-chair-office-w": {
+    "gallery": 4856,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 파랑 직사각형 의자(#05018 수준)"
+   },
+   "mc-in-opus-mci-chair-wood-e": {
+    "gallery": 4858,
+    "reason": "[purge-v2] 굵은 검정 직선 박스+명암 없는 단색 황토색 의자(fillRect)"
+   },
+   "mc-in-opus-mci-chair-wood-n": {
+    "gallery": 4857,
+    "reason": "[purge-v2] 굵은 검정 직선 박스+명암 없는 단색 황토색 의자(fillRect)"
+   },
+   "mc-in-opus-mci-chair-wood-w": {
+    "gallery": 4859,
+    "reason": "[purge-v2] 굵은 검정 직선 박스+명암 없는 단색 황토색 의자(fillRect)"
+   },
+   "mc-in-opus-mci-sofa-e": {
+    "gallery": 4864,
+    "reason": "[purge-v2] 굵은 검정 박스+단색 남색 직사각형 소파(#04942/#05018 수준)"
+   },
+   "mc-in-opus-mci-sofa-n": {
+    "gallery": 4863,
+    "reason": "[purge-v2] 굵은 검정 박스+단색 남색 직사각형 소파"
+   },
+   "mc-in-opus-mci-sofa-w": {
+    "gallery": 4865,
+    "reason": "[purge-v2] 굵은 검정 박스+단색 남색 직사각형 소파"
+   },
+   "mc-in-opus-museum-audio-desk": {
+    "gallery": 4783,
+    "reason": "[purge-v2] 형태가 뭉개져 오디오 데스크로 안 읽히는 조악한 회색 박스"
+   },
+   "mc-in-opus-museum-gallery-bench": {
+    "gallery": 4785,
+    "reason": "[purge-v2] 명암·입체감 없는 단색 어두운 회색 직사각형 벤치"
+   },
+   "mc-in-opus-museum-partition-wall": {
+    "gallery": 4784,
+    "reason": "[purge-v2] 굵은 검정 테두리 단색 흰 박스 위 단순 기하학 도형"
+   },
+   "mc-in-opus-music-acoustic-panel": {
+    "gallery": 5732,
+    "reason": "[purge-v2] 굵은 검정 선의 단색 회색 사각형 3x3 격자(순수 fillRect)"
+   },
+   "mc-in-opus-park-stall-lines": {
+    "gallery": 4848,
+    "reason": "[purge-v2] 텅 빈 면 위 희미한 직선 두 줄뿐인 극도로 빈약한 도형"
+   },
+   "mc-in-opus-projector-screen": {
+    "gallery": 5722,
+    "reason": "[purge-v2] 굵은 검정 테두리 단색 흰 직사각형+조악한 막대"
+   },
+   "mc-in-opus-rest-coat-stand": {
+    "gallery": 4782,
+    "reason": "[purge-v2] 형태가 뭉개져 코트 걸이로 읽히지 않는 정체불명 덩어리"
+   },
+   "mc-in-opus-restaurant-host-podium": {
+    "gallery": 4753,
+    "reason": "[purge-v2] 굵은 검정 직선 박스+명암 없는 단색 갈색 기둥(fillRect)"
+   },
+   "mc-in-opus-sento-bath": {
+    "gallery": 4807,
+    "reason": "[purge-v2] 검정 직사각형 테두리 안 단색 하늘색 fillRect 욕조"
+   },
+   "mc-in-opus-sento-noren-men": {
+    "gallery": 5726,
+    "reason": "[purge-v2] 굵은 검정 테두리+천 질감 없는 단색 파랑 직사각형"
+   },
+   "mc-in-opus-sento-noren-women": {
+    "gallery": 5727,
+    "reason": "[purge-v2] 굵은 검정 테두리+천 질감 없는 단색 빨강 직사각형"
+   },
+   "mc-in-opus-sento-wash-station": {
+    "gallery": 4806,
+    "reason": "[purge-v2] 굵은 검정 테두리 단색 거울 박스+투박한 원색 블록"
+   },
+   "mc-in-opus-shrine-altar": {
+    "gallery": 4817,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 베이지 가로 띠(#04799 수준)"
+   },
+   "mc-in-opus-shrine-saisen-box": {
+    "gallery": 4818,
+    "reason": "[purge-v2] 굵은 검정 직선+단색 갈색 가로 줄+기괴한 방울 형태"
+   },
+   "mc-in-opus-studio-camera-crane": {
+    "gallery": 4842,
+    "reason": "[purge-v2] 가는 검정 직선 몇 개뿐인 극도로 빈약한 막대 도형"
+   },
    "mc-in-opus-studio-chroma-wall": {
     "gallery": 4843,
     "reason": "Flat green box placeholder"
    },
+   "mc-in-opus-studio-news-desk": {
+    "gallery": 4840,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 남색/흰색 가로 띠(순수 fillRect)"
+   },
+   "mc-in-opus-train-door-s": {
+    "gallery": 4871,
+    "reason": "[purge-v2] 입체감 없는 단색 노랑 직사각형+점자 점 나열"
+   },
+   "mc-in-opus-train-led": {
+    "gallery": 5721,
+    "reason": "[purge-v2] 단색 검정/흰색 직사각형 띠 위 점·선 나열(순수 fillRect)"
+   },
+   "mc-in-opus-train-longseat": {
+    "gallery": 4786,
+    "reason": "[purge-v2] 명암·질감 없는 단색 초록 직사각형 벤치"
+   },
+   "mc-in-opus-train-longseat-n": {
+    "gallery": 4870,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 초록 세로 줄무늬 직사각형"
+   },
+   "mc-in-r10-dept-fitting-curtain": {
+    "gallery": 4934,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 흰/보라 fillRect 커튼"
+   },
+   "mc-in-r10-dept-info-desk": {
+    "gallery": 4935,
+    "reason": "[purge-v2] 작고 평면적인 단색 흰 직사각형+굵은 검정 테두리"
+   },
+   "mc-in-r10-dept-shoe-bench": {
+    "gallery": 4933,
+    "reason": "[purge-v2] 굵은 검정 박스+명암 없는 단색 갈색/흰색 직사각형"
+   },
+   "mc-in-r10-dept-skincare-counter": {
+    "gallery": 4930,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 민트/흰색 가로 띠(#04799 수준)"
+   },
+   "mc-in-r10-dept-vip-sofa": {
+    "gallery": 4942,
+    "reason": "[purge-v2] BAD 앵커 기준: 굵은 검정 직선 박스+단색 크림 fillRect 소파"
+   },
+   "mc-in-r10-home-bath-stool": {
+    "gallery": 4979,
+    "reason": "[purge-v2] 굵은 검정 테두리+명암 없는 조악한 노랑 사각형 블록"
+   },
+   "mc-in-r10-home-genkan-shoes": {
+    "gallery": 4970,
+    "reason": "[purge-v2] 굵은 검정 테두리 작은 직사각형 나열로 신발로 안 읽힘"
+   },
+   "mc-in-r10-home-wall-ac": {
+    "gallery": 4986,
+    "reason": "[purge-v2] 굵은 검정 테두리 단색 흰 직사각형+점 몇 개(순수 fillRect)"
+   },
    "mc-in-r10-home-zabuton": {
     "gallery": 4991,
     "reason": "Flat filled squares, placeholder cushions"
+   },
+   "mc-in-r10-konbini-copier": {
+    "gallery": 4913,
+    "reason": "[purge-v2] 굵은 검정 세로 박스+단색 회색/흰색 가로 띠 복사기"
+   },
+   "mc-in-r10-mart-candy-bins": {
+    "gallery": 4907,
+    "reason": "[purge-v2] 굵은 검정 세로 박스+단색 핑크/흰색 칸막이(fillRect)"
+   },
+   "mc-in-r10-mart-freezer-dumpling": {
+    "gallery": 4901,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 파랑/흰색 가로 띠+뭉개진 내부"
+   },
+   "mc-in-r10-mart-freezer-icecream": {
+    "gallery": 4902,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 파랑/흰색 가로 띠+지저분한 점"
+   },
+   "mc-in-r10-mart-sale-banner": {
+    "gallery": 4905,
+    "reason": "[purge-v2] 굵은 검정 막대+단색 빨강 직사각형 위 노랑 원 두 개"
+   },
+   "mc-in-r10-mart-sale-endcap": {
+    "gallery": 4904,
+    "reason": "[purge-v2] 굵은 검정 세로 직사각형+단색 사각형 칸 채우기"
+   },
+   "mc-in-r10-office-copier": {
+    "gallery": 4995,
+    "reason": "[purge-v2] 굵은 검정 직선 박스+명암 없는 단색 회색/흰색 fillRect"
+   },
+   "mc-in-r10-office-whiteboard-stand": {
+    "gallery": 4996,
+    "reason": "[purge-v2] 굵은 검정 직선 박스+텅 빈 단색 흰 직사각형 화이트보드"
+   },
+   "mc-in-r10-school-teacher-podium": {
+    "gallery": 4992,
+    "reason": "[purge-v2] 굵은 검정 직사각형+단색 갈색/황토 fillRect 교탁"
+   },
+   "mc-in-r10-station-name-sign": {
+    "gallery": 4965,
+    "reason": "[purge-v2] 굵은 검정 박스+단색 흰/초록 가로 띠 역명판(fillRect)"
+   },
+   "mc-in-r10-station-timetable": {
+    "gallery": 4966,
+    "reason": "[purge-v2] 굵은 검정 세로 박스+단색 흰 면 위 회색 점 격자"
+   },
+   "mc-in-r10-train-ceiling-ac": {
+    "gallery": 4960,
+    "reason": "[purge-v2] 단색 흰/회색 가로 띠+세로 줄무늬(순수 fillRect)"
+   },
+   "mc-in-r10-train-door-steel": {
+    "gallery": 4953,
+    "reason": "[purge-v2] 굵은 검정 테두리+명암 없는 단색 하늘색/노랑 직사각형 문"
+   },
+   "mc-in-r10-train-emergency-cock": {
+    "gallery": 4956,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 회색/빨강 기하학 직사각형"
+   },
+   "mc-in-r10-train-extinguisher": {
+    "gallery": 4955,
+    "reason": "[purge-v2] 굵은 검정 박스 안 단색 흰 면+조악한 빨강 덩어리"
+   },
+   "mc-in-r10-train-hanging-ad": {
+    "gallery": 4959,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 주황/흰색/노랑 가로 띠 광고판"
+   },
+   "mc-in-r10-train-lcd-dual": {
+    "gallery": 4952,
+    "reason": "[purge-v2] 굵은 검정 박스+단색 직사각형 화면 조합(fillRect)"
+   },
+   "mc-in-r10-train-priority-orange-n": {
+    "gallery": 4948,
+    "reason": "[purge-v2] 굵은 검정 격자+단색 주황 직사각형 좌석(#05018 수준)"
+   },
+   "mc-in-r10-train-priority-pink-s": {
+    "gallery": 4947,
+    "reason": "[purge-v2] 굵은 검정 격자+단색 분홍 직사각형 좌석(#05018 수준)"
+   },
+   "mc-in-r10-train-route-strip": {
+    "gallery": 4951,
+    "reason": "[purge-v2] 굵은 검정 박스+단색 초록/파랑/노랑 기하학 띠"
+   },
+   "mc-in-r10-train-seat7-blue-n": {
+    "gallery": 4946,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 파랑 직사각형 좌석 나열(#05018 수준)"
+   },
+   "mc-in-r10-train-seat7-blue-s": {
+    "gallery": 4945,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 파랑 직사각형 좌석 나열(#05018 수준)"
+   },
+   "mc-in-r10-train-seat7-green-n": {
+    "gallery": 4944,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 초록 직사각형 좌석 나열(#05018 수준)"
+   },
+   "mc-in-r10-train-seat7-green-s": {
+    "gallery": 4943,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 초록 직사각형 좌석 나열(#05018 수준)"
+   },
+   "mc-in-r10-train-sos-intercom": {
+    "gallery": 4957,
+    "reason": "[purge-v2] 굵은 검정 박스+단색 회색 면 위 빨강 점 인터폰"
+   },
+   "mc-in-r10-train-stanchion": {
+    "gallery": 4962,
+    "reason": "[purge-v2] 단순 회색 세로 직선 한 줄뿐인 극도로 빈약한 기둥"
+   },
+   "mc-in-r10-train-wheelchair-space": {
+    "gallery": 4958,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 회색/파랑 직사각형 면"
+   },
+   "mc-in-r10-train-window-blind": {
+    "gallery": 4949,
+    "reason": "[purge-v2] 굵은 검정 박스+단색 파랑/회색/주황 가로 띠 창문"
+   },
+   "mc-in-r10-train-window-tunnel": {
+    "gallery": 4950,
+    "reason": "[purge-v2] 굵은 검정 박스+단색 어두운 회색 직사각형+노랑 띠"
+   },
+   "mc-in-r10b-elev-button-panel": {
+    "gallery": 5024,
+    "reason": "[purge-v2] 굵은 검정 세로 박스+단색 흰 면 위 점 격자(순수 fillRect)"
+   },
+   "mc-in-r10b-elev-car-door": {
+    "gallery": 5021,
+    "reason": "[purge-v2] 빈약한 좁은 단색 하늘색 직사각형+사선 몇 줄"
+   },
+   "mc-in-r10b-elev-floor-led": {
+    "gallery": 5025,
+    "reason": "[purge-v2] 단색 검정 정사각형 위 숫자 텍스트만 있는 밋밋한 도형"
+   },
+   "mc-in-r10b-elev-hall-lantern": {
+    "gallery": 5026,
+    "reason": "[purge-v2] 동떨어진 작은 단색 기하학 박스 두 개로 극도로 빈약"
+   },
+   "mc-in-r10b-elev-mirror-wall": {
+    "gallery": 5022,
+    "reason": "[purge-v2] 검정 테두리 단색 연회색 직사각형 거울(fillRect)"
+   },
+   "mc-in-r10b-elev-wood-panel": {
+    "gallery": 5023,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 갈색 정사각형+세로선(순수 fillRect)"
+   },
+   "mc-in-r10b-hosp-curtain-track": {
+    "gallery": 5002,
+    "reason": "[purge-v2] 검정 테두리 단색 민트색 세로 줄무늬 직사각형 커튼"
+   },
+   "mc-in-r10b-hosp-film-viewer": {
+    "gallery": 5014,
+    "reason": "[purge-v2] 굵은 검정 직사각형 안 단색 회색 네모 두 개(순수 fillRect)"
+   },
+   "mc-in-r10b-hosp-floor-directory": {
+    "gallery": 5020,
+    "reason": "[purge-v2] 단색 남색 직사각형+가로 줄 몇 개 안내판(fillRect)"
+   },
+   "mc-in-r10b-hosp-mayo-stand": {
+    "gallery": 5009,
+    "reason": "[purge-v2] 얇은 회색 막대 위 굵은 테두리 단색 파랑/흰 박스"
+   },
+   "mc-in-r10b-hosp-number-display": {
+    "gallery": 5016,
+    "reason": "[purge-v2] 단색 검정 직사각형 위 숫자·화살표 박스(순수 fillRect)"
+   },
+   "mc-in-r10b-hosp-scrub-sink": {
+    "gallery": 5010,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 회색 직사각형 싱크대(fillRect)"
+   },
+   "mc-in-r10b-hosp-stretcher": {
+    "gallery": 4999,
+    "reason": "[purge-v2] 굵은 검정 직선+단색 흰/파랑 가로 띠 들것(fillRect)"
+   },
+   "mc-in-r10b-hosp-triage-desk": {
+    "gallery": 5004,
+    "reason": "[purge-v2] 굵은 검정 테두리+단색 민트/초록 가로 띠(#04799 BAD 앵커 수준)"
+   },
+   "mc-in-r10b-hosp-wait-row-n": {
+    "gallery": 5018,
+    "reason": "[purge-v2] BAD 앵커 동일: 굵은 검정 외곽선과 단색 사각형 의자 3개"
+   },
+   "mc-in-r10b-hosp-wait-row-s": {
+    "gallery": 5017,
+    "reason": "[purge-v2] #05018과 동일 유형의 굵은 검정 테두리·단색 평면 의자"
+   },
+   "mc-in-r10b-hosp-wheelchair-bay": {
+    "gallery": 5019,
+    "reason": "[purge-v2] 굵은 검정 윤곽선과 뭉개진 도형으로 휠체어 형태가 조악함"
+   },
+   "mc-in-r10b-hosp-xray-console": {
+    "gallery": 5013,
+    "reason": "[purge-v2] 굵은 검정 직선 박스와 명암 없는 단색 유리·회색 면(fillRect 느낌)"
+   },
+   "mc-in-r10b-hosp-xray-table": {
+    "gallery": 5012,
+    "reason": "[purge-v2] 굵은 검정 테두리 단색 직사각형 2개로만 이루어진 밋밋한 도형"
+   },
+   "mc-in-r11-amuse-bowling-lane": {
+    "gallery": 5054,
+    "reason": "[purge-v2] 단색 베이지 직사각형과 점 몇 개뿐인 극도로 밋밋한 직선 도형"
+   },
+   "mc-in-r11-amuse-bowling-return": {
+    "gallery": 5056,
+    "reason": "[purge-v2] 굵은 검정 박스, 단색 남색 면과 가로 띠, 조악한 원형 볼"
+   },
+   "mc-in-r11-art-installation": {
+    "gallery": 5097,
+    "reason": "[purge-v2] 굵은 검정 윤곽선의 단색 막대 3개와 원으로 이루어진 조악한 기하학 도형"
+   },
+   "mc-in-r11-clinic-acupuncture-bed": {
+    "gallery": 5037,
+    "reason": "[purge-v2] 굵은 검정 직선 박스, 단색 면 분할(fillRect)과 둥둥 뜬 조악한 소품"
+   },
+   "mc-in-r11-clinic-dental-chair": {
+    "gallery": 5034,
+    "reason": "[purge-v2] 굵은 검정 선과 단색 청록 사각형으로 형태가 뭉개져 치과 의자로 읽히지 않음"
+   },
+   "mc-in-r11-clinic-psych-couch": {
+    "gallery": 5035,
+    "reason": "[purge-v2] 굵은 검정 테두리의 밋밋한 단색 직사각형 소파(fillRect 느낌)"
+   },
+   "mc-in-r11-clinic-vet-table": {
+    "gallery": 5038,
+    "reason": "[purge-v2] 굵은 검정 직선 박스의 단색 테이블과 뭉개진 동물 실루엣"
+   },
+   "mc-in-r11-dorm-bunk-bed": {
+    "gallery": 5031,
+    "reason": "[purge-v2] 좁고 평면적인 단색 직사각형 적층으로 이층침대 형태가 조악함"
+   },
+   "mc-in-r11-food-bento-counter": {
+    "gallery": 5049,
+    "reason": "[purge-v2] 굵은 검정 직선 박스에 단색 가로 띠와 단순 사각형 나열(#04799 수준)"
+   },
+   "mc-in-r11-food-drink-bar": {
+    "gallery": 5052,
+    "reason": "[purge-v2] 굵은 검정 박스 안에 단색 세로 띠만 배치한 평면적 fillRect 느낌"
+   },
+   "mc-in-r11-food-fastfood-counter": {
+    "gallery": 5050,
+    "reason": "[purge-v2] 굵은 검정 테두리 직사각형 2단과 단색 빨강 면·단순 띠(#04799 수준)"
+   },
+   "mc-in-r11-food-sushi-case": {
+    "gallery": 5047,
+    "reason": "[purge-v2] 굵은 검정 직선 박스 안에 단색 가로 띠만 있는 극도로 밋밋한 도형"
+   },
+   "mc-in-r11-home-futon": {
+    "gallery": 5060,
+    "reason": "[purge-v2] 굵은 검정 테두리와 명암 없는 단색 파랑·흰색 사각형(fillRect)"
+   },
+   "mc-in-r11-hotel-key-rack": {
+    "gallery": 5078,
+    "reason": "[purge-v2] 굵은 테두리 단색 사각형 판에 단순 막대 나열, 명암·질감 부족"
+   },
+   "mc-in-r11-ind-forklift": {
+    "gallery": 5090,
+    "reason": "[purge-v2] 단색 노랑·회색 사각형 적층으로 지게차 형태가 잘 읽히지 않음"
+   },
+   "mc-in-r11-jp-incense-burner": {
+    "gallery": 5081,
+    "reason": "[purge-v2] 굵은 검정 선과 단색 갈색 직사각형·막대 3개의 극도로 단순한 도형"
+   },
+   "mc-in-r11-pub-fire-truck": {
+    "gallery": 5067,
+    "reason": "[purge-v2] 굵은 검정 직선과 단색 빨강·하늘 가로 띠 위주의 평면적인 소방차"
+   },
+   "mc-in-r11-pub-mail-sort": {
+    "gallery": 5070,
+    "reason": "[purge-v2] 굵은 검정 테두리 단색 회색 박스와 밋밋한 상단 사각형(#04799 수준)"
+   },
+   "mc-in-r11-shop-laptop-table": {
+    "gallery": 5043,
+    "reason": "[purge-v2] 굵은 검정 직선 박스의 단색 테이블과 동일한 파랑 사각형 3개(fillRect)"
+   },
+   "mc-in-r11-svc-barber-chair": {
+    "gallery": 5091,
+    "reason": "[purge-v2] 굵은 검정 직선 테두리와 명암 없는 단색 빨강 사각형 조합"
+   },
+   "mc-in-r11-svc-listing-board": {
+    "gallery": 5094,
+    "reason": "[purge-v2] 굵은 검정 테두리 흰 사각형 안에 단색 작은 직사각형만 나열됨"
+   },
+   "mc-in-r11-tr-checkin-counter": {
+    "gallery": 5071,
+    "reason": "[purge-v2] 굵은 검정 직선 박스의 거대한 단색 파랑 면과 상단 단순 사각형 3개"
+   },
+   "mc-in-r11-tr-flight-board": {
+    "gallery": 5074,
+    "reason": "[purge-v2] 굵은 검정 선의 단색 사각형 판에 가로 색상 띠만 나열된 밋밋한 도형"
+   },
+   "mc-in-r11-tr-xray-lane": {
+    "gallery": 5073,
+    "reason": "[purge-v2] 굵은 검정 직선 테두리의 단색 회색 사각형 3개로 이루어진 극도로 밋밋한 도형"
+   },
+   "mc-in-r13-jumbo-gym-apparatus": {
+    "gallery": 5116,
+    "reason": "[purge-v2] 굵은 검정 직선 박스, 단색 파랑·베이지 면과 가로 띠(fillRect 느낌)"
+   },
+   "mc-intersection-6x6": {
+    "gallery": 5132,
+    "reason": "차선·보도·표시 없이 짙은 단색 정사각형(fillRect)만 채운 텅 빈 교차로 블록"
    },
    "mc-parking-facility": {
     "gallery": 5702,
@@ -203,6 +3011,58 @@
    "mc-parking-two-bays": {
     "gallery": 5701,
     "reason": "Whole map snapshot as one object"
+   },
+   "mc-road-ew-2lane": {
+    "gallery": 5126,
+    "reason": "명암·질감 없이 노란 실선만 그은 단색 어두운 회색 세로 직사각형 띠"
+   },
+   "mc-road-ns-2lane": {
+    "gallery": 5127,
+    "reason": "명암·질감 없이 노란 실선만 그은 단색 어두운 회색 가로 직사각형 띠"
+   },
+   "mc-street-ew-section": {
+    "gallery": 5128,
+    "reason": "명암 없는 가느다란 단색 회색 세로 띠 형태의 단순 도로 조각"
+   },
+   "mc-street-ns-section": {
+    "gallery": 5129,
+    "reason": "명암 없는 가느다란 단색 회색 가로 띠 형태의 단순 도로 조각"
+   }
+  },
+  "monster_coast": {
+   "mk-monster-coast-towel_blue": {
+    "gallery": 11346,
+    "reason": "명암·질감 없이 단색 파란·흰 가로 띠만 채운 단순 직사각형(fillRect)"
+   },
+   "mk-monster-coast-towel_red": {
+    "gallery": 11347,
+    "reason": "명암·질감 없이 단색 빨간·흰 가로 띠만 채운 단순 직사각형(fillRect)"
+   }
+  },
+  "monster_dungeon": {
+   "mk-monster-dungeon-gh_stairs": {
+    "gallery": 11356,
+    "reason": "굵은 사각 틀 안에 단색 가로 띠만 채운 평면 fillRect 계단 도형"
+   },
+   "mk-monster-dungeon-pw_coil": {
+    "gallery": 11360,
+    "reason": "명암·질감 없는 평면 회색 박스와 단색 가로 줄무늬의 조악한 fillRect 기계"
+   },
+   "mk-monster-dungeon-pw_console": {
+    "gallery": 11361,
+    "reason": "단색 회색 박스에 파란 사각형과 원색 점만 나열한 전형적인 저품질 fillRect 콘솔"
+   },
+   "mk-monster-dungeon-pw_gen": {
+    "gallery": 11362,
+    "reason": "입체 음영 없이 회색 통에 주황·파랑 단색 띠만 두른 평면 fillRect 발전기"
+   },
+   "mk-monster-dungeon-ru_altar": {
+    "gallery": 11363,
+    "reason": "석재 질감이나 음영 없이 단색 직사각형을 쌓아 올린 평면 fillRect 제단"
+   },
+   "mk-monster-dungeon-ru_braille": {
+    "gallery": 11364,
+    "reason": "질감 없는 평면 갈색 돔과 점 찍힌 사각형으로 형태가 어색하고 무엇인지 읽기 어려움"
    }
   },
   "monster_gyms": {
@@ -244,6 +3104,10 @@
    }
   },
   "monster_overworld": {
+   "mk-monster-overworld-c_screen": {
+    "gallery": 11410,
+    "reason": "명암 없는 회색 테두리 사각형 안에 단색 파란 면과 초록 네모만 넣은 조악한 화면(fillRect)"
+   },
    "mk-monster-overworld-c_sofa_b": {
     "gallery": 11411,
     "reason": "Flat blue square, not readable sofa"
@@ -264,6 +3128,10 @@
     "gallery": 11433,
     "reason": "Is the C anchor itself"
    },
+   "mk-monster-overworld-h_bin": {
+    "gallery": 11444,
+    "reason": "디테일 없이 단순 회색 사각형에 선 하나만 그어 정체를 알기 어려운 쓰레기통"
+   },
    "mk-monster-overworld-h_mat": {
     "gallery": 11454,
     "reason": "Flat pink mat box, anchor level"
@@ -271,9 +3139,25 @@
    "mk-monster-overworld-h_rug": {
     "gallery": 11456,
     "reason": "Flat green rectangle rug placeholder"
+   },
+   "mk-monster-overworld-m_gondola": {
+    "gallery": 11479,
+    "reason": "회색 직사각형 선반에 명암 없는 원색 네모 블록만 나열한 조악한 진열대(fillRect)"
+   },
+   "mk-monster-overworld-m_poster": {
+    "gallery": 11480,
+    "reason": "흰 사각형 안에 보라·노랑 단순 사각 블록만 있어 무엇인지 읽히지 않는 포스터"
+   },
+   "mk-monster-overworld-rock_stairs2": {
+    "gallery": 11484,
+    "reason": "질감·원근 없이 회색·흰색 단색 가로 띠만 반복한 조악한 계단(fillRect)"
    }
   },
   "monster_rooms": {
+   "mk-monster-rooms-c_screen": {
+    "gallery": 11502,
+    "reason": "명암 없는 회색 테두리·단색 파란 면의 조악한 직사각형 화면(#11410 중복)"
+   },
    "mk-monster-rooms-c_sofa_b": {
     "gallery": 11503,
     "reason": "Duplicate flat square sofa"
@@ -286,6 +3170,14 @@
     "gallery": 11510,
     "reason": "Flat grey bar placeholder"
    },
+   "mk-monster-rooms-dp_escfoot": {
+    "gallery": 11512,
+    "reason": "명암 없이 회색 직사각형에 세로 줄만 균일하게 채운 단순 fillRect 발판"
+   },
+   "mk-monster-rooms-h_bin": {
+    "gallery": 11519,
+    "reason": "단순 회색 사각형에 선 하나만 그어 정체가 안 읽히는 쓰레기통(#11444 중복)"
+   },
    "mk-monster-rooms-h_mat": {
     "gallery": 11526,
     "reason": "Flat pink mat box, anchor level"
@@ -294,6 +3186,18 @@
     "gallery": 11527,
     "reason": "Flat green rectangle rug placeholder"
    },
+   "mk-monster-rooms-m_gondola": {
+    "gallery": 11560,
+    "reason": "회색 직사각형 선반에 원색 네모 블록만 나열한 조악한 진열대(#11479 중복)"
+   },
+   "mk-monster-rooms-m_poster": {
+    "gallery": 11561,
+    "reason": "단순 보라·노랑 블록만 있어 내용이 안 읽히는 조악한 포스터(#11480 중복)"
+   },
+   "mk-monster-rooms-mu_plaque": {
+    "gallery": 11565,
+    "reason": "어두운 테두리의 흰 직사각형 안에 회색 선 두 줄만 있는 무특징 명판(fillRect)"
+   },
    "mk-monster-rooms-rmw_bow": {
     "gallery": 11576,
     "reason": "Clipped plank fragment, mostly empty cell"
@@ -301,12 +3205,118 @@
    "mk-monster-rooms-rmw_ch": {
     "gallery": 11577,
     "reason": "Map-structure outline, not a placeable object"
+   },
+   "mk-monster-rooms-sc_dais": {
+    "gallery": 11581,
+    "reason": "두께·명암 없이 얇은 갈색 가로 줄무늬 직사각형 띠로만 그린 조악한 단상"
+   }
+  },
+  "monster_wild": {
+   "mk-monster-wild-cstairs": {
+    "gallery": 11608,
+    "reason": "Exact-pixel sibling of mk-monster-overworld-rock_stairs2: 질감·원근 없이 회색·흰색 단색 가로 띠만 반복한 조악한 계단(fillRect)"
+   },
+   "mk-monster-wild-cstairs1": {
+    "gallery": 11609,
+    "reason": "입체감 없이 회색 가로 막대 세 개만 포개 놓은 평면 fillRect 줄무늬 계단"
+   },
+   "mk-monster-wild-gstairs": {
+    "gallery": 11627,
+    "reason": "Exact-pixel sibling of mk-monster-overworld-rock_stairs2: 질감·원근 없이 회색·흰색 단색 가로 띠만 반복한 조악한 계단(fillRect)"
+   }
+  },
+  "prehistoric": {
+   "ph-altar": {
+    "gallery": 10084,
+    "reason": "석재 질감·입체감 없이 검정 테두리에 2단 단색 회색 사각형만 채운 fillRect 제단"
+   },
+   "ph-knap-bench": {
+    "gallery": 10110,
+    "reason": "다리·모서리 음영·나무결 없이 2단 단색 갈색 직사각형만 그린 전형적 fillRect 벤치"
    }
   },
   "sengoku_edo": {
    "se-in-zabuton": {
     "gallery": 9260,
     "reason": "Tiny flat blue square, placeholder cushion"
+   }
+  },
+  "sf_station": {
+   "sf-landing-plate": {
+    "gallery": 9803,
+    "reason": "명암 없는 단색 회색 사각형 위에 단순 기하학 기호만 얹은 조악한 판"
+   },
+   "sf-mess-table": {
+    "gallery": 9747,
+    "reason": "굵은 검정 테두리의 밋밋한 회색 직사각형에 단색 트레이만 얹은 fillRect 식탁"
+   },
+   "sf-microscope-station": {
+    "gallery": 9756,
+    "reason": "굵은 테두리의 단순 회색 상자 위에 형태가 뭉개져 무엇인지 안 읽히는 조악한 기기"
+   },
+   "sf-regolith": {
+    "gallery": 9802,
+    "reason": "입체감 없이 단색 회색 가로 띠에 점만 찍은 평면 직사각형 조각"
+   },
+   "sf-sidewalk": {
+    "gallery": 9807,
+    "reason": "명암·질감 없이 단색 회색 칸을 격자로만 나눈 평면 fillRect 보도블록"
+   },
+   "sf-street-bench-neon": {
+    "gallery": 9733,
+    "reason": "굵은 검정 테두리에 회색·분홍 단색 가로 띠만 쌓은 밋밋한 fillRect 벤치"
+   },
+   "sf-street-neon-bars-wall": {
+    "gallery": 9722,
+    "reason": "검정 직사각형 안에 분홍·하늘 단색 가로 띠만 배치한 명암 없는 기하학 도형"
+   },
+   "sf-street-neon-flat-strip": {
+    "gallery": 9816,
+    "reason": "명암·입체감 없이 단색 하늘색 가로 띠에 검정 줄만 그은 평면 스트립"
+   },
+   "sf-vent-grill": {
+    "gallery": 9785,
+    "reason": "명암 없이 굵은 검정 테두리 사각형에 가로 줄만 그은 단순 fillRect 환풍구"
+   },
+   "sf-void-star": {
+    "gallery": 9801,
+    "reason": "단색 남색 직사각형 띠에 점 몇 개만 찍은 평면 조각"
+   }
+  },
+  "steampunk_city": {
+   "sp-barge": {
+    "gallery": 9423,
+    "reason": "명암과 디테일이 거의 없는 밋밋한 갈색 막대 형태로 바지선으로 잘 안 읽힘"
+   },
+   "sp-chair": {
+    "gallery": 9477,
+    "reason": "명암 없이 단순 갈색 직사각형과 막대 다리로만 그린 조악한 fillRect 의자"
+   },
+   "sp-crate-in": {
+    "gallery": 9484,
+    "reason": "굵은 검정 테두리에 단색 갈색 가로 판만 채운 명암 없는 fillRect 상자"
+   },
+   "sp-crates": {
+    "gallery": 9404,
+    "reason": "명암이 거의 없는 단색 갈색 가로 줄무늬 사각형 두 개짜리 fillRect 상자 더미"
+   },
+   "sp-fence-v": {
+    "gallery": 9410,
+    "reason": "명암 없이 회색 세로 직사각형에 점 몇 개만 찍어 울타리로 안 읽히는 막대"
+   },
+   "sp-nightstand": {
+    "gallery": 9482,
+    "reason": "명암 없는 단색 갈색 정사각형에 점 하나만 찍은 단순 fillRect 협탁"
+   },
+   "sp-wardrobe": {
+    "gallery": 9481,
+    "reason": "굵은 테두리에 질감·명암 없는 단색 갈색 문짝 두 개만 채운 fillRect 옷장"
+   }
+  },
+  "wasteland_ruins": {
+   "wl-slab-ground": {
+    "gallery": 9890,
+    "reason": "줄눈·명암·외곽 묘사 없이 회색 노이즈만 채운 밋밋한 세로 직사각형 조각"
    }
   }
  }

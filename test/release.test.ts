@@ -15,8 +15,10 @@ import {
 } from "../scripts/lib/releaseGate.mjs";
 import {
   computeDemoConcurrency,
+  isDemoCacheInputRelevant,
   normalizePackageLockForHash,
   prunePerDemoCache,
+  resolveDemoCacheScope,
   sortDemosByWeight,
 } from "../scripts/content/bake-demos-lib.mjs";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, utimesSync, writeFileSync } from "node:fs";
@@ -557,18 +559,18 @@ describe("releaseTooling", () => {
     });
 
     const passing = () => ({
-      userCommits: Array.from({ length: 2 }, (_, index) => ({ sha: String(index), subject: "feat: x" })),
-      sinceTag: "v0.423.0",
+      userCommits: [{ sha: "0", subject: "feat: x" }],
+      sinceTag: "v0.424.0",
       ciDiff: null,
       lastPublishedAt: "2026-11-28T00:00:00Z",
-      recentReleaseTags: ["v0.423.0"],
+      recentReleaseTags: ["v0.424.0"],
       holdPrs: [],
       draftTags: [],
       openReleasePr: null,
-      now: "2026-11-28T02:00:00Z",
+      now: "2026-11-28T00:30:00Z",
     });
 
-    it("조건과 하루 상한이 다 맞으면 ci-full 없이도 발행한다(2시간 경계 포함)", () => {
+    it("조건과 하루 상한이 다 맞으면 ci-full 없이도 발행한다(30분 경계 포함)", () => {
       const decision = decideAutoRelease(passing());
       expect(decision.release).toBe(true);
       expect(decision.reasons).toEqual([]);
@@ -576,11 +578,11 @@ describe("releaseTooling", () => {
 
     it("하나라도 안 맞으면 넘어가고 안 맞는 것마다 이유를 남긴다", () => {
       const cases = [
-        [{ userCommits: passing().userCommits.slice(0, 1) }, "user-commits"],
-        [{ now: "2026-11-28T01:59:00Z" }, "since-publish"],
+        [{ userCommits: [] }, "user-commits"],
+        [{ now: "2026-11-28T00:29:00Z" }, "since-publish"],
         [{ holdPrs: [{ number: 5040 }] }, "hold-label"],
-        [{ recentReleaseTags: Array.from({ length: 12 }, (_, index) => `v0.4${10 + index}.0`) }, "daily-cap"],
-        [{ draftTags: ["v0.424.0"] }, "no-draft"],
+        [{ recentReleaseTags: Array.from({ length: 48 }, (_, index) => `v0.4${10 + index}.0`) }, "daily-cap"],
+        [{ draftTags: ["v0.425.0"] }, "no-draft"],
         [{ openReleasePr: { number: 5041, auto: true } }, "no-open-release-pr"],
       ];
       for (const [override, id] of cases) {
@@ -686,6 +688,24 @@ describe("releaseTooling", () => {
 
     it("sortDemosByWeight 는 가장 무거운 chrono-bell 을 맨 앞에 둔다", () => {
       expect(sortDemosByWeight(["maou-konbini", "chrono-bell", "first-love"])).toEqual(["chrono-bell", "first-love", "maou-konbini"]);
+    });
+
+    it("isDemoCacheInputRelevant 는 에디터·Electron·타입 전용 경로를 제외하고 flagship 스코프에서는 데모 핵심 경로만 추적한다", () => {
+      expect(resolveDemoCacheScope("flagship")).toBe("flagship");
+      expect(resolveDemoCacheScope(undefined)).toBe("graph");
+      // 공통 제외: Electron·에디터·영속성·타입 선언
+      expect(isDemoCacheInputRelevant("electron/shared/appUpdate.ts", "graph")).toBe(false);
+      expect(isDemoCacheInputRelevant("src/project/persistence/electronRepository.ts", "graph")).toBe(false);
+      expect(isDemoCacheInputRelevant("src/project/types/database.ts", "graph")).toBe(false);
+      expect(isDemoCacheInputRelevant("src/editor/panels/database.ts", "graph")).toBe(false);
+      // flagship 스코프: 데모·직렬화·내보내기·번들 자산만 포함, 무관한 UI/에셋 JSON 제외
+      expect(isDemoCacheInputRelevant("src/project/flagship/chronoBell.ts", "flagship")).toBe(true);
+      expect(isDemoCacheInputRelevant("src/project/io/serialize.ts", "flagship")).toBe(true);
+      expect(isDemoCacheInputRelevant("src/project/export/prepareWebExport.ts", "flagship")).toBe(true);
+      expect(isDemoCacheInputRelevant("src/assets/bundledTilesets.json", "flagship")).toBe(true);
+      expect(isDemoCacheInputRelevant("assets/bgm-release-v1.json", "flagship")).toBe(true);
+      expect(isDemoCacheInputRelevant("src/project/dialogueStyles.ts", "flagship")).toBe(false);
+      expect(isDemoCacheInputRelevant("src/assets/sharedCharacterGraphics.json", "flagship")).toBe(false);
     });
 
     it("prunePerDemoCache 는 데모마다 최신 N개만 남기고 다른 데모의 항목은 지우지 않는다", () => {

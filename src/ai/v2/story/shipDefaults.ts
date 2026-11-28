@@ -17,7 +17,7 @@ import { equipMonsterCampaign } from "./monsterCampaignGifts";
 import { beginFitBudget, enterFastFit, FitBudgetExceeded, rememberFitCache, restoreFitState, snapshotFitState } from "./monsterFitBudget";
 import { redressHeroTwins } from "./heroTwins";
 import { fillBattleSeCues } from "./shipBattleSe";
-import { Obj, reconcileFieldHud, premiseOf, fillBattleBgm, fillBattleBackgrounds, fillEnemyHpLook, fillPartyLooks, fillPartyNames, fillUiLook } from "./shipLookDefaults";
+import { Obj, reconcileFieldHud, premiseOf, fillBattleBgm, fillBattleBackgrounds, fillEnemyHpLook, fillPartyLooks, fillPartyNames, fillUiLook, fillDialogueContainer } from "./shipLookDefaults";
 import { moveEntrancesOntoArt, fillStaleObjectives, moveRepeatingStartObjective, pullBackStartObjective, fillGymArrivalObjectives, hasFinal, quietFieldGuides } from "./shipObjectiveDefaults";
 import { endsAtMvp, MVP_REACHED_SWITCH } from "../judge/blueprintScale";
 
@@ -115,6 +115,7 @@ export function applyLookDefaults(project: Project, story = "", lookSeed = ""): 
   applied.push(...reconcileFieldHud(project));
   // UI 모습 한 벌은 HUD 구성 뒤에 — HUD 의 글꼴·판(껍질)을 그 구성 위에 입힌다. 열쇠는 게임 열쇠(조수 실행의 projectKey), 없으면 제목.
   applied.push(...fillUiLook(project, lookSeed || project.gameBlueprint?.title || project.meta.title || ""));
+  applied.push(...fillDialogueContainer(project));
   // 제목 그림·엔딩 그림은 함수가 번들 스틸로 대신 깔지 않는다 — 출하 검사(title-image·ending-bg·ending-screen)가 막고 모델이 그림 단계에서 고르거나 만든다.
   return applied;
 }

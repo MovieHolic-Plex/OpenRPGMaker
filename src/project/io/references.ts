@@ -85,8 +85,9 @@ export function collectProjectItemReferenceIds(project: Project): ReadonlySet<st
   }
   for (const decoration of project.database.homeDecorationTypes ?? []) ids.add(decoration.placementItemId);
 
+  const equipmentIdSet = new Set(project.database.equipment.map((entry) => entry.id));
   for (const recipe of project.system.craftRecipes ?? []) {
-    ids.add(recipe.outputItemId);
+    if (!equipmentIdSet.has(recipe.outputItemId)) ids.add(recipe.outputItemId);
     for (const ingredient of recipe.ingredients) ids.add(ingredient.itemId);
   }
   for (const upgrade of project.system.itemUpgrades ?? []) {
@@ -816,10 +817,13 @@ function validateLifeAuthoringRecords(
   issues: string[],
 ): void {
   const seenRecipes = new Set<string>();
+  const equipmentIds = new Set(project.database.equipment.map((record) => record.id));
   for (const recipe of project.system.craftRecipes ?? []) {
     if (seenRecipes.has(recipe.id)) issues.push(`craftRecipe ${recipe.id}: duplicate id.`);
     seenRecipes.add(recipe.id);
-    if (!itemIds.has(recipe.outputItemId)) issues.push(`craftRecipe ${recipe.id}: outputItemId does not exist: ${recipe.outputItemId}`);
+    if (!itemIds.has(recipe.outputItemId) && !equipmentIds.has(recipe.outputItemId)) {
+      issues.push(`craftRecipe ${recipe.id}: outputItemId does not exist: ${recipe.outputItemId}`);
+    }
     for (const [index, ingredient] of (recipe.ingredients ?? []).entries()) {
       if (!itemIds.has(ingredient.itemId)) issues.push(`craftRecipe ${recipe.id}: ingredients[${index}].itemId does not exist: ${ingredient.itemId}`);
     }
