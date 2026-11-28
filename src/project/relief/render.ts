@@ -571,53 +571,230 @@ function naturalFoot(ax: number, c: number, d: number, n: number): number {
 }
 
 // ── 벽면에 판 계단(style.carvedStairs, r3 2026-09-29): 계단 경사로의 디딤판·챌면을 돌(또는 통나무 턱)로 칠한다 ──
-// across: 계단 폭 방향 위치(px), width: 계단 폭(px). 돌: 양옆 2px 볼돌(바깥 1px 외곽선), 디딤판 앞 1px 코(밝게), 뒤 1px 그늘,
-// 디딤판마다 엇갈린 줄눈. 통나무(log, 완만한 계단): 디딤판은 윗면 그대로, 챌면이 통나무 — 윗줄 밝은 껍질, 아랫줄 그늘, 양끝 나이테.
-// r3 QA: a log flight is a wide one (four cells or more across — the gentle path climbs), a stone flight a narrow one (walk.ts steps)
+// across: 계단 폭 방향 위치(px), width: 계단 폭(px). 돌: 절벽에 물린 자연 턱돌(서쪽 안쪽 깊은 그늘·동쪽 안쪽 햇빛), 약 8px 간격의
+// 어긋난 마름돌 디딤판·코·챌면 줄눈. 통나무(log, 폭 4칸 이상 완만한 계단): 다져진 흙·풀 오솔길 디딤판 + 둥근 통나무 턱과 말뚝, 가장자리 풀 포기.
 const isLogStair = (S: ReliefWallStyle, s: ReliefSlope) => !!S.carvedStairs?.log && (s.dir === "n" || s.dir === "s" ? s.w : s.h) >= 4;
 function stairAcross(s: ReliefSlope, px: number, py: number): [number, number] {
   return s.dir === "n" || s.dir === "s" ? [px - s.x * T, s.w * T] : [py - s.y * T, s.h * T];
 }
-function carvedTread(S: ReliefWallStyle, s: ReliefSlope, px: number, py: number, t: number, base: number): number {
-  const [a, wd] = stairAcross(s, px, py), steps = s.steps!, k = t * steps, n = Math.floor(k), frac = k - n;
-  const depth = ((s.dir === "n" || s.dir === "s" ? s.h : s.w) * T) / steps, at = frac * depth;
-  if (isLogStair(S, s)) return a < 1 || a >= wd - 1 ? base - 1 : base;
-  const cheek = carvedCheek(a, wd, py);
-  if (cheek >= 0) return cheek;
-  // tread (r3 QA: pale treads over dark flat risers read as a ladder): the top's own ground colour — a lit nosing at the front, the
-  // tread, a shaded back row; the west columns in the cheek's shadow (light from the north-west)
-  // (tread "wall": a grass top would paint green steps — the earth faces take the wall's light stone instead)
-  const o = S.carvedStairs!.tread === "wall" ? 6 : 0;
-  let p = at < 1 ? 4 : at >= depth - 1 ? 2 : 3;
-  if (a < 6) p -= a < 4 ? 2 : 1;
-  return o + Math.max(1, p);
+const safeIdx = (ramp: number, tone: number, rampCount: number) =>
+  Math.min(rampCount - 1, Math.max(0, ramp)) * 6 + Math.max(0, Math.min(5, tone));
+
+/** 절벽에 파인 돌계단의 양옆 턱돌(-1 = 계단 안쪽). 곧은 막대 대신 단마다 1px 어긋난 자연 턱돌과 서쪽 그늘·동쪽 양지를 그린다. */
+function carvedCheek(a: number, wd: number, gy: number, stepIdx: number, dy: number, sh: number, topDist: number, botDist: number, hasGrassLip: boolean): number {
+  const left = a < (wd >> 1), e = left ? a : wd - 1 - a;
+  const taper = botDist < 3 ? 1 : 0;
+  const cw = Math.max(1, 2 + (nmix(stepIdx, left ? 11 : 23, 401) % 3 === 0 ? 1 : 0) - taper);
+  if (e >= cw) return -1;
+  // 맨 위 고원 가장자리와 만나는 1~4px: 풀 처마(또는 갓돌)가 턱돌 위로 자연스럽게 덮여 내려온다
+  const hang = 2 + nmix(a, left ? 3 : 7, 403) % 3 - (e >= 2 ? 1 : 0);
+  if (topDist < hang) {
+    if (hasGrassLip) return topDist === hang - 1 ? 1 : topDist === 0 ? 4 : 2 + (nmix(a, topDist, 405) & 1);
+    return 6 + (topDist === 0 ? 5 : topDist === hang - 1 ? 2 : 4);
+  }
+  if (botDist === 0 && e === 0) return -1;
+  const joint = (gy + (left ? 2 : 5)) % 7 === 0 || dy === sh - 1;
+  if (e === 0) return 6 + (joint ? 0 : left ? 1 : 2);
+  if (e === cw - 1) {
+    // 안쪽 절개면: 서쪽(왼쪽) 턱돌 안쪽은 동향이라 깊은 절개 그늘, 동쪽(오른쪽) 턱돌 안쪽은 서향이라 북서 햇빛을 받는다
+    if (left) return 6 + (joint ? 0 : 1);
+    return 6 + (joint ? 2 : dy <= 2 ? 5 : 4);
+  }
+  return 6 + (joint ? 1 : left ? (dy <= 1 ? 3 : 2) : (dy <= 1 ? 4 : 3));
 }
-/** Cheek stones along both sides of a cut stair: outline, a block course with a joint every 6 px. -1 = not a cheek. */
-function carvedCheek(a: number, wd: number, py: number): number {
-  const e = Math.min(a, wd - 1 - a);
-  if (e >= 3) return -1;
-  if (e === 0) return 6;
-  return py % 6 === 0 ? 7 : a < wd / 2 ? 9 : 8;
+
+/** 화면 구간 [gLo, gHi] 안의 한 화소를 8px 안팎 간격의 깎은 돌계단 또는 통나무 흙길 계단으로 칠한다. */
+function paintCarvedStairPixel(
+  S: ReliefWallStyle, s: ReliefSlope, ax: number, gy: number, gLo: number, gHi: number, rampCount: number, fallback: number,
+): number {
+  const [a, wd] = stairAcross(s, ax, gy);
+  if (a < 0 || a >= wd) return fallback;
+  const span = Math.max(8, gHi - gLo + 1), relY = Math.max(0, Math.min(span - 1, gy - gLo)), botDist = span - 1 - relY;
+  const lip0 = S.lip.rows[0]?.[0] ?? 6, hasGrassLip = lip0 >= 0 && lip0 < 6;
+
+  if (isLogStair(S, s)) {
+    const ac = rampCount > 2 ? 2 : 1;
+    const visSteps = Math.max(4, Math.round(span / 9));
+    const stepIdx = Math.min(visSteps - 1, Math.floor((relY * visSteps) / span));
+    const y0 = Math.floor((stepIdx * span) / visSteps), y1 = Math.max(y0 + 5, Math.floor(((stepIdx + 1) * span) / visSteps));
+    const sh = y1 - y0, dy = relY - y0;
+    const logH = sh >= 9 ? 4 : 3, treadH = sh - logH;
+    const left = a < (wd >> 1), e = left ? a : wd - 1 - a;
+    // 양옆 가장자리: 곧은 나무 기둥 대신 들쭉날쭉한 풀 포기와 자연 흙둑이 오솔길을 감싼다
+    const grassW = (dy < treadH ? 2 : 1) + nmix(gy >> 1, left ? 1 : 2, 501) % 3 + (botDist < 3 ? 1 : 0);
+    if (e < grassW) {
+      const n = nmix(ax, gy, 503);
+      if (relY > 3 && botDist > 4 && e === grassW - 1 && (n % 3 === 0)) return safeIdx(1, left ? 1 : 3, rampCount);
+      const gt = e === 0 && relY < span - 8 && (n % 4 === 0) ? 1 : 2 + (n % 3);
+      return safeIdx(0, gt, rampCount);
+    }
+    if (dy < treadH) {
+      // 다져진 흙·풀 디딤판: 바로 위 통나무 밑 그늘 → 가운데 닳은 흙길·잔돌 + 양옆으로 넓게 스며드는 풀 클러스터
+      const u = Math.min(a, wd - 1 - a);
+      const q = vn2(ax * 0.28, gy * 0.32, 509), n = nmix(ax, gy, 511);
+      const turfReach = grassW + 4 + Math.floor(5 * vn1(gy * 0.25 + (left ? 0 : 17), 515));
+      if (dy === 0) {
+        if (u < turfReach - 1 && ((n & 1) || u < grassW + 2)) return safeIdx(0, 1, rampCount);
+        return safeIdx(1, n % 5 === 0 ? 2 : 1, rampCount);
+      }
+      if (u < turfReach && (q > 0.36 + (u - grassW) * 0.055 || (u < grassW + 3 && (n % 3 !== 0)))) {
+        return safeIdx(0, q > 0.68 ? 4 : q < 0.28 ? 2 : 3, rampCount);
+      }
+      if (botDist === 0 && (n % 3 !== 0)) return safeIdx(0, 2 + (n & 1), rampCount);
+      let et = q > 0.64 ? 5 : q < 0.32 ? 3 : 4;
+      if (dy === 1) et = Math.max(2, et - 1);
+      if (left && a < grassW + 4) et = Math.max(2, et - 1);
+      if ((n & 31) === 0 && dy > 1) return safeIdx(1, 5, rampCount);
+      if ((n & 31) === 1 && dy > 1) return safeIdx(1, 2, rampCount);
+      return safeIdx(1, et, rampCount);
+    }
+    // 둥근 통나무 챌면 + 양끝 둥근 나무 말뚝(네모 기둥 없음)
+    const ld = dy - treadH, stakeW = grassW + 3;
+    if (e < stakeW) {
+      const se = e - grassW;
+      if (se === 0) return safeIdx(ac, ld === 0 ? 2 : 1, rampCount);
+      if (ld === 0) return safeIdx(ac, se === 1 ? 5 : 4, rampCount);
+      if (ld === logH - 1) return safeIdx(ac, 1, rampCount);
+      return safeIdx(ac, se === 1 ? 4 : 2, rampCount);
+    }
+    // 넓은 통나무 계단은 가운데에도 말뚝 하나를 엇갈려 박아 자연스러운 산길 느낌을 살린다
+    const midStake = wd >= 56 ? (wd >> 1) + (stepIdx & 1 ? 5 : -6) : -99;
+    if (Math.abs(a - midStake) <= 1) {
+      const me = a - midStake;
+      if (ld === 0) return safeIdx(ac, me <= 0 ? 5 : 3, rampCount);
+      if (ld === logH - 1) return safeIdx(ac, 0, rampCount);
+      return safeIdx(ac, me === -1 ? 4 : me === 0 ? 3 : 1, rampCount);
+    }
+    const bark = nmix(ax >> 2, stepIdx * 7 + ld, 521);
+    let lt: number;
+    if (ld === 0) lt = bark % 7 === 0 ? 4 : 5;
+    else if (ld === logH - 1) lt = bark % 5 === 0 ? 0 : 1;
+    else if (ld === 1) lt = bark % 4 === 0 ? 3 : 4;
+    else lt = bark % 3 === 0 ? 2 : 3;
+    if (a < grassW + 5 && lt > 1) lt -= 1;
+    return safeIdx(ac, lt, rampCount);
+  }
+
+  // 깎은 돌계단: ~8px 간격 어긋난 마름돌(윗면 안쪽 주름 → 결이 살아 있는 디딤판 → 밝은 코 → 코 밑 짙은 그늘 → 어긋난 줄눈 챌면)
+  const tw = S.carvedStairs!.tread === "wall" ? 1 : 0;
+  const visSteps = Math.max(s.steps! * 2, Math.max(2, Math.round(span / 8)));
+  const stepIdx = Math.min(visSteps - 1, Math.floor((relY * visSteps) / span));
+  const y0 = Math.floor((stepIdx * span) / visSteps), y1 = Math.max(y0 + 4, Math.floor(((stepIdx + 1) * span) / visSteps));
+  const sh = y1 - y0, dy = relY - y0;
+
+  const cheek = carvedCheek(a, wd, gy, stepIdx, dy, sh, relY, botDist, hasGrassLip);
+  if (cheek >= 0) return safeIdx((cheek / 6) | 0, cheek % 6, rampCount);
+
+  const hasMoss = rampCount > 2 && hasGrassLip && !!S.overlay;
+  const isLower = stepIdx >= visSteps - 2;
+  const slabW = 7 + (nmix(stepIdx, 1, 419) % 3); // 7..9px 마름돌 폭
+  const stag = (stepIdx * 4 + (nmix(stepIdx, 2, 421) % 3)) % slabW;
+  const sa = a + stag, blockIdx = fdiv(sa, slabW), bu = sa - blockIdx * slabW;
+  const isJoint = bu === 0 && a > 3 && a < wd - 4;
+  const slabVar = nmix(blockIdx, stepIdx, 423) % 5 === 0 ? -1 : 0;
+  const nosingY = Math.max(2, Math.min(sh - 3, Math.floor(sh * 0.45)));
+
+  let rRamp = tw, rTone = 3;
+  if (stepIdx === 0 && dy === 0) {
+    // 고원 마루에서 첫 계단으로 꺾이는 윗턱
+    rRamp = tw;
+    rTone = isJoint ? 3 : (nmix(ax, 0, 425) % 6 === 0 ? 4 : 5);
+  } else if (dy === 0) {
+    // 윗단 챌면 밑과 맞닿는 디딤판 안쪽 오목 주름(습한 바이옴은 구석에 이끼 한두 점)
+    if (hasMoss && (a <= 4 || a >= wd - 5) && nmix(ax, stepIdx, 426) % 3 === 0) {
+      return safeIdx(2, a <= 4 ? 2 : 3, rampCount);
+    }
+    rRamp = tw;
+    rTone = isJoint ? 1 : 2 + (bu === 1 ? 1 : 0);
+  } else if (dy < nosingY) {
+    // 마름돌 디딤판: 아래쪽 계단도 챌면과 선명히 구분되도록 3~4톤 몸통과 베벨을 유지한다
+    rRamp = tw;
+    rTone = 3 + slabVar;
+    if (dy === 1 && bu > 0 && bu < slabW - 1) rTone += 1;
+    if (bu === slabW - 1 && slabVar === 0) rTone -= 1;
+    if (isJoint) rTone = 1;
+    else {
+      const q = nmix(ax, gy, 427) % 19;
+      if (q === 0 && rTone > 2) rTone -= 1;
+      else if (q === 1 && dy === 1) rTone += 1;
+    }
+    rTone = Math.max(2, Math.min(5, rTone));
+  } else if (dy === nosingY) {
+    // 디딤판 앞 코(햇빛 받는 1px 모서리, 줄눈·잔 이빠짐에서 자연스럽게 끊김)
+    rRamp = tw;
+    const chip = nmix(ax, stepIdx, 431) % 13 === 0;
+    rTone = isJoint ? 3 : (chip || (isLower && nmix(ax, stepIdx, 433) % 3 === 0)) ? 4 : 5;
+  } else if (dy === nosingY + 1) {
+    // 코 바로 아래 1px 짙은 처마 그림자
+    rRamp = 1;
+    rTone = a > wd - 6 && nmix(ax, stepIdx, 437) % 3 !== 0 ? 1 : (nmix(ax, stepIdx, 439) % 4 === 0 ? 0 : 1);
+  } else if (botDist === 0) {
+    // 맨 아래 계단 발치: 칼자국 같은 검은 줄 대신 끊어진 접지 그림자와 잔돌·풀로 땅에 스며든다
+    const fn = nmix(ax, gy, 443) % 7;
+    if (fn === 0) { rRamp = 1; rTone = 4; }
+    else if (fn <= 2) { rRamp = 0; rTone = 2; }
+    else { rRamp = 1; rTone = 1; }
+  } else {
+    // 챌면(수직 돌면): 디딤판 줄눈과 반 칸 어긋난 세로 줄눈 + 절벽 결을 살린 어두운 마름돌
+    rRamp = 1;
+    const rStag = (stag + (slabW >> 1)) % slabW, rJoint = (a + rStag) % slabW === 0 && a > 3 && a < wd - 4;
+    if (hasMoss && (a <= 4 || rJoint) && nmix(ax, gy, 445) % 6 === 0) return safeIdx(2, 1 + (nmix(ax, gy, 447) & 1), rampCount);
+    if (rJoint) rTone = 0;
+    else {
+      const b0 = S.body[0]!, bv = b0.rows[gy % b0.h]![ax % b0.w]! % 6;
+      rTone = Math.max(1, Math.min(2, bv - 1));
+      if (dy === sh - 1) rTone = 1;
+    }
+  }
+  // 서쪽(왼쪽) 턱돌 바로 옆 3px 은 절개면 그림자를 받는다(북서 광원)
+  if (a < 6 && !(rRamp === 1 && rTone <= 1)) rTone = Math.max(1, rTone - (a < 4 ? 1 : (dy !== nosingY ? 1 : 0)));
+  // 동쪽(오른쪽) 끝 마름돌 모서리는 햇빛을 살짝 더 받는다
+  if (a >= wd - 5 && dy <= nosingY && !isJoint && rTone < 5) rTone += 1;
+  return safeIdx(rRamp, rTone, rampCount);
 }
-function carvedRiser(S: ReliefWallStyle, s: ReliefSlope, px: number, py: number, d: number, n: number): number {
+
+function carvedTread(S: ReliefWallStyle, s: ReliefSlope, px: number, py: number, t: number, base: number, rampCount: number): number {
+  const [a, wd] = stairAcross(s, px, py);
+  const totalLen = (s.dir === "n" || s.dir === "s" ? s.h : s.w) * T;
+  const visSteps = Math.max(s.steps! * 2, Math.max(2, Math.round(totalLen / 8)));
+  const k = Math.max(0, Math.min(visSteps - 1e-6, t * visSteps)), stepIdx = Math.floor(k), frac = k - stepIdx;
+  const sh = Math.max(4, Math.round(totalLen / visSteps)), dy = Math.min(sh - 1, Math.floor((1 - frac) * sh));
+  const relPos = Math.floor((1 - t) * (totalLen - 1)), botDist = totalLen - 1 - relPos;
+  if (isLogStair(S, s)) {
+    const ac = rampCount > 2 ? 2 : 1;
+    if (a < 2 || a >= wd - 2) return safeIdx(0, 2 + (nmix(px, py, 531) % 3), rampCount);
+    if (dy >= sh - 2) return safeIdx(ac, dy === sh - 2 ? 4 : 1, rampCount);
+    return dy === 0 ? safeIdx(1, 2, rampCount) : base;
+  }
+  const lip0 = S.lip.rows[0]?.[0] ?? 6;
+  const cheek = carvedCheek(a, wd, py, stepIdx, dy, sh, relPos, botDist, lip0 >= 0 && lip0 < 6);
+  if (cheek >= 0) return safeIdx((cheek / 6) | 0, cheek % 6, rampCount);
+  const tw = S.carvedStairs!.tread === "wall" ? 1 : 0;
+  const slabW = 7 + (nmix(stepIdx, 1, 451) % 3), bu = (a + stepIdx * 4) % slabW, isJoint = bu === 0;
+  let tone = dy === sh - 2 ? (isJoint ? 3 : 5) : dy === sh - 1 ? 1 : isJoint ? 1 : dy <= 1 ? 2 : 3 + (bu < slabW - 1 && dy === 2 ? 1 : 0);
+  if (a < 5 && tone > 1) tone -= 1;
+  return safeIdx(dy === sh - 1 ? 1 : tw, tone, rampCount);
+}
+function carvedRiser(S: ReliefWallStyle, s: ReliefSlope, px: number, py: number, d: number, n: number, rampCount: number): number {
   const [a, wd] = stairAcross(s, px, py);
   if (isLogStair(S, s)) {
-    // log end rings at both ends, bark body: lit top, streaked middle, shaded underside
+    const ac = rampCount > 2 ? 2 : 1;
     const e = Math.min(a, wd - 1 - a);
-    if (e < 3 && n >= 3) return (e === 0 || d === 0 || d === n - 1) ? 12 + 1 : e === 1 ? 12 + 4 : 12 + 2;
-    if (d === 0) return 12 + 5;
-    if (d === n - 1) return 12 + 1;
-    if (d === 1) return 12 + 4;
-    return hsh3(a >> 1, d, 11) % 4 === 0 ? 12 + 2 : 12 + 3;
+    if (e < 2) return safeIdx(0, 2 + (nmix(px, py + d, 541) & 1), rampCount);
+    if (e < 4 && n >= 3) return safeIdx(ac, d === 0 ? 5 : d === n - 1 ? 1 : e === 2 ? 4 : 2, rampCount);
+    if (d === 0) return safeIdx(ac, 5, rampCount);
+    if (d === n - 1) return safeIdx(ac, 1, rampCount);
+    return safeIdx(ac, nmix(a >> 2, d, 543) % 3 === 0 ? 2 : 3, rampCount);
   }
-  const cheek = carvedCheek(a, wd, py + d);
-  if (cheek >= 0) return Math.max(6, cheek - 1);
-  // riser: the wall's own body texture (the strata carry through the cut, so the steps read as cut into this face), a shadow line under
-  // the nosing and at the foot; the west columns shaded like the treads
-  const b = S.body[0]!, v = b.rows[(py + d) % b.h]![px % b.w]!;
-  let p = d === 0 || d === n - 1 ? shift(v, -2) : v;
-  if (a < 6 && d > 0) p = shift(p, -1);
-  return p;
+  // 동서 돌계단의 남쪽 옆벽: 단 높이에 맞춘 마름돌 옆면
+  if (d === n - 1) return OUT_B;
+  const course = fdiv(d, 5), gy = py + d;
+  const joint = d % 5 === 4 || ((px + course * 5) % 8 === 0 && d > 0);
+  if (joint) return safeIdx(1, 1, rampCount);
+  const b = S.body[0]!, v = b.rows[gy % b.h]![px % b.w]! % 6;
+  let tone = d === 0 ? 4 : Math.max(1, Math.min(4, v));
+  if (a < 5 && d > 0) tone = Math.max(1, tone - 1);
+  return safeIdx(1, tone, rampCount);
 }
 
 /**
@@ -727,7 +904,7 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     out[i] = art && sid[m] ? 3 : lc ? shift(TOP[(py % T) * T + px % T], LV[lc]) : GROUND[(py % T) * T + px % T];
     // S.cornice (tundra-snow): stair treads are cut stone (wall ramp), not snow — snow treads vanished into the snow round them
     if (S?.cornice && sid[m] && slopes[sid[m] - 1].steps) out[i] = 6 + (Math.floor(st[m] * slopes[sid[m] - 1].steps! * 2) % 2 ? 4 : 5) - (px % T === 0 || px % T === 15 ? 2 : 0);
-    if (S?.carvedStairs && sid[m] && slopes[sid[m] - 1].steps) out[i] = carvedTread(S, gslopes[sid[m] - 1], px + ox, py + oy, st[m], out[i]);
+    if (S?.carvedStairs && sid[m] && slopes[sid[m] - 1].steps) out[i] = carvedTread(S, gslopes[sid[m] - 1], px + ox, py + oy, st[m], out[i], baseRamps.length);
     kind[i] = 0; lev[i] = lc; src[i] = cell; fl[i] = c; mpy[i] = py; ssl[i] = sid[m]; sst[i] = st[m];
     if (cut.length) cut[i] = 0; // 뒤 계단의 챌면을 앞 윗면이 가리면 계단 소유권도 걷는다.
     const onBridge = !!bridge && bridge[cell]! > 0 && c > 0;
@@ -865,7 +1042,7 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
       if (rd === 1 || ld === -1) p = shift(p, -1);
       else if (ld === 1 || rd === -1) p = shift(p, 1);
     }
-    if (S?.carvedStairs && cut[i]) p = carvedRiser(S, gslopes[cut[i] - 1], ax, mpy[i] + oy, d, n);
+    if (S?.carvedStairs && cut[i]) p = carvedRiser(S, gslopes[cut[i] - 1], ax, mpy[i] + oy, d, n, baseRamps.length);
     // 바이옴 양식은 강조색(세 번째 램프)이 있지만 기본 흙벽은 두 램프뿐이다.
     // 기본 양식의 다리 밑면을 13번 색으로 칠하면 팔레트 바깥을 읽어 렌더가 죽는다.
     if (bridge && deckUnder[i]) p = d === 0 ? (baseRamps.length > 2 ? 13 : 7) : 6;
@@ -1066,27 +1243,43 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
     if (s.steps) return f;
     return f * (0.93 + 0.1 * sst[i]);
   };
-  // carved stone flights (r3 QA: the geometric treads are 2-3 px under 16 px risers — pale rungs on a dark face, a ladder): repaint
-  // each flight's screen span as even steps — a lit nosing, a tread about half the step, a shadow line, the riser in the face's own
-  // strata — keeping the cheek stones. The span is every pixel the flight owns (treads and risers), top to bottom on screen.
+  // carved stone & log flights: repaint each N/S flight's full screen span at natural ~8-9px step pitch (dressed staggered stone blocks
+  // with sunlit nosing, overhang shadow & rugged cut-stone cheeks, or packed earth/grass treads with cylindrical timber logs & stakes).
+  // Bounds are anchored in global screen Y so editor partial-window bakes match full bakes pixel-for-pixel.
   if (S?.carvedStairs) {
-    const lo = new Int32Array(slopes.length + 1).fill(1 << 30), hi = new Int32Array(slopes.length + 1).fill(-1);
+    const gLo = new Int32Array(slopes.length + 1).fill(1 << 30), gHi = new Int32Array(slopes.length + 1).fill(-1);
     const ownerOf = (i: number) => { const o = cut.length ? cut[i]! : 0; if (o) return o; const q = ssl[i]; return q && kind[i] === 0 && slopes[q - 1]?.steps ? q : 0; };
-    for (let i = 0; i < N; i++) { const o = ownerOf(i); if (!o) continue; const y = (i / PW) | 0; if (y < lo[o]!) lo[o] = y; if (y > hi[o]!) hi[o] = y; }
-    const b0 = S.body[0]!, tw = S.carvedStairs.tread === "wall" ? 6 : 0;
+    for (let o = 1; o <= gslopes.length; o++) {
+      const s = gslopes[o - 1]!;
+      if (!s.steps || (s.dir !== "n" && s.dir !== "s")) continue;
+      if (s.dir === "n") {
+        const len = s.h * T, topStepC = s.lo + (Math.floor(((len - 0.5) / len) * s.steps) / s.steps) * (s.hi - s.lo);
+        gLo[o] = s.y > 0 ? s.y * T + pad - Math.round(s.hi * U) : pad - Math.round(topStepC * U);
+        gHi[o] = (s.y + s.h) * T - 1 + pad - Math.round(s.lo * U);
+      } else {
+        const len = s.h * T;
+        for (let py = s.y * T; py < (s.y + s.h) * T; py++) {
+          const t = Math.floor(((py - s.y * T + 0.5) / len) * s.steps) / s.steps;
+          const sy = py + pad - Math.round((s.lo + t * (s.hi - s.lo)) * U);
+          if (sy < gLo[o]!) gLo[o] = sy;
+          if (sy > gHi[o]!) gHi[o] = sy;
+        }
+      }
+    }
+    if (!win) {
+      for (let i = 0; i < N; i++) {
+        const o = ownerOf(i); if (!o) continue;
+        const gy = ((i / PW) | 0) + oy;
+        if (gy < gLo[o]!) gLo[o] = gy;
+        if (gy > gHi[o]!) gHi[o] = gy;
+      }
+    }
     for (let i = 0; i < N; i++) {
       const o = ownerOf(i); if (!o) continue;
-      const s = gslopes[o - 1]!; if (isLogStair(S, s) || !s.steps || (s.dir !== "n" && s.dir !== "s")) continue;
-      const sy = (i / PW) | 0, sx = i % PW, [a, wd] = stairAcross(s, sx + ox, 0);
-      const cheek = carvedCheek(a, wd, sy + yb); if (cheek >= 0) { out[i] = cheek; continue; }
-      const span = hi[o]! - lo[o]! + 1, bh = span / s.steps, pos = (sy - lo[o]!) % bh, f = pos / bh;
-      let p: number;
-      if (pos < 1) p = tw + 5;                                   // nosing
-      else if (f < 0.5) p = tw + 3 + (f < 0.2 ? 1 : 0);          // tread, lit toward its nosing
-      else if (pos < bh * 0.5 + 1) p = 6 + 1;                    // shadow under the tread
-      else p = shift(b0.rows[(sy + yb) % b0.h]![(sx + ox) % b0.w]!, pos > bh - 1 ? -2 : -1);   // riser: the face's strata
-      if (a < 6 && p !== 6 + 1) p = shift(p, -1);                // the west columns in the cheek's shadow
-      out[i] = p;
+      const s = gslopes[o - 1]!; if (!s.steps || (s.dir !== "n" && s.dir !== "s")) continue;
+      const sy = (i / PW) | 0, sx = i % PW;
+      out[i] = paintCarvedStairPixel(S, s, sx + ox, sy + oy, gLo[o]!, gHi[o]!, baseRamps.length, out[i]!);
+      edge[i] = 0;
     }
   }
   const stairOwner = (i: number): number => (cut.length ? cut[i] : 0) || (ssl[i] && kind[i] === 0 && slopes[ssl[i] - 1]?.steps ? ssl[i] : 0);
@@ -1095,7 +1288,7 @@ export function renderRelief(h: HeightGrid, opt: ReliefRenderOptions = {}): Reli
   for (let sy = 0; sy < SH; sy++) for (let sx = 0; sx < PW; sx++) {
     const i = sy * PW + sx; let p = out[i];
     if (p < 0) p = GROUND[(sy % T) * T + sx % T];
-    const col = ramps[(p / 6) | 0][p % 6], o = i * 4, f = kind[i] === 0 && !(bridge && underDeck[i]) ? (art && ssl[i] ? 1 : tone(fl[i])) * (ssl[i] ? slopeShade(i) : 1) : 1;   // (the floor under a deck is ground-lit: tone() darkened it into a slab)
+    const col = ramps[(p / 6) | 0][p % 6], o = i * 4, f = kind[i] === 0 && !(S?.carvedStairs && stairOwner(i)) && !(bridge && underDeck[i]) ? (art && ssl[i] ? 1 : tone(fl[i])) * (ssl[i] ? slopeShade(i) : 1) : 1;   // (the floor under a deck is ground-lit: tone() darkened it into a slab)
     if (opt.transparentGround && kind[i] < 0) continue;
     // 투명 땅은 제자리(높이 0)만. 경사로 아랫도리는 반올림 단이 0 이어도 위로 밀려 그려져 그 자리에 타일이 없다 — 불투명으로 칠한다.
     // 윗단 칸의 모서리 깎임(diag)도 화소는 높이 0 이지만 그 칸 타일은 위로 들려 그려진다 — 원천 칸이 높이 0 일 때만 비운다.
@@ -1190,27 +1383,48 @@ function paintSlopePieces(
   }
 }
 
-/** 주변 땅의 팔레트로 칠하는 연속 비탈. 가운데는 닳은 흙, 양옆과 양끝은 풀로 부드럽게 잇는다. */
+/** 주변 땅의 팔레트로 칠하는 연속 비탈. 뭉개진 보간 대신 도트 클러스터·풀 포기 가장자리·등고 음영·잔돌로 자연스러운 3/4 오르막을 그린다. */
 function paintNaturalRamps(
   ramps: number[][][], slopes: ReliefSlope[],
   r: { rgba: Uint8ClampedArray; kind: Int8Array; ssl: Int16Array; sst: Float32Array; mpy: Int32Array; PW: number; SH: number; ox: number; oy: number },
 ) {
   const { rgba, kind, ssl, sst, mpy, PW, SH, ox, oy } = r;
+  const topRamp = ramps[0]!, earthRamp = ramps[Math.min(ramps.length - 1, 1)]!;
   for (let i = 0; i < PW * SH; i++) {
     const owner = ssl[i];
-    if (!owner || kind[i] !== 0 || slopes[owner - 1].steps) continue;
-    const s = slopes[owner - 1], px = i % PW + ox, py = mpy[i] + oy;
-    const [across, width] = stairAcross(s, px, py), t = sst[i];
-    const along = s.dir === "n" || s.dir === "s" ? py : px;
-    const len = (s.dir === "n" || s.dir === "s" ? s.h : s.w) * T;
-    const noise = hsh3(px, py, 73), border = 2 + hsh3(fdiv(along, 4), owner, 79) % 3;
-    const side = Math.max(0, Math.min(1, (Math.min(across, width - 1 - across) - border) / 3));
-    const ends = Math.max(0, Math.min(1, Math.min(t, 1 - t) * len / 4));
-    const dirt = side * ends;
-    const grass = ramps[0][noise % 17 === 0 ? 4 : 3], earth = ramps[1][noise % 19 === 0 ? 3 : noise % 7 === 0 ? 4 : 5];
-    const light = SLOPE_LIGHT[s.dir] * (0.96 + 0.08 * t), o = i * 4;
-    for (let channel = 0; channel < 3; channel++) rgba[o + channel] = (grass[channel] * (1 - dirt) + earth[channel] * dirt) * light;
-    rgba[o + 3] = 255;
+    if (!owner || kind[i] !== 0 || slopes[owner - 1]!.steps) continue;
+    const s = slopes[owner - 1]!, px = i % PW + ox, py = mpy[i]! + oy;
+    const [across, width] = stairAcross(s, px, py), t = Math.max(0, Math.min(1, sst[i]!));
+    const ns = s.dir === "n" || s.dir === "s";
+    const along = ns ? py : px, len = (ns ? s.h : s.w) * T;
+    const edgeDist = Math.min(across, width - 1 - across), leftSide = across < (width >> 1);
+    const n = nmix(px, py, 601), clod = 0.58 * vn2(px * 0.42, py * 0.42, 607) + 0.42 * vn2(px * 0.19, py * 0.21, 613);
+    // 양옆 풀 포기 경계와 위·아래 끝: 곧은 사각형 대신 들쭉날쭉한 풀 클러스터가 비탈 안쪽으로 자연스럽게 스며든다
+    const wave = 2.0 + 3.4 * vn1(along * 0.21, owner * 13 + (leftSide ? 3 : 9)) + (n % 3 === 0 ? 1.2 : 0);
+    const endDist = Math.min(t, 1 - t) * len;
+    const endFeather = 1.0 + 4.2 * vn1(across * 0.29, owner * 19 + (t > 0.5 ? 5 : 11)) + ((n >> 2) % 3);
+    let col: number[];
+    if (edgeDist < wave || endDist < endFeather) {
+      const gt = (n % 7 === 0) ? 4 : clod > 0.62 ? 4 : clod < 0.34 ? 2 : 3;
+      col = topRamp[Math.max(1, Math.min(5, gt + (t > 0.84 && (n % 4 === 0) ? 1 : 0)))]!;
+    } else if (edgeDist < wave + 1.5) {
+      // 풀과 흙길 경계 턱: 서쪽(왼쪽) 절개 가장자리는 살짝 그늘지고 동쪽(오른쪽)은 빛을 받는다
+      col = (n & 1 ? topRamp[leftSide ? 2 : 3] : earthRamp[leftSide ? 2 : 4])!;
+    } else {
+      // 다져진 비탈 흙길: 마루(t→1)는 햇빛을 받아 밝고 발치(t→0)로 갈수록 차분해지며, 부드러운 흙덩이 결·잔돌로 경사를 읽힌다
+      const fade = (t - 0.42) * 1.45 + (clod - 0.5) * 2.1 + (((n >> 4) & 3) - 1.5) * 0.18;
+      let et = fade > 0.52 ? 5 : fade > -0.08 ? 4 : fade > -0.62 ? 3 : 2;
+      const u = Math.abs(across - (width - 1) * 0.5) / Math.max(1, width * 0.5);
+      const arc = Math.round(along + (ns ? 1 : -1) * 2.2 * (1 - u * u));
+      if (arc % 9 === 0 && clod < 0.52 && (n % 5 < 2)) et = Math.max(2, et - 1);
+      else if (arc % 9 === 8 && clod > 0.48 && (n % 5 < 2)) et = Math.min(5, et + 1);
+      if (t > 0.88 && (n % 3 !== 0)) et = Math.max(et, 5);
+      if ((n & 31) === 0) et = 5;
+      else if (nmix(px - 1, py, 601) % 32 === 0) et = 2;
+      col = earthRamp[et]!;
+    }
+    const light = SLOPE_LIGHT[s.dir] * (0.95 + 0.08 * t), o = i * 4;
+    rgba[o] = col[0]! * light; rgba[o + 1] = col[1]! * light; rgba[o + 2] = col[2]! * light; rgba[o + 3] = 255;
   }
 }
 

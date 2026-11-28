@@ -9,7 +9,7 @@ import { createBlankProject } from "@/project/defaults/defaultProject";
 import { canMove, isPassable } from "@/project/collision";
 import type { GameMap, Project } from "@/project/types";
 import { effectiveHeights, renderRelief, reliefPadPx } from "@/project/relief/render";
-import { cellLift, footLift, reliefLiftField, reliefRenderOptions, pointLift, reliefRowStrips, reliefSignature, reliefPaintsCell } from "@/project/relief/screen";
+import { cellLift, footLift, MIN_RELIEF_STEP_DURATION_FACTOR, reliefLiftField, reliefRenderOptions, reliefStepMotion, pointLift, reliefRowStrips, reliefSignature, reliefPaintsCell } from "@/project/relief/screen";
 import { compileReliefStyle, RELIEF_DEFAULT_RIM, RELIEF_STYLES, reliefFaceRows, RELIEF_WALL_FAMILIES, reliefRampArt, reliefStyleForGround, reliefStyleForTileset } from "@/project/relief/styles";
 import { gridFromRelief, type ReliefData } from "@/project/relief/types";
 import { RELIEF_LADDER, RELIEF_VINE, reliefAllowsStep, reliefClimbAt, reliefSlopes, rampCode } from "@/project/relief/walk";
@@ -409,6 +409,80 @@ describe("render", () => {
         const signatures = new Set([base, withDecor, otherDecor, noRamp].map(reliefSignature));
         expect(signatures.size).toBe(4);
         expect(reliefSignature(plateau())).toBe(reliefSignature(base));
+      });
+
+      it("경사로 걸음은 4방향 모두 화면 이동 속도가 평지(1.0x)와 일정하게 유지된다", () => {
+        const measureSpeeds = (field: ReturnType<typeof reliefLiftField>, path: readonly [number, number][], baseFrames = 20): number[] => {
+          const speeds: number[] = [];
+          for (let i = 0; i < path.length - 1; i += 1) {
+            const [fx, fy] = path[i]!, [tx, ty] = path[i + 1]!;
+            const motion = reliefStepMotion(field, fx, fy, tx, ty);
+            const frames = Math.max(1, Math.round(baseFrames * motion.durationFactor));
+            let prevX = fx + 0.5, prevY = fy + 1 - footLift(field, fx + 0.5, fy + 1);
+            for (let f = 1; f <= frames; f += 1) {
+              const a = motion.progress(f / frames);
+              const x = fx + (tx - fx) * a + 0.5;
+              const y = fy + (ty - fy) * a + 1;
+              const sy = y - footLift(field, x, y);
+              speeds.push(Math.hypot(x - prevX, sy - prevY) * baseFrames);
+              prevX = x; prevY = sy;
+            }
+          }
+          return speeds;
+        };
+
+        // 북향 2단 경사로(길이 2): 경사로 안 걸음은 2.0배 화면 거리 → 2.0배 시간, 전 구간 1.0x 균속
+        const northField = reliefLiftField(plateau());
+        expect(reliefStepMotion(northField, 5, 8, 5, 7).durationFactor).toBe(1);
+        expect(reliefStepMotion(northField, 5, 7, 5, 6).durationFactor).toBeCloseTo(2);
+        expect(reliefStepMotion(northField, 5, 6, 5, 5).durationFactor).toBeCloseTo(2);
+        expect(reliefStepMotion(northField, 5, 5, 5, 4).durationFactor).toBe(1);
+        for (const v of measureSpeeds(northField, [[5, 8], [5, 7], [5, 6], [5, 5], [5, 4]])) {
+          expect(v).toBeCloseTo(1, 2);
+        }
+
+        // 남향 2단 경사로(길이 4): 경사로 안 걸음은 0.5배 화면 거리 → 0.5배 시간, 전 구간 1.0x 균속
+        const sLevels = Array.from({ length: W * H }, (_, i) => (Math.floor(i / W) >= 8 ? 2 : 0));
+        const sRamps = new Array<number>(W * H).fill(0);
+        for (let y = 4; y <= 7; y += 1) sRamps[y * W + 5] = rampCode("s");
+        const southField = reliefLiftField({ width: W, height: H, levels: sLevels, ramps: sRamps });
+        expect(reliefStepMotion(southField, 5, 3, 5, 4).durationFactor).toBeCloseTo(0.5);
+        expect(reliefStepMotion(southField, 5, 4, 5, 5).durationFactor).toBeCloseTo(0.5);
+        expect(reliefStepMotion(southField, 5, 7, 5, 8).durationFactor).toBe(1);
+        for (const v of measureSpeeds(southField, [[5, 2], [5, 3], [5, 4], [5, 5], [5, 6], [5, 7], [5, 8]])) {
+          expect(v).toBeCloseTo(1, 2);
+        }
+
+        // 동향 2단 경사로(길이 2): 진입·탈출 걸음의 평지/경사 경계도 호 길이 보간으로 전 프레임 1.0x 균속
+        const eLevels = Array.from({ length: W * H }, (_, i) => ((i % W) >= 7 ? 2 : 0));
+        const eRamps = new Array<number>(W * H).fill(0);
+        eRamps[5 * W + 5] = rampCode("e");
+        eRamps[5 * W + 6] = rampCode("e");
+        const eastField = reliefLiftField({ width: W, height: H, levels: eLevels, ramps: eRamps });
+        expect(reliefStepMotion(eastField, 4, 5, 5, 5).durationFactor).toBeCloseTo(0.5 + Math.SQRT1_2);
+        expect(reliefStepMotion(eastField, 5, 5, 6, 5).durationFactor).toBeCloseTo(Math.SQRT2);
+        expect(reliefStepMotion(eastField, 6, 5, 7, 5).durationFactor).toBeCloseTo(0.5 + Math.SQRT1_2);
+        for (const v of measureSpeeds(eastField, [[3, 5], [4, 5], [5, 5], [6, 5], [7, 5]], 40)) {
+          expect(v).toBeGreaterThan(0.95);
+          expect(v).toBeLessThan(1.05);
+        }
+
+        // 벽면에 판 계단(carvedStairs)도 전체 1배속 걸음 시간을 유지하면서 디딤판 단차 점프 기믹을 보존한다
+        const carved = { ...plateau(), style: "desert" };
+        carved.ramps![6 * W + 5] = rampCode("n", true);
+        carved.ramps![7 * W + 5] = rampCode("n", true);
+        const carvedField = reliefLiftField(carved);
+        expect(reliefStepMotion(carvedField, 5, 7, 5, 6).durationFactor).toBeCloseTo(2);
+        expect(reliefStepMotion(carvedField, 5, 6, 5, 5).durationFactor).toBeCloseTo(2);
+        expect(footLift(carvedField, 5.5, 7.2)).toBe(0);
+        expect(footLift(carvedField, 5.5, 6.5)).toBe(1);
+
+        // 화면 거리가 0이 되는 퇴화 남향 1칸 경사로도 최소 배수(MIN_RELIEF_STEP_DURATION_FACTOR)로 보호된다
+        const degLevels = Array.from({ length: W * H }, (_, i) => (Math.floor(i / W) >= 6 ? 1 : 0));
+        const degRamps = new Array<number>(W * H).fill(0);
+        degRamps[5 * W + 5] = rampCode("s");
+        const degField = reliefLiftField({ width: W, height: H, levels: degLevels, ramps: degRamps });
+        expect(reliefStepMotion(degField, 5, 4, 5, 5).durationFactor).toBe(MIN_RELIEF_STEP_DURATION_FACTOR);
       });
     });
     describe("relief transparent ground", () => {
