@@ -1,0 +1,57 @@
+{
+  "ok": true,
+  "issues": [],
+  "grid_size_cells": [
+    28,
+    24
+  ],
+  "pixel_size_1x": [
+    448,
+    384
+  ],
+  "pixel_size_2x": [
+    896,
+    768
+  ],
+  "floor_cells_total": 271,
+  "occupied_floor_cells": 76,
+  "reachable_walk_cells": 195,
+  "furniture_uses": "51/51",
+  "carbon_sprites_used": "20/20",
+  "tabletop_goods_placed": 17,
+  "doorway_clear_cells_checked": 36,
+  "rooms": [
+    {
+      "room": "Astral Library Rotunda",
+      "anchor": [
+        13,
+        7
+      ],
+      "reached": true
+    },
+    {
+      "room": "Cozy Hearth Study",
+      "anchor": [
+        6,
+        14
+      ],
+      "reached": true
+    },
+    {
+      "room": "Fire-Safe Alchemy Lab & Storeroom",
+      "anchor": [
+        22,
+        15
+      ],
+      "reached": true
+    },
+    {
+      "room": "South Entrance Vestibule & Corridor",
+      "anchor": [
+        13,
+        21
+      ],
+      "reached": true
+    }
+  ]
+}

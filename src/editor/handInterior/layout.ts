@@ -175,6 +175,7 @@ const DOOR_OF: Record<string, { h?: string; v?: string }> = {
   "school-infirmary": { h: "mci-door-hospital" }, "roof-machine": { h: "mci-door-steel" }, "council-storage": { h: "mci-door-steel" },
   meeting: { h: "mci-door-glass" }, "open-office": { h: "mci-door-glass" }, elevatorhall: { h: "mci-door-glass" }, lounge: { h: "mci-door-glass" }, pantry: { h: "mci-door-wood" },
   "cinema-theater": { h: "mci-door-glass" }, "gallery-sculpture": { h: "mci-door-glass" },
+  "pcb3-smoking": { h: "mci-door-glass" }, "pcb3-team": { h: "mci-door-glass" },
   // modern_campus(현대 학교·캠퍼스) 실내 — 강의실·세미나실·교실·학생회실은 교실 미닫이문.
   lecture: { h: "sc-classroom-door" }, seminar: { h: "sc-classroom-door" }, classroom: { h: "sc-classroom-door" }, council: { h: "sc-classroom-door" },
   staffroom: { h: "sc-classroom-door", v: "door-side-sliding" }, infirmary: { h: "sc-classroom-door", v: "door-side-sliding" }, schooltoilet: { h: "door-open-toilet", v: "door-side-western" },

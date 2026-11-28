@@ -31,7 +31,7 @@ export const MODERN_KR_CARD =
   "[Modern Korea type:street|house, style kr-modern] Use for Seoul or modern Korea. " +
   "street = Korean district, sized to the requested shops. For a specific setting use hints.district: sangga-alley, villa-town, apt-complex, blvd-office, market, campus-town, riverside, station-front. " +
   "features can request shops: 편의점, 카페, 은행, 병원, 사무실, 호텔, 백화점, 아파트, 주택, 빵집, 우체국, 경찰서. " +
-  "house = one interior in that city: 카페 (bar counter, seats) · 편의점 · 지하철역 (subway station) · 사무실 · 아파트 · 빌딩 로비 (lobby) · 은행 · 병원 · 마트 · 백화점 · 영화관 (cinema) · 식당 (restaurant) · 미술관 (gallery) · 도서관 (library) · 시청 (city hall) · 의원 (clinic) · 빵집 카페 · 창고 (warehouse). Use the full venue name or hints.program.";
+  "house = one interior in that city: PC방 (PC bang: gaming seats, counter, snack bar) · 카페 (bar counter, seats) · 편의점 · 지하철역 (subway station) · 사무실 · 아파트 · 빌딩 로비 (lobby) · 은행 · 병원 · 마트 · 백화점 · 영화관 (cinema) · 식당 (restaurant) · 미술관 (gallery) · 도서관 (library) · 시청 (city hall) · 의원 (clinic) · 빵집 카페 · 창고 (warehouse). Use the full venue name or hints.program.";
 
 type Rule = readonly [RegExp, string];
 const has = (text: string, re: RegExp): boolean => re.test(text);
@@ -40,6 +40,7 @@ const textOf = (spec: PlaceSpec): string => [spec.name, spec.theme, ...(spec.fea
 
 /** 실내 낱말 → modern_city 예제 구성(program). 앞이 우선 — 이름 낱말이 방 종류(zones)보다 먼저다. */
 const PROGRAM_RULES: readonly Rule[] = [
+  [/pc\s*방|피시방|pc[\s_-]?bang|게임방/iu, "mc_pcbang"],
   [/bakery|빵집|베이커리/i, "mc_bakery_cafe"], [/cafe|café|coffee|카페|커피|찻집|바리스타/i, "cafe"], [/konbini|convenience|편의점/i, "konbini"],
   [/subway|metro|지하철|전철|승강장|역사|(?:^|\s)역(?:$|\s)/i, "subway-station"], [/concourse|대합실|환승/i, "concourse"],
   [/department|백화점/i, "department-store"], [/super|mart|마트|슈퍼/i, "supermarket-mart"], [/hospital|병원|병동/i, "hospital-ward"], [/clinic|의원|내과|치과/i, "clinic"],

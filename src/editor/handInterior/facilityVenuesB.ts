@@ -99,6 +99,51 @@ export const FACILITIES_B: readonly FacilityVenue[] = [
         pair: [["m:desk-pc", "m:chair-office-s", 2, 4, 5, 1, 3, 2, "s"]],
       }),
     ] }),
+  facility({ cat: "오락시설", p: "mc_pcbang", map: "korean-pcbang", ko: "PC방",
+    aliases: ["피시방", "pc방", "pcbang", "pc-bang", "pc_bang", "게임방"],
+    shape: "계단형", entrance: "pcb3-hall", hall: false, plainDoorways: true,
+    keepMaterials: ["pcb3-food", "pcb3-fps", "pcb3-smoking", "pcb3-team", "pcb3-hall"],
+    hubs: ["pcb3-hall", "pcb3-fps", "pcb3-food"],
+    above: [["pcb3-food", "pcb3-team"], ["pcb3-fps", "pcb3-hall"], ["pcb3-smoking", "pcb3-hall"]],
+    left: [["pcb3-food", "pcb3-fps"], ["pcb3-fps", "pcb3-smoking"], ["pcb3-team", "pcb3-hall"]],
+    rows: [["pcb3-food", "pcb3-fps", "pcb3-smoking"], ["pcb3-team", "pcb3-hall", "~"]],
+    open: [["pcb3-food", "pcb3-fps"], ["pcb3-fps", "pcb3-hall"]],
+    rooms: [
+      R("pcb3-food", 10, 9, F.pcbDark, W.pcbDark, {
+        at: [
+          ["pcb3-digital-menu", 1, 0], ["pcb3-digital-menu", 6, 0],
+          ["pcb3-drink-triple", 0, 2], ["pcb3-snack-rack", 3, 2], ["pcb3-ramen-bar", 6, 2],
+          ["pcb3-counter-pos", 1, 5], ["pcb3-tray-bin", 5, 5],
+        ],
+      }),
+      R("pcb3-fps", 13, 9, F.pcbDark, W.pcbDark, {
+        at: [
+          ["pcb3-esports-poster", 2, 0], ["pcb3-ac-dark", 6, 0], ["pcb3-esports-poster", 10, 0],
+          ["pcb3-b2b-red-4", 2, 4],
+          ["pcb3-wait-sofa-dark", 1, 8], ["pcb3-side-table-dark", 9, 8],
+        ],
+      }),
+      R("pcb3-smoking", 6, 6, F.pcbSmoke, W.pcbGlass, {
+        at: [
+          ["pcb3-vent", 2, 0],
+          ["pcb3-ashtray", 1, 3], ["pcb3-ashtray", 4, 3],
+        ],
+      }),
+      R("pcb3-team", 12, 9, F.pcbDark, W.pcbGlass, {
+        at: [
+          ["pcb3-ac-dark", 2, 0], ["pcb3-esports-poster", 7, 0],
+          ["pcb3-team-row-4", 1, 5],
+          ["pcb3-side-table-dark", 1, 3],
+        ],
+      }),
+      R("pcb3-hall", 16, 13, F.pcbDark, W.pcbDark, {
+        at: [
+          ["pcb3-b2b-blue-5", 4, 4],
+          ["pcb3-b2b-blue-5", 4, 9],
+          ["pcb3-kiosk-pair", 1, 10],
+        ],
+      }),
+    ] }),
   facility({ cat: "오락시설", p: "mc_bowling", map: "bowling-alley", ko: "볼링장", shape: "ㅗ자형", entrance: "bw-lobby",
     rows: [["~", "bw-lanes", "~"], ["bw-shoes", "bw-lobby", "bw-bar"]],
     open: [["bw-lanes", "bw-lobby"], ["bw-lobby", "bw-bar"]],

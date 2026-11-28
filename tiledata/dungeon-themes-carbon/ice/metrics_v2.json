@@ -1,0 +1,456 @@
+{
+  "theme": "ice",
+  "title": "Glacial Sanctuary Cavern v2",
+  "ok": true,
+  "issues": [],
+  "grid_size_tiles": [
+    28,
+    22
+  ],
+  "pixel_size_1x": [
+    448,
+    352
+  ],
+  "pixel_size_2x": [
+    896,
+    704
+  ],
+  "void_hex": "#111520",
+  "floor_cells_total": 246,
+  "occupied_floor_cells": 34,
+  "walkable_cells_total": 212,
+  "reachable_walk_cells": 212,
+  "trapped_unreachable_cells": 0,
+  "connectivity_ratio": 1.0,
+  "unreachable_rooms": 0,
+  "unreachable_stations": 0,
+  "carbon_sprites_available": [
+    "frost-brazier",
+    "frozen-warrior",
+    "ice-altar",
+    "ice-crystal",
+    "icicles",
+    "snow-drift"
+  ],
+  "carbon_sprites_placed_unique": "6/6",
+  "total_object_placements": 33,
+  "entrance_start_cells": [
+    [
+      15,
+      21
+    ],
+    [
+      16,
+      21
+    ]
+  ],
+  "chambers": [
+    {
+      "name": "South Entry Ice Tunnel & Frosted Vestibule",
+      "anchor": [
+        15,
+        19
+      ],
+      "reachable": true,
+      "bfs_steps": 2
+    },
+    {
+      "name": "Central Specular Frozen Lake Hall",
+      "anchor": [
+        15,
+        11
+      ],
+      "reachable": true,
+      "bfs_steps": 10
+    },
+    {
+      "name": "East Crystal Grotto",
+      "anchor": [
+        22,
+        12
+      ],
+      "reachable": true,
+      "bfs_steps": 15
+    },
+    {
+      "name": "West Cryo-Reliquary Alcove",
+      "anchor": [
+        5,
+        10
+      ],
+      "reachable": true,
+      "bfs_steps": 21
+    },
+    {
+      "name": "North Stepped Glacial Altar Apse",
+      "anchor": [
+        15,
+        5
+      ],
+      "reachable": true,
+      "bfs_steps": 16
+    }
+  ],
+  "stations": [
+    {
+      "label": "North Sanctum Ice Altar",
+      "sprite": "ice-altar",
+      "cell": [
+        15,
+        4
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        15,
+        5
+      ],
+      "reachable": true,
+      "bfs_steps": 16
+    },
+    {
+      "label": "Altar Dais Frost Brazier W",
+      "sprite": "frost-brazier",
+      "cell": [
+        13,
+        4
+      ],
+      "footprint": [
+        1,
+        1
+      ],
+      "use_cell": [
+        13,
+        5
+      ],
+      "reachable": true,
+      "bfs_steps": 18
+    },
+    {
+      "label": "Altar Dais Frost Brazier E",
+      "sprite": "frost-brazier",
+      "cell": [
+        18,
+        4
+      ],
+      "footprint": [
+        1,
+        1
+      ],
+      "use_cell": [
+        18,
+        5
+      ],
+      "reachable": true,
+      "bfs_steps": 18
+    },
+    {
+      "label": "Altar Wing Crystal Cluster W",
+      "sprite": "ice-crystal",
+      "cell": [
+        11,
+        4
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        12,
+        5
+      ],
+      "reachable": true,
+      "bfs_steps": 19
+    },
+    {
+      "label": "Altar Wing Crystal Cluster E",
+      "sprite": "ice-crystal",
+      "cell": [
+        19,
+        4
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        19,
+        5
+      ],
+      "reachable": true,
+      "bfs_steps": 19
+    },
+    {
+      "label": "Altar Outer Cheek Crystal E",
+      "sprite": "ice-crystal",
+      "cell": [
+        21,
+        5
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        21,
+        6
+      ],
+      "reachable": true,
+      "bfs_steps": 20
+    },
+    {
+      "label": "Cryo-Reliquary Frost Brazier W",
+      "sprite": "frost-brazier",
+      "cell": [
+        3,
+        8
+      ],
+      "footprint": [
+        1,
+        1
+      ],
+      "use_cell": [
+        3,
+        9
+      ],
+      "reachable": true,
+      "bfs_steps": 24
+    },
+    {
+      "label": "Frozen Horned Knight Reliquary",
+      "sprite": "frozen-warrior",
+      "cell": [
+        5,
+        8
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        6,
+        9
+      ],
+      "reachable": true,
+      "bfs_steps": 21
+    },
+    {
+      "label": "Cryo-Reliquary Frost Brazier E",
+      "sprite": "frost-brazier",
+      "cell": [
+        8,
+        8
+      ],
+      "footprint": [
+        1,
+        1
+      ],
+      "use_cell": [
+        8,
+        9
+      ],
+      "reachable": true,
+      "bfs_steps": 19
+    },
+    {
+      "label": "Cryo-Reliquary Glacial Crystal",
+      "sprite": "ice-crystal",
+      "cell": [
+        2,
+        10
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        3,
+        11
+      ],
+      "reachable": true,
+      "bfs_steps": 22
+    },
+    {
+      "label": "Cryo-Reliquary Corner Snowbank",
+      "sprite": "snow-drift",
+      "cell": [
+        3,
+        12
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        4,
+        13
+      ],
+      "reachable": true,
+      "bfs_steps": 19
+    },
+    {
+      "label": "NE Lake Shoal Ice Crystal",
+      "sprite": "ice-crystal",
+      "cell": [
+        18,
+        9
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        18,
+        10
+      ],
+      "reachable": true,
+      "bfs_steps": 13
+    },
+    {
+      "label": "SW Lake Shoal Ice Crystal",
+      "sprite": "ice-crystal",
+      "cell": [
+        11,
+        13
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        12,
+        14
+      ],
+      "reachable": true,
+      "bfs_steps": 10
+    },
+    {
+      "label": "East Crystal Grotto Hero Cluster",
+      "sprite": "ice-crystal",
+      "cell": [
+        23,
+        11
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        23,
+        12
+      ],
+      "reachable": true,
+      "bfs_steps": 16
+    },
+    {
+      "label": "East Grotto Rime Snowbank",
+      "sprite": "snow-drift",
+      "cell": [
+        22,
+        13
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        21,
+        13
+      ],
+      "reachable": true,
+      "bfs_steps": 13
+    },
+    {
+      "label": "SE Lakeside Wind Snowbank",
+      "sprite": "snow-drift",
+      "cell": [
+        18,
+        14
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        17,
+        14
+      ],
+      "reachable": true,
+      "bfs_steps": 8
+    },
+    {
+      "label": "South Entry Frost Brazier W",
+      "sprite": "frost-brazier",
+      "cell": [
+        13,
+        18
+      ],
+      "footprint": [
+        1,
+        1
+      ],
+      "use_cell": [
+        13,
+        19
+      ],
+      "reachable": true,
+      "bfs_steps": 4
+    },
+    {
+      "label": "South Entry Frost Brazier E",
+      "sprite": "frost-brazier",
+      "cell": [
+        18,
+        18
+      ],
+      "footprint": [
+        1,
+        1
+      ],
+      "use_cell": [
+        18,
+        19
+      ],
+      "reachable": true,
+      "bfs_steps": 4
+    },
+    {
+      "label": "South Tunnel Wind-Blown Snow W",
+      "sprite": "snow-drift",
+      "cell": [
+        10,
+        19
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        12,
+        19
+      ],
+      "reachable": true,
+      "bfs_steps": 5
+    },
+    {
+      "label": "South Tunnel Wind-Blown Snow E",
+      "sprite": "snow-drift",
+      "cell": [
+        20,
+        19
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        19,
+        19
+      ],
+      "reachable": true,
+      "bfs_steps": 5
+    }
+  ]
+}

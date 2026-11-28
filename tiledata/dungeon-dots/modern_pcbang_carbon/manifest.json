@@ -1,0 +1,202 @@
+[
+  {
+    "file": "objects/pc_station_blue.png",
+    "id": "pc_station_blue",
+    "name_ko": "블루 게이밍 PC석",
+    "camera": "standing",
+    "canvas": "32x32",
+    "opaque_size": "30x29",
+    "colors": 23,
+    "facing": "down"
+  },
+  {
+    "file": "objects/pc_station_red.png",
+    "id": "pc_station_red",
+    "name_ko": "레드 듀얼모니터 PC석",
+    "camera": "standing",
+    "canvas": "32x32",
+    "opaque_size": "30x29",
+    "colors": 23,
+    "facing": "down"
+  },
+  {
+    "file": "objects/gaming_chair_red.png",
+    "id": "gaming_chair_red",
+    "name_ko": "레드 게이밍 체어",
+    "camera": "chair",
+    "canvas": "16x16",
+    "opaque_size": "14x14",
+    "colors": 14,
+    "facing": "down"
+  },
+  {
+    "file": "objects/gaming_chair_blue.png",
+    "id": "gaming_chair_blue",
+    "name_ko": "블루 게이밍 체어",
+    "camera": "chair",
+    "canvas": "16x16",
+    "opaque_size": "14x14",
+    "colors": 15,
+    "facing": "down"
+  },
+  {
+    "file": "objects/arcade_cabinet_blue.png",
+    "id": "arcade_cabinet_blue",
+    "name_ko": "블루 오락기",
+    "camera": "standing",
+    "canvas": "16x32",
+    "opaque_size": "14x29",
+    "colors": 34,
+    "facing": "down"
+  },
+  {
+    "file": "objects/arcade_cabinet_red.png",
+    "id": "arcade_cabinet_red",
+    "name_ko": "레드 격투 오락기",
+    "camera": "standing",
+    "canvas": "16x32",
+    "opaque_size": "14x29",
+    "colors": 32,
+    "facing": "down"
+  },
+  {
+    "file": "objects/claw_crane_machine.png",
+    "id": "claw_crane_machine",
+    "name_ko": "인형뽑기 기계",
+    "camera": "standing",
+    "canvas": "32x32",
+    "opaque_size": "30x29",
+    "colors": 45,
+    "facing": "down"
+  },
+  {
+    "file": "objects/coin_changer.png",
+    "id": "coin_changer",
+    "name_ko": "동전교환기",
+    "camera": "standing",
+    "canvas": "16x32",
+    "opaque_size": "14x29",
+    "colors": 21,
+    "facing": "down"
+  },
+  {
+    "file": "objects/vending_machine_drinks.png",
+    "id": "vending_machine_drinks",
+    "name_ko": "음료 자판기",
+    "camera": "standing",
+    "canvas": "32x32",
+    "opaque_size": "30x29",
+    "colors": 64,
+    "facing": "down"
+  },
+  {
+    "file": "objects/drink_fridge_glass.png",
+    "id": "drink_fridge_glass",
+    "name_ko": "음료 쇼케이스 냉장고",
+    "camera": "standing",
+    "canvas": "16x32",
+    "opaque_size": "14x29",
+    "colors": 54,
+    "facing": "down"
+  },
+  {
+    "file": "objects/ramen_cooker_counter.png",
+    "id": "ramen_cooker_counter",
+    "name_ko": "즉석 라면 조리기",
+    "camera": "standing",
+    "canvas": "32x32",
+    "opaque_size": "30x29",
+    "colors": 43,
+    "facing": "down"
+  },
+  {
+    "file": "objects/snack_shelf_rack.png",
+    "id": "snack_shelf_rack",
+    "name_ko": "과자·컵라면 진열대",
+    "camera": "standing",
+    "canvas": "32x32",
+    "opaque_size": "30x29",
+    "colors": 49,
+    "facing": "down"
+  },
+  {
+    "file": "objects/pos_counter_desk.png",
+    "id": "pos_counter_desk",
+    "name_ko": "포스 카운터 데스크",
+    "camera": "standing",
+    "canvas": "48x32",
+    "opaque_size": "46x29",
+    "colors": 32,
+    "facing": "down"
+  },
+  {
+    "file": "objects/cafe_table_oak.png",
+    "id": "cafe_table_oak",
+    "name_ko": "오크 카페 테이블",
+    "camera": "topdown",
+    "canvas": "32x16",
+    "opaque_size": "30x14",
+    "colors": 15,
+    "facing": "down"
+  },
+  {
+    "file": "objects/cafe_stool.png",
+    "id": "cafe_stool",
+    "name_ko": "카페 의자",
+    "camera": "chair",
+    "canvas": "16x16",
+    "opaque_size": "14x14",
+    "colors": 17,
+    "facing": "down"
+  },
+  {
+    "file": "objects/vip_sofa_navy.png",
+    "id": "vip_sofa_navy",
+    "name_ko": "VIP 네이비 가죽소파",
+    "camera": "topdown",
+    "canvas": "32x16",
+    "opaque_size": "30x14",
+    "colors": 10,
+    "facing": "down"
+  },
+  {
+    "file": "objects/storage_locker.png",
+    "id": "storage_locker",
+    "name_ko": "코인 사물함",
+    "camera": "standing",
+    "canvas": "16x32",
+    "opaque_size": "14x29",
+    "colors": 12,
+    "facing": "down"
+  },
+  {
+    "file": "objects/server_rack.png",
+    "id": "server_rack",
+    "name_ko": "서버 랙",
+    "camera": "standing",
+    "canvas": "16x32",
+    "opaque_size": "14x30",
+    "colors": 20,
+    "facing": "down"
+  },
+  {
+    "file": "objects/standing_floor_lamp.png",
+    "id": "standing_floor_lamp",
+    "name_ko": "스탠딩 플로어 램프",
+    "camera": "slender",
+    "canvas": "16x32",
+    "opaque_size": "12x29",
+    "colors": 16,
+    "facing": "down"
+  },
+  {
+    "file": "objects/trash_recycle_bin.png",
+    "id": "trash_recycle_bin",
+    "name_ko": "분리수거함",
+    "camera": "standing",
+    "canvas": "16x16",
+    "opaque_size": "14x14",
+    "colors": 22,
+    "facing": "down"
+  }
+]

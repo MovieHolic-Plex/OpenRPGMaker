@@ -1,0 +1,449 @@
+{
+  "theme": "mine_volcano",
+  "title": "Magma Vein Dwarven Mine v2",
+  "ok": true,
+  "issues": [],
+  "grid_size_tiles": [
+    28,
+    22
+  ],
+  "pixel_size_1x": [
+    448,
+    352
+  ],
+  "pixel_size_2x": [
+    896,
+    704
+  ],
+  "void_hex": "#141114",
+  "floor_cells_total": 328,
+  "occupied_floor_cells": 30,
+  "walkable_cells_total": 235,
+  "reachable_walk_cells": 235,
+  "trapped_unreachable_cells": 0,
+  "connectivity_ratio": 1.0,
+  "unreachable_rooms": 0,
+  "unreachable_stations": 0,
+  "rail_segments_placed": 21,
+  "rail_broken_joins": 0,
+  "carbon_sprites_available": [
+    "lava-brazier",
+    "minecart",
+    "obsidian-altar",
+    "ore-crystal-vein",
+    "pickaxe-rack",
+    "rails-kit"
+  ],
+  "carbon_sprites_placed_unique": "6/6",
+  "total_object_placements": 40,
+  "entrance_start_cells": [
+    [
+      6,
+      21
+    ],
+    [
+      7,
+      21
+    ]
+  ],
+  "chambers": [
+    {
+      "name": "SW Timber-Shored Mine Shaft & Tool Station",
+      "anchor": [
+        6,
+        18
+      ],
+      "reachable": true,
+      "bfs_steps": 3
+    },
+    {
+      "name": "NW Motherlode Ore Gallery",
+      "anchor": [
+        6,
+        8
+      ],
+      "reachable": true,
+      "bfs_steps": 14
+    },
+    {
+      "name": "Central Rail Haulage Cavern",
+      "anchor": [
+        11,
+        12
+      ],
+      "reachable": true,
+      "bfs_steps": 13
+    },
+    {
+      "name": "Riveted Iron & Basalt Magma Bridge",
+      "anchor": [
+        15,
+        10
+      ],
+      "reachable": true,
+      "bfs_steps": 19
+    },
+    {
+      "name": "SE Magma-Bank Smelting Spur",
+      "anchor": [
+        15,
+        15
+      ],
+      "reachable": true,
+      "bfs_steps": 14
+    },
+    {
+      "name": "NE Volcanic Obsidian Sanctum",
+      "anchor": [
+        21,
+        6
+      ],
+      "reachable": true,
+      "bfs_steps": 29
+    }
+  ],
+  "stations": [
+    {
+      "label": "SW Shaft Tool Station Pickaxe Rack",
+      "sprite": "pickaxe-rack",
+      "cell": [
+        3,
+        16
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        4,
+        17
+      ],
+      "reachable": true,
+      "bfs_steps": 6
+    },
+    {
+      "label": "Mine Shaft Entrance Brazier W",
+      "sprite": "lava-brazier",
+      "cell": [
+        4,
+        20
+      ],
+      "footprint": [
+        1,
+        1
+      ],
+      "use_cell": [
+        5,
+        20
+      ],
+      "reachable": true,
+      "bfs_steps": 2
+    },
+    {
+      "label": "Mine Shaft Entrance Brazier E",
+      "sprite": "lava-brazier",
+      "cell": [
+        9,
+        20
+      ],
+      "footprint": [
+        1,
+        1
+      ],
+      "use_cell": [
+        8,
+        20
+      ],
+      "reachable": true,
+      "bfs_steps": 2
+    },
+    {
+      "label": "SW Shaft Exposed Ore Seam",
+      "sprite": "ore-crystal-vein",
+      "cell": [
+        2,
+        18
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        3,
+        19
+      ],
+      "reachable": true,
+      "bfs_steps": 5
+    },
+    {
+      "label": "NW Motherlode Tool Rack",
+      "sprite": "pickaxe-rack",
+      "cell": [
+        6,
+        6
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        7,
+        7
+      ],
+      "reachable": true,
+      "bfs_steps": 14
+    },
+    {
+      "label": "NW Motherlode Gold-Ruby Outcrop W",
+      "sprite": "ore-crystal-vein",
+      "cell": [
+        2,
+        7
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        3,
+        8
+      ],
+      "reachable": true,
+      "bfs_steps": 16
+    },
+    {
+      "label": "NW Motherlode Gold-Amber Outcrop E",
+      "sprite": "ore-crystal-vein",
+      "cell": [
+        9,
+        7
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        9,
+        8
+      ],
+      "reachable": true,
+      "bfs_steps": 15
+    },
+    {
+      "label": "Motherlode Loading Minecart",
+      "sprite": "minecart",
+      "cell": [
+        5,
+        9
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        6,
+        10
+      ],
+      "reachable": true,
+      "bfs_steps": 11
+    },
+    {
+      "label": "Central Cavern Haulage Minecart",
+      "sprite": "minecart",
+      "cell": [
+        10,
+        13
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        10,
+        14
+      ],
+      "reachable": true,
+      "bfs_steps": 10
+    },
+    {
+      "label": "SE Caldera Rim Motherlode Vein",
+      "sprite": "ore-crystal-vein",
+      "cell": [
+        15,
+        18
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        15,
+        19
+      ],
+      "reachable": true,
+      "bfs_steps": 10
+    },
+    {
+      "label": "West Bridgehead Lava Brazier N",
+      "sprite": "lava-brazier",
+      "cell": [
+        13,
+        9
+      ],
+      "footprint": [
+        1,
+        1
+      ],
+      "use_cell": [
+        13,
+        10
+      ],
+      "reachable": true,
+      "bfs_steps": 17
+    },
+    {
+      "label": "West Bridgehead Lava Brazier S",
+      "sprite": "lava-brazier",
+      "cell": [
+        13,
+        12
+      ],
+      "footprint": [
+        1,
+        1
+      ],
+      "use_cell": [
+        13,
+        13
+      ],
+      "reachable": true,
+      "bfs_steps": 14
+    },
+    {
+      "label": "Volcanic Obsidian Sanctum Altar",
+      "sprite": "obsidian-altar",
+      "cell": [
+        21,
+        4
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        21,
+        5
+      ],
+      "reachable": true,
+      "bfs_steps": 30
+    },
+    {
+      "label": "Obsidian Dais Lava Brazier W",
+      "sprite": "lava-brazier",
+      "cell": [
+        19,
+        4
+      ],
+      "footprint": [
+        1,
+        1
+      ],
+      "use_cell": [
+        19,
+        5
+      ],
+      "reachable": true,
+      "bfs_steps": 28
+    },
+    {
+      "label": "Obsidian Dais Lava Brazier E",
+      "sprite": "lava-brazier",
+      "cell": [
+        24,
+        4
+      ],
+      "footprint": [
+        1,
+        1
+      ],
+      "use_cell": [
+        24,
+        5
+      ],
+      "reachable": true,
+      "bfs_steps": 33
+    },
+    {
+      "label": "Sanctum Volcanic Crystal Vein W",
+      "sprite": "ore-crystal-vein",
+      "cell": [
+        17,
+        4
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        17,
+        5
+      ],
+      "reachable": true,
+      "bfs_steps": 26
+    },
+    {
+      "label": "Sanctum Volcanic Crystal Vein E",
+      "sprite": "ore-crystal-vein",
+      "cell": [
+        25,
+        6
+      ],
+      "footprint": [
+        2,
+        1
+      ],
+      "use_cell": [
+        25,
+        7
+      ],
+      "reachable": true,
+      "bfs_steps": 32
+    },
+    {
+      "label": "East Bridgehead Lava Brazier N",
+      "sprite": "lava-brazier",
+      "cell": [
+        18,
+        9
+      ],
+      "footprint": [
+        1,
+        1
+      ],
+      "use_cell": [
+        18,
+        10
+      ],
+      "reachable": true,
+      "bfs_steps": 22
+    },
+    {
+      "label": "East Bridgehead Lava Brazier S",
+      "sprite": "lava-brazier",
+      "cell": [
+        18,
+        12
+      ],
+      "footprint": [
+        1,
+        1
+      ],
+      "use_cell": [
+        18,
+        11
+      ],
+      "reachable": true,
+      "bfs_steps": 21
+    }
+  ]
+}

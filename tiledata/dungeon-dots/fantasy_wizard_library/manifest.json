@@ -1,0 +1,418 @@
+{
+  "pack_id": "fantasy_wizard_library",
+  "title": "Beodeul Wizard Tower, Grand Library & Alchemy Workshop",
+  "title_ko": "버들항 마법탑 · 대서고와 연금공방",
+  "style": "Beodeul RM2000/2003 16x16px (0.13 px/cm, 170cm char = 22px)",
+  "palette_file": "palette_beodeul_library.json",
+  "tile_count": 26,
+  "object_count": 20,
+  "demo_map": {
+    "tiles": "30x22",
+    "native_1x": "demo_fantasy_wizard_library.png",
+    "preview_2x": "demo_fantasy_wizard_library_2x.png"
+  },
+  "contact_sheet": "preview_2x_on_gray.png",
+  "objects": [
+    {
+      "file": "objects/bookshelf_tall_full.png",
+      "id": "bookshelf_tall_full",
+      "name_en": "Grand Library Bookshelf",
+      "name_ko": "대서고 대형 책장",
+      "camera": "standing",
+      "tiles": "2x2",
+      "canvas": "32x32",
+      "opaque_size": "28x30",
+      "facing": "down",
+      "description": "Double-wide dark oak Beodeul library bookcase with a lit cornice top band and three recessed shelves packed with crimson, indigo, teal, moss, and gilded tomes.",
+      "tags": [
+        "bookshelf",
+        "library",
+        "oak",
+        "books",
+        "standing",
+        "beodeul",
+        "wizard"
+      ]
+    },
+    {
+      "file": "objects/bookshelf_scroll_rack.png",
+      "id": "bookshelf_scroll_rack",
+      "name_en": "Pigeonhole Scroll Rack",
+      "name_ko": "두루마리 보관함",
+      "camera": "standing",
+      "tiles": "1x2",
+      "canvas": "16x32",
+      "opaque_size": "14x30",
+      "facing": "down",
+      "description": "Tall narrow oak cubby cabinet with a lit top cornice and six recessed compartments stacked with rolled cream parchment scrolls tied in crimson ribbon.",
+      "tags": [
+        "scrolls",
+        "rack",
+        "cabinet",
+        "parchment",
+        "standing",
+        "library"
+      ]
+    },
+    {
+      "file": "objects/grimoire_cabinet.png",
+      "id": "grimoire_cabinet",
+      "name_en": "Locked Grimoire Cabinet",
+      "name_ko": "마도서 유리 장식장",
+      "camera": "standing",
+      "tiles": "2x2",
+      "canvas": "32x32",
+      "opaque_size": "28x29",
+      "facing": "down",
+      "description": "Locked dark oak display cabinet featuring glazed upper doors with brass hinges and lockplate over rare glowing tomes, plus two brass-handled lower drawers.",
+      "tags": [
+        "cabinet",
+        "grimoire",
+        "glass",
+        "brass",
+        "standing",
+        "library"
+      ]
+    },
+    {
+      "file": "objects/reading_table_long.png",
+      "id": "reading_table_long",
+      "name_en": "Long Oak Reading Table",
+      "name_ko": "긴 참나무 독서 탁자",
+      "camera": "topdown",
+      "tiles": "3x1",
+      "canvas": "48x16",
+      "opaque_size": "46x14",
+      "facing": "down",
+      "description": "Three-tile wide weathered oak reading table viewed top-down with an empty beveled plank surface, thin dark front apron, and short corner leg stubs.",
+      "tags": [
+        "table",
+        "reading",
+        "oak",
+        "topdown",
+        "furniture",
+        "empty"
+      ]
+    },
+    {
+      "file": "objects/study_table_round.png",
+      "id": "study_table_round",
+      "name_en": "Round Oak Study Table",
+      "name_ko": "둥근 참나무 서재 탁자",
+      "camera": "topdown",
+      "tiles": "2x2",
+      "canvas": "32x32",
+      "opaque_size": "26x26",
+      "facing": "down",
+      "description": "Circular weathered oak study table seen from almost directly above with a beveled plank top, empty surface, curved shaded rim, and central pedestal foot.",
+      "tags": [
+        "table",
+        "round",
+        "oak",
+        "topdown",
+        "study",
+        "empty"
+      ]
+    },
+    {
+      "file": "objects/alchemy_workbench.png",
+      "id": "alchemy_workbench",
+      "name_en": "Stone-Top Alchemy Workbench",
+      "name_ko": "연금술 석판 작업대",
+      "camera": "topdown",
+      "tiles": "2x1",
+      "canvas": "32x16",
+      "opaque_size": "30x14",
+      "facing": "down",
+      "description": "Heavy dark oak workbench inset with an empty cool grey slate stone slab and riveted iron corner caps, viewed top-down with short front apron and legs.",
+      "tags": [
+        "workbench",
+        "alchemy",
+        "stone",
+        "topdown",
+        "iron",
+        "empty"
+      ]
+    },
+    {
+      "file": "objects/oak_study_chair.png",
+      "id": "oak_study_chair",
+      "name_en": "Carved Oak Study Chair",
+      "name_ko": "조각 참나무 서재 의자",
+      "camera": "chair",
+      "tiles": "1x1",
+      "canvas": "16x16",
+      "opaque_size": "12x14",
+      "facing": "down",
+      "description": "Near top-down oak study chair facing down with a slatted top backrest rail, crimson cushioned seat seen from above, and sturdy front leg stubs.",
+      "tags": [
+        "chair",
+        "oak",
+        "crimson",
+        "seat",
+        "furniture",
+        "library"
+      ]
+    },
+    {
+      "file": "objects/wooden_stool.png",
+      "id": "wooden_stool",
+      "name_en": "Wooden Library Stool",
+      "name_ko": "둥근 나무 스툴",
+      "camera": "chair",
+      "tiles": "1x1",
+      "canvas": "16x16",
+      "opaque_size": "12x12",
+      "facing": "down",
+      "description": "Compact round wooden stool viewed near top-down with a beveled circular oak seat, thin shaded rim, and braced dark oak legs.",
+      "tags": [
+        "stool",
+        "wooden",
+        "chair",
+        "oak",
+        "furniture",
+        "alchemy"
+      ]
+    },
+    {
+      "file": "objects/stone_fireplace_lit.png",
+      "id": "stone_fireplace_lit",
+      "name_en": "Lit Stone Hearth Fireplace",
+      "name_ko": "불 피운 석재 벽난로",
+      "camera": "standing",
+      "tiles": "2x2",
+      "canvas": "32x32",
+      "opaque_size": "28x30",
+      "facing": "down",
+      "description": "Cool dressed grey ashlar stone fireplace with a lit top mantle band, keystone arch firebox, glowing layered orange-yellow flames over iron grate, and warm hearth apron.",
+      "tags": [
+        "fireplace",
+        "hearth",
+        "stone",
+        "fire",
+        "standing",
+        "warm"
+      ]
+    },
+    {
+      "file": "objects/brass_orrery_stand.png",
+      "id": "brass_orrery_stand",
+      "name_en": "Brass Celestial Orrery",
+      "name_ko": "황동 천체 혼천의",
+      "camera": "standing",
+      "tiles": "2x2",
+      "canvas": "32x32",
+      "opaque_size": "24x31",
+      "facing": "down",
+      "description": "Gleaming antique brass armillary sphere with interlocking meridian and ecliptic rings, radiant golden sun core, and cyan/crimson planets mounted on a stone-and-oak pedestal.",
+      "tags": [
+        "orrery",
+        "brass",
+        "astronomy",
+        "wizard",
+        "standing",
+        "centerpiece"
+      ]
+    },
+    {
+      "file": "objects/alchemy_cauldron_hearth.png",
+      "id": "alchemy_cauldron_hearth",
+      "name_en": "Bubbling Alchemy Cauldron",
+      "name_ko": "끓는 연금술 가마솥",
+      "camera": "standing",
+      "tiles": "2x2",
+      "canvas": "32x32",
+      "opaque_size": "26x28",
+      "facing": "down",
+      "description": "Curved cast-iron cauldron with side handles and elliptical open rim brimming with luminous bubbling emerald-teal potion, perched on an iron tripod over glowing stone-ringed coals.",
+      "tags": [
+        "cauldron",
+        "alchemy",
+        "potion",
+        "iron",
+        "standing",
+        "fire"
+      ]
+    },
+    {
+      "file": "objects/potion_alembic_shelf.png",
+      "id": "potion_alembic_shelf",
+      "name_en": "Potion & Alembic Rack",
+      "name_ko": "물약·증류기 선반",
+      "camera": "standing",
+      "tiles": "2x2",
+      "canvas": "32x32",
+      "opaque_size": "28x29",
+      "facing": "down",
+      "description": "Two-tier dark oak apothecary rack stocked with a glowing teal-and-brass glass alembic retort, emerald, indigo, ruby, and amber potion flasks, and a stone mortar.",
+      "tags": [
+        "potions",
+        "alembic",
+        "shelf",
+        "alchemy",
+        "standing",
+        "glass"
+      ]
+    },
+    {
+      "file": "objects/gilded_lectern_tome.png",
+      "id": "gilded_lectern_tome",
+      "name_en": "Gilded Reading Lectern",
+      "name_ko": "금장 독서대와 마도서",
+      "camera": "standing",
+      "tiles": "1x2",
+      "canvas": "16x32",
+      "opaque_size": "14x29",
+      "facing": "down",
+      "description": "Carved dark oak wizard lectern trimmed in antique brass, displaying a large open parchment grimoire with dark rune script and a draped crimson bookmark.",
+      "tags": [
+        "lectern",
+        "tome",
+        "grimoire",
+        "brass",
+        "standing",
+        "library"
+      ]
+    },
+    {
+      "file": "objects/scrying_crystal_pedestal.png",
+      "id": "scrying_crystal_pedestal",
+      "name_en": "Scrying Crystal Pedestal",
+      "name_ko": "수정구 석재 받침대",
+      "camera": "standing",
+      "tiles": "1x2",
+      "canvas": "16x32",
+      "opaque_size": "12x29",
+      "facing": "down",
+      "description": "Luminous cyan-teal scrying orb with bright top-left specular gleam held in a three-prong antique brass claw mount atop a fluted grey stone pedestal.",
+      "tags": [
+        "crystal",
+        "scrying",
+        "pedestal",
+        "stone",
+        "standing",
+        "arcane"
+      ]
+    },
+    {
+      "file": "objects/treasure_chest_bound.png",
+      "id": "treasure_chest_bound",
+      "name_en": "Iron-Bound Oak Chest",
+      "name_ko": "철띠 참나무 보물상자",
+      "camera": "standing",
+      "tiles": "1x1",
+      "canvas": "16x16",
+      "opaque_size": "14x13",
+      "facing": "down",
+      "description": "Compact Beodeul oak dungeon chest with a lit domed top lid, two pewter-highlighted dark iron binding straps, and a centered antique brass lockplate.",
+      "tags": [
+        "chest",
+        "treasure",
+        "oak",
+        "iron",
+        "standing",
+        "dungeon"
+      ]
+    },
+    {
+      "file": "objects/wooden_crates_stack.png",
+      "id": "wooden_crates_stack",
+      "name_en": "Stacked Supply Crates",
+      "name_ko": "나무 상자 더미",
+      "camera": "standing",
+      "tiles": "2x2",
+      "canvas": "32x32",
+      "opaque_size": "28x27",
+      "facing": "down",
+      "description": "Pyramid stack of three weathered pine and oak storage crates showing crisp braced front panels, iron corner nails, and narrow lit top lids without side walls.",
+      "tags": [
+        "crates",
+        "stack",
+        "wooden",
+        "storage",
+        "standing",
+        "beodeul"
+      ]
+    },
+    {
+      "file": "objects/oak_barrel_hooped.png",
+      "id": "oak_barrel_hooped",
+      "name_en": "Iron-Hooped Oak Barrel",
+      "name_ko": "철테 참나무 통",
+      "camera": "standing",
+      "tiles": "1x1",
+      "canvas": "16x16",
+      "opaque_size": "12x14",
+      "facing": "down",
+      "description": "Bulging curved-stave weathered oak barrel with an elliptical top lid and two dark iron hoops carrying crisp pewter specular highlights.",
+      "tags": [
+        "barrel",
+        "oak",
+        "iron",
+        "storage",
+        "standing",
+        "beodeul"
+      ]
+    },
+    {
+      "file": "objects/brass_candelabra.png",
+      "id": "brass_candelabra",
+      "name_en": "Tall Brass Candelabra",
+      "name_ko": "황동 3구 촛대",
+      "camera": "slender",
+      "tiles": "1x2",
+      "canvas": "16x32",
+      "opaque_size": "12x30",
+      "facing": "down",
+      "description": "Slender antique brass floor candelabra with a fluted upright post, flared tripod base, and three curved branches holding lit cream wax tapers.",
+      "tags": [
+        "candelabra",
+        "brass",
+        "candles",
+        "light",
+        "slender",
+        "library"
+      ]
+    },
+    {
+      "file": "objects/wall_banner_crimson.png",
+      "id": "wall_banner_crimson",
+      "name_en": "Crimson Arcane Banner",
+      "name_ko": "진홍빛 마법탑 깃발",
+      "camera": "standing",
+      "tiles": "1x2",
+      "canvas": "16x32",
+      "opaque_size": "14x30",
+      "facing": "down",
+      "description": "Hanging deep crimson tapestry banner suspended from a brass-tipped oak rod, woven with vertical drapery folds, a central gold arcane star, and notched fringed hem.",
+      "tags": [
+        "banner",
+        "tapestry",
+        "crimson",
+        "gold",
+        "standing",
+        "wall"
+      ]
+    },
+    {
+      "file": "objects/arcane_rune_rug.png",
+      "id": "arcane_rune_rug",
+      "name_en": "Inlaid Arcane Rune Rug",
+      "name_ko": "마법진 양탄자",
+      "camera": "topdown",
+      "tiles": "3x2",
+      "canvas": "48x32",
+      "opaque_size": "46x30",
+      "facing": "down",
+      "description": "Ornate three-by-two crimson woven library rug viewed flat from above, trimmed with antique gold corner borders, fringe tassels, and a central gold-and-teal magic rune circle.",
+      "tags": [
+        "rug",
+        "carpet",
+        "rune",
+        "arcane",
+        "topdown",
+        "crimson"
+      ]
+    }
+  ]
+}

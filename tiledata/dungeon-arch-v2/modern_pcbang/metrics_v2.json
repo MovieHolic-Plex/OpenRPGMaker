@@ -1,0 +1,25 @@
+{
+  "grid_size": "30x22",
+  "pixel_size_1x": "480x352",
+  "pixel_size_2x": "960x704",
+  "unique_carbon_objects_used": "20/20",
+  "total_placed_props": 66,
+  "tabletop_goods_count": 14,
+  "hangings_count": 24,
+  "characters_count": 5,
+  "total_floor_cells": 315,
+  "walkable_open_cells": 217,
+  "bfs_reached_cells": 217,
+  "bfs_coverage_pct": 100.0,
+  "rooms_reached": {
+    "South Entrance & POS Foyer": true,
+    "NW Ramen Cafe & Kitchenette": true,
+    "NE Retro Arcade": true,
+    "Main Esports PC Hall": true,
+    "Server Nook": true,
+    "SE VIP Lounge": true
+  },
+  "stations_reachable": "66/66",
+  "issues": [],
+  "bfs_pass": true
+}

@@ -1,0 +1,53 @@
+{
+  "version": "modern_pcbang_v3",
+  "grid_size": "32x22",
+  "pixel_size_1x": "512x352",
+  "pixel_size_2x": "1024x704",
+  "total_pc_seats": 35,
+  "seat_breakdown": {
+    "main_zone_cyan_b2b_2_islands": 20,
+    "fps_240hz_pro_zone_red_b2b_island": 10,
+    "sw_glass_team_room_contiguous": 5
+  },
+  "seated_gamers_count": 5,
+  "alba_staff_count": 1,
+  "exported_modular_objects": [
+    "b2b_pod_blue.png",
+    "b2b_pod_red.png",
+    "counter_pos_dark.png",
+    "drink_fridge_triple.png",
+    "glass_booth_vent.png",
+    "prepay_kiosk.png",
+    "ramen_water_bar.png",
+    "smoking_ashtray.png",
+    "snack_ramen_rack.png",
+    "team_desk_blue.png",
+    "tray_return_bin.png"
+  ],
+  "exported_modular_objects_count": 11,
+  "total_floor_cells": 461,
+  "walkable_open_cells": 270,
+  "bfs_reached_cells": 270,
+  "bfs_coverage_pct": 100.0,
+  "landmarks_reachable": {
+    "entrance_vestibule": true,
+    "prepay_kiosks_front": true,
+    "alba_counter_customer_front": true,
+    "alba_counter_staff_interior": true,
+    "drink_fridges_and_snack_rack": true,
+    "hangang_ramen_and_water_bar": true,
+    "tray_return_station_front": true,
+    "fps_pro_zone_north_aisle": true,
+    "fps_pro_zone_south_aisle": true,
+    "main_zone_island1_north_aisle": true,
+    "main_zone_central_2tile_aisle": true,
+    "main_zone_island2_south_aisle": true,
+    "sw_5seat_team_room_interior": true,
+    "ne_glass_smoking_booth_interior": true
+  },
+  "props_adjacent_reachable": "30/30",
+  "black_000000_pixels_map": 0,
+  "black_000000_pixels_objects": 0,
+  "issues": [],
+  "bfs_pass": true
+}

@@ -103,7 +103,8 @@ export const interiorBuilder: PlaceBuilder = {
       // 어느 표로 까는가: 기본은 그 게임의 표(바깥 칩셋이 집 안도 지으면 그 표) — 다만 배치의 낱말이 다른 표(v5 등)의 것이면 그 표로 그대로 깐다.
       // 한 맵은 칩셋 하나라 방 하나가 단위다: 낱말을 더 많이 아는 표가 그 방을 깔고, 그 표에도 없는 낱말은 가까운 것으로 바꿔 깔고 알린다(interiorLayoutBuild.ts).
       const base = layoutTableFor(run.ctx.project, tilesetId, outside, run.ctx.currentMapId);
-      const tables = [...new Set([base, ...(outside ? [outside.tileset] : []), ...(gameTable ? [gameTable] : []), HAND_INTERIOR_TILESET_ID])].filter((id) => !!effectiveSpec(run.ctx.project.tilesets[id]));
+      const shown = interiorTilesetFor(run.ctx.project, run.ctx.currentMapId)?.id;
+      const tables = [...new Set([base, tilesetId, ...(shown ? [shown] : []), ...(outside ? [outside.tileset] : []), ...(gameTable ? [gameTable] : []), HAND_INTERIOR_TILESET_ID])].filter((id) => !!effectiveSpec(run.ctx.project.tilesets[id]));
       const scored = tables.map((id) => ({ id, ...knownWordCount(spec.layout, effectiveSpec(run.ctx.project.tilesets[id])!) }));
       // 그 게임의 집 안 표가 있으면(바깥 칩셋이 집 안도 짓는 게임 — 버들항) 늘 그 표로 깐다: 다른 표(지시문 카드의 v5)의 id 는 그 조각의 갈래·자리·크기로
       // 이 표의 가장 가까운 것으로 바꿔 깔고 한 줄씩 알린다(2026-11-17 r8 «갈매나루 여관»: v5 id 로 쓴 여관이 v5 로 깔려 한 게임에 실내 칩셋이 둘이었다).
