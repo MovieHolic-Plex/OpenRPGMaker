@@ -6,6 +6,20 @@
 
 <!-- releases -->
 
+## 0.433.0 — 2026-11-28
+
+### 주요 변경
+
+- **charsets** — FantasyPeople 200종 기본 세트 편입 · RefmapDoll 전량 제거 · easyrpg-charset 하네스/스킬 등록 (#5386) (`0ca892e`)
+- **tilesets** — bake Wave 6 41 modern_campus Carbon Medium remakes (60/60 complete) (#5392) (`9cb416c`)
+- **ai** — 조수 스레드 기반 — 집 맵·결과 귀속·스레드 id·목록 저장소 (#5393) (`64a3964`)
+
+### 기능
+
+- **charsets** — FantasyPeople 200종 기본 세트 편입 · RefmapDoll 전량 제거 · easyrpg-charset 하네스/스킬 등록 (#5386) (`0ca892e`)
+- **tilesets** — bake Wave 6 41 modern_campus Carbon Medium remakes (60/60 complete) (#5392) (`9cb416c`)
+- **ai** — 조수 스레드 기반 — 집 맵·결과 귀속·스레드 id·목록 저장소 (#5393) (`64a3964`)
+
 ## 0.432.0 — 2026-11-28
 
 ### 주요 변경
