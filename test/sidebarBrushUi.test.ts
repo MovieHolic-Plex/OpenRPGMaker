@@ -6,6 +6,8 @@ import { resetSmartPaletteForTests } from "@/editor/panels/tilePaletteSmart";
 import { resetTileToolbarMenusForTests } from "@/editor/panels/tileToolbarMenus";
 import { makeGridPalette } from "@/editor/panels/tilePaletteGrid";
 import { createBlankProject } from "@/project/defaults";
+// 새 프로젝트 시작 맵은 버들항이다(#5185) — 합본 마을 칸 번호를 쓰는 이 시험은 옛 저장본처럼 합본 마을 위에서 시작한다.
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 import { store } from "@/project/store";
 
 describe("sidebar brush and source gestures", () => {
@@ -37,7 +39,7 @@ describe("sidebar brush and source gestures", () => {
     vi.useFakeTimers();
     resetTileToolbarMenusForTests();
     resetSmartPaletteForTests();
-    store.replace(createBlankProject());
+    store.replace(startOnRetiredCombinedTown(createBlankProject()));
     editorState.set({ currentMapId: store.getCurrent().startMapId, tool: "paint", layer: "lower", selectedTile: 0, paintShape: "pen", brushSize: 1, activePaletteStamp: null });
     host = document.createElement("div");
     host.dataset.testid = "left-palette-root";
