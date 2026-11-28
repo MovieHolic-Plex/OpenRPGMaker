@@ -7,6 +7,8 @@ import { setTileBackingOverride, setTileLayerOverride } from "@/editor/runtimeTi
 import { tileBackingTile } from "@/editor/tileLayerPolicy";
 import { tilePassability } from "@/project/collision";
 import { createBlankProject } from "@/project/defaults";
+// 새 프로젝트 시작 맵은 버들항이다(#5185) — 합본 마을 칸 번호를 쓰는 이 시험은 옛 저장본처럼 합본 마을 위에서 시작한다.
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 import { TILE } from "@/project/defaults/constants";
 import type { GameMap, TilesetDef } from "@/project/types";
 
@@ -16,7 +18,7 @@ const BROADLEAF_TRUNK = 292;
 const CONIFER_CANOPY = 260;
 
 function blankMapAndTileset(): { map: GameMap; tileset: TilesetDef } {
-  const project = createBlankProject();
+  const project = startOnRetiredCombinedTown(createBlankProject());
   const map = project.maps[project.startMapId];
   return { map, tileset: project.tilesets[map.tilesetId] };
 }
