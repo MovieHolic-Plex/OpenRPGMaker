@@ -6,6 +6,16 @@
 
 <!-- releases -->
 
+## 0.432.0 — 2026-11-28
+
+### 주요 변경
+
+- **tilesets** — bake 11 modern_campus Carbon Medium remakes (Wave 5 + 1-pass 6-pack) (#5388) (`489bc0c`)
+
+### 기능
+
+- **tilesets** — bake 11 modern_campus Carbon Medium remakes (Wave 5 + 1-pass 6-pack) (#5388) (`489bc0c`)
+
 ## 0.431.0 — 2026-11-28
 
 ### 주요 변경
