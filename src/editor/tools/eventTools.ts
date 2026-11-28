@@ -886,7 +886,7 @@ function relocateImpassableTransfers(project: Project, event: GameEvent, warning
 }
 
 // 페이지 커맨드 shape를 사전 검증(기존 io 검증기 위임).
-export function assertEventShape(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event, project?: Project): void {
+export function assertEventShape(event: GameEvent, warnings?: string[], supplied: Partial<GameEvent> = event, project?: Project, mapId?: string): void {
   try {
     // 조건 모양을 먼저 본다 — `{kind:"all"}`(conditions 배열 없음)이 뒤쪽 검사기에서 「conditions is not iterable」
     // 같은 JS 예외로 새어 나가 모델이 무엇을 고칠지 몰랐다(2026-09-24 회상 스토리 도그푸딩, 같은 호출 재시도).
@@ -900,6 +900,7 @@ export function assertEventShape(event: GameEvent, warnings?: string[], supplied
       page.conditions.forEach((condition, index) => validateConditionShape(`${event.id}.${page.id}.conditions[${index}]`, condition));
     }
     normalizeEventCommandArrays(event, warnings, supplied);
+    if (project && mapId) compileUncompiledScriptsInEvent(project, mapId, event);
     validateLowLevelCommandArray(`${event.id}.commands`, event.commands);
     for (const page of event.pages ?? []) {
       validateLowLevelCommandArray(`${event.id}.${page.id}.commands`, page.commands);
@@ -1238,10 +1239,15 @@ function compileUncompiledScriptsInList(project: Project, mapId: string, value: 
     }
     for (const [key, child] of Object.entries(record)) {
       if (!Array.isArray(child) || child.length === 0) continue;
-      if (key === "options") {
+      if (key === "options" || key === "choices" || key === "items" || key === "answers") {
         child.forEach((option, optionIndex) => {
           if (option && typeof option === "object" && !Array.isArray(option)) {
-            compileUncompiledScriptsInList(project, mapId, (option as Record<string, unknown>).branch, `${here}.options[${optionIndex}].branch`, depth + 1);
+            const optRecord = option as Record<string, unknown>;
+            for (const branchKey of ["branch", "commands", "then", "actions"] as const) {
+              if (Array.isArray(optRecord[branchKey])) {
+                compileUncompiledScriptsInList(project, mapId, optRecord[branchKey], `${here}.${key}[${optionIndex}].${branchKey}`, depth + 1);
+              }
+            }
           }
         });
       } else if (child[0] && typeof child[0] === "object" && typeof (child[0] as Record<string, unknown>).kind === "string") {
@@ -1442,8 +1448,7 @@ const upsertEvent: ToolDefinition = {
     if (tileHotspot) TILE_HOTSPOT_EVENTS.add(event);
     const previousLook = existing && "pages" in patch ? eventLook(existing) : undefined;
     if (previousLook) PREVIOUS_EVENT_LOOK.set(event, previousLook);
-    compileUncompiledScriptsInEvent(draft, map.id, event);
-    assertEventShape(event, warnings, existing ? patch : event, draft);
+    assertEventShape(event, warnings, existing ? patch : event, draft, map.id);
     // place_npc 와 같은 규칙: 새로 쓴 페이지가 켜거나 기다리는 스위치·변수를 등록한다. 없으면 도구는 ok 를
     // 돌려준 뒤 커밋 참조 검증이 `switchId가 존재하지 않습니다` 로 쓰기 전체를 반려했다(2026-09-24 오프닝 컷신).
     if (!existing || "pages" in patch || "commands" in patch) ensureEventStoryFlags(draft, event, warnings);

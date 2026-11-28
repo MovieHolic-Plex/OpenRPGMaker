@@ -98,7 +98,7 @@ function wrapEventScriptForTypeCheck(ts: TypeScriptApi, source: string): { reado
     const chunk = source.slice(start, end);
     const lineCount = chunk.split("\n").length;
     const origStart = sf.getLineAndCharacterOfPosition(start).line + 1;
-    bodyParts.push(source.slice(cursor, start), "\n".repeat(lineCount - 1));
+    bodyParts.push(source.slice(cursor, start), `;${"\n".repeat(lineCount - 1)}`);
     cursor = end;
     hoistedChunks.push(chunk);
     spans.push({ hoistedStart: hoistedCursor, hoistedEnd: hoistedCursor + lineCount - 1, origStart });
