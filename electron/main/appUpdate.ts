@@ -18,6 +18,9 @@ import {
   restoreLaunchEnv,
   snapshotLaunchEnv,
   summarizeReleaseNotes,
+  summarizeReleaseNotesRange,
+  isReleaseNoteHeading,
+  type ReleaseFeedEntry,
   type AppUpdateMode,
   type AppUpdateState,
   type AppUpdateStatus,
@@ -118,26 +121,38 @@ async function check(): Promise<void> {
 }
 
 const RELEASE_NOTES_MAX_ITEMS = 10;
-const WHATS_NEW_MAX_ITEMS = 8;
+// 여러 버전이 밀렸을 때 재시작 뒤 안내에도 같은 목록을 보인다(제목 줄 포함) — 옛 8줄 한도는 한 판 분량이었다.
+const WHATS_NEW_MAX_ITEMS = 45;
+const RELEASE_RANGE_FETCH_COUNT = 30;
 
-async function fetchReleaseNotesFallback(version: string): Promise<readonly string[]> {
+type RangeCache = { readonly key: string; readonly notes: readonly string[] };
+let rangeCache: RangeCache | null = null;
+
+/** 지금 판 초과·latest 이하의 릴리스 변경을 모은다. 실패·없음은 빈 배열(호출한 쪽이 한 판짜리 노트를 그대로 둔다). */
+async function fetchReleaseNotesRange(latest: string): Promise<readonly string[]> {
   if (e2eLog()) return [];
-  const plain = String(version).replace(/^v/i, "").trim();
+  const plain = String(latest).replace(/^v/i, "").trim();
   if (!plain) return [];
+  const current = app.getVersion();
+  const key = `${current}→${plain}`;
+  if (rangeCache?.key === key) return rangeCache.notes;
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 6_000);
+  const timeout = setTimeout(() => controller.abort(), 8_000);
   try {
-    const url = `https://api.github.com/repos/${APP_UPDATE_REPO.owner}/${APP_UPDATE_REPO.repo}/releases/tags/v${encodeURIComponent(plain)}`;
+    const url = `https://api.github.com/repos/${APP_UPDATE_REPO.owner}/${APP_UPDATE_REPO.repo}/releases?per_page=${RELEASE_RANGE_FETCH_COUNT}`;
     const response = await fetch(url, {
       headers: {
         Accept: "application/vnd.github+json",
-        "User-Agent": `OPRN-Studio/${app.getVersion()}`,
+        "User-Agent": `OPRN-Studio/${current}`,
       },
       signal: controller.signal,
     });
     if (!response.ok) return [];
-    const data = (await response.json()) as { body?: unknown };
-    return summarizeReleaseNotes(data.body, RELEASE_NOTES_MAX_ITEMS);
+    const data = (await response.json()) as unknown;
+    if (!Array.isArray(data)) return [];
+    const notes = summarizeReleaseNotesRange(data as readonly ReleaseFeedEntry[], current, plain, { perVersionMax: 5, totalMax: WHATS_NEW_MAX_ITEMS - 5 });
+    rangeCache = { key, notes };
+    return notes;
   } catch {
     return [];
   } finally {
@@ -145,15 +160,21 @@ async function fetchReleaseNotesFallback(version: string): Promise<readonly stri
   }
 }
 
-function hydrateReleaseNotesIfMissing(version: string, existing: readonly string[]): void {
-  if (existing.length > 0 || e2eLog()) return;
-  void fetchReleaseNotesFallback(version).then((notes) => {
+/**
+ * 밀린 중간 버전이 있으면 그 변경까지 모아 노트를 바꿔 끼운다. 밀린 게 하나뿐이면 노트가 이미 그 한 판 것이라 바꾸지 않는다.
+ * 릴리스 목록을 못 읽으면(오프라인·속도 제한) 받아 둔 한 판짜리 노트가 그대로 남는다.
+ */
+function hydrateReleaseNotes(version: string, existing: readonly string[]): void {
+  if (e2eLog()) return;
+  void fetchReleaseNotesRange(version).then((notes) => {
     if (notes.length === 0) return;
+    // 한 판짜리 결과(제목 없음)는 이미 가진 노트가 있으면 그대로 둔다.
+    if (existing.length > 0 && !notes.some(isReleaseNoteHeading)) return;
     if (state.kind === "downloading" && state.version === version) {
       setState({ ...state, releaseNotes: notes });
     } else if (state.kind === "ready" && state.version === version) {
       setState({ ...state, releaseNotes: notes });
-      if (prefs.pending?.version === version && prefs.pending.lines.length === 0) {
+      if (prefs.pending?.version === version) {
         prefs.pending = { version, lines: notes.slice(0, WHATS_NEW_MAX_ITEMS) };
         writePrefs();
       }
@@ -195,6 +216,7 @@ async function checkViaGithubRelease(): Promise<void> {
         downloadUrl,
         ...(releaseNotes.length > 0 ? { releaseNotes } : {}),
       });
+      hydrateReleaseNotes(latest, releaseNotes);
     } else {
       setState({ kind: "up-to-date", checkedAt: Date.now() });
     }
@@ -254,7 +276,7 @@ async function attachUpdater(): Promise<void> {
           ...(releaseNotes.length > 0 ? { releaseNotes } : {}),
         });
       }
-      hydrateReleaseNotesIfMissing(info.version, releaseNotes);
+      hydrateReleaseNotes(info.version, releaseNotes);
     });
     autoUpdater.on("download-progress", (progress) => {
       if (state.kind !== "downloading") return;
@@ -277,7 +299,8 @@ async function attachUpdater(): Promise<void> {
       manualDownloadOwned = false;
       const fromDownloaded = summarizeReleaseNotes(info.releaseNotes, RELEASE_NOTES_MAX_ITEMS);
       const fromDownloading = state.kind === "downloading" && state.version === info.version ? (state.releaseNotes ?? []) : [];
-      const releaseNotes = fromDownloaded.length > 0 ? fromDownloaded : fromDownloading;
+      // 내려받는 동안 밀린 판까지 모은 노트(제목 줄 있음)가 있으면 그것이 우선이다 — 피드 노트는 최신 한 판뿐이다.
+      const releaseNotes = fromDownloading.some(isReleaseNoteHeading) ? fromDownloading : fromDownloaded.length > 0 ? fromDownloaded : fromDownloading;
       prefs.pending = { version: info.version, lines: releaseNotes.slice(0, WHATS_NEW_MAX_ITEMS) };
       writePrefs();
       setState({
@@ -285,7 +308,7 @@ async function attachUpdater(): Promise<void> {
         version: info.version,
         ...(releaseNotes.length > 0 ? { releaseNotes } : {}),
       });
-      hydrateReleaseNotesIfMissing(info.version, releaseNotes);
+      hydrateReleaseNotes(info.version, releaseNotes);
       e2eNote("downloaded", { to: info.version });
       // e2e: install = 칩을 누른 것과 같다, quit = 칩을 안 누르고 앱을 끈 것과 같다(끌 때 설치).
       if (e2eLog()) {

@@ -17,6 +17,8 @@ import {
   restoreLaunchEnv,
   snapshotLaunchEnv,
   summarizeReleaseNotes,
+  summarizeReleaseNotesRange,
+  isReleaseNoteHeading,
 } from "../electron/shared/appUpdate";
 
 describe("appUpdateModeFor", () => {
@@ -68,6 +70,49 @@ describe("summarizeReleaseNotes", () => {
   it("항목이 없거나 본문이 아니면 빈 배열", () => {
     expect(summarizeReleaseNotes("그냥 문장")).toEqual([]);
     expect(summarizeReleaseNotes(null)).toEqual([]);
+  });
+});
+
+describe("summarizeReleaseNotesRange", () => {
+  const rel = (tag: string, items: string[], extra: Record<string, unknown> = {}) => ({
+    tag_name: tag,
+    body: `## 주요 변경\n${items.map((item) => `- ${item}`).join("\n")}`,
+    ...extra,
+  });
+  const feed = [rel("v0.428.0", ["가"]), rel("v0.427.0", ["나", "다"]), rel("v0.426.0", ["라"]), rel("v0.425.0", ["마"])];
+
+  it("밀린 판이 둘 이상이면 새 것부터 버전 제목을 앞세운다 (현재 판은 뺀다)", () => {
+    expect(summarizeReleaseNotesRange(feed, "0.426.0", "0.428.0")).toEqual(["## v0.428", "가", "## v0.427", "나", "다"]);
+  });
+
+  it("밀린 판이 하나면 제목 없이 그 줄만 준다", () => {
+    const lines = summarizeReleaseNotesRange(feed, "0.427.0", "0.428.0");
+    expect(lines).toEqual(["가"]);
+    expect(lines.some(isReleaseNoteHeading)).toBe(false);
+  });
+
+  it("초안·시험판·latest 보다 새 판·변경 줄 없는 판은 건너뛴다", () => {
+    const mixed = [
+      rel("v0.430.0", ["아직"]),
+      rel("v0.429.0", ["초안"], { draft: true }),
+      { tag_name: "v0.428.0", body: "그냥 문장" },
+      rel("v0.427.0", ["시험"], { prerelease: true }),
+      rel("v0.426.0", ["진짜"]),
+      rel("v0.425.0", ["또"]),
+    ];
+    expect(summarizeReleaseNotesRange(mixed, "0.424.0", "0.428.0")).toEqual(["## v0.426", "진짜", "## v0.425", "또"]);
+  });
+
+  it("판당·전체 줄 한도를 지키고 오래된 판부터 자른다", () => {
+    const many = ["a", "b", "c", "d", "e", "f", "g"];
+    const big = [rel("v0.428.0", many), rel("v0.427.0", many), rel("v0.426.0", many)];
+    const lines = summarizeReleaseNotesRange(big, "0.425.0", "0.428.0", { perVersionMax: 5, totalMax: 12 });
+    expect(lines).toEqual(["## v0.428", "a", "b", "c", "d", "e", "## v0.427", "a", "b", "c", "d", "e"]);
+  });
+
+  it("릴리스가 없거나 구간 밖이면 빈 배열", () => {
+    expect(summarizeReleaseNotesRange([], "0.1.0", "0.2.0")).toEqual([]);
+    expect(summarizeReleaseNotesRange(feed, "0.428.0", "0.428.0")).toEqual([]);
   });
 });
 
