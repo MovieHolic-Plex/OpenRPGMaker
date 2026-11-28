@@ -739,8 +739,12 @@ const setProjectSettings: ToolDefinition = {
       const { container, font, speed, punctuationPause, keepActorsVisible, fullPortraitHeight, fullPortraitDrop } = args.dialogue as Record<string, unknown>;
       if (container !== undefined) {
         if (!isProjectDialogueContainerId(container)) throw new ToolError(`알 수 없는 대화 방식입니다: ${String(container)}. 가능: ${PROJECT_DIALOGUE_CONTAINER_IDS.join(", ")}`, { code: "invalid-args" });
-        if (container === "box") delete draft.system.dialogueContainer;
-        else draft.system.dialogueContainer = "balloon";
+        if (container === "box") {
+          delete draft.system.dialogueContainer;
+          if (draft.gameBlueprint) delete draft.gameBlueprint.dialogueContainer;
+        } else {
+          draft.system.dialogueContainer = "balloon";
+        }
         changed.push(`대화 방식=${container === "balloon" ? "말풍선" : "대사 상자"}`);
       }
       if (typeof keepActorsVisible === "boolean") {

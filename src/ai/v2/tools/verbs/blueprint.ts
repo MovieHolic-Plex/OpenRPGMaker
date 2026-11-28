@@ -105,7 +105,8 @@ export function blueprintVerbs(c: VerbContext) {
       const adviceNote = advice.length ? ` Notice — saved as written, nothing is rejected. Change these only if the request asks for it: ${advice.join(" ")}` : "";
       // 같은 내용을 다시 쓰면 바꾸지 않는다 — 청사진을 되풀이해 쓰는 대신 경로를 짓게 한다.
       const core = (b: typeof parsed.blueprint | undefined) => b ? JSON.stringify({ t: b.title, g: b.genre, p: b.playerGoal, o: b.opening, s: b.steps, e: b.ending, w: b.setting, pl: b.places, l: b.look, dc: b.dialogueContainer, h: b.hud, sc: b.scale, ba: b.battles, c: b.cast, wo: b.world, it: b.items }) : "";
-      if (prior && core(prior) === core(parsed.blueprint)) {
+      const clearingBalloon = raw.dialogueContainer === "box" && env.ctx.project.system.dialogueContainer === "balloon";
+      if (prior && core(prior) === core(parsed.blueprint) && !clearingBalloon) {
         session.blueprintRewrites += 1;
         const walked = walkBlueprint(env.ctx.project);
         return text({ ok: true, summary: `청사진이 이미 같은 내용이다 — 다시 쓰지 않았다(${session.blueprintRewrites}번째). write_blueprint 를 또 부르지 않는다. ${walked.blockers.length ? "다음: build_blueprint_path 를 불러 청사진 단계대로 이벤트·조건·엔딩 호출을 짓는다." : "경로가 이어져 있다 — 남은 일(장소 꾸미기·대사)을 한다."}`, path: walked.lines, open: walked.blockers.slice(0, 6).map((b) => b.message) });
@@ -113,7 +114,10 @@ export function blueprintVerbs(c: VerbContext) {
       env.ctx.project.gameBlueprint = parsed.blueprint;
       const assembled = applyBlueprintAssembly(env.ctx.project);
       // 모델이 고른 HUD·UI 모습은 바로 입힌다(끝맺음을 기다리지 않는다 — 짓는 동안의 화면 검수도 그 모습으로 본다). 안 골랐으면 끝맺음이 게임의 사실로 고른다.
-      if (parsed.blueprint.hud) assembled.push(...applyBlueprintHud(env.ctx.project, parsed.blueprint.hud));
+      // 앞 청사진에서 물려받은 hud 만으로는 이미 저작된 fieldHud(font·panel 등)를 덮어쓰지 않는다.
+      if (parsed.blueprint.hud && (raw.hud !== undefined || !env.ctx.project.system.fieldHud)) {
+        assembled.push(...applyBlueprintHud(env.ctx.project, parsed.blueprint.hud));
+      }
       if (parsed.blueprint.dialogueContainer === "balloon") {
         env.ctx.project.system.dialogueContainer = "balloon";
         assembled.push("대화 방식 balloon");

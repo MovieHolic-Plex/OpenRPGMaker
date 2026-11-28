@@ -103,7 +103,10 @@ function dialogueTextSettings(
     const next = container.value === "balloon" ? "balloon" : undefined;
     deps.updateSystem((draft) => {
       if (next) draft.system.dialogueContainer = next;
-      else delete draft.system.dialogueContainer;
+      else {
+        delete draft.system.dialogueContainer;
+        if (draft.gameBlueprint) delete draft.gameBlueprint.dialogueContainer;
+      }
     });
     refresh({ dialogueContainer: next });
   });

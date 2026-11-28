@@ -886,11 +886,21 @@
   top: -7px;
 }
 
-/* 위로 뒤집힌 꼬리는 이름표와 같은 변에 붙는다 — 이름표 위에 그려 가리지 않게 한다. */
+/* 위로 뒤집힌 꼬리는 상단 가장자리에 딱 맞붙이고(7px 꼬리 = -7px), 이름표는 아래로 옮겨 꼬리와 겹치지 않게 한다. */
 .dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon.tail-up::after {
   inset-block-end: auto;
-  inset-block-start: -12px;
+  inset-block-start: -7px;
   z-index: 5;
+}
+
+.dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon.tail-up.has-speaker {
+  padding-bottom: 9px;
+  padding-top: 4px;
+}
+
+.dialogue-overlay.balloon-active .dialogue-box.dialogue-balloon.tail-up .speaker.speaker-nameplate {
+  bottom: -6px;
+  top: auto;
 }
 
 /* ── 픽셀 계단형 꼬리 (도트 RPG · MMO 스타일) ── */
