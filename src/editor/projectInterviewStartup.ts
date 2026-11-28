@@ -2,7 +2,7 @@ import { applyRomanceDefaults, isRomanceInterviewProject } from "@/project/roman
 import { store } from "@/project/store";
 import { briefOpeningMotive, briefOpeningSequence, isUntouchedDefaultOpening } from "@/project/defaults/defaultOpeningSequence";
 import { toast } from "@/util/toast";
-import { DEFAULT_DIALOGUE_STYLE_ID, recommendedDialogueStyleForPreset } from "@/project/dialogueStyles";
+import { DEFAULT_DIALOGUE_STYLE_ID, recommendedDialogueStyleForPreset, type DialogueStyleId } from "@/project/dialogueStyles";
 import { ensureHighResFullbodyPlayResolution } from "@/project/playResolution";
 import { welcomeGenrePresetById, buildWelcomeGenrePresetPrompt, welcomeGenrePresetDisplayText } from "./welcomeGenrePresets";
 import { applyPendingAiBootIntent, peekAiAssistantDraft, setPendingAiBootIntent } from "./aiBootIntent";
@@ -66,8 +66,15 @@ export async function prepareProjectInterviewStartup(): Promise<void> {
       }
       // 장르에 어울리는 대화창을 코드가 먼저 깐다 — AI 가 기획 톤을 보고 바꿀 수 있지만,
       // 조수가 연결되지 않았거나 잊어도 첫 플레이부터 장르 대화창이 뜬다. 사용자가 이미 고른 값은 그대로 둔다.
+      // 인터뷰 장르가 연애일 때만 pixel-cinematic(이후 applyRomanceDefaults 가 전신 베일로 올림)을 쓰고, 다른 장르는 장르별 권장 창을 쓴다.
       if (project.system.dialogueStyle === undefined) {
-        const dialogueStyle = brief.interview ? "pixel-cinematic" : recommendedDialogueStyleForPreset(brief.presetId);
+        const interviewGenre = brief.interview?.genre?.trim().toLowerCase();
+        const byInterviewGenre: Partial<Record<string, DialogueStyleId>> = {
+          romance: "pixel-cinematic", horror: "float", monster: "handheld",
+          jrpg: "retro-blue", fantasy: "retro-blue", adventure: "retro-blue",
+          scifi: "terminal", sf: "terminal", eastern: "joseon", joseon: "joseon",
+        };
+        const dialogueStyle = (interviewGenre ? byInterviewGenre[interviewGenre] : undefined) ?? recommendedDialogueStyleForPreset(brief.presetId);
         if (dialogueStyle !== DEFAULT_DIALOGUE_STYLE_ID) project.system.dialogueStyle = dialogueStyle;
         // 양쪽 전신은 1024×768 무대를 값으로 저장한다 — 작가가 자료집에서 해상도를 바꿀 수 있게(playResolution.ts).
         if (dialogueStyle === "dual-fullbody-veil") ensureHighResFullbodyPlayResolution(project.system);

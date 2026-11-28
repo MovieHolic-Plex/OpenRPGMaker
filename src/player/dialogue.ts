@@ -582,7 +582,7 @@ export function createDialogueUI(
     // 위치가 바뀌는 연속 대사에서 창이 튀지 않게, 지우기 전에 앞 창의 자리를 기억한다(FLIP).
     const prevBox = overlay.querySelector<HTMLElement>(".dialogue-box");
     const savedBoxTop = prevBox ? layoutTop(overlay, prevBox)?.top : undefined;
-    previousTextBox = wasOpen && prevBox && !prevBox.classList.contains("choices") && !prevBox.classList.contains("dialogue-balloon") ? prevBox : undefined;
+    previousTextBox = wasOpen && prevBox && !prevBox.classList.contains("choices") ? prevBox : undefined;
     cancelActiveText?.();
     cancelActiveChoice?.();
     previousBoxTop = savedBoxTop;
@@ -1216,8 +1216,8 @@ export function createDialogueUI(
       };
 
       mount(useBalloon);
-      if (useBalloon && pages.length > 1) {
-        // 말풍선에 다 안 들어가면 상자로 되돌린다 — 말풍선이 여러 장 넘어가면 읽기 어렵다.
+      if (useBalloon && pages.length > 1 && !look.projectBalloon) {
+        // 단발성 줄 말풍선은 다 안 들어가면 상자로 되돌린다. 반면 프로젝트 전체가 말풍선 방식(projectBalloon)이면 일관성을 위해 말풍선 안에서 쪽을 넘긴다.
         box.remove();
         overlay.classList.remove("balloon-active");
         useBalloon = false;
@@ -2336,8 +2336,11 @@ function choiceFrame(request: DialogueChoicesRequest, previous: HTMLElement | un
   if (!request.prompt && previous) {
     frame = previous.cloneNode(true) as HTMLElement;
     frame.querySelectorAll(".dialogue-page-cursor, .continue-hint, .dialogue-log-button").forEach((node) => node.remove());
-    frame.classList.remove("page-ready", "dialogue-beat-shake");
-    for (const key of ["dialogueShake", "dialogueFlash", "dialogueCharReveal", "dialogueBeats"]) delete frame.dataset[key];
+    frame.classList.remove("page-ready", "dialogue-beat-shake", "dialogue-balloon", "tail-up");
+    for (const key of ["dialogueShake", "dialogueFlash", "dialogueCharReveal", "dialogueBeats", "container", "balloonEdge"]) delete frame.dataset[key];
+    frame.style.removeProperty("left");
+    frame.style.removeProperty("top");
+    frame.style.removeProperty("--balloon-tail-x");
     // 앞 대사의 사본은 이미 읽힌 글이다. 장식만 남기고 접근성 트리에서는 뺀다.
     frame.setAttribute("aria-hidden", "true");
   } else {

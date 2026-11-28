@@ -17,7 +17,8 @@ import { asPresetHud, HUD_SOURCES, normalizeFieldHud, projectCanLoseHp, projectF
 import { hudIsStoryTemplate } from "../judge/hudTitleChecks";
 import { battleSites } from "../judge/combatChecks";
 import { fillRegionBattleBgm, stableHash } from "./shipBattleMusic";
-import { applyUiLook, pickUiLook, uiLookEra } from "@/project/uiLook";
+import { applyUiLook, pickUiLook, uiLookFacts } from "@/project/uiLook";
+import type { GameBlueprintHudChoice } from "@/project/gameBlueprint";
 
 export type Obj = Record<string, unknown>;
 
@@ -25,20 +26,64 @@ let factoryCache: Project | undefined;
 
 const factory = (): Project => (factoryCache ??= createBlankProject() as Project);
 
+/** 청사진에서 모델이 고른 HUD 선택(blueprint.hud)을 프로젝트에 입힌다. */
+export function applyBlueprintHud(project: Project, choice: GameBlueprintHudChoice): string[] {
+  if (choice === "off") {
+    project.system.fieldHud = { theme: "chase", vitals: false, clock: false, tools: false, objective: true, hideEmpty: true, widgets: [] };
+    return ["필드 HUD → off(청사진 선택 — 목표 줄만)"];
+  }
+  const next = normalizeFieldHud({ theme: choice, objective: true });
+  delete next.widgets;
+  project.system.fieldHud = next;
+  return [`필드 HUD → ${choice}(청사진 선택)`];
+}
+
 /**
- * 필드 HUD 를 아무도 고르지 않았다(편집기 기본 — 하트 체력·숫자). 무엇을 띄울지는 이 게임의 사실로 정한다(요청 글의 낱말은 읽지 않는다):
- *  - 필드에서 체력이 깎일 일(실시간 액션 전투·피해 명령)이 없으면 끈다({off:true} — 목표 줄만). 턴제 전투만 있는 게임도 끈다 — 체력은 전투 화면과 메뉴에 있다
- *    (2026-11-13 증기의 심장: 한 명 파티 판이 내내 떠 있었다. 2026-11-05 gpt-only-game 6차: 전투 없는 학교 연애가 「514 / 514」를 내내 띄웠다).
- *  - 깎이면: 고딕 저택·묘지 칩셋의 게임은 꽃잎 생명(horror), 턴제인데 동료가 둘 이상이면 동료 체력 줄(party), 그 밖은 하트(hearts).
- * 글꼴·판(껍질)은 여기서 정하지 않는다 — fillUiLook 이 게임의 모습 한 벌로 정한다. 전에는 요청 글의 «공포·마왕·판타지» 낱말로 테마를 골랐다(낱말 목록 — 없앴다).
+ * 필드 HUD 를 아무도 고르지 않았다(편집기 기본 — 하트 체력·숫자). 무엇을 띄울지는 청사진 선택(blueprint.hud)과 이 게임의 사실로 정한다:
+ *  - 청사진에 hud 가 적혀 있으면 그것을 따른다(이후 reconcileFieldHud 가 쓰지 않는 몸 게이지만 걸러낸다).
+ *  - 필드에서 체력이 깎이는 게임: 실시간 액션 = adventure(체력·마력·도구·스태미나), 고딕/공포 = horror(꽃잎 생명), 턴제 다인 = party, 그 밖 = hearts.
+ *  - 필드에서 체력이 안 깎이는 게임:
+ *      · 몬스터 수집 = collector(지역 이름 + 목표 줄)
+ *      · 시간 + 생활 에너지 = farm(시계·소지금·기력·도구)
+ *      · 시간 시스템 켜짐 = minimal(체력 끔·시계 켬 + 목표 줄)
+ *      · 청사진이 있고 맵이 둘 이상인 탐험/RPG(공포·연애 제외) = collector(현재 지역 이름 + 목표 줄)
+ *      · 그 밖(단일 맵·전투/시간 없는 이야기·공포) = chase(목표 줄만)
+ * 글꼴·판(껍질)은 여기서 정하지 않는다 — fillUiLook 이 게임의 모습 한 벌로 정한다.
  */
 export function fillFieldHud(project: Project): string[] {
+  if (project.gameBlueprint?.hud) return applyBlueprintHud(project, project.gameBlueprint.hud);
+  const facts = uiLookFacts(project);
+  const darkHorror = facts.era === "gothic" || (facts.tones ?? []).some((t) => t === "horror" || t === "gothic");
   if (!projectFieldHpChanges(project)) {
+    if (project.system.battleUiStyle === "pokemon" || facts.era === "monster") {
+      const next = normalizeFieldHud({ theme: "collector", objective: true });
+      delete next.widgets;
+      project.system.fieldHud = next;
+      return ["필드 HUD → collector(몬스터 수집 — 지역명·목표 줄)"];
+    }
+    if (project.system.timeSystem?.enabled === true) {
+      if (project.system.energy) {
+        const next = normalizeFieldHud({ theme: "farm", objective: true });
+        delete next.widgets;
+        project.system.fieldHud = next;
+        return ["필드 HUD → farm(시간·생활 에너지)"];
+      }
+      project.system.fieldHud = { theme: "minimal", vitals: false, clock: true, tools: false, objective: true, hideEmpty: true };
+      return ["필드 HUD → minimal(시간 시스템 — 시계·목표 줄)"];
+    }
+    const namedMaps = Object.values(project.maps).filter((m) => !!m.name?.trim()).length;
+    const isRomance = project.system.genreLock?.preset === "romance" || /연애|로맨스|romance/iu.test(project.gameBlueprint?.genre ?? "");
+    if (project.gameBlueprint && namedMaps >= 2 && !darkHorror && !isRomance) {
+      const next = normalizeFieldHud({ theme: "collector", objective: true });
+      delete next.widgets;
+      project.system.fieldHud = next;
+      return ["필드 HUD → collector(다중 지역 탐험 — 지역명·목표 줄)"];
+    }
     project.system.fieldHud = { theme: "chase", vitals: false, clock: false, tools: false, objective: true, hideEmpty: true, widgets: [] };
     return [projectCanLoseHp(project) ? "필드 HUD 끔(체력은 전투 안에서만 바뀐다 — 목표 줄만)" : "필드 HUD 끔(체력이 줄 일이 없다 — 목표 줄만)"];
   }
   const action = project.system.actionCombat?.enabled === true;
-  const theme = uiLookEra(project) === "gothic" ? "horror" : !action && (project.system.startActorIds?.length ?? 0) > 1 ? "party" : "hearts";
+  const theme = action ? "adventure" : darkHorror ? "horror" : (project.system.startActorIds?.length ?? 0) > 1 ? "party" : "hearts";
   // 목표 줄은 둔다(기본 HUD 에서도 보이던 줄) — normalizeFieldHud 는 빠진 objective 를 끈다.
   const next = normalizeFieldHud({ theme, objective: true });
   delete next.widgets;
@@ -384,4 +429,17 @@ export function fillUiLook(project: Project, seed: string): string[] {
   if (!applied.length) return [];
   const why = picked.by === "blueprint" ? "청사진이 고름" : picked.by === "kept" ? "전에 고른 모습" : `${picked.facts.era ?? "시대 모름"} · ${picked.facts.combat}${picked.facts.talky ? " · 대사 중심" : ""} — 후보 ${picked.pool.join("/")}`;
   return [`UI 모습 → ${picked.look.id}(${picked.look.label}; ${why}): ${applied.join(" · ")}`];
+}
+
+/**
+ * 프로젝트 기본 대화 방식(system.dialogueContainer) 반영 — 한 게임 안에서 하단 창과 말풍선을 섞지 않고 하나로 통일한다.
+ *  - 청사진에 dialogueContainer:"balloon" 이 적혀 있으면 프로젝트 기본에 반영한다.
+ *  - 안 적혀 있으면 기본(box)을 유지한다(말풍선 게임은 청사진·요청으로 일관되게 선택).
+ */
+export function fillDialogueContainer(project: Project): string[] {
+  if (project.gameBlueprint?.dialogueContainer === "balloon" && project.system.dialogueContainer !== "balloon") {
+    project.system.dialogueContainer = "balloon";
+    return ["대화 방식 → balloon(청사진 선택 — 게임 전체 말풍선 통일)"];
+  }
+  return [];
 }

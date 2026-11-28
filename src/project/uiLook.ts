@@ -12,6 +12,7 @@ import type { DialogueStyleId } from "./dialogueStyles";
 import type { HUD_FONTS, FieldHudConfig } from "./fieldHud";
 import { tilesetFamily } from "./tilesetFamily";
 import type { MenuUiStyle, Project, TitleLogoStyle, TitleMenuStyle } from "./types";
+import type { WorldCanonTone } from "./world/canon";
 
 /** 칩셋 계열이 말하는 시대 — 낱말이 아니라 그 게임이 실제로 깐 타일셋에서 읽는다. */
 export type UiLookEra = "fantasy" | "eastern" | "industrial" | "gothic" | "modern" | "future" | "primeval" | "monster";
@@ -67,7 +68,7 @@ export const UI_LOOKS: readonly UiLookSet[] = [
     suits: { eras: ["eastern", "gothic"], combat: FIGHTS } },
   { id: "handheld", label: "휴대기 흰 창", fit: "white handheld, monster collecting",
     dialogue: "handheld", menu: "field-list", battle: "teal", battleWindow: "parch", title: { logo: "plain", menu: "window" }, windowSkin: "windowskin-default", hud: { font: "pixel", panel: "paper" },
-    suits: { eras: ["monster", "fantasy", "modern"] } },
+    suits: { eras: ["monster"] } },
   { id: "terminal", label: "단말기 · 녹색", fit: "green terminal, sci-fi",
     dialogue: "terminal", menu: "workbench", battle: "veil", title: { logo: "glow", menu: "plain" }, hud: { font: "clean", panel: "dark" },
     suits: { eras: ["future"] } },
@@ -79,7 +80,7 @@ export const UI_LOOKS: readonly UiLookSet[] = [
     suits: { eras: ["modern", "fantasy"], combat: CALM, talky: true } },
   { id: "cozy", label: "말랑 크림", fit: "cream and round, cute or healing",
     dialogue: "cream", menu: "journal", battle: "icons", battleWindow: "parch", title: { logo: "plain", menu: "plain" }, hud: { font: "pixel", panel: "paper" },
-    suits: { eras: ["modern", "fantasy", "primeval", "monster"], combat: CALM } },
+    suits: { eras: ["modern", "fantasy", "primeval", "monster"], combat: ["none"] } },
   { id: "cinematic", label: "영화창", fit: "letterboxed film look, story-first",
     dialogue: "pixel-cinematic", menu: "sheet", battle: "cinema", battleWindow: "veil", title: { logo: "plain", menu: "plain" }, hud: { font: "clean", panel: "dark" },
     suits: { eras: "any", talky: true } },
@@ -113,9 +114,9 @@ export const UI_LOOK_HINT_LIMIT = 3;
 export function uiLookHint(project: LookProject, seed: string, worldTilesetId?: string): string {
   const facts = uiLookFacts(project);
   const steps = project.gameBlueprint?.steps ?? [];
-  const era = (worldTilesetId ? UI_LOOK_ERA_BY_FAMILY[tilesetFamily(project, worldTilesetId)] : undefined) ?? facts.era;
+  const era = eraOfTileset(project, worldTilesetId) ?? facts.era;
   const combat: UiLookCombat = facts.combat === "none" && steps.some((step) => step.kind === "battle") ? "turn" : facts.combat;
-  const pool = uiLookCandidates({ ...(era ? { era } : {}), combat, talky: combat === "none" || facts.talky });
+  const pool = uiLookCandidates({ ...(era ? { era } : {}), combat, talky: combat === "none" || facts.talky, ...(facts.tones?.length ? { tones: facts.tones } : {}) });
   const start = lookHash(`ui-look|${seed}`) % pool.length;
   const shown = Array.from({ length: Math.min(UI_LOOK_HINT_LIMIT, pool.length) }, (_, i) => pool[(start + i) % pool.length]!);
   return ` UI look (set look to choose, else code picks): ${shown.map((look) => `${look.id} = ${look.fit}`).join(" · ")}.`;
@@ -133,16 +134,36 @@ export const UI_LOOK_ERA_BY_FAMILY: Readonly<Record<string, UiLookEra>> = {
   "oprn-monster": "monster", "oprn-monster-emerald": "monster",
 };
 
-export interface UiLookFacts { readonly era?: UiLookEra; readonly combat: UiLookCombat; readonly talky: boolean }
+/** 칩셋 id 하나 → 시대. 황무지(wasteland_ruins)는 계열이 oprn-modern 이지만 현대 일상(soft·cozy)이 아니라 industrial(폐허·기계) 톤이다. */
+function eraOfTileset(project: LookProject, tilesetId: string | undefined): UiLookEra | undefined {
+  if (!tilesetId) return undefined;
+  if (tilesetId === "wasteland_ruins") return "industrial";
+  return UI_LOOK_ERA_BY_FAMILY[tilesetFamily(project, tilesetId)];
+}
 
-type LookProject = Pick<Project, "maps" | "tilesets" | "system"> & Partial<Pick<Project, "startMapId" | "gameBlueprint">>;
+/** 세계관 톤(WORLD_CANON_TONES)마다 어울리는 세트 — 구조화된 청사진/세계관 톤이 있으면 시대 후보를 그 분위기로 좁힌다. */
+const TONE_LOOKS: Readonly<Record<WorldCanonTone, readonly string[]>> = {
+  grim: ["haunted", "gilded", "ink-night", "terminal", "rm2003", "cinematic"],
+  horror: ["haunted", "ink-night", "gilded", "terminal", "cinematic"],
+  gothic: ["haunted", "gilded", "ink-night", "cinematic"],
+  mystery: ["cinematic", "haunted", "glass", "ink-night", "gilded", "rm2003"],
+  political: ["gilded", "kingdom", "hanji", "ink-night", "rm2003"],
+  mythic: ["gilded", "kingdom", "hanji", "ink-night"],
+  fairytale: ["storybook", "cozy", "kingdom", "hanji"],
+  hopeful: ["kingdom", "storybook", "cozy", "soft", "hanji", "handheld"],
+  comic: ["cozy", "storybook", "soft", "handheld", "kingdom"],
+  slice: ["soft", "cozy", "storybook", "hanji", "cinematic"],
+};
+
+export interface UiLookFacts { readonly era?: UiLookEra; readonly combat: UiLookCombat; readonly talky: boolean; readonly tones?: readonly WorldCanonTone[] }
+
+type LookProject = Pick<Project, "maps" | "tilesets" | "system"> & Partial<Pick<Project, "startMapId" | "gameBlueprint" | "worldCanon">>;
 
 /** 게임이 깐 맵들의 칩셋 계열 가운데 시대를 말하는 것 — 맵 수가 가장 많은 시대(같으면 시작 맵의 시대). 세계 지도·실내 공용 칩셋만 있으면 그 계열 그대로. */
 export function uiLookEra(project: LookProject): UiLookEra | undefined {
   const count = new Map<UiLookEra, number>();
-  const eraOf = (tilesetId: string | undefined): UiLookEra | undefined => tilesetId ? UI_LOOK_ERA_BY_FAMILY[tilesetFamily(project, tilesetId)] : undefined;
   for (const map of Object.values(project.maps)) {
-    const era = eraOf(map.tilesetId);
+    const era = eraOfTileset(project, map.tilesetId);
     if (era) count.set(era, (count.get(era) ?? 0) + 1);
   }
   if (!count.size) return undefined;
@@ -151,7 +172,7 @@ export function uiLookEra(project: LookProject): UiLookEra | undefined {
   const pool = specific.length ? specific : [...count];
   const best = Math.max(...pool.map(([, n]) => n));
   const top = pool.filter(([, n]) => n === best).map(([era]) => era);
-  const start = eraOf(project.startMapId ? project.maps[project.startMapId]?.tilesetId : undefined);
+  const start = eraOfTileset(project, project.startMapId ? project.maps[project.startMapId]?.tilesetId : undefined);
   return start && top.includes(start) ? start : top[0];
 }
 
@@ -171,7 +192,24 @@ function hasBattleCommand(project: LookProject): boolean {
   return found;
 }
 
-/** 이 게임의 사실 — 시대(칩셋 계열) · 전투 방식 · 대사 중심인가(싸움이 없거나, 청사진 단계의 과반이 사람과 말하기·고르기). */
+/** 구조화된 프로젝트 자료(청사진 world.tones · worldCanon.tones · 청사진 genre)에서 톤을 읽는다 — 요청 원문은 읽지 않는다. */
+function structuredTones(project: LookProject): WorldCanonTone[] {
+  const out = new Set<WorldCanonTone>();
+  for (const tone of project.gameBlueprint?.world?.tones ?? []) if (tone in TONE_LOOKS) out.add(tone as WorldCanonTone);
+  for (const tone of project.worldCanon?.tones ?? []) if (tone in TONE_LOOKS) out.add(tone);
+  if (!out.size) {
+    const genre = project.gameBlueprint?.genre ?? "";
+    if (/공포|호러|괴담|horror/iu.test(genre)) out.add("horror");
+    if (/추리|미스터리|탐정|mystery|detective/iu.test(genre)) out.add("mystery");
+    if (/동화|fairy/iu.test(genre)) out.add("fairytale");
+    if (/일상|힐링|연애|로맨스|slice|cozy|romance/iu.test(genre)) out.add("slice");
+    if (/다크|암흑|비극|grim|dark/iu.test(genre)) out.add("grim");
+    if (/코믹|개그|유머|comic|comedy/iu.test(genre)) out.add("comic");
+  }
+  return [...out];
+}
+
+/** 이 게임의 사실 — 시대(칩셋 계열) · 전투 방식 · 대사 중심인가(싸움이 없거나, 청사진 단계의 과반이 사람과 말하기·고르기) · 세계관 톤. */
 export function uiLookFacts(project: LookProject): UiLookFacts {
   const system = project.system;
   const combat: UiLookCombat = system.battleUiStyle === "pokemon" ? "monster" : system.actionCombat?.enabled === true ? "action" : hasBattleCommand(project) ? "turn" : "none";
@@ -179,7 +217,8 @@ export function uiLookFacts(project: LookProject): UiLookFacts {
   const spoken = steps.filter((step) => step.kind === "talk" || step.kind === "choice").length;
   const talky = combat === "none" || (steps.length > 0 && spoken * 2 > steps.length);
   const era = combat === "monster" ? "monster" : uiLookEra(project);
-  return { ...(era ? { era } : {}), combat, talky };
+  const tones = structuredTones(project);
+  return { ...(era ? { era } : {}), combat, talky, ...(tones.length ? { tones } : {}) };
 }
 
 /** FNV-1a + 끝 섞기(project/kitLook.ts 와 같은 꼴) — 열쇠가 비슷한 게임들이 같은 순번으로 몰리지 않게. */
@@ -243,13 +282,19 @@ function storedMembers(system: Project["system"]): Stored {
 const agreement = (look: UiLookSet, chosen: Stored): number =>
   (chosen.dialogue === look.dialogue ? 4 : 0) + (chosen.menu === look.menu ? 2 : 0) + (chosen.battlePreset === look.battle ? 2 : 0) + (chosen.logo === look.title.logo ? 1 : 0);
 
-/** 사실에 맞는 세트들 — 시대가 맞고 전투 방식이 맞는 것. 시대를 가리지 않는 세트(영화창)는 대사 중심 게임에서만 낀다. */
+/** 사실에 맞는 세트들 — 시대가 맞고 전투 방식이 맞는 것. 시대를 가리지 않는 세트(영화창)는 대사 중심 게임에서만 낀다. 구조화된 톤이 맞으면 그쪽으로 좁힌다. */
 export function uiLookCandidates(facts: UiLookFacts): UiLookSet[] {
   const combatOk = (look: UiLookSet) => !look.suits.combat || look.suits.combat.includes(facts.combat);
   const byEra = UI_LOOKS.filter((look) => look.suits.eras !== "any" && !!facts.era && look.suits.eras.includes(facts.era) && combatOk(look) && (look.suits.talky !== true || facts.talky));
   const anyEra = UI_LOOKS.filter((look) => look.suits.eras === "any" && look.suits.talky === true && facts.talky && combatOk(look));
   const pool = [...byEra, ...anyEra];
-  return pool.length ? pool : UI_LOOKS.filter((look) => look.id === FALLBACK_UI_LOOK_ID);
+  if (!pool.length) return UI_LOOKS.filter((look) => look.id === FALLBACK_UI_LOOK_ID);
+  if (facts.tones?.length) {
+    const preferred = new Set(facts.tones.flatMap((tone) => TONE_LOOKS[tone] ?? []));
+    const toned = pool.filter((look) => preferred.has(look.id));
+    if (toned.length) return toned;
+  }
+  return pool;
 }
 
 /**

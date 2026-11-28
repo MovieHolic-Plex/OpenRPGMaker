@@ -282,6 +282,12 @@ export interface SpeakerExpression {
  */
 export const DIALOGUE_CONTAINER_IDS = ["box", "balloon", "bark", "corner"] as const;
 export type DialogueContainerId = (typeof DIALOGUE_CONTAINER_IDS)[number];
+/** 프로젝트 기본으로 고를 수 있는 대화 방식(하단 상자 또는 머리 위 말풍선). 흘림·코너는 비차단 연출이라 화자·줄 단위 전용이다. */
+export const PROJECT_DIALOGUE_CONTAINER_IDS = ["box", "balloon"] as const;
+export type ProjectDialogueContainerId = (typeof PROJECT_DIALOGUE_CONTAINER_IDS)[number];
+export function isProjectDialogueContainerId(value: unknown): value is ProjectDialogueContainerId {
+  return typeof value === "string" && (PROJECT_DIALOGUE_CONTAINER_IDS as readonly string[]).includes(value);
+}
 export const DIALOGUE_CONTAINER_LABELS: Readonly<Record<DialogueContainerId, string>> = {
   box: "대사 상자",
   balloon: "말풍선",
@@ -534,6 +540,8 @@ export interface DialogueLook {
   readonly shake: boolean;
   /** 대사를 담는 그릇. 말풍선을 못 그리면 런타임이 상자로 되돌린다. */
   readonly container: DialogueContainerId;
+  /** 프로젝트 전체가 말풍선 방식(system.dialogueContainer === "balloon")으로 통일된 경우 true — 긴 문장도 하단 상자로 튀지 않고 말풍선 안에서 쪽 넘김한다. */
+  readonly projectBalloon?: boolean;
   /** 구두점 뒤에 쉰다(프로젝트 설정, 기본 켜짐). */
   readonly punctuationPause: boolean;
   /** 표정이 고른 얼굴 그림(리소스 id). 이 줄에 얼굴이 있을 때 그 얼굴을 바꾼다. */
@@ -553,6 +561,7 @@ export interface DialogueLook {
 type LookProject = {
   readonly system: {
     readonly dialogueStyle?: string;
+    readonly dialogueContainer?: string;
     readonly dialogueFont?: string;
     readonly dialogueSpeed?: number;
     readonly dialoguePunctuationPause?: boolean;
@@ -603,9 +612,11 @@ export function resolveDialogueLook(
     ? clamp(project.system.dialogueSpeed, DIALOGUE_PROJECT_SPEED_LIMITS.min, DIALOGUE_PROJECT_SPEED_LIMITS.max)
     : 1;
   const font = speaker?.font ?? (isFontFamilyId(project.system.dialogueFont) ? project.system.dialogueFont : undefined);
+  const projectBalloon = project.system.dialogueContainer === "balloon" && !ctx.hideName;
+  const projectContainer: DialogueContainerId = projectBalloon ? "balloon" : "box";
   const container: DialogueContainerId = isDialogueContainerId(line.container)
     ? line.container
-    : speaker?.container ?? "box";
+    : speaker?.container ?? projectContainer;
   const emotion = typeof line.emotion === "string" ? parseDialogueEmotion(line.emotion) : undefined;
   const expression = emotion ? speaker?.expressions?.[emotion] : undefined;
   const basePitch = (speaker?.pitch ?? 0) + ctx.voicePitch;
@@ -625,6 +636,7 @@ export function resolveDialogueLook(
     nameSuffix: ctx.nameSuffix ?? "",
     shake: ctx.shake === true,
     container,
+    ...(projectBalloon && container === "balloon" ? { projectBalloon: true } : {}),
     punctuationPause: project.system.dialoguePunctuationPause !== false,
     ...(expression?.face ? { expressionFace: expression.face } : {}),
     ...(speaker?.talkFace ? { talkFace: speaker.talkFace } : {}),

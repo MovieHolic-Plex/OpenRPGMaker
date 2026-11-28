@@ -19,7 +19,7 @@ import { checkMonsterCampaignDefinition } from '@/project/monsterCampaignConsist
 import { installBadgeCeremonies } from '@/project/monsterBadgeCeremony';
 import { resizeCampaignGyms } from '@/project/examples/monsterExpedition/resizeGyms';
 import { listStatusMenuCommandIds, listStatusMenuRailIds, statusMenuRailLabel } from '@/player/playerStatusMenuModel';
-import { asPresetHud, FIELD_HUD_THEMES, HUD_SOURCES, hudOnScreen, normalizeFieldHud, projectCanLoseHp, projectHudUse, resolvedHudWidgets, unusedHudGauges } from '@/project/fieldHud';
+import { asPresetHud, FIELD_HUD_THEMES, HUD_FONTS, HUD_SOURCES, hudOnScreen, normalizeFieldHud, projectCanLoseHp, projectHudUse, resolvedHudWidgets, unusedHudGauges } from '@/project/fieldHud';
 import type { Project } from '@/project/types';
 import type { PlaySession } from '@/project/session';
 const str:JsonSchema={type:'string'};
@@ -53,23 +53,28 @@ function systemView(p:Project){const c=monsterCampaign(p),session=p.session as P
 export const GAME_SYSTEM_AUTHORING_TOOLS:readonly ToolDefinition[]=[
   tool('read_game_systems','전투 규칙·출전 파티·ESC 실제 항목·HUD·도감/지도/배지 정의·음악 연결을 함께 읽고 불일치를 표시.','read',schema({},[]),p=>({summary:'현재 게임 시스템과 실제 메뉴 모델을 조회했습니다.',data:systemView(p)})),
   // 2026-10-25 사용자 규칙: 편집기 기본 HUD(체력 하트·514/514)를 출하하지 않는다. 조수가 장르에 맞는 HUD 를 고르거나 끈다.
-  tool('set_field_hud','탐색 화면에 늘 떠 있는 HUD 를 장르에 맞게 고르거나 끈다(편집기 기본 HUD 를 그대로 두지 않는다). theme: '+Object.entries(FIELD_HUD_THEMES).filter(([k])=>k!=='legacy').map(([k,v])=>`${k}(${v})`).join(', ')+'. off:true = HUD 없음(이야기·추리·연애 대부분). vitals/clock/tools/objective 로 칸을 켜고 끈다. 답의 onScreen 이 필드에 실제로 뜨는 것이다 — 이 게임이 쓰지 않는 게이지(unused)는 켜지 않는다.','write',schema({
+  tool('set_field_hud','탐색 화면에 늘 떠 있는 HUD 를 장르에 맞게 고르거나 끈다(편집기 기본 HUD 를 그대로 두지 않는다). theme: '+Object.entries(FIELD_HUD_THEMES).filter(([k])=>k!=='legacy').map(([k,v])=>`${k}(${v})`).join(', ')+'. off:true = HUD 없음(이야기·추리·연애 대부분). vitals/clock/tools/objective 로 칸을 켜고 끄며 font/panel 로 껍질을 맞춘다. 답의 onScreen 이 필드에 실제로 뜨는 것이다 — 이 게임이 쓰지 않는 게이지(unused)는 켜지 않는다.','write',schema({
     theme:{type:'string',enum:Object.keys(FIELD_HUD_THEMES).filter(k=>k!=='legacy'),description:'HUD 모양(필드에 뜨는 것). classic=필드에 아무것도 없음(능력치는 메뉴) — 턴제 JRPG, hearts=하트 체력+소지금, horror=꽃잎 생명, chase=없음, party=동료 체력 줄(필드에서 체력이 깎이는 게임만), collector=지역 이름, minimal=작은 하트·시계, farm=시계·소지금·기력·도구, survival=도구·식량·체력·스태미나, adventure=체력·마력 막대+도구 5칸+스태미나(실시간 액션 전투 게임만).'},
     off:{type:'boolean',description:'true 면 상시 HUD 를 모두 끈다.'},
-    vitals:{type:'boolean',description:'몸 게이지(체력·마력·기력·스태미나) 표시'},clock:{type:'boolean',description:'달력·시계'},tools:{type:'boolean',description:'도구 슬롯'},objective:{type:'boolean',description:'목표 한 줄'},
+    vitals:{type:'boolean',description:'몸 게이지(체력·마력·기력·스태미나) 표시'},clock:{type:'boolean',description:'달력·시계'},tools:{type:'boolean',description:'도구 슬롯'},objective:{type:'boolean',description:'목표 한 줄(생략 시 기존 값 또는 켜짐 유지)'},
+    font:{type:'string',enum:Object.keys(HUD_FONTS),description:'HUD 글꼴: auto|pixel|round|clean'},
+    panel:{type:'string',enum:['dark','paper'],description:'HUD 껍질 판(목표 줄·알림·프리셋 판): dark|paper'},
   },[]),(p,args)=>{
-    const keys=['theme','off','vitals','clock','tools','objective'];const unknown=Object.keys(args).filter(k=>!keys.includes(k));
+    const keys=['theme','off','vitals','clock','tools','objective','font','panel'];const unknown=Object.keys(args).filter(k=>!keys.includes(k));
     if(unknown.length)throw new ToolError(`알 수 없는 인자 ${unknown.join(', ')}. 허용: ${keys.join(', ')}.`,{code:'invalid-args'});
-    if(args.off===true){p.system.fieldHud={theme:'chase',vitals:false,clock:false,tools:false,objective:args.objective!==false,hideEmpty:true,widgets:[]};return {summary:'필드 HUD 를 껐습니다(상시 표시 없음, 「현재 목표」 줄은 남김).',data:{hud:p.system.fieldHud}};}
+    if(args.off===true){p.system.fieldHud={theme:'chase',vitals:false,clock:false,tools:false,objective:args.objective!==false,hideEmpty:true,widgets:[],...(typeof args.font==='string'&&Object.hasOwn(HUD_FONTS,args.font)?{font:args.font as keyof typeof HUD_FONTS}:p.system.fieldHud?.font?{font:p.system.fieldHud.font}:{}),...(args.panel==='dark'||args.panel==='paper'?{panel:args.panel}:p.system.fieldHud?.panel?{panel:p.system.fieldHud.panel}:{})};return {summary:'필드 HUD 를 껐습니다(상시 표시 없음, 「현재 목표」 줄은 남김).',data:{hud:p.system.fieldHud}};}
     if(args.theme===undefined&&!keys.slice(2).some(k=>args[k]!==undefined))throw new ToolError('바꿀 것이 없습니다. 예: {theme:"horror"} · {off:true} · {theme:"hearts",clock:false}',{code:'invalid-args'});
     const theme=typeof args.theme==='string'?args.theme:(p.system.fieldHud?.theme??'minimal');
     const prev=p.system.fieldHud&&p.system.fieldHud.theme===theme?asPresetHud(p.system.fieldHud):undefined;
-    const flags:Record<string,boolean>={};for(const k of keys.slice(2))if(typeof args[k]==='boolean')flags[k]=args[k] as boolean;
+    const flags:Record<string,boolean>={};for(const k of ['vitals','clock','tools','objective'])if(typeof args[k]==='boolean')flags[k]=args[k] as boolean;
+    // 목표 줄을 명시적으로 끄지 않았으면 기존 값(없으면 켜짐)을 유지한다 — normalizeFieldHud 는 collector/hearts/horror/classic 에서 objective 를 기본 false 로 끈다.
+    if(flags.objective===undefined)flags.objective=p.system.fieldHud?.objective??true;
     // 공포 HUD 의 꽃잎은 체력이다. 체력이 줄 일(전투·피해 명령·인카운트)이 없는 공포 탐험에 말없이 켜면 설명 없는 분홍 꽃이 떠 있다(2026-10-25 심사 J67).
     // 테마만 고르면 그런 게임에서는 체력·시계·도구 칸을 켜지 않는다. 명시한 칸(vitals:true 등)과 이미 고른 같은 테마 값은 그대로다.
     const damageless=!projectCanLoseHp(p);
     if(!prev&&theme==='horror'&&damageless)for(const k of ['vitals','clock','tools'])if(flags[k]===undefined)flags[k]=false;
-    const next=normalizeFieldHud({...(prev??{}),theme,...flags,...(prev?.widgets?{widgets:prev.widgets}:{})});
+    const shell={...(typeof args.font==='string'&&Object.hasOwn(HUD_FONTS,args.font)?{font:args.font}:p.system.fieldHud?.font?{font:p.system.fieldHud.font}:{}),...(args.panel==='dark'||args.panel==='paper'?{panel:args.panel}:p.system.fieldHud?.panel?{panel:p.system.fieldHud.panel}:{})};
+    const next=normalizeFieldHud({...(prev??{}),...shell,theme,...flags,...(prev?.widgets?{widgets:prev.widgets}:{})});
     if(!prev?.widgets)delete next.widgets;
     p.system.fieldHud=next;
     const note=next.theme==='horror'&&!next.vitals&&damageless&&flags.vitals!==true?' — 체력이 줄 일(전투·피해)이 없어 꽃잎 생명을 켜지 않았다. 체력을 쓰는 게임이면 vitals:true 나 set_life_flower 로 켠다':'';

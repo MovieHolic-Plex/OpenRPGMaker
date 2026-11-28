@@ -127,7 +127,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   set_start_position: { d: "Set the game's start map and cell. Fails on an unwalkable cell." },
   set_field_hud: {
     d: "Pick or turn off what is always drawn over the field. Pick by what the theme DRAWS, not by its name; the result's onScreen lists what the player will see, and gauges and party rows that cannot change on the field are left out (unused) — in a turn-based game HP lives in the battle screen and the menu. off:true = nothing but the objective line (most story, mystery, romance games). If you do not call this, the finish step picks one from what the game uses.",
-    p: { theme: "What is drawn on the field: classic = nothing (stats live in the menu) — turn-based JRPG; hearts = HP hearts + gold; horror = petal life; chase = nothing; party = party HP rows (only where HP drops on the field); collector = area name; minimal = small hearts + clock; farm = clock, gold, energy, tools; survival = tools, food, HP, stamina; adventure = HP and MP bars + 5 tool slots + stamina ring — real-time action combat only.", off: "true = hide the whole HUD (objective line stays).", vitals: "Body gauges: HP, MP, stamina, energy — false hides all of them.", clock: "Calendar/clock.", tools: "Tool slots.", objective: "Objective line." },
+    p: { theme: "What is drawn on the field: classic = nothing (stats live in the menu) — turn-based JRPG; hearts = HP hearts + gold; horror = petal life; chase = nothing; party = party HP rows (only where HP drops on the field); collector = area name; minimal = small hearts + clock; farm = clock, gold, energy, tools; survival = tools, food, HP, stamina; adventure = HP and MP bars + 5 tool slots + stamina ring — real-time action combat only.", off: "true = hide the whole HUD (objective line stays).", vitals: "Body gauges: HP, MP, stamina, energy — false hides all of them.", clock: "Calendar/clock.", tools: "Tool slots.", objective: "Objective line (kept on unless set to false).", font: "HUD font: auto | pixel | round | clean.", panel: "HUD shell panel: dark | paper." },
   },
   simulate_battle: {
     d: "Simulate a battle N times headlessly; returns win rate, average turns, potions used and remaining HP (seed = repeatable).",
@@ -194,7 +194,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
     },
   },
   set_project_settings: {
-    d: "Project settings in one call: title, author, terms, playResolution, cameraZoom, default music/system resources, start party, battle defaults (battle.*), touch controls, fonts, dialogue window style (dialogue.style), field HUD widgets (fieldHud), New Game+ (newGamePlus), chapter label (chapter). Only the given fields change.",
+    d: "Project settings in one call: title, author, terms, playResolution, cameraZoom, default music/system resources, start party, battle defaults (battle.*), touch controls, fonts, dialogue window (dialogue.style, dialogue.container:'box'|'balloon'), field HUD widgets (fieldHud), New Game+ (newGamePlus), chapter label (chapter). Only the given fields change.",
     p: {
       fonts: "Shared fonts by role (ui, pixel, mono). \"\" resets a role.",
       touchControls: "Phone/tablet controls (desktop unaffected). Defaults are fine; tapToMove:false for puzzle maps.",
@@ -336,7 +336,7 @@ export const V2_TOOL_EN: Readonly<Record<string, ToolTextEn>> = {
   link_modern_city_interior: { d: "Link a modern_city street building door with an existing interior map (two-way transfer)." },
   set_map_properties: { d: "Set map properties: name, tileset, characterScale, encounters, BGM (bgm), background/parallax (background.preset), battle background (battleBackground), save/escape limits (flags:{disableSave:true}; disableSave:true at the top level works too), minimap, weather, loop." },
   set_game_over: { d: "Set the defeat flow: classic | horror | blackout, return position, title/body/button text and background." },
-  set_vn_look: { d: "Pick the visual-novel dialogue window skin: a preset plus name tag, choice buttons, wait marker, text size/spacing, portrait entrance, ESC menu colours." },
+  set_vn_look: { d: "Visual-novel/romance dialogue window skin ONLY (overrides dialogue.style via CSS). For RPG/adventure/horror/SF use write_blueprint{look} or set_project_settings{dialogue:{style}}." },
   configure_field_menu: { d: "Author the ESC menu: items, order, labels and window style (preset story|collector|romance|custom)." },
   // onTouch(닿았을 때 도는 장면 — 죽이지 않는 추격자, 9천 자)는 내놓지 않는다: 흔한 길은 killOnTouch 와 caughtPenalty 다.
   make_chase_scene: {
