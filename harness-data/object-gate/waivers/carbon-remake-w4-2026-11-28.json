@@ -1,0 +1,232 @@
+{
+ "schema": "oprn-object-gate-owner-waiver/1",
+ "id": "carbon-remake-w4-2026-11-28",
+ "owner": "그래. (Wave 4 5종 저장+번들 굽기 승인 · 2026-11-28)",
+ "decidedAt": "2026-11-28",
+ "recordedBy": "antigravity/gemini-4-neon (owner chat approval 2026-11-28)",
+ "contexts": [
+  "bundle",
+  "shared"
+ ],
+ "note": "Carbon Medium Wave 4 remakes (modern_campus 4 pieces, bundle/shared only)",
+ "items": [
+  {
+   "pixelSha256": "41422c96bc28218390124427e6154c8612b6bfb2565bf491ddae160af7f6170b",
+   "kind": "box",
+   "label": "교정 벤치(목재+주철)",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "7665ed2a1829ded3",
+     "7efc96d2805272be"
+    ],
+    "24": [
+     "0c6a34cf24772bfe",
+     "36165b9da7e4feb3",
+     "522663cccccc2885",
+     "54a44f1f0291bc73",
+     "6e341daa7da45394",
+     "80ed5583e6f1dc5a",
+     "9f05e0d30e9b7116",
+     "ac8a876c8903ffc9",
+     "ba2b5f9a79a6fc2e",
+     "c7e227bd16e2df50",
+     "dca7962ccfb55ef0",
+     "ddc327b0669b709c"
+    ],
+    "32": [
+     "22d231645b8c64da",
+     "8888f9adb393d249"
+    ],
+    "48": [
+     "1b6b1496b1d8fac5",
+     "364ff18be18ea477",
+     "494b0dbcbff70c9d",
+     "6aeef67f1a4bf442",
+     "a344df4fc9e8f08d",
+     "c8e6fcd1387e89d8"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "255c5e907e4999c7a5794f6b13c7e14a84a561cc248bfa0b55ade0424976d56f",
+   "kind": "structure",
+   "label": "스탠드 관람석(3단+중앙 계단)",
+   "width": 64,
+   "height": 32,
+   "cells": {
+    "16": [
+     "40ebc2117bf427e1",
+     "466748116e11e835",
+     "7af0db50d203e6d0",
+     "8ac0f4ce8d6db681",
+     "9ae58c5c6fc5d0a7",
+     "c716e470e3a073d5",
+     "cc951c3e809a9a38",
+     "e8cd171b2fe043be"
+    ],
+    "24": [
+     "02cee92fba7cd64a",
+     "09d3c325697e330d",
+     "15e9b3faad64a9b3",
+     "2af71d33fb7b2b7a",
+     "2b5ed451eedbb2b2",
+     "2c008adf5b6eea74",
+     "357a7b321bd18d41",
+     "35c2e11a0232970a",
+     "3db9db3600aeec95",
+     "458fea379ec29294",
+     "4fe7711b80aa4e8d",
+     "52d2ecfcaeefd1cb",
+     "6971e69556aa5162",
+     "715e33a41ed84a79",
+     "77ba52c0818acbeb",
+     "79c17ba000add993",
+     "8e10a0b02595df65",
+     "94c416232bb837e2",
+     "a55e899ef3313e3c",
+     "a5fac970c1e7aa5b",
+     "a728fe79382bdb42",
+     "b502dc09671166ff",
+     "b7461ae2a32b48b6",
+     "c3d85019433cf56a",
+     "ca901f4791600865",
+     "cb99992325cce55c",
+     "d5833e30bf64147d",
+     "d6616ce78f5b3588",
+     "d759d5478bcdcfc0",
+     "deed1e6afd58af48",
+     "e380d0a4f52f5094",
+     "e74b95705a4f4398",
+     "ece9aff74e518093",
+     "f8c34d7d40ed3462",
+     "fe4f8f87492e678e",
+     "ff66d6961cee0f74"
+    ],
+    "32": [
+     "355d9c8de21592ab",
+     "dbff6b6e50b40294"
+    ],
+    "48": [
+     "187dc098a8d755de",
+     "3bf5907d1f14fb87",
+     "4030b79c4f02a53d",
+     "40fdb233761a1df6",
+     "4819ac479edfc02f",
+     "6455f2f4a3d94475",
+     "6d7c9103ec514adf",
+     "7a74b81318639591",
+     "7b1fa38ed7d9d271",
+     "7de5da1d9df41603",
+     "c6e49eaa04f6ec69",
+     "ec5943efc82220c3"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "9411bd32fd7fcf48acc64a5857c768cc95ad074164ea8517b9c38fb9c540d809",
+   "kind": "other",
+   "label": "캠퍼스 안내도(지붕형 게시판)",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "7564d03f489156a5",
+     "7ac8f7c47320ba60",
+     "a3356e2bb730cc2c",
+     "c64f370d8bdba0e1"
+    ],
+    "24": [
+     "0887ad36cc0c2c6b",
+     "1ea3be4e36337238",
+     "52357094682b4142",
+     "531581e6065a37b1",
+     "5997f6d5f94463e0",
+     "62dbdc294b18817b",
+     "64f565225d21faf5",
+     "65cc6386643703a6",
+     "6835f8a3dfe21f80",
+     "7b30ca7f2f646942",
+     "7d9fe9fdd9310705",
+     "8c1fba3544394ff9",
+     "9330e10e3bf2475c",
+     "aa123926734fb9c7",
+     "bea4c7baea977ae0",
+     "beb8141ce1f83b43",
+     "c4c7b99bf036ca71",
+     "cee173915b70b31a",
+     "d77553eb2d7663a1",
+     "dd185805a2522f56",
+     "e7c5fbd2a68d7866",
+     "edcfd446d745ad73",
+     "f0ccf6bcc8cee347",
+     "fd1427644655e87e"
+    ],
+    "32": [
+     "42be7ea7c519e1b6"
+    ],
+    "48": [
+     "16bfa63166bb6788",
+     "20d569af394734bc",
+     "46aba25754cef6db",
+     "7e50a58272adb3d1",
+     "8498acdd2bdfe7a0",
+     "e1b8de5e06a1953f"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "3770eb2433b359a2f5e01ae9c0c7e7457f287e6c6cf9a484012c0486c6ec3c5c",
+   "kind": "box",
+   "label": "보건실 약 진열대(구급함+약병)",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "031651cbdad49f36",
+     "74f54b55127c4fca",
+     "8bf1542b749853f2",
+     "ff9ef1139ce24573"
+    ],
+    "24": [
+     "0cd2162546607e1a",
+     "232a1167f21346f1",
+     "2e6a8bc791045754",
+     "375f84f486b5b212",
+     "3d009c25cca5ad19",
+     "43c8e58e635eeea3",
+     "48620afa7403b7b8",
+     "6a10aab01c0e2506",
+     "708cf482b037186e",
+     "771a04acc614d625",
+     "78540b0d367ba545",
+     "845d5d8270bfc087",
+     "84a4eabaed861953",
+     "84c85ffe96fec6bd",
+     "92116ebea488c3e6",
+     "99df37ff30ae521e",
+     "ae3f8a1454ed74b3",
+     "b06b294da026ff5f",
+     "cf66d165cdcfa028",
+     "d32276f0fab5ae92",
+     "dd5f5b4e2930578e",
+     "e3e69b5e531e86f4",
+     "f4e8bfae52e74244",
+     "fb679ac857521dbc"
+    ],
+    "32": [
+     "14869b52e962c342"
+    ],
+    "48": [
+     "0a98b6133496f275",
+     "5d551039dcc144a8",
+     "74a11e13bd7b8ca4",
+     "788dd10a5a911a1f",
+     "91b84034192f747d",
+     "cd1793fb36f0133b"
+    ]
+   }
+  }
+ ]
+}

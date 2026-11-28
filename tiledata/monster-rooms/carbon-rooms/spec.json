@@ -36,6 +36,46 @@
    ],
    "rule": "몬스터 센터 카운터 뒤 중앙에 배치. 아랫줄 2칸 막힘.",
    "pixelSha256": "b3e0eb0fa3b4a41ce535366e7c8e793f5e09e49be6b45411bd6b025b85342bb7"
+  },
+  {
+   "id": "mk-c-rooms-dp-showcase",
+   "replaces": "mk-monster-rooms-dp_showcase",
+   "type": "prop",
+   "name": "백화점 유리 진열장(포션+오브+몬스터볼)",
+   "en": "department store glass display showcase",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "몬스터",
+    "백화점",
+    "진열장",
+    "상점"
+   ],
+   "words": [
+    "유리 진열장",
+    "백화점 진열장",
+    "쇼케이스",
+    "dp showcase"
+   ],
+   "rule": "몬스터 백화점·상점 내부 판매 구역에 배치. 아랫줄 3칸 막힘.",
+   "pixelSha256": "aa32dfef0b9a5ad80c6777e74ec35d50888c040e769ecb295c68dc1640e8961f"
   }
  ]
 }

@@ -152,6 +152,162 @@
    ],
    "rule": "운동장·농구코트 북쪽 끝에 배치. 기단 2칸 막힘, 백보드/기둥은 ★.",
    "pixelSha256": "f20d46a8964978fdefc34e4e9f438cb7154e653a3ee512a7e953d6a58ee7c218"
+  },
+  {
+   "id": "mc-c-campus-bench",
+   "replaces": "mc-bench",
+   "type": "prop",
+   "name": "교정 벤치(목재+주철)",
+   "en": "campus wooden park bench",
+   "kind": "box",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "tags": [
+    "실외",
+    "캠퍼스",
+    "벤치",
+    "의자",
+    "학교"
+   ],
+   "words": [
+    "교정 벤치",
+    "캠퍼스 벤치",
+    "벤치",
+    "bench"
+   ],
+   "rule": "캠퍼스 산책로·광장·건물 앞 보도에 배치. 2칸 모두 막힘.",
+   "waiver": "carbon-remake-w4-2026-11-28",
+   "pixelSha256": "bdf248b0dd58dd99b01a7456587344bb09ee2f2757688f2375ed9e79d7cdf9bd"
+  },
+  {
+   "id": "mc-c-campus-bleachers",
+   "replaces": "mc-bleachers",
+   "type": "prop",
+   "name": "스탠드 관람석(3단+중앙 계단)",
+   "en": "schoolyard 3-tier bleachers",
+   "kind": "structure",
+   "w": 4,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ],
+    [
+     3,
+     1
+    ]
+   ],
+   "tags": [
+    "실외",
+    "운동장",
+    "관람석",
+    "스탠드",
+    "학교"
+   ],
+   "words": [
+    "스탠드 관람석",
+    "관람석",
+    "스탠드",
+    "bleachers"
+   ],
+   "rule": "운동장 트랙·코트 가장자리 북쪽에 배치. 아랫줄 4칸 막힘, 윗줄 ★.",
+   "waiver": "carbon-remake-w4-2026-11-28",
+   "pixelSha256": "3bec5517667f6fa0f45cb2baffe23620d5999dbc2709e191071038cba2d8359e"
+  },
+  {
+   "id": "mc-c-campus-map",
+   "replaces": "mc-campus-map",
+   "type": "prop",
+   "name": "캠퍼스 안내도(지붕형 게시판)",
+   "en": "campus directory map board",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실외",
+    "캠퍼스",
+    "안내판",
+    "지도",
+    "학교"
+   ],
+   "words": [
+    "캠퍼스 안내도",
+    "안내도",
+    "안내판",
+    "campus map"
+   ],
+   "rule": "학교 정문 안쪽·교차로 광장에 배치. 아랫줄 2칸 막힘, 지붕 윗줄 ★.",
+   "waiver": "carbon-remake-w4-2026-11-28",
+   "pixelSha256": "8a28746ad30e514cb96bdc890a5ba92c29fc60ac1a3ab90207563d219f2bddf3"
+  },
+  {
+   "id": "mc-c-campus-aid-counter",
+   "replaces": "mc-in-mc-aid-counter",
+   "type": "prop",
+   "name": "보건실 약 진열대(구급함+약병)",
+   "en": "infirmary medicine cabinet counter",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "보건실",
+    "의무실",
+    "약장",
+    "학교"
+   ],
+   "words": [
+    "보건실 약 진열대",
+    "구급함 카운터",
+    "약 진열대",
+    "aid counter"
+   ],
+   "rule": "학교 보건실·의무실 벽면이나 작업 구역에 배치. 아랫줄 2칸 막힘.",
+   "waiver": "carbon-remake-w4-2026-11-28",
+   "pixelSha256": "95ee348cdaf7b39382995abe6dd0170263bae6cb3b9bb39faaa60fa2cb3f9468"
   }
  ],
  "waiver": "carbon-remake-w1-3-2026-11-28"
