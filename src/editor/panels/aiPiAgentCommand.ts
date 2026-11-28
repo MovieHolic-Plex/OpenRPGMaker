@@ -282,6 +282,8 @@ export interface PiCommandSurface {
    * 같은 맵으로 새 요청이 오면 보내기가 카드를 먼저 닫는다(aiDecisionPrompt 「열린 카드 대장」). 없으면 앞 턴 카드로 본다.
    */
   readonly runKey?: string;
+  /** 이 실행을 낸 대화(스레드) id — 확인 카드가 이 id 로 열린 카드 대장에 올라, 다른 스레드의 보내기를 붙잡지 않는다. */
+  readonly threadId?: string;
   /** 사용자가 이 대화에서 승인한 칩셋 계열(질문 카드 「이 타일로 바꿔도 좋아요」). 요청의 approvedTilesetFamilies 로 간다. */
   readonly getApprovedTilesetFamilies?: () => readonly string[];
   /** 조수가 ask_tileset_change 로 칩셋 계열 변경을 물었다. 패널은 턴이 끝난 뒤 질문 카드를 띄운다. */

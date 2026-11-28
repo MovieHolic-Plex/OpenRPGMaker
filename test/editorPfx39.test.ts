@@ -47,7 +47,10 @@ import { IMAGE_GENERATION_UNAVAILABLE_CODE, imageGenerationFailureCode, imageGen
 import { isImageGenerationUnavailableResult, reportImageGenerationUnavailable } from "@/editor/panels/imageGenerationGate";
 import { searchProject } from "@/editor/panels/mapEventSearchModel";
 import { mapAiBadges } from "@/editor/panels/mapTreeAiBadges";
-import type { MapRunTicket } from "@/editor/aiMapRunQueue";
+import { createMapRunQueue, type MapRunTicket } from "@/editor/aiMapRunQueue";
+import { createAiThreadList, groupThreads, threadStates, type ThreadState } from "@/editor/aiThreadList";
+import type { ConversationArchiveSummary } from "@/ai/conversationStore";
+import type { OpenAssistantDecision } from "@/editor/panels/aiDecisionPrompt";
 import type { Presence } from "@/editor/panels/aiPresence";
 import { renderEquipmentRecordForm } from "@/editor/panels/databaseEquipmentRecordView";
 import { renderLifeCraftingTab } from "@/editor/panels/databaseLifeCraftingView";
@@ -2246,6 +2249,122 @@ describe("editorPanelsSuite23", () => {
       it("does not badge project-wide or exclusive (team) queue keys", () => {
         const badges = mapAiBadges([], [ticket(1, "__project__", "running"), ticket(2, "map_c", "running", { exclusive: true })], isMap);
         expect(badges.size).toBe(0);
+      });
+    });
+    describe("aiMapRunQueue threadId", () => {
+      it("enqueue keeps threadId on the ticket", () => {
+        const q = createMapRunQueue();
+        q.enqueue({ mapKey: "map_a", label: "x", threadId: "t1", start: async () => {} });
+        expect(q.tickets()[0]?.threadId).toBe("t1");
+        // Old callers without a thread id leave the field absent, not an empty string.
+        q.enqueue({ mapKey: "map_b", label: "y", start: async () => {} });
+        expect(q.tickets()[1]).not.toHaveProperty("threadId");
+      });
+    });
+    describe("aiThreadList", () => {
+      function summary(id: string, savedAt: number, homeMapId: string | null, targetMapIds: string[] = []): ConversationArchiveSummary {
+        return { id, title: `스레드 ${id}`, model: "m", savedAt, turnCount: 1, projectContextKey: "remote:P",
+          viewedMapIds: homeMapId ? [homeMapId] : [], targetMapIds, mapAttribution: "complete", homeMapId,
+          mapIds: [...new Set([...(homeMapId ? [homeMapId] : []), ...targetMapIds])].sort(), transcriptCompacted: false };
+      }
+      function decision(threadId: string | undefined, runKey = "map_a"): OpenAssistantDecision {
+        return { title: "확인", runKey, openedAt: 1, ...(threadId !== undefined ? { threadId } : {}), answer() {} };
+      }
+      const none = new Map<string, ThreadState>();
+      it("groups by home map, game-wide for null", () => {
+        const snap = groupThreads([summary("a", 1, null), summary("b", 3, "map_a"), summary("c", 2, "map_a")], isMap, none);
+        expect(snap.gameWide.map(r => r.id)).toEqual(["a"]);
+        expect(snap.gameWide[0]?.homeMapId).toBeNull();
+        expect(snap.byMap.get("map_a")?.map(r => r.id)).toEqual(["b", "c"]);
+        expect([...snap.byMap.keys()]).toEqual(["map_a"]);
+      });
+      it("deleted home map falls back to game-wide", () => {
+        const snap = groupThreads([summary("x", 1, "map_x"), summary("y", 2, null)], isMap, none);
+        expect(snap.gameWide.map(r => r.id)).toEqual(["y", "x"]);
+        expect(snap.gameWide.find(r => r.id === "x")?.homeMapId).toBeNull();
+        expect(snap.byMap.has("map_x")).toBe(false);
+      });
+      it("echoes a thread under maps it touched outside home", () => {
+        const snap = groupThreads([summary("e", 1, "map_a", ["map_a", "map_b", "map_gone"])], isMap, none);
+        expect(snap.echoes.get("map_b")?.map(r => r.id)).toEqual(["e"]);
+        expect(snap.echoes.has("map_a")).toBe(false);
+        expect(snap.echoes.has("map_gone")).toBe(false);
+        // A game-wide thread echoes under every existing map it changed.
+        const wide = groupThreads([summary("w", 1, null, ["map_c"])], isMap, none);
+        expect(wide.echoes.get("map_c")?.map(r => r.id)).toEqual(["w"]);
+      });
+      it("threadStates: needs-answer > working > waiting", () => {
+        const states = threadStates([
+          ticket(1, "map_a", "running", { threadId: "t1" }),
+          ticket(2, "map_b", "running", { threadId: "t2" }),
+          ticket(3, "map_b", "waiting", { threadId: "t2" }),
+          ticket(4, "map_c", "waiting", { threadId: "t3" }),
+          ticket(5, "map_c", "running"),
+          ticket(6, "map_c", "done", { threadId: "t4" }),
+        ], [decision("t1"), decision(undefined)]);
+        expect(states.get("t1")).toBe("needs-answer");
+        expect(states.get("t2")).toBe("working");
+        expect(states.get("t3")).toBe("waiting");
+        expect(states.has("t4")).toBe(false);
+        expect([...states.keys()].sort()).toEqual(["t1", "t2", "t3"]);
+        const snap = groupThreads([summary("t1", 1, "map_a"), summary("t9", 2, "map_a")], isMap, states);
+        expect(snap.byMap.get("map_a")?.find(r => r.id === "t1")?.state).toBe("needs-answer");
+        expect(snap.byMap.get("map_a")?.find(r => r.id === "t9")).not.toHaveProperty("state");
+      });
+      it("store loads the scope, debounces saves and follows queue and decision changes", async () => {
+        vi.useFakeTimers();
+        try {
+          let rows = [summary("s1", 1, "map_a")];
+          const load = vi.fn(async (_scope: string) => rows);
+          // A holder, not `let`: TS would narrow a closure-assigned `let x = null` to `null`.
+          const hooks: { saved: ((id: string) => void) | null; decisionsChanged: (() => void) | null } = { saved: null, decisionsChanged: null };
+          const open: OpenAssistantDecision[] = [];
+          const queue = createMapRunQueue();
+          const list = createAiThreadList({ load, mapExists: isMap, mapsToken: () => maps, queue: () => queue,
+            decisions: () => open, subscribeDecisions: fn => { hooks.decisionsChanged = fn; return () => { hooks.decisionsChanged = null; }; },
+            onSaved: fn => { hooks.saved = fn; return () => { hooks.saved = null; }; } });
+          const seen = vi.fn();
+          list.subscribe(seen);
+          expect(list.snapshot().gameWide).toEqual([]);
+          list.setScope("remote:P");
+          await vi.advanceTimersByTimeAsync(0);
+          expect(load).toHaveBeenCalledTimes(1);
+          expect(load).toHaveBeenLastCalledWith("remote:P");
+          expect(list.snapshot().byMap.get("map_a")?.map(r => r.id)).toEqual(["s1"]);
+          // Many saves in a burst → one reload after the debounce.
+          rows = [summary("s2", 2, null), summary("s1", 1, "map_a")];
+          hooks.saved!("s2"); hooks.saved!("s2"); hooks.saved!("s1");
+          await vi.advanceTimersByTimeAsync(99);
+          expect(load).toHaveBeenCalledTimes(1);
+          await vi.advanceTimersByTimeAsync(1);
+          await vi.advanceTimersByTimeAsync(0);
+          expect(load).toHaveBeenCalledTimes(2);
+          expect(list.snapshot().gameWide.map(r => r.id)).toEqual(["s2"]);
+          // Queue changes restate immediately, without reloading.
+          let release: () => void = () => {};
+          queue.enqueue({ mapKey: "map_a", label: "x", threadId: "s1", start: () => new Promise<void>(resolve => { release = resolve; }) });
+          await vi.advanceTimersByTimeAsync(0);
+          expect(list.snapshot().byMap.get("map_a")?.[0]?.state).toBe("working");
+          open.push(decision("s1"));
+          hooks.decisionsChanged!();
+          expect(list.snapshot().byMap.get("map_a")?.[0]?.state).toBe("needs-answer");
+          expect(load).toHaveBeenCalledTimes(2);
+          expect(seen).toHaveBeenCalled();
+          open.length = 0;
+          hooks.decisionsChanged!();
+          release();
+          await vi.advanceTimersByTimeAsync(0);
+          expect(list.snapshot().byMap.get("map_a")?.[0]).not.toHaveProperty("state");
+          // Leaving the scope empties the list; disposal stops listening.
+          list.setScope(null);
+          await vi.advanceTimersByTimeAsync(0);
+          expect(list.snapshot().byMap.size).toBe(0);
+          list.dispose();
+          expect(hooks.saved).toBeNull();
+          expect(hooks.decisionsChanged).toBeNull();
+        } finally {
+          vi.useRealTimers();
+        }
       });
     });
   });

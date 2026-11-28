@@ -160,6 +160,7 @@ import {
 } from "@/ai/conversationStore";
 import { noteAiChangeUndone } from "@/ai/preferenceSignals";
 import type { AuditEntry } from "@/ai/assistantSession";
+import type { ConversationTurnContext } from "@/ai/conversationTurnContext";
 import { serializeAuditTranscript } from "@/ai/conversationReplay";
 import { createProjectWikiCoordinator } from "@/editor/projectWikiCoordinator";
 import { RunOperation } from "@/ai/runOperation";
@@ -593,6 +594,48 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     );
     refreshExportButton();
   };
+  /**
+   * 실행 하나가 붙는 대화 — 보낸 순간의 대화(컨트롤러·id·범위)와 그 기록 배열을 붙잡는다.
+   * 왜: 실행 결과(감사 행·저장)를 «끝날 때 열린» 대화에 붙이면, 그 사이 대화를 바꾼 경우 결과가 새 대화로 새고
+   * 보낸 대화에서는 빠졌다. 열려 있는 동안은 지금 배열을 따라가고(되감기·복원이 배열을 갈아 끼운다), 닫힌 뒤에는 마지막 배열에 남긴다.
+   */
+  interface TurnConversation {
+    readonly id: string;
+    readonly scope: string;
+    /** 이 실행의 감사 행을 붙일 기록 배열. */
+    readonly history: () => AuditEntry[];
+    /** 저장할 전체 항목 — 기록 + 이 대화가 열려 있던 동안의 세션 항목. */
+    readonly entries: () => AuditEntry[];
+    /** entries() + 같은 대화에서 아직 도는 앞 턴의 꼬리(사용자 말·«실행 중» 표지) — 배경 실행의 저장은 이것을 쓴다. */
+    readonly entriesWithPending: () => AuditEntry[];
+  }
+  /**
+   * 도는 앞 턴(runPiTurn)이 아직 기록 배열에 넣지 않은 꼬리 — 사용자 말과 «실행 중» 표지(#5188-4)는 그 턴의 저장에만 덧붙는다.
+   * 같은 대화의 배경 실행이 저장하면서 이것을 빼면, 앞 턴이 끝나기 전 앱이 꺼졌을 때 그 요청과 이어 하기 표지가 사라진다.
+   */
+  const pendingTurnTails = new Set<{ readonly id: string; readonly compose: (entries: readonly AuditEntry[]) => AuditEntry[] }>();
+  const captureTurnConversation = (): TurnConversation => {
+    const owner = controller, id = conversationId, scope = conversationScope;
+    let history = owner.auditHistory;
+    let sessionTail: readonly AuditEntry[] = owner.session?.getAuditEntries() ?? [];
+    const sync = (): void => {
+      if (conversationId !== id || conversationScope !== scope) return;
+      history = owner.auditHistory;
+      sessionTail = owner.session?.getAuditEntries() ?? [];
+    };
+    const entries = (): AuditEntry[] => { sync(); return [...history, ...sessionTail]; };
+    const entriesWithPending = (): AuditEntry[] => {
+      let all = entries();
+      for (const pending of pendingTurnTails) if (pending.id === id) all = pending.compose(all);
+      return all;
+    };
+    return { id, scope, history: () => { sync(); return history; }, entries, entriesWithPending };
+  };
+  /** 보낸 맵의 문맥 — 대화의 집 맵(threadHomeMapId)이 첫 사용자 글에서 읽는다. */
+  const turnMapContext = (runMapId: string | null): ConversationTurnContext => ({ mapId: runMapId, mapName: runMapId ? store.getCurrent().maps[runMapId]?.name ?? null : null });
+  /** Pi 실행 기록(activityLog)의 사용자 줄은 맵 문맥이 없다 — 보낸 맵 문맥을 싣는다. */
+  const withUserContext = (rows: readonly AuditEntry[], context: ConversationTurnContext): AuditEntry[] =>
+    rows.map((row) => (row.kind === "user" && !row.context ? { ...row, context } : row));
 
   const status = el("span", {
     class: "ai-assistant-status",
@@ -1747,7 +1790,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     refreshQueueIndicator();
     if (next) {
       void plainPiTurn(next.text).then(({ command, plan, questionPromoted, initialToolNames, intentNote, timing }) =>
-        runPiTurn(command, next.displayAs ?? next.text, plan, { questionPromoted, initialToolNames, intentNote, timing }));
+        runPiTurn(command, next.displayAs ?? next.text, plan, { questionPromoted, initialToolNames, intentNote, timing, runMapId: editorState.get().currentMapId ?? null }));
     }
   };
 
@@ -2355,7 +2398,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (cli && journal.model && engine?.cli === cli && loadAiConfig().model !== journal.model) saveAssistantEngine({ ...engine, routineModel: journal.model, deepModel: journal.model });
     proceed();
   };
-  const runPiTurn = async (command: ParsedPiCommand, displayText: string, plan: PiRunPlan | null, opts?: { readonly questionPromoted?: boolean; readonly slotClaimed?: boolean; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null;
+  const runPiTurn = async (command: ParsedPiCommand, displayText: string, plan: PiRunPlan | null, opts: { readonly questionPromoted?: boolean; readonly slotClaimed?: boolean; readonly initialToolNames?: readonly string[]; readonly intentNote?: string | null;
     /** 보낸 문장 말풍선을 send() 가 분류 전에 이미 붙였다. */
     readonly echoed?: boolean;
     /** 모델에 보낸 전체 지시문 — 말풍선(displayText)과 다를 때만. 입력창을 되살릴 때 함께 되살린다. */
@@ -2367,7 +2410,9 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     /** 다듬기 실행(확인표의 「다듬기」 단추) — 계획 턴 없이 1배 확인·독립 비평→고치기를 길게 돈다. */
     readonly polish?: import("@/ai/piAgent/featureReview").FeaturePolishOptions;
     /** 첫 화면 참고 그림 — 이 턴의 첫 사용자 차례에 그림으로 실린다. */
-    readonly images?: readonly string[] }): Promise<void> => {
+    readonly images?: readonly string[];
+    /** 보낸 순간 보고 있던 맵 — 사용자 항목의 문맥(context.mapId)으로 남는다. */
+    readonly runMapId: string | null }): Promise<void> => {
     // slotClaimed: 호출자(평문 경로)가 의도 분류 전에 이미 슬롯을 잡았다. 그 경우 turnBusy=true 는
     // «다른 턴이 점유 중» 이 아니라 «이 턴의 분류 단계» 다 — 여기서 다시 거부하면 자기 턴을 죽인다.
     if (turnBusy && opts?.slotClaimed !== true) {
@@ -2380,12 +2425,14 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (displayText && !opts?.echoed) appendBubble("user", displayText);
     // 앱이 실행 도중 꺼지면(강제 종료·충돌) 이 대화는 저장되지 않아 다시 켰을 때 요청까지 사라졌다(#5188-4, 데스크톱 빌드 실측).
     // 시작할 때 요청과 «실행 중» 표지를 먼저 남긴다 — 정상으로 끝나면 아래 finally 가 표지 없는 기록으로 덮는다.
-    const turnConversation0 = conversationId, turnScope0 = conversationScope;
-    const turnUserEntry: AuditEntry = { kind: "user", text: displayText || command.task, at: new Date().toISOString() };
-    const settledTurnEntries = (): AuditEntry[] => {
-      const entries = [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])];
-      return entries.some((entry) => entry.kind === "user" && entry.text === turnUserEntry.text) ? entries : [...entries, turnUserEntry];
-    };
+    // 보낸 대화를 붙잡는다 — 감사 행·저장은 끝날 때 열린 대화가 아니라 이 대화에 붙는다.
+    const turnOwner = captureTurnConversation();
+    const turnConversation0 = turnOwner.id, turnScope0 = turnOwner.scope;
+    const turnContext = turnMapContext(opts.runMapId);
+    const turnUserEntry: AuditEntry = { kind: "user", text: displayText || command.task, at: new Date().toISOString(), context: turnContext };
+    const withTurnUser = (entries: readonly AuditEntry[]): AuditEntry[] =>
+      entries.some((entry) => entry.kind === "user" && entry.text === turnUserEntry.text) ? [...entries] : [...entries, turnUserEntry];
+    const settledTurnEntries = (): AuditEntry[] => withTurnUser(turnOwner.entries());
     // 표지에 이어 하기 기록을 붙인다(src/ai/piAgent/runResume.ts) — 같은 열쇠를 워커가 적용 호출 기록과 함께 프로젝트에 싣는다.
     const resumed = pendingResume && pendingResume.task === command.task ? pendingResume : null;
     pendingResume = null;
@@ -2397,8 +2444,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const turnJournal = (): PiRunJournal => ({ key: runResumeKey, task: command.task, ...(displayText && displayText !== command.task ? { shown: displayText } : {}),
       mode: command.mode === "team" ? "team" : "single", ...(command.mapIds.length ? { mapIds: [...command.mapIds] } : {}), startedAt: turnStartedAt,
       ...(teamProgress.done.size ? { doneMaps: [...teamProgress.done] } : {}), provider: turnProvider, model: turnModel });
-    const persistInFlight = (): void => persistConversation({ id: turnConversation0, scope: turnScope0, entries: [...settledTurnEntries(), { kind: "status", text: inFlightMarkerText(turnJournal()), at: turnUserEntry.at }] });
+    const withInFlight = (entries: readonly AuditEntry[]): AuditEntry[] => [...withTurnUser(entries), { kind: "status", text: inFlightMarkerText(turnJournal()), at: turnUserEntry.at }];
+    const persistInFlight = (): void => persistConversation({ id: turnConversation0, scope: turnScope0, entries: withInFlight(turnOwner.entries()) });
     persistInFlight();
+    // 같은 대화의 배경 실행 저장도 이 턴의 사용자 말·표지를 지키게 한다 — finally 에서 뗀다.
+    const pendingTail = { id: turnConversation0, compose: withInFlight };
+    pendingTurnTails.add(pendingTail);
     if (opts?.questionPromoted) appendBubble("system", "프로젝트를 바꾸지 않고 확인해서 답할게요.");
     const progress = canvasProgress ?? startAiCanvasProgress(displayText || command.task);
     canvasProgress = progress;
@@ -2434,7 +2485,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     runSurface.turnBusy = true;
     refreshSendEnabled();
     await progress.paint();
-    if (disposed || canvasProgress !== progress) return;
+    if (disposed || canvasProgress !== progress) { pendingTurnTails.delete(pendingTail); return; }
     // 기존 턴과 같은 중단 버튼을 쓴다 — 컨트롤러를 활성 자리에 앉히고 실행 중 표시(turnBusy)를 켠다.
     // 다음 턴은 지난 턴의 종료 4축을 물고 가지 않는다 — 세션 경로 beginWorkPlanTurn 의 슬롯 클리어와 같은 수명이다.
     piRunOutcome = null;
@@ -2453,7 +2504,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     let tilesetQuestion = null as TilesetChangeQuestion | null;
     // 스토어·없는 기물 카드 — 조수가 generate_missing_object 를 한 턴에 여러 번 부르면 모두 모아 함께 줄 세운다.
     const storeCards: StoreCardRequest[] = [];
-    const turnConversation = conversationId;
+    const turnConversation = turnConversation0;
     // 요청 특징 확인표 — 짓기 턴에서 조수가 적은 항목과 1배 확인 바퀴별 결과(aiFeatureChecklist.ts).
     const polishRequest = opts?.polish?.request ?? command.task;
     const featureChecklist = createFeatureChecklistView((element) => { log.append(element); followConversationLog(log); }, {
@@ -2462,7 +2513,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       onPolish: ({ mapIds, lastBuilds }) => {
         if (disposed || turnConversation !== conversationId) return;
         void runPiTurn({ ...command, task: `[다듬기] ${polishRequest}`, ...(mapIds.length ? { mapIds } : {}) }, "다듬기 — 1배 확인·독립 비평으로 더 고칩니다(최대 30분, 중지 단추로 멈춤)", plan,
-          { polish: { ...FEATURE_POLISH_DEFAULT, request: polishRequest, mapIds, lastBuilds },
+          { runMapId: opts.runMapId, polish: { ...FEATURE_POLISH_DEFAULT, request: polishRequest, mapIds, lastBuilds },
             initialToolNames: [...new Set([...(opts?.initialToolNames ?? []), ...FEATURE_POLISH_TOOLS, ...Object.values(lastBuilds).map((b) => b.tool)])] });
       },
     });
@@ -2486,6 +2537,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         setStatus,
         getCurrentMapId: () => editorState.get().currentMapId ?? null,
         ...(foregroundRunKey !== undefined ? { runKey: foregroundRunKey } : {}),
+        threadId: turnConversation0,
         signal: piRunController.signal,
         showChangeReceipt: (receipt) => showPiChangeReceipt(receipt, reviewCard ?? undefined),
         onReviewResolved: (applied) => { reviewCard?.finish({ ok: true, message: applied ? "적용 완료" : "버림" }); },
@@ -2493,7 +2545,11 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         setRunOutcome: (outcome) => { piRunOutcome = outcome; refreshRunOutcome(); },
         // Pi 경로는 세션도 없고 auditHistory 를 채우는 곳도 없어서, 브리지 audit() 이 늘 빈 배열이었다
         // (2026-09-16 실측). 세션 항목과 같은 자리에 누적해 bridge·내보내기가 같은 원천을 본다.
-        onRunAudit: (rows) => { controller.auditHistory.push(...rows); },
+        // 실행 기록은 실행이 끝난 뒤 늦게 온다 — 보낸 대화의 기록에 붙이고 그 대화로 저장한다(그 사이 대화를 바꿨어도).
+        onRunAudit: (rows) => {
+          turnOwner.history().push(...withUserContext(rows, turnContext));
+          persistConversation({ id: turnConversation0, scope: turnScope0, entries: settledTurnEntries() });
+        },
         onSpend: (spend) => {
           const costUsd = spend.costUsd !== undefined ? (conversationSpend.costUsd ?? 0) + spend.costUsd : conversationSpend.costUsd;
           const billing = spend.billing ?? conversationSpend.billing;
@@ -2534,6 +2590,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       refreshAbortButton();
       syncGlassIdle();
       // 실행이 끝났다(성공·실패·중지 모두) — «실행 중» 표지 없는 기록으로 덮는다.
+      pendingTurnTails.delete(pendingTail);
       persistConversation({ id: turnConversation0, scope: turnScope0, entries: settledTurnEntries() });
     }
     if (tilesetQuestion && !disposed && turnConversation === conversationId) showTilesetChangeCard(tilesetQuestion);
@@ -2629,6 +2686,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     readonly onDeclaring?: () => void;
     /** 이 차례에 사용자가 붙인 참고 그림이 있다 — 모호한 요청을 무작위 장면으로 넓히지 않는다(plainTurn hasUserImages). */
     readonly hasUserImages?: boolean;
+    /** 앞선 요청 메모를 읽을 대화 기록 — 대기열 실행은 보낸 대화의 것을 넘긴다. 없으면 지금 열린 대화. */
+    readonly priorEntries?: readonly AuditEntry[];
   }): Promise<PlainPiTurn> => {
     const turnMapId = turnOptions?.mapId !== undefined ? turnOptions.mapId : editorState.get().currentMapId ?? null;
     // 기록기는 턴당 하나고 의도 선언부터 산다 — 사용자가 기다리는 시간은 엔터를 누른 순간부터고, 선언 한 번이
@@ -2640,7 +2699,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 조수 v2(기본 켜짐): 의도 선언 모델 호출을 건너뛴다 — v2 는 실행 모델이 요청을 짓기 명세로 바로 해석한다(src/ai/v2).
     if (isAssistantV2Enabled() && !team) {
       // 앞선 요청을 메모로 싣는다 — 실행마다 새 세션이라 「처음에 부탁한 대로」가 가리킬 곳이 없었다(J70).
-      const priorNote = priorRequestsNote([...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])], text);
+      const priorNote = priorRequestsNote(turnOptions?.priorEntries ?? [...controller.auditHistory, ...(controller.session?.getAuditEntries() ?? [])], text);
       // 영역에 시킨 턴이면 그 사각형을 알린다 — v2 는 의도 선언(범위 노트)을 건너뛰어 「여기 상점」의 「여기」가 모델에 닿지 않았다.
       const selection = turnOptions?.selection !== undefined ? turnOptions.selection : mapContext().selection;
       const regionNote = selection ? formatV2RegionNote({ mapId: selection.mapId, region: selection }, text) : null;
@@ -2704,17 +2763,27 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     readonly selection: PanelMapContext["selection"];
     /** 대기열에서 잡는 맵 키("*" = 프로젝트 전체) — 이 실행의 확인 카드가 어느 요청을 붙잡는지(aiDecisionPrompt). */
     readonly runKey?: string;
+    /** 이 실행을 낸 대화(스레드) id — 표와 확인 카드에 싣는다. */
+    readonly threadId?: string;
     readonly images?: readonly string[];
   }
   /** 앞 턴도 표에 올린다 — 같은 맵의 다음 요청이 그 뒤에 줄 선다. 돌려준 함수로 자리를 푼다. */
   const claimForegroundMapRun = (mapKey: string, label: string, exclusive: boolean): (() => void) => {
     let release: () => void = () => {};
     const done = new Promise<void>((resolve) => { release = resolve; });
-    mapRunQueue().enqueue({ mapKey, label, exclusive, force: true, start: () => done });
+    mapRunQueue().enqueue({ mapKey, label, exclusive, force: true, threadId: conversationId, start: () => done });
     return release;
   };
-  const runBackgroundMapTurn = async (card: MapRunCard, signal: AbortSignal, run: MapRunInput, ticketRef: { id: number | null }): Promise<void> => {
-    const owner = conversationId;
+  const runBackgroundMapTurn = async (card: MapRunCard, signal: AbortSignal, run: MapRunInput, ticketRef: { id: number | null }, conversation: TurnConversation): Promise<void> => {
+    // 대기열에서 차례를 기다리는 동안 대화가 바뀌었을 수 있다 — 주인은 시작 때가 아니라 보낸 때(enqueueMapRun)의 대화다.
+    const owner = conversation.id;
+    // 보낸 말을 그 대화 기록에 남긴다 — 예전에는 배경 실행의 사용자 말이 어디에도 저장되지 않았다.
+    const runContext = turnMapContext(run.mapId);
+    const runUserEntry: AuditEntry = { kind: "user", text: run.shown || run.text, at: new Date().toISOString(), context: runContext };
+    // 앞선 요청 메모(plainPiTurn)는 이 말을 빼고 보낸 대화의 기록에서 읽는다 — 대기 중 대화를 바꿨어도 남의 대화 요청이 섞이지 않게.
+    const priorEntries = conversation.entries();
+    conversation.history().push(runUserEntry);
+    persistConversation({ id: conversation.id, scope: conversation.scope, entries: conversation.entriesWithPending() });
     if (run.mapId && !store.getCurrent().maps[run.mapId]) throw new Error("보낸 맵이 사라졌어요");
     card.setStatus("의도 읽는 중…");
     const explicit = parsePiCommand(run.text, store.getCurrent(), run.mapId);
@@ -2722,7 +2791,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     let options: PiRunOptions = explicit?.goalMode ? { maxTurns: GOAL_MAX_TURNS, timeoutMs: GOAL_TIMEOUT_MS } : {};
     if (explicit) command = explicit;
     else {
-      const classified = await plainPiTurn(run.text, { ...(run.team ? { team: true } : {}), ...(run.images?.length ? { hasUserImages: true } : {}), mapId: run.mapId, selection: run.selection, onDeclaring: () => card.setStatus("의도 읽는 중…") });
+      const classified = await plainPiTurn(run.text, { ...(run.team ? { team: true } : {}), ...(run.images?.length ? { hasUserImages: true } : {}), mapId: run.mapId, selection: run.selection, priorEntries, onDeclaring: () => card.setStatus("의도 읽는 중…") });
       if (classified.clarify) {
         pendingClarify = { text: run.text, question: classified.clarify };
         card.say("assistant", clarifyForChat(classified.clarify));
@@ -2759,7 +2828,12 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       setStatus: (text) => card.setStatus(text),
       getCurrentMapId: () => run.mapId,
       ...(run.runKey !== undefined ? { runKey: run.runKey } : {}),
-      onRunAudit: (rows) => { controller.auditHistory.push(...rows); },
+      ...(run.threadId !== undefined ? { threadId: run.threadId } : {}),
+      // 실행 기록의 사용자 줄은 위에서 남긴 사용자 항목과 같은 말이면 뺀다 — 같은 요청이 두 번 보이지 않게.
+      onRunAudit: (rows) => {
+        conversation.history().push(...withUserContext(rows.filter((row) => !(row.kind === "user" && row.text === runUserEntry.text)), runContext));
+        persistConversation({ id: conversation.id, scope: conversation.scope, entries: conversation.entriesWithPending() });
+      },
       onSpend: (spend) => {
         conversationSpend = { turns: conversationSpend.turns + spend.turns, tokens: conversationSpend.tokens + spend.tokens };
         paintConversationSpend();
@@ -2771,7 +2845,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (storeCards.length && !disposed && owner === conversationId) showStoreCards(storeCards);
   };
   const enqueueMapRun = (input: MapRunInput, mapKey: string, exclusive: boolean): void => {
-    const run: MapRunInput = { ...input, runKey: exclusive ? "*" : mapKey };
+    const conversation = captureTurnConversation();
+    const run: MapRunInput = { ...input, runKey: exclusive ? "*" : mapKey, threadId: conversation.id };
     const project = store.getCurrent();
     const mapName = run.mapId ? project.maps[run.mapId]?.name ?? run.mapId : "프로젝트 전체";
     appendBubble("user", run.shown);
@@ -2795,7 +2870,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       if (ticket.status !== "waiting" && ticket.status !== "running") unsubscribe();
     });
-    ticket = mapRunQueue().enqueue({ mapKey, label: run.shown, exclusive, start: (started, signal) => { ticketRef.id = started.id; return runBackgroundMapTurn(card, signal, run, ticketRef); } });
+    ticket = mapRunQueue().enqueue({ mapKey, label: run.shown, exclusive, ...(run.threadId !== undefined ? { threadId: run.threadId } : {}), start: (started, signal) => { ticketRef.id = started.id; return runBackgroundMapTurn(card, signal, run, ticketRef, conversation); } });
     ticketId = ticket.id;
     card.root.dataset.ticketId = String(ticket.id);
     card.ticket(ticket);
@@ -2872,7 +2947,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 둘 다 30분 적용 대기로 멈췄다(aiDecisionPrompt 「열린 카드 대장」, 2026-10-29 vm1 argon).
     // 짧은 답 낱말(「예」「그만」)이면 카드 답으로 쓰고 끝낸다. 다른 요청이면 카드를 「그만두기」(내용 보존)로 닫고
     // 그 사실을 조수에게 알린 뒤 요청을 처리한다 — 카드 주인 실행은 그 변경만 빼고 이어 가고, 이 요청은 그 뒤에 돈다.
-    const blocking = blockingAssistantDecisions(mapKey, exclusive);
+    const blocking = blockingAssistantDecisions(mapKey, exclusive, conversationId);
     let runText = text;
     if (blocking.length > 0) {
       const answer = !handoff && !clarified ? readDecisionAnswer(typed) : null;
@@ -2920,7 +2995,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       // (읽기 전용·계획만·턴 상한·추론)로 풀고, 선택 영역 작업만 영역 파이프라인으로 간다.
       // 명시 `team …`·`/team …`·`/pi …` 은 언제나 우선이고 다이얼의 읽기 전용·계획보다 세다.
       if (explicit) {
-        await runPiTurn(explicit, shown, null, { slotClaimed: true, ...(handoff ? { sentText: text } : {}), ...(handoff?.images?.length ? { images: handoff.images } : {}) });
+        await runPiTurn(explicit, shown, null, { slotClaimed: true, runMapId, ...(handoff ? { sentText: text } : {}), ...(handoff?.images?.length ? { images: handoff.images } : {}) });
         return;
       }
       // 선택 영역도 Pi 턴으로 간다 — 영역은 resolveTurnScope 가 턴 범위로 붙인다. 예전의 별도 영역 파이프라인
@@ -2969,7 +3044,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const planImages = await imagePlanImages(classified.widen, (note) => { const line = appendBubble("system", note); if (workCard?.root.isConnected) workCard.root.before(line); });
       const turnImages = [...(handoff?.images ?? []), ...planImages.images];
       const beforePlanTurn = planImages.images.length ? structuredClone(store.getCurrent()) : null;
-      await runPiTurn(classified.command, shown, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, echoed: true, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: planImages.note ? [planImages.note, classified.intentNote].filter(Boolean).join("\n\n") : classified.intentNote, timing: classified.timing, ...(handoff ? { sentText: text } : {}), ...(turnImages.length ? { images: turnImages } : {}) });
+      await runPiTurn(classified.command, shown, classified.plan, { questionPromoted: classified.questionPromoted, slotClaimed: true, echoed: true, runMapId, ...(classified.initialToolNames ? { initialToolNames: classified.initialToolNames } : {}), intentNote: planImages.note ? [planImages.note, classified.intentNote].filter(Boolean).join("\n\n") : classified.intentNote, timing: classified.timing, ...(handoff ? { sentText: text } : {}), ...(turnImages.length ? { images: turnImages } : {}) });
       // 턴이 카드를 끝내지 않고 빠져나간 갈래(선택지 제시·거절 등)에서 시계가 영영 돌지 않게 한다.
       if (!turnBusy) finishWorkCard({ ok: true });
       if (beforePlanTurn) void planFollowAfterTurn(beforePlanTurn, planImages);
@@ -4511,7 +4586,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       return;
     }
     void plainPiTurn(kickoff.prompt).then(({ command, plan, questionPromoted, initialToolNames, intentNote, timing }) =>
-      runPiTurn(command, kickoff.displayAs, plan, { questionPromoted, initialToolNames, intentNote, timing }));
+      runPiTurn(command, kickoff.displayAs, plan, { questionPromoted, initialToolNames, intentNote, timing, runMapId: editorState.get().currentMapId ?? null }));
   };
 
   if (typeof window !== "undefined") {
@@ -4764,7 +4839,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       const { command, plan, questionPromoted, initialToolNames, intentNote, timing } = classified;
       try {
         if (!current()) return;
-        await runPiTurn(command, shown, plan, { slotClaimed: true, questionPromoted, initialToolNames, intentNote, timing, ...(shown !== text ? { sentText: text } : {}), ...(runOptions?.images?.length ? { images: runOptions.images } : {}) });
+        await runPiTurn(command, shown, plan, { slotClaimed: true, questionPromoted, initialToolNames, intentNote, timing, runMapId: editorState.get().currentMapId ?? null, ...(shown !== text ? { sentText: text } : {}), ...(runOptions?.images?.length ? { images: runOptions.images } : {}) });
       } catch (error) {
         preserve();
         if (current()) appendBubble("system", `첫 요청을 실행하지 못했습니다: ${error instanceof Error ? error.message : String(error)}`);

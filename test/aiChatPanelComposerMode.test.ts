@@ -2,11 +2,14 @@
 // 예전의 모드 3칩(지시/질문/계획)은 없다 — 「질문」은 다이얼 readonly, 「계획」은 confirm(planOnly).
 // 여기서는 `runPiCommand` 를 가로채 **패널이 넘기는 값**만 본다(명령 내부는 piAgentCommandLoop 테스트가 본다).
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { clearConversations } from "@/ai/conversationStore";
+import { clearConversations, listConversations, loadConversation } from "@/ai/conversationStore";
+import type { AuditEntry } from "@/ai/assistantSession";
+import { mapRunQueue, resetMapRunQueueForTests } from "@/editor/aiMapRunQueue";
+import { PI_RUN_IN_FLIGHT } from "@/ai/piAgent/runResume";
 import { AssistantSession } from "@/ai/assistantSession";
 import { AI_CONFIG_STORAGE_KEY, defaultAiConfig, loadAiConfig, saveAiConfig } from "@/ai/llmClient";
 import { editorState } from "@/editor/editorState";
-import { renderAiChatPanel, teardownAiChatPanel } from "@/editor/panels/aiChatPanel";
+import { renderAiChatPanel, teardownAiChatPanel, whenAiChatPanelSettled } from "@/editor/panels/aiChatPanel";
 import { renderEventAiAssist } from "@/editor/panels/eventEditor/aiAssist";
 import { activeTools } from "@/editor/tools";
 import type { IntentDeclaration } from "@/ai/intentDeclaration";
@@ -434,5 +437,207 @@ describe("Pi 턴의 종료 4축 수명", () => {
 
     release();
     await vi.waitFor(() => expect((findByTestId(panel, "ai-abort") as unknown as { hidden?: boolean } | null)?.hidden).toBe(true), { timeout: 2_000, interval: 5 });
+  });
+});
+
+// 맵별 스레드(2026-11-28): Pi 사용자 말은 보낸 맵을 문맥으로 남기고, 실행 결과는 «끝날 때 열린» 대화가 아니라
+// 보낸 대화에 붙는다. 예전에는 대기열(배경) 실행이 끝나기 전에 대화를 바꾸면 결과가 새 대화로 샜고 보낸 대화에서는 빠졌다.
+describe("Pi 실행 결과는 보낸 대화에 붙는다", () => {
+  const SEND_WAIT = { timeout: 2_000, interval: 5 } as const;
+  const hasStatus = (entries: readonly AuditEntry[] | undefined, text: string): boolean =>
+    (entries ?? []).some((entry) => entry.kind === "status" && entry.text === text);
+  const userEntries = (entries: readonly AuditEntry[] | undefined) =>
+    (entries ?? []).flatMap((entry) => (entry.kind === "user" ? [entry] : []));
+  const typeAndSend = (panel: FakeElement, text: string): void => {
+    (findByTestId(panel, "ai-input") as unknown as HTMLTextAreaElement).value = text;
+    findByTestId(panel, "ai-send")?.click();
+  };
+  const queuedTicket = (label?: string) => mapRunQueue().tickets().find((ticket) => !ticket.foreground && (label === undefined || ticket.label === label));
+  /** 시작 맵 옆에 둘째 맵을 둔다 — 다른 맵의 요청은 대기열에서 앞 턴과 같이 돈다. */
+  const addSecondMap = (): string => {
+    const project = createBlankProject();
+    const other = structuredClone(project.maps[project.startMapId]!);
+    other.id = "thread_map_b";
+    other.name = "둘째 맵";
+    project.maps[other.id] = other;
+    store.replace(project);
+    return other.id;
+  };
+
+  beforeEach(() => {
+    // 대기열은 편집기 전체에 하나다 — 앞 테스트의 표가 이 테스트의 줄 세우기에 끼지 않게 갈아 끼운다.
+    resetMapRunQueueForTests();
+  });
+
+  it("Pi turn saves the user entry with context.mapId of the map it was sent from", async () => {
+    const mapId = store.getCurrent().startMapId;
+    editorState.set({ currentMapId: mapId });
+    // 실제 실행 기록처럼 문맥 없는 사용자 줄과 끝 상태 줄을 돌려준다 — 그 뒤에도 첫 사용자 항목은 맵 문맥을 지켜야 한다.
+    vi.mocked(runPiCommand).mockImplementationOnce(async (command, surface) => {
+      surface.onRunAudit?.([{ kind: "user", text: command.task }, { kind: "status", text: "context-run-marker" }]);
+      return true;
+    });
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await send(panel, "맵 이름을 숲길로 바꿔줘");
+    const threadId = vi.mocked(runPiCommand).mock.calls[0]?.[1].threadId;
+    expect(threadId).toBeTruthy();
+    await whenAiChatPanelSettled();
+    await vi.waitFor(async () => {
+      const record = await loadConversation(threadId!);
+      expect(hasStatus(record?.entries, "context-run-marker")).toBe(true);
+      // Break: 문맥이 없으면 대화의 집 맵(threadHomeMapId)을 못 정해 이 대화가 맵 스레드 목록에서 빠진다.
+      expect(userEntries(record?.entries)[0]?.context).toMatchObject({ mapId, mapName: store.getCurrent().maps[mapId]?.name ?? null });
+    }, SEND_WAIT);
+  });
+
+  it("a queued run's audit rows land in the conversation that sent it", async () => {
+    const mapId = store.getCurrent().startMapId;
+    editorState.set({ currentMapId: mapId });
+    // 앞 턴은 중지될 때까지 붙잡는다 — 그동안 보낸 둘째 요청은 같은 맵 대기열에 서고, 앞 턴이 끝난 뒤에야 시작한다.
+    vi.mocked(runPiCommand).mockImplementationOnce(async (_command, surface) => {
+      await new Promise<void>((resolve) => {
+        if (surface.signal?.aborted) { resolve(); return; }
+        surface.signal?.addEventListener("abort", () => resolve(), { once: true });
+      });
+      return false;
+    });
+    vi.mocked(runPiCommand).mockImplementationOnce(async (command, surface) => {
+      surface.onRunAudit?.([{ kind: "user", text: command.task }, { kind: "status", text: "queued-run-marker" }]);
+      return true;
+    });
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    typeAndSend(panel, "맵 이름을 숲길로 바꿔줘");
+    await vi.waitFor(() => expect(vi.mocked(runPiCommand).mock.calls.length).toBe(1), SEND_WAIT);
+    const senderId = vi.mocked(runPiCommand).mock.calls[0]?.[1].threadId;
+    expect(senderId).toBeTruthy();
+    typeAndSend(panel, "우물도 파줘");
+    await vi.waitFor(() => expect(queuedTicket()?.status).toBe("waiting"), SEND_WAIT);
+    expect(queuedTicket()?.threadId).toBe(senderId);
+
+    // 새 대화 — 앞 턴은 중지되고, 대기하던 실행은 새 대화가 열린 채로 시작해 끝난다.
+    findByTestId(panel, "ai-new-chat")!.click();
+    await vi.waitFor(() => expect(vi.mocked(runPiCommand).mock.calls.length).toBe(2), SEND_WAIT);
+    expect(vi.mocked(runPiCommand).mock.calls[1]?.[1]).toMatchObject({ background: true, threadId: senderId });
+    await vi.waitFor(() => expect(queuedTicket()?.status).toBe("done"), SEND_WAIT);
+    await whenAiChatPanelSettled();
+
+    // Break: 예전에는 감사 행이 그때 열린 새 대화의 기록에 붙어 보낸 대화에는 남지 않았다.
+    await vi.waitFor(async () => {
+      expect(hasStatus((await loadConversation(senderId!))?.entries, "queued-run-marker")).toBe(true);
+    }, SEND_WAIT);
+    // 새 대화를 한 번 더 열어 지금 열린 대화를 저장시킨다 — 감사 행이 거기로 샜으면 그 기록에 남는다.
+    findByTestId(panel, "ai-new-chat")!.click();
+    await whenAiChatPanelSettled();
+    const others = (await listConversations()).filter((summary) => summary.id !== senderId);
+    for (const summary of others) {
+      expect(hasStatus((await loadConversation(summary.id))?.entries, "queued-run-marker"), summary.id).toBe(false);
+    }
+  });
+
+  it("a queued run persists its own user entry", async () => {
+    const mapId = store.getCurrent().startMapId;
+    editorState.set({ currentMapId: mapId });
+    let release!: () => void;
+    vi.mocked(runPiCommand).mockImplementationOnce(async () => {
+      await new Promise<void>((resolve) => { release = resolve; });
+      return true;
+    });
+    // 대기열 실행은 실행 기록을 돌려주지 않는다 — 사용자 말은 패널이 스스로 남겨야 한다.
+    vi.mocked(runPiCommand).mockImplementationOnce(async () => true);
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    typeAndSend(panel, "맵 이름을 숲길로 바꿔줘");
+    await vi.waitFor(() => expect(vi.mocked(runPiCommand).mock.calls.length).toBe(1), SEND_WAIT);
+    const senderId = vi.mocked(runPiCommand).mock.calls[0]?.[1].threadId;
+    expect(senderId).toBeTruthy();
+    typeAndSend(panel, "우물도 파줘");
+    await vi.waitFor(() => expect(queuedTicket()?.status).toBe("waiting"), SEND_WAIT);
+
+    release();
+    await vi.waitFor(() => expect(vi.mocked(runPiCommand).mock.calls.length).toBe(2), SEND_WAIT);
+    await vi.waitFor(() => expect(queuedTicket()?.status).toBe("done"), SEND_WAIT);
+    await whenAiChatPanelSettled();
+
+    // Break: 예전에는 배경 실행의 사용자 말이 어떤 대화 기록에도 저장되지 않아, 다시 열면 요청이 사라져 있었다.
+    await vi.waitFor(async () => {
+      const queuedUser = userEntries((await loadConversation(senderId!))?.entries).find((entry) => entry.text === "우물도 파줘");
+      expect(queuedUser?.context).toMatchObject({ mapId });
+    }, SEND_WAIT);
+  });
+
+  it("a background save keeps a concurrent foreground run's user entry and in-flight marker", async () => {
+    const mapB = addSecondMap();
+    const mapA = store.getCurrent().startMapId;
+    editorState.set({ currentMapId: mapA });
+    // 앞 턴(맵 A)은 붙잡아 둔다 — 그 사이 같은 대화에서 맵 B 요청이 배경으로 같이 돌고 먼저 끝난다.
+    let releaseForeground!: () => void;
+    vi.mocked(runPiCommand).mockImplementationOnce(async () => {
+      await new Promise<void>((resolve) => { releaseForeground = resolve; });
+      return true;
+    });
+    vi.mocked(runPiCommand).mockImplementationOnce(async (command, surface) => {
+      surface.onRunAudit?.([{ kind: "user", text: command.task }, { kind: "status", text: "side-run-marker" }]);
+      return true;
+    });
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    typeAndSend(panel, "맵 이름을 숲길로 바꿔줘");
+    await vi.waitFor(() => expect(vi.mocked(runPiCommand).mock.calls.length).toBe(1), SEND_WAIT);
+    const senderId = vi.mocked(runPiCommand).mock.calls[0]?.[1].threadId;
+    expect(senderId).toBeTruthy();
+    editorState.set({ currentMapId: mapB });
+    typeAndSend(panel, "우물도 파줘");
+    await vi.waitFor(() => expect(vi.mocked(runPiCommand).mock.calls.length).toBe(2), SEND_WAIT);
+    expect(vi.mocked(runPiCommand).mock.calls[1]?.[1]).toMatchObject({ background: true, threadId: senderId });
+    await vi.waitFor(() => expect(queuedTicket("우물도 파줘")?.status).toBe("done"), SEND_WAIT);
+    await whenAiChatPanelSettled();
+
+    // Break: 배경 실행의 저장이 앞 턴의 사용자 말과 «실행 중» 표지를 지우면, 앞 턴이 끝나기 전 앱이 꺼졌을 때
+    // 그 요청과 이어 하기 표지가 사라진다(#5188-4).
+    await vi.waitFor(async () => {
+      const entries = (await loadConversation(senderId!))?.entries;
+      expect(hasStatus(entries, "side-run-marker")).toBe(true);
+      expect(userEntries(entries).some((entry) => entry.text === "맵 이름을 숲길로 바꿔줘")).toBe(true);
+      expect((entries ?? []).some((entry) => entry.kind === "status" && entry.text.startsWith(PI_RUN_IN_FLIGHT))).toBe(true);
+    }, SEND_WAIT);
+
+    releaseForeground();
+    await vi.waitFor(() => expect((findByTestId(panel, "ai-abort") as unknown as { hidden?: boolean } | null)?.hidden).toBe(true), SEND_WAIT);
+  });
+
+  it("a queued run's earlier-requests note comes from the conversation that sent it", async () => {
+    const mapB = addSecondMap();
+    const mapA = store.getCurrent().startMapId;
+    editorState.set({ currentMapId: mapA });
+    // 앞 두 턴은 실제 실행 기록처럼 사용자 줄을 남긴다 — 앞선 요청 메모가 읽는 자리다.
+    const recordUser = async (command: Parameters<typeof runPiCommand>[0], surface: Parameters<typeof runPiCommand>[1]): Promise<boolean> => {
+      surface.onRunAudit?.([{ kind: "user", text: command.task }]);
+      return true;
+    };
+    vi.mocked(runPiCommand).mockImplementationOnce(recordUser).mockImplementationOnce(recordUser);
+    const panel = renderAiChatPanel({ clock: () => 37_000 }) as unknown as FakeElement;
+    await send(panel, "보낸 대화의 앞 요청 — 등대를 세워줘");
+    const senderId = vi.mocked(runPiCommand).mock.calls[0]?.[1].threadId;
+    expect(senderId).toBeTruthy();
+
+    // 맵 B 줄을 붙잡아 둔다 — 그동안 보낸 요청은 대기하고, 사용자는 새 대화에서 다른 요청을 끝낸다.
+    let releaseBlocker!: () => void;
+    const blocker = new Promise<void>((resolve) => { releaseBlocker = resolve; });
+    mapRunQueue().enqueue({ mapKey: mapB, label: "blocker", start: () => blocker });
+    editorState.set({ currentMapId: mapB });
+    typeAndSend(panel, "우물도 파줘");
+    await vi.waitFor(() => expect(queuedTicket("우물도 파줘")?.status).toBe("waiting"), SEND_WAIT);
+    findByTestId(panel, "ai-new-chat")!.click();
+    editorState.set({ currentMapId: mapA });
+    await send(panel, "다른 대화의 요청 — 성벽을 쌓아줘");
+
+    releaseBlocker();
+    await vi.waitFor(() => expect(vi.mocked(runPiCommand).mock.calls.length).toBe(3), SEND_WAIT);
+    const queued = vi.mocked(runPiCommand).mock.calls[2];
+    expect(queued?.[1]).toMatchObject({ background: true, threadId: senderId });
+    const note = String(queued?.[2]?.intentNote ?? "");
+    // 보낸 대화의 앞 요청은 실린다(메모 경로가 실제로 돌았다는 증거).
+    expect(note).toContain("등대를 세워줘");
+    // Break: 예전에는 대기 뒤 시작할 때 열린 대화의 기록을 읽어 남의 대화 요청이 메모로 실렸다.
+    expect(note).not.toContain("성벽을 쌓아줘");
+    await vi.waitFor(() => expect(queuedTicket("우물도 파줘")?.status).toBe("done"), SEND_WAIT);
   });
 });

@@ -23,6 +23,8 @@ const memoryTombstones = new Set<string>();
 const tombstoneKey = (id: string, scope: string | null): string => JSON.stringify([scope, id]);
 
 const SUMMARIES = "conversationSummaries", SUMMARY_META = "conversationSummaryMeta";
+/** Bump when the projected summary shape changes; a stale "ready" marker rebuilds once (v2: homeMapId, Pi scope targets). */
+const SUMMARY_PROJECTION_VERSION = 2;
 interface SummaryValue extends ScopedAiRecordRow { readonly mapIds: readonly string[]; readonly mapAttribution: string }
 interface SummaryRow { id: string; scope: string; orderAt: number; attribution: string; mapOrderKeys: IDBValidKey[]; summary: SummaryValue }
 let summaryProjector: ((row: unknown) => SummaryValue | null) | undefined;
@@ -157,12 +159,13 @@ async function ensureConversationSummaries(db: IDBDatabase | null): Promise<void
     const done = transactionDone(tx), metadata = tx.objectStore(SUMMARY_META);
     const ready = metadata.get("ready");
     ready.onsuccess = () => {
-      if (ready.result) return;
+      const marker: unknown = ready.result;
+      if (typeof marker === "object" && marker !== null && (marker as { version?: unknown }).version === SUMMARY_PROJECTION_VERSION) return;
       tx.objectStore(SUMMARIES).clear();
       const request = tx.objectStore(AI_RECORD_STORES.conversations).openCursor();
       request.onsuccess = () => {
         const cursor = request.result;
-        if (!cursor) { metadata.put({ id: "ready" }); return; }
+        if (!cursor) { metadata.put({ id: "ready", version: SUMMARY_PROJECTION_VERSION }); return; }
         try { updateSummary(tx, String(cursor.primaryKey), cursor.value); cursor.continue(); }
         catch { tx.abort(); }
       };

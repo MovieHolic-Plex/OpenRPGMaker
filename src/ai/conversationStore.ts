@@ -14,7 +14,8 @@ import {
   conversationSummaryMapIds,
 } from "@/ai/aiRecordDb";
 import { isConversationTurnContext } from "@/ai/conversationTurnContext";
-import { conversationTranscriptCompacted, indexConversationMaps, isConversationMapIndex, type ConversationMapIndex } from "@/ai/mapConversationStore";
+import { conversationTranscriptCompacted, indexConversationMaps, isConversationMapIndex, storedHomeMapId, type ConversationMapIndex } from "@/ai/mapConversationStore";
+import { decidedThreadHomeMapId, threadHomeMapId } from "@/ai/threadHome";
 import { enqueueRemoteWrite, registerRemoteOutboxSender } from "@/project/remoteOutbox";
 import type { ProjectIdentity } from "@/project/store";
 import { projectRepository } from "@/project/persistence/repository";
@@ -213,7 +214,12 @@ function fitEntriesToBudget(entries: readonly AuditEntry[]): AuditEntry[] {
 
 function compactRecord(record: ConversationRecord): ConversationRecord & { mapIndex: ConversationMapIndex } {
   const previous = isConversationMapIndex(record.mapIndex) ? record.mapIndex : undefined;
-  return { ...record, mapIndex: indexConversationMaps(record.entries, previous), entries: fitEntriesToBudget(record.entries) };
+  // 집 맵은 접기 전 원문으로, 근거가 생긴 첫 저장에서 한 번 정한다. 앞 기록이 이미 정했으면 그대로 둔다.
+  // 근거가 없으면 비워 둔다 — Pi 앞 턴의 첫 저장(실행 중 표지)에는 아직 범위 줄이 없다.
+  const kept = storedHomeMapId(previous);
+  const homeMapId = kept !== undefined ? kept : decidedThreadHomeMapId(record.entries);
+  const index = indexConversationMaps(record.entries, previous);
+  return { ...record, mapIndex: homeMapId === undefined ? index : { ...index, homeMapId }, entries: fitEntriesToBudget(record.entries) };
 }
 
 // ── 레거시 이관 ──────────────────────────────────────────────────────────────────
@@ -282,15 +288,31 @@ async function persistLocalConversation(record: ConversationRecord & { mapIndex:
     },
   }, current => {
     const prior = current && isConversationMapIndex(current.mapIndex) ? current.mapIndex : undefined;
+    // 이미 저장된 집 맵이 이긴다 — 뒤 저장의 entries 가 접혀 첫 발화가 바뀌어도 스레드는 제자리에 있다.
+    const priorHome = storedHomeMapId(prior);
+    const homeMapId = priorHome !== undefined ? priorHome : storedHomeMapId(record.mapIndex);
     const viewedMapIds = [...new Set([...record.mapIndex.viewedMapIds, ...(prior?.viewedMapIds ?? [])])].sort();
     const targetMapIds = [...new Set([...record.mapIndex.targetMapIds, ...(prior?.targetMapIds ?? [])])].sort();
     const mapAttribution = viewedMapIds.length + targetMapIds.length === 0 ? "unknown"
       : record.mapIndex.mapAttribution === "complete" && (!prior || prior.mapAttribution === "complete") ? "complete" : "partial";
-    return { ...record, mapIndex: { viewedMapIds, targetMapIds, mapAttribution } };
+    return { ...record, mapIndex: { viewedMapIds, targetMapIds, mapAttribution, ...(homeMapId === undefined ? {} : { homeMapId }) } };
   });
 }
 
 let writeFailureWarned = false;
+
+// ── 바뀜 알림 — 왼쪽 스레드 목록(editor/aiThreadList)이 다시 읽는다 ─────────────────────
+const savedListeners = new Set<(id: string) => void>();
+function emitConversationSaved(id: string): void {
+  for (const listener of [...savedListeners]) {
+    try { listener(id); } catch (error) { console.warn("[ai-conversation] saved listener", error); }
+  }
+}
+/** 대화가 이 브라우저 저장소에 써지거나 지워질 때마다 그 id 로 부른다. 돌려준 함수로 끊는다. */
+export function onConversationSaved(listener: (id: string) => void): () => void {
+  savedListeners.add(listener);
+  return () => { savedListeners.delete(listener); };
+}
 
 registerRemoteOutboxSender("ai-conversation", async (payload) => {
   if (!isObject(payload) || typeof payload.conversationId !== "string" || typeof payload.title !== "string"
@@ -328,6 +350,7 @@ export async function saveConversation(record: ConversationRecord): Promise<Conv
     if (!result.written) return { ok: true, durable: result.backend === "indexeddb", evicted: 0 };
     writeFailureWarned = false;
     outcome = { ok: true, durable: result.backend === "indexeddb", evicted: 0 };
+    emitConversationSaved(compacted.id);
   } catch (error) {
     if (!writeFailureWarned) {
       writeFailureWarned = true;
@@ -475,6 +498,7 @@ export async function clearConversations(): Promise<void> {
     legacyMigration = Promise.resolve();
     const conversations = await readAll();
     await clearAiRecords(STORE);
+    for (const record of conversations) emitConversationSaved(record.id);
     for (const record of conversations) if (record.projectContextKey) {
       await deleteTerminalRunCheckpointsForConversation(record.id, record.projectContextKey);
     }
@@ -484,6 +508,8 @@ export async function clearConversations(): Promise<void> {
 }
 
 export interface ConversationArchiveSummary extends ConversationSummary, ConversationMapIndex {
+  /** 항상 채운다 — 옛 기록은 남은 entries 로 계산한다. null = 게임 전체. */
+  readonly homeMapId: string | null;
   readonly mapIds: readonly string[];
   readonly transcriptCompacted: boolean;
 }
@@ -530,6 +556,7 @@ export async function loadConversationForScope(id: string, projectContextKey: st
 export async function deleteConversationForScope(id: string, projectContextKey: string | null): Promise<{ readonly durable: boolean }> {
   await ensureLegacyMigrated();
   const result = await mutateScopedAiRecord<ConversationRecord>({ store: STORE, id, scope: projectContextKey }, null);
+  if (result.written) emitConversationSaved(id);
   if (result.written && projectContextKey) await deleteTerminalRunCheckpointsForConversation(id, projectContextKey);
   return { durable: result.backend === "indexeddb" };
 }
@@ -578,7 +605,7 @@ export async function hydrateConversationArchive(options: ConversationArchiveHyd
       requireCurrent();
       const result = await persistLocalConversation(compactRecord(candidate), { requireCurrent,
         recoveryBaseline: baseline.get(candidate.id) ?? null });
-      if (result.written) imported++; else skipped++;
+      if (result.written) { imported++; emitConversationSaved(candidate.id); } else skipped++;
     }
     if (rows.length < pageSize) break;
   }
@@ -603,6 +630,8 @@ export function deriveTitle(entries: readonly AuditEntry[]): string {
 registerConversationSummaryProjector(value => {
   if (!isConversationRecord(value)) return null;
   const index = isConversationMapIndex(value.mapIndex) ? value.mapIndex : indexConversationMaps(value.entries);
-  return { ...toSummary(value), ...(value.projectContextKey === undefined ? {} : { projectContextKey: value.projectContextKey }), ...index, mapIds: [...new Set([...index.viewedMapIds, ...index.targetMapIds])].sort(),
+  const stored = storedHomeMapId(index);
+  const homeMapId = stored !== undefined ? stored : threadHomeMapId(value.entries);
+  return { ...toSummary(value), ...(value.projectContextKey === undefined ? {} : { projectContextKey: value.projectContextKey }), ...index, homeMapId, mapIds: [...new Set([...index.viewedMapIds, ...index.targetMapIds])].sort(),
     transcriptCompacted: conversationTranscriptCompacted(value.entries) };
 });
