@@ -137,6 +137,7 @@ export const OPRN_CHANNELS = {
   /** 앱 자동 업데이트(electron/main/appUpdate.ts). updateState 는 메인 → 렌더러 알림이다. */
   updateStatus: "oprn:update.status",
   updateState: "oprn:update.state",
+  updateCheck: "oprn:update.check",
   updateInstall: "oprn:update.install",
   updateOpenDownload: "oprn:update.openDownload",
   updateSetEnabled: "oprn:update.setEnabled",
