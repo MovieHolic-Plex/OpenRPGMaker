@@ -653,15 +653,14 @@ export function renderEventEditorDynamic(container: HTMLElement, mapId: MapId, e
       dataset: { pageCount: String(pages.length), testid: "event-editor-pagebar" },
       children: [
         ...(whoWhen ? [whoWhen] : []),
-        // 목업 v2: 쉬움은 「때」, 보통은 「상태」 머리말 뒤에 페이지 탭(페이지가 2개 이상일 때만). 고급은 지금처럼 펼치기 단추.
+        // 목업 v2: 쉬움은 「때」, 보통은 「상태」 머리말 뒤에 페이지 탭(1페이지는 숨김). 고급은 지금처럼 펼치기 단추.
         ...(sceneLevel
-          ? pages.length > 1
-            ? [el("span", {
-                class: "event-scene-page-label",
-                text: sceneLevel === "easy" ? "때" : "상태",
-                dataset: { testid: "event-scene-page-label" },
-              })]
-            : []
+          ? [el("span", {
+              class: "event-scene-page-label",
+              text: sceneLevel === "easy" ? "때" : "상태",
+              attrs: pages.length <= 1 ? { hidden: "" } : undefined,
+              dataset: { testid: "event-scene-page-label" },
+            })]
           : [advancedToggle]),
         renderClassicPageTabStrip(mapId, evForRender, activePage, validation),
         renderPageActions(mapId, evForRender, activePage),
