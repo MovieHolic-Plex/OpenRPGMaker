@@ -283,7 +283,10 @@ const server = createServer(async (req, res) => {
           }
         }
       } catch (error) {
-        if (!res.writableEnded && !res.destroyed) throw error;
+        if (!res.writableEnded && !res.destroyed) {
+          console.error("[oh-my-pi-worker] agent stream failed:", error);
+          res.write(`${JSON.stringify({ type: "error", message: error instanceof Error ? error.message : String(error) })}\n`);
+        }
       } finally {
         if (!finished) {
           await reader.cancel("client disconnected").catch(() => {});
