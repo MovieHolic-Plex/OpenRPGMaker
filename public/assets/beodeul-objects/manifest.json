@@ -26,6 +26,11 @@
       "order": 50
     },
     {
+      "id": "signature_buildings",
+      "labelKo": "시그니처 건물",
+      "order": 55
+    },
+    {
       "id": "structures",
       "labelKo": "구조물 세트",
       "order": 60

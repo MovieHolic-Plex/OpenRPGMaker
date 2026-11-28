@@ -6587,10 +6587,11 @@
     "group": "city_market",
     "sourceFile": "city_front_flower_buckets_hq.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -9292,10 +9293,11 @@
     "group": "city_garden",
     "sourceFile": "city_alot_hose_sprinkler_hq.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       ".."
     ],
     "tags": [
@@ -9538,12 +9540,12 @@
     "category": "prop",
     "group": "city_auto_service",
     "sourceFile": "city_auto_mobile_floor_jack_hq.png",
-    "widthPx": 16,
+    "widthPx": 32,
     "heightPx": 16,
-    "widthTiles": 1,
+    "widthTiles": 2,
     "heightTiles": 1,
     "footprint": [
-      "X"
+      "XX"
     ],
     "tags": [
       "자동차 정비",
@@ -9985,12 +9987,13 @@
     "category": "prop",
     "group": "city_construction",
     "sourceFile": "city_bldr_brushwork_stool_hq.png",
-    "widthPx": 16,
-    "heightPx": 16,
-    "widthTiles": 1,
-    "heightTiles": 1,
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
     "footprint": [
-      "X"
+      "**",
+      "XX"
     ],
     "tags": [
       "목공 실습",
@@ -10211,10 +10214,11 @@
     "group": "city_performance",
     "sourceFile": "city_busk_audience_chairs_pair_hq.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -10871,13 +10875,13 @@
     "category": "prop",
     "group": "city_performance",
     "sourceFile": "city_film_camera_tripod_hq.png",
-    "widthPx": 16,
+    "widthPx": 32,
     "heightPx": 32,
-    "widthTiles": 1,
+    "widthTiles": 2,
     "heightTiles": 2,
     "footprint": [
-      "*",
-      "X"
+      "**",
+      "XX"
     ],
     "tags": [
       "촬영장",
@@ -10894,13 +10898,13 @@
     "category": "prop",
     "group": "city_performance",
     "sourceFile": "city_film_director_folding_chair_hq.png",
-    "widthPx": 16,
+    "widthPx": 32,
     "heightPx": 32,
-    "widthTiles": 1,
+    "widthTiles": 2,
     "heightTiles": 2,
     "footprint": [
-      "*",
-      "X"
+      "**",
+      "XX"
     ],
     "tags": [
       "촬영장",
@@ -11075,12 +11079,13 @@
     "category": "prop",
     "group": "city_performance",
     "sourceFile": "city_film_striped_clapperboard_hq.png",
-    "widthPx": 16,
-    "heightPx": 16,
-    "widthTiles": 1,
-    "heightTiles": 1,
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
     "footprint": [
-      "X"
+      "**",
+      "XX"
     ],
     "tags": [
       "촬영장",
@@ -13058,10 +13063,11 @@
     "group": "city_parks",
     "sourceFile": "city_park2_seesaw_hq2.png",
     "widthPx": 48,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 3,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "** ",
       "XXX"
     ],
     "tags": [
@@ -13149,10 +13155,11 @@
     "group": "city_festival",
     "sourceFile": "city_pho_handheld_heart_prop_hq.png",
     "widthPx": 16,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 1,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "*",
       "X"
     ],
     "tags": [
@@ -13577,12 +13584,13 @@
     "category": "prop",
     "group": "city_street",
     "sourceFile": "city_rain_raindrop_flowerbed_hq2.png",
-    "widthPx": 16,
-    "heightPx": 16,
-    "widthTiles": 1,
-    "heightTiles": 1,
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
     "footprint": [
-      "X"
+      "**",
+      "XX"
     ],
     "tags": [
       "빗길",
@@ -13966,10 +13974,11 @@
     "group": "city_school",
     "sourceFile": "city_school_hurdles_pair_hq2.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -14307,10 +14316,11 @@
     "group": "city_terrace",
     "sourceFile": "city_terr_ramen_standing_counter_hq2.png",
     "widthPx": 48,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 3,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "***",
       "XXX"
     ],
     "tags": [
@@ -19979,10 +19989,11 @@
     "group": "city_vehicles",
     "sourceFile": "city_bfix_upside_down_bicycle_hq2.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -20538,10 +20549,11 @@
     "group": "city_camping",
     "sourceFile": "city_campout_low_hammock_stand_hq.png",
     "widthPx": 48,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 3,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "***",
       "XXX"
     ],
     "tags": [
@@ -20605,10 +20617,11 @@
     "group": "city_camping",
     "sourceFile": "city_campout_portable_grill_hq.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -20650,10 +20663,11 @@
     "group": "city_camping",
     "sourceFile": "city_campout_roll_table_hq.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -20952,12 +20966,12 @@
     "category": "prop",
     "group": "city_parks",
     "sourceFile": "city_drone_folded_drone_hq.png",
-    "widthPx": 16,
+    "widthPx": 32,
     "heightPx": 16,
-    "widthTiles": 1,
+    "widthTiles": 2,
     "heightTiles": 1,
     "footprint": [
-      "X"
+      "XX"
     ],
     "tags": [
       "city",
@@ -21555,12 +21569,13 @@
     "category": "prop",
     "group": "city_school",
     "sourceFile": "city_kndr_tricycle_hq2.png",
-    "widthPx": 16,
-    "heightPx": 16,
-    "widthTiles": 1,
-    "heightTiles": 1,
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
     "footprint": [
-      "X"
+      "**",
+      "XX"
     ],
     "tags": [
       "city",
@@ -21896,10 +21911,11 @@
     "group": "city_festival",
     "sourceFile": "city_pho_balloon_bouquet_weight_hq2.png",
     "widthPx": 16,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 1,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "*",
       "X"
     ],
     "tags": [
@@ -22915,10 +22931,11 @@
     "group": "city_festival",
     "sourceFile": "city_spr_folding_table_hq.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -24455,12 +24472,12 @@
     "category": "prop",
     "group": "city_maintenance",
     "sourceFile": "city_fire_rescue_rope_heap_hq3.png",
-    "widthPx": 16,
+    "widthPx": 32,
     "heightPx": 16,
-    "widthTiles": 1,
+    "widthTiles": 2,
     "heightTiles": 1,
     "footprint": [
-      "X"
+      "XX"
     ],
     "tags": [
       "소방서",
@@ -24502,10 +24519,11 @@
     "group": "city_garden",
     "sourceFile": "city_flori_bucket_flower_row_hq.png",
     "widthPx": 48,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 3,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "***",
       "XXX"
     ],
     "tags": [
@@ -25094,10 +25112,11 @@
     "group": "city_sports",
     "sourceFile": "city_gym_sit_up_bench_hq.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -25188,12 +25207,13 @@
     "category": "prop",
     "group": "city_fish_market",
     "sourceFile": "city_harb_buoy_bunch_hq3.png",
-    "widthPx": 16,
-    "heightPx": 16,
-    "widthTiles": 1,
-    "heightTiles": 1,
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
     "footprint": [
-      "X"
+      "**",
+      "XX"
     ],
     "tags": [
       "항구",
@@ -25842,10 +25862,11 @@
     "group": "city_laundry",
     "sourceFile": "city_laund_ironing_board_stand_hq.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -26048,12 +26069,13 @@
     "category": "prop",
     "group": "city_maintenance",
     "sourceFile": "city_pa_cable_reel_hq3.png",
-    "widthPx": 16,
-    "heightPx": 16,
-    "widthTiles": 1,
-    "heightTiles": 1,
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
     "footprint": [
-      "X"
+      "**",
+      "XX"
     ],
     "tags": [
       "방송·전기 설비",
@@ -28865,12 +28887,13 @@
     "category": "prop",
     "group": "city_garden",
     "sourceFile": "city_garde_garden_gnome_pair_hq.png",
-    "widthPx": 16,
-    "heightPx": 16,
-    "widthTiles": 1,
-    "heightTiles": 1,
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
     "footprint": [
-      "X"
+      "**",
+      "XX"
     ],
     "tags": [
       "city",
@@ -30222,12 +30245,12 @@
     "category": "prop",
     "group": "city_sports",
     "sourceFile": "city_repl_boulder_route_marker_cones_hq.png",
-    "widthPx": 16,
+    "widthPx": 32,
     "heightPx": 16,
-    "widthTiles": 1,
+    "widthTiles": 2,
     "heightTiles": 1,
     "footprint": [
-      "X"
+      "XX"
     ],
     "tags": [
       "city",
@@ -30264,12 +30287,12 @@
     "category": "prop",
     "group": "city_festival",
     "sourceFile": "city_repl_busking_coin_purse_pair_hq.png",
-    "widthPx": 16,
+    "widthPx": 32,
     "heightPx": 16,
-    "widthTiles": 1,
+    "widthTiles": 2,
     "heightTiles": 1,
     "footprint": [
-      "."
+      ".."
     ],
     "tags": [
       "city",
@@ -30413,12 +30436,12 @@
     "category": "prop",
     "group": "city_parks",
     "sourceFile": "city_repl_fishing_bait_sieve_hq.png",
-    "widthPx": 16,
+    "widthPx": 32,
     "heightPx": 16,
-    "widthTiles": 1,
+    "widthTiles": 2,
     "heightTiles": 1,
     "footprint": [
-      "X"
+      "XX"
     ],
     "tags": [
       "city",
@@ -30561,12 +30584,13 @@
     "category": "prop",
     "group": "city_garden",
     "sourceFile": "city_repl_garden_sprouting_tuber_basket_hq.png",
-    "widthPx": 16,
-    "heightPx": 16,
-    "widthTiles": 1,
-    "heightTiles": 1,
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
     "footprint": [
-      "X"
+      "**",
+      "XX"
     ],
     "tags": [
       "city",
@@ -30666,12 +30690,12 @@
     "category": "prop",
     "group": "city_sports",
     "sourceFile": "city_repl_icerink_spare_blade_guards_pair_hq.png",
-    "widthPx": 16,
+    "widthPx": 32,
     "heightPx": 16,
-    "widthTiles": 1,
+    "widthTiles": 2,
     "heightTiles": 1,
     "footprint": [
-      "."
+      ".."
     ],
     "tags": [
       "city",
@@ -30688,10 +30712,11 @@
     "group": "city_school",
     "sourceFile": "city_repl_kindergarten_scoop_and_funnels_hq.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -30708,12 +30733,13 @@
     "category": "prop",
     "group": "city_laundry",
     "sourceFile": "city_repl_laundry_clothespin_pouch_hq.png",
-    "widthPx": 16,
-    "heightPx": 16,
-    "widthTiles": 1,
-    "heightTiles": 1,
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
     "footprint": [
-      "X"
+      "**",
+      "XX"
     ],
     "tags": [
       "city",
@@ -30813,13 +30839,13 @@
     "category": "prop",
     "group": "city_festival",
     "sourceFile": "city_repl_photo_tripod_spirit_level_hq.png",
-    "widthPx": 16,
+    "widthPx": 32,
     "heightPx": 32,
-    "widthTiles": 1,
+    "widthTiles": 2,
     "heightTiles": 2,
     "footprint": [
-      "*",
-      "X"
+      "**",
+      "XX"
     ],
     "tags": [
       "city",
@@ -32210,10 +32236,11 @@
     "group": "city_festival",
     "sourceFile": "city_xmas_candy_cane_row_hq.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -32339,10 +32366,11 @@
     "group": "city_festival",
     "sourceFile": "city_xmas_poinsettia_pots_hq.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -33427,10 +33455,11 @@
     "group": "city_transport",
     "sourceFile": "city_bstop_bike_lean_rail_hq.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -33768,10 +33797,11 @@
     "group": "city_terrace",
     "sourceFile": "city_cafeo_cafe_chair_pair_hq.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -34795,10 +34825,11 @@
     "group": "city_garden",
     "sourceFile": "city_garde_wheelbarrow_soil_hq2.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -35116,10 +35147,11 @@
     "group": "city_hair",
     "sourceFile": "city_hairs_waiting_bench_salon_hq.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -35513,12 +35545,13 @@
     "category": "prop",
     "group": "city_sports",
     "sourceFile": "city_hoops_racket_stand_hq.png",
-    "widthPx": 16,
-    "heightPx": 16,
-    "widthTiles": 1,
-    "heightTiles": 1,
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
     "footprint": [
-      "X"
+      "**",
+      "XX"
     ],
     "tags": [
       "운동 코트",
@@ -35719,10 +35752,11 @@
     "group": "city_food",
     "sourceFile": "city_izaka_drunk_salaryman_free_bench_hq.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -36222,10 +36256,11 @@
     "group": "city_arcade",
     "sourceFile": "city_karao_song_book_stand_hq.png",
     "widthPx": 16,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 1,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "*",
       "X"
     ],
     "tags": [
@@ -36689,12 +36724,13 @@
     "category": "prop",
     "group": "city_street",
     "sourceFile": "city_manho_valve_wheel_post_hq2.png",
-    "widthPx": 16,
-    "heightPx": 16,
-    "widthTiles": 1,
-    "heightTiles": 1,
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
     "footprint": [
-      "X"
+      "**",
+      "XX"
     ],
     "tags": [
       "빗물·배수",
@@ -37968,12 +38004,13 @@
     "category": "prop",
     "group": "city_electronics",
     "sourceFile": "city_phone_promo_umbrella_stand_hq.png",
-    "widthPx": 16,
-    "heightPx": 16,
-    "widthTiles": 1,
-    "heightTiles": 1,
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
     "footprint": [
-      "X"
+      "**",
+      "XX"
     ],
     "tags": [
       "휴대폰 매장",
@@ -38900,12 +38937,12 @@
     "category": "prop",
     "group": "city_street",
     "sourceFile": "city_repl_access_folded_cane_clips_hq2.png",
-    "widthPx": 16,
+    "widthPx": 32,
     "heightPx": 16,
-    "widthTiles": 1,
+    "widthTiles": 2,
     "heightTiles": 1,
     "footprint": [
-      "X"
+      "XX"
     ],
     "tags": [
       "보행 보조",
@@ -38922,12 +38959,12 @@
     "category": "prop",
     "group": "city_repairs",
     "sourceFile": "city_repl_bikefix_adjustable_spanner_pair_hq2.png",
-    "widthPx": 16,
+    "widthPx": 32,
     "heightPx": 16,
-    "widthTiles": 1,
+    "widthTiles": 2,
     "heightTiles": 1,
     "footprint": [
-      "X"
+      "XX"
     ],
     "tags": [
       "자전거 정비소",
@@ -39166,12 +39203,12 @@
     "category": "prop",
     "group": "city_transport",
     "sourceFile": "city_repl_tram_track_shim_pile_hq2.png",
-    "widthPx": 16,
+    "widthPx": 32,
     "heightPx": 16,
-    "widthTiles": 1,
+    "widthTiles": 2,
     "heightTiles": 1,
     "footprint": [
-      "X"
+      "XX"
     ],
     "tags": [
       "트램",
@@ -39290,12 +39327,13 @@
     "category": "prop",
     "group": "city_parks",
     "sourceFile": "city_rivbr_duck_float_pair_hq.png",
-    "widthPx": 16,
-    "heightPx": 16,
-    "widthTiles": 1,
-    "heightTiles": 1,
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
     "footprint": [
-      "X"
+      "**",
+      "XX"
     ],
     "tags": [
       "강변·다리",
@@ -40058,13 +40096,13 @@
     "category": "prop",
     "group": "city_toys",
     "sourceFile": "city_toysh_kite_display_rack_hq.png",
-    "widthPx": 16,
+    "widthPx": 32,
     "heightPx": 32,
-    "widthTiles": 1,
+    "widthTiles": 2,
     "heightTiles": 2,
     "footprint": [
-      "*",
-      "X"
+      "**",
+      "XX"
     ],
     "tags": [
       "장난감 가게",
@@ -40172,12 +40210,13 @@
     "category": "prop",
     "group": "city_toys",
     "sourceFile": "city_toysh_sparkler_bucket_hq.png",
-    "widthPx": 16,
-    "heightPx": 16,
-    "widthTiles": 1,
-    "heightTiles": 1,
+    "widthPx": 32,
+    "heightPx": 32,
+    "widthTiles": 2,
+    "heightTiles": 2,
     "footprint": [
-      "X"
+      "**",
+      "XX"
     ],
     "tags": [
       "장난감 가게",
@@ -40539,10 +40578,11 @@
     "group": "city_wedding",
     "sourceFile": "city_wedds_chair_row_white_hq.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -40723,10 +40763,11 @@
     "group": "city_wedding",
     "sourceFile": "city_wedds_ribbon_post_rope_hq.png",
     "widthPx": 32,
-    "heightPx": 16,
+    "heightPx": 32,
     "widthTiles": 2,
-    "heightTiles": 1,
+    "heightTiles": 2,
     "footprint": [
+      "**",
       "XX"
     ],
     "tags": [
@@ -40736,6 +40777,689 @@
       "ribbon post rope",
       "현대 도시",
       "city"
+    ]
+  },
+  {
+    "id": "sig_glass_greenhouse",
+    "nameKo": "시그니처 유리 아치 온실",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_glass_greenhouse.png",
+    "widthPx": 96,
+    "heightPx": 96,
+    "widthTiles": 6,
+    "heightTiles": 6,
+    "footprint": [
+      " **** ",
+      "******",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "온실",
+      "약초원",
+      "식물원",
+      "유리",
+      "상점",
+      "greenhouse"
+    ]
+  },
+  {
+    "id": "sig_waterwheel_mill",
+    "nameKo": "시그니처 물레방아 방앗간",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_waterwheel_mill.png",
+    "widthPx": 112,
+    "heightPx": 96,
+    "widthTiles": 7,
+    "heightTiles": 6,
+    "footprint": [
+      "*****  ",
+      "****** ",
+      "*******",
+      "XXXXXXX",
+      "XXXXXXX",
+      "XXXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "물레방아",
+      "방앗간",
+      "수차",
+      "제분소",
+      "공방",
+      "waterwheel"
+    ]
+  },
+  {
+    "id": "sig_open_forge_smithy",
+    "nameKo": "시그니처 오픈 화덕 대장간",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_open_forge_smithy.png",
+    "widthPx": 96,
+    "heightPx": 96,
+    "widthTiles": 6,
+    "heightTiles": 6,
+    "footprint": [
+      "***** ",
+      "******",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "대장간",
+      "화덕",
+      "모루",
+      "공방",
+      "무기",
+      "smithy"
+    ]
+  },
+  {
+    "id": "sig_awning_bakery",
+    "nameKo": "시그니처 줄무늬 어닝 빵집",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_awning_bakery.png",
+    "widthPx": 96,
+    "heightPx": 96,
+    "widthTiles": 6,
+    "heightTiles": 6,
+    "footprint": [
+      " *****",
+      "******",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "빵집",
+      "베이커리",
+      "화덕",
+      "어닝",
+      "상점",
+      "bakery"
+    ]
+  },
+  {
+    "id": "sig_terrace_harbor_cafe",
+    "nameKo": "시그니처 테라스 광장 카페",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_terrace_harbor_cafe.png",
+    "widthPx": 112,
+    "heightPx": 96,
+    "widthTiles": 7,
+    "heightTiles": 6,
+    "footprint": [
+      "****   ",
+      "*******",
+      "*******",
+      "XXXXXXX",
+      "XXXXXXX",
+      "XXXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "카페",
+      "테라스",
+      "파라솔",
+      "상점",
+      "광장",
+      "cafe"
+    ]
+  },
+  {
+    "id": "sig_guild_bookshop",
+    "nameKo": "시그니처 길드 상회 서점",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_guild_bookshop.png",
+    "widthPx": 96,
+    "heightPx": 112,
+    "widthTiles": 6,
+    "heightTiles": 7,
+    "footprint": [
+      " **** ",
+      "******",
+      "******",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "서점",
+      "길드",
+      "상회",
+      "도서관",
+      "상점",
+      "bookshop"
+    ]
+  },
+  {
+    "id": "sig_alchemist_apothecary",
+    "nameKo": "시그니처 연금술 약제상점",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_alchemist_apothecary.png",
+    "widthPx": 96,
+    "heightPx": 96,
+    "widthTiles": 6,
+    "heightTiles": 6,
+    "footprint": [
+      " *****",
+      "******",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "연금술",
+      "약방",
+      "물약",
+      "마법",
+      "상점",
+      "apothecary"
+    ]
+  },
+  {
+    "id": "sig_tailor_silk_atelier",
+    "nameKo": "시그니처 비단 재단 염색공방",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_tailor_silk_atelier.png",
+    "widthPx": 96,
+    "heightPx": 96,
+    "widthTiles": 6,
+    "heightTiles": 6,
+    "footprint": [
+      " ***  ",
+      "***** ",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "재단사",
+      "비단",
+      "염색",
+      "의상실",
+      "공방",
+      "tailor"
+    ]
+  },
+  {
+    "id": "sig_coastal_blue_villa",
+    "nameKo": "시그니처 파란 지붕 해안집",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_coastal_blue_villa.png",
+    "widthPx": 96,
+    "heightPx": 112,
+    "widthTiles": 6,
+    "heightTiles": 7,
+    "footprint": [
+      " **** ",
+      "******",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "해안집",
+      "항구",
+      "발코니",
+      "흰 회벽",
+      "민가",
+      "villa"
+    ]
+  },
+  {
+    "id": "sig_stilt_boathouse",
+    "nameKo": "시그니처 수상 말뚝 보트하우스",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_stilt_boathouse.png",
+    "widthPx": 112,
+    "heightPx": 96,
+    "widthTiles": 7,
+    "heightTiles": 6,
+    "footprint": [
+      " ******",
+      " ******",
+      " ******",
+      "XXXXXXX",
+      "XXXXXXX",
+      "XXXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "보트하우스",
+      "조선소",
+      "항구",
+      "부두",
+      "선착장",
+      "boathouse"
+    ]
+  },
+  {
+    "id": "sig_fish_market_hall",
+    "nameKo": "시그니처 아치형 수산시장 홀",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_fish_market_hall.png",
+    "widthPx": 112,
+    "heightPx": 96,
+    "widthTiles": 7,
+    "heightTiles": 6,
+    "footprint": [
+      " ******",
+      "*******",
+      "*******",
+      "XXXXXXX",
+      "XXXXXXX",
+      "XXXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "수산시장",
+      "어시장",
+      "항구",
+      "아치",
+      "상점",
+      "fishmarket"
+    ]
+  },
+  {
+    "id": "sig_lighthouse_keeper_house",
+    "nameKo": "시그니처 등대지기 석조 관사",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_lighthouse_keeper_house.png",
+    "widthPx": 96,
+    "heightPx": 128,
+    "widthTiles": 6,
+    "heightTiles": 8,
+    "footprint": [
+      " **   ",
+      "***   ",
+      "*** **",
+      "******",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "등대",
+      "관사",
+      "항구",
+      "해안",
+      "랜드마크",
+      "lighthouse"
+    ]
+  },
+  {
+    "id": "sig_sailor_tavern",
+    "nameKo": "시그니처 항구 선원 선술집",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_sailor_tavern.png",
+    "widthPx": 112,
+    "heightPx": 96,
+    "widthTiles": 7,
+    "heightTiles": 6,
+    "footprint": [
+      " ******",
+      "*******",
+      "*******",
+      "XXXXXXX",
+      "XXXXXXX",
+      "XXXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "선술집",
+      "주점",
+      "항구",
+      "선원",
+      "여관",
+      "tavern"
+    ]
+  },
+  {
+    "id": "sig_harbor_customs_arcade",
+    "nameKo": "시그니처 항구 세관 아케이드",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_harbor_customs_arcade.png",
+    "widthPx": 112,
+    "heightPx": 112,
+    "widthTiles": 7,
+    "heightTiles": 7,
+    "footprint": [
+      "   **  ",
+      "*******",
+      "*******",
+      "*******",
+      "XXXXXXX",
+      "XXXXXXX",
+      "XXXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "세관",
+      "아케이드",
+      "항구",
+      "회랑",
+      "관청",
+      "customs"
+    ]
+  },
+  {
+    "id": "sig_coastal_terrace_house",
+    "nameKo": "시그니처 지중해 평지붕 테라스집",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_coastal_terrace_house.png",
+    "widthPx": 96,
+    "heightPx": 96,
+    "widthTiles": 6,
+    "heightTiles": 6,
+    "footprint": [
+      "****  ",
+      "****  ",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "테라스집",
+      "지중해",
+      "포도덩굴",
+      "항구",
+      "민가",
+      "terrace"
+    ]
+  },
+  {
+    "id": "sig_copper_observatory",
+    "nameKo": "시그니처 구리 돔 천문대",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_copper_observatory.png",
+    "widthPx": 80,
+    "heightPx": 112,
+    "widthTiles": 5,
+    "heightTiles": 7,
+    "footprint": [
+      " *** ",
+      "*****",
+      "*****",
+      "*****",
+      "XXXXX",
+      "XXXXX",
+      "XXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "천문대",
+      "마법탑",
+      "구리 돔",
+      "망원경",
+      "랜드마크",
+      "observatory"
+    ]
+  },
+  {
+    "id": "sig_clocktower_gatehouse",
+    "nameKo": "시그니처 아치 문루 시계탑",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_clocktower_gatehouse.png",
+    "widthPx": 96,
+    "heightPx": 128,
+    "widthTiles": 6,
+    "heightTiles": 8,
+    "footprint": [
+      "  **  ",
+      " **** ",
+      " **** ",
+      " **** ",
+      " **** ",
+      "******",
+      "XX**XX",
+      "XX..XX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "시계탑",
+      "문루",
+      "아치",
+      "광장",
+      "랜드마크",
+      "clocktower"
+    ]
+  },
+  {
+    "id": "sig_brick_steam_brewery",
+    "nameKo": "시그니처 붉은 벽돌 증기 양조장",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_brick_steam_brewery.png",
+    "widthPx": 112,
+    "heightPx": 112,
+    "widthTiles": 7,
+    "heightTiles": 7,
+    "footprint": [
+      "     **",
+      " ******",
+      " ******",
+      "*******",
+      "XXXXXXX",
+      "XXXXXXX",
+      "XXXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "양조장",
+      "벽돌",
+      "굴뚝",
+      "공장",
+      "공방",
+      "brewery"
+    ]
+  },
+  {
+    "id": "sig_marble_bathhouse",
+    "nameKo": "시그니처 원형 대리석 목욕탕",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_marble_bathhouse.png",
+    "widthPx": 112,
+    "heightPx": 96,
+    "widthTiles": 7,
+    "heightTiles": 6,
+    "footprint": [
+      "  ***  ",
+      "*******",
+      "*******",
+      "XXXXXXX",
+      "XXXXXXX",
+      "XXXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "목욕탕",
+      "대리석",
+      "온천",
+      "돔",
+      "랜드마크",
+      "bathhouse"
+    ]
+  },
+  {
+    "id": "sig_hex_music_pavilion",
+    "nameKo": "시그니처 육각 광장 음악당",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_hex_music_pavilion.png",
+    "widthPx": 96,
+    "heightPx": 96,
+    "widthTiles": 6,
+    "heightTiles": 6,
+    "footprint": [
+      "  **  ",
+      " **** ",
+      "******",
+      "******",
+      "XXXXXX",
+      "XX..XX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "정자",
+      "음악당",
+      "파빌리온",
+      "광장",
+      "랜드마크",
+      "pavilion"
+    ]
+  },
+  {
+    "id": "sig_thatch_cottage",
+    "nameKo": "시그니처 황금 초가지붕 오두막",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_thatch_cottage.png",
+    "widthPx": 96,
+    "heightPx": 96,
+    "widthTiles": 6,
+    "heightTiles": 6,
+    "footprint": [
+      " **** ",
+      "******",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "초가집",
+      "오두막",
+      "농가",
+      "전원",
+      "민가",
+      "cottage"
+    ]
+  },
+  {
+    "id": "sig_mossy_witch_hut",
+    "nameKo": "시그니처 이끼 덩굴 약초사집",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_mossy_witch_hut.png",
+    "widthPx": 96,
+    "heightPx": 112,
+    "widthTiles": 6,
+    "heightTiles": 7,
+    "footprint": [
+      " * *  ",
+      " ***  ",
+      " **** ",
+      "******",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "약초사",
+      "마녀집",
+      "이끼",
+      "버섯",
+      "판타지",
+      "witchhut"
+    ]
+  },
+  {
+    "id": "sig_hillside_hobbit_burrow",
+    "nameKo": "시그니처 언덕 잔디 반지하집",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_hillside_hobbit_burrow.png",
+    "widthPx": 96,
+    "heightPx": 80,
+    "widthTiles": 6,
+    "heightTiles": 5,
+    "footprint": [
+      "  *** ",
+      " **** ",
+      "XXXXXX",
+      "XXXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "반지하집",
+      "언덕집",
+      "원형 문",
+      "전원",
+      "판타지",
+      "burrow"
+    ]
+  },
+  {
+    "id": "sig_forest_treehouse_watch",
+    "nameKo": "시그니처 숲지기 나무 위 망루",
+    "category": "structure",
+    "group": "signature_buildings",
+    "sourceFile": "sig_forest_treehouse_watch.png",
+    "widthPx": 96,
+    "heightPx": 128,
+    "widthTiles": 6,
+    "heightTiles": 8,
+    "footprint": [
+      " *****",
+      "******",
+      "******",
+      "******",
+      "******",
+      "  XXXX",
+      " XXXXX",
+      "XXXXXX"
+    ],
+    "tags": [
+      "시그니처 건물",
+      "나무집",
+      "망루",
+      "숲지기",
+      "고목",
+      "판타지",
+      "treehouse"
     ]
   }
 ]
