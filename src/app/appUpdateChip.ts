@@ -14,6 +14,7 @@ import {
   type AppUpdateStatus,
 } from "../../electron/shared/appUpdate";
 import { attachDelayedTooltip, hideDelayedTooltip } from "@/editor/delayedTooltip";
+import { isTopModal, registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import type { OprnUpdateBridge } from "@/project/persistence/electronRepository";
 import { toast } from "@/util/toast";
 
@@ -190,6 +191,34 @@ function buildUpdateIconSvg(kind: AppUpdateIndicatorView["kind"] | "check", size
   return svg;
 }
 
+const FOCUSABLE_SELECTOR = 'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])';
+
+function trapModalTabKey(backdrop: HTMLElement, dialogBox: HTMLElement): () => void {
+  const onKeyDown = (event: KeyboardEvent): void => {
+    if (event.key !== "Tab" || !isTopModal(backdrop)) return;
+    const focusables = Array.from(dialogBox.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
+      .filter((el) => !el.hidden && el.style.display !== "none");
+    if (focusables.length === 0) {
+      event.preventDefault();
+      return;
+    }
+    const first = focusables[0]!;
+    const last = focusables[focusables.length - 1]!;
+    const active = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    if (event.shiftKey) {
+      if (!active || active === first || !dialogBox.contains(active)) {
+        event.preventDefault();
+        last.focus();
+      }
+    } else if (!active || active === last || !dialogBox.contains(active)) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+  document.addEventListener("keydown", onKeyDown, true);
+  return () => document.removeEventListener("keydown", onKeyDown, true);
+}
+
 function buildUpdateNoteListItem(line: string): HTMLLIElement {
   const item = document.createElement("li");
   Object.assign(item.style, {
@@ -287,6 +316,7 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     readonly hint: HTMLSpanElement;
     readonly laterBtn: HTMLButtonElement;
     readonly primaryBtn: HTMLButtonElement;
+    readonly disposeFocusTrap: () => void;
     iconKind: AppUpdateIndicatorView["kind"] | null;
     notesKey: string | null;
   };
@@ -326,20 +356,25 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     get label() { return currentTooltip; },
   });
 
-  const onDialogKeyDown = (event: KeyboardEvent): void => {
-    if (event.key !== "Escape" || busy || !dialog) return;
-    event.preventDefault();
-    event.stopPropagation();
-    closeDialog(true);
-  };
+  function registerDialogModal(backdrop: HTMLElement): void {
+    registerModal(backdrop, () => {
+      if (busy) {
+        if (dialog?.backdrop === backdrop && backdrop.isConnected) registerDialogModal(backdrop);
+        return;
+      }
+      closeDialog(true);
+    });
+  }
 
   function closeDialog(restoreFocus = false): void {
     if (!dialog) return;
-    const hadFocusInside = dialog.backdrop.contains(document.activeElement);
-    dialog.backdrop.remove();
+    const current = dialog;
+    const hadFocusInside = current.backdrop.contains(document.activeElement);
     dialog = null;
+    current.disposeFocusTrap();
+    unregisterModal(current.backdrop);
+    current.backdrop.remove();
     button.setAttribute("aria-expanded", "false");
-    document.removeEventListener("keydown", onDialogKeyDown, true);
     if ((restoreFocus || hadFocusInside) && button.isConnected && !button.hidden) {
       button.focus();
     }
@@ -469,7 +504,7 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     });
     backdrop.style.setProperty("-webkit-app-region", "no-drag");
     backdrop.addEventListener("pointerdown", (event) => {
-      if (event.target === backdrop && !busy) closeDialog(true);
+      if (event.target === backdrop && !busy && isTopModal(backdrop)) closeDialog(true);
     });
 
     const box = document.createElement("div");
@@ -739,6 +774,7 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
 
     box.append(head, progWrap, bodyBox, statusLine, foot);
     backdrop.append(box);
+    const disposeFocusTrap = trapModalTabKey(backdrop, box);
     dialog = {
       backdrop,
       box,
@@ -756,13 +792,14 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
       hint,
       laterBtn,
       primaryBtn,
+      disposeFocusTrap,
       iconKind: null,
       notesKey: null,
     };
     syncDialogContents();
     document.body.append(backdrop);
     button.setAttribute("aria-expanded", "true");
-    document.addEventListener("keydown", onDialogKeyDown, true);
+    registerDialogModal(backdrop);
     (primaryBtn.disabled ? closeBtn : primaryBtn).focus();
   }
 
@@ -949,19 +986,19 @@ export function showAppUpdateWhatsNewOnce(): void {
     });
     backdrop.style.setProperty("-webkit-app-region", "no-drag");
 
+    let disposeFocusTrap: (() => void) | null = null;
+    let closed = false;
     const close = (): void => {
-      document.removeEventListener("keydown", onKeyDown, true);
+      if (closed) return;
+      closed = true;
+      disposeFocusTrap?.();
+      disposeFocusTrap = null;
+      unregisterModal(backdrop);
       backdrop.remove();
       if (previousFocus && previousFocus.isConnected) previousFocus.focus();
     };
-    const onKeyDown = (event: KeyboardEvent): void => {
-      if (event.key !== "Escape") return;
-      event.preventDefault();
-      event.stopPropagation();
-      close();
-    };
     backdrop.addEventListener("pointerdown", (event) => {
-      if (event.target === backdrop) close();
+      if (event.target === backdrop && isTopModal(backdrop)) close();
     });
 
     const box = document.createElement("div");
@@ -1129,8 +1166,9 @@ export function showAppUpdateWhatsNewOnce(): void {
 
     box.append(head, bodyBox, foot);
     backdrop.append(box);
+    disposeFocusTrap = trapModalTabKey(backdrop, box);
     document.body.append(backdrop);
-    document.addEventListener("keydown", onKeyDown, true);
+    registerModal(backdrop, close);
     okBtn.focus();
   }, () => {});
 }
