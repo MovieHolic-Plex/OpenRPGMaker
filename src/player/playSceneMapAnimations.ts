@@ -55,7 +55,10 @@ export function playMapAnimation(
   const fieldFx = parseFieldFxId(step.animationId);
   if (fieldFx) {
     const tile = resolveShowAnimationTargetTile(step.target, sceneTileResolver(scene, currentEventId));
-    return playFieldFx(scene, fieldFx, tile, currentEventId);
+    const targetEventId = typeof step.target === "object" && "eventId" in step.target
+      ? (step.target.eventId || currentEventId)
+      : currentEventId;
+    return playFieldFx(scene, fieldFx, tile, targetEventId);
   }
   const project = store.getCurrent();
   const record = project.database.battleAnimations.find((entry) => entry.id === step.animationId);

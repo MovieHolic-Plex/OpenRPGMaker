@@ -66,7 +66,7 @@ export function mountCanvasBottomDock(canvasArea: HTMLElement): () => void {
     const unitOpen = unitWin?.isOpen() ?? false;
     const doodadOpen = doodadWin?.isOpen() ?? false;
 
-    const stampArmed = !unitOpen && state.layer !== "event" && (Boolean(state.activePaletteStamp) || Boolean(state.reliefDoodad));
+    const stampArmed = !unitOpen && (Boolean(state.activeInteractivePropId) || (state.layer !== "event" && (Boolean(state.activePaletteStamp) || Boolean(state.reliefDoodad))));
     doodadBtn.classList.toggle("is-active", doodadOpen || stampArmed);
     doodadBtn.setAttribute("aria-pressed", String(doodadOpen));
     unitBtn.classList.toggle("is-active", unitOpen);

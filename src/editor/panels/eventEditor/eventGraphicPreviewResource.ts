@@ -5,6 +5,11 @@ import { eventSpriteFrameForDirection, resolveEventSpriteTexture } from "@/playe
 import { resolveEventAppearanceGraphic } from "@/project/characterAppearances";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import { uploadedSpriteFrame, uploadedSpriteGeometry } from "@/project/uploadedSpriteGeometry";
+import {
+  interactivePropFrameIndex,
+  interactivePropFromSpriteId,
+  interactivePropStripUrl,
+} from "@/project/interactiveProps";
 import type { EventPageGraphic, Project } from "@/project/types";
 
 export type EventGraphicPreviewResource =
@@ -16,6 +21,7 @@ export type EventGraphicPreviewResource =
     readonly frame: { readonly x: number; readonly y: number; readonly width: number; readonly height: number };
     readonly sheet: { readonly width: number; readonly height: number };
     readonly fitSize?: number;
+    readonly propTileScale?: boolean;
   };
 
 /** Use the map's resource lookup; only charset sheets use RM2000 frame slicing. */
@@ -47,6 +53,13 @@ export function eventGraphicPreviewResource(project: Project, authored: EventPag
   if (icon && path) {
     const sheet = { width: icon.imageWidth, height: icon.imageHeight };
     return { kind: "sprite", path, sheet, frame: { x: 0, y: 0, ...sheet }, frameIndex: 0, fitSize: texture.fitSize };
+  }
+  const prop = interactivePropFromSpriteId(id, project);
+  if (prop) {
+    const frameIndex = interactivePropFrameIndex(prop, graphic.pattern);
+    const sheet = { width: prop.frameWidth * prop.frames, height: prop.frameHeight };
+    const frame = { x: frameIndex * prop.frameWidth, y: 0, width: prop.frameWidth, height: prop.frameHeight };
+    return { kind: "sprite", path: interactivePropStripUrl(prop, project), sheet, frame, frameIndex, propTileScale: true };
   }
   return null;
 }

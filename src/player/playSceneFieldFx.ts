@@ -16,7 +16,10 @@
 //  - 흔적: `interaction: { kind: "container", searched: true }` 페이지가 켜진 칸 위에 그린다(syncContainerSearchedMarks).
 import type Phaser from "phaser";
 import { playSoundEffect } from "@/player/audio";
-import { characterDepth, characterSpriteY, mapUpperTileDepth } from "@/player/characterDepth";
+import { characterDepth, characterSpriteY, footprintSpriteX, mapUpperTileDepth } from "@/player/characterDepth";
+import { reliefCellLiftPx } from "@/player/reliefStrips";
+import { UNIT_FOOTPRINT } from "@/project/footprint";
+import type { CharacterFootprint, GameMap, Project } from "@/project/types";
 import { applyDoorCue, DOOR_OPEN_SE, doorSe } from "@/player/playSceneDoorway";
 import { projectSeCue } from "@/project/seCues";
 import { mapDoorForCells, openMapDoorNow } from "@/player/playSceneDoors";
@@ -34,12 +37,16 @@ import {
   type ContainerStyle,
   type FieldFx,
 } from "@/project/containerFx";
+import { withInlineAsset } from "@/assets/inlineAssetStore";
 import {
   inferInteractivePropEra,
   interactivePropById,
   interactivePropForContainer,
+  interactivePropFrameName,
   interactivePropGlowColor,
+  interactivePropSpriteId,
   interactivePropStripUrl,
+  parseInteractivePropSpriteId,
   resolveInteractivePropSe,
   type InteractivePropEntry,
 } from "@/project/interactiveProps";
@@ -49,7 +56,6 @@ import { getMapTile, setMapTileOverride } from "@/project/session";
 import { store } from "@/project/store";
 import { mapTileSize } from "@/project/tileGeometry";
 import { runtimeLogicalTextScale } from "@/player/runtimeViewScale";
-import type { GameMap, Project } from "@/project/types";
 import { tilesetTextureKey } from "@/editor/tilesetImage";
 
 type Cell = { readonly x: number; readonly y: number };
@@ -883,9 +889,30 @@ async function playOpenState(scene: PlaySceneContext, style: ContainerStyle, cel
 // oneshot / toggle / break 는 마지막 프레임을 칸에 유지하고, loopAfterOpen(화로·향로·홀로그램 등)은
 // loopFromFrame .. frames-1 사이를 타이머로 반복한다. 맵이 바뀌거나 다시 트리거되면 타이머·이미지를 정리한다.
 
+type ActivePropHostState = {
+  readonly propId: string;
+  readonly textureKey: string;
+  readonly expectSearched: boolean;
+  heldFrame: string;
+  playing: boolean;
+};
+
 const propLoopTimers = new WeakMap<PlaySceneContext, Map<string, Phaser.Time.TimerEvent>>();
 const propGlowLayers = new WeakMap<PlaySceneContext, Map<string, Phaser.GameObjects.GameObject[]>>();
 const propShadowLayers = new WeakMap<PlaySceneContext, Map<string, Phaser.GameObjects.GameObject>>();
+const propShadowSignatures = new WeakMap<PlaySceneContext, Map<string, string>>();
+const propLoopSignatures = new WeakMap<PlaySceneContext, Map<string, string>>();
+const activePropHostFx = new WeakMap<PlaySceneContext, Map<string, ActivePropHostState>>();
+
+/** 정식 이벤트 스프라이트(`iprop:<id>`)가 현재 연출 재생 또는 전환 대기 중일 때 유지할 프레임 이름. */
+export function activeInteractivePropFrameForEvent(scene: PlaySceneContext, eventId: string): string | undefined {
+  return activePropHostFx.get(scene)?.get(eventId)?.heldFrame;
+}
+
+/** 해당 칸에서 `loopAfterOpen` 애니메이션 타이머가 활성 중인가(renderEvents 가 프레임을 덮지 않도록 보호). */
+export function isInteractivePropLoopActive(scene: PlaySceneContext, mapId: string, x: number, y: number): boolean {
+  return Boolean(propLoopTimers.get(scene)?.has(`${mapId}|${x},${y}`));
+}
 
 function stopPropGlow(scene: PlaySceneContext, key: string): void {
   const glows = propGlowLayers.get(scene);
@@ -903,6 +930,7 @@ function stopPropShadow(scene: PlaySceneContext, key: string): void {
     existing.destroy();
     shadows!.delete(key);
   }
+  propShadowSignatures.get(scene)?.delete(key);
 }
 
 function stopPropLoop(scene: PlaySceneContext, key: string): void {
@@ -912,6 +940,7 @@ function stopPropLoop(scene: PlaySceneContext, key: string): void {
     existing.remove(false);
     timers!.delete(key);
   }
+  propLoopSignatures.get(scene)?.delete(key);
   stopPropGlow(scene, key);
 }
 
@@ -931,36 +960,51 @@ function clearPropLoops(scene: PlaySceneContext): void {
     for (const shadow of shadows.values()) shadow.destroy();
     shadows.clear();
   }
+  propShadowSignatures.get(scene)?.clear();
+  propLoopSignatures.get(scene)?.clear();
+  activePropHostFx.get(scene)?.clear();
 }
 
 function propStripTextureKey(prop: InteractivePropEntry): string {
-  return `__iprop_${prop.id}`;
+  return interactivePropSpriteId(prop.id);
 }
 
 function propFrameName(index: number): string {
-  return `f${index}`;
+  return interactivePropFrameName(index);
 }
 
 /** 가로 PNG 스트립을 씬에 한 번만 싣고 프레임 0..N-1 을 텍스처에 잘라 등록한다. */
 async function ensurePropStripFrames(scene: PlaySceneContext, prop: InteractivePropEntry): Promise<string | null> {
   if (!scene.textures || typeof scene.load?.image !== "function") return null;
   const key = propStripTextureKey(prop);
-  const loaded = await ensureSceneImageTexture(scene, key, interactivePropStripUrl(prop, store.getCurrent()));
+  const loaded = await ensureSceneImageTexture(scene, key, withInlineAsset(interactivePropStripUrl(prop, store.getCurrent())));
   if (!loaded || !scene.textures.exists(key)) return null;
   const texture = scene.textures.get(key);
   if (!texture.has(propFrameName(0))) {
+    const src = texture.getSourceImage() as HTMLImageElement | HTMLCanvasElement | undefined;
+    const srcW = src ? ("naturalWidth" in src && src.naturalWidth ? src.naturalWidth : src.width) : prop.frameWidth * prop.frames;
+    const srcH = src ? ("naturalHeight" in src && src.naturalHeight ? src.naturalHeight : src.height) : prop.frameHeight;
     for (let i = 0; i < prop.frames; i++) {
-      texture.add(propFrameName(i), 0, i * prop.frameWidth, 0, prop.frameWidth, prop.frameHeight);
+      const x = Math.min(Math.max(0, srcW - 1), i * prop.frameWidth);
+      const w = Math.max(1, Math.min(prop.frameWidth, srcW - x));
+      const h = Math.max(1, Math.min(prop.frameHeight, srcH));
+      texture.add(propFrameName(i), 0, x, 0, w, h);
     }
   }
   return key;
 }
 
 /** 정규화 앵커(0..1)를 타일 칸 중심·바닥선에 맞춰 픽셀 격자에 정렬한다. */
-function propWorldOrigin(cell: Cell, prop: InteractivePropEntry, size: number): { readonly x: number; readonly y: number; readonly scale: number } {
+function propWorldOrigin(
+  scene: PlaySceneContext,
+  cell: Cell,
+  prop: InteractivePropEntry,
+  size: number,
+  footprint: CharacterFootprint = UNIT_FOOTPRINT,
+): { readonly x: number; readonly y: number; readonly scale: number } {
   const scale = size / 16;
-  const cx = cell.x * size + size / 2;
-  const footY = (cell.y + 1) * size;
+  const cx = footprintSpriteX(cell.x, footprint, size);
+  const footY = (cell.y + 1) * size - reliefCellLiftPx(scene.map.relief, cell.x, cell.y, size);
   return {
     x: Math.round(cx - prop.anchorX * prop.frameWidth * scale),
     y: Math.round(footY - prop.anchorY * prop.frameHeight * scale),
@@ -977,12 +1021,18 @@ function attachPropGroundShadow(
   size: number,
   depth: number,
   flatDebris = false,
+  footprint: CharacterFootprint = UNIT_FOOTPRINT,
 ): void {
+  const liftPx = reliefCellLiftPx(scene.map.relief, cell.x, cell.y, size);
+  const sig = `${prop.id}|${size}|${depth}|${flatDebris ? 1 : 0}|${liftPx}|${footprint.width}x${footprint.height}`;
+  const sigs = propShadowSignatures.get(scene) ?? new Map<string, string>();
+  propShadowSignatures.set(scene, sigs);
+  if (sigs.get(key) === sig && propShadowLayers.get(scene)?.get(key)?.active) return;
   stopPropShadow(scene, key);
   if (typeof scene.add?.graphics !== "function") return;
   const scale = size / 16;
-  const cx = cell.x * size + size / 2;
-  const footY = (cell.y + 1) * size - 1.5 * scale;
+  const cx = footprintSpriteX(cell.x, footprint, size);
+  const footY = (cell.y + 1) * size - liftPx - 1.5 * scale;
   const g = scene.add.graphics().setDepth(depth - 0.08);
 
   if (prop.mount === "wall") {
@@ -1011,15 +1061,25 @@ function attachPropGroundShadow(
   const shadows = propShadowLayers.get(scene) ?? new Map<string, Phaser.GameObjects.GameObject>();
   propShadowLayers.set(scene, shadows);
   shadows.set(key, g);
+  sigs.set(key, sig);
 }
 
-function attachPropGlow(scene: PlaySceneContext, key: string, cell: Cell, prop: InteractivePropEntry, size: number, depth: number): void {
+function attachPropGlow(
+  scene: PlaySceneContext,
+  key: string,
+  cell: Cell,
+  prop: InteractivePropEntry,
+  size: number,
+  depth: number,
+  footprint: CharacterFootprint = UNIT_FOOTPRINT,
+): void {
   stopPropGlow(scene, key);
   const color = interactivePropGlowColor(prop);
   if (color === null || typeof scene.add?.graphics !== "function") return;
   const scale = size / 16;
-  const cx = cell.x * size + size / 2;
-  const footY = (cell.y + 1) * size - 2 * scale;
+  const liftPx = reliefCellLiftPx(scene.map.relief, cell.x, cell.y, size);
+  const cx = footprintSpriteX(cell.x, footprint, size);
+  const footY = (cell.y + 1) * size - liftPx - 2 * scale;
   const cy = footY - Math.max(6, prop.frameHeight * 0.48) * scale;
   const radius = Math.max(size * 0.95, Math.max(prop.frameWidth, prop.frameHeight) * scale * 0.68);
   const objects: Phaser.GameObjects.GameObject[] = [];
@@ -1074,9 +1134,26 @@ function attachPropGlow(scene: PlaySceneContext, key: string, cell: Cell, prop: 
   glows.set(key, objects);
 }
 
-function attachPropLoop(scene: PlaySceneContext, key: string, image: Phaser.GameObjects.Image, prop: InteractivePropEntry, cell: Cell, size: number, depth: number): void {
+function attachPropLoop(
+  scene: PlaySceneContext,
+  key: string,
+  image: Phaser.GameObjects.Image,
+  prop: InteractivePropEntry,
+  cell: Cell,
+  size: number,
+  depth: number,
+  footprint: CharacterFootprint = UNIT_FOOTPRINT,
+): void {
+  const liftPx = reliefCellLiftPx(scene.map.relief, cell.x, cell.y, size);
+  const sig = `${prop.id}|${size}|${depth}|${liftPx}|${footprint.width}x${footprint.height}`;
+  const sigs = propLoopSignatures.get(scene) ?? new Map<string, string>();
+  propLoopSignatures.set(scene, sigs);
+  const existingTimer = propLoopTimers.get(scene)?.get(key);
+  const existingGlow = propGlowLayers.get(scene)?.get(key);
+  if (sigs.get(key) === sig && image.active && (existingTimer || existingGlow?.some((obj) => obj.active))) return;
   stopPropLoop(scene, key);
-  attachPropGlow(scene, key, cell, prop, size, depth);
+  sigs.set(key, sig);
+  attachPropGlow(scene, key, cell, prop, size, depth, footprint);
   const start = Math.max(0, Math.min(prop.frames - 1, prop.loopFromFrame ?? prop.frames - 2));
   if (start >= prop.frames - 1 || typeof scene.time?.addEvent !== "function") return;
   let current = start;
@@ -1097,6 +1174,20 @@ function attachPropLoop(scene: PlaySceneContext, key: string, image: Phaser.Game
   timers.set(key, timer);
 }
 
+function findPropHostEventId(scene: PlaySceneContext, textureKey: string, cell: Cell, explicitEventId?: string): string | undefined {
+  if (explicitEventId) {
+    const sprite = scene.eventSprites?.get(explicitEventId);
+    if (sprite?.active && sprite.texture?.key === textureKey) return explicitEventId;
+  }
+  const project = store.getCurrent();
+  for (const view of runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)) {
+    if (view.x !== cell.x || view.y !== cell.y) continue;
+    const sprite = scene.eventSprites?.get(view.event.id);
+    if (sprite?.active && sprite.texture?.key === textureKey) return view.event.id;
+  }
+  return undefined;
+}
+
 /**
  * 등록된 멀티프레임 PNG 스트립을 칸 위에서 재생한다 (`fx:prop:<id>` / `fx:prop:<id>:close` 또는 `interaction.propId`).
  * 반환: 스트립을 성공적으로 재생했는가(false 면 호출자가 기존 절차 연출로 대체할 수 있다).
@@ -1105,14 +1196,12 @@ export async function playInteractivePropFx(
   scene: PlaySceneContext,
   prop: InteractivePropEntry,
   cell: Cell,
-  options: { readonly reverse?: boolean; readonly silent?: boolean } = {},
+  options: { readonly reverse?: boolean; readonly silent?: boolean; readonly eventId?: string } = {},
 ): Promise<boolean> {
   const key = await ensurePropStripFrames(scene, prop);
   if (!key) return false;
   if (!options.silent) playSe(resolveInteractivePropSe(prop));
   const size = mapTileSize(scene.map);
-  const origin = propWorldOrigin(cell, prop, size);
-  const depth = rowDepth(cell.y, size) + FX_DEPTH_BUMP;
   const cellKey = `${scene.map.id}|${cell.x},${cell.y}`;
   stopPropLoop(scene, cellKey);
 
@@ -1124,6 +1213,54 @@ export async function playInteractivePropFx(
     for (let i = 0; i < prop.frames; i++) order.push(i);
   }
 
+  // 정식 이벤트 스프라이트(`iprop:<id>`)가 같은 칸에 있으면 새 오버레이 이미지를 겹쳐 만들지 않고
+  // 그 스프라이트 자체의 프레임을 직접 구동한다. 이렇게 하면 전리품·대사 중 닫힘 스냅,
+  // 토글 닫기 직후 열림 깜빡임, 높이 지형·배율 불일치가 원천적으로 사라진다.
+  const hostEventId = findPropHostEventId(scene, key, cell, options.eventId);
+  if (hostEventId) {
+    const mapId = scene.map.id;
+    const hostMap = activePropHostFx.get(scene) ?? new Map<string, ActivePropHostState>();
+    activePropHostFx.set(scene, hostMap);
+    const state: ActivePropHostState = {
+      propId: prop.id,
+      textureKey: key,
+      expectSearched: !reverse,
+      heldFrame: propFrameName(order[0]!),
+      playing: true,
+    };
+    hostMap.set(hostEventId, state);
+    const applyHostFrame = (frameName: string): Phaser.GameObjects.Sprite | undefined => {
+      state.heldFrame = frameName;
+      const sprite = scene.eventSprites?.get(hostEventId);
+      if (sprite?.active && sprite.texture?.key === key) {
+        sprite.setVisible(true);
+        sprite.setFrame(frameName);
+        return sprite;
+      }
+      return undefined;
+    };
+    const hostView = runtimeEventViewById(store.getCurrent(), scene.map, scene.session, scene.eventPositions, hostEventId);
+    const hostFp = hostView?.footprint ?? UNIT_FOOTPRINT;
+    const firstSprite = applyHostFrame(propFrameName(order[0]!));
+    const baseDepth = typeof firstSprite?.depth === "number" ? firstSprite.depth : rowDepth(cell.y, size) + 0.2;
+    attachPropGroundShadow(scene, cellKey, cell, prop, size, baseDepth, false, hostFp);
+    for (let i = 1; i < order.length; i++) {
+      await sleep(scene, prop.frameMs);
+      if (scene.map.id !== mapId || hostMap.get(hostEventId) !== state) return true;
+      applyHostFrame(propFrameName(order[i]!));
+    }
+    state.playing = false;
+    const finalSprite = applyHostFrame(propFrameName(order[order.length - 1]!));
+    const finalDepth = typeof finalSprite?.depth === "number" ? finalSprite.depth : baseDepth;
+    if (!reverse && prop.playback === "break") attachPropGroundShadow(scene, cellKey, cell, prop, size, finalDepth, true, hostFp);
+    if (!reverse && prop.playback === "loopAfterOpen" && finalSprite?.active) {
+      attachPropLoop(scene, cellKey, finalSprite as unknown as Phaser.GameObjects.Image, prop, cell, size, finalDepth, hostFp);
+    }
+    return true;
+  }
+
+  const origin = propWorldOrigin(scene, cell, prop, size);
+  const depth = rowDepth(cell.y, size) + FX_DEPTH_BUMP;
   const image = scene.add
     .image(origin.x, origin.y, key, propFrameName(order[0]!))
     .setOrigin(0, 0)
@@ -1164,7 +1301,7 @@ export async function playContainerFx(scene: PlaySceneContext, style: ContainerS
   const project = store.getCurrent();
   const view = eventId ? runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, eventId) : undefined;
   const explicitProp = interactivePropById(view?.page?.interaction?.propId, project);
-  if (explicitProp && (await playInteractivePropFx(scene, explicitProp, cell))) return;
+  if (explicitProp && (await playInteractivePropFx(scene, explicitProp, cell, { eventId }))) return;
   // 옷장은 기존 코드 화소 자르기(openStatePixels)가 null 을 돌려 단색 사각형 대체로 떨어졌으므로 실원본 양문 스트립으로 업그레이드한다.
   if (style === "wardrobe") {
     const wardrobeProp = fallbackInteractivePropForContainer(scene, "wardrobe", view?.event.name);
@@ -1230,7 +1367,7 @@ export async function playFieldFx(scene: PlaySceneContext, fx: FieldFx, target: 
       break;
     case "prop": {
       const prop = interactivePropById(fx.propId, store.getCurrent());
-      if (prop) await playInteractivePropFx(scene, prop, cell, { reverse: fx.reverse });
+      if (prop) await playInteractivePropFx(scene, prop, cell, { reverse: fx.reverse, eventId: currentEventId });
       break;
     }
     case "popupItem": {
@@ -1323,7 +1460,9 @@ export function syncContainerSearchedMarks(scene: PlaySceneContext): void {
   const size = mapTileSize(scene.map);
   const s = size / 16;
   const keep = new Set<string>();
+  const keepCells = new Set<string>();
   const project = store.getCurrent();
+  const hostFxMap = activePropHostFx.get(scene);
   for (const view of runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)) {
     const interaction = view.page?.interaction;
     if (interaction?.kind !== "container") continue;
@@ -1331,6 +1470,30 @@ export function syncContainerSearchedMarks(scene: PlaySceneContext): void {
     // 열리기 전(searched !== true)이라도 propId 가 명시돼 있고 타일/스프라이트가 비어 있으면 0번 원본 프레임을 그대로 그려 둔다.
     const searched = interaction.searched === true;
     const spriteShown = !view.transparent && !!view.sprite?.id;
+    const hostOwnsPropSprite = spriteShown && Boolean(explicitProp) && parseInteractivePropSpriteId(view.sprite?.id) === explicitProp!.id;
+    if (hostOwnsPropSprite && explicitProp) {
+      const cell = { x: view.x, y: view.y };
+      const cellKey = `${scene.map.id}|${cell.x},${cell.y}`;
+      keepCells.add(cellKey);
+      const hostState = hostFxMap?.get(view.event.id);
+      if (hostState && !hostState.playing && searched === hostState.expectSearched) {
+        hostFxMap!.delete(view.event.id);
+      }
+      const lid = pendingLids.get(scene)?.get(cellKey);
+      if (lid) { lid.destroy(); pendingLids.get(scene)!.delete(cellKey); }
+      const hostSprite = scene.eventSprites?.get(view.event.id);
+      if (hostSprite?.active) {
+        const depth = typeof hostSprite.depth === "number" ? hostSprite.depth : rowDepth(cell.y, size) + 0.2;
+        const effectiveOpened = hostState ? hostState.expectSearched : searched;
+        attachPropGroundShadow(scene, cellKey, cell, explicitProp, size, depth, effectiveOpened && explicitProp.playback === "break", view.footprint);
+        if (effectiveOpened && explicitProp.playback === "loopAfterOpen" && !hostState?.playing) {
+          attachPropLoop(scene, cellKey, hostSprite as unknown as Phaser.GameObjects.Image, explicitProp, cell, size, depth, view.footprint);
+        } else if (!effectiveOpened) {
+          stopPropLoop(scene, cellKey);
+        }
+      }
+      continue;
+    }
     const upperTile = scene.map.upperTiles[view.y * scene.map.width + view.x] ?? -1;
     if (!searched && (!explicitProp || spriteShown || upperTile > 0)) continue;
     const style = isContainerStyle(interaction.style) ? interaction.style : containerStyleForLabel(view.event.name);
@@ -1340,6 +1503,7 @@ export function syncContainerSearchedMarks(scene: PlaySceneContext): void {
     const key = `${view.event.id}|${view.x},${view.y}|${prop ? `prop:${prop.id}:f${frameIndex}` : style}`;
     keep.add(key);
     const lidKey = `${scene.map.id}|${view.x},${view.y}`;
+    if (prop) keepCells.add(lidKey);
     const lid = pendingLids.get(scene)?.get(lidKey);
     if (lid) { lid.destroy(); pendingLids.get(scene)!.delete(lidKey); }
     if (layer.marks.get(key)?.active) continue;
@@ -1349,7 +1513,7 @@ export function syncContainerSearchedMarks(scene: PlaySceneContext): void {
       const mapId = scene.map.id;
       void ensurePropStripFrames(scene, prop).then((texKey) => {
         if (!texKey || scene.map.id !== mapId || markLayer.marks.get(key)?.active) return;
-        const origin = propWorldOrigin(cell, prop, size);
+        const origin = propWorldOrigin(scene, cell, prop, size);
         // 부서진 잔해(break + searched)는 캐릭터 발밑으로 깔려 밟고 지나갈 수 있게 한다.
         const depth = searched && prop.playback === "break"
           ? rowDepth(cell.y, size) - size * 0.4
@@ -1382,5 +1546,13 @@ export function syncContainerSearchedMarks(scene: PlaySceneContext): void {
     if (keep.has(key)) continue;
     g.destroy();
     layer.marks.delete(key);
+  }
+  // 삭제·숨김·이동된 프롭의 그림자·광원·루프 타이머를 정리한다(진행 중 pendingLids 칸은 제외).
+  const activeLids = pendingLids.get(scene);
+  for (const cellKey of [...(propShadowLayers.get(scene)?.keys() ?? [])]) {
+    if (!keepCells.has(cellKey) && !activeLids?.has(cellKey)) stopPropShadow(scene, cellKey);
+  }
+  for (const cellKey of [...(propLoopTimers.get(scene)?.keys() ?? []), ...(propGlowLayers.get(scene)?.keys() ?? [])]) {
+    if (!keepCells.has(cellKey) && !activeLids?.has(cellKey)) stopPropLoop(scene, cellKey);
   }
 }

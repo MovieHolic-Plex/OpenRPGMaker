@@ -6,6 +6,11 @@ import { findCharsetAsset } from "@/assets/charsetCatalog";
 import { CC0_ICON_ASSETS, resolveCc0IconAssetUrl } from '@/assets/cc0IconAssets';
 import { generatedMonsterSpriteUrl } from "@/assets/generatedMonsterSprites";
 import {
+  interactivePropFrameIndex,
+  interactivePropFromSpriteId,
+  interactivePropStripUrl,
+} from "@/project/interactiveProps";
+import {
   charsetFrameSource,
   decodeCharsetFrameIndex,
   type CharsetDirection,
@@ -58,6 +63,7 @@ type ClaimedPageVisual = {
   readonly preserveAlpha?: boolean;
   readonly frame: CharsetFrameSource;
   readonly wholeImage?: boolean;
+  readonly propTileScale?: boolean;
   readonly scale: number;
   readonly footprint: CharacterFootprint;
   readonly priority: EventPriority;
@@ -131,8 +137,9 @@ function resolveEventSprite(
   const visual = claimed.visuals.length === 1 ? claimed.visuals[0] : startPageVisual(project, event);
   if (!visual) return { ok: true, sprite: null };
   const worldScale = pixelsPerTile / tileSize;
-  const destW = visual.frame.width * worldScale * visual.scale;
-  const destH = visual.frame.height * worldScale * visual.scale;
+  const propScale = visual.propTileScale ? tileSize / 16 : 1;
+  const destW = visual.frame.width * worldScale * visual.scale * propScale;
+  const destH = visual.frame.height * worldScale * visual.scale * propScale;
   const feetX = (footprintSpriteX(event.x, visual.footprint, tileSize) - region.x * tileSize) * worldScale;
   const feetY = (characterSpriteY(event.y, tileSize) - region.y * tileSize) * worldScale;
   return {
@@ -247,7 +254,7 @@ function anchorInRegion(event: GameEvent, region: RegionBox): boolean {
     && event.y >= region.y && event.y < region.y + region.h;
 }
 
-function graphicVisual(project: Project, graphic: EventPageGraphic): { imageUrl: string; frame: CharsetFrameSource; preserveAlpha?: boolean; fitScale?: number; origin?: SpriteFrameOrigin; wholeImage?: boolean } | null {
+function graphicVisual(project: Project, graphic: EventPageGraphic): { imageUrl: string; frame: CharsetFrameSource; preserveAlpha?: boolean; fitScale?: number; origin?: SpriteFrameOrigin; wholeImage?: boolean; propTileScale?: boolean } | null {
   const id = graphic.sprite?.id;
   if (!id) return null;
   const def = project.assets.sprites[id];
@@ -268,6 +275,17 @@ function graphicVisual(project: Project, graphic: EventPageGraphic): { imageUrl:
   if (!def && iconUrl && icon) return { imageUrl: iconUrl,
     frame: {x:0,y:0,width:icon.imageWidth,height:icon.imageHeight}, preserveAlpha:true,
     fitScale:16 / Math.max(icon.imageWidth,icon.imageHeight) };
+  const prop = interactivePropFromSpriteId(id, project);
+  if (prop) {
+    const frameIndex = interactivePropFrameIndex(prop, graphic.pattern);
+    return {
+      imageUrl: interactivePropStripUrl(prop, project),
+      frame: { x: frameIndex * prop.frameWidth, y: 0, width: prop.frameWidth, height: prop.frameHeight },
+      preserveAlpha: true,
+      origin: { x: prop.anchorX, y: prop.anchorY },
+      propTileScale: true,
+    };
+  }
   const asset = project.assets.uploaded[def?.image.type === "uploaded" ? def.image.id : id];
   if (asset?.kind === "sprite") {
     const frame = uploadedSpriteFrame(asset, graphic.pattern ?? 0);

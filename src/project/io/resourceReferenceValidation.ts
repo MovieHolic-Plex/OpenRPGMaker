@@ -41,6 +41,7 @@ import { assert } from "./guards";
 import { isRetiredResourceId } from "@/assets/retiredAssets";
 import { openingMapViewResourceIds } from "@/project/openingMapView";
 import { openingStillBaseId, openingStillResourceIds } from "@/project/openingStill";
+import { interactivePropSpriteIds } from "@/project/interactiveProps";
 
 export function collectResourceIds(project: Project): Set<string> {
   const ids = new Set<string>();
@@ -97,6 +98,8 @@ export function collectResourceIds(project: Project): Set<string> {
   for (const id of SCARLOXY_PEOPLE_CHARSET_RESOURCE_IDS) ids.add(id);
   // 절차 생성 전투 이펙트 시트. 기본 DB 가 이 id 를 참조하므로 빠지면 기본 프로젝트조차 역직렬화에서 던진다.
   for (const id of GENERATED_EFFECT_RESOURCE_IDS) ids.add(id);
+  // 상호작용 오브젝트 멀티프레임 스트립 정식 이벤트 그래픽 id (`iprop:<id>`).
+  for (const id of interactivePropSpriteIds(project)) ids.add(id);
   return ids;
 }
 

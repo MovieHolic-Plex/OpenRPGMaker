@@ -6,8 +6,10 @@
 // oneshot / toggle / break / loopAfterOpen 4가지 모드로 재생한다.
 import rawCatalog from "@/assets/interactivePropsCatalog.json";
 import type { ContainerStyle } from "@/project/containerFx";
+import { CHARACTER_FOOTPRINT_AXIS_MAX } from "@/project/footprint";
 import { extractCustomInteractivePropsFromUploaded } from "@/project/interactivePropAuthoring";
-import type { Project } from "@/project/types";
+import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
+import type { CharacterFootprint, Project } from "@/project/types";
 
 export type InteractivePropEra =
   | "fantasy"
@@ -195,6 +197,70 @@ export interface InteractivePropsCatalog {
 export const INTERACTIVE_PROPS_CATALOG = rawCatalog as unknown as InteractivePropsCatalog;
 export const INTERACTIVE_PROPS: readonly InteractivePropEntry[] = INTERACTIVE_PROPS_CATALOG.props;
 
+export const INTERACTIVE_PROP_SPRITE_PREFIX = "iprop:";
+
+/** 상호작용 오브젝트 카탈로그 id → 정식 이벤트 그래픽 sprite.id (`iprop:<id>`). */
+export function interactivePropSpriteId(propId: string): string {
+  return `${INTERACTIVE_PROP_SPRITE_PREFIX}${propId}`;
+}
+
+/** `iprop:<id>` 형식의 이벤트 그래픽 sprite.id 에서 카탈로그 propId 를 추출한다. */
+export function parseInteractivePropSpriteId(spriteId: string | undefined): string | null {
+  if (!spriteId || !spriteId.startsWith(INTERACTIVE_PROP_SPRITE_PREFIX)) return null;
+  const id = spriteId.slice(INTERACTIVE_PROP_SPRITE_PREFIX.length).trim();
+  return id || null;
+}
+
+/** `iprop:<id>` 형식의 이벤트 그래픽 sprite.id 에 대응하는 카탈로그 항목을 찾는다. */
+export function interactivePropFromSpriteId(spriteId: string | undefined, project?: Project): InteractivePropEntry | undefined {
+  const id = parseInteractivePropSpriteId(spriteId);
+  return id ? interactivePropById(id, project) : undefined;
+}
+
+/** 가로 스트립 텍스처 프레임 이름 (`f0`..`fN-1`). */
+export function interactivePropFrameName(index: number): string {
+  return `f${index}`;
+}
+
+/** 이벤트 페이지 pattern 값(숫자 또는 `"f<n>"`)을 유효한 스트립 프레임 번호로 정규화한다. */
+export function interactivePropFrameIndex(prop: InteractivePropEntry, pattern: string | number | undefined): number {
+  const maxIndex = Math.max(0, prop.frames - 1);
+  if (typeof pattern === "number" && Number.isFinite(pattern)) {
+    return Math.max(0, Math.min(maxIndex, Math.trunc(pattern)));
+  }
+  if (typeof pattern === "string") {
+    const match = /^f?(\d+)$/u.exec(pattern.trim());
+    if (match) return Math.max(0, Math.min(maxIndex, Number(match[1])));
+  }
+  return 0;
+}
+
+/** 프로젝트 참조 검증용 정식 이벤트 스프라이트 id 목록(번들 156종 + 프로젝트 커스텀). */
+export function interactivePropSpriteIds(project?: Project): readonly string[] {
+  return allInteractiveProps(project).map((prop) => interactivePropSpriteId(prop.id));
+}
+
+/** 카탈로그 footprint([w, h])를 이벤트 발자국 규격(CharacterFootprint)으로 정규화한다. */
+export function interactivePropFootprint(prop: InteractivePropEntry): CharacterFootprint {
+  const rawW = Number(prop.footprint?.[0]);
+  const rawH = Number(prop.footprint?.[1]);
+  const width = Number.isFinite(rawW) && rawW >= 1 ? Math.min(CHARACTER_FOOTPRINT_AXIS_MAX, Math.round(rawW)) : 1;
+  const height = Number.isFinite(rawH) && rawH >= 1 ? Math.min(CHARACTER_FOOTPRINT_AXIS_MAX, Math.round(rawH)) : 1;
+  return { width, height };
+}
+
+/** 3/4 탑뷰 오브젝트의 기본 통행 차단 행 수 — 발밑 하단 1줄만 막고 윗단 뒤는 걸어 지나갈 수 있게 한다. */
+export function interactivePropPassRows(_prop: InteractivePropEntry): number {
+  return 1;
+}
+
+/** 작동/파괴 후 플레이어가 해당 칸을 통과할 수 있어야 하는가(파괴형 · 출입문/통로형). */
+export function interactivePropOpensPassage(prop: InteractivePropEntry): boolean {
+  return prop.playback === "break"
+    || prop.category === "door-pass"
+    || Boolean(prop.roles?.includes("passage"));
+}
+
 const BY_ID = new Map<string, InteractivePropEntry>(INTERACTIVE_PROPS.map((prop) => [prop.id, prop]));
 
 /**
@@ -375,7 +441,8 @@ export function searchInteractiveProps(options: {
 export function interactivePropStripUrl(prop: InteractivePropEntry, project?: Project): string {
   if (prop.resourceId && project?.assets?.uploaded) {
     const asset = project.assets.uploaded[prop.resourceId];
-    if (asset?.dataUrl) return asset.dataUrl;
+    const resolved = asset ? uploadedAssetUrl(asset) : "";
+    if (resolved) return resolved;
   }
   if (prop.stripPath.startsWith("data:")) return prop.stripPath;
   return `/${prop.stripPath.replace(/^\/+/, "")}`;

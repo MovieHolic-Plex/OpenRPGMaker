@@ -75,6 +75,7 @@ function renderEventGraphicElement(
     preview.style.boxSizing = "content-box";
     preview.style.backgroundClip = "padding-box";
     preview.style.backgroundRepeat = "no-repeat";
+    preview.style.imageRendering = "pixelated";
     preview.style.width = `${frame.width * previewScale}px`;
     preview.style.height = `${frame.height * previewScale}px`;
     preview.style.backgroundImage = `url("${resource.path}")`;
@@ -185,8 +186,10 @@ export function renderFootprintPreview(input: {
   readonly passRows: number;
   readonly tileSize?: number;
 }): HTMLElement {
-  const scale = eventGraphicRenderScale(input.graphic, input.tileSize ?? TILE_PX);
+  const tileSize = input.tileSize ?? TILE_PX;
   const resource = eventGraphicPreviewResource(store.getCurrent(), input.graphic);
+  const baseScale = eventGraphicRenderScale(input.graphic, tileSize);
+  const scale = resource?.kind === "sprite" && resource.propTileScale ? baseScale * (tileSize / 16) : baseScale;
   const layout = footprintPreviewLayout({ footprint: input.footprint, scale, tileSize: input.tileSize,
     ...(resource?.kind === "sprite" ? { spriteWidth: resource.frame.width, spriteHeight: resource.frame.height } : {}),
   });

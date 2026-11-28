@@ -14,7 +14,13 @@ import {
   propFxId,
   type ContainerStyle,
 } from "@/project/containerFx";
-import { interactivePropById } from "@/project/interactiveProps";
+import {
+  interactivePropById,
+  interactivePropFootprint,
+  interactivePropOpensPassage,
+  interactivePropPassRows,
+  interactivePropSpriteId,
+} from "@/project/interactiveProps";
 import type { Command, Condition, GameEvent, GameMap, Project } from "@/project/types";
 
 type Page = NonNullable<GameEvent["pages"]>[number];
@@ -136,7 +142,30 @@ export function applyContainerSearchPattern(event: GameEvent, options: Container
       ...(searched ? { searched: true } : {}),
     };
     if (JSON.stringify(page.interaction ?? null) !== JSON.stringify(wanted)) { (page as Page).interaction = wanted; changed = true; }
-    if (searched && prop?.playback === "break" && (page as { priority?: string }).priority !== "below") {
+    if (prop) {
+      const hasCustomSprite = page.graphic?.transparent !== true && Boolean(page.graphic?.sprite?.id);
+      const wantedSpriteId = interactivePropSpriteId(prop.id);
+      const wantedPattern = searched ? Math.max(0, prop.frames - 1) : 0;
+      if (!hasCustomSprite || page.graphic?.sprite?.id === wantedSpriteId) {
+        const nextGraphic = {
+          ...(page.graphic ?? {}),
+          sprite: { type: "bundled" as const, id: wantedSpriteId },
+          pattern: wantedPattern,
+        };
+        delete nextGraphic.transparent;
+        if (JSON.stringify(page.graphic ?? null) !== JSON.stringify(nextGraphic)) {
+          (page as Page).graphic = nextGraphic;
+          changed = true;
+        }
+      }
+      const fp = interactivePropFootprint(prop);
+      if ((fp.width > 1 || fp.height > 1) && !page.footprint) {
+        (page as Page).footprint = fp;
+        (page as Page).passRows = interactivePropPassRows(prop);
+        changed = true;
+      }
+    }
+    if (searched && prop && interactivePropOpensPassage(prop) && (page as { priority?: string }).priority !== "below") {
       (page as { priority?: string; through?: boolean }).priority = "below";
       (page as { priority?: string; through?: boolean }).through = true;
       changed = true;
