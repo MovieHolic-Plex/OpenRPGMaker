@@ -1,0 +1,465 @@
+{
+ "schema": "oprn-object-gate-owner-waiver/1",
+ "id": "carbon-remake-w5-exp6-2026-11-28",
+ "owner": "1패스도 퀄리티가 괜찮은데? (Wave 5 5종 + 순수 1패스 6종 modern_campus 번들 굽기 · 2026-11-28)",
+ "decidedAt": "2026-11-28",
+ "recordedBy": "antigravity/gemini-4-neon (owner chat approval 2026-11-28)",
+ "contexts": [
+  "bundle",
+  "shared"
+ ],
+ "note": "Carbon Medium Wave 5 (5) + Pure 1-Pass Exp (6) = 11 modern_campus pieces, bundle/shared only",
+ "items": [
+  {
+   "pixelSha256": "b504c06c0fad8f042bae4103b9fecd938e254e516974dfe9c3d6d363e6274654",
+   "kind": "other",
+   "label": "자전거 거치대(자전거 2대+빈 슬롯)",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "a9b2073edfb6dbb4",
+     "cc5003fbf8d97599"
+    ],
+    "24": [
+     "15ea626827817fb9",
+     "3ab7efa687e43f7d",
+     "3d2a59a35187db52",
+     "5342c89749fc8c96",
+     "55117c6767821d80",
+     "6f8dba33a217a06e",
+     "706d45297a5fb704",
+     "9902d7d80fa277d7",
+     "a8bac7118c735b6d",
+     "afa16f93dbd4d79a",
+     "e59b81596f32a8f0",
+     "f8c977ccb0100a89"
+    ],
+    "32": [
+     "9af11ddf79493d46",
+     "ac8d91de112f08a2"
+    ],
+    "48": [
+     "0a610aa28f90d628",
+     "30b05a8168412417",
+     "3306b5ae390a4801",
+     "a6724e81de53ed91",
+     "cda3ca9d420406b2",
+     "f363a2b40d517796"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "d806ffc21a24ca6dbd51cee776f5b80204a5c7799d0de0984a5253bb86b522d8",
+   "kind": "box",
+   "label": "교정 음수대(타일 수조+수도꼭지)",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "3774bae274242c97",
+     "e51db9c7210612c6"
+    ],
+    "24": [
+     "0fc9f4e6d0c4b4c3",
+     "1c9ff58680d00803",
+     "265c1cf54c638645",
+     "32770ee555377808",
+     "473f7fd3bd15708e",
+     "59923a7641800241",
+     "5a499943f3e52b53",
+     "5c68f9f5172bca69",
+     "81bc2bdac13e4528",
+     "c231e531b4c11bd3",
+     "c4bf22c455d9bfbc",
+     "d7186efa1c7904bc"
+    ],
+    "32": [
+     "5f0450629d5227c6",
+     "aba6403674577fba"
+    ],
+    "48": [
+     "4513230383100f4e",
+     "7f7704be700c3e75",
+     "94f30a0bd27ecd75",
+     "9f6a95b0e74f32f2",
+     "e85867c088e7c3e4",
+     "f73bedf8db3aa011"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "0c65092265368ecd3ccf4a1dd92f795efe75b3e426792f094299a842dfe2c267",
+   "kind": "other",
+   "label": "동아리·학사 게시판(코르크+포스터)",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "1d3caab85ba72895",
+     "2c7220a1126d523e",
+     "9c406178f3c73055",
+     "f61eda82e862bd86"
+    ],
+    "24": [
+     "0cd8dcebf8362a81",
+     "0d186d261b8528fd",
+     "0deb379e76441125",
+     "1515f536126e8b5b",
+     "1f894c60edd190bd",
+     "2740ca2983dd9da9",
+     "27ebf49dbdb5ba3d",
+     "36f1fda27fb581aa",
+     "39fd36f30ccaa18a",
+     "7e8a0d0f5c9d5ac0",
+     "b511a200b02ba4a4",
+     "b70eb2b806a5f5d4",
+     "b900e2f6d6434ff1",
+     "c47c2745613c675e",
+     "c9e226e8311af3a4",
+     "cd90e1b3598d840f",
+     "d147fed36abc8cdd",
+     "e2430c31ae2a8303",
+     "e8acb905c080b5f4",
+     "e9eb959da9f98d89",
+     "eee85bf11e7771e3",
+     "fa2cb6b08025666e",
+     "fc3ae292c7c79be3",
+     "fe76423035cbe1f9"
+    ],
+    "32": [
+     "93a17f03e2831b04"
+    ],
+    "48": [
+     "4cec552d25316b20",
+     "778f291c3fa21500",
+     "adc62f29c9d64d82",
+     "c6b9d38f0535f469",
+     "d5b83ab901b7c30d",
+     "eb152ca23288a179"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "75a5ddde103ce3a930e1ac5ad079fb95f06bd733777d459abfcddc9b1c4b68f6",
+   "kind": "box",
+   "label": "학생식당 테이블(식판 2세트+물병)",
+   "width": 48,
+   "height": 16,
+   "cells": {
+    "16": [
+     "026cf0d7b0fc27df",
+     "31a68213fe2fa52f",
+     "39745cbc8aad6228"
+    ],
+    "24": [
+     "220a6f576d3c5036",
+     "5d492da0378193fe",
+     "62977a17c291d01c",
+     "96858829016b361d"
+    ],
+    "32": [
+     "35b3337a87b4a8f5",
+     "431dd5062d8cffd9",
+     "5ed1f8b95151d9f3",
+     "6e8030aea6e314a2",
+     "705c44a035a74cd8",
+     "7210db452a489a66",
+     "78c125041f765389",
+     "94a6006b862db490",
+     "ba396ef123d2c837",
+     "bfda2a38d83b5e3a",
+     "e5cba44e2fe57e81",
+     "fdf20b9d475e4428"
+    ],
+    "48": [
+     "d88d6ac2f1dfefe0",
+     "df872226590e07a4"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "871ede53fb4f77cd8be185cc71b919d4a34a4f8294fe0bef18ed626034f2c064",
+   "kind": "box",
+   "label": "도서관 개인 독서대(책장+스탠드+의자)",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "597ea46009d13660",
+     "682a993b04f60c66",
+     "9b92eb1590c5ff9a",
+     "f7ac8682c10043b5"
+    ],
+    "24": [
+     "0224868bbce2a931",
+     "1bb3becb6768a37b",
+     "22ba573d6c24409f",
+     "43b8a3f1da053f47",
+     "4e9eae03ce54b254",
+     "51f01836845ce8c4",
+     "528325d1123d96f8",
+     "5d3d4aee3771d67f",
+     "6068187a6dea7a0e",
+     "60d821bdcddd63ab",
+     "6af34a461aba2b1b",
+     "71af6e302c4e7482",
+     "8ecf25382322818f",
+     "9e1dd206200177de",
+     "9f5e691fa57267cf",
+     "a978c4dab243f404",
+     "b21a04b49d4424f0",
+     "c54c1ed3e5aa131a",
+     "ce5995aa1e5ff840",
+     "d294d3350420c4ea",
+     "e54e8dec167729e3",
+     "e7280dc679fa620f",
+     "e74e82fc1d41f5db",
+     "ea3feb828c279ccc"
+    ],
+    "32": [
+     "861eee3c65157c1a"
+    ],
+    "48": [
+     "4879b237261efa0c",
+     "553f4c5777b4637e",
+     "7f9c3e8c2c8930da",
+     "9cdc5680b1f7c851",
+     "b457f27119ddd72c",
+     "b8d7be5ec84c9fbc"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "24b165b21212d026d5e4594b00ae9e9f2c8e6228d6ff78833cd8a6f9e96aa438",
+   "kind": "box",
+   "label": "교정 돌벤치(화강암)",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "bbd5f745b05fa5ed",
+     "bcee7ee3dc632ce1"
+    ],
+    "24": [
+     "1aed2707e8b93298",
+     "23acfac6875c2a9e",
+     "25f264db0190ff84",
+     "2f7e50eabaea3b44",
+     "627419b66fd1c97b",
+     "652110a2b41c2998",
+     "71d384ab270ac287",
+     "944db9638776b419",
+     "c8433a691cdf5af8",
+     "c9e97037348d615b",
+     "ccfa9c5582c76e37",
+     "dd2ac125aaab5846"
+    ],
+    "32": [
+     "14aac82f3856df8a",
+     "1f3d27375aae5c83"
+    ],
+    "48": [
+     "125a7fdf25ab072e",
+     "125c8d49ddfc5c83",
+     "1755fc9a6b830dcf",
+     "242eecc024bbbbbf",
+     "3bd47781d3b44274",
+     "c5905c29c1155ed8"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "a4e51cd3989b2f13ac3ca3825645ec90889904c49814abc04999d591fcb7633d",
+   "kind": "column",
+   "label": "교정 흉상 동상(청동+석조 기단)",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "6b0fa058f64ea7bc",
+     "885f27aa0eb28a6f"
+    ],
+    "24": [
+     "3b7596b4acd3d087",
+     "3c981b545a2ee4ff",
+     "431a4569a2598593",
+     "43d3b1bd54a3cfab",
+     "545170e92d593fe6",
+     "67ca25baeb98d5ba",
+     "72eccec154cc324e",
+     "8338569f8b81f19b",
+     "d3edc7160d6773ed",
+     "d750b65d61fc88af",
+     "de983c300cdc0b96",
+     "fb2b8cd57b2b61d5"
+    ],
+    "32": [
+     "02b6cd1d0cf03dd1",
+     "e09d6fcb59de1783",
+     "e2d4abfc6ee122d7"
+    ],
+    "48": [
+     "5a02cf4e1142b966",
+     "6842f81d071e6ce7",
+     "82497768b7fe088e",
+     "8be194750aebed33",
+     "b7e9484906a98c02",
+     "c9cb71a1621d8e49"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "d4998c638bfc6b42c1ab3514658ffe4bb35f858b62eb708f19149932ee8c323a",
+   "kind": "column",
+   "label": "교문 기둥(벽돌+교명 현판)",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "080bc0bcf8ef2327",
+     "9b4d1a3cabe17445"
+    ],
+    "24": [
+     "0b888bbdf025ff72",
+     "26d1618ab632c7e7",
+     "401369e4110761b5",
+     "87af8819c2c92573",
+     "8da2d025b4a1b906",
+     "9561d86ae2819710",
+     "a5ddfe25559207ad",
+     "afb324def4c4ebd6",
+     "cb09da33a58bfaa0",
+     "cc5439c411359aa5",
+     "cfd0b0f95825786f",
+     "fa4412a08114e1a4"
+    ],
+    "32": [
+     "1dd782ab6e7211dd",
+     "6a6f3446bcb4c537",
+     "9d4c4d91b1b9c4c2"
+    ],
+    "48": [
+     "4920b2b812eee1bb",
+     "5d8615ecf53913b2",
+     "67ded5a2b363f720",
+     "b84ad6567a327902",
+     "cf065569085c1753",
+     "f93797635230a763"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "c8c86a91ef478745fa4192929009b677cd6131818c83599fc81e8acd4fa86c4f",
+   "kind": "box",
+   "label": "교내 분리수거함(2구)",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "2265b6cae1abf36e"
+    ],
+    "24": [
+     "0d2fe79a7e5aad40",
+     "1c67fa7c43006c85",
+     "396174f1f8c7d5cf",
+     "476472097e1c40a9",
+     "5ecd3fe785e9f06e",
+     "fcda6b1996d1b12a"
+    ],
+    "32": [
+     "6c8d1082b93efb37",
+     "b6cd2f70e2a57686",
+     "b6f7bfc1eb387053",
+     "ef03539550793fcd",
+     "f76ae5ec7d19fc59",
+     "f992031d22a6bc57"
+    ],
+    "48": [
+     "0d618b2be6fb7956",
+     "38ae17ba14f140c4",
+     "3e1aba0c333bc0ba",
+     "53c762fbc3d2e07c",
+     "7e844584b5e7c945",
+     "d951a518eda08e0d"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "2c84e4674edb105b6506c7320a4a6e14e4972a8c2558a10873eba9355df99744",
+   "kind": "other",
+   "label": "학생식당 스툴(쿠션+스틸다리)",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "7174bf272b7eb635"
+    ],
+    "24": [
+     "7d0b7065f438f626",
+     "991ef6e6be95d2dd",
+     "a0798ae3d1de2369",
+     "c92d708f4fc2c267",
+     "d6dcbfe1cf9065f4",
+     "da3bbe1585438ab1"
+    ],
+    "32": [
+     "102b26111ad66635",
+     "33ce9eacd7bc09c4",
+     "5c906a32e7e1154b",
+     "79bda5b8b215b19b",
+     "8798aca706061969",
+     "ba4469fa2357fd6c"
+    ],
+    "48": [
+     "1332d0623d08fafa",
+     "2dd24c28adf1a53d",
+     "48bf36e18d631b2b",
+     "8375e5d7f66d117c",
+     "95454c8801b2a957",
+     "fe935194a4278a52"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "0e3b0b626b130d7a4faa467e485dd9905980709a97273e40375434b8318bb06b",
+   "kind": "box",
+   "label": "도서관 목록 서랍장(8단 카드함)",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "3582b7df8e9bae17",
+     "377b63c5be9518a1"
+    ],
+    "24": [
+     "1fa57d2e733ea958",
+     "2281c2b6f214b14b",
+     "5fa239ab1ca2dc5f",
+     "64cb86a1f8d4a1d6",
+     "70f1163f75884316",
+     "77760a519ceee650",
+     "87b3327eef43533b",
+     "ba417b92b1f5d2c9",
+     "bb6f0efc0ccf7146",
+     "c7aaf33384ed3051",
+     "e9a420b658b99c3f",
+     "eac528e0ae5f2e4a"
+    ],
+    "32": [
+     "386f7bbcd8045d2d",
+     "a7197a83df42a37d",
+     "ac264f1ae0171b40"
+    ],
+    "48": [
+     "022a3cb26c1b52d7",
+     "0fbbd9c910547804",
+     "13a3b8172057da13",
+     "7af79a591c135048",
+     "d96877fa71409b74",
+     "fdbd316a670ba03c"
+    ]
+   }
+  }
+ ]
+}

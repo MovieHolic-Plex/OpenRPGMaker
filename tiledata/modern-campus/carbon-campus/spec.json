@@ -308,6 +308,393 @@
    "rule": "학교 보건실·의무실 벽면이나 작업 구역에 배치. 아랫줄 2칸 막힘.",
    "waiver": "carbon-remake-w4-2026-11-28",
    "pixelSha256": "95ee348cdaf7b39382995abe6dd0170263bae6cb3b9bb39faaa60fa2cb3f9468"
+  },
+  {
+   "id": "mc-c-campus-bike-rack",
+   "replaces": "mc-bike-rack",
+   "type": "prop",
+   "name": "자전거 거치대(자전거 2대+빈 슬롯)",
+   "en": "campus bicycle parking rack",
+   "kind": "other",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "tags": [
+    "실외",
+    "캠퍼스",
+    "자전거",
+    "학교"
+   ],
+   "words": [
+    "자전거 거치대",
+    "자전거 보관대",
+    "bike rack"
+   ],
+   "rule": "캠퍼스 정문·건물 옆 보도에 배치. 2칸 막힘.",
+   "waiver": "carbon-remake-w5-exp6-2026-11-28",
+   "pixelSha256": "967b6eaa522e3fb50d882b2c029b36177873ffbb017eb545df48116cdc1d205a"
+  },
+  {
+   "id": "mc-c-campus-fountain",
+   "replaces": "mc-drinking-fountain",
+   "type": "prop",
+   "name": "교정 음수대(타일 수조+수도꼭지)",
+   "en": "schoolyard tiled drinking fountain",
+   "kind": "box",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "tags": [
+    "실외",
+    "캠퍼스",
+    "음수대",
+    "운동장",
+    "학교"
+   ],
+   "words": [
+    "교정 음수대",
+    "음수대",
+    "수돗가",
+    "drinking fountain"
+   ],
+   "rule": "운동장·교사 외벽 앞에 배치. 2칸 막힘.",
+   "waiver": "carbon-remake-w5-exp6-2026-11-28",
+   "pixelSha256": "21e55699e1154fd7e21e43380de3c0ec9bb1afb5d7855cfa0844b5e0713b0643"
+  },
+  {
+   "id": "mc-c-campus-bulletin",
+   "replaces": "mc-in-mc-bulletin-stand",
+   "type": "prop",
+   "name": "동아리·학사 게시판(코르크+포스터)",
+   "en": "standing cork school bulletin board",
+   "kind": "other",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "실외",
+    "캠퍼스",
+    "게시판",
+    "동아리",
+    "학교"
+   ],
+   "words": [
+    "동아리 게시판",
+    "학사 게시판",
+    "게시판",
+    "bulletin board"
+   ],
+   "rule": "복도·현관·광장에 배치. 아랫줄 2칸 막힘, 윗줄 ★.",
+   "waiver": "carbon-remake-w5-exp6-2026-11-28",
+   "pixelSha256": "defc8f7c788acda8386c1338dd38862b3574a75d1709742ee15ca1b8c24d0e1e"
+  },
+  {
+   "id": "mc-c-campus-cafe-table",
+   "replaces": "mc-in-mc-cafe-table",
+   "type": "prop",
+   "name": "학생식당 테이블(식판 2세트+물병)",
+   "en": "cafeteria dining table with lunch trays",
+   "kind": "box",
+   "w": 3,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ],
+    [
+     2,
+     0
+    ]
+   ],
+   "tags": [
+    "실내",
+    "식당",
+    "카페테리아",
+    "테이블",
+    "학교"
+   ],
+   "words": [
+    "학생식당 테이블",
+    "식당 테이블",
+    "급식 테이블",
+    "cafe table"
+   ],
+   "rule": "학생식당 홀에 배치. 3칸 모두 막힘.",
+   "waiver": "carbon-remake-w5-exp6-2026-11-28",
+   "pixelSha256": "ae8b2391ca59ba7f9ae0b0db34181e6b1f9545998216e34960bb48e6c1c899c9"
+  },
+  {
+   "id": "mc-c-campus-carrel",
+   "replaces": "mc-in-mc-carrel",
+   "type": "prop",
+   "name": "도서관 개인 독서대(책장+스탠드+의자)",
+   "en": "library oak study carrel desk",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "도서관",
+    "독서대",
+    "책상",
+    "학교"
+   ],
+   "words": [
+    "개인 독서대",
+    "도서관 독서대",
+    "열람석",
+    "study carrel"
+   ],
+   "rule": "도서관 열람실 벽면·줄지어 배치. 아랫줄 2칸 막힘.",
+   "waiver": "carbon-remake-w5-exp6-2026-11-28",
+   "pixelSha256": "d533d7fbe03c54469f75085cdbaead0899e97f4133492d0549047729212b60aa"
+  },
+  {
+   "id": "mc-c-campus-bench-stone",
+   "replaces": "mc-bench-stone",
+   "type": "prop",
+   "name": "교정 돌벤치(화강암)",
+   "en": "campus granite stone park bench",
+   "kind": "box",
+   "w": 2,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ],
+    [
+     1,
+     0
+    ]
+   ],
+   "tags": [
+    "실외",
+    "캠퍼스",
+    "벤치",
+    "돌벤치",
+    "학교"
+   ],
+   "words": [
+    "돌벤치",
+    "석재 벤치",
+    "stone bench"
+   ],
+   "rule": "캠퍼스 광장·화단 옆에 배치. 2칸 막힘.",
+   "waiver": "carbon-remake-w5-exp6-2026-11-28",
+   "pixelSha256": "a79198ae2358e3fa49ba3e5dd91fd405510906962fd46db1ff96a3eb6d9483a2"
+  },
+  {
+   "id": "mc-c-campus-bust",
+   "replaces": "mc-bust",
+   "type": "prop",
+   "name": "교정 흉상 동상(청동+석조 기단)",
+   "en": "campus bronze founder bust statue",
+   "kind": "column",
+   "w": 1,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실외",
+    "캠퍼스",
+    "동상",
+    "흉상",
+    "학교"
+   ],
+   "words": [
+    "흉상",
+    "동상",
+    "교정 동상",
+    "founder bust"
+   ],
+   "rule": "본관 앞 광장·정원 중앙에 배치. 기단 1칸 막힘, 윗칸 ★.",
+   "waiver": "carbon-remake-w5-exp6-2026-11-28",
+   "pixelSha256": "e804d4ebe2783669d270e85c260a079c30b6e69622efad71eb960fa9fb5c8a2a"
+  },
+  {
+   "id": "mc-c-campus-gate-pillar",
+   "replaces": "mc-gate-pillar",
+   "type": "prop",
+   "name": "교문 기둥(벽돌+교명 현판)",
+   "en": "school brick entrance gate pillar",
+   "kind": "column",
+   "w": 1,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실외",
+    "캠퍼스",
+    "교문",
+    "기둥",
+    "학교"
+   ],
+   "words": [
+    "교문 기둥",
+    "정문 기둥",
+    "gate pillar"
+   ],
+   "rule": "학교 정문 좌우에 배치. 밑칸 막힘, 윗칸 ★.",
+   "waiver": "carbon-remake-w5-exp6-2026-11-28",
+   "pixelSha256": "472c134ab13512ae6f658be25578fb3a9c90352cb876ae552671f0a3f2ff25ae"
+  },
+  {
+   "id": "mc-c-campus-bin-wide",
+   "replaces": "mc-in-mc-bin-wide",
+   "type": "prop",
+   "name": "교내 분리수거함(2구)",
+   "en": "indoor twin compartment recycling bin",
+   "kind": "box",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "tags": [
+    "실내",
+    "캠퍼스",
+    "쓰레기통",
+    "분리수거함",
+    "학교"
+   ],
+   "words": [
+    "분리수거함",
+    "쓰레기통",
+    "recycling bin"
+   ],
+   "rule": "복도·식당 출입구 벽면에 배치. 1칸 막힘.",
+   "waiver": "carbon-remake-w5-exp6-2026-11-28",
+   "pixelSha256": "585a70560924991563408a417db35b5cf0bd34c8755ecc9a48f208519c959da6"
+  },
+  {
+   "id": "mc-c-campus-cafe-stool",
+   "replaces": "mc-in-mc-cafe-stool",
+   "type": "prop",
+   "name": "학생식당 스툴(쿠션+스틸다리)",
+   "en": "cafeteria cushioned round stool",
+   "kind": "other",
+   "w": 1,
+   "h": 1,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     0
+    ]
+   ],
+   "tags": [
+    "실내",
+    "식당",
+    "스툴",
+    "의자",
+    "학교"
+   ],
+   "words": [
+    "식당 스툴",
+    "스툴",
+    "의자",
+    "cafe stool"
+   ],
+   "rule": "학생식당 테이블 앞뒤에 배치. 1칸 막힘.",
+   "waiver": "carbon-remake-w5-exp6-2026-11-28",
+   "pixelSha256": "f985470eb877c20d1c898fea3612055656ca5acba4841e1a13702260694163ff"
+  },
+  {
+   "id": "mc-c-campus-catalog-drawers",
+   "replaces": "mc-in-mc-catalog-drawers",
+   "type": "prop",
+   "name": "도서관 목록 서랍장(8단 카드함)",
+   "en": "library oak card catalog drawers",
+   "kind": "box",
+   "w": 1,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "도서관",
+    "서랍장",
+    "카드함",
+    "학교"
+   ],
+   "words": [
+    "목록 서랍장",
+    "카드함",
+    "도서관 서랍장",
+    "catalog drawers"
+   ],
+   "rule": "도서관 안내 데스크 옆에 배치. 아랫칸 막힘, 윗칸 ★.",
+   "waiver": "carbon-remake-w5-exp6-2026-11-28",
+   "pixelSha256": "e567b3e424b2e220d4c53ee593863b49b0e20a62ff5482e932660e0f9c00a7f0"
   }
  ],
  "waiver": "carbon-remake-w1-3-2026-11-28"
