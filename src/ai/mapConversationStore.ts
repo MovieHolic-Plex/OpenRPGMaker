@@ -1,9 +1,12 @@
 import type { AuditEntry } from "@/ai/assistantSession";
+import { piScopeMapIds } from "@/ai/threadHome";
 
 export interface ConversationMapIndex {
   readonly viewedMapIds: readonly string[];
   readonly targetMapIds: readonly string[];
   readonly mapAttribution: "complete" | "partial" | "unknown";
+  /** 대화의 집 맵(threadHomeMapId). null = 게임 전체. 처음 저장할 때 정하고 뒤 저장에서 바꾸지 않는다. 옛 기록엔 없다. */
+  readonly homeMapId?: string | null;
 }
 
 const isObject = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
@@ -12,6 +15,12 @@ const isIds = (value: unknown): value is string[] => Array.isArray(value) && val
 export function isConversationMapIndex(value: unknown): value is ConversationMapIndex {
   return isObject(value) && isIds(value.viewedMapIds) && isIds(value.targetMapIds)
     && ["complete", "partial", "unknown"].includes(String(value.mapAttribution));
+}
+
+/** 저장된 집 맵. 아직 정하지 않았거나(옛 기록) 모양이 틀리면 undefined. */
+export function storedHomeMapId(index: ConversationMapIndex | undefined): string | null | undefined {
+  const value: unknown = index?.homeMapId;
+  return value === null || (typeof value === "string" && value.trim().length > 0) ? value : undefined;
 }
 
 /** Only structured context and known proposal endpoint fields; never names, prose or arbitrary recursion. */
@@ -48,6 +57,7 @@ export function indexConversationMaps(entries: readonly AuditEntry[], previous?:
         break;
       case "status":
         if (entry.text.startsWith("[conversation-trimmed]")) partial = true;
+        for (const id of piScopeMapIds(entry.text) ?? []) add(targets, id);
         break;
     }
   }

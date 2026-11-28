@@ -25,6 +25,8 @@ import * as db from "@/ai/aiRecordDb";
 import * as conversations from "@/ai/conversationStore";
 import { installElectronBridgeSession, type ElectronBridgeSession } from "./support/electronBridgeSession";
 import "fake-indexeddb/auto";
+import { threadHomeMapId } from "@/ai/threadHome";
+import { indexConversationMaps } from "@/ai/mapConversationStore";
 
 describe("assistantVerificationContinuation", { timeout: 120000 }, () => {
   isolateTimers();
@@ -1589,6 +1591,77 @@ describe("conversationStore", () => {
       expect(restored?.entries[0]).toEqual(input.entries[0]);
       expect(restored?.id).toBe(input.id);
       expect((await conversations.queryConversationArchive({ projectContextKey: "remote:P", mapId: "middle" })).total).toBe(1);
+    });
+    it("threadHomeMapId reads structured context first", () => {
+      expect(threadHomeMapId([{ kind: "user", text: "우물", at: "t", context: { mapId: "map_a", mapName: "광장" } }])).toBe("map_a");
+    });
+    it("threadHomeMapId falls back to the machine footer", () => {
+      expect(threadHomeMapId([{ kind: "user", text: "우물\n\n[컨텍스트] 현재 맵: 광장 (map_a) · 사용자 선택 영역: (1,2) 3×4", at: "t" }])).toBe("map_a");
+    });
+    it("threadHomeMapId falls back to a single-map Pi scope line", () => {
+      expect(threadHomeMapId([{ kind: "user", text: "우물", at: "t" }, { kind: "status", text: "Pi 에이전트 · 범위 map_b · 적용됨 — 바뀐 맵·항목 2개" }])).toBe("map_b");
+    });
+    it("threadHomeMapId is game-wide for multi-map scope, project scope or nothing", () => {
+      expect(threadHomeMapId([{ kind: "user", text: "길", at: "t" }, { kind: "status", text: "Pi 팀 · 범위 map_a, map_b · 끝남 — 바뀐 맵·항목 0개" }])).toBeNull();
+      expect(threadHomeMapId([{ kind: "user", text: "개요", at: "t" }, { kind: "status", text: "Pi 에이전트 · 범위 프로젝트 전체 · 끝남 — 바뀐 맵·항목 0개" }])).toBeNull();
+      expect(threadHomeMapId([{ kind: "user", text: "개요", at: "t" }])).toBeNull();
+    });
+    it("indexConversationMaps adds Pi scope ids to targetMapIds", () => {
+      const index = indexConversationMaps([{ kind: "status", text: "Pi 팀 · 범위 map_a, map_b · 적용됨 — 바뀐 맵·항목 3개" }]);
+      expect(index.targetMapIds).toEqual(["map_a", "map_b"]);
+      expect(indexConversationMaps([{ kind: "status", text: "Pi 에이전트 · 범위 프로젝트 전체 · 끝남 — 바뀐 맵·항목 0개" }]).targetMapIds).toEqual([]);
+    });
+    it("saved home map never changes on later saves", async () => {
+      const first: ConversationRecord = { id: "home", savedAt: 1, projectContextKey: "remote:P", title: "home", model: "test",
+        entries: [{ kind: "user", text: "우물", context: { mapId: "map_a", mapName: "광장" } }] };
+      await saveConversation(first);
+      // A later save whose transcript now starts with another map (e.g. after trimming) keeps the first home.
+      await saveConversation({ ...first, savedAt: 2, entries: [
+        { kind: "user", text: "다리", context: { mapId: "map_z", mapName: "강" } }, ...first.entries,
+      ] });
+      const summary = (await queryConversationArchive({ projectContextKey: "remote:P" })).records.find(row => row.id === "home");
+      expect(summary?.homeMapId).toBe("map_a");
+      expect(summary?.viewedMapIds).toEqual(["map_a", "map_z"]);
+      expect((await loadConversation("home"))?.mapIndex?.homeMapId).toBe("map_a");
+      // Game-wide (null) is a decided value too, not "unknown".
+      const wide: ConversationRecord = { id: "wide", savedAt: 3, projectContextKey: "remote:P", title: "wide", model: "test",
+        entries: [{ kind: "user", text: "개요", context: { mapId: null, mapName: null } }] };
+      await saveConversation(wide);
+      await saveConversation({ ...wide, savedAt: 4, entries: [{ kind: "user", text: "우물", context: { mapId: "map_b", mapName: null } }] });
+      expect((await queryConversationArchive({ projectContextKey: "remote:P" })).records.find(row => row.id === "wide")?.homeMapId).toBeNull();
+    });
+    it("legacy summaries without homeMapId are rebuilt once and always carry it", async () => {
+      await saveConversation({ id: "old", savedAt: 1, projectContextKey: "remote:P", title: "old", model: "test",
+        entries: [{ kind: "user", text: "우물", context: { mapId: "map_a", mapName: null } }] });
+      // Simulate a pre-homeMapId archive: summary row without the field and an unversioned ready marker.
+      await new Promise<void>((resolve, reject) => {
+        const request = indexedDB.open(AI_RECORD_DB_NAME);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+          const database = request.result;
+          const tx = database.transaction(["conversationSummaries", "conversationSummaryMeta", "conversations"], "readwrite");
+          const summaries = tx.objectStore("conversationSummaries");
+          const read = summaries.get("old");
+          read.onsuccess = () => {
+            const row = read.result as { summary: Record<string, unknown> };
+            delete row.summary.homeMapId;
+            summaries.put(row);
+          };
+          const records = tx.objectStore("conversations");
+          const stored = records.get("old");
+          stored.onsuccess = () => {
+            const value = stored.result as { mapIndex: Record<string, unknown> };
+            delete value.mapIndex.homeMapId;
+            records.put(value);
+          };
+          tx.objectStore("conversationSummaryMeta").put({ id: "ready" });
+          tx.oncomplete = () => { database.close(); resolve(); };
+          tx.onerror = () => reject(tx.error);
+        };
+      });
+      resetAiRecordDbForTest();
+      const rows = (await queryConversationArchive({ projectContextKey: "remote:P" })).records;
+      expect(rows.find(row => row.id === "old")?.homeMapId).toBe("map_a");
     });
     it("Given same-millisecond live updates When the transcript grows Then the final update is retained", async () => {
       const input = record("equal");

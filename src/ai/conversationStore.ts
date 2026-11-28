@@ -14,7 +14,8 @@ import {
   conversationSummaryMapIds,
 } from "@/ai/aiRecordDb";
 import { isConversationTurnContext } from "@/ai/conversationTurnContext";
-import { conversationTranscriptCompacted, indexConversationMaps, isConversationMapIndex, type ConversationMapIndex } from "@/ai/mapConversationStore";
+import { conversationTranscriptCompacted, indexConversationMaps, isConversationMapIndex, storedHomeMapId, type ConversationMapIndex } from "@/ai/mapConversationStore";
+import { threadHomeMapId } from "@/ai/threadHome";
 import { enqueueRemoteWrite, registerRemoteOutboxSender } from "@/project/remoteOutbox";
 import type { ProjectIdentity } from "@/project/store";
 import { projectRepository } from "@/project/persistence/repository";
@@ -213,7 +214,10 @@ function fitEntriesToBudget(entries: readonly AuditEntry[]): AuditEntry[] {
 
 function compactRecord(record: ConversationRecord): ConversationRecord & { mapIndex: ConversationMapIndex } {
   const previous = isConversationMapIndex(record.mapIndex) ? record.mapIndex : undefined;
-  return { ...record, mapIndex: indexConversationMaps(record.entries, previous), entries: fitEntriesToBudget(record.entries) };
+  // 집 맵은 접기 전 원문으로 한 번 정한다. 앞 기록이 이미 정했으면 그대로 둔다.
+  const kept = storedHomeMapId(previous);
+  const homeMapId = kept !== undefined ? kept : threadHomeMapId(record.entries);
+  return { ...record, mapIndex: { ...indexConversationMaps(record.entries, previous), homeMapId }, entries: fitEntriesToBudget(record.entries) };
 }
 
 // ── 레거시 이관 ──────────────────────────────────────────────────────────────────
@@ -282,11 +286,14 @@ async function persistLocalConversation(record: ConversationRecord & { mapIndex:
     },
   }, current => {
     const prior = current && isConversationMapIndex(current.mapIndex) ? current.mapIndex : undefined;
+    // 이미 저장된 집 맵이 이긴다 — 뒤 저장의 entries 가 접혀 첫 발화가 바뀌어도 스레드는 제자리에 있다.
+    const priorHome = storedHomeMapId(prior);
+    const homeMapId = priorHome !== undefined ? priorHome : storedHomeMapId(record.mapIndex) ?? null;
     const viewedMapIds = [...new Set([...record.mapIndex.viewedMapIds, ...(prior?.viewedMapIds ?? [])])].sort();
     const targetMapIds = [...new Set([...record.mapIndex.targetMapIds, ...(prior?.targetMapIds ?? [])])].sort();
     const mapAttribution = viewedMapIds.length + targetMapIds.length === 0 ? "unknown"
       : record.mapIndex.mapAttribution === "complete" && (!prior || prior.mapAttribution === "complete") ? "complete" : "partial";
-    return { ...record, mapIndex: { viewedMapIds, targetMapIds, mapAttribution } };
+    return { ...record, mapIndex: { viewedMapIds, targetMapIds, mapAttribution, homeMapId } };
   });
 }
 
@@ -484,6 +491,8 @@ export async function clearConversations(): Promise<void> {
 }
 
 export interface ConversationArchiveSummary extends ConversationSummary, ConversationMapIndex {
+  /** 항상 채운다 — 옛 기록은 남은 entries 로 계산한다. null = 게임 전체. */
+  readonly homeMapId: string | null;
   readonly mapIds: readonly string[];
   readonly transcriptCompacted: boolean;
 }
@@ -603,6 +612,8 @@ export function deriveTitle(entries: readonly AuditEntry[]): string {
 registerConversationSummaryProjector(value => {
   if (!isConversationRecord(value)) return null;
   const index = isConversationMapIndex(value.mapIndex) ? value.mapIndex : indexConversationMaps(value.entries);
-  return { ...toSummary(value), ...(value.projectContextKey === undefined ? {} : { projectContextKey: value.projectContextKey }), ...index, mapIds: [...new Set([...index.viewedMapIds, ...index.targetMapIds])].sort(),
+  const stored = storedHomeMapId(index);
+  const homeMapId = stored !== undefined ? stored : threadHomeMapId(value.entries);
+  return { ...toSummary(value), ...(value.projectContextKey === undefined ? {} : { projectContextKey: value.projectContextKey }), ...index, homeMapId, mapIds: [...new Set([...index.viewedMapIds, ...index.targetMapIds])].sort(),
     transcriptCompacted: conversationTranscriptCompacted(value.entries) };
 });
