@@ -4,6 +4,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { serialize, deserialize } from "@/project/io";
 import { createBlankProject } from "@/project/defaults";
+// 새 프로젝트에는 합본 마을이 없다(#5185) — 이식 대상인 합본 마을을 옛 저장본처럼 갖춘다.
+import { withRetiredEasyRpgTilesets } from "./support/retiredEasyRpgTilesets";
 import { normalizeSystemRecords } from "@/project/databaseRecordModel";
 import { COMBINED_TOWN_TILESET_ID } from "@/project/defaults/constants";
 import { store } from "@/project/store";
@@ -18,7 +20,8 @@ import {
 } from "@/assets/tileGrafts";
 import type { Project, TilesetDef } from "@/project/types";
 
-const RETRO_HOUSE = "tex_easyrpg_chipset_retro_house";
+// 이식 원본 칩셋. 옛 레트로 하우스(tex_easyrpg_chipset_retro_house)는 번들에서 빠졌다(#5185) — 지금 번들에 있는 버들항 시트를 쓴다.
+const RETRO_HOUSE = "tex_beodeul_city";
 
 function tileset(): TilesetDef {
   const found = store.getCurrent().tilesets[COMBINED_TOWN_TILESET_ID];
@@ -27,7 +30,7 @@ function tileset(): TilesetDef {
 }
 
 beforeEach(() => {
-  const project = createBlankProject();
+  const project = withRetiredEasyRpgTilesets(createBlankProject());
   // Canonicalize the unrelated text-only titleGraphic before graft round trips.
   project.system = normalizeSystemRecords(project.system);
   store.replace(project);
