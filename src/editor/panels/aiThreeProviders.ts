@@ -203,12 +203,13 @@ function resolveFamilyState(family: CoreProviderFamily): ResolvedFamilyState {
   }
 
   const connected = Boolean(routeProviderId);
-  const checking = health.state === "checking" || (!connected && connStatus.kind === "checking" && connStatus.providerId === meta.oauthId);
-  const usage = health.usage ?? oauthRoute?.usage ?? null;
+  const healthMeta = healthRouteDisabled ? undefined : health;
+  const checking = healthMeta?.state === "checking" || (!connected && oauthAllowed && connStatus.kind === "checking" && connStatus.providerId === meta.oauthId);
+  const usage = healthMeta?.usage ?? oauthRoute?.usage ?? null;
   const remaining = lowestRemaining(usage);
   const quotaPct = remaining !== null ? Math.round(remaining * 100) : undefined;
-  const accountEmail = health.accountEmail ?? (connStatus.providerId === meta.oauthId ? connStatus.account?.accountEmail : undefined);
-  const planType = health.planType ?? (connStatus.providerId === meta.oauthId ? connStatus.account?.planType : undefined);
+  const accountEmail = healthMeta?.accountEmail ?? (oauthAllowed && connStatus.providerId === meta.oauthId ? connStatus.account?.accountEmail : undefined);
+  const planType = healthMeta?.planType ?? (oauthAllowed && connStatus.providerId === meta.oauthId ? connStatus.account?.planType : undefined);
 
   return {
     connected,
@@ -218,11 +219,11 @@ function resolveFamilyState(family: CoreProviderFamily): ResolvedFamilyState {
     via,
     canDisconnectOAuth: via === "oauth" && routeProviderId === meta.oauthId,
     quotaPct,
-    verifiedLive: health.verifiedLive === true,
-    latencyMs: health.latencyMs,
+    verifiedLive: healthMeta?.verifiedLive === true,
+    latencyMs: healthMeta?.latencyMs,
     accountEmail,
     planType,
-    errorMessage: health.state === "error" ? health.message : undefined,
+    errorMessage: healthMeta?.state === "error" ? healthMeta.message : undefined,
     health,
   };
 }

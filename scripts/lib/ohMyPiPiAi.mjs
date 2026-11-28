@@ -97,6 +97,7 @@ export function markOhMyPiWorkerStale() {
 function startWorker() {
   if (workerStale) stopOhMyPiWorker();
   if (workerPortPromise) return workerPortPromise;
+  let syncFailed = false;
   let promise;
   promise = new Promise((resolve, reject) => {
     // 스크립트 경로는 bun 으로 스크립트를 띄울 때만 계산한다. CJS 번들(Electron 메인)에서는 import.meta.url 이
@@ -150,7 +151,7 @@ function startWorker() {
             : spawn(packedBin, [], { stdio: ["ignore", "pipe", "pipe"], env: { ...process.env } }))
           : spawnSourceWorker();
     } catch (error) {
-      if (workerPortPromise === promise) workerPortPromise = null;
+      syncFailed = true;
       reject(error);
       return;
     }
@@ -210,7 +211,12 @@ function startWorker() {
     const startTimeout = setTimeout(() => fail(new Error("oh-my-pi worker start timed out")), startMs);
     startTimeout.unref?.();
   });
-  workerPortPromise = promise;
+  if (!syncFailed) {
+    workerPortPromise = promise;
+    promise.catch(() => {
+      if (workerPortPromise === promise) workerPortPromise = null;
+    });
+  }
   return promise;
 }
 

@@ -2349,6 +2349,10 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
             softPref.served += 1;
             if (softPref.served > 2) softPref = undefined;
           }
+        } else if (softPref.reminded) {
+          // tool_choice 강제 뒤에도 텍스트만 반환하면 잘못된 도구 호출과 같은 예산(최대 2회)을 차감한다.
+          softPref.served += 1;
+          if (softPref.served > 2) softPref = undefined;
         }
       }
       referenceGate.complete(message.stopReason !== "error" && message.stopReason !== "aborted" && !message.errorMessage && !options.signal?.aborted);
@@ -2443,7 +2447,16 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
         continue;
       }
       providerRetries += 1;
-      await new Promise((resolve) => setTimeout(resolve, PROVIDER_RETRY_DELAY_MS * providerRetries));
+      await new Promise<void>((resolve) => {
+        if (options.signal?.aborted) { resolve(); return; }
+        const onRetryAbort = () => { clearTimeout(retryTimer); resolve(); };
+        const retryTimer = setTimeout(() => {
+          options.signal?.removeEventListener("abort", onRetryAbort);
+          resolve();
+        }, PROVIDER_RETRY_DELAY_MS * providerRetries);
+        options.signal?.addEventListener("abort", onRetryAbort, { once: true });
+      });
+      if (fatal || rejected || options.signal?.aborted) break;
       syncAgentTools();
       await agent.prompt(providerStreamResumePrompt(providerRetries, PI_PROVIDER_STREAM_RETRY_LIMIT));
     }

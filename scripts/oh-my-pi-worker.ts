@@ -37,24 +37,86 @@ function sendJson(res: ServerResponse, data: unknown, status = 200): void {
     return;
   }
   const payload = JSON.stringify(data);
-  res.writeHead(status, { "Content-Type": "application/json; charset=utf-8" });
+  const headers: Record<string, string> = { "Content-Type": "application/json; charset=utf-8" };
+  if (status === 413) headers.Connection = "close";
+  res.writeHead(status, headers);
   res.end(payload);
 }
 
-async function readJsonBody(req: IncomingMessage): Promise<Record<string, unknown>> {
-  const chunks: Buffer[] = [];
-  let total = 0;
-  for await (const chunk of req) {
-    const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
-    total += buf.length;
-    if (total > MAX_BODY_BYTES) {
-      throw Object.assign(new Error("요청 본문이 최대 크기(256MiB)를 넘었습니다."), { status: 413 });
-    }
-    chunks.push(buf);
+function readJsonBody(req: IncomingMessage): Promise<Record<string, unknown>> {
+  const declared = Number(req.headers["content-length"]);
+  if (Number.isFinite(declared) && declared > MAX_BODY_BYTES) {
+    req.pause();
+    return Promise.reject(Object.assign(new Error("요청 본문이 최대 크기(256MiB)를 넘었습니다."), { status: 413 }));
   }
-  const text = Buffer.concat(chunks).toString("utf8").trim();
-  if (!text) return {};
-  return JSON.parse(text) as Record<string, unknown>;
+  return new Promise((resolve, reject) => {
+    const chunks: Buffer[] = [];
+    let total = 0;
+    let settled = false;
+    const cleanup = () => {
+      req.off("data", onData);
+      req.off("end", onEnd);
+      req.off("error", onError);
+      req.off("aborted", onAborted);
+    };
+    const onData = (chunk: Buffer | string) => {
+      if (settled) return;
+      const buf = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+      total += buf.length;
+      if (total > MAX_BODY_BYTES) {
+        settled = true;
+        cleanup();
+        // 소켓을 즉시 파괴하지 않고 읽기만 멈춰 413 JSON 응답이 클라이언트에 정상 전달되도록 한다.
+        req.pause();
+        reject(Object.assign(new Error("요청 본문이 최대 크기(256MiB)를 넘었습니다."), { status: 413 }));
+        return;
+      }
+      chunks.push(buf);
+    };
+    const onEnd = () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      try {
+        const text = Buffer.concat(chunks).toString("utf8").trim();
+        resolve(text ? JSON.parse(text) as Record<string, unknown> : {});
+      } catch (error) {
+        reject(error);
+      }
+    };
+    const onError = (error: Error) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(error);
+    };
+    const onAborted = () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(new Error("request aborted"));
+    };
+    req.on("data", onData);
+    req.on("end", onEnd);
+    req.on("error", onError);
+    req.on("aborted", onAborted);
+  });
+}
+
+function waitForResponseDrain(res: ServerResponse): Promise<boolean> {
+  if (res.writableEnded || res.destroyed) return Promise.resolve(false);
+  return new Promise((resolve) => {
+    const cleanup = () => {
+      res.off("drain", onDrain);
+      res.off("close", onClosed);
+      res.off("error", onClosed);
+    };
+    const onDrain = () => { cleanup(); resolve(true); };
+    const onClosed = () => { cleanup(); resolve(false); };
+    res.once("drain", onDrain);
+    res.once("close", onClosed);
+    res.once("error", onClosed);
+  });
 }
 
 /**
@@ -200,7 +262,9 @@ const server = createServer(async (req, res) => {
         onCheckpoint: (checkpoint, signal) => requestPiCheckpoint(checkpoint, onEvent, signal ?? abortController.signal),
         ...(agentRequest.readOnly ? { readOnlyTools: true } : {}),
         ...(agentRequest.timeoutMs ? { timeoutMs: agentRequest.timeoutMs } : {}),
-      }).finally(held.release));
+      }).finally(held.release), {
+        onBackpressureOverflow: () => abortController.abort(new Error("client stream backpressure overflow")),
+      });
 
       res.writeHead(200, {
         "Content-Type": "application/x-ndjson; charset=utf-8",
@@ -208,14 +272,22 @@ const server = createServer(async (req, res) => {
         "X-Oprn-Heavy-Refs": "1",
       });
       const reader = stream.getReader();
+      let finished = false;
       try {
         while (true) {
           const { done, value } = await reader.read();
-          if (done) break;
+          if (done) { finished = true; break; }
           if (res.writableEnded || res.destroyed) break;
-          if (value && value.byteLength > 0) res.write(value);
+          if (value && value.byteLength > 0 && !res.write(value)) {
+            if (!(await waitForResponseDrain(res))) break;
+          }
         }
+      } catch (error) {
+        if (!res.writableEnded && !res.destroyed) throw error;
       } finally {
+        if (!finished) {
+          await reader.cancel("client disconnected").catch(() => {});
+        }
         reader.releaseLock();
         if (!res.writableEnded) res.end();
       }

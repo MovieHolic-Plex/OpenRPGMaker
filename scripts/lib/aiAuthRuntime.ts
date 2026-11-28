@@ -218,7 +218,11 @@ function shouldReplaceImportedCredentials(provider: string, current: PortedOAuth
   return external.expires > current.expires;
 }
 
-/** OMP(Bun SQLite) 자격 프로브는 @oh-my-pi 제거와 함께 비활성화한다. */
+/**
+ * OMP(Bun SQLite) 자격 프로브는 @oh-my-pi 제거와 함께 영구 폐기한다.
+ * OPRN Studio 자체 저장소(auth.json)와 Codex CLI(`~/.codex/auth.json`)는 그대로 유지되며,
+ * 과거 외부 OMP CLI 에만 로그인돼 있던 계정은 에디터에서 한 번 다시 연결해야 한다.
+ */
 function adoptOmpCliCredentials(_provider: string): boolean {
   return false;
 }
