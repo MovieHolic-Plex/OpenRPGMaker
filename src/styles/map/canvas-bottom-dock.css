@@ -66,211 +66,7 @@
   color: var(--on-accent);
 }
 
-.cbd-sep {
-  width: 1px;
-  height: 16px;
-  background: var(--border-subtle);
-  margin: 0 2px;
-  flex: none;
-}
-
-/* ── Structured Floating Compact Card (지형 붓 / 1칸 보정) ── */
-.cbd-card {
-  pointer-events: auto;
-  width: 320px;
-  max-width: calc(100vw - 32px);
-  display: flex;
-  flex-direction: column;
-  border-radius: var(--radius-m);
-  background: color-mix(in srgb, var(--bg-overlay) 96%, transparent);
-  backdrop-filter: blur(18px) saturate(1.06);
-  border: 1px solid var(--border-default);
-  box-shadow: var(--shadow-pop);
-  color: var(--text-1);
-  overflow: hidden;
-}
-
-.cbd-card[hidden] {
-  display: none;
-}
-
-.cbd-card-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 7px 10px;
-  background: var(--bg-surface);
-  border-bottom: 1px solid var(--border-subtle);
-}
-
-.cbd-card-title {
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.cbd-card-body {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 9px 10px;
-}
-
-.cbd-land-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 5px;
-}
-
-.cbd-land-tile {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  height: 32px;
-  padding: 0 9px;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-s);
-  background: var(--bg-inset);
-  color: var(--text-1);
-  font: 600 11.5px/1 var(--font-ui);
-  cursor: pointer;
-}
-
-.cbd-land-tile:hover {
-  background: var(--bg-hover);
-}
-
-.cbd-land-tile.is-active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--on-accent);
-}
-
-.cbd-land-swatch {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
-  border: 1px solid var(--border-default);
-  flex: none;
-}
-
-.cbd-land-label {
-  flex: 1 1 auto;
-  text-align: left;
-}
-
-.cbd-land-key {
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  opacity: 0.72;
-}
-
-.cbd-card-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.cbd-size-group,
-.cbd-action-group {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.cbd-row-label {
-  font-size: 10.5px;
-  font-weight: 600;
-  color: var(--text-3);
-  margin-right: 2px;
-}
-
-.cbd-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  height: 26px;
-  padding: 0 9px;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-s);
-  background: var(--bg-inset);
-  color: var(--text-1);
-  font: 600 11px/1 var(--font-ui);
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.cbd-chip:hover {
-  background: var(--bg-hover);
-}
-
-.cbd-chip.is-active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--on-accent);
-}
-
-.cbd-size-btn {
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-s);
-  background: var(--bg-inset);
-  color: var(--text-2);
-  font: 600 11px/1 var(--font-mono);
-  cursor: pointer;
-}
-
-.cbd-size-btn.is-active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--on-accent);
-}
-
-.cbd-card-foot {
-  padding: 6px 10px;
-  background: var(--bg-surface);
-  border-top: 1px solid var(--border-subtle);
-  font-size: 10.5px;
-  color: var(--text-3);
-}
-
-.cbd-recent-block {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.cbd-recent-strip {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-
-.cbd-tile-swatch {
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border: 1px solid var(--border-default);
-  border-radius: 5px;
-  image-rendering: pixelated;
-  cursor: pointer;
-  flex: none;
-}
-
-.cbd-tile-swatch.is-active {
-  outline: 2px solid var(--accent);
-  outline-offset: 1px;
-}
-
-.cbd-more {
-  font-size: 11px;
-  color: var(--text-3);
-}
-
-/* ── SCMDraft 2 Draggable Floating Windows (두댓 팔레트 & 위로 긴 유닛 팔레트) ── */
+/* ── SCMDraft 2 Draggable Floating Windows (오브젝트 팔레트 & NPC·이벤트 창) ── */
 .floating-doodad-window {
   position: absolute;
   left: 12px;
@@ -818,9 +614,6 @@
 }
 
 .cbd-btn:focus-visible,
-.cbd-chip:focus-visible,
-.cbd-land-tile:focus-visible,
-.cbd-size-btn:focus-visible,
 .fdw-head-btn:focus-visible,
 .fdw-tab:focus-visible,
 .fdw-cell:focus-visible,
@@ -834,12 +627,8 @@
   outline-offset: 1px;
 }
 
-/* ── Phase 5-1: 상단 중복 크롬 정리 (하단 독 · 우하단 플로팅 조수로 단일화) ── */
-.studio-bar .studio-layer-segment[data-testid="studio-layer-segment"],
-.studio-layer-segment[data-testid="studio-layer-segment"],
-.canvas-toolbar.canvas-tool-pill > .small-task,
-.canvas-toolbar.canvas-tool-pill > [data-testid="tool-paint"],
-.canvas-toolbar.canvas-tool-pill > [data-testid="tool-erase"] {
+/* ── Phase 5-1: 우하단 플로팅 조수로 단일화(툴 필의 조수 캡슐만 숨김 · 칠하기/지우기 및 상단 레이어 바 유지) ── */
+.canvas-toolbar.canvas-tool-pill > .small-task {
   display: none;
 }
 
