@@ -1,5 +1,14 @@
 > 저장소 전환 안내(2026-09-21): 아래 옛 원격 DB·설정·명령은 과거 기록이다. 현재 저장·이관 지침은 [프로젝트 저장 전환](storage-retirement.md)과 AGENTS를 따른다.
 
+## 자료집 좌측 단일 통합 레일 (2026-11-28, 2단 그룹 띠·오버레이 폐지)
+
+- **원인 실측:** 기존 2단 구조(64px `.db-group-strip` + 196px `position: absolute` 오버레이 `.db-tabs`)는 (1) 서랍이 열릴 때 본문 레코드 목록을 43~100% 가렸고(`시스템`은 3단 세로 메뉴 충돌), (2) 닫힌 초기 상태에서 검색·개요·최근 탭과 펼침 단서가 모두 사라졌으며, (3) `setRailOpen`이 넣은 인라인 `style="left: 64px"`가 닫기·리사이즈·도크 전환 후에도 남아 768px·도크·390px에서 레일이 본문 위로 64px 밀려 충돌했다.
+- **변경(`database.ts`·`sidebar.css`):**
+  - `.db-group-strip`(64px 띠)과 넓은 창의 오버레이 접기(`position: absolute` + `header.style.left`)를 제거하고, **단일 196px 좌측 통합 레일(`.db-tabs`)**에 검색·개요·모든 활성 구획 탭을 상시 노출한다(본문 가림 0px).
+  - 넓은 창(800px 이상)에서는 레일 상단 고정 버튼(`db-rail-collapse-toggle`, `oprn:database.railCollapsed`)으로 **196px ↔ 52px 아이콘 레일**을 수동 토글할 수 있으며, 접힌 상태에서 검색 입력에 포커스하면 자동으로 펼쳐진다.
+  - 빈 탭 묶음(`.db-tab-fold`)은 1줄 버튼(`빈 탭 펼치기 (+N)`)으로 압축하고(DOM 계약 `.db-tab-fold-count`/`.db-tab-fold-tab` 유지), 닫힌 `생활` 구획 머리는 `LIFE_SIM_ENABLED === false`일 때 숨긴다.
+  - 599px 이하 휴대 폭은 전용 상단 바(`db-phone-bar`: `파티 › 주인공 ▾` + 빠른 검색 `db-phone-search-btn`)와 본문을 밀지 않는 **2열 바텀 시트**(`.db-tabs` 오버레이 + `db-rail-scrim` 스크림 + `db-sheet-head`)로 분리해, 그룹 머리·개수 배지·빈 탭 펼치기 문구를 모두 보존한다.
+
 ## 이야기 › 대사 탭 「대본」 보기 — 이야기 순서 시나리오 (2026-10-25)
 
 「대사」 탭은 보기가 둘이다. 위 단추 `db-dialogue-mode-script`(기본) / `db-dialogue-mode-list`(아래 절의 표 — 창 넘침을 한꺼번에 고칠 때).
