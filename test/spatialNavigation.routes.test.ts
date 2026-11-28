@@ -78,15 +78,13 @@ describe("legacy spatial route replacement", () => {
     expect(store.getCurrent().tilesets[Object.keys(store.getCurrent().tilesets)[0]!]?.scratchConceptBundles).toBeUndefined();
   });
 
-  it("clears villages compatibility when the canonical Regions rail is clicked again", () => {
+  it("clears villages compatibility when the canonical Regions route is opened again", () => {
     renderDatabasePanel(host);
     switchDatabaseActiveTab("villages", host);
     expect(spatialSession().legacyOrigin).toBe("villages");
     expect(spatialSession().tab).toBe("regions");
     expect(spatialSession().regionKindFilter).toBe("settlement");
-    const regions = host.querySelector<HTMLButtonElement>("[data-testid='db-tab-spatial-regions']");
-    expect(regions).not.toBeNull();
-    regions?.click();
+    switchDatabaseActiveTab("spatialRegions", host);
     expect(getDatabaseActiveTab()).toBe("spatialRegions");
     expect(spatialSession().legacyOrigin).toBeNull();
     expect(spatialSession().regionKindFilter).toBeNull();

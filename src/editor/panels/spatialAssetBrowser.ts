@@ -14,12 +14,26 @@ type BrowserState = {
   tilesetId: string | null;
   page: number;
   selection?: string;
+  preserveFilter?: boolean;
   railScrollTop: number;
   resultsScrollTop: number;
 };
 const states = new Map<string, BrowserState>();
 let browserScrollEpoch = 0;
 const PAGE_SIZE = 48;
+
+/** 테마 팩 상세에서 「전체 N개 검색」으로 넘어올 때 타일셋·검색어를 미리 채운다. */
+export function setSpatialAssetBrowserTileset(tilesetId: string | null, query = ""): void {
+  const key = `${spatialProjectKey()}:objects`;
+  states.set(key, {
+    query,
+    tilesetId,
+    page: 0,
+    preserveFilter: true,
+    railScrollTop: 0,
+    resultsScrollTop: 0,
+  });
+}
 
 const sortedMemo = new WeakMap<readonly SpatialGalleryCard[], readonly SpatialGalleryCard[]>();
 
@@ -78,7 +92,10 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
   const project = visibleAuthoringProject();
   const cards = ownFirst(listSpatialGalleryCards(session));
   const railCounts = countsByTileset(cards);
-  if (selected && state.selection !== selected.id) {
+  if (state.preserveFilter) {
+    state.preserveFilter = false;
+    state.selection = selected?.id;
+  } else if (selected && state.selection !== selected.id) {
     state.selection = selected.id;
     if (!filterSpatialBrowserCards(cards, state.query, state.tilesetId).some(card => card.id === selected.id)) {
       state.query = ""; state.tilesetId = null;

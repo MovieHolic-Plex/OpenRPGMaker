@@ -98,6 +98,7 @@
 @import "./desktop-record-shell/17-database-footer-final.css" layer(database);
 @import "./desktop-record-shell/18-party-simplify.css" layer(database);
 @import "./spatial-shell.css" layer(database);
+@import "./spatial-themes.css" layer(database);
 @import "./spatial-spaces.css" layer(database);
 @import "./spatial-places.css" layer(database);
 @import "./spatial-geography.css" layer(database);
