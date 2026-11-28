@@ -470,10 +470,11 @@ function renderCommandIssueBadge(path: readonly number[], issues: readonly Event
     : matches.some((issue) => issue.severity === "warning")
       ? "warning"
       : "info";
+  const summaryText = matches.map((issue) => issue.message).join("\n");
   return el("span", {
     class: `event-command-issue-badge ${severity}`,
     children: [renderEditorIcon(severity === "info" ? "info" : "warning"), el("span", { text: String(matches.length) })],
-    attrs: { title: matches.map((issue) => issue.message).join("\n"), "aria-label": `검사 문제 ${matches.length}개` },
+    attrs: { title: summaryText, "aria-label": `검사 문제 ${matches.length}개` },
     dataset: { testid: `event-command-issue-badge-${path.join("-")}`, severity },
   });
 }

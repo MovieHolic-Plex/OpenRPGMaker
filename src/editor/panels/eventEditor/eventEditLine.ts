@@ -43,6 +43,7 @@ const states = new Map<string, LineState>();
 let statesProject = "";
 let liveInput: HTMLInputElement | null = null;
 let liveSetStatus: ((text: string, kind: LineState["status"]["kind"]) => void) | null = null;
+let liveRun: (() => Promise<void>) | null = null;
 const undoListeners = new Set<(eventKey: string, count: number) => void>();
 
 function keyOf(mapId: MapId, eventId: string): string {
@@ -84,6 +85,20 @@ export function focusEventEditLine(): boolean {
   return true;
 }
 
+/**
+ * 경고 팝오버의 「조수에게 고쳐달라 하기」 등 내부 입구가 현재 이벤트의 한 줄 고치기에
+ * 구체적인 수리 요청을 채우고 즉시 실행한다.
+ */
+export function submitEventEditLine(text: string): boolean {
+  const trimmed = text.trim();
+  if (!trimmed || !liveInput?.isConnected || liveInput.disabled || !liveRun || getAiAssistantStatus().turnBusy) return false;
+  liveInput.value = trimmed;
+  liveInput.dispatchEvent(new Event("input", { bubbles: true }));
+  liveInput.focus();
+  void liveRun();
+  return true;
+}
+
 /** 막히는 신호 하나. 보기 제안이 나오면(쉬움·보통, 14일 안 처음) 열린 편집기의 요약줄 자리에 한 줄 띄운다. */
 export function noteViewLevelSignal(signal: ViewLevelSignal): boolean {
   if (!liveInput?.isConnected || !liveSetStatus) return false;
@@ -98,6 +113,7 @@ export function resetEventEditLineForTest(): void {
   statesProject = "";
   liveInput = null;
   liveSetStatus = null;
+  liveRun = null;
   undoListeners.clear();
 }
 
@@ -433,6 +449,7 @@ export function renderEventEditLine(options: EventEditLineOptions): HTMLElement 
 
   liveInput = input;
   liveSetStatus = setStatus;
+  liveRun = run;
   return el("div", {
     class: "event-edit-line",
     dataset: { testid: "event-edit-line" },

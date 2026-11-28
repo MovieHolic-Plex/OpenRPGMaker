@@ -3,6 +3,7 @@ import "@/styles/event/index.css";
 import { preloadRuntimeStyles } from "@/app/runtimeStyles";
 import { warmEditorPickerAssets } from "@/assets/editorAssetWarmup";
 import { editorState, editorStateNeedsEventEditorRefresh } from "@/editor/editorState";
+import { resolveRegionClientRect } from "@/editor/regionClientRect";
 import { selectEditorMap } from "@/editor/mapSelection";
 import { requestEditorEventDeletion } from "@/editor/eventDeletion";
 import { eventDisplayName } from "@/editor/eventMarkerUx";
@@ -344,9 +345,144 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   }
   const resizeHandle = renderModalResizeHandle();
   attachWindowResize(resizeHandle, windowEl);
+  const bubbleTail = el("div", { class: "event-editor-bubble-tail", attrs: { "aria-hidden": "true" } });
   const footer = renderModalFooter(request, closeHandler, requestClose);
-  windowEl.append(header, body, footer, resizeHandle);
+  windowEl.append(header, body, footer, resizeHandle, bubbleTail);
   backdrop.append(windowEl);
+
+  // 쉬움·보통 보기는 맵이 보이는 초콤팩트 말풍선으로 열리고, [↗ 크게]를 누르면 미리보기 포함 2칼럼으로 넓어진다.
+  let sceneExpanded = false;
+  let bubbleDragged = false;
+  header.addEventListener("pointerdown", (event) => {
+    if ((event.target as HTMLElement | null)?.closest("button, input, select, details, summary, a")) return;
+    if (windowEl.classList.contains("is-bubble")) {
+      bubbleDragged = true;
+      windowEl.classList.add("is-bubble-detached");
+    }
+  });
+  const resetWindowInlineGeometry = (): void => {
+    windowEl.style.left = "";
+    windowEl.style.top = "";
+    windowEl.style.width = "";
+    windowEl.style.height = "";
+    windowEl.style.position = "";
+    windowEl.style.margin = "";
+    windowEl.style.removeProperty("--event-bubble-tail-top");
+    delete windowEl.dataset.tailSide;
+  };
+  const positionBubbleNearCanvas = (): void => {
+    if (bubbleDragged || typeof window === "undefined") return;
+    if (!windowEl.classList.contains("is-bubble")) return;
+    const canvas = document.querySelector<HTMLElement>('[data-testid="edit-canvas"]');
+    const measuredRect = windowEl.getBoundingClientRect();
+    const bubbleW = Math.min(440, window.innerWidth - 24);
+    const maxBubbleH = Math.min(560, window.innerHeight - 88);
+    const bubbleH = measuredRect.height > 120 ? Math.min(Math.round(measuredRect.height), maxBubbleH) : Math.min(360, maxBubbleH);
+    const ev = store.getCurrent().maps[request.mapId]?.events.find((entry) => entry.id === request.eventId);
+    const canvasRect = canvas ? canvas.getBoundingClientRect() : null;
+    const tileRect = ev ? resolveRegionClientRect({ x: ev.x, y: ev.y, width: 1, height: 1 }) : null;
+    const tileVisible = Boolean(
+      tileRect
+      && canvasRect
+      && canvasRect.width >= 120
+      && canvasRect.height >= 120
+      && tileRect.x + tileRect.width > canvasRect.left
+      && tileRect.x < canvasRect.right
+      && tileRect.y + tileRect.height > canvasRect.top
+      && tileRect.y < canvasRect.bottom,
+    );
+    if (tileVisible && tileRect && canvasRect) {
+      const tileCenterY = tileRect.y + tileRect.height / 2;
+      const gap = 16;
+      const rightSpaceLeft = Math.round(tileRect.x + tileRect.width + gap);
+      const leftSpaceLeft = Math.round(tileRect.x - gap - bubbleW);
+      const rightLimit = Math.min(canvasRect.right - 8, window.innerWidth - 12);
+      const leftLimit = Math.max(canvasRect.left + 8, 12);
+      let left: number;
+      let tailSide: "left" | "right" | null = null;
+      if (rightSpaceLeft + bubbleW <= rightLimit) {
+        left = rightSpaceLeft;
+        tailSide = "left";
+      } else if (leftSpaceLeft >= leftLimit) {
+        left = leftSpaceLeft;
+        tailSide = "right";
+      } else if (rightSpaceLeft + bubbleW <= window.innerWidth - 12) {
+        left = rightSpaceLeft;
+        tailSide = "left";
+      } else if (leftSpaceLeft >= 12) {
+        left = leftSpaceLeft;
+        tailSide = "right";
+      } else {
+        left = Math.max(12, Math.min(rightSpaceLeft, window.innerWidth - bubbleW - 12));
+        tailSide = null;
+      }
+      const desiredTop = Math.round(tileCenterY - Math.min(bubbleH, 400) * 0.42);
+      const top = Math.max(56, Math.min(desiredTop, window.innerHeight - bubbleH - 16));
+      windowEl.style.position = "fixed";
+      windowEl.style.left = `${left}px`;
+      windowEl.style.top = `${top}px`;
+      windowEl.style.margin = "0";
+      if (tailSide) {
+        windowEl.classList.remove("is-bubble-detached");
+        windowEl.dataset.tailSide = tailSide;
+        const tailTop = Math.max(28, Math.min(bubbleH - 44, Math.round(tileCenterY - top - 8)));
+        windowEl.style.setProperty("--event-bubble-tail-top", `${tailTop}px`);
+      } else {
+        windowEl.classList.add("is-bubble-detached");
+        delete windowEl.dataset.tailSide;
+      }
+      return;
+    }
+    if (!canvasRect || canvasRect.width < 120 || canvasRect.height < 120) {
+      windowEl.classList.add("is-bubble-detached");
+      resetWindowInlineGeometry();
+      return;
+    }
+    // 이벤트 타일이 현재 뷰포트 밖에 있으면 가짜 꼬리를 숨기고 캔버스 중앙에 깔끔하게 띄운다.
+    windowEl.classList.add("is-bubble-detached");
+    delete windowEl.dataset.tailSide;
+    const desiredLeft = Math.round(canvasRect.left + Math.max(16, (canvasRect.width - bubbleW) / 2));
+    const desiredTop = Math.round(canvasRect.top + Math.max(16, (canvasRect.height - bubbleH) * 0.35));
+    const left = Math.max(12, Math.min(desiredLeft, window.innerWidth - bubbleW - 12));
+    const top = Math.max(56, Math.min(desiredTop, window.innerHeight - bubbleH - 16));
+    windowEl.style.position = "fixed";
+    windowEl.style.left = `${left}px`;
+    windowEl.style.top = `${top}px`;
+    windowEl.style.margin = "0";
+  };
+  const expandButton = header.querySelector<HTMLButtonElement>('[data-testid="event-editor-bubble-expand"]');
+  const syncModalPresentation = (): void => {
+    const level = eventEditorViewLevel();
+    const isScene = level === "easy" || level === "normal";
+    const isBubble = isScene && !sceneExpanded;
+    const isExpanded = isScene && sceneExpanded;
+    const wasBubble = windowEl.classList.contains("is-bubble");
+    backdrop.classList.toggle("is-bubble-backdrop", isBubble);
+    windowEl.classList.toggle("is-bubble", isBubble);
+    windowEl.classList.toggle("is-scene-expanded", isExpanded);
+    if (!isBubble && wasBubble) {
+      bubbleDragged = false;
+      windowEl.classList.remove("is-bubble-detached");
+      resetWindowInlineGeometry();
+    } else if (isBubble) {
+      positionBubbleNearCanvas();
+      if (typeof requestAnimationFrame === "function") {
+        requestAnimationFrame(() => {
+          if (!closed && !minimized) positionBubbleNearCanvas();
+        });
+      }
+    }
+    if (expandButton) {
+      expandButton.hidden = !isScene;
+      expandButton.textContent = isExpanded ? "↙ 작게" : "↗ 크게";
+      expandButton.title = isExpanded ? "작은 말풍선으로 접기" : "미리보기와 함께 넓게 보기";
+      expandButton.setAttribute("aria-pressed", isExpanded ? "true" : "false");
+    }
+  };
+  expandButton?.addEventListener("click", () => {
+    sceneExpanded = !sceneExpanded;
+    syncModalPresentation();
+  });
   // 맵 더블클릭으로 열면 pointerdown 은 캔버스에서 나고, 모달이 붙는 순간
   // 이어지는 click 이 백드롭(창 바깥)으로 떨어질 수 있다. 스튜디오 모니터는
   // 뷰포트 중앙이 아니라서 그 click 이 창이 아니라 어두운 면에 맞는다.
@@ -383,6 +519,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     if (closed || minimized || opening) return;
     const scrollSnapshots = captureEventEditorScroll(dynamicBody);
     const interactionSnapshot = captureEventEditorInteraction(dynamicBody);
+    let latestValidation: EventDraftValidation | undefined;
     try {
       const live = store.getCurrent().maps[request.mapId]?.events.some((event) => event.id === request.eventId);
       if (!live && !store.restoreEventDraftFromVault(request.mapId, request.eventId)) {
@@ -397,9 +534,10 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       // 새 본문을 별도 버퍼에 먼저 그린다. 렌더가 던져도 기존 화면은 살아남는다 —
       // 예전에는 clearChildren 뒤에 그려서 명령 하나가 터지면 이벤트 전체가 흰 화면이 됐다.
       const staged = document.createElement("div");
-      renderEventEditorDynamic(staged, request.mapId, request.eventId);
+      const renderedValidation = renderEventEditorDynamic(staged, request.mapId, request.eventId);
       clearChildren(dynamicBody);
       dynamicBody.append(...Array.from(staged.childNodes));
+      latestValidation = renderedValidation;
     } catch (error) {
       // 스테이징이 터지면 기존 본문은 그대로 두고 배너만 얹는다. 읽기와 멀쩡한 부분의
       // 편집은 계속 된다 — "다시 그리기" 전에도 내용은 볼 수 있어야 한다.
@@ -412,9 +550,10 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       restoreEventEditorScroll(dynamicBody, scrollSnapshots);
       restoreEventEditorInteraction(dynamicBody, interactionSnapshot);
       refreshHeaderPageSegments(header, request);
-      refreshEventValidationBell(header, validateEventDraft(store.getCurrent(), request.mapId, request.eventId));
+      refreshEventValidationBell(header, latestValidation ?? validateEventDraft(store.getCurrent(), request.mapId, request.eventId));
       refreshModalFooterStatus(footer, request);
       refreshModalHeaderSaveState(header, footer);
+      syncModalPresentation();
     } catch (error) {
       console.error("[event-editor] failed to restore editor chrome", error);
     }
@@ -774,7 +913,7 @@ function renderModalHeader(
         ],
       }),
       // 쉬움 보기는 이름 칸 대신 이름 글자만 보인다(목업 v2: 쉬움은 이벤트 이름 칸을 숨긴다).
-      el("span", { class: "event-editor-name-text", text: authoredName || borrowedName, attrs: { translate: "no" }, dataset: { testid: "event-editor-name-text" } }),
+      el("span", { class: "event-editor-name-text", text: authoredName || borrowedName || "새 이벤트", attrs: { translate: "no" }, dataset: { testid: "event-editor-name-text" } }),
       el("div", {
         class: "event-editor-header-save-state",
         attrs: { style: "display: none;" },
@@ -784,6 +923,12 @@ function renderModalHeader(
         class: "header-actions",
         children: [
           renderEventValidationBell(),
+          el("button", {
+            class: "btn ghost event-editor-bubble-expand",
+            text: "↗ 크게",
+            attrs: { type: "button", title: "미리보기와 함께 넓게 보기", "aria-pressed": "false" },
+            dataset: { testid: "event-editor-bubble-expand" },
+          }),
           el("button", {
             class: "btn ghost event-editor-header-test",
             text: "테스트",
@@ -1032,6 +1177,8 @@ function refreshHeaderPageSegments(header: HTMLElement, request: OpenEventEditor
     if (nameInput.value !== authored) nameInput.value = authored;
     nameInput.title = authored || borrowed;
   }
+  const nameText = header.querySelector<HTMLElement>('[data-testid="event-editor-name-text"]');
+  if (nameText) nameText.textContent = authored || borrowed || "새 이벤트";
   const identity = header.querySelector<HTMLElement>('[data-testid="event-editor-identity"]');
   if (identity) {
     identity.hidden = Boolean(authored) || !borrowed;

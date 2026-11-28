@@ -655,7 +655,7 @@ describe("m2Catalog", () => {
           expect.objectContaining({
             code: "reference.item.missing",
             commandPath: [1],
-            message: "상점 아이템 'item_does_not_exist'을 찾을 수 없습니다.",
+            message: "고른 상점 아이템('item_does_not_exist')을 찾을 수 없어요.",
           }),
         ]);
         expect(result.issues.some((issue) => issue.commandPath?.[0] === 0 && issue.code === "reference.item.missing")).toBe(false);

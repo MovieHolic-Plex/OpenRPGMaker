@@ -2,6 +2,7 @@
 // 단추를 늘리지 않는다(오너 원칙): 카드는 누르면 고치는 면, 보통에서만 줄 수와 「카드」 추가가 보인다.
 import { el } from "@/util/dom";
 import type { Command, Project } from "@/project/types";
+import type { EventDraftIssue } from "@/editor/eventDraftValidator";
 import { resolveCommandAtPath } from "@/editor/eventCommandPaths";
 import type { EventEditorViewLevel } from "./beginnerChrome";
 import { commandSummary } from "./commandSummary";
@@ -26,6 +27,8 @@ export interface SceneCardsViewOptions {
   readonly onRevealHidden?: (card: SceneCard) => void;
   /** 방금 바뀐 명령 경로(JSON) — 그 경로를 덮는 카드에 노란 테두리. */
   readonly changedPaths?: ReadonlySet<string>;
+  /** 활성 페이지의 검증 이슈 — 해당 카드에 오류/경고 배지를 띄운다. */
+  readonly issues?: readonly EventDraftIssue[];
 }
 
 const EASY_TALK_LINES = 4;
@@ -67,8 +70,34 @@ function isChanged(card: SceneCard, changed: ReadonlySet<string> | undefined): b
   return [...changed].some((raw) => card.paths.some((path) => raw === JSON.stringify(path) || raw.startsWith(`${JSON.stringify(path).slice(0, -1)},`)));
 }
 
+function issuesForCard(card: SceneCard, issues: readonly EventDraftIssue[] | undefined): readonly EventDraftIssue[] {
+  if (!issues || issues.length === 0) return [];
+  const cardSerialized = card.paths.map((path) => JSON.stringify(path));
+  return issues.filter((issue) => {
+    if (!issue.commandPath || issue.severity === "info") return false;
+    const raw = JSON.stringify(issue.commandPath);
+    return cardSerialized.some((prefix) => raw === prefix || raw.startsWith(`${prefix.slice(0, -1)},`));
+  });
+}
+
 function renderCard(card: SceneCard, key: string, options: SceneCardsViewOptions): HTMLElement {
   const changed = isChanged(card, options.changedPaths);
+  const cardIssues = issuesForCard(card, options.issues);
+  const cardErrorCount = cardIssues.filter((i) => i.severity === "error").length;
+  const cardWarningCount = cardIssues.filter((i) => i.severity === "warning").length;
+  const cardSeverity = cardErrorCount > 0
+    ? "error"
+    : cardWarningCount > 0
+      ? "warning"
+      : null;
+  const cardBadgeText = [
+    cardErrorCount > 0 ? `오류 ${cardErrorCount}` : "",
+    cardWarningCount > 0 ? `경고 ${cardWarningCount}` : "",
+  ].filter(Boolean).join(" · ");
+  const cardBadgeAriaPrefix = [
+    cardErrorCount > 0 ? `오류 ${cardErrorCount}건` : "",
+    cardWarningCount > 0 ? `경고 ${cardWarningCount}건` : "",
+  ].filter(Boolean).join(" · ");
   const open = (): void => {
     const path = card.kind === "talk" ? card.lines[0]?.path ?? primaryPath(card) : primaryPath(card);
     if (path) options.onOpen?.(path);
@@ -78,6 +107,17 @@ function renderCard(card: SceneCard, key: string, options: SceneCardsViewOptions
     children: [
       el("span", { class: "event-scene-card-kind", text: SCENE_CARD_KIND_LABEL[card.kind] }),
       el("span", { class: "event-scene-card-title", text: card.title }),
+      ...(cardSeverity
+        ? [el("span", {
+            class: `event-command-issue-badge ${cardSeverity} event-scene-card-issue`,
+            text: cardBadgeText,
+            attrs: {
+              title: cardIssues.map((i) => i.message).join("\n"),
+              "aria-label": `${cardBadgeAriaPrefix}: ${cardIssues.map((i) => i.message).join("; ")}`,
+            },
+            dataset: { testid: `event-scene-card-issue-${key}`, severity: cardSeverity },
+          })]
+        : []),
       ...(options.level === "normal"
         ? [el("span", { class: "event-scene-card-count", text: `${card.commandCount}줄`, dataset: { testid: "event-scene-card-count" } })]
         : []),

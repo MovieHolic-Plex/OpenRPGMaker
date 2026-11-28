@@ -252,7 +252,11 @@
   position: relative;
 }
 
-.event-editor-modal-header .event-draft-validation[data-severity="warning"],
+.event-editor-modal-header .event-draft-validation[data-severity="warning"] {
+  --ev-bell-tone: var(--warning);
+  --ev-bell-wash: color-mix(in srgb, var(--warning) 16%, transparent);
+}
+
 .event-editor-modal-header .event-draft-validation[data-severity="error"] {
   --ev-bell-tone: var(--danger);
   --ev-bell-wash: var(--danger-muted);
@@ -360,15 +364,24 @@
 }
 
 .event-editor-modal-header .event-draft-validation-head {
-  align-items: baseline;
+  align-items: center;
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   justify-content: space-between;
 }
 
 .event-editor-modal-header .event-draft-validation-title {
   color: var(--text-1);
-  font: 650 12px/1.2 var(--font-ui);
+  font: 700 12.5px/1.2 var(--font-ui);
+}
+
+.event-editor-modal-header .event-draft-validation-status {
+  background: var(--ev-bell-wash);
+  border-radius: 999px;
+  color: var(--ev-bell-tone);
+  font: 700 10.5px/1 var(--font-ui);
+  padding: 4px 8px;
 }
 
 .event-editor-modal-header .event-draft-validation-tally {
@@ -382,7 +395,7 @@
 
 .event-editor-modal-header .event-draft-validation-issues {
   display: grid;
-  gap: 2px;
+  gap: 4px;
   max-height: min(320px, 46vh);
   overflow-y: auto;
   scrollbar-width: thin;
@@ -392,15 +405,15 @@
   --ev-issue-tone: var(--accent);
   align-items: center;
   background: transparent;
-  border: 1px solid transparent;
+  border: 1px solid var(--border-subtle);
   border-radius: var(--radius-s);
   color: var(--text-1);
   cursor: pointer;
   display: grid;
   font: 500 12px/1.45 var(--font-ui);
   gap: 8px;
-  grid-template-columns: 38px minmax(0, 1fr);
-  padding: 7px 8px;
+  grid-template-columns: 38px minmax(0, 1fr) auto;
+  padding: 8px 9px;
   text-align: left;
   width: 100%;
 }
@@ -416,7 +429,7 @@
 .event-editor-modal-header .event-draft-validation-issue:hover,
 .event-editor-modal-header .event-draft-validation-issue:focus-visible {
   background: color-mix(in srgb, var(--ev-issue-tone) 8%, transparent);
-  border-color: color-mix(in srgb, var(--ev-issue-tone) 30%, transparent);
+  border-color: color-mix(in srgb, var(--ev-issue-tone) 35%, transparent);
   outline: 2px solid var(--ev-issue-tone);
   outline-offset: 2px;
 }
@@ -430,31 +443,71 @@
   text-align: center;
 }
 
+.event-editor-modal-header .event-draft-validation-go {
+  color: var(--accent);
+  font: 600 11px/1 var(--font-ui);
+  white-space: nowrap;
+}
+
 .event-editor-modal-header .event-draft-validation-message > span {
   display: block;
 }
 
-.event-editor-modal-header .event-draft-validation-head {
-  flex-wrap: wrap;
+.event-editor-modal-header .event-draft-validation-actions {
+  display: grid;
+  gap: 8px;
+  /* 목록과 동작을 분명히 나눈다. 전면은 사람용 조수 수리, 개발자·AI 진단 복사는 아래 접힘 서랍으로 분리. */
+  border-top: 1px solid var(--border-subtle);
+  padding-top: 9px;
 }
 
-.event-editor-modal-header .event-draft-validation-actions {
+.event-editor-modal-header .event-draft-validation-primary-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.event-editor-modal-header .event-validation-ask-btn {
+  width: 100%;
+  justify-content: center;
+}
+
+.event-editor-modal-header .event-validation-dev-fold {
+  border-top: 1px dashed var(--border-subtle);
+  padding-top: 6px;
+}
+
+.event-editor-modal-header .event-validation-dev-summary {
+  color: var(--text-3);
+  cursor: pointer;
+  font: 600 11px/1.3 var(--font-ui);
+  user-select: none;
+}
+
+.event-editor-modal-header .event-validation-dev-summary:hover {
+  color: var(--text-1);
+}
+
+.event-editor-modal-header .event-validation-dev-drawer {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px 8px;
-  /* 목록이 스크롤 끝에서 바로 진단 복사 줄로 이어져 마지막 항목이 버튼에 가려진 듯 보였다(vm-qa15 #21).
-     줄을 그어 목록과 동작을 나눈다. */
-  border-top: 1px solid var(--border-subtle);
-  padding-top: 8px;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 7px;
+  padding: 7px 8px;
+  background: var(--bg-base);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-s);
 }
 
-.event-editor-modal-header .event-draft-validation-actions > label {
+.event-editor-modal-header .event-validation-dev-drawer > label {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   color: var(--text-2);
-  font: 500 12px var(--font-ui);
+  font: 500 11.5px var(--font-ui);
 }
 
 .event-editor-modal-header select.event-validation-format {

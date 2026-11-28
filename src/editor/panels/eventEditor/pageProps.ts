@@ -329,7 +329,13 @@ export function renderClassicPageTabStrip(
   const canDrag = pages.length > 1;
   pages.forEach((page, index) => {
     const isActive = page.id === activePage.id;
-    const pageErrors = validation?.issues.filter((i) => i.pageId === page.id && (i.severity === "error" || i.severity === "warning")).length ?? 0;
+    const pageErrorCount = validation?.issues.filter((i) => i.pageId === page.id && i.severity === "error").length ?? 0;
+    const pageWarningCount = validation?.issues.filter((i) => i.pageId === page.id && i.severity === "warning").length ?? 0;
+    const pageBadgeSeverity = pageErrorCount > 0 ? "error" : pageWarningCount > 0 ? "warning" : null;
+    const pageBadgeLabel = [
+      pageErrorCount > 0 ? `오류 ${pageErrorCount}건` : "",
+      pageWarningCount > 0 ? `경고 ${pageWarningCount}건` : "",
+    ].filter(Boolean).join(" · ");
     const tab = el("button", {
       class: "btn evt-page-segment" + (isActive ? " active" : ""),
       dataset: { testid: `evt-page-segment-${index + 1}`, pageId: page.id },
@@ -351,7 +357,13 @@ export function renderClassicPageTabStrip(
           children: pageTabConditionLabels(page).map((text) => el("span", { text })),
           dataset: { testid: `evt-page-cond-${index + 1}` },
         }),
-        ...(pageErrors > 0 ? [el("i", { class: "warn" })] : []),
+        ...(pageBadgeSeverity
+          ? [el("i", {
+              class: `warn is-${pageBadgeSeverity}`,
+              attrs: { title: pageBadgeLabel, "aria-label": pageBadgeLabel, role: "img" },
+              dataset: { testid: `evt-page-warn-${index + 1}`, severity: pageBadgeSeverity },
+            })]
+          : []),
       ],
       on: {
         click: (event) => {
@@ -419,12 +431,16 @@ export function renderClassicPageTabStrip(
     })
   );
 
+  const errorCount = validation?.errorCount ?? 0;
   const warningCount = validation?.warningCount ?? 0;
-  if (warningCount > 0) {
+  if (errorCount > 0 || warningCount > 0) {
+    const metaChildren: HTMLElement[] = [];
+    if (errorCount > 0) metaChildren.push(el("span", { class: "event-pages-meta-error", text: `오류 ${errorCount}`, dataset: { testid: "evt-pages-meta-errors" } }));
+    if (warningCount > 0) metaChildren.push(el("span", { class: "warn-text", text: `경고 ${warningCount}`, dataset: { testid: "evt-pages-meta-warnings" } }));
     pageButtons.append(
       el("div", {
         class: "pages-meta",
-        children: [el("span", { class: "warn-text", text: `경고 ${warningCount}` })],
+        children: metaChildren,
       })
     );
   }
@@ -501,7 +517,7 @@ function focusRenderedPageTab(pageId: string): void {
   }
 }
 
-function pageTabConditionLabels(page: EventPage): string[] {
+export function pageTabConditionLabels(page: EventPage): string[] {
   const conditions = page.conditions ?? [];
   const first = conditions[0];
   if (!first) return ["조건 없음"];
@@ -1821,7 +1837,7 @@ function renderEventPageSafetyWarning(page: EventPage): HTMLElement {
   const hasGateCondition = hasRecursivePageCondition(page.conditions);
   return el("div", {
     class: "event-page-safety-warning" + (riskyTrigger && !hasGateCondition ? "" : " hidden"),
-    text: "조건 없는 자동/병렬 이벤트는 반복 실행될 수 있습니다.",
+    text: "조건 없이 자동 시작하면 멈추지 않고 계속 반복돼요. 끝나고 스위치를 켜거나 다음 페이지로 넘겨 주세요.",
     dataset: { testid: "event-page-safety-warning" },
   });
 }
