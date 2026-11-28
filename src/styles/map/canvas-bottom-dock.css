@@ -834,9 +834,7 @@
   outline-offset: 1px;
 }
 
-/* ── Phase 5-1: 상단 중복 크롬 정리 (하단 독 · 우하단 플로팅 조수로 단일화) ── */
-.studio-bar .studio-layer-segment[data-testid="studio-layer-segment"],
-.studio-layer-segment[data-testid="studio-layer-segment"],
+/* ── Phase 5-1: 캔버스 중복 툴 필 정리 (상단 레이어 바 지형·바닥·상위·이벤트는 유지) ── */
 .canvas-toolbar.canvas-tool-pill > .small-task,
 .canvas-toolbar.canvas-tool-pill > [data-testid="tool-paint"],
 .canvas-toolbar.canvas-tool-pill > [data-testid="tool-erase"] {
