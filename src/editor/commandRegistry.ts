@@ -424,6 +424,18 @@ export function listEditorCommands(): readonly EditorCommand[] {
         void import("@/editor/panels/helpModal").then((mod) => mod.openHelpModal("shortcuts"));
       },
     },
+    {
+      id: "app-update-check",
+      label: "도움말: 업데이트 확인",
+      category: "화면",
+      keywords: ["update", "version", "check", "업데이트", "업데이트 확인", "버전", "최신"],
+      run: () => {
+        void Promise.all([
+          import("@/app/appUpdateChip"),
+          import("@/editor/appUpdateRestart"),
+        ]).then(([chip, restart]) => chip.triggerAppUpdateCheck({ beforeRestart: restart.prepareEditorForAppUpdateRestart }));
+      },
+    },
   ];
 }
 

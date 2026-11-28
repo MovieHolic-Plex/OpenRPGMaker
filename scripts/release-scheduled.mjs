@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 // scripts/release-scheduled.mjs
-// 조건 기반 자동 릴리스 — .github/workflows/auto-release.yml 이 3시간마다 부른다.
-// 규칙과 판정은 scripts/lib/releaseGate.mjs, ci-full 대조는 scripts/ci-full-diff.mjs.
+// 조건 기반 자동 릴리스 — .github/workflows/auto-release.yml 이 1시간마다 부른다.
+// 규칙과 판정은 scripts/lib/releaseGate.mjs, ci-full 대조(requireCiFull 시)는 scripts/ci-full-diff.mjs.
 //
 // 조건이 다 맞으면 기존 릴리스 경로를 그대로 탄다(새 발행기를 만들지 않는다):
 //   ① release-auto.mjs --skip-publish  → release/next PR(버전 범프 + 사용자 말 CHANGELOG)
-//   ② ci-fast·ci-related-tests·app-update-e2e 를 release/next 에 디스패치(GITHUB_TOKEN 푸시는 워크플로를 깨우지 않는다)
-//      → app-update-e2e 가 초록일 때만 ③ 으로 간다(앱 자동 업데이트가 깨진 판을 내보내지 않는다).
+//   ② ci-fast·ci-related-tests(직전 발행 태그 대비)·(필요 시) app-update-e2e 를 release/next 에 디스패치
+//      (GITHUB_TOKEN 푸시는 워크플로를 깨우지 않는다)
+//      → ci-full 게이트 분리 모드에서는 ci-related-tests 초록을 기다리고,
+//        업데이트/Electron 변경 시 app-update-e2e 초록도 기다린다.
 //   ③ merge-pr.mjs <PR>                → fast·fast-static·패리티 초록일 때만 그 머리 커밋을 squash
 //   ④ release-auto.mjs --skip-propose  → 태그 + 초안 릴리스(본문 = CHANGELOG 그 절)
 //   ⑤ desktop-release 디스패치          → 산출물 검증 뒤 발행(30분 cron 도 같은 초안을 집는다)
@@ -198,15 +200,22 @@ function execute(repo, decision, inputs, now) {
   // 봇(GITHUB_TOKEN)이 연 PR 의 pull_request 런은 잡 0개로 멈췄다가 머지 때 실패로 닫힌다 — 시험이 하나도 돌지 않는다.
   // 실측: v0.420 PR #5159 의 ci-fast·ci-related-tests·app-update-e2e 셋 다(run 45730826290 «workflow file issue»).
   // 그래서 PR 에 걸린 나머지 두 검사도 같은 머리에 직접 디스패치한다.
-  const base = git(["rev-parse", "origin/main"]);
-  step("ci-related-tests", () => gh(["workflow", "run", "ci-related-tests.yml", "--ref", "release/next", "-f", `base=${base}`]) || "디스패치");
+  // 직전 발행 태그(sinceTag) 기준으로 diff 를 잡아야 릴리스에 들어가는 모든 변경의 관련 시험이 돈다.
+  const relatedBase =
+    (inputs.sinceTag && git(["rev-parse", `${inputs.sinceTag}^{commit}`], { allowFailure: true })) ||
+    git(["rev-parse", "origin/main"]);
+  step("ci-related-tests", () => gh(["workflow", "run", "ci-related-tests.yml", "--ref", "release/next", "-f", `base=${relatedBase}`]) || "디스패치");
   const e2eNeed = checkAppUpdateE2eNeed(repo, inputs.sinceTag, now);
   if (e2eNeed.required) {
     step("app-update-e2e", () => gh(["workflow", "run", "app-update-e2e.yml", "--ref", "release/next"]) || `디스패치 (${e2eNeed.reason})`);
-    // ci-related-tests 는 정보용(필수 아님, 릴리스는 ci-full 대조가 막는다)이라 기다리지 않는다. 업데이트 e2e 는 기다린다.
-    step("app-update-e2e-wait", () => waitDispatchedRun("app-update-e2e.yml", pr.headRefOid, 50));
   } else {
     step("app-update-e2e", () => `건너뜀 (${e2eNeed.reason})`);
+  }
+  if (!AUTO_RELEASE_RULES.requireCiFull) {
+    step("ci-related-tests-wait", () => waitDispatchedRun("ci-related-tests.yml", pr.headRefOid, 45));
+  }
+  if (e2eNeed.required) {
+    step("app-update-e2e-wait", () => waitDispatchedRun("app-update-e2e.yml", pr.headRefOid, 50));
   }
   // merge-pr 가 CI 를 기다리는 동안 누가 hold-release 를 붙일 수 있다. merge-pr 가 머지 직전에, 여기서 태그 직전에 다시 본다.
   assertNoHold("merge");
@@ -224,7 +233,7 @@ const args = parseArgs(process.argv.slice(2));
 const now = args.now ? new Date(args.now) : new Date();
 const repo = repoSlug();
 const inputs = gatherInputs(repo, now);
-const ciDiff = computeCiFullDiff({ repo, tag: inputs.sinceTag });
+const ciDiff = AUTO_RELEASE_RULES.requireCiFull ? computeCiFullDiff({ repo, tag: inputs.sinceTag }) : null;
 const decision = decideAutoRelease({
   userCommits: inputs.userCommits,
   sinceTag: inputs.sinceTag,
@@ -245,7 +254,10 @@ let exitCode = 0;
 if (decision.release && !args.dryRun) {
   try {
     record.result = execute(repo, decision, inputs, now);
-    record.notifiedIssue = notify(repo, `${record.result.tag} 자동 릴리스: PR #${record.result.pr} 머지, 태그·초안 생성, desktop-release 가 산출물 검증 뒤 발행한다. 사용자 체감 변경 ${inputs.userCommits.length}개, ci-full 새 실패 0 (판 ${ciDiff.candidate?.id} 대 ${ciDiff.baseline?.id}).`);
+    const gateNote = ciDiff
+      ? `ci-full 새 실패 0 (판 ${ciDiff.candidate?.id} 대 ${ciDiff.baseline?.id})`
+      : "ci-fast·ci-related-tests 통과 (ci-full 게이트 분리)";
+    record.notifiedIssue = notify(repo, `${record.result.tag} 자동 릴리스: PR #${record.result.pr} 머지, 태그·초안 생성, desktop-release 가 산출물 검증 뒤 발행한다. 사용자 체감 변경 ${inputs.userCommits.length}개, ${gateNote}.`);
   } catch (error) {
     record.error = error.message;
     record.notifiedIssue = notify(repo, `자동 릴리스가 도중에 멈춤: ${error.message}\n열린 release/next PR 이 있으면 다음 회차는 넘어간다. 사람이 확인해 머지하거나 닫는다.`);

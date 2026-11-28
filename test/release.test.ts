@@ -557,18 +557,18 @@ describe("releaseTooling", () => {
     });
 
     const passing = () => ({
-      userCommits: Array.from({ length: 5 }, (_, index) => ({ sha: String(index), subject: "feat: x" })),
-      sinceTag: "v0.419.0",
-      ciDiff: { ok: true, newFailures: [], notInBaseline: [] },
-      lastPublishedAt: "2026-11-24T00:00:00Z",
-      recentReleaseTags: ["v0.419.0"],
+      userCommits: Array.from({ length: 2 }, (_, index) => ({ sha: String(index), subject: "feat: x" })),
+      sinceTag: "v0.423.0",
+      ciDiff: null,
+      lastPublishedAt: "2026-11-28T00:00:00Z",
+      recentReleaseTags: ["v0.423.0"],
       holdPrs: [],
       draftTags: [],
       openReleasePr: null,
-      now: "2026-11-24T12:00:00Z",
+      now: "2026-11-28T02:00:00Z",
     });
 
-    it("네 조건과 하루 상한이 다 맞으면 발행한다(12시간 경계 포함)", () => {
+    it("조건과 하루 상한이 다 맞으면 ci-full 없이도 발행한다(2시간 경계 포함)", () => {
       const decision = decideAutoRelease(passing());
       expect(decision.release).toBe(true);
       expect(decision.reasons).toEqual([]);
@@ -576,14 +576,11 @@ describe("releaseTooling", () => {
 
     it("하나라도 안 맞으면 넘어가고 안 맞는 것마다 이유를 남긴다", () => {
       const cases = [
-        [{ userCommits: passing().userCommits.slice(0, 4) }, "user-commits"],
-        [{ ciDiff: { ok: false, newFailures: ["test/a.test.ts"], notInBaseline: [] } }, "ci-full"],
-        [{ ciDiff: { ok: false, error: "판 없음" } }, "ci-full"],
-        [{ ciDiff: null }, "ci-full"],
-        [{ now: "2026-11-24T11:59:00Z" }, "since-publish"],
+        [{ userCommits: passing().userCommits.slice(0, 1) }, "user-commits"],
+        [{ now: "2026-11-28T01:59:00Z" }, "since-publish"],
         [{ holdPrs: [{ number: 5040 }] }, "hold-label"],
-        [{ recentReleaseTags: ["v0.418.0", "v0.419.0"] }, "daily-cap"],
-        [{ draftTags: ["v0.420.0"] }, "no-draft"],
+        [{ recentReleaseTags: Array.from({ length: 12 }, (_, index) => `v0.4${10 + index}.0`) }, "daily-cap"],
+        [{ draftTags: ["v0.424.0"] }, "no-draft"],
         [{ openReleasePr: { number: 5041, auto: true } }, "no-open-release-pr"],
       ];
       for (const [override, id] of cases) {
@@ -591,6 +588,20 @@ describe("releaseTooling", () => {
         expect(decision.release).toBe(false);
         expect(decision.checks.filter((check) => !check.ok).map((check) => check.id)).toEqual([id]);
         expect(decision.reasons).toHaveLength(1);
+      }
+    });
+
+    it("requireCiFull: true 를 켜면 ci-full 대조 실패·누락을 막는다", () => {
+      const ok = decideAutoRelease({ ...passing(), requireCiFull: true, ciDiff: { ok: true, newFailures: [], notInBaseline: [] } });
+      expect(ok.release).toBe(true);
+      for (const ciDiff of [
+        { ok: false, newFailures: ["test/a.test.ts"], notInBaseline: [] },
+        { ok: false, error: "판 없음" },
+        null,
+      ]) {
+        const decision = decideAutoRelease({ ...passing(), requireCiFull: true, ciDiff });
+        expect(decision.release).toBe(false);
+        expect(decision.checks.filter((check) => !check.ok).map((check) => check.id)).toEqual(["ci-full"]);
       }
     });
   });

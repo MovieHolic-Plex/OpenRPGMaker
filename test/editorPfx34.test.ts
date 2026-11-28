@@ -81,12 +81,6 @@ describe("editorPanelsSuite29", () => {
       renderDatabasePanel(root);
       return root;
     }
-    function viewed(root: HTMLElement): string | undefined {
-      return root.querySelector<HTMLElement>(".db-tabs")?.dataset.viewGroup;
-    }
-    function inView(root: HTMLElement, testid: string): string | undefined {
-      return root.querySelector<HTMLElement>(`[data-testid="${testid}"]`)?.dataset.inView;
-    }
     beforeEach(() => {
       store.replace(createBlankProject(), { preserveEventDrafts: false });
       setDatabaseActiveTab("classes");
@@ -95,44 +89,46 @@ describe("editorPanelsSuite29", () => {
       document.body.replaceChildren();
       store.replace(previous, { preserveEventDrafts: false });
     });
-    describe("자료집 그룹 띠", () => {
-      it("띠를 누르면 보는 구획이 바뀌고 활성 탭은 그 그룹의 첫 탭으로 간다", () => {
-        const root = host();
-        expect(viewed(root)).toBe("party");
-        expect(inView(root, "db-tab-classes")).toBe("1");
-        expect(inView(root, "db-tab-enemies")).toBe("0");
-
-        root.querySelector<HTMLElement>('[data-testid="db-group-strip-battle"]')!.click();
-
-        expect(viewed(root)).toBe("battle");
-        expect(inView(root, "db-tab-enemies")).toBe("1");
-        expect(inView(root, "db-tab-classes")).toBe("0");
-        const strip = root.querySelector<HTMLElement>('[data-testid="db-group-strip-battle"]')!;
-        expect(strip.getAttribute("aria-pressed")).toBe("true");
-        expect(root.querySelector<HTMLElement>('[data-testid="db-group-strip-party"]')!.getAttribute("aria-pressed")).toBe("false");
-        // 8684ab7daf: 그룹을 바꾸면 본문·크럼도 그 그룹으로 간다 — 기억한 탭이 없으면 첫 보이는 탭(빈 프로젝트는 첫 탭)에 착지한다.
-        expect(root.querySelector<HTMLElement>(".db-tab.active")?.dataset.testid).toBe("db-tab-enemies");
+    describe("자료집 단일 통합 레일", () => {
+      afterEach(() => {
+        window.localStorage.removeItem("oprn:database.railCollapsed");
       });
 
-      it("레일은 접힌 채 시작하고, 묶음을 누르면 열리고, 탭을 고르거나 같은 묶음을 다시 누르면 닫힌다", () => {
+      it("2단 그룹 띠를 두지 않고 모든 활성 구획 탭을 단일 레일에 한 번에 노출한다", () => {
         const root = host();
-        expect(root.dataset.railOpen).toBe("0");
-        root.querySelector<HTMLElement>('[data-testid="db-group-strip-battle"]')!.click();
-        expect(root.dataset.railOpen).toBe("1");
-        root.querySelector<HTMLElement>('[data-testid="db-tab-states"]')!.click();
-        expect(root.dataset.railOpen).toBe("0");
-        expect(root.querySelector<HTMLElement>(".db-tab.active")?.dataset.testid).toBe("db-tab-states");
-        const battle = root.querySelector<HTMLElement>('[data-testid="db-group-strip-battle"]')!;
-        battle.click();
-        expect(root.dataset.railOpen).toBe("1");
-        battle.click();
-        expect(root.dataset.railOpen).toBe("0");
+        expect(root.querySelector('[data-testid="db-group-strip"]')).toBeNull();
+        expect(root.querySelector<HTMLElement>('[data-testid="db-tab-classes"]')).not.toBeNull();
+        expect(root.querySelector<HTMLElement>('[data-testid="db-tab-enemies"]')).not.toBeNull();
+        expect(root.querySelector<HTMLElement>('[data-testid="db-tab-system"]')).not.toBeNull();
+        expect(root.querySelector<HTMLElement>('[data-testid="db-tab-classes"]')?.dataset.inView).toBeUndefined();
+        expect(root.querySelector<HTMLElement>('[data-testid="db-tab-enemies"]')?.dataset.inView).toBeUndefined();
       });
 
-      it("휴대 폭 탭 고르기 단추는 레일을 열고, 탭을 고르면 닫히며 새 탭 이름을 단다", () => {
+      it("메뉴 접기 단추로 196px↔52px 접기를 토글·기억하며 인라인 left 를 쓰지 않는다", () => {
+        const root = host();
+        const toggle = root.querySelector<HTMLElement>('[data-testid="db-rail-collapse-toggle"]')!;
+        const tabs = root.querySelector<HTMLElement>(".db-tabs")!;
+        expect(root.dataset.railCollapsed).toBe("0");
+        expect(toggle.getAttribute("aria-expanded")).toBe("true");
+        expect(tabs.style.left).toBe("");
+
+        toggle.click();
+        expect(root.dataset.railCollapsed).toBe("1");
+        expect(toggle.getAttribute("aria-expanded")).toBe("false");
+        expect(window.localStorage.getItem("oprn:database.railCollapsed")).toBe("1");
+        expect(tabs.style.left).toBe("");
+
+        // 접힌 상태에서 검색 입력에 포커스가 가면 자동으로 다시 펼친다.
+        root.querySelector<HTMLInputElement>('[data-testid="db-tab-search"]')!.dispatchEvent(new Event("focus"));
+        expect(root.dataset.railCollapsed).toBe("0");
+        expect(toggle.getAttribute("aria-expanded")).toBe("true");
+      });
+
+      it("휴대 폭 상단 바는 바텀 시트를 열고(검색·스크림 포함), 탭을 고르면 닫히며 소속 그룹·탭 이름을 단다", () => {
         const root = host();
         const switcher = root.querySelector<HTMLElement>('[data-testid="db-tab-switcher"]')!;
         expect(switcher.classList.contains("db-tab")).toBe(false);
+        expect(switcher.textContent).toContain("파티");
         expect(switcher.textContent).toContain("직업");
         expect(switcher.getAttribute("aria-expanded")).toBe("false");
         switcher.click();
@@ -141,28 +137,36 @@ describe("editorPanelsSuite29", () => {
         root.querySelector<HTMLElement>('[data-testid="db-tab-states"]')!.click();
         expect(root.dataset.railOpen).toBe("0");
         expect(switcher.getAttribute("aria-expanded")).toBe("false");
+        expect(switcher.textContent).toContain("전투");
         expect(switcher.textContent).toContain("상태");
         expect(switcher.getAttribute("aria-label")).toBe("탭 바꾸기, 지금 상태");
+
+        // 빠른 검색 버튼은 바텀 시트를 열고, 스크림·닫기 단추로 닫으며 닫기 단추는 스위처로 포커스를 되돌린다.
+        root.querySelector<HTMLElement>('[data-testid="db-phone-search-btn"]')!.click();
+        expect(root.dataset.railOpen).toBe("1");
+        root.querySelector<HTMLElement>('[data-testid="db-rail-scrim"]')!.click();
+        expect(root.dataset.railOpen).toBe("0");
+
+        switcher.click();
+        expect(root.dataset.railOpen).toBe("1");
+        root.querySelector<HTMLElement>('[data-testid="db-sheet-close"]')!.click();
+        expect(root.dataset.railOpen).toBe("0");
+        expect(document.activeElement).toBe(switcher);
       });
 
-      it("다른 구획의 탭을 고르면 그 탭 그룹이 계속 보인다", () => {
+      it("다른 구획의 탭을 한 번에 누르면 즉시 활성 탭이 바뀐다", () => {
         const root = host();
-        root.querySelector<HTMLElement>('[data-testid="db-group-strip-battle"]')!.click();
         root.querySelector<HTMLElement>('[data-testid="db-tab-enemies"]')!.click();
-        expect(viewed(root)).toBe("battle");
         expect(root.querySelector<HTMLElement>(".db-tab.active")?.dataset.testid).toBe("db-tab-enemies");
 
-        root.querySelector<HTMLElement>('[data-testid="db-group-strip-system"]')!.click();
-        expect(viewed(root)).toBe("system");
+        root.querySelector<HTMLElement>('[data-testid="db-tab-system"]')!.click();
+        expect(root.querySelector<HTMLElement>(".db-tab.active")?.dataset.testid).toBe("db-tab-system");
       });
 
-      it("프로그램 점프(조수·딥링크)는 새 활성 탭의 그룹으로 띠를 옮긴다", () => {
-        const root = host();
-        root.querySelector<HTMLElement>('[data-testid="db-group-strip-battle"]')!.click();
+      it("프로그램 점프(조수·딥링크)는 새 활성 탭을 즉시 활성화한다", () => {
         setDatabaseActiveTab("skills");
         const rerooted = host();
-        expect(viewed(rerooted)).toBe("party");
-        expect(inView(rerooted, "db-tab-skills")).toBe("1");
+        expect(rerooted.querySelector<HTMLElement>(".db-tab.active")?.dataset.testid).toBe("db-tab-skills");
       });
     });
   });

@@ -9,6 +9,7 @@ import { hasOpenModalLayer, isTopModal, registerModal, unregisterModal } from "@
 import { createSaveErrorPopover, saveErrorIcon } from "@/editor/ui/saveErrorPopover";
 import { afterOpeningPaint } from "@/editor/ui/afterOpeningPaint";
 import {
+  closeDatabasePhoneSheet,
   databaseTabGroupLabel,
   lifeTabClosed,
   databaseTabLabel,
@@ -844,6 +845,8 @@ export function openDatabaseModal(initialTab?: DatabaseTab, options?: DatabaseMo
       handleDirtyDecision(EDITOR_MODAL_DIRTY_DECISION.KeepEditing);
       return;
     }
+    // 휴대 폭 바텀 시트가 열려 있으면 첫 Escape 는 시트만 닫고 자료집 창은 유지한다.
+    if (closeDatabasePhoneSheet(body)) return;
     // 전체 화면은 전면 fixed 라 "Esc 한 번 = DB 통째로 닫힘"이 된다. 첫 Esc 는 복원만.
     if (exitMaximizedDatabaseModal(maximizeButton)) return;
     controller.requestClose("escape");

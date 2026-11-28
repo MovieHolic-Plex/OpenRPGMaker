@@ -44,7 +44,7 @@ import { withoutRecentProject } from "../../electron/shared/recentProjects";
 import { BUILTIN_GAMES } from "./home/builtinGames";
 import { createLocalAgentsApi, loadEngineChoice, localAgentsEnabled, summarizeAiStatus, type AiStatusSummary } from "./settings/localAgents";
 import type { SettingsTab } from "./settings/settingsDialog";
-import { renderAppUpdateChip } from "@/app/appUpdateChip";
+import { renderAppUpdateChip, triggerAppUpdateCheck } from "@/app/appUpdateChip";
 
 export const START_SCREEN_TESTIDS = {
   root: "start-screen",
@@ -472,6 +472,7 @@ export function mountStartScreen(host: HTMLElement, bridge: OprnBridgeStart | un
         { label: "에셋 스토어 ↗", testid: "first-run-more-store", run: () => { window.open("https://store.openrpgmaker.com", "_blank", "noopener"); } },
         // 다른 사람이 만든 게임을 하는 곳은 웹(OPRN PLAY)이다 — Studio 는 만드는 앱이라 앱 안에서 돌리지 않는다(2026-11-04 B안).
         { label: "OPRN PLAY 에서 게임 하기 ↗", testid: "first-run-more-play-web", run: () => { window.open(OPRN_PLAY_URL, "_blank", "noopener"); } },
+        ...(window.oprn?.update ? [{ label: "업데이트 확인", testid: "first-run-more-update", run: () => { void triggerAppUpdateCheck(); } }] : []),
         { label: "설정", testid: "first-run-more-settings", run: () => openSettings("ai") },
       ],
     });

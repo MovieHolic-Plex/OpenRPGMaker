@@ -36,13 +36,13 @@
   min-width: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  padding: 10px 8px 12px;
+  padding: 8px 8px 12px;
   position: relative;
   width: 220px;
   scrollbar-gutter: stable;
-  /* 고정된 탭 검색(40px)과 구획 머리 한 줄 아래로 활성 탭을 드러낸다 — scrollIntoView(nearest)가
+  /* 고정된 접기 버튼(34px)·탭 검색(40px)·구획 머리 아래로 활성 탭을 드러낸다 — scrollIntoView(nearest)가
      위로 올릴 때 행이 고정 머리 밑에 숨지 않게. */
-  scroll-padding-top: 72px;
+  scroll-padding-top: 108px;
   scroll-padding-bottom: 12px;
   /* ‘모든 자료’를 펼치면 사이드바 내용이 200px 냘게 넘치는데, 오버레이 스크롤바는
      스크롤 전에 보이지 않아 마지막 항목이 그냥 쟘린 듯이 끝났다 — 스크롤바를 상시
@@ -93,17 +93,15 @@
   overflow: hidden !important;
 }
 
-/* 그룹 띠는 넓은 창(800px 이상)에서만 서므로 196px 목록도 그때만 쓴다. 예전에는 조건 없이 :not(.is-docked) 로 걸려
-   좁은 창의 56px 레일 규칙보다 특이도가 높아 390 에서도 196px 레일이 두 줄로 내용을 덮었다(vm-qa15 #43·#97). */
+/* 800px 이상 모달의 기본 단일 통합 레일은 196px(접히면 52px). 좁은 창(799px 이하)은 56px 아이콘 레일. */
 @container db-modal (min-width: 800px) {
-  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-tabs {
-    /* 그룹 띠(64px)가 곁에 서므로 목록은 196px 이다. */
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body:not([data-rail-collapsed="1"]) > .db-tabs {
     flex: 0 0 196px !important;
     width: 196px !important;
   }
 }
 
-.database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-tabs > .db-tab {
+.database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body:not([data-rail-collapsed="1"]) > .db-tabs > .db-tab {
   /* font 단축을 쓰지 않는다 — !important 단축은 font-weight 도 강제해 활성 행의 600 이 진다.
      글꼴은 .db-tab 기본 규칙의 var(--font-ui) 를 그대로 받는다. */
   font-size: 13px !important;
@@ -270,8 +268,8 @@
   display: flex;
   position: sticky;
   text-align: left;
-  /* 탭 검색(32px + 아래 8px) 밑에 붙는다 — 검색 칸이 먼저 위에 고정된다. */
-  top: 40px;
+  /* 상단 접기 버튼(34px) + 탭 검색(40px) 밑에 붙는다. */
+  top: 74px;
   z-index: 1;
   margin: 0;
   white-space: normal;
@@ -324,12 +322,12 @@
   padding: 0 10px;
   width: 100%;
   text-align: left;
-  /* 레일이 넘쳐 아래 탭(맵 구획)으로 스크롤해도 검색 칸이 반쯤 잘린 채 사라지지 않게 고정한다.
+  /* 레일이 넘쳐 아래 탭으로 스크롤해도 검색 칸이 상단 접기 버튼 아래에 고정된다.
      그림자는 칸 둘레의 여백을 레일 바탕으로 덮어 밑으로 지나가는 행이 비치지 않게 한다. */
   position: sticky;
-  top: 0;
+  top: 34px;
   z-index: 2;
-  box-shadow: 0 0 0 10px var(--db-studio-surface, #FFFFFF);
+  box-shadow: 0 0 0 8px var(--db-studio-surface, #FFFFFF);
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search::placeholder {
@@ -739,6 +737,7 @@
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-count {
   color: var(--db-studio-text-2, var(--text-2));
+  display: none;
   font: 600 12px/1.35 var(--font-ui);
   padding: 6px 10px 2px;
 }
@@ -750,6 +749,7 @@
   box-sizing: border-box;
   color: var(--db-studio-text-2, var(--text-2));
   cursor: pointer;
+  display: none;
   font: 400 12.5px/1.35 var(--font-ui);
   min-height: 28px;
   overflow-wrap: anywhere;
@@ -771,144 +771,131 @@
 }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-all {
-  display: none;
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--db-studio-text-3);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  font: 500 11.5px/1 var(--font-ui);
+  min-height: 26px;
+  padding: 0 8px;
+  text-align: left;
+  width: 100%;
 }
 
-/* 좁은 창·도크의 56/48px 아이콘 레인에서는 이름 단추 대신 「+N」 한 단추가 그룹을 펼친다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-all::before {
+  content: "빈 탭 펼치기 (";
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-all[data-fold-kind="profile"]::before {
+  content: "숨긴 탭 펼치기 (";
+}
+
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-all::after {
+  content: ")";
+}
+
+/* 좁은 창·도크의 56/48px 아이콘 레인에서는 「+N」만 표시한다. */
 @container db-modal (max-width: 799px) {
   .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold { align-items: center; width: 40px; }
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold > :not(.db-tab-fold-all) { display: none; }
   .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-all {
-    background: transparent; border: 0; border-radius: 6px; color: var(--db-studio-text-2); cursor: pointer; display: block;
-    font: 600 12px/1 var(--font-ui); min-height: 28px; width: 40px;
+    color: var(--db-studio-text-2); display: block; font-size: 12px; font-weight: 600; min-height: 28px; padding: 0; text-align: center; width: 40px;
   }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-all::before,
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-all::after { content: none; }
 }
 
 @media (max-width: 799px) {
   .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold { align-items: center; width: 40px; }
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold > :not(.db-tab-fold-all) { display: none; }
   .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-all {
-    background: transparent; border: 0; border-radius: 6px; color: var(--db-studio-text-2); cursor: pointer; display: block;
-    font: 600 12px/1 var(--font-ui); min-height: 28px; width: 40px;
+    color: var(--db-studio-text-2); display: block; font-size: 12px; font-weight: 600; min-height: 28px; padding: 0; text-align: center; width: 40px;
   }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-all::before,
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-all::after { content: none; }
 }
 
 .database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab-fold { align-items: center; width: 40px; }
-.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab-fold > :not(.db-tab-fold-all) { display: none; }
 .database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab-fold-all {
-  background: transparent; border: 0; border-radius: 6px; color: var(--db-studio-text-2); cursor: pointer; display: block;
-  font: 600 12px/1 var(--font-ui); min-height: 28px; width: 40px;
+  color: var(--db-studio-text-2); display: block; font-size: 12px; font-weight: 600; min-height: 28px; padding: 0; text-align: center; width: 40px;
 }
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab-fold-all::before,
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab-fold-all::after { content: none; }
 
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-group-label {
   min-width: 0;
   overflow-wrap: anywhere;
 }
 
-/* ---- group strip — 2026-09-27 자료집 개선안 ------------------------------
-   레일 왼쪽 64px 세로 띠. 그룹 7개를 아이콘 + 짧은 이름으로 세우고, 옆 목록(.db-tabs)은
-   data-view-group 이 가리키는 구획만 보인다. 탭 검색 중에는 제한을 풀어 전 구획에서 찾는다. */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-group-strip {
-  align-items: stretch;
-  background: var(--db-studio-surface);
-  border-right: 1px solid var(--db-studio-border-subtle);
-  box-sizing: border-box;
-  display: flex;
-  flex: 0 0 64px;
-  flex-direction: column;
-  gap: 2px;
-  min-height: 0;
-  overflow-y: auto;
-  padding: 10px 3px;
-  width: 64px;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-group-strip-btn {
+/* ---- 단일 통합 레일 접기 버튼 (2026-11-28, 안 B) --------------------------
+   기존 2단 구조(64px 그룹 띠 + 196px 오버레이 드로어)를 폐지하고 단일 196px 레일을
+   기본으로 둔다. 넓은 편집 폭이 필요할 때 상단 토글로 52px 아이콘 레일로 접고 펼친다. */
+.database-modal-backdrop .database-modal-window .database-modal-body .db-rail-collapse-btn {
   align-items: center;
-  background: transparent;
-  border: 0;
-  border-radius: 8px;
+  background: var(--db-studio-surface);
+  border: 1px solid var(--db-studio-border-subtle);
+  border-radius: 6px;
+  box-shadow: 0 0 0 12px var(--db-studio-surface);
   color: var(--db-studio-text-2);
   cursor: pointer;
-  display: flex;
+  display: inline-flex;
   flex: 0 0 auto;
-  flex-direction: column;
-  font: 500 11.5px/1.25 var(--font-ui);
-  gap: 3px;
-  min-height: 50px;
-  padding: 7px 2px 6px;
-  text-align: center;
-  word-break: keep-all;
+  font: 600 11.5px/1 var(--font-ui);
+  height: 26px;
+  justify-content: space-between;
+  margin: 0 0 6px;
+  padding: 0 8px;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  z-index: 3;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-group-strip-icon {
-  color: currentColor;
-  flex: 0 0 auto;
-  height: 20px;
-  width: 20px;
-}
-
-/* 「전투 규칙」「세계관」처럼 긴 이름도 52px 칸 안에서 두 줄로 끊기게 한다. */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-group-strip-label {
-  max-width: 100%;
-  overflow-wrap: anywhere;
-  word-break: keep-all;
-}
-
-.database-modal-backdrop .database-modal-window .database-modal-body .db-group-strip-btn:hover {
+.database-modal-backdrop .database-modal-window .database-modal-body .db-rail-collapse-btn:hover {
   background: var(--db-studio-inset);
+  border-color: var(--db-studio-border-default);
   color: var(--db-studio-text-1);
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-group-strip-btn:focus-visible {
+.database-modal-backdrop .database-modal-window .database-modal-body .db-rail-collapse-btn:focus-visible {
   outline: 2px solid var(--db-studio-accent);
-  outline-offset: -2px;
+  outline-offset: 1px;
 }
 
-.database-modal-backdrop .database-modal-window .database-modal-body .db-group-strip-btn.active {
-  background: var(--db-studio-accent-soft);
-  color: var(--db-studio-accent-text);
-  font-weight: 600;
+.database-modal-backdrop .database-modal-window .database-modal-body .db-rail-collapse-icon {
+  font-size: 13px;
+  line-height: 1;
 }
 
-/* 구획 제한은 넓은 창에서만 건다. 좁은 창(799px 이하)·도크 모드는 기존 56/48px 아이콘 레일이
-   전 구획을 그대로 보이므로 띠를 접고 제한도 걸지 않는다. 컨테이너 쿼리와 미디어 폴백은 쌍이다. */
-@container db-modal (min-width: 800px) {
-  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body .db-tabs:not([data-searching]) > [data-in-view="0"] {
-    display: none;
-  }
-  /* 띠가 이미 그룹 이름을 강조한다 — 머리를 다시 쓰면 「전투」「적」 두 단계 제목이 붙어 보였다
-     (V-database-11). 띠가 보이는 동안 머리는 감춘다(소제목 「적·규칙」은 남는다). */
-  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body .db-tabs:not([data-searching]) > .db-tab-group[data-in-view="1"] {
-    display: none;
-  }
-}
-
-@media (min-width: 800px) {
-  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body .db-tabs:not([data-searching]) > [data-in-view="0"] {
-    display: none;
-  }
-  /* 띠가 이미 그룹 이름을 강조한다 — 머리를 다시 쓰면 「전투」「적」 두 단계 제목이 붙어 보였다
-     (V-database-11). 띠가 보이는 동안 머리는 감춘다(소제목 「적·규칙」은 남는다). */
-  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body .db-tabs:not([data-searching]) > .db-tab-group[data-in-view="1"] {
-    display: none;
-  }
+.database-modal-backdrop .database-modal-window .database-modal-body .db-rail-collapse-label {
+  white-space: nowrap;
 }
 
 @container db-modal (max-width: 799px) {
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-group-strip {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-rail-collapse-btn {
     display: none;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search {
+    top: 0;
   }
 }
 
 @media (max-width: 799px) {
-  .database-modal-backdrop .database-modal-window .database-modal-body .db-group-strip {
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-rail-collapse-btn {
     display: none;
+  }
+  .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-search {
+    top: 0;
   }
 }
 
-.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-group-strip {
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-rail-collapse-btn {
   display: none;
+}
+
+.database-modal-backdrop.is-docked .database-modal-window .database-modal-body .db-tab-search {
+  top: 0;
 }
 
 /* ---- PR-3 레일 소제목 (.db-tab-subhead) & 경로 구분자 -------------------- */
@@ -998,25 +985,54 @@
   }
 }
 
-/* 레일 접기 (btn-vqa-db PR 7, 오너 확인 2026-11-24) — 묶음 아이콘 띠만 늘 보이고, 탭 목록(.db-tabs)은
-   묶음을 눌렀을 때만 띠 옆에 겹쳐 뜬다. 닫혀 있으면 상자를 아예 빼서 탭 순서·조작 수에 잡히지 않는다.
-   열림·닫힘은 database.ts 의 setRailOpen 이 .database-modal-body 의 data-rail-open 으로 정한다.
-   띠가 없는 좁은 창(799px 이하)·도크에서는 아이콘 목록이 유일한 길이라 접지 않는다. */
+/* 단일 통합 레일 수동 접기 (2026-11-28, 안 B) — 800px 이상 모달에서 사용자가 접으면 52px 아이콘 레일로
+   축소된다(본문 가림 0px). 검색 돋보기를 누르면 자동으로 다시 펼쳐진다. */
 @container db-modal (min-width: 800px) {
-  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body[data-rail-open] {
-    position: relative;
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-collapsed="1"] > .db-tabs {
+    align-items: center;
+    flex: 0 0 52px;
+    gap: 3px;
+    padding: 8px 6px 12px;
+    width: 52px;
   }
 
-  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body[data-rail-open="0"] > .db-tabs {
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-collapsed="1"] > .db-tabs > .db-rail-collapse-btn {
+    justify-content: center;
+    padding: 0;
+    width: 36px;
+  }
+
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-collapsed="1"] > .db-tabs > .db-rail-collapse-btn > .db-rail-collapse-label,
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-collapsed="1"] > .db-tabs > .db-tab-group,
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-collapsed="1"] > .db-tabs > .db-tab-subhead,
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-collapsed="1"] > .db-tabs > .db-recent-tabs,
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-collapsed="1"] > .db-tabs > .db-tab-fold,
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-collapsed="1"] > .db-tabs > .db-tab > .db-tab-label,
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-collapsed="1"] > .db-tabs > .db-tab[data-count]::after {
     display: none;
   }
 
-  .database-modal-backdrop:not(.is-docked) .database-modal-window .database-modal-body[data-rail-open="1"] > .db-tabs {
-    bottom: 0;
-    box-shadow: 8px 0 24px rgb(15 23 42 / 16%);
-    position: absolute;
-    top: 0;
-    z-index: 40;
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-collapsed="1"] > .db-tabs > .db-tab-search {
+    background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 16 16' fill='none' stroke='%2364748B' stroke-width='1.6'%3E%3Ccircle cx='7' cy='7' r='4.2'/%3E%3Cpath d='M10.2 10.2 14 14'/%3E%3C/svg%3E");
+    background-position: center;
+    background-repeat: no-repeat;
+    color: transparent;
+    height: 32px;
+    padding: 0;
+    width: 36px;
+  }
+
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-collapsed="1"] > .db-tabs > .db-tab-search::placeholder {
+    color: transparent;
+  }
+
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-collapsed="1"] > .db-tabs > .db-tab {
+    gap: 0;
+    height: 36px;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0;
+    width: 36px;
   }
 }
 
@@ -1044,52 +1060,60 @@
   }
 }
 
-/* 휴대 폭 탭 고르기 (db-390-trim, 오너 2026-11-26) — 599px 이하에서는 아이콘 레일 20칸을 지금 탭 이름 단추 하나로 접는다.
-   레일은 본문 위 한 줄이 되고, 단추를 누르면(data-rail-open="1") 검색·탭 목록이 이름과 함께 펼쳐진다.
-   넓은 창·도크에서는 단추가 숨고 레일은 그대로다. 창 자체가 db-modal 컨테이너라 미디어 폴백은 두지 않는다. */
-.database-modal-backdrop .database-modal-window .database-modal-body .db-tabs > .db-tab-switcher {
+/* 휴대 폭 전용 상단 바 + 2열 바텀 시트 (2026-11-28) — 넓은 창·도크에서는 숨긴다.
+   599px 이하에서는 상단 44px 1줄(「파티 › 주인공 ▾」 + 빠른 검색)만 차지해 본문을 밀지 않고,
+   열면 어두운 스크림 위로 그룹 머리·개수 배지가 살아 있는 2열 바텀 시트가 올라온다. */
+.database-modal-backdrop .database-modal-window .database-modal-body > .db-phone-bar,
+.database-modal-backdrop .database-modal-window .database-modal-body > .db-rail-scrim,
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tabs > .db-sheet-head {
   display: none;
 }
 
 @container db-modal (max-width: 599px) {
   .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body {
     flex-direction: column !important;
+    position: relative;
   }
-  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body > .db-tabs {
-    align-items: stretch;
-    border-bottom: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.10));
-    border-right: none;
-    flex: 0 0 auto !important;
-    max-height: 60%;
-    padding: 6px 10px;
-    width: 100% !important;
-  }
-  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body > .db-body.db-shared-workspace {
-    flex: 1 1 0;
-    width: auto;
-  }
-  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body:not([data-rail-open="1"]) > .db-tabs > :not(.db-tab-switcher) {
-    display: none !important;
-  }
-  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body > .db-tabs > .db-tab-switcher {
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body > .db-phone-bar {
     align-items: center;
-    background: transparent;
-    border: 1px solid var(--db-studio-border-default, rgba(15, 23, 42, 0.10));
+    background: var(--db-studio-surface);
+    border-bottom: 1px solid var(--db-studio-border-default);
+    display: flex;
+    flex: 0 0 auto;
+    gap: 8px;
+    padding: 6px 10px;
+    width: 100%;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body > .db-phone-bar > .db-tab-switcher {
+    align-items: center;
+    background: var(--db-studio-inset);
+    border: 1px solid var(--db-studio-border-subtle);
     border-radius: 8px;
     color: var(--db-studio-text-1);
     cursor: pointer;
     display: flex;
-    font-size: 14px;
+    flex: 1 1 0;
+    font-size: 13.5px;
     font-weight: 600;
-    gap: 8px;
-    min-height: 40px;
-    padding: 0 12px;
-    width: 100%;
+    gap: 6px;
+    min-height: 36px;
+    min-width: 0;
+    padding: 0 10px;
   }
   .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-tab-switcher > .db-tab-icon {
+    color: var(--db-studio-accent-text);
     flex: 0 0 auto;
-    height: 18px;
-    width: 18px;
+    height: 17px;
+    width: 17px;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-tab-switcher > .db-tab-switcher-group {
+    color: var(--db-studio-text-2);
+    flex: 0 0 auto;
+    font-weight: 500;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-tab-switcher > .db-tab-switcher-sep {
+    color: var(--db-studio-text-3);
+    flex: 0 0 auto;
   }
   .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-tab-switcher > .db-tab-switcher-label {
     flex: 1 1 auto;
@@ -1099,20 +1123,175 @@
     white-space: nowrap;
   }
   .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-tab-switcher > .db-tab-switcher-chevron {
-    color: var(--db-studio-text-2, var(--text-2));
+    color: var(--db-studio-text-2);
+    flex: 0 0 auto;
     font-size: 12px;
   }
-  /* 펼친 목록은 아이콘만이 아니라 이름도 보인다 — 폭이 충분하다. */
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-phone-search-btn {
+    align-items: center;
+    background: var(--db-studio-inset);
+    border: 1px solid var(--db-studio-border-subtle);
+    border-radius: 8px;
+    color: var(--db-studio-text-2);
+    cursor: pointer;
+    display: inline-flex;
+    flex: 0 0 auto;
+    height: 36px;
+    justify-content: center;
+    width: 36px;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-phone-search-icon {
+    height: 16px;
+    width: 16px;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body > .db-body.db-shared-workspace {
+    flex: 1 1 0;
+    width: auto;
+  }
+  /* 닫혀 있으면 시트와 스크림을 숨겨 본문이 전체 높이를 쓴다. */
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body:not([data-rail-open="1"]) > .db-tabs {
+    display: none;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-rail-scrim {
+    background: color-mix(in srgb, var(--db-studio-text-1) 46%, transparent);
+    display: block;
+    inset: 0;
+    position: absolute;
+    z-index: 30;
+  }
+  /* 바텀 시트(2열 카드 그리드) — 본문을 밀지 않고 하단에서 스크림 위로 올라온다. */
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs {
+    align-content: start;
+    align-items: stretch;
+    background: var(--db-studio-surface);
+    border-right: none;
+    border-top: 1px solid var(--db-studio-border-default);
+    border-radius: 16px 16px 0 0;
+    bottom: 0;
+    box-shadow: 0 -8px 28px color-mix(in srgb, var(--db-studio-text-1) 24%, transparent);
+    display: grid;
+    gap: 6px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    left: 0;
+    max-height: 82%;
+    overflow-y: auto;
+    padding: 8px 12px 18px;
+    position: absolute;
+    right: 0;
+    width: 100% !important;
+    z-index: 40;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-sheet-head {
+    align-items: center;
+    display: grid;
+    gap: 6px 8px;
+    grid-column: 1 / -1;
+    grid-template-columns: 1fr auto;
+    padding-bottom: 2px;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-sheet-handle {
+    background: var(--db-studio-border-default);
+    border-radius: 999px;
+    grid-column: 1 / -1;
+    height: 4px;
+    justify-self: center;
+    width: 36px;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-sheet-title {
+    color: var(--db-studio-text-1);
+    font-size: 13.5px;
+    font-weight: 700;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .db-sheet-close {
+    align-items: center;
+    background: var(--db-studio-inset);
+    border: 0;
+    border-radius: 999px;
+    color: var(--db-studio-text-2);
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 16px;
+    height: 28px;
+    justify-content: center;
+    width: 28px;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab-search {
+    background-image: none;
+    box-shadow: none;
+    grid-column: 1 / -1;
+    height: 36px;
+    margin: 0 0 2px;
+    padding: 0 10px;
+    position: static;
+    text-align: left;
+    width: 100%;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab-search::placeholder {
+    color: var(--db-studio-text-3);
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab-group {
+    display: flex;
+    grid-column: 1 / -1;
+    padding: 8px 2px 2px;
+    position: static;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-recent-tabs,
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-search-dest-head,
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-search-dest,
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab-search-empty {
+    display: flex;
+    grid-column: 1 / -1;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab-fold {
+    align-items: stretch;
+    grid-column: 1 / -1;
+    margin: 0;
+    width: 100%;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab-fold > .db-tab-fold-all {
+    border: 1px dashed var(--db-studio-border-default);
+    font-size: 12px;
+    font-weight: 500;
+    min-height: 34px;
+    padding: 0 10px;
+    text-align: center;
+    width: 100%;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab-fold > .db-tab-fold-all::before {
+    content: "빈 탭 펼치기 (";
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab-fold > .db-tab-fold-all[data-fold-kind="profile"]::before {
+    content: "숨긴 탭 펼치기 (";
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab-fold > .db-tab-fold-all::after {
+    content: ")";
+  }
   .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab {
+    background: var(--db-studio-canvas);
+    border-color: var(--db-studio-border-subtle);
+    border-radius: 10px;
     color: var(--db-studio-text-1) !important;
-    font-size: 14px !important;
-    gap: 10px;
+    font-size: 13px !important;
+    gap: 7px;
     justify-content: flex-start !important;
     max-width: none !important;
-    padding: 0 12px !important;
+    min-height: 40px;
+    padding: 6px 10px !important;
     width: 100% !important;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab.active {
+    background: var(--db-studio-accent-soft);
+    border-color: var(--db-studio-accent);
+    color: var(--db-studio-accent-text) !important;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab > .db-tab-icon {
+    height: 16px;
+    width: 16px;
   }
   .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab > .db-tab-label {
     display: inline;
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab[data-count]::after {
+    display: inline-flex !important;
   }
 }
