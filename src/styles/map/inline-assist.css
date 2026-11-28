@@ -435,6 +435,11 @@
   padding: 0 8px;
 }
 
+.selection-action-zone-tag-input:focus-visible {
+  box-shadow: var(--focus-ring);
+  outline: none;
+}
+
 .selection-action-zone-tag-save {
   background: var(--accent);
   border: 0;
@@ -462,6 +467,11 @@
   position: absolute;
   right: 6px;
   z-index: 250;
+}
+
+.selection-action-more-popover.is-below {
+  bottom: auto;
+  top: calc(100% + 6px);
 }
 
 .selection-action-more-item {
@@ -612,7 +622,9 @@
     flex-wrap: wrap;
   }
   .selection-action-context-actions {
+    flex: 1 1 auto;
     flex-wrap: wrap;
+    min-width: 0;
   }
   .selection-action-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

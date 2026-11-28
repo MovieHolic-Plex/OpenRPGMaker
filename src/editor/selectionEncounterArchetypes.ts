@@ -169,7 +169,7 @@ export function recommendedEncounterArchetypes(zone: SelectionZoneContext | null
   readonly topIds: ReadonlySet<EncounterArchetypeId>;
 } {
   let order: EncounterArchetypeId[];
-  const label = zone?.label ?? "";
+  const label = zone ? `${zone.label} ${(zone.locationTags ?? []).join(" ")} ${zone.suggestedZoneTags.join(" ")}` : "";
   const area = zone?.metrics.area ?? 12;
 
   if (NIGHT_HORROR_RE.test(label)) {
@@ -200,7 +200,7 @@ export interface BuildEncounterArchetypePromptInput {
   readonly zone: SelectionZoneContext | null;
   readonly zoneLabel: string;
   readonly zoneSaved: boolean;
-  readonly suggestedCell: { readonly x: number; readonly y: number };
+  readonly suggestedCell: { readonly x: number; readonly y: number } | null;
   readonly userMemo?: string;
 }
 
@@ -216,9 +216,12 @@ export function buildEncounterArchetypePrompt(input: BuildEncounterArchetypeProm
   const zoneDesc = zoneSaved
     ? `「${zoneLabel}」 (저장된 구역 태그${zone?.locationId ? ` · locationId=${zone.locationId}` : ""})`
     : `「${zoneLabel}」`;
+  const cellHint = suggestedCell
+    ? `기준 통행 칸 (${suggestedCell.x}, ${suggestedCell.y})`
+    : `영역 내 빈 통행 칸 없음 (영역 재선택 또는 통행 가능 칸 확인 필요)`;
 
   const lines: string[] = [
-    `[대상 구역] ${zoneDesc} · 좌표 (${selection.x},${selection.y})~(${xEnd},${yEnd}) ${selection.width}×${selection.height}칸 · 기준 통행 칸 (${suggestedCell.x}, ${suggestedCell.y})`,
+    `[대상 구역] ${zoneDesc} · 좌표 (${selection.x},${selection.y})~(${xEnd},${yEnd}) ${selection.width}×${selection.height}칸 · ${cellHint}`,
     `[작업 종류] ${arch.icon} ${arch.label} 조우·전투 저작 (권장 도구: ${arch.tools.join(", ")})`,
     ...arch.specLines.map((line) => `• ${line}`),
   ];

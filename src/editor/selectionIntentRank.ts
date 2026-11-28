@@ -70,8 +70,8 @@ export interface SelectionIntentAnalysis {
   readonly actions: readonly SelectionQuickAction[];
   readonly npcPresets: readonly SelectionQuickPreset[];
   readonly directPresets: readonly SelectionQuickPreset[];
-  /** 선택 영역 안 통행 가능한 중앙 우선 칸 — AI 없이 직접 NPC 만들기 모달 좌표. */
-  readonly suggestedNpcCell: { readonly x: number; readonly y: number };
+  /** 선택 영역 안 통행 가능한 빈 중앙 우선 칸 — 조건에 맞는 칸이 없으면 null. */
+  readonly suggestedNpcCell: { readonly x: number; readonly y: number } | null;
   readonly promptPlaceholder: string;
 }
 
@@ -115,8 +115,9 @@ function classifyTileWithMeta(tileId: number, tileset: TilesetDef | undefined): 
   const meta = tileset?.tileMeta?.[tileId];
   if (meta) {
     const hay = `${meta.label ?? ""} ${meta.role ?? ""} ${(meta.tags ?? []).join(" ")}`;
-    if (META_WATER_RE.test(hay)) return "water";
+    // "건물 외벽" 등이 "물" 부분 문자열로 수면에 오분류되지 않게 건물을 먼저 판정한다.
     if (META_BUILDING_RE.test(hay)) return "building";
+    if (META_WATER_RE.test(hay)) return "water";
     if (META_FOREST_RE.test(hay)) return "forest";
     if (META_ROAD_RE.test(hay)) return "road";
   }
@@ -356,7 +357,7 @@ function pickSuggestedNpcCell(
   y0: number,
   x1: number,
   y1: number,
-): { readonly x: number; readonly y: number } {
+): { readonly x: number; readonly y: number } | null {
   const cx = Math.floor((x0 + x1 - 1) / 2);
   const cy = Math.floor((y0 + y1 - 1) / 2);
   const occupied = new Set(map.events.map((ev) => `${ev.x},${ev.y}`));
@@ -378,7 +379,7 @@ function pickSuggestedNpcCell(
       }
     }
   }
-  return best ?? { x: cx, y: cy };
+  return best;
 }
 
 /**

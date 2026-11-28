@@ -230,7 +230,7 @@ export function recommendedDirectArchetypes(zone: SelectionZoneContext | null): 
   readonly topIds: ReadonlySet<DirectArchetypeId>;
 } {
   let order: DirectArchetypeId[];
-  const label = zone?.label ?? "";
+  const label = zone ? `${zone.label} ${(zone.locationTags ?? []).join(" ")} ${zone.suggestedZoneTags.join(" ")}` : "";
   const waterTotal = (zone?.metrics.insideCounts.water ?? 0) + (zone?.metrics.outsideCounts.water ?? 0);
   const forestTotal = (zone?.metrics.insideCounts.forest ?? 0) + (zone?.metrics.outsideCounts.forest ?? 0);
 

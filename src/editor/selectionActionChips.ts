@@ -281,10 +281,12 @@ export function renderSelectionActionChips(
     : null;
 
   const actions = intent?.actions ?? fallbackActions();
-  const suggestedNpcCell = intent?.suggestedNpcCell ?? {
-    x: selection.x + Math.floor(Math.max(1, selection.width) / 2),
-    y: selection.y + Math.floor(Math.max(1, selection.height) / 2),
-  };
+  const suggestedNpcCell = intent
+    ? intent.suggestedNpcCell
+    : {
+        x: selection.x + Math.floor(Math.max(1, selection.width) / 2),
+        y: selection.y + Math.floor(Math.max(1, selection.height) / 2),
+      };
 
   const npcRec = recommendedNpcArchetypes(intent?.zone ?? null);
   let activeNpcCategory: "rec" | NpcArchetypeCategory = "rec";
@@ -320,15 +322,25 @@ export function renderSelectionActionChips(
     return `${activeZoneLabel} · AI에게 시킬 일…`;
   };
 
+  const currentZone = () =>
+    intent
+      ? {
+          ...intent.zone,
+          label: activeZoneLabel,
+          ...(activeLocationId ? { locationId: activeLocationId, source: "location" as const } : {}),
+        }
+      : null;
+
   const buildCurrentArchetypePrompt = (mode: ArchetypeDrawerMode): string => {
     const userMemo = prompt.value.trim();
+    const zone = currentZone();
     if (mode === "npc") {
       return buildNpcArchetypePrompt({
         archetypeId: selectedNpcArchetypeId,
         project,
         map,
         selection,
-        zone: intent?.zone ?? null,
+        zone,
         zoneLabel: activeZoneLabel,
         zoneSaved: Boolean(activeLocationId),
         suggestedCell: suggestedNpcCell,
@@ -341,7 +353,7 @@ export function renderSelectionActionChips(
         project,
         map,
         selection,
-        zone: intent?.zone ?? null,
+        zone,
         zoneLabel: activeZoneLabel,
         zoneSaved: Boolean(activeLocationId),
         userMemo,
@@ -352,7 +364,7 @@ export function renderSelectionActionChips(
       project,
       map,
       selection,
-      zone: intent?.zone ?? null,
+      zone,
       zoneLabel: activeZoneLabel,
       zoneSaved: Boolean(activeLocationId),
       suggestedCell: suggestedNpcCell,
@@ -383,6 +395,10 @@ export function renderSelectionActionChips(
 
   const aiPreset = SELECTION_CHIP_PRESETS.find((preset) => preset.id === "ai")!;
   const submitPrompt = (): void => {
+    if (!aiReady) {
+      toast("AI 연결 후 실행할 수 있어요", "info");
+      return;
+    }
     const stamp = isStampPlaceOn();
     if (isArchetypeDrawer(drawerMode)) {
       const detailed = buildCurrentArchetypePrompt(drawerMode);
@@ -660,19 +676,71 @@ export function renderSelectionActionChips(
     },
   }) as HTMLButtonElement;
 
+  const moreMenuItems = (): HTMLButtonElement[] =>
+    Array.from(morePopover.querySelectorAll?.<HTMLButtonElement>(".selection-action-more-item:not(:disabled)") ?? []);
+
+  const openMorePopover = (focusFirst = false): void => {
+    const rect = typeof bar.getBoundingClientRect === "function" ? bar.getBoundingClientRect() : null;
+    morePopover.classList?.toggle?.("is-below", Boolean(rect && rect.top > 0 && rect.top < 280));
+    morePopover.hidden = false;
+    moreButton.setAttribute("aria-expanded", "true");
+    moreButton.classList?.add?.("is-active");
+    if (focusFirst) {
+      moreMenuItems()[0]?.focus?.({ preventScroll: true });
+    }
+  };
+
   const moreButton = iconButton({
     testid: "more",
     title: "더보기 — 복사(Ctrl+C)·지우기(Del)·마을/숲/항구·구조물 저장",
     icon: makeSvgIcon("more"),
-    onClick: () => {
+    onClick: (event) => {
       const opening = Boolean(morePopover.hidden);
-      morePopover.hidden = !opening;
-      moreButton.setAttribute("aria-expanded", String(opening));
-      moreButton.classList?.toggle?.("is-active", opening);
+      if (opening) {
+        const isKeyboard = (event as MouseEvent).detail === 0;
+        openMorePopover(isKeyboard);
+      } else {
+        closeMorePopover();
+      }
     },
   });
   moreButton.setAttribute("aria-haspopup", "menu");
   moreButton.setAttribute("aria-expanded", "false");
+  moreButton.addEventListener("keydown", (raw) => {
+    const event = raw as KeyboardEvent;
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      if (morePopover.hidden) openMorePopover(true);
+      else {
+        const items = moreMenuItems();
+        (event.key === "ArrowDown" ? items[0] : items[items.length - 1])?.focus?.({ preventScroll: true });
+      }
+    }
+  });
+  morePopover.addEventListener("keydown", (raw) => {
+    const event = raw as KeyboardEvent;
+    const items = moreMenuItems();
+    if (items.length === 0) return;
+    const idx = items.indexOf(document.activeElement as HTMLButtonElement);
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      items[(idx + 1 + items.length) % items.length]?.focus?.({ preventScroll: true });
+    } else if (event.key === "ArrowUp") {
+      event.preventDefault();
+      items[(idx - 1 + items.length) % items.length]?.focus?.({ preventScroll: true });
+    } else if (event.key === "Home") {
+      event.preventDefault();
+      items[0]?.focus?.({ preventScroll: true });
+    } else if (event.key === "End") {
+      event.preventDefault();
+      items[items.length - 1]?.focus?.({ preventScroll: true });
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      event.stopPropagation();
+      closeMorePopover();
+      moreButton.focus?.({ preventScroll: true });
+    }
+  });
 
   const dismissButton = iconButton({
     testid: "dismiss",
@@ -880,6 +948,8 @@ export function renderSelectionActionChips(
               else if (mode === "direct") activeDirectCategory = cat.id as "rec" | DirectArchetypeCategory;
               else activeEncounterCategory = cat.id as "rec" | EncounterArchetypeCategory;
               renderArchetypePalette(mode);
+              const nextBtn = npcCatRow.querySelector?.<HTMLButtonElement>(`[data-testid="selection-${mode}-cat-${cat.id}"]`);
+              nextBtn?.focus?.({ preventScroll: true });
             },
           },
         }),
@@ -894,13 +964,19 @@ export function renderSelectionActionChips(
         text: "+ 빈 NPC 직접",
         attrs: {
           type: "button",
-          title: `AI 없이 (${suggestedNpcCell.x}, ${suggestedNpcCell.y})에 새 NPC 이벤트 편집창 바로 열기`,
+          title: suggestedNpcCell
+            ? `AI 없이 (${suggestedNpcCell.x}, ${suggestedNpcCell.y})에 새 NPC 이벤트 편집창 바로 열기`
+            : "선택 영역에 비어 있는 통행 가능 칸이 없습니다 — 다른 영역을 선택해 주세요",
         },
         dataset: { testid: "selection-chip-npc-direct" },
         on: {
           click: () => {
             if (!canEditMap(selection.mapId)) {
               toast(mapEditLockNotice(selection.mapId), "error");
+              return;
+            }
+            if (!suggestedNpcCell) {
+              toast("선택 영역 안에 비어 있는 통행 가능 칸이 없습니다. 다른 영역을 선택해 주세요.", "info");
               return;
             }
             openNewEventEditorModal(selection.mapId, suggestedNpcCell.x, suggestedNpcCell.y);
@@ -919,6 +995,7 @@ export function renderSelectionActionChips(
         on: {
           click: () => {
             if (!buildVillageInSelection(selection)) {
+              activeDirectCategory = "decor";
               selectedDirectArchetypeId = "street";
               prompt.value = "이 선택 영역 안에만 마을의 집·길·소품을 자연스럽게 배치해 줘.";
               autosizePrompt(prompt);
@@ -1090,6 +1167,7 @@ export function renderSelectionActionChips(
         prompt.value = "";
         autosizePrompt(prompt);
         syncSendState();
+        if (isArchetypeDrawer(drawerMode) && specPreviewOpen) syncArchetypeSpecPreview();
         return;
       }
       setDrawerMode(null);
@@ -1105,7 +1183,12 @@ export function renderSelectionActionChips(
       pasteButton.click();
     } else if (event.key === "Delete") {
       event.preventDefault();
+      if (event.repeat) return;
+      if (clearCells > CLEAR_CONFIRM_CELLS && !clearArmed && morePopover.hidden) {
+        openMorePopover(false);
+      }
       clearButton.click();
+      if (clearArmed) clearButton.focus?.({ preventScroll: true });
     }
   });
 
@@ -1123,11 +1206,17 @@ export function renderSelectionActionChips(
       pasteButton.click();
     } else if (event.key === "Delete") {
       event.preventDefault();
+      if (event.repeat) return;
+      if (clearCells > CLEAR_CONFIRM_CELLS && !clearArmed && morePopover.hidden) {
+        openMorePopover(false);
+      }
       clearButton.click();
+      if (clearArmed) clearButton.focus?.({ preventScroll: true });
     } else if (event.key === "Escape") {
       event.preventDefault();
       if (!morePopover.hidden) {
         closeMorePopover();
+        moreButton.focus?.({ preventScroll: true });
       } else if (drawerMode !== null) {
         setDrawerMode(null);
       } else {

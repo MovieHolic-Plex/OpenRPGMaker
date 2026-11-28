@@ -227,7 +227,7 @@ export function recommendedNpcArchetypes(zone: SelectionZoneContext | null): {
   readonly topIds: ReadonlySet<NpcArchetypeId>;
 } {
   let order: NpcArchetypeId[];
-  const label = zone?.label ?? "";
+  const label = zone ? `${zone.label} ${(zone.locationTags ?? []).join(" ")} ${zone.suggestedZoneTags.join(" ")}` : "";
   const waterTotal = (zone?.metrics.insideCounts.water ?? 0) + (zone?.metrics.outsideCounts.water ?? 0);
 
   if (WATER_HINT_RE.test(label) || waterTotal >= 3) {
@@ -254,7 +254,7 @@ export interface BuildNpcArchetypePromptInput {
   readonly zone: SelectionZoneContext | null;
   readonly zoneLabel: string;
   readonly zoneSaved: boolean;
-  readonly suggestedCell: { readonly x: number; readonly y: number };
+  readonly suggestedCell: { readonly x: number; readonly y: number } | null;
   readonly userMemo?: string;
 }
 
@@ -268,9 +268,12 @@ export function buildNpcArchetypePrompt(input: BuildNpcArchetypePromptInput): st
   const xEnd = selection.x + Math.max(1, selection.width) - 1;
   const yEnd = selection.y + Math.max(1, selection.height) - 1;
   const zoneDesc = zoneSaved ? `「${zoneLabel}」 (저장된 구역 태그)` : `「${zoneLabel}」`;
+  const cellHint = suggestedCell
+    ? `추천 배치 칸 (${suggestedCell.x}, ${suggestedCell.y})`
+    : `영역 내 빈 통행 칸 없음 (영역을 다시 잡거나 인접 통행 가능 칸 확인 필요)`;
 
   const lines: string[] = [
-    `[대상 구역] ${zoneDesc} · 좌표 (${selection.x},${selection.y})~(${xEnd},${yEnd}) ${selection.width}×${selection.height}칸 · 추천 배치 칸 (${suggestedCell.x}, ${suggestedCell.y})`,
+    `[대상 구역] ${zoneDesc} · 좌표 (${selection.x},${selection.y})~(${xEnd},${yEnd}) ${selection.width}×${selection.height}칸 · ${cellHint}`,
     `[작업 종류] ${arch.icon} ${arch.label} NPC 저작 (권장 도구: ${arch.tools.join(", ")})`,
     ...arch.specLines.map((line) => `• ${line}`),
   ];
