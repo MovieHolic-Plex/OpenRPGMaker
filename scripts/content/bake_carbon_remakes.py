@@ -157,7 +157,8 @@ def bake_bundle(bundle, dry=False):
             pins['cells'][name] = tid
         return tid
 
-    how_waiver = f"3/4 관문 미통과 — 오너 면제 그림({waiver_id})."
+    def waiver_note(it):
+        return f"3/4 관문 미통과 — 오너 면제 그림({it.get('waiver') or waiver_id})."
 
     for it, im in pcs:
         w, h = int(it['w']), int(it['h'])
@@ -185,7 +186,7 @@ def bake_bundle(bundle, dry=False):
         parts = [dict(kind='entrance', x=c, y=h - 1, w=1, h=1, label='출입구') for c in doors if c not in ps] if is_bldg else []
         access = [dict(x=c, y=h) for c in doors] if is_bldg else []
         role = 'building' if is_bldg else 'prop'
-        desc = f"{it['name']} ({it['en']}) — Carbon Medium 재작화(대체: {it.get('replaces', '')}). {how_waiver}"
+        desc = f"{it['name']} ({it['en']}) — Carbon Medium 재작화(대체: {it.get('replaces', '')}). {waiver_note(it)}"
 
         ai = dict(
             description=desc[:400],
@@ -261,7 +262,7 @@ def bake_bundle(bundle, dry=False):
         data['terrain'][tid] = 0
         data['tileMeta'][tid] = dict(
             label=label,
-            description=f"{PC_NOTE[pc]}. 키트 {kid} 로 찍는다(낱칸으로 칠하지 않는다). {how_waiver}",
+            description=f"{PC_NOTE[pc]}. 키트 {kid} 로 찍는다(낱칸으로 칠하지 않는다). {waiver_note(it)}",
             role='building' if it.get('type') == 'building' else 'prop',
             passage=passage,
             defaultLayer=home,
@@ -277,6 +278,8 @@ def bake_bundle(bundle, dry=False):
         data['libraryEnd'] = data['count']
 
     gid = bundle['group_id']
+    waiver_ids = list(dict.fromkeys(it.get('waiver') or waiver_id for it, _ in pcs))
+    group_waiver = f"3/4 관문 미통과 — 오너 면제 그림({', '.join(waiver_ids)})."
     data['tileGroups'] = [g for g in data['tileGroups'] if g['id'] != gid]
     data['tileGroups'].append(dict(
         id=gid,
@@ -284,7 +287,7 @@ def bake_bundle(bundle, dry=False):
         role='prop',
         defaultLayer='upper',
         tileIds=sorted(mine),
-        description=f"Carbon Medium 재작화 키트({len(kit_defs)}종): " + ' · '.join(it['name'] for it, _ in pcs) + f". {how_waiver}",
+        description=f"Carbon Medium 재작화 키트({len(kit_defs)}종): " + ' · '.join(it['name'] for it, _ in pcs) + f". {group_waiver}",
         placementRules='키트째 위층에 찍는다. 낱칸으로 칠하지 않는다.',
         source='bundled-default',
         confidence='high',
