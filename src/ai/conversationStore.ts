@@ -299,6 +299,19 @@ async function persistLocalConversation(record: ConversationRecord & { mapIndex:
 
 let writeFailureWarned = false;
 
+// ── 바뀜 알림 — 왼쪽 스레드 목록(editor/aiThreadList)이 다시 읽는다 ─────────────────────
+const savedListeners = new Set<(id: string) => void>();
+function emitConversationSaved(id: string): void {
+  for (const listener of [...savedListeners]) {
+    try { listener(id); } catch (error) { console.warn("[ai-conversation] saved listener", error); }
+  }
+}
+/** 대화가 이 브라우저 저장소에 써지거나 지워질 때마다 그 id 로 부른다. 돌려준 함수로 끊는다. */
+export function onConversationSaved(listener: (id: string) => void): () => void {
+  savedListeners.add(listener);
+  return () => { savedListeners.delete(listener); };
+}
+
 registerRemoteOutboxSender("ai-conversation", async (payload) => {
   if (!isObject(payload) || typeof payload.conversationId !== "string" || typeof payload.title !== "string"
     || typeof payload.model !== "string" || typeof payload.savedAt !== "number" || !Array.isArray(payload.entries)
@@ -335,6 +348,7 @@ export async function saveConversation(record: ConversationRecord): Promise<Conv
     if (!result.written) return { ok: true, durable: result.backend === "indexeddb", evicted: 0 };
     writeFailureWarned = false;
     outcome = { ok: true, durable: result.backend === "indexeddb", evicted: 0 };
+    emitConversationSaved(compacted.id);
   } catch (error) {
     if (!writeFailureWarned) {
       writeFailureWarned = true;
@@ -482,6 +496,7 @@ export async function clearConversations(): Promise<void> {
     legacyMigration = Promise.resolve();
     const conversations = await readAll();
     await clearAiRecords(STORE);
+    for (const record of conversations) emitConversationSaved(record.id);
     for (const record of conversations) if (record.projectContextKey) {
       await deleteTerminalRunCheckpointsForConversation(record.id, record.projectContextKey);
     }
@@ -539,6 +554,7 @@ export async function loadConversationForScope(id: string, projectContextKey: st
 export async function deleteConversationForScope(id: string, projectContextKey: string | null): Promise<{ readonly durable: boolean }> {
   await ensureLegacyMigrated();
   const result = await mutateScopedAiRecord<ConversationRecord>({ store: STORE, id, scope: projectContextKey }, null);
+  if (result.written) emitConversationSaved(id);
   if (result.written && projectContextKey) await deleteTerminalRunCheckpointsForConversation(id, projectContextKey);
   return { durable: result.backend === "indexeddb" };
 }
@@ -587,7 +603,7 @@ export async function hydrateConversationArchive(options: ConversationArchiveHyd
       requireCurrent();
       const result = await persistLocalConversation(compactRecord(candidate), { requireCurrent,
         recoveryBaseline: baseline.get(candidate.id) ?? null });
-      if (result.written) imported++; else skipped++;
+      if (result.written) { imported++; emitConversationSaved(candidate.id); } else skipped++;
     }
     if (rows.length < pageSize) break;
   }

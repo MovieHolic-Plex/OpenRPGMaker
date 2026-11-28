@@ -29,9 +29,21 @@ export interface OpenAssistantDecision {
   answer(accepted: boolean, via: Exclude<AssistantDecisionVia, "button">): void;
 }
 const openDecisions = new Set<OpenAssistantDecision>();
+const decisionListeners = new Set<() => void>();
+function emitDecisionChange(): void {
+  for (const listener of [...decisionListeners]) {
+    try { listener(); } catch (error) { console.warn("[aiDecisionPrompt] listener", error); }
+  }
+}
 export function registerAssistantDecision(decision: OpenAssistantDecision): () => void {
   openDecisions.add(decision);
-  return () => { openDecisions.delete(decision); };
+  emitDecisionChange();
+  return () => { if (openDecisions.delete(decision)) emitDecisionChange(); };
+}
+/** 카드가 열리거나 닫힐 때마다 부른다 — 왼쪽 스레드 목록의 「확인 필요」(aiThreadList). */
+export function subscribeAssistantDecisions(listener: () => void): () => void {
+  decisionListeners.add(listener);
+  return () => { decisionListeners.delete(listener); };
 }
 /** 열린 카드들, 오래된 것부터. */
 export function openAssistantDecisions(): readonly OpenAssistantDecision[] {
