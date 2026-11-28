@@ -716,8 +716,13 @@ export function mountFloatingDoodadWindow(
   }
 
   let suppressEditorSync = false;
+  function isHouseModeState(state: ReturnType<typeof editorState.get>): boolean {
+    return state.tool === "relief" && state.terrainBrush === "house";
+  }
+
   function activateItem(item: UnifiedDoodad): void {
     recordRecent(item.key);
+    const wasHouseMode = isHouseModeState(editorState.get());
     suppressEditorSync = true;
     try {
       if (item.source === "interactive") {
@@ -757,7 +762,9 @@ export function mountFloatingDoodadWindow(
     } else {
       const tileset = currentTileset();
       renderRecentBar(unifiedDoodadsFor(tileset), tileset);
-      syncSelectionInPlace();
+      // 집 짓기 모드를 빠져나왔다면 막대의 토글·양식 버튼이 낡은 상태를 쥐고 있으므로 통째로 다시 만든다.
+      if (wasHouseMode !== isHouseModeState(editorState.get())) renderBody();
+      else syncSelectionInPlace();
     }
   }
 
