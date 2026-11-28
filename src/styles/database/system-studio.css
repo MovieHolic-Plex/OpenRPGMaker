@@ -500,6 +500,7 @@
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-table-row b { font-weight: 500; padding: 2px 6px; border-radius: 4px; }
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-table-row b.is-variable { background: var(--db-studio-accent-soft); color: var(--db-studio-accent); }
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-no-results { padding: 24px; display: grid; gap: 12px; justify-items: start; }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-no-results[hidden] { display: none; }
 /* Party / fonts / assets use the same property-row rhythm. */
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-party-roster { display: grid; gap: 0; }
 .database-modal-backdrop .database-modal-window .db-system-form .db-system-party-row { display: grid; grid-template-columns: 24px 40px minmax(0, 1fr); align-items: center; gap: 8px 16px; padding: 16px 0; border-bottom: 1px solid var(--db-studio-border-subtle); }
@@ -645,3 +646,112 @@
 .database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-system-look-grid { grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); }
 .database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-system-look-grid > .db-field:nth-child(2) { grid-column: 1 / -1; }
 .database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-system-look-fit { font-size: 12.5px; line-height: 1.5; }
+
+/* 메뉴·시스템 스튜디오 2열(좌: 편집 카드 / 우: 라이브 ESC 메뉴 미리보기) — battle-screen-layout 과 같은 스크롤·sticky 계약 */
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-battle-studio-heading { padding: 10px 16px 8px; }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-system-intro { font-size: 12px; line-height: 1.4; }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-system-layout { display: grid; grid-template-columns: minmax(0, 1fr) 292px; align-items: start; align-self: stretch; gap: 12px; min-height: 0; min-width: 0; overflow-y: auto; padding: 0 16px 14px; }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-system-layout > .db-menu-system-stack { padding: 0; overflow: visible; gap: 10px; }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-system-layout [hidden] { display: none; }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-system-aside { align-self: start; position: sticky; top: 8px; display: grid; gap: 10px; min-width: 0; }
+@media (max-width: 1120px) {
+  .database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-system-layout { grid-template-columns: minmax(0, 1fr); }
+  .database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-system-aside { position: static; order: -1; }
+}
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-subtabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 4px; background: var(--db-studio-inset); border: 1px solid var(--db-studio-border-subtle); border-radius: 8px; }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-subtab { padding: 5px 11px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--db-studio-text-2); font: 600 12px/1.3 var(--font-ui); cursor: pointer; }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-subtab:hover { color: var(--db-studio-text-1); background: var(--db-studio-surface); }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-subtab.active { background: var(--db-studio-surface); color: var(--db-studio-accent); border-color: var(--db-studio-accent-border); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05); }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-field :is(select, input[type="text"]) { min-height: 30px; padding: 3px 8px; border: 1px solid var(--db-studio-border-default); border-radius: 6px; background: var(--db-studio-surface); color: var(--db-studio-text-1); }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-row { padding: 3px 6px; gap: 6px; }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-row-help { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-row-help-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-row-badge { flex: 0 0 auto; padding: 1px 6px; border-radius: 999px; font: 600 10.5px/1.3 var(--font-ui); white-space: nowrap; }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-row-badge.is-warn { background: rgba(217, 119, 6, 0.14); color: var(--db-studio-warning, #b45309); border: 1px solid rgba(217, 119, 6, 0.32); }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-row-badge.is-info { background: var(--db-studio-accent-soft); color: var(--db-studio-accent); border: 1px solid var(--db-studio-accent-border); }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-system-subbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--db-studio-border-subtle); }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-journal-writers { display: grid; gap: 6px; margin-top: 8px; }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-journal-writers-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font: 600 12px/1.4 var(--font-ui); color: var(--db-studio-text-2); }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-journal-writer-list { display: grid; gap: 5px; margin: 0; padding: 0; list-style: none; }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-journal-writer-row { display: grid; grid-template-columns: 84px minmax(0, 1fr) 28px; align-items: center; gap: 6px; }
+.database-modal-backdrop .database-modal-window .db-menu-system-studio .db-menu-journal-writer-row code { font: 500 11px/1.3 var(--font-mono); color: var(--db-studio-text-2); overflow: hidden; text-overflow: ellipsis; }
+
+/* 공용 UI 한 벌 1줄 슬림 바 + 접이식 13종 프리셋 그리드 */
+.database-modal-backdrop .database-modal-window .db-system-studio-ui-look-host { margin-bottom: 10px; }
+.database-modal-backdrop .database-modal-window .db-ui-look-bar { display: grid; gap: 8px; padding: 8px 12px; background: var(--db-studio-surface); border: 1px solid var(--db-studio-border-subtle); border-radius: 8px; }
+.database-modal-backdrop .database-modal-window .db-ui-look-bar-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.database-modal-backdrop .database-modal-window .db-ui-look-bar-title { font: 700 12px/1 var(--font-ui); color: var(--db-studio-text-1); white-space: nowrap; }
+.database-modal-backdrop .database-modal-window .db-ui-look-select { min-height: 28px; padding: 3px 8px; font: 500 12px/1.3 var(--font-ui); border: 1px solid var(--db-studio-border-default); border-radius: 6px; background: var(--db-studio-surface); color: var(--db-studio-text-1); max-width: 240px; }
+.database-modal-backdrop .database-modal-window .db-ui-look-quick.is-active { border-color: var(--db-studio-accent); background: var(--db-studio-accent-soft); color: var(--db-studio-accent); }
+.database-modal-backdrop .database-modal-window .db-ui-look-status { margin-inline-start: auto; font: 500 11.5px/1.35 var(--font-ui); color: var(--db-studio-text-2); }
+.database-modal-backdrop .database-modal-window .db-ui-look-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(126px, 1fr)); gap: 5px; padding-top: 6px; border-top: 1px solid var(--db-studio-border-subtle); }
+.database-modal-backdrop .database-modal-window .db-ui-look-grid[hidden] { display: none; }
+.database-modal-backdrop .database-modal-window .db-ui-look-chip { display: grid; gap: 1px; padding: 5px 8px; text-align: left; background: var(--db-studio-inset); border: 1px solid var(--db-studio-border-subtle); border-radius: 6px; color: var(--db-studio-text-1); cursor: pointer; }
+.database-modal-backdrop .database-modal-window .db-ui-look-chip:hover { border-color: var(--db-studio-border-default); }
+.database-modal-backdrop .database-modal-window .db-ui-look-chip.is-active { border-color: var(--db-studio-accent); background: var(--db-studio-accent-soft); box-shadow: 0 0 0 1px var(--db-studio-accent); }
+.database-modal-backdrop .database-modal-window .db-ui-look-chip.is-recommended:not(.is-active) { border-style: dashed; border-color: var(--db-studio-accent-border); }
+.database-modal-backdrop .database-modal-window .db-ui-look-chip strong { font: 600 11.5px/1.25 var(--font-ui); color: var(--db-studio-text-1); }
+.database-modal-backdrop .database-modal-window .db-ui-look-chip small { font: 400 10px/1.2 var(--font-ui); color: var(--db-studio-text-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 시스템 개요 · 섹션 전체 컴팩트 밀도 */
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-sections { padding: 14px 18px; }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-panel-heading { margin-bottom: 10px; }
+.database-modal-backdrop .database-modal-window .db-system-form :is(.db-system-settings-group, .db-title-workbench-group) { margin-bottom: 10px; padding: 12px 14px; }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-header { margin-bottom: 10px; }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-layout { grid-template-columns: minmax(0, 1fr) 224px; gap: 12px; }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-card-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-rule-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-top: 8px; }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-card { min-height: 48px; padding: 8px 11px; gap: 4px; border: 1px solid var(--db-studio-border-subtle); border-radius: 7px; }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-card:hover { border-color: var(--db-studio-accent-border); background: var(--db-studio-inset); }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-card-copy { grid-template-columns: minmax(0, 1fr); gap: 1px; }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-card-copy strong { font-size: 12.5px; line-height: 1.3; }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-card-copy em { grid-column: 1; grid-row: 2; font-size: 11.5px; line-height: 1.35; }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-card-copy small { display: none; }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-card-details { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-card-detail { font-size: 11px; }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-preview { padding: 12px; }
+.database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-state { margin-top: 8px; padding: 8px 10px; }
+@container system-workspace (max-width: 780px) {
+  .database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-card-grid,
+  .database-modal-backdrop .database-modal-window .db-system-form .db-system-studio-rule-grid { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* 게임 메뉴 1줄 컴팩트 툴바 + 옛 스킨 14종 접이식 서랍 */
+.database-modal-backdrop .database-modal-window .db-system-menu-compact-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; margin-bottom: 10px; background: var(--db-studio-inset); border: 1px solid var(--db-studio-border-subtle); border-radius: 7px; }
+.database-modal-backdrop .database-modal-window .db-system-hub-theme-inline { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.database-modal-backdrop .database-modal-window .db-system-hub-theme-inline .db-field { grid-template-columns: auto auto; gap: 6px; }
+.database-modal-backdrop .database-modal-window .db-system-hub-theme-inline input[type="color"] { width: 34px; height: 26px; min-height: 26px; padding: 1px; cursor: pointer; }
+.database-modal-backdrop .database-modal-window .db-system-menu-compact-bar > .db-field { grid-template-columns: auto auto; gap: 8px; }
+.database-modal-backdrop .database-modal-window .db-system-legacy-skin-drawer { padding: 8px 12px; border: 1px solid var(--db-studio-border-subtle); border-radius: 7px; background: var(--db-studio-surface); }
+.database-modal-backdrop .database-modal-window .db-system-legacy-skin-drawer > summary { font: 600 12.5px/1.4 var(--font-ui); color: var(--db-studio-text-1); cursor: pointer; }
+.database-modal-backdrop .database-modal-window .db-system-legacy-skin-drawer > :not(summary) { margin-top: 8px; }
+
+/* ESC 메뉴 라이브 미리보기 + 비활성 스킨 안내 */
+.database-modal-backdrop .database-modal-window .db-menu-preview-meta { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 6px; }
+.database-modal-backdrop .database-modal-window .db-menu-preview-chip { padding: 1px 7px; border-radius: 999px; background: var(--db-studio-inset); border: 1px solid var(--db-studio-border-subtle); font: 500 10.5px/1.4 var(--font-ui); color: var(--db-studio-text-2); }
+.database-modal-backdrop .database-modal-window .db-menu-preview-stage { border: 1px solid var(--db-studio-border-default); border-radius: 8px; overflow: hidden; }
+.database-modal-backdrop .database-modal-window .db-menu-preview-stage.is-hub { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 8px; padding: 9px; background: linear-gradient(180deg, color-mix(in srgb, var(--preview-hub-win, #18216a) 72%, #02040f), #050816); color: #f4f6ff; }
+.database-modal-backdrop .database-modal-window .db-menu-preview-hub-party { display: grid; gap: 5px; align-content: start; }
+.database-modal-backdrop .database-modal-window .db-menu-preview-hub-card { display: grid; gap: 1px; padding: 6px 8px; border-radius: 5px; background: rgba(0, 0, 0, 0.32); border: 1px solid rgba(255, 255, 255, 0.24); font-size: 11px; }
+.database-modal-backdrop .database-modal-window .db-menu-preview-hub-card small { color: #c4cef4; font-size: 10px; }
+.database-modal-backdrop .database-modal-window .db-menu-preview-hub-vital { color: #58d98a; font-size: 10px; font-weight: 600; }
+.database-modal-backdrop .database-modal-window .db-menu-preview-hub-right { display: grid; gap: 6px; align-content: space-between; }
+.database-modal-backdrop .database-modal-window .db-menu-preview-hub-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+.database-modal-backdrop .database-modal-window .db-menu-preview-hub-tile { padding: 7px 6px; border-radius: 5px; text-align: center; font: 600 11px/1.2 var(--font-ui); background: rgba(0, 0, 0, 0.28); border: 1px solid color-mix(in srgb, var(--preview-hub-accent, #ffe27a) 55%, rgba(255, 255, 255, 0.25)); color: var(--preview-hub-accent, #ffe27a); }
+.database-modal-backdrop .database-modal-window .db-menu-preview-hub-bar { display: grid; gap: 4px; padding: 6px 7px; border-radius: 5px; background: rgba(0, 0, 0, 0.34); border: 1px solid rgba(255, 255, 255, 0.2); }
+.database-modal-backdrop .database-modal-window .db-menu-preview-hub-gold { font-size: 10px; color: #c4cef4; }
+.database-modal-backdrop .database-modal-window .db-menu-preview-hub-others { display: flex; flex-wrap: wrap; gap: 4px; }
+.database-modal-backdrop .database-modal-window .db-menu-preview-hub-pill { padding: 1px 6px; border-radius: 4px; background: rgba(255, 255, 255, 0.1); font-size: 10px; color: #f4f6ff; }
+.database-modal-backdrop .database-modal-window .db-menu-preview-stage.is-legacy { display: grid; grid-template-columns: minmax(0, 240px) minmax(0, 1fr); gap: 10px; align-items: start; padding: 9px; background: var(--db-studio-inset); }
+.database-modal-backdrop .database-modal-window .db-menu-system-aside .db-menu-preview-stage.is-legacy { grid-template-columns: minmax(0, 1fr); }
+.database-modal-backdrop .database-modal-window .db-menu-preview-legacy-thumb { display: grid; gap: 4px; max-width: 240px; }
+.database-modal-backdrop .database-modal-window .db-menu-preview-legacy-thumb img { width: 100%; height: auto; aspect-ratio: 4 / 3; border-radius: 5px; image-rendering: pixelated; background: #111; }
+.database-modal-backdrop .database-modal-window .db-menu-preview-legacy-caption { font: 600 11px/1.3 var(--font-ui); color: var(--db-studio-text-2); }
+.database-modal-backdrop .database-modal-window .db-menu-preview-legacy-list { display: grid; gap: 4px; font-size: 11px; }
+.database-modal-backdrop .database-modal-window .db-menu-preview-legacy-list ul { display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.database-modal-backdrop .database-modal-window .db-menu-preview-legacy-list li { padding: 1px 6px; border-radius: 4px; background: var(--db-studio-surface); border: 1px solid var(--db-studio-border-subtle); font-size: 10.5px; }
+.database-modal-backdrop .database-modal-window .db-menu-preview-actions { margin-top: 7px; }
+.database-modal-backdrop .database-modal-window .db-system-menu-preview-host { margin-bottom: 10px; }
+.database-modal-backdrop .database-modal-window .db-system-menu-mode-banner,
+.database-modal-backdrop .database-modal-window .db-system-dialogue-bridge { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 10px; background: var(--db-studio-inset); border: 1px solid var(--db-studio-border-subtle); border-radius: 6px; font: 500 12px/1.4 var(--font-ui); color: var(--db-studio-text-2); }
+.database-modal-backdrop .database-modal-window .is-inactive-mode { opacity: 0.62; }

@@ -266,4 +266,65 @@ describe("메뉴·시스템 탭 (저장·되돌리기·재로드)", () => {
       local.close();
     }
   });
+
+  it("P0~P2: 이야기 시작 메뉴·UI 한 벌·저장 방식·전역 상점·이야기 일지·쉬기/도감 원클릭 복구가 동작한다", () => {
+    store.replace(createBlankProject());
+    let host = render();
+
+    // P0: 라이브 ESC 메뉴 미리보기 존재
+    expect(need(host, "db-menu-live-preview")).toBeDefined();
+
+    // P2: 이야기·공포 시작 메뉴 프리셋
+    need(host, "db-menu-system-starter-story").click();
+    expect(commands(store.getCurrent())).toContain("items");
+    expect(commands(store.getCurrent())).not.toContain("skills");
+
+    // P1: UI 한 벌(uiLook) 13종 원클릭 적용
+    host = render();
+    need(host, "db-ui-look-chip-hanji").click();
+    expect(store.getCurrent().system.uiLook).toBe("hanji");
+    expect(store.getCurrent().system.dialogueStyle).toBe("joseon");
+    expect(store.getCurrent().system.menuUiStyle).toBe("journal");
+
+    // P2: 저장 허용 방식(saveAccess)
+    host = render();
+    const saveAccessGroup = need(host, "db-menu-system-save-access");
+    const savePointsRadio = saveAccessGroup.children
+      .flatMap((pill) => pill.children)
+      .find((child) => child.getAttribute("value") === "savePoints");
+    expect(savePointsRadio).toBeDefined();
+    (savePointsRadio as unknown as { checked: boolean; value: string }).checked = true;
+    (savePointsRadio as unknown as { value: string }).value = "savePoints";
+    savePointsRadio!.dispatchEvent(new Event("change"));
+    expect(store.getCurrent().system.saveAccess).toBe("savePoints");
+
+    // P2: 전역 상점 프리셋(oprnShopPreset)
+    host = render();
+    const shopSelect = need(host, "db-menu-system-shop-preset") as unknown as FakeElement & { value: string };
+    shopSelect.value = "baram";
+    shopSelect.dispatchEvent(new Event("change"));
+    expect(store.getCurrent().meta.oprnShopPreset).toBe("baram");
+
+    // P2: 이야기 일지 제목·필체(oprnStoryJournal)
+    host = render();
+    const journalTitle = need(host, "db-menu-system-journal-title") as unknown as FakeElement & { value: string };
+    journalTitle.value = "수사 수첩";
+    journalTitle.dispatchEvent(new Event("change"));
+    expect(store.getCurrent().meta.oprnStoryJournal?.title).toBe("수사 수첩");
+    host = render();
+    need(host, "db-menu-system-journal-writer-add").click();
+    expect(store.getCurrent().meta.oprnStoryJournal?.writers.length).toBe(1);
+
+    // P2: rest / bestiary 원클릭 Fix 버튼 동작
+    store.update((draft) => {
+      draft.meta.oprnFieldMenu = menuWithEntry(menuWithEntry(starterFieldMenu(), "rest"), "bestiary");
+    });
+    host = render();
+    need(host, "db-menu-system-fix-rest-entry-off").click();
+    expect(store.getCurrent().system.timeSystem?.enabled).toBe(true);
+    expect(store.getCurrent().system.timeSystem?.restMenu?.enabled).toBe(true);
+    host = render();
+    need(host, "db-menu-system-fix-bestiary-entry-off").click();
+    expect(store.getCurrent().system.bestiary?.enabled).toBe(true);
+  });
 });

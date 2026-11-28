@@ -1,18 +1,21 @@
 /**
- * 자료집 「메뉴·시스템」 탭 — 플레이 화면의 시스템 UI 세 덩이를 한 화면에서 저작한다(2026-10-17, 미연시 3단계).
+ * 자료집 「메뉴·시스템」 탭 — 플레이 화면의 메뉴·대사창·부가 메뉴를 한 화면에서 저작하고 미리 본다.
  *
- * - ESC 메뉴: 항목 켜기/끄기·순서·이름 (`meta.oprnFieldMenu`)
- * - 대사창: 백로그·오토·스킵·숨기기 단추, 기본 속도·스킵 범위·백로그 줄 수 (`meta.oprnDialogueSystem`)
- * - 갤러리·엔딩 목록·저장 카드 (`meta.oprnVnExtras`)
- *
- * 검증·병합·연동 규칙은 조수 도구(configure_field_menu·set_dialogue_system·set_vn_extras)와 같은 함수(`@/project/menuSystem`)를 쓴다 —
- * 화면과 도구가 같은 규칙을 갖는다. 저작이 없으면 옛 동작 그대로이고(연애·관계 중심 게임만 기본 구성이 처음부터 켜져 있다),
- * 값을 바꾸는 순간 그 칸이 이 게임만의 저작이 된다. 되돌리기 버튼은 저작을 지워 자동 판정으로 돌린다.
+ * - ESC 메뉴: 항목 켜기/끄기·순서·이름(`meta.oprnFieldMenu`), 저장 허용 방식(`system.saveAccess`), 항목별 표시 조건 뱃지
+ * - 게임 UI 한 벌(13종 테마 세트, `system.uiLook`) 원클릭 적용
+ * - 대사창: 백로그·오토·스킵·숨기기 단추, 기본 속도·스킵 범위·백로그 줄 수 (`meta.oprnDialogueSystem`) + 대사창 룩 (`meta.oprnVnLook`)
+ * - 갤러리·엔딩 목록·저장 카드 (`meta.oprnVnExtras` + `system.gallery` 연동)
+ * - 부가 메뉴: 프로젝트 전역 상점 스킨 (`meta.oprnShopPreset`) · 이야기 일지 (`meta.oprnStoryJournal`)
+ * - 우측(좁은 화면은 위) 라이브 ESC 메뉴 미리보기 (`databaseMenuPreview.ts`)
  */
 import { PORTRAIT_BOTTOM_NOTICE } from "@/project/dialoguePortraitPosition";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { field, segmentedControl, selectField, toggleSwitch } from "@/editor/panels/databaseControls";
+import { escCommandRuntimeHint, renderEscMenuPreviewCard } from "@/editor/panels/databaseMenuPreview";
+import { renderUiLookPresetCard } from "@/editor/panels/databaseUiLookBar";
 import { noticeBar, sectionCard } from "@/editor/panels/databaseWorkspace";
+import { normalizeBestiary } from "@/project/bestiary";
+import { normalizeTimeSystemConfig } from "@/project/databaseRecordModel";
 import {
   BACKLOG_LIMIT_MAX,
   BACKLOG_LIMIT_MIN,
@@ -26,7 +29,9 @@ import {
   type DialogueSystemPatch,
   type SkipScope,
 } from "@/project/dialogueSystem";
+import { DIALOGUE_STYLES, resolveDialogueStyleId } from "@/project/dialogueStyles";
 import { fieldMenu, type AuthoredFieldMenu, type FieldMenuCommand } from "@/project/fieldMenu";
+import { GALLERY_LABEL_MAX, isGalleryEnabled, normalizeGallerySettings } from "@/project/gallery";
 import {
   FIELD_MENU_COMMAND_HELP,
   FIELD_MENU_DEFAULT_LABELS,
@@ -45,8 +50,16 @@ import {
   type MenuSystemIssue,
 } from "@/project/menuSystem";
 import { usesRelationshipMenu } from "@/project/relationshipMenu";
+import { normalizeRestMenu } from "@/project/restMenu";
+import { SHOP_UI_PRESET_OPTIONS, isShopUiPreset } from "@/project/shopUiPresets";
 import { store } from "@/project/store";
-import type { Project } from "@/project/types";
+import {
+  STORY_JOURNAL_DEFAULT_TITLE,
+  storyJournal,
+  validateStoryJournal,
+  type AuthoredStoryJournal,
+} from "@/project/storyJournal";
+import type { Project, ShopUiPreset } from "@/project/types";
 import { defaultVnExtras, listEndingRows, listGallerySlots, mergeVnExtras, resolveVnExtras, type VnExtrasPatch } from "@/project/vnExtras";
 import {
   VN_CHOICE_STYLES,
@@ -83,6 +96,10 @@ const SKIP_OPTIONS = [
   { id: "read", name: "읽은 글만" },
   { id: "all", name: "전부" },
 ] as const;
+const SAVE_ACCESS_OPTIONS = [
+  { id: "anywhere", name: "어디서나 저장(ESC 메뉴)" },
+  { id: "savePoints", name: "세이브 포인트에서만" },
+] as const;
 const LOOK_NAMEPLATE_NAMES: Readonly<Record<(typeof VN_NAMEPLATES)[number], string>> = { tab: "위로 솟은 탭", pill: "둥근 알약", ribbon: "리본" };
 const LOOK_CHOICE_NAMES: Readonly<Record<(typeof VN_CHOICE_STYLES)[number], string>> = { bar: "가로 막대", card: "카드", bubble: "풍선" };
 const LOOK_WAIT_NAMES: Readonly<Record<(typeof VN_WAIT_ICONS)[number], string>> = { arrow: "화살표", heart: "하트", dot: "점" };
@@ -93,6 +110,7 @@ const LOOK_ENTRANCE_NAMES = { none: "없음", fade: "서서히", slide: "미끄�
 const LOOK_UI_THEME_NAMES = { match: "룩과 같은 색", legacy: "예전 청색 창" } as const;
 const LOOK_PRESET_DEFAULT = "preset";
 const LOOK_LEGACY_OPTION = "legacy";
+const SHOP_PRESET_EVENT_DEFAULT = "event-default";
 const MENU_MAX_ENTRIES = 12;
 /** 설정이 어긋난 게 아니라 아직 채울 내용(엔딩·그림)이 없다는 안내 — 경고색이 아니라 안내색으로 보인다. */
 const CONTENT_ISSUES: ReadonlySet<string> = new Set(["endings-none", "gallery-no-cg"]);
@@ -101,6 +119,17 @@ const CONTENT_ISSUES: ReadonlySet<string> = new Set(["endings-none", "gallery-no
 let lastRejection: string | null = null;
 let lastNotices: readonly string[] = [];
 let lastFeedbackProject: Project | null = null;
+
+type MenuSystemSubtab = "menu" | "dialogue" | "extras" | "other" | "all";
+let activeSubtab: MenuSystemSubtab = "menu";
+
+const MENU_SYSTEM_SUBTABS: readonly { readonly id: MenuSystemSubtab; readonly label: string }[] = [
+  { id: "menu", label: "ESC 메뉴" },
+  { id: "dialogue", label: "대사창·룩" },
+  { id: "extras", label: "갤러리·엔딩" },
+  { id: "other", label: "상점·일지" },
+  { id: "all", label: "전체 보기" },
+];
 
 function liveFeedback(): { readonly rejection: string | null; readonly notices: readonly string[] } {
   if (lastFeedbackProject !== store.getCurrent()) return { rejection: null, notices: [] };
@@ -122,6 +151,14 @@ function refocus(testid: string): void {
   });
 }
 
+function jumpToSystemSection(slug: "menu" | "dialogue"): void {
+  const systemTab = document.querySelector<HTMLElement>('[data-testid="db-tab-system"]');
+  systemTab?.click();
+  const navBtn = document.querySelector<HTMLElement>(`[data-testid="db-system-nav-${slug}"]`);
+  navBtn?.click();
+  navBtn?.focus({ preventScroll: true });
+}
+
 function commit(label: string, edit: MenuSystemEdit, rerender: () => void, options: CommitOptions = {}): void {
   try {
     validateMenuSystemEdit(edit);
@@ -139,6 +176,16 @@ function commit(label: string, edit: MenuSystemEdit, rerender: () => void, optio
     notices = applyMenuSystemEdit(draft, edit);
   }, { scope: "system", label });
   lastNotices = notices;
+  lastFeedbackProject = store.getCurrent();
+  rerender();
+  if (options.focus) refocus(options.focus);
+}
+
+function commitDirect(label: string, mutator: (draft: Project) => void, rerender: () => void, options: CommitOptions = {}): void {
+  lastRejection = null;
+  lastNotices = [];
+  recordProjectSnapshot(label);
+  store.update(mutator, { scope: "system", label });
   lastFeedbackProject = store.getCurrent();
   rerender();
   if (options.focus) refocus(options.focus);
@@ -186,6 +233,28 @@ function issueFix(issue: MenuSystemIssue, project: Project, rerender: () => void
       return menu ? { label: "메뉴에 추가", testid: `db-menu-system-fix-${issue.id}`, onClick: () => commit("메뉴 편집", { menu: menuWithEntry(menu, "gallery") }, rerender) } : undefined;
     case "endings-on-no-entry":
       return menu ? { label: "메뉴에 추가", testid: `db-menu-system-fix-${issue.id}`, onClick: () => commit("메뉴 편집", { menu: menuWithEntry(menu, "endings") }, rerender) } : undefined;
+    case "rest-entry-off":
+      return {
+        label: "시간·쉬기 켜기",
+        testid: `db-menu-system-fix-${issue.id}`,
+        onClick: () => commitDirect("시간 쉬기 켜기", (draft) => {
+          const restMenu = normalizeRestMenu({ ...(draft.system.timeSystem?.restMenu ?? {}), enabled: true });
+          draft.system.timeSystem = normalizeTimeSystemConfig({ ...(draft.system.timeSystem ?? { enabled: true }), enabled: true, restMenu });
+        }, rerender),
+      };
+    case "rest-on-no-entry":
+      return menu ? { label: "메뉴에 추가", testid: `db-menu-system-fix-${issue.id}`, onClick: () => commit("메뉴 편집", { menu: menuWithEntry(menu, "rest") }, rerender) } : undefined;
+    case "bestiary-entry-off":
+      return {
+        label: "괴물 도감 켜기",
+        testid: `db-menu-system-fix-${issue.id}`,
+        onClick: () => commitDirect("괴물 도감 켜기", (draft) => {
+          const current = normalizeBestiary(draft.system.bestiary) ?? { enabled: true, entries: [] };
+          draft.system.bestiary = normalizeBestiary({ ...current, enabled: true }) ?? { enabled: true, entries: [] };
+        }, rerender),
+      };
+    case "bestiary-on-no-entry":
+      return menu ? { label: "메뉴에 추가", testid: `db-menu-system-fix-${issue.id}`, onClick: () => commit("메뉴 편집", { menu: menuWithEntry(menu, "bestiary") }, rerender) } : undefined;
     default:
       return undefined;
   }
@@ -231,9 +300,10 @@ function boundedNumber(
   return field(label, el("span", { class: "db-menu-number", children: [input, hint] }));
 }
 
-function entryRow(menu: AuthoredFieldMenu, index: number, rerender: () => void): HTMLElement {
+function entryRow(project: Project, menu: AuthoredFieldMenu, index: number, rerender: () => void): HTMLElement {
   const entry = menu.entries[index]!;
   const isTitle = entry.command === "to-title";
+  const badge = escCommandRuntimeHint(project, entry.command);
   const input = el("input", {
     class: "db-menu-row-label",
     attrs: { type: "text", maxlength: "12", "aria-label": `${FIELD_MENU_DEFAULT_LABELS[entry.command]} 항목 이름`, title: "플레이 화면에 보이는 이름(1~12자)" },
@@ -252,13 +322,25 @@ function entryRow(menu: AuthoredFieldMenu, index: number, rerender: () => void):
     on: { click: onClick },
   });
   const lastMovable = menu.entries[menu.entries.length - 1]?.command === "to-title" ? menu.entries.length - 2 : menu.entries.length - 1;
+  const helpChildren: HTMLElement[] = [
+    el("span", { class: "db-menu-row-help-text", text: FIELD_MENU_COMMAND_HELP[entry.command] }),
+  ];
+  if (badge) {
+    helpChildren.push(
+      el("span", {
+        class: `db-menu-row-badge is-${badge.tone}`,
+        dataset: { testid: `db-menu-system-row-badge-${entry.command}` },
+        text: badge.text,
+      }),
+    );
+  }
   return el("li", {
     class: "db-menu-row",
     dataset: { testid: `db-menu-system-row-${entry.command}`, command: entry.command },
     children: [
       el("span", { class: "db-menu-row-index", text: String(index + 1) }),
       input,
-      el("span", { class: "db-menu-row-help", text: FIELD_MENU_COMMAND_HELP[entry.command] }),
+      el("span", { class: "db-menu-row-help", children: helpChildren }),
       small("▲", `db-menu-system-up-${entry.command}`, isTitle || index === 0, () => commit("메뉴 순서 편집", { menu: menuWithMove(menu, entry.command, -1) }, rerender), `${entry.label} 위로`),
       small("▼", `db-menu-system-down-${entry.command}`, isTitle || index >= lastMovable, () => commit("메뉴 순서 편집", { menu: menuWithMove(menu, entry.command, 1) }, rerender), `${entry.label} 아래로`),
       small("✕", `db-menu-system-remove-${entry.command}`, menu.entries.length <= 1, () => commit("메뉴 항목 삭제", { menu: menuWithoutEntry(menu, entry.command) }, rerender), `${entry.label} 항목 빼기`),
@@ -280,8 +362,25 @@ function starterButtons(rerender: () => void): HTMLElement {
       make("custom", "기본 항목으로 직접 꾸미기"),
       make("romance", "연애 메뉴로 시작"),
       make("collector", "몬스터 수집 메뉴로 시작"),
+      make("story", "이야기·공포 메뉴로 시작"),
     ],
   });
+}
+
+function saveAccessControl(project: Project, rerender: () => void): HTMLElement {
+  const current = project.system.saveAccess === "savePoints" ? "savePoints" : "anywhere";
+  return segmentedControl(
+    "저장 허용 방식",
+    "db-menu-system-save-access",
+    current,
+    SAVE_ACCESS_OPTIONS,
+    (value) => {
+      commitDirect("저장 허용 방식 편집", (draft) => {
+        if (value === "savePoints") draft.system.saveAccess = "savePoints";
+        else delete draft.system.saveAccess;
+      }, rerender, { focus: "db-menu-system-save-access" });
+    },
+  );
 }
 
 function menuCard(project: Project, rerender: () => void): HTMLElement {
@@ -295,7 +394,7 @@ function menuCard(project: Project, rerender: () => void): HTMLElement {
       starterButtons(rerender),
     );
   } else {
-    const rows = el("ol", { class: "db-menu-rows", dataset: { testid: "db-menu-system-rows" }, children: menu.entries.map((_, index) => entryRow(menu, index, rerender)) });
+    const rows = el("ol", { class: "db-menu-rows", dataset: { testid: "db-menu-system-rows" }, children: menu.entries.map((_, index) => entryRow(project, menu, index, rerender)) });
     const addable = menuAddableCommands(menu).filter((command) => command !== "to-title" || !menu.entries.some((entry) => entry.command === "to-title"));
     const full = menu.entries.length >= MENU_MAX_ENTRIES;
     const select = el("select", {
@@ -311,7 +410,7 @@ function menuCard(project: Project, rerender: () => void): HTMLElement {
       on: { click: () => commit("메뉴 항목 추가", { menu: menuWithEntry(menu, select.value as FieldMenuCommand) }, rerender) },
     });
     children.push(
-      el("p", { class: "db-menu-system-lead", text: `플레이 중 ESC 로 여는 메뉴입니다(${menu.entries.length}/${MENU_MAX_ENTRIES}). 위에서부터 이 순서로 나오고, 「타이틀로」는 항상 맨 끝입니다. 갤러리·엔딩·백로그는 해당 기능이 켜져 있을 때만 실제로 보입니다.` }),
+      el("p", { class: "db-menu-system-lead", text: `플레이 중 ESC 로 여는 메뉴입니다(${menu.entries.length}/${MENU_MAX_ENTRIES}). 위에서부터 이 순서로 나오고, 「타이틀로」는 항상 맨 끝입니다. 꺼져 있거나 조건부인 항목은 행 오른쪽 뱃지로 표시됩니다.` }),
       rows,
       el("div", { class: "db-menu-add-row", children: [el("span", { class: "db-menu-add-caption", text: "항목 추가" }), select, add] }),
       el("div", {
@@ -325,6 +424,21 @@ function menuCard(project: Project, rerender: () => void): HTMLElement {
       children.splice(1, 0, noticeBar({ text: "아직 직접 저작한 메뉴가 없어 연애 기본 메뉴를 보여 주고 있습니다. 이름·순서를 바꾸거나 항목을 빼면 이 게임만의 메뉴가 됩니다.", tone: "info", testid: "db-menu-system-menu-default-note" }));
     }
   }
+  children.push(
+    el("div", {
+      class: "db-menu-system-subbar",
+      children: [
+        saveAccessControl(project, rerender),
+        el("button", {
+          class: "db-ws-btn db-ws-btn-ghost",
+          text: "외형·스킨(허브/14종) 편집 →",
+          attrs: { type: "button" },
+          dataset: { testid: "db-menu-system-open-appearance" },
+          on: { click: () => jumpToSystemSection("menu") },
+        }),
+      ],
+    }),
+  );
   return sectionCard({ title: "ESC 메뉴", hint: sourceHint(authored, relationship && menu !== undefined), testid: "db-menu-system-menu-card", children });
 }
 
@@ -338,6 +452,8 @@ function dialogueCard(project: Project, rerender: () => void): HTMLElement {
   const current = resolved ?? defaultDialogueSystem();
   const authored = project.meta.oprnDialogueSystem !== undefined;
   const relationship = usesRelationshipMenu(project);
+  const baseStyleLabel = DIALOGUE_STYLES[resolveDialogueStyleId(project.system.dialogueStyle)].label;
+  const baseSpeed = project.system.dialogueSpeed ?? 1;
   const patchWith = (patch: DialogueSystemPatch, options?: CommitOptions): void => commit("대사창 편집", { dialogue: mergeDialogueSystem(current, patch) }, rerender, options);
   const patchDefaults = (defaults: NonNullable<DialogueSystemPatch["defaults"]>, options?: CommitOptions): void => patchWith({ defaults }, options);
   const backlogOff = !current.backlog.enabled;
@@ -363,6 +479,16 @@ function dialogueCard(project: Project, rerender: () => void): HTMLElement {
   });
   const children: HTMLElement[] = [
     el("p", { class: "db-menu-system-lead", text: "대사창 아래 단추와 단축키(L 백로그 · A 오토 · S 스킵 · H 숨기기)입니다. 속도·스킵 범위·불투명도는 플레이어가 아직 정하지 않았을 때의 시작값이고, 플레이어는 설정에서 바꿀 수 있습니다. 스킵은 선택지·엔딩·넘기기 금지 글에서 항상 멈춥니다." }),
+    noticeBar({
+      text: `프로젝트 기본 대화창 스타일: 「${baseStyleLabel}」 · 말 빠르기 배율 ×${baseSpeed}. 기본 스타일 18종과 전신 초상은 「게임 설정 › 대화창」에서 바꿉니다.`,
+      tone: "info",
+      testid: "db-menu-system-dialogue-sync-note",
+      action: {
+        label: "대화창 스타일·초상 편집 →",
+        testid: "db-menu-system-open-dialogue-style",
+        onClick: () => jumpToSystemSection("dialogue"),
+      },
+    }),
     portraitBottomNote(),
     toggles,
     grid,
@@ -429,18 +555,47 @@ function extrasCard(project: Project, rerender: () => void): HTMLElement {
   const current = resolved ?? defaultVnExtras();
   const authored = project.meta.oprnVnExtras !== undefined;
   const relationship = usesRelationshipMenu(project);
+  const galleryEnabled = current.gallery.enabled || isGalleryEnabled(project);
   const patchWith = (patch: VnExtrasPatch, focus: string): void => commit("갤러리·엔딩 편집", { vn: mergeVnExtras(current, patch) }, rerender, { focus });
   const slots = listGallerySlots(project).length;
   const endingRows = listEndingRows(project, undefined).length;
-  const galleryOff = !current.gallery.enabled;
+  const galleryOff = !galleryEnabled;
   const endingsOff = !current.endings.enabled;
   const inherit = current.language ?? "inherit";
+  const galleryLabelInput = el("input", {
+    attrs: {
+      type: "text",
+      maxlength: String(GALLERY_LABEL_MAX),
+      placeholder: "갤러리",
+      "aria-label": "갤러리 메뉴 이름",
+    },
+    dataset: { testid: "db-menu-system-gallery-label" },
+    value: project.system.gallery?.label ?? "",
+  }) as HTMLInputElement;
+  galleryLabelInput.addEventListener("change", () => {
+    commitDirect("갤러리 이름 편집", (draft) => {
+      const next = normalizeGallerySettings({
+        enabled: draft.system.gallery?.enabled === true || galleryEnabled,
+        label: galleryLabelInput.value,
+      });
+      if (next) draft.system.gallery = next;
+      else delete draft.system.gallery;
+    }, rerender, { focus: "db-menu-system-gallery-label" });
+  });
   const children: HTMLElement[] = [
     el("p", { class: "db-menu-system-lead", text: "새 그림은 만들지 않습니다. 이미 있는 「갤러리에 기록」 그림, 엔딩 정의, 저장 칸을 읽어 보여 줄 뿐입니다. 한 번 본 엔딩과 한 번 연 그림은 저장 칸이 아니라 이 기기에 남아, 다른 저장 칸·새 게임·옛 저장을 불러온 뒤에도 그대로 열려 있습니다." }),
     el("div", {
       class: "db-menu-system-toggles",
       children: [
-        toggleSwitch("갤러리", "db-menu-system-gallery", current.gallery.enabled, (checked) => patchWith({ gallery: checked }, "db-menu-system-gallery")),
+        toggleSwitch("갤러리", "db-menu-system-gallery", galleryEnabled, (checked) => {
+          // system.gallery 와 meta.oprnVnExtras.gallery 를 함께 맞춰 이원화를 없앤다.
+          commitDirect("갤러리 편집", (draft) => {
+            applyMenuSystemEdit(draft, { vn: mergeVnExtras(current, { gallery: checked }) });
+            const nextSys = normalizeGallerySettings({ enabled: checked, label: draft.system.gallery?.label });
+            if (nextSys) draft.system.gallery = nextSys;
+            else delete draft.system.gallery;
+          }, rerender, { focus: "db-menu-system-gallery" });
+        }),
         toggleSwitch("안 연 그림 칸을 「잠김」으로 보이기", "db-menu-system-gallery-locked", current.gallery.showLocked, (checked) => patchWith({ galleryShowLocked: checked }, "db-menu-system-gallery-locked")),
         toggleSwitch("엔딩 목록", "db-menu-system-endings", current.endings.enabled, (checked) => patchWith({ endings: checked }, "db-menu-system-endings")),
         toggleSwitch("못 본 엔딩 이름을 ???로 가리기", "db-menu-system-endings-hide", current.endings.hideUnseen, (checked) => patchWith({ endingsHideUnseen: checked }, "db-menu-system-endings-hide")),
@@ -450,6 +605,7 @@ function extrasCard(project: Project, rerender: () => void): HTMLElement {
     el("div", {
       class: "db-menu-system-grid",
       children: [
+        field("갤러리 메뉴 이름", galleryLabelInput),
         selectField("갤러리·엔딩 글자 언어", "db-menu-system-vn-language", inherit, [{ id: "inherit", name: "대사창 언어를 따름" }, ...DIALOGUE_UI_LANGUAGES.map((id) => ({ id, name: LANGUAGE_NAMES[id] }))], (value) => patchWith({ language: value as VnExtrasPatch["language"] }, "db-menu-system-vn-language")),
         field("지금 게임의 그림 칸 · 엔딩", el("span", {
           class: "db-menu-system-counts",
@@ -465,6 +621,165 @@ function extrasCard(project: Project, rerender: () => void): HTMLElement {
   return sectionCard({ title: "갤러리 · 엔딩 목록 · 저장 카드", hint: sourceHint(authored, relationship && resolved !== undefined), testid: "db-menu-system-extras-card", children });
 }
 
+function otherMenusCard(project: Project, rerender: () => void): HTMLElement {
+  const currentShopPreset = project.meta.oprnShopPreset ?? SHOP_PRESET_EVENT_DEFAULT;
+  const shopOptions = [
+    { id: SHOP_PRESET_EVENT_DEFAULT, name: "이벤트별 개별 설정 따름 (기본)" },
+    ...SHOP_UI_PRESET_OPTIONS.map((option) => ({ id: option.value, name: option.label })),
+  ];
+  const shopField = selectField(
+    "전역 상점 UI 프리셋",
+    "db-menu-system-shop-preset",
+    currentShopPreset,
+    shopOptions,
+    (value) => {
+      commitDirect("전역 상점 프리셋 편집", (draft) => {
+        if (value === SHOP_PRESET_EVENT_DEFAULT) delete draft.meta.oprnShopPreset;
+        else if (isShopUiPreset(value)) draft.meta.oprnShopPreset = value as ShopUiPreset;
+      }, rerender, { focus: "db-menu-system-shop-preset" });
+    },
+  );
+
+  const journal = storyJournal(project);
+  const commitJournal = (next: AuthoredStoryJournal | undefined, focus?: string): void => {
+    if (next) {
+      try {
+        validateStoryJournal(next);
+      } catch (error) {
+        lastRejection = error instanceof Error ? error.message : String(error);
+        lastNotices = [];
+        lastFeedbackProject = store.getCurrent();
+        rerender();
+        return;
+      }
+    }
+    commitDirect("이야기 일지 편집", (draft) => {
+      if (next) draft.meta.oprnStoryJournal = next;
+      else delete draft.meta.oprnStoryJournal;
+    }, rerender, focus ? { focus } : {});
+  };
+
+  const titleInput = el("input", {
+    attrs: {
+      type: "text",
+      maxlength: "12",
+      placeholder: STORY_JOURNAL_DEFAULT_TITLE,
+      "aria-label": "이야기 일지 메뉴 제목",
+    },
+    dataset: { testid: "db-menu-system-journal-title" },
+    value: journal?.title ?? "",
+  }) as HTMLInputElement;
+  titleInput.addEventListener("change", () => {
+    const trimmed = titleInput.value.trim().slice(0, 12);
+    if (!trimmed && (!journal || journal.writers.length === 0)) {
+      commitJournal(undefined, "db-menu-system-journal-title");
+      return;
+    }
+    commitJournal({
+      version: 1,
+      title: trimmed || STORY_JOURNAL_DEFAULT_TITLE,
+      writers: journal?.writers ?? [],
+    }, "db-menu-system-journal-title");
+  });
+
+  const writers = journal?.writers ?? [];
+  const writerRows = writers.map((writer, idx) => {
+    const nameInput = el("input", {
+      attrs: { type: "text", maxlength: "24", "aria-label": `필체 ${writer.id} 이름` },
+      dataset: { testid: `db-menu-system-journal-writer-name-${writer.id}` },
+      value: writer.name,
+    }) as HTMLInputElement;
+    nameInput.addEventListener("change", () => {
+      const nextName = nameInput.value.trim();
+      if (!nextName) { nameInput.value = writer.name; return; }
+      const nextWriters = writers.map((row, i) => (i === idx ? { id: row.id, name: nextName } : row));
+      commitJournal({ version: 1, title: journal?.title || STORY_JOURNAL_DEFAULT_TITLE, writers: nextWriters });
+    });
+    const removeBtn = el("button", {
+      class: "db-menu-row-button",
+      text: "✕",
+      attrs: { type: "button", title: `${writer.name} 필체 삭제`, "aria-label": `${writer.name} 필체 삭제` },
+      dataset: { testid: `db-menu-system-journal-writer-remove-${writer.id}` },
+      on: {
+        click: () => {
+          const nextWriters = writers.filter((_, i) => i !== idx);
+          commitJournal({ version: 1, title: journal?.title || STORY_JOURNAL_DEFAULT_TITLE, writers: nextWriters });
+        },
+      },
+    });
+    return el("li", {
+      class: "db-menu-journal-writer-row",
+      children: [
+        el("code", { text: writer.id }),
+        nameInput,
+        removeBtn,
+      ],
+    });
+  });
+
+  const addWriterBtn = el("button", {
+    class: "db-ws-btn",
+    text: "+ 필체 추가",
+    attrs: { type: "button", ...(writers.length >= 16 ? { disabled: "true" } : {}) },
+    dataset: { testid: "db-menu-system-journal-writer-add" },
+    on: {
+      click: () => {
+        const taken = new Set(writers.map((w) => w.id));
+        let n = writers.length + 1;
+        while (taken.has(`writer_${n}`)) n += 1;
+        const id = `writer_${n}`;
+        commitJournal({
+          version: 1,
+          title: journal?.title || STORY_JOURNAL_DEFAULT_TITLE,
+          writers: [...writers, { id, name: `작성자 ${n}` }],
+        }, `db-menu-system-journal-writer-name-${id}`);
+      },
+    },
+  });
+
+  const children: HTMLElement[] = [
+    el("p", {
+      class: "db-menu-system-lead",
+      text: "프로젝트 전체 상점 창의 모양을 한 번에 통일하거나, ESC 「일지」 메뉴의 제목과 기록자(필체) 이름을 정합니다.",
+    }),
+    el("div", {
+      class: "db-menu-system-grid",
+      children: [
+        shopField,
+        field("이야기 일지 제목(12자)", titleInput),
+      ],
+    }),
+    el("div", {
+      class: "db-menu-journal-writers",
+      children: [
+        el("div", {
+          class: "db-menu-journal-writers-head",
+          children: [
+            el("span", { text: `일지 필체 목록 (${writers.length}/16)` }),
+            addWriterBtn,
+          ],
+        }),
+        ...(writerRows.length > 0
+          ? [el("ul", { class: "db-menu-journal-writer-list", children: writerRows })]
+          : [el("p", { class: "db-menu-system-lead", text: "아직 필체가 없습니다. 이벤트의 「일지 한 줄 쓰기」에서 쓸 작성자 이름을 등록할 수 있습니다." })]),
+      ],
+    }),
+  ];
+
+  if (journal) {
+    children.push(
+      resetButton("일지 설정 기본값으로", "db-menu-system-journal-reset", () => commitJournal(undefined)),
+    );
+  }
+
+  return sectionCard({
+    title: "부가 메뉴 · 상점 · 이야기 일지",
+    hint: project.meta.oprnShopPreset || journal ? "사용자 지정됨" : "기본값 사용 중",
+    testid: "db-menu-system-other-card",
+    children,
+  });
+}
+
 function introLine(project: Project): HTMLElement {
   const relationship = usesRelationshipMenu(project);
   const flags = authoredFlags(project);
@@ -478,7 +793,7 @@ function introLine(project: Project): HTMLElement {
     class: "db-menu-system-intro",
     dataset: { testid: "db-menu-system-intro" },
     children: [
-      el("span", { text: "플레이 중 ESC 메뉴에 무엇이 나오는지, 대사창에 어떤 읽기 도구가 붙는지, 갤러리·엔딩 목록·저장 칸에 무엇을 보일지 한 곳에서 정합니다. " }),
+      el("span", { text: "플레이 중 ESC 메뉴에 무엇이 나오는지, 대사창에 어떤 읽기 도구가 붙는지, 갤러리·엔딩 목록·상점·일지를 한 곳에서 정합니다. " }),
       el("strong", { dataset: { testid: "db-menu-system-status" }, text: status }),
     ],
   });
@@ -513,7 +828,71 @@ export function renderMenuSystemTab(host: HTMLElement): void {
   }
   const issues = issuesBlock(project, rerender);
   if (issues) stack.append(issues);
-  stack.append(menuCard(project, rerender), dialogueCard(project, rerender), lookCard(project, rerender), extrasCard(project, rerender));
-  form.append(heading, stack);
+
+  const menuEl = menuCard(project, rerender);
+  const dialogueEl = dialogueCard(project, rerender);
+  const lookEl = lookCard(project, rerender);
+  const extrasEl = extrasCard(project, rerender);
+  const otherEl = otherMenusCard(project, rerender);
+
+  const syncSubtab = (tab: MenuSystemSubtab): void => {
+    activeSubtab = tab;
+    menuEl.hidden = tab !== "all" && tab !== "menu";
+    dialogueEl.hidden = tab !== "all" && tab !== "dialogue";
+    lookEl.hidden = tab !== "all" && tab !== "dialogue";
+    extrasEl.hidden = tab !== "all" && tab !== "extras";
+    otherEl.hidden = tab !== "all" && tab !== "other";
+    for (const btn of Array.from(subtabBar.querySelectorAll<HTMLButtonElement>("button"))) {
+      const isCurrent = btn.dataset.subtab === tab;
+      btn.classList.toggle("active", isCurrent);
+      btn.setAttribute("aria-selected", String(isCurrent));
+    }
+  };
+
+  const subtabBar = el("div", {
+    class: "db-menu-subtabs",
+    attrs: { role: "tablist", "aria-label": "메뉴·시스템 세부 구획" },
+    dataset: { testid: "db-menu-system-subtabs" },
+    children: MENU_SYSTEM_SUBTABS.map((item) =>
+      el("button", {
+        class: `db-menu-subtab${item.id === activeSubtab ? " active" : ""}`,
+        text: item.label,
+        attrs: { type: "button", role: "tab", "aria-selected": String(item.id === activeSubtab) },
+        dataset: { testid: `db-menu-subtab-${item.id}`, subtab: item.id },
+        on: { click: () => syncSubtab(item.id) },
+      }),
+    ),
+  });
+  syncSubtab(activeSubtab);
+
+  stack.append(
+    renderUiLookPresetCard(project, rerender, { compact: true }),
+    subtabBar,
+    menuEl,
+    dialogueEl,
+    lookEl,
+    extrasEl,
+    otherEl,
+  );
+  const previewAside = el("aside", {
+    class: "db-menu-system-aside",
+    children: [
+      renderEscMenuPreviewCard(project, {
+        onClearHudOverride: () => commitDirect("HUD 메뉴 덮어쓰기 해제", (draft) => {
+          if (draft.system.fieldHud) draft.system.fieldHud.menuStyle = "project";
+        }, rerender),
+        jumpAction: {
+          label: "허브 색·옛 스킨(14종) 편집 →",
+          testid: "db-menu-preview-open-skin",
+          onClick: () => jumpToSystemSection("menu"),
+        },
+      }),
+    ],
+  });
+  const layout = el("div", {
+    class: "db-menu-system-layout",
+    children: [stack, previewAside],
+  });
+  form.append(heading, layout);
   host.append(form);
 }

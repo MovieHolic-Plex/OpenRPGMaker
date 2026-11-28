@@ -22,7 +22,9 @@ import { sectionCard } from "@/editor/panels/databaseWorkspace";
 import { seCueTableSection } from "@/editor/panels/databaseSeCueTable";
 import { recordListThumbnail, markDatabaseImageFailed } from "@/editor/panels/databaseRecordThumbnails";
 import { renderSystemStudioOverview, wireSystemStudioOverview } from "@/editor/panels/databaseSystemStudio";
+import { DEFAULT_HUB_ACCENT_COLOR, DEFAULT_HUB_WINDOW_COLOR, renderEscMenuPreviewCard } from "@/editor/panels/databaseMenuPreview";
 import { dialogueStyleSection } from "@/editor/panels/databaseDialogueStyleSection";
+import { mergeVnExtras } from "@/project/vnExtras";
 import {
   DEFAULT_DODGE_IFRAMES_MS,
   DEFAULT_DODGE_STAMINA_COST,
@@ -246,7 +248,7 @@ export function renderSystemTab(host: HTMLElement, rerender: SystemRefresh = () 
   const sections = systemSectionNodes(project, titleScreen, titleBackgroundResourceId, refresh, activeSlug);
   const sectionHost = el("div", { class: "db-system-sections", dataset: { testid: "db-system-sections" } });
   for (const { slug } of SYSTEM_SECTION_ORDER) sectionHost.append(sections[slug]);
-  const nav = systemSectionNav(activeSlug, host, sectionHost);
+  const nav = systemSectionNav(activeSlug, host, sectionHost, refresh);
 
   form.append(nav, sectionHost);
   wireSystemStudioOverview(form);
@@ -272,7 +274,7 @@ function focusSystemField(root: HTMLElement, testid: string): void {
   if (typeof field.scrollIntoView === "function") field.scrollIntoView({ block: "nearest" });
 }
 
-function systemSectionNav(activeSlug: SystemSectionSlug, host: HTMLElement, sectionHost: HTMLElement): HTMLElement {
+function systemSectionNav(activeSlug: SystemSectionSlug, host: HTMLElement, sectionHost: HTMLElement, rerender: SystemRefresh): HTMLElement {
   const nav = el("nav", {
     class: "db-system-section-nav",
     dataset: { testid: "db-system-section-nav" },
@@ -314,7 +316,7 @@ function systemSectionNav(activeSlug: SystemSectionSlug, host: HTMLElement, sect
         dataset: { testid: `db-system-nav-${slug}` },
         on: {
           click: () => {
-            activateSystemSection(slug, host, nav, sectionHost);
+            activateSystemSection(slug, host, nav, sectionHost, rerender);
           },
         },
       }),
@@ -327,7 +329,7 @@ function systemSectionNav(activeSlug: SystemSectionSlug, host: HTMLElement, sect
 }
 
 /** 섹션 전환 핸들러 — DOM 토글만 수행하며 store.update/스냅샷을 만들지 않는다. */
-function activateSystemSection(slug: SystemSectionSlug, host: HTMLElement, nav: HTMLElement, sectionHost: HTMLElement): void {
+function activateSystemSection(slug: SystemSectionSlug, host: HTMLElement, nav: HTMLElement, sectionHost: HTMLElement, rerender?: SystemRefresh): void {
   const jump = nav.querySelector<HTMLElement>('[data-testid="db-title-workbench-jump"]');
   if (jump) jump.hidden = slug !== "title";
   if (host.dataset.dbSystemSection === slug) return;
@@ -341,7 +343,7 @@ function activateSystemSection(slug: SystemSectionSlug, host: HTMLElement, nav: 
   }
   if (slug === "overview") {
     const overview = sectionHost.querySelector<HTMLElement>('[data-system-section="overview"]');
-    overview?.replaceChildren(renderSystemStudioOverview(store.getCurrent()));
+    overview?.replaceChildren(renderSystemStudioOverview(store.getCurrent(), rerender ? () => rerender() : undefined));
     if (overview && nav.parentElement) wireSystemStudioOverview(nav.parentElement, overview);
   }
   sectionHost.scrollTop = 0;
@@ -379,7 +381,7 @@ function systemSectionNodes(
     return node;
   };
   return {
-    overview: section("overview", [renderSystemStudioOverview(project)]),
+    overview: section("overview", [renderSystemStudioOverview(project, () => rerender())]),
     party: section("party", [
       rm2k3Fieldset("초기 파티", [
         el("div", {
@@ -390,7 +392,7 @@ function systemSectionNodes(
       ]),
     ]),
     display: section("display", [playResolutionFieldset(project, rerender)]),
-    menu: section("menu", [menuSkinFieldset(project)]),
+    menu: section("menu", [menuSkinFieldset(project, rerender)]),
     dialogue: section("dialogue", dialogueStyleSection(project, { updateSystem, fieldset: rm2k3Fieldset, help: systemHelp })),
     hud: section("hud", [fieldHudEditor(project, config => updateSystem(draft => { draft.system.fieldHud = config; }))]),
     font: section("font", [systemFontFieldset(project, rerender)]),
@@ -591,15 +593,29 @@ function systemSectionNodes(
         ),
       ]),
       rm2k3Fieldset("갤러리", [
-        checkboxField("갤러리 사용", "db-field-system-gallery-enabled", project.system.gallery?.enabled === true, (checked) => {
+        checkboxField("갤러리 사용", "db-field-system-gallery-enabled", project.system.gallery?.enabled === true || project.meta.oprnVnExtras?.gallery.enabled === true, (checked) => {
           updateSystem((draft) => {
             const next = normalizeGallerySettings({ enabled: checked, label: draft.system.gallery?.label });
             if (next) draft.system.gallery = next;
             else delete draft.system.gallery;
+            if (draft.meta.oprnVnExtras) {
+              draft.meta.oprnVnExtras = mergeVnExtras(draft.meta.oprnVnExtras, { gallery: checked });
+            }
           });
         }),
         galleryLabelField(project.system.gallery?.label ?? ""),
-        systemHelp("켜면 플레이 중 메뉴의 기록에 이 이름으로 들어갑니다. 이름은 갤러리 대신 원하는 낱말을 적어도 됩니다. 그림 표시에서 「남기기」를 켠 그림만 모입니다."),
+        systemHelp("켜면 플레이 중 메뉴의 기록에 이 이름으로 들어갑니다. 「메뉴·시스템」 탭의 갤러리 설정과 자동으로 연동됩니다."),
+        el("div", {
+          class: "db-system-resource-actions",
+          children: [
+            el("button", {
+              class: "btn small",
+              text: "메뉴·시스템에서 엔딩·저장 카드와 함께 관리 →",
+              attrs: { type: "button" },
+              dataset: { databaseTarget: "menu-system", testid: "db-system-gallery-open-menu-system" },
+            }),
+          ],
+        }),
       ]),
       rm2k3Fieldset("난이도", difficultyFieldset(project, updateSystem, () => rerender())),
       rm2k3Fieldset("몬스터 합성", monsterFusionFieldset(project, updateSystem, () => rerender())),
@@ -736,22 +752,109 @@ export function menuSkinPreviewUrl(id: MenuSkinId): string {
 }
 
 /**
- * 「게임 메뉴 디자인」 — ESC(X) 메뉴 스킨. 레지스트리 순서대로 디자인을 내놓고, 기본(workbench)은 저장에서 지운다
- * (normalizeSystemRecords 와 같은 계약). 설명·미리보기는 다시 그리지 않고 제자리에서 바꾼다.
+ * 「게임 메뉴 디자인」 — 허브 메뉴 2색 테마(`system.menuTheme`), 옛 메뉴(14종 스킨, `system.menuUiStyle`),
+ * 라이브 ESC 메뉴 미리보기, 항목 편집 바로가기를 한 섹션에 묶는다.
  */
-function menuSkinFieldset(project: Project): HTMLElement {
+function menuSkinFieldset(project: Project, rerender: SystemRefresh): HTMLElement {
   const saved = resolveMenuSkinId(project.system.menuUiStyle);
+  const isLegacy = project.system.menuLayout === "legacy";
   let selected = saved;
+  const previewHost = el("div", { class: "db-system-menu-preview-host" });
+  const renderPreview = (): void => {
+    const live = store.getCurrent();
+    previewHost.replaceChildren(
+      renderEscMenuPreviewCard(live, {
+        onClearHudOverride: () => {
+          updateSystem((draft) => {
+            if (draft.system.fieldHud) draft.system.fieldHud.menuStyle = "project";
+          });
+          renderPreview();
+          rerender();
+        },
+        jumpAction: {
+          label: "ESC 메뉴 항목·순서·라벨 편집(메뉴·시스템) →",
+          testid: "db-system-menu-open-items",
+          onClick: () => {
+            document.querySelector<HTMLElement>('[data-testid="db-tab-menu-system"]')?.click();
+          },
+        },
+      }),
+    );
+  };
+  renderPreview();
+
+  // 허브 메뉴 2색 테마 (system.menuTheme)
+  const hubWinValue = project.system.menuTheme?.window || DEFAULT_HUB_WINDOW_COLOR;
+  const hubAccentValue = project.system.menuTheme?.accent || DEFAULT_HUB_ACCENT_COLOR;
+  const makeColorPicker = (
+    label: string,
+    key: "window" | "accent",
+    initial: string,
+    defaultColor: string,
+    testid: string,
+  ): HTMLElement => {
+    const input = el("input", {
+      attrs: { type: "color", "aria-label": label },
+      dataset: { testid },
+      value: /^#[0-9a-f]{6}$/i.test(initial) ? initial : defaultColor,
+    }) as HTMLInputElement;
+    input.addEventListener("change", () => {
+      updateSystem((draft) => {
+        const next = { ...(draft.system.menuTheme ?? {}) };
+        if (input.value.toLowerCase() === defaultColor.toLowerCase()) delete next[key];
+        else next[key] = input.value;
+        if (next.window || next.accent) draft.system.menuTheme = next;
+        else delete draft.system.menuTheme;
+      });
+      renderPreview();
+    });
+    return field(label, input);
+  };
+  const hubThemeRow = el("div", {
+    class: "db-system-menu-compact-bar",
+    dataset: { testid: "db-system-hub-theme" },
+    children: [
+      el("div", {
+        class: `db-system-hub-theme-inline${isLegacy ? " is-inactive-mode" : ""}`,
+        children: [
+          makeColorPicker("허브 창 색", "window", hubWinValue, DEFAULT_HUB_WINDOW_COLOR, "db-field-system-menu-theme-window"),
+          makeColorPicker("강조 색", "accent", hubAccentValue, DEFAULT_HUB_ACCENT_COLOR, "db-field-system-menu-theme-accent"),
+          el("button", {
+            class: "btn small",
+            text: "기본 색",
+            attrs: { type: "button", ...(project.system.menuTheme ? {} : { disabled: "true" }) },
+            dataset: { testid: "db-system-menu-theme-reset" },
+            on: {
+              click: () => {
+                updateSystem((draft) => {
+                  delete draft.system.menuTheme;
+                });
+                rerender();
+              },
+            },
+          }),
+        ],
+      }),
+      checkboxField("옛 메뉴 스킨 사용", "db-field-system-menu-layout-legacy", isLegacy, (checked) => {
+        updateSystem((draft) => {
+          if (checked) draft.system.menuLayout = "legacy";
+          else delete draft.system.menuLayout;
+        });
+        rerender();
+      }),
+    ],
+  });
+
   const cards = new Map<MenuSkinId, HTMLButtonElement>();
   const gallery = el("div", {
-    class: "db-system-menu-skin-gallery",
+    class: `db-system-menu-skin-gallery${isLegacy ? "" : " is-inactive-mode"}`,
     attrs: { role: "group", "aria-label": "게임 메뉴 디자인" },
     dataset: { testid: "db-field-system-menu-ui-style" },
   });
   const status = el("p", {
     class: "db-system-menu-skin-description",
     attrs: { role: "status" },
-    text: `현재 디자인 · ${MENU_SKINS[saved].label}`,
+    text: `현재 디자인 · ${MENU_SKINS[saved].label}${isLegacy ? "" : " (허브 사용 중 — 옛 메뉴 켜면 적용)"}`,
     dataset: { testid: "db-system-menu-skin-description" },
   });
   for (const id of listMenuSkinIds()) {
@@ -774,6 +877,10 @@ function menuSkinFieldset(project: Project): HTMLElement {
       updateSystem((draft) => {
         if (id === DEFAULT_MENU_SKIN_ID) delete draft.system.menuUiStyle;
         else draft.system.menuUiStyle = id;
+        // HUD 의 옛 menuStyle 덮어쓰기가 남아 있으면 해제해 여기서 고른 스킨이 그대로 적용되게 한다.
+        if (draft.system.fieldHud?.menuStyle && draft.system.fieldHud.menuStyle !== "project") {
+          draft.system.fieldHud.menuStyle = "project";
+        }
       });
       selected = id;
       for (const [key, button] of cards) {
@@ -781,21 +888,51 @@ function menuSkinFieldset(project: Project): HTMLElement {
         const badge = button.querySelector(".db-system-menu-skin-card-state");
         if (badge) badge.textContent = key === id ? "✓ 선택됨" : "선택하기";
       }
-      status.textContent = `현재 디자인 · ${skin.label}`;
+      const nowLegacy = store.getCurrent().system.menuLayout === "legacy";
+      status.textContent = `현재 디자인 · ${skin.label}${nowLegacy ? "" : " (허브 사용 중 — 옛 메뉴 켜면 적용)"}`;
+      renderPreview();
     });
     cards.set(id, card);
     gallery.append(card);
   }
+  const legacyBanner = !isLegacy
+    ? el("div", {
+        class: "db-system-menu-mode-banner",
+        dataset: { testid: "db-system-menu-hub-active-banner" },
+        children: [
+          el("span", { text: "기본 「허브 카드형」 사용 중입니다. 아래 14종은 옛 메뉴 스킨을 켜거나 연애·수집 게임에서 쓰입니다." }),
+          el("button", {
+            class: "btn small",
+            text: "옛 메뉴 켜기",
+            attrs: { type: "button" },
+            dataset: { testid: "db-system-menu-enable-legacy" },
+            on: {
+              click: () => {
+                updateSystem((draft) => {
+                  draft.system.menuLayout = "legacy";
+                });
+                rerender();
+              },
+            },
+          }),
+        ],
+      })
+    : null;
+  const legacyDrawer = el("details", {
+    class: "db-system-legacy-skin-drawer",
+    attrs: isLegacy ? { open: "" } : {},
+    dataset: { testid: "db-system-legacy-skin-drawer" },
+    children: [
+      el("summary", { text: `옛 메뉴 스킨 14종 (${MENU_SKINS[saved].label})` }),
+      ...(legacyBanner ? [legacyBanner] : []),
+      status,
+      gallery,
+    ],
+  });
   return rm2k3Fieldset("게임 메뉴 디자인", [
-    checkboxField("옛 메뉴 쓰기(아래 디자인 목록)", "db-field-system-menu-layout-legacy", project.system.menuLayout === "legacy", (checked) => {
-      updateSystem((draft) => {
-        if (checked) draft.system.menuLayout = "legacy";
-        else delete draft.system.menuLayout;
-      });
-    }),
-    systemHelp("ESC 메뉴는 기본으로 허브 메뉴(동료 카드 · 타이틀 그림 배경)입니다. 옛 메뉴를 켜면 아래에서 고른 디자인을 씁니다."),
-    status,
-    gallery,
+    previewHost,
+    hubThemeRow,
+    legacyDrawer,
   ]);
 }
 

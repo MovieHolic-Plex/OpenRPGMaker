@@ -1,6 +1,8 @@
 import { FIELD_HUD_THEMES, normalizeFieldHud } from "@/project/fieldHud";
 import { MENU_SKINS, resolveMenuSkinId } from "@/player/menuSkins/registry";
 import { listTitleMenuOptions } from "@/player/titleScreen";
+import { renderUiLookPresetCard } from "@/editor/panels/databaseUiLookBar";
+import { store } from "@/project/store";
 import { resolveFontSelection, FONT_ROLE_LABELS, FONT_ROLES, fontOptionsForRole } from "@/project/fontRegistry";
 import { listDatabaseResourceOptions } from "@/editor/panels/databaseResourcePickerDialog";
 import { BATTLE_METHOD_LABELS, battleMethodOf } from "@/project/battleMethod";
@@ -39,7 +41,7 @@ type StateRow = {
   readonly description?: string;
 };
 
-export function renderSystemStudioOverview(project: Project): HTMLElement {
+export function renderSystemStudioOverview(project: Project, onRefreshAll?: () => void): HTMLElement {
   const titleScreen = resolvedTitleScreen(project);
   const stateRows = semanticStateRows(project);
   const warnings = systemWarningCount(project);
@@ -53,11 +55,33 @@ export function renderSystemStudioOverview(project: Project): HTMLElement {
     dataset: { testid: "db-system-studio-command-search" },
   }) as HTMLInputElement;
 
+  const uiLookHost = el("div", { class: "db-system-studio-ui-look-host" });
+  const mountUiLook = (): void => {
+    const live = store.getCurrent();
+    uiLookHost.replaceChildren(
+      renderUiLookPresetCard(live, () => {
+        if (onRefreshAll) {
+          onRefreshAll();
+          return;
+        }
+        const nextStudio = renderSystemStudioOverview(store.getCurrent());
+        const parent = studio.parentElement;
+        studio.replaceWith(nextStudio);
+        if (parent) {
+          const form = parent.closest<HTMLElement>(".db-system-form");
+          if (form) wireSystemStudioOverview(form, nextStudio);
+        }
+      }, { compact: true }),
+    );
+  };
+  mountUiLook();
+
   const studio = el("section", {
     class: "db-system-studio",
     dataset: { testid: "db-system-studio" },
     children: [
       studioHeader(project, warnings, search),
+      uiLookHost,
       el("div", {
         class: "db-system-studio-layout",
         children: [
@@ -212,7 +236,9 @@ function primaryCardGrid(project: Project): HTMLElement {
       id: "menu",
       title: "게임 메뉴",
       description: "ESC · X 메뉴 디자인 선택과 미리보기",
-      status: MENU_SKINS[resolveMenuSkinId(project.system.menuUiStyle)].label,
+      status: project.system.menuLayout === "legacy"
+        ? `옛 메뉴 · ${MENU_SKINS[resolveMenuSkinId(project.system.menuUiStyle)].label}`
+        : `허브 카드형 · 옛 스킨 ${MENU_SKINS[resolveMenuSkinId(project.system.menuUiStyle)].label}`,
       statusKind: "neutral",
       target: "menu",
     },
