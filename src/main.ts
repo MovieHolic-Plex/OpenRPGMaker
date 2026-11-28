@@ -10,6 +10,7 @@ import { bootMark, installBootSummaryFallback } from "@/util/bootMarks";
 import { installVitePreloadRecovery } from "@/app/moduleLoadRecovery";
 import "./styles/index.css";
 import { mountWindowControls } from "@/start/windowControls";
+import { mountVersionTag } from "@/app/versionTag";
 // ⚠ 순서 의존: 저장 키 마이그레이션이 import 시점에 localStorage 를 읽는 모듈보다 **먼저**
 // 평가돼야 한다. 자세한 이유는 src/storageBoot.ts 헤더 주석 — 진입점 본문의 함수 호출로는
 // 안 된다(import 호이스팅).
@@ -72,6 +73,7 @@ if (typeof window !== "undefined" && window.location) {
     }
   }
   mountWindowControls();
+  mountVersionTag();
   if (window.oprn?.closeIsHostDriven === true) {
     const { lifecycle } = window.oprn;
     const flushForClose = async (mode: "auto" | "save"): Promise<boolean> => {
