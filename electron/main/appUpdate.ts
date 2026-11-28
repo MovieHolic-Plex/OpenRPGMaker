@@ -41,6 +41,7 @@ let attachPromise: Promise<void> | null = null;
 let timer: ReturnType<typeof setInterval> | null = null;
 let installing = false;
 let manualCheckInFlight = false;
+let manualDownloadOwned = false;
 /** 켜질 때의 경로 환경 변수. 이 모듈은 main.ts 가 import 할 때 평가되므로 startApp 이 값을 쓰기 전이다. */
 const launchEnv = snapshotLaunchEnv(process.env);
 
@@ -183,8 +184,13 @@ async function attachUpdater(): Promise<void> {
     autoUpdater.allowPrerelease = false;
     autoUpdater.allowDowngrade = false;
     autoUpdater.on("update-available", (info) => {
-      if (mode === "manual") setState({ kind: "available", version: info.version, downloadUrl: portableDownloadUrl(info.version) });
-      else setState({ kind: "downloading", version: info.version, percent: 0 });
+      if (mode === "manual") {
+        manualDownloadOwned = false;
+        setState({ kind: "available", version: info.version, downloadUrl: portableDownloadUrl(info.version) });
+      } else {
+        manualDownloadOwned = manualCheckInFlight;
+        setState({ kind: "downloading", version: info.version, percent: 0 });
+      }
     });
     autoUpdater.on("download-progress", (progress) => {
       if (state.kind !== "downloading") return;
@@ -193,11 +199,13 @@ async function attachUpdater(): Promise<void> {
       setState({ kind: "downloading", version: state.version, percent });
     });
     autoUpdater.on("update-not-available", () => {
+      manualDownloadOwned = false;
       if (manualCheckInFlight || state.kind === "checking") {
         setState({ kind: "up-to-date", checkedAt: Date.now() });
       }
     });
     autoUpdater.on("update-downloaded", (info) => {
+      manualDownloadOwned = false;
       prefs.pending = { version: info.version, lines: summarizeReleaseNotes(info.releaseNotes) };
       writePrefs();
       setState({ kind: "ready", version: info.version });
@@ -210,7 +218,9 @@ async function attachUpdater(): Promise<void> {
     });
     autoUpdater.on("error", (error) => {
       console.warn("[update] 오류:", error instanceof Error ? error.message : String(error));
-      if (manualCheckInFlight || state.kind === "checking") {
+      const reportToUser = manualCheckInFlight || manualDownloadOwned || state.kind === "checking";
+      manualDownloadOwned = false;
+      if (reportToUser) {
         setState({ kind: "error", message: friendlyUpdateError(error) });
       } else if (state.kind === "downloading") {
         setState({ kind: "idle" });
@@ -225,7 +235,11 @@ async function attachUpdater(): Promise<void> {
 
 /** 사용자가 직접 「업데이트 확인」을 눌렀을 때 실행한다. 자동 업데이트 토글과 무관하게 동작한다. */
 export async function checkForAppUpdateNow(): Promise<AppUpdateStatus> {
-  if (installing || state.kind === "ready" || state.kind === "downloading" || state.kind === "checking") {
+  if (state.kind === "downloading") {
+    manualDownloadOwned = true;
+    return status();
+  }
+  if (installing || state.kind === "ready" || state.kind === "checking") {
     return status();
   }
   if (mode === "off") {

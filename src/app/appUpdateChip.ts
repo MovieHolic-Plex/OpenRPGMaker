@@ -33,7 +33,7 @@ let latest: AppUpdateStatus | null = null;
 let restartFlush: (() => Promise<boolean>) | null = null;
 const listeners = new Set<(status: AppUpdateStatus) => void>();
 let watching = false;
-let installInFlight = false;
+let activeInstallPromise: Promise<void> | null = null;
 
 function bridge(): OprnUpdateBridge | null {
   return (typeof window !== "undefined" ? window.oprn?.update : undefined) ?? null;
@@ -61,21 +61,24 @@ export function flushForAppUpdateRestart(): Promise<boolean> {
   return restartFlush ? restartFlush() : Promise.resolve(true);
 }
 
-async function runInstall(
+function runInstall(
   update: OprnUpdateBridge,
   beforeRestart: ((say: (text: string) => void) => Promise<boolean>) | undefined,
   say: (text: string) => void,
-): Promise<void> {
-  if (installInFlight) return;
-  installInFlight = true;
-  try {
+): { readonly promise: Promise<void>; readonly joined: boolean } {
+  if (activeInstallPromise) {
+    return { promise: activeInstallPromise, joined: true };
+  }
+  const task = (async () => {
     const ok = beforeRestart ? await beforeRestart(say) : true;
     if (!ok) throw new Error("저장하지 못해 다시 시작하지 않았어요. 저장 상태를 확인해 주세요.");
     say("다시 시작하는 중…");
     if (!(await update.install())) throw new Error("업데이트를 설치하지 못했어요.");
-  } finally {
-    installInFlight = false;
-  }
+  })().finally(() => {
+    if (activeInstallPromise === task) activeInstallPromise = null;
+  });
+  activeInstallPromise = task;
+  return { promise: task, joined: false };
 }
 
 export function appUpdateMenuLabel(): string {
@@ -104,10 +107,11 @@ export async function triggerAppUpdateCheck(options: {
   if (current) publish(current);
   const state = current?.state;
   if (state?.kind === "ready") {
+    const { promise, joined } = runInstall(update, options.beforeRestart, (text) => toast(text, "ok"));
     try {
-      await runInstall(update, options.beforeRestart, (text) => toast(text, "ok"));
+      await promise;
     } catch (error) {
-      toast(error instanceof Error ? error.message : String(error), "error");
+      if (!joined) toast(error instanceof Error ? error.message : String(error), "error");
     }
     return;
   }
@@ -190,11 +194,12 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     busy = true;
     button.disabled = true;
     const say = (text: string): void => { button.textContent = text; };
-    void runInstall(update, options.beforeRestart, say).catch((error: unknown) => {
+    const { promise, joined } = runInstall(update, options.beforeRestart, say);
+    void promise.catch((error: unknown) => {
       busy = false;
       button.disabled = false;
       if (latest) paint(latest);
-      toast(error instanceof Error ? error.message : String(error), "error");
+      if (!joined) toast(error instanceof Error ? error.message : String(error), "error");
     });
   });
 
@@ -281,11 +286,12 @@ export function renderAppUpdateControl(options: AppUpdateControlOptions = {}): {
         button.textContent = text;
         detail.textContent = text;
       };
-      void runInstall(update, options.beforeRestart, say).catch((error: unknown) => {
+      const { promise, joined } = runInstall(update, options.beforeRestart, say);
+      void promise.catch((error: unknown) => {
         busy = false;
         button.disabled = false;
         if (latest) paint(latest);
-        toast(error instanceof Error ? error.message : String(error), "error");
+        if (!joined) toast(error instanceof Error ? error.message : String(error), "error");
       });
       return;
     }
