@@ -1,23 +1,24 @@
 import type { Page } from "@playwright/test";
 
 /**
- * 자료집 레일 접기(impl-database) 뒤에는 탭 목록이 묶음 아이콘을 눌러야 뜬다.
- * 그 탭이 속한 묶음 아이콘을 눌러 목록을 연다. tab 을 비우면 지금 묶음의 목록(검색 칸 포함)을 연다.
- * 이미 그 묶음 목록이 열려 있으면 아무것도 누르지 않는다(같은 묶음을 다시 누르면 닫히므로).
+ * 자료집 좌측 단일 통합 레일(2026-11-28, 안 B)에서는 넓은 창의 모든 구획이 상시 펼쳐져 있다.
+ * 사용자가 수동으로 52px 아이콘 레일로 접어 둔 상태(`data-rail-collapsed="1"`)이거나,
+ * 599px 이하 휴대 폭에서 탭 고르기 단추(`db-tab-switcher`)가 닫혀 있을 때만 목록을 펼친다.
  */
-export async function revealDbRailTab(page: Page, tab?: string): Promise<void> {
-  const slug = await page.evaluate((id) => {
-    const body = document.querySelector<HTMLElement>(".database-modal-body[data-rail-open]");
+export async function revealDbRailTab(page: Page, _tab?: string): Promise<void> {
+  const action = await page.evaluate(() => {
+    const body = document.querySelector<HTMLElement>(".database-modal-body");
     if (!body) return null;
-    let node: Element | null = id ? document.querySelector(`[data-testid="db-tab-${id}"]`) : null;
-    if (id && !node) return null;
-    while (node && !node.classList.contains("db-tab-group")) node = node.previousElementSibling;
-    const owner = (node as HTMLElement | null)?.dataset.groupSlug
-      ?? document.querySelector<HTMLElement>(".db-group-strip-btn.active")?.dataset.groupSlug
-      ?? null;
-    const viewing = document.querySelector<HTMLElement>(".database-modal-body > .db-tabs")?.dataset.viewGroup;
-    if (body.dataset.railOpen === "1" && viewing === owner) return null;
-    return owner;
-  }, tab ?? null);
-  if (slug) await page.getByTestId(`db-group-strip-${slug}`).click();
+    const switcher = body.querySelector<HTMLElement>("[data-testid='db-tab-switcher']");
+    if (switcher && switcher.getBoundingClientRect().width > 0) {
+      return body.dataset.railOpen === "1" ? null : "switcher";
+    }
+    const collapseToggle = body.querySelector<HTMLElement>("[data-testid='db-rail-collapse-toggle']");
+    if (body.dataset.railCollapsed === "1" && collapseToggle && collapseToggle.getBoundingClientRect().width > 0) {
+      return "expand";
+    }
+    return null;
+  });
+  if (action === "switcher") await page.getByTestId("db-tab-switcher").click();
+  else if (action === "expand") await page.getByTestId("db-rail-collapse-toggle").click();
 }

@@ -51,7 +51,7 @@ import {
   renderTerrainTab,
 } from "@/editor/panels/databaseUtilityRecordViews";
 import { renderOverviewTab } from "@/editor/panels/databaseOverviewView";
-import { makeDatabaseGroupIcon, makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
+import { makeDatabaseTabIcon } from "@/editor/panels/databaseTabIcons";
 import { renderStructureKitsTab } from "@/editor/panels/structureKitDbTab";
 import { applyTilesetFolderFacet } from "@/editor/panels/tilesetMetadataEditor";
 import { getSelectedTilesetId, renderTilesetsTab } from "@/editor/panels/tilesetSettingsPanel";
@@ -532,8 +532,6 @@ function applyEmptyTabFold(header: HTMLElement): void {
 
 /** 그룹 머리·「빈 탭」 줄 — 숨은 빈 탭을 펼친다. 이미 다 보이면 아무것도 하지 않는다(접지 않는다). */
 function revealGroupEmptyTabs(slug: string, header: HTMLElement): void {
-  // 그룹 머리를 누르면 그 구획을 본다 — 띠를 거치지 않는 옛 경로(e2e 헬퍼·키보드)도 같은 곳에 닿는다.
-  if (viewedGroupSlug !== slug && TAB_GROUPS.some((candidate) => candidate.slug === slug)) viewGroup(header, slug);
   const group = TAB_GROUPS.find((candidate) => candidate.slug === slug);
   if (!group || foldedEmptyTabs(group).length === 0) return;
   revealedEmptyGroupSlugs().add(slug);
@@ -549,10 +547,9 @@ function tabFor(id: DatabaseTab): { readonly id: DatabaseTab; readonly label: st
 
 const DATABASE_ACTIVE_TAB_KEY = "oprn:database.activeTab";
 const DATABASE_REVEALED_EMPTY_GROUPS_KEY = "oprn:database.revealedEmptyTabGroups";
+const DATABASE_RAIL_COLLAPSED_KEY = "oprn:database.railCollapsed";
 
 let activeTab: DatabaseTab = readStoredActiveTab();
-// 그룹마다 마지막으로 연 탭. 띠로 그룹을 바꾸면 그 탭(없으면 그룹의 첫 보이는 탭)을 연다.
-const lastTabByGroup = new Map<string, DatabaseTab>();
 let databaseHeaderResizeObserver: ResizeObserver | null = null;
 let spatialDatabaseHost: HTMLElement | null = null;
 
@@ -617,8 +614,6 @@ export function setDatabaseActiveTab(tab: DatabaseTab): void {
   else if (shellTab) setSpatialTab(shellTab);
   persistActiveTab();
   recordRecentDatabaseTab(primaryTab(activeTab));
-  const owner = groupForTab(activeTab);
-  if (owner) lastTabByGroup.set(owner.slug, primaryTab(activeTab));
   for (const listener of activeTabListeners) listener(activeTab);
 }
 
@@ -660,17 +655,19 @@ export function renderDatabasePanel(container: HTMLElement): void {
     dataset: { testid: "db-shared-workspace" },
   });
   // 버튼의 testid/라벨/.active 토글 계약(G006 + databaseCrossTabNav)을 유지한다.
-  appendPhoneTabSwitcher(header, container);
+  appendSheetHeader(header, container);
+  appendRailCollapseToggle(header, container);
   appendTabSearch(header, body, container);
   appendRecentTabs(header, body, container);
   appendTabButton(header, body, container, tabFor("overview"));
   for (const group of TAB_GROUPS) {
+    const groupClosed = !LIFE_SIM_ENABLED && group.slug === "life";
     header.append(el("div", {
       class: "db-tab-group",
-      // 그룹 머리는 이제 구획 제목이다 — 모든 그룹이 늘 펼쳐져 있다. 누르면 그 그룹의 빈 탭을
+      // 그룹 머리는 구획 제목이다 — 모든 그룹이 늘 펼쳐져 있다. 누르면 그 그룹의 빈 탭을
       // 펼친다(「빈 탭 N개」 줄과 같은 동작). div+onclick 이라 role/tabindex 를 주고
       // Enter/Space 를 직접 받는다 — <button> 은 기본 스타일이 달라 레일 모양이 흔들린다.
-      attrs: { title: group.description ?? group.label, role: "button", tabindex: "0" },
+      attrs: { title: group.description ?? group.label, role: "button", tabindex: "0", ...(groupClosed ? { hidden: "" } : {}) },
       dataset: { testid: `db-tab-group-${group.slug}`, groupSlug: group.slug },
       // 라벨을 **별도 span 으로** 둔다. 라벨 계약(databaseNavMode·db-desktop-matrix)은
       // .db-tab-group-label 의 textContent 를 본다.
@@ -718,10 +715,18 @@ export function renderDatabasePanel(container: HTMLElement): void {
   applyEmptyTabFold(header);
 
   renderActiveTab(body, container);
-  container.append(buildGroupStrip(header, body, container), header, body);
+  const phoneBar = buildPhoneNavBar(header, container);
+  const scrim = el("div", {
+    class: "db-rail-scrim",
+    attrs: { "aria-hidden": "true" },
+    dataset: { testid: "db-rail-scrim" },
+    on: { click: () => setRailOpen(container, false) },
+  });
+  container.append(phoneBar, scrim, header, body);
+  syncPhoneTabSwitcher(container);
   wireRailFold(container, header);
+  setRailCollapsed(container, readStoredRailCollapsed());
   resumeSkillAnimationStagesIn(body);
-  syncGroupStrip(header);
   revealActiveTab(header);
   if (typeof ResizeObserver !== "undefined") {
     // 헤더가 교체되면(탭 레일 재구성) 이전 옵저버는 할 일이 없다. GC 로 수거될 "가능성"에
@@ -940,6 +945,9 @@ function appendTabSearch(header: HTMLElement, body: HTMLElement, container: HTML
     attrs: { type: "search", placeholder: "탭 검색", title: "탭 검색", "aria-label": "탭 검색" },
     dataset: { testid: "db-tab-search" },
     on: {
+      focus: () => {
+        if (container.dataset.railCollapsed === "1") setRailCollapsed(container, false);
+      },
       input: refreshSearch,
       keydown: (event: Event) => {
         if (!("key" in event)) return;
@@ -1098,7 +1106,13 @@ function applyTabFilter(header: HTMLElement, rawQuery: string): void {
   if (query === "") delete header.dataset.searching;
   else header.dataset.searching = "1";
   if (query === "") {
-    for (const child of railChildren(header)) child.hidden = false;
+    for (const child of railChildren(header)) {
+      if (!LIFE_SIM_ENABLED && child.classList?.contains("db-tab-group") && child.dataset.groupSlug === "life") {
+        child.hidden = true;
+      } else {
+        child.hidden = false;
+      }
+    }
     applyEmptyTabFold(header);
     recentTabSyncers.get(header)?.();
     syncTabSearchEmptyNotice(header, rawQuery);
@@ -1197,28 +1211,85 @@ function appendTabButton(
   );
 }
 
-// 휴대 폭(599px 이하) 탭 고르기 (db-390-trim, 오너 2026-11-26 「사용자는 많은 버튼을 원하지 않는다」).
-// 아이콘 레일 20칸(검색·탭·「+N」) 대신 지금 탭 이름 단추 하나만 둔다. 누르면 같은 레일이 이름과 함께 펼쳐지고,
-// 탭을 고르면 wireRailFold 가 닫는다(열림 상태는 넓은 창 레일 접기와 같은 data-rail-open). 넓은 창·도크에서는
-// CSS 가 숨긴다. `.db-tab` 이 아니므로 탭 버튼 계약(라벨·testid·포커스 순서)에 잡히지 않는다.
-function appendPhoneTabSwitcher(header: HTMLElement, container: HTMLElement): void {
-  header.append(el("button", {
+// 휴대 폭(599px 이하) 전용 상단 바 + 2열 바텀 시트(2026-11-28).
+// 닫혀 있을 때는 상단 44px 한 줄(「파티 › 주인공 ▾」 + 빠른 검색 버튼)만 두고 본문을 밀지 않는다.
+// 누르면 어두운 스크림 위로 바텀 시트(.db-tabs)가 2열 카드·그룹 머리·개수 배지와 함께 올라온다.
+function buildPhoneNavBar(header: HTMLElement, container: HTMLElement): HTMLElement {
+  const switcher = el("button", {
     class: "db-tab-switcher",
     attrs: { type: "button", "aria-expanded": "false" },
     dataset: { testid: "db-tab-switcher" },
     on: { click: () => setRailOpen(container, container.dataset.railOpen !== "1") },
-  }));
-  syncPhoneTabSwitcher(header);
+  });
+  const searchIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  searchIcon.setAttribute("class", "db-phone-search-icon");
+  searchIcon.setAttribute("viewBox", "0 0 16 16");
+  searchIcon.setAttribute("fill", "none");
+  searchIcon.setAttribute("stroke", "currentColor");
+  searchIcon.setAttribute("stroke-width", "1.7");
+  searchIcon.setAttribute("aria-hidden", "true");
+  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  circle.setAttribute("cx", "7");
+  circle.setAttribute("cy", "7");
+  circle.setAttribute("r", "4.3");
+  const handle = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  handle.setAttribute("d", "M10.4 10.4 14 14");
+  handle.setAttribute("stroke-linecap", "round");
+  searchIcon.append(circle, handle);
+  const searchBtn = el("button", {
+    class: "db-phone-search-btn",
+    attrs: { type: "button", title: "탭 검색 열기", "aria-label": "탭 검색 열기" },
+    dataset: { testid: "db-phone-search-btn" },
+    children: [searchIcon],
+    on: {
+      click: () => {
+        setRailOpen(container, true);
+        header.querySelector<HTMLInputElement>(".db-tab-search")?.focus();
+      },
+    },
+  });
+  return el("div", {
+    class: "db-phone-bar",
+    dataset: { testid: "db-phone-bar" },
+    children: [switcher, searchBtn],
+  });
 }
 
-function syncPhoneTabSwitcher(header: HTMLElement): void {
-  const button = header.querySelector<HTMLElement>(".db-tab-switcher");
+function appendSheetHeader(header: HTMLElement, container: HTMLElement): void {
+  header.append(el("div", {
+    class: "db-sheet-head",
+    dataset: { testid: "db-sheet-head" },
+    children: [
+      el("span", { class: "db-sheet-handle", attrs: { "aria-hidden": "true" } }),
+      el("span", { class: "db-sheet-title", text: "자료집 이동" }),
+      el("button", {
+        class: "db-sheet-close",
+        text: "×",
+        attrs: { type: "button", title: "닫기", "aria-label": "메뉴 닫기" },
+        dataset: { testid: "db-sheet-close" },
+        on: { click: () => setRailOpen(container, false) },
+      }),
+    ],
+  }));
+}
+
+function syncPhoneTabSwitcher(root: HTMLElement): void {
+  const button = root.querySelector<HTMLElement>(".db-tab-switcher")
+    ?? root.parentElement?.querySelector<HTMLElement>(".db-tab-switcher");
   if (!button) return;
   const tab = tabFor(primaryTab(activeTab));
-  button.setAttribute("title", `탭 바꾸기 — 지금: ${tab.label}`);
+  const group = groupForTab(tab.id);
+  const fullPath = group ? `${group.label} › ${tab.label}` : tab.label;
+  button.setAttribute("title", `탭 바꾸기 — 지금: ${fullPath}`);
   button.setAttribute("aria-label", `탭 바꾸기, 지금 ${tab.label}`);
   button.replaceChildren(
     makeDatabaseTabIcon(tab.id),
+    ...(group
+      ? [
+        el("span", { class: "db-tab-switcher-group", text: group.label }),
+        el("span", { class: "db-tab-switcher-sep", text: "›", attrs: { "aria-hidden": "true" } }),
+      ]
+      : []),
     el("span", { class: "db-tab-switcher-label", text: tab.label }),
     el("span", { class: "db-tab-switcher-chevron", text: "▾", attrs: { "aria-hidden": "true" } }),
   );
@@ -1246,104 +1317,70 @@ function updateTabButtons(header: HTMLElement): void {
     else button.removeAttribute("aria-current");
   }
   recentTabSyncers.get(header)?.();
-  syncGroupStrip(header);
   revealActiveTab(header);
 }
 
-// ── 그룹 띠 (2026-09-27 자료집 개선안) ───────────────────────────────────────────
-// 레일 왼쪽 64px 세로 띠에 그룹 7개를 아이콘+짧은 이름으로 세우고, 옆 목록(.db-tabs)은
-// **보고 있는 그룹 구획만** 보인다. 30개 넘는 탭이 한 줄로 쌓여 늘 스크롤되던 레일이
-// 그룹당 4~8줄이 된다.
-//
-// .db-tabs 의 평평한 DOM 계약(검색 → 개요 → 그룹 머리·탭 번갈아)은 그대로 둔다 — 띠는 형제다.
-// 어떤 그룹을 보일지는 레일의 data-view-group 한 속성이 정하고, 구획을 숨기는 것은 CSS 다.
-// 그래서 탭 버튼의 hidden(빈 탭 접기·검색)과 섞이지 않고, 검색 중에는 CSS 가 구획 제한을 푼다.
-let viewedGroupSlug: string | null = null;
-// 띠가 마지막으로 따라간 활성 탭. 활성 탭이 **바뀐 때만** 그 그룹으로 옮긴다 — 매번 옮기면
-// 띠 클릭(viewGroup)이 고른 그룹을 syncGroupStrip 이 곧바로 활성 탭의 그룹으로 되돌린다
-// (2026-09-28 사용자 보고: 「사이드바 눌러도 메뉴가 안 바뀐다」).
-let groupFollowedTab: DatabaseTab | null = null;
-
-function groupStripOf(header: HTMLElement): HTMLElement | null {
-  const strip = header.previousElementSibling;
-  return strip instanceof HTMLElement && strip.classList.contains("db-group-strip") ? strip : null;
-}
-
-function currentViewedGroup(): string {
-  return viewedGroupSlug ?? groupForTab(activeTab)?.slug ?? TAB_GROUPS[0]!.slug;
-}
-
-function syncGroupStrip(header: HTMLElement): void {
-  // 활성 탭이 바뀌면(조수 점프·딥링크 포함) 그 탭의 그룹을 본다. 개요는 그룹 밖이라 보던 그룹을 둔다.
-  if (groupFollowedTab !== activeTab) {
-    groupFollowedTab = activeTab;
-    const owner = groupForTab(activeTab)?.slug;
-    if (owner) viewedGroupSlug = owner;
-  }
-  const slug = currentViewedGroup();
-  header.dataset.viewGroup = slug;
-  markViewedSection(header, slug);
-  const strip = groupStripOf(header);
-  if (!strip) return;
-  for (const button of Array.from(strip.children)) {
-    if (!(button instanceof HTMLElement)) continue;
-    const on = button.dataset.groupSlug === slug;
-    button.classList.toggle("active", on);
-    button.setAttribute("aria-pressed", String(on));
+// ── 단일 통합 레일 접기 (2026-11-28, 안 B) ─────────────────────────────────────────
+// 기존 2단 구조(64px 그룹 띠 + 196px 오버레이 드로어)를 폐지하고, 모든 구획이 한 번에 보이는
+// 196px 단일 레일로 통합한다. 넓은 편집 폭이 필요할 때만 사용자가 상단 버튼으로 52px 아이콘 레일로
+// 수동 접기/펼치기할 수 있고(본문 가림 0px), 599px 이하 휴대 폭은 기존 탭 고르기 단추(data-rail-open)를 유지한다.
+function readStoredRailCollapsed(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return window.localStorage.getItem(DATABASE_RAIL_COLLAPSED_KEY) === "1";
+  } catch {
+    return false;
   }
 }
 
-/** 구획 소속을 행마다 data-in-view 로 적는다 — CSS 가 이것만 보고 다른 구획을 숨긴다. */
-function markViewedSection(header: HTMLElement, slug: string): void {
-  let current: string | null = null;
-  for (const child of railChildren(header)) {
-    const classes = child.classList;
-    if (!classes) continue;
-    if (classes.contains("db-tab-group")) current = child.dataset.groupSlug ?? null;
-    else if (!classes.contains("db-tab") && !classes.contains("db-tab-fold") && !classes.contains("db-tab-subhead")) continue;
-    // 개요와 검색 결과 보조 목적지는 구획 밖이다 — 늘 보인다.
-    if (current === null || child.dataset.searchSecondary) {
-      delete child.dataset.inView;
-      continue;
-    }
-    child.dataset.inView = current === slug ? "1" : "0";
+function persistRailCollapsed(collapsed: boolean): void {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(DATABASE_RAIL_COLLAPSED_KEY, collapsed ? "1" : "0");
+  } catch {
+    // 저장 실패해도 이번 세션 상태는 유지한다.
   }
 }
 
-function viewGroup(header: HTMLElement, slug: string): void {
-  viewedGroupSlug = slug;
-  syncGroupStrip(header);
-  header.scrollTop = 0;
+function setRailCollapsed(container: HTMLElement, collapsed: boolean): void {
+  container.dataset.railCollapsed = collapsed ? "1" : "0";
+  persistRailCollapsed(collapsed);
+  const button = container.querySelector<HTMLElement>("[data-testid='db-rail-collapse-toggle']");
+  if (!button) return;
+  button.setAttribute("aria-expanded", String(!collapsed));
+  button.setAttribute("title", collapsed ? "메뉴 펼치기" : "메뉴 접기");
+  button.setAttribute("aria-label", collapsed ? "메뉴 펼치기" : "메뉴 접기");
+  const icon = button.querySelector(".db-rail-collapse-icon");
+  const label = button.querySelector(".db-rail-collapse-label");
+  if (icon) icon.textContent = collapsed ? "»" : "«";
+  if (label) label.textContent = collapsed ? "펼치기" : "메뉴 접기";
 }
 
-function groupLandingTab(group: DatabaseTabGroup): DatabaseTab {
-  const remembered = lastTabByGroup.get(group.slug);
-  if (remembered && group.tabs.includes(remembered)) return remembered;
-  const folded = new Set(foldedEmptyTabs(group));
-  return group.tabs.find((id) => !folded.has(id)) ?? group.tabs[0]!;
+function appendRailCollapseToggle(header: HTMLElement, container: HTMLElement): void {
+  header.append(el("button", {
+    class: "db-rail-collapse-btn",
+    attrs: { type: "button", title: "메뉴 접기", "aria-label": "메뉴 접기", "aria-expanded": "true" },
+    dataset: { testid: "db-rail-collapse-toggle" },
+    children: [
+      el("span", { class: "db-rail-collapse-icon", text: "«", attrs: { "aria-hidden": "true" } }),
+      el("span", { class: "db-rail-collapse-label", text: "메뉴 접기" }),
+    ],
+    on: {
+      click: () => setRailCollapsed(container, container.dataset.railCollapsed !== "1"),
+    },
+  }));
 }
 
-// ── 레일 접기 (btn-vqa-db PR 7, 오너 확인 2026-11-24 「사용자는 많은 버튼을 원하지 않는다」) ───────────
-// 레일에는 묶음 아이콘만 보인다. 묶음을 누르면 탭 목록(.db-tabs: 검색·개요·그 묶음 탭)이 뜨고, 탭을 고르거나
-// 바깥을 누르거나 Esc 를 누르면 닫힌다. 지금 탭은 머리줄 크럼(「파티 › 주인공」)이 말한다. 숨기는 것은 CSS 다 —
-// .db-tabs 의 DOM·testid·탭 버튼 계약은 그대로다.
 function setRailOpen(container: HTMLElement, open: boolean): void {
   container.dataset.railOpen = open ? "1" : "0";
-  const header = container.querySelector<HTMLElement>(":scope > .db-tabs");
-  header?.querySelector(".db-tab-switcher")?.setAttribute("aria-expanded", String(open));
-  const strip = header ? groupStripOf(header) : null;
-  if (header && strip && open) header.style.left = `${strip.offsetWidth}px`;
-  for (const button of strip ? Array.from(strip.children) : []) {
-    if (button instanceof HTMLElement) button.setAttribute("aria-expanded", String(open && button.classList.contains("active")));
-  }
+  container.querySelector(".db-tab-switcher")?.setAttribute("aria-expanded", String(open));
 }
 
 const railFoldHosts = new WeakSet<HTMLElement>();
 
 function wireRailFold(container: HTMLElement, header: HTMLElement): void {
-  // 패널을 다시 그려도(같은 host) 열림 상태는 잇는다. host 리스너는 한 번만 단다.
+  // 패널을 다시 그려도(같은 host) 휴대 폭 바텀 시트 열림 상태는 잇는다. host 리스너는 한 번만 단다.
   setRailOpen(container, container.dataset.railOpen === "1");
-  // 탭을 고르면 닫는다. 탭 버튼의 자기 click 이 먼저 돌고(버블링) 여기서 닫는다.
   header.addEventListener("click", (event) => {
     const target = event.target instanceof Element ? event.target : null;
     if (target?.closest(".db-tab, .db-search-dest, .db-recent-tab, [data-reveal-tab]")) setRailOpen(container, false);
@@ -1352,48 +1389,15 @@ function wireRailFold(container: HTMLElement, header: HTMLElement): void {
     if (event.key !== "Escape" || container.dataset.railOpen !== "1") return;
     event.stopPropagation();
     setRailOpen(container, false);
-    groupStripOf(header)?.querySelector<HTMLElement>(".db-group-strip-btn.active")?.focus();
+    container.querySelector<HTMLElement>(".db-tab-switcher")?.focus();
   });
   if (railFoldHosts.has(container)) return;
   railFoldHosts.add(container);
   container.addEventListener("pointerdown", (event) => {
     if (container.dataset.railOpen !== "1") return;
     const target = event.target instanceof Element ? event.target : null;
-    if (target?.closest(".db-tabs, .db-group-strip")) return;
+    if (target?.closest(".db-tabs, .db-phone-bar")) return;
     setRailOpen(container, false);
-  });
-}
-
-function buildGroupStrip(header: HTMLElement, body: HTMLElement, container: HTMLElement): HTMLElement {
-  return el("nav", {
-    class: "db-group-strip",
-    attrs: { "aria-label": "자료 분류" },
-    dataset: { testid: "db-group-strip" },
-    children: TAB_GROUPS.map((group) => el("button", {
-      class: "db-group-strip-btn",
-      // 설명 문장은 이름이 아니라 설명이다 — 접근 이름은 보이는 글자, 설명은 aria-description 으로 준다.
-      attrs: { type: "button", title: group.description ?? group.label, "aria-pressed": "false", ...(group.description ? { "aria-description": group.description } : {}) },
-      dataset: { testid: `db-group-strip-${group.slug}`, groupSlug: group.slug },
-      children: [makeDatabaseGroupIcon(group.slug), el("span", { class: "db-group-strip-label", text: group.label })],
-      on: {
-        click: () => {
-          // 그룹을 바꾸면 본문·크럼도 그 그룹으로 간다. 예전에는 하위 목록만 바뀌고 본문은 이전 그룹의
-          // 탭(「파티 › 주인공」)에 머물러, 지금 무엇을 편집 중인지 두 신호가 어긋났다(V-database-05~08).
-          const owner = groupForTab(activeTab)?.slug;
-          // 같은 묶음을 다시 누르면 탭 목록을 닫는다(열림 토글).
-          const reopen = !(container.dataset.railOpen === "1" && currentViewedGroup() === group.slug);
-          if (owner === group.slug) {
-            viewGroup(header, group.slug);
-            setRailOpen(container, reopen);
-            return;
-          }
-          viewGroup(header, group.slug);
-          openRailDestination(header, body, container, groupLandingTab(group));
-          setRailOpen(container, true);
-          (container.querySelector(`[data-testid="db-group-strip-${group.slug}"]`) as HTMLElement | null)?.focus();
-        },
-      },
-    })),
   });
 }
 
