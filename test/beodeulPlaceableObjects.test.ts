@@ -117,7 +117,8 @@ describe("bundled Beodeul placeable objects", () => {
     const map = createBlankMap("버들항", width, height, tileset.id);
     const entries = filterProps(recommendProps(map, tileset), undefined, "버들항 기본 기물");
     const grafts = new Map(tileset.tileGrafts?.map(graft => [graft.targetTile, graft]));
-    expect(new Set(entries.map(({ choice }) => choice.id))).toEqual(new Set(BEODEUL_PLACEABLE_OBJECTS.map(({ id }) => kitId(id))));
+    const activeObjects = BEODEUL_PLACEABLE_OBJECTS.filter(({ id }) => !isRetiredObject(tileset.id, kitId(id)));
+    expect(new Set(entries.map(({ choice }) => choice.id))).toEqual(new Set(activeObjects.map(({ id }) => kitId(id))));
     for (const [index, object] of BEODEUL_PLACEABLE_OBJECTS.entries()) {
       const asset = BEODEUL_OBJECT_IMAGE_ASSETS[index]!;
       expect(findBundledImageAsset(asset.textureKey)).toEqual(asset);
@@ -129,6 +130,10 @@ describe("bundled Beodeul placeable objects", () => {
       if (object.category === "indoor") expect(kit?.spec?.category).toBe("furniture");
       if (object.category === "nature") expect(kit?.spec?.category).toBe("nature");
       expect(kit?.ai?.growthAxis).toBe(object.growthAxis);
+      if (isRetiredObject(tileset.id, kitId(object.id))) {
+        expect(entries.find(entry => entry.choice.id === kitId(object.id))).toBeUndefined();
+        continue;
+      }
       const { stamp } = entries.find(entry => entry.choice.id === kitId(object.id))!.choice;
       expect([stamp.width, stamp.height]).toEqual([object.widthTiles, object.heightTiles]);
       expect(stamp.cells).toHaveLength(object.footprint.join("").replaceAll(" ", "").length);
