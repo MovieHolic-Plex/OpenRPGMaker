@@ -7,6 +7,7 @@ import { renderEventEditorContent } from "@/editor/panels/eventEditor/content";
 import { renderClassicPageTabStrip } from "@/editor/panels/eventEditor/pageProps";
 import { openNpcGraphicDialog } from "@/editor/panels/eventEditor/graphicDialog";
 import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/eventEditor/modal";
+import { setEventEditorViewLevel } from "@/editor/panels/eventEditor/beginnerChrome";
 import { createBlankProject } from "@/project/defaults";
 import { _resetEventDraftVaultForTest } from "@/project/eventDraftVault";
 import { store } from "@/project/store";
@@ -531,6 +532,52 @@ describe("RPG Maker style event editor entry points", () => {
     expect(nameInput?.value).toBe("");
     expect(nameInput?.placeholder).toBe("이벤트 이름 (예: 촌장 할아버지)");
     expect(nameInput?.closest(".event-editor-name-field")).not.toBeNull();
+  });
+
+  it("applies bubble presentation before the opening paint so easy/normal views never flash full-size", () => {
+    const project = createBlankProject();
+    const map = project.maps[project.startMapId];
+    map.events = [gameEvent(eventPage())];
+    store.replace(project);
+    setEventEditorViewLevel("easy");
+
+    const origRaf = globalThis.requestAnimationFrame;
+    const origVisibility = Object.getOwnPropertyDescriptor(document, "visibilityState");
+    const queuedRafs: FrameRequestCallback[] = [];
+    const seenOnAppend: Array<{ modalClass: string; winClass: string; hasEasyShell: boolean }> = [];
+    const origAppend = document.body.append.bind(document.body);
+    const appendSpy = vi.spyOn(document.body, "append").mockImplementation((...nodes) => {
+      for (const node of nodes) {
+        if (node instanceof FakeElement && node.dataset.testid === "event-editor-modal") {
+          const win = node.querySelector(".event-editor-modal-window");
+          seenOnAppend.push({
+            modalClass: node.className,
+            winClass: win?.className ?? "",
+            hasEasyShell: Boolean(node.querySelector(".event-editor.is-beginner.is-level-easy")),
+          });
+        }
+      }
+      return origAppend(...nodes);
+    });
+    Object.defineProperty(document, "visibilityState", { configurable: true, value: "visible" });
+    globalThis.requestAnimationFrame = ((cb: FrameRequestCallback) => {
+      queuedRafs.push(cb);
+      return queuedRafs.length;
+    }) as typeof globalThis.requestAnimationFrame;
+
+    try {
+      openEventEditorModal(project.startMapId, "event-1");
+      expect(seenOnAppend).toHaveLength(1);
+      expect(seenOnAppend[0]?.modalClass).toContain("is-bubble-backdrop");
+      expect(seenOnAppend[0]?.winClass).toContain("is-bubble");
+      expect(seenOnAppend[0]?.hasEasyShell).toBe(true);
+    } finally {
+      appendSpy.mockRestore();
+      globalThis.requestAnimationFrame = origRaf;
+      if (origVisibility) Object.defineProperty(document, "visibilityState", origVisibility);
+      else delete (document as { visibilityState?: unknown }).visibilityState;
+      setEventEditorViewLevel("advanced");
+    }
   });
 
 });

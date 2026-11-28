@@ -61,6 +61,7 @@ import { openEventEditorHelp } from "./eventEditorHelp";
 import {
   EVENT_EDITOR_VIEW_LEVEL_LABEL,
   EVENT_EDITOR_VIEW_LEVELS,
+  eventEditorAdvancedOpen,
   eventEditorViewLevel,
   onEventEditorViewLevelChange,
   setEventEditorViewLevel,
@@ -372,7 +373,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   };
   const positionBubbleNearCanvas = (): void => {
     if (bubbleDragged || typeof window === "undefined") return;
-    if (!windowEl.classList.contains("is-bubble")) return;
+    if (!windowEl.classList.contains("is-bubble") || windowEl.classList.contains("is-fullscreen")) return;
     const canvas = document.querySelector<HTMLElement>('[data-testid="edit-canvas"]');
     const measuredRect = windowEl.getBoundingClientRect();
     const bubbleW = Math.min(440, window.innerWidth - 24);
@@ -451,7 +452,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     windowEl.style.margin = "0";
   };
   const expandButton = header.querySelector<HTMLButtonElement>('[data-testid="event-editor-bubble-expand"]');
-  const syncModalPresentation = (): void => {
+  const syncModalPresentation = (options?: { readonly scheduleReposition?: boolean }): void => {
     const level = eventEditorViewLevel();
     const isScene = level === "easy" || level === "normal";
     const isBubble = isScene && !sceneExpanded;
@@ -466,7 +467,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       resetWindowInlineGeometry();
     } else if (isBubble) {
       positionBubbleNearCanvas();
-      if (typeof requestAnimationFrame === "function") {
+      if (options?.scheduleReposition !== false && typeof requestAnimationFrame === "function") {
         requestAnimationFrame(() => {
           if (!closed && !minimized) positionBubbleNearCanvas();
         });
@@ -663,20 +664,42 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   });
   const openedAt = performance.now();
   let openLeakSwallowed = false;
+  let modalPointerDownSeen = false;
+  backdrop.addEventListener(
+    "pointerdown",
+    () => {
+      modalPointerDownSeen = true;
+    },
+    { capture: true },
+  );
   backdrop.addEventListener(
     "dblclick",
     (event) => {
-      // Only swallow the opening canvas double-click, never titlebar controls.
-      if (event.target !== backdrop || openLeakSwallowed || performance.now() - openedAt >= 800) return;
+      // Only swallow the opening canvas double-click, never deliberate titlebar interactions.
+      const leakedOpeningClick = event.target === backdrop || (event.isTrusted && !modalPointerDownSeen);
+      if (!leakedOpeningClick || openLeakSwallowed || performance.now() - openedAt >= 800) return;
       openLeakSwallowed = true;
       event.stopPropagation();
       event.preventDefault();
     },
     { capture: true },
   );
+  const initialViewLevel = eventEditorViewLevel();
+  const initialAdvancedOpen = initialViewLevel === "advanced" && eventEditorAdvancedOpen();
   document.body.classList.add("event-editor-modal-open");
-  dynamicBody.append(el("p", { class: "empty-hint", text: "불러오는 중…", attrs: { role: "status" } }));
+  dynamicBody.append(
+    el("div", {
+      class: `panel-section event-editor event-editor-command-focused ${initialAdvancedOpen ? "is-advanced" : "is-beginner"} is-level-${initialViewLevel}`,
+      children: [el("p", { class: "empty-hint", text: "불러오는 중…", attrs: { role: "status" } })],
+    }),
+  );
+  // Sync bubble/expanded presentation before first paint so easy/normal views
+  // never flash the full-size default dialog shell during afterOpeningPaint.
+  syncModalPresentation({ scheduleReposition: false });
   document.body.append(backdrop);
+  // Re-measure connected loading height synchronously before first paint so the
+  // bubble tail stays flush on the bubble edge on Frame 0.
+  if (windowEl.classList.contains("is-bubble")) positionBubbleNearCanvas();
   announceEventEditorOpened(request.mapId);
   focusFirstDialogControl(backdrop);
   const openingFocus = document.activeElement;
