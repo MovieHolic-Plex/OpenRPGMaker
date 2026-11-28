@@ -3,6 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { editorState } from "@/editor/editorState";
 import type { TileToolbarModel } from "@/editor/panels/tileToolbarMenus";
 import { createBlankProject } from "@/project/defaults";
+// 새 프로젝트 시작 맵은 버들항이다(#5185) — 합본 마을 칸 번호를 쓰는 이 시험은 옛 저장본처럼 합본 마을 위에서 시작한다.
+import { startOnRetiredCombinedTown } from "./support/retiredEasyRpgTilesets";
 import { store } from "@/project/store";
 
 const lintMock = vi.hoisted(() => ({
@@ -33,7 +35,7 @@ function toolbarModel(): TileToolbarModel {
 describe("표준/전문가 사이드바 접근성", () => {
   beforeEach(() => {
     resetTileToolbarMenusForTests();
-    const project = createBlankProject();
+    const project = startOnRetiredCombinedTown(createBlankProject());
     store.replace(project);
     editorState.set({
       currentMapId: project.startMapId,
