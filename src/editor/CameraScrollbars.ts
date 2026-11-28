@@ -34,13 +34,14 @@ export class CameraScrollbars {
     });
   }
 
-  sync(area: Area, mapWidth: number, mapHeight: number): void {
+  sync(area: Area, mapWidth: number, mapHeight: number, mapId?: string): void {
     const { canvas, unoccluded: view, worldView, zoom } = area;
-    const projection = [mapWidth, mapHeight, canvas.x, canvas.y, canvas.width, canvas.height, view.x, view.y, view.width, view.height, worldView.x, worldView.y, zoom].join("|");
+    const projection = [mapId ?? "", mapWidth, mapHeight, canvas.x, canvas.y, canvas.width, canvas.height, view.x, view.y, view.width, view.height, worldView.x, worldView.y, zoom].join("|");
     if (projection === this.projection) return;
     this.projection = projection;
     this.zoom = zoom;
     publishEditorCameraViewport({
+      ...(mapId ? { mapId } : {}),
       mapWidthPx: mapWidth,
       mapHeightPx: mapHeight,
       viewX: worldView.x + (view.x - canvas.x) / zoom,

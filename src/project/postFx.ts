@@ -10,6 +10,8 @@
  */
 import type { AtmosphereKind } from "./atmosphere";
 import type { MapSunlight } from "./sunlight";
+import type { LightSource, LightingState } from "./types";
+import { normalizeLightingState } from "./lightingRules";
 
 export const POST_FX_PRESET_IDS = [
   "none",
@@ -298,7 +300,7 @@ export const CINEMATIC_COMBO_PRESETS: Readonly<Record<CinematicComboId, Cinemati
   "classic-clean": {
     id: "classic-clean",
     label: "없음 (원본 초기화)",
-    summary: "후처리·환경효과·태양그림자·야간조명을 모두 끄고 순수 도트 원본으로 복원",
+    summary: "후처리·환경효과·태양그림자·콤보가 켠 야간조명을 끄고 순수 도트 원본으로 복원 (직접 둔 광원·기후는 남김)",
     postFx: null,
     sunlight: null,
     atmosphereEffects: [],
@@ -514,4 +516,55 @@ export function resolvePostFx(mapPostFx: MapPostFx | undefined, systemPostFx?: M
     wallOcclusion: effective.wallOcclusion !== false,
     waterReflections: effective.waterReflections !== false,
   };
+}
+
+/** 콤보가 플레이어에 붙이는 손전등 광원 id — 직접 둔 광원과 구분해 콤보만 걷어 낸다. */
+export const COMBO_FLASHLIGHT_SOURCE_ID = "combo-flashlight";
+
+/**
+ * 이 조명이 콤보가 켠 어둠인가 — 어떤 콤보의 ambient·color 와 정확히 같으면 콤보 것으로 본다.
+ * 직접 만든 밤 조명(다른 ambient/색)은 콤보 끄기·초기화가 건드리지 않는다.
+ */
+export function isComboOwnedLighting(lighting: Pick<LightingState, "ambient" | "color"> | undefined): boolean {
+  if (!lighting) return false;
+  for (const combo of Object.values(CINEMATIC_COMBO_PRESETS)) {
+    const own = combo.lighting;
+    if (own && own.ambient === lighting.ambient && own.color === lighting.color) return true;
+  }
+  return false;
+}
+
+/**
+ * 콤보를 적용한 뒤의 맵 기본 조명. 직접 둔 광원(sources)은 어떤 콤보에서도 지우지 않는다 —
+ * 예전에는 `lighting: null` 인 콤보(황혼·벚꽃 등)를 누르기만 해도 defaultLighting 을 통째로 지워
+ * 작성한 횃불·등불 광원이 사라졌다.
+ *
+ * - `undefined`: 콤보가 조명을 말하지 않는다 → 그대로.
+ * - `null`: 콤보 손전등을 빼고, 어둠이 콤보 것일 때만 ambient·색을 걷는다(직접 둔 광원이 없으면 필드 삭제).
+ * - 값: ambient·색을 콤보 값으로, 직접 둔 광원은 남기고 콤보 손전등만 갈아 끼운다.
+ */
+export function resolveComboLighting(
+  current: LightingState | undefined,
+  lighting: CinematicComboPreset["lighting"],
+): LightingState | undefined {
+  if (lighting === undefined) return current;
+  const authored = (current?.sources ?? []).filter((source) => source.id !== COMBO_FLASHLIGHT_SOURCE_ID);
+  if (lighting === null) {
+    if (!current) return undefined;
+    if (!isComboOwnedLighting(current)) {
+      return authored.length === current.sources.length ? current : { ...current, sources: authored };
+    }
+    if (authored.length === 0) return undefined;
+    const { color: _color, ...rest } = current;
+    return { ...rest, ambient: 0, sources: authored };
+  }
+  const flashlight: LightSource[] = lighting.playerFlashlightRadius
+    ? [{ id: COMBO_FLASHLIGHT_SOURCE_ID, at: "player", radius: lighting.playerFlashlightRadius, intensity: 1 }]
+    : [];
+  return normalizeLightingState({
+    ...(current ?? { sources: [] }),
+    ambient: lighting.ambient,
+    color: lighting.color,
+    sources: [...authored, ...flashlight],
+  });
 }

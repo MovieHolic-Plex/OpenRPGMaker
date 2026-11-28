@@ -9,6 +9,7 @@
 import {
   addMap,
   applyCinematicCombo,
+  resetMapMood,
   setMapAtmosphereEffects,
   setMapCloudShadows,
   setMapPostFx,
@@ -28,7 +29,7 @@ import { toggleLeftColumn } from "@/editor/panels/leftColumnDrawer";
 import { openMapPropertiesDialog } from "@/editor/panels/mapPropertiesDialog";
 import { toggleWorldBoard } from "@/editor/panels/worldBoardModal";
 import { selectSidebarLayer } from "@/editor/panels/leftLayerSwitcher";
-import { createMapThumbnail } from "@/editor/panels/mapThumbnail";
+import { createMapThumbnail, mapThumbnailKey } from "@/editor/panels/mapThumbnail";
 import { selectMapModeTool } from "@/editor/panels/tileToolbarActions";
 import { resolveCurrentMapId, selectEditorMap } from "@/editor/mapSelection";
 import {
@@ -39,17 +40,20 @@ import {
   type AtmosphereKind,
   type AtmosphereScenePreset,
 } from "@/project/atmosphere";
+import { nestedCommandLists } from "@/project/authoredCommandIndex";
 import { normalizeMapClimate } from "@/project/mapClimate";
 import { collectMapLinkGraph } from "@/project/mapLinkStats";
 import { isMapTreeFolder, mapTreeNodeLabel } from "@/project/mapTree";
 import {
   CINEMATIC_COMBO_PRESETS,
+  isComboOwnedLighting,
   POST_FX_PRESETS,
   type CinematicComboId,
   type PostFxPresetId,
 } from "@/project/postFx";
 import { isTileCellChange, store } from "@/project/store";
 import type { Command, GameEvent, GameMap, MapId, MapTreeNode, Project } from "@/project/types";
+import type { MapSunlight } from "@/project/sunlight";
 import { clearChildren, el } from "@/util/dom";
 
 export const FLOATING_MINIMAP_TOGGLE_EVENT = "oprn:floating-minimap-toggle";
@@ -105,6 +109,19 @@ const POSTFX_CARD_ORDER: ReadonlyArray<{
   { id: "none", icon: "◻", shortLabel: "원본 (후처리 없음)" },
 ];
 
+/** ☀ 빠른 스위치의 두 태양 — 켜짐 표시는 이 값과 같을 때만이다(직접 맞춘 태양을 「한낮」으로 오인해 지우지 않게). */
+const QUICK_SUN_DAY: Partial<MapSunlight> = { enabled: true, azimuth: 315, altitude: 62, opacity: 0.30, softness: 1, heightScale: 0.7 };
+const QUICK_SUN_DUSK: Partial<MapSunlight> = { enabled: true, azimuth: 262, altitude: 22, opacity: 0.42, softness: 2, heightScale: 0.85 };
+
+/**
+ * 이름으로 적을 짐작한다. 「적」 한 글자는 낱말일 때만 — 예전 /적/ 은 「목적지」「흔적」「기적」을 빨간 점으로 칠했다.
+ */
+const ENEMY_NAME_PATTERN = /(?:^|[\s_\-·(\[])적(?:$|[\s_\-·)\]\d])|적군|적병|몬스터|보스|산적|슬라임|마물|enemy|boss|monster/iu;
+
+function sunMatches(sun: Partial<MapSunlight> | undefined, preset: Partial<MapSunlight>): boolean {
+  return Boolean(sun?.enabled) && sun?.azimuth === preset.azimuth && sun?.altitude === preset.altitude;
+}
+
 function detectMinimapMode(state: Pick<EditorState, "layer" | "tool">): MinimapMode {
   if (state.tool === "relief") return "terrain";
   if (state.layer === "event") return "unit";
@@ -116,10 +133,8 @@ function minimapModeMeta(mode: MinimapMode): { readonly label: string; readonly 
     return {
       label: "유닛 뷰",
       title: "현재 유닛(이벤트) 뷰 — 누르면 지형 붓 모드로 전환",
-      next: () => {
-        selectMapModeTool("relief");
-        editorState.set({ layer: "lower" });
-      },
+      // selectMapModeTool 이 이벤트 레이어를 바닥으로 이미 바꾼다 — 두 번 set 하면 다시 그리기만 두 번 돈다.
+      next: () => selectMapModeTool("relief"),
     };
   }
   if (mode === "terrain") {
@@ -140,8 +155,9 @@ function computeFittedRect(mapWidth: number, mapHeight: number, boxW: number, bo
   const safeW = Math.max(1, mapWidth);
   const safeH = Math.max(1, mapHeight);
   const scale = Math.min(boxW / safeW, boxH / safeH);
-  const w = Math.max(12, Math.round(safeW * scale));
-  const h = Math.max(12, Math.round(safeH * scale));
+  // 하한을 크게 잡으면(예전 12px) 썸네일은 비율을 지켜 다시 레터박스를 넣고 오버레이는 늘어난 칸에 점을 찍어 어긋났다.
+  const w = Math.max(2, Math.round(safeW * scale));
+  const h = Math.max(2, Math.round(safeH * scale));
   return {
     x: Math.floor((boxW - w) / 2),
     y: Math.floor((boxH - h) / 2),
@@ -150,34 +166,34 @@ function computeFittedRect(mapWidth: number, mapHeight: number, boxW: number, bo
   };
 }
 
-function hasCommandKind(commands: readonly Command[] | undefined, kind: Command["kind"]): boolean {
+function commandsContain(commands: readonly Command[] | undefined, kinds: ReadonlySet<Command["kind"]>): boolean {
   if (!commands) return false;
   for (const cmd of commands) {
-    if (cmd.kind === kind) return true;
-    if (cmd.kind === "fork") {
-      if (hasCommandKind(cmd.then, kind) || hasCommandKind(cmd.else, kind)) return true;
-    } else if (cmd.kind === "choices") {
-      for (const opt of cmd.options) {
-        if (hasCommandKind(opt.branch, kind)) return true;
-      }
-      if (hasCommandKind(cmd.cancelBranch, kind)) return true;
-    } else if (cmd.kind === "loop") {
-      if (hasCommandKind(cmd.body, kind)) return true;
+    if (kinds.has(cmd.kind)) return true;
+    for (const branch of nestedCommandLists(cmd)) {
+      if (commandsContain(branch, kinds)) return true;
     }
   }
   return false;
 }
 
-function classifyEvent(event: GameEvent): EventCategory {
-  const pages = event.pages?.length ? event.pages : [{ commands: event.commands }];
-  for (const page of pages) {
-    if (hasCommandKind(page.commands, "transfer")) return "portal";
-  }
-  for (const page of pages) {
-    if (hasCommandKind(page.commands, "battleProcessing")) return "enemy";
-  }
-  if (/적|몬스터|보스|산적|슬라임|전투|enemy|boss|monster/iu.test(event.name ?? "")) return "enemy";
-  return "npc";
+const PORTAL_KINDS: ReadonlySet<Command["kind"]> = new Set<Command["kind"]>(["transfer"]);
+const ENEMY_KINDS: ReadonlySet<Command["kind"]> = new Set<Command["kind"]>(["battleProcessing", "tacticsBattle"]);
+
+/** 이벤트 객체는 바뀔 때 새 객체가 된다 — 같은 객체면 분류도 같다. 팬 중 매 프레임 명령 트리를 다시 훑지 않게. */
+const eventCategoryCache = new WeakMap<GameEvent, EventCategory>();
+
+export function classifyMinimapEvent(event: GameEvent): EventCategory {
+  const cached = eventCategoryCache.get(event);
+  if (cached) return cached;
+  // 쪽(pages)과 바깥 명령을 둘 다 본다 — 둘 중 한쪽만 보면 쪽이 있는 이벤트의 바깥 이동을 놓친다.
+  const lists = [event.commands, ...(event.pages ?? []).map((page) => page.commands)];
+  let category: EventCategory = "npc";
+  if (lists.some((commands) => commandsContain(commands, PORTAL_KINDS))) category = "portal";
+  else if (lists.some((commands) => commandsContain(commands, ENEMY_KINDS))) category = "enemy";
+  else if (ENEMY_NAME_PATTERN.test(event.name ?? "")) category = "enemy";
+  eventCategoryCache.set(event, category);
+  return category;
 }
 
 function flattenTree(node: MapTreeNode, depth: number, out: { readonly node: MapTreeNode; readonly depth: number }[]): void {
@@ -201,6 +217,11 @@ function detectActiveCombo(map: GameMap | undefined): CinematicComboId | null {
     if (!expectedKinds.every((k) => curEffects.includes(k))) continue;
     const expectedWeather = combo.weather?.kind ?? "none";
     if (expectedWeather !== curWeather) continue;
+    // 태양·조명도 맞아야 그 콤보다 — 우연히 후처리·입자만 같은 맵을 「켜짐」으로 보여 끄기 한 번에 날리지 않게.
+    if (combo.sunlight === null && map.sunlight?.enabled) continue;
+    if (combo.sunlight && !sunMatches(map.sunlight, combo.sunlight)) continue;
+    if (combo.lighting && (map.defaultLighting?.ambient !== combo.lighting.ambient || map.defaultLighting?.color !== combo.lighting.color)) continue;
+    if (combo.lighting === null && isComboOwnedLighting(map.defaultLighting)) continue;
     return meta.id;
   }
   return null;
@@ -262,6 +283,8 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
   let dragging = false;
   let settleTimer: ReturnType<typeof setTimeout> | null = null;
   let lastThumbKey = "";
+  let lastThumbMapId: MapId | null = null;
+  let overlayFrame: number | null = null;
   let currentFit: StageRect = { x: 0, y: 0, w: MINIMAP_STAGE_W, h: MINIMAP_STAGE_H };
 
   // ── Header ──
@@ -343,7 +366,13 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
   }) as HTMLCanvasElement;
   const stage = el("div", {
     class: "fmh-stage",
-    attrs: { role: "slider", tabindex: "0", "aria-label": "미니맵 — 클릭하거나 끌어 카메라 이동" },
+    // slider 역할은 aria-valuenow 가 필수인데 2차원 위치라 값이 없다 — 화살표로 움직이는 application 으로 둔다.
+    attrs: {
+      role: "application",
+      tabindex: "0",
+      "aria-roledescription": "미니맵",
+      "aria-label": "미니맵 — 클릭하거나 끌어 카메라 이동, 화살표 키로 화면 이동",
+    },
     dataset: { testid: "floating-minimap-stage" },
     children: [thumbSlot, overlayCanvas],
   });
@@ -383,8 +412,12 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
         const project = store.getCurrent();
         const curId = resolveCurrentMapId();
         const curMap = curId ? project.maps[curId] : undefined;
-        const count = Object.keys(project.maps).length + 1;
+        const names = new Set(Object.values(project.maps).map((m) => m.name));
+        let count = Object.keys(project.maps).length + 1;
+        while (names.has(`새 맵 ${count}`)) count += 1;
         const id = addMap(`새 맵 ${count}`, curMap?.width ?? 24, curMap?.height ?? 18, curMap?.tilesetId);
+        // 크기 상한 등으로 만들지 못하면 빈 id 가 온다 — 팝오버를 닫아 「됐다」고 보이지 않게 둔다.
+        if (!id) return;
         selectEditorMap(id);
         setSwitcherOpen(false);
       },
@@ -428,15 +461,14 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
 
   const resetMoodBtn = el("button", {
     class: "fmh-mood-chip",
-    attrs: { type: "button", title: "후처리·그림자·환경 입자·조명·시야 차단을 모두 원본으로 되돌립니다" },
+    attrs: { type: "button", title: "후처리·그림자·환경 입자·콤보 조명·시야 차단을 원본으로 되돌립니다 (직접 둔 광원·실내 기후는 남깁니다)" },
     dataset: { testid: "fmh-mood-reset" },
     text: "초기화",
     on: {
       click: () => {
         const { mapId } = currentContext();
         if (!mapId) return;
-        applyCinematicCombo(mapId, "classic-clean");
-        setMapVisionBlocking(mapId, false);
+        resetMapMood(mapId);
       },
     },
   }) as HTMLButtonElement;
@@ -451,7 +483,7 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
       on: {
         click: () => {
           activeMoodTab = id;
-          renderMoodPopover();
+          renderMoodPopover(true);
         },
       },
     }) as HTMLButtonElement;
@@ -571,31 +603,72 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
   };
   stage.addEventListener("pointerup", endDrag);
   stage.addEventListener("pointercancel", endDrag);
+  stage.addEventListener("lostpointercapture", () => { dragging = false; });
+  stage.addEventListener("keydown", (event: KeyboardEvent) => {
+    const step = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[event.key];
+    if (!step) return;
+    const { mapId, map } = currentContext();
+    const vp = getEditorCameraViewport();
+    if (!mapId || !map || !vp || vp.mapWidthPx <= 0 || vp.mapHeightPx <= 0) return;
+    if (vp.mapId && vp.mapId !== mapId) return;
+    event.preventDefault();
+    event.stopPropagation();
+    const tilePxX = vp.mapWidthPx / Math.max(1, map.width);
+    const tilePxY = vp.mapHeightPx / Math.max(1, map.height);
+    // 화면 폭의 1/4 씩. 큰 맵에서도 몇 번이면 끝까지 간다.
+    const centerX = (vp.viewX + vp.viewWidthPx / 2) / tilePxX + step[0]! * Math.max(1, vp.viewWidthPx / tilePxX / 4);
+    const centerY = (vp.viewY + vp.viewHeightPx / 2) / tilePxY + step[1]! * Math.max(1, vp.viewHeightPx / tilePxY / 4);
+    requestEditorCameraFocus({
+      mapId,
+      tileX: Math.max(0, Math.min(map.width - 0.01, centerX)),
+      tileY: Math.max(0, Math.min(map.height - 0.01, centerY)),
+      immediate: true,
+    });
+  });
 
   function syncThumbnail(force = false): void {
     const { mapId, map } = currentContext();
     if (!mapId || !map) {
       clearChildren(thumbSlot);
       lastThumbKey = "";
+      lastThumbMapId = null;
       return;
     }
     const fit = computeFittedRect(map.width, map.height, MINIMAP_STAGE_W, MINIMAP_STAGE_H);
     currentFit = fit;
-    const tileSig = `${map.lowerTiles.length}:${map.upperTiles.length}:${map.lowerTiles[0] ?? 0}:${map.lowerTiles[Math.floor(map.lowerTiles.length / 2)] ?? 0}`;
-    const key = `${mapId}|${map.tilesetId}|${map.width}x${map.height}|${fit.w}x${fit.h}|${tileSig}`;
+    // 썸네일 모듈의 내용 해시 키를 그대로 쓴다. 예전 자체 키는 타일 두 칸만 봐서, 접은 채 고친 뒤 펴면 옛 그림이 남았다.
+    // 같은 키면 그림이 같으므로 이벤트 이동·분위기 토글처럼 타일이 아닌 변경은 캔버스를 갈지 않는다.
+    const key = `${mapThumbnailKey(mapId, map, fit.w, fit.h)}|${fit.x},${fit.y}`;
     if (!force && key === lastThumbKey && thumbSlot.childElementCount > 0) return;
+    const previous = lastThumbMapId === mapId ? thumbSlot.querySelector("canvas") : null;
     lastThumbKey = key;
+    lastThumbMapId = mapId;
     const thumb = createMapThumbnail(mapId, {
       width: fit.w,
       height: fit.h,
       className: "fmh-thumb-canvas",
       testId: "floating-minimap-thumb",
+      // 같은 맵을 다시 그릴 때는 렌더가 끝날 때까지 이전 그림을 둔다(편집마다 대체 무늬가 번쩍이지 않게).
+      seedFrom: previous,
     });
     thumb.style.left = `${fit.x}px`;
     thumb.style.top = `${fit.y}px`;
     thumb.style.width = `${fit.w}px`;
     thumb.style.height = `${fit.h}px`;
     thumbSlot.replaceChildren(thumb);
+  }
+
+  /** 뷰포트 게시는 팬 중 매 프레임 온다 — 한 프레임에 한 번만 그린다. */
+  function scheduleOverlay(): void {
+    if (collapsed || overlayFrame !== null) return;
+    if (typeof requestAnimationFrame !== "function") {
+      drawOverlay();
+      return;
+    }
+    overlayFrame = requestAnimationFrame(() => {
+      overlayFrame = null;
+      drawOverlay();
+    });
   }
 
   function drawOverlay(): void {
@@ -625,16 +698,22 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
     // 2. Terrain mode: elevation contour tinting from map.relief.levels
     if (mode === "terrain" && map.relief?.levels?.length) {
       const levels = map.relief.levels;
+      // 높이 격자는 자기 너비를 갖는다 — 맵 너비로 줄을 나누면 크기가 어긋난 격자에서 칸이 비뚤어진다.
+      const reliefW = map.relief.width > 0 ? map.relief.width : map.width;
+      const reliefH = map.relief.height > 0 ? map.relief.height : map.height;
       const cellW = fit.w / Math.max(1, map.width);
       const cellH = fit.h / Math.max(1, map.height);
       const step = Math.max(1, Math.floor(Math.max(map.width, map.height) / 64));
       for (let y = 0; y < map.height; y += step) {
         for (let x = 0; x < map.width; x += step) {
-          const level = levels[y * map.width + x] ?? 0;
+          if (x >= reliefW || y >= reliefH) continue;
+          const level = levels[y * reliefW + x] ?? 0;
           if (level <= 0) continue;
           const alpha = Math.min(0.62, 0.16 + level * 0.11);
           ctx.fillStyle = level >= 3 ? `rgba(251, 191, 36, ${alpha})` : `rgba(56, 189, 248, ${alpha})`;
-          ctx.fillRect(fit.x + x * cellW, fit.y + y * cellH, Math.max(1.5, cellW * step), Math.max(1.5, cellH * step));
+          const cw = Math.min(Math.max(1.5, cellW * step), fit.x + fit.w - (fit.x + x * cellW));
+          const ch = Math.min(Math.max(1.5, cellH * step), fit.y + fit.h - (fit.y + y * cellH));
+          ctx.fillRect(fit.x + x * cellW, fit.y + y * cellH, cw, ch);
         }
       }
     }
@@ -647,7 +726,7 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
     for (const ev of map.events) {
       const cx = toX(ev.x + 0.5);
       const cy = toY(ev.y + 0.5);
-      const cat = classifyEvent(ev);
+      const cat = classifyMinimapEvent(ev);
       ctx.fillStyle = cat === "portal" ? "#38bdf8" : cat === "enemy" ? "#ef4444" : "#facc15";
       ctx.beginPath();
       ctx.arc(cx, cy, dotRadius, 0, Math.PI * 2);
@@ -686,26 +765,55 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
 
     // 4. Live StarCraft white camera viewport rectangle
     const vp = getEditorCameraViewport();
-    if (vp && vp.mapWidthPx > 0 && vp.mapHeightPx > 0) {
+    // 맵 전환 직후에는 새 맵의 기하가 아직 안 왔다 — 옛 맵의 px 를 새 맵에 대입하지 않는다.
+    if (vp && vp.mapWidthPx > 0 && vp.mapHeightPx > 0 && (!vp.mapId || vp.mapId === mapId)) {
       const rx = fit.x + (vp.viewX / vp.mapWidthPx) * fit.w;
       const ry = fit.y + (vp.viewY / vp.mapHeightPx) * fit.h;
       const rw = (vp.viewWidthPx / vp.mapWidthPx) * fit.w;
       const rh = (vp.viewHeightPx / vp.mapHeightPx) * fit.h;
-      const clippedX = Math.max(fit.x, Math.min(fit.x + fit.w - 4, rx));
-      const clippedY = Math.max(fit.y, Math.min(fit.y + fit.h - 4, ry));
-      const clippedW = Math.max(6, Math.min(fit.x + fit.w - clippedX, rx + rw - clippedX));
-      const clippedH = Math.max(6, Math.min(fit.y + fit.h - clippedY, ry + rh - clippedY));
-      ctx.strokeStyle = "rgba(15, 23, 42, 0.85)";
-      ctx.lineWidth = 2.6;
-      ctx.strokeRect(clippedX, clippedY, clippedW, clippedH);
-      ctx.strokeStyle = "#ffffff";
-      ctx.lineWidth = 1.4;
-      ctx.strokeRect(clippedX, clippedY, clippedW, clippedH);
+      // 맵과 겹치는 부분만 그린다. 화면이 맵 밖(검사 여백)에 있으면 가짜 상자를 만들지 않는다.
+      const left = Math.max(fit.x, rx);
+      const top = Math.max(fit.y, ry);
+      const right = Math.min(fit.x + fit.w, rx + rw);
+      const bottom = Math.min(fit.y + fit.h, ry + rh);
+      if (right > left && bottom > top) {
+        const minSide = 4;
+        const w = Math.max(minSide, right - left);
+        const h = Math.max(minSide, bottom - top);
+        const x = Math.max(fit.x, Math.min(fit.x + fit.w - w, left));
+        const y = Math.max(fit.y, Math.min(fit.y + fit.h - h, top));
+        ctx.strokeStyle = "rgba(15, 23, 42, 0.85)";
+        ctx.lineWidth = 2.6;
+        ctx.strokeRect(x, y, w, h);
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 1.4;
+        ctx.strokeRect(x, y, w, h);
+      }
     }
   }
 
-  function renderSwitcherList(): void {
+  /**
+   * 목록을 다시 지어도 스크롤·키보드 포커스를 잃지 않게 한다. 예전엔 입자 칩 하나를 누를 때마다
+   * 본문이 비워졌다 채워져 맨 위로 튀고 포커스가 body 로 빠졌다.
+   */
+  function rebuildKeepingPlace(container: HTMLElement, rebuild: () => void, resetScroll = false): void {
+    const scrollTop = resetScroll ? 0 : container.scrollTop;
+    const active = document.activeElement;
+    const focusedId = active instanceof HTMLElement && container.contains(active) ? active.dataset.testid : undefined;
+    rebuild();
+    container.scrollTop = scrollTop;
+    if (focusedId) {
+      const again = Array.from(container.querySelectorAll<HTMLElement>("[data-testid]")).find((node) => node.dataset.testid === focusedId);
+      again?.focus({ preventScroll: true });
+    }
+  }
+
+  function renderSwitcherList(resetScroll = false): void {
     if (!switcherOpen) return;
+    rebuildKeepingPlace(switcherList, buildSwitcherList, resetScroll);
+  }
+
+  function buildSwitcherList(): void {
     const { project, mapId: currentId } = currentContext();
     const query = searchQuery.trim().toLowerCase();
     clearChildren(switcherList);
@@ -730,9 +838,8 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
       if (!map) return null;
       const label = map.name?.trim() || id;
       if (query && !label.toLowerCase().includes(query) && !id.toLowerCase().includes(query)) return null;
+      // 맵 트리 행과 같은 크기(40×30)로 주문해 캐시를 함께 쓴다 — 28×20 따로 주문하면 맵마다 한 번씩 더 렌더했다.
       const thumb = createMapThumbnail(id, {
-        width: 28,
-        height: 20,
         className: "fmh-switcher-thumb",
         testId: `fmh-switch-thumb-${id}`,
       });
@@ -813,8 +920,12 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
     }
   }
 
-  function renderMoodPopover(): void {
+  function renderMoodPopover(resetScroll = false): void {
     if (!moodOpen) return;
+    rebuildKeepingPlace(moodBody, buildMoodPopover, resetScroll);
+  }
+
+  function buildMoodPopover(): void {
     const { mapId, map } = currentContext();
     clearChildren(moodBody);
 
@@ -858,7 +969,8 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
           ],
           on: {
             click: () => {
-              if (isCurrent) applyCinematicCombo(mapId, "classic-clean");
+              // 끄기는 이 콤보가 켠 것만 걷는다 — 따로 켠 구름 그림자는 남긴다.
+              if (isCurrent) applyCinematicCombo(mapId, "classic-clean", { preserveCloudShadows: true });
               else applyCinematicCombo(mapId, meta.id);
             },
           },
@@ -868,10 +980,8 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
 
       // Quick Direct Lighting / Shadow / Fog Toggles
       moodBody.append(el("div", { class: "fmh-mood-section-label", text: "광원 · 그림자 · 시야 스위치" }));
-      const sunEnabled = Boolean(map.sunlight?.enabled);
-      const sunAlt = map.sunlight?.altitude ?? 45;
-      const isDaySun = sunEnabled && sunAlt > 38;
-      const isDuskSun = sunEnabled && sunAlt <= 38;
+      const isDaySun = sunMatches(map.sunlight, QUICK_SUN_DAY);
+      const isDuskSun = sunMatches(map.sunlight, QUICK_SUN_DUSK);
       const isCloudOn = Boolean(map.cloudShadows?.enabled);
       const isVisionOn = Boolean(map.terrainDesign?.gameplay?.visionBlocking);
 
@@ -885,7 +995,7 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
           on: {
             click: () => {
               if (isDaySun) setMapSunlight(mapId, null);
-              else setMapSunlight(mapId, { enabled: true, azimuth: 315, altitude: 62, opacity: 0.30, softness: 1, heightScale: 0.7 });
+              else setMapSunlight(mapId, QUICK_SUN_DAY);
             },
           },
         }),
@@ -897,7 +1007,7 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
           on: {
             click: () => {
               if (isDuskSun) setMapSunlight(mapId, null);
-              else setMapSunlight(mapId, { enabled: true, azimuth: 262, altitude: 22, opacity: 0.42, softness: 2, heightScale: 0.85 });
+              else setMapSunlight(mapId, QUICK_SUN_DUSK);
             },
           },
         }),
@@ -973,7 +1083,7 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
         on: {
           click: () => {
             activeGenre = genre;
-            renderMoodPopover();
+            renderMoodPopover(true);
           },
         },
       }));
@@ -1053,7 +1163,10 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
     collapseBtn.textContent = collapsed ? "+" : "−";
     collapseBtn.setAttribute("aria-expanded", String(!collapsed));
     try { localStorage.setItem(MINIMAP_COLLAPSED_KEY, collapsed ? "1" : "0"); } catch { /* ignore */ }
-    if (!collapsed) {
+    if (collapsed) {
+      if (overlayFrame !== null && typeof cancelAnimationFrame === "function") cancelAnimationFrame(overlayFrame);
+      overlayFrame = null;
+    } else {
       syncThumbnail();
       drawOverlay();
     }
@@ -1068,7 +1181,7 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
     if (switcherOpen) {
       searchQuery = "";
       searchInput.value = "";
-      renderSwitcherList();
+      renderSwitcherList(true);
       queueMicrotask(() => searchInput.focus());
     }
   }
@@ -1081,13 +1194,13 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
     moodBtn.setAttribute("aria-expanded", String(moodOpen));
     moodBtn.classList.toggle("is-active", moodOpen);
     if (moodOpen) {
-      renderMoodPopover();
+      renderMoodPopover(true);
     }
   }
 
   searchInput.addEventListener("input", () => {
     searchQuery = searchInput.value;
-    renderSwitcherList();
+    renderSwitcherList(true);
   });
   searchInput.addEventListener("keydown", (event: KeyboardEvent) => {
     if (event.key === "Escape") {
@@ -1127,7 +1240,7 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
   window.addEventListener(FLOATING_MAP_SWITCHER_OPEN_EVENT, onSwitcherEvent);
   window.addEventListener(FLOATING_MOOD_POPOVER_OPEN_EVENT, onMoodEvent);
 
-  const unsubViewport = subscribeEditorCameraViewport(() => drawOverlay());
+  const unsubViewport = subscribeEditorCameraViewport(() => scheduleOverlay());
   const unsubMoodPreview = subscribeEditorMoodPreview(() => {
     if (moodOpen) renderMoodPopover();
   });
@@ -1148,14 +1261,15 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
       settleTimer = setTimeout(() => {
         settleTimer = null;
         if (!collapsed) {
-          syncThumbnail(true);
+          syncThumbnail();
           drawOverlay();
         }
       }, THUMB_SETTLE_MS);
       return;
     }
     if (!collapsed) {
-      syncThumbnail(true);
+      // 키가 같으면(타일 그림이 그대로면) 캔버스를 갈지 않는다.
+      syncThumbnail();
       drawOverlay();
     }
     if (switcherOpen) renderSwitcherList();
@@ -1170,6 +1284,8 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
 
   return () => {
     if (settleTimer !== null) clearTimeout(settleTimer);
+    if (overlayFrame !== null && typeof cancelAnimationFrame === "function") cancelAnimationFrame(overlayFrame);
+    overlayFrame = null;
     unsubViewport();
     unsubMoodPreview();
     unsubEditor();

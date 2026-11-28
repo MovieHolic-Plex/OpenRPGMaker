@@ -1,8 +1,7 @@
 import { MAP_CHARACTER_SCALE_MIN } from "@/project/characterScale";
 import { patchSunlight } from "@/project/sunlight";
-import { CINEMATIC_COMBO_PRESETS, patchPostFx, type CinematicComboId } from "@/project/postFx";
+import { CINEMATIC_COMBO_PRESETS, patchPostFx, resolveComboLighting, type CinematicComboId } from "@/project/postFx";
 import { normalizeAtmosphereEffects } from "@/project/atmosphere";
-import { normalizeLightingState } from "@/project/lightingRules";
 import { normalizeMapClimate, type MapClimate } from "@/project/mapClimate";
 import { DEFAULT_TERRAIN_GAMEPLAY, normalizeTerrainDesign } from "@/project/terrainDesign";
 // editor/actions.ts
@@ -55,7 +54,7 @@ export {
   paintRelief,
 } from "@/editor/tileActions";
 export type { TileStrokeCell } from "@/editor/tileActions";
-import type { EncounterTableEntry, FieldSpawnDef, MapBackground, MapBgmSetting, MapBgsSetting, MapCloudShadowSetting, MapId, MapMinimapSetting, TilesetDef, TroopId } from "@/project/types";
+import type { EncounterTableEntry, FieldSpawnDef, GameMap, MapBackground, MapBgmSetting, MapBgsSetting, MapCloudShadowSetting, MapId, MapMinimapSetting, TilesetDef, TroopId } from "@/project/types";
 
 // ── 맵 CRUD ──
 
@@ -625,46 +624,70 @@ export function setMapPostFx(mapId: MapId, patch: Partial<import("@/project/post
   }, { scope: "map", mapId, label: "HD-2D 필름 후처리" });
 }
 
-export function applyCinematicCombo(mapId: MapId, comboId: CinematicComboId): void {
+export interface ApplyCinematicComboOptions {
+  /** 콤보 끄기처럼 「이 콤보가 켠 것만」 걷을 때 — 따로 켠 구름 그림자는 남긴다. */
+  readonly preserveCloudShadows?: boolean;
+}
+
+/**
+ * 콤보 하나를 맵에 입힌다(store.update 안에서 부른다). 직접 둔 광원과 고정이 아닌 기후
+ * (inherit·indoor)는 어떤 콤보에서도 지우지 않는다 — 실내 맵의 indoor 기후를 지우면 바깥 날씨가 샌다.
+ */
+function applyComboToMap(map: GameMap, comboId: CinematicComboId, options: ApplyCinematicComboOptions = {}): void {
+  const combo = CINEMATIC_COMBO_PRESETS[comboId];
+  if (combo.postFx === null) delete map.postFx;
+  else map.postFx = patchPostFx(undefined, combo.postFx);
+
+  if (combo.sunlight === null) delete map.sunlight;
+  else if (combo.sunlight) map.sunlight = patchSunlight(map.sunlight, combo.sunlight);
+
+  const normalizedAtmo = normalizeAtmosphereEffects(combo.atmosphereEffects);
+  if (normalizedAtmo.length === 0) delete map.atmosphereEffects;
+  else map.atmosphereEffects = normalizedAtmo;
+
+  const lighting = resolveComboLighting(map.defaultLighting, combo.lighting);
+  if (lighting) map.defaultLighting = lighting;
+  else delete map.defaultLighting;
+
+  if (combo.weather && combo.weather.kind !== "none") {
+    map.climate = normalizeMapClimate({
+      mode: "fixed",
+      weather: combo.weather.kind,
+      intensity: combo.weather.intensity,
+    });
+  } else if (map.climate?.mode === "fixed") {
+    delete map.climate;
+  }
+
+  if (comboId === "classic-clean" && !options.preserveCloudShadows) delete map.cloudShadows;
+}
+
+export function applyCinematicCombo(mapId: MapId, comboId: CinematicComboId, options: ApplyCinematicComboOptions = {}): void {
   if (!allowMapMutation(mapId)) return;
   const combo = CINEMATIC_COMBO_PRESETS[comboId];
   store.update((p) => {
     const map = p.maps[mapId];
     if (!map) return;
-    if (combo.postFx === null) delete map.postFx;
-    else map.postFx = patchPostFx(undefined, combo.postFx);
-
-    if (combo.sunlight === null) delete map.sunlight;
-    else if (combo.sunlight) map.sunlight = patchSunlight(map.sunlight, combo.sunlight);
-
-    const normalizedAtmo = normalizeAtmosphereEffects(combo.atmosphereEffects);
-    if (normalizedAtmo.length === 0) delete map.atmosphereEffects;
-    else map.atmosphereEffects = normalizedAtmo;
-
-    if (combo.lighting === null) delete map.defaultLighting;
-    else if (combo.lighting) {
-      map.defaultLighting = normalizeLightingState({
-        ambient: combo.lighting.ambient,
-        color: combo.lighting.color,
-        sources: combo.lighting.playerFlashlightRadius
-          ? [{ id: "combo-flashlight", at: "player", radius: combo.lighting.playerFlashlightRadius, intensity: 1 }]
-          : [],
-      });
-    }
-
-    if (comboId === "classic-clean") {
-      delete map.climate;
-      delete map.cloudShadows;
-    } else if (combo.weather && combo.weather.kind !== "none") {
-      map.climate = normalizeMapClimate({
-        mode: "fixed",
-        weather: combo.weather.kind,
-        intensity: combo.weather.intensity,
-      });
-    } else if (map.climate?.mode === "fixed") {
-      delete map.climate;
-    }
+    applyComboToMap(map, comboId, options);
   }, { scope: "map", mapId, label: `시네마틱 콤보: ${combo.label}` });
+}
+
+/** 분위기 「초기화」 — 콤보 원본 복원과 시야 차단 끄기를 한 번의 되돌리기 단위로 묶는다. */
+export function resetMapMood(mapId: MapId): void {
+  if (!allowMapMutation(mapId)) return;
+  store.update((p) => {
+    const map = p.maps[mapId];
+    if (!map) return;
+    applyComboToMap(map, "classic-clean");
+    if (map.terrainDesign?.gameplay?.visionBlocking) {
+      const next = normalizeTerrainDesign(
+        { ...map.terrainDesign, gameplay: { ...map.terrainDesign.gameplay, visionBlocking: false } },
+        map.width * map.height,
+      );
+      if (next) map.terrainDesign = next;
+      else delete map.terrainDesign;
+    }
+  }, { scope: "map", mapId, label: "분위기 초기화" });
 }
 
 export function setMapVisionBlocking(mapId: MapId, visionBlocking: boolean): void {

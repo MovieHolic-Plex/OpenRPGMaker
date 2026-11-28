@@ -2,6 +2,8 @@
 // EditScene 카메라가 지금 비추고 있는 월드 사각형·줌을 플로팅 미니맵 HUD와 캔버스 포털 오버레이에 전달한다.
 
 export interface EditorCameraViewport {
+  /** 이 사각형이 속한 맵. 맵 전환 직후 옛 맵의 px 값을 새 맵에 대입하지 않도록 소비자가 대조한다. */
+  readonly mapId?: string;
   readonly mapWidthPx: number;
   readonly mapHeightPx: number;
   readonly viewX: number;

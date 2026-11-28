@@ -309,8 +309,9 @@
 }
 
 .fmh-switcher-thumb {
+  /* 맵 트리 썸네일(40×30, 4:3)과 같은 주문을 줄여 보인다 — 비율을 맞춰야 찌그러지지 않는다. */
   width: 28px;
-  height: 20px;
+  height: 21px;
   border-radius: 3px;
   border: 1px solid var(--border-subtle);
   flex: none;

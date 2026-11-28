@@ -28,6 +28,11 @@ export type MapThumbnailOptions = {
   readonly height?: number;
   readonly className?: string;
   readonly testId?: string;
+  /**
+   * 렌더가 끝날 때까지 대체 무늬 대신 보여 줄 이전 그림. 같은 맵을 고친 뒤 다시 그릴 때
+   * 편집마다 해시 무늬가 번쩍이지 않게 한다(플로팅 미니맵).
+   */
+  readonly seedFrom?: HTMLCanvasElement | null;
 };
 /** 한 번에 그리는 썸네일 수 상한 — 맵 30개짜리 프로젝트가 한꺼번에 큰 캔버스를 잡지 않게 한다. */
 const MAX_PARALLEL = 3;
@@ -68,6 +73,8 @@ export function createMapThumbnail(mapId: MapId, options: MapThumbnailOptions = 
   }
 
   const key = thumbnailKey(mapId, map, width, height);
+  // 렌더 완료 시 이 키의 캔버스에만 그린다 — 같은 testid 를 쓰는 다른 맵·옛 내용 캔버스를 덮지 않게.
+  canvas.dataset.thumbKey = key;
   const cached = renderedCache.get(key);
   if (cached) {
     // 최근 쓴 것을 뒤로 보낸다(LRU) — 화면에 보이는 썸네일이 먼저 버려지지 않게.
@@ -77,7 +84,8 @@ export function createMapThumbnail(mapId: MapId, options: MapThumbnailOptions = 
     return canvas;
   }
 
-  paintFallback(canvas, mapId);
+  if (options.seedFrom && options.seedFrom.width > 0 && options.seedFrom.height > 0) blit(canvas, options.seedFrom, "pending");
+  else paintFallback(canvas, mapId);
   if (!pendingKeys.has(key)) {
     pendingKeys.add(key);
     // Let the editor canvas paint once before thumbnail rasterization starts. Canvas previews are
@@ -88,6 +96,11 @@ export function createMapThumbnail(mapId: MapId, options: MapThumbnailOptions = 
     else start();
   }
   return canvas;
+}
+
+/** 썸네일 캐시 키 — 같은 값이면 createMapThumbnail 이 같은 그림을 낸다. 호출자가 다시 만들지 판단할 때 쓴다. */
+export function mapThumbnailKey(mapId: MapId, map: GameMap, width: number, height: number): string {
+  return thumbnailKey(mapId, map, Math.max(1, Math.round(width)), Math.max(1, Math.round(height)));
 }
 
 /** 캐시 키에 목표 크기가 들어가야 한다 — 안 넣으면 40×30 스테이지가 큰 미리보기로 확대된다. */
@@ -141,7 +154,7 @@ async function paintFromMap(
     if (!stage) return;
     renderedCache.set(key, stage);
     evictOverflow();
-    for (const live of liveCanvasesFor(testId)) blit(live, stage, "map");
+    for (const live of liveCanvasesFor(testId, key)) blit(live, stage, "map");
   } catch {
     // 대체 무늬가 이미 그려져 있다 — 목록 렌더가 썸네일 하나 때문에 멈추면 안 된다.
   } finally {
@@ -204,11 +217,16 @@ async function renderStage(
   return target;
 }
 
-function liveCanvasesFor(testId: string): HTMLCanvasElement[] {
-  return Array.from(document.querySelectorAll<HTMLCanvasElement>(`canvas[data-testid="${testId}"]`));
+/**
+ * 이 렌더의 키를 단 살아 있는 캔버스만. testid 만으로 찾으면 맵 A 렌더가 늦게 끝났을 때
+ * 그 사이 맵 B 로 바뀐 같은 testid 캔버스(플로팅 미니맵)에 A 그림을 덮어썼다.
+ */
+function liveCanvasesFor(testId: string, key: string): HTMLCanvasElement[] {
+  return Array.from(document.querySelectorAll<HTMLCanvasElement>(`canvas[data-testid="${testId}"]`))
+    .filter((canvas) => canvas.dataset.thumbKey === key);
 }
 
-function blit(canvas: HTMLCanvasElement, source: HTMLCanvasElement, state: "map" | "fallback"): void {
+function blit(canvas: HTMLCanvasElement, source: HTMLCanvasElement, state: "map" | "fallback" | "pending"): void {
   const context = canvas.getContext("2d", { alpha: false });
   if (!context) return;
   context.imageSmoothingEnabled = false;
