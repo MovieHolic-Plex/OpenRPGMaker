@@ -12,7 +12,8 @@ import { pursuitPass, pursuitState } from "./pursuitNavigation";
 import { canMoveFootprint, isLedgeCell, isPassableLanding } from "@/project/collision";
 import { isSpatialPlacementBlocking } from "@/project/spatialOccupancy";
 import { yieldingLivingMovers, routeForLivingMovement } from "@/player/npcLivingTravel";
-import { passageBounds, rectsOverlap } from "@/project/footprint";
+import { footprintBounds, passageBounds, rectsOverlap } from "@/project/footprint";
+import { spriteReliefStepMotion } from "@/player/playSceneRelief";
 import { playerPassageRect, resolvePlayerBody } from "@/project/playerFootprint";
 import { findBlockingEventOverlappingRect, createBlockingEventQuery, invalidateEventIdIndexPass, withEventIdIndexPass } from "@/project/runtimeEventState";
 import { store } from "@/project/store";
@@ -380,6 +381,11 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
       mover.lastStepDir = command.kind === "move" ? command.dir : undefined;
       livingBlockers.delete(mover);
       moveAutonomousRuntimePosition(scene, eventId, nx, ny, frameDir);
+      const reliefMotion = movement.hop
+        ? null
+        : spriteReliefStepMotion(scene.map, position.x, position.y, nx, ny, footprintBounds(0, 0, view.footprint).left + view.footprint.width / 2);
+      const stepDurationMs = movement.hop?.durationMs
+        ?? (reliefMotion && reliefMotion.durationFactor !== 1 ? Math.max(1, Math.round(mover.moveDurationMs * reliefMotion.durationFactor)) : undefined);
       mover.activeMove = {
         fromX: position.x,
         fromY: position.y,
@@ -388,9 +394,9 @@ function updateAutonomousNPCsInPass(scene: AutonomousNpcSceneContext, frameDelta
         dir: frameDir,
         baseFrame,
         // 명령 경로는 앞 걸음의 남은 시간을 이어받는다(점프는 자기 시간이 있어 이어받지 않는다).
-        elapsedMs: movement.hop ? 0 : Math.min(mover.carryMs ?? 0, mover.moveDurationMs),
+        elapsedMs: movement.hop ? 0 : Math.min(mover.carryMs ?? 0, stepDurationMs ?? mover.moveDurationMs),
         hop: movement.hop,
-        durationMs: movement.hop?.durationMs,
+        durationMs: stepDurationMs,
       };
       mover.carryMs = 0;
       if (sprite) {
@@ -705,8 +711,14 @@ function updateChaseNpc(
       }
     }
   }
-  mover.activeMove = { fromX: view.x, fromY: view.y, toX: decision.x, toY: decision.y, dir: frameDir, baseFrame, elapsedMs: carried,
-    ...(stepMs !== undefined ? { durationMs: stepMs } : {}),
+  const chaseReliefMotion = styled && approach?.hop
+    ? null
+    : spriteReliefStepMotion(scene.map, view.x, view.y, decision.x, decision.y, footprintBounds(0, 0, view.footprint).left + view.footprint.width / 2);
+  const effectiveStepMs = chaseReliefMotion && chaseReliefMotion.durationFactor !== 1
+    ? Math.max(1, Math.round((stepMs ?? mover.moveDurationMs) * chaseReliefMotion.durationFactor))
+    : stepMs;
+  mover.activeMove = { fromX: view.x, fromY: view.y, toX: decision.x, toY: decision.y, dir: frameDir, baseFrame, elapsedMs: Math.min(carried, Math.max(0, (effectiveStepMs ?? mover.moveDurationMs) - 1)),
+    ...(effectiveStepMs !== undefined ? { durationMs: effectiveStepMs } : {}),
     ...(styled && approach?.hop ? { hop: jumpHop({ heightPx: approach.hop * tile, durationMs: stepMs ?? approach.stepMs, impact: false }) } : {}),
     ...(styled && (approach?.sway || approach?.bob) ? { approach: {
       sway: approach.sway ?? 0, bob: approach.bob ?? 0,
@@ -823,8 +835,12 @@ function updateActiveNpcMove(target: ActiveNpcMoveTarget, deltaMs: number): void
   // 보간과 착지 두 곳이 같은 값을 써야 하므로 함수 스코프에 둔다.
   const footprint = view?.footprint ?? UNIT_FOOTPRINT;
   if (sprite) {
-    const groundX = footprintSpriteX(lerp(move.fromX, move.toX, progress), footprint, mapTileSize(scene.map));
-    const groundY = characterSpriteY(lerp(move.fromY, move.toY, progress), mapTileSize(scene.map));
+    const reliefMotion = hop
+      ? null
+      : spriteReliefStepMotion(scene.map, move.fromX, move.fromY, move.toX, move.toY, footprintBounds(0, 0, footprint).left + footprint.width / 2);
+    const moveProgress = reliefMotion ? reliefMotion.progress(progress) : progress;
+    const groundX = footprintSpriteX(lerp(move.fromX, move.toX, moveProgress), footprint, mapTileSize(scene.map));
+    const groundY = characterSpriteY(lerp(move.fromY, move.toY, moveProgress), mapTileSize(scene.map));
     sprite.setPosition(groundX, groundY);
     if (move.approach && !hop) {
       // 다가오는 몸짓: 진행 방향과 수직으로 흔들리고(S자·급강하), 칸마다 둥실/쿵 하고 오르내린다.
@@ -837,8 +853,10 @@ function updateActiveNpcMove(target: ActiveNpcMoveTarget, deltaMs: number): void
     updateCharacterDepth(sprite, priority);
     applySpriteAlpha(sprite, mover.opacity);
     // 체공 중에는 걸음을 돌리지 않는다 — 공중에서 발을 젓는 모양이 된다.
+    // 경사로 보정으로 걸음 시간만 늘어나거나 줄어들어도 발놀림 주기는 평지 속도에 맞춘다.
+    const cadenceMs = reliefMotion && reliefMotion.durationFactor !== 1 ? durationMs / reliefMotion.durationFactor : durationMs;
     if (hop) setNpcIdleFrame(sprite, move.baseFrame, move.dir, animationType, mover.animationEnabled);
-    else setNpcWalkFrame(sprite, move.baseFrame, move.dir, move.elapsedMs, animationType, mover.animationEnabled, durationMs, mover.walkPhase ?? 0);
+    else setNpcWalkFrame(sprite, move.baseFrame, move.dir, move.elapsedMs, animationType, mover.animationEnabled, cadenceMs, mover.walkPhase ?? 0);
     // 리프트는 프레임 갱신 뒤에 — setFrame 이 원점을 되돌린다(characterHop.ts 계약).
     if (hop) applyHopFrame(scene, eventId, sprite, groundX, groundY, hop, progress);
   }

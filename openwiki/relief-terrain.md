@@ -389,7 +389,7 @@ UX2 페이지 보존 뒤 「높이 붓을 쓰면 렉」 신고. 원인은 붓 �
 ## 발 접지·클릭·바닥 접합 수정 (2026-10-04)
 
 - 경사로 표기의 연결 덩어리를 큰 사각형으로 채우지 않는다. 낮은 층계참 → 같은 방향/낮은 높이의 연속 칸 → 높은 층계참을 가진 통로만 인정한다. 나란한 통로도 시작/끝/높이가 같은 경우만 병합한다. 옆구리 진입, 다른 경사로로 가로질러 이동, 끊긴 경사 표기는 막는다.
-- 캐릭터는 타일 중심 들림을 보간하지 않고 `footLift`로 실제 `sprite.x/y` 발 좌표의 연속 기하를 읽는다. 타일·상층 그림은 기존 중심 좌표를 쓴다. 클릭은 `camera.worldView`를 사용해 줌 원점을 보정하고, 작은 렌더 창의 화소 소유권(`reliefPickPoint`)으로 보이는 윗면을 고른다. 절벽 벽 클릭은 목표 칸이 아니다.
+- 캐릭터는 타일 중심 들림을 보간하지 않고 `footLift`로 실제 `sprite.x/y` 발 좌표의 연속 기하를 읽는다(벽면에 판 계단 `s.steps`는 디딤판 단차 점프를 유지하고, 정적 타일/사물은 `cellLift` 중심 좌표를 쓴다). 경사로 걸음은 `reliefStepMotion`(플레이어 `playSceneMovement.ts` · NPC `playSceneAutonomous.ts` → `playSceneRelief.ts spriteReliefStepMotion`)으로 3/4 화면 이동 거리(arc length)에 비례해 걸음 시간과 구간 진행률을 보정해 북향(2~5배 가속)·남향(0.33~0.67배 감속)·동서 진입/탈출 경계에서의 속도 튐을 없앤다. 클릭은 `camera.worldView`를 사용해 줌 원점을 보정하고, 작은 렌더 창의 화소 소유권(`reliefPickPoint`)으로 보이는 윗면을 고른다. 절벽 벽 클릭은 목표 칸이 아니다.
 - `ReliefRenderOptions.ground`가 있으면 실제 원본 칩셋 바닥을 윗면·비탈·대각선 접점과 풀 턱에 투영한다. 바닥 없는 헤드리스 호출은 기존 절차적 팔레트가 대체한다. 원본 바닥의 kind=0 띠는 전부 under로 배치하며 하층/2층/그림자를 별도로 중복해서 그리지 않는다. 계단/다리 밑면의 전용 그림은 유지한다.
 - 북·동·서 외곽선과 안쪽 턱은 실제 바닥 무늬에 지형 명암을 곱한다. 바깥 흙 둑은 `kind=1` 벽으로 분리해서 바닥 재질 투영에 지워지지 않는다.
   기본 흙벽도 `RELIEF_DEFAULT_RIM`의 북쪽 뒤 둑을 가진다. 재질 없이 그리는 `reliefPickPoint`도 같은 둑/벽 경계를 쓴다.
@@ -444,6 +444,9 @@ UX2 페이지 보존 뒤 「높이 붓을 쓰면 렉」 신고. 원인은 붓 �
 - 구조 검사기: `scripts/content/lib/relief-check.mjs`(`checkRelief`) — 얇은 벽·계단 양옆·층계참·다리 판·도달 오류 코드(목록은 runtime-project-schema 의 r3 항목).
 - 양식 견본: `vite-node scripts/content/relief-style-sheet.mts [out.png]`(작은 지형을 모든 양식으로).
 - 경사로 도트 재생성: `node scripts/content/build-relief-ramp-art.mjs`(`tiledata/relief-art/*.png` → `rampArt.json`).
+- **경사로·판 계단 도트 재작업 (2026-11-28, Gemini 4 Carbon Medium):**
+  - `render.ts`: `carvedStairs` 돌계단(약 8px 시각 단 간격 · 엇갈린 다듬은 돌블록 · 윗면 베벨/챌면 그늘 · 자연 절벽 보강 테두리)·통나무 계단(원통 음영 통나무 + 양끝 말뚝 + 풀 포기)·`paintNaturalRamps` 자연 비탈을 재설계했다.
+  - `scripts/experiments/long-ramp/pieces.py`(14모듈) · `scripts/experiments/bbox-village/ramps/pieces.py`(16조각): 인위적 V자 줄무늬·각진 옆벽을 없애고 잠긴 버들항 팔레트만으로 흙비탈·돌계단을 다시 찍어 `rampArt.json["grass-steps"].pieces` 에 구웠다(**3/4 관문 미통과 — 오너 면제**, 묶음 `beodeul-ramps-redraw-2026-11-28`).
 - **긴 비탈(2026-11-07, 오너 승인):** 북향 2단 이상 경사로는 `ramp:n:<2|3>:long-<top|cut|out6|out5|out4|out3|toe>` 모듈을 쌓은 한 장(`cutPieces.ts` `longRampPiece`) — 꼭대기 · 절벽 면 × (단 차−1) · 낮은 땅 위 × (`LONG_RAMP_RUNOUT`=2 −1, 옆벽 6→3px) · 발치. 높이 제한 없음, 경사로 칸은 절벽 발치 아래 2줄. 1단과 돌계단은 아래 낱조각. 그림 `scripts/experiments/long-ramp/pieces.py`, 굽기 `scripts/content/beodeul-lakeshore/bake_lakeshore.py`.
 - **자연 호숫가(2026-11-07):** 버들항 시트 꼬리 34,048~ 에 물↔풀·물↔모래 47장(8프레임) 오토타일 `beodeul_lakeshore_grass`/`_sand`. 「땅 칸 → 물」 붓이 기본으로 쓴다(운하 물 `beodeul_canal_lake_47` 은 돌 둑 가장자리). 땅 화소 = 편집기 바닥 풀 737. 물 깊이 덧칠(`src/player/terrainWater.ts`)은 깊이 3 이상에만 — 물가 칸을 네모로 덮지 않는다.
 - **절벽 깎은 경사로·계단 통째 조각(2026-10-31, #4031·#4036 뒤 굽기):** `rampArt.json["grass-steps"].pieces` — 키 `<ramp|stairs>:n:<w>x1:<단 차>`(w 2·3, 단 차 1~4), 조각 = w×16 × (단 차+1)×16, 위 단 차 줄이 남향 절벽 면을 정확히 대신하고 마지막 줄은 그 길(흙길·포장길)이 곧게 이어지는 모습이다.

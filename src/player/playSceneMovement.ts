@@ -1,4 +1,6 @@
 import { reliefClimbAt } from "@/project/relief/walk";
+import { spriteReliefStepMotion } from "@/player/playSceneRelief";
+import { IDENTITY_RELIEF_STEP_MOTION, type ReliefStepMotion } from "@/project/relief/screen";
 import { updateFieldEnemyClashes } from "@/player/playSceneFieldEnemyClash";
 import { cancelPointerRoute, consumePendingTapAction } from "@/player/playScenePointerMove";
 import { showBattleAdmissionError } from "@/player/playSceneOverlays";
@@ -214,8 +216,18 @@ function framesForDuration(durationMs: number): number {
   return Math.max(1, Math.round(durationMs / LOGIC_TICK_MS));
 }
 
-function stepFrames(scene: Pick<PlaySceneContext, "dashing" | "moveDurationMs" | "playerRoute" | "session">): number {
-  return framesForDuration((scene.playerRoute?.moveDurationMs ?? scene.moveDurationMs) / (scene.dashing ? DASH_SPEED_FACTOR : 1) / vehicleSpeedFactor(scene.session));
+function stepFrames(scene: Pick<PlaySceneContext, "dashing" | "moveDurationMs" | "playerRoute" | "session">, durationFactor = 1): number {
+  const baseFrames = framesForDuration((scene.playerRoute?.moveDurationMs ?? scene.moveDurationMs) / (scene.dashing ? DASH_SPEED_FACTOR : 1) / vehicleSpeedFactor(scene.session));
+  return durationFactor === 1 ? baseFrames : Math.max(1, Math.round(baseFrames * durationFactor));
+}
+
+function playerReliefStepMotion(
+  scene: Pick<PlaySceneContext, "map" | "movingFrom" | "movingTo" | "session">,
+  footprint: PlayerBody["footprint"],
+): ReliefStepMotion {
+  if (boardedVehicleId(scene.session) === "airship" || isSideViewMap(scene.map)) return IDENTITY_RELIEF_STEP_MOTION;
+  const footOffsetX = footprintBounds(0, 0, footprint).left + footprint.width / 2;
+  return spriteReliefStepMotion(scene.map, scene.movingFrom.x, scene.movingFrom.y, scene.movingTo.x, scene.movingTo.y, footOffsetX);
 }
 
 /**
@@ -287,9 +299,10 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
   const hopState = scene.playerHop;
   // 점프는 자기 지속 시간으로 난다 — 대시 배속이나 이동 속도에 끌려가지 않는다.
   const pushFrames = furniturePushFrames(scene);
-  const totalFrames = pushFrames ?? (hopState ? framesForDuration(hopState.hop.durationMs) : stepFrames(scene));
   // 스프라이트 가로 위치는 «몸 중앙» 이다 — 폭 2 이상이면 타일 중앙과 다르다(#250).
   const footprint = resolvePlayerBody(store.getCurrent(), scene.session).footprint;
+  const reliefMotion = pushFrames || hopState ? IDENTITY_RELIEF_STEP_MOTION : playerReliefStepMotion(scene, footprint);
+  const totalFrames = pushFrames ?? (hopState ? framesForDuration(hopState.hop.durationMs) : stepFrames(scene, reliefMotion.durationFactor));
   if (hopState) {
     hopState.elapsedFrames = Math.min(totalFrames, hopState.elapsedFrames + 1);
     scene.moveElapsedFrames = hopState.elapsedFrames;
@@ -354,8 +367,9 @@ function advancePlayerStepFrame(scene: PlaySceneContext): void {
     maybeTriggerRandomEncounter(scene);
     return;
   }
-  const px = linear(scene.movingFrom.x, scene.movingTo.x, scene.moveProgress);
-  const py = linear(scene.movingFrom.y, scene.movingTo.y, scene.moveProgress);
+  const stepProgress = reliefMotion.progress(scene.moveProgress);
+  const px = linear(scene.movingFrom.x, scene.movingTo.x, stepProgress);
+  const py = linear(scene.movingFrom.y, scene.movingTo.y, stepProgress);
   scene.player.x = footprintSpriteX(px, footprint, mapTileSize(scene.map));
   scene.player.y = characterSpriteY(py, mapTileSize(scene.map));
   updateCharacterDepth(scene.player, "same");
@@ -448,7 +462,8 @@ function beginPlayerStep(scene: PlaySceneContext, toX: number, toY: number): voi
   scene.moveElapsedFrames = 0;
   // 동료는 주인공이 떠나는 칸으로 같은 박자에 들어선다(HGSS). 걸음이 끝난 뒤 기록하던 옛 경로도 그대로 남아 있지만
   // 같은 칸은 두 번 쌓이지 않는다(recordFollowerPlayerStep).
-  beginFollowerStep(scene, scene.movingFrom, scene.movingTo, stepFrames(scene) * LOGIC_TICK_MS);
+  const reliefMotion = playerReliefStepMotion(scene, resolvePlayerBody(store.getCurrent(), scene.session).footprint);
+  beginFollowerStep(scene, scene.movingFrom, scene.movingTo, stepFrames(scene, reliefMotion.durationFactor) * LOGIC_TICK_MS);
 }
 
 function tryStartMove(scene: PlaySceneContext, input: InputState): void {
