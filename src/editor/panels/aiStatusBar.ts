@@ -12,19 +12,16 @@
 // 렉 방지: 조수 이벤트마다(초당 수십 번) DOM 을 고치지 않는다. 구독자는 「바뀌었다」만 표시하고 그리기는 프레임당 한 번(createFrameBatch)이며,
 // 레이아웃 읽기(칩 폭 예산·앉히기)는 그 프레임의 쓰기보다 먼저 한다 — 이벤트 처리 중 동기 읽기는 없다.
 
-import { focusEditorRegion } from "@/editor/editorReferenceNavigation";
-import { selectEditorMap } from "@/editor/mapSelection";
 import { el } from "@/util/dom";
 import { createFrameBatch } from "@/util/frameBatch";
 import { editorState } from "@/editor/editorState";
 import { peekStampOrderQueue, subscribeStampOrders } from "@/editor/stampOrderQueue";
 import { AI_STUDIO_CHANGE_EVENT } from "@/editor/aiStudioMode";
-import { reviewButtons } from "./aiJobActions";
 import { currentJobSummary, subscribeJobSummary } from "./aiJobList";
 import { markJobListEntry, syncJobListEntry, toggleAiJobList } from "./aiJobListView";
-import { conversationCardCovers, isActive, needsUser, PRESENCE_LABEL, stopAllPresences, stopPresence, subscribeAiPresence, summarizeJobs, urgencyRank, type JobSummary, type Presence } from "./aiPresence";
-import { createStatusMemberCard, formatElapsed, presenceInTeamRun } from "./aiStatusMemberCard";
-import { deckIcon } from "./aiDeckIcons";
+import { conversationCardCovers, isActive, needsUser, PRESENCE_LABEL, stopAllPresences, subscribeAiPresence, summarizeJobs, urgencyRank, type JobSummary, type Presence } from "./aiPresence";
+import { closePresencePopoverBySource, openPresencePopoverId, repositionPresencePopover, subscribePresencePopover, togglePresencePopover } from "./aiPresencePopover";
+import { formatElapsed } from "./aiStatusMemberCard";
 
 /** 끝난 일(적용됨)은 이 시간 뒤에 줄에서 물러난다. 실패·검토 대기는 사람이 처리할 때까지 남는다. */
 const SETTLED_HIDE_MS = 6000;
@@ -34,11 +31,10 @@ const MAX_CHIPS = 4;
 export function mountAiStatusBar(): () => void {
   let presences: readonly Presence[] = [];
   let jobs: JobSummary = currentJobSummary();
-  let openId: string | null = null;
+  let openBarId: string | null = null;
   let settledSince: number | null = null;
   let hiddenBySettle = false;
   let lastChipSignature = "";
-  let lastPopPresence: Presence | null = null;
   let lastSummarySig = "";
   let lastStampSig = "";
   /** 줄 폭에서 나온 칩 수 상한. 폭은 앉히기(프레임 시작)에서만 읽고 여기 캐시한다 — 이벤트 처리 중 레이아웃을 읽지 않는다. */
@@ -65,14 +61,12 @@ export function mountAiStatusBar(): () => void {
     dataset: { testid: "ai-status-stop" },
     on: { click: () => { stopAllPresences(); peekStampOrderQueue()?.cancelAll(); } },
   });
-  const pop = el("div", { class: "ai-status-pop", dataset: { testid: "ai-status-pop" }, attrs: { role: "dialog", "aria-label": "조수 작업 상세", hidden: "" } });
-  const card = createStatusMemberCard();
   const root = el("aside", {
     class: "ai-status-bar", attrs: { role: "status", "aria-live": "polite", "aria-label": "AI 작업 상태", hidden: "" },
     dataset: { testid: "ai-status-bar", attention: "none" },
     children: [summary, chips, stampChip, el("span", { class: "ai-status-spacer" }), elapsed, log, stop],
   });
-  document.body.append(root, pop);
+  document.body.append(root);
 
   /** 칩 한 개 약 150px, 요약·시간·「작업 기록」·「멈춤」 약 300px. 폭이 좁으면 +N 으로 접는다(칩이 잘려 읽히지 않는 것보다 낫다). */
   const budgetFor = (width: number): number => Math.max(1, Math.min(MAX_CHIPS, Math.floor((width - 300) / 150)));
@@ -111,25 +105,8 @@ export function mountAiStatusBar(): () => void {
     root.style.left = `${Math.round(box.left)}px`;
     root.style.width = `${box.width}px`;
     root.style.bottom = `${Math.max(8, Math.round(window.innerHeight - rect.bottom + 16))}px`;
-    if (!pop.hidden) placePop();
+    if (openBarId) repositionPresencePopover();
   };
-
-  const placePop = (): void => {
-    const chip = chips.querySelector<HTMLElement>(`[data-presence-id="${CSS.escape(openId ?? "")}"]`);
-    if (!chip) { closePop(); return; }
-    const chipRect = chip.getBoundingClientRect();
-    // 오른쪽 끝 칩에서 열려도 화면 밖으로 나가지 않게 가둔다(실측 2026-10-16: 380px 팝오버가 오른쪽에서 잘렸다).
-    const popWidth = pop.offsetWidth || 420;
-    pop.style.left = `${Math.max(8, Math.min(Math.round(chipRect.left), window.innerWidth - popWidth - 8))}px`;
-    pop.style.bottom = `${Math.round(window.innerHeight - root.getBoundingClientRect().top + 10)}px`;
-  };
-
-  function closePop(): void {
-    openId = null;
-    lastPopPresence = null;
-    pop.hidden = true;
-    for (const chip of chips.querySelectorAll(".ai-status-chip")) chip.setAttribute("aria-expanded", "false");
-  }
 
   function openLogs(): void {
     // 로그·내려받기는 오른쪽 AI 창이 이미 갖고 있다 — 입구만 여기로 모은다.
@@ -137,40 +114,8 @@ export function mountAiStatusBar(): () => void {
     document.querySelector<HTMLElement>(".ai-workspace-log-trigger")?.click();
   }
 
-  function locate(presence: Presence): void {
-    if (!presence.mapId) return;
-    if (presence.region) focusEditorRegion({ mapId: presence.mapId, x: presence.region.x, y: presence.region.y, w: presence.region.width, h: presence.region.height }, { highlight: true });
-    else selectEditorMap(presence.mapId, { checkoutForEditing: false });
-  }
-
-  function renderPop(presence: Presence): void {
-    lastPopPresence = presence;
-    pop.dataset.tone = String(presence.tone);
-    pop.dataset.state = presence.state;
-    const actions: HTMLElement[] = [
-      ...(presence.source === "chat" ? [el("button", {
-        class: "ai-status-btn is-primary", attrs: { type: "button", title: "오른쪽 패널에서 이 조수의 전체 기록과 후속 요청 창을 엽니다" }, dataset: { testid: "ai-status-detail" },
-        children: [el("span", { text: "조수 상세 패널 열기" }), deckIcon("chevron-right", { size: 15 })],
-        // 오른쪽 도크의 조수 상세를 이 조수로 연다(aiWorkspace 가 듣는다).
-        on: { click: () => { closePop(); window.dispatchEvent(new CustomEvent("oprn:ai-open-team", { detail: { id: presence.id, agentId: presence.id } })); } },
-      })] : []),
-      ...reviewButtons(presence, closePop),
-      ...(presence.mapId ? [el("button", { class: "ai-status-btn", attrs: { type: "button" }, dataset: { testid: "ai-status-locate" }, children: [deckIcon("map", { size: 15 }), el("span", { text: presence.mapId !== editorState.get().currentMapId ? "그 맵으로 이동" : "지도에서 보기" })], on: { click: () => locate(presence) } })] : []),
-      ...(isActive(presence) ? [el("button", { class: "ai-status-btn is-stop", attrs: { type: "button", title: presenceInTeamRun(presence) ? "팀 실행 전체를 멈춥니다" : "이 작업을 멈춥니다" }, dataset: { testid: "ai-status-pop-stop" }, children: [deckIcon("stop", { size: 15 }), el("span", { text: presenceInTeamRun(presence) ? "팀 멈춤" : "멈춤" })], on: { click: () => { stopPresence(presence); closePop(); } } })] : []),
-    ];
-    pop.replaceChildren(...card.render(presence, actions, closePop));
-  }
-
-  function openFor(id: string): void {
-    if (openId === id) { closePop(); return; }
-    openId = id;
-    const p = presences.find(item => item.id === id);
-    if (p) renderPop(p);
-    pop.hidden = false;
-    placePop();
-    for (const chip of chips.querySelectorAll<HTMLElement>(".ai-status-chip")) chip.setAttribute("aria-expanded", String((chip.dataset.presenceId ?? "") === id));
-    // 오른쪽 조수 상세가 이미 펼쳐져 있으면 같은 조수로 맞춘다 — 접힌 도크를 억지로 열지는 않는다.
-    if (p && presenceInTeamRun(p) && document.querySelector(".ai-team-sidebar:not(.is-collapsed):not([hidden])")) window.dispatchEvent(new CustomEvent("oprn:ai-team-select", { detail: { id: p.id } }));
+  function openFor(id: string, chip: HTMLElement): void {
+    togglePresencePopover(id, chip, { source: "bar", placement: "above", barEl: root });
   }
 
   const stepText = (presence: Presence): string => presence.steps > 0 && presence.state === "working" ? ` · ${presence.steps}단계` : "";
@@ -181,15 +126,18 @@ export function mountAiStatusBar(): () => void {
     return presences.length > 0 && presences.every((p) => p.source === "chat");
   };
 
+  /** 하단 상태 줄 표시 스위치 — #5328(우측 팀 날개) + 2026-11-28(지도 위 시공 배지 팝오버)로 비활성화. */
+  const bottomBarEnabled = false;
+
   function renderNow(box: { left: number; width: number; rect: DOMRect } | null): void {
     const stamp = peekStampOrderQueue()?.summary() ?? { waiting: 0, running: 0, total: 0 };
     const live = summarizeJobs(presences);
     // 바로 깔기 주문·이벤트 AI 작업은 aiPresence 밖의 줄기다 — 작업 목록이 함께 센다(jobs.total).
     const others = Math.max(0, jobs.total - live.total);
     const coveredByRightDock = (conversationCardCovers(presences) || teamWingCovers()) && others === 0;
-    const visible = ((presences.length > 0 && !hiddenBySettle) || others > 0) && !coveredByRightDock;
+    const visible = bottomBarEnabled && ((presences.length > 0 && !hiddenBySettle) || others > 0) && !coveredByRightDock;
     if (root.hidden === visible) root.hidden = !visible;
-    if (!visible) { closePop(); return; }
+    if (!visible) { closePresencePopoverBySource("bar"); return; }
     // 급한 순: 내 확인 필요(앰버) > 실패(빨강). 둘 다 있으면 앰버 — 사람이 먼저 눌러야 일이 이어지는 쪽이다.
     const attention = jobs.review > 0 ? "review" : jobs.failed > 0 ? "failed" : "none";
     if (root.dataset.attention !== attention) root.dataset.attention = attention;
@@ -222,12 +170,12 @@ export function mountAiStatusBar(): () => void {
     const here = editorState.get().currentMapId;
     const mapsInvolved = new Set(presences.map(p => p.mapId ?? "")).size;
     // 보이는 칩의 내용이 그대로면 칩을 다시 만들지 않는다 — 조수 이벤트(델타·도구 신호)마다 같은 칩을 지우고 만들던 것을 거른다.
-    const chipSignature = JSON.stringify([openId, here, mapsInvolved, budget, shown.map(p => [p.id, p.state, p.no, p.tone, p.source, p.action, p.steps, p.name, p.mapId, p.mapName]), rest.length, rest.some(needsUser)]);
+    const chipSignature = JSON.stringify([openBarId, here, mapsInvolved, budget, shown.map(p => [p.id, p.state, p.no, p.tone, p.source, p.action, p.steps, p.name, p.mapId, p.mapName]), rest.length, rest.some(needsUser)]);
     if (chipSignature !== lastChipSignature) {
       lastChipSignature = chipSignature;
       chips.replaceChildren(...shown.map(presence => el("button", {
         class: "ai-status-chip",
-        attrs: { type: "button", "aria-expanded": String(openId === presence.id), title: `${presence.name} · ${PRESENCE_LABEL[presence.state]}` },
+        attrs: { type: "button", "aria-expanded": String(openBarId === presence.id), title: `${presence.name} · ${PRESENCE_LABEL[presence.state]}` },
         dataset: { testid: "ai-status-chip", presenceId: presence.id, state: presence.state, tone: String(presence.tone), source: presence.source, elsewhere: String(Boolean(presence.mapId && here && presence.mapId !== here)) },
         children: [
           el("span", { class: `ai-status-dot${isActive(presence) ? " is-pulse" : ""}`, dataset: { tone: String(presence.tone), state: presence.state } }),
@@ -236,7 +184,7 @@ export function mountAiStatusBar(): () => void {
           el("b", { text: presence.name }),
           el("span", { class: "ai-status-action", text: `${presence.action}${stepText(presence)}` }),
         ],
-        on: { click: () => openFor(presence.id) },
+        on: { click: (event) => openFor(presence.id, event.currentTarget as HTMLElement) },
       })), ...(rest.length ? [el("button", {
         class: "ai-status-chip is-more", attrs: { type: "button", title: "나머지 작업 모두 보기", "aria-haspopup": "dialog" },
         dataset: { testid: "ai-status-more", attention: String(rest.some(needsUser)), aiJobEntry: "1" },
@@ -245,11 +193,6 @@ export function mountAiStatusBar(): () => void {
       })] : []));
     }
     stop.hidden = !presences.some(isActive) && stamp.total === 0;
-    if (openId) {
-      const open = presences.find(p => p.id === openId);
-      if (!open) closePop();
-      else if (open !== lastPopPresence) renderPop(open);
-    }
     placeNow(box);
     tick();
   }
@@ -258,13 +201,20 @@ export function mountAiStatusBar(): () => void {
     const starts = presences.filter(isActive).map(p => p.startedAt).filter((v): v is number => v !== undefined);
     const text = starts.length ? formatElapsed(Date.now() - Math.min(...starts)) : "";
     if (elapsed.textContent !== text) elapsed.textContent = text;
-    card.tick();
     if (settledSince !== null && !hiddenBySettle && Date.now() - settledSince >= SETTLED_HIDE_MS) {
       hiddenBySettle = true;
       render();
     }
   }
 
+  const offPopover = subscribePresencePopover(({ id, source }) => {
+    openBarId = source === "bar" ? id : null;
+    for (const chip of chips.querySelectorAll<HTMLElement>(".ai-status-chip")) {
+      const expanded = String((chip.dataset.presenceId ?? "") === (openBarId ?? ""));
+      if (chip.getAttribute("aria-expanded") !== expanded) chip.setAttribute("aria-expanded", expanded);
+    }
+    if (openBarId && openPresencePopoverId() === openBarId) repositionPresencePopover();
+  });
   const off = subscribeAiPresence(next => {
     presences = next;
     const settled = next.length > 0 && next.every(p => p.state === "applied");
@@ -278,16 +228,7 @@ export function mountAiStatusBar(): () => void {
   const onResize = (): void => render(); // 폭이 바뀌면 칩 개수도 다시 정한다(프레임 묶음이 읽고 앉힌다).
   // 도크를 접고 펼치거나 스튜디오가 열리고 닫히면 「대화 카드가 보이나」가 바뀐다 — 줄을 다시 판단한다.
   const onVisibilityContext = (): void => render();
-  const onDocPointer = (event: PointerEvent): void => {
-    if (pop.hidden) return;
-    const target = event.target as Node | null;
-    if (target && (pop.contains(target) || chips.contains(target) || summary.contains(target))) return;
-    closePop();
-  };
-  const onKey = (event: KeyboardEvent): void => { if (event.key === "Escape" && !pop.hidden) { closePop(); } };
   window.addEventListener("resize", onResize);
-  document.addEventListener("pointerdown", onDocPointer, true);
-  document.addEventListener("keydown", onKey);
   // 도크가 접히고 펼쳐지거나 레이아웃이 바뀌어도 줄이 AI 창을 가리지 않게 다시 앉힌다.
   const canvas = document.querySelector<HTMLElement>('[data-testid="edit-canvas"]');
   const observer = typeof ResizeObserver === "function" ? new ResizeObserver(() => render()) : null;
@@ -299,9 +240,11 @@ export function mountAiStatusBar(): () => void {
 
   return () => {
     off();
+    offPopover();
     offJobs();
     offStamp();
     offSummaryEntry();
+    closePresencePopoverBySource("bar");
     frame.cancel();
     window.clearInterval(timer);
     window.removeEventListener("resize", onResize);
@@ -309,10 +252,7 @@ export function mountAiStatusBar(): () => void {
     window.removeEventListener("oprn:ai-panel-collapse", onVisibilityContext);
     window.removeEventListener("oprn:ai-team-wing-state", onVisibilityContext);
     window.removeEventListener(AI_STUDIO_CHANGE_EVENT, onVisibilityContext);
-    document.removeEventListener("pointerdown", onDocPointer, true);
-    document.removeEventListener("keydown", onKey);
     observer?.disconnect();
     root.remove();
-    pop.remove();
   };
 }

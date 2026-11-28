@@ -118,7 +118,7 @@ export function createAiWorkspace(options: {
     return detail?.agentId ?? detail?.id;
   };
   const onOpenTeam = (event: Event) => {
-    if (!showTeamUi) return;
+    if (!showTeamUi) { onOpenChat(); return; }
     options.requestOpen();
     select("team", false);
     team.openMember(memberId(event));

@@ -123,13 +123,17 @@ function dragOriginFor(board: TeamBoardState): DragOrigin | undefined {
 
 export function derivePresences(board: TeamBoardState | null): readonly Presence[] {
   if (!board || board.phase === "버림") return [];
+  const origin = dragOriginFor(board);
   if (board.agents.length === 0) {
     // 에이전트 행이 생기기 전의 준비 구간 — 비어 보이지 않게 하나는 그려 준다.
+    // 드래그로 시킨 일이면 준비 구간부터 드래그 자리에 이름표가 붙게 origin 을 싣는다.
     if (board.phase !== "준비" && board.phase !== "실행 중") return [];
-    return [{ id: "run", source: "chat", name: "조수", readsOnly: false, no: 0, tone: 0, state: "working", mapId: null, mapName: null, task: board.task,
-      action: "생각 중", steps: 0, startedAt: undefined, recent: [] }];
+    const where = origin ? mapNameOf(origin.mapId) : { mapId: null, mapName: null };
+    return [{ id: "run", source: "chat", name: "조수", readsOnly: false, no: 0, tone: 0, state: "working",
+      mapId: where.mapId, mapName: where.mapName,
+      ...(origin ? { drag: true, region: origin.region } : {}),
+      task: board.task, action: "생각 중", steps: 0, startedAt: board.trace?.startedAt, recent: [] }];
   }
-  const origin = dragOriginFor(board);
   return board.agents.map((agent, index): Presence => {
     const observation = teamObservation(agent, board.trace);
     const state = stateOf(agent, board);
@@ -244,6 +248,29 @@ export function reportBackgroundBoard(ticketId: number, board: TeamBoardState | 
   publish();
 }
 
+/**
+ * Presence 가 가리키는 팀 보드와 에이전트 행.
+ * 앞 턴(chat)뿐 아니라 다른 맵에서 같이 도는 실행(background)도 보드를 찾아 작업 과정·그림을 같은 카드로 보여 준다.
+ */
+export function boardForPresence(presence: Presence): { readonly board: TeamBoardState; readonly agent: TeamBoardAgent | undefined } | null {
+  if (presence.source === "chat") {
+    const board = currentTeamActivity();
+    if (!board) return null;
+    const agent = board.agents.find(item => item.agentId === presence.id);
+    if (agent) return { board, agent };
+    return presence.id === "run" ? { board, agent: undefined } : null;
+  }
+  if (presence.source === "background" && presence.ticketId !== undefined) {
+    const board = backgroundBoards.get(presence.ticketId);
+    if (!board) return null;
+    const prefix = `bg${presence.ticketId}:`;
+    const agentId = presence.id.startsWith(prefix) ? presence.id.slice(prefix.length) : "";
+    const agent = agentId ? board.agents.find(item => item.agentId === agentId) : undefined;
+    return { board, agent };
+  }
+  return null;
+}
+
 /** 실패 같은 「확인만 하면 되는」 항목을 받은함에서 치운다. */
 export function dismissPresence(id: string): void {
   dismissed.add(id);
@@ -325,6 +352,7 @@ function publish(): void {
     if (dismissed.has(p.id)) continue;
     const handoff = /^bg(\d+):/.exec(p.id);
     if (handoff) adoptJobNumber(`p:${p.id}`, `p:bg${handoff[1]}`);
+    else if (p.source === "chat" && p.id !== "run") adoptJobNumber(`p:${p.id}`, "p:run");
     const no = jobNumber(`p:${p.id}`);
     const tone = jobTone(no);
     const candidate = p.no === no && p.tone === tone ? p : { ...p, no, tone };

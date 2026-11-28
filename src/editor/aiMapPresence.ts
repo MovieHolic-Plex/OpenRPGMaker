@@ -11,6 +11,14 @@ import { agentGhostPreviewsForMap, getAgentGhostPreviewState, subscribeAgentGhos
 import { editorState } from "@/editor/editorState";
 import { resolveRegionClientRect } from "@/editor/regionClientRect";
 import { conversationCardCovers, isActive, PRESENCE_LABEL, subscribeAiPresence, type Presence, type PresenceRegion } from "@/editor/panels/aiPresence";
+import {
+  closePresencePopoverBySource,
+  isPresencePopoverOpen,
+  openPresencePopoverId,
+  repositionPresencePopover,
+  subscribePresencePopover,
+  togglePresencePopover,
+} from "@/editor/panels/aiPresencePopover";
 import { AI_STUDIO_CHANGE_EVENT } from "@/editor/aiStudioMode";
 import { yieldWhileGesture } from "@/editor/mapGestureState";
 import { createFrameBatch } from "@/util/frameBatch";
@@ -36,7 +44,7 @@ function ensureLayer(): HTMLElement | null {
   const parent = host();
   if (!parent) return null;
   if (getComputedStyle(parent).position === "static") parent.style.position = "relative";
-  layer = el("div", { class: "ai-map-presence", dataset: { testid: "ai-map-presence" }, attrs: { "aria-hidden": "true" } });
+  layer = el("div", { class: "ai-map-presence", dataset: { testid: "ai-map-presence" }, attrs: { role: "region", "aria-label": "지도 위 AI 작업 표시" } });
   parent.appendChild(layer);
   return layer;
 }
@@ -89,19 +97,48 @@ function regionClass(presence: Presence, region: PresenceRegion | null): string 
 const written = new WeakMap<HTMLElement, { cls: string; tone: string; state: string; name: string; text: string; slot: string; no: string }>();
 
 function buildRegion(presence: Presence, region: PresenceRegion | null, index: number, covered: boolean): HTMLElement {
+  const stopCanvas = (event: Event): void => { event.stopPropagation(); };
+  const tag = el("button", {
+    class: "ai-map-region-tag ai-status-map-tag",
+    attrs: {
+      type: "button",
+      "aria-haspopup": "dialog",
+      "aria-expanded": String(isPresencePopoverOpen(presence.id)),
+      title: "클릭해서 지금 하는 작업 보기",
+    },
+    dataset: { testid: "ai-map-region-tag", presenceId: presence.id },
+    children: [
+      el("span", { class: "ai-map-region-dot", text: `#${presence.no}`, attrs: { translate: "no" } }),
+      el("b", { text: presence.name }),
+      el("span", { class: "ai-status-map-status", text: tagText(presence) }),
+      el("span", { class: "ai-status-map-caret", text: "▾", attrs: { "aria-hidden": "true" } }),
+    ],
+    on: {
+      pointerdown: stopCanvas,
+      mousedown: stopCanvas,
+      click: (event) => {
+        event.stopPropagation();
+        togglePresencePopover(presence.id, tag, { source: "map", placement: "auto" });
+      },
+    },
+  });
   const node = el("div", {
     class: regionClass(presence, region),
     dataset: { testid: "ai-map-region", presenceId: presence.id, tone: String(presence.tone), state: presence.state, slot: String(index), covered: covered ? "1" : "0" },
-    children: [el("span", { class: "ai-map-region-tag", children: [
-      el("span", { class: "ai-map-region-dot", text: `#${presence.no}`, attrs: { translate: "no" } }),
-      el("b", { text: presence.name }),
-      el("span", { text: tagText(presence) }),
-    ] })],
+    children: [tag],
   });
   // 좌표를 받기 전에는 보이지 않게 둔다 — 첫 배치가 다음 프레임이라도 왼쪽 위 구석에 깜빡이지 않게.
   if (region) node.hidden = true;
   written.set(node, { cls: node.className, tone: String(presence.tone), state: presence.state, name: presence.name, text: tagText(presence), slot: String(index), no: String(presence.no) });
   return node;
+}
+
+function syncTagExpanded(openId: string | null): void {
+  if (!layer?.isConnected) return;
+  for (const tag of layer.querySelectorAll<HTMLElement>(".ai-map-region-tag")) {
+    const expanded = String((tag.dataset.presenceId ?? "") === (openId ?? ""));
+    if (tag.getAttribute("aria-expanded") !== expanded) tag.setAttribute("aria-expanded", expanded);
+  }
 }
 
 /**
@@ -137,7 +174,7 @@ function render(): void {
     if (!prev || prev.name !== next.name || prev.text !== next.text) {
       const tag = node.querySelector(".ai-map-region-tag");
       const nameEl = tag?.querySelector("b");
-      const textEl = tag?.lastElementChild;
+      const textEl = tag?.querySelector(".ai-status-map-status");
       if (nameEl && nameEl.textContent !== next.name) nameEl.textContent = next.name;
       if (textEl && textEl.textContent !== next.text) textEl.textContent = next.text;
     }
@@ -182,14 +219,15 @@ function invalidateLayerRect(): void {
   layerRectCache = null;
 }
 
-function writeIfChanged(node: HTMLElement, rect: { left: number; top: number; width: number; height: number }): void {
+function writeIfChanged(node: HTMLElement, rect: { left: number; top: number; width: number; height: number }): boolean {
   const next = `${rect.left}|${rect.top}|${rect.width}|${rect.height}`;
-  if (node.dataset.rect === next) return;
+  if (node.dataset.rect === next) return false;
   node.dataset.rect = next;
   node.style.left = `${rect.left}px`;
   node.style.top = `${rect.top}px`;
   node.style.width = `${rect.width}px`;
   node.style.height = `${rect.height}px`;
+  return true;
 }
 
 function reposition(): void {
@@ -200,6 +238,8 @@ function reposition(): void {
     return;
   }
   const layerRect = (layerRectCache ??= layer.getBoundingClientRect());
+  const openId = openPresencePopoverId();
+  let movedOpenAnchor = false;
   for (const node of layer.querySelectorAll<HTMLElement>(".ai-map-region")) {
     const entry = placed.find(item => item.presence.id === node.dataset.presenceId);
     const region = entry?.region;
@@ -207,11 +247,13 @@ function reposition(): void {
     const client = resolveRegionClientRect({ x: region.x, y: region.y, width: region.width, height: region.height });
     if (!client) { node.hidden = true; continue; }
     node.hidden = false;
-    writeIfChanged(node, {
+    const moved = writeIfChanged(node, {
       left: Math.round(client.x - layerRect.left), top: Math.round(client.y - layerRect.top),
       width: Math.max(8, Math.round(client.width)), height: Math.max(8, Math.round(client.height)),
     });
+    if (moved && openId && node.dataset.presenceId === openId) movedOpenAnchor = true;
   }
+  if (movedOpenAnchor) repositionPresencePopover();
 }
 
 /** 편집기 부팅 때 한 번. 해제 함수를 돌려준다(두 번 부르면 앞의 것을 먼저 거둔다). */
@@ -226,6 +268,7 @@ export function mountAiMapPresence(): () => void {
   const refresh = (): void => batch.schedule();
   const offPresence = subscribeAiPresence(next => { latest = next; refresh(); });
   const offGhost = subscribeAgentGhostPreview(refresh);
+  const offPopover = subscribePresencePopover(({ id, source }) => { syncTagExpanded(source === "map" ? id : null); });
   let lastMapId = editorState.get().currentMapId;
   // 도크를 접고 펼치거나 스튜디오가 열리고 닫히면 대화 카드가 보이는지가 바뀐다 — 이름표 글을 다시 판단한다. 캔버스 크기도 바뀔 수 있다.
   const onContext = (): void => { invalidateLayerRect(); refresh(); };
@@ -242,7 +285,8 @@ export function mountAiMapPresence(): () => void {
     if (mapId !== lastMapId) { lastMapId = mapId; refresh(); }
   });
   teardown = () => {
-    offPresence(); offGhost(); offEditor();
+    offPresence(); offGhost(); offPopover(); offEditor();
+    closePresencePopoverBySource("map");
     batch.cancel();
     yieldState.off?.(); yieldState.off = null;
     if (yieldState.timer !== null) { clearTimeout(yieldState.timer); yieldState.timer = null; }

@@ -107,8 +107,9 @@
   대화 일이면 그 맵의 고스트 초안 바운딩 박스(맵당 조수 한 명 규칙 → 그 맵에 **쓰는** 조수 한 명에게만, 검수는 이름표만).
   좌표는 `resolveRegionClientRect`. 팬·줌은 EditScene 의 `repositionAiMapPresence()`, 도크 열림 같은 레이아웃 변화는 이름표가 떠 있는 동안
   rAF 대조(`writeIfChanged`)로 따라간다(실측: 훅만으로는 도크를 열 때 상자가 옛 자리에 남았다).
-- **상태 줄** `src/editor/panels/aiStatusBar.ts` — 지도 아래 한 줄. 칩 = 이름 · 지금 하는 일 · 단계 수, 사람이 필요하면 줄 전체가 앰버(검토)/빨강(실패).
-  칩을 누르면 **지도 위 팝오버**(최근 3단계 · 조수 상세 · 지도로 이동 · 멈춤). 「작업 기록」은 기존 로그 입구(`ai-workspace-log-trigger`)로 연결, 「멈춤」은 `requestTeamStop`.
+  이름표(`.ai-map-region-tag`, `<button>`)는 클릭할 수 있으며 `aiPresencePopover.ts` 의 공용 `.ai-status-pop`(임무·지금 하는 일과 실행 도구/인자·조수 메모·턴/도구/오류/최근 활동 요약·단계별 펼침 및 「자세히」 전환·다음 예정 할 일·작업 그림·조수 상세/멈춤)을
+  지도 위 그 자리에 열어 준다(2026-11-28: 오른쪽 도크가 열려 상태 줄이 접힌 상태에서도 드래그 「#N 시공 · …」 배지를 눌러 진행 과정을 본다).
+- **상태 줄** `src/editor/panels/aiStatusBar.ts` — 2026-11-28(#5328 우측 팀 날개 통합 + 지도 위 시공 배지 클릭 팝오버)부터 하단 상태 줄을 화면에 노출하지 않고 DOM(`ai-status-bar`·`ai-status-stop`, i18n/e2e 계약)만 `hidden` 상태로 유지한다. 작업 상세는 지도 위 `#N 시공 · …` 배지와 우측 도크·작업 목록이 맡는다.
   적용됨만 남으면 6초 뒤 물러난다. 색 번호(`data-tone`)는 이름표·칩이 같다.
 - **받은함** `src/editor/panels/aiInbox.ts` — 도크 맨 위. 검토 대기(적용/변경 보기/버리기 = `currentTeamReviewActions` 와 **같은 클로저**)와 실패만. 비면 숨는다.
   `aiWorkspace.ts` 가 마운트하고, 대화 화면에서는 「조수 N / 대화」 탭을 숨긴다(조수 상세는 팝오버의 「조수 상세」 → `oprn:ai-open-team`).
