@@ -63,9 +63,11 @@ export function escCommandRuntimeHint(project: Project, command: FieldMenuComman
     case "journal":
       return { text: "일지 기록 후 표시", tone: "info" };
     case "monster-dex":
-      return monsterDexSpeciesIds(project).length === 0
-        ? { text: "몬스터 종 없음(숨김)", tone: "warn" }
-        : undefined;
+      if (monsterDexSpeciesIds(project).length === 0) return { text: "몬스터 종 없음(숨김)", tone: "warn" };
+      if (project.switches.some((sw) => sw.id === "mx_pokedex_received")) {
+        return { text: "도감 획득 스위치 후 표시", tone: "info" };
+      }
+      return undefined;
     case "region-map":
     case "campaign-progress":
       return !monsterCampaign(project) ? { text: "원정 캠페인 없음(숨김)", tone: "warn" } : undefined;
@@ -122,7 +124,7 @@ export function renderEscMenuPreviewCard(project: Project, options: EscMenuPrevi
 
   const stage = usesHub
     ? renderHubPreviewStage(project, snapshot, visibleCommands)
-    : renderLegacyPreviewStage(project, skin.id, skin.label, snapshot, visibleCommands);
+    : renderLegacyPreviewStage(skin.id, skin.label, snapshot);
 
   const metaItems: HTMLElement[] = [
     el("span", {
@@ -238,11 +240,9 @@ function renderHubPreviewStage(
 }
 
 function renderLegacyPreviewStage(
-  project: Project,
   skinId: string,
   skinLabel: string,
   snapshot: ReturnType<typeof createPlayerStatusMenuSnapshot>,
-  visibleCommands: readonly FieldMenuCommand[],
 ): HTMLElement {
   return el("div", {
     class: "db-menu-preview-stage is-legacy",
@@ -265,10 +265,10 @@ function renderLegacyPreviewStage(
       el("div", {
         class: "db-menu-preview-legacy-list",
         children: [
-          el("strong", { text: `실제 표시 명령 (${visibleCommands.length}개)` }),
+          el("strong", { text: `실제 표시 명령 (${snapshot.commands.length}개)` }),
           el("ul", {
-            children: visibleCommands.map((command) =>
-              el("li", { text: statusMenuCommandLabel(command, true, project) }),
+            children: snapshot.commands.map((command) =>
+              el("li", { text: command.opensGroup ? `${command.label} ▸` : command.label }),
             ),
           }),
           el("small", {

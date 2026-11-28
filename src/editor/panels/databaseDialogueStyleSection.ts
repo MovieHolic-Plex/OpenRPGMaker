@@ -105,6 +105,7 @@ function dialogueReadingToolsBridge(project: Project, deps: DialogueStyleSection
           on: {
             click: () => {
               document.querySelector<HTMLElement>('[data-testid="db-tab-menu-system"]')?.click();
+              document.querySelector<HTMLElement>('[data-testid="db-menu-subtab-dialogue"]')?.click();
             },
           },
         }),

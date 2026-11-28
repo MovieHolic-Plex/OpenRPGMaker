@@ -44,7 +44,7 @@ import {
   renderVariablesTab,
 } from "@/editor/panels/databaseUtilityViews";
 import { renderBattleScreenTab } from "@/editor/panels/databaseBattleScreenTab";
-import { renderMenuSystemTab } from "@/editor/panels/databaseMenuSystemTab";
+import { renderMenuSystemTab, revealMenuSystemCardSubtab } from "@/editor/panels/databaseMenuSystemTab";
 import {
   renderBattleCommandsTab,
   renderElementsTab,
@@ -1048,6 +1048,7 @@ function openRailDestination(
   updateTabButtons(header);
   renderActiveTab(body, container, landing?.systemSection ? { forceFresh: true } : {});
   if (landing?.scrollTestId) {
+    if (tabId === "menuSystem") revealMenuSystemCardSubtab(body, landing.scrollTestId);
     const target = body.querySelector<HTMLElement>(`[data-testid="${landing.scrollTestId}"]`);
     if (target && typeof target.scrollIntoView === "function") target.scrollIntoView({ block: "start" });
   }

@@ -24,7 +24,7 @@ import { recordListThumbnail, markDatabaseImageFailed } from "@/editor/panels/da
 import { renderSystemStudioOverview, wireSystemStudioOverview } from "@/editor/panels/databaseSystemStudio";
 import { DEFAULT_HUB_ACCENT_COLOR, DEFAULT_HUB_WINDOW_COLOR, renderEscMenuPreviewCard } from "@/editor/panels/databaseMenuPreview";
 import { dialogueStyleSection } from "@/editor/panels/databaseDialogueStyleSection";
-import { mergeVnExtras } from "@/project/vnExtras";
+import { galleryActive, mergeVnExtras, resolveVnExtras } from "@/project/vnExtras";
 import {
   DEFAULT_DODGE_IFRAMES_MS,
   DEFAULT_DODGE_STAMINA_COST,
@@ -593,13 +593,14 @@ function systemSectionNodes(
         ),
       ]),
       rm2k3Fieldset("갤러리", [
-        checkboxField("갤러리 사용", "db-field-system-gallery-enabled", project.system.gallery?.enabled === true || project.meta.oprnVnExtras?.gallery.enabled === true, (checked) => {
+        checkboxField("갤러리 사용", "db-field-system-gallery-enabled", project.system.gallery?.enabled === true || galleryActive(project), (checked) => {
           updateSystem((draft) => {
             const next = normalizeGallerySettings({ enabled: checked, label: draft.system.gallery?.label });
             if (next) draft.system.gallery = next;
             else delete draft.system.gallery;
-            if (draft.meta.oprnVnExtras) {
-              draft.meta.oprnVnExtras = mergeVnExtras(draft.meta.oprnVnExtras, { gallery: checked });
+            const resolvedVn = resolveVnExtras(draft);
+            if (draft.meta.oprnVnExtras || resolvedVn) {
+              draft.meta.oprnVnExtras = mergeVnExtras(resolvedVn, { gallery: checked });
             }
           });
         }),
@@ -612,7 +613,13 @@ function systemSectionNodes(
               class: "btn small",
               text: "메뉴·시스템에서 엔딩·저장 카드와 함께 관리 →",
               attrs: { type: "button" },
-              dataset: { databaseTarget: "menu-system", testid: "db-system-gallery-open-menu-system" },
+              dataset: { testid: "db-system-gallery-open-menu-system" },
+              on: {
+                click: () => {
+                  document.querySelector<HTMLElement>('[data-testid="db-tab-menu-system"]')?.click();
+                  document.querySelector<HTMLElement>('[data-testid="db-menu-subtab-extras"]')?.click();
+                },
+              },
             }),
           ],
         }),
@@ -776,6 +783,7 @@ function menuSkinFieldset(project: Project, rerender: SystemRefresh): HTMLElemen
           testid: "db-system-menu-open-items",
           onClick: () => {
             document.querySelector<HTMLElement>('[data-testid="db-tab-menu-system"]')?.click();
+            document.querySelector<HTMLElement>('[data-testid="db-menu-subtab-menu"]')?.click();
           },
         },
       }),
@@ -786,6 +794,21 @@ function menuSkinFieldset(project: Project, rerender: SystemRefresh): HTMLElemen
   // 허브 메뉴 2색 테마 (system.menuTheme)
   const hubWinValue = project.system.menuTheme?.window || DEFAULT_HUB_WINDOW_COLOR;
   const hubAccentValue = project.system.menuTheme?.accent || DEFAULT_HUB_ACCENT_COLOR;
+  const resetThemeBtn = el("button", {
+    class: "btn small",
+    text: "기본 색",
+    attrs: { type: "button" },
+    dataset: { testid: "db-system-menu-theme-reset" },
+    on: {
+      click: () => {
+        updateSystem((draft) => {
+          delete draft.system.menuTheme;
+        });
+        rerender();
+      },
+    },
+  }) as HTMLButtonElement;
+  resetThemeBtn.disabled = !project.system.menuTheme;
   const makeColorPicker = (
     label: string,
     key: "window" | "accent",
@@ -806,6 +829,7 @@ function menuSkinFieldset(project: Project, rerender: SystemRefresh): HTMLElemen
         if (next.window || next.accent) draft.system.menuTheme = next;
         else delete draft.system.menuTheme;
       });
+      resetThemeBtn.disabled = !store.getCurrent().system.menuTheme;
       renderPreview();
     });
     return field(label, input);
@@ -819,20 +843,7 @@ function menuSkinFieldset(project: Project, rerender: SystemRefresh): HTMLElemen
         children: [
           makeColorPicker("허브 창 색", "window", hubWinValue, DEFAULT_HUB_WINDOW_COLOR, "db-field-system-menu-theme-window"),
           makeColorPicker("강조 색", "accent", hubAccentValue, DEFAULT_HUB_ACCENT_COLOR, "db-field-system-menu-theme-accent"),
-          el("button", {
-            class: "btn small",
-            text: "기본 색",
-            attrs: { type: "button", ...(project.system.menuTheme ? {} : { disabled: "true" }) },
-            dataset: { testid: "db-system-menu-theme-reset" },
-            on: {
-              click: () => {
-                updateSystem((draft) => {
-                  delete draft.system.menuTheme;
-                });
-                rerender();
-              },
-            },
-          }),
+          resetThemeBtn,
         ],
       }),
       checkboxField("옛 메뉴 스킨 사용", "db-field-system-menu-layout-legacy", isLegacy, (checked) => {
@@ -874,12 +885,14 @@ function menuSkinFieldset(project: Project, rerender: SystemRefresh): HTMLElemen
     });
     card.addEventListener("click", () => {
       if (selected === id) return;
+      let clearedHudOverride = false;
       updateSystem((draft) => {
         if (id === DEFAULT_MENU_SKIN_ID) delete draft.system.menuUiStyle;
         else draft.system.menuUiStyle = id;
         // HUD 의 옛 menuStyle 덮어쓰기가 남아 있으면 해제해 여기서 고른 스킨이 그대로 적용되게 한다.
         if (draft.system.fieldHud?.menuStyle && draft.system.fieldHud.menuStyle !== "project") {
           draft.system.fieldHud.menuStyle = "project";
+          clearedHudOverride = true;
         }
       });
       selected = id;
@@ -890,7 +903,8 @@ function menuSkinFieldset(project: Project, rerender: SystemRefresh): HTMLElemen
       }
       const nowLegacy = store.getCurrent().system.menuLayout === "legacy";
       status.textContent = `현재 디자인 · ${skin.label}${nowLegacy ? "" : " (허브 사용 중 — 옛 메뉴 켜면 적용)"}`;
-      renderPreview();
+      if (clearedHudOverride) rerender();
+      else renderPreview();
     });
     cards.set(id, card);
     gallery.append(card);

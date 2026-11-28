@@ -799,6 +799,23 @@ function introLine(project: Project): HTMLElement {
   });
 }
 
+const MENU_SYSTEM_CARD_SUBTAB: Readonly<Record<string, MenuSystemSubtab>> = {
+  "db-menu-system-menu-card": "menu",
+  "db-menu-system-dialogue-card": "dialogue",
+  "db-menu-system-look-card": "dialogue",
+  "db-menu-system-extras-card": "extras",
+  "db-menu-system-other-card": "other",
+};
+
+/** 길찾기 검색 결과가 숨긴 서브탭의 카드로 착지할 때 해당 서브탭을 먼저 연다. */
+export function revealMenuSystemCardSubtab(root: HTMLElement, scrollTestId: string): void {
+  const targetTab = MENU_SYSTEM_CARD_SUBTAB[scrollTestId];
+  if (!targetTab) return;
+  activeSubtab = targetTab;
+  const btn = root.querySelector<HTMLElement>(`[data-testid="db-menu-subtab-${targetTab}"]`);
+  btn?.click();
+}
+
 export function renderMenuSystemTab(host: HTMLElement): void {
   const project = store.getCurrent();
   const rerender = (): void => {
