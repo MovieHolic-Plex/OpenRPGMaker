@@ -135,7 +135,8 @@ for (const [width, height] of [[1024, 768], [1280, 800], [1440, 900]]) {
     await openWalkEncounterList(page);
     await clickVisibleControl(page, page.getByTestId("walk-encounter-select-area"));
     await dragRegion(page, 7, 5);
-    await assertReachable(page, "selection-chip-walk-encounter");
+    await assertReachable(page, "selection-chip-quick-encounter");
+    await clickVisibleControl(page, page.getByTestId("selection-chip-quick-encounter"));
     await clickVisibleControl(page, page.getByTestId("selection-chip-walk-encounter"));
     await clickVisibleControl(page, page.getByTestId("walk-encounter-add-group"));
     await page.screenshot({ path: testInfo.outputPath(`picker-${width}.png`) });
@@ -169,6 +170,7 @@ for (const [width, height] of [[1024, 768], [1280, 800], [1440, 900]]) {
     await page.evaluate(() => (window as BrowserSignals).walkChange);
 
     await dragRegion(page, 11, 5);
+    await clickVisibleControl(page, page.getByTestId("selection-chip-quick-encounter"));
     await clickVisibleControl(page, page.getByTestId("selection-chip-walk-encounter"));
     await clickVisibleControl(page, page.getByTestId("walk-encounter-reuse"));
     await armProjectChange(page, 4);

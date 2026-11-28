@@ -111,7 +111,7 @@ test("canvas fills chrome-safe area and selection chips overlay without reflow",
 
   const chips = page.getByTestId("selection-action-chips");
   await expect(chips).toBeVisible();
-  await expect(page.getByTestId("selection-chip-ai")).toBeVisible();
+  await expect(page.getByTestId("selection-chip-ai-toggle")).toBeVisible();
 
   const chipMetrics = await page.evaluate(() => {
     const host = document.querySelector("[data-testid='edit-canvas']") as HTMLElement | null;

@@ -58,9 +58,11 @@ test("우클릭 드래그 놓은 자리에 선택 칩이 뜬다 (우하단 고�
   const chipCenterY = chipBox.y + chipBox.height / 2;
   expect(Math.abs(chipCenterY - y1)).toBeLessThan(120);
 
-  // 복사/AI 버튼이 칩 바에 존재
+  // 컴팩트 HUD 주요 버튼(조수 지시 / 더보기)과 더보기 팝오버 안의 복사 버튼 확인
+  await expect(page.getByTestId("selection-chip-ai-toggle")).toBeVisible();
+  await expect(page.getByTestId("selection-chip-more")).toBeVisible();
+  await page.getByTestId("selection-chip-more").click();
   await expect(page.getByTestId("selection-chip-copy")).toBeVisible();
-  await expect(page.getByTestId("selection-chip-ai")).toBeVisible();
 
   // 스크린샷 증거
   await page.screenshot({ path: "output/evidence/right-drag-chips-anchored.png", fullPage: false });
