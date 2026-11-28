@@ -59,6 +59,7 @@ import { loadAiConfig, reportTransportHealth } from "@/ai/llmClient";
 import { isQuotaOrRateLimitError, quotaFailureCopy, quotaStatusLine } from "@/ai/providerQuota";
 import { getOhMyPiProvider, parseOhMyPiProvider } from "@/ai/ohMyPiProviders";
 import { mapRunScope, independentMapRunRoots, settleMapRuns } from "@/ai/piAgent/mapRunLocks.mjs";
+import { findRegionWriteViolation } from "@/ai/piAgent/regionWriteGuard";
 import { editorAiMapRuns } from "@/ai/piAgent/editorMapRunLocks";
 import { aiProjectRunKey } from "@/editor/aiMapRunOwnership";
 import { composePiTask } from "@/ai/piAgent/executionRoute";
@@ -431,8 +432,10 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
   const { base: proposalBase, baseline } = captureApplyAuthority(base);
   const config = loadAiConfig();
   const applyMode = normalizePiApplyMode(config.piApply);
+  const lockRegion = command.mode !== "team" && command.region ? command.region : null;
   const publication = createPiPublication(base, applyMode, surface, {
     humanEdits,
+    lockRegion,
     beforeApply: (before, next) => ghost.present(before, next, surface.signal),
     afterApply: project => ghost.accept(project),
   });
@@ -760,7 +763,6 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     const line = formatLocalCliCost({ ...(billing ? { billing } : {}), ...(costUsd !== undefined ? { costUsd } : {}), usage: { input: tokens, output: 0, cacheRead: 0, cacheWrite: 0 } });
     if (line) surface.appendProcess?.(`이번 차례 · ${line}`);
   };
-  const lockRegion = command.mode !== "team" && command.region ? command.region : null;
   const regionPart = lockRegion ? { region: lockRegion } : {};
   const userImagesPart = options.userImages?.length ? { userImages: options.userImages } : {};
   // 이 턴의 모든 워커 실행(계획·실행·목표·수리)이 같은 값을 싣는다 — 워커가 지시문·도구가 같은 실행끼리만 대화를 잇는다.
@@ -1281,6 +1283,18 @@ async function runPiCommandProtected(command: ParsedPiCommand, surface: PiComman
     // (세션 경로의 aiProposalCard.applyProposal 과 같은 관례).
     ghost.dispose();
     const alreadyPublished = publication.count > 0 && changedProjectKeys(publication.project, merged.project).length === 0;
+    if (!alreadyPublished && lockRegion) {
+      const violation = findRegionWriteViolation(publication.count ? publication.project : base, merged.project, lockRegion, "pi_agent");
+      if (violation) {
+        publishFinalOutcome();
+        boardState = markTeamBoardFailed(boardState, violation.summary); sync();
+        finishLog({ applied: false, changedCount, error: violation.summary });
+        surface.setStatus("적용 실패");
+        surface.appendProcess?.(violation.summary);
+        surface.appendBubble("system", "선택한 드래그 영역 밖의 변경이 포함되어 적용하지 않았어요.");
+        return false;
+      }
+    }
     // 계측은 «실제 변이» 만 감싼다. 예전에는 apply 단계가 이 함수 전체였고 그 안에서 finishLog 가 불려
     // 스냅숏이 구간이 닫히기 전에 찍혔다 — 그래서 표의 apply 는 구조적으로 항상 0ms 였다(2026-09-26 리뷰 실측).
     // 사람이 삭제 확인 모달을 보는 시간도 이제 들어가지 않는다 — 알아야 하는 값은 적용 자체의 벽시계다.

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { mapBundleIds, mapBundleSpill, mergeMapBundles, worldNodeMapIds } from "@/ai/piAgent/mapBundle";
 import { createMapRunLocks, mapRunBundleIds } from "@/ai/piAgent/mapRunLocks.mjs";
+import { findRegionWriteViolation } from "@/ai/piAgent/regionWriteGuard";
 import { changedProjectKeys, createPiAgentLineDecoder, encodePiAgentEvent } from "@/ai/piAgent/protocol";
 import { repairWorldTransfers } from "@/project/world/transferRepair";
 import { commitChangeset } from "@/editor/tools";
@@ -547,6 +548,38 @@ describe("piAgent mapBundle", () => {
     if (right.ok) right.release();
     if (child.ok) child.release();
     expect(locks.acquire("p", [root], "whole-after").ok).toBe(true);
+  });
+
+  it("드래그 영역 쓰기 가드는 영역 안 타일·이벤트 변경만 허용하고 영역 밖·다른 맵 변경을 거부한다", () => {
+    const base = seed();
+    const root = base.mapTree.mapId;
+    const region = { mapId: root, x: 1, y: 1, width: 3, height: 3 };
+    const mapWidth = base.maps[root]!.width;
+
+    // 영역 안 타일과 이벤트 추가는 허용.
+    const inside = clone(base);
+    inside.maps[root]!.lowerTiles[2 * mapWidth + 2] = 7;
+    inside.maps[root]!.events = [...inside.maps[root]!.events, {
+      id: "ev_in", name: "안쪽", x: 3, y: 3, trigger: { kind: "action" }, commands: [],
+    } as unknown as Project["maps"][string]["events"][number]];
+    expect(findRegionWriteViolation(base, inside, region, "paint_tiles")).toBeNull();
+
+    // 영역 밖 타일 변경은 거부.
+    const outsideTile = clone(base);
+    outsideTile.maps[root]!.lowerTiles[0] = 9;
+    expect(findRegionWriteViolation(base, outsideTile, region, "paint_tiles")?.ok).toBe(false);
+
+    // 영역 밖 이벤트 배치는 거부.
+    const outsideEvent = clone(base);
+    outsideEvent.maps[root]!.events = [...outsideEvent.maps[root]!.events, {
+      id: "ev_out", name: "바깥", x: 4, y: 1, trigger: { kind: "action" }, commands: [],
+    } as unknown as Project["maps"][string]["events"][number]];
+    expect(findRegionWriteViolation(base, outsideEvent, region, "create_event")?.ok).toBe(false);
+
+    // 다른 맵 수정도 거부.
+    const otherMap = clone(base);
+    otherMap.maps.map_east!.name = "바뀐 동쪽";
+    expect(findRegionWriteViolation(base, otherMap, region, "rename_map")?.ok).toBe(false);
   });
 
   it("시작 맵 담당이 따로 맡은 세계 노드를 바꾼 것은 옮기지 않고, 그 맵 담당의 결과를 남긴다", () => {

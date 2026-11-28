@@ -2816,7 +2816,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 스토어·없는 기물 카드 — 조수가 generate_missing_object 를 한 턴에 여러 번 부르면 모두 모아 함께 줄 세운다.
     const storeCards: StoreCardRequest[] = [];
     let phase: string | undefined;
-    const bgCommand = run.region && run.mapId && command.mode !== "team"
+    const bgNamesOtherMap = command.mapIds.some((id) => id !== run.mapId);
+    const bgCommand = run.region && run.mapId && command.mode !== "team" && !bgNamesOtherMap
       ? { ...command, region: { mapId: run.mapId, ...run.region } }
       : command;
     await runPiCommand(bgCommand, {
@@ -2955,7 +2956,8 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     const explicit = parsePiCommand(text, store.getCurrent(), runMapId);
     const exclusive = handoff?.team === true || explicit?.mode === "team"
       || loadAiConfig().piTeam === true || isGenrePresetBriefRequest(text) || firstMvpRoute(store.getCurrent(), text).team;
-    const runRegion: MapRunRegion | null = !exclusive && regionScope?.region && regionScope.mapId === runMapId
+    const namesOtherMap = explicit?.mapIds.some((id) => id !== runMapId) ?? false;
+    const runRegion: MapRunRegion | null = !exclusive && regionScope?.region && regionScope.mapId === runMapId && !namesOtherMap
       ? regionScope.region
       : null;
     const queue = mapRunQueue();

@@ -44,6 +44,8 @@ import { mergeMapBundles } from "../../src/ai/piAgent/mapBundle.ts";
 import type { PiProjectCheckpoint } from "../../src/ai/piAgent/protocol.ts";
 import { createWriterTool } from "./piWriterTool.ts";
 import { completeProvider } from "./ohMyPiPiAiRuntime.ts";
+import { findRegionWriteViolation } from "../../src/ai/piAgent/regionWriteGuard.ts";
+import { mapRunRegion } from "../../src/ai/piAgent/mapRunLocks.mjs";
 import { guardLeadChat, resolveSplitConfig } from "../../src/ai/v2/turn/split.ts";
 import { setCutsceneArtGenerator } from '../../src/editor/tools/cutsceneArtTools';
 import { probeCutscene } from '../../src/editor/cutscenePreview/probe';
@@ -1386,12 +1388,14 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
   // 얼굴 그림 수(실행당 상한 — 한 장이 생성 브로커 한 번, 모델 호출과 실행 끝이 같이 쓴다).
   const PORTRAIT_RUN_BUDGET = 6;
   let portraitDraws = 0;
-  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !['show_map_region', 'show_spatial_design', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'generate_map_background', 'generate_image_asset', 'run_ffmpeg', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources', 'generate_walk_chip', ITEM_ICON_TOOL, APPEARANCE_GENERATION_TOOL].includes(tool.name) ? tool : ({ ...tool,
+  const lockRegion = mapRunRegion(request);
+  const wrapCoreTool = (tool: PiToolShape): PiToolShape => !incremental && !lockRegion && !['show_map_region', 'show_spatial_design', 'inspect_interior_layout', 'show_opening_image', 'generate_opening_image', 'generate_map_background', 'generate_image_asset', 'run_ffmpeg', 'generate_opening_layer', 'preview_opening_animatic', 'preview_opening_reference', 'show_title_opening', 'list_npc_graphics', 'list_resources', 'generate_walk_chip', ITEM_ICON_TOOL, APPEARANCE_GENERATION_TOOL].includes(tool.name) ? tool : ({ ...tool,
     async execute(id, params, signal) {
       // The core owns ordering: consecutive reads overlap; writes hold an exclusive
       // barrier through publication. A second queue here would serialize reads too.
       if (rejected) throw new Error("적용이 중단되었습니다.");
       signal?.throwIfAborted();
+      const beforeRegionCheck = lockRegion ? ctx.project : null;
       let result: Awaited<ReturnType<PiToolShape["execute"]>>;
       {
         if (tool.name === 'run_ffmpeg') {
@@ -1571,6 +1575,14 @@ export async function runPiAgent(request: PiAgentRequest, options: RunPiAgentOpt
             result = { content: [{ type: 'text', text: JSON.stringify(execution) }], details: execution };
           }
         } else result = await tool.execute(id, params, signal);
+      }
+      if (lockRegion && beforeRegionCheck && ctx.project !== beforeRegionCheck) {
+        const violation = findRegionWriteViolation(beforeRegionCheck, ctx.project, lockRegion, tool.name);
+        if (violation) {
+          ctx.project = beforeRegionCheck;
+          emit({ type: "execution_status", name: "region_guard", ok: false, summary: violation.summary, data: { toolCallId: id } });
+          return { content: [{ type: "text", text: JSON.stringify(violation) }], details: violation };
+        }
       }
       if (tool.name === 'show_opening_image' || tool.name === 'generate_opening_image' || tool.name === 'generate_opening_layer') {
         if (!renderToEditor) throw new Error('오프닝 그림 시각 전달 경로가 없습니다. 시각 검토 미완료입니다.');

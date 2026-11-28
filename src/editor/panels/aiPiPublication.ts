@@ -1,7 +1,9 @@
 import { isMapDestruction } from "@/ai/approvalPolicy";
 import type { PiApplyMode } from "@/ai/piAgent/applyMode";
+import type { MapRunLockRegion } from "@/ai/piAgent/mapRunLocks.mjs";
 import type { PiProjectCheckpoint } from "@/ai/piAgent/protocol";
 import { changedProjectKeys, PI_MAP_LOSS_DECLINED_PREFIX, restoreCheckpointProject } from "@/ai/piAgent/protocol";
+import { findRegionWriteViolation } from "@/ai/piAgent/regionWriteGuard";
 import { mapLossConfirmRequest } from "@/ai/mapDestructionConfirm";
 import { applyProposedProject, captureApplyAuthority } from "@/editor/tools/applyChangesetToStore";
 import { describeMergeConflicts } from "@/project/projectMerge";
@@ -20,6 +22,7 @@ import type { PiCommandSurface } from "./aiPiAgentCommand";
  */
 export function createPiPublication(base: Project, mode: PiApplyMode, surface: PiCommandSurface, presentation?: {
   humanEdits?: import("@/editor/assistantHumanEdits").AssistantHumanEdits;
+  lockRegion?: MapRunLockRegion | null;
   beforeApply(before: Project, next: Project): Promise<void>;
   afterApply(project: Project): void;
 }) {
@@ -66,6 +69,10 @@ export function createPiPublication(base: Project, mode: PiApplyMode, surface: P
     if (mode === "review") throw new Error("검토 후 적용 모드는 실행 중 변경을 반영하지 않습니다.");
     const next = restoreCheckpointProject(project, checkpoint.project, checkpoint.unchangedKeys, checkpoint.unchangedTilesetIds);
     if (!changedProjectKeys(project, next).length) return project;
+    if (presentation?.lockRegion) {
+      const violation = findRegionWriteViolation(project, next, presentation.lockRegion, checkpoint.toolName);
+      if (violation) throw new Error(violation.summary);
+    }
     if (mode === "step") await approveStage(next, checkpoint.label);
     const rawLoss = mapLossConfirmRequest(project, next);
     const turnProtectedBefore: Project = {
