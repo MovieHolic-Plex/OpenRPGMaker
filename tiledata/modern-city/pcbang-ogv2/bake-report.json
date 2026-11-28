@@ -1,0 +1,20 @@
+{
+  "gate": {
+    "bundle_open": 25,
+    "owner_waiver": {
+      "batch": "owner-pcbang-carbon-2026-11-28",
+      "note": "3/4 관문 미통과 — 오너 면제(통과가 아니다)",
+      "count": 25
+    }
+  },
+  "tiles_before": 13857,
+  "tiles_after": 14115,
+  "tiles_added_or_updated": 258,
+  "sheet_size": [
+    768,
+    4720
+  ],
+  "objects": 21,
+  "floors": 2,
+  "walls": 2
+}

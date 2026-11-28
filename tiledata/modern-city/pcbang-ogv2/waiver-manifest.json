@@ -1,0 +1,130 @@
+{
+  "note": "object-gate owner-waive manifest for owner-pcbang-carbon-2026-11-28 (object-gen-v2 Carbon Medium 1-pass, fable-city.json pv=0 av=0).",
+  "items": [
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb-floor-dark.png",
+      "kind": "terrain",
+      "label": "modern_city/pcbang_ogv2/pcb-floor-dark"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb-floor-smoke.png",
+      "kind": "terrain",
+      "label": "modern_city/pcbang_ogv2/pcb-floor-smoke"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb-wall-dark.png",
+      "kind": "structure",
+      "label": "modern_city/pcbang_ogv2/pcb-wall-dark"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb-wall-glass.png",
+      "kind": "structure",
+      "label": "modern_city/pcbang_ogv2/pcb-wall-glass"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-b2b-blue-5.png",
+      "kind": "low_furniture",
+      "label": "modern_city/pcbang_ogv2/pcb3-b2b-blue-5"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-b2b-blue-4.png",
+      "kind": "low_furniture",
+      "label": "modern_city/pcbang_ogv2/pcb3-b2b-blue-4"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-b2b-red-4.png",
+      "kind": "low_furniture",
+      "label": "modern_city/pcbang_ogv2/pcb3-b2b-red-4"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-b2b-blue-1.png",
+      "kind": "low_furniture",
+      "label": "modern_city/pcbang_ogv2/pcb3-b2b-blue-1"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-b2b-red-1.png",
+      "kind": "low_furniture",
+      "label": "modern_city/pcbang_ogv2/pcb3-b2b-red-1"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-team-row-4.png",
+      "kind": "low_furniture",
+      "label": "modern_city/pcbang_ogv2/pcb3-team-row-4"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-team-desk-1.png",
+      "kind": "low_furniture",
+      "label": "modern_city/pcbang_ogv2/pcb3-team-desk-1"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-kiosk-pair.png",
+      "kind": "tall_furniture",
+      "label": "modern_city/pcbang_ogv2/pcb3-kiosk-pair"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-kiosk-1.png",
+      "kind": "tall_furniture",
+      "label": "modern_city/pcbang_ogv2/pcb3-kiosk-1"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-counter-pos.png",
+      "kind": "low_furniture",
+      "label": "modern_city/pcbang_ogv2/pcb3-counter-pos"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-drink-triple.png",
+      "kind": "tall_furniture",
+      "label": "modern_city/pcbang_ogv2/pcb3-drink-triple"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-snack-rack.png",
+      "kind": "tall_furniture",
+      "label": "modern_city/pcbang_ogv2/pcb3-snack-rack"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-ramen-bar.png",
+      "kind": "tall_furniture",
+      "label": "modern_city/pcbang_ogv2/pcb3-ramen-bar"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-tray-bin.png",
+      "kind": "container",
+      "label": "modern_city/pcbang_ogv2/pcb3-tray-bin"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-ashtray.png",
+      "kind": "container",
+      "label": "modern_city/pcbang_ogv2/pcb3-ashtray"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-vent.png",
+      "kind": "wall_mounted",
+      "label": "modern_city/pcbang_ogv2/pcb3-vent"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-digital-menu.png",
+      "kind": "wall_mounted",
+      "label": "modern_city/pcbang_ogv2/pcb3-digital-menu"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-esports-poster.png",
+      "kind": "wall_mounted",
+      "label": "modern_city/pcbang_ogv2/pcb3-esports-poster"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-ac-dark.png",
+      "kind": "wall_mounted",
+      "label": "modern_city/pcbang_ogv2/pcb3-ac-dark"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-wait-sofa-dark.png",
+      "kind": "low_furniture",
+      "label": "modern_city/pcbang_ogv2/pcb3-wait-sofa-dark"
+    },
+    {
+      "png": "tiledata/modern-city/pcbang-ogv2/pieces/pcb3-side-table-dark.png",
+      "kind": "low_furniture",
+      "label": "modern_city/pcbang_ogv2/pcb3-side-table-dark"
+    }
+  ]
+}

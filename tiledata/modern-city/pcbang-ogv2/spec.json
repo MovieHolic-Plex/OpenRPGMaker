@@ -1,0 +1,33 @@
+{
+  "packId": "pcbang-ogv2",
+  "title": "Korean PC Bang Objects (object-gen-v2 Carbon Medium)",
+  "summary": "21 authentic 3/4 Korean PC Bang objects generated via object-gen-v2 (Carbon Medium 1-pass, fable-city palette lock).",
+  "model": "gemini-4-carbon (thought_level: medium)",
+  "license": "CC0",
+  "palette": "/home/main/object-gen-v2/palettes/fable-city.json",
+  "piecesDir": "pieces",
+  "tags": ["pcbang", "modern-city", "korean", "object-gen-v2", "3/4"],
+  "items": [
+    { "id": "pcb3-b2b-blue-5", "name": "블루 양면 맞대기 10석 게이밍 아일랜드", "w": 10, "h": 4, "block": [[0,1],[1,1],[2,1],[3,1],[4,1],[5,1],[6,1],[7,1],[8,1],[9,1],[0,2],[1,2],[2,2],[3,2],[4,2],[5,2],[6,2],[7,2],[8,2],[9,2]], "tags": ["PC방", "피시방", "게이밍", "좌석"] },
+    { "id": "pcb3-b2b-blue-4", "name": "블루 양면 맞대기 8석 게이밍 아일랜드", "w": 8, "h": 4, "block": [[0,1],[1,1],[2,1],[3,1],[4,1],[5,1],[6,1],[7,1],[0,2],[1,2],[2,2],[3,2],[4,2],[5,2],[6,2],[7,2]], "tags": ["PC방", "피시방", "게이밍", "좌석"] },
+    { "id": "pcb3-b2b-red-4", "name": "240Hz FPS 레드 양면 맞대기 8석 아일랜드", "w": 8, "h": 4, "block": [[0,1],[1,1],[2,1],[3,1],[4,1],[5,1],[6,1],[7,1],[0,2],[1,2],[2,2],[3,2],[4,2],[5,2],[6,2],[7,2]], "tags": ["PC방", "FPS", "게이밍", "좌석"] },
+    { "id": "pcb3-b2b-blue-1", "name": "블루 양면 맞대기 2석 모듈", "w": 2, "h": 4, "block": [[0,1],[1,1],[0,2],[1,2]], "tags": ["PC방", "게이밍", "좌석"] },
+    { "id": "pcb3-b2b-red-1", "name": "240Hz FPS 레드 양면 맞대기 2석 모듈", "w": 2, "h": 4, "block": [[0,1],[1,1],[0,2],[1,2]], "tags": ["PC방", "FPS", "좌석"] },
+    { "id": "pcb3-team-row-4", "name": "다인큐 팀룸 4연석 게이밍 데스크", "w": 8, "h": 3, "block": [[0,1],[1,1],[2,1],[3,1],[4,1],[5,1],[6,1],[7,1]], "tags": ["PC방", "팀룸", "게이밍"] },
+    { "id": "pcb3-team-desk-1", "name": "팀룸 단면 게이밍석(1인)", "w": 2, "h": 3, "block": [[0,1],[1,1]], "tags": ["PC방", "팀룸", "게이밍"] },
+    { "id": "pcb3-kiosk-pair", "name": "무인 선불결제기 2연속 키오스크", "w": 2, "h": 2, "block": [[0,1],[1,1]], "tags": ["PC방", "선불결제기", "키오스크"] },
+    { "id": "pcb3-kiosk-1", "name": "무인 선불결제기", "w": 1, "h": 2, "block": [[0,1]], "tags": ["PC방", "선불결제기", "키오스크"] },
+    { "id": "pcb3-counter-pos", "name": "PC방 알바 POS 계산 카운터", "w": 3, "h": 2, "block": [[0,1],[1,1],[2,1]], "tags": ["PC방", "카운터", "계산대"] },
+    { "id": "pcb3-drink-triple", "name": "3도어 음료 쇼케이스 냉장고", "w": 3, "h": 2, "block": [[0,1],[1,1],[2,1]], "tags": ["PC방", "냉장고", "음료"] },
+    { "id": "pcb3-snack-rack", "name": "컵라면·스낵 진열 선반", "w": 2, "h": 2, "block": [[0,1],[1,1]], "tags": ["PC방", "컵라면", "과자", "진열대"] },
+    { "id": "pcb3-ramen-bar", "name": "한강 즉석라면 조리기 & 얼음정수기 바", "w": 3, "h": 2, "block": [[0,1],[1,1],[2,1]], "tags": ["PC방", "라면", "정수기"] },
+    { "id": "pcb3-tray-bin", "name": "3구 퇴식구·분리수거함", "w": 2, "h": 2, "block": [[0,1],[1,1]], "tags": ["PC방", "퇴식구", "분리수거"] },
+    { "id": "pcb3-ashtray", "name": "스탠드형 재떨이", "w": 1, "h": 2, "block": [[0,1]], "tags": ["PC방", "흡연부스", "재떨이"] },
+    { "id": "pcb3-vent", "name": "흡연부스 천장 환풍 후드", "w": 2, "h": 2, "place": "roof", "tags": ["PC방", "흡연부스", "환풍기"] },
+    { "id": "pcb3-digital-menu", "name": "PC방 다크 디지털 메뉴판", "w": 2, "h": 2, "place": "roof", "tags": ["PC방", "메뉴판"] },
+    { "id": "pcb3-esports-poster", "name": "e스포츠 네온 챔피언십 포스터", "w": 2, "h": 2, "place": "roof", "tags": ["PC방", "포스터", "액자"] },
+    { "id": "pcb3-ac-dark", "name": "다크 무풍 벽걸이 에어컨", "w": 2, "h": 2, "place": "roof", "tags": ["PC방", "에어컨"] },
+    { "id": "pcb3-wait-sofa-dark", "name": "PC방 다크 가죽 대기 소파(3인)", "w": 3, "h": 2, "block": [[0,1],[1,1],[2,1]], "tags": ["PC방", "대기", "소파"] },
+    { "id": "pcb3-side-table-dark", "name": "PC방 다크 스틸 사이드 테이블", "w": 2, "h": 2, "block": [[0,1],[1,1]], "tags": ["PC방", "대기", "사이드 테이블"] }
+  ]
+}

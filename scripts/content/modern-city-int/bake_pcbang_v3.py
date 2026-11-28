@@ -28,7 +28,7 @@ import numpy as np  # noqa: E402
 import object_gate as OG  # noqa: E402
 
 SRC_V3 = ROOT / "tiledata" / "dungeon-arch-v2" / "modern_pcbang_v3" / "objects"
-OUT_DIR = ROOT / "tiledata" / "modern-city" / "pcbang-v3"
+OUT_DIR = ROOT / "tiledata" / "modern-city" / "pcbang-ogv2"
 PIECES_DIR = OUT_DIR / "pieces"
 MANIFEST_PATH = OUT_DIR / "waiver-manifest.json"
 PREVIEW_PATH = OUT_DIR / "preview_new_dark_props_3x.png"
@@ -810,10 +810,34 @@ def bake(dry: bool = False) -> None:
     print("BAKED OK:", json.dumps(report, ensure_ascii=False))
 
 
+def write_manifest_from_pieces() -> None:
+    gk_by_id = {s[0]: s[2] for s in OBJ_SPECS}
+    all_ids = [f[0] for f in FLOOR_SPECS] + [w[0] for w in WALL_SPECS] + [s[0] for s in OBJ_SPECS]
+    manifest_items = []
+    for pid in all_ids:
+        out_p = PIECES_DIR / f"{pid}.png"
+        assert out_p.exists(), f"Missing {out_p}"
+        im = Image.open(out_p).convert("RGBA")
+        assert_no_pure_black(im, pid)
+        gkind = "terrain" if pid.startswith("pcb-floor-") else ("structure" if pid.startswith("pcb-wall-") else gk_by_id[pid])
+        manifest_items.append({
+            "png": str(out_p.relative_to(ROOT)),
+            "kind": gkind,
+            "label": f"modern_city/pcbang_ogv2/{pid}",
+        })
+    MANIFEST_PATH.write_text(json.dumps({
+        "note": f"object-gate owner-waive manifest for {WAIVER_BATCH_ID} (object-gen-v2 Carbon Medium 1-pass, fable-city.json pv=0 av=0).",
+        "items": manifest_items,
+    }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print(f"Wrote manifest ({len(manifest_items)} items) -> {MANIFEST_PATH}")
+
+
 if __name__ == "__main__":
-    cmd = sys.argv[1] if len(sys.argv) > 1 else "build-pieces"
+    cmd = sys.argv[1] if len(sys.argv) > 1 else "manifest"
     if cmd == "build-pieces":
         build_pieces()
+    elif cmd == "manifest":
+        write_manifest_from_pieces()
     elif cmd == "gate":
         o, b = check_gate()
         print(f"open={len(o)} blocked={len(b)}")
