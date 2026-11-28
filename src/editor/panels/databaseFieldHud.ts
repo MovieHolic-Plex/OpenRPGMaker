@@ -1,5 +1,5 @@
 import type { Project } from "@/project/types";
-import { FIELD_HUD_THEMES, HUD_KINDS, HUD_SOURCES, HUD_SHAPES, HUD_ANCHORS, HUD_CONDITIONS, HUD_WIDGET_LIMIT, HUD_FONTS, HUD_MENUS, HUD_DESCRIPTIONS, recommendedHudMenu, hudPreset, normalizeFieldHud, normalizeHudWidget, resolvedHudWidgets, type FieldHudConfig, type HudWidget } from "@/project/fieldHud";
+import { FIELD_HUD_THEMES, HUD_KINDS, HUD_SOURCES, HUD_SHAPES, HUD_ANCHORS, HUD_CONDITIONS, HUD_WIDGET_LIMIT, HUD_FONTS, HUD_MENUS, HUD_DESCRIPTIONS, hudPreset, normalizeFieldHud, normalizeHudWidget, resolvedHudWidgets, type FieldHudConfig, type HudWidget } from "@/project/fieldHud";
 import { startSession } from "@/project/session";
 import { resolvePlayResolution } from "@/project/playResolution";
 import { FieldHud } from "@/player/fieldHud";
@@ -66,8 +66,8 @@ export function fieldHudEditor(project: Project, save: (config: FieldHudConfig) 
       element.dataset.selected = String(element.dataset.widgetId === selected); element.tabIndex = 0;
       element.setAttribute("aria-label", `${widgets.find(w => w.id === element.dataset.widgetId)?.label || "HUD 요소"} · 방향키로 이동`);
     }
-    const menuSelect = root.querySelector<HTMLSelectElement>('[data-testid="hud-menu-style"]');
-    if (menuSelect) menuSelect.value = config.menuStyle ?? "project";
+    const legacyMenuNotice = root.querySelector<HTMLElement>('[data-testid="hud-legacy-menu-override"]');
+    if (legacyMenuNotice) legacyMenuNotice.hidden = !config.menuStyle || config.menuStyle === "project";
     for (const element of presets.querySelectorAll<HTMLElement>("button")) element.setAttribute("aria-pressed", String(element.dataset.theme === config.theme));
   }
   function choose(id: string) { selected = id; renderList(); renderInspector(); paint(); }
@@ -146,12 +146,32 @@ export function fieldHudEditor(project: Project, save: (config: FieldHudConfig) 
   }
   for (const [theme, label] of Object.entries(FIELD_HUD_THEMES)) {
     const control = button(label, () => {
-      config = { ...config, theme: theme as FieldHudConfig["theme"], menuStyle: recommendedHudMenu(theme as FieldHudConfig["theme"]), objective: !["collector", "classic", "horror", "chase", "hearts", "minimal"].includes(theme) }; widgets = hudPreset(config.theme); selected = widgets[0]?.id ?? "";
+      // HUD 테마를 바꿔도 ESC 메뉴 디자인(system.menuUiStyle)을 조용히 덮어쓰지 않도록 menuStyle 은 project 로 유지한다.
+      config = { ...config, theme: theme as FieldHudConfig["theme"], menuStyle: "project", objective: !["collector", "classic", "horror", "chase", "hearts", "minimal"].includes(theme) }; widgets = hudPreset(config.theme); selected = widgets[0]?.id ?? "";
       commit(`${label} 구성을 불러왔습니다. 이전 구성은 실행 취소로 복원할 수 있습니다.`); renderInspector();
     }, `db-hud-theme-${theme}`); control.dataset.theme = theme; presets.append(control);
   }
   const appearance = node("div", "hud-studio-row");
-  appearance.append(select("HUD 글꼴", config.font ?? "auto", HUD_FONTS, value => { config = { ...config, font: value as FieldHudConfig["font"] }; commit(); }, "hud-font"), select("함께 사용할 메뉴", config.menuStyle ?? "project", HUD_MENUS, value => { config = { ...config, menuStyle: value as FieldHudConfig["menuStyle"] }; commit(); }, "hud-menu-style"));
+  const openMenuBtn = button("게임 메뉴 디자인에서 설정 →", () => {
+    const menuNav = document.querySelector<HTMLElement>('[data-testid="db-system-nav-menu"]');
+    menuNav?.click();
+    menuNav?.focus({ preventScroll: true });
+  }, "db-hud-open-menu-settings");
+  const legacyMenuOverride = node("div", "hud-studio-menu-override");
+  legacyMenuOverride.dataset.testid = "hud-legacy-menu-override";
+  legacyMenuOverride.hidden = !config.menuStyle || config.menuStyle === "project";
+  const currentOverrideLabel = config.menuStyle && config.menuStyle !== "project" ? HUD_MENUS[config.menuStyle] : "";
+  legacyMenuOverride.append(
+    node("span", "", `옛 HUD 메뉴 덮어쓰기(${currentOverrideLabel})가 켜져 있어 게임 메뉴 디자인을 가리고 있습니다.`),
+    button("덮어쓰기 해제", () => {
+      config = { ...config, menuStyle: "project" };
+      commit("HUD 메뉴 덮어쓰기를 해제했습니다. 이제 「게임 메뉴」 설정이 그대로 적용됩니다.");
+    }, "hud-clear-menu-override"),
+  );
+  appearance.append(
+    select("HUD 글꼴", config.font ?? "auto", HUD_FONTS, value => { config = { ...config, font: value as FieldHudConfig["font"] }; commit(); }, "hud-font"),
+    field("ESC 게임 메뉴 디자인", openMenuBtn),
+  );
   const addType = document.createElement("select"); addType.dataset.testid = "hud-add-kind";
   for (const [key,label] of Object.entries(HUD_KINDS)) { const option = document.createElement("option"); option.value = key; option.textContent = label; addType.append(option); }
   left.append(node("h3", "hud-studio-heading", "구성 요소"), list, field("추가할 요소", addType), button("+ 요소 추가", () => {
@@ -189,6 +209,6 @@ export function fieldHudEditor(project: Project, save: (config: FieldHudConfig) 
   stage.addEventListener("keydown",event=>{ const delta:Record<string,[number,number]>={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]}; const change=delta[event.key]; const target=(event.target as HTMLElement).closest<HTMLElement>(".hud-widget"); if(!change||!target)return;event.preventDefault();selected=target.dataset.widgetId!;const step=event.shiftKey?8:1;patch({anchor:"top-left",x:parseFloat(target.style.left)+change[0]*step,y:parseFloat(target.style.top)+change[1]*step},true);});
   // ResizeObserver 가 없는 환경(테스트의 가짜 DOM 등)에서는 배율 맞춤만 건너뛴다 — 편집기 자체는 그대로 그린다.
   if(typeof ResizeObserver!=="undefined"){const resize=new ResizeObserver(()=>{if(!root.isConnected){resize.disconnect();hud.destroy();return;}const width=viewport.clientWidth;if(!width)return;const scale=width/resolution.width;stage.style.transform=`scale(${scale})`;viewport.style.aspectRatio=`${resolution.width}/${resolution.height}`;});resize.observe(viewport);}
-  layout.append(left,center,inspector);root.append(node("p","hud-studio-hint","프리셋으로 시작한 뒤 요소별 데이터·표현·위치·표시 조건을 편집하세요. 프리셋을 다시 누르면 구성이 교체됩니다."),presets,description,appearance,layout,status);
+  layout.append(left,center,inspector);root.append(node("p","hud-studio-hint","프리셋으로 시작한 뒤 요소별 데이터·표현·위치·표시 조건을 편집하세요. 프리셋을 다시 누르면 구성이 교체됩니다."),presets,description,appearance,legacyMenuOverride,layout,status);
   renderList();renderInspector();paint();return root;
 }

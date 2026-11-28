@@ -3,7 +3,8 @@
 // 한 화면에서 만지는 자료집 칸과 조수 도구(configure_field_menu·set_dialogue_system·set_vn_extras)가 **같은 검증·같은 연동 규칙**을 쓰게 하는 잎 모듈(2026-10-17, 미연시 3단계).
 // 화면도 도구도 여기의 validate*/merge*/sync*/issues 를 거친다 — 규칙을 두 곳에 베끼지 않는다.
 import { backlogEnabled, mergeDialogueSystem, resolveDialogueSystem, validateDialogueSystem, type AuthoredDialogueSystem } from "./dialogueSystem";
-import { FIELD_MENU_COMMANDS, collectorFieldMenu, fieldMenu, romanceFieldMenu, validateFieldMenu, type AuthoredFieldMenu, type FieldMenuCommand } from "./fieldMenu";
+import { FIELD_MENU_COMMANDS, collectorFieldMenu, fieldMenu, romanceFieldMenu, storyFieldMenu, validateFieldMenu, type AuthoredFieldMenu, type FieldMenuCommand } from "./fieldMenu";
+import { isGalleryEnabled } from "./gallery";
 import { galleryActive, listGallerySlots, mergeVnExtras, resolveVnExtras, validateVnExtras, type AuthoredVnExtras } from "./vnExtras";
 import { validateVnLook, type AuthoredVnLook } from "./vnLook";
 import type { Project } from "./types";
@@ -44,7 +45,7 @@ export function menuSystemIssues(project: Project): readonly MenuSystemIssue[] {
   const backlog = backlogEnabled(project);
   if (has("backlog") && !backlog) out.push({ id: "backlog-entry-off", ui: "ESC 메뉴에 백로그 항목이 있지만 대사창의 백로그가 꺼져 있어 항목이 보이지 않습니다. 아래 「대사창」에서 백로그를 켜거나 메뉴에서 빼세요.", tool: "ESC 메뉴에 백로그 항목이 있지만 대사 시스템의 백로그가 꺼져 있어 항목이 보이지 않습니다. set_dialogue_system {backlog:true} 로 켜거나 메뉴에서 빼세요." });
   if (backlog && menu && !has("backlog")) out.push({ id: "backlog-on-no-entry", ui: "백로그는 켜져 있지만 ESC 메뉴에 백로그 항목이 없습니다. 대사창 단추·L 키로는 열리지만 메뉴로는 못 엽니다. 메뉴에 「백로그」를 추가하세요.", tool: "대사 시스템의 백로그는 켜져 있지만 저작된 ESC 메뉴에 백로그 항목이 없습니다. 대사창 단추·L 키로는 열리지만 메뉴로는 못 엽니다. configure_field_menu {preset:\"custom\", add:[{command:\"backlog\",label:\"백로그\"}]} 로 넣으세요." });
-  if (has("gallery") && !galleryActive(project)) out.push({ id: "gallery-entry-off", ui: "ESC 메뉴에 갤러리 항목이 있지만 갤러리가 꺼져 있어 항목이 보이지 않습니다. 아래 「갤러리·엔딩·저장 카드」에서 갤러리를 켜거나 메뉴에서 빼세요.", tool: "ESC 메뉴에 갤러리 항목이 있지만 갤러리가 꺼져 있어 항목이 보이지 않습니다. set_vn_extras {gallery:true} 로 켜거나 메뉴에서 빼세요." });
+  if (has("gallery") && !galleryActive(project) && !isGalleryEnabled(project)) out.push({ id: "gallery-entry-off", ui: "ESC 메뉴에 갤러리 항목이 있지만 갤러리가 꺼져 있어 항목이 보이지 않습니다. 아래 「갤러리·엔딩·저장 카드」에서 갤러리를 켜거나 메뉴에서 빼세요.", tool: "ESC 메뉴에 갤러리 항목이 있지만 갤러리가 꺼져 있어 항목이 보이지 않습니다. set_vn_extras {gallery:true} 로 켜거나 메뉴에서 빼세요." });
   if (has("endings") && !vn?.endings.enabled) out.push({ id: "endings-entry-off", ui: "ESC 메뉴에 엔딩 항목이 있지만 엔딩 목록이 꺼져 있어 항목이 보이지 않습니다. 아래에서 엔딩 목록을 켜거나 메뉴에서 빼세요.", tool: "ESC 메뉴에 엔딩 항목이 있지만 엔딩 목록이 꺼져 있어 항목이 보이지 않습니다. set_vn_extras {endings:true} 로 켜거나 메뉴에서 빼세요." });
   if (entries && vn?.endings.enabled && !has("endings")) out.push({ id: "endings-on-no-entry", ui: "엔딩 목록은 켜져 있지만 ESC 메뉴에 엔딩 항목이 없어 열 수 없습니다. 메뉴에 「엔딩」을 추가하세요.", tool: "엔딩 목록은 켜져 있지만 저작된 ESC 메뉴에 엔딩 항목이 없어 열 수 없습니다. configure_field_menu {preset:\"custom\", add:[{command:\"endings\",label:\"엔딩\"}]} 로 넣으세요." });
   if (vn?.endings.enabled && (project.endings ?? []).length === 0) out.push({ id: "endings-none", ui: "엔딩 목록은 켜져 있지만 엔딩 정의가 없어 빈 목록만 보입니다. 엔딩을 먼저 만드세요.", tool: "엔딩 목록은 켜져 있지만 엔딩 정의가 없어 빈 목록만 보입니다. 엔딩을 먼저 저작하세요." });
@@ -167,7 +168,7 @@ export function starterFieldMenu(): AuthoredFieldMenu {
   return { version: 1, entries: (["items", "skills", "equipment", "status", "save", "load", "options", "to-title"] as const).map((command) => ({ command, label: FIELD_MENU_DEFAULT_LABELS[command] })) };
 }
 
-export const MENU_STARTERS = { romance: romanceFieldMenu, collector: collectorFieldMenu, custom: starterFieldMenu } as const;
+export const MENU_STARTERS = { romance: romanceFieldMenu, collector: collectorFieldMenu, story: storyFieldMenu, custom: starterFieldMenu } as const;
 export type MenuStarter = keyof typeof MENU_STARTERS;
 
 /** 한 번의 편집이 세 저작 칸을 함께 바꿀 수 있다. 값이 null 이면 그 칸의 저작을 지운다(자동 판정으로 복귀). 없으면 그대로. */

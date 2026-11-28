@@ -28,7 +28,9 @@ import {
   type DialogueStyleId,
 } from "@/project/dialogueStyles";
 import { FONT_REGISTRY, isFontFamilyId } from "@/project/fontRegistry";
+import { resolveDialogueSystem } from "@/project/dialogueSystem";
 import { ensureHighResFullbodyPlayResolution } from "@/project/playResolution";
+import { VN_PRESETS, resolveVnLook } from "@/project/vnLook";
 import type { Project } from "@/project/types";
 import { el } from "@/util/dom";
 
@@ -71,7 +73,45 @@ export function dialogueStyleSection(project: Project, deps: DialogueStyleSectio
   };
   const gallery = dialogueStyleGallery(project, deps, (style) => refresh({ dialogueStyle: style }));
   const settings = dialogueTextSettings(project, deps, refresh);
-  return [gallery, settings, fullPortrait, showcase, extras];
+  const readingToolsLink = dialogueReadingToolsBridge(project, deps);
+  return [readingToolsLink, gallery, settings, fullPortrait, showcase, extras];
+}
+
+/** 「메뉴·시스템」 탭의 읽기 보조 도구(백로그·오토·스킵·숨기기)와 VN 룩 상태를 요약하고 한 번에 이동한다. */
+function dialogueReadingToolsBridge(project: Project, deps: DialogueStyleSectionDeps): HTMLElement {
+  const sys = resolveDialogueSystem(project);
+  const look = resolveVnLook(project);
+  const activeTools = sys
+    ? [
+        sys.backlog.enabled ? "백로그" : "",
+        sys.auto.enabled ? "오토" : "",
+        sys.skip.enabled ? "스킵" : "",
+        sys.hideButton.enabled ? "숨기기" : "",
+      ].filter(Boolean)
+    : [];
+  const toolsSummary = activeTools.length > 0 ? activeTools.join(" · ") : "사용 안 함";
+  const lookSummary = look ? `VN 룩: ${VN_PRESETS[look.preset].label}` : "VN 룩: 꺼짐(아래 기본 스타일 사용)";
+  return deps.fieldset("읽기 도구 · VN 룩 연동", [
+    el("div", {
+      class: "db-system-dialogue-bridge",
+      dataset: { testid: "db-system-dialogue-reading-bridge" },
+      children: [
+        el("span", { text: `대사창 단추: ${toolsSummary} · ${lookSummary}` }),
+        el("button", {
+          class: "btn small",
+          text: "읽기 도구·VN 룩 편집(메뉴·시스템) →",
+          attrs: { type: "button" },
+          dataset: { testid: "db-system-dialogue-open-menu-system" },
+          on: {
+            click: () => {
+              document.querySelector<HTMLElement>('[data-testid="db-tab-menu-system"]')?.click();
+              document.querySelector<HTMLElement>('[data-testid="db-menu-subtab-dialogue"]')?.click();
+            },
+          },
+        }),
+      ],
+    }),
+  ]);
 }
 
 /** 글꼴·기본 말 빠르기·구두점 쉼 — 스타일과 따로 정하는 프로젝트 기본. 인물 프로필이 다시 덮을 수 있다. */
