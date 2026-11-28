@@ -18,7 +18,7 @@ import { openEventEditorModal, openNewEventEditorModal } from "@/editor/panels/e
 import { selectSidebarLayer } from "@/editor/panels/leftLayerSwitcher";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { eventDisplayName } from "@/project/eventDisplayName";
-import { store } from "@/project/store";
+import { isTileCellChange, store } from "@/project/store";
 import type { Command, EventPageGraphic, GameEvent, GameMap, MapId, Project } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 
@@ -605,11 +605,16 @@ export function mountFloatingUnitWindow(
   };
   window.addEventListener("keydown", onKeyDown);
 
-  const unsubEditor = editorState.subscribe(() => {
-    if (open) renderList();
+  let lastUnitEditorState = editorState.get();
+  const unsubEditor = editorState.subscribe((state) => {
+    const prev = lastUnitEditorState;
+    lastUnitEditorState = state;
+    if (!open) return;
+    if (state.currentMapId === prev.currentMapId && state.selectedEventId === prev.selectedEventId && state.layer === prev.layer) return;
+    renderList();
   });
-  const unsubStore = store.subscribe(() => {
-    if (open) renderList();
+  const unsubStore = store.subscribe((_project, change) => {
+    if (open && !isTileCellChange(change)) renderList();
   });
 
   canvasArea.append(win);

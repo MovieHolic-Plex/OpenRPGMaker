@@ -1,6 +1,6 @@
 import { editorMapTileSize } from "@/editor/mapGeometry";
 import { editorState, editorStateChangedOnlyCanvasOverlay } from "@/editor/editorState";
-import { store } from "@/project/store";
+import { isTileCellChange, store } from "@/project/store";
 import { el } from "@/util/dom";
 
 let overlayEl: HTMLElement | null = null;
@@ -82,7 +82,9 @@ export function installLayoutBboxOverlay(): () => void {
     if (editorStateChangedOnlyCanvasOverlay(previous, state)) return;
     renderBboxes();
   });
-  const offStore = store.subscribe(() => renderBboxes());
+  const offStore = store.subscribe((_project, change) => {
+    if (!isTileCellChange(change)) renderBboxes();
+  });
   unsub = () => {
     offEditor();
     offStore();

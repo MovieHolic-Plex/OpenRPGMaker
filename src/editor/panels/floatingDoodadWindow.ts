@@ -24,7 +24,7 @@ import { reliefDoodadCatalog, type ReliefDoodad } from "@/editor/reliefDoodads";
 import { selectTerrainDesignTool } from "@/editor/terrainDesignActions";
 import { hasOpenModalLayer } from "@/editor/ui/modalStack";
 import { allInteractiveProps, type InteractivePropEntry, type InteractivePropEra } from "@/project/interactiveProps";
-import { store } from "@/project/store";
+import { isTileCellChange, store } from "@/project/store";
 import type { TilesetDef } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 
@@ -474,7 +474,6 @@ export function mountFloatingDoodadWindow(
   let viewMode: DoodadViewMode = "grid";
   let searchQuery = "";
   let visibleLimit = INITIAL_PAGE_SIZE;
-  let selectedKey: string | null = null;
   let customPos: { x: number; y: number } | null = null;
   let customSize = loadSavedWindowSize();
   let recentKeys: string[] = loadRecentKeys();
@@ -573,14 +572,21 @@ export function mountFloatingDoodadWindow(
     text: "해제",
     on: {
       click: () => {
-        selectedKey = null;
-        selectInteractivePropBrush(null);
-        const st = editorState.get();
-        if (st.tool === "relief" && st.terrainBrush === "house") {
-          editorState.set({ tool: "paint", terrainBrush: "crayon", terrainHouseDrag: null });
+        let wasHouseMode = false;
+        suppressEditorSync = true;
+        try {
+          selectInteractivePropBrush(null);
+          const st = editorState.get();
+          wasHouseMode = st.tool === "relief" && st.terrainBrush === "house";
+          if (wasHouseMode) {
+            editorState.set({ tool: "paint", terrainBrush: "crayon", terrainHouseDrag: null });
+          }
+          editorState.set({ activePaletteStamp: null, reliefDoodad: null, reliefBridgeStart: null });
+        } finally {
+          suppressEditorSync = false;
         }
-        editorState.set({ activePaletteStamp: null, reliefDoodad: null, reliefBridgeStart: null });
-        renderBody();
+        if (viewMode === "split" || wasHouseMode) renderBody();
+        else syncSelectionInPlace();
       },
     },
   }) as HTMLButtonElement;
@@ -672,39 +678,94 @@ export function mountFloatingDoodadWindow(
     });
   }
 
-  function activateItem(item: UnifiedDoodad): void {
-    selectedKey = item.key;
-    recordRecent(item.key);
-    if (item.source === "interactive") {
-      editorState.set({ reliefDoodad: null, reliefBridgeStart: null });
-      selectInteractivePropBrush(item.prop.id);
-    } else if (item.source === "relief") {
-      selectInteractivePropBrush(null);
-      selectMapModeTool("relief");
-      editorState.set({
-        layer: "lower",
-        activePaletteStamp: null,
-        terrainBrush: "height",
-        terrainPreset: null,
-        terrainMoveGroup: false,
-        terrainPoints: null,
-        terrainHouseDrag: null,
-        terrainVisionPreview: false,
-        reliefClusterEnabled: false,
-        reliefDoodad: item.doodad.id,
-        reliefDoodadOpen: false,
-        reliefBridgeStart: null,
-        terrainDesignOpen: false,
-      });
-    } else {
-      selectInteractivePropBrush(null);
-      if (editorState.get().layer === "event") {
-        editorState.set({ layer: item.choice.stamp.cells[0]?.layer ?? "upper" });
-      }
-      editorState.set({ reliefDoodad: null, reliefBridgeStart: null });
-      selectPaletteStamp(item.choice.stamp);
+  function applySelectionStatus(itemCount: number, activeItem: UnifiedDoodad | undefined): void {
+    const state = editorState.get();
+    const houseModeActive = state.tool === "relief" && state.terrainBrush === "house";
+    const nextStatus = houseModeActive
+      ? "🏠 드래그 집 짓기 활성 · 빈 땅을 끌어 원하는 크기로 집을 세우세요"
+      : activeItem
+        ? `${activeItem.name} (${activeItem.sizeLabel}) · 맵 클릭으로 배치`
+        : `오브젝트 ${itemCount}개 · 클릭 후 맵에 배치`;
+    if (statusName.textContent !== nextStatus) statusName.textContent = nextStatus;
+    const nextClearHidden = !activeItem && !houseModeActive;
+    if (clearPickBtn.hidden !== nextClearHidden) clearPickBtn.hidden = nextClearHidden;
+  }
+
+  function syncSelectionInPlace(): void {
+    if (!open) return;
+    const tileset = currentTileset();
+    const profile = detectArtStyleProfile(tileset);
+    const allItems = unifiedDoodadsFor(tileset);
+    const items = filteredItems(tileset, profile);
+    applySelectionStatus(items.length, items.find(isItemSelected));
+
+    const itemByKey = new Map(allItems.map((it) => [it.key, it]));
+    for (const btn of body.querySelectorAll<HTMLButtonElement>('[data-testid^="floating-doodad-item-"]')) {
+      const key = btn.dataset.testid?.slice("floating-doodad-item-".length) ?? "";
+      const item = itemByKey.get(key);
+      const active = item ? isItemSelected(item) : false;
+      btn.classList.toggle("is-active", active);
+      const pressed = String(active);
+      if (btn.getAttribute("aria-pressed") !== pressed) btn.setAttribute("aria-pressed", pressed);
     }
-    renderBody();
+    const resolvedRecent = resolveRecentItems(allItems);
+    resolvedRecent.forEach((item, idx) => {
+      const slot = recentBar.querySelector<HTMLButtonElement>(`[data-testid="floating-doodad-recent-${idx + 1}"]`);
+      if (slot) slot.classList.toggle("is-active", isItemSelected(item));
+    });
+  }
+
+  let suppressEditorSync = false;
+  function isHouseModeState(state: ReturnType<typeof editorState.get>): boolean {
+    return state.tool === "relief" && state.terrainBrush === "house";
+  }
+
+  function activateItem(item: UnifiedDoodad): void {
+    recordRecent(item.key);
+    const wasHouseMode = isHouseModeState(editorState.get());
+    suppressEditorSync = true;
+    try {
+      if (item.source === "interactive") {
+        editorState.set({ reliefDoodad: null, reliefBridgeStart: null });
+        selectInteractivePropBrush(item.prop.id);
+      } else if (item.source === "relief") {
+        selectInteractivePropBrush(null);
+        selectMapModeTool("relief");
+        editorState.set({
+          layer: "lower",
+          activePaletteStamp: null,
+          terrainBrush: "height",
+          terrainPreset: null,
+          terrainMoveGroup: false,
+          terrainPoints: null,
+          terrainHouseDrag: null,
+          terrainVisionPreview: false,
+          reliefClusterEnabled: false,
+          reliefDoodad: item.doodad.id,
+          reliefDoodadOpen: false,
+          reliefBridgeStart: null,
+          terrainDesignOpen: false,
+        });
+      } else {
+        selectInteractivePropBrush(null);
+        if (editorState.get().layer === "event") {
+          editorState.set({ layer: item.choice.stamp.cells[0]?.layer ?? "upper" });
+        }
+        editorState.set({ reliefDoodad: null, reliefBridgeStart: null });
+        selectPaletteStamp(item.choice.stamp);
+      }
+    } finally {
+      suppressEditorSync = false;
+    }
+    if (viewMode === "split") {
+      renderBody();
+    } else {
+      const tileset = currentTileset();
+      renderRecentBar(unifiedDoodadsFor(tileset), tileset);
+      // 집 짓기 모드를 빠져나왔다면 막대의 토글·양식 버튼이 낡은 상태를 쥐고 있으므로 통째로 다시 만든다.
+      if (wasHouseMode !== isHouseModeState(editorState.get())) renderBody();
+      else syncSelectionInPlace();
+    }
   }
 
   function filteredItems(tileset: TilesetDef | undefined, profile: ArtStyleProfile): readonly UnifiedDoodad[] {
@@ -731,6 +792,8 @@ export function mountFloatingDoodadWindow(
   function renderBody(): void {
     if (!open) return;
     const tileset = currentTileset();
+    lastRenderedTileset = tileset;
+    lastRenderedUploaded = store.getCurrent().assets.uploaded;
     const profile = detectArtStyleProfile(tileset);
     styleLockBtn.classList.toggle("is-locked", styleLocked);
     styleLockBtn.setAttribute("aria-pressed", String(styleLocked));
@@ -804,7 +867,6 @@ export function mountFloatingDoodadWindow(
             if (houseModeActive) {
               editorState.set({ tool: "paint", terrainBrush: "crayon", terrainHouseDrag: null });
             } else {
-              selectedKey = null;
               selectInteractivePropBrush(null);
               editorState.set({ activePaletteStamp: null, reliefDoodad: null, terrainDesignOpen: false });
               if (houseStyles.length > 0) {
@@ -827,13 +889,8 @@ export function mountFloatingDoodadWindow(
       }));
     }
 
-    const activeItem = items.find(isItemSelected) ?? (selectedKey ? items.find((it) => it.key === selectedKey) : undefined);
-    statusName.textContent = houseModeActive
-      ? "🏠 드래그 집 짓기 활성 · 빈 땅을 끌어 원하는 크기로 집을 세우세요"
-      : activeItem
-        ? `${activeItem.name} (${activeItem.sizeLabel}) · 맵 클릭으로 배치`
-        : `오브젝트 ${items.length}개 · 클릭 후 맵에 배치`;
-    clearPickBtn.hidden = !activeItem && !houseModeActive;
+    const activeItem = items.find(isItemSelected);
+    applySelectionStatus(items.length, activeItem);
 
     if (items.length === 0) {
       if (activeTab === "interactive" && styleLocked) {
@@ -1082,11 +1139,51 @@ export function mountFloatingDoodadWindow(
   window.addEventListener("keydown", onKeyDown);
   window.addEventListener(FLOATING_DOODAD_PALETTE_TOGGLE_EVENT, onToggleEvent);
 
-  const unsubEditor = editorState.subscribe(() => {
-    if (open) renderBody();
+  let lastRenderedTileset: TilesetDef | undefined;
+  let lastRenderedUploaded: unknown;
+  let lastEditorSnapshot = editorState.get();
+  const unsubEditor = editorState.subscribe((state) => {
+    const prev = lastEditorSnapshot;
+    lastEditorSnapshot = state;
+    if (!open || suppressEditorSync) return;
+    if (state.currentMapId !== prev.currentMapId) {
+      renderBody();
+      return;
+    }
+    const houseMode = (st: typeof state): boolean => st.tool === "relief" && st.terrainBrush === "house";
+    if (
+      houseMode(state) !== houseMode(prev)
+      || state.terrainHouseStyle !== prev.terrainHouseStyle
+      || state.terrainHouseKitId !== prev.terrainHouseKitId
+      || state.terrainHouseStories !== prev.terrainHouseStories
+    ) {
+      renderBody();
+      return;
+    }
+    if (
+      state.activePaletteStamp !== prev.activePaletteStamp
+      || state.activeInteractivePropId !== prev.activeInteractivePropId
+      || state.reliefDoodad !== prev.reliefDoodad
+      || state.tool !== prev.tool
+    ) {
+      if (viewMode === "split") renderBody();
+      else syncSelectionInPlace();
+    }
   });
-  const unsubStore = store.subscribe(() => {
-    if (open) renderBody();
+  const unsubStore = store.subscribe((project, change) => {
+    if (!open) return;
+    if (change.scope === "map") {
+      if (isTileCellChange(change)) return;
+      const nextTileset = currentTileset();
+      if (nextTileset === lastRenderedTileset && project.assets.uploaded === lastRenderedUploaded) return;
+      lastRenderedTileset = nextTileset;
+      lastRenderedUploaded = project.assets.uploaded;
+      renderBody();
+      return;
+    }
+    lastRenderedTileset = currentTileset();
+    lastRenderedUploaded = project.assets.uploaded;
+    renderBody();
   });
 
   canvasArea.append(win);

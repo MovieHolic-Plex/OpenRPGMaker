@@ -14,7 +14,7 @@ import { renderEventGraphicIcon } from "@/editor/panels/eventEditor/eventGraphic
 import { openEventEditorModal } from "@/editor/panels/eventEditor/modal";
 import { openMapPropertiesDialog } from "@/editor/panels/mapPropertiesDialog";
 import { eventDisplayName } from "@/project/eventDisplayName";
-import { store } from "@/project/store";
+import { isTileCellChange, store } from "@/project/store";
 import type { Command, EventPageGraphic, GameEvent, GameMap, Project } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 
@@ -289,8 +289,23 @@ export function mountAiSelectionContextStrip(
     : null;
   classObserver?.observe(aiPanel, { attributes: true, attributeFilter: ["class"] });
 
-  const unsubEditor = editorState.subscribe(() => paint());
-  const unsubStore = store.subscribe(() => paint());
+  let lastCtxEditor = editorState.get();
+  const unsubEditor = editorState.subscribe((state) => {
+    const prev = lastCtxEditor;
+    lastCtxEditor = state;
+    if (
+      state.currentMapId === prev.currentMapId
+      && state.selectedEventId === prev.selectedEventId
+      && state.layer === prev.layer
+      && state.tool === prev.tool
+    ) {
+      return;
+    }
+    paint();
+  });
+  const unsubStore = store.subscribe((_project, change) => {
+    if (!isTileCellChange(change)) paint();
+  });
 
   syncPillVisibility();
   paint();

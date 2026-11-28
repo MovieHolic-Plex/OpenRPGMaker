@@ -7,7 +7,7 @@ import { requestEditorCameraFocus } from "@/editor/editorCameraFocus";
 import { getEditorCameraViewport, subscribeEditorCameraViewport } from "@/editor/editorCameraViewport";
 import { resolveCurrentMapId, selectEditorMap } from "@/editor/mapSelection";
 import { presentItemBranchLists } from "@/project/eventCommands/presentItemBranches";
-import { store } from "@/project/store";
+import { isTileCellChange, store } from "@/project/store";
 import type { Command, GameEvent, GameMap, MapId, Project } from "@/project/types";
 import { clearChildren, el } from "@/util/dom";
 
@@ -173,8 +173,15 @@ export function mountCanvasPortalBadges(
   };
 
   const unsubVp = subscribeEditorCameraViewport(() => schedulePaint());
-  const unsubEditor = editorState.subscribe(() => schedulePaint());
-  const unsubStore = store.subscribe(() => schedulePaint());
+  let lastPortalMapId = editorState.get().currentMapId;
+  const unsubEditor = editorState.subscribe((state) => {
+    if (state.currentMapId === lastPortalMapId) return;
+    lastPortalMapId = state.currentMapId;
+    schedulePaint();
+  });
+  const unsubStore = store.subscribe((_project, change) => {
+    if (!isTileCellChange(change)) schedulePaint();
+  });
   window.addEventListener("resize", schedulePaint);
   schedulePaint();
 

@@ -1131,7 +1131,19 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
   const unsubMoodPreview = subscribeEditorMoodPreview(() => {
     if (moodOpen) renderMoodPopover();
   });
-  const unsubEditor = editorState.subscribe(() => {
+  let lastMinimapEditor = editorState.get();
+  const unsubEditor = editorState.subscribe((state) => {
+    const prev = lastMinimapEditor;
+    lastMinimapEditor = state;
+    if (
+      state.currentMapId === prev.currentMapId
+      && state.layer === prev.layer
+      && state.tool === prev.tool
+      && state.zoom === prev.zoom
+      && state.selectedEventId === prev.selectedEventId
+    ) {
+      return;
+    }
     syncChrome();
     if (!collapsed) {
       syncThumbnail();
@@ -1141,8 +1153,6 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
     if (moodOpen) renderMoodPopover();
   });
   const unsubStore = store.subscribe((_project, change) => {
-    syncChrome();
-    if (moodOpen) renderMoodPopover();
     if (isTileCellChange(change)) {
       if (settleTimer !== null) clearTimeout(settleTimer);
       settleTimer = setTimeout(() => {
@@ -1154,11 +1164,13 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
       }, THUMB_SETTLE_MS);
       return;
     }
+    syncChrome();
     if (!collapsed) {
       syncThumbnail(true);
       drawOverlay();
     }
     if (switcherOpen) renderSwitcherList();
+    if (moodOpen) renderMoodPopover();
   });
 
   canvasArea.append(card);

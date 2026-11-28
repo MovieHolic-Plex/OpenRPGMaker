@@ -1,5 +1,5 @@
 import { el } from "@/util/dom";
-import { store } from "@/project/store";
+import { isTileCellChange, store } from "@/project/store";
 import { editorState } from "../editorState";
 import { quickHouseCatalog, quickHouseKit, quickHouseStyles, quickHouseStyleName, quickHouseMinWidth, quickHouseOptions } from "../quickHouse";
 import { structureKitUnitCells } from "../harnessSuggestion/structureKitModel";
@@ -38,8 +38,15 @@ export function mountQuickBuildPanel(host: HTMLElement): () => void {
   road.append(el("label", { class: "terrain-design-check", children: [drag, el("span", { text: "끌고 놓으면 도로 적용" })] }), el("p", { text: "길 폭을 고르고 캔버스를 끌어 그리세요. 기존 길과 연결되고, 높이 차이는 경사로로 이어집니다." }));
   let rendered = "";
   function sync(): void {
-    const s = editorState.get(), p = store.getCurrent(), map = s.currentMapId ? p.maps[s.currentMapId] : undefined, tileset = map ? p.tilesets[map.tilesetId] : undefined;
-    house.hidden = s.terrainBrush !== "house"; road.hidden = s.terrainBrush !== "road"; drag.checked = s.terrainRoadDrag;
+    const s = editorState.get();
+    const nextHouseHidden = s.terrainBrush !== "house";
+    if (house.hidden !== nextHouseHidden) house.hidden = nextHouseHidden;
+    const nextRoadHidden = s.terrainBrush !== "road";
+    if (road.hidden !== nextRoadHidden) road.hidden = nextRoadHidden;
+    if (drag.checked !== s.terrainRoadDrag) drag.checked = s.terrainRoadDrag;
+    const panelHidden = !s.terrainDesignOpen || s.tool !== "relief" || s.layer === "event";
+    if (panelHidden) return;
+    const p = store.getCurrent(), map = s.currentMapId ? p.maps[s.currentMapId] : undefined, tileset = map ? p.tilesets[map.tilesetId] : undefined;
     // 집 붓이 아니면 아래 집 목록(버들항 킷 3,969개 걸러내기)을 만들지 않는다 — 편집기 마운트·상태 변경·저장마다 약 0.4s 였다(2026-11-27 프로파일).
     // 집 붓으로 바꾸면 그 상태 변경이 다시 sync 를 부른다.
     if (house.hidden) return;
@@ -91,6 +98,6 @@ export function mountQuickBuildPanel(host: HTMLElement): () => void {
     for (const card of cards.querySelectorAll<HTMLButtonElement>("[data-house-style]")) card.setAttribute("aria-pressed", String(!effectiveKit && card.dataset.houseStyle === effectiveStyle));
     for (const card of cards.querySelectorAll<HTMLButtonElement>("[data-house-kit]")) card.setAttribute("aria-pressed", String(card.dataset.houseKit === effectiveKit));
   }
-  const offState = editorState.subscribe(sync), offStore = store.subscribe(sync); sync();
+  const offState = editorState.subscribe(sync), offStore = store.subscribe((_project, change) => { if (!isTileCellChange(change)) sync(); }); sync();
   return () => { offState(); offStore(); root.remove(); };
 }

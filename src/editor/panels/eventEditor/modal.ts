@@ -61,6 +61,7 @@ import { openEventEditorHelp } from "./eventEditorHelp";
 import {
   EVENT_EDITOR_VIEW_LEVEL_LABEL,
   EVENT_EDITOR_VIEW_LEVELS,
+  eventEditorAdvancedOpen,
   eventEditorViewLevel,
   onEventEditorViewLevelChange,
   setEventEditorViewLevel,
@@ -333,9 +334,12 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     controls.addEventListener("pointerdown", (event) => event.preventDefault());
   });
   attachWindowDrag(header, windowEl);
+  let onFullscreenPresentationChange = (): void => {};
   const fullscreenButton = header.querySelector<HTMLButtonElement>("[data-testid='event-editor-window-fullscreen']");
   if (fullscreenButton) {
-    const fullscreen = attachWindowFullscreen(fullscreenButton, header, backdrop, windowEl);
+    const fullscreen = attachWindowFullscreen(fullscreenButton, header, backdrop, windowEl, () => {
+      onFullscreenPresentationChange();
+    });
     disposeWindowFullscreen = fullscreen.dispose;
     exitWindowFullscreen = () => {
       if (!fullscreen.isFullscreen()) return false;
@@ -370,14 +374,22 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     windowEl.style.removeProperty("--event-bubble-tail-top");
     delete windowEl.dataset.tailSide;
   };
-  const positionBubbleNearCanvas = (): void => {
+  const positionBubbleNearCanvas = (options?: { readonly openingPlaceholder?: boolean }): void => {
     if (bubbleDragged || typeof window === "undefined") return;
-    if (!windowEl.classList.contains("is-bubble")) return;
+    if (!windowEl.classList.contains("is-bubble") || windowEl.classList.contains("is-fullscreen")) return;
+    const viewportW = Number.isFinite(window.innerWidth) && window.innerWidth > 0 ? window.innerWidth : 1280;
+    const viewportH = Number.isFinite(window.innerHeight) && window.innerHeight > 0 ? window.innerHeight : 800;
     const canvas = document.querySelector<HTMLElement>('[data-testid="edit-canvas"]');
     const measuredRect = windowEl.getBoundingClientRect();
-    const bubbleW = Math.min(440, window.innerWidth - 24);
-    const maxBubbleH = Math.min(560, window.innerHeight - 88);
-    const bubbleH = measuredRect.height > 120 ? Math.min(Math.round(measuredRect.height), maxBubbleH) : Math.min(360, maxBubbleH);
+    const bubbleW = Math.max(200, Math.min(440, viewportW - 24));
+    const maxBubbleH = Math.max(200, Math.min(560, viewportH - 88));
+    const measuredH = measuredRect.height > 80 ? Math.min(Math.round(measuredRect.height), maxBubbleH) : 0;
+    // While the opening placeholder is shown, anchor `top` using the settled target height (~360px)
+    // so the bubble does not jump vertically on Frame 1, while clamping the tail inside the actual box.
+    const bubbleH = options?.openingPlaceholder
+      ? Math.min(360, maxBubbleH)
+      : (measuredH > 120 ? measuredH : Math.min(360, maxBubbleH));
+    const tailBoxH = measuredH > 0 ? measuredH : bubbleH;
     const ev = store.getCurrent().maps[request.mapId]?.events.find((entry) => entry.id === request.eventId);
     const canvasRect = canvas ? canvas.getBoundingClientRect() : null;
     const tileRect = ev ? resolveRegionClientRect({ x: ev.x, y: ev.y, width: 1, height: 1 }) : null;
@@ -396,7 +408,7 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       const gap = 16;
       const rightSpaceLeft = Math.round(tileRect.x + tileRect.width + gap);
       const leftSpaceLeft = Math.round(tileRect.x - gap - bubbleW);
-      const rightLimit = Math.min(canvasRect.right - 8, window.innerWidth - 12);
+      const rightLimit = Math.min(canvasRect.right - 8, viewportW - 12);
       const leftLimit = Math.max(canvasRect.left + 8, 12);
       let left: number;
       let tailSide: "left" | "right" | null = null;
@@ -406,18 +418,18 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       } else if (leftSpaceLeft >= leftLimit) {
         left = leftSpaceLeft;
         tailSide = "right";
-      } else if (rightSpaceLeft + bubbleW <= window.innerWidth - 12) {
+      } else if (rightSpaceLeft + bubbleW <= viewportW - 12) {
         left = rightSpaceLeft;
         tailSide = "left";
       } else if (leftSpaceLeft >= 12) {
         left = leftSpaceLeft;
         tailSide = "right";
       } else {
-        left = Math.max(12, Math.min(rightSpaceLeft, window.innerWidth - bubbleW - 12));
+        left = Math.max(12, Math.min(rightSpaceLeft, viewportW - bubbleW - 12));
         tailSide = null;
       }
       const desiredTop = Math.round(tileCenterY - Math.min(bubbleH, 400) * 0.42);
-      const top = Math.max(56, Math.min(desiredTop, window.innerHeight - bubbleH - 16));
+      const top = Math.max(56, Math.min(desiredTop, viewportH - bubbleH - 16));
       windowEl.style.position = "fixed";
       windowEl.style.left = `${left}px`;
       windowEl.style.top = `${top}px`;
@@ -425,7 +437,8 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       if (tailSide) {
         windowEl.classList.remove("is-bubble-detached");
         windowEl.dataset.tailSide = tailSide;
-        const tailTop = Math.max(28, Math.min(bubbleH - 44, Math.round(tileCenterY - top - 8)));
+        const tailMax = Math.max(28, tailBoxH - 44);
+        const tailTop = Math.max(28, Math.min(tailMax, Math.round(tileCenterY - top - 8)));
         windowEl.style.setProperty("--event-bubble-tail-top", `${tailTop}px`);
       } else {
         windowEl.classList.add("is-bubble-detached");
@@ -443,19 +456,20 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
     delete windowEl.dataset.tailSide;
     const desiredLeft = Math.round(canvasRect.left + Math.max(16, (canvasRect.width - bubbleW) / 2));
     const desiredTop = Math.round(canvasRect.top + Math.max(16, (canvasRect.height - bubbleH) * 0.35));
-    const left = Math.max(12, Math.min(desiredLeft, window.innerWidth - bubbleW - 12));
-    const top = Math.max(56, Math.min(desiredTop, window.innerHeight - bubbleH - 16));
+    const left = Math.max(12, Math.min(desiredLeft, viewportW - bubbleW - 12));
+    const top = Math.max(56, Math.min(desiredTop, viewportH - bubbleH - 16));
     windowEl.style.position = "fixed";
     windowEl.style.left = `${left}px`;
     windowEl.style.top = `${top}px`;
     windowEl.style.margin = "0";
   };
   const expandButton = header.querySelector<HTMLButtonElement>('[data-testid="event-editor-bubble-expand"]');
-  const syncModalPresentation = (): void => {
+  const syncModalPresentation = (options?: { readonly scheduleReposition?: boolean; readonly openingPlaceholder?: boolean }): void => {
     const level = eventEditorViewLevel();
+    const isFullscreen = windowEl.classList.contains("is-fullscreen");
     const isScene = level === "easy" || level === "normal";
-    const isBubble = isScene && !sceneExpanded;
-    const isExpanded = isScene && sceneExpanded;
+    const isBubble = isScene && !sceneExpanded && !isFullscreen;
+    const isExpanded = isScene && sceneExpanded && !isFullscreen;
     const wasBubble = windowEl.classList.contains("is-bubble");
     backdrop.classList.toggle("is-bubble-backdrop", isBubble);
     windowEl.classList.toggle("is-bubble", isBubble);
@@ -465,20 +479,21 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
       windowEl.classList.remove("is-bubble-detached");
       resetWindowInlineGeometry();
     } else if (isBubble) {
-      positionBubbleNearCanvas();
-      if (typeof requestAnimationFrame === "function") {
+      positionBubbleNearCanvas(options);
+      if (options?.scheduleReposition !== false && typeof requestAnimationFrame === "function") {
         requestAnimationFrame(() => {
           if (!closed && !minimized) positionBubbleNearCanvas();
         });
       }
     }
     if (expandButton) {
-      expandButton.hidden = !isScene;
+      expandButton.hidden = !isScene || isFullscreen;
       expandButton.textContent = isExpanded ? "↙ 작게" : "↗ 크게";
       expandButton.title = isExpanded ? "작은 말풍선으로 접기" : "미리보기와 함께 넓게 보기";
       expandButton.setAttribute("aria-pressed", isExpanded ? "true" : "false");
     }
   };
+  onFullscreenPresentationChange = () => syncModalPresentation();
   expandButton?.addEventListener("click", () => {
     sceneExpanded = !sceneExpanded;
     syncModalPresentation();
@@ -663,20 +678,42 @@ function openDraftEventEditorModal(request: OpenEventEditorRequest): void {
   });
   const openedAt = performance.now();
   let openLeakSwallowed = false;
+  let modalPointerDownSeen = false;
+  backdrop.addEventListener(
+    "pointerdown",
+    () => {
+      modalPointerDownSeen = true;
+    },
+    { capture: true },
+  );
   backdrop.addEventListener(
     "dblclick",
     (event) => {
-      // Only swallow the opening canvas double-click, never titlebar controls.
-      if (event.target !== backdrop || openLeakSwallowed || performance.now() - openedAt >= 800) return;
+      // Only swallow the opening canvas double-click, never deliberate titlebar interactions.
+      const leakedOpeningClick = event.target === backdrop || (event.isTrusted && !modalPointerDownSeen);
+      if (!leakedOpeningClick || openLeakSwallowed || performance.now() - openedAt >= 800) return;
       openLeakSwallowed = true;
       event.stopPropagation();
       event.preventDefault();
     },
     { capture: true },
   );
+  const initialViewLevel = eventEditorViewLevel();
+  const initialAdvancedOpen = initialViewLevel === "advanced" && eventEditorAdvancedOpen();
   document.body.classList.add("event-editor-modal-open");
-  dynamicBody.append(el("p", { class: "empty-hint", text: "불러오는 중…", attrs: { role: "status" } }));
+  dynamicBody.append(
+    el("div", {
+      class: `panel-section event-editor event-editor-command-focused ${initialAdvancedOpen ? "is-advanced" : "is-beginner"} is-level-${initialViewLevel}`,
+      children: [el("p", { class: "empty-hint", text: "불러오는 중…", attrs: { role: "status" } })],
+    }),
+  );
+  // Sync bubble/expanded presentation before first paint so easy/normal views
+  // never flash the full-size default dialog shell during afterOpeningPaint.
+  syncModalPresentation({ scheduleReposition: false, openingPlaceholder: true });
   document.body.append(backdrop);
+  // Re-measure connected loading height synchronously before first paint so the
+  // bubble tail stays flush inside the loading box without shifting `top`.
+  if (windowEl.classList.contains("is-bubble")) positionBubbleNearCanvas({ openingPlaceholder: true });
   announceEventEditorOpened(request.mapId);
   focusFirstDialogControl(backdrop);
   const openingFocus = document.activeElement;

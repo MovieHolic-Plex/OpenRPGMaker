@@ -1,7 +1,7 @@
 import { el } from "@/util/dom";
 import { toast } from "@/util/toast";
 import { editorState } from "../editorState";
-import { store } from "@/project/store";
+import { isTileCellChange, store } from "@/project/store";
 import { DEFAULT_TERRAIN_GAMEPLAY, type TerrainGameplayRules, type TerrainStamp } from "@/project/terrainDesign";
 import { selectTerrainFeature } from "../terrainDesignActions";
 import { recordMapEditIfChanged } from "../mapEditHistory";
@@ -52,8 +52,17 @@ export function mountTerrainEvolutionPanel(body: HTMLElement): () => void {
   button(library,"stamp-import","도장 파일 가져오기",()=>file.click());
   library.append(el("p",{text:"이 브라우저의 모든 프로젝트에서 공유됩니다. 다른 기기로 옮길 때는 파일을 내보내세요. 같은 칩셋에서 사용할 수 있습니다."}));
   function sync():void {
-    const s=editorState.get(),p=store.getCurrent(),map=s.currentMapId?p.maps[s.currentMapId]:undefined;
-    edit.hidden=!["contour","road","ridge","valley","lake"].includes(s.terrainBrush);finish.hidden=s.terrainBrush!=="finish";route.hidden=s.terrainBrush!=="route";library.hidden=s.terrainBrush!=="stamp";
+    const s=editorState.get();
+    const nextEditHidden=!["contour","road","ridge","valley","lake"].includes(s.terrainBrush);
+    if(edit.hidden!==nextEditHidden)edit.hidden=nextEditHidden;
+    const nextFinishHidden=s.terrainBrush!=="finish";
+    if(finish.hidden!==nextFinishHidden)finish.hidden=nextFinishHidden;
+    const nextRouteHidden=s.terrainBrush!=="route";
+    if(route.hidden!==nextRouteHidden)route.hidden=nextRouteHidden;
+    const nextLibraryHidden=s.terrainBrush!=="stamp";
+    if(library.hidden!==nextLibraryHidden)library.hidden=nextLibraryHidden;
+    if (!s.terrainDesignOpen || s.tool !== "relief" || s.layer === "event") return;
+    const p=store.getCurrent(),map=s.currentMapId?p.maps[s.currentMapId]:undefined;
     const fk=JSON.stringify(map?.terrainDesign?.features?.map(f=>[f.id,f.tool,f.points,f.options]));
     if(fk!==lastFeature){lastFeature=fk;feature.replaceChildren(el("option",{value:"",text:"새 지형"}));for(const f of map?.terrainDesign?.features??[])feature.append(el("option",{value:f.id,text:`${{contour:"절벽",road:"길",ridge:"능선",valley:"계곡",lake:"호수"}[f.tool]} · ${f.points.length}점 · ${f.id.slice(-6)}`}));}
     feature.value=s.terrainFeatureId??"";finishMethod.value=s.terrainFinishMethod;finishPasses.value=String(s.terrainFinishPasses);bodySize.forEach((input,n)=>{if(document.activeElement!==input)input.value=String(s.terrainRouteBody[n]);});events.checked=s.terrainRouteEvents;doors.value=s.terrainRouteDoors;
@@ -63,6 +72,6 @@ export function mountTerrainEvolutionPanel(body: HTMLElement): () => void {
     const ck=JSON.stringify([map?.tilesetId,search.value,shared.map(s=>[s.id,s.name])]);if(ck!==lastCards){lastCards=ck;cards.replaceChildren();for(const stamp of shared.filter(st=>st.name.toLocaleLowerCase().includes(search.value.toLocaleLowerCase()))){const b=el("button",{class:"terrain-stamp-card",attrs:{type:"button"},dataset:{stampId:stamp.id},on:{click:()=>{if(stamp.tilesetId!==map?.tilesetId){toast("같은 칩셋의 맵에서 사용하세요","info");return;}store.update(d=>{d.terrainStamps=[...(d.terrainStamps??[]).filter(s=>s.id!==stamp.id),structuredClone(stamp)];},{scope:"project",label:"공용 지형 도장 가져오기"});editorState.set({terrainStampId:stamp.id,terrainStampCapture:false,terrainPoints:null});}}});const tileset=p.tilesets[stamp.tilesetId];if(tileset)b.append(renderTileCellsToCanvas({tileset,widthTiles:stamp.width,heightTiles:stamp.height,scale:Math.min(1,6/Math.max(stamp.width,stamp.height)),backgroundTile:null,transparentBackground:true,cells:stamp.cells.flatMap((c,i)=>c.layers.map((tile,n)=>({dx:i%stamp.width,dy:Math.floor(i/stamp.width),layer:n<2?"lower" as const:"upper" as const,tile})))}));b.append(el("span",{text:`${stamp.name} · ${stamp.width}×${stamp.height}`}));cards.append(b);}
       if(!cards.childElementCount)cards.append(el("p",{text:"공용 도장이 없습니다. 프로젝트 도장을 선택해 공용에 저장하세요."}));}
   }
-  search.addEventListener("input",sync);const offState=editorState.subscribe(sync),offStore=store.subscribe(sync);sync();void refresh();
+  search.addEventListener("input",sync);const offState=editorState.subscribe(sync),offStore=store.subscribe((_project,change)=>{if(!isTileCellChange(change))sync();});sync();void refresh();
   return()=>{offState();offStore();root.remove();};
 }

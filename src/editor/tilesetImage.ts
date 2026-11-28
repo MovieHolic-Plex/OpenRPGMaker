@@ -8,7 +8,7 @@ import {
 } from "@/assets/bundled";
 import { graftedTilesetImageUrl, setUploadedGraftSourceUrlResolver } from "@/assets/tileGraftImageCache";
 import { withInlineAsset } from "@/assets/inlineAssetStore";
-import { activeTileGrafts, setUploadedGraftGeometryResolver, tileGraftsTextureSuffix, uploadedGraftGeometryIn } from "@/assets/tileGrafts";
+import { activeTileGraftSourceChipsets, setUploadedGraftGeometryResolver, tileGraftsTextureSuffix, uploadedGraftGeometryIn } from "@/assets/tileGrafts";
 import { sliceChipsetBandSources } from "@/assets/chipsetTextureBands";
 import { bakeTilesetTextureCanvas, tilesetTextureNeedsBake } from "@/assets/tileGraftTexture";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
@@ -62,19 +62,67 @@ export function tilesetTextureKey(tileset: TilesetDef): string {
 
 const BUNDLED_CHIPSET_KEYS: ReadonlySet<string> = new Set([...BUNDLED_EASYRPG_CHIPSET_ASSETS, ...BUNDLED_REFERENCE_CHIPSET_ASSETS].map((asset) => asset.textureKey));
 
+type MissingSourceHint = { readonly kind: "uploaded" | "bundled"; readonly sourceChipset: string };
+const missingGraftSourceByScene = new WeakMap<Phaser.Scene, Map<string, MissingSourceHint>>();
+
+function missingSourceStillAbsent(
+  scene: Phaser.Scene,
+  uploaded: Record<string, unknown>,
+  hint: MissingSourceHint,
+): boolean {
+  if (hint.kind === "uploaded") {
+    return Boolean(uploaded[hint.sourceChipset]) && !scene.textures.exists(hint.sourceChipset);
+  }
+  return BUNDLED_CHIPSET_KEYS.has(hint.sourceChipset)
+    && !scene.textures.exists(hint.sourceChipset)
+    && !scene.textures.exists(rawChipsetTextureKey(hint.sourceChipset));
+}
+
 export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): string {
   const textureKey = tilesetTextureKey(tileset);
   if (scene.textures.exists(textureKey)) return textureKey;
   if (!tilesetTextureNeedsBake(tileset)) return textureKey;
 
   const baseKey = baseTilesetTextureKey(tileset);
-  // 업로드 그림판에서 이식하는 칸은 그 그림판이 실린 뒤에만 굽는다 — 먼저 구우면 빠진 칸이 든 텍스처가 캐시로 남는다.
   const uploaded = store.getCurrent().assets.uploaded;
-  if (activeTileGrafts(tileset).some((graft) => uploaded[graft.sourceChipset] && !scene.textures.exists(graft.sourceChipset))) return baseKey;
-  // 번들 그림판도 같다 — 부팅 뒤에 들어온 이식(장소 가져오기 등)의 소스 칩셋은 ensureBundledProjectTextures 가 뒤늦게 싣는다.
-  // 그 전에 구우면 폭포·다리 칸이 빈칸으로 캐시에 남는다(2026-09-25 너울목 가져오기).
-  if (activeTileGrafts(tileset).some((graft) => BUNDLED_CHIPSET_KEYS.has(graft.sourceChipset)
-    && !scene.textures.exists(graft.sourceChipset) && !scene.textures.exists(rawChipsetTextureKey(graft.sourceChipset)))) return baseKey;
+  let sceneMissing = missingGraftSourceByScene.get(scene);
+  const priorMissing = sceneMissing?.get(textureKey);
+  if (priorMissing && missingSourceStillAbsent(scene, uploaded, priorMissing)) {
+    return baseKey;
+  }
+
+  // Unique source chipset keys (tens of entries instead of thousands of per-tile grafts).
+  const sourceChipsets = activeTileGraftSourceChipsets(tileset);
+  for (const sourceChipset of sourceChipsets) {
+    // 업로드 그림판에서 이식하는 칸은 그 그림판이 실린 뒤에만 굽는다 — 먼저 구우면 빠진 칸이 든 텍스처가 캐시로 남는다.
+    if (uploaded[sourceChipset] && !scene.textures.exists(sourceChipset)) {
+      if (!sceneMissing) {
+        sceneMissing = new Map();
+        missingGraftSourceByScene.set(scene, sceneMissing);
+      } else if (sceneMissing.size > 256) {
+        sceneMissing.clear();
+      }
+      sceneMissing.set(textureKey, { kind: "uploaded", sourceChipset });
+      return baseKey;
+    }
+    // 번들 그림판도 같다 — 부팅 뒤에 들어온 이식(장소 가져오기 등)의 소스 칩셋은 ensureBundledProjectTextures 가 뒤늦게 싣는다.
+    // 그 전에 구우면 폭포·다리 칸이 빈칸으로 캐시에 남는다(2026-09-25 너울목 가져오기).
+    if (
+      BUNDLED_CHIPSET_KEYS.has(sourceChipset)
+      && !scene.textures.exists(sourceChipset)
+      && !scene.textures.exists(rawChipsetTextureKey(sourceChipset))
+    ) {
+      if (!sceneMissing) {
+        sceneMissing = new Map();
+        missingGraftSourceByScene.set(scene, sceneMissing);
+      } else if (sceneMissing.size > 256) {
+        sceneMissing.clear();
+      }
+      sceneMissing.set(textureKey, { kind: "bundled", sourceChipset });
+      return baseKey;
+    }
+  }
+  sceneMissing?.delete(textureKey);
   const canvas = bakeTilesetTextureCanvas(scene, tileset, baseKey);
   if (!canvas) return baseKey;
 
