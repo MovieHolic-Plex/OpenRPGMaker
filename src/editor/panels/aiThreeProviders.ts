@@ -9,6 +9,8 @@ import { ChatGptCompanionResponseError, connectOpenAiCompatEndpoint } from "@/ai
 import { ASSISTANT_CLAUDE_EFFORT, ASSISTANT_CLAUDE_MODEL } from "@/ai/claudeDefault";
 import { KEY_ROUTES } from "@/ai/keyRoutes";
 import { AI_CONFIG_CHANGED_EVENT, loadAiConfig } from "@/ai/llmClient";
+import { LIVE_MODELS_CHANGED_EVENT, ensureLiveModels, getLiveModelState, refreshLiveModels } from "@/ai/liveModelCatalog";
+import { mergeModelOptions, type LiveModelFamily } from "@/ai/liveModels";
 import { localCliProviderId } from "@/ai/localCliEngine";
 import { modelDisplayName } from "@/ai/modelDisplayName";
 import { modelForRole, type RoleModel } from "@/ai/modelRoles";
@@ -135,6 +137,11 @@ const FAMILY_META: Readonly<Record<CoreProviderFamily, FamilyMeta>> = {
     note: "Google 계정 직접 로그인은 계정 정지 위험으로 비활성화되어 있어요. Gemini API 키로 연결해 주세요.",
   },
 };
+
+/** 서버의 실제 모델 목록을 받아 오는 계열 — GPT(Codex 백엔드)·Claude(Anthropic). Google 은 제외다. */
+function liveFamilyOf(family: CoreProviderFamily): LiveModelFamily | null {
+  return family === "gpt" || family === "claude" ? family : null;
+}
 
 function familyOfProvider(providerId: string): CoreProviderFamily | null {
   if (providerId === CODEX_PROVIDER_ID || providerId === localCliProviderId("codex")) return "gpt";
@@ -264,6 +271,8 @@ export function renderAiThreeProviders(options: AiThreeProvidersOptions): AiThre
   let apiKeyStatusTone: "idle" | "busy" | "ok" | "error" = "idle";
   let installingClaude = false;
   let installMessage = "";
+  // 화면을 열 때 계열마다 한 번만 목록을 받아 본다(다시 그릴 때마다 제공자를 두드리지 않는다). 다시 받기는 「목록 새로고침」.
+  const liveRequested = new Set<LiveModelFamily>();
 
   const chosenModel: Record<CoreProviderFamily, string> = {
     gpt: activeModelAndEffort("gpt").model,
@@ -440,6 +449,30 @@ export function renderAiThreeProviders(options: AiThreeProvidersOptions): AiThre
     });
   }
 
+  function buildModelListNote(family: LiveModelFamily, live: ReturnType<typeof getLiveModelState>, extra: number): HTMLElement {
+    const text = live.status === "loading"
+      ? "서버에서 모델 목록을 받는 중…"
+      : live.status === "ok"
+        ? `서버 목록 ${live.models.length}개를 확인했어요${extra ? ` · 새 모델 ${extra}개를 목록에 더했어요` : ""}.`
+        : live.status === "failed"
+          ? `${live.message ?? "모델 목록을 받지 못했어요."} ${live.models.length ? "마지막으로 받은 목록을 쓰고 있어요." : "기본 목록을 쓰고 있어요."}`
+          : "";
+    return el("p", {
+      class: "ai-config-help ai-three-note",
+      dataset: { testid: `ai-provider-models-note-${family}`, status: live.status },
+      children: [
+        ...(text ? [el("span", { text: `${text} ` })] : []),
+        el("button", {
+          class: "ai-settings-link",
+          attrs: { type: "button" },
+          text: live.status === "loading" ? "받는 중…" : "목록 새로고침",
+          dataset: { testid: `ai-provider-models-refresh-${family}` },
+          on: { click: () => { if (live.status !== "loading") void refreshLiveModels(family, { force: true }); } },
+        }),
+      ],
+    });
+  }
+
   function paintDetail(family: CoreProviderFamily, state: ResolvedFamilyState): void {
     const meta = FAMILY_META[family];
     const viaLabel = state.via === "local-cli"
@@ -520,13 +553,21 @@ export function renderAiThreeProviders(options: AiThreeProvidersOptions): AiThre
         chosenModel[family] = current.model;
         chosenEffort[family] = current.effort;
       }
+      // 프리셋(코드의 권장 목록) 뒤에 서버가 지금 내주는 새 모델을 덧붙인다. 못 받으면 프리셋 그대로다.
+      const liveFamily = liveFamilyOf(family);
+      if (liveFamily && !liveRequested.has(liveFamily)) {
+        liveRequested.add(liveFamily);
+        void ensureLiveModels(liveFamily);
+      }
+      const liveState = liveFamily ? getLiveModelState(liveFamily) : null;
+      const modelOptions = mergeModelOptions(meta.models, liveState?.models);
       const modelSelect = el("select", {
         class: "ai-config-select",
         attrs: { "aria-label": `${meta.label} 모델` },
         dataset: { testid: `ai-provider-model-${family}` },
-        children: meta.models.map((entry) => el("option", { attrs: { value: entry.id }, text: entry.label })),
+        children: modelOptions.map((entry) => el("option", { attrs: { value: entry.id }, text: entry.label })),
       }) as HTMLSelectElement;
-      if (!meta.models.some((entry) => entry.id === chosenModel[family])) {
+      if (!modelOptions.some((entry) => entry.id === chosenModel[family])) {
         modelSelect.append(el("option", { attrs: { value: chosenModel[family] }, text: modelDisplayName(chosenModel[family]) }));
       }
       modelSelect.value = chosenModel[family];
@@ -559,6 +600,7 @@ export function renderAiThreeProviders(options: AiThreeProvidersOptions): AiThre
             el("div", { class: "ai-three-effort", attrs: { role: "group", "aria-label": "생각 깊이" }, children: effortButtons }),
           ] }),
         ] }),
+        ...(liveFamily && liveState ? [buildModelListNote(liveFamily, liveState, modelOptions.filter((entry) => entry.live).length)] : []),
         el("p", { class: "ai-config-help ai-three-note", text: meta.note }),
       );
     } else {
@@ -708,6 +750,7 @@ export function renderAiThreeProviders(options: AiThreeProvidersOptions): AiThre
     AI_CONNECTION_STATUS_CHANGED_EVENT,
     AI_CONFIG_CHANGED_EVENT,
     ASSISTANT_ENGINE_CHANGED_EVENT,
+    LIVE_MODELS_CHANGED_EVENT,
   ];
   for (const name of events) win?.addEventListener?.(name, paint);
   paint();

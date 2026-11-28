@@ -211,9 +211,10 @@ export async function fetchCompanion(input: string, init?: RequestInit, options:
     const retryAfter = response.headers?.get?.("retry-after");
     const message = retryAfter ? `사용 한도 초과 (Retry-After ${retryAfter})` : "사용 한도 초과";
     void import("@/ai/llmClient").then((llm) => llm.reportTransportHealth(false, 429, message)).catch(() => undefined);
-  } else if (response.ok && routeOf(input).startsWith("/v1/") && !routeOf(input).startsWith("/v1/local-agents")) {
+  } else if (response.ok && routeOf(input).startsWith("/v1/") && !routeOf(input).startsWith("/v1/local-agents") && !routeOf(input).startsWith("/v1/models")) {
     // 로그인 확인(/auth/*) 성공은 한도가 풀렸다는 뜻이 아니다 — 실제 모델 호출(/v1/*)이 성공했을 때만 걷는다.
     // 내 PC 프로그램 감지(/v1/local-agents)는 모델 호출이 아니다 — 자동 선택이 상태를 모으며 부르므로 그 성공이 한도 표시를 지웠다.
+    // 모델 목록 조회(/v1/models)도 마찬가지다 — 설정 화면이 열릴 때 부르는 읽기 전용 조회다.
     void import("@/ai/llmClient").then((llm) => { if (llm.getAiTransportHealth()?.status === 429) llm.reportTransportHealth(true, response.status); }).catch(() => undefined);
   }
   if (response.ok) { clearProblem(); return response; }
