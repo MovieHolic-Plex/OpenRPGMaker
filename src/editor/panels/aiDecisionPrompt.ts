@@ -23,6 +23,8 @@ export interface OpenAssistantDecision {
   readonly title: string;
   /** 카드 주인 실행이 잡은 맵 키(aiMapRunQueue mapKey). "*" = 프로젝트 전체를 잡은 실행. 없으면 앞 턴(패널) 카드다. */
   readonly runKey?: string;
+  /** 카드를 연 대화(스레드) id. 없으면 옛 호출자 — 어느 스레드의 보내기든 붙잡는다. */
+  readonly threadId?: string;
   readonly openedAt: number;
   answer(accepted: boolean, via: Exclude<AssistantDecisionVia, "button">): void;
 }
@@ -35,9 +37,13 @@ export function registerAssistantDecision(decision: OpenAssistantDecision): () =
 export function openAssistantDecisions(): readonly OpenAssistantDecision[] {
   return [...openDecisions].sort((a, b) => a.openedAt - b.openedAt);
 }
-/** 새 요청(맵 키 mapKey, 프로젝트 전체면 exclusive)을 붙잡아 둘 카드 — 같은 맵·프로젝트 전체 실행·앞 턴 카드. */
-export function blockingAssistantDecisions(mapKey: string, exclusive: boolean): readonly OpenAssistantDecision[] {
-  return openAssistantDecisions().filter(d => exclusive || d.runKey === undefined || d.runKey === "*" || d.runKey === mapKey);
+/**
+ * 새 요청(맵 키 mapKey, 프로젝트 전체면 exclusive)을 붙잡아 둘 카드 — 같은 맵·프로젝트 전체 실행·앞 턴 카드.
+ * threadId 를 주면 그 스레드의 카드와 스레드 id 가 없는(옛) 카드만 본다 — 다른 스레드의 카드는 그 스레드가 답한다.
+ */
+export function blockingAssistantDecisions(mapKey: string, exclusive: boolean, threadId?: string): readonly OpenAssistantDecision[] {
+  return openAssistantDecisions().filter(d => (threadId === undefined || d.threadId === undefined || d.threadId === threadId)
+    && (exclusive || d.runKey === undefined || d.runKey === "*" || d.runKey === mapKey));
 }
 
 const YES = ["예", "네", "넵", "넹", "응", "웅", "어", "그래", "그래요", "좋아", "좋아요", "확인", "진행", "진행해", "진행해줘",
@@ -71,6 +77,8 @@ interface DecisionSurface {
   readonly signal?: AbortSignal;
   /** 카드 주인 실행이 잡은 맵 키 — 보내기가 이 카드가 새 요청을 붙잡는지 판단한다. */
   readonly runKey?: string;
+  /** 카드를 연 대화(스레드) id. */
+  readonly threadId?: string;
 }
 
 /** 어떻게 닫혔는지까지 돌려준다 — 새 메시지로 닫힌 거절은 조수에게 그렇게 알린다(aiPiPublication). */
@@ -115,6 +123,7 @@ export function requestAssistantDecisionDetailed(surface: DecisionSurface, optio
     unregister = registerAssistantDecision({
       title: options.title ?? "확인",
       ...(surface.runKey !== undefined ? { runKey: surface.runKey } : {}),
+      ...(surface.threadId !== undefined ? { threadId: surface.threadId } : {}),
       openedAt: Date.now(),
       answer: (accepted, via) => finish(accepted, via),
     });

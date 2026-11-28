@@ -2486,6 +2486,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
         setStatus,
         getCurrentMapId: () => editorState.get().currentMapId ?? null,
         ...(foregroundRunKey !== undefined ? { runKey: foregroundRunKey } : {}),
+        threadId: conversationId,
         signal: piRunController.signal,
         showChangeReceipt: (receipt) => showPiChangeReceipt(receipt, reviewCard ?? undefined),
         onReviewResolved: (applied) => { reviewCard?.finish({ ok: true, message: applied ? "적용 완료" : "버림" }); },
@@ -2704,13 +2705,15 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     readonly selection: PanelMapContext["selection"];
     /** 대기열에서 잡는 맵 키("*" = 프로젝트 전체) — 이 실행의 확인 카드가 어느 요청을 붙잡는지(aiDecisionPrompt). */
     readonly runKey?: string;
+    /** 이 실행을 낸 대화(스레드) id — 표와 확인 카드에 싣는다. */
+    readonly threadId?: string;
     readonly images?: readonly string[];
   }
   /** 앞 턴도 표에 올린다 — 같은 맵의 다음 요청이 그 뒤에 줄 선다. 돌려준 함수로 자리를 푼다. */
   const claimForegroundMapRun = (mapKey: string, label: string, exclusive: boolean): (() => void) => {
     let release: () => void = () => {};
     const done = new Promise<void>((resolve) => { release = resolve; });
-    mapRunQueue().enqueue({ mapKey, label, exclusive, force: true, start: () => done });
+    mapRunQueue().enqueue({ mapKey, label, exclusive, force: true, threadId: conversationId, start: () => done });
     return release;
   };
   const runBackgroundMapTurn = async (card: MapRunCard, signal: AbortSignal, run: MapRunInput, ticketRef: { id: number | null }): Promise<void> => {
@@ -2759,6 +2762,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       setStatus: (text) => card.setStatus(text),
       getCurrentMapId: () => run.mapId,
       ...(run.runKey !== undefined ? { runKey: run.runKey } : {}),
+      ...(run.threadId !== undefined ? { threadId: run.threadId } : {}),
       onRunAudit: (rows) => { controller.auditHistory.push(...rows); },
       onSpend: (spend) => {
         conversationSpend = { turns: conversationSpend.turns + spend.turns, tokens: conversationSpend.tokens + spend.tokens };
@@ -2771,7 +2775,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     if (storeCards.length && !disposed && owner === conversationId) showStoreCards(storeCards);
   };
   const enqueueMapRun = (input: MapRunInput, mapKey: string, exclusive: boolean): void => {
-    const run: MapRunInput = { ...input, runKey: exclusive ? "*" : mapKey };
+    const run: MapRunInput = { ...input, runKey: exclusive ? "*" : mapKey, threadId: conversationId };
     const project = store.getCurrent();
     const mapName = run.mapId ? project.maps[run.mapId]?.name ?? run.mapId : "프로젝트 전체";
     appendBubble("user", run.shown);
@@ -2795,7 +2799,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
       }
       if (ticket.status !== "waiting" && ticket.status !== "running") unsubscribe();
     });
-    ticket = mapRunQueue().enqueue({ mapKey, label: run.shown, exclusive, start: (started, signal) => { ticketRef.id = started.id; return runBackgroundMapTurn(card, signal, run, ticketRef); } });
+    ticket = mapRunQueue().enqueue({ mapKey, label: run.shown, exclusive, ...(run.threadId !== undefined ? { threadId: run.threadId } : {}), start: (started, signal) => { ticketRef.id = started.id; return runBackgroundMapTurn(card, signal, run, ticketRef); } });
     ticketId = ticket.id;
     card.root.dataset.ticketId = String(ticket.id);
     card.ticket(ticket);
@@ -2872,7 +2876,7 @@ export function renderAiChatPanel(options: AiChatPanelOptions = {}): HTMLElement
     // 둘 다 30분 적용 대기로 멈췄다(aiDecisionPrompt 「열린 카드 대장」, 2026-10-29 vm1 argon).
     // 짧은 답 낱말(「예」「그만」)이면 카드 답으로 쓰고 끝낸다. 다른 요청이면 카드를 「그만두기」(내용 보존)로 닫고
     // 그 사실을 조수에게 알린 뒤 요청을 처리한다 — 카드 주인 실행은 그 변경만 빼고 이어 가고, 이 요청은 그 뒤에 돈다.
-    const blocking = blockingAssistantDecisions(mapKey, exclusive);
+    const blocking = blockingAssistantDecisions(mapKey, exclusive, conversationId);
     let runText = text;
     if (blocking.length > 0) {
       const answer = !handoff && !clarified ? readDecisionAnswer(typed) : null;

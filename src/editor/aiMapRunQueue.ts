@@ -32,6 +32,8 @@ export interface MapRunTicket {
   readonly foreground: boolean;
   /** 사람이 읽는 짧은 이름(보낸 문장). */
   readonly label: string;
+  /** 이 실행을 낸 대화(스레드) id — 왼쪽 스레드 목록이 「도는 중·기다림」을 그 줄에 단다. 옛 호출자는 없다. */
+  readonly threadId?: string;
   status: MapRunStatus;
   wait: MapRunWait | null;
   /** 같은 맵에서 앞에 선 실행 수(기다릴 때). */
@@ -51,6 +53,8 @@ export interface MapRunEnqueueInput {
    * 표에 올려 같은 맵의 다음 요청이 그 뒤에 줄 서게 하는 게 목적이다.
    */
   readonly force?: boolean;
+  /** 이 실행을 낸 대화(스레드) id. */
+  readonly threadId?: string;
   /** 차례가 오면 부른다. signal 은 cancel() 이 끊는다. 던지면 failed, 끝나면 done. */
   readonly start: (ticket: MapRunTicket, signal: AbortSignal) => Promise<void>;
 }
@@ -141,6 +145,7 @@ export function createMapRunQueue(options: { readonly concurrency?: number; read
     enqueue(input) {
       const ticket: MapRunTicket = {
         id: nextId++, mapKey: input.mapKey, exclusive: input.exclusive === true, foreground: input.force === true, label: input.label,
+        ...(input.threadId !== undefined ? { threadId: input.threadId } : {}),
         status: "waiting", wait: null, ahead: 0, enqueuedAt: clock(), startedAt: null, endedAt: null, error: null,
       };
       entries.push({ ticket, force: input.force === true, start: input.start, controller: new AbortController() });

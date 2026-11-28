@@ -4,6 +4,7 @@ import type { PiCommandSurface } from "@/editor/panels/aiPiAgentCommand";
 const h = vi.hoisted(() => ({
   current: null as unknown, calls: [] as any[], confirms: 0, confirm: true,
   prompt: null as null | { apply(): void; discard(): void },
+  registered: [] as any[],
 }));
 vi.mock("@/editor/tools/applyChangesetToStore", () => ({
   captureProposalBase: (project: unknown) => ({ project }),
@@ -20,7 +21,7 @@ vi.mock("@/editor/tools/spatialToolState", () => ({ adoptSpatialToolProof() {} }
 // 7cd26810ba(2026-10-29) 이후 발행은 requestAssistantDecisionDetailed({accepted, via}) 와 열린 카드 대장(registerAssistantDecision)을 쓴다.
 vi.mock("@/editor/panels/aiDecisionPrompt", () => ({
   requestAssistantDecisionDetailed: async () => { h.confirms++; return { accepted: h.confirm, via: "button" as const }; },
-  registerAssistantDecision: () => () => {},
+  registerAssistantDecision: (decision: unknown) => { h.registered.push(decision); return () => {}; },
 }));
 vi.mock("@/editor/panels/aiChangePreview", () => ({ openWideChangeViewer() {} }));
 vi.mock("@/editor/panels/aiPendingReview", () => ({ createPendingReviewPrompt: (actions: any) => {
@@ -33,7 +34,7 @@ const tiles = () => ({ lowerTiles: [], upperTiles: [] });
 const initial = () => ({ maps: { a: { id: "a", events: [], name: "before", ...tiles() }, b: { id: "b", events: [], name: "B", ...tiles() } } }) as unknown as Project;
 const surface = (signal?: AbortSignal) => ({ appendCard() {}, appendBubble() {}, setStatus() {}, getCurrentMapId: () => "a", signal }) as PiCommandSurface;
 const checkpoint = (project: Project, toolName = "paint_tiles") => ({ project, toolName, label: "지형" });
-beforeEach(() => { h.current = initial(); h.calls = []; h.confirms = 0; h.confirm = true; h.prompt = null; });
+beforeEach(() => { h.current = initial(); h.calls = []; h.confirms = 0; h.confirm = true; h.prompt = null; h.registered = []; });
 describe("publication authority", () => {
   it.each(["yolo", "auto", "default"] as const)("%s publishes real changes and groups undo", async mode => {
     const base = h.current as Project;
@@ -103,4 +104,34 @@ it("a rejected publication does not poison the queue for later checkpoints", asy
   const good = structuredClone(base); good.maps.a!.name = "good";
   await expect(pub.publish(checkpoint(good))).resolves.toBe(good);
   expect(h.current).toBe(good);
+});
+
+describe("decision cards carry the thread id", () => {
+  it("blockingAssistantDecisions ignores other threads", async () => {
+    const real = await vi.importActual<typeof import("@/editor/panels/aiDecisionPrompt")>("@/editor/panels/aiDecisionPrompt");
+    const close = real.registerAssistantDecision({ title: "맵 삭제", runKey: "map_a", threadId: "A", openedAt: 1, answer() {} });
+    try {
+      expect(real.blockingAssistantDecisions("map_a", false, "B")).toEqual([]);
+      expect(real.blockingAssistantDecisions("map_a", false, "A")).toHaveLength(1);
+      // No thread given: every matching card blocks, as before.
+      expect(real.blockingAssistantDecisions("map_a", false)).toHaveLength(1);
+      // A card without a thread id (old caller) blocks every thread.
+      const closeLegacy = real.registerAssistantDecision({ title: "옛 카드", runKey: "map_a", openedAt: 2, answer() {} });
+      expect(real.blockingAssistantDecisions("map_a", false, "B").map(d => d.title)).toEqual(["옛 카드"]);
+      closeLegacy();
+    } finally { close(); }
+    expect(real.blockingAssistantDecisions("map_a", false, "A")).toEqual([]);
+  });
+  it("step approval card registers with the run's thread id", async () => {
+    const base = h.current as Project;
+    const next = structuredClone(base); next.maps.a!.name = "draft";
+    const pub = createPiPublication(base, "step", { ...surface(), runKey: "map_a", threadId: "A" } as PiCommandSurface);
+    const pending = pub.publish(checkpoint(next));
+    await Promise.resolve(); await Promise.resolve();
+    expect(h.prompt).not.toBeNull();
+    expect(h.registered).toHaveLength(1);
+    expect(h.registered[0]).toMatchObject({ runKey: "map_a", threadId: "A", title: "지형" });
+    h.prompt!.apply();
+    await expect(pending).resolves.toBe(next);
+  });
 });

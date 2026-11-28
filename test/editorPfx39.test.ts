@@ -47,7 +47,7 @@ import { IMAGE_GENERATION_UNAVAILABLE_CODE, imageGenerationFailureCode, imageGen
 import { isImageGenerationUnavailableResult, reportImageGenerationUnavailable } from "@/editor/panels/imageGenerationGate";
 import { searchProject } from "@/editor/panels/mapEventSearchModel";
 import { mapAiBadges } from "@/editor/panels/mapTreeAiBadges";
-import type { MapRunTicket } from "@/editor/aiMapRunQueue";
+import { createMapRunQueue, type MapRunTicket } from "@/editor/aiMapRunQueue";
 import type { Presence } from "@/editor/panels/aiPresence";
 import { renderEquipmentRecordForm } from "@/editor/panels/databaseEquipmentRecordView";
 import { renderLifeCraftingTab } from "@/editor/panels/databaseLifeCraftingView";
@@ -2246,6 +2246,16 @@ describe("editorPanelsSuite23", () => {
       it("does not badge project-wide or exclusive (team) queue keys", () => {
         const badges = mapAiBadges([], [ticket(1, "__project__", "running"), ticket(2, "map_c", "running", { exclusive: true })], isMap);
         expect(badges.size).toBe(0);
+      });
+    });
+    describe("aiMapRunQueue threadId", () => {
+      it("enqueue keeps threadId on the ticket", () => {
+        const q = createMapRunQueue();
+        q.enqueue({ mapKey: "map_a", label: "x", threadId: "t1", start: async () => {} });
+        expect(q.tickets()[0]?.threadId).toBe("t1");
+        // Old callers without a thread id leave the field absent, not an empty string.
+        q.enqueue({ mapKey: "map_b", label: "y", start: async () => {} });
+        expect(q.tickets()[1]).not.toHaveProperty("threadId");
       });
     });
   });
