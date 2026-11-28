@@ -4,6 +4,13 @@
 //  - list_interactive_props: 100종 실원본 상호작용 오브젝트(판타지·던전·현대·조선·무림·SF·스팀펑크) 검색.
 //  - place_interactive_props: 항아리 파괴·양문 옷장·비밀 책장·자판기·화로 점화·에어록·봉인 제단 등 100종을 맵에 즉시 배치.
 import { buildContainerSearchEvent, ownerNoticeCommands, withLootPopups } from "@/project/containerSearchPattern";
+import {
+  normalizeCharacterFootprint,
+  normalizePassRows,
+  passageBounds,
+  rectsOverlap,
+} from "@/project/footprint";
+import type { FootprintRect } from "@/project/types";
 import { CONTAINER_STYLES, isContainerStyle, propFxId, type ContainerStyle } from "@/project/containerFx";
 import {
   INTERACTIVE_PROP_CATEGORIES,
@@ -13,6 +20,10 @@ import {
   INTERACTIVE_PROP_ROLES,
   inferInteractivePropEra,
   interactivePropById,
+  interactivePropFootprint,
+  interactivePropOpensPassage,
+  interactivePropPassRows,
+  interactivePropSpriteId,
   searchInteractiveProps,
   type InteractivePropCategory,
   type InteractivePropEntry,
@@ -299,7 +310,14 @@ const placeInteractivePropsTool: ToolDefinition = {
     const list = Array.isArray(args.props) ? args.props : [];
     if (!list.length) throw new ToolError("props 가 비었습니다.");
     const used = new Set(Object.values(draft.maps).flatMap((m) => m.events.map((e) => e.id)));
-    const taken = new Set(map.events.map((e) => `${e.x},${e.y}`));
+    const takenAnchors = new Set(map.events.map((e) => `${e.x},${e.y}`));
+    const occupiedPassageRects: FootprintRect[] = [];
+    for (const existing of map.events) {
+      const p = existing.pages?.[0];
+      const fp = normalizeCharacterFootprint(p?.footprint);
+      const pr = normalizePassRows(p?.passRows, fp.height);
+      occupiedPassageRects.push(passageBounds(existing.x, existing.y, fp, pr));
+    }
     const warnings: string[] = [];
     const placed: string[] = [];
 
@@ -307,9 +325,19 @@ const placeInteractivePropsTool: ToolDefinition = {
       if (!isRec(raw)) { warnings.push(`props[${index}] 객체가 아님 — 건너뜀`); return; }
       const x = Number(raw.x), y = Number(raw.y);
       if (!inMapBounds(map, x, y)) { warnings.push(`props[${index}] 맵 밖 (${x},${y}) — 건너뜀`); return; }
-      if (taken.has(`${x},${y}`)) { warnings.push(`props[${index}] (${x},${y}) 에 이미 이벤트 — 건너뜀`); return; }
       const prop = interactivePropById(typeof raw.propId === "string" ? raw.propId.trim() : undefined, draft);
       if (!prop) { warnings.push(`props[${index}] 알 수 없는 propId '${String(raw.propId)}' — 건너뜀`); return; }
+      const fp = interactivePropFootprint(prop);
+      const passRows = interactivePropPassRows(prop);
+      const passRect = passageBounds(x, y, fp, passRows);
+      if (passRect.left < 0 || passRect.right >= map.width || passRect.top < 0 || passRect.bottom >= map.height) {
+        warnings.push(`props[${index}] (${x},${y}) ${fp.width}×${fp.height} 발자국이 맵 경계 밖 — 건너뜀`);
+        return;
+      }
+      if (takenAnchors.has(`${x},${y}`) || occupiedPassageRects.some((rect) => rectsOverlap(rect, passRect))) {
+        warnings.push(`props[${index}] (${x},${y}) 에 이미 다른 이벤트와 겹침 — 건너뜀`);
+        return;
+      }
 
       const name = typeof raw.name === "string" && raw.name.trim() ? raw.name.trim() : prop.name;
       const style: ContainerStyle = prop.containerStyle && isContainerStyle(prop.containerStyle) ? prop.containerStyle : "crate";
@@ -352,14 +380,22 @@ const placeInteractivePropsTool: ToolDefinition = {
 
       let id = `ev_prop_${prop.id}_${x}_${y}`.replace(/[^\w]/g, "_");
       for (let n = 2; used.has(id); n += 1) id = `ev_prop_${prop.id}_${x}_${y}_${n}`.replace(/[^\w]/g, "_");
-      used.add(id); taken.add(`${x},${y}`);
+      used.add(id);
+      takenAnchors.add(`${x},${y}`);
+      occupiedPassageRects.push(passRect);
 
+      const opensPassage = interactivePropOpensPassage(prop);
       const isBreak = prop.playback === "break";
+      const footprintFields = fp.width > 1 || fp.height > 1 ? { footprint: fp, passRows } : {};
+      const propSpriteRef = { type: "bundled" as const, id: interactivePropSpriteId(prop.id) };
+      const closedGraphic = { sprite: propSpriteRef, pattern: 0 };
+      const openedGraphic = { sprite: propSpriteRef, pattern: Math.max(0, prop.frames - 1) };
       const p0: Page = {
         id: `${id}_p0`,
         name: "닫힘/대기",
         conditions: [],
-        graphic: { transparent: true },
+        graphic: closedGraphic,
+        ...footprintFields,
         trigger: { kind: "action" },
         priority: "same",
         movement: { type: "fixed", speed: 3, frequency: 3 },
@@ -371,10 +407,11 @@ const placeInteractivePropsTool: ToolDefinition = {
         id: `${id}_p1`,
         name: isBreak ? "파괴됨" : "작동됨",
         conditions: [{ kind: "selfSwitch", key: "A", value: true }],
-        graphic: { transparent: true },
+        graphic: openedGraphic,
+        ...footprintFields,
         trigger: { kind: "action" },
-        priority: isBreak ? "below" : "same",
-        ...(isBreak ? { through: true } : {}),
+        priority: opensPassage ? "below" : "same",
+        ...(opensPassage ? { through: true } : {}),
         movement: { type: "fixed", speed: 3, frequency: 3 },
         interaction: { kind: "container", style, propId: prop.id, searched: true },
         commands: afterCmds,

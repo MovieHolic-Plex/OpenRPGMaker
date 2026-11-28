@@ -33,7 +33,7 @@ import type { WebExportAsset } from "@/project/webExportTypes";
 import { webUploadedAssetPath } from './webUploadedAssetPath';
 import { transitVehicle } from "@/project/mapTransit";
 import { parseFieldFxId } from "@/project/containerFx";
-import { inferInteractivePropEra, interactivePropById, interactivePropForContainer } from "@/project/interactiveProps";
+import { inferInteractivePropEra, interactivePropById, interactivePropForContainer, parseInteractivePropSpriteId } from "@/project/interactiveProps";
 import battleTrainerSpriteFiles from "@/assets/battleTrainerSpriteFiles.json" with { type: "json" };
 export { safeFileName } from './webUploadedAssetPath';
 
@@ -351,9 +351,13 @@ function collectReferencedCustomPropResourceIds(project: Project): readonly stri
   };
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
+      const legacyPropId = parseInteractivePropSpriteId(event.sprite?.id);
+      if (legacyPropId) addProp(legacyPropId);
       for (const page of event.pages ?? []) {
         const inter = page.interaction;
         if (inter?.kind === "container" && inter.propId) addProp(inter.propId);
+        const spritePropId = parseInteractivePropSpriteId(page.graphic?.sprite?.id);
+        if (spritePropId) addProp(spritePropId);
         scanCommands(page.commands);
       }
       scanCommands(event.commands);
@@ -443,12 +447,16 @@ function interactivePropStripPaths(project: Project): readonly string[] {
     const tileset = project.tilesets[map.tilesetId];
     const era = inferInteractivePropEra(map.tilesetId, tileset?.name);
     for (const event of map.events) {
+      const legacyPropId = parseInteractivePropSpriteId(event.sprite?.id);
+      if (legacyPropId) addProp(legacyPropId);
       for (const page of event.pages ?? []) {
         const inter = page.interaction;
         if (inter?.kind === "container") {
           if (inter.propId) addProp(inter.propId);
           else if (inter.style) addContainerFallback(inter.style, event.name, era);
         }
+        const spritePropId = parseInteractivePropSpriteId(page.graphic?.sprite?.id);
+        if (spritePropId) addProp(spritePropId);
         scanCommands(page.commands, event.name, era);
       }
       scanCommands(event.commands, event.name, era);
