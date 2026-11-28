@@ -382,15 +382,14 @@ npm run release:auto -- --dry-run    # 계획만 (아무것도 쓰지 않음)
 | 보류 | 열린 PR 에 `hold-release` 라벨 없음 |
 | 하루 상한 | 최근 24시간에 만든 릴리스 **48판 미만** |
 | 꼬임 방지 | 산출물 대기 중인 초안 없음, 열린 `release/next` PR 없음 |
-| ci-full | 게이트 분리(`requireCiFull: false`) — 밤 1회 회귀 감시로 두고 릴리스 전에는 `ci-fast` + 직전 태그 대비 `ci-related-tests` 로 검증 |
+| ci-full | 게이트 분리(`requireCiFull: false`) — 밤 1회 회귀 감시로 두고 릴리스 전에는 `ci-fast` + 필요 시 `app-update-e2e` 로 검증 |
 
 안 맞으면 아무것도 쓰지 않고 그 실행의 요약과 아티팩트 `auto-release-decision`(JSON)에 이유만 남긴다.
 맞으면 새 발행기를 만들지 않고 기존 경로를 탄다: `release-auto --skip-publish`(PR·사용자 말 CHANGELOG, PR 본문 GraphQL 일괄 조회) →
-`ci-fast`·직전 발행 태그 대비 `ci-related-tests` 를 `release/next` 에 디스패치(GITHUB_TOKEN 푸시는 워크플로를 깨우지 않고,
-봇이 연 PR 의 pull_request 런은 잡 0개로 머물다 머지 때 «workflow file issue» 실패로 닫힌다 — v0.420 PR #5159) →
-`ci-related-tests` 초록 대기 + 직전 태그(`>= v0.420.0`) 이후 `electron/`·패키징·업데이트·의존성 변경이 있거나 최근 14일 내 통과 기록이 없을 때만
+`ci-fast` 를 `release/next` 에 디스패치(GITHUB_TOKEN 푸시는 워크플로를 깨우지 않는다; `ci-related-tests` 는 각 기능 PR 머지 전에 이미 통과했으므로 버전 범프 전용 `release/next` 에서 중복 실행하지 않는다) →
+직전 태그(`>= v0.420.0`) 이후 `electron/`·패키징·업데이트·의존성 변경이 있거나 최근 14일 내 통과 기록이 없을 때만
 `app-update-e2e` 를 디스패치해 초록을 기다림 → `merge-pr.mjs`(`ci-fast` 확인 뒤 머지) →
-`release-auto --skip-propose`(태그·초안) → `desktop-release` 디스패치(검증 뒤 발행). 발행하거나 도중에 멈추면
+`release-auto --skip-propose`(태그·초안) → `desktop-release` 디스패치(`OPRN_BAKE_DEMOS_CACHE_SCOPE=flagship` + 압축 레벨 1·12스레드, 검증 뒤 발행). 발행하거나 도중에 멈추면
 이슈 «자동 릴리스 기록» 에 한 줄 남긴다(리드가 보는 한 곳).
 
 판정만 보려면: `node scripts/release-scheduled.mjs --dry-run` (로컬, gh 인증) 또는
