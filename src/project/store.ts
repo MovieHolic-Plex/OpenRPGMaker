@@ -1577,14 +1577,6 @@ class ProjectStore {
   }
 
   private setAutoSaveState(state: AutoSaveState): void {
-    const prev = this.autoSaveState;
-    if (
-      prev.kind === state.kind
-      && (state.kind !== "saved" || (prev.kind === "saved" && prev.at === state.at))
-      && (state.kind !== "error" || (prev.kind === "error" && prev.message === state.message && prev.code === state.code && prev.retryCount === state.retryCount))
-    ) {
-      return;
-    }
     if (state.kind === "saved") this.lastSavedAt = state.at;
     this.autoSaveState = state;
     this.emitAutoSave();
