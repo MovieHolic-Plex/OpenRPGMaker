@@ -782,7 +782,7 @@ x=8, y=278, 300×383으로 화면 안에 놓인다. 설정 변경·팀 메뉴 �
   도구 줄(`oprn-tile-toolbar`)·크기·모양·이웃 연결·구조 보조·선택 타일 칩·붓 보조/내 구조물은 모두 「붓 설정」 안에 있다(DOM 에는 늘 있고
   `hidden` 만 바뀐다 — 단축키·⌘K·제자리 갱신이 그대로 닿는다). 펼침은 `oprn:brush-settings-open` 에 저장(`brushSettingsDisclosure.ts`).
   검사 메뉴를 열면(`openSidebarInspection`) 먼저 편다. 맵 트리가 같은 열에 있으면 팔레트 머리의 맵 스위처(`sidebar-map-header`)는 그리지 않는다.
-- 접힘: `oprn:left-column-collapsed`. 접히면 12px 펴기 손잡이(`left-column-restore`)만 남는다. 「보기 ▾」 메뉴의 패널 항목은
+- 접힘: 기본 접힘(`defaultCollapsed: true`, B×C 풀-블리드 캔버스 — `editor.ts`). 기본 접힘 모드에서는 이전 버전의 `oprn:left-column-collapsed` 저장값을 복원·기록하지 않아 항상 접힌 채로 시작하고, 톱바 레이어 전환(`oprn:ai-sidebar-tools`)·맵 보기(`oprn:ai-sidebar-maps`) 신호도 접힌 열을 자동으로 펼치지 않는다(이미 펼쳐진 열의 서랍만 메인으로 돌린다). 접히면 12px 펴기 손잡이(`left-column-restore`)만 남고, `1칸 → 원본 시트 ◧`·미니맵 `◧`·`⌘K`·서랍 열기로 필요할 때만 펼친다. 「보기 ▾」 메뉴의 패널 항목은
   열의 `[data-left-pane]` 단추(왼쪽 열·진행·기물)를 비춘다(`workspaceBar.syncPanelItems`).
 - 공방·스토어 큰 화면의 왼쪽 여백은 열의 실제 폭을 잰다(예전 고정 48px).
 - 스타일: 열 겉은 `18-assistant-deck.css` 「왼쪽 한 칸」 절(`left-column-*`), 두 섹션은 `map/left-column.css`.
