@@ -496,10 +496,10 @@ describe("llmClient", () => {
 
       it("configForLiteModel은 reasoning을 off로 끈다", () => {
         const lite = configForLiteModel({
-          ...defaultAiConfig(), baseUrl: "https://example.invalid/v1", model: "stub-supervisor-model",
+          ...defaultAiConfig(), authMode: "apiKey", baseUrl: "https://example.invalid/v1", model: "stub-supervisor-model",
           liteModel: "stub-lite-model",
           reasoningEffort: "high",
-          // #2535 부터 기본 설정에 역할 모델(deep)이 있어 그 칸을 따른다 — liteModel 경로를 보려고 역할 모델을 뺀다.
+          // #2535 부터 기본 설정에 역할 모델(deep)이 있어 그 칸을 따른다 — liteModel 경로를 보려고 apiKey + 역할 모델 없음으로 둔다.
           roleModels: undefined,
         });
         expect(lite.reasoningEffort).toBe("off");

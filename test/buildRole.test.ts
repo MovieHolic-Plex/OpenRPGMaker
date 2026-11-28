@@ -19,8 +19,8 @@ describe("execution role by kind of work", () => {
       roleModels: { deep: { provider: "openai-codex", model: "gpt-6.1-sol", thinkingLevel: "medium" } } } as unknown as AiConfig;
     expect(modelForRole(config, "build")).toEqual(modelForRole(config, "deep"));
     const seeded = configForProviderSelection(config, "openai-codex", true);
-    // #4775(오너 결정 2026-11-19): ChatGPT 계정의 작문·제작은 더 이상 Gemini Argon 이 아니고, 두 티어 모두 GPT-6.2 Sol 이다.
-    expect(seeded.roleModels?.build).toEqual({ provider: "openai-codex", model: "gpt-6.2-sol", thinkingLevel: "medium" });
-    expect(seeded.roleModels?.deep).toEqual({ provider: "openai-codex", model: "gpt-6.2-sol", thinkingLevel: "medium" });
+    // 오너 결정 2026-11-28: ChatGPT 계정의 작문·제작·실행은 GPT-6.2 Sol · high 다.
+    expect(seeded.roleModels?.build).toEqual({ provider: "openai-codex", model: "gpt-6.2-sol", thinkingLevel: "high" });
+    expect(seeded.roleModels?.deep).toEqual({ provider: "openai-codex", model: "gpt-6.2-sol", thinkingLevel: "high" });
   });
 });

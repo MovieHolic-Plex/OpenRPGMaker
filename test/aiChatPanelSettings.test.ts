@@ -160,8 +160,8 @@ describe("설정 자동 저장", () => {
       select.querySelectorAll("option").map((option) => option.getAttribute("value") ?? "");
 
     expect(values()).toEqual(OH_MY_PI_PROVIDERS.map((provider) => provider.id));
-    // 2026-11-23(오너 결정: 조수는 Sonnet 5.5 high)부터 권장 제공자 Claude 가 맨 앞이다(2026-11-19 에는 ChatGPT 였다).
-    expect(values().slice(0, 3)).toEqual(["anthropic", "openai-codex", "google-antigravity"]);
+    // 2026-11-28(오너 결정: 조수는 GPT-6.2 Sol high)부터 권장 제공자 ChatGPT 가 맨 앞이다(2026-11-23 에는 Claude 였다).
+    expect(values().slice(0, 3)).toEqual(["openai-codex", "anthropic", "google-antigravity"]);
     expect(providersForKind("oauth")).toEqual(providersForKind("apiKey"));
   });
 

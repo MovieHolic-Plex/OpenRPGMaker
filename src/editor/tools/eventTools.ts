@@ -1199,7 +1199,7 @@ function routeRootCommandsIntoPage(
 }
 
 function hasUncompiledScript(value: unknown, depth = 0): boolean {
-  if (depth > 24 || !value || typeof value !== "object") return false;
+  if (depth > 128 || !value || typeof value !== "object") return false;
   if (Array.isArray(value)) return value.some((item) => hasUncompiledScript(item, depth + 1));
   const record = value as Record<string, unknown>;
   if (record.kind === "script" && typeof record.source === "string" && record.source.trim() && (typeof record.compiled !== "string" || !record.compiled.trim())) {

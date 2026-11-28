@@ -557,12 +557,12 @@ describe("editorPanelsSuite15", () => {
 
       it("주·눈·도트·그림은 기존 칸을 읽는다", () => {
         const base = defaultAiConfig();
-        // 공장 기본(2026-11-23): Claude Sonnet 5.5 · high 한 모델.
-        const sonnetHigh = { provider: "anthropic", model: "claude-sonnet-5-5", thinkingLevel: "high" };
-        expect(assistantRoleModel(base, "main")).toEqual(sonnetHigh);
-        expect(assistantRoleModel(base, "vision")).toEqual(sonnetHigh);
+        // 공장 기본(2026-11-28): ChatGPT GPT-6.2 Sol · high 한 모델.
+        const solHigh = { provider: "openai-codex", model: "gpt-6.2-sol", thinkingLevel: "high" };
+        expect(assistantRoleModel(base, "main")).toEqual(solHigh);
+        expect(assistantRoleModel(base, "vision")).toEqual(solHigh);
         // 도트 칸은 비어 있어 계획 모델을 따른다.
-        expect(assistantRoleModel(base, "pixel")).toEqual(sonnetHigh);
+        expect(assistantRoleModel(base, "pixel")).toEqual(solHigh);
         expect(assistantRoleModel(base, "image")?.model).toBe(base.imageModel);
       });
     });

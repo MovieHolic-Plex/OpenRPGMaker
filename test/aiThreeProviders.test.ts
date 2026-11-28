@@ -111,7 +111,7 @@ describe("AI 3대장 설정(GPT · Claude · Gemini) 및 시작 시 health 점�
     gptBtn.click();
     expect(gptBtn.getAttribute("aria-selected")).toBe("true");
     findByTestId(root, "ai-provider-use-gpt")?.click();
-    expect(onSelectOAuthProvider).toHaveBeenCalledWith("openai-codex", "gpt-6.2-sol", "medium");
+    expect(onSelectOAuthProvider).toHaveBeenCalledWith("openai-codex", "gpt-6.2-sol", "high");
 
     geminiBtn.click();
     expect(geminiBtn.getAttribute("aria-selected")).toBe("true");
