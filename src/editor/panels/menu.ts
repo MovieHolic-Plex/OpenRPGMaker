@@ -261,8 +261,8 @@ function rebuildTopbar(topbar: HTMLElement): void {
     renderSaveButton(),
   );
   if (mode === "edit") trailing.append(renderTestPlayButton());
-  // 앱 업데이트 칩 — 받아 둔 새 판이 있을 때만 보인다(데스크톱 앱만, src/app/appUpdateChip.ts).
-  const updateChip = renderAppUpdateChip({ className: "studio-tool-button", beforeRestart: prepareEditorForAppUpdateRestart });
+  // 앱 업데이트 녹색 아이콘 — 새 버전이 있을 때만 오른쪽 상단에 보인다(데스크톱 앱만, src/app/appUpdateChip.ts).
+  const updateChip = renderAppUpdateChip({ className: "studio-icon-button", beforeRestart: prepareEditorForAppUpdateRestart });
   if (updateChip) {
     disposeAppUpdateChip = updateChip.dispose;
     trailing.append(updateChip.element);

@@ -109,6 +109,8 @@ export type PromptHome = {
   setAiStatus(status: AiStatusSummary): void;
   /** 만들기 실패 문구를 입력칸·시트 바로 아래에 둔다. 빈 문자열이면 감춘다. */
   setError(message: string): void;
+  /** 오른쪽 상단 끝에 붙일 보조 컨트롤(예: 앱 업데이트 녹색 아이콘). */
+  setTrailing(node: HTMLElement | null): void;
 };
 
 const SUBMIT_LABEL = "만들기 시작";
@@ -622,10 +624,11 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
     ] }),
   ] });
 
+  const trailingSlot = el("span", { attrs: { style: "display:contents" } });
   const root = el("div", { class: "fr-root is-blades", dataset: { testid: PROMPT_HOME_TESTIDS.root }, children: [
     el("header", { class: "fr-top", children: [
       el("span", { class: "fr-brand", attrs: { translate: "no" }, children: [el("span", { class: "fr-brand-mark", html: BRAND_MARK_SVG }), el("span", { text: "OPRN Studio" })] }),
-      el("div", { class: "fr-top-right", children: [directToggle, bladesToggle, topBlankBtn, aiStatus, moreWrap] }),
+      el("div", { class: "fr-top-right", children: [directToggle, bladesToggle, topBlankBtn, aiStatus, moreWrap, trailingSlot] }),
     ] }),
     bladesStage,
     mainView,
@@ -695,5 +698,6 @@ export function createPromptHome(actions: PromptHomeActions): PromptHome {
     setGames,
     setAiStatus,
     setError,
+    setTrailing: (node) => { trailingSlot.replaceChildren(...(node ? [node] : [])); },
   };
 }
