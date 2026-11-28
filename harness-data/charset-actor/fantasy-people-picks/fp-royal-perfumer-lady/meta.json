@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-royal-perfumer-lady",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "5998765720a8824774b214e47dd210345f9665be2bd093e166132492b77a90e6"
+}

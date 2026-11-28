@@ -126,8 +126,8 @@ function categoryOf(entry: CharsetSemanticEntry): CharsetCategory {
   if (entry.textureKey.startsWith('tex_scarloxy_charset_people') || entry.textureKey.startsWith('tex_oprn_charset_scarloxy_people')) return 'people';
   // 현대 연애 칩(Modern1~3)은 전부 사람이다. 이게 빠지면 "villager"/"npc" 같은 일반 질의가 0건이 된다.
   if (entry.textureKey.startsWith('tex_oprn_charset_modern')) return 'people';
-  // REFMAP 변형 인물 칩(RefmapDoll<n>)도 전부 사람이다 — 빠지면 「object」로 떨어져 사람 칩 잠금이 REFMAP 일 때 기본 주민(villager) 질의가 0건이 된다(2026-10-29).
-  if (entry.textureKey.startsWith('tex_oprn_charset_refmap_doll')) return 'people';
+  // 판타지 직업·마을 인물 칩(FantasyPeople1~, 200종)도 전부 사람이다 — 빠지면 「object」로 떨어져 일반 주민(villager) 질의에 나오지 않는다.
+  if (entry.textureKey.startsWith('tex_oprn_charset_fantasy_people')) return 'people';
   // CT·FF6풍 영웅 칩(Heroes1)은 주인공·동료 칩이다 — "hero"/"actor"/"주인공" 같은 일반 질의에 RTP Actor 와 같은 분류로 나와야 한다.
   // 전엔 아래에서 「object」로 떨어져 한 번도 검색되지 않았다(jrpg-real-1 J02).
   if (isHeroesEntry(entry)) return 'actor';
@@ -141,10 +141,15 @@ function categoryOf(entry: CharsetSemanticEntry): CharsetCategory {
 }
 
 function directTextureAlias(normalized: string, catalog: readonly CharsetSemanticEntry[]): string | null {
-  // "heroes"·"heroes1" — CT·FF6풍 영웅 칩 시트 전체(번들 접두사가 달라 아래 짧은 키 비교에 안 걸린다).
+  // "heroes"·"heroes1" / "fantasypeople"·"fantasypeople1" — 번들 접두사가 달라 아래 짧은 키 비교에 안 걸린다.
   const heroesAlias = /^heroes(\d*)$/u.exec(normalized);
   if (heroesAlias) {
     const key = `tex_oprn_charset_heroes${heroesAlias[1] || "1"}`;
+    if (catalog.some((entry) => entry.textureKey === key)) return key;
+  }
+  const fpAlias = /^fantasy[-_]?people(\d*)$/u.exec(normalized);
+  if (fpAlias) {
+    const key = `tex_oprn_charset_fantasy_people${fpAlias[1] || "1"}`;
     if (catalog.some((entry) => entry.textureKey === key)) return key;
   }
   for (const entry of catalog) {

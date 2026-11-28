@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-court-portrait-painter",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "a5f2105f1770a88a14af88565e1221cc1a9ddb5b0fbd380c1e0fa0b621e930d4"
+}

@@ -214,3 +214,13 @@ Claude 가 읽어 두고, 머리 덩어리(색 종류로 자른다, 선이 아�
   `charsetFamily.ts`(새 계열 `refmap-doll`) · `genreLockCharsets.ts`(사람 계열) · `catalog_sources.py`(공방 순환 입력 제외).
 - 라이선스: OPRN 게임 사용 라이선스가 아니라 REFMAP 조건(`public/assets/ATTRIBUTION.md` 「RefmapDoll」). 스토어는 이름으로 계속 거절한다.
 - 조수 검색 확인: `npx vite-node --script scripts/qa/runtime/refmap-dolls-search.mts`(모델 없이 `list_npc_graphics` 가 무엇을 내놓는지).
+
+## 판타지 직업·마을 인물 칩 FantasyPeople1~25 — `easyrpg-charset-batch` 검증 200종 설치 및 RefmapDoll 전량 삭제 (2026-11-28)
+
+`assistant-skills/easyrpg-charset-batch` 스킬(공식 RTP 2등신 12프레임 보행 뼈대 + 1단계 기계 관문 `face-check`/`neck-pinch`/`check_walk_kinematics_12frame` + 2단계 독립 12프레임 블라인드 시각 QA `qa-verdict`)로 양산·검증한 **200종(1차 101종 + 2차 신규 99종, `FantasyPeople1~25.png` 25시트×8칸 만석)** 을 에디터 기본 캐릭터셋으로 설치하고, 이질적 합성이 섞였던 `RefmapDoll1~321.png`(321장 2,567칸 + 옆모습 배틀러 26장)을 전량 제거했다.
+
+- 입력(재생성 금지): `harness-data/charset-actor/fantasy-people-picks/<key>/{chip.chr.txt,meta.json}`, 명단·순서(칸 번호 덧붙이기 전용): `harness-data/charset-actor/fantasy-people-install.json`.
+- 굽기: `python3 src/harnesses/charset-actor/install_fantasy_people.py` (`--check` 로 화소·명단 일치 확인) → `public/assets/generated/charsets/FantasyPeople{1..25}.png` + `src/assets/fantasyPeopleCharsets.json`.
+- 배선: `src/assets/fantasyPeopleCharsets.ts` → `charsetCatalog.ts` · `charsetSemantics.ts` · `charsetQuery.ts`(`people` 분류 및 별칭) · `ai/v2/place/people.ts`(`familyFits` 판타지 기본 계열 포함) · `generatedAssetResourceResolver.ts` · `project/io/resourceReferenceValidation.ts` · `project/charsetFamily.ts`(`rtp-people` 계열) · `project/assetLicenseAudit.ts`(RTP CC BY 4.0 감사) · `catalog_sources.py`(공방 순환 입력 제외) · `public/assets/ATTRIBUTION.md`.
+- **RefmapDoll 전량 삭제 완료(2026-11-28):** `RefmapDoll1~321.png`, `charset-battlers/refmap-doll/`, `refmapDollCharsets.ts/json`, `refmapDollSemantics.ts`, `install_refmap_dolls.py`, `install_refmap_battlers.py` 를 물리 삭제했고, 구 저장본 역직렬화 보호를 위해 `src/assets/retiredAssets.ts` 에 은퇴 접두사로만 등록했다. `my-games/starlight-vale/project.json` 의 NPC 4명은 `FantasyPeople` 슬롯으로 교체했다.
+- 조수 스킬 번들: `node scripts/content/bundle-assistant-skills.mjs` 가 `easyrpg-charset-batch` 본문과 `references/base-catalog.md`(`part: "base-catalog"`)를 `src/assets/assistantSkills.json` · `assistantSkillParts.json` 에 함께 굽는다.

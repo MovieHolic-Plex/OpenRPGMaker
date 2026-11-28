@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-sapphire-high-queen",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "0f94c6aae88fd57100407b7ae5e53bc8195812227005dea7ae385a64eeb13b1a"
+}

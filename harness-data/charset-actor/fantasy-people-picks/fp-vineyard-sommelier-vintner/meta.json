@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-vineyard-sommelier-vintner",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "fc506b2dba10df56eb01e5772c6b3e9fd85d0d51a48999eed88532d5dedd3e58"
+}

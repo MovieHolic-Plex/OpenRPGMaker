@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-cathedral-bell-acolyte",
+  "base": "Template:2",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "8326011e164ba46538e0f53f446059f0551fc7c78689a701a354cd6592cc1298"
+}

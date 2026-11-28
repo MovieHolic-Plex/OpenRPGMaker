@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-catfolk-rogue-thief",
+  "base": "Template:2",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "f25fa2df1147d5244c84e541a38943472cdf999e4787c8bdeee658a234ce75c8"
+}

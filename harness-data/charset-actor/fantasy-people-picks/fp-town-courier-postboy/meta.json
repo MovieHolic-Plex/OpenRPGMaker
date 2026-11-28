@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-town-courier-postboy",
+  "base": "Template:2",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "4ea45771b27f2117cb3203760bf24f44fffa75920c254310f3f53db4cad67f7c"
+}

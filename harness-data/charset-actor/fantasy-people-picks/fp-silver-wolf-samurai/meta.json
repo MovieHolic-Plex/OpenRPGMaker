@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-silver-wolf-samurai",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "c2474d3a394d053aee873ee9681d866cd64d2fe5b9034e41310d4f5dda9049c2"
+}

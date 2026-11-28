@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-desert-bounty-hunter",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "ef7e137c6efed21dc5a0998731fae8788bb92253d8ee80fe6971c12f7acefe50"
+}

@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-frost-fur-trapper",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "0a3aff414138891dbbaf6c04c006e27b2c5094525127f55df2c7aa778d7ef543"
+}

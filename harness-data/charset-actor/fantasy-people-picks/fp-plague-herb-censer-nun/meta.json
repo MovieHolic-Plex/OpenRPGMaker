@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-plague-herb-censer-nun",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "a124bfb74b7e74ff4915b224c089f41380145c6051e4e6128132f1239a9fb261"
+}

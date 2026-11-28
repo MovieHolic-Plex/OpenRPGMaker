@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-crimson-spear-ashigaru",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "ceb73e147233486257b8c0c5c8f22d1c905352ff86eb016b37212a9d298f1ed4"
+}

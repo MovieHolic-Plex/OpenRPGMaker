@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-crimson-whip-tamer",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "7260a8b1ddad34bec12399aad17105afc079c0ca5a98dd4c247591473d1fc52d"
+}

@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-emerald-horn-summoner",
+  "base": "Template:2",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "f1b66904cd598db9e3c30edad04e05998cd2442d317d599d9c1e241acd92ff98"
+}

@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-dwarven-brewmaster-innkeep",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "e864e32bd8357296f41d1871ce3943b8f50a1a2e1864455b4d3d1ce08fd11a8d"
+}

@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-village-blacksmith",
+  "base": "People4:4",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "e6ade53eec1ef326de531860cacb73c96d7e80b4da146a3622f5bd95e1de8214"
+}

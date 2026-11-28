@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-tundra-bear-chieftain",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "17be5d9066659efb0aae0d091666b3866b10bbdbbf94fec1b8c4e5a0a8b7246a"
+}

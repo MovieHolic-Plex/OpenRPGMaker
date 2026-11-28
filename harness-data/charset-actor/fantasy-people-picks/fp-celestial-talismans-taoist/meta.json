@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-celestial-talismans-taoist",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "ce130ba71d107a8329c58b56abf8c5f61b1e2d8f5305ace71c00402a4940d5dd"
+}

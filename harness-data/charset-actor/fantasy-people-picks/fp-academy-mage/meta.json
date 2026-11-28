@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-academy-mage",
+  "base": "People1:3",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "0e4a3d95eb817fc5087a92841c611d41b9f0881e790b8dd1a2620cf32250b67f"
+}

@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-forest-herbalist-kid",
+  "base": "Template:2",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "04e1315297e3d8a3a20fae04cc3f85e88bc7474af8e4f73cb95ef6e559f030c6"
+}

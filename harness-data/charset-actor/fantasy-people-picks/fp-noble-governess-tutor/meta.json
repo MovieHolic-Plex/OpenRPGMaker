@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-noble-governess-tutor",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "37e43a162a872880b33229015675580134c713b35a4f46289d89055b93f75922"
+}

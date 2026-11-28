@@ -9,9 +9,9 @@ import { HARNESS_MONSTER_CHARSET_ASSETS } from "@/assets/harnessMonsterArt";
 import { OPRN_MONSTER_CHARSET_ASSETS } from "@/assets/oprnMonsterCharsets";
 import { SCARLOXY_CHARSET_ASSETS } from "@/assets/scarloxyPack";
 import { HEROES_CHARSET_ASSETS } from "@/assets/heroesCharsets";
+import { FANTASY_PEOPLE_CHARSET_ASSETS } from "@/assets/fantasyPeopleCharsets";
 import { MODERN_CHARSET_ASSETS } from "@/assets/modernCharsets";
 import { SCARLOXY_PEOPLE_CHARSET_ASSETS } from "@/assets/scarloxyPeopleCharsets";
-import { REFMAP_DOLL_CHARSET_ASSETS } from "@/assets/refmapDollCharsets";
 import { WIZARDING_CHARSET_ASSETS } from "@/assets/wizardingCharsets";
 import { FALLEN_MIRROR_CHARSET_ASSETS } from "@/assets/fallenMirrorCharsets";
 import type { UploadedAsset } from "@/project/types";
@@ -19,6 +19,7 @@ import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 
 export const CHARSET_ASSETS: readonly EasyRpgCharsetAsset[] = [
   ...EASYRPG_CHARSET_ASSETS,
+  ...FANTASY_PEOPLE_CHARSET_ASSETS,
   ...SCARLOXY_CHARSET_ASSETS,
   ...FARMING_ANIMAL_CHARSET_ASSETS,
   ...OPRN_MONSTER_CHARSET_ASSETS,
@@ -27,7 +28,6 @@ export const CHARSET_ASSETS: readonly EasyRpgCharsetAsset[] = [
   ...HEROES_CHARSET_ASSETS,
   ...MODERN_CHARSET_ASSETS,
   ...SCARLOXY_PEOPLE_CHARSET_ASSETS,
-  ...REFMAP_DOLL_CHARSET_ASSETS,
   ...FALLEN_MIRROR_CHARSET_ASSETS,
 ];
 

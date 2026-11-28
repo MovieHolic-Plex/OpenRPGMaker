@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-colosseum-lion-gladiator",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "62ee1ab1b00c2bcec45a1e738c1584443b76222501f226ed657fe8d3ce0adfd0"
+}

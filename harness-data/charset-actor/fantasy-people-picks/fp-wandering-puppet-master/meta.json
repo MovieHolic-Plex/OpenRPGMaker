@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-wandering-puppet-master",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "154e7f23206f36f04b85384e69e9d23efab7090f6f842139280c39546272f51a"
+}

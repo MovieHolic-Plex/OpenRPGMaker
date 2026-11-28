@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-town-well-washerwoman",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "e4a7e898fea6a83e4e77d5501e0cd53af51808c4ed6d66beb252705d3dde101e"
+}

@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-butcher-smokehouse-grocer",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "651be93086885cde251c8e2882faf24f9c43295f264185b34f959f578073e5da"
+}

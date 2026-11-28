@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-bridal-bouquet-maiden",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "7f57a1ca409ba434d8d332a111cbd8f814857fd95e46c0ccdc4af9ccac2a12f7"
+}

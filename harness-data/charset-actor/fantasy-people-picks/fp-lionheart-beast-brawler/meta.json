@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-lionheart-beast-brawler",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "a469f9d6258a596596581d93c39d38e4f610ae382951dad96e27c00931382efe"
+}

@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-twin-dagger-acrobat",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "2ffdafbfed80c8f30343cc7826bbbb62628a78d08ca5f2e307b70f8096d842a5"
+}

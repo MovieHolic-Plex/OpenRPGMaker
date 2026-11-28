@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-halfling-pie-baker",
+  "base": "Template:2",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "f019e6824c291da77e77c9d85c9a193e503bd1575083392b3325b3263d40f0c1"
+}

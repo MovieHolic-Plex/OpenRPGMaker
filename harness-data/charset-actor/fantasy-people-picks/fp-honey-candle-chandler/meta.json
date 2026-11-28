@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-honey-candle-chandler",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "b90d9d083214e2029a75e6c7b59ca4f8c5c9935506395e86dddba0e50c7766d5"
+}

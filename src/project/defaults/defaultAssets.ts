@@ -44,6 +44,7 @@ import { OPRN_BGM_ASSETS } from "@/assets/oprnBgmAssets";
 import { BUNDLED_EASYRPG_CHARSET_ASSETS, BUNDLED_EASYRPG_CHIPSET_ASSETS, bundledChipsetSheetHeight, bundledChipsetTilesPerRow, bundledChipsetTileSize, bundledEasyRpgTilesetId } from "@/assets/bundled";
 import { EASYRPG_RTP_ASSETS } from "@/assets/easyrpgRtp";
 import { AUTHORABLE_FACESET_FACE_ASSETS, GENERATED_FACESET_FACE_IDS, LEGACY_FACESET_SHEET_IDS } from "@/assets/facesetFaceAssets";
+import { isRetiredResourceId } from "@/assets/retiredAssets";
 import previousFaceNames from "@/assets/previousFaceReferenceNames.json" with { type: "json" };
 import { FACE_IMAGE_SIZE } from "@/assets/resourceSlicing";
 import { getResourceProfileSpec } from "@/project/resourceProfiles";
@@ -751,9 +752,17 @@ export function ensureBundledResourceProfiles(project: { resourceProfiles: Resou
   // 리소스 관리자에 192x192 시트가 계속 보인다(실측: 얼굴 그래픽 목록이 낱장 112장 대신 시트 5장이었다).
   // 생성 시리즈 낱장 프로필(generated-actor-hero-XX-face-NN)도 같은 규칙으로 걷어낸다 —
   // 저작 목록에서 내렸으므로, 저장본의 남은 프로필은 로드 한 번에 수렴시킨다.
+  const defaultProfiles = defaultResourceProfiles();
+  const defaultAssetIds = new Set(
+    defaultProfiles.map((profile) => profile.assetId).filter((assetId): assetId is string => assetId !== undefined),
+  );
   const staleFaceSheetIds = new Set<string>(LEGACY_FACESET_SHEET_IDS);
   const nextResourceProfiles = project.resourceProfiles.filter(
     (profile) => profile.assetId !== LEGACY_RM_TILESET_TEXTURE_KEY
+      && !(profile.assetId !== undefined
+        && !defaultAssetIds.has(profile.assetId)
+        && !project.assets?.uploaded?.[profile.assetId]
+        && isRetiredResourceId(profile.assetId))
       && !(profile.kind === "faceset" && profile.assetId !== undefined
         && !project.assets?.uploaded?.[profile.assetId]
         && (staleFaceSheetIds.has(profile.assetId) || GENERATED_FACESET_FACE_IDS.has(profile.assetId)))
@@ -777,7 +786,7 @@ export function ensureBundledResourceProfiles(project: { resourceProfiles: Resou
   }
   project.resourceProfiles = nextResourceProfiles;
   const existingAssetIds = new Set(project.resourceProfiles.map((profile) => profile.assetId).filter((assetId) => assetId !== undefined));
-  for (const profile of defaultResourceProfiles()) {
+  for (const profile of defaultProfiles) {
     if (profile.assetId === undefined) continue;
     if (existingAssetIds.has(profile.assetId)) continue;
     project.resourceProfiles.push({ ...profile });

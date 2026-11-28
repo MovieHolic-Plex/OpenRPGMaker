@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-head-housekeeper-matron",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "831a3934e96bf18034f9fc00939da7de57b2070168eefddca26c7d6947968279"
+}

@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-steam-boiler-machinist",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "b10f01f1cce518e852e7699e1638237e9db3635662d78cae9e52f96ad1af1487"
+}

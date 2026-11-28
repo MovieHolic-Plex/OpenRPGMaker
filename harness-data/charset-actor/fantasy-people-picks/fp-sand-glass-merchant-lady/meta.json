@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-sand-glass-merchant-lady",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "4525e9a7d5e4e90a78cdf0b020b35290a17e01e7f35204f03ebbc4f311163895"
+}

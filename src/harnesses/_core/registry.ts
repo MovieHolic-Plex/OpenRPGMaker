@@ -13,6 +13,7 @@ import { JOSEON_BARAM_HARNESS } from "../joseon-baram/harness";
 import { SUPER_HARNESS } from "../super-harness/harness";
 import { ROMANCE_SCENE_HARNESS } from "../romance-scene/harness";
 import { CHARSET_ACTOR_HARNESS } from "../charset-actor/harness";
+import { EASYRPG_CHARSET_HARNESS } from "../easyrpg-charset/harness";
 import { WORLDMAP_ICONS_HARNESS } from "../worldmap-icons/harness";
 import { ASSISTANT_CAPABILITY_HARNESS } from "../assistant-capability/harness";
 import { SPACE_CRAFT_HARNESS } from "../space-craft/harness";
@@ -44,6 +45,7 @@ export const HARNESSES: readonly HarnessManifest[] = [
   SUPER_HARNESS,
   ROMANCE_SCENE_HARNESS,
   CHARSET_ACTOR_HARNESS,
+  EASYRPG_CHARSET_HARNESS,
   WORLDMAP_ICONS_HARNESS,
   ASSISTANT_CAPABILITY_HARNESS,
   SPACE_CRAFT_HARNESS,

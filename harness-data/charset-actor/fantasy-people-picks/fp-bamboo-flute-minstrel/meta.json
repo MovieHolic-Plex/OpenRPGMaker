@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-bamboo-flute-minstrel",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "2b7f8c6664776de818fca30674e687659a8382de5e7797c4e0c726ab7141660c"
+}

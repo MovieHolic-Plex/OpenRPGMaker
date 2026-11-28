@@ -158,7 +158,7 @@ export function familyFits(map: GameMap, textureKey: string, hostile = false): b
   if (family === "wizarding") return /wizard/i.test(map.tilesetId);
   // 공유 배우 칩(shared-actor)은 화풍이 섞인 묶음이다 — 현대 맵의 기본 계열로 치지 않는다(글이 이름으로 부르면 named 로 선다).
   // 왜(2026-11-17 r7-jpcity R5): 라멘집 «단골손님» 이 현대 칩 넷 사이에 «별담 · 천문 기록관»(판타지 공유 칩, 짝 얼굴 없음)으로 섰다.
-  return !fantasyChip && family !== "refmap-doll" && family !== "heroes" && family !== "shared-actor";
+  return !fantasyChip && family !== "fantasy-people" && family !== "heroes" && family !== "shared-actor";
 }
 
 /**

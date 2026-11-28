@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-hotspring-ryokan-landlady",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "71a6794bb6ec2f556a3e6b7b0da107fec3432f19e7ea71affbe0ea321b3e6354"
+}

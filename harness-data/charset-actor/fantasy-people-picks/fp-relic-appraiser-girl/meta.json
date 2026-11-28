@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-relic-appraiser-girl",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "c3226570275e004012ab0f82492bb3cacdd8b1ddba35d34530131f1f58f0e7a1"
+}

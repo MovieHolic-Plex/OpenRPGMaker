@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-town-halberd-sentry",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "38f1e2e95142bf387e8e8b9d51454b31b6b5b588d5d53daecb10f17af9ecbf6e"
+}

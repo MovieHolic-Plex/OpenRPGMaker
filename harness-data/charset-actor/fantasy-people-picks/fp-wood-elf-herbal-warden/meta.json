@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-wood-elf-herbal-warden",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "8f9d14b44f3f5bbe8db69291fbd2f020e6fa19b988704d81307e88a0654cc5ec"
+}

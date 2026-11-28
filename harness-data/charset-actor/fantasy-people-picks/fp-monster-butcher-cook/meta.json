@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-monster-butcher-cook",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "0ccb02c443a1143541a02d5da1c5c51c1b1b917e0d5610a1b63f4ebf42755ebb"
+}

@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-harbor-lighthouse-keeper",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "15f59a2b919bed2dd3e9c95f881968995b3fec732a9e71ba595c5145834edf43"
+}

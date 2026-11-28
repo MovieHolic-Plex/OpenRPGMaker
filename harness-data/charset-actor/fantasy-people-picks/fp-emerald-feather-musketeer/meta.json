@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-emerald-feather-musketeer",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "5436e4b0e69b8d7f1d1b16d44fdfa994aa5213c9ef659ad714746f66e30e1293"
+}

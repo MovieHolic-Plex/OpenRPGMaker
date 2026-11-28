@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-emerald-diplomat-envoy",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "4bab33177ab84c981ebfd1101c43760b74de9eab8987aacc0d9be95ea72eba5c"
+}

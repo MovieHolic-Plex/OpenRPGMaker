@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-hearth-knitting-grandma",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "45929352022c3792124160456fa21d8dbec3f997bbf8a37157baa57ec20ea343"
+}

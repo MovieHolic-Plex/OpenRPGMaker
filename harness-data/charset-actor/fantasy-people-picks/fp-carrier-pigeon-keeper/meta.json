@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-carrier-pigeon-keeper",
+  "base": "Template:2",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "6095e074698996ce3c866c002267e62db3ba1c085bdea1d89db6b7b0f712fcc4"
+}

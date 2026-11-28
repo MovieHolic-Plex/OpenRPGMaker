@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-mirage-scimitar-dervish",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "dd7fe62e75feaa3e307eb82703bc67591e3ac69b7cdfbbda2eb26896ceaa2e31"
+}

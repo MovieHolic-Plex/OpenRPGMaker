@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-obsidian-forge-weaponsmith",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "e6f451d5be951a79d3c8b1ae8ed7051c060996d707f0a018b112e3081c4a53b6"
+}

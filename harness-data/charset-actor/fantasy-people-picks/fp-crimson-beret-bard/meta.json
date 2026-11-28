@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-crimson-beret-bard",
+  "base": "People1:1",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "7f79a10d03c0568f8adde7d91b6a3278a8bc6a5bbab3ef738f7fa93aef8a39d2"
+}

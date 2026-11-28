@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-harbor-old-fisherman",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "a9e3b9c706210d69fbb159893d52cda53ef8e6f585c59ebe76f7bf5e415c9d82"
+}

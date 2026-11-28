@@ -34,24 +34,24 @@ describe("peopleChipLock", () => {
   const ctxOf = (project: Project, assistantRun = true): ToolContext => ({ project, currentMapId: project.startMapId, assistantRun });
   const npc = (ctx: ToolContext, x: number, name: string, graphic?: Record<string, unknown>) =>
     runTool(ctx, "place_npc", { mapId: ctx.project.startMapId, x, y: 3, name, ...(graphic ? { graphic } : {}), pages: [{ lines: ["안녕"] }] }, { dryRun: false });
-  const REFMAP = { textureKey: "oprn-charset-refmap-doll1", characterIndex: 0 };
+  const FANTASY = { textureKey: "oprn-charset-fantasy-people1", characterIndex: 0 };
   const RTP = { textureKey: "easyrpg-charset-people1", characterIndex: 2 };
   describe("사람 칩 계열 잠금", () => {
     it("첫 사람 칩이 기본 계열을 정하고, 다른 계열 사람 칩을 이름으로 고르면 그대로 쓰고 알린다", () => {
       const ctx = ctxOf(createBlankProject());
-      expect(npc(ctx, 3, "여관 주인", REFMAP).ok).toBe(true);
-      expect(ctx.project.system.peopleChipLock).toEqual({ family: "refmap-doll", by: "auto" });
+      expect(npc(ctx, 3, "여관 주인", FANTASY).ok).toBe(true);
+      expect(ctx.project.system.peopleChipLock).toEqual({ family: "fantasy-people", by: "auto" });
       const other = npc(ctx, 5, "상인", RTP);
       expect(other.ok).toBe(true);
       expect(JSON.stringify(other)).toContain("Kept as chosen");
       expect(ctx.project.maps[ctx.project.startMapId]!.events.map((event) => event.name)).toContain("상인");
       // 기본 계열은 바뀌지 않는다.
-      expect(ctx.project.system.peopleChipLock).toEqual({ family: "refmap-doll", by: "auto" });
+      expect(ctx.project.system.peopleChipLock).toEqual({ family: "fantasy-people", by: "auto" });
     });
 
     it("사용자가 직접 고른 계열은 다른 계열 사람 칩을 거부한다", () => {
       const project = createBlankProject();
-      project.system.peopleChipLock = { family: "refmap-doll", by: "user" };
+      project.system.peopleChipLock = { family: "fantasy-people", by: "user" };
       const ctx = ctxOf(project);
       const rejected = npc(ctx, 5, "상인", RTP);
       expect(rejected.ok).toBe(false);
@@ -61,29 +61,29 @@ describe("peopleChipLock", () => {
 
     it("잠근 뒤 검색어·기본 주민도 잠금 계열 사람 칩으로 골라진다", () => {
       const ctx = ctxOf(createBlankProject());
-      npc(ctx, 3, "여관 주인", REFMAP);
+      npc(ctx, 3, "여관 주인", FANTASY);
       expect(npc(ctx, 5, "늙은 상인", { query: "old merchant" }).ok).toBe(true);
       expect(npc(ctx, 7, "마을 사람").ok).toBe(true);
       for (const event of ctx.project.maps[ctx.project.startMapId]!.events) {
         const id = (event.pages[0]!.graphic as { sprite?: { id?: string } }).sprite?.id ?? "";
-        expect(charsetFamilyOf(ctx.project, id)).toBe("refmap-doll");
+        expect(charsetFamilyOf(ctx.project, id)).toBe("fantasy-people");
       }
     });
 
     it("주인공 걷기 칩은 사용자가 고른 계열이면 그 계열만, 저절로 정해진 계열이면 이름으로 고른 것을 받는다", () => {
       const project = createBlankProject();
-      project.system.peopleChipLock = { family: "refmap-doll", by: "user" };
+      project.system.peopleChipLock = { family: "fantasy-people", by: "user" };
       const locked = ctxOf(project);
       expect(runTool(locked, "upsert_actor", { actor: { id: "actor_hero", characterResourceId: "oprn-charset-heroes1", characterIndex: 0 } }, { dryRun: false }).ok).toBe(false);
-      expect(runTool(locked, "upsert_actor", { actor: { id: "actor_hero", characterResourceId: "oprn-charset-refmap-doll5", characterIndex: 1 } }, { dryRun: false }).ok).toBe(true);
+      expect(runTool(locked, "upsert_actor", { actor: { id: "actor_hero", characterResourceId: "oprn-charset-fantasy-people2", characterIndex: 1 } }, { dryRun: false }).ok).toBe(true);
       const ctx = ctxOf(createBlankProject());
-      npc(ctx, 3, "여관 주인", REFMAP);
+      npc(ctx, 3, "여관 주인", FANTASY);
       expect(runTool(ctx, "upsert_actor", { actor: { id: "actor_hero", characterResourceId: "oprn-charset-heroes1", characterIndex: 0 } }, { dryRun: false }).ok).toBe(true);
     });
 
     it("몬스터·동물 칩은 잠그지 않는다", () => {
       const ctx = ctxOf(createBlankProject());
-      npc(ctx, 3, "여관 주인", REFMAP);
+      npc(ctx, 3, "여관 주인", FANTASY);
       expect(npc(ctx, 5, "슬라임", { query: "슬라임" }).ok).toBe(true);
       expect(peopleChipLockAllows(ctx.project, "easyrpg-charset-monster1")).toBe(true);
       expect(peopleChipLockAllows(ctx.project, "easyrpg-charset-people1")).toBe(false);
@@ -91,7 +91,7 @@ describe("peopleChipLock", () => {
 
     it("손 편집은 막지 않고 잠금도 걸지 않는다", () => {
       const ctx = ctxOf(createBlankProject(), false);
-      expect(npc(ctx, 3, "여관 주인", REFMAP).ok).toBe(true);
+      expect(npc(ctx, 3, "여관 주인", FANTASY).ok).toBe(true);
       expect(ctx.project.system.peopleChipLock).toBeUndefined();
     });
 
@@ -104,10 +104,10 @@ describe("peopleChipLock", () => {
 
     it("저장·재로드에 남고 프롬프트에 기본 계열이 실린다", () => {
       const ctx = ctxOf(createBlankProject());
-      npc(ctx, 3, "여관 주인", REFMAP);
+      npc(ctx, 3, "여관 주인", FANTASY);
       const again = deserialize(serialize(ctx.project));
-      expect(again.system.peopleChipLock).toEqual({ family: "refmap-doll", by: "auto" });
-      expect(buildSystemPrompt(again)).toContain("[사람 칩 기본 계열 — REFMAP 변형 인물 칩]");
+      expect(again.system.peopleChipLock).toEqual({ family: "fantasy-people", by: "auto" });
+      expect(buildSystemPrompt(again)).toContain("[사람 칩 기본 계열 — 판타지 인물 칩(FantasyPeople)]");
       expect(buildSystemPrompt(createBlankProject())).toContain("처음 새로 놓는 사람 칩");
     });
   });

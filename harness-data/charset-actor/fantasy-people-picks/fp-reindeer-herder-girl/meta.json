@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-reindeer-herder-girl",
+  "base": "Template:2",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "41fb62f6bbda308f372d30c8d52b145c2f168f0a7c59ffe9e65d99b5a6473162"
+}

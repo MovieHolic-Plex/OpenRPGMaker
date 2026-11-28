@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-tavern-barmaid",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "80449b1691066321dc247686ab4dabea2a9f43547b48ac6ed6b8115ca94ef6ac"
+}

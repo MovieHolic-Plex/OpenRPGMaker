@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-tax-collector-bailiff",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "8d36793b2d7ba8dd6b619254989fd6ed86e24b9d72a20476a135895c095416a4"
+}

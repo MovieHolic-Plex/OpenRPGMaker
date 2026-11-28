@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-stained-glass-artisan",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "6849ce8786e55bf50e395a5e99f4a9fc4fa5cd5202fadfece21e9ea04d4bd4f3"
+}

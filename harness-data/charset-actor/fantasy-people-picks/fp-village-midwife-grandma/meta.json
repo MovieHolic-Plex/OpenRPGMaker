@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-village-midwife-grandma",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "afde7f19c1bbfbfe8774268a25fcb3e9814f531b5c35f8541bead5c9a7f6be2a"
+}

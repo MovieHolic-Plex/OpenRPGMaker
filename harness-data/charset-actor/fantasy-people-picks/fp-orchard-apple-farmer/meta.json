@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-orchard-apple-farmer",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "e1ce0ce3432b02531cf359559147e663ba19b6d400a4dec666670d5a73f1bdf9"
+}

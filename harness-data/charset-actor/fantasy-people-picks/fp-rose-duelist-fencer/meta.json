@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-rose-duelist-fencer",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "38154ff64d0cfc1f51098db806e8ab88fe545f2fd62534dfd55f5e54ad2b311c"
+}

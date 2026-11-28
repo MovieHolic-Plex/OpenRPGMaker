@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-silver-crossbow-witchhunter",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "1dc2e4d4829b502b24f808cc8d9bcea4c5dd27091d482cb3170269a7efd15715"
+}

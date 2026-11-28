@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-aurora-veil-dancer",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "52786b0021e4fc5f6bf14f4fd951e9be9c244f10774e9917f075bee308618bf4"
+}

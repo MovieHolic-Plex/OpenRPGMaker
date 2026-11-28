@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-celadon-fan-courtesan-dancer",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "bcf8e60d0ec2394c27f2dfd98965238e0a872b0e50dbf2805ec51f3e63587312"
+}

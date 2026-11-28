@@ -1,8 +1,6 @@
 import { READY_PEOPLE_BATTLERS } from "@/assets/charsetBattlerReady";
-import { refmapDollBattler, refmapDollBattlerFor } from "@/assets/refmapDollCharsets";
 
-// charsetSemantics.ts 를 직접 끌어오면 에디터 전용 1MB refmapDollCharsets.json 까지 플레이어 번들에 실린다.
-// 걷기 칩 전투 시트(actor1~4 · people1~5)의 표시 이름만 가볍게 보관한다.
+// 걷기 칩 전투 시트(actor1~4 · people1~5)의 표시 이름만 가볍게 보관한다(에디터 전용 대용량 의미표를 플레이어 번들에 끌어오지 않는다).
 const EASYRPG_BATTLER_LABELS: Readonly<Record<string, readonly string[]>> = {
   actor1: ["청년 용사", "빨간 로브 마법사", "붉은 갑옷 기사", "붉은 갑옷 여전사", "젊은 남성 마법사", "젊은 여성 마법사", "파란 로브 마법사", "파란 옷 젊은 여성 마법사"],
   actor2: ["검은 머리 도적", "하늘색 재킷 젊은 여성", "녹색 망토 레인저", "녹색 후드 궁수", "갈색 머리 중년 전사", "젊은 여성 도적", "젊은 여성 엘프", "젊은 남성 엘프"],
@@ -97,9 +95,8 @@ const PEOPLE_CHIP_BATTLERS = Array.from({ length: 40 }, (_, index) => {
 export const CHARSET_BATTLERS = [...WALK_CHIP_BATTLERS, ...PEOPLE_CHIP_BATTLERS, ...CLASS_BATTLERS];
 
 const byId = new Map(CHARSET_BATTLERS.map((entry) => [entry.resourceId, entry]));
-/** REFMAP 변형 인물 칩의 전투 시트(2,567개)는 표에 싣지 않고 id 규칙으로 푼다(refmapDollCharsets.ts) — 에디터 그림 목록에도 늘어놓지 않는다. */
 export function charsetBattler(resourceId: string | undefined) {
-  return resourceId ? byId.get(resourceId) ?? refmapDollBattler(resourceId) : undefined;
+  return resourceId ? byId.get(resourceId) : undefined;
 }
 
 /** 손으로 고친 걷기 칩(업로드 칩)에 맞춘 전투 시트 — 칩 id·자리로 찾는다. 원본 칩의 전투 시트를 쓰면 모자·머리가 다른 사람이 된다. */
@@ -109,8 +106,6 @@ const BY_CUSTOM_CHIP = new Map(CLASS_BATTLERS.filter((entry) => entry.characterR
 export function charsetBattlerForCharacter(characterResourceId?: string, characterIndex = 0): string | undefined {
   const custom = BY_CUSTOM_CHIP.get(`${characterResourceId ?? ""}#${characterIndex}`);
   if (custom) return custom;
-  const refmap = refmapDollBattlerFor(characterResourceId, characterIndex);
-  if (refmap) return refmap;
   if (!/^easyrpg-charset-(actor[1-4]|people[1-5])$/.test(characterResourceId ?? "")) return undefined;
   if (!Number.isInteger(characterIndex) || characterIndex < 0 || characterIndex > 7) return undefined;
   const id = `charset-battler-${characterResourceId!.slice("easyrpg-charset-".length)}-${characterIndex}`;

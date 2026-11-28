@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-scroll-ink-calligrapher",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "a38f8d85d77922003219a03a87b351841df3b405f22f97522171c048fc806038"
+}

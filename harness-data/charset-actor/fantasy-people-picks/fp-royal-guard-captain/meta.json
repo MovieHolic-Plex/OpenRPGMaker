@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-royal-guard-captain",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "0c99a5d291b1afd8f99448134986c114fb79179a70acfaca66b8046018985c26"
+}

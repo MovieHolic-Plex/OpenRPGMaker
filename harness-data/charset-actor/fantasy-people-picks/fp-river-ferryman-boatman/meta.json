@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-river-ferryman-boatman",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "62fff389dbb2199f310997d6545a173db145dff9637438294bfa9c0ff0c34ffc"
+}

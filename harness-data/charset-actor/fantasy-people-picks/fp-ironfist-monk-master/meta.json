@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-ironfist-monk-master",
+  "base": "Template:1",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "f097558003edd9a855eec5b2309db9427d5e33d1321e33deacf0bcea0e76133c"
+}

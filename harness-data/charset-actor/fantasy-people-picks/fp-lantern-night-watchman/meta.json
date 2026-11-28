@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-lantern-night-watchman",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "db7d8c031589facd48c050bf8f1ab0e937ced6f65c9a5d5d94ef72975c6a763c"
+}

@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-royal-treasurer-magistrate",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "78286774a837bf9f1bb6e8b9076524cc0168312f25bf04357466466e2921a6c8"
+}

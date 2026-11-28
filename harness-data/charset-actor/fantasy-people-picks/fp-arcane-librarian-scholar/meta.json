@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-arcane-librarian-scholar",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "def35bbdb798831ed4a12b2860522ae7ae7057bb6c4208f41a61038712c0c576"
+}

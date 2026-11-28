@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-belltower-blind-monk",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "7890c6b7b46cf74e52ce41d8df89f85d6e116f57521a5e49164a19f57382c564"
+}

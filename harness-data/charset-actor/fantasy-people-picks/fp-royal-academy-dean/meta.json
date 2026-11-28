@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-royal-academy-dean",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "ba821121896d9d6446a2963118a446781d200578b9bbe4499bf00db4f54bbba0"
+}

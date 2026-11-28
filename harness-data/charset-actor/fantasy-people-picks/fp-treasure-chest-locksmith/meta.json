@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-treasure-chest-locksmith",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "7472618d69ecfa9db5e4a30d682f59c5902115299fdfd3911a89f29e064bee25"
+}

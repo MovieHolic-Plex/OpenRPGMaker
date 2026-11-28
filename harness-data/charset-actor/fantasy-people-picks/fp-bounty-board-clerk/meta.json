@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-bounty-board-clerk",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "1624d6225582e8c9399789845c39a4753f3a1ad49954fa0e92ec8805d9f52645"
+}

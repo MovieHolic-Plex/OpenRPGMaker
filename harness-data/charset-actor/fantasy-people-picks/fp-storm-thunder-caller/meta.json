@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-storm-thunder-caller",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "7256e0f372469fdd236a4ecbbd116798f345c09825a653c9fc249d820e580112"
+}

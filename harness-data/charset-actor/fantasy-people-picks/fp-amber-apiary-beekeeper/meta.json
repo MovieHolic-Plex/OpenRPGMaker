@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-amber-apiary-beekeeper",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "448f9c4bc19be0b789a1cd63d959a8834bf6792aea3ba7f6badf515c0a2b53fc"
+}

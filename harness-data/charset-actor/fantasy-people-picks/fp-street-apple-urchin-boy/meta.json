@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-street-apple-urchin-boy",
+  "base": "Template:2",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "110426af93a4861aa3b25c47571ff8ff158a997a5d9a7a019cb8c2a2191c4346"
+}

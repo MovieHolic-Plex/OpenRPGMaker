@@ -16,6 +16,7 @@
 | `super-harness` | 슈퍼하네싱 (기물·파생·공간) | 장르 무관 | `harness-data/super-harness/seed.json` | `openwiki/harnesses/super-harness.md` |
 | `romance-scene` | 연애 첫 대화 장면 | 장르 `story-cutscene` 전용 | `harness-data/romance-scene/seed.json` | `openwiki/harnesses/romance-scene.md` |
 | `charset-actor` | RM2000 캐릭터 GIF 공방 | 장르 무관 | `harness-data/charset-actor/briefs.json` | `openwiki/harnesses/charset-actor.md` |
+| `easyrpg-charset` | EasyRPG 24×32 캐릭터 배치·2단계 관문 (Carbon·Fable 전용) | 장르 무관 | `harness-data/easyrpg-charset/seed.json` | `openwiki/harnesses/easyrpg-charset.md` |
 | `worldmap-icons` | 월드맵 아이콘 | 장르 무관 | `harness-data/worldmap-icons/seed.json` | `openwiki/harnesses/worldmap-icons.md` |
 | `assistant-capability` | 조수 기능별 수행 검증 | 장르 무관 | `harness-data/assistant-capability/seed.json` | `openwiki/harnesses/assistant-capability.md` |
 | `space-craft` | 조수 공간 제작 시각 품질 | 장르 무관 | `harness-data/space-craft/seed.json` | `openwiki/harnesses/space-craft.md` |
@@ -253,6 +254,25 @@ GPT 6.1 sol high가 정지·걷기 12프레임을 전부 직접 저작하고 사
 - `export` — 선택 팩: 자유 저작은 사람이 남긴 캐릭터만 ZIP으로 묶는다. 기존 검수 실행은 이전 계약을 유지한다.
 - `status` — 현황: 저작 진행과 검수 판정을 표시한다.
 - `serve` — GIF 공방: 자동 걷기 GIF 갤러리·남기기/폐기·일시 정지/재개·선택 팩 다운로드 화면을 연다.
+
+**들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
+
+## easyrpg-charset — EasyRPG 24×32 캐릭터 배치·2단계 관문 (Carbon·Fable 전용)
+
+공식 EasyRPG RTP 2등신 뼈대(doll12·partedit·full12) + Carbon/Fable 도트 저작 + 1단계 12프레임 기계 관문 + 2단계 독립 블라인드 시각 QA(SHA-256 잠금)로 RM2000 288×256 캐릭터셋 및 에디터 기본 세트(FantasyPeople 200종)를 제작·설치한다. ※ 권장 LLM: Carbon·Fable 전용(이외 LLM은 잘 작동하지 않음).
+
+**이럴 때 쓴다:**
+- EasyRPG/RM2000 24×32(288×256) 보행 캐릭터칩을 Nude-Doll(doll12)·부위편집(partedit)으로 신규 양산하거나 FantasyPeople 에디터 기본 세트를 증설·검증할 때 (권장 LLM: Carbon·Fable 전용)
+
+**단계** (`npm run harness -- easyrpg-charset <단계>`):
+- `check-model` — 권장 LLM 점검: [모델명] [--strict] 로 Carbon·Fable 권장 계열 여부를 검사하고, 이외의 LLM이면 오작동 경고를 출력한다.
+- `seed` — 작업장 시드 생성: --spec batch.json --out DIR [--model gemini-4-carbon|fable] 로 슬롯별 RTP 마네킹·헤어 교본·작업 지시서(prompt.md)를 생성한다.
+- `doll-check` — 단일 슬롯 정밀 관문: --dir SLOT_DIR 로 단일 캐릭터의 12프레임 기계 관문·12배 두상 대조판·8배 보행 역학 대조판을 생성하고 gate.json(SHA-256)을 기록한다.
+- `verify` — 배치 1단계 기계 관문: --out DIR 로 배치 전체 슬롯의 눈 대칭·목 수축(ey+3)·옆모습 4대 비례·12프레임 양손/발 접지 관문을 일괄 검사한다.
+- `qa-prep` — 2단계 독립 시각 QA 보드: --out DIR 로 1단계 통과 슬롯들의 5배 12프레임 전수 + 1x/2x 비교 보드와 독립 검수관 브리프(critic_prompt.md)를 만든다.
+- `qa-verdict` — 해시 잠금 QA 판정 기록: --dir SLOT_DIR --verdict PASS|FAIL --by CRITIC --notes ... 로 독립 시각 QA 판정을 out.chr.txt SHA-256에 묶어 기록한다.
+- `pack` — 해시 잠금 시트·GIF 패킹: --out DIR 로 1단계 기계 관문 + 2단계 독립 QA PASS 해시가 모두 일치하는 슬롯만 288×256 시트와 잔디 퍼레이드 GIF로 묶는다.
+- `install` — 에디터 기본 세트 설치·검증: [--check] 로 승인된 FantasyPeople 픽셀 격자(기본 200종, FantasyPeople1~25)를 에디터 기본 세트로 굽거나 바이트 일치를 확인한다.
 
 **들어오는 길:** CLI 있음 · 에디터 화면 아직 없음 · 조수 도구 아직 없음
 

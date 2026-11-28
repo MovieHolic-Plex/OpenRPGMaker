@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-moon-blossom-dryad-maiden",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "9b10e4a8b5272455805ab1fad2c7a911b3b0ee4b36b3666a2096e4d4cf65d013"
+}

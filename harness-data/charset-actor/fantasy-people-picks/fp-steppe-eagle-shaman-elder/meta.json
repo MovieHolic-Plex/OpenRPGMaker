@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-steppe-eagle-shaman-elder",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "daa0b1c796764d9f01dab16c01d280c7f86accbfdcc3019208d50052241e6670"
+}

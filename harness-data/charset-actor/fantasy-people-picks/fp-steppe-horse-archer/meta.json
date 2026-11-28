@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-steppe-horse-archer",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "3f2aa9288ae4f857ea4e14990d40818552be01433fc37259d7ef693a94d18c6c"
+}

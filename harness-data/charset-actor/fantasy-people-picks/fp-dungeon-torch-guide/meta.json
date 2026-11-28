@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-dungeon-torch-guide",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "4affeb6af2ab4c0a109e3c8886679d678714682678b5e5c62c0a9f7adcae2e26"
+}

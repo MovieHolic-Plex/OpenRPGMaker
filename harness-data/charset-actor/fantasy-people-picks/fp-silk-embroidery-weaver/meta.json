@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-silk-embroidery-weaver",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "1a56d4d53a7266870d52ddbc2967218e986a6fcf79b505ce54395a0b3c26fd2c"
+}

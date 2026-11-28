@@ -262,23 +262,23 @@ describe("characterFit", () => {
   isolateTimers();
   describe("이름 붙은 인물의 걷기 칩이 역할에 맞는가", () => {
     it("무기점 주인에게 여관 주인 앞치마 칩은 맞지 않고, 대장장이 칩은 맞는다", () => {
-      const innkeeper = charsetEntryOf("tex_oprn_charset_refmap_doll225", 0);
-      const smith = charsetEntryOf("tex_oprn_charset_refmap_doll190", 4);
+      const innkeeper = charsetEntryOf("tex_easyrpg_charset_people5", 6);
+      const smith = charsetEntryOf("tex_oprn_charset_fantasy_people1", 0);
       expect(innkeeper && smith).toBeTruthy();
       expect(chipFitsRole(innkeeper, "무기점 주인 도르간").fits).toBe(false);
       expect(chipFitsRole(smith, "무기점 주인 도르간").fits).toBe(true);
     });
 
     it("어부 할아버지는 늙은 선원 칩이면 맞고 젊은 어부 칩이면 나이가 어긋난다", () => {
-      const oldSailor = charsetEntryOf("tex_oprn_charset_refmap_doll288", 2);
-      const youngFisher = charsetEntryOf("tex_oprn_charset_refmap_doll291", 7);
+      const oldSailor = charsetEntryOf("tex_oprn_charset_fantasy_people4", 4);
+      const youngFisher = charsetEntryOf("tex_oprn_charset_fantasy_people13", 5);
       expect(chipFitsRole(oldSailor, "어부 할아버지").fits).toBe(true);
       expect(chipFitsRole(youngFisher, "어부 할아버지").fits).toBe(false);
     });
 
     it("꽃집 소녀·음유시인·수상한 상인은 각자 보이는 것이 있어야 한다", () => {
-      const flowerMaid = charsetEntryOf("tex_oprn_charset_refmap_doll49", 2);
-      const bard = charsetEntryOf("tex_oprn_charset_refmap_doll199", 4);
+      const flowerMaid = charsetEntryOf("tex_oprn_charset_fantasy_people13", 6);
+      const bard = charsetEntryOf("tex_oprn_charset_fantasy_people1", 3);
       const innkeeper = charsetEntryOf("tex_easyrpg_charset_people5", 6);
       expect(chipFitsRole(flowerMaid, "꽃집 소녀 릴리").fits).toBe(true);
       expect(chipFitsRole(bard, "떠돌이 음유시인").fits).toBe(true);

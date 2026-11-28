@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-dockyard-shipwright",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "97246bfcfb7f6efbfffd4ea8025698e3c1a8460ed2fffa37066bd10cae48b03a"
+}

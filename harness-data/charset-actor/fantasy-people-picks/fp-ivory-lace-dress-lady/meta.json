@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-ivory-lace-dress-lady",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "56a0a2295979e95d5bc3bc4b6efbd44be2ac44a397542acf5dc7d4fff24fe452"
+}

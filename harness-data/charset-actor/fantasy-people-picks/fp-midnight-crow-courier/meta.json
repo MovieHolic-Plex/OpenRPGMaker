@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-midnight-crow-courier",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "6d95ca0972e96cb5904312a9a9be567423b0e79fd7b59d0633e6e7be8a2c2eeb"
+}

@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-stone-bridge-mason",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "52d2c8b9391e816873e34f00d84462e3af6aafa2a66ee5309659e26499ff3238"
+}

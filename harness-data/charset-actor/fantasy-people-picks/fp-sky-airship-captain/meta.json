@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-sky-airship-captain",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "3617a26b0b539c575ef1bf055f6596be16b34154242d60ea51ff721d2532b106"
+}

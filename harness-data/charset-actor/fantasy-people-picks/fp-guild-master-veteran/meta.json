@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-guild-master-veteran",
+  "base": "Template:broad",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "0b0af092495d35adf9949b579a65675195fc193635e86a8b03c891cd7513891e"
+}

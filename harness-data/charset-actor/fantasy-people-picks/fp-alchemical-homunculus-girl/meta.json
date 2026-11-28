@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-alchemical-homunculus-girl",
+  "base": "Template:2",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "105e34fd3ed5e1546168e9a71c1daa1806088818f472b034c36b30a170a35470"
+}

@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-clockwork-automaton-steward",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "49b5189d84b7470273016b8c05595f654ea116a18531e4deda33b74d11831535"
+}

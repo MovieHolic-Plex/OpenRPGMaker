@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-emerald-lute-bard",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "2c45545d3152b0d8933635ef4801d9b2395d3741e97776228c5d7617d7b086f6"
+}

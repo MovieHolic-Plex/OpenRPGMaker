@@ -1,0 +1,8 @@
+{
+  "ok": true,
+  "key": "fp-cathedral-choir-sister",
+  "base": "Template:0",
+  "model": "gemini-4-carbon-medium",
+  "qaVerdict": "PASS",
+  "approvedGridSha256": "ca7e44ac3227316788f98d17fa5206aa97f2fafeee8236d756d0195f68165c8a"
+}
