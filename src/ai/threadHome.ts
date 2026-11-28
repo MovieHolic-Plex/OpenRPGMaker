@@ -15,24 +15,36 @@ export function piScopeMapIds(text: string): string[] | null {
 }
 
 /**
- * 대화(스레드)의 집 맵. `null` 은 「게임 전체」다.
- * 순서: 첫 사용자 글의 구조 맥락 → 같은 글의 꼬리말 → 첫 Pi 범위 줄(맵이 정확히 하나일 때만).
+ * 근거가 있을 때만 정한 집 맵. `undefined` = 아직 근거가 없다(저장하지 말고 다음 저장에서 다시 본다).
+ * 근거와 순서:
+ *  1. 첫 사용자 글에 구조 맥락(`context`)이 있다 — `mapId` 가 null 이면 일부러 게임 전체다.
+ *  2. 같은 글에 기계 꼬리말 `[컨텍스트] 현재 맵: … (id)` 이 있다.
+ *  3. Pi 범위 줄이 있다 — 첫 줄의 맵이 정확히 하나면 그 맵, 여러 맵·프로젝트 전체면 게임 전체.
+ * Pi 앞 턴은 실행 전에 먼저 저장하고(실행 중 표지) 범위 줄은 끝에 붙으므로, 첫 저장에는 근거가 없을 수 있다.
  * 맵이 지금 있는지는 보지 않는다 — 목록(aiThreadList)이 본다.
  */
-export function threadHomeMapId(entries: readonly AuditEntry[]): string | null {
+export function decidedThreadHomeMapId(entries: readonly AuditEntry[]): string | null | undefined {
   const firstUser = entries.find(entry => entry.kind === "user");
   if (firstUser?.kind === "user") {
-    const mapId = firstUser.context?.mapId;
-    if (typeof mapId === "string" && mapId.trim()) return mapId;
+    if (firstUser.context !== undefined) {
+      const mapId = firstUser.context.mapId;
+      return typeof mapId === "string" && mapId.trim() ? mapId : null;
+    }
     const footer = CONTEXT_FOOTER_MAP.exec(firstUser.text)?.[1];
     if (footer) return footer;
   }
   for (const entry of entries) {
     if (entry.kind !== "status") continue;
-    const ids = piScopeMapIds(entry.text);
-    if (ids === null) continue;
-    const raw = PI_SCOPE_LINE.exec(entry.text)?.[1]?.split(",") ?? [];
-    return raw.length === 1 && ids.length === 1 ? (ids[0] ?? null) : null;
+    const match = PI_SCOPE_LINE.exec(entry.text);
+    if (!match?.[1]) continue;
+    const raw = match[1].split(",").map(id => id.trim());
+    const only = raw.length === 1 ? raw[0] : undefined;
+    return only && only !== PI_PROJECT_SCOPE ? only : null;
   }
-  return null;
+  return undefined;
+}
+
+/** 대화(스레드)의 집 맵. `null` 은 「게임 전체」다(근거가 없을 때도). */
+export function threadHomeMapId(entries: readonly AuditEntry[]): string | null {
+  return decidedThreadHomeMapId(entries) ?? null;
 }

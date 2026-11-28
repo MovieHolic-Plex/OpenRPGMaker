@@ -15,7 +15,7 @@ import {
 } from "@/ai/aiRecordDb";
 import { isConversationTurnContext } from "@/ai/conversationTurnContext";
 import { conversationTranscriptCompacted, indexConversationMaps, isConversationMapIndex, storedHomeMapId, type ConversationMapIndex } from "@/ai/mapConversationStore";
-import { threadHomeMapId } from "@/ai/threadHome";
+import { decidedThreadHomeMapId, threadHomeMapId } from "@/ai/threadHome";
 import { enqueueRemoteWrite, registerRemoteOutboxSender } from "@/project/remoteOutbox";
 import type { ProjectIdentity } from "@/project/store";
 import { projectRepository } from "@/project/persistence/repository";
@@ -214,10 +214,12 @@ function fitEntriesToBudget(entries: readonly AuditEntry[]): AuditEntry[] {
 
 function compactRecord(record: ConversationRecord): ConversationRecord & { mapIndex: ConversationMapIndex } {
   const previous = isConversationMapIndex(record.mapIndex) ? record.mapIndex : undefined;
-  // 집 맵은 접기 전 원문으로 한 번 정한다. 앞 기록이 이미 정했으면 그대로 둔다.
+  // 집 맵은 접기 전 원문으로, 근거가 생긴 첫 저장에서 한 번 정한다. 앞 기록이 이미 정했으면 그대로 둔다.
+  // 근거가 없으면 비워 둔다 — Pi 앞 턴의 첫 저장(실행 중 표지)에는 아직 범위 줄이 없다.
   const kept = storedHomeMapId(previous);
-  const homeMapId = kept !== undefined ? kept : threadHomeMapId(record.entries);
-  return { ...record, mapIndex: { ...indexConversationMaps(record.entries, previous), homeMapId }, entries: fitEntriesToBudget(record.entries) };
+  const homeMapId = kept !== undefined ? kept : decidedThreadHomeMapId(record.entries);
+  const index = indexConversationMaps(record.entries, previous);
+  return { ...record, mapIndex: homeMapId === undefined ? index : { ...index, homeMapId }, entries: fitEntriesToBudget(record.entries) };
 }
 
 // ── 레거시 이관 ──────────────────────────────────────────────────────────────────
@@ -288,12 +290,12 @@ async function persistLocalConversation(record: ConversationRecord & { mapIndex:
     const prior = current && isConversationMapIndex(current.mapIndex) ? current.mapIndex : undefined;
     // 이미 저장된 집 맵이 이긴다 — 뒤 저장의 entries 가 접혀 첫 발화가 바뀌어도 스레드는 제자리에 있다.
     const priorHome = storedHomeMapId(prior);
-    const homeMapId = priorHome !== undefined ? priorHome : storedHomeMapId(record.mapIndex) ?? null;
+    const homeMapId = priorHome !== undefined ? priorHome : storedHomeMapId(record.mapIndex);
     const viewedMapIds = [...new Set([...record.mapIndex.viewedMapIds, ...(prior?.viewedMapIds ?? [])])].sort();
     const targetMapIds = [...new Set([...record.mapIndex.targetMapIds, ...(prior?.targetMapIds ?? [])])].sort();
     const mapAttribution = viewedMapIds.length + targetMapIds.length === 0 ? "unknown"
       : record.mapIndex.mapAttribution === "complete" && (!prior || prior.mapAttribution === "complete") ? "complete" : "partial";
-    return { ...record, mapIndex: { viewedMapIds, targetMapIds, mapAttribution, homeMapId } };
+    return { ...record, mapIndex: { viewedMapIds, targetMapIds, mapAttribution, ...(homeMapId === undefined ? {} : { homeMapId }) } };
   });
 }
 

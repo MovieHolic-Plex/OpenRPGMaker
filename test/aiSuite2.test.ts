@@ -1630,6 +1630,36 @@ describe("conversationStore", () => {
       await saveConversation({ ...wide, savedAt: 4, entries: [{ kind: "user", text: "우물", context: { mapId: "map_b", mapName: null } }] });
       expect((await queryConversationArchive({ projectContextKey: "remote:P" })).records.find(row => row.id === "wide")?.homeMapId).toBeNull();
     });
+    it("home map stays undecided until evidence arrives (Pi first save has no scope line yet)", async () => {
+      // Pi foreground turn: the in-flight save runs before the run; the scope line is appended at the end.
+      const first: ConversationRecord = { id: "pi", savedAt: 1, projectContextKey: "remote:P", title: "pi", model: "test",
+        entries: [{ kind: "user", text: "우물을 놓아 줘" }] };
+      await saveConversation(first);
+      expect((await loadConversation("pi"))?.mapIndex).not.toHaveProperty("homeMapId");
+      // Read time still answers: no evidence = game-wide for now.
+      expect((await queryConversationArchive({ projectContextKey: "remote:P" })).records.find(row => row.id === "pi")?.homeMapId).toBeNull();
+      await saveConversation({ ...first, savedAt: 2, entries: [...first.entries,
+        { kind: "assistant", text: "놓았어요" }, { kind: "status", text: "Pi 에이전트 · 범위 map_b · 적용됨 — 바뀐 맵·항목 2개" }] });
+      expect((await queryConversationArchive({ projectContextKey: "remote:P" })).records.find(row => row.id === "pi")?.homeMapId).toBe("map_b");
+      expect((await loadConversation("pi"))?.mapIndex?.homeMapId).toBe("map_b");
+      // Once decided, a later run's scope line on another map does not move it.
+      const decided = (await loadConversation("pi"))!;
+      await saveConversation({ ...decided, savedAt: 3, entries: [...decided.entries,
+        { kind: "user", text: "다리도" }, { kind: "status", text: "Pi 에이전트 · 범위 map_c · 적용됨 — 바뀐 맵·항목 1개" }] });
+      expect((await loadConversation("pi"))?.mapIndex?.homeMapId).toBe("map_b");
+    });
+    it("explicit game-wide context stays null even when a later single-map scope line appears", async () => {
+      const first: ConversationRecord = { id: "wide-pi", savedAt: 1, projectContextKey: "remote:P", title: "wide-pi", model: "test",
+        entries: [{ kind: "user", text: "게임 개요", context: { mapId: null, mapName: null } }] };
+      await saveConversation(first);
+      expect((await loadConversation("wide-pi"))?.mapIndex?.homeMapId).toBeNull();
+      await saveConversation({ ...first, savedAt: 2, entries: [...first.entries,
+        { kind: "status", text: "Pi 에이전트 · 범위 map_b · 적용됨 — 바뀐 맵·항목 1개" }] });
+      expect((await queryConversationArchive({ projectContextKey: "remote:P" })).records.find(row => row.id === "wide-pi")?.homeMapId).toBeNull();
+      expect((await loadConversation("wide-pi"))?.mapIndex?.homeMapId).toBeNull();
+      // Pure helper agrees: context present → decided, no fallthrough to the scope line.
+      expect(threadHomeMapId([...first.entries, { kind: "status", text: "Pi 에이전트 · 범위 map_b · 끝남 — 바뀐 맵·항목 0개" }])).toBeNull();
+    });
     it("legacy summaries without homeMapId are rebuilt once and always carry it", async () => {
       await saveConversation({ id: "old", savedAt: 1, projectContextKey: "remote:P", title: "old", model: "test",
         entries: [{ kind: "user", text: "우물", context: { mapId: "map_a", mapName: null } }] });
