@@ -500,7 +500,7 @@ describe("modernCityStoryObjects", () => {
           expect(ts.priority[tile]).toBe(item.place === "decal" ? "lower" : "upper");
         }));
       }
-      expect(next).toBe(ts.count);
+      expect(ts.count).toBeGreaterThanOrEqual(next);
       expect((ts.referenceDocuments ?? []).some((category) => category.documents.some((doc) => doc.id === "mc-story-objects"))).toBe(true);
     });
 

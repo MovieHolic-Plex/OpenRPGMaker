@@ -9,7 +9,7 @@
    "type": "prop",
    "name": "편의점 계산대(오뎅·호빵)",
    "en": "convenience store checkout counter with oden and bun warmer",
-   "kind": "furniture",
+   "kind": "box",
    "w": 3,
    "h": 2,
    "place": "prop",
@@ -50,7 +50,7 @@
    "type": "prop",
    "name": "장바구니 더미",
    "en": "stacked shopping baskets on rolling stand",
-   "kind": "prop",
+   "kind": "other",
    "w": 1,
    "h": 2,
    "place": "tall",
@@ -80,7 +80,7 @@
    "type": "prop",
    "name": "VIP 라운지 2인 소파",
    "en": "tufted leather 2-seater VIP lounge sofa",
-   "kind": "furniture",
+   "kind": "box",
    "w": 2,
    "h": 2,
    "place": "prop",
@@ -116,7 +116,7 @@
    "type": "prop",
    "name": "대기 의자 3연석(북향)",
    "en": "3-seater hospital waiting bench facing north",
-   "kind": "furniture",
+   "kind": "box",
    "w": 3,
    "h": 2,
    "place": "prop",
@@ -149,5 +149,6 @@
    "rule": "병원·클리닉 대기실에 북향으로 배치. 아랫줄 3칸 막힘.",
    "pixelSha256": "36e28df1701f6017db42a49570495fc455602caa9f4c53fcb4cc85123f6b1f78"
   }
- ]
+ ],
+ "waiver": "carbon-remake-w1-3-2026-11-28"
 }
