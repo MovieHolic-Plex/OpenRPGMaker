@@ -156,6 +156,7 @@ export function applyContainerSearchPattern(event: GameEvent, options: Container
           pattern: wantedPattern,
         };
         delete nextGraphic.transparent;
+        delete nextGraphic.appearanceId;
         if (JSON.stringify(page.graphic ?? null) !== JSON.stringify(nextGraphic)) {
           (page as Page).graphic = nextGraphic;
           changed = true;

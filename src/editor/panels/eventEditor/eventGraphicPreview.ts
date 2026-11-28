@@ -193,7 +193,9 @@ export function renderFootprintPreview(input: {
   const tileSize = input.tileSize ?? TILE_PX;
   const resource = eventGraphicPreviewResource(store.getCurrent(), input.graphic);
   const baseScale = eventGraphicRenderScale(input.graphic, tileSize);
-  const scale = resource?.kind === "sprite" && resource.propTileScale ? baseScale * (tileSize / 16) : baseScale;
+  const scale = normalizeCharacterScale(
+    resource?.kind === "sprite" && resource.propTileScale ? baseScale * (tileSize / 16) : baseScale,
+  );
   const layout = footprintPreviewLayout({ footprint: input.footprint, scale, tileSize: input.tileSize,
     ...(resource?.kind === "sprite"
       ? {

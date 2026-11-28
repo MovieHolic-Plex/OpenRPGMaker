@@ -19,7 +19,7 @@ import { playSoundEffect } from "@/player/audio";
 import { characterDepth, characterSpriteY, footprintSpriteX, mapUpperTileDepth } from "@/player/characterDepth";
 import { reliefCellLiftPx } from "@/player/reliefStrips";
 import { UNIT_FOOTPRINT } from "@/project/footprint";
-import type { CharacterFootprint, GameMap, Project } from "@/project/types";
+import type { CharacterFootprint, EventPage, GameMap, Project } from "@/project/types";
 import { applyDoorCue, DOOR_OPEN_SE, doorSe } from "@/player/playSceneDoorway";
 import { projectSeCue } from "@/project/seCues";
 import { mapDoorForCells, openMapDoorNow } from "@/player/playSceneDoors";
@@ -910,6 +910,7 @@ export function activeInteractivePropFrameForEvent(
   scene: PlaySceneContext,
   eventId: string,
   expectedTextureKey?: string,
+  interaction?: EventPage["interaction"],
 ): string | undefined {
   const map = activePropHostFx.get(scene);
   const state = map?.get(eventId);
@@ -917,6 +918,13 @@ export function activeInteractivePropFrameForEvent(
   if (expectedTextureKey !== undefined && state.textureKey !== expectedTextureKey) {
     if (!state.playing) map!.delete(eventId);
     return undefined;
+  }
+  if (!state.playing) {
+    const awaitingTransition = interaction?.kind === "container" && (interaction.searched === true) !== state.expectSearched;
+    if (!awaitingTransition) {
+      map!.delete(eventId);
+      return undefined;
+    }
   }
   return state.heldFrame;
 }
@@ -1276,6 +1284,12 @@ export async function playInteractivePropFx(
     if (!reverse && prop.playback === "break") attachPropGroundShadow(scene, cellKey, cell, prop, size, finalDepth, true, hostFp);
     if (!reverse && prop.playback === "loopAfterOpen" && finalSprite?.active) {
       attachPropLoop(scene, cellKey, finalSprite as unknown as Phaser.GameObjects.Image, prop, cell, size, finalDepth, hostFp);
+    }
+    const latestView = runtimeEventViewById(store.getCurrent(), scene.map, scene.session, scene.eventPositions, hostEventId);
+    const awaitingContainerTransition = latestView?.page?.interaction?.kind === "container"
+      && (latestView.page.interaction.searched === true) !== state.expectSearched;
+    if (!awaitingContainerTransition && hostMap.get(hostEventId) === state) {
+      hostMap.delete(hostEventId);
     }
     return true;
   }

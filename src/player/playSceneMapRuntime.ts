@@ -975,6 +975,7 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
       scene as unknown as PlaySceneContext,
       event.id,
       spriteTexture?.texture,
+      view.page?.interaction,
     );
     const frame =
       activePropFrame !== undefined
