@@ -1,12 +1,11 @@
 /* src/styles/map/inline-assist.css
    캔버스 인라인 어시스트 — 선택 액션 칩, 제안 인라인 승인, 영역 작업 진행 배지. */
 
-/* 선택 영역 액션 바: 한 줄 AI 입력(자라남) + 같은 상자 안의 아이콘 도구.
-   position 없으면 flex 형제로 캔버스를 밀고 left/top이 무시된다.
-   줄 높이 20px · 버튼 30px 이 기준이다 — 입력창이 여러 줄로 자라면 도구와 실행 버튼은 아래에 붙는다. */
+/* 선택 영역 액션 바 (안 B — 초미니멀 4버튼 1줄 HUD + 펼침 서랍 + 더보기 팝오버).
+   position 없으면 flex 형제로 캔버스를 밀고 left/top이 무시된다. */
 .selection-action-chips,
 .selection-action-chips.build-palette-floating {
-  align-items: flex-end;
+  align-items: stretch;
   animation: selection-action-in 90ms ease-out;
   background: var(--bg-surface);
   border: 1px solid var(--border-default);
@@ -14,15 +13,16 @@
   box-shadow: var(--shadow-pop);
   box-sizing: border-box;
   display: flex;
-  flex-wrap: wrap;
-  gap: 2px;
+  flex-direction: column;
+  gap: 0;
   left: auto;
-  padding: 4px 4px 4px 10px;
+  max-width: min(520px, calc(100vw - 16px));
+  padding: 5px 6px;
   pointer-events: auto;
   position: fixed;
   right: auto;
   top: auto;
-  width: 480px;
+  width: max-content;
   z-index: 240;
 }
 
@@ -40,14 +40,384 @@
   .selection-action-chips { animation: none; }
 }
 
+/* 1줄 메인 컴팩트 HUD 행 */
+.selection-compact-row {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  justify-content: space-between;
+}
+
+.selection-context-actions {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 4px;
+}
+
+.selection-compact-utils {
+  align-items: center;
+  display: flex;
+  flex: 0 0 auto;
+  gap: 2px;
+}
+
+.selection-context-action {
+  align-items: center;
+  background: var(--bg-hover);
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  font: 600 11.5px/1 var(--font-ui, system-ui, sans-serif);
+  gap: 4px;
+  height: 32px;
+  padding: 0 9px;
+  white-space: nowrap;
+}
+
+.selection-context-action > svg {
+  flex: 0 0 auto;
+  height: 13px;
+  width: 13px;
+}
+
+.selection-context-action:hover:not(:disabled) {
+  border-color: var(--border-default);
+  color: var(--text-1);
+}
+
+.selection-context-action.is-top {
+  background: var(--accent-muted);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border-default));
+  color: var(--accent);
+}
+
+.selection-context-action.is-ai-toggle {
+  background: transparent;
+  border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--border-default));
+  color: var(--accent);
+}
+
+.selection-context-action.is-ai-toggle:hover {
+  background: var(--accent-muted);
+}
+
+.selection-context-action.is-active,
+.selection-context-action.is-active:hover,
+.selection-context-action.is-ai-toggle.is-active,
+.selection-context-action.is-ai-toggle.is-active:hover {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: var(--on-accent);
+}
+
+.selection-context-action:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.selection-context-rank {
+  font-size: 10px;
+  font-weight: 800;
+  opacity: 0.72;
+}
+
+.selection-context-spark {
+  height: 13px;
+  width: 13px;
+}
+
+/* 구역 태그 핀 버튼 — 미저장 시 컴팩트 아이콘, 저장 시 짧은 구역 이름 함께 표시 */
+.selection-zone-pin {
+  align-items: center;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: var(--text-2);
+  cursor: pointer;
+  display: inline-flex;
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  gap: 3px;
+  height: 32px;
+  max-width: 130px;
+  min-width: 32px;
+  justify-content: center;
+  padding: 0 6px;
+  white-space: nowrap;
+}
+
+.selection-zone-pin:hover,
+.selection-zone-pin.is-open {
+  background: var(--bg-hover);
+  color: var(--text-1);
+}
+
+.selection-zone-pin.is-saved {
+  background: var(--accent-muted);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--border-default));
+  color: var(--accent);
+  padding: 0 8px;
+}
+
+.selection-zone-pin > svg {
+  flex: 0 0 auto;
+  height: 14px;
+  width: 14px;
+}
+
+.selection-zone-pin-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.selection-zone-pin-text:empty {
+  display: none;
+}
+
+/* 펼침 서랍 */
+.selection-drawer {
+  border-top: 1px solid var(--border-default);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+  padding-top: 6px;
+}
+
+.selection-drawer[hidden],
+.selection-drawer-guardrail[hidden],
+.selection-npc-palette[hidden],
+.selection-npc-spec-preview[hidden],
+.selection-drawer-presets[hidden],
+.selection-drawer-composer[hidden],
+.selection-zone-tag-editor[hidden],
+.selection-more-popover[hidden] {
+  display: none;
+}
+
+/* 12종 NPC 아키타입 팔레트 */
+.selection-npc-palette {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 2px;
+}
+
+.selection-npc-cat-row {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: space-between;
+}
+
+.selection-npc-cats {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.selection-npc-cat-btn {
+  background: var(--bg-hover);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--text-2);
+  cursor: pointer;
+  font: 600 10.5px/1 var(--font-ui, system-ui, sans-serif);
+  height: 22px;
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+.selection-npc-cat-btn:hover {
+  color: var(--text-1);
+}
+
+.selection-npc-cat-btn.is-active {
+  background: var(--accent-muted);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border-default));
+  color: var(--accent);
+}
+
+.selection-npc-direct-btn {
+  background: transparent;
+  border: 1px dashed var(--border-default);
+  border-radius: 999px;
+  color: var(--text-2);
+  cursor: pointer;
+  font: 600 10.5px/1 var(--font-ui, system-ui, sans-serif);
+  height: 22px;
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+.selection-npc-direct-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.selection-npc-grid {
+  display: grid;
+  gap: 5px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.selection-npc-card {
+  align-items: flex-start;
+  background: var(--bg-hover);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  color: var(--text-1);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 7px;
+  text-align: left;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+
+.selection-npc-card:hover {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border-default));
+}
+
+.selection-npc-card.is-rec {
+  border-color: color-mix(in srgb, var(--accent) 32%, var(--border-default));
+}
+
+.selection-npc-card.is-selected {
+  background: var(--accent-muted);
+  border-color: var(--accent);
+}
+
+.selection-npc-card-top {
+  align-items: center;
+  display: flex;
+  gap: 4px;
+  width: 100%;
+}
+
+.selection-npc-card-ic {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.selection-npc-card-name {
+  font: 700 11px/1.15 var(--font-ui, system-ui, sans-serif);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selection-npc-card.is-selected .selection-npc-card-name {
+  color: var(--accent);
+}
+
+.selection-npc-card-sub {
+  color: var(--text-3);
+  font: 500 9.5px/1.25 var(--font-ui, system-ui, sans-serif);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.selection-npc-spec-bar {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.selection-npc-spec-summary {
+  color: var(--text-2);
+  font: 600 10.5px/1.2 var(--font-ui, system-ui, sans-serif);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.selection-npc-spec-toggle {
+  background: transparent;
+  border: 0;
+  color: var(--accent);
+  cursor: pointer;
+  flex: 0 0 auto;
+  font: 600 10.5px/1 var(--font-ui, system-ui, sans-serif);
+  padding: 2px 4px;
+  white-space: nowrap;
+}
+
+.selection-npc-spec-toggle:hover {
+  text-decoration: underline;
+}
+
+.selection-npc-spec-preview {
+  background: var(--bg-base, var(--bg-hover));
+  border: 1px solid var(--border-default);
+  border-radius: 7px;
+  color: var(--text-2);
+  font: 400 10.5px/1.45 var(--font-mono, monospace);
+  margin: 0;
+  max-height: 120px;
+  overflow: auto;
+  padding: 6px 8px;
+  white-space: pre-wrap;
+}
+
+.selection-drawer-guardrail {
+  color: var(--text-3);
+  font: 600 10.5px/1.2 var(--font-ui, system-ui, sans-serif);
+  padding: 0 4px;
+}
+
+.selection-drawer-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 0 2px;
+}
+
+.selection-preset-pill {
+  background: var(--bg-hover);
+  border: 1px solid var(--border-default);
+  border-radius: 999px;
+  color: var(--text-1);
+  cursor: pointer;
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  height: 24px;
+  padding: 0 9px;
+  white-space: nowrap;
+}
+
+.selection-preset-pill:hover {
+  background: var(--accent-muted);
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--border-default));
+  color: var(--accent);
+}
+
+.selection-preset-pill.is-instant {
+  border-style: dashed;
+  color: var(--accent);
+}
+
+.selection-drawer-composer {
+  align-items: flex-end;
+  display: flex;
+  gap: 3px;
+  padding-left: 4px;
+}
+
 .selection-action-spark {
   align-self: flex-start;
   color: var(--accent);
   flex: 0 0 auto;
-  height: 16px;
+  height: 15px;
   margin: 7px 2px 0 0;
-  order: 0;
-  width: 16px;
+  width: 15px;
 }
 
 .selection-action-prompt {
@@ -55,12 +425,11 @@
   border: 0;
   box-sizing: border-box;
   color: var(--text-1);
-  flex: 1 1 160px;
-  font: 400 13px/20px var(--font-ui, system-ui, sans-serif);
+  flex: 1 1 200px;
+  font: 400 12.5px/20px var(--font-ui, system-ui, sans-serif);
   height: 30px;
   margin: 0;
   min-width: 0;
-  order: 1;
   outline: none;
   overflow-y: hidden;
   padding: 5px 4px;
@@ -71,18 +440,127 @@
   color: var(--text-3);
 }
 
-.selection-action-tools {
+.selection-zone-tag-editor {
   align-items: center;
   display: flex;
+  gap: 6px;
+  padding: 0 2px;
+}
+
+.selection-zone-tag-caption {
+  color: var(--text-2);
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  white-space: nowrap;
+}
+
+.selection-zone-tag-input {
+  background: var(--bg-base, var(--bg-surface));
+  border: 1px solid var(--accent);
+  border-radius: 7px;
+  color: var(--text-1);
+  flex: 1 1 140px;
+  font: 500 12px/18px var(--font-ui, system-ui, sans-serif);
+  height: 26px;
+  min-width: 0;
+  outline: none;
+  padding: 0 8px;
+}
+
+.selection-zone-tag-save {
+  background: var(--accent);
+  border: 0;
+  border-radius: 7px;
+  color: var(--on-accent);
+  cursor: pointer;
+  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
+  height: 26px;
+  padding: 0 10px;
+  white-space: nowrap;
+}
+
+/* 더보기 팝오버 (바 위로 열려 캔버스 하단 잘림 방지) */
+.selection-more-popover {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  border-radius: 11px;
+  bottom: calc(100% + 6px);
+  box-shadow: var(--shadow-pop);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 172px;
+  padding: 5px;
+  position: absolute;
+  right: 6px;
+  z-index: 250;
+}
+
+.selection-more-item {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  color: var(--text-1);
+  cursor: pointer;
+  display: flex;
+  font: 600 12px/1 var(--font-ui, system-ui, sans-serif);
+  gap: 7px;
+  height: 28px;
+  padding: 0 8px;
+  text-align: left;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.selection-more-item > svg {
+  color: var(--text-2);
   flex: 0 0 auto;
-  gap: 1px;
-  order: 2;
+  height: 15px;
+  width: 15px;
+}
+
+.selection-more-item:hover:not(:disabled) {
+  background: var(--bg-hover);
+}
+
+.selection-more-item:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.selection-more-item.is-danger:hover {
+  background: var(--danger-muted);
+  color: var(--danger);
+}
+
+.selection-more-item.is-danger:hover > svg {
+  color: var(--danger);
+}
+
+.selection-more-item.is-armed {
+  background: var(--danger-muted);
+  color: var(--danger);
+}
+
+.selection-more-label {
+  flex: 1 1 auto;
+}
+
+.selection-more-kbd {
+  color: var(--text-3);
+  font: 500 10.5px/1 var(--font-mono, monospace);
+}
+
+.selection-more-sep {
+  background: var(--border-default);
+  height: 1px;
+  margin: 3px 4px;
 }
 
 .selection-action-sep {
   background: var(--border-default);
   height: 16px;
-  margin: 0 3px;
+  margin: 0 2px;
   width: 1px;
 }
 
@@ -96,17 +574,17 @@
   display: inline-flex;
   flex: 0 0 auto;
   font: 600 12px/1 var(--font-ui, system-ui, sans-serif);
-  height: 30px;
+  height: 32px;
   justify-content: center;
   padding: 0;
   white-space: nowrap;
-  width: 30px;
+  width: 32px;
 }
 
 .selection-action-chip > svg {
   display: block;
-  height: 18px;
-  width: 18px;
+  height: 17px;
+  width: 17px;
 }
 
 .selection-action-chip:hover {
@@ -119,18 +597,16 @@
   outline: none;
 }
 
-.selection-action-chip.is-danger:hover {
-  background: var(--danger-muted);
-  color: var(--danger);
+.selection-action-chip.is-active {
+  background: var(--accent-muted);
+  color: var(--accent);
 }
 
-/* 실행 — 입력이 있을 때만 강조색. 비어 있으면 누르면 무엇을 할지 적으라고 한다(바로 깔기면 숲). */
 .selection-action-chip.selection-action-send {
   background: var(--accent);
-  border-radius: 10px;
+  border-radius: 9px;
   color: var(--on-accent);
   margin-left: 2px;
-  order: 4;
 }
 
 .selection-action-chip.selection-action-send:hover {
@@ -148,11 +624,6 @@
   color: var(--accent);
 }
 
-/* 바로 깔기 토글 — 실행 버튼 바로 앞. 켜지면 강조색 테두리로 「Enter 가 곧바로 깐다」를 보인다. */
-.selection-action-chip.selection-action-stamp {
-  order: 3;
-}
-
 .selection-action-chip.selection-action-stamp.is-active {
   background: var(--accent-muted);
   box-shadow: inset 0 0 0 1.5px var(--accent);
@@ -163,41 +634,24 @@
   fill: currentColor;
 }
 
-/* 넓은 영역 「지우기」의 확인 상태 — 한 번 더 눌러야 실제로 지워진다. */
-.selection-action-chip.is-armed {
-  background: var(--danger-muted);
-  color: var(--danger);
-  padding: 0 10px;
-  width: auto;
-}
-
-.selection-action-chip.is-armed:hover {
-  background: var(--danger);
-  color: var(--on-accent);
-}
-
-/* 휴대 폭: 캔버스가 100~160px 만 남아 줄이 입력칸 88px·동작 5개 잘림으로 찌그러졌다(vm-qa15 #36·#37).
-   EditScene 이 left 8px · max-width(화면-16px)로 놓고, 여기서는 폭을 화면에 맞추고 버튼을 34px 로 키운다(터치 #61:
-   30px 는 작다. 34px 아홉 개가 390 한 줄에 들어간다).
-   경계 600px 는 EditScene 의 SELECTION_CHIPS_NARROW_VIEWPORT 와 같다. */
 @media (max-width: 599px) {
   .selection-action-chips,
   .selection-action-chips.build-palette-floating {
     width: calc(100vw - 16px);
   }
-  .selection-action-prompt {
-    flex-basis: 100%;
-  }
-  .selection-action-tools {
+  .selection-compact-row {
     flex-wrap: wrap;
-    flex: 1 1 auto;
   }
+  .selection-context-actions {
+    flex-wrap: wrap;
+  }
+  .selection-npc-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .selection-context-action,
+  .selection-zone-pin,
   .selection-action-chip {
-    height: 34px;
-    min-width: 34px;
-  }
-  .selection-action-chip.is-icon {
-    width: 34px;
+    height: 32px;
   }
 }
 
