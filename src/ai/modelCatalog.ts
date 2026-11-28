@@ -72,6 +72,16 @@ const ANTHROPIC_MODELS: readonly string[] = [
   "claude-haiku-5-5",
 ];
 
+const AGY_ACP_MODELS: readonly string[] = [
+  "gemini-4-argon",
+  "gemini-4-neon",
+  "gemini-4-carbon",
+  "gemini-4-hydrogen",
+  "gemini-3.8-flash",
+  "claude-sonnet-5-5",
+  "claude-opus-5-5",
+];
+
 /**
  * 제공자별 모델 목록. 카탈로그 행이 없는 제공자는 레지스트리 defaultModel 하나로 떨어진다(modelCatalogForAuthMode).
  * 옛 게이트웨이 그룹은 걷어냈다 — 그 모델들에 닿을 제공자가 레지스트리에 없다.
@@ -80,6 +90,9 @@ const PROVIDER_MODELS: Readonly<Record<string, readonly string[]>> = {
   [ANTIGRAVITY_PROVIDER_ID]: ANTIGRAVITY_MODELS,
   [CODEX_PROVIDER_ID]: CODEX_MODELS,
   anthropic: ANTHROPIC_MODELS,
+  "local-cli:codex": CODEX_MODELS,
+  "local-cli:claude": ANTHROPIC_MODELS,
+  "local-cli:agy": AGY_ACP_MODELS,
 };
 
 /** 각 제공자에서 최신으로 치는 모델(2026-11-04 기준). 그 밖의 카탈로그 항목은 옛 모델이다. */
@@ -87,6 +100,9 @@ const LATEST_MODEL_IDS: Readonly<Record<string, readonly string[]>> = {
   [ANTIGRAVITY_PROVIDER_ID]: ["gemini-4-argon", "gemini-3.8-flash"],
   [CODEX_PROVIDER_ID]: [ASSISTANT_CHATGPT_MODEL, "gpt-6.2-astra", "gpt-6-astra", "gpt-6-luna"],
   anthropic: ANTHROPIC_MODELS,
+  "local-cli:codex": [ASSISTANT_CHATGPT_MODEL, "gpt-6.2-astra", "gpt-6-astra", "gpt-6-luna"],
+  "local-cli:claude": ANTHROPIC_MODELS,
+  "local-cli:agy": ["gemini-4-argon", "gemini-4-neon", "gemini-4-carbon", "gemini-4-hydrogen", "gemini-3.8-flash", "claude-sonnet-5-5", "claude-opus-5-5"],
 };
 
 /**

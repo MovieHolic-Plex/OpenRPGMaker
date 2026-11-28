@@ -48,6 +48,11 @@ export const CHATGPT_SUBSCRIPTION_ENGINE: AssistantEngineChoice = {
   kind: "local-cli", cli: "codex", routineModel: ASSISTANT_CHATGPT_MODEL, deepModel: ASSISTANT_CHATGPT_MODEL, effort: ASSISTANT_CHATGPT_EFFORT,
 };
 
+/** Google Antigravity 공식 ACP 구독 기본: 일상 Argon + 깊은 작업 Neon. */
+export const AGY_SUBSCRIPTION_ENGINE: AssistantEngineChoice = {
+  kind: "local-cli", cli: "agy", routineModel: "gemini-4-argon", deepModel: "gemini-4-neon", effort: "medium",
+};
+
 const ready = (rows: readonly DetectedCli[], id: LocalCliEngineId): boolean =>
   rows.some((row) => row.id === id && row.state === "ready" && row.billing === "subscription");
 
@@ -65,6 +70,9 @@ export function planCandidates(rows: readonly DetectedCli[], accounts: readonly 
   }
   if (ready(rows, "claude")) {
     out.push({ key: "claude-cli", kind: "local-cli", name: "Claude 구독", setup: "Sonnet 5.5 하나가 계획부터 만들기까지 해요.", engine: CLAUDE_SUBSCRIPTION_ENGINE });
+  }
+  if (ready(rows, "agy")) {
+    out.push({ key: "agy-cli", kind: "local-cli", name: "Google Antigravity 구독", setup: "공식 Antigravity ACP(Gemini 4)로 안전하게 연결해요.", engine: AGY_SUBSCRIPTION_ENGINE });
   }
   // Google Antigravity 직접 OAuth와 종료된 Gemini CLI 는 추천 후보에서 제외한다(계정 정지 방지).
   return out;

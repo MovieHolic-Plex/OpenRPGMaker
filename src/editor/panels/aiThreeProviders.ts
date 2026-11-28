@@ -15,7 +15,7 @@ import { modelForRole, type RoleModel } from "@/ai/modelRoles";
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "@/ai/oauth/credentials";
 import { ANTHROPIC_PROVIDER_ID } from "@/ai/ohMyPiProviders";
 import { listKnownOpenAiCompatEndpoints, type OpenAiCompatEndpointPublic } from "@/ai/openAiCompat";
-import { saveProviderPin } from "@/ai/providerPin";
+import { loadProviderPin, saveProviderPin } from "@/ai/providerPin";
 import { lowestRemaining } from "@/ai/providerQuota";
 import { AI_AUTO_PICK_EVENT, currentProviderId, lastAutoRoutes, runAutoProviderPick } from "@/editor/panels/aiAutoProvider";
 import { AI_CONNECTION_STATUS_CHANGED_EVENT, getAiConnectionStatus, refreshAiConnectionStatus, resetAiConnectionStatusCache } from "@/editor/panels/aiConnectionStatus";
@@ -55,7 +55,7 @@ interface FamilyMeta {
   readonly label: string;
   readonly idleSub: string;
   readonly oauthId: string;
-  readonly cliId: "codex" | "claude" | "gemini";
+  readonly cliId: "codex" | "claude" | "agy";
   readonly defaultModel: string;
   readonly defaultEffort: "low" | "medium" | "high";
   readonly models: readonly { readonly id: string; readonly label: string }[];
@@ -115,31 +115,33 @@ const FAMILY_META: Readonly<Record<CoreProviderFamily, FamilyMeta>> = {
     label: "Gemini",
     idleSub: "Google",
     oauthId: ANTIGRAVITY_PROVIDER_ID,
-    cliId: "gemini",
+    cliId: "agy",
     defaultModel: "gemini-4-argon",
     defaultEffort: "medium",
     models: [
+      { id: "gemini-4-neon", label: "Gemini 4 Neon" },
+      { id: "gemini-4-carbon", label: "Gemini 4 Carbon" },
       { id: "gemini-4-argon", label: "Gemini 4 Argon" },
       { id: "gemini-3.8-flash", label: "Gemini 3.8 Flash" },
-      { id: "gemini-3.7-flash", label: "Gemini 3.7 Flash" },
     ],
     efforts: [
       { id: "low", label: "낮음" },
       { id: "medium", label: "보통" },
       { id: "high", label: "높음" },
+      { id: "xhigh", label: "매우 높음" },
     ],
     // Google 계정 직접 OAuth(Antigravity)는 제3자 하네스 사용 시 계정 정지 위험이 있어 비활성화한다.
-    // 추후 공식 Antigravity CLI(agy acp) 경로로 붙인다.
+    // 대신 Google 공식 Antigravity CLI(agy acp) 구독 또는 Gemini API 키로 안전하게 연결한다.
     apiKeyFamily: "google",
     apiKeyPlaceholder: "AIza…",
-    note: "Google 계정 직접 로그인은 계정 정지 위험으로 비활성화되어 있어요. Gemini API 키로 연결해 주세요.",
+    note: "공식 Antigravity CLI(agy acp) 구독 또는 Gemini API 키로 안전하게 연결할 수 있어요.",
   },
 };
 
 function familyOfProvider(providerId: string): CoreProviderFamily | null {
   if (providerId === CODEX_PROVIDER_ID || providerId === localCliProviderId("codex")) return "gpt";
   if (providerId === ANTHROPIC_PROVIDER_ID || providerId === localCliProviderId("claude")) return "claude";
-  if (providerId === ANTIGRAVITY_PROVIDER_ID || providerId === "google-gemini-cli" || providerId === localCliProviderId("gemini")) return "gemini";
+  if (providerId === ANTIGRAVITY_PROVIDER_ID || providerId === "google-gemini-cli" || providerId === localCliProviderId("agy") || providerId === localCliProviderId("gemini")) return "gemini";
   const compat = listKnownOpenAiCompatEndpoints().find((entry) => entry.id === providerId);
   if (compat) {
     if (compat.baseUrl.includes("anthropic.com")) return "claude";
@@ -176,10 +178,10 @@ function resolveFamilyState(family: CoreProviderFamily): ResolvedFamilyState {
   const routes = lastAutoRoutes();
   const current = currentProviderId();
   const active = familyOfProvider(current) === family;
-  // Google Antigravity 직접 OAuth 는 계정 정지 위험으로 비활성화한다(Gemini API 키만 연결로 본다).
+  // Google Antigravity 직접 OAuth 는 계정 정지 위험으로 비활성화한다(공식 agy ACP 또는 Gemini API 키만 연결로 본다).
   const oauthAllowed = family !== "gemini";
   const oauthRoute = oauthAllowed ? routes.find((r) => r.providerId === meta.oauthId && r.connected) : undefined;
-  const cliRoute = family !== "gemini" ? routes.find((r) => r.providerId === localCliProviderId(meta.cliId) && r.connected) : undefined;
+  const cliRoute = routes.find((r) => r.providerId === localCliProviderId(meta.cliId) && r.connected);
   const compat = findCompatFor(family);
   const connStatus = getAiConnectionStatus();
   const liveReady = oauthAllowed && connStatus.kind === "ready" && connStatus.providerId === meta.oauthId;
@@ -187,7 +189,7 @@ function resolveFamilyState(family: CoreProviderFamily): ResolvedFamilyState {
   let routeProviderId: string | undefined;
   let via: ResolvedFamilyState["via"];
   const healthRouteDisabled = family === "gemini"
-    && (health.routeProviderId === meta.oauthId || health.routeProviderId === "google-gemini-cli" || health.routeProviderId === localCliProviderId(meta.cliId));
+    && (health.routeProviderId === meta.oauthId || health.routeProviderId === "google-gemini-cli" || health.routeProviderId === localCliProviderId("gemini"));
   if (health.state === "ok" && health.routeProviderId && !healthRouteDisabled) {
     routeProviderId = health.routeProviderId;
     via = health.via;
@@ -323,6 +325,12 @@ export function renderAiThreeProviders(options: AiThreeProvidersOptions): AiThre
     }),
   });
 
+  const multiSubBar = el("div", {
+    class: "ai-three-detail-head",
+    dataset: { testid: "ai-multi-sub-bar" },
+  });
+  multiSubBar.hidden = true;
+
   const detailHost = el("div", { class: "ai-three-detail", dataset: { testid: "ai-provider-detail" } });
 
   function activateFamily(family: CoreProviderFamily, state: ResolvedFamilyState): void {
@@ -443,7 +451,7 @@ export function renderAiThreeProviders(options: AiThreeProvidersOptions): AiThre
   function paintDetail(family: CoreProviderFamily, state: ResolvedFamilyState): void {
     const meta = FAMILY_META[family];
     const viaLabel = state.via === "local-cli"
-      ? (family === "claude" ? "Claude Code" : family === "gpt" ? "Codex CLI" : "Gemini CLI")
+      ? (family === "claude" ? "Claude Code" : family === "gpt" ? "Codex CLI" : "Antigravity (ACP)")
       : state.via === "env"
         ? "환경 변수"
         : state.via === "compat"
@@ -572,7 +580,7 @@ export function renderAiThreeProviders(options: AiThreeProvidersOptions): AiThre
           on: { click: () => options.onStartOAuth(meta.oauthId) },
         }));
       }
-      if (family === "claude" && state.health.cli?.state === "login-required" && state.health.cli.login.command) {
+      if ((family === "claude" || family === "gemini") && state.health.cli?.state === "login-required" && state.health.cli.login.command) {
         const cmd = state.health.cli.login.command;
         const copyBtn = el("button", {
           class: "ai-settings-button",
@@ -689,6 +697,53 @@ export function renderAiThreeProviders(options: AiThreeProvidersOptions): AiThre
           : "";
     }
 
+    // 다중 구독 요약 · 한도 도달 시 자동 전환 제어 막대(2개 이상 연결 시 표시)
+    const connectedFamilies = CORE_PROVIDER_FAMILIES.filter((f) => states[f].connected);
+    const extraConnected = lastAutoRoutes().filter((r) => r.connected && familyOfProvider(r.providerId) === null);
+    const totalConnected = connectedFamilies.length + extraConnected.length;
+    if (totalConnected >= 2) {
+      const pinned = loadProviderPin();
+      const names = connectedFamilies.map((f) => FAMILY_META[f].label);
+      const summary = el("div", {
+        class: "ai-three-detail-copy",
+        children: [
+          el("div", {
+            class: "ai-three-detail-title",
+            children: [
+              el("span", { class: "ai-settings-pill", dataset: { tone: pinned ? "muted" : "ok" }, text: pinned ? "고정 사용 중" : "자동 전환" }),
+              el("small", {
+                class: "ai-config-help",
+                children: [
+                  el("span", { text: "연결된 구독" }),
+                  ` ${totalConnected} (${names.join(" · ")}${extraConnected.length > 0 ? " · +" + extraConnected.length : ""})`,
+                ],
+              }),
+            ],
+          }),
+        ],
+      });
+      const actions = pinned
+        ? [el("button", {
+          class: "ai-settings-link",
+          attrs: { type: "button" },
+          text: "자동 전환 켜기",
+          dataset: { testid: "ai-multi-sub-auto" },
+          on: {
+            click: () => {
+              saveProviderPin(null);
+              void runAutoProviderPick().finally(() => { if (!disposed) paint(); });
+              paint();
+            },
+          },
+        })]
+        : [el("small", { class: "ai-config-help", text: "한도 시 다음 구독으로 전환" })];
+      multiSubBar.replaceChildren(summary, el("div", { class: "ai-three-detail-actions", children: actions }));
+      multiSubBar.hidden = false;
+    } else {
+      multiSubBar.hidden = true;
+      multiSubBar.replaceChildren();
+    }
+
     paintDetail(selected, states[selected]);
   }
 
@@ -697,7 +752,7 @@ export function renderAiThreeProviders(options: AiThreeProvidersOptions): AiThre
     dataset: { testid: "ai-settings-section-three" },
     children: [
       el("header", { class: "ai-settings-section-header", children: [el("h3", { text: "기본 AI" })] }),
-      el("div", { class: "ai-three-wrap", children: [grid, detailHost] }),
+      el("div", { class: "ai-three-wrap", children: [grid, multiSubBar, detailHost] }),
     ],
   });
 

@@ -179,7 +179,7 @@ export function familyOfModels(models: readonly string[]): ModelFamily | undefin
 
 /** 경로 id 의 계열. 사용자 지정 엔드포인트는 모델 목록이 정한다(familyOfModels). */
 export function familyOfProviderId(providerId: string, models: readonly string[] = []): ModelFamily | undefined {
-  if (providerId === "google-antigravity" || providerId === "local-cli:gemini") return "gemini";
+  if (providerId === "google-antigravity" || providerId === "local-cli:agy" || providerId === "local-cli:gemini") return "gemini";
   if (providerId === "openai-codex" || providerId === "local-cli:codex") return "gpt";
   if (providerId === "local-cli:claude") return "claude";
   if (providerId.startsWith("openai-compat:")) return familyOfModels(models);

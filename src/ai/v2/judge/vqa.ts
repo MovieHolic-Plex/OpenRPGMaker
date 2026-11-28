@@ -350,6 +350,7 @@ export const vqaReviewerLabel = (pick: VqaReviewerPick): string =>
 const LOCAL_CLI_REVIEWERS: readonly { readonly provider: string; readonly model: string; readonly effort?: "medium" | "high" }[] = [
   { provider: "local-cli:codex", model: ASSISTANT_CHATGPT_MODEL, effort: ASSISTANT_CHATGPT_EFFORT },
   { provider: "local-cli:claude", model: ASSISTANT_CLAUDE_MODEL, effort: ASSISTANT_CLAUDE_EFFORT },
+  { provider: "local-cli:agy", model: "gemini-4-argon" },
   { provider: "local-cli:gemini", model: "gemini-4-argon" },
 ];
 

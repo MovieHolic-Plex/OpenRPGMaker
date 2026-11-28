@@ -72,7 +72,14 @@ export const ORIGINAL_MODEL_WINDOWS: Readonly<Record<string, Readonly<Record<str
 
 export function originalContextWindow(config: Pick<AiConfig, "model"> & Partial<Pick<AiConfig, "authMode" | "providerId">>): number {
   const provider = config.providerId ?? "google-antigravity";
-  const models = ORIGINAL_MODEL_WINDOWS[provider === "local-cli:codex" ? "openai-codex" : provider];
+  const mappedProvider = provider === "local-cli:codex"
+    ? "openai-codex"
+    : provider === "local-cli:agy"
+      ? "google-antigravity"
+      : provider === "local-cli:claude"
+        ? "anthropic"
+        : provider;
+  const models = ORIGINAL_MODEL_WINDOWS[mappedProvider];
   const exact = models?.[config.model];
   if (exact !== undefined) return exact;
   if (config.authMode === "chatgpt") {

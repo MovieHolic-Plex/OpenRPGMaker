@@ -1663,11 +1663,20 @@ function modelField(
  * 역할 표의 제공자 선택지를 채운다 — 로그인 제공자 둘 뒤에 사용자 지정 엔드포인트가 이어진다.
  * 저장돼 있는데 목록에 없는 값(지운 엔드포인트)은 그대로 보여 준다: 말없이 다른 제공자로 바꾸지 않고, 요청 시점에 「없는 엔드포인트」 오류가 말한다.
  */
+const ROLE_LOCAL_CLI_PROVIDERS = ["local-cli:codex", "local-cli:claude", "local-cli:agy"] as const;
+
 function fillProviderOptions(select: HTMLSelectElement, current: string): void {
   const rows: OhMyPiProvider[] = [...selectableOhMyPiProviders()];
+  for (const cliProviderId of ROLE_LOCAL_CLI_PROVIDERS) {
+    if (!rows.some((row) => row.id === cliProviderId)) {
+      const cliRow = getOhMyPiProvider(cliProviderId);
+      if (cliRow) rows.push(cliRow);
+    }
+  }
   if (current && !rows.some((row) => row.id === current)) {
     const row = getOhMyPiProvider(current);
-    rows.push(row ? { ...row, label: `${row.label} (지워짐)` } : { id: current, label: current, defaultModel: "", envVars: [], authKind: "apiKey" });
+    const label = row ? (current.startsWith("local-cli:") ? row.label : `${row.label} (지워짐)`) : current;
+    rows.push(row ? { ...row, label } : { id: current, label, defaultModel: "", envVars: [], authKind: "apiKey" });
   }
   select.replaceChildren(...rows.map((row) => el("option", { attrs: { value: row.id }, text: row.label })));
   select.value = current;

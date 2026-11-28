@@ -11,8 +11,8 @@ import type { RoleModel, SpecialistModels, ThinkingEffort } from "./modelRoles";
 import { ASSISTANT_CLAUDE_EFFORT, ASSISTANT_CLAUDE_MODEL } from "./claudeDefault.ts";
 import { ASSISTANT_CHATGPT_EFFORT, ASSISTANT_CHATGPT_MODEL, atLeastMediumEffort, isLegacyTerraModel } from "./chatgptDefault.ts";
 
-export type LocalCliEngineId = "claude" | "codex" | "gemini";
-export const LOCAL_CLI_ENGINE_IDS: readonly LocalCliEngineId[] = ["claude", "codex", "gemini"];
+export type LocalCliEngineId = "claude" | "codex" | "agy" | "gemini";
+export const LOCAL_CLI_ENGINE_IDS: readonly LocalCliEngineId[] = ["claude", "codex", "agy", "gemini"];
 export const LOCAL_CLI_PROVIDER_PREFIX = "local-cli:";
 export const ASSISTANT_ENGINE_STORAGE_KEY = "oprn:assistant-engine";
 
@@ -36,6 +36,7 @@ export interface AssistantEngineChoice {
 export const LOCAL_CLI_LABELS: Readonly<Record<LocalCliEngineId, string>> = {
   claude: "Claude Code (내 PC)",
   codex: "Codex · ChatGPT (내 PC)",
+  agy: "Antigravity · Google (내 PC)",
   gemini: "Gemini CLI (내 PC)",
 };
 
@@ -47,6 +48,7 @@ export const LOCAL_CLI_LABELS: Readonly<Record<LocalCliEngineId, string>> = {
 export const LOCAL_CLI_DEFAULT_MODELS: Readonly<Record<LocalCliEngineId, { routine: string; deep: string }>> = {
   claude: { routine: ASSISTANT_CLAUDE_MODEL, deep: ASSISTANT_CLAUDE_MODEL },
   codex: { routine: ASSISTANT_CHATGPT_MODEL, deep: ASSISTANT_CHATGPT_MODEL },
+  agy: { routine: "gemini-4-argon", deep: "gemini-4-neon" },
   gemini: { routine: "auto", deep: "auto" },
 };
 

@@ -380,6 +380,7 @@ describe("autoProviderPick", () => {
       ["ChatGPT 429 시각이 지났으면 다시 ChatGPT", [on(CHATGPT, { limitedUntil: NOW - 1 }), on(CLAUDE)], CHATGPT, "best"],
       ["한도 모름은 쓸 수 있다", [on(CHATGPT, { usage: { provider: CHATGPT, readable: false, fetchedAt: NOW, windows: [] } }), on(CLAUDE)], CHATGPT, "best"],
       ["도구 호출 불가 길은 건너뛴다", [on(CHATGPT, { toolCalls: false }), on(CLAUDE)], CLAUDE, "fallback"],
+      ["ChatGPT·Claude 모두 한도 → 공식 agy ACP 구독으로 페일오버", [on(CHATGPT, { usage: usage(CHATGPT, 0) }), on(CLAUDE, { usage: usage(CLAUDE, 0) }), on("local-cli:agy")], "local-cli:agy", "fallback"],
       ["비활성화된 Google OAuth 길은 자동 선택하지 않는다", [on(GOOGLE), on(DEEPSEEK)], DEEPSEEK, "best"],
       ["키 길은 사용자 지정 엔드포인트보다 앞", [on(DEEPSEEK), on("xai-oauth")], "xai-oauth", "best"],
       ["사용자 지정 엔드포인트만", [on(DEEPSEEK)], DEEPSEEK, "best"],

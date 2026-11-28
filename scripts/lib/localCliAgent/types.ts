@@ -5,10 +5,10 @@
 // - 우리는 토큰·키를 읽지도, 옮기지도, 서버에 두지도 않는다. 로그인 여부는 CLI 자신의 상태 명령으로만 본다.
 // - 에디터 도구는 실행마다 뜨는 루프백 MCP 서버(mcpHttpServer.ts)로만 노출한다. CLI 의 내장 도구(셸·파일·웹)는 끈다.
 
-export type LocalCliId = "claude" | "codex" | "gemini";
+export type LocalCliId = "claude" | "codex" | "agy" | "gemini";
 
 export const LOCAL_CLI_PROVIDER_PREFIX = "local-cli:";
-export const LOCAL_CLI_IDS: readonly LocalCliId[] = ["claude", "codex", "gemini"];
+export const LOCAL_CLI_IDS: readonly LocalCliId[] = ["claude", "codex", "agy", "gemini"];
 
 export function localCliProviderId(id: LocalCliId): string {
   return `${LOCAL_CLI_PROVIDER_PREFIX}${id}`;

@@ -49,7 +49,7 @@ const OAUTH_PROVIDER_FOR: Readonly<Record<CoreProviderFamily, string>> = {
 const CLI_ID_FOR: Readonly<Record<CoreProviderFamily, LocalCliId>> = {
   gpt: "codex",
   claude: "claude",
-  gemini: "gemini",
+  gemini: "agy",
 };
 
 function initialEntry(family: CoreProviderFamily): CoreProviderHealth {
@@ -109,14 +109,16 @@ async function evaluateFamily(
 ): Promise<CoreProviderHealth> {
   const oauthId = OAUTH_PROVIDER_FOR[family];
   const cliId = CLI_ID_FOR[family];
-  const { auth, error } = await fetchOAuthQuiet(oauthId, options.fresh);
+  // Google Antigravity 직접 OAuth 는 계정 정지 위험으로 비활성화한다(공식 agy ACP 또는 Gemini API 키만 사용).
+  const oauthAllowed = family !== "gemini";
+  const { auth, error } = oauthAllowed ? await fetchOAuthQuiet(oauthId, options.fresh) : { auth: undefined, error: undefined };
   const now = Date.now();
-  const oauthUsable = Boolean(auth && hasUsableCompanionCredential(auth));
+  const oauthUsable = oauthAllowed && Boolean(auth && hasUsableCompanionCredential(auth));
   const cliReady = cli?.state === "ready";
 
   // 1) OAuth(Codex ~/.codex/auth.json 자동 입양 포함) 또는 환경 변수로 연결됨
   if (oauthUsable && auth) {
-    const usage = family === "gpt" || family === "gemini" ? await fetchUsageQuiet(oauthId) : null;
+    const usage = family === "gpt" ? await fetchUsageQuiet(oauthId) : null;
     const verifiedLive = Boolean(usage?.readable);
     if (verifiedLive) liveHealthCheckedAt.set(family, now);
     return {
@@ -133,9 +135,9 @@ async function evaluateFamily(
     };
   }
 
-  // 2) 이 PC 에 로그인된 로컬 CLI(Claude Code · Codex CLI · Gemini CLI)로 연결됨
+  // 2) 이 PC 에 로그인된 로컬 CLI(Claude Code · Codex CLI · Antigravity ACP)로 연결됨
   if (cliReady) {
-    const shouldHealth = options.liveHealth && (family === "claude" || family === "gpt")
+    const shouldHealth = options.liveHealth
       && (options.fresh || (now - (liveHealthCheckedAt.get(family) ?? 0) > HEALTH_TTL_MS));
     if (shouldHealth && localAgentsEnabled()) {
       try {

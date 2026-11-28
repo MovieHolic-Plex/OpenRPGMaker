@@ -58,15 +58,16 @@ const DISABLED_AUTO_PROVIDERS = new Set<string>([
 
 /**
  * 자동 선택 우선순위. ChatGPT 길이 먼저다(조수 출하 기본 = ChatGPT GPT-6.2 Sol · high, 오너 결정 2026-11-28).
- * 편집기 안 ChatGPT 계정·이 PC 의 Codex CLI 구독, 그다음 Claude, 그 밖의 키 길(xAI · OpenRouter …)은 레지스트리 순서,
- * 사용자 지정 엔드포인트(DeepSeek 등 OpenAI 호환)는 맨 뒤.
- * Google Antigravity / Gemini CLI OAuth 는 계정 보호를 위해 제외한다.
+ * 편집기 안 ChatGPT 계정·이 PC 의 Codex CLI 구독, 그다음 Claude, 공식 Antigravity ACP(agy),
+ * 그 밖의 키 길(xAI · OpenRouter …)은 레지스트리 순서, 사용자 지정 엔드포인트(DeepSeek 등 OpenAI 호환)는 맨 뒤.
+ * Google Antigravity 직접 OAuth / Gemini CLI OAuth 는 계정 보호를 위해 제외한다.
  */
 export const AUTO_PROVIDER_PRIORITY: readonly string[] = [
   CODEX_PROVIDER_ID,
   localCliProviderId("codex"),
   ANTHROPIC_PROVIDER_ID,
   localCliProviderId("claude"),
+  localCliProviderId("agy"),
   ...OH_MY_PI_PROVIDERS.map((provider) => provider.id).filter((id) => id !== CODEX_PROVIDER_ID && id !== ANTHROPIC_PROVIDER_ID && !DISABLED_AUTO_PROVIDERS.has(id)),
 ];
 
@@ -104,7 +105,7 @@ export function pickAutoProvider(input: {
 }): AutoPick {
   const { now } = input;
   const ordered = [...input.routes].sort((a, b) => rank(a.providerId) - rank(b.providerId));
-  if (input.pinnedProviderId) {
+  if (input.pinnedProviderId && !DISABLED_AUTO_PROVIDERS.has(input.pinnedProviderId)) {
     const pinned = ordered.find((route) => route.providerId === input.pinnedProviderId);
     const quota = pinned ? providerQuotaState(pinned, now) : "unknown";
     const reset = pinned && quota === "exhausted" ? resetsAt(pinned, now) : Infinity;
