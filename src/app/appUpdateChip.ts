@@ -8,6 +8,8 @@
 import {
   appUpdateButtonView,
   appUpdateIndicatorView,
+  isReleaseNoteHeading,
+  releaseNoteHeadingText,
   releasePageUrl,
   shortVersion,
   type AppUpdateIndicatorView,
@@ -243,6 +245,20 @@ function trapModalTabKey(backdrop: HTMLElement, dialogBox: HTMLElement): () => v
 
 function buildUpdateNoteListItem(line: string): HTMLLIElement {
   const item = document.createElement("li");
+  // 여러 버전이 밀렸을 때 버전마다 앞서는 제목 줄(`## v0.425`) — 점 없이 굵게, 둘째 버전부터는 위를 띄운다.
+  if (isReleaseNoteHeading(line)) {
+    item.textContent = releaseNoteHeadingText(line);
+    item.dataset.testid = "app-update-note-heading";
+    item.dataset.noteHeading = "1";
+    Object.assign(item.style, {
+      fontSize: "13px",
+      fontWeight: "700",
+      letterSpacing: "0.02em",
+      color: "var(--text-2, inherit)",
+      marginTop: "4px",
+    });
+    return item;
+  }
   Object.assign(item.style, {
     display: "flex",
     alignItems: "flex-start",

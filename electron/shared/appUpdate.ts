@@ -294,6 +294,54 @@ export function summarizeReleaseNotes(notes: unknown, max = 3, maxLineLength = 1
   return items;
 }
 
+/** 변경 줄 목록에서 «이 아래는 이 버전의 변경» 을 알리는 제목 줄 접두. 여러 버전이 밀렸을 때만 쓴다. */
+export const RELEASE_NOTE_HEADING_PREFIX = "## ";
+
+export function isReleaseNoteHeading(line: string): boolean {
+  return line.startsWith(RELEASE_NOTE_HEADING_PREFIX);
+}
+
+/** 제목 줄에서 화면에 보일 글자(`v0.425`)만 꺼낸다. */
+export function releaseNoteHeadingText(line: string): string {
+  return line.slice(RELEASE_NOTE_HEADING_PREFIX.length);
+}
+
+export type ReleaseFeedEntry = { readonly tag_name?: unknown; readonly body?: unknown; readonly draft?: unknown; readonly prerelease?: unknown };
+
+/**
+ * 밀린 중간 버전들의 변경을 한 목록으로 모은다(GitHub 릴리스 목록 → 현재 판 초과·최신 판 이하, 새 것부터).
+ * 둘 이상이면 버전마다 제목 줄(`## v0.425`)을 앞세우고, 하나뿐이면 제목 없이 그 줄만 준다(옛 동작과 같다).
+ * 한 판당 perVersionMax 줄, 전체 totalMax 줄까지 — 넘으면 오래된 판부터 잘린다(전체 링크는 화면에 따로 있다).
+ * 변경 줄이 없는 판은 건너뛴다. 모은 게 없으면 빈 배열.
+ */
+export function summarizeReleaseNotesRange(
+  releases: readonly ReleaseFeedEntry[],
+  currentVersion: string,
+  latestVersion: string,
+  options: { readonly perVersionMax?: number; readonly totalMax?: number } = {},
+): string[] {
+  const perVersionMax = options.perVersionMax ?? 5;
+  const totalMax = options.totalMax ?? 40;
+  const picked: { version: string; items: string[] }[] = [];
+  for (const release of releases) {
+    if (release.draft === true || release.prerelease === true) continue;
+    const version = typeof release.tag_name === "string" ? release.tag_name.replace(/^v/i, "").trim() : "";
+    if (!version || compareSemver(version, currentVersion) <= 0 || compareSemver(version, latestVersion) > 0) continue;
+    if (picked.some((entry) => entry.version === version)) continue;
+    const items = summarizeReleaseNotes(release.body, perVersionMax);
+    if (items.length > 0) picked.push({ version, items });
+  }
+  picked.sort((a, b) => compareSemver(b.version, a.version));
+  if (picked.length === 0) return [];
+  if (picked.length === 1) return picked[0].items;
+  const lines: string[] = [];
+  for (const entry of picked) {
+    if (lines.length > 0 && lines.length + 1 + entry.items.length > totalMax) break;
+    lines.push(`${RELEASE_NOTE_HEADING_PREFIX}v${shortVersion(entry.version)}`, ...entry.items);
+  }
+  return lines;
+}
+
 function releaseNotesText(notes: unknown): string {
   if (typeof notes === "string") return htmlToLines(notes);
   // fullChangelog 일 때 electron-updater 는 [{ version, note }] 를 준다. 가장 새 것 하나만 본다.
