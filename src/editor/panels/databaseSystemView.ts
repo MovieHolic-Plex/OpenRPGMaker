@@ -23,6 +23,7 @@ import { seCueTableSection } from "@/editor/panels/databaseSeCueTable";
 import { recordListThumbnail, markDatabaseImageFailed } from "@/editor/panels/databaseRecordThumbnails";
 import { renderSystemStudioOverview, wireSystemStudioOverview } from "@/editor/panels/databaseSystemStudio";
 import { DEFAULT_HUB_ACCENT_COLOR, DEFAULT_HUB_WINDOW_COLOR, renderEscMenuPreviewCard } from "@/editor/panels/databaseMenuPreview";
+import { hubMenuEnabled } from "@/player/hubMenu";
 import { dialogueStyleSection } from "@/editor/panels/databaseDialogueStyleSection";
 import { galleryActive, mergeVnExtras, resolveVnExtras } from "@/project/vnExtras";
 import {
@@ -764,7 +765,9 @@ export function menuSkinPreviewUrl(id: MenuSkinId): string {
  */
 function menuSkinFieldset(project: Project, rerender: SystemRefresh): HTMLElement {
   const saved = resolveMenuSkinId(project.system.menuUiStyle);
-  const isLegacy = project.system.menuLayout === "legacy";
+  const explicitLegacy = project.system.menuLayout === "legacy";
+  const usesHub = hubMenuEnabled(project, undefined);
+  const effectiveLegacy = !usesHub;
   let selected = saved;
   const previewHost = el("div", { class: "db-system-menu-preview-host" });
   const renderPreview = (): void => {
@@ -839,14 +842,14 @@ function menuSkinFieldset(project: Project, rerender: SystemRefresh): HTMLElemen
     dataset: { testid: "db-system-hub-theme" },
     children: [
       el("div", {
-        class: `db-system-hub-theme-inline${isLegacy ? " is-inactive-mode" : ""}`,
+        class: `db-system-hub-theme-inline${effectiveLegacy ? " is-inactive-mode" : ""}`,
         children: [
           makeColorPicker("허브 창 색", "window", hubWinValue, DEFAULT_HUB_WINDOW_COLOR, "db-field-system-menu-theme-window"),
           makeColorPicker("강조 색", "accent", hubAccentValue, DEFAULT_HUB_ACCENT_COLOR, "db-field-system-menu-theme-accent"),
           resetThemeBtn,
         ],
       }),
-      checkboxField("옛 메뉴 스킨 사용", "db-field-system-menu-layout-legacy", isLegacy, (checked) => {
+      checkboxField("옛 메뉴 스킨 사용", "db-field-system-menu-layout-legacy", explicitLegacy, (checked) => {
         updateSystem((draft) => {
           if (checked) draft.system.menuLayout = "legacy";
           else delete draft.system.menuLayout;
@@ -858,14 +861,14 @@ function menuSkinFieldset(project: Project, rerender: SystemRefresh): HTMLElemen
 
   const cards = new Map<MenuSkinId, HTMLButtonElement>();
   const gallery = el("div", {
-    class: `db-system-menu-skin-gallery${isLegacy ? "" : " is-inactive-mode"}`,
+    class: `db-system-menu-skin-gallery${effectiveLegacy ? "" : " is-inactive-mode"}`,
     attrs: { role: "group", "aria-label": "게임 메뉴 디자인" },
     dataset: { testid: "db-field-system-menu-ui-style" },
   });
   const status = el("p", {
     class: "db-system-menu-skin-description",
     attrs: { role: "status" },
-    text: `현재 디자인 · ${MENU_SKINS[saved].label}${isLegacy ? "" : " (허브 사용 중 — 옛 메뉴 켜면 적용)"}`,
+    text: `현재 디자인 · ${MENU_SKINS[saved].label}${effectiveLegacy ? "" : " (허브 사용 중 — 옛 메뉴 켜면 적용)"}`,
     dataset: { testid: "db-system-menu-skin-description" },
   });
   for (const id of listMenuSkinIds()) {
@@ -901,15 +904,15 @@ function menuSkinFieldset(project: Project, rerender: SystemRefresh): HTMLElemen
         const badge = button.querySelector(".db-system-menu-skin-card-state");
         if (badge) badge.textContent = key === id ? "✓ 선택됨" : "선택하기";
       }
-      const nowLegacy = store.getCurrent().system.menuLayout === "legacy";
-      status.textContent = `현재 디자인 · ${skin.label}${nowLegacy ? "" : " (허브 사용 중 — 옛 메뉴 켜면 적용)"}`;
+      const nowEffectiveLegacy = !hubMenuEnabled(store.getCurrent(), undefined);
+      status.textContent = `현재 디자인 · ${skin.label}${nowEffectiveLegacy ? "" : " (허브 사용 중 — 옛 메뉴 켜면 적용)"}`;
       if (clearedHudOverride) rerender();
       else renderPreview();
     });
     cards.set(id, card);
     gallery.append(card);
   }
-  const legacyBanner = !isLegacy
+  const legacyBanner = usesHub
     ? el("div", {
         class: "db-system-menu-mode-banner",
         dataset: { testid: "db-system-menu-hub-active-banner" },
@@ -934,7 +937,7 @@ function menuSkinFieldset(project: Project, rerender: SystemRefresh): HTMLElemen
     : null;
   const legacyDrawer = el("details", {
     class: "db-system-legacy-skin-drawer",
-    attrs: isLegacy ? { open: "" } : {},
+    attrs: effectiveLegacy ? { open: "" } : {},
     dataset: { testid: "db-system-legacy-skin-drawer" },
     children: [
       el("summary", { text: `옛 메뉴 스킨 14종 (${MENU_SKINS[saved].label})` }),
