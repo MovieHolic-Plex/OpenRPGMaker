@@ -524,7 +524,11 @@ function applyEmptyTabFold(header: HTMLElement): void {
         title: hasProfileFold ? `숨긴 탭 모두 보기 — ${names.join(", ")}` : `비어 있는 탭 펼치기 — ${names.join(", ")}`,
         "aria-label": hasProfileFold ? `${group.label}: 숨긴 탭 ${folded.size}개 모두 보기` : `${group.label}: 빈 탭 ${folded.size}개 펼치기`,
       },
-      dataset: { testid: `db-tab-fold-all-${group.slug}`, groupSlug: group.slug },
+      dataset: {
+        testid: `db-tab-fold-all-${group.slug}`,
+        groupSlug: group.slug,
+        ...(hasProfileFold ? { foldKind: "profile" } : {}),
+      },
     });
     child.replaceChildren(caption, ...reveal, all);
   }
@@ -1267,7 +1271,11 @@ function appendSheetHeader(header: HTMLElement, container: HTMLElement): void {
         text: "×",
         attrs: { type: "button", title: "닫기", "aria-label": "메뉴 닫기" },
         dataset: { testid: "db-sheet-close" },
-        on: { click: () => setRailOpen(container, false) },
+        on: {
+          click: () => {
+            closeDatabasePhoneSheet(container);
+          },
+        },
       }),
     ],
   }));
@@ -1374,6 +1382,14 @@ function appendRailCollapseToggle(header: HTMLElement, container: HTMLElement): 
 function setRailOpen(container: HTMLElement, open: boolean): void {
   container.dataset.railOpen = open ? "1" : "0";
   container.querySelector(".db-tab-switcher")?.setAttribute("aria-expanded", String(open));
+}
+
+/** 휴대 폭 바텀 시트가 열려 있으면 닫고 스위처로 포커스를 되돌린다(modalStack Escape 경로 공유). */
+export function closeDatabasePhoneSheet(container: HTMLElement): boolean {
+  if (container.dataset.railOpen !== "1") return false;
+  setRailOpen(container, false);
+  container.querySelector<HTMLElement>(".db-tab-switcher")?.focus();
+  return true;
 }
 
 const railFoldHosts = new WeakSet<HTMLElement>();

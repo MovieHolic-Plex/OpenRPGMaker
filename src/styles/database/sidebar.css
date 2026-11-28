@@ -789,6 +789,10 @@
   content: "빈 탭 펼치기 (";
 }
 
+.database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-all[data-fold-kind="profile"]::before {
+  content: "숨긴 탭 펼치기 (";
+}
+
 .database-modal-backdrop .database-modal-window .database-modal-body .db-tab-fold-all::after {
   content: ")";
 }
@@ -1255,6 +1259,9 @@
   }
   .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab-fold > .db-tab-fold-all::before {
     content: "빈 탭 펼치기 (";
+  }
+  .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab-fold > .db-tab-fold-all[data-fold-kind="profile"]::before {
+    content: "숨긴 탭 펼치기 (";
   }
   .database-modal-backdrop:not(.is-docked) .database-modal-window:has(.db-shared-workspace) .database-modal-body[data-rail-open="1"] > .db-tabs > .db-tab-fold > .db-tab-fold-all::after {
     content: ")";

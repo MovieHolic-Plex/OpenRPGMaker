@@ -141,11 +141,17 @@ describe("editorPanelsSuite29", () => {
         expect(switcher.textContent).toContain("상태");
         expect(switcher.getAttribute("aria-label")).toBe("탭 바꾸기, 지금 상태");
 
-        // 빠른 검색 버튼은 바텀 시트를 열고, 스크림·닫기 단추로 닫는다.
+        // 빠른 검색 버튼은 바텀 시트를 열고, 스크림·닫기 단추로 닫으며 닫기 단추는 스위처로 포커스를 되돌린다.
         root.querySelector<HTMLElement>('[data-testid="db-phone-search-btn"]')!.click();
         expect(root.dataset.railOpen).toBe("1");
         root.querySelector<HTMLElement>('[data-testid="db-rail-scrim"]')!.click();
         expect(root.dataset.railOpen).toBe("0");
+
+        switcher.click();
+        expect(root.dataset.railOpen).toBe("1");
+        root.querySelector<HTMLElement>('[data-testid="db-sheet-close"]')!.click();
+        expect(root.dataset.railOpen).toBe("0");
+        expect(document.activeElement).toBe(switcher);
       });
 
       it("다른 구획의 탭을 한 번에 누르면 즉시 활성 탭이 바뀐다", () => {
