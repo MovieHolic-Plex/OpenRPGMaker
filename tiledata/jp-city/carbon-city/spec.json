@@ -1,0 +1,279 @@
+{
+ "_doc": "jp_city Carbon Medium 건물 원화 저장소(tiledata/jp-city/fable-city/palette.json 100% 잠금, 알파 0/255, 탑 3/4 시점). 아직 시트 굽기 전 원화 단계이며 굽기 시 object-gate/오너 승인 절차를 따른다.",
+ "model": "gemini-4-carbon (thought_level: medium)",
+ "palette": "../fable-city/palette.json",
+ "items": [
+  {
+   "id": "jp-bldg-c-tabako",
+   "replaces": "jp-bldg-shop-tabako",
+   "type": "building",
+   "name": "담배 가게",
+   "en": "tobacco shop",
+   "kind": "structure",
+   "w": 3,
+   "h": 7,
+   "tier": "small",
+   "floors": 2,
+   "doors": [
+    1
+   ],
+   "depth": 2,
+   "tags": [
+    "건물",
+    "country:jp",
+    "tier:small",
+    "setting:city",
+    "street:shop-row",
+    "roof:tile"
+   ],
+   "words": [
+    "담배 가게",
+    "tobacco shop",
+    "たばこ屋",
+    "たばこ"
+   ],
+   "rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+   "program": "jp_tabako",
+   "pixelSha256": "748647e95d2a2c3d34e4aa43fb6f3207bec01349ea599cfe125fbbe019e1164a"
+  },
+  {
+   "id": "jp-bldg-c-teishoku",
+   "replaces": "jp-bldg-shop-teishoku",
+   "type": "building",
+   "name": "백반집",
+   "en": "teishoku diner",
+   "kind": "structure",
+   "w": 4,
+   "h": 7,
+   "tier": "small",
+   "floors": 2,
+   "doors": [
+    1
+   ],
+   "depth": 2,
+   "tags": [
+    "건물",
+    "country:jp",
+    "tier:small",
+    "setting:city",
+    "street:shop-row",
+    "roof:tile"
+   ],
+   "words": [
+    "백반집",
+    "정식당",
+    "teishoku diner",
+    "定食屋",
+    "めし処"
+   ],
+   "rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+   "program": "jp_teishoku",
+   "pixelSha256": "b706dba53b7f2a2e89c48bd2485d6bef2a6028f9f3a69ac4bd656dc14a559049"
+  },
+  {
+   "id": "jp-bldg-c-salon",
+   "replaces": "jp-bldg-shop-salon",
+   "type": "building",
+   "name": "미용실",
+   "en": "hair salon",
+   "kind": "structure",
+   "w": 4,
+   "h": 7,
+   "tier": "small",
+   "floors": 2,
+   "doors": [
+    0
+   ],
+   "depth": 2,
+   "tags": [
+    "건물",
+    "country:jp",
+    "tier:small",
+    "setting:city",
+    "street:shop-row",
+    "roof:flat"
+   ],
+   "words": [
+    "미용실",
+    "헤어샵",
+    "hair salon",
+    "美容室",
+    "ヘアー"
+   ],
+   "rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+   "program": "jp_salon",
+   "pixelSha256": "6010f16a086618ebe6103fc8823f5cee1ec135d25481bebb2dd7ab3900c47a74"
+  },
+  {
+   "id": "jp-bldg-c-realestate",
+   "replaces": "jp-bldg-shop-realestate",
+   "type": "building",
+   "name": "부동산",
+   "en": "real estate agency",
+   "kind": "structure",
+   "w": 4,
+   "h": 7,
+   "tier": "small",
+   "floors": 2,
+   "doors": [
+    2
+   ],
+   "depth": 2,
+   "tags": [
+    "건물",
+    "country:jp",
+    "tier:small",
+    "setting:city",
+    "street:shop-row",
+    "roof:flat"
+   ],
+   "words": [
+    "부동산",
+    "real estate",
+    "不動産屋",
+    "不動産"
+   ],
+   "rule": "상점가 보도에 정면을 붙여 세운다. 좌우 벽을 이웃 가게와 맞대어 줄로 세운다(틈 없이 x + 폭). 문 앞 한 칸은 걷는 바닥으로 비운다.",
+   "program": "jp_realestate",
+   "pixelSha256": "b9157775cc6b73f0be65d40cc9016fb3ec16ae4817542734417b2e046c849e90"
+  },
+  {
+   "id": "jp-bldg-c-vacant",
+   "replaces": "jp-bldg-shop-vacant",
+   "type": "building",
+   "name": "빈 점포(임대)",
+   "en": "vacant shuttered shop",
+   "kind": "structure",
+   "w": 3,
+   "h": 7,
+   "tier": "small",
+   "floors": 2,
+   "doors": [],
+   "depth": 2,
+   "tags": [
+    "건물",
+    "country:jp",
+    "tier:small",
+    "setting:city",
+    "street:shop-row",
+    "roof:flat"
+   ],
+   "words": [
+    "빈 점포",
+    "임대 점포",
+    "vacant shop",
+    "貸店舗",
+    "テナント募集"
+   ],
+   "rule": "상점가 보도에 정면을 붙여 세운다. 셔터가 내려져 있어 출입구 없음.",
+   "pixelSha256": "557e016b465970c63196b46b46a560ac0dff8976219edc0e8a80801a9d4f1262"
+  },
+  {
+   "id": "jp-bldg-c-gas-office",
+   "replaces": "jp-bldg-gas-office",
+   "type": "building",
+   "name": "주유소 사무소",
+   "en": "gas station office",
+   "kind": "structure",
+   "w": 5,
+   "h": 6,
+   "tier": "medium",
+   "floors": 1,
+   "doors": [
+    0
+   ],
+   "depth": 2,
+   "touch": false,
+   "tags": [
+    "건물",
+    "country:jp",
+    "tier:medium",
+    "setting:city",
+    "roof:flat"
+   ],
+   "words": [
+    "주유소",
+    "주유소 사무소",
+    "gas station",
+    "給油所"
+   ],
+   "rule": "주유소 앞마당(콘크리트 바닥) 북쪽에 단독 배치한다. 앞쪽에 주유기 캐노피·진입 차로를 둔다.",
+   "program": "jp_gas_office",
+   "pixelSha256": "71f740d60549be00cc0c8a9fceefe38dfca2cf96833e254b8c26e081c9b93f4f"
+  },
+  {
+   "id": "jp-bldg-c-school-gate",
+   "replaces": "jp-school-gate",
+   "type": "building",
+   "name": "초등학교 정문",
+   "en": "elementary school gate",
+   "kind": "structure",
+   "w": 6,
+   "h": 3,
+   "tier": "small",
+   "floors": 1,
+   "doors": [
+    2,
+    3
+   ],
+   "pass": [
+    2,
+    3
+   ],
+   "depth": 1,
+   "touch": false,
+   "tags": [
+    "구조물",
+    "문",
+    "country:jp",
+    "setting:city",
+    "school"
+   ],
+   "words": [
+    "학교 정문",
+    "초등학교 정문",
+    "school gate",
+    "小学校",
+    "校門"
+   ],
+   "rule": "학교 담장 줄에 맞춰 배치한다. 가운데 2열(x+2, x+3)은 걸어서 지나가는 통로다.",
+   "pixelSha256": "decb0e60a45c85d1e987096b3195fbcdbc81c03ab2b79a63b2eec94ad672debf"
+  },
+  {
+   "id": "jp-in-c-cv-cart-rack",
+   "replaces": "jp-in-cv-cart-rack",
+   "type": "prop",
+   "name": "카트 보관대",
+   "en": "nested shopping cart corral",
+   "kind": "prop",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "슈퍼",
+    "편의점",
+    "카트",
+    "country:jp"
+   ],
+   "words": [
+    "카트 보관대",
+    "쇼핑 카트",
+    "cart rack",
+    "shopping cart"
+   ],
+   "rule": "슈퍼마켓·대형 점포 입구 안쪽 또는 처마 아래 배치. 아랫줄 2칸 막힘.",
+   "pixelSha256": "0935aede29f702df2e223095d16f188a2dcdace214d0b4276ded44b77268e180"
+  }
+ ]
+}

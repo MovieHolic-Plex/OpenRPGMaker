@@ -1,0 +1,790 @@
+/* 자료집 › 공간 › 테마 팩 갤러리 (안 C — 1단 화풍 큐레이션 브라우징) */
+
+.spatial-themes-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background: var(--db-studio-surface);
+  color: var(--db-studio-text-1);
+}
+
+/* 상단 헤더 */
+.spatial-themes-top {
+  flex: none;
+  padding: 18px 22px 14px;
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.spatial-themes-head-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.spatial-themes-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.spatial-themes-title-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.spatial-themes-heading h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--db-studio-text-1);
+}
+
+.spatial-themes-count-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: var(--db-studio-inset);
+  border: 1px solid var(--db-studio-border-subtle);
+  color: var(--db-studio-text-2);
+}
+
+.spatial-themes-heading p {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--db-studio-text-3);
+}
+
+/* 고급 관리 드롭다운 (기존 5탭 접근 통로) */
+.spatial-themes-legacy-menu {
+  position: relative;
+  flex: none;
+}
+
+.spatial-themes-legacy-trigger {
+  cursor: pointer;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--db-studio-border-default);
+  background: var(--db-studio-surface);
+  color: var(--db-studio-text-2);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.spatial-themes-legacy-trigger:hover {
+  border-color: var(--db-studio-accent);
+  color: var(--db-studio-text-1);
+}
+
+.spatial-themes-legacy-pop {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+  width: 228px;
+  padding: 6px;
+  border-radius: 10px;
+  border: 1px solid var(--db-studio-border-default);
+  background: var(--db-studio-surface);
+  box-shadow: var(--db-studio-shadow-pop);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.spatial-themes-legacy-pop[hidden] {
+  display: none;
+}
+
+.spatial-themes-legacy-note {
+  margin: 4px 8px 6px;
+  font-size: 11px;
+  color: var(--db-studio-text-3);
+  line-height: 1.4;
+}
+
+.spatial-themes-legacy-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--db-studio-text-1);
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.spatial-themes-legacy-item:hover {
+  background: var(--db-studio-accent-soft);
+}
+
+.spatial-themes-legacy-item small {
+  color: var(--db-studio-text-3);
+  font-size: 11px;
+}
+
+/* 필터 & 검색 줄 */
+.spatial-themes-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.spatial-themes-search {
+  flex: 1 1 240px;
+  min-width: 180px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--db-studio-border-default);
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-1);
+  font: inherit;
+  font-size: 13px;
+}
+
+.spatial-themes-search:focus {
+  outline: none;
+  border-color: var(--db-studio-accent);
+  background: var(--db-studio-surface);
+}
+
+.spatial-themes-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.spatial-themes-chip {
+  padding: 6px 11px;
+  border-radius: 999px;
+  border: 1px solid var(--db-studio-border-subtle);
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-2);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.spatial-themes-chip:hover {
+  border-color: var(--db-studio-border-default);
+  color: var(--db-studio-text-1);
+}
+
+.spatial-themes-chip.is-active {
+  background: var(--db-studio-accent);
+  border-color: var(--db-studio-accent);
+  color: var(--db-studio-surface);
+  font-weight: 700;
+}
+
+/* 본문 스크롤 영역 */
+.spatial-themes-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 18px 22px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* 테마 팩 그리드 */
+.spatial-themes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+  gap: 14px;
+  align-content: start;
+}
+
+.spatial-theme-card {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border-radius: 12px;
+  border: 1px solid var(--db-studio-border-subtle);
+  background: var(--db-studio-surface);
+  color: var(--db-studio-text-1);
+  text-align: left;
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color 120ms ease, transform 120ms ease, box-shadow 120ms ease;
+}
+
+.spatial-theme-card:hover {
+  border-color: var(--db-studio-accent);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.16);
+}
+
+.spatial-theme-card.is-used {
+  border-color: var(--db-studio-accent);
+}
+
+/* 카드 상단 비주얼 커버 */
+.spatial-theme-cover {
+  position: relative;
+  height: 148px;
+  background: repeating-conic-gradient(var(--spatial-checker-a) 0% 25%, var(--spatial-checker-b) 0% 50%) 0 0 / 16px 16px;
+  border-bottom: 1px solid var(--db-studio-border-subtle);
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: 2px;
+  padding: 4px;
+}
+
+.spatial-theme-cover.has-scene {
+  grid-template-columns: 1.45fr 1fr;
+  grid-template-rows: repeat(2, 1fr);
+  padding: 0;
+  gap: 2px;
+}
+
+.spatial-theme-cover-scene {
+  grid-row: 1 / -1;
+  position: relative;
+  overflow: hidden;
+  background: var(--db-studio-inset);
+}
+
+.spatial-theme-cover-scene img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+  display: block;
+}
+
+.spatial-theme-cover-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
+  background: var(--db-studio-inset);
+  border-radius: 4px;
+  padding: 4px;
+}
+
+.spatial-theme-cover.has-scene .spatial-theme-cover-tile {
+  border-radius: 0;
+}
+
+.database-modal-body .spatial-themes-shell .spatial-theme-cover-tile .spatial-card-thumb-slot,
+.database-modal-body .spatial-themes-shell .spatial-theme-obj-art .spatial-card-thumb-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.database-modal-body .spatial-themes-shell .spatial-theme-cover-tile img,
+.database-modal-body .spatial-themes-shell .spatial-theme-cover-tile canvas,
+.database-modal-body .spatial-themes-shell .spatial-theme-cover-tile .spatial-card-image,
+.database-modal-body .spatial-themes-shell .spatial-theme-obj-art img,
+.database-modal-body .spatial-themes-shell .spatial-theme-obj-art canvas,
+.database-modal-body .spatial-themes-shell .spatial-theme-obj-art .spatial-card-image {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.spatial-theme-cover-sheet {
+  grid-column: 1 / -1;
+  grid-row: 1 / -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+  image-rendering: pixelated;
+}
+
+.spatial-theme-badges {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.spatial-theme-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  backdrop-filter: blur(6px);
+  background: rgba(15, 18, 26, 0.78);
+  color: #f4f6fb;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.spatial-theme-badge.is-used {
+  background: var(--db-studio-accent);
+  color: var(--db-studio-surface);
+  border-color: transparent;
+}
+
+/* 카드 본문 */
+.spatial-theme-body {
+  padding: 12px 14px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.spatial-theme-name {
+  margin: 0;
+  font-size: 14.5px;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--db-studio-text-1);
+}
+
+.spatial-theme-sub {
+  margin: 0;
+  font-size: 11.5px;
+  color: var(--db-studio-text-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spatial-theme-stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.spatial-theme-stat {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-2);
+}
+
+/* 검색 결과 오브젝트 스트립 (전체 검색 시 테마 아래 노출) */
+.spatial-themes-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.spatial-themes-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.spatial-themes-section-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.spatial-themes-section-title h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--db-studio-text-1);
+}
+
+.spatial-themes-section-title span {
+  font-size: 12px;
+  color: var(--db-studio-text-3);
+}
+
+/* ── 테마 상세 뷰 ── */
+.spatial-theme-detail-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.spatial-theme-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  margin-left: -10px;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--db-studio-accent);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.spatial-theme-back:hover {
+  background: var(--db-studio-accent-soft);
+}
+
+.spatial-theme-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.spatial-theme-hero-copy {
+  flex: 1 1 320px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.spatial-theme-hero-copy h2 {
+  margin: 0;
+  font-size: 21px;
+  font-weight: 800;
+  line-height: 1.25;
+}
+
+.spatial-theme-hero-copy p {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--db-studio-text-2);
+  line-height: 1.5;
+}
+
+.spatial-theme-hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.spatial-theme-btn {
+  padding: 8px 13px;
+  border-radius: 8px;
+  border: 1px solid var(--db-studio-border-default);
+  background: var(--db-studio-surface);
+  color: var(--db-studio-text-1);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.spatial-theme-btn:hover {
+  border-color: var(--db-studio-accent);
+}
+
+.spatial-theme-btn.is-primary {
+  background: var(--db-studio-accent);
+  border-color: var(--db-studio-accent);
+  color: var(--db-studio-surface);
+  font-weight: 700;
+}
+
+/* 완성 장소 가로 스크롤 스트립 (1줄 고정으로 대표 건물·소품이 바로 아래 보임) */
+.spatial-theme-places-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 224px;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.spatial-theme-place-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  border: 1px solid var(--db-studio-border-subtle);
+  background: var(--db-studio-surface);
+  overflow: hidden;
+}
+
+.spatial-theme-place-art {
+  height: 132px;
+  background: var(--db-studio-inset);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.spatial-theme-place-art img,
+.spatial-theme-place-art canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+.spatial-theme-place-body {
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.spatial-theme-place-body strong {
+  font-size: 13px;
+  line-height: 1.3;
+  color: var(--db-studio-text-1);
+}
+
+.spatial-theme-place-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.spatial-theme-place-actions button {
+  flex: 1;
+  padding: 5px 8px;
+  border-radius: 6px;
+  border: 1px solid var(--db-studio-border-default);
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-1);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.spatial-theme-place-actions button:hover {
+  border-color: var(--db-studio-accent);
+}
+
+.spatial-theme-place-actions button.is-primary {
+  background: var(--db-studio-accent);
+  border-color: var(--db-studio-accent);
+  color: var(--db-studio-surface);
+}
+
+/* 대표 건물·소품 큐레이션 그리드 */
+.spatial-theme-objects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(136px, 1fr));
+  gap: 10px;
+}
+
+.spatial-theme-obj-card {
+  display: flex;
+  flex-direction: column;
+  padding: 0 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--db-studio-border-subtle);
+  background: var(--db-studio-surface);
+  color: var(--db-studio-text-1);
+  text-align: left;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.spatial-theme-obj-card:hover {
+  border-color: var(--db-studio-accent);
+}
+
+.spatial-theme-obj-card.is-selected {
+  border-color: var(--db-studio-accent);
+  box-shadow: 0 0 0 2px var(--db-studio-accent-soft);
+}
+
+.spatial-theme-obj-art {
+  height: 104px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  margin-bottom: 8px;
+  background: repeating-conic-gradient(var(--spatial-checker-a) 0% 25%, var(--spatial-checker-b) 0% 50%) 0 0 / 14px 14px;
+  overflow: hidden;
+}
+
+.spatial-theme-obj-art img,
+.spatial-theme-obj-art canvas {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 88px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.spatial-theme-obj-card strong {
+  padding: 0 10px;
+  font-size: 12px;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.spatial-theme-obj-card small {
+  padding: 2px 10px 0;
+  font-size: 10.5px;
+  color: var(--db-studio-text-3);
+}
+
+/* 선택한 대표 오브젝트 빠른 액션 바 */
+.spatial-theme-selection-bar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--db-studio-accent);
+  background: var(--db-studio-inset);
+  flex-wrap: wrap;
+}
+
+.spatial-theme-selection-art {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: repeating-conic-gradient(var(--spatial-checker-a) 0% 25%, var(--spatial-checker-b) 0% 50%) 0 0 / 12px 12px;
+  overflow: hidden;
+  flex: none;
+}
+
+.spatial-theme-selection-art img,
+.spatial-theme-selection-art canvas {
+  max-width: 50px;
+  max-height: 50px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.spatial-theme-selection-info {
+  flex: 1 1 200px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.spatial-theme-selection-info strong {
+  font-size: 13.5px;
+  color: var(--db-studio-text-1);
+}
+
+.spatial-theme-selection-info span {
+  font-size: 11.5px;
+  color: var(--db-studio-text-3);
+}
+
+.spatial-theme-selection-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* 포함된 타일셋 시트 칩 목록 */
+.spatial-theme-tilesets-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.spatial-theme-tileset-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 11px;
+  border-radius: 9px;
+  border: 1px solid var(--db-studio-border-subtle);
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-1);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.spatial-theme-tileset-chip:hover {
+  border-color: var(--db-studio-accent);
+  background: var(--db-studio-surface);
+}
+
+.spatial-theme-tileset-chip img,
+.spatial-theme-tileset-chip canvas {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  object-fit: cover;
+  object-position: top left;
+  image-rendering: pixelated;
+}
+
+.spatial-theme-tileset-chip small {
+  color: var(--db-studio-text-3);
+  font-size: 11px;
+}
+
+.spatial-themes-inline-search {
+  width: 240px;
+  max-width: 100%;
+  padding: 6px 10px;
+  border-radius: 7px;
+  border: 1px solid var(--db-studio-border-default);
+  background: var(--db-studio-inset);
+  color: var(--db-studio-text-1);
+  font: inherit;
+  font-size: 12px;
+}
+
+.spatial-themes-empty {
+  padding: 48px 20px;
+  text-align: center;
+  color: var(--db-studio-text-3);
+  font-size: 13px;
+  border: 1px dashed var(--db-studio-border-default);
+  border-radius: 12px;
+}

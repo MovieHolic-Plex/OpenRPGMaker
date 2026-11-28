@@ -606,13 +606,13 @@ describe("editorPanelsSuite30", () => {
       setDatabaseActiveTab("overview");
     });
     describe("spatial navigation acceptance (task 12 owns GREEN)", () => {
-      it("renders the five ordered spatial destinations when the legacy concept route opens", () => {
+      it("renders the theme pack primary destination when the legacy concept route opens", () => {
         // Given: real database host and current outdoor map from beforeEach.
         // When
         renderDatabasePanel(host);
-        // Then: renderer output, not a registry-only assertion.
+        // Then: renderer output exposes the unified theme pack rail entry.
         expect(Array.from(host.querySelectorAll<HTMLElement>('.db-tabs [data-testid^="db-tab-spatial-"]'), node => node.dataset.testid))
-          .toEqual(tabs.map(tab => `db-tab-spatial-${tab}`));
+          .toEqual(["db-tab-spatial-themes"]);
       });
 
       it("leaves the whole project unchanged when opening a legacy authoring route to browse", () => {
@@ -628,13 +628,17 @@ describe("editorPanelsSuite30", () => {
         // Given
         renderDatabasePanel(host);
         const before = structuredClone(store.getCurrent());
-        const control = host.querySelector<HTMLButtonElement>(`[data-testid="db-tab-spatial-${tab}"]`);
+        const themesBtn = host.querySelector<HTMLButtonElement>('[data-testid="db-tab-spatial-themes"]');
+        expect(themesBtn, "Missing rendered spatial theme hub").not.toBeNull();
+        themesBtn?.click();
+        const tabId = `spatial${tab[0]!.toUpperCase()}${tab.slice(1)}`;
+        const control = host.querySelector<HTMLButtonElement>(`[data-testid="spatial-themes-jump-${tabId}"]`);
         expect(control, `Missing rendered spatial route: ${tab}`).not.toBeNull();
         if (!control) throw new Error(`Missing rendered spatial route: ${tab}`);
         // When
         control.click();
         // Then
-        expect(control.classList.contains("active")).toBe(true);
+        expect(themesBtn?.classList.contains("active")).toBe(true);
         expect(store.getCurrent()).toEqual(before);
       });
     });

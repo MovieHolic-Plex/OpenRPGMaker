@@ -21,6 +21,18 @@ const states = new Map<string, BrowserState>();
 let browserScrollEpoch = 0;
 const PAGE_SIZE = 48;
 
+/** 테마 팩 상세에서 「전체 N개 검색」으로 넘어올 때 타일셋·검색어를 미리 채운다. */
+export function setSpatialAssetBrowserTileset(tilesetId: string | null, query = ""): void {
+  const key = `${spatialProjectKey()}:objects`;
+  states.set(key, {
+    query,
+    tilesetId,
+    page: 0,
+    railScrollTop: 0,
+    resultsScrollTop: 0,
+  });
+}
+
 const sortedMemo = new WeakMap<readonly SpatialGalleryCard[], readonly SpatialGalleryCard[]>();
 
 /** 내 것이 앞에 오는 순서. 목록이 메모된 탭(오브젝트 1만 장)은 정렬도 한 번만 한다. */

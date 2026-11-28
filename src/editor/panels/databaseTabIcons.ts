@@ -250,6 +250,13 @@ const TAB_ICONS: Record<DatabaseTab, readonly SvgNodeSpec[]> = {
     { tag: "path", attrs: { d: "M4 6.9 11 10.9 18 6.9" } },
     { tag: "path", attrs: { d: "M11 10.9v8.2" } },
   ],
+  // 테마 팩 — 2×2 화풍 카드 격자
+  spatialThemes: [
+    { tag: "rect", attrs: { x: "3.2", y: "3.2", width: "6.8", height: "6.8", rx: "1.6" } },
+    { tag: "rect", attrs: { x: "12", y: "3.2", width: "6.8", height: "6.8", rx: "1.6" } },
+    { tag: "rect", attrs: { x: "3.2", y: "12", width: "6.8", height: "6.8", rx: "1.6" } },
+    { tag: "rect", attrs: { x: "12", y: "12", width: "6.8", height: "6.8", rx: "1.6" } },
+  ],
   spatialSpaces: [
     { tag: "path", attrs: { d: "M4.2 18.2V7.2L11 3.6l6.8 3.6v11" } },
     { tag: "rect", attrs: { x: "8.4", y: "11.2", width: "5.2", height: "7", rx: "0.6" } },
