@@ -1057,7 +1057,7 @@ export class EditScene extends PhaserRuntime.Scene {
     if (previous && shouldDeferCameraFocus(this.pointerGestureState())) {
       camera.preRender();
       const origin = camera.getWorldPoint(0, 0);
-      this.cameraScrollbars.sync({ ...area, worldView: { ...area.worldView, x: origin.x, y: origin.y } }, map.width * this.activeTileSize(), map.height * this.activeTileSize());
+      this.cameraScrollbars.sync({ ...area, worldView: { ...area.worldView, x: origin.x, y: origin.y } }, map.width * this.activeTileSize(), map.height * this.activeTileSize(), mapId || undefined);
       this.lastNavGeometryKey = navKey;
       return;
     }
@@ -1081,7 +1081,7 @@ export class EditScene extends PhaserRuntime.Scene {
     camera.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);
     camera.preRender();
     const origin = camera.getWorldPoint(0, 0);
-    this.cameraScrollbars.sync({ ...area, worldView: { ...area.worldView, x: origin.x, y: origin.y } }, map.width * this.activeTileSize(), map.height * this.activeTileSize());
+    this.cameraScrollbars.sync({ ...area, worldView: { ...area.worldView, x: origin.x, y: origin.y } }, map.width * this.activeTileSize(), map.height * this.activeTileSize(), mapId || undefined);
     this.lastNavGeometryKey = navKey;
   }
 
