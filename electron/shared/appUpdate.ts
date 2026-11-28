@@ -275,7 +275,7 @@ export function shortVersion(version: string): string {
  * 릴리스 본문(GitHub 피드의 HTML, 또는 마크다운)에서 재시작 뒤 보일 짧은 줄 몇 개를 뽑는다.
  * 「주요 변경」 절이 있으면 그 절의 항목을, 없으면 본문의 첫 항목들을 쓴다. 항목이 없으면 빈 배열.
  */
-export function summarizeReleaseNotes(notes: unknown, max = 3): string[] {
+export function summarizeReleaseNotes(notes: unknown, max = 3, maxLineLength = 140): string[] {
   const text = releaseNotesText(notes);
   if (!text) return [];
   const lines = text.split("\n").map((line) => line.trim());
@@ -289,7 +289,7 @@ export function summarizeReleaseNotes(notes: unknown, max = 3): string[] {
     if (!match) continue;
     // 끝의 PR 번호·커밋 해시 괄호를 난다 — 릴리스 본문 항목은 «… (#5097) (92ea21e)» 꼴이다.
     const item = match[1].replace(/(?:\s*\((?:#\d+|[0-9a-f]{7,40})\))+\s*$/i, "").replace(/\*\*/g, "").trim();
-    if (item) items.push(item.length > 70 ? `${item.slice(0, 69)}…` : item);
+    if (item) items.push(item.length > maxLineLength ? `${item.slice(0, maxLineLength - 1)}…` : item);
   }
   return items;
 }

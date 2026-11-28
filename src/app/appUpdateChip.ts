@@ -8,11 +8,13 @@
 import {
   appUpdateButtonView,
   appUpdateIndicatorView,
+  releasePageUrl,
   shortVersion,
   type AppUpdateIndicatorView,
   type AppUpdateStatus,
 } from "../../electron/shared/appUpdate";
 import { attachDelayedTooltip, hideDelayedTooltip } from "@/editor/delayedTooltip";
+import { isTopModal, registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import type { OprnUpdateBridge } from "@/project/persistence/electronRepository";
 import { toast } from "@/util/toast";
 
@@ -160,7 +162,7 @@ export async function triggerAppUpdateCheck(options: {
 const SVG_NS = "http://www.w3.org/2000/svg";
 const UPDATE_BADGE_BG = "color-mix(in srgb, var(--success, #18764F) 65%, var(--success-indicator, #34C759))";
 
-function buildUpdateIconSvg(kind: AppUpdateIndicatorView["kind"]): SVGSVGElement {
+function buildUpdateIconSvg(kind: AppUpdateIndicatorView["kind"] | "check", sizePx = 16): SVGSVGElement {
   const svg = document.createElementNS(SVG_NS, "svg");
   svg.setAttribute("viewBox", "0 0 16 16");
   svg.setAttribute("fill", "none");
@@ -172,19 +174,76 @@ function buildUpdateIconSvg(kind: AppUpdateIndicatorView["kind"]): SVGSVGElement
   svg.setAttribute("focusable", "false");
   Object.assign(svg.style, {
     display: "block",
-    width: "14px",
-    height: "14px",
+    width: `${sizePx}px`,
+    height: `${sizePx}px`,
     pointerEvents: "none",
   });
-  const paths = kind === "ready"
-    ? ["M8 11.2V3.3", "M4.6 6.7 8 3.3l3.4 3.4", "M3.8 13h8.4"]
-    : ["M8 3v7.2", "M4.6 6.8 8 10.2l3.4-3.4", "M3.8 13h8.4"];
+  const paths = kind === "check"
+    ? ["M3.5 8.5 6.6 11.6 12.6 4.8"]
+    : kind === "ready"
+      ? ["M8 11.2V3.3", "M4.6 6.7 8 3.3l3.4 3.4", "M3.8 13h8.4"]
+      : ["M8 3v7.2", "M4.6 6.8 8 10.2l3.4-3.4", "M3.8 13h8.4"];
   for (const d of paths) {
     const path = document.createElementNS(SVG_NS, "path");
     path.setAttribute("d", d);
     svg.append(path);
   }
   return svg;
+}
+
+const FOCUSABLE_SELECTOR = 'button:not(:disabled), a[href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])';
+
+function trapModalTabKey(backdrop: HTMLElement, dialogBox: HTMLElement): () => void {
+  const onKeyDown = (event: KeyboardEvent): void => {
+    if (event.key !== "Tab" || !isTopModal(backdrop)) return;
+    const focusables = Array.from(dialogBox.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR))
+      .filter((el) => !el.hidden && el.style.display !== "none");
+    if (focusables.length === 0) {
+      event.preventDefault();
+      return;
+    }
+    const first = focusables[0]!;
+    const last = focusables[focusables.length - 1]!;
+    const active = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    if (event.shiftKey) {
+      if (!active || active === first || !dialogBox.contains(active)) {
+        event.preventDefault();
+        last.focus();
+      }
+    } else if (!active || active === last || !dialogBox.contains(active)) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+  document.addEventListener("keydown", onKeyDown, true);
+  return () => document.removeEventListener("keydown", onKeyDown, true);
+}
+
+function buildUpdateNoteListItem(line: string): HTMLLIElement {
+  const item = document.createElement("li");
+  Object.assign(item.style, {
+    display: "flex",
+    alignItems: "flex-start",
+    gap: "10px",
+    fontSize: "14.5px",
+    lineHeight: "1.6",
+    color: "var(--text-1, inherit)",
+    wordBreak: "keep-all",
+  });
+  const dot = document.createElement("span");
+  dot.setAttribute("aria-hidden", "true");
+  Object.assign(dot.style, {
+    width: "7px",
+    height: "7px",
+    borderRadius: "var(--radius-pill, 999px)",
+    background: UPDATE_BADGE_BG,
+    marginTop: "8px",
+    flex: "0 0 auto",
+  });
+  const textSpan = document.createElement("span");
+  textSpan.textContent = line;
+  item.append(dot, textSpan);
+  return item;
 }
 
 export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly element: HTMLButtonElement; dispose(): void } | null {
@@ -204,10 +263,10 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     alignItems: "center",
     justifyContent: "center",
     flex: "0 0 auto",
-    width: "32px",
-    minWidth: "32px",
-    height: "32px",
-    minHeight: "32px",
+    width: "36px",
+    minWidth: "36px",
+    height: "36px",
+    minHeight: "36px",
     padding: "0",
     margin: "0",
     border: "0",
@@ -224,8 +283,8 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     display: "inline-flex",
     alignItems: "center",
     justifyContent: "center",
-    width: "24px",
-    height: "24px",
+    width: "28px",
+    height: "28px",
     borderRadius: "var(--radius-pill, 999px)",
     boxSizing: "border-box",
     transition: "transform var(--transition-fast, 120ms ease), box-shadow var(--transition-fast, 120ms ease), opacity var(--transition-fast, 120ms ease)",
@@ -240,11 +299,12 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
   let currentStatus: AppUpdateStatus | null = null;
   let currentTooltip = "";
   let renderedIconKind: AppUpdateIndicatorView["kind"] | null = null;
-  type PopoverRefs = {
+  type DialogRefs = {
+    readonly backdrop: HTMLDivElement;
     readonly box: HTMLDivElement;
     readonly headIcon: HTMLSpanElement;
     readonly title: HTMLDivElement;
-    readonly sub: HTMLDivElement;
+    readonly sub: HTMLSpanElement;
     readonly closeBtn: HTMLButtonElement;
     readonly progWrap: HTMLDivElement;
     readonly progFill: HTMLDivElement;
@@ -256,16 +316,17 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     readonly hint: HTMLSpanElement;
     readonly laterBtn: HTMLButtonElement;
     readonly primaryBtn: HTMLButtonElement;
+    readonly disposeFocusTrap: () => void;
     iconKind: AppUpdateIndicatorView["kind"] | null;
     notesKey: string | null;
   };
-  let popover: PopoverRefs | null = null;
+  let dialog: DialogRefs | null = null;
 
   const syncBadgeStyle = (): void => {
     if (!currentView) return;
     if (currentView.kind === "downloading") {
       badge.style.background = "var(--success-muted, rgba(24, 118, 79, 0.13))";
-      badge.style.border = `1.5px solid ${UPDATE_BADGE_BG}`;
+      badge.style.border = `1.75px solid ${UPDATE_BADGE_BG}`;
       badge.style.color = UPDATE_BADGE_BG;
       badge.style.boxShadow = hovered
         ? "0 0 0 3px var(--success-muted, rgba(24, 118, 79, 0.13))"
@@ -295,56 +356,43 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     get label() { return currentTooltip; },
   });
 
-  const positionPopover = (): void => {
-    if (!popover) return;
-    const rect = button.getBoundingClientRect();
-    const top = Math.max(12, Math.round(rect.bottom + 8));
-    const right = Math.max(12, Math.round(window.innerWidth - rect.right));
-    popover.box.style.top = `${top}px`;
-    popover.box.style.right = `${right}px`;
-  };
+  function registerDialogModal(backdrop: HTMLElement): void {
+    registerModal(backdrop, () => {
+      if (busy) {
+        if (dialog?.backdrop === backdrop && backdrop.isConnected) registerDialogModal(backdrop);
+        return;
+      }
+      closeDialog(true);
+    });
+  }
 
-  const onOutsidePointerDown = (event: PointerEvent): void => {
-    if (busy || !popover) return;
-    const target = event.target as Node | null;
-    if (target && (popover.box.contains(target) || button.contains(target))) return;
-    closePopover(false);
-  };
-
-  const onPopoverKeyDown = (event: KeyboardEvent): void => {
-    if (event.key !== "Escape" || busy || !popover) return;
-    event.preventDefault();
-    event.stopPropagation();
-    closePopover(true);
-  };
-
-  function closePopover(restoreFocus = false): void {
-    if (!popover) return;
-    const hadFocusInside = popover.box.contains(document.activeElement);
-    popover.box.remove();
-    popover = null;
+  function closeDialog(restoreFocus = false): void {
+    if (!dialog) return;
+    const current = dialog;
+    const hadFocusInside = current.backdrop.contains(document.activeElement);
+    dialog = null;
+    current.disposeFocusTrap();
+    unregisterModal(current.backdrop);
+    current.backdrop.remove();
     button.setAttribute("aria-expanded", "false");
-    document.removeEventListener("pointerdown", onOutsidePointerDown, true);
-    document.removeEventListener("keydown", onPopoverKeyDown, true);
-    window.removeEventListener("resize", positionPopover);
     if ((restoreFocus || hadFocusInside) && button.isConnected && !button.hidden) {
       button.focus();
     }
   }
 
-  const startInstallFromPopover = (): void => {
+  const startInstallFromDialog = (): void => {
     if (busy || currentView?.action !== "install") return;
     busy = true;
     busyStatusText = "업데이트를 준비하고 있어요…";
     button.disabled = true;
     syncBadgeStyle();
-    syncPopoverContents();
+    syncDialogContents();
     const say = (text: string): void => {
       busyStatusText = text;
       currentTooltip = text;
       button.title = text;
       button.setAttribute("aria-label", text);
-      syncPopoverContents();
+      syncDialogContents();
     };
     const { promise, joined } = runInstall(update, options.beforeRestart, say);
     void promise.catch((error: unknown) => {
@@ -354,27 +402,26 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
       if (latest) paint(latest);
       else {
         syncBadgeStyle();
-        syncPopoverContents();
+        syncDialogContents();
       }
       if (!joined) toast(error instanceof Error ? error.message : String(error), "error");
     });
   };
 
-  function syncPopoverContents(): void {
-    if (!popover || !currentView) return;
-    const refs = popover;
+  function syncDialogContents(): void {
+    if (!dialog || !currentView) return;
+    const refs = dialog;
     const view = currentView;
     const currentVer = currentStatus?.currentVersion ? shortVersion(currentStatus.currentVersion) : null;
     const isDownloading = view.kind === "downloading";
 
-    // 아이콘과 헤더 문구 제자리 갱신
     if (refs.iconKind !== view.kind) {
-      refs.headIcon.replaceChildren(buildUpdateIconSvg(view.kind));
+      refs.headIcon.replaceChildren(buildUpdateIconSvg(view.kind, 22));
       refs.iconKind = view.kind;
     }
     if (isDownloading) {
       refs.headIcon.style.background = "var(--success-muted, rgba(24, 118, 79, 0.13))";
-      refs.headIcon.style.border = `1.5px solid ${UPDATE_BADGE_BG}`;
+      refs.headIcon.style.border = `2px solid ${UPDATE_BADGE_BG}`;
       refs.headIcon.style.color = UPDATE_BADGE_BG;
     } else {
       refs.headIcon.style.background = UPDATE_BADGE_BG;
@@ -384,14 +431,13 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     refs.title.textContent = isDownloading
       ? `v${view.version} 내려받는 중`
       : `v${view.version} 업데이트`;
-    refs.sub.hidden = !currentVer;
+    refs.sub.style.display = currentVer ? "inline-flex" : "none";
     refs.sub.textContent = currentVer ? `v${currentVer} → v${view.version}` : "";
 
     refs.closeBtn.disabled = busy;
     refs.closeBtn.style.cursor = busy ? "default" : "pointer";
     refs.closeBtn.style.opacity = busy ? "0.45" : "";
 
-    // 다운로드 진행 막대 제자리 갱신
     refs.progWrap.style.display = isDownloading ? "flex" : "none";
     if (isDownloading) {
       refs.progFill.style.width = `${view.percent ?? 15}%`;
@@ -406,32 +452,7 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
       if (view.notes.length > 0) {
         refs.notesList.style.display = "flex";
         refs.notesEmpty.style.display = "none";
-        refs.notesList.replaceChildren(...view.notes.map((line) => {
-          const item = document.createElement("li");
-          Object.assign(item.style, {
-            display: "flex",
-            alignItems: "flex-start",
-            gap: "7px",
-            fontSize: "12.5px",
-            lineHeight: "1.42",
-            color: "var(--text-1, inherit)",
-            wordBreak: "keep-all",
-          });
-          const dot = document.createElement("span");
-          dot.setAttribute("aria-hidden", "true");
-          Object.assign(dot.style, {
-            width: "5px",
-            height: "5px",
-            borderRadius: "var(--radius-pill, 999px)",
-            background: UPDATE_BADGE_BG,
-            marginTop: "6px",
-            flex: "0 0 auto",
-          });
-          const textSpan = document.createElement("span");
-          textSpan.textContent = line;
-          item.append(dot, textSpan);
-          return item;
-        }));
+        refs.notesList.replaceChildren(...view.notes.map(buildUpdateNoteListItem));
         refs.notesList.scrollTop = prevScrollTop;
       } else {
         refs.notesList.style.display = "none";
@@ -443,7 +464,7 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     refs.statusLine.style.display = busy && busyStatusText ? "block" : "none";
     refs.statusLine.textContent = busyStatusText;
 
-    refs.hint.textContent = view.kind === "ready" ? "앱을 끌 때도 자동 적용" : "";
+    refs.hint.textContent = view.kind === "ready" ? "앱을 끌 때도 자동으로 적용돼요" : "";
 
     refs.laterBtn.textContent = view.kind === "ready" ? "나중에" : "닫기";
     refs.laterBtn.disabled = busy;
@@ -464,26 +485,48 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     refs.primaryBtn.style.opacity = busy ? "0.65" : "";
   }
 
-  function openPopover(): void {
-    if (!currentView || popover) return;
+  function openDialog(): void {
+    if (!currentView || dialog) return;
     hideDelayedTooltip();
+
+    const backdrop = document.createElement("div");
+    backdrop.dataset.testid = "app-update-backdrop";
+    Object.assign(backdrop.style, {
+      position: "fixed",
+      inset: "0",
+      zIndex: "var(--z-app-modal, 2600)",
+      display: "grid",
+      placeItems: "center",
+      padding: "24px",
+      background: "var(--bg-scrim, rgba(15, 15, 15, 0.45))",
+      backdropFilter: "blur(2px)",
+      boxSizing: "border-box",
+    });
+    backdrop.style.setProperty("-webkit-app-region", "no-drag");
+    backdrop.addEventListener("pointerdown", (event) => {
+      if (event.target === backdrop && !busy && isTopModal(backdrop)) closeDialog(true);
+    });
+
     const box = document.createElement("div");
     box.dataset.testid = "app-update-popover";
     box.setAttribute("role", "dialog");
+    box.setAttribute("aria-modal", "true");
     box.setAttribute("aria-label", "새 버전 업데이트");
     Object.assign(box.style, {
-      position: "fixed",
-      zIndex: "var(--z-popover-top, 1201)",
-      width: "min(344px, calc(100vw - 24px))",
-      padding: "14px 16px",
-      borderRadius: "var(--radius-3, 10px)",
+      width: "min(560px, calc(100vw - 48px))",
+      maxHeight: "min(640px, calc(100vh - 64px))",
+      display: "flex",
+      flexDirection: "column",
+      padding: "24px 28px",
+      borderRadius: "var(--radius-4, 14px)",
       border: "1px solid var(--border-default, rgba(55, 53, 47, 0.16))",
       background: "var(--bg-overlay, #ffffff)",
       color: "var(--text-1, #1F1F1E)",
-      boxShadow: "var(--shadow-pop, 0 4px 12px rgba(15, 15, 15, 0.08), 0 12px 32px rgba(15, 15, 15, 0.10))",
-      font: "400 13px/1.45 var(--font-ui, system-ui, sans-serif)",
+      boxShadow: "var(--shadow-modal, 0 8px 24px rgba(15, 15, 15, 0.12), 0 24px 64px rgba(15, 15, 15, 0.18))",
+      font: "400 14.5px/1.55 var(--font-ui, system-ui, sans-serif)",
       textAlign: "left",
       boxSizing: "border-box",
+      overflow: "hidden",
     });
     box.style.setProperty("-webkit-app-region", "no-drag");
 
@@ -493,11 +536,12 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
       display: "flex",
       alignItems: "flex-start",
       justifyContent: "space-between",
-      gap: "10px",
-      marginBottom: "10px",
+      gap: "14px",
+      marginBottom: "18px",
+      flex: "0 0 auto",
     });
     const headLeft = document.createElement("div");
-    Object.assign(headLeft.style, { display: "flex", alignItems: "center", gap: "9px", minWidth: "0" });
+    Object.assign(headLeft.style, { display: "flex", alignItems: "center", gap: "14px", minWidth: "0" });
 
     const headIcon = document.createElement("span");
     headIcon.setAttribute("aria-hidden", "true");
@@ -505,27 +549,34 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
       display: "inline-flex",
       alignItems: "center",
       justifyContent: "center",
-      width: "26px",
-      height: "26px",
+      width: "42px",
+      height: "42px",
       borderRadius: "var(--radius-pill, 999px)",
       flex: "0 0 auto",
       boxSizing: "border-box",
     });
 
     const titleWrap = document.createElement("div");
-    Object.assign(titleWrap.style, { minWidth: "0" });
+    Object.assign(titleWrap.style, { minWidth: "0", display: "flex", flexDirection: "column", gap: "5px" });
     const title = document.createElement("div");
     Object.assign(title.style, {
-      fontSize: "13.5px",
-      fontWeight: "600",
+      fontSize: "19px",
+      fontWeight: "700",
       lineHeight: "1.25",
+      letterSpacing: "-0.01em",
       color: "var(--text-1, inherit)",
     });
-    const sub = document.createElement("div");
+    const sub = document.createElement("span");
     Object.assign(sub.style, {
-      fontSize: "11.5px",
-      color: "var(--text-3, inherit)",
-      marginTop: "2px",
+      alignSelf: "flex-start",
+      padding: "2px 9px",
+      borderRadius: "var(--radius-pill, 999px)",
+      background: "var(--bg-inset, rgba(127, 127, 127, 0.12))",
+      color: "var(--text-2, inherit)",
+      fontFamily: "var(--font-mono, monospace)",
+      fontSize: "12.5px",
+      fontWeight: "500",
+      lineHeight: "1.35",
     });
     titleWrap.append(title, sub);
     headLeft.append(headIcon, titleWrap);
@@ -536,28 +587,31 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     closeBtn.setAttribute("aria-label", "닫기");
     closeBtn.textContent = "×";
     Object.assign(closeBtn.style, {
-      width: "26px",
-      height: "26px",
+      width: "34px",
+      height: "34px",
       padding: "0",
       border: "0",
       borderRadius: "var(--radius-2, 6px)",
       background: "transparent",
       color: "var(--text-3, inherit)",
-      fontSize: "17px",
+      fontSize: "22px",
       lineHeight: "1",
       cursor: "pointer",
       flex: "0 0 auto",
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
     });
-    closeBtn.addEventListener("click", () => { if (!busy) closePopover(true); });
+    closeBtn.addEventListener("click", () => { if (!busy) closeDialog(true); });
     head.append(headLeft, closeBtn);
 
     // 다운로드 진행 막대
     const progWrap = document.createElement("div");
-    Object.assign(progWrap.style, { display: "none", alignItems: "center", gap: "8px", marginBottom: "10px" });
+    Object.assign(progWrap.style, { display: "none", alignItems: "center", gap: "12px", marginBottom: "16px", flex: "0 0 auto" });
     const track = document.createElement("div");
     Object.assign(track.style, {
       flex: "1 1 auto",
-      height: "6px",
+      height: "8px",
       borderRadius: "var(--radius-pill, 999px)",
       background: "var(--bg-inset, rgba(127, 127, 127, 0.2))",
       overflow: "hidden",
@@ -573,8 +627,9 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     track.append(progFill);
     const progPct = document.createElement("span");
     Object.assign(progPct.style, {
-      fontSize: "11.5px",
+      fontSize: "13.5px",
       fontWeight: "600",
+      fontFamily: "var(--font-mono, monospace)",
       color: "var(--text-2, inherit)",
       flex: "0 0 auto",
     });
@@ -583,40 +638,47 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     // 변경 내역 영역
     const bodyBox = document.createElement("div");
     Object.assign(bodyBox.style, {
-      padding: "10px 12px",
-      borderRadius: "var(--radius-2, 6px)",
+      flex: "1 1 auto",
+      minHeight: "120px",
+      display: "flex",
+      flexDirection: "column",
+      padding: "16px 18px",
+      borderRadius: "var(--radius-3, 10px)",
       background: "var(--bg-surface, rgba(127, 127, 127, 0.06))",
       border: "1px solid var(--border-subtle, rgba(127, 127, 127, 0.14))",
-      marginBottom: "12px",
+      marginBottom: "18px",
+      overflow: "hidden",
     });
     const notesHead = document.createElement("div");
     notesHead.textContent = "주요 변경 사항";
     Object.assign(notesHead.style, {
-      fontSize: "11.5px",
+      fontSize: "13.5px",
       fontWeight: "600",
       color: "var(--text-2, inherit)",
-      marginBottom: "6px",
+      marginBottom: "10px",
+      flex: "0 0 auto",
     });
     const notesList = document.createElement("ul");
     notesList.dataset.testid = "app-update-popover-notes";
     Object.assign(notesList.style, {
       margin: "0",
-      padding: "0",
+      padding: "0 4px 0 0",
       listStyle: "none",
       display: "none",
       flexDirection: "column",
-      gap: "5px",
-      maxHeight: "180px",
+      gap: "10px",
+      flex: "1 1 auto",
+      maxHeight: "300px",
       overflowY: "auto",
     });
     const notesEmpty = document.createElement("p");
     notesEmpty.dataset.testid = "app-update-popover-empty";
-    notesEmpty.textContent = "요약된 변경 내역이 없어요. 아래 링크에서 전체 릴리스 노트를 볼 수 있어요.";
+    notesEmpty.textContent = "요약된 변경 내역이 없어요. 아래 링크에서 전체 릴리스 노트를 확인할 수 있어요.";
     Object.assign(notesEmpty.style, {
       margin: "0",
       display: "none",
-      fontSize: "12px",
-      lineHeight: "1.45",
+      fontSize: "14px",
+      lineHeight: "1.6",
       color: "var(--text-2, inherit)",
     });
     const releaseLink = document.createElement("button");
@@ -624,15 +686,17 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     releaseLink.dataset.testid = "app-update-popover-release-link";
     releaseLink.textContent = "전체 릴리스 노트 보기 ↗";
     Object.assign(releaseLink.style, {
-      marginTop: "8px",
+      marginTop: "12px",
       padding: "0",
       border: "0",
       background: "transparent",
       color: "var(--accent, #1F6FC5)",
-      fontSize: "12px",
+      fontSize: "13.5px",
       fontWeight: "500",
       cursor: "pointer",
       textAlign: "left",
+      alignSelf: "flex-start",
+      flex: "0 0 auto",
     });
     releaseLink.addEventListener("click", () => {
       if (currentView) window.open(currentView.releaseUrl, "_blank", "noopener");
@@ -642,10 +706,11 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     const statusLine = document.createElement("div");
     Object.assign(statusLine.style, {
       display: "none",
-      fontSize: "12px",
-      fontWeight: "500",
+      fontSize: "13.5px",
+      fontWeight: "600",
       color: "var(--success, #18764F)",
-      marginBottom: "10px",
+      marginBottom: "14px",
+      flex: "0 0 auto",
     });
 
     // 하단 행동 줄
@@ -654,51 +719,53 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
-      gap: "8px",
+      gap: "12px",
+      flexWrap: "wrap",
+      flex: "0 0 auto",
     });
     const hint = document.createElement("span");
     Object.assign(hint.style, {
-      fontSize: "11.5px",
+      fontSize: "13px",
       color: "var(--text-3, inherit)",
     });
     const actions = document.createElement("div");
-    Object.assign(actions.style, { display: "flex", alignItems: "center", gap: "6px", marginLeft: "auto" });
+    Object.assign(actions.style, { display: "flex", alignItems: "center", gap: "10px", marginLeft: "auto" });
 
     const laterBtn = document.createElement("button");
     laterBtn.type = "button";
     Object.assign(laterBtn.style, {
-      height: "30px",
-      padding: "0 11px",
-      borderRadius: "var(--radius-2, 6px)",
+      height: "40px",
+      padding: "0 18px",
+      borderRadius: "var(--radius-2, 8px)",
       border: "1px solid var(--border-default, rgba(127, 127, 127, 0.3))",
       background: "transparent",
       color: "var(--text-2, inherit)",
-      font: "500 12px/1 var(--font-ui, system-ui, sans-serif)",
+      font: "600 14px/1 var(--font-ui, system-ui, sans-serif)",
       cursor: "pointer",
       whiteSpace: "nowrap",
     });
-    laterBtn.addEventListener("click", () => { if (!busy) closePopover(true); });
+    laterBtn.addEventListener("click", () => { if (!busy) closeDialog(true); });
 
     const primaryBtn = document.createElement("button");
     primaryBtn.type = "button";
     primaryBtn.dataset.testid = "app-update-popover-action";
     Object.assign(primaryBtn.style, {
-      height: "30px",
-      padding: "0 12px",
-      borderRadius: "var(--radius-2, 6px)",
+      height: "40px",
+      padding: "0 20px",
+      borderRadius: "var(--radius-2, 8px)",
       border: "0",
-      font: "600 12px/1 var(--font-ui, system-ui, sans-serif)",
+      font: "600 14px/1 var(--font-ui, system-ui, sans-serif)",
       cursor: "pointer",
       whiteSpace: "nowrap",
     });
     primaryBtn.addEventListener("click", () => {
       if (busy || !currentView) return;
       if (currentView.action === "install") {
-        startInstallFromPopover();
+        startInstallFromDialog();
         return;
       }
       if (currentView.action === "download") {
-        closePopover(true);
+        closeDialog(true);
         void update.openDownload();
       }
     });
@@ -706,7 +773,10 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     foot.append(hint, actions);
 
     box.append(head, progWrap, bodyBox, statusLine, foot);
-    popover = {
+    backdrop.append(box);
+    const disposeFocusTrap = trapModalTabKey(backdrop, box);
+    dialog = {
+      backdrop,
       box,
       headIcon,
       title,
@@ -722,16 +792,14 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
       hint,
       laterBtn,
       primaryBtn,
+      disposeFocusTrap,
       iconKind: null,
       notesKey: null,
     };
-    syncPopoverContents();
-    document.body.append(box);
-    positionPopover();
+    syncDialogContents();
+    document.body.append(backdrop);
     button.setAttribute("aria-expanded", "true");
-    document.addEventListener("pointerdown", onOutsidePointerDown, true);
-    document.addEventListener("keydown", onPopoverKeyDown, true);
-    window.addEventListener("resize", positionPopover);
+    registerDialogModal(backdrop);
     (primaryBtn.disabled ? closeBtn : primaryBtn).focus();
   }
 
@@ -746,7 +814,7 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     button.style.display = visible ? "inline-flex" : "none";
     button.dataset.updateState = status.state.kind;
     if (!view) {
-      closePopover(false);
+      closeDialog(false);
       currentTooltip = "";
       button.title = "";
       button.removeAttribute("aria-label");
@@ -756,20 +824,20 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
     button.title = view.tooltip;
     button.setAttribute("aria-label", view.label);
     if (renderedIconKind !== view.kind) {
-      badge.replaceChildren(buildUpdateIconSvg(view.kind));
+      badge.replaceChildren(buildUpdateIconSvg(view.kind, 16));
       renderedIconKind = view.kind;
     }
     syncBadgeStyle();
-    if (popover) syncPopoverContents();
+    if (dialog) syncDialogContents();
   };
 
   button.addEventListener("click", () => {
     if (!currentView) return;
-    if (popover) {
-      if (!busy) closePopover(true);
+    if (dialog) {
+      if (!busy) closeDialog(true);
       return;
     }
-    openPopover();
+    openDialog();
   });
 
   listeners.add(paint);
@@ -778,7 +846,7 @@ export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly e
   return {
     element: button,
     dispose: () => {
-      closePopover(false);
+      closeDialog(false);
       listeners.delete(paint);
       disposeTooltip();
     },
@@ -806,12 +874,13 @@ export function renderAppUpdateControl(options: AppUpdateControlOptions = {}): {
     button.className = options.buttonClassName;
   } else {
     Object.assign(button.style, {
-      padding: "5px 11px",
+      minHeight: "36px",
+      padding: "0 16px",
       borderRadius: "var(--radius-s, 6px)",
       border: "1px solid var(--border-default, rgba(127,127,127,0.35))",
       background: "var(--bg-raised, transparent)",
       color: "var(--text-1, inherit)",
-      font: "600 12px/1.3 var(--font-ui, system-ui, sans-serif)",
+      font: "600 13.5px/1.3 var(--font-ui, system-ui, sans-serif)",
       cursor: "pointer",
       whiteSpace: "nowrap",
     });
@@ -822,7 +891,7 @@ export function renderAppUpdateControl(options: AppUpdateControlOptions = {}): {
   const detail = document.createElement("span");
   detail.dataset.testid = `${prefix}-status`;
   Object.assign(detail.style, {
-    fontSize: "12px",
+    fontSize: "13.5px",
     color: "var(--text-2, inherit)",
   });
 
@@ -896,11 +965,210 @@ export function renderAppUpdateControl(options: AppUpdateControlOptions = {}): {
 /** 업데이트 뒤 처음 켜졌으면 바뀐 점을 한 번 보인다. 메인이 한 번만 내주므로 두 문서가 불러도 한 번이다. */
 export function showAppUpdateWhatsNewOnce(): void {
   const update = bridge();
-  if (!update) return;
+  if (!update || typeof document === "undefined" || !document.body) return;
   void update.takeWhatsNew().then((news) => {
-    if (!news) return;
-    const head = `v${shortVersion(news.version)} 으로 업데이트했어요`;
-    const message = news.lines.length > 0 ? `${head} · ${news.lines.join(" · ")}` : head;
-    toast(message, { kind: "ok", durationMs: 9000 });
+    if (!news || !document.body) return;
+    const version = shortVersion(news.version);
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+
+    const backdrop = document.createElement("div");
+    backdrop.dataset.testid = "app-update-whats-new-backdrop";
+    Object.assign(backdrop.style, {
+      position: "fixed",
+      inset: "0",
+      zIndex: "var(--z-app-modal, 2600)",
+      display: "grid",
+      placeItems: "center",
+      padding: "24px",
+      background: "var(--bg-scrim, rgba(15, 15, 15, 0.45))",
+      backdropFilter: "blur(2px)",
+      boxSizing: "border-box",
+    });
+    backdrop.style.setProperty("-webkit-app-region", "no-drag");
+
+    let disposeFocusTrap: (() => void) | null = null;
+    let closed = false;
+    const close = (): void => {
+      if (closed) return;
+      closed = true;
+      disposeFocusTrap?.();
+      disposeFocusTrap = null;
+      unregisterModal(backdrop);
+      backdrop.remove();
+      if (previousFocus && previousFocus.isConnected) previousFocus.focus();
+    };
+    backdrop.addEventListener("pointerdown", (event) => {
+      if (event.target === backdrop && isTopModal(backdrop)) close();
+    });
+
+    const box = document.createElement("div");
+    box.dataset.testid = "app-update-whats-new";
+    box.setAttribute("role", "dialog");
+    box.setAttribute("aria-modal", "true");
+    box.setAttribute("aria-label", `v${version} 업데이트 완료`);
+    Object.assign(box.style, {
+      width: "min(520px, calc(100vw - 48px))",
+      maxHeight: "min(600px, calc(100vh - 64px))",
+      display: "flex",
+      flexDirection: "column",
+      padding: "24px 28px",
+      borderRadius: "var(--radius-4, 14px)",
+      border: "1px solid var(--border-default, rgba(55, 53, 47, 0.16))",
+      background: "var(--bg-overlay, #ffffff)",
+      color: "var(--text-1, #1F1F1E)",
+      boxShadow: "var(--shadow-modal, 0 8px 24px rgba(15, 15, 15, 0.12), 0 24px 64px rgba(15, 15, 15, 0.18))",
+      font: "400 14.5px/1.55 var(--font-ui, system-ui, sans-serif)",
+      textAlign: "left",
+      boxSizing: "border-box",
+      overflow: "hidden",
+    });
+    box.style.setProperty("-webkit-app-region", "no-drag");
+
+    const head = document.createElement("div");
+    Object.assign(head.style, {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: "14px",
+      marginBottom: "18px",
+    });
+    const headLeft = document.createElement("div");
+    Object.assign(headLeft.style, { display: "flex", alignItems: "center", gap: "14px" });
+    const icon = document.createElement("span");
+    icon.setAttribute("aria-hidden", "true");
+    Object.assign(icon.style, {
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      width: "42px",
+      height: "42px",
+      borderRadius: "var(--radius-pill, 999px)",
+      background: UPDATE_BADGE_BG,
+      color: "var(--on-accent, #ffffff)",
+      flex: "0 0 auto",
+    });
+    icon.append(buildUpdateIconSvg("check", 22));
+    const title = document.createElement("div");
+    title.textContent = `v${version}으로 업데이트했어요`;
+    Object.assign(title.style, {
+      fontSize: "19px",
+      fontWeight: "700",
+      lineHeight: "1.25",
+      letterSpacing: "-0.01em",
+      color: "var(--text-1, inherit)",
+    });
+    headLeft.append(icon, title);
+
+    const closeBtn = document.createElement("button");
+    closeBtn.type = "button";
+    closeBtn.setAttribute("aria-label", "닫기");
+    closeBtn.textContent = "×";
+    Object.assign(closeBtn.style, {
+      width: "34px",
+      height: "34px",
+      padding: "0",
+      border: "0",
+      borderRadius: "var(--radius-2, 6px)",
+      background: "transparent",
+      color: "var(--text-3, inherit)",
+      fontSize: "22px",
+      lineHeight: "1",
+      cursor: "pointer",
+      flex: "0 0 auto",
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+    });
+    closeBtn.addEventListener("click", close);
+    head.append(headLeft, closeBtn);
+
+    const bodyBox = document.createElement("div");
+    Object.assign(bodyBox.style, {
+      flex: "1 1 auto",
+      display: "flex",
+      flexDirection: "column",
+      padding: "16px 18px",
+      borderRadius: "var(--radius-3, 10px)",
+      background: "var(--bg-surface, rgba(127, 127, 127, 0.06))",
+      border: "1px solid var(--border-subtle, rgba(127, 127, 127, 0.14))",
+      marginBottom: "18px",
+      overflow: "hidden",
+    });
+    const notesHead = document.createElement("div");
+    notesHead.textContent = "이번에 바뀐 점";
+    Object.assign(notesHead.style, {
+      fontSize: "13.5px",
+      fontWeight: "600",
+      color: "var(--text-2, inherit)",
+      marginBottom: "10px",
+    });
+    bodyBox.append(notesHead);
+
+    if (news.lines.length > 0) {
+      const list = document.createElement("ul");
+      Object.assign(list.style, {
+        margin: "0",
+        padding: "0 4px 0 0",
+        listStyle: "none",
+        display: "flex",
+        flexDirection: "column",
+        gap: "10px",
+        maxHeight: "280px",
+        overflowY: "auto",
+      });
+      for (const line of news.lines) list.append(buildUpdateNoteListItem(line));
+      bodyBox.append(list);
+    } else {
+      const empty = document.createElement("p");
+      empty.textContent = "최신 버전으로 업데이트가 완료됐어요.";
+      Object.assign(empty.style, { margin: "0", fontSize: "14px", lineHeight: "1.6", color: "var(--text-2, inherit)" });
+      bodyBox.append(empty);
+    }
+
+    const releaseLink = document.createElement("button");
+    releaseLink.type = "button";
+    releaseLink.textContent = "전체 릴리스 노트 보기 ↗";
+    Object.assign(releaseLink.style, {
+      marginTop: "12px",
+      padding: "0",
+      border: "0",
+      background: "transparent",
+      color: "var(--accent, #1F6FC5)",
+      fontSize: "13.5px",
+      fontWeight: "500",
+      cursor: "pointer",
+      textAlign: "left",
+      alignSelf: "flex-start",
+    });
+    releaseLink.addEventListener("click", () => {
+      window.open(releasePageUrl(news.version), "_blank", "noopener");
+    });
+    bodyBox.append(releaseLink);
+
+    const foot = document.createElement("div");
+    Object.assign(foot.style, { display: "flex", justifyContent: "flex-end" });
+    const okBtn = document.createElement("button");
+    okBtn.type = "button";
+    okBtn.dataset.testid = "app-update-whats-new-ok";
+    okBtn.textContent = "확인";
+    Object.assign(okBtn.style, {
+      height: "40px",
+      padding: "0 22px",
+      borderRadius: "var(--radius-2, 8px)",
+      border: "0",
+      background: UPDATE_BADGE_BG,
+      color: "var(--on-accent, #ffffff)",
+      font: "600 14px/1 var(--font-ui, system-ui, sans-serif)",
+      cursor: "pointer",
+    });
+    okBtn.addEventListener("click", close);
+    foot.append(okBtn);
+
+    box.append(head, bodyBox, foot);
+    backdrop.append(box);
+    disposeFocusTrap = trapModalTabKey(backdrop, box);
+    document.body.append(backdrop);
+    registerModal(backdrop, close);
+    okBtn.focus();
   }, () => {});
 }
