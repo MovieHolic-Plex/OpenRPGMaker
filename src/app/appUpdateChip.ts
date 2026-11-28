@@ -1,16 +1,18 @@
-// 앱 자동 업데이트 칩 및 수동 확인 컨트롤(렌더러).
+// 앱 자동 업데이트 아이콘 및 수동 확인 컨트롤(렌더러).
 // 메인은 electron/main/appUpdate.ts, 상태 모양은 electron/shared/appUpdate.ts.
 //
-// - 상단 칩(renderAppUpdateChip): 새 버전이 준비됐거나 내려받을 수 있을 때만 띄운다.
+// - 상단 오른쪽 녹색 아이콘(renderAppUpdateChip): 새 버전이 있거나 내려받는 중·준비됐을 때만 띄운다.
 // - 수동 확인 컨트롤(renderAppUpdateControl) & 메뉴/명령(triggerAppUpdateCheck): 설정·도움말·메뉴·⌘K 에서
 //   언제든지 최신 버전을 확인하고, 새 버전이 있으면 내려받기/재시작까지 바로 진행한다.
-// 새 CSS 파일을 만들지 않는다 — 놓일 곳의 단추 클래스를 빌리고 강조색만 토큰 변수로 준다.
+// 새 CSS 파일을 만들지 않는다 — 놓일 곳의 단추 클래스를 빌리고 녹색 상태 토큰 변수로 그린다.
 import {
   appUpdateButtonView,
-  appUpdateChipText,
+  appUpdateIndicatorView,
   shortVersion,
+  type AppUpdateIndicatorView,
   type AppUpdateStatus,
 } from "../../electron/shared/appUpdate";
+import { attachDelayedTooltip, hideDelayedTooltip } from "@/editor/delayedTooltip";
 import type { OprnUpdateBridge } from "@/project/persistence/electronRepository";
 import { toast } from "@/util/toast";
 
@@ -139,10 +141,10 @@ export async function triggerAppUpdateCheck(options: {
         toast(`새 버전 v${shortVersion(next.state.version)} 을 내려받고 있어요.`, "ok");
         break;
       case "ready":
-        toast(`v${shortVersion(next.state.version)} 준비됨 · 다시 시작하면 바로 적용돼요.`, "ok");
+        toast(`v${shortVersion(next.state.version)} 준비됨 · 오른쪽 상단 녹색 아이콘을 눌러 다시 시작할 수 있어요.`, "ok");
         break;
       case "available":
-        toast(`새 버전 v${shortVersion(next.state.version)} 이 있어요. 상단 단추에서 내려받으세요.`, "ok");
+        toast(`새 버전 v${shortVersion(next.state.version)} 이 있어요. 오른쪽 상단 녹색 아이콘에서 내려받으세요.`, "ok");
         break;
       case "error":
         toast(next.state.message, "error");
@@ -155,58 +157,632 @@ export async function triggerAppUpdateCheck(options: {
   }
 }
 
+const SVG_NS = "http://www.w3.org/2000/svg";
+const UPDATE_BADGE_BG = "color-mix(in srgb, var(--success, #18764F) 65%, var(--success-indicator, #34C759))";
+
+function buildUpdateIconSvg(kind: AppUpdateIndicatorView["kind"]): SVGSVGElement {
+  const svg = document.createElementNS(SVG_NS, "svg");
+  svg.setAttribute("viewBox", "0 0 16 16");
+  svg.setAttribute("fill", "none");
+  svg.setAttribute("stroke", "currentColor");
+  svg.setAttribute("stroke-width", "1.9");
+  svg.setAttribute("stroke-linecap", "round");
+  svg.setAttribute("stroke-linejoin", "round");
+  svg.setAttribute("aria-hidden", "true");
+  svg.setAttribute("focusable", "false");
+  Object.assign(svg.style, {
+    display: "block",
+    width: "14px",
+    height: "14px",
+    pointerEvents: "none",
+  });
+  const paths = kind === "ready"
+    ? ["M8 11.2V3.3", "M4.6 6.7 8 3.3l3.4 3.4", "M3.8 13h8.4"]
+    : ["M8 3v7.2", "M4.6 6.8 8 10.2l3.4-3.4", "M3.8 13h8.4"];
+  for (const d of paths) {
+    const path = document.createElementNS(SVG_NS, "path");
+    path.setAttribute("d", d);
+    svg.append(path);
+  }
+  return svg;
+}
+
 export function renderAppUpdateChip(options: AppUpdateChipOptions): { readonly element: HTMLButtonElement; dispose(): void } | null {
-  const update = bridge();
-  if (!update) return null;
+  const updateBridge = bridge();
+  if (!updateBridge) return null;
+  const update: OprnUpdateBridge = updateBridge;
   const button = document.createElement("button");
   button.type = "button";
-  button.className = options.className;
+  if (options.className) button.className = options.className;
   button.dataset.testid = "app-update-chip";
+  button.dataset.delayedTooltipAttached = "1";
+  button.setAttribute("aria-haspopup", "dialog");
+  button.setAttribute("aria-expanded", "false");
   button.hidden = true;
-  button.style.color = "var(--accent)";
-  button.style.fontWeight = "600";
-  button.style.whiteSpace = "nowrap";
-  let busy = false;
+  Object.assign(button.style, {
+    display: "none",
+    alignItems: "center",
+    justifyContent: "center",
+    flex: "0 0 auto",
+    width: "32px",
+    minWidth: "32px",
+    height: "32px",
+    minHeight: "32px",
+    padding: "0",
+    margin: "0",
+    border: "0",
+    borderRadius: "var(--radius-2, 6px)",
+    ...(options.className ? {} : { background: "transparent" }),
+    cursor: "pointer",
+    position: "relative",
+    boxSizing: "border-box",
+  });
 
-  const paint = (status: AppUpdateStatus): void => {
-    if (busy) return;
-    const text = status.enabled || status.state.kind === "ready" || status.state.kind === "available"
-      ? appUpdateChipText(status.state)
-      : null;
-    button.hidden = text === null;
-    // 빌린 단추 클래스(ln-btn·studio-tool-button)의 display 가 [hidden] 을 이겨, 숨긴 칩이 빈 파란 네모로 남았다(2026-11-26 실측).
-    button.style.display = text === null ? "none" : "";
-    button.textContent = text ?? "";
-    button.title = status.state.kind === "ready"
-      ? `저장하고 다시 시작하면 v${shortVersion(status.state.version)} 으로 바뀌어요. 그냥 두면 앱을 끌 때 바뀌어요.`
-      : status.state.kind === "available" ? `v${shortVersion(status.state.version)} 을 내려받아요` : "";
-    button.dataset.updateState = status.state.kind;
+  const badge = document.createElement("span");
+  badge.setAttribute("aria-hidden", "true");
+  Object.assign(badge.style, {
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "24px",
+    height: "24px",
+    borderRadius: "var(--radius-pill, 999px)",
+    boxSizing: "border-box",
+    transition: "transform var(--transition-fast, 120ms ease), box-shadow var(--transition-fast, 120ms ease), opacity var(--transition-fast, 120ms ease)",
+    pointerEvents: "none",
+  });
+  button.append(badge);
+
+  let busy = false;
+  let busyStatusText = "";
+  let hovered = false;
+  let currentView: AppUpdateIndicatorView | null = null;
+  let currentStatus: AppUpdateStatus | null = null;
+  let currentTooltip = "";
+  let renderedIconKind: AppUpdateIndicatorView["kind"] | null = null;
+  type PopoverRefs = {
+    readonly box: HTMLDivElement;
+    readonly headIcon: HTMLSpanElement;
+    readonly title: HTMLDivElement;
+    readonly sub: HTMLDivElement;
+    readonly closeBtn: HTMLButtonElement;
+    readonly progWrap: HTMLDivElement;
+    readonly progFill: HTMLDivElement;
+    readonly progPct: HTMLSpanElement;
+    readonly notesList: HTMLUListElement;
+    readonly notesEmpty: HTMLParagraphElement;
+    readonly releaseLink: HTMLButtonElement;
+    readonly statusLine: HTMLDivElement;
+    readonly hint: HTMLSpanElement;
+    readonly laterBtn: HTMLButtonElement;
+    readonly primaryBtn: HTMLButtonElement;
+    iconKind: AppUpdateIndicatorView["kind"] | null;
+    notesKey: string | null;
+  };
+  let popover: PopoverRefs | null = null;
+
+  const syncBadgeStyle = (): void => {
+    if (!currentView) return;
+    if (currentView.kind === "downloading") {
+      badge.style.background = "var(--success-muted, rgba(24, 118, 79, 0.13))";
+      badge.style.border = `1.5px solid ${UPDATE_BADGE_BG}`;
+      badge.style.color = UPDATE_BADGE_BG;
+      badge.style.boxShadow = hovered
+        ? "0 0 0 3px var(--success-muted, rgba(24, 118, 79, 0.13))"
+        : "none";
+    } else {
+      badge.style.background = UPDATE_BADGE_BG;
+      badge.style.border = "0";
+      badge.style.color = "var(--on-accent, #ffffff)";
+      badge.style.boxShadow = hovered
+        ? "0 0 0 4px var(--success-muted, rgba(24, 118, 79, 0.13))"
+        : "0 0 0 2px var(--success-muted, rgba(24, 118, 79, 0.13))";
+    }
+    badge.style.transform = hovered && !busy ? "scale(1.06)" : "";
+    badge.style.opacity = busy ? "0.65" : "";
   };
 
-  button.addEventListener("click", () => {
-    const state = latest?.state;
-    if (!state || busy) return;
-    if (state.kind === "available") {
-      void update.openDownload();
-      return;
+  const setHovered = (next: boolean): void => {
+    hovered = next;
+    syncBadgeStyle();
+  };
+  button.addEventListener("pointerenter", () => setHovered(true));
+  button.addEventListener("pointerleave", () => setHovered(false));
+  button.addEventListener("focus", () => setHovered(true));
+  button.addEventListener("blur", () => setHovered(false));
+
+  const disposeTooltip = attachDelayedTooltip(button, {
+    get label() { return currentTooltip; },
+  });
+
+  const positionPopover = (): void => {
+    if (!popover) return;
+    const rect = button.getBoundingClientRect();
+    const top = Math.max(12, Math.round(rect.bottom + 8));
+    const right = Math.max(12, Math.round(window.innerWidth - rect.right));
+    popover.box.style.top = `${top}px`;
+    popover.box.style.right = `${right}px`;
+  };
+
+  const onOutsidePointerDown = (event: PointerEvent): void => {
+    if (busy || !popover) return;
+    const target = event.target as Node | null;
+    if (target && (popover.box.contains(target) || button.contains(target))) return;
+    closePopover(false);
+  };
+
+  const onPopoverKeyDown = (event: KeyboardEvent): void => {
+    if (event.key !== "Escape" || busy || !popover) return;
+    event.preventDefault();
+    event.stopPropagation();
+    closePopover(true);
+  };
+
+  function closePopover(restoreFocus = false): void {
+    if (!popover) return;
+    const hadFocusInside = popover.box.contains(document.activeElement);
+    popover.box.remove();
+    popover = null;
+    button.setAttribute("aria-expanded", "false");
+    document.removeEventListener("pointerdown", onOutsidePointerDown, true);
+    document.removeEventListener("keydown", onPopoverKeyDown, true);
+    window.removeEventListener("resize", positionPopover);
+    if ((restoreFocus || hadFocusInside) && button.isConnected && !button.hidden) {
+      button.focus();
     }
-    if (state.kind !== "ready") return;
+  }
+
+  const startInstallFromPopover = (): void => {
+    if (busy || currentView?.action !== "install") return;
     busy = true;
+    busyStatusText = "업데이트를 준비하고 있어요…";
     button.disabled = true;
-    const say = (text: string): void => { button.textContent = text; };
+    syncBadgeStyle();
+    syncPopoverContents();
+    const say = (text: string): void => {
+      busyStatusText = text;
+      currentTooltip = text;
+      button.title = text;
+      button.setAttribute("aria-label", text);
+      syncPopoverContents();
+    };
     const { promise, joined } = runInstall(update, options.beforeRestart, say);
     void promise.catch((error: unknown) => {
       busy = false;
+      busyStatusText = "";
       button.disabled = false;
       if (latest) paint(latest);
+      else {
+        syncBadgeStyle();
+        syncPopoverContents();
+      }
       if (!joined) toast(error instanceof Error ? error.message : String(error), "error");
     });
+  };
+
+  function syncPopoverContents(): void {
+    if (!popover || !currentView) return;
+    const refs = popover;
+    const view = currentView;
+    const currentVer = currentStatus?.currentVersion ? shortVersion(currentStatus.currentVersion) : null;
+    const isDownloading = view.kind === "downloading";
+
+    // 아이콘과 헤더 문구 제자리 갱신
+    if (refs.iconKind !== view.kind) {
+      refs.headIcon.replaceChildren(buildUpdateIconSvg(view.kind));
+      refs.iconKind = view.kind;
+    }
+    if (isDownloading) {
+      refs.headIcon.style.background = "var(--success-muted, rgba(24, 118, 79, 0.13))";
+      refs.headIcon.style.border = `1.5px solid ${UPDATE_BADGE_BG}`;
+      refs.headIcon.style.color = UPDATE_BADGE_BG;
+    } else {
+      refs.headIcon.style.background = UPDATE_BADGE_BG;
+      refs.headIcon.style.border = "0";
+      refs.headIcon.style.color = "var(--on-accent, #ffffff)";
+    }
+    refs.title.textContent = isDownloading
+      ? `v${view.version} 내려받는 중`
+      : `v${view.version} 업데이트`;
+    refs.sub.hidden = !currentVer;
+    refs.sub.textContent = currentVer ? `v${currentVer} → v${view.version}` : "";
+
+    refs.closeBtn.disabled = busy;
+    refs.closeBtn.style.cursor = busy ? "default" : "pointer";
+    refs.closeBtn.style.opacity = busy ? "0.45" : "";
+
+    // 다운로드 진행 막대 제자리 갱신
+    refs.progWrap.style.display = isDownloading ? "flex" : "none";
+    if (isDownloading) {
+      refs.progFill.style.width = `${view.percent ?? 15}%`;
+      refs.progPct.textContent = view.percent !== null ? `${view.percent}%` : "…";
+    }
+
+    // 변경 사항 목록은 내용이 바뀔 때만 갱신해 스크롤 위치와 포커스를 지킨다.
+    const nextNotesKey = view.notes.join("\n");
+    if (refs.notesKey !== nextNotesKey) {
+      refs.notesKey = nextNotesKey;
+      const prevScrollTop = refs.notesList.scrollTop;
+      if (view.notes.length > 0) {
+        refs.notesList.style.display = "flex";
+        refs.notesEmpty.style.display = "none";
+        refs.notesList.replaceChildren(...view.notes.map((line) => {
+          const item = document.createElement("li");
+          Object.assign(item.style, {
+            display: "flex",
+            alignItems: "flex-start",
+            gap: "7px",
+            fontSize: "12.5px",
+            lineHeight: "1.42",
+            color: "var(--text-1, inherit)",
+            wordBreak: "keep-all",
+          });
+          const dot = document.createElement("span");
+          dot.setAttribute("aria-hidden", "true");
+          Object.assign(dot.style, {
+            width: "5px",
+            height: "5px",
+            borderRadius: "var(--radius-pill, 999px)",
+            background: UPDATE_BADGE_BG,
+            marginTop: "6px",
+            flex: "0 0 auto",
+          });
+          const textSpan = document.createElement("span");
+          textSpan.textContent = line;
+          item.append(dot, textSpan);
+          return item;
+        }));
+        refs.notesList.scrollTop = prevScrollTop;
+      } else {
+        refs.notesList.style.display = "none";
+        refs.notesList.replaceChildren();
+        refs.notesEmpty.style.display = "block";
+      }
+    }
+
+    refs.statusLine.style.display = busy && busyStatusText ? "block" : "none";
+    refs.statusLine.textContent = busyStatusText;
+
+    refs.hint.textContent = view.kind === "ready" ? "앱을 끌 때도 자동 적용" : "";
+
+    refs.laterBtn.textContent = view.kind === "ready" ? "나중에" : "닫기";
+    refs.laterBtn.disabled = busy;
+    refs.laterBtn.style.cursor = busy ? "default" : "pointer";
+    refs.laterBtn.style.opacity = busy ? "0.5" : "";
+
+    refs.primaryBtn.disabled = busy || isDownloading;
+    refs.primaryBtn.textContent = busy
+      ? "적용 중…"
+      : view.kind === "ready"
+        ? "저장 후 다시 시작"
+        : view.kind === "available"
+          ? "새 버전 내려받기"
+          : view.percent !== null ? `내려받는 중 ${view.percent}%` : "내려받는 중…";
+    refs.primaryBtn.style.background = isDownloading ? "var(--bg-inset, rgba(127, 127, 127, 0.2))" : UPDATE_BADGE_BG;
+    refs.primaryBtn.style.color = isDownloading ? "var(--text-3, inherit)" : "var(--on-accent, #ffffff)";
+    refs.primaryBtn.style.cursor = busy || isDownloading ? "default" : "pointer";
+    refs.primaryBtn.style.opacity = busy ? "0.65" : "";
+  }
+
+  function openPopover(): void {
+    if (!currentView || popover) return;
+    hideDelayedTooltip();
+    const box = document.createElement("div");
+    box.dataset.testid = "app-update-popover";
+    box.setAttribute("role", "dialog");
+    box.setAttribute("aria-label", "새 버전 업데이트");
+    Object.assign(box.style, {
+      position: "fixed",
+      zIndex: "var(--z-popover-top, 1201)",
+      width: "min(344px, calc(100vw - 24px))",
+      padding: "14px 16px",
+      borderRadius: "var(--radius-3, 10px)",
+      border: "1px solid var(--border-default, rgba(55, 53, 47, 0.16))",
+      background: "var(--bg-overlay, #ffffff)",
+      color: "var(--text-1, #1F1F1E)",
+      boxShadow: "var(--shadow-pop, 0 4px 12px rgba(15, 15, 15, 0.08), 0 12px 32px rgba(15, 15, 15, 0.10))",
+      font: "400 13px/1.45 var(--font-ui, system-ui, sans-serif)",
+      textAlign: "left",
+      boxSizing: "border-box",
+    });
+    box.style.setProperty("-webkit-app-region", "no-drag");
+
+    // 머리줄
+    const head = document.createElement("div");
+    Object.assign(head.style, {
+      display: "flex",
+      alignItems: "flex-start",
+      justifyContent: "space-between",
+      gap: "10px",
+      marginBottom: "10px",
+    });
+    const headLeft = document.createElement("div");
+    Object.assign(headLeft.style, { display: "flex", alignItems: "center", gap: "9px", minWidth: "0" });
+
+    const headIcon = document.createElement("span");
+    headIcon.setAttribute("aria-hidden", "true");
+    Object.assign(headIcon.style, {
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      width: "26px",
+      height: "26px",
+      borderRadius: "var(--radius-pill, 999px)",
+      flex: "0 0 auto",
+      boxSizing: "border-box",
+    });
+
+    const titleWrap = document.createElement("div");
+    Object.assign(titleWrap.style, { minWidth: "0" });
+    const title = document.createElement("div");
+    Object.assign(title.style, {
+      fontSize: "13.5px",
+      fontWeight: "600",
+      lineHeight: "1.25",
+      color: "var(--text-1, inherit)",
+    });
+    const sub = document.createElement("div");
+    Object.assign(sub.style, {
+      fontSize: "11.5px",
+      color: "var(--text-3, inherit)",
+      marginTop: "2px",
+    });
+    titleWrap.append(title, sub);
+    headLeft.append(headIcon, titleWrap);
+
+    const closeBtn = document.createElement("button");
+    closeBtn.type = "button";
+    closeBtn.dataset.testid = "app-update-popover-close";
+    closeBtn.setAttribute("aria-label", "닫기");
+    closeBtn.textContent = "×";
+    Object.assign(closeBtn.style, {
+      width: "26px",
+      height: "26px",
+      padding: "0",
+      border: "0",
+      borderRadius: "var(--radius-2, 6px)",
+      background: "transparent",
+      color: "var(--text-3, inherit)",
+      fontSize: "17px",
+      lineHeight: "1",
+      cursor: "pointer",
+      flex: "0 0 auto",
+    });
+    closeBtn.addEventListener("click", () => { if (!busy) closePopover(true); });
+    head.append(headLeft, closeBtn);
+
+    // 다운로드 진행 막대
+    const progWrap = document.createElement("div");
+    Object.assign(progWrap.style, { display: "none", alignItems: "center", gap: "8px", marginBottom: "10px" });
+    const track = document.createElement("div");
+    Object.assign(track.style, {
+      flex: "1 1 auto",
+      height: "6px",
+      borderRadius: "var(--radius-pill, 999px)",
+      background: "var(--bg-inset, rgba(127, 127, 127, 0.2))",
+      overflow: "hidden",
+    });
+    const progFill = document.createElement("div");
+    Object.assign(progFill.style, {
+      width: "0%",
+      height: "100%",
+      borderRadius: "var(--radius-pill, 999px)",
+      background: UPDATE_BADGE_BG,
+      transition: "width var(--transition-med, 160ms ease)",
+    });
+    track.append(progFill);
+    const progPct = document.createElement("span");
+    Object.assign(progPct.style, {
+      fontSize: "11.5px",
+      fontWeight: "600",
+      color: "var(--text-2, inherit)",
+      flex: "0 0 auto",
+    });
+    progWrap.append(track, progPct);
+
+    // 변경 내역 영역
+    const bodyBox = document.createElement("div");
+    Object.assign(bodyBox.style, {
+      padding: "10px 12px",
+      borderRadius: "var(--radius-2, 6px)",
+      background: "var(--bg-surface, rgba(127, 127, 127, 0.06))",
+      border: "1px solid var(--border-subtle, rgba(127, 127, 127, 0.14))",
+      marginBottom: "12px",
+    });
+    const notesHead = document.createElement("div");
+    notesHead.textContent = "주요 변경 사항";
+    Object.assign(notesHead.style, {
+      fontSize: "11.5px",
+      fontWeight: "600",
+      color: "var(--text-2, inherit)",
+      marginBottom: "6px",
+    });
+    const notesList = document.createElement("ul");
+    notesList.dataset.testid = "app-update-popover-notes";
+    Object.assign(notesList.style, {
+      margin: "0",
+      padding: "0",
+      listStyle: "none",
+      display: "none",
+      flexDirection: "column",
+      gap: "5px",
+      maxHeight: "180px",
+      overflowY: "auto",
+    });
+    const notesEmpty = document.createElement("p");
+    notesEmpty.dataset.testid = "app-update-popover-empty";
+    notesEmpty.textContent = "요약된 변경 내역이 없어요. 아래 링크에서 전체 릴리스 노트를 볼 수 있어요.";
+    Object.assign(notesEmpty.style, {
+      margin: "0",
+      display: "none",
+      fontSize: "12px",
+      lineHeight: "1.45",
+      color: "var(--text-2, inherit)",
+    });
+    const releaseLink = document.createElement("button");
+    releaseLink.type = "button";
+    releaseLink.dataset.testid = "app-update-popover-release-link";
+    releaseLink.textContent = "전체 릴리스 노트 보기 ↗";
+    Object.assign(releaseLink.style, {
+      marginTop: "8px",
+      padding: "0",
+      border: "0",
+      background: "transparent",
+      color: "var(--accent, #1F6FC5)",
+      fontSize: "12px",
+      fontWeight: "500",
+      cursor: "pointer",
+      textAlign: "left",
+    });
+    releaseLink.addEventListener("click", () => {
+      if (currentView) window.open(currentView.releaseUrl, "_blank", "noopener");
+    });
+    bodyBox.append(notesHead, notesList, notesEmpty, releaseLink);
+
+    const statusLine = document.createElement("div");
+    Object.assign(statusLine.style, {
+      display: "none",
+      fontSize: "12px",
+      fontWeight: "500",
+      color: "var(--success, #18764F)",
+      marginBottom: "10px",
+    });
+
+    // 하단 행동 줄
+    const foot = document.createElement("div");
+    Object.assign(foot.style, {
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      gap: "8px",
+    });
+    const hint = document.createElement("span");
+    Object.assign(hint.style, {
+      fontSize: "11.5px",
+      color: "var(--text-3, inherit)",
+    });
+    const actions = document.createElement("div");
+    Object.assign(actions.style, { display: "flex", alignItems: "center", gap: "6px", marginLeft: "auto" });
+
+    const laterBtn = document.createElement("button");
+    laterBtn.type = "button";
+    Object.assign(laterBtn.style, {
+      height: "30px",
+      padding: "0 11px",
+      borderRadius: "var(--radius-2, 6px)",
+      border: "1px solid var(--border-default, rgba(127, 127, 127, 0.3))",
+      background: "transparent",
+      color: "var(--text-2, inherit)",
+      font: "500 12px/1 var(--font-ui, system-ui, sans-serif)",
+      cursor: "pointer",
+      whiteSpace: "nowrap",
+    });
+    laterBtn.addEventListener("click", () => { if (!busy) closePopover(true); });
+
+    const primaryBtn = document.createElement("button");
+    primaryBtn.type = "button";
+    primaryBtn.dataset.testid = "app-update-popover-action";
+    Object.assign(primaryBtn.style, {
+      height: "30px",
+      padding: "0 12px",
+      borderRadius: "var(--radius-2, 6px)",
+      border: "0",
+      font: "600 12px/1 var(--font-ui, system-ui, sans-serif)",
+      cursor: "pointer",
+      whiteSpace: "nowrap",
+    });
+    primaryBtn.addEventListener("click", () => {
+      if (busy || !currentView) return;
+      if (currentView.action === "install") {
+        startInstallFromPopover();
+        return;
+      }
+      if (currentView.action === "download") {
+        closePopover(true);
+        void update.openDownload();
+      }
+    });
+    actions.append(laterBtn, primaryBtn);
+    foot.append(hint, actions);
+
+    box.append(head, progWrap, bodyBox, statusLine, foot);
+    popover = {
+      box,
+      headIcon,
+      title,
+      sub,
+      closeBtn,
+      progWrap,
+      progFill,
+      progPct,
+      notesList,
+      notesEmpty,
+      releaseLink,
+      statusLine,
+      hint,
+      laterBtn,
+      primaryBtn,
+      iconKind: null,
+      notesKey: null,
+    };
+    syncPopoverContents();
+    document.body.append(box);
+    positionPopover();
+    button.setAttribute("aria-expanded", "true");
+    document.addEventListener("pointerdown", onOutsidePointerDown, true);
+    document.addEventListener("keydown", onPopoverKeyDown, true);
+    window.addEventListener("resize", positionPopover);
+    (primaryBtn.disabled ? closeBtn : primaryBtn).focus();
+  }
+
+  const paint = (status: AppUpdateStatus): void => {
+    currentStatus = status;
+    if (busy) return;
+    const view = appUpdateIndicatorView(status.state);
+    currentView = view;
+    const visible = view !== null;
+    button.hidden = !visible;
+    // 빌린 단추 클래스의 display 가 [hidden] 을 이겨 빈 칸으로 남지 않게 명시적으로 제어한다.
+    button.style.display = visible ? "inline-flex" : "none";
+    button.dataset.updateState = status.state.kind;
+    if (!view) {
+      closePopover(false);
+      currentTooltip = "";
+      button.title = "";
+      button.removeAttribute("aria-label");
+      return;
+    }
+    currentTooltip = view.tooltip;
+    button.title = view.tooltip;
+    button.setAttribute("aria-label", view.label);
+    if (renderedIconKind !== view.kind) {
+      badge.replaceChildren(buildUpdateIconSvg(view.kind));
+      renderedIconKind = view.kind;
+    }
+    syncBadgeStyle();
+    if (popover) syncPopoverContents();
+  };
+
+  button.addEventListener("click", () => {
+    if (!currentView) return;
+    if (popover) {
+      if (!busy) closePopover(true);
+      return;
+    }
+    openPopover();
   });
 
   listeners.add(paint);
   if (latest) paint(latest);
   watch(update);
-  return { element: button, dispose: () => { listeners.delete(paint); } };
+  return {
+    element: button,
+    dispose: () => {
+      closePopover(false);
+      listeners.delete(paint);
+      disposeTooltip();
+    },
+  };
 }
 
 /** 설정·도움말 등 상시 노출 영역의 「업데이트 확인」 단추 + 상태 문구. 데스크톱 앱에서만 그린다. */

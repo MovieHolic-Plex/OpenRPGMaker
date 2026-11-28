@@ -117,6 +117,51 @@ async function check(): Promise<void> {
   }
 }
 
+const RELEASE_NOTES_MAX_ITEMS = 5;
+
+async function fetchReleaseNotesFallback(version: string): Promise<readonly string[]> {
+  if (e2eLog()) return [];
+  const plain = String(version).replace(/^v/i, "").trim();
+  if (!plain) return [];
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 6_000);
+  try {
+    const url = `https://api.github.com/repos/${APP_UPDATE_REPO.owner}/${APP_UPDATE_REPO.repo}/releases/tags/v${encodeURIComponent(plain)}`;
+    const response = await fetch(url, {
+      headers: {
+        Accept: "application/vnd.github+json",
+        "User-Agent": `OPRN-Studio/${app.getVersion()}`,
+      },
+      signal: controller.signal,
+    });
+    if (!response.ok) return [];
+    const data = (await response.json()) as { body?: unknown };
+    return summarizeReleaseNotes(data.body, RELEASE_NOTES_MAX_ITEMS);
+  } catch {
+    return [];
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function hydrateReleaseNotesIfMissing(version: string, existing: readonly string[]): void {
+  if (existing.length > 0 || e2eLog()) return;
+  void fetchReleaseNotesFallback(version).then((notes) => {
+    if (notes.length === 0) return;
+    if (state.kind === "downloading" && state.version === version) {
+      setState({ ...state, releaseNotes: notes });
+    } else if (state.kind === "ready" && state.version === version) {
+      setState({ ...state, releaseNotes: notes });
+      if (prefs.pending?.version === version && prefs.pending.lines.length === 0) {
+        prefs.pending = { version, lines: notes.slice(0, 3) };
+        writePrefs();
+      }
+    } else if (state.kind === "available" && state.version === version) {
+      setState({ ...state, releaseNotes: notes });
+    }
+  });
+}
+
 async function checkViaGithubRelease(): Promise<void> {
   setState({ kind: "checking" });
   const controller = new AbortController();
@@ -133,7 +178,7 @@ async function checkViaGithubRelease(): Promise<void> {
     if (!response.ok) {
       throw new Error(`HTTP ${response.status}`);
     }
-    const data = (await response.json()) as { tag_name?: unknown; html_url?: unknown };
+    const data = (await response.json()) as { tag_name?: unknown; html_url?: unknown; body?: unknown };
     const latest = typeof data.tag_name === "string" ? data.tag_name.replace(/^v/i, "").trim() : "";
     if (!latest) {
       setState({ kind: "up-to-date", checkedAt: Date.now() });
@@ -142,7 +187,13 @@ async function checkViaGithubRelease(): Promise<void> {
     if (compareSemver(latest, app.getVersion()) > 0) {
       const candidateUrl = typeof data.html_url === "string" ? data.html_url : "";
       const downloadUrl = isSafeReleaseDownloadUrl(candidateUrl) ? candidateUrl : releasesLatestPageUrl();
-      setState({ kind: "available", version: latest, downloadUrl });
+      const releaseNotes = summarizeReleaseNotes(data.body, RELEASE_NOTES_MAX_ITEMS);
+      setState({
+        kind: "available",
+        version: latest,
+        downloadUrl,
+        ...(releaseNotes.length > 0 ? { releaseNotes } : {}),
+      });
     } else {
       setState({ kind: "up-to-date", checkedAt: Date.now() });
     }
@@ -184,19 +235,36 @@ async function attachUpdater(): Promise<void> {
     autoUpdater.allowPrerelease = false;
     autoUpdater.allowDowngrade = false;
     autoUpdater.on("update-available", (info) => {
+      const releaseNotes = summarizeReleaseNotes(info.releaseNotes, RELEASE_NOTES_MAX_ITEMS);
       if (mode === "manual") {
         manualDownloadOwned = false;
-        setState({ kind: "available", version: info.version, downloadUrl: portableDownloadUrl(info.version) });
+        setState({
+          kind: "available",
+          version: info.version,
+          downloadUrl: portableDownloadUrl(info.version),
+          ...(releaseNotes.length > 0 ? { releaseNotes } : {}),
+        });
       } else {
         manualDownloadOwned = manualCheckInFlight;
-        setState({ kind: "downloading", version: info.version, percent: 0 });
+        setState({
+          kind: "downloading",
+          version: info.version,
+          percent: 0,
+          ...(releaseNotes.length > 0 ? { releaseNotes } : {}),
+        });
       }
+      hydrateReleaseNotesIfMissing(info.version, releaseNotes);
     });
     autoUpdater.on("download-progress", (progress) => {
       if (state.kind !== "downloading") return;
       const percent = Math.max(0, Math.min(100, Math.round(progress.percent ?? 0)));
       if (state.percent === percent) return;
-      setState({ kind: "downloading", version: state.version, percent });
+      setState({
+        kind: "downloading",
+        version: state.version,
+        percent,
+        ...(state.releaseNotes && state.releaseNotes.length > 0 ? { releaseNotes: state.releaseNotes } : {}),
+      });
     });
     autoUpdater.on("update-not-available", () => {
       manualDownloadOwned = false;
@@ -206,9 +274,17 @@ async function attachUpdater(): Promise<void> {
     });
     autoUpdater.on("update-downloaded", (info) => {
       manualDownloadOwned = false;
-      prefs.pending = { version: info.version, lines: summarizeReleaseNotes(info.releaseNotes) };
+      const fromDownloaded = summarizeReleaseNotes(info.releaseNotes, RELEASE_NOTES_MAX_ITEMS);
+      const fromDownloading = state.kind === "downloading" && state.version === info.version ? (state.releaseNotes ?? []) : [];
+      const releaseNotes = fromDownloaded.length > 0 ? fromDownloaded : fromDownloading;
+      prefs.pending = { version: info.version, lines: releaseNotes.slice(0, 3) };
       writePrefs();
-      setState({ kind: "ready", version: info.version });
+      setState({
+        kind: "ready",
+        version: info.version,
+        ...(releaseNotes.length > 0 ? { releaseNotes } : {}),
+      });
+      hydrateReleaseNotesIfMissing(info.version, releaseNotes);
       e2eNote("downloaded", { to: info.version });
       // e2e: install = 칩을 누른 것과 같다, quit = 칩을 안 누르고 앱을 끈 것과 같다(끌 때 설치).
       if (e2eLog()) {

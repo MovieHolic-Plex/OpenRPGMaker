@@ -7,10 +7,12 @@ import {
   APP_UPDATE_INTERVAL_MS,
   appUpdateButtonView,
   appUpdateChipText,
+  appUpdateIndicatorView,
   appUpdateModeFor,
   compareSemver,
   isSafeReleaseDownloadUrl,
   portableDownloadUrl,
+  releasePageUrl,
   releasesLatestPageUrl,
   restoreLaunchEnv,
   snapshotLaunchEnv,
@@ -125,5 +127,46 @@ describe("appUpdateButtonView", () => {
   it("자동 업데이트 확인 주기는 시작 15초 후·이후 15분 간격이다", () => {
     expect(APP_UPDATE_FIRST_CHECK_MS).toBe(15_000);
     expect(APP_UPDATE_INTERVAL_MS).toBe(15 * 60 * 1000);
+  });
+});
+
+describe("appUpdateIndicatorView", () => {
+  it("새 버전 감지·다운로드·준비 상태에서만 오른쪽 상단 녹색 아이콘과 변경 사항 정보를 돌려준다", () => {
+    expect(appUpdateIndicatorView({ kind: "idle" })).toBeNull();
+    expect(appUpdateIndicatorView({ kind: "checking" })).toBeNull();
+    expect(appUpdateIndicatorView({ kind: "up-to-date", checkedAt: 1 })).toBeNull();
+    expect(appUpdateIndicatorView({ kind: "error", message: "네트워크 오류" })).toBeNull();
+    expect(appUpdateIndicatorView({ kind: "downloading", version: "0.421.0", percent: 42.4, releaseNotes: ["자동 저장 개선"] })).toMatchObject({
+      kind: "downloading",
+      version: "0.421",
+      percent: 42,
+      label: "새 버전 v0.421 내려받는 중 (42%)",
+      notes: ["자동 저장 개선"],
+      releaseUrl: releasePageUrl("0.421.0"),
+      action: "info",
+    });
+    expect(appUpdateIndicatorView({ kind: "downloading", version: "0.421.0" })).toMatchObject({
+      kind: "downloading",
+      version: "0.421",
+      percent: null,
+      label: "새 버전 v0.421 내려받는 중…",
+      notes: [],
+      action: "info",
+    });
+    expect(appUpdateIndicatorView({ kind: "ready", version: "0.421.0", releaseNotes: ["새 UI", "버그 수정"] })).toMatchObject({
+      kind: "ready",
+      version: "0.421",
+      label: "새 버전 v0.421 준비됨 · 변경 사항 보기",
+      notes: ["새 UI", "버그 수정"],
+      releaseUrl: "https://github.com/MovieHolic-Plex/OpenRPGMaker/releases/tag/v0.421.0",
+      action: "install",
+    });
+    expect(appUpdateIndicatorView({ kind: "available", version: "0.421.0", downloadUrl: portableDownloadUrl("0.421.0") })).toMatchObject({
+      kind: "available",
+      version: "0.421",
+      label: "새 버전 v0.421 있음 · 변경 사항 보기",
+      notes: [],
+      action: "download",
+    });
   });
 });
