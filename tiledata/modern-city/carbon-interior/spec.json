@@ -1,0 +1,154 @@
+{
+ "_doc": "modern_city Carbon Medium 실내 기물 원화 저장소(tiledata/jp-city/fable-city/palette.json 100% 잠금, 알파 0/255, 탑 3/4 시점). 굽기 시 object-gate/오너 승인 절차를 따른다.",
+ "model": "gemini-4-carbon (thought_level: medium)",
+ "palette": "../../jp-city/fable-city/palette.json",
+ "items": [
+  {
+   "id": "mc-c-konbini-counter",
+   "replaces": "mc-in-opus-konbini-counter",
+   "type": "prop",
+   "name": "편의점 계산대(오뎅·호빵)",
+   "en": "convenience store checkout counter with oden and bun warmer",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "편의점",
+    "계산대",
+    "오뎅",
+    "호빵"
+   ],
+   "words": [
+    "편의점 계산대",
+    "계산대",
+    "오뎅",
+    "호빵",
+    "konbini counter"
+   ],
+   "rule": "편의점 실내 카운터 구역에 배치. 아랫줄 3칸 막힘, 윗줄은 ★.",
+   "pixelSha256": "b0cec977fe2684041180405fe19a26b9adfadaf92855f263760b6284d1f2a55b"
+  },
+  {
+   "id": "mc-c-basket-stack",
+   "replaces": "mc-in-mci-basket-stack",
+   "type": "prop",
+   "name": "장바구니 더미",
+   "en": "stacked shopping baskets on rolling stand",
+   "kind": "other",
+   "w": 1,
+   "h": 2,
+   "place": "tall",
+   "block": [
+    [
+     0,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "편의점",
+    "마트",
+    "장바구니"
+   ],
+   "words": [
+    "장바구니 더미",
+    "장바구니",
+    "shopping basket"
+   ],
+   "rule": "편의점·마트 출입구 안쪽 벽가에 배치. 아랫칸 막힘, 윗칸 ★.",
+   "pixelSha256": "515ba078c071fe59564938e264816caa2744c03817546721dbe09fe29de8b789"
+  },
+  {
+   "id": "mc-c-dept-vip-sofa",
+   "replaces": "mc-in-r10-dept-vip-sofa",
+   "type": "prop",
+   "name": "VIP 라운지 2인 소파",
+   "en": "tufted leather 2-seater VIP lounge sofa",
+   "kind": "box",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "백화점",
+    "라운지",
+    "소파",
+    "VIP"
+   ],
+   "words": [
+    "VIP 라운지 소파",
+    "2인 소파",
+    "가죽 소파",
+    "lounge sofa"
+   ],
+   "rule": "백화점 VIP 라운지·호텔 로비에 배치. 아랫줄 2칸 막힘.",
+   "pixelSha256": "50ebc6ed642ec364af777d3989962a3353c3a80635b18cfdf7c6d0d45e2629ff"
+  },
+  {
+   "id": "mc-c-hosp-wait-row-n",
+   "replaces": "mc-in-r10b-hosp-wait-row-n",
+   "type": "prop",
+   "name": "대기 의자 3연석(북향)",
+   "en": "3-seater hospital waiting bench facing north",
+   "kind": "box",
+   "w": 3,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ],
+    [
+     2,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "병원",
+    "대기실",
+    "의자"
+   ],
+   "words": [
+    "대기 의자",
+    "병원 의자",
+    "3연석 의자",
+    "waiting bench"
+   ],
+   "rule": "병원·클리닉 대기실에 북향으로 배치. 아랫줄 3칸 막힘.",
+   "pixelSha256": "36e28df1701f6017db42a49570495fc455602caa9f4c53fcb4cc85123f6b1f78"
+  }
+ ],
+ "waiver": "carbon-remake-w1-3-2026-11-28"
+}

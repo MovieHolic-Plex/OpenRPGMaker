@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { createAssistantMessageEventStream } from "@oh-my-pi/pi-ai";
+import { createAssistantMessageEventStream } from "@earendil-works/pi-ai";
 import { runPiAgent } from "../scripts/lib/piAgentRuntime.ts";
 import { createEmptyToolProject } from "../src/editor/tools/emptyProject.ts";
 import { runTool } from "../src/editor/tools/toolRunner.ts";
@@ -54,7 +54,7 @@ test("Pi contract repairs dialogue in one budget without publishing partial cons
     });
     return stream;
   };
-  const done = await runPiAgent({ provider: "google-antigravity", task: "마을을 지어라", mapIds: ["village"],
+  const done = await runPiAgent({ provider: "openai-codex", task: "마을을 지어라", mapIds: ["village"],
     villageContract: { mapId: "village", houseCount: 2, npcCount: 3, args: { target: { kind: "existing", mapId: "village" }, houseCount: 2, npcCount: 3, countPolicy: "exact" } },
     applyMode: "default", project: ctx.project, initialToolNames: ["author_village"], maxTurns: 8,
   }, { onCheckpoint: async () => { checkpoints++; }, streamFn: streamFn as never, onEvent: event => events.push(event) });
@@ -82,7 +82,7 @@ test('missing construction is incomplete and a repair with no progress stops', a
       stream.push({ type: 'done', reason: 'stop', message } as never);
     }); return stream;
   };
-  const done = await runPiAgent({provider:'google-antigravity',task:'마을을 지어라',project,mapIds:[],maxTurns:8,
+  const done = await runPiAgent({provider:'openai-codex',task:'마을을 지어라',project,mapIds:[],maxTurns:8,
     villageContract:{mapId:'new',houseCount:2,npcCount:0,args:{target:{kind:'new',mapId:'new',name:'마을'},houseCount:2,npcCount:0,countPolicy:'exact'}}},
     {streamFn:streamFn as never});
   expect(calls).toBe(2);

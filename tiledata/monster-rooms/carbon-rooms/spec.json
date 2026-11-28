@@ -1,0 +1,41 @@
+{
+ "_doc": "monster_rooms Carbon Medium 원화 저장소(fable-city/palette.json 100% 잠금, 알파 0/255, 탑 3/4 시점).",
+ "model": "gemini-4-carbon (thought_level: medium)",
+ "palette": "../../jp-city/fable-city/palette.json",
+ "items": [
+  {
+   "id": "mk-c-rooms-healer",
+   "replaces": "mk-monster-rooms-c_healer",
+   "type": "prop",
+   "name": "몬스터 회복 장치",
+   "en": "monster healing machine console",
+   "kind": "prop",
+   "w": 2,
+   "h": 2,
+   "place": "prop",
+   "block": [
+    [
+     0,
+     1
+    ],
+    [
+     1,
+     1
+    ]
+   ],
+   "tags": [
+    "실내",
+    "몬스터",
+    "회복",
+    "센터"
+   ],
+   "words": [
+    "회복 장치",
+    "몬스터 회복",
+    "healing machine"
+   ],
+   "rule": "몬스터 센터 카운터 뒤 중앙에 배치. 아랫줄 2칸 막힘.",
+   "pixelSha256": "b3e0eb0fa3b4a41ce535366e7c8e793f5e09e49be6b45411bd6b025b85342bb7"
+  }
+ ]
+}

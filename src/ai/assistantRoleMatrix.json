@@ -8,10 +8,10 @@
     "image": { "label": "그림 생성", "desc": "타이틀·배경·컷신·초상 한 장 통째로", "needs": ["imageOutput"], "missing": "그림은 ChatGPT 로만 그려요(대화 AI 와는 따로예요). AI 설정에서 ChatGPT 로그인을 연결해 주세요." },
     "pixel": { "label": "도트", "desc": "타일·캐릭터·기물을 격자 문자열로 찍음(텍스트 모델)", "needs": ["text"], "missing": "주 모델이 찍음" }
   },
-  "$mainOrder": "주 작업은 Claude 가 연결돼 있으면 Sonnet 5.5 high(오너 결정 2026-11-23, 그 전은 Opus 5.5 medium), 없으면 Gemini Argon medium.",
+  "$mainOrder": "주 작업은 ChatGPT(GPT)가 연결돼 있으면 GPT-6.2 Sol high(오너 결정 2026-11-28, 그 전 2026-11-23 은 Claude Sonnet 5.5 high), 없으면 Claude Sonnet 5.5 high, 없으면 Gemini Argon medium.",
   "$claude": "Claude 경로는 주 작업·눈·도트가 모두 Sonnet 5.5 high 한 모델이다(오너 결정 2026-11-23 「조수는 sonnet 5.5 high 만」, 그 전 2026-11-16 은 Opus 5.5 medium). 잔일 칸(Haiku)은 없다 — 잔일은 주 모델이 대신한다. 검토자 칸도 Sonnet 5.5 high 이다(2026-11-16 N6 — 곁 호출도 조수 기본 모델. Claude 만 있으면 주 모델과 같은 모델이 문맥만 따로 본다. 다른 계열이 연결돼 있으면 그쪽이 먼저다). 값은 src/ai/claudeDefault.ts 와 같아야 한다(test/aiDefaultClaudeSonnetHigh.test.ts).",
-  "familyOrder": ["gemini", "gpt", "claude", "deepseek"],
-  "mainFamilyOrder": ["claude", "gemini", "gpt", "deepseek"],
+  "familyOrder": ["gpt", "claude", "gemini", "deepseek"],
+  "mainFamilyOrder": ["gpt", "claude", "gemini", "deepseek"],
   "families": {
     "gemini": {
       "label": "Gemini",
@@ -42,19 +42,17 @@
       "label": "GPT",
       "routes": [
         { "providerId": "openai-codex", "roles": {
-          "main": [{ "model": "gpt-6.2-sol", "thinkingLevel": "medium" }],
-          "smol": [{ "model": "gpt-6-luna", "thinkingLevel": "low" }],
-          "advisor": [{ "model": "gpt-6.2-sol", "thinkingLevel": "medium" }, { "model": "gpt-6-astra", "thinkingLevel": "medium" }],
-          "vision": [{ "model": "gpt-6.2-sol", "thinkingLevel": "medium" }],
+          "main": [{ "model": "gpt-6.2-sol", "thinkingLevel": "high" }],
+          "advisor": [{ "model": "gpt-6.2-sol", "thinkingLevel": "high" }],
+          "vision": [{ "model": "gpt-6.2-sol", "thinkingLevel": "high" }],
           "image": [{ "model": "codex-image-default", "thinkingLevel": "off" }],
-          "pixel": [{ "model": "gpt-6.2-sol", "thinkingLevel": "medium" }]
+          "pixel": [{ "model": "gpt-6.2-sol", "thinkingLevel": "high" }]
         } },
         { "providerId": "local-cli:codex", "roles": {
-          "main": [{ "model": "gpt-6.2-sol", "thinkingLevel": "medium" }],
-          "smol": [{ "model": "gpt-6-luna", "thinkingLevel": "low" }],
-          "advisor": [{ "model": "gpt-6.2-sol", "thinkingLevel": "medium" }],
-          "vision": [{ "model": "gpt-6.2-sol", "thinkingLevel": "medium" }],
-          "pixel": [{ "model": "gpt-6.2-sol", "thinkingLevel": "medium" }]
+          "main": [{ "model": "gpt-6.2-sol", "thinkingLevel": "high" }],
+          "advisor": [{ "model": "gpt-6.2-sol", "thinkingLevel": "high" }],
+          "vision": [{ "model": "gpt-6.2-sol", "thinkingLevel": "high" }],
+          "pixel": [{ "model": "gpt-6.2-sol", "thinkingLevel": "high" }]
         } }
       ]
     },

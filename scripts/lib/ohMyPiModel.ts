@@ -1,71 +1,31 @@
-import { getBundledModel } from "@oh-my-pi/pi-catalog";
+import { getModel } from "@earendil-works/pi-ai/compat";
 import { getOhMyPiProvider } from "../../src/ai/ohMyPiProviders.ts";
 import { isOpenAiCompatProviderId } from "../../src/ai/openAiCompat.ts";
 import { resolveOpenAiCompatModel } from "./openAiCompatModel.ts";
 
-/**
- * GPT-6 계열은 설치된 pi-catalog 17.4.0 보다 나중에 나왔다. pi-catalog 18.3.2 의 openai-codex 항목이
- * gpt-5.6-sol 과 같은 전송(api openai-codex-responses · baseUrl chatgpt.com/backend-api · 사고 강도
- * low..max)이고 다른 것은 이름·컨텍스트 창뿐이다 — 그래서 번들 gpt-5.6-sol 메타데이터에
- * 그 두 값만 덮어 쓴다. 번들이 올라오면 exact 경로가 먼저 잡으므로 이 표는 저절로 안 쓰인다.
- * 창(2026-11-04 재확인): astra·luna 272000(~/.codex/models_cache.json context_window), 6.1-sol 500000(package-lock 의
- * pi-catalog 18.13.2 와 codex 0.164.0 08:53Z 캐시), 6.1-terra 272000(보수값 — 500000 은 지금은 사라진 이른 캐시 한 곳에만 있었고
- * 다른 출처는 272000 이다. 모자라게 잡으면 압축이 일찍 걸릴 뿐이고, 넘치게 잡으면 실행이 실패한다). 번들에 있는 id 는 번들 값이 먼저다.
- */
-const CODEX_GPT6_EXTENSION: Readonly<Record<string, {
-  readonly name: string;
-  readonly contextWindow: number;
-  readonly useResponsesLite?: boolean;
-}>> = {
-  "gpt-6-astra": { name: "GPT-6 Astra", contextWindow: 272000 },
-  "gpt-6-sol": { name: "GPT-6 Sol", contextWindow: 272000 },
-  "gpt-6-luna": { name: "GPT-6 Luna", contextWindow: 272000 },
-  // codex-rs 0.155 카탈로그가 use_responses_lite: true 로 내려 준다. 이 헤더 없이 보내면
-  // 「not supported when using Codex with a ChatGPT account」 400 이다(실측 2026-10-07).
-  "gpt-6.1-sol": { name: "GPT-6.1 Sol", contextWindow: 500000, useResponsesLite: true },
-  // 이전 저장값·기록과의 호환을 위해 해석만 지원한다.
-  "gpt-6.1-terra": { name: "GPT-6.1 Terra", contextWindow: 272000, useResponsesLite: true },
-  // Codex 0.170 모델 캐시(2026-11-19): 6.2 두 모델 모두 Responses Lite 를 쓴다.
-  "gpt-6.2-sol": { name: "GPT-6.2 Sol", contextWindow: 500000, useResponsesLite: true },
-  "gpt-6.2-astra": { name: "GPT-6.2 Astra", contextWindow: 272000, useResponsesLite: true },
-};
+const GOOGLE_OAUTH_DISABLED_ERROR =
+  "Google 계정 직접 로그인(google-antigravity)은 계정 정지 위험으로 비활성화되어 있습니다. Gemini API 키를 사용해 주세요.";
 
 /** Exact selection only. Missing catalog entries must never change the user's model. */
 export function resolveOhMyPiModel(provider: string, requested?: string) {
   // 사용자 지정(OpenAI 호환) 엔드포인트는 번들 카탈로그에 없다 — 호스트가 실어 보낸 정의로 모델을 만든다.
-  if (isOpenAiCompatProviderId(provider)) return resolveOpenAiCompatModel(provider, requested) as ReturnType<typeof getBundledModel>;
+  if (isOpenAiCompatProviderId(provider)) return resolveOpenAiCompatModel(provider, requested) as ReturnType<typeof getModel>;
+  if (provider === "google-antigravity") {
+    throw Object.assign(new Error(GOOGLE_OAUTH_DISABLED_ERROR), { status: 400 });
+  }
   const id = requested?.trim() || getOhMyPiProvider(provider)?.defaultModel || "";
-  const exact = getBundledModel(provider as never, id);
+  const exact = getModel(provider as never, id as never);
   if (exact && typeof exact === "object" && "id" in exact) return exact;
-  // OMP 17.4 predates this model. OAuth wire verified 2026-09-14:
-  // gemini-3.8-flash-high, thinkingLevel HIGH -> OK. Prefer bundled metadata once available.
-  if (provider === "google-antigravity" && id === "gemini-3.8-flash") {
-    const base = getBundledModel("google-antigravity", "gemini-3.7-flash");
-    if (base) return { ...base, id, name: "Gemini 3.8 Flash", thinking: {
-      ...base.thinking!, effortRouting: {
-        minimal: "gemini-3.8-flash-low", low: "gemini-3.8-flash-low",
-        medium: "gemini-3.8-flash-medium", high: "gemini-3.8-flash-high",
-      },
-    } };
+  // 레거시/별칭 제공자 ID 매핑(xai-oauth → xai, kimi-code → kimi-coding).
+  const aliasProvider = provider === "xai-oauth" ? "xai" : provider === "kimi-code" ? "kimi-coding" : undefined;
+  if (aliasProvider) {
+    const aliased = getModel(aliasProvider as never, id as never);
+    if (aliased && typeof aliased === "object" && "id" in aliased) return aliased;
   }
-  // Gemini 4 Argon: `agy` 모델 목록(2026-10-14)에 gemini-4-argon-{low,medium,high} 로 올라와 있다. 3.8 과 같은 전송이고
-  // 사고 강도 라우팅 이름만 다르다. 번들 카탈로그가 이 모델을 싣게 되면 위 exact 경로가 먼저 잡는다.
-  if (provider === "google-antigravity" && id === "gemini-4-argon") {
-    const base = getBundledModel("google-antigravity", "gemini-3.7-flash");
-    // 첫 응답 감시: 3.7 Flash 의 60초를 물려받으면 큰 대화(읽기 결과·그림 수십만 토큰)에서 Argon 이 생각하는 동안 요청이 끊긴다
-    // (2026-10-25 조수 단독 게임 G12/G14: 8~9번째 턴마다 「Request was aborted」 네 번 연속). Pro 급 기본값 5분으로 둔다.
-    if (base) return { ...base, id, name: "Gemini 4 Argon", compat: { ...base.compat, streamFirstEventTimeoutMs: 300_000 }, thinking: {
-      ...base.thinking!, effortRouting: {
-        minimal: "gemini-4-argon-low", low: "gemini-4-argon-low",
-        medium: "gemini-4-argon-medium", high: "gemini-4-argon-high",
-      },
-    } };
-  }
-  if (provider === "openai-codex" && CODEX_GPT6_EXTENSION[id]) {
-    const base = getBundledModel("openai-codex", "gpt-5.6-sol");
-    // 웹소켓 핸드셰이크는 옛 클라이언트 버전을 박아 보내 새 모델을 거절당한다 — SSE 로 보내야
-    // codexVersionFetch 가 버전을 올릴 수 있다(codexClientVersion.ts).
-    if (base) return { ...base, id, ...CODEX_GPT6_EXTENSION[id], preferWebsockets: false };
+  // Claude 5.5 Haiku 등 카탈로그 반영 전 모델은 같은 계열 베이스 모델에 ID 만 덮어 쓴다.
+  if (provider === "anthropic" && /^claude-(sonnet|opus|haiku)-/u.test(id)) {
+    const base = getModel("anthropic", "claude-sonnet-5-5");
+    if (base) return { ...base, id, name: id };
   }
   throw Object.assign(new Error(`지원 목록에 없는 모델입니다: ${provider}/${id}. 다른 모델로 대체하지 않았습니다.`), { status: 400 });
 }

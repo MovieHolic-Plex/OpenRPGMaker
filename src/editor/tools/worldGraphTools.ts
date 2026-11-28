@@ -1,4 +1,3 @@
-import { isRoadCell } from "@/ai/v2/place/surface";
 import { defaultOutdoorTilesetId } from "@/project/defaults/outdoorTileset";
 // 선언형 월드 그래프 툴: plan_world / link_maps / build_world / lint_world.
 
@@ -584,13 +583,12 @@ function assertProvidedLanding(project: Project, map: GameMap, point: Point, gat
   return { x: point.x, y: point.y };
 }
 
-/** 맵 가장자리나 길 위의 출입구로 들어와 바로 곁 칸에 서면 출입구를 등지고 선다(가장자리면 맵 안쪽, 길 끝이면 길을 따라 안쪽). 그 밖에는 방향을 정하지 않는다. */
-function gateArrivalFacing(project: Project, map: GameMap, gate: Point, landing: Point): { direction?: "up" | "down" | "left" | "right" } {
+/** 출입구로 들어와 착지 칸에 서면 출입구를 등지는 방향을 기본으로 정한다(가장자리·길·실내·동굴·계단 공통). */
+function gateArrivalFacing(_project: Project, _map: GameMap, gate: Point, landing: Point): { direction?: "up" | "down" | "left" | "right" } {
   const dx = landing.x - gate.x, dy = landing.y - gate.y;
-  if (Math.abs(dx) + Math.abs(dy) !== 1) return {};
-  const inward = (gate.x === 0 && dx === 1) || (gate.x === map.width - 1 && dx === -1) || (gate.y === 0 && dy === 1) || (gate.y === map.height - 1 && dy === -1);
-  if (!inward && !(isRoadCell(project, map, gate.x, gate.y) && isRoadCell(project, map, landing.x, landing.y))) return {};
-  return { direction: dx === 1 ? "right" : dx === -1 ? "left" : dy === 1 ? "down" : "up" };
+  if (dx === 0 && dy === 0) return {};
+  if (Math.abs(dx) >= Math.abs(dy)) return { direction: dx > 0 ? "right" : "left" };
+  return { direction: dy > 0 ? "down" : "up" };
 }
 
 function sideCenter(map: GameMap, side: WorldGraphSide): Point {

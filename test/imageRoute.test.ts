@@ -19,8 +19,8 @@ describe("imageRoute", () => {
   isolateTimers();
   const purposes = Object.keys(IMAGE_PURPOSES) as ImagePurpose[];
   const kindOf = (kind: string): ImagePurpose[] => purposes.filter((p) => IMAGE_PURPOSES[p].kind === kind);
-  /** 새 설정의 계획 모델 — 도트 칸이 비면 이 모델이 도트를 찍는다(오너 결정 2026-11-23: 조수 기본은 Claude Sonnet 5.5 · high). */
-  const FACTORY_PLAN = { provider: "anthropic", model: "claude-sonnet-5-5", thinkingLevel: "high" } as const;
+  /** 새 설정의 계획 모델 — 도트 칸이 비면 이 모델이 도트를 찍는다(오너 결정 2026-11-28: 조수 기본은 GPT-6.2 Sol · high). */
+  const FACTORY_PLAN = { provider: "openai-codex", model: "gpt-6.2-sol", thinkingLevel: "high" } as const;
   describe("그림 용도 라우터", () => {
     it("세 갈래가 모두 있다", () => {
       expect(kindOf("generative").length).toBeGreaterThan(0);
@@ -180,13 +180,13 @@ describe("providerLimits", () => {
     });
 
     it("429 를 적으면 자동 선택이 다음 길로 넘어가고 칩이 그 사실을 말한다", () => {
-      noteProviderLimited("anthropic", "Retry-After 600", NOW);
+      noteProviderLimited("openai-codex", "Retry-After 600", NOW);
       const pick = pickAutoProvider({
         routes: ["anthropic", "openai-codex"].map((providerId) => ({ providerId, connected: true, limitedUntil: providerLimitedUntil(providerId, NOW) })),
         now: NOW,
       });
-      expect(pick.providerId).toBe("openai-codex");
-      expect(autoPickNote(pick, (id) => (id === "anthropic" ? "Claude" : id), () => "")).toBe("Claude 한도 · 자동 전환");
+      expect(pick.providerId).toBe("anthropic");
+      expect(autoPickNote(pick, (id) => (id === "openai-codex" ? "ChatGPT" : id), () => "")).toBe("ChatGPT 한도 · 자동 전환");
     });
   });
   describe("autoPickNote", () => {

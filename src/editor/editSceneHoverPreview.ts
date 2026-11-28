@@ -1,5 +1,22 @@
+import { ensureInteractivePropTexture } from "@/assets/bundled";
+import { requestEditRenderFrame } from "@/editor/editRenderGate";
 import { prepareReliefRead } from "./reliefGroundSurface";
 import { mapTileSize } from "@/project/tileGeometry";
+import {
+  interactivePropById,
+  interactivePropFootprint,
+  interactivePropFrameName,
+  interactivePropPassRows,
+  interactivePropSpriteId,
+} from "@/project/interactiveProps";
+import { footprintSpriteX } from "@/player/characterDepth";
+import {
+  footprintBounds,
+  normalizeCharacterFootprint,
+  normalizePassRows,
+  passageBounds,
+  rectsOverlap,
+} from "@/project/footprint";
 import { worldmapAutoTile } from '@/project/worldmapAutoBrush';
 import type Phaser from "phaser";
 import { createChipsetTileObject } from "@/editor/chipsetTileRender";
@@ -178,9 +195,27 @@ function hoverPreviewKey(spec: HoverPreviewSpec): string {
   const stampKey = stamp
     ? `${stamp.width}x${stamp.height}:${stamp.source.startTile}-${stamp.source.endTile}:${stamp.cells.length}:${stamp.anchor?.dx ?? 0},${stamp.anchor?.dy ?? 0}`
     : "";
+  const map = store.getCurrent().maps[spec.mapId];
+  const propOccupied = (() => {
+    if (!state.activeInteractivePropId || !map) return "";
+    const prop = interactivePropById(state.activeInteractivePropId, store.getCurrent());
+    if (!prop) return "";
+    const fp = interactivePropFootprint(prop);
+    const pr = interactivePropPassRows(prop);
+    const rect = passageBounds(spec.centerX, spec.centerY, fp, pr);
+    if (rect.left < 0 || rect.right >= map.width || rect.top < 0 || rect.bottom >= map.height) return "oob";
+    const collides = map.events.some((event) => {
+      if (event.x === spec.centerX && event.y === spec.centerY) return true;
+      const efp = normalizeCharacterFootprint(event.pages?.[0]?.footprint);
+      const epr = normalizePassRows(event.pages?.[0]?.passRows, efp.height);
+      return rectsOverlap(rect, passageBounds(event.x, event.y, efp, epr));
+    });
+    return collides ? "occ" : "free";
+  })();
   return [
     spec.mapId, spec.centerX, spec.centerY, spec.groundY ?? spec.centerY, state.tool, state.layer,
     state.selectedTile, state.worldmapAutoBackground, state.brushSize, state.paintShape, stampKey,
+    state.activeInteractivePropId ?? "", propOccupied,
     state.terrainSymmetry, state.terrainStampId, state.terrainStampRotation, state.terrainStampMirror, state.terrainStampCapture,
     state.terrainHouseStyle, state.terrainHouseKitId, state.terrainHouseWidth, state.terrainHouseStories, state.terrainHouseResize, state.terrainHouseRoofWidth, state.terrainRoadDrag,
     state.terrainAreaShape, state.terrainDelta, state.terrainSeed, JSON.stringify(state.terrainMixWeights), JSON.stringify(state.terrainPoints),
@@ -211,6 +246,71 @@ export function renderHoverTilePreview(spec: HoverPreviewSpec): void {
   if (state.tool !== "paint" && state.tool !== "fill" && state.tool !== "erase") return;
   if (spec.centerX < 0 || spec.centerY < 0 || spec.centerX >= map.width || spec.centerY >= map.height) return;
   const lift = map.relief ? reliefLiftField(map.relief) : null;
+  if (state.tool === "paint" && state.activeInteractivePropId) {
+    const project = store.getCurrent();
+    const prop = interactivePropById(state.activeInteractivePropId, project);
+    if (!prop) return;
+    const fp = interactivePropFootprint(prop);
+    const passRows = interactivePropPassRows(prop);
+    const bodyRect = footprintBounds(spec.centerX, spec.centerY, fp);
+    const passRect = passageBounds(spec.centerX, spec.centerY, fp, passRows);
+    const outOfBounds = passRect.left < 0 || passRect.right >= map.width || passRect.top < 0 || passRect.bottom >= map.height;
+    const occupied = outOfBounds || map.events.some((event) => {
+      if (event.x === spec.centerX && event.y === spec.centerY) return true;
+      const efp = normalizeCharacterFootprint(event.pages?.[0]?.footprint);
+      const epr = normalizePassRows(event.pages?.[0]?.passRows, efp.height);
+      return rectsOverlap(passRect, passageBounds(event.x, event.y, efp, epr));
+    });
+    const liftPx = (lift ? cellLift(lift, spec.centerX, spec.centerY) : 0) * tileSize;
+    const textureKey = interactivePropSpriteId(prop.id);
+    const frame = interactivePropFrameName(0);
+    const ready = ensureInteractivePropTexture(spec.scene, prop, project, () => {
+      if (editorState.get().activeInteractivePropId !== prop.id) return;
+      if (!spec.layer.active || spec.layer.getData(HOVER_PREVIEW_KEY) !== key) return;
+      spec.layer.setData(HOVER_PREVIEW_KEY, "");
+      renderHoverTilePreview(spec);
+      if (spec.scene.game) requestEditRenderFrame(spec.scene.game);
+    });
+    if (ready && spec.scene.textures?.exists(textureKey) && spec.scene.textures.get(textureKey).has(frame)) {
+      const preview = spec.scene.add.image(
+        footprintSpriteX(spec.centerX, fp, tileSize),
+        (bodyRect.bottom + 1) * tileSize - liftPx,
+        textureKey,
+        frame,
+      );
+      preview.setOrigin(prop.anchorX, prop.anchorY);
+      preview.setScale(tileSize / 16);
+      preview.setAlpha(occupied ? 0.45 : 0.78);
+      if (occupied) preview.setTint(0xff8787);
+      spec.layer.add(preview);
+    }
+    // 다중 칸 오브젝트는 전체 몸 사각(옅은 테두리) + 하단 통행 차단 행(채움)을 함께 표시한다.
+    if (fp.width > 1 || fp.height > 1) {
+      const bodyOutline = spec.scene.add.rectangle(
+        bodyRect.left * tileSize,
+        bodyRect.top * tileSize - liftPx,
+        (bodyRect.right - bodyRect.left + 1) * tileSize,
+        (bodyRect.bottom - bodyRect.top + 1) * tileSize,
+        occupied ? 0xff6b6b : 0xffffff,
+        0.06,
+      );
+      bodyOutline.setOrigin(0, 0);
+      bodyOutline.setStrokeStyle(1, occupied ? 0xffc9c9 : 0xffffff, 0.55);
+      spec.layer.add(bodyOutline);
+    }
+    const marker = spec.scene.add.rectangle(
+      passRect.left * tileSize,
+      passRect.top * tileSize - liftPx,
+      (passRect.right - passRect.left + 1) * tileSize,
+      (passRect.bottom - passRect.top + 1) * tileSize,
+      occupied ? 0xff6b6b : 0x51cf66,
+      occupied ? 0.28 : 0.2,
+    );
+    marker.setOrigin(0, 0);
+    marker.setStrokeStyle(1, occupied ? 0xffc9c9 : 0xd3f9d8, 0.92);
+    spec.layer.add(marker);
+    return;
+  }
   if (state.tool === "paint" && state.activePaletteStamp) {
     // 발자국은 comboBrushPlacement 하나로 푸다 — 여기서 두 번째 경계 계산을 하지 않는다.
     // 예전에는 미리보기와 페인트가 각자 `x < map.width` 를 세서 둘이 어긋날 수 있었고,

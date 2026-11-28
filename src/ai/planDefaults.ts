@@ -55,22 +55,18 @@ const ready = (rows: readonly DetectedCli[], id: LocalCliEngineId): boolean =>
 const signedIn = (accounts: readonly DetectedAccount[], providerId: string): boolean =>
   accounts.some((row) => row.providerId === providerId && row.connected && row.expired !== true && row.env !== true && row.authKind === "oauth");
 
-/** 후보 목록 — Claude(기본, 2026-11-23 오너 결정), ChatGPT, 나머지 순. 같은 요금제는 한 장만(CLI 가 있으면 CLI). 없으면 빈 배열. */
+/** 후보 목록 — ChatGPT(기본, 2026-11-28 오너 결정), Claude, 나머지 순. 같은 요금제는 한 장만(CLI 가 있으면 CLI). 없으면 빈 배열. */
 export function planCandidates(rows: readonly DetectedCli[], accounts: readonly DetectedAccount[]): PlanCandidate[] {
   const out: PlanCandidate[] = [];
-  if (ready(rows, "claude")) {
-    out.push({ key: "claude-cli", kind: "local-cli", name: "Claude 구독", setup: "Sonnet 5.5 하나가 계획부터 만들기까지 해요.", engine: CLAUDE_SUBSCRIPTION_ENGINE });
-  }
   if (ready(rows, "codex")) {
     out.push({ key: "codex-cli", kind: "local-cli", name: "ChatGPT 구독", setup: "GPT-6.2 Sol 하나가 계획부터 만들기까지 해요.", engine: CHATGPT_SUBSCRIPTION_ENGINE });
   } else if (signedIn(accounts, CODEX_ACCOUNT_PROVIDER_ID)) {
     out.push({ key: "codex-account", kind: "account", name: "ChatGPT 로그인", setup: "GPT-6.2 Sol 하나가 계획부터 만들기까지 해요.", providerId: CODEX_ACCOUNT_PROVIDER_ID });
   }
-  if (ready(rows, "gemini")) {
-    out.push({ key: "gemini-cli", kind: "local-cli", name: "Gemini CLI 구글 로그인", setup: "Gemini CLI 기본 모델로 해요.", engine: { kind: "local-cli", cli: "gemini", effort: "medium" } });
-  } else if (signedIn(accounts, GOOGLE_ACCOUNT_PROVIDER_ID)) {
-    out.push({ key: "google-account", kind: "account", name: "Google 로그인", setup: "Google 계정의 기본 모델(Gemini 4 Argon)로 해요.", providerId: GOOGLE_ACCOUNT_PROVIDER_ID });
+  if (ready(rows, "claude")) {
+    out.push({ key: "claude-cli", kind: "local-cli", name: "Claude 구독", setup: "Sonnet 5.5 하나가 계획부터 만들기까지 해요.", engine: CLAUDE_SUBSCRIPTION_ENGINE });
   }
+  // Google Antigravity 직접 OAuth와 종료된 Gemini CLI 는 추천 후보에서 제외한다(계정 정지 방지).
   return out;
 }
 
@@ -86,18 +82,25 @@ type PlanAccountConfig = {
 
 /**
  * 계정 후보를 골랐을 때 역할 모델. 제공자 선택(configForProviderSelection)을 이미 거친 설정을 받는다.
- * ChatGPT 만 Sol 로 바꾼다(사람이 직접 고른 칸은 그대로). 다른 계정은 받은 그대로.
+ * ChatGPT 만 Sol · high 로 맞춘다(사람이 직접 고른 칸은 그대로). 다른 계정은 받은 그대로.
  */
 export function configForPlanAccount<T extends PlanAccountConfig>(config: T, providerId: string): T {
   if (providerId !== CODEX_ACCOUNT_PROVIDER_ID) return config;
   const pinned = config.modelSelectionOverrides ?? {};
-  const row = (old: RoleModel | undefined): RoleModel => ({ provider: providerId, model: CHATGPT_ACCOUNT_MODEL, thinkingLevel: atLeastMediumEffort(old?.provider === providerId ? old.thinkingLevel : undefined) });
+  const effortFor = (prevProvider: string | undefined, prevEffort: ThinkingEffort | undefined): ThinkingEffort =>
+    prevProvider === providerId && prevEffort ? atLeastMediumEffort(prevEffort) : ASSISTANT_CHATGPT_EFFORT;
+  const row = (old: RoleModel | undefined): RoleModel => ({
+    provider: providerId, model: CHATGPT_ACCOUNT_MODEL, thinkingLevel: effortFor(old?.provider, old?.thinkingLevel),
+  });
   const roleModels: SpecialistModels = { ...config.roleModels };
   for (const role of ["deep", "build", "writer", "vision"] as const) if (!pinned[role]) roleModels[role] = row(roleModels[role]);
   return {
     ...config,
     providerId, model: CHATGPT_ACCOUNT_MODEL, liteModel: CHATGPT_ACCOUNT_MODEL, roleModels,
-    reasoningEffort: atLeastMediumEffort(config.providerId === providerId ? config.reasoningEffort : undefined),
-    ...(pinned.ultrabrain ? {} : { ultrabrainProviderId: providerId, ultrabrainModel: CHATGPT_ACCOUNT_MODEL, ultrabrainReasoningEffort: atLeastMediumEffort(config.ultrabrainProviderId === providerId ? config.ultrabrainReasoningEffort : undefined) }),
+    reasoningEffort: effortFor(config.providerId, config.reasoningEffort),
+    ...(pinned.ultrabrain ? {} : {
+      ultrabrainProviderId: providerId, ultrabrainModel: CHATGPT_ACCOUNT_MODEL,
+      ultrabrainReasoningEffort: effortFor(config.ultrabrainProviderId, config.ultrabrainReasoningEffort),
+    }),
   };
 }

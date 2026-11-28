@@ -262,6 +262,11 @@ export function renderAiAuthSettings(
       provider !== providerId && (state === "error" || state === "hostDisabled"));
     const pill = cardPills.get(id);
     if (!pill) return;
+    if (id === ANTIGRAVITY_PROVIDER_ID) {
+      pill.textContent = "비활성화됨";
+      pill.dataset.tone = "offline";
+      return;
+    }
     let text = "확인 중…";
     let tone = "checking";
     if (auth === "hostDisabled") {
@@ -528,10 +533,13 @@ export function renderAiAuthSettings(
     // 카드 설명을 그대로 되풀이하지 않는다 — 패널 안내는 **다음에 무슨 일이 일어나는지**를 말한다.
     const label = meta?.label ?? providerId;
     const custom = isOpenAiCompatProviderId(providerId);
+    const googleOAuthDisabled = providerId === ANTIGRAVITY_PROVIDER_ID;
     // 사용자 지정 엔드포인트는 로그인이 없다 — 주소·키 관리는 아래 「사용자 지정 연결」 카드가 맡는다.
     actionsRow.hidden = custom;
     providerHelp.textContent = custom
       ? `${label} (사용자 지정) 로 쓰는 중 — 아래에서 바꿔요.`
+      : googleOAuthDisabled
+      ? "Google 계정 직접 로그인은 계정 정지 위험으로 비활성화되어 있어요. Gemini API 키를 사용해 주세요."
       : providerKind === "local"
       // 내 PC 의 에이전트 CLI(local-cli:*) — 설정 마법사가 고르는 길이다. 자격은 그 프로그램이 갖고, 여기서는 상태만 본다.
       // 예전엔 oauth 가 아니면 모두 「자격 종류는 지원하지 않아요」로 떠서 마법사가 고른 연결을 부정했다(2026-11-04).
@@ -541,12 +549,15 @@ export function renderAiAuthSettings(
       : stored
         ? `${label} 계정으로 연결됨`
         : `${label} 계정으로 로그인`;
-    loginButton.textContent = stored
-      ? "다시 확인"
-      : providerKind === "oauth" ? "로그인" : "연결 확인";
+    loginButton.textContent = googleOAuthDisabled
+      ? "비활성화됨"
+      : stored
+        ? "다시 확인"
+        : providerKind === "oauth" ? "로그인" : "연결 확인";
+    loginButton.disabled = googleOAuthDisabled;
     disconnectButton.hidden = !stored || custom;
     // 로그인 전에는 「로그인」 이 이 화면의 유일한 다음 단계다 — 다른 회색 버튼과 같은 무게로 두지 않는다.
-    loginButton.classList.toggle("is-primary", !stored && providerKind === "oauth");
+    loginButton.classList.toggle("is-primary", !googleOAuthDisabled && !stored && providerKind === "oauth");
     // 퀵 카드의 보이기/체크·탭 순서도 같은 크롬 갱신 경로에서 맞춘다.
     applyQuickChrome();
   };

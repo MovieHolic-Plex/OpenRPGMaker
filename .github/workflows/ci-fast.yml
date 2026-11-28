@@ -111,8 +111,8 @@ jobs:
             fi
           }
           build_worker() {
-            bun scripts/build-ai-worker.ts "$RUNNER_TEMP" linux
-            test -s "$RUNNER_TEMP/oh-my-pi-worker"
+            node scripts/build-ai-worker.ts "$RUNNER_TEMP"
+            test -s "$RUNNER_TEMP/ai-worker.mjs"
           }
           check_types() {
             if [[ -n "${OPRN_CI_CACHE:-}" ]]; then

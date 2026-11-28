@@ -3,7 +3,7 @@
 // 형식이 깨진 명세만 거부한다.
 import { test } from "bun:test";
 import assert from "node:assert/strict";
-import { createAssistantMessageEventStream } from "@oh-my-pi/pi-ai";
+import { createAssistantMessageEventStream } from "@earendil-works/pi-ai";
 import { createBlankProject } from "../src/project/defaults";
 import { runPiAgent } from "../scripts/lib/piAgentRuntime";
 
@@ -12,7 +12,7 @@ async function callBuildSpec(args: Record<string, unknown>): Promise<{ text: str
   const mapId = project.startMapId;
   let turn = 0;
   let seen: { text: string; isError: boolean } | undefined;
-  await runPiAgent({ provider: "google-antigravity", task: "sketch", project, mapIds: [mapId], maxTurns: 3, initialToolNames: ["find_tools"] }, {
+  await runPiAgent({ provider: "openai-codex", task: "sketch", project, mapIds: [mapId], maxTurns: 3, initialToolNames: ["find_tools"] }, {
     streamFn: ((_model: unknown, ctx: { messages: any[] }) => {
       const stream = createAssistantMessageEventStream(), first = turn++ === 0;
       if (!first) {

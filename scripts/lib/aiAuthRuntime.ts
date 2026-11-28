@@ -82,10 +82,10 @@ function testStub(): boolean {
 
 /**
  * 이 앱이 **직접** 로그인 흐름을 구현한 제공자(브리지 로그인).
- * 나머지 제공자는 OMP(pi) 에서 이미 로그인한 자격을 가져오는 경로로만 쓰인다 —
- * pi 의 로그인은 Bun·bun:sqlite 를 쓰고 이 동반 서비스는 순수 Node 라 여기서 돌릴 수 없다.
+ * Google Antigravity OAuth 는 제3자 하네스 사용 시 계정 정지 위험이 있어 비활성화한다(2026-11-28).
  */
-const BRIDGE_LOGIN_PROVIDERS = new Set<string>([ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID]);
+const BRIDGE_LOGIN_PROVIDERS = new Set<string>([CODEX_PROVIDER_ID]);
+const GOOGLE_OAUTH_DISABLED_MESSAGE = "Google 계정 직접 로그인은 계정 정지 위험으로 현재 비활성화되어 있습니다. Gemini API 키를 사용해 주세요.";
 
 /**
  * 로그인·상태·갱신이 다룰 수 있는 제공자인가.
@@ -218,27 +218,12 @@ function shouldReplaceImportedCredentials(provider: string, current: PortedOAuth
   return external.expires > current.expires;
 }
 
-/** Adopt OMP's existing login into the companion cache without opening OAuth. */
-function adoptOmpCliCredentials(provider: string): boolean {
-  if (!shouldProbeOmpAuth() || store.adoptionDeclined(provider)) return false;
-  const currentRow = store.get(provider);
-  const current = credentialsOf(provider);
-  const probe = probeOmpAuth(provider);
-
-  if (!probe.available) return false;
-  if (!probe.credentials) {
-    // If this row came from OMP and OMP no longer has it (logout), do not keep
-    // presenting a stale editor connection. A manual editor disconnect uses
-    // store.remove(), which records declined and remains authoritative.
-    if (currentRow?.source === "omp") store.clear(provider);
-    return false;
-  }
-  if (!current || currentRow?.source === "omp" || !isUsableCredentials(provider, current)) {
-    if (shouldReplaceImportedCredentials(provider, current, probe.credentials)) {
-      store.setOAuth(provider, probe.credentials, { source: "omp" });
-      return true;
-    }
-  }
+/**
+ * OMP(Bun SQLite) 자격 프로브는 @oh-my-pi 제거와 함께 영구 폐기한다.
+ * OPRN Studio 자체 저장소(auth.json)와 Codex CLI(`~/.codex/auth.json`)는 그대로 유지되며,
+ * 과거 외부 OMP CLI 에만 로그인돼 있던 계정은 에디터에서 한 번 다시 연결해야 한다.
+ */
+function adoptOmpCliCredentials(_provider: string): boolean {
   return false;
 }
 
@@ -322,6 +307,9 @@ export function publicProviderStatus(provider: string) {
   // 답하면 사용자는 "여기 로그인하면 된다"고 오해하게 된다 — 지원하지 않는 것이다.
   requireKnown(provider);
   const envScan = envScanDecision();
+  if (provider === ANTIGRAVITY_PROVIDER_ID && !testStub()) {
+    return { connected: false, provider, disabled: true, lastLoginError: GOOGLE_OAUTH_DISABLED_MESSAGE, env: false, envScan };
+  }
   // 동의(allow) 전에는 process.env 를 보지 않는다. deny 도 마찬가지다.
   const envVars = envScan === "allow" ? (getOhMyPiProvider(provider)?.envVars ?? []) : [];
   const envHit = envVars.some((name) => Boolean(process.env[name]?.trim()));
@@ -409,10 +397,13 @@ export async function startProviderLogin(
     throw Object.assign(new Error("사용자 지정 엔드포인트는 로그인이 없습니다. 연결 설정에서 주소와 API 키를 저장하세요."), { status: 400 });
   }
   const id = requireKnown(provider);
+  if (id === ANTIGRAVITY_PROVIDER_ID) {
+    const error = new Error(GOOGLE_OAUTH_DISABLED_MESSAGE) as Error & { status?: number };
+    error.status = 400;
+    throw error;
+  }
   if (!BRIDGE_LOGIN_PROVIDERS.has(id)) {
-    // pi 는 이 제공자의 로그인을 구현했지만 그 흐름은 Bun·bun:sqlite 위에서 돈다 — 이 Node 서비스는
-    // 그것을 돌릴 수 없다. 거짓 성공(연결됨처럼 보이는 상태)보다 사실을 말한다.
-    const error = new Error(`이 앱에서 로그인할 수 없는 제공자입니다: ${id}. OMP(pi) 에서 먼저 로그인해 주세요.`) as Error & { status?: number };
+    const error = new Error(`이 앱에서 직접 로그인을 지원하지 않는 제공자입니다: ${id}.`) as Error & { status?: number };
     error.status = 400;
     throw error;
   }
@@ -577,11 +568,14 @@ function refreshSingleFlight(id: PortedOAuthProviderId) {
 export async function refreshProvider(provider: string) {
   // API 키·사용자 지정 엔드포인트에는 갱신할 토큰이 없다 — 조용히 현재 상태를 돌려준다.
   if (isOpenAiCompatProviderId(provider)) return openAiCompatStatus(provider);
-  return refreshSingleFlight(requireKnown(provider));
+  const id = requireKnown(provider);
+  if (id === ANTIGRAVITY_PROVIDER_ID && !testStub()) return publicProviderStatus(id);
+  return refreshSingleFlight(id);
 }
 
 /** 만료됐지만 갱신 토큰이 있어 사용자 조작 없이 되살릴 수 있는 저장본인가. */
 function canAutoRefresh(id: PortedOAuthProviderId): boolean {
+  if (id === ANTIGRAVITY_PROVIDER_ID && !testStub()) return false;
   if (pendingLogins.has(id)) return false;
   const credentials = credentialsOf(id);
   return Boolean(
@@ -601,7 +595,7 @@ export async function providerStatus(provider: string) {
   if (isOpenAiCompatProviderId(provider)) return openAiCompatStatus(provider);
   const id = requireKnown(provider);
   const status = publicProviderStatus(id);
-  if (status.connected || !canAutoRefresh(id)) return status;
+  if (status.connected || ("disabled" in status && status.disabled) || !canAutoRefresh(id)) return status;
   const failure = refreshFailures.get(id);
   if (failure && Date.now() < failure.retryAt) {
     return { ...status, refreshError: failure.error, refreshRetryAt: failure.retryAt };
@@ -662,6 +656,7 @@ export async function resolveRequestApiKey(provider: string): Promise<string | u
   // 키 없는 엔드포인트는 자리표시값을 돌려준다(pi-ai 가 빈 키에서 환경 변수로 떨어지지 않게). 없는 엔드포인트는 404.
   if (isOpenAiCompatProviderId(provider)) return resolveOpenAiCompatRequestKey(provider);
   const id = requireKnown(provider);
+  if (id === ANTIGRAVITY_PROVIDER_ID && !testStub()) return undefined;
   if (envScanDecision() === "allow") {
     const envVars = getOhMyPiProvider(id)?.envVars ?? [];
     for (const name of envVars) {

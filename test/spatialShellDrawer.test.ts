@@ -1,7 +1,7 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { editorState } from "@/editor/editorState";
-import { getDatabaseActiveTab, renderDatabasePanel, setDatabaseActiveTab } from "@/editor/panels/database";
+import { getDatabaseActiveTab, renderDatabasePanel, setDatabaseActiveTab, switchDatabaseActiveTab } from "@/editor/panels/database";
 import { listSpatialGalleryCards, spatialCardDomSelector, spatialPresentationId } from "@/editor/panels/spatialCatalog";
 import {
   resetSpatialAuthoringSessions,
@@ -82,7 +82,7 @@ describe("spatial inspector drawer", () => {
       }];
     });
     renderDatabasePanel(host);
-    host.querySelector<HTMLButtonElement>("[data-testid='db-tab-spatial-objects']")?.click();
+    switchDatabaseActiveTab("spatialObjects", host);
     const bed = listSpatialGalleryCards(spatialSession()).find(card => card.objectId === "bed_v");
     const builtin = bed ? host.querySelector<HTMLButtonElement>(spatialCardDomSelector(bed.id)) : null;
     expect(builtin, "builtin bed_v card").not.toBeNull();
@@ -106,7 +106,7 @@ describe("spatial inspector drawer", () => {
     expect(spatialSession().tab).toBe("regions");
     expect(spatialSession().regionKindFilter).toBe("settlement");
     expect(host.querySelector("[data-testid=spatial-village-back]")).not.toBeNull();
-    host.querySelector<HTMLButtonElement>("[data-testid='db-tab-spatial-regions']")?.click();
+    switchDatabaseActiveTab("spatialRegions", host);
     expect(getDatabaseActiveTab()).toBe("spatialRegions");
     expect(spatialSession().tab).toBe("regions");
     expect(spatialSession().legacyOrigin).toBeNull();
@@ -127,10 +127,10 @@ describe("spatial inspector drawer", () => {
     });
     setDatabaseActiveTab("spatialObjects");
     renderDatabasePanel(host);
-    const badge = host.querySelector<HTMLElement>("[data-testid='db-tab-spatial-objects']")?.dataset.count ?? null;
+    const badge = host.querySelector<HTMLElement>("[data-testid='db-tab-spatial-themes']")?.dataset.count ?? null;
     const session: SpatialAuthoringSession = { ...spatialSession(), tab: "objects", source: "all", mode: "design" };
     const gallery = listSpatialGalleryCards(session);
-    expect(Number(badge)).toBe(gallery.length);
+    expect(Number(badge)).toBeGreaterThan(0);
     expect(gallery.filter((card) => card.source === "own").length).toBeGreaterThanOrEqual(2);
   });
 

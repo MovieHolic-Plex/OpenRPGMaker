@@ -650,27 +650,34 @@ export function mountReliefToolbar(canvasArea: HTMLElement): () => void {
     ],
   });
   installDelayedTooltips(sidePanel);
-  const syncSide = (_state: EditorState): void => {
-    // 구 좌측 「지형」 거대 사이드 패널은 하단 5-크레용 「지형 개략도」로 일원화되어 항상 숨긴다.
-    sidePanel.hidden = true;
-    const root = sidePanel.parentElement ?? (typeof document !== "undefined" ? document.querySelector<HTMLElement>('[data-testid="left-palette-root"]') : null);
+  const syncSide = (state: EditorState): void => {
+    const visible = state.tool === "relief" && state.layer !== "event";
+    let root = sidePanel.parentElement;
+    if (!root && typeof document !== "undefined") {
+      const paletteRoot = document.querySelector<HTMLElement>('[data-testid="left-palette-root"]');
+      if (paletteRoot) {
+        paletteRoot.querySelector<HTMLElement>('[data-testid="relief-side-panel"]')?.remove();
+        paletteRoot.append(sidePanel);
+        root = paletteRoot;
+      }
+    }
+    sidePanel.hidden = !visible;
     const tileSurface = root?.querySelector<HTMLElement>(":scope > .palette-work-shell");
-    if (tileSurface && tileSurface.hidden) tileSurface.hidden = false;
+    if (tileSurface) tileSurface.hidden = visible;
   };
   activeReliefSide = { panel: sidePanel, sync: syncSide };
   const dock = el("div", { class: "relief-bar-dock", children: [hint] });
   const host = el("div", { class: "relief-toolbar-host", dataset: { testid: "relief-toolbar" }, children: [pop, dock] });
-  host.hidden = true;
   canvasArea.append(host);
   const offDesign = mountTerrainDesignPanel(host);
   installDelayedTooltips(host);
 
   let hover: ReliefDoodadHoverDetail = null;
   const sync = (state: EditorState): void => {
+    const visible = state.tool === "relief" && state.layer !== "event";
     activeReliefSide?.sync(state);
-    // 모든 지형 개략도 조작은 하단 5-크레용 팔레트(canvasBottomDock)에서 수행하므로 구 툴바는 표시하지 않는다.
-    host.hidden = true;
-    if (host.hidden) return;
+    host.hidden = !visible;
+    if (!visible) return;
     designButton.classList.toggle("is-active", state.terrainDesignOpen);
     designButton.setAttribute("aria-pressed", String(state.terrainDesignOpen));
     designButton.setAttribute("aria-expanded", String(state.terrainDesignOpen));

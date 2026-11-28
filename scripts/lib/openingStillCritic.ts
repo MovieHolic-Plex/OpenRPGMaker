@@ -18,8 +18,8 @@ export type StillCritique = {
 };
 
 const JUDGES = [
-  { id: 'gemini', provider: 'google-antigravity', model: 'gemini-3.8-flash', effort: 'medium' },
   { id: 'gpt', provider: 'openai-codex', model: ASSISTANT_CHATGPT_MODEL, effort: ASSISTANT_CHATGPT_EFFORT },
+  { id: 'gemini', provider: 'google-antigravity', model: 'gemini-3.8-flash', effort: 'medium' },
 ] as const;
 
 const RUBRIC = `You are a strict art director judging candidate stills for the opening of a 2D game. Judge only what is visible. Be harsh: a pretty but generic image is a failure.

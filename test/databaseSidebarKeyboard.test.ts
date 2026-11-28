@@ -48,6 +48,7 @@ const TAB_TESTID: Record<string, string> = {
   worldGen: "db-tab-world-gen",
   terrain: "db-tab-terrain",
   tilesets: "db-tab-tilesets",
+  spatialThemes: "db-tab-spatial-themes",
   spatialTiles: "db-tab-spatial-tiles",
   spatialObjects: "db-tab-spatial-objects",
   spatialSpaces: "db-tab-spatial-spaces",

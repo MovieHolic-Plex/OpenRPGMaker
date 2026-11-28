@@ -179,7 +179,7 @@ function isUnpackedPayload(path) {
   if (/^dist\/assets\/.*\.(png|jpg|jpeg|webp)$/s.test(path)) return true;
   if (!path.startsWith("dist-electron/")) return false;
   return path.startsWith("dist-electron/agent-npm/") || path.startsWith("dist-electron/worker-data/") ||
-    /^(oh-my-pi-worker.*|pi_natives.*\.node|oprn-agent-mode-mcp\.mjs)$/s.test(basename(path));
+    /^(ai-worker\.mjs|oh-my-pi-worker.*|pi_natives.*\.node|oprn-agent-mode-mcp\.mjs)$/s.test(basename(path));
 }
 
 function unpackedParent(dir) {

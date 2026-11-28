@@ -23,10 +23,10 @@ const DISABLED_FEATURES = [
 ];
 
 const FALLBACK_MODELS: LocalCliModel[] = [
-  { id: ASSISTANT_CHATGPT_MODEL, label: "GPT-6.2 Sol (권장)", roles: ["deep"] },
+  { id: ASSISTANT_CHATGPT_MODEL, label: "GPT-6.2 Sol (권장)", roles: ["routine", "deep"] },
   { id: "gpt-6.2-astra", label: "GPT-6.2 Astra" },
   { id: "gpt-6.1-sol", label: "GPT-6.1 Sol" },
-  { id: "gpt-6-luna", label: "GPT-6 Luna (빠름·가벼움)", roles: ["routine"] },
+  { id: "gpt-6-luna", label: "GPT-6 Luna (빠름·가벼움)" },
 ];
 
 export function buildCodexArgs(work: string, instructionsPath: string, mcpUrl: string | undefined, options: { model?: string; effort?: string; resume?: string; images?: readonly string[] }): string[] {
@@ -211,7 +211,7 @@ export const codexAdapter: LocalCliAdapter = {
     const has = (id: string) => models.some((m) => m.id === id);
     const base = {
       id: "codex" as const, label: "Codex (ChatGPT)", models,
-      defaults: { routine: has("gpt-6-luna") ? "gpt-6-luna" : models[0]!.id, deep: has(ASSISTANT_CHATGPT_MODEL) ? ASSISTANT_CHATGPT_MODEL : models[0]!.id },
+      defaults: { routine: has(ASSISTANT_CHATGPT_MODEL) ? ASSISTANT_CHATGPT_MODEL : models[0]!.id, deep: has(ASSISTANT_CHATGPT_MODEL) ? ASSISTANT_CHATGPT_MODEL : models[0]!.id },
       ...installFields(CODEX_INSTALL_BY_OS, "https://developers.openai.com/codex/cli"),
       login: { command: "codex login", help: "터미널에서 codex login 을 실행해 ChatGPT 계정으로 로그인하세요." },
     };

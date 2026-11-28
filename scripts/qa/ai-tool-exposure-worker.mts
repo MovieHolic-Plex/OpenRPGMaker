@@ -1,6 +1,6 @@
 // Browser contract QA only: real Pi loop/registry, scripted model, detached project fixtures.
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { createAssistantMessageEventStream } from '@oh-my-pi/pi-ai';
+import { createAssistantMessageEventStream } from '@earendil-works/pi-ai';
 import { runPiAgent } from '../lib/piAgentRuntime.ts';
 import { selectPiToolDefinitions } from '../../src/ai/piAgent/toolAdapter.ts';
 import { buildSessionRegistryTools } from '../../src/ai/sessionToolExposure.ts';

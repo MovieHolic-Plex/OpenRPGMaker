@@ -246,14 +246,23 @@ game.log("price", price);`;
 });
 
 describe("generic event tools", () => {
-  it("refuse a hand-written script command without compiled code", async () => {
+  it("auto-compiles a hand-written script command without compiled code and rejects type errors", async () => {
     const { ctx, mapId } = contextWithPanel();
-    const result = await runToolAsync(ctx, "upsert_event", {
+    const okResult = await runToolAsync(ctx, "upsert_event", {
       mapId,
       event: { id: "ev_hand", x: 5, y: 3, trigger: { kind: "action" }, pages: [{ id: "p0", conditions: [], commands: [{ kind: "script", source: "game.setSwitch('a', true);", compiled: "" }] }] },
     });
-    expect(result.ok).toBe(false);
-    expect(JSON.stringify(result.issues)).toContain("author_script");
+    expect(okResult.ok, okResult.summary).toBe(true);
+    const saved = ctx.project.maps[mapId]!.events.find((event) => event.id === "ev_hand")!.pages![0]!.commands[0] as Extract<Command, { kind: "script" }>;
+    expect(saved.compiled.length).toBeGreaterThan(0);
+    expect(saved.sourceHash.length).toBeGreaterThan(0);
+
+    const badResult = await runToolAsync(ctx, "upsert_event", {
+      mapId,
+      event: { id: "ev_hand_bad", x: 6, y: 3, trigger: { kind: "action" }, pages: [{ id: "p0", conditions: [], commands: [{ kind: "script", source: "const n: number = 'oops';", compiled: "" }] }] },
+    });
+    expect(badResult.ok).toBe(false);
+    expect(JSON.stringify(badResult.issues)).toContain("did not compile");
   });
 
   it("refuse compiled code that does not belong to the source, also inside branches", async () => {

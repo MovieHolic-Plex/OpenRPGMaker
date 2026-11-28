@@ -107,8 +107,9 @@
   대화 일이면 그 맵의 고스트 초안 바운딩 박스(맵당 조수 한 명 규칙 → 그 맵에 **쓰는** 조수 한 명에게만, 검수는 이름표만).
   좌표는 `resolveRegionClientRect`. 팬·줌은 EditScene 의 `repositionAiMapPresence()`, 도크 열림 같은 레이아웃 변화는 이름표가 떠 있는 동안
   rAF 대조(`writeIfChanged`)로 따라간다(실측: 훅만으로는 도크를 열 때 상자가 옛 자리에 남았다).
-- **상태 줄** `src/editor/panels/aiStatusBar.ts` — 지도 아래 한 줄. 칩 = 이름 · 지금 하는 일 · 단계 수, 사람이 필요하면 줄 전체가 앰버(검토)/빨강(실패).
-  칩을 누르면 **지도 위 팝오버**(최근 3단계 · 조수 상세 · 지도로 이동 · 멈춤). 「작업 기록」은 기존 로그 입구(`ai-workspace-log-trigger`)로 연결, 「멈춤」은 `requestTeamStop`.
+  이름표(`.ai-map-region-tag`, `<button>`)는 클릭할 수 있으며 `aiPresencePopover.ts` 의 공용 `.ai-status-pop`(임무·지금 하는 일과 실행 도구/인자·조수 메모·턴/도구/오류/최근 활동 요약·단계별 펼침 및 「자세히」 전환·다음 예정 할 일·작업 그림·조수 상세/멈춤)을
+  지도 위 그 자리에 열어 준다(2026-11-28: 오른쪽 도크가 열려 상태 줄이 접힌 상태에서도 드래그 「#N 시공 · …」 배지를 눌러 진행 과정을 본다).
+- **상태 줄** `src/editor/panels/aiStatusBar.ts` — 2026-11-28(#5328 우측 팀 날개 통합 + 지도 위 시공 배지 클릭 팝오버)부터 하단 상태 줄을 화면에 노출하지 않고 DOM(`ai-status-bar`·`ai-status-stop`, i18n/e2e 계약)만 `hidden` 상태로 유지한다. 작업 상세는 지도 위 `#N 시공 · …` 배지와 우측 도크·작업 목록이 맡는다.
   적용됨만 남으면 6초 뒤 물러난다. 색 번호(`data-tone`)는 이름표·칩이 같다.
 - **받은함** `src/editor/panels/aiInbox.ts` — 도크 맨 위. 검토 대기(적용/변경 보기/버리기 = `currentTeamReviewActions` 와 **같은 클로저**)와 실패만. 비면 숨는다.
   `aiWorkspace.ts` 가 마운트하고, 대화 화면에서는 「조수 N / 대화」 탭을 숨긴다(조수 상세는 팝오버의 「조수 상세」 → `oprn:ai-open-team`).
@@ -782,7 +783,7 @@ x=8, y=278, 300×383으로 화면 안에 놓인다. 설정 변경·팀 메뉴 �
   도구 줄(`oprn-tile-toolbar`)·크기·모양·이웃 연결·구조 보조·선택 타일 칩·붓 보조/내 구조물은 모두 「붓 설정」 안에 있다(DOM 에는 늘 있고
   `hidden` 만 바뀐다 — 단축키·⌘K·제자리 갱신이 그대로 닿는다). 펼침은 `oprn:brush-settings-open` 에 저장(`brushSettingsDisclosure.ts`).
   검사 메뉴를 열면(`openSidebarInspection`) 먼저 편다. 맵 트리가 같은 열에 있으면 팔레트 머리의 맵 스위처(`sidebar-map-header`)는 그리지 않는다.
-- 접힘: `oprn:left-column-collapsed`. 접히면 12px 펴기 손잡이(`left-column-restore`)만 남는다. 「보기 ▾」 메뉴의 패널 항목은
+- 접힘: 기본 접힘(`defaultCollapsed: true`, B×C 풀-블리드 캔버스 — `editor.ts`). 기본 접힘 모드에서는 이전 버전의 `oprn:left-column-collapsed` 저장값을 복원·기록하지 않아 항상 접힌 채로 시작하고, 톱바 레이어 전환(`oprn:ai-sidebar-tools`)·맵 보기(`oprn:ai-sidebar-maps`) 신호도 접힌 열을 자동으로 펼치지 않는다(이미 펼쳐진 열의 서랍만 메인으로 돌린다). 접히면 12px 펴기 손잡이(`left-column-restore`)만 남고, `1칸 → 원본 시트 ◧`·미니맵 `◧`·`⌘K`·서랍 열기로 필요할 때만 펼친다. 「보기 ▾」 메뉴의 패널 항목은
   열의 `[data-left-pane]` 단추(왼쪽 열·진행·기물)를 비춘다(`workspaceBar.syncPanelItems`).
 - 공방·스토어 큰 화면의 왼쪽 여백은 열의 실제 폭을 잰다(예전 고정 48px).
 - 스타일: 열 겉은 `18-assistant-deck.css` 「왼쪽 한 칸」 절(`left-column-*`), 두 섹션은 `map/left-column.css`.
@@ -1456,16 +1457,16 @@ Ultrabrain for supervisor surfaces. Cast-sheet prose uses Writer. The small inte
 classifier remains a non-reasoning, 4096-token routing call; it must not inherit
 Deep's expensive effort or the editor's 200000 output budget. Legacy/test configs
 without role selections retain their prior behavior.
-**조수 출하 기본 = Claude · Sonnet 5.5 · high (오너 결정 2026-11-23: 「조수는 sonnet 5.5 high 만 쓰게」).** 새 설치(저장된 설정 없음)와 첫 실행 마법사의 첫 순위가 모두 Claude 다. Claude 로 도는 모든 길에서 계획·실행(deep)·시각·작문·시공(build)·감독(ultrabrain)과 곁 호출(화면 검수·검토자)이 **`claude-sonnet-5-5` · `high` 한 모델**이다(`src/ai/claudeDefault.ts`). 제공자 목록의 첫 항목(= `RECOMMENDED_OH_MY_PI_PROVIDER`)도 Claude, 둘째가 ChatGPT 다. ChatGPT·Google·그 밖의 제공자는 그대로 고를 수 있고, 이미 저장된 설정은 옮기지 않는다. 그림 만들기는 이 선택과 무관하게 ChatGPT 뿐이다(오너 결정 2026-11-19). Haiku 워커·팀장 나누기는 여전히 기본에서 빠져 있다. Opus·나누기·다른 모델은 설정에서 고른다.
-**지난 출하 기본(이력) = ChatGPT · GPT-6.2 Sol · medium (오너 결정 2026-11-19, 2026-11-23 에 Claude 로 바뀜).** Terra 로는 게임을 못 만든다는 결정에 따라, 저장된 Terra 제작 역할과 Codex 엔진 선택도 읽을 때 Sol 로 올린다. medium 이상의 저장 강도는 유지한다. ChatGPT 를 고른 설정·ChatGPT 구독·로그인 첫 실행의 기본은 지금도 이 값이다(`src/ai/chatgptDefault.ts`). 지난 Claude 기본은 `claude-opus-5-5` · `medium`(2026-11-16)이었다.
+**조수 출하 기본 = ChatGPT · GPT-6.2 Sol · high (오너 결정 2026-11-28: 「기본 출하 모델을 GPT Sol 6.2 high 로 바꿔라」).** 새 설치(저장된 설정 없음)와 첫 실행 마법사의 첫 순위가 모두 ChatGPT 다. ChatGPT 로 도는 모든 길(Codex CLI 구독 · 편집기 안 ChatGPT 로그인)에서 계획·실행(deep)·시각·작문·시공(build)·감독(ultrabrain)과 곁 호출(화면 검수·검토자)이 **`gpt-6.2-sol` · `high` 한 모델**이다(`src/ai/chatgptDefault.ts`). 제공자 목록의 첫 항목(= `RECOMMENDED_OH_MY_PI_PROVIDER`)도 ChatGPT(`openai-codex`), 둘째가 Claude 다. Claude·Google·그 밖의 제공자는 그대로 고를 수 있고, 이미 저장된 설정은 옮기지 않는다. 그림 만들기도 ChatGPT 뿐이다(오너 결정 2026-11-19).
+**지난 출하 기본(이력) = Claude · Sonnet 5.5 · high (오너 결정 2026-11-23, 2026-11-28 에 GPT-6.2 Sol · high 로 바뀜).** Claude 로 도는 길의 기본은 지금도 `claude-sonnet-5-5` · `high` 한 모델이다(`src/ai/claudeDefault.ts`). 그 전 출하 기본은 ChatGPT · GPT-6.2 Sol · medium(2026-11-19), Claude · Opus 5.5 · medium(2026-11-16), Google · Gemini 4 Argon · medium(2026-10-14)이었다. Terra 로는 게임을 못 만든다는 결정에 따라, 저장된 Terra 제작 역할과 Codex 엔진 선택도 읽을 때 Sol 로 올린다. medium 이상의 저장 강도는 유지한다.
 
 | 들어가는 길 | 기본이 풀리는 값 | 정하는 곳 |
 |---|---|---|
-| 새 설치(저장 없음) | `anthropic` / `claude-sonnet-5-5` / high — 모든 역할·감독. 도트 칸은 계획 모델을 따른다. 그림 만들기(`imageProviderId`)는 ChatGPT 그대로 | `defaultAiConfig()` · `RECOMMENDED_OH_MY_PI_PROVIDER` = anthropic(제공자 목록 첫 항목) |
-| 새 설치 + Claude Code CLI 구독 | 엔진 `local-cli:claude` · `claude-sonnet-5-5` 하나 · high, 팀장 없음 | 첫 실행 마법사 `teamPlan.ts buildTeamPlan`(Sonnet 을 쓸 수 있으면 — 구독 CLI·키 어느 길이든 — ChatGPT 보다 먼저 Sonnet 혼자, 점수표 행 없음) · 후보 카드 순서 `planDefaults.ts planCandidates` = Claude 구독 → ChatGPT → Gemini/Google · 자동 추천 `registry.ts LOCAL_CLI_DEFAULT_ORDER` = claude → codex → gemini → `applyTeamPlan`(Claude CLI 강도 = `ASSISTANT_CLAUDE_EFFORT`). `LOCAL_CLI_DEFAULT_MODELS.claude` 도 같다 |
+| 새 설치(저장 없음) | `openai-codex` / `gpt-6.2-sol` / high — 모든 역할·감독. 도트 칸은 계획 모델을 따른다. 그림 만들기(`imageProviderId`)도 ChatGPT | `defaultAiConfig()` · `RECOMMENDED_OH_MY_PI_PROVIDER` = openai-codex(제공자 목록 첫 항목) |
+| 새 설치 + ChatGPT 구독(Codex CLI) 또는 로그인 | 엔진 `local-cli:codex` 또는 `openai-codex` · `gpt-6.2-sol` 하나 · high, 팀장 없음 | 첫 실행 마법사 `teamPlan.ts buildTeamPlan`(ChatGPT 구독·로그인을 Claude 보다 먼저 Sol 혼자) · 후보 카드 순서 `planDefaults.ts planCandidates` = ChatGPT → Claude 구독 → Gemini/Google · 자동 추천 `registry.ts LOCAL_CLI_DEFAULT_ORDER` = codex → claude → gemini → `applyTeamPlan` · `configForPlanAccount`(강도 = `ASSISTANT_CHATGPT_EFFORT`) |
+| 새 설치 + Claude Code CLI 구독(ChatGPT 없을 때, 또는 설정에서 Claude 고름) | 엔진 `local-cli:claude` · `claude-sonnet-5-5` 하나 · high, 팀장 없음 | `planDefaults.ts` · `applyTeamPlan`(Claude CLI 강도 = `ASSISTANT_CLAUDE_EFFORT`) · `LOCAL_CLI_DEFAULT_MODELS.claude` |
 | Anthropic 키(`ANTHROPIC_API_KEY`) | 입양한 엔드포인트 `openai-compat:…` / `claude-sonnet-5-5` — 모든 역할·감독 | `keyRouteAdoptModel("claude")` = sonnet, `providerSelection.ts`. 이 길은 추론 강도를 보내지 않는다(`KEY_ROUTES.claude.reasoningMode = none`) |
 | 편집기 안 Claude 계정(설정에서 Claude 를 고름) | `anthropic` / `claude-sonnet-5-5` / high — 모든 역할·감독 | `modelPresets.ts`(anthropic 두 티어 모두 Sonnet) + `providerSelection.ts`(조수 기본 모델 칸은 역할·감독 모두 `CLAUDE_DEFAULT_EFFORT`) |
-| ChatGPT 구독 또는 로그인(Claude 가 없을 때, 또는 설정에서 ChatGPT 를 고름) | Codex CLI 와 편집기 안 로그인 모두 `gpt-6.2-sol` · medium | 마법사 → `applyTeamPlan` · `configForPlanAccount` |
 | Google 만 | 지난 기본 그대로: `gemini-4-argon` medium · 감독 high | 마법사 → `configForProviderSelection` |
 | 저장된 설정이 있음 | Terra 제작 역할은 Sol 로 읽는다 | `loadAiConfig` · `loadAssistantEngine` |
 

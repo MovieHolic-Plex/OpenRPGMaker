@@ -360,6 +360,7 @@ describe("autoProviderPick", () => {
   const CLAUDE = "anthropic";
   const CLAUDE_CLI = "local-cli:claude";
   const CHATGPT = "openai-codex";
+  const CODEX_CLI = "local-cli:codex";
   const GOOGLE = "google-antigravity";
   const DEEPSEEK = "openai-compat:deepseek";
   const usage = (provider: string, remainingFraction: number, resetsAt?: number): ProviderUsageSnapshot => ({
@@ -372,13 +373,14 @@ describe("autoProviderPick", () => {
     it.each<[string, ProviderRouteState[], string | null, string]>([
       ["Claude 만", [on(CLAUDE), off(CHATGPT)], CLAUDE, "best"],
       ["ChatGPT 만", [off(CLAUDE), on(CHATGPT)], CHATGPT, "best"],
-      ["둘 다 — Claude 먼저", [on(CHATGPT), on(CLAUDE)], CLAUDE, "best"],
+      ["둘 다 — ChatGPT 먼저(2026-11-28 기본)", [on(CHATGPT), on(CLAUDE)], CHATGPT, "best"],
       ["Claude 구독 CLI 만", [on(CLAUDE_CLI), on(DEEPSEEK)], CLAUDE_CLI, "best"],
-      ["Claude 한도(사용량 0%) → ChatGPT", [on(CLAUDE, { usage: usage(CLAUDE, 0) }), on(CHATGPT)], CHATGPT, "fallback"],
-      ["Claude 최근 429 쉬는 중 → ChatGPT", [on(CLAUDE, { limitedUntil: NOW + 60_000 }), on(CHATGPT)], CHATGPT, "fallback"],
-      ["Claude 429 시각이 지났으면 다시 Claude", [on(CLAUDE, { limitedUntil: NOW - 1 }), on(CHATGPT)], CLAUDE, "best"],
-      ["한도 모름은 쓸 수 있다", [on(CLAUDE, { usage: { provider: CLAUDE, readable: false, fetchedAt: NOW, windows: [] } }), on(CHATGPT)], CLAUDE, "best"],
-      ["도구 호출 불가 길은 건너뛴다", [on(CLAUDE, { toolCalls: false }), on(GOOGLE)], GOOGLE, "fallback"],
+      ["ChatGPT 한도(사용량 0%) → Claude", [on(CHATGPT, { usage: usage(CHATGPT, 0) }), on(CLAUDE)], CLAUDE, "fallback"],
+      ["ChatGPT 최근 429 쉬는 중 → Claude", [on(CHATGPT, { limitedUntil: NOW + 60_000 }), on(CLAUDE)], CLAUDE, "fallback"],
+      ["ChatGPT 429 시각이 지났으면 다시 ChatGPT", [on(CHATGPT, { limitedUntil: NOW - 1 }), on(CLAUDE)], CHATGPT, "best"],
+      ["한도 모름은 쓸 수 있다", [on(CHATGPT, { usage: { provider: CHATGPT, readable: false, fetchedAt: NOW, windows: [] } }), on(CLAUDE)], CHATGPT, "best"],
+      ["도구 호출 불가 길은 건너뛴다", [on(CHATGPT, { toolCalls: false }), on(CLAUDE)], CLAUDE, "fallback"],
+      ["비활성화된 Google OAuth 길은 자동 선택하지 않는다", [on(GOOGLE), on(DEEPSEEK)], DEEPSEEK, "best"],
       ["키 길은 사용자 지정 엔드포인트보다 앞", [on(DEEPSEEK), on("xai-oauth")], "xai-oauth", "best"],
       ["사용자 지정 엔드포인트만", [on(DEEPSEEK)], DEEPSEEK, "best"],
       ["연결 없음", [off(CLAUDE), off(CHATGPT)], null, "none"],
@@ -390,21 +392,21 @@ describe("autoProviderPick", () => {
     });
 
     it("건너뛴 길과 이유를 남긴다", () => {
-      const pick = pickAutoProvider({ routes: [on(CLAUDE, { usage: usage(CLAUDE, 0) }), on(CLAUDE_CLI, { toolCalls: false }), on(CHATGPT)], now: NOW });
-      expect(pick.skipped).toEqual([{ providerId: CLAUDE, why: "limited" }, { providerId: CLAUDE_CLI, why: "no-tools" }]);
+      const pick = pickAutoProvider({ routes: [on(CHATGPT, { usage: usage(CHATGPT, 0) }), on(CODEX_CLI, { toolCalls: false }), on(CLAUDE)], now: NOW });
+      expect(pick.skipped).toEqual([{ providerId: CHATGPT, why: "limited" }, { providerId: CODEX_CLI, why: "no-tools" }]);
     });
 
     it("모두 한도면 가장 빨리 풀리는 길을 고르고 exhausted 로 알린다", () => {
       const pick = pickAutoProvider({
-        routes: [on(CLAUDE, { usage: usage(CLAUDE, 0, NOW + 3_600_000) }), on(CHATGPT, { limitedUntil: NOW + 600_000 })],
+        routes: [on(CHATGPT, { usage: usage(CHATGPT, 0, NOW + 3_600_000) }), on(CLAUDE, { limitedUntil: NOW + 600_000 })],
         now: NOW,
       });
-      expect(pick).toMatchObject({ providerId: CHATGPT, reason: "all-limited", quota: "exhausted" });
+      expect(pick).toMatchObject({ providerId: CLAUDE, reason: "all-limited", quota: "exhausted" });
     });
 
     it("고정한 연결은 한도라도 바꾸지 않는다", () => {
-      const pick = pickAutoProvider({ routes: [on(CLAUDE), on(CHATGPT, { limitedUntil: NOW + 1 })], pinnedProviderId: CHATGPT, now: NOW });
-      expect(pick).toMatchObject({ providerId: CHATGPT, reason: "pinned", quota: "exhausted", skipped: [] });
+      const pick = pickAutoProvider({ routes: [on(CHATGPT), on(CLAUDE, { limitedUntil: NOW + 1 })], pinnedProviderId: CLAUDE, now: NOW });
+      expect(pick).toMatchObject({ providerId: CLAUDE, reason: "pinned", quota: "exhausted", skipped: [] });
     });
   });
   describe("providerQuotaState", () => {

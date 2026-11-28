@@ -6,7 +6,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { homedir } from "node:os";
-import { validateToolArguments } from "@oh-my-pi/pi-ai";
+import { validateToolArguments } from "@earendil-works/pi-ai";
 import { createBlankProject } from "../../../src/project/defaults/blankProject.ts";
 import { createV2Tools } from "../../../src/ai/v2/tools/verbs.ts";
 import { V2Session } from "../../../src/ai/v2/turn/session.ts";

@@ -1,0 +1,1554 @@
+{
+ "schema": "oprn-object-gate-owner-waiver/1",
+ "id": "beodeul-ramps-redraw-2026-11-28",
+ "owner": "훨씬 낫네. 이대로 하자",
+ "decidedAt": "2026-11-28",
+ "recordedBy": "t3-code session 2026-11-28 (gemini-4-carbon medium redraw approved by owner in thread)",
+ "contexts": [
+  "bundle"
+ ],
+ "note": "3/4 관문 미통과 — 오너 면제 (경사로·계단 도트 재작업 30장: long-ramp 14 + bbox-village forward 16)",
+ "items": [
+  {
+   "pixelSha256": "92e27847dc04f09c9a87f6cf334be4f0f6d946d7c98608c56acd3a49bd4b24de",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:2:long-cut",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "519402bc721f0701",
+     "bf60619cad043dbd"
+    ],
+    "24": [
+     "056b1c4d790b7c06",
+     "30bff29ec4052627",
+     "37f72d534b3a257a",
+     "386c2004061b8cac",
+     "49cf1f4f4760c805",
+     "60c3b65c22a0b199",
+     "6fb00e8090aadd90",
+     "73e555e0a2bc30d9",
+     "761fe769b52bf968",
+     "9856bec3ed041e6e",
+     "d3edee11f4513edb",
+     "d6f7aaff4c2087ae"
+    ],
+    "32": [
+     "3ab870bd8da01d2b",
+     "ea30510922272684"
+    ],
+    "48": [
+     "10ba7c4e05e128b3",
+     "20fc5e0ac1fa70f2",
+     "b7ffaa3021544cc7",
+     "d64b18aae501980e",
+     "de3ad966e5e21928",
+     "e9bc4391101a2827"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "bcbafa519676c75151b24f9b108ad8b9235d4c9853c609561feb1beb9c455df0",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:3:long-cut",
+   "width": 48,
+   "height": 16,
+   "cells": {
+    "16": [
+     "3693c16187ba1734",
+     "7560cd8a969b190e",
+     "f4748f7e0f850912"
+    ],
+    "24": [
+     "68b024e9afdc489c",
+     "7520a912fc557716",
+     "b3968ad8e0fc9efd",
+     "e397a3df3cb1bfc9"
+    ],
+    "32": [
+     "0dd458ac7ac43aa9",
+     "15d895cf103be919",
+     "17d0991be09eef88",
+     "3cda8a9738357db1",
+     "7c7b9b17244f0502",
+     "8c76c15a8e20d6aa",
+     "a7ad62534bc135ab",
+     "a9c693129ea8ea00",
+     "ae7ffbe405148227",
+     "c51840468e6c1bf4",
+     "d86d835bdd04708a",
+     "e758c07f28659de2"
+    ],
+    "48": [
+     "96494125235b3844",
+     "d5cf48f7ce5dc86a"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "43b3712acd850f9e4c6291d9fd58e6ee184e93cc4b996c1d1a92db1b64dd68dd",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:2:long-out3",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "0dffd09e00f1f982",
+     "0fa6de106e0c4483"
+    ],
+    "24": [
+     "1043411e9a54085d",
+     "1d408d6b6568c4c0",
+     "6a8cf0b2301888ab",
+     "aa9027e04fefd90c",
+     "b7ecfd9a6f354e5a",
+     "b8a078e11fe82bd1",
+     "b96ce9d6acee8f9a",
+     "ba533a08c667287b",
+     "c1a2a49e3ef7d80d",
+     "cf72078a936e4f01",
+     "eea96335b52cf452",
+     "ff5511cc6209d582"
+    ],
+    "32": [
+     "c9c36986be07ea1f",
+     "e9d8dd805460c8ea"
+    ],
+    "48": [
+     "47c2b34ea808115b",
+     "868f5a4936c5410a",
+     "9052f8e85128b8b9",
+     "bd5da5d1096176df",
+     "d67c93aa961719f5",
+     "df9b9a572c2c5ee7"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "2cdbf5572ae80921c08acab89c9890a00eb00257e9f191e5d560e5a674f12f46",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:3:long-out3",
+   "width": 48,
+   "height": 16,
+   "cells": {
+    "16": [
+     "1ce58021caab381e",
+     "24d33c9b081a8a9f",
+     "4520f704070bdb3f"
+    ],
+    "24": [
+     "10c1ae5ced776431",
+     "1a803b8909878437",
+     "abf7184896549b16",
+     "c38c24c707270b68"
+    ],
+    "32": [
+     "16af098d91b9f02c",
+     "259a4918e53b3ca7",
+     "25b00b920ba9127d",
+     "52a25e490a890302",
+     "52bb63b831f8d1c7",
+     "685f2052572a098b",
+     "81f292ef24d57f37",
+     "bc685584c5dfb231",
+     "c5d5dc29910617c5",
+     "c74798f9e85b5649",
+     "cdd4557284bbfee8",
+     "dcecf977c7e23b8d"
+    ],
+    "48": [
+     "6081c1a01fa191ba",
+     "88676607adbfb972"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "8a1f0c7adc30f8f31beb96f1cc2baf21f44476f09bb1a0363863bd767be76d43",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:2:long-out4",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "27e9f5c3fe53cae6",
+     "942156a788168b0f"
+    ],
+    "24": [
+     "0675eda56b2e969d",
+     "1a9ae87eaa160103",
+     "1d408d6b6568c4c0",
+     "20340317a2f40209",
+     "219fae016f3e432b",
+     "50f618b599053042",
+     "526e8465216139d2",
+     "b8a078e11fe82bd1",
+     "bc96d1a530bd08c7",
+     "be89d5d5005e7c3b",
+     "c73ef383b1304ae9",
+     "d89cbbf51f228b7b"
+    ],
+    "32": [
+     "bec8a7d4e82eb5f6",
+     "f9c980ffd1317812"
+    ],
+    "48": [
+     "1b100d4ddb928882",
+     "4597c29c9ce295d9",
+     "653702318c2c6646",
+     "7fec5805c3695462",
+     "9499abb7b59ac407",
+     "dab8700296c95444"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "ab5a91b5d2bceb1395774962be4a0a9fcf9d4f33a7821b37ba48771343ea93fc",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:3:long-out4",
+   "width": 48,
+   "height": 16,
+   "cells": {
+    "16": [
+     "57ee88999fd4896f",
+     "e45c322d8787fb1a",
+     "f19273593f14fdab"
+    ],
+    "24": [
+     "2e049c5cc92ba500",
+     "5f3f40bbd887798b",
+     "61e75715f7ede6c5",
+     "ddef92be3bcb0af1"
+    ],
+    "32": [
+     "072b8b6e2187c431",
+     "16d6e803cfae11c0",
+     "1dc1d2017df0799b",
+     "2a7a6daf959ebbef",
+     "3d1feca5b6d3eef2",
+     "6612b45a4f672fe6",
+     "840b75d48af552a9",
+     "9520c99fff066d8b",
+     "c58128b46a2e3707",
+     "d3a5c1b9e4545cd8",
+     "d6fb5eda781453fa",
+     "e87bd8bef824fd7b"
+    ],
+    "48": [
+     "599edfeae864b154",
+     "fc216a97c37c3280"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "0341f8dc9cdb275707fc7e1a6736ff287a673490025e2773e55abf2e9071217d",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:2:long-out5",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "34a1df8cbb27a897",
+     "fc303584630f68ba"
+    ],
+    "24": [
+     "0ee9ec29b1c37642",
+     "23954104616fb007",
+     "2f86a42418683b6b",
+     "4524a27dee93be89",
+     "47c5fa3293153ec3",
+     "6a545cd2bb3f1e1f",
+     "6d2cf64afc86f941",
+     "89a80a98c6a5b088",
+     "8d1d0c113f1e6668",
+     "b4361c42130f2285",
+     "dc3b59291fa962d1",
+     "fe978a29b3a22ddd"
+    ],
+    "32": [
+     "27fcf03e55393171",
+     "788e8e1af85b324b"
+    ],
+    "48": [
+     "19584fb9891b2911",
+     "37edca9723454a0e",
+     "69f4ecaf2f2a407e",
+     "7fa106d4b33555d2",
+     "8208529d81080060",
+     "d448fe383ee8649f"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "94e0a252c2a2078801dbbde575417fbb2d80b3694a50a3d83efecbcc85de3cae",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:3:long-out5",
+   "width": 48,
+   "height": 16,
+   "cells": {
+    "16": [
+     "5dc1949373b18078",
+     "d22cea1c840e0759",
+     "de46edb0701e1f1f"
+    ],
+    "24": [
+     "4adbe7f7c24f1387",
+     "836fd953c20c7be3",
+     "99531a3e4acbc875",
+     "eb5146f5a023f0f1"
+    ],
+    "32": [
+     "37737f26607edcd0",
+     "55b49ca569ce5019",
+     "7ca8d846b3b47970",
+     "8be3df78d4715f3f",
+     "99279be69f6a90df",
+     "9b635fedef3c129d",
+     "9de3e94a2579788a",
+     "a48fba743bf0ad19",
+     "c5f805f13dc65558",
+     "dde3c5ef6f9b0ceb",
+     "f14a6dce22ae0110",
+     "f985e0b3e3123f9b"
+    ],
+    "48": [
+     "4becc727f8187ca8",
+     "a9f685e9f34a4dd9"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "04c039dc754542f35057dc13ae4bd20d17ccc19bc0f75a690797edd1f9c42fbd",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:2:long-out6",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "9d65e5412aed777c",
+     "f5b9fd4700b3bf04"
+    ],
+    "24": [
+     "0ad95be1793b0dbb",
+     "0bca457fa6c0f237",
+     "2c3632f97401176a",
+     "2c47dbff0459ccf3",
+     "3dc74408ec0ed92c",
+     "5ed6e4f4c1e34934",
+     "6392ade58d6306da",
+     "63b024d8bb950545",
+     "712be745353d503b",
+     "8da1cdb69ea09839",
+     "91126205e4075ca9",
+     "bda640cef6e8a8d3"
+    ],
+    "32": [
+     "24ce5dd4580123b7",
+     "a5bdb3e88f7915c7"
+    ],
+    "48": [
+     "049c9daaf4411cc8",
+     "1996f481d5b303df",
+     "670f4df6ea463e2b",
+     "8d35ff31545f8f0d",
+     "c74e1af9d68e91b7",
+     "c930cb9bc4a62697"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "a94e567f4602a4209596ff410ec96abc541b5965ef639109efdebdc8af377f32",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:3:long-out6",
+   "width": 48,
+   "height": 16,
+   "cells": {
+    "16": [
+     "1202d49a5e49c1b7",
+     "70fb6da0958b6a07",
+     "d4220abad9e45268"
+    ],
+    "24": [
+     "0bd8b1aea75dbc86",
+     "25cb911a2c42ec08",
+     "8718c08f377e93d5",
+     "e71c0b3cbf0c286c"
+    ],
+    "32": [
+     "182b8fa007ec77f5",
+     "21ca8235328fb3bc",
+     "22b121016bb8459b",
+     "33e7ad78013f931a",
+     "38efe0431016fd4a",
+     "4eb8fd5a9aec5738",
+     "583a3313cf7c4744",
+     "587f40692b131410",
+     "6b02e3447d7622bf",
+     "7a6a13294badfd3e",
+     "ce422f657b6f0683",
+     "fa76918668f478a0"
+    ],
+    "48": [
+     "1ddb4a887ce54038",
+     "df827b2a5908774d"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "8457ebaf447a732351a68affbadf00f79dd7334011e7976797821d005812aa2b",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:2:long-toe",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "6653ec9d5b1336d9",
+     "b14d4bfe3abf664a"
+    ],
+    "24": [
+     "092e09eb33de36ca",
+     "13846fb96d24fa18",
+     "27ec2110fb75e1ac",
+     "2d5138cacc732000",
+     "3ab3e77c18de060d",
+     "7157173cca6d9a15",
+     "75e32fce2675c484",
+     "d4cda0d630e1fa9a",
+     "d84531d3eb8020bd",
+     "ed97a9af9f3a3ba7",
+     "f1f7a9ca095a9b2e",
+     "fa492e391c49a8bc"
+    ],
+    "32": [
+     "2d48aca0b064bfab",
+     "d216beb7824c031d"
+    ],
+    "48": [
+     "010af67118fb1dca",
+     "3bd93c16caed5560",
+     "3c2f6d2f041f0427",
+     "b11857dc568903c4",
+     "d4d36badb27845a9",
+     "f05c5759105171bd"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "dd34755b6990b971e157a75b4d9e2f7a542734ba4f2bc6eb206b6f959d702f35",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:3:long-toe",
+   "width": 48,
+   "height": 16,
+   "cells": {
+    "16": [
+     "4b16e8f30de85de6",
+     "51fb2479f805a30e",
+     "8d5c32229d629e4a"
+    ],
+    "24": [
+     "00b9ab6d3426a42d",
+     "4faf314e455a6b42",
+     "7998a0a85e0f7d92",
+     "d72634927cd24b18"
+    ],
+    "32": [
+     "148f02926ec409c0",
+     "1cd6cf500730db4c",
+     "299001fca8583726",
+     "368d03e5a5969090",
+     "3cfbd32b0b9873e2",
+     "544ef0d786b237a9",
+     "6abac7dcdd7c4d7c",
+     "6cb16667f1c860da",
+     "813d5dd1132840db",
+     "c23f663f31fbe23e",
+     "e228841a20940f1e",
+     "f65edbca84f8df20"
+    ],
+    "48": [
+     "0d02ea1b1cdb65ef",
+     "3e5b782f343e85e1"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "47997b4af656fd04ac4166e77b6dd0d74204458acab01c017676ec5acbb03bc6",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:2:long-top",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "1e0f7f6f42d0e96f",
+     "f57aded28935ad3f"
+    ],
+    "24": [
+     "12bf87035e0760b7",
+     "1968f3515ff5c25c",
+     "2b9b9a6a6a730e83",
+     "2d66f1db0a6bbbfb",
+     "4a09dc180f8ab65a",
+     "4cf899b96d4ef192",
+     "759994f034a3b12e",
+     "813ef7229d0ddee7",
+     "8813f7c1703a6848",
+     "896c9cc3ae00c02a",
+     "b8e8ddcd3e36d775",
+     "d02d10c219430724"
+    ],
+    "32": [
+     "05884098abcef59c",
+     "2f2e86474105b650"
+    ],
+    "48": [
+     "5bf595ee8480cb29",
+     "76f6a6b0bb767cf8",
+     "83863c2cfd806db5",
+     "8a48de9f7e3d9e39",
+     "de9bd32a4e78e503",
+     "e06d524ffe3ce744"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "92b92a5d064a8717feb420eca71cfc71368e8a16a5c0630163a05c57eca8683a",
+   "kind": "terrain",
+   "label": "beodeul-long-ramp/ramp:n:3:long-top",
+   "width": 48,
+   "height": 16,
+   "cells": {
+    "16": [
+     "16b79b1d68165af2",
+     "5bb6e773b0923c2f",
+     "da2736414e6829d4"
+    ],
+    "24": [
+     "1fb95b836a220222",
+     "34245afe04f6db7a",
+     "b9c553ef5ab72e9d",
+     "e46f7ab173591878"
+    ],
+    "32": [
+     "0f1f6b12829d8c5d",
+     "305ccb9655f4816b",
+     "37e52cc5ca0fa2e8",
+     "3a7ff9d36c0a2dff",
+     "4d2858076b34db66",
+     "72ce1182515ff66c",
+     "83844e1ba1350d15",
+     "93dd03a967c75f69",
+     "b766027179c6c0d0",
+     "bc60e726d1f30bba",
+     "f2a98ae31491653d",
+     "fb94b2834cf946fe"
+    ],
+    "48": [
+     "31cc4dd0840c417b",
+     "39649ddf37417a28"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "ec2bacd9415081ed65261304d34b8495e1eb5a4b49e77bb3a4d4198c5301b278",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/ramp-h1-w2",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "1240458d6b6464a5",
+     "3a107f1c4400e54b",
+     "43b99f3b1d74225a",
+     "4ae0339a55ba3933"
+    ],
+    "24": [
+     "095fd44036b44625",
+     "27bb69e99b48e42a",
+     "32cfaf23433535e3",
+     "341d4d6e9e3e7cbd",
+     "374252b0766de39f",
+     "4f9deb13561e1b45",
+     "5240f46ae2d6637a",
+     "57414a79689e8072",
+     "59c7b6208d2ce0f4",
+     "5a01eb1985309677",
+     "5f0a014f1023c4a7",
+     "667e0ddbdcc55ecc",
+     "681228404d8d9794",
+     "7bc7e988adfe561c",
+     "99008e15918c16cf",
+     "a19393f86385e4af",
+     "ce65e611dba491e0",
+     "cea7babcbf0deaeb",
+     "d49215dd938f0288",
+     "d6121b8b9d50a58b",
+     "e11b296c88135d8b",
+     "e7c3fef9845a33fb",
+     "f8e8d3e7e0637013",
+     "fa9c4f85f89af0ab"
+    ],
+    "32": [
+     "b6c0643c9f141269"
+    ],
+    "48": [
+     "34ba6f97160a749c",
+     "73a2613827ecea91",
+     "7652bee0955de08e",
+     "955d6a498787e925",
+     "cf09932d9874829a",
+     "dbc7b2f94a8c6fcf"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "75edb76927faa92b7a311fef7a638bf345acf9abac5ef05223bec8e32de21954",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/ramp-h1-w3",
+   "width": 48,
+   "height": 32,
+   "cells": {
+    "16": [
+     "1240458d6b6464a5",
+     "27444b0385aaed05",
+     "478ab1a46b13264d",
+     "6977e15c41eb4299",
+     "bfd33ce548d8d99c",
+     "cff4b9d9d5e8ec20"
+    ],
+    "24": [
+     "00645d4c38a13406",
+     "0c43595f4738593e",
+     "3d981b931e803d63",
+     "5c2a89e917507f86",
+     "7d6dd7c52efd0e1e",
+     "bd8b1ef4dde0ac48",
+     "db2a44f0bb262c5e",
+     "eb4d7523368c4be9"
+    ],
+    "32": [
+     "2c0a3e8753e11858",
+     "4e6437739c2a7721",
+     "c214d84a0bfa4a4b",
+     "e4d18ec4b7c73158",
+     "ec5e42fed414f435",
+     "f46798965dbfdd9c"
+    ],
+    "48": [
+     "7a77ec81caf29347",
+     "81276e11dadfb64b"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "c122286a85cc750f5e366a4e853bce0c5aad435be82b88a5a4ac7c839f26f59b",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/ramp-h2-w2",
+   "width": 32,
+   "height": 48,
+   "cells": {
+    "16": [
+     "0478aa6ebcb980e8",
+     "11a32b1322443dd5",
+     "3804c67fc40de326",
+     "468d5ce5ea5c6d67",
+     "e82f2b2424ed68c3",
+     "f17a39a104409cb3"
+    ],
+    "24": [
+     "182de78a24c22f04",
+     "3c6c80f2231ab17e",
+     "439e90dcdbfe617f",
+     "556f9188e7dcda7c",
+     "76e7fd238e792191",
+     "a2063f56bb5cfb1a",
+     "ad0608434a8fb5e8",
+     "b1b8e6fcc58476d8",
+     "d3c56e5b94c25181",
+     "d9c6b2fabdb0dc20",
+     "e2cfcdc6e21a52bc",
+     "f4f1459f9ac8dd87"
+    ],
+    "32": [
+     "4e719fb842f9d02b",
+     "87769fff3e51fc64",
+     "d27dbadbf3dc6b9c",
+     "ed6f1c4f7bfd1c3b"
+    ],
+    "48": [
+     "1cded701a96c9bc5",
+     "437643e69182ef92",
+     "c884c78010396f5d"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "099f02c0d71a9ee21172b2c2ef5aa7e88c93ff52539ec0cae70b588a691b71e9",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/ramp-h2-w3",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "06a2806f95769565",
+     "08ae2e25386a140c",
+     "4e1022ee8f41b28f",
+     "b6e6f0beb0e1fdfa",
+     "ce1dff8785a71389",
+     "d3dabc54de394795",
+     "e82f2b2424ed68c3",
+     "f7dd4ddad65c95a8",
+     "f8df1f53b7e55e1b"
+    ],
+    "24": [
+     "11ab0cfa321e01db",
+     "2318445b249cda30",
+     "47b731593c37427d",
+     "ba61708d0868c1c3"
+    ],
+    "32": [
+     "0156e4c3dc681c4f",
+     "0b4643936f862d66",
+     "1c2ccd61d854507e",
+     "20d1f7091c3e8b91",
+     "23b881b251d5b190",
+     "272579810e693261",
+     "38bb2ec69277c16b",
+     "3e28d979da7b822c",
+     "491fdb9e91738521",
+     "4b27ebf37c60881b",
+     "5391df5e0ab169fc",
+     "65f3fa0cb6b60c0d",
+     "68371cee23d3bdb6",
+     "6b829c4869c8fb9d",
+     "8d334b58978fd9eb",
+     "96ef7c6d18f33a4f",
+     "983f6cafbfe096bf",
+     "ac96e7ebde544d11",
+     "c0faf4f7c973992b",
+     "c9745f5783aeb406",
+     "ce3411b2e7832137",
+     "d050bef2a6f6c833",
+     "d2765b28a81ad3f6",
+     "fb8b66e1481f7ce1"
+    ],
+    "48": [
+     "b602ae1174a2b14a"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "a9a27faa7cef51f88284b52154b9337c3b6bba04c1a0687c82705225e8f106ae",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/ramp-h3-w2",
+   "width": 32,
+   "height": 64,
+   "cells": {
+    "16": [
+     "1249db6ee8356893",
+     "25203ca47258d5a7",
+     "35ac14dfb3cf2f64",
+     "7eece38b59cc93d3",
+     "988c25049cce1ac0",
+     "c7d7b8a69b5b7b98",
+     "d441c41866ec9ca7",
+     "e4dfd72ab6157ac7"
+    ],
+    "24": [
+     "00c252c391eff9f7",
+     "0162ca4af73c1559",
+     "039233a785ae7f12",
+     "0c5734cf4dd5218b",
+     "0cba1cc13453f119",
+     "1a7946b59a0b14a6",
+     "1cd07ba2ea2b65ec",
+     "28951a97cbdf8e53",
+     "2bd9072bfa62101d",
+     "396ebc7028d2d9f0",
+     "4918880903584dcb",
+     "4bcaf119ac15522e",
+     "5cdabe3a38269bd9",
+     "5d909f1663caf92d",
+     "6812e8aab6e01094",
+     "6a1a41122d81bc75",
+     "7a2a4515583d4a64",
+     "7fe6d6ca628b7b11",
+     "832fc16250685a2d",
+     "8732adcfca588149",
+     "8e94fb05f05c359a",
+     "90bc836a3b317f1e",
+     "97eafedb349e58e3",
+     "9afdc3f3db3eec42",
+     "c33640ba10a077c9",
+     "c785c6ae483e1fe0",
+     "cc3d1b3f40577390",
+     "ce9896871c22bbff",
+     "e12eaef3a98fa820",
+     "e3eab942802fc037",
+     "e50cbdce308dfca2",
+     "eac67b6c17df5490",
+     "f0e835e0559dbd09",
+     "f2340725f0136d48",
+     "f529b1bde951e316",
+     "fc1b429640b8ba03"
+    ],
+    "32": [
+     "c6054a77dd33e051",
+     "eeb16b1daecaf676"
+    ],
+    "48": [
+     "0f8b8a56159e45ab",
+     "18436a4021775c4e",
+     "3add3d7a47e4dbcb",
+     "523997da37066283",
+     "6c55a999a1ac2865",
+     "7281e796184d9072",
+     "83bb225717cf636e",
+     "86ad202475b63844",
+     "b8a66eebf0f96b67",
+     "c5818c33e7fe405d",
+     "c72be4786ecfd73c",
+     "f5ea6fd2c255f290"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "f17f0ade2c5566b24b6a926aff8cb0d8157f51c86f16505ee7402c838519a7ad",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/ramp-h3-w3",
+   "width": 48,
+   "height": 64,
+   "cells": {
+    "16": [
+     "04705c31b1e4ced4",
+     "39dbfe061da65789",
+     "3f94bbff1e7bc7e8",
+     "75a4b108edeab32a",
+     "765cd7fa54be06fe",
+     "7eece38b59cc93d3",
+     "8b39d672c2b4f12f",
+     "a781d0171fbdc45a",
+     "b0124523957b658f",
+     "cb6fb86febec0132",
+     "d5ac8e46fe0a651e",
+     "e4d46f490ee5f6e0"
+    ],
+    "24": [
+     "04b543dd20263d79",
+     "0ebef058a0564021",
+     "142bc916950bf95b",
+     "82f1265aebc9874e",
+     "8d361236d07308ea",
+     "9af8e7bff9186de0",
+     "b28bad2d35f4f608",
+     "ba68f42c48268f31",
+     "cf08b93e82bd3556",
+     "d320206ecfcfefde",
+     "ebc49ad2a10264f6",
+     "facd5650cf7d5867"
+    ],
+    "32": [
+     "435933eb0598ce80",
+     "4f6f517baaf9a10f",
+     "6a36f7f0cdd9e836",
+     "6eebed807f7e0844",
+     "6f257519bfecef21",
+     "823c9287396d9714",
+     "88998a4926a71269",
+     "95306aa2a1c026f7",
+     "9c0eda3bdd0f4a98",
+     "a9d1ee30882c65ad",
+     "b35c8f072529da62",
+     "d19d7037e6bd279c"
+    ],
+    "48": [
+     "2f09d99fa38ba46d",
+     "32dbb8d96fdfd2bf",
+     "f7c70b7d4249a7ac",
+     "fc5ab9e2f091131f"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "7184cfab3d72f02b1696497595a46bddc58834c9eb27f0649b312ce47eefe2c9",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/ramp-h4-w2",
+   "width": 32,
+   "height": 80,
+   "cells": {
+    "16": [
+     "305253c9c6f1c27f",
+     "5d49c60f95cb4348",
+     "7751e3b7c6e10936",
+     "9fdcabbe512ef0bf",
+     "a3564795cdc2e008",
+     "afa36cdfda319853",
+     "b0597ff9f1654c0d",
+     "c851fe7c57ea4ce3",
+     "dd593a7edce9d1f3",
+     "e0b63d2af5c55023"
+    ],
+    "24": [
+     "0755b6050596cd11",
+     "0b672218010338e5",
+     "15c1acc763207e75",
+     "178415e5766b3c3d",
+     "1b467257062660ef",
+     "204c75799f59a6a8",
+     "20e96565ee44fb60",
+     "278fc65f124078dc",
+     "2b2fb4a519881405",
+     "36df9237dd62a3a7",
+     "3b7db53ad4610e9a",
+     "3e2733a3c0d496f8",
+     "404ccde9ca5ac378",
+     "416283b20c1f03bc",
+     "4b29a0eb032d17fa",
+     "5240f46ae2d6637a",
+     "681228404d8d9794",
+     "683a271a8bc34017",
+     "7112e91143d8db0a",
+     "7c4755dde65b6381",
+     "829b5af147e3d198",
+     "839fc0235a63fdb9",
+     "85ab78796201530e",
+     "873778bced0121f0",
+     "9818509f14f35407",
+     "99008e15918c16cf",
+     "9b223ce9d69767b7",
+     "a22f4f319930285f",
+     "a467860471f99448",
+     "aa01c6687f1a6047",
+     "ab5ac32f4e72b7d1",
+     "abc43f10568abd0b",
+     "aefb25235e19b9f4",
+     "b5b1f1a2e261a36f",
+     "b96a72c5f9a82947",
+     "bf60d4edff4322f4",
+     "cda80019f776e59b",
+     "d53c3b81a127848c",
+     "d6121b8b9d50a58b",
+     "d67524f43b6776e4",
+     "e11b296c88135d8b",
+     "e131f7fc07a80e82",
+     "e1deaf265a5c0b24",
+     "e3ddc6e0748eef20",
+     "e7580f47be82d8f9",
+     "f0ff2ee7c747e2cd",
+     "f15b7dd0d11623d9",
+     "fa9c4f85f89af0ab"
+    ],
+    "32": [
+     "19e083146e4be387",
+     "337ed571f5cb1515",
+     "64cd84ea30f60e39",
+     "656c5420f242e183",
+     "f44d8f8afb3f661e",
+     "fdaaa617311e7025"
+    ],
+    "48": [
+     "227f24c8c74584b0",
+     "408e6638e77a9a4c",
+     "7677f24e1f7d0d4d",
+     "796bb28954fd7b66",
+     "7f5a74072106c23c",
+     "ad4963feed74f3a5",
+     "b395a785a388e28e",
+     "c0d7fa53dc4b56cb",
+     "c40726e6afeb57ca",
+     "cc435c5d39c1088a",
+     "d8b0fb55c75c85fd",
+     "e1264b7107d9b171"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "e59d55056e9e47f6c1b25d72df0f736c2314e0107ba8b1ad33fd9c82b9da827e",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/ramp-h4-w3",
+   "width": 48,
+   "height": 80,
+   "cells": {
+    "16": [
+     "01a4c717a2853593",
+     "29f68dc6c5d96024",
+     "2a508cd25333401a",
+     "2e3d424e35dbd48c",
+     "2fa70f3d442c71c5",
+     "31e2167dba4dd52b",
+     "342130aba75e1ccd",
+     "764eec3e98bf0795",
+     "86d7734b219ae9e0",
+     "b24fbbbfe03593ab",
+     "bba35df995d3bcae",
+     "c6c7d4181048232d",
+     "db2ee3a926521894",
+     "e0b63d2af5c55023",
+     "ed1ac1f4c66b83a4"
+    ],
+    "24": [
+     "00645d4c38a13406",
+     "07cb94f40c8a7146",
+     "10ff3ea2662f0def",
+     "1270fbf3b2fbb255",
+     "3a775955be9ffe3c",
+     "42ee9d3c0bb16b63",
+     "4a7bc3b9134ee242",
+     "5dba71da45f8388f",
+     "729e0b9b62b89f7a",
+     "7d6dd7c52efd0e1e",
+     "89d0cc94b14780c4",
+     "8fe8586f5ddd315e",
+     "a83174353977ef58",
+     "e28a5ae0d9a5f9ea",
+     "ee0f8fbaf167665e",
+     "f7ac4ac48c5957cd"
+    ],
+    "32": [
+     "00648204b5fa8c6f",
+     "0767fedf43e5e2cb",
+     "0a9deee6e20ca3db",
+     "0f41e392f6e4d824",
+     "103cb81becb79fcc",
+     "16297eadcfec64a1",
+     "19dd49621260c6bd",
+     "2090cfa4d6feb1c7",
+     "41e58950dead3c40",
+     "4d5377d89fc81e4c",
+     "5fb9a757c06e3b8f",
+     "6cc6949e64d89cd8",
+     "70d298ed478a5bf6",
+     "71e6e624533ddd34",
+     "81ed9132619befc9",
+     "83ae16527d6bb422",
+     "856bd65fc7fb5f18",
+     "888396b6a0929a93",
+     "8ba7112cf41276d5",
+     "910fb5c8eb2ce453",
+     "9f5c0b53fee6e24f",
+     "a168b4909c7e6e0e",
+     "a7d57497549be05a",
+     "ab9da8eea1d043ea",
+     "c35bf65fd3d1e94f",
+     "c743f5dcb5b7db4a",
+     "d18434182d318a8e",
+     "d74b45ff05d164cf",
+     "d7a99e236b7858be",
+     "d8cee1a5036c2488",
+     "e1d89d8e11266039",
+     "e4caea7c8e370350",
+     "e51b7d5e6fa93d94",
+     "e5e97bd2464a0d94",
+     "f3334479a0059e17",
+     "f6291defd8a0d356"
+    ],
+    "48": [
+     "171f3a591d3eef42",
+     "8e6e0fc88b966d96",
+     "9565e23bb104dff8",
+     "e14de0cd2d9fde6c"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "f1f95b53cd4989118753464d2aae67664a901d4c6358f2643c16e63f2a610d42",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/stairs-h1-w2",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "73413535032f65eb",
+     "abd442ae5cb596f4",
+     "c137c168da3bd263",
+     "e98799f18a132e96"
+    ],
+    "24": [
+     "0fd9a536372a003d",
+     "1730dfcee2817f9e",
+     "22475c6cadc139d8",
+     "22fb997fe0bdd85b",
+     "288e8144744b0e8c",
+     "354113f2404b5b5f",
+     "3f22ce1c5d07e206",
+     "47da387d4c85eddc",
+     "49152bc204e4c698",
+     "496d5f85bd178c32",
+     "57ca13f217170400",
+     "5acfe61f6fb89d07",
+     "5e027046ba7437a4",
+     "6617d5a8b184ddf2",
+     "7158e8b8805ac396",
+     "7c2e245ab0e83984",
+     "947be353837f2553",
+     "a09e43154ca96fca",
+     "c2bb09b7f0daf621",
+     "ce43fc239b3906a2",
+     "ed857939b3301d7b",
+     "f08f0e5342e32af2",
+     "f9246f25bc904d90",
+     "fd6529ae74812906"
+    ],
+    "32": [
+     "b47db4f09986c8e8"
+    ],
+    "48": [
+     "1477e7f20da44861",
+     "17391ebec293a11a",
+     "36aac9e1fb0d52d9",
+     "8847f9780b184cdb",
+     "b521a020dc08f1c8",
+     "f3ab123f6f8c7420"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "f92c74f3313d1641b6774736bc16181ad73bd1ba6860cf6595f5a8d50b1804a5",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/stairs-h1-w3",
+   "width": 48,
+   "height": 32,
+   "cells": {
+    "16": [
+     "63108e27d1cdc168",
+     "73413535032f65eb",
+     "7f1bba1d8401d952",
+     "8959881fdebe4fc4",
+     "c137c168da3bd263",
+     "db9d474e261352b3"
+    ],
+    "24": [
+     "22fb997fe0bdd85b",
+     "288e8144744b0e8c",
+     "492bd7277f4ae73d",
+     "94db2db7f41232b8",
+     "b0fe57c65762c87d",
+     "c4b0cfed86530680",
+     "e7c6830586439d00",
+     "ea5cd84902e75ea3"
+    ],
+    "32": [
+     "6034a9932b2ef969",
+     "73f306a86f2140d7",
+     "d6c9700ef8f8b7a5",
+     "e7d6a322c1ea5361",
+     "f031c0b0b2aac61c",
+     "f13ce52a4cf6f08b"
+    ],
+    "48": [
+     "42e7804129183af6",
+     "b69d346af9202819"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "d58bd1dfd2427d0d5806da288332dc5f942ffe15a5b9e9bb3957d3e1231369e0",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/stairs-h2-w2",
+   "width": 32,
+   "height": 48,
+   "cells": {
+    "16": [
+     "1d01d37f89e9cf09",
+     "3c386e05d8bd6154",
+     "a5cf25f2974cbf4f",
+     "a5f3392b60281f26",
+     "a9ba91eb0473d007",
+     "fbc663a4ce453d82"
+    ],
+    "24": [
+     "01439f4ef068950a",
+     "05b3b8feed99de06",
+     "201ad61a3325b12b",
+     "555e107af4d42fc3",
+     "7148934f8939fdc6",
+     "73867d9024ddd169",
+     "9c0ca2ab2b5b37d0",
+     "a0f9af242bf3d27a",
+     "bc400a9f9910e399",
+     "c09befde385453bb",
+     "cf3babc0c451ca50",
+     "f098dfabf4a08c4c"
+    ],
+    "32": [
+     "178246b3b350d4cf",
+     "2593041750944231",
+     "492597df22afb5eb",
+     "99cefb724e6c589b"
+    ],
+    "48": [
+     "7406882efd05421f",
+     "eed9d933a21f6aad",
+     "f4619b4a342c60ac"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "551ddbd4dcb1d3b281a38e0031bc4885335497ebfb3301e22b893ce91663ff59",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/stairs-h2-w3",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "5301ccd162a63787",
+     "5509baa37aa9dbb8",
+     "61543ccc07028409",
+     "a5cf25f2974cbf4f",
+     "a9ba91eb0473d007",
+     "d18d9e3f822f4c9a",
+     "d8a5f03a8110b4c6",
+     "e8c7838590ddd623",
+     "fbc663a4ce453d82"
+    ],
+    "24": [
+     "198662be0999b5b8",
+     "7066694f3eff8782",
+     "769da108c24c7bda",
+     "e9dac2a31e5bd7ec"
+    ],
+    "32": [
+     "043b0ea4d9c97a80",
+     "1619aef8ad084f20",
+     "27c8bcd70fd1f840",
+     "32c83790a9d4a5b6",
+     "398afe9e5f52fabe",
+     "39adc83ed17673d3",
+     "53822bf88984f322",
+     "57bd6ec0d56dcbe9",
+     "588cce729ccc169a",
+     "5dd3bfee7a1f283b",
+     "6c41bfb3b210a8af",
+     "6c8dff89903ee3fd",
+     "9a399525bcf62645",
+     "ac6ac6c66cc40bea",
+     "bd6a51ca88ef2e54",
+     "c9758789aed48f92",
+     "d2617f9152c89729",
+     "ddd1e8513ee6bfd3",
+     "e2f8ab5e05256734",
+     "e409684f8360dd95",
+     "e840a55f8cdc4d6d",
+     "ed8720dd251a3825",
+     "f3fbba908685466e",
+     "fa60ea8cc46f40c8"
+    ],
+    "48": [
+     "a11965fa7c673387"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "773a5fea35878f87ae605baf2ade34e0e2b1d218ae7c29c8af4a2215fa48a20e",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/stairs-h3-w2",
+   "width": 32,
+   "height": 64,
+   "cells": {
+    "16": [
+     "150e30013c92e932",
+     "34bde8d9c06ad38e",
+     "3c386e05d8bd6154",
+     "50fecb6aa8855a36",
+     "6ca1b8264d98a068",
+     "8c0a51988d94ef4f",
+     "a5cf25f2974cbf4f",
+     "c20cbaf6e356f65b"
+    ],
+    "24": [
+     "11625cf76e032595",
+     "124944a9dc1cd73f",
+     "128d099240d23b49",
+     "21df9682e9aaadef",
+     "2f0baeb38fc42a13",
+     "302d48f9ce19458a",
+     "4a2ba37d83502ad3",
+     "4ac0f677a62f87ba",
+     "4e1fe4d02c7bdca6",
+     "53f0aa4ae626f046",
+     "544e17af879040c6",
+     "55e17ee194e46451",
+     "5643ae823aaa54bc",
+     "6e90034b9a559f54",
+     "736e8497df48ae85",
+     "763105d4383e8fcd",
+     "77fe00705344399c",
+     "7902cce7afbc0175",
+     "7caaabcfcc747fee",
+     "848b8784c3c7eb0f",
+     "9a7198d4a1a4ba0d",
+     "b303220fef94d18a",
+     "bca4c69b724c2a9a",
+     "c38c0f63554f6ef1",
+     "c3b1fe276053ffdc",
+     "c895917add41dad4",
+     "cf7729a2da29f81c",
+     "d7a50790026e84e5",
+     "de613276e3de2a40",
+     "e33b745c89830c5f",
+     "e58961c9b5dbf454",
+     "e6263b047d5f6fdf",
+     "e6fe54973d544ed7",
+     "e866208aa09dbcfa",
+     "f2ed7bb891f969f9",
+     "f4dcd18922af74af"
+    ],
+    "32": [
+     "28d5df1ddbc23515",
+     "6253de48cc809740"
+    ],
+    "48": [
+     "0ed81b34989526e0",
+     "15e998c59ae12399",
+     "202f67749c33cafd",
+     "22de20ea4162b5d5",
+     "a5ae8479c04edf95",
+     "c4a4f927a3a30432",
+     "c529055db3fa32ee",
+     "c7d154a9f432f80d",
+     "d907f2bfa29c40e7",
+     "daca9758caabc227",
+     "e449363b052c4120",
+     "ea52df6b394a1dbc"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "a15804757158b1deaca60f5e93aa4e0c34f27552e2b9e0261d4a3f3874a5ac80",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/stairs-h3-w3",
+   "width": 48,
+   "height": 64,
+   "cells": {
+    "16": [
+     "50fecb6aa8855a36",
+     "58346ba4c5894bc3",
+     "61543ccc07028409",
+     "6ca1b8264d98a068",
+     "7d6d3ef7b12cecd5",
+     "808edfa6177184ae",
+     "907a8504e1c8042c",
+     "a5cf25f2974cbf4f",
+     "b59e35edb43509e0",
+     "c20cbaf6e356f65b",
+     "d8a5f03a8110b4c6",
+     "f36bf5235cfb8a28"
+    ],
+    "24": [
+     "07d38775bb0645b5",
+     "2cda1c28a180a425",
+     "553c6fd7792aa218",
+     "77fe00705344399c",
+     "945cbd821096cbb6",
+     "a7ff4495e2b6bce0",
+     "b0d173a7183395d0",
+     "b763159b8f2d196c",
+     "b9a5be77626e9200",
+     "e6eda26851942001",
+     "f3fb3b4ee2082004",
+     "fc80ee8424f98cce"
+    ],
+    "32": [
+     "0bf788db05601487",
+     "2384ae9abc60bb28",
+     "3a2584cd1d19e183",
+     "3d005d742a6c426a",
+     "884d073001e62b17",
+     "98b47c1caf541f31",
+     "9cbb81b8086987c0",
+     "c227453869d8230a",
+     "c474c770c64c8557",
+     "d3ffe9c15fbe7ec4",
+     "d8d2913b5f75e509",
+     "fd3df01b32041bd3"
+    ],
+    "48": [
+     "0fa1b7cc08aa1248",
+     "92df75a71199b397",
+     "c573537df434627e",
+     "edbec19c86700df0"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "c49071b4d0e7ce311e3042b8200cec000ad02c4043ac07983ad31db118993c54",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/stairs-h4-w2",
+   "width": 32,
+   "height": 80,
+   "cells": {
+    "16": [
+     "17e2674f95774da0",
+     "34bde8d9c06ad38e",
+     "3c386e05d8bd6154",
+     "50fecb6aa8855a36",
+     "66889b2b2a752dda",
+     "9a3bcb23f9f7e88d",
+     "a5cf25f2974cbf4f",
+     "af2360d82eeb23e9",
+     "b22f07510b86d381",
+     "d27348b3aac84353"
+    ],
+    "24": [
+     "048c960cc4c1ac08",
+     "0bccb941c763725b",
+     "12c5c61353f14692",
+     "1369c96407ad8191",
+     "146d650a1c15e4bb",
+     "1baee5cf27480bcd",
+     "21df9682e9aaadef",
+     "22475c6cadc139d8",
+     "22fb997fe0bdd85b",
+     "288e8144744b0e8c",
+     "2f0baeb38fc42a13",
+     "3233993c933f77b3",
+     "3a7685c5f916dc14",
+     "47bf40d9c4df5986",
+     "47da387d4c85eddc",
+     "49c3db29057ff2d3",
+     "4ac0f677a62f87ba",
+     "4d5ad60f4f9a222c",
+     "5653dececafed15e",
+     "5cd55f516d001dd5",
+     "5e027046ba7437a4",
+     "656e29b081be0f9e",
+     "6e90034b9a559f54",
+     "6fb0a96245f82b95",
+     "72a09b08c83a11a3",
+     "768fb52cc5dc3fc3",
+     "774bc74d8de5e315",
+     "7b3953b636ae6945",
+     "7b9c21a33d72d6ce",
+     "81d06e3c7695a9a8",
+     "846f5d59795eda5b",
+     "89e2033a31ec783d",
+     "8bf6a0116898c5c5",
+     "920dfa76cb9c8cac",
+     "947be353837f2553",
+     "9a7198d4a1a4ba0d",
+     "a06e5c1308200036",
+     "a6f58fec0585029d",
+     "aee99d377a29781c",
+     "b95dfdb1d4f03295",
+     "c20c336cb0b20830",
+     "c2bb09b7f0daf621",
+     "d7cbebe9991159e4",
+     "dd535967f7b23225",
+     "e6263b047d5f6fdf",
+     "edbdc36053dd6040",
+     "f37e40df5247d77a",
+     "f9c1b3642a81a4ea"
+    ],
+    "32": [
+     "14d89c6e256b7ceb",
+     "178246b3b350d4cf",
+     "18a151cf76abac24",
+     "6253de48cc809740",
+     "a8739039d626b1f9",
+     "ad2c6e6255917736"
+    ],
+    "48": [
+     "3935b3430c1e2907",
+     "54c0d10f279d6821",
+     "56166dc6448fbf86",
+     "975a9a562c459696",
+     "abfcf60c17225984",
+     "b105694d2a077945",
+     "bab4d2f7956c9a98",
+     "bed501427b93c66b",
+     "d151e6ceca313fa7",
+     "e1aa169edebfc067",
+     "eda93878b5bd04a9",
+     "f1ed96a2c62a5d03"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "e90d579c8f86a545bb0d414309ab4c9c8e5c53431b179d685c9099b6898c60a7",
+   "kind": "terrain",
+   "label": "bbox-village-ramps/stairs-h4-w3",
+   "width": 48,
+   "height": 80,
+   "cells": {
+    "16": [
+     "17e2674f95774da0",
+     "4aa32f1c47f3f36a",
+     "50fecb6aa8855a36",
+     "5a651060fbf13ee8",
+     "61543ccc07028409",
+     "7e36aa03cc25a419",
+     "907a8504e1c8042c",
+     "9e084526f3a1a164",
+     "a5cf25f2974cbf4f",
+     "af2360d82eeb23e9",
+     "b22f07510b86d381",
+     "c6fe573f8f7033c5",
+     "cea8386bb2cbf469",
+     "d8a5f03a8110b4c6",
+     "f36bf5235cfb8a28"
+    ],
+    "24": [
+     "1b136e04b3cb7766",
+     "22fb997fe0bdd85b",
+     "288e8144744b0e8c",
+     "2e5754745474bf0b",
+     "32813a02da6770b5",
+     "8c00624cf46bc9c0",
+     "8d9f0efbd99550a0",
+     "a0725d15be80493b",
+     "a3e19e74ab96f943",
+     "a7ff4495e2b6bce0",
+     "b9a5be77626e9200",
+     "c84c0a69dbf39557",
+     "d3c1baf276918897",
+     "dc97ad86723dff15",
+     "f7df18eb893b636e",
+     "fbdd1e2933c53a14"
+    ],
+    "32": [
+     "0bf788db05601487",
+     "0d22f3a639297e95",
+     "19d86fa693f20159",
+     "2165165aeba63116",
+     "262761a9dbdd68d2",
+     "2e6944603fbcd8af",
+     "37b917be69805e5b",
+     "39adc83ed17673d3",
+     "3a8bc9ff41b62657",
+     "3d005d742a6c426a",
+     "57bd6ec0d56dcbe9",
+     "612c2ae0d139b8ea",
+     "6537d025fda99233",
+     "6c8dff89903ee3fd",
+     "7b134e7ce4ff58c5",
+     "839449f79db57ddc",
+     "84204005260f096c",
+     "884d073001e62b17",
+     "98b47c1caf541f31",
+     "a054e23f0a4759f2",
+     "b27d5b3b4fa8fe4a",
+     "b5896e88e73b5ca7",
+     "b9ed90e1cda6ea0c",
+     "be118f035358170e",
+     "c0dd7d2406f21f2a",
+     "c9758789aed48f92",
+     "cee50de62957c1c1",
+     "d00e81bcbf818470",
+     "d3ffe9c15fbe7ec4",
+     "dbfba1755e8f149a",
+     "de90bba22c288088",
+     "e840a55f8cdc4d6d",
+     "e8822a7007e2860f",
+     "f3da62fa8bc57c91",
+     "f3fbba908685466e",
+     "fd3df01b32041bd3"
+    ],
+    "48": [
+     "4c3307eea92aa132",
+     "9a7b8317cf1d8a66",
+     "d60badd560e7cdab",
+     "e66cef86eceb3fc3"
+    ]
+   }
+  }
+ ]
+}

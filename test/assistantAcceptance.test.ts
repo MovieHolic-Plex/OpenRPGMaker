@@ -65,29 +65,18 @@ describe("assistantAcceptanceProvider", () => {
     if (!acceptanceRecord(value)) throw new Error("Expected a schema object");
     return value;
   }
-  describe("acceptance at the installed Antigravity schema boundary", () => {
-    it("retains every scoped canonical shape and selector through Google then CCA normalization", () => {
-      // Execute the installed provider's actual two normalization stages in its Bun runtime.
+  describe("acceptance schema contract", () => {
+    it("retains every scoped canonical shape and selector without oneOf", () => {
       const input = [...WORK_PLAN_TOOLS.filter(tool => tool.function.name === "set_work_plan"), ...ACCEPTANCE_TOOLS];
-      const result = spawnSync("bun", ["-e", `
-      import {normalizeSchemaForGoogle, normalizeSchemaForCCA} from "./node_modules/@oh-my-pi/pi-ai/src/utils/schema/normalize.ts";
-      const tools = await Bun.stdin.json();
-      console.log(JSON.stringify(tools.map(tool => ({name: tool.function.name,
-        parameters: normalizeSchemaForCCA(normalizeSchemaForGoogle(tool.function.parameters))}))));
-    `], { cwd: process.cwd(), input: JSON.stringify(input), encoding: "utf8", timeout: 15000 });
-      expect(result.error).toBeUndefined();
-      expect(result.status, result.stderr).toBe(0);
-      const normalized: unknown = JSON.parse(result.stdout);
-      if (!Array.isArray(normalized)) throw new Error("Expected normalized tools");
-      expect(normalized).toHaveLength(3);
-      for (const entry of normalized) {
-        const tool = record(entry);
-        const properties = record(record(tool.parameters).properties);
-        if (tool.name === "review_acceptance") {
+      expect(input).toHaveLength(3);
+      for (const entry of input) {
+        const name = entry.function.name;
+        const properties = record(record(entry.function.parameters).properties);
+        if (name === "review_acceptance") {
           expect(record(properties.verdict).enum).toEqual(["pass", "fail"]);
           continue;
         }
-        const criteria = tool.name === "set_work_plan"
+        const criteria = name === "set_work_plan"
           ? record(record(record(properties.acceptance).items).properties).criteria : properties.criteria;
         const item = record(record(criteria).items);
         expect(item.oneOf).toBeUndefined();

@@ -25,6 +25,7 @@ import { enforceGenreLockVisuals, genreLockVisualCatalogFilter, GenreLockVisualE
 import { isMonsterOnlyTool, monsterAssetsAllowed, monsterToolArgViolation, monsterToolRejection, withMonsterTurn } from "@/project/genreLockMonsterAssets";
 import { assertMonsterAssetLock, monsterAssetCatalogFilters, MonsterAssetLockError } from "@/project/genreLockMonsterAssetsDiff";
 import { withNpcGraphicCatalogFilter } from "@/assets/charsetQuery";
+import { withGraphicResolveProject } from "./eventCompile";
 import { withKitLook } from "@/project/kitLook";
 import { projectTilesetLook, settleProjectLook } from "@/project/tilesetLook";
 import { pruneBeodeulGrassGrain } from "./beodeulGrassGrain";
@@ -535,7 +536,8 @@ export function runToolDefinition(
 
   if (tool.mode === "read") {
     try {
-      const exec = withCharsetCatalog(ctx, ctx.project, () => tool.run(ctx.project, normalizedArgs));
+      const exec = withGraphicResolveProject(ctx.project, () =>
+        withCharsetCatalog(ctx, ctx.project, () => tool.run(ctx.project, normalizedArgs)));
       const warnings = [...(prunedNote ? [prunedNote] : []), ...(exec.warnings ?? [])];
       return {
         ok: true,
@@ -579,7 +581,8 @@ export function runToolDefinition(
     // listOps 는 모든 호출자에게 푼다(스키마가 모두에게 내놓는다 — 조수 밖에서 보내면 말없이 무시되던 자리).
     const dbEnvelope = DB_UPSERT_TOOLS[name] && (ctx.assistantRun || (guarded?.args ?? normalizedArgs as Record<string, unknown>)?.listOps !== undefined)
       ? beforeDbUpsert(before, name, (guarded?.args ?? normalizedArgs) as Record<string, unknown>, (tool.parameters.properties?.[DB_UPSERT_TOOLS[name]?.arg ?? ""]), !!ctx.assistantRun) : undefined;
-    exec = withCharsetCatalog(ctx, lockProject, () => tool.run(draft, dbEnvelope?.args ?? guarded?.args ?? normalizedArgs));
+    exec = withGraphicResolveProject(draft, () =>
+      withCharsetCatalog(ctx, lockProject, () => tool.run(draft, dbEnvelope?.args ?? guarded?.args ?? normalizedArgs)));
     if (dbEnvelope && ctx.assistantRun) { const told = afterDbUpsert(before, draft, dbEnvelope); exec = { ...exec, summary: `${told.head} ${exec.summary}`, warnings: [...told.warnings, ...(exec.warnings ?? [])] }; }
     // 몬스터 수집 전용 도구가 성공하면 장르 표지(system.genre)를 남긴다 — 잠금(빈 시작 맵에서만 걸린다)을 소급해 걸지 않는 대신 기록만 한다.
     if (markerAllowed && monsterMarkerTool(name, normalizedArgs)) markMonsterGenre(draft);

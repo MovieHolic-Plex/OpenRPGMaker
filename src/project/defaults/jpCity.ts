@@ -21,6 +21,7 @@ const data = () => {
  * 조수에게 권하는 목록에서 뺀다(`ai.supersededBy`). 새 가족에 같은 구실이 없는 것(학교·체육관·유치원·주유소 사무소·시장 건물·공장·창고·마치코바)은 그대로 둔다.
  */
 const NEW_BUILDING_PREFIX = "jp-bldg-f-";
+const CARBON_BUILDING_PREFIX = "jp-bldg-c-";
 const HAND_ONLY_BUILDINGS = new Set(["school", "school-gym", "kindergarten", "gas-office", "market-hall", "factory", "warehouse", "machikoba-home"].map((s) => `jp-bldg-${s}`));
 /**
  * 선로와 열차는 못 걷는 칸이다(2026-11-16 r6 브라우저 플레이 P1: 게임이 선로 위에서 시작했고 열차 안·역 지붕 밑으로 걸어 들어갔다).
@@ -53,7 +54,7 @@ function markSupersededBuildings(kits: StructureKitDef[]): void {
   if (marked.has(kits)) return;
   marked.add(kits);
   if (!kits.some((kit) => kit.id.startsWith(NEW_BUILDING_PREFIX))) return;
-  for (const kit of kits) if (kit.id.startsWith("jp-bldg-") && !kit.id.startsWith(NEW_BUILDING_PREFIX) && !HAND_ONLY_BUILDINGS.has(kit.id) && kit.ai) kit.ai.supersededBy = NEW_BUILDING_PREFIX;
+  for (const kit of kits) if (kit.id.startsWith("jp-bldg-") && !kit.id.startsWith(NEW_BUILDING_PREFIX) && !kit.id.startsWith(CARBON_BUILDING_PREFIX) && !HAND_ONLY_BUILDINGS.has(kit.id) && kit.ai) kit.ai.supersededBy = NEW_BUILDING_PREFIX;
 }
 import references from "@/assets/jpCityReferences.json" with { type: "json" };
 import forestReferences from "@/assets/jpForestReferences.json" with { type: "json" };

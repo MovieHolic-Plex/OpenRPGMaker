@@ -254,6 +254,9 @@ jobs:
 
       - name: 예제 프로젝트 굽기
         if: steps.preflight.outputs.needed == 'true'
+        env:
+          # 데모 정의·직렬화·내보내기·번들 타일셋이 바뀌지 않았으면 직전 캐시를 재사용한다(chrono-bell 8분 병목 제거).
+          OPRN_BAKE_DEMOS_CACHE_SCOPE: flagship
         run: |
           npm run bake:demos
           test -s dist/demos/chrono-bell.project.json
@@ -270,12 +273,10 @@ jobs:
       - name: 데스크톱 패키지 압축
         if: steps.preflight.outputs.needed == 'true'
         env:
-          # 26.18 의 기본값은 zip 7, 7z 9다. 같은 포맷에서 압축 CPU 시간을 줄인다.
-          ELECTRON_BUILDER_COMPRESSION_LEVEL: 3
+          # 30분 고속 릴리스용: 레벨 1(고속 LZMA2) + 12스레드(40코어 mdc2-heavy 에서 3타깃 병렬 = 36스레드)로 압축 시간을 절반 이하로 줄인다.
+          ELECTRON_BUILDER_COMPRESSION_LEVEL: 1
           SEVENZIP_MEMUSE: 2g
-          # 설치판·portable 이 같은 앱(약 1.9GB)을 7z 로 한 번씩 누른다. 스레드 2개에서 각 4~5.5분이었다(v0.419 run 45420794518).
-          # 레벨 3 사전은 작아 스레드당 메모리가 수십 MB 이고, 번들 7zz 는 -mmemuse 상한 안으로 스레드를 스스로 줄인다.
-          SEVENZIP_THREADS: 8
+          SEVENZIP_THREADS: 12
         run: |
           set -euo pipefail
           printf '%s\n' '{"type":"commonjs"}' > "$ELECTRON_BUILDER_CACHE/package.json"

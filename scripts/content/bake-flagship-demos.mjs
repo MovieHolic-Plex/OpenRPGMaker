@@ -19,8 +19,10 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import {
   DEMO_ENTRY_FILES,
   computeDemoConcurrency,
+  isDemoCacheInputRelevant,
   normalizePackageLockForHash,
   prunePerDemoCache,
+  resolveDemoCacheScope,
   sortDemosByWeight,
   syncDemoBgm,
 } from "./bake-demos-lib.mjs";
@@ -144,6 +146,7 @@ async function graphInputsForDemo(demoId, inputs) {
 }
 
 async function computePerDemoKeys(demoIds) {
+  const cacheScope = resolveDemoCacheScope();
   const fileDigestCache = new Map();
   const digestOf = (file) => {
     let digest = fileDigestCache.get(file);
@@ -181,11 +184,13 @@ async function computePerDemoKeys(demoIds) {
 
     for (const file of fixedInputs) inputs.add(join(root, file));
     const hash = createHash("sha256");
-    hash.update(JSON.stringify([CACHE_SCHEMA_VERSION, demoId, process.version, lockDigest]));
+    hash.update(JSON.stringify([CACHE_SCHEMA_VERSION, cacheScope, demoId, process.version, lockDigest]));
     for (const file of [...inputs].sort()) {
       const relPath = relative(root, file);
+      const posixRel = isAbsolute(relPath) ? file : relPath.split("\\").join("/");
+      if (!isDemoCacheInputRelevant(posixRel, cacheScope)) continue;
       const digest = digestOf(file);
-      hash.update(JSON.stringify([isAbsolute(relPath) ? file : relPath.split("\\").join("/"), digest]));
+      hash.update(JSON.stringify([posixRel, digest]));
     }
     keys.set(demoId, hash.digest("hex"));
   }

@@ -25,6 +25,54 @@ export const DEMO_WEIGHT_ORDER = Object.freeze([
   "maou-konbini",
 ]);
 
+/** 헤드리스 데모 굽기가 실행하지 않거나 컴파일 때 사라지는 경로(캐시 키에서 제외). */
+const DEMO_CACHE_IGNORED_PREFIXES = Object.freeze([
+  "electron/",
+  "src/editor/",
+  "src/start/",
+  "src/player/",
+  "src/ai/",
+  "src/app/",
+  "src/styles/",
+  "src/project/persistence/",
+  "src/project/types/",
+]);
+
+/** `OPRN_BAKE_DEMOS_CACHE_SCOPE=flagship` 일 때 데모 산출물을 실제로 바꾸는 핵심 경로만 추적한다. */
+const DEMO_CACHE_FLAGSHIP_PREFIXES = Object.freeze([
+  "src/project/flagship/",
+  "src/project/io/",
+  "src/project/export/",
+  "src/project/defaults/",
+  "src/project/worldGen/",
+  "src/assets/bundled",
+  "scripts/content/bake-",
+]);
+
+const DEMO_CACHE_FLAGSHIP_EXACT = new Set([
+  "tsconfig.json",
+  "assets/bgm-release-v1.json",
+]);
+
+export function resolveDemoCacheScope(raw = process.env.OPRN_BAKE_DEMOS_CACHE_SCOPE) {
+  return String(raw ?? "").trim().toLowerCase() === "flagship" ? "flagship" : "graph";
+}
+
+/**
+ * 데모 캐시 키에 포함할 입력 파일인지 판정한다.
+ * - `graph`(기본): 런타임과 무관한 Electron·에디터·타입 정의 경로만 빼고 의존 그래프 전체를 해시한다.
+ * - `flagship`(고속 데스크톱 릴리스): 데모 정의·직렬화·웹 내보내기·번들 타일셋 경로만 해시해
+ *   에디터 UI·DB 패널·업데이터 수정으로 chrono-bell(8분)이 매번 캐시 미스 나는 일을 막는다.
+ */
+export function isDemoCacheInputRelevant(relPath, scope = "graph") {
+  const normalized = String(relPath ?? "").replace(/\\/g, "/").replace(/^\.\//, "");
+  if (!normalized) return false;
+  if (DEMO_CACHE_IGNORED_PREFIXES.some((prefix) => normalized.startsWith(prefix))) return false;
+  if (scope !== "flagship") return true;
+  if (DEMO_CACHE_FLAGSHIP_EXACT.has(normalized)) return true;
+  return DEMO_CACHE_FLAGSHIP_PREFIXES.some((prefix) => normalized.startsWith(prefix));
+}
+
 const BGM_CDN = "https://cheapcdn.sgp1.cdn.digitaloceanspaces.com/rpg-zzu/bgm/v1/";
 const GIB = 1024 * 1024 * 1024;
 

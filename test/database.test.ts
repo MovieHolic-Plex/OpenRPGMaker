@@ -407,8 +407,8 @@ describe("databaseNavMode", () => {
       if (!nav) throw new Error("missing database navigation");
 
       expect(findByTestId(host, "db-nav-all")).toBeNull();
-      expect(directTabIds(nav)).toContain("db-tab-spatial-tiles");
-      expect(findByTestId(nav, "db-tab-spatial-tiles")?.closest("details")).toBeNull();
+      expect(directTabIds(nav)).toContain("db-tab-spatial-themes");
+      expect(findByTestId(nav, "db-tab-spatial-themes")?.closest("details")).toBeNull();
     });
 
     it("interview.genre 가 있는 프로젝트는 장르 프로필 탭을 「숨긴 탭 N개」로 접고 클릭·점프 시 펼친다", () => {

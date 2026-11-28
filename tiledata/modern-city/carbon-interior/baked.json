@@ -1,0 +1,23 @@
+{
+"version": 1,
+"cells": {
+"carbon_mc:mc-c-konbini-counter:0,0": 13839,
+"carbon_mc:mc-c-konbini-counter:1,0": 13840,
+"carbon_mc:mc-c-konbini-counter:2,0": 13841,
+"carbon_mc:mc-c-konbini-counter:0,1": 13842,
+"carbon_mc:mc-c-konbini-counter:1,1": 13843,
+"carbon_mc:mc-c-konbini-counter:2,1": 13844,
+"carbon_mc:mc-c-basket-stack:0,0": 13845,
+"carbon_mc:mc-c-basket-stack:0,1": 13846,
+"carbon_mc:mc-c-dept-vip-sofa:0,0": 13847,
+"carbon_mc:mc-c-dept-vip-sofa:1,0": 13848,
+"carbon_mc:mc-c-dept-vip-sofa:0,1": 13849,
+"carbon_mc:mc-c-dept-vip-sofa:1,1": 13850,
+"carbon_mc:mc-c-hosp-wait-row-n:0,0": 13851,
+"carbon_mc:mc-c-hosp-wait-row-n:1,0": 13852,
+"carbon_mc:mc-c-hosp-wait-row-n:2,0": 13853,
+"carbon_mc:mc-c-hosp-wait-row-n:0,1": 13854,
+"carbon_mc:mc-c-hosp-wait-row-n:1,1": 13855,
+"carbon_mc:mc-c-hosp-wait-row-n:2,1": 13856
+}
+}

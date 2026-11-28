@@ -9,7 +9,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { isDeepStrictEqual } from "node:util";
-import { buildModel } from "@oh-my-pi/pi-catalog/build";
+const buildModel = <T>(m: T): T => m;
 import { runPiAgent } from "../lib/piAgentRuntime.ts";
 import { renderMapPng, renderToolRegionPngBase64 } from "../qa-game/render.mts";
 import { runTool } from "../../src/editor/tools/index.ts";

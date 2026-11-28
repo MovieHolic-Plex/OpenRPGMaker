@@ -1,61 +1,74 @@
-// 제공자 사용량(남은 한도) 조회 — Bun 워커 안에서만 돈다(@oh-my-pi/pi-ai 가 Bun 전용).
+// 제공자 사용량(남은 한도) 조회 — 순수 Node fetch 로 동작한다(@oh-my-pi 의존 제거).
 //
-// 왜 (2026-11-10 ai-quota-aware): 조수가 한도 소진으로 멈췄을 때 사용자는 남은 양을 볼 곳이 없었다.
-// pi-ai 18.16 은 제공자별 사용량 조회기(usage/*)를 이미 들고 있다 — Codex 는 계정 사용량 경로, Antigravity 는
-// 모델별 quotaInfo. 토큰은 응답에 싣지 않는다(브라우저로 비밀이 나가지 않는다는 동반 서비스 불변식).
-import { antigravityUsageProvider, openaiCodexUsageProvider, type UsageCredential, type UsageProvider, type UsageReport } from "@oh-my-pi/pi-ai";
+// Codex(ChatGPT 구독)는 ChatGPT 백엔드 usage 엔드포인트를 조회하고,
+// Google Antigravity 직접 OAuth 는 계정 정지 위험으로 비활성화되어 조회하지 않는다.
 import { ANTIGRAVITY_PROVIDER_ID, CODEX_PROVIDER_ID } from "../../src/ai/oauth/credentials.ts";
 import type { ProviderUsageSnapshot, ProviderUsageWindow } from "../../src/ai/providerQuota.ts";
 
 const USAGE_TIMEOUT_MS = 10_000;
+const CODEX_USAGE_URL = "https://chatgpt.com/backend-api/wham/usage";
 
-const USAGE_PROVIDERS: Readonly<Record<string, UsageProvider>> = {
-  [CODEX_PROVIDER_ID]: openaiCodexUsageProvider,
-  [ANTIGRAVITY_PROVIDER_ID]: antigravityUsageProvider,
-};
-
-function credentialFor(provider: string, apiKey: string): UsageCredential | null {
-  if (provider === CODEX_PROVIDER_ID) return { type: "oauth", accessToken: apiKey };
-  if (provider === ANTIGRAVITY_PROVIDER_ID) {
-    try {
-      const packed = JSON.parse(apiKey) as { token?: string; projectId?: string; expiresAt?: number; email?: string };
-      if (!packed.token || !packed.projectId) return null;
-      return { type: "oauth", accessToken: packed.token, projectId: packed.projectId, ...(packed.expiresAt ? { expiresAt: packed.expiresAt } : {}), ...(packed.email ? { email: packed.email } : {}) };
-    } catch {
-      return null;
-    }
-  }
-  return null;
+interface CodexRateLimitWindow {
+  readonly used_percent?: number;
+  readonly reset_at?: number;
+  readonly limit_window_seconds?: number;
 }
 
-export function compactUsageReport(provider: string, report: UsageReport): ProviderUsageSnapshot {
-  const windows: ProviderUsageWindow[] = report.limits.map((limit) => {
-    const used = limit.amount.usedFraction;
-    const remaining = limit.amount.remainingFraction ?? (used !== undefined ? 1 - used : undefined);
-    return {
-      label: limit.label,
-      ...(remaining !== undefined && Number.isFinite(remaining) ? { remainingFraction: Math.min(1, Math.max(0, remaining)) } : {}),
-      ...(limit.window?.resetsAt ? { resetsAt: limit.window.resetsAt } : {}),
-      ...(limit.status === "exhausted" ? { exhausted: true } : {}),
-    };
-  });
-  return { provider, readable: true, fetchedAt: report.fetchedAt || Date.now(), windows };
+interface CodexUsageResponse {
+  readonly rate_limit?: {
+    readonly primary_window?: CodexRateLimitWindow | null;
+    readonly secondary_window?: CodexRateLimitWindow | null;
+  } | null;
+}
+
+function toWindow(label: string, win: CodexRateLimitWindow | null | undefined): ProviderUsageWindow | null {
+  if (!win || typeof win !== "object") return null;
+  const used = typeof win.used_percent === "number" && Number.isFinite(win.used_percent) ? win.used_percent / 100 : undefined;
+  const remaining = used !== undefined ? Math.min(1, Math.max(0, 1 - used)) : undefined;
+  const resetsAt = typeof win.reset_at === "number" && Number.isFinite(win.reset_at)
+    ? (win.reset_at < 1e12 ? win.reset_at * 1000 : win.reset_at)
+    : undefined;
+  return {
+    label,
+    ...(remaining !== undefined ? { remainingFraction: remaining } : {}),
+    ...(resetsAt !== undefined ? { resetsAt } : {}),
+    ...(remaining !== undefined && remaining <= 0 ? { exhausted: true } : {}),
+  };
+}
+
+function windowLabel(seconds: number | undefined, fallback: string): string {
+  if (!seconds || !Number.isFinite(seconds)) return fallback;
+  const hours = Math.round(seconds / 3600);
+  if (hours >= 24 && hours % 24 === 0) return `${hours / 24}일 한도`;
+  if (hours >= 1) return `${hours}시간 한도`;
+  return fallback;
 }
 
 export async function fetchProviderUsage(provider: string, apiKey: string | undefined): Promise<ProviderUsageSnapshot> {
   const unknown = (reason: string): ProviderUsageSnapshot => ({ provider, readable: false, fetchedAt: Date.now(), windows: [], reason });
-  const usageProvider = USAGE_PROVIDERS[provider];
-  if (!usageProvider) return unknown("이 연결은 남은 한도를 알려 주지 않아요.");
+  if (provider === ANTIGRAVITY_PROVIDER_ID) {
+    return unknown("Google 계정 직접 로그인은 비활성화되어 있습니다.");
+  }
+  if (provider !== CODEX_PROVIDER_ID) {
+    return unknown("이 연결은 남은 한도를 알려 주지 않아요.");
+  }
   if (!apiKey) return unknown("로그인 정보가 없어 남은 한도를 확인하지 못했어요.");
-  const credential = credentialFor(provider, apiKey);
-  if (!credential) return unknown("이 연결의 로그인 정보로는 남은 한도를 확인할 수 없어요.");
   try {
-    const report = await usageProvider.fetchUsage(
-      { provider: provider as never, credential, signal: AbortSignal.timeout(USAGE_TIMEOUT_MS) },
-      { fetch: globalThis.fetch.bind(globalThis) as never },
-    );
-    if (!report || report.limits.length === 0) return unknown("제공자가 남은 한도를 돌려주지 않았어요.");
-    return compactUsageReport(provider, report);
+    const response = await fetch(CODEX_USAGE_URL, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        Accept: "application/json",
+      },
+      signal: AbortSignal.timeout(USAGE_TIMEOUT_MS),
+    });
+    if (!response.ok) return unknown("제공자가 남은 한도를 돌려주지 않았어요.");
+    const data = (await response.json()) as CodexUsageResponse;
+    const primary = toWindow(windowLabel(data.rate_limit?.primary_window?.limit_window_seconds, "5시간 한도"), data.rate_limit?.primary_window);
+    const secondary = toWindow(windowLabel(data.rate_limit?.secondary_window?.limit_window_seconds, "주간 한도"), data.rate_limit?.secondary_window);
+    const windows = [primary, secondary].filter((w): w is ProviderUsageWindow => w !== null);
+    if (windows.length === 0) return unknown("제공자가 남은 한도를 돌려주지 않았어요.");
+    return { provider, readable: true, fetchedAt: Date.now(), windows };
   } catch (error) {
     console.warn(`[provider-usage] ${provider}: ${error instanceof Error ? error.name : "error"}`);
     return unknown("남은 한도를 확인하는 중 오류가 났어요.");

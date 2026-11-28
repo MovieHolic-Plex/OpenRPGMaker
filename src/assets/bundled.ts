@@ -1,6 +1,13 @@
 import { MONSTER_KIT_CHIPSET_ASSETS, monsterKitSheet } from "./monsterKitAssets";
 import { loadUploadedEventSprites, registerUploadedEventSpriteFrames } from "./uploadedEventSprites";
 import { CC0_ICON_ASSETS, resolveCc0IconAssetUrl } from './cc0IconAssets';
+import {
+  interactivePropFrameName,
+  interactivePropFromSpriteId,
+  interactivePropSpriteId,
+  interactivePropStripUrl,
+  type InteractivePropEntry,
+} from "@/project/interactiveProps";
 import { uploadedAssetUrl } from "@/project/persistence/assetAccessors";
 import bundledSheetCounts from "./bundledSheetCounts.json" with { type: "json" };
 import beodeulCitySheet from "./beodeulCitySheet.json" with { type: "json" };
@@ -353,6 +360,11 @@ export function loadBundledAssets(scene: { readonly load: Pick<Phaser.Loader.Loa
   for (const id of usedTextures ?? []) {
     // Project-owned sprites/uploads keep their existing texture ownership.
     if (project?.assets.sprites[id] || project?.assets.uploaded[id]) continue;
+    const prop = interactivePropFromSpriteId(id, project);
+    if (prop) {
+      scene.load.image(id, withInlineAsset(interactivePropStripUrl(prop, project)));
+      continue;
+    }
     const iconUrl = resolveCc0IconAssetUrl(id);
     const url = iconUrl ?? generatedMonsterSpriteUrl(id);
     if (url) scene.load.image(id, iconUrl ? withInlineAsset(url) : url);
@@ -426,7 +438,102 @@ export function registerBundledFrames(scene: Phaser.Scene, project?: Project): v
   registerUploadedTilesets(scene, project);
   registerUploadedEventSpriteFrames(scene, project);
   registerFarmingCropFrames(scene, usedTextures);
+  registerInteractivePropFrames(scene, usedTextures, project);
   registerEmoteFrames(scene);
+}
+
+/** 멀티프레임 상호작용 오브젝트 스트립 텍스처에 `f0`..`fN-1` 프레임을 등록한다. */
+export function registerInteractivePropTextureFrames(
+  scene: Phaser.Scene,
+  textureKey: string,
+  prop: InteractivePropEntry,
+): void {
+  if (!scene.textures.exists(textureKey)) return;
+  const texture = scene.textures.get(textureKey);
+  if (texture.has(interactivePropFrameName(0))) return;
+  const source = texture.getSourceImage() as HTMLImageElement | HTMLCanvasElement | undefined;
+  const srcW = source ? uploadedSourceWidth(source) : prop.frameWidth * prop.frames;
+  const srcH = source ? uploadedSourceHeight(source) : prop.frameHeight;
+  for (let i = 0; i < prop.frames; i += 1) {
+    const x = Math.min(Math.max(0, srcW - 1), i * prop.frameWidth);
+    const w = Math.max(1, Math.min(prop.frameWidth, srcW - x));
+    const h = Math.max(1, Math.min(prop.frameHeight, srcH));
+    texture.add(interactivePropFrameName(i), 0, x, 0, w, h);
+  }
+}
+
+function registerInteractivePropFrames(
+  scene: Phaser.Scene,
+  usedTextures: ReadonlySet<string> | null,
+  project?: Project,
+): void {
+  for (const id of usedTextures ?? []) {
+    const prop = interactivePropFromSpriteId(id, project);
+    if (!prop) continue;
+    registerInteractivePropTextureFrames(scene, id, prop);
+  }
+}
+
+/** 호버 미리보기·동적 배치 등에서 단일 상호작용 오브젝트 텍스처를 씬에 싣고 프레임을 등록한다. */
+export function ensureInteractivePropTexture(
+  scene: Phaser.Scene,
+  prop: InteractivePropEntry,
+  project?: Project,
+  onRegistered?: () => void,
+): boolean {
+  const key = interactivePropSpriteId(prop.id);
+  if (scene.textures.exists(key)) {
+    registerInteractivePropTextureFrames(scene, key, prop);
+    return scene.textures.get(key).has(interactivePropFrameName(0));
+  }
+  const inFlight = bundledLoadsInFlight.get(scene) ?? new Set<string>();
+  bundledLoadsInFlight.set(scene, inFlight);
+  if (onRegistered) registerBundledLoadCallback(scene, key, onRegistered);
+  if (inFlight.has(key)) return false;
+  inFlight.add(key);
+  const finish = (): void => {
+    inFlight.delete(key);
+    scene.load.off(`filecomplete-image-${key}`, onComplete);
+    scene.load.off("loaderror", onError);
+  };
+  const onComplete = (): void => {
+    finish();
+    registerInteractivePropTextureFrames(scene, key, prop);
+    flushBundledLoadCallbacks(scene, key);
+  };
+  const onError = (file: { readonly key?: string }): void => {
+    if (file.key !== key) return;
+    finish();
+    clearBundledLoadCallbacks(scene, key);
+  };
+  scene.load.once(`filecomplete-image-${key}`, onComplete);
+  scene.load.on("loaderror", onError);
+  scene.load.image(key, withInlineAsset(interactivePropStripUrl(prop, project)));
+  if (!scene.load.isLoading()) scene.load.start();
+  return false;
+}
+
+/** 씬별·키별 대기 콜백. 같은 키를 호버와 배치(ensureBundledProjectTextures)가 동시에 요청해도 둘 다 알림을 받는다. */
+const bundledLoadCallbacks = new WeakMap<Phaser.Scene, Map<string, Set<() => void>>>();
+
+function registerBundledLoadCallback(scene: Phaser.Scene, key: string, cb: () => void): void {
+  const byKey = bundledLoadCallbacks.get(scene) ?? new Map<string, Set<() => void>>();
+  bundledLoadCallbacks.set(scene, byKey);
+  const set = byKey.get(key) ?? new Set<() => void>();
+  set.add(cb);
+  byKey.set(key, set);
+}
+
+function flushBundledLoadCallbacks(scene: Phaser.Scene, key: string): void {
+  const byKey = bundledLoadCallbacks.get(scene);
+  const set = byKey?.get(key);
+  if (!set) return;
+  byKey!.delete(key);
+  for (const cb of set) cb();
+}
+
+function clearBundledLoadCallbacks(scene: Phaser.Scene, key: string): void {
+  bundledLoadCallbacks.get(scene)?.delete(key);
 }
 
 // 이모트 시트(16x16 프레임 가로 나열) — 프레임 인덱스 = EMOTE_KINDS 순서.
@@ -627,6 +734,7 @@ export function ensureBundledProjectTextures(
   const charsetKeys = new Set<string>();
   const cropIds = new Set<string>();
   const objectIds = new Set<string>();
+  const propEntries = new Map<string, InteractivePropEntry>();
   const queue = (loadKey: string, path: string): void => {
     inFlight.add(loadKey);
     scene.load.image(loadKey, withInlineAsset(path));
@@ -657,7 +765,21 @@ export function ensureBundledProjectTextures(
     queue(asset.id, asset.path);
     objectIds.add(asset.id);
   }
-  if (chipsets.length === 0 && charsetKeys.size === 0 && cropIds.size === 0 && objectIds.size === 0) return;
+  for (const id of used) {
+    const prop = interactivePropFromSpriteId(id, project);
+    if (!prop) continue;
+    if (scene.textures.exists(id)) {
+      registerInteractivePropTextureFrames(scene, id, prop);
+      continue;
+    }
+    if (inFlight.has(id)) {
+      if (onRegistered) registerBundledLoadCallback(scene, id, onRegistered);
+      continue;
+    }
+    queue(id, interactivePropStripUrl(prop, project));
+    propEntries.set(id, prop);
+  }
+  if (chipsets.length === 0 && charsetKeys.size === 0 && cropIds.size === 0 && objectIds.size === 0 && propEntries.size === 0) return;
   scene.load.once("complete", () => {
     for (const asset of chipsets) {
       inFlight.delete(chipsetLoadTextureKey(asset.textureKey));
@@ -669,6 +791,11 @@ export function ensureBundledProjectTextures(
     for (const key of charsetKeys) inFlight.delete(rawCharsetTextureKey(key));
     for (const id of cropIds) inFlight.delete(id);
     for (const id of objectIds) inFlight.delete(id);
+    for (const [id, prop] of propEntries) {
+      inFlight.delete(id);
+      registerInteractivePropTextureFrames(scene, id, prop);
+      flushBundledLoadCallbacks(scene, id);
+    }
     if (charsetKeys.size > 0) registerEasyRpgCharsetTextures(scene, charsetKeys);
     if (cropIds.size > 0) registerFarmingCropFrames(scene, cropIds);
     onRegistered?.();
@@ -725,7 +852,12 @@ function projectBundledTextureKeys(project: Project): Set<string> {
   for (const map of Object.values(project.maps)) {
     for (const event of map.events) {
       if (event.sprite?.id) objectIds.add(event.sprite.id);
-      for (const page of event.pages ?? []) if (page.graphic.sprite?.id) objectIds.add(page.graphic.sprite.id);
+      for (const page of event.pages ?? []) {
+        if (page.graphic.sprite?.id) objectIds.add(page.graphic.sprite.id);
+        if (page.interaction?.kind === "container" && page.interaction.propId) {
+          objectIds.add(interactivePropSpriteId(page.interaction.propId));
+        }
+      }
     }
   }
   for (const asset of EASYRPG_PICTURE_ASSETS) {
@@ -733,6 +865,12 @@ function projectBundledTextureKeys(project: Project): Set<string> {
   }
   for (const asset of CC0_ICON_ASSETS) {
     if (objectIds.has(asset.id)) keys.add(asset.id);
+  }
+  for (const id of objectIds) {
+    if (interactivePropFromSpriteId(id, project)) keys.add(id);
+  }
+  for (const id of strings) {
+    if (interactivePropFromSpriteId(id, project)) keys.add(id);
   }
   // Rock/gem charset + tree chipset frames are hardcoded by the placeable overlay renderer,
   // so they are not always present as project strings even when rocks/trees exist in session.

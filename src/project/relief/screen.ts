@@ -149,6 +149,117 @@ export function footLift(field: ReliefLiftField, x: number, y: number): number {
   return s.lo + t * (s.hi - s.lo);
 }
 
+/**
+ * 3/4 투영(screenY = y − lift)에서 경사로 한 걸음의 화면 이동 속도 보정.
+ * 논리 칸 시간만 쓰면 북향 경사로는 2~5배 급가속, 남향 경사로는 0.33~0.67배 급감속,
+ * 동서 경사로 진입·탈출 걸음은 걸음 도중에 1.0x↔1.41x 로 속도가 튄다.
+ * 화면 이동 거리(arc length)에 비례해 걸음 시간과 진행률을 맞춰 평지와 같은 화면 속도를 유지한다.
+ */
+export interface ReliefStepMotion {
+  /** 평지 1칸 대비 화면 이동 거리 배수(평지 = 1). 기본 걸음 시간에 곱한다. */
+  readonly durationFactor: number;
+  /** 선형 시간 진행도 u∈[0,1] → 논리 칸 보간 비율 a∈[0,1]. 경사로 경계에서도 화면 속도를 균일하게 유지한다. */
+  progress(u: number): number;
+}
+
+const identityProgress = (u: number): number => u;
+export const IDENTITY_RELIEF_STEP_MOTION: ReliefStepMotion = { durationFactor: 1, progress: identityProgress };
+/** 극단적인 역방향(남향) 1칸 경사로 등에서 화면 거리가 0에 가까워질 때의 최소 지속 시간 배수. */
+export const MIN_RELIEF_STEP_DURATION_FACTOR = 0.2;
+
+function pushIntegerCrossings(out: number[], v0: number, v1: number): void {
+  const dv = v1 - v0;
+  if (Math.abs(dv) < 1e-7) return;
+  const lo = Math.min(v0, v1), hi = Math.max(v0, v1);
+  for (let k = Math.floor(lo + 1e-7) + 1; k < hi - 1e-7; k += 1) {
+    out.push((k - v0) / dv);
+  }
+}
+
+/**
+ * 칸 (fromX, fromY) → (toX, toY) 한 걸음의 화면 이동 거리 배수와 균속 진행률 함수.
+ * 평지·경사로 옆 이동 등 들림 변화가 없으면 {@link IDENTITY_RELIEF_STEP_MOTION} 을 돌려준다.
+ */
+export function reliefStepMotion(
+  field: ReliefLiftField,
+  fromX: number,
+  fromY: number,
+  toX: number,
+  toY: number,
+  footOffsetX = 0.5,
+): ReliefStepMotion {
+  const dx = toX - fromX, dy = toY - fromY;
+  const flatDist = Math.hypot(dx, dy);
+  if (flatDist < 1e-7) return IDENTITY_RELIEF_STEP_MOTION;
+  const x0 = fromX + footOffsetX, y0 = fromY + 1;
+  const x1 = toX + footOffsetX, y1 = toY + 1;
+  const rawKnots = [0, 1];
+  pushIntegerCrossings(rawKnots, x0, x1);
+  pushIntegerCrossings(rawKnots, y0, y1);
+  rawKnots.sort((a, b) => a - b);
+  const knots: number[] = [0];
+  for (let i = 1; i < rawKnots.length; i += 1) {
+    if (rawKnots[i]! - knots[knots.length - 1]! > 1e-7) knots.push(rawKnots[i]!);
+  }
+  if (knots[knots.length - 1]! < 1 - 1e-7) knots.push(1);
+  else knots[knots.length - 1] = 1;
+
+  const segDists: number[] = [];
+  let totalScreenDist = 0;
+  let hasSlopeChange = false;
+  let hasDegenerateSeg = false;
+  for (let i = 0; i < knots.length - 1; i += 1) {
+    const a0 = knots[i]!, a1 = knots[i + 1]!, da = a1 - a0, am = (a0 + a1) * 0.5;
+    const cx = Math.max(0, Math.min(field.width - 1, Math.floor(x0 + dx * am)));
+    const cy = Math.max(0, Math.min(field.height - 1, Math.floor(y0 + dy * am - 1e-7)));
+    const s = field.slopes[field.slopeOwners[cy * field.width + cx]!];
+    let dz = 0;
+    if (s) {
+      const length = s.dir === "n" || s.dir === "s" ? s.h : s.w;
+      const alongDelta = s.dir === "n" ? -dy * da : s.dir === "s" ? dy * da : s.dir === "w" ? -dx * da : dx * da;
+      dz = (alongDelta / length) * (s.hi - s.lo);
+    }
+    if (Math.abs(dz) > 1e-6) hasSlopeChange = true;
+    const dist = Math.hypot(dx * da, dy * da - dz);
+    if (dist < 1e-6) hasDegenerateSeg = true;
+    segDists.push(dist);
+    totalScreenDist += dist;
+  }
+  if (!hasSlopeChange) return IDENTITY_RELIEF_STEP_MOTION;
+  const durationFactor = Math.max(MIN_RELIEF_STEP_DURATION_FACTOR, totalScreenDist / flatDist);
+  if (segDists.length <= 1 || hasDegenerateSeg || totalScreenDist < 1e-6) {
+    return { durationFactor, progress: identityProgress };
+  }
+  // 모든 구간의 화면 속도(dist / da)가 같으면 선형 진행과 동일하다.
+  const firstRate = segDists[0]! / (knots[1]! - knots[0]!);
+  let uniform = true;
+  for (let i = 1; i < segDists.length; i += 1) {
+    const rate = segDists[i]! / (knots[i + 1]! - knots[i]!);
+    if (Math.abs(rate - firstRate) > 1e-5) { uniform = false; break; }
+  }
+  if (uniform) return { durationFactor, progress: identityProgress };
+  const cumU: number[] = [0];
+  let acc = 0;
+  for (const dist of segDists) { acc += dist; cumU.push(acc / totalScreenDist); }
+  cumU[cumU.length - 1] = 1;
+  return {
+    durationFactor,
+    progress(u: number): number {
+      if (u <= 0) return 0;
+      if (u >= 1) return 1;
+      for (let i = 0; i < segDists.length; i += 1) {
+        const u0 = cumU[i]!, u1 = cumU[i + 1]!;
+        if (u <= u1 || i === segDists.length - 1) {
+          const span = u1 - u0;
+          const local = span > 1e-9 ? (u - u0) / span : 0;
+          return knots[i]! + (knots[i + 1]! - knots[i]!) * local;
+        }
+      }
+      return u;
+    },
+  };
+}
+
 /** Pick the visible surface pixel. A small padded column uses the same diagonal/ramp geometry as rendering. */
 export function reliefPickPoint(relief: ReliefData, worldX: number, worldY: number, tileSize: number): { x: number; y: number; face: "top" | "wall" } | undefined {
   const x = worldX / tileSize, y = worldY / tileSize;

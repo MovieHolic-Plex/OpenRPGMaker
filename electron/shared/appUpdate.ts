@@ -1,9 +1,9 @@
 // 앱 자동 업데이트의 공용 모양과 순수 판단. 메인(electron/main/appUpdate.ts)·프리로드·렌더러 칩(src/app/appUpdateChip.ts)이 같이 본다.
 //
-// 흐름(오너 승인 2026-11-24, 「사용자는 많은 버튼을 원하지 않는다」):
-//   시작 뒤와 6시간마다 조용히 확인 → 뒤에서 내려받기 → 다 받으면 상단에 칩 하나 「v0.x 준비됨 · 다시 시작」.
+// 흐름(오너 승인 2026-11-24 → 2026-11-28 30분 릴리스 주기에 맞춰 15분 간격으로 단축):
+//   시작 뒤(15초)와 15분마다 조용히 확인 → 새 버전이 감지·다운로드·준비되면 화면 오른쪽 상단에 녹색 아이콘 표시.
 //   누르면 저장 후 재시작(조수가 일하는 중이면 끝날 때까지 기다림). 안 누르면 앱을 끌 때 설치한다.
-//   portable exe 는 스스로 바꿀 수 없어 「새 버전 있음 · 내려받기」 링크만 준다.
+//   portable exe 는 스스로 바꿀 수 없어 내려받기 링크로 이동한다.
 
 /** auto = 내려받고 설치까지(NSIS 설치판·AppImage), manual = 알리기만(portable), off = 확인하지 않음(개발 실행·맥·설치 형태 모름). */
 export type AppUpdateMode = "auto" | "manual" | "off";
@@ -12,9 +12,9 @@ export type AppUpdateState =
   | { readonly kind: "idle" }
   | { readonly kind: "checking" }
   | { readonly kind: "up-to-date"; readonly checkedAt: number }
-  | { readonly kind: "downloading"; readonly version: string; readonly percent?: number }
-  | { readonly kind: "ready"; readonly version: string }
-  | { readonly kind: "available"; readonly version: string; readonly downloadUrl: string }
+  | { readonly kind: "downloading"; readonly version: string; readonly percent?: number; readonly releaseNotes?: readonly string[] }
+  | { readonly kind: "ready"; readonly version: string; readonly releaseNotes?: readonly string[] }
+  | { readonly kind: "available"; readonly version: string; readonly downloadUrl: string; readonly releaseNotes?: readonly string[] }
   | { readonly kind: "error"; readonly message: string };
 
 export interface AppUpdateButtonView {
@@ -22,6 +22,17 @@ export interface AppUpdateButtonView {
   readonly detail: string;
   readonly action: "check" | "install" | "download" | "none";
   readonly disabled: boolean;
+}
+
+export interface AppUpdateIndicatorView {
+  readonly kind: "downloading" | "ready" | "available";
+  readonly version: string;
+  readonly percent: number | null;
+  readonly label: string;
+  readonly tooltip: string;
+  readonly notes: readonly string[];
+  readonly releaseUrl: string;
+  readonly action: "install" | "download" | "info";
 }
 
 export interface AppUpdateStatus {
@@ -38,7 +49,7 @@ export interface AppUpdateWhatsNew {
 
 export const APP_UPDATE_REPO = { owner: "MovieHolic-Plex", repo: "OpenRPGMaker" } as const;
 export const APP_UPDATE_FIRST_CHECK_MS = 15_000;
-export const APP_UPDATE_INTERVAL_MS = 6 * 60 * 60 * 1000;
+export const APP_UPDATE_INTERVAL_MS = 15 * 60 * 1000;
 
 /**
  * 이 실행이 스스로 업데이트할 수 있는가. 판정은 설치 형태로만 한다.
@@ -86,6 +97,13 @@ export function portableDownloadUrl(version: string): string {
 
 export function releasesLatestPageUrl(): string {
   return `https://github.com/${APP_UPDATE_REPO.owner}/${APP_UPDATE_REPO.repo}/releases/latest`;
+}
+
+export function releasePageUrl(version: string): string {
+  const plain = String(version).replace(/^v/i, "").trim();
+  return plain
+    ? `https://github.com/${APP_UPDATE_REPO.owner}/${APP_UPDATE_REPO.repo}/releases/tag/v${encodeURIComponent(plain)}`
+    : releasesLatestPageUrl();
 }
 
 export function isSafeReleaseDownloadUrl(url: string): boolean {
@@ -139,6 +157,57 @@ export function appUpdateChipText(state: AppUpdateState): string | null {
     case "ready": return `v${shortVersion(state.version)} 준비됨 · 다시 시작`;
     case "available": return `새 버전 있음 · 내려받기`;
     default: return null;
+  }
+}
+
+export function appUpdateIndicatorView(state: AppUpdateState): AppUpdateIndicatorView | null {
+  switch (state.kind) {
+    case "ready": {
+      const version = shortVersion(state.version);
+      return {
+        kind: "ready",
+        version,
+        percent: null,
+        label: `새 버전 v${version} 준비됨 · 변경 사항 보기`,
+        tooltip: `새 버전 v${version} 이 준비됐어요. 눌러서 변경 사항을 확인하고 업데이트해요.`,
+        notes: state.releaseNotes ?? [],
+        releaseUrl: releasePageUrl(state.version),
+        action: "install",
+      };
+    }
+    case "available": {
+      const version = shortVersion(state.version);
+      return {
+        kind: "available",
+        version,
+        percent: null,
+        label: `새 버전 v${version} 있음 · 변경 사항 보기`,
+        tooltip: `새 버전 v${version} 이 있어요. 눌러서 변경 사항을 확인하고 내려받아요.`,
+        notes: state.releaseNotes ?? [],
+        releaseUrl: releasePageUrl(state.version),
+        action: "download",
+      };
+    }
+    case "downloading": {
+      const version = shortVersion(state.version);
+      const pct = typeof state.percent === "number" && Number.isFinite(state.percent)
+        ? Math.max(0, Math.min(100, Math.round(state.percent)))
+        : null;
+      return {
+        kind: "downloading",
+        version,
+        percent: pct,
+        label: pct !== null ? `새 버전 v${version} 내려받는 중 (${pct}%)` : `새 버전 v${version} 내려받는 중…`,
+        tooltip: pct !== null
+          ? `새 버전 v${version} 을 내려받고 있어요 (${pct}%). 눌러서 변경 사항을 볼 수 있어요.`
+          : `새 버전 v${version} 을 내려받고 있어요. 눌러서 변경 사항을 볼 수 있어요.`,
+        notes: state.releaseNotes ?? [],
+        releaseUrl: releasePageUrl(state.version),
+        action: "info",
+      };
+    }
+    default:
+      return null;
   }
 }
 
@@ -206,7 +275,7 @@ export function shortVersion(version: string): string {
  * 릴리스 본문(GitHub 피드의 HTML, 또는 마크다운)에서 재시작 뒤 보일 짧은 줄 몇 개를 뽑는다.
  * 「주요 변경」 절이 있으면 그 절의 항목을, 없으면 본문의 첫 항목들을 쓴다. 항목이 없으면 빈 배열.
  */
-export function summarizeReleaseNotes(notes: unknown, max = 3): string[] {
+export function summarizeReleaseNotes(notes: unknown, max = 3, maxLineLength = 140): string[] {
   const text = releaseNotesText(notes);
   if (!text) return [];
   const lines = text.split("\n").map((line) => line.trim());
@@ -220,7 +289,7 @@ export function summarizeReleaseNotes(notes: unknown, max = 3): string[] {
     if (!match) continue;
     // 끝의 PR 번호·커밋 해시 괄호를 난다 — 릴리스 본문 항목은 «… (#5097) (92ea21e)» 꼴이다.
     const item = match[1].replace(/(?:\s*\((?:#\d+|[0-9a-f]{7,40})\))+\s*$/i, "").replace(/\*\*/g, "").trim();
-    if (item) items.push(item.length > 70 ? `${item.slice(0, 69)}…` : item);
+    if (item) items.push(item.length > maxLineLength ? `${item.slice(0, maxLineLength - 1)}…` : item);
   }
   return items;
 }

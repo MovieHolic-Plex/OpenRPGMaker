@@ -3,23 +3,26 @@ import { modelForRole, type RoleModel, type SpecialistRole } from "./modelRoles"
 import { MODEL_PRESETS, tierModelFor } from "./modelPresets";
 import { CODEX_PROVIDER_ID } from "./oauth/credentials";
 import { DEFAULT_IMAGE_MODEL, DEFAULT_IMAGE_PROVIDER_ID } from "./imageModelCatalog";
-import { CHATGPT_DEFAULT_EFFORT, CLAUDE_DEFAULT_EFFORT, CLAUDE_DEFAULT_MODEL, getOhMyPiProvider, parseOhMyPiProvider } from "./ohMyPiProviders";
+import { CHATGPT_DEFAULT_EFFORT, CHATGPT_DEFAULT_MODEL, CLAUDE_DEFAULT_EFFORT, CLAUDE_DEFAULT_MODEL, getOhMyPiProvider, parseOhMyPiProvider } from "./ohMyPiProviders";
 import { configForUltrabrain } from "./ultrabrainConfig";
 
 /** 계정을 바꿀 때 역할별 사고 강도는 「균형」 프리셋을 따른다. 같은 계정 안에서는 기존 값을 둔다. */
 const BALANCED = MODEL_PRESETS.find(preset => preset.id === "balanced")!;
 
 /**
- * 계정을 바꿀 때의 사고 강도. 조수 기본 모델(Claude Sonnet 5.5)로 맞춰지는 칸은 모든 역할·감독이 그 기본 강도(high)다 —
- * 오너 결정(2026-11-23): 「조수는 sonnet 5.5 high 만」. Claude 계정과 Anthropic 키로 만든 사용자 지정 엔드포인트가 여기에 든다.
- * 다른 모델은 그대로 「균형」 프리셋 강도다.
+ * 계정을 바꿀 때의 사고 강도. 조수 기본 모델(GPT-6.2 Sol · high, 오너 결정 2026-11-28)과 Claude 기본 모델(Sonnet 5.5 · high)로 맞춰지는 칸은
+ * 모든 역할·감독이 각 기본 강도(high)다. 다른 모델은 그대로 「균형」 프리셋 강도다.
  */
 function ultrabrainEffortFor(model: string): "low" | "medium" | "high" {
-  return model === CLAUDE_DEFAULT_MODEL ? CLAUDE_DEFAULT_EFFORT : BALANCED.ultrabrain.thinking as "low" | "medium" | "high";
+  if (model === CHATGPT_DEFAULT_MODEL) return CHATGPT_DEFAULT_EFFORT;
+  if (model === CLAUDE_DEFAULT_MODEL) return CLAUDE_DEFAULT_EFFORT;
+  return BALANCED.ultrabrain.thinking as "low" | "medium" | "high";
 }
 
 function roleEffortFor(role: SpecialistRole, model: string): RoleModel["thinkingLevel"] {
-  return model === CLAUDE_DEFAULT_MODEL ? CLAUDE_DEFAULT_EFFORT : BALANCED.roles[role].thinking;
+  if (model === CHATGPT_DEFAULT_MODEL) return CHATGPT_DEFAULT_EFFORT;
+  if (model === CLAUDE_DEFAULT_MODEL) return CLAUDE_DEFAULT_EFFORT;
+  return BALANCED.roles[role].thinking;
 }
 
 /** 작문을 다른 계정에 둘 수 있는지 — 그 계정이 없어도 작업은 시작된다(작문만 실행 모델로 대신한다). */

@@ -19,7 +19,7 @@ describe("그룹 구획과 빈 탭 접기", () => {
     const world = TAB_GROUPS.find((group) => group.slug === "world");
     expect(world, "맵 그룹이 사라졌다").toBeTruthy();
     expect(world?.label).toBe("공간"); // 2026-11 레일 묶음 이름 «맵»→«공간»(#5185)
-    expect(world!.tabs).toEqual(["spatialTiles", "spatialObjects", "spatialPlaces", "spatialRegions", "spatialWorlds"]);
+    expect(world!.tabs).toEqual(["spatialThemes"]);
   });
 
   it("이야기 그룹이 레일 맨 앞에 있다", () => {
