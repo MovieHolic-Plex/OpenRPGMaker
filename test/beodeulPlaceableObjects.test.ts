@@ -17,6 +17,7 @@ import { createBlankMap } from "@/project/defaults/defaultMaps";
 import { ensureBeodeulPlaceableObjects, upgradeBeodeulCrateStackGrafts } from "@/project/defaults/beodeulPlaceableObjects";
 import { deserialize, serialize } from "@/project/io";
 import { OBJECT_SPEC_PASSAGE_CHARS, validateObjectSpec } from "@/project/objectSpec";
+import { isRetiredObject } from "@/project/retiredObjects";
 import { passageMarkForTile } from "@/project/tilesetPassage";
 import type { TilesetDef } from "@/project/types";
 import { collectWebExportAssets } from "@/project/webExportAssets";
@@ -208,6 +209,10 @@ describe("bundled Beodeul placeable objects", () => {
     expect(new Set(listedRows.flatMap(row => (row as { variantIds?: string[] }).variantIds ?? []))).toEqual(folded);
     const plannerIndex = new Map(buildStampObjectIndex(ctx.project.tilesets[tilesetId]).map(entry => [entry.id, entry]));
     for (const object of BEODEUL_PLACEABLE_OBJECTS) {
+      if (isRetiredObject(tilesetId, kitId(object.id))) {
+        expect(plannerIndex.get(kitId(object.id))).toBeUndefined();
+        continue;
+      }
       expect(plannerIndex.get(kitId(object.id))).toMatchObject({
         width: object.widthTiles, height: object.heightTiles,
         placement: object.surface ?? "floor", indoor: object.category === "indoor",

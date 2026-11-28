@@ -232,13 +232,13 @@ def bake_bundle(bundle, dry=False):
         sheet.paste(cell, (x, y))
         assert np.array_equal(np.asarray(sheet.crop((x, y, x + T, y + T))), np.asarray(cell)), tid
 
-    # Strict append-only guarantee: zero prior tiles mutated
+    # Strict append-only guarantee: zero prior tiles mutated (including already-pinned owned slots)
     a0 = np.asarray(old)
     a1 = np.asarray(sheet)[:old.height]
     prior_slots = min(count0, (old.height // T) * tpr)
     changed = [
         t for t in range(prior_slots)
-        if t not in mine and not np.array_equal(
+        if not np.array_equal(
             a0[(t // tpr) * T:(t // tpr) * T + T, (t % tpr) * T:(t % tpr) * T + T],
             a1[(t // tpr) * T:(t // tpr) * T + T, (t % tpr) * T:(t % tpr) * T + T],
         )
