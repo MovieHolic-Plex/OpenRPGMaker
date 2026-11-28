@@ -5,10 +5,10 @@
 //
 // 조건이 다 맞으면 기존 릴리스 경로를 그대로 탄다(새 발행기를 만들지 않는다):
 //   ① release-auto.mjs --skip-publish  → release/next PR(버전 범프 + 사용자 말 CHANGELOG)
-//   ② ci-fast·ci-related-tests(직전 발행 태그 대비)·(필요 시) app-update-e2e 를 release/next 에 디스패치
-//      (GITHUB_TOKEN 푸시는 워크플로를 깨우지 않는다)
-//      → ci-full 게이트 분리 모드에서는 ci-related-tests 초록을 기다리고,
-//        업데이트/Electron 변경 시 app-update-e2e 초록도 기다린다.
+//   ② ci-fast·(필요 시) app-update-e2e 를 release/next 에 디스패치
+//      (GITHUB_TOKEN 푸시는 워크플로를 깨우지 않는다; ci-related-tests 는 각 PR 머지 전에 이미 통과했으므로
+//       버전 범프만 있는 release/next 에서 중복 실행하지 않는다)
+//      → 업데이트/Electron 변경 시 app-update-e2e 초록을 기다린다.
 //   ③ merge-pr.mjs <PR>                → fast·fast-static·패리티 초록일 때만 그 머리 커밋을 squash
 //   ④ release-auto.mjs --skip-propose  → 태그 + 초안 릴리스(본문 = CHANGELOG 그 절)
 //   ⑤ desktop-release 디스패치          → 산출물 검증 뒤 발행(30분 cron 도 같은 초안을 집는다)
@@ -197,25 +197,15 @@ function execute(repo, decision, inputs, now) {
   gh(["label", "create", AUTO_RELEASE_RULES.autoLabel, "--color", "0e8a16", "--description", "조건 기반 자동 릴리스", "--force"], { allowFailure: true });
   step("label", () => gh(["pr", "edit", String(pr.number), "--add-label", AUTO_RELEASE_RULES.autoLabel]) || `#${pr.number}`);
   step("ci-fast", () => gh(["workflow", "run", "ci-fast.yml", "--ref", "release/next"]) || "디스패치");
-  // 봇(GITHUB_TOKEN)이 연 PR 의 pull_request 런은 잡 0개로 멈췄다가 머지 때 실패로 닫힌다 — 시험이 하나도 돌지 않는다.
-  // 실측: v0.420 PR #5159 의 ci-fast·ci-related-tests·app-update-e2e 셋 다(run 45730826290 «workflow file issue»).
-  // 그래서 PR 에 걸린 나머지 두 검사도 같은 머리에 직접 디스패치한다.
-  // 직전 발행 태그(sinceTag) 기준으로 diff 를 잡아야 릴리스에 들어가는 모든 변경의 관련 시험이 돈다.
-  const relatedBase =
-    (inputs.sinceTag && git(["rev-parse", `${inputs.sinceTag}^{commit}`], { allowFailure: true })) ||
-    git(["rev-parse", "origin/main"]);
-  step("ci-related-tests", () => gh(["workflow", "run", "ci-related-tests.yml", "--ref", "release/next", "-f", `base=${relatedBase}`]) || "디스패치");
+  // 봇(GITHUB_TOKEN)이 연 PR 의 pull_request 런은 잡 0개로 멈췄다가 머지 때 실패로 닫힌다.
+  // 각 기능 PR 은 머지 전에 이미 ci-related-tests 를 돌고 들어오므로, 버전 범프만 올리는 release/next 에서는
+  // ci-fast(~2분)와 업데이트·Electron 변경 시 app-update-e2e(~3분)만 확인한다(2026-11-28, v0.425 33분 병목 제거).
   const e2eNeed = checkAppUpdateE2eNeed(repo, inputs.sinceTag, now);
   if (e2eNeed.required) {
     step("app-update-e2e", () => gh(["workflow", "run", "app-update-e2e.yml", "--ref", "release/next"]) || `디스패치 (${e2eNeed.reason})`);
+    step("app-update-e2e-wait", () => waitDispatchedRun("app-update-e2e.yml", pr.headRefOid, 50));
   } else {
     step("app-update-e2e", () => `건너뜀 (${e2eNeed.reason})`);
-  }
-  if (!AUTO_RELEASE_RULES.requireCiFull) {
-    step("ci-related-tests-wait", () => waitDispatchedRun("ci-related-tests.yml", pr.headRefOid, 45));
-  }
-  if (e2eNeed.required) {
-    step("app-update-e2e-wait", () => waitDispatchedRun("app-update-e2e.yml", pr.headRefOid, 50));
   }
   // merge-pr 가 CI 를 기다리는 동안 누가 hold-release 를 붙일 수 있다. merge-pr 가 머지 직전에, 여기서 태그 직전에 다시 본다.
   assertNoHold("merge");
@@ -256,7 +246,7 @@ if (decision.release && !args.dryRun) {
     record.result = execute(repo, decision, inputs, now);
     const gateNote = ciDiff
       ? `ci-full 새 실패 0 (판 ${ciDiff.candidate?.id} 대 ${ciDiff.baseline?.id})`
-      : "ci-fast·ci-related-tests 통과 (ci-full 게이트 분리)";
+      : "ci-fast 통과 (PR ci-related-tests·밤 ci-full 분리)";
     record.notifiedIssue = notify(repo, `${record.result.tag} 자동 릴리스: PR #${record.result.pr} 머지, 태그·초안 생성, desktop-release 가 산출물 검증 뒤 발행한다. 사용자 체감 변경 ${inputs.userCommits.length}개, ${gateNote}.`);
   } catch (error) {
     record.error = error.message;

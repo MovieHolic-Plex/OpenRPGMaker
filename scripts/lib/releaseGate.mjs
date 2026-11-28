@@ -270,7 +270,7 @@ export function decideAutoRelease(input) {
     }
     add("ci-full", "main 마지막 ci-full 대 기준 판", Boolean(diff && !diff.error && diff.ok), ciValue, "새 실패 0");
   } else {
-    add("ci-full", "ci-full 게이트", true, "게이트 분리 (밤 1회 감시 · 릴리스는 ci-fast + ci-related-tests)", "분리됨");
+    add("ci-full", "ci-full 게이트", true, "게이트 분리 (밤 1회 감시 · 릴리스는 ci-fast + 필요 시 app-update-e2e)", "분리됨");
   }
 
   let hours = null;
