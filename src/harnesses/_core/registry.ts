@@ -31,6 +31,7 @@ import { BUILDING_KIT_HARNESS } from "../building-kit/harness";
 import { CAST_PORTRAIT_HARNESS } from "../cast-portrait/harness";
 import { BATTLE_BACKDROP_HARNESS } from "../battle-backdrop/harness";
 import { INTERACTIVE_PROPS_HARNESS } from "../interactive-props/harness";
+import { OBJECT_GEN_V2_HARNESS } from "../object-gen-v2/harness";
 
 export const HARNESSES: readonly HarnessManifest[] = [
   MONSTER_COLLECT_SPECIES_HARNESS,
@@ -59,6 +60,7 @@ export const HARNESSES: readonly HarnessManifest[] = [
   CAST_PORTRAIT_HARNESS,
   BATTLE_BACKDROP_HARNESS,
   INTERACTIVE_PROPS_HARNESS,
+  OBJECT_GEN_V2_HARNESS,
 ];
 
 export function getHarness(id: string): HarnessManifest | undefined {

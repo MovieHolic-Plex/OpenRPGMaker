@@ -1,0 +1,26 @@
+{
+  "schema": "oprn-object-gen-v2-seed/1",
+  "subrepo": {
+    "monorepoPath": "harness/object-gen-v2",
+    "remote": "https://github.com/MovieHolic-Plex/object-gen-v2.git",
+    "visibility": "private",
+    "syncScript": "scripts/object-gen-v2-sync.mjs",
+    "lockEntry": "tiledata/gen-kits.lock.json#kits.object-gen-v2"
+  },
+  "recommendedModel": {
+    "model": "gemini-4-carbon",
+    "thoughtLevel": "medium",
+    "warning": "Carbon Medium 전용 1-Pass 규격 — 하위 모델이나 낮은 추론 단계에서는 평면 fillRect 상자와 검은 테두리로 퇴행함"
+  },
+  "defaultPalette": "harness/object-gen-v2/palettes/fable-city.json",
+  "referencesIndex": "harness/object-gen-v2/references/index.json",
+  "batches": [
+    {
+      "id": "pcbang-ogv2",
+      "spec": "tiledata/modern-city/pcbang-ogv2/spec.json",
+      "piecesDir": "tiledata/modern-city/pcbang-ogv2/pieces",
+      "packDir": "tiledata/modern-city/pcbang-ogv2/dist-pack",
+      "count": 25
+    }
+  ]
+}

@@ -118,6 +118,7 @@
     "gen-kits:sync": "node scripts/gen-kits-sync.mjs",
     "gen-kits:check": "node scripts/gen-kits-sync.mjs --check --only object-gen --max-behind 10",
     "object-gate:sync": "node scripts/object-gate-sync.mjs",
+    "object-gen-v2:sync": "node scripts/object-gen-v2-sync.mjs",
     "store": "vite-node --script scripts/store/agentStore.mts --",
     "store:publish-buildings": "vite-node --script scripts/store/publish-buildings.mts --",
     "store:publish-bundle": "vite-node --script scripts/store/publish-bundle.mts --",

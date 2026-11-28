@@ -124,6 +124,35 @@
         "tilegen/checks.py",
         "tilegen/gate.py"
       ]
+    },
+    "object-gen-v2": {
+      "repo": "https://github.com/MovieHolic-Plex/object-gen-v2.git",
+      "visibility": "private",
+      "branch": "main",
+      "commit": "718560efe3126875e522bf8a4aeb32974aea78eb",
+      "contract": [
+        {
+          "file": "objectgen_v2/pack.py",
+          "contains": [
+            "oprn-store-pack/1"
+          ]
+        },
+        {
+          "file": "objectgen_v2/cli.py",
+          "verbs": [
+            "verify",
+            "sheet",
+            "pack",
+            "init-batch"
+          ]
+        }
+      ],
+      "fingerprint": [
+        "SKILL.md",
+        "palettes/fable-city.json",
+        "objectgen_v2/palette.py",
+        "objectgen_v2/pack.py"
+      ]
     }
   }
 }

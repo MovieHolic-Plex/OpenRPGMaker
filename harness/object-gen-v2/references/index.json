@@ -1,0 +1,109 @@
+{
+  "palette": "palettes/fable-city.json",
+  "references": [
+    {
+      "id": "jp-bldg-c-tabako",
+      "file": "jp-bldg-c-tabako.png",
+      "category": "building",
+      "name": "담뱃가게(소형 상점 건물)",
+      "w": 3,
+      "h": 7,
+      "tags": [
+        "building",
+        "shop",
+        "exterior"
+      ]
+    },
+    {
+      "id": "jp-bldg-c-teishoku",
+      "file": "jp-bldg-c-teishoku.png",
+      "category": "building",
+      "name": "정식집(목조 기와 상점)",
+      "w": 4,
+      "h": 7,
+      "tags": [
+        "building",
+        "shop",
+        "roof"
+      ]
+    },
+    {
+      "id": "mc-c-campus-bus-shelter",
+      "file": "mc-c-campus-bus-shelter.png",
+      "category": "outdoor",
+      "name": "버스 정류장(지붕+벤치+표지판)",
+      "w": 3,
+      "h": 2,
+      "tags": [
+        "outdoor",
+        "structure",
+        "glass"
+      ]
+    },
+    {
+      "id": "mc-c-campus-bench",
+      "file": "mc-c-campus-bench.png",
+      "category": "outdoor",
+      "name": "교정 목재 벤치",
+      "w": 2,
+      "h": 1,
+      "tags": [
+        "outdoor",
+        "bench",
+        "wood"
+      ]
+    },
+    {
+      "id": "mc-c-campus-scoreboard",
+      "file": "mc-c-campus-scoreboard.png",
+      "category": "outdoor",
+      "name": "운동장 전광판",
+      "w": 3,
+      "h": 3,
+      "tags": [
+        "outdoor",
+        "large",
+        "sports"
+      ]
+    },
+    {
+      "id": "mc-c-campus-aid-counter",
+      "file": "mc-c-campus-aid-counter.png",
+      "category": "indoor",
+      "name": "보건실 약 진열대",
+      "w": 2,
+      "h": 2,
+      "tags": [
+        "indoor",
+        "counter",
+        "medical"
+      ]
+    },
+    {
+      "id": "mc-c-campus-carrel",
+      "file": "mc-c-campus-carrel.png",
+      "category": "indoor",
+      "name": "도서관 개인 독서대",
+      "w": 2,
+      "h": 2,
+      "tags": [
+        "indoor",
+        "desk",
+        "wood"
+      ]
+    },
+    {
+      "id": "mc-c-campus-school-bus",
+      "file": "mc-c-campus-school-bus.png",
+      "category": "vehicle",
+      "name": "스쿨버스(정면 3/4)",
+      "w": 2,
+      "h": 4,
+      "tags": [
+        "vehicle",
+        "bus",
+        "exterior"
+      ]
+    }
+  ]
+}

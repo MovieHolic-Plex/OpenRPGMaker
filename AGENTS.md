@@ -116,6 +116,11 @@ This repository uses a project-local OpenWiki layer so coding agents can underst
   → `interview-scene-bank` · 시드 `harness-data/interview-scene-bank/seed.json` · 문서 `openwiki/harnesses/interview-scene-bank.md`
   → 1,457개 선택 조합을 계획하고, 원본 도트 규격과 해시에 묶인 실제 그림 검수를 모두 통과한 배경만 배포한다.
 
+- **16px 격자 3/4 오브젝트·실내 가구·상점/시설 기물·차량을 Carbon Medium(`gemini-4-carbon`, `medium`) 1-Pass 배치로 대량 제작·재작화하거나 `oprn-store-pack/1`로 묶을 때**
+  → `object-gen-v2` (비공개 서브레포 `MovieHolic-Plex/object-gen-v2` ↔ 모노레포 사본 `harness/object-gen-v2/`, 동기화 `npm run object-gen-v2:sync -- status|export|import`, 버전 고정 `tiledata/gen-kits.lock.json`)
+  → 시드 `harness-data/object-gen-v2/seed.json` · `npm run harness -- object-gen-v2 status|init-batch|verify|sheet|pack|test|sync` · 문서 `openwiki/harnesses/object-gen-v2.md` · 스킬 `assistant-skills/object-gen-v2/SKILL.md`
+  → 권장 LLM은 `gemini-4-carbon` (`thought_level: medium`) 전용이며, 모든 출력은 잠금 팔레트(`fable-city.json` `pv=0`)·이진 알파(`av=0`)·순흑 금지(`#000000` 0px) 기계 검증(`verify`)과 4배율 시트(`sheet`)를 통과해야 한다. 번들 시트·스토어 출구에는 `object-gate` 규칙이 그대로 적용된다.
+
 ## 코딩 에이전트의 에셋 스토어 제출 (hard rule, 2026-10-20)
 
 **코딩 에이전트(Claude Code·omp·Codex 등)가 만든 그림·소리를 store.openrpgmaker.com 에 올릴 때는 `npm run -s store -- publish <팩 폴더> --agent "<도구·모델>"` 하나만 쓴다.**

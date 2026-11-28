@@ -11,6 +11,7 @@ export const PUBLIC_EXCLUDE = [
   // 게임 번들에는 설치되지 않았고 하네스 안에서만 쓴다.
   "src/harnesses/pokemon-character-casting/references",
   "harness/pokemon-like-characters", // references 는 원작, variants·examples 는 원작과의 비교·파생(README)
+  "harness/object-gen-v2", // 비공개 서브레포 MovieHolic-Plex/object-gen-v2 사본(내부 체크아웃 전용)
   "harness-data/pokemon-character-casting",
   "scripts/asset-gen/pokemon-characters/references", // 브렌든 원작 걷기 그림(ATTRIBUTION.md 가 원작이라고 밝힘)
   "harness/pokemon-like-field-kit", // 포챠나 원작 필드 그림을 판형으로 쓴 파생 그림(README 45행)

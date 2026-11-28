@@ -33,6 +33,19 @@
     "tilegen/checks.py": "8bc4d30a41f5ed5d",
     "tilegen/gate.py": "71332670c8d5e67c"
    }
+  },
+  "object-gen-v2": {
+   "repo": "https://github.com/MovieHolic-Plex/object-gen-v2.git",
+   "visibility": "private",
+   "commit": "718560efe3126875e522bf8a4aeb32974aea78eb",
+   "vendored": false,
+   "contract": "ok",
+   "fingerprint": {
+    "SKILL.md": "0aeb091cc99ef569",
+    "palettes/fable-city.json": "2d9cbba01dcec48e",
+    "objectgen_v2/palette.py": "acbd60b7a5b9446f",
+    "objectgen_v2/pack.py": "043c8ec4f75a325f"
+   }
   }
  }
 }
