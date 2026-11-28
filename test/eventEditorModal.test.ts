@@ -539,6 +539,9 @@ describe("RPG Maker style event editor entry points", () => {
     const map = project.maps[project.startMapId];
     map.events = [gameEvent(eventPage())];
     store.replace(project);
+    const priorStoredView = (() => {
+      try { return localStorage.getItem("oprn.event-editor.view"); } catch { return null; }
+    })();
     setEventEditorViewLevel("easy");
 
     const origRaf = globalThis.requestAnimationFrame;
@@ -572,11 +575,17 @@ describe("RPG Maker style event editor entry points", () => {
       expect(seenOnAppend[0]?.winClass).toContain("is-bubble");
       expect(seenOnAppend[0]?.hasEasyShell).toBe(true);
     } finally {
+      document.querySelector<HTMLElement>('[data-testid="event-editor-cancel"]')?.click();
       appendSpy.mockRestore();
       globalThis.requestAnimationFrame = origRaf;
       if (origVisibility) Object.defineProperty(document, "visibilityState", origVisibility);
       else delete (document as { visibilityState?: unknown }).visibilityState;
-      setEventEditorViewLevel("advanced");
+      try {
+        if (priorStoredView === null) localStorage.removeItem("oprn.event-editor.view");
+        else localStorage.setItem("oprn.event-editor.view", priorStoredView);
+      } catch {
+        setEventEditorViewLevel("advanced");
+      }
     }
   });
 

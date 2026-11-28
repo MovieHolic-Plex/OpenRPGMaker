@@ -17,6 +17,7 @@ export function attachWindowFullscreen(
   header: HTMLElement,
   backdrop: HTMLElement,
   windowEl: HTMLElement,
+  onChange?: (fullscreen: boolean) => void,
 ): ModalFullscreenHandle {
   let fullscreen = false;
   let snapshot: WindowStyleSnapshot | null = null;
@@ -53,6 +54,7 @@ export function attachWindowFullscreen(
     backdrop.classList.toggle("is-fullscreen", fullscreen);
     windowEl.classList.toggle("is-fullscreen", fullscreen);
     updateButton();
+    onChange?.(fullscreen);
   };
 
   const onButtonClick = (): void => toggle();

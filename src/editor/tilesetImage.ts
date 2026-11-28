@@ -99,6 +99,8 @@ export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): 
       if (!sceneMissing) {
         sceneMissing = new Map();
         missingGraftSourceByScene.set(scene, sceneMissing);
+      } else if (sceneMissing.size > 256) {
+        sceneMissing.clear();
       }
       sceneMissing.set(textureKey, { kind: "uploaded", sourceChipset });
       return baseKey;
@@ -113,6 +115,8 @@ export function ensureTilesetTexture(scene: Phaser.Scene, tileset: TilesetDef): 
       if (!sceneMissing) {
         sceneMissing = new Map();
         missingGraftSourceByScene.set(scene, sceneMissing);
+      } else if (sceneMissing.size > 256) {
+        sceneMissing.clear();
       }
       sceneMissing.set(textureKey, { kind: "bundled", sourceChipset });
       return baseKey;

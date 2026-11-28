@@ -14,7 +14,7 @@ import {
   createTransparentColorKeyCanvas,
   isColorKeyedChipsetTextureKey,
 } from "@/assets/chipsetTransparency";
-import { activeTileGrafts, createGraftedTilesetCanvas, hasActiveTileGrafts } from "@/assets/tileGrafts";
+import { activeTileGrafts, activeTileGraftSourceChipsets, createGraftedTilesetCanvas, hasActiveTileGrafts } from "@/assets/tileGrafts";
 import { tilesetLookSignature } from "@/assets/tilesetLooks";
 import type { TilesetDef } from "@/project/types";
 import { decodeDataUrlBytes } from "@/project/persistence/core/dataUrl";
@@ -45,7 +45,7 @@ export function clearTileGraftImageCache(): void {
 // DOM preview URL, or null while baking. Evidence APIs below retain PNG data URLs.
 export function graftedTilesetImageUrl(tileset: TilesetDef, baseUrl: string): string | null {
   if (!hasActiveTileGrafts(tileset)) return null;
-  const cacheKey = graftImageCacheKey(tileset, baseUrl);
+  const cacheKey = graftImageCacheKey(tileset, baseUrl, true);
   const cached = previewUrlCache.get(cacheKey);
   if (cached) return cached;
   void ensureGraftImageBake(cacheKey, snapshotGraftBake(tileset), baseUrl);
@@ -55,7 +55,7 @@ export function graftedTilesetImageUrl(tileset: TilesetDef, baseUrl: string): st
 /** Cached bake for the exact render inputs, or null when grafts are absent. */
 export function peekGraftedTilesetImageUrl(tileset: TilesetDef, baseUrl: string): string | null {
   if (!hasActiveTileGrafts(tileset)) return null;
-  return bakedUrlCache.get(graftImageCacheKey(tileset, baseUrl)) ?? null;
+  return bakedUrlCache.get(graftImageCacheKey(tileset, baseUrl, false)) ?? null;
 }
 
 /**
@@ -70,7 +70,7 @@ export function awaitGraftedTilesetImageUrl(
 ): Promise<string | null> {
   if (!hasActiveTileGrafts(tileset)) return Promise.resolve(null);
   if (signal?.aborted) return Promise.resolve(null);
-  const cacheKey = graftImageCacheKey(tileset, baseUrl);
+  const cacheKey = graftImageCacheKey(tileset, baseUrl, false);
   const cached = bakedUrlCache.get(cacheKey);
   if (cached) return Promise.resolve(cached);
   const bake = ensureGraftImageBake(cacheKey, snapshotGraftBake(tileset), baseUrl);
@@ -107,37 +107,54 @@ function canonicalGraftTuples(tileset: Pick<TilesetDef, "tileGrafts">): Array<{
 }
 
 type GraftCacheKeyMemo = {
+  readonly generation: number;
   readonly length: number;
   readonly look: string;
   readonly baseUrl: string;
   readonly count: number;
   readonly tileSize: number;
   readonly tilesPerRow: number;
+  readonly uploadedSourcesSig: string;
   readonly key: string;
 };
 const graftCacheKeyMemo = new WeakMap<NonNullable<TilesetDef["tileGrafts"]>, GraftCacheKeyMemo>();
 
+function uploadedGraftSourcesSignature(
+  tileset: GraftBakeSnapshot & Partial<Pick<TilesetDef, "look" | "image">>,
+): string {
+  const parts: string[] = [];
+  for (const sourceChipset of activeTileGraftSourceChipsets(tileset)) {
+    const resolved = uploadedGraftSourceUrl(sourceChipset);
+    if (resolved) parts.push(`${sourceChipset}=${resolved}`);
+  }
+  return parts.join("|");
+}
+
 function graftImageCacheKey(
   tileset: GraftBakeSnapshot & Partial<Pick<TilesetDef, "look" | "image">>,
   baseUrl: string,
+  allowMemo = false,
 ): string {
   // Exact identity for ready/in-flight evidence bakes: full active graft tuples
   // (every rendering field) plus atlas geometry and base URL. A short texture
   // suffix hash is not equality — distinct compositions must not share a bucket.
-  // Memoize by tileGrafts array identity + length + geometry + look so repeated
-  // tilesetImageUrl() calls do not re-stringify 2,500–7,700 grafts per hover/click.
+  // Memoize only on the hot DOM preview path (allowMemo=true) keyed by generation,
+  // array identity+length, geometry, look, and resolved uploaded source URLs.
   const source = tileset.tileGrafts;
   const look = tilesetLookSignature(tileset);
-  if (source && source.length > 0) {
+  const uploadedSourcesSig = uploadedGraftSourcesSignature(tileset);
+  if (allowMemo && source && source.length > 0) {
     const cached = graftCacheKeyMemo.get(source);
     if (
       cached
+      && cached.generation === cacheGeneration
       && cached.length === source.length
       && cached.look === look
       && cached.baseUrl === baseUrl
       && cached.count === tileset.count
       && cached.tileSize === tileset.tileSize
       && cached.tilesPerRow === tileset.tilesPerRow
+      && cached.uploadedSourcesSig === uploadedSourcesSig
     ) {
       return cached.key;
     }
@@ -147,16 +164,19 @@ function graftImageCacheKey(
     count: tileset.count,
     tileSize: tileset.tileSize,
     tilesPerRow: tileset.tilesPerRow,
+    ...(uploadedSourcesSig ? { uploadedSourcesSig } : {}),
     grafts: canonicalGraftTuples(tileset),
   });
-  if (source && source.length > 0) {
+  if (allowMemo && source && source.length > 0) {
     graftCacheKeyMemo.set(source, {
+      generation: cacheGeneration,
       length: source.length,
       look,
       baseUrl,
       count: tileset.count,
       tileSize: tileset.tileSize,
       tilesPerRow: tileset.tilesPerRow,
+      uploadedSourcesSig,
       key,
     });
   }

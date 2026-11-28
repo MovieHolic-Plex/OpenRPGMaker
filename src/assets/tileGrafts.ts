@@ -17,16 +17,21 @@ type GraftSource = HTMLImageElement | HTMLCanvasElement;
 // 기억해 둔다(tileGraftsTextureSuffix 와 같은 전제: 배열 정체성·길이가 같으면 같은 답). 이식 소스가 아직 안 실린 채 맵을 그리면
 // ensureTilesetTexture 가 칸마다 이 목록을 두 번 만든다 — 버들항(이식 2,515개) 빈 맵 첫 그리기가 이것만으로 약 0.5s 였다(2026-11-27 패키지 프로파일).
 // 돌려주는 배열은 부르는 쪽 소유 사본이다.
+const EMPTY_ACTIVE_GRAFTS: { readonly grafts: readonly TileGraft[]; readonly sourceChipsets: readonly string[] } = Object.freeze({
+  grafts: Object.freeze([]),
+  sourceChipsets: Object.freeze([]),
+});
 const activeGraftCache = new WeakMap<readonly TileGraft[], { readonly length: number; readonly look: string; readonly grafts: readonly TileGraft[]; readonly sourceChipsets: readonly string[] }>();
 
 function getCachedActiveTileGrafts(tileset: Pick<TilesetDef, "tileGrafts"> & Partial<Pick<TilesetDef, "look" | "image">>): { readonly grafts: readonly TileGraft[]; readonly sourceChipsets: readonly string[] } {
   const source = tileset.tileGrafts;
+  const look = tilesetLookSignature(tileset);
   if (!source || source.length === 0) {
+    if (!look) return EMPTY_ACTIVE_GRAFTS;
     const grafts = computeActiveTileGrafts(tileset);
     const sourceChipsets = grafts.length === 0 ? [] : [...new Set(grafts.map((g) => g.sourceChipset))];
     return { grafts, sourceChipsets };
   }
-  const look = tilesetLookSignature(tileset);
   const cached = activeGraftCache.get(source);
   if (cached && cached.length === source.length && cached.look === look) return cached;
   const grafts = computeActiveTileGrafts(tileset);

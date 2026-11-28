@@ -712,10 +712,10 @@ export function mountAiTeamWing(
     if (!state.active) {
       if (!wing.hidden) wing.hidden = true;
       if (!inlineStrip.hidden) inlineStrip.hidden = true;
-      if (lastRenderSig !== "inactive") {
-        emitPillState({ active: false, label: "", tone: "idle" });
-        lastRenderSig = "inactive";
-      }
+      // emitPillState already deduplicates via lastPillSig, so always emit idle here even
+      // if an active run previously returned early while aiPanel was collapsed.
+      emitPillState({ active: false, label: "", tone: "idle" });
+      lastRenderSig = "";
       return;
     }
 

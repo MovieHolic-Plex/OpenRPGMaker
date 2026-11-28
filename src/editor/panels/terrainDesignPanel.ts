@@ -99,7 +99,7 @@ export function mountTerrainDesignPanel(host: HTMLElement): () => void {
       ? `${count}개 점 · 두 모서리를 찍고 적용하세요. Esc: 취소`
       : `${count}개 점 · 외곽 또는 경유점을 찍고 적용하세요. Esc: 취소`;
   };
-  const offState = editorState.subscribe(sync), offStore = store.subscribe((_project, change) => { if (!isTileCellChange(change)) sync(); }); sync();
+  const offState = editorState.subscribe(sync), offStore = store.subscribe((_project, change) => { if (!isTileCellChange(change) || editorState.get().terrainRoute) sync(); }); sync();
   const keydown = (event: KeyboardEvent) => { if (panel.hidden || event.defaultPrevented || hasOpenModalLayer() || shouldIgnoreEditorShortcut(event)) return; if (event.key === "Enter" && !apply.disabled) { event.preventDefault(); event.stopPropagation(); commitTerrainDesign(); } else if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); if (editorState.get().terrainHouseDrag) editorState.set({ terrainHouseDrag: null }); else if (editorState.get().terrainPoints) editorState.set({ terrainPoints: null, terrainFeatureId: null }); else editorState.set({ terrainDesignOpen: false }); } };
   document.addEventListener("keydown", keydown, true);
   let drag: { x: number; y: number; left: number; top: number } | null = null;

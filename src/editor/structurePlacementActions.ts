@@ -159,7 +159,7 @@ export function commitKitStampCapture(capture: KitStampCapture): StructurePlacem
   store.updateMapTiles(
     capture.mapId,
     (map) => pushStructurePlacement(map, placement),
-    { cells: [{ x: capture.rect.x, y: capture.rect.y, layer: "upper" }] },
+    { cells: [{ x: capture.rect.x, y: capture.rect.y, layer: "upper" }], label: "구조물 배치 기록" },
   );
   return placement;
 }

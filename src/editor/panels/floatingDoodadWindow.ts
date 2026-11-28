@@ -469,7 +469,6 @@ export function mountFloatingDoodadWindow(
   let viewMode: DoodadViewMode = "grid";
   let searchQuery = "";
   let visibleLimit = INITIAL_PAGE_SIZE;
-  let selectedKey: string | null = null;
   let customPos: { x: number; y: number } | null = null;
   let customSize = loadSavedWindowSize();
   let recentKeys: string[] = loadRecentKeys();
@@ -568,10 +567,15 @@ export function mountFloatingDoodadWindow(
     text: "해제",
     on: {
       click: () => {
-        selectedKey = null;
-        selectInteractivePropBrush(null);
-        editorState.set({ activePaletteStamp: null, reliefDoodad: null, reliefBridgeStart: null });
-        renderBody();
+        suppressEditorSync = true;
+        try {
+          selectInteractivePropBrush(null);
+          editorState.set({ activePaletteStamp: null, reliefDoodad: null, reliefBridgeStart: null });
+        } finally {
+          suppressEditorSync = false;
+        }
+        if (viewMode === "split") renderBody();
+        else syncSelectionInPlace();
       },
     },
   }) as HTMLButtonElement;
@@ -669,7 +673,7 @@ export function mountFloatingDoodadWindow(
     const profile = detectArtStyleProfile(tileset);
     const allItems = unifiedDoodadsFor(tileset);
     const items = filteredItems(tileset, profile);
-    const activeItem = items.find(isItemSelected) ?? (selectedKey ? items.find((it) => it.key === selectedKey) : undefined);
+    const activeItem = items.find(isItemSelected);
     const nextStatus = activeItem
       ? `${activeItem.name} (${activeItem.sizeLabel}) · 맵 클릭으로 배치`
       : `오브젝트 ${items.length}개 · 클릭 후 맵에 배치`;
@@ -695,7 +699,6 @@ export function mountFloatingDoodadWindow(
 
   let suppressEditorSync = false;
   function activateItem(item: UnifiedDoodad): void {
-    selectedKey = item.key;
     recordRecent(item.key);
     suppressEditorSync = true;
     try {
@@ -758,6 +761,7 @@ export function mountFloatingDoodadWindow(
     if (!open) return;
     const tileset = currentTileset();
     lastRenderedTileset = tileset;
+    lastRenderedUploaded = store.getCurrent().assets.uploaded;
     const profile = detectArtStyleProfile(tileset);
     styleLockBtn.classList.toggle("is-locked", styleLocked);
     styleLockBtn.setAttribute("aria-pressed", String(styleLocked));
@@ -767,7 +771,7 @@ export function mountFloatingDoodadWindow(
     const items = filteredItems(tileset, profile);
     clearChildren(body);
 
-    const activeItem = items.find(isItemSelected) ?? (selectedKey ? items.find((it) => it.key === selectedKey) : undefined);
+    const activeItem = items.find(isItemSelected);
     statusName.textContent = activeItem
       ? `${activeItem.name} (${activeItem.sizeLabel}) · 맵 클릭으로 배치`
       : `오브젝트 ${items.length}개 · 클릭 후 맵에 배치`;
@@ -1021,6 +1025,7 @@ export function mountFloatingDoodadWindow(
   window.addEventListener(FLOATING_DOODAD_PALETTE_TOGGLE_EVENT, onToggleEvent);
 
   let lastRenderedTileset: TilesetDef | undefined;
+  let lastRenderedUploaded: unknown;
   let lastEditorSnapshot = editorState.get();
   const unsubEditor = editorState.subscribe((state) => {
     const prev = lastEditorSnapshot;
@@ -1040,17 +1045,19 @@ export function mountFloatingDoodadWindow(
       else syncSelectionInPlace();
     }
   });
-  const unsubStore = store.subscribe((_project, change) => {
+  const unsubStore = store.subscribe((project, change) => {
     if (!open) return;
     if (change.scope === "map") {
       if (isTileCellChange(change)) return;
       const nextTileset = currentTileset();
-      if (nextTileset === lastRenderedTileset) return;
+      if (nextTileset === lastRenderedTileset && project.assets.uploaded === lastRenderedUploaded) return;
       lastRenderedTileset = nextTileset;
+      lastRenderedUploaded = project.assets.uploaded;
       renderBody();
       return;
     }
     lastRenderedTileset = currentTileset();
+    lastRenderedUploaded = project.assets.uploaded;
     renderBody();
   });
 

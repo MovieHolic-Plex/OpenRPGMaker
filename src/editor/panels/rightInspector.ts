@@ -254,9 +254,10 @@ export function mountRightInspector(cursorHost: HTMLElement): RightInspectorMoun
   let lastCell: { x: number; y: number } | null = null;
   let fingerprint = "";
   let advancedOpen = false;
-  // Avoid reading root.offsetParent on hot cursor/store ticks (which forces a synchronous reflow).
-  // In real browsers ResizeObserver reports visibility; in headless unit tests without ResizeObserver stay active.
-  let visibleInLayout = typeof ResizeObserver !== "function";
+  // Start visible so initial synchronous paint() and zero-layout test DOMs (happy-dom/fakeDom)
+  // render immediately. In real browsers ResizeObserver flips visibleInLayout=false only when
+  // the element is connected and actually display:none, avoiding forced reflow on hot ticks.
+  let visibleInLayout = true;
   const isHiddenInLayout = (): boolean => !visibleInLayout;
   const paint = (): void => {
     if (isHiddenInLayout()) return;
@@ -301,10 +302,18 @@ export function mountRightInspector(cursorHost: HTMLElement): RightInspectorMoun
   observer?.observe(cursorHost, { subtree: true, characterData: true, childList: true });
   const resizeObserver = typeof ResizeObserver === "function"
     ? new ResizeObserver((entries) => {
-      const nextVisible = entries.some((entry) => entry.contentRect.width > 0);
+      const latest = entries[entries.length - 1];
+      if (!latest || !root.isConnected) return;
+      const nextVisible = latest.contentRect.width > 0
+        ? true
+        : !(typeof getComputedStyle === "function" && getComputedStyle(root).display === "none");
       if (nextVisible === visibleInLayout) return;
       visibleInLayout = nextVisible;
-      if (visibleInLayout) schedule();
+      if (visibleInLayout) {
+        const currentCell = readCursorCell(cursorHost);
+        if (currentCell) lastCell = currentCell;
+        schedule();
+      }
     })
     : null;
   resizeObserver?.observe(root);

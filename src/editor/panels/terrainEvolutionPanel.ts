@@ -53,9 +53,16 @@ export function mountTerrainEvolutionPanel(body: HTMLElement): () => void {
   library.append(el("p",{text:"이 브라우저의 모든 프로젝트에서 공유됩니다. 다른 기기로 옮길 때는 파일을 내보내세요. 같은 칩셋에서 사용할 수 있습니다."}));
   function sync():void {
     const s=editorState.get();
+    const nextEditHidden=!["contour","road","ridge","valley","lake"].includes(s.terrainBrush);
+    if(edit.hidden!==nextEditHidden)edit.hidden=nextEditHidden;
+    const nextFinishHidden=s.terrainBrush!=="finish";
+    if(finish.hidden!==nextFinishHidden)finish.hidden=nextFinishHidden;
+    const nextRouteHidden=s.terrainBrush!=="route";
+    if(route.hidden!==nextRouteHidden)route.hidden=nextRouteHidden;
+    const nextLibraryHidden=s.terrainBrush!=="stamp";
+    if(library.hidden!==nextLibraryHidden)library.hidden=nextLibraryHidden;
     if (!s.terrainDesignOpen || s.tool !== "relief" || s.layer === "event") return;
     const p=store.getCurrent(),map=s.currentMapId?p.maps[s.currentMapId]:undefined;
-    edit.hidden=!["contour","road","ridge","valley","lake"].includes(s.terrainBrush);finish.hidden=s.terrainBrush!=="finish";route.hidden=s.terrainBrush!=="route";library.hidden=s.terrainBrush!=="stamp";
     const fk=JSON.stringify(map?.terrainDesign?.features?.map(f=>[f.id,f.tool,f.points,f.options]));
     if(fk!==lastFeature){lastFeature=fk;feature.replaceChildren(el("option",{value:"",text:"새 지형"}));for(const f of map?.terrainDesign?.features??[])feature.append(el("option",{value:f.id,text:`${{contour:"절벽",road:"길",ridge:"능선",valley:"계곡",lake:"호수"}[f.tool]} · ${f.points.length}점 · ${f.id.slice(-6)}`}));}
     feature.value=s.terrainFeatureId??"";finishMethod.value=s.terrainFinishMethod;finishPasses.value=String(s.terrainFinishPasses);bodySize.forEach((input,n)=>{if(document.activeElement!==input)input.value=String(s.terrainRouteBody[n]);});events.checked=s.terrainRouteEvents;doors.value=s.terrainRouteDoors;

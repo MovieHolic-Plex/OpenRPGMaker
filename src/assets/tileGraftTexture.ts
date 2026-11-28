@@ -7,7 +7,7 @@ import {
   isTransparentColorKeySourceImage,
   rawChipsetTextureKey,
 } from "@/assets/chipsetTransparency";
-import { activeTileGrafts, createGraftedTilesetCanvas } from "@/assets/tileGrafts";
+import { activeTileGrafts, createGraftedTilesetCanvas, hasActiveTileGrafts } from "@/assets/tileGrafts";
 import { normalizeRgbHexColor } from "@/assets/transparentColorKey";
 import type { TilesetDef } from "@/project/types";
 import type Phaser from "phaser";
@@ -18,7 +18,7 @@ type BakeSource = HTMLImageElement | HTMLCanvasElement;
 export function tilesetTextureNeedsBake(tileset: TilesetDef): boolean {
   return (
     !!normalizeRgbHexColor(tileset.transparentColor ?? "") ||
-    activeTileGrafts(tileset).length > 0
+    hasActiveTileGrafts(tileset)
   );
 }
 

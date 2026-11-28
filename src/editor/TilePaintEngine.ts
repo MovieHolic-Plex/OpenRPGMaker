@@ -163,6 +163,11 @@ export class TilePaintEngine {
       if (!prop || !placeTool) return;
       let placedId: string | undefined;
       let warningText: string | undefined;
+      const change: { scope: "map"; mapId: MapId; label: string; eventId?: string } = {
+        scope: "map",
+        mapId: mid,
+        label: "상호작용 오브젝트 배치",
+      };
       store.update((draft) => {
         const beforeCount = draft.maps[mid]?.events.length ?? 0;
         const res = placeTool.run(draft, {
@@ -173,8 +178,9 @@ export class TilePaintEngine {
         const mapAfter = draft.maps[mid];
         if (mapAfter && mapAfter.events.length > beforeCount) {
           placedId = mapAfter.events[mapAfter.events.length - 1]?.id;
+          if (placedId) change.eventId = placedId;
         }
-      }, { scope: "map", mapId: mid, label: "상호작용 오브젝트 배치" });
+      }, change);
       if (placedId) {
         editorState.set({ selectedEventId: placedId });
         toast(`「${prop.name}」 배치 (${x}, ${y})`, "info");
