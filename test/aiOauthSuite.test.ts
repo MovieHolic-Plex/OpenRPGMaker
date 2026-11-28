@@ -559,20 +559,20 @@ describe("credentials", () => {
       return blob.providerId;
     }
     describe("제공자는 Antigravity·Codex 둘뿐이다", () => {
-      it("옛 저장값은 Antigravity 로 읽고, 새 설정은 Claude(Sonnet 5.5 high)를 권한다", () => {
+      it("옛 저장값은 Antigravity 로 읽고, 새 설정은 ChatGPT(GPT-6.2 Sol high)를 권한다", () => {
         expect(DEFAULT_OH_MY_PI_PROVIDER).toBe(ANTIGRAVITY_PROVIDER_ID);
-        // 오너 결정 2026-11-23: 공장 기본은 Claude 다(2026-11-19 ChatGPT 에서 바뀜). 옛 저장값을 읽는 기본 제공자는 그대로 Antigravity 다.
-        expect(defaultAiConfig().providerId).toBe("anthropic");
+        // 오너 결정 2026-11-28: 공장 기본은 ChatGPT GPT-6.2 Sol high 다. 옛 저장값을 읽는 기본 제공자는 그대로 Antigravity 다.
+        expect(defaultAiConfig().providerId).toBe(CODEX_PROVIDER_ID);
       });
 
       it("처음 세 제공자는 순서가 고정이고, 나머지는 뒤에 덧붙기만 한다 — 순서가 바뀌어도 기존 사용자는 넘어가지 않는다", () => {
         // 2026-11-02: 예전에는 「둘뿐」 이었다. 이제 OMP 가 로그인해 둔 제공자를 그대로 쓰므로 목록이 늘었다.
-        // 2026-11-16: 권장 제공자가 Claude 가 되어 맨 앞에 섰다. 2026-11-19: ChatGPT 가 맨 앞에 섰다. 2026-11-23: 다시 Claude 가 맨 앞이다(오너 결정 — 조수는 Sonnet 5.5 high).
+        // 2026-11-16: Claude → 2026-11-19: ChatGPT → 2026-11-23: Claude → 2026-11-28: 다시 ChatGPT 가 맨 앞이다(오너 결정 — 조수는 GPT-6.2 Sol high).
         // 첫 항목은 권장값일 뿐이다 — 옛 저장값·모르는 id 의 제공자는 순서가 아니라 DEFAULT_OH_MY_PI_PROVIDER(Antigravity)가 정한다.
         const ids = OH_MY_PI_PROVIDERS.map((provider) => provider.id);
         expect(ids.slice(0, 3)).toEqual([
-          "anthropic",
           CODEX_PROVIDER_ID,
+          "anthropic",
           ANTIGRAVITY_PROVIDER_ID,
         ]);
         expect(ids.length).toBeGreaterThan(3);
@@ -765,13 +765,13 @@ describe("credentials", () => {
         expect(editorConnectionKind({ ...GATEWAY, providerId: "zai" })).toBe("oauth");
       });
 
-      it("종류와 무관하게 같은 제공자 목록(앞의 셋은 Claude·ChatGPT·Google)을 노출하고, 사용자에게 선택권이 있다", () => {
+      it("종류와 무관하게 같은 제공자 목록(앞의 셋은 ChatGPT·Claude·Google)을 노출하고, 사용자에게 선택권이 있다", () => {
         // 이전 계약은 "Antigravity 하나만", 그다음은 "둘뿐" 이었다. abaa03e78f(2026-11-02) 로 17종이 됐다.
-        // 2026-11-16(오너 결정)에 Claude 가 맨 앞이었고, 2026-11-19 에 ChatGPT 가 맨 앞이었다가, 2026-11-23(오너 결정: 조수는 Sonnet 5.5 high)부터 다시 Claude 가 맨 앞이다. 앞의 셋 순서가 고정이다.
+        // 2026-11-16 Claude → 2026-11-19 ChatGPT → 2026-11-23 Claude → 2026-11-28(오너 결정: 조수는 GPT-6.2 Sol high)부터 ChatGPT 가 맨 앞이다. 앞의 셋 순서가 고정이다.
         for (const kind of ["oauth", "apiKey"] as const) {
           expect(providersForKind(kind).map((provider) => provider.id).slice(0, 3)).toEqual([
-            "anthropic",
             CODEX_PROVIDER_ID,
+            "anthropic",
             ANTIGRAVITY_PROVIDER_ID,
           ]);
           expect(providersForKind(kind).length).toBeGreaterThan(3);
@@ -780,11 +780,11 @@ describe("credentials", () => {
         expect(editorHasProviderChoice()).toBe(true);
       });
 
-      it("목록의 첫 항목은 기본 제공자(Claude)이고 두 종류의 기본값이 같다", () => {
-        expect(providersForKind("oauth")[0]?.id).toBe("anthropic");
-        expect(defaultProviderForKind("oauth")).toBe("anthropic");
+      it("목록의 첫 항목은 기본 제공자(ChatGPT)이고 두 종류의 기본값이 같다", () => {
+        expect(providersForKind("oauth")[0]?.id).toBe(CODEX_PROVIDER_ID);
+        expect(defaultProviderForKind("oauth")).toBe(CODEX_PROVIDER_ID);
         // "API 키" 쪽에 내놓을 제공자가 없으므로 가짜 apiKey 제공자를 만들지 않고 같은 기본값을 쓴다.
-        expect(defaultProviderForKind("apiKey")).toBe("anthropic");
+        expect(defaultProviderForKind("apiKey")).toBe(CODEX_PROVIDER_ID);
         expect(ohMyPiAuthKind(defaultProviderForKind("apiKey"))).toBe("oauth");
       });
 
@@ -963,14 +963,14 @@ describe("credentials", () => {
   describe("ohMyPiProviders", () => {
     isolateTimers();
     describe("oh-my-pi provider catalog", () => {
-      it("앞의 셋은 고정이고 권장 제공자(Claude)가 맨 앞이다", () => {
+      it("앞의 셋은 고정이고 권장 제공자(ChatGPT)가 맨 앞이다", () => {
         expect(OH_MY_PI_PROVIDERS.map((provider) => provider.id).slice(0, 3)).toEqual([
-          "anthropic",
           CODEX_PROVIDER_ID,
+          "anthropic",
           ANTIGRAVITY_PROVIDER_ID,
         ]);
         expect(OH_MY_PI_PROVIDERS.length).toBeGreaterThan(3);
-        expect(RECOMMENDED_OH_MY_PI_PROVIDER).toBe("anthropic");
+        expect(RECOMMENDED_OH_MY_PI_PROVIDER).toBe(CODEX_PROVIDER_ID);
         expect(OH_MY_PI_PROVIDERS[0]?.id).toBe(RECOMMENDED_OH_MY_PI_PROVIDER);
       });
 

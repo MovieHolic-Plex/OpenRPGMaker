@@ -32,15 +32,15 @@ describe("localCliDefaultOrder", () => {
     defaults: { routine, deep }, install: { command: "", help: "", url: "" }, login: { command: "", help: "" },
   });
   describe("pickDefaultLocalCli", () => {
-    it("prefers Claude over Codex (ChatGPT) and Gemini when several are ready, whatever the row order", () => {
-      expect(LOCAL_CLI_DEFAULT_ORDER).toEqual(["claude", "codex", "gemini"]);
+    it("prefers Codex (ChatGPT) over Claude and Gemini when several are ready, whatever the row order", () => {
+      expect(LOCAL_CLI_DEFAULT_ORDER).toEqual(["codex", "claude", "gemini"]);
       const rows = [row("claude", "ready", "claude-sonnet-5-5", "claude-sonnet-5-5"), row("codex", "ready", "gpt-6-luna", "gpt-6.2-sol"), row("gemini", "ready", "auto", "auto")];
-      expect(pickDefaultLocalCli(rows)).toEqual({ provider: "local-cli:claude", routineModel: "claude-sonnet-5-5", deepModel: "claude-sonnet-5-5" });
-      expect(pickDefaultLocalCli([...rows].reverse())?.provider).toBe("local-cli:claude");
+      expect(pickDefaultLocalCli(rows)).toEqual({ provider: "local-cli:codex", routineModel: "gpt-6-luna", deepModel: "gpt-6.2-sol" });
+      expect(pickDefaultLocalCli([...rows].reverse())?.provider).toBe("local-cli:codex");
     });
 
-    it("falls back to Codex (ChatGPT), then Gemini, when Claude is not ready, and to nothing when none is", () => {
-      expect(pickDefaultLocalCli([row("claude", "login-required", "", ""), row("codex", "ready", "gpt-6-luna", "gpt-6.2-sol"), row("gemini", "ready", "auto", "auto")])).toEqual({ provider: "local-cli:codex", routineModel: "gpt-6-luna", deepModel: "gpt-6.2-sol" });
+    it("falls back to Claude, then Gemini, when Codex is not ready, and to nothing when none is", () => {
+      expect(pickDefaultLocalCli([row("codex", "login-required", "", ""), row("claude", "ready", "claude-sonnet-5-5", "claude-sonnet-5-5"), row("gemini", "ready", "auto", "auto")])).toEqual({ provider: "local-cli:claude", routineModel: "claude-sonnet-5-5", deepModel: "claude-sonnet-5-5" });
       expect(pickDefaultLocalCli([row("claude", "not-installed", "", ""), row("codex", "error", "", ""), row("gemini", "ready", "auto", "auto")])?.provider).toBe("local-cli:gemini");
       expect(pickDefaultLocalCli([row("claude", "login-required", "", "")])).toBeUndefined();
     });

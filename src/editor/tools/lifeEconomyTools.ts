@@ -101,6 +101,19 @@ function requireEquipmentId(draft: Project, value: unknown, label: string): Item
   return id;
 }
 
+function requireItemOrEquipmentId(draft: Project, value: unknown, label: string): ItemId {
+  const id = typeof value === "string" ? value.trim() : "";
+  const knownItems = itemIds(draft);
+  const knownEquipment = draft.database.equipment.map((record) => record.id);
+  if (!id || (!knownItems.includes(id) && !knownEquipment.includes(id))) {
+    throw new ToolError(
+      `${label}='${id}'는 database.items 또는 database.equipment 에 없는 ID입니다. 사용 가능한 itemId: ${sampleIds(knownItems)} / equipmentId: ${sampleIds(knownEquipment)} — 없으면 upsert_item 또는 upsert_equipment 로 먼저 만드세요.`,
+      { code: "item-not-found" },
+    );
+  }
+  return id;
+}
+
 function requireSwitchId(draft: Project, value: unknown, label: string): string {
   const id = typeof value === "string" ? value.trim() : "";
   const known = draft.switches.map((entry) => entry.id);
@@ -134,7 +147,7 @@ function upsertById<T extends { readonly id: string }>(list: readonly T[], recor
 const upsertCraftRecipe: ToolDefinition = {
   name: "upsert_craft_recipe",
   description:
-    "제작 레시피(system.craftRecipes)를 id 기준으로 등록/수정한다. Database 생활·제작 탭의 제작법 행과 같은 저작 데이터. 재료/산출 itemId 는 database.items 에서 검증한다.",
+    "제작 레시피(system.craftRecipes)를 id 기준으로 등록/수정한다. Database 생활·제작 탭의 제작법 행과 같은 저작 데이터. 재료 itemId 는 database.items, 산출 outputItemId 는 database.items 또는 database.equipment(무기·방어구·장신구)에서 검증한다.",
   mode: "write",
   parameters: CRAFT_RECIPE_PARAMS,
   invalidArgsExample: { recipe: { id: "recipe_plank", name: "판자", ingredients: [{ itemId: "wood", count: 2 }], outputItemId: "plank", outputCount: 1 } },
@@ -146,7 +159,7 @@ const upsertCraftRecipe: ToolDefinition = {
       id,
       ...(optionalText(record, "name") !== undefined ? { name: optionalText(record, "name") } : {}),
       ingredients: record.ingredients === undefined ? [] : parseIngredients(draft, record.ingredients, "recipe.ingredients"),
-      outputItemId: requireItemId(draft, record.outputItemId, "recipe.outputItemId"),
+      outputItemId: requireItemOrEquipmentId(draft, record.outputItemId, "recipe.outputItemId"),
       ...(optionalCount(record, "outputCount", "recipe", 1) !== undefined ? { outputCount: optionalCount(record, "outputCount", "recipe", 1) } : {}),
       ...(optionalCount(record, "goldCost", "recipe") !== undefined ? { goldCost: optionalCount(record, "goldCost", "recipe") } : {}),
       ...(typeof record.requiresUnlock === "boolean" ? { requiresUnlock: record.requiresUnlock } : {}),

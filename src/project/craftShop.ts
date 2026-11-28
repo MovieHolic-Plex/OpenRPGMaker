@@ -43,8 +43,10 @@ export function craftShopRecipeIds(project: Project, command: OpenCraftShopComma
 
 export function craftShopRows(project: Project, session: PlaySession, command: OpenCraftShopCommand): CraftShopRow[] {
   const items = new Map(project.database.items.map((item) => [item.id, item]));
-  const name = (id: string): string => items.get(id)?.name ?? id;
-  const icon = (id: string): string | undefined => items.get(id)?.iconResourceId ?? items.get(id)?.imageResourceId;
+  const equipment = new Map(project.database.equipment.map((entry) => [entry.id, entry]));
+  const name = (id: string): string => items.get(id)?.name ?? equipment.get(id)?.name ?? id;
+  const icon = (id: string): string | undefined =>
+    items.get(id)?.iconResourceId ?? items.get(id)?.imageResourceId ?? equipment.get(id)?.iconResourceId;
   return craftShopRecipeIds(project, command).flatMap((recipeId) => {
     const recipe = craftRecipesOf(project).find((entry) => entry.id === recipeId);
     if (!recipe) return [];
@@ -59,7 +61,7 @@ export function craftShopRows(project: Project, session: PlaySession, command: O
     }));
     const goldCost = recipe.goldCost ?? 0;
     const reason = check.ok ? undefined : craftShopReason(check, ingredients, goldCost, session.gold);
-    const output = items.get(recipe.outputItemId);
+    const output = items.get(recipe.outputItemId) ?? equipment.get(recipe.outputItemId);
     const iconResourceId = icon(recipe.outputItemId);
     return [{
       recipeId,
@@ -103,7 +105,9 @@ export function craftShopOnce(project: Project, session: PlaySession, command: O
 export const CRAFT_SHOP_MAX_COUNT = 99;
 
 function craftShopItemName(project: Project, id: string): string {
-  return project.database.items.find((item) => item.id === id)?.name ?? id;
+  return project.database.items.find((item) => item.id === id)?.name
+    ?? project.database.equipment.find((entry) => entry.id === id)?.name
+    ?? id;
 }
 
 /** 재료·골드를 사본 세션에서 실제로 차감해 세어 본다 — 넘침·잠금·중복 재료까지 craftRecipe 규칙 그대로. */

@@ -30,7 +30,7 @@ export const VILLAGE_CARD =
   "theme: river (grassland; a river or not is set by water) · coast (fishing port) · desert (oasis) · snow · swamp (stilt village). " +
   "Land hints: landform · water · high (north|south|west|east|center) · tiers. " +
   "features: plaza · scatter (scattered farms) · harbour (port, big map) · walls (river·desert·snow, flat land) · forest · dense forest · conifer. " +
-  "Other hints: houseCount (3–5) · roofs (red|slate|moss|log) · woods (edge|dense) · forestType · wallGate (S|N|NS) · width · height · variant. " +
+  "Other hints: houseCount (3–5) · roofs (red|slate|moss|log) · woods (edge|dense) · forestType · wallGate (S|N|NS|NE|NW|SE|SW) · width · height · variant. " +
   "Asked buildings (cathedral, inn…): hints.buildings [kit id or word]. A village with houses cannot be rebuilt — put everything in the building call. " +
   `${SHEER_KINDS_CARD_LINE} ` +
   `hints.kind (optional, river·coast): village kind id, e.g. ${VILLAGE_KIND_EXAMPLES.join(" · ")}. Omitted, the game picks one. The land answer and any unknown id list all ${BEODEUL_VILLAGE_KINDS.length}.`;

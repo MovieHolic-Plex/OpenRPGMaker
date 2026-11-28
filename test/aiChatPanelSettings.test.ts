@@ -134,7 +134,7 @@ describe("설정 자동 저장", () => {
     // 고르는 것은 제공자다. 종류 카드는 사라졌고, 제공자 카드를 골라도 전송은 바뀌지 않는다.
     const panel = renderPanel();
     const modal = openSettingsSurface(panel);
-    expect(loadAiConfig()).toMatchObject({ authMode: "chatgpt", providerId: "anthropic" });
+    expect(loadAiConfig()).toMatchObject({ authMode: "chatgpt", providerId: "openai-codex" });
 
     const googleCard = findByTestId(modal, "ai-auth-quick-google-antigravity");
     if (!googleCard) throw new Error("Google provider card missing");
@@ -160,8 +160,8 @@ describe("설정 자동 저장", () => {
       select.querySelectorAll("option").map((option) => option.getAttribute("value") ?? "");
 
     expect(values()).toEqual(OH_MY_PI_PROVIDERS.map((provider) => provider.id));
-    // 2026-11-23(오너 결정: 조수는 Sonnet 5.5 high)부터 권장 제공자 Claude 가 맨 앞이다(2026-11-19 에는 ChatGPT 였다).
-    expect(values().slice(0, 3)).toEqual(["anthropic", "openai-codex", "google-antigravity"]);
+    // 2026-11-28(오너 결정: 조수는 GPT-6.2 Sol high)부터 권장 제공자 ChatGPT 가 맨 앞이다(2026-11-23 에는 Claude 였다).
+    expect(values().slice(0, 3)).toEqual(["openai-codex", "anthropic", "google-antigravity"]);
     expect(providersForKind("oauth")).toEqual(providersForKind("apiKey"));
   });
 
@@ -238,18 +238,15 @@ describe("설정 자동 저장", () => {
     model.dispatchEvent(new Event("change"));
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    // 빈 칸은 그 설정 제공자의 기본 모델로 저장된다 — 공장 기본 제공자는 Claude 다(2026-11-23), 그래서 Claude 카탈로그 첫 항목 claude-sonnet-5-5.
-    // 기본 모델은 제공자 카탈로그 ID 다 — 인증이 OAuth 하나뿐이므로 게이트웨이 ID
-    // (옛 기본값 cpen/gpt-5-6-luna)는 쓸 수 없다. 카탈로그 밖 ID 는 오류 없이 제공자 기본
-    // 모델로 강등되므로, 저장 시점 기본값 자체가 카탈로그 안이어야 한다.
-    expect(stored.providerId).toBe("anthropic");
-    expect(stored.model).toBe("claude-sonnet-5-5");
+    // 빈 칸은 그 설정 제공자의 기본 모델로 저장된다 — 공장 기본 제공자는 ChatGPT 다(2026-11-28), 그래서 Codex 카탈로그 첫 항목 gpt-6.2-sol.
+    expect(stored.providerId).toBe("openai-codex");
+    expect(stored.model).toBe("gpt-6.2-sol");
     expect(isModelValidForAuthMode("chatgpt", stored.model, stored.providerId)).toBe(true);
     // Google 계정의 기본 모델 상수는 그대로다(옛 저장값의 모델 기본).
     expect(DEFAULT_MODEL).toBe("gemini-4-argon");
-    expect(loadAiConfig().model).toBe("claude-sonnet-5-5");
-    // 실행(lite) 칸은 건드리지 않았으므로 공장 기본(Sonnet 5.5) 그대로다.
-    expect(loadAiConfig().liteModel).toBe("claude-sonnet-5-5");
+    expect(loadAiConfig().model).toBe("gpt-6.2-sol");
+    // 실행(lite) 칸은 건드리지 않았으므로 공장 기본(GPT-6.2 Sol) 그대로다.
+    expect(loadAiConfig().liteModel).toBe("gpt-6.2-sol");
   });
 
   it("모델 필드는 자유 입력이 가능하고 입력값이 그대로 저장된다", async () => {
@@ -276,9 +273,9 @@ describe("설정 자동 저장", () => {
     liteModel.dispatchEvent(new Event("change"));
 
     const stored = JSON.parse(storage.get(AI_CONFIG_STORAGE_KEY) ?? "{}");
-    // 공장 기본 제공자는 Claude 다(2026-11-23) — 빈 칸에 Google 의 기본 모델 이름(gemini-4-argon)을 적지 않는다.
-    expect(stored.providerId).toBe("anthropic");
-    expect(stored.liteModel).toBe("claude-sonnet-5-5");
+    // 공장 기본 제공자는 ChatGPT 다(2026-11-28) — 빈 칸에 Google 의 기본 모델 이름(gemini-4-argon)을 적지 않는다.
+    expect(stored.providerId).toBe("openai-codex");
+    expect(stored.liteModel).toBe("gpt-6.2-sol");
     expect(isModelValidForAuthMode("chatgpt", stored.liteModel, stored.providerId)).toBe(true);
     // Google 계정의 실행 모델 기본값도 감독과 동일(단일 모델 기본) — 예전 flash-lite pin 이 아니다.
     expect(DEFAULT_LITE_MODEL).toBe("gemini-4-argon");

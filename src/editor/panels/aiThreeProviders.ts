@@ -251,7 +251,7 @@ function activeModelAndEffort(family: CoreProviderFamily): { model: string; effo
 
 export function renderAiThreeProviders(options: AiThreeProvidersOptions): AiThreeProvidersView {
   let disposed = false;
-  let selected: CoreProviderFamily = familyOfProvider(currentProviderId()) ?? "claude";
+  let selected: CoreProviderFamily = familyOfProvider(currentProviderId()) ?? "gpt";
   let showApiKeyFor: CoreProviderFamily | null = null;
   let apiKeyBusy = false;
   let apiKeyStatusText = "";

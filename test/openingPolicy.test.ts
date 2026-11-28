@@ -15,8 +15,9 @@ import { OPENING_STAGE_TOOLS } from "@/editor/tools/openingStageTools";
 import { coerceToolArgs } from "@/ai/piAgent/argCoerce";
 
 describe("openingPolicy", () => {
-  it("limits high tier strictly to Sonnet, Opus, Fable, Astra, Neon, Carbon, Argon", () => {
+  it("limits high tier strictly to Sol, Sonnet, Opus, Fable, Astra, Neon, Carbon, Argon", () => {
     const highModels = [
+      "gpt-6.2-sol",
       "claude-sonnet-5-5",
       "claude-opus-5-5",
       "fable-5-2",
@@ -35,7 +36,6 @@ describe("openingPolicy", () => {
       "gemini-3.8-flash",
       "claude-haiku-5-5",
       "gpt-6.1-terra",
-      "gpt-6.2-sol",
       "gpt-6-luna",
       "deepseek-v4.1-flash",
       "gpt-5.4-mini",

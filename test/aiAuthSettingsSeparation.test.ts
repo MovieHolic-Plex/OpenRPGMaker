@@ -422,9 +422,9 @@ describe("OAuth 빠른 선택", () => {
     return event as KeyboardEvent;
   }
 
-  it("퀵 그룹은 Codex·Claude·Gemini 카드를 보여 주고, 새 설정은 Claude 카드가 선택돼 있다", async () => {
+  it("퀵 그룹은 Codex·Claude·Gemini 카드를 보여 주고, 새 설정은 ChatGPT(Codex) 카드가 선택돼 있다", async () => {
     // 감독 요구 변경: Codex 도 1급 선택지다. 카드가 모두 실재하고, 선택된 것만 체크·탭 가능이다
-    // (roving tabindex — 라디오 그룹 표준). 공장 기본은 Claude 다(2026-11-23, 그 전 2026-11-19 는 ChatGPT).
+    // (roving tabindex — 라디오 그룹 표준). 공장 기본은 ChatGPT 다(2026-11-28, 그 전 2026-11-23 는 Claude).
     const { root, dispose } = await renderFactory();
     expect(findByTestId(root, "ai-auth-quick")?.hidden).toBe(false);
     const claude = findByTestId(root, "ai-auth-quick-anthropic");
@@ -433,12 +433,12 @@ describe("OAuth 빠른 선택", () => {
     expect(claude).not.toBeNull();
     expect(gemini).not.toBeNull();
     expect(codex).not.toBeNull();
-    expect(claude?.getAttribute("aria-checked")).toBe("true");
-    expect(claude?.getAttribute("tabindex")).toBe("0");
+    expect(codex?.getAttribute("aria-checked")).toBe("true");
+    expect(codex?.getAttribute("tabindex")).toBe("0");
+    expect(claude?.getAttribute("aria-checked")).toBe("false");
+    expect(claude?.getAttribute("tabindex")).toBe("-1");
     expect(gemini?.getAttribute("aria-checked")).toBe("false");
     expect(gemini?.getAttribute("tabindex")).toBe("-1");
-    expect(codex?.getAttribute("aria-checked")).toBe("false");
-    expect(codex?.getAttribute("tabindex")).toBe("-1");
     dispose();
   });
 
@@ -474,10 +474,10 @@ describe("OAuth 빠른 선택", () => {
   });
 
   it("화살표가 카드 사이를 순환한다 (앞의 둘 사이 이동 + 끝에서 처음으로)", async () => {
-    // 카드 순서는 레지스트리 순서다 — 맨 앞이 Claude(공장 기본, 2026-11-23), 둘째가 ChatGPT.
+    // 카드 순서는 레지스트리 순서다 — 맨 앞이 ChatGPT(공장 기본, 2026-11-28), 둘째가 Claude.
     const { root, dispose } = await renderFactory();
-    const first = findByTestId(root, "ai-auth-quick-anthropic");
-    const second = findByTestId(root, "ai-auth-quick-openai-codex");
+    const first = findByTestId(root, "ai-auth-quick-openai-codex");
+    const second = findByTestId(root, "ai-auth-quick-anthropic");
 
     findByTestId(root, "ai-auth-quick")?.dispatchEvent(keydown("ArrowDown"));
     expect(second?.getAttribute("aria-checked")).toBe("true");

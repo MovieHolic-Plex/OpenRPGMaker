@@ -1,6 +1,7 @@
 /** @vitest-environment happy-dom */
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { clearCachedAuthStatus } from "@/ai/authStatusCache";
+import { AI_CONFIG_STORAGE_KEY } from "@/ai/llmClient";
 import { renderAiThreeProviders } from "@/editor/panels/aiThreeProviders";
 import { getStartupAiHealth, resetStartupAiHealthForTests, runStartupAiHealthCheck } from "@/editor/panels/aiStartupHealth";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
@@ -81,6 +82,8 @@ describe("AI 3대장 설정(GPT · Claude · Gemini) 및 시작 시 health 점�
   });
 
   it("GPT · Claude · Gemini 3버튼을 보여 주고 클릭으로 선택·전환한다", async () => {
+    // 공장 기본은 GPT(openai-codex)이므로, 다른 제공자(Claude)에서 GPT로 전환하는 경로를 본다.
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ authMode: "chatgpt", providerId: "anthropic" }));
     vi.stubGlobal("fetch", async (input: string) => {
       const url = new URL(input, "http://oprn.invalid");
       if (url.pathname === "/auth/status" && url.searchParams.get("provider") === "openai-codex") {
@@ -111,7 +114,7 @@ describe("AI 3대장 설정(GPT · Claude · Gemini) 및 시작 시 health 점�
     gptBtn.click();
     expect(gptBtn.getAttribute("aria-selected")).toBe("true");
     findByTestId(root, "ai-provider-use-gpt")?.click();
-    expect(onSelectOAuthProvider).toHaveBeenCalledWith("openai-codex", "gpt-6.2-sol", "medium");
+    expect(onSelectOAuthProvider).toHaveBeenCalledWith("openai-codex", "gpt-6.2-sol", "high");
 
     geminiBtn.click();
     expect(geminiBtn.getAttribute("aria-selected")).toBe("true");
