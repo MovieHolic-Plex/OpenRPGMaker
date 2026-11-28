@@ -104,7 +104,9 @@ export interface EditorState {
   reliefDoodad: string | null;
   /** 지형지물 팝업이 열려 있는가. */
   reliefDoodadOpen: boolean;
-  terrainBrush: "height" | "surface" | "river" | "group" | "land" | TerrainDesignTool;
+  terrainBrush: "crayon" | "height" | "surface" | "river" | "group" | "land" | TerrainDesignTool;
+  terrainContextOverride: import("./terrainCrayons").TerrainContextKind | null;
+  terrainCrayonId: import("./terrainCrayons").TerrainCrayonId | null;
   terrainLand: import("./terrainLandBrush").TerrainLand;
   terrainLandSize: import("./terrainLandBrush").TerrainLandSize;
   /** 「땅 올리기」「땅 내리기」 — 끌기 첫 칸보다 한 층(2단) 높게·낮게 맞춘다. null 이면 terrainLand 그대로. */
@@ -199,7 +201,9 @@ class EditorStateStore {
     reliefTopGrass: true,
     reliefDoodad: null,
     reliefDoodadOpen: false,
-    terrainBrush: "land",
+    terrainBrush: "crayon",
+    terrainContextOverride: null,
+    terrainCrayonId: null,
     terrainLand: 2,
     terrainLandSize: 3,
     terrainLandStep: null,
@@ -404,7 +408,7 @@ const EVENT_EDITOR_IGNORED_KEYS: ReadonlySet<keyof EditorState> = new Set<keyof 
   "reliefTopGrass",
   "reliefDoodad",
   "reliefDoodadOpen",
-  "terrainBrush", "terrainLand", "terrainLandSize", "terrainLandStep", "terrainPreset", "terrainMaterial", "terrainWidth", "reliefRampWidth", "reliefBridgeStart",
+  "terrainBrush", "terrainContextOverride", "terrainCrayonId", "terrainLand", "terrainLandSize", "terrainLandStep", "terrainPreset", "terrainMaterial", "terrainWidth", "reliefRampWidth", "reliefBridgeStart",
   "terrainDesignOpen", "terrainSymmetry", "terrainDelta", "terrainAreaShape", "terrainStampName", "terrainSeed", "terrainMixWeights",
   "terrainLakeLevel", "terrainLakeDepth", "terrainShallowWidth", "terrainRoadFlatten", "terrainUnlock",
   "terrainFeatureId", "terrainDragPoint", "terrainFinishMethod", "terrainFinishPasses",

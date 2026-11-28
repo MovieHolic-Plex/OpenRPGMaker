@@ -43,6 +43,7 @@ import { MAX_TOOL_MAP_DIMENSION } from "@/project/mapSizeLimits";
 import { SEASONS, TIME_PHASES, type Season, type TimePhase } from "@/project/gameTime";
 import { store } from "@/project/store";
 import { normalizeSunlight, SUNLIGHT_LIMITS, sunDirectionLabel } from "@/project/sunlight";
+import { DEFAULT_TERRAIN_GAMEPLAY } from "@/project/terrainDesign";
 import { mapLocations } from "@/project/mapNamedLocations";
 import { renderLocationDrawCta } from "@/editor/locationDrawCta";
 import {
@@ -71,7 +72,7 @@ const TAB_LABELS: Record<MapPropsTab, string> = {
   background: "맵 배경",
   clouds: "구름 그림자",
   transit: "탈것(차·버스·전차)",
-  sunlight: "태양과 그림자",
+  sunlight: "태양·그림자·시야",
   atmosphere: "환경 효과",
   bgm: "배경 음악",
   battle: "전투 배경",
@@ -132,7 +133,8 @@ let bgmPreview: AudioPreviewSession | null = null;
 function sectionSummary(tab: MapPropsTab, map: import("@/project/types").GameMap): string {
   if (tab === "sunlight") {
     const sun = normalizeSunlight(map.sunlight);
-    return sun.enabled ? `${sunDirectionLabel(sun.azimuth)}쪽 태양 · 고도 ${sun.altitude}°` : "꺼짐";
+    const visionText = map.terrainDesign?.gameplay?.visionBlocking ? ` · 시야 차단(${map.terrainDesign.gameplay.visionRadius ?? DEFAULT_TERRAIN_GAMEPLAY.visionRadius}칸)` : "";
+    return (sun.enabled ? `${sunDirectionLabel(sun.azimuth)}쪽 태양 · 고도 ${sun.altitude}°` : "태양 꺼짐") + visionText;
   }
   const project = store.getCurrent();
   const resourceName = (id: string | undefined): string =>
@@ -1595,6 +1597,35 @@ function renderSunlightTab(host: HTMLElement, map: import("@/project/types").Gam
       value: sun.softness, normalize: v => clampSlider(v, 0, 4), describe: v => v === 0 ? "선명하게" : `${v} — 부드럽게`, apply: softness => setMapSunlight(map.id, { softness }) });
     appendSliderRow(section, { label: "집·나무의 그림자 높이 (%)", testid: "map-sunlight-height", min: 25, max: 200, step: 5,
       value: Math.round(sun.heightScale * 100), normalize: v => clampSlider(v, 25, 200), describe: v => `${v}% — 집·나무의 그림자 길이를 조절합니다.`, apply: v => setMapSunlight(map.id, { heightScale: v / 100 }) });
+  }
+  const gp = { ...DEFAULT_TERRAIN_GAMEPLAY, ...map.terrainDesign?.gameplay };
+  const visionCheck = el("input", { attrs: { type: "checkbox" }, dataset: { testid: "map-vision-blocking" } }) as HTMLInputElement;
+  visionCheck.checked = gp.visionBlocking;
+  visionCheck.addEventListener("change", () => {
+    store.updateMap(map.id, (draft) => {
+      draft.terrainDesign ??= {};
+      draft.terrainDesign.gameplay = { ...DEFAULT_TERRAIN_GAMEPLAY, ...draft.terrainDesign.gameplay, visionBlocking: visionCheck.checked };
+    }, { label: "맵 시야 차단 설정" });
+    rerender(host);
+  });
+  const visionRow = el("label", { class: "map-props-check-row" });
+  visionRow.append(visionCheck, el("span", { text: "벽·절벽·나무가 주인공/NPC 시야를 차단 (전장의 안개)" }));
+  section.append(visionRow);
+  if (gp.visionBlocking) {
+    appendSliderRow(section, {
+      label: "기본 시야 반경 (칸)",
+      testid: "map-vision-radius",
+      min: 3,
+      max: 24,
+      step: 1,
+      value: gp.visionRadius,
+      normalize: (v) => clampSlider(v, 3, 24),
+      describe: (v) => `${v}칸 반경까지 보입니다.`,
+      apply: (visionRadius) => store.updateMap(map.id, (draft) => {
+        draft.terrainDesign ??= {};
+        draft.terrainDesign.gameplay = { ...DEFAULT_TERRAIN_GAMEPLAY, ...draft.terrainDesign.gameplay, visionRadius };
+      }, { label: "시야 반경 변경" }),
+    });
   }
   host.append(section);
 }

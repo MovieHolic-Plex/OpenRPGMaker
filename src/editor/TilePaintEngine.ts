@@ -35,6 +35,18 @@ import { planEditorTerrainDoodad, planEditorGroupMove } from "./terrainDoodadPla
 import { groupAt } from "./terrainClusters";
 import { paintTerrainBrush } from "./terrainBrush";
 import { landBrushCells, landRectCells, landStepTarget, paintLandCells, terrainLandLabel, type TerrainLand } from "./terrainLandBrush";
+import {
+  detectTerrainContext,
+  eraserCrayonForContext,
+  isAsphaltCell,
+  paintForestCrayonAt,
+  paintReliefCrayonCells,
+  paintTileCrayonCells,
+  resolveActiveCrayon,
+  type TerrainContextKind,
+  type TerrainCrayonDef,
+} from "./terrainCrayons";
+import { paintFlatRoadStroke, resolveFlatHillTargetTier } from "./flatGridTerrain";
 import { applyTerrainPreset, TERRAIN_PRESETS } from "./terrainPresets";
 import type { ReliefBrushMode } from "@/project/relief/edit";
 import { RELIEF_ROUGH_RADII } from "@/project/relief/roughBrush";
@@ -113,6 +125,13 @@ export class TilePaintEngine {
   private terrainLast: { x: number; y: number } | null = null;
   private landStrokeLand: TerrainLand = 0;
   private landStrokeRect = false;
+  private crayonStrokeContext: TerrainContextKind = "outdoor";
+  private crayonStrokeDef: TerrainCrayonDef | null = null;
+  private crayonStrokeEraser = false;
+  private crayonStrokeStartedOnAsphalt = false;
+  private crayonStrokeRoad = false;
+  private crayonStrokeTargetTier = 1;
+  private crayonForestLast: { x: number; y: number } | null = null;
   private rampDrag: { mapId: MapId; start: { x: number; y: number; face: "top" | "wall" }; end: { x: number; y: number } } | null = null;
 
   constructor(private readonly deps: TilePaintEngineDeps) {}
@@ -382,6 +401,91 @@ export class TilePaintEngine {
       }
       return;
     }
+    if (state.terrainBrush === "crayon" && !state.reliefDoodad) {
+      // 안 A: 크레용 개략도는 항상 화면 격자 1:1 좌표(groundX, groundY)에서 그대로 작동한다.
+      const flatPick = { x: groundX, y: groundY };
+      if (firstStrokeTile) {
+        this.stopReliefGrowth();
+        this.terrainLast = null;
+        this.crayonForestLast = null;
+        const right = ptr.button === 2 || ptr.rightButtonDown();
+        const context = state.terrainContextOverride ?? detectTerrainContext(map, tileset);
+        const active = right
+          ? eraserCrayonForContext(context, tileset)
+          : resolveActiveCrayon(context, tileset, state.terrainCrayonId);
+        this.crayonStrokeContext = context;
+        this.crayonStrokeDef = active;
+        this.crayonStrokeEraser = right;
+        this.crayonStrokeStartedOnAsphalt = isAsphaltCell(map, tileset, flatPick.x, flatPick.y);
+        this.crayonStrokeRoad = active.kind === "road" && !right;
+        const cliffMode = context === "dungeon" ? "dungeon" : "outdoor";
+        this.crayonStrokeTargetTier =
+          active.kind === "hill"
+            ? resolveFlatHillTargetTier(map, tileset, flatPick.x, flatPick.y, "raise", cliffMode)
+            : active.kind === "ground"
+              ? resolveFlatHillTargetTier(map, tileset, flatPick.x, flatPick.y, "flatten", cliffMode)
+              : 0;
+        this.landStrokeLand =
+          active.kind === "water" ? "water"
+          : active.kind === "ground" ? 0
+          : active.kind === "hill" ? 2
+          : 0;
+        this.landStrokeRect = !this.crayonStrokeRoad && active.kind !== "forest" && (state.terrainLandSize === "rect" || pointerShiftKey(ptr));
+      }
+      const active = this.crayonStrokeDef;
+      if (!active) return;
+
+      if (this.crayonStrokeRoad) {
+        const points = firstStrokeTile ? [] : state.terrainPoints?.mapId === mid ? state.terrainPoints.points : [];
+        if (points.at(-1)?.x === flatPick.x && points.at(-1)?.y === flatPick.y) return;
+        if (points.length < 256) editorState.set({ terrainPoints: { mapId: mid, points: [...points, { x: flatPick.x, y: flatPick.y }] } });
+        return;
+      }
+
+      if (this.landStrokeRect) {
+        const start = firstStrokeTile || state.terrainLandRect?.mapId !== mid ? { x: flatPick.x, y: flatPick.y } : state.terrainLandRect.start;
+        editorState.set({ terrainLandRect: { mapId: mid, start, end: { x: flatPick.x, y: flatPick.y } } });
+        return;
+      }
+
+      const size = state.terrainLandSize === "rect" ? 3 : state.terrainLandSize;
+      if (active.kind === "forest") {
+        const minStep = Math.max(2, Math.floor(size / 2) + 1);
+        if (!this.crayonForestLast || Math.hypot(flatPick.x - this.crayonForestLast.x, flatPick.y - this.crayonForestLast.y) >= minStep) {
+          const radius = size <= 1 ? 1 : size <= 3 ? 2 : 4;
+          this.applyStrokeEdit(mid, () => {
+            for (const pt of symmetricPoints(flatPick, state.terrainSymmetry, map.width, map.height)) {
+              paintForestCrayonAt(mid, pt.x, pt.y, radius, 50);
+            }
+          }, { label: "지형 · 숲" });
+          this.crayonForestLast = { x: flatPick.x, y: flatPick.y };
+        }
+        return;
+      }
+
+      const prev = this.terrainLast;
+      const strokeAxis: "horizontal" | "vertical" | null =
+        prev ? (Math.abs(flatPick.x - prev.x) >= Math.abs(flatPick.y - prev.y) ? "horizontal" : "vertical") : null;
+      const centers = strokeCenters(prev ? `${prev.x},${prev.y}` : "", flatPick.x, flatPick.y);
+      const cells = [...new Set(centers.flatMap((c) => symmetricPoints(c, state.terrainSymmetry, map.width, map.height)).flatMap((p) => landBrushCells(map, p, size)))];
+      if (active.kind === "tile") {
+        this.applyStrokeEdit(mid, () => {
+          paintTileCrayonCells(mid, active, cells, {
+            context: this.crayonStrokeContext,
+            isEraser: this.crayonStrokeEraser,
+            startedOnAsphalt: this.crayonStrokeStartedOnAsphalt,
+            strokeAxis,
+          });
+        }, { label: `지형 · ${active.label}` });
+      } else {
+        const tier = this.crayonStrokeTargetTier;
+        this.applyStrokeEdit(mid, () => {
+          paintReliefCrayonCells(mid, this.landStrokeLand, cells, state.reliefTopGrass, false, this.crayonStrokeContext, tier);
+        }, { label: `지형 · ${active.label}` });
+      }
+      this.terrainLast = { x: flatPick.x, y: flatPick.y };
+      return;
+    }
     if (state.terrainBrush === "land" && !state.reliefDoodad && state.terrainPreset) {
       const preset = TERRAIN_PRESETS.find((entry) => entry.id === state.terrainPreset);
       if (firstStrokeTile && preset && !(ptr.button === 2 || ptr.rightButtonDown())) {
@@ -535,6 +639,27 @@ export class TilePaintEngine {
       if (commit) commitQuickHouseDrag();
       else editorState.set({ terrainHouseDrag: null });
     }
+    if (this.crayonStrokeRoad) {
+      this.crayonStrokeRoad = false;
+      const pts = design.terrainPoints?.mapId === design.currentMapId ? design.terrainPoints.points : [];
+      const roadContext = this.crayonStrokeContext === "dungeon" ? "dungeon" : "outdoor";
+      editorState.set({ terrainPoints: null });
+      const mid = design.currentMapId;
+      if (commit && mid && pts.length >= 2) {
+        const roadWidth = design.terrainLandSize === "rect" ? 3 : Math.min(5, Math.max(1, design.terrainLandSize));
+        let res: { ok: boolean; stairs: number; bridges: number; cells: number } = { ok: false, stairs: 0, bridges: 0, cells: 0 };
+        this.applyStrokeEdit(mid, () => {
+          res = paintFlatRoadStroke(mid, pts, roadWidth, design.terrainSymmetry, roadContext);
+        }, { label: "지형 · 길" });
+        if (res.ok) {
+          const extras = [
+            res.stairs > 0 ? `돌계단 ${res.stairs}곳` : "",
+            res.bridges > 0 ? `나무다리 ${res.bridges}칸` : "",
+          ].filter(Boolean).join(" · ");
+          toast(extras ? `길 ${res.cells}칸 (${extras} 자동 연결)` : `길 ${res.cells}칸`, "info");
+        }
+      }
+    }
     if (design.tool === "relief" && design.terrainBrush === "road" && design.terrainRoadDrag && !design.terrainFeatureId && !design.terrainVisionPreview) {
       if (commit && (design.terrainPoints?.points.length ?? 0) >= 2) commitTerrainDesign();
       else editorState.set({ terrainPoints: null });
@@ -548,10 +673,33 @@ export class TilePaintEngine {
       const map = store.getCurrent().maps[rect.mapId];
       if (commit && map) {
         const cells = [...new Set(symmetryVariants(design.terrainSymmetry, map.width, map.height).flatMap((v) => landRectCells(map, transformPoint(rect.start, map.width, map.height, v), transformPoint(rect.end, map.width, map.height, v))))];
-        const land = this.landStrokeLand;
-        this.applyStrokeEdit(rect.mapId, () => { paintLandCells(rect.mapId, cells, land, design.reliefTopGrass, true); }, { label: `땅 칸 · ${terrainLandLabel(land)}` });
+        if (design.terrainBrush === "crayon" && this.crayonStrokeDef) {
+          const active = this.crayonStrokeDef;
+          const strokeCtx = this.crayonStrokeContext;
+          if (active.kind === "tile") {
+            this.applyStrokeEdit(rect.mapId, () => {
+              paintTileCrayonCells(rect.mapId, active, cells, {
+                context: strokeCtx,
+                isEraser: this.crayonStrokeEraser,
+                startedOnAsphalt: this.crayonStrokeStartedOnAsphalt,
+                strokeAxis: null,
+              });
+            }, { label: `지형 · ${active.label}` });
+          } else {
+            const land = this.landStrokeLand;
+            const tier = this.crayonStrokeTargetTier;
+            this.applyStrokeEdit(rect.mapId, () => {
+              paintReliefCrayonCells(rect.mapId, land, cells, design.reliefTopGrass, true, strokeCtx, tier);
+            }, { label: `지형 · ${active.label}` });
+          }
+        } else {
+          const land = this.landStrokeLand;
+          this.applyStrokeEdit(rect.mapId, () => { paintLandCells(rect.mapId, cells, land, design.reliefTopGrass, true); }, { label: `땅 칸 · ${terrainLandLabel(land)}` });
+        }
       }
     }
+    this.crayonStrokeDef = null;
+    this.crayonForestLast = null;
     if (editorState.get().terrainDragPoint !== null) editorState.set({ terrainDragPoint: null });
     this.terrainLast=null;
     const labeled = this.labeledStroke;

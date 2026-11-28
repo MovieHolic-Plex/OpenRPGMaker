@@ -23,11 +23,11 @@ export function terrainMaterialTile(tileset:TilesetDef|undefined, material:Terra
 
 export function terrainIsReserved(map:GameMap,tileset:TilesetDef,index:number):boolean {
   if (terrainLocked(map.terrainDesign, index) || (map.terrainDesign?.waterDepth?.[index] ?? 0) > 0) return true;
-  if ((map.relief?.ramps?.[index]??0)>0 || layerTileAt(map,3,index)>=0 || layerTileAt(map,4,index)>=0) return true;
+  if ((map.relief?.ramps?.[index]??0)>0 || layerTileAt(map,2,index)>=0 || layerTileAt(map,3,index)>=0 || layerTileAt(map,4,index)>=0) return true;
   if ((topTileInStack(map,"upper",index)??-1)>=0) return true;
   const tile=layerTileAt(map,1,index), meta=tileset.tileMeta?.[tile];
   if (tileset.id === "modern_city" && /^보도 포석/.test(meta?.label ?? "")) return false;
-  if (/road|path|water|river|lake|길|포석|물|호수/i.test(`${meta?.label} ${meta?.tags?.join(" ")}`)) return true;
+  if (/road|path|water|river|lake|cliff|stair|bridge|길|포석|물|호수|절벽|옹벽|계단|다리/i.test(`${meta?.label} ${meta?.tags?.join(" ")}`)) return true;
   return autotileGroupsForTileset(tileset).some(g=>g.id !== "mc:sidewalk" && /road|path|water|river|lake|길|포석|물|호수/i.test(`${g.id} ${g.name}`) && g.memberTileIds.includes(tile));
 }
 

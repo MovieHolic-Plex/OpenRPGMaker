@@ -20,7 +20,7 @@ import { reliefCellLiftPx } from "@/project/relief/screen";
 import { RELIEF_MAX_LEVEL } from "@/project/relief/types";
 import { reliefPaintsCell } from "@/project/relief/screen";
 import { prepareReliefRead, reliefGroundAvailable, reliefTilesetImage } from "./reliefGroundSurface";
-import { tilesetTextureKey } from "./tilesetImage";
+import { ensureTilesetTexture } from "./tilesetImage";
 import { cellLift, reliefLiftField } from "@/project/relief/screen";
 import { terrainReachability } from "@/project/terrainReachability";
 import { renderTerrainDesignOverlay } from "./terrainDesignOverlay";
@@ -360,7 +360,7 @@ function renderTileCellLayer(
     // event 에서도 0.62 로 내린다 — 이벤트 배지만 선명하면 배지가 어디에 떠 있는지가 즉시 읽힌다.
     const lowerAlpha = activeLayer === "upper" ? 0.58 : activeLayer === "event" ? 0.62 : 1;
     const lower = map.lowerTiles[i];
-    const ownsGround = reliefGroundAvailable(map, reliefTilesetImage(context.scene.textures, tilesetTextureKey(tileset)));
+    const ownsGround = reliefGroundAvailable(map, reliefTilesetImage(context.scene.textures, ensureTilesetTexture(context.scene, tileset)));
     // 경사로 도트가 있는 바이옴의 경사로 칸은 relief 경사로 도트가 바닥을 칠한다(게임과 같게) — 타일은 그리지 않는다
     if (lower >= 0 && !ownsGround && !reliefPaintsCell(map.relief, x, y)) {
       const lowerTile = createChipsetTileObject(context.scene, map, tileset, x, y, lower);
