@@ -648,8 +648,14 @@ function renderThemeDetailView(
       gridSlot.replaceChildren(el("div", {
         class: "spatial-theme-objects-grid",
         children: list.map((card) => renderObjectSampleCard(card, card.id === viewState.selectedObjectId, (chosen) => {
-          viewState.selectedObjectId = viewState.selectedObjectId === chosen.id ? null : chosen.id;
-          paintObjects();
+          const prevSelected = viewState.selectedObjectId;
+          viewState.selectedObjectId = prevSelected === chosen.id ? null : chosen.id;
+          renderSelectionBar(viewState.selectedObjectId ? chosen : undefined);
+          for (const btn of gridSlot.querySelectorAll<HTMLButtonElement>(".spatial-theme-obj-card")) {
+            const isSel = btn.dataset.cardId === viewState.selectedObjectId;
+            btn.classList.toggle("is-selected", isSel);
+            btn.setAttribute("aria-pressed", String(isSel));
+          }
         })),
       }));
     };
@@ -873,27 +879,34 @@ export function renderSpatialThemesTab(
     attrs: { role: "tablist", "aria-label": "테마 분류" },
   });
 
-  const paintChips = (): void => {
-    chips.replaceChildren(...SPATIAL_THEME_FILTERS.map((f) => {
-      const label = f.id === "used" && usedThemeCount > 0 ? `${f.label} ${usedThemeCount}` : f.label;
-      const active = viewState.filter === f.id;
-      return el("button", {
-        class: `spatial-themes-chip${active ? " is-active" : ""}`,
-        text: label,
-        attrs: { type: "button", role: "tab", "aria-selected": String(active) },
-        dataset: { testid: `spatial-themes-filter-${f.id}` },
-        on: {
-          click: () => {
-            viewState.filter = f.id;
-            paintChips();
-            paintBody();
-          },
+  const chipButtons = SPATIAL_THEME_FILTERS.map((f) => {
+    const label = f.id === "used" && usedThemeCount > 0 ? `${f.label} ${usedThemeCount}` : f.label;
+    const btn = el("button", {
+      class: "spatial-themes-chip",
+      text: label,
+      attrs: { type: "button", role: "tab", "aria-selected": "false" },
+      dataset: { testid: `spatial-themes-filter-${f.id}`, filterId: f.id },
+      on: {
+        click: () => {
+          viewState.filter = f.id;
+          syncChips();
+          paintBody();
         },
-      });
-    }));
+      },
+    });
+    return btn;
+  });
+  chips.replaceChildren(...chipButtons);
+
+  const syncChips = (): void => {
+    for (const btn of chipButtons) {
+      const active = btn.dataset.filterId === viewState.filter;
+      btn.classList.toggle("is-active", active);
+      btn.setAttribute("aria-selected", String(active));
+    }
   };
 
-  paintChips();
+  syncChips();
   paintBody();
 
   const header = el("header", {

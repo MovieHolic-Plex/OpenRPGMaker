@@ -14,6 +14,7 @@ type BrowserState = {
   tilesetId: string | null;
   page: number;
   selection?: string;
+  preserveFilter?: boolean;
   railScrollTop: number;
   resultsScrollTop: number;
 };
@@ -28,6 +29,7 @@ export function setSpatialAssetBrowserTileset(tilesetId: string | null, query = 
     query,
     tilesetId,
     page: 0,
+    preserveFilter: true,
     railScrollTop: 0,
     resultsScrollTop: 0,
   });
@@ -90,7 +92,10 @@ export function renderSpatialAssetBrowser(session: SpatialAuthoringSession, sele
   const project = visibleAuthoringProject();
   const cards = ownFirst(listSpatialGalleryCards(session));
   const railCounts = countsByTileset(cards);
-  if (selected && state.selection !== selected.id) {
+  if (state.preserveFilter) {
+    state.preserveFilter = false;
+    state.selection = selected?.id;
+  } else if (selected && state.selection !== selected.id) {
     state.selection = selected.id;
     if (!filterSpatialBrowserCards(cards, state.query, state.tilesetId).some(card => card.id === selected.id)) {
       state.query = ""; state.tilesetId = null;
