@@ -22,6 +22,7 @@ export type EventGraphicPreviewResource =
     readonly sheet: { readonly width: number; readonly height: number };
     readonly fitSize?: number;
     readonly propTileScale?: boolean;
+    readonly origin?: { readonly x: number; readonly y: number };
   };
 
 /** Use the map's resource lookup; only charset sheets use RM2000 frame slicing. */
@@ -59,7 +60,15 @@ export function eventGraphicPreviewResource(project: Project, authored: EventPag
     const frameIndex = interactivePropFrameIndex(prop, graphic.pattern);
     const sheet = { width: prop.frameWidth * prop.frames, height: prop.frameHeight };
     const frame = { x: frameIndex * prop.frameWidth, y: 0, width: prop.frameWidth, height: prop.frameHeight };
-    return { kind: "sprite", path: interactivePropStripUrl(prop, project), sheet, frame, frameIndex, propTileScale: true };
+    return {
+      kind: "sprite",
+      path: interactivePropStripUrl(prop, project),
+      sheet,
+      frame,
+      frameIndex,
+      propTileScale: true,
+      origin: { x: prop.anchorX, y: prop.anchorY },
+    };
   }
   return null;
 }

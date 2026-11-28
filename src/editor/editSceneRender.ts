@@ -1,9 +1,10 @@
 import type Phaser from "phaser";
 import { editorState, type Layer, type TileSelection } from "@/editor/editorState";
 import { createChipsetTileObject, createRawChipsetTileObject } from "@/editor/chipsetTileRender";
-import { eventPageAtGameStart, renderEventMarkers } from "@/editor/editSceneEventMarkers";
+import { renderEventMarkers } from "@/editor/editSceneEventMarkers";
 import { editorWorkingEvents } from "@/project/eventDrafts";
 import { normalizeCharacterFootprint, normalizePassRows, passageBounds } from "@/project/footprint";
+import { resolveEventPage } from "@/project/io/pageResolution";
 import { editorCameraBounds } from "@/editor/cameraFocusViewport";
 import { planEditorCameraCenter, viewportCenterWorld } from "@/editor/cameraStability";
 import { cellPassability } from "@/project/collision";
@@ -617,11 +618,21 @@ function renderCollisionOverlay(context: EditSceneRenderContext, map: GameMap): 
       }
     }
   }
-  // 상호작용 오브젝트·NPC 등 시작 상태에서 통행을 막는 이벤트 발자국(passageBounds)도 함께 표시한다.
+  // 상호작용 오브젝트·NPC 등 시작 상태에서 실제로 켜져 통행을 막는 이벤트 발자국(passageBounds)도 함께 표시한다.
+  // 조건이 맞는 페이지가 없는 이벤트는 런타임과 동일하게 건너뛴다(1페이지 폴백 금지).
   collG.fillStyle(0xf59f00, 0.36);
   collG.lineStyle(1, 0xffd43b, 0.9);
+  const start = project.session;
+  const startState = {
+    switches: start?.switches ?? {},
+    variables: start?.variables ?? {},
+    selfSwitches: start?.selfSwitches,
+    inventory: start?.inventory,
+    partyActorIds: start?.partyActorIds,
+    gold: start?.gold,
+  };
   for (const event of editorWorkingEvents(map.events)) {
-    const page = eventPageAtGameStart(event, project, map);
+    const page = resolveEventPage(event, startState, { locations: map.locations });
     if (!page || page.priority !== "same") continue;
     const body = normalizeCharacterFootprint(page.footprint);
     const passRows = normalizePassRows(page.passRows, body.height);

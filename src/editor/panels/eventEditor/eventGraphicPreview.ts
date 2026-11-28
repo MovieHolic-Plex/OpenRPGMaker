@@ -137,6 +137,8 @@ export function footprintPreviewLayout(input: {
   readonly tileSize?: number;
   readonly spriteWidth?: number;
   readonly spriteHeight?: number;
+  readonly centerOnFootprint?: boolean;
+  readonly origin?: { readonly x: number; readonly y: number };
 }): FootprintPreviewLayout {
   const scale = normalizeCharacterScale(input.scale);
   const tileSize = input.tileSize ?? TILE_PX;
@@ -147,10 +149,12 @@ export function footprintPreviewLayout(input: {
   const spriteH = (input.spriteHeight ?? CELL_PY) * scale;
   // 발밑 규약: 앵커 칸은 몸 사각 하단 행이고, 짝수 폭에서는 중앙 왼쪽이다.
   const anchorColumn = Math.floor((width - 1) / 2);
-  // 스프라이트 원점은 (0.5, 1) — 앵커 칸의 가로 중앙, 몸 사각 밑변에 발이 닿는다.
-  const anchorCenterX = anchorColumn * tileSize + tileSize / 2;
-  const rawSpriteX = anchorCenterX - spriteW / 2;
-  const rawSpriteY = bodyH - spriteH;
+  // 상호작용 프롭(centerOnFootprint)은 EditScene/PlayScene 의 footprintSpriteX 와 동일하게 몸 사각 전체 중앙 + prop.anchor 로 놓는다.
+  const anchorCenterX = input.centerOnFootprint ? bodyW / 2 : anchorColumn * tileSize + tileSize / 2;
+  const originX = input.origin?.x ?? 0.5;
+  const originY = input.origin?.y ?? 1;
+  const rawSpriteX = anchorCenterX - spriteW * originX;
+  const rawSpriteY = bodyH - spriteH * originY;
   // 둘 중 더 왼쪽/위로 삐져나온 쪽이 0 이 되도록 각자를 밀어 넣는다. `Math.max` 를 거치므로
   // 값이 -0 으로 새지 않는다 — -0 은 `-0px` 문자열이 되어 CSS 와 테스트를 둘 다 지저분하게 한다.
   const bodyX = Math.max(0, -rawSpriteX);
@@ -191,7 +195,13 @@ export function renderFootprintPreview(input: {
   const baseScale = eventGraphicRenderScale(input.graphic, tileSize);
   const scale = resource?.kind === "sprite" && resource.propTileScale ? baseScale * (tileSize / 16) : baseScale;
   const layout = footprintPreviewLayout({ footprint: input.footprint, scale, tileSize: input.tileSize,
-    ...(resource?.kind === "sprite" ? { spriteWidth: resource.frame.width, spriteHeight: resource.frame.height } : {}),
+    ...(resource?.kind === "sprite"
+      ? {
+        spriteWidth: resource.frame.width,
+        spriteHeight: resource.frame.height,
+        ...(resource.propTileScale ? { centerOnFootprint: true, origin: resource.origin } : {}),
+      }
+      : {}),
   });
   const { zoom } = layout;
   const host = document.createElement("div");

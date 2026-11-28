@@ -898,6 +898,7 @@ type ActivePropHostState = {
 };
 
 const propLoopTimers = new WeakMap<PlaySceneContext, Map<string, Phaser.Time.TimerEvent>>();
+const propLoopTargets = new WeakMap<PlaySceneContext, Map<string, Phaser.GameObjects.Image>>();
 const propGlowLayers = new WeakMap<PlaySceneContext, Map<string, Phaser.GameObjects.GameObject[]>>();
 const propShadowLayers = new WeakMap<PlaySceneContext, Map<string, Phaser.GameObjects.GameObject>>();
 const propShadowSignatures = new WeakMap<PlaySceneContext, Map<string, string>>();
@@ -905,8 +906,19 @@ const propLoopSignatures = new WeakMap<PlaySceneContext, Map<string, string>>();
 const activePropHostFx = new WeakMap<PlaySceneContext, Map<string, ActivePropHostState>>();
 
 /** 정식 이벤트 스프라이트(`iprop:<id>`)가 현재 연출 재생 또는 전환 대기 중일 때 유지할 프레임 이름. */
-export function activeInteractivePropFrameForEvent(scene: PlaySceneContext, eventId: string): string | undefined {
-  return activePropHostFx.get(scene)?.get(eventId)?.heldFrame;
+export function activeInteractivePropFrameForEvent(
+  scene: PlaySceneContext,
+  eventId: string,
+  expectedTextureKey?: string,
+): string | undefined {
+  const map = activePropHostFx.get(scene);
+  const state = map?.get(eventId);
+  if (!state) return undefined;
+  if (expectedTextureKey !== undefined && state.textureKey !== expectedTextureKey) {
+    if (!state.playing) map!.delete(eventId);
+    return undefined;
+  }
+  return state.heldFrame;
 }
 
 /** 해당 칸에서 `loopAfterOpen` 애니메이션 타이머가 활성 중인가(renderEvents 가 프레임을 덮지 않도록 보호). */
@@ -940,6 +952,7 @@ function stopPropLoop(scene: PlaySceneContext, key: string): void {
     existing.remove(false);
     timers!.delete(key);
   }
+  propLoopTargets.get(scene)?.delete(key);
   propLoopSignatures.get(scene)?.delete(key);
   stopPropGlow(scene, key);
 }
@@ -960,6 +973,7 @@ function clearPropLoops(scene: PlaySceneContext): void {
     for (const shadow of shadows.values()) shadow.destroy();
     shadows.clear();
   }
+  propLoopTargets.get(scene)?.clear();
   propShadowSignatures.get(scene)?.clear();
   propLoopSignatures.get(scene)?.clear();
   activePropHostFx.get(scene)?.clear();
@@ -1150,9 +1164,13 @@ function attachPropLoop(
   propLoopSignatures.set(scene, sigs);
   const existingTimer = propLoopTimers.get(scene)?.get(key);
   const existingGlow = propGlowLayers.get(scene)?.get(key);
-  if (sigs.get(key) === sig && image.active && (existingTimer || existingGlow?.some((obj) => obj.active))) return;
+  const existingTarget = propLoopTargets.get(scene)?.get(key);
+  if (sigs.get(key) === sig && existingTarget === image && image.active && (existingTimer || existingGlow?.some((obj) => obj.active))) return;
   stopPropLoop(scene, key);
   sigs.set(key, sig);
+  const targets = propLoopTargets.get(scene) ?? new Map<string, Phaser.GameObjects.Image>();
+  propLoopTargets.set(scene, targets);
+  targets.set(key, image);
   attachPropGlow(scene, key, cell, prop, size, depth, footprint);
   const start = Math.max(0, Math.min(prop.frames - 1, prop.loopFromFrame ?? prop.frames - 2));
   if (start >= prop.frames - 1 || typeof scene.time?.addEvent !== "function") return;
@@ -1175,11 +1193,14 @@ function attachPropLoop(
 }
 
 function findPropHostEventId(scene: PlaySceneContext, textureKey: string, cell: Cell, explicitEventId?: string): string | undefined {
-  if (explicitEventId) {
-    const sprite = scene.eventSprites?.get(explicitEventId);
-    if (sprite?.active && sprite.texture?.key === textureKey) return explicitEventId;
-  }
   const project = store.getCurrent();
+  if (explicitEventId) {
+    const view = runtimeEventViewById(project, scene.map, scene.session, scene.eventPositions, explicitEventId);
+    const sprite = scene.eventSprites?.get(explicitEventId);
+    if (view && view.x === cell.x && view.y === cell.y && sprite?.active && sprite.texture?.key === textureKey) {
+      return explicitEventId;
+    }
+  }
   for (const view of runtimeEventViewsForMap(project, scene.map, scene.session, scene.eventPositions)) {
     if (view.x !== cell.x || view.y !== cell.y) continue;
     const sprite = scene.eventSprites?.get(view.event.id);

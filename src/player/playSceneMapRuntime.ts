@@ -971,7 +971,11 @@ function renderEvents<TImage extends RenderedTileImage, TSprite extends Rendered
     const spriteTexture = withDerivedFieldFoe(scene, resolveEventSpriteTexture(store.getCurrent(), sprite.id, pattern), view.page?.graphic);
     if (!spriteTexture) scene.missingResources.add(sprite.id);
     // Static art has one frame. Charset overrides already encode direction/walk.
-    const activePropFrame = activeInteractivePropFrameForEvent(scene as unknown as PlaySceneContext, event.id);
+    const activePropFrame = activeInteractivePropFrameForEvent(
+      scene as unknown as PlaySceneContext,
+      event.id,
+      spriteTexture?.texture,
+    );
     const frame =
       activePropFrame !== undefined
         ? activePropFrame

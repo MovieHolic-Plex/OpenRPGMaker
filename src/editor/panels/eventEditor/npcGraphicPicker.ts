@@ -252,14 +252,13 @@ function graphicForConfirmedSelection(
   if (!id) return { status: "matched", graphic: graphicWithoutSprite(graphic) };
   const interactiveProp = interactivePropFromSpriteId(id, store.getCurrent());
   if (interactiveProp) {
-    return {
-      status: "matched",
-      graphic: {
-        ...graphic,
-        sprite: { type: "bundled", id },
-        pattern: interactivePropFrameIndex(interactiveProp, graphic.pattern),
-      },
+    const nextGraphic: EventPageGraphic = {
+      ...graphic,
+      sprite: { type: "bundled", id },
+      pattern: interactivePropFrameIndex(interactiveProp, graphic.pattern),
     };
+    delete nextGraphic.appearanceId;
+    return { status: "matched", graphic: nextGraphic };
   }
   const assets = currentCharsetAssets();
   if (!assets.some((a) => a.textureKey === id)) return { status: "no-match" };
