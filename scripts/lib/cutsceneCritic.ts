@@ -13,8 +13,8 @@ export type CutsceneCritique = {
 };
 
 const JUDGES = [
-  { id: 'gemini', provider: 'google-antigravity', model: 'gemini-3.8-flash', effort: 'medium' },
   { id: 'gpt', provider: 'openai-codex', model: ASSISTANT_CHATGPT_MODEL, effort: ASSISTANT_CHATGPT_EFFORT },
+  { id: 'gemini', provider: 'google-antigravity', model: 'gemini-3.8-flash', effort: 'medium' },
 ] as const;
 
 const RUBRIC = `You are a strict director reviewing an in-game opening cutscene for a 2D game, judging ONLY from the evidence given: (1) a render of the real start map, (2) a contact sheet of key frames of the scripted cutscene (pictures drawn over a plain backdrop; built-in pictures may appear as grey boxes), (3) measured numbers from a deterministic probe (visible seconds, size relative to the screen, travel, overlap, tint/weather/sound counts).

@@ -43,15 +43,13 @@
       "routes": [
         { "providerId": "openai-codex", "roles": {
           "main": [{ "model": "gpt-6.2-sol", "thinkingLevel": "high" }],
-          "smol": [{ "model": "gpt-6-luna", "thinkingLevel": "low" }],
-          "advisor": [{ "model": "gpt-6.2-sol", "thinkingLevel": "high" }, { "model": "gpt-6-astra", "thinkingLevel": "medium" }],
+          "advisor": [{ "model": "gpt-6.2-sol", "thinkingLevel": "high" }],
           "vision": [{ "model": "gpt-6.2-sol", "thinkingLevel": "high" }],
           "image": [{ "model": "codex-image-default", "thinkingLevel": "off" }],
           "pixel": [{ "model": "gpt-6.2-sol", "thinkingLevel": "high" }]
         } },
         { "providerId": "local-cli:codex", "roles": {
           "main": [{ "model": "gpt-6.2-sol", "thinkingLevel": "high" }],
-          "smol": [{ "model": "gpt-6-luna", "thinkingLevel": "low" }],
           "advisor": [{ "model": "gpt-6.2-sol", "thinkingLevel": "high" }],
           "vision": [{ "model": "gpt-6.2-sol", "thinkingLevel": "high" }],
           "pixel": [{ "model": "gpt-6.2-sol", "thinkingLevel": "high" }]

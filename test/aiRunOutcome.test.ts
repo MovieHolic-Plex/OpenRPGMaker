@@ -873,16 +873,18 @@ describe("aiDefaultClaudeSonnetHigh", () => {
       expect(route.roles.smol).toBeUndefined();
     });
 
-    it("화면 검수(VQA) — 다른 계열이 답하지 못해 Claude 로 넘어가면 Sonnet 5.5 · high 이다(Opus 아님)", async () => {
+    it("화면 검수(VQA) — Claude 로 넘어가면 Sonnet 5.5 · high 이고, GPT 단독에서는 Claude CLI 를 몰래 호출하지 않는다", async () => {
       const { vqaReviewerCandidates } = await import("@/ai/v2/judge/vqa");
       const { familyOfProviderId } = await import("@/ai/assistantRoles");
-      const claudeOf = (main: { provider: string; model: string }) => vqaReviewerCandidates({ main, keyed: new Set([main.provider]), familyOf: (id) => familyOfProviderId(id, [main.model]) })
+      const claudeOf = (main: { provider: string; model: string }, extraKeyed: string[] = []) => vqaReviewerCandidates({ main, keyed: new Set([main.provider, ...extraKeyed]), familyOf: (id) => familyOfProviderId(id, [main.model]) })
         .filter((p) => p.provider === "local-cli:claude");
       // 조수가 Claude(Sonnet)로 돌 때: Claude 검수자는 Sonnet · high 하나(주 모델과 합쳐짐 — 지은 모델과 검수 모델이 같다).
       expect(claudeOf({ provider: "local-cli:claude", model: SONNET })).toEqual([{ provider: "local-cli:claude", model: SONNET, effort: "high", sameAsMain: true }]);
-      // 조수가 다른 계열로 돌 때: 다른 계열 검수자로 서는 Claude 도 Sonnet · high.
-      expect(claudeOf({ provider: "openai-codex", model: "gpt-6.1-terra" })).toEqual([{ provider: "local-cli:claude", model: SONNET, effort: "high", sameAsMain: false }]);
-      expect(claudeOf({ provider: "google-antigravity", model: "gemini-4-argon" })[0]).toMatchObject({ model: SONNET, effort: "high" });
+      // GPT 단독에서는 미연결 Claude CLI 를 몰래 부르지 않는다.
+      expect(claudeOf({ provider: "openai-codex", model: "gpt-6.2-sol" })).toEqual([]);
+      // Claude CLI 가 명시적으로 keyed 됐을 때만 다른 계열 검수자로 선다.
+      expect(claudeOf({ provider: "openai-codex", model: "gpt-6.1-terra" }, ["local-cli:claude"])).toEqual([{ provider: "local-cli:claude", model: SONNET, effort: "high", sameAsMain: false }]);
+      expect(claudeOf({ provider: "google-antigravity", model: "gemini-4-argon" }, ["local-cli:claude"])[0]).toMatchObject({ model: SONNET, effort: "high" });
     });
 
     it("검토자(advisor) 자동 배정 — Claude 만 연결되면 Sonnet 5.5 · high", async () => {

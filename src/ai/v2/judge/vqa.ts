@@ -342,12 +342,15 @@ export const vqaReviewerLabel = (pick: VqaReviewerPick): string =>
   `${pick.provider}/${pick.effort === "high" && pick.model === "gemini-4-argon" ? "gemini-4-argon-high" : pick.model}${pick.sameAsMain ? " 「같은 계열 검수」(다른 계열 검수자가 답하지 못함 — 약한 증거)" : ""}`;
 
 /**
- * 로컬 CLI 의 검수용 모델 — 계열마다 하나. 다른 계열이면 독립 검수자로, 같은 계열이면 «자기 자신» 앞의 마지막 후보로 쓴다.
- * Claude 는 조수 기본(claudeDefault.ts, 2026-11-23 오너 결정 Sonnet 5.5 · high)이다 — 조수 안의 보조 호출도 같다. 2026-11-16 실모델 확인 r7a 에서
- * 주 모델과 화면 검수 모델이 따로 박혀 있었다(N6). 조수가 Claude 로 돌면 지은 모델과 검수 모델이 같아진다 — «같은 계열 검수»(약한 증거) 표시 그대로.
+ * 로컬 CLI 의 검수용 모델 — 계열마다 하나.
+ * 오너 결정(2026-11-28): 기본 출하·주력 모델은 GPT-6.2 Sol · high 하나이며 Claude 는 쓰지 않는다.
+ * 다른 계열 로컬 CLI(`local-cli:claude`·`local-cli:gemini`)는 사용자가 명시적으로 연결(keyed)했을 때만 후보에 올리고,
+ * 그렇지 않으면 GPT-6.2 Sol · high 만으로 완결해 미사용 CLI 호출·대기를 없앤다.
  */
 const LOCAL_CLI_REVIEWERS: readonly { readonly provider: string; readonly model: string; readonly effort?: "medium" | "high" }[] = [
-  { provider: "local-cli:claude", model: ASSISTANT_CLAUDE_MODEL, effort: ASSISTANT_CLAUDE_EFFORT }, { provider: "local-cli:codex", model: ASSISTANT_CHATGPT_MODEL, effort: ASSISTANT_CHATGPT_EFFORT }, { provider: "local-cli:gemini", model: "gemini-4-argon" },
+  { provider: "local-cli:codex", model: ASSISTANT_CHATGPT_MODEL, effort: ASSISTANT_CHATGPT_EFFORT },
+  { provider: "local-cli:claude", model: ASSISTANT_CLAUDE_MODEL, effort: ASSISTANT_CLAUDE_EFFORT },
+  { provider: "local-cli:gemini", model: "gemini-4-argon" },
 ];
 
 interface VqaReviewerInput {
@@ -380,9 +383,10 @@ export function vqaReviewerCandidates(input: VqaReviewerInput): VqaReviewerPick[
   for (const d of [{ provider: "google-antigravity", model: "gemini-4-argon" }, { provider: "openai-codex", model: ASSISTANT_CHATGPT_MODEL, effort: ASSISTANT_CHATGPT_EFFORT }]) {
     if (input.keyed.has(d.provider) && differs(d.provider)) add(d, false);
   }
-  // 키 있는 다른 계열 계정이 없거나 답하지 못하면 로컬 CLI. 설치돼 있지 않으면 호출이 실패해 다음 후보로 넘어간다.
+  // 다른 계열 로컬 CLI: 기본(Codex GPT-6.2 Sol high)은 항상 후보로, Claude·Gemini CLI 는 명시적으로 연결(keyed)됐을 때만 시도한다
+  // (2026-11-28 오너 결정: Claude 미사용 환경에서 GPT-6.2 Sol 실행 중 local-cli:claude 를 몰래 호출하지 않는다).
   for (const d of LOCAL_CLI_REVIEWERS) {
-    if (differs(d.provider)) add(d, false);
+    if (differs(d.provider) && (d.provider === "local-cli:codex" || input.keyed.has(d.provider))) add(d, false);
   }
   if (input.vision && usable(input.vision.provider) && !differs(input.vision.provider)) add(input.vision, true);
   if (input.advisor && usable(input.advisor.provider) && seesImages(input.advisor.provider) && !differs(input.advisor.provider)) add(input.advisor, true);

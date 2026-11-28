@@ -46,7 +46,7 @@ export const LOCAL_CLI_LABELS: Readonly<Record<LocalCliEngineId, string>> = {
  */
 export const LOCAL_CLI_DEFAULT_MODELS: Readonly<Record<LocalCliEngineId, { routine: string; deep: string }>> = {
   claude: { routine: ASSISTANT_CLAUDE_MODEL, deep: ASSISTANT_CLAUDE_MODEL },
-  codex: { routine: "gpt-6-luna", deep: ASSISTANT_CHATGPT_MODEL },
+  codex: { routine: ASSISTANT_CHATGPT_MODEL, deep: ASSISTANT_CHATGPT_MODEL },
   gemini: { routine: "auto", deep: "auto" },
 };
 
