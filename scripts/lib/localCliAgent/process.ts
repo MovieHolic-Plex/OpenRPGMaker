@@ -1,5 +1,5 @@
 // CLI 자식 프로세스 공통 — 줄 단위 JSON 읽기, 빈 임시 작업 폴더, 중단.
-import { spawn, spawnSync, type ChildProcessWithoutNullStreams } from "node:child_process";
+import { spawn, spawnSync, type ChildProcess, type ChildProcessWithoutNullStreams } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -9,6 +9,19 @@ import { planSpawn } from "./resolveBinary.ts";
 export function emptyWorkDir(prefix: string): { readonly dir: string; readonly remove: () => void } {
   const dir = mkdtempSync(join(tmpdir(), `oprn-${prefix}-`));
   return { dir, remove: () => rmSync(dir, { recursive: true, force: true }) };
+}
+
+/**
+ * 자식 프로세스를 끝낸다. cmd.exe 로 띄운 `.cmd`·`.bat`(`planSpawn` 의 windowsVerbatimArguments)는 cmd 만 죽이면
+ * 그 아래 node CLI 가 남으므로 `taskkill /T /F` 로 프로세스 나무째 끝낸다. 네이티브 실행 파일은 SIGTERM.
+ */
+export function killProcessTree(child: ChildProcess, viaCmdShim: boolean): void {
+  if (viaCmdShim && child.pid) {
+    spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"], { stdio: "ignore", windowsHide: true })
+      .on("error", () => { try { child.kill(); } catch { /* 무시 */ } });
+    return;
+  }
+  try { child.kill("SIGTERM"); } catch { /* 이미 끝남 */ }
 }
 
 export interface SpawnLinesOptions {
@@ -68,9 +81,7 @@ export function spawnJsonLines(options: SpawnLinesOptions): SpawnedLines {
     endInput: () => { if (!child.stdin.destroyed) child.stdin.end(); },
     kill: () => {
       if (child.exitCode !== null || child.killed) return;
-      // cmd.exe 로 띄운 .cmd 는 cmd 만 죽이면 그 아래 node CLI 가 남는다 — 프로세스 나무째 끝낸다.
-      if (plan.windowsVerbatimArguments && child.pid) spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"], { stdio: "ignore", windowsHide: true }).on("error", () => child.kill());
-      else child.kill("SIGTERM");
+      killProcessTree(child, Boolean(plan.windowsVerbatimArguments));
     },
   };
 }
@@ -134,7 +145,7 @@ export function runShortAsync(binary: string, args: readonly string[], timeoutMs
     };
     const timer = setTimeout(() => {
       timedOut = true;
-      try { child.kill("SIGTERM"); } catch { /* 무시 */ }
+      killProcessTree(child, Boolean(plan.windowsVerbatimArguments));
       done({ ok: false, stdout, stderr, timedOut: true, errorCode: "ETIMEDOUT", errorMessage: `timed out after ${timeoutMs}ms` });
     }, timeoutMs);
     timer.unref?.();

@@ -7,7 +7,7 @@
 // - `--dangerously-skip-permissions` 는 쓰지 않고, `session/request_permission` 에서 `oprn` MCP 도구만 허용하고 내장 셸/파일 도구는 거절한다.
 
 import { spawn, type ChildProcess } from "node:child_process";
-import { emptyWorkDir, isTransientCliError, runShortAsync, sleep } from "./process.ts";
+import { emptyWorkDir, isTransientCliError, killProcessTree, runShortAsync, sleep } from "./process.ts";
 import { planSpawn, resolveBinary } from "./resolveBinary.ts";
 import {
   installFields,
@@ -88,7 +88,8 @@ export function parseAgyModelsOutput(output: string): { readonly models: LocalCl
   }
   const byBase = new Map<string, LocalCliModel>();
   for (const fallback of AGY_FALLBACK_MODELS) {
-    const hasMatch = rawModels.some((row) => row.id === fallback.id || row.id.startsWith(`${fallback.id}-`));
+    // 접두 일치가 아니라 «알려진 강도 접미사만 뗀 ID» 로 계열을 맞춘다 — `gemini-4-argon-preview-high` 가 Argon 으로 접히지 않게.
+    const hasMatch = rawModels.some((row) => row.id.replace(EFFORT_SUFFIX_RE, "") === fallback.id);
     if (hasMatch) byBase.set(fallback.id, fallback);
   }
   for (const row of rawModels) {
@@ -125,7 +126,7 @@ export function resolveAgyModelId(
   if (available.size > 0) {
     const hit = candidates.find((candidate) => available.has(candidate));
     if (hit) return hit;
-    const variant = availableIds.find((id) => id.startsWith(`${trimmed}-`));
+    const variant = availableIds.find((id) => id.replace(EFFORT_SUFFIX_RE, "") === trimmed);
     if (variant) return variant;
   }
   return candidates[0];
@@ -146,21 +147,29 @@ export function parseAgyQuotaWarning(text: string): string | undefined {
   return undefined;
 }
 
-/** ACP 권한 요청(`session/request_permission`)에서 우리 MCP 도구만 허용하고 내장 셸/파일 도구는 차단한다. */
-export function shouldApproveAgyPermission(params: unknown): boolean {
+/** 도구 이름이 우리 MCP 서버(`oprn`)의 것으로 «시작» 하는가 — `mcp__oprn__x`·`oprn_x`·`oprn:x`. 이름 중간에 낀 `oprn` 은 인정하지 않는다. */
+const OPRN_TOOL_PREFIX_RE = new RegExp(`^(?:mcp__)?${AGY_MCP_SERVER_NAME}(?:_|[:/.\\s])`, "iu");
+
+/**
+ * ACP 권한 요청(`session/request_permission`)에서 우리 MCP 도구만 허용하고 그 밖은 전부 거절한다(실패 시 닫힘).
+ * - 도구를 연결하지 않은 세션(`toolsEnabled=false`, 보조 `complete`)은 어떤 도구 권한도 허용하지 않는다.
+ * - `title` 은 에이전트가 쓴 표시 문구라 신뢰하지 않는다: agy 가 알려 준 서버 식별(`serverName`)이 `oprn` 이거나,
+ *   도구 이름이 `oprn` 으로 «시작» 할 때만 허용한다. `kind: "mcp"` 만으로는 허용하지 않는다.
+ */
+export function shouldApproveAgyPermission(params: unknown, toolsEnabled = true): boolean {
+  if (!toolsEnabled) return false;
   if (!params || typeof params !== "object") return false;
   const p = params as {
-    toolCall?: { title?: unknown; kind?: unknown; rawInput?: unknown; toolName?: unknown };
+    toolCall?: { title?: unknown; kind?: unknown; toolName?: unknown; serverName?: unknown; server?: unknown; _meta?: { serverName?: unknown } };
     title?: unknown;
     toolName?: unknown;
+    serverName?: unknown;
   };
-  const title = String(p.toolCall?.title ?? p.title ?? "");
-  const toolName = String(p.toolCall?.toolName ?? p.toolName ?? "");
-  const kind = String(p.toolCall?.kind ?? "");
-  const combined = `${title} ${toolName}`.toLowerCase();
-  if (combined.includes("oprn") || combined.includes(`mcp__${AGY_MCP_SERVER_NAME}`)) return true;
-  if (kind === "mcp" && !/(shell|bash|terminal|write_file|edit_file|delete)/iu.test(combined)) return true;
-  return false;
+  const server = String(p.toolCall?.serverName ?? p.toolCall?.server ?? p.toolCall?._meta?.serverName ?? p.serverName ?? "").trim();
+  if (server) return server === AGY_MCP_SERVER_NAME;
+  const title = String(p.toolCall?.title ?? p.title ?? "").trim();
+  const toolName = String(p.toolCall?.toolName ?? p.toolName ?? "").trim();
+  return OPRN_TOOL_PREFIX_RE.test(toolName) || OPRN_TOOL_PREFIX_RE.test(title);
 }
 
 function usageFromAcp(raw: unknown, calls: number): LocalCliUsage | undefined {
@@ -229,6 +238,8 @@ export function createAgyUpdateHandler(
         const rawName = String(update.toolName ?? update.title ?? "tool");
         const cleanName = rawName.replace(/^mcp__oprn__/u, "");
         if (id) toolNames.set(id, cleanName);
+        // 도구는 «끝난 때» 가 아니라 «시작한 때» 센다 — 쓰기를 시작하고 아직 도는 중에 일시 오류가 나도 같은 프롬프트를 다시 보내지 않게.
+        toolCalls += 1;
         const rawInput = update.rawInput as { name?: unknown } | undefined;
         emitAssistant(sessionId, [{
           type: "tool_use",
@@ -239,8 +250,10 @@ export function createAgyUpdateHandler(
         const status = String(update.status ?? "");
         if (status === "completed" || status === "failed" || status === "error") {
           const id = String(update.toolCallId ?? update.id ?? "");
+          const startedBefore = id !== "" && toolNames.has(id);
           const name = toolNames.get(id) ?? String(update.toolName ?? update.title ?? "").replace(/^mcp__oprn__/u, "");
-          toolCalls += 1;
+          // 시작 알림 없이 끝 알림만 온 도구도 한 번은 센다.
+          if (!startedBefore) toolCalls += 1;
           emit({ kind: "acknowledged", toolName: name, ok: status === "completed" });
           afterDelivery = true;
         }
@@ -262,6 +275,7 @@ function spawnAgyAcpClient(
   onUpdate: (sessionId: string, update: Record<string, unknown>) => void,
   onStderr: (text: string) => void,
   onRaw?: (line: unknown) => void,
+  toolsEnabled = true,
 ): AcpClient {
   const plan = planSpawn(binary, buildAgyAcpArgs());
   const child: ChildProcess = spawn(plan.command, [...plan.args], {
@@ -292,7 +306,7 @@ function spawnAgyAcpClient(
   };
 
   const handlePermissionRequest = (id: number | string, params: unknown) => {
-    const allowed = shouldApproveAgyPermission(params);
+    const allowed = shouldApproveAgyPermission(params, toolsEnabled);
     const options = Array.isArray((params as { options?: unknown } | null)?.options)
       ? ((params as { options: Array<{ optionId?: string; kind?: string }> }).options)
       : [];
@@ -311,7 +325,7 @@ function spawnAgyAcpClient(
     const wasAlive = alive;
     alive = false;
     try { child.stdin?.end(); } catch { /* 무시 */ }
-    try { child.kill("SIGTERM"); } catch { /* 무시 */ }
+    killProcessTree(child, Boolean(plan.windowsVerbatimArguments));
     if (wasAlive && pending.size > 0) {
       failAll(new Error("Antigravity ACP 프로세스가 중단되었습니다."));
     }
@@ -332,8 +346,11 @@ function spawnAgyAcpClient(
     for (const raw of lines) {
       const trimmed = raw.trim();
       if (!trimmed) continue;
-      let msg: Record<string, unknown>;
-      try { msg = JSON.parse(trimmed) as Record<string, unknown>; } catch { continue; }
+      let parsed: unknown;
+      try { parsed = JSON.parse(trimmed); } catch { continue; }
+      // `null`·배열·원시값은 ACP 프레임이 아니다 — 필드를 읽다 콜백에서 던지지 않게 건너뛴다.
+      if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) continue;
+      const msg = parsed as Record<string, unknown>;
       onRaw?.(msg);
       if (typeof msg.id === "number" && pending.has(msg.id) && !("method" in msg)) {
         const entry = pending.get(msg.id)!;
@@ -421,12 +438,12 @@ function openAgySession(
 
   const updates = createAgyUpdateHandler(options.onEvent);
 
-  const ensureSession = async (): Promise<{ client: AcpClient; sessionId: string }> => {
-    if (client && client.alive && sessionId) return { client, sessionId };
-    client?.kill();
-    sessionId = undefined;
-
-    const nextClient = spawnAgyAcpClient(
+  type AcpInit = {
+    agentCapabilities?: { sessionCapabilities?: { resume?: unknown }; session_capabilities?: { resume?: unknown } };
+  };
+  /** 새 `agy acp` 프로세스를 띄우고 `initialize` 까지 마친다. */
+  const startClient = async (): Promise<{ client: AcpClient; init: AcpInit | undefined }> => {
+    const spawned = spawnAgyAcpClient(
       binary,
       work.dir,
       (sid, update) => {
@@ -434,16 +451,25 @@ function openAgySession(
       },
       (text) => options.onEvent({ kind: "stderr", text }),
       options.onRaw,
+      toolsEnabled,
     );
-    client = nextClient;
-
-    const init = await nextClient.call<{
-      agentCapabilities?: { sessionCapabilities?: { resume?: unknown }; session_capabilities?: { resume?: unknown } };
-    }>("initialize", {
+    client = spawned;
+    const init = await spawned.call<AcpInit>("initialize", {
       protocolVersion: 1,
       clientCapabilities: {},
       clientInfo: { name: "oprn-studio", version: "1.0.0" },
     }, ACP_CONTROL_TIMEOUT_MS);
+    return { client: spawned, init };
+  };
+
+  const ensureSession = async (): Promise<{ client: AcpClient; sessionId: string }> => {
+    if (client && client.alive && sessionId) return { client, sessionId };
+    client?.kill();
+    sessionId = undefined;
+
+    const started = await startClient();
+    let nextClient = started.client;
+    const init = started.init;
 
     const mcpServers = toolsEnabled
       ? [{
@@ -471,7 +497,12 @@ function openAgySession(
         const resumeMethod = supportsResume ? "session/resume" : "session/load";
         created = await nextClient.call(resumeMethod, { sessionId: targetId, cwd: work.dir, mcpServers }, ACP_CONTROL_TIMEOUT_MS);
         if (!created?.sessionId) created = { ...created, sessionId: targetId };
-      } catch {
+      } catch (resumeError) {
+        // 중단·종료된 실행은 새 프로세스를 띄우지 않는다.
+        if (closed || killed || options.signal?.aborted) throw resumeError;
+        // resume/load 가 시간 초과로 프로세스를 죽였다면 죽은 클라이언트로 session/new 를 보내지 말고 새로 띄운다.
+        // RPC 만 거절당했고 프로세스가 살아 있으면 같은 클라이언트로 이어 간다.
+        if (!nextClient.alive) nextClient = (await startClient()).client;
         created = await nextClient.call("session/new", {
           cwd: work.dir,
           mcpServers,
@@ -653,6 +684,23 @@ export const agyAdapter: LocalCliAdapter = {
       return { ...base, state: "not-installed", stateLabel: "설치 필요", found: false, billing: "unknown", models: [] };
     }
     const parsed = parseAgyModelsOutput(`${modelsRes.stdout}\n${modelsRes.stderr}`);
+    if (parsed.models.length > 0 && !modelsRes.ok) {
+      // 한 줄만 찍고 시간 초과·비정상 종료한 조회는 «연결됨» 이 아니다 — 자동 설정이 멀쩡한 다른 CLI 대신 agy 를 고르지 않게.
+      return {
+        ...base,
+        state: "error",
+        stateLabel: "확인 실패",
+        found: true,
+        binaryPath: resolved,
+        ...(version ? { version } : {}),
+        loggedIn: false,
+        billing: "unknown",
+        models: parsed.models,
+        problem: modelsRes.timedOut
+          ? "모델 목록 확인 시간이 초과됐습니다."
+          : (modelsRes.errorMessage || modelsRes.stderr.trim() || "Antigravity 모델 목록 조회가 정상 종료하지 않았습니다."),
+      };
+    }
     if (parsed.models.length > 0) {
       const { billing, authMethod } = inferAgyBilling(parsed.models);
       return {

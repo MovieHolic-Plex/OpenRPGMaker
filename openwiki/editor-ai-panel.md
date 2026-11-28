@@ -47,13 +47,12 @@
   이미 불렀으면 처음부터 다시 시키지 않는다).
 - **`local-cli:agy` — Google 구독(Gemini 4 Argon/Neon) 공식 ACP 브리지 (2026-11-28, 멀티 모델 구독 2단계).** 구현 `scripts/lib/localCliAgent/agy.ts`.
   `agy acp --stdio --include-default-customizations=false --process-per-session` 를 JSON-RPC 2.0 으로 구동한다(토큰 추출·직접 호출 없음, 사용자가
-  `agy acp --login` 으로 로그인한 상태만 쓴다). **`--dangerously-skip-permissions` 는 쓰지 않는다** — `session/request_permission` 에서 `oprn` MCP
-  도구만 허용하고 내장 셸·파일 도구는 거절한다. `--process-per-session` 은 클라이언트가 넘긴 HTTP MCP 서버가 세션마다 격리되게 하는 공식 요구 플래그.
+  `agy acp --login` 으로 로그인한 상태만 쓴다). **`--dangerously-skip-permissions` 는 쓰지 않는다** — `session/request_permission` 은 **실패 시 닫힘**: agy 가 알려 준 서버 식별(`serverName`)이 `oprn` 이거나 도구 이름이 `oprn`/`mcp__oprn__` 으로 «시작» 할 때만 허용한다(`kind:"mcp"`·이름 중간의 `oprn` 은 불허). 도구를 연결하지 않은 보조 `complete` 는 어떤 도구 권한도 허용하지 않는다. `--process-per-session` 은 클라이언트가 넘긴 HTTP MCP 서버가 세션마다 격리되게 하는 공식 요구 플래그.
   - 한도 소진은 `stopReason:"end_turn"` + 단독 경고 배너(`⚠ Individual quota reached. Resets in …`)로 온다 → `parseAgyQuotaWarning` 이 짧은 단독 배너만
     잡아 429 로 바꿔 다중 구독 자동 전환이 다음 구독으로 넘어가게 한다. 답변 본문 속 같은 문구는 오탐하지 않는다. `end_turn` 이 아닌 stopReason(cancelled·refusal)은 실패다.
   - 모든 제어 호출에 25초, `session/prompt` 에 900초 타임아웃(초과 시 자식 종료). stdout/stderr/stdin 은 UTF-8 고정·EPIPE 리스너(한글이 청크 경계에서 깨지지 않게).
-    재시도 때는 이전 시도 부분 출력을 지운다. 이어가기는 `initialize` 가 `resume` 능력을 알리면 `session/resume`, 아니면 `session/load`(재전송되는 과거 대화는 억제).
-  - 감지(`detect`)는 `runShortAsync`(process.ts, 이벤트 루프를 막지 않음)로 `--version`·`models` 를 본다. 모델 목록이 있으면 «연결됨», 없으면 «확인 실패»(로그인 필요 문구가
+    재시도 때는 이전 시도 부분 출력을 지운다. 도구는 «시작한 때» 센다(`createAgyUpdateHandler`) — 한 번이라도 시작했으면 일시 오류 재시도를 하지 않는다(쓰기 중복 방지). resume/load 시간 초과로 프로세스가 죽었으면 새 프로세스로 `session/new` 를 보낸다. Windows `.cmd` 셔임은 `killProcessTree`(process.ts, `taskkill /T /F`)로 나무째 끝낸다. ACP 줄이 객체가 아니면(`null` 등) 건너뛴다. 이어가기는 `initialize` 가 `resume` 능력을 알리면 `session/resume`, 아니면 `session/load`(재전송되는 과거 대화는 억제).
+  - 감지(`detect`)는 `runShortAsync`(process.ts, 이벤트 루프를 막지 않음)로 `--version`·`models` 를 본다. 모델 목록이 있고 **조회가 정상 종료(`ok`)했을 때만** «연결됨», 한 줄만 찍고 시간 초과·비정상 종료하면 «확인 실패»(자동 설정이 멀쩡한 다른 CLI 대신 agy 를 고르지 않게). 모델 계열은 접두 일치가 아니라 «알려진 강도 접미사만 뗀 ID» 로 맞춘다(`…-preview-high` 는 Argon 이 아니다). 목록이 없으면 «확인 실패»(로그인 필요 문구가
     있을 때만 «로그인 필요»). 청구 구분은 `inferAgyBilling`(API 키 환경 변수가 있으면 api, 구독 전용 카탈로그면 subscription, 애매하면 unknown). 역할 기본값은 감지된 목록에서 고른다.
   - 자동 추천 순서 `LOCAL_CLI_DEFAULT_ORDER` = codex → claude → **agy** → gemini. 에디터의 세 제공자 UI(`aiThreeProviders.ts`)는 local-cli 경로에서 `xhigh` 강도 칸을 숨긴다(agy 변형은 low~high).
   - 시험 `test/agyAcpAdapter.test.ts`(가짜 `agy` 바이너리로 핸드셰이크·모델 선택·권한 허용/거절·refusal) · `test/localCli.test.ts`.

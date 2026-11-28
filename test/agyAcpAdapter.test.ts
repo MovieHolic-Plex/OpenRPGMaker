@@ -40,6 +40,10 @@ describe("Antigravity ACP (agy) adapter", () => {
       "gpt-oss-120b",
     ]);
 
+    // 접두 일치로 계열을 맞추지 않는다 — preview 모델이 Argon 으로 접히거나 유령 Argon 항목을 만들지 않는다.
+    const previewOnly = parseAgyModelsOutput("gemini-4-argon-preview-high\tGemini 4 Argon Preview (High)");
+    expect(previewOnly.models.map((m) => m.id)).toEqual(["gemini-4-argon-preview"]);
+
     const loggedOut = parseAgyModelsOutput("Fetching available models...\nError: Please sign in to view available models.");
     expect(loggedOut.needsLogin).toBe(true);
     expect(loggedOut.models).toEqual([]);
@@ -52,6 +56,8 @@ describe("Antigravity ACP (agy) adapter", () => {
     expect(resolveAgyModelId("gemini-4-neon", "high", available)).toBe("gemini-4-neon-xhigh");
     expect(resolveAgyModelId("gemini-4-neon-xhigh", "low", available)).toBe("gemini-4-neon-xhigh");
     expect(resolveAgyModelId("auto", "medium", available)).toBeUndefined();
+    // preview 변형은 Argon 의 강도 변형이 아니다 — 광고된 변형이 없으면 기본 후보로 떨어진다.
+    expect(resolveAgyModelId("gemini-4-argon", "high", ["gemini-4-argon-preview-high"])).toBe("gemini-4-argon-high");
   });
 
   it("detects standalone quota warning banners without false-positiving on normal answers", () => {
@@ -60,11 +66,19 @@ describe("Antigravity ACP (agy) adapter", () => {
     expect(parseAgyQuotaWarning("In this game, the error message says quota exceeded when the player runs out of mana.")).toBeUndefined();
   });
 
-  it("approves only oprn MCP permissions and blocks built-in shell/file tools", () => {
+  it("approves only requests bound to the oprn MCP server and fails closed otherwise", () => {
     expect(shouldApproveAgyPermission({ toolCall: { title: "mcp__oprn__paint_tiles", kind: "mcp" } })).toBe(true);
     expect(shouldApproveAgyPermission({ toolCall: { title: "oprn_ping", kind: "mcp" } })).toBe(true);
+    expect(shouldApproveAgyPermission({ toolCall: { title: "paint_tiles", kind: "mcp", serverName: "oprn" } })).toBe(true);
+    // 서버 식별이 있으면 이름보다 우선한다 — 다른 서버가 oprn 처럼 보이는 이름을 달아도 거절.
+    expect(shouldApproveAgyPermission({ toolCall: { title: "mcp__oprn__paint_tiles", kind: "mcp", serverName: "other" } })).toBe(false);
+    // 이름 «중간» 의 oprn 이나 kind: mcp 만으로는 허용하지 않는다(에이전트가 쓴 표시 문구).
+    expect(shouldApproveAgyPermission({ toolCall: { title: "run_shell_command (oprn helper)", kind: "execute" } })).toBe(false);
+    expect(shouldApproveAgyPermission({ toolCall: { title: "paint_tiles", kind: "mcp" } })).toBe(false);
     expect(shouldApproveAgyPermission({ toolCall: { title: "run_shell_command", kind: "execute" } })).toBe(false);
     expect(shouldApproveAgyPermission({ toolCall: { title: "write_file", kind: "edit" } })).toBe(false);
+    // 도구를 연결하지 않은 세션(보조 complete)은 oprn 도구 요청도 허용하지 않는다.
+    expect(shouldApproveAgyPermission({ toolCall: { title: "mcp__oprn__paint_tiles", kind: "mcp" } }, false)).toBe(false);
   });
 
   it("maps ACP session/update notifications into LocalCliEvent stream", () => {
@@ -82,6 +96,13 @@ describe("Antigravity ACP (agy) adapter", () => {
       { kind: "assistant", messageId: "sess-1:2", newRequest: true, blocks: [{ type: "text", text: "Done!" }] },
     ]);
     expect(handler.snapshot()).toEqual({ calls: 2, toolCalls: 1, text: "Done!" });
+
+    // 도구는 시작한 때 센다 — 끝 알림 전에도 재시도를 막을 수 있어야 한다.
+    const started = createAgyUpdateHandler(() => undefined);
+    started.handleUpdate("sess-2", { sessionUpdate: "tool_call", toolCallId: "w1", toolName: "mcp__oprn__paint_tiles" });
+    expect(started.snapshot().toolCalls).toBe(1);
+    started.handleUpdate("sess-2", { sessionUpdate: "tool_call_update", toolCallId: "w1", status: "completed" });
+    expect(started.snapshot().toolCalls).toBe(1);
   });
 
   it.skipIf(process.platform === "win32")("verifies model selection, permission allow/deny outcomes, stopReason handling, and not-installed detection", async () => {
@@ -93,7 +114,10 @@ describe("Antigravity ACP (agy) adapter", () => {
     writeFileSync(fakeBin, `#!/usr/bin/env node
 const args = process.argv.slice(2);
 if (args[0] === "--version") { console.log("1.5.18-test"); process.exit(0); }
-if (args[0] === "models") { console.log("gemini-4-argon-high\\tGemini 4 Argon (High)"); process.exit(0); }
+if (args[0] === "models") {
+  console.log("gemini-4-argon-high\\tGemini 4 Argon (High)");
+  process.exit(process.env.OPRN_FAKE_AGY_MODELS_FAIL === "1" ? 3 : 0);
+}
 let buf = "";
 let selectedModel = null;
 let promptReqId = null;
@@ -110,6 +134,7 @@ process.stdin.on("data", (chunk) => {
     if (!line.trim()) continue;
     const msg = JSON.parse(line);
     if (msg.method === "initialize") {
+      process.stdout.write("null\\n"); // ACP 프레임이 아닌 줄 — 어댑터가 던지지 않고 건너뛰어야 한다.
       process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id: msg.id, result: { protocolVersion: 1, agentCapabilities: { sessionCapabilities: { resume: {} } } } }) + "\\n");
     } else if (msg.method === "session/new") {
       process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id: msg.id, result: { sessionId: "fake-sess-1", models: { currentModelId: "gemini-4-neon-high", availableModels: [{ modelId: "gemini-4-argon-high" }] } } }) + "\\n");
@@ -151,12 +176,9 @@ process.stdin.on("data", (chunk) => {
       }) + "\\n");
     } else if (msg.id === "perm-2" && permStep === 2) {
       denyOk = msg.result?.outcome?.outcome === "cancelled" || msg.result?.outcome?.optionId === "reject_once";
-      if (!allowOk || !denyOk) {
-        process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id: promptReqId, error: { code: -32001, message: "perm failed: " + JSON.stringify({ allowOk, denyOk }) } }) + "\\n");
-      } else {
-        process.stdout.write(JSON.stringify({ jsonrpc: "2.0", method: "session/update", params: { sessionId: "fake-sess-1", update: { sessionUpdate: "agent_message_chunk", content: { type: "text", text: "OK" } } } }) + "\\n");
-        process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id: promptReqId, result: { stopReason: "end_turn", usage: { inputTokens: 120, outputTokens: 10, cachedReadTokens: 20 } } }) + "\\n");
-      }
+      // 허용/거절 결과는 답변 글에 실어 테스트가 세션 종류(도구 연결 여부)별로 단언한다.
+      process.stdout.write(JSON.stringify({ jsonrpc: "2.0", method: "session/update", params: { sessionId: "fake-sess-1", update: { sessionUpdate: "agent_message_chunk", content: { type: "text", text: "OK allow=" + allowOk + " deny=" + denyOk } } } }) + "\\n");
+      process.stdout.write(JSON.stringify({ jsonrpc: "2.0", id: promptReqId, result: { stopReason: "end_turn", usage: { inputTokens: 120, outputTokens: 10, cachedReadTokens: 20 } } }) + "\\n");
     }
   }
 });
@@ -178,8 +200,44 @@ process.stdin.on("data", (chunk) => {
         effort: "high",
         onUsage: (u) => { seenUsage = u; },
       });
-      expect(reply).toBe("OK");
+      // 도구를 연결하지 않은 보조 호출은 oprn 도구 요청도 거절한다(allow=false), 셸 요청도 거절(deny=true).
+      expect(reply).toBe("OK allow=false deny=true");
       expect(seenUsage).toEqual({ input: 100, output: 10, cacheRead: 20, cacheWrite: 0, calls: 1 });
+
+      // 도구를 연결한 세션에서만 oprn MCP 요청이 허용되고, 셸 요청은 여전히 거절된다.
+      let sessionText = "";
+      let sessionResult: { ok: boolean; error?: string } | undefined;
+      const session = agyAdapter.openSession({
+        mcpUrl: "http://127.0.0.1:9/mcp",
+        mcpToken: "test-token",
+        systemPrompt: "test",
+        binary: fakeBin,
+        model: "gemini-4-argon",
+        effort: "high",
+        onEvent: (event) => {
+          if (event.kind === "assistant") {
+            for (const block of event.blocks) if (block.type === "text") sessionText += block.text;
+          } else if (event.kind === "result") {
+            sessionResult = { ok: event.ok, ...(event.error ? { error: event.error } : {}) };
+          }
+        },
+      });
+      try {
+        await session.prompt("Reply with OK");
+      } finally {
+        await session.close();
+      }
+      expect(sessionResult).toMatchObject({ ok: true });
+      expect(sessionText).toBe("OK allow=true deny=true");
+
+      // 모델 조회가 한 줄 출력 뒤 비정상 종료하면 «연결됨» 이 아니다.
+      process.env.OPRN_FAKE_AGY_MODELS_FAIL = "1";
+      try {
+        const partial = await agyAdapter.detect(fakeBin);
+        expect(partial.state).toBe("error");
+      } finally {
+        delete process.env.OPRN_FAKE_AGY_MODELS_FAIL;
+      }
 
       await expect(agyAdapter.complete("REFUSE", {
         binary: fakeBin,
