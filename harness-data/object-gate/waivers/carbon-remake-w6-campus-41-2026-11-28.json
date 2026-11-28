@@ -1,0 +1,1793 @@
+{
+ "schema": "oprn-object-gate-owner-waiver/1",
+ "id": "carbon-remake-w6-campus-41-2026-11-28",
+ "owner": "그래 분리하자. 비공개로 하고 레포 스캐폴드도 만들고 니 추천대로 (Wave 6 modern_campus 41종 100% 완주 번들 굽기 승인 · 2026-11-28)",
+ "decidedAt": "2026-11-28",
+ "recordedBy": "antigravity/gemini-4-neon (owner chat approval 2026-11-28)",
+ "contexts": [
+  "bundle",
+  "shared"
+ ],
+ "note": "Carbon Medium Wave 6 pure 1-pass 41 pieces (completes 60/60 modern_campus), bundle/shared only",
+ "items": [
+  {
+   "pixelSha256": "b16a66ff7851a17b586df376d0d2260fdc99ce61e3cd25ad68b6b77914ee58e8",
+   "kind": "column",
+   "label": "교정 볼라드(스틸+반사띠)",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "cff87c5ff82d21cd"
+    ],
+    "24": [
+     "06449dd025fba34e",
+     "07f58dd355e5609d",
+     "0b84094ba284cf3c",
+     "250c88228865a7eb",
+     "6b691ff3cb48640b",
+     "836098af6daf71ff"
+    ],
+    "32": [
+     "2a216480738b9842",
+     "4ac8b55f59c006c8",
+     "7ef20523e412df43",
+     "90e5123cd28a7499",
+     "bb06e494dbd5e683",
+     "ca5799a3b8955480"
+    ],
+    "48": [
+     "0410f5a53a1556e5",
+     "25721f8b72ab5af5",
+     "3568edc52f79e217",
+     "43956c1858ad1279",
+     "502e5dcf365b2c0f",
+     "7704bb3ed8459d49"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "dc165e0a9962cc436d7295810d361c50dff413199468045dc1999e6c2a6b106e",
+   "kind": "column",
+   "label": "캠퍼스 가로등(클래식 랜턴)",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "0303e5e729bd197b",
+     "7efacbf35945753e"
+    ],
+    "24": [
+     "1db21ba938f159d7",
+     "3c7b9ce4875df054",
+     "540a8d661021caed",
+     "5b70bb4ff26bb7bd",
+     "5d9f0e129ca14b0d",
+     "69b9cc3821e8717d",
+     "6a74976f8cd30e45",
+     "a008d84e4961428a",
+     "a243c0bb55dfcc28",
+     "a52e28e6862478cc",
+     "d7ca8bd513f2eb35",
+     "e301fcdc8ee1155d"
+    ],
+    "32": [
+     "2cfe4c986e1e0e9f",
+     "6a0c445f3052d179",
+     "85958a0fea2b5b84"
+    ],
+    "48": [
+     "0db86129a4279ad2",
+     "552e8022c358d95e",
+     "b65dac19615d55d7",
+     "bf75a681f472f5e4",
+     "d7b7024887a187bd",
+     "de0ef1fa32813f0b"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "374598b81954ba8bf558172de15ff227079968d235210895360fc76c35057c62",
+   "kind": "box",
+   "label": "야외 쓰레기통(후드형)",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "933a730e1712903b"
+    ],
+    "24": [
+     "0a04702b63282bd8",
+     "1d4b5c2b2969577f",
+     "7e797b3b2d0b879f",
+     "8a3fbea426f24f3e",
+     "9b9d6a79f335f6bf",
+     "fb6b8345d81dceab"
+    ],
+    "32": [
+     "4c2b5e29840f8237",
+     "5a88aa0d0248ec8a",
+     "762df702df3d33eb",
+     "7eac8d16c37fea27",
+     "aae01364b4c97bc7",
+     "ed786b0d6373451f"
+    ],
+    "48": [
+     "0baa7bf107a48eaa",
+     "870e326a9d0b8744",
+     "a83f825121cc8c9d",
+     "b0c97ce127faca03",
+     "bb24491ceb5f1f42",
+     "bc2789baac00f02e"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "98b2dcb25066437c12f48cfdb1fbd0d06d6afe2e885f1f34beb0ef0bae8d43ce",
+   "kind": "box",
+   "label": "야외 분리수거함(3구 세트)",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "430ba3adfe0b9243",
+     "9c1352c209058f85"
+    ],
+    "24": [
+     "00c52f967328c808",
+     "13bae9b6de08de72",
+     "1815184070ebeba0",
+     "2732093c358259a0",
+     "3ef1dbc4f87cf90f",
+     "6971abe86a36b34a",
+     "7cba44e6ecc7d820",
+     "8cb532afc5c64bab",
+     "c154b0b648658668",
+     "c7ec0e2a616fef30",
+     "e18c7bb99de3d71d",
+     "f52c192718a1410c"
+    ],
+    "32": [
+     "3cce9862c6f6a593",
+     "6107f14952ef00f6"
+    ],
+    "48": [
+     "2264c7b4c8854521",
+     "2f401a22e49e6421",
+     "5166a02225504f88",
+     "68727eaf1d57495f",
+     "bcef783ac2cc35a3",
+     "dac9d461c3e7fbd5"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "5b846d6202fff5eb2093a5553b3ce9b50a94951be8ba27ff2ac73e6fb41606b3",
+   "kind": "other",
+   "label": "야외 지붕형 게시판(달력+공지)",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "00979dd6da76c6d1",
+     "51d88c3b35036068",
+     "52aa55ffdd7151dc",
+     "6fcef7e203f48791"
+    ],
+    "24": [
+     "175b33a5732e25d7",
+     "1c91b2a1cec7173b",
+     "27856560c579e2d7",
+     "35bd8277d8ccee2b",
+     "3edd0fcc6b59b69e",
+     "480e37905e6bbcec",
+     "59046db812b1f7ed",
+     "5b68e2e6e14d1f59",
+     "6e29a0dbdafa63ee",
+     "8013cc002673899d",
+     "8e2fd81b955c9e3a",
+     "8ee356f1a8b6eb3c",
+     "a29c118998646a1a",
+     "b4c705c04cb3eefc",
+     "b9839d71f20220ed",
+     "d56322ecaecb940c",
+     "d7518081dc0dfa05",
+     "e4fa72de4c576657",
+     "e6edb6c087cffdb4",
+     "e7da7c32d609134a",
+     "ecbf2ccfa13f8bdc",
+     "ed8e1f6e41a3144e",
+     "f76557ede7b6d02e",
+     "fdaf01d5469e7bd0"
+    ],
+    "32": [
+     "509e1f6a3c09fff5"
+    ],
+    "48": [
+     "06acde71e3762385",
+     "4b4dbf25e074f273",
+     "58c1b1a95044a85e",
+     "6bd972a11799a9a8",
+     "9dfd1830f9fa697e",
+     "cfad90551662c568"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "0c7e4130a814bd2bddd52e2c21d3ae39cd570296d7d23a8eaa25ec85005d07a3",
+   "kind": "box",
+   "label": "교정 피크닉 테이블(벤치 일체형)",
+   "width": 48,
+   "height": 32,
+   "cells": {
+    "16": [
+     "0dfc64d8e851f7e3",
+     "487124ab6e648262",
+     "632a049314f13d46",
+     "8d60efe09666d96d",
+     "a1885e5e36702a89",
+     "c2bd17fca6e196ac"
+    ],
+    "24": [
+     "1c97863fa84cf12f",
+     "2b4a5d5b151fd152",
+     "3729327ea070c33b",
+     "53caffd09007b723",
+     "5893b5ee049a1c95",
+     "664858f5f84eef17",
+     "b97e2829b00c1943",
+     "ced8192208fcb7d4"
+    ],
+    "32": [
+     "1e976071d1f5e94c",
+     "517648ccbb1952c3",
+     "55075e190c377756",
+     "ced2576ab023e184",
+     "dde7e3a0ec14e299",
+     "f6d8dc866a0115e2"
+    ],
+    "48": [
+     "4e62b03c9b413fcc",
+     "e8f3a48bdb4eced8"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "9a4a439b91d1c551e120724a9e52c6da75155f17374c2e56c17d678375de7d26",
+   "kind": "column",
+   "label": "교훈비(석조 기념비)",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "56ab8905e6e3a111",
+     "7e73a83ff13f0269",
+     "cb00a3b70e0b6485",
+     "d37af25da7f4eba9"
+    ],
+    "24": [
+     "08cb0870ca4ce811",
+     "1471bc5bccff067f",
+     "194af1a1e9c73fb5",
+     "2c3520a237071186",
+     "2f1269dcf121fcd5",
+     "2f3641282398b556",
+     "30a48d34597fa8f2",
+     "43e108c8de666288",
+     "4df0af416682f760",
+     "5ab9d5a819356a14",
+     "637e615850818ba3",
+     "698b6420a2a83c57",
+     "78c6349015765e5d",
+     "80f2d84973845869",
+     "8a519a95d7c625e9",
+     "8bf781921fd888f7",
+     "9282e0c22d247902",
+     "b579a0f089526e6c",
+     "d8414a5ac2bde245",
+     "d97343b5b738389e",
+     "f0cc0a960b956b99",
+     "fabda5c9c3332484"
+    ],
+    "32": [
+     "c200c26f867460fa"
+    ],
+    "48": [
+     "0b8d39761972afaa",
+     "0badc46c51952148",
+     "2c0821cd217c52f5",
+     "3772a5307fa4f8e3",
+     "43bf9855825133b4",
+     "e864c67fe191a0e8"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "65aa7544e9a028be2564843add9bb056146e1131c33625c59b782dc3f22e2041",
+   "kind": "structure",
+   "label": "운동장 전광판(야구·육상)",
+   "width": 48,
+   "height": 48,
+   "cells": {
+    "16": [
+     "0281b26ed34a9775",
+     "13c8c00857ab1bc7",
+     "3da9f5a7e0c4764a",
+     "49b0c5eac6ee3533",
+     "629dd7024c16d4ca",
+     "78c33a5d4eef9cdd",
+     "802c37edac72725f",
+     "b354b919d0381d25",
+     "bd17b0fe5ba37c43"
+    ],
+    "24": [
+     "88e3e8b9b3899b53",
+     "90c4f0847a9bb115",
+     "e98c43a3b1bd215b",
+     "ff61c74d66fece8e"
+    ],
+    "32": [
+     "16c7a59575303312",
+     "1d49f7e868564e4f",
+     "21bd20ee6834ae90",
+     "2652215430e9da1e",
+     "28daf544ff40930e",
+     "42bed7fe253d1b83",
+     "4c14e38604904e85",
+     "55429c8f087b64dc",
+     "5c342d42df6b4273",
+     "685aa1fdbfa295dc",
+     "68a08dcf6157e901",
+     "6b4f05e0189d35db",
+     "7b7eb590a2e42a70",
+     "967c9c18c5d6bcec",
+     "b8bde15c99850b59",
+     "c415e70f14cbb5c0",
+     "d0e156469509c28c",
+     "e269bd23f63b4c28",
+     "ea75c8b7edd73184",
+     "ec02e5d4577989e0",
+     "eefe53fbb93cc501",
+     "f31e59f16b18aa52",
+     "fb76b5c3b23077ea",
+     "fdfe66c39eeecba3"
+    ],
+    "48": [
+     "55beb6d19f21c4e1"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "5fe406149cd93b5b763d556217b6b1ca9f02a160b29d289411f4569c616a4428",
+   "kind": "other",
+   "label": "교직원 승용차(정면 3/4)",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "05f527dfcfca1bb3",
+     "11bb62cae3cabdae",
+     "2902e267bd83764e",
+     "2a31af30188ed76c"
+    ],
+    "24": [
+     "03c0681768f01c46",
+     "061140f1eedaf532",
+     "0b6c42366a6d41e8",
+     "0d183acfc2f5de1f",
+     "11a50621f5a5772c",
+     "29aa556cee58f21d",
+     "3bb06a07808ee04b",
+     "446916306abd06c7",
+     "4578fceb38df3b9f",
+     "45939bd75c9b9c65",
+     "4a1d9b1c77159b1e",
+     "4aa369bd265d1f0c",
+     "67e4916fdace0ff7",
+     "6bee92f9c83c952a",
+     "76a0c8a1cd29abc9",
+     "8bb8d091e230f6ed",
+     "9f06941d38813e99",
+     "a58fa94143a4f8a8",
+     "a7cbdda4e00ddf65",
+     "c78e1fd2c76e3858",
+     "d7d976923b803695",
+     "e34627f539dfabcc",
+     "e909655074641dca",
+     "ee7f90adfba14ff8"
+    ],
+    "32": [
+     "0f065f17cf4ac061"
+    ],
+    "48": [
+     "332ca8ffa459e892",
+     "610b59de1814693a",
+     "7baf4402d6131393",
+     "b1b818bff0c6866d",
+     "d84a53dcacc2633d",
+     "f20c692ce203c8e1"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "ecb844762fb96f32eadf3690e32939e30bd17f79c11d2893cee73a6486115084",
+   "kind": "other",
+   "label": "스쿨버스(정면 3/4)",
+   "width": 32,
+   "height": 64,
+   "cells": {
+    "16": [
+     "023f990c2a6b4eb1",
+     "a470e1c66a930bee",
+     "be2815cb1f431ec3",
+     "c6e2f8cc2ad9698b",
+     "cd37d73848e79d51",
+     "d1126f52774b225e",
+     "debc9a4b81c5e4d0",
+     "e37badd9a4afe421"
+    ],
+    "24": [
+     "1ab12990d9f3da76",
+     "1fd002d97ab45914",
+     "2756d75466c14eb4",
+     "37f46552cdca23e7",
+     "41c884834ded964f",
+     "4373508c5cbed07a",
+     "4a079748cb94fea3",
+     "50302c9756721e90",
+     "53804bc40887b848",
+     "53f6db56034f13f5",
+     "5654b3644c61b640",
+     "56dd80160071f2ad",
+     "66119318604dfe0a",
+     "681f8fb3d7c089e2",
+     "76f3c130ec12389b",
+     "7f612401f24810f5",
+     "81d1d823ee47db89",
+     "848983558f7df617",
+     "8c8376086c77b4dd",
+     "8da2f15ec8fdd818",
+     "8eb6f93863fa289e",
+     "91e4fa3fa4196b03",
+     "98cded25dd6c87e0",
+     "a05803d81be6ce52",
+     "a1143d3350b4bf02",
+     "a6492e01b979a6c9",
+     "ab0f1048d3fb9613",
+     "bd2adca89806c3df",
+     "c42044b5949e266b",
+     "cafea50f0aba4589",
+     "d168db644412dca5",
+     "db36def8b6771518",
+     "dd246c00f34bead6",
+     "df8ba3f9f16e0a9c",
+     "e61a54b5e8cca7d5",
+     "f70f0e07eb8513ea"
+    ],
+    "32": [
+     "977d8a766efcae4b",
+     "fed841cfdcdd0b81"
+    ],
+    "48": [
+     "04cfab5ece638767",
+     "2c1e53219e51aa2b",
+     "2e001aacddb458e1",
+     "3fc705650aae9a0e",
+     "4bc9426f1b7f7dae",
+     "56debcebde77454d",
+     "5ef200c7e4bb59fa",
+     "af18b3852f713df0",
+     "bae704cd9c8bfabe",
+     "bc93025797bd3e53",
+     "bd56b914b60b3c9d",
+     "e04e5cd1672fdf83"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "62023bd50132bc6851bda234ed1c0f357428ed638efb6b0a9e6d53d9a6b07bd3",
+   "kind": "box",
+   "label": "학생 책상 쌍(교과서+필통)",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "4ad13be478ca0025",
+     "a5a72d478889d11d"
+    ],
+    "24": [
+     "072126ac579bc2d5",
+     "0de3fdbbe5ef9b41",
+     "3b074e72fae5fcf4",
+     "444f2a2463a3c3f3",
+     "47d9e489db52eede",
+     "72ff486756b26d63",
+     "733a00999fdae825",
+     "7ece9cce07bc8609",
+     "89d5533ee22c3208",
+     "cb4fc6b77e6af7d0",
+     "d3629dd785b67e94",
+     "f27e64e5c7d60319"
+    ],
+    "32": [
+     "6a36e08bfb76cbb3",
+     "daa200362214e6d8"
+    ],
+    "48": [
+     "14e2a31e1eac3e9a",
+     "3437b23cc6837d2f",
+     "3909be4b7bd0fcb2",
+     "922ca39536622a58",
+     "a4dc647decb7ac20",
+     "df595649d482b7bf"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "2cc31a7ce1f7f5821cb4920428477dff0e9b556c6945b2cf9df91e7a5eaec222",
+   "kind": "box",
+   "label": "강의실 긴 책상(3석)",
+   "width": 48,
+   "height": 16,
+   "cells": {
+    "16": [
+     "1a3c8c4a8270c442",
+     "a38ce91f3fc889d7",
+     "b8b759a7b00501d4"
+    ],
+    "24": [
+     "1ae1e2852e2a796d",
+     "85eb4e50a00d9188",
+     "d09bcfcb999f62fa",
+     "ff92a2ca971c0262"
+    ],
+    "32": [
+     "039f638b9f089476",
+     "08d32d07534130f7",
+     "0acca31b863e5722",
+     "0c1c5ffe75f4b9cb",
+     "3e8fd5dfbc1a94ad",
+     "44e95a2e08a91abb",
+     "5340653bdcb04a35",
+     "53e66a1861013173",
+     "5785ad5d3e154d44",
+     "5e34545e15b76253",
+     "d33418c0f3bb6158",
+     "f7aa83db3a05e3fe"
+    ],
+    "48": [
+     "8373156077e6a36a",
+     "847d32f361708084"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "79526d1884f68ee8a9c705a33fac6bde47087c354bdeb9039c650c1a0e51db5f",
+   "kind": "box",
+   "label": "교단 강연대(마이크+교장 문장)",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "1e56dd663d15841b",
+     "29165be21b1ca9f6"
+    ],
+    "24": [
+     "57e05d44ba3da90c",
+     "6a4a5dfc612bc4c5",
+     "72594326470465fa",
+     "7702627c1c3b2f7d",
+     "7820e645a724b65a",
+     "7ff4ac9496280ae0",
+     "924f2cdca2c04d11",
+     "a1f0d830317f0dcd",
+     "a3e8da1913233091",
+     "b6efce2eac66cd32",
+     "fd6ff034e04c4ee5",
+     "fec162d83283e30b"
+    ],
+    "32": [
+     "39aa2ea589fb7b58",
+     "4ead03ae1ffb78cb",
+     "86b6e14e0208e8c6"
+    ],
+    "48": [
+     "07b0bea5fccddd8c",
+     "0c8e86ae86cbc797",
+     "63e82996f753826b",
+     "71cd3b21eae8eae0",
+     "d783f5123ef268ef",
+     "eb5520fd77b1f0be"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "70a51a2b449924e5ed8d969898b7983f20d1b82bd9473b223c7145ca5feb07e6",
+   "kind": "other",
+   "label": "실습실 목재 스툴 쌍",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "006aee2ff5f723d0",
+     "be8d76fcdc2aafe7"
+    ],
+    "24": [
+     "0c3b842c81c84e39",
+     "30764f6f24b7c34d",
+     "4e73850b0a96a921",
+     "67edd687956195e0",
+     "69f0116e957cb2cc",
+     "7ac3ef1a70fca8f4",
+     "894fa727146c222f",
+     "ae4a21761656e45a",
+     "bf05705b11e501e4",
+     "c60c4b892d570a40",
+     "de6b058631e8d446",
+     "e3ffaa61e453c3c0"
+    ],
+    "32": [
+     "00df2ce43406fee4",
+     "ab2ccad407d1d101"
+    ],
+    "48": [
+     "170a28df830a565e",
+     "2112a419204de248",
+     "2e2aabad4b5dc2a4",
+     "c0ac58d445ae9bf2",
+     "d422b8a76d572560",
+     "e088c9970cf54a59"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "bd791cf8af4667aa922ac2448a89e0a886e96714a239241d7f7e4dc7e89f0291",
+   "kind": "other",
+   "label": "영사 스크린(차트 슬라이드)",
+   "width": 48,
+   "height": 32,
+   "cells": {
+    "16": [
+     "7096b48c46863ba1",
+     "73dbaf5c1160a810",
+     "8058e570d0965c5a",
+     "93a242b28d06e11d",
+     "b023b87fd1551175",
+     "fa5ac2c030dcc9ac"
+    ],
+    "24": [
+     "2e9f67f90466212e",
+     "30b5d2060d50f4b8",
+     "426f0d08e667aaf5",
+     "5696dac096158b60",
+     "e283bb2c3044090c",
+     "ed17746c8a96e1c2",
+     "edf3949aaf2a03c0",
+     "fc5604459cc0c91a"
+    ],
+    "32": [
+     "000aa73fc895ee73",
+     "79a63045c1ef7dcc",
+     "b8d412dcb39dfe67",
+     "c6e02eb1d8728ca6",
+     "cd5b41bb10c97433",
+     "d13b4294f000264e"
+    ],
+    "48": [
+     "27397d92546a4d21",
+     "59f1b5fcbd2f082f"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "8bd180b51a6fbe199f576d6d43b2f212b536cb0bc75f264f93d39f5d7b66f064",
+   "kind": "other",
+   "label": "접이식 의자 더미(5단)",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "48e70d5c74807f63",
+     "75d38ceba6525e12"
+    ],
+    "24": [
+     "1b115b89f6efa309",
+     "60556d8443a0b4ee",
+     "6b7bcc7686ac1dd7",
+     "848f9f36d838dbdc",
+     "8d1af39a7b10ed32",
+     "8efce87fa9130524",
+     "af91f3d9ca50ed44",
+     "b5d13234eecb9851",
+     "bb6e46393b459408",
+     "c2b8db80708be498",
+     "e491de41ae372adf",
+     "f2fd4d22d266a2a0"
+    ],
+    "32": [
+     "9eb29aea8603bb84",
+     "ba04cac5a830d8fb",
+     "dbd2977c116edc8f"
+    ],
+    "48": [
+     "0293313a21833bc5",
+     "079633b744924c21",
+     "0e9251d35970e00a",
+     "27b89a8b9832637f",
+     "6e33b140db0a488d",
+     "797da252a83ce702"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "2d123c48d72654a0fc8815187330666782c100966becee74fbc5afab8dc07798",
+   "kind": "box",
+   "label": "노트북 충전 카트(AV 트롤리)",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "2bd8beefd38180f4",
+     "83906024623ebc83"
+    ],
+    "24": [
+     "160714ba6e9857ee",
+     "1753bd584fa546f1",
+     "2e4fd781c1f5ad50",
+     "43dbf05f1751453e",
+     "4febfc0520dfae67",
+     "6991ef4a5e084f49",
+     "a353d2c3709387d5",
+     "a8a341e29e375e1e",
+     "b2f6497c00db01e0",
+     "c39a2afd2a209d11",
+     "c61a7fe501e35889",
+     "f2f61c618e2442c4"
+    ],
+    "32": [
+     "44095b51b8d24569",
+     "828e9b7708ffcdef",
+     "e6fcbcfc39149482"
+    ],
+    "48": [
+     "2e6f24a94d7c5f1f",
+     "946c02580c147e6c",
+     "9cde2f84c18e16db",
+     "b7783fe889a38e6a",
+     "cc32bfdaf1ddc76e",
+     "d385b8db1b16cc32"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "f888dd386494629330f7655c88ce5f47a236eda3053798edc9dc893f6b8c3918",
+   "kind": "other",
+   "label": "교실 벽시계(원형 목재 프레임)",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "10ec6747da49d0a3",
+     "584c430f474d4f14"
+    ],
+    "24": [
+     "0ad5afaa8d2fbb6b",
+     "1fb413ac2d9449e8",
+     "3e44925a96e5c21d",
+     "692650f34dcd9f21",
+     "aa64151d88627b72",
+     "b01894cd3be0a713",
+     "ce5a48b896ea1f1a",
+     "d7445721bae3d6b2",
+     "e9b6a138cc3baec4"
+    ],
+    "32": [
+     "5a026b2740f42eb6",
+     "b766654caf7d1159",
+     "e7856cb45eed5683"
+    ],
+    "48": [
+     "0626b12ef511da9f",
+     "1fbcedd15e7c0c93",
+     "79949e90d52d1a6f",
+     "85656e2e4872660c",
+     "db7f78d70b940b44",
+     "e3e169398ed433d4"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "1ce9ac1b09571dba9682ebd3a09e8088f45cc4e2d48fc4bdd4d214d41ae87443",
+   "kind": "box",
+   "label": "교실 쓰레기통(스윙 뚜껑)",
+   "width": 16,
+   "height": 16,
+   "cells": {
+    "16": [
+     "daf87a2ac259e7f4"
+    ],
+    "24": [
+     "01d81b9313f12588",
+     "2c9459f665fd0d30",
+     "62153f70698e90d1",
+     "887fd4a19f26ac84",
+     "8bb6c118168c6d3a",
+     "ed4f76af5ac965e2"
+    ],
+    "32": [
+     "57496bd8ed913de1",
+     "95dab83b10265ab3",
+     "bd3e11c143cac001",
+     "bf04edda212e7ba3",
+     "ed7830bd319c60db",
+     "edf26485a22ca249"
+    ],
+    "48": [
+     "5aa6c5bf28172c1f",
+     "9120a2349d8645ef",
+     "9751ae005977ef6f",
+     "98344406e1cea26c",
+     "e8c1c7a1ea9d982b",
+     "fef80800a68cfbfc"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "a5176382bab71c6c1a359642f530c0670a9f012c0c6e344f3d44bd42fbf4ca23",
+   "kind": "other",
+   "label": "교실 창문 커튼(주름 드레이프)",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "cff6701e34cc7b55",
+     "f185c54f1c2d28a4"
+    ],
+    "24": [
+     "00aa56856b1294bd",
+     "32bc6d6854f0ca77",
+     "4946d33a50b54c65",
+     "6c89b94c15e74202",
+     "7492ecaed5607f94",
+     "85e2898584dadcac",
+     "869bdad403433435",
+     "9c2f9e824934c7cd",
+     "a6d194410a33717e",
+     "a94922735eef1609",
+     "b4caeca62989b75a",
+     "c81c2558be03c690"
+    ],
+    "32": [
+     "7bcbf7ff856f71b3",
+     "d0137355673be6c4",
+     "ebc166d780465951"
+    ],
+    "48": [
+     "07cb47ff6de9a9c5",
+     "09253e2d87ae7010",
+     "6aebd2225d84b711",
+     "7fc66e4fbc3ae9f7",
+     "c903dabbdc27fd54",
+     "f233946d995a2c7c"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "aeb26b63aa44b380517570091a6adc2a93bd334f64c19570aa15145e1a4eda7a",
+   "kind": "box",
+   "label": "현관 신발장(실내화+화분)",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "3753f98bb9029f39",
+     "74ee69ff8f555cf5",
+     "903883f043d4851a",
+     "9d244c791373b2c6"
+    ],
+    "24": [
+     "2ce13e789c0b0fa3",
+     "3a90782929c80dc3",
+     "47ed520630a2d17a",
+     "4b1178ce20b45ecc",
+     "5831bb7285ff53d0",
+     "5eaee9e2c564e584",
+     "61faf29b40b8ae96",
+     "6529c3131478cb59",
+     "6fcbcde61088b20d",
+     "73ad1df032ee8e35",
+     "7586ffbfdb1c6005",
+     "78f00c7fb90e6f39",
+     "8dbd997239d2ee1f",
+     "98998d2439503a81",
+     "9ba29e51b0ac975e",
+     "a0c7a56b1a2c54b2",
+     "a6ecce57a1a1c596",
+     "a7165acb7e438e21",
+     "a86061e01f433541",
+     "ca32ef1092b2804b",
+     "d28178b5d84ebbd1",
+     "ef680e3838a8ae92",
+     "f85c7ddf54b8f090",
+     "f9c029e426f868a8"
+    ],
+    "32": [
+     "8a8efea3a9e2d6c9"
+    ],
+    "48": [
+     "2b486dd209386fcb",
+     "533d2f31a6b65831",
+     "735b47258a71ae38",
+     "8ca56996eea0d0ed",
+     "da39c97b23e114a9",
+     "ee72a8e2d05c4d6e"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "1a289b18a424f82a98f6168112c0d8054c26ce5b603d85fd2ede0efeca79fb8f",
+   "kind": "box",
+   "label": "탈의실 목재 벤치",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "001bcc9b00de8a0a",
+     "f5c4681ca9b19687"
+    ],
+    "24": [
+     "24e6d2b32c5056a7",
+     "360626725a2004cd",
+     "415ef5984528eca5",
+     "514f452cacd107a7",
+     "66148d05bcee7343",
+     "68577b5e6729fef0",
+     "7d5d67cb9ae822af",
+     "7d7f4a3ec3a8529c",
+     "83493b982e234e98",
+     "e649b942beae7d10",
+     "ef4391bd57b4bd47",
+     "f53d48d47281b935"
+    ],
+    "32": [
+     "01c4b4359d6041c8",
+     "5d7f92830685718c"
+    ],
+    "48": [
+     "1ccd22ad880b854d",
+     "327f896fce404c13",
+     "764e441b2e1cd937",
+     "9f8777afe340e92a",
+     "e0c3dc3ddd504665",
+     "e5891f57b680b6bb"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "ee756a083023c772cc7fda53f1a395b4b9193f044cdadfa6f11e469d4648aaa2",
+   "kind": "box",
+   "label": "옥내 소화전함(경광등+벨)",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "9473898f197daf95",
+     "fb2fa5545e5f37e8"
+    ],
+    "24": [
+     "0db044d24f9b47af",
+     "17472d0fd101e68c",
+     "3e5c49a50bfd5556",
+     "441cf68e97f3bce5",
+     "47779d7120c5a48d",
+     "4cef700b2a263fd7",
+     "5d80be21b266bc22",
+     "b21e05442b8f345c",
+     "b91b2c03d10ef692",
+     "eeba87fba9043e81",
+     "f3ff536382cff4ec",
+     "fba259225961451f"
+    ],
+    "32": [
+     "250846c643940f0f",
+     "41e5a439b20bdee8",
+     "90df3ad95517e584"
+    ],
+    "48": [
+     "0ff772325cac15a8",
+     "30a6d7fea3bfbaca",
+     "52fec8b94cdd45a1",
+     "a597b6a6db597691",
+     "abbef9a065c8e2f8",
+     "b309db9718d2d28c"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "414fa080e637130c3e56cf3668c26e789cb30783485668ca9b90badd3bd21866",
+   "kind": "box",
+   "label": "복도 냉온수기(스테인리스)",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "bb00be47819aef70",
+     "d55f1b32d7ae1ad4"
+    ],
+    "24": [
+     "0c7d30135bdd1681",
+     "1c7080c703de18a8",
+     "1db4b201e4951eda",
+     "24c4ef582de8b6f1",
+     "3050ee562b88a866",
+     "54827e53321fad89",
+     "57adfc50f4e5214f",
+     "676c6b6231378f17",
+     "a2e5a32bc3c95628",
+     "e264ea8d595f2545",
+     "f3e2a3892135813e",
+     "f9f01ec314f45507"
+    ],
+    "32": [
+     "14fff33b59354c4e",
+     "3812dcc006df3679",
+     "e28593f5dfc3fdf2"
+    ],
+    "48": [
+     "0d0f927fb07a95f9",
+     "1fc564b4cfd68cfe",
+     "38bea706571b0cab",
+     "5a2c2aa4688a6a52",
+     "e74103c858b16445",
+     "f6fa8b50a5982f94"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "2a0cfa4ddb37ef0f341c27ffc415ef79b10fdb2a18de9f23573d7300f90e3672",
+   "kind": "box",
+   "label": "트로피 진열장(유리장+우승컵)",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "113c2401aeee444e",
+     "1f55d9532837d491",
+     "9ee1c5331ccbca62",
+     "ebdf1aeff704e594"
+    ],
+    "24": [
+     "023cc4714d474d4e",
+     "16e73850b09b9c8b",
+     "22fc63ab108d2e83",
+     "2f0d9cb575ddc7fb",
+     "33a4182363292d1f",
+     "34e465d746de9fac",
+     "3acb18324d6f76f8",
+     "3cc949f76e51a114",
+     "4cb68c1d53da5d6d",
+     "4e9e73b3d8175d3d",
+     "52c6f1b4bbff5bf6",
+     "666c91cdc4bd59ce",
+     "7700a55505a584f2",
+     "7b3cc16ae9d84a68",
+     "a05e8137c92ced3f",
+     "a10e5a71844cde66",
+     "bc8c7a9a17c0ee25",
+     "cf67213040870475",
+     "d03ffda4af701b39",
+     "d74955af94928dc5",
+     "de3bac53e2aaa2be",
+     "e8933d96b948d191",
+     "ea4d7de7c4d7a433",
+     "f7e8098ba2f92a4b"
+    ],
+    "32": [
+     "cbb42a17d9a7808a"
+    ],
+    "48": [
+     "41fe54df13bb0cfa",
+     "4a66866af083dbf3",
+     "5646a9bb40d7bead",
+     "6a2e269137bb7f50",
+     "8edd647fc0afa038",
+     "d1c15e88ae4315f0"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "c39585588b51d6a0376181c11c0ce101edbec3f2a09df4ad1dfc4d7dbcf87275",
+   "kind": "box",
+   "label": "학생식당 2인 테이블(식판)",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "93b4b44bc78711d7",
+     "e883a2676e122c5b"
+    ],
+    "24": [
+     "031be1836e48e0b5",
+     "168718ead47cb1f3",
+     "2109e7f90b8582f7",
+     "25857187c9359728",
+     "3f7a5ecb96f70a3f",
+     "70f53c62e9ef8a87",
+     "86d6cba14e385961",
+     "8a4c38252a9589bd",
+     "916b7806ce23743d",
+     "93a1f4716f8f3c7e",
+     "aa36ada3aa4da9a7",
+     "fc922431964a2ff2"
+    ],
+    "32": [
+     "4fe23c4325f0a26d",
+     "7a822e556165fde2"
+    ],
+    "48": [
+     "1addcab0609d59fd",
+     "22435beaab341a39",
+     "68cf46c925012ce6",
+     "c5309d1bf46a2496",
+     "d8b6d11f728bb668",
+     "f6f46790c8609952"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "654ae3b07d23b8115a91fd84921d9b629e62b28235d6a61b8f5f4ac7c521890f",
+   "kind": "box",
+   "label": "식당 배식대(온장 3구+유리가드)",
+   "width": 48,
+   "height": 32,
+   "cells": {
+    "16": [
+     "1134472d15b106df",
+     "330ece811d366cb2",
+     "8653d54e70525e08",
+     "a0cdc3a67d5f3ac1",
+     "e874a80dcc4a882b",
+     "f29f7b26866015a8"
+    ],
+    "24": [
+     "6323a378d4c6960f",
+     "6d3206fc69888ce9",
+     "7cbfe44a31179e7e",
+     "7d9242976cefa070",
+     "807a9073025ab5d5",
+     "b3a292c6d86b3430",
+     "c27006d22c6e3365",
+     "fd99470103b3373e"
+    ],
+    "32": [
+     "1d1156c170f08402",
+     "27e2884efc96d813",
+     "363c2e7626053464",
+     "59d0e7dd173c71a1",
+     "d51735642dafac13",
+     "d57ea9add6daeda1"
+    ],
+    "48": [
+     "a45b789f87e3d6c6",
+     "da6cca7a741f1cb7"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "cb8e78959b5a524ac202a6aafa015897756aaafb302fd0b23592d6f1591a8394",
+   "kind": "box",
+   "label": "교내 음료 자판기(와이드)",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "05b442a2129f0f40",
+     "09193fa233c9226f",
+     "8e1ccb1c8935a588",
+     "d2bfdb7bc5b7cce1"
+    ],
+    "24": [
+     "048febd5b10d33d8",
+     "06e1dd8bff1f493f",
+     "1ff6e555de1a27a7",
+     "225ce3cefe12a9f9",
+     "271c5256c967991f",
+     "31f5a9962d82a00d",
+     "398224b04ceeb21f",
+     "3aa91fa560b163b4",
+     "4f964cf7b91fb0d3",
+     "4fffcd4941358204",
+     "5fdfcce41fc6e0a5",
+     "6c34b99c96088f27",
+     "732ebfd56c9be781",
+     "79cb4fcd74185139",
+     "90b77be59d5a3c54",
+     "98b7d892841ef7d8",
+     "a129a1c323b19339",
+     "b066f0fe5227d95d",
+     "ba07166c028c39e2",
+     "ca138f592210938f",
+     "d705722577714059",
+     "daebb91f8c9a7bb6",
+     "e47441a1ed9c3297",
+     "ffc6320cd578865a"
+    ],
+    "32": [
+     "55594032170ad870"
+    ],
+    "48": [
+     "0dd880692db00b5a",
+     "4a7bc22ff4046cd7",
+     "7ee74365873577f3",
+     "aa6302c258583f77",
+     "ab62aa5bab64d991",
+     "dc0e5bb8e19fa5d6"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "3adfd6cce66b0420e3ecb482da2280808a75415da68712ea3090c7cbd6b3de02",
+   "kind": "box",
+   "label": "동아리방 테이블(기획서+보온병)",
+   "width": 48,
+   "height": 16,
+   "cells": {
+    "16": [
+     "13ce2e1f4795d601",
+     "957566ebcea74923",
+     "9b784ab280d7877f"
+    ],
+    "24": [
+     "73b7135475867eae",
+     "b58471d75097206d",
+     "b66d594ffe494bbe",
+     "b6f3f6a4ba1bedf0"
+    ],
+    "32": [
+     "1d50666da8f6d31f",
+     "1e3bc7ea045eed36",
+     "2722205b79ad8351",
+     "4a38ab47a3084f1a",
+     "6140c981eb484e67",
+     "69955b3e1230b8aa",
+     "6efc2bc0d3c2c92d",
+     "71ea81f2d8246430",
+     "9b217a889a720cc3",
+     "c0c706666e242a76",
+     "d4b961827a32d6ba",
+     "f0dfbbc530f26946"
+    ],
+    "48": [
+     "54bae95481f7f2e0",
+     "d3aa076880115b1d"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "c9de885f86cf93916cce65e4c5d7323d373ee51e1fb6249fb2f4d8e6bd214d2a",
+   "kind": "box",
+   "label": "업소용 냉장 작업대(도마+물병)",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "248bc703a683cf18",
+     "4cd55b9dffd03f7f",
+     "dff48c67c0fa184a",
+     "e766ef0910c4a5f5"
+    ],
+    "24": [
+     "054baaad7e4762f2",
+     "11b04fcd8ef287e6",
+     "1c80123a760ed136",
+     "1cae74804a9ec5e9",
+     "22f7c13992b9f289",
+     "2a2fd5f48facf18d",
+     "333298d13a27abf9",
+     "3afd9c6ebe71c58d",
+     "4457bab9549001b7",
+     "618244d1b438164f",
+     "72a78352f16226f8",
+     "7acbae2bab308038",
+     "81e69d325d7ba094",
+     "9066e9c80c98f78b",
+     "a393aff22493e77a",
+     "ce05ed65e59534d6",
+     "d3395fa6c79f7e27",
+     "d413262d421da530",
+     "d5c016b3bc3a713e",
+     "d756871fdfa88b3b",
+     "dbcbf13bb23c755d",
+     "e47e09818afbb4f9",
+     "f847d6868ba05011",
+     "fa0a67d32ada289b"
+    ],
+    "32": [
+     "dd707cceb634b4c6"
+    ],
+    "48": [
+     "385da39aff869911",
+     "3b7e7d907aa4dcb4",
+     "4ff739fc2ac2d29e",
+     "65d1c3e25fe117d4",
+     "b45966d28282cbd5",
+     "bc248f82fd708747"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "d810e208afb7634b70269495112e997715a32490a0410965b2c38728f15c00bd",
+   "kind": "box",
+   "label": "기숙사 싱글 침대(오크+이불)",
+   "width": 16,
+   "height": 48,
+   "cells": {
+    "16": [
+     "84e64d87657e8de5",
+     "bffd49a93566ad14",
+     "ca03aff68b0eec93"
+    ],
+    "24": [
+     "49a17e487515d6b1",
+     "555473575b57e198",
+     "85554e270684bcd5",
+     "927eecb1927a4d55",
+     "caa419c62753c11a",
+     "d030eb08892352c2"
+    ],
+    "32": [
+     "338e972c329e5c08",
+     "38705ad18a9e3a03",
+     "6b8dd95494db8b02",
+     "6dbb9b809888ba3c",
+     "6ecb483a03e81599",
+     "80ed6b4e15a80e82",
+     "93ae5b8fe67d01df",
+     "980e01097c7ed59c",
+     "bbacb1d0bffe0b1b",
+     "bf9ef32a326c7152",
+     "dd4118f0f9235d38",
+     "fabd47c905ae2fa0"
+    ],
+    "48": [
+     "ca64d1492d916670",
+     "dd27da1a1059c49d",
+     "f5e5a8684b173264"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "92fdef4871f52675d3f948fa7c02d32711fb6a063d0ea80ad73bed1e65fed53b",
+   "kind": "box",
+   "label": "기숙사 목재 옷장(2문+서랍)",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "3f43fe77621c7716",
+     "e76b5921243ae077"
+    ],
+    "24": [
+     "162ac853689d6adb",
+     "17a8cee312b91130",
+     "47baee14877d8c8a",
+     "5e8c7f346c5abfbc",
+     "6418cddde9c80717",
+     "82b55d3378e5e5bf",
+     "9251df6e96d8993f",
+     "9649a0513e19f757",
+     "9ede33d7fa5e1e1e",
+     "a20b20367aba935e",
+     "a9f0477508e1ae90",
+     "b3856bf2eea0f309"
+    ],
+    "32": [
+     "6bb239308adc2ded",
+     "7dd5e4e766e7b336",
+     "b0b4d29eff6fa42b"
+    ],
+    "48": [
+     "249c2a02c519698d",
+     "262a9046a5a26674",
+     "38832ee430ddaf47",
+     "45d892e317fb50a9",
+     "96c1e15c80dcd2e0",
+     "d5e9e135e5c1c6cd"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "2053bd044d03ea718e32c713414524d1acf6a7d6cf7e9ef9b9b0ef64c4ad9a6a",
+   "kind": "box",
+   "label": "기숙사 미니 냉장고(2도어)",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "2946a6f0e51beb52",
+     "2ec171d39f702b36"
+    ],
+    "24": [
+     "01122648768398f2",
+     "282ef670439a5fdc",
+     "7875fb8bd5251c6e",
+     "82ef4575ff08351c",
+     "8b7c2870ab35ce32",
+     "ac24fed2a838352c",
+     "ae2668f76b86792f",
+     "b9877ba525ce79a0",
+     "bea1149429683d81",
+     "c883318f5a9415dd",
+     "ceb0aa1e06fe9714",
+     "e70be63b1aa3b1f5"
+    ],
+    "32": [
+     "1390ed6b1fc387a6",
+     "1b981b076ff0c351",
+     "6f4389c868a9af23"
+    ],
+    "48": [
+     "31a4de93ed4fc8bf",
+     "7693858b59755651",
+     "9e19f17565c9ad14",
+     "bbe545897494b833",
+     "c8dd21eb3f9f1572",
+     "f75579ad2cfb67e8"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "a1ebb0b65fd951e634b3756ef548422ff33c3d38f2c2056452d5d33f20e25038",
+   "kind": "box",
+   "label": "학생 라운지 2인 소파(쿠션)",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "964362de12f35ae7",
+     "9b3e27328dc0b356",
+     "cf98bef3b93060be",
+     "ea5f3a685327c7fd"
+    ],
+    "24": [
+     "05310b5b1daec28c",
+     "07c0c818fa9eaa2a",
+     "0e42a4d185dbe58d",
+     "0ececafd8f0b2099",
+     "212fdd7efc03817a",
+     "21bc62b1f6fef54f",
+     "2a3e4a5aef4d1028",
+     "329db0efd308185d",
+     "4cfb8a9cca92e0dc",
+     "53645e41dfbd0b8a",
+     "6403e0949acebd1c",
+     "7654b8a4cae2fb81",
+     "86ea353c87106812",
+     "8a8fc7a485139453",
+     "8cd170d69f33cc9a",
+     "9df56f19992c7ec7",
+     "ad4f5ed1ef86b5ae",
+     "d2093f0cafe93630",
+     "d5860fc3cb3dc7d8",
+     "d6d7804e717f516c",
+     "e01dc91d767e72d8",
+     "f038ca8dadc6d173",
+     "f218e6eccc69d51e",
+     "f5476f248eddf922"
+    ],
+    "32": [
+     "4f3141c382880470"
+    ],
+    "48": [
+     "0f73c0f1d44b81be",
+     "2516fa12673c5b31",
+     "46bd3c3f3daa1d83",
+     "49e58b9eba8e344a",
+     "ad4effcec1a52e49",
+     "f6a9e2ee114918a5"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "a1adfda848c7940548eb656093ca72a9d732ce1e58da89dc70fa026ef53ba7ec",
+   "kind": "box",
+   "label": "라운지 낮은 탁자(잡지+머그)",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "2c16db336c518d10",
+     "40a745200d55f16a"
+    ],
+    "24": [
+     "00125e8d182fb1c0",
+     "071304ce32ff2726",
+     "0bbf4b3d1d669b91",
+     "1b9358d6b4bd5b1e",
+     "2349ff6a24554bf5",
+     "34cc138f931095ef",
+     "4b4d4e0715656d5f",
+     "732f6004ac0bb1ad",
+     "9dab7e0027d27e4d",
+     "a4abe213a0ba498b",
+     "f3158f06900bdf4f",
+     "fe111caf20a17d76"
+    ],
+    "32": [
+     "1d0e7cacf54218ba",
+     "b9645e061a08feea"
+    ],
+    "48": [
+     "17ce9423ba30e951",
+     "2df40b34f3ef7bba",
+     "3b40fc0353cefed3",
+     "6d4cb935670c609d",
+     "af826d8da5de4bf9",
+     "bfdb3d497aa40f02"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "96bdf46a2f6a1f193f799d898317fb7a601b7a92011fe2efe6851129bccf6c29",
+   "kind": "box",
+   "label": "보건실 간호사 책상(모니터+차트)",
+   "width": 32,
+   "height": 16,
+   "cells": {
+    "16": [
+     "8274241f4c0b54b3",
+     "a8be7306b23e1bc4"
+    ],
+    "24": [
+     "0163c93f93a8675c",
+     "091508cca97d061c",
+     "095aac1fae3d1907",
+     "10b1381b26ce4917",
+     "45dd3cadefe602a3",
+     "5c8426fd73002265",
+     "5eb469a38b42e6bd",
+     "7e11193aa8ea1f31",
+     "946908b7c5551e5c",
+     "bda470c60945d7bd",
+     "d437c1ba539c2ddc",
+     "ffd36814d48fabd5"
+    ],
+    "32": [
+     "ce30e31bcd8de1db",
+     "f57190f3550e99ef"
+    ],
+    "48": [
+     "4156addb05f5aa3b",
+     "4fad720bf85f4bdc",
+     "999ce63388029d94",
+     "b04dc480d24b20de",
+     "c3ee300d3ac678ac",
+     "da9025710f8fec9f"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "d9a866aa347eaf74f0db86cf5785c27c772d13365a2d7fcbe130daf8c187e0b4",
+   "kind": "other",
+   "label": "보건실 시력검사표(란돌트 C)",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "110d9b66973efdd2",
+     "57df02af93df27f5"
+    ],
+    "24": [
+     "02614b80be69bdf0",
+     "122d657bf3b3b407",
+     "1e4bf3aae7423ae1",
+     "3b3b173edc73156c",
+     "447235e78e5c7fe1",
+     "6af0e13b3886c9cc",
+     "7a4a68d4d051dc7f",
+     "9402cead759edd59",
+     "9ff4e32c16b3e35d",
+     "b0c3794caa2242b9",
+     "cbf2cf65abdd95ce",
+     "f96206bc364e26af"
+    ],
+    "32": [
+     "4a2ad2c05c830054",
+     "72d68f0549e978e7",
+     "bcd82c91cfdc1926"
+    ],
+    "48": [
+     "06037e99ad563d12",
+     "8b5a749bc065382a",
+     "b82e3af57a57437b",
+     "c60e193929399769",
+     "cd3602902249164d",
+     "fe391706d11e7053"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "ca7c4c76c78999ebc8d909c2a0e4073281e43e251582e5fe7e4f945f7468e89a",
+   "kind": "box",
+   "label": "화장실 2구 세면대(거울+수납장)",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "40985a50d05dd2b9",
+     "7cb43858edffe586",
+     "97a30e084da6b693",
+     "f558026fb9c8ef8f"
+    ],
+    "24": [
+     "04120c419dbdf543",
+     "1031d65a7257d918",
+     "191a71ac9580e51d",
+     "1a01e4f6fa82a9f9",
+     "1f73b101ee956f8b",
+     "1f9ef91f7605e4c5",
+     "2a92ec90f7116bbf",
+     "359e8a9b5f654915",
+     "3f2d535eb2f4d632",
+     "435d051bed255935",
+     "43ac2cfe9ffa7256",
+     "499c77a17a02bc6c",
+     "4c4148e69ffdfa8a",
+     "53aceac9ff84cab9",
+     "571e7126254ccb94",
+     "63a2c470f252cdc2",
+     "740ddc04575d579b",
+     "7fddf2f203142c89",
+     "b94c94a1ca36a516",
+     "c788b6aa38a6b813",
+     "c81a86e755f56dbb",
+     "cdd0c377267ee6b4",
+     "d1c873284da94a91",
+     "eaa2add16df85c9e"
+    ],
+    "32": [
+     "2d5e40413b9b5858"
+    ],
+    "48": [
+     "3628947ad0de8b81",
+     "5e286a2321f99aeb",
+     "74f33ccd57d3c4ca",
+     "ae79311d4d621eb0",
+     "c46c47efdcbd1fa1",
+     "c73663c183115f57"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "6b3c1ac546e985953af3dbdb5847b6c40cffc51bf0152696bd084e3efc556893",
+   "kind": "structure",
+   "label": "화장실 칸막이 문(사용 표시등)",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "298e5010d9986905",
+     "41cff64273cdae35"
+    ],
+    "24": [
+     "07ed913897e50bd1",
+     "157e7476c365d0df",
+     "3ce619f69298b46c",
+     "49861cc387f28627",
+     "4e1f9014a1872e5a",
+     "5584b633bddcfc9e",
+     "72dd80fb4dd523b2",
+     "943d84ba2a756560",
+     "adbc44a9527f3b98",
+     "cf0fb3d9d0cee0af",
+     "e803bd2826af9dec",
+     "fe254f0a00f0310d"
+    ],
+    "32": [
+     "207f1644ce9c5a00",
+     "6011e1f2f2ef6613",
+     "9cb6a328aed06c76"
+    ],
+    "48": [
+     "6a53ff6a43847f80",
+     "7f1ec56e27f17f9f",
+     "94c47a8ef7111f79",
+     "a02076675524a1de",
+     "a489053d054601df",
+     "cb3864c4a41c6b49"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "46031d5d9b56adc549b825b6ed06c4dd27e8301b577aae4e993f3a44c69f3d6f",
+   "kind": "other",
+   "label": "청소 카트(대걸레+양동이)",
+   "width": 16,
+   "height": 32,
+   "cells": {
+    "16": [
+     "e0c5e3fd27b166c6",
+     "edb69ac223c2db2b"
+    ],
+    "24": [
+     "083cd87e7299c8d5",
+     "132a93ad4f6c5192",
+     "290f6ee30628a5ad",
+     "37a68efc784dec33",
+     "459facf7f16d40c7",
+     "4b79ae32d55d0886",
+     "5cd408ac17083ff6",
+     "601084ef338ab5e3",
+     "6a456f646db87423",
+     "a014cf7d7f217f5d",
+     "ccc8388f7dd44060",
+     "ec8aa6d2342513a5"
+    ],
+    "32": [
+     "9745d7bc73df841b",
+     "aff04a35d4440832",
+     "e8ada58fa8ae2196"
+    ],
+    "48": [
+     "1f9df0100247af4d",
+     "73bade15012c0751",
+     "98fcb13ddb56c674",
+     "9b56681ad667a4d8",
+     "9cf496bb1008f4c0",
+     "f4a21418ff39d342"
+    ]
+   }
+  },
+  {
+   "pixelSha256": "f7074bc495a8ec4187c5e1621559380426464c9a79e7f8961498f815c3e15fb8",
+   "kind": "box",
+   "label": "청소 용품 왜건(3단+주의콘)",
+   "width": 32,
+   "height": 32,
+   "cells": {
+    "16": [
+     "1573d0a2b166e1ea",
+     "4dd5c71a8463d279",
+     "8be868e1dfae9027",
+     "c19d153387aaf4b9"
+    ],
+    "24": [
+     "16895a8cd668b15e",
+     "2068c0c5a26e12cc",
+     "2f3f103abc89b3f8",
+     "309b436338680732",
+     "321597c2bffaafb4",
+     "445383747ca9871d",
+     "45bd3fcda6cc2731",
+     "5305ea8f7123715c",
+     "5ab813b118a0eb84",
+     "5f3b6eff682f7e95",
+     "61b543816ce4f504",
+     "7cbf788a534a41e3",
+     "7e05120ed3b5541c",
+     "7e7d2efaf4e25276",
+     "87855252a795e45d",
+     "8ef2458b452e893a",
+     "9614462958e80de0",
+     "a2f59fef4cf1eba4",
+     "ad924b6abed9f5b9",
+     "cb2b172f47384bdf",
+     "d83227eebf1f81cc",
+     "f0a9e839f38582a6",
+     "f75a2294d7cf9016"
+    ],
+    "32": [
+     "1cd8978903fb538b"
+    ],
+    "48": [
+     "14e0ffb7c600c24b",
+     "2023fc956118a6dc",
+     "3543027cb4620b2c",
+     "35d7246d7e23e355",
+     "99685de527953f5c",
+     "a62059e99ee1281b"
+    ]
+   }
+  }
+ ]
+}
