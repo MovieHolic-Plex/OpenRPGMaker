@@ -40,6 +40,7 @@ const BRAND_PATHS: Readonly<Record<string, readonly FillPath[]>> = {
   gemini: GEMINI_STAR,
   "local-cli:codex": OPENAI_KNOT,
   "local-cli:claude": CLAUDE_SPARK,
+  "local-cli:agy": GEMINI_STAR,
   "local-cli:gemini": GEMINI_STAR,
 };
 

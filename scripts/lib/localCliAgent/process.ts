@@ -1,5 +1,5 @@
 // CLI 자식 프로세스 공통 — 줄 단위 JSON 읽기, 빈 임시 작업 폴더, 중단.
-import { spawn, spawnSync, type ChildProcessWithoutNullStreams } from "node:child_process";
+import { spawn, spawnSync, type ChildProcess, type ChildProcessWithoutNullStreams } from "node:child_process";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -9,6 +9,19 @@ import { planSpawn } from "./resolveBinary.ts";
 export function emptyWorkDir(prefix: string): { readonly dir: string; readonly remove: () => void } {
   const dir = mkdtempSync(join(tmpdir(), `oprn-${prefix}-`));
   return { dir, remove: () => rmSync(dir, { recursive: true, force: true }) };
+}
+
+/**
+ * 자식 프로세스를 끝낸다. cmd.exe 로 띄운 `.cmd`·`.bat`(`planSpawn` 의 windowsVerbatimArguments)는 cmd 만 죽이면
+ * 그 아래 node CLI 가 남으므로 `taskkill /T /F` 로 프로세스 나무째 끝낸다. 네이티브 실행 파일은 SIGTERM.
+ */
+export function killProcessTree(child: ChildProcess, viaCmdShim: boolean): void {
+  if (viaCmdShim && child.pid) {
+    spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"], { stdio: "ignore", windowsHide: true })
+      .on("error", () => { try { child.kill(); } catch { /* 무시 */ } });
+    return;
+  }
+  try { child.kill("SIGTERM"); } catch { /* 이미 끝남 */ }
 }
 
 export interface SpawnLinesOptions {
@@ -68,22 +81,93 @@ export function spawnJsonLines(options: SpawnLinesOptions): SpawnedLines {
     endInput: () => { if (!child.stdin.destroyed) child.stdin.end(); },
     kill: () => {
       if (child.exitCode !== null || child.killed) return;
-      // cmd.exe 로 띄운 .cmd 는 cmd 만 죽이면 그 아래 node CLI 가 남는다 — 프로세스 나무째 끝낸다.
-      if (plan.windowsVerbatimArguments && child.pid) spawn("taskkill", ["/pid", String(child.pid), "/T", "/F"], { stdio: "ignore", windowsHide: true }).on("error", () => child.kill());
-      else child.kill("SIGTERM");
+      killProcessTree(child, Boolean(plan.windowsVerbatimArguments));
     },
   };
 }
 
-/** `--version` 같은 짧은 명령. 찾지 못하면 ok:false. */
-export function runShort(binary: string, args: readonly string[], timeoutMs = 20_000, env?: NodeJS.ProcessEnv): { ok: boolean; stdout: string; stderr: string } {
+export interface ShortCommandResult {
+  readonly ok: boolean;
+  readonly stdout: string;
+  readonly stderr: string;
+  readonly enoent?: boolean;
+  readonly timedOut?: boolean;
+  readonly errorCode?: string;
+  readonly errorMessage?: string;
+}
+
+/** `--version` 같은 짧은 명령(동기). 찾지 못하면 ok:false. */
+export function runShort(binary: string, args: readonly string[], timeoutMs = 20_000, env?: NodeJS.ProcessEnv): ShortCommandResult {
   let plan: ReturnType<typeof planSpawn>;
   try { plan = planSpawn(binary, args, env ? { env } : {}); } catch (error) { return { ok: false, stdout: "", stderr: error instanceof Error ? error.message : String(error) }; }
   const out = spawnSync(plan.command, [...plan.args], {
     encoding: "utf8", timeout: timeoutMs, windowsHide: true,
     ...(plan.windowsVerbatimArguments ? { windowsVerbatimArguments: true } : {}), ...(env ? { env } : {}),
   });
-  return { ok: !out.error && out.status === 0, stdout: out.stdout ?? "", stderr: out.stderr ?? "" };
+  const err = out.error as NodeJS.ErrnoException | undefined;
+  return {
+    ok: !err && out.status === 0,
+    stdout: out.stdout ?? "",
+    stderr: out.stderr ?? "",
+    ...(err?.code === "ENOENT" ? { enoent: true } : {}),
+    ...(err?.code === "ETIMEDOUT" ? { timedOut: true } : {}),
+    ...(err?.code ? { errorCode: err.code } : {}),
+    ...(err?.message ? { errorMessage: err.message } : {}),
+  };
+}
+
+/** 이벤트 루프를 막지 않는 비동기 짧은 명령 실행기(감지 프로브용). */
+export function runShortAsync(binary: string, args: readonly string[], timeoutMs = 20_000, env?: NodeJS.ProcessEnv): Promise<ShortCommandResult> {
+  let plan: ReturnType<typeof planSpawn>;
+  try { plan = planSpawn(binary, args, env ? { env } : {}); } catch (error) {
+    return Promise.resolve({ ok: false, stdout: "", stderr: error instanceof Error ? error.message : String(error), errorMessage: error instanceof Error ? error.message : String(error) });
+  }
+  return new Promise((resolve) => {
+    const child = spawn(plan.command, [...plan.args], {
+      stdio: ["ignore", "pipe", "pipe"],
+      windowsHide: true,
+      ...(plan.windowsVerbatimArguments ? { windowsVerbatimArguments: true } : {}),
+      ...(env ? { env } : {}),
+    });
+    let stdout = "";
+    let stderr = "";
+    let settled = false;
+    let timedOut = false;
+    child.stdout?.setEncoding("utf8");
+    child.stderr?.setEncoding("utf8");
+    child.stdout?.on("data", (chunk: string) => { stdout += chunk; });
+    child.stderr?.on("data", (chunk: string) => { stderr += chunk; });
+    const done = (result: ShortCommandResult) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      resolve(result);
+    };
+    const timer = setTimeout(() => {
+      timedOut = true;
+      killProcessTree(child, Boolean(plan.windowsVerbatimArguments));
+      done({ ok: false, stdout, stderr, timedOut: true, errorCode: "ETIMEDOUT", errorMessage: `timed out after ${timeoutMs}ms` });
+    }, timeoutMs);
+    timer.unref?.();
+    child.on("error", (err: NodeJS.ErrnoException) => {
+      done({
+        ok: false,
+        stdout,
+        stderr,
+        ...(err.code === "ENOENT" ? { enoent: true } : {}),
+        ...(err.code ? { errorCode: err.code } : {}),
+        errorMessage: err.message,
+      });
+    });
+    child.on("close", (code) => {
+      done({
+        ok: !timedOut && code === 0,
+        stdout,
+        stderr,
+        ...(timedOut ? { timedOut: true, errorCode: "ETIMEDOUT" } : {}),
+      });
+    });
+  });
 }
 
 /**

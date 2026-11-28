@@ -198,7 +198,7 @@ const server = createServer(async (req, res) => {
       }) as { cli?: string; id?: string; model?: string };
       const id = localCliIdOf(`local-cli:${body.cli ?? body.id ?? ""}`);
       if (!id) {
-        sendJson(res, { error: `알 수 없는 AI 프로그램입니다: ${String(body.cli ?? body.id ?? "(없음)")}. claude·codex·gemini 중 하나여야 합니다.` }, 400);
+        sendJson(res, { error: `알 수 없는 AI 프로그램입니다: ${String(body.cli ?? body.id ?? "(없음)")}. claude·codex·agy·gemini 중 하나여야 합니다.` }, 400);
         return;
       }
       sendJson(res, await healthCheckLocalCli(id, typeof body.model === "string" && body.model ? body.model : undefined, abortController.signal));

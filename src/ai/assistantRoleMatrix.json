@@ -30,6 +30,13 @@
           "vision": [{ "model": "gemini-4-argon-high", "thinkingLevel": "high", "requiresEndpointImages": true }],
           "pixel": [{ "model": "gemini-4-argon", "thinkingLevel": "medium" }]
         } },
+        { "providerId": "local-cli:agy", "roles": {
+          "main": [{ "model": "gemini-4-neon", "thinkingLevel": "medium" }, { "model": "gemini-4-argon", "thinkingLevel": "medium" }],
+          "smol": [{ "model": "gemini-3.8-flash", "thinkingLevel": "low" }, { "model": "gemini-4-argon", "thinkingLevel": "low" }],
+          "advisor": [{ "model": "gemini-4-neon", "thinkingLevel": "medium" }, { "model": "gemini-4-argon", "thinkingLevel": "medium" }],
+          "vision": [{ "model": "gemini-4-argon", "thinkingLevel": "medium" }, { "model": "gemini-4-neon", "thinkingLevel": "medium" }],
+          "pixel": [{ "model": "gemini-4-argon", "thinkingLevel": "medium" }]
+        } },
         { "providerId": "local-cli:gemini", "roles": {
           "main": [{ "model": "auto", "thinkingLevel": "medium" }],
           "advisor": [{ "model": "auto", "thinkingLevel": "medium" }],

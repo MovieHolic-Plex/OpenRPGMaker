@@ -16,7 +16,12 @@ export { ASSISTANT_ENGINE_STORAGE_KEY, type AssistantEngineChoice };
 
 export type LocalCliId = LocalCliEngineId;
 export const LOCAL_CLI_IDS: readonly LocalCliId[] = LOCAL_CLI_ENGINE_IDS;
-export const LOCAL_PROGRAM_LABELS: Readonly<Record<LocalCliId, string>> = { claude: "Claude Code", codex: "Codex CLI", gemini: "Gemini CLI" };
+export const LOCAL_PROGRAM_LABELS: Readonly<Record<LocalCliId, string>> = {
+  claude: "Claude Code",
+  codex: "Codex CLI",
+  agy: "Antigravity (agy)",
+  gemini: "Gemini CLI",
+};
 export const ASSISTANT_ENGINE_CHANGED_EVENT = "oprn:assistant-engine-changed";
 
 export type LocalCliModel = { readonly id: string; readonly label: string; readonly roles?: readonly ("routine" | "deep")[] };

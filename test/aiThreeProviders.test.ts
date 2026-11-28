@@ -120,10 +120,53 @@ describe("AI 3대장 설정(GPT · Claude · Gemini) 및 시작 시 health 점�
 
     geminiBtn.click();
     expect(geminiBtn.getAttribute("aria-selected")).toBe("true");
-    // Google 계정 직접 OAuth 로그인은 계정 정지 위험으로 비활성화됨 — API 키 연결만 제공한다.
+    // Google 계정 직접 OAuth 로그인은 계정 정지 위험으로 비활성화됨 — API 키 또는 공식 agy ACP 로 연결한다.
     expect(findByTestId(root, "ai-provider-login-gemini")).toBeNull();
     expect(findByTestId(root, "ai-provider-apikey-toggle-gemini")).not.toBeNull();
     expect(onStartOAuth).not.toHaveBeenCalled();
+
+    view.dispose();
+  });
+
+  it("공식 agy ACP 구독으로 Gemini를 연결하고 다중 구독 자동 전환 막대를 표시한다", async () => {
+    vi.stubGlobal("fetch", async (input: string) => {
+      const url = new URL(input, "http://oprn.invalid");
+      if (url.pathname === "/auth/status" && url.searchParams.get("provider") === "openai-codex") {
+        return Response.json({ connected: true, authKind: "oauth", planType: "pro" });
+      }
+      if (url.pathname === "/v1/local-agents") {
+        return Response.json({
+          clis: [
+            { id: "agy", label: "Antigravity (agy)", state: "ready", stateLabel: "연결됨", found: true, billing: "subscription", authMethod: "Google ACP", models: [], defaults: { routine: "gemini-4-argon", deep: "gemini-4-neon" }, install: { command: "", help: "", url: "" }, login: { command: "agy acp --login", help: "" } },
+          ],
+        });
+      }
+      return Response.json({ connected: false });
+    });
+
+    const health = await runStartupAiHealthCheck({ force: true, liveHealth: false });
+    expect(health.gemini).toMatchObject({
+      state: "ok",
+      routeProviderId: "local-cli:agy",
+      via: "local-cli",
+    });
+
+    const view = renderAiThreeProviders({
+      onStartOAuth: vi.fn(),
+      onDisconnectOAuth: vi.fn(),
+      onSelectOAuthProvider: vi.fn(),
+      onConnectedCompat: vi.fn(),
+    });
+    const root = view.element as unknown as FakeElement;
+    const multiBar = findByTestId(root, "ai-multi-sub-bar")!;
+    expect(multiBar.hidden).toBe(false);
+    expect(multiBar.textContent).toContain("연결된 구독 2");
+    expect(multiBar.textContent).toContain("GPT");
+    expect(multiBar.textContent).toContain("Gemini");
+
+    findByTestId(root, "ai-provider-btn-gemini")?.click();
+    findByTestId(root, "ai-provider-use-gemini")?.click();
+    expect(findByTestId(root, "ai-multi-sub-auto")).not.toBeNull();
 
     view.dispose();
   });
