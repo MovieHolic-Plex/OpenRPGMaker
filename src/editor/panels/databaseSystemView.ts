@@ -22,8 +22,7 @@ import { sectionCard } from "@/editor/panels/databaseWorkspace";
 import { seCueTableSection } from "@/editor/panels/databaseSeCueTable";
 import { recordListThumbnail, markDatabaseImageFailed } from "@/editor/panels/databaseRecordThumbnails";
 import { renderSystemStudioOverview, wireSystemStudioOverview } from "@/editor/panels/databaseSystemStudio";
-import { DEFAULT_HUB_ACCENT_COLOR, DEFAULT_HUB_WINDOW_COLOR, renderEscMenuPreviewCard } from "@/editor/panels/databaseMenuPreview";
-import { hubMenuEnabled } from "@/player/hubMenu";
+import { DEFAULT_HUB_ACCENT_COLOR, DEFAULT_HUB_WINDOW_COLOR, projectUsesHubMenu, renderEscMenuPreviewCard } from "@/editor/panels/databaseMenuPreview";
 import { dialogueStyleSection } from "@/editor/panels/databaseDialogueStyleSection";
 import { galleryActive, mergeVnExtras, resolveVnExtras } from "@/project/vnExtras";
 import {
@@ -766,7 +765,7 @@ export function menuSkinPreviewUrl(id: MenuSkinId): string {
 function menuSkinFieldset(project: Project, rerender: SystemRefresh): HTMLElement {
   const saved = resolveMenuSkinId(project.system.menuUiStyle);
   const explicitLegacy = project.system.menuLayout === "legacy";
-  const usesHub = hubMenuEnabled(project, undefined);
+  const usesHub = projectUsesHubMenu(project);
   const effectiveLegacy = !usesHub;
   let selected = saved;
   const previewHost = el("div", { class: "db-system-menu-preview-host" });
@@ -904,7 +903,7 @@ function menuSkinFieldset(project: Project, rerender: SystemRefresh): HTMLElemen
         const badge = button.querySelector(".db-system-menu-skin-card-state");
         if (badge) badge.textContent = key === id ? "✓ 선택됨" : "선택하기";
       }
-      const nowEffectiveLegacy = !hubMenuEnabled(store.getCurrent(), undefined);
+      const nowEffectiveLegacy = !projectUsesHubMenu(store.getCurrent());
       status.textContent = `현재 디자인 · ${skin.label}${nowEffectiveLegacy ? "" : " (허브 사용 중 — 옛 메뉴 켜면 적용)"}`;
       if (clearedHudOverride) rerender();
       else renderPreview();

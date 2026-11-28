@@ -87,6 +87,11 @@ export type EscMenuPreviewOptions = {
   readonly jumpAction?: { readonly label: string; readonly testid: string; readonly onClick: () => void };
 };
 
+/** 에디터 미리보기 세션 기준 이 프로젝트가 실효 허브 카드형 ESC 메뉴를 쓰는지 판별한다. */
+export function projectUsesHubMenu(project: Project): boolean {
+  return hubMenuEnabled(project, startSession(project, 1));
+}
+
 /**
  * 현재 프로젝트 설정으로 플레이 시 실제로 열리는 ESC 메뉴의 라이브 미리보기 카드.
  */
