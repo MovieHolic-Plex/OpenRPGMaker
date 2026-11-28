@@ -2,6 +2,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { clearCachedAuthStatus } from "@/ai/authStatusCache";
 import { AI_CONFIG_STORAGE_KEY } from "@/ai/llmClient";
+import { refreshLiveModels, resetLiveModelCatalogForTests } from "@/ai/liveModelCatalog";
+import { resetLiveModelIdsForTests } from "@/ai/modelCatalog";
 import { renderAiThreeProviders } from "@/editor/panels/aiThreeProviders";
 import { getStartupAiHealth, resetStartupAiHealthForTests, runStartupAiHealthCheck } from "@/editor/panels/aiStartupHealth";
 import { findByTestId, installFakeDom, type FakeElement } from "./fakeDom";
@@ -167,5 +169,59 @@ describe("AI 3대장 설정(GPT · Claude · Gemini) 및 시작 시 health 점�
     expect(findByTestId(root, "ai-multi-sub-auto")).not.toBeNull();
 
     view.dispose();
+  });
+
+  it("GPT 모델 목록은 프리셋 뒤에 서버가 내준 새 모델을 덧붙이고, 목록을 못 받으면 프리셋만 보여 준다", async () => {
+    resetLiveModelCatalogForTests();
+    resetLiveModelIdsForTests();
+    storage.set(AI_CONFIG_STORAGE_KEY, JSON.stringify({ authMode: "chatgpt", providerId: "anthropic" }));
+    let modelsStatus: "ok" | "down" = "ok";
+    const modelCalls: string[] = [];
+    vi.stubGlobal("fetch", async (input: string) => {
+      const url = new URL(input, "http://oprn.invalid");
+      if (url.pathname === "/auth/status" && url.searchParams.get("provider") === "openai-codex") {
+        return Response.json({ connected: true, authKind: "oauth", planType: "plus", accountEmail: "user@example.invalid" });
+      }
+      if (url.pathname === "/v1/local-agents") return Response.json({ clis: [] });
+      if (url.pathname === "/v1/models") {
+        modelCalls.push(`${url.pathname}${url.search}`);
+        if (modelsStatus === "down") return Response.json({ ok: false, family: "gpt", reason: "upstream-error", message: "ChatGPT 서버에 닿지 못했어요.", fetchedAt: Date.now() });
+        return Response.json({
+          ok: true, family: "gpt", source: "codex-backend", fetchedAt: Date.now(),
+          models: [
+            { id: "gpt-6.2-sol", label: "GPT-6.2 Sol" },
+            { id: "gpt-6.1-terra", label: "GPT-6.1 Terra" },
+            { id: "gpt-7-sol", label: "GPT-7 Sol" },
+          ],
+        });
+      }
+      return Response.json({ connected: false });
+    });
+    try {
+      await runStartupAiHealthCheck({ force: true, liveHealth: false });
+      const view = renderAiThreeProviders({ onStartOAuth: vi.fn(), onDisconnectOAuth: vi.fn(), onSelectOAuthProvider: vi.fn(), onConnectedCompat: vi.fn() });
+      const root = view.element as unknown as FakeElement;
+      findByTestId(root, "ai-provider-btn-gpt")!.click();
+      await refreshLiveModels("gpt");
+      const optionIds = () => findByTestId(root, "ai-provider-model-gpt")!.childNodes.map((node) => (node as FakeElement).getAttribute("value"));
+      // 프리셋 셋이 앞, 서버에서만 온 모델이 뒤. 같은 id 는 한 번만.
+      expect(optionIds()).toEqual(["gpt-6.2-sol", "gpt-6.2-astra", "gpt-6.1-sol", "gpt-6.1-terra", "gpt-7-sol"]);
+      expect(findByTestId(root, "ai-provider-models-note-gpt")!.dataset.status).toBe("ok");
+      // 화면을 다시 그려도 같은 화면 수명 안에서는 다시 받지 않는다(수동 새로고침만 다시 받는다).
+      expect(modelCalls).toHaveLength(1);
+      modelsStatus = "down";
+      findByTestId(root, "ai-provider-models-refresh-gpt")!.click();
+      await refreshLiveModels("gpt", { force: false });
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      expect(modelCalls).toHaveLength(2);
+      expect(modelCalls[1]).toContain("fresh=1");
+      // 새로고침이 실패해도 마지막으로 받은 목록을 지우지 않는다.
+      expect(optionIds()).toContain("gpt-7-sol");
+      expect(findByTestId(root, "ai-provider-models-note-gpt")!.dataset.status).toBe("failed");
+      view.dispose();
+    } finally {
+      resetLiveModelCatalogForTests();
+      resetLiveModelIdsForTests();
+    }
   });
 });

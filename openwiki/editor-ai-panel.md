@@ -119,8 +119,9 @@
   대화 일이면 그 맵의 고스트 초안 바운딩 박스(맵당 조수 한 명 규칙 → 그 맵에 **쓰는** 조수 한 명에게만, 검수는 이름표만).
   좌표는 `resolveRegionClientRect`. 팬·줌은 EditScene 의 `repositionAiMapPresence()`, 도크 열림 같은 레이아웃 변화는 이름표가 떠 있는 동안
   rAF 대조(`writeIfChanged`)로 따라간다(실측: 훅만으로는 도크를 열 때 상자가 옛 자리에 남았다).
-- **상태 줄** `src/editor/panels/aiStatusBar.ts` — 지도 아래 한 줄. 칩 = 이름 · 지금 하는 일 · 단계 수, 사람이 필요하면 줄 전체가 앰버(검토)/빨강(실패).
-  칩을 누르면 **지도 위 팝오버**(최근 3단계 · 조수 상세 · 지도로 이동 · 멈춤). 「작업 기록」은 기존 로그 입구(`ai-workspace-log-trigger`)로 연결, 「멈춤」은 `requestTeamStop`.
+  이름표(`.ai-map-region-tag`, `<button>`)는 클릭할 수 있으며 `aiPresencePopover.ts` 의 공용 `.ai-status-pop`(임무·지금 하는 일과 실행 도구/인자·조수 메모·턴/도구/오류/최근 활동 요약·단계별 펼침 및 「자세히」 전환·다음 예정 할 일·작업 그림·조수 상세/멈춤)을
+  지도 위 그 자리에 열어 준다(2026-11-28: 오른쪽 도크가 열려 상태 줄이 접힌 상태에서도 드래그 「#N 시공 · …」 배지를 눌러 진행 과정을 본다).
+- **상태 줄** `src/editor/panels/aiStatusBar.ts` — 2026-11-28(#5328 우측 팀 날개 통합 + 지도 위 시공 배지 클릭 팝오버)부터 하단 상태 줄을 화면에 노출하지 않고 DOM(`ai-status-bar`·`ai-status-stop`, i18n/e2e 계약)만 `hidden` 상태로 유지한다. 작업 상세는 지도 위 `#N 시공 · …` 배지와 우측 도크·작업 목록이 맡는다.
   적용됨만 남으면 6초 뒤 물러난다. 색 번호(`data-tone`)는 이름표·칩이 같다.
 - **받은함** `src/editor/panels/aiInbox.ts` — 도크 맨 위. 검토 대기(적용/변경 보기/버리기 = `currentTeamReviewActions` 와 **같은 클로저**)와 실패만. 비면 숨는다.
   `aiWorkspace.ts` 가 마운트하고, 대화 화면에서는 「조수 N / 대화」 탭을 숨긴다(조수 상세는 팝오버의 「조수 상세」 → `oprn:ai-open-team`).
@@ -1469,6 +1470,13 @@ classifier remains a non-reasoning, 4096-token routing call; it must not inherit
 Deep's expensive effort or the editor's 200000 output budget. Legacy/test configs
 without role selections retain their prior behavior.
 **조수 출하 기본 = ChatGPT · GPT-6.2 Sol · high (오너 결정 2026-11-28: 「기본 출하 모델을 GPT Sol 6.2 high 로 바꿔라」).** 새 설치(저장된 설정 없음)와 첫 실행 마법사의 첫 순위가 모두 ChatGPT 다. ChatGPT 로 도는 모든 길(Codex CLI 구독 · 편집기 안 ChatGPT 로그인)에서 계획·실행(deep)·시각·작문·시공(build)·감독(ultrabrain)과 곁 호출(화면 검수·검토자)이 **`gpt-6.2-sol` · `high` 한 모델**이다(`src/ai/chatgptDefault.ts`). 제공자 목록의 첫 항목(= `RECOMMENDED_OH_MY_PI_PROVIDER`)도 ChatGPT(`openai-codex`), 둘째가 Claude 다. Claude·Google·그 밖의 제공자는 그대로 고를 수 있고, 이미 저장된 설정은 옮기지 않는다. 그림 만들기도 ChatGPT 뿐이다(오너 결정 2026-11-19).
+
+**모델 목록은 서버에서 받는다 — GPT·Claude 만 (2026-11-28, Google 은 제외).** 코드에 박힌 목록(`aiThreeProviders.ts` `FAMILY_META.models`, `modelCatalog.ts` `PROVIDER_MODELS`)은 «권장 프리셋» 이고, 설정 화면의 모델 선택은 그 뒤에 **제공자가 지금 내주는 새 모델**을 덧붙인다(프리셋 순서·기본값·첫 실행 선택은 그대로). 흐름: 동반 서비스 `GET /v1/models?family=gpt|claude[&fresh=1]`(`ohMyPiHttp.mjs` → 어댑터 `listModels` → `scripts/lib/liveModelList.ts`) → 편집기 `src/ai/liveModelCatalog.ts`(메모리 + localStorage `oprn:ai:live-models:v1`, 6시간 안이면 다시 받지 않음, 실패 뒤 자동 재시도 60초 백오프, 실패해도 마지막 성공 목록 유지) → `modelCatalog.registerLiveModelIds`(둘째 그룹 «서버에서 받은 새 모델» · 직접 입력 검증 통과, `latestModelsFor`·기본 모델은 프리셋 첫 그룹만). 해석기는 `src/ai/liveModels.ts`.
+- GPT: ChatGPT 로그인 토큰으로 Codex 백엔드 `GET chatgpt.com/backend-api/codex/models?client_version=<OPRN_CODEX_CLIENT_VERSION>`. `visibility:"hide"`(gpt-reserve·codex-auto-review)·`supported_in_api:false` 는 빼고 서버 `priority` 순. client_version 이 낮으면 새 모델이 목록에 없다(`codexClientVersion.ts`) — 목록에 있으면 그 버전으로 부를 수 있다.
+- Claude: Anthropic `GET /v1/models?limit=1000`(기본 쪽수가 20 이라 limit 필수, `has_more` 는 이어 받음). 자격은 ① 사용자가 연결한 `api.anthropic.com` API 키 엔드포인트 ② `anthropic` 제공자 키(환경 변수는 «환경 변수 읽기» 에 동의한 경우만). **Claude Code 구독 로그인만 있는 PC 는 목록을 읽을 수 없다**(그 CLI 의 토큰은 보지 않는다) — 그때는 프리셋 그대로이고 화면에 이유를 적는다.
+- 못 받아도 HTTP 200 + `{ok:false, reason}` 이다(설정 화면이 프리셋으로 물러남). 성공 목록은 호스트에서 10분 캐시.
+- 서버 목록으로 고른 새 모델은 번들 카탈로그에 없어도 `resolveOhMyPiModel` 이 같은 계열 기준 모델(`gpt-6.2-sol`·`claude-sonnet-5-5`…)에 **ID 만 덮어** 부른다(`gpt-*`/`claude-*` 만, 다른 모델로 바꿔 부르지 않는다 — 서버가 거절하면 그 거절이 그대로 간다).
+- 계약 시험: `test/liveModels.test.ts`, `test/aiThreeProviders.test.ts`, `test/ohMyPiHttp.node.test.mjs`, `test/ohMyPiComplete.bun.test.ts`.
 **지난 출하 기본(이력) = Claude · Sonnet 5.5 · high (오너 결정 2026-11-23, 2026-11-28 에 GPT-6.2 Sol · high 로 바뀜).** Claude 로 도는 길의 기본은 지금도 `claude-sonnet-5-5` · `high` 한 모델이다(`src/ai/claudeDefault.ts`). 그 전 출하 기본은 ChatGPT · GPT-6.2 Sol · medium(2026-11-19), Claude · Opus 5.5 · medium(2026-11-16), Google · Gemini 4 Argon · medium(2026-10-14)이었다. Terra 로는 게임을 못 만든다는 결정에 따라, 저장된 Terra 제작 역할과 Codex 엔진 선택도 읽을 때 Sol 로 올린다. medium 이상의 저장 강도는 유지한다.
 
 | 들어가는 길 | 기본이 풀리는 값 | 정하는 곳 |

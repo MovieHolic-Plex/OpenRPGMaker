@@ -245,7 +245,11 @@ function tilesetDoodadsFor(tileset: TilesetDef): readonly UnifiedDoodad[] {
   }
 
   // 4) Relief doodads (ramps, stairs, bridges, walls)
+  // Trees/rocks (kind === "prop") are already included above as single-object stamps in "nature".
+  // Routing them through source:"relief" duplicated them under "경사로·다리"/"전체" and triggered
+  // terrain cluster scattering (reliefClusterEnabled defaults to true), placing multiple trees per click.
   for (const doodad of reliefDoodadCatalog(tileset)) {
+    if (doodad.kind === "prop") continue;
     const sizeLabel = doodad.kind === "ramp"
       ? (doodad.stairs ? "2×N" : "4×N")
       : doodad.kind === "bridge"
@@ -675,6 +679,13 @@ export function mountFloatingDoodadWindow(
       editorState.set({
         layer: "lower",
         activePaletteStamp: null,
+        terrainBrush: "height",
+        terrainPreset: null,
+        terrainMoveGroup: false,
+        terrainPoints: null,
+        terrainHouseDrag: null,
+        terrainVisionPreview: false,
+        reliefClusterEnabled: false,
         reliefDoodad: item.doodad.id,
         reliefDoodadOpen: false,
         reliefBridgeStart: null,

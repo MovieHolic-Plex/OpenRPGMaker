@@ -117,7 +117,8 @@ async function check(): Promise<void> {
   }
 }
 
-const RELEASE_NOTES_MAX_ITEMS = 5;
+const RELEASE_NOTES_MAX_ITEMS = 10;
+const WHATS_NEW_MAX_ITEMS = 8;
 
 async function fetchReleaseNotesFallback(version: string): Promise<readonly string[]> {
   if (e2eLog()) return [];
@@ -153,7 +154,7 @@ function hydrateReleaseNotesIfMissing(version: string, existing: readonly string
     } else if (state.kind === "ready" && state.version === version) {
       setState({ ...state, releaseNotes: notes });
       if (prefs.pending?.version === version && prefs.pending.lines.length === 0) {
-        prefs.pending = { version, lines: notes.slice(0, 3) };
+        prefs.pending = { version, lines: notes.slice(0, WHATS_NEW_MAX_ITEMS) };
         writePrefs();
       }
     } else if (state.kind === "available" && state.version === version) {
@@ -277,7 +278,7 @@ async function attachUpdater(): Promise<void> {
       const fromDownloaded = summarizeReleaseNotes(info.releaseNotes, RELEASE_NOTES_MAX_ITEMS);
       const fromDownloading = state.kind === "downloading" && state.version === info.version ? (state.releaseNotes ?? []) : [];
       const releaseNotes = fromDownloaded.length > 0 ? fromDownloaded : fromDownloading;
-      prefs.pending = { version: info.version, lines: releaseNotes.slice(0, 3) };
+      prefs.pending = { version: info.version, lines: releaseNotes.slice(0, WHATS_NEW_MAX_ITEMS) };
       writePrefs();
       setState({
         kind: "ready",

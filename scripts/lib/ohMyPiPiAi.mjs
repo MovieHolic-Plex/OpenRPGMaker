@@ -28,11 +28,13 @@ import {
   deleteOpenAiCompat,
   listOpenAiCompatPublic,
   assertOpenAiCompatModelsAllowed,
+  resolveOpenAiCompatRequestKey,
   resolveOpenAiCompatRun,
   saveOpenAiCompat,
   testOpenAiCompat,
   connectOpenAiCompat,
 } from "./openAiCompatRuntime.ts";
+import { listLiveModels } from "./liveModelList.ts";
 import { adoptKeySource, currentEnvScanDecision, listKeySources } from "./detectedKeys.ts";
 import { runInstall } from "./localCliAgent/installer.ts";
 
@@ -89,6 +91,32 @@ function keepWorkerKeysFresh(port, providerApiKeys, body, signal) {
   signal?.addEventListener("abort", stop, { once: true });
   return body.pipeThrough(new TransformStream({ flush: stop, cancel: stop }));
 }
+
+/**
+ * 모델 목록 조회용 자격 해석(scripts/lib/liveModelList.ts 에 주입). 키 원문은 이 프로세스를 나가지 않고, 응답에는 모델 id·이름만 실린다.
+ * Claude: ① 사용자가 연결한 Anthropic API 키 엔드포인트(고정 호스트 *.anthropic.com 만) ② anthropic 제공자 키(환경 변수는 동의한 경우만 resolveRequestApiKey 가 돌려준다).
+ */
+const liveModelDeps = {
+  async codexAccessToken() {
+    try { return (await resolveRequestApiKey("openai-codex")) || undefined; } catch { return undefined; }
+  },
+  async anthropicCredentials() {
+    const out = [];
+    for (const endpoint of listOpenAiCompatPublic()) {
+      if (!endpoint.hasKey) continue;
+      let host = "";
+      try { host = new URL(endpoint.baseUrl).hostname.toLowerCase(); } catch { continue; }
+      if (host !== "api.anthropic.com") continue;
+      try { out.push({ source: "anthropic-compat", key: resolveOpenAiCompatRequestKey(endpoint.id), origin: "https://api.anthropic.com" }); } catch { /* 지워진 엔드포인트 */ }
+    }
+    try {
+      const key = await resolveRequestApiKey("anthropic");
+      // 묶음 JSON(다른 제공자 형식)이나 자리표시값은 Anthropic 키가 아니다.
+      if (key && !key.startsWith("{") && key !== "oprn-no-key") out.push({ source: "anthropic-api", key });
+    } catch { /* 저장된 Claude 자격 없음 */ }
+    return out;
+  },
+};
 
 export function markOhMyPiWorkerStale() {
   workerStale = true;
@@ -312,6 +340,8 @@ export async function createOhMyPiAdapters() {
       if (!apiKey) return unknown("로그인하면 남은 한도를 볼 수 있어요.");
       return workerJson("/usage", { provider, apiKey });
     },
+    /** GPT·Claude 의 «지금 실제로 고를 수 있는» 모델 목록(GET /v1/models). 못 받으면 ok:false — 호출부가 프리셋으로 물러난다. */
+    async listModels(family, options) { return listLiveModels(family, liveModelDeps, { fresh: options?.fresh === true }); },
     async setEnvScan(decision) {
       setEnvScanDecision(decision);
     },
