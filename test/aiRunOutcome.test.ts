@@ -967,23 +967,27 @@ describe("aiDefaultModelForced", () => {
     });
   });
   describe("Claude 계정의 기본 = Sonnet 5.5 · high", () => {
-    it("Claude 계정의 카탈로그 첫 항목·제공자 레코드·두 티어가 모두 공장 기본 모델이다(프리셋이 Haiku 로 내리지 않는다)", () => {
+    it("Claude 계정의 카탈로그 첫 항목·제공자 레코드·두 티어가 모두 Sonnet 5.5 다(프리셋이 Haiku 로 내리지 않는다)", () => {
+      expect(defaultModelForAuthMode("chatgpt", "anthropic")).toBe(CLAUDE_MODEL);
+      expect(getOhMyPiProvider("anthropic")?.defaultModel).toBe(CLAUDE_MODEL);
+      expect(tierModelFor("anthropic", "fast")).toBe(CLAUDE_MODEL);
+      expect(tierModelFor("anthropic", "strong")).toBe(CLAUDE_MODEL);
+    });
+
+    it("모델이 빈 Claude 설정의 modelForRole 폴백도 Sonnet 5.5 다", () => {
+      expect(modelForRole({ providerId: "anthropic" } as AiConfig, "deep").model).toBe(CLAUDE_MODEL);
+    });
+  });
+  describe("ChatGPT 길의 기본 = GPT-6.2 Sol · high (공장 기본)", () => {
+    it("ChatGPT 카탈로그 첫 항목과 제공자 레코드가 GPT-6.2 Sol 이고 두 티어가 같다", () => {
       expect(defaultModelForAuthMode("chatgpt", FACTORY_PROVIDER)).toBe(FACTORY_MODEL);
       expect(getOhMyPiProvider(FACTORY_PROVIDER)?.defaultModel).toBe(FACTORY_MODEL);
       expect(tierModelFor(FACTORY_PROVIDER, "fast")).toBe(FACTORY_MODEL);
       expect(tierModelFor(FACTORY_PROVIDER, "strong")).toBe(FACTORY_MODEL);
     });
 
-    it("모델이 빈 Claude 설정의 modelForRole 폴백도 공장 기본 모델이다", () => {
+    it("모델이 빈 ChatGPT 설정의 modelForRole 폴백도 공장 기본 모델이다", () => {
       expect(modelForRole({ providerId: FACTORY_PROVIDER } as AiConfig, "deep").model).toBe(FACTORY_MODEL);
-    });
-  });
-  describe("ChatGPT 길의 기본 = GPT-6.2 Sol (공장 기본이 아니다)", () => {
-    it("ChatGPT 카탈로그 첫 항목과 제공자 레코드가 GPT-6.2 Sol 이고 두 티어가 같다", () => {
-      expect(defaultModelForAuthMode("chatgpt", "openai-codex")).toBe(CHATGPT_MODEL);
-      expect(getOhMyPiProvider("openai-codex")?.defaultModel).toBe(CHATGPT_MODEL);
-      expect(tierModelFor("openai-codex", "fast")).toBe(CHATGPT_MODEL);
-      expect(tierModelFor("openai-codex", "strong")).toBe(CHATGPT_MODEL);
     });
   });
   describe("Google 계정의 강제 기본 모델", () => {
