@@ -553,10 +553,12 @@ describe("RPG Maker style event editor entry points", () => {
       for (const node of nodes) {
         if (node instanceof FakeElement && node.dataset.testid === "event-editor-modal") {
           const win = node.querySelector(".event-editor-modal-window");
+          // FakeDom 은 `.a.b` 복합 클래스 선택자를 풀지 못한다 — 단일 클래스로 찾고 토큰을 직접 본다.
+          const shellTokens = (node.querySelector(".event-editor")?.className ?? "").split(/\s+/);
           seenOnAppend.push({
             modalClass: node.className,
             winClass: win?.className ?? "",
-            hasEasyShell: Boolean(node.querySelector(".event-editor.is-beginner.is-level-easy")),
+            hasEasyShell: shellTokens.includes("is-beginner") && shellTokens.includes("is-level-easy"),
           });
         }
       }
