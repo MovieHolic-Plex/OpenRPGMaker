@@ -232,7 +232,7 @@ function autosizePrompt(prompt: HTMLTextAreaElement): void {
  * 안 B 초기 상태(접힘)에서는 캔버스 포커스를 빼앗지 않아 드래그 직후 Ctrl+C·Del·Esc 가 바로 먹힌다.
  */
 export function focusSelectionActionPrompt(bar: HTMLElement): void {
-  const composer = bar.querySelector?.(".selection-drawer-composer") as HTMLElement | null | undefined;
+  const composer = bar.querySelector?.(".selection-action-drawer-composer") as HTMLElement | null | undefined;
   if (!composer || composer.hidden) return;
   const prompt = bar.querySelector?.(".selection-action-prompt") as HTMLTextAreaElement | null | undefined;
   if (!prompt || typeof prompt.focus !== "function") return;
@@ -462,7 +462,7 @@ export function renderSelectionActionChips(
 
   // ── 더보기 팝오버 안의 보조 도구 (복사·붙여넣기·마을/던전/숲/항구·구조물 저장·지우기) ──
   const morePopover = el("div", {
-    class: "selection-more-popover",
+    class: "selection-action-more-popover",
     attrs: { role: "menu", hidden: "hidden" },
     dataset: { testid: "selection-more-popover" },
   });
@@ -483,13 +483,13 @@ export function renderSelectionActionChips(
     readonly onClick: (event: Event) => void;
   }): HTMLButtonElement => {
     const btn = el("button", {
-      class: `selection-more-item${input.className ? ` ${input.className}` : ""}`,
+      class: `selection-action-more-item${input.className ? ` ${input.className}` : ""}`,
       attrs: { type: "button", role: "menuitem", title: input.title },
       dataset: { testid: `selection-chip-${input.testid}` },
       children: [
         ...(input.icon ? [input.icon] : []),
-        el("span", { class: "selection-more-label", text: input.label }),
-        ...(input.shortcut ? [el("span", { class: "selection-more-kbd", text: input.shortcut })] : []),
+        el("span", { class: "selection-action-more-label", text: input.label }),
+        ...(input.shortcut ? [el("span", { class: "selection-action-more-kbd", text: input.shortcut })] : []),
       ],
       on: { click: input.onClick },
     }) as HTMLButtonElement;
@@ -550,12 +550,12 @@ export function renderSelectionActionChips(
   );
 
   const clearCells = Math.max(0, selection.width) * Math.max(0, selection.height);
-  const clearLabel = el("span", { class: "selection-more-label", text: "지우기" });
+  const clearLabel = el("span", { class: "selection-action-more-label", text: "지우기" });
   const clearButton = el("button", {
-    class: "selection-more-item is-danger",
+    class: "selection-action-more-item is-danger",
     attrs: { type: "button", role: "menuitem", title: "지우기 (Del)" },
     dataset: { testid: "selection-chip-clear" },
-    children: [buildSvgIcon(ICON_TRASH), clearLabel, el("span", { class: "selection-more-kbd", text: "Del" })],
+    children: [buildSvgIcon(ICON_TRASH), clearLabel, el("span", { class: "selection-action-more-kbd", text: "Del" })],
   }) as HTMLButtonElement;
   let clearArmed = false;
   let clearArmTimer: ReturnType<typeof setTimeout> | null = null;
@@ -582,10 +582,10 @@ export function renderSelectionActionChips(
   morePopover.append(
     copyButton,
     ...(pasteButton ? [pasteButton] : []),
-    el("div", { class: "selection-more-sep", attrs: { "aria-hidden": "true" } }),
+    el("div", { class: "selection-action-more-sep", attrs: { "aria-hidden": "true" } }),
     ...placeButtons,
     structureButton,
-    el("div", { class: "selection-more-sep", attrs: { "aria-hidden": "true" } }),
+    el("div", { class: "selection-action-more-sep", attrs: { "aria-hidden": "true" } }),
     clearButton,
   );
 
@@ -594,7 +594,7 @@ export function renderSelectionActionChips(
   const quickButtons = actions.map((action) => {
     const testid = `selection-chip-quick-${action.kind}`;
     const btn = el("button", {
-      class: `selection-context-action${action.rank === 1 ? " is-top" : ""}`,
+      class: `selection-action-context-btn${action.rank === 1 ? " is-top" : ""}`,
       attrs: {
         type: "button",
         title: `${action.title} (${action.reason})`,
@@ -605,7 +605,7 @@ export function renderSelectionActionChips(
         rank: String(action.rank),
       },
       children: [
-        el("span", { class: "selection-context-rank", text: String(action.rank) }),
+        el("span", { class: "selection-action-context-rank", text: String(action.rank) }),
         quickActionIcon(action.kind),
         el("span", { text: action.label }),
       ],
@@ -621,12 +621,12 @@ export function renderSelectionActionChips(
   });
 
   const aiToggleButton = el("button", {
-    class: "selection-context-action is-ai-toggle",
+    class: "selection-action-context-btn is-ai-toggle",
     attrs: { type: "button", title: "조수에게 자유롭게 텍스트로 지시 (4)" },
     dataset: { testid: "selection-chip-ai-toggle", rank: "4" },
     children: [
-      el("span", { class: "selection-context-rank", text: "4" }),
-      makeAiSparkIcon("selection-context-spark"),
+      el("span", { class: "selection-action-context-rank", text: "4" }),
+      makeAiSparkIcon("selection-action-context-spark"),
       el("span", { text: "조수 지시" }),
     ],
     on: {
@@ -638,11 +638,11 @@ export function renderSelectionActionChips(
   }) as HTMLButtonElement;
 
   const zonePinLabel = el("span", {
-    class: "selection-zone-pin-text",
+    class: "selection-action-zone-pin-text",
     text: activeLocationId ? activeZoneLabel : "",
   });
   const zoneTagButton = el("button", {
-    class: `selection-zone-pin${activeLocationId ? " is-saved" : ""}`,
+    class: `selection-action-zone-pin${activeLocationId ? " is-saved" : ""}`,
     attrs: {
       type: "button",
       title: activeLocationId
@@ -683,51 +683,50 @@ export function renderSelectionActionChips(
   });
 
   const primaryRow = el("div", {
-    class: "selection-compact-row",
+    class: "selection-action-compact-row",
     dataset: { testid: "selection-context-row" },
     children: [
-      el("div", { class: "selection-context-actions", children: [...quickButtons, aiToggleButton] }),
+      el("div", { class: "selection-action-context-actions", children: [...quickButtons, aiToggleButton] }),
       el("span", { class: "selection-action-sep", attrs: { "aria-hidden": "true" } }),
-      el("div", { class: "selection-compact-utils", children: [zoneTagButton, moreButton, dismissButton] }),
+      el("div", { class: "selection-action-compact-utils", children: [zoneTagButton, moreButton, dismissButton] }),
     ],
   });
 
   // ── 펼침 서랍: NPC 12종 아키타입 팔레트 / 디렉팅 프리셋 + AI 입력 줄 / 구역 태그 편집 줄 ──
-  const drawerGuardrail = el("div", { class: "selection-drawer-guardrail" });
+  const drawerGuardrail = el("div", { class: "selection-action-drawer-guardrail" });
   const npcPalette = el("div", {
-    class: "selection-npc-palette",
+    class: "selection-action-palette",
     attrs: { hidden: "hidden" },
     dataset: { testid: "selection-npc-palette" },
   });
-  const npcCatRow = el("div", { class: "selection-npc-cat-row" });
-  const npcGrid = el("div", { class: "selection-npc-grid", dataset: { testid: "selection-npc-grid" } });
-  const npcSpecSummary = el("span", { class: "selection-npc-spec-summary" });
+  const npcCatRow = el("div", { class: "selection-action-cat-row" });
+  const npcGrid = el("div", { class: "selection-action-grid", dataset: { testid: "selection-action-grid" } });
+  const npcSpecSummary = el("span", { class: "selection-action-spec-summary" });
   const npcSpecToggle = el("button", {
-    class: "selection-npc-spec-toggle",
+    class: "selection-action-spec-toggle",
     text: "상세 프롬프트 보기 ▾",
     attrs: { type: "button" },
     dataset: { testid: "selection-npc-spec-toggle" },
   }) as HTMLButtonElement;
   const npcSpecBar = el("div", {
-    class: "selection-npc-spec-bar",
+    class: "selection-action-spec-bar",
     children: [npcSpecSummary, npcSpecToggle],
   });
   const npcSpecPreview = el("pre", {
-    class: "selection-npc-spec-preview",
+    class: "selection-action-spec-preview",
     attrs: { hidden: "hidden" },
     dataset: { testid: "selection-npc-spec-preview" },
   });
   npcPalette.append(npcCatRow, npcGrid, npcSpecBar, npcSpecPreview);
 
-  const drawerPresets = el("div", { class: "selection-drawer-presets" });
   const drawerComposer = el("div", {
-    class: "selection-drawer-composer",
+    class: "selection-action-drawer-composer",
     attrs: { hidden: "hidden" },
     children: [makeAiSparkIcon(), prompt, stampButton, send],
   });
 
   const tagInput = el("input", {
-    class: "selection-zone-tag-input",
+    class: "selection-action-zone-tag-input",
     attrs: {
       type: "text",
       maxlength: "64",
@@ -738,26 +737,26 @@ export function renderSelectionActionChips(
     dataset: { testid: "selection-zone-tag-input" },
   }) as HTMLInputElement;
   const tagSaveBtn = el("button", {
-    class: "selection-zone-tag-save",
+    class: "selection-action-zone-tag-save",
     text: "저장",
     attrs: { type: "submit" },
     dataset: { testid: "selection-zone-tag-save" },
   }) as HTMLButtonElement;
   const tagEditor = el("form", {
-    class: "selection-zone-tag-editor",
+    class: "selection-action-zone-tag-editor",
     attrs: { hidden: "hidden" },
     children: [
-      el("span", { class: "selection-zone-tag-caption", text: "구역 태그" }),
+      el("span", { class: "selection-action-zone-tag-caption", text: "구역 태그" }),
       tagInput,
       tagSaveBtn,
     ],
   }) as HTMLFormElement;
 
   const drawer = el("div", {
-    class: "selection-drawer",
+    class: "selection-action-drawer",
     attrs: { hidden: "hidden" },
     dataset: { testid: "selection-drawer" },
-    children: [drawerGuardrail, npcPalette, drawerPresets, drawerComposer, tagEditor],
+    children: [drawerGuardrail, npcPalette, drawerComposer, tagEditor],
   });
 
   const saveZoneTag = (): void => {
@@ -867,11 +866,11 @@ export function renderSelectionActionChips(
           : activeEncounterCategory;
 
     npcCatRow.textContent = "";
-    const tabsWrap = el("div", { class: "selection-npc-cats" });
+    const tabsWrap = el("div", { class: "selection-action-cats" });
     for (const cat of categories) {
       tabsWrap.append(
         el("button", {
-          class: `selection-npc-cat-btn${activeCat === cat.id ? " is-active" : ""}`,
+          class: `selection-action-cat-btn${activeCat === cat.id ? " is-active" : ""}`,
           text: cat.id === "rec" ? `✦ ${cat.label}` : cat.label,
           attrs: { type: "button" },
           dataset: { testid: `selection-${mode}-cat-${cat.id}` },
@@ -891,7 +890,7 @@ export function renderSelectionActionChips(
     let instantBtn: HTMLElement | null = null;
     if (mode === "npc") {
       instantBtn = el("button", {
-        class: "selection-npc-direct-btn",
+        class: "selection-action-instant-btn",
         text: "+ 빈 NPC 직접",
         attrs: {
           type: "button",
@@ -910,7 +909,7 @@ export function renderSelectionActionChips(
       });
     } else if (mode === "direct" && intent?.zone.mapRole !== "interior") {
       instantBtn = el("button", {
-        class: "selection-npc-direct-btn",
+        class: "selection-action-instant-btn",
         text: "+ 마을 즉시 짓기",
         attrs: {
           type: "button",
@@ -932,7 +931,7 @@ export function renderSelectionActionChips(
       });
     } else if (mode === "encounter") {
       instantBtn = el("button", {
-        class: "selection-npc-direct-btn",
+        class: "selection-action-instant-btn",
         text: "+ 걷기 전투 직접",
         attrs: {
           type: "button",
@@ -990,18 +989,18 @@ export function renderSelectionActionChips(
       const isSelected = item.id === selectedId;
       npcGrid.append(
         el("button", {
-          class: `selection-npc-card${isRec ? " is-rec" : ""}${isSelected ? " is-selected" : ""}`,
+          class: `selection-action-card${isRec ? " is-rec" : ""}${isSelected ? " is-selected" : ""}`,
           attrs: { type: "button", title: `${item.label} — ${item.summary}` },
           dataset: { testid: `selection-${mode}-arch-${item.id}` },
           children: [
             el("span", {
-              class: "selection-npc-card-top",
+              class: "selection-action-card-top",
               children: [
-                el("span", { class: "selection-npc-card-ic", text: item.icon }),
-                el("span", { class: "selection-npc-card-name", text: item.label }),
+                el("span", { class: "selection-action-card-ic", text: item.icon }),
+                el("span", { class: "selection-action-card-name", text: item.label }),
               ],
             }),
-            el("span", { class: "selection-npc-card-sub", text: item.summary }),
+            el("span", { class: "selection-action-card-sub", text: item.summary }),
           ],
           on: {
             click: () => {
@@ -1032,7 +1031,6 @@ export function renderSelectionActionChips(
       drawer.hidden = true;
       drawerGuardrail.hidden = true;
       npcPalette.hidden = true;
-      drawerPresets.hidden = true;
       drawerComposer.hidden = true;
       tagEditor.hidden = true;
       return;
@@ -1042,7 +1040,6 @@ export function renderSelectionActionChips(
     if (next === "tag") {
       drawerGuardrail.hidden = true;
       npcPalette.hidden = true;
-      drawerPresets.hidden = true;
       drawerComposer.hidden = true;
       tagEditor.hidden = false;
       tagInput.value = activeLocationId ? activeZoneLabel : (intent?.zone.suggestedZoneName ?? activeZoneLabel);
@@ -1058,7 +1055,6 @@ export function renderSelectionActionChips(
       ? `📍 ${activeZoneLabel} (태그됨) · 영역·지형·세계관 가드레일 잠금`
       : `📍 ${activeZoneLabel} · 영역·지형·세계관 가드레일 잠금`;
 
-    drawerPresets.hidden = true;
     if (isArchetypeDrawer(next)) {
       npcPalette.hidden = false;
       renderArchetypePalette(next);

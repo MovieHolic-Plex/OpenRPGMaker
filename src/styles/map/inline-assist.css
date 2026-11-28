@@ -41,28 +41,28 @@
 }
 
 /* 1줄 메인 컴팩트 HUD 행 */
-.selection-compact-row {
+.selection-action-compact-row {
   align-items: center;
   display: flex;
   gap: 4px;
   justify-content: space-between;
 }
 
-.selection-context-actions {
+.selection-action-context-actions {
   align-items: center;
   display: flex;
   flex: 0 0 auto;
   gap: 4px;
 }
 
-.selection-compact-utils {
+.selection-action-compact-utils {
   align-items: center;
   display: flex;
   flex: 0 0 auto;
   gap: 2px;
 }
 
-.selection-context-action {
+.selection-action-context-btn {
   align-items: center;
   background: var(--bg-hover);
   border: 1px solid transparent;
@@ -77,60 +77,60 @@
   white-space: nowrap;
 }
 
-.selection-context-action > svg {
+.selection-action-context-btn > svg {
   flex: 0 0 auto;
   height: 13px;
   width: 13px;
 }
 
-.selection-context-action:hover:not(:disabled) {
+.selection-action-context-btn:hover:not(:disabled) {
   border-color: var(--border-default);
   color: var(--text-1);
 }
 
-.selection-context-action.is-top {
+.selection-action-context-btn.is-top {
   background: var(--accent-muted);
   border-color: color-mix(in srgb, var(--accent) 45%, var(--border-default));
   color: var(--accent);
 }
 
-.selection-context-action.is-ai-toggle {
+.selection-action-context-btn.is-ai-toggle {
   background: transparent;
   border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--border-default));
   color: var(--accent);
 }
 
-.selection-context-action.is-ai-toggle:hover {
+.selection-action-context-btn.is-ai-toggle:hover {
   background: var(--accent-muted);
 }
 
-.selection-context-action.is-active,
-.selection-context-action.is-active:hover,
-.selection-context-action.is-ai-toggle.is-active,
-.selection-context-action.is-ai-toggle.is-active:hover {
+.selection-action-context-btn.is-active,
+.selection-action-context-btn.is-active:hover,
+.selection-action-context-btn.is-ai-toggle.is-active,
+.selection-action-context-btn.is-ai-toggle.is-active:hover {
   background: var(--accent);
   border: 1px solid var(--accent);
   color: var(--on-accent);
 }
 
-.selection-context-action:disabled {
+.selection-action-context-btn:disabled {
   cursor: not-allowed;
   opacity: 0.45;
 }
 
-.selection-context-rank {
+.selection-action-context-rank {
   font-size: 10px;
   font-weight: 800;
   opacity: 0.72;
 }
 
-.selection-context-spark {
+.selection-action-context-spark {
   height: 13px;
   width: 13px;
 }
 
 /* 구역 태그 핀 버튼 — 미저장 시 컴팩트 아이콘, 저장 시 짧은 구역 이름 함께 표시 */
-.selection-zone-pin {
+.selection-action-zone-pin {
   align-items: center;
   background: transparent;
   border: 1px solid transparent;
@@ -148,36 +148,36 @@
   white-space: nowrap;
 }
 
-.selection-zone-pin:hover,
-.selection-zone-pin.is-open {
+.selection-action-zone-pin:hover,
+.selection-action-zone-pin.is-open {
   background: var(--bg-hover);
   color: var(--text-1);
 }
 
-.selection-zone-pin.is-saved {
+.selection-action-zone-pin.is-saved {
   background: var(--accent-muted);
   border-color: color-mix(in srgb, var(--accent) 40%, var(--border-default));
   color: var(--accent);
   padding: 0 8px;
 }
 
-.selection-zone-pin > svg {
+.selection-action-zone-pin > svg {
   flex: 0 0 auto;
   height: 14px;
   width: 14px;
 }
 
-.selection-zone-pin-text {
+.selection-action-zone-pin-text {
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.selection-zone-pin-text:empty {
+.selection-action-zone-pin-text:empty {
   display: none;
 }
 
 /* 펼침 서랍 */
-.selection-drawer {
+.selection-action-drawer {
   border-top: 1px solid var(--border-default);
   display: flex;
   flex-direction: column;
@@ -186,26 +186,25 @@
   padding-top: 6px;
 }
 
-.selection-drawer[hidden],
-.selection-drawer-guardrail[hidden],
-.selection-npc-palette[hidden],
-.selection-npc-spec-preview[hidden],
-.selection-drawer-presets[hidden],
-.selection-drawer-composer[hidden],
-.selection-zone-tag-editor[hidden],
-.selection-more-popover[hidden] {
+.selection-action-drawer[hidden],
+.selection-action-drawer-guardrail[hidden],
+.selection-action-palette[hidden],
+.selection-action-spec-preview[hidden],
+.selection-action-drawer-composer[hidden],
+.selection-action-zone-tag-editor[hidden],
+.selection-action-more-popover[hidden] {
   display: none;
 }
 
 /* 12종 NPC 아키타입 팔레트 */
-.selection-npc-palette {
+.selection-action-palette {
   display: flex;
   flex-direction: column;
   gap: 6px;
   padding: 0 2px;
 }
 
-.selection-npc-cat-row {
+.selection-action-cat-row {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
@@ -213,13 +212,13 @@
   justify-content: space-between;
 }
 
-.selection-npc-cats {
+.selection-action-cats {
   display: inline-flex;
   flex-wrap: wrap;
   gap: 3px;
 }
 
-.selection-npc-cat-btn {
+.selection-action-cat-btn {
   background: var(--bg-hover);
   border: 1px solid transparent;
   border-radius: 999px;
@@ -231,17 +230,17 @@
   white-space: nowrap;
 }
 
-.selection-npc-cat-btn:hover {
+.selection-action-cat-btn:hover {
   color: var(--text-1);
 }
 
-.selection-npc-cat-btn.is-active {
+.selection-action-cat-btn.is-active {
   background: var(--accent-muted);
   border-color: color-mix(in srgb, var(--accent) 45%, var(--border-default));
   color: var(--accent);
 }
 
-.selection-npc-direct-btn {
+.selection-action-instant-btn {
   background: transparent;
   border: 1px dashed var(--border-default);
   border-radius: 999px;
@@ -253,18 +252,18 @@
   white-space: nowrap;
 }
 
-.selection-npc-direct-btn:hover {
+.selection-action-instant-btn:hover {
   border-color: var(--accent);
   color: var(--accent);
 }
 
-.selection-npc-grid {
+.selection-action-grid {
   display: grid;
   gap: 5px;
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.selection-npc-card {
+.selection-action-card {
   align-items: flex-start;
   background: var(--bg-hover);
   border: 1px solid var(--border-default);
@@ -279,43 +278,43 @@
   transition: border-color 0.12s ease, background 0.12s ease;
 }
 
-.selection-npc-card:hover {
+.selection-action-card:hover {
   border-color: color-mix(in srgb, var(--accent) 55%, var(--border-default));
 }
 
-.selection-npc-card.is-rec {
+.selection-action-card.is-rec {
   border-color: color-mix(in srgb, var(--accent) 32%, var(--border-default));
 }
 
-.selection-npc-card.is-selected {
+.selection-action-card.is-selected {
   background: var(--accent-muted);
   border-color: var(--accent);
 }
 
-.selection-npc-card-top {
+.selection-action-card-top {
   align-items: center;
   display: flex;
   gap: 4px;
   width: 100%;
 }
 
-.selection-npc-card-ic {
+.selection-action-card-ic {
   font-size: 13px;
   line-height: 1;
 }
 
-.selection-npc-card-name {
+.selection-action-card-name {
   font: 700 11px/1.15 var(--font-ui, system-ui, sans-serif);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.selection-npc-card.is-selected .selection-npc-card-name {
+.selection-action-card.is-selected .selection-action-card-name {
   color: var(--accent);
 }
 
-.selection-npc-card-sub {
+.selection-action-card-sub {
   color: var(--text-3);
   font: 500 9.5px/1.25 var(--font-ui, system-ui, sans-serif);
   overflow: hidden;
@@ -324,7 +323,7 @@
   width: 100%;
 }
 
-.selection-npc-spec-bar {
+.selection-action-spec-bar {
   align-items: center;
   display: flex;
   gap: 6px;
@@ -332,7 +331,7 @@
   padding: 0 2px;
 }
 
-.selection-npc-spec-summary {
+.selection-action-spec-summary {
   color: var(--text-2);
   font: 600 10.5px/1.2 var(--font-ui, system-ui, sans-serif);
   overflow: hidden;
@@ -340,7 +339,7 @@
   white-space: nowrap;
 }
 
-.selection-npc-spec-toggle {
+.selection-action-spec-toggle {
   background: transparent;
   border: 0;
   color: var(--accent);
@@ -351,11 +350,11 @@
   white-space: nowrap;
 }
 
-.selection-npc-spec-toggle:hover {
+.selection-action-spec-toggle:hover {
   text-decoration: underline;
 }
 
-.selection-npc-spec-preview {
+.selection-action-spec-preview {
   background: var(--bg-base, var(--bg-hover));
   border: 1px solid var(--border-default);
   border-radius: 7px;
@@ -368,43 +367,13 @@
   white-space: pre-wrap;
 }
 
-.selection-drawer-guardrail {
+.selection-action-drawer-guardrail {
   color: var(--text-3);
   font: 600 10.5px/1.2 var(--font-ui, system-ui, sans-serif);
   padding: 0 4px;
 }
 
-.selection-drawer-presets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  padding: 0 2px;
-}
-
-.selection-preset-pill {
-  background: var(--bg-hover);
-  border: 1px solid var(--border-default);
-  border-radius: 999px;
-  color: var(--text-1);
-  cursor: pointer;
-  font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
-  height: 24px;
-  padding: 0 9px;
-  white-space: nowrap;
-}
-
-.selection-preset-pill:hover {
-  background: var(--accent-muted);
-  border-color: color-mix(in srgb, var(--accent) 50%, var(--border-default));
-  color: var(--accent);
-}
-
-.selection-preset-pill.is-instant {
-  border-style: dashed;
-  color: var(--accent);
-}
-
-.selection-drawer-composer {
+.selection-action-drawer-composer {
   align-items: flex-end;
   display: flex;
   gap: 3px;
@@ -440,20 +409,20 @@
   color: var(--text-3);
 }
 
-.selection-zone-tag-editor {
+.selection-action-zone-tag-editor {
   align-items: center;
   display: flex;
   gap: 6px;
   padding: 0 2px;
 }
 
-.selection-zone-tag-caption {
+.selection-action-zone-tag-caption {
   color: var(--text-2);
   font: 600 11px/1 var(--font-ui, system-ui, sans-serif);
   white-space: nowrap;
 }
 
-.selection-zone-tag-input {
+.selection-action-zone-tag-input {
   background: var(--bg-base, var(--bg-surface));
   border: 1px solid var(--accent);
   border-radius: 7px;
@@ -466,7 +435,7 @@
   padding: 0 8px;
 }
 
-.selection-zone-tag-save {
+.selection-action-zone-tag-save {
   background: var(--accent);
   border: 0;
   border-radius: 7px;
@@ -479,7 +448,7 @@
 }
 
 /* 더보기 팝오버 (바 위로 열려 캔버스 하단 잘림 방지) */
-.selection-more-popover {
+.selection-action-more-popover {
   background: var(--bg-surface);
   border: 1px solid var(--border-default);
   border-radius: 11px;
@@ -495,7 +464,7 @@
   z-index: 250;
 }
 
-.selection-more-item {
+.selection-action-more-item {
   align-items: center;
   background: transparent;
   border: 0;
@@ -512,46 +481,46 @@
   width: 100%;
 }
 
-.selection-more-item > svg {
+.selection-action-more-item > svg {
   color: var(--text-2);
   flex: 0 0 auto;
   height: 15px;
   width: 15px;
 }
 
-.selection-more-item:hover:not(:disabled) {
+.selection-action-more-item:hover:not(:disabled) {
   background: var(--bg-hover);
 }
 
-.selection-more-item:disabled {
+.selection-action-more-item:disabled {
   cursor: not-allowed;
   opacity: 0.45;
 }
 
-.selection-more-item.is-danger:hover {
+.selection-action-more-item.is-danger:hover {
   background: var(--danger-muted);
   color: var(--danger);
 }
 
-.selection-more-item.is-danger:hover > svg {
+.selection-action-more-item.is-danger:hover > svg {
   color: var(--danger);
 }
 
-.selection-more-item.is-armed {
+.selection-action-more-item.is-armed {
   background: var(--danger-muted);
   color: var(--danger);
 }
 
-.selection-more-label {
+.selection-action-more-label {
   flex: 1 1 auto;
 }
 
-.selection-more-kbd {
+.selection-action-more-kbd {
   color: var(--text-3);
   font: 500 10.5px/1 var(--font-mono, monospace);
 }
 
-.selection-more-sep {
+.selection-action-more-sep {
   background: var(--border-default);
   height: 1px;
   margin: 3px 4px;
@@ -639,17 +608,17 @@
   .selection-action-chips.build-palette-floating {
     width: calc(100vw - 16px);
   }
-  .selection-compact-row {
+  .selection-action-compact-row {
     flex-wrap: wrap;
   }
-  .selection-context-actions {
+  .selection-action-context-actions {
     flex-wrap: wrap;
   }
-  .selection-npc-grid {
+  .selection-action-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .selection-context-action,
-  .selection-zone-pin,
+  .selection-action-context-btn,
+  .selection-action-zone-pin,
   .selection-action-chip {
     height: 32px;
   }
