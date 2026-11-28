@@ -2,7 +2,18 @@
 // 앱 자동 업데이트의 순수 판단(electron/shared/appUpdate.ts). 설치 형태 판정이 틀리면 portable 이 스스로를
 // 지우려 하거나(설치판 경로), 설치판이 칩만 띄우고 끝난다. 실제 교체·재시작은 CI e2e(app-update-e2e.yml)가 본다.
 import { describe, expect, it } from "vitest";
-import { appUpdateChipText, appUpdateModeFor, portableDownloadUrl, restoreLaunchEnv, snapshotLaunchEnv, summarizeReleaseNotes } from "../electron/shared/appUpdate";
+import {
+  appUpdateButtonView,
+  appUpdateChipText,
+  appUpdateModeFor,
+  compareSemver,
+  isSafeReleaseDownloadUrl,
+  portableDownloadUrl,
+  releasesLatestPageUrl,
+  restoreLaunchEnv,
+  snapshotLaunchEnv,
+  summarizeReleaseNotes,
+} from "../electron/shared/appUpdate";
 
 describe("appUpdateModeFor", () => {
   it("윈도 portable 은 알리기만, 설치판은 자동", () => {
@@ -61,5 +72,51 @@ describe("restoreLaunchEnv", () => {
     };
     restoreLaunchEnv(env, launch);
     expect(env).toEqual({ PATH: "/bin", OPRN_RENDERER_DIR: "/user/dist" });
+  });
+});
+
+describe("compareSemver", () => {
+  it("v 접두사와 프리릴리스를 포함해 버전을 비교한다", () => {
+    expect(compareSemver("0.421.0", "0.420.0")).toBeGreaterThan(0);
+    expect(compareSemver("v0.420.0", "0.420.0")).toBe(0);
+    expect(compareSemver("0.420.0", "0.420.0-dev.1")).toBeGreaterThan(0);
+    expect(compareSemver("0.420.0-beta.2", "0.420.0-beta.10")).toBeLessThan(0);
+    expect(compareSemver("0.419.9", "0.420.0")).toBeLessThan(0);
+  });
+});
+
+describe("isSafeReleaseDownloadUrl", () => {
+  it("공식 저장소 릴리스 주소만 허용한다", () => {
+    expect(isSafeReleaseDownloadUrl(portableDownloadUrl("0.420.0"))).toBe(true);
+    expect(isSafeReleaseDownloadUrl(releasesLatestPageUrl())).toBe(true);
+    expect(isSafeReleaseDownloadUrl("https://evil.example/OPRN.exe")).toBe(false);
+  });
+});
+
+describe("appUpdateButtonView", () => {
+  const base = { mode: "auto" as const, enabled: true, currentVersion: "0.420.0" };
+
+  it("상태별 버튼 문구·활성·동작을 일관되게 돌려준다", () => {
+    expect(appUpdateButtonView({ ...base, state: { kind: "idle" } })).toMatchObject({
+      label: "업데이트 확인", action: "check", disabled: false,
+    });
+    expect(appUpdateButtonView({ ...base, state: { kind: "checking" } })).toMatchObject({
+      label: "확인 중…", action: "none", disabled: true,
+    });
+    expect(appUpdateButtonView({ ...base, state: { kind: "downloading", version: "0.421.0", percent: 42.4 } })).toMatchObject({
+      label: "내려받는 중 42%", action: "none", disabled: true,
+    });
+    expect(appUpdateButtonView({ ...base, state: { kind: "ready", version: "0.421.0" } })).toMatchObject({
+      label: "v0.421 다시 시작", action: "install", disabled: false,
+    });
+    expect(appUpdateButtonView({ ...base, state: { kind: "available", version: "0.421.0", downloadUrl: releasesLatestPageUrl() } })).toMatchObject({
+      label: "v0.421 내려받기", action: "download", disabled: false,
+    });
+    expect(appUpdateButtonView({ ...base, state: { kind: "up-to-date", checkedAt: 1 } })).toMatchObject({
+      label: "업데이트 확인", detail: "최신 버전이에요 (v0.420)", action: "check", disabled: false,
+    });
+    expect(appUpdateButtonView({ ...base, state: { kind: "error", message: "네트워크 오류" } })).toMatchObject({
+      label: "다시 확인", detail: "네트워크 오류", action: "check", disabled: false,
+    });
   });
 });

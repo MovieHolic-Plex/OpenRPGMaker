@@ -9,8 +9,12 @@ import { OPRN_CHANNELS } from "../shared/channels";
 import {
   APP_UPDATE_FIRST_CHECK_MS,
   APP_UPDATE_INTERVAL_MS,
+  APP_UPDATE_REPO,
   appUpdateModeFor,
+  compareSemver,
+  isSafeReleaseDownloadUrl,
   portableDownloadUrl,
+  releasesLatestPageUrl,
   restoreLaunchEnv,
   snapshotLaunchEnv,
   summarizeReleaseNotes,
@@ -33,8 +37,11 @@ let state: AppUpdateState = { kind: "idle" };
 let prefs: StoredPrefs = { enabled: true };
 let whatsNew: AppUpdateWhatsNew | null = null;
 let updater: Updater | null = null;
+let attachPromise: Promise<void> | null = null;
 let timer: ReturnType<typeof setInterval> | null = null;
 let installing = false;
+let manualCheckInFlight = false;
+let manualDownloadOwned = false;
 /** 켜질 때의 경로 환경 변수. 이 모듈은 main.ts 가 import 할 때 평가되므로 startApp 이 값을 쓰기 전이다. */
 const launchEnv = snapshotLaunchEnv(process.env);
 
@@ -85,13 +92,65 @@ function setState(next: AppUpdateState): void {
   }
 }
 
+function friendlyUpdateError(error: unknown): string {
+  const raw = error instanceof Error ? error.message : String(error);
+  if (/ENOTFOUND|EAI_AGAIN|ETIMEDOUT|ECONNRESET|ERR_INTERNET_DISCONNECTED|AbortError|fetch failed/i.test(raw)) {
+    return "네트워크에 연결할 수 없어 업데이트를 확인하지 못했어요.";
+  }
+  if (/404|Cannot find latest/i.test(raw)) {
+    return "아직 이 환경용 업데이트 정보가 등록되지 않았어요.";
+  }
+  if (/403|rate limit/i.test(raw)) {
+    return "잠시 후 다시 확인해 주세요 (요청 한도 초과).";
+  }
+  return "업데이트를 확인하지 못했어요. 잠시 후 다시 시도해 주세요.";
+}
+
 async function check(): Promise<void> {
-  if (!updater || !prefs.enabled || state.kind === "ready" || installing) return;
+  if (!updater || !prefs.enabled || installing) return;
+  if (state.kind === "ready" || state.kind === "checking" || state.kind === "downloading") return;
   try {
     await updater.checkForUpdates();
   } catch (error) {
-    // 오프라인·릴리스에 latest.yml 이 아직 없음 등. 사용자에게 보일 일이 아니다.
+    // 오프라인·릴리스에 latest.yml 이 아직 없음 등. 자동 확인은 사용자에게 보일 일이 아니다.
     console.warn("[update] 확인 실패:", error instanceof Error ? error.message : String(error));
+  }
+}
+
+async function checkViaGithubRelease(): Promise<void> {
+  setState({ kind: "checking" });
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10_000);
+  try {
+    const url = `https://api.github.com/repos/${APP_UPDATE_REPO.owner}/${APP_UPDATE_REPO.repo}/releases/latest`;
+    const response = await fetch(url, {
+      headers: {
+        Accept: "application/vnd.github+json",
+        "User-Agent": `OPRN-Studio/${app.getVersion()}`,
+      },
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+    const data = (await response.json()) as { tag_name?: unknown; html_url?: unknown };
+    const latest = typeof data.tag_name === "string" ? data.tag_name.replace(/^v/i, "").trim() : "";
+    if (!latest) {
+      setState({ kind: "up-to-date", checkedAt: Date.now() });
+      return;
+    }
+    if (compareSemver(latest, app.getVersion()) > 0) {
+      const candidateUrl = typeof data.html_url === "string" ? data.html_url : "";
+      const downloadUrl = isSafeReleaseDownloadUrl(candidateUrl) ? candidateUrl : releasesLatestPageUrl();
+      setState({ kind: "available", version: latest, downloadUrl });
+    } else {
+      setState({ kind: "up-to-date", checkedAt: Date.now() });
+    }
+  } catch (error) {
+    console.warn("[update] 수동 확인 실패(GitHub):", error instanceof Error ? error.message : String(error));
+    setState({ kind: "error", message: friendlyUpdateError(error) });
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
@@ -114,32 +173,106 @@ function adoptWhatsNew(): void {
 }
 
 async function attachUpdater(): Promise<void> {
-  const { autoUpdater } = await import("electron-updater");
-  updater = autoUpdater;
-  autoUpdater.logger = { info: () => {}, debug: () => {}, warn: (m: unknown) => console.warn("[update]", m), error: (m: unknown) => console.warn("[update]", m) };
-  autoUpdater.autoDownload = mode === "auto";
-  autoUpdater.autoInstallOnAppQuit = mode === "auto" && prefs.enabled;
-  autoUpdater.allowPrerelease = false;
-  autoUpdater.allowDowngrade = false;
-  autoUpdater.on("update-available", (info) => {
-    if (mode === "manual") setState({ kind: "available", version: info.version, downloadUrl: portableDownloadUrl(info.version) });
-    else setState({ kind: "downloading", version: info.version });
+  if (updater) return;
+  if (attachPromise) return attachPromise;
+  attachPromise = (async () => {
+    const { autoUpdater } = await import("electron-updater");
+    updater = autoUpdater;
+    autoUpdater.logger = { info: () => {}, debug: () => {}, warn: (m: unknown) => console.warn("[update]", m), error: (m: unknown) => console.warn("[update]", m) };
+    autoUpdater.autoDownload = mode === "auto";
+    autoUpdater.autoInstallOnAppQuit = mode === "auto" && prefs.enabled;
+    autoUpdater.allowPrerelease = false;
+    autoUpdater.allowDowngrade = false;
+    autoUpdater.on("update-available", (info) => {
+      if (mode === "manual") {
+        manualDownloadOwned = false;
+        setState({ kind: "available", version: info.version, downloadUrl: portableDownloadUrl(info.version) });
+      } else {
+        manualDownloadOwned = manualCheckInFlight;
+        setState({ kind: "downloading", version: info.version, percent: 0 });
+      }
+    });
+    autoUpdater.on("download-progress", (progress) => {
+      if (state.kind !== "downloading") return;
+      const percent = Math.max(0, Math.min(100, Math.round(progress.percent ?? 0)));
+      if (state.percent === percent) return;
+      setState({ kind: "downloading", version: state.version, percent });
+    });
+    autoUpdater.on("update-not-available", () => {
+      manualDownloadOwned = false;
+      if (manualCheckInFlight || state.kind === "checking") {
+        setState({ kind: "up-to-date", checkedAt: Date.now() });
+      }
+    });
+    autoUpdater.on("update-downloaded", (info) => {
+      manualDownloadOwned = false;
+      prefs.pending = { version: info.version, lines: summarizeReleaseNotes(info.releaseNotes) };
+      writePrefs();
+      setState({ kind: "ready", version: info.version });
+      e2eNote("downloaded", { to: info.version });
+      // e2e: install = 칩을 누른 것과 같다, quit = 칩을 안 누르고 앱을 끈 것과 같다(끌 때 설치).
+      if (e2eLog()) {
+        if (process.env.OPRN_UPDATE_E2E_ACTION === "quit") app.quit();
+        else installAppUpdate();
+      }
+    });
+    autoUpdater.on("error", (error) => {
+      console.warn("[update] 오류:", error instanceof Error ? error.message : String(error));
+      const reportToUser = manualCheckInFlight || manualDownloadOwned || state.kind === "checking";
+      manualDownloadOwned = false;
+      if (reportToUser) {
+        setState({ kind: "error", message: friendlyUpdateError(error) });
+      } else if (state.kind === "downloading") {
+        setState({ kind: "idle" });
+      }
+    });
+  })().catch((error) => {
+    attachPromise = null;
+    throw error;
   });
-  autoUpdater.on("update-downloaded", (info) => {
-    prefs.pending = { version: info.version, lines: summarizeReleaseNotes(info.releaseNotes) };
-    writePrefs();
-    setState({ kind: "ready", version: info.version });
-    e2eNote("downloaded", { to: info.version });
-    // e2e: install = 칩을 누른 것과 같다, quit = 칩을 안 누르고 앱을 끈 것과 같다(끌 때 설치).
-    if (e2eLog()) {
-      if (process.env.OPRN_UPDATE_E2E_ACTION === "quit") app.quit();
-      else installAppUpdate();
+  return attachPromise;
+}
+
+/** 사용자가 직접 「업데이트 확인」을 눌렀을 때 실행한다. 자동 업데이트 토글과 무관하게 동작한다. */
+export async function checkForAppUpdateNow(): Promise<AppUpdateStatus> {
+  if (state.kind === "downloading") {
+    manualDownloadOwned = true;
+    return status();
+  }
+  if (installing || state.kind === "ready" || state.kind === "checking") {
+    return status();
+  }
+  if (mode === "off") {
+    await checkViaGithubRelease();
+    return status();
+  }
+  try {
+    await attachUpdater();
+  } catch (error) {
+    console.warn("[update] 업데이트 모듈을 읽지 못했습니다:", error);
+    setState({ kind: "error", message: friendlyUpdateError(error) });
+    return status();
+  }
+  if (!updater) {
+    setState({ kind: "error", message: "업데이트 모듈을 초기화하지 못했어요." });
+    return status();
+  }
+  manualCheckInFlight = true;
+  setState({ kind: "checking" });
+  try {
+    await updater.checkForUpdates();
+  } catch (error) {
+    console.warn("[update] 수동 확인 실패:", error instanceof Error ? error.message : String(error));
+    if (state.kind === "checking" || state.kind === "downloading") {
+      setState({ kind: "error", message: friendlyUpdateError(error) });
     }
-  });
-  autoUpdater.on("error", (error) => {
-    console.warn("[update] 오류:", error instanceof Error ? error.message : String(error));
-    if (state.kind === "downloading") setState({ kind: "idle" });
-  });
+  } finally {
+    manualCheckInFlight = false;
+    if (state.kind === "checking") {
+      setState({ kind: "up-to-date", checkedAt: Date.now() });
+    }
+  }
+  return status();
 }
 
 /**
@@ -176,9 +309,12 @@ export function registerAppUpdate(): void {
   });
 
   ipcMain.handle(OPRN_CHANNELS.updateStatus, () => status());
+  ipcMain.handle(OPRN_CHANNELS.updateCheck, () => checkForAppUpdateNow());
   ipcMain.handle(OPRN_CHANNELS.updateInstall, () => installAppUpdate());
   ipcMain.handle(OPRN_CHANNELS.updateOpenDownload, () => {
-    if (state.kind === "available") void shell.openExternal(state.downloadUrl);
+    if (state.kind === "available" && isSafeReleaseDownloadUrl(state.downloadUrl)) {
+      void shell.openExternal(state.downloadUrl);
+    }
   });
   ipcMain.handle(OPRN_CHANNELS.updateTakeWhatsNew, () => {
     const taken = whatsNew;

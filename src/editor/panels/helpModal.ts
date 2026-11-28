@@ -4,6 +4,8 @@
 // 시연 실행/저장 공유, 마지막에 단축키 요약. 왼쪽 목차에서 섹션으로 바로 이동한다.
 import { modalCloseButton } from "@/editor/ui/modal";
 import { APP_VERSION, PRODUCT_BRAND, PRODUCT_TAGLINE, appVersionDetail } from "@/brand";
+import { renderAppUpdateControl } from "@/app/appUpdateChip";
+import { prepareEditorForAppUpdateRestart } from "@/editor/appUpdateRestart";
 import { registerModal, unregisterModal } from "@/editor/ui/modalStack";
 import { el } from "@/util/dom";
 
@@ -268,6 +270,11 @@ export function openHelpModal(sectionId?: string): void {
     dataset: { testid: "help-modal-nav" },
   });
 
+  const updateControl = renderAppUpdateControl({
+    testIdPrefix: "help-update",
+    beforeRestart: prepareEditorForAppUpdateRestart,
+  });
+
   const backdrop = el("div", {
     class: "help-modal-backdrop",
     attrs: { role: "presentation" },
@@ -296,6 +303,7 @@ export function openHelpModal(sectionId?: string): void {
                     attrs: { title: appVersionDetail() },
                     dataset: { testid: "help-modal-version" },
                   }),
+                  ...(updateControl ? [updateControl.element] : []),
                 ],
               }),
               closeButton,
@@ -359,6 +367,7 @@ export function openHelpModal(sectionId?: string): void {
   setActiveNav(GUIDE_SECTIONS[0]?.id ?? "");
 
   function close(): void {
+    updateControl?.dispose();
     observer.disconnect();
     unregisterModal(backdrop);
     backdrop.remove();

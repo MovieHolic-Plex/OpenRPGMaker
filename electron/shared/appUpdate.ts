@@ -10,9 +10,19 @@ export type AppUpdateMode = "auto" | "manual" | "off";
 
 export type AppUpdateState =
   | { readonly kind: "idle" }
-  | { readonly kind: "downloading"; readonly version: string }
+  | { readonly kind: "checking" }
+  | { readonly kind: "up-to-date"; readonly checkedAt: number }
+  | { readonly kind: "downloading"; readonly version: string; readonly percent?: number }
   | { readonly kind: "ready"; readonly version: string }
-  | { readonly kind: "available"; readonly version: string; readonly downloadUrl: string };
+  | { readonly kind: "available"; readonly version: string; readonly downloadUrl: string }
+  | { readonly kind: "error"; readonly message: string };
+
+export interface AppUpdateButtonView {
+  readonly label: string;
+  readonly detail: string;
+  readonly action: "check" | "install" | "download" | "none";
+  readonly disabled: boolean;
+}
 
 export interface AppUpdateStatus {
   readonly mode: AppUpdateMode;
@@ -74,11 +84,116 @@ export function portableDownloadUrl(version: string): string {
   return `https://github.com/${APP_UPDATE_REPO.owner}/${APP_UPDATE_REPO.repo}/releases/download/v${plain}/OPRN.Studio-windows.exe`;
 }
 
+export function releasesLatestPageUrl(): string {
+  return `https://github.com/${APP_UPDATE_REPO.owner}/${APP_UPDATE_REPO.repo}/releases/latest`;
+}
+
+export function isSafeReleaseDownloadUrl(url: string): boolean {
+  return url.startsWith(`https://github.com/${APP_UPDATE_REPO.owner}/${APP_UPDATE_REPO.repo}/releases/`);
+}
+
+function parseSemver(raw: string): { readonly core: readonly [number, number, number]; readonly pre: readonly string[] } | null {
+  const plain = String(raw).trim().replace(/^v/i, "").split("+")[0] ?? "";
+  const match = /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?$/.exec(plain);
+  if (!match) return null;
+  return {
+    core: [Number(match[1]), Number(match[2]), Number(match[3])],
+    pre: match[4] ? match[4].split(".") : [],
+  };
+}
+
+/** a > b 이면 양수, 같으면 0, a < b 이면 음수. semver 형식이 아니면 0. */
+export function compareSemver(a: string, b: string): number {
+  const pa = parseSemver(a);
+  const pb = parseSemver(b);
+  if (!pa || !pb) return 0;
+  for (let i = 0; i < 3; i += 1) {
+    if (pa.core[i] !== pb.core[i]) return pa.core[i] - pb.core[i];
+  }
+  if (pa.pre.length === 0 && pb.pre.length === 0) return 0;
+  if (pa.pre.length === 0) return 1;
+  if (pb.pre.length === 0) return -1;
+  const max = Math.max(pa.pre.length, pb.pre.length);
+  for (let i = 0; i < max; i += 1) {
+    const sa = pa.pre[i];
+    const sb = pb.pre[i];
+    if (sa === undefined) return -1;
+    if (sb === undefined) return 1;
+    const na = /^\d+$/.test(sa) ? Number(sa) : null;
+    const nb = /^\d+$/.test(sb) ? Number(sb) : null;
+    if (na !== null && nb !== null) {
+      if (na !== nb) return na - nb;
+    } else if (na !== null) {
+      return -1;
+    } else if (nb !== null) {
+      return 1;
+    } else if (sa !== sb) {
+      return sa < sb ? -1 : 1;
+    }
+  }
+  return 0;
+}
+
 export function appUpdateChipText(state: AppUpdateState): string | null {
   switch (state.kind) {
     case "ready": return `v${shortVersion(state.version)} 준비됨 · 다시 시작`;
     case "available": return `새 버전 있음 · 내려받기`;
     default: return null;
+  }
+}
+
+export function appUpdateButtonView(status: AppUpdateStatus): AppUpdateButtonView {
+  const { state } = status;
+  switch (state.kind) {
+    case "checking":
+      return { label: "확인 중…", detail: "최신 버전을 확인하고 있어요.", action: "none", disabled: true };
+    case "downloading": {
+      const pct = typeof state.percent === "number" && Number.isFinite(state.percent)
+        ? Math.max(0, Math.min(100, Math.round(state.percent)))
+        : null;
+      return {
+        label: pct !== null ? `내려받는 중 ${pct}%` : "내려받는 중…",
+        detail: `v${shortVersion(state.version)} 을 내려받고 있어요.`,
+        action: "none",
+        disabled: true,
+      };
+    }
+    case "ready":
+      return {
+        label: `v${shortVersion(state.version)} 다시 시작`,
+        detail: `v${shortVersion(state.version)} 이 준비됐어요. 다시 시작하면 바로 적용돼요.`,
+        action: "install",
+        disabled: false,
+      };
+    case "available":
+      return {
+        label: `v${shortVersion(state.version)} 내려받기`,
+        detail: `새 버전 v${shortVersion(state.version)} 이 있어요.`,
+        action: "download",
+        disabled: false,
+      };
+    case "up-to-date":
+      return {
+        label: "업데이트 확인",
+        detail: `최신 버전이에요 (v${shortVersion(status.currentVersion)})`,
+        action: "check",
+        disabled: false,
+      };
+    case "error":
+      return {
+        label: "다시 확인",
+        detail: state.message,
+        action: "check",
+        disabled: false,
+      };
+    case "idle":
+    default:
+      return {
+        label: "업데이트 확인",
+        detail: `현재 버전 v${shortVersion(status.currentVersion)}`,
+        action: "check",
+        disabled: false,
+      };
   }
 }
 

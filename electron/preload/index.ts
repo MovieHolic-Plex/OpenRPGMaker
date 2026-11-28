@@ -195,6 +195,7 @@ const bridge = {
   },
   update: {
     status: invoke(OPRN_CHANNELS.updateStatus),
+    check: invoke(OPRN_CHANNELS.updateCheck),
     install: invoke(OPRN_CHANNELS.updateInstall),
     openDownload: invoke(OPRN_CHANNELS.updateOpenDownload),
     setEnabled: invoke(OPRN_CHANNELS.updateSetEnabled),

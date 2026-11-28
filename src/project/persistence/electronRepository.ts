@@ -169,6 +169,7 @@ export type OprnAgentBridge = {
 
 export type OprnUpdateBridge = {
   status(): Promise<import("../../../electron/shared/appUpdate").AppUpdateStatus>;
+  check(): Promise<import("../../../electron/shared/appUpdate").AppUpdateStatus>;
   install(): Promise<boolean>;
   openDownload(): Promise<void>;
   setEnabled(enabled: boolean): Promise<import("../../../electron/shared/appUpdate").AppUpdateStatus>;

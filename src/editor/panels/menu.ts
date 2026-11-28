@@ -56,7 +56,7 @@ import { downloadBlob } from "@/util/downloadBlob";
 import { clearChildren, el } from "@/util/dom";
 import { createLogger } from "@/util/logger";
 import { toast } from "@/util/toast";
-import { renderAppUpdateChip } from "@/app/appUpdateChip";
+import { appUpdateMenuLabel, renderAppUpdateChip, triggerAppUpdateCheck } from "@/app/appUpdateChip";
 import { prepareEditorForAppUpdateRestart } from "@/editor/appUpdateRestart";
 import { beginGameExport, endGameExport } from "./gameExportNotice";
 import { projectRepository } from "@/project/persistence/repository";
@@ -1089,6 +1089,7 @@ function menuCommands(id: MenuId, topbar: HTMLElement): readonly MenuCommand[] {
       return [
         { ...item("단축키 보기", "menu-help-shortcuts", () => openHelpModal("shortcuts")), shortcut: "?", keys: "?" },
         item("에디터 가이드", "menu-help-guide", () => openHelpModal()),
+        item(appUpdateMenuLabel(), "menu-help-update-check", () => void triggerAppUpdateCheck({ beforeRestart: prepareEditorForAppUpdateRestart })),
         item("정보", "menu-help-about", () => toast(`${PRODUCT_BRAND} — ${t(PRODUCT_TAGLINE)}`, "ok")),
       ];
     case "language": {
