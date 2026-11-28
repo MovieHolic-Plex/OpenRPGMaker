@@ -245,7 +245,7 @@
    "type": "prop",
    "name": "카트 보관대",
    "en": "nested shopping cart corral",
-   "kind": "prop",
+   "kind": "other",
    "w": 2,
    "h": 2,
    "place": "prop",
@@ -275,5 +275,6 @@
    "rule": "슈퍼마켓·대형 점포 입구 안쪽 또는 처마 아래 배치. 아랫줄 2칸 막힘.",
    "pixelSha256": "0935aede29f702df2e223095d16f188a2dcdace214d0b4276ded44b77268e180"
   }
- ]
+ ],
+ "waiver": "carbon-remake-w1-3-2026-11-28"
 }
