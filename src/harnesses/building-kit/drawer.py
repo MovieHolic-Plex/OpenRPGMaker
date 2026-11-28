@@ -21,6 +21,7 @@ import concurrent.futures
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -38,9 +39,15 @@ import projection  # noqa: E402
 REPO = dot.REPO
 SANDBOX = os.environ.get('BUILDING_KIT_DRAWER_DIR') or os.path.join(REPO, 'qa-runs', 'harnesses', 'building-kit', 'drawer')
 DEFAULT_TIMEOUT = int(os.environ.get('BUILDING_KIT_DRAWER_TIMEOUT', '3600'))
-# 사용자 요구(2026-10-22): 타일·건물을 그리거나 까는 에이전트는 Opus 5.5 high. 환경 변수로만 바꾼다.
+# 기본 백엔드(사용자 결정 2026-11-27): codex(gpt-6.2-sol high). --backend claude / neon 선택 가능.
+BACKEND = os.environ.get('BUILDING_KIT_BACKEND', 'codex')
 MODEL = os.environ.get('BUILDING_KIT_DRAWER_MODEL', 'claude-opus-5-5')
 EFFORT = os.environ.get('BUILDING_KIT_DRAWER_EFFORT', 'high')
+CODEX_MODEL = os.environ.get('BUILDING_KIT_CODEX_MODEL', 'gpt-6.2-sol')
+CODEX_EFFORT = os.environ.get('BUILDING_KIT_CODEX_EFFORT', 'high')
+NEON_MODEL = os.environ.get('BUILDING_KIT_NEON_MODEL', 'gemini-4-neon')
+NEON_EFFORT = os.environ.get('BUILDING_KIT_NEON_EFFORT', 'medium')
+PROMPT_PLACEHOLDER = '{prompt}'
 MAX_ATTEMPTS = 3
 CANDIDATES_PER_LINE = 2
 BEGIN = '# >>> {name}'
@@ -269,10 +276,13 @@ def targets(theme, rid):
         for m in ms:
             h, desc = _mass_size(items, m)
             width = max(width, m['x'] + m['cols'])
-            height = max(height, h + max([0] + [-int(ex['at'][1]) for ex in m.get('extras') or []]))
+            height = max(height, h + max([0] + [-int(ex['at'][1]) for ex in m.get('extras') or [] if ex.get('at') is not None]))
             rows.append(f'      질량 {m["id"]} [{m["kind"]}]: {m["cols"]}칸 폭 {m["storeys"]}층 x={m["x"]} depth={m["depth"]} → 세로 {h}칸 ({desc})'
-                        + ''.join(f' · extra {ex["part"]} at {ex["at"]}' + (' on roof' if ex.get('on') == 'roof' else '')
-                                  for ex in m.get('extras') or []))
+                        + ''.join(
+                            f' · extra {ex["part"]} '
+                            + (f'at {ex["at"]}' if ex.get('at') is not None else f'storey={ex.get("storey")} col={ex.get("col", 0)}')
+                            + (f' on {ex["on"]}' if ex.get('on') else '')
+                            for ex in m.get('extras') or []))
         head = (f'  - {b["id"]} "{b.get("title", "")}" ({b.get("use", "")}): 질량 {len(ms)}개 → 가로 {width}칸 × 세로 {height}칸, '
                 + ('기단 행 있음' if any(m.get('base') for m in ms) else '기단 행 없음(벽이 땅에 닿는다)'))
         out.append(head + '\n' + '\n'.join(rows))
@@ -433,10 +443,47 @@ def brief(theme, rid, seed, key, items, line):
 """
 
 def claude_command(sandbox, model=None, effort=None, tools='Read,Write,Edit,Bash(python3:*)'):
-    """타일·건물을 그리거나 까는 에이전트 명령 — 기본 Opus 5.5 high(BUILDING_KIT_DRAWER_MODEL/EFFORT 로만 바꾼다).
+    """타일·건물을 그리거나 까는 Claude 에이전트 명령 — 기본 Opus 5.5 high(BUILDING_KIT_DRAWER_MODEL/EFFORT 로 바꾼다).
     마을에 타일을 까는 에이전트도 이 함수로 띄운다."""
     return [shutil.which('claude') or 'claude', '-p', '--output-format', 'text', '--strict-mcp-config',
             '--allowedTools', tools, '--add-dir', sandbox, '--model', model or MODEL, '--effort', effort or EFFORT]
+
+
+def codex_command(sandbox, model=None, effort=None, sandbox_mode='workspace-write'):
+    """Codex CLI 명령 — 기본 gpt-6.2-sol high(BUILDING_KIT_CODEX_MODEL/EFFORT 로 바꾼다). 프롬프트는 표준 입력('-')."""
+    eff = effort or CODEX_EFFORT
+    return [shutil.which('codex') or os.path.expanduser('~/.local/bin/codex'), 'exec',
+            '-m', model or CODEX_MODEL, '-c', f'model_reasoning_effort="{eff}"',
+            '--skip-git-repo-check', '-s', sandbox_mode, '--add-dir', sandbox, '-C', sandbox, '-']
+
+
+def agy_command(sandbox, model=None, effort=None):
+    """Antigravity(agy) CLI 명령 — 선택 백엔드(기본 gemini-4-neon medium).
+    PROMPT_PLACEHOLDER 자리에 subprocess_runner 가 프롬프트 전문을 꽂아 비대화식(-p)으로 돌린다."""
+    return [shutil.which('agy') or 'agy', '--output-format', 'text', '--dangerously-skip-permissions',
+            '--disable-slash-commands', '--add-dir', sandbox, '--model', model or NEON_MODEL,
+            '--effort', effort or NEON_EFFORT, '-p', PROMPT_PLACEHOLDER]
+
+
+def normalize_backend(backend=None):
+    b = (backend or BACKEND or 'codex').strip().lower()
+    if b in ('codex', 'sol', 'openai'):
+        return 'codex'
+    if b in ('neon', 'agy', 'antigravity'):
+        return 'neon'
+    if b == 'claude':
+        return 'claude'
+    raise ValueError(f'알 수 없는 백엔드: {b} (codex, claude, neon 중 하나)')
+
+
+def agent_command(sandbox, backend=None, model=None, effort=None, tools='Read,Write,Edit,Bash(python3:*)'):
+    b = normalize_backend(backend)
+    if b == 'codex':
+        return codex_command(sandbox, model=model, effort=effort)
+    if b == 'neon':
+        return agy_command(sandbox, model=model, effort=effort)
+    return claude_command(sandbox, model=model, effort=effort, tools=tools)
+
 
 GATEWAY_RETRIES = int(os.environ.get('BUILDING_KIT_DRAWER_GATEWAY_RETRIES', '3'))
 GATEWAY_WAIT = int(os.environ.get('BUILDING_KIT_DRAWER_GATEWAY_WAIT', '120'))
@@ -450,8 +497,14 @@ def is_gateway_error(rc, out):
 def subprocess_runner(cmd, prompt, cwd, timeout, sleep=None):
     import time
     sleep = sleep or time.sleep
+    if isinstance(cmd, (list, tuple)) and PROMPT_PLACEHOLDER in cmd:
+        run_cmd = [prompt if arg == PROMPT_PLACEHOLDER else arg for arg in cmd]
+        run_input = None
+    else:
+        run_cmd = cmd
+        run_input = prompt
     for attempt in range(GATEWAY_RETRIES + 1):
-        r = subprocess.run(cmd, input=prompt, cwd=cwd, capture_output=True, text=True, timeout=timeout)
+        r = subprocess.run(run_cmd, input=run_input, cwd=cwd, capture_output=True, text=True, timeout=timeout)
         if not is_gateway_error(r.returncode, r.stdout) or attempt == GATEWAY_RETRIES:
             return r.returncode, r.stdout or '', r.stderr or ''
         sleep(GATEWAY_WAIT)
@@ -474,7 +527,7 @@ def sandbox_for(theme, rid, key):
               open(os.path.join(path, 'dry.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     return path
 
-def draw_one(theme, rid, key, runner, cmd, timeout, effort):
+def draw_one(theme, rid, key, runner, cmd, timeout, effort, backend=None, model=None):
     line = key[0]
     seed = dot.seed(theme)
     items = draw_items(theme, rid, key, seed)
@@ -484,7 +537,7 @@ def draw_one(theme, rid, key, runner, cmd, timeout, effort):
     sandbox = sandbox_for(theme, rid, key)
     text = brief(theme, rid, seed, key, items, line)
     (open(os.path.join(sandbox, 'BRIEF.md'), 'w', encoding='utf-8')).write(text)
-    command = cmd or claude_command(sandbox, effort=effort)
+    command = cmd or agent_command(sandbox, backend=backend, model=model, effort=effort)
     rc, out, err = runner(command, text, sandbox, timeout)
     (open(os.path.join(sandbox, 'drawer.log'), 'w', encoding='utf-8')).write((out or '') + '\n--- stderr\n' + (err or '')[-4000:])
     sandbox_text = open(os.path.join(sandbox, 'round_module.py'), encoding='utf-8').read()
@@ -493,16 +546,18 @@ def draw_one(theme, rid, key, runner, cmd, timeout, effort):
             'missing': [it['id'] for it in items if it['id'] not in changed],
             'sandbox': os.path.relpath(sandbox, REPO), 'tail': (out or '').strip().splitlines()[-3:]}
 
-def run(theme, rid, lines_=None, jobs=1, cmd=None, runner=None, timeout=None, effort=None):
+def run(theme, rid, lines_=None, jobs=1, cmd=None, runner=None, timeout=None, effort=None, backend=None, model=None):
     path = ensure_module(theme, rid)
     keys = keys_for(theme, rid, lines_)
     if not keys:
         raise SystemExit(f'{theme} {rid}: 그릴 후보 키가 없다 — --lines 로 줄을 고른다')
+    if isinstance(cmd, str):
+        cmd = shlex.split(cmd)
     runner = runner or subprocess_runner
     timeout = timeout or DEFAULT_TIMEOUT
     results = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=max(1, int(jobs))) as ex:
-        futs = [ex.submit(draw_one, theme, rid, k, runner, cmd, timeout, effort) for k in keys]
+        futs = [ex.submit(draw_one, theme, rid, k, runner, cmd, timeout, effort, backend, model) for k in keys]
         for f in futs:
             try:
                 results.append(f.result())

@@ -1,0 +1,208 @@
+{
+  "batch": "pack04_urban_midrise",
+  "kind": "buildings",
+  "palette": "tiledata/jp-city/fable-city/palette.json",
+  "count": 10,
+  "items": [
+    {
+      "id": "mf-bldg-mid_setback_cafe",
+      "name": "셋백 루프 테라스 로스터리 카페 (3F)",
+      "category": "urban-midrise",
+      "w": 7,
+      "h": 8,
+      "size": [
+        112,
+        128
+      ],
+      "file": "mf-bldg-mid_setback_cafe.png",
+      "tags": [
+        "midrise",
+        "setback",
+        "cafe",
+        "roastery",
+        "terrace",
+        "limestone"
+      ]
+    },
+    {
+      "id": "mf-bldg-mid_brick_fireescape",
+      "name": "도심 적벽돌 비상계단 로프트·비스트로 (4F)",
+      "category": "urban-midrise",
+      "w": 6,
+      "h": 9,
+      "size": [
+        96,
+        144
+      ],
+      "file": "mf-bldg-mid_brick_fireescape.png",
+      "tags": [
+        "midrise",
+        "brick",
+        "loft",
+        "fire-escape",
+        "bistro",
+        "water-tower"
+      ]
+    },
+    {
+      "id": "mf-bldg-mid_glass_podium_office",
+      "name": "글래스 포디움 모던 오피스 (4F)",
+      "category": "urban-midrise",
+      "w": 7,
+      "h": 9,
+      "size": [
+        112,
+        144
+      ],
+      "file": "mf-bldg-mid_glass_podium_office.png",
+      "tags": [
+        "midrise",
+        "office",
+        "glass",
+        "podium",
+        "helipad",
+        "corporate"
+      ]
+    },
+    {
+      "id": "mf-bldg-mid_corner_boutique_hotel",
+      "name": "코너 부티크 호텔 (4F)",
+      "category": "urban-midrise",
+      "w": 7,
+      "h": 9,
+      "size": [
+        112,
+        144
+      ],
+      "file": "mf-bldg-mid_corner_boutique_hotel.png",
+      "tags": [
+        "midrise",
+        "hotel",
+        "boutique",
+        "brick",
+        "juliet-balcony",
+        "mansard"
+      ]
+    },
+    {
+      "id": "mf-bldg-mid_art_gallery_skylight",
+      "name": "톱니 천창 현대 미술관 (3F)",
+      "category": "urban-midrise",
+      "w": 7,
+      "h": 7,
+      "size": [
+        112,
+        112
+      ],
+      "file": "mf-bldg-mid_art_gallery_skylight.png",
+      "tags": [
+        "midrise",
+        "gallery",
+        "museum",
+        "skylight",
+        "concrete",
+        "cultural"
+      ]
+    },
+    {
+      "id": "mf-bldg-mid_coworking_balcony",
+      "name": "우드 발코니 코워킹 스튜디오 (3F)",
+      "category": "urban-midrise",
+      "w": 7,
+      "h": 8,
+      "size": [
+        112,
+        128
+      ],
+      "file": "mf-bldg-mid_coworking_balcony.png",
+      "tags": [
+        "midrise",
+        "coworking",
+        "balcony",
+        "timber",
+        "pergola",
+        "solar"
+      ]
+    },
+    {
+      "id": "mf-bldg-mid_jazz_rooftop_lounge",
+      "name": "재즈 클럽 & 루프탑 라운지 바 (3F)",
+      "category": "urban-midrise",
+      "w": 6,
+      "h": 8,
+      "size": [
+        96,
+        128
+      ],
+      "file": "mf-bldg-mid_jazz_rooftop_lounge.png",
+      "tags": [
+        "midrise",
+        "jazz",
+        "music-club",
+        "rooftop-bar",
+        "neon",
+        "slate"
+      ]
+    },
+    {
+      "id": "mf-bldg-mid_fitness_studio",
+      "name": "도심 피트니스 & 요가 스튜디오 (3F)",
+      "category": "urban-midrise",
+      "w": 6,
+      "h": 8,
+      "size": [
+        96,
+        128
+      ],
+      "file": "mf-bldg-mid_fitness_studio.png",
+      "tags": [
+        "midrise",
+        "fitness",
+        "yoga",
+        "studio",
+        "turf-terrace",
+        "glass"
+      ]
+    },
+    {
+      "id": "mf-bldg-mid_bookstore_garden",
+      "name": "루프 정원 플래그십 서점 (3F)",
+      "category": "urban-midrise",
+      "w": 7,
+      "h": 8,
+      "size": [
+        112,
+        128
+      ],
+      "file": "mf-bldg-mid_bookstore_garden.png",
+      "tags": [
+        "midrise",
+        "bookstore",
+        "garden",
+        "terrace",
+        "cultural",
+        "wood"
+      ]
+    },
+    {
+      "id": "mf-bldg-mid_fashion_flagship",
+      "name": "부티크 패션 플래그십 스토어 (3F)",
+      "category": "urban-midrise",
+      "w": 6,
+      "h": 8,
+      "size": [
+        96,
+        128
+      ],
+      "file": "mf-bldg-mid_fashion_flagship.png",
+      "tags": [
+        "midrise",
+        "fashion",
+        "flagship",
+        "boutique",
+        "granite",
+        "penthouse"
+      ]
+    }
+  ]
+}

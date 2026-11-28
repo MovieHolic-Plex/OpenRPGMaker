@@ -396,6 +396,15 @@ class FinishedFlowTest(FinishBase):
         self.assertEqual(cands, {})
         self.assertIn('바탕', why[BID])
 
+    def test_codex_default_and_backend_agent_labels(self):
+        cmd = finish.agent_command('/tmp/sb')
+        self.assertTrue(cmd[0].endswith('codex'))
+        self.assertEqual(cmd[cmd.index('-m') + 1], 'gpt-6.2-sol')
+        self.assertIn('model_reasoning_effort="high"', cmd)
+        self.assertEqual(finish.agent_label(), 'codex/gpt-6.2-sol/high')
+        self.assertEqual(finish.agent_label(backend='neon'), 'agy/gemini-4-neon/medium')
+        self.assertEqual(finish.agent_label(backend='claude'), f'claude/{finish.MODEL}/{finish.EFFORT}')
+
 
 if __name__ == '__main__':
     unittest.main()

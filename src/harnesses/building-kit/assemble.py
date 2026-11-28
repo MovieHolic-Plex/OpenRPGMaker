@@ -90,13 +90,21 @@ DEPTH_ROWS = (2, 6)
 RECEDING_MIN, RECEDING_MAX = 0.50, 0.85
 # 깊이 땅 문법(r7): 박공 정면 지붕을 짧게(오두막·날개 2행, 회관 3행), 날개 최소 4칸.
 DEPTH_GRAMMAR = 'r7'
+RPGMAKER_GRAMMAR = 'r10'
+RM2K_GRAMMAR = 'r11'
 GF_COLS_DEPTH = (4, 6)
+GF_COLS_RM2K = (3, 6)
 GF_DEPTH_ROWS_DEPTH = (2, 3)
+GF_DEPTH_ROWS_RPGMAKER = (1, 3)
+GF_BAND_RPGMAKER = (0.40, 0.75)
 EAVE_DROP = 2
 SHADOW_RGB, SHADOW_ALPHA = (12, 14, 20), 88
 RIDGE_STEP = 6.0
 SLOPE_STEP = 8.0
 ROOF_KINDS = ('roof',)
+EXTRA_SURFACES = ('roof', 'wall')
+WALL_EXTRA_MIN_OVERLAP = 0.60
+WALL_EXTRA_DOOR_MAX_LOWER = 0.25
 
 
 def gf_body_roles(cols):
@@ -131,6 +139,8 @@ def body_roles(m):
 def roof_kind(item):
     if item.get('spire') or item.get('cone'):
         return 'spire'
+    if item.get('flat'):
+        return 'flat'
     return 'pitched' if int(item.get('end', ROOF_END)) == 2 else 'flat'
 
 def _r(code, level, ok, msg):
@@ -163,6 +173,22 @@ def is_depth_grammar(grammar):
     m = re.fullmatch(r'r(\d+)', str(grammar or ''))
     return bool(m) and int(m.group(1)) >= int(DEPTH_GRAMMAR[1:])
 
+def is_rpgmaker_grammar(grammar):
+    """grammar 가 쯔꾸르 정석 지붕 다양화 문법(r10 이상)이면 True — 짧은 앞박공(depth_rows 1)·2층 앞날개·평지붕 혼용."""
+    m = re.fullmatch(r'r(\d+)', str(grammar or ''))
+    return bool(m) and int(m.group(1)) >= int(RPGMAKER_GRAMMAR[1:])
+
+def is_rm2k_grammar(grammar):
+    """grammar 가 RM2000 다층·다축 매스 문법(r11 이상)이면 True — 3칸 좁은 앞박공·벽맞댐 돌출 현관·이색 지붕·층간 기와 차양·포탑."""
+    m = re.fullmatch(r'r(\d+)', str(grammar or ''))
+    return bool(m) and int(m.group(1)) >= int(RM2K_GRAMMAR[1:])
+
+def rpgmaker_roof(theme, rid):
+    return is_rpgmaker_grammar(((dot.seed(theme).get('rounds') or {}).get(rid or '') or {}).get('grammar'))
+
+def rm2k_massing(theme, rid):
+    return is_rm2k_grammar(((dot.seed(theme).get('rounds') or {}).get(rid or '') or {}).get('grammar'))
+
 def depth_ground(theme, rid):
     """판이 깊이 땅 문법(grammar r7+)이면 True — 옛 판(r3~r6)은 A10(한 땅 행)을 그대로 둔다(영수증의 조립 해시가 바뀌지 않게)."""
     return is_depth_grammar(((dot.seed(theme).get('rounds') or {}).get(rid or '') or {}).get('grammar'))
@@ -180,6 +206,10 @@ def round_buildings(theme, rid=None):
         out = [dict(b, _requireGableFront=True) for b in out]
     if depth_ground(theme, rid):
         out = [dict(b, _depthGround=True) for b in out]
+    if rpgmaker_roof(theme, rid):
+        out = [dict(b, _rpgmakerRoof=True) for b in out]
+    if rm2k_massing(theme, rid):
+        out = [dict(b, _rm2kMassing=True) for b in out]
     return out
 
 
@@ -243,6 +273,25 @@ def needs_drawing(recipe, have):
                 out += [f'{item} {r}' for r in roles[item]] if roles.get(item) else [item]
     return list(dict.fromkeys(out))
 
+def _extra_rel_at(plan, ex):
+    """extra 의 (ax, ay) — 질량 왼쪽 위(plan['x'], top) 기준 칸 좌표.
+    on: 'wall' 은 storey(0=맨 위층, -1=1층) + col(+ 선택 dy) 앵커도 지원한다."""
+    if ex.get('storey') is not None:
+        n = len(plan['walls'])
+        si = int(ex['storey'])
+        if si < 0:
+            si += n
+        si = max(0, min(n - 1, si))
+        y_off = plan['rh']
+        for k in range(si):
+            y_off += plan['walls'][k]['h'] + (plan['band_h'] if plan['band_item'] else 0)
+        ax = int(ex.get('col', (ex.get('at') or [0, 0])[0]))
+        ay = y_off + int(ex.get('dy', 0))
+        return ax, ay
+    ax, ay = ex['at']
+    return int(ax), int(ay)
+
+
 def _mass_height(plan):
     return plan['rh'] + sum(w['h'] for w in plan['walls']) + plan['bands'] * plan['band_h'] + plan['base_h']
 
@@ -262,16 +311,19 @@ def _receding_roof(m, items):
             'back_h': back_pc['size'][1], 'front_h': front_pc['size'][1], 'body_h': max(body_h),
             'body_hs': body_h}, None
 
-def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=None):
+def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=None, rpgmaker_roof=None, rm2k_massing=None):
     """items = {항목 id: {'item': 시드 항목, 'img': PIL}}. 반환 {img, kit, checks, pieces, door, height, width, masses}.
 
-    require_gable_front·depth_ground 가 None 이면 레시피의 `_requireGableFront`·`_depthGround`(round_buildings 가 판
-    플래그로 붙인다)를 따른다."""
+    require_gable_front·depth_ground·rpgmaker_roof·rm2k_massing 가 None 이면 레시피의 판 플래그를 따른다."""
     checks = []
     if require_gable_front is None:
         require_gable_front = bool(recipe.get('_requireGableFront'))
     if depth_ground is None:
         depth_ground = bool(recipe.get('_depthGround'))
+    if rpgmaker_roof is None:
+        rpgmaker_roof = bool(recipe.get('_rpgmakerRoof'))
+    if rm2k_massing is None:
+        rm2k_massing = bool(recipe.get('_rm2kMassing'))
     lift = (lambda p: p['depth']) if depth_ground else (lambda p: 0)
     missing = sorted(needed(recipe) - set(items))
     if missing:
@@ -328,7 +380,7 @@ def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=N
                          'roof_kind': roof_kind(roof_item)})
         plan['bands'] = max(0, len(walls) - 1) if band_item else 0
         plan['h'] = _mass_height(plan)
-        plan['rise'] = max([0] + [-int(ex['at'][1]) for ex in plan['extras']])
+        plan['rise'] = max([0] + [-_extra_rel_at(plan, ex)[1] for ex in plan['extras']])
         plan['idx'] = len(plans)
         plans.append(plan)
 
@@ -410,7 +462,7 @@ def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=N
                 put(plan, plan['base'], items[plan['base']]['img'], pc, bx, y, 'base')
                 bx += pc['size'][0]
         for ex in plan['extras']:
-            ax, ay = ex['at']
+            ax, ay = _extra_rel_at(plan, ex)
             for pc in items[ex['part']]['item']['pieces']:
                 r = put(plan, ex['part'], items[ex['part']]['img'], pc,
                         plan['x'] + ax + pc['at'][0], top + ay + pc['at'][1], 'extra')
@@ -528,7 +580,7 @@ def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=N
     for plan in plans:
         tag = plan['m']['id']
         if plan['kind'] in RECEDING:
-            bad3 += _a3_receding(plan, depth_ground)
+            bad3 += _a3_receding(plan, depth_ground, rpgmaker_roof, rm2k_massing)
             continue
         if roof_kind(plan['roof_item']) == 'spire':
             if plan['cols'] not in (1, 2):
@@ -573,9 +625,10 @@ def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=N
         ratio = plan['rh'] / max(plan['h'], 1)
         kind = plan['roof_kind']
         if kind == GABLE_FRONT and depth_ground:
-            lo, hi = gable_front_band()
+            lo, hi = GF_BAND_RPGMAKER if rpgmaker_roof else gable_front_band()
             ok = lo - 1e-9 <= ratio <= hi + 1e-9
-            span = f'{lo:.2f}~{hi:.2f} (박공 정면 — 투영 안내도 오두막·날개·회관 비율 실측, 짧은 지붕)'
+            span = (f'{lo:.2f}~{hi:.2f} (쯔꾸르 정석 박공 — 짧은 사면·2층 벽 허용)' if rpgmaker_roof
+                    else f'{lo:.2f}~{hi:.2f} (박공 정면 — 투영 안내도 오두막·날개·회관 비율 실측, 짧은 지붕)')
         elif kind in RECEDING:
             ok = RECEDING_MIN <= ratio <= RECEDING_MAX
             span = (f'{RECEDING_MIN:.2f}~{RECEDING_MAX:.2f} ({kind} — 물러나는 지붕이 실루엣의 대부분, '
@@ -605,7 +658,7 @@ def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=N
                      f'용마루가 처마 폭의 {band["ridge_min"]:.2f} 이상' if not ridge_bad
                      else f'뾰족한 지붕(용마루 하한 {band["ridge_min"]:.2f}): ' + '; '.join(ridge_bad)))
 
-    checks.append(_a11(plans, pal))
+    checks.append(_a11(plans, pal, allow_mixed_roof=rm2k_massing))
 
     if len(plans) > 1:
         tops = []
@@ -621,16 +674,16 @@ def assemble(recipe, items, pal, theme, require_gable_front=None, depth_ground=N
         checks.append(_a12(gf))
     if any(p['kind'] in RECEDING for p in plans):
         checks.append(_a13(plans, op, owner_plan, owner_kind))
-    if any(r.get('on') == 'roof' for p in plans for r in p.get('extra_recs') or []):
-        checks.append(_a14(plans, roof_px, wall_px))
+    if any(r.get('on') in EXTRA_SURFACES for p in plans for r in p.get('extra_recs') or []):
+        checks.append(_a14(plans, roof_px, wall_px, doors))
     if require_gable_front:
         checks.append(_r('A15', 'FAIL', bool(gf),
                          f'박공 정면 질량 {len(gf)}개' if gf else
                          '이 판은 requireGableFront — 모든 질량이 용마루가 정면과 나란한 지붕(평평한 정면 입면)이다. '
                          'gable_front 질량이 하나 이상 있어야 한다'))
 
-    if depth_ground and wing_mains([p['m'] for p in plans]):
-        checks.append(_a16(plans, op, owner_plan, roof_px))
+    if depth_ground and wing_mains([p['m'] for p in plans], rm2k_massing=rm2k_massing):
+        checks.append(_a16(plans, op, owner_plan, roof_px, rm2k_massing=rm2k_massing))
 
     shadow = cast_shadows(cv.a, plans, owner_plan, owner_kind, height) if depth_ground else np.zeros(op.shape, bool)
     door_at = [d['at'] for d in doors]
@@ -714,12 +767,15 @@ def mass_problems(ms, rows=None):
             bad.append(f'{m["id"]} x {m["x"]} < 0')
     return bad
 
-def wing_mains(ms):
+def wing_mains(ms, rm2k_massing=False):
     """깊이 땅 문법의 날개: 박공 정면 질량 W 마다, W 와 가로로 겹치는 더 뒤 질량 가운데 가장 앞(depth 최소)의 것들(본채).
-    반환 [(W, [본채…])]. 본채가 없는 박공 정면(오두막·회관)은 날개가 아니다."""
+    반환 [(W, [본채…])]. 본채가 없는 박공 정면(오두막·회관)은 날개가 아니다.
+    rm2k_massing(r11+) 에서 back_end 가 gable 인 앞 현관·별채는 뒤 벽에 맞대고(A13 이 지붕 파고듦 차단) valley 날개로 보지 않는다."""
     out = []
     for w in ms:
         if (w.get('kind') or RIDGE_SIDE) != GABLE_FRONT:
+            continue
+        if rm2k_massing and (w.get('back_end') or 'gable') == 'gable':
             continue
         wx0, wx1, wd = int(w.get('x') or 0), int(w.get('x') or 0) + int(w['cols']), int(w.get('depth') or 0)
         behind = [b for b in ms if b is not w and int(b.get('depth') or 0) > wd
@@ -949,7 +1005,7 @@ def _a1_depth(plans, doors, op, height):
               f'문은 가장 앞 질량(depth {front}), 문 앞 칸은 땅' if not bad else '; '.join(bad))
 
 
-def _a16(plans, op, owner_plan, roof_px):
+def _a16(plans, op, owner_plan, roof_px, rm2k_massing=False):
     """날개 이음(사용자 판정 2026-10-22 「ㅜ자 집이 한 채로 안 보인다 — 날개와 본채 사이에 풀이 보이고 날개 뒤 박공이
     본채 벽 앞에서 끝난다」). 날개 W(박공 정면)와 그 본채 B(wing_mains)마다:
       ① 계약: B depth = W depth + 1, W back_end = valley(wing_problems)
@@ -960,7 +1016,7 @@ def _a16(plans, op, owner_plan, roof_px):
     T = dot.T
     by_id = {p['m']['id']: p for p in plans}
     bad, msgs = [], []
-    for wm, mains in wing_mains([p['m'] for p in plans]):
+    for wm, mains in wing_mains([p['m'] for p in plans], rm2k_massing=rm2k_massing):
         W = by_id[wm['id']]
         bad += wing_problems(wm, mains)
         if not W.get('storey_rows'):
@@ -1031,8 +1087,8 @@ def gable_front_band():
     return gable_front_band.cache
 
 
-def _a11(plans, pal):
-    """탑 지붕(첨탑·원뿔) — 탑 몸통보다 좌우 2px 썩만 넓고, 건물 주 지붕과 같은 재료 램프."""
+def _a11(plans, pal, allow_mixed_roof=False):
+    """탑 지붕(첨탑·원뿔) — 탑 몸통보다 좌우 2px 썩만 넓고, 건물 주 지붕과 같은 재료 램프(r11 이색 지붕 문법은 혼용 허용)."""
     bad = []
     main = max((p for p in plans if roof_kind(p['roof_item']) != 'spire'),
                key=lambda p: p['cols'] * p['h'], default=None)
@@ -1054,24 +1110,28 @@ def _a11(plans, pal):
                 bad.append(f'{tag} {kindname} 폭 {width}px > 탑 몸통 '
                            f'{plan["cols"] * dot.T}px + 4px')
             ramp = G.dominant_ramp(strip, pal)
-            if main_ramp and ramp != main_ramp:
+            if not allow_mixed_roof and main_ramp and ramp != main_ramp:
                 bad.append(f'{tag} 탑 지붕 재료 램프 {ramp} ≠ 주 지붕 {main_ramp}')
     return _r('A11', 'FAIL', not bad,
               '탑 지붕은 탑 몸통 + 좌우 2px 이내이고 주 지붕과 같은 램프' if not bad else '; '.join(bad))
 
 
-def receding_limits(kind, depth_ground=False):
-    """(폭 범위, depth_rows 범위). 깊이 땅 문법의 박공 정면은 폭 4~6·depth_rows 2~3(짧은 지붕, 넓은 날개)."""
+def receding_limits(kind, depth_ground=False, rpgmaker_roof=False, rm2k_massing=False):
+    """(폭 범위, depth_rows 범위). 깊이 땅 문법의 박공 정면은 폭 4~6·depth_rows 2~3(r10 은 1~3, r11 은 폭 3~6)."""
     if kind == GABLE_FRONT:
+        if rm2k_massing:
+            return GF_COLS_RM2K, GF_DEPTH_ROWS_RPGMAKER
+        if rpgmaker_roof:
+            return GF_COLS_DEPTH, GF_DEPTH_ROWS_RPGMAKER
         return (GF_COLS_DEPTH, GF_DEPTH_ROWS_DEPTH) if depth_ground else (GF_COLS, DEPTH_ROWS)
     return LEAN_COLS, DEPTH_ROWS
 
 
-def _a3_receding(plan, depth_ground=False):
+def _a3_receding(plan, depth_ground=False, rpgmaker_roof=False, rm2k_massing=False):
     m = plan['m']
     tag = m['id']
     bad = []
-    (lo, hi), (d0, d1) = receding_limits(plan['kind'], depth_ground)
+    (lo, hi), (d0, d1) = receding_limits(plan['kind'], depth_ground, rpgmaker_roof, rm2k_massing)
     if not lo <= plan['cols'] <= hi:
         bad.append(f'{tag} {plan["kind"]} 폭 {plan["cols"]}칸 — {lo}~{hi}칸')
     if not d0 <= m['depth_rows'] <= d1:
@@ -1210,33 +1270,75 @@ def _a13(plans, op, owner_plan, owner_kind):
     return _r('A13', 'FAIL', not bad, '; '.join(msgs) if not bad else '; '.join(bad))
 
 
-def _a14(plans, roof_px, wall_px):
-    bad, n = [], 0
+def _a14(plans, roof_px, wall_px, doors=()):
+    bad, n_roof, n_wall = [], 0, 0
+    door_boxes = {}
+    for d in doors:
+        rec = d['rec']
+        dx0, dy0 = rec['at'][0] * dot.T, rec['at'][1] * dot.T
+        dw, dh = rec['size'][0] * dot.T, rec['size'][1] * dot.T
+        # 문짝 아랫부분(상단 상인방 40% 아래)은 어닝·간판이 가리면 안 된다
+        door_boxes.setdefault(d['mass'], []).append((dx0, dy0 + int(dh * 0.4), dx0 + dw, dy0 + dh))
     for plan in plans:
+        rp, wp = roof_px[plan['idx']], wall_px[plan['idx']]
         for r in plan.get('extra_recs') or []:
-            if r.get('on') != 'roof':
+            surf = r.get('on')
+            if surf not in EXTRA_SURFACES:
                 continue
-            n += 1
             a = np.array(r['crop'].convert('RGBA'))
             eop = a[:, :, 3] == 255
             gx0, gy0 = r['at'][0] * dot.T, r['at'][1] * dot.T
-            rp, wp = roof_px[plan['idx']], wall_px[plan['idx']]
-            off, on_wall = 0, 0
-            ys = np.nonzero(eop.any(axis=1))[0]
-            base = int(ys.max()) if len(ys) else None
-            for x in (np.nonzero(eop[base])[0] if base is not None else []):
-                gy, gx = gy0 + base, gx0 + int(x)
-                if not (0 <= gy < rp.shape[0] and 0 <= gx < rp.shape[1]) or not rp[gy, gx]:
-                    off += 1
-            for y, x in zip(*np.nonzero(eop)):
-                gy, gx = gy0 + int(y), gx0 + int(x)
-                if 0 <= gy < wp.shape[0] and 0 <= gx < wp.shape[1] and wp[gy, gx]:
-                    on_wall += 1
-            if off:
-                bad.append(f'{plan["m"]["id"]} {r["item"]} 밑동(맨 아래 행) {off}px 이 그 질량 지붕 면 위가 아니다(떠 있다)')
-            if on_wall:
-                bad.append(f'{plan["m"]["id"]} {r["item"]} 화소 {on_wall}개가 벽에 걸친다')
-    return _r('A14', 'FAIL', not bad, f'지붕 위 부속 {n}개가 지붕 면에 얹힌다' if not bad else '; '.join(bad))
+            if surf == 'roof':
+                n_roof += 1
+                off, on_wall = 0, 0
+                ys = np.nonzero(eop.any(axis=1))[0]
+                base = int(ys.max()) if len(ys) else None
+                for x in (np.nonzero(eop[base])[0] if base is not None else []):
+                    gy, gx = gy0 + base, gx0 + int(x)
+                    if not (0 <= gy < rp.shape[0] and 0 <= gx < rp.shape[1]) or not rp[gy, gx]:
+                        off += 1
+                for y, x in zip(*np.nonzero(eop)):
+                    gy, gx = gy0 + int(y), gx0 + int(x)
+                    if 0 <= gy < wp.shape[0] and 0 <= gx < wp.shape[1] and wp[gy, gx]:
+                        on_wall += 1
+                if off:
+                    bad.append(f'{plan["m"]["id"]} {r["item"]} 밑동(맨 아래 행) {off}px 이 그 질량 지붕 면 위가 아니다(떠 있다)')
+                if on_wall:
+                    bad.append(f'{plan["m"]["id"]} {r["item"]} 화소 {on_wall}개가 벽에 걸친다')
+            else:
+                n_wall += 1
+                tot = int(eop.sum())
+                if tot == 0:
+                    bad.append(f'{plan["m"]["id"]} {r["item"]} 불투명 화소가 없다')
+                    continue
+                on_w, out_bounds = 0, 0
+                door_hit = 0
+                dboxes = door_boxes.get(plan['m']['id'], ())
+                for y, x in zip(*np.nonzero(eop)):
+                    gy, gx = gy0 + int(y), gx0 + int(x)
+                    if not (0 <= gy < wp.shape[0] and 0 <= gx < wp.shape[1]):
+                        out_bounds += 1
+                        continue
+                    if wp[gy, gx]:
+                        on_w += 1
+                    for bx0, by0, bx1, by1 in dboxes:
+                        if bx0 <= gx < bx1 and by0 <= gy < by1:
+                            door_hit += 1
+                if out_bounds:
+                    bad.append(f'{plan["m"]["id"]} {r["item"]} 화소 {out_bounds}개가 그림 밖으로 나간다')
+                frac = on_w / tot
+                if frac < WALL_EXTRA_MIN_OVERLAP:
+                    bad.append(f'{plan["m"]["id"]} {r["item"]} 벽 겹침 {frac:.0%} < {WALL_EXTRA_MIN_OVERLAP:.0%}(벽에서 떴다)')
+                if door_hit:
+                    d_area = sum((bx1 - bx0) * (by1 - by0) for bx0, by0, bx1, by1 in dboxes)
+                    if door_hit / max(d_area, 1) > WALL_EXTRA_DOOR_MAX_LOWER:
+                        bad.append(f'{plan["m"]["id"]} {r["item"]} 이 문짝 하단을 가린다({door_hit}px)')
+    parts_msg = []
+    if n_roof:
+        parts_msg.append(f'지붕 위 부속 {n_roof}개')
+    if n_wall:
+        parts_msg.append(f'벽 부속 {n_wall}개')
+    return _r('A14', 'FAIL', not bad, f'{" · ".join(parts_msg)} 부착 통과' if not bad else '; '.join(bad))
 
 
 def _a7(plans, multi, depth_ground=False):
@@ -1253,10 +1355,12 @@ def _a5(placed):
     bad = []
     pairs = 0
     for p in placed:
+        if p.get('kind') == 'extra':
+            continue
         x0, y0 = p['at']
         x1, y1 = x0 + p['size'][0], y0 + p['size'][1]
         for q in placed:
-            if q is p:
+            if q is p or q.get('kind') == 'extra':
                 continue
             qx, qy = q['at']
             if qy != y1:
@@ -1289,9 +1393,14 @@ def _kit(recipe, plans, placed, width, height, doors, depth_ground=False):
                 X, Y = x0 + i, y0 + j
                 if not (0 <= X < width and 0 <= Y < height):
                     continue
-                if p['kind'] == 'roof':
+                if p['kind'] == 'roof' or (p['kind'] == 'extra' and p.get('on') == 'roof'):
                     upper[Y][X] = '★'
-                    walk[Y][X] = '★'
+                    if walk[Y][X] != 'X':
+                        walk[Y][X] = '★'
+                elif p['kind'] == 'extra':
+                    if walk[Y][X] == '.':
+                        lower[Y][X] = 'X'
+                        walk[Y][X] = 'X'
                 else:
                     lower[Y][X] = 'X'
                     walk[Y][X] = 'X'

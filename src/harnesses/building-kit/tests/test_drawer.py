@@ -186,5 +186,38 @@ class DrawerTest(unittest.TestCase):
         self.assertEqual(drawer.DEFAULT_TIMEOUT, int(os.environ.get('BUILDING_KIT_DRAWER_TIMEOUT', '3600')))
         self.assertEqual(drawer.DEFAULT_TIMEOUT, 3600)
 
+    def test_codex_default_and_neon_backend_commands(self):
+        self.assertEqual(drawer.BACKEND, 'codex')
+        self.assertEqual(drawer.CODEX_MODEL, 'gpt-6.2-sol')
+        self.assertEqual(drawer.CODEX_EFFORT, 'high')
+        ccmd = drawer.agent_command('/tmp/sandbox')
+        self.assertTrue(ccmd[0].endswith('codex'))
+        self.assertEqual(ccmd[1], 'exec')
+        self.assertEqual(ccmd[ccmd.index('-m') + 1], 'gpt-6.2-sol')
+        self.assertIn('model_reasoning_effort="high"', ccmd)
+        self.assertEqual(ccmd[-1], '-')
+
+        cmd = drawer.agent_command('/tmp/sandbox', backend='neon')
+        self.assertTrue(cmd[0].endswith('agy'))
+        self.assertEqual(cmd[cmd.index('--model') + 1], drawer.NEON_MODEL)
+        self.assertEqual(cmd[cmd.index('--effort') + 1], drawer.NEON_EFFORT)
+        self.assertIn('/tmp/sandbox', cmd)
+        self.assertEqual(cmd[cmd.index('-p') + 1], drawer.PROMPT_PLACEHOLDER)
+        seen = {}
+        orig = drawer.subprocess.run
+        def fake_run(c, **kw):
+            seen['cmd'] = c
+            seen['input'] = kw.get('input')
+            return type('R', (), {'returncode': 0, 'stdout': 'ok', 'stderr': ''})()
+        drawer.subprocess.run = fake_run
+        try:
+            rc, out, _ = drawer.subprocess_runner(cmd, 'hello prompt', '/tmp/sandbox', 30)
+        finally:
+            drawer.subprocess.run = orig
+        self.assertEqual((rc, out), (0, 'ok'))
+        self.assertIsNone(seen['input'])
+        self.assertEqual(seen['cmd'][seen['cmd'].index('-p') + 1], 'hello prompt')
+        self.assertNotIn(drawer.PROMPT_PLACEHOLDER, seen['cmd'])
+
 if __name__ == '__main__':
     unittest.main()

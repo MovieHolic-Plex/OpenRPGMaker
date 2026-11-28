@@ -1,0 +1,189 @@
+{
+  "batch": "pack09_park_recreation",
+  "kind": "buildings",
+  "items": [
+    {
+      "id": "mf-bldg-pk_glass_conservatory",
+      "name": "대형 식물원 유리 온실 (빅토리안 돔)",
+      "category": "park_recreation",
+      "w": 8,
+      "h": 7,
+      "pxW": 128,
+      "pxH": 112,
+      "passableTopRows": 2,
+      "tags": [
+        "park",
+        "botanical",
+        "conservatory",
+        "greenhouse",
+        "glass-dome",
+        "landmark"
+      ]
+    },
+    {
+      "id": "mf-bldg-pk_amphitheater",
+      "name": "야외 음악당·음향 셸 파빌리온",
+      "category": "park_recreation",
+      "w": 9,
+      "h": 6,
+      "pxW": 144,
+      "pxH": 96,
+      "passableTopRows": 2,
+      "tags": [
+        "park",
+        "amphitheater",
+        "bandstand",
+        "stage",
+        "culture",
+        "music"
+      ]
+    },
+    {
+      "id": "mf-bldg-pk_lakeside_boathouse",
+      "name": "호숫가 목조 보트하우스·보트 대여소",
+      "category": "park_recreation",
+      "w": 7,
+      "h": 6,
+      "pxW": 112,
+      "pxH": 96,
+      "passableTopRows": 2,
+      "tags": [
+        "park",
+        "boathouse",
+        "lake",
+        "dock",
+        "swan-boat",
+        "recreation"
+      ]
+    },
+    {
+      "id": "mf-bldg-pk_community_center",
+      "name": "2층 주민 문화·커뮤니티 센터 (옥상 정원)",
+      "category": "park_recreation",
+      "w": 8,
+      "h": 7,
+      "pxW": 128,
+      "pxH": 112,
+      "passableTopRows": 2,
+      "tags": [
+        "park",
+        "community-center",
+        "culture",
+        "roof-garden",
+        "skylight",
+        "louvers"
+      ]
+    },
+    {
+      "id": "mf-bldg-pk_onsen_steam_terrace",
+      "name": "도심 온천·족욕 테라스 정자",
+      "category": "park_recreation",
+      "w": 7,
+      "h": 6,
+      "pxW": 112,
+      "pxH": 96,
+      "passableTopRows": 2,
+      "tags": [
+        "park",
+        "onsen",
+        "hot-spring",
+        "foot-bath",
+        "steam",
+        "shoji",
+        "recreation"
+      ]
+    },
+    {
+      "id": "mf-bldg-pk_urban_greenhouse",
+      "name": "도심 텃밭 원예 창고·목조 온실",
+      "category": "park_recreation",
+      "w": 6,
+      "h": 5,
+      "pxW": 96,
+      "pxH": 80,
+      "passableTopRows": 2,
+      "tags": [
+        "park",
+        "greenhouse",
+        "garden",
+        "potting-shed",
+        "seedlings",
+        "recreation"
+      ]
+    },
+    {
+      "id": "mf-bldg-pk_shrine_gate",
+      "name": "도심 공원 신사 본전·주홍 도리이",
+      "category": "park_recreation",
+      "w": 7,
+      "h": 6,
+      "pxW": 112,
+      "pxH": 96,
+      "passableTopRows": 2,
+      "tags": [
+        "park",
+        "shrine",
+        "torii",
+        "sanctuary",
+        "kawara",
+        "culture"
+      ]
+    },
+    {
+      "id": "mf-bldg-pk_modern_chapel",
+      "name": "공원 현대식 석조·스테인드글라스 채플",
+      "category": "park_recreation",
+      "w": 6,
+      "h": 8,
+      "pxW": 96,
+      "pxH": 128,
+      "passableTopRows": 2,
+      "tags": [
+        "park",
+        "chapel",
+        "wedding",
+        "stained-glass",
+        "spire",
+        "culture"
+      ]
+    },
+    {
+      "id": "mf-bldg-pk_rooftop_glass_bistro",
+      "name": "공원 유리온실 가든 비스트로·테라스",
+      "category": "park_recreation",
+      "w": 7,
+      "h": 6,
+      "pxW": 112,
+      "pxH": 96,
+      "passableTopRows": 2,
+      "tags": [
+        "park",
+        "bistro",
+        "cafe",
+        "glasshouse",
+        "patio",
+        "olive-tree",
+        "recreation"
+      ]
+    },
+    {
+      "id": "mf-bldg-pk_tennis_clubhouse",
+      "name": "화이트우드·벽돌 테니스 클럽하우스",
+      "category": "park_recreation",
+      "w": 7,
+      "h": 6,
+      "pxW": 112,
+      "pxH": 96,
+      "passableTopRows": 2,
+      "tags": [
+        "park",
+        "tennis",
+        "clubhouse",
+        "sports",
+        "veranda",
+        "cupola",
+        "recreation"
+      ]
+    }
+  ]
+}

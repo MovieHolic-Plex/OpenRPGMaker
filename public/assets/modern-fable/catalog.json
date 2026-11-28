@@ -1,0 +1,4610 @@
+{
+  "ground": [
+    {
+      "id": "mf-gnd-asphalt-a",
+      "name": "아스팔트 차도 A",
+      "category": "ground",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        1
+      ]
+    },
+    {
+      "id": "mf-gnd-asphalt-b",
+      "name": "아스팔트 차도 B",
+      "category": "ground",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        2
+      ]
+    },
+    {
+      "id": "mf-gnd-asphalt-patch",
+      "name": "아스팔트 보수 패치",
+      "category": "ground",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        3
+      ]
+    },
+    {
+      "id": "mf-gnd-sidewalk-a",
+      "name": "보도 블록 판석 A",
+      "category": "ground",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        4
+      ]
+    },
+    {
+      "id": "mf-gnd-sidewalk-b",
+      "name": "보도 블록 판석 B",
+      "category": "ground",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        5
+      ]
+    },
+    {
+      "id": "mf-gnd-sidewalk-brick",
+      "name": "인터로킹 벽돌 보도",
+      "category": "ground",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        6
+      ]
+    },
+    {
+      "id": "mf-gnd-forecourt",
+      "name": "상가 앞마당 테라코타 판석",
+      "category": "ground",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        7
+      ]
+    },
+    {
+      "id": "mf-gnd-alley",
+      "name": "골목 생활도로 포장",
+      "category": "ground",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        8
+      ]
+    },
+    {
+      "id": "mf-gnd-lawn-a",
+      "name": "공원 잔디 A",
+      "category": "ground",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        9
+      ]
+    },
+    {
+      "id": "mf-gnd-lawn-b",
+      "name": "공원 잔디 꽃밭",
+      "category": "ground",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        10
+      ]
+    },
+    {
+      "id": "mf-gnd-earth",
+      "name": "운동장·마당 흙바닥",
+      "category": "ground",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        11
+      ]
+    },
+    {
+      "id": "mf-gnd-water",
+      "name": "운하·하천 수면",
+      "category": "ground",
+      "w": 16,
+      "h": 16,
+      "passable": false,
+      "tileIds": [
+        12
+      ]
+    },
+    {
+      "id": "mf-curb-s",
+      "name": "보도 남측 연석·측구",
+      "category": "floor",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        13
+      ]
+    },
+    {
+      "id": "mf-curb-n",
+      "name": "보도 북측 연석",
+      "category": "floor",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        14
+      ]
+    },
+    {
+      "id": "mf-curb-e",
+      "name": "보도 동측 연석",
+      "category": "floor",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        15
+      ]
+    },
+    {
+      "id": "mf-curb-w",
+      "name": "보도 서측 연석",
+      "category": "floor",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        16
+      ]
+    },
+    {
+      "id": "mf-mark-zebra-h",
+      "name": "횡단보도 가로",
+      "category": "floor",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        17
+      ]
+    },
+    {
+      "id": "mf-mark-zebra-v",
+      "name": "횡단보도 세로",
+      "category": "floor",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        18
+      ]
+    },
+    {
+      "id": "mf-mark-yellow-h",
+      "name": "황색 중앙선 가로",
+      "category": "floor",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        19
+      ]
+    },
+    {
+      "id": "mf-mark-yellow-v",
+      "name": "황색 중앙선 세로",
+      "category": "floor",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        20
+      ]
+    },
+    {
+      "id": "mf-mark-dash-h",
+      "name": "백색 차선 점선",
+      "category": "floor",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        21
+      ]
+    },
+    {
+      "id": "mf-mark-stop",
+      "name": "정지선",
+      "category": "floor",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        22
+      ]
+    },
+    {
+      "id": "mf-floor-tactile",
+      "name": "노란 점자블록",
+      "category": "floor",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        23
+      ]
+    },
+    {
+      "id": "mf-floor-manhole",
+      "name": "철제 맨홀 뚜껑",
+      "category": "floor",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        24
+      ]
+    },
+    {
+      "id": "mf-floor-grate",
+      "name": "도로 배수구 그레이팅",
+      "category": "floor",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        25
+      ]
+    },
+    {
+      "id": "mf-shade-south",
+      "name": "건물 발치 그늘",
+      "category": "shade",
+      "w": 16,
+      "h": 16,
+      "passable": true,
+      "tileIds": [
+        26
+      ]
+    },
+    {
+      "id": "mf-bank-canal",
+      "name": "하천·운하 석축 둑",
+      "category": "bank",
+      "w": 16,
+      "h": 16,
+      "passable": false,
+      "tileIds": [
+        27
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "id": "mf-obj-utility_pole",
+      "name": "전봇대 (변압기·애자)",
+      "category": "street-infra",
+      "batch": "batch_01",
+      "w": 16,
+      "h": 64,
+      "wTiles": 1,
+      "hTiles": 4,
+      "lightAnchors": [],
+      "tags": [
+        "street-infra",
+        "pole",
+        "power",
+        "urban"
+      ],
+      "kitId": "mf-obj-utility_pole"
+    },
+    {
+      "id": "mf-obj-streetlamp_single",
+      "name": "단등 가로등",
+      "category": "street-infra",
+      "batch": "batch_01",
+      "w": 16,
+      "h": 48,
+      "wTiles": 1,
+      "hTiles": 3,
+      "lightAnchors": [
+        [
+          11,
+          9
+        ]
+      ],
+      "tags": [
+        "street-infra",
+        "lamp",
+        "lighting",
+        "urban"
+      ],
+      "kitId": "mf-obj-streetlamp_single"
+    },
+    {
+      "id": "mf-obj-streetlamp_double",
+      "name": "대로 쌍등 가로등",
+      "category": "street-infra",
+      "batch": "batch_01",
+      "w": 32,
+      "h": 48,
+      "wTiles": 2,
+      "hTiles": 3,
+      "lightAnchors": [
+        [
+          16,
+          9
+        ]
+      ],
+      "tags": [
+        "street-infra",
+        "lamp",
+        "lighting",
+        "avenue"
+      ],
+      "kitId": "mf-obj-streetlamp_double"
+    },
+    {
+      "id": "mf-obj-traffic_signal",
+      "name": "교차로 3색 신호등",
+      "category": "street-infra",
+      "batch": "batch_01",
+      "w": 32,
+      "h": 48,
+      "wTiles": 2,
+      "hTiles": 3,
+      "lightAnchors": [],
+      "tags": [
+        "street-infra",
+        "traffic",
+        "signal",
+        "crosswalk"
+      ],
+      "kitId": "mf-obj-traffic_signal"
+    },
+    {
+      "id": "mf-obj-ped_signal",
+      "name": "보행자 신호등",
+      "category": "street-infra",
+      "batch": "batch_01",
+      "w": 16,
+      "h": 48,
+      "wTiles": 1,
+      "hTiles": 3,
+      "lightAnchors": [],
+      "tags": [
+        "street-infra",
+        "traffic",
+        "pedestrian",
+        "crosswalk"
+      ],
+      "kitId": "mf-obj-ped_signal"
+    },
+    {
+      "id": "mf-obj-elec_box",
+      "name": "거리 배전함",
+      "category": "street-infra",
+      "batch": "batch_01",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "street-infra",
+        "utility",
+        "transformer",
+        "sidewalk"
+      ],
+      "kitId": "mf-obj-elec_box"
+    },
+    {
+      "id": "mf-obj-fire_hydrant",
+      "name": "붉은 소화전",
+      "category": "street-infra",
+      "batch": "batch_01",
+      "w": 16,
+      "h": 16,
+      "wTiles": 1,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "street-infra",
+        "hydrant",
+        "safety",
+        "sidewalk"
+      ],
+      "kitId": "mf-obj-fire_hydrant"
+    },
+    {
+      "id": "mf-obj-convex_mirror",
+      "name": "도로 반사경",
+      "category": "street-infra",
+      "batch": "batch_01",
+      "w": 16,
+      "h": 32,
+      "wTiles": 1,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "street-infra",
+        "mirror",
+        "safety",
+        "corner"
+      ],
+      "kitId": "mf-obj-convex_mirror"
+    },
+    {
+      "id": "mf-obj-bus_shelter",
+      "name": "유리 버스 정류장 쉘터",
+      "category": "street-infra",
+      "batch": "batch_01",
+      "w": 64,
+      "h": 48,
+      "wTiles": 4,
+      "hTiles": 3,
+      "lightAnchors": [
+        [
+          48,
+          24
+        ]
+      ],
+      "tags": [
+        "street-infra",
+        "bus",
+        "transit",
+        "shelter",
+        "bench"
+      ],
+      "kitId": "mf-obj-bus_shelter"
+    },
+    {
+      "id": "mf-obj-subway_pylon",
+      "name": "지하철 출구 안내 기둥",
+      "category": "street-infra",
+      "batch": "batch_01",
+      "w": 16,
+      "h": 48,
+      "wTiles": 1,
+      "hTiles": 3,
+      "lightAnchors": [
+        [
+          8,
+          10
+        ]
+      ],
+      "tags": [
+        "street-infra",
+        "subway",
+        "metro",
+        "transit",
+        "pylon"
+      ],
+      "kitId": "mf-obj-subway_pylon"
+    },
+    {
+      "id": "mf-obj-aframe_chalkboard",
+      "name": "카페 A형 칠판 입간판",
+      "category": "signage-lighting",
+      "batch": "batch_01",
+      "w": 16,
+      "h": 16,
+      "wTiles": 1,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "signage-lighting",
+        "cafe",
+        "chalkboard",
+        "sidewalk"
+      ],
+      "kitId": "mf-obj-aframe_chalkboard"
+    },
+    {
+      "id": "mf-obj-neon_blade_cafe",
+      "name": "카페·바 세로 네온 간판",
+      "category": "signage-lighting",
+      "batch": "batch_01",
+      "w": 16,
+      "h": 32,
+      "wTiles": 1,
+      "hTiles": 2,
+      "lightAnchors": [
+        [
+          10,
+          13
+        ]
+      ],
+      "tags": [
+        "signage-lighting",
+        "neon",
+        "cafe",
+        "sign"
+      ],
+      "kitId": "mf-obj-neon_blade_cafe"
+    },
+    {
+      "id": "mf-obj-conv_pylon_sign",
+      "name": "24시 편의점 지주 간판",
+      "category": "signage-lighting",
+      "batch": "batch_01",
+      "w": 16,
+      "h": 48,
+      "wTiles": 1,
+      "hTiles": 3,
+      "lightAnchors": [
+        [
+          8,
+          13
+        ]
+      ],
+      "tags": [
+        "signage-lighting",
+        "convenience",
+        "pylon",
+        "sign"
+      ],
+      "kitId": "mf-obj-conv_pylon_sign"
+    },
+    {
+      "id": "mf-obj-lantern_stand",
+      "name": "목제 초롱 등불 스탠드",
+      "category": "signage-lighting",
+      "batch": "batch_01",
+      "w": 16,
+      "h": 32,
+      "wTiles": 1,
+      "hTiles": 2,
+      "lightAnchors": [
+        [
+          10,
+          17
+        ]
+      ],
+      "tags": [
+        "signage-lighting",
+        "lantern",
+        "traditional",
+        "lighting"
+      ],
+      "kitId": "mf-obj-lantern_stand"
+    },
+    {
+      "id": "mf-obj-menu_board",
+      "name": "조명 식당 메뉴 진열대",
+      "category": "signage-lighting",
+      "batch": "batch_01",
+      "w": 16,
+      "h": 32,
+      "wTiles": 1,
+      "hTiles": 2,
+      "lightAnchors": [
+        [
+          8,
+          14
+        ]
+      ],
+      "tags": [
+        "signage-lighting",
+        "menu",
+        "restaurant",
+        "display"
+      ],
+      "kitId": "mf-obj-menu_board"
+    },
+    {
+      "id": "mf-obj-pharmacy_cross",
+      "name": "약국 LED 녹색 십자 간판",
+      "category": "signage-lighting",
+      "batch": "batch_01",
+      "w": 16,
+      "h": 32,
+      "wTiles": 1,
+      "hTiles": 2,
+      "lightAnchors": [
+        [
+          10,
+          12
+        ]
+      ],
+      "tags": [
+        "signage-lighting",
+        "pharmacy",
+        "led",
+        "sign"
+      ],
+      "kitId": "mf-obj-pharmacy_cross"
+    },
+    {
+      "id": "mf-obj-barber_pole",
+      "name": "이발소 회전 싸인볼",
+      "category": "signage-lighting",
+      "batch": "batch_01",
+      "w": 16,
+      "h": 32,
+      "wTiles": 1,
+      "hTiles": 2,
+      "lightAnchors": [
+        [
+          8,
+          14
+        ]
+      ],
+      "tags": [
+        "signage-lighting",
+        "barber",
+        "retro",
+        "sign"
+      ],
+      "kitId": "mf-obj-barber_pole"
+    },
+    {
+      "id": "mf-obj-street_name_sign",
+      "name": "도로명 이정표 기둥",
+      "category": "signage-lighting",
+      "batch": "batch_01",
+      "w": 32,
+      "h": 48,
+      "wTiles": 2,
+      "hTiles": 3,
+      "lightAnchors": [],
+      "tags": [
+        "signage-lighting",
+        "road-sign",
+        "directional",
+        "street"
+      ],
+      "kitId": "mf-obj-street_name_sign"
+    },
+    {
+      "id": "mf-obj-kr_shade_umbrella",
+      "name": "횡단보도 접이식 그늘막",
+      "category": "signage-lighting",
+      "batch": "batch_01",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "signage-lighting",
+        "parasol",
+        "crosswalk",
+        "korea"
+      ],
+      "kitId": "mf-obj-kr_shade_umbrella"
+    },
+    {
+      "id": "mf-obj-construction_barrier",
+      "name": "공사 안전 바리케이드·라바콘",
+      "category": "signage-lighting",
+      "batch": "batch_01",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [
+        [
+          16,
+          2
+        ]
+      ],
+      "tags": [
+        "signage-lighting",
+        "construction",
+        "barrier",
+        "cone"
+      ],
+      "kitId": "mf-obj-construction_barrier"
+    },
+    {
+      "id": "mf-obj-vending_drink_lit",
+      "name": "음료 자판기 (점등)",
+      "category": "vending-kiosks",
+      "batch": "batch_02",
+      "w": 16,
+      "h": 32,
+      "wTiles": 1,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "vending",
+        "kiosk",
+        "street",
+        "lit",
+        "drink"
+      ],
+      "kitId": "mf-obj-vending_drink_lit"
+    },
+    {
+      "id": "mf-obj-vending_snack",
+      "name": "스낵·커피 자판기",
+      "category": "vending-kiosks",
+      "batch": "batch_02",
+      "w": 16,
+      "h": 32,
+      "wTiles": 1,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "vending",
+        "kiosk",
+        "street",
+        "lit",
+        "snack"
+      ],
+      "kitId": "mf-obj-vending_snack"
+    },
+    {
+      "id": "mf-obj-gacha_row",
+      "name": "캡슐토이 가챠 4열",
+      "category": "vending-kiosks",
+      "batch": "batch_02",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "gacha",
+        "vending",
+        "shopfront",
+        "street"
+      ],
+      "kitId": "mf-obj-gacha_row"
+    },
+    {
+      "id": "mf-obj-ticket_kiosk",
+      "name": "무인 발권 키오스크",
+      "category": "vending-kiosks",
+      "batch": "batch_02",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "kiosk",
+        "station",
+        "parking",
+        "lit"
+      ],
+      "kitId": "mf-obj-ticket_kiosk"
+    },
+    {
+      "id": "mf-obj-parcel_locker",
+      "name": "무인 택배 보관함",
+      "category": "vending-kiosks",
+      "batch": "batch_02",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "locker",
+        "kiosk",
+        "parcel",
+        "lit"
+      ],
+      "kitId": "mf-obj-parcel_locker"
+    },
+    {
+      "id": "mf-obj-phone_booth",
+      "name": "공중전화 부스",
+      "category": "vending-kiosks",
+      "batch": "batch_02",
+      "w": 16,
+      "h": 32,
+      "wTiles": 1,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "phone",
+        "booth",
+        "retro",
+        "street",
+        "lit"
+      ],
+      "kitId": "mf-obj-phone_booth"
+    },
+    {
+      "id": "mf-obj-atm_kiosk",
+      "name": "은행 ATM 부스",
+      "category": "vending-kiosks",
+      "batch": "batch_02",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "atm",
+        "bank",
+        "kiosk",
+        "lit"
+      ],
+      "kitId": "mf-obj-atm_kiosk"
+    },
+    {
+      "id": "mf-obj-pojangmacha_cart",
+      "name": "포장마차 노점 수레",
+      "category": "vending-kiosks",
+      "batch": "batch_02",
+      "w": 48,
+      "h": 32,
+      "wTiles": 3,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "pojangmacha",
+        "food-cart",
+        "korean",
+        "street",
+        "lit"
+      ],
+      "kitId": "mf-obj-pojangmacha_cart"
+    },
+    {
+      "id": "mf-obj-coffee_cart",
+      "name": "모바일 에스프레소 커피 카트",
+      "category": "vending-kiosks",
+      "batch": "batch_02",
+      "w": 48,
+      "h": 32,
+      "wTiles": 3,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "coffee",
+        "cart",
+        "cafe",
+        "street",
+        "lit"
+      ],
+      "kitId": "mf-obj-coffee_cart"
+    },
+    {
+      "id": "mf-obj-newsstand_kiosk",
+      "name": "가판대 잡지·음료 키오스크",
+      "category": "vending-kiosks",
+      "batch": "batch_02",
+      "w": 48,
+      "h": 32,
+      "wTiles": 3,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "newsstand",
+        "kiosk",
+        "magazine",
+        "street",
+        "lit"
+      ],
+      "kitId": "mf-obj-newsstand_kiosk"
+    },
+    {
+      "id": "mf-obj-cafe_bistro_set",
+      "name": "카페 비스트로 테이블 세트",
+      "category": "seating-terrace",
+      "batch": "batch_02",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "cafe",
+        "bistro",
+        "table",
+        "seating",
+        "terrace"
+      ],
+      "kitId": "mf-obj-cafe_bistro_set"
+    },
+    {
+      "id": "mf-obj-parasol_patio_set",
+      "name": "테라스 팔각 파라솔 테이블",
+      "category": "seating-terrace",
+      "batch": "batch_02",
+      "w": 48,
+      "h": 48,
+      "wTiles": 3,
+      "hTiles": 3,
+      "lightAnchors": [],
+      "tags": [
+        "parasol",
+        "patio",
+        "cafe",
+        "seating",
+        "terrace"
+      ],
+      "kitId": "mf-obj-parasol_patio_set"
+    },
+    {
+      "id": "mf-obj-park_bench_wood",
+      "name": "공원 삼나무 벤치",
+      "category": "seating-terrace",
+      "batch": "batch_02",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "bench",
+        "park",
+        "wood",
+        "seating"
+      ],
+      "kitId": "mf-obj-park_bench_wood"
+    },
+    {
+      "id": "mf-obj-plaza_bench_stone",
+      "name": "광장 화강암 벤치",
+      "category": "seating-terrace",
+      "batch": "batch_02",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "bench",
+        "plaza",
+        "stone",
+        "seating"
+      ],
+      "kitId": "mf-obj-plaza_bench_stone"
+    },
+    {
+      "id": "mf-obj-rooftop_pergola",
+      "name": "옥상 담쟁이 퍼걸러",
+      "category": "seating-terrace",
+      "batch": "batch_02",
+      "w": 48,
+      "h": 32,
+      "wTiles": 3,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "pergola",
+        "rooftop",
+        "terrace",
+        "ivy"
+      ],
+      "kitId": "mf-obj-rooftop_pergola"
+    },
+    {
+      "id": "mf-obj-rooftop_water_tank",
+      "name": "옥상 철골 물탱크",
+      "category": "seating-terrace",
+      "batch": "batch_02",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "water-tank",
+        "rooftop",
+        "utility"
+      ],
+      "kitId": "mf-obj-rooftop_water_tank"
+    },
+    {
+      "id": "mf-obj-rooftop_ac_stack",
+      "name": "옥상 2단 실외기 스택",
+      "category": "seating-terrace",
+      "batch": "batch_02",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "hvac",
+        "ac",
+        "rooftop",
+        "utility"
+      ],
+      "kitId": "mf-obj-rooftop_ac_stack"
+    },
+    {
+      "id": "mf-obj-rooftop_solar_panel",
+      "name": "옥상 태양광 패널 어레이",
+      "category": "seating-terrace",
+      "batch": "batch_02",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "solar",
+        "rooftop",
+        "utility",
+        "eco"
+      ],
+      "kitId": "mf-obj-rooftop_solar_panel"
+    },
+    {
+      "id": "mf-obj-rooftop_laundry",
+      "name": "옥상 빨래 건조대",
+      "category": "seating-terrace",
+      "batch": "batch_02",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "laundry",
+        "rooftop",
+        "daily-life"
+      ],
+      "kitId": "mf-obj-rooftop_laundry"
+    },
+    {
+      "id": "mf-obj-rooftop_garden_bed",
+      "name": "옥상 텃밭 화분 상자",
+      "category": "seating-terrace",
+      "batch": "batch_02",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "garden",
+        "planter",
+        "rooftop",
+        "urban-farm"
+      ],
+      "kitId": "mf-obj-rooftop_garden_bed"
+    },
+    {
+      "id": "mf-obj-tree_grate_spring",
+      "name": "봄 가로수(주철 보호판)",
+      "category": "foliage-planters",
+      "batch": "batch_03",
+      "w": 32,
+      "h": 48,
+      "wTiles": 2,
+      "hTiles": 3,
+      "lightAnchors": [],
+      "tags": [
+        "tree",
+        "foliage",
+        "street"
+      ],
+      "kitId": "mf-obj-tree_grate_spring"
+    },
+    {
+      "id": "mf-obj-tree_grate_ginkgo",
+      "name": "가을 은행나무 가로수",
+      "category": "foliage-planters",
+      "batch": "batch_03",
+      "w": 32,
+      "h": 48,
+      "wTiles": 2,
+      "hTiles": 3,
+      "lightAnchors": [],
+      "tags": [
+        "tree",
+        "foliage",
+        "autumn"
+      ],
+      "kitId": "mf-obj-tree_grate_ginkgo"
+    },
+    {
+      "id": "mf-obj-tree_cherry_blossom",
+      "name": "만개 벚나무(석재 화단링)",
+      "category": "foliage-planters",
+      "batch": "batch_03",
+      "w": 32,
+      "h": 48,
+      "wTiles": 2,
+      "hTiles": 3,
+      "lightAnchors": [],
+      "tags": [
+        "tree",
+        "foliage",
+        "spring"
+      ],
+      "kitId": "mf-obj-tree_cherry_blossom"
+    },
+    {
+      "id": "mf-obj-sidewalk_planter",
+      "name": "콘크리트 가로 화분대",
+      "category": "foliage-planters",
+      "batch": "batch_03",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "planter",
+        "flowers",
+        "street"
+      ],
+      "kitId": "mf-obj-sidewalk_planter"
+    },
+    {
+      "id": "mf-obj-terracotta_trough",
+      "name": "테라코타 카페 화분",
+      "category": "foliage-planters",
+      "batch": "batch_03",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "planter",
+        "flowers",
+        "cafe"
+      ],
+      "kitId": "mf-obj-terracotta_trough"
+    },
+    {
+      "id": "mf-obj-boxwood_hedge",
+      "name": "회양목 생울타리",
+      "category": "foliage-planters",
+      "batch": "batch_03",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "hedge",
+        "foliage",
+        "park"
+      ],
+      "kitId": "mf-obj-boxwood_hedge"
+    },
+    {
+      "id": "mf-obj-bamboo_planter",
+      "name": "슬레이트 대나무 화분",
+      "category": "foliage-planters",
+      "batch": "batch_03",
+      "w": 16,
+      "h": 32,
+      "wTiles": 1,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "planter",
+        "bamboo",
+        "modern"
+      ],
+      "kitId": "mf-obj-bamboo_planter"
+    },
+    {
+      "id": "mf-obj-potted_olive",
+      "name": "유약 도기 올리브 화분",
+      "category": "foliage-planters",
+      "batch": "batch_03",
+      "w": 16,
+      "h": 32,
+      "wTiles": 1,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "planter",
+        "tree",
+        "cafe"
+      ],
+      "kitId": "mf-obj-potted_olive"
+    },
+    {
+      "id": "mf-obj-park_fountain",
+      "name": "광장 2단 석재 분수대",
+      "category": "foliage-planters",
+      "batch": "batch_03",
+      "w": 48,
+      "h": 48,
+      "wTiles": 3,
+      "hTiles": 3,
+      "lightAnchors": [],
+      "tags": [
+        "fountain",
+        "water",
+        "plaza"
+      ],
+      "kitId": "mf-obj-park_fountain"
+    },
+    {
+      "id": "mf-obj-drinking_fountain",
+      "name": "공원 음수대",
+      "category": "foliage-planters",
+      "batch": "batch_03",
+      "w": 16,
+      "h": 16,
+      "wTiles": 1,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "fountain",
+        "park",
+        "water"
+      ],
+      "kitId": "mf-obj-drinking_fountain"
+    },
+    {
+      "id": "mf-obj-car_compact_side",
+      "name": "소형 해치백 승용차",
+      "category": "transit-vehicles",
+      "batch": "batch_03",
+      "w": 48,
+      "h": 32,
+      "wTiles": 3,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "vehicle",
+        "car",
+        "road"
+      ],
+      "kitId": "mf-obj-car_compact_side"
+    },
+    {
+      "id": "mf-obj-kei_truck_side",
+      "name": "경트럭 배달 화물차",
+      "category": "transit-vehicles",
+      "batch": "batch_03",
+      "w": 48,
+      "h": 32,
+      "wTiles": 3,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "vehicle",
+        "truck",
+        "road"
+      ],
+      "kitId": "mf-obj-kei_truck_side"
+    },
+    {
+      "id": "mf-obj-city_taxi_side",
+      "name": "도심 택시",
+      "category": "transit-vehicles",
+      "batch": "batch_03",
+      "w": 48,
+      "h": 32,
+      "wTiles": 3,
+      "hTiles": 2,
+      "lightAnchors": [
+        [
+          24,
+          10
+        ]
+      ],
+      "tags": [
+        "vehicle",
+        "taxi",
+        "road",
+        "lightAnchor"
+      ],
+      "kitId": "mf-obj-city_taxi_side"
+    },
+    {
+      "id": "mf-obj-delivery_scooter",
+      "name": "배달 스쿠터",
+      "category": "transit-vehicles",
+      "batch": "batch_03",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "vehicle",
+        "scooter",
+        "street"
+      ],
+      "kitId": "mf-obj-delivery_scooter"
+    },
+    {
+      "id": "mf-obj-bike_rack_4",
+      "name": "4구 자전거 거치대",
+      "category": "transit-vehicles",
+      "batch": "batch_03",
+      "w": 48,
+      "h": 16,
+      "wTiles": 3,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "vehicle",
+        "bicycle",
+        "street"
+      ],
+      "kitId": "mf-obj-bike_rack_4"
+    },
+    {
+      "id": "mf-obj-parked_bicycle",
+      "name": "생활 자전거(바구니)",
+      "category": "transit-vehicles",
+      "batch": "batch_03",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "vehicle",
+        "bicycle",
+        "street"
+      ],
+      "kitId": "mf-obj-parked_bicycle"
+    },
+    {
+      "id": "mf-obj-city_bus_side",
+      "name": "저상 시내버스",
+      "category": "transit-vehicles",
+      "batch": "batch_03",
+      "w": 80,
+      "h": 32,
+      "wTiles": 5,
+      "hTiles": 2,
+      "lightAnchors": [
+        [
+          40,
+          10
+        ]
+      ],
+      "tags": [
+        "vehicle",
+        "bus",
+        "road",
+        "lightAnchor"
+      ],
+      "kitId": "mf-obj-city_bus_side"
+    },
+    {
+      "id": "mf-obj-police_car_side",
+      "name": "도심 순찰차",
+      "category": "transit-vehicles",
+      "batch": "batch_03",
+      "w": 48,
+      "h": 32,
+      "wTiles": 3,
+      "hTiles": 2,
+      "lightAnchors": [
+        [
+          24,
+          10
+        ]
+      ],
+      "tags": [
+        "vehicle",
+        "police",
+        "road",
+        "lightAnchor"
+      ],
+      "kitId": "mf-obj-police_car_side"
+    },
+    {
+      "id": "mf-obj-ambulance_side",
+      "name": "119 구급차",
+      "category": "transit-vehicles",
+      "batch": "batch_03",
+      "w": 64,
+      "h": 32,
+      "wTiles": 4,
+      "hTiles": 2,
+      "lightAnchors": [
+        [
+          32,
+          10
+        ]
+      ],
+      "tags": [
+        "vehicle",
+        "ambulance",
+        "road",
+        "lightAnchor"
+      ],
+      "kitId": "mf-obj-ambulance_side"
+    },
+    {
+      "id": "mf-obj-shopping_cart_corral",
+      "name": "마트 쇼핑카트 보관소",
+      "category": "transit-vehicles",
+      "batch": "batch_03",
+      "w": 48,
+      "h": 32,
+      "wTiles": 3,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "vehicle",
+        "cart",
+        "commercial"
+      ],
+      "kitId": "mf-obj-shopping_cart_corral"
+    },
+    {
+      "id": "mf-obj-plastic_crates",
+      "name": "배달 플라스틱 상자 더미",
+      "category": "alley-utility",
+      "batch": "batch_04",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "alley",
+        "utility",
+        "crates",
+        "delivery"
+      ],
+      "kitId": "mf-obj-plastic_crates"
+    },
+    {
+      "id": "mf-obj-recycle_bin_trio",
+      "name": "3색 분리수거함",
+      "category": "alley-utility",
+      "batch": "batch_04",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "alley",
+        "utility",
+        "recycle",
+        "bins"
+      ],
+      "kitId": "mf-obj-recycle_bin_trio"
+    },
+    {
+      "id": "mf-obj-metal_dumpster",
+      "name": "골목 대형 철제 쓰레기통",
+      "category": "alley-utility",
+      "batch": "batch_04",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "alley",
+        "utility",
+        "dumpster",
+        "trash"
+      ],
+      "kitId": "mf-obj-metal_dumpster"
+    },
+    {
+      "id": "mf-obj-garbage_net_cage",
+      "name": "접이식 쓰레기 수거 그물망",
+      "category": "alley-utility",
+      "batch": "batch_04",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "alley",
+        "utility",
+        "trash",
+        "net"
+      ],
+      "kitId": "mf-obj-garbage_net_cage"
+    },
+    {
+      "id": "mf-obj-wall_ac_unit",
+      "name": "에어컨 실외기",
+      "category": "alley-utility",
+      "batch": "batch_04",
+      "w": 16,
+      "h": 16,
+      "wTiles": 1,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "alley",
+        "utility",
+        "ac",
+        "machinery"
+      ],
+      "kitId": "mf-obj-wall_ac_unit"
+    },
+    {
+      "id": "mf-obj-gas_meter_pipes",
+      "name": "가스 계량기·배관",
+      "category": "alley-utility",
+      "batch": "batch_04",
+      "w": 16,
+      "h": 32,
+      "wTiles": 1,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "alley",
+        "utility",
+        "gas",
+        "pipes"
+      ],
+      "kitId": "mf-obj-gas_meter_pipes"
+    },
+    {
+      "id": "mf-obj-propane_cylinders",
+      "name": "LPG 프로판 가스통 2구",
+      "category": "alley-utility",
+      "batch": "batch_04",
+      "w": 16,
+      "h": 32,
+      "wTiles": 1,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "alley",
+        "utility",
+        "propane",
+        "gas"
+      ],
+      "kitId": "mf-obj-propane_cylinders"
+    },
+    {
+      "id": "mf-obj-cardboard_stack",
+      "name": "묶은 택배 골판지 상자",
+      "category": "alley-utility",
+      "batch": "batch_04",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "alley",
+        "utility",
+        "cardboard",
+        "boxes"
+      ],
+      "kitId": "mf-obj-cardboard_stack"
+    },
+    {
+      "id": "mf-obj-wood_pallet_sacks",
+      "name": "목재 팔레트 쌀·밀가루 포대",
+      "category": "alley-utility",
+      "batch": "batch_04",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "alley",
+        "utility",
+        "pallet",
+        "sacks"
+      ],
+      "kitId": "mf-obj-wood_pallet_sacks"
+    },
+    {
+      "id": "mf-obj-mop_bucket_broom",
+      "name": "청소 양동이·빗자루·대걸레",
+      "category": "alley-utility",
+      "batch": "batch_04",
+      "w": 16,
+      "h": 16,
+      "wTiles": 1,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "alley",
+        "utility",
+        "cleaning",
+        "shopkeeping"
+      ],
+      "kitId": "mf-obj-mop_bucket_broom"
+    },
+    {
+      "id": "mf-obj-fruit_veg_stand",
+      "name": "청과물 야채 가판대",
+      "category": "shopfront-life",
+      "batch": "batch_04",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "shopfront",
+        "market",
+        "fruit",
+        "produce"
+      ],
+      "kitId": "mf-obj-fruit_veg_stand"
+    },
+    {
+      "id": "mf-obj-bakery_bread_rack",
+      "name": "베이커리 노천 빵 진열대",
+      "category": "shopfront-life",
+      "batch": "batch_04",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "shopfront",
+        "bakery",
+        "bread",
+        "canopy"
+      ],
+      "kitId": "mf-obj-bakery_bread_rack"
+    },
+    {
+      "id": "mf-obj-flower_bucket_stand",
+      "name": "꽃집 양동이 계단 진열대",
+      "category": "shopfront-life",
+      "batch": "batch_04",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "shopfront",
+        "florist",
+        "flowers",
+        "plants"
+      ],
+      "kitId": "mf-obj-flower_bucket_stand"
+    },
+    {
+      "id": "mf-obj-book_stall",
+      "name": "헌책방 100원 균일가 책 가판대",
+      "category": "shopfront-life",
+      "batch": "batch_04",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "shopfront",
+        "bookstore",
+        "books",
+        "retro"
+      ],
+      "kitId": "mf-obj-book_stall"
+    },
+    {
+      "id": "mf-obj-clothing_rack",
+      "name": "부티크 이동식 의류 행거",
+      "category": "shopfront-life",
+      "batch": "batch_04",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "shopfront",
+        "boutique",
+        "clothing",
+        "fashion"
+      ],
+      "kitId": "mf-obj-clothing_rack"
+    },
+    {
+      "id": "mf-obj-noren_lantern_stand",
+      "name": "이자카야 노렌·초롱 입구대",
+      "category": "shopfront-life",
+      "batch": "batch_04",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "shopfront",
+        "izakaya",
+        "noren",
+        "lantern",
+        "lit"
+      ],
+      "kitId": "mf-obj-noren_lantern_stand"
+    },
+    {
+      "id": "mf-obj-umbrella_stand",
+      "name": "가게 앞 우산꽂이",
+      "category": "shopfront-life",
+      "batch": "batch_04",
+      "w": 16,
+      "h": 16,
+      "wTiles": 1,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "shopfront",
+        "umbrella",
+        "entryway"
+      ],
+      "kitId": "mf-obj-umbrella_stand"
+    },
+    {
+      "id": "mf-obj-pastry_case",
+      "name": "카페 케이크·디저트 쇼케이스",
+      "category": "shopfront-life",
+      "batch": "batch_04",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "shopfront",
+        "cafe",
+        "pastry",
+        "lit"
+      ],
+      "kitId": "mf-obj-pastry_case"
+    },
+    {
+      "id": "mf-obj-retro_arcade_cab",
+      "name": "레트로 캔디캐비닛 오락기",
+      "category": "shopfront-life",
+      "batch": "batch_04",
+      "w": 16,
+      "h": 32,
+      "wTiles": 1,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "shopfront",
+        "arcade",
+        "retro",
+        "lit"
+      ],
+      "kitId": "mf-obj-retro_arcade_cab"
+    },
+    {
+      "id": "mf-obj-laundry_basket_cart",
+      "name": "코인세탁소 이동식 빨래 카트",
+      "category": "shopfront-life",
+      "batch": "batch_04",
+      "w": 16,
+      "h": 16,
+      "wTiles": 1,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "shopfront",
+        "laundry",
+        "cart",
+        "daily"
+      ],
+      "kitId": "mf-obj-laundry_basket_cart"
+    },
+    {
+      "id": "mf-obj-playground_slide",
+      "name": "놀이터 미끄럼틀",
+      "category": "plaza-park",
+      "batch": "batch_05",
+      "w": 48,
+      "h": 32,
+      "wTiles": 3,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "plaza-park",
+        "playground",
+        "park",
+        "slide"
+      ],
+      "kitId": "mf-obj-playground_slide"
+    },
+    {
+      "id": "mf-obj-swing_set",
+      "name": "공원 2인 그네",
+      "category": "plaza-park",
+      "batch": "batch_05",
+      "w": 48,
+      "h": 32,
+      "wTiles": 3,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "plaza-park",
+        "playground",
+        "park",
+        "swing"
+      ],
+      "kitId": "mf-obj-swing_set"
+    },
+    {
+      "id": "mf-obj-park_gazebo",
+      "name": "공원 팔각 정자",
+      "category": "plaza-park",
+      "batch": "batch_05",
+      "w": 48,
+      "h": 48,
+      "wTiles": 3,
+      "hTiles": 3,
+      "lightAnchors": [],
+      "tags": [
+        "plaza-park",
+        "gazebo",
+        "pavilion",
+        "park"
+      ],
+      "kitId": "mf-obj-park_gazebo"
+    },
+    {
+      "id": "mf-obj-stone_monument",
+      "name": "광장 화강암 기념비",
+      "category": "plaza-park",
+      "batch": "batch_05",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "plaza-park",
+        "monument",
+        "plaza",
+        "stone"
+      ],
+      "kitId": "mf-obj-stone_monument"
+    },
+    {
+      "id": "mf-obj-plaza_clock_pillar",
+      "name": "광장 시계탑 기둥",
+      "category": "plaza-park",
+      "batch": "batch_05",
+      "w": 16,
+      "h": 48,
+      "wTiles": 1,
+      "hTiles": 3,
+      "lightAnchors": [
+        [
+          8,
+          16
+        ]
+      ],
+      "tags": [
+        "plaza-park",
+        "clock",
+        "plaza",
+        "lightAnchor"
+      ],
+      "kitId": "mf-obj-plaza_clock_pillar"
+    },
+    {
+      "id": "mf-obj-notice_board",
+      "name": "동네 지붕 게시판",
+      "category": "plaza-park",
+      "batch": "batch_05",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "plaza-park",
+        "notice",
+        "board",
+        "community"
+      ],
+      "kitId": "mf-obj-notice_board"
+    },
+    {
+      "id": "mf-obj-red_mailbox",
+      "name": "빨간 우체통",
+      "category": "plaza-park",
+      "batch": "batch_05",
+      "w": 16,
+      "h": 32,
+      "wTiles": 1,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "plaza-park",
+        "mailbox",
+        "street",
+        "post"
+      ],
+      "kitId": "mf-obj-red_mailbox"
+    },
+    {
+      "id": "mf-obj-bike_share_dock",
+      "name": "공공자전거 대여소",
+      "category": "plaza-park",
+      "batch": "batch_05",
+      "w": 48,
+      "h": 16,
+      "wTiles": 3,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "plaza-park",
+        "bike",
+        "dock",
+        "transit"
+      ],
+      "kitId": "mf-obj-bike_share_dock"
+    },
+    {
+      "id": "mf-obj-street_trash_bin",
+      "name": "거리 분리수거 쓰레기통",
+      "category": "plaza-park",
+      "batch": "batch_05",
+      "w": 16,
+      "h": 16,
+      "wTiles": 1,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "plaza-park",
+        "trash",
+        "bin",
+        "street"
+      ],
+      "kitId": "mf-obj-street_trash_bin"
+    },
+    {
+      "id": "mf-obj-park_stone_lantern",
+      "name": "공원 석등롱",
+      "category": "plaza-park",
+      "batch": "batch_05",
+      "w": 16,
+      "h": 32,
+      "wTiles": 1,
+      "hTiles": 2,
+      "lightAnchors": [
+        [
+          8,
+          10
+        ]
+      ],
+      "tags": [
+        "plaza-park",
+        "lantern",
+        "stone",
+        "park",
+        "lightAnchor"
+      ],
+      "kitId": "mf-obj-park_stone_lantern"
+    },
+    {
+      "id": "mf-obj-steel_guardrail",
+      "name": "백색 도로 가드레일",
+      "category": "road-barriers",
+      "batch": "batch_05",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "road-barriers",
+        "guardrail",
+        "road",
+        "barrier"
+      ],
+      "kitId": "mf-obj-steel_guardrail"
+    },
+    {
+      "id": "mf-obj-stone_bollard",
+      "name": "화강암 볼라드",
+      "category": "road-barriers",
+      "batch": "batch_05",
+      "w": 16,
+      "h": 16,
+      "wTiles": 1,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "road-barriers",
+        "bollard",
+        "sidewalk",
+        "stone"
+      ],
+      "kitId": "mf-obj-stone_bollard"
+    },
+    {
+      "id": "mf-obj-chainlink_fence",
+      "name": "철망 울타리",
+      "category": "road-barriers",
+      "batch": "batch_05",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "road-barriers",
+        "fence",
+        "chainlink",
+        "barrier"
+      ],
+      "kitId": "mf-obj-chainlink_fence"
+    },
+    {
+      "id": "mf-obj-brick_garden_wall",
+      "name": "붉은 벽돌 정원 담장",
+      "category": "road-barriers",
+      "batch": "batch_05",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "road-barriers",
+        "wall",
+        "brick",
+        "garden"
+      ],
+      "kitId": "mf-obj-brick_garden_wall"
+    },
+    {
+      "id": "mf-obj-concrete_block_wall",
+      "name": "시멘트 블록 골목 담장",
+      "category": "road-barriers",
+      "batch": "batch_05",
+      "w": 32,
+      "h": 32,
+      "wTiles": 2,
+      "hTiles": 2,
+      "lightAnchors": [],
+      "tags": [
+        "road-barriers",
+        "wall",
+        "concrete",
+        "alley"
+      ],
+      "kitId": "mf-obj-concrete_block_wall"
+    },
+    {
+      "id": "mf-obj-subway_stair_rail",
+      "name": "지하철역 계단 출입구",
+      "category": "road-barriers",
+      "batch": "batch_05",
+      "w": 48,
+      "h": 32,
+      "wTiles": 3,
+      "hTiles": 2,
+      "lightAnchors": [
+        [
+          24,
+          10
+        ]
+      ],
+      "tags": [
+        "road-barriers",
+        "subway",
+        "stairs",
+        "transit",
+        "lightAnchor"
+      ],
+      "kitId": "mf-obj-subway_stair_rail"
+    },
+    {
+      "id": "mf-obj-canal_railing",
+      "name": "하천·운하 철제 난간",
+      "category": "road-barriers",
+      "batch": "batch_05",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "road-barriers",
+        "railing",
+        "canal",
+        "waterfront"
+      ],
+      "kitId": "mf-obj-canal_railing"
+    },
+    {
+      "id": "mf-obj-parking_wheelstop",
+      "name": "주차장 카스토퍼",
+      "category": "road-barriers",
+      "batch": "batch_05",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "road-barriers",
+        "parking",
+        "wheelstop",
+        "road"
+      ],
+      "kitId": "mf-obj-parking_wheelstop"
+    },
+    {
+      "id": "mf-obj-speed_bump",
+      "name": "도로 과속방지턱",
+      "category": "road-barriers",
+      "batch": "batch_05",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "road-barriers",
+        "speed-bump",
+        "road",
+        "traffic"
+      ],
+      "kitId": "mf-obj-speed_bump"
+    },
+    {
+      "id": "mf-obj-tactile_drain_set",
+      "name": "점자블록·측구 배수구 세트",
+      "category": "road-barriers",
+      "batch": "batch_05",
+      "w": 32,
+      "h": 16,
+      "wTiles": 2,
+      "hTiles": 1,
+      "lightAnchors": [],
+      "tags": [
+        "road-barriers",
+        "tactile",
+        "drain",
+        "curb",
+        "road"
+      ],
+      "kitId": "mf-obj-tactile_drain_set"
+    }
+  ],
+  "buildings": [
+    {
+      "id": "mf-bldg-kr_chicken_pub",
+      "name": "치킨호프 적벽돌 3층 상가",
+      "pack": "pack01_kr_sangga",
+      "w": 96,
+      "h": 112,
+      "wTiles": 6,
+      "hTiles": 7,
+      "doorCol": 3,
+      "lightAnchors": [
+        [
+          26,
+          93
+        ],
+        [
+          56,
+          91
+        ],
+        [
+          90,
+          48
+        ],
+        [
+          22,
+          36
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "pub",
+        "chicken",
+        "brick",
+        "commercial",
+        "3f"
+      ],
+      "kitId": "mf-bldg-kr_chicken_pub"
+    },
+    {
+      "id": "mf-bldg-kr_hagwon_cafe",
+      "name": "학원·에스프레소 카페 화강석 3층 상가",
+      "pack": "pack01_kr_sangga",
+      "w": 96,
+      "h": 128,
+      "wTiles": 6,
+      "hTiles": 8,
+      "doorCol": 3,
+      "lightAnchors": [
+        [
+          27,
+          108
+        ],
+        [
+          60,
+          108
+        ],
+        [
+          18,
+          36
+        ],
+        [
+          25,
+          66
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "hagwon",
+        "cafe",
+        "granite",
+        "commercial",
+        "3f"
+      ],
+      "kitId": "mf-bldg-kr_hagwon_cafe"
+    },
+    {
+      "id": "mf-bldg-kr_bakery_clinic",
+      "name": "베이커리·치과 크림스투코 3층 상가",
+      "pack": "pack01_kr_sangga",
+      "w": 112,
+      "h": 112,
+      "wTiles": 7,
+      "hTiles": 7,
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          32,
+          95
+        ],
+        [
+          68,
+          93
+        ],
+        [
+          30,
+          35
+        ],
+        [
+          50,
+          60
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "bakery",
+        "clinic",
+        "stucco",
+        "commercial",
+        "3f"
+      ],
+      "kitId": "mf-bldg-kr_bakery_clinic"
+    },
+    {
+      "id": "mf-bldg-kr_pcbang_billiard",
+      "name": "PC방·당구장·국수집 4층 유흥상가",
+      "pack": "pack01_kr_sangga",
+      "w": 96,
+      "h": 128,
+      "wTiles": 6,
+      "hTiles": 8,
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          44,
+          48
+        ],
+        [
+          26,
+          78
+        ],
+        [
+          90,
+          62
+        ],
+        [
+          20,
+          118
+        ],
+        [
+          66,
+          114
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "pcbang",
+        "billiard",
+        "neon",
+        "commercial",
+        "4f"
+      ],
+      "kitId": "mf-bldg-kr_pcbang_billiard"
+    },
+    {
+      "id": "mf-bldg-kr_corner_conv24",
+      "name": "24시 코너 편의점·적벽돌 2층 상가",
+      "pack": "pack01_kr_sangga",
+      "w": 96,
+      "h": 96,
+      "wTiles": 6,
+      "hTiles": 6,
+      "doorCol": 3,
+      "lightAnchors": [
+        [
+          20,
+          76
+        ],
+        [
+          49,
+          74
+        ],
+        [
+          77,
+          72
+        ],
+        [
+          22,
+          34
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "convenience",
+        "24h",
+        "brick",
+        "corner",
+        "2f"
+      ],
+      "kitId": "mf-bldg-kr_corner_conv24"
+    },
+    {
+      "id": "mf-bldg-kr_rooftop_cafe",
+      "name": "성수 적벽돌 루프탑 테라스 카페",
+      "pack": "pack01_kr_sangga",
+      "w": 96,
+      "h": 112,
+      "wTiles": 6,
+      "hTiles": 7,
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          31,
+          84
+        ],
+        [
+          68,
+          90
+        ],
+        [
+          31,
+          38
+        ],
+        [
+          32,
+          8
+        ],
+        [
+          72,
+          8
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "cafe",
+        "rooftop",
+        "brick",
+        "terrace",
+        "2f"
+      ],
+      "kitId": "mf-bldg-kr_rooftop_cafe"
+    },
+    {
+      "id": "mf-bldg-kr_narrow_alley_shop",
+      "name": "골목 분식집 슬레이트 2.5층 협소상가",
+      "pack": "pack01_kr_sangga",
+      "w": 64,
+      "h": 96,
+      "wTiles": 4,
+      "hTiles": 6,
+      "doorCol": 2,
+      "lightAnchors": [
+        [
+          20,
+          82
+        ],
+        [
+          44,
+          84
+        ],
+        [
+          58,
+          50
+        ],
+        [
+          20,
+          44
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "alley",
+        "snack",
+        "tteokbokki",
+        "compact",
+        "2f"
+      ],
+      "kitId": "mf-bldg-kr_narrow_alley_shop"
+    },
+    {
+      "id": "mf-bldg-kr_glass_salon",
+      "name": "모던 콘크리트·우드 헤어살롱 3층 상가",
+      "pack": "pack01_kr_sangga",
+      "w": 80,
+      "h": 112,
+      "wTiles": 5,
+      "hTiles": 7,
+      "doorCol": 3,
+      "lightAnchors": [
+        [
+          28,
+          92
+        ],
+        [
+          62,
+          94
+        ],
+        [
+          24,
+          58
+        ],
+        [
+          46,
+          35
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "salon",
+        "boutique",
+        "modern",
+        "glass",
+        "3f"
+      ],
+      "kitId": "mf-bldg-kr_glass_salon"
+    },
+    {
+      "id": "mf-bldg-kr_market_arcade",
+      "name": "전통시장 아케이드·청과·떡집 2층 상가",
+      "pack": "pack01_kr_sangga",
+      "w": 128,
+      "h": 96,
+      "wTiles": 8,
+      "hTiles": 6,
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          64,
+          72
+        ],
+        [
+          21,
+          68
+        ],
+        [
+          106,
+          68
+        ],
+        [
+          64,
+          20
+        ],
+        [
+          18,
+          36
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "market",
+        "arcade",
+        "stalls",
+        "commercial",
+        "2f"
+      ],
+      "kitId": "mf-bldg-kr_market_arcade"
+    },
+    {
+      "id": "mf-bldg-kr_corner_pharmacy",
+      "name": "민트·화이트 코너 약국 2층 상가",
+      "pack": "pack01_kr_sangga",
+      "w": 80,
+      "h": 96,
+      "wTiles": 5,
+      "hTiles": 6,
+      "doorCol": 3,
+      "lightAnchors": [
+        [
+          23,
+          78
+        ],
+        [
+          55,
+          78
+        ],
+        [
+          73,
+          44
+        ],
+        [
+          20,
+          38
+        ]
+      ],
+      "tags": [
+        "sangga",
+        "korean",
+        "pharmacy",
+        "corner",
+        "white-tile",
+        "2f"
+      ],
+      "kitId": "mf-bldg-kr_corner_pharmacy"
+    },
+    {
+      "id": "mf-bldg-kr_piloti_brick_villa",
+      "name": "적벽돌 4층 필로티 빌라",
+      "pack": "pack02_kr_residential",
+      "w": 96,
+      "h": 128,
+      "wTiles": 6,
+      "hTiles": 8,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "building",
+        "kr-residential",
+        "villa",
+        "piloti",
+        "brick",
+        "korea"
+      ],
+      "kitId": "mf-bldg-kr_piloti_brick_villa"
+    },
+    {
+      "id": "mf-bldg-kr_piloti_stone_villa",
+      "name": "화강석·라임스톤 4층 필로티 빌라",
+      "pack": "pack02_kr_residential",
+      "w": 96,
+      "h": 128,
+      "wTiles": 6,
+      "hTiles": 8,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "building",
+        "kr-residential",
+        "villa",
+        "piloti",
+        "stone",
+        "korea"
+      ],
+      "kitId": "mf-bldg-kr_piloti_stone_villa"
+    },
+    {
+      "id": "mf-bldg-kr_corner_terrace_villa",
+      "name": "2층 코너 테라스 벽돌 빌라",
+      "pack": "pack02_kr_residential",
+      "w": 112,
+      "h": 112,
+      "wTiles": 7,
+      "hTiles": 7,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "building",
+        "kr-residential",
+        "villa",
+        "terrace",
+        "veranda",
+        "korea"
+      ],
+      "kitId": "mf-bldg-kr_corner_terrace_villa"
+    },
+    {
+      "id": "mf-bldg-kr_rooftop_garden_house",
+      "name": "옥상 텃밭 2층 단독주택",
+      "pack": "pack02_kr_residential",
+      "w": 96,
+      "h": 96,
+      "wTiles": 6,
+      "hTiles": 6,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "building",
+        "kr-residential",
+        "house",
+        "dandok",
+        "rooftop-garden",
+        "korea"
+      ],
+      "kitId": "mf-bldg-kr_rooftop_garden_house"
+    },
+    {
+      "id": "mf-bldg-kr_duplex_townhouse",
+      "name": "듀플렉스 쌍둥이 타운하우스",
+      "pack": "pack02_kr_residential",
+      "w": 112,
+      "h": 96,
+      "wTiles": 7,
+      "hTiles": 6,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "building",
+        "kr-residential",
+        "townhouse",
+        "duplex",
+        "modern"
+      ],
+      "kitId": "mf-bldg-kr_duplex_townhouse"
+    },
+    {
+      "id": "mf-bldg-kr_apt_block_a",
+      "name": "5층 복도식 아파트 101동",
+      "pack": "pack02_kr_residential",
+      "w": 128,
+      "h": 160,
+      "wTiles": 8,
+      "hTiles": 10,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "building",
+        "kr-residential",
+        "apartment",
+        "101",
+        "korea"
+      ],
+      "kitId": "mf-bldg-kr_apt_block_a"
+    },
+    {
+      "id": "mf-bldg-kr_apt_block_b",
+      "name": "5층 테라코타 모던 아파트 102동",
+      "pack": "pack02_kr_residential",
+      "w": 128,
+      "h": 160,
+      "wTiles": 8,
+      "hTiles": 10,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "building",
+        "kr-residential",
+        "apartment",
+        "102",
+        "terracotta",
+        "korea"
+      ],
+      "kitId": "mf-bldg-kr_apt_block_b"
+    },
+    {
+      "id": "mf-bldg-kr_apt_gatehouse",
+      "name": "아파트 단지 정문 문주·경비실",
+      "pack": "pack02_kr_residential",
+      "w": 128,
+      "h": 80,
+      "wTiles": 8,
+      "hTiles": 5,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "building",
+        "kr-residential",
+        "gatehouse",
+        "apartment",
+        "landmark",
+        "korea"
+      ],
+      "kitId": "mf-bldg-kr_apt_gatehouse"
+    },
+    {
+      "id": "mf-bldg-kr_hillside_stepped",
+      "name": "언덕 계단식 테라스 주택",
+      "pack": "pack02_kr_residential",
+      "w": 96,
+      "h": 128,
+      "wTiles": 6,
+      "hTiles": 8,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "building",
+        "kr-residential",
+        "hillside",
+        "terrace",
+        "seoul",
+        "korea"
+      ],
+      "kitId": "mf-bldg-kr_hillside_stepped"
+    },
+    {
+      "id": "mf-bldg-kr_modern_cube_house",
+      "name": "노출콘크리트 모던 큐브 하우스",
+      "pack": "pack02_kr_residential",
+      "w": 80,
+      "h": 96,
+      "wTiles": 5,
+      "hTiles": 6,
+      "doorCol": 2,
+      "lightAnchors": [],
+      "tags": [
+        "building",
+        "kr-residential",
+        "modern",
+        "cube",
+        "concrete",
+        "cedar"
+      ],
+      "kitId": "mf-bldg-kr_modern_cube_house"
+    },
+    {
+      "id": "mf-bldg-jp_ramen_shop",
+      "name": "일본 골목 라멘집 (2층)",
+      "pack": "pack03_jp_shotengai",
+      "w": 80,
+      "h": 96,
+      "wTiles": 5,
+      "hTiles": 6,
+      "doorCol": 2,
+      "lightAnchors": [],
+      "tags": [
+        "jp-shotengai",
+        "restaurant",
+        "ramen",
+        "noren",
+        "lantern",
+        "kawara"
+      ],
+      "kitId": "mf-bldg-jp_ramen_shop"
+    },
+    {
+      "id": "mf-bldg-jp_sushi_bar",
+      "name": "히노키 스시야 (2층)",
+      "pack": "pack03_jp_shotengai",
+      "w": 80,
+      "h": 96,
+      "wTiles": 5,
+      "hTiles": 6,
+      "doorCol": 2,
+      "lightAnchors": [],
+      "tags": [
+        "jp-shotengai",
+        "restaurant",
+        "sushi",
+        "hinoki",
+        "ibushi",
+        "noren"
+      ],
+      "kitId": "mf-bldg-jp_sushi_bar"
+    },
+    {
+      "id": "mf-bldg-jp_izakaya_corner",
+      "name": "목조 코너 이자카야 (2층)",
+      "pack": "pack03_jp_shotengai",
+      "w": 96,
+      "h": 96,
+      "wTiles": 6,
+      "hTiles": 6,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "jp-shotengai",
+        "tavern",
+        "izakaya",
+        "lantern",
+        "balcony",
+        "midori"
+      ],
+      "kitId": "mf-bldg-jp_izakaya_corner"
+    },
+    {
+      "id": "mf-bldg-jp_kissaten_cafe",
+      "name": "쇼와 벽돌 킷사텐 카페 (2층)",
+      "pack": "pack03_jp_shotengai",
+      "w": 80,
+      "h": 96,
+      "wTiles": 5,
+      "hTiles": 6,
+      "doorCol": 2,
+      "lightAnchors": [],
+      "tags": [
+        "jp-shotengai",
+        "cafe",
+        "kissaten",
+        "brick",
+        "stained-glass",
+        "showa"
+      ],
+      "kitId": "mf-bldg-jp_kissaten_cafe"
+    },
+    {
+      "id": "mf-bldg-jp_wagashi_gable",
+      "name": "마치야 화과자점 (박공 2층)",
+      "pack": "pack03_jp_shotengai",
+      "w": 96,
+      "h": 96,
+      "wTiles": 6,
+      "hTiles": 6,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "jp-shotengai",
+        "sweets",
+        "wagashi",
+        "machiya",
+        "gable",
+        "kawara"
+      ],
+      "kitId": "mf-bldg-jp_wagashi_gable"
+    },
+    {
+      "id": "mf-bldg-jp_vinyl_records",
+      "name": "시모키타자와 바이닐 레코드샵 (2.5층)",
+      "pack": "pack03_jp_shotengai",
+      "w": 80,
+      "h": 112,
+      "wTiles": 5,
+      "hTiles": 7,
+      "doorCol": 2,
+      "lightAnchors": [],
+      "tags": [
+        "jp-shotengai",
+        "music",
+        "vinyl",
+        "records",
+        "shimokitazawa",
+        "flat-roof"
+      ],
+      "kitId": "mf-bldg-jp_vinyl_records"
+    },
+    {
+      "id": "mf-bldg-jp_bike_repair",
+      "name": "동네 자전거 수리 공방 (2층)",
+      "pack": "pack03_jp_shotengai",
+      "w": 96,
+      "h": 96,
+      "wTiles": 6,
+      "hTiles": 6,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "jp-shotengai",
+        "workshop",
+        "bicycle",
+        "shutter",
+        "balcony",
+        "tin-roof"
+      ],
+      "kitId": "mf-bldg-jp_bike_repair"
+    },
+    {
+      "id": "mf-bldg-jp_flower_greenhouse",
+      "name": "온실 플라워 샵 (2층)",
+      "pack": "pack03_jp_shotengai",
+      "w": 96,
+      "h": 96,
+      "wTiles": 6,
+      "hTiles": 6,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "jp-shotengai",
+        "florist",
+        "greenhouse",
+        "conservatory",
+        "flowers"
+      ],
+      "kitId": "mf-bldg-jp_flower_greenhouse"
+    },
+    {
+      "id": "mf-bldg-jp_secondhand_books",
+      "name": "진보초 헌책방 (2층)",
+      "pack": "pack03_jp_shotengai",
+      "w": 80,
+      "h": 96,
+      "wTiles": 5,
+      "hTiles": 6,
+      "doorCol": 2,
+      "lightAnchors": [],
+      "tags": [
+        "jp-shotengai",
+        "bookstore",
+        "jimbocho",
+        "books",
+        "kawara"
+      ],
+      "kitId": "mf-bldg-jp_secondhand_books"
+    },
+    {
+      "id": "mf-bldg-jp_bakery_terrace",
+      "name": "테라스 불랑주리 베이커리 (2층)",
+      "pack": "pack03_jp_shotengai",
+      "w": 112,
+      "h": 112,
+      "wTiles": 7,
+      "hTiles": 7,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "jp-shotengai",
+        "bakery",
+        "boulangerie",
+        "terrace",
+        "pergola",
+        "cafe"
+      ],
+      "kitId": "mf-bldg-jp_bakery_terrace"
+    },
+    {
+      "id": "mf-bldg-mid_setback_cafe",
+      "name": "셋백 루프 테라스 로스터리 카페 (3F)",
+      "pack": "pack04_urban_midrise",
+      "w": 112,
+      "h": 128,
+      "wTiles": 7,
+      "hTiles": 8,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "midrise",
+        "setback",
+        "cafe",
+        "roastery",
+        "terrace",
+        "limestone"
+      ],
+      "kitId": "mf-bldg-mid_setback_cafe"
+    },
+    {
+      "id": "mf-bldg-mid_brick_fireescape",
+      "name": "도심 적벽돌 비상계단 로프트·비스트로 (4F)",
+      "pack": "pack04_urban_midrise",
+      "w": 96,
+      "h": 144,
+      "wTiles": 6,
+      "hTiles": 9,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "midrise",
+        "brick",
+        "loft",
+        "fire-escape",
+        "bistro",
+        "water-tower"
+      ],
+      "kitId": "mf-bldg-mid_brick_fireescape"
+    },
+    {
+      "id": "mf-bldg-mid_glass_podium_office",
+      "name": "글래스 포디움 모던 오피스 (4F)",
+      "pack": "pack04_urban_midrise",
+      "w": 112,
+      "h": 144,
+      "wTiles": 7,
+      "hTiles": 9,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "midrise",
+        "office",
+        "glass",
+        "podium",
+        "helipad",
+        "corporate"
+      ],
+      "kitId": "mf-bldg-mid_glass_podium_office"
+    },
+    {
+      "id": "mf-bldg-mid_corner_boutique_hotel",
+      "name": "코너 부티크 호텔 (4F)",
+      "pack": "pack04_urban_midrise",
+      "w": 112,
+      "h": 144,
+      "wTiles": 7,
+      "hTiles": 9,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "midrise",
+        "hotel",
+        "boutique",
+        "brick",
+        "juliet-balcony",
+        "mansard"
+      ],
+      "kitId": "mf-bldg-mid_corner_boutique_hotel"
+    },
+    {
+      "id": "mf-bldg-mid_art_gallery_skylight",
+      "name": "톱니 천창 현대 미술관 (3F)",
+      "pack": "pack04_urban_midrise",
+      "w": 112,
+      "h": 112,
+      "wTiles": 7,
+      "hTiles": 7,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "midrise",
+        "gallery",
+        "museum",
+        "skylight",
+        "concrete",
+        "cultural"
+      ],
+      "kitId": "mf-bldg-mid_art_gallery_skylight"
+    },
+    {
+      "id": "mf-bldg-mid_coworking_balcony",
+      "name": "우드 발코니 코워킹 스튜디오 (3F)",
+      "pack": "pack04_urban_midrise",
+      "w": 112,
+      "h": 128,
+      "wTiles": 7,
+      "hTiles": 8,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "midrise",
+        "coworking",
+        "balcony",
+        "timber",
+        "pergola",
+        "solar"
+      ],
+      "kitId": "mf-bldg-mid_coworking_balcony"
+    },
+    {
+      "id": "mf-bldg-mid_jazz_rooftop_lounge",
+      "name": "재즈 클럽 & 루프탑 라운지 바 (3F)",
+      "pack": "pack04_urban_midrise",
+      "w": 96,
+      "h": 128,
+      "wTiles": 6,
+      "hTiles": 8,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "midrise",
+        "jazz",
+        "music-club",
+        "rooftop-bar",
+        "neon",
+        "slate"
+      ],
+      "kitId": "mf-bldg-mid_jazz_rooftop_lounge"
+    },
+    {
+      "id": "mf-bldg-mid_fitness_studio",
+      "name": "도심 피트니스 & 요가 스튜디오 (3F)",
+      "pack": "pack04_urban_midrise",
+      "w": 96,
+      "h": 128,
+      "wTiles": 6,
+      "hTiles": 8,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "midrise",
+        "fitness",
+        "yoga",
+        "studio",
+        "turf-terrace",
+        "glass"
+      ],
+      "kitId": "mf-bldg-mid_fitness_studio"
+    },
+    {
+      "id": "mf-bldg-mid_bookstore_garden",
+      "name": "루프 정원 플래그십 서점 (3F)",
+      "pack": "pack04_urban_midrise",
+      "w": 112,
+      "h": 128,
+      "wTiles": 7,
+      "hTiles": 8,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "midrise",
+        "bookstore",
+        "garden",
+        "terrace",
+        "cultural",
+        "wood"
+      ],
+      "kitId": "mf-bldg-mid_bookstore_garden"
+    },
+    {
+      "id": "mf-bldg-mid_fashion_flagship",
+      "name": "부티크 패션 플래그십 스토어 (3F)",
+      "pack": "pack04_urban_midrise",
+      "w": 96,
+      "h": 128,
+      "wTiles": 6,
+      "hTiles": 8,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "midrise",
+        "fashion",
+        "flagship",
+        "boutique",
+        "granite",
+        "penthouse"
+      ],
+      "kitId": "mf-bldg-mid_fashion_flagship"
+    },
+    {
+      "id": "mf-bldg-hi_apt_tower_varied",
+      "name": "6층 변화형 주상복합 아파트 타워",
+      "pack": "pack05_highrise_civic",
+      "w": 112,
+      "h": 176,
+      "wTiles": 7,
+      "hTiles": 11,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "highrise",
+        "apartment",
+        "tower",
+        "residential",
+        "penthouse",
+        "balcony",
+        "non-cloned"
+      ],
+      "kitId": "mf-bldg-hi_apt_tower_varied"
+    },
+    {
+      "id": "mf-bldg-hi_glass_corp_tower",
+      "name": "6층 계단식 유리 오피스 타워",
+      "pack": "pack05_highrise_civic",
+      "w": 112,
+      "h": 192,
+      "wTiles": 7,
+      "hTiles": 12,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "highrise",
+        "office",
+        "glass",
+        "corporate",
+        "sky-garden",
+        "tower",
+        "non-cloned"
+      ],
+      "kitId": "mf-bldg-hi_glass_corp_tower"
+    },
+    {
+      "id": "mf-bldg-hi_setback_depato",
+      "name": "5층 대형 백화점 (옥상 유원지)",
+      "pack": "pack05_highrise_civic",
+      "w": 144,
+      "h": 160,
+      "wTiles": 9,
+      "hTiles": 10,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "highrise",
+        "department-store",
+        "depato",
+        "commercial",
+        "ferris-wheel",
+        "rooftop",
+        "landmark"
+      ],
+      "kitId": "mf-bldg-hi_setback_depato"
+    },
+    {
+      "id": "mf-bldg-civic_city_hall_clock",
+      "name": "시청사 시계탑 랜드마크",
+      "pack": "pack05_highrise_civic",
+      "w": 144,
+      "h": 144,
+      "wTiles": 9,
+      "hTiles": 9,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "civic",
+        "city-hall",
+        "clock-tower",
+        "landmark",
+        "government",
+        "colonnade"
+      ],
+      "kitId": "mf-bldg-civic_city_hall_clock"
+    },
+    {
+      "id": "mf-bldg-civic_general_hospital",
+      "name": "4층 종합병원 (옥상 헬기장·응급실)",
+      "pack": "pack05_highrise_civic",
+      "w": 144,
+      "h": 144,
+      "wTiles": 9,
+      "hTiles": 9,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "civic",
+        "hospital",
+        "medical",
+        "ambulance",
+        "helipad",
+        "non-cloned"
+      ],
+      "kitId": "mf-bldg-civic_general_hospital"
+    },
+    {
+      "id": "mf-bldg-civic_central_bank",
+      "name": "신고전주의 중앙은행",
+      "pack": "pack05_highrise_civic",
+      "w": 128,
+      "h": 112,
+      "wTiles": 8,
+      "hTiles": 7,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "civic",
+        "bank",
+        "neoclassical",
+        "columns",
+        "finance",
+        "landmark"
+      ],
+      "kitId": "mf-bldg-civic_central_bank"
+    },
+    {
+      "id": "mf-bldg-civic_police_station",
+      "name": "3층 지구대·경찰서",
+      "pack": "pack05_highrise_civic",
+      "w": 112,
+      "h": 112,
+      "wTiles": 7,
+      "hTiles": 7,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "civic",
+        "police",
+        "koban",
+        "station",
+        "safety",
+        "antenna"
+      ],
+      "kitId": "mf-bldg-civic_police_station"
+    },
+    {
+      "id": "mf-bldg-civic_fire_station",
+      "name": "2.5층 소방서·망루",
+      "pack": "pack05_highrise_civic",
+      "w": 128,
+      "h": 112,
+      "wTiles": 8,
+      "hTiles": 7,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "civic",
+        "fire-station",
+        "fire-engine",
+        "watchtower",
+        "garage",
+        "safety"
+      ],
+      "kitId": "mf-bldg-civic_fire_station"
+    },
+    {
+      "id": "mf-bldg-civic_post_office",
+      "name": "2층 벽돌 우체국",
+      "pack": "pack05_highrise_civic",
+      "w": 112,
+      "h": 96,
+      "wTiles": 7,
+      "hTiles": 6,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "civic",
+        "post-office",
+        "mail",
+        "brick",
+        "pitched-roof"
+      ],
+      "kitId": "mf-bldg-civic_post_office"
+    },
+    {
+      "id": "mf-bldg-civic_public_museum",
+      "name": "시립 미술관·박물관 (유리 아트리움)",
+      "pack": "pack05_highrise_civic",
+      "w": 144,
+      "h": 128,
+      "wTiles": 9,
+      "hTiles": 8,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "civic",
+        "museum",
+        "gallery",
+        "skylight",
+        "banners",
+        "landmark"
+      ],
+      "kitId": "mf-bldg-civic_public_museum"
+    },
+    {
+      "id": "mf-bldg-camp_school_main",
+      "name": "3층 본관 학교 (시계탑·옥상 펜스)",
+      "pack": "pack06_campus_education",
+      "w": 160,
+      "h": 128,
+      "wTiles": 10,
+      "hTiles": 8,
+      "doorCol": 5,
+      "lightAnchors": [],
+      "tags": [
+        "campus",
+        "school",
+        "high-school",
+        "clock",
+        "rooftop-fence",
+        "non-cloned",
+        "landmark"
+      ],
+      "kitId": "mf-bldg-camp_school_main"
+    },
+    {
+      "id": "mf-bldg-camp_brick_library",
+      "name": "2.5층 담쟁이 적벽돌 대학 도서관",
+      "pack": "pack06_campus_education",
+      "w": 128,
+      "h": 112,
+      "wTiles": 8,
+      "hTiles": 7,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "campus",
+        "library",
+        "brick",
+        "ivy",
+        "bookshelves",
+        "skylight",
+        "pitched-roof"
+      ],
+      "kitId": "mf-bldg-camp_brick_library"
+    },
+    {
+      "id": "mf-bldg-camp_gymnasium",
+      "name": "학교 실내 체육관·강당",
+      "pack": "pack06_campus_education",
+      "w": 144,
+      "h": 96,
+      "wTiles": 9,
+      "hTiles": 6,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "campus",
+        "gymnasium",
+        "auditorium",
+        "barrel-roof",
+        "sports",
+        "clerestory"
+      ],
+      "kitId": "mf-bldg-camp_gymnasium"
+    },
+    {
+      "id": "mf-bldg-camp_science_greenhouse",
+      "name": "과학 실험동 & 유리 식물원 온실",
+      "pack": "pack06_campus_education",
+      "w": 112,
+      "h": 96,
+      "wTiles": 7,
+      "hTiles": 6,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "campus",
+        "science",
+        "lab",
+        "greenhouse",
+        "botany",
+        "glass-dome",
+        "plants"
+      ],
+      "kitId": "mf-bldg-camp_science_greenhouse"
+    },
+    {
+      "id": "mf-bldg-camp_student_union_terrace",
+      "name": "2.5층 학생회관·카페테리아 테라스",
+      "pack": "pack06_campus_education",
+      "w": 128,
+      "h": 112,
+      "wTiles": 8,
+      "hTiles": 7,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "campus",
+        "student-union",
+        "cafeteria",
+        "terrace",
+        "parasol",
+        "awning",
+        "bulletin"
+      ],
+      "kitId": "mf-bldg-camp_student_union_terrace"
+    },
+    {
+      "id": "mf-bldg-camp_bell_tower",
+      "name": "벽돌·석조 캠퍼스 시계 종탑",
+      "pack": "pack06_campus_education",
+      "w": 64,
+      "h": 144,
+      "wTiles": 4,
+      "hTiles": 9,
+      "doorCol": 2,
+      "lightAnchors": [],
+      "tags": [
+        "campus",
+        "bell-tower",
+        "clock-tower",
+        "spire",
+        "ivy",
+        "archway",
+        "landmark"
+      ],
+      "kitId": "mf-bldg-camp_bell_tower"
+    },
+    {
+      "id": "mf-bldg-camp_dormitory",
+      "name": "3층 벽돌·크림 학생 기숙사",
+      "pack": "pack06_campus_education",
+      "w": 112,
+      "h": 128,
+      "wTiles": 7,
+      "hTiles": 8,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "campus",
+        "dormitory",
+        "residential",
+        "balcony",
+        "laundry",
+        "bicycle",
+        "non-cloned"
+      ],
+      "kitId": "mf-bldg-camp_dormitory"
+    },
+    {
+      "id": "mf-bldg-camp_music_conservatory",
+      "name": "2.5층 목재·유리 음악당·예술관",
+      "pack": "pack06_campus_education",
+      "w": 112,
+      "h": 112,
+      "wTiles": 7,
+      "hTiles": 7,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "campus",
+        "music",
+        "conservatory",
+        "arts",
+        "timber-louvers",
+        "skylight",
+        "posters"
+      ],
+      "kitId": "mf-bldg-camp_music_conservatory"
+    },
+    {
+      "id": "mf-bldg-camp_main_gatehouse",
+      "name": "캠퍼스 벽돌·화강암 정문 & 경비실",
+      "pack": "pack06_campus_education",
+      "w": 112,
+      "h": 80,
+      "wTiles": 7,
+      "hTiles": 5,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "campus",
+        "gatehouse",
+        "entrance",
+        "wrought-iron",
+        "cherry-blossom",
+        "security-lodge"
+      ],
+      "kitId": "mf-bldg-camp_main_gatehouse"
+    },
+    {
+      "id": "mf-bldg-camp_sports_pavilion",
+      "name": "운동장 스탠드 관람석 & 락커 하우스",
+      "pack": "pack06_campus_education",
+      "w": 112,
+      "h": 80,
+      "wTiles": 7,
+      "hTiles": 5,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "campus",
+        "sports",
+        "pavilion",
+        "bleachers",
+        "scoreboard",
+        "locker-room"
+      ],
+      "kitId": "mf-bldg-camp_sports_pavilion"
+    },
+    {
+      "id": "mf-bldg-tr_train_station_clock",
+      "name": "시계탑 근교 철도역사",
+      "pack": "pack07_transit_harbor",
+      "w": 160,
+      "h": 112,
+      "wTiles": 10,
+      "hTiles": 7,
+      "doorCol": 5,
+      "lightAnchors": [],
+      "tags": [
+        "transit",
+        "station",
+        "train",
+        "clock-tower",
+        "brick",
+        "landmark"
+      ],
+      "kitId": "mf-bldg-tr_train_station_clock"
+    },
+    {
+      "id": "mf-bldg-tr_subway_plaza",
+      "name": "지하철 유리 캐노피 출입구 광장",
+      "pack": "pack07_transit_harbor",
+      "w": 96,
+      "h": 80,
+      "wTiles": 6,
+      "hTiles": 5,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "transit",
+        "subway",
+        "metro",
+        "glass-canopy",
+        "escalator",
+        "plaza"
+      ],
+      "kitId": "mf-bldg-tr_subway_plaza"
+    },
+    {
+      "id": "mf-bldg-tr_viaduct_shops",
+      "name": "철도 고가 아치 상가 (라멘·서점·바)",
+      "pack": "pack07_transit_harbor",
+      "w": 144,
+      "h": 96,
+      "wTiles": 9,
+      "hTiles": 6,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "transit",
+        "viaduct",
+        "railway",
+        "arches",
+        "shops",
+        "brick"
+      ],
+      "kitId": "mf-bldg-tr_viaduct_shops"
+    },
+    {
+      "id": "mf-bldg-tr_bus_terminal",
+      "name": "2층 광역 시외버스 터미널",
+      "pack": "pack07_transit_harbor",
+      "w": 144,
+      "h": 96,
+      "wTiles": 9,
+      "hTiles": 6,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "transit",
+        "bus-terminal",
+        "canopy",
+        "boarding-bays",
+        "departure-board"
+      ],
+      "kitId": "mf-bldg-tr_bus_terminal"
+    },
+    {
+      "id": "mf-bldg-tr_parking_garage",
+      "name": "4층 도심 주차타워 (옥상 주차장)",
+      "pack": "pack07_transit_harbor",
+      "w": 112,
+      "h": 128,
+      "wTiles": 7,
+      "hTiles": 8,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "transit",
+        "parking-garage",
+        "cars",
+        "ramp",
+        "neon-sign",
+        "non-cloned"
+      ],
+      "kitId": "mf-bldg-tr_parking_garage"
+    },
+    {
+      "id": "mf-bldg-hb_ferry_terminal",
+      "name": "해안 여객선 페리 터미널",
+      "pack": "pack07_transit_harbor",
+      "w": 144,
+      "h": 112,
+      "wTiles": 9,
+      "hTiles": 7,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "harbor",
+        "ferry",
+        "terminal",
+        "nautical",
+        "wave-roof",
+        "landmark"
+      ],
+      "kitId": "mf-bldg-hb_ferry_terminal"
+    },
+    {
+      "id": "mf-bldg-hb_coastal_lighthouse",
+      "name": "적백 줄무늬 항구 등대·등대지기 오두막",
+      "pack": "pack07_transit_harbor",
+      "w": 64,
+      "h": 144,
+      "wTiles": 4,
+      "hTiles": 9,
+      "doorCol": 2,
+      "lightAnchors": [],
+      "tags": [
+        "harbor",
+        "lighthouse",
+        "coastal",
+        "cottage",
+        "lantern",
+        "landmark"
+      ],
+      "kitId": "mf-bldg-hb_coastal_lighthouse"
+    },
+    {
+      "id": "mf-bldg-hb_seafood_market",
+      "name": "항구 수산시장 어시장 창고",
+      "pack": "pack07_transit_harbor",
+      "w": 128,
+      "h": 96,
+      "wTiles": 8,
+      "hTiles": 6,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "harbor",
+        "seafood",
+        "fish-market",
+        "stalls",
+        "warehouse",
+        "banners"
+      ],
+      "kitId": "mf-bldg-hb_seafood_market"
+    },
+    {
+      "id": "mf-bldg-hb_pier_terrace_pub",
+      "name": "부두 2층 바다 테라스 펍·해산물 그릴",
+      "pack": "pack07_transit_harbor",
+      "w": 112,
+      "h": 112,
+      "wTiles": 7,
+      "hTiles": 7,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "harbor",
+        "pier",
+        "pub",
+        "terrace",
+        "string-lights",
+        "waterfront"
+      ],
+      "kitId": "mf-bldg-hb_pier_terrace_pub"
+    },
+    {
+      "id": "mf-bldg-hb_canal_crane_loft",
+      "name": "운하 적벽돌 크레인 호이스트 창고 로프트",
+      "pack": "pack07_transit_harbor",
+      "w": 112,
+      "h": 128,
+      "wTiles": 7,
+      "hTiles": 8,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "harbor",
+        "canal",
+        "warehouse",
+        "loft",
+        "crane-hoist",
+        "brick",
+        "non-cloned"
+      ],
+      "kitId": "mf-bldg-hb_canal_crane_loft"
+    },
+    {
+      "id": "mf-bldg-nl_coin_laundry",
+      "name": "24시 코인 세탁방 (2층)",
+      "pack": "pack08_alley_nightlife",
+      "w": 80,
+      "h": 96,
+      "wTiles": 5,
+      "hTiles": 6,
+      "doorCol": 2,
+      "lightAnchors": [],
+      "tags": [
+        "alley-nightlife",
+        "laundromat",
+        "coin-laundry",
+        "24h",
+        "retro",
+        "kawara"
+      ],
+      "kitId": "mf-bldg-nl_coin_laundry"
+    },
+    {
+      "id": "mf-bldg-nl_sento_chimney",
+      "name": "굴뚝 동네 목욕탕·센토",
+      "pack": "pack08_alley_nightlife",
+      "w": 112,
+      "h": 128,
+      "wTiles": 7,
+      "hTiles": 8,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "alley-nightlife",
+        "sento",
+        "bathhouse",
+        "chimney",
+        "noren",
+        "kawara",
+        "landmark"
+      ],
+      "kitId": "mf-bldg-nl_sento_chimney"
+    },
+    {
+      "id": "mf-bldg-nl_retro_arcade",
+      "name": "레트로 골목 오락실 (3층)",
+      "pack": "pack08_alley_nightlife",
+      "w": 96,
+      "h": 112,
+      "wTiles": 6,
+      "hTiles": 7,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "alley-nightlife",
+        "arcade",
+        "game-center",
+        "neon",
+        "retro",
+        "nightlife"
+      ],
+      "kitId": "mf-bldg-nl_retro_arcade"
+    },
+    {
+      "id": "mf-bldg-nl_karaoke_neon_tower",
+      "name": "네온 노래방 타워 (4층)",
+      "pack": "pack08_alley_nightlife",
+      "w": 80,
+      "h": 144,
+      "wTiles": 5,
+      "hTiles": 9,
+      "doorCol": 2,
+      "lightAnchors": [],
+      "tags": [
+        "alley-nightlife",
+        "karaoke",
+        "noraebang",
+        "neon",
+        "tower",
+        "nightlife"
+      ],
+      "kitId": "mf-bldg-nl_karaoke_neon_tower"
+    },
+    {
+      "id": "mf-bldg-nl_pojangmacha_hall",
+      "name": "골목 포장마차 홀",
+      "pack": "pack08_alley_nightlife",
+      "w": 112,
+      "h": 80,
+      "wTiles": 7,
+      "hTiles": 5,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "alley-nightlife",
+        "pojangmacha",
+        "street-food",
+        "tavern",
+        "nightlife",
+        "awning"
+      ],
+      "kitId": "mf-bldg-nl_pojangmacha_hall"
+    },
+    {
+      "id": "mf-bldg-nl_lp_bar_extstair",
+      "name": "외부계단 LP 바이닐 바 (2.5층)",
+      "pack": "pack08_alley_nightlife",
+      "w": 80,
+      "h": 112,
+      "wTiles": 5,
+      "hTiles": 7,
+      "doorCol": 2,
+      "lightAnchors": [],
+      "tags": [
+        "alley-nightlife",
+        "lp-bar",
+        "vinyl",
+        "ext-stair",
+        "brick",
+        "nightlife"
+      ],
+      "kitId": "mf-bldg-nl_lp_bar_extstair"
+    },
+    {
+      "id": "mf-bldg-nl_bowling_alley",
+      "name": "레트로 볼링장 (볼링핀 간판)",
+      "pack": "pack08_alley_nightlife",
+      "w": 128,
+      "h": 96,
+      "wTiles": 8,
+      "hTiles": 6,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "alley-nightlife",
+        "bowling",
+        "retro",
+        "marquee",
+        "landmark",
+        "nightlife"
+      ],
+      "kitId": "mf-bldg-nl_bowling_alley"
+    },
+    {
+      "id": "mf-bldg-nl_barbershop_home",
+      "name": "동네 레트로 이발소 (2층)",
+      "pack": "pack08_alley_nightlife",
+      "w": 64,
+      "h": 96,
+      "wTiles": 4,
+      "hTiles": 6,
+      "doorCol": 2,
+      "lightAnchors": [],
+      "tags": [
+        "alley-nightlife",
+        "barbershop",
+        "retro",
+        "alley",
+        "mint-tile",
+        "kawara"
+      ],
+      "kitId": "mf-bldg-nl_barbershop_home"
+    },
+    {
+      "id": "mf-bldg-nl_repair_workshop",
+      "name": "골목 수리 공방·정비소",
+      "pack": "pack08_alley_nightlife",
+      "w": 96,
+      "h": 80,
+      "wTiles": 6,
+      "hTiles": 5,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "alley-nightlife",
+        "workshop",
+        "repair",
+        "garage",
+        "industrial",
+        "corrugated"
+      ],
+      "kitId": "mf-bldg-nl_repair_workshop"
+    },
+    {
+      "id": "mf-bldg-nl_antique_corner",
+      "name": "모퉁이 골동품·앤티크샵 (2층)",
+      "pack": "pack08_alley_nightlife",
+      "w": 80,
+      "h": 96,
+      "wTiles": 5,
+      "hTiles": 6,
+      "doorCol": 2,
+      "lightAnchors": [],
+      "tags": [
+        "alley-nightlife",
+        "antique",
+        "vintage",
+        "curiosity",
+        "dormer",
+        "kawara"
+      ],
+      "kitId": "mf-bldg-nl_antique_corner"
+    },
+    {
+      "id": "mf-bldg-pk_glass_conservatory",
+      "name": "대형 식물원 유리 온실 (빅토리안 돔)",
+      "pack": "pack09_park_recreation",
+      "w": 128,
+      "h": 112,
+      "wTiles": 8,
+      "hTiles": 7,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "park",
+        "botanical",
+        "conservatory",
+        "greenhouse",
+        "glass-dome",
+        "landmark"
+      ],
+      "kitId": "mf-bldg-pk_glass_conservatory"
+    },
+    {
+      "id": "mf-bldg-pk_amphitheater",
+      "name": "야외 음악당·음향 셸 파빌리온",
+      "pack": "pack09_park_recreation",
+      "w": 144,
+      "h": 96,
+      "wTiles": 9,
+      "hTiles": 6,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "park",
+        "amphitheater",
+        "bandstand",
+        "stage",
+        "culture",
+        "music"
+      ],
+      "kitId": "mf-bldg-pk_amphitheater"
+    },
+    {
+      "id": "mf-bldg-pk_lakeside_boathouse",
+      "name": "호숫가 목조 보트하우스·보트 대여소",
+      "pack": "pack09_park_recreation",
+      "w": 112,
+      "h": 96,
+      "wTiles": 7,
+      "hTiles": 6,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "park",
+        "boathouse",
+        "lake",
+        "dock",
+        "swan-boat",
+        "recreation"
+      ],
+      "kitId": "mf-bldg-pk_lakeside_boathouse"
+    },
+    {
+      "id": "mf-bldg-pk_community_center",
+      "name": "2층 주민 문화·커뮤니티 센터 (옥상 정원)",
+      "pack": "pack09_park_recreation",
+      "w": 128,
+      "h": 112,
+      "wTiles": 8,
+      "hTiles": 7,
+      "doorCol": 4,
+      "lightAnchors": [],
+      "tags": [
+        "park",
+        "community-center",
+        "culture",
+        "roof-garden",
+        "skylight",
+        "louvers"
+      ],
+      "kitId": "mf-bldg-pk_community_center"
+    },
+    {
+      "id": "mf-bldg-pk_onsen_steam_terrace",
+      "name": "도심 온천·족욕 테라스 정자",
+      "pack": "pack09_park_recreation",
+      "w": 112,
+      "h": 96,
+      "wTiles": 7,
+      "hTiles": 6,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "park",
+        "onsen",
+        "hot-spring",
+        "foot-bath",
+        "steam",
+        "shoji",
+        "recreation"
+      ],
+      "kitId": "mf-bldg-pk_onsen_steam_terrace"
+    },
+    {
+      "id": "mf-bldg-pk_urban_greenhouse",
+      "name": "도심 텃밭 원예 창고·목조 온실",
+      "pack": "pack09_park_recreation",
+      "w": 96,
+      "h": 80,
+      "wTiles": 6,
+      "hTiles": 5,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "park",
+        "greenhouse",
+        "garden",
+        "potting-shed",
+        "seedlings",
+        "recreation"
+      ],
+      "kitId": "mf-bldg-pk_urban_greenhouse"
+    },
+    {
+      "id": "mf-bldg-pk_shrine_gate",
+      "name": "도심 공원 신사 본전·주홍 도리이",
+      "pack": "pack09_park_recreation",
+      "w": 112,
+      "h": 96,
+      "wTiles": 7,
+      "hTiles": 6,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "park",
+        "shrine",
+        "torii",
+        "sanctuary",
+        "kawara",
+        "culture"
+      ],
+      "kitId": "mf-bldg-pk_shrine_gate"
+    },
+    {
+      "id": "mf-bldg-pk_modern_chapel",
+      "name": "공원 현대식 석조·스테인드글라스 채플",
+      "pack": "pack09_park_recreation",
+      "w": 96,
+      "h": 128,
+      "wTiles": 6,
+      "hTiles": 8,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "park",
+        "chapel",
+        "wedding",
+        "stained-glass",
+        "spire",
+        "culture"
+      ],
+      "kitId": "mf-bldg-pk_modern_chapel"
+    },
+    {
+      "id": "mf-bldg-pk_rooftop_glass_bistro",
+      "name": "공원 유리온실 가든 비스트로·테라스",
+      "pack": "pack09_park_recreation",
+      "w": 112,
+      "h": 96,
+      "wTiles": 7,
+      "hTiles": 6,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "park",
+        "bistro",
+        "cafe",
+        "glasshouse",
+        "patio",
+        "olive-tree",
+        "recreation"
+      ],
+      "kitId": "mf-bldg-pk_rooftop_glass_bistro"
+    },
+    {
+      "id": "mf-bldg-pk_tennis_clubhouse",
+      "name": "화이트우드·벽돌 테니스 클럽하우스",
+      "pack": "pack09_park_recreation",
+      "w": 112,
+      "h": 96,
+      "wTiles": 7,
+      "hTiles": 6,
+      "doorCol": 3,
+      "lightAnchors": [],
+      "tags": [
+        "park",
+        "tennis",
+        "clubhouse",
+        "sports",
+        "veranda",
+        "cupola",
+        "recreation"
+      ],
+      "kitId": "mf-bldg-pk_tennis_clubhouse"
+    },
+    {
+      "id": "mf-bldg-sig_wide_cafe_corner",
+      "name": "플래그십 2층 시더 테라스 로스터리 카페 (2.5F)",
+      "pack": "pack10_signature_terraces",
+      "w": 144,
+      "h": 128,
+      "wTiles": 9,
+      "hTiles": 8,
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          32,
+          106
+        ],
+        [
+          72,
+          108
+        ],
+        [
+          112,
+          106
+        ],
+        [
+          40,
+          44
+        ],
+        [
+          104,
+          44
+        ]
+      ],
+      "tags": [
+        "signature",
+        "terrace",
+        "cafe",
+        "roastery",
+        "brick",
+        "wide-balcony",
+        "hero"
+      ],
+      "kitId": "mf-bldg-sig_wide_cafe_corner"
+    },
+    {
+      "id": "mf-bldg-sig_pergola_garden_villa",
+      "name": "시더 페르골라 지중해 가든 빌라 (2F)",
+      "pack": "pack10_signature_terraces",
+      "w": 128,
+      "h": 112,
+      "wTiles": 8,
+      "hTiles": 7,
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          64,
+          96
+        ],
+        [
+          30,
+          92
+        ],
+        [
+          98,
+          92
+        ],
+        [
+          80,
+          42
+        ],
+        [
+          36,
+          38
+        ]
+      ],
+      "tags": [
+        "signature",
+        "terrace",
+        "villa",
+        "pergola",
+        "garden",
+        "mediterranean",
+        "hero"
+      ],
+      "kitId": "mf-bldg-sig_pergola_garden_villa"
+    },
+    {
+      "id": "mf-bldg-sig_extstair_bookstore",
+      "name": "외부 철계단 3층 독립서점·티 스튜디오 (3F)",
+      "pack": "pack10_signature_terraces",
+      "w": 112,
+      "h": 128,
+      "wTiles": 7,
+      "hTiles": 8,
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          46,
+          108
+        ],
+        [
+          90,
+          108
+        ],
+        [
+          48,
+          50
+        ],
+        [
+          80,
+          50
+        ],
+        [
+          44,
+          32
+        ]
+      ],
+      "tags": [
+        "signature",
+        "terrace",
+        "bookstore",
+        "tea",
+        "exterior-stair",
+        "veranda",
+        "hero"
+      ],
+      "kitId": "mf-bldg-sig_extstair_bookstore"
+    },
+    {
+      "id": "mf-bldg-sig_3tier_stepped_terrace",
+      "name": "3단 계단식 스카이가든·갤러리 복합빌딩 (3F)",
+      "pack": "pack10_signature_terraces",
+      "w": 144,
+      "h": 144,
+      "wTiles": 9,
+      "hTiles": 9,
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          32,
+          122
+        ],
+        [
+          72,
+          126
+        ],
+        [
+          112,
+          122
+        ],
+        [
+          72,
+          65
+        ],
+        [
+          72,
+          22
+        ]
+      ],
+      "tags": [
+        "signature",
+        "terrace",
+        "stepped",
+        "ziggurat",
+        "gallery",
+        "sky-garden",
+        "hero"
+      ],
+      "kitId": "mf-bldg-sig_3tier_stepped_terrace"
+    },
+    {
+      "id": "mf-bldg-sig_canal_bridge_shop",
+      "name": "운하변 캔틸레버 목재 발코니 티·페이스트리 하우스 (2F)",
+      "pack": "pack10_signature_terraces",
+      "w": 128,
+      "h": 112,
+      "wTiles": 8,
+      "hTiles": 7,
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          28,
+          96
+        ],
+        [
+          64,
+          98
+        ],
+        [
+          98,
+          96
+        ],
+        [
+          32,
+          40
+        ],
+        [
+          96,
+          40
+        ]
+      ],
+      "tags": [
+        "signature",
+        "terrace",
+        "canal",
+        "waterfront",
+        "tea-house",
+        "cantilever",
+        "hero"
+      ],
+      "kitId": "mf-bldg-sig_canal_bridge_shop"
+    },
+    {
+      "id": "mf-bldg-sig_lcorner_conv_bar",
+      "name": "L자형 루프탑 비어가든·24시 편의점·펍 복합코너 (2F)",
+      "pack": "pack10_signature_terraces",
+      "w": 128,
+      "h": 112,
+      "wTiles": 8,
+      "hTiles": 7,
+      "doorCol": 2,
+      "lightAnchors": [
+        [
+          36,
+          96
+        ],
+        [
+          82,
+          96
+        ],
+        [
+          107,
+          96
+        ],
+        [
+          106,
+          32
+        ],
+        [
+          44,
+          24
+        ]
+      ],
+      "tags": [
+        "signature",
+        "terrace",
+        "rooftop-bar",
+        "beer-garden",
+        "convenience",
+        "l-shaped",
+        "hero"
+      ],
+      "kitId": "mf-bldg-sig_lcorner_conv_bar"
+    },
+    {
+      "id": "mf-bldg-sig_glass_atrium_arcade",
+      "name": "랜드마크 유리 아트리움 쇼핑 아케이드 (2.5F)",
+      "pack": "pack10_signature_terraces",
+      "w": 144,
+      "h": 128,
+      "wTiles": 9,
+      "hTiles": 8,
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          24,
+          106
+        ],
+        [
+          72,
+          110
+        ],
+        [
+          120,
+          106
+        ],
+        [
+          58,
+          52
+        ],
+        [
+          86,
+          52
+        ]
+      ],
+      "tags": [
+        "signature",
+        "terrace",
+        "arcade",
+        "atrium",
+        "glass-vault",
+        "landmark",
+        "hero"
+      ],
+      "kitId": "mf-bldg-sig_glass_atrium_arcade"
+    },
+    {
+      "id": "mf-bldg-sig_hillside_bakery_patio",
+      "name": "언덕 위 석축 1.5층 가든 파티오 블랑제리 (1.5F)",
+      "pack": "pack10_signature_terraces",
+      "w": 128,
+      "h": 112,
+      "wTiles": 8,
+      "hTiles": 7,
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          32,
+          48
+        ],
+        [
+          61,
+          48
+        ],
+        [
+          94,
+          48
+        ],
+        [
+          48,
+          84
+        ],
+        [
+          75,
+          84
+        ]
+      ],
+      "tags": [
+        "signature",
+        "terrace",
+        "bakery",
+        "patio",
+        "hillside",
+        "stone-steps",
+        "hero"
+      ],
+      "kitId": "mf-bldg-sig_hillside_bakery_patio"
+    },
+    {
+      "id": "mf-bldg-sig_courtyard_mansion",
+      "name": "2층 목재 갤러리 브릿지 중정 부티크 맨션 (2F)",
+      "pack": "pack10_signature_terraces",
+      "w": 144,
+      "h": 128,
+      "wTiles": 9,
+      "hTiles": 8,
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          24,
+          96
+        ],
+        [
+          120,
+          96
+        ],
+        [
+          60,
+          40
+        ],
+        [
+          84,
+          40
+        ],
+        [
+          72,
+          110
+        ]
+      ],
+      "tags": [
+        "signature",
+        "terrace",
+        "courtyard",
+        "mansion",
+        "u-shaped",
+        "gallery-bridge",
+        "hero"
+      ],
+      "kitId": "mf-bldg-sig_courtyard_mansion"
+    },
+    {
+      "id": "mf-bldg-sig_neon_nightmarket_hall",
+      "name": "네온 루프탑 테라스 야시장 푸드홀 (2F)",
+      "pack": "pack10_signature_terraces",
+      "w": 144,
+      "h": 112,
+      "wTiles": 9,
+      "hTiles": 7,
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          30,
+          88
+        ],
+        [
+          72,
+          90
+        ],
+        [
+          114,
+          88
+        ],
+        [
+          96,
+          10
+        ],
+        [
+          44,
+          24
+        ]
+      ],
+      "tags": [
+        "signature",
+        "terrace",
+        "nightmarket",
+        "food-hall",
+        "neon",
+        "rooftop",
+        "hero"
+      ],
+      "kitId": "mf-bldg-sig_neon_nightmarket_hall"
+    }
+  ]
+}

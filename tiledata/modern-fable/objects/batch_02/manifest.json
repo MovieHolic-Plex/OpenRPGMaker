@@ -1,0 +1,428 @@
+{
+  "batch": "batch_02",
+  "kind": "objects",
+  "palette": "tiledata/jp-city/fable-city/palette.json",
+  "count": 20,
+  "items": [
+    {
+      "id": "mf-obj-vending_drink_lit",
+      "name": "음료 자판기 (점등)",
+      "category": "vending-kiosks",
+      "w": 1,
+      "h": 2,
+      "size": [
+        16,
+        32
+      ],
+      "file": "mf-obj-vending_drink_lit.png",
+      "tags": [
+        "vending",
+        "kiosk",
+        "street",
+        "lit",
+        "drink"
+      ],
+      "lightAnchor": {
+        "x": 8,
+        "y": 12,
+        "color": "#eef2f2",
+        "radius": 2.5
+      }
+    },
+    {
+      "id": "mf-obj-vending_snack",
+      "name": "스낵·커피 자판기",
+      "category": "vending-kiosks",
+      "w": 1,
+      "h": 2,
+      "size": [
+        16,
+        32
+      ],
+      "file": "mf-obj-vending_snack.png",
+      "tags": [
+        "vending",
+        "kiosk",
+        "street",
+        "lit",
+        "snack"
+      ],
+      "lightAnchor": {
+        "x": 11,
+        "y": 13,
+        "color": "#f6cc7c",
+        "radius": 2.0
+      }
+    },
+    {
+      "id": "mf-obj-gacha_row",
+      "name": "캡슐토이 가챠 4열",
+      "category": "vending-kiosks",
+      "w": 2,
+      "h": 2,
+      "size": [
+        32,
+        32
+      ],
+      "file": "mf-obj-gacha_row.png",
+      "tags": [
+        "gacha",
+        "vending",
+        "shopfront",
+        "street"
+      ]
+    },
+    {
+      "id": "mf-obj-ticket_kiosk",
+      "name": "무인 발권 키오스크",
+      "category": "vending-kiosks",
+      "w": 2,
+      "h": 2,
+      "size": [
+        32,
+        32
+      ],
+      "file": "mf-obj-ticket_kiosk.png",
+      "tags": [
+        "kiosk",
+        "station",
+        "parking",
+        "lit"
+      ],
+      "lightAnchor": {
+        "x": 14,
+        "y": 14,
+        "color": "#86b8c8",
+        "radius": 2.5
+      }
+    },
+    {
+      "id": "mf-obj-parcel_locker",
+      "name": "무인 택배 보관함",
+      "category": "vending-kiosks",
+      "w": 2,
+      "h": 2,
+      "size": [
+        32,
+        32
+      ],
+      "file": "mf-obj-parcel_locker.png",
+      "tags": [
+        "locker",
+        "kiosk",
+        "parcel",
+        "lit"
+      ],
+      "lightAnchor": {
+        "x": 16,
+        "y": 14,
+        "color": "#86b8c8",
+        "radius": 2.2
+      }
+    },
+    {
+      "id": "mf-obj-phone_booth",
+      "name": "공중전화 부스",
+      "category": "vending-kiosks",
+      "w": 1,
+      "h": 2,
+      "size": [
+        16,
+        32
+      ],
+      "file": "mf-obj-phone_booth.png",
+      "tags": [
+        "phone",
+        "booth",
+        "retro",
+        "street",
+        "lit"
+      ],
+      "lightAnchor": {
+        "x": 8,
+        "y": 9,
+        "color": "#f8eca0",
+        "radius": 2.5
+      }
+    },
+    {
+      "id": "mf-obj-atm_kiosk",
+      "name": "은행 ATM 부스",
+      "category": "vending-kiosks",
+      "w": 2,
+      "h": 2,
+      "size": [
+        32,
+        32
+      ],
+      "file": "mf-obj-atm_kiosk.png",
+      "tags": [
+        "atm",
+        "bank",
+        "kiosk",
+        "lit"
+      ],
+      "lightAnchor": {
+        "x": 16,
+        "y": 9,
+        "color": "#6c98cc",
+        "radius": 3.0
+      }
+    },
+    {
+      "id": "mf-obj-pojangmacha_cart",
+      "name": "포장마차 노점 수레",
+      "category": "vending-kiosks",
+      "w": 3,
+      "h": 2,
+      "size": [
+        48,
+        32
+      ],
+      "file": "mf-obj-pojangmacha_cart.png",
+      "tags": [
+        "pojangmacha",
+        "food-cart",
+        "korean",
+        "street",
+        "lit"
+      ],
+      "lightAnchor": {
+        "x": 24,
+        "y": 13,
+        "color": "#f6cc7c",
+        "radius": 3.5
+      }
+    },
+    {
+      "id": "mf-obj-coffee_cart",
+      "name": "모바일 에스프레소 커피 카트",
+      "category": "vending-kiosks",
+      "w": 3,
+      "h": 2,
+      "size": [
+        48,
+        32
+      ],
+      "file": "mf-obj-coffee_cart.png",
+      "tags": [
+        "coffee",
+        "cart",
+        "cafe",
+        "street",
+        "lit"
+      ],
+      "lightAnchor": {
+        "x": 24,
+        "y": 10,
+        "color": "#f8eca0",
+        "radius": 3.0
+      }
+    },
+    {
+      "id": "mf-obj-newsstand_kiosk",
+      "name": "가판대 잡지·음료 키오스크",
+      "category": "vending-kiosks",
+      "w": 3,
+      "h": 2,
+      "size": [
+        48,
+        32
+      ],
+      "file": "mf-obj-newsstand_kiosk.png",
+      "tags": [
+        "newsstand",
+        "kiosk",
+        "magazine",
+        "street",
+        "lit"
+      ],
+      "lightAnchor": {
+        "x": 18,
+        "y": 13,
+        "color": "#f6cc7c",
+        "radius": 3.2
+      }
+    },
+    {
+      "id": "mf-obj-cafe_bistro_set",
+      "name": "카페 비스트로 테이블 세트",
+      "category": "seating-terrace",
+      "w": 2,
+      "h": 2,
+      "size": [
+        32,
+        32
+      ],
+      "file": "mf-obj-cafe_bistro_set.png",
+      "tags": [
+        "cafe",
+        "bistro",
+        "table",
+        "seating",
+        "terrace"
+      ]
+    },
+    {
+      "id": "mf-obj-parasol_patio_set",
+      "name": "테라스 팔각 파라솔 테이블",
+      "category": "seating-terrace",
+      "w": 3,
+      "h": 3,
+      "size": [
+        48,
+        48
+      ],
+      "file": "mf-obj-parasol_patio_set.png",
+      "tags": [
+        "parasol",
+        "patio",
+        "cafe",
+        "seating",
+        "terrace"
+      ]
+    },
+    {
+      "id": "mf-obj-park_bench_wood",
+      "name": "공원 삼나무 벤치",
+      "category": "seating-terrace",
+      "w": 2,
+      "h": 1,
+      "size": [
+        32,
+        16
+      ],
+      "file": "mf-obj-park_bench_wood.png",
+      "tags": [
+        "bench",
+        "park",
+        "wood",
+        "seating"
+      ]
+    },
+    {
+      "id": "mf-obj-plaza_bench_stone",
+      "name": "광장 화강암 벤치",
+      "category": "seating-terrace",
+      "w": 2,
+      "h": 1,
+      "size": [
+        32,
+        16
+      ],
+      "file": "mf-obj-plaza_bench_stone.png",
+      "tags": [
+        "bench",
+        "plaza",
+        "stone",
+        "seating"
+      ]
+    },
+    {
+      "id": "mf-obj-rooftop_pergola",
+      "name": "옥상 담쟁이 퍼걸러",
+      "category": "seating-terrace",
+      "w": 3,
+      "h": 2,
+      "size": [
+        48,
+        32
+      ],
+      "file": "mf-obj-rooftop_pergola.png",
+      "tags": [
+        "pergola",
+        "rooftop",
+        "terrace",
+        "ivy"
+      ]
+    },
+    {
+      "id": "mf-obj-rooftop_water_tank",
+      "name": "옥상 철골 물탱크",
+      "category": "seating-terrace",
+      "w": 2,
+      "h": 2,
+      "size": [
+        32,
+        32
+      ],
+      "file": "mf-obj-rooftop_water_tank.png",
+      "tags": [
+        "water-tank",
+        "rooftop",
+        "utility"
+      ]
+    },
+    {
+      "id": "mf-obj-rooftop_ac_stack",
+      "name": "옥상 2단 실외기 스택",
+      "category": "seating-terrace",
+      "w": 2,
+      "h": 2,
+      "size": [
+        32,
+        32
+      ],
+      "file": "mf-obj-rooftop_ac_stack.png",
+      "tags": [
+        "hvac",
+        "ac",
+        "rooftop",
+        "utility"
+      ]
+    },
+    {
+      "id": "mf-obj-rooftop_solar_panel",
+      "name": "옥상 태양광 패널 어레이",
+      "category": "seating-terrace",
+      "w": 2,
+      "h": 1,
+      "size": [
+        32,
+        16
+      ],
+      "file": "mf-obj-rooftop_solar_panel.png",
+      "tags": [
+        "solar",
+        "rooftop",
+        "utility",
+        "eco"
+      ]
+    },
+    {
+      "id": "mf-obj-rooftop_laundry",
+      "name": "옥상 빨래 건조대",
+      "category": "seating-terrace",
+      "w": 2,
+      "h": 2,
+      "size": [
+        32,
+        32
+      ],
+      "file": "mf-obj-rooftop_laundry.png",
+      "tags": [
+        "laundry",
+        "rooftop",
+        "daily-life"
+      ]
+    },
+    {
+      "id": "mf-obj-rooftop_garden_bed",
+      "name": "옥상 텃밭 화분 상자",
+      "category": "seating-terrace",
+      "w": 2,
+      "h": 1,
+      "size": [
+        32,
+        16
+      ],
+      "file": "mf-obj-rooftop_garden_bed.png",
+      "tags": [
+        "garden",
+        "planter",
+        "rooftop",
+        "urban-farm"
+      ]
+    }
+  ]
+}

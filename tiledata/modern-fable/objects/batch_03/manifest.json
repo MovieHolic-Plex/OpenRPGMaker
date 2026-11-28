@@ -1,0 +1,395 @@
+{
+  "batch": "batch_03",
+  "kind": "objects",
+  "count": 20,
+  "items": [
+    {
+      "id": "mf-obj-tree_grate_spring",
+      "name": "봄 가로수(주철 보호판)",
+      "category": "foliage-planters",
+      "w": 2,
+      "h": 3,
+      "px": [
+        32,
+        48
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "tree",
+        "foliage",
+        "street"
+      ],
+      "file": "mf-obj-tree_grate_spring.png"
+    },
+    {
+      "id": "mf-obj-tree_grate_ginkgo",
+      "name": "가을 은행나무 가로수",
+      "category": "foliage-planters",
+      "w": 2,
+      "h": 3,
+      "px": [
+        32,
+        48
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "tree",
+        "foliage",
+        "autumn"
+      ],
+      "file": "mf-obj-tree_grate_ginkgo.png"
+    },
+    {
+      "id": "mf-obj-tree_cherry_blossom",
+      "name": "만개 벚나무(석재 화단링)",
+      "category": "foliage-planters",
+      "w": 2,
+      "h": 3,
+      "px": [
+        32,
+        48
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "tree",
+        "foliage",
+        "spring"
+      ],
+      "file": "mf-obj-tree_cherry_blossom.png"
+    },
+    {
+      "id": "mf-obj-sidewalk_planter",
+      "name": "콘크리트 가로 화분대",
+      "category": "foliage-planters",
+      "w": 2,
+      "h": 1,
+      "px": [
+        32,
+        16
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "planter",
+        "flowers",
+        "street"
+      ],
+      "file": "mf-obj-sidewalk_planter.png"
+    },
+    {
+      "id": "mf-obj-terracotta_trough",
+      "name": "테라코타 카페 화분",
+      "category": "foliage-planters",
+      "w": 2,
+      "h": 1,
+      "px": [
+        32,
+        16
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "planter",
+        "flowers",
+        "cafe"
+      ],
+      "file": "mf-obj-terracotta_trough.png"
+    },
+    {
+      "id": "mf-obj-boxwood_hedge",
+      "name": "회양목 생울타리",
+      "category": "foliage-planters",
+      "w": 2,
+      "h": 1,
+      "px": [
+        32,
+        16
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "hedge",
+        "foliage",
+        "park"
+      ],
+      "file": "mf-obj-boxwood_hedge.png"
+    },
+    {
+      "id": "mf-obj-bamboo_planter",
+      "name": "슬레이트 대나무 화분",
+      "category": "foliage-planters",
+      "w": 1,
+      "h": 2,
+      "px": [
+        16,
+        32
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "planter",
+        "bamboo",
+        "modern"
+      ],
+      "file": "mf-obj-bamboo_planter.png"
+    },
+    {
+      "id": "mf-obj-potted_olive",
+      "name": "유약 도기 올리브 화분",
+      "category": "foliage-planters",
+      "w": 1,
+      "h": 2,
+      "px": [
+        16,
+        32
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "planter",
+        "tree",
+        "cafe"
+      ],
+      "file": "mf-obj-potted_olive.png"
+    },
+    {
+      "id": "mf-obj-park_fountain",
+      "name": "광장 2단 석재 분수대",
+      "category": "foliage-planters",
+      "w": 3,
+      "h": 3,
+      "px": [
+        48,
+        48
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "fountain",
+        "water",
+        "plaza"
+      ],
+      "file": "mf-obj-park_fountain.png"
+    },
+    {
+      "id": "mf-obj-drinking_fountain",
+      "name": "공원 음수대",
+      "category": "foliage-planters",
+      "w": 1,
+      "h": 1,
+      "px": [
+        16,
+        16
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "fountain",
+        "park",
+        "water"
+      ],
+      "file": "mf-obj-drinking_fountain.png"
+    },
+    {
+      "id": "mf-obj-car_compact_side",
+      "name": "소형 해치백 승용차",
+      "category": "transit-vehicles",
+      "w": 3,
+      "h": 2,
+      "px": [
+        48,
+        32
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "vehicle",
+        "car",
+        "road"
+      ],
+      "file": "mf-obj-car_compact_side.png"
+    },
+    {
+      "id": "mf-obj-kei_truck_side",
+      "name": "경트럭 배달 화물차",
+      "category": "transit-vehicles",
+      "w": 3,
+      "h": 2,
+      "px": [
+        48,
+        32
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "vehicle",
+        "truck",
+        "road"
+      ],
+      "file": "mf-obj-kei_truck_side.png"
+    },
+    {
+      "id": "mf-obj-city_taxi_side",
+      "name": "도심 택시",
+      "category": "transit-vehicles",
+      "w": 3,
+      "h": 2,
+      "px": [
+        48,
+        32
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "vehicle",
+        "taxi",
+        "road",
+        "lightAnchor"
+      ],
+      "file": "mf-obj-city_taxi_side.png",
+      "lightAnchor": true
+    },
+    {
+      "id": "mf-obj-delivery_scooter",
+      "name": "배달 스쿠터",
+      "category": "transit-vehicles",
+      "w": 2,
+      "h": 1,
+      "px": [
+        32,
+        16
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "vehicle",
+        "scooter",
+        "street"
+      ],
+      "file": "mf-obj-delivery_scooter.png"
+    },
+    {
+      "id": "mf-obj-bike_rack_4",
+      "name": "4구 자전거 거치대",
+      "category": "transit-vehicles",
+      "w": 3,
+      "h": 1,
+      "px": [
+        48,
+        16
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "vehicle",
+        "bicycle",
+        "street"
+      ],
+      "file": "mf-obj-bike_rack_4.png"
+    },
+    {
+      "id": "mf-obj-parked_bicycle",
+      "name": "생활 자전거(바구니)",
+      "category": "transit-vehicles",
+      "w": 2,
+      "h": 1,
+      "px": [
+        32,
+        16
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "vehicle",
+        "bicycle",
+        "street"
+      ],
+      "file": "mf-obj-parked_bicycle.png"
+    },
+    {
+      "id": "mf-obj-city_bus_side",
+      "name": "저상 시내버스",
+      "category": "transit-vehicles",
+      "w": 5,
+      "h": 2,
+      "px": [
+        80,
+        32
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "vehicle",
+        "bus",
+        "road",
+        "lightAnchor"
+      ],
+      "file": "mf-obj-city_bus_side.png",
+      "lightAnchor": true
+    },
+    {
+      "id": "mf-obj-police_car_side",
+      "name": "도심 순찰차",
+      "category": "transit-vehicles",
+      "w": 3,
+      "h": 2,
+      "px": [
+        48,
+        32
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "vehicle",
+        "police",
+        "road",
+        "lightAnchor"
+      ],
+      "file": "mf-obj-police_car_side.png",
+      "lightAnchor": true
+    },
+    {
+      "id": "mf-obj-ambulance_side",
+      "name": "119 구급차",
+      "category": "transit-vehicles",
+      "w": 4,
+      "h": 2,
+      "px": [
+        64,
+        32
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "vehicle",
+        "ambulance",
+        "road",
+        "lightAnchor"
+      ],
+      "file": "mf-obj-ambulance_side.png",
+      "lightAnchor": true
+    },
+    {
+      "id": "mf-obj-shopping_cart_corral",
+      "name": "마트 쇼핑카트 보관소",
+      "category": "transit-vehicles",
+      "w": 3,
+      "h": 2,
+      "px": [
+        48,
+        32
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "vehicle",
+        "cart",
+        "commercial"
+      ],
+      "file": "mf-obj-shopping_cart_corral.png"
+    }
+  ]
+}

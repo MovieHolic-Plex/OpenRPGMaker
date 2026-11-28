@@ -1,0 +1,459 @@
+{
+  "pack": "pack10_signature_terraces",
+  "batch": "pack10_signature_terraces",
+  "kind": "buildings",
+  "palette": "tiledata/jp-city/fable-city/palette.json",
+  "count": 10,
+  "items": [
+    {
+      "id": "mf-bldg-sig_wide_cafe_corner",
+      "name": "플래그십 2층 시더 테라스 로스터리 카페 (2.5F)",
+      "pack": "pack10_signature_terraces",
+      "category": "signature-terraces",
+      "w": 9,
+      "h": 8,
+      "size": [
+        144,
+        128
+      ],
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          32,
+          106
+        ],
+        [
+          72,
+          108
+        ],
+        [
+          112,
+          106
+        ],
+        [
+          40,
+          44
+        ],
+        [
+          104,
+          44
+        ]
+      ],
+      "file": "mf-bldg-sig_wide_cafe_corner.png",
+      "tags": [
+        "signature",
+        "terrace",
+        "cafe",
+        "roastery",
+        "brick",
+        "wide-balcony",
+        "hero"
+      ]
+    },
+    {
+      "id": "mf-bldg-sig_pergola_garden_villa",
+      "name": "시더 페르골라 지중해 가든 빌라 (2F)",
+      "pack": "pack10_signature_terraces",
+      "category": "signature-terraces",
+      "w": 8,
+      "h": 7,
+      "size": [
+        128,
+        112
+      ],
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          64,
+          96
+        ],
+        [
+          30,
+          92
+        ],
+        [
+          98,
+          92
+        ],
+        [
+          80,
+          42
+        ],
+        [
+          36,
+          38
+        ]
+      ],
+      "file": "mf-bldg-sig_pergola_garden_villa.png",
+      "tags": [
+        "signature",
+        "terrace",
+        "villa",
+        "pergola",
+        "garden",
+        "mediterranean",
+        "hero"
+      ]
+    },
+    {
+      "id": "mf-bldg-sig_extstair_bookstore",
+      "name": "외부 철계단 3층 독립서점·티 스튜디오 (3F)",
+      "pack": "pack10_signature_terraces",
+      "category": "signature-terraces",
+      "w": 7,
+      "h": 8,
+      "size": [
+        112,
+        128
+      ],
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          46,
+          108
+        ],
+        [
+          90,
+          108
+        ],
+        [
+          48,
+          50
+        ],
+        [
+          80,
+          50
+        ],
+        [
+          44,
+          32
+        ]
+      ],
+      "file": "mf-bldg-sig_extstair_bookstore.png",
+      "tags": [
+        "signature",
+        "terrace",
+        "bookstore",
+        "tea",
+        "exterior-stair",
+        "veranda",
+        "hero"
+      ]
+    },
+    {
+      "id": "mf-bldg-sig_3tier_stepped_terrace",
+      "name": "3단 계단식 스카이가든·갤러리 복합빌딩 (3F)",
+      "pack": "pack10_signature_terraces",
+      "category": "signature-terraces",
+      "w": 9,
+      "h": 9,
+      "size": [
+        144,
+        144
+      ],
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          32,
+          122
+        ],
+        [
+          72,
+          126
+        ],
+        [
+          112,
+          122
+        ],
+        [
+          72,
+          65
+        ],
+        [
+          72,
+          22
+        ]
+      ],
+      "file": "mf-bldg-sig_3tier_stepped_terrace.png",
+      "tags": [
+        "signature",
+        "terrace",
+        "stepped",
+        "ziggurat",
+        "gallery",
+        "sky-garden",
+        "hero"
+      ]
+    },
+    {
+      "id": "mf-bldg-sig_canal_bridge_shop",
+      "name": "운하변 캔틸레버 목재 발코니 티·페이스트리 하우스 (2F)",
+      "pack": "pack10_signature_terraces",
+      "category": "signature-terraces",
+      "w": 8,
+      "h": 7,
+      "size": [
+        128,
+        112
+      ],
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          28,
+          96
+        ],
+        [
+          64,
+          98
+        ],
+        [
+          98,
+          96
+        ],
+        [
+          32,
+          40
+        ],
+        [
+          96,
+          40
+        ]
+      ],
+      "file": "mf-bldg-sig_canal_bridge_shop.png",
+      "tags": [
+        "signature",
+        "terrace",
+        "canal",
+        "waterfront",
+        "tea-house",
+        "cantilever",
+        "hero"
+      ]
+    },
+    {
+      "id": "mf-bldg-sig_lcorner_conv_bar",
+      "name": "L자형 루프탑 비어가든·24시 편의점·펍 복합코너 (2F)",
+      "pack": "pack10_signature_terraces",
+      "category": "signature-terraces",
+      "w": 8,
+      "h": 7,
+      "size": [
+        128,
+        112
+      ],
+      "doorCol": 2,
+      "lightAnchors": [
+        [
+          36,
+          96
+        ],
+        [
+          82,
+          96
+        ],
+        [
+          107,
+          96
+        ],
+        [
+          106,
+          32
+        ],
+        [
+          44,
+          24
+        ]
+      ],
+      "file": "mf-bldg-sig_lcorner_conv_bar.png",
+      "tags": [
+        "signature",
+        "terrace",
+        "rooftop-bar",
+        "beer-garden",
+        "convenience",
+        "l-shaped",
+        "hero"
+      ]
+    },
+    {
+      "id": "mf-bldg-sig_glass_atrium_arcade",
+      "name": "랜드마크 유리 아트리움 쇼핑 아케이드 (2.5F)",
+      "pack": "pack10_signature_terraces",
+      "category": "signature-terraces",
+      "w": 9,
+      "h": 8,
+      "size": [
+        144,
+        128
+      ],
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          24,
+          106
+        ],
+        [
+          72,
+          110
+        ],
+        [
+          120,
+          106
+        ],
+        [
+          58,
+          52
+        ],
+        [
+          86,
+          52
+        ]
+      ],
+      "file": "mf-bldg-sig_glass_atrium_arcade.png",
+      "tags": [
+        "signature",
+        "terrace",
+        "arcade",
+        "atrium",
+        "glass-vault",
+        "landmark",
+        "hero"
+      ]
+    },
+    {
+      "id": "mf-bldg-sig_hillside_bakery_patio",
+      "name": "언덕 위 석축 1.5층 가든 파티오 블랑제리 (1.5F)",
+      "pack": "pack10_signature_terraces",
+      "category": "signature-terraces",
+      "w": 8,
+      "h": 7,
+      "size": [
+        128,
+        112
+      ],
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          32,
+          48
+        ],
+        [
+          61,
+          48
+        ],
+        [
+          94,
+          48
+        ],
+        [
+          48,
+          84
+        ],
+        [
+          75,
+          84
+        ]
+      ],
+      "file": "mf-bldg-sig_hillside_bakery_patio.png",
+      "tags": [
+        "signature",
+        "terrace",
+        "bakery",
+        "patio",
+        "hillside",
+        "stone-steps",
+        "hero"
+      ]
+    },
+    {
+      "id": "mf-bldg-sig_courtyard_mansion",
+      "name": "2층 목재 갤러리 브릿지 중정 부티크 맨션 (2F)",
+      "pack": "pack10_signature_terraces",
+      "category": "signature-terraces",
+      "w": 9,
+      "h": 8,
+      "size": [
+        144,
+        128
+      ],
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          24,
+          96
+        ],
+        [
+          120,
+          96
+        ],
+        [
+          60,
+          40
+        ],
+        [
+          84,
+          40
+        ],
+        [
+          72,
+          110
+        ]
+      ],
+      "file": "mf-bldg-sig_courtyard_mansion.png",
+      "tags": [
+        "signature",
+        "terrace",
+        "courtyard",
+        "mansion",
+        "u-shaped",
+        "gallery-bridge",
+        "hero"
+      ]
+    },
+    {
+      "id": "mf-bldg-sig_neon_nightmarket_hall",
+      "name": "네온 루프탑 테라스 야시장 푸드홀 (2F)",
+      "pack": "pack10_signature_terraces",
+      "category": "signature-terraces",
+      "w": 9,
+      "h": 7,
+      "size": [
+        144,
+        112
+      ],
+      "doorCol": 4,
+      "lightAnchors": [
+        [
+          30,
+          88
+        ],
+        [
+          72,
+          90
+        ],
+        [
+          114,
+          88
+        ],
+        [
+          96,
+          10
+        ],
+        [
+          44,
+          24
+        ]
+      ],
+      "file": "mf-bldg-sig_neon_nightmarket_hall.png",
+      "tags": [
+        "signature",
+        "terrace",
+        "nightmarket",
+        "food-hall",
+        "neon",
+        "rooftop",
+        "hero"
+      ]
+    }
+  ]
+}

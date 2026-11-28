@@ -53,7 +53,10 @@ SCALE = 3
 REF_SCALE = 2
 DEFAULT_RUNS = 3
 DEFAULT_RETRIES = 2
-JUDGE_MODEL = os.environ.get('BUILDING_KIT_JUDGE_MODEL', 'opus')
+JUDGE_BACKEND = os.environ.get('BUILDING_KIT_JUDGE_BACKEND') or os.environ.get('BUILDING_KIT_BACKEND', 'codex')
+JUDGE_MODEL = os.environ.get('BUILDING_KIT_JUDGE_MODEL', 'gpt-6.2-sol')
+NEON_JUDGE_MODEL = os.environ.get('BUILDING_KIT_NEON_JUDGE_MODEL', 'gemini-4-neon')
+CLAUDE_JUDGE_MODEL = os.environ.get('BUILDING_KIT_CLAUDE_JUDGE_MODEL', 'opus')
 JUDGE_EFFORT = os.environ.get('BUILDING_KIT_JUDGE_EFFORT', 'high')
 JUDGE_TIMEOUT = int(os.environ.get('BUILDING_KIT_JUDGE_TIMEOUT', '3600'))
 REF_KITS = ('bd-house-h101_0', 'bd-house-inn', 'bd-out-cabin')
@@ -368,10 +371,42 @@ def claude_judge(prompt, images, workdir, model=None, effort=None, timeout=None)
     listing = '\n'.join(f'- {p}' for p in images)
     full = f'{prompt}\n\nOpen and look at each of these images with the Read tool, in this order, before answering:\n{listing}'
     cmd = [shutil.which('claude') or 'claude', '-p', '--output-format', 'text', '--strict-mcp-config',
-           '--allowedTools', 'Read', '--add-dir', str(workdir), '--model', model or JUDGE_MODEL]
+           '--allowedTools', 'Read', '--add-dir', str(workdir), '--model', model or CLAUDE_JUDGE_MODEL]
     if effort or JUDGE_EFFORT:
         cmd += ['--effort', effort or JUDGE_EFFORT]
     return _call(cmd, full, workdir, timeout)
+
+
+def codex_judge(prompt, images, workdir, model=None, effort=None, timeout=None):
+    listing = '\n'.join(f'- {p}' for p in images)
+    full = f'{prompt}\n\nAttached images in order:\n{listing}'
+    eff = effort or JUDGE_EFFORT
+    cmd = [shutil.which('codex') or os.path.expanduser('~/.local/bin/codex'), 'exec',
+           '-m', model or JUDGE_MODEL, '-c', f'model_reasoning_effort="{eff}"',
+           '--skip-git-repo-check', '-s', 'read-only', '-C', str(workdir)]
+    for img_p in images:
+        cmd += ['-i', str(img_p)]
+    cmd.append('-')
+    return _call(cmd, full, workdir, timeout)
+
+
+def agy_judge(prompt, images, workdir, model=None, effort=None, timeout=None):
+    listing = '\n'.join(f'- {p}' for p in images)
+    full = f'{prompt}\n\nOpen and look at each of these images with the Read tool, in this order, before answering:\n{listing}'
+    cmd = [shutil.which('agy') or 'agy', '--output-format', 'text', '--dangerously-skip-permissions',
+           '--disable-slash-commands', '--add-dir', str(workdir), '--model', model or NEON_JUDGE_MODEL,
+           '--effort', effort or JUDGE_EFFORT, '-p', full]
+    return _call(cmd, None, workdir, timeout)
+
+
+def default_judge(backend=None):
+    import drawer
+    b = drawer.normalize_backend(backend or JUDGE_BACKEND)
+    if b == 'codex':
+        return codex_judge, JUDGE_MODEL, f'codex/{JUDGE_MODEL}/{JUDGE_EFFORT}'
+    if b == 'neon':
+        return agy_judge, NEON_JUDGE_MODEL, f'agy/{NEON_JUDGE_MODEL}/{JUDGE_EFFORT}'
+    return claude_judge, CLAUDE_JUDGE_MODEL, f'claude/{CLAUDE_JUDGE_MODEL}/{JUDGE_EFFORT}'
 
 
 def command_judge(shell_cmd):
@@ -574,24 +609,26 @@ def parts_by_key(theme, rid):
 
 
 def run(theme, rid, runs=DEFAULT_RUNS, judge_cmd=None, judge_runner=None, parts=None, only=None, seed=None, quiet=False,
-        finished=False):
+        finished=False, backend=None):
     if parts is None:
         parts = parts_by_key(theme, rid)
     if not parts:
         raise SystemExit(f'{theme} {rid}: 조립할 부품이 없다 — draw 로 판 후보를 만든다')
+    def_fn, def_model, def_label = default_judge(backend)
     if judge_runner is None and judge_cmd:
         judge_runner = command_judge(judge_cmd)
-    judge_runner = judge_runner or claude_judge
+    judge_runner = judge_runner or def_fn
     os.makedirs(_round_dir(theme, rid, finished), exist_ok=True)
     budget = runs + DEFAULT_RETRIES
-    label = f'claude/{JUDGE_MODEL}/{JUDGE_EFFORT}' if judge_runner is claude_judge else f'injected:{judge_cmd or "runner"}'
+    label = def_label if judge_runner is def_fn else f'injected:{judge_cmd or "runner"}'
+    run_model = def_model if judge_runner is def_fn else JUDGE_MODEL
     agg = None
     started = 0
     while True:
         started += 1
         prep = prepare(theme, rid, parts, runs, DEFAULT_RETRIES, only, seed, finished)
         try:
-            text = judge_runner(prep['prompt'], prep['images'], prep['work'], JUDGE_MODEL, JUDGE_EFFORT, JUDGE_TIMEOUT)
+            text = judge_runner(prep['prompt'], prep['images'], prep['work'], run_model, JUDGE_EFFORT, JUDGE_TIMEOUT)
         except Exception as e:  # noqa: BLE001
             shutil.rmtree(prep['dir'], ignore_errors=True)
             raise SystemExit(f'판정자 프로세스 실패(기록 없음): {e}')

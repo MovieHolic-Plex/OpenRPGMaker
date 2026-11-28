@@ -1,0 +1,301 @@
+{
+  "tiles": [
+    {
+      "id": "mf-gnd-asphalt-a",
+      "name": "아스팔트 차도 A",
+      "layer": "ground",
+      "pc": "floor",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "road"
+      ]
+    },
+    {
+      "id": "mf-gnd-asphalt-b",
+      "name": "아스팔트 차도 B",
+      "layer": "ground",
+      "pc": "floor",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "road"
+      ]
+    },
+    {
+      "id": "mf-gnd-asphalt-patch",
+      "name": "아스팔트 보수 패치",
+      "layer": "ground",
+      "pc": "floor",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "road"
+      ]
+    },
+    {
+      "id": "mf-gnd-sidewalk-a",
+      "name": "보도 블록 판석 A",
+      "layer": "ground",
+      "pc": "floor",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "path"
+      ]
+    },
+    {
+      "id": "mf-gnd-sidewalk-b",
+      "name": "보도 블록 판석 B",
+      "layer": "ground",
+      "pc": "floor",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "path"
+      ]
+    },
+    {
+      "id": "mf-gnd-sidewalk-brick",
+      "name": "인터로킹 벽돌 보도",
+      "layer": "ground",
+      "pc": "floor",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "path"
+      ]
+    },
+    {
+      "id": "mf-gnd-forecourt",
+      "name": "상가 앞마당 테라코타 판석",
+      "layer": "ground",
+      "pc": "floor",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "path"
+      ]
+    },
+    {
+      "id": "mf-gnd-alley",
+      "name": "골목 생활도로 포장",
+      "layer": "ground",
+      "pc": "floor",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "alley"
+      ]
+    },
+    {
+      "id": "mf-gnd-lawn-a",
+      "name": "공원 잔디 A",
+      "layer": "ground",
+      "pc": "floor",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "green"
+      ]
+    },
+    {
+      "id": "mf-gnd-lawn-b",
+      "name": "공원 잔디 꽃밭",
+      "layer": "ground",
+      "pc": "floor",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "green"
+      ]
+    },
+    {
+      "id": "mf-gnd-earth",
+      "name": "운동장·마당 흙바닥",
+      "layer": "ground",
+      "pc": "floor",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "terrain"
+      ]
+    },
+    {
+      "id": "mf-gnd-water",
+      "name": "운하·하천 수면",
+      "layer": "ground",
+      "pc": "solidfloor",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "water"
+      ]
+    },
+    {
+      "id": "mf-curb-s",
+      "name": "보도 남측 연석·측구",
+      "layer": "floor",
+      "pc": "flat",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "border"
+      ]
+    },
+    {
+      "id": "mf-curb-n",
+      "name": "보도 북측 연석",
+      "layer": "floor",
+      "pc": "flat",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "border"
+      ]
+    },
+    {
+      "id": "mf-curb-e",
+      "name": "보도 동측 연석",
+      "layer": "floor",
+      "pc": "flat",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "border"
+      ]
+    },
+    {
+      "id": "mf-curb-w",
+      "name": "보도 서측 연석",
+      "layer": "floor",
+      "pc": "flat",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "border"
+      ]
+    },
+    {
+      "id": "mf-mark-zebra-h",
+      "name": "횡단보도 가로",
+      "layer": "floor",
+      "pc": "flat",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "mark"
+      ]
+    },
+    {
+      "id": "mf-mark-zebra-v",
+      "name": "횡단보도 세로",
+      "layer": "floor",
+      "pc": "flat",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "mark"
+      ]
+    },
+    {
+      "id": "mf-mark-yellow-h",
+      "name": "황색 중앙선 가로",
+      "layer": "floor",
+      "pc": "flat",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "mark"
+      ]
+    },
+    {
+      "id": "mf-mark-yellow-v",
+      "name": "황색 중앙선 세로",
+      "layer": "floor",
+      "pc": "flat",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "mark"
+      ]
+    },
+    {
+      "id": "mf-mark-dash-h",
+      "name": "백색 차선 점선",
+      "layer": "floor",
+      "pc": "flat",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "mark"
+      ]
+    },
+    {
+      "id": "mf-mark-stop",
+      "name": "정지선",
+      "layer": "floor",
+      "pc": "flat",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "mark"
+      ]
+    },
+    {
+      "id": "mf-floor-tactile",
+      "name": "노란 점자블록",
+      "layer": "floor",
+      "pc": "flat",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "detail"
+      ]
+    },
+    {
+      "id": "mf-floor-manhole",
+      "name": "철제 맨홀 뚜껑",
+      "layer": "floor",
+      "pc": "flat",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "detail"
+      ]
+    },
+    {
+      "id": "mf-floor-grate",
+      "name": "도로 배수구 그레이팅",
+      "layer": "floor",
+      "pc": "flat",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "detail"
+      ]
+    },
+    {
+      "id": "mf-shade-south",
+      "name": "건물 발치 그늘",
+      "layer": "shade",
+      "pc": "flat",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "shade"
+      ]
+    },
+    {
+      "id": "mf-bank-canal",
+      "name": "하천·운하 석축 둑",
+      "layer": "bank",
+      "pc": "solidfloor",
+      "w": 1,
+      "h": 1,
+      "tags": [
+        "bank"
+      ]
+    }
+  ]
+}

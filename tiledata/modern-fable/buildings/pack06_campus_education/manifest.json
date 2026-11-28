@@ -1,0 +1,193 @@
+{
+  "batch": "pack06_campus_education",
+  "kind": "buildings",
+  "items": [
+    {
+      "id": "mf-bldg-camp_school_main",
+      "name": "3층 본관 학교 (시계탑·옥상 펜스)",
+      "category": "campus",
+      "w": 10,
+      "h": 8,
+      "pxW": 160,
+      "pxH": 128,
+      "passableTopRows": 2,
+      "tags": [
+        "campus",
+        "school",
+        "high-school",
+        "clock",
+        "rooftop-fence",
+        "non-cloned",
+        "landmark"
+      ]
+    },
+    {
+      "id": "mf-bldg-camp_brick_library",
+      "name": "2.5층 담쟁이 적벽돌 대학 도서관",
+      "category": "campus",
+      "w": 8,
+      "h": 7,
+      "pxW": 128,
+      "pxH": 112,
+      "passableTopRows": 2,
+      "tags": [
+        "campus",
+        "library",
+        "brick",
+        "ivy",
+        "bookshelves",
+        "skylight",
+        "pitched-roof"
+      ]
+    },
+    {
+      "id": "mf-bldg-camp_gymnasium",
+      "name": "학교 실내 체육관·강당",
+      "category": "campus",
+      "w": 9,
+      "h": 6,
+      "pxW": 144,
+      "pxH": 96,
+      "passableTopRows": 2,
+      "tags": [
+        "campus",
+        "gymnasium",
+        "auditorium",
+        "barrel-roof",
+        "sports",
+        "clerestory"
+      ]
+    },
+    {
+      "id": "mf-bldg-camp_science_greenhouse",
+      "name": "과학 실험동 & 유리 식물원 온실",
+      "category": "campus",
+      "w": 7,
+      "h": 6,
+      "pxW": 112,
+      "pxH": 96,
+      "passableTopRows": 2,
+      "tags": [
+        "campus",
+        "science",
+        "lab",
+        "greenhouse",
+        "botany",
+        "glass-dome",
+        "plants"
+      ]
+    },
+    {
+      "id": "mf-bldg-camp_student_union_terrace",
+      "name": "2.5층 학생회관·카페테리아 테라스",
+      "category": "campus",
+      "w": 8,
+      "h": 7,
+      "pxW": 128,
+      "pxH": 112,
+      "passableTopRows": 2,
+      "tags": [
+        "campus",
+        "student-union",
+        "cafeteria",
+        "terrace",
+        "parasol",
+        "awning",
+        "bulletin"
+      ]
+    },
+    {
+      "id": "mf-bldg-camp_bell_tower",
+      "name": "벽돌·석조 캠퍼스 시계 종탑",
+      "category": "campus",
+      "w": 4,
+      "h": 9,
+      "pxW": 64,
+      "pxH": 144,
+      "passableTopRows": 2,
+      "tags": [
+        "campus",
+        "bell-tower",
+        "clock-tower",
+        "spire",
+        "ivy",
+        "archway",
+        "landmark"
+      ]
+    },
+    {
+      "id": "mf-bldg-camp_dormitory",
+      "name": "3층 벽돌·크림 학생 기숙사",
+      "category": "campus",
+      "w": 7,
+      "h": 8,
+      "pxW": 112,
+      "pxH": 128,
+      "passableTopRows": 2,
+      "tags": [
+        "campus",
+        "dormitory",
+        "residential",
+        "balcony",
+        "laundry",
+        "bicycle",
+        "non-cloned"
+      ]
+    },
+    {
+      "id": "mf-bldg-camp_music_conservatory",
+      "name": "2.5층 목재·유리 음악당·예술관",
+      "category": "campus",
+      "w": 7,
+      "h": 7,
+      "pxW": 112,
+      "pxH": 112,
+      "passableTopRows": 2,
+      "tags": [
+        "campus",
+        "music",
+        "conservatory",
+        "arts",
+        "timber-louvers",
+        "skylight",
+        "posters"
+      ]
+    },
+    {
+      "id": "mf-bldg-camp_main_gatehouse",
+      "name": "캠퍼스 벽돌·화강암 정문 & 경비실",
+      "category": "campus",
+      "w": 7,
+      "h": 5,
+      "pxW": 112,
+      "pxH": 80,
+      "passableTopRows": 1,
+      "tags": [
+        "campus",
+        "gatehouse",
+        "entrance",
+        "wrought-iron",
+        "cherry-blossom",
+        "security-lodge"
+      ]
+    },
+    {
+      "id": "mf-bldg-camp_sports_pavilion",
+      "name": "운동장 스탠드 관람석 & 락커 하우스",
+      "category": "campus",
+      "w": 7,
+      "h": 5,
+      "pxW": 112,
+      "pxH": 80,
+      "passableTopRows": 1,
+      "tags": [
+        "campus",
+        "sports",
+        "pavilion",
+        "bleachers",
+        "scoreboard",
+        "locker-room"
+      ]
+    }
+  ]
+}

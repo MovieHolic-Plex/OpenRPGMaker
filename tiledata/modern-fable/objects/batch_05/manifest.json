@@ -1,0 +1,432 @@
+{
+  "batch": "batch_05",
+  "kind": "objects",
+  "palette": "tiledata/jp-city/fable-city/palette.json",
+  "count": 20,
+  "items": [
+    {
+      "id": "mf-obj-playground_slide",
+      "name": "놀이터 미끄럼틀",
+      "category": "plaza-park",
+      "w": 3,
+      "h": 2,
+      "px": [
+        48,
+        32
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "plaza-park",
+        "playground",
+        "park",
+        "slide"
+      ],
+      "file": "mf-obj-playground_slide.png"
+    },
+    {
+      "id": "mf-obj-swing_set",
+      "name": "공원 2인 그네",
+      "category": "plaza-park",
+      "w": 3,
+      "h": 2,
+      "px": [
+        48,
+        32
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "plaza-park",
+        "playground",
+        "park",
+        "swing"
+      ],
+      "file": "mf-obj-swing_set.png"
+    },
+    {
+      "id": "mf-obj-park_gazebo",
+      "name": "공원 팔각 정자",
+      "category": "plaza-park",
+      "w": 3,
+      "h": 3,
+      "px": [
+        48,
+        48
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "plaza-park",
+        "gazebo",
+        "pavilion",
+        "park"
+      ],
+      "file": "mf-obj-park_gazebo.png"
+    },
+    {
+      "id": "mf-obj-stone_monument",
+      "name": "광장 화강암 기념비",
+      "category": "plaza-park",
+      "w": 2,
+      "h": 2,
+      "px": [
+        32,
+        32
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "plaza-park",
+        "monument",
+        "plaza",
+        "stone"
+      ],
+      "file": "mf-obj-stone_monument.png"
+    },
+    {
+      "id": "mf-obj-plaza_clock_pillar",
+      "name": "광장 시계탑 기둥",
+      "category": "plaza-park",
+      "w": 1,
+      "h": 3,
+      "px": [
+        16,
+        48
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "plaza-park",
+        "clock",
+        "plaza",
+        "lightAnchor"
+      ],
+      "file": "mf-obj-plaza_clock_pillar.png",
+      "lightAnchor": true,
+      "lightPos": {
+        "x": 8,
+        "y": 13,
+        "radius": 44,
+        "color": "#f6e7b8"
+      }
+    },
+    {
+      "id": "mf-obj-notice_board",
+      "name": "동네 지붕 게시판",
+      "category": "plaza-park",
+      "w": 2,
+      "h": 2,
+      "px": [
+        32,
+        32
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "plaza-park",
+        "notice",
+        "board",
+        "community"
+      ],
+      "file": "mf-obj-notice_board.png"
+    },
+    {
+      "id": "mf-obj-red_mailbox",
+      "name": "빨간 우체통",
+      "category": "plaza-park",
+      "w": 1,
+      "h": 2,
+      "px": [
+        16,
+        32
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "plaza-park",
+        "mailbox",
+        "street",
+        "post"
+      ],
+      "file": "mf-obj-red_mailbox.png"
+    },
+    {
+      "id": "mf-obj-bike_share_dock",
+      "name": "공공자전거 대여소",
+      "category": "plaza-park",
+      "w": 3,
+      "h": 1,
+      "px": [
+        48,
+        16
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "plaza-park",
+        "bike",
+        "dock",
+        "transit"
+      ],
+      "file": "mf-obj-bike_share_dock.png"
+    },
+    {
+      "id": "mf-obj-street_trash_bin",
+      "name": "거리 분리수거 쓰레기통",
+      "category": "plaza-park",
+      "w": 1,
+      "h": 1,
+      "px": [
+        16,
+        16
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "plaza-park",
+        "trash",
+        "bin",
+        "street"
+      ],
+      "file": "mf-obj-street_trash_bin.png"
+    },
+    {
+      "id": "mf-obj-park_stone_lantern",
+      "name": "공원 석등롱",
+      "category": "plaza-park",
+      "w": 1,
+      "h": 2,
+      "px": [
+        16,
+        32
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "plaza-park",
+        "lantern",
+        "stone",
+        "park",
+        "lightAnchor"
+      ],
+      "file": "mf-obj-park_stone_lantern.png",
+      "lightAnchor": true,
+      "lightPos": {
+        "x": 8,
+        "y": 13,
+        "radius": 40,
+        "color": "#f6cc7c"
+      }
+    },
+    {
+      "id": "mf-obj-steel_guardrail",
+      "name": "백색 도로 가드레일",
+      "category": "road-barriers",
+      "w": 2,
+      "h": 1,
+      "px": [
+        32,
+        16
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "road-barriers",
+        "guardrail",
+        "road",
+        "barrier"
+      ],
+      "file": "mf-obj-steel_guardrail.png"
+    },
+    {
+      "id": "mf-obj-stone_bollard",
+      "name": "화강암 볼라드",
+      "category": "road-barriers",
+      "w": 1,
+      "h": 1,
+      "px": [
+        16,
+        16
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "road-barriers",
+        "bollard",
+        "sidewalk",
+        "stone"
+      ],
+      "file": "mf-obj-stone_bollard.png"
+    },
+    {
+      "id": "mf-obj-chainlink_fence",
+      "name": "철망 울타리",
+      "category": "road-barriers",
+      "w": 2,
+      "h": 2,
+      "px": [
+        32,
+        32
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "road-barriers",
+        "fence",
+        "chainlink",
+        "barrier"
+      ],
+      "file": "mf-obj-chainlink_fence.png"
+    },
+    {
+      "id": "mf-obj-brick_garden_wall",
+      "name": "붉은 벽돌 정원 담장",
+      "category": "road-barriers",
+      "w": 2,
+      "h": 1,
+      "px": [
+        32,
+        16
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "road-barriers",
+        "wall",
+        "brick",
+        "garden"
+      ],
+      "file": "mf-obj-brick_garden_wall.png"
+    },
+    {
+      "id": "mf-obj-concrete_block_wall",
+      "name": "시멘트 블록 골목 담장",
+      "category": "road-barriers",
+      "w": 2,
+      "h": 2,
+      "px": [
+        32,
+        32
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "road-barriers",
+        "wall",
+        "concrete",
+        "alley"
+      ],
+      "file": "mf-obj-concrete_block_wall.png"
+    },
+    {
+      "id": "mf-obj-subway_stair_rail",
+      "name": "지하철역 계단 출입구",
+      "category": "road-barriers",
+      "w": 3,
+      "h": 2,
+      "px": [
+        48,
+        32
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "road-barriers",
+        "subway",
+        "stairs",
+        "transit",
+        "lightAnchor"
+      ],
+      "file": "mf-obj-subway_stair_rail.png",
+      "lightAnchor": true,
+      "lightPos": {
+        "x": 24,
+        "y": 4,
+        "radius": 52,
+        "color": "#a0c0e0"
+      }
+    },
+    {
+      "id": "mf-obj-canal_railing",
+      "name": "하천·운하 철제 난간",
+      "category": "road-barriers",
+      "w": 2,
+      "h": 1,
+      "px": [
+        32,
+        16
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "road-barriers",
+        "railing",
+        "canal",
+        "waterfront"
+      ],
+      "file": "mf-obj-canal_railing.png"
+    },
+    {
+      "id": "mf-obj-parking_wheelstop",
+      "name": "주차장 카스토퍼",
+      "category": "road-barriers",
+      "w": 2,
+      "h": 1,
+      "px": [
+        32,
+        16
+      ],
+      "layer": "object",
+      "pc": "solid",
+      "tags": [
+        "road-barriers",
+        "parking",
+        "wheelstop",
+        "road"
+      ],
+      "file": "mf-obj-parking_wheelstop.png"
+    },
+    {
+      "id": "mf-obj-speed_bump",
+      "name": "도로 과속방지턱",
+      "category": "road-barriers",
+      "w": 2,
+      "h": 1,
+      "px": [
+        32,
+        16
+      ],
+      "layer": "object",
+      "pc": "flat",
+      "tags": [
+        "road-barriers",
+        "speed-bump",
+        "road",
+        "traffic"
+      ],
+      "file": "mf-obj-speed_bump.png"
+    },
+    {
+      "id": "mf-obj-tactile_drain_set",
+      "name": "점자블록·측구 배수구 세트",
+      "category": "road-barriers",
+      "w": 2,
+      "h": 1,
+      "px": [
+        32,
+        16
+      ],
+      "layer": "object",
+      "pc": "flat",
+      "tags": [
+        "road-barriers",
+        "tactile",
+        "drain",
+        "curb",
+        "road"
+      ],
+      "file": "mf-obj-tactile_drain_set.png"
+    }
+  ]
+}

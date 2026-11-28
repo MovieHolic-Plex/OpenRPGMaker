@@ -44,7 +44,8 @@ import dot  # noqa: E402
 
 KIT = os.path.join(HERE, 'finish_kit')
 DEFAULT_TIMEOUT = int(os.environ.get('BUILDING_KIT_FINISH_TIMEOUT', '5400'))
-# 사용자 요구(2026-10-22): 마감은 Opus 5.5 high. 환경 변수로만 바꾼다.
+# 기본 백엔드(사용자 결정 2026-11-27): codex(gpt-6.2-sol high). --backend claude / neon 선택 가능.
+BACKEND = os.environ.get('BUILDING_KIT_FINISH_BACKEND') or os.environ.get('BUILDING_KIT_BACKEND', 'codex')
 MODEL = os.environ.get('BUILDING_KIT_FINISH_MODEL', 'claude-opus-5-5')
 EFFORT = os.environ.get('BUILDING_KIT_FINISH_EFFORT', 'high')
 RERUN_TIMEOUT = 300
@@ -444,6 +445,26 @@ def claude_command(sandbox):
     return drawer.claude_command(sandbox, model=MODEL, effort=EFFORT, tools=TOOLS)
 
 
+def agent_command(sandbox, backend=None, model=None, effort=None):
+    import drawer
+    b = drawer.normalize_backend(backend or BACKEND)
+    if b == 'codex':
+        return drawer.codex_command(sandbox, model=model, effort=effort)
+    if b == 'neon':
+        return drawer.agy_command(sandbox, model=model, effort=effort)
+    return drawer.claude_command(sandbox, model=model or MODEL, effort=effort or EFFORT, tools=TOOLS)
+
+
+def agent_label(backend=None, model=None, effort=None):
+    import drawer
+    b = drawer.normalize_backend(backend or BACKEND)
+    if b == 'codex':
+        return f'codex/{model or drawer.CODEX_MODEL}/{effort or drawer.CODEX_EFFORT}'
+    if b == 'neon':
+        return f'agy/{model or drawer.NEON_MODEL}/{effort or drawer.NEON_EFFORT}'
+    return f'claude/{model or MODEL}/{effort or EFFORT}'
+
+
 def recheck(theme, item, sandbox):
     """에이전트 말을 믿지 않는다: 지금 조립에서 만든 깨끗한 입력 + 원본 check.py 로 finish_draw.py 를 다시 돌린다."""
     out = {'reproduced': False, 'agentFinishedSha256': None, 'finishedSha256': None, 'check': None, 'rerun': ''}
@@ -504,14 +525,14 @@ def record(theme, rid, item, sandbox, rc, chk, extra=None):
            'agentFinishedSha256': chk.get('agentFinishedSha256'), 'reproduced': chk['reproduced'], 'pass': chk['pass'],
            'check': chk.get('check'), 'checkOutput': chk.get('checkOutput', ''), 'rerun': chk.get('rerun', ''),
            'iterations': iterations(sandbox), 'minIterations': MIN_ITERATIONS, 'exit': rc,
-           'agent': f'claude/{MODEL}/{EFFORT}', 'sandbox': os.path.relpath(sandbox, dot.REPO), 'at': now(), **(extra or {})}
+           'agent': agent_label(), 'sandbox': os.path.relpath(sandbox, dot.REPO), 'at': now(), **(extra or {})}
     json.dump(rec, open(stem + '.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=1)
     return rec
 
 
-def finish_one(theme, rid, item, runner, cmd, timeout):
+def finish_one(theme, rid, item, runner, cmd, timeout, backend=None, model=None, effort=None):
     sandbox, meta, text = sandbox_for(theme, rid, item)
-    command = cmd or claude_command(sandbox)
+    command = cmd or agent_command(sandbox, backend=backend, model=model, effort=effort)
     timed_out = False
     try:
         rc, out, err = runner(command, text, sandbox, timeout)
@@ -519,7 +540,8 @@ def finish_one(theme, rid, item, runner, cmd, timeout):
         rc, out, err, timed_out = 124, '', f'시간 초과 {timeout}s', True
     open(os.path.join(sandbox, 'finisher.log'), 'w', encoding='utf-8').write((out or '') + '\n--- stderr\n' + (err or '')[-4000:])
     chk = recheck(theme, item, sandbox)
-    extra = {'timedOut': timed_out, 'agentCommand': command if isinstance(command, str) else ' '.join(command[:2] + ['…']),
+    extra = {'timedOut': timed_out, 'agent': agent_label(backend=backend, model=model, effort=effort),
+             'agentCommand': command if isinstance(command, str) else ' '.join(command[:2] + ['…']),
              'tail': (out or '').strip().splitlines()[-3:]}
     if chk.get('baseSha256') != meta['baseSha256']:
         chk['pass'] = False
@@ -527,7 +549,8 @@ def finish_one(theme, rid, item, runner, cmd, timeout):
     return record(theme, rid, item, sandbox, rc, chk, extra)
 
 
-def run(theme, rid, line, building=None, jobs=1, cmd=None, runner=None, timeout=None, parts_by_key=None, quiet=False):
+def run(theme, rid, line, building=None, jobs=1, cmd=None, runner=None, timeout=None, parts_by_key=None, quiet=False,
+        backend=None, model=None, effort=None):
     import drawer
     items, skipped = eligible(theme, rid, line, building, parts_by_key)
     if not items:
@@ -539,7 +562,7 @@ def run(theme, rid, line, building=None, jobs=1, cmd=None, runner=None, timeout=
     timeout = timeout or DEFAULT_TIMEOUT
     results = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=max(1, int(jobs))) as ex:
-        futs = [ex.submit(finish_one, theme, rid, it, runner, cmd, timeout) for it in items]
+        futs = [ex.submit(finish_one, theme, rid, it, runner, cmd, timeout, backend, model, effort) for it in items]
         for f in futs:
             results.append(f.result())
     if not quiet:

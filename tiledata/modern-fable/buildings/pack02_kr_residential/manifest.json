@@ -1,0 +1,163 @@
+{
+  "batch": "pack02_kr_residential",
+  "items": [
+    {
+      "id": "mf-bldg-kr_piloti_brick_villa",
+      "name": "적벽돌 4층 필로티 빌라",
+      "category": "kr-residential",
+      "w": 6,
+      "h": 8,
+      "passableTopRows": 2,
+      "tags": [
+        "building",
+        "kr-residential",
+        "villa",
+        "piloti",
+        "brick",
+        "korea"
+      ]
+    },
+    {
+      "id": "mf-bldg-kr_piloti_stone_villa",
+      "name": "화강석·라임스톤 4층 필로티 빌라",
+      "category": "kr-residential",
+      "w": 6,
+      "h": 8,
+      "passableTopRows": 2,
+      "tags": [
+        "building",
+        "kr-residential",
+        "villa",
+        "piloti",
+        "stone",
+        "korea"
+      ]
+    },
+    {
+      "id": "mf-bldg-kr_corner_terrace_villa",
+      "name": "2층 코너 테라스 벽돌 빌라",
+      "category": "kr-residential",
+      "w": 7,
+      "h": 7,
+      "passableTopRows": 2,
+      "tags": [
+        "building",
+        "kr-residential",
+        "villa",
+        "terrace",
+        "veranda",
+        "korea"
+      ]
+    },
+    {
+      "id": "mf-bldg-kr_rooftop_garden_house",
+      "name": "옥상 텃밭 2층 단독주택",
+      "category": "kr-residential",
+      "w": 6,
+      "h": 6,
+      "passableTopRows": 2,
+      "tags": [
+        "building",
+        "kr-residential",
+        "house",
+        "dandok",
+        "rooftop-garden",
+        "korea"
+      ]
+    },
+    {
+      "id": "mf-bldg-kr_duplex_townhouse",
+      "name": "듀플렉스 쌍둥이 타운하우스",
+      "category": "kr-residential",
+      "w": 7,
+      "h": 6,
+      "passableTopRows": 2,
+      "tags": [
+        "building",
+        "kr-residential",
+        "townhouse",
+        "duplex",
+        "modern"
+      ]
+    },
+    {
+      "id": "mf-bldg-kr_apt_block_a",
+      "name": "5층 복도식 아파트 101동",
+      "category": "kr-residential",
+      "w": 8,
+      "h": 10,
+      "passableTopRows": 2,
+      "tags": [
+        "building",
+        "kr-residential",
+        "apartment",
+        "101",
+        "korea"
+      ]
+    },
+    {
+      "id": "mf-bldg-kr_apt_block_b",
+      "name": "5층 테라코타 모던 아파트 102동",
+      "category": "kr-residential",
+      "w": 8,
+      "h": 10,
+      "passableTopRows": 2,
+      "tags": [
+        "building",
+        "kr-residential",
+        "apartment",
+        "102",
+        "terracotta",
+        "korea"
+      ]
+    },
+    {
+      "id": "mf-bldg-kr_apt_gatehouse",
+      "name": "아파트 단지 정문 문주·경비실",
+      "category": "kr-residential",
+      "w": 8,
+      "h": 5,
+      "passableTopRows": 2,
+      "tags": [
+        "building",
+        "kr-residential",
+        "gatehouse",
+        "apartment",
+        "landmark",
+        "korea"
+      ]
+    },
+    {
+      "id": "mf-bldg-kr_hillside_stepped",
+      "name": "언덕 계단식 테라스 주택",
+      "category": "kr-residential",
+      "w": 6,
+      "h": 8,
+      "passableTopRows": 2,
+      "tags": [
+        "building",
+        "kr-residential",
+        "hillside",
+        "terrace",
+        "seoul",
+        "korea"
+      ]
+    },
+    {
+      "id": "mf-bldg-kr_modern_cube_house",
+      "name": "노출콘크리트 모던 큐브 하우스",
+      "category": "kr-residential",
+      "w": 5,
+      "h": 6,
+      "passableTopRows": 2,
+      "tags": [
+        "building",
+        "kr-residential",
+        "modern",
+        "cube",
+        "concrete",
+        "cedar"
+      ]
+    }
+  ]
+}

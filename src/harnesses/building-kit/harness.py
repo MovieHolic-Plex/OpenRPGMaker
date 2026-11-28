@@ -212,10 +212,10 @@ def cmd_palette(theme, check):
     return subprocess.run([sys.executable, os.path.join(HERE, 'palette.py'), '--theme', theme] + (['--check'] if check else [])).returncode
 
 
-def cmd_draw(theme, rid, agent=False, lines_=None, jobs=1, cmd=None, quiet=False):
+def cmd_draw(theme, rid, agent=False, lines_=None, jobs=1, cmd=None, quiet=False, backend=None, model=None, effort=None):
     if agent:
         import drawer
-        return drawer.run(theme, rid, lines_, jobs, cmd)
+        return drawer.run(theme, rid, lines_, jobs, cmd, effort=effort, backend=backend, model=model)
     mod, rendered = render_round(theme, rid)
     base = os.path.join(dot.RUNS, theme, rid)
     man = {'theme': theme, 'round': rid, 'wave': getattr(mod, 'WAVE', None), 'at': now(), 'items': {}}
@@ -461,8 +461,10 @@ def cmd_validate(theme):
             for ex in m.get('extras') or []:
                 if ex.get('part') not in ids:
                     errs.append(f'{tag}: extra {ex.get("part")} 가 items 에 없다')
-                if ex.get('on') not in (None, 'roof'):
-                    errs.append(f'{tag}: extra on {ex.get("on")!r} — "roof" 만 안다')
+                if ex.get('on') not in (None, *AS.EXTRA_SURFACES):
+                    errs.append(f'{tag}: extra on {ex.get("on")!r} — {"·".join(AS.EXTRA_SURFACES)} 만 안다')
+                if ex.get('at') is None and ex.get('storey') is None:
+                    errs.append(f'{tag}: extra {ex.get("part")} 에 at 또는 storey 앵커가 없다')
         doors = sum(r['letters'].replace(' ', '').count('D') for m in ms for r in m['walls'])
         if doors != 1 and not b.get('doorTwice'):
             errs.append(f'건물 {bid}: 문 {doors}개 — 건물 하나(질량 전부)에 문은 정확히 하나')
@@ -611,11 +613,16 @@ def _r4_grammar(s, items, rid):
             if not it or it.get('spire') or m['kind'] != AS.RIDGE_SIDE:
                 continue
             rows = it['pieces'][0]['size'][1]
-            want = 2 if int(m['storeys']) == 1 else 3
-            if rows != want:
-                errs.append(f'판 {rid} {bid}/{m["id"]}: {m["storeys"]}층 지붕 {rows}행 — {want}행이어야 한다')
-            if int(it.get('end', AS.ROOF_END)) == AS.ROOF_END and int(m['cols']) < 5:
-                errs.append(f'판 {rid} {bid}/{m["id"]}: 모임지붕 몸통 {m["cols"]}칸 — 용마루가 남으려면 5칸 이상')
+            if AS.is_rpgmaker_grammar(s['rounds'][rid].get('grammar')):
+                if rows not in (2, 3, 4):
+                    errs.append(f'판 {rid} {bid}/{m["id"]}: 지붕 {rows}행 — 2~4행이어야 한다')
+            else:
+                want = 2 if int(m['storeys']) == 1 else 3
+                if rows != want:
+                    errs.append(f'판 {rid} {bid}/{m["id"]}: {m["storeys"]}층 지붕 {rows}행 — {want}행이어야 한다')
+            min_hip = 4 if AS.is_rm2k_grammar(s['rounds'][rid].get('grammar')) else 5
+            if int(it.get('end', AS.ROOF_END)) == AS.ROOF_END and int(m['cols']) < min_hip:
+                errs.append(f'판 {rid} {bid}/{m["id"]}: 모임지붕 몸통 {m["cols"]}칸 — 용마루가 남으려면 {min_hip}칸 이상')
         spires = [m for m in ms if (items.get(m['roof']) or {}).get('spire')]
         plain = [m for m in ms if not (items.get(m['roof']) or {}).get('spire')]
         try:
@@ -652,9 +659,11 @@ def _depth_round(s, items, rid):
             errs.append(f'{tag}: 조각 계약 오류 {e}')
             continue
         errs += [f'{tag}: {why}' for why in AS.mass_problems(ms, rows)]
+        rpgmaker = AS.is_rpgmaker_grammar(s['rounds'][rid].get('grammar'))
+        rm2k = AS.is_rm2k_grammar(s['rounds'][rid].get('grammar'))
         for m in ms:
             if m['kind'] in AS.RECEDING:
-                (c0, c1), (d0, d1) = AS.receding_limits(m['kind'], True)
+                (c0, c1), (d0, d1) = AS.receding_limits(m['kind'], True, rpgmaker, rm2k)
                 if not c0 <= m['cols'] <= c1:
                     errs.append(f'{tag}/{m["id"]}: {m["kind"]} 폭 {m["cols"]}칸 — 깊이 땅 문법은 {c0}~{c1}칸')
                 if not d0 <= int(m.get('depth_rows') or 0) <= d1:
@@ -667,7 +676,7 @@ def _depth_round(s, items, rid):
         for m in ms:
             if m['kind'] == AS.LEAN_TO and int(m['storeys']) >= tallest:
                 errs.append(f'{tag}/{m["id"]}: 외쪽 {m["storeys"]}층 — 붙는 본 질량({tallest}층)보다 낮아야 한다(처마 아래)')
-        for w, mains in AS.wing_mains(ms):
+        for w, mains in AS.wing_mains(ms, rm2k_massing=rm2k):
             errs += [f'{tag}/{why}' for why in AS.wing_problems(w, mains)]
             top = w['depth'] + rows[w['id']]
             for b in mains:
@@ -686,7 +695,7 @@ def _receding_problems(tag, m, items):
     lo, hi = AS.GF_COLS if kind == AS.GABLE_FRONT else AS.LEAN_COLS
     if not lo <= int(m['cols']) <= hi:
         errs.append(f'{tag}: {kind} 폭 {m["cols"]}칸 — {lo}~{hi}칸')
-    d0, d1 = AS.DEPTH_ROWS
+    d0, d1 = (1, AS.DEPTH_ROWS[1]) if kind == AS.GABLE_FRONT else AS.DEPTH_ROWS
     if not d0 <= int(m.get('depth_rows') or 0) <= d1:
         errs.append(f'{tag}: depth_rows {m.get("depth_rows")} — {d0}~{d1}')
     slope = items.get(m.get('roof')) or {}
@@ -739,8 +748,8 @@ def _gable_front_round(s, items, rid):
             errs.append(f'판 {rid} {bid}: 판 items 에 없는 부품 {miss}')
         for m in ms:
             for ex in m.get('extras') or []:
-                if ex.get('on') != 'roof':
-                    errs.append(f'판 {rid} {bid}/{m["id"]}: extra {ex.get("part")} 는 on: "roof" 를 적는다(A14)')
+                if ex.get('on') not in AS.EXTRA_SURFACES:
+                    errs.append(f'판 {rid} {bid}/{m["id"]}: extra {ex.get("part")} 는 on: "roof" 또는 "wall" 을 적는다(A14)')
     ridge = [i for i in have if (items.get(i) or {}).get('wave') == 'roof' and not items[i].get('form')
              and not items[i].get('spire') and int(items[i].get('end', AS.ROOF_END)) == AS.ROOF_END]
     if not ridge:
@@ -859,9 +868,9 @@ def cmd_sheet(theme, rid, show_failed=False, finished=False):
     return sheet.write(theme, rid, show_failed, finished=finished)
 
 
-def cmd_review(theme, rid, runs=3, judge_cmd=None, finished=False):
+def cmd_review(theme, rid, runs=3, judge_cmd=None, finished=False, backend=None):
     import review
-    return review.run(theme, rid, runs, judge_cmd, finished=finished)
+    return review.run(theme, rid, runs, judge_cmd, finished=finished, backend=backend)
 
 
 def cmd_village(theme, rid, line='A', seed=0, size=None, all_=False, quiet=False, finished=False):
@@ -869,9 +878,9 @@ def cmd_village(theme, rid, line='A', seed=0, size=None, all_=False, quiet=False
     return village.write(theme, rid, line, seed, size or village.DEFAULT_SIZE, all_, quiet, finished=finished)
 
 
-def cmd_finish(theme, rid, line, building=None, jobs=1, cmd=None):
+def cmd_finish(theme, rid, line, building=None, jobs=1, cmd=None, backend=None, model=None, effort=None):
     import finish
-    return finish.run(theme, rid, line, building, jobs, cmd)
+    return finish.run(theme, rid, line, building, jobs, cmd, backend=backend, model=model, effort=effort)
 
 
 def finished_picked_path(theme, line, building):
@@ -976,6 +985,9 @@ def main(argv=None):
     p.add_argument('--agent', action='store_true')
     p.add_argument('--lines')
     p.add_argument('--jobs', type=int, default=1)
+    p.add_argument('--backend', choices=['codex', 'sol', 'claude', 'neon', 'agy'])
+    p.add_argument('--model')
+    p.add_argument('--effort')
     p.add_argument('--cmd', dest='agent_cmd')  # dest 'cmd' would overwrite the subcommand name
     p = sub.add_parser('dry')
     p.add_argument('theme')
@@ -998,11 +1010,15 @@ def main(argv=None):
     p.add_argument('--line', required=True)
     p.add_argument('--building')
     p.add_argument('--jobs', type=int, default=1)
+    p.add_argument('--backend', choices=['codex', 'sol', 'claude', 'neon', 'agy'])
+    p.add_argument('--model')
+    p.add_argument('--effort')
     p.add_argument('--cmd', dest='agent_cmd')
     p = sub.add_parser('review')
     p.add_argument('theme')
     p.add_argument('round')
     p.add_argument('--runs', type=int, default=3)
+    p.add_argument('--backend', choices=['codex', 'sol', 'claude', 'neon', 'agy'])
     p.add_argument('--judge-cmd')
     p.add_argument('--finished', action='store_true')
     p = sub.add_parser('sheet')
@@ -1053,7 +1069,8 @@ def main(argv=None):
         cmd_list(a.theme)
         return 0
     if a.cmd == 'draw':
-        return cmd_draw(a.theme, a.round, a.agent, (a.lines or '').split(',') if a.lines else None, a.jobs, a.agent_cmd)
+        return cmd_draw(a.theme, a.round, a.agent, (a.lines or '').split(',') if a.lines else None, a.jobs, a.agent_cmd,
+                        backend=a.backend, model=a.model, effort=a.effort)
     if a.cmd == 'dry':
         return cmd_dry(a.theme, a.round, a.key, module=a.module, out=a.out)
     if a.cmd == 'gate':
@@ -1063,9 +1080,10 @@ def main(argv=None):
         _, fails = cmd_assemble(a.theme, a.round, a.line, a.key)
         return 1 if fails else 0
     if a.cmd == 'finish':
-        return cmd_finish(a.theme, a.round, a.line, a.building, a.jobs, a.agent_cmd)
+        return cmd_finish(a.theme, a.round, a.line, a.building, a.jobs, a.agent_cmd,
+                          backend=a.backend, model=a.model, effort=a.effort)
     if a.cmd == 'review':
-        return cmd_review(a.theme, a.round, a.runs, a.judge_cmd, a.finished)
+        return cmd_review(a.theme, a.round, a.runs, a.judge_cmd, a.finished, backend=a.backend)
     if a.cmd == 'sheet':
         return cmd_sheet(a.theme, a.round, a.show_failed, a.finished)
     if a.cmd == 'pick':
