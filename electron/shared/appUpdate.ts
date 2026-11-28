@@ -1,7 +1,7 @@
 // 앱 자동 업데이트의 공용 모양과 순수 판단. 메인(electron/main/appUpdate.ts)·프리로드·렌더러 칩(src/app/appUpdateChip.ts)이 같이 본다.
 //
-// 흐름(오너 승인 2026-11-24, 「사용자는 많은 버튼을 원하지 않는다」):
-//   시작 뒤와 6시간마다 조용히 확인 → 뒤에서 내려받기 → 다 받으면 상단에 칩 하나 「v0.x 준비됨 · 다시 시작」.
+// 흐름(오너 승인 2026-11-24 → 2026-11-28 30분 릴리스 주기에 맞춰 15분 간격으로 단축):
+//   시작 뒤(15초)와 15분마다 조용히 확인 → 뒤에서 내려받기 → 다 받으면 상단에 칩 하나 「v0.x 준비됨 · 다시 시작」.
 //   누르면 저장 후 재시작(조수가 일하는 중이면 끝날 때까지 기다림). 안 누르면 앱을 끌 때 설치한다.
 //   portable exe 는 스스로 바꿀 수 없어 「새 버전 있음 · 내려받기」 링크만 준다.
 
@@ -38,7 +38,7 @@ export interface AppUpdateWhatsNew {
 
 export const APP_UPDATE_REPO = { owner: "MovieHolic-Plex", repo: "OpenRPGMaker" } as const;
 export const APP_UPDATE_FIRST_CHECK_MS = 15_000;
-export const APP_UPDATE_INTERVAL_MS = 6 * 60 * 60 * 1000;
+export const APP_UPDATE_INTERVAL_MS = 15 * 60 * 1000;
 
 /**
  * 이 실행이 스스로 업데이트할 수 있는가. 판정은 설치 형태로만 한다.
