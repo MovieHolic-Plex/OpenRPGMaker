@@ -86,7 +86,7 @@ export function renderUiLookPresetCard(
   grid.hidden = !uiLookExpanded;
 
   const toggleBtn = el("button", {
-    class: "btn small db-ui-look-toggle",
+    class: "btn small",
     text: uiLookExpanded ? "접기" : "13종 보기",
     attrs: { type: "button", "aria-expanded": String(uiLookExpanded) },
     dataset: { testid: "db-ui-look-toggle" },
