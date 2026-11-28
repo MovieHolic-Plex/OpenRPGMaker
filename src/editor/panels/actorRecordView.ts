@@ -3,10 +3,12 @@ import { ACTOR_PARAMETER_KEYS, parameterValueAtLevel } from "@/project/actorMode
 import { actorCurveCards, actorExperiencePanel } from "@/editor/panels/actorRecordCurveEditors";
 import { battlePanel, ratesPanel } from "@/editor/panels/actorRecordBattlePanels";
 import {
+  actorFacePreview,
   actorPanel,
   checkboxControl,
   emptyToUndefined,
   graphicPreview,
+  heroWalkPreview,
   numberControl,
   resourceControl,
   selectRecord,
@@ -20,11 +22,16 @@ import {
   type ActorBuildPreview,
   type ActorBuildReferenceWarning,
 } from "@/editor/panels/databasePartyBuildSummary";
-import { setSelectedRecordId } from "@/editor/panels/databaseRecordViewSession";
+import {
+  actorSectionTabForSession,
+  setActorSectionTabForSession,
+  setSelectedRecordId,
+} from "@/editor/panels/databaseRecordViewSession";
 import { recordProjectSnapshot } from "@/editor/mapEditHistory";
 import { store } from "@/project/store";
 import type { ActorParameterKey, ActorRecord, Project } from "@/project/types";
 import { el } from "@/util/dom";
+import { toast } from "@/util/toast";
 import { getCharacterAppearance, resolveActorAppearance } from "@/project/characterAppearances";
 import { appearanceBindingControl } from "./appearanceBindingControl";
 
@@ -62,20 +69,21 @@ export function renderActorRecordForm(
       }),
     ],
   });
-  const hero = actorHeroHeader(actor, onRename);
+  const hero = actorHeroHeader(actor, rerender, onRename);
   if (layout === "studio") {
+    const activeSection = currentActorSectionKey();
     const sections = [
       // '현재 시작 능력치'는 성장 곡선에서 파생된 읽기 전용 요약이라 성장 탭에 있었는데,
       // 그 탭은 곡선 + 경험치까지 지고 있어 과밀했고 반대로 기본 탭은 컨트롤 네 개만
       // 놓인 채 아래 절반이 비어 있었다(감사 H 축). 요약을 기본으로 올리면 처음 보는
       // 화면이 "이 주인공이 어떤 수치로 시작하는가" 에 답하게 되고 성장도 숨통이 트인다.
-      actorSection("identity", [identity, actorClass, baseStats]),
-      actorSection("appearance", [graphics]),
-      actorSection("growth", [curves, experience]),
-      actorSection("battle", [battle, critical, rates]),
-      actorSection("preview", [buildPreview.element]),
+      actorSection("identity", [identity, actorClass, baseStats], activeSection),
+      actorSection("appearance", [graphics], activeSection),
+      actorSection("growth", [curves, experience], activeSection),
+      actorSection("battle", [battle, critical, rates], activeSection),
+      actorSection("preview", [buildPreview.element], activeSection),
     ];
-    form.append(hero, actorSectionTabs(sections), el("div", { class: "actor-section-body", children: sections }));
+    form.append(hero, actorSectionTabs(sections, activeSection), el("div", { class: "actor-section-body", children: sections }));
   } else {
     form.append(hero, buildPreview.element, classicSheet);
   }
@@ -92,23 +100,30 @@ const ACTOR_SECTIONS = [
 
 type ActorSectionKey = (typeof ACTOR_SECTIONS)[number]["key"];
 
-function actorSection(key: ActorSectionKey, content: HTMLElement[]): HTMLElement {
+function currentActorSectionKey(): ActorSectionKey {
+  const stored = actorSectionTabForSession();
+  return ACTOR_SECTIONS.some((entry) => entry.key === stored) ? (stored as ActorSectionKey) : "identity";
+}
+
+function actorSection(key: ActorSectionKey, content: HTMLElement[], activeKey: ActorSectionKey): HTMLElement {
   const section = el("section", {
     class: `actor-section-panel actor-section-${key}`,
     attrs: { role: "tabpanel" },
     dataset: { testid: `db-actor-panel-${key}` },
     children: content,
   });
-  section.hidden = key !== "identity";
+  section.hidden = key !== activeKey;
   return section;
 }
 
 // `role="tablist"` 는 화살표 이동과 단일 탭 스톱을 **약속하는** 역할이다. 예전에는 역할만
 // 붙고 구현이 없어서 ArrowRight 가 무반응이고 `tabindex` 관리도 `aria-controls` 도 없었다
 // (실측). 역할을 지우는 대신 약속한 패턴을 구현한다 — 이 탭 줄은 주인공 편집의 주 내비다.
-function actorSectionTabs(sections: HTMLElement[]): HTMLElement {
+function actorSectionTabs(sections: HTMLElement[], activeKey: ActorSectionKey): HTMLElement {
   const tabs: HTMLElement[] = [];
   const activate = (index: number, moveFocus = false): void => {
+    const chosen = ACTOR_SECTIONS[index];
+    if (chosen) setActorSectionTabForSession(chosen.key);
     tabs.forEach((tab, candidate) => {
       const selected = candidate === index;
       tab.setAttribute("aria-selected", String(selected));
@@ -126,15 +141,16 @@ function actorSectionTabs(sections: HTMLElement[]): HTMLElement {
   };
   tabs.push(...ACTOR_SECTIONS.map((section, index) => {
     const panelId = `db-actor-panel-${section.key}`;
+    const isInitial = section.key === activeKey;
     sections[index]?.setAttribute("id", panelId);
     return el("button", {
-      class: `db-ws-section-tab${index === 0 ? " active" : ""}`,
+      class: `db-ws-section-tab${isInitial ? " active" : ""}`,
       text: section.label,
       attrs: {
         "aria-controls": panelId,
-        "aria-selected": String(index === 0),
+        "aria-selected": String(isInitial),
         role: "tab",
-        tabindex: index === 0 ? "0" : "-1",
+        tabindex: isInitial ? "0" : "-1",
         type: "button",
       },
       dataset: { testid: `db-actor-tab-${section.key}` },
@@ -461,26 +477,84 @@ function startPartySwitch(actor: ActorRecord, summary: HTMLElement): HTMLElement
   return control;
 }
 
-function actorHeroHeader(actor: ActorRecord, onRename?: (name: string) => void): HTMLElement {
-  const effective = resolveActorAppearance(store.getCurrent(), actor);
+function bindActorGraphicDoubleClick(
+  surface: HTMLElement,
+  actor: ActorRecord,
+  field: "faceResourceId" | "characterResourceId" | "battleCharacterResourceId",
+  rerender: () => void,
+  lockedByAppearance: boolean,
+  hintText: string
+): void {
+  surface.classList.add("db-hero-pickable");
+  surface.title = lockedByAppearance
+    ? "공유 외형에서 관리 중입니다. 외형 탭에서 연결을 해제하거나 공유 외형을 편집하세요."
+    : hintText;
+  surface.addEventListener("dblclick", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const live = store.getCurrent().database.actors.find((entry) => entry.id === actor.id) ?? actor;
+    const liveLinked = getCharacterAppearance(store.getCurrent(), live.appearanceId);
+    const locked = (field === "faceResourceId" && Boolean(liveLinked?.face))
+      || (field === "characterResourceId" && Boolean(liveLinked?.charset));
+    if (locked) {
+      toast("공유 외형에서 그림을 사용 중입니다. 외형 탭에서 연결을 해제하거나 공유 외형을 수정하세요.", "info");
+      return;
+    }
+    openActorResourceDialog(live, field, rerender);
+  });
+}
+
+function buildHeroFaceElement(actor: ActorRecord, rerender: () => void): HTMLElement {
+  const project = store.getCurrent();
+  const linked = getCharacterAppearance(project, actor.appearanceId);
+  const effective = resolveActorAppearance(project, actor);
+  const face = actorFacePreview(effective.faceResourceId, effective.characterResourceId, effective.characterIndex ?? 0, 4 / 3);
+  face.classList.add("db-record-hero-face");
+  face.dataset.testid = "db-actor-hero-face-pick";
+  bindActorGraphicDoubleClick(face, actor, "faceResourceId", rerender, Boolean(linked?.face), "더블클릭하여 초상화 변경");
+  return face;
+}
+
+function buildHeroWalkElement(actor: ActorRecord, rerender: () => void): HTMLElement {
+  const project = store.getCurrent();
+  const linked = getCharacterAppearance(project, actor.appearanceId);
+  const effective = resolveActorAppearance(project, actor);
+  const walk = heroWalkPreview(effective.characterResourceId, effective.characterIndex ?? 0);
+  walk.dataset.testid = "db-actor-hero-walk-pick";
+  bindActorGraphicDoubleClick(walk, actor, "characterResourceId", rerender, Boolean(linked?.charset), "더블클릭하여 걷기 캐릭터 변경");
+  return walk;
+}
+
+function actorHeroHeader(actor: ActorRecord, rerender: () => void, onRename?: (name: string) => void): HTMLElement {
+  const project = store.getCurrent();
   const summary = el("p", {
     class: "db-record-hero-summary",
-    text: actorSummarySentence(store.getCurrent(), actor),
+    text: actorSummarySentence(project, actor),
     dataset: { testid: "db-actor-summary" },
   });
-  const face = graphicPreview(
-    "얼굴",
-    effective.faceResourceId ?? effective.characterResourceId ?? "(없음)",
-    "faceset",
-    0,
-    4 / 3
-  );
-  face.classList.add("db-record-hero-face");
+  const face = buildHeroFaceElement(actor, rerender);
+  const walk = buildHeroWalkElement(actor, rerender);
+  const assignedClass = project.database.classes.find((entry) => entry.id === actor.classId);
+  const classJump = assignedClass
+    ? el("button", {
+        class: "db-record-hero-class-link",
+        text: `${assignedClass.name} 직업 ↗`,
+        attrs: { type: "button", title: `${assignedClass.name} 직업 편집으로 이동` },
+        dataset: { testid: "db-actor-hero-open-class" },
+        on: {
+          click: (event) => {
+            setSelectedRecordId("classes", assignedClass.id);
+            const panelRoot = databasePanelRootFrom(event.currentTarget as HTMLElement | null);
+            if (panelRoot) switchDatabaseActiveTab("classes", panelRoot);
+          },
+        },
+      })
+    : null;
   return el("header", {
     class: "db-record-hero",
     dataset: { testid: "db-record-hero" },
     children: [
-      face,
+      el("div", { class: "db-record-hero-visuals", children: [face, walk] }),
       el("div", {
         class: "db-record-hero-title",
         children: [
@@ -492,7 +566,7 @@ function actorHeroHeader(actor: ActorRecord, onRename?: (name: string) => void):
           // 이미 말한다(V-database-24: 직업이 네 번, 레벨 범위가 두 번 보였다).
           el("div", {
             class: "db-record-hero-tags",
-            children: [startPartySwitch(actor, summary)],
+            children: [startPartySwitch(actor, summary), ...(classJump ? [classJump] : [])],
           }),
           summary,
         ],
@@ -624,15 +698,20 @@ function graphicsPanel(actor: ActorRecord, rerender: () => void): HTMLElement {
   const project = store.getCurrent();
   const linked = getCharacterAppearance(project, actor.appearanceId);
   const effective = resolveActorAppearance(project, actor);
+  const facePreview = actorFacePreview(effective.faceResourceId, effective.characterResourceId, effective.characterIndex ?? 0);
+  bindActorGraphicDoubleClick(facePreview, actor, "faceResourceId", rerender, Boolean(linked?.face), "더블클릭하여 초상화 변경");
+  const charsetPreview = graphicPreview("캐릭터셋", effective.characterResourceId ?? "(없음)", "charset", effective.characterIndex ?? 0);
+  bindActorGraphicDoubleClick(charsetPreview, actor, "characterResourceId", rerender, Boolean(linked?.charset), "더블클릭하여 캐릭터셋 변경");
+  const battlePreview = graphicPreview("애니메이션", actor.battleCharacterResourceId ?? "(없음)", "battleCharset");
+  bindActorGraphicDoubleClick(battlePreview, actor, "battleCharacterResourceId", rerender, false, "더블클릭하여 배틀 캐릭터 변경");
   const panel = actorPanel("화면에 보이는 모습", "actor-graphic", [
     appearanceBindingControl(actor.appearanceId, "actor-appearance-select", (appearanceId) => {
       updateDatabaseRecord("actors", actor.id, { appearanceId });
       const current = store.getCurrent().database.actors.find((entry) => entry.id === actor.id);
       if (current) {
-        const resolved = resolveActorAppearance(store.getCurrent(), current);
-        const heroFace = graphicPreview("얼굴", resolved.faceResourceId ?? resolved.characterResourceId ?? "(없음)", "faceset", 0, 4 / 3);
-        heroFace.classList.add("db-record-hero-face");
-        panel.closest(".actor-detail-form")?.querySelector(".db-record-hero-face")?.replaceWith(heroFace);
+        const hero = panel.closest(".actor-detail-form");
+        hero?.querySelector(".db-record-hero-face")?.replaceWith(buildHeroFaceElement(current, rerender));
+        hero?.querySelector(".db-record-hero-walk")?.replaceWith(buildHeroWalkElement(current, rerender));
         const replacement = graphicsPanel(current, rerender);
         panel.replaceWith(replacement);
         replacement.querySelector<HTMLSelectElement>("[data-testid='actor-appearance-select']")?.focus();
@@ -652,7 +731,7 @@ function graphicsPanel(actor: ActorRecord, rerender: () => void): HTMLElement {
     }),
     ...(linked ? [el("p", { class: "actor-field-help", dataset: { testid: "actor-appearance-linked" },
       text: `${linked.name}에서 그림을 공유합니다. 아래 직접 지정 값은 보관되며 연결을 해제하면 복원됩니다. 비어 있는 슬롯은 직접 지정 값을 사용합니다.` })] : []),
-    graphicPreview("얼굴", effective.faceResourceId ?? effective.characterResourceId ?? "(없음)", "faceset"),
+    facePreview,
     resourceControl("얼굴", "db-field-face-resource", actor.faceResourceId ?? "", (faceResourceId) =>
       updateDatabaseRecord("actors", actor.id, { faceResourceId: emptyToUndefined(faceResourceId) }),
       () => openActorResourceDialog(actor, "faceResourceId", rerender)
@@ -666,7 +745,7 @@ function graphicsPanel(actor: ActorRecord, rerender: () => void): HTMLElement {
         rerender();
       },
     }),
-    graphicPreview("캐릭터셋", effective.characterResourceId ?? "(없음)", "charset", effective.characterIndex ?? 0),
+    charsetPreview,
     resourceControl("캐릭터셋", "db-field-character-resource", actor.characterResourceId ?? "", (characterResourceId) =>
       updateDatabaseRecord("actors", actor.id, { characterResourceId: emptyToUndefined(characterResourceId) }),
       () => openActorResourceDialog(actor, "characterResourceId", rerender)
@@ -674,7 +753,7 @@ function graphicsPanel(actor: ActorRecord, rerender: () => void): HTMLElement {
     checkboxControl("투명", "db-field-character-transparent", actor.characterTransparent, (characterTransparent) =>
       updateDatabaseRecord("actors", actor.id, { characterTransparent })
     ),
-    graphicPreview("애니메이션", actor.battleCharacterResourceId ?? "(없음)", "battleCharset"),
+    battlePreview,
     resourceControl("애니메이션", "db-field-battle-character-resource", actor.battleCharacterResourceId ?? "", (battleCharacterResourceId) =>
       updateDatabaseRecord("actors", actor.id, { battleCharacterResourceId: emptyToUndefined(battleCharacterResourceId) }),
       () => openActorResourceDialog(actor, "battleCharacterResourceId", rerender)

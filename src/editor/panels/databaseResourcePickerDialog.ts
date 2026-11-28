@@ -92,10 +92,12 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     attrs: { type: "search", placeholder: "검색 (이름 또는 ID)", autocomplete: "off" },
     dataset: { testid: `${prefix}-search` },
   }) as HTMLInputElement;
-  const iconGrid = options.kind === "icon" || options.kind === "image";
+  const iconGrid = options.kind === "icon" || options.kind === "image" || options.kind === "faceset";
   const list = el("div", {
     class: iconGrid
-      ? "db-resource-picker-list db-resource-picker-list-icons"
+      ? options.kind === "faceset"
+        ? "db-resource-picker-list db-resource-picker-list-icons db-resource-picker-list-faces"
+        : "db-resource-picker-list db-resource-picker-list-icons"
       : "db-resource-picker-list",
     dataset: { testid: `${prefix}-list` },
   });
@@ -107,6 +109,14 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     preview.append(audioPreview.element);
   }
 
+  let closeDialogRef: (() => void) | undefined;
+  const confirmSelection = (): void => {
+    if (!selectedId || isUnsupportedAudio(selectedId)) return;
+    options.onConfirm({
+      resourceId: selectedId,
+      characterIndex: options.kind === "charset" ? characterIndex : undefined,
+    });
+  };
   const selectEntry = (entry: DatabaseResourceOption): void => {
     if (isUnsupportedAudio(entry.id)) return;
     selectedId = entry.id;
@@ -114,8 +124,23 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     refreshPreview();
     refreshIndexPanel();
   };
+  const confirmEntry = (entry: DatabaseResourceOption): void => {
+    if (isUnsupportedAudio(entry.id)) return;
+    selectedId = entry.id;
+    confirmSelection();
+    closeDialogRef?.();
+  };
   const renderOption = (entry: DatabaseResourceOption): HTMLElement =>
-    resourceButton(entry, selectedId, options.kind, store.getCurrent(), characterIndex, () => selectEntry(entry), prefix);
+    resourceButton(
+      entry,
+      selectedId,
+      options.kind,
+      store.getCurrent(),
+      characterIndex,
+      () => selectEntry(entry),
+      () => confirmEntry(entry),
+      prefix
+    );
   // BGM 281곡처럼 긴 한 줄 목록만 창으로 그린다. 아이콘 격자는 auto-fill 열·줄바꿈 이름표라
   // 행 높이가 균일하지 않아 가상화 계약(databaseListVirtualizer measureRows)을 만족하지 못한다.
   const virtualList = iconGrid
@@ -213,13 +238,7 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
       label: "선택",
       testid: `${prefix}-ok`,
       primary: true,
-      action: () => {
-        if (!selectedId || isUnsupportedAudio(selectedId)) return;
-        options.onConfirm({
-          resourceId: selectedId,
-          characterIndex: options.kind === "charset" ? characterIndex : undefined,
-        });
-      },
+      action: confirmSelection,
     },
     { label: "취소", testid: `${prefix}-cancel` },
   ];
@@ -249,6 +268,7 @@ export function openDatabaseResourcePickerDialog(options: OpenDatabaseResourcePi
     el("div", { class: "db-resource-picker-grid", children: [list, preview] }),
     indexPanel,
   ], actions, undefined, () => { unsubscribe?.(); audioPreview?.dispose(); });
+  closeDialogRef = closeDialog;
   if (virtualList) {
     refreshList();
     // 첫 창은 추정 행 높이로 그렸다. 실측 피치로 다시 재고 현재 선택이 보이게 한다.
@@ -430,12 +450,13 @@ function resourceButton(
   project: Project,
   characterIndex: number,
   onSelect: () => void,
+  onConfirm: () => void,
   prefix: string
 ): HTMLElement {
   return el("button", {
     class: option.id === selectedId ? "active" : "",
     attrs: {
-      type: "button", title: `${option.name} (${option.id})`,
+      type: "button", title: `${option.name} (${option.id}) · 더블클릭으로 바로 선택`,
       ...((kind === "music" || kind === "sound") && audioPlayback(option.id, project).midi ? { disabled: "" } : {}),
     },
     dataset: { resourceId: option.id, testid: `${prefix}-option-${option.id}` },
@@ -448,7 +469,7 @@ function resourceButton(
         ] })
         : el("span", { text: studioResourceLabel(option.name, option.id) }),
     ],
-    on: { click: onSelect },
+    on: { click: onSelect, dblclick: onConfirm },
   });
 }
 

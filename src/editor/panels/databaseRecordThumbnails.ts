@@ -1,4 +1,6 @@
+import { applyCharsetFrameCrop } from "@/assets/charsetFrameCrop";
 import { resolveAssetResourceUrl } from "@/assets/generatedAssetResourceResolver";
+import { resolveActorAppearance } from "@/project/characterAppearances";
 import type { DatabaseCollection } from "@/editor/databaseActions";
 import type {
   ActorRecord,
@@ -63,17 +65,35 @@ export function recordListThumbnail(
 }
 
 function actorThumbnail(record: ActorRecord, project: Project, size: number): HTMLElement {
+  const effective = resolveActorAppearance(project, record);
   const label = `${record.name} 얼굴`;
-  const url = resolveAssetResourceUrl(record.faceResourceId, { project });
-  if (!url) return record.faceResourceId ? imageFailureSlot(label, size) : emptySlot(size);
+  const faceUrl = resolveAssetResourceUrl(effective.faceResourceId, { project });
+  if (faceUrl) {
+    // 얼굴 한 칸 = 파일 한 장이라 크롭이 없다 — 슬롯 크기에 맞춰 그림 한 장을 통째로 깐다.
+    const slot = baseSlot("db-list-thumb-crop", label, size);
+    slot.style.backgroundImage = `url("${faceUrl}")`;
+    slot.style.backgroundPosition = "center";
+    slot.style.backgroundSize = `${size}px ${size}px`;
+    slot.append(loadProbe(faceUrl, slot, label));
+    return slot;
+  }
+  if (effective.faceResourceId) return imageFailureSlot(label, size);
 
-  // 얼굴 한 칸 = 파일 한 장이라 크롭이 없다 — 슬롯 크기에 맞춰 그림 한 장을 통째로 깐다.
-  const slot = baseSlot("db-list-thumb-crop", label, size);
-  slot.style.backgroundImage = `url("${url}")`;
-  slot.style.backgroundPosition = "center";
-  slot.style.backgroundSize = `${size}px ${size}px`;
-  slot.append(loadProbe(url, slot, label));
-  return slot;
+  // 초상화가 비어 있으면 깨진 이미지 아이콘 대신 해당 캐릭터의 걷기 1칸 크롭을 보여 준다.
+  const charsetUrl = resolveAssetResourceUrl(effective.characterResourceId, { project });
+  if (charsetUrl) {
+    const slot = baseSlot("db-list-thumb-charset-fallback", `${record.name} 걷기 (초상화 미지정)`, size);
+    const frame = el("span", { class: "db-list-thumb-charset-frame", attrs: { "aria-hidden": "true" } });
+    const scale = Math.max(1, size / 36);
+    applyCharsetFrameCrop(frame, charsetUrl, {
+      characterIndex: effective.characterIndex ?? 0,
+      direction: "down",
+      pattern: 1,
+    }, scale);
+    slot.append(frame, loadProbe(charsetUrl, slot, `${record.name} 걷기`));
+    return slot;
+  }
+  return emptySlot(size);
 }
 
 function enemyThumbnail(record: EnemyRecord, project: Project, size: number): HTMLElement {

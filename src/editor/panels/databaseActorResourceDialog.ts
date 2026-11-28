@@ -13,6 +13,7 @@ export function openActorResourceDialog(record: ActorRecord, field: ActorResourc
     title: dialogTitle(kind),
     currentId: current[field],
     currentCharacterIndex: current.characterIndex ?? 0,
+    allowClear: true,
     testidPrefix: "db-actor-resource-dialog",
     onConfirm: (result) => {
       if (field === "faceResourceId") {

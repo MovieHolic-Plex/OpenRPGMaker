@@ -2541,6 +2541,294 @@
       "faceResourceId": "shared-modern-apron-olive-expressions-bust-base",
       "quality": "approximate",
       "note": "2026-10-17 칩이 정답인 흉상·전신을 새로 그린 짝(scripts/content/portraits/modern_portraits.py). 얼굴 낱장은 없고 흉상 base 가 짝이다 — 전신은 같은 세트의 -full-base."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster4",
+      "characterIndex": 0,
+      "label": "트렌트",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster4",
+      "characterIndex": 1,
+      "label": "버섯 요정",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster4",
+      "characterIndex": 2,
+      "label": "갓파",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster4",
+      "characterIndex": 3,
+      "label": "구미호",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster4",
+      "characterIndex": 4,
+      "label": "너구리 둔갑사",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster4",
+      "characterIndex": 5,
+      "label": "이끼 골렘",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster4",
+      "characterIndex": 6,
+      "label": "얼음 요정",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster4",
+      "characterIndex": 7,
+      "label": "만드라고라",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster5",
+      "characterIndex": 0,
+      "label": "미믹",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-monster-00",
+      "quality": "exact",
+      "note": "자체 제작 Monster5 걷기 칩과 기존 생성 초상화 연결."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster5",
+      "characterIndex": 1,
+      "label": "저주 갑옷",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster5",
+      "characterIndex": 2,
+      "label": "초롱 귀신",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster5",
+      "characterIndex": 3,
+      "label": "저주 인형",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster5",
+      "characterIndex": 4,
+      "label": "마도서 괴물",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster5",
+      "characterIndex": 5,
+      "label": "허수아비 괴물",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster5",
+      "characterIndex": 6,
+      "label": "태엽 병정",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "mapped",
+      "faceResourceId": "generated-faceset-missing-people-13",
+      "quality": "exact",
+      "note": "자체 제작 Monster5 걷기 칩과 기존 생성 초상화 연결."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster5",
+      "characterIndex": 7,
+      "label": "촛불 임프",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster6",
+      "characterIndex": 0,
+      "label": "예티",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster6",
+      "characterIndex": 1,
+      "label": "인어 전사",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster6",
+      "characterIndex": 2,
+      "label": "사이클롭스",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster6",
+      "characterIndex": 3,
+      "label": "나방 인간",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster6",
+      "characterIndex": 4,
+      "label": "바실리스크",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster6",
+      "characterIndex": 5,
+      "label": "지니",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster6",
+      "characterIndex": 6,
+      "label": "키메라",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
+    },
+    {
+      "textureKey": "tex_easyrpg_charset_monster6",
+      "characterIndex": 7,
+      "label": "타락 천사",
+      "attributes": {
+        "kind": "몬스터"
+      },
+      "status": "no-face",
+      "faceResourceId": null,
+      "quality": "unspecified",
+      "note": "자체 제작 Monster4~6 걷기 칩. 전용 초상화 미제작 상태."
     }
   ],
   "faces": [
