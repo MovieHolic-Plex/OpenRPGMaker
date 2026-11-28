@@ -21,6 +21,11 @@
   pointer-events: auto;
 }
 
+/* 팝오버가 열린 동안 하단 독(z 35) 위로 — 팝오버 z-index 는 카드 쌓임 맥락 안이라 카드를 올려야 한다. */
+.floating-minimap-hud.has-open-popover {
+  z-index: 36;
+}
+
 .floating-minimap-hud.is-collapsed {
   width: auto;
   max-width: 228px;

@@ -1172,6 +1172,25 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
     }
   }
 
+  /**
+   * 열린 팝오버를 캔버스 영역 안에 묶는다. CSS max-height(468px)만 두면 낮은 창에서 아래로 넘쳐
+   * 하단 독에 덮이고, 본문이 스크롤되지 않아 아래 항목을 누를 수 없었다(620px 창 실측).
+   * 팝오버가 열린 동안에는 카드를 하단 독(z 35) 위로 올린다.
+   */
+  function fitOpenPopover(): void {
+    card.classList.toggle("has-open-popover", switcherOpen || moodOpen);
+    const target = moodOpen ? moodPopover : switcherOpen ? popover : null;
+    if (!target) return;
+    target.style.maxHeight = "";
+    const top = target.getBoundingClientRect().top;
+    const bottom = canvasArea.getBoundingClientRect().bottom;
+    const available = Math.floor(bottom - top - 12);
+    if (Number.isFinite(available) && available > 0) {
+      const cssMax = Number.parseFloat(getComputedStyle(target).maxHeight);
+      target.style.maxHeight = `${Math.max(160, Number.isFinite(cssMax) ? Math.min(cssMax, available) : available)}px`;
+    }
+  }
+
   function setSwitcherOpen(next: boolean): void {
     if (switcherOpen === next) return;
     if (next && moodOpen) setMoodOpen(false);
@@ -1184,6 +1203,7 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
       renderSwitcherList(true);
       queueMicrotask(() => searchInput.focus());
     }
+    fitOpenPopover();
   }
 
   function setMoodOpen(next: boolean): void {
@@ -1196,6 +1216,7 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
     if (moodOpen) {
       renderMoodPopover(true);
     }
+    fitOpenPopover();
   }
 
   searchInput.addEventListener("input", () => {
@@ -1234,6 +1255,8 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
   const onSwitcherEvent = (): void => setSwitcherOpen(true);
   const onMoodEvent = (): void => setMoodOpen(!moodOpen);
 
+  const onWindowResize = (): void => fitOpenPopover();
+  window.addEventListener("resize", onWindowResize);
   document.addEventListener("pointerdown", onDocPointerDown, true);
   document.addEventListener("keydown", onDocKeyDown);
   window.addEventListener(FLOATING_MINIMAP_TOGGLE_EVENT, onToggleEvent);
@@ -1302,6 +1325,7 @@ export function mountFloatingMinimapHud(canvasArea: HTMLElement): () => void {
     unsubMoodPreview();
     unsubEditor();
     unsubStore();
+    window.removeEventListener("resize", onWindowResize);
     document.removeEventListener("pointerdown", onDocPointerDown, true);
     document.removeEventListener("keydown", onDocKeyDown);
     window.removeEventListener(FLOATING_MINIMAP_TOGGLE_EVENT, onToggleEvent);
